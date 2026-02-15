@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Alastair Irving, Kim Morrison, Ainsley Pahljina
 -/
-import Mathlib.NumberTheory.Fermat
-import Mathlib.RingTheory.Fintype
+module
+
+public import Mathlib.NumberTheory.Fermat
+public import Mathlib.RingTheory.Fintype
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes
@@ -30,6 +32,8 @@ This tactic was ported by Thomas Murrills to Lean 4, and then it was converted t
 extension and made to use kernel reductions by Kyle Miller.
 -/
 
+@[expose] public section
+
 /-- The Mersenne numbers, 2^p - 1. -/
 def mersenne (p : ℕ) : ℕ :=
   2 ^ p - 1
@@ -37,17 +41,13 @@ def mersenne (p : ℕ) : ℕ :=
 theorem strictMono_mersenne : StrictMono mersenne := fun m n h ↦
   (Nat.sub_lt_sub_iff_right <| Nat.one_le_pow _ _ two_pos).2 <| by gcongr; norm_num1
 
-@[simp]
+@[simp, gcongr]
 theorem mersenne_lt_mersenne {p q : ℕ} : mersenne p < mersenne q ↔ p < q :=
   strictMono_mersenne.lt_iff_lt
 
-@[gcongr] protected alias ⟨_, GCongr.mersenne_lt_mersenne⟩ := mersenne_lt_mersenne
-
-@[simp]
+@[simp, gcongr]
 theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q :=
   strictMono_mersenne.le_iff_le
-
-@[gcongr] protected alias ⟨_, GCongr.mersenne_le_mersenne⟩ := mersenne_le_mersenne
 
 @[simp] theorem mersenne_zero : mersenne 0 = 0 := rfl
 
@@ -62,7 +62,7 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 lemma mersenne_succ (n : ℕ) : mersenne (n + 1) = 2 * mersenne n + 1 := by
   dsimp [mersenne]
   have := Nat.one_le_pow n 2 two_pos
-  omega
+  lia
 
 /-- If `2 ^ p - 1` is prime, then `p` is prime. -/
 lemma Nat.Prime.of_mersenne {p : ℕ} (h : (mersenne p).Prime) : Nat.Prime p := by
@@ -78,7 +78,7 @@ alias ⟨_, mersenne_pos_of_pos⟩ := mersenne_pos
 
 /-- Extension for the `positivity` tactic: `mersenne`. -/
 @[positivity mersenne _]
-def evalMersenne : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalMersenne : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(mersenne $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
@@ -102,34 +102,34 @@ theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
 lemma mersenne_mod_four {n : ℕ} (h : 2 ≤ n) : mersenne n % 4 = 3 := by
   induction n, h using Nat.le_induction with
   | base => rfl
-  | succ _ _ _ => rw [mersenne_succ]; omega
+  | succ _ _ _ => rw [mersenne_succ]; lia
 
 lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : mersenne n % 3 = 1 := by
   obtain ⟨k, rfl⟩ := odd
-  replace h : 1 ≤ k := by omega
+  replace h : 1 ≤ k := by lia
   induction k, h using Nat.le_induction with
   | base => rfl
   | succ j _ _ =>
-    rw [mersenne_succ, show 2 * (j + 1) = 2 * j + 1 + 1 by omega, mersenne_succ]
-    omega
+    rw [mersenne_succ, show 2 * (j + 1) = 2 * j + 1 + 1 by lia, mersenne_succ]
+    lia
 
 lemma mersenne_mod_eight {n : ℕ} (h : 3 ≤ n) : mersenne n % 8 = 7 := by
   induction n, h using Nat.le_induction with
   | base => rfl
-  | succ _ _ _ => rw [mersenne_succ]; omega
+  | succ _ _ _ => rw [mersenne_succ]; lia
 
 /-- If `2^p - 1` is prime then 2 is a square mod `2^p - 1`. -/
 lemma legendreSym_mersenne_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) :
     legendreSym (mersenne p) 2 = 1 := by
   have := mersenne_mod_eight hp
-  rw [legendreSym.at_two (by omega), ZMod.χ₈_nat_eq_if_mod_eight]
-  omega
+  rw [legendreSym.at_two (by lia), ZMod.χ₈_nat_eq_if_mod_eight]
+  lia
 
 /-- If `2^p - 1` is prime then 3 is not a square mod `2^p - 1`. -/
 lemma legendreSym_mersenne_three {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) (odd : Odd p) :
     legendreSym (mersenne p) 3 = -1 := by
   rw [(by rfl : (3 : ℤ) = (3 : ℕ)), legendreSym.quadratic_reciprocity_three_mod_four (by norm_num)
-    (mersenne_mod_four (by omega)),
+    (mersenne_mod_four (by lia)),
     legendreSym.mod]
   rw_mod_cast [mersenne_mod_three odd hp]
   simp
@@ -185,16 +185,8 @@ theorem sMod_lt (p : ℕ) (hp : p ≠ 0) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
 
 theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p' + 2) - 1)) := by
   induction i with
-  | zero => dsimp [s, sZMod]; norm_num
+  | zero => dsimp [s, sZMod]; simp
   | succ i ih => push_cast [s, sZMod, ih]; rfl
-
--- These next two don't make good `norm_cast` lemmas.
-theorem Int.natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
-  have : 1 ≤ b ^ p := Nat.one_le_pow p b w
-  norm_cast
-
-theorem Int.coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
-  Int.natCast_pow_pred 2 p (by decide)
 
 theorem sZMod_eq_sMod (p : ℕ) (i : ℕ) : sZMod p i = (sMod p i : ZMod (2 ^ p - 1)) := by
   induction i <;> push_cast [← Int.coe_nat_two_pow_pred p, sMod, sZMod, *] <;> rfl
@@ -211,10 +203,8 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
   · -- We want to use that fact that `0 ≤ s_mod p (p-2) < 2^p - 1`
     -- and `lucas_lehmer_residue p = 0 → 2^p - 1 ∣ s_mod p (p-2)`.
     intro h
-    simp? [ZMod.intCast_zmod_eq_zero_iff_dvd] at h says
-      simp only [ZMod.intCast_zmod_eq_zero_iff_dvd, ofNat_pos, pow_pos, cast_pred,
-        cast_pow, cast_ofNat] at h
-    apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
+    apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _
+      (by simpa [ZMod.intCast_zmod_eq_zero_iff_dvd] using h) <;> clear h
     · exact sMod_nonneg _ (by positivity) _
     · exact sMod_lt _ (by positivity) _
   · intro h
@@ -441,7 +431,7 @@ lemma pow_ω [Fact q.Prime] (odd : Odd q)
     (ω : X q) ^ ((q + 1) / 2) = -1 := by
   have pow2 : (2 : ZMod q) ^ ((q + 1) / 2) = 2 := by
     obtain ⟨_, _⟩ := odd
-    rw [(by omega : (q + 1) / 2 = q / 2 + 1), pow_succ]
+    rw [(by lia : (q + 1) / 2 = q / 2 + 1), pow_succ]
     have leg := legendreSym.eq_pow q 2
     have : (2 : ZMod q) = ((2 : ℤ) : ZMod q) := by norm_cast
     rw [this, ← leg, leg2]
@@ -449,9 +439,9 @@ lemma pow_ω [Fact q.Prime] (odd : Odd q)
   have := two_mul_ω_pow odd leg3
   rw [mul_pow] at this
   have coe : (2 : X q) = (2 : ZMod q) := by rw [map_ofNat]
-  rw [coe, ← RingHom.map_pow, pow2, ← coe,
+  rw [coe, ← map_pow, pow2, ← coe,
     (by ring : (-2 : X q) = 2 * -1)] at this
-  refine (isUnit_of_mul_eq_one (2 : X q) ((q + 1) / 2 : ℕ) ?_).mul_left_cancel this
+  refine (IsUnit.of_mul_eq_one (M := X q) ↑((q + 1) / 2) ?_).mul_left_cancel this
   norm_cast
   simp [Nat.mul_div_cancel' odd.add_one.two_dvd]
 
@@ -464,7 +454,7 @@ lemma ω_pow_trace [Fact q.Prime] (odd : Odd q)
   have : (ω : X q) ^ ((q + 1) / 2) * ωb ^ ((q + 1) / 4) = -ωb ^ ((q + 1) / 4) := by
     rw [pow_ω odd leg3 leg2]
     ring
-  have div4 : (q + 1) / 2 = (q + 1) / 4 + (q + 1) / 4 := by rcases hq4 with ⟨k, hk⟩; omega
+  have div4 : (q + 1) / 2 = (q + 1) / 4 + (q + 1) / 4 := by rcases hq4 with ⟨k, hk⟩; lia
   rw [div4, pow_add, mul_assoc, ← mul_pow, ω_mul_ωb, one_pow, mul_one] at this
   rw [this]
   ring
@@ -522,6 +512,8 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   have : 1 ≤ 2 ^ (p' + 2) := Nat.one_le_pow _ _ (by decide)
   exact mod_cast h
 
+-- TODO: fix non-terminal simp (acting on two goals with different simp sets)
+set_option linter.flexible false in
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
 theorem mersenne_coe_X (p : ℕ) : (mersenne p : X (q p)) = 0 := by
   ext <;> simp [mersenne, q, ZMod.natCast_eq_zero_iff, -pow_pos]
@@ -587,7 +579,7 @@ open LucasLehmer
 theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (mersenne p).Prime := by
   set p' := p - 2 with hp'
   clear_value p'
-  obtain rfl : p = p' + 2 := by omega
+  obtain rfl : p = p' + 2 := by lia
   have w : 1 < p' + 2 := Nat.lt_of_sub_eq_succ rfl
   contrapose
   intro a t
@@ -596,17 +588,17 @@ theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (
   have h := lt_of_lt_of_le h₁ h₂
   exact not_lt_of_ge (Nat.sub_le _ _) h
 
-/-- If `2^p-1` is prime then the Lucas-Lehmer test holds, `s(p-2) % (2^p-1) = 0. -/
+/-- If `2^p - 1` is prime then the Lucas-Lehmer test holds, `s (p - 2) % (2^p - 1) = 0`. -/
 theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) (hp : (mersenne p).Prime) :
     LucasLehmerTest p := by
   have : Fact (mersenne p).Prime := ⟨‹_›⟩
   set p' := p - 2 with hp'
   clear_value p'
-  obtain rfl : p = p' + 2 := by omega
+  obtain rfl : p = p' + 2 := by lia
   dsimp [LucasLehmerTest, lucasLehmerResidue]
   rw [sZMod_eq_s p', ← X.fst_intCast, X.closed_form, add_tsub_cancel_right]
   have := X.ω_pow_trace (q := mersenne (p' + 2)) (by simp)
-    (legendreSym_mersenne_three w <| hp.of_mersenne.odd_of_ne_two (by omega))
+    (legendreSym_mersenne_three w <| hp.of_mersenne.odd_of_ne_two (by lia))
     (legendreSym_mersenne_two w) (by simp [pow_add])
   rw [succ_mersenne, pow_add, show 2 ^ 2 = 4 by norm_num, mul_div_cancel_right₀ _ (by norm_num)]
     at this
@@ -623,7 +615,7 @@ Lean 4 kernel, which has the capability of efficiently reducing natural number e
 With this reduction in hand, it's a simple matter of applying the lemma
 `LucasLehmer.residue_eq_zero_iff_sMod_eq_zero`.
 
-See [Archive/Examples/MersennePrimes.lean] for certifications of all Mersenne primes
+See `Archive/Examples/MersennePrimes.lean` for certifications of all Mersenne primes
 up through `mersenne 4423`.
 -/
 
@@ -640,7 +632,7 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
   have h1 := calc
     4 = 2 ^ 2 := by simp
     _ ≤ 2 ^ p := Nat.pow_le_pow_right (by simp) hp
-  have h2 : 1 ≤ 2 ^ p := by omega
+  have h2 : 1 ≤ 2 ^ p := by lia
   induction k with
   | zero =>
     rw [sModNat, sMod, Int.natCast_emod]
@@ -649,21 +641,22 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
     rw [sModNat, sMod, ← ih]
     have h3 : 2 ≤ 2 ^ p - 1 := by
       zify [h2]
-      calc
-        (2 : Int) ≤ 4 - 1 := by simp
-        _         ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
+      calc (2 : ℤ)
+        _ ≤ 4 - 1 := by simp
+        _ ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
     zify [h2, h3]
     rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
       Int.add_emod_right, ← sub_eq_add_neg]
 
 /-- Tail-recursive version of `sModNat`. -/
-def sModNatTR (q k : ℕ) : ℕ :=
+meta def sModNatTR (q k : ℕ) : ℕ :=
   go k (4 % q)
 where
   /-- Helper function for `sMod''`. -/
   go : ℕ → ℕ → ℕ
   | 0, acc => acc
   | n + 1, acc => go n ((acc ^ 2 + (q - 2)) % q)
+termination_by structural x => x
 
 /--
 Generalization of `sModNat` with arbitrary base case,
@@ -702,7 +695,7 @@ lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sModNatTR (2 ^ p -
 lemma testFalseHelper (p : ℕ) (hp : Nat.blt 1 p = true)
     (h : Nat.ble 1 (sModNatTR (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
-  rw [Nat.ble_eq, Nat.succ_le, Nat.pos_iff_ne_zero] at h
+  rw [Nat.ble_eq, Nat.succ_le_iff, Nat.pos_iff_ne_zero] at h
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sModNat_eq_sMod p _ hp,
     ← sModNatTR_eq_sModNat]
   simpa using h
@@ -718,7 +711,7 @@ theorem isNat_not_lucasLehmerTest : {p np : ℕ} →
 /-- Calculate `LucasLehmer.LucasLehmerTest p` for `2 ≤ p` by using kernel reduction for the
 `sMod'` function. -/
 @[norm_num LucasLehmer.LucasLehmerTest (_ : ℕ)]
-def evalLucasLehmerTest : NormNumExt where eval {_ _} e := do
+meta def evalLucasLehmerTest : NormNumExt where eval {_ _} e := do
   let .app _ (p : Q(ℕ)) ← Meta.whnfR e | failure
   let ⟨ep, hp⟩ ← deriveNat p _
   let np := ep.natLit!
@@ -742,14 +735,14 @@ end LucasLehmer
 
 /-!
 This implementation works successfully to prove `(2^4423 - 1).Prime`,
-and all the Mersenne primes up to this point appear in [Archive/Examples/MersennePrimes.lean].
+and all the Mersenne primes up to this point appear in `Archive/Examples/MersennePrimes.lean`.
 These can be calculated nearly instantly, and `(2^9689 - 1).Prime` only fails due to deep
 recursion.
 
 (Note by kmill: the following notes were for the Lean 3 version. They seem like they could still
 be useful, so I'm leaving them here.)
 
-There's still low hanging fruit available to do faster computations
+There's still low-hanging fruit available to do faster computations
 based on the formula
 ```
 n ≡ (n % 2^p) + (n / 2^p) [MOD 2^p - 1]

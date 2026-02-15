@@ -3,11 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
-import Mathlib.CategoryTheory.Sites.EpiMono
-import Mathlib.Condensed.Equivalence
-import Mathlib.Condensed.Module
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
+public import Mathlib.CategoryTheory.Sites.EpiMono
+public import Mathlib.Condensed.Equivalence
+public import Mathlib.Condensed.Module
 /-!
 
 # Epimorphisms of condensed objects
@@ -16,6 +18,8 @@ This file characterises epimorphisms of condensed sets and condensed `R`-modules
 as those morphisms which are objectwise surjective on `Stonean` (see
 `CondensedSet.epi_iff_surjective_on_stonean` and `CondensedMod.epi_iff_surjective_on_stonean`).
 -/
+
+public section
 
 universe v u w u' v'
 
@@ -65,14 +69,12 @@ namespace CondensedSet
 
 variable {X Y : CondensedSet.{u}} (f : X ⟶ Y)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
     ∀ (S : CompHaus) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : CompHaus) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
         f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) :=
   Condensed.epi_iff_locallySurjective_on_compHaus _ f
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_surjective_on_stonean : Epi f ↔
     ∀ (S : Stonean), Function.Surjective (f.val.app (op S.compHaus)) :=
   Condensed.epi_iff_surjective_on_stonean _ f
@@ -83,14 +85,12 @@ namespace CondensedMod
 
 variable (R : Type (u + 1)) [Ring R] {X Y : CondensedMod.{u} R} (f : X ⟶ Y)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
     ∀ (S : CompHaus) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : CompHaus) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
         f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) :=
   Condensed.epi_iff_locallySurjective_on_compHaus _ f
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_surjective_on_stonean : Epi f ↔
     ∀ (S : Stonean), Function.Surjective (f.val.app (op S.compHaus)) :=
   have : HasLimitsOfSize.{u, u + 1} (ModuleCat R) :=

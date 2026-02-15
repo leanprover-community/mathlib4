@@ -3,10 +3,12 @@ Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Analysis.Convex.Cone.Basic
-import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
-import Mathlib.Geometry.Convex.Cone.Dual
-import Mathlib.Topology.Algebra.Module.PerfectPairing
+module
+
+public import Mathlib.Analysis.Convex.Cone.Basic
+public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Geometry.Convex.Cone.Dual
+public import Mathlib.Topology.Algebra.Module.PerfectPairing
 
 /-!
 # The topological dual of a cone and Farkas' lemma
@@ -37,6 +39,8 @@ We prove the following theorems:
 * https://en.wikipedia.org/wiki/Farkas%27_lemma#Geometric_interpretation
 -/
 
+@[expose] public section
+
 assert_not_exists InnerProductSpace
 
 open Set LinearMap Pointwise
@@ -48,7 +52,7 @@ variable {R M N : Type*} [CommRing R] [PartialOrder R] [TopologicalSpace R] [Clo
 
 lemma isClosed_dual (hp : ∀ x, Continuous (p x)) : IsClosed (dual p s : Set N) := by
   rw [← s.biUnion_of_singleton]
-  simp_rw [dual_iUnion, Submodule.iInf_coe, dual_singleton]
+  simp_rw [dual_iUnion, Submodule.coe_iInf, dual_singleton]
   exact isClosed_biInter fun x hx ↦ isClosed_Ici.preimage <| hp _
 
 end PointedCone
@@ -135,7 +139,7 @@ theorem hyperplane_separation_point (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) 
 @[simp] theorem dual_flip_dual (p : E →ₗ[ℝ] F →ₗ[ℝ] ℝ) [p.IsContPerfPair] (C : ProperCone ℝ E) :
     dual p.flip (dual p (C : Set E)) = C := by
   refine le_antisymm (fun x ↦ ?_) subset_dual_dual
-  simp only [mem_toPointedCone, mem_dual, SetLike.mem_coe]
+  simp only [mem_dual, SetLike.mem_coe]
   contrapose!
   simpa [p.flip.toContPerfPair.surjective.exists] using C.hyperplane_separation_point
 

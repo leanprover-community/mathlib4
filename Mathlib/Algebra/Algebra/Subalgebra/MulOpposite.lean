@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Ring.Subring.MulOpposite
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Ring.Subring.MulOpposite
 
 /-!
 
@@ -14,6 +16,8 @@ For every ring `A` over a commutative ring `R`, we construct an equivalence betw
 subalgebras of `A / R` and that of `Aᵐᵒᵖ / R`.
 
 -/
+
+@[expose] public section
 
 namespace Subalgebra
 

@@ -3,9 +3,11 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.Hom.ContinuousEval
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Topology.Hom.ContinuousEval
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # The compact-open topology
@@ -31,6 +33,8 @@ topological spaces.
 
 compact-open, curry, function space
 -/
+
+@[expose] public section
 
 
 open Set Filter TopologicalSpace Topology
@@ -59,6 +63,15 @@ theorem isOpen_setOf_mapsTo (hK : IsCompact K) (hU : IsOpen U) :
 lemma eventually_mapsTo {f : C(X, Y)} (hK : IsCompact K) (hU : IsOpen U) (h : MapsTo f K U) :
     ∀ᶠ g : C(X, Y) in 𝓝 f, MapsTo g K U :=
   (isOpen_setOf_mapsTo hK hU).mem_nhds h
+
+lemma isOpen_setOf_range_subset [CompactSpace X] (hU : IsOpen U) :
+    IsOpen {f : C(X, Y) | range f ⊆ U} := by
+  simp_rw [← mapsTo_univ_iff_range_subset]
+  exact isOpen_setOf_mapsTo isCompact_univ hU
+
+lemma eventually_range_subset [CompactSpace X] {f : C(X, Y)} (hU : IsOpen U) (h : range f ⊆ U) :
+    ∀ᶠ g : C(X, Y) in 𝓝 f, range g ⊆ U :=
+  (isOpen_setOf_range_subset hU).mem_nhds h
 
 lemma nhds_compactOpen (f : C(X, Y)) :
     𝓝 f = ⨅ (K : Set X) (_ : IsCompact K) (U : Set Y) (_ : IsOpen U) (_ : MapsTo f K U),
@@ -166,7 +179,7 @@ lemma continuous_prodMk_const : Continuous fun p : X × C(Y, Z) ↦ prodMk (cons
   obtain ⟨V, W, hV, hW, hrV, hKW, hVW⟩ := generalized_tube_lemma (isCompact_singleton (x := r))
     (hK.image f.continuous) hU (by simpa [Set.subset_def, forall_comm (α := X)])
   refine Filter.eventually_of_mem (prod_mem_nhds (hV.mem_nhds (by simpa using hrV))
-    (ContinuousMap.eventually_mapsTo hK hW (Set.mapsTo'.mpr hKW))) ?_
+    (ContinuousMap.eventually_mapsTo hK hW (Set.mapsTo_iff_image_subset.mpr hKW))) ?_
   rintro ⟨r', f'⟩ ⟨hr'V, hf'⟩ x hxK
   exact hVW (Set.mk_mem_prod hr'V (hf' hxK))
 
@@ -181,7 +194,7 @@ theorem continuous_comp' : Continuous fun x : C(X, Y) × C(Y, Z) => x.2.comp x.1
   obtain ⟨L, hKL, hLc, hLU⟩ : ∃ L ∈ 𝓝ˢ (f '' K), IsCompact L ∧ MapsTo g L U :=
     exists_mem_nhdsSet_isCompact_mapsTo g.continuous (hK.image f.continuous) hU
       (mapsTo_image_iff.2 hKU)
-  rw [← subset_interior_iff_mem_nhdsSet, ← mapsTo'] at hKL
+  rw [← subset_interior_iff_mem_nhdsSet, ← mapsTo_iff_image_subset] at hKL
   exact ((eventually_mapsTo hK isOpen_interior hKL).prod_nhds
     (eventually_mapsTo hLc hU hLU)).mono fun ⟨f', g'⟩ ⟨hf', hg'⟩ ↦
       hg'.comp <| hf'.mono_right interior_subset
@@ -268,7 +281,7 @@ instance [RegularSpace Y] : RegularSpace C(X, Y) :=
     intro K hK U hU hf
     rcases (hK.image f.continuous).exists_isOpen_closure_subset (hU.mem_nhdsSet.2 hf.image_subset)
       with ⟨V, hVo, hKV, hVU⟩
-    filter_upwards [mem_lift' (eventually_mapsTo hK hVo (mapsTo'.2 hKV))] with g hg
+    filter_upwards [mem_lift' (eventually_mapsTo hK hVo (mapsTo_iff_image_subset.2 hKV))] with g hg
     refine ((isClosed_setOf_mapsTo isClosed_closure K).closure_subset ?_).mono_right hVU
     exact closure_mono (fun _ h ↦ h.mono_right subset_closure) hg
 
@@ -387,7 +400,7 @@ theorem image_coev {y : Y} (s : Set X) : coev X Y y '' s = {y} ×ˢ s := by simp
 /-- The coevaluation map `Y → C(X, Y × X)` is continuous (always). -/
 theorem continuous_coev : Continuous (coev X Y) :=
   ((continuous_prodMk_const (X := Y) (Y := X) (Z := X)).comp
-    (.prodMk continuous_id (continuous_const (y := ContinuousMap.id _))):)
+    (.prodMk continuous_id (continuous_const (y := ContinuousMap.id _))) :)
 
 end Coev
 
@@ -405,7 +418,7 @@ theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) 
   rfl
 
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
-α × β → γ` is continuous. -/
+`α × β → γ` is continuous. -/
 theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
     (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f :=
   (curry ⟨_, h⟩).2

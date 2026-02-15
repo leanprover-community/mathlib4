@@ -3,12 +3,14 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-import Mathlib.CategoryTheory.ObjectProperty.EpiMono
-import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-import Mathlib.Order.OrderIsoNat
-import Mathlib.CategoryTheory.Simple
+module
+
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+public import Mathlib.Order.OrderIsoNat
+public import Mathlib.CategoryTheory.Simple
 
 /-!
 # Artinian objects
@@ -25,6 +27,8 @@ closed under subobjects.
 with `IsNoetherianObject` in `Cᵒᵖ`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -136,7 +140,7 @@ variable [HasZeroMorphisms C] [HasZeroObject C]
 
 theorem exists_simple_subobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
     ∃ Y : Subobject X, Simple (Y : C) := by
-  haveI : Nontrivial (Subobject X) := nontrivial_of_not_isZero h
+  have : Nontrivial (Subobject X) := nontrivial_of_not_isZero h
   obtain ⟨Y, s⟩ := (IsAtomic.eq_bot_or_exists_atom_le (⊤ : Subobject X)).resolve_left top_ne_bot
   exact ⟨Y, (subobject_simple_iff_isAtom _).mpr s.1⟩
 

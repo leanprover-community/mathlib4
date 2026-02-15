@@ -3,8 +3,10 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Fabrizio Barroero, Christopher Hoskin
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # circleMap
@@ -18,6 +20,8 @@ This file defines the circle map $θ ↦ c + R e^{θi}$, a parametrization of a 
 ## Tags
 
 -/
+
+@[expose] public section
 noncomputable section circleMap
 
 open Complex Function Metric Real
@@ -35,12 +39,8 @@ theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) := zer
 @[simp]
 theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| := by simp [circleMap]
 
-@[deprecated (since := "2025-02-17")] alias abs_circleMap_zero := norm_circleMap_zero
-
 theorem circleMap_notMem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [Complex.dist_eq, le_abs_self]
-
-@[deprecated (since := "2025-05-23")] alias circleMap_not_mem_ball := circleMap_notMem_ball
 
 theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R) (θ : ℝ) :
     circleMap c R θ ≠ w :=
@@ -87,8 +87,6 @@ lemma circleMap_zero_pow (n : ℕ) (R θ : ℝ) :
 lemma circleMap_zero_zpow (n : ℤ) (R θ : ℝ) :
     (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
   simp [circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc]
-
-@[deprecated (since := "2025-04-02")] alias circleMap_zero_int_mul := circleMap_zero_zpow
 
 lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
   simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]

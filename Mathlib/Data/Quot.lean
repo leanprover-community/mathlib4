@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Relation
-import Mathlib.Logic.Unique
-import Mathlib.Util.Notation3
+module
+
+public import Mathlib.Logic.Relation
+public import Mathlib.Logic.Unique
+public import Mathlib.Util.Notation3
 
 /-!
 # Quotient types
@@ -16,6 +18,8 @@ This module extends the core library's treatment of quotient types (`Init.Core`)
 
 quotient
 -/
+
+@[expose] public section
 
 variable {α : Sort*} {β : Sort*}
 
@@ -272,7 +276,9 @@ theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
     Quot.mk r x = Quot.mk r y ↔ Relation.EqvGen r x y :=
   ⟨Quot.eqvGen_exact, Quot.eqvGen_sound⟩
 
-@[simp]
+-- This should not be a `@[simp]` lemma,
+-- as this prevents us from using `simp` reliably in the quotient,
+-- because this might bump us back out from equality to the underlying relation.
 theorem Quotient.eq {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ r x y :=
   ⟨Quotient.exact, Quotient.sound⟩
 
@@ -680,7 +686,8 @@ theorem hrecOn₂'_mk'' {φ : Quotient s₁ → Quotient s₂ → Sort*}
   rfl
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
-to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/
+to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients.
+This is a version of `Quotient.map` using `Setoid.r` instead of `≈`. -/
 protected def map' (f : α → β) (h : ∀ a b, s₁.r a b → s₂.r (f a) (f b)) :
     Quotient s₁ → Quotient s₂ :=
   Quot.map f h
@@ -690,7 +697,20 @@ theorem map'_mk'' (f : α → β) (h) (x : α) :
     (Quotient.mk'' x : Quotient s₁).map' f h = (Quotient.mk'' (f x) : Quotient s₂) :=
   rfl
 
-/-- A version of `Quotient.map₂` using curly braces and unification. -/
+/-- Map a function `f : α → β → γ` that sends equivalent elements to equivalent elements
+to a function `f : Quotient sa → Quotient sb → Quotient sc`. Useful to define binary operations
+on quotients. This is a version of `Quotient.map₂` using `Setoid.r` instead of `≈`. -/
+protected def map₂' (f : α → β → γ)
+    (h : ∀ ⦃a₁ a₂ : α⦄, s₁.r a₁ a₂ → ∀ ⦃b₁ b₂ : β⦄, s₂.r b₁ b₂ → s₃.r (f a₁ b₁) (f a₂ b₂)) :
+    Quotient s₁ → Quotient s₂ → Quotient s₃ :=
+  Quotient.map₂ f h
+
+@[simp]
+theorem map₂'_mk'' (f : α → β → γ) (h) (x : α) :
+    (Quotient.mk'' x : Quotient s₁).map₂' f h =
+      (Quotient.map' (f x) (h (Setoid.refl x)) : Quotient s₂ → Quotient s₃) :=
+  rfl
+
 theorem exact' {a b : α} :
     (Quotient.mk'' a : Quotient s₁) = Quotient.mk'' b → s₁ a b :=
   Quotient.exact

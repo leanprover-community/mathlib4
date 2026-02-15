@@ -3,7 +3,10 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.IdentDistrib
+module
+
+public import Mathlib.Probability.IdentDistrib
+import Mathlib.Probability.Independence.Integration
 
 /-!
 # Moments and moment-generating function
@@ -35,6 +38,8 @@ import Mathlib.Probability.IdentDistrib
   of `cgf`.
 -/
 
+@[expose] public section
+
 
 open MeasureTheory Filter Finset Real
 
@@ -50,10 +55,12 @@ variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ
 def moment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
   μ[X ^ p]
 
+lemma moment_def (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) :
+    moment X p μ = μ[X ^ p] := rfl
+
 /-- Central moment of a real random variable, `μ[(X - μ[X]) ^ p]`. -/
-def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ := by
-  have m := fun (x : Ω) => μ[X] -- Porting note: Lean deems `μ[(X - fun x => μ[X]) ^ p]` ambiguous
-  exact μ[(X - m) ^ p]
+def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
+  μ[(X - fun (_ : Ω) => μ[X]) ^ p]
 
 @[simp]
 theorem moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
@@ -67,6 +74,9 @@ lemma moment_zero_measure : moment X p (0 : Measure Ω) = 0 := by simp [moment]
 theorem centralMoment_zero (hp : p ≠ 0) : centralMoment 0 p μ = 0 := by
   simp only [centralMoment, hp, Pi.zero_apply, integral_const, smul_eq_mul,
     mul_zero, zero_sub, Pi.pow_apply, Pi.neg_apply, neg_zero, zero_pow, Ne, not_false_iff]
+
+lemma moment_one (X : Ω → ℝ) (μ : Measure Ω) :
+    moment X 1 μ = μ[X] := by simp [moment]
 
 @[simp]
 lemma centralMoment_zero_measure : centralMoment X p (0 : Measure Ω) = 0 := by
@@ -95,6 +105,13 @@ theorem centralMoment_one [IsZeroOrProbabilityMeasure μ] : centralMoment X 1 μ
 
 lemma centralMoment_two_eq_variance (hX : AEMeasurable X μ) : centralMoment X 2 μ = variance X μ :=
   (variance_eq_integral hX).symm
+
+/-- Central moments are equal for almost-everywhere equal random variables. -/
+lemma centralMoment_congr_ae {X Y : Ω → ℝ} (hXY : X =ᵐ[μ] Y) :
+    centralMoment X p μ = centralMoment Y p μ := by
+  simp only [centralMoment, integral_congr_ae hXY]
+  refine integral_congr_ae ?_
+  filter_upwards [hXY] with x hx using by simp [hx]
 
 section MomentGeneratingFunction
 
@@ -194,9 +211,6 @@ lemma mgf_pos_iff [hμ : NeZero μ] :
 lemma exp_cgf [hμ : NeZero μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos' hμ.out hX)]
 
-@[deprecated (since := "2025-03-08")]
-alias exp_cgf_of_neZero := exp_cgf
-
 lemma mgf_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'} {Y : Ω' → Ω} {X : Ω → ℝ}
     (hY : AEMeasurable Y μ) {t : ℝ} (hX : AEStronglyMeasurable (fun ω ↦ exp (t * X ω)) (μ.map Y)) :
     mgf X (μ.map Y) t = mgf (X ∘ Y) μ t := by
@@ -222,13 +236,15 @@ theorem cgf_neg : cgf (-X) μ t = cgf X μ (-t) := by simp_rw [cgf, mgf_neg]
 theorem mgf_smul_left (α : ℝ) : mgf (α • X) μ t = mgf X μ (α * t) := by
   simp_rw [mgf, Pi.smul_apply, smul_eq_mul, mul_comm α t, mul_assoc]
 
+theorem mgf_const_mul (α : ℝ) : mgf (fun ω ↦ α * X ω) μ t = mgf X μ (α * t) := mgf_smul_left α
+
 theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α) * mgf X μ t := by
   rw [mgf, mgf, ← integral_const_mul]
   congr with x
   dsimp
   rw [mul_add, exp_add]
 
-theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t *  exp (t * α) := by
+theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t * exp (t * α) := by
   simp only [add_comm, mgf_const_add, mul_comm]
 
 lemma mgf_add_measure {ν : Measure Ω}
@@ -267,20 +283,20 @@ lemma mgf_anti_of_nonpos {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : t ≤ 0)
 section IndepFun
 
 /-- This is a trivial application of `IndepFun.comp` but it will come up frequently. -/
-theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (s t : ℝ) :
-    IndepFun (fun ω => exp (s * X ω)) (fun ω => exp (t * Y ω)) μ := by
+theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : X ⟂ᵢ[μ] Y) (s t : ℝ) :
+    (fun ω => exp (s * X ω)) ⟂ᵢ[μ] (fun ω => exp (t * Y ω)) := by
   have h_meas : ∀ t, Measurable fun x => exp (t * x) := fun t => (measurable_id'.const_mul t).exp
   change IndepFun ((fun x => exp (s * x)) ∘ X) ((fun x => exp (t * x)) ∘ Y) μ
   exact IndepFun.comp h_indep (h_meas s) (h_meas t)
 
-theorem IndepFun.mgf_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
+theorem IndepFun.mgf_add {X Y : Ω → ℝ} (h_indep : X ⟂ᵢ[μ] Y)
     (hX : AEStronglyMeasurable (fun ω => exp (t * X ω)) μ)
     (hY : AEStronglyMeasurable (fun ω => exp (t * Y ω)) μ) :
     mgf (X + Y) μ t = mgf X μ t * mgf Y μ t := by
   simp_rw [mgf, Pi.add_apply, mul_add, exp_add]
   exact (h_indep.exp_mul t t).integral_mul_eq_mul_integral hX hY
 
-theorem IndepFun.mgf_add' {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
+theorem IndepFun.mgf_add' {X Y : Ω → ℝ} (h_indep : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) : mgf (X + Y) μ t = mgf X μ t * mgf Y μ t := by
   have A : Continuous fun x : ℝ => exp (t * x) := by fun_prop
   have h'X : AEStronglyMeasurable (fun ω => exp (t * X ω)) μ :=
@@ -289,7 +305,7 @@ theorem IndepFun.mgf_add' {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (hX : A
     A.aestronglyMeasurable.comp_aemeasurable hY.aemeasurable
   exact h_indep.mgf_add h'X h'Y
 
-theorem IndepFun.cgf_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
+theorem IndepFun.cgf_add {X Y : Ω → ℝ} (h_indep : X ⟂ᵢ[μ] Y)
     (h_int_X : Integrable (fun ω => exp (t * X ω)) μ)
     (h_int_Y : Integrable (fun ω => exp (t * Y ω)) μ) :
     cgf (X + Y) μ t = cgf X μ t + cgf Y μ t := by
@@ -320,7 +336,7 @@ theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
     rw [sum_insert hi_notin_s]
     apply aestronglyMeasurable_exp_mul_add (h_int i (mem_insert_self _ _)) h_rec
 
-theorem IndepFun.integrable_exp_mul_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
+theorem IndepFun.integrable_exp_mul_add {X Y : Ω → ℝ} (h_indep : X ⟂ᵢ[μ] Y)
     (h_int_X : Integrable (fun ω => exp (t * X ω)) μ)
     (h_int_Y : Integrable (fun ω => exp (t * Y ω)) μ) :
     Integrable (fun ω => exp (t * (X + Y) ω)) μ := by
@@ -344,10 +360,8 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
     refine IndepFun.integrable_exp_mul_add ?_ (h_int i (mem_insert_self _ _)) h_rec
     exact (h_indep.indepFun_finset_sum_of_notMem h_meas hi_notin_s).symm
 
--- TODO(vilin97): weaken `h_meas` to `AEMeasurable (X i)` or `AEStronglyMeasurable (X i)` throughout
--- https://github.com/leanprover-community/mathlib4/issues/20367
-theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
-    (h_indep : iIndepFun X μ) (h_meas : ∀ i, Measurable (X i))
+theorem iIndepFun.mgf_sum₀ {X : ι → Ω → ℝ}
+    (h_indep : iIndepFun X μ) (h_meas : ∀ i, AEMeasurable (X i) μ)
     (s : Finset ι) : mgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, mgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   classical
@@ -357,19 +371,30 @@ theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
     have h_int' : ∀ i : ι, AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i =>
       ((h_meas i).const_mul t).exp.aestronglyMeasurable
     rw [sum_insert hi_notin_s,
-      IndepFun.mgf_add (h_indep.indepFun_finset_sum_of_notMem h_meas hi_notin_s).symm (h_int' i)
+      IndepFun.mgf_add (h_indep.indepFun_finset_sum_of_notMem₀ h_meas hi_notin_s).symm (h_int' i)
         (aestronglyMeasurable_exp_mul_sum fun i _ => h_int' i),
       h_rec, prod_insert hi_notin_s]
 
-theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
+theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
     (h_indep : iIndepFun X μ) (h_meas : ∀ i, Measurable (X i))
+    (s : Finset ι) : mgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, mgf (X i) μ t :=
+  h_indep.mgf_sum₀ (by fun_prop) s
+
+theorem iIndepFun.cgf_sum₀ {X : ι → Ω → ℝ}
+    (h_indep : iIndepFun X μ) (h_meas : ∀ i, AEMeasurable (X i) μ)
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
     cgf (∑ i ∈ s, X i) μ t = ∑ i ∈ s, cgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   simp_rw [cgf]
-  rw [← log_prod _ _ fun j hj => ?_]
-  · rw [h_indep.mgf_sum h_meas]
+  rw [← log_prod fun j hj => ?_]
+  · rw [h_indep.mgf_sum₀ h_meas]
   · exact (mgf_pos (h_int j hj)).ne'
+
+theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
+    (h_indep : iIndepFun X μ) (h_meas : ∀ i, Measurable (X i))
+    {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
+    cgf (∑ i ∈ s, X i) μ t = ∑ i ∈ s, cgf (X i) μ t :=
+  h_indep.cgf_sum₀ (by fun_prop) h_int
 
 end IndepFun
 
@@ -378,16 +403,25 @@ theorem mgf_congr_of_identDistrib
     (hident : IdentDistrib X X' μ μ') (t : ℝ) :
     mgf X μ t = mgf X' μ' t := hident.comp (measurable_const_mul t).exp |>.integral_eq
 
+theorem mgf_sum_of_identDistrib₀
+    {X : ι → Ω → ℝ}
+    {s : Finset ι} {j : ι}
+    (h_meas : ∀ i, AEMeasurable (X i) μ)
+    (h_indep : iIndepFun X μ)
+    (hident : ∀ i ∈ s, ∀ j ∈ s, IdentDistrib (X i) (X j) μ μ)
+    (hj : j ∈ s) (t : ℝ) : mgf (∑ i ∈ s, X i) μ t = mgf (X j) μ t ^ #s := by
+  rw [h_indep.mgf_sum₀ h_meas]
+  exact Finset.prod_eq_pow_card fun i hi =>
+    mgf_congr_of_identDistrib (X i) (X j) (hident i hi j hj) t
+
 theorem mgf_sum_of_identDistrib
     {X : ι → Ω → ℝ}
     {s : Finset ι} {j : ι}
     (h_meas : ∀ i, Measurable (X i))
     (h_indep : iIndepFun X μ)
     (hident : ∀ i ∈ s, ∀ j ∈ s, IdentDistrib (X i) (X j) μ μ)
-    (hj : j ∈ s) (t : ℝ) : mgf (∑ i ∈ s, X i) μ t = mgf (X j) μ t ^ #s := by
-  rw [h_indep.mgf_sum h_meas]
-  exact Finset.prod_eq_pow_card fun i hi =>
-    mgf_congr_of_identDistrib (X i) (X j) (hident i hi j hj) t
+    (hj : j ∈ s) (t : ℝ) : mgf (∑ i ∈ s, X i) μ t = mgf (X j) μ t ^ #s :=
+  mgf_sum_of_identDistrib₀ (by fun_prop) h_indep hident hj t
 
 section Chernoff
 
@@ -475,3 +509,27 @@ lemma integrable_exp_mul_of_mem_Icc [IsFiniteMeasure μ] {X : Ω → ℝ} {a b t
   · exact ⟨Or.inr (by nlinarith), Or.inl (by nlinarith)⟩
 
 end ProbabilityTheory
+
+namespace ContinuousLinearMap
+
+variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+    [NormedSpace 𝕜 E] [NormedSpace ℝ E] [NormedSpace 𝕜 F] [NormedSpace ℝ F] [CompleteSpace E]
+    [CompleteSpace F] [MeasurableSpace E] {μ : Measure E}
+
+lemma integral_comp_id_comm' (h : Integrable id μ) (L : E →L[𝕜] F) :
+    μ[L] = L μ[id] := by
+  change ∫ x, L (id x) ∂μ = _
+  rw [L.integral_comp_comm h]
+
+lemma integral_comp_id_comm (h : Integrable id μ) (L : E →L[𝕜] F) :
+    μ[L] = L (∫ x, x ∂μ) :=
+  L.integral_comp_id_comm' h
+
+variable [OpensMeasurableSpace E] [MeasurableSpace F] [BorelSpace F] [SecondCountableTopology F]
+
+lemma integral_id_map (h : Integrable id μ) (L : E →L[𝕜] F) :
+    ∫ x, x ∂(μ.map L) = L (∫ x, x ∂μ) := by
+  rw [integral_map (by fun_prop) (by fun_prop)]
+  simp [L.integral_comp_id_comm h]
+
+end ContinuousLinearMap

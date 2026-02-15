@@ -3,16 +3,20 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Creating (co)limits
 
 We say that `F` creates limits of `K` if, given any limit cone `c` for `K ⋙ F`
-(i.e. below) we can lift it to a cone "above", and further that `F` reflects
+(i.e. below), we can lift it to a cone "above", and further that `F` reflects
 limits for `K`.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor
@@ -138,6 +142,13 @@ lemma liftedLimitMapsToOriginal_inv_map_π
   rw [show F.map ((liftLimit t).π.app j) = (liftedLimitMapsToOriginal t).hom.hom ≫ c.π.app j
     from (by simp), ← Category.assoc, ← Cone.category_comp_hom]
   simp
+
+lemma liftedLimitMapsToOriginal_hom_π
+    {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (j : J) :
+      (liftedLimitMapsToOriginal t).hom.hom ≫ c.π.app j = F.map ((liftLimit t).π.app j) := by
+  rw [← liftedLimitMapsToOriginal_inv_map_π (t := t)]
+  simp only [Functor.mapCone_pt, Functor.comp_obj, ← Category.assoc, ← Cone.category_comp_hom,
+    Iso.hom_inv_id, Cone.category_id_hom, Category.id_comp, Functor.const_obj_obj]
 
 /-- The lifted cone is a limit. -/
 def liftedLimitIsLimit {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)}
@@ -384,10 +395,6 @@ def createsColimitOfReflectsIsomorphismsOfPreserves {K : J ⥤ C} {F : C ⥤ D}
     [F.ReflectsIsomorphisms] [HasColimit K] [PreservesColimit K F] : CreatesColimit K F :=
   createsColimitOfReflectsIso' (isColimitOfPreserves F (colimit.isColimit _))
     ⟨⟨_, Iso.refl _⟩, colimit.isColimit _⟩
-
-@[deprecated (since := "2025-02-01")]
-noncomputable alias createsColimitOfFullyFaithfulOfPreserves :=
-  createsColimitOfReflectsIsomorphismsOfPreserves
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
@@ -637,6 +644,12 @@ instance compCreatesLimitsOfShape [CreatesLimitsOfShape J F] [CreatesLimitsOfSha
 instance compCreatesLimits [CreatesLimitsOfSize.{w, w'} F] [CreatesLimitsOfSize.{w, w'} G] :
     CreatesLimitsOfSize.{w, w'} (F ⋙ G) where CreatesLimitsOfShape := inferInstance
 
+instance preservesLimit_comp_of_createsLimit [CreatesLimit K F] [PreservesLimit K (F ⋙ G)] :
+    PreservesLimit (K ⋙ F) G where
+  preserves hc := ⟨IsLimit.ofIsoLimit (isLimitOfPreserves (F ⋙ G) (liftedLimitIsLimit hc))
+    ((Functor.mapConeMapCone (liftLimit hc)).symm ≪≫
+      (Cones.functoriality _ _).mapIso (liftedLimitMapsToOriginal hc))⟩
+
 instance compCreatesColimit [CreatesColimit K F] [CreatesColimit (K ⋙ F) G] :
     CreatesColimit K (F ⋙ G) where
   lifts c t :=
@@ -653,6 +666,12 @@ instance compCreatesColimitsOfShape [CreatesColimitsOfShape J F] [CreatesColimit
 
 instance compCreatesColimits [CreatesColimitsOfSize.{w, w'} F] [CreatesColimitsOfSize.{w, w'} G] :
     CreatesColimitsOfSize.{w, w'} (F ⋙ G) where CreatesColimitsOfShape := inferInstance
+
+instance preservesColimit_comp_of_createsColimit [CreatesColimit K F] [PreservesColimit K (F ⋙ G)] :
+    PreservesColimit (K ⋙ F) G where
+  preserves hc := ⟨IsColimit.ofIsoColimit (isColimitOfPreserves (F ⋙ G) (liftedColimitIsColimit hc))
+    ((Functor.mapCoconeMapCocone (liftColimit hc)).symm ≪≫
+      (Cocones.functoriality _ _).mapIso (liftedColimitMapsToOriginal hc))⟩
 
 end Comp
 

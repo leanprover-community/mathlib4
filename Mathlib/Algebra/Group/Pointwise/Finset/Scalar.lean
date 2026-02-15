@@ -3,9 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Data.Finset.NAry
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
+module
+
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 
 /-!
 # Pointwise operations of finsets
@@ -31,10 +32,10 @@ the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat actio
 
 ## Implementation notes
 
-We put all instances in the locale `Pointwise`, so that these instances are not available by
+We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-since we expect the locale to be open whenever the instances are actually used (and making the
-instances reducible changes the behavior of `simp`.
+since we expect the scope to be open whenever the instances are actually used (and making the
+instances reducible changes the behavior of `simp`).
 
 ## Tags
 
@@ -42,7 +43,9 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
-assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
 
 open Function MulOpposite
 
@@ -337,38 +340,12 @@ theorem op_smul_finset_smul_eq_smul_smul_finset (a : α) (s : Finset β) (t : Fi
 
 end SMul
 
-
-section IsRightCancelMul
-
-variable [Mul α] [IsRightCancelMul α] [DecidableEq α] {s t : Finset α} {a : α}
-
-
-end IsRightCancelMul
-
-section CancelMonoid
-variable [DecidableEq α] [CancelMonoid α] {s : Finset α} {m n : ℕ}
-
-
-end CancelMonoid
-
-section Group
-variable [Group α] [DecidableEq α] {s t : Finset α}
-
-
-end Group
-
 @[to_additive]
 theorem image_smul_comm [DecidableEq β] [DecidableEq γ] [SMul α β] [SMul α γ] (f : β → γ) (a : α)
     (s : Finset β) : (∀ b, f (a • b) = a • f b) → (a • s).image f = a • s.image f :=
   image_comm
 
 end Finset
-
-namespace Fintype
-variable {ι : Type*} {α β : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (β i)]
-  [∀ i, DecidableEq (α i)]
-
-end Fintype
 
 open Pointwise
 

@@ -3,13 +3,17 @@ Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Order.SuccPred.Basic
+module
+
+public import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Successor function on `WithBot`
 
 This file defines the successor of `a : WithBot α` as an element of `α`, and dually for `WithTop`.
 -/
+
+@[expose] public section
 
 namespace WithBot
 variable {α : Type*} [Preorder α] [OrderBot α] [SuccOrder α] {x y : WithBot α}

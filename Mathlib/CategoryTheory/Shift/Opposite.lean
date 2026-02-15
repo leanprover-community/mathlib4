@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Adjunction
-import Mathlib.CategoryTheory.Preadditive.Opposite
+module
+
+public import Mathlib.CategoryTheory.Shift.Adjunction
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # The (naive) shift on the opposite category
@@ -46,19 +48,21 @@ We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` st
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits Category
 
 section
 
-variable (C : Type*) [Category C] (A : Type*) [AddMonoid A] [HasShift C A]
+variable (C : Type*) [Category* C] (A : Type*) [AddMonoid A] [HasShift C A]
 
 namespace HasShift
 
 /-- Construction of the naive shift on the opposite category of a category `C`:
 the shiftfunctor by `n` is `(shiftFunctor C n).op`. -/
-noncomputable def mkShiftCoreOp : ShiftMkCore Cᵒᵖ A where
+def mkShiftCoreOp : ShiftMkCore Cᵒᵖ A where
   F n := (shiftFunctor C n).op
   zero := (NatIso.op (shiftFunctorZero C A)).symm
   add a b := (NatIso.op (shiftFunctorAdd C a b)).symm
@@ -77,20 +81,17 @@ with the naive shift: `shiftFunctor (OppositeShift C A) n` is `(shiftFunctor C n
 @[nolint unusedArguments]
 def OppositeShift (A : Type*) [AddMonoid A] [HasShift C A] := Cᵒᵖ
 
-instance : Category (OppositeShift C A) := by
-  dsimp only [OppositeShift]
-  infer_instance
+instance : Category (OppositeShift C A) := inferInstanceAs (Category Cᵒᵖ)
 
-noncomputable instance : HasShift (OppositeShift C A) A :=
+instance : HasShift (OppositeShift C A) A :=
   hasShiftMk Cᵒᵖ A (HasShift.mkShiftCoreOp C A)
 
 instance [HasZeroObject C] : HasZeroObject (OppositeShift C A) := by
   dsimp only [OppositeShift]
   infer_instance
 
-instance [Preadditive C] : Preadditive (OppositeShift C A) := by
-  dsimp only [OppositeShift]
-  infer_instance
+instance [Preadditive C] : Preadditive (OppositeShift C A) :=
+  inferInstanceAs (Preadditive Cᵒᵖ)
 
 instance [Preadditive C] (n : A) [(shiftFunctor C n).Additive] :
     (shiftFunctor (OppositeShift C A) n).Additive := by
@@ -138,14 +139,14 @@ lemma oppositeShiftFunctorAdd'_hom_app :
 
 end
 
-variable {C D : Type*} [Category C] [Category D] (A : Type*) [AddMonoid A]
+variable {C D : Type*} [Category* C] [Category* D] (A : Type*) [AddMonoid A]
   [HasShift C A] [HasShift D A] (F : C ⥤ D)
 
 /--
 The functor `F.op`, seen as a functor from `OppositeShift C A` to `OppositeShift D A`.
 (We will use this to carry a `CommShift` instance for the naive shifts on the opposite category.
 Then, in the pretriangulated case, we will be able to put a `CommShift` instance on `F.op`
-for the modified shifts and not deal with instance clashes.
+for the modified shifts and not deal with instance clashes.)
 -/
 def OppositeShift.functor : OppositeShift C A ⥤ OppositeShift D A := F.op
 
@@ -164,17 +165,17 @@ namespace Functor
 Given a `CommShift` structure on `F`, this is the corresponding `CommShift` structure on
 `OppositeShift.functor F` (for the naive shifts on the opposite categories).
 -/
-noncomputable instance commShiftOp [CommShift F A] :
+instance commShiftOp [CommShift F A] :
     CommShift (OppositeShift.functor A F) A where
-  iso a := (NatIso.op (F.commShiftIso a)).symm
-  zero := by
+  commShiftIso a := (NatIso.op (F.commShiftIso a)).symm
+  commShiftIso_zero := by
     rw [commShiftIso_zero]
     ext
     simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
       CommShift.isoZero_inv_app, op_comp, CommShift.isoZero_hom_app]
     erw [oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorZero_hom_app]
     rfl
-  add a b := by
+  commShiftIso_add a b := by
     rw [commShiftIso_add]
     ext
     simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
@@ -189,18 +190,18 @@ lemma commShiftOp_iso_eq [CommShift F A] (a : A) :
 Given a `CommShift` structure on `OppositeShift.functor F` (for the naive shifts on the opposite
 categories), this is the corresponding `CommShift` structure on `F`.
 -/
-@[simps]
-noncomputable def commShiftUnop
+@[simps -isSimp]
+def commShiftUnop
     [CommShift (OppositeShift.functor A F) A] : CommShift F A where
-  iso a := NatIso.removeOp ((OppositeShift.functor A F).commShiftIso a).symm
-  zero := by
+  commShiftIso a := NatIso.removeOp ((OppositeShift.functor A F).commShiftIso a).symm
+  commShiftIso_zero := by
     rw [commShiftIso_zero]
     ext
     simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
       CommShift.isoZero_inv_app, unop_comp, CommShift.isoZero_hom_app]
     erw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorZero_inv_app]
     rfl
-  add a b := by
+  commShiftIso_add a b := by
     rw [commShiftIso_add]
     ext
     simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
@@ -220,7 +221,7 @@ instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     NatTrans.CommShift (OppositeShift.natTrans A τ) A where
   shift_comm _ := by
     ext
-    rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _ ).inv.app _),
+    rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _).inv.app _),
       ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
     dsimp
     simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
@@ -244,11 +245,11 @@ instance : NatTrans.CommShift (OppositeShift.natIsoId C A).hom A where
   shift_comm _ := by
     ext
     dsimp [OppositeShift.natIsoId, Functor.commShiftOp_iso_eq]
-    simp only [Functor.commShiftIso_id_hom_app, Functor.comp_obj, Functor.id_obj, Functor.map_id,
+    simp only [Functor.commShiftIso_id_hom_app, Functor.map_id,
       comp_id, Functor.commShiftIso_id_inv_app, CategoryTheory.op_id, id_comp]
     rfl
 
-variable {E : Type*} [Category E] [HasShift E A] (G : D ⥤ E)
+variable {E : Type*} [Category* E] [HasShift E A] (G : D ⥤ E)
 
 /-- The obvious isomorphism between `OppositeShift.functor (F ⋙ G)` and the
 composition of `OppositeShift.functor F` and `OppositeShift.functor G`.

@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Triangulated.Rotate
-import Mathlib.Algebra.Ring.NegOnePow
+module
+
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Triangulated.Rotate
+public import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # The shift on the category of triangles
@@ -19,6 +21,8 @@ The shift on the category of triangles was also obtained by Adam Topaz,
 Johan Commelin and Andrew Yang during the Liquid Tensor Experiment.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

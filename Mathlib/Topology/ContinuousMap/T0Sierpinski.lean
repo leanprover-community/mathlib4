@@ -3,9 +3,11 @@ Copyright (c) 2022 Ivan Sadofschi Costa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ivan Sadofschi Costa
 -/
-import Mathlib.Topology.Order
-import Mathlib.Topology.Sets.Opens
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Topology.Order
+public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Any T0 space embeds in a product of copies of the Sierpinski space.
@@ -17,6 +19,8 @@ continuous map `productOfMemOpens` from `X` to `Opens X → Prop` which is the p
 The map `productOfMemOpens` is always inducing. Whenever `X` is T0, `productOfMemOpens` is
 also injective and therefore an embedding.
 -/
+
+@[expose] public section
 
 open Topology
 

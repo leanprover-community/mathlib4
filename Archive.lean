@@ -3,6 +3,7 @@ import Archive.Examples.Eisenstein
 import Archive.Examples.IfNormalization.Result
 import Archive.Examples.IfNormalization.Statement
 import Archive.Examples.IfNormalization.WithoutAesop
+import Archive.Examples.Kuratowski
 import Archive.Examples.MersennePrimes
 import Archive.Examples.PropEncodable
 import Archive.Hairer
@@ -41,6 +42,7 @@ import Archive.Imo.Imo2006Q5
 import Archive.Imo.Imo2008Q2
 import Archive.Imo.Imo2008Q3
 import Archive.Imo.Imo2008Q4
+import Archive.Imo.Imo2010Q5
 import Archive.Imo.Imo2011Q3
 import Archive.Imo.Imo2011Q5
 import Archive.Imo.Imo2013Q1
@@ -56,6 +58,8 @@ import Archive.Imo.Imo2024Q2
 import Archive.Imo.Imo2024Q3
 import Archive.Imo.Imo2024Q5
 import Archive.Imo.Imo2024Q6
+import Archive.Imo.Imo2025Q3
+import Archive.Kuratowski
 import Archive.MiuLanguage.Basic
 import Archive.MiuLanguage.DecisionNec
 import Archive.MiuLanguage.DecisionSuf
@@ -72,7 +76,6 @@ import Archive.Wiedijk100Theorems.FriendshipGraphs
 import Archive.Wiedijk100Theorems.HeronsFormula
 import Archive.Wiedijk100Theorems.InverseTriangleSum
 import Archive.Wiedijk100Theorems.Konigsberg
-import Archive.Wiedijk100Theorems.Partition
 import Archive.Wiedijk100Theorems.PerfectNumbers
 import Archive.Wiedijk100Theorems.SolutionOfCubicQuartic
 import Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges

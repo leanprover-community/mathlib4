@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Centroid
-import Mathlib.LinearAlgebra.AffineSpace.Independent
-import Mathlib.LinearAlgebra.AffineSpace.Pointwise
-import Mathlib.LinearAlgebra.Basis.SMul
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Centroid
+public import Mathlib.LinearAlgebra.AffineSpace.Independent
+public import Mathlib.LinearAlgebra.AffineSpace.Pointwise
+public import Mathlib.LinearAlgebra.Basis.SMul
 
 /-!
 # Affine bases and barycentric coordinates
@@ -26,6 +28,9 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 ## Main definitions
 
+* `fintypeAffineCoords`: the `AffineSubspace` of `ι → k` (for `Fintype ι`) where coordinates sum
+  to `1`.
+* `finsuppAffineCoords`: the `AffineSubspace of `ι →₀ k` where coordinates sum to `1`.
 * `AffineBasis`: a structure representing an affine basis of an affine space.
 * `AffineBasis.coord`: the map `P →ᵃ[k] k` corresponding to `i : ι`.
 * `AffineBasis.coord_apply_eq`: the behaviour of `AffineBasis.coord i` on `p i`.
@@ -36,12 +41,44 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 ## TODO
 
-* Construct the affine equivalence between `P` and `{ f : ι →₀ k | f.sum = 1 }`.
+* Construct the affine equivalence between `P` and `finsuppAffineCoords ι k`.
 
 -/
 
+@[expose] public section
+
 open Affine Module Set
 open scoped Pointwise
+
+section Coordinates
+
+variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+
+variable (ι k) in
+/-- The space of coordinates for affine combinations indexed by a `Fintype`. -/
+def fintypeAffineCoords [Fintype ι] : AffineSubspace k (ι → k) :=
+  (affineSpan k {(1 : k)}).comap (Fintype.linearCombination k (1 : ι → k)).toAffineMap
+
+lemma mem_fintypeAffineCoords_iff_sum [Fintype ι] {w : ι → k} :
+    w ∈ fintypeAffineCoords ι k ↔ ∑ i, w i = 1 := by
+  simp [fintypeAffineCoords, Fintype.linearCombination_apply]
+
+lemma AffineIndependent.injOn_affineCombination_fintypeAffineCoords [Fintype ι] {p : ι → P}
+    (h : AffineIndependent k p) :
+    InjOn (Finset.univ.affineCombination k p) (fintypeAffineCoords ι k) :=
+  fun w₁ hw₁ w₂ hw₂ he ↦ (affineIndependent_iff_eq_of_fintype_affineCombination_eq k p).1
+    h w₁ w₂ (mem_fintypeAffineCoords_iff_sum.1 hw₁) (mem_fintypeAffineCoords_iff_sum.1 hw₂) he
+
+variable (ι k) in
+/-- The space of coordinates for affine combinations indexed by a general type. -/
+def finsuppAffineCoords : AffineSubspace k (ι →₀ k) :=
+  (affineSpan k {(1 : k)}).comap (Finsupp.linearCombination k (1 : ι → k)).toAffineMap
+
+lemma mem_finsuppAffineCoords_iff_linearCombination {w : ι →₀ k} :
+    w ∈ finsuppAffineCoords ι k ↔ Finsupp.linearCombination k (1 : ι → k) w = 1 := by
+  simp [finsuppAffineCoords]
+
+end Coordinates
 
 universe u₁ u₂ u₃ u₄
 
@@ -137,8 +174,8 @@ noncomputable def coord (i : ι) : P →ᵃ[k] k where
   toFun q := 1 - (b.basisOf i).sumCoords (q -ᵥ b i)
   linear := -(b.basisOf i).sumCoords
   map_vadd' q v := by
-    rw [vadd_vsub_assoc, LinearMap.map_add, vadd_eq_add, LinearMap.neg_apply,
-      sub_add_eq_sub_sub_swap, add_comm, sub_eq_add_neg]
+    rw [vadd_vsub_assoc, map_add, vadd_eq_add, LinearMap.neg_apply, sub_add_eq_sub_sub_swap,
+      add_comm, sub_eq_add_neg]
 
 @[simp]
 theorem linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCoords :=
@@ -151,7 +188,7 @@ theorem coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := 
 
 @[simp]
 theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
-  simp only [coord, Basis.coe_sumCoords, LinearEquiv.map_zero, sub_zero,
+  simp only [coord, Basis.coe_sumCoords, map_zero, sub_zero,
     AffineMap.coe_mk, Finsupp.sum_zero_index, vsub_self]
 
 @[simp]
@@ -175,9 +212,6 @@ theorem coord_apply_combination_of_notMem (hi : i ∉ s) {w : ι → k} (hw : s.
   classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_false,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
-
-@[deprecated (since := "2025-05-23")]
-alias coord_apply_combination_of_not_mem := coord_apply_combination_of_notMem
 
 @[simp]
 theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by
@@ -244,7 +278,7 @@ noncomputable def coords : P →ᵃ[k] ι → k where
   toFun q i := b.coord i q
   linear :=
     { toFun := fun v i => -(b.basisOf i).sumCoords v
-      map_add' := fun v w => by ext; simp only [LinearMap.map_add, Pi.add_apply, neg_add]
+      map_add' := fun v w => by ext; simp only [map_add, Pi.add_apply, neg_add]
       map_smul' := fun t v => by ext; simp }
   map_vadd' p v := by ext; simp
 

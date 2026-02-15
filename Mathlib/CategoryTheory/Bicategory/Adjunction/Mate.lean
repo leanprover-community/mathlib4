@@ -3,8 +3,10 @@ Copyright (c) 2025 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Joël Riou
 -/
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Mates in bicategories
@@ -19,7 +21,7 @@ This file establishes the bijection between the 2-cells
          l₂                  r₂
 ```
 
-where `l₁ ⊣ r₁` and `l₂ ⊣ r₂`. The corresponding natural transformations are called mates.
+where `l₁ ⊣ r₁` and `l₂ ⊣ r₂`. The corresponding 2-morphisms are called mates.
 
 For the bicategory `Cat`, the definitions in this file are provided in
 `Mathlib/CategoryTheory/Adjunction/Mates.lean`, where you can find more detailed documentation
@@ -41,6 +43,8 @@ To be precise, the definitions in `Mathlib/CategoryTheory/Adjunction/Mates.lean`
 polymorphic, so they are not simple specializations of the definitions in this file.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -64,7 +68,7 @@ def homEquiv₁ {g : b ⟶ d} {h : c ⟶ d} : (g ⟶ l ≫ h) ≃ (r ≫ g ⟶ h
   invFun β := (λ_ _).inv ≫ adj.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l ◁ β
   left_inv γ :=
     calc
-      _ = 𝟙 _ ⊗≫ (adj.unit ▷ g ≫ (l ≫ r) ◁ γ) ⊗≫ l ◁ adj.counit ▷ h ⊗≫ 𝟙 _:= by
+      _ = 𝟙 _ ⊗≫ (adj.unit ▷ g ≫ (l ≫ r) ◁ γ) ⊗≫ l ◁ adj.counit ▷ h ⊗≫ 𝟙 _ := by
         bicategory
       _ = γ ⊗≫ leftZigzag adj.unit adj.counit ▷ h ⊗≫ 𝟙 _ := by
         rw [← whisker_exchange]
@@ -88,7 +92,7 @@ def homEquiv₁ {g : b ⟶ d} {h : c ⟶ d} : (g ⟶ l ≫ h) ≃ (r ≫ g ⟶ h
 @[simps -isSimp]
 def homEquiv₂ {g : a ⟶ b} {h : a ⟶ c} : (g ≫ l ⟶ h) ≃ (g ⟶ h ≫ r) where
   toFun α := (ρ_ _).inv ≫ g ◁ adj.unit ≫ (α_ _ _ _).inv ≫ α ▷ r
-  invFun γ := γ ▷ l ≫ (α_ _ _ _ ).hom ≫ h ◁ adj.counit ≫ (ρ_ _).hom
+  invFun γ := γ ▷ l ≫ (α_ _ _ _).hom ≫ h ◁ adj.counit ≫ (ρ_ _).hom
   left_inv α :=
     calc
       _ = 𝟙 _ ⊗≫ g ◁ adj.unit ▷ l ⊗≫ (α ▷ (r ≫ l) ≫ h ◁ adj.counit) ⊗≫ 𝟙 _ := by
@@ -127,7 +131,7 @@ and `l₂ ⊣ r₂` respectively).
       e ↔ f
 ```
 
-Then we have a bijection between natural transformations `g ≫ l₂ ⟶ l₁ ≫ h` and
+Then we have a bijection between 2-morphisms `g ≫ l₂ ⟶ l₁ ≫ h` and
 `r₁ ≫ g ⟶ h ≫ r₂`. This can be seen as a bijection of the 2-cells:
 
 ```
@@ -138,7 +142,7 @@ Then we have a bijection between natural transformations `g ≫ l₂ ⟶ l₁ �
          L₂                  R₂
 ```
 
-Note that if one of the transformations is an iso, it does not imply the other is an iso.
+Note that if one of the 2-morphisms is an iso, it does not imply the other is an iso.
 -/
 @[simps! -isSimp]
 def mateEquiv : (g ≫ l₂ ⟶ l₁ ≫ h) ≃ (r₁ ≫ g ⟶ h ≫ r₂) :=
@@ -503,6 +507,7 @@ lemma conjugateEquiv_whiskerRight
     leftUnitor_inv_whiskerRight, Iso.inv_hom_id, triangle_assoc_comp_right_assoc] at this
   simp [conjugateEquiv_apply, this]
 
+set_option linter.flexible false in -- simp followed by bicategory
 lemma conjugateEquiv_associator_hom
     {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
     {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)
@@ -561,7 +566,7 @@ variable {c d : B}
 variable {l₁ l₂ : c ⟶ d} {r₁ r₂ : d ⟶ c}
 variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂)
 
-/-- If `α` is an isomorphism between left adjoints, then its conjugate transformation is an
+/-- If `α` is an isomorphism between left adjoints, then its conjugate 2-morphism is an
 isomorphism. The converse is given in `conjugateEquiv_of_iso`.
 -/
 instance conjugateEquiv_iso (α : l₂ ⟶ l₁) [IsIso α] :
@@ -569,7 +574,7 @@ instance conjugateEquiv_iso (α : l₂ ⟶ l₁) [IsIso α] :
   ⟨⟨conjugateEquiv adj₂ adj₁ (inv α),
       ⟨conjugateEquiv_comm _ _ (by simp), conjugateEquiv_comm _ _ (by simp)⟩⟩⟩
 
-/-- If `α` is an isomorphism between right adjoints, then its conjugate transformation is an
+/-- If `α` is an isomorphism between right adjoints, then its conjugate 2-morphism is an
 isomorphism. The converse is given in `conjugateEquiv_symm_of_iso`.
 -/
 instance conjugateEquiv_symm_iso (α : r₁ ⟶ r₂) [IsIso α] :
@@ -577,7 +582,7 @@ instance conjugateEquiv_symm_iso (α : r₁ ⟶ r₂) [IsIso α] :
   ⟨⟨(conjugateEquiv adj₂ adj₁).symm (inv α),
       ⟨conjugateEquiv_symm_comm _ _ (by simp), conjugateEquiv_symm_comm _ _ (by simp)⟩⟩⟩
 
-/-- If `α` is a natural transformation between left adjoints whose conjugate natural transformation
+/-- If `α` is a 2-morphism between left adjoints whose conjugate 2-morphism
 is an isomorphism, then `α` is an isomorphism. The converse is given in `Conjugate_iso`.
 -/
 theorem conjugateEquiv_of_iso (α : l₂ ⟶ l₁) [IsIso (conjugateEquiv adj₁ adj₂ α)] :
@@ -587,7 +592,7 @@ theorem conjugateEquiv_of_iso (α : l₂ ⟶ l₁) [IsIso (conjugateEquiv adj₁
   infer_instance
 
 /--
-If `α` is a natural transformation between right adjoints whose conjugate natural transformation is
+If `α` is a 2-morphism between right adjoints whose conjugate 2-morphism is
 an isomorphism, then `α` is an isomorphism. The converse is given in `conjugateEquiv_symm_iso`.
 -/
 theorem conjugateEquiv_symm_of_iso (α : r₁ ⟶ r₂)
@@ -596,7 +601,7 @@ theorem conjugateEquiv_symm_of_iso (α : r₁ ⟶ r₂)
     by simpa only [Equiv.apply_symm_apply] using this
   infer_instance
 
-/-- Thus conjugation defines an equivalence between natural isomorphisms. -/
+/-- Thus conjugation defines an equivalence between isomorphisms. -/
 @[simps]
 def conjugateIsoEquiv : (l₂ ≅ l₁) ≃ (r₁ ≅ r₂) where
   toFun α :=
@@ -682,7 +687,7 @@ theorem mateEquiv_conjugateEquiv_vcomp
     _ = 𝟙 _ ⊗≫
           rightAdjointSquare.vcomp
             (mateEquiv adj₁ adj₂ α)
-            (mateEquiv adj₂ adj₃ ((λ_ l₃).hom ≫ β ≫ (ρ_ l₂).inv)) ⊗≫ 𝟙 _  := by
+            (mateEquiv adj₂ adj₃ ((λ_ l₃).hom ≫ β ≫ (ρ_ l₂).inv)) ⊗≫ 𝟙 _ := by
       dsimp only [conjugateEquiv_apply, rightAdjointSquareConjugate.vcomp,
         rightAdjointSquare.vcomp]
       bicategory

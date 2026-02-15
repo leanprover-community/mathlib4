@@ -3,8 +3,10 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.Ring.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.Algebra.Category.Ring.Basic
 
 /-!
 # Presheaves of modules over a presheaf of rings.
@@ -24,6 +26,8 @@ of scalars of `M.obj Y` via `R.map f`.
 * Presheaves of modules over a presheaf of commutative rings form a monoidal category.
 * Pushforward and pullback.
 -/
+
+@[expose] public section
 
 universe v v₁ u₁ u
 
@@ -62,6 +66,10 @@ protected lemma map_smul {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (m : M.obj 
 
 lemma congr_map_apply {X Y : Cᵒᵖ} {f g : X ⟶ Y} (h : f = g) (m : M.obj X) :
     M.map f m = M.map g m := by rw [h]
+
+lemma map_comp_apply {U V W : Cᵒᵖ} (i : U ⟶ V) (j : V ⟶ W) (x) :
+    M.map (i ≫ j) x = M.map j (M.map i x) := by
+  rw [M.map_comp]; rfl
 
 /-- A morphism of presheaves of modules consists of a family of linear maps which
 satisfy the naturality condition. -/
@@ -110,12 +118,12 @@ def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
     { app := fun X ↦ (app X).inv
       naturality := fun {X Y} f ↦ by
         rw [← cancel_epi (app X).hom, ← reassoc_of% (naturality f), Iso.map_hom_inv_id,
-          Category.comp_id, Iso.hom_inv_id_assoc]}
+          Category.comp_id, Iso.hom_inv_id_assoc] }
 
 /-- The underlying presheaf of abelian groups of a presheaf of modules. -/
 noncomputable def presheaf : Cᵒᵖ ⥤ Ab where
   obj X := (forget₂ _ _).obj (M.obj X)
-  map f := AddCommGrp.ofHom <| AddMonoidHom.mk' (M.map f) (by simp)
+  map f := AddCommGrpCat.ofHom <| AddMonoidHom.mk' (M.map f) (by simp)
 
 @[simp]
 lemma presheaf_obj_coe (X : Cᵒᵖ) :
@@ -134,7 +142,7 @@ variable (R) in
 noncomputable def toPresheaf : PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ Ab where
   obj M := M.presheaf
   map f :=
-    { app := fun X ↦ AddCommGrp.ofHom <| AddMonoidHom.mk' (Hom.app f X) (by simp)
+    { app := fun X ↦ AddCommGrpCat.ofHom <| AddMonoidHom.mk' (Hom.app f X) (by simp)
       naturality := fun X Y g ↦ by ext x; exact naturality_apply f g x }
 
 @[simp]
@@ -149,7 +157,7 @@ lemma toPresheaf_map_app_apply (f : M₁ ⟶ M₂) (X : Cᵒᵖ) (x : M₁.obj X
 instance : (toPresheaf R).Faithful where
   map_injective {_ _ f g} h := by
     ext X x
-    exact congr_fun (((evaluation _ _).obj X ⋙ forget _).congr_map h) x
+    exact congr_fun (((evaluation _ _).obj X ⋙ forget Ab).congr_map h) x
 
 section
 
@@ -368,7 +376,7 @@ noncomputable def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) 
   { toFun := fun x => M.map f x
     map_add' := by simp
     map_smul' := fun r x => by
-      simp only [ModuleCat.restrictScalars.smul_def, RingHom.id_apply, M.map_smul]
+      simp only [ModuleCat.restrictScalars.smul_def (R := R.obj X), RingHom.id_apply, M.map_smul]
       rw [← RingCat.comp_apply, ← R.map_comp]
       congr
       apply hX.hom_ext }

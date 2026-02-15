@@ -3,12 +3,14 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Idempotent
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.PUnit
-import Mathlib.Order.Hom.BoundedLattice
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.Order.Hom.BoundedLattice
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Ring
 
 /-!
 # Boolean rings
@@ -40,13 +42,15 @@ purposes and because it is easier than dealing with
 boolean ring, boolean algebra
 -/
 
+@[expose] public section
+
 open scoped symmDiff
 
 variable {α β γ : Type*}
 
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
-  /-- Multiplication in a boolean ring is idempotent. -/
+  /-- Multiplication in a Boolean ring is idempotent. -/
   isIdempotentElem (a : α) : IsIdempotentElem a
 
 namespace BooleanRing
@@ -160,8 +164,8 @@ def sup : Max α :=
 def inf : Min α :=
   ⟨(· * ·)⟩
 
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.sup
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.inf
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.sup
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
@@ -363,7 +367,7 @@ instance [Inhabited α] : Inhabited (AsBoolRing α) :=
   ‹Inhabited α›
 
 -- See note [reducible non-instances]
-/-- Every generalized Boolean algebra has the structure of a non unital commutative ring with the
+/-- Every generalized Boolean algebra has the structure of a nonunital commutative ring with the
 following data:
 
 * `a + b` unfolds to `a ∆ b` (symmetric difference)
@@ -521,7 +525,6 @@ instance : BooleanRing Bool where
   add_assoc := xor_assoc
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
-  sub_eq_add_neg _ _ := rfl
   neg_add_cancel := Bool.xor_self
   add_comm := xor_comm
   mul_assoc := and_assoc

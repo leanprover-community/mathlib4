@@ -3,13 +3,15 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
 /-!
 # Right-angled triangles
 
-This file proves basic geometrical results about distances and angles in (possibly degenerate)
+This file proves basic geometric results about distances and angles in (possibly degenerate)
 right-angled triangles in real inner product spaces and Euclidean affine spaces.
 
 ## Implementation notes
@@ -23,6 +25,8 @@ triangle unnecessarily.
 * https://en.wikipedia.org/wiki/Pythagorean_theorem
 
 -/
+
+public section
 
 
 noncomputable section

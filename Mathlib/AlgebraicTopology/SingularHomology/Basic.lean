@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Homology.AlternatingConst
-import Mathlib.AlgebraicTopology.SingularSet
+module
+
+public import Mathlib.Algebra.Homology.AlternatingConst
+public import Mathlib.AlgebraicTopology.SingularSet
 
 /-!
 # Singular homology
@@ -13,6 +15,8 @@ In this file, we define the singular chain complex and singular homology of a to
 We also calculate the homology of a totally disconnected space as an example.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

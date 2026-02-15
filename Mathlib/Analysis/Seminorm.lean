@@ -3,10 +3,13 @@ Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yaël Dillies, Moritz Doll
 -/
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Analysis.LocallyConvex.Basic
-import Mathlib.Data.Real.Pointwise
+module
+
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Analysis.LocallyConvex.Basic
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Data.Real.Pointwise
 
 /-!
 # Seminorms
@@ -32,6 +35,8 @@ For a module over a normed ring:
 
 seminorm, locally convex, LCTVS
 -/
+
+@[expose] public section
 
 assert_not_exists balancedCore
 
@@ -84,7 +89,7 @@ def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     refine le_antisymm (smul_le r x) ?_
     by_cases h : r = 0
     · simp [h, map_zero]
-    rw [← mul_le_mul_left (inv_pos.mpr (norm_pos_iff.mpr h))]
+    rw [← mul_le_mul_iff_right₀ (inv_pos.mpr (norm_pos_iff.mpr h))]
     rw [inv_mul_cancel_left₀ (norm_ne_zero_iff.mpr h)]
     specialize smul_le r⁻¹ (r • x)
     rw [norm_inv] at smul_le
@@ -187,7 +192,7 @@ instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid (Seminorm 𝕜 E) :=
-  DFunLike.coe_injective.isOrderedCancelAddMonoid _ rfl coe_add fun _ _ => rfl
+  Function.Injective.isOrderedCancelAddMonoid DFunLike.coe coe_add .rfl
 
 instance instMulAction [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
     MulAction R (Seminorm 𝕜 E) :=
@@ -338,10 +343,12 @@ theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (ha
 
 theorem finset_sup_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
     s.sup p x = ↑(s.sup fun i => ⟨p i x, apply_nonneg (p i) x⟩ : ℝ≥0) := by
-  induction' s using Finset.cons_induction_on with a s ha ih
-  · rw [Finset.sup_empty, Finset.sup_empty, coe_bot, _root_.bot_eq_zero, Pi.zero_apply]
+  induction s using Finset.cons_induction_on with
+  | empty =>
+    rw [Finset.sup_empty, Finset.sup_empty, coe_bot, _root_.bot_eq_zero, Pi.zero_apply]
     norm_cast
-  · rw [Finset.sup_cons, Finset.sup_cons, coe_sup, Pi.sup_apply, NNReal.coe_max, NNReal.coe_mk, ih]
+  | cons a s ha ih =>
+    rw [Finset.sup_cons, Finset.sup_cons, coe_sup, Pi.sup_apply, NNReal.coe_max, NNReal.coe_mk, ih]
 
 theorem exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) {s : Finset ι} (hs : s.Nonempty) (x : E) :
     ∃ i ∈ s, s.sup p x = p i x := by
@@ -558,6 +565,7 @@ protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
   rw [Seminorm.sSup_apply bddAbove_empty, Real.iSup_of_isEmpty]
   rfl
 
+set_option backward.privateInPublic true in
 private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
     IsLUB s (sSup s) := by
   refine ⟨fun p hp x => ?_, fun p hp x => ?_⟩ <;> haveI : Nonempty ↑s := hs₂.coe_sort <;>
@@ -566,6 +574,8 @@ private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs�
     exact le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
   · exact ciSup_le fun q => hp q.2 x
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `Seminorm 𝕜 E` is a conditionally complete lattice.
 
 Note that, while `inf`, `sup` and `sSup` have good definitional properties (corresponding to
@@ -890,7 +900,7 @@ theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     rw [Set.mem_smul_set, Seminorm.mem_ball_zero]
     refine fun hx => ⟨k⁻¹ • x, ?_, ?_⟩
     · rwa [Seminorm.mem_ball_zero, map_smul_eq_mul, norm_inv, ←
-        mul_lt_mul_left <| norm_pos_iff.mpr hk, ← mul_assoc, ← div_eq_mul_inv ‖k‖ ‖k‖,
+        mul_lt_mul_iff_right₀ <| norm_pos_iff.mpr hk, ← mul_assoc, ← div_eq_mul_inv ‖k‖ ‖k‖,
         div_self (ne_of_gt <| norm_pos_iff.mpr hk), one_mul]
     rw [← smul_assoc, smul_eq_mul, ← div_eq_mul_inv, div_self hk, one_smul]
 
@@ -913,8 +923,7 @@ theorem smul_closedBall_zero {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} (hk : 0 
   intro x
   rw [Set.mem_smul_set, Seminorm.mem_closedBall_zero]
   refine fun hx => ⟨k⁻¹ • x, ?_, ?_⟩
-  · rwa [Seminorm.mem_closedBall_zero, map_smul_eq_mul, norm_inv, ← mul_le_mul_left hk, ← mul_assoc,
-      ← div_eq_mul_inv ‖k‖ ‖k‖, div_self (ne_of_gt hk), one_mul]
+  · rwa [Seminorm.mem_closedBall_zero, map_smul_eq_mul, norm_inv, inv_mul_le_iff₀ hk]
   rw [← smul_assoc, smul_eq_mul, ← div_eq_mul_inv, div_self (norm_pos_iff.mp hk), one_smul]
 
 theorem ball_zero_absorbs_ball_zero (p : Seminorm 𝕜 E) {r₁ r₂ : ℝ} (hr₁ : 0 < r₁) :
@@ -1030,7 +1039,7 @@ theorem restrictScalars_closedBall (p : Seminorm 𝕜' E) :
 
 end RestrictScalars
 
-/-! ### Continuity criterions for seminorms -/
+/-! ### Continuity criteria for seminorms -/
 
 
 section Continuity
@@ -1081,7 +1090,7 @@ protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [IsUni
 
 protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : Continuous p := by
-  letI := IsTopologicalAddGroup.toUniformSpace E
+  letI := IsTopologicalAddGroup.rightUniformSpace E
   haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).continuous
 
@@ -1188,12 +1197,12 @@ If there is a scalar `c` with `‖c‖>1`, then any `x` such that `p x ≠ 0` ca
 moved by scalar multiplication to any `p`-shell of width `‖c‖`. Also recap information on the
 value of `p` on the rescaling element that shows up in applications. -/
 lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ}
-    (εpos : 0 < ε) {x : E} (hx : p x ≠ 0) : ∃ n : ℤ, c^n ≠ 0 ∧
-    p (c^n • x) < ε ∧ (ε / ‖c‖ ≤ p (c^n • x)) ∧ (‖c^n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x) := by
-  have xεpos : 0 < (p x)/ε := by positivity
+    (εpos : 0 < ε) {x : E} (hx : p x ≠ 0) : ∃ n : ℤ, c ^ n ≠ 0 ∧
+    p (c ^ n • x) < ε ∧ (ε / ‖c‖ ≤ p (c ^ n • x)) ∧ (‖c ^ n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x) := by
+  have xεpos : 0 < (p x) / ε := by positivity
   rcases exists_mem_Ico_zpow xεpos hc with ⟨n, hn⟩
   have cpos : 0 < ‖c‖ := by positivity
-  have cnpos : 0 < ‖c^(n + 1)‖ := by rw [norm_zpow]; exact xεpos.trans hn.2
+  have cnpos : 0 < ‖c ^ (n + 1)‖ := by rw [norm_zpow]; exact xεpos.trans hn.2
   refine ⟨-(n + 1), ?_, ?_, ?_, ?_⟩
   · show c ^ (-(n + 1)) ≠ 0; exact zpow_ne_zero _ (norm_pos_iff.1 cpos)
   · show p ((c ^ (-(n + 1))) • x) < ε
@@ -1217,7 +1226,7 @@ moved by scalar multiplication to any `p`-shell of width `‖c‖`. Also recap i
 value of `p` on the rescaling element that shows up in applications. -/
 lemma rescale_to_shell (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε) {x : E}
     (hx : p x ≠ 0) :
-    ∃ d : 𝕜, d ≠ 0 ∧ p (d • x) < ε ∧ (ε/‖c‖ ≤ p (d • x)) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x) :=
+    ∃ d : 𝕜, d ≠ 0 ∧ p (d • x) < ε ∧ (ε / ‖c‖ ≤ p (d • x)) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x) :=
 let ⟨_, hn⟩ := p.rescale_to_shell_zpow hc εpos hx; ⟨_, hn⟩
 
 /-- Let `p` and `q` be two seminorms on a vector space over a `NontriviallyNormedField`.
@@ -1228,7 +1237,7 @@ lemma bound_of_shell
     (hf : ∀ x, ε / ‖c‖ ≤ p x → p x < ε → q x ≤ C * p x) {x : E} (hx : p x ≠ 0) :
     q x ≤ C * p x := by
   rcases p.rescale_to_shell hc ε_pos hx with ⟨δ, hδ, δxle, leδx, -⟩
-  simpa only [map_smul_eq_mul, mul_left_comm C, mul_le_mul_left (norm_pos_iff.2 hδ)]
+  simpa only [map_smul_eq_mul, mul_left_comm C, mul_le_mul_iff_right₀ (norm_pos_iff.2 hδ)]
     using hf (δ • x) leδx δxle
 
 /-- A version of `Seminorm.bound_of_shell` expressed using pointwise scalar multiplication of
@@ -1327,7 +1336,8 @@ moved by scalar multiplication to any shell of width `‖c‖`. Also recap infor
 the rescaling element that shows up in applications. -/
 lemma rescale_to_shell_semi_normed_zpow {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε) {x : E}
     (hx : ‖x‖ ≠ 0) :
-    ∃ n : ℤ, c^n ≠ 0 ∧ ‖c^n • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖c^n • x‖) ∧ (‖c^n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
+    ∃ n : ℤ, c ^ n ≠ 0 ∧ ‖c ^ n • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖c ^ n • x‖) ∧
+      (‖c ^ n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
   (normSeminorm 𝕜 E).rescale_to_shell_zpow hc εpos hx
 
 /-- If there is a scalar `c` with `‖c‖>1`, then any element with nonzero norm can be
@@ -1335,12 +1345,13 @@ moved by scalar multiplication to any shell of width `‖c‖`. Also recap infor
 the rescaling element that shows up in applications. -/
 lemma rescale_to_shell_semi_normed {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε)
     {x : E} (hx : ‖x‖ ≠ 0) :
-    ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε/‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
+    ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
   (normSeminorm 𝕜 E).rescale_to_shell hc εpos hx
 
 lemma rescale_to_shell_zpow [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
     {ε : ℝ} (εpos : 0 < ε) {x : F} (hx : x ≠ 0) :
-    ∃ n : ℤ, c^n ≠ 0 ∧ ‖c^n • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖c^n • x‖) ∧ (‖c^n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
+    ∃ n : ℤ, c ^ n ≠ 0 ∧ ‖c ^ n • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖c ^ n • x‖) ∧
+      (‖c ^ n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
   rescale_to_shell_semi_normed_zpow hc εpos (norm_ne_zero_iff.mpr hx)
 
 /-- If there is a scalar `c` with `‖c‖>1`, then any element can be moved by scalar multiplication to
@@ -1348,7 +1359,7 @@ any shell of width `‖c‖`. Also recap information on the norm of the rescalin
 up in applications. -/
 lemma rescale_to_shell [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
     {ε : ℝ} (εpos : 0 < ε) {x : F} (hx : x ≠ 0) :
-    ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε/‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
+    ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
   rescale_to_shell_semi_normed hc εpos (norm_ne_zero_iff.mpr hx)
 
 end normSeminorm

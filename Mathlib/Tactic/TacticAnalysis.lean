@@ -3,12 +3,14 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+module
 
-import Batteries.Data.Array.Merge
-import Lean.Elab.Tactic.Meta
-import Lean.Util.Heartbeats
-import Lean.Server.InfoUtils
-import Mathlib.Lean.ContextInfo
+public meta import Lean.Util.Heartbeats
+public meta import Lean.Server.InfoUtils
+public meta import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Lean.Compiler.IR.CompilerM
+public import Lean.Elab.Command
+public import Mathlib.Lean.ContextInfo
 
 /-! # Tactic analysis framework
 
@@ -34,6 +36,8 @@ The `ComplexConfig` interface doesn't feel quite intuitive and flexible yet and 
 in the future. Please do not rely on this interface being stable.
 -/
 
+public meta section
+
 open Lean Elab Term Command Linter
 
 /-- The tactic analysis framework hooks into the linter to run analysis rounds on sequences
@@ -47,6 +51,23 @@ register_option linter.tacticAnalysis : Bool := {
 
 namespace Mathlib.TacticAnalysis
 
+/-- Information about a tactic in a sequence, parsed from infotrees and passed to a tactic
+analysis pass. -/
+structure TacticNode where
+  /-- `ContextInfo` at the infotree node. -/
+  ctxI : ContextInfo
+  /-- `TacticInfo` at the infotree node. -/
+  tacI : TacticInfo
+  /-- This tactic is allowed to fail because it is in a `try`/`anyGoals`/etc block. -/
+  mayFail : Bool
+
+/-- Run tactic code, given by a piece of syntax, in the context of a tactic info node.
+
+Convenience abbreviation for `ContextInfo.runTacticCode`. -/
+abbrev TacticNode.runTacticCode (i : TacticNode) :
+    MVarId → Syntax → CommandElabM (List MVarId) :=
+  i.ctxI.runTacticCode i.tacI
+
 /-- Stores the configuration for a tactic analysis pass.
 
 This provides the low-level interface into the tactic analysis framework.
@@ -56,7 +77,7 @@ structure Config where
   to a sequence of tactics from the source file. Should do all reporting itself,
   for example by `Lean.Linter.logLint`.
   -/
-  run : Array (ContextInfo × TacticInfo) → CommandElabM Unit
+  run : Array TacticNode → CommandElabM Unit
 
 /-- The internal representation of a tactic analysis pass,
 extending `Config` with some declaration meta-information.
@@ -89,13 +110,19 @@ instance : Ord Entry where
 
 /-- Environment extensions for `tacticAnalysis` declarations -/
 initialize tacticAnalysisExt : PersistentEnvExtension Entry (Entry × Pass)
-    (Array (Entry × Pass)) ←
+    -- Like `SimplePersistentEnvExtension`, store the locally declared entries separately from all
+    -- of the passes. Otherwise we end up re-exporting the entries and spending a lot of time
+    -- deduplicating them downstream.
+    (List Entry × Array Pass) ←
   registerPersistentEnvExtension {
-    mkInitial := pure #[]
-    addImportedFn s := s.flatten.sortDedup.mapM fun e => do
-      return (e, ← e.import)
-    addEntryFn := Array.push
-    exportEntriesFn s := s.map (· |>.1)
+    mkInitial := pure ([], #[])
+    addImportedFn s := do
+      let localEntries := []
+      let allPasses ← s.flatten.mapM fun e => e.import
+      return (localEntries, allPasses)
+    addEntryFn := fun (localEntries, allPasses) (entry, pass) =>
+      (entry :: localEntries, allPasses.push pass)
+    exportEntriesFn := fun (localEntries, _) => localEntries.reverse.toArray
   }
 
 /-- Attribute adding a tactic analysis pass from a `Config` structure. -/
@@ -140,24 +167,27 @@ would result in three sequences:
 Similarly, a declaration with multiple `by` blocks results in each of the blocks getting its
 own sequence.
 -/
-def findTacticSeqs (stx : Syntax) (tree : InfoTree) :
-    CommandElabM (Array (Array (ContextInfo × TacticInfo))) := do
-  let some enclosingRange := stx.getRange? |
-    throw (Exception.error stx m!"operating on syntax without range")
+def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) := do
   -- Turn the CommandElabM into a surrounding context for traversing the tree.
   let ctx ← read
   let state ← get
   let ctxInfo := { env := state.env, fileMap := ctx.fileMap, ngen := state.ngen }
   let out ← tree.visitM (m := CommandElabM) (ctx? := some ctxInfo)
-    (fun _ i _ => do
-      if let some range := i.stx.getRange? then
-        pure <| enclosingRange.start <= range.start && range.stop <= enclosingRange.stop
-      else pure false)
+    (fun _ _ _ => pure true) -- Assumption: a tactic can occur as a child of any piece of syntax.
     (fun ctx i _c cs => do
       let relevantChildren := (cs.filterMap id).toArray
       let childTactics := relevantChildren.filterMap Prod.fst
       let childSequences := (relevantChildren.map Prod.snd).flatten
       let stx := i.stx
+      -- Tactic sequencing operators: collect all the child tactics into a new sequence.
+      -- This must happen regardless of source info, as `have h := by ...` creates tacticSeq
+      -- nodes with synthetic source info.
+      if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented,
+          ``Lean.Parser.Term.byTactic] then
+        return (none, if childTactics.isEmpty then
+            childSequences
+          else
+            childSequences.push childTactics)
       if let some (.original _ _ _ _) := stx.getHeadInfo? then
         -- Punctuation: skip this.
         if stx.getKind ∈ [`«;», `Lean.cdotTk, `«]», nullKind, `«by»] then
@@ -165,19 +195,18 @@ def findTacticSeqs (stx : Syntax) (tree : InfoTree) :
         -- Tactic modifiers: return the children unmodified.
         if stx.getKind ∈ [``Lean.Parser.Tactic.withAnnotateState] then
           return (childTactics[0]?, childSequences)
-        -- Tactic sequencing operators: collect all the child tactics into a new sequence.
-        if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented,
-            ``Lean.Parser.Term.byTactic] then
-          return (none, if childTactics.isEmpty then
-              childSequences
-            else
-              childSequences.push childTactics)
 
         -- Remaining options: plain pieces of syntax.
         -- We discard `childTactics` here, because those are either already picked up by a
         -- sequencing operator, or come from macros.
         if let .ofTacticInfo i := i then
-          return ((ctx, i), childSequences)
+          let childSequences :=
+            -- This tactic accepts the failure of its children.
+            if stx.getKind ∈ [``Lean.Parser.Tactic.tacticTry_, ``Lean.Parser.Tactic.anyGoals] then
+              childSequences.map (·.map fun i => { i with mayFail := true })
+            else
+              childSequences
+          return (some ⟨ctx, i, false⟩, childSequences)
         return (none, childSequences)
       else
         return (none, childSequences))
@@ -185,8 +214,7 @@ def findTacticSeqs (stx : Syntax) (tree : InfoTree) :
 
 /-- Run the tactic analysis passes from `configs` on the tactic sequences in `stx`,
 using `trees` to get the infotrees. -/
-def runPasses (configs : Array Pass) (stx : Syntax)
-    (trees : PersistentArray InfoTree) : CommandElabM Unit := do
+def runPasses (configs : Array Pass) (trees : PersistentArray InfoTree) : CommandElabM Unit := do
   let opts ← getLinterOptions
   let enabledConfigs := configs.filter fun config =>
     -- This can be `none` in the file where the option is declared.
@@ -194,7 +222,7 @@ def runPasses (configs : Array Pass) (stx : Syntax)
   if enabledConfigs.isEmpty then
     return
   for i in trees do
-    for seq in (← findTacticSeqs stx i) do
+    for seq in (← findTacticSeqs i) do
       for config in enabledConfigs do
         config.run seq
 
@@ -210,9 +238,9 @@ def tacticAnalysis : Linter where run := withSetOptionIn fun stx => do
   if (← get).messages.hasErrors then
     return
   let env ← getEnv
-  let configs := (tacticAnalysisExt.getState env).map (· |>.snd)
+  let configs := (tacticAnalysisExt.getState env).2
   let trees ← getInfoTrees
-  runPasses configs stx trees
+  runPasses configs trees
 
 initialize addLinter tacticAnalysis
 
@@ -267,39 +295,44 @@ structure ComplexConfig where
   -/
   trigger (context : Option ctx) (currentTactic : Syntax) : TriggerCondition ctx
   /-- Code to run in the context of the tactic, for example an alternative tactic. -/
-  test (context : ctx) (goal : MVarId) : MetaM out
+  test (ctxI : ContextInfo) (i : TacticInfo) (context : ctx) (goal : MVarId) : CommandElabM out
   /-- Decides what to report to the user. -/
-  tell (stx : Syntax) (original : List MVarId × Nat) (new : out × Nat) : Option MessageData
+  tell (stx : Syntax) (originalSubgoals : List MVarId) (originalHeartbeats : Nat)
+    (new : out) (newHeartbeats : Nat) : CommandElabM (Option MessageData)
 
 /-- Test the `config` against a sequence of tactics, using the context info and tactic info
 from the start of the sequence. -/
 def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
-    (ctxI : ContextInfo) (i : TacticInfo) (ctx : config.ctx) :
+    (i : TacticNode) (ctx : config.ctx) :
     CommandElabM Unit := do
-  let stx ← `(tactic| $(tacticSeq);*)
-  -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
-  if let [goal] := i.goalsBefore then
-    let old ← withHeartbeats <| ctxI.runTactic i goal fun goal => do
-      try
-        Lean.Elab.runTactic goal stx
-      catch e =>
-        logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
-        return ([goal], {})
-    let new ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
-    if let some msg := config.tell stx (old.1.1, old.2) new then
-      logWarningAt stx msg
+  /- Syntax quotations use the current ref's position info even for nodes which do not usually
+  carry position info. We set the ref here to ensure we log messages on the correct range. -/
+  withRef (mkNullNode tacticSeq) do
+    let stx ← `(tactic| $tacticSeq;*)
+    -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
+    if let [goal] := i.tacI.goalsBefore then
+      let (oldGoals, oldHeartbeats) ← withHeartbeats <|
+        try
+          i.runTacticCode goal stx
+        catch e =>
+          if !i.mayFail then
+            logWarning m!"original tactic '{stx}' failed: {e.toMessageData}"
+          return [goal]
+      let (new, newHeartbeats) ← withHeartbeats <| config.test i.ctxI i.tacI ctx goal
+      if let some msg ← config.tell stx oldGoals oldHeartbeats new newHeartbeats  then
+        logWarning msg
 
 /-- Run the `config` against a sequence of tactics, using the `trigger` to determine which
 subsequences should be `test`ed. -/
-def runPass (config : ComplexConfig) (seq : Array (ContextInfo × TacticInfo)) :
+def runPass (config : ComplexConfig) (seq : Array TacticNode) :
     CommandElabM Unit := do
   let mut acc := none
   let mut firstInfo := none
   let mut tacticSeq := #[]
-  for (ctxI, i) in seq do
+  for i in seq do
     if firstInfo.isNone then
-      firstInfo := some (ctxI, i)
-    let stx : TSyntax `tactic := ⟨i.stx⟩
+      firstInfo := some i
+    let stx : TSyntax `tactic := ⟨i.tacI.stx⟩
     tacticSeq := tacticSeq.push stx
     match config.trigger acc stx with
     | .continue ctx =>
@@ -309,16 +342,16 @@ def runPass (config : ComplexConfig) (seq : Array (ContextInfo × TacticInfo)) :
       tacticSeq := #[]
       firstInfo := none
     | .accept ctx =>
-      if let some (ctxI, i) := firstInfo then
-        testTacticSeq config tacticSeq ctxI i ctx
+      if let some i := firstInfo then
+        testTacticSeq config tacticSeq i ctx
       else
         logWarningAt stx m!"internal error in tactic analysis: accepted an empty sequence."
       acc := none
   -- Insert a `done` at the end so we can handle a final `.continue` at the end.
   match config.trigger acc (← `(tactic| done)) with
   | .accept ctx =>
-    if let some (ctxI, i) := firstInfo then
-      testTacticSeq config tacticSeq ctxI i ctx
+    if let some i := firstInfo then
+      testTacticSeq config tacticSeq i ctx
   | _ => pure ()
 
 /-- Constructor for a `Config` which breaks the pass up into multiple pieces. -/
@@ -328,3 +361,8 @@ def Config.ofComplex (config : ComplexConfig) : Config where
 end ComplexConfig
 
 end Mathlib.TacticAnalysis
+
+/-- A dummy option for testing the tactic analysis framework -/
+register_option linter.tacticAnalysis.dummy : Bool := {
+  defValue := false
+}

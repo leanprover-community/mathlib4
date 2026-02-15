@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw
 -/
+module
 
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Util.DischargerAsTactic
+import all Lean.Meta.Tactic.Simp.Rewrite
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Util.DischargerAsTactic
 
 /-!
 # Discharger for `field_simp` tactic
@@ -35,6 +37,8 @@ fundamentally difficult.
 
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.FieldSimp
 
 open Lean Elab.Tactic Parser.Tactic Lean.Meta
@@ -45,8 +49,6 @@ private def dischargerTraceMessage {ε : Type*} (prop : Expr) :
     Except ε (Option Expr) → SimpM MessageData
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
-
-open private Simp.dischargeUsingAssumption? from Lean.Meta.Tactic.Simp.Rewrite
 
 /-- Discharge strategy for the `field_simp` tactic. -/
 partial def discharge (prop : Expr) : SimpM (Option Expr) :=
@@ -78,6 +80,12 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     -- Discharge strategy 4: Use the simplifier
     Simp.withIncDischargeDepth do
       let ctx ← readThe Simp.Context
+      -- these lemmas allow `simp` to function as a cheap approximation to `positivity` in fields
+      -- where `positivity` is not available (e.g. through lack of a `≤`)
+      let lems := [``two_ne_zero, ``three_ne_zero, ``four_ne_zero, ``mul_ne_zero, ``pow_ne_zero,
+        ``zpow_ne_zero, ``Nat.cast_add_one_ne_zero]
+      let ctx' := ctx.setSimpTheorems <| ctx.simpTheorems.push <|
+        ← lems.foldlM (SimpTheorems.addConst · · (post := false)) {}
       let stats : Simp.Stats := { (← get) with }
 
       -- Porting note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
@@ -87,7 +95,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
       --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
       --   3) some other reason?
       let ⟨simpResult, stats'⟩ ←
-        simp prop ctx #[(← Simp.getSimprocs)]
+        simp prop ctx' #[(← Simp.getSimprocs)]
           discharge stats
       set { (← get) with usedTheorems := stats'.usedTheorems, diag := stats'.diag }
       if simpResult.expr.isConstOf ``True then

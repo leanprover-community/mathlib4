@@ -3,12 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.SetNotation
-import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Tactic.ToAdditive
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Order.SetNotation
+public import Mathlib.Tactic.Continuity
+public import Mathlib.Tactic.FunProp
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Basic definitions about topological spaces
@@ -56,6 +58,8 @@ other than `Mathlib/Data/Set/Lattice.lean`.
 We introduce notation `IsOpen[t]`, `IsClosed[t]`, `closure[t]`, `Continuous[t₁, t₂]`
 that allow passing custom topologies to these predicates and functions without using `@`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 

@@ -3,14 +3,18 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # The monoidal category structure on R-algebras
 -/
+
+@[expose] public section
 
 open CategoryTheory
 open scoped MonoidalCategory
@@ -39,8 +43,6 @@ noncomputable abbrev tensorHom {W X Y Z : AlgCat.{u} R} (f : W ⟶ X) (g : Y ⟶
     tensorObj W Y ⟶ tensorObj X Z :=
   ofHom <| Algebra.TensorProduct.map f.hom g.hom
 
-open MonoidalCategory
-
 end instMonoidalCategory
 
 open instMonoidalCategory
@@ -51,9 +53,45 @@ instance : MonoidalCategoryStruct (AlgCat.{u} R) where
   whiskerRight {X₁ X₂} (f : X₁ ⟶ X₂) Y := tensorHom f (𝟙 Y)
   tensorHom := tensorHom
   tensorUnit := of R R
-  associator X Y Z := (Algebra.TensorProduct.assoc R R X Y Z).toAlgebraIso
+  associator X Y Z := (Algebra.TensorProduct.assoc R R R X Y Z).toAlgebraIso
   leftUnitor X := (Algebra.TensorProduct.lid R X).toAlgebraIso
   rightUnitor X := (Algebra.TensorProduct.rid R R X).toAlgebraIso
+
+theorem hom_tensorHom {K L M N : AlgCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
+    (f ⊗ₘ g).hom = Algebra.TensorProduct.map f.hom g.hom :=
+  rfl
+
+theorem hom_whiskerLeft (L : AlgCat.{u} R) {M N : AlgCat.{u} R} (f : M ⟶ N) :
+    (L ◁ f).hom = Algebra.TensorProduct.map (.id _ _) f.hom :=
+  rfl
+
+theorem hom_whiskerRight {L M : AlgCat.{u} R} (f : L ⟶ M) (N : AlgCat.{u} R) :
+    (f ▷ N).hom = Algebra.TensorProduct.map f.hom (.id _ _) :=
+  rfl
+
+theorem hom_hom_leftUnitor {M : AlgCat.{u} R} :
+    (λ_ M).hom.hom = (Algebra.TensorProduct.lid _ _).toAlgHom :=
+  rfl
+
+theorem hom_inv_leftUnitor {M : AlgCat.{u} R} :
+    (λ_ M).inv.hom = (Algebra.TensorProduct.lid _ _).symm.toAlgHom :=
+  rfl
+
+theorem hom_hom_rightUnitor {M : AlgCat.{u} R} :
+    (ρ_ M).hom.hom = (Algebra.TensorProduct.rid _ _ _).toAlgHom :=
+  rfl
+
+theorem hom_inv_rightUnitor {M : AlgCat.{u} R} :
+    (ρ_ M).inv.hom = (Algebra.TensorProduct.rid _ _ _).symm.toAlgHom :=
+  rfl
+
+theorem hom_hom_associator {M N K : AlgCat.{u} R} :
+    (α_ M N K).hom.hom = (Algebra.TensorProduct.assoc R R R M N K).toAlgHom :=
+  rfl
+
+theorem hom_inv_associator {M N K : AlgCat.{u} R} :
+    (α_ M N K).inv.hom = (Algebra.TensorProduct.assoc R R R M N K).symm.toAlgHom :=
+  rfl
 
 noncomputable instance instMonoidalCategory : MonoidalCategory (AlgCat.{u} R) :=
   Monoidal.induced

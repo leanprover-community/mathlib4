@@ -3,10 +3,12 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.PUnit
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.PUnit
 
 /-!
 # Properties of comma categories relating to adjunctions
@@ -20,6 +22,8 @@ provided a left adjoint.
 
 The duals are also shown.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -101,7 +105,7 @@ def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
 
 /--
 If each costructured arrow category on `G` has a terminal object, construct a right adjoint to `G`.
-It is shown that it is a right adjoint in `adjunctionOfStructuredArrowInitials`.
+It is shown that it is a right adjoint in `adjunctionOfCostructuredArrowTerminals`.
 -/
 def rightAdjointOfCostructuredArrowTerminals : C ⥤ D :=
   Adjunction.rightAdjointOfEquiv (rightAdjointOfCostructuredArrowTerminalsAux G)

@@ -3,15 +3,17 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Monad.Algebra
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Monad.Algebra
 
 /-!
 # Algebras for the coproduct monad
 
 The functor `Y ↦ X ⨿ Y` forms a monad, whose category of monads is equivalent to the under category
-of `X`. Similarly, `Y ↦ X ⨯ Y` forms a comonad, whose category of comonads is equivalent to the
+of `X`. Similarly, `Y ↦ X ⨯ Y` forms a comonad, whose category of coalgebras is equivalent to the
 over category of `X`.
 
 ## TODO
@@ -19,6 +21,8 @@ over category of `X`.
 Show that `Over.forget X : Over X ⥤ C` is a comonadic left adjoint and `Under.forget : Under X ⥤ C`
 is a monadic right adjoint.
 -/
+
+@[expose] public section
 
 
 noncomputable section

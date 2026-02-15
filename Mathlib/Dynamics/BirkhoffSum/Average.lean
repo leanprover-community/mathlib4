@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Lua Viana Reis, Oliver Butterley
 -/
-import Mathlib.Dynamics.BirkhoffSum.Basic
-import Mathlib.Algebra.Module.Basic
+module
+
+public import Mathlib.Dynamics.BirkhoffSum.Basic
+public import Mathlib.Algebra.Module.Basic
 
 /-!
 # Birkhoff average
@@ -22,6 +24,8 @@ the definition does not depend on the choice of `R`,
 see `birkhoffAverage_congr_ring`.
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -86,7 +90,7 @@ section AddCommGroup
 variable {R : Type*} {α M : Type*} [DivisionSemiring R] [AddCommGroup M] [Module R M]
 
 lemma birkhoffAverage_neg {f : α → α} {g : α → M} :
-    birkhoffAverage R f (-g) = - birkhoffAverage R f g := by
+    birkhoffAverage R f (-g) = -birkhoffAverage R f g := by
   funext _ x
   simp [birkhoffAverage, birkhoffSum]
 

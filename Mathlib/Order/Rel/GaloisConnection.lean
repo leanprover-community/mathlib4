@@ -3,7 +3,9 @@ Copyright (c) 2024 Lagrange Mathematics and Computing Research Center. All right
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anthony Bordg
 -/
-import Mathlib.Data.Rel
+module
+
+public import Mathlib.Data.Rel
 
 /-!
 # The Galois Connection Induced by a Relation
@@ -31,6 +33,8 @@ We define `R.leftFixedPoints` (resp. `R.rightFixedPoints`) as the set of fixed p
 
 relation, Galois connection, induced bijection, fixed points
 -/
+
+@[expose] public section
 
 variable {α β : Type*} (R : SetRel α β)
 

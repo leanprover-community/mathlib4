@@ -3,10 +3,13 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
 # Lemmas about squarefreeness of natural numbers
@@ -20,6 +23,8 @@ A number is squarefree when it is not divisible by any squares except the square
 squarefree, multiplicity
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -51,7 +56,7 @@ theorem _root_.Squarefree.natFactorization_le_one {n : ℕ} (p : ℕ) (hn : Squa
     rw [← multiplicity_eq_factorization hp hn']
     simp only [Nat.isUnit_iff, hp.ne_one, or_false] at this
     exact multiplicity_le_of_emultiplicity_le this
-  · rw [factorization_eq_zero_of_non_prime _ hp]
+  · rw [factorization_eq_zero_of_not_prime _ hp]
     exact zero_le_one
 
 lemma factorization_eq_one_of_squarefree (hn : Squarefree n) (hp : p.Prime) (hpn : p ∣ n) :
@@ -78,8 +83,8 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
       hp.dvd_iff_one_le_factorization hm.ne_zero, not_le, lt_one_iff] at h₁
     have h₂ := hn.natFactorization_le_one p
     have h₃ := hm.natFactorization_le_one p
-    omega
-  rw [factorization_eq_zero_of_non_prime _ hp, factorization_eq_zero_of_non_prime _ hp]
+    lia
+  rw [factorization_eq_zero_of_not_prime _ hp, factorization_eq_zero_of_not_prime _ hp]
 
 theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
     Squarefree (n ^ k) ↔ Squarefree n ∧ k = 1 := by
@@ -153,7 +158,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
     have := ih p pp (dvd_trans ⟨_, rfl⟩ d)
     have := Nat.mul_le_mul this this
     exact not_le_of_gt h (le_trans this (le_of_dvd n0 d))
-  have k2 : 2 ≤ k := by omega
+  have k2 : 2 ≤ k := by lia
   have k0 : 0 < k := lt_of_lt_of_le (by decide) k2
   have IH : ∀ n', n' ∣ n → ¬k ∣ n' → MinSqFacProp n' (n'.minSqFacAux (k + 2)) := by
     intro n' nd' nk
@@ -172,7 +177,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
     change 2 * (i + 2) ∣ n' at d
     have := ih _ prime_two (dvd_trans (dvd_of_mul_right_dvd d) nd')
     rw [e] at this
-    exact absurd this (by omega)
+    exact absurd this (by lia)
   have pk : k ∣ n → Prime k := by
     refine fun dk => prime_def_minFac.2 ⟨k2, le_antisymm (minFac_le k0) ?_⟩
     exact ih _ (minFac_prime (ne_of_gt k2)) (dvd_trans (minFac_dvd _) dk)
@@ -343,17 +348,14 @@ and generalizes to arbitrary commutative monoids. See `Squarefree.of_mul_left` a
 `Squarefree.of_mul_right` above for auxiliary lemmas. -/
 theorem squarefree_mul {m n : ℕ} (hmn : m.Coprime n) :
     Squarefree (m * n) ↔ Squarefree m ∧ Squarefree n := by
-  simp only [squarefree_iff_prime_squarefree, ← sq, ← forall_and]
-  refine forall₂_congr fun p hp => ?_
-  simp only [hmn.isPrimePow_dvd_mul (hp.isPrimePow.pow two_ne_zero), not_or]
+  simp [squarefree_mul_iff, Nat.coprime_iff_isRelPrime.mp hmn]
 
 theorem coprime_of_squarefree_mul {m n : ℕ} (h : Squarefree (m * n)) : m.Coprime n :=
   coprime_of_dvd fun p hp hm hn => squarefree_iff_prime_squarefree.mp h p hp (mul_dvd_mul hm hn)
 
 theorem squarefree_mul_iff {m n : ℕ} :
-    Squarefree (m * n) ↔ m.Coprime n ∧ Squarefree m ∧ Squarefree n :=
-  ⟨fun h => ⟨coprime_of_squarefree_mul h, (squarefree_mul <| coprime_of_squarefree_mul h).mp h⟩,
-    fun h => (squarefree_mul h.1).mpr h.2⟩
+    Squarefree (m * n) ↔ m.Coprime n ∧ Squarefree m ∧ Squarefree n := by
+  rw [_root_.squarefree_mul_iff, Nat.coprime_iff_isRelPrime]
 
 lemma coprime_div_gcd_of_squarefree (hm : Squarefree m) (hn : n ≠ 0) : Coprime (m / gcd m n) n := by
   have : Coprime (m / gcd m n) (gcd m n) :=

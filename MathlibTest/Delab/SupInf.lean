@@ -1,5 +1,5 @@
-import Mathlib
-
+module
+import Mathlib.Data.Real.Archimedean
 
 /-- info: max 1 2 : ℕ -/
 #guard_msgs in
@@ -12,7 +12,6 @@ import Mathlib
 /-- info: ({0} ⊔ {1} ⊔ ({2} ⊔ {3})) ⊓ ({4} ⊔ {5}) ⊔ {6} ⊓ {7} ⊓ ({8} ⊓ {9}) : Set ℕ -/
 #guard_msgs in
 #check (max (min (max (max {0} {1}) (max {2} {3})) (max {4} {5})) (min (min {6} {7}) (min {8} {9})) : Set ℕ)
-
 
 section
 
@@ -62,3 +61,46 @@ info: fun α [ConditionallyCompleteLinearOrder α] a b =>
 -/
 #guard_msgs in
 #check fun (α : Type u) [ConditionallyCompleteLinearOrder α] (a b : α) => max a b
+
+-- In this section we check that the delaborator respects the options `pp.explicit` and `pp.notation`.
+section
+
+variable [Min α] [Max α] (a b c : α)
+
+/-- info: (a ⊔ b) ⊓ c : α -/
+#guard_msgs in
+#check min (max a b) c
+
+set_option pp.notation false in
+/-- info: min (max a b) c : α -/
+#guard_msgs in
+#check min (max a b) c
+
+set_option pp.explicit true in
+/-- info: @min α inst✝¹ (@max α inst✝ a b) c : α -/
+#guard_msgs in
+#check min (max a b) c
+
+end
+
+section Apply
+
+variable {ι α : Type*} [Lattice α] (f g : ι → α) (i : ι)
+
+/-- info: (f ⊔ g) i : α -/
+#guard_msgs in
+#check (f ⊔ g) i
+
+/-- info: (f ⊔ g) i : α -/
+#guard_msgs in
+#check max f g i
+
+/-- info: (f ⊓ g) i : α -/
+#guard_msgs in
+#check (f ⊓ g) i
+
+/-- info: (f ⊓ g) i : α -/
+#guard_msgs in
+#check min f g i
+
+end Apply

@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir and María-Inés de Frutos Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos Fernández
 -/
+module
 
-import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Adjoin.FG
+public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Adjoin.FG
 
 /-! # Tensor products and finitely generated submodules
 
@@ -43,6 +44,8 @@ tensor products of finitely-generated modules.
   as a linear equivalence.
 -/
 
+@[expose] public section
+
 open Submodule LinearMap
 
 section Semiring
@@ -50,6 +53,7 @@ section Semiring
 universe u v
 variable {R : Type u} [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The directed system of finitely generated submodules of `M` -/
 instance Submodule.FG.directedSystem :
     DirectedSystem (ι := {P : Submodule R M // P.FG}) (F := fun P ↦ P.val)
@@ -192,8 +196,9 @@ variable {R M N} (u : M ⊗[R] N)
     {P : Submodule R M} (hP : Submodule.FG P) {t : P ⊗[R] N}
     {P' : Submodule R M} (hP' : Submodule.FG P') {t' : P' ⊗[R] N}
 
-theorem TensorProduct.exists_of_fg [DecidableEq {P : Submodule R M // P.FG}] :
+theorem TensorProduct.exists_of_fg :
     ∃ (P : Submodule R M), P.FG ∧ u ∈ range (rTensor N P.subtype) := by
+  classical
   let ⟨P, t, ht⟩ := Module.DirectLimit.exists_of ((Submodule.FG.rTensor.directLimit R M N).symm u)
   use P.val, P.property, t
   rw [← Submodule.FG.rTensor.directLimit_apply, ht, LinearEquiv.apply_symm_apply]
@@ -239,7 +244,7 @@ variable {R S M N : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
   {A : Subalgebra R S} (hA : A.FG) {t t' : A ⊗[R] N}
   {A' : Subalgebra R S} (hA' : A'.FG)
 
-theorem TensorProduct.Algebra.exists_of_fg [DecidableEq {P : Submodule R S // P.FG}] :
+theorem TensorProduct.Algebra.exists_of_fg :
     ∃ (A : Subalgebra R S), Subalgebra.FG A ∧ u ∈ range (rTensor N A.val.toLinearMap) := by
   obtain ⟨P, ⟨s, hs⟩, hu⟩ := TensorProduct.exists_of_fg u
   use Algebra.adjoin R s, Subalgebra.fg_adjoin_finset _

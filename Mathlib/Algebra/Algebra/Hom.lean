@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # Homomorphisms of `R`-algebras
@@ -15,10 +17,12 @@ This file defines bundled homomorphisms of `R`-algebras.
 * `AlgHom R A B`: the type of `R`-algebra morphisms from `A` to `B`.
 * `Algebra.ofId R A : R →ₐ[R] A`: the canonical map from `R` to `A`, as an `AlgHom`.
 
-## Notations
+## Notation
 
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w u₁ v₁
 
@@ -275,6 +279,9 @@ theorem comp_assoc (φ₁ : C →ₐ[R] D) (φ₂ : B →ₐ[R] C) (φ₃ : A �
     (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
   rfl
 
+instance {φ₁ : B →ₐ[R] C} {φ₂ : A →ₐ[R] B} :
+    RingHomCompTriple φ₂.toRingHom φ₁.toRingHom (φ₁.comp φ₂).toRingHom := ⟨rfl⟩
+
 /-- R-Alg ⥤ R-Mod -/
 def toLinearMap : A →ₗ[R] B where
   toFun := φ
@@ -284,6 +291,9 @@ def toLinearMap : A →ₗ[R] B where
 @[simp]
 theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
   rfl
+
+@[simp]
+lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
 
 theorem toLinearMap_injective :
     Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun _φ₁ _φ₂ h =>
@@ -309,7 +319,7 @@ def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x
     toFun := f
     map_one' := map_one
     map_mul' := map_mul
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
+    commutes' c := by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
 
 @[simp]
 theorem ofLinearMap_toLinearMap (map_one) (map_mul) :
@@ -426,6 +436,8 @@ variable {R}
 
 @[simp] lemma ofId_self : ofId R R = .id R R := rfl
 
+@[simp] lemma toRingHom_ofId : ofId R A = algebraMap R A := rfl
+
 @[simp]
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
@@ -456,7 +468,7 @@ theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
 
 end MulDistribMulAction
 
-variable (M : Submonoid R) {B : Type w} [CommRing B] [Algebra R B] {A}
+variable (M : Submonoid R) {B : Type w} [Semiring B] [Algebra R B] {A}
 
 lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
     (algebraMapSubmonoid A M).map f = algebraMapSubmonoid B M := by
@@ -486,7 +498,7 @@ variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 /-- Each element of the monoid defines an algebra homomorphism.
 
 This is a stronger version of `MulSemiringAction.toRingHom` and
-`DistribMulAction.toLinearMap`. -/
+`DistribSMul.toLinearMap`. -/
 @[simps]
 def toAlgHom (m : M) : A →ₐ[R] A :=
   { MulSemiringAction.toRingHom _ _ m with

@@ -3,8 +3,10 @@ Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
-import Mathlib.Algebra.Polynomial.EraseLead
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
+public import Mathlib.Algebra.Polynomial.EraseLead
 
 /-!
 # Reverse of a univariate polynomial
@@ -15,6 +17,8 @@ the polynomial with a reversed list of coefficients, equivalent to `X^f.natDegre
 The main result is that `reverse (f * g) = reverse f * reverse g`, provided the leading
 coefficients of `f` and `g` do not multiply to zero.
 -/
+
+@[expose] public section
 
 
 namespace Polynomial
@@ -54,7 +58,7 @@ def revAt (N : ℕ) : Function.Embedding ℕ ℕ where
 theorem revAtFun_eq (N i : ℕ) : revAtFun N i = revAt N i :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem revAt_invol {N i : ℕ} : (revAt N) (revAt N i) = i :=
   revAtFun_invol
 
@@ -89,14 +93,16 @@ theorem reflect_support (N : ℕ) (f : R[X]) :
   ext1
   simp only [reflect, support_ofFinsupp, support_embDomain, Finset.mem_map, Finset.mem_image]
 
-@[simp]
+@[simp, grind =]
 theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f.coeff (revAt N i) := by
   rcases f with ⟨f⟩
   simp only [reflect, coeff]
   calc
     Finsupp.embDomain (revAt N) f i = Finsupp.embDomain (revAt N) f (revAt N (revAt N i)) := by
       rw [revAt_invol]
-    _ = f (revAt N i) := Finsupp.embDomain_apply _ _ _
+    _ = f (revAt N i) := Finsupp.embDomain_apply_self _ _ _
+
+@[simp] lemma reflect_reflect {N : ℕ} {p : R[X]} : (p.reflect N).reflect N = p := by ext; simp
 
 @[simp]
 theorem reflect_zero {N : ℕ} : reflect N (0 : R[X]) = 0 :=
@@ -118,14 +124,7 @@ theorem reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r *
 
 theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
   ext
-  rw [reflect_C_mul, coeff_C_mul, coeff_C_mul, coeff_X_pow, coeff_reflect]
-  split_ifs with h
-  · rw [h, revAt_invol, coeff_X_pow_self]
-  · rw [notMem_support_iff.mp]
-    intro a
-    rw [← one_mul (X ^ n), ← C_1] at a
-    apply h
-    rw [← mem_support_C_mul_X_pow a, revAt_invol]
+  grind
 
 @[simp]
 theorem reflect_C (r : R) (N : ℕ) : reflect N (C r) = C r * X ^ N := by
@@ -146,24 +145,18 @@ lemma reflect_map {S : Type*} [Semiring S] (f : R →+* S) (p : R[X]) (n : ℕ) 
 lemma reflect_one (n : ℕ) : (1 : R[X]).reflect n = Polynomial.X ^ n := by
   rw [← C.map_one, reflect_C, map_one, one_mul]
 
-theorem reflect_mul_induction (cf cg : ℕ) :
-    ∀ N O : ℕ,
-      ∀ f g : R[X],
-        #f.support ≤ cf.succ →
-          #g.support ≤ cg.succ →
-            f.natDegree ≤ N →
-              g.natDegree ≤ O → reflect (N + O) (f * g) = reflect N f * reflect O g := by
-  induction' cf with cf hcf
-  --first induction (left): base case
-  · induction' cg with cg hcg
-    -- second induction (right): base case
-    · intro N O f g Cf Cg Nf Og
+theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.support ≤ cf.succ)
+    (Cg : #g.support ≤ cg.succ) (Nf : f.natDegree ≤ N) (Og : g.natDegree ≤ O) :
+    reflect (N + O) (f * g) = reflect N f * reflect O g := by
+  induction cf generalizing f with
+  | zero =>
+    induction cg generalizing g with
+    | zero =>
       rw [← C_mul_X_pow_eq_self Cf, ← C_mul_X_pow_eq_self Cg]
       simp_rw [mul_assoc, X_pow_mul, mul_assoc, ← pow_add (X : R[X]), reflect_C_mul,
         reflect_monomial, add_comm, revAt_add Nf Og, mul_assoc, X_pow_mul, mul_assoc, ←
         pow_add (X : R[X]), add_comm]
-    -- second induction (right): induction step
-    · intro N O f g Cf Cg Nf Og
+    | succ cg hcg =>
       by_cases g0 : g = 0
       · rw [g0, reflect_zero, mul_zero, mul_zero, reflect_zero]
       rw [← eraseLead_add_C_mul_X_pow g, mul_add, reflect_add, reflect_add, mul_add, hcg, hcg] <;>
@@ -172,8 +165,7 @@ theorem reflect_mul_induction (cf cg : ℕ) :
       · exact le_trans (natDegree_C_mul_X_pow_le g.leadingCoeff g.natDegree) Og
       · exact Nat.lt_succ_iff.mp (lt_of_lt_of_le (eraseLead_support_card_lt g0) Cg)
       · exact le_trans eraseLead_natDegree_le_aux Og
-  --first induction (left): induction step
-  · intro N O f g Cf Cg Nf Og
+  | succ cf hcf =>
     by_cases f0 : f = 0
     · rw [f0, reflect_zero, zero_mul, zero_mul, reflect_zero]
     rw [← eraseLead_add_C_mul_X_pow f, add_mul, reflect_add, reflect_add, add_mul, hcf, hcf] <;>
@@ -187,6 +179,11 @@ theorem reflect_mul_induction (cf cg : ℕ) :
 theorem reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.natDegree ≤ G) :
     reflect (F + G) (f * g) = reflect F f * reflect G g :=
   reflect_mul_induction _ _ F G f g f.support.card.le_succ g.support.card.le_succ Ff Gg
+
+lemma natDegree_reflect_le {N : ℕ} {p : R[X]} :
+    (p.reflect N).natDegree ≤ max N p.natDegree := by
+  simp +contextual [-le_sup_iff, natDegree_le_iff_coeff_eq_zero,
+    revAt, not_le_of_gt, coeff_eq_zero_of_natDegree_lt]
 
 section Eval₂
 

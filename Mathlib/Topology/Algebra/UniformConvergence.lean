@@ -3,9 +3,11 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+module
+
+public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Algebraic facts about the topology of uniform convergence
@@ -36,6 +38,8 @@ to `β` endowed with the structures of uniform convergence and `𝔖`-convergenc
 uniform convergence, strong dual
 
 -/
+
+@[expose] public section
 
 open Filter
 

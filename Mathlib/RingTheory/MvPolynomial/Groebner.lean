@@ -3,12 +3,14 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.MonomialOrder
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.Data.List.TFAE
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.MvPolynomial.MonomialOrder
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Data.List.TFAE
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
 /-! # Division algorithm with respect to monomial orders
 
@@ -17,7 +19,7 @@ Let `R` be a commutative ring, `σ` a type of indeterminates and `m : MonomialOr
 a monomial ordering on `σ →₀ ℕ`.
 
 Consider a family of polynomials `b : ι → MvPolynomial σ R` with invertible leading coefficients
-(with respect to `m`) : we assume `hb : ∀ i, IsUnit (m.leadingCoeff (b i))`).
+(with respect to `m`): we assume `hb : ∀ i, IsUnit (m.leadingCoeff (b i))`.
 
 * `MonomialOrder.div hb f` furnishes
   - a finitely supported family `g : ι →₀ MvPolynomial σ R`
@@ -43,6 +45,8 @@ The proof is done by induction, using two standard constructions
 ## Reference : [Becker-Weispfenning1993]
 
 -/
+
+@[expose] public section
 
 namespace MonomialOrder
 
@@ -127,7 +131,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       f = Finsupp.linearCombination _ b g + r ∧
         (∀ i, m.degree (b i * (g i)) ≼[m] m.degree f) ∧
         (∀ c ∈ r.support, ∀ i, ¬ (m.degree (b i) ≤ c)) := by
-  by_cases hb' : ∃ i, m.degree (b i) = 0
+  by_cases! hb' : ∃ i, m.degree (b i) = 0
   · obtain ⟨i, hb0⟩ := hb'
     use Finsupp.single i ((hb i).unit⁻¹ • f), 0
     constructor
@@ -142,17 +146,16 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
         simp only [hj, hb0, Finsupp.single_eq_same, zero_add]
         apply le_of_eq
         simp only [EmbeddingLike.apply_eq_iff_eq]
-        apply degree_smul (Units.isRegular _)
-      · simp only [Finsupp.single_eq_of_ne (Ne.symm hj), mul_zero, degree_zero, map_zero]
+        apply degree_smul_of_isRegular (Units.isRegular _)
+      · simp only [Finsupp.single_eq_of_ne hj, mul_zero, degree_zero, map_zero]
         apply bot_le
     · simp
-  push_neg at hb'
   by_cases hf0 : f = 0
   · refine ⟨0, 0, by simp [hf0], ?_, by simp⟩
     intro b
     simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
     exact bot_le
-  by_cases hf : ∃ i, m.degree (b i) ≤ m.degree f
+  by_cases! hf : ∃ i, m.degree (b i) ≤ m.degree f
   · obtain ⟨i, hf⟩ := hf
     have deg_reduce : m.degree (m.reduce (hb i) f) ≺[m] m.degree f := by
       apply degree_reduce_lt (hb i) hf
@@ -177,23 +180,17 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       · classical
         rw [Finsupp.single_apply]
         split_ifs with hc
-        · apply le_trans degree_mul_le
-          simp only [map_add]
-          apply le_of_le_of_eq (add_le_add_left (degree_monomial_le _) _)
-          simp only [← hc]
-          rw [← map_add, m.toSyn.injective.eq_iff]
-          rw [add_tsub_cancel_of_le]
-          exact hf
+        · subst j
+          grw [degree_mul_le, map_add, degree_monomial_le, ← map_add, add_tsub_cancel_of_le hf]
         · simp only [mul_zero, degree_zero, map_zero]
           exact bot_le
     · exact H'.2.2
-  · push_neg at hf
-    suffices ∃ (g' : ι →₀ MvPolynomial σ R), ∃ r',
+  · suffices ∃ (g' : ι →₀ MvPolynomial σ R), ∃ r',
         (m.subLTerm f = Finsupp.linearCombination (MvPolynomial σ R) b g' + r') ∧
-        (∀ i, m.degree ((b  i) * (g' i)) ≼[m] m.degree (m.subLTerm f)) ∧
+        (∀ i, m.degree ((b i) * (g' i)) ≼[m] m.degree (m.subLTerm f)) ∧
         (∀ c ∈ r'.support, ∀ i, ¬ m.degree (b i) ≤ c) by
       obtain ⟨g', r', H'⟩ := this
-      use g', r' +  monomial (m.degree f) (m.leadingCoeff f)
+      use g', r' + monomial (m.degree f) (m.leadingCoeff f)
       constructor
       · simp [← add_assoc, ← H'.1, subLTerm]
       constructor

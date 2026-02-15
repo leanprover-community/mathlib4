@@ -3,9 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+module
 
-import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.GroupTheory.Congruence.Opposite
+public import Mathlib.RingTheory.Congruence.Basic
+public import Mathlib.GroupTheory.Congruence.Opposite
 
 /-!
 # Congruences on the opposite ring
@@ -14,6 +15,8 @@ This file defines the order isomorphism between the congruences on a ring `R` an
 the opposite ring `Rᵐᵒᵖ`.
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [Add R] [Mul R]
 

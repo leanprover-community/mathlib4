@@ -3,13 +3,15 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Aaron Anderson
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.Finsupp.SMulWithZero
-import Mathlib.Order.Preorder.Finsupp
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.Order.Preorder.Finsupp
 
 /-!
 # Pointwise order on finitely supported functions
@@ -21,6 +23,8 @@ This file lifts order structures on `α` to `ι →₀ α`.
 * `Finsupp.orderEmbeddingToFun`: The order embedding from finitely supported functions to
   functions.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -44,17 +48,34 @@ variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] {f : ι �
 lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.sum h₁ ≤ f.sum h₂ :=
   Finset.sum_le_sum h
 
+theorem sum_nonneg (h : ∀ i ∈ f.support, 0 ≤ h₁ i (f i)) : 0 ≤ f.sum h₁ := Finset.sum_nonneg h
+
+theorem sum_nonneg' (h : ∀ i, 0 ≤ h₁ i (f i)) : 0 ≤ f.sum h₁ := sum_nonneg fun _ _ ↦ h _
+
+theorem sum_nonpos (h : ∀ i ∈ f.support, h₁ i (f i) ≤ 0) : f.sum h₁ ≤ 0 := Finset.sum_nonpos h
+
 end OrderedAddCommMonoid
+
+section IsOrderedCancelAddMonoid
+
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β]
+variable {f : ι →₀ α} {g : ι → α → β}
+
+theorem sum_pos (h : ∀ i ∈ f.support, 0 < g i (f i)) (hf : f ≠ 0) : 0 < f.sum g :=
+  Finset.sum_pos h (by simpa)
+
+theorem sum_pos' (h : ∀ i ∈ f.support, 0 ≤ g i (f i)) (hf : ∃ i ∈ f.support, 0 < g i (f i)) :
+    0 < f.sum g := Finset.sum_pos' h hf
+
+end IsOrderedCancelAddMonoid
 
 section Preorder
 variable [Preorder α] {f g : ι →₀ α} {i : ι} {a b : α}
 
-@[simp] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b := by
+@[simp, gcongr] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b := by
   classical exact Pi.single_le_single
 
 lemma single_mono : Monotone (single i : α → ι →₀ α) := fun _ _ ↦ single_le_single.2
-
-@[gcongr] protected alias ⟨_, GCongr.single_mono⟩ := single_le_single
 
 @[simp] lemma single_nonneg : 0 ≤ single i a ↔ 0 ≤ a := by classical exact Pi.single_nonneg
 @[simp] lemma single_nonpos : single i a ≤ 0 ↔ a ≤ 0 := by classical exact Pi.single_nonpos
@@ -81,11 +102,9 @@ variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
 instance isOrderedAddMonoid : IsOrderedAddMonoid (ι →₀ α) :=
   { add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
 
+@[gcongr]
 lemma mapDomain_mono : Monotone (mapDomain f : (ι →₀ α) → (κ →₀ α)) := by
   classical exact fun g₁ g₂ h ↦ sum_le_sum_index h (fun _ _ ↦ single_mono) (by simp)
-
-@[gcongr] protected lemma GCongr.mapDomain_mono (hg : g₁ ≤ g₂) : g₁.mapDomain f ≤ g₂.mapDomain f :=
-  mapDomain_mono hg
 
 lemma mapDomain_nonneg (hg : 0 ≤ g) : 0 ≤ g.mapDomain f := by simpa using mapDomain_mono hg
 lemma mapDomain_nonpos (hg : g ≤ 0) : g.mapDomain f ≤ 0 := by simpa using mapDomain_mono hg
@@ -183,6 +202,7 @@ instance orderedSub : OrderedSub (ι →₀ α) :=
 
 instance [AddLeftMono α] : CanonicallyOrderedAdd (ι →₀ α) where
   exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
+  le_add_self _ _ _ := le_add_self
   le_self_add := fun _f _g _x => le_self_add
 
 @[simp, norm_cast] lemma coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g := rfl
@@ -193,7 +213,7 @@ theorem tsub_apply (f g : ι →₀ α) (a : ι) : (f - g) a = f a - g a :=
 @[simp]
 theorem single_tsub : single i (a - b) = single i a - single i b := by
   ext j
-  obtain rfl | h := eq_or_ne i j
+  obtain rfl | h := eq_or_ne j i
   · rw [tsub_apply, single_eq_same, single_eq_same, single_eq_same]
   · rw [tsub_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, tsub_self]
 

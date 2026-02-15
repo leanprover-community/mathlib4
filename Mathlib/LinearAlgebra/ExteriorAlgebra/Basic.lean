@@ -3,8 +3,10 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhangir Azerbayev, Adam Topaz, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.LinearAlgebra.Alternating.Curry
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+public import Mathlib.LinearAlgebra.Alternating.Curry
 
 /-!
 # Exterior Algebras
@@ -44,6 +46,8 @@ The exterior algebra of `M` is constructed as simply `CliffordAlgebra (0 : Quadr
 as this avoids us having to duplicate API.
 -/
 
+@[expose] public section
+
 
 universe u1 u2 u3 u4 u5
 
@@ -69,7 +73,7 @@ section exteriorPower
 -- New variables `n` and `M`, to get the correct order of variables in the notation.
 variable (n : ℕ) (M : Type u2) [AddCommGroup M] [Module R M]
 
-/-- Definition of the `n`th exterior power of a `R`-module `N`. We introduce the notation
+/-- Definition of the `n`th exterior power of an `R`-module `N`. We introduce the notation
 `⋀[R]^n M` for `exteriorPower R n M`. -/
 abbrev exteriorPower : Submodule R (ExteriorAlgebra R M) :=
   LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n
@@ -206,7 +210,7 @@ theorem ι_inj (x y : M) : ι R x = ι R y ↔ x = y :=
   ι_leftInverse.injective.eq_iff
 
 @[simp]
-theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
+theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, map_zero]
 
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
@@ -218,7 +222,7 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
     have : r = 0 ∧ 0 = x := Prod.ext_iff.1 hf0
     exact this.symm.imp_left Eq.symm
   · rintro ⟨rfl, rfl⟩
-    rw [LinearMap.map_zero, RingHom.map_zero]
+    rw [map_zero, map_zero]
 
 @[simp]
 theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
@@ -233,7 +237,7 @@ theorem ι_range_disjoint_one :
   rintro _ ⟨x, hx⟩ h
   obtain ⟨r, rfl : algebraMap R (ExteriorAlgebra R M) r = _⟩ := Submodule.mem_one.mp h
   rw [ι_eq_algebraMap_iff x] at hx
-  rw [hx.2, RingHom.map_zero]
+  rw [hx.2, map_zero]
 
 @[simp]
 theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
@@ -320,7 +324,8 @@ lemma ιMulti_range (n : ℕ) :
   exact ⟨fun i => ⟨ι R (v i), LinearMap.mem_range_self _ _⟩, rfl⟩
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power, as a submodule
-of the exterior algebra. -/
+of the exterior algebra. See `exteriorPower.ιMulti_span_fixedDegree_of_span_eq_top` for a version
+where we restrict to elements of the form `x₁ ∧ ⋯ ∧ xₙ` where the `xᵢ` belong to a spanning set. -/
 lemma ιMulti_span_fixedDegree (n : ℕ) :
     Submodule.span R (Set.range (ιMulti R n)) = ⋀[R]^n M := by
   refine le_antisymm (Submodule.span_le.2 (ιMulti_range R n)) ?_
@@ -434,7 +439,7 @@ lemma map_surjective_iff {f : M →ₗ[R] N} :
   obtain ⟨x, hx⟩ := h (ι R y)
   existsi ιInv x
   rw [← LinearMap.comp_apply, ← ιInv_comp_map, LinearMap.comp_apply]
-  erw [hx, ExteriorAlgebra.ι_leftInverse]
+  simp [hx, ιInv]
 
 variable {K E F : Type*} [Field K] [AddCommGroup E]
   [Module K E] [AddCommGroup F] [Module K F]

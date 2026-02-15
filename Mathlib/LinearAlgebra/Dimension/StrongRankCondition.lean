@@ -3,10 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Basis.Submodule
-import Mathlib.LinearAlgebra.Dimension.Finrank
-import Mathlib.LinearAlgebra.InvariantBasisNumber
+module
+
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Basis.Submodule
+public import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 # Lemmas about rank and `finrank` in rings satisfying strong rank condition.
@@ -41,6 +44,8 @@ For modules over rings with invariant basis number
   free `R`-algebra of rank `2`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -348,7 +353,6 @@ namespace Module.Basis
 theorem card_le_card_of_linearIndependent {ι : Type*} [Fintype ι] (b : Basis ι R M)
     {ι' : Type*} [Fintype ι'] {v : ι' → M} (hv : LinearIndependent R v) :
     Fintype.card ι' ≤ Fintype.card ι := by
-  letI := nontrivial_of_invariantBasisNumber R
   simpa [rank_eq_card_basis b, Cardinal.mk_fintype] using hv.cardinal_lift_le_rank
 
 theorem card_le_card_of_submodule (N : Submodule R M) [Fintype ι] (b : Basis ι R M)
@@ -420,6 +424,25 @@ theorem Ideal.rank_eq {R S : Type*} [CommRing R] [StrongRankCondition R] [Ring S
 
 namespace Module
 
+omit [StrongRankCondition R] in
+theorem rank_pos_of_free [Module.Free R M] [Nontrivial M] :
+    0 < Module.rank R M :=
+  have := Module.nontrivial R M
+  (pos_of_ne_zero <| Cardinal.mk_ne_zero _).trans_le
+    (Free.chooseBasis R M).linearIndependent.cardinal_le_rank
+
+theorem rank_pos_iff_of_free [Module.Free R M] :
+    0 < Module.rank R M ↔ Nontrivial M := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ rank_pos_of_free⟩
+  rw [← not_subsingleton_iff_nontrivial]
+  intro h'
+  simp only [rank_subsingleton', lt_self_iff_false] at h
+
+theorem rank_zero_iff_of_free [Module.Free R M] :
+    Module.rank R M = 0 ↔ Subsingleton M := by
+  rw [← not_nontrivial_iff_subsingleton, iff_not_comm,
+    ← Module.rank_pos_iff_of_free (R := R), pos_iff_ne_zero]
+
 theorem finrank_eq_nat_card_basis (h : Basis ι R M) :
     finrank R M = Nat.card ι := by
   rw [Nat.card, ← toNat_lift.{v}, h.mk_eq_rank, toNat_lift, finrank]
@@ -466,8 +489,8 @@ variable (M)
 theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   simp only [Module.rank_def]
   obtain ⟨S, hS⟩ := Module.finite_def.mp ‹_›
-  refine (ciSup_le' fun i => ?_).trans_lt (nat_lt_aleph0 S.card)
-  exact linearIndependent_le_span_finset _ i.prop S hS
+  exact (ciSup_le' fun i => linearIndependent_le_span_finset _ i.prop S hS).trans_lt
+    natCast_lt_aleph0
 
 noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R M]
     {s t : Set M} [Module.Finite R (span R t)]
@@ -481,6 +504,17 @@ noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R
 @[simp]
 theorem finrank_eq_rank [Module.Finite R M] : ↑(finrank R M) = Module.rank R M := by
   rw [Module.finrank, cast_toNat_of_lt_aleph0 (rank_lt_aleph0 R M)]
+
+theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
+    Module.finrank R M = 0 ↔ Subsingleton M := by
+  have := Module.rank_lt_aleph0 R M
+  rw [← not_le] at this
+  simp [Module.finrank, this, Module.rank_zero_iff_of_free]
+
+theorem finrank_pos_iff_of_free [Module.Free R M] [Module.Finite R M] :
+    0 < Module.finrank R M ↔ Nontrivial M := by
+  rw [← not_subsingleton_iff_nontrivial, ← iff_not_comm]
+  simp [Module.finrank_eq_zero_iff_of_free]
 
 /-- If `M` is finite, then `finrank N = rank N` for all `N : Submodule M`. Note that
 such an `N` need not be finitely generated. -/
@@ -507,7 +541,7 @@ theorem LinearMap.finrank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Alge
     Module.finrank R L ≤ Module.finrank R L' := by
   refine finrank_le_finrank_of_rank_le_rank (lift_le.mpr <| rank_le_of_isSMulRegular L L' hr h) ?_
   rw [← Module.finrank_eq_rank R L']
-  exact nat_lt_aleph0 (finrank R ↥L')
+  exact natCast_lt_aleph0
 
 variable (R S M) in
 /-- Also see `Module.finrank_top_le_finrank_of_isScalarTower_of_free`
@@ -529,6 +563,43 @@ lemma Module.finrank_bot_le_finrank_of_isScalarTower (S T : Type*) [Semiring S] 
     finrank R S ≤ finrank R T :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_bot_le_lift_rank_of_isScalarTower R S T)
     (Module.rank_lt_aleph0 _ _)
+
+omit [StrongRankCondition R]
+
+theorem strongRankCondition_iff_forall_rank_lt_aleph0 [Nontrivial R] :
+    StrongRankCondition R ↔ ∀ n : ℕ, Module.rank R (Fin n → R) < ℵ₀ :=
+  (strongRankCondition_iff_succ R).trans <| not_iff_not.mp <| by
+    push_neg
+    refine ⟨fun ⟨n, f, inj⟩ ↦ ⟨n, ?_⟩, fun ⟨n, le⟩ ↦
+      ⟨n, le_rank_iff_exists_linearMap.mp (natCast_le_aleph0.trans le)⟩⟩
+    have ⟨g, hg⟩ := f.exists_finsupp_nat_of_fin_fun_injective inj
+    convert (Finsupp.basisSingleOne.linearIndependent.map_injOn _ hg.injOn).cardinal_lift_le_rank
+    simp
+
+theorem strongRankCondition_iff_forall_zero_lt_finrank [Nontrivial R] :
+    StrongRankCondition R ↔ ∀ n > 0, 0 < finrank R (Fin n → R) := by
+  rw [strongRankCondition_iff_forall_rank_lt_aleph0, ← not_iff_not]
+  push_neg
+  simp_rw [finrank, Nat.le_zero, toNat_eq_zero]
+  refine ⟨fun ⟨n, le⟩ ↦ ⟨n + 1, n.succ_pos, ?_⟩, fun ⟨n, pos, eq⟩ ↦ ⟨n, ?_⟩⟩
+  · exact .inr <| le.trans <| LinearMap.rank_le_of_injective
+      (ExtendByZero.linearMap R _) <| extend_injective (Fin.castSucc_injective n) _
+  · rw [or_iff_not_imp_left, ← Ne, ← one_le_iff_ne_zero, one_le_rank_iff] at eq
+    rw [← n.succ_pred_eq_of_pos pos] at eq ⊢
+    exact eq ⟨.single R (fun _ ↦ _) 0, Pi.single_injective (M := fun _ ↦ _) _⟩
+
+/-- If each `Rⁿ` is a Noetherian `R`-module, then `R` satisfies the strong rank condition.
+Not an instance for performance reasons.
+
+If `R` is a ring, the assumption is equivalent to `R` being a left-Noetherian ring, but this
+is not necessarily the case for semirings: `ℕ` is a Noetherian semiring but `ℕ²` is not a
+Noetherian `ℕ`-module. (`ℕ` does satisfy the strong rank condition.) -/
+theorem StrongRankCondition.of_isNoetherian [Nontrivial R] [∀ n, IsNoetherian R (Fin n → R)] :
+    StrongRankCondition R :=
+  (strongRankCondition_iff_succ R).2 fun n f hf ↦
+    have e := LinearEquiv.piCongrLeft R (fun _ ↦ R) (finSuccEquiv n) ≪≫ₗ .piOptionEquivProd _
+    not_subsingleton R <| IsNoetherian.subsingleton_of_injective
+      (f := f ∘ₗ e.symm.toLinearMap) (hf.comp e.symm.injective)
 
 end StrongRankCondition
 

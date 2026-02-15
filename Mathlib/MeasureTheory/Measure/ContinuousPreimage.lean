@@ -3,15 +3,17 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.CompactOpen
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Measure.Regular
+module
+
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
-# Continuity of the preimage of a set under a measure preserving continuous function
+# Continuity of the preimage of a set under a measure-preserving continuous function
 
 In this file we prove that the preimage of a null measurable set `s : Set Y`
-under a measure preserving continuous function `f : C(X, Y)` is continuous in `f`
+under a measure-preserving continuous function `f : C(X, Y)` is continuous in `f`
 in the sense that `μ ((f a ⁻¹' s) ∆ (g ⁻¹' s))` tends to zero as `f a` tends to `g`.
 
 As a corollary, we show that
@@ -19,6 +21,8 @@ for a continuous family of continuous maps `f z : C(X, Y)`,
 a null measurable set `s`, and a null measurable set `t` of finite measure,
 the set of parameters `z` such that `f z ⁻¹' t` is a.e. equal to `s` is a closed set.
 -/
+
+public section
 
 open Filter Set
 open scoped ENNReal symmDiff Topology
@@ -37,8 +41,8 @@ Suppose that `μ` is inner regular for finite measure sets with respect to compa
 and `ν` is a locally finite measure.
 Let `f : α → C(X, Y)` be a family of continuous maps
 that converges to a continuous map `g : C(X, Y)` in the compact-open topology along a filter `l`.
-Suppose that `g` is a measure preserving map
-and `f a` is a measure preserving map eventually along `l`.
+Suppose that `g` is a measure-preserving map
+and `f a` is a measure-preserving map eventually along `l`.
 Then for any finite measure measurable set `s`,
 the preimages `f a ⁻¹' s` tend to the preimage `g ⁻¹' s` in measure.
 More precisely, the measure of the symmetric difference of these two sets tends to zero. -/
@@ -95,7 +99,7 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
   exact hKμ.le
 
 /-- Let `f : Z → C(X, Y)` be a continuous (in the compact open topology) family
-of continuous measure preserving maps.
+of continuous measure-preserving maps.
 Let `t : Set Y` be a null measurable set of finite measure.
 Then for any `s`, the set of parameters `z`
 such that the preimage of `t` under `f_z` is a.e. equal to `s`

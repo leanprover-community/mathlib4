@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Convex.Hull
-import Mathlib.LinearAlgebra.AffineSpace.Independent
+module
+
+public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.LinearAlgebra.AffineSpace.Independent
 
 /-!
 # Simplicial complexes
@@ -19,12 +21,10 @@ underlying set of a simplex.
 ## Main declarations
 
 * `SimplicialComplex 𝕜 E`: A simplicial complex in the `𝕜`-module `E`.
-* `SimplicialComplex.vertices`: The zero dimensional faces of a simplicial complex.
+* `SimplicialComplex.vertices`: The zero-dimensional faces of a simplicial complex.
 * `SimplicialComplex.facets`: The maximal faces of a simplicial complex.
 
 ## Notation
-
-`s ∈ K` means that `s` is a face of `K`.
 
 `K ≤ L` means that the faces of `K` are faces of `L`.
 
@@ -39,6 +39,8 @@ vertices.
 
 Simplicial complexes can be generalized to affine spaces once `ConvexHull` has been ported.
 -/
+
+@[expose] public section
 
 
 open Finset Set
@@ -61,24 +63,17 @@ structure SimplicialComplex where
   /-- the vertices in each face are affine independent: this is an implementation detail -/
   indep : ∀ {s}, s ∈ faces → AffineIndependent 𝕜 ((↑) : s → E)
   /-- faces are downward closed: a non-empty subset of its spanning vertices spans another face -/
-  down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t ≠ ∅ → t ∈ faces
+  down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t.Nonempty → t ∈ faces
   inter_subset_convexHull : ∀ {s t}, s ∈ faces → t ∈ faces →
     convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)
 
 namespace SimplicialComplex
 
-@[deprecated (since := "2025-05-23")]
-alias not_empty_mem := empty_notMem
-
 variable {𝕜 E}
 variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 
-/-- A `Finset` belongs to a `SimplicialComplex` if it's a face of it. -/
-instance : Membership (Finset E) (SimplicialComplex 𝕜 E) :=
-  ⟨fun K s => s ∈ K.faces⟩
-
 lemma nonempty_of_mem_faces (hs : s ∈ K.faces) : s.Nonempty := by
-  rw [Finset.nonempty_iff_ne_empty]; rintro rfl; exact K.empty_notMem hs
+  by_contra! rfl; exact K.empty_notMem hs
 
 /-- The underlying space of a simplicial complex is the union of its faces. -/
 def space (K : SimplicialComplex 𝕜 E) : Set E :=
@@ -87,7 +82,7 @@ def space (K : SimplicialComplex 𝕜 E) : Set E :=
 theorem mem_space_iff : x ∈ K.space ↔ ∃ s ∈ K.faces, x ∈ convexHull 𝕜 (s : Set E) := by
   simp [space]
 
-theorem convexHull_subset_space (hs : s ∈ K.faces) : convexHull 𝕜 ↑s ⊆ K.space := by
+theorem convexHull_subset_space (hs : s ∈ K.faces) : convexHull 𝕜 s ⊆ K.space := by
   convert subset_biUnion_of_mem hs
   rfl
 
@@ -95,7 +90,7 @@ protected theorem subset_space (hs : s ∈ K.faces) : (s : Set E) ⊆ K.space :=
   (subset_convexHull 𝕜 _).trans <| convexHull_subset_space hs
 
 theorem convexHull_inter_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
-    convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t = convexHull 𝕜 (s ∩ t : Set E) :=
+    convexHull 𝕜 s ∩ convexHull 𝕜 t = convexHull 𝕜 (s ∩ t : Set E) :=
   (K.inter_subset_convexHull hs ht).antisymm <|
     subset_inter (convexHull_mono Set.inter_subset_left) <|
       convexHull_mono Set.inter_subset_right
@@ -104,14 +99,13 @@ theorem convexHull_inter_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
 unusable, as it's about faces as sets in space rather than simplices. Further, additional structure
 on `𝕜` means the only choice of `u` is `s ∩ t` (but it's hard to prove). -/
 theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
-    Disjoint (convexHull 𝕜 (s : Set E)) (convexHull 𝕜 ↑t) ∨
-      ∃ u ∈ K.faces, convexHull 𝕜 (s : Set E) ∩ convexHull 𝕜 ↑t = convexHull 𝕜 ↑u := by
+    Disjoint (convexHull 𝕜 (s : Set E)) (convexHull 𝕜 t) ∨
+      ∃ u ∈ K.faces, convexHull 𝕜 (s : Set E) ∩ convexHull 𝕜 t = convexHull 𝕜 u := by
   classical
   by_contra! h
-  refine h.2 (s ∩ t) (K.down_closed hs inter_subset_left fun hst => h.1 <|
-    disjoint_iff_inf_le.mpr <| (K.inter_subset_convexHull hs ht).trans ?_) ?_
-  · rw [← coe_inter, hst, coe_empty, convexHull_empty]
-    rfl
+  rw [not_disjoint_iff_nonempty_inter] at h
+  refine h.2 (s ∩ t) (K.down_closed hs inter_subset_left ?_) ?_
+  · simpa [← coe_inter] using convexHull_nonempty_iff.1 (h.1.mono (K.inter_subset_convexHull hs ht))
   · rw [coe_inter, convexHull_inter_convexHull hs ht]
 
 /-- Construct a simplicial complex by removing the empty face for you. -/
@@ -124,7 +118,7 @@ def ofErase (faces : Set (Finset E)) (indep : ∀ s ∈ faces, AffineIndependent
   faces := faces \ {∅}
   empty_notMem h := h.2 (mem_singleton _)
   indep hs := indep _ hs.1
-  down_closed hs hts ht := ⟨down_closed _ hs.1 _ hts, ht⟩
+  down_closed hs hts ht := ⟨down_closed _ hs.1 _ hts, ht.ne_empty⟩
   inter_subset_convexHull hs ht := inter_subset_convexHull _ hs.1 _ ht.1
 
 /-- Construct a simplicial complex as a subset of a given simplicial complex. -/
@@ -140,7 +134,7 @@ def ofSubcomplex (K : SimplicialComplex 𝕜 E) (faces : Set (Finset E)) (subset
 /-! ### Vertices -/
 
 
-/-- The vertices of a simplicial complex are its zero dimensional faces. -/
+/-- The vertices of a simplicial complex are its zero-dimensional faces. -/
 def vertices (K : SimplicialComplex 𝕜 E) : Set E :=
   { x | {x} ∈ K.faces }
 
@@ -150,7 +144,7 @@ theorem vertices_eq : K.vertices = ⋃ k ∈ K.faces, (k : Set E) := by
   ext x
   refine ⟨fun h => mem_biUnion h <| mem_coe.2 <| mem_singleton_self x, fun h => ?_⟩
   obtain ⟨s, hs, hx⟩ := mem_iUnion₂.1 h
-  exact K.down_closed hs (Finset.singleton_subset_iff.2 <| mem_coe.1 hx) (singleton_ne_empty _)
+  exact K.down_closed hs (Finset.singleton_subset_iff.2 <| mem_coe.1 hx) (singleton_nonempty _)
 
 theorem vertices_subset_space : K.vertices ⊆ K.space :=
   vertices_eq.subset.trans <| iUnion₂_mono fun x _ => subset_convexHull 𝕜 (x : Set E)
@@ -169,7 +163,7 @@ theorem face_subset_face_iff (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
     convexHull 𝕜 (s : Set E) ⊆ convexHull 𝕜 ↑t ↔ s ⊆ t :=
   ⟨fun h _ hxs =>
     (vertex_mem_convexHull_iff
-          (K.down_closed hs (Finset.singleton_subset_iff.2 hxs) <| singleton_ne_empty _) ht).1
+          (K.down_closed hs (Finset.singleton_subset_iff.2 hxs) <| singleton_nonempty _) ht).1
       (h (subset_convexHull 𝕜 (E := E) s hxs)),
     convexHull_mono⟩
 

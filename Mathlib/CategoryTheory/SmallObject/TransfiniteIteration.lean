@@ -3,18 +3,23 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+module
+
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
 /-!
 # The transfinite iteration of a successor structure
 
-Given a successor structure `Φ : SuccStruct C` (see the file `SmallObject.Iteration.Basic`)
+Given a successor structure `Φ : SuccStruct C`
+(see the file `Mathlib/CategoryTheory/SmallObject/Iteration/Basic.lean`)
 and a well-ordered type `J`, we define the iteration `Φ.iteration J : C`. It is
 defined as the colimit of a functor `Φ.iterationFunctor J : J ⥤ C`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

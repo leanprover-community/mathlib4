@@ -3,14 +3,18 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
-import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Lemmas about the interaction of power operations with order in terms of `CovariantClass`
 -/
+
+@[expose] public section
 
 open Function
 
@@ -120,9 +124,9 @@ lemma pow_le_pow_mul_of_sq_le_mul [MulLeftMono M] {a b : M} (hab : a ^ 2 ≤ b *
   | n + 2, _ => by
     calc
       a ^ (n + 2) = a ^ (n + 1) * a := by rw [pow_succ]
-      _ ≤ b ^ n * a * a := mul_le_mul_right' (pow_le_pow_mul_of_sq_le_mul hab (by omega)) _
+      _ ≤ b ^ n * a * a := by grw [pow_le_pow_mul_of_sq_le_mul hab (by lia)]; simp
       _ = b ^ n * a ^ 2 := by rw [mul_assoc, sq]
-      _ ≤ b ^ n * (b * a) := mul_le_mul_left' hab _
+      _ ≤ b ^ n * (b * a) := by grw [hab]
       _ = b ^ (n + 1) * a := by rw [← mul_assoc, ← pow_succ]
 
 end Right
@@ -218,11 +222,6 @@ theorem one_lt_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 < x ^ n ↔ 1 < x :=
 theorem pow_lt_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n < 1 ↔ x < 1 :=
   lt_iff_lt_of_le_iff_le (one_le_pow_iff hn)
 
-@[to_additive]
-theorem pow_eq_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 := by
-  simp only [le_antisymm_iff]
-  rw [pow_le_one_iff hn, one_le_pow_iff hn]
-
 end CovariantLE
 
 section CovariantLT
@@ -261,9 +260,12 @@ section CovariantLTSwap
 
 variable [MulLeftStrictMono M] [MulRightStrictMono M]
 
+@[to_additive nsmul_le_nsmul_iff_right]
+theorem pow_le_pow_iff_left {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n ↔ a ≤ b :=
+  (pow_left_strictMono hn).le_iff_le
+
 @[to_additive le_of_nsmul_le_nsmul_right]
-theorem le_of_pow_le_pow_left' {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n → a ≤ b :=
-  (pow_left_strictMono hn).le_iff_le.1
+alias ⟨le_of_pow_le_pow_left', _⟩ := pow_le_pow_iff_left
 
 @[to_additive min_le_of_add_le_two_nsmul]
 theorem min_le_of_mul_le_sq {a b c : M} (h : a * b ≤ c ^ 2) : min a b ≤ c := by
@@ -289,6 +291,10 @@ theorem Right.pow_lt_one_iff [MulRightStrictMono M] {n : ℕ} {x : M}
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
   haveI := mulRightMono_of_mulRightStrictMono M
   ⟨fun H => not_le.mp fun k => H.not_ge <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
+
+@[to_additive]
+instance [MulLeftStrictMono M] [MulRightStrictMono M] : IsMulTorsionFree M where
+  pow_left_injective _ hn := (pow_left_strictMono hn).injective
 
 end LinearOrder
 
