@@ -52,7 +52,7 @@ and likewise for the increasing sum. This is what we take as the definition here
 
 @[expose] public section
 
-section incdecsum
+namespace Fintype
 open Finset
 
 variable {n m R : Type*} [Fintype n] [LinearOrder R] [Semiring R]
@@ -86,9 +86,10 @@ noncomputable def decSumSet (k : ℕ) (x : n → R) :=
         (fun s => ∑ i ∈ s, x i) (by grind))
     else ∅
 
-end incdecsum
+end Fintype
 
 section majorization
+open Fintype
 
 variable {m n R : Type*} [Fintype m] [Fintype n] [LinearOrder R] [Semiring R]
 
