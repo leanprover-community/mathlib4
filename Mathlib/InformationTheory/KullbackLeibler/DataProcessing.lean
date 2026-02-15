@@ -193,9 +193,7 @@ theorem klDiv_map_le [IsFiniteMeasure μ] [IsFiniteMeasure ν]
   swap; · simp [hμν]
   by_cases h_int : Integrable (llr μ ν) μ
   swap; · simp [klDiv_of_not_integrable h_int]
-  rw [klDiv_map_of_ac hμν hg h_int]
-  classical
-  rw [klDiv_eq_integral_klFun]
+  rw [klDiv_map_of_ac hμν hg h_int, klDiv_eq_integral_klFun]
   simp only [hμν, h_int, and_self, ↓reduceIte]
   conv_rhs => rw [← integral_condExp hg.comap_le]
   gcongr 1
