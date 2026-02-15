@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.RCLike.Extend
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # Separation Hahn-Banach theorem
@@ -37,7 +38,6 @@ We provide many variations to stricten the result under more assumptions on the 
 
 @[expose] public section
 
-assert_not_exists ContinuousLinearMap.hasOpNorm
 
 open Set
 
@@ -239,6 +239,7 @@ theorem separate_convex_open_set {s : Set E}
   simp only [re_extendTo𝕜'ₗ]
   exact hg
 
+/-- Following [Rudin, *Functional Analysis* (Theorem 3.4 (a))][rudin1991] -/
 theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht : Convex ℝ t)
     (disj : Disjoint s t) : ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧
     ∀ b ∈ t, u ≤ re (f b) := by
@@ -272,6 +273,7 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
 
 variable [LocallyConvexSpace ℝ E]
 
+/-- Following [Rudin, *Functional Analysis* (Theorem 3.4 (b))][rudin1991] -/
 theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsCompact s)
     (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : Disjoint s t) :
     ∃ (f : StrongDual 𝕜 E) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) := by
@@ -316,4 +318,44 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
+
+/-- Following [Rudin, *Functional Analysis* (Theorem 3.7)][rudin1991]
+-/
+theorem geometric_hahn_banach {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
+    (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) {x₀ : E} (hx : x₀ ∉ B) :
+    ∃ (f : StrongDual 𝕜 E) (s : ℝ), 0 < s ∧ s < ‖(f x₀)‖ ∧ ∀ b ∈ B, ‖f b‖ < s := by
+  obtain ⟨f, u, v, h1, h2, h3⟩ : ∃ (f : StrongDual 𝕜 E) (u v : ℝ),
+      (∀ a ∈ ({x₀} : Set E), re (f a) < u) ∧ u < v ∧ ∀ b ∈ B, v < re (f b) :=
+    RCLike.geometric_hahn_banach_compact_closed (convex_singleton x₀) isCompact_singleton hs₁ hs₂
+      (Set.disjoint_singleton_left.mpr hx)
+  have h3 : ∀ z ∈ f '' B, v < re z := fun z ⟨y, ⟨hy, eq⟩⟩ ↦ eq ▸ h3 y hy
+  set K := closure (⇑f '' B)
+  have notin : f x₀ ∉ K := fun h ↦ by
+    have : v ≤ re (f x₀) := le_on_closure_of_le (by grind) continuous_re.continuousOn h
+    linarith [h1 x₀ rfl]
+  have Balanced_K : Balanced 𝕜 K := by
+    refine Balanced.closure (fun a ha _ ⟨_, ⟨⟨t, ht, _⟩, _⟩⟩ ↦ ?_)
+    exact ⟨a • t, Balanced.smul_mem hs₃ ha ht, by simp_all⟩
+  have zero_in : 0 ∈ K := subset_closure ⟨0, by simpa using Balanced.zero_mem hs₃ hs₄⟩
+  set r := ‖f x₀‖ with hr
+  have r_pos : r > 0 := by simpa [hr] using fun nh ↦ by simp [nh, zero_in] at notin
+  have norm_lt_r : ∀ x ∈ K, ‖x‖ < r := fun x hx ↦
+    not_le.mp <| hr ▸ not_imp_not.mpr (mem_balanced_of_norm_le Balanced_K hx (f x₀)) notin
+  have compact_K : IsCompact K := Metric.isCompact_of_isClosed_isBounded isClosed_closure <|
+    (Metric.isBounded_iff_subset_ball 0).mpr ⟨r, fun x hx ↦ mem_ball_zero_iff.mpr (norm_lt_r x hx)⟩
+  obtain ⟨s, s_pos, s_lt, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) :=
+    closed_balanced_sep compact_K zero_in norm_lt_r
+  use f, s
+  simpa [← hr, s_lt, s_pos] using fun b hb ↦ hs (f b) (subset_closure (mem_image_of_mem f hb))
+
+theorem geometric_hahn_banach' {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
+    (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) (x₀ : E) (hx : x₀ ∉ B) :
+    ∃ (f : StrongDual 𝕜 E), (‖(f x₀)‖ > 1) ∧ ∀ b ∈ B, ‖f b‖ < 1 := by
+  obtain ⟨f, s, h1, h2, h3⟩ := geometric_hahn_banach hs₁ hs₂ hs₃ hs₄ hx
+  use (‖f x₀‖ / (s * (f x₀))) • f
+  have (x : E): ‖((‖f x₀‖ / (s * f x₀)) • f) x‖ = ‖f x‖ / s := by
+    have : ‖f x₀‖ > 0 := by linarith
+    simp [abs_of_pos h1, field]
+  exact ⟨this _ ▸ (one_lt_div₀ h1).mpr h2, by simpa only [this, div_lt_one₀ h1] using h3⟩
+
 end RCLike
