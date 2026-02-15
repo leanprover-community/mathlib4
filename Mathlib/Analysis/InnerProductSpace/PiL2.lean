@@ -49,7 +49,7 @@ the last section, various properties of matrices are explored.
 - `exists_orthonormalBasis`: provides an orthonormal basis on a finite-dimensional vector space
 
 - `stdOrthonormalBasis`: provides an arbitrarily-chosen `OrthonormalBasis` of a given
-finite-dimensional inner product space
+  finite-dimensional inner product space
 
 For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.

@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.IsEmpty
+public import Mathlib.Logic.IsEmpty.Basic
 public import Mathlib.Order.OrderDual
 public import Mathlib.Tactic.MkIffOfInductiveProp
 
