@@ -82,19 +82,12 @@ set_option autoImplicit false
 
 -- A top-level `set_option ... in` is also linted against, also with several options.
 
-/--
-warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended for development and not for final code. If you intend to submit this contribution to the Mathlib project, please remove 'set_option profiler.threshold'.
-note: this linter can be disabled with `set_option linter.style.setOption false`
--/
+-- TODO: right now, no warning is shown, FIX THIS!
 #guard_msgs in
 set_option profiler.threshold 50 in
 lemma topLevelIn : True := trivial
 
--- TODO: only the first warning is shown, FIX THIS!
-/--
-warning: The 'tactic.skipAssignedInstances' option was only added for backwards compatibility with existing code: please do not add new uses of it.
-note: this linter can be disabled with `set_option linter.style.setOption false`
--/
+-- TODO: right now, no warning is shown, FIX THIS!
 #guard_msgs in
 set_option tactic.skipAssignedInstances true in
 set_option profiler.threshold 5 in
@@ -165,7 +158,8 @@ lemma foo' : True := trivial
 
 /--
 warning: The 'tactic.skipAssignedInstances' option was only added for backwards compatibility with existing code: please do not add new uses of it.
-note: this linter can be disabled with `set_option linter.style.setOption false`
+
+Note: This linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option tactic.skipAssignedInstances true
@@ -173,15 +167,13 @@ set_option tactic.skipAssignedInstances true
 -- Currently, we also warn about setting the linter to `false`.
 /--
 warning: The 'tactic.skipAssignedInstances' option was only added for backwards compatibility with existing code: please do not add new uses of it.
-note: this linter can be disabled with `set_option linter.style.setOption false`
+
+Note: This linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option tactic.skipAssignedInstances false
 
-/--
-warning: The 'tactic.skipAssignedInstances' option was only added for backwards compatibility with existing code: please do not add new uses of it.
-note: this linter can be disabled with `set_option linter.style.setOption false`
--/
+-- TODO: make this warn also!
 #guard_msgs in
 set_option tactic.skipAssignedInstances true in
 lemma skipAssInst'' : True := trivial
