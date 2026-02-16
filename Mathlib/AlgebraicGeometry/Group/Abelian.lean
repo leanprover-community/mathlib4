@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Andrew Yang. All rights reserved.
+Copyright (c) 2026 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Christian Merten
 -/
@@ -134,6 +134,6 @@ theorem isCommMonObj_of_isProper_of_geometricallyIntegral
   rw [← cancel_epi (Functor.Monoidal.μIso (Over.pullback f) G G).hom]
   dsimp [GrpObj.commutator] at this ⊢
   simpa only [Functor.map_mul, one_eq_one, comp_one, Functor.map_one, Functor.map_inv',
-    comp_mul, GrpObj.comp_inv, Functor.Monoidal.μ_fst, K', Functor.Monoidal.μ_snd] using this
+    comp_mul, GrpObj.comp_inv, Functor.Monoidal.μ_fst, K', Functor.Monoidal.μ_snd] 
 
 end AlgebraicGeometry
