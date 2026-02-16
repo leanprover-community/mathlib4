@@ -363,6 +363,14 @@ theorem Submodule.rank_eq_spanRank_of_free [Module.Free R M] [StrongRankConditio
   rw [← Basis.mk_eq_rank'' B, ← Basis.mk_eq_spanRank B, ← Cardinal.lift_id #(Set.range B),
     Cardinal.mk_range_eq_of_injective B.injective, Cardinal.lift_id _]
 
+lemma Module.finrank_eq_spanFinrank_of_free [StrongRankCondition R]
+    (M : Type*) [AddCommGroup M] [Module R M] [fin : Module.Finite R M] [Module.Free R M] :
+    Module.finrank R M = (⊤ : Submodule R M).spanFinrank := by
+  have : Submodule.spanFinrank (⊤ : Submodule R M) = Module.rank R M := by
+    rw [← Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fin.1,
+      Submodule.rank_eq_spanRank_of_free]
+  simpa only [← Module.finrank_eq_rank, Nat.cast_inj] using this.symm
+
 theorem Submodule.rank_le_spanRank [StrongRankCondition R] :
     Module.rank R M ≤ (⊤ : Submodule R M).spanRank := by
   rw [Module.rank, Submodule.spanRank]
