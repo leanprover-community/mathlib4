@@ -109,7 +109,8 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
   simp only [charpos, false_or] at char
   rcases char with ⟨p, _, char⟩
   let _ := ZMod.algebra k p
-  let _ : Algebra (ResidueField (PadicInt p)) k := sorry
+  let _ : Algebra (ResidueField (PadicInt p)) k :=
+    ((algebraMap (ZMod p) k).comp PadicInt.residueField.toRingHom).toAlgebra
   rcases exists_isLocalHom_flat (PadicInt p) k with ⟨R, _, _, _, _, flat, maxeq, ⟨iso⟩⟩
   simp only [PadicInt.maximalIdeal_eq_span_p, Ideal.map_span, Set.image_singleton,
     map_natCast] at maxeq
@@ -169,9 +170,11 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
       (le_antisymm (dimle.trans (Nat.cast_le.mpr spanle)) dimge)
   let _ : IsAdicComplete (maximalIdeal R') R' := AdicCompletion.isAdicComplete_of_fg maxfg
   use R', inferInstance, inferInstance
-  refine ⟨⟨?_⟩, ?_⟩
-  · sorry
-  · sorry
+  let e : k ≃+* ResidueField R' := iso.toRingEquiv.trans
+    (RingEquiv.ofBijective _ (AdicCompletion.residueField_map_bijective_of_fg maxfg))
+  refine ⟨⟨?_⟩, ⟨e.symm⟩⟩
+  let _ := e.toRingHom.toAlgebra
+  rw [← Algebra.ringChar_eq k, ringChar.eq k p, maxeq']
 
 /-- A variant of `PadicInt.toZModPow`. -/
 noncomputable def padicIntToIntQuotient (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ) :
