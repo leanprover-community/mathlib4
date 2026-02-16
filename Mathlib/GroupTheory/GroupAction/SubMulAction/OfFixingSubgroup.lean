@@ -214,7 +214,7 @@ section FixingSubgroupConj
 variable {s t : Set α} {g : M}
 
 /-
-FIXME: The following use of `to_additive` is a horrible mess.
+FIXME: The use of `to_additive` in this section is a horrible mess.
 It requires translating `MulAut.instGroup` to `AddAut.instAddGroup` instead of `AddAut.instGroup`,
 and `MulAut.conj` shouldn't be able to translate to `AddAut.conj`, but somehow it works out.
 -/
