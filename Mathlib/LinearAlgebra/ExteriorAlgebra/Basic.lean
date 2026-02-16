@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.LinearAlgebra.Alternating.Curry
+public import Mathlib.Order.Hom.PowersetCard
 
 /-!
 # Exterior Algebras
@@ -341,8 +342,8 @@ lemma ιMulti_span_fixedDegree (n : ℕ) :
 /-- Given a linearly ordered family `v` of vectors of `M` and a natural number `n`, produce the
 family of `n`fold exterior products of elements of `v`, seen as members of the exterior algebra. -/
 abbrev ιMulti_family (n : ℕ) {I : Type*} [LinearOrder I] (v : I → M)
-    (s : {s : Finset I // Finset.card s = n}) : ExteriorAlgebra R M :=
-  ιMulti R n fun i => v (Finset.orderIsoOfFin _ s.prop i)
+    (s : Set.powersetCard I n) : ExteriorAlgebra R M :=
+  ιMulti R n (v ∘ (Set.powersetCard.ofFinEmbEquiv.symm s))
 
 variable {R}
 
