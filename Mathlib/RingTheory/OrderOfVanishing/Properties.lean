@@ -187,7 +187,7 @@ lemma IsDiscreteValutationRing.not_krullDimLE_zero : ¬ KrullDimLE 0 R := by
 
 lemma ord_eq_addVal (x : R) : ord R x = IsDiscreteValuationRing.addVal R x := by
   by_cases hx : x = 0
-  · simp [hx, Ring.ord]
+  · simp only [ord, hx, AddValuation.map_zero]
     subst hx
     by_contra!
     rw [Module.length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian] at this
@@ -213,7 +213,7 @@ lemma associated_of_ord_eq (x y : R) (hx : x ≠ 0) (hy : y ≠ 0)
   obtain ⟨n, β, hy'⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hy hϖ
   rw [ord_eq_addVal x, ord_eq_addVal y, IsDiscreteValuationRing.addVal_def x α hϖ m hx',
       IsDiscreteValuationRing.addVal_def y β hϖ n hy'] at h
-  simp [ENat.coe_inj.mp h, hx', hy', Associates.mk_eq_mk_iff_associated.mp rfl]
+  simp [ENat.coe_inj.mp h, hx', hy']
 
 /--
 For `x y : R` where `R` is a discrete valuation ring, we have that
@@ -243,8 +243,7 @@ we work with the order on `ℕ∞` where the `∞` element is interpreted as a `
 -/
 lemma ordFrac_ge_one_of_ne_zero (x : R) (hx : x ≠ 0) :
     ordFrac R (algebraMap R K x) ≥ 1 := by
-
-  simp [ordFrac_eq_ord R x hx, ordMonoidWithZeroHom_eq_ord x (by simp [hx])]
+  simp only [ordFrac_eq_ord R x hx, ordMonoidWithZeroHom_eq_ord x (by simp [hx]), ge_iff_le]
   suffices ord R x ≠ ⊤ by
     rw [ENat.ne_top_iff_exists] at this
     obtain ⟨m, hm⟩ := this
@@ -295,7 +294,7 @@ lemma ordFrac_of_isUnit (x : R) (hx : IsUnit x) :
     ordFrac R (algebraMap R K x) = 1 := by
   have : x ≠ 0 := by exact IsUnit.ne_zero hx
   have thing : x ∈ nonZeroDivisors R := by exact IsUnit.mem_nonZeroDivisors hx
-  simp [ordFrac_eq_ord R x this, thing]
+  simp only [ordFrac_eq_ord R x this, thing, ordMonoidWithZeroHom_eq_ord]
   rw [ord_of_isUnit x hx]
   aesop
 
@@ -305,11 +304,11 @@ for an irreducible element `ϖ`. This is the analogue of `ord_irreducible` for `
 -/
 lemma ordFrac_irreducible [IsDiscreteValuationRing R]
     (ϖ : R) (hϖ : Irreducible ϖ) : ordFrac R (algebraMap R K ϖ) = WithZero.exp 1 := by
-  have : ϖ ≠ 0 := by exact Irreducible.ne_zero hϖ
-  have thing : ϖ ∈ nonZeroDivisors R := by exact mem_nonZeroDivisors_of_ne_zero this
-  simp [ordFrac_eq_ord R ϖ this, thing]
-  rw [ord_irreducible ϖ hϖ]
-  aesop
+  have : ϖ ≠ 0 := Irreducible.ne_zero hϖ
+  simp only [ordFrac_eq_ord R ϖ this, mem_nonZeroDivisors_of_ne_zero this,
+      ordMonoidWithZeroHom_eq_ord, ord_irreducible ϖ hϖ]
+  rfl
+
 
 /--
 For `x y : R`, if `x + y ≠ 0` then `min (ordFrac R x) (ordFrac R y) ≤ ordFrac R (x + y)`. The
@@ -327,7 +326,6 @@ theorem ordFrac_add [IsDiscreteValuationRing R] (x y : K) (h : x + y ≠ 0) :
   · simp[hy0]
   obtain ⟨m, α, hx⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ hx0
   obtain ⟨n, β, hy⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ hy0
-
   rw [Units.smul_def, Algebra.smul_def] at hx hy
   wlog hmn : m ≤ n
   · rw[min_comm, add_comm]
@@ -341,10 +339,8 @@ theorem ordFrac_add [IsDiscreteValuationRing R] (x y : K) (h : x + y ≠ 0) :
     · ring
     · exact IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors <|
         mem_nonZeroDivisors_of_ne_zero <| Irreducible.ne_zero hϖ
-
   rw [xy, hx, hy, map_mul, map_mul, map_mul, map_zpow₀, map_zpow₀,
      ordFrac_of_isUnit (α : R), ordFrac_of_isUnit (β : R), ordFrac_irreducible _ hϖ]
-
   · simp only [← WithZero.exp_zsmul, Int.zsmul_eq_mul, mul_one, one_mul, WithZero.exp_add,
       inf_le_iff, WithZero.exp_pos, le_mul_iff_one_le_left]
     have : (algebraMap R K) ↑α + (algebraMap R K) ↑β *
@@ -357,7 +353,6 @@ theorem ordFrac_add [IsDiscreteValuationRing R] (x y : K) (h : x + y ≠ 0) :
         exact h.1
       rw [← (algebraMap.coe_zero : algebraMap R K 0 = 0)] at m
       exact fun a ↦ m (congrArg (⇑(algebraMap R K)) a)
-
     exact Or.inl <| ordFrac_ge_one_of_ne_zero _ this
   all_goals simp
 
@@ -370,11 +365,11 @@ theorem associated_of_ordFrac_eq [IsDiscreteValuationRing R] (x y : K) (hx : x �
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
   obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ hx
   obtain ⟨n, β, rfl⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ hy
-
   rw [Units.smul_def, Algebra.smul_def, Units.smul_def, Algebra.smul_def] at ⊢ h
   nth_rewrite 2 [mul_comm] at h
   rw [mul_comm, map_mul, map_mul, map_zpow₀, map_zpow₀] at h
-  simp [ordFrac_irreducible ϖ hϖ, ordFrac_of_isUnit] at h
+  simp only [ordFrac_irreducible ϖ hϖ, ← WithZero.exp_zsmul, Int.zsmul_eq_mul, mul_one,
+    Units.isUnit, ordFrac_of_isUnit, WithZero.exp_inj] at h
   use β * α⁻¹
   rw[Units.smul_def, Algebra.smul_def]
   simp only [Units.val_mul, map_mul, map_units_inv, h]
