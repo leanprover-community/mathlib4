@@ -504,6 +504,98 @@ lemma map_strictMono_of_isInducing {f : β → α} (hf : IsInducing f) :
     StrictMono (map f hf.continuous) :=
   Monotone.strictMono_of_injective (map_mono hf.continuous) (map_injective_of_isInducing hf)
 
+lemma map_preimage_nonemtpy (f : β → α) (h : Continuous f) (T : IrreducibleCloseds β) :
+    (f ⁻¹' (map f h T)).Nonempty :=
+  (Nonempty.mono (closure_subset_preimage_closure_image h (s := T))
+      (closure_nonempty_iff.mpr T.2.nonempty))
+
+/--
+Map induced by the preimage under a continuous closed embedding on irreducible closed subsets.
+-/
+def comap (f : β → α) (h : IsOpenEmbedding f) (V : IrreducibleCloseds α) (hV : (f ⁻¹' V).Nonempty) :
+    IrreducibleCloseds β where
+  carrier := f ⁻¹' V
+  isIrreducible' := ⟨hV,
+    IsPreirreducible.preimage (IsIrreducible.isPreirreducible V.2) h⟩
+  isClosed' := V.3.preimage h.continuous
+
+
+def mapSubtype (f : β → α) (hf : Continuous f) (T : IrreducibleCloseds β) :
+    {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} :=
+  ⟨map f hf T, map_preimage_nonemtpy f hf T⟩
+
+def comapSubtype (f : β → α) (h : IsOpenEmbedding f)
+    (V : {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty}) :=
+  comap f h V.1 V.2
+
+/--
+The map taking an irreducible closed set `T` to `closure (f '' T)` is left inverse to the preimage
+when `f` is an open embedding
+-/
+lemma map_comap_leftInverse (f : β → α) (h : IsOpenEmbedding f) :
+    Function.LeftInverse (mapSubtype f h.continuous) (comapSubtype f h) := by
+  intro V
+  simp only [coe_setOf]
+  have : (V.1.1 ∩ range f).Nonempty := by
+    have := V.2
+    dsimp at this
+    rw[← Set.preimage_inter_range] at this
+    have : (f ⁻¹' (↑↑V ∩ range f)).Nonempty := this
+    exact Set.nonempty_of_nonempty_preimage this
+  have lem := subset_closure_inter_of_isPreirreducible_of_isOpen (S := V.1.1) (U := range f)
+    (IsIrreducible.isPreirreducible V.1.2) (h.isOpen_range) this
+  refine le_antisymm (((IsClosed.closure_subset_iff (IrreducibleCloseds.isClosed V.1)).mpr
+    (image_preimage_subset f ↑↑V))) ?_
+  suffices V.1.1 ⊆ closure (f '' (f ⁻¹' V.1.1)) from this
+  convert lem
+  exact image_preimage_eq_inter_range
+
+/--
+The map taking an irreducible closed set `T` to `closure (f '' T)` is right inverse to the preimage
+when `f` is an open embedding
+-/
+lemma map_comap_rightInverse (f : β → α) (h : IsOpenEmbedding f) :
+    Function.RightInverse (mapSubtype f h.continuous) (comapSubtype f h) := by
+  intro V
+  simp only [comapSubtype, comap, mem_setOf_eq, mapSubtype, map,
+    IrreducibleCloseds.coe_mk]
+  apply le_antisymm
+  · apply le_trans (b := closure V.carrier)
+    · rw[Topology.isOpenEmbedding_iff_continuous_injective_isOpenMap] at h
+      simp only [IrreducibleCloseds.coe_mk, le_eq_subset,
+          IsOpenMap.preimage_closure_eq_closure_preimage h.2.2 h.1]
+      rw [preimage_image_eq]
+      · rfl
+      exact h.2.1
+    · rw [IsClosed.closure_eq V.3]
+      rfl
+  · apply le_trans subset_closure (closure_subset_preimage_closure_image h.continuous)
+
+/--
+Given `f : U → X` a continuous open embedding, the irreducble closeds of `U` are order isomorphic
+to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
+-/
+noncomputable
+def closureImageOrderIso (f : β → α) (h : IsOpenEmbedding f) :
+  IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
+    toFun := mapSubtype f (h.continuous)
+    invFun := comapSubtype f h
+    left_inv := map_comap_rightInverse f h
+    right_inv := map_comap_leftInverse f h
+    map_rel_iff' := by
+      intro a b
+      simp only [coe_setOf, mem_setOf_eq, Equiv.coe_fn_mk]
+      constructor
+      · intro c
+        have eq : f ⁻¹' closure (f '' a.carrier) ≤ f ⁻¹' closure (f '' b.carrier) := fun _ b ↦ c b
+        have (z : IrreducibleCloseds β) : z.carrier = f ⁻¹' (closure (f '' z.carrier)) := by
+          suffices closure z.carrier = f ⁻¹' (closure (f '' z.carrier)) by
+            nth_rewrite 1 [← IsClosed.closure_eq z.3]
+            exact this
+          exact Topology.IsEmbedding.closure_eq_preimage_closure_image h.isEmbedding z
+        rwa [← this a, ← this b] at eq
+      · exact fun c ↦ (map_mono h.continuous) c
+
 end IrreducibleCloseds
 
 end TopologicalSpace
