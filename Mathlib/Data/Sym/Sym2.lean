@@ -627,11 +627,12 @@ lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (f
   simp [Set.subset_def, Sym2.forall, Reflexive]
 
 @[simp] lemma disjoint_diagSet_fromRel (hr : Symmetric r) :
-    Disjoint diagSet (fromRel hr) ↔ Irreflexive r := by
-  simp [Set.disjoint_left, Sym2.forall, Irreflexive]
+    Disjoint diagSet (fromRel hr) ↔ Std.Irrefl r := by
+  refine .trans ?_ ⟨(⟨·⟩), (·.irrefl)⟩
+  simp [Set.disjoint_left, Sym2.forall]
 
 @[simp] lemma fromRel_subset_compl_diagSet (hr : Symmetric r) :
-    fromRel hr ⊆ diagSetᶜ ↔ Irreflexive r := by simp [Set.subset_compl_iff_disjoint_left]
+    fromRel hr ⊆ diagSetᶜ ↔ Std.Irrefl r := by simp [Set.subset_compl_iff_disjoint_left]
 
 @[deprecated diagSet_subset_fromRel (since := "2025-12-10")]
 theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
@@ -639,16 +640,17 @@ theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
 
 @[deprecated fromRel_subset_compl_diagSet (since := "2025-12-10")]
 theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Symmetric r) :
-    Irreflexive r ↔ fromRel sym ⊆ diagSetᶜ := by simp
+    Std.Irrefl r ↔ fromRel sym ⊆ diagSetᶜ := by simp
 
-theorem fromRel_irreflexive {sym : Symmetric r} :
-    Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=
-  { mp := by intro h; apply Sym2.ind; aesop
-    mpr := fun h _ hr => h (fromRel_prop.mpr hr) rfl }
+theorem fromRel_irrefl {sym : Symmetric r} : Std.Irrefl r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z where
+  mp := by intro ⟨h⟩; apply Sym2.ind; aesop
+  mpr h := ⟨fun _ hr ↦ h (fromRel_prop.mpr hr) rfl⟩
 
-theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Irreflexive r) {a : α}
+@[deprecated (since := "2026-02-12")] alias fromRel_irreflexive := fromRel_irrefl
+
+theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Std.Irrefl r) {a : α}
     {z : Sym2 α} (hz : z ∈ fromRel sym) (h : a ∈ z) : Mem.other h ≠ a :=
-  other_ne (fromRel_irreflexive.mp irrefl hz) h
+  other_ne (fromRel_irrefl.mp irrefl hz) h
 
 instance fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
     DecidablePred (· ∈ Sym2.fromRel sym) := fun z => z.recOnSubsingleton fun _ => h _ _
