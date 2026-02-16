@@ -59,7 +59,8 @@ theorem induction_on {motive : PGL(n, R) → Prop} (g : PGL(n, R))
 
 variable {M : Type*} [Monoid M]
 
-/-- Lift a group homomorphism ` -/
+/-- Lift a monoid homomorphism `f : GL n R →* M` that vanishes on all scalar matrices
+to a homomorphism from `PGL(n, R)`. -/
 def lift (f : GL n R →* M) (hf : f.comp (GeneralLinearGroup.scalar n) = 1) :
     PGL(n, R) →* M :=
   QuotientGroup.lift _ f <| by
