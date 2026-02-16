@@ -73,7 +73,7 @@ lemma incSum_eq_sum_incSumSet {k : ℕ} {x : n → R} (hk : k ≤ card n) :
     incSum k x = ∑ i ∈ incSumSet k x, x i := by
   obtain ⟨hs₁, hs₂⟩ := Classical.choose_spec (exists_min'_image (powersetCard k (univ : Finset n))
         (fun s => ∑ i ∈ s, x i) (by grind))
-  unfold incSum incSumSet
+  rw [incSum_def, incSumSet]
   simp only [hk, ↓reduceDIte]
   exact hs₂
 
@@ -83,7 +83,7 @@ lemma sum_incSumSet_le (k : ℕ) (x : n → R) (hk : k ≤ card n) (t : Finset n
     ∑ i ∈ incSumSet k x, x i ≤ ∑ i ∈ t, x i := by
   obtain ⟨hs₁, hs₂⟩ := Classical.choose_spec (exists_min'_image (powersetCard k (univ : Finset n))
         (fun s => ∑ i ∈ s, x i) (by grind))
-  unfold incSumSet
+  rw [incSumSet_def]
   simp only [mem_powersetCard, subset_univ, true_and, hk, ↓reduceDIte] at hs₂ ⊢
   rw [← hs₂]
   exact Finset.min'_le _ _ (by grind)
@@ -124,7 +124,7 @@ lemma decSum_eq_sum_decSumSet {k : ℕ} {x : n → R} (hk : k ≤ card n) :
     decSum k x = ∑ i ∈ decSumSet k x, x i := by
   obtain ⟨hs₁, hs₂⟩ := Classical.choose_spec (exists_max'_image (powersetCard k (univ : Finset n))
         (fun s => ∑ i ∈ s, x i) (by grind))
-  unfold decSum decSumSet
+  rw [decSum_def, decSumSet_def]
   simp only [hk, ↓reduceDIte]
   exact hs₂
 
@@ -134,7 +134,7 @@ lemma sum_decSumSet_le (k : ℕ) (x : n → R) (hk : k ≤ card n) (t : Finset n
     ∑ i ∈ t, x i ≤ ∑ i ∈ decSumSet k x, x i := by
   obtain ⟨hs₁, hs₂⟩ := Classical.choose_spec (exists_max'_image (powersetCard k (univ : Finset n))
         (fun s => ∑ i ∈ s, x i) (by grind))
-  unfold decSumSet
+  rw [decSumSet_def]
   simp only [mem_powersetCard, subset_univ, true_and, hk, ↓reduceDIte] at hs₂ ⊢
   rw [← hs₂]
   exact Finset.le_max' _ _ (by grind)
@@ -459,8 +459,8 @@ lemma mulVec_isSubmajorizedBy_of_mem_doublyStochastic [DecidableEq n] [IsStrictO
   · let s := decSumSet k x
     let t := decSumSet k (A *ᵥ x)
     have hs₁ := card_decSumSet k x hcard
-    have ht₁ := card_decSumSet k (A *ᵥ x) (by grind)
-    rw [decSum_eq_sum_decSumSet (by grind), decSum_eq_sum_decSumSet (by grind)]
+    have ht₁ := card_decSumSet k (A *ᵥ x) hcard
+    rw [decSum_eq_sum_decSumSet hcard, decSum_eq_sum_decSumSet hcard]
     simp only [Matrix.mulVec, dotProduct]
     let z i := ∑ j ∈ t, A j i
     have hz : ∑ i, z i = k := by
@@ -489,11 +489,6 @@ lemma mulVec_isSubmajorizedBy_of_mem_doublyStochastic [DecidableEq n] [IsStrictO
         have : z i * x i + z i * M + c * M ≤ z i * x i + z i * M + c * x i := by
           have := hM i hi; gcongr
         have : z i * x i + z i * M + c * x i = (z i + c) * x i + z i * M
-      --calc _ = z i * x i + (z i + c) * M := by grind only
-      --  _ = z i * x i + z i * M + c * M := by grind only
-      --  _ ≤ z i * x i + z i * M + c * x i := by have := hM i hi; gcongr
-      --  _ = (z i + c) * x i + z i * M := by grind only
-      --  _ = x i + z i * M := by grind only
     have hmain : (∑ i, z i * x i) + k • M ≤ (∑ i ∈ s, x i) + k • M := by
       calc _ = (∑ i ∈ s, z i * x i) + (∑ i ∈ sᶜ, z i * x i) + (∑ i ∈ s, M) := by
                 simp [Finset.sum_add_sum_compl, hs₁, s]
