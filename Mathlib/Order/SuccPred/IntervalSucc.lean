@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.SuccPred.Archimedean
+module
+
+public import Mathlib.Data.Set.Pairwise.Basic
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Intervals `Ixx (f x) (f (Order.succ x))`
@@ -23,11 +25,15 @@ In this file we prove
 For the latter lemma, we also prove various order dual versions.
 -/
 
+public section
+
 
 open Set Order
 
 variable {α β : Type*} [LinearOrder α]
 
+/-- Union formula for `Set.Ico (f i) (f (Order.succ i))` over `i ∈ Ici a`. See also
+`iUnion_Ico_map_succ_eq_Ici` for the specialization `a = ⊥`. -/
 theorem biUnion_Ici_Ico_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
     {a : α} (hf : ∀ i ∈ Ici a, f a ≤ f i) (h2f : ¬BddAbove (f '' Ici a)) :
     ⋃ i ∈ Ici a, Ico (f i) (f (succ i)) = Ici (f a) := by
@@ -39,6 +45,8 @@ theorem biUnion_Ici_Ico_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOr
   simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   exact Succ.rec (P := fun i _ ↦ f i ≤ b) hb (by aesop)
 
+/-- Union formula for `Set.Ioc (f i) (f (Order.succ i))` over `i ∈ Ici a`. See also
+`iUnion_Ioc_map_succ_eq_Ioi` for the specialization `a = ⊥`. -/
 theorem biUnion_Ici_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
     {a : α} (hf : ∀ i ∈ Ici a, f a ≤ f i) (h2f : ¬BddAbove (f '' Ici a)) :
     ⋃ i ∈ Ici a, Ioc (f i) (f (succ i)) = Ioi (f a) := by
@@ -48,6 +56,18 @@ theorem biUnion_Ici_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOr
   contrapose! h2f
   suffices ∀ i, a ≤ i → f i < b from ⟨b, by aesop (add simp [upperBounds, le_of_lt])⟩
   exact Succ.rec (P := fun i _ ↦ f i < b) hb (by aesop)
+
+/-- Special case `a = ⊥` of `biUnion_Ici_Ico_map_succ`. -/
+theorem iUnion_Ico_map_succ_eq_Ici [OrderBot α] [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β]
+    {f : α → β} (hf : ∀ a, f ⊥ ≤ f a) (h2f : ¬BddAbove (range f)) :
+    (⋃ a : α, Ico (f a) (f (succ a))) = Ici (f ⊥) := by
+  simpa using biUnion_Ici_Ico_map_succ (f := f) (a := ⊥) (by simpa) (by simpa)
+
+/-- Special case `a = ⊥` of `biUnion_Ici_Ioc_map_succ`. -/
+theorem iUnion_Ioc_map_succ_eq_Ioi [OrderBot α] [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β]
+    {f : α → β} (hf : ∀ a, f ⊥ ≤ f a) (h2f : ¬BddAbove (range f)) :
+    (⋃ a : α, Ioc (f a) (f (succ a))) = Ioi (f ⊥) := by
+  simpa using biUnion_Ici_Ioc_map_succ (f := f) (a := ⊥) (by simpa) (by simpa)
 
 namespace Monotone
 

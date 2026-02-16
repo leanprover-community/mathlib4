@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.ConstMulAction
+module
+
+public import Mathlib.Topology.Algebra.ConstMulAction
 
 /-!
 # Minimal action of a group
@@ -20,6 +22,8 @@ and prove some basic facts about minimal actions.
 
 group action, minimal
 -/
+
+@[expose] public section
 
 
 open Pointwise

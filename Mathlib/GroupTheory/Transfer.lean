@@ -3,8 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Complement
-import Mathlib.GroupTheory.Sylow
+module
+
+public import Mathlib.GroupTheory.Complement
+public import Mathlib.GroupTheory.Sylow
 
 /-!
 # The Transfer Homomorphism
@@ -23,6 +25,8 @@ In this file we construct the transfer homomorphism.
 - `ker_transferSylow_isComplement'`: Burnside's transfer (or normal `p`-complement) theorem:
   If `hP : N(P) ≤ C(P)`, then `(transfer P hP).ker` is a normal `p`-complement.
 -/
+
+@[expose] public section
 
 
 variable {G : Type*} [Group G] {H : Subgroup G} {A : Type*} [CommGroup A] (ϕ : H →* A)

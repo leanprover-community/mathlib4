@@ -3,9 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.RingTheory.Adjoin.Field
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.RingTheory.Adjoin.Field
 
 /-!
 # Splitting fields
@@ -28,6 +30,8 @@ if it is the smallest field extension of `K` such that `f` splits.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 universe u v w
@@ -41,14 +45,14 @@ variable [Field K] [Field L] [Field F] [Algebra K L]
 /-- Typeclass characterising splitting fields. -/
 @[stacks 09HV "Predicate version"]
 class IsSplittingField (f : K[X]) : Prop where
-  splits' : Splits (algebraMap K L) f
+  splits' : Splits (f.map (algebraMap K L))
   adjoin_rootSet' : Algebra.adjoin K (f.rootSet L : Set L) = ⊤
 
 namespace IsSplittingField
 
 variable {K}
 
-theorem splits (f : K[X]) [IsSplittingField K L f] : Splits (algebraMap K L) f :=
+theorem splits (f : K[X]) [IsSplittingField K L f] : Splits (f.map (algebraMap K L)) :=
   splits'
 
 theorem adjoin_rootSet (f : K[X]) [IsSplittingField K L f] :
@@ -60,65 +64,64 @@ section ScalarTower
 variable [Algebra F K] [Algebra F L] [IsScalarTower F K L]
 
 instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <| algebraMap F K) :=
-  ⟨by rw [splits_map_iff, ← IsScalarTower.algebraMap_eq]; exact splits L f,
+  ⟨by rw [map_map, ← IsScalarTower.algebraMap_eq]; exact splits L f,
     Subalgebra.restrictScalars_injective F <| by
       rw [rootSet, aroots, map_map, ← IsScalarTower.algebraMap_eq, Subalgebra.restrictScalars_top,
         eq_top_iff, ← adjoin_rootSet L f, Algebra.adjoin_le_iff]
       exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
 
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
-    Splits (RingHom.id K) f ↔ (⊤ : Subalgebra K L) = ⊥ :=
-  ⟨fun h => by
-    rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, roots_map (algebraMap K L) h,
-      Algebra.adjoin_le_iff]
+    Splits f ↔ (⊤ : Subalgebra K L) = ⊥ where
+  mp h := by
+    rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, h.roots_map, Algebra.adjoin_le_iff]
     intro y hy
     classical
     rw [Multiset.toFinset_map, Finset.mem_coe, Finset.mem_image] at hy
     obtain ⟨x : K, -, hxy : algebraMap K L x = y⟩ := hy
     rw [← hxy]
-    exact SetLike.mem_coe.2 <| Subalgebra.algebraMap_mem _ _,
-    fun h => @RingEquiv.toRingHom_refl K _ ▸ RingEquiv.self_trans_symm
-      (RingEquiv.ofBijective _ <| Algebra.bijective_algebraMap_iff.2 h) ▸ by
-        rw [RingEquiv.toRingHom_trans]
-        exact splits_comp_of_splits _ _ (splits L f)⟩
+    exact SetLike.mem_coe.2 <| Subalgebra.algebraMap_mem _ _
+  mpr h := by
+    rw [← Polynomial.map_id (p := f), ← RingEquiv.toRingHom_refl, ← RingEquiv.self_trans_symm
+      (RingEquiv.ofBijective _ <| Algebra.bijective_algebraMap_iff.2 h),
+      RingEquiv.toRingHom_trans, ← map_map]
+    apply (splits L f).map
 
 theorem IsScalarTower.splits (f : F[X]) [IsSplittingField K L (mapAlg F K f)] :
-    Splits (RingHom.id L) (mapAlg F L f) := by
-  rw [mapAlg_comp K L f, mapAlg_eq_map, splits_id_iff_splits]
+    Splits (mapAlg F L f) := by
+  rw [mapAlg_comp K L f, mapAlg_eq_map]
   apply IsSplittingField.splits
 
 theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
-    [IsSplittingField K L (g.map <| algebraMap F K)] : IsSplittingField F L (f * g) :=
-  ⟨(IsScalarTower.algebraMap_eq F K L).symm ▸
-      splits_mul _ (splits_comp_of_splits _ _ (splits K f))
-        ((splits_map_iff _ _).1 (splits L <| g.map <| algebraMap F K)), by
-    classical
+    [IsSplittingField K L (g.map <| algebraMap F K)] : IsSplittingField F L (f * g) := by
+  constructor
+  · rw [Polynomial.map_mul, IsScalarTower.algebraMap_eq F K L, ← map_map, ← map_map]
+    exact Splits.mul ((splits K f).map _) (splits L (g.map (algebraMap F K)))
+  · classical
     rw [rootSet, aroots_mul (mul_ne_zero hf hg),
       Multiset.toFinset_add, Finset.coe_union, Algebra.adjoin_union_eq_adjoin_adjoin,
-      aroots_def, aroots_def, IsScalarTower.algebraMap_eq F K L, ← map_map,
-      roots_map (algebraMap K L) ((splits_id_iff_splits <| algebraMap F K).2 <| splits K f),
+      aroots_def, aroots_def, IsScalarTower.algebraMap_eq F K L, ← map_map, (splits K f).roots_map,
       Multiset.toFinset_map, Finset.coe_image, Algebra.adjoin_algebraMap, ← rootSet, adjoin_rootSet,
       Algebra.map_top, IsScalarTower.adjoin_range_toAlgHom, ← map_map, ← rootSet, adjoin_rootSet,
-      Subalgebra.restrictScalars_top]⟩
+      Subalgebra.restrictScalars_top]
 
 end ScalarTower
 
 open Classical in
 /-- Splitting field of `f` embeds into any field that splits `f`. -/
 def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
-    (hf : Splits (algebraMap K F) f) : L →ₐ[K] F :=
+    (hf : Splits (f.map (algebraMap K F))) : L →ₐ[K] F :=
   if hf0 : f = 0 then
     (Algebra.ofId K F).comp <|
       (Algebra.botEquiv K L : (⊥ : Subalgebra K L) →ₐ[K] K).comp <| by
-        rw [← (splits_iff L f).1 (show f.Splits (RingHom.id K) from hf0.symm ▸ splits_zero _)]
+        rw [← (splits_iff L f).1 (show f.Splits by simp [hf0])]
         exact Algebra.toTop
   else AlgHom.comp (by
     rw [← adjoin_rootSet L f]
     exact Classical.choice (lift_of_splits _ fun y hy =>
       have : aeval y f = 0 := (eval₂_eq_eval_map _).trans <|
         (mem_roots <| map_ne_zero hf0).1 (Multiset.mem_toFinset.mp hy)
-    ⟨IsAlgebraic.isIntegral ⟨f, hf0, this⟩,
-      splits_of_splits_of_dvd _ hf0 hf <| minpoly.dvd _ _ this⟩)) Algebra.toTop
+    ⟨IsAlgebraic.isIntegral ⟨f, hf0, this⟩, hf.of_dvd (map_ne_zero hf0)
+      ((map_dvd_map' _).mpr (minpoly.dvd K y this))⟩)) Algebra.toTop
 
 theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensional K L := by
   classical
@@ -136,14 +139,14 @@ theorem IsScalarTower.isAlgebraic [Algebra F K] [Algebra F L] [Algebra.IsAlgebra
 theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingField K F p] :
     IsSplittingField K L p := by
   constructor
-  · rw [← f.toAlgHom.comp_algebraMap]
-    exact splits_comp_of_splits _ _ (splits F p)
+  · rw [← f.toAlgHom.comp_algebraMap, ← map_map]
+    exact (splits F p).map _
   · rw [← (AlgHom.range_eq_top f.toAlgHom).mpr f.surjective,
-      adjoin_rootSet_eq_range (splits F p), adjoin_rootSet F p]
+      (splits F p).adjoin_rootSet_eq_range, adjoin_rootSet F p]
 
 theorem adjoin_rootSet_eq_range [Algebra K F] (f : K[X]) [IsSplittingField K L f] (i : L →ₐ[K] F) :
     Algebra.adjoin K (rootSet f F) = i.range :=
-  (Polynomial.adjoin_rootSet_eq_range (splits L f) i).mpr (adjoin_rootSet L f)
+  ((splits L f).adjoin_rootSet_eq_range i).mpr (adjoin_rootSet L f)
 
 end IsSplittingField
 
@@ -153,41 +156,42 @@ open Polynomial
 
 variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]} {F : IntermediateField K L}
 
-theorem IntermediateField.splits_of_splits (h : p.Splits (algebraMap K L))
-    (hF : ∀ x ∈ p.rootSet L, x ∈ F) : p.Splits (algebraMap K F) := by
+theorem IntermediateField.splits_of_splits (h : (p.map (algebraMap K L)).Splits)
+    (hF : ∀ x ∈ p.rootSet L, x ∈ F) : (p.map (algebraMap K F)).Splits := by
   classical
-  simp_rw [← F.fieldRange_val, rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
-  exact splits_of_comp _ F.val.toRingHom h hF
+  have := Splits.of_splits_map (f := p.map (algebraMap K F)) (algebraMap F L)
+  rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq] at this
+  exact this h (by simpa [rootSet_def] using hF)
 
-theorem IntermediateField.splits_iff_mem (h : p.Splits (algebraMap K L)) :
-    p.Splits (algebraMap K F) ↔ ∀ x ∈ p.rootSet L, x ∈ F := by
+theorem IntermediateField.splits_iff_mem (h : (p.map (algebraMap K L)).Splits) :
+    (p.map (algebraMap K F)).Splits ↔ ∀ x ∈ p.rootSet L, x ∈ F := by
   refine ⟨?_, IntermediateField.splits_of_splits h⟩
   intro hF
-  rw [← Polynomial.image_rootSet hF F.val, Set.forall_mem_image]
+  rw [← hF.image_rootSet F.val, Set.forall_mem_image]
   exact fun x _ ↦ x.2
 
 theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsIntegral K x)
-    {F : IntermediateField K L} (h : Splits (algebraMap K F) (minpoly K x)) : x ∈ F := by
+    {F : IntermediateField K L} (h : Splits ((minpoly K x).map (algebraMap K F))) : x ∈ F := by
   rw [← F.fieldRange_val]; exact int.mem_range_algebraMap_of_minpoly_splits h
 
 /-- Characterize `IsSplittingField` with `IntermediateField.adjoin` instead of `Algebra.adjoin`. -/
 theorem isSplittingField_iff_intermediateField : p.IsSplittingField K L ↔
-    p.Splits (algebraMap K L) ∧ IntermediateField.adjoin K (p.rootSet L) = ⊤ := by
+    (p.map (algebraMap K L)).Splits ∧ IntermediateField.adjoin K (p.rootSet L) = ⊤ := by
   rw [← IntermediateField.toSubalgebra_injective.eq_iff,
-      IntermediateField.adjoin_algebraic_toSubalgebra fun _ ↦ isAlgebraic_of_mem_rootSet]
+      IntermediateField.adjoin_toSubalgebra_of_isAlgebraic fun _ ↦ isAlgebraic_of_mem_rootSet]
   exact ⟨fun ⟨spl, adj⟩ ↦ ⟨spl, adj⟩, fun ⟨spl, adj⟩ ↦ ⟨spl, adj⟩⟩
 
 -- Note: p.Splits (algebraMap F E) also works
 theorem IntermediateField.isSplittingField_iff :
-    p.IsSplittingField K F ↔ p.Splits (algebraMap K F) ∧ F = adjoin K (p.rootSet L) := by
+    p.IsSplittingField K F ↔ (p.map (algebraMap K F)).Splits ∧ F = adjoin K (p.rootSet L) := by
   suffices _ → (Algebra.adjoin K (p.rootSet F) = ⊤ ↔ F = adjoin K (p.rootSet L)) by
     exact ⟨fun h ↦ ⟨h.1, (this h.1).mp h.2⟩, fun h ↦ ⟨h.1, (this h.1).mpr h.2⟩⟩
   rw [← toSubalgebra_injective.eq_iff,
-      adjoin_algebraic_toSubalgebra fun x ↦ isAlgebraic_of_mem_rootSet]
-  refine fun hp ↦ (adjoin_rootSet_eq_range hp F.val).symm.trans ?_
+      adjoin_toSubalgebra_of_isAlgebraic fun x ↦ isAlgebraic_of_mem_rootSet]
+  refine fun hp ↦ (hp.adjoin_rootSet_eq_range F.val).symm.trans ?_
   rw [← F.range_val, eq_comm]
 
-theorem IntermediateField.adjoin_rootSet_isSplittingField (hp : p.Splits (algebraMap K L)) :
+theorem IntermediateField.adjoin_rootSet_isSplittingField (hp : (p.map (algebraMap K L)).Splits) :
     p.IsSplittingField K (adjoin K (p.rootSet L)) :=
   isSplittingField_iff.mpr ⟨splits_of_splits hp fun _ hx ↦ subset_adjoin K (p.rootSet L) hx, rfl⟩
 

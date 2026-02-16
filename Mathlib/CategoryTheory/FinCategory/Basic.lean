@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Category.ULift
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Category.ULift
 
 /-!
 # Finite categories
@@ -20,6 +22,8 @@ so we have removed these requirements to avoid
 having to supply instances or delay with non-defeq conflicts between instances.
 -/
 
+@[expose] public section
+
 
 universe w v u
 
@@ -29,6 +33,9 @@ namespace CategoryTheory
 
 instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
   Fintype.ofEquiv α discreteEquiv.symm
+
+instance {α : Type*} [Finite α] : Finite (Discrete α) :=
+  Finite.of_equiv α discreteEquiv.symm
 
 instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
   classical
@@ -42,6 +49,9 @@ class FinCategory (J : Type v) [SmallCategory J] where
 attribute [instance] FinCategory.fintypeObj FinCategory.fintypeHom
 
 instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Discrete J) where
+
+instance {J : Type u} [Finite J] [SmallCategory J] [Quiver.IsThin J] : FinCategory J :=
+  FinCategory.mk (Fintype.ofFinite J) (fun j j' ↦ Fintype.ofFinite (j ⟶ j'))
 
 open Opposite
 

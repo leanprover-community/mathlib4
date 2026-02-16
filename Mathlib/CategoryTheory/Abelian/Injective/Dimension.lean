@@ -3,9 +3,11 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Injective dimension
@@ -20,9 +22,11 @@ if all `Ext Y X i` vanish when `n ≤ i`. This defines a type class
 `HasInjectiveDimensionLE`.)
 
 We also define the Injective dimension in `WithBot ℕ∞` as `injectiveDimension`,
-`injectiveDimension X = ⊥` iff `X` is zero and acts in common sense in the non-negative values.
+`injectiveDimension X = ⊥` iff `X` is zero and behaves as expected on non-negative values.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -109,15 +113,15 @@ lemma hasInjectiveDimensionLT_of_ge (m : ℕ) (h : n ≤ m)
   letI := HasExt.standard C
   rw [hasInjectiveDimensionLT_iff]
   intro i hi Y e
-  exact e.eq_zero_of_hasInjectiveDimensionLT n (by cutsat)
+  exact e.eq_zero_of_hasInjectiveDimensionLT n (by lia)
 
 instance [HasInjectiveDimensionLT X n] (k : ℕ) :
     HasInjectiveDimensionLT X (n + k) :=
-  hasInjectiveDimensionLT_of_ge X n (n + k) (by cutsat)
+  hasInjectiveDimensionLT_of_ge X n (n + k) (by lia)
 
 instance [HasInjectiveDimensionLT X n] (k : ℕ) :
     HasInjectiveDimensionLT X (k + n) :=
-  hasInjectiveDimensionLT_of_ge X n (k + n) (by cutsat)
+  hasInjectiveDimensionLT_of_ge X n (k + n) (by lia)
 
 instance [HasInjectiveDimensionLT X n] :
     HasInjectiveDimensionLT X n.succ :=
@@ -192,7 +196,7 @@ lemma hasInjectiveDimensionLT_X₁ (h₁ : HasInjectiveDimensionLT S.X₃ n)
   · simp at hi
   · obtain ⟨x₁, rfl⟩ := Ext.covariant_sequence_exact₁ _ hS x₃
       (Ext.eq_zero_of_hasInjectiveDimensionLT _ (n + 1) hi) rfl
-    rw [x₁.eq_zero_of_hasInjectiveDimensionLT n (by cutsat), Ext.zero_comp]
+    rw [x₁.eq_zero_of_hasInjectiveDimensionLT n (by lia), Ext.zero_comp]
 
 lemma hasInjectiveDimensionLT_X₃ (h₂ : HasInjectiveDimensionLT S.X₂ n)
     (h₃ : HasInjectiveDimensionLT S.X₁ (n + 1)) :
@@ -201,8 +205,8 @@ lemma hasInjectiveDimensionLT_X₃ (h₂ : HasInjectiveDimensionLT S.X₂ n)
   rw [hasInjectiveDimensionLT_iff]
   intro i hi Y x₁
   obtain ⟨x₂, rfl⟩ := Ext.covariant_sequence_exact₃ _ hS x₁ (add_comm _ _)
-    (Ext.eq_zero_of_hasInjectiveDimensionLT _ (n + 1) (by cutsat))
-  rw [x₂.eq_zero_of_hasInjectiveDimensionLT n (by cutsat), Ext.zero_comp]
+    (Ext.eq_zero_of_hasInjectiveDimensionLT _ (n + 1) (by lia))
+  rw [x₂.eq_zero_of_hasInjectiveDimensionLT n (by lia), Ext.zero_comp]
 
 lemma hasInjectiveDimensionLT_X₃_iff (n : ℕ) (h₂ : Injective S.X₂) :
     HasInjectiveDimensionLT S.X₃ (n + 1) ↔ HasInjectiveDimensionLT S.X₁ (n + 2) :=
@@ -264,7 +268,7 @@ lemma injectiveDimension_le_iff (X : C) (n : ℕ) :
 
 lemma injectiveDimension_ge_iff (X : C) (n : ℕ) :
     n ≤ injectiveDimension X ↔ ¬ HasInjectiveDimensionLT X n := by
-  rw [← not_iff_not, not_le, not_not, injectiveDimension_lt_iff]
+  contrapose!; exact injectiveDimension_lt_iff
 
 lemma injectiveDimension_eq_bot_iff (X : C) :
     injectiveDimension X = ⊥ ↔ Limits.IsZero X := by

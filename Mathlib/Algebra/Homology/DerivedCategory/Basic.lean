@@ -3,11 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
-import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
-import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
-import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
-import Mathlib.Algebra.Homology.Localization
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
+public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
+public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 
 /-! # The derived category of an abelian category
 
@@ -18,17 +18,17 @@ The derived category is defined here as the localization of cochain complexes
 indexed by `ℤ` with respect to quasi-isomorphisms: it is a type synonym of
 `HomologicalComplexUpToQuasiIso C (ComplexShape.up ℤ)`. Then, we have a
 localization functor `DerivedCategory.Q : CochainComplex C ℤ ⥤ DerivedCategory C`.
-It was already shown in the file `Algebra.Homology.Localization` that the induced
+It was already shown in the file `Mathlib/Algebra/Homology/Localization.lean` that the induced
 functor `DerivedCategory.Qh : HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C`
 is a localization functor with respect to the class of morphisms
-`HomotopyCategory.quasiIso C (ComplexShape.up ℤ)`. In the lemma
-`HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W` we obtain that this class of morphisms
+`HomotopyCategory.quasiIso C (ComplexShape.up ℤ)`. In the file
+`HomotopyCategory.Acyclic`, it was shown that this class of quasiisomorphisms
 consists of morphisms whose cone belongs to the triangulated subcategory
 `HomotopyCategory.subcategoryAcyclic C` of acyclic complexes. Then, the triangulated
 structure on `DerivedCategory C` is deduced from the triangulated structure
-on the homotopy category (see file `Algebra.Homology.HomotopyCategory.Triangulated`)
+on the homotopy category (see file `Mathlib/Algebra/Homology/HomotopyCategory/Triangulated.lean`)
 using the localization theorem for triangulated categories which was obtained
-in the file `CategoryTheory.Localization.Triangulated`.
+in the file `Mathlib/CategoryTheory/Localization/Triangulated.lean`.
 
 ## Implementation notes
 
@@ -36,7 +36,7 @@ If `C : Type u` and `Category.{v} C`, the constructed localized category of coch
 complexes with respect to quasi-isomorphisms has morphisms in `Type (max u v)`.
 However, in certain circumstances, it shall be possible to prove that they are `v`-small
 (when `C` is a Grothendieck abelian category (e.g. the category of modules over a ring),
-it should be so by a theorem of Hovey.).
+it should be so by a theorem of Hovey).
 
 Then, when working with derived categories in mathlib, the user should add the variable
 `[HasDerivedCategory.{w} C]` which is the assumption that there is a chosen derived
@@ -57,6 +57,8 @@ with the one defined in `Algebra.Homology.HomologySequence`.
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 universe w v u
@@ -64,43 +66,6 @@ universe w v u
 open CategoryTheory Limits Pretriangulated
 
 variable (C : Type u) [Category.{v} C] [Abelian C]
-
-namespace HomotopyCategory
-
-/-- The triangulated subcategory of `HomotopyCategory C (ComplexShape.up ℤ)` consisting
-of acyclic complexes. -/
-def subcategoryAcyclic : ObjectProperty (HomotopyCategory C (ComplexShape.up ℤ)) :=
-  (homologyFunctor C (ComplexShape.up ℤ) 0).homologicalKernel
-
-instance : (subcategoryAcyclic C).IsTriangulated := by
-  dsimp [subcategoryAcyclic]
-  infer_instance
-
-instance : (subcategoryAcyclic C).IsClosedUnderIsomorphisms := by
-  dsimp [subcategoryAcyclic]
-  infer_instance
-
-variable {C}
-
-lemma mem_subcategoryAcyclic_iff (X : HomotopyCategory C (ComplexShape.up ℤ)) :
-    subcategoryAcyclic C X ↔ ∀ (n : ℤ), IsZero ((homologyFunctor _ _ n).obj X) :=
-  Functor.mem_homologicalKernel_iff _ X
-
-lemma quotient_obj_mem_subcategoryAcyclic_iff_exactAt (K : CochainComplex C ℤ) :
-    subcategoryAcyclic C ((quotient _ _).obj K) ↔ ∀ (n : ℤ), K.ExactAt n := by
-  rw [mem_subcategoryAcyclic_iff]
-  refine forall_congr' (fun n => ?_)
-  simp only [HomologicalComplex.exactAt_iff_isZero_homology]
-  exact ((homologyFunctorFactors C (ComplexShape.up ℤ) n).app K).isZero_iff
-
-variable (C)
-
-lemma quasiIso_eq_subcategoryAcyclic_W :
-    quasiIso C (ComplexShape.up ℤ) = (subcategoryAcyclic C).trW := by
-  ext K L f
-  exact ((homologyFunctor C (ComplexShape.up ℤ) 0).mem_homologicalKernel_trW_iff f).symm
-
-end HomotopyCategory
 
 /-- The assumption that a localized category for
 `(HomologicalComplex.quasiIso C (ComplexShape.up ℤ))` has been chosen, and that the morphisms
@@ -202,11 +167,11 @@ noncomputable instance : IsTriangulated (DerivedCategory C) :=
 instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow _ (HomotopyCategory.subcategoryAcyclic C).trW
 
-instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C := C))).Full :=
+instance {D : Type*} [Category* D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C := C))).Full :=
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Full
 
-instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C := C))).Faithful :=
+instance {D : Type*} [Category* D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C := C))).Faithful :=
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Faithful
 
@@ -289,5 +254,9 @@ noncomputable def singleFunctorIsoCompQ (n : ℤ) :
 lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     IsIso (Q.map φ) ↔ QuasiIso φ := by
   apply HomologicalComplexUpToQuasiIso.isIso_Q_map_iff_mem_quasiIso
+
+lemma Q_map_eq_of_homotopy {K L : CochainComplex C ℤ} {f g : K ⟶ L} (h : Homotopy f g) :
+    DerivedCategory.Q.map f = DerivedCategory.Q.map g :=
+  HomologicalComplexUpToQuasiIso.Q_map_eq_of_homotopy h
 
 end DerivedCategory

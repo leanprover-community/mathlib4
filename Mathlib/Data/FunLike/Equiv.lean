@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.FunLike.Embedding
+module
+
+public import Mathlib.Data.FunLike.Embedding
 
 /-!
 # Typeclass for a type `F` with an injective map to `A ≃ B`
@@ -123,6 +125,8 @@ instead of linearly increasing the work per `MyIso`-related declaration.
 
 -/
 
+@[expose] public section
+
 
 /-- The class `EquivLike E α β` expresses that terms of type `E` have an
 injective coercion to bijections between `α` and `β`.
@@ -209,9 +213,6 @@ or its equivalent.
 TODO: define a generic form of `Equiv.symm`. -/
 @[simp]
 theorem apply_inv_apply (e : E) (b : β) : e (inv e b) = b := right_inv _ _
-
-@[deprecated inv_apply_eq (since := "2025-06-20")]
-lemma inv_apply_eq_iff_eq_apply {e : E} {b : β} {a : α} : inv e b = a ↔ b = e a := inv_apply_eq
 
 theorem comp_injective (f : α → β) (e : F) : Function.Injective (e ∘ f) ↔ Function.Injective f :=
   EmbeddingLike.comp_injective f e

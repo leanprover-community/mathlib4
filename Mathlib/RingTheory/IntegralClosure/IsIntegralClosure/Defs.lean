@@ -3,7 +3,9 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
 /-!
 # Integral closure as a characteristic predicate
@@ -16,6 +18,8 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
   in `B`, i.e. that an element of `B` is integral over `R` iff it is an element of
   (the image of) `A`.
 -/
+
+@[expose] public section
 
 /-- `IsIntegralClosure A R B` is the characteristic predicate stating `A` is
 the integral closure of `R` in `B`,

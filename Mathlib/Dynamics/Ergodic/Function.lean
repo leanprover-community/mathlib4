@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.Ergodic
-import Mathlib.MeasureTheory.Function.AEEqFun
+module
+
+public import Mathlib.Dynamics.Ergodic.Ergodic
+public import Mathlib.MeasureTheory.Function.AEEqFun
 
 /-!
 # Functions invariant under (quasi)ergodic map
@@ -15,6 +17,8 @@ We prove several versions of this statement with slightly different measurabilit
 We also formulate a version for `MeasureTheory.AEEqFun` functions
 with all a.e. equalities replaced with equalities in the quotient space.
 -/
+
+public section
 
 open Function Set Filter MeasureTheory Topology TopologicalSpace
 

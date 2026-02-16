@@ -3,10 +3,12 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Geometry.Manifold.ContMDiff.Basic
-import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Geometry.Manifold.ContMDiff.Basic
+public import Mathlib.Geometry.Manifold.Instances.Real
+public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-! # Manifold structure on real intervals
 
@@ -30,7 +32,9 @@ embeddings. Once this is done,
   with the projection `ℝ → Icc x y` is
 -/
 
-open Set
+@[expose] public section
+
+open Set WithLp
 open scoped Manifold Topology
 
 noncomputable section
@@ -79,8 +83,8 @@ lemma contMDiff_subtype_coe_Icc :
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ z 0 + x) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
     · simpa using z.2.1
-    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (fun i ↦ z - x) := by
-      apply (isOpen_lt (continuous_apply 0) continuous_const).mem_nhds
+    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (toLp 2 fun i ↦ z - x) := by
+      apply (isOpen_lt (PiLp.continuous_apply 2 _ 0) continuous_const).mem_nhds
       simpa using hz
     filter_upwards [self_mem_nhdsWithin, nhdsWithin_le_nhds this] with w hw h'w
     rw [max_eq_left hw, min_eq_left]
@@ -95,8 +99,8 @@ lemma contMDiff_subtype_coe_Icc :
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ y - z 0) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
     · simpa using z.2.2
-    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (fun i ↦ y - z) := by
-      apply (isOpen_lt (continuous_apply 0) continuous_const).mem_nhds
+    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (toLp 2 fun i ↦ y - z) := by
+      apply (isOpen_lt (PiLp.continuous_apply 2 _ 0) continuous_const).mem_nhds
       simpa using h.out.trans_le hz
     filter_upwards [self_mem_nhdsWithin, nhdsWithin_le_nhds this] with w hw h'w
     rw [max_eq_left hw, max_eq_left]
@@ -114,7 +118,7 @@ lemma contMDiffOn_projIcc :
   suffices ContDiffWithinAt ℝ n _ (Icc x y) z by simpa
   split_ifs with h'z
   · have : ContDiff ℝ n (fun (w : ℝ) ↦
-        (show EuclideanSpace ℝ (Fin 1) from fun (_ : Fin 1) ↦ w - x)) := by
+        (show EuclideanSpace ℝ (Fin 1) from toLp 2 fun (_ : Fin 1) ↦ w - x)) := by
       dsimp
       apply contDiff_euclidean.2 (fun i ↦ by fun_prop)
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
@@ -125,7 +129,7 @@ lemma contMDiffOn_projIcc :
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
   · have : ContDiff ℝ n (fun (w : ℝ) ↦
-        (show EuclideanSpace ℝ (Fin 1) from fun (_ : Fin 1) ↦ y - w)) := by
+        (show EuclideanSpace ℝ (Fin 1) from toLp 2 fun (_ : Fin 1) ↦ y - w)) := by
       dsimp
       apply contDiff_euclidean.2 (fun i ↦ by fun_prop)
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
@@ -158,12 +162,12 @@ lemma mdifferentiableWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y}
     MDifferentiableWithinAt 𝓘(ℝ) I (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
       MDifferentiableAt (𝓡∂ 1) I f w := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · have A := (contMDiff_subtype_coe_Icc (x := x) (y := y) (n := 1) w).mdifferentiableAt le_rfl
+  · have A := (contMDiff_subtype_coe_Icc (x := x) (y := y) w).mdifferentiableAt one_ne_zero
     rw [← mdifferentiableWithinAt_univ] at A ⊢
     convert hf.comp _ A (fun z hz ↦ z.2)
     ext z
     simp
-  · have := (contMDiffOn_projIcc (x := x) (y := y) (n := 1) w w.2).mdifferentiableWithinAt le_rfl
+  · have := (contMDiffOn_projIcc (x := x) (y := y) w w.2).mdifferentiableWithinAt one_ne_zero
     exact MDifferentiableAt.comp_mdifferentiableWithinAt_of_eq (w : ℝ) hf this (by simp)
 
 lemma mfderivWithin_projIcc_one {z : ℝ} (hz : z ∈ Icc x y) :
@@ -181,7 +185,7 @@ lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
     · rwa [mdifferentiableWithinAt_comp_projIcc_iff]
   rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)]; rotate_left
   · simp [hw]
-  · exact (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt le_rfl
+  · exact (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt one_ne_zero
   · exact (uniqueDiffOn_Icc h.out _ w.2).uniqueMDiffWithinAt
   simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
   have : w = projIcc x y h.out.le (w : ℝ) := by rw [projIcc_of_mem]

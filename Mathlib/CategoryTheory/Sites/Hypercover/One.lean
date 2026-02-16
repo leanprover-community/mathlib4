@@ -3,19 +3,22 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Coverage
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # 1-hypercovers
 
 Given a Grothendieck topology `J` on a category `C`, we define the type of
-`1`-hypercovers of an object `S : C`. They consists of a covering family
+`1`-hypercovers of an object `S : C`. They consist of a covering family
 of morphisms `X i ⟶ S` indexed by a type `I₀` and, for each tuple `(i₁, i₂)`
 of elements of `I₀`, a "covering `Y j` of the fibre product of `X i₁` and
 `X i₂` over `S`", a condition which is phrased here without assuming that
-the fibre product actually exist.
+the fibre product actually exists.
 
 The definition `OneHypercover.isLimitMultifork` shows that if `E` is a
 `1`-hypercover of `S`, and `F` is a sheaf, then `F.obj (op S)`
@@ -24,13 +27,15 @@ identifies to the multiequalizer of suitable maps
 
 -/
 
+@[expose] public section
+
 universe w'' w' w v u
 
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C] {A : Type*} [Category A]
+variable {C : Type u} [Category.{v} C] {A : Type*} [Category* A]
 
 /-- The categorical data that is involved in a `1`-hypercover of an object `S`. This
 consists of a family of morphisms `f i : X i ⟶ S` for `i : I₀`, and for each
@@ -103,6 +108,12 @@ end
 /-- The sigma type of all `E.I₁ i₁ i₂` for `⟨i₁, i₂⟩ : E.I₀ × E.I₀`. -/
 abbrev I₁' : Type w := Sigma (fun (i : E.I₀ × E.I₀) => E.I₁ i.1 i.2)
 
+/-- The `1`-components as a function from the sigma type over `E.I₁ i₁ i₂`. -/
+def Y' (i : E.I₁') : C := E.Y i.2
+
+@[simp]
+lemma Y'_apply (i : E.I₁') : E.Y' i = E.Y i.2 := rfl
+
 /-- The shape of the multiforks attached to `E : PreOneHypercover S`. -/
 @[simps]
 def multicospanShape : MulticospanShape where
@@ -127,6 +138,107 @@ def multifork (F : Cᵒᵖ ⥤ A) :
     rintro ⟨⟨i₁, i₂⟩, (j : E.I₁ i₁ i₂)⟩
     dsimp
     simp only [← F.map_comp, ← op_comp, E.w])
+
+@[simp]
+lemma multifork_ι (F : Cᵒᵖ ⥤ A) (i : E.I₀) : (E.multifork F).ι i = F.map (E.f i).op := rfl
+
+/-- The fork associated to a pre-`0`-hypercover induced by taking the coproduct of the
+components. -/
+@[simps! pt]
+def forkOfIsColimit {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d)
+    (F : Cᵒᵖ ⥤ A) :
+    Fork (F.map (Cofan.IsColimit.desc hd fun _ ↦ E.p₁ _ ≫ c.inj _).op)
+      (F.map (Cofan.IsColimit.desc hd fun _ ↦ E.p₂ _ ≫ c.inj _).op) :=
+  .ofι (F.map (Cofan.IsColimit.desc hc E.f).op) <| by
+    simp_rw [← Functor.map_comp, ← op_comp]
+    congr 2
+    exact Cofan.IsColimit.hom_ext hd _ _ (by simp [E.w])
+
+@[reassoc (attr := simp)]
+lemma forkOfIsColimit_ι_map_inj {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'}
+    (hd : IsColimit d) (F : Cᵒᵖ ⥤ A) (i : E.I₀) :
+    (E.forkOfIsColimit hc hd F).ι ≫ F.map (c.inj i).op = F.map (E.f i).op := by
+  simp [forkOfIsColimit, ← Functor.map_comp, ← op_comp]
+
+open Opposite
+
+/-- The multifork associated to a pre-`1`-hypercover is limiting if and only if
+the fork induced by taking the coproduct of the components is limiting. -/
+noncomputable def isLimitMultiforkEquivIsLimitFork
+    {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d) (F : Cᵒᵖ ⥤ A)
+    [PreservesLimit (Discrete.functor fun i ↦ Opposite.op (E.X i)) F]
+    [PreservesLimit (Discrete.functor fun i ↦ Opposite.op (E.Y' i)) F] :
+    IsLimit (E.multifork F) ≃ IsLimit (E.forkOfIsColimit hc hd F) := by
+  letI c' : Fan (E.multicospanIndex F).left := Fan.mk _ fun i ↦ F.map (c.inj i).op
+  letI hc' : IsLimit c' := isLimitFanMkObjOfIsLimit _ _ (fun i : E.I₀ ↦ _) (Cofan.IsColimit.op hc)
+  letI d' : Fan (E.multicospanIndex F).right := Fan.mk _ fun i ↦ F.map (d.inj i).op
+  letI hd' : IsLimit d' := isLimitFanMkObjOfIsLimit _ _ (fun i : E.I₁' ↦ _) (Cofan.IsColimit.op hd)
+  refine (IsLimit.ofConeEquiv <|
+    (E.multicospanIndex F).multiforkEquivPiForkOfIsLimit hc' hd').symm.trans ?_
+  refine Fork.isLimitEquivOfIsos _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_
+  · refine Fan.IsLimit.hom_ext hd' _ _ fun i ↦ ?_
+    simp only [multicospanShape_L, multicospanIndex_right, multicospanShape_R, Iso.refl_hom,
+      Y'_apply, id_comp, comp_id]
+    rw [MulticospanIndex.fstPiMapOfIsLimit_proj]
+    simp [c', d', ← F.map_comp, ← op_comp]
+  · refine Fan.IsLimit.hom_ext hd' _ _ fun i ↦ ?_
+    simp only [multicospanShape_L, multicospanIndex_right, multicospanShape_R, Iso.refl_hom,
+      Y'_apply, id_comp, comp_id]
+    rw [MulticospanIndex.sndPiMapOfIsLimit_proj]
+    simp [c', d', ← F.map_comp, ← op_comp]
+  · refine Fan.IsLimit.hom_ext hc' _ _ fun i ↦ ?_
+    simp
+    simp [c']
+
+/-- The single object pre-`1`-hypercover obtained from taking coproducts of the components. -/
+@[simps toPreZeroHypercover Y]
+def sigmaOfIsColimit {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d) :
+    PreOneHypercover.{w} S where
+  __ := E.toPreZeroHypercover.sigmaOfIsColimit hc
+  I₁ _ _ := PUnit
+  Y _ _ _ := d.pt
+  p₁ _ _ _ := Cofan.IsColimit.desc hd fun i ↦ E.p₁ _ ≫ c.inj _
+  p₂ _ _ _ := Cofan.IsColimit.desc hd fun i ↦ E.p₂ _ ≫ c.inj _
+  w _ _ _ := Cofan.IsColimit.hom_ext hd _ _ (by simp [E.w])
+
+@[reassoc (attr := simp)]
+lemma p₁_sigmaOfIsColimit {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d)
+    (i : E.I₁') {a b : PUnit} (r : (E.sigmaOfIsColimit hc hd).I₁ a b) :
+    d.inj i ≫ (E.sigmaOfIsColimit hc hd).p₁ r = E.p₁ _ ≫ c.inj _ := by
+  simp [sigmaOfIsColimit]
+
+@[reassoc (attr := simp)]
+lemma p₂_sigmaOfIsColimit {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d)
+    (i : E.I₁') {a b : PUnit} (r : (E.sigmaOfIsColimit hc hd).I₁ a b) :
+    d.inj i ≫ (E.sigmaOfIsColimit hc hd).p₂ r = E.p₂ _ ≫ c.inj _ := by
+  simp [sigmaOfIsColimit]
+
+instance {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d) :
+    Unique (E.sigmaOfIsColimit hc hd).multicospanShape.L :=
+  inferInstanceAs <| Unique PUnit
+
+instance {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d) :
+    Unique (E.sigmaOfIsColimit hc hd).multicospanShape.R where
+  default := ⟨(⟨⟩, ⟨⟩), ⟨⟩⟩
+  uniq _ := rfl
+
+/-- If `E` is a pre-`1`-hypercover and `F` a presheaf, the induced equalizer of
+the single object covering obtained from `E` by taking coproducts is limiting
+if and only if the induced multiequalizer of `E` is limiting. -/
+noncomputable
+def isLimitSigmaOfIsColimitEquiv {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'}
+    (hd : IsColimit d) (F : Cᵒᵖ ⥤ A)
+    [PreservesLimit (Discrete.functor fun i ↦ Opposite.op (E.X i)) F]
+    [PreservesLimit (Discrete.functor fun i ↦ Opposite.op (E.Y' i)) F] :
+    IsLimit ((E.sigmaOfIsColimit hc hd).multifork F) ≃ IsLimit (E.multifork F) := by
+  refine (Multifork.isLimitEquivOfIsos _ _ ?_ ?_ ?_ ?_ ?_ ?_).trans
+    (IsLimit.ofConeEquiv <| (MulticospanIndex.multiforkOfParallelHomsEquivFork
+      (E.sigmaOfIsColimit hc hd).multicospanShape _ _).symm) |>.trans
+      (E.isLimitMultiforkEquivIsLimitFork hc hd F).symm
+  · exact .refl _
+  · exact fun _ ↦ .refl _
+  · exact fun _ ↦ .refl _
+  all_goals cat_disch
 
 /-- The trivial pre-`1`-hypercover of `S` with a single component `S`. -/
 @[simps toPreZeroHypercover I₁ Y p₁ p₂]
@@ -462,6 +574,42 @@ def isoMk {E F : J.OneHypercover S} (f : E.toPreOneHypercover ≅ F.toPreOneHype
 
 end Category
 
+section
+
+open Opposite
+variable {C : Type*} [Category* C] {K : GrothendieckTopology C} {P : Cᵒᵖ ⥤ Type*}
+   {S : C} (E : K.OneHypercover S)
+
+lemma isSheafFor_presieve₀ (h : Presieve.IsSheaf K P) : E.presieve₀.IsSheafFor P := by
+  rw [Presieve.isSheafFor_iff_generate]
+  exact h _ E.mem₀
+
+lemma arrowsCompatible (h : Presieve.IsSeparated K P) (x : ∀ i, P.obj (op <| E.X i))
+    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), P.map (E.p₁ k).op (x i) = P.map (E.p₂ k).op (x j)) :
+    Presieve.Arrows.Compatible _ E.f x := by
+  rintro i₁ i₂ Z g₁ g₂ heq
+  refine (h _ (E.mem₁ _ _ _ _ heq)).ext fun W f ⟨T, u, h₁, h₂⟩ ↦ ?_
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, h₁]
+  conv_rhs => rw [← FunctorToTypes.map_comp_apply, ← op_comp, h₂]
+  simp [hc]
+
+/-- Glue sections of a `Type`-valued sheaf over a `1`-hypercover. -/
+noncomputable def amalgamate (h : Presieve.IsSheaf K P) (x : ∀ i, P.obj (op <| E.X i))
+    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), P.map (E.p₁ k).op (x i) = P.map (E.p₂ k).op (x j)) :
+    P.obj (op S) :=
+  (E.isSheafFor_presieve₀ h).amalgamate _
+    ((E.arrowsCompatible h.isSeparated x hc).familyOfElements_compatible)
+
+@[simp]
+lemma map_amalgamate (h : Presieve.IsSheaf K P) (x : ∀ i, P.obj (op <| E.X i))
+    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), P.map (E.p₁ k).op (x i) = P.map (E.p₂ k).op (x j))
+    (i : E.I₀) :
+    P.map (E.f i).op (E.amalgamate h x hc) = x i := by
+  rw [amalgamate, Presieve.IsSheafFor.valid_glue _ _ _ ⟨i⟩]
+  simp
+
+end
+
 end OneHypercover
 
 namespace Cover
@@ -510,5 +658,47 @@ def oneHypercover : J.OneHypercover X where
 end Cover
 
 end GrothendieckTopology
+
+lemma PreZeroHypercover.ext_of_isSeparatedFor {P : Cᵒᵖ ⥤ Type*} {S : C} (E : PreZeroHypercover S)
+    (h : E.presieve₀.IsSeparatedFor P) {x y : P.obj (.op S)}
+    (hi : ∀ i, P.map (E.f i).op x = P.map (E.f i).op y) :
+    x = y :=
+  h.ext fun _ _ ⟨i⟩ ↦ hi i
+
+/-- If the pairwise pullbacks exist, this is the pre-`1`-hypercover where the covers
+by the pullbacks are given by the pullbacks themselves. -/
+@[simps toPreZeroHypercover I₁ Y p₁ p₂]
+noncomputable def PreZeroHypercover.toPreOneHypercover {S : C} (E : PreZeroHypercover S)
+    [E.HasPullbacks] :
+    PreOneHypercover S where
+  __ := E
+  I₁ _ _ := PUnit
+  Y i j _ := pullback (E.f i) (E.f j)
+  p₁ _ _ _ := pullback.fst _ _
+  p₂ _ _ _ := pullback.snd _ _
+  w _ _ _ := pullback.condition
+
+instance {S : C} (E : PreZeroHypercover S) [E.HasPullbacks] :
+    E.toPreOneHypercover.HasPullbacks := by
+  dsimp
+  infer_instance
+
+@[simp]
+lemma sieve₁'_toPreOneHypercover_eq_top {S : C} (E : PreZeroHypercover S) [E.HasPullbacks]
+    (i j : E.I₀) :
+    E.toPreOneHypercover.sieve₁' i j = ⊤ := by
+  rw [eq_top_iff]
+  intro Y f _
+  refine ⟨pullback (E.f i) (E.f j), f, 𝟙 _, ?_, by simp⟩
+  refine Presieve.ofArrows.mk' ⟨⟩ rfl ?_
+  apply pullback.hom_ext <;> simp [PreOneHypercover.toPullback]
+
+/-- If the pairwise pullbacks exist, this is the pre-`1`-hypercover where the covers
+by the pullbacks are given by the pullbacks themselves. -/
+@[simps! toPreOneHypercover]
+noncomputable def Precoverage.ZeroHypercover.toOneHypercover {J : Precoverage C}
+    {S : C} (E : J.ZeroHypercover S) [E.HasPullbacks] :
+    (J.toGrothendieck).OneHypercover S :=
+  .mk' E.toPreZeroHypercover.toPreOneHypercover (J.generate_mem_toGrothendieck E.mem₀) (by simp)
 
 end CategoryTheory

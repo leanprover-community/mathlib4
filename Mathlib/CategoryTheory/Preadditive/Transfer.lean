@@ -3,8 +3,10 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Pulling back a preadditive structure along a fully faithful functor
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 A preadditive structure on a category `D` transfers to a preadditive structure on `C` for a given
 fully faithful functor `F : C ⥤ D`.
 -/
+
+@[expose] public section
 namespace CategoryTheory
 
 open Limits

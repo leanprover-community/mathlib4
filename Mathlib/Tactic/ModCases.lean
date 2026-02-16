@@ -3,14 +3,19 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Data.Int.ModEq
-import Mathlib.Tactic.HaveI
+module
+
+public meta import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Tactic.HaveI
 
 /-! # `mod_cases` tactic
 
 The `mod_cases` tactic does case disjunction on `e % n`, where `e : ℤ` or `e : ℕ`,
 to yield `n` new subgoals corresponding to the possible values of `e` modulo `n`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.ModCases
 open Lean Meta Elab Tactic Term Qq
@@ -24,7 +29,7 @@ there exists `0 ≤ z < n` such that `a ≡ z (mod n)`.
 It asserts that if `∃ z, lb ≤ z < n ∧ a ≡ z (mod n)` holds, then `p`
 (where `p` is the current goal).
 -/
-def OnModCases (n : ℕ) (a : ℤ) (lb : ℕ) (p : Sort*) :=
+@[expose] def OnModCases (n : ℕ) (a : ℤ) (lb : ℕ) (p : Sort*) :=
   ∀ z, lb ≤ z ∧ z < n ∧ a ≡ ↑z [ZMOD ↑n] → p
 
 /--
@@ -101,7 +106,7 @@ there exists `0 ≤ m < n` such that `a ≡ m (mod n)`.
 It asserts that if `∃ m, lb ≤ m < n ∧ a ≡ m (mod n)` holds, then `p`
 (where `p` is the current goal).
 -/
-def OnModCases (n : ℕ) (a : ℕ) (lb : ℕ) (p : Sort _) :=
+@[expose] def OnModCases (n : ℕ) (a : ℕ) (lb : ℕ) (p : Sort _) :=
   ∀ m, lb ≤ m ∧ m < n ∧ a ≡ m [MOD n] → p
 
 /--

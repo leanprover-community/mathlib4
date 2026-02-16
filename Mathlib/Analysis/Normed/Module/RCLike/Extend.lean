@@ -3,14 +3,18 @@ Copyright (c) 2020 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
-import Mathlib.Analysis.RCLike.Extend
-import Mathlib.Analysis.Normed.Operator.Basic
+module
+
+public import Mathlib.Analysis.RCLike.Extend
+public import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 # Norm properties of the extension of continuous `ℝ`-linear functionals to `𝕜`-linear functionals
 
 This file shows that `ContinuousLinearMap.extendTo𝕜` preserves the norm of the functional.
 -/
+
+public section
 
 open RCLike
 open scoped ComplexConjugate

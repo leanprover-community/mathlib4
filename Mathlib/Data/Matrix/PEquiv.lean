@@ -3,8 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Data.PEquiv
+module
+
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Data.PEquiv
 
 /-!
 # partial equivalences for matrices
@@ -31,6 +33,8 @@ inverse of this map, sending anything not in the image to zero.
 
 This file uses `ᵀ` for `Matrix.transpose`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

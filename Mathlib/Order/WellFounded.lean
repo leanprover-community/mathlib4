@@ -3,8 +3,10 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Bounds.Defs
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Bounds.Defs
 
 /-!
 # Well-founded relations
@@ -17,6 +19,8 @@ The predicate `WellFounded` is defined in the core library. In this file we prov
 and provide a few new definitions: `WellFounded.min`, `WellFounded.sup`, and `WellFounded.succ`,
 and an induction principle `WellFounded.induction_bot`.
 -/
+
+@[expose] public section
 
 theorem acc_def {α} {r : α → α → Prop} {a : α} : Acc r a ↔ ∀ b, r b a → Acc r b where
   mp h := h.rec fun _ h _ ↦ h
@@ -37,7 +41,8 @@ theorem not_acc_iff_exists_descending_chain {α} {r : α → α → Prop} {x : �
 
 theorem acc_iff_isEmpty_descending_chain {α} {r : α → α → Prop} {x : α} :
     Acc r x ↔ IsEmpty { f : ℕ → α // f 0 = x ∧ ∀ n, r (f (n + 1)) (f n) } := by
-  rw [← not_iff_not, not_isEmpty_iff, nonempty_subtype]
+  contrapose!
+  rw [nonempty_subtype]
   exact not_acc_iff_exists_descending_chain
 
 /-- A relation is well-founded iff it doesn't have any infinite descending chain.
@@ -54,14 +59,16 @@ namespace WellFounded
 
 variable {r r' : α → α → Prop}
 
-protected theorem isAsymm (h : WellFounded r) : IsAsymm α r := ⟨h.asymmetric⟩
+protected theorem asymm (h : WellFounded r) : Std.Asymm r := ⟨h.asymmetric⟩
 
-protected theorem isIrrefl (h : WellFounded r) : IsIrrefl α r := @IsAsymm.isIrrefl α r h.isAsymm
+@[deprecated (since := "2026-01-07")] protected alias isAsymm := WellFounded.asymm
 
-instance [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.rel :=
-  WellFoundedRelation.wf.isAsymm
+protected theorem irrefl (h : WellFounded r) : Std.Irrefl r := @Std.Asymm.irrefl α r h.asymm
 
-instance : IsIrrefl α WellFoundedRelation.rel := IsAsymm.isIrrefl
+@[deprecated (since := "2026-01-07")] protected alias isIrrefl := WellFounded.irrefl
+
+instance [WellFoundedRelation α] : Std.Asymm (α := α) WellFoundedRelation.rel :=
+  WellFoundedRelation.wf.asymm
 
 theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded r' :=
   Subrelation.wf (h _ _) hr
@@ -106,9 +113,6 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   refine hm ⟨_, fun y hy => ?_⟩
   by_contra hy'
   exact hm' y hy' hy
-
-@[deprecated (since := "2025-08-10")]
-alias wellFounded_iff_no_descending_seq := wellFounded_iff_isEmpty_descending_chain
 
 theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
   by_contra! hf
@@ -199,21 +203,27 @@ variable (f : α → β)
 
 section LT
 
-variable [LT β] [h : WellFoundedLT β]
+variable [LT β] [WellFoundedLT β]
 
 /-- Given a function `f : α → β` where `β` carries a well-founded `<`, this is an element of `α`
-whose image under `f` is minimal in the sense of `Function.not_lt_argmin`. -/
+whose image under `f` is minimal in the sense of `Function.not_lt_argmin`.
+
+See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` is finite. -/
 noncomputable def argmin [Nonempty α] : α :=
-  WellFounded.min (InvImage.wf f h.wf) Set.univ Set.univ_nonempty
+  WellFounded.min (InvImage.wf f wellFounded_lt) Set.univ Set.univ_nonempty
 
 theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f) :=
-  WellFounded.not_lt_min (InvImage.wf f h.wf) _ _ (Set.mem_univ a)
+  WellFounded.not_lt_min (InvImage.wf f wellFounded_lt) _ _ (Set.mem_univ a)
 
 /-- Given a function `f : α → β` where `β` carries a well-founded `<`, and a non-empty subset `s`
 of `α`, this is an element of `s` whose image under `f` is minimal in the sense of
-`Function.not_lt_argminOn`. -/
+`Function.not_lt_argminOn`.
+
+See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` or `s` is finite.
+
+TODO Consider removing this definition in favour of `exists_minimalFor_of_wellFoundedLT`. -/
 noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
-  WellFounded.min (InvImage.wf f h.wf) s hs
+  WellFounded.min (InvImage.wf f wellFounded_lt) s hs
 
 @[simp]
 theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f s hs ∈ s :=
@@ -221,7 +231,7 @@ theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f s hs ∈ s :=
 
 theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
     (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f s hs) :=
-  WellFounded.not_lt_min (InvImage.wf f h.wf) s hs ha
+  WellFounded.not_lt_min (InvImage.wf f wellFounded_lt) s hs ha
 
 end LT
 
@@ -232,9 +242,17 @@ variable [LinearOrder β] [WellFoundedLT β]
 theorem argmin_le (a : α) [Nonempty α] : f (argmin f) ≤ f a :=
   not_lt.mp <| not_lt_argmin f a
 
+theorem isMinimalFor_argmin [Nonempty α] :
+    MinimalFor Set.univ f (argmin f) :=
+  ⟨Set.mem_univ (argmin f), fun a _ _ ↦ argmin_le f a⟩
+
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
     f (argminOn f s hs) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f s ha hs
+
+theorem isMinimalFor_argminOn (s : Set α) (hs : s.Nonempty) :
+    MinimalFor s f (argminOn f s hs) :=
+  ⟨argminOn_mem f s hs, fun _ h _ ↦ argminOn_le f s h hs⟩
 
 end LinearOrder
 

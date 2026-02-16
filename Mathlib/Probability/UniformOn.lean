@@ -3,8 +3,10 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Bhavik Mehta
 -/
-import Mathlib.Probability.ConditionalProbability
-import Mathlib.MeasureTheory.Measure.Count
+module
+
+public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.MeasureTheory.Measure.Count
 
 /-!
 # Classical probability
@@ -32,6 +34,8 @@ allow us to describe this by abusing the definitional equality of sets and predi
 writing `uniformOn s P`. We should avoid this however as none of the lemmas are written for
 predicates.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -79,13 +83,27 @@ theorem uniformOn_univ [Fintype Ω] {s : Set Ω} :
     uniformOn Set.univ s = Measure.count s / Fintype.card Ω := by
   simp [uniformOn, cond_apply, ← ENNReal.div_eq_inv_mul]
 
+theorem isProbabilityMeasure_uniformOn' {s : Set Ω}
+    (hs_fin : s.Finite) (hs_nonempty : s.Nonempty) (hs_meas : MeasurableSet s) :
+    IsProbabilityMeasure (uniformOn s) := by
+  apply cond_isProbabilityMeasure_of_finite
+  · rwa [Measure.count_ne_zero_iff]
+  · exact (Measure.count_apply_lt_top' hs_meas).2 hs_fin |>.ne
+
+instance instIsProbabilityMeasure_uniformOn_univ [Finite Ω] [Nonempty Ω] :
+    IsProbabilityMeasure (uniformOn (.univ : Set Ω)) :=
+  isProbabilityMeasure_uniformOn' Set.finite_univ Set.univ_nonempty .univ
+
 variable [MeasurableSingletonClass Ω]
 
-theorem uniformOn_isProbabilityMeasure {s : Set Ω} (hs : s.Finite) (hs' : s.Nonempty) :
+theorem isProbabilityMeasure_uniformOn {s : Set Ω} (hs : s.Finite) (hs' : s.Nonempty) :
     IsProbabilityMeasure (uniformOn s) := by
   apply cond_isProbabilityMeasure_of_finite
   · rwa [Measure.count_ne_zero_iff]
   · exact (Measure.count_apply_lt_top.2 hs).ne
+
+@[deprecated (since := "2026-01-26")]
+alias uniformOn_isProbabilityMeasure := isProbabilityMeasure_uniformOn
 
 theorem uniformOn_singleton (ω : Ω) (t : Set Ω) [Decidable (ω ∈ t)] :
     uniformOn {ω} t = if ω ∈ t then 1 else 0 := by
@@ -107,7 +125,7 @@ theorem uniformOn_self (hs : s.Finite) (hs' : s.Nonempty) : uniformOn s s = 1 :=
 
 theorem uniformOn_eq_one_of (hs : s.Finite) (hs' : s.Nonempty) (ht : s ⊆ t) :
     uniformOn s t = 1 := by
-  haveI := uniformOn_isProbabilityMeasure hs hs'
+  haveI := isProbabilityMeasure_uniformOn hs hs'
   refine eq_of_le_of_not_lt prob_le_one ?_
   rw [not_lt, ← uniformOn_self hs hs']
   exact measure_mono ht
@@ -155,7 +173,7 @@ theorem uniformOn_union (hs : s.Finite) (htu : Disjoint t u) :
 theorem uniformOn_compl (t : Set Ω) (hs : s.Finite) (hs' : s.Nonempty) :
     uniformOn s t + uniformOn s tᶜ = 1 := by
   rw [← uniformOn_union hs disjoint_compl_right, Set.union_compl_self,
-    (uniformOn_isProbabilityMeasure hs hs').measure_univ]
+    (isProbabilityMeasure_uniformOn hs hs').measure_univ]
 
 theorem uniformOn_disjoint_union (hs : s.Finite) (ht : t.Finite) (hst : Disjoint s t) :
     uniformOn s u * uniformOn (s ∪ t) s + uniformOn t u * uniformOn (s ∪ t) t =

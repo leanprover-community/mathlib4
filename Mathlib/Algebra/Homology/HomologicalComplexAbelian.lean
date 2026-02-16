@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-! # THe category of homological complexes is abelian
 
@@ -17,11 +19,13 @@ is exact (resp. short exact) iff degreewise it is so.
 
 -/
 
+public section
+
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
-variable {C ι : Type*} {c : ComplexShape ι} [Category C] [Abelian C]
+variable {C ι : Type*} {c : ComplexShape ι} [Category* C] [Abelian C]
 
 noncomputable instance : IsNormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
   ⟨NormalEpi.mk _ (kernel.ι p) (kernel.condition _)

@@ -1,13 +1,14 @@
 import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.ToAdditive
 
+set_option linter.translateRedundant false in
 /--
 info: * Pairings:
 #[(new_name_mul, mul_easy_deprecated), (new_name_add, add_easy_deprecated)]
 
 Try this:
 
-  /-- I also have a doc-string -/
+  [apply] /-- I also have a doc-string -/
   @[to_additive /-- With its additive doc-string -/
       ]
   theorem new_name_mul : True :=

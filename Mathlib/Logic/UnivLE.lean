@@ -3,7 +3,9 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Logic.Small.Defs
+module
+
+public import Mathlib.Logic.Small.Defs
 
 /-!
 # UnivLE
@@ -16,6 +18,8 @@ directly due to https://github.com/leanprover/lean4/issues/2297.
 
 See the doc-string for the comparison with an alternative stronger definition.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -78,5 +82,5 @@ example : UnivLE.{2, 5} := inferInstance
 -- example (α : Type u) (β : Type v) [UnivLE.{u, v}] : Small.{v} (α → β) := inferInstance
 
 example : ¬UnivLE.{u + 1, u} := by
-  simp only [univLE_iff, small_iff, not_forall, not_exists, not_nonempty_iff]
-  exact ⟨Type u, fun α => ⟨fun f => Function.not_surjective_Type.{u, u} f.symm f.symm.surjective⟩⟩
+  simp only [univLE_iff, small_iff, not_forall, not_exists]
+  exact ⟨Type u, fun α => fun ⟨f⟩ => Function.not_surjective_Type.{u, u} f.symm f.symm.surjective⟩

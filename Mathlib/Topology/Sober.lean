@@ -3,11 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Sets.Closeds
-import Mathlib.Topology.Sets.OpenCover
-import Mathlib.Algebra.HierarchyDesign
-import Mathlib.Order.KrullDimension
-import Mathlib.Topology.KrullDimension
+module
+
+public import Mathlib.Topology.Sets.Closeds
+public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Algebra.HierarchyDesign
+public import Mathlib.Order.KrullDimension
+public import Mathlib.Topology.KrullDimension
 
 /-!
 # Sober spaces
@@ -25,6 +27,8 @@ stated via `[QuasiSober α] [T0Space α]`.
 * `genericPoints` : The set of generic points of irreducible components.
 
 -/
+
+@[expose] public section
 
 
 open Set

@@ -3,11 +3,13 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Data.DFinsupp.Lex
-import Mathlib.Order.Antisymmetrization
-import Mathlib.Order.GameAdd
-import Mathlib.SetTheory.Cardinal.Order
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Data.DFinsupp.Lex
+public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Order.GameAdd
+public import Mathlib.SetTheory.Cardinal.Order
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `DFinsupp` and `Pi`
@@ -44,6 +46,8 @@ can happen arbitrarily. This explains the appearance of `rᶜ ⊓ (≠)` in
 of a linear order), `¬ r j i ∧ j ≠ i` implies `r i j`, so it suffices to require `r.swap`
 to be well-founded.
 -/
+
+@[expose] public section
 
 
 variable {ι : Type*} {α : ι → Type*}
@@ -105,7 +109,6 @@ theorem Lex.acc_of_single_erase [DecidableEq ι] {x : Π₀ i, α i} (i : ι)
       (InvImage.accessible snd <| hs.prod_gameAdd hu)
     convert piecewise_single_erase x i
 
-
 theorem Lex.acc_zero (hbot : ∀ ⦃i a⦄, ¬s i a 0) : Acc (DFinsupp.Lex r s) 0 :=
   Acc.intro 0 fun _ ⟨_, _, h⟩ => (hbot h).elim
 
@@ -157,18 +160,23 @@ theorem Lex.wellFounded (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFound
   ⟨fun x => by classical exact Lex.acc hbot hs x fun i _ => hr.apply i⟩
 
 theorem Lex.wellFounded' (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFounded (s i))
-    [IsTrichotomous ι r] (hr : WellFounded (Function.swap r)) :
-    WellFounded (DFinsupp.Lex r s) :=
+    [Std.Trichotomous r] (hr : WellFounded (Function.swap r)) : WellFounded (DFinsupp.Lex r s) :=
   Lex.wellFounded hbot hs <| Subrelation.wf
-    (fun {i j} h => ((@IsTrichotomous.trichotomous ι r _ i j).resolve_left h.1).resolve_left h.2) hr
+    (fun {i j} h ↦ Not.imp_symm (@Std.Trichotomous.trichotomous ι r _ i j h.left) h.right) hr
 
 end Zero
 
-instance Lex.wellFoundedLT [LT ι] [IsTrichotomous ι (· < ·)] [hι : WellFoundedGT ι]
+instance Lex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [hι : WellFoundedGT ι]
     [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
     [hα : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Lex (Π₀ i, α i)) :=
   ⟨Lex.wellFounded' (fun _ a => (zero_le a).not_gt) (fun i => (hα i).wf) hι.wf⟩
+
+instance Colex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [WellFoundedLT ι]
+    [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+    [∀ i, WellFoundedLT (α i)] :
+    WellFoundedLT (Colex (Π₀ i, α i)) :=
+  Lex.wellFoundedLT (ι := ιᵒᵈ)
 
 end DFinsupp
 
@@ -181,13 +189,17 @@ theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] (hs : ∀ i, We
   obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
   · convert emptyWf.wf
   letI : ∀ i, Zero (α i) := fun i => ⟨(hs i).min ⊤ ⟨x i, trivial⟩⟩
-  haveI := IsTrans.swap r; haveI := IsIrrefl.swap r; haveI := Fintype.ofFinite ι
+  haveI := IsTrans.swap r; haveI := Std.Irrefl.swap r; haveI := Fintype.ofFinite ι
   refine InvImage.wf equivFunOnFintype.symm (Lex.wellFounded' (fun i a => ?_) hs ?_)
   exacts [(hs i).not_lt_min ⊤ _ trivial, Finite.wellFounded_of_trans_of_irrefl (Function.swap r)]
 
 instance Pi.Lex.wellFoundedLT [LinearOrder ι] [Finite ι] [∀ i, LT (α i)]
     [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Lex (∀ i, α i)) :=
   ⟨Pi.Lex.wellFounded (· < ·) fun i => (hwf i).1⟩
+
+instance Pi.Colex.wellFoundedLT [LinearOrder ι] [Finite ι] [∀ i, LT (α i)]
+    [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Colex (∀ i, α i)) :=
+  Pi.Lex.wellFoundedLT (ι := ιᵒᵈ)
 
 instance Function.Lex.wellFoundedLT {α} [LinearOrder ι] [Finite ι] [LT α] [WellFoundedLT α] :
     WellFoundedLT (Lex (ι → α)) :=
@@ -202,6 +214,10 @@ instance DFinsupp.Lex.wellFoundedLT_of_finite [LinearOrder ι] [Finite ι] [∀ 
     [∀ i, LT (α i)] [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Lex (Π₀ i, α i)) :=
   ⟨DFinsupp.Lex.wellFounded_of_finite (· < ·) fun i => (hwf i).1⟩
 
+instance DFinsupp.Colex.wellFoundedLT_of_finite [LinearOrder ι] [Finite ι] [∀ i, Zero (α i)]
+    [∀ i, LT (α i)] [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Colex (Π₀ i, α i)) :=
+  DFinsupp.Lex.wellFoundedLT_of_finite (ι := ιᵒᵈ)
+
 protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (α i)]
     [∀ i, WellFoundedLT (α i)] (hbot : ∀ ⦃i⦄ ⦃a : α i⦄, ¬a < 0) : WellFoundedLT (Π₀ i, α i) :=
   ⟨by
@@ -210,7 +226,7 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
     let _ : ∀ i, Zero (β i) := fun i ↦ ⟨e i 0⟩
     have : WellFounded (DFinsupp.Lex (Function.swap <| @WellOrderingRel ι)
         (fun _ ↦ (· < ·) : (i : ι) → β i → β i → Prop)) := by
-      have := IsTrichotomous.swap (@WellOrderingRel ι)
+      have := Std.Trichotomous.swap (@WellOrderingRel ι)
       refine Lex.wellFounded' ?_ (fun i ↦ IsWellFounded.wf) ?_
       · rintro i ⟨a⟩
         apply hbot

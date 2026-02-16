@@ -56,7 +56,7 @@ open scoped TensorProduct
 
 open Complex
 
-/- `TensorProduct.Algebra.module` forms a diamond with `Mul.toSMul` and
+/- `TensorProduct.Algebra.module` forms a diamond with `instSMulOfMul` and
 `algebra.tensor_product.tensor_product.semiring`. Given a commutative semiring `A` over a
 commutative semiring `R`, we get two mathematically different scalar actions of `A ⊗[R] A` on
 itself. -/
@@ -70,19 +70,19 @@ noncomputable def f : ℂ ⊗[ℝ] ℂ →ₗ[ℝ] ℝ :=
 theorem f_apply (z w : ℂ) : f (z ⊗ₜ[ℝ] w) = z.re * w.re := by simp [f]
 
 unseal Algebra.TensorProduct.mul in
-/- `TensorProduct.Algebra.module` forms a diamond with `Mul.toSMul` and
+/- `TensorProduct.Algebra.module` forms a diamond with `instSMulOfMul` and
 `algebra.tensor_product.tensor_product.semiring`. Given a commutative semiring `A` over a
 commutative semiring `R`, we get two mathematically different scalar actions of `A ⊗[R] A` on
 itself. -/
 example :
-    Mul.toSMul (ℂ ⊗[ℝ] ℂ) ≠
+    instSMulOfMul (α := ℂ ⊗[ℝ] ℂ) ≠
       (@TensorProduct.Algebra.module ℝ ℂ ℂ (ℂ ⊗[ℝ] ℂ) _ _ _ _ _ _ _ _ _ _ _ _).toSMul := by
   have contra : I ⊗ₜ[ℝ] I ≠ (-1) ⊗ₜ[ℝ] 1 := fun c => by simpa using congr_arg f c
   contrapose! contra
   rw [SMul.ext_iff, SMul.smul_eq_hSMul, @SMul.smul_eq_hSMul _ _ (_)] at contra
   replace contra := congr_fun (congr_fun contra (1 ⊗ₜ I)) (I ⊗ₜ 1)
   rw [TensorProduct.Algebra.smul_def (R := ℝ) (1 : ℂ) I (I ⊗ₜ[ℝ] (1 : ℂ))] at contra
-  simpa only [Algebra.id.smul_eq_mul, Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one,
+  simpa only [smul_eq_mul, Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one,
     one_smul, TensorProduct.smul_tmul', I_mul_I] using contra
 
 end TensorProduct

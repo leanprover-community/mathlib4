@@ -3,11 +3,12 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+module
 
-import Mathlib.Data.Set.Subset
-import Mathlib.Order.Irreducible
-import Mathlib.Topology.Order.LowerUpperTopology
-import Mathlib.Topology.Sets.Closeds
+public import Mathlib.Data.Set.Subset
+public import Mathlib.Order.Irreducible
+public import Mathlib.Topology.Order.LowerUpperTopology
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Hull-Kernel Topology
@@ -52,6 +53,8 @@ lower topology, hull-kernel topology, Jacobson topology, structure topology, pri
 
 -/
 
+@[expose] public section
+
 variable {α}
 
 open TopologicalSpace
@@ -86,7 +89,7 @@ variable [OrderTop α]
 relative-closed set of the form `hull T a` where `a = ⨅ F`. -/
 open Finset in
 lemma hull_finsetInf (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
-    hull T (inf F id) = T ↓∩ upperClosure F.toSet := by
+    hull T (inf F id) = T ↓∩ upperClosure (F : Set α) := by
   rw [coe_upperClosure]
   induction F using Finset.cons_induction with
   | empty =>
@@ -102,7 +105,7 @@ lemma hull_finsetInf (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
 set of the form `(hull T a)ᶜ` where `a = ⨅ F`. -/
 open Finset in
 lemma preimage_upperClosure_compl_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
-    T ↓∩ (upperClosure F.toSet)ᶜ = (hull T (inf F id))ᶜ := by
+    T ↓∩ (upperClosure (F : Set α))ᶜ = (hull T (inf F id))ᶜ := by
   rw [Set.preimage_compl, (hull_finsetInf hT)]
 
 variable [TopologicalSpace α] [IsLower α]
@@ -117,7 +120,7 @@ lemma isTopologicalBasis_relativeLower (hT : ∀ p ∈ T, InfPrime p) :
   ext R
   simp only [preimage_compl, mem_setOf_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
   constructor <;> intro ha
-  · obtain ⟨a, ha'⟩ :=  ha
+  · obtain ⟨a, ha'⟩ := ha
     use {a}
     rw [← (Function.Injective.preimage_image Subtype.val_injective R), ← ha']
     simp only [finite_singleton, upperClosure_singleton, UpperSet.coe_Ici, image_val_compl,

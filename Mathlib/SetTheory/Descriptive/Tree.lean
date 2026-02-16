@@ -3,7 +3,9 @@ Copyright (c) 2024 Sven Manthe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sven Manthe
 -/
-import Mathlib.Order.CompleteLattice.SetLike
+module
+
+public import Mathlib.Order.CompleteLattice.SetLike
 
 /-!
 # Trees in the sense of descriptive set theory
@@ -15,6 +17,8 @@ sequences that are stable under taking prefixes.
 
 * `tree A`: a (possibly infinite) tree of depth at most `ω` with nodes in `A`
 -/
+
+@[expose] public section
 
 namespace Descriptive
 
@@ -28,6 +32,8 @@ def tree (A : Type*) : CompleteSublattice (Set (List A)) :=
     (by rintro S hS x a h T hT; exact hS hT <| h T hT)
 
 @[simps!] instance (A : Type*) : SetLike (tree A) (List A) := SetLike.instSubtypeSet
+
+instance (A : Type*) : PartialOrder (tree A) := .ofSetLike (tree A) (List A)
 
 namespace Tree
 variable {A : Type*} {S T : tree A}
@@ -65,8 +71,10 @@ lemma take_mem {n : ℕ} (x : T) : x.val.take n ∈ T :=
 -- ### `subAt`
 
 variable (T) (x y : List A)
+
 /-- The residual tree obtained by regarding the node x as new root -/
-def subAt : tree A := ⟨(x ++ ·)⁻¹' T, fun _ _ _ ↦ mem_of_append (by rwa [List.append_assoc])⟩
+def subAt : tree A :=
+  ⟨(x ++ ·)⁻¹' T, fun _ a _ ↦ mem_of_append (y := [a]) (by rwa [List.append_assoc])⟩
 
 @[simp] lemma mem_subAt : y ∈ subAt T x ↔ x ++ y ∈ T := Iff.rfl
 
@@ -136,7 +144,7 @@ lemma pullSub_adjunction (S T : tree A) (x : List A) : pullSub S x ≤ T ↔ S �
     · constructor <;> intro ⟨h, _⟩ <;>
         [skip; replace h := by simpa [List.take_take] using h.take x.length] <;>
         cases hp <| List.prefix_iff_eq_take.mpr (h.eq_of_length (by simpa)).symm
-  · rw [mem_pullSub_short hl, mem_pullSub_short (by simp), mem_pullSub_short (by simp; cutsat)]
+  · rw [mem_pullSub_short hl, mem_pullSub_short (by simp), mem_pullSub_short (by simp; lia)]
     simpa using fun _ ↦ (z.isPrefix_append_of_length hl).symm
 
 end Descriptive.Tree

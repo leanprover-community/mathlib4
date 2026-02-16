@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Topology.ClusterPt
+module
+
+public import Mathlib.Topology.ClusterPt
 
 /-!
 # Continuity in topological spaces
@@ -17,6 +19,8 @@ partially defined functions.
 
 continuity, continuous function
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 
@@ -38,7 +42,7 @@ theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :
   hf.isOpen_preimage t h
 
 lemma Equiv.continuous_symm_iff (e : X ≃ Y) : Continuous e.symm ↔ IsOpenMap e := by
-  simp_rw [continuous_def, ← Set.image_equiv_eq_preimage_symm, IsOpenMap]
+  simp_rw [continuous_def, ← Equiv.image_eq_preimage_symm, IsOpenMap]
 
 lemma Equiv.isOpenMap_symm_iff (e : X ≃ Y) : IsOpenMap e.symm ↔ Continuous e := by
   simp_rw [← Equiv.continuous_symm_iff, Equiv.symm_symm]
@@ -93,6 +97,11 @@ theorem preimage_interior_subset_interior_preimage {t : Set Y} (hf : Continuous 
     f ⁻¹' interior t ⊆ interior (f ⁻¹' t) :=
   interior_maximal (preimage_mono interior_subset) (isOpen_interior.preimage hf)
 
+theorem continuous_iff_preimage_interior_subset_interior_preimage :
+    Continuous f ↔ ∀ s, f ⁻¹' (interior s) ⊆ interior (f ⁻¹' s) where
+  mp h s := preimage_interior_subset_interior_preimage h
+  mpr h := ⟨fun s hs ↦ subset_interior_iff_isOpen.mp <| by grw [← h, hs.interior_eq]⟩
+
 @[continuity]
 theorem continuous_id : Continuous (id : X → X) :=
   continuous_def.2 fun _ => id
@@ -110,6 +119,7 @@ theorem Continuous.comp {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
 theorem Continuous.comp' {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) := hg.comp hf
 
+@[fun_prop]
 theorem Continuous.iterate {f : X → X} (h : Continuous f) (n : ℕ) : Continuous f^[n] :=
   Nat.recOn n continuous_id fun _ ihn => ihn.comp h
 
@@ -212,6 +222,12 @@ theorem closure_subset_preimage_closure_image (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) :=
   (mapsTo_image _ _).closure h
 
+theorem continuous_iff_image_closure_subset_closure_image :
+    Continuous f ↔ ∀ s, f '' closure s ⊆ closure (f '' s) where
+  mp h s := image_closure_subset_closure_image h
+  mpr h := continuous_iff_isClosed.mpr fun s hs ↦ isClosed_of_closure_subset <| by
+    grw [image_subset_iff.mp <| h <| f ⁻¹' s, image_preimage_subset, hs.closure_subset]
+
 theorem map_mem_closure {t : Set Y} (hf : Continuous f)
     (hx : x ∈ closure s) (ht : MapsTo f s t) : f x ∈ closure t :=
   ht.closure hf hx
@@ -310,7 +326,7 @@ theorem DenseRange.mem_nhds (h : DenseRange f) (hs : s ∈ 𝓝 x) :
 
 end DenseRange
 
-library_note2 «continuity lemma statement» /--
+library_note «continuity lemma statement» /--
 The library contains many lemmas stating that functions/operations are continuous. There are many
 ways to formulate the continuity of operations. Some are more convenient than others.
 Note: for the most part this note also applies to other properties
@@ -324,18 +340,18 @@ in different definitionally equal ways (omitting some typing information)
 * `Continuous ↿(+)`. (`↿` is notation for recursively uncurrying a function)
 
 However, lemmas with this conclusion are not nice to use in practice because
-1. They confuse the elaborator. The following two examples fail, because of limitations in the
+1. They confuse the elaborator. The following example fails, because of limitations in the
   elaboration process.
   ```
   variable {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
   example : Continuous (fun x : M ↦ x + x) :=
     continuous_add.comp _
 
+  -- This example used to fail, but would be accepted if you wrote is as
+  -- `continuous_add.comp (continuous_id.prodMk continuous_id :)`.
   example : Continuous (fun x : M ↦ x + x) :=
     continuous_add.comp (continuous_id.prodMk continuous_id)
   ```
-  The second is a valid proof, which is accepted if you write it as
-  `continuous_add.comp (continuous_id.prodMk continuous_id :)`
 
 2. If the operation has more than 2 arguments, they are impractical to use, because in your
   application the arguments in the domain might be in a different order or associated differently.
@@ -345,17 +361,18 @@ However, lemmas with this conclusion are not nice to use in practice because
 A much more convenient way to write continuity lemmas is like `Continuous.add`:
 ```
 Continuous.add {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
-  Continuous (fun x ↦ f x + g x)
+  Continuous (f + g)
 ```
-The conclusion can be `Continuous (f + g)`, which is definitionally equal.
+The conclusion can be `Continuous (fun x ↦ f x + g x)`, which is definitionally equal.
 This has the following advantages
 * It supports projection notation, so is shorter to write.
 * `Continuous.add _ _` is recognized correctly by the elaborator and gives useful new goals.
 * It works generally, since the domain is a variable.
+  (Having a domain `Y × Z` would be less convenient in general.)
 
 As an example for a unary operation, we have `Continuous.neg`.
 ```
-Continuous.neg {f : X → G} (hf : Continuous f) : Continuous (fun x ↦ -f x)
+Continuous.neg {f : X → G} (hf : Continuous f) : Continuous (-f)
 ```
 For unary functions, the elaborator is not confused when applying the traditional lemma
 (like `continuous_neg`), but it's still convenient to have the short version available (compare
@@ -407,7 +424,7 @@ With `ContinuousAt` you can be even more precise about what to prove in case of 
 see e.g. `ContinuousAt.comp_div_cases`.
 -/
 
-library_note2 «comp_of_eq lemmas» /--
+library_note «comp_of_eq lemmas» /--
 Lean's elaborator has trouble elaborating applications of lemmas that state that the composition of
 two functions satisfy some property at a point, like `ContinuousAt.comp` / `ContDiffAt.comp` and
 `ContMDiffWithinAt.comp`. The reason is that a lemma like this looks like

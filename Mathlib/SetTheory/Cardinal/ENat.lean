@@ -3,9 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Data.ENat.Basic
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Conversion between `Cardinal` and `ℕ∞`
@@ -27,6 +29,8 @@ Since it is not registered as a coercion, the argument about delaboration does n
 
 set theory, cardinals, extended natural numbers
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -54,7 +58,7 @@ instance : Coe ENat Cardinal := ⟨Cardinal.ofENat⟩
   rfl
 
 lemma ofENat_strictMono : StrictMono ofENat :=
-  WithTop.strictMono_iff.2 ⟨Nat.strictMono_cast, nat_lt_aleph0⟩
+  WithTop.strictMono_iff.2 ⟨Nat.strictMono_cast, fun _ ↦ natCast_lt_aleph0⟩
 
 @[simp, norm_cast]
 lemma ofENat_lt_ofENat {m n : ℕ∞} : (m : Cardinal) < n ↔ m < n :=
@@ -159,7 +163,7 @@ lemma toENatAux_nat (n : ℕ) : toENatAux n = n := Nat.cast_injective.extend_app
 lemma toENatAux_zero : toENatAux 0 = 0 := toENatAux_nat 0
 
 lemma toENatAux_eq_top {a : Cardinal} (ha : ℵ₀ ≤ a) : toENatAux a = ⊤ :=
-  extend_apply' _ _ _ fun ⟨n, hn⟩ ↦ ha.not_gt <| hn ▸ nat_lt_aleph0 n
+  extend_apply' _ _ _ fun ⟨_n, hn⟩ ↦ ha.not_gt <| hn ▸ natCast_lt_aleph0
 
 lemma toENatAux_ofENat : ∀ n : ℕ∞, toENatAux n = n
   | (n : ℕ) => toENatAux_nat n
@@ -175,7 +179,7 @@ lemma toENatAux_gc : GaloisConnection (↑) toENatAux := fun n x ↦ by
 theorem toENatAux_le_nat {x : Cardinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ n := by
   cases lt_or_ge x ℵ₀ with
   | inl hx => lift x to ℕ using hx; simp
-  | inr hx => simp [toENatAux_eq_top hx, (nat_lt_aleph0 n).trans_le hx]
+  | inr hx => simp [toENatAux_eq_top hx, natCast_lt_aleph0.trans_le hx]
 
 lemma toENatAux_eq_nat {x : Cardinal} {n : ℕ} : toENatAux x = n ↔ x = n := by
   simp only [le_antisymm_iff, toENatAux_le_nat, ← toENatAux_gc _, ofENat_nat]
@@ -267,7 +271,7 @@ theorem toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by
   | inr ha => simp [toENat_eq_top.2, ha]
 
 theorem toENat_congr {α : Type u} {β : Type v} (e : α ≃ β) : toENat #α = toENat #β := by
-  rw [← toENat_lift, lift_mk_eq.{_, _,v}.mpr ⟨e⟩, toENat_lift]
+  rw [← toENat_lift, lift_mk_eq.{_, _, v}.mpr ⟨e⟩, toENat_lift]
 
 lemma toENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
     toENat c ≤ toENat c' ↔ c ≤ c' := by

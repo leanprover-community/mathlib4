@@ -3,10 +3,12 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.Geometry.Manifold.Diffeomorph
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+public import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+public import Mathlib.Geometry.Manifold.Diffeomorph
 
 /-!
 # Derivatives of maps in the tangent bundle
@@ -15,6 +17,8 @@ This file contains properties of derivatives which need the manifold structure o
 bundle. Notably, it includes formulas for the tangent maps to charts, and unique differentiability
 statements for subsets of the tangent bundle.
 -/
+
+@[expose] public section
 
 open Bundle Set
 open scoped Manifold
@@ -91,7 +95,7 @@ lemma inTangentCoordinates_eq_mfderiv_comp
 open Bundle
 variable (I) in
 /-- The canonical identification between the tangent bundle to the model space and the product,
-as a diffeomorphism -/
+as a diffeomorphism. -/
 def tangentBundleModelSpaceDiffeomorph (n : ℕ∞) :
     TangentBundle I H ≃ₘ^n⟮I.tangent, I.prod 𝓘(𝕜, E)⟯ ModelProd H E where
   __ := TotalSpace.toProd H E

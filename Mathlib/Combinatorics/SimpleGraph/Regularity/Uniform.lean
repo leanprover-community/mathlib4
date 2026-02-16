@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Combinatorics.SimpleGraph.Density
-import Mathlib.Data.Nat.Cast.Order.Field
-import Mathlib.Order.Partition.Equipartition
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Combinatorics.SimpleGraph.Density
+public import Mathlib.Data.Nat.Cast.Order.Field
+public import Mathlib.Order.Partition.Equipartition
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Graph uniformity and uniform partitions
@@ -38,6 +40,8 @@ greater than `(1 - ε)`.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -202,7 +206,7 @@ lemma mk_mem_sparsePairs (u v : Finset α) (ε : 𝕜) :
 
 omit [IsStrictOrderedRing 𝕜] in
 lemma sparsePairs_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.sparsePairs G ε ⊆ P.sparsePairs G ε' :=
-  monotone_filter_right _ fun _ ↦ h.trans_lt'
+  monotone_filter_right _ fun _ _ ↦ h.trans_lt'
 
 /-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
@@ -215,14 +219,14 @@ omit [IsStrictOrderedRing 𝕜] in
   rw [nonUniforms, mem_filter, mem_offDiag, and_assoc, and_assoc]
 
 theorem nonUniforms_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.nonUniforms G ε' ⊆ P.nonUniforms G ε :=
-  monotone_filter_right _ fun _ => mt <| SimpleGraph.IsUniform.mono h
+  monotone_filter_right _ fun _ _ => mt <| SimpleGraph.IsUniform.mono h
 
 theorem nonUniforms_bot (hε : 0 < ε) : (⊥ : Finpartition A).nonUniforms G ε = ∅ := by
   rw [eq_empty_iff_forall_notMem]
   rintro ⟨u, v⟩
   simp only [mk_mem_nonUniforms, parts_bot, mem_map, not_and,
     Classical.not_not, exists_imp]; dsimp
-  rintro x ⟨_, rfl⟩ y ⟨_,rfl⟩ _
+  rintro x ⟨_, rfl⟩ y ⟨_, rfl⟩ _
   rwa [SimpleGraph.isUniform_singleton]
 
 /-- A finpartition of a graph's vertex set is `ε`-uniform (aka `ε`-regular) iff the proportion of
@@ -262,6 +266,9 @@ noncomputable def nonuniformWitnesses : Finset (Finset α) :=
 
 variable {P G ε s} {t : Finset α}
 
+lemma card_nonuniformWitnesses_le :
+    #(P.nonuniformWitnesses G ε s) ≤ #{t ∈ P.parts | s ≠ t ∧ ¬G.IsUniform ε s t} := card_image_le
+
 theorem nonuniformWitness_mem_nonuniformWitnesses (h : ¬G.IsUniform ε s t) (ht : t ∈ P.parts)
     (hst : s ≠ t) : G.nonuniformWitness ε s t ∈ P.nonuniformWitnesses G ε s :=
   mem_image_of_mem _ <| mem_filter.2 ⟨ht, hst, h⟩
@@ -280,7 +287,8 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     _ ≤ _ := ?_
   · gcongr with UV hUV
     obtain ⟨U, V⟩ := UV
-    simp [mk_mem_sparsePairs, ← card_interedges_div_card] at hUV
+    simp only [mk_mem_sparsePairs, ne_eq, ← card_interedges_div_card, Rat.cast_div,
+      Rat.cast_natCast, Rat.cast_mul] at hUV
     refine ((div_lt_iff₀ ?_).1 hUV.2.2.2).le
     exact mul_pos (Nat.cast_pos.2 (P.nonempty_of_mem_parts hUV.1).card_pos)
       (Nat.cast_pos.2 (P.nonempty_of_mem_parts hUV.2.1).card_pos)
@@ -288,7 +296,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
   gcongr
   calc
     (_ : ℕ) ≤ _ := sum_le_card_nsmul P.parts.offDiag (fun i ↦ #i.1 * #i.2)
-            ((#A / #P.parts + 1)^2 : ℕ) ?_
+            ((#A / #P.parts + 1) ^ 2 : ℕ) ?_
     _ ≤ (#P.parts * (#A / #P.parts) + #P.parts) ^ 2 := ?_
     _ ≤ _ := by gcongr; apply Nat.mul_div_le
   · simp only [Prod.forall, and_imp, mem_offDiag, sq]
@@ -302,7 +310,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le (hP : P.IsEquipartition) (h
     #((P.sparsePairs G ε).biUnion fun (U, V) ↦ G.interedges U V) ≤ 4 * ε * #A ^ 2 := by
   calc
     _ ≤ _ := hP.card_interedges_sparsePairs_le' hε
-    _ ≤ ε * (#A + #A)^2 := by gcongr; exact P.card_parts_le_card
+    _ ≤ ε * (#A + #A) ^ 2 := by gcongr; exact P.card_parts_le_card
     _ = _ := by ring
 
 private lemma aux {i j : ℕ} (hj : 0 < j) : j * (j - 1) * (i / j + 1) ^ 2 < (i + j) ^ 2 := by
@@ -340,7 +348,7 @@ lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquiparti
   have : (#A : 𝕜) + #P.parts ≤ 2 * #A := by
     rw [two_mul]; gcongr; exact P.card_parts_le_card
   refine (mul_le_mul_of_nonneg_left this <| by positivity).trans ?_
-  suffices 1 ≤ ε/4 * #P.parts by
+  suffices 1 ≤ ε / 4 * #P.parts by
     rw [mul_left_comm, ← sq]
     convert mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two <| sq_nonneg (#A : 𝕜))
       using 1 <;> ring
@@ -391,7 +399,7 @@ that have edge density at least `δ`. -/
     rintro ⟨ab, U, UP, V, VP, xU, yV, UV, GUV, εUV⟩
     refine ⟨G.symm ab, V, VP, U, UP, yV, xU, UV.symm, GUV.symm, ?_⟩
     rwa [edgeDensity_comm]
-  loopless a h := G.loopless a h.1
+  loopless := ⟨fun a h ↦ G.loopless.irrefl a h.1⟩
 
 instance regularityReduced.instDecidableRel_adj : DecidableRel (G.regularityReduced P ε δ).Adj := by
   unfold regularityReduced; infer_instance
@@ -414,9 +422,9 @@ lemma regularityReduced_anti {δ₁ δ₂ : 𝕜} (hδ : δ₁ ≤ δ₂) :
 
 omit [IsStrictOrderedRing 𝕜] in
 lemma unreduced_edges_subset :
-    (A ×ˢ A).filter (fun (x, y) ↦ G.Adj x y ∧ ¬ (G.regularityReduced P (ε/8) (ε/4)).Adj x y) ⊆
-      (P.nonUniforms G (ε/8)).biUnion (fun (U, V) ↦ U ×ˢ V) ∪ P.parts.biUnion offDiag ∪
-        (P.sparsePairs G (ε/4)).biUnion fun (U, V) ↦ G.interedges U V := by
+    (A ×ˢ A).filter (fun (x, y) ↦ G.Adj x y ∧ ¬ (G.regularityReduced P (ε / 8) (ε / 4)).Adj x y) ⊆
+      (P.nonUniforms G (ε / 8)).biUnion (fun (U, V) ↦ U ×ˢ V) ∪ P.parts.biUnion offDiag ∪
+        (P.sparsePairs G (ε / 4)).biUnion fun (U, V) ↦ G.interedges U V := by
   rintro ⟨x, y⟩
   simp only [mem_filter, regularityReduced_adj, not_and, not_exists,
     not_le, mem_biUnion, mem_union, mem_product, Prod.exists, mem_offDiag, and_imp,
@@ -427,7 +435,7 @@ lemma unreduced_edges_subset :
   obtain ⟨V, hV, hy⟩ := P.exists_mem hy
   obtain rfl | hUV := eq_or_ne U V
   · exact Or.inr (Or.inl ⟨U, hU, hx, hy, G.ne_of_adj h⟩)
-  by_cases h₂ : G.IsUniform (ε/8) U V
+  by_cases h₂ : G.IsUniform (ε / 8) U V
   · exact Or.inr <| Or.inr ⟨U, V, hU, hV, hUV, h' _ hU _ hV hx hy hUV h₂, hx, hy, h⟩
   · exact Or.inl ⟨U, V, hU, hV, hUV, h₂, hx, hy⟩
 

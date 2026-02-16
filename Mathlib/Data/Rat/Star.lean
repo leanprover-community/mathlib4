@@ -3,12 +3,13 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Order.Monoid.Submonoid
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.NNRat.Order
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.GroupWithZero.Commute
+public import Mathlib.Algebra.Order.Monoid.Submonoid
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.NNRat.Order
 
 /-!
 # Star ordered ring structures on `ℚ` and `ℚ≥0`
@@ -16,6 +17,8 @@ import Mathlib.Tactic.FieldSimp
 This file shows that `ℚ` and `ℚ≥0` are `StarOrderedRing`s. In particular, this means that every
 nonnegative rational number is a sum of squares.
 -/
+
+@[expose] public section
 
 open AddSubmonoid Set
 open scoped NNRat

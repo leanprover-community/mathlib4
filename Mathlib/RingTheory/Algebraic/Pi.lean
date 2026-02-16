@@ -3,13 +3,17 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!
 # Algebraic functions
 
 This file defines algebraic functions as the image of the `algebraMap R[X] (R → S)`.
 -/
+
+@[expose] public section
 
 assert_not_exists IsIntegralClosure LinearIndependent IsLocalRing MvPolynomial
 

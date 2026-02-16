@@ -3,11 +3,15 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Products
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Products
 
 /-!
 # Pullbacks and pushouts in the category of topological spaces
 -/
+
+@[expose] public section
 
 open TopologicalSpace Topology
 
@@ -117,7 +121,7 @@ theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
         induced (pullback.snd f g) Y.str := by
   let homeo := homeoOfIso (pullbackIsoProdSubtype f g)
   refine homeo.isInducing.eq_induced.trans ?_
-  change induced homeo (induced _ ( (induced Prod.fst X.str) ⊓ (induced Prod.snd Y.str))) = _
+  change induced homeo (induced _ ((induced Prod.fst X.str) ⊓ (induced Prod.snd Y.str))) = _
   simp only [induced_compose, induced_inf]
   rfl
 

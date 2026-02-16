@@ -3,11 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.CategoryTheory.Galois.Decomposition
-import Mathlib.CategoryTheory.Limits.IndYoneda
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+module
+
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.CategoryTheory.Galois.Decomposition
+public import Mathlib.CategoryTheory.Limits.IndYoneda
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Pro-Representability of fiber functors
@@ -52,6 +54,8 @@ an arbitrary `FintypeCat.{w}`.
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
 
 -/
+
+@[expose] public section
 
 universe u₁ u₂ w
 
@@ -141,7 +145,7 @@ section Specialized
 variable (F : C ⥤ FintypeCat.{u₂})
 
 /-- `F ⋙ FintypeCat.incl` as a cocone over `(can F).op ⋙ coyoneda`.
-This is a colimit cocone (see `PreGaloisCategory.isColimìt`) -/
+This is a colimit cocone (see `PreGaloisCategory.isColimit`) -/
 def cocone : Cocone ((incl F).op ⋙ coyoneda) where
   pt := F ⋙ FintypeCat.incl
   ι := {
@@ -321,11 +325,9 @@ lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
 noncomputable def autIsoFibers :
     autGaloisSystem F ⋙ forget GrpCat ≅ incl F ⋙ F' :=
   NatIso.ofComponents (fun A ↦ ((evaluationEquivOfIsGalois F A A.pt).toIso))
-    (fun {A B} f ↦ by
-      ext (φ : Aut A.obj)
-      dsimp
-      erw [evaluationEquivOfIsGalois_apply, evaluationEquivOfIsGalois_apply]
-      simp [-Hom.comp, ← f.comp])
+    (fun f ↦ by
+      ext
+      simp [evaluationEquivOfIsGalois, -Hom.comp, ← f.comp])
 
 lemma autIsoFibers_inv_app (A : PointedGaloisObject F) (b : F.obj A) :
     (autIsoFibers F).inv.app A b = (evaluationEquivOfIsGalois F A A.pt).symm b :=
@@ -452,16 +454,13 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
       (e Y).symm.trans <| (FintypeCat.equivEquivIso.symm (g'.app Y)).trans (e Y)
     let g : F ≅ F := NatIso.ofComponents gapp <| fun {X Y} f ↦ by
       ext x
-      simp only [FintypeCat.comp_apply, FintypeCat.equivEquivIso_apply_hom,
-        Equiv.trans_apply, FintypeCat.equivEquivIso_symm_apply_apply, Iso.app_hom, gapp, e]
+      dsimp [gapp, e]
       erw [FintypeCat.uSwitchEquiv_naturality (F.map f)]
-      rw [← Functor.comp_map, ← FunctorToFintypeCat.naturality]
-      simp only [comp_obj, Functor.comp_map, F']
-      rw [FintypeCat.uSwitchEquiv_symm_naturality (F.map f)]
+      rw [← Functor.comp_map]
+      erw [← FunctorToFintypeCat.naturality, FintypeCat.uSwitchEquiv_symm_naturality (F.map f)]
+      rfl
     refine ⟨g, show (gapp X).hom x = y from ?_⟩
-    simp only [FintypeCat.equivEquivIso_apply_hom, Equiv.trans_apply,
-      FintypeCat.equivEquivIso_symm_apply_apply, Iso.app_hom, gapp]
-    rw [← hx', hg', hy', Equiv.apply_symm_apply]
+    simp [gapp, ← hx', hg', hy', Equiv.apply_symm_apply]
 
 end General
 

@@ -3,9 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.Algebra.Category.Grp.Colimits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.Grp.Colimits
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+public import Mathlib.LinearAlgebra.DFinsupp
 
 /-!
 # The category of R-modules has all colimits.
@@ -20,6 +23,8 @@ TODO:
 In fact, in `ModuleCat R` there is a much nicer model of colimits as quotients
 of finitely supported functions, and we really should implement this as well.
 -/
+
+@[expose] public section
 
 universe w' w u v
 
@@ -57,7 +62,7 @@ noncomputable def coconePointSMul :
 noncomputable def colimitCocone : Cocone F where
   pt := mkOfSMul (coconePointSMul F)
   ι :=
-    { app := fun j => homMk (colimit.ι (F ⋙ forget₂ _ AddCommGrpCat)  j) (fun r => by
+    { app := fun j => homMk (colimit.ι (F ⋙ forget₂ _ AddCommGrpCat) j) (fun r => by
         dsimp
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
         erw [mkOfSMul_smul]
@@ -148,5 +153,26 @@ instance : HasCoequalizers (ModuleCat.{v} R) where
 
 noncomputable example (R : Type u) [Ring R] :
     PreservesColimits (forget₂ (ModuleCat.{u} R) AddCommGrpCat) := inferInstance
+
+section
+
+variable (R : Type w) [CommRing R] (M ι : Type u) [AddCommGroup M] [Module R M]
+
+/-- The coproduct cone induced by the concrete coproduct. -/
+noncomputable
+def finsuppCocone : Cofan fun _ : ι ↦ ModuleCat.of R M :=
+  Cofan.mk (ModuleCat.of R (ι →₀ M)) fun i ↦
+    ModuleCat.ofHom (Finsupp.lsingle i (R := R) (M := ModuleCat.of R M))
+
+/-- The concrete cocoproduct cone is colimiting. -/
+noncomputable
+def finsuppCoconeIsColimit : IsColimit (finsuppCocone R M ι) where
+  desc s := ModuleCat.ofHom <| Finsupp.lsum R (N := s.pt) (fun i ↦ (s.ι.app ⟨i⟩).hom)
+  fac := by aesop (add simp finsuppCocone)
+  uniq s f h := by
+    ext : 1
+    exact Finsupp.lhom_ext' fun i ↦ LinearMap.ext fun x ↦ by simpa using congr($(h ⟨i⟩) (x : M))
+
+end
 
 end ModuleCat

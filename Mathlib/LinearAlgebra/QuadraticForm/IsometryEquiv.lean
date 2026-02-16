@@ -3,8 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
-import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 
 /-!
 # Isometric equivalences with respect to quadratic forms
@@ -19,6 +21,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 * `equivalent_weighted_sum_squares`: in finite dimensions, any quadratic form is equivalent to a
   parametrization of `QuadraticForm.weightedSumSquares`.
 -/
+
+@[expose] public section
 
 open Module QuadraticMap
 

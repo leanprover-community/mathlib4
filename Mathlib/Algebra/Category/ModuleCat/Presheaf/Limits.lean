@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-! # Limits in categories of presheaves of modules
 
@@ -14,6 +16,8 @@ In this file, it is shown that under suitable assumptions,
 limits exist in the category `PresheafOfModules R`.
 
 -/
+
+@[expose] public section
 
 universe v v₁ v₂ u₁ u₂ u u'
 
@@ -142,14 +146,13 @@ section Small
 variable [Small.{v} J]
 
 instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{v} R) where
-
 instance hasLimitsOfSize : HasLimitsOfSize.{v, v} (PresheafOfModules.{v} R) where
 
-noncomputable instance evaluation_preservesLimitsOfShape (X : Cᵒᵖ) :
-    PreservesLimitsOfShape J (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
+instance (X : Cᵒᵖ) : PreservesLimitsOfShape J (evaluation.{v} R X) where
+instance (X : Cᵒᵖ) : PreservesLimitsOfSize.{v, v} (evaluation.{v} R X) where
 
-noncomputable instance toPresheaf_preservesLimitsOfShape :
-    PreservesLimitsOfShape J (toPresheaf.{v} R) where
+instance : PreservesLimitsOfShape J (toPresheaf.{v} R) where
+instance : PreservesLimitsOfSize.{v, v} (toPresheaf.{v} R) where
 
 end Small
 
