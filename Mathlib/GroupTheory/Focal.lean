@@ -88,7 +88,7 @@ lemma focalSubgroup_le_commutator : focalSubgroup H ≤ _root_.commutator G := b
 In the quotient `H / H*`, conjugation by any element of `G` preserves equivalence classes.
 If `h ∈ H` and `g⁻¹ * h * g ∈ H`, then `g⁻¹hg ≡ h (mod H*)`.
 -/
-lemma focalSubgroupOf_mk'_conj_eq {h : G} (hh : h ∈ H) (g : G)
+lemma focalSubgroupOf.mk'_conj_eq {h : G} (hh : h ∈ H) (g : G)
     (hconj : g⁻¹ * h * g ∈ H) :
     (QuotientGroup.mk' (focalSubgroupOf H)) ⟨g⁻¹ * h * g, hconj⟩ =
     (QuotientGroup.mk' (focalSubgroupOf H)) ⟨h, hh⟩ := by
@@ -150,15 +150,14 @@ lemma focalSubgroupOf.pow_index_surjective : Surjective fun y : P ⧸ P.focalSub
   ((P.2.to_quotient P.focalSubgroupOf).powEquiv' P.not_dvd_index).surjective
 
 /-- The Transfer homomorphism is surjective from `G` to `P/P*`. -/
-lemma transfer_restrict_surjective :
-    Surjective (transferFocal P.toSubgroup) := by
+lemma transferFocal_surjective : Surjective (transferFocal P.toSubgroup) := by
   intro x
   obtain ⟨x, rfl⟩ := pow_n_surjective_on_p_quotient P x
   obtain ⟨x, rfl⟩ := QuotientGroup.mk'_surjective _ x
   exact ⟨x, P.transfer_focal_eq_pow x⟩
 
 /-- Isomorphism theorem: `G / ker(V) ≅ P / P*`. -/
-def quotientKerIsoQuotientFocal : G ⧸ P.transferFocal.ker ≃* P ⧸ P.focalSubgroupOf :=
+def transferFocal.quotientKerMulEquivQuotientFocalSubroupOf : G ⧸ P.transferFocal.ker ≃* P ⧸ P.focalSubgroupOf :=
   QuotientGroup.quotientKerEquivOfSurjective P.transferFocal (transfer_restrict_surjective P)
 
 lemma ker_restrict_transferFocal_eq_focalSubgroupOf :
@@ -168,7 +167,7 @@ lemma ker_restrict_transferFocal_eq_focalSubgroupOf :
   rw [MonoidHom.mem_ker, MonoidHom.restrict_apply, transfer_focal_eq_pow]
   simpa using (hQ.powEquiv' P.not_dvd_index).apply_eq_iff_eq (x := g) (y := 1)
 
-lemma inf_ker_transferFocal_eq_focalSubgroup : P.transferFocal.ker ⊓ P = P.focalSubgroup := by
+lemma ker_transferFocal_inf_eq_focalSubgroup : P.transferFocal.ker ⊓ P = P.focalSubgroup := by
   rw [← subgroupOf_map_subtype, ← MonoidHom.ker_restrict, ← map_focalSubgroupOf]
   exact congr_arg _ (ker_restrict_transferFocal_eq_focalSubgroupOf P)
 
