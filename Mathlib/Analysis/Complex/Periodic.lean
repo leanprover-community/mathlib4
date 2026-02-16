@@ -136,6 +136,11 @@ theorem eq_cuspFunction (hh : h ≠ 0) (hf : Periodic f h) (z : ℂ) :
   obtain ⟨m, hm⟩ := qParam_left_inv_mod_period hh z
   simpa only [this, hm] using hf.int_mul m z
 
+lemma tendsto_nhds_zero {f : ℂ → ℂ} (hcts : ContinuousAt (cuspFunction h f) 0) :
+    Tendsto (fun x ↦ f (invQParam h x)) (𝓝[≠] 0) (𝓝 (cuspFunction h f 0)) := by
+  apply (tendsto_nhdsWithin_of_tendsto_nhds hcts.tendsto).congr'
+  filter_upwards [self_mem_nhdsWithin] with a using cuspFunction_eq_of_nonzero h f
+
 end PeriodicOnℂ
 
 section HoloOnC
@@ -245,5 +250,37 @@ theorem exp_decay_of_zero_at_inf (hh : 0 < h) (hf : Periodic f h)
     exp_decay_sub_of_bounded_at_inf hh hf h_hol h_zer.boundedAtFilter
 
 end HoloAtInfC
+
+section arithmetic
+
+lemma cuspFunction_smul {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) (a : ℂ) :
+    cuspFunction h (a • f) = a • cuspFunction h f := by
+  simp only [cuspFunction] at *
+  ext y
+  obtain rfl | hy := eq_or_ne y 0
+  · simpa using (Tendsto.const_mul _ (by simpa using hfcts)).limUnder_eq
+  · simp [hy]
+
+lemma cuspFunction_neg {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) :
+    cuspFunction h (-f) = -cuspFunction h f := by
+  simpa using cuspFunction_smul hfcts (-1)
+
+lemma cuspFunction_add {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    cuspFunction h (f + g) = cuspFunction h f + cuspFunction h g := by
+  simp only [cuspFunction]
+  ext y
+  obtain hy | rfl := ne_or_eq y 0
+  · simp [hy]
+  ·  simpa using (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hfcts⟩).add
+      (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hgcts⟩) |>.limUnder_eq
+
+lemma cuspFunction_sub {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    cuspFunction h (f - g) = cuspFunction h f - cuspFunction h g := by
+  simpa [sub_eq_add_neg, ← cuspFunction_neg hgcts]
+    using cuspFunction_add hfcts (by simp [cuspFunction_neg, hgcts])
+
+end arithmetic
 
 end Function.Periodic
