@@ -195,6 +195,15 @@ lemma ramificationIdx_eq_one_of_map_localization
   · exact hp this
   · exact IsLocalization.injective _ hp'
 
+theorem ramificationIdx_map_self_eq_one [IsDedekindDomain S] (h₁ : map f p ≠ ⊤) (h₂ : map f p ≠ ⊥) :
+    ramificationIdx f p (map f p) = 1 := by
+  refine ramificationIdx_spec (by simp) fun h ↦ ?_
+  have : map f p ^ 1 = (map f p) ^ 2 := by
+    rw [pow_one]
+    exact le_antisymm h <| pow_le_self two_ne_zero
+  have := IsMulTorsionFree.pow_right_injective₀ (by rwa [one_eq_top]) h₂ this
+  simp_all
+
 variable (p P) in
 theorem ramificationIdx_le_ramificationIdx {T : Type*} [CommRing T] (Q : Ideal T) (f : R →+* S)
     (g : S →+* T) (hp : p = Ideal.comap f P) (h : BddAbove {n | map (g.comp f) p ≤ Q ^ n}) :
@@ -207,14 +216,7 @@ namespace IsDedekindDomain
 
 variable [IsDedekindDomain S]
 
-theorem ramificationIdx_map_self_eq_one (h₁ : map f p ≠ ⊤) (h₂ : map f p ≠ ⊥) :
-    ramificationIdx f p (map f p) = 1 := by
-  refine ramificationIdx_spec (by simp) fun h ↦ ?_
-  have : map f p ^ 1 = (map f p) ^ 2 := by
-    rw [pow_one]
-    exact le_antisymm h <| pow_le_self two_ne_zero
-  have := IsMulTorsionFree.pow_right_injective₀ (by rwa [one_eq_top]) h₂ this
-  simp_all
+
 
 theorem ramificationIdx_eq_normalizedFactors_count [DecidableEq (Ideal S)]
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime)
