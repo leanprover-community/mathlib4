@@ -6,11 +6,8 @@ Authors: Daniel Carranza
 
 module
 
-public import Mathlib.CategoryTheory.Enriched.Basic
-public import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
 public import Mathlib.CategoryTheory.Monoidal.Closed.Enrichment
 public import Mathlib.CategoryTheory.Enriched.Opposite
-public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 public import Mathlib.CategoryTheory.Enriched.TensorProductCategory
 
 universe u u₁ v w
@@ -19,18 +16,7 @@ open CategoryTheory MonoidalCategory MonoidalClosed BraidedCategory
 
 open scoped MonoidalClosed
 
-/- My own namesapce for experimenting with enriched categories -/
-namespace myEnrichedCategories
-
--- Playing with instances
-
-noncomputable example : MonoidalCategory SSet.{v} := by infer_instance
-
-noncomputable example : EnrichedCategory SSet.{v} SSet.{v} := by infer_instance
-
-example {V : Type u} [Category.{u₁, u} V] [MonoidalCategory V] [MonoidalClosed V] : EnrichedCategory V V := by infer_instance
-
-noncomputable example : EnrichedCategory SSet.{v} SSet.{v} := by infer_instance
+namespace CategoryTheory.Enriched
 
 abbrev Ihom (V : Type u) [Category.{u₁, u} V] [MonoidalCategory V] [MonoidalClosed V] (x y : V) : V :=
   (ihom x).obj y
@@ -40,17 +26,8 @@ abbrev Ehom (V : Type u) [Category.{u₁, u} V] [MonoidalCategory V] [MonoidalCl
     (C : Type v) [EnrichedCategory V C] (x y : C) : V :=
   @EnrichedCategory.Hom V _ _ _ _ x y
 
-def Ihom_Ehom_eq (V : Type u) [Category.{u₁, u} V] [MonoidalCategory V] [MonoidalClosed V]
-    (x y : V) : Ihom V x y = Ehom V V x y :=
-  rfl
-
--- New stuff
 variable {V : Type u} [Category.{u₁, u} V] [MonoidalCategory V] [BraidedCategory V] [MonoidalClosed V]
 variable {C : Type v} [EnrichedCategory V C]
-
-example {x y z : V} {f f' : x ⟶ y} {g g' : y ⟶ z} : (f = f') → (g = g') → (x ◁ f ≫ x ◁ g = x ◁ f' ≫ x ◁ g') := by
-  intro p q
-  rw [p, q]
 
 /-- The structure of the cotensoring of `x : C` by `v : V` -/
 structure Precotensor (v : V) (x : C) where
@@ -89,12 +66,9 @@ def Cotensor.coneNatTransIso {v : V} {x : C} (vx : Cotensor v x) (y : C) : Ehom 
   hom_inv_id := vx.NatTrans_NatTransInv_eq y
   inv_hom_id := vx.NatTransInv_NatTrans_eq y
 
-end myEnrichedCategories
-
-open myEnrichedCategories
+open CategoryTheory.Enriched
 
 /- My own namespace for proving things about cotensors -/
-namespace Cotensor
 
 variable (V : Type u) [Category.{u₁} V] [MonoidalCategory V] [BraidedCategory V] [MonoidalClosed V]
 variable {C : Type v} [EnrichedCategory V C]
@@ -491,4 +465,4 @@ def cotensor_bifunc [CotensoredCategory V C] : EnrichedBifunctor V Vᵒᵖ C C w
 
 end
 
-end Cotensor
+end CategoryTheory.Enriched
