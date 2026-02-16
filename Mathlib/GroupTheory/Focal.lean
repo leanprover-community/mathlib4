@@ -137,7 +137,7 @@ theorem transfer_focal_eq_pow [H.FiniteIndex] (x : H) :
     MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot]
   apply Finset.prod_congr rfl
   intros
-  apply focalSubgroupOf_mk'_conj_eq H
+  apply focalSubgroupOf.mk'_conj_eq H
 
 end Definitions
 
@@ -146,19 +146,21 @@ section FocalSubgroupTheorem
 variable {G : Type*} [Group G] [Finite G] {p : ℕ} [Fact (Nat.Prime p)] (P : Sylow p G)
 
 /-- The power map `y ↦ y^n` is surjective on `P/P*` because `gcd(n, p) = 1`. -/
-lemma focalSubgroupOf.pow_index_surjective : Surjective fun y : P ⧸ P.focalSubgroupOf ↦ y ^ P.index :=
+lemma focalSubgroupOf.pow_index_surjective :
+    Surjective fun y : P ⧸ P.focalSubgroupOf ↦ y ^ P.index :=
   ((P.2.to_quotient P.focalSubgroupOf).powEquiv' P.not_dvd_index).surjective
 
 /-- The Transfer homomorphism is surjective from `G` to `P/P*`. -/
 lemma transferFocal_surjective : Surjective (transferFocal P.toSubgroup) := by
   intro x
-  obtain ⟨x, rfl⟩ := pow_n_surjective_on_p_quotient P x
+  obtain ⟨x, rfl⟩ := focalSubgroupOf.pow_index_surjective P x
   obtain ⟨x, rfl⟩ := QuotientGroup.mk'_surjective _ x
   exact ⟨x, P.transfer_focal_eq_pow x⟩
 
 /-- Isomorphism theorem: `G / ker(V) ≅ P / P*`. -/
-def transferFocal.quotientKerMulEquivQuotientFocalSubroupOf : G ⧸ P.transferFocal.ker ≃* P ⧸ P.focalSubgroupOf :=
-  QuotientGroup.quotientKerEquivOfSurjective P.transferFocal (transfer_restrict_surjective P)
+def transferFocal.quotientKerMulEquivQuotientFocalSubroupOf :
+    G ⧸ P.transferFocal.ker ≃* P ⧸ P.focalSubgroupOf :=
+  QuotientGroup.quotientKerEquivOfSurjective P.transferFocal (transferFocal_surjective P)
 
 lemma ker_restrict_transferFocal_eq_focalSubgroupOf :
     (P.transferFocal.restrict P).ker = P.focalSubgroupOf := by
@@ -179,7 +181,7 @@ where `P*` is the focal subgroup of `P`.
 -/
 theorem commutator_inf_eq_focalSubgroup :  _root_.commutator G ⊓ P = P.focalSubgroup :=
   le_antisymm ((inf_le_inf_right _ (Abelianization.commutator_subset_ker P.transferFocal)).trans
-    (inf_ker_transferFocal_eq_focalSubgroup P).le)
+    (ker_transferFocal_inf_eq_focalSubgroup P).le)
       (le_inf P.focalSubgroup_le_commutator P.focalSubgroup_le)
 
 end FocalSubgroupTheorem
