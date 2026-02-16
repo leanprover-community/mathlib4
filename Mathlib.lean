@@ -5592,7 +5592,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 public import Mathlib.Order.Copy
 public import Mathlib.Order.CountableDenseLinearOrder
 public import Mathlib.Order.Cover
@@ -5830,6 +5832,7 @@ public import Mathlib.Probability.Decision.Risk.Basic
 public import Mathlib.Probability.Decision.Risk.Defs
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.Distributions.Beta
+public import Mathlib.Probability.Distributions.Cauchy
 public import Mathlib.Probability.Distributions.Exponential
 public import Mathlib.Probability.Distributions.Fernique
 public import Mathlib.Probability.Distributions.Gamma
