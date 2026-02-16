@@ -577,24 +577,24 @@ to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
 -/
 noncomputable
 def mapOrderIso (f : β → α) (h : IsOpenEmbedding f) :
-  IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
-    toFun := mapSubtype f (h.continuous)
-    invFun := comapSubtype f h
-    left_inv := map_comap_rightInverse f h
-    right_inv := map_comap_leftInverse f h
-    map_rel_iff' := by
-      intro a b
-      simp only [coe_setOf, mem_setOf_eq, Equiv.coe_fn_mk]
-      constructor
-      · intro c
-        have eq : f ⁻¹' closure (f '' a.carrier) ≤ f ⁻¹' closure (f '' b.carrier) := fun _ b ↦ c b
-        have (z : IrreducibleCloseds β) : z.carrier = f ⁻¹' (closure (f '' z.carrier)) := by
-          suffices closure z.carrier = f ⁻¹' (closure (f '' z.carrier)) by
-            nth_rewrite 1 [← IsClosed.closure_eq z.3]
-            exact this
-          exact Topology.IsEmbedding.closure_eq_preimage_closure_image h.isEmbedding z
-        rwa [← this a, ← this b] at eq
-      · exact fun c ↦ (map_mono h.continuous) c
+    IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
+  toFun := mapSubtype f (h.continuous)
+  invFun := comapSubtype f h
+  left_inv := map_comap_rightInverse f h
+  right_inv := map_comap_leftInverse f h
+  map_rel_iff' := by
+    intro a b
+    simp only [coe_setOf, mem_setOf_eq, Equiv.coe_fn_mk]
+    constructor
+    · intro c
+      have eq : f ⁻¹' closure (f '' a.carrier) ≤ f ⁻¹' closure (f '' b.carrier) := fun _ b ↦ c b
+      have (z : IrreducibleCloseds β) : z.carrier = f ⁻¹' (closure (f '' z.carrier)) := by
+        suffices closure z.carrier = f ⁻¹' (closure (f '' z.carrier)) by
+          nth_rewrite 1 [← IsClosed.closure_eq z.3]
+          exact this
+        exact Topology.IsEmbedding.closure_eq_preimage_closure_image h.isEmbedding z
+      rwa [← this a, ← this b] at eq
+    · exact fun c ↦ (map_mono h.continuous) c
 
 end IrreducibleCloseds
 

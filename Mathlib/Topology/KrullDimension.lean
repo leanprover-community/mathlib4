@@ -9,6 +9,7 @@ public import Mathlib.Order.KrullDimension
 public import Mathlib.Topology.Irreducible
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Closeds
+public import Mathlib.Topology.Sober
 
 /-!
 # The Krull dimension of a topological space

@@ -9,7 +9,6 @@ public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.OpenCover
 public import Mathlib.Algebra.HierarchyDesign
 public import Mathlib.Order.KrullDimension
-public import Mathlib.Topology.KrullDimension
 
 /-!
 # Sober spaces
@@ -185,13 +184,13 @@ lemma coe_irreducibleEquivPoints_symm_apply [QuasiSober α] [T0Space α] (x : α
 open TopologicalSpace Topology Order Set IrreducibleCloseds
 
 @[simp]
-lemma coe_closureImageOrderIso {U X : Type*} [TopologicalSpace U]
+lemma coe_mapOrderIso {U X : Type*} [TopologicalSpace U]
     [TopologicalSpace X] {f : U → X} (hf : IsOpenEmbedding f) (Z) :
     (mapOrderIso f hf Z : IrreducibleCloseds X) =
       map f hf.continuous Z :=
   rfl
 
-lemma coheight_map_of_isOpenEmbedding {U X : Type*} [TopologicalSpace U]
+lemma Topology.IsOpenEmbedding.coheight_map {U X : Type*} [TopologicalSpace U]
     [TopologicalSpace X] {f : U → X} (hf : IsOpenEmbedding f)
     (Z : TopologicalSpace.IrreducibleCloseds U) :
     Order.coheight (map f hf.continuous Z) = Order.coheight Z := by
@@ -220,13 +219,13 @@ lemma coheight_map_of_isOpenEmbedding {U X : Type*} [TopologicalSpace U]
      ((mapOrderIso f hf) Z) this).symm
 
 
-lemma coheight_eq_of_isOpenEmbedding {U X : Type*} [TopologicalSpace U] [TopologicalSpace X]
+lemma Topology.IsOpenEmbedding.coheight_eq {U X : Type*} [TopologicalSpace U] [TopologicalSpace X]
     [QuasiSober X] [T0Space X] [QuasiSober U] [T0Space U]
     {x : U} (f : U → X) (hf : Continuous f) (hf' : IsOpenEmbedding f) :
     coheight (f x) = coheight x := by
   rw [← coheight_orderIso (irreducibleSetEquivPoints (α := X)).symm (f x),
     ← coheight_orderIso (irreducibleSetEquivPoints (α := U)).symm x,
-    ← coheight_map_of_isOpenEmbedding hf']
+    ← Topology.IsOpenEmbedding.coheight_map hf']
   congr
   ext : 1
   simp [closure_image_closure hf]
