@@ -74,7 +74,7 @@ instance instMonoid : Monoid (Module.End R M) where
 instance instSemiring : Semiring (Module.End R M) where
   __ := AddMonoidWithOne.unary
   __ := instMonoid
-  __ := addCommMonoid
+  __ := FunLike.instAddCommMonoid
   mul_zero := comp_zero
   zero_mul := zero_comp
   left_distrib := fun _ _ _ ↦ comp_add _ _ _
@@ -200,8 +200,8 @@ instance applyModule : Module (Module.End R M) M where
   smul := (· <| ·)
   smul_zero := map_zero
   smul_add := map_add
-  add_smul := LinearMap.add_apply
-  zero_smul := (LinearMap.zero_apply : ∀ m, (0 : M →ₗ[R] M) m = 0)
+  add_smul := FunLikeAdd.add_apply
+  zero_smul := (FunLikeZero.zero_apply : ∀ m, (0 : M →ₗ[R] M) m = 0)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
@@ -352,9 +352,9 @@ See `LinearMap.applyₗ` for a version where `S = R`. -/
 @[simps]
 def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   toFun v :=
-    { toFun := fun f => f v
-      map_add' := fun f g => f.add_apply g v
-      map_smul' := fun x f => f.smul_apply x v }
+    { toFun := fun f ↦ f v
+      map_add' := by simp
+      map_smul' := by simp }
   map_zero' := LinearMap.ext fun f => f.map_zero
   map_add' _ _ := LinearMap.ext fun f => f.map_add _ _
 

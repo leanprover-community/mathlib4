@@ -538,7 +538,7 @@ See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
     simp only [Function.comp_apply, apply_symm_apply, coe_comp, coe_coe]
   map_add' f g := by
     ext x
-    simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
+    simp
 
 /-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
 are isomorphic.

@@ -739,12 +739,15 @@ theorem id_apply (x : M) : (id : M →ₗ⁅R,L⁆ M) x = x :=
 instance : Zero (M →ₗ⁅R,L⁆ N) :=
   ⟨{ (0 : M →ₗ[R] N) with map_lie' := by simp }⟩
 
-@[norm_cast, simp]
+instance : FunLikeZero (M →ₗ⁅R,L⁆ N) M N where
+  zero_apply _ := rfl
+
+/-@[norm_cast, simp]
 theorem coe_zero : ⇑(0 : M →ₗ⁅R,L⁆ N) = 0 :=
   rfl
 
 theorem zero_apply (m : M) : (0 : M →ₗ⁅R,L⁆ N) m = 0 :=
-  rfl
+  rfl-/
 
 /-- The identity map is a Lie module morphism. -/
 instance : One (M →ₗ⁅R,L⁆ M) :=

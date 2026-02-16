@@ -22,14 +22,12 @@ section Zero
 class FunLikeZero (F : Type*) (α β : outParam Type*) [FunLike F α β] [Zero β] [Zero F] where
   zero_apply (x : α) : (0 : F) x = 0
 
-attribute [simp] FunLikeZero.zero_apply
-
 /-- `FunLikeOne F α β` states for all `x : α`, `(1 : F) x = 1`. -/
 @[to_additive]
 class FunLikeOne (F : Type*) (α β : outParam Type*) [FunLike F α β] [One β] [One F] where
   one_apply (x : α) : (1 : F) x = 1
 
-attribute [simp] FunLikeOne.one_apply
+@[to_additive (attr := simp)] alias one_apply := FunLikeOne.one_apply
 
 end Zero
 
@@ -39,14 +37,12 @@ section Add
 class FunLikeAdd (F : Type*) (α β : outParam Type*) [FunLike F α β] [Add β] [Add F] where
   add_apply (f g : F) (x : α) : (f + g) x = f x + g x
 
-attribute [simp] FunLikeAdd.add_apply
-
 /-- `FunLikeMul F α β` states for all `f g : F` and `x : α`, `(f * g) x = f x * g x`. -/
 @[to_additive]
 class FunLikeMul (F : Type*) (α β : outParam Type*) [FunLike F α β] [Mul β] [Mul F] where
   mul_apply (f g : F) (x : α) : (f * g) x = f x * g x
 
-attribute [simp] FunLikeMul.mul_apply
+@[to_additive (attr := simp)] alias mul_apply := FunLikeMul.mul_apply
 
 end Add
 
@@ -56,14 +52,12 @@ section Sub
 class FunLikeSub (F : Type*) (α β : outParam Type*) [FunLike F α β] [Sub β] [Sub F] where
   sub_apply (f g : F) (x : α) : (f - g) x = f x - g x
 
-attribute [simp] FunLikeSub.sub_apply
-
 /-- `FunLikeDiv F α β` states for all `f g : F` and `x : α`, `(f / g) x = f x / g x`. -/
 @[to_additive]
 class FunLikeDiv (F : Type*) (α β : outParam Type*) [FunLike F α β] [Div β] [Div F] where
   div_apply (f g : F) (x : α) : (f / g) x = f x / g x
 
-attribute [simp] FunLikeDiv.div_apply
+@[to_additive (attr := simp)] alias div_apply := FunLikeDiv.div_apply
 
 end Sub
 
@@ -73,14 +67,12 @@ section Neg
 class FunLikeNeg (F : Type*) (α β : outParam Type*) [FunLike F α β] [Neg β] [Neg F] where
   neg_apply (f : F) (x : α) : (-f) x = -f x
 
-attribute [simp] FunLikeNeg.neg_apply
-
 /-- `FunLikeInv F α β` states for all `f : F` and `x : α`, `f⁻¹ x = (f x)⁻¹`. -/
 @[to_additive]
 class FunLikeInv (F : Type*) (α β : outParam Type*) [FunLike F α β] [Inv β] [Inv F] where
   inv_apply (f : F) (x : α) : f⁻¹ x = (f x)⁻¹
 
-attribute [simp] FunLikeInv.inv_apply
+@[to_additive (attr := simp)] alias inv_apply := FunLikeInv.inv_apply
 
 end Neg
 
@@ -99,12 +91,14 @@ class FunLikeSMul (M F : Type*) (α β : outParam Type*) [FunLike F α β] [SMul
 
 attribute [simp] FunLikeSMul.smul_apply
 
+@[to_additive (attr := simp)] alias smul_apply := FunLikeSMul.smul_apply
+
 /-- `FunLikePow M F α β` states for all `f : F`, `n : M` and `x : α`, `(f ^ n) x = (f x) ^ n`. -/
 @[to_additive FunLikeSMul]
 class FunLikePow (M F : Type*) (α β : outParam Type*) [FunLike F α β] [Pow β M] [Pow F M] where
   pow_apply (f : F) (n : M) (x : α) : (f ^ n) x = (f x) ^ n
 
-attribute [simp] FunLikePow.pow_apply
+@[to_additive (attr := simp)] alias pow_apply := FunLikePow.pow_apply
 
 end SMul
 

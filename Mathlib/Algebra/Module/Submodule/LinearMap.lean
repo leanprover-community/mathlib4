@@ -277,7 +277,7 @@ theorem _root_.Module.End.submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R 
     (hG : G ^ k = 0) : g ^ k = 0 := by
   ext m
   have hg : N.subtype.comp (g ^ k) m = 0 := by
-    rw [← Module.End.commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
+    rw [← Module.End.commute_pow_left_of_commute h, hG, zero_comp, FunLikeZero.zero_apply]
   simpa using hg
 
 section
