@@ -64,8 +64,8 @@ structure IsTree : Prop where
 variable {G G'}
 
 /-- A vertex in a simple graph is a tree leaf if the graph is a tree and the vertex has degree 1. -/
-def IsTree.IsLeaf [Fintype V] [DecidableRel G.Adj] (_ : G.IsTree) (v : V) : Prop :=
-  G.degree v = 1
+def IsTree.IsLeaf [Fintype V] [DecidableRel G.Adj] (h : G.IsTree) (v : V) : Prop :=
+  let _ := h; G.degree v = 1
 
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
 
