@@ -3,8 +3,10 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.Normed.Ring.Basic
-import Mathlib.Analysis.Normed.Group.Ultra
+module
+
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Analysis.Normed.Group.Ultra
 
 /-!
 # Ultrametric norms on rings where the norm of one is one
@@ -35,6 +37,8 @@ Instead, we use weakest pre-existing typeclass that implies both
 
 ultrametric, nonarchimedean
 -/
+
+public section
 open Metric NNReal
 
 namespace IsUltrametricDist
@@ -66,7 +70,7 @@ lemma norm_natCast_le_one (n : ℕ) :
 lemma nnnorm_intCast_le_one (z : ℤ) :
     ‖(z : R)‖₊ ≤ 1 := by
   cases z <;>
-  simpa only [Int.ofNat_eq_coe, Int.cast_natCast, Int.cast_negSucc, Nat.cast_one, nnnorm_neg]
+  simpa only [Int.ofNat_eq_natCast, Int.cast_natCast, Int.cast_negSucc, Nat.cast_one, nnnorm_neg]
     using nnnorm_natCast_le_one _ _
 
 lemma norm_intCast_le_one (z : ℤ) :

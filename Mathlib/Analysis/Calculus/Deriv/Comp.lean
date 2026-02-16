@@ -3,9 +3,11 @@ Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel, Yury Kudryashov, Yuyang Zhao
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 /-!
 # One-dimensional derivatives of compositions of functions
@@ -24,12 +26,14 @@ of definitional equality of the different points used in the composition. These 
 often more flexible to use.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 
 derivative, chain rule
 -/
+
+public section
 
 
 universe u v w
@@ -37,8 +41,6 @@ universe u v w
 open scoped Topology Filter ENNReal
 
 open Filter Asymptotics Set
-
-open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -311,7 +313,7 @@ protected nonrec theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜
     (hf : HasDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
     HasDerivAtFilter f^[n] (f' ^ n) x L := by
   have := hf.iterate hL hx n
-  rwa [ContinuousLinearMap.smulRight_one_pow] at this
+  rwa [ContinuousLinearMap.toSpanSingleton_pow] at this
 
 protected nonrec theorem HasDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasDerivAt f^[n] (f' ^ n) x :=
@@ -320,13 +322,13 @@ protected nonrec theorem HasDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf 
 protected theorem HasDerivWithinAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivWithinAt f f' s x)
     (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : HasDerivWithinAt f^[n] (f' ^ n) s x := by
   have := HasFDerivWithinAt.iterate hf hx hs n
-  rwa [ContinuousLinearMap.smulRight_one_pow] at this
+  rwa [ContinuousLinearMap.toSpanSingleton_pow] at this
 
 protected nonrec theorem HasStrictDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasStrictDerivAt f f' x) (hx : f x = x) (n : ℕ) :
     HasStrictDerivAt f^[n] (f' ^ n) x := by
   have := hf.iterate hx n
-  rwa [ContinuousLinearMap.smulRight_one_pow] at this
+  rwa [ContinuousLinearMap.toSpanSingleton_pow] at this
 
 end Composition
 
@@ -344,8 +346,7 @@ equal to the Fréchet derivative of `l` applied to the derivative of `f`. -/
 theorem HasFDerivWithinAt.comp_hasDerivWithinAt {t : Set F} (hl : HasFDerivWithinAt l l' t (f x))
     (hf : HasDerivWithinAt f f' s x) (hst : MapsTo f s t) :
     HasDerivWithinAt (l ∘ f) (l' f') s x := by
-  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
-    (hl.comp x hf.hasFDerivWithinAt hst).hasDerivWithinAt
+  simpa using (hl.comp x hf.hasFDerivWithinAt hst).hasDerivWithinAt
 
 /-- The composition `l ∘ f` where `l : F → E` and `f : 𝕜 → F`, has a derivative within a set
 equal to the Fréchet derivative of `l` applied to the derivative of `f`. -/
@@ -357,8 +358,7 @@ theorem HasFDerivWithinAt.comp_hasDerivWithinAt_of_eq {t : Set F}
 
 theorem HasFDerivWithinAt.comp_hasDerivAt {t : Set F} (hl : HasFDerivWithinAt l l' t (f x))
     (hf : HasDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) : HasDerivAt (l ∘ f) (l' f') x := by
-  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
-    (hl.comp_hasFDerivAt x hf.hasFDerivAt ht).hasDerivAt
+  simpa using (hl.comp_hasFDerivAt x hf.hasFDerivAt ht).hasDerivAt
 
 theorem HasFDerivWithinAt.comp_hasDerivAt_of_eq {t : Set F} (hl : HasFDerivWithinAt l l' t y)
     (hf : HasDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) (hy : y = f x) :
@@ -389,8 +389,7 @@ theorem HasFDerivAt.comp_hasDerivAt_of_eq
 
 theorem HasStrictFDerivAt.comp_hasStrictDerivAt (hl : HasStrictFDerivAt l l' (f x))
     (hf : HasStrictDerivAt f f' x) : HasStrictDerivAt (l ∘ f) (l' f') x := by
-  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
-    (hl.comp x hf.hasStrictFDerivAt).hasStrictDerivAt
+  simpa using (hl.comp x hf.hasStrictFDerivAt).hasStrictDerivAt
 
 theorem HasStrictFDerivAt.comp_hasStrictDerivAt_of_eq (hl : HasStrictFDerivAt l l' y)
     (hf : HasStrictDerivAt f f' x) (hy : y = f x) :

@@ -3,14 +3,14 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
+module
+
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Basic
+public import Batteries.Logic
+public import Batteries.Util.LibraryNote
+
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Basic
-import Batteries.Logic
-import Batteries.Tactic.Trans
-import Batteries.Util.LibraryNote
-import Mathlib.Data.Nat.Notation
-import Mathlib.Data.Int.Notation
 
 /-!
 # Basic logic properties
@@ -22,6 +22,8 @@ This file is one of the earliest imports in mathlib.
 Theorems that require decidability hypotheses are in the namespace `Decidable`.
 Classical versions are in the namespace `Classical`.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -95,10 +97,10 @@ class Fact (p : Prop) : Prop where
   `Fact p`. -/
   out : p
 
-library_note "fact non-instances"/--
-In most cases, we should not have global instances of `Fact`; typeclass search only reads the head
-symbol and then tries any instances, which means that adding any such instance will cause slowdowns
-everywhere. We instead make them as lemmata and make them local instances as required.
+library_note «fact non-instances» /--
+In most cases, we should not have global instances of `Fact`; typeclass search is not an
+advanced proof search engine, and adding any such instance has the potential to cause
+slowdowns everywhere. We instead declare them as lemmata and make them local instances as required.
 -/
 
 theorem Fact.elim {p : Prop} (h : Fact p) : p := h.1
@@ -124,13 +126,8 @@ section Propositional
 
 alias Iff.imp := imp_congr
 
--- This is a duplicate of `Classical.imp_iff_right_iff`. Deprecate?
-theorem imp_iff_right_iff {a b : Prop} : (a → b ↔ b) ↔ a ∨ b :=
-  open scoped Classical in Decidable.imp_iff_right_iff
-
--- This is a duplicate of `Classical.and_or_imp`. Deprecate?
-theorem and_or_imp {a b c : Prop} : a ∧ b ∨ (a → c) ↔ a → b ∨ c :=
-  open scoped Classical in Decidable.and_or_imp
+@[deprecated (since := "2026-01-30")] alias imp_iff_right_iff := Classical.imp_iff_right_iff
+@[deprecated (since := "2026-01-30")] alias and_or_imp := Classical.and_or_imp
 
 /-- Provide modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mt {a b : Prop} : (a → b) → ¬b → ¬a := mt
@@ -139,6 +136,7 @@ protected theorem Function.mt {a b : Prop} : (a → b) → ¬b → ¬a := mt
 
 alias dec_em := Decidable.em
 
+set_option linter.unusedDecidableInType false in
 theorem dec_em' (p : Prop) [Decidable p] : ¬p ∨ p := (dec_em p).symm
 
 alias em := Classical.em
@@ -165,7 +163,7 @@ theorem by_cases {p q : Prop} (hpq : p → q) (hnpq : ¬p → q) : q :=
 
 alias by_contra := by_contradiction
 
-library_note "decidable namespace"/--
+library_note «decidable namespace» /--
 In most of mathlib, we use the law of excluded middle (LEM) and the axiom of choice (AC) freely.
 The `Decidable` namespace contains versions of lemmas from the root namespace that explicitly
 attempt to avoid the axiom of choice, usually by adding decidability assumptions on the inputs.
@@ -174,7 +172,7 @@ You can check if a lemma uses the axiom of choice by using `#print axioms foo` a
 `Classical.choice` appears in the list.
 -/
 
-library_note "decidable arguments"/--
+library_note «decidable arguments» /--
 As mathlib is primarily classical,
 if the type signature of a `def` or `lemma` does not require any `Decidable` instances to state,
 it is preferable not to introduce any `Decidable` instances that are needed in the proof
@@ -186,7 +184,6 @@ classical ones, as these may cause instance mismatch errors later.
 -/
 
 export Classical (not_not)
-attribute [simp] not_not
 
 variable {a b : Prop}
 
@@ -292,7 +289,9 @@ theorem imp_iff_or_not {b a : Prop} : b → a ↔ a ∨ ¬b :=
 
 theorem not_imp_not : ¬a → ¬b ↔ b → a := open scoped Classical in Decidable.not_imp_not
 
-theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by simp
+@[deprecated Classical.imp_and_neg_imp_iff (since := "2026-01-30")]
+theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q :=
+  Classical.imp_and_neg_imp_iff p
 
 /-- Provide the reverse of modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
@@ -318,7 +317,7 @@ theorem imp_or {a b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) :=
 theorem imp_or' {a : Sort*} {b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) :=
   open scoped Classical in Decidable.imp_or'
 
-theorem not_imp : ¬(a → b) ↔ a ∧ ¬b := open scoped Classical in Decidable.not_imp_iff_and_not
+@[deprecated (since := "2026-01-30")] alias not_imp := Classical.not_imp
 
 theorem peirce (a b : Prop) : ((a → b) → a) → a := open scoped Classical in Decidable.peirce _ _
 
@@ -388,9 +387,6 @@ alias Ne.trans_eq := ne_of_ne_of_eq
 
 theorem eq_equivalence {α : Sort*} : Equivalence (@Eq α) :=
   ⟨Eq.refl, @Eq.symm _, @Eq.trans _⟩
-
--- These were migrated to Batteries but the `@[simp]` attributes were (mysteriously?) removed.
-attribute [simp] eq_mp_eq_cast eq_mpr_eq_cast
 
 -- @[simp] -- FIXME simp ignores proof rewrites
 theorem congr_refl_left {α β : Sort*} (f : α → β) {a b : α} (h : a = b) :
@@ -517,7 +513,7 @@ theorem forall_imp_iff_exists_imp {α : Sort*} {p : α → Prop} {b : Prop} [ha 
   classical
   let ⟨a⟩ := ha
   refine ⟨fun h ↦ not_forall_not.1 fun h' ↦ ?_, fun ⟨x, hx⟩ h ↦ hx (h x)⟩
-  exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (_root_.not_imp.1 (h' x)).1
+  exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (Classical.not_imp.1 (h' x)).1
 
 @[mfld_simps]
 theorem forall_true_iff : (α → True) ↔ True := imp_true_iff _
@@ -723,6 +719,10 @@ protected noncomputable def byContradiction' {α : Sort*} (H : ¬(α → False))
 def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H ↦ contra H.elim
 
+-- This can be removed after https://github.com/leanprover/lean4/pull/11316
+-- arrives in a release candidate.
+grind_pattern Exists.choose_spec => P.choose
+
 @[simp] lemma choose_eq (a : α) : @Exists.choose _ (· = a) ⟨a, rfl⟩ = a := @choose_spec _ (· = a) _
 
 @[simp]
@@ -904,6 +904,9 @@ either branch to `a`. -/
 theorem ite_apply (f g : ∀ a, σ a) (a : α) : (ite P f g) a = ite P (f a) (g a) :=
   dite_apply P (fun _ ↦ f) (fun _ ↦ g) a
 
+theorem apply_ite_left {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Decidable P]
+    (x y : α) (z : β) : f (if P then x else y) z = if P then f x z else f y z := by grind
+
 section
 variable [Decidable Q]
 
@@ -961,12 +964,6 @@ end ite
 alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
 alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'
 
-@[deprecated (since := "2025-05-23")]
-alias Membership.mem.ne_of_not_mem := Membership.mem.ne_of_notMem
-
-@[deprecated (since := "2025-05-23")]
-alias Membership.mem.ne_of_not_mem' := Membership.mem.ne_of_notMem'
-
 section Membership
 
 variable {α β : Type*} [Membership α β] {p : Prop} [Decidable p]
@@ -1007,7 +1004,5 @@ theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
 theorem lawful_beq_subsingleton {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
     inst1 = inst2 := by
-  apply beq_ext
-  intro x y
-  classical
-  simp only [beq_eq_decide]
+  ext
+  simp

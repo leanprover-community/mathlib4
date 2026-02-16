@@ -3,14 +3,16 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.Algebra.Group.Action.Hom
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Data.List.FinRange
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Sigma.Basic
-import Lean.Elab.Tactic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+public import Mathlib.Algebra.Group.Action.Hom
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Data.List.FinRange
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Data.Sigma.Basic
+public import Lean.Elab.Tactic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Additively-graded multiplicative structures
@@ -88,6 +90,8 @@ This file also defines:
 
 graded monoid
 -/
+
+@[expose] public section
 
 
 variable {ι : Type*}
@@ -231,8 +235,6 @@ class GMonoid [AddMonoid ι] extends GMul A, GOne A where
 
 /-- `GMonoid` implies a `Monoid (GradedMonoid A)`. -/
 instance GMonoid.toMonoid [AddMonoid ι] [GMonoid A] : Monoid (GradedMonoid A) where
-  one := 1
-  mul := (· * ·)
   npow n a := GradedMonoid.mk _ (GMonoid.gnpow n a.snd)
   npow_zero a := GMonoid.gnpow_zero' a
   npow_succ n a := GMonoid.gnpow_succ' n a
@@ -291,7 +293,7 @@ variable [AddZeroClass ι] [GMul A]
 an `Eq.rec` to turn `A (0 + i)` into `A i`.
 -/
 instance GradeZero.smul (i : ι) : SMul (A 0) (A i) where
-  smul x y := @Eq.rec ι (0+i) (fun a _ => A a) (GMul.mul x y) i (zero_add i)
+  smul x y := @Eq.rec ι (0 + i) (fun a _ => A a) (GMul.mul x y) i (zero_add i)
 
 /-- `(*) : A 0 → A 0 → A 0` is the value provided in `GradedMonoid.GMul.mul`, composed with
 an `Eq.rec` to turn `A (0 + 0)` into `A 0`.
@@ -446,7 +448,6 @@ structure. -/
 instance Monoid.gMonoid [AddMonoid ι] [Monoid R] : GradedMonoid.GMonoid fun _ : ι => R :=
   -- { Mul.gMul ι, One.gOne ι with
   { One.gOne ι with
-    mul := fun x y => x * y
     one_mul := fun _ => Sigma.ext (zero_add _) (heq_of_eq (one_mul _))
     mul_one := fun _ => Sigma.ext (add_zero _) (heq_of_eq (mul_one _))
     mul_assoc := fun _ _ _ => Sigma.ext (add_assoc _ _ _) (heq_of_eq (mul_assoc _ _ _))
@@ -537,11 +538,11 @@ def submonoid : Submonoid R where
   mul_mem' ha hb := add_zero (0 : ι) ▸ SetLike.mul_mem_graded ha hb
   one_mem' := SetLike.one_mem_graded A
 
--- TODO: it might be expensive to unify `A` in this instances in practice
+-- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instMonoid : Monoid (A 0) := inferInstanceAs <| Monoid (GradeZero.submonoid A)
 
--- TODO: it might be expensive to unify `A` in this instances in practice
+-- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The commutative monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instCommMonoid
     {R S : Type*} [SetLike S R] [CommMonoid R]
@@ -601,7 +602,7 @@ instance SetLike.gMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A 
 @[simp]
 theorem SetLike.coe_gnpow {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S)
     [SetLike.GradedMonoid A] {i : ι} (x : A i) (n : ℕ) :
-    ↑(@GradedMonoid.GMonoid.gnpow _ (fun i => A i) _ _ n _ x) = (x:R)^n :=
+    ↑(@GradedMonoid.GMonoid.gnpow _ (fun i => A i) _ _ n _ x) = (x : R) ^ n :=
   rfl
 
 /-- Build a `GCommMonoid` instance for a collection of subobjects. -/

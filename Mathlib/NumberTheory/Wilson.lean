@@ -3,7 +3,9 @@ Copyright (c) 2022 John Nicol. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Nicol
 -/
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Wilson's theorem.
@@ -23,6 +25,8 @@ This could be generalized to similar results about finite abelian groups.
 
 * Give `wilsons_lemma` a descriptive name.
 -/
+
+public section
 
 assert_not_exists legendreSym.quadratic_reciprocity
 

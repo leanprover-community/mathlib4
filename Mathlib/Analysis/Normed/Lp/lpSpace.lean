@@ -3,11 +3,14 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.MeanInequalitiesPow
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Data.Set.Image
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+module
+
+public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Analysis.MeanInequalitiesPow
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Data.Set.Image
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 
 /-!
 # ℓp space
@@ -53,6 +56,8 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
   three exponents satisfying `1 / r = 1 / p + 1 / q`)
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

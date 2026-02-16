@@ -3,8 +3,10 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Analysis.Normed.Group.Completion
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Group.Completion
 
 /-!
 # Completion of normed group homs
@@ -45,6 +47,8 @@ The vertical maps in the above diagrams are also normed group homs constructed i
 * `NormedAddGroupHom.extension` : if `H` is complete, the extension of
   `f : NormedAddGroupHom G H` to a `NormedAddGroupHom (completion G) H`.
 -/
+
+@[expose] public section
 
 
 noncomputable section

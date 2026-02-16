@@ -3,9 +3,11 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Category.Grp.FilteredColimits
-import Mathlib.Algebra.Ring.ULift
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Algebra.Category.Grp.FilteredColimits
+public import Mathlib.Algebra.Ring.ULift
 
 /-!
 # The forgetful functor from (commutative) (semi-) rings preserves filtered colimits.
@@ -21,6 +23,8 @@ In particular, this implies that `forget SemiRingCat` preserves filtered colimit
 Similarly for `CommSemiRingCat`, `RingCat` and `CommRingCat`.
 
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -132,7 +136,7 @@ def descAddMonoidHom : R F →+ t.1 :=
 
 lemma descAddMonoidHom_quotMk {j : J} (x : F.obj j) :
     descAddMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x :=
-  congr_fun ((forget _).congr_map
+  congr_fun ((forget AddCommMonCat).congr_map
     ((AddCommMonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
       (F ⋙ forget₂ SemiRingCat AddCommMonCat)).fac
         ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) x
@@ -144,7 +148,7 @@ def descMonoidHom : R F →* t.1 :=
 
 lemma descMonoidHom_quotMk {j : J} (x : F.obj j) :
     descMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x :=
-  congr_fun ((forget _).congr_map
+  congr_fun ((forget MonCat).congr_map
     ((MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
       (F ⋙ forget₂ _ _)).fac ((forget₂ _ _).mapCocone t) j)) x
 
@@ -168,7 +172,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   fac t j := by ext x; exact descAddMonoidHom_quotMk t x
   uniq t m hm := by
     ext ⟨j, x⟩
-    exact (congr_fun ((forget _).congr_map (hm j)) x).trans
+    exact (congr_fun ((forget SemiRingCat).congr_map (hm j)) x).trans
       (descAddMonoidHom_quotMk t x).symm
 
 instance forget₂Mon_preservesFilteredColimits :
@@ -260,8 +264,8 @@ abbrev R : SemiRingCat.{max v u} :=
 
 instance colimitRing : Ring.{max v u} <| R.{v, u} F :=
   { (R F).semiring,
-    AddCommGrp.FilteredColimits.colimitAddCommGroup.{v, u}
-      (F ⋙ forget₂ RingCat AddCommGrp.{max v u}) with }
+    AddCommGrpCat.FilteredColimits.colimitAddCommGroup.{v, u}
+      (F ⋙ forget₂ RingCat AddCommGrpCat.{max v u}) with }
 
 /-- The bundled ring giving the filtered colimit of a diagram. -/
 def colimit : RingCat.{max v u} :=
@@ -290,6 +294,14 @@ instance forget₂SemiRing_preservesFilteredColimits :
         preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
             (F ⋙ forget₂ RingCat SemiRingCat.{u})) }
+
+instance : Limits.PreservesFilteredColimits (forget₂ RingCat AddCommGrpCat.{u}) where
+  preserves_filtered_colimits _ :=
+    { preservesColimit := fun {F} =>
+        Limits.preservesColimit_of_preserves_colimit_cocone
+          (RingCat.FilteredColimits.colimitCoconeIsColimit.{u, u} F)
+          (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit
+            (F ⋙ forget₂ RingCat AddCommGrpCat.{u})) }
 
 instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget RingCat.{u}) :=
   Limits.comp_preservesFilteredColimits (forget₂ RingCat SemiRingCat) (forget SemiRingCat.{u})

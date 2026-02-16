@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.CompactOpen
+module
+
+public import Mathlib.Topology.CompactOpen
 
 /-!
 # Equivalence between `C(X, Σ i, Y i)` and `Σ i, C(X, Y i)`
@@ -31,6 +33,8 @@ if `X` is empty, then any index `i` will work, so there is no 1-to-1 corresponde
 
 continuous map, sigma type, disjoint union
 -/
+
+@[expose] public section
 
 noncomputable section
 

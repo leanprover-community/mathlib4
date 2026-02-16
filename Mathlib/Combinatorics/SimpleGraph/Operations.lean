@@ -3,9 +3,11 @@ Copyright (c) 2023 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Combinatorics.SimpleGraph.Maps
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Local graph operations
@@ -21,6 +23,8 @@ we also prove theorems about the number of edges in the modified graphs.
 * `edge s t` is the graph with a single `s-t` edge. Adding this edge to a graph `G` is then
   `G ⊔ edge s t`.
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -82,15 +86,15 @@ instance : DecidableRel (G.replaceVertex s t).Adj := by unfold replaceVertex; in
 
 theorem edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeFinset =
     G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t)) := by
-  simp only [incidenceFinset, neighborFinset, ← Set.toFinset_diff, ← Set.toFinset_image,
-    ← Set.toFinset_union]
-  exact Set.toFinset_congr (G.edgeSet_replaceVertex_of_not_adj hn)
+  apply Finset.coe_injective
+  push_cast
+  exact G.edgeSet_replaceVertex_of_not_adj hn
 
 theorem edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeFinset =
     (G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t))) \ {s(t, t)} := by
-  simp only [incidenceFinset, neighborFinset, ← Set.toFinset_diff, ← Set.toFinset_image,
-    ← Set.toFinset_union, ← Set.toFinset_singleton]
-  exact Set.toFinset_congr (G.edgeSet_replaceVertex_of_adj ha)
+  apply Finset.coe_injective
+  push_cast
+  exact G.edgeSet_replaceVertex_of_adj ha
 
 lemma disjoint_sdiff_neighborFinset_image :
     Disjoint (G.edgeFinset \ G.incidenceFinset t) ((G.neighborFinset s).image (s(·, t))) := by
@@ -164,9 +168,7 @@ lemma edge_le_iff {v w : V} : edge v w ≤ G ↔ v = w ∨ G.Adj v w := by
 
 variable {s t}
 
-lemma edge_edgeSet_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by
-  rwa [edge, edgeSet_fromEdgeSet, sdiff_eq_left, Set.disjoint_singleton_left, Set.mem_setOf_eq,
-    Sym2.isDiag_iff_proj_eq]
+lemma edge_edgeSet_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by simpa [edge]
 
 lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
   rwa [sup_eq_left, ← edgeSet_subset_edgeSet, edge_edgeSet_of_ne h.ne, Set.singleton_subset_iff,

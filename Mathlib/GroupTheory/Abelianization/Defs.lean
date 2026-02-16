@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Michael Howes, Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.Commutator.Basic
+module
+
+public import Mathlib.GroupTheory.Commutator.Basic
 
 /-!
 # The abelianization of a group
@@ -20,6 +22,8 @@ groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 * `MulEquiv.abelianizationCongr`: Equivalent groups have equivalent abelianizations
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal Field
 
@@ -89,9 +93,6 @@ def lift : (G →* A) ≃ (Abelianization G →* A) where
 theorem lift_apply_of (x : G) : lift f (of x) = f x :=
   rfl
 
-@[deprecated (since := "2025-07-23")]
-alias lift.of := lift_apply_of
-
 theorem coe_lift_symm : (lift.symm : (Abelianization G →* A) → (G →* A)) = (·.comp of) := rfl
 
 @[simp]
@@ -102,8 +103,6 @@ theorem lift_unique (φ : Abelianization G →* A)
     (hφ : ∀ x : G, φ (Abelianization.of x) = f x)
     {x : Abelianization G} : φ x = lift f x :=
   QuotientGroup.induction_on x hφ
-
-@[deprecated (since := "2025-07-23")] alias lift.unique := lift_unique
 
 @[simp]
 theorem lift_of : lift of = MonoidHom.id (Abelianization G) :=
@@ -165,7 +164,7 @@ def MulEquiv.abelianizationCongr (e : G ≃* H) : Abelianization G ≃* Abeliani
   right_inv := by
     rintro ⟨a⟩
     simp
-  map_mul' := MonoidHom.map_mul _
+  map_mul' := map_mul _
 
 @[simp]
 theorem abelianizationCongr_of (e : G ≃* H) (x : G) :

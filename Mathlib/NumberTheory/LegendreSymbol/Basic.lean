@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 
 /-!
 # Legendre symbol
@@ -32,6 +34,8 @@ are squares:
 
 quadratic residue, quadratic nonresidue, Legendre symbol
 -/
+
+@[expose] public section
 
 
 open Nat

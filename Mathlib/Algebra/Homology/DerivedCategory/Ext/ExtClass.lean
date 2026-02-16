@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
-import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 
 /-!
 # The Ext class of a short exact sequence
@@ -14,6 +16,8 @@ in an abelian category, we construct the associated class in
 `Ext S.X₃ S.X₁ 1`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -52,6 +56,7 @@ instance : HasSmallLocalizedShiftedHom.{w} W ℤ (S').X₃ (S').X₁ := by
   dsimp
   infer_instance
 
+set_option backward.privateInPublic true in
 include hS in
 private lemma hasSmallLocalizedHom_S'_X₃_K :
     HasSmallLocalizedHom.{w} W (S').X₃ K := by
@@ -59,12 +64,15 @@ private lemma hasSmallLocalizedHom_S'_X₃_K :
   dsimp
   apply Localization.hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀ (M := ℤ)
 
+set_option backward.privateInPublic true in
 include hS in
 private lemma hasSmallLocalizedShiftedHom_K_S'_X₁ :
     HasSmallLocalizedShiftedHom.{w} W ℤ K (S').X₁ := by
   rw [Localization.hasSmallLocalizedShiftedHom_iff_source.{w} W ℤ qis hqis (S').X₁]
   infer_instance
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The class in `Ext S.X₃ S.X₁ 1` that is attached to a short exact
 short complex `S` in an abelian category. -/
 noncomputable def extClass : Ext.{w} S.X₃ S.X₁ 1 := by
@@ -77,7 +85,7 @@ noncomputable def extClass : Ext.{w} S.X₃ S.X₁ 1 := by
 lemma extClass_hom [HasDerivedCategory.{w'} C] : hS.extClass.hom = hS.singleδ := by
   change SmallShiftedHom.equiv W Q hS.extClass = _
   dsimp [extClass, SmallShiftedHom.equiv]
-  erw [SmallHom.equiv_comp, Iso.homToEquiv_apply]
+  erw [SmallHom.equiv_comp]
   rw [SmallHom.equiv_mkInv, SmallHom.equiv_mk]
   dsimp [singleδ, triangleOfSESδ]
   rw [Category.assoc, Category.assoc, Category.assoc,
@@ -101,7 +109,7 @@ lemma comp_extClass : (Ext.mk₀ S.g).comp hS.extClass (zero_add 1) = 0 := by
 @[simp]
 lemma comp_extClass_assoc {Y : C} {n : ℕ} (γ : Ext S.X₁ Y n) {n' : ℕ} (h : 1 + n = n') :
     (Ext.mk₀ S.g).comp (hS.extClass.comp γ h) (zero_add n') = 0 := by
-  rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by cutsat) (by cutsat) (by cutsat),
+  rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by lia) (by lia) (by lia),
     comp_extClass, Ext.zero_comp]
 
 @[simp]
@@ -115,7 +123,7 @@ lemma extClass_comp : hS.extClass.comp (Ext.mk₀ S.f) (add_zero 1) = 0 := by
 @[simp]
 lemma extClass_comp_assoc {Y : C} {n : ℕ} (γ : Ext S.X₂ Y n) {n' : ℕ} {h : 1 + n = n'} :
     hS.extClass.comp ((Ext.mk₀ S.f).comp γ (zero_add n)) h = 0 := by
-  rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by cutsat) (by cutsat) (by cutsat),
+  rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by lia) (by lia) (by lia),
     extClass_comp, Ext.zero_comp]
 
 end ShortExact

@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Action.Basic
-import Mathlib.CategoryTheory.Monoidal.Opposite
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Action.Basic
+public import Mathlib.CategoryTheory.Monoidal.Opposite
 
 /-!
 
@@ -12,9 +14,9 @@ import Mathlib.CategoryTheory.Monoidal.Opposite
 
 In this file, given a monoidal category `C` and a category `D`,
 we construct a left `C`-action on `D` out of the data of a right `Cᴹᵒᵖ`-action
-on `D`. We also construct a right `C`-action on `D`from the data of a left
+on `D`. We also construct a right `C`-action on `D` from the data of a left
 `Cᴹᵒᵖ`-action on `D`. Conversely, given left/right `C`-actions on `D`,
-we construct a`Cᴹᵒᵖ` actions with the conjugate variance.
+we construct a `Cᴹᵒᵖ` action with the conjugate variance.
 
 We construct similar actions for `Cᵒᵖ`, namely, left/right `Cᵒᵖ`-actions
 on `Dᵒᵖ` from left/right-actions of `C` on `D`, and vice-versa.
@@ -24,11 +26,13 @@ you should bring them as local instances if you intend to use them.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.MonoidalCategory
 
 variable (C D : Type*)
 
-variable [Category C] [MonoidalCategory C] [Category D]
+variable [Category* C] [MonoidalCategory C] [Category* D]
 
 namespace MonoidalLeftAction
 open scoped MonoidalLeftAction MonoidalRightAction
@@ -58,7 +62,7 @@ def leftActionOfMonoidalOppositeRightAction [MonoidalRightAction Cᴹᵒᵖ D] :
       MonoidalRightAction.actionHomRight_inv_hom_assoc] using
       (d ⊴ᵣ (α_ (mop c₃) (mop c₂) (mop c₁)).inv) ≫=
         MonoidalRightAction.actionHom_associator
-          (mop c₃) (mop c₂) (mop c₁) d|>.symm
+          (mop c₃) (mop c₂) (mop c₁) d |>.symm
 
 /-- Define a left action of `Cᴹᵒᵖ` on `D` from a right action of `C` on `D` via
 the formula `mop c ⊙ₗ d = d ⊙ᵣ c`. -/
@@ -83,7 +87,7 @@ def monoidalOppositeLeftAction [MonoidalRightAction C D] :
       MonoidalRightAction.actionHomRight_inv_hom_assoc] using
       (d ⊴ᵣ (α_ (unmop c₃) (unmop c₂) (unmop c₁)).inv) ≫=
         MonoidalRightAction.actionHom_associator
-          (unmop c₃) (unmop c₂) (unmop c₁) d|>.symm
+          (unmop c₃) (unmop c₂) (unmop c₁) d |>.symm
 
 section
 
@@ -272,7 +276,7 @@ def rightActionOfMonoidalOppositeLeftAction [MonoidalLeftAction Cᴹᵒᵖ D] :
       MonoidalLeftAction.inv_hom_actionHomLeft_assoc] using
       (α_ (mop c₃) (mop c₂) (mop c₁)).inv ⊵ₗ d ≫=
         MonoidalLeftAction.associator_actionHom
-          (mop c₃) (mop c₂) (mop c₁) d|>.symm
+          (mop c₃) (mop c₂) (mop c₁) d |>.symm
 
 /-- Define a right action of `Cᴹᵒᵖ` on `D` from a left action of `C` on `D` via
 the formula `d ⊙ᵣ mop c = c ⊙ₗ d`. -/
@@ -295,7 +299,7 @@ def monoidalOppositeRightAction [MonoidalLeftAction C D] :
       MonoidalLeftAction.inv_hom_actionHomLeft_assoc] using
       (α_ (unmop c₃) (unmop c₂) (unmop c₁)).inv ⊵ₗ d ≫=
         MonoidalLeftAction.associator_actionHom
-          (unmop c₃) (unmop c₂) (unmop c₁) d|>.symm
+          (unmop c₃) (unmop c₂) (unmop c₁) d |>.symm
 
 section
 

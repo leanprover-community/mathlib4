@@ -3,9 +3,13 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.Normed.Module.RCLike.Real
-import Mathlib.Analysis.Normed.Operator.Basic
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Analysis.Normed.Module.Span
+public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # Normed spaces over R or C
@@ -25,6 +29,8 @@ None.
 
 This file exists mainly to avoid importing `RCLike` in the main normed space theory files.
 -/
+
+public section
 
 
 open Metric
@@ -47,11 +53,17 @@ theorem norm_smul_inv_norm' {r : ℝ} (r_nonneg : 0 ≤ r) {x : E} (hx : x ≠ 0
   have : ‖x‖ ≠ 0 := by simp [hx]
   simp [field, norm_smul, r_nonneg, rclike_simps]
 
+theorem ContinuousLinearEquiv.coord_norm' {x : E} (h : x ≠ 0) :
+    ‖(‖x‖ : 𝕜) • ContinuousLinearEquiv.coord 𝕜 x h‖ = 1 := by
+  simp only [norm_smul, RCLike.norm_coe_norm, coord_norm, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
+
+@[deprecated (since := "2026-02-01")] alias coord_norm' := ContinuousLinearEquiv.coord_norm'
+
 theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] 𝕜)
     (h : ∀ z ∈ sphere (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ := by
   by_cases z_zero : z = 0
   · rw [z_zero]
-    simp only [LinearMap.map_zero, norm_zero, mul_zero]
+    simp only [map_zero, norm_zero, mul_zero]
     exact le_rfl
   set z₁ := ((r : 𝕜) * (‖z‖ : 𝕜)⁻¹) • z with hz₁
   have norm_f_z₁ : ‖f z₁‖ ≤ c := by
@@ -60,7 +72,7 @@ theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f :
     exact norm_smul_inv_norm' r_pos.le z_zero
   have r_ne_zero : (r : 𝕜) ≠ 0 := RCLike.ofReal_ne_zero.mpr r_pos.ne'
   have eq : f z = ‖z‖ / r * f z₁ := by
-    rw [hz₁, LinearMap.map_smul, smul_eq_mul]
+    rw [hz₁, map_smul, smul_eq_mul]
     rw [← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ r_ne_zero, mul_inv_cancel₀, one_mul]
     simp only [z_zero, RCLike.ofReal_eq_zero, norm_eq_zero, Ne, not_false_iff]
   rw [eq, norm_mul, norm_div, RCLike.norm_coe_norm, RCLike.norm_of_nonneg r_pos.le,

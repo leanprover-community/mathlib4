@@ -3,11 +3,12 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # Spectrum and quasispectrum of products
@@ -28,6 +29,8 @@ union of the (quasi)spectra.
 + Apply these results to block matrices.
 
 -/
+
+@[expose] public section
 
 variable {ι A B R : Type*} {κ : ι → Type*}
 

@@ -3,8 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Defs
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
+module
+
+public import Mathlib.Analysis.Calculus.TangentCone.Prod
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
 # Basic properties of the manifold Fréchet derivative
@@ -19,6 +22,8 @@ mimicking the API for Fréchet derivatives.
 - composition lemmas and the chain rule
 
 -/
+
+public section
 
 noncomputable section
 
@@ -137,6 +142,9 @@ theorem MDifferentiableWithinAt.mdifferentiableAt (h : MDifferentiableWithinAt I
 theorem MDifferentiableOn.mono (h : MDifferentiableOn I I' f t) (st : s ⊆ t) :
     MDifferentiableOn I I' f s := fun x hx => (h x (st hx)).mono st
 
+@[simp]
+theorem mdifferentiableOn_empty : MDifferentiableOn I I' f ∅ := fun _x hx ↦ hx.elim
+
 theorem mdifferentiableOn_univ : MDifferentiableOn I I' f univ ↔ MDifferentiable I I' f := by
   simp only [MDifferentiableOn, mdifferentiableWithinAt_univ, mfld_simps]; rfl
 
@@ -214,10 +222,10 @@ theorem mdifferentiableWithinAt_iff_target :
     ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
         ContinuousWithinAt f s x :=
       and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
-  simp_rw [cont, DifferentiableWithinAtProp, extChartAt, PartialHomeomorph.extend,
+  simp_rw [cont, DifferentiableWithinAtProp, extChartAt, OpenPartialHomeomorph.extend,
     PartialEquiv.coe_trans,
-    ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
-    chartAt_self_eq, PartialHomeomorph.refl_apply]
+    ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
+    chartAt_self_eq, OpenPartialHomeomorph.refl_apply]
   rfl
 
 theorem mdifferentiableAt_iff_target {x : M} :
@@ -228,7 +236,7 @@ theorem mdifferentiableAt_iff_target {x : M} :
 
 section IsManifold
 
-variable {e : PartialHomeomorph M H} {e' : PartialHomeomorph M' H'}
+variable {e : OpenPartialHomeomorph M H} {e' : OpenPartialHomeomorph M' H'}
 
 open IsManifold
 
@@ -423,8 +431,8 @@ theorem mdifferentiableOn_iff_target :
         ∀ y : M', MDifferentiableOn I 𝓘(𝕜, E') (extChartAt I' y ∘ f)
           (s ∩ f ⁻¹' (extChartAt I' y).source) := by
   simp only [mdifferentiableOn_iff, ModelWithCorners.source_eq, chartAt_self_eq,
-    PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_trans, extChartAt,
-    PartialHomeomorph.extend, Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
+    OpenPartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_trans, extChartAt,
+    OpenPartialHomeomorph.extend, Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
   intro h
   constructor
   · refine fun h' y => ⟨?_, fun x _ => h' x y⟩
@@ -459,31 +467,30 @@ end IsManifold
 variable {n : WithTop ℕ∞}
 
 theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n f s x)
-    (hn : 1 ≤ n) : MDifferentiableWithinAt I I' f s x := by
+    (hn : n ≠ 0) : MDifferentiableWithinAt I I' f s x := by
   suffices h : MDifferentiableWithinAt I I' f (s ∩ f ⁻¹' (extChartAt I' (f x)).source) x by
     rwa [mdifferentiableWithinAt_inter'] at h
     apply hf.1.preimage_mem_nhdsWithin
     exact extChartAt_source_mem_nhds (f x)
   rw [mdifferentiableWithinAt_iff]
-  exact ⟨hf.1.mono inter_subset_left, (hf.2.differentiableWithinAt (mod_cast hn)).mono
-    (by mfld_set_tac)⟩
+  exact ⟨hf.1.mono inter_subset_left, (hf.2.differentiableWithinAt hn).mono (by mfld_set_tac)⟩
 
-theorem ContMDiffAt.mdifferentiableAt (hf : ContMDiffAt I I' n f x) (hn : 1 ≤ n) :
+theorem ContMDiffAt.mdifferentiableAt (hf : ContMDiffAt I I' n f x) (hn : n ≠ 0) :
     MDifferentiableAt I I' f x :=
   mdifferentiableWithinAt_univ.1 <| ContMDiffWithinAt.mdifferentiableWithinAt hf hn
 
-theorem ContMDiff.mdifferentiableAt (hf : ContMDiff I I' n f) (hn : 1 ≤ n) :
+theorem ContMDiff.mdifferentiableAt (hf : ContMDiff I I' n f) (hn : n ≠ 0) :
     MDifferentiableAt I I' f x :=
   hf.contMDiffAt.mdifferentiableAt hn
 
-theorem ContMDiff.mdifferentiableWithinAt (hf : ContMDiff I I' n f) (hn : 1 ≤ n) :
+theorem ContMDiff.mdifferentiableWithinAt (hf : ContMDiff I I' n f) (hn : n ≠ 0) :
     MDifferentiableWithinAt I I' f s x :=
   (hf.contMDiffAt.mdifferentiableAt hn).mdifferentiableWithinAt
 
-theorem ContMDiffOn.mdifferentiableOn (hf : ContMDiffOn I I' n f s) (hn : 1 ≤ n) :
+theorem ContMDiffOn.mdifferentiableOn (hf : ContMDiffOn I I' n f s) (hn : n ≠ 0) :
     MDifferentiableOn I I' f s := fun x hx => (hf x hx).mdifferentiableWithinAt hn
 
-theorem ContMDiff.mdifferentiable (hf : ContMDiff I I' n f) (hn : 1 ≤ n) : MDifferentiable I I' f :=
+theorem ContMDiff.mdifferentiable (hf : ContMDiff I I' n f) (hn : n ≠ 0) : MDifferentiable I I' f :=
   fun x => (hf x).mdifferentiableAt hn
 
 theorem MDifferentiableOn.continuousOn (h : MDifferentiableOn I I' f s) : ContinuousOn f s :=
@@ -495,9 +502,9 @@ theorem MDifferentiable.continuous (h : MDifferentiable I I' f) : Continuous f :
 /-! ### Deriving continuity from differentiability on manifolds -/
 
 theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
-    {y | writtenInExtChartAt I I'' x (g ∘ f) y =
-          (writtenInExtChartAt I' I'' (f x) g ∘ writtenInExtChartAt I I' x f) y} ∈
-      𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x := by
+    writtenInExtChartAt I I'' x (g ∘ f)
+      =ᶠ[𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x x)]
+      (writtenInExtChartAt I' I'' (f x) g ∘ writtenInExtChartAt I I' x f) := by
   apply
     @Filter.mem_of_superset _ _ (f ∘ (extChartAt I x).symm ⁻¹' (extChartAt I' (f x)).source) _
       (extChartAt_preimage_mem_nhdsWithin
@@ -829,8 +836,15 @@ theorem tangentMapWithin_proj {p : TangentBundle I M} :
   rfl
 
 @[simp, mfld_simps]
+lemma tangentMapWithin_snd {X : TangentSpace I x} :
+    (tangentMapWithin I I' f s X).2 = (mfderivWithin I I' f s x) X := rfl
+
+@[simp, mfld_simps]
 theorem tangentMap_proj {p : TangentBundle I M} : (tangentMap I I' f p).proj = f p.proj :=
   rfl
+
+@[simp, mfld_simps]
+lemma tangentMap_snd {X : TangentSpace I x} : (tangentMap I I' f X).2 = (mfderiv I I' f x) X := rfl
 
 /-- If two sets coincide locally around `x`, except maybe at a point `y`, then their
 preimage under `extChartAt x` coincide locally, except maybe at `extChartAt I x x`. -/
@@ -840,7 +854,7 @@ theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[�
   have : T1Space M := I.t1Space M
   obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | (y ∈ s) = (y ∈ t)} :=
     mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (nhdsWithin_compl_singleton_le x y h)
-  rw [← extChartAt_to_inv (I:= I) x] at u_mem
+  rw [← extChartAt_to_inv (I := I) x] at u_mem
   have B : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 (extChartAt I x x) := by
     rw [← nhdsWithin_univ, ← union_compl_self (range I), nhdsWithin_union]
     apply Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin x) self_mem_nhdsWithin
@@ -850,11 +864,12 @@ theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[�
   simp only [eq_iff_iff, mem_setOf_eq]
   change z ∈ (extChartAt I x).symm ⁻¹' s ∩ range I ↔ z ∈ (extChartAt I x).symm ⁻¹' t ∩ range I
   by_cases hIz : z ∈ range I
-  · simp [-extChartAt, hIz] at hz ⊢
+  · simp only [mem_inter_iff, mem_preimage, mem_union, mem_compl_iff, hIz, not_true_eq_false,
+      or_false, and_true] at hz ⊢
     rw [← eq_iff_iff]
     apply hu ⟨hz.1, ?_⟩
-    simp only [mem_compl_iff, mem_singleton_iff, ne_comm, ne_eq] at h'z ⊢
-    rw [(extChartAt I x).eq_symm_apply (by simp) hz.2]
+    push _ ∈ _ at h'z ⊢
+    rw [eq_comm, (extChartAt I x).eq_symm_apply (by simp) hz.2]
     exact Ne.symm h'z
   · simp [hIz]
 

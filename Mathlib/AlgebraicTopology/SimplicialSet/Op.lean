@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Op
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Op
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 
 /-!
 # The covariant involution of the category of simplicial sets
@@ -18,12 +20,14 @@ We use an abbreviation `X.op` for `opFunctor.obj X`.
 ## TODO
 
 * Show that this involution sends `Δ[n]` to itself, and that via
-this identification, the horn `horn n i` is sent to `horn n i.rev` (@joelriou)
+  this identification, the horn `horn n i` is sent to `horn n i.rev` (@joelriou)
 * Construct an isomorphism `nerve Cᵒᵖ ≅ (nerve C).op` (@robin-carlier)
 * Show that the topological realization of `X.op` identifies to the
-topological realization of `X` (@joelriou)
+  topological realization of `X` (@joelriou)
 
 -/
+
+@[expose] public section
 
 universe u
 

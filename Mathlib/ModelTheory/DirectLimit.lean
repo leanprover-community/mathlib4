@@ -3,11 +3,13 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
-import Mathlib.Data.Finite.Sum
-import Mathlib.Data.Fintype.Order
-import Mathlib.ModelTheory.FinitelyGenerated
-import Mathlib.ModelTheory.Quotients
-import Mathlib.Order.DirectedInverseSystem
+module
+
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.ModelTheory.FinitelyGenerated
+public import Mathlib.ModelTheory.Quotients
+public import Mathlib.Order.DirectedInverseSystem
 
 /-!
 # Direct Limits of First-Order Structures
@@ -24,6 +26,8 @@ This file constructs the direct limit of a directed system of first-order embedd
 - `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
   isomorphic direct systems.
 -/
+
+@[expose] public section
 
 
 universe v w w' u₁ u₂
@@ -58,9 +62,7 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
   induction k with
-  | zero =>
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [natLERec, Nat.leRecOn_self, Embedding.refl_apply, Nat.leRecOn_self]
+  | zero => simp [natLERec, Nat.leRecOn_self]
   | succ k ih =>
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
@@ -120,7 +122,7 @@ variable (G)
 namespace DirectLimit
 
 /-- The directed limit glues together the structures along the embeddings. -/
-def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] : Setoid (Σˣ f) where
+def setoid [DirectedSystem G fun i j h => f i j h] [IsDirectedOrder ι] : Setoid (Σˣ f) where
   r := fun ⟨i, x⟩ ⟨j, y⟩ => ∃ (k : ι) (ik : i ≤ k) (jk : j ≤ k), f i k ik x = f j k jk y
   iseqv :=
     ⟨fun ⟨i, _⟩ => ⟨i, refl i, refl i, rfl⟩, @fun ⟨_, _⟩ ⟨_, _⟩ ⟨k, ik, jk, h⟩ =>
@@ -133,7 +135,7 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
 -/
-noncomputable def sigmaStructure [IsDirected ι (· ≤ ·)] [Nonempty ι] : L.Structure (Σˣ f) where
+noncomputable def sigmaStructure [IsDirectedOrder ι] [Nonempty ι] : L.Structure (Σˣ f) where
   funMap F x :=
     ⟨_,
       funMap F
@@ -147,18 +149,18 @@ noncomputable def sigmaStructure [IsDirected ι (· ≤ ·)] [Nonempty ι] : L.S
 end DirectLimit
 
 /-- The direct limit of a directed system is the structures glued together along the embeddings. -/
-def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :=
+def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirectedOrder ι] :=
   Quotient (DirectLimit.setoid G f)
 
 attribute [local instance] DirectLimit.setoid DirectLimit.sigmaStructure
 
-instance [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] [Inhabited ι]
+instance [DirectedSystem G fun i j h => f i j h] [IsDirectedOrder ι] [Inhabited ι]
     [Inhabited (G default)] : Inhabited (DirectLimit G f) :=
   ⟨⟦⟨default, default⟩⟧⟩
 
 namespace DirectLimit
 
-variable [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h => f i j h]
+variable [IsDirectedOrder ι] [DirectedSystem G fun i j h => f i j h]
 
 theorem equiv_iff {x y : Σˣ f} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
     x ≈ y ↔ (f x.1 i hx) x.2 = (f y.1 i hy) y.2 := by
@@ -239,8 +241,6 @@ theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x 
 theorem relMap_quotient_mk'_sigma_mk' {n : ℕ} {R : L.Relations n} {i : ι} {x : Fin n → G i} :
     RelMap R (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) = RelMap R x := by
   rw [relMap_quotient_mk']
-  obtain ⟨k, _, _⟩ :=
-    directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
   rw [relMap_equiv_unify G f R (fun a => .mk f i (x a)) i (fun _ ⟨_, hj⟩ => le_of_eq hj.symm)]
   rw [unify_sigma_mk_self]
 
@@ -401,7 +401,7 @@ theorem equiv_lift_of {i : ι} (x : G i) :
 variable {L ι G f}
 
 /-- The direct limit of countably many countably generated structures is countably generated. -/
-theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
+theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     (h : ∀ i, Structure.CG L (G i)) [DirectedSystem G fun i j h => f i j h] :
     Structure.CG L (DirectLimit G f) := by
@@ -417,7 +417,7 @@ theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
       trivial
     · simp only [out, Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]
 
-instance cg' {ι : Type*} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
+instance cg' {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     [h : ∀ i, Structure.CG L (G i)] [DirectedSystem G fun i j h => f i j h] :
     Structure.CG L (DirectLimit G f) :=
@@ -427,7 +427,7 @@ end DirectLimit
 
 section Substructure
 
-variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
+variable [Nonempty ι] [IsDirectedOrder ι]
 variable {M : Type*} [L.Structure M] (S : ι →o L.Substructure M)
 
 instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) where

@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.NAry
-import Mathlib.Data.ULift
-import Mathlib.Order.CompleteLattice.Defs
-import Mathlib.Order.Hom.Set
+module
+
+public import Mathlib.Data.Set.NAry
+public import Mathlib.Data.ULift
+public import Mathlib.Order.CompleteLattice.Defs
+public import Mathlib.Order.Hom.Set
 
 /-!
 # Theory of complete lattices
@@ -33,6 +35,8 @@ In lemma names,
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
 
+@[expose] public section
+
 open Function OrderDual Set
 
 variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
@@ -50,10 +54,6 @@ variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
   IsLeast.mono (isLUB_sSup t) (isLUB_sSup s) <| upperBounds_mono_of_isCofinalFor h
 
-@[deprecated "use `sSup_le_sSup_of_isCofinalFor` instead" (since := "2025-07-14")]
-theorem sSup_le_sSup_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) : sSup s ≤ sSup t :=
-  sSup_le_sSup_of_isCofinalFor h
-
 -- We will generalize this to conditionally complete lattices in `csSup_singleton`.
 @[simp]
 theorem sSup_singleton {a : α} : sSup {a} = a :=
@@ -67,10 +67,6 @@ variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 
 theorem sInf_le_sInf_of_isCoinitialFor (h : IsCoinitialFor s t) : sInf t ≤ sInf s :=
   IsGreatest.mono (isGLB_sInf t) (isGLB_sInf s) <| lowerBounds_mono_of_isCoinitialFor h
-
-@[deprecated "use `sInf_le_sInf_of_isCoinitialFor` instead" (since := "2025-07-14")]
-theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : sInf t ≤ sInf s :=
-  sInf_le_sInf_of_isCoinitialFor h
 
 -- We will generalize this to conditionally complete lattices in `csInf_singleton`.
 @[simp]
@@ -129,7 +125,7 @@ theorem sSup_le_sSup_of_subset_insert_bot (h : s ⊆ insert ⊥ t) : sSup s ≤ 
   (sSup_le_sSup h).trans_eq (sSup_insert.trans (bot_sup_eq _))
 
 theorem sInf_le_sInf_of_subset_insert_top (h : s ⊆ insert ⊤ t) : sInf t ≤ sInf s :=
-  (sInf_le_sInf h).trans_eq' (sInf_insert.trans (top_inf_eq _)).symm
+  (sInf_le_sInf h).trans_eq' (sInf_insert.trans (top_inf_eq _))
 
 @[simp]
 theorem sSup_diff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
@@ -449,8 +445,10 @@ theorem sInf_eq_iInf {s : Set α} : sInf s = ⨅ a ∈ s, a :=
 lemma sSup_lowerBounds_eq_sInf (s : Set α) : sSup (lowerBounds s) = sInf s :=
   (isLUB_sSup _).unique (isGLB_sInf _).isLUB
 
-lemma sInf_upperBounds_eq_csSup (s : Set α) : sInf (upperBounds s) = sSup s :=
+lemma sInf_upperBounds_eq_sSup (s : Set α) : sInf (upperBounds s) = sSup s :=
   (isGLB_sInf _).unique (isLUB_sSup _).isGLB
+
+@[deprecated (since := "2026-02-01")] alias sInf_upperBounds_eq_csSup := sInf_upperBounds_eq_sSup
 
 theorem Monotone.le_map_iSup [CompleteLattice β] {f : α → β} (hf : Monotone f) :
     ⨆ i, f (s i) ≤ f (iSup s) :=
@@ -913,11 +911,11 @@ theorem sInf_image {s : Set β} {f : β → α} : sInf (f '' s) = ⨅ a ∈ s, f
 
 theorem OrderIso.map_sSup_eq_sSup_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
     f (sSup s) = sSup (f.symm ⁻¹' s) := by
-  rw [map_sSup, ← sSup_image, f.image_eq_preimage]
+  rw [map_sSup, ← sSup_image, f.image_eq_preimage_symm]
 
 theorem OrderIso.map_sInf_eq_sInf_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
     f (sInf s) = sInf (f.symm ⁻¹' s) := by
-  rw [map_sInf, ← sInf_image, f.image_eq_preimage]
+  rw [map_sInf, ← sInf_image, f.image_eq_preimage_symm]
 
 /-
 ### iSup and iInf under set constructions
@@ -992,6 +990,22 @@ theorem iSup_extend_bot {e : ι → β} (he : Injective e) (f : ι → α) :
 theorem iInf_extend_top {e : ι → β} (he : Injective e) (f : ι → α) :
     ⨅ j, extend e f ⊤ j = iInf f :=
   @iSup_extend_bot αᵒᵈ _ _ _ _ he _
+
+theorem Set.BijOn.iSup_comp {s : Set β} {t : Set γ} {f : β → γ} (g : γ → α)
+    (hf : Set.BijOn f s t) : ⨆ x ∈ s, g (f x) = ⨆ y ∈ t, g y := by
+  rw [← hf.image_eq, iSup_image]
+
+theorem Set.BijOn.iInf_comp {s : Set β} {t : Set γ} {f : β → γ} (g : γ → α)
+    (hf : Set.BijOn f s t) : ⨅ x ∈ s, g (f x) = ⨅ y ∈ t, g y := by
+  rw [← hf.image_eq, iInf_image]
+
+theorem Set.BijOn.iSup_congr {s : Set β} {t : Set γ} (f : β → α) (g : γ → α) {h : β → γ}
+    (h1 : Set.BijOn h s t) (h2 : ∀ x, g (h x) = f x) : ⨆ x ∈ s, f x = ⨆ y ∈ t, g y := by
+  simpa only [h2] using h1.iSup_comp g
+
+theorem Set.BijOn.iInf_congr {s : Set β} {t : Set γ} (f : β → α) (g : γ → α) {h : β → γ}
+    (h1 : Set.BijOn h s t) (h2 : ∀ x, g (h x) = f x) : ⨅ x ∈ s, f x = ⨅ y ∈ t, g y := by
+  simpa only [h2] using h1.iInf_comp g
 
 section le
 
@@ -1128,12 +1142,12 @@ theorem iInf_option_elim (a : α) (f : β → α) : ⨅ o : Option β, o.elim a 
 dropped, without changing the result. -/
 @[simp]
 theorem iSup_ne_bot_subtype (f : ι → α) : ⨆ i : { i // f i ≠ ⊥ }, f i = ⨆ i, f i := by
-  by_cases htriv : ∀ i, f i = ⊥
+  by_cases! htriv : ∀ i, f i = ⊥
   · simp only [iSup_bot, (funext htriv : f = _)]
   refine (iSup_comp_le f _).antisymm (iSup_mono' fun i => ?_)
   by_cases hi : f i = ⊥
   · rw [hi]
-    obtain ⟨i₀, hi₀⟩ := not_forall.mp htriv
+    obtain ⟨i₀, hi₀⟩ := htriv
     exact ⟨⟨i₀, hi₀⟩, bot_le⟩
   · exact ⟨⟨i, hi⟩, rfl.le⟩
 
@@ -1364,18 +1378,16 @@ congr_arg₂ Prod.mk (congr_arg sSup <| fst_image_prod _ ht) (congr_arg sSup <| 
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteLattice` along an injection. -/
-protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α] [InfSet α] [Top α]
-    [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
+protected abbrev Function.Injective.completeLattice [Max α] [Min α] [LE α] [LT α]
+    [SupSet α] [InfSet α] [Top α] [Bot α] [CompleteLattice β]
+    (f : α → β) (hf : Function.Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : CompleteLattice α where
-  -- we cannot use BoundedOrder.lift here as the `LE` instance doesn't exist yet
-  __ := hf.lattice f map_sup map_inf
-  le_sSup _ a h := (le_iSup₂ a h).trans (map_sSup _).ge
-  sSup_le _ _ h := (map_sSup _).trans_le <| iSup₂_le h
-  sInf_le _ a h := (map_sInf _).trans_le <| iInf₂_le a h
-  le_sInf _ _ h := (le_iInf₂ h).trans (map_sInf _).ge
-  top := ⊤
-  le_top _ := (@le_top β _ _ _).trans map_top.ge
-  bot := ⊥
-  bot_le _ := map_bot.le.trans bot_le
+  __ := hf.lattice f le lt map_sup map_inf
+  __ := BoundedOrder.lift f (fun _ _ ↦ le.1) map_top map_bot
+  le_sSup _ a h := le.1 <| (le_iSup₂ a h).trans (map_sSup _).ge
+  sSup_le _ _ h := le.1 <| (map_sSup _).trans_le <| iSup₂_le fun a ha ↦ le.2 <| h a ha
+  sInf_le _ a h := le.1 <| (map_sInf _).trans_le <| iInf₂_le a h
+  le_sInf _ _ h := le.1 <| (le_iInf₂ fun a ha ↦ le.2 <| h a ha).trans (map_sInf _).ge

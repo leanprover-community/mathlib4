@@ -3,10 +3,11 @@ Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Kim Morrison, Matteo Cipollina
 -/
+module
 
-import Mathlib.Combinatorics.Quiver.Prefunctor
-import Mathlib.Logic.Lemmas
-import Batteries.Data.List.Basic
+public import Mathlib.Combinatorics.Quiver.Prefunctor
+public import Mathlib.Logic.Lemmas
+public import Batteries.Data.List.Basic
 
 /-!
 # Paths in quivers
@@ -15,6 +16,8 @@ Given a quiver `V`, we define the type of paths from `a : V` to `b : V` as an in
 family. We define composition of paths and the action of prefunctors on paths.
 -/
 
+@[expose] public section
+
 open Function
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
@@ -22,7 +25,7 @@ universe v v₁ v₂ v₃ u u₁ u₂ u₃
 namespace Quiver
 
 /-- `Path a b` is the type of paths from `a` to `b` through the arrows of `G`. -/
-inductive Path {V : Type u} [Quiver.{v} V] (a : V) : V → Sort max (u + 1) v
+inductive Path {V : Type u} [Quiver.{v} V] (a : V) : V → Type max u v
   | nil : Path a a
   | cons : ∀ {b c : V}, Path a b → (b ⟶ c) → Path a c
 
@@ -172,9 +175,9 @@ lemma length_ne_zero_iff_eq_comp (p : Path a b) :
     p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
       p = e.toPath.comp p' ∧ p.length = p'.length + 1 := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · have h_len : p.length = (p.length - 1) + 1 := by omega
+  · have h_len : p.length = (p.length - 1) + 1 := by lia
     obtain ⟨c, e, p', hp', rfl⟩ := Path.eq_toPath_comp_of_length_eq_succ p h_len
-    exact ⟨c, e, p', rfl, by cutsat⟩
+    exact ⟨c, e, p', rfl, by lia⟩
   · rintro ⟨c, p', e, rfl, h⟩
     simp [h]
 
@@ -265,14 +268,15 @@ def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
   fun ⟨p, hp⟩ ⟨q, hq⟩ =>
     match v, w, p, q with
     | _, _, .nil, .nil => isTrue rfl
-    | _, _, .nil, .cons _ _ => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
-    | _, _, .cons _ _, .nil => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
+    | _, _, .nil, .cons _ _
+    | _, _, .cons _ _, .nil =>
+      isFalse fun h => Quiver.Path.noConfusion rfl .rfl .rfl .rfl (heq_of_eq (Subtype.mk.inj h))
     | _, _, .cons (b := v') p' α, .cons (b := v'') q' β =>
       match v', v'', h₁ v' v'' with
       | _, _, isTrue (Eq.refl _) =>
         if h : α = β then
-          have hp' : p'.length ≤ n := by simp [Quiver.Path.length] at hp; cutsat
-          have hq' : q'.length ≤ n := by simp [Quiver.Path.length] at hq; cutsat
+          have hp' : p'.length ≤ n := by simp [Quiver.Path.length] at hp; lia
+          have hq' : q'.length ≤ n := by simp [Quiver.Path.length] at hq; lia
           if h'' : (⟨p', hp'⟩ : BoundedPaths _ _ n) = ⟨q', hq'⟩ then
             isTrue <| by
               apply Subtype.ext

@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Localization.Away.Lemmas
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Localization.Away.Lemmas
 
 /-!
 # Target local closure of ring homomorphism properties
@@ -39,6 +41,8 @@ composition, base change, etc., so is `Locally P`.
   `Locally P`.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -234,11 +238,9 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
 /-- If `P` is stable under composition with localization away maps on the right,
 then so is `Locally P`. -/
 lemma locally_StableUnderCompositionWithLocalizationAwayTarget
-    (hP0 : RespectsIso P)
     (hPa : StableUnderCompositionWithLocalizationAwayTarget P) :
     StableUnderCompositionWithLocalizationAwayTarget (Locally P) := by
   intro R S T _ _ _ _ t _ f hf
-  simp only [locally_iff_isLocalization hP0 f] at hf
   obtain ⟨s, hsone, hs⟩ := hf
   refine ⟨algebraMap S T '' s, ?_, ?_⟩
   · rw [← Ideal.map_span, hsone, Ideal.map_top]
@@ -382,7 +384,7 @@ lemma locally_propertyIsLocal (hPl : LocalizationAwayPreserves P)
     (hPa : StableUnderCompositionWithLocalizationAway P) : PropertyIsLocal (Locally P) where
   localizationAwayPreserves := locally_localizationAwayPreserves hPl
   StableUnderCompositionWithLocalizationAwayTarget :=
-    locally_StableUnderCompositionWithLocalizationAwayTarget hPl.respectsIso hPa.right
+    locally_StableUnderCompositionWithLocalizationAwayTarget hPa.right
   ofLocalizationSpan := (locally_ofLocalizationSpanTarget hPl.respectsIso).ofLocalizationSpan
     (locally_StableUnderCompositionWithLocalizationAwaySource hPa.left)
   ofLocalizationSpanTarget := locally_ofLocalizationSpanTarget hPl.respectsIso

@@ -3,15 +3,19 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Order.LatticeIntervals
+module
+
+public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Order.LatticeIntervals
 
 /-!
 # Lattice structures on the type of nonnegative elements
 
 -/
+
+@[expose] public section
 assert_not_exists Ring
-assert_not_exists OrderedCommMonoid
+assert_not_exists IsOrderedMonoid
 
 open Set
 

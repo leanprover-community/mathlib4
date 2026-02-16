@@ -3,8 +3,10 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Limits.Creates
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Limits.Creates
 
 /-!
 # Adjunctions and limits
@@ -24,6 +26,8 @@ the functor associating to each `Y` the cocones over `K ⋙ F` with cone point `
 is naturally isomorphic to
 the functor associating to each `Y` the cocones over `K` with cone point `G.obj Y`.
 -/
+
+@[expose] public section
 
 
 open Opposite
@@ -47,7 +51,7 @@ variable {J : Type u} [Category.{v} J] (K : J ⥤ C)
 
 /-- The right adjoint of `Cocones.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
-Auxiliary definition for `functorialityIsLeftAdjoint`.
+Auxiliary definition for `functorialityAdjunction`.
 -/
 def functorialityRightAdjoint : Cocone (K ⋙ F) ⥤ Cocone K :=
   Cocones.functoriality _ G ⋙
@@ -57,7 +61,7 @@ attribute [local simp] functorialityRightAdjoint
 
 /-- The unit for the adjunction for `Cocones.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
-Auxiliary definition for `functorialityIsLeftAdjoint`.
+Auxiliary definition for `functorialityAdjunction`.
 -/
 @[simps]
 def functorialityUnit :
@@ -66,7 +70,7 @@ def functorialityUnit :
 
 /-- The counit for the adjunction for `Cocones.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
-Auxiliary definition for `functorialityIsLeftAdjoint`.
+Auxiliary definition for `functorialityAdjunction`.
 -/
 @[simps]
 def functorialityCounit :
@@ -157,7 +161,7 @@ variable {J : Type u} [Category.{v} J] (K : J ⥤ D)
 
 /-- The left adjoint of `Cones.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
 
-Auxiliary definition for `functorialityIsRightAdjoint`.
+Auxiliary definition for `functorialityAdjunction'`.
 -/
 def functorialityLeftAdjoint : Cone (K ⋙ G) ⥤ Cone K :=
   Cones.functoriality _ F ⋙
@@ -167,7 +171,7 @@ attribute [local simp] functorialityLeftAdjoint
 
 /-- The unit for the adjunction for `Cones.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
 
-Auxiliary definition for `functorialityIsRightAdjoint`.
+Auxiliary definition for `functorialityAdjunction'`.
 -/
 @[simps]
 def functorialityUnit' :
@@ -176,7 +180,7 @@ def functorialityUnit' :
 
 /-- The counit for the adjunction for `Cones.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
 
-Auxiliary definition for `functorialityIsRightAdjoint`.
+Auxiliary definition for `functorialityAdjunction'`.
 -/
 @[simps]
 def functorialityCounit' :
@@ -328,7 +332,7 @@ end Adjunction
 
 namespace Functor
 
-variable {J C D : Type*} [Category J] [Category C] [Category D]
+variable {J C D : Type*} [Category* J] [Category* C] [Category* D]
   (F : C ⥤ D)
 
 noncomputable instance [IsLeftAdjoint F] : PreservesColimitsOfShape J F :=

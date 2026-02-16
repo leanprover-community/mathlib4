@@ -3,11 +3,13 @@ Copyright (c) 2022 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard M. Hill
 -/
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Action of the polynomial ring on module induced by an algebra element.
@@ -20,6 +22,8 @@ In particular `X • m = a • m`.
 In the special case that `A = M →ₗ[R] M` and `φ : M →ₗ[R] M`, the module `Module.AEval R M a` is
 abbreviated `Module.AEval' φ`. In this module we have `X • m = ↑φ m`.
 -/
+
+@[expose] public section
 
 open Set Function Polynomial
 
@@ -89,7 +93,7 @@ instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a w
 instance instFinitePolynomial [Module.Finite R M] : Module.Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
 
-/-- Construct an `R[X]`-linear map out of `AEval R M a` from a `R`-linear map out of `M`. -/
+/-- Construct an `R[X]`-linear map out of `AEval R M a` from an `R`-linear map out of `M`. -/
 def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
     [IsScalarTower R R[X] N] (f : M →ₗ[R] N) (hf : ∀ m : M, f (a • m) = (X : R[X]) • f m) :
     AEval R M a →ₗ[R[X]] N where
@@ -100,7 +104,8 @@ def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
         LinearMap.comp_apply, LinearEquiv.coe_toLinearMap] at h ⊢
       simp_rw [pow_succ, ← mul_assoc, mul_smul _ X, ← hf, ← of_symm_X_smul, ← h]
 
-/-- Construct an `R[X]`-linear equivalence out of `AEval R M a` from a `R`-linear map out of `M`. -/
+/-- Construct an `R[X]`-linear equivalence out of `AEval R M a` from an `R`-linear map out of `M`.
+-/
 def _root_.LinearEquiv.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
     [IsScalarTower R R[X] N] (f : M ≃ₗ[R] N) (hf : ∀ m : M, f (a • m) = (X : R[X]) • f m) :
     AEval R M a ≃ₗ[R[X]] N where

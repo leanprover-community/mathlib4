@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Countable
-import Mathlib.Topology.Category.Profinite.AsLimit
-import Mathlib.Topology.Category.Profinite.CofilteredLimit
-import Mathlib.Topology.ClopenBox
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Countable
+public import Mathlib.Topology.Category.Profinite.AsLimit
+public import Mathlib.Topology.Category.Profinite.CofilteredLimit
+public import Mathlib.Topology.ClopenBox
 /-!
 
 # Light profinite spaces
@@ -26,6 +28,8 @@ The category `LightProfinite` is defined using the structure `CompHausLike`. See
 `CompHausLike.Basic` for more information.
 
 -/
+
+@[expose] public section
 
 /- The basic API for `LightProfinite` is largely copied from the API of `Profinite`;
 where possible, try to keep them in sync -/
@@ -88,14 +92,14 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `LightProfinite`, endowing a finite type with the
 discrete topology. -/
-@[simps! -isSimp map_hom_apply]
+@[simps! -isSimp map_hom_hom_apply]
 def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
   obj A := LightProfinite.of A
   map f := CompHausLike.ofHom _ ⟨f, by continuity⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toLightProfiniteFullyFaithful : toLightProfinite.FullyFaithful where
-  preimage f := (f : _ → _)
+  preimage f := InducedCategory.homMk (f.hom.hom.1)
   map_preimage _ := rfl
   preimage_map _ := rfl
 
@@ -108,7 +112,7 @@ instance : FintypeCat.toLightProfinite.Full :=
 instance (X : FintypeCat.{u}) : Fintype (FintypeCat.toLightProfinite.obj X) :=
   inferInstanceAs (Fintype X)
 
-instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) :=  inferInstanceAs (Fintype X)
+instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) := inferInstanceAs (Fintype X)
 
 end DiscreteTopology
 
@@ -133,7 +137,9 @@ def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
         · change SecondCountableTopology ({ u : ∀ j : J, F.obj j | _ } : Type _)
           apply IsInducing.subtypeVal.secondCountableTopology }
   π :=
-  { app := (CompHaus.limitCone.{v, u} (F ⋙ lightProfiniteToCompHaus)).π.app
+  { app j :=
+      ConcreteCategory.ofHom
+        ((CompHaus.limitCone.{v, u} (F ⋙ lightProfiniteToCompHaus)).π.app j).hom.hom
     naturality := by
       intro j k f
       ext ⟨g, p⟩
@@ -144,9 +150,15 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] [CountableCategory J]
     (F : J ⥤ LightProfinite.{max u v}) :
     Limits.IsLimit (limitCone F) where
   lift S :=
-    (CompHaus.limitConeIsLimit.{v, u} (F ⋙ lightProfiniteToCompHaus)).lift
-      (lightProfiniteToCompHaus.mapCone S)
-  uniq S _ h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (lightProfiniteToCompHaus.mapCone S) _ h
+    ConcreteCategory.ofHom
+    ((CompHaus.limitConeIsLimit.{v, u} (F ⋙ lightProfiniteToCompHaus)).lift
+      (lightProfiniteToCompHaus.mapCone S)).hom.hom
+  uniq S _ h := by
+    apply lightProfiniteToCompHaus.map_injective
+    apply (CompHaus.limitConeIsLimit.{v, u} _).uniq (lightProfiniteToCompHaus.mapCone S)
+    intro j
+    simp [← h]
+    rfl
 
 noncomputable instance createsCountableLimits {J : Type v} [SmallCategory J] [CountableCategory J] :
     CreatesLimitsOfShape J lightToProfinite.{max v u} where
@@ -192,7 +204,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     contrapose!
     rintro ⟨y, hy⟩ hf
     let C := Set.range f
-    have hC : IsClosed C := (isCompact_range f.hom.continuous).isClosed
+    have hC : IsClosed C := (isCompact_range f.hom.hom.continuous).isClosed
     let U := Cᶜ
     have hyU : y ∈ U := by
       refine Set.mem_compl ?_
@@ -226,7 +238,7 @@ instance : lightToProfinite.PreservesEpimorphisms where
 end LightProfinite
 
 /-- A structure containing the data of sequential limit in `Profinite` of finite sets. -/
-structure LightDiagram : Type (u+1) where
+structure LightDiagram : Type (u + 1) where
   /-- The indexing diagram. -/
   diagram : ℕᵒᵖ ⥤ FintypeCat
   /-- The limit cone. -/
@@ -240,7 +252,8 @@ namespace LightDiagram
 def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 
 @[simps!]
-instance : Category LightDiagram := InducedCategory.category toProfinite
+instance : Category LightDiagram :=
+  inferInstanceAs (Category (InducedCategory _ toProfinite))
 
 instance hasForget : ConcreteCategory LightDiagram (fun X Y => C(X.toProfinite, Y.toProfinite)) :=
   InducedCategory.concreteCategory toProfinite
@@ -279,7 +292,7 @@ end LightProfinite
 @[simps]
 noncomputable def lightProfiniteToLightDiagram : LightProfinite.{u} ⥤ LightDiagram.{u} where
   obj X := X.toLightDiagram
-  map f := f
+  map f := InducedCategory.homMk (InducedCategory.homMk f.hom)
 
 open scoped Classical in
 instance (S : LightDiagram.{u}) : SecondCountableTopology S.cone.pt := by
@@ -295,7 +308,7 @@ instance (S : LightDiagram.{u}) : SecondCountableTopology S.cone.pt := by
     refine @Pi.finite _ _ ?_ _
     simp only [Functor.comp_obj]
     exact show (Finite (S.diagram.obj _)) from inferInstance
-  · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩).hom
+  · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩).hom.hom
   · intro a
     obtain ⟨n, g, h⟩ := Profinite.exists_locallyConstant S.cone S.isLimit a
     exact ⟨⟨unop n, g⟩, h.symm⟩
@@ -304,7 +317,7 @@ instance (S : LightDiagram.{u}) : SecondCountableTopology S.cone.pt := by
 @[simps obj map]
 def lightDiagramToLightProfinite : LightDiagram.{u} ⥤ LightProfinite.{u} where
   obj X := LightProfinite.of X.cone.pt
-  map f := f
+  map f := InducedCategory.homMk f.hom.hom
 
 /-- The equivalence of categories `LightProfinite ≌ LightDiagram` -/
 noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiagram.{u} where
@@ -314,12 +327,11 @@ noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiag
   counitIso := NatIso.ofComponents
     (fun _ ↦ lightDiagramToProfinite.preimageIso (Iso.refl _)) (by
       intro _ _ f
-      simp only [Functor.comp_obj, lightDiagramToLightProfinite_obj,
-        lightProfiniteToLightDiagram_obj, Functor.id_obj, Functor.comp_map,
-        lightDiagramToLightProfinite_map, lightProfiniteToLightDiagram_map,
-        lightDiagramToProfinite_obj, Functor.preimageIso_hom, Iso.refl_hom, Functor.id_map]
-      erw [lightDiagramToProfinite.preimage_id, lightDiagramToProfinite.preimage_id,
-        Category.comp_id f])
+      dsimp
+      apply lightDiagramToProfinite.map_injective
+      apply InducedCategory.hom_ext
+      simp only [Functor.map_comp, Functor.map_preimage]
+      simp)
   functor_unitIso_comp _ := by simpa using lightDiagramToProfinite.preimage_id
 
 instance : lightProfiniteToLightDiagram.IsEquivalence :=
@@ -345,19 +357,23 @@ structure LightDiagram' : Type u where
 
 /-- A `LightDiagram'` yields a `Profinite`. -/
 def LightDiagram'.toProfinite (S : LightDiagram') : Profinite :=
-  limit (S.diagram  ⋙ FintypeCat.Skeleton.equivalence.functor ⋙ FintypeCat.toProfinite.{u})
+  limit (S.diagram ⋙ FintypeCat.Skeleton.equivalence.functor ⋙ FintypeCat.toProfinite.{u})
 
-instance : Category LightDiagram' := InducedCategory.category LightDiagram'.toProfinite
+instance : Category LightDiagram' :=
+  inferInstanceAs (Category (InducedCategory _ LightDiagram'.toProfinite))
 
 /-- The functor part of the equivalence of categories `LightDiagram' ≌ LightDiagram`. -/
 def LightDiagram'.toLightFunctor : LightDiagram'.{u} ⥤ LightDiagram.{u} where
   obj X := ⟨X.diagram ⋙ Skeleton.equivalence.functor, _, limit.isLimit _⟩
-  map f := f
+  map f := InducedCategory.homMk f.hom
 
-instance : LightDiagram'.toLightFunctor.{u}.Faithful := ⟨id⟩
+instance : LightDiagram'.toLightFunctor.{u}.Faithful where
+  map_injective h := by
+    apply InducedCategory.homEquiv.injective
+    apply InducedCategory.homEquiv.symm.injective h
 
 instance : LightDiagram'.toLightFunctor.{u}.Full where
-  map_surjective f := ⟨f, rfl⟩
+  map_surjective f := ⟨InducedCategory.homMk f.hom, rfl⟩
 
 instance : LightDiagram'.toLightFunctor.{u}.EssSurj where
   mem_essImage Y :=

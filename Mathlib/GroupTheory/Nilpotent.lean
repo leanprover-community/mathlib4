@@ -3,10 +3,12 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 -/
-import Mathlib.GroupTheory.Solvable
-import Mathlib.GroupTheory.Sylow
-import Mathlib.Algebra.Group.Subgroup.Order
-import Mathlib.GroupTheory.Commutator.Finite
+module
+
+public import Mathlib.GroupTheory.Solvable
+public import Mathlib.GroupTheory.Sylow
+public import Mathlib.Algebra.Group.Subgroup.Order
+public import Mathlib.GroupTheory.Commutator.Finite
 
 /-!
 
@@ -22,10 +24,10 @@ by the commutators `hkh⁻¹k⁻¹`. Recall also Lean's conventions that `⊤` d
 subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 
 * `upperCentralSeries G : ℕ → Subgroup G` : the upper central series of a group `G`.
-     This is an increasing sequence of normal subgroups `H n` of `G` with `H 0 = ⊥` and
+     This is an increasing sequence of characteristic subgroups `H n` of `G` with `H 0 = ⊥` and
      `H (n + 1) / H n` is the centre of `G / H n`.
 * `lowerCentralSeries G : ℕ → Subgroup G` : the lower central series of a group `G`.
-     This is a decreasing sequence of normal subgroups `H n` of `G` with `H 0 = ⊤` and
+     This is a decreasing sequence of characteristic subgroups `H n` of `G` with `H 0 = ⊤` and
      `H (n + 1) = ⁅H n, G⁆`.
 * `IsNilpotent` : A group G is nilpotent if its upper central series reaches `⊤`, or
     equivalently if its lower central series reaches `⊥`.
@@ -74,6 +76,8 @@ are not central series if `G` is not nilpotent is a standard abuse of notation.
 
 -/
 
+@[expose] public section
+
 
 open Subgroup
 
@@ -107,24 +111,22 @@ theorem upperCentralSeriesStep_eq_comap_center :
     upperCentralSeriesStep H = Subgroup.comap (mk' H) (center (G ⧸ H)) := by
   ext
   rw [mem_comap, mem_center_iff, forall_mk]
-  apply forall_congr'
-  intro y
+  refine forall_congr' fun y => ?_
   rw [coe_mk', ← QuotientGroup.mk_mul, ← QuotientGroup.mk_mul, eq_comm, eq_iff_div_mem,
     div_eq_mul_inv, mul_inv_rev, mul_assoc]
 
-instance : Normal (upperCentralSeriesStep H) := by
-  rw [upperCentralSeriesStep_eq_comap_center]
-  infer_instance
+instance [H.Characteristic] : Characteristic (upperCentralSeriesStep H) :=
+  (upperCentralSeriesStep_eq_comap_center H) ▸ Characteristic.comap_quotient_mk centerCharacteristic
 
 variable (G)
 
 /-- An auxiliary type-theoretic definition defining both the upper central series of
-a group, and a proof that it is normal, all in one go. -/
-def upperCentralSeriesAux : ℕ → Σ' H : Subgroup G, Normal H
+a group, and a proof that it is characteristic, all in one go. -/
+def upperCentralSeriesAux : ℕ → Σ' H : Subgroup G, Characteristic H
   | 0 => ⟨⊥, inferInstance⟩
   | n + 1 =>
     let un := upperCentralSeriesAux n
-    let _un_normal := un.2
+    let _un_characteristic := un.2
     ⟨upperCentralSeriesStep un.1, inferInstance⟩
 
 /-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`.
@@ -143,7 +145,7 @@ hold.
 def upperCentralSeries (n : ℕ) : Subgroup G :=
   (upperCentralSeriesAux G n).1
 
-instance upperCentralSeries_normal (n : ℕ) : Normal (upperCentralSeries G n) :=
+instance (n : ℕ) : Characteristic (upperCentralSeries G n) :=
   (upperCentralSeriesAux G n).2
 
 @[simp]
@@ -235,7 +237,7 @@ theorem upperCentralSeries_mono : Monotone (upperCentralSeries G) := by
   refine monotone_nat_of_le_succ ?_
   intro n x hx y
   rw [mul_assoc, mul_assoc, ← mul_assoc y x⁻¹ y⁻¹]
-  exact mul_mem hx (Normal.conj_mem (upperCentralSeries_normal G n) x⁻¹ (inv_mem hx) y)
+  exact mul_mem hx (Normal.conj_mem inferInstance x⁻¹ (inv_mem hx) y)
 
 /-- A group `G` is nilpotent iff there exists an ascending central series which reaches `G` in
   finitely many steps. -/
@@ -254,13 +256,12 @@ theorem is_descending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : �
   obtain ⟨h0, hH⟩ := hasc
   refine ⟨hn, fun x m hx g => ?_⟩
   dsimp at hx
-  by_cases hm : n ≤ m
+  by_cases! hm : n ≤ m
   · rw [tsub_eq_zero_of_le hm, h0, Subgroup.mem_bot] at hx
     subst hx
     rw [show (1 : G) * g * (1⁻¹ : G) * g⁻¹ = 1 by group]
     exact Subgroup.one_mem _
-  · push_neg at hm
-    apply hH
+  · apply hH
     convert hx using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
 
@@ -269,12 +270,11 @@ theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : �
   obtain ⟨h0, hH⟩ := hdesc
   refine ⟨hn, fun x m hx g => ?_⟩
   dsimp only at hx ⊢
-  by_cases hm : n ≤ m
+  by_cases! hm : n ≤ m
   · have hnm : n - m = 0 := tsub_eq_zero_iff_le.mpr hm
     rw [hnm, h0]
     exact mem_top _
-  · push_neg at hm
-    convert hH x _ hx g using 1
+  · convert hH x _ hx g using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
 
 /-- A group `G` is nilpotent iff there exists a descending central series which reaches the
@@ -318,10 +318,10 @@ theorem lowerCentralSeries_succ (n : ℕ) :
       closure { x | ∃ p ∈ lowerCentralSeries G n, ∃ q ∈ (⊤ : Subgroup G), p * q * p⁻¹ * q⁻¹ = x } :=
   rfl
 
-instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) := by
+instance (n : ℕ) : Characteristic (lowerCentralSeries G n) := by
   induction n with
-  | zero => exact (⊤ : Subgroup G).normal_of_characteristic
-  | succ d hd => exact @Subgroup.commutator_normal _ _ (lowerCentralSeries G d) ⊤ hd _
+  | zero => simp [topCharacteristic]
+  | succ d hd => unfold lowerCentralSeries; infer_instance
 
 theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
   refine antitone_nat_of_succ_le fun n x hx => ?_
@@ -331,8 +331,7 @@ theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
     closure_induction ?_ (Subgroup.one_mem _) (fun _ _ _ _ ↦ mul_mem) (fun _ _ ↦ inv_mem) hx
   rintro y ⟨z, hz, a, ha⟩
   rw [← ha, mul_assoc, mul_assoc, ← mul_assoc a z⁻¹ a⁻¹]
-  exact mul_mem hz (Normal.conj_mem (lowerCentralSeries_normal n) z⁻¹ (inv_mem hz) a)
-
+  exact mul_mem hz (Normal.conj_mem inferInstance z⁻¹ (inv_mem hz) a)
 
 /-- The lower central series of a group is a descending central series. -/
 theorem lowerCentralSeries_isDescendingCentralSeries :
@@ -498,7 +497,7 @@ theorem lowerCentralSeries.map {H : Type*} [Group H] (f : G →* H) (n : ℕ) :
   | succ d hd =>
     rintro a ⟨x, hx : x ∈ lowerCentralSeries G d.succ, rfl⟩
     refine closure_induction (hx := hx) ?_ (by simp [f.map_one, Subgroup.one_mem _])
-      (fun y z _ _ hy hz => by simp [MonoidHom.map_mul, Subgroup.mul_mem _ hy hz]) (fun y _ hy => by
+      (fun y z _ _ hy hz => by simp [map_mul, Subgroup.mul_mem _ hy hz]) (fun y _ hy => by
         rw [f.map_inv]; exact Subgroup.inv_mem _ hy)
     rintro a ⟨y, hy, z, ⟨-, rfl⟩⟩
     apply mem_closure.mpr

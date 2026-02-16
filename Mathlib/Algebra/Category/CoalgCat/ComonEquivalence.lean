@@ -3,12 +3,15 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.CoalgCat.Basic
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
-import Mathlib.CategoryTheory.Monoidal.Comon_
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Coalgebra.TensorProduct
+module
+
+public import Mathlib.Algebra.Category.CoalgCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
+public import Mathlib.CategoryTheory.Monoidal.Comon_
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # The category equivalence between `R`-coalgebras and comonoid objects in `R-Mod`
@@ -29,6 +32,8 @@ constructed in `Mathlib/Algebra/Category/CoalgCat/Monoidal.lean` to have better
 definitional equalities.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 

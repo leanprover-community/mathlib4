@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Equivalence
 
 /-! Tools for compatibilities between Dold-Kan equivalences
 
@@ -25,11 +27,11 @@ In this file, given four categories `A`, `A'`, `B`, `B'`, equivalences `eA : A �
 compatibilities, we construct successive equivalences:
 - `equivalence₀` from `A` to `B'`, which is the composition of `eA` and `e'`.
 - `equivalence₁` from `A` to `B'`, with the same inverse functor as `equivalence₀`,
-but whose functor is `F`.
+  but whose functor is `F`.
 - `equivalence₂` from `A` to `B`, which is the composition of `equivalence₁` and the
-inverse of `eB`:
+  inverse of `eB`:
 - `equivalence` from `A` to `B`, which has the same functor `F ⋙ eB.inverse` as `equivalence₂`,
-but whose inverse functor is `G`.
+  but whose inverse functor is `G`.
 
 When extra assumptions are given, we shall also provide simplification lemmas for the
 unit and counit isomorphisms of `equivalence`.
@@ -37,6 +39,8 @@ unit and counit isomorphisms of `equivalence`.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category Functor
@@ -47,7 +51,7 @@ namespace DoldKan
 
 namespace Compatibility
 
-variable {A A' B B' : Type*} [Category A] [Category A'] [Category B] [Category B'] (eA : A ≌ A')
+variable {A A' B B' : Type*} [Category* A] [Category* A'] [Category* B] [Category* B'] (eA : A ≌ A')
   (eB : B ≌ B') (e' : A' ≌ B') {F : A ⥤ B'} (hF : eA.functor ⋙ e'.functor ≅ F) {G : B ⥤ A}
   (hG : eB.functor ⋙ e'.inverse ≅ G ⋙ eA.functor)
 

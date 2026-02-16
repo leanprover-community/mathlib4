@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.TypeTags.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Additive and Multiplicative for group actions
@@ -13,6 +15,8 @@ import Mathlib.Algebra.Group.TypeTags.Basic
 
 group action
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero MonoidHom
 
@@ -39,12 +43,12 @@ instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β where sm
 
 instance Additive.addAction [Monoid α] [MulAction α β] : AddAction (Additive α) β where
   zero_vadd := MulAction.one_smul
-  add_vadd := MulAction.mul_smul (α := α)
+  add_vadd := mul_smul (α := α)
 
 instance Multiplicative.mulAction [AddMonoid α] [AddAction α β] :
     MulAction (Multiplicative α) β where
   one_smul := AddAction.zero_vadd
-  mul_smul := AddAction.add_vadd (G := α)
+  mul_smul := add_vadd (G := α)
 
 instance Additive.vaddCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     VAddCommClass (Additive α) (Additive β) γ :=

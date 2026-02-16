@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Hom
-import Mathlib.RepresentationTheory.Basic
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Hom
+public import Mathlib.RepresentationTheory.Basic
 
 /-!
 # The Weyl group of a root pairing
@@ -29,6 +31,8 @@ on roots.
 ## TODO
 * faithfulness of `weylGroupToPerm` when multiplication by 2 is injective on the weight space.
 -/
+
+@[expose] public section
 
 open Set Function
 

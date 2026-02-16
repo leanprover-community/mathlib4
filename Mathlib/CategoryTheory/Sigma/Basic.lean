@@ -3,15 +3,19 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.NatIso
+module
+
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.NatIso
 
 /-!
 # Disjoint union of categories
 
 We define the category structure on a sigma-type (disjoint union) of categories.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -23,7 +27,8 @@ universe w₁ w₂ w₃ v₁ v₂ u₁ u₂
 variable {I : Type w₁} {C : I → Type u₁} [∀ i, Category.{v₁} (C i)]
 
 /-- The type of morphisms of a disjoint union of categories: for `X : C i` and `Y : C j`, a morphism
-`(i, X) ⟶ (j, Y)` if `i = j` is just a morphism `X ⟶ Y`, and if `i ≠ j` there are no such morphisms.
+`(i, X) ⟶ (j, Y)` when `i = j` is just a morphism `X ⟶ Y`, and if `i ≠ j` then there are no such
+morphisms.
 -/
 inductive SigmaHom : (Σ i, C i) → (Σ i, C i) → Type max w₁ v₁ u₁
   | mk : ∀ {i : I} {X Y : C i}, (X ⟶ Y) → SigmaHom ⟨i, X⟩ ⟨i, Y⟩

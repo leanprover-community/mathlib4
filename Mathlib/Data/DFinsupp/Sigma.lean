@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Data.DFinsupp.Module
-import Mathlib.Data.Fintype.Quotient
+module
+
+public import Mathlib.Data.DFinsupp.Module
+public import Mathlib.Data.Fintype.Quotient
 
 /-!
 # `DFinsupp` on `Sigma` types
@@ -19,6 +21,8 @@ import Mathlib.Data.Fintype.Quotient
   bijection.
 
 -/
+
+@[expose] public section
 
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
@@ -92,8 +96,7 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
 
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
-def sigmaUncurry [∀ i j, Zero (δ i j)] [DecidableEq ι] (f : Π₀ (i) (j), δ i j) :
-    Π₀ i : Σ _, _, δ i.1 i.2 where
+def sigmaUncurry [∀ i j, Zero (δ i j)] (f : Π₀ (i) (j), δ i j) : Π₀ i : Σ _, _, δ i.1 i.2 where
   toFun i := f i.1 i.2
   support' :=
     f.support'.bind fun s =>
@@ -152,8 +155,7 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [∀ i, DecidableEq (α i)]
 /-- The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
 
 This is the dfinsupp version of `Equiv.piCurry`. -/
-def sigmaCurryEquiv [∀ i j, Zero (δ i j)] [DecidableEq ι] :
-    (Π₀ i : Σ _, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
+def sigmaCurryEquiv [∀ i j, Zero (δ i j)] : (Π₀ i : Σ _, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
   toFun := sigmaCurry
   invFun := sigmaUncurry
   left_inv f := by

@@ -3,9 +3,11 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.Bases
-import Mathlib.Topology.DenseEmbedding
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.DenseEmbedding
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-! # Stone-Čech compactification
 
@@ -32,6 +34,8 @@ on all compact Hausdorff spaces. We replace it by a two steps construction.
 The first step called `PreStoneCech` guarantees the expected universal property but
 not the Hausdorff condition. We then define `StoneCech α` as `T2Quotient (PreStoneCech α)`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -126,8 +130,6 @@ theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) �
   exact principal_mono.2 fun _ ↦ id
 
 section Embedding
-
-@[deprecated (since := "2025-08-14")] alias ultrafilter_pure_injective := Ultrafilter.pure_injective
 
 open TopologicalSpace
 
