@@ -601,7 +601,7 @@ lemma mulHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0
     (fun α _ ↦ ∀ (ι : α → Type v) [∀ a, Finite (ι a)] {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0),
       mulHeight (fun I : (a : α) → ι a ↦ ∏ a, x a (I a)) = ∏ a, mulHeight (x a))
     (fun β β' _ e H ι _ x hx ↦ ?equiv) ?empty (fun β hβ ih ι _ x hx ↦ ?option) α inferInstance
-  case empty => simp [← Pi.one_def] -- when #35407 is merged, this will be just `simp`
+  case empty => simp
   case equiv =>
     have (a : β) : Finite ((ι ∘ ⇑e) a) := inferInstanceAs <| Finite (ι (e a))
     specialize H (ι ∘ ⇑e) (x := fun b ↦ x (e b)) (by simp [hx])
