@@ -2462,6 +2462,7 @@ public import Mathlib.CategoryTheory.Enriched.Basic
 public import Mathlib.CategoryTheory.Enriched.EnrichedCat
 public import Mathlib.CategoryTheory.Enriched.FunctorCategory
 public import Mathlib.CategoryTheory.Enriched.HomCongr
+public import Mathlib.CategoryTheory.Enriched.Limits.Cotensors
 public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalLimits
 public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalProducts
 public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalPullbacks
