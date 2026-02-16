@@ -146,7 +146,7 @@ section FocalSubgroupTheorem
 variable {G : Type*} [Group G] [Finite G] {p : ℕ} [Fact (Nat.Prime p)] (P : Sylow p G)
 
 /-- The power map `y ↦ y^n` is surjective on `P/P*` because `gcd(n, p) = 1`. -/
-lemma pow_n_surjective_on_p_quotient : Surjective fun y : P ⧸ P.focalSubgroupOf ↦ y ^ P.index :=
+lemma focalSubgroupOf.pow_index_surjective : Surjective fun y : P ⧸ P.focalSubgroupOf ↦ y ^ P.index :=
   ((P.2.to_quotient P.focalSubgroupOf).powEquiv' P.not_dvd_index).surjective
 
 /-- The Transfer homomorphism is surjective from `G` to `P/P*`. -/
