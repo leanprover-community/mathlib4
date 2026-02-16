@@ -216,15 +216,6 @@ protected theorem coe_two : ((2 : ℝ≥0) : ℝ) = 2 := rfl
 protected theorem coe_sub {r₁ r₂ : ℝ≥0} (h : r₂ ≤ r₁) : ((r₁ - r₂ : ℝ≥0) : ℝ) = ↑r₁ - ↑r₂ :=
   max_eq_left <| le_sub_comm.2 <| by simp [show (r₂ : ℝ) ≤ r₁ from h]
 
-@[norm_cast]
-protected theorem coe_sub_of_add_le {a b c : ℝ≥0} (h : a + c ≤ b) :
-    ((b - a : ℝ≥0) : ℝ) = b - a :=
-  NNReal.coe_sub <| (self_le_add_right _ c).trans h
-
-@[norm_cast]
-protected theorem coe_sub_of_lt {a b : ℝ≥0} (h : a < b) :
-    ((b - a : ℝ≥0) : ℝ) = b - a := NNReal.coe_sub h.le
-
 variable {r r₁ r₂ : ℝ≥0} {x y : ℝ}
 
 @[simp, norm_cast] lemma coe_eq_zero : (r : ℝ) = 0 ↔ r = 0 := by rw [← coe_zero, coe_inj]

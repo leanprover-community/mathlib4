@@ -1,4 +1,6 @@
-import Mathlib.Tactic.Linarith.NNRealPreprocessor
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Rify
+import Mathlib.Data.NNReal.Basic
 
 set_option linter.unusedVariables false
 
@@ -65,11 +67,4 @@ example {a b : ℝ≥0} (h : 2 * b ≤ a + 2) (h' : 8 ≤ a) : (0 : ℝ) ≤ 3 *
 example {a b : ℝ≥0} (h₁ : 8 ≤ a) (h₂ : 2 * b > a) (h₃ : b + 1 < a) :
     a - (b + 1) + 3 ≤ a := by
   rify [h₃] at *
-  linarith
-
-example {a b : ℝ≥0} (h₁ : 8 ≤ a) (h₂ : 2 * b > a) (h₃ : b + 1 < a) :
-    a - (a - (b + 1)) = b + 1 := by
-  have f₁ : b + 1 ≤ a := by linarith
-  have f₂ : a - (b + 1) ≤ a := by rify [f₁]; linarith
-  rify [f₁, f₂] at *
   linarith

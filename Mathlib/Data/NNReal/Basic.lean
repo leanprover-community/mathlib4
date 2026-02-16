@@ -139,6 +139,15 @@ typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSu
 theorem sub_div (a b c : ℝ≥0) : (a - b) / c = a / c - b / c :=
   tsub_div _ _ _
 
+@[norm_cast]
+protected theorem coe_sub_of_add_le {a b c : ℝ≥0} (h : a + c ≤ b) :
+    ((b - a : ℝ≥0) : ℝ) = b - a :=
+  NNReal.coe_sub <| (self_le_add_right _ c).trans h
+
+@[norm_cast]
+protected theorem coe_sub_of_lt {a b : ℝ≥0} (h : a < b) :
+    ((b - a : ℝ≥0) : ℝ) = b - a := NNReal.coe_sub h.le
+
 end Sub
 
 section Csupr

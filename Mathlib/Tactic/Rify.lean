@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Tactic.Zify
-public import Mathlib.Tactic.Qify
+public import Mathlib.Tactic.Qify  -- shake: keep (for `@[qify_simps]`)
 
 /-!
 # `rify` tactic
@@ -109,3 +109,5 @@ doesn't need to be imported when using this tactic for only `ℕ, ℤ`, or `ℚ`
     ((ofNat(a) : ℚ) : ℝ) = (ofNat(a) : ℝ) := rfl
 
 end Mathlib.Tactic.Rify
+
+#min_imports
