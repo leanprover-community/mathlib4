@@ -14,10 +14,15 @@ jobs:
     with:
       source_workflow: ${{ github.event.workflow_run.name }}
       push_to_fork: leanprover-community/mathlib4_copy
+      allow_pr_author: true
+      allowed_teams: |
+        leanprover-community/mathlib-reviewers
       # Installation owner used when minting token from app secrets below.
       token_app_owner: leanprover-community
     secrets:
       token_app_id: ${{ secrets.MATHLIB_SPLICEBOT_APP_ID }}
       token_app_private_key: ${{ secrets.MATHLIB_SPLICEBOT_PRIVATE_KEY }}
+      authz_token_app_id: ${{ secrets.LPC_TEAM_CHECK_APP_ID }}
+      authz_token_app_private_key: ${{ secrets.LPC_TEAM_CHECK_PRIVATE_KEY }}
       branch_token_app_id: ${{ secrets.MATHLIB_COPY_SPLICEBOT_APP_ID }}
       branch_token_app_private_key: ${{ secrets.MATHLIB_COPY_SPLICEBOT_PRIVATE_KEY }}
