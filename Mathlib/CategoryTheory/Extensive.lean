@@ -208,7 +208,7 @@ theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFi
 
 instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
   classical
-  rw [finitaryExtensive_iff_of_isTerminal (Type u) PUnit Types.isTerminalPunit _
+  rw [finitaryExtensive_iff_of_isTerminal (Type u) PUnit Types.isTerminalPUnit _
       (Types.binaryCoproductColimit _ _)]
   apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => Types.binaryCoproductColimit X Y) _
       fun f g => (Limits.Types.pullbackLimitCone f g).2
@@ -225,7 +225,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
           cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαY val :).symm
       delta ExistsUnique at this
       choose l hl hl' using this
-      exact ⟨l, (funext hl).symm, Types.isTerminalPunit.hom_ext _ _,
+      exact ⟨l, (funext hl).symm, Types.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
     · refine ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
       intro s
@@ -238,7 +238,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
             existsUnique_eq']
       delta ExistsUnique at this
       choose l hl hl' using this
-      exact ⟨l, (funext hl).symm, Types.isTerminalPunit.hom_ext _ _,
+      exact ⟨l, (funext hl).symm, Types.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
   · intro Z f
     dsimp [Limits.Types.binaryCoproductCocone]

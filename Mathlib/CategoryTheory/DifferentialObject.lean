@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.CategoryTheory.Shift.Basic
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
 # Differential objects in a category.
@@ -209,20 +209,6 @@ end DifferentialObject
 
 namespace DifferentialObject
 
-section HasForget
-
-variable (S : Type*) [AddMonoidWithOne S]
-variable (C : Type (u + 1)) [LargeCategory C] [HasForget C] [HasZeroMorphisms C]
-variable [HasShift C S]
-
-instance hasForgetOfDifferentialObjects : HasForget (DifferentialObject S C) where
-  forget := forget S C ⋙ CategoryTheory.forget C
-
-instance : HasForget₂ (DifferentialObject S C) C where
-  forget₂ := forget S C
-
-end HasForget
-
 section ConcreteCategory
 
 variable (S : Type*) [AddMonoidWithOne S]
@@ -249,6 +235,9 @@ instance concreteCategoryOfDifferentialObjects :
   ofHom_hom _ := by ext; simp [ConcreteCategory.ofHom_hom]
   id_apply := ConcreteCategory.id_apply (C := C)
   comp_apply _ _ := ConcreteCategory.comp_apply (C := C) _ _
+
+instance : HasForget₂ (DifferentialObject S C) C where
+  forget₂ := forget S C
 
 end ConcreteCategory
 

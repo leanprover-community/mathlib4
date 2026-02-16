@@ -128,7 +128,7 @@ lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
           ext ⟨x⟩
           let α : CostructuredArrow.mk (F.map f ≫ x) ⟶ CostructuredArrow.mk x :=
             CostructuredArrow.homMk f
-          simp [uliftYoneda, ← s.w α, α] }
+          simp [← s.w α, α] }
     have hφ (s) (j) : (restrictedULiftYoneda F).map j.hom ≫ φ s =
         (restrictedULiftYoneda F).map (s.ι.app j) := by
       ext ⟨X⟩ ⟨x⟩
@@ -141,7 +141,7 @@ lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
         fac s j := h.map_injective (by simp [hφ])
         uniq s m hm := h.map_injective (by
           ext ⟨X⟩ ⟨x⟩
-          simp [uliftYoneda, φ, ← hm])}⟩
+          simp [φ, ← hm])}⟩
 
 lemma isDense_iff_fullyFaithful_restrictedULiftYoneda [F.Full] :
     F.IsDense ↔ Nonempty (restrictedULiftYoneda.{w} F).FullyFaithful :=

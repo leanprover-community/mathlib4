@@ -190,6 +190,7 @@ jobs:
         exit 0
 
     - name: Fetch latest bump branch name
+      if: steps.check_branch.outputs.result == 'false'
       id: latest_bump_branch
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       with:
@@ -210,6 +211,7 @@ jobs:
           return latestBranch;
 
     - name: Fetch lean-toolchain from latest bump branch
+      if: steps.check_branch.outputs.result == 'false'
       id: bump_version
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       with:
@@ -272,7 +274,7 @@ jobs:
           core.setOutput('toolchain_content', content);
           core.setOutput('branch_name', branchName);
 
-          const match = content.match(/leanprover\/lean4:nightly-(\d{4}-\d{2}-\d{2})/);
+          const match = content.match(/leanprover\/lean4:nightly-(\d{4}-\d{2}-\d{2}(?:-rev\d+)?)/);
           if (!match) {
             core.setFailed('Toolchain pattern did not match');
             return null;
@@ -280,7 +282,7 @@ jobs:
           return match[1];
 
     - name: Send warning message on Zulip if pattern doesn't match
-      if: failure()
+      if: failure() && steps.bump_version.outcome == 'failure'
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -290,7 +292,7 @@ jobs:
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
-          ⚠️ Warning: The lean-toolchain file in bump branch `${{ steps.bump_version.outputs.branch_name }}` does not match the expected pattern 'leanprover/lean4:nightly-YYYY-MM-DD'.
+          ⚠️ Warning: The lean-toolchain file in bump branch `${{ steps.bump_version.outputs.branch_name }}` does not match the expected pattern 'leanprover/lean4:nightly-YYYY-MM-DD(-revK)'.
 
           **Branch:** `${{ steps.bump_version.outputs.branch_name }}`
           **File URL:** https://github.com/${{ github.repository }}/blob/${{ steps.bump_version.outputs.branch_sha }}/lean-toolchain
@@ -324,13 +326,22 @@ jobs:
       if: steps.check_branch.outputs.result == 'false'
       run: |
         sudo rm -rf -- *
+    # Regenerate the app token just before use.
+    # GitHub App tokens expire after 1 hour, and the preceding steps can take longer than that.
+    - name: Regenerate app token for Mathlib4 checkout
+      if: steps.check_branch.outputs.result == 'false'
+      id: app-token-2
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      with:
+        app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+        private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
     - name: Checkout Mathlib4 repository
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       if: steps.check_branch.outputs.result == 'false'
       with:
         ref: nightly-testing # checkout nightly-testing branch (shouldn't matter which)
         fetch-depth: 0 # checkout all branches
-        token: ${{ steps.app-token.outputs.token }}
+        token: ${{ steps.app-token-2.outputs.token }}
 
     - name: Attempt automatic PR creation
       id: auto_pr
@@ -340,7 +351,7 @@ jobs:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
         SHA: ${{ env.SHA }}
-        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        GH_TOKEN: ${{ steps.app-token-2.outputs.token }}
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
       run: |
         echo "Current version: ${NIGHTLY}"
@@ -407,7 +418,7 @@ jobs:
             if last_bot_message:
                 last_content = last_bot_message['content']
                 # Extract nightly date and bump branch from last bot message
-                date_match = re.search(r'bump/nightly-(\d{4}-\d{2}-\d{2})', last_content)
+                date_match = re.search(r'bump/nightly-(\d{4}-\d{2}-\d{2}(?:-rev\d+)?)', last_content)
                 branch_match = re.search(r'PR that to (bump/v[\d.]+)', last_content)
                 if date_match and branch_match:
                     last_date = date_match.group(1)

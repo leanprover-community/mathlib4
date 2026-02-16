@@ -171,11 +171,6 @@ theorem lift_comp_of (F : DirectLimit G f →+* P) :
     lift G f _ (fun i ↦ F.comp <| of G f i) (fun i j hij x ↦ by simp) = F := by
   ext; simp
 
-@[deprecated lift_comp_of (since := "2025-08-11")]
-theorem lift_unique (F : DirectLimit G f →+* P) (x) :
-    F x = lift G f P (fun i ↦ F.comp <| of G f i) (fun i j hij x ↦ by simp) x := by
-  rw [lift_comp_of]
-
 @[simp]
 theorem lift_of' : lift G f _ (of G f) (fun i j hij x ↦ by simp) = .id _ := by
   ext; simp
