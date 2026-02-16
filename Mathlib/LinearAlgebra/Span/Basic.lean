@@ -873,3 +873,8 @@ theorem coord_apply_smul (y : Submodule.span R ({x} : Set M)) : coord R M x h y 
   Subtype.ext_iff.1 <| (toSpanNonzeroSingleton R M x h).apply_symm_apply _
 
 end LinearEquiv
+
+lemma Submodule.span_val_image_eq_iff {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+    (p : Submodule R M) (s : Set p) :
+    Submodule.span R (Subtype.val '' s) = p ↔ Submodule.span R s = ⊤ := by
+  simp [← (Submodule.map_injective_of_injective p.injective_subtype).eq_iff, Submodule.map_span]
