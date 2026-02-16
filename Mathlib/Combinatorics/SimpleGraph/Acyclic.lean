@@ -512,16 +512,12 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   exact h.minDegree_eq_one_of_nontrivial
 
 /-- A nontrivial tree there exists at least two leaves. -/
-@[nolint unusedArguments]
 theorem IsTree_exists_atleast_two_leaves [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
-(hTree : G.IsTree) (hSize : 1 < Fintype.card V) :
-∃ (v1 v2: V), v1 ≠ v2 ∧ G.isTree_leaf v1 ∧ G.isTree_leaf v2 := by
-  have : Nonempty V := by
-    rw [<- Fintype.card_pos_iff]
-    exact lt_trans (Nat.zero_lt_one) hSize
+    (hTree : G.IsTree) :
+    ∃ (v1 v2: V), v1 ≠ v2 ∧ G.isTree_leaf v1 ∧ G.isTree_leaf v2 := by
+  have : Nonempty V := Nontrivial.to_nonempty
   obtain ⟨u, v, p, hp_isPath, hp_max⟩ :=
     SimpleGraph.Walk.exists_isPath_forall_isPath_length_le_length G
-  have : Nontrivial V := Fintype.one_lt_card_iff_nontrivial.mp hSize
   obtain ⟨x, y, hxy⟩ := exists_pair_ne V
   obtain ⟨walk_xy, h_walk_is_path⟩ := SimpleGraph.Connected.exists_isPath hTree.isConnected x y
   have h_len_ge_1 : 1 ≤ p.length := by

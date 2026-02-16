@@ -349,9 +349,7 @@ theorem exists_neighbor_ne_of_one_lt_degree {V : Type*} [Fintype V] {G : SimpleG
   have h_subset : G.neighborFinset u ⊆ {v} := by
     intro x hx
     simp only [mem_neighborFinset] at hx
-    have h_eq := h_all_v x hx
-    simp only [mem_singleton]
-    exact h_eq
+    simp [h_all_v x hx]
   have h_card_le_1 := Finset.card_le_card h_subset
   rw [Finset.card_singleton] at h_card_le_1
   rw [← Nat.lt_add_one_iff] at h_card_le_1
