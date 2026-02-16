@@ -210,12 +210,11 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
       (Gamma_integrand_deriv_integrable_B hs hX),
     intervalIntegral.integral_neg, neg_add, neg_neg] at int_eval
   rw [eq_sub_of_add_eq int_eval, sub_neg_eq_add, neg_sub, add_comm, add_sub]
-  have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
-      (fun x => s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
-  rw [this]
-  rw [← intervalIntegral.integral_const_mul, ofReal_zero, zero_cpow]
-  · rw [mul_zero, add_zero]; congr 2; ext1; ring
-  · contrapose! hs; rw [hs, zero_re]
+  have hn : s ≠ 0 := by contrapose! hs; rw [hs, zero_re]
+  simp only [Pi.mul_apply, Function.comp_apply, ofReal_zero, zero_cpow hn, mul_zero, add_zero,
+    ← intervalIntegral.integral_const_mul]
+  congr with x
+  ring
 
 /-- The recurrence relation for the `Γ` integral. -/
 theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
