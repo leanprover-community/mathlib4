@@ -325,6 +325,7 @@ private lemma norm_φ_eq_norm_φ_of_isMinOn {x : F} {z : ℝ × ℝ} (h : IsMinO
   exact (norm_sub_le ..).trans <| by simp [q, aeval_eq_φ, hw]
 
 open Filter Topology Bornology in
+omit [NormMulClass F] in
 /- Assuming that `‖x - algebraMap ℝ F ·‖` is bounded below by a positive constant, we show that
 `φ x w` grows unboundedly as `w : ℝ × ℝ` does. We will use this to obtain a contradiction
 when `φ x` does not attain the value zero. -/
@@ -362,6 +363,7 @@ private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c)
     exact tendsto_fst
 
 open Bornology Filter Set in
+omit [NormMulClass F] in
 /- The norm of `‖φ x ·‖` attains a minimum on `ℝ × ℝ`. -/
 private lemma exists_isMinOn_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x ·‖) univ z := by
   -- use that `‖x - algebraMap ℝ F ·‖` has a minimum.

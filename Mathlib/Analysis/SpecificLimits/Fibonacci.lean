@@ -14,7 +14,7 @@ public import Mathlib.NumberTheory.Real.GoldenRatio
 We prove that the ratio of consecutive Fibonacci numbers tends to the golden ratio.
 -/
 
-@[expose] public section
+public section
 
 open Nat Real Filter Tendsto
 open scoped Topology goldenRatio

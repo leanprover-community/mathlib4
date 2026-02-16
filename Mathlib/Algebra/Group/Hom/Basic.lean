@@ -154,7 +154,7 @@ namespace OneHom
 instance [One M] [MulOneClass N] : Mul (OneHom M N) where
   mul f g :=
     { toFun m := f m * g m
-      map_one' := by simp}
+      map_one' := by simp }
 
 @[to_additive]
 instance instFunLikeMul [One M] [MulOneClass N] : FunLikeMul (OneHom M N) M N where
@@ -184,7 +184,7 @@ theorem mul_comp [One M] [One N] [MulOneClass P] (g₁ g₂ : OneHom N P) (f : O
 instance [One M] [InvOneClass N] : Inv (OneHom M N) where
   inv f :=
     { toFun m := (f m)⁻¹
-      map_one' := by simp}
+      map_one' := by simp }
 
 @[to_additive]
 instance instFunLikeInv [One M] [InvOneClass N] : FunLikeInv (OneHom M N) M N where

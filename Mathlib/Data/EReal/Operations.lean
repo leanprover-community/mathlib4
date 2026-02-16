@@ -6,6 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.EReal.Basic
+public import Batteries.Util.ProofWanted
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers
@@ -97,9 +98,6 @@ theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
 if and only if `x` is not `⊥`. -/
 theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by rw [add_comm, top_add_iff_ne_bot]
 
-@[deprecated (since := "2025-08-14")] alias add_pos_of_nonneg_of_pos :=
-  Right.add_pos_of_nonneg_of_pos
-
 protected theorem add_pos_of_pos_of_nonneg {a b : EReal} (ha : 0 < a) (hb : 0 ≤ b) : 0 < a + b :=
   add_comm a b ▸ Right.add_pos_of_nonneg_of_pos hb ha
 
@@ -188,20 +186,9 @@ lemma add_ne_top_iff_ne_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤
 lemma add_ne_top_iff_ne_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
     x + y ≠ ⊤ ↔ y ≠ ⊤ := add_comm x y ▸ add_ne_top_iff_ne_top_left hx hx'
 
-@[deprecated (since := "2025-08-14")] alias add_ne_top_iff_of_ne_bot := add_ne_top_iff_ne_top₂
-
 lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ := by
   induction x <;> simp [EReal.add_ne_top_iff_ne_top₂, hy, hy']
-
-/-- We do not have a notion of `LinearOrderedAddCommMonoidWithBot` but we can at least make
-the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
-instance : LinearOrderedAddCommMonoidWithTop ERealᵒᵈ where
-  le_top := by simp
-  top_add' := by
-    rw [OrderDual.forall]
-    intro x
-    rw [← OrderDual.toDual_bot, ← toDual_add, bot_add, OrderDual.toDual_bot]
 
 /-! ### Negation -/
 

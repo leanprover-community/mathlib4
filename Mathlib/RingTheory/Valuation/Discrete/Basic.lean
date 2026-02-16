@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Group.Cyclic
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # Discrete Valuations
@@ -118,36 +119,30 @@ lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsRankOneD
 lemma generator_ne_zero : (generator v : Γ) ≠ 0 := by simp
 
 instance : IsCyclic <| valueGroup v := by
-  rw [isCyclic_iff_exists_zpowers_eq_top, ← generator_zpowers_eq_valueGroup]
-  use ⟨generator v, by simp⟩
-  rw [eq_top_iff]
-  rintro ⟨g, k, hk⟩
-  simp only [mem_top, forall_const]
-  use k
-  ext
-  simp [← hk]
+  rw [← generator_zpowers_eq_valueGroup]
+  exact isCyclic_zpowers (generator v)
 
-instance : Nontrivial (valueGroup v) :=
-  ⟨1, ⟨generator v, by simp [← generator_zpowers_eq_valueGroup]⟩, ne_of_gt <| generator_lt_one v⟩
-
-instance [IsRankOneDiscrete v] : Nontrivial (valueMonoid v) := by
-  by_contra! H
-  apply ((valueGroup v).nontrivial_iff_ne_bot).mp (by infer_instance)
-  apply closure_eq_bot_iff.mpr
-  rw [subsingleton_iff] at H
-  intro x hx
-  specialize H ⟨x, hx⟩ ⟨1, one_mem_valueMonoid v⟩
-  simpa using H
-
-instance [IsRankOneDiscrete v] : v.IsNontrivial := by
-  constructor
-  obtain ⟨⟨γ, π, hπ⟩, hγ⟩ := (nontrivial_iff_exists_ne (1 : valueMonoid v)).mp (by infer_instance)
-  use π
-  constructor
-  · simp [hπ]
-  · rw [hπ]
-    simp only [← MonoidWithZeroHom.coe_one, ne_eq, Subtype.mk.injEq] at hγ
-    simp [hγ, Units.val_eq_one]
+instance : v.IsNontrivial := by
+  apply IsNontrivial.mk
+  by_contra! h1
+  have hvalueGroup : valueGroup v = ⊥ := by
+    simp only [valueGroup, valueMonoid, Submonoid.coe_set_mk, Subsemigroup.coe_set_mk,
+      closure_eq_bot_iff, subset_singleton_iff, mem_preimage, mem_range, forall_exists_index,
+      Units.ext_iff]
+    intro y x
+    specialize h1 x
+    aesop
+  #adaptation_note
+  /-- Until nightly-2026-01-07, this was:
+  ```
+  aesop (add safe forward [generator_lt_one, generator_zpowers_eq_valueGroup])
+  ```
+  This proof works as of 2026-01-30, but is about 4 times slower than the proof below.
+  -/
+  simp_all only [ne_eq]
+  have : generator v < 1 := generator_lt_one v
+  have : zpowers (generator v) = valueGroup v := generator_zpowers_eq_valueGroup v
+  simp_all only [zpowers_eq_bot, lt_self_iff_false]
 
 lemma valueGroup_genLTOne_eq_generator : (valueGroup v).genLTOne = generator v :=
   ((valueGroup v).genLTOne_unique (generator_lt_one v) (generator_zpowers_eq_valueGroup v)).symm

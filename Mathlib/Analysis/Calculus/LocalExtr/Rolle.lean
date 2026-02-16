@@ -42,7 +42,7 @@ We prove four versions of this theorem.
 local extremum, Rolle's Theorem
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology
 

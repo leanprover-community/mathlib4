@@ -76,7 +76,8 @@ lemma Surjective.of_comp [Surjective (f ≫ g)] : Surjective g where
 lemma Surjective.comp_iff [Surjective f] : Surjective (f ≫ g) ↔ Surjective g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
-instance : MorphismProperty.IsStableUnderComposition @Surjective.{u} where
+instance : MorphismProperty.IsMultiplicative @Surjective.{u} where
+  id_mem _ := inferInstance
   comp_mem _ _ hf hg := ⟨hg.1.comp hf.1⟩
 
 instance : MorphismProperty.RespectsIso @Surjective :=
@@ -121,6 +122,18 @@ lemma Surjective.sigmaDesc_of_union_range_eq_univ {X : Scheme.{u}}
 instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} (𝒰 : X.Cover (Scheme.precoverage P)) :
     Surjective (Limits.Sigma.desc fun i ↦ 𝒰.f i) :=
   Surjective.sigmaDesc_of_union_range_eq_univ 𝒰.iUnion_range
+
+/-- The single object covering by one surjective morphism satisfying `P`. -/
+@[simps! I₀ X f]
+def Scheme.Hom.cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f)
+    [Surjective f] : Cover.{v} (precoverage P) S :=
+  .singleton f <| by
+    rw [singleton_mem_precoverage_iff]
+    exact ⟨f.surjective, hf⟩
+
+instance {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f)
+    [Surjective f] : Unique (Scheme.Hom.cover f hf).I₀ :=
+  inferInstanceAs <| Unique PUnit
 
 end Surjective
 

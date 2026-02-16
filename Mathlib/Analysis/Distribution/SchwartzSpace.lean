@@ -1,22 +1,8 @@
-/-
-Copyright (c) 2022 Moritz Doll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Doll
--/
-module
+module -- shake: keep-all
 
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
-public import Mathlib.Analysis.Normed.Lp.SmoothApprox
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Analysis.Distribution.DerivNotation
-public import Mathlib.Analysis.Distribution.TemperateGrowth
-public import Mathlib.Topology.Algebra.UniformFilterBasis
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-public import Mathlib.MeasureTheory.Function.L2Space
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 
+<<<<<<< HEAD
 /-!
 # Schwartz space
 
@@ -1404,3 +1390,6 @@ end integration_by_parts
 
 
 end SchwartzMap
+=======
+deprecated_module (since := "2026-01-19")
+>>>>>>> master

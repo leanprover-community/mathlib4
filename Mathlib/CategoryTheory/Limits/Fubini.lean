@@ -141,7 +141,7 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
                 naturality := fun k k' f => by
                   dsimp; simp only [Category.comp_id]
                   conv_lhs =>
-                    arg 1; equals (F.map (𝟙 _)).app _ ≫  (F.obj j).map f =>
+                    arg 1; equals (F.map (𝟙 _)).app _ ≫ (F.obj j).map f =>
                       simp
                   conv_lhs => arg 1; rw [← uncurry_obj_map F (𝟙 j ×ₘ f)]
                   rw [c.w] } }
@@ -449,7 +449,7 @@ noncomputable def coconeOfHasColimitCurryCompColim : Cocone G :=
           Category.assoc, Category.comp_id, Prod.fac' (f₁, f₂),
           G.map_comp_assoc, ← curry_obj_map_app, ← curry_obj_obj_map]
         dsimp
-        simp [ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this]} }
+        simp [ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this] } }
 
 
 /-- The cocone `coconeOfHasColimitCurryCompColim` is in fact a limit cocone.

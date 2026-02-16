@@ -5,7 +5,7 @@ Authors: Abby J. Goldberg, Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Ring
 
 /-!
 # linear_combination' Tactic
@@ -258,7 +258,7 @@ elab_rules : tactic
   | `(tactic| linear_combination'%$tk $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
     elabLinearCombination' tk tac n e
 
-@[inherit_doc linearCombination']
+@[tactic_alt linearCombination']
 syntax "linear_combination2" (normStx)? (ppSpace colGt term)? : tactic
 elab_rules : tactic
   | `(tactic| linear_combination2%$tk $[(norm := $tac)]? $(e)?) =>

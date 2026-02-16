@@ -10,6 +10,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 
 /-!
 # The adjunction between the nerve and the homotopy category functor
@@ -466,27 +467,6 @@ instance preservesBinaryProducts :
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves finite products of simplicial sets. -/
 instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
   PreservesFiniteProducts.of_preserves_binary_and_terminal _
-
-/-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
-noncomputable instance Monoidal : hoFunctor.Monoidal :=
-  .ofChosenFiniteProducts hoFunctor
-
-open MonoidalCategory
-
-/-- An equivalence between the vertices of a simplicial set `X` and the
-objects of `hoFunctor.obj X`. -/
-def unitHomEquiv (X : SSet.{u}) :
-    (𝟙_ SSet ⟶ X) ≃ Cat.chosenTerminal ⥤ hoFunctor.obj X :=
-  (SSet.unitHomEquiv X).trans <|
-    (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
-
-theorem unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
-    hoFunctor.unitHomEquiv X x = (Functor.LaxMonoidal.ε hoFunctor).toFunctor ⋙
-      (hoFunctor.map x).toFunctor := by
-  simp only [Cat.of_α, unitHomEquiv, Equiv.trans_apply,
-    Functor.CoreMonoidal.toMonoidal_toLaxMonoidal]
-  rw [Equiv.symm_apply_eq, ← Equiv.eq_symm_apply]
-  rfl
 
 end hoFunctor
 

@@ -243,7 +243,7 @@ section Uniqueness
 @[stacks 01L0]
 lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
     (hf : ValuativeCriterion.Uniqueness f) : IsSeparated f where
-  diagonal_isClosedImmersion := by
+  isClosedImmersion_diagonal := by
     suffices h : ValuativeCriterion.Existence (pullback.diagonal f) by
       have := UniversallyClosed.of_valuativeCriterion (pullback.diagonal f) h
       exact .of_isPreimmersion _ (pullback.diagonal f).isClosedMap.isClosed_range

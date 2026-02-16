@@ -97,7 +97,7 @@ instance [Algebra R S] (p : PrimeSpectrum S) :
   over := rfl
 
 /-- `RingHom.comap` of an isomorphism of rings as an equivalence of their prime spectra. -/
-@[simps apply symm_apply]
+@[simps apply]
 def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃o PrimeSpectrum S where
   toFun := comap e.symm.toRingHom
   invFun := comap e.toRingHom
@@ -110,6 +110,8 @@ def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃o PrimeSpectrum S where
       RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm]
     rfl
   map_rel_iff' {I J} := Ideal.comap_le_comap_iff_of_surjective _ e.symm.surjective ..
+
+@[simp] lemma comapEquiv_symm (e : R ≃+* S) : (comapEquiv e).symm = comapEquiv e.symm := rfl
 
 section Pi
 

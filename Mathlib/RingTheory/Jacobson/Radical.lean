@@ -136,6 +136,10 @@ instance : (jacobson R).IsTwoSided :=
 
 variable {R R₂}
 
+lemma jacobson_le_of_isMaximal (m : Ideal R) [m.IsMaximal] : jacobson R ≤ m := by
+  rw [Ring.jacobson_eq_sInf_isMaximal]
+  exact sInf_le ‹_›
+
 theorem le_comap_jacobson : jacobson R ≤ Ideal.comap f (jacobson R₂) :=
   Module.le_comap_jacobson f.toSemilinearMap
 

@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Algebra.Order.Disjointed
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
 import Mathlib.MeasureTheory.Integral.Regular
@@ -71,7 +70,7 @@ theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : �
   apply isCompact_iff_ultrafilter_le_nhds'.2 (fun f hf ↦ ?_)
   have L (g : C_c(E, ℝ)) :
       ∃ x ∈ Icc (-C * ‖g.toBoundedContinuousFunction‖) (C * ‖g.toBoundedContinuousFunction‖),
-      Tendsto (fun (μ : FiniteMeasure E) ↦ ∫ x, g x ∂ μ) f (𝓝 x) := by
+      Tendsto (fun (μ : FiniteMeasure E) ↦ ∫ x, g x ∂μ) f (𝓝 x) := by
     simp only [Tendsto, ← Ultrafilter.coe_map]
     apply IsCompact.ultrafilter_le_nhds' isCompact_Icc
     simp only [neg_mul, Ultrafilter.mem_map]
@@ -428,16 +427,13 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
     filter_upwards [Ici_mem_atTop n] with m (hm : n ≤ m)
     have : ∑ i ∈ Finset.range (m + 1), (ν i : Measure E) (K n)ᶜ
         = ∑ i ∈ Finset.Ioc n m, (ν i : Measure E) (K n)ᶜ := by
-      apply (Finset.sum_subset _ _).symm
-      · intro i hi
-        simp only [Finset.mem_Ioc, Finset.mem_range_succ_iff] at hi ⊢
-        grind
-      · simp +contextual only [Finset.mem_range_succ_iff, Finset.mem_Ioc, not_and,
-          not_true_eq_false, imp_false, not_lt, ← null_iff_toMeasure_null]
-        intro i hi h'i
-        apply (ν i).mono_null _ (νK i)
-        rw [Monotone.partialSups_eq h]
-        exact compl_subset_compl.2 (h h'i)
+      apply (Finset.sum_subset (by grind) _).symm
+      simp +contextual only [Finset.mem_range_succ_iff, Finset.mem_Ioc, not_and,
+        not_true_eq_false, imp_false, not_lt, ← null_iff_toMeasure_null]
+      intro i hi h'i
+      apply (ν i).mono_null _ (νK i)
+      rw [Monotone.partialSups_eq h]
+      exact compl_subset_compl.2 (h h'i)
     rw [this]
     suffices (∑ i ∈ Finset.Ioc n m, ν i).toMeasure univ ≤ u n by
       apply le_trans _ this
@@ -469,7 +465,7 @@ lemma isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le {u : ℕ → ℝ�
     (h : NormalSpace E ∨ Monotone K) :
     IsCompact {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
   have : {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} =
-    {μ | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} ∩  {μ | μ.mass = C} := by ext; grind
+    {μ | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} ∩ {μ | μ.mass = C} := by ext; grind
   rw [this]
   apply IsCompact.inter_right (isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le C hu hK h)
   exact isClosed_eq (by fun_prop) (by fun_prop)

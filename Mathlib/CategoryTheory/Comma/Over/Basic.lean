@@ -131,6 +131,15 @@ lemma forall_iff (P : Over X → Prop) :
     (∀ Y, P Y) ↔ (∀ (Y) (f : Y ⟶ X), P (.mk f)) := by
   aesop
 
+lemma mk_surjective {S : T} (X : Over S) :
+    ∃ (Y : T) (f : Y ⟶ S), Over.mk f = X :=
+  ⟨_, X.hom, rfl⟩
+
+lemma homMk_surjective
+    {S : T} {X Y : Over S} (f : X ⟶ Y) :
+    ∃ (g : X.left ⟶ Y.left) (hg : g ≫ Y.hom = X.hom), f = Over.homMk g :=
+  ⟨f.left, by simp⟩
+
 section
 
 variable (X)
@@ -277,6 +286,11 @@ instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
 noncomputable def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
   CostructuredArrow.mkIdTerminal
 
+-- We could make this defeq if we care.
+@[simp] lemma mkIdTerminal_from_left (Y : Over X) : (mkIdTerminal.from Y).left = Y.hom := by
+  rw [mkIdTerminal.hom_ext (mkIdTerminal.from Y) (homMk Y.hom)]
+  rfl
+
 instance forget_faithful : (forget X).Faithful where
 
 -- TODO: Show the converse holds if `T` has binary products.
@@ -354,6 +368,26 @@ theorem iteratedSliceForward_forget :
 theorem iteratedSliceBackward_forget_forget :
     iteratedSliceBackward f ⋙ forget f ⋙ forget X = forget f.left :=
   rfl
+
+variable {f}
+
+/-- The naturality of the iterated slice equivalence up to isomorphism. -/
+@[simps! hom_app inv_app]
+def iteratedSliceForwardNaturalityIso {g : Over X} (p : f ⟶ g) :
+    iteratedSliceForward f ⋙ Over.map p.left ≅ Over.map p ⋙ iteratedSliceForward g :=
+  Iso.refl _
+
+/-- The natural isomorphism relating the functor `Over.map p` to the functor `Over.map p.left`,
+mediated by the underlying functor of the iterated slice equivalence.
+Note that `iteratedSliceForward` can in fact be considered as a natural transformation from the
+2-functor `Over (C := Over X) : Over X ⥤ Cat` to the composite 2-functor
+`forget X ⋙ Over : Over X ⥤ Cat`, and the naturality isormphism is then given by
+`iteratedSliceEquivOverMapIso`.
+-/
+@[simps! hom_app_left_left inv_app_left_left]
+def iteratedSliceEquivOverMapIso {f g : Over X} (p : f ⟶ g) :
+    f.iteratedSliceForward ⋙ Over.map p.left ⋙ g.iteratedSliceBackward ≅ Over.map p :=
+  NatIso.ofComponents (fun h => Over.isoMk (Over.isoMk (Iso.refl _)))
 
 end IteratedSlice
 
@@ -434,6 +468,13 @@ def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
   unitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.unitIso.app A.left))
   counitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.counitIso.app A.left))
 
+/-- `post (Over.forget X) : Over f ⥤ Over (forget.obj f)` is naturally isomorphic to the
+functor `Over.iteratedSliceForward : Over f ⥤ Over f.left`. -/
+@[simps! hom_app inv_app]
+def iteratedSliceForwardIsoPost (f : Over X) :
+    post (Over.forget X) ≅ Over.iteratedSliceForward f :=
+  Iso.refl _
+
 open Limits
 
 variable {X} in
@@ -477,6 +518,17 @@ def isLimitLiftCone {J : Type*} [Category* J] [Nonempty J]
 
 end Over
 
+/--
+Restrict a cone to the diagram over `j`. This preserves being limiting if the forgetful functor
+`Over j ⥤ J` is initial (see `CategoryTheory.Limits.IsLimit.overPost`).
+-/
+@[simps]
+def Limits.Cone.overPost
+    {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C} (c : Cone D) (j : J) :
+    Cone (Over.post (X := j) D) where
+  pt := Over.mk (c.π.app j)
+  π.app k := Over.homMk (c.π.app k.left)
+
 namespace CostructuredArrow
 
 /-- Reinterpreting an `F`-costructured arrow `F.obj d ⟶ X` as an arrow over `X` induces a functor
@@ -498,6 +550,41 @@ instance (F : D ⥤ T) (X : T) [F.EssSurj] : (toOver F X).EssSurj :=
 instance isEquivalence_toOver (F : D ⥤ T) (X : T) [F.IsEquivalence] :
     (toOver F X).IsEquivalence :=
   CostructuredArrow.isEquivalence_pre _ _ _
+
+namespace costructuredArrowToOverEquivalence
+
+variable (F : D ⥤ T) {X : T} (Y : Over X)
+
+/-- Auxiliary definition for `costructuredArrowToOverEquivalence`. -/
+@[simps]
+def functor : CostructuredArrow (toOver F X) Y ⥤ CostructuredArrow F Y.left where
+  obj Z := CostructuredArrow.mk Z.hom.left
+  map f :=
+    CostructuredArrow.homMk f.left.left (by rw [← CostructuredArrow.w f]; dsimp)
+
+/-- Auxiliary definition for `costructuredArrowToOverEquivalence`. -/
+@[simps]
+def inverse : CostructuredArrow F Y.left ⥤ CostructuredArrow (toOver F X) Y where
+  obj Z :=
+    CostructuredArrow.mk (Y := CostructuredArrow.mk (Z.hom ≫ Y.hom))
+      (Over.homMk Z.hom)
+  map f :=
+    CostructuredArrow.homMk
+      (CostructuredArrow.homMk f.left)
+        (by ext; exact CostructuredArrow.w f)
+
+end costructuredArrowToOverEquivalence
+
+/-- A category of costructured arrows for a functor `toOver F X` identifies
+to a category of costructured arrows for `F`. -/
+def costructuredArrowToOverEquivalence (F : D ⥤ T) {X : T} (Y : Over X) :
+    CostructuredArrow (toOver F X) Y ≌ CostructuredArrow F Y.left where
+  functor := costructuredArrowToOverEquivalence.functor F Y
+  inverse := costructuredArrowToOverEquivalence.inverse F Y
+  unitIso :=
+    NatIso.ofComponents (fun _ ↦
+      CostructuredArrow.isoMk (CostructuredArrow.isoMk (Iso.refl _)))
+  counitIso := Iso.refl _
 
 end CostructuredArrow
 
@@ -591,6 +678,15 @@ lemma inv_right_hom_right {f g : Under X} (e : f ≅ g) :
 lemma forall_iff (P : Under X → Prop) :
     (∀ Y, P Y) ↔ (∀ (Y) (f : X ⟶ Y), P (.mk f)) := by
   aesop
+
+lemma mk_surjective {S : T} (X : Under S) :
+    ∃ (Y : T) (f : S ⟶ Y), Under.mk f = X :=
+  ⟨_, X.hom, rfl⟩
+
+lemma homMk_surjective
+    {S : T} {X Y : Under S} (f : X ⟶ Y) :
+    ∃ (g : X.right ⟶ Y.right) (hg : X.hom ≫ g = Y.hom), Under.homMk g = f :=
+  ⟨f.right, by simp⟩
 
 section
 
@@ -723,6 +819,11 @@ instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
 /-- The identity under `X` is initial. -/
 noncomputable def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
   StructuredArrow.mkIdInitial
+
+-- We could make this defeq if we care.
+@[simp] lemma mkIdInitial_to_right (Y : Under X) : (mkIdInitial.to Y).right = Y.hom := by
+  rw [mkIdInitial.hom_ext (mkIdInitial.to Y) (homMk Y.hom)]
+  rfl
 
 instance forget_faithful : (forget X).Faithful where
 
@@ -881,6 +982,17 @@ def isColimitLiftCocone {J : Type*} [Category* J] [Nonempty J]
     exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).right)
 
 end Under
+
+/--
+Restrict a cocone to the diagram under `j`. This preserves being colimiting if the forgetful functor
+`Over j ⥤ J` is final (see `CategoryTheory.Limits.IsColimit.underPost`).
+-/
+@[simps]
+def Limits.Cocone.underPost {J C : Type*} [Category* J] [Category* C]
+    {D : J ⥤ C} (c : Cocone D) (j : J) :
+    Cocone (Under.post (X := j) D) where
+  pt := Under.mk (c.ι.app j)
+  ι.app k := Under.homMk (c.ι.app k.right)
 
 namespace StructuredArrow
 

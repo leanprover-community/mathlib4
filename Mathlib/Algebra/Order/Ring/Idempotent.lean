@@ -24,7 +24,7 @@ is uniquely determined by either `a` or `b`).
 variable {R : Type*}
 
 instance [CommMonoid R] [AddCommMonoid R] :
-    HasCompl {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
+    Compl {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
   compl a := ⟨(a.1.2, a.1.1), (mul_comm ..).trans a.2.1, (add_comm ..).trans a.2.2⟩
 
 lemma eq_of_mul_eq_add_eq_one [NonAssocSemiring R] (a : R) {b c : R}

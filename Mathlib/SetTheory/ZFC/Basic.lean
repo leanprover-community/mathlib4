@@ -185,6 +185,8 @@ instance : SetLike ZFSet.{u} ZFSet.{u} where
   coe x := {y | y ∈ x}
   coe_injective' x y hxy := by ext z; exact congr(z ∈ $hxy)
 
+instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u} ZFSet.{u}
+
 /-- Convert a ZFC set into a `Set` of ZFC sets -/
 @[deprecated SetLike.coe (since := "2025-11-05")]
 def toSet (u : ZFSet.{u}) : Set ZFSet.{u} :=
@@ -231,7 +233,7 @@ instance : HasSSubset ZFSet := ⟨(· < ·)⟩
 theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
   Iff.rfl
 
-instance : IsRefl ZFSet (· ⊆ ·) :=
+instance : @Std.Refl ZFSet (· ⊆ ·) :=
   ⟨fun _ _ => id⟩
 
 instance : IsTrans ZFSet (· ⊆ ·) :=
@@ -256,7 +258,7 @@ theorem toSet_injective : Function.Injective ((↑) : ZFSet.{u} → Set ZFSet.{u
 @[deprecated SetLike.coe_set_eq (since := "2025-11-05")]
 lemma toSet_inj : (x : Set ZFSet.{u}) = y ↔ x = y := SetLike.coe_set_eq
 
-instance : IsAntisymm ZFSet (· ⊆ ·) :=
+instance : @Std.Antisymm ZFSet (· ⊆ ·) :=
   ⟨@le_antisymm ZFSet _⟩
 
 instance : IsNonstrictStrictOrder ZFSet (· ⊆ ·) (· ⊂ ·) :=

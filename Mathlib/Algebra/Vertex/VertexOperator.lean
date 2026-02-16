@@ -62,7 +62,7 @@ scoped[VertexOperator] notation A "[[" n "]]" => ncoeff A n
 
 @[simp]
 theorem coeff_eq_ncoeff (A : VertexOperator R V)
-    (n : ℤ) : HVertexOperator.coeff A n = A [[-n - 1]] := by
+    (n : ℤ) : HVertexOperator.coeff A n = A[[-n - 1]] := by
   rw [ncoeff_apply, neg_sub, Int.sub_neg, add_sub_cancel_left]
 
 @[deprecated (since := "2025-08-30")] alias ncoeff_add := map_add
@@ -81,21 +81,18 @@ theorem coeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
 /-- Given an endomorphism-valued function on integers satisfying a pointwise bounded-pole condition,
 we produce a vertex operator. -/
 noncomputable def of_coeff (f : ℤ → Module.End R V)
-    (hf : ∀ x : V, ∃ n : ℤ, ∀ m : ℤ, m < n → f m x = 0) : VertexOperator R V :=
-  HVertexOperator.of_coeff f
-    (fun x => HahnSeries.suppBddBelow_supp_PWO (fun n => f n x)
-      (HahnSeries.forallLTEqZero_supp_BddBelow (fun n => f n x)
-        (Exists.choose (hf x)) (Exists.choose_spec (hf x))))
+    (hf : ∀ x, BddBelow (Function.support fun y ↦ f y x)) : VertexOperator R V :=
+  HVertexOperator.of_coeff f fun x ↦ (BddBelow.isWF (hf x)).isPWO
 
 @[simp]
 theorem of_coeff_apply_coeff (f : ℤ → Module.End R V)
-    (hf : ∀ (x : V), ∃ n, ∀ m < n, (f m) x = 0) (x : V) (n : ℤ) :
+    (hf : ∀ x, BddBelow (Function.support fun y ↦ f y x)) (x : V) (n : ℤ) :
     ((HahnModule.of R).symm ((of_coeff f hf) x)).coeff n = (f n) x := by
   rfl
 
 @[simp]
 theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
-    (hf : ∀ (x : V), ∃ (n : ℤ), ∀ (m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
+    (hf : ∀ x, BddBelow (Function.support fun y ↦ f y x)) (n : ℤ) :
     (of_coeff f hf)[[n]] = f (-n - 1) := by
   ext v
   rw [ncoeff_apply, coeff_apply_apply, of_coeff_apply_coeff]

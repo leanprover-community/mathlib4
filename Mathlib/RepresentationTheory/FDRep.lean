@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.FGModuleCat.Limits
 public import Mathlib.Algebra.Category.FGModuleCat.Colimits
-public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided  -- shake: keep (`example`)
 public import Mathlib.CategoryTheory.Preadditive.Schur
 public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.RepresentationTheory.Rep
@@ -181,12 +181,12 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
       (forget₂ (FDRep R G) (Rep R G)).obj Y) ≃ₗ[R] X ⟶ Y where
   toFun f := ⟨InducedCategory.homMk f.hom, fun g ↦ by
     ext x
-    exact congr_fun ((forget _).congr_map (f.comm g)) x⟩
+    exact congr_fun ((forget (ModuleCat R)).congr_map (f.comm g)) x⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := ⟨(forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom, fun g ↦ by
     ext x
-    exact congr_fun ((forget _).congr_map (f.comm g)) x⟩
+    exact congr_fun ((forget (FGModuleCat R)).congr_map (f.comm g)) x⟩
 
 instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
   dsimp [forget₂, HasForget₂.forget₂]

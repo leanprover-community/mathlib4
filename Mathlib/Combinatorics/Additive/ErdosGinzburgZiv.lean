@@ -22,7 +22,7 @@ elements of sum zero.
 * `ZMod.erdos_ginzburg_ziv`: The Erdős–Ginzburg–Ziv theorem stated using sequences in `ZMod n`
 -/
 
-@[expose] public section
+public section
 
 open Finset MvPolynomial
 

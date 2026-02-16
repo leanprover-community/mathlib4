@@ -250,6 +250,11 @@ theorem comap_iInf [RingHomSurjective σ₁₂] {ι : Sort*} (f : M →ₛₗ[σ
   (gc_map_comap f).u_iInf
 
 @[simp]
+theorem comap_finsetInf [RingHomSurjective σ₁₂] {ι : Type*} (f : M →ₛₗ[σ₁₂] M₂)
+    (s : Finset ι) (p : ι → Submodule R₂ M₂) : comap f (s.inf p) = s.inf fun i ↦ comap f (p i) := by
+  simp [Finset.inf_eq_iInf]
+
+@[simp]
 theorem comap_zero : comap (0 : M →ₛₗ[σ₁₂] M₂) q = ⊤ :=
   ext <| by simp
 
@@ -306,9 +311,6 @@ theorem map_sup_comap_of_surjective (p q : Submodule R₂ M₂) :
 theorem map_iSup_comap_of_surjective {ι : Sort*} (S : ι → Submodule R₂ M₂) :
     (⨆ i, (S i).comap f).map f = iSup S :=
   (giMapComap hf).l_iSup_u _
-
-@[deprecated (since := "2025-07-08")]
-alias map_iSup_comap_of_sujective := map_iSup_comap_of_surjective
 
 theorem map_inf_comap_of_surjective (p q : Submodule R₂ M₂) :
     (p.comap f ⊓ q.comap f).map f = p ⊓ q :=
@@ -686,8 +688,6 @@ variable {module_M : Module R M} {module_M₂ : Module R₂ M₂}
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 variable (e : M ≃ₛₗ[σ₁₂] M₂)
-
-@[deprecated (since := "2025-06-18")] alias map_eq_comap := Submodule.map_equiv_eq_comap_symm
 
 /-- A linear equivalence of two modules restricts to a linear equivalence from any submodule
 `p` of the domain onto the image of that submodule.

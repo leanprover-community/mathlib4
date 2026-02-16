@@ -156,7 +156,7 @@ attribute [local simp] Iso.inv_comp_eq in
 instance {e : X ≅ Y} [HomIsOver e.hom S] : HomIsOver e.inv S where
 
 -- FIXME: False positive from the linter
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 attribute [local simp ←] Iso.eq_inv_comp in
 instance {e : X ≅ Y} [HomIsOver e.inv S] : HomIsOver e.hom S where
 

@@ -3,7 +3,7 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 public import Mathlib.LinearAlgebra.Matrix.Dual
@@ -21,7 +21,7 @@ The file contains results connecting perfect pairings and matrices.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 

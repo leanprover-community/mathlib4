@@ -20,7 +20,7 @@ public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 -/
 
-@[expose] public section
+public section
 
 section TopologicalSpace
 

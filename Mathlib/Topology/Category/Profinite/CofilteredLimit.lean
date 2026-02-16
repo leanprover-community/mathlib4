@@ -24,7 +24,7 @@ This file contains some theorems about cofiltered limits of profinite sets.
   of profinite sets factors through one of the components.
 -/
 
-@[expose] public section
+public section
 
 namespace Profinite
 

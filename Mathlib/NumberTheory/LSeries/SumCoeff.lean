@@ -34,7 +34,7 @@ L-series.
 
 -/
 
-@[expose] public section
+public section
 
 open Finset Filter MeasureTheory Topology Complex Asymptotics
 

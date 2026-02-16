@@ -20,7 +20,7 @@ We prove results about big operators that involve some interaction between
 multiplicative and additive structures on the values being combined.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

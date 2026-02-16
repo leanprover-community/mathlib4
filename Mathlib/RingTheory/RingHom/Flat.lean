@@ -32,9 +32,6 @@ lemma RingHom.flat_algebraMap_iff {R S : Type*} [CommRing R] [CommRing S] [Algeb
     (algebraMap R S).Flat ↔ Module.Flat R S := by
   rw [RingHom.Flat, toAlgebra_algebraMap]
 
-@[deprecated (since := "2025-06-03")]
-alias flat_algebraMap_iff := RingHom.flat_algebraMap_iff
-
 namespace RingHom.Flat
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
@@ -130,4 +127,34 @@ lemma generalizingMap_comap {f : R →+* S} (hf : f.Flat) : GeneralizingMap (com
   rw [← Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap]
   infer_instance
 
+lemma of_isField (hR : IsField R) (f : R →+* S) : f.Flat := by
+  let := f.toAlgebra
+  let := hR.toField
+  rw [← f.algebraMap_toAlgebra, RingHom.flat_algebraMap_iff]
+  infer_instance
+
 end RingHom.Flat
+
+section
+
+open CategoryTheory Limits
+
+variable {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T)
+
+lemma CommRingCat.inr_injective_of_flat
+    (hf : Function.Injective f) (hg : g.hom.Flat) : Function.Injective (pushout.inr f g) := by
+  algebraize [f.hom, g.hom]
+  have : _ = pushout.inr f g := (CommRingCat.isPushout_tensorProduct R S T).inr_isoPushout_hom
+  rw [← this]
+  exact (CommRingCat.isPushout_tensorProduct R S T).isoPushout.commRingCatIsoToRingEquiv
+    |>.injective.comp (Algebra.TensorProduct.includeRight_injective (B := T) hf)
+
+lemma CommRingCat.inl_injective_of_flat
+    (hf : f.hom.Flat) (hg : Function.Injective g) : Function.Injective (pushout.inl f g) := by
+  algebraize [f.hom, g.hom]
+  have : _ = pushout.inl f g := (CommRingCat.isPushout_tensorProduct R S T).inl_isoPushout_hom
+  rw [← this]
+  exact (CommRingCat.isPushout_tensorProduct R S T).isoPushout.commRingCatIsoToRingEquiv
+    |>.injective.comp (Algebra.TensorProduct.includeLeft_injective (S := R) (A := S) hg)
+
+end

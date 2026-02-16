@@ -11,12 +11,12 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Field
 /-!
 # Summability of logarithms
 
-We give conditions under which the logarithms of a summble sequence is summable. We also use this
+We give conditions under which the logarithms of a summable sequence are summable. We also use this
 to relate summability of `f` to multipliability of `1 + f`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Type*}
 

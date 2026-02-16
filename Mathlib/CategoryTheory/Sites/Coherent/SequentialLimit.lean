@@ -27,7 +27,7 @@ This is deduced from the corresponding statement about locally surjective morphi
 (see `coherentTopology.isLocallySurjective_π_app_zero_of_isLocallySurjective_map`).
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
@@ -36,8 +36,6 @@ open CategoryTheory Limits Opposite
 namespace CategoryTheory.coherentTopology
 
 variable {C : Type u} [Category.{v} C] [Preregular C] [FinitaryExtensive C]
-
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
 variable {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) (Type v)} {c : Cone F}
     (hc : IsLimit c)
     (hF : ∀ n, Sheaf.IsLocallySurjective (F.map (homOfLE (Nat.le_succ n)).op))

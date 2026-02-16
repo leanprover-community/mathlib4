@@ -439,14 +439,12 @@ noncomputable instance : Category (Localization W) where
   comp_id := by
     rintro (X Y : C) f
     obtain ⟨z, rfl⟩ := Hom.mk_surjective f
-    change (Hom.mk z).comp (Hom.mk (ofHom W (𝟙 Y))) = Hom.mk z
     rw [Hom.comp_eq, comp_eq z (ofHom W (𝟙 Y)) (ofInv z.s z.hs) (by simp)]
     dsimp [comp₀]
     simp only [comp_id, id_comp]
   id_comp := by
     rintro (X Y : C) f
     obtain ⟨z, rfl⟩ := Hom.mk_surjective f
-    change (Hom.mk (ofHom W (𝟙 X))).comp (Hom.mk z) = Hom.mk z
     rw [Hom.comp_eq, comp_eq (ofHom W (𝟙 X)) z (ofHom W z.f) (by simp)]
     dsimp
     simp only [id_comp, comp_id]
@@ -455,8 +453,6 @@ noncomputable instance : Category (Localization W) where
     obtain ⟨z₁, rfl⟩ := Hom.mk_surjective f₁
     obtain ⟨z₂, rfl⟩ := Hom.mk_surjective f₂
     obtain ⟨z₃, rfl⟩ := Hom.mk_surjective f₃
-    change ((Hom.mk z₁).comp (Hom.mk z₂)).comp (Hom.mk z₃) =
-      (Hom.mk z₁).comp ((Hom.mk z₂).comp (Hom.mk z₃))
     rw [Hom.comp_eq z₁ z₂, Hom.comp_eq z₂ z₃]
     obtain ⟨z₁₂, fac₁₂⟩ := exists_leftFraction (RightFraction.mk z₁.s z₁.hs z₂.f)
     obtain ⟨z₂₃, fac₂₃⟩ := exists_leftFraction (RightFraction.mk z₂.s z₂.hs z₃.f)
