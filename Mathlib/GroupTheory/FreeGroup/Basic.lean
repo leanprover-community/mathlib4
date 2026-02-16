@@ -881,7 +881,7 @@ end Sum
 @[deprecated "Use `Equiv.ofUnique (FreeGroup Empty) Unit` instead,
 or MulEquiv.ofUnique (FreeGroup Empty) Unit for the multiplicative version"
 (since := "2026-02-11")]
-alias freeGroupEmptyEquivUnit := Equiv.ofUnique (FreeGroup Empty) Unit
+def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   toFun _ := ()
   invFun _ := 1
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
