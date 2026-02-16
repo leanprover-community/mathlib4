@@ -118,6 +118,7 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
   · simp
 
 /-- A proper geometrically integral group scheme over a field is commutative. -/
+@[stacks 0BFD]
 theorem isCommMonObj_of_isProper_of_geometricallyIntegral
     (G : Over (Spec (.of K))) [IsProper G.hom] [GeometricallyIntegral G.hom] [GrpObj G] :
     IsCommMonObj G := by
