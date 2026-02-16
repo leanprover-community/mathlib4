@@ -275,7 +275,7 @@ end Isotopy
 
 section Completion
 
-variable {n : Type u'} [Fintype n] [Nonempty n] [DecidableEq n]
+variable {n : Type u} [Fintype n] [Nonempty n] [DecidableEq n]
 variable {k : Type u} [Fintype k] [Nonempty k]
 
 def is_subrect
@@ -773,30 +773,41 @@ theorem latin_rectangle_extends_one_row
 #check Nat.set_induction
 #check Finset.induction_on
 
+
+-- protected theorem induction_on {α : Type*} {motive : Finset α → Prop} [DecidableEq α] (s : Finset α)
+--     (empty : motive ∅)
+--     (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : motive s :=
+--   Finset.induction empty insert s
+
 -- protected theorem induction {α : Type*} {motive : Finset α → Prop} [DecidableEq α]
 --     (empty : motive ∅)
 --     (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : ∀ s, motive s :=
 --   cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert a s ha
 
-lemma inclusion_induction {k : Type u} [Fintype k] {motive2 : (Type u -> Type u) -> Prop}
-    (empty : motive2 Type u -> Type u)
-    (h : Fintype.card k ≤ Fintype.card n)
-    (ι : k ↪ n) :
-    ∃ (k' : Type*) (_ : Fintype k'), Fintype.card k' = (Fintype.card n) - 1 ∧ Nonempty (k' ↪ n) := by sorry
+lemma inclusion_induction {k : Type u} [Fintype k]
+    {motive : (Σ (n : Type u), (k ↪ n)) → Prop}
+    (base : motive ⟨k, Function.Embedding.refl k⟩)
+    (step : ∀ (n : Type u) [Fintype n] (f : k ↪ n),
+        motive ⟨n, f⟩ → 
+            ∃ (k' : Type u) (_ : Fintype k') (f' : k ↪ k'),
+            motive ⟨k', f'⟩ ∧ Fintype.card k' = Fintype.card n + 1)
+  : ∀ (n : Type u) [Fintype n] (f : k ↪ n), Fintype.card k ≤ Fintype.card n → motive ⟨n, f⟩ := sorry
+
+lemma subrect_self
+    (A : LatinRectangle k n α) : is_subrect A A (Function.Embedding.refl k) := by sorry
 
 theorem latin_rectangle_extends_to_latin_square
     (A : LatinRectangle k n α)
     (h : Fintype.card k ≤ Fintype.card n := by omega)
     (ι : k ↪ n) :
-    ∃ (A' : LatinSquare n α), is_subrect A A' ι := by 
-      
-      let k' := Fintype.card n - Fintype.card k
-      induction k' generalizing n k ι with
-      | zero  => sorry
-      | succ k' ih => sorry
-      -- let k' := (Finset.univ : Finset n) ∖ (Finset.image ι Finset.univ )
-      -- induction k' using Finset.induction_on 
-      -- case empty 
+    ∃ (A' : LatinRectangle n n α), is_subrect A A' ι := by 
+    let motive := fun (p : Σ (n : Type u), (k ↪ n)) => ∀ [Fintype p.1], 
+        ∀ (A : LatinRectangle k p.1 α), ∃ (A' : LatinRectangle p.1 p.1 α), is_subrect A A' p.2
+    apply inclusion_induction (motive := motive)
+    case base => sorry 
+    case step => sorry
+    case a => exact h
+
 end Completion
 
 end LatinSquare
