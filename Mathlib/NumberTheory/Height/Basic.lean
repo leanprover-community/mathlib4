@@ -338,6 +338,31 @@ lemma mulHeight.ne_zero (x : ι → K) : mulHeight x ≠ 0 :=
 lemma zero_le_logHeight (x : ι → K) : 0 ≤ logHeight x :=
   log_nonneg <| one_le_mulHeight x
 
+open Function in
+lemma mulHeight_comp_le {ι ι' : Type*} [Finite ι] [Finite ι'] (f : ι → ι') (x : ι' → K) :
+    mulHeight (x ∘ f) ≤ mulHeight x := by
+  rcases eq_or_ne (x ∘ f) 0 with h₀ | h₀
+  · simpa [h₀] using one_le_mulHeight _
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  have : Nonempty ι := .intro (ne_iff.mp h₀).choose
+  rw [mulHeight_eq h₀, mulHeight_eq hx]
+  have H (v : AbsoluteValue K ℝ) : ⨆ i, v ((x ∘ f) i) ≤ ⨆ i, v (x i) :=
+    -- TODO: use `Finite.le_ciSup_of_le` when #35260 is merged
+    ciSup_le fun i ↦ le_ciSup_of_le (Finite.bddAbove_range _) (f i) le_rfl
+  gcongr
+  · exact finprod_nonneg fun v ↦ v.val.iSup_abv_nonneg
+  · exact Multiset.prod_map_nonneg fun v _ ↦ v.iSup_abv_nonneg
+  · exact Multiset.prod_map_le_prod_map₀ _ _ (fun v _ ↦ v.iSup_abv_nonneg) fun v _ ↦ H v
+  · exact finprod_le_finprod (mulSupport_iSup_nonarchAbsVal_finite h₀)
+      (fun v ↦ v.val.iSup_abv_nonneg) (mulSupport_iSup_nonarchAbsVal_finite hx) fun v ↦ H v.val
+
+open Real in
+lemma logHeight_comp_le {ι ι' : Type*} [Finite ι] [Finite ι'] (f : ι → ι') (x : ι' → K) :
+    logHeight (x ∘ f) ≤ logHeight x := by
+  simp only [logHeight_eq_log_mulHeight]
+  exact log_le_log (mulHeight_pos _) <| mulHeight_comp_le ..
+
 end Height
 
 /-!
