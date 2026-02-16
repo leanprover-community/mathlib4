@@ -45,7 +45,8 @@ variable (C : Type*) [Category* C] {FC : outParam <| C → C → Type*} {CC : ou
     [outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{w} C FC]
 
 /-- The forgetful functor from a concrete category to the category of types. -/
-def forget : C ⥤ TypeCat.{w} where
+@[to_additive_do_translate]
+abbrev forget : C ⥤ TypeCat.{w} where
   obj X := .of (ToType X)
   map f := ConcreteCategory.ofHom ⟨f⟩
 

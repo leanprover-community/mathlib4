@@ -32,7 +32,7 @@ structure FintypeCat where
   /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
   of ::
   /-- The underlying type. -/
-  carrier : Type*
+  carrier : TypeCat
   [str : Fintype carrier]
 
 attribute [instance] FintypeCat.str
@@ -40,10 +40,10 @@ attribute [instance] FintypeCat.str
 namespace FintypeCat
 
 instance instCoeSort : CoeSort FintypeCat Type* :=
-  ⟨carrier⟩
+  ⟨fun X ↦ (X.carrier :)⟩
 
 instance : Inhabited FintypeCat :=
-  ⟨of PEmpty⟩
+  ⟨of <| TypeCat.of PEmpty⟩
 
 instance {X : FintypeCat} : Fintype X :=
   X.2
@@ -53,19 +53,14 @@ instance : Category FintypeCat :=
 
 /-- The fully faithful embedding of `FintypeCat` into the category of types. -/
 @[simps!]
-def incl : FintypeCat ⥤ Type* :=
+def incl : FintypeCat ⥤ TypeCat :=
   inducedFunctor _
 
 instance : incl.Full := InducedCategory.full _
 instance : incl.Faithful := InducedCategory.faithful _
 
-instance (X Y : FintypeCat) : FunLike (X ⟶ Y) X Y where
-  coe f := f.hom
-  coe_injective' _ _ h := InducedCategory.homEquiv.injective h
-
-instance concreteCategoryFintype : ConcreteCategory FintypeCat (· ⟶ ·) where
-  hom f := f
-  ofHom f := f
+instance concreteCategoryFintype : ConcreteCategory FintypeCat (TypeCat.Fun · ·) :=
+  inferInstanceAs (ConcreteCategory (InducedCategory _ carrier) _)
 
 /- Help typeclass inference infer fullness of forgetful functor. -/
 instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
@@ -82,32 +77,32 @@ theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f
 lemma hom_apply {X Y : FintypeCat} (f : X ⟶ Y) (x : X) :
     f.hom x = f x := rfl
 
--- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
-lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
-  DFunLike.congr_fun f.hom_inv_id x
+@[simp]
+lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : ToType X) : f.inv (f.hom x) = x :=
+  Iso.hom_inv_id_apply f x
 
 -- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
-  DFunLike.congr_fun f.inv_hom_id y
+  Iso.inv_hom_id_apply f y
 
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g :=
-  DFunLike.ext _ _ h
+  ConcreteCategory.hom_ext _ _ h
 
 /-- Constructor for morphisms in `FintypeCat`. -/
 def homMk {X Y : FintypeCat} (f : X → Y) : X ⟶ Y where
-  hom := f
+  hom := TypeCat.ofHom ⟨f⟩
 
 @[simp]
 lemma homMk_apply {X Y : FintypeCat} (f : X → Y) (x : X) :
     homMk f x = f x := rfl
 
 @[simp]
-lemma id_hom (X : FintypeCat) : InducedCategory.Hom.hom (𝟙 X) = id := rfl
+lemma id_hom (X : FintypeCat) : InducedCategory.Hom.hom (𝟙 X) = TypeCat.ofHom ⟨id⟩ := rfl
 
 @[simp, reassoc]
 lemma comp_hom {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom ∘ f.hom := rfl
+    (f ≫ g).hom = TypeCat.ofHom ⟨g.hom ∘ f.hom⟩ := rfl
 
 @[simp]
 lemma homMk_eq_id_iff {X : FintypeCat} (f : X → X) :
@@ -145,7 +140,8 @@ def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
   right_inv := by cat_disch
 
 instance (X Y : FintypeCat) : Finite (X ⟶ Y) :=
-  Finite.of_equiv _ (show (X ⟶ Y) ≃ (X → Y) from InducedCategory.homEquiv).symm
+  Finite.of_equiv _ (show (X ⟶ Y) ≃ (X → Y) from
+    InducedCategory.homEquiv.trans TypeCat.homEquiv).symm
 
 instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
   Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
@@ -210,13 +206,14 @@ theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
 
 /-- The canonical fully faithful embedding of `Fintype.Skeleton` into `FintypeCat`. -/
 def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
-  obj X := FintypeCat.of (ULift (Fin X.len))
+  obj X := FintypeCat.of <| TypeCat.of (ULift (Fin X.len))
   map f := homMk f
 
-instance : incl.Full where map_surjective f := ⟨f.hom, rfl⟩
+instance : incl.Full where map_surjective f := ⟨(f.hom : _ → _), rfl⟩
 
 instance : incl.Faithful where
-  map_injective h := InducedCategory.homEquiv.symm.injective h
+  map_injective h := by
+    simpa [ConcreteCategory.ext_iff] using InducedCategory.homEquiv.symm.injective h
 
 instance : incl.EssSurj :=
   Functor.EssSurj.mk fun X =>
@@ -252,7 +249,7 @@ universe v
 `uSwitch.{u, v} : FintypeCat.{u} ⥤ FintypeCat.{v}` by sending
 `X : FintypeCat.{u}` to `ULift.{v} (Fin (Fintype.card X))`. -/
 noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
-  obj X := FintypeCat.of <| ULift.{v} (Fin (Fintype.card X))
+  obj X := FintypeCat.of <| TypeCat.of <| ULift.{v} (Fin (Fintype.card X))
   map {X Y} f :=
     homMk (ULift.up ∘ Fintype.equivFin Y ∘ f.hom ∘ (Fintype.equivFin X).symm ∘ ULift.down)
 
@@ -307,8 +304,9 @@ universe u v w
 
 variable {C : Type u} [Category.{v} C] (F G : C ⥤ FintypeCat.{w}) {X Y : C}
 
+@[deprecated NatTrans.naturality_apply (since := "2026-02-16")]
 lemma naturality (σ : F ⟶ G) (f : X ⟶ Y) (x : F.obj X) :
     σ.app Y (F.map f x) = G.map f (σ.app X x) :=
-  DFunLike.congr_fun (σ.naturality f) x
+  NatTrans.naturality_apply _ _ _
 
 end FunctorToFintypeCat

@@ -64,7 +64,7 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
 /-- The free functor `Type u ⥤ MonCat` sending a type `X` to the free monoid on `X`. -/
 @[to_additive
 /-- The free functor `Type u ⥤ AddMonCat` sending a type `X` to the free additive monoid on `X`. -/]
-def free : Type u ⥤ MonCat.{u} where
+def free : TypeCat.{u} ⥤ MonCat.{u} where
   obj α := MonCat.of (FreeMonoid α)
   map f := ofHom (FreeMonoid.map f)
   map_id _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl)
@@ -75,8 +75,13 @@ def free : Type u ⥤ MonCat.{u} where
 def adj : free ⊣ forget MonCat.{u} :=
   Adjunction.mkOfHomEquiv
     -- The hint `(C := MonCat)` below speeds up the declaration by 10 times.
-    { homEquiv X Y := (ConcreteCategory.homEquiv (C := MonCat)).trans FreeMonoid.lift.symm
-      homEquiv_naturality_left_symm _ _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl) }
+    { homEquiv X Y := (ConcreteCategory.homEquiv (C := MonCat)).trans (FreeMonoid.lift.symm.trans
+        {
+          toFun f := TypeCat.ofHom ⟨f⟩
+          invFun f := f
+          left_inv := fun _ ↦ rfl
+          right_inv := fun _ ↦ rfl })
+      homEquiv_naturality_left_symm _ _ := ConcreteCategory.ext (FreeMonoid.hom_eq fun _ ↦ by rfl) }
 
 instance : (forget MonCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
@@ -89,14 +94,14 @@ namespace AddCommMonCat
 sending a type `X` to the free commutative monoid on `X`. -/
 @[simps]
 noncomputable
-def free : Type u ⥤ AddCommMonCat.{u} where
+def free : TypeCat.{u} ⥤ AddCommMonCat.{u} where
   obj α := .of (α →₀ ℕ)
   map f := ofHom (Finsupp.mapDomain.addMonoidHom f)
 
 /-- The free-forgetful adjunction for commutative monoids. -/
 noncomputable
 def adj : free ⊣ forget AddCommMonCat.{u} where
-  unit := { app X i := Finsupp.single i 1 }
+  unit := { app X := TypeCat.ofHom ⟨fun i ↦ Finsupp.single i 1⟩ }
   counit :=
   { app M := ofHom (Finsupp.liftAddHom (multiplesHom M))
     naturality {M N} f := by dsimp; ext1; apply Finsupp.liftAddHom.symm.injective; ext; simp }

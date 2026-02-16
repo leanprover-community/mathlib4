@@ -506,6 +506,14 @@ theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) 
 theorem map_hom_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
     F.map f ≫ F.map (inv f) = 𝟙 (F.obj X) := by simp
 
+@[reassoc]
+theorem map_hom_inv' (F : C ⥤ D) {X Y : C} (f : X ≅ Y) :
+    F.map f.hom ≫ F.map f.inv = 𝟙 (F.obj X) := by simp
+
+@[reassoc]
+theorem map_inv_hom' (F : C ⥤ D) {X Y : C} (f : X ≅ Y) :
+    F.map f.inv ≫ F.map f.hom = 𝟙 (F.obj Y) := by simp
+
 end Functor
 
 end CategoryTheory

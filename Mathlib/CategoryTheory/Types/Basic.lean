@@ -263,6 +263,7 @@ theorem hcomp (x : (I ⋙ F).obj W) : (ρ ◫ σ).app W x = (G.map (ρ.app W)) (
   rfl
 
 attribute [elementwise nosimp] Functor.map_hom_inv Functor.map_inv_hom
+  Functor.map_hom_inv' Functor.map_inv_hom'
 
 @[deprecated (since := "2026-02-09")] alias map_inv_map_hom_apply := Functor.map_hom_inv_apply
 @[deprecated (since := "2026-02-09")] alias map_hom_map_inv_apply := Functor.map_inv_hom_apply
@@ -409,7 +410,6 @@ namespace Equiv
 
 variable {X Y : Type u}
 
--- attribute [local simp←] ofHom_comp in
 /-- Any equivalence between types in the same universe gives
 a categorical isomorphism between those types.
 -/
@@ -437,9 +437,17 @@ def toEquiv (i : X ≅ Y) : X ≃ Y where
 theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=
   rfl
 
+-- @[simp]
+-- theorem toEquiv_fun' (i : X ≅ Y) : TypeCat.ofHom ⟨(i.toEquiv : X → Y)⟩ = i.hom :=
+--   rfl
+
 @[simp]
 theorem toEquiv_symm_fun (i : X ≅ Y) : (i.toEquiv.symm : Y → X) = i.inv :=
   rfl
+
+-- @[simp]
+-- theorem toEquiv_symm_fun' (i : X ≅ Y) : TypeCat.ofHom ⟨(i.toEquiv.symm : Y → X)⟩ = i.inv :=
+--   rfl
 
 @[simp]
 theorem toEquiv_id (X : TypeCat.{u}) : (Iso.refl X).toEquiv = Equiv.refl X :=
