@@ -111,9 +111,52 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
   let _ := ZMod.algebra k p
   let _ : Algebra (ResidueField (PadicInt p)) k := sorry
   rcases exists_isLocalHom_flat (PadicInt p) k with ⟨R, _, _, _, _, flat, maxeq, ⟨iso⟩⟩
-  use AdicCompletion (maximalIdeal R) R, inferInstance
-  --prove `p` is not zero divisor using `R⧸m^n` is flat (free) over `ℤ⧸{p^n}`
-  --torsion free => mul `p` equal zero implies every eval is `0`
+  simp only [PadicInt.maximalIdeal_eq_span_p, Ideal.map_span, Set.image_singleton,
+    map_natCast] at maxeq
+  have maxfg : (maximalIdeal R).FG := by
+    use {(p : R)}
+    simp [maxeq]
+  let R' := AdicCompletion (maximalIdeal R) R
+  let _ : IsLocalRing R' := AdicCompletion.isLocalRing_of_fg maxfg
+  use R', inferInstance
+  have maxeq' : maximalIdeal R' = Ideal.span {(p : R')} := by
+    rw [AdicCompletion.maximalIdeal_eq_map_of_fg maxfg]
+    simp [maxeq, Ideal.map_span]
+  have reg : (p : R) ∈ nonZeroDivisors R := by
+    refine mem_nonZeroDivisors_iff_right.mpr (fun x hx ↦ ?_)
+    have regaux : IsSMulRegular R (p : R) := by
+      simpa using IsSMulRegular.of_flat (IsSMulRegular.of_ne_zero PadicInt.irreducible_p.ne_zero)
+    apply isSMulRegular_iff_right_eq_zero_of_smul.mp regaux x
+    simp [← hx, mul_comm]
+  have mem_of_mem_succ {n : ℕ} {r : R} (mem : p • r ∈ (maximalIdeal R) ^ (n + 1)) :
+    r ∈ (maximalIdeal R) ^ n := by
+    simp only [maxeq, Ideal.span_singleton_pow] at mem ⊢
+    rcases Ideal.mem_span_singleton'.mp mem with ⟨s, hs⟩
+    simp only [pow_succ, ← mul_assoc, nsmul_eq_mul, mul_comm _ r,
+      mul_cancel_right_mem_nonZeroDivisors reg] at hs
+    rw [← hs, Ideal.mem_span_singleton']
+    use s
+  have reg' : (p : R') ∈ nonZeroDivisors R' := by
+    refine mem_nonZeroDivisors_iff_right.mpr (fun x hx ↦ ?_)
+    have eq0 : p • x = 0 := by simp [← hx, mul_comm]
+    ext n
+    have : p • AdicCompletion.eval _ _ (n + 1) x = 0 := by
+      simp [← LinearMap.map_smul_of_tower, eq0]
+    rcases Submodule.Quotient.mk_surjective _ (x.1 (n + 1)) with ⟨y, hy⟩
+    simp only [AdicCompletion.eval, LinearMap.coe_mk, AddHom.coe_mk, ← hy,
+      ← Submodule.mkQ_apply, ← LinearMap.map_smul_of_tower] at this
+    rw [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero, smul_eq_mul, Ideal.mul_top] at this
+    simpa [← x.2 (Nat.le_succ n), ← hy, AdicCompletion.transitionMap, Submodule.factorPow,
+      Ideal.Quotient.eq_zero_iff_mem] using mem_of_mem_succ this
+  let _ : IsNoetherianRing (R ⧸ maximalIdeal R) := sorry
+  let _ : IsNoetherianRing R' := AdicCompletion.isNoetherianRing_of_fg _ maxfg
+  have nmin : maximalIdeal R' ∉ minimalPrimes R' := by
+    sorry
+  have spanle : (maximalIdeal R').spanFinrank ≤ 1 := by
+    sorry
+  have dimge : ringKrullDim R' ≥ 1 := by
+    sorry
+  have := ringKrullDim_le_spanFinrank_maximalIdeal R'
   sorry
 
 /-- A variant of `PadicInt.toZModPow`. -/
