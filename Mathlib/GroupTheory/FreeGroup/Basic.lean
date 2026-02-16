@@ -886,10 +886,8 @@ or `MulEquiv.ofUnique (FreeGroup Empty) Unit` for the multiplicative version ins
 (since := "2026-02-11"))
   /-- The bijection between the additive free group on the empty type,
   and a type with one element. -/]
-def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
-  toFun _ := ()
-  invFun _ := 1
-  left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
+abbrev freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit :=
+  Equiv.ofUnique (FreeGroup Empty) Unit
 
 -- TODO: find a good way to fix the linter
 -- simp applies to two goals at once, with different simp sets
