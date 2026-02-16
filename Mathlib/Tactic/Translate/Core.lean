@@ -333,7 +333,7 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
       failure
     modify fun s => s.insert e
     match e with
-    | .app e a       =>
+    | .app e a =>
         visit e true <|> do
           if let some n := e.getAppFn.constName? then
             if let some l := t.ignoreArgsAttr.find? env n then
