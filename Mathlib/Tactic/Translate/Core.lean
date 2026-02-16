@@ -1156,14 +1156,9 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
            `@[{t.attrName} existing]`."
       else
         "The translated declaration doesn't exist. Please remove the option `existing`."
-  let reorder ←
-    if alreadyExists then
-      MetaM.run' <| checkExistingType t src tgt cfg
-    else
-      pure (cfg.reorder?.getD [])
-  let relevantArg ← cfg.relevantArg?.getDM <| findRelevantArg t src
-  insertTranslation t src tgt reorder relevantArg cfg.ref
   if alreadyExists then
+    let (reorder, relevantArg) ← MetaM.run' <| checkExistingType t src tgt cfg
+    insertTranslation t src tgt reorder relevantArg cfg.ref
     -- since `tgt` already exists, we just need to
     -- add translations `src.x ↦ tgt.x'` for any subfields.
     trace[translate_detail] "declaration {tgt} already exists."
