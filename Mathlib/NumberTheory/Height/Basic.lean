@@ -254,6 +254,13 @@ def logHeight (x : ι → K) : ℝ := log (mulHeight x)
 
 lemma logHeight_eq_log_mulHeight (x : ι → K) : logHeight x = log (mulHeight x) := rfl
 
+lemma logHeight_comp_equiv {ι ι' : Type*} (e : ι ≃ ι') (x : ι' → K) :
+    logHeight (x ∘ ⇑e) = logHeight x := by
+  simp only [logHeight_eq_log_mulHeight, mulHeight_comp_equiv]
+
+lemma logHeight_swap (x y : K) : logHeight ![x, y] = logHeight ![y, x] := by
+  simp only [logHeight_eq_log_mulHeight, mulHeight_swap]
+
 variable {α : Type*}
 
 /-- The multiplicative height of a finitely supported function. -/
