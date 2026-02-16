@@ -237,22 +237,35 @@ section to_tuple
 variable {R : Type*} [CommSemiring R]
 
 /-- Given a polynomial `p : R[X]`, this is the family `![p₀, p₁]` of homogeneous bivariate
-polynomials of degree `p.natDegree` such that `p(x) = p₀(x,1)/p₁(x,1)`. -/
+polynomials of degree `p.natDegree` such that `p(x) = p₀(x,1)/p₁(x,1)` and `p₁` is a monomial. -/
 noncomputable
-def to_tuple_mvPolynomial (p : R[X]) : Fin 2 → MvPolynomial (Fin 2) R :=
+def toTupleMvPolynomial (p : R[X]) : Fin 2 → MvPolynomial (Fin 2) R :=
   ![p.homogenize p.natDegree, (MvPolynomial.X 1) ^ p.natDegree]
 
+lemma toTupleMvPolynomial_zero_eq (p : R[X]) :
+    p.toTupleMvPolynomial 0 = p.homogenize p.natDegree :=
+  rfl
+
+lemma toTupleMvPolynomial_one_eq (p : R[X]) :
+    p.toTupleMvPolynomial 1 = (MvPolynomial.X 1) ^ p.natDegree :=
+  rfl
+
 lemma isHomogenous_toTupleMvPolynomial (p : R[X]) :
-    ∀ i, (p.to_tuple_mvPolynomial i).IsHomogeneous p.natDegree := by
+    ∀ i, (p.toTupleMvPolynomial i).IsHomogeneous p.natDegree := by
   intro i
   fin_cases i
-  · simp [to_tuple_mvPolynomial]
-  · simpa [to_tuple_mvPolynomial] using MvPolynomial.isHomogeneous_X_pow 1 p.natDegree
+  · simp [toTupleMvPolynomial]
+  · simpa [toTupleMvPolynomial] using MvPolynomial.isHomogeneous_X_pow 1 p.natDegree
+
+lemma eval_X_toTupleMvPolynomial_zero_eq (p : R[X]) :
+    MvPolynomial.aeval ![X, 1] (p.toTupleMvPolynomial 0) =
+      p * MvPolynomial.aeval ![X, 1] (p.toTupleMvPolynomial 1) := by
+  simp [toTupleMvPolynomial]
 
 lemma eval_eq_div_eval_toTupleMvPolynomial {R : Type*} [Field R] (p : R[X]) (x : R) :
     p.eval x =
-      (p.to_tuple_mvPolynomial 0).eval ![x, 1] / (p.to_tuple_mvPolynomial 1).eval ![x, 1] := by
-  simp [to_tuple_mvPolynomial, eval_homogenize]
+      (p.toTupleMvPolynomial 0).eval ![x, 1] / (p.toTupleMvPolynomial 1).eval ![x, 1] := by
+  simp [toTupleMvPolynomial, eval_homogenize]
 
 lemma sum_eq_natDegree_of_mem_support_homogenize (p : R[X]) {s : Fin 2 →₀ ℕ}
     (hs : s ∈ (p.homogenize p.natDegree).support) :
