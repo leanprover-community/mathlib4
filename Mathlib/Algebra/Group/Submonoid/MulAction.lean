@@ -111,8 +111,8 @@ variable [Monoid M']
 /-- The action by a submonoid is the action by the underlying monoid. -/
 @[to_additive
       /-- The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. -/]
-instance mulAction [MulAction M' α] {T : Type*} [SetLike T M'] [SubmonoidClass T M']
-    (S : T) : MulAction S α := inferInstance
+instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
+  inferInstance
 
 instance (R S : Type*) {T : Type*} [SMul M' R] [SMul M' S] [SMul R S] [SetLike T M']
     [h : SMulDistribClass M' R S] (N' : T) :
