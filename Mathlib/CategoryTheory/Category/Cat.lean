@@ -361,7 +361,7 @@ theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) :
 called `forget`, because it is not a faithful functor. -/
 def objects : Cat.{v, u} ⥤ TypeCat.{u} where
   obj C := .of C
-  map F := TypeCat.ofHom F.toFunctor.obj
+  map F := TypeCat.ofHom ⟨F.toFunctor.obj⟩
 
 /-- See through the defeq `objects.obj X = X`. -/
 instance (X : Cat.{v, u}) : Category (objects.obj X) := inferInstanceAs <| Category X
@@ -411,8 +411,8 @@ def typeToCat : TypeCat.{u} ⥤ Cat where
     · simp
     · intro X Y f
       cases f
-      simp only [Discrete.functor_obj_eq_as, Function.comp_apply, types_id_apply, Discrete.mk_as,
-        id_obj, eqToHom_refl, Functor.id_map, Category.comp_id, Category.id_comp]
+      simp only [Discrete.functor_obj_eq_as, Function.comp_apply, id_obj, eqToHom_refl,
+        Functor.id_map, Category.comp_id, Category.id_comp]
       apply ULift.ext
       cat_disch
   map_comp f g := by
@@ -422,12 +422,12 @@ def typeToCat : TypeCat.{u} ⥤ Cat where
     cat_disch
 
 instance : Functor.Faithful typeToCat.{u} where
-  map_injective {_X} {_Y} _f _g h :=
-    ConcreteCategory.ext <|
-      funext (fun x => congrArg (Discrete.as) (Functor.congr_obj congr(($h).toFunctor) ⟨x⟩))
+  map_injective {_X} {_Y} _f _g h := by
+    ext x
+    exact congrArg (Discrete.as) (Functor.congr_obj congr(($h).toFunctor) ⟨x⟩)
 
 instance : Functor.Full typeToCat.{u} where
-  map_surjective F := ⟨TypeCat.ofHom (Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk), by
+  map_surjective F := ⟨TypeCat.ofHom ⟨(Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk)⟩, by
     ext
     apply Functor.ext
     · intro x y f

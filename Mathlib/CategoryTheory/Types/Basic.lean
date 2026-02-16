@@ -66,6 +66,12 @@ instance : Inhabited TypeCat.{u} := ⟨of <| PUnit⟩
 structure Fun (X Y : Type*) where
   as : X → Y
 
+def Fun.homEquiv (X Y : Type*) : (Fun X Y) ≃ (X → Y) where
+  toFun f := f.as
+  invFun f := ⟨f⟩
+  left_inv := by intro; rfl
+  right_inv := by intro; rfl
+
 set_option backward.privateInPublic true in
 /-- The type of morphisms in `TypeCat`. -/
 @[ext]
@@ -123,7 +129,7 @@ example (X Y : TypeCat.{u}) (f : X ⟶ Y) : (f : X → Y) = (ConcreteCategory.ho
 namespace TypeCat
 
 /-- Turn a morphism in `TypeCat` back into a function. -/
-abbrev Hom.hom {X Y : TypeCat.{u}} (f : Hom X Y) : X → Y :=
+abbrev Hom.hom {X Y : TypeCat.{u}} (f : Hom X Y) : Fun X Y :=
   ConcreteCategory.hom (C := TypeCat.{u}) f
 
 /-- Typecheck a function as a morphism in `TypeCat`. -/
@@ -158,8 +164,15 @@ lemma ofHom_apply {X Y : Type u} (f : X → Y) (x : X) :
     ConcreteCategory.ofHom (C := TypeCat) ⟨f⟩ x = f x :=
   rfl
 
+@[simp]
+lemma ofHom_hom {X Y : Type u} (f : Fun X Y) : Hom.hom (ofHom f) = f := rfl
+
+@[simp]
+lemma hom_ofHom {X Y : TypeCat.{u}} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
+
 /-- `TypeCat.Hom.hom` bundled as an `Equiv`. -/
-def homEquiv {X Y : TypeCat.{u}} : (X ⟶ Y) ≃ Fun X Y := ConcreteCategory.homEquiv (C := TypeCat)
+def homEquiv {X Y : TypeCat.{u}} : (X ⟶ Y) ≃ (X → Y) :=
+  (ConcreteCategory.homEquiv (C := TypeCat)).trans (Fun.homEquiv _ _)
 
 end TypeCat
 
@@ -254,7 +267,8 @@ attribute [elementwise nosimp] Functor.map_hom_inv Functor.map_inv_hom
 @[deprecated (since := "2026-02-09")] alias map_inv_map_hom_apply := Functor.map_hom_inv_apply
 @[deprecated (since := "2026-02-09")] alias map_hom_map_inv_apply := Functor.map_inv_hom_apply
 
-attribute [elementwise] Iso.hom_inv_id_app Iso.inv_hom_id_app
+attribute [elementwise (attr := simp)] Iso.hom_inv_id_app Iso.inv_hom_id_app
+
 
 @[deprecated (since := "2026-02-09")] alias hom_inv_id_app_apply := Iso.hom_inv_id_app_apply
 @[deprecated (since := "2026-02-09")] alias inv_hom_id_app_apply := Iso.inv_hom_id_app_apply
@@ -315,20 +329,29 @@ theorem homOfElement_eq_iff {X : TypeCat.{u}} (x y : X) : homOfElement x = homOf
 
 /-- A morphism in `Type` is a monomorphism if and only if it is injective. -/
 @[stacks 003C]
-theorem mono_iff_injective {X Y : TypeCat.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
+theorem ofHom_mono_iff_injective {X Y : Type u} (f : X → Y) :
+    Mono (ofHom ⟨f⟩) ↔ Function.Injective f := by
   constructor
   · intro H x x' h
     rw [← homOfElement_eq_iff] at h ⊢
-    exact (cancel_mono f).mp h
-  · exact fun H => ⟨fun g g' h => ConcreteCategory.hom_ext _ _ fun x ↦
-      congrFun (H.comp_left (by simp [← hom_comp, h])) x⟩
+    exact (cancel_mono (ofHom ⟨f⟩)).mp h
+  · refine fun H => ⟨fun g g' h => ConcreteCategory.hom_ext _ _ fun x ↦
+      congrFun (H.comp_left ?_) x⟩
+    ext y
+    exact ConcreteCategory.congr_hom h y
+
+/-- A morphism in `Type` is a monomorphism if and only if it is injective. -/
+@[stacks 003C]
+theorem mono_iff_injective {X Y : TypeCat.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
+  simp [← ofHom_mono_iff_injective]
 
 theorem injective_of_mono {X Y : TypeCat.{u}} (f : X ⟶ Y) [hf : Mono f] : Function.Injective f :=
   (mono_iff_injective f).1 hf
 
 /-- A morphism in `Type` is an epimorphism if and only if it is surjective. -/
 @[stacks 003C]
-theorem epi_iff_surjective {X Y : TypeCat.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
+theorem ofHom_epi_iff_surjective {X Y : Type u} (f : X → Y) :
+    Epi (ofHom ⟨f⟩) ↔ Function.Surjective f := by
   constructor
   · rintro ⟨H⟩
     refine Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => ?_
@@ -340,8 +363,15 @@ theorem epi_iff_surjective {X Y : TypeCat.{u}} (f : X ⟶ Y) : Epi f ↔ Functio
     intro x
     change (ULift.up ∘ g₁ ∘ f) _ = (ULift.up ∘ g₂ ∘ f) _
     rw [hg]
-  · exact fun H => ⟨fun g g' h =>  ConcreteCategory.hom_ext _ _ fun x ↦
-      congrFun (H.injective_comp_right (by simp [← hom_comp, h])) x⟩
+  · refine fun H => ⟨fun g g' h =>  ConcreteCategory.hom_ext _ _ fun x ↦
+      congrFun (H.injective_comp_right ?_) x⟩
+    ext y
+    exact ConcreteCategory.congr_hom h y
+
+/-- A morphism in `Type` is an epimorphism if and only if it is surjective. -/
+@[stacks 003C]
+theorem epi_iff_surjective {X Y : TypeCat.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
+  simp [← ofHom_epi_iff_surjective]
 
 theorem surjective_of_epi {X Y : TypeCat.{u}} (f : X ⟶ Y) [hf : Epi f] : Function.Surjective f :=
   (epi_iff_surjective f).1 hf
@@ -367,7 +397,7 @@ theorem ofTypeFunctor_obj (X : TypeCat.{u}) : (ofTypeFunctor m).obj X = m X.carr
 
 @[simp]
 theorem ofTypeFunctor_map {α β} (f : α → β) :
-    ((ofTypeFunctor m).map (ofHom ⟨f⟩)).hom = (_root_.Functor.map f : m α → m β) :=
+    ((ofTypeFunctor m).map (ofHom ⟨f⟩)).hom = ⟨(_root_.Functor.map f : m α → m β)⟩ :=
   rfl
 
 end

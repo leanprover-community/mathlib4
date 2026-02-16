@@ -797,7 +797,7 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C :=
     (by intro (X, F) (Y, G) f
         ext (a : TypeCat.of <| yoneda.obj X.unop ⟶ F)
         apply ULift.ext
-        simp? [yonedaEvaluation, yonedaEquiv] says -- was `dsimp [yonedaEvaluation, yonedaEquiv]`
+        simp? [yonedaEvaluation, yonedaEquiv] says
           simp only [evaluationUncurried_obj, yonedaEvaluation, comp_obj, uliftFunctor_obj,
             yonedaPairing_map, prod_obj, op_obj, id_obj, op_unop, yonedaEquiv, yoneda_obj_obj,
             Equiv.toIso_hom, Equiv.coe_trans, Equiv.ulift_symm_apply, Equiv.coe_fn_mk, hom_as_apply,

@@ -47,7 +47,7 @@ variable (C : Type*) [Category* C] {FC : outParam <| C → C → Type*} {CC : ou
 /-- The forgetful functor from a concrete category to the category of types. -/
 def forget : C ⥤ TypeCat.{w} where
   obj X := .of (ToType X)
-  map f := ConcreteCategory.ofHom f
+  map f := ConcreteCategory.ofHom ⟨f⟩
 
 instance : (forget C).Faithful where
   map_injective h := ConcreteCategory.hom_ext _ _ fun x ↦ ConcreteCategory.congr_hom h x
@@ -55,12 +55,9 @@ instance : (forget C).Faithful where
 variable {C}
 
 @[simp]
-lemma coe_forget_map_eq_coe {X Y : C} (f : X ⟶ Y) :
-    ((forget C).map f : _ → _) = (f : _ → _) :=
+lemma ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) :
+    (forget C).map f = ofHom ⟨f⟩ :=
   rfl
-
-@[deprecated (since := "2026-02-09")] alias ConcreteCategory.forget_map_eq_coe :=
-  coe_forget_map_eq_coe
 
 theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
 
@@ -144,7 +141,7 @@ lemma ConcreteCategory.forget₂_comp_apply [HasForget₂ C D] {X Y Z : C}
   rw [Functor.map_comp, CategoryTheory.comp_apply]
 
 instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
-    IsIso (C := TypeCat) (TypeCat.ofHom ⇑(ConcreteCategory.hom f)) :=
+    IsIso (C := TypeCat) (TypeCat.ofHom ⟨(ConcreteCategory.hom f)⟩) :=
   ((forget C).mapIso (asIso f)).isIso_hom
 
 end CategoryTheory

@@ -264,6 +264,5 @@ def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] :
   map_comp f g := by
     ext
     simp [Equiv.toIso, EquivFunctor.map_trans']
-    rfl
 
 end CategoryTheory

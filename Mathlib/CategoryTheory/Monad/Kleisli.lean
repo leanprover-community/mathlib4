@@ -43,17 +43,28 @@ variable (T : Monad C)
 instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) :=
   ⟨(default : C)⟩
 
+variable {T} in
+@[ext]
+structure Hom (X Y : Kleisli T) where
+  hom : @Quiver.Hom C inferInstance X (T.obj Y)
+
 /-- The Kleisli category on a monad `T`.
 cf Definition 5.2.9 in [Riehl][riehl2017]. -/
+@[simps!]
 instance category : Category (Kleisli T) where
-  Hom := fun X Y : C => X ⟶ (T : C ⥤ C).obj Y
-  id X := T.η.app X
-  comp {_} {_} {Z} f g := f ≫ (T : C ⥤ C).map g ≫ T.μ.app Z
+  Hom := Hom
+  id X := ⟨T.η.app X⟩
+  comp {_} {_} {Z} f g := ⟨f.hom ≫ (T : C ⥤ C).map g.hom ≫ T.μ.app Z⟩
   id_comp {X} {Y} f := by
-    rw [← T.η.naturality_assoc f, T.left_unit]
-    apply Category.comp_id
+    ext
+    simp [← T.η.naturality_assoc f.hom, T.left_unit]
   assoc f g h := by
+    ext
     simp [Monad.assoc, T.mu_naturality_assoc]
+
+variable {T} in
+@[ext]
+lemma ext {X Y : Kleisli T} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g := Hom.ext h
 
 namespace Adjunction
 
@@ -61,31 +72,31 @@ namespace Adjunction
 @[simps]
 def toKleisli : C ⥤ Kleisli T where
   obj X := (X : Kleisli T)
-  map {X} {Y} f := (f ≫ T.η.app Y : X ⟶ T.obj Y)
+  map {X} {Y} f := ⟨(f ≫ T.η.app Y : X ⟶ T.obj Y)⟩
   map_comp {X} {Y} {Z} f g := by
-    unfold_projs
+    ext
     simp [← T.η.naturality g]
 
 /-- The right adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
 @[simps]
 def fromKleisli : Kleisli T ⥤ C where
   obj X := T.obj X
-  map {_} {Y} f := T.map f ≫ T.μ.app Y
+  map {_} {Y} f := T.map f.hom ≫ T.μ.app Y
   map_id _ := T.right_unit _
   map_comp {X} {Y} {Z} f g := by
-    unfold_projs
-    simp only [Functor.map_comp, Category.assoc]
-    rw [← T.μ.naturality_assoc g, T.assoc]
-    rfl
+    simp [← T.μ.naturality_assoc g.hom, T.assoc]
 
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
 cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
 def adj : toKleisli T ⊣ fromKleisli T :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y => Equiv.refl (X ⟶ T.obj Y)
+    { homEquiv := fun X Y => {
+        toFun f := f.hom
+        invFun f := ⟨f⟩
+        left_inv := by intro; rfl
+        right_inv := by intro; rfl }
       homEquiv_naturality_left_symm := fun {X} {Y} {Z} f g => by
-        unfold_projs
-        change f ≫ g = (f ≫ T.η.app Y) ≫ T.map g ≫ T.μ.app Z
+        ext
         simp [← T.η.naturality_assoc g] }
 
 /-- The composition of the adjunction gives the original functor. -/

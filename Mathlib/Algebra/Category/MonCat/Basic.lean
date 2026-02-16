@@ -309,10 +309,7 @@ lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[to_additive (attr := simp)]
-lemma forget_map {X Y : CommMonCat} (f : X ⟶ Y) :
-    ((forget CommMonCat).map f : X → Y) = (f : X → Y) := by
-  dsimp
+@[deprecated (since := "2026-02-15")] alias forget_map := ConcreteCategory.forget_map_eq_coe
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : CommMonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -472,8 +469,8 @@ in `MonCat` -/
 @[to_additive addEquivIsoAddMonCatIso]
 def mulEquivIsoMonCatIso {X Y : Type u} [Monoid X] [Monoid Y] :
     TypeCat.of (X ≃* Y) ≅ TypeCat.of (MonCat.of X ≅ MonCat.of Y) where
-  hom := TypeCat.ofHom fun e ↦ e.toMonCatIso
-  inv := TypeCat.ofHom fun i ↦ i.monCatIsoToMulEquiv
+  hom := TypeCat.ofHom ⟨fun e ↦ e.toMonCatIso⟩
+  inv := TypeCat.ofHom ⟨fun i ↦ i.monCatIsoToMulEquiv⟩
 
 /-- additive equivalences between `AddMonoid`s are the same
 as (isomorphic to) isomorphisms in `AddMonCat` -/
@@ -484,8 +481,8 @@ in `CommMonCat` -/
 @[to_additive addEquivIsoAddCommMonCatIso]
 def mulEquivIsoCommMonCatIso {X Y : Type u} [CommMonoid X] [CommMonoid Y] :
     TypeCat.of (X ≃* Y) ≅ TypeCat.of (CommMonCat.of X ≅ CommMonCat.of Y) where
-  hom := TypeCat.ofHom fun e ↦ e.toCommMonCatIso
-  inv := TypeCat.ofHom fun i ↦ i.commMonCatIsoToMulEquiv
+  hom := TypeCat.ofHom ⟨fun e ↦ e.toCommMonCatIso⟩
+  inv := TypeCat.ofHom ⟨fun i ↦ i.commMonCatIsoToMulEquiv⟩
 
 /-- additive equivalences between `AddCommMonoid`s are
 the same as (isomorphic to) isomorphisms in `AddCommMonCat` -/

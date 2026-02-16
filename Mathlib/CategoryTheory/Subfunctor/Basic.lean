@@ -141,17 +141,17 @@ instance : Nonempty (Subfunctor F) :=
   inferInstance
 
 /-- The subfunctor as a functor. -/
-@[simps!?]
+@[simps]
 def toFunctor : C ⥤ TypeCat.{w} where
   obj U := TypeCat.of (Subtype (G.obj U))
-  map := @fun _ _ i => TypeCat.ofHom fun x => ⟨F.map i x, G.map i x.prop⟩
+  map := @fun _ _ i => TypeCat.ofHom ⟨fun x => ⟨F.map i x, G.map i x.prop⟩⟩
 
 instance {U} : CoeHead (G.toFunctor.obj U) (F.obj U) where
   coe := Subtype.val
 
 /-- The inclusion of a subfunctor to the original functor. -/
 @[simps]
-def ι : G.toFunctor ⟶ F where app _ := TypeCat.ofHom fun x ↦ x
+def ι : G.toFunctor ⟶ F where app _ := TypeCat.ofHom ⟨fun x ↦ x⟩
 
 instance : Mono G.ι :=
   ⟨@fun _ _ _ e =>
@@ -160,7 +160,7 @@ instance : Mono G.ι :=
 /-- The inclusion of a subfunctor to a larger subfunctor -/
 @[simps]
 def homOfLe {G G' : Subfunctor F} (h : G ≤ G') : G.toFunctor ⟶ G'.toFunctor where
-  app U := TypeCat.ofHom fun x ↦ ⟨x, h U x.prop⟩
+  app U := TypeCat.ofHom ⟨fun x ↦ ⟨x, h U x.prop⟩⟩
 
 instance {G G' : Subfunctor F} (h : G ≤ G') : Mono (Subfunctor.homOfLe h) :=
   ⟨fun _ _ e => NatTrans.ext <| funext fun U => hom_ext _ _ fun x => by
@@ -211,9 +211,9 @@ theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.nat_trans_naturality := nat_trans_naturality
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf := toFunctor
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_obj := toFunctor_obj_carrier
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_map_coe := toFunctor_map_hom_coe
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_map_coe := toFunctor_map
 @[deprecated (since := "2026-02-10")] alias toFunctor_obj := toFunctor_obj_carrier
-@[deprecated (since := "2026-02-10")] alias toFunctor_map_coe := toFunctor_map_hom_coe
+@[deprecated (since := "2026-02-10")] alias toFunctor_map_coe := toFunctor_map
 
 end Subfunctor
 

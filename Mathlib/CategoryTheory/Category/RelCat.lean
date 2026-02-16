@@ -77,10 +77,14 @@ from the category of types and functions into the category of types and relation
 @[simps obj map_rel]
 def graphFunctor : TypeCat.{u} ⥤ RelCat.{u} where
   obj X := X
-  map f := .ofRel f.hom.graph
+  map f := .ofRel (f : _ → _).graph
 
 instance graphFunctor_faithful : graphFunctor.Faithful where
-  map_injective h := ConcreteCategory.ext (Function.graph_injective congr(($h).rel))
+  map_injective h := by
+    ext
+    have := Function.graph_injective congr(($h).rel)
+    rw [funext_iff] at this
+    exact this _
 
 instance graphFunctor_essSurj : graphFunctor.EssSurj :=
     graphFunctor.essSurj_of_surj Function.surjective_id
@@ -96,11 +100,11 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
     simp only [RelCat.Hom.rel_comp_apply₂, RelCat.Hom.rel_id_apply₂, eq_iff_iff] at h1 h2
     obtain ⟨f, hf⟩ := Classical.axiomOfChoice (fun a => (h1 a a).mpr rfl)
     obtain ⟨g, hg⟩ := Classical.axiomOfChoice (fun a => (h2 a a).mpr rfl)
-    suffices hif : IsIso (C := TypeCat.{u}) (TypeCat.ofHom f) by
-      use asIso (TypeCat.ofHom f)
+    suffices hif : IsIso (C := TypeCat.{u}) (TypeCat.ofHom ⟨f⟩) by
+      use asIso (TypeCat.ofHom ⟨f⟩)
       ext ⟨x, y⟩
       exact ⟨by aesop, fun hxy ↦ (h2 (f x) y).1 ⟨x, (hf x).2, hxy⟩⟩
-    use TypeCat.ofHom g
+    use TypeCat.ofHom ⟨g⟩
     constructor
     · ext x
       apply (h1 _ _).mp

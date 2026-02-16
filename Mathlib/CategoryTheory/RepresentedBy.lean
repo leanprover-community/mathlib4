@@ -47,10 +47,10 @@ For better universe generality, we state this manually as for every `Y`, the
 induced map `(Y ⟶ X) → F.obj Y` is bijective.
 -/
 @[mk_iff]
-structure IsRepresentedBy (F : Cᵒᵖ ⥤ Type w) {X : C} (x : F.obj (op X)) : Prop where
+structure IsRepresentedBy (F : Cᵒᵖ ⥤ TypeCat.{w}) {X : C} (x : F.obj (op X)) : Prop where
   map_bijective {Y : C} : Function.Bijective (fun f : Y ⟶ X ↦ F.map f.op x)
 
-variable {F : Cᵒᵖ ⥤ Type w} {X : C} {x : F.obj (op X)}
+variable {F : Cᵒᵖ ⥤ TypeCat.{w}} {X : C} {x : F.obj (op X)}
 
 lemma IsRepresentedBy.iff_isIso_uliftYonedaEquiv :
     F.IsRepresentedBy x ↔
@@ -88,20 +88,20 @@ lemma RepresentableBy.isRepresentedBy (R : F.RepresentableBy X) :
   convert (RepresentableBy.equivUliftYonedaIso _ _ <|
     representableByUliftFunctorEquiv.{v}.symm R).isIso_hom
   ext
-  simp [uliftYonedaEquiv, ← homEquiv_eq]
+  simpa [uliftYonedaEquiv] using (homEquiv_eq _ _).symm
 
 lemma IsRepresentedBy.iff_exists_representableBy :
     F.IsRepresentedBy x ↔ ∃ (R : F.RepresentableBy X), R.homEquiv (𝟙 X) = x :=
   ⟨fun h ↦ ⟨h.representableBy, by simp⟩, fun ⟨R, h⟩ ↦ h ▸ R.isRepresentedBy⟩
 
-lemma IsRepresentedBy.of_natIso (h : F.IsRepresentedBy x) {F' : Cᵒᵖ ⥤ Type w}
+lemma IsRepresentedBy.of_natIso (h : F.IsRepresentedBy x) {F' : Cᵒᵖ ⥤ TypeCat.{w}}
     (e : F ≅ F') :
     F'.IsRepresentedBy (e.hom.app (op X) x) := by
   rw [iff_exists_representableBy]
   use h.representableBy.ofIso e
   simp [RepresentableBy.ofIso]
 
-lemma IsRepresentedBy.iff_natIso {F' : Cᵒᵖ ⥤ Type w} (e : F ≅ F') :
+lemma IsRepresentedBy.iff_natIso {F' : Cᵒᵖ ⥤ TypeCat.{w}} (e : F ≅ F') :
     F'.IsRepresentedBy (e.hom.app (op X) x) ↔ F.IsRepresentedBy x :=
   ⟨fun h ↦ by simpa using h.of_natIso e.symm, fun h ↦ .of_natIso h _⟩
 
@@ -115,7 +115,7 @@ lemma IsRepresentedBy.iff_of_isoObj {Y : C} (e : Y ≅ X) :
     F.IsRepresentedBy (F.map e.hom.op x) ↔ F.IsRepresentedBy x := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.of_isoObj e⟩
   have : x = F.map e.inv.op (F.map e.hom.op x) := by
-    simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+    simp [← comp_apply, ← map_comp, ← op_comp]
   exact this ▸ .of_isoObj h e.symm
 
 lemma IsRepresentedBy.of_isRepresentable [F.IsRepresentable] : F.IsRepresentedBy F.reprx :=
