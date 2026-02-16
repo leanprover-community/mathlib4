@@ -369,6 +369,24 @@ theorem intent_sInf (S : Set (Concept α β r)) :
     (sInf S).intent = upperPolar r (⋂ c ∈ S, extent c) :=
   rfl
 
+@[simp]
+theorem extent_iSup (f : ι → Concept α β r) :
+    (⨆ i, f i).extent = lowerPolar r (⋂ i, (f i).intent) := by
+  simp_rw [iSup, extent_sSup, ← Set.iInf_eq_iInter, iInf_range]
+
+@[simp]
+theorem intent_iSup (f : ι → Concept α β r) : (⨆ i, f i).intent = ⋂ i, (f i).intent := by
+  simp_rw [iSup, intent_sSup, ← Set.iInf_eq_iInter, iInf_range]
+
+@[simp]
+theorem extent_iInf (f : ι → Concept α β r) : (⨅ i, f i).extent = ⋂ i, (f i).extent := by
+  simp_rw [iInf, extent_sInf, ← Set.iInf_eq_iInter, iInf_range]
+
+@[simp]
+theorem intent_iInf (f : ι → Concept α β r) :
+    (⨅ i, f i).intent = upperPolar r (⋂ i, (f i).extent) := by
+  simp_rw [iInf, intent_sInf, ← Set.iInf_eq_iInter, iInf_range]
+
 instance : Inhabited (Concept α β r) :=
   ⟨⊥⟩
 
