@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
 
@@ -637,5 +638,21 @@ lemma IsAcyclic.chromaticNumber_le_two (hG : G.IsAcyclic) : G.chromaticNumber �
 /-- The chromatic number of a tree is at most 2. -/
 lemma IsTree.chromaticNumber_le_two (hG : G.IsTree) : G.chromaticNumber ≤ 2 :=
   hG.colorable_two.chromaticNumber_le
+
+lemma exists_isCycle_of_isEdgeReachable_two {u v : V} (huv : u ≠ v)
+    (h : G.IsEdgeReachable 2 u v) : ∃ w : G.Walk u u, w.IsCycle := by
+  classical
+  obtain ⟨w, hw, h⟩ := exists_adj_isEdgeReachable_two huv h
+  have := @h {s(u, w)} (by simp)
+  obtain ⟨w, p, hp₁, hp₂⟩ := adj_and_reachable_delete_edges_iff_exists_cycle.mp ⟨hw, this⟩
+  exact ⟨p.rotate (p.fst_mem_support_of_mem_edges hp₂), IsCycle.rotate hp₁ _⟩
+
+lemma isAcyclic_iff_pairwise_not_isEdgeReachable_two :
+    G.IsAcyclic ↔ Pairwise (¬G.IsEdgeReachable 2 · ·) := by
+  refine ⟨fun h u v hne he ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨w, hw⟩ := exists_isCycle_of_isEdgeReachable_two hne he
+    exact h w hw
+  · refine isAcyclic_iff_forall_adj_isBridge.mpr fun u v huv ↦ ?_
+    exact isBridge_iff_adj_and_not_isEdgeConnected_two.mpr ⟨huv, h huv.ne⟩
 
 end SimpleGraph
