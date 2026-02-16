@@ -915,11 +915,12 @@ theorem IsTopologicalGroup.of_comm_of_nhds_one {G : Type u} [CommGroup G] [Topol
 variable (G) in
 /-- Any first countable topological group has an antitone neighborhood basis `u : ℕ → Set G` for
 which `(u (n + 1)) ^ 2 ⊆ u n`. The existence of such a neighborhood basis is a key tool for
-`QuotientGroup.completeSpace` -/
+`QuotientGroup.completeSpace_right`. -/
 @[to_additive
   /-- Any first countable topological additive group has an antitone neighborhood basis
   `u : ℕ → set G` for which `u (n + 1) + u (n + 1) ⊆ u n`.
-  The existence of such a neighborhood basis is a key tool for `QuotientAddGroup.completeSpace` -/]
+  The existence of such a neighborhood basis is a key tool
+  for `QuotientAddGroup.completeSpace_right`. -/]
 theorem IsTopologicalGroup.exists_antitone_basis_nhds_one [FirstCountableTopology G] :
     ∃ u : ℕ → Set G, (𝓝 1).HasAntitoneBasis u ∧ ∀ n, u (n + 1) * u (n + 1) ⊆ u n := by
   rcases (𝓝 (1 : G)).exists_antitone_basis with ⟨u, hu, u_anti⟩
