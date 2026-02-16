@@ -357,3 +357,31 @@ instance {ι} [Finite ι] : ∀ {R : ι → Type*} [Π i, Semiring (R i)] [∀ i
   · exact fun e h ↦ isNoetherianRing_of_ringEquiv _ (.piCongrLeft _ e)
   · infer_instance
   · exact fun ih ↦ isNoetherianRing_of_ringEquiv _ (.symm .piOptionEquivProd)
+
+namespace Submodule
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+
+/-- A submodule contained in an noetherian submodule is FG. -/
+theorem FG.of_le_of_isNoetherian {S T : Submodule R M} [IsNoetherian R T] (hST : S ≤ T) : S.FG :=
+  isNoetherian_submodule.mp inferInstance _ hST
+
+/-- A submodule contained in an FG submodule is FG over noetherian rings. -/
+lemma FG.of_le [IsNoetherianRing R] {S T : Submodule R M} (hT : T.FG) (hST : S ≤ T) : S.FG := by
+  rw [← Module.Finite.iff_fg] at hT
+  exact FG.of_le_of_isNoetherian hST
+
+end Submodule
+
+universe w v u
+
+variable (R : Type u) [CommRing R]
+
+theorem Module.exists_finite_presentation [Small.{v} R] (M : Type v) [AddCommGroup M] [Module R M]
+    [Module.Finite R M] : ∃ (P : Type v) (_ : AddCommGroup P) (_ : Module R P) (_ : Module.Free R P)
+      (_ : Module.Finite R P) (f : P →ₗ[R] M), Function.Surjective f := by
+  rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
+  let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
+      (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
+  use (Fin m →₀ Shrink.{v, u} R), inferInstance, inferInstance, inferInstance, inferInstance, f
+  simpa [f] using hf'

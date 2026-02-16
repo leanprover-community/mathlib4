@@ -10,7 +10,8 @@ public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Util.AssertExists
+public import Mathlib.Tactic.Set
+public import Mathlib.Logic.Nontrivial.Basic
 
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa

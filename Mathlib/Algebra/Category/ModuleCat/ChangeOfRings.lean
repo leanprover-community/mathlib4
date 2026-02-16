@@ -100,7 +100,7 @@ instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
 instance {R S : Type*} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars f).ReflectsIsomorphisms :=
   have : (restrictScalars f ⋙ CategoryTheory.forget (ModuleCat R)).ReflectsIsomorphisms :=
-    inferInstanceAs (CategoryTheory.forget _).ReflectsIsomorphisms
+    inferInstanceAs (CategoryTheory.forget (ModuleCat S)).ReflectsIsomorphisms
   reflectsIsomorphisms_of_comp _ (CategoryTheory.forget _)
 
 -- Porting note: this should be automatic
@@ -901,7 +901,7 @@ instance preservesColimit_restrictScalars {R S : Type*} [Ring R] [Ring S]
   have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrpCat) :=
     inferInstanceAs (HasColimit (F ⋙ forget₂ _ AddCommGrpCat))
   apply preservesColimit_of_preserves_colimit_cocone (HasColimit.isColimitColimitCocone F)
-  apply isColimitOfReflects (forget₂ _ AddCommGrpCat)
+  apply isColimitOfReflects (forget₂ (ModuleCat.{v} R) AddCommGrpCat)
   apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGrpCat.{v})
   exact HasColimit.isColimitColimitCocone F
 

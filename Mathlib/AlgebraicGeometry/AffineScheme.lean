@@ -232,9 +232,8 @@ instance hasLimits : HasLimits AffineScheme.{u} := by
 noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp := inferInstance
 
 noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
-  apply (config := { allowSynthFailures := true })
-    @preservesLimits_of_natIso _ _ _ _ _ _
-      (Functor.isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
+  apply +allowSynthFailures @preservesLimits_of_natIso _ _ _ _ _ _
+    (Functor.isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
   change PreservesLimits (equivCommRingCat.functor ⋙ Scheme.Spec)
   infer_instance
 
@@ -1001,7 +1000,7 @@ theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
     exact hf₂ x
   rw [← V.prop.self_le_iSup_basicOpen_iff]
   intro x hx
-  rw [iSup_range', SetLike.mem_coe, Opens.mem_iSup]
+  rw [iSup_range', Opens.mem_iSup]
   exact ⟨_, hf₁ ⟨x, hx⟩⟩
 
 /-- If `φ` is a monomorphism in `CommRingCat`, it is not in general true that `Spec φ` is epi.
