@@ -374,54 +374,56 @@ namespace ModelWithCorners
 
 /-- The change of charts from `e` to `e'` in the model vector space `E`. -/
 @[simps!]
-def extCoordChange (e e' : OpenPartialHomeomorph M H) : PartialEquiv E E :=
+def extendCoordChange (e e' : OpenPartialHomeomorph M H) : PartialEquiv E E :=
   (e.extend I).symm.trans (e'.extend I)
 
 variable {e e' : OpenPartialHomeomorph M H}
 
-lemma extCoordChange_symm : (I.extCoordChange e e').symm = I.extCoordChange e' e := by
+lemma extendCoordChange_symm : (I.extendCoordChange e e').symm = I.extendCoordChange e' e := by
   rfl
 
-lemma uniqueDiffOn_extCoordChange_source : UniqueDiffOn 𝕜 (I.extCoordChange e e').source := by
-  rw [extCoordChange_source, inter_assoc, inter_comm, preimage_comp, ← preimage_inter]
+lemma uniqueDiffOn_extendCoordChange_source : UniqueDiffOn 𝕜 (I.extendCoordChange e e').source := by
+  rw [extendCoordChange_source, inter_assoc, inter_comm, preimage_comp, ← preimage_inter]
   exact I.uniqueDiffOn_preimage <| e.isOpen_inter_preimage_symm e'.open_source
 
-lemma uniqueDiffOn_extCoordChange_target : UniqueDiffOn 𝕜 (I.extCoordChange e e').target := by
-  rw [← extCoordChange_symm, PartialEquiv.symm_target]
-  exact uniqueDiffOn_extCoordChange_source
+lemma uniqueDiffOn_extendCoordChange_target : UniqueDiffOn 𝕜 (I.extendCoordChange e e').target := by
+  rw [← extendCoordChange_symm, PartialEquiv.symm_target]
+  exact uniqueDiffOn_extendCoordChange_source
 
 variable [ChartedSpace H M] {n : WithTop ℕ∞}
 
-lemma contDiffOn_extCoordChange (he : e ∈ IsManifold.maximalAtlas I n M)
+lemma contDiffOn_extendCoordChange (he : e ∈ IsManifold.maximalAtlas I n M)
     (he' : e' ∈ IsManifold.maximalAtlas I n M) :
-    ContDiffOn 𝕜 n (I.extCoordChange e e') (I.extCoordChange e e').source :=
+    ContDiffOn 𝕜 n (I.extendCoordChange e e') (I.extendCoordChange e e').source :=
   e'.contDiffOn_extend_coord_change he' he
 
-lemma contDiffOn_extCoordChange_symm (he : e ∈ IsManifold.maximalAtlas I n M)
+lemma contDiffOn_extendCoordChange_symm (he : e ∈ IsManifold.maximalAtlas I n M)
     (he' : e' ∈ IsManifold.maximalAtlas I n M) :
-    ContDiffOn 𝕜 n (I.extCoordChange e e').symm (I.extCoordChange e e').target :=
+    ContDiffOn 𝕜 n (I.extendCoordChange e e').symm (I.extendCoordChange e e').target :=
   e.contDiffOn_extend_coord_change he he'
 
-lemma isInvertible_fderivWithin_extCoordChange (hn : n ≠ 0) (he : e ∈ IsManifold.maximalAtlas I n M)
-    (he' : e' ∈ IsManifold.maximalAtlas I n M) {x : E} (hx : x ∈ (I.extCoordChange e e').source) :
-    (fderivWithin 𝕜 (I.extCoordChange e e') (I.extCoordChange e e').source x).IsInvertible := by
-  set φ := I.extCoordChange e e'
-  have hφ : ContDiffOn 𝕜 n φ φ.source := I.contDiffOn_extCoordChange he he'
-  have hφ' : ContDiffOn 𝕜 n φ.symm φ.target := I.contDiffOn_extCoordChange_symm he he'
+lemma isInvertible_fderivWithin_extendCoordChange (hn : n ≠ 0)
+    (he : e ∈ IsManifold.maximalAtlas I n M) (he' : e' ∈ IsManifold.maximalAtlas I n M)
+    {x : E} (hx : x ∈ (I.extendCoordChange e e').source) :
+    ContinuousLinearMap.IsInvertible <|
+      fderivWithin 𝕜 (I.extendCoordChange e e') (I.extendCoordChange e e').source x := by
+  set φ := I.extendCoordChange e e'
+  have hφ : ContDiffOn 𝕜 n φ φ.source := I.contDiffOn_extendCoordChange he he'
+  have hφ' : ContDiffOn 𝕜 n φ.symm φ.target := I.contDiffOn_extendCoordChange_symm he he'
   refine .of_inverse (g := (fderivWithin 𝕜 φ.symm φ.target (φ x))) ?_ ?_
   · rw [← φ.left_inv hx, φ.right_inv (φ.map_source hx), ← fderivWithin_comp,
       fderivWithin_congr' φ.rightInvOn.eqOn (φ.map_source hx), fderivWithin_id]
-    · exact I.uniqueDiffOn_extCoordChange_source _ (φ.map_source hx)
+    · exact I.uniqueDiffOn_extendCoordChange_source _ (φ.map_source hx)
     · exact (φ.left_inv hx ▸ ((hφ _ hx).differentiableWithinAt hn):)
     · exact (hφ' _ (φ.map_source hx)).differentiableWithinAt hn
     · exact φ.symm_mapsTo
-    · exact I.uniqueDiffOn_extCoordChange_source _ (φ.map_source hx)
+    · exact I.uniqueDiffOn_extendCoordChange_source _ (φ.map_source hx)
   · rw [← fderivWithin_comp, fderivWithin_congr' φ.leftInvOn.eqOn hx, fderivWithin_id]
-    · exact I.uniqueDiffOn_extCoordChange_source _ hx
+    · exact I.uniqueDiffOn_extendCoordChange_source _ hx
     · exact (hφ' _ (φ.map_source hx)).differentiableWithinAt hn
     · exact (hφ _ hx).differentiableWithinAt hn
     · exact φ.mapsTo
-    · exact I.uniqueDiffOn_extCoordChange_source _ hx
+    · exact I.uniqueDiffOn_extendCoordChange_source _ hx
 
 end ModelWithCorners
 
