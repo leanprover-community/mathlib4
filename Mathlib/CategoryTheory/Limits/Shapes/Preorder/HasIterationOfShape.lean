@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.Interval.Set.InitialSeg
+module
+
+public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.Interval.Set.InitialSeg
 
 /-!
 # An assumption for constructions by transfinite induction
@@ -17,6 +19,8 @@ an assumption in order to do constructions by transfinite induction indexed by
 a well-ordered type `J` in a category `C` (see `CategoryTheory.SmallObject`).
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -34,6 +38,8 @@ class HasIterationOfShape : Prop where
   hasColimitsOfShape : HasColimitsOfShape J C := by infer_instance
 
 attribute [instance] HasIterationOfShape.hasColimitsOfShape
+
+instance [HasColimitsOfSize.{w, w} C] : HasIterationOfShape J C where
 
 variable [HasIterationOfShape J C]
 
@@ -63,7 +69,7 @@ instance : HasIterationOfShape J (K ⥤ C) where
 variable {J} [SuccOrder J] [WellFoundedLT J]
 
 lemma hasColimitsOfShape_of_initialSeg
-    {α : Type*} [LinearOrder α] (f : α ≤i J) [Nonempty α] :
+    {α : Type*} [PartialOrder α] (f : α ≤i J) [Nonempty α] :
     HasColimitsOfShape α C := by
   by_cases hf : Function.Surjective f
   · exact hasColimitsOfShape_of_equivalence
@@ -71,10 +77,10 @@ lemma hasColimitsOfShape_of_initialSeg
   · let s := f.toPrincipalSeg hf
     obtain ⟨i, hi₀⟩ : ∃ i, i = s.top := ⟨_, rfl⟩
     induction i using SuccOrder.limitRecOn with
-    | hm i hi =>
+    | isMin i hi =>
       subst hi₀
       exact (hi.not_lt (s.lt_top (Classical.arbitrary _))).elim
-    | hs i hi _ =>
+    | succ i hi _ =>
       obtain ⟨a, rfl⟩ := (s.mem_range_iff_rel (b := i)).2 (by
         simpa only [← hi₀] using Order.lt_succ_of_not_isMax hi)
       have : OrderTop α :=
@@ -83,7 +89,7 @@ lemma hasColimitsOfShape_of_initialSeg
             rw [← s.le_iff_le]
             exact Order.le_of_lt_succ (by simpa only [hi₀] using s.lt_top b) }
       infer_instance
-    | hl i hi =>
+    | isSuccLimit i hi =>
       subst hi₀
       exact hasColimitsOfShape_of_isSuccLimit' C s hi
 
@@ -92,10 +98,11 @@ lemma hasIterationOfShape_of_initialSeg {α : Type*} [LinearOrder α]
     HasIterationOfShape α C where
   hasColimitsOfShape := hasColimitsOfShape_of_initialSeg C h
   hasColimitsOfShape_of_isSuccLimit j hj := by
-    have : Nonempty (Set.Iio j) := by
-      obtain ⟨a, ha⟩ := not_isMin_iff.1 hj.1
-      exact ⟨⟨a, ha⟩⟩
-    exact hasColimitsOfShape_of_initialSeg  _
+    have := hj.nonempty_Iio.to_subtype
+    exact hasColimitsOfShape_of_initialSeg _
       (InitialSeg.trans (Set.principalSegIio j) h)
+
+instance (j : J) : HasIterationOfShape (Set.Iic j) C :=
+  hasIterationOfShape_of_initialSeg C (Set.initialSegIic j)
 
 end CategoryTheory.Limits

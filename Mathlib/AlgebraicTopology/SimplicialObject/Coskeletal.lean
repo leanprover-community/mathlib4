@@ -3,9 +3,11 @@ Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
 /-!
 # Coskeletal simplicial objects
@@ -22,6 +24,8 @@ then when `X` is `n`-coskeletal, the unit of `coskAdj n` defines an isomorphism:
 
 TODO: Prove that `X` is `n`-coskeletal whenever a certain canonical cone is a limit cone.
 -/
+
+@[expose] public section
 
 open Opposite
 
@@ -40,7 +44,7 @@ variable (X : SimplicialObject C) (n : ℕ)
 namespace Truncated
 
 /-- The identity natural transformation exhibits a simplicial set as a right extension of its
-restriction along `(Truncated.inclusion n).op`.-/
+restriction along `(Truncated.inclusion n).op`. -/
 @[simps!]
 def rightExtensionInclusion :
     RightExtension (Truncated.inclusion n).op
@@ -79,7 +83,7 @@ instance [X.IsCoskeletal n] : IsIso ((coskAdj n).unit.app X) := by
   infer_instance
 
 /-- The canonical isomorphism `X ≅ (cosk n).obj X` defined when `X` is coskeletal and the
-`n`-coskeleton functor exists.-/
+`n`-coskeleton functor exists. -/
 @[simps! hom]
 noncomputable def isoCoskOfIsCoskeletal [X.IsCoskeletal n] : X ≅ (cosk n).obj X :=
   asIso ((coskAdj n).unit.app X)

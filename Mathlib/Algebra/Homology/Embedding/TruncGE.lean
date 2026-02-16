@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.HomEquiv
-import Mathlib.Algebra.Homology.Embedding.IsSupported
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.HomEquiv
+public import Mathlib.Algebra.Homology.Embedding.IsSupported
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
 # The canonical truncation
@@ -35,14 +37,16 @@ We also construct the canonical epimorphism `K.πTruncGE e : K ⟶ K.truncGE e`.
 
 ## TODO
 * show that `K.πTruncGE e : K ⟶ K.truncGE e` induces an isomorphism
-in homology in degrees in the image of `e.f`.
+  in homology in degrees in the image of `e.f`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits ZeroObject Category
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 namespace HomologicalComplex
 
@@ -59,12 +63,12 @@ noncomputable def X (i : ι) : C :=
   then K.opcycles (e.f i)
   else K.X (e.f i)
 
-/-- The isomorphism `truncGE'.X K e i ≅ K.opcycles (e.f i)` when `e.BoundaryGE i` holds.-/
+/-- The isomorphism `truncGE'.X K e i ≅ K.opcycles (e.f i)` when `e.BoundaryGE i` holds. -/
 noncomputable def XIsoOpcycles {i : ι} (hi : e.BoundaryGE i) :
     X K e i ≅ K.opcycles (e.f i) :=
   eqToIso (if_pos hi)
 
-/-- The isomorphism `truncGE'.X K e i ≅ K.X (e.f i)` when `e.BoundaryGE i` does not hold.-/
+/-- The isomorphism `truncGE'.X K e i ≅ K.X (e.f i)` when `e.BoundaryGE i` does not hold. -/
 noncomputable def XIso {i : ι} (hi : ¬ e.BoundaryGE i) :
     X K e i ≅ K.X (e.f i) :=
   eqToIso (if_neg hi)
@@ -167,7 +171,6 @@ noncomputable def truncGE'Map : K.truncGE' e ⟶ L.truncGE' e where
     else
       (K.truncGE'XIso e rfl hi).hom ≫ φ.f (e.f i) ≫ (L.truncGE'XIso e rfl hi).inv
   comm' i j hij := by
-    dsimp
     rw [dif_neg (e.not_boundaryGE_next hij)]
     by_cases hi : e.BoundaryGE i
     · rw [dif_pos hi]
@@ -375,15 +378,18 @@ instance [K.IsStrictlySupported e] : IsIso (K.πTruncGE e) := by
   suffices ∀ (i' : ι'), IsIso ((K.πTruncGE e).f i') by
     apply Hom.isIso_of_components
   intro i'
-  by_cases hn : ∃ i, e.f i = i'
+  by_cases! hn : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hn
     dsimp [πTruncGE]
     rw [e.isIso_liftExtend_f_iff _ _ hi]
     infer_instance
-  · simp only [not_exists] at hn
-    refine ⟨0, ?_, ?_⟩
+  · refine ⟨0, ?_, ?_⟩
     all_goals
       apply (isZero_X_of_isStrictlySupported _ e i' hn).eq_of_src
+
+lemma isIso_πTruncGE_iff : IsIso (K.πTruncGE e) ↔ K.IsStrictlySupported e :=
+  ⟨fun _ ↦ isStrictlySupported_of_iso (asIso (K.πTruncGE e)).symm e,
+    fun _ ↦ inferInstance⟩
 
 end
 
@@ -392,7 +398,7 @@ end HomologicalComplex
 namespace ComplexShape.Embedding
 
 variable (e : Embedding c c') [e.IsTruncGE]
-    (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
+    (C : Type*) [Category* C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
 
 /-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncGE`,
 this is the (canonical) truncation functor

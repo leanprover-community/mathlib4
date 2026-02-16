@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
-import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 /-!
 # Extending an alternating map to the exterior algebra
@@ -21,6 +23,8 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
   exterior powers.
 
 -/
+
+@[expose] public section
 
 
 variable {R M N N' : Type*}
@@ -63,11 +67,7 @@ theorem liftAlternating_ι (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M) :
     liftAlternating (R := R) (M := M) (N := N) f (ι R m) = f 1 ![m] := by
   dsimp [liftAlternating]
   rw [foldl_ι, LinearMap.mk₂_apply, AlternatingMap.curryLeft_apply_apply]
-  congr
-  -- Porting note: In Lean 3, `congr` could use the `[Subsingleton (Fin 0 → M)]` instance to finish
-  -- the proof. Here, the instance can be synthesized but `congr` does not use it so the following
-  -- line is provided.
-  rw [Matrix.zero_empty]
+  congr!
 
 theorem liftAlternating_ι_mul (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M)
     (x : ExteriorAlgebra R M) :
@@ -93,13 +93,8 @@ theorem liftAlternating_algebraMap (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (r : R)
 theorem liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, M [⋀^Fin i]→ₗ[R] N)
     (v : Fin n → M) : liftAlternating (R := R) (M := M) (N := N) f (ιMulti R n v) = f n v := by
   rw [ιMulti_apply]
-  -- Porting note: `v` is generalized automatically so it was removed from the next line
   induction n generalizing f with
-  | zero =>
-    -- Porting note: Lean does not automatically synthesize the instance
-    -- `[Subsingleton (Fin 0 → M)]` which is needed for `Subsingleton.elim 0 v` on line 114.
-    letI : Subsingleton (Fin 0 → M) := by infer_instance
-    rw [List.ofFn_zero, List.prod_nil, liftAlternating_one, Subsingleton.elim 0 v]
+  | zero => rw [List.ofFn_zero, List.prod_nil, liftAlternating_one, Subsingleton.elim 0 v]
   | succ n ih =>
     rw [List.ofFn_succ, List.prod_cons, liftAlternating_ι_mul, ih,
       AlternatingMap.curryLeft_apply_apply]

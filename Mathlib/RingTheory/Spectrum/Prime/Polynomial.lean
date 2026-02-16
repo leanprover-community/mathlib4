@@ -3,12 +3,14 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Charpoly.BaseChange
-import Mathlib.LinearAlgebra.Eigenspace.Zero
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+module
+
+public import Mathlib.LinearAlgebra.Charpoly.BaseChange
+public import Mathlib.LinearAlgebra.Eigenspace.Zero
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 
@@ -27,6 +29,8 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
 
 -/
 
+public section
+
 open Polynomial TensorProduct PrimeSpectrum
 
 variable {R M A} [CommRing R] [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A]
@@ -43,7 +47,7 @@ lemma isNilpotent_tensor_residueField_iff
   have : Module.finrank I.ResidueField (I.ResidueField ⊗[R] A) = Module.finrank R A := by
     rw [Module.finrank_tensorProduct, Module.finrank_self, one_mul]
   rw [← IsNilpotent.map_iff (Algebra.TensorProduct.comm R A I.ResidueField).injective]
-  simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.id.map_eq_id, RingHom.id_apply,
+  simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
     Algebra.coe_lmul_eq_mul, Algebra.TensorProduct.comm_tmul]
   rw [← IsNilpotent.map_iff (Algebra.lmul_injective (R := I.ResidueField)),
     LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange]
@@ -79,7 +83,7 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
         q.asIdeal.ResidueField :=
       Algebra.TensorProduct.lift
         (Ideal.Quotient.liftₐ (Ideal.span s) (Algebra.ofId A _) hs)
-        (Ideal.ResidueField.mapₐ _ _ rfl)
+        (Ideal.ResidueField.mapₐ _ _ (Algebra.ofId _ _) rfl)
         fun _ _ ↦ .all _ _
     have := H.map F
     rw [AlgHom.commutes, isNilpotent_iff_eq_zero, ← RingHom.mem_ker,
@@ -88,7 +92,7 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
   · intro H
     rw [← mem_nilradical, nilradical_eq_sInf, Ideal.mem_sInf] at H
     simp only [Set.mem_setOf_eq, Algebra.TensorProduct.algebraMap_apply,
-      Ideal.Quotient.algebraMap_eq, not_forall, Classical.not_imp] at H
+      Ideal.Quotient.algebraMap_eq, not_forall] at H
     obtain ⟨q, hq, hfq⟩ := H
     have : ∀ a ∈ s, Ideal.Quotient.mk (Ideal.span s) a ⊗ₜ[R] 1 ∈ q := fun a ha ↦ by
       simp [Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.subset_span ha)]
@@ -138,11 +142,11 @@ lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
     let e : R[X] ⊗[R] x.asIdeal.ResidueField ≃ₐ[R] x.asIdeal.ResidueField[X] :=
       (Algebra.TensorProduct.comm R _ _).trans (polyEquivTensor R x.asIdeal.ResidueField).symm
     rw [← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
-    show (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ Polynomial.mapRingHom _ f = 0
+    change (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ Polynomial.mapRingHom _ f = 0
     congr!
     ext1
     · ext; simp [e]
-    · simp [e, monomial_one_one_eq_X]
+    · simp [e]
   · simp [Polynomial.ext_iff]
 
 lemma image_comap_C_basicOpen (f : R[X]) :
@@ -165,18 +169,18 @@ lemma comap_C_surjective : Function.Surjective (comap (R := R) C) := by
   intro x
   refine ⟨comap (evalRingHom 0) x, ?_⟩
   rw [← comap_comp_apply, (show (evalRingHom 0).comp C = .id R by ext; simp),
-    comap_id, ContinuousMap.id_apply]
+    comap_id]
 
 lemma exists_image_comap_of_monic (f g : R[X]) (hg : g.Monic) :
     ∃ t : Finset R, comap C '' (zeroLocus {g} \ zeroLocus {f}) = (zeroLocus t)ᶜ := by
-  apply (config := { allowSynthFailures := true }) exists_image_comap_of_finite_of_free
+  apply +allowSynthFailures exists_image_comap_of_finite_of_free
   · exact .of_basis (AdjoinRoot.powerBasis' hg).basis
   · exact .of_basis (AdjoinRoot.powerBasis' hg).basis
 
 lemma isCompact_image_comap_of_monic (f g : R[X]) (hg : g.Monic) :
     IsCompact (comap C '' (zeroLocus {g} \ zeroLocus {f})) := by
   obtain ⟨t, ht⟩ := exists_image_comap_of_monic f g hg
-  rw [ht, ← t.toSet.iUnion_of_singleton_coe, zeroLocus_iUnion, Set.compl_iInter]
+  rw [ht, ← (t : Set R).iUnion_of_singleton_coe, zeroLocus_iUnion, Set.compl_iInter]
   apply isCompact_iUnion
   exact fun _ ↦ by simpa using isCompact_basicOpen _
 
@@ -200,12 +204,12 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
     let e : MvPolynomial σ R ⊗[R] x.asIdeal.ResidueField ≃ₐ[R]
         MvPolynomial σ x.asIdeal.ResidueField := scalarRTensorAlgEquiv
     rw [← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
-    show (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ MvPolynomial.map _ f = 0
+    change (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ MvPolynomial.map _ f = 0
     congr!
     ext
     · simp [scalarRTensorAlgEquiv, e, coeff_map,
         Algebra.smul_def, apply_ite (f := algebraMap _ _)]
-    · simp [e, monomial_one_one_eq_X, scalarRTensorAlgEquiv, coeff_map, coeff_X']
+    · simp [e, scalarRTensorAlgEquiv, coeff_map, coeff_X']
   · simp [MvPolynomial.ext_iff, coeff_map]
 
 lemma image_comap_C_basicOpen (f : MvPolynomial σ R) :
@@ -228,6 +232,6 @@ lemma comap_C_surjective : Function.Surjective (comap (R := R) (C (σ := σ))) :
   intro x
   refine ⟨comap (eval₂Hom (.id _) 0) x, ?_⟩
   rw [← comap_comp_apply, (show (eval₂Hom (.id _) 0).comp C = .id R by ext; simp),
-    comap_id, ContinuousMap.id_apply]
+    comap_id]
 
 end MvPolynomial

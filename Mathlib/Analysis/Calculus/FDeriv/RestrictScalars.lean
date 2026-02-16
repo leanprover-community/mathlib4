@@ -3,17 +3,21 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Basic
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Basic
 
 /-!
 # The derivative of the scalar restriction of a linear map
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 the scalar restriction of a linear map.
 -/
+
+public section
 
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
@@ -90,6 +94,11 @@ theorem hasFDerivAt_of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivAt f 
 theorem DifferentiableAt.fderiv_restrictScalars (h : DifferentiableAt 𝕜' f x) :
     fderiv 𝕜 f x = (fderiv 𝕜' f x).restrictScalars 𝕜 :=
   (h.hasFDerivAt.restrictScalars 𝕜).fderiv
+
+theorem DifferentiableWithinAt.restrictScalars_fderivWithin (hf : DifferentiableWithinAt 𝕜' f s x)
+    (hs : UniqueDiffWithinAt 𝕜 s x) :
+    (fderivWithin 𝕜' f s x).restrictScalars 𝕜 = fderivWithin 𝕜 f s x :=
+  ((hf.hasFDerivWithinAt.restrictScalars 𝕜).fderivWithin hs).symm
 
 theorem differentiableWithinAt_iff_restrictScalars (hf : DifferentiableWithinAt 𝕜 f s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) : DifferentiableWithinAt 𝕜' f s x ↔

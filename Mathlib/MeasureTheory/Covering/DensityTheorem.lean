@@ -3,9 +3,11 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.MeasureTheory.Measure.Doubling
-import Mathlib.MeasureTheory.Covering.Vitali
-import Mathlib.MeasureTheory.Covering.Differentiation
+module
+
+public import Mathlib.MeasureTheory.Measure.Doubling
+public import Mathlib.MeasureTheory.Covering.Vitali
+public import Mathlib.MeasureTheory.Covering.Differentiation
 
 /-!
 # Uniformly locally doubling measures and Lebesgue's density theorem
@@ -20,11 +22,13 @@ doubling measures with results about differentiation along a Vitali family to ob
 form of Lebesgue's density theorem.
 
 ## Main results
-  * `IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div`: a version of Lebesgue's density
+* `IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div`: a version of Lebesgue's density
   theorem for sequences of balls converging on a point but whose centres are not required to be
   fixed.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -80,7 +84,7 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
   /- For small balls, there is the difficulty that `r` could be large but still the ball could be
     small, if the annulus `{y | ε ≤ dist y x ≤ R/4}` is empty. We split between the cases `r ≤ R`
     and `r > R`, and use the doubling for the former and rough estimates for the latter. -/
-  rcases le_or_lt r R with (hr | hr)
+  rcases le_or_gt r R with (hr | hr)
   · refine ⟨(K + 1) * r, ?_⟩
     constructor
     · apply closedBall_subset_closedBall'

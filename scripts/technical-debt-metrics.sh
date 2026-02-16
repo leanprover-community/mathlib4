@@ -77,13 +77,14 @@ tdc () {
 # See also the comment on the `read` line in the for-loop that follows the definition of this array.
 titlesPathsAndRegexes=(
   "porting notes"                  "*"      "Porting note"
-  "backwards compatibility flags"  "*"      "set_option.*backward"
-  "skipAssignedInstances flags"    "*"      "set_option tactic.skipAssignedInstances"
+  "flexible linter exceptions"     ":^MathlibTest"      "set_option linter.flexible"
   "adaptation notes"               ":^Mathlib/Tactic/AdaptationNote.lean :^Mathlib/Tactic/Linter"
                                             "^[· ]*#adaptation_note"
   "disabled simpNF lints"          "*"      "nolint simpNF"
   "erw"                            "*"      "erw \["
-  "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats"
+  "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats.* [0-9][0-9]*"
+  "CommRing (Fin n) instances"     "*"      "^open Fin.CommRing "
+  "NatCast (Fin n) instances"      "*"      "^open Fin.NatCast "
 )
 
 for i in ${!titlesPathsAndRegexes[@]}; do
@@ -102,21 +103,39 @@ for i in ${!titlesPathsAndRegexes[@]}; do
   fi
 done
 
+# Dynamic breakdown of backwards compatibility flags by individual option
+for flag in $({ git grep -oh -e 'set_option backward\.[A-Za-z0-9_]*' -- ':^scripts' || true; } |
+               sed 's/set_option //' | sort -u); do
+  printf '%s|%s\n' \
+    "$({ git grep -Fc -e "set_option ${flag}" -- ':^scripts' || true; } |
+      awk -F: 'BEGIN{s=0}{s+=$2} END{print s}')" \
+    "${flag}"
+done
+
+# count simp +instances and dsimp +instances
+# we use grep -v 'dsimp' to avoid counting dsimp lines in the simp total
+simpPlusInstances="$({ git grep -e 'simp \([+-][^ ]* *\)*+instances' -- ':^scripts' || true; } |
+  grep -v 'dsimp' | wc -l)"
+dsimpPlusInstances="$({ git grep -c -e 'dsimp \([+-][^ ]* *\)*+instances' -- ':^scripts' || true; } |
+  awk -F: 'BEGIN{s=0}{s+=$2} END{print s}')"
+printf '%s|simp +instances\n' "${simpPlusInstances}"
+printf '%s|dsimp +instances\n' "${dsimpPlusInstances}"
+
 # count total number of `set_option linter.deprecated false` outside of `Mathlib/Deprecated`
 deprecs="$(git grep -c -- "set_option linter.deprecated false" -- ":^Mathlib/Deprecated" |
   awk -F: 'BEGIN{total=0} {total+=$2} END{print total}')"
 
 # count the `linter.deprecated` exceptions that are themselves followed by `deprecated ...(since`
 # we subtract these from `deprecs`
-doubleDeprecs="$(git grep -A1 -- "set_option linter.deprecated false" -- ":^Mathlib/Deprecated" |
+doubleDeprecs="$(git grep -A2 -- "set_option linter.deprecated false" -- ":^Mathlib/Deprecated" |
   grep -c "deprecated .*(since")"
 
 printf '%s|disabled deprecation lints\n' "$(( deprecs - doubleDeprecs ))"
 
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
+printf '%s|%s\n' "$(grep -c 'tacticDocs' scripts/nolints.json)" "undocumented tactics"
 # We count the number of large files, making sure to avoid counting the test file `MathlibTest/Lint.lean`.
 printf '%s|%s\n' "$(git grep '^set_option linter.style.longFile [0-9]*' Mathlib | wc -l)" "large files"
-printf '%s|%s\n' "$(git grep "^open .*Classical" | grep -v " in$" -c)" "bare open (scoped) Classical"
 
 printf '%s|%s\n' "$(wc -l < scripts/nolints_prime_decls.txt)" "exceptions for the docPrime linter"
 

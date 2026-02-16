@@ -3,7 +3,9 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Ring.Equiv
+module
+
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Propositional typeclasses on several ring homs
@@ -13,6 +15,7 @@ This file contains three typeclasses used in the definition of (semi)linear maps
 * `RingHomCompTriple σ₁₂ σ₂₃ σ₁₃`, which expresses the fact that `σ₂₃.comp σ₁₂ = σ₁₃`
 * `RingHomInvPair σ₁₂ σ₂₁`, which states that `σ₁₂` and `σ₂₁` are inverses of each other
 * `RingHomSurjective σ`, which states that `σ` is surjective
+
 These typeclasses ensure that objects such as `σ₂₃.comp σ₁₂` never end up in the type of a
 semilinear map; instead, the typeclass system directly finds the appropriate `RingHom` to use.
 A typical use-case is conjugate-linear maps, i.e. when `σ = Complex.conj`; this system ensures that
@@ -39,6 +42,8 @@ Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 `RingHomCompTriple`, `RingHomInvPair`, `RingHomSurjective`
 -/
 
+@[expose] public section
+
 
 variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
@@ -47,7 +52,7 @@ variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 -- This at first seems not very useful. However we need this when considering
 -- modules over some diagram in the category of rings,
 -- e.g. when defining presheaves over a presheaf of rings.
--- See `Mathlib.Algebra.Category.ModuleCat.Presheaf`.
+-- See `Mathlib/Algebra/Category/ModuleCat/Presheaf.lean`.
 class RingHomId {R : Type*} [Semiring R] (σ : R →+* R) : Prop where
   eq_id : σ = RingHom.id R
 
@@ -129,12 +134,10 @@ namespace RingHomCompTriple
 
 instance ids : RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂ :=
   ⟨by
-    ext
     simp⟩
 
 instance right_ids : RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂ :=
   ⟨by
-    ext
     simp⟩
 
 end RingHomCompTriple

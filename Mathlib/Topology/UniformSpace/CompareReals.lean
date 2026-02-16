@@ -3,10 +3,11 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.UniformSpace.AbsoluteValue
-import Mathlib.Topology.Instances.Rat
-import Mathlib.Topology.UniformSpace.Completion
-import Mathlib.Topology.Metrizable.Basic
+module
+
+public import Mathlib.Topology.Instances.Rat
+public import Mathlib.Topology.UniformSpace.AbsoluteValue
+public import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # Comparison of Cauchy reals and Bourbaki reals
@@ -49,6 +50,8 @@ does use ℝ).
 
 real numbers, completion, uniform spaces
 -/
+
+@[expose] public section
 
 
 open Set Function Filter CauSeq UniformSpace

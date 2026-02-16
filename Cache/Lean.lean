@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Arthur Paulino
 -/
 
-import Lean.Util.Paths
+import Lean.Data.Json
+import Lean.Util.Path
 
 /-!
 # Helper Functions
@@ -18,7 +19,7 @@ Some functions here are duplicates from the folder `Mathlib/Lean/`.
 /-- Format as hex digit string. Used by `Cache` to format hashes. -/
 def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
   | 0, s => s
-  | len+1, s =>
+  | len + 1, s =>
     let b := UInt8.ofNat (n >>> (len * 8))
     Nat.toHexDigits n len <|
       s.push (Nat.digitChar (b >>> 4).toNat) |>.push (Nat.digitChar (b &&& 15).toNat)
@@ -26,6 +27,22 @@ def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
 /-- Format hash as hex digit with extension `.ltar` -/
 def UInt64.asLTar (n : UInt64) : String :=
   s!"{Nat.toHexDigits n.toNat 8}.ltar"
+
+/-- Parse a single hex digit character to its numeric value. -/
+def Char.hexDigitToNat? (c : Char) : Option Nat :=
+  if '0' ≤ c ∧ c ≤ '9' then some (c.toNat - '0'.toNat)
+  else if 'a' ≤ c ∧ c ≤ 'f' then some (c.toNat - 'a'.toNat + 10)
+  else if 'A' ≤ c ∧ c ≤ 'F' then some (c.toNat - 'A'.toNat + 10)
+  else none
+
+/-- Parse a 16-character hex string (like "4bd6700ff435e8d0") to a UInt64. -/
+def String.parseHexToUInt64? (s : String) : Option UInt64 := do
+  if s.length != 16 then failure
+  let mut result : UInt64 := 0
+  for c in s.toList do
+    let digit ← c.hexDigitToNat?
+    result := (result <<< 4) ||| digit.toUInt64
+  return result
 
 -- copied from Mathlib
 /-- Create a `Name` from a list of components. -/
@@ -50,9 +67,8 @@ expose this base path.
 -/
 def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) : IO (Option FilePath) := do
   let pkg := mod.getRoot.toString (escape := false)
-  let root? ← sp.findM? fun p =>
+  sp.findM? fun p =>
     (p / pkg).isDir <||> ((p / pkg).addExtension ext).pathExists
-  return root?
 
 end Lean.SearchPath
 

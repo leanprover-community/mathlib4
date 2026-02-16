@@ -3,21 +3,18 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Algebra.Order.GroupWithZero.Finset
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.Analysis.Normed.Group.Rat
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.MetricSpace.DilationEquiv
-import Mathlib.Topology.Instances.NNReal.Defs
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Group.Rat
+public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Topology.MetricSpace.DilationEquiv
+import Mathlib.Analysis.Normed.MulAction
 
 /-!
 # Normed fields
 
-In this file we continue building the theory of (semi)normed rings and fields.
+In this file we continue building the theory of normed division rings and fields.
 
 Some useful results that relate the topology of the normed field to the discrete topology include:
 * `discreteTopology_or_nontriviallyNormedField`
@@ -25,229 +22,40 @@ Some useful results that relate the topology of the normed field to the discrete
 
 -/
 
+@[expose] public section
+
 -- Guard against import creep.
 assert_not_exists RestrictScalars
 
-variable {α : Type*} {β : Type*} {ι : Type*}
+variable {α β ι : Type*}
 
-open Filter Bornology
-open scoped Topology NNReal Pointwise
-
-section NonUnitalSeminormedRing
-
-variable [NonUnitalSeminormedRing α]
-
-theorem Filter.Tendsto.zero_mul_isBoundedUnder_le {f g : ι → α} {l : Filter ι}
-    (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l ((‖·‖) ∘ g)) :
-    Tendsto (fun x => f x * g x) l (𝓝 0) :=
-  hf.op_zero_isBoundedUnder_le hg (· * ·) norm_mul_le
-
-theorem Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter ι}
-    (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
-    Tendsto (fun x => f x * g x) l (𝓝 0) :=
-  hg.op_zero_isBoundedUnder_le hf (flip (· * ·)) fun x y =>
-    (norm_mul_le y x).trans_eq (mul_comm _ _)
-
-/-- Non-unital seminormed ring structure on the product of finitely many non-unital seminormed
-rings, using the sup norm. -/
-instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
-    [∀ i, NonUnitalSeminormedRing (π i)] : NonUnitalSeminormedRing (∀ i, π i) :=
-  { Pi.seminormedAddCommGroup, Pi.nonUnitalRing with
-    norm_mul := fun x y =>
-      NNReal.coe_mono <|
-        calc
-          (Finset.univ.sup fun i => ‖x i * y i‖₊) ≤
-              Finset.univ.sup ((fun i => ‖x i‖₊) * fun i => ‖y i‖₊) :=
-            Finset.sup_mono_fun fun _ _ => norm_mul_le _ _
-          _ ≤ (Finset.univ.sup fun i => ‖x i‖₊) * Finset.univ.sup fun i => ‖y i‖₊ :=
-            Finset.sup_mul_le_mul_sup_of_nonneg (fun _ _ => zero_le _) fun _ _ => zero_le _
-           }
-
-end NonUnitalSeminormedRing
-
-section SeminormedRing
-
-variable [SeminormedRing α]
-
-/-- Seminormed ring structure on the product of finitely many seminormed rings,
-  using the sup norm. -/
-instance Pi.seminormedRing {π : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (π i)] :
-    SeminormedRing (∀ i, π i) :=
-  { Pi.nonUnitalSeminormedRing, Pi.ring with }
-
-end SeminormedRing
-
-section NonUnitalNormedRing
-
-variable [NonUnitalNormedRing α]
-
-/-- Normed ring structure on the product of finitely many non-unital normed rings, using the sup
-norm. -/
-instance Pi.nonUnitalNormedRing {π : ι → Type*} [Fintype ι] [∀ i, NonUnitalNormedRing (π i)] :
-    NonUnitalNormedRing (∀ i, π i) :=
-  { Pi.nonUnitalSeminormedRing, Pi.normedAddCommGroup with }
-
-end NonUnitalNormedRing
-
-section NormedRing
-
-variable [NormedRing α]
-
-/-- Normed ring structure on the product of finitely many normed rings, using the sup norm. -/
-instance Pi.normedRing {π : ι → Type*} [Fintype ι] [∀ i, NormedRing (π i)] :
-    NormedRing (∀ i, π i) :=
-  { Pi.seminormedRing, Pi.normedAddCommGroup with }
-
-end NormedRing
-
-section NonUnitalSeminormedCommRing
-
-variable [NonUnitalSeminormedCommRing α]
-
-/-- Non-unital seminormed commutative ring structure on the product of finitely many non-unital
-seminormed commutative rings, using the sup norm. -/
-instance Pi.nonUnitalSeminormedCommRing {π : ι → Type*} [Fintype ι]
-    [∀ i, NonUnitalSeminormedCommRing (π i)] : NonUnitalSeminormedCommRing (∀ i, π i) :=
-  { Pi.nonUnitalSeminormedRing, Pi.nonUnitalCommRing with }
-
-end NonUnitalSeminormedCommRing
-
-section NonUnitalNormedCommRing
-
-variable [NonUnitalNormedCommRing α]
-
-/-- Normed commutative ring structure on the product of finitely many non-unital normed
-commutative rings, using the sup norm. -/
-instance Pi.nonUnitalNormedCommRing {π : ι → Type*} [Fintype ι]
-    [∀ i, NonUnitalNormedCommRing (π i)] : NonUnitalNormedCommRing (∀ i, π i) :=
-  { Pi.nonUnitalSeminormedCommRing, Pi.normedAddCommGroup with }
-
-end NonUnitalNormedCommRing
-
-section SeminormedCommRing
-
-variable [SeminormedCommRing α]
-
-/-- Seminormed commutative ring structure on the product of finitely many seminormed commutative
-rings, using the sup norm. -/
-instance Pi.seminormedCommRing {π : ι → Type*} [Fintype ι] [∀ i, SeminormedCommRing (π i)] :
-    SeminormedCommRing (∀ i, π i) :=
-  { Pi.nonUnitalSeminormedCommRing, Pi.ring with }
-
-end SeminormedCommRing
-
-section NormedCommRing
-
-variable [NormedCommRing α]
-
-/-- Normed commutative ring structure on the product of finitely many normed commutative rings,
-using the sup norm. -/
-instance Pi.normedCommutativeRing {π : ι → Type*} [Fintype ι] [∀ i, NormedCommRing (π i)] :
-    NormedCommRing (∀ i, π i) :=
-  { Pi.seminormedCommRing, Pi.normedAddCommGroup with }
-
-end NormedCommRing
-
--- see Note [lower instance priority]
-instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSeminormedRing α] :
-    ContinuousMul α :=
-  ⟨continuous_iff_continuousAt.2 fun x =>
-      tendsto_iff_norm_sub_tendsto_zero.2 <| by
-        have : ∀ e : α × α,
-            ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ := by
-          intro e
-          calc
-            ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1 * (e.2 - x.2) + (e.1 - x.1) * x.2‖ := by
-              rw [mul_sub, sub_mul, sub_add_sub_cancel]
-            _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
-              norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
-        refine squeeze_zero (fun e => norm_nonneg _) this ?_
-        convert
-          ((continuous_fst.tendsto x).norm.mul
-                ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
-            (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul _)
-        -- Porting note: `show` used to select a goal to work on
-        rotate_right
-        · show Tendsto _ _ _
-          exact tendsto_const_nhds
-        · simp⟩
-
--- see Note [lower instance priority]
-/-- A seminormed ring is a topological ring. -/
-instance (priority := 100) NonUnitalSeminormedRing.toTopologicalRing [NonUnitalSeminormedRing α] :
-    TopologicalRing α where
-
-namespace SeparationQuotient
-
-instance [NonUnitalSeminormedRing α] : NonUnitalNormedRing (SeparationQuotient α) where
-  __ : NonUnitalRing (SeparationQuotient α) := inferInstance
-  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
-  norm_mul := Quotient.ind₂ norm_mul_le
-
-instance [NonUnitalSeminormedCommRing α] : NonUnitalNormedCommRing (SeparationQuotient α) where
-  __ : NonUnitalCommRing (SeparationQuotient α) := inferInstance
-  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
-  norm_mul := Quotient.ind₂ norm_mul_le
-
-instance [SeminormedRing α] : NormedRing (SeparationQuotient α) where
-  __ : Ring (SeparationQuotient α) := inferInstance
-  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
-  norm_mul := Quotient.ind₂ norm_mul_le
-
-instance [SeminormedCommRing α] : NormedCommRing (SeparationQuotient α) where
-  __ : CommRing (SeparationQuotient α) := inferInstance
-  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
-  norm_mul := Quotient.ind₂ norm_mul_le
-
-instance [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
-    NormOneClass (SeparationQuotient α) where
-  norm_one := norm_one (α := α)
-
-end SeparationQuotient
+open Filter Bornology Metric
+open scoped Topology NNReal Pointwise Uniformity
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α] {a : α}
-
-lemma antilipschitzWith_mul_left {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (a * ·) :=
-  AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by simp [dist_eq_norm, ← _root_.mul_sub, ha]
-
-lemma antilipschitzWith_mul_right {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (· * a) :=
-  AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by
-    simp [dist_eq_norm, ← _root_.sub_mul, ← mul_comm (‖a‖), ha]
+variable [NormedDivisionRing α]
 
 /-- Multiplication by a nonzero element `a` on the left
 as a `DilationEquiv` of a normed division ring. -/
 @[simps!]
 def DilationEquiv.mulLeft (a : α) (ha : a ≠ 0) : α ≃ᵈ α where
+  __ := Dilation.mulLeft a ha
   toEquiv := Equiv.mulLeft₀ a ha
-  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
-    simp [edist_nndist, nndist_eq_nnnorm, ← mul_sub]⟩
 
 /-- Multiplication by a nonzero element `a` on the right
 as a `DilationEquiv` of a normed division ring. -/
 @[simps!]
 def DilationEquiv.mulRight (a : α) (ha : a ≠ 0) : α ≃ᵈ α where
+  __ := Dilation.mulRight a ha
   toEquiv := Equiv.mulRight₀ a ha
-  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
-    simp [edist_nndist, nndist_eq_nnnorm, ← sub_mul, ← mul_comm (‖a‖₊)]⟩
 
 namespace Filter
-
-@[simp]
-lemma comap_mul_left_cobounded {a : α} (ha : a ≠ 0) :
-    comap (a * ·) (cobounded α) = cobounded α :=
-  Dilation.comap_cobounded (DilationEquiv.mulLeft a ha)
 
 @[simp]
 lemma map_mul_left_cobounded {a : α} (ha : a ≠ 0) :
     map (a * ·) (cobounded α) = cobounded α :=
   DilationEquiv.map_cobounded (DilationEquiv.mulLeft a ha)
-
-@[simp]
-lemma comap_mul_right_cobounded {a : α} (ha : a ≠ 0) :
-    comap (· * a) (cobounded α) = cobounded α :=
-  Dilation.comap_cobounded (DilationEquiv.mulRight a ha)
 
 @[simp]
 lemma map_mul_right_cobounded {a : α} (ha : a ≠ 0) :
@@ -273,8 +81,10 @@ lemma inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
   simp only [comap_comap, Function.comp_def, norm_inv]
 
 @[simp]
-lemma inv_nhdsWithin_ne_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
+lemma inv_nhdsNE_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
   rw [← inv_cobounded₀, inv_inv]
+
+@[deprecated (since := "2025-11-26")] alias inv_nhdsWithin_ne_zero := inv_nhdsNE_zero
 
 lemma tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) :=
   inv_cobounded₀.le
@@ -282,62 +92,138 @@ lemma tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) :
 theorem tendsto_inv₀_cobounded : Tendsto Inv.inv (cobounded α) (𝓝 0) :=
   tendsto_inv₀_cobounded'.mono_right inf_le_left
 
-lemma tendsto_inv₀_nhdsWithin_ne_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) :=
-  inv_nhdsWithin_ne_zero.le
+lemma tendsto_inv₀_nhdsNE_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) :=
+  inv_nhdsNE_zero.le
+
+@[deprecated (since := "2025-11-26")]
+alias tendsto_inv₀_nhdsWithin_ne_zero := tendsto_inv₀_nhdsNE_zero
 
 end Filter
 
+/-- If `s` is a set disjoint from `𝓝 0`, then `fun x ↦ x⁻¹` is uniformly continuous on `s`. -/
+theorem uniformContinuousOn_inv₀ {s : Set α} (hs : sᶜ ∈ 𝓝 0) :
+    UniformContinuousOn Inv.inv s := by
+  rw [Metric.uniformContinuousOn_iff_le]
+  intro ε hε
+  rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.mem_iff.mp hs with ⟨r, hr₀, hr⟩
+  simp only [Set.subset_compl_comm (t := s), Set.compl_setOf, not_lt] at hr
+  have hs₀ : ∀ x ∈ s, x ≠ 0 := fun x hx ↦ norm_pos_iff.mp <| hr₀.trans_le (hr hx)
+  refine ⟨ε * r ^ 2, by positivity, fun x hx y hy hxy ↦ ?_⟩
+  calc
+    dist x⁻¹ y⁻¹ = ‖x‖⁻¹ * dist y x * ‖y‖⁻¹ := by
+      simp [dist_eq_norm, inv_sub_inv' (hs₀ x hx) (hs₀ y hy)]
+    _ ≤ r⁻¹ * (ε * r ^ 2) * r⁻¹ := by
+      rw [dist_comm]
+      gcongr <;> exact hr ‹_›
+    _ = ε := by field_simp
+
+@[to_fun]
+theorem UniformContinuousOn.inv₀ {X : Type*} [UniformSpace X] {f : X → α} {s : Set X}
+    (hf : UniformContinuousOn f s) (hf₀ : (f '' s)ᶜ ∈ 𝓝 0) :
+    UniformContinuousOn f⁻¹ s :=
+  uniformContinuousOn_inv₀ hf₀ |>.comp hf (Set.mapsTo_image f s)
+
+@[to_fun]
+theorem UniformContinuous.inv₀ {X : Type*} [UniformSpace X] {f : X → α}
+    (hf : UniformContinuous f) (hf₀ : (Set.range f)ᶜ ∈ 𝓝 0) :
+    UniformContinuous f⁻¹ := by
+  simp only [← uniformContinuousOn_univ, ← Set.image_univ] at *
+  exact hf.inv₀ hf₀
+
+@[to_fun]
+theorem TendstoLocallyUniformlyOn.inv₀_of_disjoint {X ι : Type*} [TopologicalSpace X]
+    {s : Set X} {F : ι → X → α} {f : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformlyOn F f l s) (hf : ∀ x ∈ s, Disjoint (map f (𝓝[s] x)) (𝓝 0)) :
+    TendstoLocallyUniformlyOn F⁻¹ f⁻¹ l s := by
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at *
+  intro x hx
+  rcases basis_sets _ |>.map _ |>.disjoint_iff nhds_basis_ball
+    |>.mp (hf x hx) with ⟨U, hUx, r, hr₀, hr⟩
+  refine Tendsto.comp (uniformContinuousOn_inv₀ (s := (closedBall (0 : α) (r / 2))ᶜ)
+    (by simp [closedBall_mem_nhds, hr₀])) <| tendsto_inf.mpr ⟨hF x hx, tendsto_principal.mpr ?_⟩
+  filter_upwards [hF x hx (dist_mem_uniformity (half_pos hr₀)), tendsto_snd hUx] with y hy₁ hy₂
+  have : r ≤ ‖f y.2‖ := by simp_all [Set.disjoint_left]
+  have : r / 2 < ‖F y.1 y.2‖ := by
+    simp [dist_eq_norm_sub] at hy₁
+    linarith [hy₁, norm_sub_norm_le (f y.2) (F y.1 y.2)]
+  simp_all [(half_lt_self hr₀).trans_le]
+
+@[to_fun]
+theorem TendstoLocallyUniformly.inv₀_of_disjoint {X ι : Type*} [TopologicalSpace X]
+    {F : ι → X → α} {f : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformly F f l) (hf : ∀ x, Disjoint (map f (𝓝 x)) (𝓝 0)) :
+    TendstoLocallyUniformly F⁻¹ f⁻¹ l := by
+  rw [← tendstoLocallyUniformlyOn_univ] at *
+  apply hF.inv₀_of_disjoint
+  simpa
+
+@[to_fun]
+theorem TendstoLocallyUniformlyOn.inv₀ {X ι : Type*} [TopologicalSpace X]
+    {s : Set X} {F : ι → X → α} {f : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformlyOn F f l s) (hf : ContinuousOn f s) (hf₀ : ∀ x ∈ s, f x ≠ 0) :
+    TendstoLocallyUniformlyOn F⁻¹ f⁻¹ l s :=
+  hF.inv₀_of_disjoint fun x hx ↦ disjoint_nhds_nhds.2 (hf₀ x hx) |>.mono_left (hf x hx)
+
+@[to_fun]
+theorem TendstoLocallyUniformly.inv₀ {X ι : Type*} [TopologicalSpace X]
+    {F : ι → X → α} {f : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformly F f l) (hf : Continuous f) (hf₀ : ∀ x, f x ≠ 0) :
+    TendstoLocallyUniformly F⁻¹ f⁻¹ l :=
+  hF.inv₀_of_disjoint fun x ↦ disjoint_nhds_nhds.2 (hf₀ x) |>.mono_left (hf.tendsto x)
+
 -- see Note [lower instance priority]
-instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContinuousInv₀ α := by
-  refine ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 ?_⟩
-  have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
-  rcases exists_between r0' with ⟨ε, ε0, εr⟩
-  have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε := by
-    filter_upwards [(isOpen_lt continuous_const continuous_norm).eventually_mem εr] with e he
-    have e0 : e ≠ 0 := norm_pos_iff.1 (ε0.trans he)
-    calc
-      ‖e⁻¹ - r⁻¹‖ = ‖r‖⁻¹ * ‖r - e‖ * ‖e‖⁻¹ := by
-        rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, mul_sub, sub_mul,
-          mul_assoc _ e, inv_mul_cancel₀ r0, mul_inv_cancel₀ e0, one_mul, mul_one]
-      _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
-      _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
-  refine squeeze_zero' (Eventually.of_forall fun _ => norm_nonneg _) this ?_
-  refine (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ ?_
-  simp
+instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousInv₀ α where
+  continuousAt_inv₀ x hx := by
+    refine uniformContinuousOn_inv₀ (s := (Metric.closedBall x (‖x‖ / 2))) ?_
+      |>.continuousOn |>.continuousAt ?_
+    · refine Metric.isClosed_closedBall.isOpen_compl.mem_nhds ?_
+      simpa
+    · apply Metric.closedBall_mem_nhds
+      simpa
+
+@[deprecated (since := "2025-09-01")] alias NormedDivisionRing.to_hasContinuousInv₀ :=
+  NormedDivisionRing.to_continuousInv₀
+
+@[to_fun]
+theorem TendstoLocallyUniformlyOn.div₀ {X ι : Type*} [TopologicalSpace X]
+    {s : Set X} {F G : ι → X → α} {f g : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformlyOn F f l s) (hG : TendstoLocallyUniformlyOn G g l s)
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) (hg₀ : ∀ x ∈ s, g x ≠ 0) :
+    TendstoLocallyUniformlyOn (F / G) (f / g) l s := by
+  simp only [div_eq_mul_inv]
+  exact hF.mul₀ (hG.inv₀ hg hg₀) hf <| hg.inv₀ hg₀
+
+@[to_fun]
+theorem TendstoLocallyUniformly.div₀ {X ι : Type*} [TopologicalSpace X]
+    {F G : ι → X → α} {f g : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformly F f l) (hG : TendstoLocallyUniformly G g l)
+    (hf : Continuous f) (hg : Continuous g) (hg₀ : ∀ x, g x ≠ 0) :
+    TendstoLocallyUniformly (F / G) (f / g) l := by
+  simp only [div_eq_mul_inv]
+  exact hF.mul₀ (hG.inv₀ hg hg₀) hf <| hg.inv₀ hg₀
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a topological division ring. -/
-instance (priority := 100) NormedDivisionRing.to_topologicalDivisionRing :
-    TopologicalDivisionRing α where
+instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :
+    IsTopologicalDivisionRing α where
 
-protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
-  ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one <| norm_nonneg _
+lemma tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
+  tendsto_norm_cobounded_atTop.comp tendsto_inv₀_nhdsNE_zero
 
-example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
-    ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
+@[deprecated (since := "2025-11-26")]
+alias NormedField.tendsto_norm_inv_nhdsNE_zero_atTop := tendsto_norm_inv_nhdsNE_zero_atTop
 
-@[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
-    (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
-
-lemma NormedField.tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
-  (tendsto_inv_nhdsGT_zero.comp tendsto_norm_nhdsNE_zero).congr fun x ↦ (norm_inv x).symm
-
-@[deprecated (since := "2024-12-22")]
-alias NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop :=
-  NormedField.tendsto_norm_inv_nhdsNE_zero_atTop
-
-lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
-    Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
+lemma tendsto_zpow_nhdsNE_zero_cobounded {m : ℤ} (hm : m < 0) :
+    Tendsto (· ^ m) (𝓝[≠] 0) (cobounded α) := by
   obtain ⟨m, rfl⟩ := neg_surjective m
-  rw [neg_lt_zero] at hm
-  lift m to ℕ using hm.le
-  rw [Int.natCast_pos] at hm
-  simp only [norm_pow, zpow_neg, zpow_natCast, ← inv_pow]
-  exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inv_nhdsNE_zero_atTop
+  lift m to ℕ using by lia
+  simpa [Function.comp_def] using
+    (tendsto_pow_cobounded_cobounded (by lia)).comp tendsto_inv₀_nhdsNE_zero
 
-@[deprecated (since := "2024-12-22")]
-alias NormedField.tendsto_norm_zpow_nhdsWithin_0_atTop :=
-  NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop
+@[deprecated tendsto_zpow_nhdsNE_zero_cobounded (since := "2025-11-26")]
+lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
+    Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop :=
+  tendsto_norm_cobounded_atTop.comp (tendsto_zpow_nhdsNE_zero_cobounded hm)
 
 end NormedDivisionRing
 
@@ -358,7 +244,7 @@ lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [h : NormedFiel
     contrapose! H
     refine H.imp ?_
     -- contextual to reuse the `a ≠ 0` hypothesis in the proof of `a ≠ 0 ∧ ‖a‖ ≠ 1`
-    simp (config := {contextual := true}) [add_comm, ne_of_lt]
+    simp +contextual [ne_of_lt]
 
 lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
     (h : BddAbove (Set.range fun k : 𝕜 ↦ ‖k‖)) :
@@ -367,7 +253,7 @@ lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
   rintro ⟨_, rfl⟩
   obtain ⟨x, h⟩ := h
   obtain ⟨k, hk⟩ := NormedField.exists_lt_norm 𝕜 x
-  exact hk.not_le (h (Set.mem_range_self k))
+  exact hk.not_ge (h (Set.mem_range_self k))
 
 section Densely
 
@@ -388,8 +274,8 @@ protected lemma continuousAt_zpow : ContinuousAt (fun x ↦ x ^ n) x ↔ x ≠ 0
   refine ⟨?_, continuousAt_zpow₀ _ _⟩
   contrapose!
   rintro ⟨rfl, hm⟩ hc
-  exact not_tendsto_atTop_of_tendsto_nhds (hc.tendsto.mono_left nhdsWithin_le_nhds).norm
-    (NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop hm)
+  exact (hc.tendsto.mono_left nhdsWithin_le_nhds).not_tendsto (Metric.disjoint_nhds_cobounded _)
+    (tendsto_zpow_nhdsNE_zero_cobounded hm)
 
 @[simp]
 protected lemma continuousAt_inv : ContinuousAt Inv.inv x ↔ x ≠ 0 := by
@@ -398,30 +284,10 @@ protected lemma continuousAt_inv : ContinuousAt Inv.inv x ↔ x ≠ 0 := by
 end NontriviallyNormedField
 end NormedField
 
-namespace NNReal
-
-lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
-  rw [← isometry_subtype_coe.lipschitzWith_iff]
-  have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
-    isometry_subtype_coe.prod_map isometry_subtype_coe
-  convert (((LipschitzWith.prod_fst.comp this.lipschitz).sub
-    (LipschitzWith.prod_snd.comp this.lipschitz)).max_const 0)
-  norm_num
-
-end NNReal
-
-instance Int.instNormedCommRing : NormedCommRing ℤ where
-  __ := instCommRing
-  __ := instNormedAddCommGroup
-  norm_mul m n := by simp only [norm, Int.cast_mul, abs_mul, le_rfl]
-
-instance Int.instNormOneClass : NormOneClass ℤ :=
-  ⟨by simp [← Int.norm_cast_real]⟩
-
 instance Rat.instNormedField : NormedField ℚ where
   __ := instField
   __ := instNormedAddCommGroup
-  norm_mul' a b := by simp only [norm, Rat.cast_mul, abs_mul]
+  norm_mul a b := by simp only [norm, Rat.cast_mul, abs_mul]
 
 instance Rat.instDenselyNormedField : DenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=
@@ -434,7 +300,7 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
     CompleteSpace K ↔ IsComplete (Metric.closedBall 0 1 : Set K) := by
   constructor <;> intro h
   · exact Metric.isClosed_closedBall.isComplete
-  rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _|⟨_, rfl⟩
+  rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _ | ⟨_, rfl⟩
   · rwa [completeSpace_iff_isComplete_univ,
          ← NormedDivisionRing.unitClosedBall_eq_univ_of_discrete]
   refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_

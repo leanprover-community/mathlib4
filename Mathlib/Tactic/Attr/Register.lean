@@ -3,10 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Simp.SimpTheorems
-import Lean.Meta.Tactic.Simp.RegisterCommand
-import Lean.LabelAttribute
+module
+
+public import Mathlib.Init
+public meta import Lean.LabelAttribute -- TODO: `registerLabelAttr` should be marked `meta`
+public import Lean.LabelAttribute
+public import Lean.Meta.Tactic.Simp
 
 /-!
 # Attributes used in `Mathlib`
@@ -17,6 +19,8 @@ of them in one file for two reasons:
 - in Lean 4, one cannot use an attribute in the same file where it was declared;
 - this way it is easy to see which simp sets contain a given lemma.
 -/
+
+public meta section
 
 /-- Simp set for `functor_norm` -/
 register_simp_attr functor_norm
@@ -30,11 +34,6 @@ register_simp_attr functor_norm
 
 /-- Simp set for `functor_norm` -/
 register_simp_attr monad_norm
-
-/-- The simpset `field_simps` is used by the tactic `field_simp` to
-reduce an expression in a field to an expression of the form `n / d` where `n` and `d` are
-division-free. -/
-register_simp_attr field_simps
 
 /-- Simp attribute for lemmas about `Even` -/
 register_simp_attr parity_simps
@@ -87,3 +86,49 @@ register_label_attr is_poly
 
 /-- A simp set for the `fin_omega` wrapper around `omega`. -/
 register_simp_attr fin_omega
+
+/-- A simp set for simplifying expressions involving `⊤` in `enat_to_nat`. -/
+register_simp_attr enat_to_nat_top
+
+/-- A simp set for pushing coercions from `ℕ` to `ℕ∞` in `enat_to_nat`. -/
+register_simp_attr enat_to_nat_coe
+
+/-- A simp set for the `pnat_to_nat` tactic. -/
+register_simp_attr pnat_to_nat_coe
+
+/-- `mon_tauto` is a simp set to prove tautologies about morphisms from some (tensor) power of `M`
+to `M`, where `M` is a (commutative) monoid object in a (braided) monoidal category.
+
+**This `simp` set is incompatible with the standard simp set.**
+If you want to use it, make sure to add the following to your simp call to disable the problematic
+default simp lemmas:
+```
+-MonoidalCategory.whiskerLeft_id, -MonoidalCategory.id_whiskerRight,
+-MonoidalCategory.tensor_comp, -MonoidalCategory.tensor_comp_assoc,
+-MonObj.mul_assoc, -MonObj.mul_assoc_assoc
+```
+
+The general algorithm it follows is to push the associators `α_` and commutators `β_` inwards until
+they cancel against the right sequence of multiplications.
+
+This approach is justified by the fact that a tautology in the language of (commutative) monoid
+objects "remembers" how it was proved: Every use of a (commutative) monoid object axiom inserts a
+unitor, associator or commutator, and proving a tautology simply amounts to undoing those moves as
+prescribed by the presence of unitors, associators and commutators in its expression.
+
+This simp set is opiniated about its normal form, which is why it cannot be used concurrently with
+some of the simp lemmas in the standard simp set:
+* It eliminates all mentions of whiskers by rewriting them to tensored homs,
+  which goes against `whiskerLeft_id` and `id_whiskerRight`:
+  `X ◁ f = 𝟙 X ⊗ₘ f`, `f ▷ X = 𝟙 X ⊗ₘ f`.
+  This goes against `whiskerLeft_id` and `id_whiskerRight` in the standard simp set.
+* It collapses compositions of tensored homs to the tensored hom of the compositions,
+  which goes against `tensor_comp`:
+  `(f₁ ⊗ₘ g₁) ≫ (f₂ ⊗ₘ g₂) = (f₁ ≫ f₂) ⊗ₘ (g₁ ≫ g₂)`. TODO: Isn't this direction Just Better?
+* It cancels the associators against multiplications,
+  which goes against `mul_assoc`:
+  `(α_ M M M).hom ≫ (𝟙 M ⊗ₘ μ) ≫ μ = (μ ⊗ₘ 𝟙 M) ≫ μ`,
+  `(α_ M M M).inv ≫ (μ ⊗ₘ 𝟙 M) ≫ μ = (𝟙 M ⊗ₘ μ) ≫ μ`
+* It unfolds non-primitive coherence isomorphisms, like the tensor strengths `tensorμ`, `tensorδ`.
+-/
+register_simp_attr mon_tauto

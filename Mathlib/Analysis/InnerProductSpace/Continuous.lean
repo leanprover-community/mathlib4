@@ -3,9 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # Continuity of inner product
@@ -17,6 +18,8 @@ We show that the inner product is continuous, `continuous_inner`.
 inner product space, Hilbert space, norm
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -30,7 +33,7 @@ section Continuous
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-!
 ### Continuity of the inner product
@@ -66,7 +69,7 @@ variable {α : Type*}
 
 theorem Filter.Tendsto.inner {f g : α → E} {l : Filter α} {x y : E} (hf : Tendsto f l (𝓝 x))
     (hg : Tendsto g l (𝓝 y)) : Tendsto (fun t => ⟪f t, g t⟫) l (𝓝 ⟪x, y⟫) :=
-  (continuous_inner.tendsto _).comp (hf.prod_mk_nhds hg)
+  (continuous_inner.tendsto _).comp (hf.prodMk_nhds hg)
 
 variable [TopologicalSpace α] {f g : α → E} {x : α} {s : Set α}
 
@@ -74,16 +77,17 @@ theorem ContinuousWithinAt.inner (hf : ContinuousWithinAt f s x) (hg : Continuou
     ContinuousWithinAt (fun t => ⟪f t, g t⟫) s x :=
   Filter.Tendsto.inner hf hg
 
+@[fun_prop]
 theorem ContinuousAt.inner (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (fun t => ⟪f t, g t⟫) x :=
   Filter.Tendsto.inner hf hg
 
+@[fun_prop]
 theorem ContinuousOn.inner (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun t => ⟪f t, g t⟫) s := fun x hx => (hf x hx).inner (hg x hx)
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.inner (hf : Continuous f) (hg : Continuous g) : Continuous fun t => ⟪f t, g t⟫ :=
-  continuous_iff_continuousAt.2 fun _x => hf.continuousAt.inner hg.continuousAt
+  continuous_iff_continuousAt.2 fun _x => by fun_prop
 
 end Continuous
-

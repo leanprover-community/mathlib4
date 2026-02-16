@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Half braidings and the Drinfeld center of a monoidal category
@@ -29,6 +31,8 @@ In this file, we take the second approach using the monoidal composition `⊗≫
 `coherence` tactic.
 -/
 
+@[expose] public section
+
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
@@ -48,13 +52,14 @@ transformations (in the pseudo- sense) of the identity 2-functor on `C`, which s
 `0`-morphism to `X`.
 -/
 structure HalfBraiding (X : C) where
+  /-- The family of isomorphisms `X ⊗ U ≅ U ⊗ X` -/
   β : ∀ U, X ⊗ U ≅ U ⊗ X
   monoidal : ∀ U U', (β (U ⊗ U')).hom =
       (α_ _ _ _).inv ≫
         ((β U).hom ▷ U') ≫ (α_ _ _ _).hom ≫ (U ◁ (β U').hom) ≫ (α_ _ _ _).inv := by
-    aesop_cat
+    cat_disch
   naturality : ∀ {U U'} (f : U ⟶ U'), (X ◁ f) ≫ (β U').hom = (β U).hom ≫ (f ▷ X) := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc, simp] HalfBraiding.monoidal -- the reassoc lemma is redundant as a simp lemma
 
@@ -75,8 +80,9 @@ variable {C}
 /-- A morphism in the Drinfeld center of `C`. -/
 @[ext]
 structure Hom (X Y : Center C) where
+  /-- The underlying morphism between the first components of the objects involved -/
   f : X.1 ⟶ Y.1
-  comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by aesop_cat
+  comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
 
@@ -194,7 +200,7 @@ def whiskerRight {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) :
 @[simps]
 def tensorHom {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂ where
-  f := f.f ⊗ g.f
+  f := f.f ⊗ₘ g.f
   comm U := by
     rw [tensorHom_def, comp_whiskerRight_assoc, whiskerLeft_comm, whiskerRight_comm_assoc,
       MonoidalCategory.whiskerLeft_comp]
@@ -260,7 +266,7 @@ theorem whiskerRight_f {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C)
   rfl
 
 @[simp]
-theorem tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ g).f = f.f ⊗ g.f :=
+theorem tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ₘ g).f = f.f ⊗ₘ g.f :=
   rfl
 
 @[simp]
@@ -309,7 +315,7 @@ def forget : Center C ⥤ C where
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _}
+      μIso := fun _ _ ↦ Iso.refl _ }
 
 @[simp] lemma forget_ε : ε (forget C) = 𝟙 _ := rfl
 @[simp] lemma forget_η : η (forget C) = 𝟙 _ := rfl
@@ -338,7 +344,7 @@ def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
 instance braidedCategoryCenter : BraidedCategory (Center C) where
   braiding := braiding
 
--- `aesop_cat` handles the hexagon axioms
+-- `cat_disch` handles the hexagon axioms
 section
 
 variable [BraidedCategory C]

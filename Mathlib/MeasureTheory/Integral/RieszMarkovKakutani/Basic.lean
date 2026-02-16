@@ -3,16 +3,21 @@ Copyright (c) 2022 Jesse Reimann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jesse Reimann, Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.Content
-import Mathlib.Topology.ContinuousMap.CompactlySupported
-import Mathlib.Topology.PartitionOfUnity
+module
+
+public import Mathlib.MeasureTheory.Measure.Content
+public import Mathlib.Topology.ContinuousMap.CompactlySupported
+public import Mathlib.Topology.PartitionOfUnity
 
 /-!
-#  Riesz–Markov–Kakutani representation theorem
+# Riesz–Markov–Kakutani representation theorem
 
-This file will prove the Riesz-Markov-Kakutani representation theorem on a locally compact
-T2 space `X`. As a special case, the statements about linear functionals on bounded continuous
-functions follows.
+This file prepares technical definitions and results for the Riesz-Markov-Kakutani representation
+theorem on a locally compact T2 space `X`. As a special case, the statements about linear
+functionals on bounded continuous functions follows. Actual theorems, depending on the
+linearity (`ℝ`, `ℝ≥0` or `ℂ`), are proven in separate files
+(`Mathlib/MeasureTheory/Integral/RieszMarkovKakutani/Real.lean`,
+`Mathlib/MeasureTheory/Integral/RieszMarkovKakutani/NNReal.lean`...)
 
 To make use of the existing API, the measure is constructed from a content `λ` on the
 compact subsets of a locally compact space X, rather than the usual construction of open sets in the
@@ -23,6 +28,8 @@ literature.
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -83,9 +90,10 @@ theorem rieszContentAux_image_nonempty (K : Compacts X) :
 /-- Riesz content `λ` (associated with a positive linear functional `Λ`) is
 monotone: if `K₁ ⊆ K₂` are compact subsets in `X`, then `λ(K₁) ≤ λ(K₂)`. -/
 theorem rieszContentAux_mono {K₁ K₂ : Compacts X} (h : K₁ ≤ K₂) :
-    rieszContentAux Λ K₁ ≤ rieszContentAux Λ K₂ :=
-  csInf_le_csInf (OrderBot.bddBelow _) (rieszContentAux_image_nonempty Λ K₂)
-    (image_subset Λ (setOf_subset_setOf.mpr fun _ f_hyp x x_in_K₁ => f_hyp x (h x_in_K₁)))
+    rieszContentAux Λ K₁ ≤ rieszContentAux Λ K₂ := by
+  unfold rieszContentAux
+  gcongr
+  apply rieszContentAux_image_nonempty
 
 end RieszMonotone
 
@@ -146,7 +154,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     (t_compact : IsCompact t) (disj : Disjoint s₀ s₁) (hst : s₀ ∪ s₁ ⊆ t) :
     ∃ (f₀ f₁ : C_c(X, ℝ≥0)), EqOn f₀ 1 s₀ ∧ EqOn f₁ 1 s₁ ∧ EqOn (f₀ + f₁) 1 t := by
   set so : Fin 2 → Set X := fun j => if j = 0 then s₀ᶜ else s₁ᶜ with hso
-  have soopen (j : Fin 2) :  IsOpen (so j) := by
+  have soopen (j : Fin 2) : IsOpen (so j) := by
     fin_cases j
     · simp only [hso, Fin.zero_eta, Fin.isValue, ↓reduceIte, isOpen_compl_iff]
       exact IsCompact.isClosed <| s₀_compact
@@ -183,12 +191,12 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     simp only [Fin.isValue, nnrealPart_apply,
       CompactlySupportedContinuousMap.coe_mk, Pi.one_apply, Real.toNNReal_eq_one]
     have : (f 0) x = 0 := by
-      rw [← nmem_support]
+      rw [← notMem_support]
       have : s₀ ⊆ (tsupport (f 0))ᶜ := by
         apply subset_trans _ (compl_subset_compl.mpr (f_supp_in_so 0))
         rw [hso]
         simp only [Fin.isValue, ↓reduceIte, compl_compl, subset_refl]
-      apply not_mem_of_mem_compl
+      apply notMem_of_mem_compl
       exact mem_of_subset_of_mem (subset_trans this (compl_subset_compl_of_subset subset_closure))
         hx
     rw [union_subset_iff] at hst
@@ -198,12 +206,12 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     simp only [Fin.isValue, nnrealPart_apply,
       CompactlySupportedContinuousMap.coe_mk, Pi.one_apply, Real.toNNReal_eq_one]
     have : (f 1) x = 0 := by
-      rw [← nmem_support]
+      rw [← notMem_support]
       have : s₁ ⊆ (tsupport (f 1))ᶜ := by
         apply subset_trans _ (compl_subset_compl.mpr (f_supp_in_so 1))
         rw [hso]
         simp only [Fin.isValue, one_ne_zero, ↓reduceIte, compl_compl, subset_refl]
-      apply not_mem_of_mem_compl
+      apply notMem_of_mem_compl
       exact mem_of_subset_of_mem (subset_trans this (compl_subset_compl_of_subset subset_closure))
         hx
     rw [union_subset_iff] at hst
@@ -238,13 +246,12 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
   have f_eq_sum : f = g₁ * f + g₂ * f := by
     ext x
     simp only [CompactlySupportedContinuousMap.coe_add, CompactlySupportedContinuousMap.coe_mul,
-      Pi.add_apply, Pi.mul_apply, NNReal.coe_add, NNReal.coe_mul,
-      Eq.symm (RightDistribClass.right_distrib _ _ _), ← NNReal.coe_add, ← Pi.add_apply]
+      Pi.mul_apply, NNReal.coe_mul,
+      Eq.symm (RightDistribClass.right_distrib _ _ _)]
     by_cases h : f x = 0
     · rw [h]
-      simp only [NNReal.coe_zero, NNReal.coe_add, mul_zero]
-    · push_neg at h
-      simp only [CompactlySupportedContinuousMap.coe_add, ContinuousMap.toFun_eq_coe,
+      simp only [NNReal.coe_zero, mul_zero]
+    · simp only [CompactlySupportedContinuousMap.coe_add, ContinuousMap.toFun_eq_coe,
         CompactlySupportedContinuousMap.coe_toContinuousMap] at sum_g
       rw [sum_g (mem_of_subset_of_mem subset_closure (mem_support.mpr h))]
       simp only [Pi.one_apply, NNReal.coe_one, one_mul]
@@ -305,7 +312,7 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
 
 end RieszContentRegular
 
-section RieszMeasure
+namespace NNRealRMK
 
 variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 
@@ -319,17 +326,17 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : �
   rw [← TopologicalSpace.Compacts.coe_mk K hK]
   simp only [rieszMeasure, Content.measure_eq_content_of_regular (rieszContent Λ)
     (contentRegular_rieszContent Λ)]
-  simp only [rieszContent, ENNReal.ofReal_coe_nnreal, ENNReal.coe_le_coe, Content.mk_apply]
+  simp only [rieszContent, ENNReal.coe_le_coe, Content.mk_apply]
   apply le_iff_forall_pos_le_add.mpr
   intro ε hε
   obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos Λ ⟨K, hK⟩ hε
   apply le_trans _ hg.2.le
   apply monotone_of_nnreal Λ
   intro x
-  simp only [ContinuousMap.toFun_eq_coe, CompactlySupportedContinuousMap.coe_toContinuousMap]
+  simp only
   by_cases hx : x ∈ tsupport f
   · exact le_trans (hf x) (hg.1 x (Set.mem_of_subset_of_mem h hx))
-  · rw [image_eq_zero_of_nmem_tsupport hx]
+  · rw [image_eq_zero_of_notMem_tsupport hx]
     exact zero_le (g x)
 
 lemma le_rieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1) {V : Set X}
@@ -338,4 +345,4 @@ lemma le_rieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x 
   apply le_rieszMeasure_of_isCompact_tsupport_subset Λ hf f.hasCompactSupport
   exact subset_rfl
 
-end RieszMeasure
+end NNRealRMK

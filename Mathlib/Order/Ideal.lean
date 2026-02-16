@@ -3,12 +3,13 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Logic.Encodable.Basic
-import Mathlib.Order.Atoms
-import Mathlib.Order.Chain
-import Mathlib.Order.Cofinal
-import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Logic.Encodable.Basic
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.Cofinal
+public import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma
@@ -46,6 +47,8 @@ ideal, cofinal, dense, countable, generic
 
 -/
 
+@[expose] public section
+
 
 open Function Set
 
@@ -63,7 +66,7 @@ structure Ideal (P) [LE P] extends LowerSet P where
   /-- The ideal is upward directed. -/
   directed' : DirectedOn (· ≤ ·) carrier
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
+-- TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections Ideal (+toLowerSet, -carrier)
 
@@ -103,6 +106,8 @@ theorem toLowerSet_injective : Injective (toLowerSet : Ideal P → LowerSet P) :
 instance : SetLike (Ideal P) P where
   coe s := s.carrier
   coe_injective' _ _ h := toLowerSet_injective <| SetLike.coe_injective h
+
+instance : PartialOrder (Ideal P) := .ofSetLike (Ideal P) P
 
 @[ext]
 theorem ext {s t : Ideal P} : (s : Set P) = t → s = t :=
@@ -146,28 +151,28 @@ theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈
   @Set.mem_of_mem_of_subset P x I J
 
 /-- A proper ideal is one that is not the whole set.
-    Note that the whole set might not be an ideal. -/
+Note that the whole set might not be an ideal. -/
 @[mk_iff]
 class IsProper (I : Ideal P) : Prop where
   /-- This ideal is not the whole set. -/
   ne_univ : (I : Set P) ≠ univ
 
-theorem isProper_of_not_mem {I : Ideal P} {p : P} (nmem : p ∉ I) : IsProper I :=
+theorem isProper_of_notMem {I : Ideal P} {p : P} (notMem : p ∉ I) : IsProper I :=
   ⟨fun hp ↦ by
     have := mem_univ p
     rw [← hp] at this
-    exact nmem this⟩
+    exact notMem this⟩
 
 /-- An ideal is maximal if it is maximal in the collection of proper ideals.
 
 Note that `IsCoatom` is less general because ideals only have a top element when `P` is directed
 and nonempty. -/
 @[mk_iff]
-class IsMaximal (I : Ideal P) extends IsProper I : Prop where
+class IsMaximal (I : Ideal P) : Prop extends IsProper I where
   /-- This ideal is maximal in the collection of proper ideals. -/
   maximal_proper : ∀ ⦃J : Ideal P⦄, I < J → (J : Set P) = univ
 
-theorem inter_nonempty [IsDirected P (· ≥ ·)] (I J : Ideal P) : (I ∩ J : Set P).Nonempty := by
+theorem inter_nonempty [IsCodirectedOrder P] (I J : Ideal P) : (I ∩ J : Set P).Nonempty := by
   obtain ⟨a, ha⟩ := I.nonempty
   obtain ⟨b, hb⟩ := J.nonempty
   obtain ⟨c, hac, hbc⟩ := exists_le_le a b
@@ -177,9 +182,9 @@ end
 
 section Directed
 
-variable [IsDirected P (· ≤ ·)] [Nonempty P] {I : Ideal P}
+variable [IsDirectedOrder P] [Nonempty P] {I : Ideal P}
 
-/-- In a directed and nonempty order, the top ideal of a is `univ`. -/
+/-- In a directed and nonempty order, the top ideal is `univ`. -/
 instance : OrderTop (Ideal P) where
   top := ⟨⊤, univ_nonempty, directedOn_univ⟩
   le_top _ _ _ := LowerSet.mem_top
@@ -236,7 +241,7 @@ theorem top_of_top_mem (h : ⊤ ∈ I) : I = ⊤ := by
   ext
   exact iff_of_true (I.lower le_top h) trivial
 
-theorem IsProper.top_not_mem (hI : IsProper I) : ⊤ ∉ I := fun h ↦ hI.ne_top <| top_of_top_mem h
+theorem IsProper.top_notMem (hI : IsProper I) : ⊤ ∉ I := fun h ↦ hI.ne_top <| top_of_top_mem h
 
 end OrderTop
 
@@ -313,11 +318,18 @@ theorem sup_mem (hx : x ∈ s) (hy : y ∈ s) : x ⊔ y ∈ s :=
 theorem sup_mem_iff : x ⊔ y ∈ I ↔ x ∈ I ∧ y ∈ I :=
   ⟨fun h ↦ ⟨I.lower le_sup_left h, I.lower le_sup_right h⟩, fun h ↦ sup_mem h.1 h.2⟩
 
+@[simp]
+lemma finsetSup_mem_iff {P : Type*} [SemilatticeSup P] [OrderBot P]
+    (t : Ideal P) {ι : Type*}
+    {f : ι → P} {s : Finset ι} : s.sup f ∈ t ↔ ∀ i ∈ s, f i ∈ t := by
+  classical
+  induction s using Finset.induction_on <;> simp [*]
+
 end SemilatticeSup
 
 section SemilatticeSupDirected
 
-variable [SemilatticeSup P] [IsDirected P (· ≥ ·)] {x : P} {I J s t : Ideal P}
+variable [SemilatticeSup P] [IsCodirectedOrder P] {x : P} {I J s t : Ideal P}
 
 /-- The infimum of two ideals of a co-directed order is their intersection. -/
 instance : Min (Ideal P) :=
@@ -332,7 +344,7 @@ instance : Max (Ideal P) :=
   ⟨fun I J ↦
     { carrier := { x | ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j }
       nonempty' := by
-        cases' inter_nonempty I J with w h
+        obtain ⟨w, h⟩ := inter_nonempty I J
         exact ⟨w, w, h.1, w, h.2, le_sup_left⟩
       directed' := fun x ⟨xi, _, xj, _, _⟩ y ⟨yi, _, yj, _, _⟩ ↦
         ⟨x ⊔ y, ⟨xi ⊔ yi, sup_mem ‹_› ‹_›, xj ⊔ yj, sup_mem ‹_› ‹_›,
@@ -366,7 +378,6 @@ instance : Lattice (Ideal P) :=
 theorem coe_sup : ↑(s ⊔ t) = { x | ∃ a ∈ s, ∃ b ∈ t, x ≤ a ⊔ b } :=
   rfl
 
--- Porting note: Modified `s ∩ t` to `↑s ∩ ↑t`.
 @[simp]
 theorem coe_inf : (↑(s ⊓ t) : Set P) = ↑s ∩ ↑t :=
   rfl
@@ -379,7 +390,7 @@ theorem mem_inf : x ∈ I ⊓ J ↔ x ∈ I ∧ x ∈ J :=
 theorem mem_sup : x ∈ I ⊔ J ↔ ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j :=
   Iff.rfl
 
-theorem lt_sup_principal_of_not_mem (hx : x ∉ I) : I < I ⊔ principal x :=
+theorem lt_sup_principal_of_notMem (hx : x ∉ I) : I < I ⊔ principal x :=
   le_sup_left.lt_of_ne fun h ↦ hx <| by simpa only [left_eq_sup, principal_le_iff] using h
 
 end SemilatticeSupDirected
@@ -443,14 +454,14 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra P] {x : P} {I : Ideal P}
 
-theorem IsProper.not_mem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x ∉ I := by
+theorem IsProper.notMem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x ∉ I := by
   intro hx
-  apply hI.top_not_mem
+  apply hI.top_notMem
   have ht : x ⊔ xᶜ ∈ I := sup_mem ‹_› ‹_›
   rwa [sup_compl_eq_top] at ht
 
-theorem IsProper.not_mem_or_compl_not_mem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
-  have h : xᶜ ∈ I → x ∉ I := hI.not_mem_of_compl_mem
+theorem IsProper.notMem_or_compl_notMem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
+  have h : xᶜ ∈ I → x ∉ I := hI.notMem_of_compl_mem
   tauto
 
 end BooleanAlgebra
@@ -465,9 +476,6 @@ structure Cofinal (P) [Preorder P] where
   carrier : Set P
   /-- The `Cofinal` contains arbitrarily large elements. -/
   isCofinal : IsCofinal carrier
-
-@[deprecated Cofinal.isCofinal (since := "2024-12-02")]
-alias Cofinal.mem_gt := Cofinal.isCofinal
 
 namespace Cofinal
 

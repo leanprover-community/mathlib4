@@ -3,12 +3,16 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
-import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+module
+
+public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
+public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 /-!
 # Barycentric coordinates are smooth
 -/
+
+public section
 
 variable {ι 𝕜 E P : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]

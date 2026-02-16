@@ -3,7 +3,7 @@ import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 variable {k : Type*} [Field k]
 
-example : (AddCommGroup.toNatModule : Module ℕ (AlgebraicClosure k)) =
+example : (AddCommMonoid.toNatModule : Module ℕ (AlgebraicClosure k)) =
       @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) := by
   with_reducible_and_instances rfl
 

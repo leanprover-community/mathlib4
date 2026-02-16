@@ -92,10 +92,8 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lakefile.lean`
 * `lean-toolchain`
 * `lake-manifest.json`
-and the hash of `Lean.githash`.
 
-(We hash `Lean.githash` in case the toolchain changes even though `lean-toolchain` hasn't.
-This happens with the `lean-pr-testing-NNNN` toolchains when Lean 4 PRs are updated.)
+and the hash of `Lean.githash`.
 -/
 def getRootHash : CacheM UInt64 := do
   let mathlibDepPath := (← read).mathlibDepPath
@@ -105,7 +103,7 @@ def getRootHash : CacheM UInt64 := do
     mathlibDepPath / "lake-manifest.json"]
   let hashes ← rootFiles.mapM fun path =>
     hashFileContents <$> IO.FS.readFile path
-  return hash (hash Lean.githash :: hashes)
+  return hash (rootHashGeneration :: hashes)
 
 /--
 Computes the hash of a file, which mixes:
@@ -139,6 +137,16 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet 
         -- one import did not have a hash: invalidate hash of this module
         modify fun stt => { stt with cache := stt.cache.insert mod none }
         return none
+    /-
+    TODO: Currently, the cache uses the hash of the unresolved file name
+    (e.g. `Mathlib/Init.lean`) which is reconstructed from the module name
+    (e.g. `Mathlib.Init`) in `path`. It could, however, directly use `hash mod` instead.
+
+    We can change this at any time causing a one-time cache invalidation, just as
+    a toolchain-bump would.
+    -/
+    let filePath := mkFilePath (mod.components.map toString) |>.withExtension "lean"
+
     let rootHash := (← get).rootHash
     let modHash := hash mod
     let fileHash := hash <| rootHash :: modHash :: hashFileContents content :: importHashes.toList

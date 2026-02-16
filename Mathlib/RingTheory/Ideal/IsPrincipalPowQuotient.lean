@@ -3,9 +3,11 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Quotients of powers of principal ideals
@@ -26,6 +28,8 @@ formed as ring equivs.
 
 -/
 
+@[expose] public section
+
 
 namespace Ideal
 
@@ -37,15 +41,15 @@ variable {R : Type*} [CommRing R] [IsDomain R] {I : Ideal R}
 that uses the ideal of `R ⧸ I ^ (n + 1)`, compose with
 `Ideal.powQuotPowSuccLinearEquivMapMkPowSuccPow`. -/
 noncomputable
-def quotEquivPowQuotPowSucc (h : I.IsPrincipal) (h': I ≠ ⊥) (n : ℕ) :
+def quotEquivPowQuotPowSucc (h : I.IsPrincipal) (h' : I ≠ ⊥) (n : ℕ) :
     (R ⧸ I) ≃ₗ[R] (I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R)) := by
   let f : (I ^ n : Ideal R) →ₗ[R] (I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R)) :=
     Submodule.mkQ _
-  let ϖ := h.principal'.choose
-  have hI : I = Ideal.span {ϖ} := h.principal'.choose_spec
+  let ϖ := h.principal.choose
+  have hI : I = Ideal.span {ϖ} := h.principal.choose_spec
   have hϖ : ϖ ^ n ∈ I ^ n := hI ▸ (Ideal.pow_mem_pow (Ideal.mem_span_singleton_self _) n)
-  let g : R →ₗ[R] (I ^ n : Ideal R) := (LinearMap.mulRight R ϖ^n).codRestrict _ fun x ↦ by
-    simp only [LinearMap.pow_mulRight, LinearMap.mulRight_apply, Ideal.submodule_span_eq]
+  let g : R →ₗ[R] (I ^ n : Ideal R) := (LinearMap.mulRight R ϖ ^ n).codRestrict _ fun x ↦ by
+    simp only [LinearMap.pow_mulRight, LinearMap.mulRight_apply]
     -- TODO: change argument of Ideal.pow_mem_of_mem
     exact Ideal.mul_mem_left _ _ hϖ
   have : I = LinearMap.ker (f.comp g) := by
@@ -77,7 +81,7 @@ typeclass synthesis issues on complex `Module` goals.  To convert into a form
 that uses the ideal of `R ⧸ I ^ (n + 1)`, compose with
 `Ideal.powQuotPowSuccEquivMapMkPowSuccPow`. -/
 noncomputable
-def quotEquivPowQuotPowSuccEquiv (h : I.IsPrincipal) (h': I ≠ ⊥) (n : ℕ) :
+def quotEquivPowQuotPowSuccEquiv (h : I.IsPrincipal) (h' : I ≠ ⊥) (n : ℕ) :
     (R ⧸ I) ≃ (I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R)) :=
   quotEquivPowQuotPowSucc h h' n
 

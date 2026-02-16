@@ -45,7 +45,8 @@ example (Q : Type) (f : Nat → Q) : Int × Q := by
 
 -- Test that with transparency set to `.reducible`, the tactic will not unfold `/` to the underlying
 -- `*` to match the form of the lemma `mul_le_mul`
-example [LinearOrderedField α] {a b : α} (hb : 0 ≤ b) (hab : a ≤ b) : a / 2 ≤ b / 2 := by
+example [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a b : α} (hb : 0 ≤ b) (hab : a ≤ b) :
+    a / 2 ≤ b / 2 := by
   fail_if_success
     apply_rules (config := { transparency := .reducible }) [mul_le_mul]
   guard_target = a / 2 ≤ b / 2

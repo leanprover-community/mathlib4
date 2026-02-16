@@ -3,10 +3,12 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Vector.Basic
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Symmetric powers
@@ -27,6 +29,8 @@ symmetric powers
 
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 open List (Vector)
 open Function
@@ -38,18 +42,14 @@ show these are equivalent in `Sym.symEquivSym'`.
 -/
 def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
+deriving [DecidableEq α] → DecidableEq _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
 
 instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
   ⟨Sym.toMultiset⟩
-
--- Porting note: instance needed for Data.Finset.Sym
-instance {α : Type*} {n : ℕ} [DecidableEq α] : DecidableEq (Sym α n) :=
-  inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
 
@@ -59,6 +59,12 @@ abbrev List.Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :
   (List.isSetoid α).comap Subtype.val
 
 attribute [local instance] Vector.Perm.isSetoid
+
+-- Copy over the `DecidableRel` instance across the definition.
+-- (Although `List.Vector.Perm.isSetoid` is an `abbrev`, `List.isSetoid` is not.)
+instance {α : Type*} {n : ℕ} [DecidableEq α] :
+    DecidableRel (· ≈ · : List.Vector α n → List.Vector α n → Prop) :=
+  fun _ _ => List.decidablePerm _ _
 
 namespace Sym
 
@@ -80,7 +86,7 @@ theorem val_eq_coe (s : Sym α n) : s.1 = ↑s :=
 
 /-- Construct an element of the `n`th symmetric power from a multiset of cardinality `n`.
 -/
-@[match_pattern] -- Porting note: removed `@[simps]`, generated bad lemma
+@[match_pattern]
 abbrev mk (m : Multiset α) (h : Multiset.card m = n) : Sym α n :=
   ⟨m, h⟩
 
@@ -163,8 +169,8 @@ lemma «exists» {p : Sym α n → Prop} :
   simp [Sym]
 
 @[simp]
-theorem not_mem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
-  Multiset.not_mem_zero a
+theorem notMem_nil (a : α) : a ∉ (nil : Sym α 0) :=
+  Multiset.notMem_zero a
 
 @[simp]
 theorem mem_cons : a ∈ b ::ₛ s ↔ a = b ∨ a ∈ s :=
@@ -190,14 +196,14 @@ theorem sound {a b : List.Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) =
   Subtype.ext <| Quotient.sound h
 
 /-- `erase s a h` is the sym that subtracts 1 from the
-  multiplicity of `a` if a is present in the sym. -/
+  multiplicity of `a` if `a` is present in the sym. -/
 def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α n :=
   ⟨s.val.erase a, (Multiset.card_erase_of_mem h).trans <| s.property.symm ▸ n.pred_succ⟩
 
 @[simp]
 theorem erase_mk [DecidableEq α] (m : Multiset α)
     (hc : Multiset.card m = n + 1) (a : α) (h : a ∈ m) :
-    (mk m hc).erase a h =mk (m.erase a)
+    (mk m hc).erase a h = mk (m.erase a)
         (by rw [Multiset.card_erase_of_mem h, hc, Nat.add_one, Nat.pred_succ]) :=
   rfl
 
@@ -234,7 +240,7 @@ def symEquivSym' {α : Type*} {n : ℕ} : Sym α n ≃ Sym' α n :=
   Equiv.subtypeQuotientEquivQuotientSubtype _ _ (fun _ => by rfl) fun _ _ => by rfl
 
 theorem cons_equiv_eq_equiv_cons (α : Type*) (n : ℕ) (a : α) (s : Sym α n) :
-    (a::symEquivSym' s) = symEquivSym' (a ::ₛ s) := by
+    (a :: symEquivSym' s) = symEquivSym' (a ::ₛ s) := by
   rcases s with ⟨⟨l⟩, _⟩
   rfl
 
@@ -262,12 +268,15 @@ theorem replicate_succ {a : α} {n : ℕ} : replicate n.succ a = a ::ₛ replica
 theorem coe_replicate : (replicate n a : Multiset α) = Multiset.replicate n a :=
   rfl
 
+theorem val_replicate : (replicate n a).val = Multiset.replicate n a := by
+  rw [val_eq_coe, coe_replicate]
+
 @[simp]
 theorem mem_replicate : b ∈ replicate n a ↔ n ≠ 0 ∧ b = a :=
   Multiset.mem_replicate
 
 theorem eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a := by
-  erw [Subtype.ext_iff, Multiset.eq_replicate]
+  rw [Subtype.ext_iff, val_replicate, Multiset.eq_replicate]
   exact and_iff_right s.2
 
 theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
@@ -306,7 +315,7 @@ instance inhabitedSym [Inhabited α] (n : ℕ) : Inhabited (Sym α n) :=
   ⟨replicate n default⟩
 
 instance inhabitedSym' [Inhabited α] (n : ℕ) : Inhabited (Sym' α n) :=
-  ⟨Quotient.mk' (Vector.replicate n default)⟩
+  ⟨Quotient.mk' (List.Vector.replicate n default)⟩
 
 instance (n : ℕ) [IsEmpty α] : IsEmpty (Sym α n.succ) :=
   ⟨fun s => by
@@ -419,8 +428,6 @@ The simp-normal form is for the `cast` to be pushed outward. -/
 protected def cast {n m : ℕ} (h : n = m) : Sym α n ≃ Sym α m where
   toFun s := ⟨s.val, s.2.trans h⟩
   invFun s := ⟨s.val, s.2.trans h.symm⟩
-  left_inv _ := Subtype.ext rfl
-  right_inv _ := Subtype.ext rfl
 
 @[simp]
 theorem cast_rfl : Sym.cast rfl s = s :=
@@ -453,7 +460,6 @@ theorem append_inj_left {s s' : Sym α n} (t : Sym α n') : s.append t = s'.appe
 
 theorem append_comm (s : Sym α n') (s' : Sym α n') :
     s.append s' = Sym.cast (add_comm _ _) (s'.append s) := by
-  ext
   simp [append, add_comm]
 
 @[simp, norm_cast]
@@ -469,12 +475,11 @@ def oneEquiv : α ≃ Sym α 1 where
   toFun a := ⟨{a}, by simp⟩
   invFun s := (Equiv.subtypeQuotientEquivQuotientSubtype
       (·.length = 1) _ (fun _ ↦ Iff.rfl) (fun l l' ↦ by rfl) s).liftOn
-    (fun l ↦ l.1.head <| List.length_pos.mp <| by simp)
+    (fun l ↦ l.1.head <| List.length_pos_iff.mp <| by simp)
     fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
-      obtain ⟨a, rfl⟩ := List.length_eq_one.mp h
-      exact List.eq_of_mem_singleton (perm.mem_iff.mp <| List.head_mem _)
-  left_inv a := by rfl
-  right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one.mp h; rfl
+      obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h
+      exact List.eq_of_mem_singleton (List.Perm.mem_iff perm |>.mp <| List.head_mem _)
+  right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h; rfl
 
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.
 This is a convenience wrapper for `m.append (replicate i a)` that adjusts the term using
@@ -494,7 +499,7 @@ open Multiset
 
 /-- Remove every `a` from a given `Sym α n`.
 Yields the number of copies `i` and a term of `Sym α (n - i)`. -/
-def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym α (n - i) :=
+def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σ i : Fin (n + 1), Sym α (n - i) :=
   ⟨⟨m.1.count a, (count_le_card _ _).trans_lt <| by rw [m.2, Nat.lt_succ_iff]⟩,
     m.1.filter (a ≠ ·),
     Nat.eq_sub_of_add_eq <|
@@ -505,7 +510,7 @@ def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym �
           rw [← card_eq_countP_add_countP _ _])
         m.2⟩
 
-theorem sigma_sub_ext {m₁ m₂ : Σi : Fin (n + 1), Sym α (n - i)} (h : (m₁.2 : Multiset α) = m₂.2) :
+theorem sigma_sub_ext {m₁ m₂ : Σ i : Fin (n + 1), Sym α (n - i)} (h : (m₁.2 : Multiset α) = m₂.2) :
     m₁ = m₂ :=
   Sigma.subtype_ext
     (Fin.ext <| by
@@ -524,18 +529,19 @@ theorem fill_filterNe [DecidableEq α] (a : α) (m : Sym α n) :
       · rw [if_pos rfl, if_neg (not_not.2 rfl), zero_add]
       · rw [if_pos h, if_neg h, add_zero])
 
-theorem filter_ne_fill [DecidableEq α] (a : α) (m : Σi : Fin (n + 1), Sym α (n - i)) (h : a ∉ m.2) :
+theorem filter_ne_fill
+    [DecidableEq α] (a : α) (m : Σ i : Fin (n + 1), Sym α (n - i)) (h : a ∉ m.2) :
     (m.2.fill a m.1).filterNe a = m :=
   sigma_sub_ext
     (by
       rw [filterNe, ← val_eq_coe, Subtype.coe_mk, val_eq_coe, coe_fill]
-      rw [filter_add, filter_eq_self.2, add_right_eq_self, eq_zero_iff_forall_not_mem]
+      rw [filter_add, filter_eq_self.2, add_eq_left, eq_zero_iff_forall_notMem]
       · intro b hb
         rw [mem_filter, Sym.mem_coe, mem_replicate] at hb
         exact hb.2 hb.1.2.symm
       · exact fun a ha ha' => h <| ha'.symm ▸ ha)
 
-theorem count_coe_fill_self_of_not_mem [DecidableEq α] {a : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
+theorem count_coe_fill_self_of_notMem [DecidableEq α] {a : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
     (hx : a ∉ s) :
     count a (fill a i s : Multiset α) = i := by
   simp [coe_fill, coe_replicate, hx]
@@ -574,7 +580,7 @@ theorem encode_of_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h : no
   dif_pos h
 
 @[simp]
-theorem encode_of_not_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h : ¬none ∈ s) :
+theorem encode_of_none_notMem [DecidableEq α] (s : Sym (Option α) n.succ) (h : none ∉ s) :
     encode s =
       Sum.inr
         (s.attach.map fun o =>
@@ -582,7 +588,6 @@ theorem encode_of_not_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h 
   dif_neg h
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
--- @[simp] Porting note: not a nice simp lemma, applies too often in Lean4
 def decode : Sym (Option α) n ⊕ Sym α n.succ → Sym (Option α) n.succ
   | Sum.inl s => none ::ₛ s
   | Sum.inr s => s.map Embedding.some
@@ -599,7 +604,7 @@ theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.so
 theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (encode s) = s := by
   by_cases h : none ∈ s
   · simp [h]
-  · simp only [decode, h, not_false_iff, encode_of_not_none_mem, Embedding.some_apply, map_map,
+  · simp only [decode, h, not_false_iff, encode_of_none_notMem, Embedding.some_apply, map_map,
       comp_apply, Option.some_get]
     convert s.attach_map_coe
 

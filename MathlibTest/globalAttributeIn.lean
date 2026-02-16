@@ -28,7 +28,8 @@ instance : Inhabited Int where
 /--
 warning: Despite the `in`, the attribute 'instance 1100' is added globally to 'Int.add'
 please remove the `in` or make this a `local instance 1100`
-note: this linter can be disabled with `set_option linter.globalAttributeIn false`
+
+Note: This linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
 set_option autoImplicit false in
@@ -40,7 +41,8 @@ instance : Inhabited Int where
 /--
 warning: Despite the `in`, the attribute 'instance' is added globally to 'Int.add'
 please remove the `in` or make this a `local instance`
-note: this linter can be disabled with `set_option linter.globalAttributeIn false`
+
+Note: This linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
 attribute [instance] Int.add in
@@ -50,7 +52,8 @@ instance : Inhabited Int where
 /--
 warning: Despite the `in`, the attribute 'simp' is added globally to 'Int.add'
 please remove the `in` or make this a `local simp`
-note: this linter can be disabled with `set_option linter.globalAttributeIn false`
+
+Note: This linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
 attribute [simp] Int.add in
@@ -60,18 +63,20 @@ instance : Inhabited Int where
 namespace X
 
 -- Here's another example, with nested attributes.
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 theorem foo (x y : Nat) : x = y := sorry
 
 /--
 warning: Despite the `in`, the attribute 'simp' is added globally to 'foo'
 please remove the `in` or make this a `local simp`
-note: this linter can be disabled with `set_option linter.globalAttributeIn false`
+
+Note: This linter can be disabled with `set_option linter.globalAttributeIn false`
 ---
 warning: Despite the `in`, the attribute 'ext' is added globally to 'foo'
 please remove the `in` or make this a `local ext`
-note: this linter can be disabled with `set_option linter.globalAttributeIn false`
+
+Note: This linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
 attribute [simp, local simp, ext, scoped instance, -simp, -ext] foo in

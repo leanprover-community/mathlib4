@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.CategoryTheory.Galois.Topology
-import Mathlib.CategoryTheory.Galois.Prorepresentability
-import Mathlib.Topology.Algebra.OpenSubgroup
+module
+
+public import Mathlib.CategoryTheory.Galois.Basic
+public import Mathlib.CategoryTheory.Galois.Topology
+public import Mathlib.CategoryTheory.Galois.Prorepresentability
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 
@@ -30,7 +32,7 @@ Given a compact, topological group `G` with an action on `F.obj X` on each `X`, 
 - `transitive_of_isGalois`: `G` acts transitively on `F.obj X` for all Galois objects `X : C`
 - `continuous_smul`: the action of `G` on `F.obj X` is continuous if `F.obj X` is equipped with the
   discrete topology for all `X : C`.
-- `non_trivial': if `g : G` acts trivial on all `F.obj X`, then `g = 1`.
+- `non_trivial'`: if `g : G` acts trivially on all `F.obj X`, then `g = 1`.
 
 Given this data, we define `toAut F G : G →* Aut F` in the natural way.
 
@@ -45,6 +47,9 @@ Given this data, we define `toAut F G : G →* Aut F` in the natural way.
   `G` being a `T2Space`.
 
 -/
+
+@[expose] public section
+
 universe u₁ u₂ w
 
 namespace CategoryTheory
@@ -64,8 +69,9 @@ on `F.obj X` and `F.obj Y` are compatible with `F.map f`. -/
 class IsNaturalSMul : Prop where
   naturality (g : G) {X Y : C} (f : X ⟶ Y) (x : F.obj X) : F.map f (g • x) = g • F.map f x
 
+set_option backward.privateInPublic true in
 variable {G} in
-@[simps!]
+@[simps! -isSimp]
 private def isoOnObj (g : G) (X : C) : F.obj X ≅ F.obj X :=
   FintypeCat.equivEquivIso <| {
     toFun := fun x ↦ g • x
@@ -76,22 +82,23 @@ private def isoOnObj (g : G) (X : C) : F.obj X ≅ F.obj X :=
 
 variable [IsNaturalSMul F G]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `G` acts naturally on `F.obj X` for each `X : C`, this is the canonical
 group homomorphism into the automorphism group of `F`. -/
 def toAut : G →* Aut F where
   toFun g := NatIso.ofComponents (isoOnObj F g) <| by
     intro X Y f
     ext
-    simp [IsNaturalSMul.naturality]
+    exact (IsNaturalSMul.naturality _ _ _).symm
   map_one' := by
     ext
-    simp only [NatIso.ofComponents_hom_app, isoOnObj_hom, one_smul]
-    rfl
+    dsimp [isoOnObj]
+    cat_disch
   map_mul' := by
     intro g h
     ext X x
-    simp only [NatIso.ofComponents_hom_app, isoOnObj_hom, mul_smul]
-    rfl
+    apply mul_smul
 
 variable {G} in
 @[simp]
@@ -111,7 +118,7 @@ lemma toAut_injective_of_non_trivial (h : ∀ (g : G), (∀ (X : C) (x : F.obj X
 
 variable [GaloisCategory C] [FiberFunctor F]
 
-lemma toAut_continuous [TopologicalSpace G] [TopologicalGroup G]
+lemma toAut_continuous [TopologicalSpace G] [IsTopologicalGroup G]
     [∀ (X : C), ContinuousSMul G (F.obj X)] :
     Continuous (toAut F G) := by
   apply continuous_of_continuousAt_one
@@ -146,15 +153,14 @@ lemma toAut_surjective_isGalois_finite_family (t : Aut F) {ι : Type*} [Finite �
     ∃ (g : G), ∀ (i : ι) (x : F.obj (X i)), g • x = t.hom.app (X i) x := by
   let x (i : ι) : F.obj (X i) := (nonempty_fiber_of_isConnected F (X i)).some
   let P : C := ∏ᶜ X
-  letI : Fintype ι := Fintype.ofFinite ι
   let is₁ : F.obj P ≅ ∏ᶜ fun i ↦ (F.obj (X i)) := PreservesProduct.iso F X
   let is₂ : (∏ᶜ fun i ↦ F.obj (X i) : FintypeCat) ≃ ∀ i, F.obj (X i) :=
     Limits.FintypeCat.productEquiv (fun i ↦ (F.obj (X i)))
   let px : F.obj P := is₁.inv (is₂.symm x)
   have hpx (i : ι) : F.map (Pi.π X i) px = x i := by
-    simp only [px, is₁, is₂, ← piComparison_comp_π, ← PreservesProduct.iso_hom]
-    simp only [FintypeCat.comp_apply, FintypeCat.inv_hom_id_apply,
-      FintypeCat.productEquiv_symm_comp_π_apply]
+    simp only [px, is₁, is₂, ← piComparison_comp_π, ← PreservesProduct.iso_hom,
+      FintypeCat.comp_apply]
+    rw [FintypeCat.inv_hom_id_apply, FintypeCat.productEquiv_symm_comp_π_apply]
   obtain ⟨A, f, a, _, hfa⟩ := exists_hom_from_galois_of_fiber F P px
   obtain ⟨g, hg⟩ := toAut_surjective_isGalois F G t A
   refine ⟨g, fun i y ↦ action_ext_of_isGalois F (x i) ?_ _⟩
@@ -167,8 +173,8 @@ open Pointwise
 fibers of `F`, `toAut F G` is surjective if and only if it acts transitively on the fibers
 of all Galois objects. This is the `if` direction. For the `only if` see
 `isPretransitive_of_surjective`. -/
-lemma toAut_surjective_of_isPretransitive [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
-    [∀ (X : C), ContinuousSMul G (F.obj X)]
+lemma toAut_surjective_of_isPretransitive [TopologicalSpace G] [IsTopologicalGroup G]
+    [CompactSpace G] [∀ (X : C), ContinuousSMul G (F.obj X)]
     (h : ∀ (X : C) [IsGalois X], MulAction.IsPretransitive G (F.obj X)) :
     Function.Surjective (toAut F G) := by
   intro t
@@ -221,8 +227,8 @@ variable (G : Type*) [Group G] [∀ (X : C), MulAction G (F.obj X)]
 is a fundamental group of `F`, if `G` acts transitively on the fibers of Galois objects,
 the action on `F.obj X` is continuous for all `X : C` and the only trivially acting element of `G`
 is the identity. -/
-class IsFundamentalGroup [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
-    extends IsNaturalSMul F G : Prop where
+class IsFundamentalGroup [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G] : Prop
+    extends IsNaturalSMul F G where
   transitive_of_isGalois (X : C) [IsGalois X] : MulAction.IsPretransitive G (F.obj X)
   continuous_smul (X : C) : ContinuousSMul G (F.obj X)
   non_trivial' (g : G) : (∀ (X : C) (x : F.obj X), g • x = x) → g = 1
@@ -231,7 +237,7 @@ namespace IsFundamentalGroup
 
 attribute [instance] continuous_smul transitive_of_isGalois
 
-variable {G} [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G] [IsFundamentalGroup F G]
+variable {G} [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G] [IsFundamentalGroup F G]
 
 lemma non_trivial (g : G) (h : ∀ (X : C) (x : F.obj X), g • x = x) : g = 1 :=
   IsFundamentalGroup.non_trivial' g h
@@ -249,7 +255,7 @@ instance : IsFundamentalGroup F (Aut F) where
     ext X x
     exact h X x
 
-variable [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G] [IsFundamentalGroup F G]
+variable [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G] [IsFundamentalGroup F G]
 
 lemma toAut_bijective : Function.Bijective (toAut F G) where
   left := toAut_injective_of_non_trivial F G IsFundamentalGroup.non_trivial'

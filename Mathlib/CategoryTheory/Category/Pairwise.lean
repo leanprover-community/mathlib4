@@ -3,9 +3,15 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Order.CompleteLattice
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.IsLimit
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Limits.IsLimit
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.Order.CompleteLattice.Basic
+public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Data.Fintype.Sum
 
 /-!
 # The category of "pairwise intersections".
@@ -21,6 +27,8 @@ Given any function `U : ι → α`, where `α` is some complete lattice (e.g. `(
 we produce a functor `Pairwise ι ⥤ α` in the obvious way,
 and show that `iSup U` provides a colimit cocone over this functor.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -39,6 +47,7 @@ We use this as the objects of a category to describe the sheaf condition.
 inductive Pairwise (ι : Type v)
   | single : ι → Pairwise ι
   | pair : ι → ι → Pairwise ι
+  deriving Fintype, DecidableEq
 
 variable {ι : Type v}
 
@@ -55,6 +64,10 @@ inductive Hom : Pairwise ι → Pairwise ι → Type v
   | id_pair : ∀ i j, Hom (pair i j) (pair i j)
   | left : ∀ i j, Hom (pair i j) (single i)
   | right : ∀ i j, Hom (pair i j) (single j)
+  deriving DecidableEq
+
+-- False positive?
+attribute [nolint unusedArguments] instDecidableEqHom.decEq
 
 open Hom
 
@@ -74,22 +87,38 @@ def comp : ∀ {o₁ o₂ o₃ : Pairwise ι} (_ : Hom o₁ o₂) (_ : Hom o₂ 
   | _, _, _, left i j, id_single _ => left i j
   | _, _, _, right i j, id_single _ => right i j
 
+instance : CategoryStruct (Pairwise ι) where
+  Hom := Hom
+  id := id
+  comp := @comp _
+
 section
 
 open Lean Elab Tactic in
-/-- A helper tactic for `aesop_cat` and `Pairwise`. -/
+/-- A helper tactic for `cat_disch` and `Pairwise`. -/
 def pairwiseCases : TacticM Unit := do
   evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] pairwiseCases in
 instance : Category (Pairwise ι) where
-  Hom := Hom
-  id := id
-  comp f g := comp f g
 
 end
 
-variable {α : Type v} (U : ι → α)
+instance {i j : Pairwise ι} [DecidableEq ι] : DecidableEq (i ⟶ j) :=
+  inferInstanceAs (DecidableEq (Pairwise.Hom i j))
+
+instance [Fintype ι] [DecidableEq ι] : FinCategory (Pairwise ι) where
+  fintypeHom
+  | .single i, .single j => ⟨if h : i = j then {eqToHom (h ▸ rfl)} else ∅, by rintro ⟨⟩; cat_disch⟩
+  | .single i, .pair j k => ⟨∅, by rintro ⟨⟩⟩
+  | .pair i j, .single k =>
+    ⟨(if h : i = k then {Hom.left i j ≫ eqToHom (h ▸ rfl)} else ∅) ∪
+      (if h : j = k then {Hom.right i j ≫ eqToHom (h ▸ rfl)} else ∅),
+        by rintro ⟨⟩ <;> cat_disch⟩
+  | .pair i j, .pair k l =>
+    ⟨if h : i = k ∧ j = l then {eqToHom (h.1 ▸ h.2 ▸ rfl)} else ∅, by rintro ⟨⟩; cat_disch⟩
+
+variable {α : Type u} (U : ι → α)
 
 section
 

@@ -1,16 +1,23 @@
 {
-	"Deprecation for mathlib": {
+	"Deprecation": {
 		"scope": "lean4",
 		"prefix": "deprecated",
 		"body": [
 			"@[deprecated $1 (since := \"${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}\")]"
 		]
 	},
-	"Deprecated alias for mathlib": {
+	"Deprecated alias": {
 		"scope": "lean4",
 		"prefix": "deprecated alias",
 		"body": [
 			"@[deprecated (since := \"${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}\")] alias $1 := $2"
 		]
-	}
+	},
+	"Deprecated module": {
+		"scope": "lean4",
+		"prefix": "deprecated module",
+		"body": [
+			"deprecated_module (since := \"${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}\")"
+		]
+	},
 }

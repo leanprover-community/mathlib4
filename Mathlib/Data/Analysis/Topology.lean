@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Analysis.Filter
-import Mathlib.Topology.Bases
-import Mathlib.Topology.LocallyFinite
+module
+
+public import Mathlib.Data.Analysis.Filter
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.LocallyFinite
 
 /-!
 # Computational realization of topological spaces (experimental)
@@ -19,6 +21,8 @@ This file provides infrastructure to compute with topological spaces.
 * `LocallyFinite.Realizer`: Realization of the local finiteness of an indexed family of sets.
 * `Compact.Realizer`: Realization of the compactness of a set.
 -/
+
+@[expose] public section
 
 
 open Set
@@ -57,7 +61,6 @@ variable (F : Ctop α σ)
 instance : CoeFun (Ctop α σ) fun _ ↦ σ → Set α :=
   ⟨Ctop.f⟩
 
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem coe_mk (f T h₁ I h₂ h₃ a) : (@Ctop.mk α σ f T h₁ I h₂ h₃) a = f a := rfl
 
 /-- Map a Ctop to an equivalent representation type. -/

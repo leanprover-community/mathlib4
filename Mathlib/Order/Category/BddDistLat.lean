@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.BddLat
-import Mathlib.Order.Category.DistLat
+module
+
+public import Mathlib.Order.Category.BddLat
+public import Mathlib.Order.Category.DistLat
 
 /-!
 # The category of bounded distributive lattices
@@ -14,6 +16,8 @@ This defines `BddDistLat`, the category of bounded distributive lattices.
 Note that this category is sometimes called [`DistLat`](https://ncatlab.org/nlab/show/DistLat) when
 being a lattice is understood to entail having a bottom and a top element.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -44,6 +48,7 @@ abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat where
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `BddDistLat R`. -/
 @[ext]
 structure Hom (X Y : BddDistLat.{u}) where
@@ -51,11 +56,15 @@ structure Hom (X Y : BddDistLat.{u}) where
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category BddDistLat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨BoundedLatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BddDistLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -89,7 +98,7 @@ lemma coe_comp {X Y Z : BddDistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X �
 
 @[simp]
 lemma forget_map {X Y : BddDistLat} (f : X ⟶ Y) :
-    (forget BddDistLat).map f = f := rfl
+    (forget BddDistLat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : BddDistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -116,8 +125,9 @@ lemma hom_ext {X Y : BddDistLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [DistribLattice Y]
-    [BoundedOrder Y](f : BoundedLatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+    [BoundedOrder Y] (f : BoundedLatticeHom X Y) :
+    (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : BddDistLat} (f : X ⟶ Y) :
@@ -139,14 +149,10 @@ lemma ofHom_apply {X Y : Type u} [DistribLattice X] [BoundedOrder X] [DistribLat
     (f : BoundedLatticeHom X Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[simp]
 lemma inv_hom_apply {X Y : BddDistLat} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {X Y : BddDistLat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited BddDistLat :=

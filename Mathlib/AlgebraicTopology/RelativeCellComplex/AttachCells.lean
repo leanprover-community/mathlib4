@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Attaching cells
@@ -21,12 +23,14 @@ there is a pushout diagram of the form
 In other words, the morphism `f` is a pushout of coproducts of morphisms
 of the form `g a : A a ⟶ B a`, see `nonempty_attachCells_iff`.
 
-See the file `RelativeCellComplex.Basic` for transfinite compositions
+See the file `Mathlib/AlgebraicTopology/RelativeCellComplex/Basic.lean` for transfinite compositions
 of morphisms `f` with `AttachCells g f` structures.
 
 -/
 
-universe w t t' v u
+@[expose] public section
+
+universe w' w t t' v u
 
 open CategoryTheory Limits
 
@@ -54,7 +58,7 @@ structure AttachCells where
   isColimit₂ : IsColimit cofan₂
   /-- the coproduct of the maps `g (π i) : A (π i) ⟶ B (π i)` for all `i : ι`. -/
   m : cofan₁.pt ⟶ cofan₂.pt
-  hm (i : ι) : cofan₁.inj i ≫ m = g (π i) ≫ cofan₂.inj i := by aesop_cat
+  hm (i : ι) : cofan₁.inj i ≫ m = g (π i) ≫ cofan₂.inj i := by cat_disch
   /-- the top morphism of the pushout square -/
   g₁ : cofan₁.pt ⟶ X₁
   /-- the bottom morphism of the pushout square -/
@@ -91,6 +95,42 @@ lemma hom_ext {Z : C} {φ φ' : X₂ ⟶ Z}
   apply c.isPushout.hom_ext h₀
   apply Cofan.IsColimit.hom_ext c.isColimit₂
   simpa [cell_def] using h
+
+/-- If `f` and `f'` are isomorphic morphisms and the target of `f`
+is obtained by attaching cells to the source of `f`,
+then the same holds for `f'`. -/
+@[simps]
+def ofArrowIso {Y₁ Y₂ : C} {f' : Y₁ ⟶ Y₂} (e : Arrow.mk f ≅ Arrow.mk f') :
+    AttachCells.{w} g f' where
+  ι := c.ι
+  π := c.π
+  cofan₁ := c.cofan₁
+  cofan₂ := c.cofan₂
+  isColimit₁ := c.isColimit₁
+  isColimit₂ := c.isColimit₂
+  m := c.m
+  g₁ := c.g₁ ≫ Arrow.leftFunc.map e.hom
+  g₂ := c.g₂ ≫ Arrow.rightFunc.map e.hom
+  isPushout :=
+    c.isPushout.of_iso (Iso.refl _) (Arrow.leftFunc.mapIso e) (Iso.refl _)
+      (Arrow.rightFunc.mapIso e) (by simp) (by simp) (by simp) (by simp)
+
+/-- This definition allows the replacement of the `ι` field of
+a `AttachCells g f` structure by an equivalent type. -/
+@[simps]
+def reindex {ι' : Type w'} (e : ι' ≃ c.ι) :
+    AttachCells.{w'} g f where
+  ι := ι'
+  π i' := c.π (e i')
+  cofan₁ := Cofan.mk c.cofan₁.pt (fun i' ↦ c.cofan₁.inj (e i'))
+  cofan₂ := Cofan.mk c.cofan₂.pt (fun i' ↦ c.cofan₂.inj (e i'))
+  isColimit₁ := IsColimit.whiskerEquivalence (c.isColimit₁) (Discrete.equivalence e)
+  isColimit₂ := IsColimit.whiskerEquivalence (c.isColimit₂) (Discrete.equivalence e)
+  m := c.m
+  g₁ := c.g₁
+  g₂ := c.g₂
+  hm i' := c.hm (e i')
+  isPushout := c.isPushout
 
 section
 
@@ -156,6 +196,6 @@ lemma nonempty_attachCells_iff :
         (IsColimit.precomposeHomEquiv (Discrete.natIso (fun ⟨i⟩ ↦ e₂ i)) _).1
           (IsColimit.ofIsoColimit h₂ (Cocones.ext (Iso.refl _) (by simp)))
       hm i := by simp [e₁, e₂]
-      isPushout := sq }⟩
+      isPushout := sq, .. }⟩
 
 end HomotopicalAlgebra

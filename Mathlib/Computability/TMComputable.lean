@@ -3,9 +3,11 @@ Copyright (c) 2020 Pim Spelier, Daan van Gent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Spelier, Daan van Gent
 -/
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.Computability.Encoding
-import Mathlib.Computability.TuringMachine
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Computability.Encoding
+public import Mathlib.Computability.TuringMachine
 
 /-!
 # Computable functions
@@ -28,6 +30,8 @@ generally contains multiple "fundamental" steps (pushing, popping, and so on).
 However, as functions only contain a finite number of executions and each one is executed at most
 once, this execution time is up to multiplication by a constant the amount of fundamental steps.
 -/
+
+@[expose] public section
 
 
 
@@ -298,6 +302,20 @@ instance inhabitedTM2Computable :
 
 instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
   ⟨(default : TM2Computable finEncodingBoolBool finEncodingBoolBool id).toTM2ComputableAux⟩
+
+/--
+For any two polynomial time Multi-tape Turing Machines,
+there exists another polynomial time multi-tape Turing Machine that composes their operations.
+This machine can work by simply having one tape for each tape in both of the composed TMs.
+It first carries out the operations of the first TM on the tapes associated with the first TM,
+then copies the output tape of the first TM to the input tape of the second TM,
+then runs the second TM.
+-/
+proof_wanted TM2ComputableInPolyTime.comp
+    {α β γ : Type} {eα : FinEncoding α} {eβ : FinEncoding β}
+    {eγ : FinEncoding γ} {f : α → β} {g : β → γ} (h1 : TM2ComputableInPolyTime eα eβ f)
+    (h2 : TM2ComputableInPolyTime eβ eγ g) :
+  Nonempty (TM2ComputableInPolyTime eα eγ (g ∘ f))
 
 end
 

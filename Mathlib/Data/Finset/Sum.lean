@@ -3,8 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.Multiset.Sum
-import Mathlib.Data.Finset.Card
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Data.Multiset.Sum
 
 /-!
 # Disjoint sum of finsets
@@ -19,12 +22,14 @@ the `Finset.sum` operation which computes the additive sum.
 * `Finset.toRight`: Given a finset of elements `α ⊕ β`, extracts all the elements of the form `β`.
 -/
 
+@[expose] public section
+
 
 open Function Multiset Sum
 
 namespace Finset
 
-variable {α β : Type*} (s : Finset α) (t : Finset β)
+variable {α β γ : Type*} (s : Finset α) (t : Finset β)
 
 /-- Disjoint sum of finsets. -/
 def disjSum : Finset (α ⊕ β) :=
@@ -92,7 +97,7 @@ theorem disjSum_ssubset_disjSum_of_subset_of_ssubset (hs : s₁ ⊆ s₂) (ht : 
 theorem disjSum_strictMono_left (t : Finset β) : StrictMono fun s : Finset α => s.disjSum t :=
   fun _ _ hs => disjSum_ssubset_disjSum_of_ssubset_of_subset hs Subset.rfl
 
-theorem disj_sum_strictMono_right (s : Finset α) :
+theorem disjSum_strictMono_right (s : Finset α) :
     StrictMono (s.disjSum : Finset β → Finset (α ⊕ β)) := fun _ _ =>
   disjSum_ssubset_disjSum_of_subset_of_ssubset Subset.rfl
 
@@ -109,9 +114,8 @@ forms a quasi-inverse to `disjSum`, in that it recovers its left input.
 
 See also `List.partitionMap`.
 -/
-def toLeft (s : Finset (α ⊕ β)) : Finset α :=
-  s.disjiUnion (Sum.elim singleton (fun _ => ∅)) <| by
-    simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, eq_comm]
+def toLeft (u : Finset (α ⊕ β)) : Finset α :=
+  u.filterMap (Sum.elim some fun _ => none) (by clear x; aesop)
 
 /--
 Given a finset of elements `α ⊕ β`, extract all the elements of the form `β`. This
@@ -119,17 +123,13 @@ forms a quasi-inverse to `disjSum`, in that it recovers its right input.
 
 See also `List.partitionMap`.
 -/
-def toRight (s : Finset (α ⊕ β)) : Finset β :=
-  s.disjiUnion (Sum.elim (fun _ => ∅) singleton) <| by
-    simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, eq_comm]
+def toRight (u : Finset (α ⊕ β)) : Finset β :=
+  u.filterMap (Sum.elim (fun _ => none) some) (by clear x; aesop)
 
-variable {u v : Finset (α ⊕ β)}
+variable {u v : Finset (α ⊕ β)} {a : α} {b : β}
 
-@[simp] lemma mem_toLeft {x : α} : x ∈ u.toLeft ↔ inl x ∈ u := by
-  simp [toLeft]
-
-@[simp] lemma mem_toRight {x : β} : x ∈ u.toRight ↔ inr x ∈ u := by
-  simp [toRight]
+@[simp] lemma mem_toLeft : a ∈ u.toLeft ↔ .inl a ∈ u := by simp [toLeft]
+@[simp] lemma mem_toRight : b ∈ u.toRight ↔ .inr b ∈ u := by simp [toRight]
 
 @[gcongr]
 lemma toLeft_subset_toLeft : u ⊆ v → u.toLeft ⊆ v.toLeft :=
@@ -145,13 +145,13 @@ lemma toRight_monotone : Monotone (@toRight α β) := fun _ _ => toRight_subset_
 lemma toLeft_disjSum_toRight : u.toLeft.disjSum u.toRight = u := by
   ext (x | x) <;> simp
 
-lemma card_toLeft_add_card_toRight : u.toLeft.card + u.toRight.card = u.card := by
+lemma card_toLeft_add_card_toRight : #u.toLeft + #u.toRight = #u := by
   rw [← card_disjSum, toLeft_disjSum_toRight]
 
-lemma card_toLeft_le : u.toLeft.card ≤ u.card :=
+lemma card_toLeft_le : #u.toLeft ≤ #u :=
   (Nat.le_add_right _ _).trans_eq card_toLeft_add_card_toRight
 
-lemma card_toRight_le : u.toRight.card ≤ u.card :=
+lemma card_toRight_le : #u.toRight ≤ #u :=
   (Nat.le_add_left _ _).trans_eq card_toLeft_add_card_toRight
 
 @[simp] lemma toLeft_disjSum : (s.disjSum t).toLeft = s := by ext x; simp
@@ -163,6 +163,27 @@ lemma disjSum_eq_iff : s.disjSum t = u ↔ s = u.toLeft ∧ t = u.toRight :=
 
 lemma eq_disjSum_iff : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
   ⟨fun h => by simp [h], fun h => by simp [← h, toLeft_disjSum_toRight]⟩
+
+lemma disjSum_subset : s.disjSum t ⊆ u ↔ s ⊆ u.toLeft ∧ t ⊆ u.toRight := by simp [subset_iff]
+lemma subset_disjSum : u ⊆ s.disjSum t ↔ u.toLeft ⊆ s ∧ u.toRight ⊆ t := by simp [subset_iff]
+
+lemma subset_map_inl : u ⊆ s.map .inl ↔ u.toLeft ⊆ s ∧ u.toRight = ∅ := by
+  simp [← disjSum_empty, subset_disjSum]
+
+lemma subset_map_inr : u ⊆ t.map .inr ↔ u.toLeft = ∅ ∧ u.toRight ⊆ t := by
+  simp [← empty_disjSum, subset_disjSum]
+
+lemma map_inl_subset_iff_subset_toLeft : s.map .inl ⊆ u ↔ s ⊆ u.toLeft := by
+  simp [← disjSum_empty, disjSum_subset]
+
+lemma map_inr_subset_iff_subset_toRight : t.map .inr ⊆ u ↔ t ⊆ u.toRight := by
+  simp [← empty_disjSum, disjSum_subset]
+
+lemma gc_map_inl_toLeft : GaloisConnection (·.map (.inl : α ↪ α ⊕ β)) toLeft :=
+  fun _ _ ↦ map_inl_subset_iff_subset_toLeft
+
+lemma gc_map_inr_toRight : GaloisConnection (·.map (.inr : β ↪ α ⊕ β)) toRight :=
+  fun _ _ ↦ map_inr_subset_iff_subset_toRight
 
 @[simp] lemma toLeft_map_sumComm : (u.map (Equiv.sumComm _ _).toEmbedding).toLeft = u.toRight := by
   ext x; simp
@@ -179,6 +200,7 @@ lemma eq_disjSum_iff : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
 @[simp] lemma toRight_cons_inr (hb) :
     (cons (inr b) u hb).toRight = cons b u.toRight (by simpa) := by ext y; simp
 
+section
 variable [DecidableEq α] [DecidableEq β]
 
 lemma toLeft_image_swap : (u.image Sum.swap).toLeft = u.toRight := by
@@ -201,6 +223,8 @@ lemma toRight_union : (u ∪ v).toRight = u.toRight ∪ v.toRight := by ext x; s
 lemma toLeft_sdiff : (u \ v).toLeft = u.toLeft \ v.toLeft := by ext x; simp
 lemma toRight_sdiff : (u \ v).toRight = u.toRight \ v.toRight := by ext x; simp
 
+end
+
 /-- Finsets on sum types are equivalent to pairs of finsets on each summand. -/
 @[simps apply_fst apply_snd]
 def sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃o Finset α × Finset β where
@@ -213,5 +237,19 @@ def sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃o Finset α × Finset β wh
 @[simp]
 lemma sumEquiv_symm_apply {α β : Type*} (s : Finset α × Finset β) :
     sumEquiv.symm s = disjSum s.1 s.2 := rfl
+
+theorem map_disjSum (f : α ⊕ β ↪ γ) :
+    (s.disjSum t).map f =
+      (s.map (.trans .inl f)).disjUnion (t.map (.trans .inr f)) (by
+        as_aux_lemma =>
+          simpa only [← map_map]
+            using (Finset.disjoint_map f).2 (disjoint_map_inl_map_inr _ _)) :=
+  val_injective <| Multiset.map_disjSum _
+
+lemma fold_disjSum (s : Finset α) (t : Finset β) (f : α ⊕ β → γ) (b₁ b₂ : γ) (op : γ → γ → γ)
+    [Std.Commutative op] [Std.Associative op] :
+    (s.disjSum t).fold op (op b₁ b₂) f =
+      op (s.fold op b₁ (f <| .inl ·)) (t.fold op b₂ (f <| .inr ·)) := by
+  simp_rw [fold, disjSum, Multiset.map_disjSum, fold_add]
 
 end Finset

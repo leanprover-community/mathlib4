@@ -3,10 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.IteratedFDeriv
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+module
+
+public import Mathlib.Analysis.Analytic.IteratedFDeriv
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 /-!
 # Symmetry of the second derivative
@@ -60,6 +62,8 @@ when `v` and `w` both point towards the interior of `s`, to make sure that all t
 rectangle are contained in `s` by convexity. The general case follows by linearity, though.
 -/
 
+@[expose] public section
+
 
 open Asymptotics Set Filter
 
@@ -104,20 +108,20 @@ lemma fderivWithin_fderivWithin_eq_of_mem_nhdsWithin (h : t ∈ 𝓝[s] x)
       nhdsWithin_le_iff.2 h (nhdsWithin_mono _ (subset_insert x t) (hf.eventually (by simp)))
     filter_upwards [self_mem_nhdsWithin, this, eventually_eventually_nhdsWithin.2 h]
       with y hy h'y h''y
-    exact fderivWithin_of_mem_nhdsWithin h''y (hs y hy) (h'y.differentiableWithinAt one_le_two)
+    exact fderivWithin_of_mem_nhdsWithin h''y (hs y hy) (h'y.differentiableWithinAt two_ne_zero)
   have : fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x := by
     apply Filter.EventuallyEq.fderivWithin_eq A
-    exact fderivWithin_of_mem_nhdsWithin h (hs x hx) (hf.differentiableWithinAt one_le_two)
+    exact fderivWithin_of_mem_nhdsWithin h (hs x hx) (hf.differentiableWithinAt two_ne_zero)
   rw [this]
   apply fderivWithin_of_mem_nhdsWithin h (hs x hx)
   exact (hf.fderivWithin_right (m := 1) ht le_rfl
-    (mem_of_mem_nhdsWithin hx h)).differentiableWithinAt le_rfl
+    (mem_of_mem_nhdsWithin hx h)).differentiableWithinAt one_ne_zero
 
 lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
   fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
     = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x :=
-      (fderivWithin_eventually_congr_set h).fderivWithin_eq_nhds
+      (fderivWithin_eventually_congr_set h).fderivWithin_eq_of_nhds
   _ = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := fderivWithin_congr_set h
 
 lemma fderivWithin_fderivWithin_eq_of_mem_nhds {f : E → F} {x : E} {s : Set E}
@@ -155,16 +159,40 @@ theorem IsSymmSndFDerivAt.isSymmSndFDerivWithinAt (h : IsSymmSndFDerivAt 𝕜 f 
   simp only [← isSymmSndFDerivWithinAt_univ, ← contDiffWithinAt_univ] at h hf
   exact h.mono_of_mem_nhdsWithin univ_mem hf hs uniqueDiffOn_univ hx
 
+theorem isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    IsSymmSndFDerivWithinAt 𝕜 f s x ↔
+      (iteratedFDerivWithin 𝕜 2 f s x).domDomCongr Fin.revPerm =
+        iteratedFDerivWithin 𝕜 2 f s x := by
+  simp_rw [IsSymmSndFDerivWithinAt, ContinuousMultilinearMap.ext_iff, Fin.forall_fin_succ_pi,
+    Fin.forall_fin_zero_pi]
+  simp [iteratedFDerivWithin_two_apply f hs hx, eq_comm]
+
+theorem isSymmSndFDerivAt_iff_iteratedFDeriv :
+    IsSymmSndFDerivAt 𝕜 f x ↔
+      (iteratedFDeriv 𝕜 2 f x).domDomCongr Fin.revPerm = iteratedFDeriv 𝕜 2 f x := by
+  simp only [← isSymmSndFDerivWithinAt_univ, ← iteratedFDerivWithin_univ]
+  exact isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin uniqueDiffOn_univ (mem_univ _)
+
+theorem IsSymmSndFDerivWithinAt.iteratedFDerivWithin_cons {x v w : E}
+    {hf : IsSymmSndFDerivWithinAt 𝕜 f s x} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    iteratedFDerivWithin 𝕜 2 f s x ![v, w] = iteratedFDerivWithin 𝕜 2 f s x ![w, v] := by
+  simp_rw [isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin hs hx, ContinuousMultilinearMap.ext_iff,
+    ContinuousMultilinearMap.domDomCongr_apply] at hf
+  convert hf ![w, v] using 2
+  ext i
+  fin_cases i <;> simp
+
+theorem IsSymmSndFDerivAt.iteratedFDeriv_cons {x v w : E} {hf : IsSymmSndFDerivAt 𝕜 f x} :
+    iteratedFDeriv 𝕜 2 f x ![v, w] = iteratedFDeriv 𝕜 2 f x ![w, v] := by
+  simp only [← isSymmSndFDerivWithinAt_univ, ← iteratedFDerivWithin_univ] at *
+  exact hf.iteratedFDerivWithin_cons uniqueDiffOn_univ (mem_univ _)
+
 /-- If a function is analytic within a set at a point, then its second derivative is symmetric. -/
 theorem ContDiffWithinAt.isSymmSndFDerivWithinAt_of_omega (hf : ContDiffWithinAt 𝕜 ω f s x)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by
-  intro v w
-  rw [← iteratedFDerivWithin_two_apply' f hs hx, ← iteratedFDerivWithin_two_apply' f hs hx,
-    ← hf.iteratedFDerivWithin_comp_perm hs hx _ (Equiv.swap 0 1)]
-  congr
-  ext i
-  fin_cases i <;> rfl
+  rw [isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin hs hx]
+  exact hf.domDomCongr_iteratedFDerivWithin hs hx _
 
 /-- If a function is analytic at a point, then its second derivative is symmetric. -/
 theorem ContDiffAt.isSymmSndFDerivAt_of_omega (hf : ContDiffAt 𝕜 ω f x) :
@@ -283,17 +311,17 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
         simp only [norm_smul, Real.norm_eq_abs, abs_mul, abs_of_nonneg, ht.1, hpos.le, mul_assoc]
         exact mul_le_of_le_one_left (by positivity) ht.2.le
       _ = ε * ((‖v‖ + ‖w‖) * ‖w‖) * h ^ 2 := by
-        simp only [norm_smul, Real.norm_eq_abs, abs_mul, abs_of_nonneg, hpos.le]; ring
+        simp only [norm_smul, Real.norm_eq_abs, abs_of_nonneg, hpos.le]; ring
   -- conclude using the mean value inequality
   have I : ‖g 1 - g 0‖ ≤ ε * ((‖v‖ + ‖w‖) * ‖w‖) * h ^ 2 := by
     simpa only [mul_one, sub_zero] using
       norm_image_sub_le_of_norm_deriv_le_segment' g_deriv g'_bound 1 (right_mem_Icc.2 zero_le_one)
   convert I using 1
   · congr 1
-    simp only [g, Nat.one_ne_zero, add_zero, one_mul, zero_div, zero_mul, sub_zero,
+    simp only [g, add_zero, one_mul, zero_div, zero_mul, sub_zero,
       zero_smul, Ne, not_false_iff, zero_pow, reduceCtorEq]
     abel
-  · simp (discharger := positivity) only [Real.norm_eq_abs, abs_mul, abs_of_nonneg, abs_pow]
+  · simp (discharger := positivity) only [Real.norm_eq_abs, abs_of_nonneg]
     ring
 
 /-- One can get `f'' v w` as the limit of `h ^ (-2)` times the alternate sum of the values of `f`
@@ -305,8 +333,8 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
     (fun h : ℝ => f (x + h • (2 • v + 2 • w)) + f (x + h • (v + w))
         - f (x + h • (2 • v + w)) - f (x + h • (v + 2 • w)) - h ^ 2 • f'' v w) =o[𝓝[>] 0]
       fun h => h ^ 2 := by
-  have A : (1 : ℝ) / 2 ∈ Ioc (0 : ℝ) 1 := ⟨by norm_num, by norm_num⟩
-  have B : (1 : ℝ) / 2 ∈ Icc (0 : ℝ) 1 := ⟨by norm_num, by norm_num⟩
+  have A : (1 : ℝ) / 2 ∈ Ioc (0 : ℝ) 1 := ⟨by simp, by norm_num⟩
+  have B : (1 : ℝ) / 2 ∈ Icc (0 : ℝ) 1 := ⟨by simp, by norm_num⟩
   have h2v2w : x + (2 : ℝ) • v + (2 : ℝ) • w ∈ interior s := by
     convert s_conv.interior.add_smul_sub_mem h4v h4w B using 1
     module
@@ -332,9 +360,8 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
   have TA2 := s_conv.taylor_approx_two_segment hf xs hx hvw hvww
   convert TA1.sub TA2 using 1
   ext h
-  simp only [two_smul, smul_add, ← add_assoc, ContinuousLinearMap.map_add,
-    ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul',
-    ContinuousLinearMap.map_smul]
+  simp only [two_smul, smul_add, ← add_assoc, map_add,
+    ContinuousLinearMap.add_apply]
   abel
 
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is
@@ -356,9 +383,9 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     apply C.congr' _ _
     · filter_upwards [self_mem_nhdsWithin]
       intro h (hpos : 0 < h)
-      match_scalars <;> field_simp
+      match_scalars <;> field
     · filter_upwards [self_mem_nhdsWithin] with h (hpos : 0 < h)
-      field_simp
+      simp [field]
   simpa only [sub_eq_zero] using isLittleO_const_const_iff.1 B
 
 end
@@ -396,17 +423,16 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     intro m
     have : f'' (z + t m • m) (z + t 0 • (0 : E)) = f'' (z + t 0 • (0 : E)) (z + t m • m) :=
       s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts 0) (ts m)
-    simp only [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, add_right_inj,
-      ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul', add_zero,
-      ContinuousLinearMap.zero_apply, smul_zero, ContinuousLinearMap.map_zero] at this
+    simp only [map_add, map_smul, add_right_inj, ContinuousLinearMap.add_apply, Pi.smul_apply,
+      ContinuousLinearMap.coe_smul', add_zero, smul_zero] at this
     exact smul_right_injective F (tpos m).ne' this
   -- applying `second_derivative_within_at_symmetric_of_mem_interior` to the vectors `z + (t v) v`
   -- and `z + (t w) w`, we deduce that `f'' v w = f'' w v`. Cross terms involving `z` can be
   -- eliminated thanks to the fact proved above that `f'' m z = f'' z m`.
   have : f'' (z + t v • v) (z + t w • w) = f'' (z + t w • w) (z + t v • v) :=
     s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts w) (ts v)
-  simp only [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, smul_add, smul_smul,
-    ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul', C] at this
+  simp only [map_add, map_smul, ContinuousLinearMap.add_apply, Pi.smul_apply,
+    ContinuousLinearMap.coe_smul', C] at this
   have : (t v * t w) • (f'' v) w = (t v * t w) • (f'' w) v := by
     linear_combination (norm := module) this
   apply smul_right_injective F _ this
@@ -527,10 +553,10 @@ theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞}
       filter_upwards [v_open.mem_nhds xv] with y hy
       have : DifferentiableAt 𝕜 f y := by
         have := (h'u.mono vu y hy).contDiffAt (v_open.mem_nhds hy)
-        exact this.differentiableAt one_le_two
+        exact this.differentiableAt two_ne_zero
       exact DifferentiableAt.hasFDerivAt this
     · have : DifferentiableAt 𝕜 (fderiv 𝕜 f) x := by
-        apply ContDiffAt.differentiableAt _ le_rfl
+        apply ContDiffAt.differentiableAt _ one_ne_zero
         exact hf.fderiv_right (le_minSmoothness.trans hn)
       exact DifferentiableAt.hasFDerivAt this
   -- then deal with the case of an arbitrary field, with analytic functions.
@@ -576,7 +602,7 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
     apply fderivWithin_fderivWithin_eq_of_eventuallyEq
     filter_upwards [u_open.mem_nhds hy.2] with z hz
     change (z ∈ s) = (z ∈ s ∩ u)
-    aesop
+    simp_all
   have B : Tendsto (fun k ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y k)) atTop
       (𝓝 (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x)) := by
     have : Tendsto y atTop (𝓝[s ∩ u] x) := by
