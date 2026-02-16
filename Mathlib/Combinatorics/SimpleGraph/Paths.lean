@@ -745,6 +745,17 @@ lemma bypass_eq_self_of_length_le (p : G.Walk u v) (h : p.length ≤ p.bypass.le
         Nat.add_le_add_iff_right] at h
       rw [ih h]
 
+@[simp]
+lemma bypass_cons_nil (hadj : G.Adj u v) : (cons hadj nil).bypass = cons hadj nil := by
+  grind [bypass, support_nil, SimpleGraph.irrefl]
+
+@[simp]
+lemma bypass_eq_nil (p : G.Walk u u) : p.bypass = nil := by
+  grind [p.bypass_isPath, isPath_iff_eq_nil]
+
+lemma bypass_eq_of_isPath (p : G.Walk u v) (h : p.IsPath) : p.bypass = p := by
+  induction p <;> grind [cons_isPath_iff, bypass]
+
 /-- Given a walk, produces a path with the same endpoints using `SimpleGraph.Walk.bypass`. -/
 def toPath (p : G.Walk u v) : G.Path u v :=
   ⟨p.bypass, p.bypass_isPath⟩
@@ -803,6 +814,12 @@ lemma edges_cycleBypass_subset : ∀ {w : G.Walk v v}, w.cycleBypass.edges ⊆ w
     dsimp only [cycleBypass, edges_cons]
     gcongr
     exact edges_bypass_subset _
+
+lemma cycleBypass_eq_of_isCycle (p : G.Walk u u) (h : p.IsCycle) : p.cycleBypass = p := by
+  cases p
+  · simp
+  · simp only [cycleBypass, cons.injEq, heq_eq_eq, true_and]
+    exact bypass_eq_of_isPath _ (by simpa using h.isPath_tail)
 
 lemma IsTrail.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w ≠ .nil → w.IsTrail → w.cycleBypass.IsCycle
   | .cons (v := v') hvv' w, _, hw => by
