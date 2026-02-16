@@ -6,6 +6,8 @@ Authors: Christian Merten, Joël Riou
 module
 
 public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.AB
+public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.AlgebraicGeometry.Sites.Etale
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 public import Mathlib.CategoryTheory.Sites.Abelian
@@ -328,16 +330,22 @@ noncomputable def AffineEtale.sheafEquiv :
   ((AffineEtale.Spec S).sheafPushforwardContinuous A
       (topology S) S.smallEtaleTopology).asEquivalence.symm
 
+-- Making this an instance would create timeouts
 lemma isGrothendieckAbelian_sheaf_affineEtaleTopology
     [Abelian A] [IsGrothendieckAbelian.{u} A] :
     IsGrothendieckAbelian.{u} (Sheaf (AffineEtale.topology S) A) :=
   Sheaf.isGrothendieckAbelian_of_essentiallySmall _ _
 
-lemma isGrothendieckAbelian_sheaf_smallEtaleTopology
+-- Making this an instance would create timeouts
+instance isGrothendieckAbelian_sheaf_smallEtaleTopology
     [Abelian A] [IsGrothendieckAbelian.{u} A] :
     IsGrothendieckAbelian.{u} (Sheaf S.smallEtaleTopology A) :=
   have := isGrothendieckAbelian_sheaf_affineEtaleTopology S A
   IsGrothendieckAbelian.of_equivalence (AffineEtale.sheafEquiv S A)
+
+instance (R : Type u) [Ring R] :
+    IsGrothendieckAbelian.{u} (Sheaf S.smallEtaleTopology (ModuleCat.{u} R)) :=
+  isGrothendieckAbelian_sheaf_smallEtaleTopology _ _
 
 end
 
