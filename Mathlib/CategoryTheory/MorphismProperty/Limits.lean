@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Filtered.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # Relation of morphism properties with limits
@@ -125,12 +126,12 @@ instance : P.pushouts.IsStableUnderCobaseChange where
     rintro _ _ _ _ _ _ _ _ h ⟨_, _, _, _, _, hp, hq⟩
     exact P.pushouts_mk (hq.paste_horiz h) hp
 
-/-- `P.HasPullbacksAlong f` states that for any morphism satifying `P` with the same codomain
+/-- `P.HasPullbacksAlong f` states that for any morphism satisfying `P` with the same codomain
 as `f`, the pullback of that morphism along `f` exists. -/
 protected class HasPullbacksAlong {X Y : C} (f : X ⟶ Y) : Prop where
   hasPullback {W} (g : W ⟶ Y) : P g → HasPullback g f
 
-/-- `P.IsStableUnderBaseChangeAlong f` states that for any morphism satifying `P` with the same
+/-- `P.IsStableUnderBaseChangeAlong f` states that for any morphism satisfying `P` with the same
 codomain as `f`, any pullback of that morphism along `f` also satisfies `P`. -/
 class IsStableUnderBaseChangeAlong {X Y : C} (f : X ⟶ Y) : Prop where
   of_isPullback {Z W : C} {f' : W ⟶ Z} {g' : W ⟶ X} {g : Z ⟶ Y}
@@ -169,6 +170,14 @@ theorem IsStableUnderBaseChange.mk' [RespectsIso P]
     let e := sq.flip.isoPullback
     rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
     exact hP₂ _ _ _ f g hg
+
+lemma IsStableUnderBaseChange.of_forall_exists_isPullback {P : MorphismProperty C} [P.RespectsIso]
+    (H : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] (_ : P g),
+      ∃ (T : C) (fst : T ⟶ X) (snd : T ⟶ Y), IsPullback fst snd f g ∧ P fst) :
+    P.IsStableUnderBaseChange := by
+  refine .mk' fun X Y S f g _ hg ↦ ?_
+  obtain ⟨T, fst, snd, h, hfst⟩ := H f g hg
+  rwa [← h.isoPullback_inv_fst, P.cancel_left_of_respectsIso]
 
 variable (C)
 
@@ -294,6 +303,14 @@ theorem IsStableUnderCobaseChange.mk' [RespectsIso P]
     rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
     exact hP₂ _ _ _ f g hf
 
+lemma IsStableUnderCobaseChange.of_forall_exists_isPullback {P : MorphismProperty C} [P.RespectsIso]
+    (H : ∀ {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g] (_ : P f),
+      ∃ (T : C) (inl : X ⟶ T) (inr : Y ⟶ T), IsPushout f g inl inr ∧ P inr) :
+    P.IsStableUnderCobaseChange := by
+  refine .mk' fun X Y S f g _ hg ↦ ?_
+  obtain ⟨T, inl, inr, h, hinl⟩ := H f g hg
+  rwa [← h.inr_isoPushout_hom, P.cancel_right_of_respectsIso]
+
 instance IsStableUnderCobaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderCobaseChange where
   of_isPushout {_ _ _ _ f g _ _} h (_ : IsIso f) :=
@@ -371,7 +388,7 @@ end
 
 section LimitsOfShape
 
-variable (W : MorphismProperty C) (J : Type*) [Category J]
+variable (W : MorphismProperty C) (J : Type*) [Category* J]
 
 /-- The class of morphisms in `C` that are limits of shape `J` of
 natural transformations involving morphisms in `W`. -/
@@ -389,7 +406,7 @@ lemma limitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cone X₁) (c₂ : Cone X�
   exact ⟨_, _, _, _, h₁, _, _, hf⟩
 
 lemma limitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
-    (J : Type*) [Category J] :
+    (J : Type*) [Category* J] :
     W₁.limitsOfShape J ≤ W₂.limitsOfShape J := by
   rintro _ _ _ ⟨_, _, _, _, h₁, _, f, hf⟩
   exact ⟨_, _, _, _, h₁, _, f, fun j ↦ h _ (hf j)⟩
@@ -446,17 +463,11 @@ protected lemma limMap [W.IsStableUnderLimitsOfShape J] {X Y : J ⥤ C}
     W (limMap f) :=
   limitsOfShape_le _ (limitsOfShape_limMap _ hf)
 
-@[deprecated (since := "2025-05-11")] alias IsStableUnderLimitsOfShape.limitsOfShape_le :=
-  limitsOfShape_le
-
-@[deprecated (since := "2025-05-11")] alias IsStableUnderLimitsOfShape.limMap :=
-  MorphismProperty.limMap
-
 end LimitsOfShape
 
 section ColimitsOfShape
 
-variable (W : MorphismProperty C) (J : Type*) [Category J]
+variable (W : MorphismProperty C) (J : Type*) [Category* J]
 
 /-- The class of morphisms in `C` that are colimits of shape `J` of
 natural transformations involving morphisms in `W`. -/
@@ -474,13 +485,13 @@ lemma colimitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Coc
   exact ⟨_, _, _, _, _, h₂, _, hf⟩
 
 lemma colimitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
-    (J : Type*) [Category J] :
+    (J : Type*) [Category* J] :
     W₁.colimitsOfShape J ≤ W₂.colimitsOfShape J := by
   rintro _ _ _ ⟨_, _, _, _, _, h₂, f, hf⟩
   exact ⟨_, _, _, _, _, h₂, f, fun j ↦ h _ (hf j)⟩
 
 variable {J} in
-lemma colimitsOfShape_le_of_final {J' : Type*} [Category J'] (F : J ⥤ J') [F.Final] :
+lemma colimitsOfShape_le_of_final {J' : Type*} [Category* J'] (F : J ⥤ J') [F.Final] :
     W.colimitsOfShape J' ≤ W.colimitsOfShape J := by
   intro _ _ _ ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩
   have h₁' : IsColimit (c₁.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₁).symm h₁
@@ -495,7 +506,7 @@ lemma colimitsOfShape_le_of_final {J' : Type*} [Category J'] (F : J ⥤ J') [F.F
   exact ⟨_, _, _, _, h₁', h₂', _, fun _ ↦ hf _⟩
 
 variable {J} in
-lemma colimitsOfShape_eq_of_equivalence {J' : Type*} [Category J'] (e : J ≌ J') :
+lemma colimitsOfShape_eq_of_equivalence {J' : Type*} [Category* J'] (e : J ≌ J') :
     W.colimitsOfShape J = W.colimitsOfShape J' :=
   le_antisymm (W.colimitsOfShape_le_of_final e.inverse)
     (W.colimitsOfShape_le_of_final e.functor)
@@ -506,8 +517,8 @@ instance : (W.colimitsOfShape J).RespectsIso :=
     let e₁ := Arrow.leftFunc.mapIso e
     let e₂ := Arrow.rightFunc.mapIso e
     have fac : e₁.hom ≫ g = h₁.desc (Cocone.mk _ (f ≫ c₂.ι)) ≫ e₂.hom := e.hom.w
-    let c₁' : Cocone X₁ := { pt := Y₁, ι := c₁.ι ≫ (Functor.const _).map e₁.hom}
-    let c₂' : Cocone X₂ := { pt := Y₂, ι := c₂.ι ≫ (Functor.const _).map e₂.hom}
+    let c₁' : Cocone X₁ := { pt := Y₁, ι := c₁.ι ≫ (Functor.const _).map e₁.hom }
+    let c₂' : Cocone X₂ := { pt := Y₂, ι := c₂.ι ≫ (Functor.const _).map e₂.hom }
     have h₁' : IsColimit c₁' := IsColimit.ofIsoColimit h₁ (Cocones.ext e₁)
     have h₂' : IsColimit c₂' := IsColimit.ofIsoColimit h₂ (Cocones.ext e₂)
     obtain hg : h₁'.desc (Cocone.mk _ (f ≫ c₂'.ι)) = g :=
@@ -534,7 +545,7 @@ lemma colimitsOfShape.of_isColimit
       naturality _ _ _ := by
         dsimp
         rw [Category.id_comp, ← Functor.map_comp]
-        rfl} h _ (by simp)
+        rfl } h _ (by simp)
 
 /-- The property that a morphism property `W` is stable under colimits
 indexed by a category `J`. -/
@@ -563,12 +574,6 @@ protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
     (f : X ⟶ Y) [HasColimit X] [HasColimit Y] (hf : W.functorCategory _ f) :
     W (colimMap f) :=
   colimitsOfShape_le _ (colimitsOfShape_colimMap _ hf)
-
-@[deprecated (since := "2025-05-11")] alias IsStableUnderColimitsOfShape.colimMap :=
-  MorphismProperty.colimMap
-
-@[deprecated (since := "2025-05-11")] alias IsStableUnderColimitsOfShape.colimitsOfShape_le :=
-  colimitsOfShape_le
 
 variable (C J) in
 instance IsStableUnderColimitsOfShape.isomorphisms :
@@ -706,14 +711,6 @@ class IsStableUnderFiniteCoproducts : Prop where
   isStableUnderCoproductsOfShape (J : Type) [Finite J] : W.IsStableUnderCoproductsOfShape J
 
 attribute [instance] IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape
-
-@[deprecated "This is now an instance." (since := "2025-05-11")]
-alias isStableUnderProductsOfShape_of_isStableUnderFiniteProducts :=
-  IsStableUnderFiniteProducts.isStableUnderProductsOfShape
-
-@[deprecated "This is now an instance." (since := "2025-05-11")]
-alias isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts :=
-  IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape
 
 /-- The condition that a property of morphisms is stable by coproducts. -/
 @[pp_with_univ]

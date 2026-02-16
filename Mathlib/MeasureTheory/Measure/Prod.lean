@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.OpenPos
+public import Mathlib.MeasureTheory.Measure.Doubling
 
 /-!
 # The product measure
@@ -287,6 +288,29 @@ instance {X Y : Type*}
     [SFinite (volume : Measure Y)] : IsOpenPosMeasure (volume : Measure (X × Y)) :=
   prod.instIsOpenPosMeasure
 
+protected theorem FiniteAtFilter.prod {X Y : Type*} {m : MeasurableSpace X} {μ : Measure X}
+    {m' : MeasurableSpace Y} {ν : Measure Y} {l : Filter X} {l' : Filter Y}
+    (hμ : μ.FiniteAtFilter l) (hν : ν.FiniteAtFilter l') :
+    (μ.prod ν).FiniteAtFilter (l ×ˢ l') := by
+  rcases hμ with ⟨s, hs, hμs⟩
+  rcases hν with ⟨t, ht, hνt⟩
+  use s ×ˢ t, Filter.prod_mem_prod hs ht
+  grw [prod_prod_le]
+  exact ENNReal.mul_lt_top hμs hνt
+
+instance prod.instIsLocallyFiniteMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {m : MeasurableSpace X} {μ : Measure X} [IsLocallyFiniteMeasure μ] {m' : MeasurableSpace Y}
+    {ν : Measure Y} [IsLocallyFiniteMeasure ν] : IsLocallyFiniteMeasure (μ.prod ν) where
+  finiteAtNhds x := by
+    rw [nhds_prod_eq]
+    exact μ.finiteAt_nhds _ |>.prod <| ν.finiteAt_nhds _
+
+instance {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {m : MeasureSpace X} [IsLocallyFiniteMeasure (volume : Measure X)]
+    {m' : MeasureSpace Y} [IsLocallyFiniteMeasure (volume : Measure Y)] :
+    IsLocallyFiniteMeasure (volume : Measure (X × Y)) :=
+  prod.instIsLocallyFiniteMeasure
+
 instance prod.instIsFiniteMeasure {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
     (μ : Measure α) (ν : Measure β) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     IsFiniteMeasure (μ.prod ν) := by
@@ -323,6 +347,31 @@ instance {X Y : Type*}
     [TopologicalSpace Y] [MeasureSpace Y] [IsFiniteMeasureOnCompacts (volume : Measure Y)] :
     IsFiniteMeasureOnCompacts (volume : Measure (X × Y)) :=
   prod.instIsFiniteMeasureOnCompacts _ _
+
+
+open IsUnifLocDoublingMeasure in
+/--
+The product of two uniformly locally doubling measures is a uniformly locally doubling measure,
+assuming the second one is s-finite.
+-/
+instance _root_.IsUnifLocDoublingMeasure.prod {X Y : Type*}
+    [PseudoMetricSpace X] [MeasurableSpace X] [PseudoMetricSpace Y] [MeasurableSpace Y]
+    (μ : Measure X) (ν : Measure Y) [SFinite ν]
+    [IsUnifLocDoublingMeasure μ] [IsUnifLocDoublingMeasure ν] :
+    IsUnifLocDoublingMeasure (μ.prod ν) := by
+  constructor
+  use doublingConstant μ * doublingConstant ν
+  filter_upwards [eventually_measure_le_doublingConstant_mul μ,
+    eventually_measure_le_doublingConstant_mul ν] with r hμr hνr x
+  rw [← closedBall_prod_same, prod_prod, ← closedBall_prod_same, prod_prod]
+  grw [hμr, hνr, ENNReal.coe_mul, mul_mul_mul_comm]
+
+instance IsUnifLocDoublingMeasure.volume_prod {X Y : Type*} [PseudoMetricSpace X] [MeasureSpace X]
+    [PseudoMetricSpace Y] [MeasureSpace Y] [SFinite (volume : Measure Y)]
+    [IsUnifLocDoublingMeasure (volume : Measure X)]
+    [IsUnifLocDoublingMeasure (volume : Measure Y)] :
+    IsUnifLocDoublingMeasure (volume : Measure (X × Y)) :=
+  .prod _ _
 
 theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ.prod ν) s ≠ ∞) :
     ∀ᵐ x ∂μ, ν (Prod.mk x ⁻¹' s) < ∞ := by

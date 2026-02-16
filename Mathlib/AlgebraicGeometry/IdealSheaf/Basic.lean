@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.Tactic.DepRewrite
 
 /-!
 # Ideal sheaves on schemes
@@ -233,6 +234,38 @@ lemma ideal_le_comap_ideal {U V : X.affineOpens} (h : U ≤ V) :
     I.ideal V ≤ (I.ideal U).comap (X.presheaf.map (homOfLE h).op).hom := by
   rw [← Ideal.map_le_iff_le_comap, ← I.map_ideal h]
 
+lemma le_of_iSup_eq_top {I J : X.IdealSheafData} {ι : Type*}
+    (U : ι → X.affineOpens) (hU : ⨆ i, (U i).1 = ⊤) (H : ∀ i, I.ideal (U i) ≤ J.ideal (U i)) :
+    I ≤ J := by
+  intro V
+  have : ∀ x : V.1, ∃ (i : ι) (r : Γ(X, V.1)) (rU : Γ(X, U i)),
+      X.basicOpen r = X.basicOpen rU ∧ x.1 ∈ X.basicOpen r := by
+    intro ⟨x, hxV⟩
+    obtain ⟨i, hi⟩ := TopologicalSpace.Opens.mem_iSup.mp (hU.ge (Set.mem_univ x))
+    exact ⟨i, exists_basicOpen_le_affine_inter V.2 (U i).2 _ ⟨hxV, hi⟩⟩
+  choose i r rU e hxr using this
+  have : Ideal.span (Set.range r) = ⊤ := by
+    rw [← V.2.self_le_iSup_basicOpen_iff]
+    exact fun x hxV ↦ TopologicalSpace.Opens.mem_iSup.mpr ⟨⟨_, _, rfl⟩, hxr ⟨x, hxV⟩⟩
+  have inst := V.2.isLocalization_basicOpen
+  refine Submodule.le_of_isLocalized_span _ this (fun i ↦ Γ(X, X.basicOpen i.1))
+    (fun i ↦ Algebra.linearMap Γ(X, V.1) Γ(X, X.basicOpen i.1)) ?_
+  rintro ⟨_, j, rfl⟩
+  dsimp
+  simp only [← Submodule.restrictScalars_localized' Γ(X, X.basicOpen (r j)),
+    Ideal.localized'_eq_map, RingHom.algebraMap_toAlgebra]
+  erw [I.map_ideal (U := ⟨_, V.2.basicOpen _⟩) (X.basicOpen_le (r j)),
+    J.map_ideal (U := ⟨_, V.2.basicOpen _⟩) (X.basicOpen_le (r j))]
+  delta algebra_section_section_basicOpen
+  rw! [e]
+  rw [← I.map_ideal (V := (U _)) (X.basicOpen_le _), ← J.map_ideal (V := (U _)) (X.basicOpen_le _)]
+  exact Ideal.map_mono (f := (X.presheaf.map (homOfLE (X.basicOpen_le (rU j))).op).hom) (H (i j))
+
+lemma ext_of_iSup_eq_top {I J : X.IdealSheafData} {ι : Type*}
+    (U : ι → X.affineOpens) (hU : ⨆ i, (U i).1 = ⊤) (H : ∀ i, I.ideal (U i) = J.ideal (U i)) :
+    I = J :=
+  (le_of_iSup_eq_top U hU (by aesop)).antisymm (le_of_iSup_eq_top U hU (by aesop))
+
 end map_ideal
 
 section support
@@ -291,6 +324,9 @@ def support : Closeds X := ⟨I.supportSet, I.isClosed_supportSet⟩
 lemma coe_support_eq_eq_iInter_zeroLocus :
     (I.support : Set X) = ⋂ U, X.zeroLocus (U := U.1) (I.ideal U) :=
   I.supportSet_eq_iInter_zeroLocus
+
+@[simp] lemma mem_supportSet_iff_mem_support {I : IdealSheafData X} {x} :
+    x ∈ I.supportSet ↔ x ∈ I.support := .rfl
 
 lemma mem_support_iff {I : IdealSheafData X} {x} :
     x ∈ I.support ↔ ∀ U, x ∈ X.zeroLocus (U := U.1) (I.ideal U) :=
@@ -355,6 +391,65 @@ lemma support_eq_bot_iff : support I = ⊥ ↔ I = ⊤ := by
 
 end support
 
+section Semiring
+
+variable (I J K : X.IdealSheafData)
+
+instance : Zero X.IdealSheafData where zero := ⊥
+instance : One X.IdealSheafData where one := ⊤
+instance : Add X.IdealSheafData where add := (· ⊔ ·)
+
+instance : Mul X.IdealSheafData where
+  mul I J := mkOfMemSupportIff (I.ideal * J.ideal) (by simp [Ideal.map_mul, map_ideal_basicOpen])
+    (I.supportSet ∪ J.supportSet) fun U x hxU ↦ by
+    simp [-mem_zeroLocus_iff, zeroLocus_mul, mem_support_iff_of_mem hxU]
+
+instance : Pow X.IdealSheafData ℕ where
+  pow I n := mkOfMemSupportIff (I.ideal ^ n) (by simp [Ideal.map_pow, map_ideal_basicOpen])
+    (if n = 0 then ∅ else I.supportSet) fun U x hxU ↦ .symm <| by
+    induction n <;> simp_all [-mem_zeroLocus_iff, zeroLocus_mul,
+      pow_succ, mem_support_iff_of_mem hxU]
+
+@[simp] lemma ideal_mul : (I * J).ideal = I.ideal * J.ideal := rfl
+@[simp] lemma support_mul : (I * J).support = I.support ⊔ J.support := rfl
+@[simp] lemma ideal_pow (n : ℕ) : (I ^ n).ideal = I.ideal ^ n := rfl
+@[simp] lemma support_pow_succ (n : ℕ) : (I ^ (n + 1)).support = I.support := rfl
+lemma support_pow (n : ℕ) (hn : n ≠ 0) : (I ^ n).support = I.support := by cases n <;> simp_all
+
+@[simp] lemma top_mul : ⊤ * I = I := by ext; simp
+@[simp] lemma mul_top : I * ⊤ = I := by ext; simp
+@[simp] lemma bot_mul : ⊥ * I = ⊥ := by ext; simp
+@[simp] lemma mul_bot : I * ⊥ = ⊥ := by ext; simp
+lemma mul_inf : I * (J ⊔ K) = I * J ⊔ I * K := by ext U : 2; exact mul_add _ _ _
+lemma inf_mul : (I ⊔ J) * K = I * K ⊔ J * K := by ext U : 2; exact add_mul _ _ _
+
+instance : IdemCommSemiring X.IdealSheafData where
+  add_assoc := sup_assoc
+  zero_add := bot_sup_eq
+  add_zero := sup_bot_eq
+  add_comm := sup_comm
+  mul_assoc _ _ _ := IdealSheafData.ext (mul_assoc _ _ _)
+  mul_comm _ _ := IdealSheafData.ext (mul_comm _ _)
+  zero_mul := bot_mul
+  mul_zero := mul_bot
+  one_mul := top_mul
+  mul_one := mul_top
+  nsmul := nsmulRec
+  left_distrib := mul_inf
+  right_distrib := inf_mul
+  npow_zero _ := by ext; rfl
+  npow_succ _ _ := by ext; rfl
+  bot_le _ := bot_le
+
+instance : IsOrderedRing X.IdealSheafData where
+
+/-! We follow `Ideal` and set the simp normal form to be `⊥` and `⊤` and `⊔`. -/
+@[simp] lemma zero_eq_bot : (0 : X.IdealSheafData) = ⊥ := rfl
+@[simp] lemma one_eq_top : (1 : X.IdealSheafData) = ⊤ := rfl
+@[simp] lemma add_eq_sup : I + J = I ⊔ J := rfl
+
+end Semiring
+
 section IsAffine
 
 /-- The ideal sheaf induced by an ideal of the global sections. -/
@@ -380,22 +475,28 @@ lemma ext_of_isAffine [IsAffine X] {I J : IdealSheafData X}
   (le_of_isAffine H.le).antisymm (le_of_isAffine H.ge)
 
 /-- Over affine schemes, ideal sheaves are in bijection with ideals of the global sections. -/
-@[simps]
-def equivOfIsAffine [IsAffine X] : IdealSheafData X ≃o Ideal Γ(X, ⊤) where
+def equivOfIsAffine [IsAffine X] : IdealSheafData X ≃+*o Ideal Γ(X, ⊤) where
   toFun := (ideal · ⟨⊤, isAffineOpen_top X⟩)
   invFun := ofIdealTop
   left_inv I := ext_of_isAffine (by simp)
   right_inv I := by simp
-  map_rel_iff' {I J} := ⟨le_of_isAffine, (· _)⟩
+  map_mul' := by simp
+  map_add' := by simp
+  map_le_map_iff' := ⟨le_of_isAffine, (· _)⟩
+
+@[simp]
+lemma equivOfIsAffine_apply [IsAffine X] (I : IdealSheafData X) :
+    equivOfIsAffine I = I.ideal ⟨⊤, isAffineOpen_top X⟩ := rfl
+
+@[simp]
+lemma equivOfIsAffine_symm_apply [IsAffine X] (I : Ideal Γ(X, ⊤)) :
+    equivOfIsAffine.symm I = ofIdealTop I := rfl
 
 end IsAffine
 
 section ofIsClosed
 
 open _root_.PrimeSpectrum TopologicalSpace
-
-@[deprecated (since := "2025-08-10")] alias Scheme.zeroLocus_radical :=
-  AlgebraicGeometry.Scheme.zeroLocus_radical
 
 /-- The radical of an ideal sheaf. -/
 @[simps! ideal]
@@ -437,9 +538,15 @@ lemma radical_sup {I J : IdealSheafData X} :
 
 @[simp]
 lemma radical_inf {I J : IdealSheafData X} :
-    radical (I ⊓ J) = (radical I ⊓ radical J) := by
+    radical (I ⊓ J) = radical I ⊓ radical J := by
   ext U : 2
   simp only [radical_ideal, ideal_inf, Pi.inf_apply, Ideal.radical_inf]
+
+@[simp]
+lemma radical_mul {I J : IdealSheafData X} :
+    radical (I * J) = radical I ⊓ radical J := by
+  ext U : 2
+  simp only [radical_ideal, ideal_mul, Pi.mul_apply, Ideal.radical_mul, ideal_inf, Pi.inf_apply]
 
 /-- The vanishing ideal sheaf of a closed set,
 which is the largest ideal sheaf whose support is equal to it.
@@ -502,9 +609,6 @@ lemma le_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X} :
   rw [coe_support_inter, ← Set.image_subset_image_iff U.2.fromSpec.isOpenEmbedding.injective,
     Set.image_preimage_eq_inter_range, IsAffineOpen.fromSpec_image_zeroLocus,
     IsAffineOpen.range_fromSpec]
-
-@[deprecated (since := "2025-05-16")]
-alias subset_support_iff_le_vanishingIdeal := le_support_iff_le_vanishingIdeal
 
 /-- `support` and `vanishingIdeal` forms a Galois connection.
 This is the global version of `PrimeSpectrum.gc`. -/
@@ -757,7 +861,7 @@ lemma Hom.support_ker (f : X ⟶ Y) [QuasiCompact f] :
     rw [ker_of_isAffine, coe_support_ofIdealTop, Spec_zeroLocus, ← Ideal.coe_comap,
       RingHom.comap_ker, ← PrimeSpectrum.closure_range_comap, ← CommRingCat.hom_comp,
       ← Scheme.ΓSpecIso_inv_naturality]
-    simp only [CommRingCat.hom_comp, PrimeSpectrum.comap_comp, ContinuousMap.coe_comp]
+    simp only [CommRingCat.hom_comp, PrimeSpectrum.comap_comp]
     exact closure_mono (Set.range_comp_subset_range _ (Spec.map φ))
   · rw [(support _).isClosed.closure_subset_iff]
     exact f.range_subset_ker_support

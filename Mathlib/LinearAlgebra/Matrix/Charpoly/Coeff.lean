@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import Mathlib.RingTheory.Polynomial.Nilpotent
+public import Mathlib.Data.Matrix.DMatrix
 
 /-!
 # Characteristic polynomials
@@ -83,8 +84,6 @@ theorem charpoly_coeff_eq_prod_coeff_of_le {k : ℕ} (h : Fintype.card n - 1 ≤
   apply Polynomial.coeff_eq_zero_of_degree_lt
   apply lt_of_lt_of_le (charpoly_sub_diagonal_degree_lt M) ?_
   rw [Nat.cast_le]; apply h
-
-@[deprecated (since := "2025-08-14")] alias det_of_card_zero := det_eq_one_of_card_eq_zero
 
 @[simp]
 theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
@@ -209,7 +208,7 @@ lemma det_one_add_smul (r : R) (M : Matrix n n R) :
 
 lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
     M.charpoly = X ^ 2 - C M.trace * X + C M.det := by
-  have : Nonempty n := by rw [← Fintype.card_pos_iff]; omega
+  have : Nonempty n := by rw [← Fintype.card_pos_iff]; lia
   ext i
   by_cases hi : i ∈ Finset.range 3
   · fin_cases hi

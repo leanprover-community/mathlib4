@@ -126,10 +126,10 @@ def tensorCotangentHom : S ⊗[D.T] D.presLeft.toExtension.Cotangent →ₗ[S] P
 lemma tensorCotangentHom_tmul (x : D.presLeft.toExtension.ker) :
     D.tensorCotangentHom (1 ⊗ₜ[D.T] Extension.Cotangent.mk x) =
       .mk ⟨x.val, D.ker_presLeft_le x.2⟩ := by
-  simp only [tensorCotangentHom, LinearMap.liftBaseChange_tmul, one_smul, presLeft,
+  simp_rw [tensorCotangentHom, LinearMap.liftBaseChange_tmul, one_smul, presLeft,
     Extension.Cotangent.map_mk, Extension.Hom.toAlgHom_apply, Hom.toExtensionHom_toRingHom,
-    toAlgHom_fhom, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom]
-  rfl
+    toAlgHom_fhom, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom, toExtension_Ring,
+    toExtension_commRing, toExtension_algebra₂, Presentation.naive_toGenerators, RingHom.id_apply]
 
 /-- The backwards direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
 def tensorCotangentInv : P.toExtension.Cotangent →ₗ[S] S ⊗[D.T] D.presLeft.toExtension.Cotangent :=

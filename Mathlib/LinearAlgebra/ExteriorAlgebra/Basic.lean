@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.LinearAlgebra.Alternating.Curry
+public import Mathlib.Order.Hom.PowersetCard
 
 /-!
 # Exterior Algebras
@@ -73,7 +74,7 @@ section exteriorPower
 -- New variables `n` and `M`, to get the correct order of variables in the notation.
 variable (n : ℕ) (M : Type u2) [AddCommGroup M] [Module R M]
 
-/-- Definition of the `n`th exterior power of a `R`-module `N`. We introduce the notation
+/-- Definition of the `n`th exterior power of an `R`-module `N`. We introduce the notation
 `⋀[R]^n M` for `exteriorPower R n M`. -/
 abbrev exteriorPower : Submodule R (ExteriorAlgebra R M) :=
   LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n
@@ -324,7 +325,8 @@ lemma ιMulti_range (n : ℕ) :
   exact ⟨fun i => ⟨ι R (v i), LinearMap.mem_range_self _ _⟩, rfl⟩
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power, as a submodule
-of the exterior algebra. -/
+of the exterior algebra. See `exteriorPower.ιMulti_span_fixedDegree_of_span_eq_top` for a version
+where we restrict to elements of the form `x₁ ∧ ⋯ ∧ xₙ` where the `xᵢ` belong to a spanning set. -/
 lemma ιMulti_span_fixedDegree (n : ℕ) :
     Submodule.span R (Set.range (ιMulti R n)) = ⋀[R]^n M := by
   refine le_antisymm (Submodule.span_le.2 (ιMulti_range R n)) ?_
@@ -340,8 +342,8 @@ lemma ιMulti_span_fixedDegree (n : ℕ) :
 /-- Given a linearly ordered family `v` of vectors of `M` and a natural number `n`, produce the
 family of `n`fold exterior products of elements of `v`, seen as members of the exterior algebra. -/
 abbrev ιMulti_family (n : ℕ) {I : Type*} [LinearOrder I] (v : I → M)
-    (s : {s : Finset I // Finset.card s = n}) : ExteriorAlgebra R M :=
-  ιMulti R n fun i => v (Finset.orderIsoOfFin _ s.prop i)
+    (s : Set.powersetCard I n) : ExteriorAlgebra R M :=
+  ιMulti R n (v ∘ (Set.powersetCard.ofFinEmbEquiv.symm s))
 
 variable {R}
 
@@ -438,7 +440,7 @@ lemma map_surjective_iff {f : M →ₗ[R] N} :
   obtain ⟨x, hx⟩ := h (ι R y)
   existsi ιInv x
   rw [← LinearMap.comp_apply, ← ιInv_comp_map, LinearMap.comp_apply]
-  erw [hx, ExteriorAlgebra.ι_leftInverse]
+  simp [hx, ιInv]
 
 variable {K E F : Type*} [Field K] [AddCommGroup E]
   [Module K E] [AddCommGroup F] [Module K F]

@@ -26,7 +26,7 @@ This file contains basic results relevant to the triangularizability of linear e
 
 ## References
 
-* [Sheldon Axler, *Linear Algebra Done Right*][axler2015]
+* [Sheldon Axler, *Linear Algebra Done Right*][axler2024]
 * https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors
 
 ## TODO
@@ -40,7 +40,7 @@ generalized eigenspaces span the whole space.
 eigenspace, eigenvector, eigenvalue, eigen
 -/
 
-@[expose] public section
+public section
 
 open Set Function Module Module
 
@@ -57,7 +57,7 @@ theorem exists_hasEigenvalue_of_genEigenspace_eq_top [Nontrivial M] {f : End R M
     exact HasUnifEigenvalue.lt zero_lt_one hμ
   simp [HasUnifEigenvalue, ← not_forall, ← iSup_eq_bot, hf]
 
--- This is Lemma 5.21 of [axler2015], although we are no longer following that proof.
+-- This is Lemma 5.19 of [axler2024], although we are no longer following that proof.
 /-- In finite dimensions, over an algebraically closed field, every linear endomorphism has an
 eigenvalue. -/
 theorem exists_eigenvalue [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
@@ -69,7 +69,7 @@ noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f
     Inhabited f.Eigenvalues :=
   ⟨⟨f.exists_eigenvalue.choose, f.exists_eigenvalue.choose_spec⟩⟩
 
--- Lemma 8.21 of [axler2015]
+-- Lemma 8.22(c) of [axler2024]
 /-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
 linear endomorphism span the whole space. -/
 theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
@@ -106,7 +106,7 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
       rw [Module.End.genEigenspace_nat, Module.End.genEigenrange_nat]
       apply LinearMap.finrank_range_add_finrank_ker
     -- Therefore the dimension `ER` mus be smaller than `finrank K V`.
-    have h_dim_ER : finrank K ER < n.succ := by omega
+    have h_dim_ER : finrank K ER < n.succ := by lia
     -- This allows us to apply the induction hypothesis on `ER`:
     have ih_ER : ⨆ (μ : K), f'.maxGenEigenspace μ = ⊤ :=
       ih (finrank K ER) h_dim_ER f' rfl

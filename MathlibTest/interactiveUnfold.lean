@@ -3,6 +3,7 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
+module
 import Mathlib
 
 /-!
@@ -55,10 +56,10 @@ info: Unfolds for 5 / 3:
 
 /--
 info: Unfolds for 1 + 1:
-· Ordinal.type (Sum.Lex EmptyRelation EmptyRelation)
-· ⟦{ α := PUnit.{u_1 + 1} ⊕ PUnit.{u_1 + 1}, r := Sum.Lex EmptyRelation EmptyRelation, wo := ⋯ }⟧
+· Ordinal.type (Sum.Lex emptyRelation emptyRelation)
+· ⟦{ α := PUnit.{u_1 + 1} ⊕ PUnit.{u_1 + 1}, r := Sum.Lex emptyRelation emptyRelation, wo := ⋯ }⟧
 · Quot.mk ⇑Ordinal.isEquivalent
-  { α := PUnit.{u_1 + 1} ⊕ PUnit.{u_1 + 1}, r := Sum.Lex EmptyRelation EmptyRelation, wo := ⋯ }
+  { α := PUnit.{u_1 + 1} ⊕ PUnit.{u_1 + 1}, r := Sum.Lex emptyRelation emptyRelation, wo := ⋯ }
 -/
 #guard_msgs in
 #unfold? (1 : Ordinal) + 1

@@ -44,7 +44,13 @@ theorem mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
   (forget C).mono_of_mono_map ((mono_iff_injective ((forget C).map f)).2 i)
 
 instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] [HasForget.{w} C] [Category.{v'} D] [HasForget.{w} D]
+    [Category.{v} C] [Category.{v'} D]
+    {FC : C → C → Type*} {CC : C → Type w}
+    [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory C FC]
+    {FD : D → D → Type*} {CD : D → Type w}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    [ConcreteCategory D FD]
     [HasForget₂ C D] [(forget C).PreservesMonomorphisms] :
     (forget₂ C D).PreservesMonomorphisms :=
   have : (forget₂ C D ⋙ forget D).PreservesMonomorphisms := by
@@ -53,7 +59,13 @@ instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
   Functor.preservesMonomorphisms_of_preserves_of_reflects _ (forget D)
 
 instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] [HasForget.{w} C] [Category.{v'} D] [HasForget.{w} D]
+    [Category.{v} C] [Category.{v'} D]
+    {FC : C → C → Type*} {CC : C → Type w}
+    [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory C FC]
+    {FD : D → D → Type*} {CD : D → Type w}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    [ConcreteCategory D FD]
     [HasForget₂ C D] [(forget C).PreservesEpimorphisms] :
     (forget₂ C D).PreservesEpimorphisms :=
   have : (forget₂ C D ⋙ forget D).PreservesEpimorphisms := by
@@ -168,7 +180,9 @@ is equivalent to being bijective. -/
 theorem isIso_iff_bijective [(forget C).ReflectsIsomorphisms]
     {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f := by
   rw [← CategoryTheory.isIso_iff_bijective]
-  exact ⟨fun _ ↦ inferInstance, fun _ ↦ isIso_of_reflects_iso f (forget C)⟩
+  refine ⟨fun _ ↦ inferInstance, fun h ↦ ?_⟩
+  have : IsIso ((forget C).map f) := h
+  exact isIso_of_reflects_iso f (forget C)
 
 end
 

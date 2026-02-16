@@ -120,7 +120,7 @@ protected theorem hasFiniteFPowerSeriesOnBall :
 
 lemma cpolynomialAt : CPolynomialAt 𝕜 f x :=
   f.hasFiniteFPowerSeriesOnBall.cpolynomialAt_of_mem
-    (by simp only [Metric.emetric_ball_top, Set.mem_univ])
+    (by simp only [Metric.eball_top, Set.mem_univ])
 
 lemma cpolynomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
 
@@ -158,7 +158,7 @@ noncomputable def toFormalMultilinearSeriesOfMultilinear :
 protected theorem hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear :
     HasFiniteFPowerSeriesOnBall (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2)
       f.toFormalMultilinearSeriesOfMultilinear 0 (Fintype.card (Option ι) + 1) ⊤ := by
-  apply HasFiniteFPowerSeriesOnBall.mk' ?_ ENNReal.zero_lt_top  ?_
+  apply HasFiniteFPowerSeriesOnBall.mk' ?_ ENNReal.zero_lt_top ?_
   · intro m hm
     apply dif_neg
     exact Nat.ne_of_lt hm
@@ -170,7 +170,7 @@ protected theorem hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear :
 lemma cpolynomialAt_uncurry_of_multilinear :
     CPolynomialAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
   f.hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear.cpolynomialAt_of_mem
-    (by simp only [Metric.emetric_ball_top, Set.mem_univ])
+    (by simp only [Metric.eball_top, Set.mem_univ])
 
 lemma cpolynomialOn_uncurry_of_multilinear :
     CPolynomialOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=

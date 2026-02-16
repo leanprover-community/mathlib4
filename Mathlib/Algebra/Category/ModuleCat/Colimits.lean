@@ -6,8 +6,9 @@ Authors: Kim Morrison, Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.Algebra.Category.Grp.Colimits
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+public import Mathlib.LinearAlgebra.DFinsupp
 
 /-!
 # The category of R-modules has all colimits.
@@ -61,7 +62,7 @@ noncomputable def coconePointSMul :
 noncomputable def colimitCocone : Cocone F where
   pt := mkOfSMul (coconePointSMul F)
   ι :=
-    { app := fun j => homMk (colimit.ι (F ⋙ forget₂ _ AddCommGrpCat)  j) (fun r => by
+    { app := fun j => homMk (colimit.ι (F ⋙ forget₂ _ AddCommGrpCat) j) (fun r => by
         dsimp
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
         erw [mkOfSMul_smul]
@@ -152,5 +153,26 @@ instance : HasCoequalizers (ModuleCat.{v} R) where
 
 noncomputable example (R : Type u) [Ring R] :
     PreservesColimits (forget₂ (ModuleCat.{u} R) AddCommGrpCat) := inferInstance
+
+section
+
+variable (R : Type w) [CommRing R] (M ι : Type u) [AddCommGroup M] [Module R M]
+
+/-- The coproduct cone induced by the concrete coproduct. -/
+noncomputable
+def finsuppCocone : Cofan fun _ : ι ↦ ModuleCat.of R M :=
+  Cofan.mk (ModuleCat.of R (ι →₀ M)) fun i ↦
+    ModuleCat.ofHom (Finsupp.lsingle i (R := R) (M := ModuleCat.of R M))
+
+/-- The concrete cocoproduct cone is colimiting. -/
+noncomputable
+def finsuppCoconeIsColimit : IsColimit (finsuppCocone R M ι) where
+  desc s := ModuleCat.ofHom <| Finsupp.lsum R (N := s.pt) (fun i ↦ (s.ι.app ⟨i⟩).hom)
+  fac := by aesop (add simp finsuppCocone)
+  uniq s f h := by
+    ext : 1
+    exact Finsupp.lhom_ext' fun i ↦ LinearMap.ext fun x ↦ by simpa using congr($(h ⟨i⟩) (x : M))
+
+end
 
 end ModuleCat

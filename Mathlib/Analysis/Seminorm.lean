@@ -257,7 +257,7 @@ theorem lt_def {p q : Seminorm 𝕜 E} : p < q ↔ p ≤ q ∧ ∃ x, p x < q x 
   @Pi.lt_def _ _ _ p q
 
 instance instSemilatticeSup : SemilatticeSup (Seminorm 𝕜 E) :=
-  Function.Injective.semilatticeSup _ DFunLike.coe_injective coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 end SMul
 
@@ -565,6 +565,7 @@ protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
   rw [Seminorm.sSup_apply bddAbove_empty, Real.iSup_of_isEmpty]
   rfl
 
+set_option backward.privateInPublic true in
 private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
     IsLUB s (sSup s) := by
   refine ⟨fun p hp x => ?_, fun p hp x => ?_⟩ <;> haveI : Nonempty ↑s := hs₂.coe_sort <;>
@@ -573,6 +574,8 @@ private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs�
     exact le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
   · exact ciSup_le fun q => hp q.2 x
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `Seminorm 𝕜 E` is a conditionally complete lattice.
 
 Note that, while `inf`, `sup` and `sSup` have good definitional properties (corresponding to
@@ -1156,9 +1159,9 @@ theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
   exact isOpen_lt hq continuous_const
 
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
-    (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) :=
+    (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) := by
   have this : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
-  by simpa only [p.ball_zero_eq] using this (Iio_mem_nhds hr)
+  simpa only [p.ball_zero_eq] using this (Iio_mem_nhds hr)
 
 lemma uniformSpace_eq_of_hasBasis
     {ι} [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul 𝕜 E]
@@ -1199,7 +1202,7 @@ lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) 
   have xεpos : 0 < (p x) / ε := by positivity
   rcases exists_mem_Ico_zpow xεpos hc with ⟨n, hn⟩
   have cpos : 0 < ‖c‖ := by positivity
-  have cnpos : 0 < ‖c^(n + 1)‖ := by rw [norm_zpow]; exact xεpos.trans hn.2
+  have cnpos : 0 < ‖c ^ (n + 1)‖ := by rw [norm_zpow]; exact xεpos.trans hn.2
   refine ⟨-(n + 1), ?_, ?_, ?_, ?_⟩
   · show c ^ (-(n + 1)) ≠ 0; exact zpow_ne_zero _ (norm_pos_iff.1 cpos)
   · show p ((c ^ (-(n + 1))) • x) < ε

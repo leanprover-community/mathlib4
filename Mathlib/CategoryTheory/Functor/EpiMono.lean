@@ -167,9 +167,6 @@ theorem preservesEpimorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : F
         rwa [adj.homEquiv_naturality_left, adj.homEquiv_naturality_left, cancel_epi,
           Equiv.apply_eq_iff_eq] at H⟩ }
 
-@[deprecated (since := "2025-07-27")]
-alias preservesEpimorphsisms_of_adjunction := preservesEpimorphisms_of_adjunction
-
 instance (priority := 100) preservesEpimorphisms_of_isLeftAdjoint (F : C ⥤ D) [IsLeftAdjoint F] :
     PreservesEpimorphisms F :=
   preservesEpimorphisms_of_adjunction (Adjunction.ofIsLeftAdjoint F)
@@ -269,7 +266,7 @@ theorem mono_map_iff_mono [hF₁ : PreservesMonomorphisms F] [hF₂ : ReflectsMo
   · intro h
     exact F.map_mono f
 
-/-- If `F : C ⥤ D` is an equivalence of categories and `C` is a `split_epi_category`,
+/-- If `F : C ⥤ D` is an equivalence of categories and `C` is a `SplitEpiCategory`,
 then `D` also is. -/
 theorem splitEpiCategoryImpOfIsEquivalence [IsEquivalence F] [SplitEpiCategory C] :
     SplitEpiCategory D :=
@@ -284,7 +281,7 @@ end CategoryTheory.Functor
 
 namespace CategoryTheory.Adjunction
 
-variable {C D : Type*} [Category C] [Category D] {F : C ⥤ D} {F' : D ⥤ C} {A B : C}
+variable {C D : Type*} [Category* C] [Category* D] {F : C ⥤ D} {F' : D ⥤ C} {A B : C}
 
 theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [F'.PreservesMonomorphisms]
     [F.PreservesEpimorphisms] [StrongEpi f] : StrongEpi (F.map f) :=
@@ -307,7 +304,7 @@ end CategoryTheory.Adjunction
 
 namespace CategoryTheory.Functor
 
-variable {C D : Type*} [Category C] [Category D] {F : C ⥤ D} {A B : C} (f : A ⟶ B)
+variable {C D : Type*} [Category* C] [Category* D] {F : C ⥤ D} {A B : C} (f : A ⟶ B)
 
 @[simp]
 theorem strongEpi_map_iff_strongEpi_of_isEquivalence [IsEquivalence F] :

@@ -158,10 +158,13 @@ theorem iSup_N {ι : Sort*} (f : ι → I.Filtration M) : (iSup f).N = ⨆ i, (f
 theorem iInf_N {ι : Sort*} (f : ι → I.Filtration M) : (iInf f).N = ⨅ i, (f i).N :=
   congr_arg sInf (Set.range_comp _ _).symm
 
+instance : PartialOrder (I.Filtration M) :=
+  PartialOrder.lift _ fun _ _ ↦ Ideal.Filtration.ext
+
 instance : CompleteLattice (I.Filtration M) :=
   Function.Injective.completeLattice Ideal.Filtration.N
-    (fun _ _ => Ideal.Filtration.ext) sup_N inf_N
-    (fun _ => sSup_image) (fun _ => sInf_image) top_N bot_N
+    (fun _ _ ↦ Ideal.Filtration.ext) .rfl .rfl sup_N inf_N
+    (fun _ ↦ sSup_image) (fun _ ↦ sInf_image) top_N bot_N
 
 instance : Inhabited (I.Filtration M) :=
   ⟨⊥⟩
@@ -302,7 +305,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]
     rw [Subalgebra.smul_def, smul_single_apply, if_pos (show n' ≤ n + 1 by lia)]
-    have e : n' ≤ n := by omega
+    have e : n' ≤ n := by lia
     have := F.pow_smul_le_pow_smul (n - n') n' 1
     rw [tsub_add_cancel_of_le e, pow_one, add_comm _ 1, ← add_tsub_assoc_of_le e, add_comm] at this
     exact this (Submodule.smul_mem_smul ((l _).2 <| n + 1 - n') hm)
@@ -449,8 +452,8 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
 
 open IsLocalRing in
-theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors
-    [IsNoetherianRing R] [NoZeroSMulDivisors R M]
+theorem Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree [IsDomain R]
+    [IsNoetherianRing R] [Module.IsTorsionFree R M]
     [Module.Finite R M] (h : I ≠ ⊤) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ := by
   rw [eq_bot_iff]
   intro x hx
@@ -460,8 +463,12 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors
   have := smul_left_injective _ hx' (hr.trans (one_smul _ x).symm)
   exact I.eq_top_iff_one.not.mp h (this ▸ r.prop)
 
+@[deprecated (since := "2026-01-17")]
+alias Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors :=
+  Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree
+
 /-- **Krull's intersection theorem** for Noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
-  convert I.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors (M := R) h
+  convert I.iInf_pow_smul_eq_bot_of_isTorsionFree (M := R) h
   simp

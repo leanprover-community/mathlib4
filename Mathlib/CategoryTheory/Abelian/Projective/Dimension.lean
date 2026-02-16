@@ -22,7 +22,7 @@ if all `Ext X Y i` vanish when `n ≤ i`. This defines a type class
 `HasProjectiveDimensionLE`.)
 
 We also define the projective dimension in `WithBot ℕ∞` as `projectiveDimension`,
-`projectiveDimension X = ⊥` iff `X` is zero and acts in common sense in the non-negative values.
+`projectiveDimension X = ⊥` iff `X` is zero and behaves as expected on non-negative values.
 
 -/
 

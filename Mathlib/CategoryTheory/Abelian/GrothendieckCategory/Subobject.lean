@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Subobject.Lattice
 /-!
 # Subobjects in Grothendieck abelian categories
 
-We study the complete lattice of subjects of `X : C`
+We study the complete lattice of subobjects of `X : C`
 when `C` is a Grothendieck abelian category. In particular,
 for a functor `F : J ⥤ MonoOver X` from a filtered category,
 we relate the colimit of `F` (computed in `C`) and the
@@ -50,8 +50,7 @@ functor `J ⥤ C`, and `f : c.pt ⟶ X` is induced by the inclusions,
 then `f` is a monomorphism. -/
 lemma mono_of_isColimit_monoOver : Mono f := by
   let α : F ⋙ MonoOver.forget _ ⋙ Over.forget _ ⟶ (Functor.const _).obj X :=
-    { app j := (F.obj j).obj.hom
-      naturality _ _ f := (F.map f).w }
+    { app j := (F.obj j).obj.hom }
   have := NatTrans.mono_of_mono_app α
   exact colim.map_mono' α hc (isColimitConstCocone J X) f (by simpa using hf)
 

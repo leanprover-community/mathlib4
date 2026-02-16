@@ -23,7 +23,7 @@ more general assumption of just being a primitive root, for reasons described in
 details section.
 
 ## Main definitions
-* `IsCyclotomicExtension.zeta n A B`: if `IsCyclotomicExtension {n} A B`, than `zeta n A B`
+* `IsCyclotomicExtension.zeta n A B`: if `IsCyclotomicExtension {n} A B`, then `zeta n A B`
   is a primitive `n`-th root of unity in `B`.
 * `IsPrimitiveRoot.powerBasis`: if `K` and `L` are fields such that
   `IsCyclotomicExtension {n} K L`, then `IsPrimitiveRoot.powerBasis`
@@ -95,7 +95,7 @@ theorem zeta_spec : IsPrimitiveRoot (zeta n A B) n :=
 
 theorem aeval_zeta [IsDomain B] [NeZero (n : B)] :
     aeval (zeta n A B) (cyclotomic n A) = 0 := by
-  rw [aeval_def, ← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff]
+  rw [← eval_map_algebraMap, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff]
   exact zeta_spec n A B
 
 theorem zeta_isRoot [IsDomain B] [NeZero (n : B)] : IsRoot (cyclotomic n B) (zeta n A B) := by
@@ -135,7 +135,7 @@ theorem powerBasis_gen_mem_adjoin_zeta_sub_one :
 @[simps!]
 noncomputable def subOnePowerBasis : PowerBasis K L := by
   apply PowerBasis.ofAdjoinEqTop (((integral {n} K L).isIntegral ζ).sub isIntegral_one)
-  exact PowerBasis.adjoin_eq_top_of_gen_mem_adjoin  (hζ.powerBasis_gen_mem_adjoin_zeta_sub_one _)
+  exact PowerBasis.adjoin_eq_top_of_gen_mem_adjoin (hζ.powerBasis_gen_mem_adjoin_zeta_sub_one _)
 
 variable {K} (C)
 
@@ -214,7 +214,7 @@ section Field
 variable {K} [Field K] [NumberField K]
 
 variable (n) in
-/-- If a `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
+/-- If an `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
 `l ∣ 2 * n`. -/
 theorem dvd_of_isCyclotomicExtension [IsCyclotomicExtension {n} ℚ K] {ζ : K}
     {l : ℕ} (hζ : IsPrimitiveRoot ζ l) (hl : l ≠ 0) : l ∣ 2 * n := by
@@ -243,7 +243,7 @@ theorem dvd_of_isCyclotomicExtension [IsCyclotomicExtension {n} ℚ K] {ζ : K}
 such that `x = (-ζ)^r`. -/
 theorem exists_neg_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
     (hno : Odd n) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
-    ∃ r : ℕ, x = (-ζ) ^ r :=  by
+    ∃ r : ℕ, x = (-ζ) ^ r := by
   have hnegζ : IsPrimitiveRoot (-ζ) (2 * n) := by
     convert IsPrimitiveRoot.orderOf (-ζ)
     rw [neg_eq_neg_one_mul, (Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
@@ -264,7 +264,7 @@ theorem exists_neg_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
 such that `x = ζ^r` or `x = -ζ^r`. -/
 theorem exists_pow_or_neg_mul_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
     (hno : Odd n) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
-    ∃ r : ℕ, r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
+    ∃ r : ℕ, r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) := by
   obtain ⟨r, hr⟩ := hζ.exists_neg_pow_of_isOfFinOrder hno hx
   refine ⟨r % n, Nat.mod_lt _ (NeZero.pos _), ?_⟩
   rw [show ζ ^ (r % n) = ζ ^ r from (IsPrimitiveRoot.eq_orderOf hζ).symm ▸ pow_mod_orderOf .., hr]

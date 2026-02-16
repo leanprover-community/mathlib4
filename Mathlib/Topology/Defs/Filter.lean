@@ -9,6 +9,7 @@ public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Filter.Defs
 public import Mathlib.Tactic.IrreducibleDef
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Definitions about filters in topological spaces
@@ -172,8 +173,6 @@ def nhdsSetWithin (s t : Set X) : Filter X := 𝓝ˢ s ⊓ 𝓟 t
 Alexandrov-discrete space, this is the smallest neighborhood of the set. -/
 def nhdsKer (s : Set X) : Set X := (𝓝ˢ s).ker
 
-@[deprecated (since := "2025-07-09")] alias exterior := nhdsKer
-
 /-- A function between topological spaces is continuous at a point `x₀`
 if `f x` tends to `f x₀` when `x` tends to `x₀`. -/
 @[fun_prop]
@@ -210,8 +209,8 @@ def Specializes (x y : X) : Prop := 𝓝 x ≤ 𝓝 y
 @[inherit_doc]
 infixl:300 " ⤳ " => Specializes
 
-/-- Two points `x` and `y` in a topological space are `Inseparable` if any of the following
-equivalent properties hold:
+/-- Two points `x` and `y` in a topological space are `Inseparable`, or *topologically
+indistinguishable*, if any of the following equivalent properties hold:
 
 - `𝓝 x = 𝓝 y`; we use this property as the definition;
 - for any open set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_forall_isOpen`;
@@ -233,8 +232,8 @@ def specializationPreorder : Preorder X :=
 /-- A `setoid` version of `Inseparable`, used to define the `SeparationQuotient`. -/
 def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparable }
 
-/-- The quotient of a topological space by its `inseparableSetoid`.
-This quotient is guaranteed to be a T₀ space. -/
+/-- The quotient of a topological space by its `inseparableSetoid`. Also called the Kolmogorov
+quotient. This quotient is guaranteed to be a T₀ space. -/
 def SeparationQuotient := Quotient (inseparableSetoid X)
 
 variable {X}

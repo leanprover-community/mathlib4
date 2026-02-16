@@ -21,7 +21,7 @@ We compute the discriminant of a `p ^ n`-th cyclotomic extension.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

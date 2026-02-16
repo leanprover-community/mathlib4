@@ -812,7 +812,7 @@ considering the restriction of the subset to `{1, ..., n-1}` and shifting to the
 def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)) where
   toFun c :=
     { i : Fin (n - 1) |
-        (⟨1 + (i : ℕ), by omega⟩ : Fin n.succ) ∈ c.boundaries }.toFinset
+        (⟨1 + (i : ℕ), by lia⟩ : Fin n.succ) ∈ c.boundaries }.toFinset
   invFun s :=
     { boundaries :=
         { i : Fin n.succ |

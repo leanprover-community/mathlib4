@@ -183,22 +183,15 @@ theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
   simpa [sub_eq_add_neg] using add_algebraMap x (-a)
 
 theorem neg {B : Type*} [Ring B] [Algebra A B] (x : B) :
-    minpoly A (- x) = (-1) ^ (natDegree (minpoly A x)) * (minpoly A x).comp (- X) := by
+    minpoly A (-x) = (-1) ^ (natDegree (minpoly A x)) * (minpoly A x).comp (-X) := by
   by_cases hx : IsIntegral A x
   · refine (minpoly.unique _ _ ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X)
         ?_ fun q qmo hq => ?_).symm
     · simp [aeval_comp]
-    · have : (Polynomial.aeval x) ((-1) ^ q.natDegree * q.comp (- X)) = 0 := by
+    · have : (Polynomial.aeval x) ((-1) ^ q.natDegree * q.comp (-X)) = 0 := by
         simpa [aeval_comp] using hq
       have H := minpoly.min A x qmo.neg_one_pow_natDegree_mul_comp_neg_X this
-      have n1 := ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X).ne_zero
-      have n2 := qmo.neg_one_pow_natDegree_mul_comp_neg_X.ne_zero
-      rw [degree_eq_natDegree qmo.ne_zero,
-        degree_eq_natDegree n1, natDegree_mul (by simp) (right_ne_zero_of_mul n1), natDegree_comp]
-      rw [degree_eq_natDegree (minpoly.ne_zero hx),
-        degree_eq_natDegree qmo.neg_one_pow_natDegree_mul_comp_neg_X.ne_zero,
-        natDegree_mul (by simp) (right_ne_zero_of_mul n2), natDegree_comp] at H
-      simpa using H
+      simp_all
   · rw [minpoly.eq_zero hx, minpoly.eq_zero, zero_comp]
     · simp only [natDegree_zero, pow_zero, mul_zero]
     · exact IsIntegral.neg_iff.not.mpr hx

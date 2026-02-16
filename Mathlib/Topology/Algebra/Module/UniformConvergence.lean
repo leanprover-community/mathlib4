@@ -40,7 +40,7 @@ uniform convergence, strong dual
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology
 open scoped Pointwise UniformConvergence Uniformity

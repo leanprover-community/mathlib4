@@ -24,7 +24,7 @@ is interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for an
 derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Set Filter Function IsUnifLocDoublingMeasure
 

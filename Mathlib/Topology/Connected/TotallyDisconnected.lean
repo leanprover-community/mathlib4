@@ -77,7 +77,7 @@ instance [TopologicalSpace β] [TotallyDisconnectedSpace α] [TotallyDisconnecte
   · exact ht.subsingleton.image _
 
 instance [∀ i, TopologicalSpace (X i)] [∀ i, TotallyDisconnectedSpace (X i)] :
-    TotallyDisconnectedSpace (Σi, X i) := by
+    TotallyDisconnectedSpace (Σ i, X i) := by
   refine ⟨fun s _ hs => ?_⟩
   obtain rfl | h := s.eq_empty_or_nonempty
   · exact subsingleton_empty
@@ -168,6 +168,12 @@ lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
 instance Subtype.totallyDisconnectedSpace {α : Type*} {p : α → Prop} [TopologicalSpace α]
     [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Subtype p) :=
   totallyDisconnectedSpace_subtype_iff.2 (isTotallyDisconnected_of_totallyDisconnectedSpace _)
+
+instance [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Additive α) :=
+  ‹TotallyDisconnectedSpace α›
+
+instance [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Multiplicative α) :=
+  ‹TotallyDisconnectedSpace α›
 
 end TotallyDisconnected
 

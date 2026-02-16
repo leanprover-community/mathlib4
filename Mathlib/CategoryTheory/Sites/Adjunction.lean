@@ -27,13 +27,14 @@ universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
 variable {D : Type u₂} [Category.{v₂} D]
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 variable {F : D ⥤ E} {G : E ⥤ D}
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
 whose forgetful functor preserves the correct limits. -/
-abbrev sheafForget [HasForget D] [HasSheafCompose J (forget D)] :
-    Sheaf J D ⥤ Sheaf J (Type _) :=
+abbrev sheafForget {FD : D → D → Type*} {CD : D → Type*}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD]
+    [HasSheafCompose J (forget D)] : Sheaf J D ⥤ Sheaf J (Type _) :=
   sheafCompose J (forget D)
 
 namespace Sheaf
@@ -51,7 +52,7 @@ def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
 @[simp]
 lemma adjunction_unit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
     (X : Sheaf J E) : ((adjunction J adj).unit.app X).val =
-      (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.val ⋙ G)) F  := by
+      (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.val ⋙ G)) F := by
   change (sheafToPresheaf _ _).map ((adjunction J adj).unit.app X) = _
   simp only [Functor.id_obj, Functor.comp_obj, whiskeringRight_obj_obj, adjunction,
     Adjunction.map_restrictFullyFaithful_unit_app, Adjunction.comp_unit_app,
@@ -100,10 +101,11 @@ instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
 
 section ForgetToType
 
-variable [HasWeakSheafify J D] [HasForget D] [HasSheafCompose J (forget D)]
+variable [HasWeakSheafify J D] {FD : D → D → Type*} {CD : D → Type (max u₁ v₁)}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD] [HasSheafCompose J (forget D)]
 
 example [(forget D).IsRightAdjoint] :
-    (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint := by infer_instance
+    (sheafForget.{_, _, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint := by infer_instance
 
 end ForgetToType
 

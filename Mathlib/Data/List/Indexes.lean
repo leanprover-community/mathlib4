@@ -5,7 +5,6 @@ Authors: Jannis Limperg
 -/
 module
 
-public import Mathlib.Util.AssertExists
 public import Mathlib.Data.List.Defs
 
 /-!
@@ -22,7 +21,7 @@ Anyone wanting to restore this material is welcome to do so, but will need to up
 However, note that this material will later be implemented in the Lean standard library.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

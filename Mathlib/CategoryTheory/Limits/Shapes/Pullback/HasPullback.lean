@@ -102,7 +102,7 @@ abbrev pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
 abbrev pushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :=
   colimit (span f g)
 
-/-- The cocone associated to the pullback of `f` and `g` -/
+/-- The cocone associated to the pushout of `f` and `g` -/
 abbrev pushout.cocone {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : PushoutCocone f g :=
   colimit.cocone (span f g)
 
@@ -582,5 +582,97 @@ theorem hasPullback_symmetry_of_hasPullbacksAlong {S X Y : C} {f : X ⟶ S} [Has
 theorem hasPushouts_symmetry_of_hasPushoutsAlong {S X Y : C} {f : S ⟶ X} [HasPushoutsAlong f]
     {g : S ⟶ Y} : HasPushout f g :=
   hasPushout_symmetry g f
+
+section Products
+
+variable {C}
+
+/-- `X ×[Y] (Y ⨯ Z) ≅ X ⨯ Z` -/
+noncomputable def pullbackProdFstIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
+    [HasBinaryProduct Y Z] [HasBinaryProduct X Z] [HasPullback f (prod.fst : Y ⨯ Z ⟶ _)] :
+    pullback f (prod.fst : Y ⨯ Z ⟶ _) ≅ X ⨯ Z where
+  hom := prod.lift (pullback.fst _ _) (pullback.snd _ _ ≫ prod.snd)
+  inv := pullback.lift prod.fst (prod.map f (𝟙 Z))
+  hom_inv_id := by
+    apply pullback.hom_ext
+    · simp
+    · apply prod.hom_ext <;> simp [pullback.condition]
+
+section
+
+variable {X Y : C} (f : X ⟶ Y) (Z : C) [HasBinaryProduct Y Z] [HasBinaryProduct X Z]
+  [HasPullback f (prod.fst : Y ⨯ Z ⟶ _)]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdFstIsoProd_hom_fst :
+    (pullbackProdFstIsoProd f Z).hom ≫ prod.fst = pullback.fst _ _ := by
+  simp [pullbackProdFstIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdFstIsoProd_hom_snd :
+    (pullbackProdFstIsoProd f Z).hom ≫ prod.snd = pullback.snd _ _ ≫ prod.snd := by
+  simp [pullbackProdFstIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdFstIsoProd_inv_fst :
+    (pullbackProdFstIsoProd f Z).inv ≫ pullback.fst _ _ = prod.fst := by
+  simp [pullbackProdFstIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdFstIsoProd_inv_snd_fst :
+    (pullbackProdFstIsoProd f Z).inv ≫ pullback.snd _ _ ≫ prod.fst = prod.fst ≫ f := by
+  simp [pullbackProdFstIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdFstIsoProd_inv_snd_snd :
+    (pullbackProdFstIsoProd f Z).inv ≫ pullback.snd _ _ ≫ prod.snd = prod.snd := by
+  simp [pullbackProdFstIsoProd]
+
+end
+
+section
+
+/-- `(Z ⨯ Y) ×[Y] X ≅ Z ⨯ X` -/
+noncomputable def pullbackProdSndIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
+    [HasBinaryProduct Z Y] [HasBinaryProduct Z X] [HasPullback (prod.snd : Z ⨯ Y ⟶ Y) f] :
+    pullback (prod.snd : Z ⨯ Y ⟶ Y) f ≅ Z ⨯ X where
+  hom := prod.lift (pullback.fst _ _ ≫ prod.fst) (pullback.snd _ _)
+  inv := pullback.lift (prod.map (𝟙 Z) f) prod.snd
+  hom_inv_id := by
+    apply pullback.hom_ext
+    · apply prod.hom_ext <;> simp [pullback.condition]
+    · simp
+
+variable {X Y : C} (f : X ⟶ Y) (Z : C) [HasBinaryProduct Z Y] [HasBinaryProduct Z X]
+  [HasPullback (prod.snd : Z ⨯ Y ⟶ Y) f]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdSndIsoProd_hom_fst :
+    (pullbackProdSndIsoProd f Z).hom ≫ prod.fst = pullback.fst _ _ ≫ prod.fst := by
+  simp [pullbackProdSndIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdSndIsoProd_hom_snd :
+    (pullbackProdSndIsoProd f Z).hom ≫ prod.snd = pullback.snd _ _ := by
+  simp [pullbackProdSndIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdSndIsoProd_inv_fst_fst :
+    (pullbackProdSndIsoProd f Z).inv ≫ pullback.fst _ _ ≫ prod.fst = prod.fst := by
+  simp [pullbackProdSndIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdSndIsoProd_inv_fst_snd :
+    (pullbackProdSndIsoProd f Z).inv ≫ pullback.fst _ _ ≫ prod.snd = prod.snd ≫ f := by
+  simp [pullbackProdSndIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdSndIsoProd_inv_snd :
+    (pullbackProdSndIsoProd f Z).inv ≫ pullback.snd _ _ = prod.snd := by
+  simp [pullbackProdSndIsoProd]
+
+end
+
+end Products
 
 end CategoryTheory.Limits

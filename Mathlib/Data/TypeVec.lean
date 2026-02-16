@@ -423,7 +423,7 @@ def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
 
 theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i x) ↔ p := by
   induction i with
-  | fz      => rfl
+  | fz => rfl
   | fs _ ih =>
     rw [TypeVec.const]
     exact ih
@@ -640,8 +640,6 @@ theorem dropFun_id {α : TypeVec (n + 1)} : dropFun (@TypeVec.id _ α) = id :=
 
 @[simp]
 theorem prod_map_id {α β : TypeVec n} : (@TypeVec.id _ α ⊗' @TypeVec.id _ β) = id := prod_id
-
-@[deprecated (since := "2025-08-14")] alias subtypeVal_diagSub := diag_sub_val
 
 @[simp]
 theorem toSubtype_of_subtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :

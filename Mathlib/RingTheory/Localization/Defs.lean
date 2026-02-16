@@ -139,23 +139,21 @@ theorem exists_of_eq {x y : R} : algebraMap R S x = algebraMap R S y → ∃ c :
 
 variable (S)
 
+variable {M} in
+theorem smul_bijective (m : M) : Bijective fun s : S ↦ m • s := by
+  simpa only [Submonoid.smul_def, Algebra.smul_def] using (map_units S m).smul_bijective
+
 /-- `IsLocalization.toLocalizationMap M S` shows `S` is the monoid localization of `R` at `M`. -/
 abbrev toLocalizationMap : M.LocalizationMap S where
   __ := algebraMap R S
   toFun := algebraMap R S
   isLocalizationMap := IsLocalization'.toIsLocalizationMap
 
-@[deprecated (since := "2025-08-01")] alias toLocalizationWithZeroMap := toLocalizationMap
-
 @[simp]
 lemma toLocalizationMap_toMonoidHom :
     (toLocalizationMap M S).toMonoidHom = (algebraMap R S : R →*₀ S) := rfl
 
-@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap := toLocalizationMap_toMonoidHom
-
 @[simp] lemma coe_toLocalizationMap : ⇑(toLocalizationMap M S) = algebraMap R S := rfl
-
-@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap_apply := coe_toLocalizationMap
 
 lemma toLocalizationMap_apply (x) : toLocalizationMap M S x = algebraMap R S x := rfl
 

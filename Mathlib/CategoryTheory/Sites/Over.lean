@@ -5,11 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.CoverLifting
-public import Mathlib.CategoryTheory.Sites.CoverPreserving
-public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Connected
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.CategoryTheory.Functor.Flat
 
 /-! Localization
 
@@ -241,6 +241,27 @@ instance {X Y : C} (f : X ⟶ Y) : (Over.map f).IsContinuous (J.over X) (J.over 
 
 section
 
+open CategoryTheory Limits
+
+variable {C : Type u'} [Category* C] [HasBinaryProducts C] {J : GrothendieckTopology C}
+
+theorem coverPreserving_over_star (X : C) :
+    CoverPreserving J (J.over X) (Over.star X) where
+  cover_preserve {U} S hs := by
+    refine J.superset_covering ?_ (J.pullback_stable prod.snd hs)
+    intro y f hf
+    dsimp [Sieve.overEquiv]
+    rw [← Presieve.functorPushforward_comp]
+    refine ⟨_, _, prod.lift (f ≫ prod.fst) (𝟙 _), hf, Limits.prod.hom_ext ?_ ?_⟩ <;> simp
+
+instance (X : C) : (Over.star X).IsContinuous J (J.over X) :=
+  Functor.isContinuous_of_coverPreserving
+    (compatiblePreservingOfFlat (J.over X) (Over.star X)) (coverPreserving_over_star X)
+
+end
+
+section
+
 variable (A : Type u') [Category.{v'} A]
 
 /-- The pullback functor `Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A` induced
@@ -332,6 +353,8 @@ abbrev Sheaf.over {A : Type u'} [Category.{v'} A] (F : Sheaf J A) (X : C) :
 
 section
 
+-- TODO: Generalize this section to arbitrary precoverages.
+
 variable (K : Precoverage C) [K.HasPullbacks] [K.IsStableUnderBaseChange]
 
 /-- The Grothendieck topology on `Over X`, obtained from localizing the topology generated
@@ -341,7 +364,8 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
   refine le_antisymm ?_ ?_
   · intro ⟨Y, right, (s : Y ⟶ X)⟩ R hR
     obtain ⟨(R : Sieve Y), rfl⟩ := (Sieve.overEquiv _).symm.surjective R
-    simp only [GrothendieckTopology.mem_over_iff, Equiv.apply_symm_apply] at hR
+    simp only [GrothendieckTopology.mem_over_iff, Equiv.apply_symm_apply,
+      ← Precoverage.toGrothendieck_toCoverage] at hR
     induction hR with
     | of Z S hS =>
       rw [Sieve.overEquiv_symm_generate]
@@ -359,8 +383,30 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
     rw [Precoverage.mem_comap_iff] at hR
     rw [GrothendieckTopology.mem_toPrecoverage_iff, GrothendieckTopology.mem_over_iff,
       Sieve.overEquiv, Equiv.coe_fn_mk, ← Sieve.generate_map_eq_functorPushforward]
-    exact Coverage.Saturate.of _ _ hR
+    exact Precoverage.Saturate.of _ _ hR
 
 end
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceEquiv.inverse.IsDenseSubsite (J.over _) ((J.over _).over _) where
+  functorPushforward_mem_iff := by
+    simp [GrothendieckTopology.mem_over_iff, Sieve.overEquiv,
+      ← Over.iteratedSliceBackward_forget_forget f, Sieve.functorPushforward_comp]
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceForward.IsContinuous ((J.over _).over _) (J.over _) :=
+  inferInstanceAs (f.iteratedSliceEquiv.functor.IsContinuous _ _)
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceForward.IsCocontinuous ((J.over _).over _) (J.over _) :=
+  inferInstanceAs (f.iteratedSliceEquiv.functor.IsCocontinuous _ _)
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceBackward.IsContinuous (J.over _) ((J.over _).over _) :=
+  inferInstanceAs (f.iteratedSliceEquiv.inverse.IsContinuous _ _)
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceBackward.IsCocontinuous (J.over _) ((J.over _).over _) :=
+  inferInstanceAs (f.iteratedSliceEquiv.inverse.IsCocontinuous _ _)
 
 end CategoryTheory

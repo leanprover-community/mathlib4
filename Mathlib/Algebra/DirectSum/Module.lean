@@ -429,30 +429,8 @@ noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type
 @[simp]
 theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σ i, α i ↦ ↑(v a.1 a.2) := by
-  funext a
-  -- Porting note: was
-  -- simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_ofRepr,
-  --   Basis.repr_symm_apply, DFinsupp.lsum_apply_apply, DFinsupp.mapRange.linearEquiv_apply,
-  --   DFinsupp.mapRange.linearEquiv_symm, DFinsupp.mapRange_single, linearCombination_single,
-  --   LinearEquiv.ofBijective_apply, LinearEquiv.symm_symm, LinearEquiv.symm_trans_apply, one_smul,
-  --   sigmaFinsuppAddEquivDFinsupp_apply, sigmaFinsuppEquivDFinsupp_single,
-  --   sigmaFinsuppLequivDFinsupp_apply]
-  -- convert DFinsupp.sumAddHom_single (fun i ↦ (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
-  simp only [IsInternal.collectedBasis, coeLinearMap, Basis.coe_ofRepr, LinearEquiv.trans_symm,
-    LinearEquiv.symm_symm, LinearEquiv.trans_apply, sigmaFinsuppLequivDFinsupp_apply,
-    AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
-    sigmaFinsuppAddEquivDFinsupp_apply, sigmaFinsuppEquivDFinsupp_single,
-    LinearEquiv.ofBijective_apply]
-  rw [DFinsupp.mapRange.linearEquiv_symm]
-  -- `DFunLike.coe (β := fun x ↦ ⨁ (i : ι), ↥(A i))`
-  -- appears in the goal, but the lemma is expecting
-  -- `DFunLike.coe (β := fun x ↦ Π₀ (i : ι), ↥(A i))`
-  erw [DFinsupp.mapRange.linearEquiv_apply]
-  simp only [DFinsupp.mapRange_single, Basis.repr_symm_apply, linearCombination_single, one_smul,
-    toModule]
-  -- Similarly here.
-  erw [DFinsupp.lsum_single]
-  simp only [Submodule.coe_subtype]
+  simp [IsInternal.collectedBasis, coeLinearMap, DFinsupp.mapRange.linearEquiv,
+    toModule, DFinsupp.lsum]
 
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σ i, α i) : h.collectedBasis v a ∈ A a.1 := by simp

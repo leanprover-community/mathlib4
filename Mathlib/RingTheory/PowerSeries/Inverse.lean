@@ -323,6 +323,7 @@ theorem maximalIdeal_eq_span_X : IsLocalRing.maximalIdeal (k⟦X⟧) = Ideal.spa
       apply Ideal.eq_top_of_isUnit_mem I hfI0 (IsUnit.map C (Ne.isUnit hfX))
   rw [IsLocalRing.eq_maximalIdeal hX]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance : NormalizationMonoid k⟦X⟧ where
   normUnit f := (Unit_of_divided_by_X_pow_order f)⁻¹
   normUnit_zero := by simp only [Unit_of_divided_by_X_pow_order_zero, inv_one]

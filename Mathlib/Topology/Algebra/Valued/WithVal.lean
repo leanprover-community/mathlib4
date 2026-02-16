@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
@@ -45,7 +45,7 @@ namespace WithVal
 
 section Instances
 
-variable {P S : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {P S : Type*}
 
 instance [Ring R] (v : Valuation R Γ₀) : Ring (WithVal v) := inferInstanceAs (Ring R)
 
@@ -54,6 +54,8 @@ instance [CommRing R] (v : Valuation R Γ₀) : CommRing (WithVal v) := inferIns
 instance [Field R] (v : Valuation R Γ₀) : Field (WithVal v) := inferInstanceAs (Field R)
 
 instance [Ring R] (v : Valuation R Γ₀) : Inhabited (WithVal v) := ⟨0⟩
+
+instance [Ring R] (v : Valuation R Γ₀) : Preorder (WithVal v) := v.toPreorder
 
 instance [CommSemiring S] [CommRing R] [Algebra S R] (v : Valuation R Γ₀) :
     Algebra S (WithVal v) := inferInstanceAs (Algebra S R)
@@ -79,9 +81,6 @@ instance {S : Type*} [Ring S] [Algebra R S] (w : Valuation S Γ₀) :
 instance {P S : Type*} [Ring S] [Semiring P] [Module P R] [Module P S]
     [Algebra R S] [IsScalarTower P R S] :
     IsScalarTower P (WithVal v) S := inferInstanceAs (IsScalarTower P R S)
-
-instance [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    {v : Valuation R Γ₀} : Preorder (WithVal v) := v.toPreorder
 
 end Instances
 
@@ -183,11 +182,11 @@ theorem IsEquiv.uniformContinuous_equivWithVal
     (hw : ∀ γ : Γ₀'ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧ w r / w s = γ) (h : v.IsEquiv w) :
     UniformContinuous (equivWithVal v w) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
-  rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
-    (Valued.hasBasis_nhds_zero _ _)]
-  intro γ _
+  simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
+    (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
+  intro γ
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw γ
-  use .mk0 (v r / v s) (by simp [h.ne_zero, hr₀.ne.symm, hs₀.ne.symm]), trivial, fun x hx ↦ ?_
+  use .mk0 (v r / v s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]), fun x hx ↦ ?_
   rw [← hr, Set.mem_setOf_eq, ← WithVal.apply_equiv, ← (equiv w).apply_symm_apply r,
     lt_div_iff₀ hs₀, ← (equiv w).apply_symm_apply s, ← map_mul, ← map_mul, ← lt_def,
     ← h.orderRingIso_apply, ← h.orderRingIso.apply_symm_apply ((equiv w).symm s), ← map_mul,
@@ -202,6 +201,25 @@ def IsEquiv.uniformEquiv (hv : ∀ γ : Γ₀ˣ, ∃ r s, 0 < v r ∧ 0 < v s �
   __ := equivWithVal v w
   uniformContinuous_toFun := h.uniformContinuous_equivWithVal hw
   uniformContinuous_invFun := h.symm.uniformContinuous_equivWithVal hv
+
+theorem exists_div_eq_of_surjective {K : Type*} [Field K] {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (hv : Function.Surjective v)
+    (γ : Γ₀ˣ) : ∃ r s, 0 < v r ∧ 0 < v s ∧ v r / v s = γ := by
+  obtain ⟨r, hr⟩ := hv γ
+  exact ⟨r, 1, by simp [hr]⟩
+
+open UniformSpace.Completion in
+theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
+    {w : Valuation K Γ₀'} (h : v.IsEquiv w) (hv : Function.Surjective v)
+    (hw : Function.Surjective w) {x : v.Completion} :
+    Valued.v x ≤ 1 ↔ Valued.v (mapEquiv (h.uniformEquiv (exists_div_eq_of_surjective hv)
+      (exists_div_eq_of_surjective hw)) x) ≤ 1 := by
+  induction x using induction_on with
+  | hp =>
+    exact (mapEquiv (h.uniformEquiv _ _)).toHomeomorph.isClosed_setOf_iff
+      (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
+  | ih a =>
+    simpa [Valued.valuedCompletion_apply, ← WithVal.apply_equiv] using h.le_one_iff_le_one
 
 end Equivalence
 

@@ -40,8 +40,8 @@ bundle the adjunctions in a structure `Triple F G H`.
 * `mono_leftToRight_app_iff_mono_adj₂_unit_app`: `leftToRight : F ⟶ H` is monic at `X` iff
   `adj₂.unit` is monic at `F.obj X`.
 * `mono_leftToRight_app_iff_mono_adj₁_counit_app`: `leftToRight : F ⟶ H` is monic at `X` iff
-  `adj₁.unit` is monic at `H.obj X`.
-* `mono_leftToRight_app_iff`: `leftToRight : H ⟶ F` is componentwise monic iff
+  `adj₁.counit` is monic at `H.obj X`.
+* `mono_leftToRight_app_iff`: `leftToRight : F ⟶ H` is componentwise monic iff
   `adj₁.counit ≫ adj₂.unit : G ⋙ F ⟶ G ⋙ H` is.
 -/
 
@@ -49,7 +49,7 @@ bundle the adjunctions in a structure `Triple F G H`.
 
 open CategoryTheory Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 variable (F : C ⥤ D) (G : D ⥤ C) (H : C ⥤ D)
 
 /-- Structure containing the two adjunctions of an adjoint triple `F ⊣ G ⊣ H`. -/
@@ -156,7 +156,7 @@ lemma rightToLeft_app_adj₂_unit_app (X : C) :
 `F.op ⟶ H.op` obtained from the dual adjoint triple `H.op ⊣ G.op ⊣ F.op` is dual to the natural
 transformation `H ⟶ F`. -/
 @[simp]
-lemma op_rightToLeft : t.op.rightToLeft = NatTrans.op t.rightToLeft  := by
+lemma op_rightToLeft : t.op.rightToLeft = NatTrans.op t.rightToLeft := by
   ext
   rw [rightToLeft_eq_units, rightToLeft_eq_counits]
   simp

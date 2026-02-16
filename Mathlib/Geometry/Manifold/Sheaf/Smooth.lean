@@ -118,7 +118,7 @@ open CategoryTheory Limits
 /-- Given manifolds `M`, `N` and an open neighbourhood `U` of a point `x : M`, the evaluation-at-`x`
 map to `N` from smooth functions from  `U` to `N`. -/
 def smoothSheaf.evalAt (x : TopCat.of M) (U : OpenNhds x)
-    (i : (smoothSheaf IM I M N).presheaf.obj (Opposite.op U.obj)) : N :=
+    (i : (smoothSheaf IM I M N).presheaf.obj (Opposite.op U.val)) : N :=
   i.1 ⟨x, U.2⟩
 
 @[simp, reassoc, elementwise] lemma smoothSheaf.ι_evalHom (x : TopCat.of M) (U) :
@@ -293,7 +293,7 @@ open CategoryTheory Limits
 def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
     ((smoothSheafCommRing IM I M R).presheaf.stalk x).carrier ≅
     (smoothSheaf IM I M R).presheaf.stalk x :=
-  preservesColimitIso (forget _) _
+  preservesColimitIso (forget CommRingCat) _
 
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_hom (x : TopCat.of M) (U) :
     CategoryStruct.comp

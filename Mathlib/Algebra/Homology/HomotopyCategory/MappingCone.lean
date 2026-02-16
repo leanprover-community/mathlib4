@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCofiber
+public import Mathlib.Tactic.Linarith
 
 /-! # The mapping cone of a morphism of cochain complexes
 
@@ -110,7 +111,7 @@ lemma inr_f_snd_v (p : ℤ) :
 lemma inl_fst :
     (inl φ).comp (fst φ).1 (neg_add_cancel 1) = Cochain.ofHom (𝟙 F) := by
   ext p
-  simp [Cochain.comp_v _ _ (neg_add_cancel 1) p (p-1) p rfl (by lia)]
+  simp [Cochain.comp_v _ _ (neg_add_cancel 1) p (p - 1) p rfl (by lia)]
 
 @[simp]
 lemma inl_snd :
@@ -475,7 +476,7 @@ noncomputable def liftCocycle {K : CochainComplex C ℤ} {n m : ℤ}
     (eq : δ n m β + α.1.comp (Cochain.ofHom φ) (add_zero m) = 0) :
     Cocycle K (mappingCone φ) n :=
   Cocycle.mk (liftCochain φ α β h) m h (by
-    simp only [δ_liftCochain φ α β h (m+1) rfl, eq,
+    simp only [δ_liftCochain φ α β h (m + 1) rfl, eq,
       Cocycle.δ_eq_zero, Cochain.zero_comp, neg_zero, add_zero])
 
 section
@@ -547,7 +548,7 @@ lemma liftCochain_descCochain :
 lemma liftCochain_v_descCochain_v (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + n = p₂) (h₂₃ : p₂ + n' = p₃)
     (q : ℤ) (hq : p₁ + m = q) :
     (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (descCochain φ α' β' h').v p₂ p₃ h₂₃ =
-      α.v p₁ q hq ≫ α'.v q p₃ (by lia) + β.v p₁ p₂ h₁₂ ≫ β'.v p₂ p₃ h₂₃ := by
+      α.v p₁ q hq ≫ α'.v q p₃ (by omega) + β.v p₁ p₂ h₁₂ ≫ β'.v p₂ p₃ h₂₃ := by
   have eq := Cochain.congr_v (liftCochain_descCochain φ α β α' β' h h' p hp) p₁ p₃ (by lia)
   simpa only [Cochain.comp_v _ _ hp p₁ p₂ p₃ h₁₂ h₂₃, Cochain.add_v,
     Cochain.comp_v _ _ _ _ _ _ hq (show q + m' = p₃ by lia)] using eq
@@ -583,12 +584,12 @@ definitional properties. See also the equational lemma `mapHomologicalComplexXIs
 noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
     ((H.mapHomologicalComplex (ComplexShape.up ℤ)).obj (mappingCone φ)).X n ≅
       (mappingCone ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).X n where
-  hom := H.map ((fst φ).1.v n m (by omega)) ≫
-      (inl ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v m n (by omega) +
+  hom := H.map ((fst φ).1.v n m (by lia)) ≫
+      (inl ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v m n (by lia) +
       H.map ((snd φ).v n n (add_zero n)) ≫
         (inr ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).f n
-  inv := (fst ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).1.v n m (by omega) ≫
-      H.map ((inl φ).v m n (by omega)) +
+  inv := (fst ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).1.v n m (by lia) ≫
+      H.map ((inl φ).v m n (by lia)) +
       (snd ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v n n (add_zero n) ≫
         H.map ((inr φ).f n)
   hom_inv_id := by
@@ -597,7 +598,7 @@ noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
       inl_v_snd_v_assoc, inr_f_snd_v_assoc, zero_add, ← Functor.map_comp, ← Functor.map_add]
     rw [← H.map_id]
     congr 1
-    simp [ext_from_iff  _ _ _ hnm]
+    simp [ext_from_iff _ _ _ hnm]
   inv_hom_id := by
     simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc,
       ← H.map_comp_assoc, inl_v_fst_v, CategoryTheory.Functor.map_id, id_comp, inr_f_fst_v,

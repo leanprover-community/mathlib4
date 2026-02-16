@@ -43,7 +43,7 @@ variable {α : Type*} [TopologicalSpace α] [MulOneClass α]
 
 variable (α) in
 /-- A unital magma with a topology and bornology has the trivial approximate unit `pure 1`. -/
-lemma pure_one : IsApproximateUnit (pure (1 : α))  where
+lemma pure_one : IsApproximateUnit (pure (1 : α)) where
   tendsto_mul_left m := by simpa using tendsto_pure_nhds (m * ·) (1 : α)
   tendsto_mul_right m := by simpa using tendsto_pure_nhds (· * m) (1 : α)
 

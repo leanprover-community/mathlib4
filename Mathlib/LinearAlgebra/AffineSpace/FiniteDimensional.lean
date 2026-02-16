@@ -8,7 +8,9 @@ module
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -646,13 +648,23 @@ theorem affineIndependent_of_affineIndependent_collinear_ne {p₁ p₂ p₃ p : 
     AffineIndependent k ![p₁, p₂, p] := by
   rw [affineIndependent_iff_not_collinear_set]
   by_contra h
-  have h1: Collinear k {p₁, p₃, p₂, p} := by
+  have h1 : Collinear k {p₁, p₃, p₂, p} := by
     apply collinear_insert_insert_of_mem_affineSpan_pair
     · apply Collinear.mem_affineSpan_of_mem_of_ne h (by simp) (by simp) (by simp) hne
     · apply Collinear.mem_affineSpan_of_mem_of_ne hcol (by simp) (by simp) (by simp) hne
   have h2 : Collinear k {p₁, p₂, p₃} := h1.subset (by grind)
   rw [affineIndependent_iff_not_collinear_set] at ha
   exact ha h2
+
+/-- Replacing a point in an affinely independent triple with another point on the same
+line preserves affine independence. -/
+theorem affineIndependent_iff_affineIndependent_collinear_ne {p₁ p₂ p₃ p : P}
+    (hcol : Collinear k {p₂, p, p₃}) (hne1 : p₂ ≠ p) (hne2 : p₂ ≠ p₃) :
+    AffineIndependent k ![p₁, p₂, p] ↔ AffineIndependent k ![p₁, p₂, p₃] := by
+  refine ⟨fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h hcol hne2,
+    fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h ?_ hne1⟩
+  convert hcol using 1
+  aesop
 
 variable (k) in
 /-- A set of points is coplanar if their `vectorSpan` has dimension at most `2`. -/
@@ -782,6 +794,17 @@ variable (k)
 /-- Three points are coplanar. -/
 theorem coplanar_triple (p₁ p₂ p₃ : P) : Coplanar k ({p₁, p₂, p₃} : Set P) :=
   (collinear_pair k p₂ p₃).coplanar_insert p₁
+
+/-- For a simplex, the centroid, a vertex, and the corresponding `faceOppositeCentroid` are
+collinear. -/
+theorem Affine.Simplex.collinear_point_centroid_faceOppositeCentroid [CharZero k] {n : ℕ} [NeZero n]
+    (s : Simplex k P n) (i : Fin (n + 1)) :
+    Collinear k {s.points i, s.centroid, s.faceOppositeCentroid i} := by
+  apply collinear_insert_of_mem_affineSpan_pair
+  have h : s.points i = (-n : k) • (s.faceOppositeCentroid i -ᵥ s.centroid) +ᵥ s.centroid := by
+    rw [← neg_vsub_eq_vsub_rev, neg_smul_neg, ← point_vsub_centroid_eq_smul_vsub, vsub_vadd]
+  rw [h]
+  exact smul_vsub_vadd_mem_affineSpan_pair _ _ _
 
 end DivisionRing
 

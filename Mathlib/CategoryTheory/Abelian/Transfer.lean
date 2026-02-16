@@ -115,7 +115,7 @@ namespace ShrinkHoms
 
 universe w
 
-variable {C : Type*} [Category C] [LocallySmall.{w} C]
+variable {C : Type*} [Category* C] [LocallySmall.{w} C]
 
 section Preadditive
 
@@ -132,7 +132,7 @@ instance : (inverse C).Additive :=
 instance : (functor C).Additive :=
   (equivalence C).symm.additive_inverse_of_FullyFaithful
 
-instance hasLimitsOfShape (J : Type*) [Category J]
+instance hasLimitsOfShape (J : Type*) [Category* J]
     [HasLimitsOfShape J C] : HasLimitsOfShape.{_, _, w} J (ShrinkHoms C) :=
   Adjunction.hasLimitsOfShape_of_equivalence (inverse C)
 
@@ -169,7 +169,7 @@ instance : (down (C := C)).Additive :=
 instance : (up (C := C)).Additive :=
   equiv.symm.additive_inverse_of_FullyFaithful
 
-instance hasLimitsOfShape (J : Type*) [Category J]
+instance hasLimitsOfShape (J : Type*) [Category* J]
     [HasLimitsOfShape J C] : HasLimitsOfShape.{_, _, max u v w} J (AsSmall.{w} C) :=
   Adjunction.hasLimitsOfShape_of_equivalence equiv.inverse
 

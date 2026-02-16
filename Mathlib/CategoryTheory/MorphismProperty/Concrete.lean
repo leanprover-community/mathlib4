@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 In this file, we define the class of morphisms `MorphismProperty.injective`,
 `MorphismProperty.surjective`, `MorphismProperty.bijective` in concrete
-categories, and show that it is stable under composition and respect isomorphisms.
+categories, and show that it is stable under composition and respects isomorphisms.
 
 We introduce type-classes `HasSurjectiveInjectiveFactorization` and
 `HasFunctorialSurjectiveInjectiveFactorization` expressing that in a concrete category `C`,
@@ -39,10 +39,10 @@ open Function
 /-- Injectivity (in a concrete category) as a `MorphismProperty` -/
 protected def injective : MorphismProperty C := fun _ _ f => Injective f
 
-/-- Surjectiveness (in a concrete category) as a `MorphismProperty` -/
+/-- Surjectivity (in a concrete category) as a `MorphismProperty` -/
 protected def surjective : MorphismProperty C := fun _ _ f => Surjective f
 
-/-- Bijectiveness (in a concrete category) as a `MorphismProperty` -/
+/-- Bijectivity (in a concrete category) as a `MorphismProperty` -/
 protected def bijective : MorphismProperty C := fun _ _ f => Bijective f
 
 theorem bijective_eq_sup :
@@ -114,7 +114,6 @@ end ConcreteCategory
 
 open ConcreteCategory
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- In the category of types, any map can be functorially factored as a surjective
 map followed by an injective map. -/
 def functorialSurjectiveInjectiveFactorizationData :
@@ -140,7 +139,6 @@ def functorialSurjectiveInjectiveFactorizationData :
     rw [Subtype.ext_iff]
     exact h
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : HasFunctorialSurjectiveInjectiveFactorization (Type u) where
   nonempty_functorialFactorizationData :=
     ⟨functorialSurjectiveInjectiveFactorizationData⟩

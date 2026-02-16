@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Small.Set
 public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
 # Finally small categories
@@ -16,13 +17,13 @@ A category given by `(J : Type u) [Category.{v} J]` is `w`-finally small if ther
 `FinalModel J ⥤ J`.
 
 This means that if a category `C` has colimits of size `w` and `J` is `w`-finally small, then
-`C` has colimits of shape `J`. In this way, the notion of "finally small" can be seen of a
+`C` has colimits of shape `J`. In this way, the notion of "finally small" can be seen as a
 generalization of the notion of "essentially small" for indexing categories of colimits.
 
 Dually, we have a notion of initially small category.
 
 We show that a finally small category admits a small weakly terminal set, i.e., a small set `s` of
-objects such that from every object there a morphism to a member of `s`. We also show that the
+objects such that from every object there is a morphism to a member of `s`. We also show that the
 converse holds if `J` is filtered.
 -/
 
@@ -81,6 +82,10 @@ theorem finallySmall_of_final_of_essentiallySmall [EssentiallySmall.{w} K] (F : 
   have := finallySmall_of_essentiallySmall K
   finallySmall_of_final_of_finallySmall F
 
+instance [Limits.HasTerminal J] : FinallySmall.{w} J :=
+  have := Functor.final_const_terminal (C := PUnit.{w + 1}) (D := J)
+  .mk' ((Functor.const PUnit.{w + 1}).obj (⊤_ J))
+
 end FinallySmall
 
 section InitiallySmall
@@ -129,6 +134,17 @@ theorem initiallySmall_of_initial_of_essentiallySmall [EssentiallySmall.{w} K]
     (F : K ⥤ J) [Initial F] : InitiallySmall.{w} J :=
   have := initiallySmall_of_essentiallySmall K
   initiallySmall_of_initial_of_initiallySmall F
+
+instance [Limits.HasInitial J] : InitiallySmall.{w} J :=
+  have := Functor.initial_const_initial (C := PUnit.{w + 1}) (D := J)
+  .mk' ((Functor.const PUnit.{w + 1}).obj (⊥_ J))
+
+instance [LocallySmall.{w} J] [InitiallySmall.{w} J] (X : J) :
+    InitiallySmall.{w} (Over X) := by
+  have : InitiallySmall.{w} (CostructuredArrow (fromInitialModel.{w} J) X) :=
+    initiallySmall_of_essentiallySmall _
+  exact initiallySmall_of_initial_of_initiallySmall
+    (CostructuredArrow.toOver (fromInitialModel.{w} J) X)
 
 end InitiallySmall
 

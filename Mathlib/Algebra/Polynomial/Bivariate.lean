@@ -49,6 +49,9 @@ abbrev CC (r : R) : R[X][Y] := C (C r)
 lemma evalEval_C (x y : R) (p : R[X]) : (C p).evalEval x y = p.eval x := by
   rw [evalEval, eval_C]
 
+lemma evalEval_map_C (x y : R) (p : R[X]) : (p.map C).evalEval x y = p.eval y := by
+  rw [evalEval, eval_map_apply, eval_C]
+
 @[simp]
 lemma evalEval_CC (x y : R) (p : R) : (CC p).evalEval x y = p := by
   rw [evalEval_C, eval_C]
@@ -230,8 +233,17 @@ theorem Bivariate.swap_X : swap (R := R) (C X) = Y := by simp
 
 theorem Bivariate.swap_Y : swap (R := R) Y = (C X) := by simp
 
--- TODO: fix non-terminal simp
-set_option linter.flexible false in
+theorem Bivariate.swap_C_C (r : R) : swap (C (C r)) = C (C r) := by simp
+
+theorem Bivariate.swap_C (f : R[X]) : swap (C f) = f.map C := by
+  simpa [← algebraMap_eq] using aeval_X_left_eq_map f
+
+theorem Bivariate.swap_map_C (f : R[X]) : swap (f.map C) = C f := by
+  induction f using Polynomial.induction_on' with
+  | add => aesop
+  | monomial n a => rw [map_monomial, ← C_mul_X_pow_eq_monomial, ← C_mul_X_pow_eq_monomial,
+    map_mul, map_pow, swap_Y, C_mul, C_pow, Bivariate.swap_C_C]
+
 theorem Bivariate.swap_monomial_monomial (n m : ℕ) (r : R) :
     swap (monomial n (monomial m r)) = (monomial m (monomial n r)) := by
   simp [← C_mul_X_pow_eq_monomial]; ac_rfl
@@ -249,7 +261,7 @@ attribute [local instance] Polynomial.algebra in
 theorem Bivariate.aveal_eq_map_swap (x : A) (p : R[X][Y]) :
     aeval (C x) p = mapAlgHom (aeval x) (swap p) := by
   induction p using Polynomial.induction_on' with
-  | add =>  aesop
+  | add => aesop
   | monomial n a =>
       simp
       induction a using Polynomial.induction_on'
@@ -307,6 +319,9 @@ lemma pderiv_zero_equivMvPolynomial {R : Type*} [CommRing R] (p : R[X][Y]) :
     simp_rw [← Polynomial.C_mul_X_pow_eq_monomial]
     simp [map_nsmul]
 
+@[deprecated (since := "2025-12-09")]
+alias Polynomial.Bivariate.pderiv_zero_equivMvPolynomial := pderiv_zero_equivMvPolynomial
+
 lemma pderiv_one_equivMvPolynomial (p : R[X][Y]) :
     (equivMvPolynomial R p).pderiv 1 = equivMvPolynomial R (derivative p) := by
   induction p using Polynomial.induction_on' with
@@ -317,6 +332,9 @@ lemma pderiv_one_equivMvPolynomial (p : R[X][Y]) :
   | monomial m a =>
     simp_rw [← Polynomial.C_mul_X_pow_eq_monomial]
     simp [derivative_pow]
+
+@[deprecated (since := "2025-12-09")]
+alias Polynomial.Bivariate.pderiv_one_equivMvPolynomial := pderiv_one_equivMvPolynomial
 
 end MvPolynomial
 

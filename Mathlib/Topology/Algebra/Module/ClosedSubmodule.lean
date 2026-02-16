@@ -53,6 +53,8 @@ instance : SetLike (ClosedSubmodule R M) M where
   coe s := s.1
   coe_injective' _ _ h := toSubmodule_injective <| SetLike.coe_injective h
 
+instance : PartialOrder (ClosedSubmodule R M) := .ofSetLike (ClosedSubmodule R M) M
+
 lemma toCloseds_injective : Injective (toCloseds : ClosedSubmodule R M → Closeds M) :=
   fun _s _t h ↦ SetLike.coe_injective congr(($h : Set M))
 
@@ -74,6 +76,10 @@ instance : Coe (ClosedSubmodule R M) (Submodule R M) where
 lemma coe_toSubmodule (s : ClosedSubmodule R M) : (s.toSubmodule : Set M) = s := rfl
 
 @[simp]
+lemma mem_toSubmodule_iff (x : M) (s : ClosedSubmodule R M) : x ∈ s.toSubmodule ↔ x ∈ s := by
+  rfl
+
+@[simp]
 lemma coe_toCloseds (s : ClosedSubmodule R M) : (s.toCloseds : Set M) = s := rfl
 
 lemma isClosed (s : ClosedSubmodule R M) : IsClosed (s : Set M) := s.isClosed'
@@ -89,14 +95,14 @@ instance : CanLift (Submodule R M) (ClosedSubmodule R M) toSubmodule (IsClosed (
 /-- The preimage of a closed submodule under a continuous linear map as a closed submodule. -/
 @[simps!]
 def comap (f : M →L[R] N) (s : ClosedSubmodule R N) : ClosedSubmodule R M where
-  toSubmodule := .comap f s
+  toSubmodule := .comap (f : M →ₗ[R] N) s
   isClosed' := by simpa using s.isClosed.preimage f.continuous
 
 @[simp]
 lemma mem_comap {f : M →L[R] N} {s : ClosedSubmodule R N} {x : M} : x ∈ s.comap f ↔ f x ∈ s := .rfl
 
 @[simp] lemma toSubmodule_comap (f : M →L[R] N) (s : ClosedSubmodule R N) :
-    (s.comap f).toSubmodule = s.toSubmodule.comap f := rfl
+    (s.comap f).toSubmodule = s.toSubmodule.comap (f : M →ₗ[R] N) := rfl
 
 @[simp] lemma comap_id (s : ClosedSubmodule R M) : s.comap (.id _ _) = s := rfl
 
@@ -132,7 +138,7 @@ lemma coe_iInf (f : ι → ClosedSubmodule R M) : ↑(⨅ i, f i) = ⨅ i, (f i 
   simp [← SetLike.mem_coe]
 
 instance instSemilatticeInf : SemilatticeInf (ClosedSubmodule R M) :=
-  toSubmodule_injective.semilatticeInf _ fun _ _ ↦ rfl
+  toSubmodule_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
@@ -143,12 +149,8 @@ lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
 @[simp] lemma mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := .rfl
 
 instance : CompleteSemilatticeInf (ClosedSubmodule R M) where
-  sInf_le s a ha _ := by
-    simp only [toSubmodule_sInf, Submodule.mem_iInf]
-    exact fun h ↦ h a ha
-  le_sInf s a ha b := by
-    simp only [toSubmodule_sInf, Submodule.mem_iInf]
-    exact fun a i hi ↦ ha i hi a
+  sInf_le _ a ha _ h := mem_sInf.1 h a ha
+  le_sInf _ _ ha _ h := mem_sInf.2 fun a hi ↦ ha a hi h
 
 instance : OrderTop (ClosedSubmodule R M) where
   top := ⟨⊤, isClosed_univ⟩
@@ -192,16 +194,25 @@ protected def closure (s : Submodule R M) : ClosedSubmodule R M where
 lemma mem_closure_iff {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.topologicalClosure :=
   Iff.rfl
 
+@[simp]
+lemma closure_eq {s : ClosedSubmodule R M} : s.closure = s := by
+  ext
+  simp only [carrier_eq_coe, ClosedSubmodule.coe_toSubmodule, coe_closure, SetLike.mem_coe]
+  rw [closure_eq_iff_isClosed.mpr]
+  · rfl
+  · exact s.isClosed'
+
+lemma closure_eq' {s : Submodule R M} (hs : IsClosed s.carrier) : s.closure = ⟨s, hs⟩ := by
+  ext; simp
+
 end Submodule
 
 namespace ClosedSubmodule
 
 variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
 
-@[simp]
 lemma closure_toSubmodule_eq {s : ClosedSubmodule R N} : s.toSubmodule.closure = s := by
-  ext x
-  simp [closure_eq_iff_isClosed.mpr (ClosedSubmodule.isClosed s)]
+  ext x; simp
 
 /-- The closure of the image of a closed submodule under a continuous linear map is a closed
 submodule.
@@ -209,11 +220,11 @@ submodule.
 `ClosedSubmodule.map f` is left-adjoint to `ClosedSubmodule.comap f`.
 See `ClosedSubmodule.gc_map_comap`. -/
 def map (f : M →L[R] N) (s : ClosedSubmodule R M) : ClosedSubmodule R N :=
-  (s.toSubmodule.map f).closure
+  (s.toSubmodule.map (f : M →ₗ[R] N)).closure
 
 @[simp]
 lemma map_id [ContinuousAdd M] [ContinuousConstSMul R M] (s : ClosedSubmodule R M) :
-    s.map (.id _ _) = s := SetLike.coe_injective <| by simpa [map] using s.isClosed.closure_eq
+    s.map (.id _ _) = s := SetLike.coe_injective <| by simp [map]
 
 lemma map_le_iff_le_comap {s : ClosedSubmodule R M} {t : ClosedSubmodule R N} :
     map f s ≤ t ↔ s ≤ comap f t := by
@@ -292,3 +303,13 @@ instance : Lattice (ClosedSubmodule R N) where
 instance [T1Space N] : CompleteLattice (ClosedSubmodule R N) where
 
 end ClosedSubmodule
+
+section CompleteSpace
+
+instance {𝕜 H : Type*} [Semiring 𝕜] [AddCommMonoid H] [UniformSpace H] [Module 𝕜 H]
+    [CompleteSpace H] (K : ClosedSubmodule 𝕜 H) : CompleteSpace K := by
+  apply IsComplete.completeSpace_coe
+  rw [← ClosedSubmodule.carrier_eq_coe]
+  exact K.isClosed'.isComplete
+
+end CompleteSpace

@@ -34,14 +34,14 @@ namespace CategoryTheory
 @[simps -isSimp]
 def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
   obj Δ := ComposableArrows C (Δ.unop.len)
-  map f x := x.whiskerLeft (SimplexCategory.toCat.map f.unop)
+  map f x := x.whiskerLeft (SimplexCategory.toCat.map f.unop).toFunctor
   -- `aesop` can prove these but is slow, help it out:
   map_id _ := rfl
   map_comp _ _ := rfl
 
 attribute [simp] nerve_obj
 
-instance {C : Type*} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
+instance {C : Type*} [Category* C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
   (inferInstance : Category (ComposableArrows C (Δ.unop.len)))
 
 section
@@ -69,11 +69,11 @@ end
 @[simps]
 def nerveFunctor : Cat.{v, u} ⥤ SSet where
   obj C := nerve C
-  map F := nerveMap F
+  map F := nerveMap F.toFunctor
 
 /-- The 0-simplices of the nerve of a category are equivalent to the objects of the category. -/
 def nerveEquiv {C : Type u} [Category.{v} C] : ComposableArrows C 0 ≃ C where
-  toFun f := f.obj ⟨0, by omega⟩
+  toFun f := f.obj ⟨0, by lia⟩
   invFun f := ComposableArrows.mk₀ f
   left_inv f := ComposableArrows.ext₀ rfl
 
@@ -135,7 +135,7 @@ lemma left_edge {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
 
 @[simp]
 lemma right_edge {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
-    ComposableArrows.right  (n := 1) e.edge = nerveEquiv y := by
+    ComposableArrows.right (n := 1) e.edge = nerveEquiv y := by
   simp only [← e.tgt_eq]
   rfl
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Adjunction.Mates
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Adjoints commute with shifts
@@ -53,7 +54,7 @@ open Category
 
 namespace Adjunction
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
   {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) {A : Type*} [AddMonoid A] [HasShift C A] [HasShift D A]
 
 namespace CommShift
@@ -252,7 +253,7 @@ instance instId : (Adjunction.id (C := C)).CommShift A where
   commShift_unit :=
     inferInstanceAs (NatTrans.CommShift (𝟭 C).leftUnitor.inv A)
 
-variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
+variable {E : Type*} [Category* E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
   [HasShift E A] [F'.CommShift A] [G'.CommShift A] [adj.CommShift A] [adj'.CommShift A]
 
 /-- Compatibility of `Adjunction.Commshift` with the composition of adjunctions.
@@ -292,7 +293,7 @@ end Adjunction
 
 namespace Adjunction
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
   {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) {A : Type*} [AddGroup A] [HasShift C A] [HasShift D A]
 
 namespace RightAdjointCommShift
@@ -485,7 +486,7 @@ end Adjunction
 
 namespace Equivalence
 
-variable {C D : Type*} [Category C] [Category D] (E : C ≌ D)
+variable {C D : Type*} [Category* C] [Category* D] (E : C ≌ D)
 
 section
 
@@ -508,8 +509,8 @@ instance [E.CommShift A] : NatTrans.CommShift E.unitIso.hom A :=
 instance [E.CommShift A] : NatTrans.CommShift E.counitIso.hom A :=
   inferInstanceAs (NatTrans.CommShift E.toAdjunction.counit A)
 
-instance [h : E.functor.CommShift A] : E.symm.inverse.CommShift A := h
-instance [h : E.inverse.CommShift A] : E.symm.functor.CommShift A := h
+instance : E.symm.inverse.CommShift A := inferInstanceAs (E.functor.CommShift A)
+instance : E.symm.functor.CommShift A := inferInstanceAs (E.inverse.CommShift A)
 
 /-- Constructor for `Equivalence.CommShift`. -/
 lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :
@@ -550,11 +551,11 @@ lemma mk'' (h : NatTrans.CommShift E.counitIso.hom A) :
   have := mk' E.symm A (inferInstanceAs (NatTrans.CommShift E.counitIso.inv A))
   inferInstanceAs (E.symm.symm.CommShift A)
 
-variable {F : Type*} [Category F] [HasShift F A] {E' : D ≌ F} [E.CommShift A]
+variable {F : Type*} [Category* F] [HasShift F A] {E' : D ≌ F} [E.CommShift A]
     [E'.functor.CommShift A] [E'.inverse.CommShift A] [E'.CommShift A]
 
 /--
-If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose forward functors are compatible with shifts,
+If `E : C ≌ D` and `E' : D ≌ F` are equivalences whose forward functors are compatible with shifts,
 so is `(E.trans E').functor`.
 -/
 instance : (E.trans E').functor.CommShift A := by
@@ -562,7 +563,7 @@ instance : (E.trans E').functor.CommShift A := by
   infer_instance
 
 /--
-If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose inverse functors are compatible with shifts,
+If `E : C ≌ D` and `E' : D ≌ F` are equivalences whose inverse functors are compatible with shifts,
 so is `(E.trans E').inverse`.
 -/
 instance : (E.trans E').inverse.CommShift A := by

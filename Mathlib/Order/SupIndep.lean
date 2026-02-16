@@ -89,7 +89,7 @@ theorem SupIndep.subset (ht : t.SupIndep f) (h : s ⊆ t) : s.SupIndep f := fun 
   ht (hu.trans h) (h hi)
 
 lemma SupIndep.mono (hf : s.SupIndep f) (h : ∀ i ∈ s, g i ≤ f i) : s.SupIndep g :=
-  fun _ ht j hj htj ↦  (hf ht hj htj).mono (h j hj) (sup_mono_fun fun b a ↦ h b (ht a))
+  fun _ ht j hj htj ↦ (hf ht hj htj).mono (h j hj) (sup_mono_fun fun b a ↦ h b (ht a))
 
 @[simp, grind ←]
 theorem supIndep_empty (f : ι → α) : (∅ : Finset ι).SupIndep f := fun _ _ a ha =>
@@ -238,6 +238,16 @@ theorem supIndep_product_iff {s : Finset ι} {t : Finset ι'} {f : ι × ι' →
   · suffices Disjoint ((s.image ((·, i))).sup f) ((s ×ˢ u).sup f) by
       simpa only [sup_image, sup_product_right]
     grind [Finset.SupIndep.disjoint_sup_sup, = product_eq_sprod, = disjoint_left]
+
+protected theorem SupIndep.union [DecidableEq ι] {s t : Finset ι} {f : ι → α}
+    (hs : s.SupIndep f) (ht : t.SupIndep f) (h : Disjoint (s.sup f) (t.sup f)) :
+    (s ∪ t).SupIndep f := by
+  rw [show s ∪ t = ({s, t} : Finset _).biUnion id by simp]
+  grind [SupIndep.biUnion, supIndep_pair]
+
+protected theorem SupIndep.insert [DecidableEq ι] {i : ι} {s : Finset ι} {f : ι → α}
+    (hs : s.SupIndep f) (h : Disjoint (f i) (s.sup f)) : (insert i s).SupIndep f := by
+  grind [insert_eq, SupIndep.union, sup_singleton]
 
 end IsModularLattice
 

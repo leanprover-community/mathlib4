@@ -29,7 +29,7 @@ and extensive topologies.
   finitary extensive category is locally surjective iff it is objectwise surjective.
 -/
 
-@[expose] public section
+public section
 
 universe w
 
@@ -37,7 +37,7 @@ open CategoryTheory Sheaf Limits Opposite
 
 namespace CategoryTheory
 
-variable {C : Type*} (D : Type*) [Category C] [Category D] {FD : D → D → Type*} {CD : D → Type w}
+variable {C : Type*} (D : Type*) [Category* C] [Category* D] {FD : D → D → Type*} {CD : D → Type w}
   [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD]
 
 lemma regularTopology.isLocallySurjective_iff [Preregular C] {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G) :
@@ -57,7 +57,6 @@ lemma regularTopology.isLocallySurjective_iff [Preregular C] {F G : Cᵒᵖ ⥤ 
     rw [regularTopology.mem_sieves_iff_hasEffectiveEpi]
     exact ⟨X', π, h, h'⟩
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       (h : Presheaf.IsLocallySurjective (extensiveTopology C) f) {X : C} :
@@ -108,7 +107,6 @@ lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
         ∀ (X : C), Function.Surjective (f.val.app (op X)) :=
   extensiveTopology.presheafIsLocallySurjective_iff _ f.val
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       (h : Presheaf.IsLocallySurjective (coherentTopology C) f) :

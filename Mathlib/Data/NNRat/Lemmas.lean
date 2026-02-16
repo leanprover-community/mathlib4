@@ -29,7 +29,7 @@ variable {α : Type*} {q : ℚ≥0}
 @[simp, norm_cast]
 lemma coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :
     ((s.indicator f a : ℚ≥0) : ℚ) = s.indicator (fun x ↦ ↑(f x)) a :=
-  (coeHom : ℚ≥0 →+ ℚ).map_indicator _ _ _
+  map_indicator coeHom _ _ _
 
 end NNRat
 

@@ -257,6 +257,10 @@ abbrev Iso :=
 @[inherit_doc] infixl:50 " ↪g " => Embedding
 @[inherit_doc] infixl:50 " ≃g " => Iso
 
+/-- `HomClass F G H` asserts that `F` is a type of adjacency-preserving morphism. -/
+abbrev HomClass (F : Type*) (G : SimpleGraph V) (H : SimpleGraph W) [FunLike F V W] :=
+  RelHomClass F G.Adj H.Adj
+
 namespace Hom
 
 variable {G G'} {G₁ G₂ : SimpleGraph V} {H : SimpleGraph W} (f : G →g G')
@@ -266,6 +270,8 @@ protected abbrev id : G →g G :=
   RelHom.id _
 
 @[simp, norm_cast] lemma coe_id : ⇑(Hom.id : G →g G) = id := rfl
+
+instance [IsEmpty (V → W)] : IsEmpty (G →g H) := DFunLike.coe.isEmpty
 
 instance [Subsingleton (V → W)] : Subsingleton (G →g H) := DFunLike.coe_injective.subsingleton
 

@@ -25,9 +25,9 @@ namespace CategoryTheory
 
 open Functor
 
-variable {C : Type*} [Category C]
-  {D : Type*} [Category D]
-  {E : Type*} [Category E]
+variable {C : Type*} [Category* C]
+  {D : Type*} [Category* D]
+  {E : Type*} [Category* E]
 
 section ReflectsIso
 

@@ -462,7 +462,7 @@ end CategoryTheory
 open CategoryTheory
 
 lemma Monotone.final_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J₂]
-    [IsDirected J₁ (· ≤ ·)] {f : J₁ → J₂} (hf : Monotone f) :
+    [IsDirectedOrder J₁] {f : J₁ → J₂} (hf : Monotone f) :
     hf.functor.Final ↔ ∀ (j₂ : J₂), ∃ (j₁ : J₁), j₂ ≤ f j₁ := by
   rw [Functor.final_iff_of_isFiltered]
   constructor

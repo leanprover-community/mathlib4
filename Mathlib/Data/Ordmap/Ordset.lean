@@ -188,8 +188,8 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     rw [hm.2.size_eq] at lr₁ lr₂ mr₁ mr₂
     by_cases mm : size ml + size mr ≤ 1
     · dsimp [delta, ratio] at lr₁ mr₁
-      have r1 : r.size = 1 := by omega
-      have l1 : l.size = 1 := by omega
+      have r1 : r.size = 1 := by lia
+      have l1 : l.size = 1 := by lia
       rw [r1, add_assoc] at lr₁
       rw [l1, r1]
       revert mm; cases size ml <;> cases size mr <;> intro mm
@@ -239,10 +239,10 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
   rw [hr.2.size_eq] at H3
   replace H3 : 2 * (size rl + size rr) ≤ 9 * size l + 3 ∨ size rl + size rr ≤ 2 :=
     H3.imp (@Nat.le_of_add_le_add_right _ 2 _) Nat.le_of_succ_le_succ
-  have H3_0 (l0 : size l = 0) : size rl + size rr ≤ 2 := by omega
+  have H3_0 (l0 : size l = 0) : size rl + size rr ≤ 2 := by lia
   have H3p : size l > 0 → 2 * (size rl + size rr) ≤ 9 * size l + 3 := fun l0 : 1 ≤ size l =>
     (or_iff_left_of_imp <| by lia).1 H3
-  have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by omega
+  have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by lia
   have hlp : size l > 0 → ¬size rl + size rr ≤ 1 := fun l0 hb =>
     absurd (le_trans (le_trans (Nat.mul_le_mul_left _ l0) H2) hb) (by decide)
   rw [Ordnode.rotateL_node]; split_ifs with h
@@ -477,7 +477,7 @@ theorem Valid.merge {l r} (hl : Valid l) (hr : Valid r)
     (sep : l.All fun x => r.All fun y => x < y) : Valid (@merge α l r) :=
   (Valid'.merge_aux hl hr sep).1
 
-theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [DecidableLE α] (f : α → α) (x : α)
+theorem insertWith.valid_aux [@Std.Total α (· ≤ ·)] [DecidableLE α] (f : α → α) (x : α)
     (hf : ∀ y, x ≤ y ∧ y ≤ x → x ≤ f y ∧ f y ≤ x) :
     ∀ {t o₁ o₂},
       Valid' o₁ t o₂ →
@@ -506,7 +506,7 @@ theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [DecidableLE α] (f : α �
         exact (e.add_left _).add_right _
       exact Or.inr ⟨_, e, h.3.1⟩
 
-theorem insertWith.valid [IsTotal α (· ≤ ·)] [DecidableLE α] (f : α → α) (x : α)
+theorem insertWith.valid [@Std.Total α (· ≤ ·)] [DecidableLE α] (f : α → α) (x : α)
     (hf : ∀ y, x ≤ y ∧ y ≤ x → x ≤ f y ∧ f y ≤ x) {t} (h : Valid t) : Valid (insertWith f x t) :=
   (insertWith.valid_aux _ _ hf h ⟨⟩ ⟨⟩).1
 
@@ -516,7 +516,7 @@ theorem insert_eq_insertWith [DecidableLE α] (x : α) :
   | node _ l y r => by
     unfold Ordnode.insert insertWith; cases cmpLE x y <;> simp [insert_eq_insertWith]
 
-theorem insert.valid [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) {t} (h : Valid t) :
+theorem insert.valid [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) {t} (h : Valid t) :
     Valid (Ordnode.insert x t) := by
   rw [insert_eq_insertWith]; exact insertWith.valid _ _ (fun _ _ => ⟨le_rfl, le_rfl⟩) h
 
@@ -526,7 +526,7 @@ theorem insert'_eq_insertWith [DecidableLE α] (x : α) :
   | node _ l y r => by
     unfold insert' insertWith; cases cmpLE x y <;> simp [insert'_eq_insertWith]
 
-theorem insert'.valid [IsTotal α (· ≤ ·)] [DecidableLE α]
+theorem insert'.valid [@Std.Total α (· ≤ ·)] [DecidableLE α]
     (x : α) {t} (h : Valid t) : Valid (insert' x t) := by
   rw [insert'_eq_insertWith]; exact insertWith.valid _ _ (fun _ => id) h
 
@@ -688,16 +688,16 @@ instance Empty.instDecidablePred : DecidablePred (@Empty α _) :=
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
   If an equivalent element is already in the set, this replaces it. -/
-protected def insert [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
+protected def insert [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
     Ordset α :=
   ⟨Ordnode.insert x s.1, insert.valid _ s.2⟩
 
-instance instInsert [IsTotal α (· ≤ ·)] [DecidableLE α] : Insert α (Ordset α) :=
+instance instInsert [@Std.Total α (· ≤ ·)] [DecidableLE α] : Insert α (Ordset α) :=
   ⟨Ordset.insert⟩
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
   If an equivalent element is already in the set, the set is returned as is. -/
-nonrec def insert' [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
+nonrec def insert' [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
     Ordset α :=
   ⟨insert' x s.1, insert'.valid _ s.2⟩
 

@@ -95,7 +95,7 @@ theorem tendsto_approxOn_Lp_eLpNorm [OpensMeasurableSpace E] {f : β → E} (hf 
   · simpa only [hp_zero, eLpNorm_exponent_zero] using tendsto_const_nhds
   have hp : 0 < p.toReal := toReal_pos hp_zero hp_ne_top
   suffices Tendsto (fun n => ∫⁻ x, ‖approxOn f hf s y₀ h₀ n x - f x‖ₑ ^ p.toReal ∂μ) atTop (𝓝 0) by
-    simp only [eLpNorm_eq_lintegral_rpow_enorm hp_zero hp_ne_top]
+    simp only [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_zero hp_ne_top]
     convert continuous_rpow_const.continuousAt.tendsto.comp this
     simp [zero_rpow_of_pos (_root_.inv_pos.mpr hp)]
   -- We simply check the conditions of the Dominated Convergence Theorem:
@@ -137,7 +137,7 @@ theorem memLp_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : 
   have hf' : MemLp (fun x => ‖f x - y₀‖) p μ := by
     have h_meas : Measurable fun x => ‖f x - y₀‖ := by
       simp only [← dist_eq_norm]
-      exact (continuous_id.dist continuous_const).measurable.comp fmeas
+      fun_prop
     refine ⟨h_meas.aemeasurable.aestronglyMeasurable, ?_⟩
     rw [eLpNorm_norm]
     convert eLpNorm_add_lt_top hf hi₀.neg with x
@@ -695,8 +695,6 @@ def coeToLp : Lp.simpleFunc E p μ →L[𝕜] Lp E p μ :=
     map_smul' := fun _ _ => rfl
     cont := Lp.simpleFunc.uniformContinuous.continuous }
 
-variable {α E 𝕜}
-
 end CoeToLp
 
 section Order
@@ -788,8 +786,6 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
     rw [Lp.simpleFunc.toLp_eq_toLp]
     exact h_toLp n
   · rfl
-
-variable {p μ G}
 
 end Order
 

@@ -78,7 +78,6 @@ theorem id_map {α : Type _} (x : F α) : id <$> x = x := by
 theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) (x : F α) :
     (g ∘ f) <$> x = g <$> f <$> x := by
   rw [← abs_repr x]
-  obtain ⟨a, f⟩ := repr x
   rw [← abs_map, ← abs_map, ← abs_map]
   rfl
 

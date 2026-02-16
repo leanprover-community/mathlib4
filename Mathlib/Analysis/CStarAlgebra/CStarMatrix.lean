@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Topology.UniformSpace.Matrix
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 /-!
 # Matrices with entries in a C⋆-algebra
@@ -253,9 +254,13 @@ def mapₗ [Semiring R] [Semiring S] {σ : R →+* S} [AddCommMonoid A] [AddComm
   map_add' M N := by ext; simp
   map_smul' r M := by ext; simp
 
+section decidable
+
+variable [DecidableEq n]
+
 section zero_one
 
-variable [Zero A] [One A] [DecidableEq n]
+variable [Zero A] [One A]
 
 instance instOne : One (CStarMatrix n n A) := inferInstanceAs <| One (Matrix n n A)
 
@@ -267,6 +272,8 @@ theorem one_apply_eq (i) : (1 : CStarMatrix n n A) i i = 1 := Matrix.one_apply_e
 @[simp] theorem one_apply_ne {i j} : i ≠ j → (1 : CStarMatrix n n A) i j = 0 := Matrix.one_apply_ne
 
 theorem one_apply_ne' {i j} : j ≠ i → (1 : CStarMatrix n n A) i j = 0 := Matrix.one_apply_ne'
+
+end zero_one
 
 instance instAddMonoidWithOne [AddMonoidWithOne A] : AddMonoidWithOne (CStarMatrix n n A) where
 
@@ -293,7 +300,7 @@ instance {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] :
 
 instance [Fintype n] [Mul A] [AddCommMonoid A] : Mul (CStarMatrix n n A) where mul M N := M * N
 
-end zero_one
+end decidable
 
 theorem mul_apply {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] {M : CStarMatrix l m A}
     {N : CStarMatrix m n A} {i k} : (M * N) i k = ∑ j, M i j * N j k := rfl
@@ -620,6 +627,7 @@ namespace CStarMatrix
 variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
+set_option backward.privateInPublic true in
 private noncomputable def normedAddCommGroupAux : NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
@@ -672,6 +680,7 @@ private lemma uniformInducing_toMatrixAux :
   AntilipschitzWith.isUniformInducing antilipschitzWith_toMatrixAux
     lipschitzWith_toMatrixAux.uniformContinuous
 
+set_option backward.privateInPublic true in
 private lemma uniformity_eq_aux :
     𝓤 (CStarMatrix m n A) = (𝓤[Pi.uniformSpace _] :
       Filter (CStarMatrix m n A × CStarMatrix m n A)) := by
@@ -683,6 +692,7 @@ private lemma uniformity_eq_aux :
   rfl
 
 open Bornology in
+set_option backward.privateInPublic true in
 private lemma cobounded_eq_aux :
     cobounded (CStarMatrix m n A) = @cobounded _ Pi.instBornology := by
   have : cobounded (CStarMatrix m n A) = Filter.comap ofMatrix.symm (cobounded _) := by
@@ -697,7 +707,7 @@ end TopologyAux
 
 namespace CStarMatrix
 
-section non_unital
+section NonUnital
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -719,6 +729,8 @@ instance instIsUniformAddGroup : IsUniformAddGroup (CStarMatrix m n A) :=
 instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [ContinuousSMul R A] :
     ContinuousSMul R (CStarMatrix m n A) := instContinuousSMulForall
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable instance instNormedAddCommGroup :
     NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCoreReplaceAll CStarMatrix.normedSpaceCore
@@ -774,9 +786,9 @@ noncomputable instance instPartialOrder :
 instance instStarOrderedRing :
     StarOrderedRing (CStarMatrix n n A) := CStarAlgebra.spectralOrderedRing _
 
-end non_unital
+end NonUnital
 
-section unital
+section Unital
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -790,9 +802,9 @@ noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A)
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r
 
 /-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
-noncomputable instance instCStarAlgebra [DecidableEq n] : CStarAlgebra (CStarMatrix n n A) where
+noncomputable instance instCStarAlgebra : CStarAlgebra (CStarMatrix n n A) where
 
-end unital
+end Unital
 
 section
 

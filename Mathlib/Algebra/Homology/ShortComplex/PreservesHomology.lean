@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C D : Type*} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D]
+variable {C D : Type*} [Category* C] [Category* D] [HasZeroMorphisms C] [HasZeroMorphisms D]
 
 namespace Functor
 

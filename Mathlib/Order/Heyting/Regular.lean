@@ -38,9 +38,9 @@ variable {α : Type*}
 
 namespace Heyting
 
-section HasCompl
+section Compl
 
-variable [HasCompl α] {a : α}
+variable [Compl α] {a : α}
 
 /-- An element of a Heyting algebra is regular if its double complement is itself. -/
 def IsRegular (a : α) : Prop :=
@@ -52,7 +52,7 @@ protected theorem IsRegular.eq : IsRegular a → aᶜᶜ = a :=
 instance IsRegular.decidablePred [DecidableEq α] : @DecidablePred α IsRegular := fun _ =>
   ‹DecidableEq α› _ _
 
-end HasCompl
+end Compl
 
 section HeytingAlgebra
 
@@ -127,7 +127,7 @@ instance inf : Min (Regular α) :=
 instance himp : HImp (Regular α) :=
   ⟨fun a b => ⟨a ⇨ b, a.2.himp b.2⟩⟩
 
-instance hasCompl : HasCompl (Regular α) :=
+instance : Compl (Regular α) :=
   ⟨fun a => ⟨aᶜ, isRegular_compl _⟩⟩
 
 @[simp, norm_cast]
@@ -153,8 +153,8 @@ theorem coe_compl (a : Regular α) : (↑aᶜ : α) = (a : α)ᶜ :=
 instance : Inhabited (Regular α) :=
   ⟨⊥⟩
 
-instance : SemilatticeInf (Regular α) :=
-  coe_injective.semilatticeInf _ coe_inf
+instance : PartialOrder (Regular α) :=
+  PartialOrder.lift _ coe_injective
 
 instance boundedOrder : BoundedOrder (Regular α) :=
   BoundedOrder.lift ((↑) : Regular α → α) (fun _ _ => id) coe_top coe_bot
@@ -198,7 +198,7 @@ theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜ�
 
 instance : BooleanAlgebra (Regular α) :=
   { Regular.lattice, Regular.boundedOrder, Regular.himp,
-    Regular.hasCompl with
+    Regular.instCompl with
     le_sup_inf := fun a b c =>
       coe_le_coe.1 <| by
         dsimp

@@ -11,7 +11,7 @@ public import Mathlib.Probability.Kernel.WithDensity
 /-!
 # Radon-Nikodym derivative and Lebesgue decomposition for kernels
 
-Let `α` and `γ` be two measurable space, where either `α` is countable or `γ` is
+Let `α` and `γ` be two measurable spaces, where either `α` is countable or `γ` is
 countably generated. Let `κ, η : Kernel α γ` be finite kernels.
 Then there exists a function `Kernel.rnDeriv κ η : α → γ → ℝ≥0∞` jointly measurable on `α × γ`
 and a kernel `Kernel.singularPart κ η : Kernel α γ` such that
@@ -198,9 +198,6 @@ lemma mem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
 lemma notMem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
     x ∉ mutuallySingularSetSlice κ η a ↔ rnDerivAux κ (κ + η) a x < 1 := by
   simp [mutuallySingularSetSlice]
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_mutuallySingularSetSlice := notMem_mutuallySingularSetSlice
 
 lemma measurableSet_mutuallySingularSet (κ η : Kernel α γ) :
     MeasurableSet (mutuallySingularSet κ η) :=

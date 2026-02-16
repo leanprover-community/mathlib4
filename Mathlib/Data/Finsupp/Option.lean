@@ -18,7 +18,7 @@ to construct `Option α →₀ M` from a map α →₀ M, and vice versa.
 
 As functions, these behave as `Option.elim'`, and as an application of `some` hence the names.
 
-We prove a variety of API lemmas, see `Data/Finsupp/Fin.lean` for comparison.
+We prove a variety of API lemmas, see `Mathlib/Data/Finsupp/Fin.lean` for comparison.
 
 ## Main declarations
 
@@ -87,7 +87,7 @@ theorem some_single_some (a : α) (m : M) :
     simp [single_apply]
 
 @[simp] lemma some_embDomain_some (f : α →₀ M) : (f.embDomain .some).some = f := by
-  ext; rw [some_apply]; exact embDomain_apply _ _ _
+  ext; rw [some_apply]; exact embDomain_apply_self _ _ _
 
 @[simp] lemma embDomain_some_none (f : α →₀ M) : f.embDomain .some .none = 0 :=
   embDomain_notin_range _ _ _ (by simp)
@@ -106,7 +106,7 @@ theorem some_update_none (f : Option α →₀ M) (a : M) :
 pairs of an element and a `Finsupp` on the original type. -/
 @[simps]
 noncomputable
-def optionEquiv [Zero M] : (Option α →₀ M) ≃ M × (α →₀ M) where
+def optionEquiv : (Option α →₀ M) ≃ M × (α →₀ M) where
   toFun P := (P none, P.some)
   invFun P := (P.2.embDomain .some).update none P.1
   left_inv P := by ext (_ | a) <;> simp [Finsupp.update]

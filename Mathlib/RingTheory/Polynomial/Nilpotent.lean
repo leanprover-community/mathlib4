@@ -168,7 +168,7 @@ theorem isUnit_iff_coeff_isUnit_isNilpotent :
     ← Polynomial.isNilpotent_iff]
 
 lemma isUnit_iff' :
-    IsUnit P ↔ IsUnit (eval 0 P) ∧ IsNilpotent (P /ₘ X)  := by
+    IsUnit P ↔ IsUnit (eval 0 P) ∧ IsNilpotent (P /ₘ X) := by
   suffices P = C (eval 0 P) + X * (P /ₘ X) by
     conv_lhs => rw [this]; simp
   conv_lhs => rw [← modByMonic_add_div P monic_X]
@@ -187,6 +187,12 @@ theorem not_isUnit_of_natDegree_pos_of_isReduced [IsReduced R] (p : R[X])
 theorem not_isUnit_of_degree_pos_of_isReduced [IsReduced R] (p : R[X])
     (hpl : 0 < p.degree) : ¬ IsUnit p :=
   not_isUnit_of_natDegree_pos_of_isReduced _ (natDegree_pos_iff_degree_pos.mpr hpl)
+
+instance : IsLocalHom (C : _ →+* Polynomial R) where
+  map_nonunit := by classical simp +contextual [isUnit_iff_coeff_isUnit_isNilpotent, coeff_C]
+
+instance : IsLocalHom (algebraMap R (Polynomial R)) :=
+  inferInstanceAs (IsLocalHom C)
 
 end CommRing
 

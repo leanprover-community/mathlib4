@@ -191,7 +191,7 @@ lemma dens_filter_add_dens_filter_not_eq_dens {α : Type*} [Fintype α] {s : Fin
     (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
     dens {a ∈ s | p a} + dens {a ∈ s | ¬ p a} = dens s := by
   classical
-  rw [← dens_union_of_disjoint (disjoint_filter_filter_neg ..), filter_union_filter_neg_eq]
+  rw [← dens_union_of_disjoint (disjoint_filter_filter_not ..), filter_union_filter_not_eq]
 
 lemma dens_union_le (s t : Finset α) : dens (s ∪ t) ≤ dens s + dens t :=
   dens_union_add_dens_inter s t ▸ le_add_of_nonneg_right zero_le'

@@ -23,7 +23,7 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, inverse function
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -89,19 +89,32 @@ theorem OpenPartialHomeomorph.hasDerivAt_symm (f : OpenPartialHomeomorph 𝕜 �
     HasDerivAt f.symm f'⁻¹ a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) hf' (f.eventually_right_inverse ha)
 
+theorem HasDerivWithinAt.tendsto_nhdsWithin_nhdsNE (h : HasDerivWithinAt f f' s x) (hf' : f' ≠ 0) :
+    Tendsto f (𝓝[s \ {x}] x) (𝓝[≠] f x) :=
+  h.hasFDerivWithinAt.tendsto_nhdsWithin_nhdsNE ⟨‖f'‖₊⁻¹, AntilipschitzWith.of_le_mul_dist
+    fun _ _ ↦ by simp [dist_eq_norm_sub, ← sub_smul, norm_smul]; field_simp; rfl⟩
+
 theorem HasDerivWithinAt.eventually_ne (h : HasDerivWithinAt f f' s x) (hf' : f' ≠ 0) :
     ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c :=
-  h.hasFDerivWithinAt.eventually_ne
-    ⟨‖f'‖⁻¹, fun z => by simp [norm_smul]; field_simp; rfl⟩
+  h.hasFDerivWithinAt.eventually_ne ⟨‖f'‖₊⁻¹, AntilipschitzWith.of_le_mul_dist
+    fun _ _ ↦ by simp [dist_eq_norm_sub, ← sub_smul, norm_smul]; field_simp; rfl⟩
+
+theorem HasDerivWithinAt.eventually_notMem (h : HasDerivWithinAt f f' s x) (hf' : f' ≠ 0)
+    (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t)) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ∉ t :=
+  h.hasFDerivWithinAt.eventually_notMem ⟨‖f'‖₊⁻¹, AntilipschitzWith.of_le_mul_dist
+    fun _ _ ↦ by simp [dist_eq_norm_sub, ← sub_smul, norm_smul]; field_simp; rfl⟩ t ht
+
+theorem HasDerivAt.tendsto_nhdsNE (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
+    Tendsto f (𝓝[≠] x) (𝓝[≠] f x) := by
+  simpa only [compl_eq_univ_diff] using (hasDerivWithinAt_univ.2 h).tendsto_nhdsWithin_nhdsNE hf'
 
 theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ c := by
   simpa only [compl_eq_univ_diff] using (hasDerivWithinAt_univ.2 h).eventually_ne hf'
 
-theorem HasDerivAt.tendsto_nhdsNE (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
-    Tendsto f (𝓝[≠] x) (𝓝[≠] f x) :=
-  tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ h.continuousAt.continuousWithinAt
-    (h.eventually_ne hf')
+theorem HasDerivAt.eventually_notMem (h : HasDerivAt f f' x) (hf' : f' ≠ 0)
+    (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t)) : ∀ᶠ z in 𝓝[≠] x, f z ∉ t := by
+  simpa only [compl_eq_univ_diff] using (hasDerivWithinAt_univ.2 h).eventually_notMem hf' t ht
 
 /-- If a function is equal to a constant at a set of points that accumulates to `x` in `s`,
 then its derivative within `s` at `x` equals zero,
@@ -113,11 +126,29 @@ theorem derivWithin_zero_of_frequently_const {c} (h : ∃ᶠ y in 𝓝[s \ {x}] 
     exact hf.hasDerivWithinAt.eventually_ne h
   · exact derivWithin_zero_of_not_differentiableWithinAt hf
 
+/-- If a function frequently (in `𝓝[s ∖ {x}] x`) takes values in a set `t` that does not
+accumulate at `f x`, then its derivative within `s` at `x` equals zero,
+either because it has derivative zero or because it isn't differentiable at this point. -/
+theorem derivWithin_zero_of_frequently_mem (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t))
+    (h : ∃ᶠ y in 𝓝[s \ {x}] x, f y ∈ t) : derivWithin f s x = 0 := by
+  by_cases hf : DifferentiableWithinAt 𝕜 f s x
+  · contrapose! h
+    exact hf.hasDerivWithinAt.eventually_notMem h t ht
+  · exact derivWithin_zero_of_not_differentiableWithinAt hf
+
 /-- If a function is equal to a constant at a set of points that accumulates to `x`,
 then its derivative at `x` equals zero,
 either because it has derivative zero or because it isn't differentiable at this point. -/
 theorem deriv_zero_of_frequently_const {c} (h : ∃ᶠ y in 𝓝[≠] x, f y = c) : deriv f x = 0 := by
   rw [← derivWithin_univ, derivWithin_zero_of_frequently_const]
+  rwa [← compl_eq_univ_diff]
+
+/-- If a function frequently (in `𝓝[≠] x`) takes values in a set `t` that does not
+accumulate at `f x`, then its derivative at `x` equals zero,
+either because it has derivative zero or because it isn't differentiable at this point. -/
+theorem deriv_zero_of_frequently_mem (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t))
+    (h : ∃ᶠ y in 𝓝[≠] x, f y ∈ t) : deriv f x = 0 := by
+  rw [← derivWithin_univ, derivWithin_zero_of_frequently_mem t ht]
   rwa [← compl_eq_univ_diff]
 
 theorem not_differentiableWithinAt_of_local_left_inverse_hasDerivWithinAt_zero {f g : 𝕜 → 𝕜} {a : 𝕜}

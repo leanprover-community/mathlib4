@@ -5,8 +5,9 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import ImportGraph.Imports
-public meta import Mathlib.Tactic.MinImports
+public meta import ImportGraph.Imports.ImportGraph
+public meta import ImportGraph.Graph.TransitiveClosure
+public import Mathlib.Tactic.MinImports
 
 /-! # The `minImports` linter
 
@@ -19,6 +20,9 @@ information.
 It also works incrementally, accumulating increasing import information.
 This is better suited, for instance, to split files.
 -/
+
+set_option backward.privateInPublic true
+set_option backward.privateInPublic.warn false
 
 meta section
 

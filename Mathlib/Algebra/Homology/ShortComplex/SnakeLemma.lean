@@ -53,7 +53,7 @@ namespace CategoryTheory
 
 open Category Limits Preadditive
 
-variable (C : Type*) [Category C] [Abelian C]
+variable (C : Type*) [Category* C] [Abelian C]
 
 namespace ShortComplex
 

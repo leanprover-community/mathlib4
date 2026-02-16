@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 open Localization
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C) {A : Type*} [Category A]
+variable {C : Type*} [Category* C] (J : GrothendieckTopology C) {A : Type*} [Category* A]
 
 namespace GrothendieckTopology
 
@@ -49,9 +49,6 @@ lemma W_sheafToPresheaf_map_iff_isIso {F₁ F₂ : Sheaf J A} (φ : F₁ ⟶ F�
     J.W ((sheafToPresheaf J A).map φ) ↔ IsIso φ := by
   rw [W_eq_isLocal_range_sheafToPresheaf_obj,
     ObjectProperty.isLocal_iff_isIso _ _ ⟨_, rfl⟩ ⟨_, rfl⟩, isIso_iff_of_reflects_iso]
-
-@[deprecated (since := "2025-07-27")]
-alias W_sheafToPreheaf_map_iff_isIso := W_sheafToPresheaf_map_iff_isIso
 
 section Adjunction
 

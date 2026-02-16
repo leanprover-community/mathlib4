@@ -88,7 +88,7 @@ protected theorem IsClosed.pathComponent (x : X) : IsClosed (pathComponent x) :=
   intro y hxy
   rcases (path_connected_basis y).ex_mem with ⟨V, hVy, hVc⟩
   filter_upwards [hVy] with z hz hxz
-  exact hxy <|  hxz.trans (hVc.joinedIn _ hz _ (mem_of_mem_nhds hVy)).joined
+  exact hxy <| hxz.trans (hVc.joinedIn _ hz _ (mem_of_mem_nhds hVy)).joined
 
 /-- In a locally path connected space, each path component is a clopen set. -/
 protected theorem IsClopen.pathComponent (x : X) : IsClopen (pathComponent x) :=

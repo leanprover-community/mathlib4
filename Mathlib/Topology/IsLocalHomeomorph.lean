@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 public import Mathlib.Topology.SeparatedMap
 
 /-!
@@ -70,7 +70,7 @@ theorem discreteTopology_of_image (h : IsLocalHomeomorphOn f s)
     have ⟨U, hU, eq⟩ := isOpen_discrete {(⟨_, _, x.2, rfl⟩ : e '' s)}
     refine ⟨e.source ∩ e ⁻¹' U, e.continuousOn_toFun.isOpen_inter_preimage e.open_source hU,
       subset_antisymm (fun x' mem ↦ Subtype.ext <| e.injOn mem.1 hx ?_) ?_⟩
-    · exact Subtype.ext_iff.mp (eq.subset (a := ⟨_, x', x'.2, rfl⟩) mem.2)
+    · simpa using Set.subset_singleton_iff.1 eq.subset ⟨_, x', x'.2, rfl⟩ mem.2
     · rintro x rfl; exact ⟨hx, eq.superset rfl⟩
 
 lemma isDiscrete_of_image (h : IsLocalHomeomorphOn f s)
@@ -250,9 +250,11 @@ theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injectiv
   .of_continuous_injective_isOpenMap hf.continuous hi hf.isOpenMap
 
 /-- A bijective local homeomorphism is a homeomorphism. -/
-noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
+noncomputable def toHomeomorphOfBijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
     X ≃ₜ Y :=
   (Equiv.ofBijective f hb).toHomeomorphOfContinuousOpen hf.continuous hf.isOpenMap
+
+@[deprecated (since := "2025-12-19")] alias toHomeomorph_of_bijective := toHomeomorphOfBijective
 
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
 theorem isOpenEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : IsOpenEmbedding (g ∘ f))

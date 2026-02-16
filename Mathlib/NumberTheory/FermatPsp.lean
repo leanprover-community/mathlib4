@@ -39,7 +39,7 @@ Note that all composite numbers are pseudoprimes to base 0 and 1, and that the d
 that 0 and 1 are probable primes to any base.
 
 The main theorems are
-- `Nat.exists_infinite_pseudoprimes`: there are infinite pseudoprimes to any base `b ≥ 1`
+- `Nat.exists_infinite_pseudoprimes`: there are infinitely many pseudoprimes to any base `b ≥ 1`
 -/
 
 @[expose] public section
@@ -199,11 +199,11 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   have hi_A : 1 < A := a_id_helper (Nat.succ_le_iff.mp b_ge_two) (Nat.Prime.one_lt p_prime)
   have hi_B : 1 < B := b_id_helper (Nat.succ_le_iff.mp b_ge_two) p_gt_two
   have hi_AB : 1 < A * B := one_lt_mul'' hi_A hi_B
-  have hi_b : 0 < b := by omega
+  have hi_b : 0 < b := by lia
   have hi_p : 1 ≤ p := Nat.one_le_of_lt p_gt_two
   have hi_bsquared : 0 < b ^ 2 - 1 := by
     have := Nat.pow_le_pow_left b_ge_two 2
-    omega
+    lia
   have hi_bpowtwop : 1 ≤ b ^ (2 * p) := Nat.one_le_pow (2 * p) b hi_b
   have hi_bpowpsubone : 1 ≤ b ^ (p - 1) := Nat.one_le_pow (p - 1) b hi_b
   -- Other useful facts
@@ -313,7 +313,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
   suffices h : p < (b ^ 2) ^ (p - 1) by gcongr
   rw [← pow_mul, Nat.mul_sub_left_distrib, mul_one]
   have : 2 ≤ 2 * p - 2 := le_tsub_of_add_le_left (show 4 ≤ 2 * p by lia)
-  have : 2 + p ≤ 2 * p := by omega
+  have : 2 + p ≤ 2 * p := by lia
   have : p ≤ 2 * p - 2 := le_tsub_of_add_le_left this
   exact this.trans_lt (Nat.lt_pow_self b_ge_two)
 
@@ -336,7 +336,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
     have h₂ : 4 ≤ b ^ 2 := pow_le_pow_left' b_ge_two 2
     have h₃ : 0 < b ^ 2 - 1 := tsub_pos_of_lt (lt_of_lt_of_le (by simp) h₂)
     have h₄ : 0 < b * (b ^ 2 - 1) := mul_pos h₁ h₃
-    have h₅ : b * (b ^ 2 - 1) < p := by omega
+    have h₅ : b * (b ^ 2 - 1) < p := by lia
     have h₆ : ¬p ∣ b * (b ^ 2 - 1) := Nat.not_dvd_of_pos_of_lt h₄ h₅
     have h₇ : b ≤ b * (b ^ 2 - 1) := Nat.le_mul_of_pos_right _ h₃
     have h₈ : 2 ≤ b * (b ^ 2 - 1) := le_trans b_ge_two h₇
@@ -349,7 +349,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
   -- If `¬2 ≤ b`, then `b = 1`. Since all composite numbers are pseudoprimes to base 1, we can pick
   -- any composite number greater than m. We choose `2 * (m + 2)` because it is greater than `m` and
   -- is composite for all natural numbers `m`.
-  · have h₁ : b = 1 := by omega
+  · have h₁ : b = 1 := by lia
     rw [h₁]
     use 2 * (m + 2)
     have : ¬Nat.Prime (2 * (m + 2)) := Nat.not_prime_mul (by lia) (by lia)

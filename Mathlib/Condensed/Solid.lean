@@ -76,7 +76,7 @@ end Condensed
 The predicate on condensed `R`-modules describing the property of being solid.
 
 TODO: This is not the correct definition of solid `R`-modules for a general `R`. The correct one is
-as follows: Use this to define solid modules over a finite type `ℤ`-algebra `R`. In particular this
+as follows: Use this to define solid modules over a finite type `ℤ`-algebra `R`. In particular this
 gives a definition of solid modules over `ℤ[X]` (polynomials in one variable). Then a solid
 `R`-module over a general ring `R` is the condition that for every `r ∈ R` and every ring
 homomorphism `ℤ[X] → R` such that `X` maps to `r`, the underlying `ℤ[X]`-module is solid.

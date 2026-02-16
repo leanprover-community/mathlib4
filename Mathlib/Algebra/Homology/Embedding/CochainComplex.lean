@@ -26,7 +26,7 @@ open CategoryTheory Category Limits ComplexShape ZeroObject
 
 namespace CochainComplex
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 open HomologicalComplex
 
@@ -210,6 +210,10 @@ variable [HasZeroObject C]
 
 instance (X : CochainComplex C ℕ) :
     CochainComplex.IsStrictlyGE (X.extend embeddingUpNat) 0 where
+  isZero _ _ := isZero_extend_X _ _ _ (by aesop)
+
+instance (X : ChainComplex C ℕ) :
+    CochainComplex.IsStrictlyLE (X.extend embeddingDownNat) 0 where
   isZero _ _ := isZero_extend_X _ _ _ (by aesop)
 
 /-- A cochain complex that is both strictly `≤ n` and `≥ n` is isomorphic to

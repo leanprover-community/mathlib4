@@ -27,7 +27,7 @@ and its dual.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Topology Filter
 

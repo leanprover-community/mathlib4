@@ -17,7 +17,7 @@ public import Mathlib.Data.DFinsupp.Defs
   are equal on each `single a b`, then they are equal.
 -/
 
-@[expose] public section
+public section
 
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l

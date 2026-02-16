@@ -52,10 +52,10 @@ namespace CategoryTheory
 
 open Category Limits Pretriangulated ZeroObject Preadditive
 
-variable {C D A : Type*} [Category C] [HasShift C ℤ]
-  [Category D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
+variable {C D A : Type*} [Category* C] [HasShift C ℤ]
+  [Category* D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
   [∀ (n : ℤ), (CategoryTheory.shiftFunctor D n).Additive] [Pretriangulated D]
-  [Category A]
+  [Category* A]
 
 namespace Functor
 
@@ -269,9 +269,6 @@ lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
     apply isIso_of_mono_of_epi
   · intros
     constructor <;> infer_instance
-
-@[deprecated (since := "2025-07-21")]
-alias mem_homologicalKernel_W_iff := mem_homologicalKernel_trW_iff
 
 open ComposableArrows
 

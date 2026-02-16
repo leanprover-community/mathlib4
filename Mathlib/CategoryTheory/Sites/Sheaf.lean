@@ -99,17 +99,17 @@ def conesEquivSieveCompatibleFamily :
       { x : FamilyOfElements (P ⋙ coyoneda.obj E) (S : Presieve X) // x.SieveCompatible } where
   toFun π :=
     ⟨fun _ f h => π.app (op ⟨Over.mk f, h⟩), fun X Y f g hf => by
-      apply (id_comp _).symm.trans
-      dsimp
-      exact π.naturality (Quiver.Hom.op (Over.homMk _ (by rfl)))⟩
+      let φ : S.arrows.categoryMk (g ≫ f) (S.downward_closed hf g) ⟶
+        S.arrows.categoryMk f hf := ObjectProperty.homMk (Over.homMk _ (by rfl))
+      simpa using π.naturality φ.op⟩
   invFun x :=
     { app := fun f => x.1 f.unop.1.hom f.unop.2
       naturality := fun f f' g => by
-        refine Eq.trans ?_ (x.2 f.unop.1.hom g.unop.left f.unop.2)
-        dsimp
-        rw [id_comp]
+        have := x.2 f.unop.1.hom g.unop.hom.left f.unop.2
+        dsimp at this ⊢
+        rw [id_comp, ← this]
         convert rfl
-        rw [Over.w] }
+        simp only [Over.w] }
 
 variable {P S E}
 variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)

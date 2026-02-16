@@ -6,7 +6,6 @@ Authors: Jeremy Avigad
 module
 
 public import Batteries.Logic
-public import Batteries.Tactic.Init
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Lemma
@@ -124,9 +123,9 @@ lemma inductionOn'_sub_one (hz : z ≤ b) :
   rw [hn]
   obtain _ | n := n
   · change _ = -1 at hn
-    have : z = b := by omega
+    have : z = b := by lia
     subst this; rw [inductionOn'_self]; exact heq_of_eq rfl
-  · have : z = b + -[n+1] := by rw [Int.negSucc_eq] at hn ⊢; omega
+  · have : z = b + -[n+1] := by rw [Int.negSucc_eq] at hn ⊢; lia
     subst this
     refine (cast_heq _ _).trans ?_
     congr
@@ -164,8 +163,8 @@ and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
 @[elab_as_elim] protected def strongRec (n : ℤ) : motive n := by
   refine if hnm : n < m then lt n hnm else ge n (by lia) (n.inductionOn' m lt ?_ ?_)
   · intro _n _ ih l _
-    exact if hlm : l < m then lt l hlm else ge l (by omega) fun k _ ↦ ih k (by omega)
-  · exact fun n _ hn l _ ↦ hn l (by omega)
+    exact if hlm : l < m then lt l hlm else ge l (by lia) fun k _ ↦ ih k (by lia)
+  · exact fun n _ hn l _ ↦ hn l (by lia)
 
 variable {lt ge}
 lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dif_pos _
@@ -255,6 +254,12 @@ lemma div_lt_div_iff_of_dvd_of_neg_of_neg (hb : b < 0) (hd : d < 0) (hba : b ∣
 lemma emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
   emod_two_eq n
 
+theorem ext_ediv_emod {n a b : ℤ} (H0 : a / n = b / n) (H1 : a % n = b % n) : a = b :=
+  (mul_ediv_add_emod a n).symm.trans (H0 ▸ H1 ▸ mul_ediv_add_emod b n)
+
+theorem ext_ediv_emod_iff (n a b : ℤ) : a = b ↔ a / n = b / n ∧ a % n = b % n := by
+  grind [ext_ediv_emod]
+
 /-! ### dvd -/
 
 lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c :=
@@ -300,8 +305,7 @@ lemma le_add_iff_lt_of_dvd_sub (ha : 0 < a) (hab : a ∣ c - b) : a + b ≤ c �
 /-! ### sign -/
 
 lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
-  have : (1 : ℤ) ≠ -1 := by decide
-  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm] <;> omega
+  lia
 
 /-! ### toNat -/
 
@@ -319,9 +323,6 @@ lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) 
 
 lemma toNat_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by lia
 
-@[deprecated (since := "2025-05-24")]
-alias toNat_lt'' := toNat_lt_of_ne_zero
-
 /-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
 def natMod (m n : ℤ) : ℕ := (m % n).toNat
 
@@ -330,5 +331,10 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
 
 /-- For use in `Mathlib/Tactic/NormNum/Pow.lean` -/
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
+
+@[simp] lemma gcd_ofNat_negSucc (m n : ℕ) : gcd m (negSucc n) = m.gcd (n + 1) := by simp [gcd]
+@[simp] lemma gcd_negSucc_ofNat (m n : ℕ) : gcd (negSucc m) n = (m + 1).gcd n := by simp [gcd]
+@[simp] lemma gcd_negSucc_negSucc (m n : ℕ) :
+    (negSucc m).gcd (negSucc n) = (m + 1).gcd (n + 1) := by simp [gcd]
 
 end Int

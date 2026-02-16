@@ -152,6 +152,15 @@ lemma coe_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) : f.compLeft
 lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
     f.compLeft g a = g (f a) := by simp [coe_compLeft hg f]
 
+/-- A compactly supported continuous function gives rise to a bounded continuous function. -/
+@[simps] def toBoundedContinuousFunction {β : Type*} [PseudoMetricSpace β] [Zero β]
+    (f : C_c(α, β)) : BoundedContinuousFunction α β where
+  toFun := f
+  map_bounded' := by
+    have : IsCompact (Set.range f) := f.hasCompactSupport.isCompact_range f.continuous
+    rcases Metric.isBounded_iff.1 this.isBounded with ⟨C, hC⟩
+    exact ⟨C, by grind⟩
+
 end Basics
 
 /-! ### Algebraic structure
@@ -456,7 +465,7 @@ instance instSup : Max C_c(α, β) where max f g :=
 @[simp] lemma sup_apply (f g : C_c(α, β)) (a : α) : (f ⊔ g) a = f a ⊔ g a := rfl
 
 instance semilatticeSup : SemilatticeSup C_c(α, β) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 lemma finsetSup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
     s.sup' H f a = s.sup' H fun i ↦ f i a :=
@@ -482,7 +491,7 @@ instance instInf : Min C_c(α, β) where min f g :=
 @[simp] lemma inf_apply (f g : C_c(α, β)) (a : α) : (f ⊓ g) a = f a ⊓ g a := rfl
 
 instance semilatticeInf : SemilatticeInf C_c(α, β) :=
-  DFunLike.coe_injective.semilatticeInf _ coe_inf
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl coe_inf
 
 lemma finsetInf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
     s.inf' H f a = s.inf' H fun i ↦ f i a :=
@@ -498,9 +507,7 @@ section Lattice
 
 variable [TopologicalSpace β]
 
-instance [Lattice β] [TopologicalLattice β] [Zero β] :
-    Lattice C_c(α, β) :=
-  DFunLike.coe_injective.lattice _ coe_sup coe_inf
+instance [Lattice β] [TopologicalLattice β] [Zero β] : Lattice C_c(α, β) where
 
 instance instMulLeftMono [PartialOrder β] [MulZeroClass β] [ContinuousMul β] [MulLeftMono β] :
     MulLeftMono C_c(α, β) :=
@@ -676,8 +683,8 @@ protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f�
   · ext x
     simpa [← NNReal.coe_add] using add_tsub_cancel_of_le (h x)
 
-/-- The nonnegative part of a bounded continuous `ℝ`-valued function as a bounded
-continuous `ℝ≥0`-valued function. -/
+/-- The nonnegative part of a continuous compactly supported `ℝ`-valued function as a
+continuous compactly supported `ℝ≥0`-valued function. -/
 noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where
   toFun := Real.toNNReal.comp f.toFun
   continuous_toFun := Continuous.comp continuous_real_toNNReal f.continuous
@@ -824,22 +831,6 @@ lemma eq_toNNRealLinear_toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ�
     toNNRealLinear (toRealPositiveLinear Λ) = Λ := by
   ext f
   simp
-
-@[deprecated (since := "2025-08-08")]
-alias toRealLinear := toRealPositiveLinear
-
-@[deprecated (since := "2025-08-08")]
-alias toRealLinear_apply := toRealPositiveLinear_apply
-
-@[deprecated map_nonneg (since := "2025-08-08")]
-lemma toRealLinear_nonneg (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (g : C_c(α, ℝ)) (hg : 0 ≤ g) :
-    0 ≤ toRealPositiveLinear Λ g := map_nonneg _ hg
-
-@[deprecated (since := "2025-08-08")]
-alias eq_toRealLinear_toReal := eq_toRealPositiveLinear_toReal
-
-@[deprecated (since := "2025-08-08")]
-alias eq_toNNRealLinear_toRealLinear := eq_toNNRealLinear_toRealPositiveLinear
 
 end toRealPositiveLinear
 

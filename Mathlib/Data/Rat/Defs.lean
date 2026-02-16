@@ -102,10 +102,6 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
   exact (divInt_eq_divInt_iff (f0 d₁0 d₂0) (f0 b0 d0)).2
     (H ((divInt_eq_divInt_iff b0 d₁0).1 ha) ((divInt_eq_divInt_iff d0 d₂0).1 hc))
 
-attribute [simp] divInt_add_divInt
-
-attribute [simp] neg_divInt
-
 lemma neg_def (q : ℚ) : -q = -q.num /. q.den := by rw [← neg_divInt, num_divInt_den]
 
 @[simp] lemma divInt_neg (n d : ℤ) : n /. -d = -n /. d := divInt_neg' ..
@@ -152,7 +148,7 @@ variable (a b c : ℚ)
 lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one, Rat.intCast_one]
 
 protected theorem zero_ne_one : 0 ≠ (1 : ℚ) := by
-  rw [ne_comm, ← divInt_one_one, divInt_ne_zero] <;> omega
+  rw [ne_comm, ← divInt_one_one, divInt_ne_zero] <;> lia
 
 attribute [simp] mkRat_eq_zero
 
