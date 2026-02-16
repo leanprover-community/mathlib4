@@ -174,7 +174,7 @@ theorem ord_irreducible (ϖ : R) (hϖ : Irreducible ϖ) : ord R ϖ = 1 := by
   infer_instance
 
 variable (R) in
-lemma IsDiscreteValutationRing.krullDim_eq_one : ¬ KrullDimLE 0 R := by
+lemma IsDiscreteValutationRing.not_krullDimLE_zero : ¬ KrullDimLE 0 R := by
   intro a
   have : IsLocalRing R := by exact IsLocalRing.of_singleton_maximalSpectrum
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
@@ -195,7 +195,7 @@ lemma ord_eq_addVal (x : R) : ord R x = IsDiscreteValuationRing.addVal R x := by
     rw [Ideal.span_singleton_zero] at art
     have : IsArtinianRing R :=
       (LinearEquiv.isArtinian_iff (Submodule.quotEquivOfEqBot ⊥ rfl).symm).mpr art
-    exact (IsDiscreteValutationRing.krullDim_eq_one R) (PrimeSpectrum.instKrullDimLEOfNatNat R)
+    exact (IsDiscreteValutationRing.not_krullDimLE_zero R) (PrimeSpectrum.instKrullDimLEOfNatNat R)
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
   obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hx hϖ
   rw [ord_mul, ord_pow, ord_irreducible ϖ hϖ]
