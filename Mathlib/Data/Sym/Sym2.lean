@@ -673,8 +673,7 @@ lemma fromRel_relationMap {r : α → α → Prop} (hr : Symmetric r) (f : α �
 def fromRelNdrec {motive : Sort*} {sym : Symmetric r} (hz : z ∈ fromRel sym)
     (f : (a b : α) → r a b → motive) (h : ∀ (a b : α) (h : r a b), f a b h = f b a (sym h)) :
     motive :=
-  z.hrec (fun p ↦ f p.fst p.snd)
-    (fun _ _ ↦ Function.hfunext (sym.iff .. |>.eq) fun _ _ _ ↦ heq_of_eq <| h ..) hz
+  z.hrec f (fun _ _ ↦ Function.hfunext (sym.iff .. |>.eq) fun _ _ _ ↦ heq_of_eq <| h ..) hz
 
 /-- The `fromRel` set of a symmetric relation `r` is equivalent to summing that set restricted to
 fibers of `f` -/
