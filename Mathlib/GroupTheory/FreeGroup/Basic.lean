@@ -880,7 +880,7 @@ end Sum
 
 /-- The bijection between the free group on the empty type, and a type with one element. -/
 @[to_additive
-  (attr := deprecated "Use `Equiv.ofUnique (FreeGroup Empty) Unit` instead, \
+  (attr := deprecated "Use `Equiv.ofUnique (FreeGroup Empty) Unit` instead,
 or `MulEquiv.ofUnique (FreeGroup Empty) Unit` for the multiplicative version instead."
 (since := "2026-02-11"))
   /-- The bijection between the additive free group on the empty type,
