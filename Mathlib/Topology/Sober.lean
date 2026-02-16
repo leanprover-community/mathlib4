@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.OpenCover
-public import Mathlib.Algebra.HierarchyDesign
 public import Mathlib.Order.KrullDimension
 
 /-!
@@ -175,60 +174,6 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     refine specializes_iff_closure_subset.trans ?_
     simp
     rfl
-
-
-@[simp]
-lemma coe_irreducibleEquivPoints_symm_apply [QuasiSober α] [T0Space α] (x : α) :
-    (irreducibleSetEquivPoints.symm x : Set α) = closure {x} := rfl
-
-open TopologicalSpace Topology Order Set IrreducibleCloseds
-
-@[simp]
-lemma coe_mapOrderIso {U X : Type*} [TopologicalSpace U]
-    [TopologicalSpace X] {f : U → X} (hf : IsOpenEmbedding f) (Z) :
-    (mapOrderIso f hf Z : IrreducibleCloseds X) =
-      map f hf.continuous Z :=
-  rfl
-
-lemma Topology.IsOpenEmbedding.coheight_map {U X : Type*} [TopologicalSpace U]
-    [TopologicalSpace X] {f : U → X} (hf : IsOpenEmbedding f)
-    (Z : TopologicalSpace.IrreducibleCloseds U) :
-    Order.coheight (map f hf.continuous Z) = Order.coheight Z := by
-  rw [← coheight_orderIso (mapOrderIso f hf) Z]
-  let g : {V : IrreducibleCloseds X | (f ⁻¹' ↑V).Nonempty} ↪o
-      IrreducibleCloseds X :=
-    OrderEmbedding.subtype {V : IrreducibleCloseds X | (f ⁻¹' V).Nonempty}
-  let a := (mapOrderIso f hf) Z
-  have : ∀ p : LTSeries (IrreducibleCloseds X), p.head = g a →
-         ∃ p' : LTSeries ({V : IrreducibleCloseds X | (f ⁻¹' ↑V).Nonempty}),
-           p'.head = a ∧ p = p'.map g (OrderEmbedding.strictMono g) := fun p hp ↦ by
-    let p' : LTSeries {V : IrreducibleCloseds X | (f ⁻¹' ↑V).Nonempty} := {
-      length := p.length
-      toFun i := {
-        val := p i
-        property := by
-          suffices  ¬ f ⁻¹' a = ∅ by
-            rw[← Ne, ← nonempty_iff_ne_empty] at this
-            exact Nonempty.mono (fun _ b ↦ (hp ▸ LTSeries.head_le p i) b) this
-          exact nonempty_iff_ne_empty.mp a.2
-      }
-      step := p.step
-    }
-    exact ⟨p', SetCoe.ext hp, rfl⟩
-  exact (coheight_eq_of_strictMono g (fun _ _ a ↦ a)
-     ((mapOrderIso f hf) Z) this).symm
-
-
-lemma Topology.IsOpenEmbedding.coheight_eq {U X : Type*} [TopologicalSpace U] [TopologicalSpace X]
-    [QuasiSober X] [T0Space X] [QuasiSober U] [T0Space U]
-    {x : U} (f : U → X) (hf : Continuous f) (hf' : IsOpenEmbedding f) :
-    coheight (f x) = coheight x := by
-  rw [← coheight_orderIso (irreducibleSetEquivPoints (α := X)).symm (f x),
-    ← coheight_orderIso (irreducibleSetEquivPoints (α := U)).symm x,
-    ← Topology.IsOpenEmbedding.coheight_map hf']
-  congr
-  ext : 1
-  simp [closure_image_closure hf]
 
 lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :
     QuasiSober α where
