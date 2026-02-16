@@ -211,11 +211,15 @@ lemma AdicCompletion.isMaximal_map (m : Ideal R) [m.IsMaximal] (le : I ≤ m) (f
     Ideal.IsMaximal.map_of_surjective_of_ker_le Ideal.Quotient.mk_surjective (by simpa using le)
   exact Ideal.comap_isMaximal_of_surjective _ (evalOneₐ_surjective I)
 
-instance [IsNoetherianRing R] [IsLocalRing R] : IsLocalRing (AdicCompletion (maximalIdeal R) R) :=
+lemma AdicCompletion.isLocalRing_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
+    IsLocalRing (AdicCompletion (maximalIdeal R) R) :=
   @isLocalRing_of_isAdicComplete_maximal _ _
     ((maximalIdeal R).map (algebraMap R (AdicCompletion (maximalIdeal R) R)))
-    (AdicCompletion.isMaximal_map _ _ (le_refl _) (fg_of_isNoetherianRing (maximalIdeal R)))
-    (AdicCompletion.isAdicComplete_self _ (fg_of_isNoetherianRing (maximalIdeal R)))
+    (AdicCompletion.isMaximal_map _ _ (le_refl _) fg)
+    (AdicCompletion.isAdicComplete_self _ fg)
+
+instance [IsNoetherianRing R] [IsLocalRing R] : IsLocalRing (AdicCompletion (maximalIdeal R) R) :=
+  AdicCompletion.isLocalRing_of_fg (fg_of_isNoetherianRing (maximalIdeal R))
 
 lemma AdicCompletion.maximalIdeal_eq_map [IsNoetherianRing R] [IsLocalRing R] :
     (maximalIdeal (AdicCompletion (maximalIdeal R) R)) =
