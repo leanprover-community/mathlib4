@@ -29,7 +29,7 @@ Description of Latin Squares
 
 ## TODO
 
-* Add theorem that a k-1 × n Latin rectangle can be extended to a k × n Latin rectangle.
+* [DONE] Add theorem that a k-1 × n Latin rectangle can be extended to a k × n Latin rectangle.
 * Corollary, any k x n Latin rectangle can be extneded to a Latin square.
 * Add that a n x n Latin rectangle is a Latin square.
   This will lead to a computable definition of Latin square.
@@ -47,8 +47,8 @@ Description of Latin Squares
 
 universe u u' v
 
-variable {m m' : Type u} [Fintype m] [Fintype m'] --[DecidableEq α]
-variable {n n' : Type u'} [Fintype n] [Fintype n']--[DecidableEq α]
+variable {m m' : Type*} [Fintype m] [Fintype m'] 
+variable {n n' : Type*} [Fintype n] [Fintype n']
 variable {α β : Type v} [Fintype α] [DecidableEq α] [Fintype β] [DecidableEq β]
 
 section LatinSquare
@@ -168,7 +168,6 @@ instance {n : Nat} {α : Type v} [DecidableEq α] [Fintype α] [ToString α] :
   Repr (LatinSquare (Fin n) α) where
     reprPrec L prec := Repr.reprPrec L.toLatinRectangle prec
 
-
 /-- Every Finite Group's Cayley table is an example of a Latin Square. -/
 @[to_additive]
 def group_to_cayley_table (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
@@ -182,8 +181,6 @@ def group_to_cayley_table (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
       simp only [once_per_column, Matrix.col]
       exact Group.mulRight_bijective (G := G)
    }
-
-#check col (addGroup_to_cayley_table (ZMod 5) : LatinRectangle (ZMod 5) (ZMod 5) (ZMod 5))
 
 def latin_rectangle_isomorphism
   (f : m ≃ m')
@@ -287,25 +284,10 @@ def is_subrect
   (ι : m ↪ m') :=
   ∀ (i : m), ∀ (j : n), A.M i j = B.M (ι i) j
 
-
--- def symbols_in
---  (A : LatinRectangle k n α) (j : n) :=
---   let D := Finset.image (col A j) Finset.univ
---   D
-
 def symbols_not_in
  (A : LatinRectangle k n α) (j : n) :=
   let D := Finset.image (col A j) Finset.univ
   Finset.univ \ D
-  
--- lemma symbols_in_count
---  (A : LatinRectangle k n α) (j : n) : 
---    Nonempty (symbols_in A j ≃ k) := by sorry
- 
--- lemma symbols_in_and_not_in_disjoint 
--- {k n : Nat} [NeZero k] [NeZero n]
---  (A : LatinRectangle k n α) (j : Fin n) : 
---  (symbols_in A j) ∩ (symbols_not_in A j) = ∅ := by sorry
 
 lemma count_by_group_or_element_indicator
   {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -504,33 +486,6 @@ lemma latin_rect_hall_property
     specialize h3 x s
     omega
 
-
-
-
-
--- lemma col_map_in_symbols
---     {k n : Nat} [NeZero k] [NeZero n]
---     (A : LatinRectangle k n α) :
---     ∀ j, (Finset.image (col_map A j) Finset.univ) ∩ (symbols A.M) 
---      = (Finset.image (col_map A j) Finset.univ) := by 
---      intro j
---      unfold col_map symbols
---      simp [Finset.inter_eq_left, Finset.subset_iff]
-
--- lemma col_injective
---     {k n : Nat} [NeZero k] [NeZero n]
---     (A : LatinRectangle k n α)
---     (h : k < n := by omega) :
---     ∀ j, Function.Injective (col_map A j) := by 
---     have h_col := A.distinct_col_entries
---     unfold distinct_col_entries at h_col
---     unfold Function.Injective col_map
---     intro j a1 a2
---     specialize h_col j a1 a2
---     replace h_col := h_col.mt
---     simp at h_col
---     exact h_col
-
 lemma col_card
     (A : LatinRectangle k n α) :
     ∀ j, (Finset.image (col A j) Finset.univ).card = Fintype.card k := by 
@@ -589,8 +544,7 @@ lemma unique_missed_element
       simp only [Finset.mem_univ, true_and] at hx2
       exact hx2 hy
 
--- TODO Rewrite in terms of new definition!
-theorem latin_rectangle_extends
+theorem latin_rectangle_extends_one_row
     (A : LatinRectangle k n α)
     (h : Fintype.card k < Fintype.card n := by omega)
     {k' : Type u} [Fintype k'] [DecidableEq k']
@@ -761,7 +715,7 @@ theorem latin_rectangle_extends
     distinct_col_entries := by 
       unfold distinct_col_entries
       intro y
-      simp [Function.Injective, Matrix.col, Matrix.transpose,M']
+      simp [Function.Injective, Matrix.col, Matrix.transpose, M']
       intro a1 a2
       split_ifs
       rename_i if_h1 if_h2
@@ -813,6 +767,36 @@ theorem latin_rectangle_extends
   simp
   rfl
   
+
+#check Function.Embedding.nonempty_of_card_le
+#check IsChain
+#check Nat.set_induction
+#check Finset.induction_on
+
+-- protected theorem induction {α : Type*} {motive : Finset α → Prop} [DecidableEq α]
+--     (empty : motive ∅)
+--     (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : ∀ s, motive s :=
+--   cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert a s ha
+
+lemma inclusion_induction {k : Type u} [Fintype k] {motive2 : (Type u -> Type u) -> Prop}
+    (empty : motive2 Type u -> Type u)
+    (h : Fintype.card k ≤ Fintype.card n)
+    (ι : k ↪ n) :
+    ∃ (k' : Type*) (_ : Fintype k'), Fintype.card k' = (Fintype.card n) - 1 ∧ Nonempty (k' ↪ n) := by sorry
+
+theorem latin_rectangle_extends_to_latin_square
+    (A : LatinRectangle k n α)
+    (h : Fintype.card k ≤ Fintype.card n := by omega)
+    (ι : k ↪ n) :
+    ∃ (A' : LatinSquare n α), is_subrect A A' ι := by 
+      
+      let k' := Fintype.card n - Fintype.card k
+      induction k' generalizing n k ι with
+      | zero  => sorry
+      | succ k' ih => sorry
+      -- let k' := (Finset.univ : Finset n) ∖ (Finset.image ι Finset.univ )
+      -- induction k' using Finset.induction_on 
+      -- case empty 
 end Completion
 
 end LatinSquare
