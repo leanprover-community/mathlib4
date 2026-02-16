@@ -110,9 +110,6 @@ truncated integer division, and hence should only be used when `p` and `q` have 
 def atom (p q : ℤ) : R :=
   W ((p + q).tdiv 2) * W ((p - q).tdiv 2)
 
-example (m : ℤ) : (-m).tdiv 2 = -(m.tdiv 2) := by
-  exact Int.neg_tdiv m 2
-
 @[simp]
 lemma atom_same (p : ℤ) : atom W p p = W p * W 0 := by
   rw [atom, ← two_mul, Int.mul_tdiv_cancel_left _ two_ne_zero, sub_self, Int.zero_tdiv]
