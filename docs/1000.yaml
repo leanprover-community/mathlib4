@@ -3155,7 +3155,7 @@ Q5456213:
 
 Q5463860:
   title: Focal subgroup theorem
-  decl: Subgroup.inf_commutator_eq_focalSubgroup
+  decl: Subgroup.commutator_inf_eq_focalSubgroup
   authors: Boyang Hu
   date: 2026
 
