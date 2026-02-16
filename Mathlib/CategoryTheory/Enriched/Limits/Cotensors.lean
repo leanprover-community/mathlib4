@@ -463,6 +463,8 @@ def cotensor_bifunc [CotensoredCategory V C] : EnrichedBifunctor V Vᵒᵖ C C w
       rw [← SymmetricCategory.braiding_swap_eq_inv_braiding]
       exact post_pre_eq_pre_post V (CotensoredCategory.cotensor v.unop x) (CotensoredCategory.cotensor v.unop y) (CotensoredCategory.cotensor w.unop x) (CotensoredCategory.cotensor w.unop y)
 
+def cotensor_prod_func [CotensoredCategory V C] : EnrichedFunctor V (Vᵒᵖ × C) C := enrichedBifunctorEquiv.to V _ _ _ cotensor_bifunc
+
 end
 
 end CategoryTheory.Enriched
