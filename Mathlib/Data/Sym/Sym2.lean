@@ -146,8 +146,8 @@ protected def rec {motive : Sym2 α → Sort*}
 @[elab_as_elim]
 protected def recOn {motive : Sym2 α → Sort*} (z : Sym2 α)
     (f : (a b : α) → motive s(a, b))
-    (h : (a b c d : α) → (h : Rel α (a, b) (c, d)) → Eq.ndrec (f a b) (Sym2.sound h) = f c d)
-    : motive z :=
+    (h : (a b c d : α) → (h : Rel α (a, b) (c, d)) → Eq.ndrec (f a b) (Sym2.sound h) = f c d) :
+    motive z :=
   Quot.recOn z (fun (a, b) ↦ f a b) (fun (a, b) (c, d) ↦ h a b c d)
 
 /-- A dependent recursion principle for `Sym2` that uses heterogeneous equality. -/
@@ -169,7 +169,7 @@ protected abbrev recOnSubsingleton {motive : Sym2 α → Sort*}
     (z : Sym2 α) (f : (a b : α) → motive s(a, b)) : motive z :=
   Quot.recOnSubsingleton z fun (a, b) ↦ f a b
 
-theorem mk_surjective : Function.Surjective (fun ((a, b) : α × α) ↦ s(a, b)) := Quot.mk_surjective
+theorem mk_surjective : (Sym2.mk (α := α)).uncurry.Surjective := Quot.mk_surjective
 
 protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f s(x, y) :=
@@ -879,12 +879,10 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
     apply other_eq_other'
 
 theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
-    {x ∈ (s ×ˢ s).image fun (a, b) ↦ s(a, b) | x.IsDiag} =
-      s.diag.image (fun (a, b) ↦ s(a, b)) := by aesop
+    {x ∈ (s ×ˢ s).image Sym2.mk.uncurry | x.IsDiag} = s.diag.image Sym2.mk.uncurry := by aesop
 
 theorem filter_image_mk_not_isDiag [DecidableEq α] (s : Finset α) :
-    {x ∈ (s ×ˢ s).image fun (a, b) ↦ s(a, b) | ¬x.IsDiag} =
-      s.offDiag.image (fun (a, b) ↦ s(a, b)) := by aesop
+    {x ∈ (s ×ˢ s).image Sym2.mk.uncurry | ¬x.IsDiag} = s.offDiag.image Sym2.mk.uncurry := by aesop
 
 end Decidable
 
@@ -941,9 +939,9 @@ lemma mem_sym2_iff_subset {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s :=
   induction z using Sym2.inductionOn
   simp [pair_subset_iff]
 
-lemma sym2_eq_mk_image : s.sym2 = (fun (a, b) ↦ s(a, b)) '' s ×ˢ s := by ext ⟨x, y⟩; aesop
+lemma sym2_eq_mk_image : s.sym2 = (Sym2.mk.uncurry) '' s ×ˢ s := by ext ⟨x, y⟩; aesop
 
-@[simp] lemma mk_preimage_sym2 : (fun (a, b) ↦ s(a, b)) ⁻¹' s.sym2 = s ×ˢ s := rfl
+@[simp] lemma mk_preimage_sym2 : (Sym2.mk.uncurry) ⁻¹' s.sym2 = s ×ˢ s := rfl
 
 @[simp] lemma sym2_empty : (∅ : Set α).sym2 = ∅ := by ext ⟨x, y⟩; simp
 @[simp] lemma sym2_univ : (Set.univ : Set α).sym2 = Set.univ := by ext ⟨x, y⟩; simp
@@ -957,9 +955,8 @@ lemma sym2_preimage {f : α → β} {s : Set β} : (f ⁻¹' s).sym2 = Sym2.map 
   ext ⟨x, y⟩
   simp
 
-lemma sym2_image {f : α → β} {s : Set α} : (f '' s).sym2 = Sym2.map f '' s.sym2 :=
-  preimage_injective.mpr Sym2.mk_surjective <| by
-    simp_rw [sym2_eq_mk_image, prod_image_image_eq, image_image, Sym2.map_mk]
+lemma sym2_image {f : α → β} {s : Set α} : (f '' s).sym2 = Sym2.map f '' s.sym2 := by
+  simp_rw [sym2_eq_mk_image, prod_image_image_eq, image_image, uncurry, Sym2.map_mk]
 
 lemma sym2_inter (s t : Set α) : (s ∩ t).sym2 = s.sym2 ∩ t.sym2 :=
   preimage_injective.mpr Sym2.mk_surjective <| Set.prod_inter_prod.symm
