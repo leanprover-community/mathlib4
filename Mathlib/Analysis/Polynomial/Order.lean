@@ -67,6 +67,53 @@ theorem eval_le_zero_of_roots_le_of_leadingCoeff_nonpos
   · rwa [IsRoot, ← neg_zero, ← neg_eq_iff_eq_neg, ← eval_neg]
   · rwa [leadingCoeff_neg, neg_nonneg]
 
+theorem zero_lt_negOnePow_mul_eval_of_lt_roots_of_leadingCoeff_nonneg
+    (hroots : ∀ y, P.IsRoot y → x < y) (hlc : 0 ≤ P.leadingCoeff) :
+      0 < Int.negOnePow P.natDegree * P.eval x := by
+  have hroots' y (hy : (P.comp (-X)).IsRoot y) : y < -x := by
+    grind [show P.IsRoot (-y) by rwa [IsRoot.def, eval_comp, eval_neg, eval_X, ← IsRoot.def] at hy]
+  have hlc' : 0 ≤ Int.negOnePow (P.comp (-X)).natDegree * (P.comp (-X)).leadingCoeff := by
+    simpa [natDegree_comp, Int.negOnePow_def, ← mul_assoc]
+  cases P.natDegree.even_or_odd
+  case inl h =>
+    rw [Int.negOnePow_even] at hlc' ⊢
+    · push_cast at hlc' ⊢; rw [one_mul] at hlc' ⊢
+      have := zero_lt_eval_of_roots_lt_of_leadingCoeff_nonneg hroots' hlc'
+      simpa using this
+    · simpa
+    · simpa [natDegree_comp]
+  case inr h =>
+    rw [Int.negOnePow_odd] at hlc' ⊢
+    · push_cast at hlc' ⊢; rw [neg_one_mul] at hlc' ⊢
+      have := eval_lt_zero_of_roots_lt_of_leadingCoeff_nonpos hroots' (nonpos_of_neg_nonneg hlc')
+      exact neg_pos.mpr (by simpa using this)
+    · simpa
+    · simpa [natDegree_comp]
+
+theorem zero_le_negOnePow_mul_eval_of_le_roots_of_leadingCoeff_nonneg
+    (hroots : ∀ y, P.IsRoot y → x ≤ y) (hlc : 0 ≤ P.leadingCoeff) :
+      0 ≤ Int.negOnePow P.natDegree * P.eval x := by
+  by_cases! hroots' : ∃ y, P.IsRoot y ∧ y ≤ x
+  · obtain ⟨y, hroot, hle⟩ := hroots'
+    rw [eq_of_ge_of_le hle (hroots y hroot), hroot, mul_zero]
+  · exact (zero_lt_negOnePow_mul_eval_of_lt_roots_of_leadingCoeff_nonneg hroots' hlc).le
+
+theorem negOnePow_mul_eval_lt_zero_of_lt_roots_of_leadingCoeff_nonpos
+    (hroots : ∀ y, P.IsRoot y → x < y) (hlc : P.leadingCoeff ≤ 0) :
+      Int.negOnePow P.natDegree * P.eval x < 0 := by
+  suffices 0 < Int.negOnePow (-P).natDegree * (-P).eval x by apply neg_pos.mp; simpa
+  refine zero_lt_negOnePow_mul_eval_of_lt_roots_of_leadingCoeff_nonneg (fun y hy => hroots y ?_) ?_
+  · rwa [IsRoot, ← neg_zero, ← neg_eq_iff_eq_neg, ← eval_neg]
+  · rwa [leadingCoeff_neg, le_neg, neg_zero]
+
+theorem negOnePow_mul_eval_le_zero_of_le_roots_of_leadingCoeff_nonpos
+    (hroots : ∀ y, P.IsRoot y → x ≤ y) (hlc : P.leadingCoeff ≤ 0) :
+      Int.negOnePow P.natDegree * P.eval x ≤ 0 := by
+  suffices 0 ≤ Int.negOnePow (-P).natDegree * (-P).eval x by apply neg_nonneg.mp; simpa
+  refine zero_le_negOnePow_mul_eval_of_le_roots_of_leadingCoeff_nonneg (fun y hy => hroots y ?_) ?_
+  · rwa [IsRoot, ← neg_zero, ← neg_eq_iff_eq_neg, ← eval_neg]
+  · rwa [leadingCoeff_neg, neg_nonneg]
+
 end PolynomialSign
 
 end Polynomial
