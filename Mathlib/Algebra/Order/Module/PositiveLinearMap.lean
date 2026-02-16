@@ -111,6 +111,10 @@ lemma coe_toLinearMap (f : E₁ →ₚ[R] E₂) : (f.toLinearMap : E₁ → E₂
 lemma toLinearMap_injective : Function.Injective (toLinearMap : (E₁ →ₚ[R] E₂) → (E₁ →ₗ[R] E₂)) :=
   fun _ _ h ↦ by ext x; congrm($h x)
 
+@[simp]
+lemma toLinearMap_inj {f g : E₁ →ₚ[R] E₂} : f.toLinearMap = g.toLinearMap ↔ f = g :=
+  toLinearMap_injective.eq_iff
+
 instance : Zero (E₁ →ₚ[R] E₂) where
   zero := .mk (0 : E₁ →ₗ[R] E₂) fun _ ↦ by simp
 
