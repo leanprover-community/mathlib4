@@ -85,7 +85,7 @@ def pointEquivClosedPoint :
   right_inv x := by simp
 
 lemma ext_of_apply_closedPoint_eq
-    (f g : Spec (.of K) ⟶ X) (h : X ⟶ Spec (.of K))
+    {f g : Spec (.of K) ⟶ X} (h : X ⟶ Spec (.of K))
     [LocallyOfFiniteType h]
     (hf : f ≫ h = 𝟙 _) (hg : g ≫ h = 𝟙 _)
     (H : f (IsLocalRing.closedPoint K) = g (IsLocalRing.closedPoint K)) : f = g :=
@@ -94,7 +94,7 @@ lemma ext_of_apply_closedPoint_eq
 /-- Let `X` and `Y` be locally of finite type `K`-schemes with `K` algebraically closed and `Y`
 separated over `K`. Suppose `X` is reduced, then two `K`-morphisms `f g : X ⟶ Y` are equal if
 they are equal on the closed points of a dense locally closed subset of `X`. -/
-lemma ext_of_apply_eq (f g : X ⟶ Y) (i : Y ⟶ Spec (.of K)) [IsSeparated i] [LocallyOfFiniteType i]
+lemma ext_of_apply_eq {f g : X ⟶ Y} (i : Y ⟶ Spec (.of K)) [IsSeparated i] [LocallyOfFiniteType i]
     [IsReduced X] [LocallyOfFiniteType (f ≫ i)]
     (S : Set X) (hS : IsLocallyClosed S) (hS' : Dense S)
     (H : ∀ x ∈ S, IsClosed {x} → f x = g x)
@@ -103,12 +103,10 @@ lemma ext_of_apply_eq (f g : X ⟶ Y) (i : Y ⟶ Spec (.of K)) [IsSeparated i] [
   refine ext_of_fromSpecResidueField_eq f g i (S ∩ closedPoints X) ?_ ?_ H'
   · rwa [dense_iff_closure_eq, JacobsonSpace.closure_inter_closedPoints_eq_closure hS,
       ← dense_iff_closure_eq]
-  · rintro x ⟨hxS, hx⟩
+  · intro x ⟨hxS, hx⟩
     rw [← cancel_epi (Spec.map (residueFieldIsoBase (f ≫ i) x hx).hom)]
-    refine ext_of_apply_closedPoint_eq _ _ i ?_ ?_ (by simpa using H x hxS hx)
-    · simp only [Category.assoc, ← SpecMap_residueFieldIsoBase_inv (f ≫ i) x hx, ← Spec.map_comp,
-        Iso.inv_hom_id, Spec.map_id]
-    · simp only [Category.assoc, ← SpecMap_residueFieldIsoBase_inv (f ≫ i) x hx, ← Spec.map_comp,
+    refine ext_of_apply_closedPoint_eq i ?_ ?_ (by simpa using H x hxS hx) <;>
+      simp only [Category.assoc, ← SpecMap_residueFieldIsoBase_inv (f ≫ i) x hx, ← Spec.map_comp,
         Iso.inv_hom_id, Spec.map_id, ← H']
 
 end AlgebraicGeometry

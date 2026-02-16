@@ -27,7 +27,7 @@ namespace AlgebraicGeometry
 
 universe u
 
-variable {K : Type u} [Field K] {X : Scheme}
+variable {K : Type u} [Field K] {X : Scheme.{u}}
 
 open MonoidalCategory CartesianMonoidalCategory MonObj
 
@@ -53,6 +53,7 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
   let γ : G ⊗ G ⟶ G ⊗ G := lift (fst _ _) (GrpObj.commutator _)
   have : IsProper (γ.left ≫ (fst G G).left) := by simpa [γ]
   have : IsProper γ.left := .of_comp _ (fst G G).left
+  -- It suffices to check that `γ : (x, y) ↦ x * y * x⁻¹ * y⁻¹` is constantly `1`.
   rw [isCommMonObj_iff_commutator_eq_toUnit_η]
   ext1
   have H : γ.left '' ((fst G G).left ⁻¹' {η[G].left point}) ⊆ {(lift η[G] η[G]).left point} := by
@@ -67,10 +68,12 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
     obtain rfl : c point = c₀ := congr(($e).1)
     let fc : 𝟙_ (Over S) ⟶ 𝟙_ (Over S) ⊗ G := lift (𝟙 _) (Over.homMk c hc ≫ snd G G)
     have : c ≫ pullback.fst G.hom G.hom = η[G].left :=
-      ext_of_apply_closedPoint_eq _ _ G.hom (by simpa) (by simp) (by simpa)
+      ext_of_apply_closedPoint_eq G.hom (by simpa) (by simp) (by simpa)
     have H₁ : c = fc.left ≫ (η[G] ▷ G).left := by dsimp; ext <;> simp [fc, S, this]
     have H₂ : fc ≫ η ▷ G ≫ γ = lift η η := by ext1 <;> simp [fc, γ, S]
     exact hc₂ <| by simp [H₁, H₂, ← Scheme.Hom.comp_apply, Category.assoc, ← Over.comp_left]
+  -- Since the image of `y ↦ γ(e, y)` is finite, by Zariski Main, there exists an open
+  -- `1 ∈ U ⊆ G` such that `γ ∣_ U` factors through a finite scheme over `U`.
   obtain ⟨U, hηU, H⟩ := exists_finite_imageι_comp_morphismRestrict_of_finite_image_preimage
     γ.left (fst G G).left (η[G].left point) (by
       dsimp [-Scheme.Hom.comp_base, γ]
@@ -89,29 +92,32 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
       Scheme.Hom.support_ker, ← Set.inter_assoc, ← Set.preimage_inter,
       Set.singleton_inter_of_mem x.2, IsClosed.closure_eq
       (by exact γ.left.isClosedMap.isClosed_range)]
-  refine ext_of_apply_eq _ _ G.hom _
+  -- It suffices to check set-theoretic equality on closed points of `U ×[k] G`.
+  refine ext_of_apply_eq G.hom _
     ((fst G G).left ⁻¹ᵁ U).isOpen.isLocallyClosed
     (((fst G G).left ⁻¹ᵁ U).isOpen.dense ?_) ?_ ?_
   · exact .preimage ⟨_, hηU⟩ (fst G G).left.surjective
-  · rintro y hyU hy
+  · intro y hyU hy
     have hx : IsClosed {(fst G G).left y} := by simpa using (fst G G).left.isClosedMap _ hy
     let x : 𝟙_ _ ⟶ G := Over.homMk (pointOfClosedPoint G.hom _ hx) (by simp)
-    have := subsingleton_image_closure_of_finite_of_isPreirreducible
-      (S := (fst G G).left ⁻¹' {(fst G G).left y})
-      (hx.preimage (fst G G).left.continuous).isLocallyClosed (by
-        let α : G ⊗ G ⟶ G ⊗ G := toUnit _ ≫ x ⊗ₘ 𝟙 _
+    let xe : (G ⊗ G).left := (fst G G ≫ (ρ_ _).inv ≫ G ◁ η[G]).left y
+    have : γ.left y = xe := by
+      -- By the choice of `U`, the set `γ({y} ×[k] G)` is finite and hence, by irreducibility,
+      -- a singleton.
+      refine subsingleton_image_closure_of_finite_of_isPreirreducible
+        (hx.preimage (fst G G).left.continuous).isLocallyClosed ?_ γ.left.continuous
+        γ.left.isClosedMap ((H ⟨_, hyU⟩).subset (Set.image_subset_iff.mpr fun _ ↦ by
+          simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base, γ])) ?_ ?_
+      · let α : G ⊗ G ⟶ G ⊗ G := toUnit _ ≫ x ⊗ₘ 𝟙 _
         convert ((IrreducibleSpace.isIrreducible_univ _).image α.left
           α.left.continuous.continuousOn).isPreirreducible
         rw [Over.tensorHom_left]
-        simp [Set.range_comp, Scheme.Pullback.range_map, x]) γ.left.continuous
-      γ.left.isClosedMap ((H ⟨_, hyU⟩).subset (Set.image_subset_iff.mpr fun _ ↦ by
-        simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base, γ]))
-    let xe : (G ⊗ G).left := (fst G G ≫ (ρ_ _).inv ≫ G ◁ η[G]).left y
-    have := this (x := γ.left y) ⟨_, subset_closure (by simp), rfl⟩
-      (y := xe) ⟨xe, subset_closure (by
-        simp [xe, ← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base]), (by
-        simp only [xe, γ, ← Scheme.Hom.comp_apply, ← Over.comp_left]
-        congr 6; ext <;> simp)⟩
+        simp [Set.range_comp, Scheme.Pullback.range_map, x]
+      · exact ⟨y, subset_closure (by simp), rfl⟩
+      · refine ⟨xe, subset_closure ?_, ?_⟩
+        · simp [xe, ← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base]
+        · simp only [xe, γ, ← Scheme.Hom.comp_apply, ← Over.comp_left]
+          congr 6; ext <;> simp
     convert congr((snd G G).left $this) using 1
     · simp [γ, ← Scheme.Hom.comp_apply]
     · simp [xe, ← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base]
@@ -122,18 +128,17 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
 theorem isCommMonObj_of_isProper_of_geometricallyIntegral
     (G : Over (Spec (.of K))) [IsProper G.hom] [GeometricallyIntegral G.hom] [GrpObj G] :
     IsCommMonObj G := by
-  let K' := AlgebraicClosure K
-  let f := Spec.map (CommRingCat.ofHom <| algebraMap K K')
+  let f := Spec.map (CommRingCat.ofHom <| algebraMap K (AlgebraicClosure K))
   let G' := (Over.pullback f).obj G
   have : IsProper G'.hom := by dsimp [G']; infer_instance
   have : IsIntegral (G' ⊗ G').left := by dsimp [G']; infer_instance
-  let : GrpObj G' := CategoryTheory.Functor.grpObjObj
+  let : GrpObj G' := Functor.grpObjObj
   have := isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed G'
   rw [isCommMonObj_iff_commutator_eq_toUnit_η] at this ⊢
   apply (Over.pullback f).map_injective
   rw [← cancel_epi (Functor.Monoidal.μIso (Over.pullback f) G G).hom]
   dsimp [GrpObj.commutator] at this ⊢
   simpa only [Functor.map_mul, one_eq_one, comp_one, Functor.map_one, Functor.map_inv',
-    comp_mul, GrpObj.comp_inv, Functor.Monoidal.μ_fst, K', Functor.Monoidal.μ_snd]
+    comp_mul, GrpObj.comp_inv, Functor.Monoidal.μ_fst, Functor.Monoidal.μ_snd]
 
 end AlgebraicGeometry
