@@ -144,47 +144,91 @@ section UniformConvergence
 
 variable {ι : Type*} {l : Filter ι} {l' : Filter β} {f f' : ι → β → α} {g g' : β → α} {s : Set β}
 
-@[to_additive]
+@[to_additive (attr := to_fun)]
 theorem TendstoUniformlyOnFilter.mul (hf : TendstoUniformlyOnFilter f g l l')
     (hf' : TendstoUniformlyOnFilter f' g' l l') : TendstoUniformlyOnFilter (f * f') (g * g') l l' :=
   fun u hu =>
   ((uniformContinuous_mul.comp_tendstoUniformlyOnFilter (hf.prodMk hf')) u hu).diag_of_prod_left
 
-@[to_additive]
+attribute [to_additive existing] TendstoUniformlyOnFilter.fun_mul
+
+@[to_additive (attr := to_fun)]
 theorem TendstoUniformlyOnFilter.div (hf : TendstoUniformlyOnFilter f g l l')
     (hf' : TendstoUniformlyOnFilter f' g' l l') : TendstoUniformlyOnFilter (f / f') (g / g') l l' :=
   fun u hu =>
   ((uniformContinuous_div.comp_tendstoUniformlyOnFilter (hf.prodMk hf')) u hu).diag_of_prod_left
 
-@[to_additive]
+attribute [to_additive existing] TendstoUniformlyOnFilter.fun_div
+
+@[to_additive (attr := to_fun)]
+theorem TendstoUniformlyOnFilter.inv (hf : TendstoUniformlyOnFilter f g l l') :
+    TendstoUniformlyOnFilter (f⁻¹) (g⁻¹) l l' :=
+  fun u hu ↦ uniformContinuous_inv.comp_tendstoUniformlyOnFilter hf u hu
+
+attribute [to_additive existing] TendstoUniformlyOnFilter.fun_inv
+
+@[to_additive (attr := to_fun)]
 theorem TendstoUniformlyOn.mul (hf : TendstoUniformlyOn f g l s)
     (hf' : TendstoUniformlyOn f' g' l s) : TendstoUniformlyOn (f * f') (g * g') l s := fun u hu =>
   ((uniformContinuous_mul.comp_tendstoUniformlyOn (hf.prodMk hf')) u hu).diag_of_prod
 
-@[to_additive]
+attribute [to_additive existing] TendstoUniformlyOn.fun_mul
+
+@[to_additive (attr := to_fun)]
 theorem TendstoUniformlyOn.div (hf : TendstoUniformlyOn f g l s)
     (hf' : TendstoUniformlyOn f' g' l s) : TendstoUniformlyOn (f / f') (g / g') l s := fun u hu =>
   ((uniformContinuous_div.comp_tendstoUniformlyOn (hf.prodMk hf')) u hu).diag_of_prod
 
-@[to_additive]
+attribute [to_additive existing] TendstoUniformlyOn.fun_div
+
+@[to_additive (attr := to_fun)]
+theorem TendstoUniformlyOn.inv (hf : TendstoUniformlyOn f g l s) :
+    TendstoUniformlyOn (f⁻¹) (g⁻¹) l s :=
+  fun u hu ↦ uniformContinuous_inv.comp_tendstoUniformlyOn hf u hu
+
+attribute [to_additive existing] TendstoUniformlyOn.fun_inv
+
+@[to_additive (attr := to_fun)]
 theorem TendstoUniformly.mul (hf : TendstoUniformly f g l) (hf' : TendstoUniformly f' g' l) :
     TendstoUniformly (f * f') (g * g') l := fun u hu =>
   ((uniformContinuous_mul.comp_tendstoUniformly (hf.prodMk hf')) u hu).diag_of_prod
 
-@[to_additive]
+attribute [to_additive existing] TendstoUniformly.fun_mul
+
+@[to_additive (attr := to_fun)]
 theorem TendstoUniformly.div (hf : TendstoUniformly f g l) (hf' : TendstoUniformly f' g' l) :
     TendstoUniformly (f / f') (g / g') l := fun u hu =>
   ((uniformContinuous_div.comp_tendstoUniformly (hf.prodMk hf')) u hu).diag_of_prod
 
-@[to_additive]
+attribute [to_additive existing] TendstoUniformly.fun_div
+
+@[to_additive (attr := to_fun)]
+theorem TendstoUniformly.inv (hf : TendstoUniformly f g l) :
+    TendstoUniformly (f⁻¹) (g⁻¹) l :=
+  fun u hu ↦ uniformContinuous_inv.comp_tendstoUniformly hf u hu
+
+attribute [to_additive existing] TendstoUniformly.fun_inv
+
+@[to_additive (attr := to_fun)]
 theorem UniformCauchySeqOn.mul (hf : UniformCauchySeqOn f l s) (hf' : UniformCauchySeqOn f' l s) :
     UniformCauchySeqOn (f * f') l s := fun u hu => by
   simpa using (uniformContinuous_mul.comp_uniformCauchySeqOn (hf.prod' hf')) u hu
 
-@[to_additive]
+attribute [to_additive existing] UniformCauchySeqOn.fun_mul
+
+@[to_additive (attr := to_fun)]
 theorem UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCauchySeqOn f' l s) :
     UniformCauchySeqOn (f / f') l s := fun u hu => by
   simpa using (uniformContinuous_div.comp_uniformCauchySeqOn (hf.prod' hf')) u hu
+
+attribute [to_additive existing] UniformCauchySeqOn.fun_div
+
+@[to_additive (attr := to_fun)]
+theorem UniformCauchySeqOn.inv (hf : UniformCauchySeqOn f l s) :
+    UniformCauchySeqOn (f⁻¹) l s :=
+  fun u hu ↦ by simpa using (uniformContinuous_inv.comp_uniformCauchySeqOn hf u hu)
+
+attribute [to_additive existing] UniformCauchySeqOn.fun_inv
 
 end UniformConvergence
 
