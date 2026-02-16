@@ -223,11 +223,11 @@ private alias ⟨_, natCeil_pos⟩ := ENat.ceil_pos
 
 /-- Extension for the `positivity` tactic: `ENat.ceil` is positive if its input is. -/
 @[positivity ⌈_⌉ₑ]
-meta def evalENatCeil : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENatCeil : PositivityExt where eval {u α} _zα _pα? e := do
   match u, α, e with
   | 0, ~q(ℕ∞), ~q(ENat.ceil $r) =>
     assertInstancesCommute
-    match ← core q(inferInstance) q(inferInstance) r with
+    match ← core q(inferInstance) (some q(inferInstance)) r with
     | .positive pr =>
       assertInstancesCommute
       pure (.positive q(natCeil_pos $pr))

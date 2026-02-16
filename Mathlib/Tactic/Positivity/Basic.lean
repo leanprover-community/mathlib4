@@ -188,7 +188,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HAdd.hAdd)
   let ra ← core zα pα? a; let rb ← core zα pα? b
-  let some pα := pα? | failure
+  let some pα := pα? | pure .none
   match ra, rb with
   | .positive (ltα := ltα) pa, .positive pb =>
     let _a ← synthInstanceQ q(AddLeftStrictMono $α)
@@ -319,11 +319,11 @@ meta def evalPow : PositivityExt where eval {u α} zα pα? e := do
     haveI' : $e =Q $a ^ $b := ⟨⟩
     let .nonzero nza ← core zα .none a | pure .none
     pure (.nonzero q(pow_ne_zero $b $nza))
-  let _a ← synthInstanceQ q(Ring $α)
-  let _a ← synthInstanceQ q(LinearOrder $α)
-  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-  assumeInstancesCommute
   let result ← catchNone do
+    let _a ← synthInstanceQ q(Ring $α)
+    let _a ← synthInstanceQ q(LinearOrder $α)
+    let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
+    assumeInstancesCommute
     let .true := b.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ n where n is a literal"
     let some n := (b.getRevArg! 1).rawNatLit? | throwError "not a ^ n where n is a literal"
     guard (n % 2 = 0)
@@ -699,11 +699,11 @@ meta def evalNegPart : PositivityExt where eval {u α} _ _ e := do
 /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
 @[positivity DFunLike.coe _ _]
 meta def evalMap : PositivityExt where eval {_ β} _ pβ? e := do
+  let some pβ := pβ? | pure .none
   let .app (.app _ f) a ← whnfR e
     | throwError "not ↑f · where f is of NonnegHomClass"
-  let some pβ := pβ? | throwError "not PartialOrder"
   let pa ← mkAppOptM ``apply_nonneg #[none, none, β, none, none, none, none, f, a]
-  pure (.nonnegative (leα := pβ) pa)
+  pure (.nonnegative (leα := q(($pβ).toLE)) pa)
 
 end Positivity
 

@@ -1,0 +1,105 @@
+# PositivityExt review list
+
+- [ ] Mathlib\Combinatorics\Enumerative\DyckWord.lean:571 ? evalDyckWordFirstReturn
+- [ ] Mathlib\Combinatorics\SimpleGraph\Triangle\Removal.lean:179 ? evalTriangleRemovalBound
+- [ ] Mathlib\Combinatorics\SimpleGraph\Regularity\Bound.lean:240 ? evalInitialBound
+- [ ] Mathlib\Combinatorics\SimpleGraph\Regularity\Bound.lean:252 ? evalBound
+    - [ ] Mathlib\Analysis\SpecialFunctions\Pow\Real.lean:369 ? evalRpowZero
+    - [ ] Mathlib\Analysis\SpecialFunctions\Pow\Real.lean:379 ? evalRpow
+- [ ] Mathlib\Data\Nat\Totient.lean:404 ? evalNatTotient
+    - [+] Mathlib\Algebra\Order\BigOperators\Ring\Finset.lean:278 ? evalFinsetProd
+        - [+] Mathlib\Algebra\Order\AbsoluteValue\Basic.lean:413 ? Mathlib.Meta.Positivity.evalAbv
+- [+] Mathlib\Tactic\Positivity\Finset.lean:31 ? evalFinsetCard
+- [+] Mathlib\Tactic\Positivity\Finset.lean:41 ? evalFintypeCard
+- [+] Mathlib\Tactic\Positivity\Finset.lean:53 ? evalFinsetDens
+- [+] Mathlib\Tactic\Positivity\Finset.lean:72 ? evalFinsetSum
+- [+] Mathlib\Tactic\Positivity\Basic.lean:60 ? evalIte
+- [+] Mathlib\Tactic\Positivity\Basic.lean:111 ? evalMin
+- [+] Mathlib\Tactic\Positivity\Basic.lean:146 ? evalMax
+- [+] Mathlib\Tactic\Positivity\Basic.lean:183 ? evalAdd
+- [+] Mathlib\Tactic\Positivity\Basic.lean:215 ? evalMul
+- [+] Mathlib\Tactic\Positivity\Basic.lean:269 ? evalIntDiv
+- [+] Mathlib\Tactic\Positivity\Basic.lean:300 ? evalPowZeroNat
+- [+] Mathlib\Tactic\Positivity\Basic.lean:313 ? evalPow
+- [+] Mathlib\Tactic\Positivity\Basic.lean:377 ? evalAbs
+- [+] Mathlib\Tactic\Positivity\Basic.lean:401 ? evalNatAbs
+- [+] Mathlib\Tactic\Positivity\Basic.lean:423 ? evalNatCast
+- [+] Mathlib\Tactic\Positivity\Basic.lean:448 ? evalIntCast
+- [+] Mathlib\Tactic\Positivity\Basic.lean:476 ? evalNatSucc
+- [+] Mathlib\Tactic\Positivity\Basic.lean:485 ? evalPNatVal
+- [+] Mathlib\Tactic\Positivity\Basic.lean:494 ? evalFactorial
+- [+] Mathlib\Tactic\Positivity\Basic.lean:503 ? evalAscFactorial
+- [+] Mathlib\Tactic\Positivity\Basic.lean:515 ? evalNatGCD
+- [+] Mathlib\Tactic\Positivity\Basic.lean:533 ? evalNatLCM
+- [+] Mathlib\Tactic\Positivity\Basic.lean:550 ? evalNatSqrt
+- [+] Mathlib\Tactic\Positivity\Basic.lean:564 ? evalIntGCD
+- [+] Mathlib\Tactic\Positivity\Basic.lean:580 ? evalIntLCM
+- [+] Mathlib\Tactic\Positivity\Basic.lean:603 ? evalNNRatNum
+- [+] Mathlib\Tactic\Positivity\Basic.lean:620 ? evalNNRatDen
+- [+] Mathlib\Tactic\Positivity\Basic.lean:644 ? evalRatNum
+- [+] Mathlib\Tactic\Positivity\Basic.lean:663 ? evalRatDen
+- [+] Mathlib\Tactic\Positivity\Basic.lean:672 ? evalPosPart
+- [+] Mathlib\Tactic\Positivity\Basic.lean:690 ? evalNegPart
+- [+] Mathlib\Tactic\Positivity\Basic.lean:701 ? evalMap
+- [ ] Mathlib\Data\Nat\Factorial\DoubleFactorial.lean:90 ? evalDoubleFactorial
+- [ ] Mathlib\MeasureTheory\Covering\Besicovitch.lean:141 ? evalBesicovitchSatelliteConfigR
+- [ ] Mathlib\Data\Real\Sqrt.lean:297 ? evalNNRealSqrt
+- [ ] Mathlib\Data\Real\Sqrt.lean:310 ? evalSqrt
+- [ ] Mathlib\Data\Rat\Cast\Order.lean:263 ? evalRatCast
+- [ ] Mathlib\Data\Rat\Cast\Order.lean:287 ? evalNNRatCast
+- [ ] Mathlib\Topology\MetricSpace\Pseudo\Defs.lean:240 ? evalDist
+    - [ ] Mathlib\Data\ENNReal\Real.lean:398 ? evalENNRealOfReal
+        - [ ] Mathlib\Data\ENNReal\Basic.lean:734 ? evalENNRealtoReal
+        - [ ] Mathlib\Data\ENNReal\Basic.lean:743 ? evalENNRealOfNNReal
+            - [ ] Mathlib\Data\NNReal\Defs.lean:991 ? evalNNRealtoReal
+            - [ ] Mathlib\Data\NNReal\Defs.lean:1003 ? evalRealToNNReal
+            - [ ] Mathlib\Data\NNReal\Defs.lean:1016 ? evalRealNNAbs
+- [ ] Mathlib\MeasureTheory\Integral\Bochner\Basic.lean:1459 ? evalIntegral
+    - [ ] Mathlib\MeasureTheory\Measure\Real.lean:453 ? evalMeasureReal
+- [ ] Mathlib\Topology\MetricSpace\Bounded.lean:571 ? evalDiam
+- [ ] Mathlib\NumberTheory\SelbergSieve.lean:89 ? evalBoundingSieveWeights
+- [ ] Mathlib\NumberTheory\ArithmeticFunction.lean:1509 ? evalArithmeticFunctionSigma
+- [ ] Mathlib\NumberTheory\ArithmeticFunction.lean:1521 ? evalArithmeticFunctionZeta
+- [ ] Mathlib\Data\EReal\Inv.lean:554 ? evalERealInv
+- [ ] Mathlib\Data\EReal\Inv.lean:565 ? evalERealDiv
+    - [ ] Mathlib\Data\EReal\Operations.lean:838 ? evalERealAdd
+    - [ ] Mathlib\Data\EReal\Operations.lean:857 ? evalERealMul
+        - [ ] Mathlib\Data\EReal\Basic.lean:856 ? evalRealToEReal
+        - [ ] Mathlib\Data\EReal\Basic.lean:870 ? evalENNRealToEReal
+        - [ ] Mathlib\Data\EReal\Basic.lean:887 ? evalERealToReal
+        - [ ] Mathlib\Data\EReal\Basic.lean:903 ? evalERealToENNReal
+- [ ] Mathlib\NumberTheory\LucasLehmer.lean:85 ? evalMersenne
+- [ ] Mathlib\Topology\Algebra\InfiniteSum\Order.lean:365 ? evalTsum
+- [ ] Mathlib\Algebra\Order\Module\Algebra.lean:74 ? evalAlgebraMap
+- [ ] Mathlib\Algebra\Order\Interval\Basic.lean:666 ? evalNonemptyIntervalLength
+- [ ] Mathlib\Algebra\Order\Interval\Basic.lean:676 ? evalIntervalLength
+- [+] Mathlib\Algebra\Order\Field\Power.lean:126 ? evalZPow
+- [-] Mathlib\Algebra\Order\Floor\Ring.lean:53 ? evalIntFloor
+- [-] Mathlib\Algebra\Order\Floor\Ring.lean:72 ? evalNatCeil
+- [-] Mathlib\Algebra\Order\Floor\Ring.lean:90 ? evalIntCeil
+    - [+] Mathlib\Algebra\Order\Field\Basic.lean:684 ? evalDiv
+    - [+] Mathlib\Algebra\Order\Field\Basic.lean:729 ? evalInv
+    - [+] Mathlib\Algebra\Order\Field\Basic.lean:757 ? evalPowZeroInt
+- [-] Mathlib\Algebra\Order\Floor\Extended.lean:226 ? evalENatCeil
+- [-] Mathlib\Algebra\Order\BigOperators\Expect.lean:189 ? evalFinsetExpect
+    - [?] Mathlib\Algebra\Order\Module\Field.lean:104 ? evalSMul
+- [-] Mathlib\Geometry\Euclidean\Altitude.lean:189 ? evalHeight
+- [ ] Mathlib\Analysis\SpecialFunctions\Trigonometric\Deriv.lean:1470 ? evalSinh
+    - [ ] Mathlib\Analysis\SpecialFunctions\Trigonometric\Basic.lean:179 ? evalRealPi
+- [ ] Mathlib\Analysis\SpecialFunctions\Trigonometric\Arctan.lean:393 ? evalRealArctan
+- [ ] Mathlib\Analysis\SpecialFunctions\Trigonometric\Arctan.lean:407 ? evalRealCosArctan
+- [ ] Mathlib\Analysis\SpecialFunctions\Trigonometric\Arctan.lean:416 ? evalRealSinArctan
+- [ ] Mathlib\Analysis\SpecialFunctions\Pow\NNReal.lean:1083 ? evalNNRealRpow
+- [ ] Mathlib\Analysis\SpecialFunctions\Pow\NNReal.lean:1111 ? evalENNRealRpow
+- [ ] Mathlib\Analysis\SpecialFunctions\Bernstein.lean:83 ? evalBernstein
+- [ ] Mathlib\Analysis\Complex\UpperHalfPlane\Basic.lean:126 ? evalUpperHalfPlaneIm
+- [ ] Mathlib\Analysis\Complex\UpperHalfPlane\Basic.lean:135 ? evalUpperHalfPlaneCoe
+- [ ] Mathlib\Analysis\Complex\Trigonometric.lean:920 ? evalCosh
+    - [ ] Mathlib\Analysis\Complex\Exponential.lean:681 ? evalExp
+- [ ] Mathlib\Analysis\Complex\Order.lean:144 ? evalComplexOfReal
+- [ ] Mathlib\Analysis\SpecialFunctions\Log\Basic.lean:547 ? evalLogNatCast
+- [ ] Mathlib\Analysis\SpecialFunctions\Log\Basic.lean:556 ? evalLogIntCast
+- [ ] Mathlib\Analysis\SpecialFunctions\Log\Basic.lean:565 ? evalLogNatLit
+- [ ] Mathlib\Analysis\SpecialFunctions\Gamma\Basic.lean:489 ? _root_.Mathlib.Meta.Positivity.evalGamma
+- [ ] Mathlib\Analysis\Normed\Group\Basic.lean:1398 ? evalMulNorm
+- [ ] Mathlib\Analysis\Normed\Group\Basic.lean:1420 ? evalAddNorm

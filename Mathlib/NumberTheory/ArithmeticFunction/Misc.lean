@@ -454,10 +454,13 @@ meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := 
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.sigma $k $n) =>
     let rn ← core z p n
-    assumeInstancesCommute
     match rn with
-    | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.sigma_pos_iff $pn)
-    | _ => return .nonnegative q(Nat.zero_le _)
+    | .positive pn =>
+      assumeInstancesCommute
+      return .positive q(Iff.mpr ArithmeticFunction.sigma_pos_iff $pn)
+    | _ =>
+      assumeInstancesCommute
+      return .nonnegative q(Nat.zero_le _)
   | _, _, _ => throwError "not ArithmeticFunction.sigma"
 
 

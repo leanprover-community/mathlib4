@@ -145,17 +145,26 @@ meta def evalComplexOfReal : PositivityExt where eval {u α} _ _ e := do
   -- TODO: Can we avoid duplicating the code?
   match u, α, e with
   | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>
-    assumeInstancesCommute
-    match ← core q(inferInstance) q(inferInstance) a with
-    | .positive pa => return .positive q(ofReal_pos $pa)
-    | .nonnegative pa => return .nonnegative q(ofReal_nonneg $pa)
-    | .nonzero pa => return .nonzero q(ofReal_ne_zero_of_ne_zero $pa)
+    match ← core q(inferInstance) (some q(inferInstance)) a with
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(ofReal_pos $pa)
+    | .nonnegative pa =>
+      assumeInstancesCommute
+      return .nonnegative q(ofReal_nonneg $pa)
+    | .nonzero pa =>
+      assumeInstancesCommute
+      return .nonzero q(ofReal_ne_zero_of_ne_zero $pa)
     | _ => return .none
   | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>
     assumeInstancesCommute
-    match ← core q(inferInstance) q(inferInstance) a with
-    | .positive pa => return .positive q(ofReal_pos $pa)
-    | .nonnegative pa => return .nonnegative q(ofReal_nonneg $pa)
+    match ← core q(inferInstance) (some q(inferInstance)) a with
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(ofReal_pos $pa)
+    | .nonnegative pa =>
+      assumeInstancesCommute
+      return .nonnegative q(ofReal_nonneg $pa)
     | .nonzero pa => return .nonzero q(ofReal_ne_zero_of_ne_zero $pa)
     | _ => return .none
   | _, _ => throwError "not Complex.ofReal"

@@ -381,13 +381,14 @@ the base is nonnegative and positive when the base is positive. -/
 meta def evalRpow : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q($a ^ ($b : ℝ)) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
-    assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa =>
-        pure (.positive q(Real.rpow_pos_of_pos $pa $b))
+      assertInstancesCommute
+      pure (.positive q(Real.rpow_pos_of_pos $pa $b))
     | .nonnegative pa =>
-        pure (.nonnegative q(Real.rpow_nonneg $pa $b))
+      assertInstancesCommute
+      pure (.nonnegative q(Real.rpow_nonneg $pa $b))
     | _ => pure .none
   | _, _, _ => throwError "not Real.rpow"
 

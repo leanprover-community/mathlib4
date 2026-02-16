@@ -489,7 +489,7 @@ open Lean.Meta Qq Mathlib.Meta.Positivity in
 meta def _root_.Mathlib.Meta.Positivity.evalGamma : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Gamma $a) =>
-    match ← core q(inferInstance) q(inferInstance) a with
+    match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
       assertInstancesCommute
       pure (.positive q(Gamma_pos_of_pos $pa))

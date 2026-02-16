@@ -369,7 +369,8 @@ attribute [local instance] monadLiftOptionMetaM in
 This extension only proves non-negativity, strict positivity is more delicate for infinite sums and
 requires more assumptions. -/
 @[positivity tsum _]
-meta def evalTsum : PositivityExt where eval {u α} zα pα e := do
+meta def evalTsum : PositivityExt where eval {u α} zα pα? e := do
+  let some pα := pα? | pure .none
   match e with
   | ~q(@tsum _ $ι $instCommMonoid $instTopSpace $f $L) =>
     lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do

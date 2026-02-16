@@ -101,7 +101,8 @@ end NoZeroSMulDivisors
 
 /-- Positivity extension for scalar multiplication. -/
 @[positivity HSMul.hSMul _ _]
-meta def evalSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
+meta def evalSMul : PositivityExt where eval {_u α} zα pα? (e : Q($α)) := do
+  let some pα := pα? | pure .none
   let .app (.app (.app (.app (.app (.app
         (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
           (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
@@ -109,20 +110,20 @@ meta def evalSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   let pM : Q(PartialOrder $β) ← synthInstanceQ q(PartialOrder $β)
   -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the
   -- required typeclasses. Ideally we could tell `q()` to do this automatically.
-  match ← core zM pM a, ← core zα pα b with
+  match ← core zM pM a, ← core zα pα? b with
   | .positive pa, .positive pb =>
       try {
         let _hαβ : Q(SMul $β $α) ← synthInstanceQ q(SMul $β $α)
         let _hαβ : Q(PosSMulStrictMono $β $α) ← synthInstanceQ q(PosSMulStrictMono $β $α)
-        pure (.positive (← mkAppM ``smul_pos #[pa, pb]))
+        pure (.positive (ltα := q(($pα).toLT)) (← mkAppM ``smul_pos #[pa, pb]))
       } catch _ =>
-        pure (.nonnegative (← mkAppM ``smul_nonneg_of_pos_of_pos #[pa, pb]))
+        pure (.nonnegative (leα := q(($pα).toLE)) (← mkAppM ``smul_nonneg_of_pos_of_pos #[pa, pb]))
   | .positive pa, .nonnegative pb =>
-      pure (.nonnegative (← mkAppM ``smul_nonneg_of_pos_of_nonneg #[pa, pb]))
+      pure (.nonnegative (leα := q(($pα).toLE)) (← mkAppM ``smul_nonneg_of_pos_of_nonneg #[pa, pb]))
   | .nonnegative pa, .positive pb =>
-      pure (.nonnegative (← mkAppM ``smul_nonneg_of_nonneg_of_pos #[pa, pb]))
+      pure (.nonnegative (leα := q(($pα).toLE)) (← mkAppM ``smul_nonneg_of_nonneg_of_pos #[pa, pb]))
   | .nonnegative pa, .nonnegative pb =>
-      pure (.nonnegative (← mkAppM ``smul_nonneg #[pa, pb]))
+      pure (.nonnegative (leα := q(($pα).toLE)) (← mkAppM ``smul_nonneg #[pa, pb]))
   | .positive pa, .nonzero pb =>
       pure (.nonzero (← mkAppM ``smul_ne_zero_of_pos_of_ne_zero #[pa, pb]))
   | .nonzero pa, .positive pb =>

@@ -1472,11 +1472,16 @@ meta def evalSinh : PositivityExt where eval {u α} _ _ e := do
   let pα : Q(PartialOrder ℝ) := q(inferInstance)
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.sinh $a) =>
-    assumeInstancesCommute
     match ← core zα pα a with
-    | .positive pa => return .positive q(sinh_pos_of_pos $pa)
-    | .nonnegative pa => return .nonnegative q(sinh_nonneg_of_nonneg $pa)
-    | .nonzero pa => return .nonzero q(sinh_ne_zero_of_ne_zero $pa)
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(sinh_pos_of_pos $pa)
+    | .nonnegative pa =>
+      assumeInstancesCommute
+      return .nonnegative q(sinh_nonneg_of_nonneg $pa)
+    | .nonzero pa =>
+      assumeInstancesCommute
+      return .nonzero q(sinh_ne_zero_of_ne_zero $pa)
     | _ => return .none
   | _, _, _ => throwError "not Real.sinh"
 

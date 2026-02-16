@@ -404,9 +404,10 @@ open Lean Meta Qq
 meta def evalNatTotient : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.totient $n) =>
-    assumeInstancesCommute
     match ← core z p n with
-    | .positive pa => return .positive q(Nat.totient_pos.mpr $pa)
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(Nat.totient_pos.mpr $pa)
     | _ => failure
   | _, _, _ => throwError "not Nat.totient"
 

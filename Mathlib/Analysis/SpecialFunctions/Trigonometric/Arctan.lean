@@ -393,11 +393,16 @@ meta def evalRealArctan : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.arctan $a) =>
     let ra ← core z p a
-    assumeInstancesCommute
     match ra with
-    | .positive pa => return .positive q(Real.arctan_pos.mpr $pa)
-    | .nonnegative na => return .nonnegative q(Real.arctan_nonneg.mpr $na)
-    | .nonzero na => return .nonzero q(mt Real.arctan_eq_zero_iff.mp $na)
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(Real.arctan_pos.mpr $pa)
+    | .nonnegative na =>
+      assumeInstancesCommute
+      return .nonnegative q(Real.arctan_nonneg.mpr $na)
+    | .nonzero na =>
+      assumeInstancesCommute
+      return .nonzero q(mt Real.arctan_eq_zero_iff.mp $na)
     | .none => return .none
   | _ => throwError "not Real.arctan"
 
@@ -415,11 +420,16 @@ meta def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
 meta def evalRealSinArctan : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.sin (Real.arctan $a)) =>
-    assumeInstancesCommute
     match ← core z p a with
-    | .positive pa => return .positive q(Real.sin_arctan_pos.mpr $pa)
-    | .nonnegative na => return .nonnegative q(Real.sin_arctan_nonneg.mpr $na)
-    | .nonzero na => return .nonzero q(mt Real.sin_arctan_eq_zero.mp $na)
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(Real.sin_arctan_pos.mpr $pa)
+    | .nonnegative na =>
+      assumeInstancesCommute
+      return .nonnegative q(Real.sin_arctan_nonneg.mpr $na)
+    | .nonzero na =>
+      assumeInstancesCommute
+      return .nonzero q(mt Real.sin_arctan_eq_zero.mp $na)
     | .none => return .none
   | _ => throwError "not Real.sin (Real.arctan _)"
 
