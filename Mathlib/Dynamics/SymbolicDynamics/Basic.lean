@@ -52,7 +52,7 @@ so that the theory works not only for groups but also for cancellative monoids.
 * `Pattern.occursInAt p x g` — occurrence of `p` in `x` at translate `g`.
 * `forbidden F` — configurations avoiding every pattern in `F`.
 * `Subshift A G` — closed, shift-invariant subsets of the full shift.
-* `MulSubshift.ofForbidde F` — the subshift defined by forbidding a family of patterns.
+* `MulSubshift.ofForbidden F` — the subshift defined by forbidding a family of patterns.
 * `subshift_of_finite_type F` — a subshift of finite type defined by a finite set of
 forbidden patterns.
 * `languageOn X U` — the set of patterns of shape `U` obtained by restricting some `x ∈ X`.
