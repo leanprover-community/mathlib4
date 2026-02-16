@@ -311,10 +311,8 @@ theorem fract_coe_add (ℓ m : M) (h : ℓ ∈ span ℤ (Set.range b)) :
     fract b (ℓ + m) = fract b m := by
   rw [add_comm, fract_add_coe b m ℓ h]
 
-@[simp]
 theorem fract_zero : fract b 0 = 0 := by simp [fract, floor_zero]
 
-@[simp]
 theorem fract_zSpanCast (m : M) (hm : m ∈ span ℤ (Set.range b)) : fract b m = 0 := by
   rw [fract, (floor_eq_self_iff_mem b m).mpr hm]
   exact sub_self _
@@ -327,14 +325,12 @@ theorem fract_eq_self {m : M} : fract b m = m ↔ m ∈ fundamentalDomain b := b
   classical simp only [b.ext_elem_iff, repr_fract_apply, Int.fract_eq_self,
     mem_fundamentalDomain, Set.mem_Ico]
 
-@[simp]
 theorem fract_fract (m : M) : fract b (fract b m) = fract b m :=
   b.ext_elem fun _ ↦ by simp only [repr_fract_apply, Int.fract_fract]
 
 theorem fract_mem_fundamentalDomain (x : M) : fract b x ∈ fundamentalDomain b :=
   fract_eq_self.mp <| fract_fract b _
 
-@[simp]
 theorem floor_fract (m : M) : floor b (fract b m) = 0 := by
   rw [floor_eq_zero_iff]; exact fract_mem_fundamentalDomain b m
 
@@ -371,7 +367,6 @@ theorem fract_eq_zero_iff (m : M) : fract b m = 0 ↔ m ∈ span ℤ (Set.range 
 theorem fract_ne_zero_iff (m : M) : fract b m ≠ 0 ↔ m ∉ span ℤ (Set.range b) :=
   (fract_eq_zero_iff b m).not
 
-@[simp]
 theorem fract_neg_eq_zero {m : M} : fract b (-m) = 0 ↔ fract b m = 0 := by
   simp only [fract_eq_iff]
   constructor <;>
