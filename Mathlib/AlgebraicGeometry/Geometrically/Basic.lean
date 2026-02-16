@@ -57,6 +57,12 @@ lemma geometrically_eq_universally (P : ObjectProperty Scheme.{u}) :
     apply h.flip.of_iso (.refl _) (.refl _) W.isoSpec (.refl _) <;> simp
   · exact hf _ _ _ h.flip inferInstance inferInstance
 
+lemma geometrically_inf (P Q : ObjectProperty Scheme.{u}) :
+    geometrically (P ⊓ Q) = geometrically P ⊓ geometrically Q := by
+  simp only [geometrically_eq_universally, ← MorphismProperty.universally_inf]
+  congr with X Y f
+  exact ⟨fun H ↦ ⟨(H · · |>.1), (H · · |>.2)⟩, fun H a b ↦ ⟨H.1 a b, H.2 a b⟩⟩
+
 variable (P : ObjectProperty Scheme.{u})
 
 instance : (geometrically P).IsStableUnderBaseChange := by
