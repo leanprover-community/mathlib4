@@ -254,7 +254,7 @@ lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet
   rintro e he
   induction e using Sym2.ind with | h a b =>
   rw [Subgraph.mem_edgeSet] at he
-  exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_pair_eq ..⟩
+  exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_mk ..⟩
 
 theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
@@ -1099,7 +1099,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
   · intro hs
     refine Sym2.ind ?_
     rintro ⟨v', hv'⟩ ⟨w', hw'⟩
-    simp only [Sym2.map_pair_eq, Sym2.eq]
+    simp only [Sym2.map_mk, Sym2.eq]
     contrapose!
     rintro (_ | _) <;> simpa only [Sym2.eq_swap]
   · intro h' hs

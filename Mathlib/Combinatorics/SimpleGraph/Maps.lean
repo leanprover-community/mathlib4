@@ -77,10 +77,10 @@ theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
   constructor
   · intro ⟨a, b, hadj, ha, hb⟩
     use s(a, b), hadj
-    rw [Embedding.sym2Map_apply, Sym2.map_pair_eq, ha, hb]
+    rw [Embedding.sym2Map_apply, Sym2.map_mk, ha, hb]
   · intro ⟨e, hadj, he⟩
     induction e
-    rw [Embedding.sym2Map_apply, Sym2.map_pair_eq, Sym2.eq_iff] at he
+    rw [Embedding.sym2Map_apply, Sym2.map_mk, Sym2.eq_iff] at he
     exact he.elim (fun ⟨h, h'⟩ ↦ ⟨_, _, hadj, h, h'⟩) (fun ⟨h', h⟩ ↦ ⟨_, _, hadj.symm, h, h'⟩)
 
 lemma map_adj_apply {G : SimpleGraph V} {f : V ↪ W} {a b : V} :
