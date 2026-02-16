@@ -1100,8 +1100,7 @@ lemma wbtw_of_sameRay_vsub_left {x y z : P} (h : SameRay R (y -ᵥ x) (z -ᵥ x)
     Wbtw R x y z ∨ Wbtw R x z y := by
   rcases h with (h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩)
   · simp_all
-  · rw [vsub_eq_zero_iff_eq] at h
-    simp [h]
+  · simp_all
   wlog hr : r₂ ≤ r₁ generalizing r₁ r₂ y z
   · rw [or_comm]
     apply this r₂ r₁ hr₂ hr₁ h.symm (Std.le_of_not_ge hr)
