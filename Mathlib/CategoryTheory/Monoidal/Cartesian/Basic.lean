@@ -454,7 +454,7 @@ lemma lift_braiding_inv {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
     lift f g ≫ (β_ Y X).inv = lift g f := by aesop
 
 -- See note [lower instance priority]
-instance (priority := low) toSymmetricCategory [BraidedCategory C] : SymmetricCategory C where
+instance (priority := low) toSymmetricCategory : SymmetricCategory C where
 
 /-- `CartesianMonoidalCategory` implies `BraidedCategory`.
 This is not an instance to prevent diamonds. -/

@@ -1058,7 +1058,7 @@ theorem measurableSet_plusPart (hm : MeasurableSet A) :
   convert_to MeasurableSet (A ∩ (⋂ w, {x | 0 < x.1 w}))
   · ext; simp
   · refine hm.inter (MeasurableSet.iInter fun _ ↦ ?_)
-    exact measurableSet_lt measurable_const ((measurable_pi_apply _).comp' measurable_fst)
+    exact measurableSet_lt measurable_const (by fun_prop)
 
 variable (s) in
 theorem measurableSet_negAt_plusPart (hm : MeasurableSet A) :

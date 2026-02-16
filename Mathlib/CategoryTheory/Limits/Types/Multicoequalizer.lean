@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Multiequalizer
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 public import Mathlib.CategoryTheory.Limits.Shapes.MultiequalizerPullback
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Types.Set
@@ -46,8 +45,7 @@ lemma isMulticoequalizer_iff {J : MultispanShape.{w, w'}} {d : MultispanIndex J 
   have (x : d.multispan.ColimitType) :
       ∃ (i : J.R) (a : d.right i), d.multispan.ιColimitType (.right i) a = x := by
     obtain ⟨(l | r), z, rfl⟩ := d.multispan.ιColimitType_jointly_surjective x
-    · exact ⟨J.fst l, d.multispan.map (WalkingMultispan.Hom.fst l) z,
-        by rw [ιColimitType_map]⟩
+    · exact ⟨J.fst l, d.multispan.map (WalkingMultispan.Hom.fst l) z, by rw [ιColimitType_map]⟩
     · exact ⟨r, z, by simp⟩
   constructor
   · intro hc

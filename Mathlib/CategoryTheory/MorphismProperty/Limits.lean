@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Filtered.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # Relation of morphism properties with limits
@@ -170,6 +171,14 @@ theorem IsStableUnderBaseChange.mk' [RespectsIso P]
     rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
     exact hP₂ _ _ _ f g hg
 
+lemma IsStableUnderBaseChange.of_forall_exists_isPullback {P : MorphismProperty C} [P.RespectsIso]
+    (H : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] (_ : P g),
+      ∃ (T : C) (fst : T ⟶ X) (snd : T ⟶ Y), IsPullback fst snd f g ∧ P fst) :
+    P.IsStableUnderBaseChange := by
+  refine .mk' fun X Y S f g _ hg ↦ ?_
+  obtain ⟨T, fst, snd, h, hfst⟩ := H f g hg
+  rwa [← h.isoPullback_inv_fst, P.cancel_left_of_respectsIso]
+
 variable (C)
 
 instance IsStableUnderBaseChange.isomorphisms :
@@ -293,6 +302,14 @@ theorem IsStableUnderCobaseChange.mk' [RespectsIso P]
     let e := sq.flip.isoPushout
     rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
     exact hP₂ _ _ _ f g hf
+
+lemma IsStableUnderCobaseChange.of_forall_exists_isPullback {P : MorphismProperty C} [P.RespectsIso]
+    (H : ∀ {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g] (_ : P f),
+      ∃ (T : C) (inl : X ⟶ T) (inr : Y ⟶ T), IsPushout f g inl inr ∧ P inr) :
+    P.IsStableUnderCobaseChange := by
+  refine .mk' fun X Y S f g _ hg ↦ ?_
+  obtain ⟨T, inl, inr, h, hinl⟩ := H f g hg
+  rwa [← h.inr_isoPushout_hom, P.cancel_right_of_respectsIso]
 
 instance IsStableUnderCobaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderCobaseChange where

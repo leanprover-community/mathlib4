@@ -161,6 +161,22 @@ lemma spanningCoe_toSubgraph : C.toSubgraph.spanningCoe = C.toSimpleGraph.spanni
 lemma connected_toSubgraph : C.toSubgraph.Connected :=
   ⟨C.coe_toSubgraph ▸ C.connected_toSimpleGraph⟩
 
+theorem maximal_connected_toSubgraph (C : G.ConnectedComponent) :
+    Maximal Subgraph.Connected C.toSubgraph := by
+  refine C.ind fun v ↦ ⟨connected_toSubgraph _, fun G' hconn hle ↦ ?_⟩
+  refine le_trans Subgraph.le_induce_top_verts <| Subgraph.induce_mono_right fun u hu ↦ ?_
+  exact ConnectedComponent.sound <| hconn.coe.preconnected ⟨u, hu⟩ ⟨v, hle.left rfl⟩ |>.map G'.hom
+
+theorem maximal_subgraph_connected_iff (G' : G.Subgraph) :
+    Maximal Subgraph.Connected G' ↔ ∃ C : G.ConnectedComponent, C.toSubgraph = G' := by
+  refine ⟨fun ⟨hconn, h⟩ ↦ ?_, fun ⟨C, h⟩ ↦ ?_⟩
+  · have ⟨v, hv⟩ := hconn.nonempty
+    suffices G' ≤ (G.connectedComponentMk v).toSubgraph from
+      ⟨G.connectedComponentMk v, le_antisymm (h (connected_toSubgraph _) this) this⟩
+    exact le_trans Subgraph.le_induce_top_verts <| Subgraph.induce_mono_right fun u hu ↦
+      ConnectedComponent.sound <| hconn.coe.preconnected ⟨u, hu⟩ ⟨v, hv⟩ |>.map G'.hom
+  · exact h ▸ maximal_connected_toSubgraph _
+
 end ConnectedComponent
 
 /-! ### Walks as subgraphs -/
@@ -205,7 +221,7 @@ theorem mem_edges_toSubgraph (p : G.Walk u v) {e : Sym2 V} :
     e ∈ p.toSubgraph.edgeSet ↔ e ∈ p.edges := by induction p <;> simp [*]
 
 @[simp]
-theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = { e | e ∈ p.edges } :=
+theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = p.edgeSet :=
   Set.ext fun _ => p.mem_edges_toSubgraph
 
 @[simp]
@@ -310,6 +326,14 @@ lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
     p.toSubgraph.Adj u' v' ↔ s(u', v') ∈ p.edges := by
   rw [← p.mem_edges_toSubgraph, Subgraph.mem_edgeSet]
 
+theorem toSubgraph_le_iff {w : G.Walk u v} (hnil : ¬w.Nil) {G' : G.Subgraph} :
+    w.toSubgraph ≤ G' ↔ w.edgeSet ⊆ G'.edgeSet := by
+  refine ⟨fun hw e he ↦ Subgraph.edgeSet_mono hw <| w.mem_edges_toSubgraph.mpr he, fun hw ↦ ?_⟩
+  refine ⟨fun v' hv' ↦ ?_, fun u' v' hadj ↦ hw <| w.mem_edges_toSubgraph.mp (hadj : s(_, _) ∈ _)⟩
+  rw [mem_verts_toSubgraph, mem_support_iff_exists_mem_edges_of_not_nil hnil] at hv'
+  have ⟨e, he, hv'e⟩ := hv'
+  exact G'.mem_verts_of_mem_edge (hw he) hv'e
+
 lemma toSubgraph_bypass_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
     p.bypass.toSubgraph ≤ p.toSubgraph := by
   constructor
@@ -358,16 +382,7 @@ lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
   ext v
   simp_all only [Subgraph.mem_neighborSet, Set.mem_singleton_iff,
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
-  refine ⟨?_, by simp_all⟩
-  rintro ⟨i, hl | hr⟩
-  · have : i = 0 := by
-      apply hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by rw [Set.mem_setOf]; lia)
-      simp_all
-    simp_all
-  · have : i + 1 = 0 := by
-      apply hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by rw [Set.mem_setOf]; lia)
-      simp_all
-    contradiction
+  grind [getVert_eq_start_iff]
 
 lemma neighborSet_toSubgraph_endpoint {u v} {p : G.Walk u v}
     (hp : p.IsPath) (hnp : ¬ p.Nil) : p.toSubgraph.neighborSet v = {p.penultimate} := by
@@ -420,18 +435,10 @@ namespace IsCycle
 lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
     p.toSubgraph.neighborSet u = {p.snd, p.penultimate} := by
   have hadj1 := p.toSubgraph_adj_snd hpc.not_nil
-  have hadj2 := (p.toSubgraph_adj_penultimate hpc.not_nil).symm
   ext v
   simp_all only [Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
-  refine ⟨?_, by aesop⟩
-  rintro ⟨i, hl | hr⟩
-  · rw [hpc.getVert_endpoint_iff (by lia)] at hl
-    cases hl.1 <;> aesop
-  · rcases (hpc.getVert_endpoint_iff (by lia)).mp hr.2 with h1 | h2
-    · contradiction
-    · simp only [penultimate, ← h2, add_tsub_cancel_right]
-      simp_all
+  grind [getVert_endpoint_iff, add_tsub_cancel_right]
 
 lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≠ 0) (h' : i < p.length) :

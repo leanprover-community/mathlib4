@@ -319,15 +319,15 @@ theorem StronglyAdapted.isStoppingTime_crossing (hf : StronglyAdapted ℱ f) :
   | zero =>
     refine ⟨isStoppingTime_const _ 0, ?_⟩
     simp only [lowerCrossingTime_zero, Nat.bot_eq_zero]
-    exact hittingBtwn_isStoppingTime hf measurableSet_Iic
+    exact hf.adapted.isStoppingTime_hittingBtwn measurableSet_Iic
   | succ k ih =>
     have : IsStoppingTime ℱ (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) := by
       intro n
       simp_rw [upperCrossingTime_succ_eq]
-      refine isStoppingTime_hittingBtwn_isStoppingTime ih.2 ?_ measurableSet_Ici hf _
+      refine hf.adapted.isStoppingTime_hittingBtwn_isStoppingTime ih.2 ?_ measurableSet_Ici _
       simp [lowerCrossingTime_le]
     refine ⟨this, fun n ↦ ?_⟩
-    refine isStoppingTime_hittingBtwn_isStoppingTime this ?_ measurableSet_Iic hf _
+    refine hf.adapted.isStoppingTime_hittingBtwn_isStoppingTime this ?_ measurableSet_Iic _
     simp [upperCrossingTime_le]
 
 theorem StronglyAdapted.isStoppingTime_upperCrossingTime (hf : StronglyAdapted ℱ f) :

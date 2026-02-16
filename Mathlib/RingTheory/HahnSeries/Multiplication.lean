@@ -552,9 +552,6 @@ theorem orderTop_add_le_mul {x y : R⟦Γ⟧} : x.orderTop + y.orderTop ≤ (x *
   rw [← smul_eq_mul]
   exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j ↦ rfl
 
-@[deprecated (since := "2025-08-11")] alias orderTop_add_orderTop_le_orderTop_mul :=
-  orderTop_add_le_mul
-
 theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
     (h : x.leadingCoeff * y.leadingCoeff ≠ 0) : (x * y).order = x.order + y.order := by
   have hx : x.leadingCoeff ≠ 0 := by aesop
@@ -986,7 +983,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
     · simp [hx]
       grind
     · simp +contextual only [mem_union, mem_addAntidiagonal, mul_eq_mul_left_iff, Prod.mk.injEq,
-        ne_eq, ← and_or_left, ← or_and_right, or_false, and_imp, Prod.forall,  mem_support, not_and]
+        ne_eq, ← and_or_left, ← or_and_right, or_false, and_imp, Prod.forall, mem_support, not_and]
       rintro b c hxb - hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq (order_le_of_coeff_ne_zero hxb)
@@ -1008,7 +1005,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
     · simp [hx]
       grind
     · simp +contextual only [mem_union, mem_addAntidiagonal, mul_eq_mul_right_iff, Prod.mk.injEq,
-        ne_eq, ← or_and_right, or_false, and_imp, Prod.forall,  mem_support, not_and]
+        ne_eq, ← or_and_right, or_false, and_imp, Prod.forall, mem_support, not_and]
       rintro b c - hxb hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq

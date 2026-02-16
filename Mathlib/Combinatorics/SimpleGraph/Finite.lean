@@ -54,15 +54,16 @@ section EdgeFinset
 variable {G₁ G₂ : SimpleGraph V} [Fintype G.edgeSet] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet]
 
 /-- The `edgeSet` of the graph as a `Finset`. -/
-abbrev edgeFinset : Finset (Sym2 V) :=
+def edgeFinset : Finset (Sym2 V) :=
   Set.toFinset G.edgeSet
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_edgeFinset : (G.edgeFinset : Set (Sym2 V)) = G.edgeSet :=
   Set.coe_toFinset _
 
 variable {G}
 
+@[simp]
 theorem mem_edgeFinset : e ∈ G.edgeFinset ↔ e ∈ G.edgeSet :=
   Set.mem_toFinset
 
@@ -74,11 +75,16 @@ theorem card_toFinset_mem_edgeFinset [DecidableEq V] (e : G.edgeFinset) :
     (e : Sym2 V).toFinset.card = 2 :=
   Sym2.card_toFinset_of_not_isDiag e.val (G.not_isDiag_of_mem_edgeFinset e.prop)
 
-theorem edgeFinset_inj : G₁.edgeFinset = G₂.edgeFinset ↔ G₁ = G₂ := by simp
+@[simp]
+theorem edgeFinset_inj : G₁.edgeFinset = G₂.edgeFinset ↔ G₁ = G₂ := by simp [edgeFinset]
 
-theorem edgeFinset_subset_edgeFinset : G₁.edgeFinset ⊆ G₂.edgeFinset ↔ G₁ ≤ G₂ := by simp
+@[simp]
+theorem edgeFinset_subset_edgeFinset : G₁.edgeFinset ⊆ G₂.edgeFinset ↔ G₁ ≤ G₂ := by
+  simp [edgeFinset]
 
-theorem edgeFinset_ssubset_edgeFinset : G₁.edgeFinset ⊂ G₂.edgeFinset ↔ G₁ < G₂ := by simp
+@[simp]
+theorem edgeFinset_ssubset_edgeFinset : G₁.edgeFinset ⊂ G₂.edgeFinset ↔ G₁ < G₂ := by
+  simp [edgeFinset]
 
 @[mono, gcongr] alias ⟨_, edgeFinset_mono⟩ := edgeFinset_subset_edgeFinset
 
@@ -100,12 +106,15 @@ theorem edgeFinset_inf [DecidableEq V] : (G₁ ⊓ G₂).edgeFinset = G₁.edgeF
 theorem edgeFinset_sdiff [DecidableEq V] :
     (G₁ \ G₂).edgeFinset = G₁.edgeFinset \ G₂.edgeFinset := by simp [edgeFinset]
 
+@[simp]
 lemma disjoint_edgeFinset : Disjoint G₁.edgeFinset G₂.edgeFinset ↔ Disjoint G₁ G₂ := by
   simp_rw [← Finset.disjoint_coe, coe_edgeFinset, disjoint_edgeSet]
 
+@[simp]
 lemma edgeFinset_eq_empty : G.edgeFinset = ∅ ↔ G = ⊥ := by
   rw [← edgeFinset_bot, edgeFinset_inj]
 
+@[simp]
 lemma edgeFinset_nonempty : G.edgeFinset.Nonempty ↔ G ≠ ⊥ := by
   rw [Finset.nonempty_iff_ne_empty, edgeFinset_eq_empty.ne]
 
@@ -113,8 +122,11 @@ theorem edgeFinset_card : #G.edgeFinset = Fintype.card G.edgeSet :=
   Set.toFinset_card _
 
 @[simp]
-theorem edgeSet_univ_card : #(univ : Finset G.edgeSet) = #G.edgeFinset :=
-  Fintype.card_of_subtype G.edgeFinset fun _ => mem_edgeFinset
+theorem card_edgeSet : Fintype.card G.edgeSet = #G.edgeFinset :=
+  .symm <| Set.toFinset_card _
+
+theorem edgeSet_univ_card : #(univ : Finset G.edgeSet) = #G.edgeFinset := by
+  simp
 
 variable [Fintype V]
 
@@ -125,7 +137,7 @@ theorem edgeFinset_top [DecidableEq V] :
 /-- The complete graph on `n` vertices has `n.choose 2` edges. -/
 theorem card_edgeFinset_top_eq_card_choose_two [DecidableEq V] :
     #(⊤ : SimpleGraph V).edgeFinset = (Fintype.card V).choose 2 := by
-  simp_rw [Set.toFinset_card, edgeSet_top, ← Sym2.card_diagSet_compl]
+  simp_rw [edgeFinset, Set.toFinset_card, edgeSet_top, ← Sym2.card_diagSet_compl]
 
 /-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
 theorem card_edgeFinset_le_card_choose_two : #G.edgeFinset ≤ (Fintype.card V).choose 2 := by
@@ -158,6 +170,10 @@ def neighborFinset : Finset V :=
 theorem neighborFinset_def : G.neighborFinset v = (G.neighborSet v).toFinset :=
   rfl
 
+@[simp, norm_cast]
+theorem coe_neighborFinset : (G.neighborFinset v : Set V) = G.neighborSet v :=
+  Set.coe_toFinset _
+
 @[simp]
 theorem mem_neighborFinset (w : V) : w ∈ G.neighborFinset v ↔ G.Adj v w :=
   Set.mem_toFinset
@@ -182,6 +198,18 @@ theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v
 
 theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
   simp only [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
+
+variable {G v} in
+theorem degree_pos_iff_nonempty : 0 < G.degree v ↔ (G.neighborSet v).Nonempty :=
+  G.degree_pos_iff_exists_adj v
+
+variable {G v} in
+theorem Adj.degree_pos_left {w : V} (h : G.Adj v w) : 0 < G.degree v :=
+  G.degree_pos_iff_nonempty.mpr ⟨_, h⟩
+
+variable {G v} in
+theorem Adj.degree_pos_right {w : V} (h : G.Adj w v) : 0 < G.degree v :=
+  h.symm.degree_pos_left
 
 theorem degree_pos_iff_mem_support : 0 < G.degree v ↔ v ∈ G.support := by
   rw [G.degree_pos_iff_exists_adj v, mem_support]
@@ -223,6 +251,11 @@ theorem card_incidenceSet_eq_degree [DecidableEq V] :
     Fintype.card (G.incidenceSet v) = G.degree v := by
   rw [Fintype.card_congr (G.incidenceSetEquivNeighborSet v)]
   simp
+
+@[simp, norm_cast]
+theorem coe_incidenceFinset [DecidableEq V] :
+    (G.incidenceFinset v : Set (Sym2 V)) = G.incidenceSet v := by
+  simp [incidenceFinset]
 
 @[simp]
 theorem card_incidenceFinset_eq_degree [DecidableEq V] : #(G.incidenceFinset v) = G.degree v := by
@@ -486,7 +519,7 @@ variable {G} {W : Type*} {G' : SimpleGraph W}
 theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeSet] :
     #G.edgeFinset = #G'.edgeFinset := by
   apply Finset.card_eq_of_equiv
-  simp only [Set.mem_toFinset]
+  simp only [mem_edgeFinset]
   exact f.mapEdgeSet
 
 @[simp] theorem degree_eq (f : G ≃g G') (x : V)
@@ -534,23 +567,12 @@ instance : DecidablePred (· ∈ G.support) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })
 
 theorem map_edgeFinset_induce [DecidableEq V] :
-    (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map
+    (G.induce s).edgeFinset.map (Embedding.subtype (· ∈ s)).sym2Map
       = G.edgeFinset ∩ s.toFinset.sym2 := by
-  simp_rw [Finset.ext_iff, Sym2.forall, mem_inter, mk_mem_sym2_iff, mem_map, Sym2.exists,
-    Set.mem_toFinset, mem_edgeSet, comap_adj, Embedding.sym2Map_apply, Embedding.coe_subtype,
-    Sym2.map_pair_eq, Sym2.eq_iff]
-  intro v w
-  constructor
-  · rintro ⟨x, y, hadj, ⟨hv, hw⟩ | ⟨hw, hv⟩⟩
-    all_goals rw [← hv, ← hw]
-    · exact ⟨hadj, x.prop, y.prop⟩
-    · exact ⟨hadj.symm, y.prop, x.prop⟩
-  · intro ⟨hadj, hv, hw⟩
-    use ⟨v, hv⟩, ⟨w, hw⟩, hadj
-    tauto
+  aesop (add simp [Finset.ext_iff, Sym2.exists, Sym2.forall, adj_comm])
 
 theorem map_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
-    (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map = G.edgeFinset := by
+    (G.induce s).edgeFinset.map (Embedding.subtype (· ∈ s)).sym2Map = G.edgeFinset := by
   classical
   simpa [map_edgeFinset_induce] using edgeFinset_subset_sym2_of_support_subset h
 
@@ -601,7 +623,8 @@ variable [Fintype V] {W : Type*} [Fintype W] [DecidableEq W]
 @[simp]
 theorem edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :
     (G.map f).edgeFinset = G.edgeFinset.map f.sym2Map := by
-  rw [Finset.map_eq_image, ← Set.toFinset_image, Set.toFinset_inj]
+  rw [← Finset.coe_inj]
+  push_cast
   exact G.edgeSet_map f
 
 theorem card_edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :

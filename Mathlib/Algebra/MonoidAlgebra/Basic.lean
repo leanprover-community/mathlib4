@@ -165,6 +165,26 @@ lemma curryAlgEquiv_symm_single (m : M) (n : N) (a : A) :
 
 end Algebra
 
+variable (R A) in
+/-- If `f : M → N` is a homomorphism between two magmas, then `MonoidAlgebra.mapDomain f`
+is a non-unital algebra homomorphism between their magma algebras. -/
+@[to_additive (dont_translate := R A) (attr := simps apply)
+/-- If `f : M → N` is a homomorphism between two additive magmas,
+then `AddMonoidAlgebra.mapDomain f` is a non-unital algebra homomorphism
+between their additive magma algebras. -/]
+def mapDomainNonUnitalAlgHom [CommSemiring R] [Semiring A] [Algebra R A]
+    [Mul M] [Mul N] (f : M →ₙ* N) : A[M] →ₙₐ[R] A[N] where
+  __ := mapDomainNonUnitalRingHom A f
+  map_mul' := mapDomain_mul f
+  map_smul' _ _ := mapDomain_smul ..
+
+variable (A) in
+@[to_additive]
+theorem mapDomain_algebraMap {F : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    [Monoid M] [Monoid N] [FunLike F M N] [MonoidHomClass F M N] (f : F) (r : R) :
+    mapDomain f (algebraMap R A[M] r) = algebraMap R A[N] r := by
+  simp only [coe_algebraMap, mapDomain_single, map_one, (· ∘ ·)]
+
 section lift
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
   [Monoid M] [Monoid N] [Monoid O]
@@ -237,24 +257,6 @@ theorem lift_mapRangeRingHom_algebraMap [CommSemiring S] [Algebra S A]
   induction x using Finsupp.induction with
   | zero => simp
   | single_add a b f _ _ ih => simp [ih]
-
-/-- If `f : M → N` is a homomorphism between two magmas, then `MonoidAlgebra.mapDomain f`
-is a non-unital algebra homomorphism between their magma algebras. -/
-@[to_additive (dont_translate := R A) (attr := simps apply)
-/-- If `f : M → N` is a homomorphism between two additive magmas,
-then `AddMonoidAlgebra.mapDomain f` is a non-unital algebra homomorphism
-between their additive magma algebras. -/]
-def mapDomainNonUnitalAlgHom (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-    [Mul M] [Mul N] (f : M →ₙ* N) : A[M] →ₙₐ[R] A[N] where
-  __ := mapDomainNonUnitalRingHom A f
-  map_mul' := mapDomain_mul f
-  map_smul' _ _ := mapDomain_smul ..
-
-variable (A) in
-@[to_additive]
-theorem mapDomain_algebraMap {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) (r : R) :
-    mapDomain f (algebraMap R A[M] r) = algebraMap R A[N] r := by
-  simp only [coe_algebraMap, mapDomain_single, map_one, (· ∘ ·)]
 
 variable (R A) in
 /-- If `f : M → N` is a monoid homomorphism, then `MonoidAlgebra.mapDomain f` is an algebra

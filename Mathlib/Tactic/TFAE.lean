@@ -81,22 +81,35 @@ end Parser
 open Parser
 
 /--
-`tfae_have` introduces hypotheses for proving goals of the form `TFAE [P₁, P₂, ...]`. Specifically,
-`tfae_have i <arrow> j := ...` introduces a hypothesis of type `Pᵢ <arrow> Pⱼ` to the local
-context, where `<arrow>` can be `→`, `←`, or `↔`. Note that `i` and `j` are natural number indices
-(beginning at 1) used to specify the propositions `P₁, P₂, ...` that appear in the goal.
+`tfae_have i → j := t`, where the goal is `TFAE [P₁, P₂, ...]` introduces a hypothesis
+`tfae_i_to_j : Pᵢ → Pⱼ` and proof `t` to the local context. Note that `i` and `j` are
+natural number literals (beginning at 1) used as indices to specify the propositions
+`P₁, P₂, ...` that appear in the goal.
 
+Once sufficient hypotheses have been introduced by `tfae_have`, `tfae_finish` can be used to close
+the goal.
+
+All features of `have` are supported by `tfae_have`, including naming, matching,
+destructuring, and goal creation.
+
+* `tfae_have i ← j := t` adds a hypothesis in the reverse direction, of type `Pⱼ → Pᵢ`.
+* `tfae_have i ↔ j := t` adds a hypothesis in the both directions, of type `Pᵢ ↔ Pⱼ`.
+* `tfae_have hij : i → j := t` names the introduced hypothesis `hij` instead of `tfae_i_to_j`.
+* `tfae_have i j | p₁ => t₁ | ...` matches on the assumption `p : Pᵢ`.
+* `tfae_have ⟨hij, hji⟩ : i ↔ j := t` destructures the bi-implication into `hij : Pᵢ → Pⱼ`
+  and `hji : Pⱼ → Pⱼ`.
+* `tfae_have i → j := t ?a` creates a new goal for `?a`.
+
+Examples:
 ```lean4
 example (h : P → R) : TFAE [P, Q, R] := by
   tfae_have 1 → 3 := h
-  ...
+  -- The resulting context now includes `tfae_1_to_3 : P → R`.
+  sorry
 ```
-The resulting context now includes `tfae_1_to_3 : P → R`.
-
-Once sufficient hypotheses have been introduced by `tfae_have`, `tfae_finish` can be used to close
-the goal. For example,
 
 ```lean4
+-- An example of `tfae_have` and `tfae_finish`:
 example : TFAE [P, Q, R] := by
   tfae_have 1 → 2 := sorry /- proof of P → Q -/
   tfae_have 2 → 1 := sorry /- proof of Q → P -/
@@ -104,10 +117,8 @@ example : TFAE [P, Q, R] := by
   tfae_finish
 ```
 
-All features of `have` are supported by `tfae_have`, including naming, matching,
-destructuring, and goal creation. These are demonstrated below.
-
 ```lean4
+-- All features of `have` are supported by `tfae_have`:
 example : TFAE [P, Q] := by
   -- assert `tfae_1_to_2 : P → Q`:
   tfae_have 1 → 2 := sorry
@@ -124,13 +135,14 @@ example : TFAE [P, Q] := by
 
   -- assert `h : P → Q`; `?a` is a new goal:
   tfae_have h : 1 → 2 := f ?a
-  ...
+
+  sorry
 ```
 -/
 syntax (name := tfaeHave) "tfae_have " tfaeHaveDecl : tactic
 
 /--
-`tfae_finish` is used to close goals of the form `TFAE [P₁, P₂, ...]` once a sufficient collection
+`tfae_finish` closes goals of the form `TFAE [P₁, P₂, ...]` once a sufficient collection
 of hypotheses of the form `Pᵢ → Pⱼ` or `Pᵢ ↔ Pⱼ` have been introduced to the local context.
 
 `tfae_have` can be used to conveniently introduce these hypotheses; see `tfae_have`.

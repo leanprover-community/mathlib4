@@ -34,10 +34,7 @@ namespace LinearIsometryEquiv
 variable (f : E ≃ₗᵢ[ℝ] F)
 
 /-- Every linear isometry equivalence is a measurable equivalence. -/
-def toMeasurableEquiv : E ≃ᵐ F where
-  toEquiv := f
-  measurable_toFun := f.continuous.measurable
-  measurable_invFun := f.symm.continuous.measurable
+def toMeasurableEquiv : E ≃ᵐ F := f.toHomeomorph.toMeasurableEquiv
 
 @[simp] theorem coe_toMeasurableEquiv : (f.toMeasurableEquiv : E → F) = f := rfl
 
@@ -150,9 +147,6 @@ theorem EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp :
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
     MeasurableEquiv.coe_toLp, ← PiLp.coe_symm_continuousLinearEquiv 2 ℝ, Basis.map_addHaar]
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
-
-@[deprecated (since := "2025-07-26")] alias EuclideanSpace.volume_preserving_measurableEquiv :=
-  EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp
 
 /-- A copy of `EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp`
 for the canonical spelling of the equivalence. -/

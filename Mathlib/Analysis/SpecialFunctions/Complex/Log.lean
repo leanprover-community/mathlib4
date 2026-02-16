@@ -229,7 +229,7 @@ theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x :
   · refine continuous_ofReal.continuousAt.comp ?_
     refine (Real.continuousAt_log ?_).comp continuous_norm.continuousAt
     exact norm_ne_zero_iff.mpr <| slitPlane_ne_zero h
-  · have h_cont_mul : Continuous fun x : ℂ => x * I := continuous_id'.mul continuous_const
+  · have h_cont_mul : Continuous fun x : ℂ => x * I := by fun_prop
     refine h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp ?_)
     exact continuousAt_arg h
 
