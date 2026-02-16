@@ -149,16 +149,25 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
       Ideal.Quotient.eq_zero_iff_mem] using mem_of_mem_succ this
   let _ : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
   let _ : IsNoetherianRing R' := AdicCompletion.isNoetherianRing_of_fg _ maxfg
-  have nmin : maximalIdeal R' ∉ minimalPrimes R' := by
-    sorry
   have spanle : (maximalIdeal R').spanFinrank ≤ 1 := by
-    sorry
-  have dimge : ringKrullDim R' ≥ 1 := by
-    sorry
-  have := ringKrullDim_le_spanFinrank_maximalIdeal R'
-  have : IsRegularLocalRing R' := sorry
-  have : IsDiscreteValuationRing R' := sorry
-  have : IsAdicComplete (maximalIdeal R') R' := sorry
+    rw [maxeq']
+    exact le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite (Set.finite_singleton _))
+      (Set.ncard_singleton _)
+  have dimge : 1 ≤ ringKrullDim R' := by
+    apply (WithBot.one_le_iff_pos _).mpr
+    by_contra! le
+    let _ : Ring.KrullDimLE 0 R' := Ring.krullDimLE_iff.mpr le
+    have disj := Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes
+      (Ideal.mem_minimalPrimes_of_krullDimLE_zero (maximalIdeal R'))
+    absurd Disjoint.notMem_of_mem_right disj reg'
+    simpa [maxeq'] using Ideal.subset_span (Set.mem_singleton _)
+  have dimle := ringKrullDim_le_spanFinrank_maximalIdeal R'
+  let _ : IsRegularLocalRing R' :=
+    (isRegularLocalRing_def _).mpr (le_antisymm ((Nat.cast_le.mpr spanle).trans dimge) dimle)
+  let _ : IsDiscreteValuationRing R' :=
+    IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one _
+      (le_antisymm (dimle.trans (Nat.cast_le.mpr spanle)) dimge)
+  let _ : IsAdicComplete (maximalIdeal R') R' := AdicCompletion.isAdicComplete_of_fg maxfg
   use R', inferInstance, inferInstance
   refine ⟨⟨?_⟩, ?_⟩
   · sorry
