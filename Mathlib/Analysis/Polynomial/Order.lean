@@ -30,8 +30,11 @@ section PolynomialSign
 
 variable {P : ℝ[X]} {x : ℝ}
 
-theorem zero_lt_eval_of_roots_lt_of_leadingCoeff_pos
-    (hroots : ∀ y, P.IsRoot y → y < x) (hlc : 0 < P.leadingCoeff) : 0 < P.eval x := by
+theorem zero_lt_eval_of_roots_lt_of_leadingCoeff_nonneg
+    (hroots : ∀ y, P.IsRoot y → y < x) (hlc : 0 ≤ P.leadingCoeff) : 0 < P.eval x := by
+  replace hlc : 0 < P.leadingCoeff := by
+    contrapose! hroots
+    exact ⟨x, by simp [leadingCoeff_eq_zero.mp <| eq_of_le_of_ge hroots hlc], le_refl x⟩
   by_cases! hdeg : P.degree ≤ 0
   · rwa [eq_C_of_degree_le_zero hdeg, ← natDegree_eq_zero_iff_degree_le_zero.mpr hdeg, eval_C]
   contrapose! hroots
@@ -48,16 +51,14 @@ theorem zero_le_eval_of_roots_le_of_leadingCoeff_nonneg
   by_cases! hroots' : ∃ y, P.IsRoot y ∧ x ≤ y
   · obtain ⟨y, hroot, hle⟩ := hroots'
     rw [eq_of_le_of_ge hle (hroots y hroot), hroot]
-  by_cases! hlc' : P.leadingCoeff ≤ 0
-  · rw [leadingCoeff_eq_zero.mp <| eq_of_le_of_ge hlc' hlc, eval_zero]
-  · exact (zero_lt_eval_of_roots_lt_of_leadingCoeff_pos hroots' hlc').le
+  · exact (zero_lt_eval_of_roots_lt_of_leadingCoeff_nonneg hroots' hlc).le
 
-theorem eval_lt_zero_of_roots_lt_of_leadingCoeff_neg
-    (hroots : ∀ y, P.IsRoot y → y < x) (hlc : P.leadingCoeff < 0) : P.eval x < 0 := by
+theorem eval_lt_zero_of_roots_lt_of_leadingCoeff_nonpos
+    (hroots : ∀ y, P.IsRoot y → y < x) (hlc : P.leadingCoeff ≤ 0) : P.eval x < 0 := by
   suffices 0 < (-P).eval x by apply neg_pos.mp; rwa [← eval_neg]
-  refine zero_lt_eval_of_roots_lt_of_leadingCoeff_pos (fun y hy => hroots y ?_) ?_
+  refine zero_lt_eval_of_roots_lt_of_leadingCoeff_nonneg (fun y hy => hroots y ?_) ?_
   · rwa [IsRoot, ← neg_zero, ← neg_eq_iff_eq_neg, ← eval_neg]
-  · rwa [leadingCoeff_neg, neg_pos]
+  · rwa [leadingCoeff_neg, le_neg, neg_zero]
 
 theorem eval_le_zero_of_roots_le_of_leadingCoeff_nonpos
     (hroots : ∀ y, P.IsRoot y → y ≤ x) (hlc : P.leadingCoeff ≤ 0) : P.eval x ≤ 0 := by
