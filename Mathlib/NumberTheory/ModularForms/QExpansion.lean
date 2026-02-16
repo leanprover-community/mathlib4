@@ -501,8 +501,8 @@ private lemma hasFPowerSeriesOnBall_update (hh : 0 < h)
   · simp
   · intro y hy
     rw [zero_add]
-    -- note the `simp`s below do not automatically apply this lemma to the argument of 
-    -- `Function.update`, because of limitations in `simp`'s support for dependent function types, 
+    -- note the `simp`s below do not automatically apply this lemma to the argument of
+    -- `Function.update`, because of limitations in `simp`'s support for dependent function types,
     -- see lean4 issue #12478.
     rw [← ENNReal.coe_one, eball_coe, NNReal.coe_one, mem_ball_zero_iff] at hy
     rcases eq_or_ne y 0 with rfl | hy'
