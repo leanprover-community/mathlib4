@@ -632,7 +632,7 @@ end
 
 section
 
-/-- `(Z ⨯ Y) ×[Y] X` ≅ Z ⨯ X` -/
+/-- `(Z ⨯ Y) ×[Y] X ≅ Z ⨯ X` -/
 noncomputable def pullbackProdSndIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
     [HasBinaryProduct Z Y] [HasBinaryProduct Z X] [HasPullback (prod.snd : Z ⨯ Y ⟶ Y) f] :
     pullback (prod.snd : Z ⨯ Y ⟶ Y) f ≅ Z ⨯ X where

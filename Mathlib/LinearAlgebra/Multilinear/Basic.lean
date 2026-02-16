@@ -12,6 +12,7 @@ public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 
 /-!
@@ -879,7 +880,7 @@ section Semiring
 variable [Semiring R] [(i : ι) → AddCommMonoid (M₁ i)] [(i : ι) → Module R (M₁ i)]
   [AddCommMonoid M₂] [Module R M₂]
 
-instance [Monoid S] [DistribMulAction S M₂] [Module R M₂] [SMulCommClass R S M₂] :
+instance [Monoid S] [DistribMulAction S M₂] [SMulCommClass R S M₂] :
     DistribMulAction S (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.distribMulAction coeAddMonoidHom fun _ _ ↦ rfl
 

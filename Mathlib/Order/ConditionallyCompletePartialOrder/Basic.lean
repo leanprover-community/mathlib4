@@ -5,13 +5,20 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
-public import Mathlib.Order.WithBot
 
 import Mathlib.Data.Set.Lattice
 
+/-! # Basic results on conditionally complete partial orders
+
+This file contains some basic results on conditionally complete partial orders, and is intended
+to parallel the API for conditionally complete lattices where possible. For the reason, the
+theorems here are mostly protected within the `DirectedOn` namespace, unless such an assumption is
+unnecessary. Otherwise the names here share the same names as their counterparts in
+`Mathlib/Order/ConditionallyCompleteLattice/Basic.lean`.
+
+-/
 @[expose] public section
 
 -- Guard against import creep
@@ -20,94 +27,6 @@ assert_not_exists Multiset
 open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*}
-
-section
-
-/-!
-Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot α`
--/
-
-variable [Preorder α]
-
-open Classical in
-noncomputable instance WithTop.instSupSet [SupSet α] :
-    SupSet (WithTop α) :=
-  ⟨fun S =>
-    if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α) then
-      ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
-
-open Classical in
-noncomputable instance WithTop.instInfSet [InfSet α] : InfSet (WithTop α) :=
-  ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
-
-noncomputable instance WithBot.instSupSet [SupSet α] : SupSet (WithBot α) :=
-  ⟨(WithTop.instInfSet (α := αᵒᵈ)).sInf⟩
-
-noncomputable instance WithBot.instInfSet [InfSet α] :
-    InfSet (WithBot α) :=
-  ⟨(WithTop.instSupSet (α := αᵒᵈ)).sSup⟩
-
-theorem WithTop.sSup_eq [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
-    (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
-  (if_neg hs).trans <| if_pos hs'
-
-theorem WithTop.sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) (h's : BddBelow s) :
-    sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
-  if_neg <| by simp [hs, h's]
-
-theorem WithBot.sInf_eq [InfSet α] {s : Set (WithBot α)} (hs : ⊥ ∉ s)
-    (hs' : BddBelow ((↑) ⁻¹' s : Set α)) : sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
-  (if_neg hs).trans <| if_pos hs'
-
-theorem WithBot.sSup_eq [SupSet α] {s : Set (WithBot α)} (hs : ¬s ⊆ {⊥}) (h's : BddAbove s) :
-    sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
-  WithTop.sInf_eq (α := αᵒᵈ) hs h's
-
-@[simp]
-theorem WithTop.sInf_empty [InfSet α] : sInf (∅ : Set (WithTop α)) = ⊤ :=
-  if_pos <| by simp
-
-theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) (h's : BddBelow s) :
-    ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
-  classical
-  obtain ⟨x, hx⟩ := hs
-  change _ = ite _ _ _
-  split_ifs with h
-  · rcases h with h1 | h2
-    · cases h1 (mem_image_of_mem _ hx)
-    · exact (h2 (Monotone.map_bddBelow coe_mono h's)).elim
-  · rw [preimage_image_eq]
-    exact Option.some_injective _
-
-theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
-    ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
-  classical
-  change _ = ite _ _ _
-  rw [if_neg, preimage_image_eq, if_pos hs]
-  · exact Option.some_injective _
-  · rintro ⟨x, _, ⟨⟩⟩
-
-@[simp]
-theorem WithBot.sSup_empty [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
-  WithTop.sInf_empty (α := αᵒᵈ)
-
-theorem WithBot.sInf_empty (α : Type*) [CompleteLattice α] : (sInf ∅ : WithBot α) = ⊤ := by
-  rw [WithBot.sInf_eq (by simp) (OrderBot.bddBelow _), Set.preimage_empty, _root_.sInf_empty,
-    WithBot.coe_top]
-
-@[norm_cast]
-theorem WithBot.coe_sSup' [SupSet α] {s : Set α} (hs : s.Nonempty) (h's : BddAbove s) :
-    ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
-  WithTop.coe_sInf' (α := αᵒᵈ) hs h's
-
-@[norm_cast]
-theorem WithBot.coe_sInf' [InfSet α] {s : Set α} (hs : BddBelow s) :
-    ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
-  WithTop.coe_sSup' (α := αᵒᵈ) hs
-
-end
-
-variable {α : Type*}
 
 namespace OrderDual
 
@@ -224,6 +143,7 @@ theorem csSup_Iic : sSup (Iic a) = a :=
 theorem csSup_Ioc (h : a < b) : sSup (Ioc a b) = b :=
   (isGreatest_Ioc h).csSup_eq
 
+@[simp]
 theorem csSup_Icc {a b : α} (h : a ≤ b) : sSup (Icc a b) = b :=
   (isGreatest_Icc h).csSup_eq
 
