@@ -118,7 +118,6 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
     simp [maxeq]
   let R' := AdicCompletion (maximalIdeal R) R
   let _ : IsLocalRing R' := AdicCompletion.isLocalRing_of_fg maxfg
-  use R', inferInstance
   have maxeq' : maximalIdeal R' = Ideal.span {(p : R')} := by
     rw [AdicCompletion.maximalIdeal_eq_map_of_fg maxfg]
     simp [maxeq, Ideal.map_span]
@@ -148,7 +147,7 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
     rw [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero, smul_eq_mul, Ideal.mul_top] at this
     simpa [← x.2 (Nat.le_succ n), ← hy, AdicCompletion.transitionMap, Submodule.factorPow,
       Ideal.Quotient.eq_zero_iff_mem] using mem_of_mem_succ this
-  let _ : IsNoetherianRing (R ⧸ maximalIdeal R) := sorry
+  let _ : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
   let _ : IsNoetherianRing R' := AdicCompletion.isNoetherianRing_of_fg _ maxfg
   have nmin : maximalIdeal R' ∉ minimalPrimes R' := by
     sorry
@@ -157,7 +156,13 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
   have dimge : ringKrullDim R' ≥ 1 := by
     sorry
   have := ringKrullDim_le_spanFinrank_maximalIdeal R'
-  sorry
+  have : IsRegularLocalRing R' := sorry
+  have : IsDiscreteValuationRing R' := sorry
+  have : IsAdicComplete (maximalIdeal R') R' := sorry
+  use R', inferInstance, inferInstance
+  refine ⟨⟨?_⟩, ?_⟩
+  · sorry
+  · sorry
 
 /-- A variant of `PadicInt.toZModPow`. -/
 noncomputable def padicIntToIntQuotient (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ) :
