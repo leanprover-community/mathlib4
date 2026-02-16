@@ -743,13 +743,13 @@ such that `positivity` successfully recognises both `a` and `b`. -/
       pure (.nonzero q(div_ne_zero $pa $pb))
     | _, _ => pure .none
   let _a ← synthInstanceQ q(GroupWithZero $α)
-  let _a ← synthInstanceQ q(PartialOrder $α)
+  let pα' ← synthInstanceQ q(PartialOrder $α)
   let _a ← synthInstanceQ q(PosMulReflectLT $α)
   assumeInstancesCommute
   let ra ← core zα pα? a; let rb ← core zα pα? b
   match ra, rb with
   | .positive (ltα := ltα) pa, .positive pb =>
-    haveI' : $ltα =Q ($lα).toLT := ⟨⟩
+    haveI' : $ltα =Q ($pα').toLT := ⟨⟩
     assumeInstancesCommute
     pure (.positive q(div_pos $pa $pb))
   | .positive pa, .nonnegative pb =>
@@ -759,7 +759,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     assumeInstancesCommute
     pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
   | .nonnegative (leα := leα) pa, .nonnegative pb =>
-    haveI' : $leα =Q ($lα).toLE := ⟨⟩
+    haveI' : $leα =Q ($pα').toLE := ⟨⟩
     assumeInstancesCommute
     pure (.nonnegative q(div_nonneg $pa $pb))
   | .positive pa, .nonzero pb =>
