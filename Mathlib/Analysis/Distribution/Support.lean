@@ -40,14 +40,17 @@ variable {f g : F → V} {s s₁ s₂ : Set α}
 
 section IsVanishingOn
 
-/-! ## Vanishing of distributions -/
+/-! ### Vanishing of distributions -/
 
 section Zero
 
 variable [Zero V]
 
-/-- A distribution `f` vanishes on `s` if for all `u` with `tsupport u ⊆ s` it follows that
-`f u = 0`. -/
+/-- A distribution `f` vanishes on a set `s` if it vanishes for all test functions `u` with
+`tsupport u ⊆ s`.
+
+To make this definition work for all types of distributions, we define it for any function from
+a `FunLike` type to a type with zero. -/
 def IsVanishingOn (f : F → V) (s : Set α) : Prop :=
     ∀ (u : F), tsupport u ⊆ s → f u = 0
 
@@ -62,6 +65,7 @@ theorem isVanishingOn_univ_iff : IsVanishingOn f Set.univ ↔ f = 0 := by
   ext u
   simpa [IsVanishingOn] using hf u
 
+@[gcongr]
 theorem IsVanishingOn.mono (hs : s₂ ⊆ s₁) (hf : IsVanishingOn f s₁) : IsVanishingOn f s₂ :=
   fun u hu ↦ hf u (hu.trans hs)
 
@@ -108,7 +112,7 @@ end IsVanishingOn
 
 section dsupport
 
-/-! ## Support -/
+/-! ### Support -/
 
 section Zero
 
@@ -163,7 +167,7 @@ theorem isClosed_dsupport : IsClosed (dsupport f) := by
   grind [dsupport, isClosed_sInter]
 
 @[simp]
-theorem support_zero_eq_emptyset : dsupport (0 : F → V) = ∅ := by
+theorem dsupport_zero : dsupport (0 : F → V) = ∅ := by
   simp only [dsupport, isVanishingOn_zero, true_and, Set.sInter_eq_empty_iff, Set.mem_setOf_eq]
   intro x
   use ∅
@@ -173,7 +177,7 @@ end Zero
 
 section Monoid
 
-theorem support_add_subset [AddMonoid V] : dsupport (f + g) ⊆ dsupport f ∪ dsupport g := by
+theorem dsupport_add_subset [AddMonoid V] : dsupport (f + g) ⊆ dsupport f ∪ dsupport g := by
   rw [← Set.compl_subset_compl, Set.compl_union]
   intro x hx
   rw [mem_dsupport_compl_iff]
@@ -185,12 +189,12 @@ theorem support_add_subset [AddMonoid V] : dsupport (f + g) ⊆ dsupport f ∪ d
 variable [SubtractionMonoid V]
 
 @[simp]
-theorem support_neg_eq : dsupport (-f) = dsupport f := by
+theorem dsupport_neg_eq : dsupport (-f) = dsupport f := by
   apply subset_antisymm
   all_goals grind [neg_neg]
 
-theorem support_sub_subset : dsupport (f - g) ⊆ dsupport f ∪ dsupport g := by
-  grw [sub_eq_add_neg, support_add_subset, support_neg_eq]
+theorem dsupport_sub_dsubset : dsupport (f - g) ⊆ dsupport f ∪ dsupport g := by
+  grw [sub_eq_add_neg, dsupport_add_subset, dsupport_neg_eq]
 
 end Monoid
 
@@ -198,7 +202,7 @@ section Module
 
 variable [Semiring R] [AddCommMonoid V] [Module R V]
 
-theorem support_smul_subset (r : R) : dsupport (r • f) ⊆ dsupport f := by grind
+theorem dsupport_smul_subset (r : R) : dsupport (r • f) ⊆ dsupport f := by grind
 
 end Module
 
@@ -213,7 +217,7 @@ variable [FunLike F α β] [SeminormedAddGroup α] [Zero β] [Zero V]
 variable {f : F → V}
 
 /-- The complement of the support is given by all *bounded* open sets on which `f` vanishes. -/
-theorem support_compl_eq_sUnion_isBounded :
+theorem compl_dsupport_eq_sUnion_isBounded :
     (dsupport f)ᶜ = ⋃₀ { a | IsVanishingOn f a ∧ IsOpen a ∧ Bornology.IsBounded a } := by
   rw [dsupport_compl_eq]
   apply subset_antisymm
