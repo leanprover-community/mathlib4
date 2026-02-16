@@ -76,12 +76,33 @@ lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
 lemma IsEdgeReachable.reachable (hk : k ≠ 0) (huv : G.IsEdgeReachable k u v) : G.Reachable u v :=
   isEdgeReachable_one.mp (huv.anti (Nat.one_le_iff_ne_zero.mpr hk))
 
+lemma IsEdgeReachable.subsingleton [Subsingleton V] : G.IsEdgeReachable k u v :=
+  fun _ _ ↦ Reachable.of_subsingleton
+
+lemma IsEdgeConnected.subsingleton [Subsingleton V] : G.IsEdgeConnected k :=
+  fun _ _ ↦ IsEdgeReachable.subsingleton
+
 lemma IsEdgeConnected.preconnected (hk : k ≠ 0) (h : G.IsEdgeConnected k) : G.Preconnected :=
   fun u v ↦ (h u v).reachable hk
 
 lemma IsEdgeConnected.connected [Nonempty V] (hk : k ≠ 0) (h : G.IsEdgeConnected k) :
     G.Connected where
   preconnected := h.preconnected hk
+
+lemma IsEdgeReachable.le_degree [G.LocallyFinite] (h : G.IsEdgeReachable k u v) (huv : u ≠ v) :
+    k ≤ G.degree u := by
+  classical
+  by_contra! hh
+  obtain ⟨w, _⟩ := @h (G.incidenceSet u) (by simpa [← Set.coe_fintypeCard]) |>.exists_isPath
+  have : 1 < w.support.length := by
+    by_contra! hh
+    exact huv <| Walk.eq_of_length_eq_zero (by simpa using hh)
+  simpa using w.isChain_adj_support.getElem 0 this
+
+lemma IsEdgeConnected.le_degree [G.LocallyFinite] [Nontrivial V] (h : G.IsEdgeConnected k) :
+    k ≤ G.degree u := by
+  obtain ⟨v, hv⟩ := exists_ne u
+  exact (h u v).le_degree hv.symm
 
 lemma isEdgeReachable_add_one (hk : k ≠ 0) :
     G.IsEdgeReachable (k + 1) u v ↔ ∀ e, (G.deleteEdges {e}).IsEdgeReachable k u v := by
