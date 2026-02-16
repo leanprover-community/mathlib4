@@ -115,10 +115,6 @@ instance instPreorder : Preorder ℚ := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 
-@[deprecated (since := "2025-08-14")] alias le_def := Rat.le_iff
-
-@[deprecated (since := "2025-08-14")] alias lt_def := Rat.lt_iff
-
 instance : AddLeftMono ℚ where
   elim := fun _ _ _ h => Rat.add_le_add_left.2 h
 
