@@ -752,10 +752,8 @@ subspaces are complete. In contrast to `QuotientAddGroup.completeSpace_left'`, i
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `IsTopologicalAddGroup.leftUniformSpace`.
-In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
-significant care was taken so that the uniform structure inherent in that setting coincides
-(definitionally) with the uniform structure provided here. -/]
+uniform structure, so it is still provided manually
+via `IsTopologicalAddGroup.leftUniformSpace`. -/]
 instance QuotientGroup.completeSpace_left (G : Type*)
     [Group G] [us : UniformSpace G] [IsLeftUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
