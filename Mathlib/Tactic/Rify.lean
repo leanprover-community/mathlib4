@@ -109,5 +109,3 @@ doesn't need to be imported when using this tactic for only `ℕ, ℤ`, or `ℚ`
     ((ofNat(a) : ℚ) : ℝ) = (ofNat(a) : ℝ) := rfl
 
 end Mathlib.Tactic.Rify
-
-#min_imports
