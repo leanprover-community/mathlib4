@@ -248,10 +248,16 @@ instance [IsNoetherianRing R] [IsLocalRing R] :
   apply ((IsLocalRing.local_hom_TFAE _).out 0 2).mpr
   simp [AdicCompletion.maximalIdeal_eq_map]
 
+lemma AdicCompletion.isAdicComplete_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
+    letI := AdicCompletion.isLocalRing_of_fg fg
+    IsAdicComplete (maximalIdeal (AdicCompletion (maximalIdeal R) R))
+      (AdicCompletion (maximalIdeal R) R) := by
+  rw [AdicCompletion.maximalIdeal_eq_map_of_fg fg]
+  exact AdicCompletion.isAdicComplete_self _ fg
+
 instance [IsNoetherianRing R] [IsLocalRing R] : IsAdicComplete
-    (maximalIdeal (AdicCompletion (maximalIdeal R) R)) (AdicCompletion (maximalIdeal R) R) := by
-  rw [AdicCompletion.maximalIdeal_eq_map]
-  exact AdicCompletion.isAdicComplete_self _ (maximalIdeal R).fg_of_isNoetherianRing
+    (maximalIdeal (AdicCompletion (maximalIdeal R) R)) (AdicCompletion (maximalIdeal R) R) :=
+  AdicCompletion.isAdicComplete_of_fg (maximalIdeal R).fg_of_isNoetherianRing
 
 variable (R) in
 lemma AdicCompletion.residueField_map_bijective [IsNoetherianRing R] [IsLocalRing R] :
