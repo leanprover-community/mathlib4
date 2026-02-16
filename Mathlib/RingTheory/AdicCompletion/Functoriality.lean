@@ -452,7 +452,7 @@ variable (σ M I) in
 /-- The canonical map from the finitely supported functions of adic completions to
 the adic completion of finitely supported functions. This is an isomorphism if `σ` is finite. -/
 def finsuppSum : (σ →₀ (AdicCompletion I M)) →ₗ[AdicCompletion I R] AdicCompletion I (σ →₀ M) :=
-  lsum (AdicCompletion I R) (fun i ↦ map I (lsingle i))
+  lsum (AdicCompletion I R) fun i ↦ map I (lsingle i)
 
 @[simp]
 theorem finsuppSum_single_of (i : σ) (m : M) : finsuppSum I M σ (single i (of I M m)) =
