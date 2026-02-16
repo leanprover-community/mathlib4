@@ -70,7 +70,7 @@ theorem discreteTopology_of_image (h : IsLocalHomeomorphOn f s)
     have ⟨U, hU, eq⟩ := isOpen_discrete {(⟨_, _, x.2, rfl⟩ : e '' s)}
     refine ⟨e.source ∩ e ⁻¹' U, e.continuousOn_toFun.isOpen_inter_preimage e.open_source hU,
       subset_antisymm (fun x' mem ↦ Subtype.ext <| e.injOn mem.1 hx ?_) ?_⟩
-    · exact Subtype.ext_iff.mp (eq.subset (a := ⟨_, x', x'.2, rfl⟩) mem.2)
+    · simpa using Set.subset_singleton_iff.1 eq.subset ⟨_, x', x'.2, rfl⟩ mem.2
     · rintro x rfl; exact ⟨hx, eq.superset rfl⟩
 
 lemma isDiscrete_of_image (h : IsLocalHomeomorphOn f s)
