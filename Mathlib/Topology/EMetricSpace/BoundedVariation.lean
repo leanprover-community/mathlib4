@@ -434,24 +434,87 @@ theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
     gcongr <;> (apply hI; rw [Finset.mem_range] at hi; lia)
   · simp
 
-private lemma eVariationOn_le_ofDual (f : α → E) (s : Set α) :
-    eVariationOn f s ≤ eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) := by
-  apply iSup_le
-  rintro ⟨n, u, u_mono, u_mem⟩
-  let v (i : ℕ) := toDual (u (n - i))
-  have M : Monotone v := by
-    simp only [Monotone, toDual_le_toDual, v] at u_mono ⊢
-    grind
-  calc ∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))
-  _ = ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := by
-    simp only [toDual, v]
-    rw [← Finset.sum_range_reflect]
-    grind [Finset.sum_congr, edist_comm]
-  _ ≤ _ := sum_le M (fun i ↦ u_mem _)
+/-! # Composition of bounded variation functions with monotone functions -/
 
-@[simp] lemma eVariationOn_ofDual (f : α → E) (s : Set α) :
-    eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) = eVariationOn f s :=
-  le_antisymm (eVariationOn_le_ofDual _ _) (eVariationOn_le_ofDual _ _)
+section Monotone
+
+variable {β : Type*} [LinearOrder β]
+
+theorem comp_le_of_monotoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t)
+    (φst : MapsTo φ t s) : eVariationOn (f ∘ φ) t ≤ eVariationOn f s :=
+  iSup_le fun ⟨n, u, hu, ut⟩ =>
+    le_iSup_of_le ⟨n, φ ∘ u, fun x y xy => hφ (ut x) (ut y) (hu xy), fun i => φst (ut i)⟩ le_rfl
+
+theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β → α) (hφ : AntitoneOn φ t)
+    (φst : MapsTo φ t s) : eVariationOn (f ∘ φ) t ≤ eVariationOn f s := by
+  refine iSup_le ?_
+  rintro ⟨n, u, hu, ut⟩
+  rw [← Finset.sum_range_reflect]
+  refine (Finset.sum_congr rfl fun x hx => ?_).trans_le <| le_iSup_of_le
+    ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left xy n),
+      fun i => φst (ut _)⟩
+    le_rfl
+  rw [Finset.mem_range] at hx
+  dsimp only [Subtype.coe_mk, Function.comp_apply]
+  rw [edist_comm]
+  congr 4 <;> lia
+
+theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t) :
+    eVariationOn (f ∘ φ) t = eVariationOn f (φ '' t) := by
+  apply le_antisymm (comp_le_of_monotoneOn f φ hφ (mapsTo_image φ t))
+  cases isEmpty_or_nonempty β
+  · convert zero_le (_ : ℝ≥0∞)
+    exact eVariationOn.subsingleton f <|
+      (subsingleton_of_subsingleton.image _).anti (surjOn_image φ t)
+  let ψ := φ.invFunOn t
+  have ψφs : EqOn (φ ∘ ψ) id (φ '' t) := (surjOn_image φ t).rightInvOn_invFunOn
+  have ψts : MapsTo ψ (φ '' t) t := (surjOn_image φ t).mapsTo_invFunOn
+  have hψ : MonotoneOn ψ (φ '' t) := Function.monotoneOn_of_rightInvOn_of_mapsTo hφ ψφs ψts
+  change eVariationOn (f ∘ id) (φ '' t) ≤ eVariationOn (f ∘ φ) t
+  rw [← eq_of_eqOn (ψφs.comp_left : EqOn (f ∘ φ ∘ ψ) (f ∘ id) (φ '' t))]
+  exact comp_le_of_monotoneOn _ ψ hψ ψts
+
+theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t)
+    {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
+    eVariationOn (f ∘ φ) (t ∩ Icc x y) = eVariationOn f (φ '' t ∩ Icc (φ x) (φ y)) := by
+  rcases le_total x y with (h | h)
+  · convert comp_eq_of_monotoneOn f φ (hφ.mono Set.inter_subset_left)
+    apply le_antisymm
+    · rintro _ ⟨⟨u, us, rfl⟩, vφx, vφy⟩
+      rcases le_total x u with (xu | ux)
+      · rcases le_total u y with (uy | yu)
+        · exact ⟨u, ⟨us, ⟨xu, uy⟩⟩, rfl⟩
+        · rw [le_antisymm vφy (hφ hy us yu)]
+          exact ⟨y, ⟨hy, ⟨h, le_rfl⟩⟩, rfl⟩
+      · rw [← le_antisymm vφx (hφ us hx ux)]
+        exact ⟨x, ⟨hx, ⟨le_rfl, h⟩⟩, rfl⟩
+    · rintro _ ⟨u, ⟨⟨hu, xu, uy⟩, rfl⟩⟩
+      exact ⟨⟨u, hu, rfl⟩, ⟨hφ hx hu xu, hφ hu hy uy⟩⟩
+  · rw [eVariationOn.subsingleton, eVariationOn.subsingleton]
+    exacts [(Set.subsingleton_Icc_of_ge (hφ hy hx h)).anti Set.inter_subset_right,
+      (Set.subsingleton_Icc_of_ge h).anti Set.inter_subset_right]
+
+theorem comp_eq_of_antitoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : AntitoneOn φ t) :
+    eVariationOn (f ∘ φ) t = eVariationOn f (φ '' t) := by
+  apply le_antisymm (comp_le_of_antitoneOn f φ hφ (mapsTo_image φ t))
+  cases isEmpty_or_nonempty β
+  · convert zero_le (_ : ℝ≥0∞)
+    exact eVariationOn.subsingleton f <| (subsingleton_of_subsingleton.image _).anti
+      (surjOn_image φ t)
+  let ψ := φ.invFunOn t
+  have ψφs : EqOn (φ ∘ ψ) id (φ '' t) := (surjOn_image φ t).rightInvOn_invFunOn
+  have ψts := (surjOn_image φ t).mapsTo_invFunOn
+  have hψ : AntitoneOn ψ (φ '' t) := Function.antitoneOn_of_rightInvOn_of_mapsTo hφ ψφs ψts
+  change eVariationOn (f ∘ id) (φ '' t) ≤ eVariationOn (f ∘ φ) t
+  rw [← eq_of_eqOn (ψφs.comp_left : EqOn (f ∘ φ ∘ ψ) (f ∘ id) (φ '' t))]
+  exact comp_le_of_antitoneOn _ ψ hψ ψts
+
+open OrderDual
+
+@[simp] theorem comp_ofDual (f : α → E) (s : Set α) :
+    eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) = eVariationOn f s := by
+  convert comp_eq_of_antitoneOn f ofDual fun _ _ _ _ => id
+  simp only [Equiv.image_preimage]
 
 lemma _root_.BoundedVariationOn.ofDual {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
     BoundedVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) := by
@@ -460,6 +523,10 @@ lemma _root_.BoundedVariationOn.ofDual {f : α → E} {s : Set α} (hf : Bounded
 @[simp] lemma boundedVariation_ofDual {f : α → E} {s : Set α} :
     BoundedVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) ↔ BoundedVariationOn f s :=
   ⟨fun h ↦ h.ofDual, fun h ↦ h.ofDual⟩
+
+end Monotone
+
+/-! # Left and right limits of bounded variation functions -/
 
 /-- If a function is continuous on the left at a point `a`, then its variations on `Iio a` and
 on `Iic a` coincide. We give a version relative to a set `s`. -/
@@ -509,7 +576,7 @@ lemma eVariationOn_inter_Ioi_eq_inter_Ici_of_continuousWithinAt
     [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} {a : α}
     (h : (𝓝[s ∩ Ioi a] a).NeBot) (h' : ContinuousWithinAt f (s ∩ Ici a) a) :
     eVariationOn f (s ∩ Ioi a) = eVariationOn f (s ∩ Ici a) := by
-  rw [← eVariationOn_ofDual f, ← eVariationOn_ofDual f]
+  rw [← comp_ofDual f, ← comp_ofDual f]
   exact eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt h h'
 
 lemma exists_lt_eVariationOn_inter_Icc {f : α → E} {ε : ℝ≥0∞} {s : Set α}
@@ -635,7 +702,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ioc_zero [TopologicalSpac
   have : (fun y ↦ eVariationOn f (s ∩ Ioc x y)) =
       (fun y ↦ eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s ∩ Ico (toDual y) (toDual x))) := by
     ext y
-    rw [Ico_toDual, ← preimage_inter, eVariationOn_ofDual]
+    rw [Ico_toDual, ← preimage_inter, comp_ofDual]
   rw [this]
   exact hf.ofDual.tendsto_eVariationOn_Ico_zero (toDual x)
 
@@ -673,7 +740,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_right
   have : (fun y ↦ eVariationOn f (s ∩ Icc x y)) =
       (fun y ↦ eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s ∩ Icc (toDual y) (toDual x))) := by
     ext y
-    rw [Icc_toDual, ← preimage_inter, eVariationOn_ofDual]
+    rw [Icc_toDual, ← preimage_inter, comp_ofDual]
   rw [this]
   exact hf.ofDual.tendsto_eVariationOn_Icc_zero_left h
 
@@ -781,6 +848,8 @@ lemma _root_.BoundedVariationOn.continuousWithinAt_rightLim [TopologicalSpace α
     ContinuousWithinAt f.rightLim (Ici x) x :=
   BoundedVariationOn.continuousWithinAt_leftLim hf.ofDual
 
+/-! # Limits of bounded variation functions as `± ∞` -/
+
 /-- If a function has bounded variation, then the variation on closed semi-infinite
 intervals tends to `0` at `+∞`. -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ici_zero
@@ -797,7 +866,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Iic_zero
   have : (fun y ↦ eVariationOn f (s ∩ Iic y)) =
       (fun y ↦ eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s ∩ Ici (toDual y))) := by
     ext y
-    rw [Ici_toDual, ← preimage_inter, eVariationOn_ofDual]
+    rw [Ici_toDual, ← preimage_inter, comp_ofDual]
   rw [this]
   exact hf.ofDual.tendsto_eVariationOn_Ici_zero
 
@@ -826,91 +895,9 @@ theorem _root_.BoundedVariationOn.tendsto_atBot_limUnder [CompleteSpace E] [hE :
     Tendsto f atBot (𝓝 (limUnder atBot f)) :=
   tendsto_nhds_limUnder (by simpa using hf.exists_tendsto_atBot)
 
-section Monotone
-
-variable {β : Type*} [LinearOrder β]
-
-theorem comp_le_of_monotoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t)
-    (φst : MapsTo φ t s) : eVariationOn (f ∘ φ) t ≤ eVariationOn f s :=
-  iSup_le fun ⟨n, u, hu, ut⟩ =>
-    le_iSup_of_le ⟨n, φ ∘ u, fun x y xy => hφ (ut x) (ut y) (hu xy), fun i => φst (ut i)⟩ le_rfl
-
-theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β → α) (hφ : AntitoneOn φ t)
-    (φst : MapsTo φ t s) : eVariationOn (f ∘ φ) t ≤ eVariationOn f s := by
-  refine iSup_le ?_
-  rintro ⟨n, u, hu, ut⟩
-  rw [← Finset.sum_range_reflect]
-  refine (Finset.sum_congr rfl fun x hx => ?_).trans_le <| le_iSup_of_le
-    ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left xy n),
-      fun i => φst (ut _)⟩
-    le_rfl
-  rw [Finset.mem_range] at hx
-  dsimp only [Subtype.coe_mk, Function.comp_apply]
-  rw [edist_comm]
-  congr 4 <;> lia
-
-theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t) :
-    eVariationOn (f ∘ φ) t = eVariationOn f (φ '' t) := by
-  apply le_antisymm (comp_le_of_monotoneOn f φ hφ (mapsTo_image φ t))
-  cases isEmpty_or_nonempty β
-  · convert zero_le (_ : ℝ≥0∞)
-    exact eVariationOn.subsingleton f <|
-      (subsingleton_of_subsingleton.image _).anti (surjOn_image φ t)
-  let ψ := φ.invFunOn t
-  have ψφs : EqOn (φ ∘ ψ) id (φ '' t) := (surjOn_image φ t).rightInvOn_invFunOn
-  have ψts : MapsTo ψ (φ '' t) t := (surjOn_image φ t).mapsTo_invFunOn
-  have hψ : MonotoneOn ψ (φ '' t) := Function.monotoneOn_of_rightInvOn_of_mapsTo hφ ψφs ψts
-  change eVariationOn (f ∘ id) (φ '' t) ≤ eVariationOn (f ∘ φ) t
-  rw [← eq_of_eqOn (ψφs.comp_left : EqOn (f ∘ φ ∘ ψ) (f ∘ id) (φ '' t))]
-  exact comp_le_of_monotoneOn _ ψ hψ ψts
-
-theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t)
-    {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
-    eVariationOn (f ∘ φ) (t ∩ Icc x y) = eVariationOn f (φ '' t ∩ Icc (φ x) (φ y)) := by
-  rcases le_total x y with (h | h)
-  · convert comp_eq_of_monotoneOn f φ (hφ.mono Set.inter_subset_left)
-    apply le_antisymm
-    · rintro _ ⟨⟨u, us, rfl⟩, vφx, vφy⟩
-      rcases le_total x u with (xu | ux)
-      · rcases le_total u y with (uy | yu)
-        · exact ⟨u, ⟨us, ⟨xu, uy⟩⟩, rfl⟩
-        · rw [le_antisymm vφy (hφ hy us yu)]
-          exact ⟨y, ⟨hy, ⟨h, le_rfl⟩⟩, rfl⟩
-      · rw [← le_antisymm vφx (hφ us hx ux)]
-        exact ⟨x, ⟨hx, ⟨le_rfl, h⟩⟩, rfl⟩
-    · rintro _ ⟨u, ⟨⟨hu, xu, uy⟩, rfl⟩⟩
-      exact ⟨⟨u, hu, rfl⟩, ⟨hφ hx hu xu, hφ hu hy uy⟩⟩
-  · rw [eVariationOn.subsingleton, eVariationOn.subsingleton]
-    exacts [(Set.subsingleton_Icc_of_ge (hφ hy hx h)).anti Set.inter_subset_right,
-      (Set.subsingleton_Icc_of_ge h).anti Set.inter_subset_right]
-
-theorem comp_eq_of_antitoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : AntitoneOn φ t) :
-    eVariationOn (f ∘ φ) t = eVariationOn f (φ '' t) := by
-  apply le_antisymm (comp_le_of_antitoneOn f φ hφ (mapsTo_image φ t))
-  cases isEmpty_or_nonempty β
-  · convert zero_le (_ : ℝ≥0∞)
-    exact eVariationOn.subsingleton f <| (subsingleton_of_subsingleton.image _).anti
-      (surjOn_image φ t)
-  let ψ := φ.invFunOn t
-  have ψφs : EqOn (φ ∘ ψ) id (φ '' t) := (surjOn_image φ t).rightInvOn_invFunOn
-  have ψts := (surjOn_image φ t).mapsTo_invFunOn
-  have hψ : AntitoneOn ψ (φ '' t) := Function.antitoneOn_of_rightInvOn_of_mapsTo hφ ψφs ψts
-  change eVariationOn (f ∘ id) (φ '' t) ≤ eVariationOn (f ∘ φ) t
-  rw [← eq_of_eqOn (ψφs.comp_left : EqOn (f ∘ φ ∘ ψ) (f ∘ id) (φ '' t))]
-  exact comp_le_of_antitoneOn _ ψ hψ ψts
-
-open OrderDual
-
-theorem comp_ofDual (f : α → E) (s : Set α) :
-    eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) = eVariationOn f s := by
-  convert comp_eq_of_antitoneOn f ofDual fun _ _ _ _ => id
-  simp only [Equiv.image_preimage]
-
-end Monotone
-
 end eVariationOn
 
-/-! ## Monotone functions and bounded variation -/
+/-! ## Variation of monotone functions -/
 
 theorem MonotoneOn.eVariationOn_le {f : α → ℝ} {s : Set α} (hf : MonotoneOn f s) {a b : α}
     (as : a ∈ s) (bs : b ∈ s) : eVariationOn f (s ∩ Icc a b) ≤ ENNReal.ofReal (f b - f a) := by
