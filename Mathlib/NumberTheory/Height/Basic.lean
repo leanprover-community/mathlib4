@@ -140,7 +140,7 @@ lemma mulHeight₁_pos (x : K) : 0 < mulHeight₁ x :=
 lemma mulHeight₁_ne_zero (x : K) : mulHeight₁ x ≠ 0 :=
   (mulHeight₁_pos x).ne'
 
-lemma zero_le_mulHeight₁ (x : K) : 0 ≤ mulHeight₁ x :=
+lemma mulHeight₁_nonneg (x : K) : 0 ≤ mulHeight₁ x :=
   (mulHeight₁_pos x).le
 
 /-- The logarithmic height of an element of `K`. -/
@@ -221,11 +221,11 @@ lemma mulHeight_eq {x : ι → K} (hx : x ≠ 0) :
       (archAbsVal.map fun v ↦ ⨆ i, v (x i)).prod * ∏ᶠ v : nonarchAbsVal, ⨆ i, v.val (x i) := by
   simp [mulHeight, hx]
 
-@[simp]
+@[to_fun (attr := simp)]
 lemma mulHeight_zero : mulHeight (0 : ι → K) = 1 := by
   simp [mulHeight]
 
-@[simp]
+@[to_fun (attr := simp)]
 lemma mulHeight_one : mulHeight (1 : ι → K) = 1 := by
   rcases isEmpty_or_nonempty ι with hι | hι
   · rw [show (1 : ι → K) = 0 from Subsingleton.elim ..]
@@ -253,6 +253,14 @@ lemma mulHeight_swap (x y : K) : mulHeight ![x, y] = mulHeight ![y, x] := by
 def logHeight (x : ι → K) : ℝ := log (mulHeight x)
 
 lemma logHeight_eq_log_mulHeight (x : ι → K) : logHeight x = log (mulHeight x) := rfl
+
+@[to_fun (attr := simp)]
+lemma logHeight_zero {ι : Type*} : logHeight (0 : ι → K) = 0 := by
+  simp [logHeight_eq_log_mulHeight]
+
+@[to_fun (attr := simp)]
+lemma logHeight_one {ι : Type*} : logHeight (1 : ι → K) = 0 := by
+  simp [logHeight_eq_log_mulHeight]
 
 lemma logHeight_comp_equiv {ι ι' : Type*} (e : ι ≃ ι') (x : ι' → K) :
     logHeight (x ∘ ⇑e) = logHeight x := by
@@ -332,10 +340,10 @@ lemma one_le_mulHeight (x : ι → K) : 1 ≤ mulHeight x := by
 lemma mulHeight_pos (x : ι → K) : 0 < mulHeight x :=
   zero_lt_one.trans_le <| one_le_mulHeight x
 
-lemma mulHeight.ne_zero (x : ι → K) : mulHeight x ≠ 0 :=
+lemma mulHeight_ne_zero (x : ι → K) : mulHeight x ≠ 0 :=
   (mulHeight_pos x).ne'
 
-lemma zero_le_logHeight (x : ι → K) : 0 ≤ logHeight x :=
+lemma logHeight_nonneg (x : ι → K) : 0 ≤ logHeight x :=
   log_nonneg <| one_le_mulHeight x
 
 open Function in
@@ -395,7 +403,7 @@ meta def evalLogHeight : PositivityExt where eval {u α} _ _ e := do
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
       assertInstancesCommute
-      return .nonnegative q(zero_le_logHeight $a)
+      return .nonnegative q(logHeight_nonneg $a)
     | _ => throwError "index type in Height.logHeight not known to be finite"
   | _, _, _ => throwError "not Height.logHeight"
 
@@ -623,7 +631,7 @@ of the logarithmic heights of all the `x a`. -/
 lemma logHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0) :
     logHeight (fun I : (a : α) → ι a ↦ ∏ a, x a (I a)) = ∑ a, logHeight (x a) := by
   simp only [logHeight_eq_log_mulHeight]
-  rw [← log_prod fun a _ ↦ mulHeight.ne_zero _]
+  rw [← log_prod fun a _ ↦ mulHeight_ne_zero _]
   exact congrArg log <| mulHeight_fun_prod_eq hx
 
 end many
