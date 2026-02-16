@@ -95,7 +95,7 @@ attribute [simp] FunLikeVAdd.vadd_apply
 /-- `FunLikeSMul M F α β` states for all `f : F`, `n : M` and `x : α`, `(n • f) x = n • f x`. -/
 @[to_additive]
 class FunLikeSMul (M F : Type*) (α β : outParam Type*) [FunLike F α β] [SMul M β] [SMul M F] where
-  smul_apply (f : F) (n : M) (x : α) : (n • f) x = n • f x
+  smul_apply (f : F) (r : M) (x : α) : (r • f) x = r • f x
 
 attribute [simp] FunLikeSMul.smul_apply
 

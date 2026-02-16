@@ -44,9 +44,6 @@ instance AddMonoid.End.instZero [AddZeroClass M] : Zero (AddMonoid.End M) := ins
 instance OneHom.instFunLikeOne [One M] [One N] : FunLikeOne (OneHom M N) M N where
   one_apply _ := rfl
 
---@[to_additive (attr := simp)]
---theorem OneHom.one_apply [One M] [One N] (x : M) : (1 : OneHom M N) x = 1 := rfl
-
 @[to_additive]
 instance MonoidHom.instFunLikeOne [MulOne M] [MulOneClass N] : FunLikeOne (M →* N) M N where
   one_apply _ := rfl
@@ -54,18 +51,6 @@ instance MonoidHom.instFunLikeOne [MulOne M] [MulOneClass N] : FunLikeOne (M →
 instance AddMonoid.End.instFunLikeZero [AddZeroClass M] :
     FunLikeZero (AddMonoid.End M) M M where
   zero_apply _ := rfl
-
---@[to_additive (attr := simp)]
---theorem MonoidHom.one_apply [MulOne M] [MulOneClass N] (x : M) : (1 : M →* N) x = 1 := rfl
-
-@[to_additive (attr := simp)]
-theorem OneHom.one_comp [One M] [One N] [One P] (f : OneHom M N) :
-    (1 : OneHom N P).comp f = 1 := rfl
-
-@[to_additive (attr := simp)]
-theorem OneHom.comp_one [One M] [One N] [One P] (f : OneHom N P) : f.comp (1 : OneHom M N) = 1 := by
-  ext
-  simp
 
 @[to_additive]
 instance [One M] [One N] : Inhabited (OneHom M N) := ⟨1⟩
@@ -75,20 +60,6 @@ instance [Mul M] [MulOneClass N] : Inhabited (M →ₙ* N) := ⟨1⟩
 
 @[to_additive]
 instance [MulOne M] [MulOneClass N] : Inhabited (M →* N) := ⟨1⟩
-
-namespace MonoidHom
-
-@[to_additive (attr := simp)]
-theorem one_comp [MulOne M] [MulOne N] [MulOneClass P] (f : M →* N) :
-    (1 : N →* P).comp f = 1 := rfl
-
-@[to_additive (attr := simp)]
-theorem comp_one [MulOne M] [MulOneClass N] [MulOneClass P] (f : N →* P) :
-    f.comp (1 : M →* N) = 1 := by
-  ext
-  simp
-
-end MonoidHom
 
 end One
 

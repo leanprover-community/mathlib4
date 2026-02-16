@@ -744,20 +744,16 @@ instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
       map_add' := fun x y ↦ by simp only [Pi.smul_apply, f.map_add, smul_add]
       map_smul' := fun c x ↦ by simp [Pi.smul_apply, smul_comm] }⟩
 
-@[simp]
-theorem smul_apply (a : S) (f : M →ₛₗ[σ₁₂] M₂) (x : M) : (a • f) x = a • f x :=
-  rfl
-
-theorem coe_smul (a : S) (f : M →ₛₗ[σ₁₂] M₂) : (a • f : M →ₛₗ[σ₁₂] M₂) = a • (f : M → M₂) :=
-  rfl
+instance : FunLikeSMul S (M →ₛₗ[σ₁₂] M₂) M M₂ where
+  smul_apply _ _ _ := rfl
 
 instance [SMulCommClass S T M₂] : SMulCommClass S T (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun _ _ _ ↦ ext fun _ ↦ smul_comm _ _ _⟩
 
 -- example application of this instance: if S -> T -> R are homomorphisms of commutative rings and
 -- M and M₂ are R-modules then the S-module and T-module structures on Hom_R(M,M₂) are compatible.
-instance [SMul S T] [IsScalarTower S T M₂] : IsScalarTower S T (M →ₛₗ[σ₁₂] M₂) where
-  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc _ _ _
+/-instance [SMul S T] [IsScalarTower S T M₂] : IsScalarTower S T (M →ₛₗ[σ₁₂] M₂) where
+  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc _ _ _-/
 
 instance [DistribSMul Sᵐᵒᵖ M₂] [SMulCommClass R₂ Sᵐᵒᵖ M₂] [IsCentralScalar S M₂] :
     IsCentralScalar S (M →ₛₗ[σ₁₂] M₂) where
@@ -782,13 +778,12 @@ instance : Zero (M →ₛₗ[σ₁₂] M₂) :=
       map_add' := by simp
       map_smul' := by simp }⟩
 
-@[simp]
-theorem zero_apply (x : M) : (0 : M →ₛₗ[σ₁₂] M₂) x = 0 :=
-  rfl
+instance : FunLikeZero (M →ₛₗ[σ₁₂] M₂) M M₂ where
+  zero_apply _ := rfl
 
 @[simp]
 theorem comp_zero (g : M₂ →ₛₗ[σ₂₃] M₃) : (g.comp (0 : M →ₛₗ[σ₁₂] M₂) : M →ₛₗ[σ₁₃] M₃) = 0 :=
-  ext fun c ↦ by rw [comp_apply, zero_apply, zero_apply, g.map_zero]
+  ext fun c ↦ by simp [g.map_zero]
 
 @[simp]
 theorem zero_comp (f : M →ₛₗ[σ₁₂] M₂) : ((0 : M₂ →ₛₗ[σ₂₃] M₃).comp f : M →ₛₗ[σ₁₃] M₃) = 0 :=
@@ -824,9 +819,8 @@ instance : Add (M →ₛₗ[σ₁₂] M₂) :=
       map_add' := by simp [add_comm, add_left_comm]
       map_smul' := by simp [smul_add] }⟩
 
-@[simp]
-theorem add_apply (f g : M →ₛₗ[σ₁₂] M₂) (x : M) : (f + g) x = f x + g x :=
-  rfl
+instance : FunLikeAdd (M →ₛₗ[σ₁₂] M₂) M M₂ where
+  add_apply _ _ _ := rfl
 
 theorem add_comp (f : M →ₛₗ[σ₁₂] M₂) (g h : M₂ →ₛₗ[σ₂₃] M₃) :
     ((h + g).comp f : M →ₛₗ[σ₁₃] M₃) = h.comp f + g.comp f :=
@@ -836,9 +830,10 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
     (h.comp (f + g) : M →ₛₗ[σ₁₃] M₃) = h.comp f + h.comp g :=
   ext fun _ ↦ h.map_add _ _
 
+/-
 /-- The type of linear maps is an additive monoid. -/
 instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
-  DFunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  DFunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl-/
 
 /-- The negation of a linear map is linear. -/
 instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
@@ -847,9 +842,8 @@ instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
       map_add' := by simp [add_comm]
       map_smul' := by simp }⟩
 
-@[simp]
-theorem neg_apply (f : M →ₛₗ[σ₁₂] N₂) (x : M) : (-f) x = -f x :=
-  rfl
+instance : FunLikeNeg (M →ₛₗ[σ₁₂] N₂) M N₂ where
+  neg_apply _ _ := rfl
 
 @[simp]
 theorem neg_comp (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] N₃) : (-g).comp f = -g.comp f :=
@@ -866,9 +860,8 @@ instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
       map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
       map_smul' := fun r x ↦ by simp [Pi.sub_apply, smul_sub] }⟩
 
-@[simp]
-theorem sub_apply (f g : M →ₛₗ[σ₁₂] N₂) (x : M) : (f - g) x = f x - g x :=
-  rfl
+instance : FunLikeSub (M →ₛₗ[σ₁₂] N₂) M N₂ where
+  sub_apply _ _ _ := rfl
 
 theorem sub_comp (f : M →ₛₗ[σ₁₂] M₂) (g h : M₂ →ₛₗ[σ₂₃] N₃) :
     (g - h).comp f = g.comp f - h.comp f :=
@@ -878,16 +871,17 @@ theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃
     h.comp (g - f) = h.comp g - h.comp f :=
   ext fun _ ↦ h.map_sub _ _
 
+/-
 /-- The type of linear maps is an additive group. -/
 instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) :=
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl-/
 
 /-- Evaluation of a `σ₁₂`-linear map at a fixed `a`, as an `AddMonoidHom`. -/
 @[simps]
 def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂ where
   toFun f := f a
-  map_add' f g := LinearMap.add_apply f g a
+  map_add' f g := FunLikeAdd.add_apply f g a
   map_zero' := rfl
 
 /-- `LinearMap.toAddMonoidHom` promoted to an `AddMonoidHom`. -/
