@@ -68,10 +68,10 @@ section TruncFinset
 
 variable [CommSemiring R] {s : Finset (σ →₀ ℕ)}
 
-variable (R s) in
 /-- Restrict the support of a multivariate power series to a finite set of monomials and
 obtain a multivariate polynomial. -/
-def truncFinset : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R where
+def truncFinset (R : Type*) [CommSemiring R] (s : Finset (σ →₀ ℕ)) :
+    MvPowerSeries σ R →ₗ[R] MvPolynomial σ R where
   toFun p := ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x)
   map_add' _ _ := by simp [Finset.sum_add_distrib]
   map_smul' _ _ := by
@@ -81,31 +81,29 @@ def truncFinset : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R where
 theorem truncFinset_apply (p : MvPowerSeries σ R) :
     truncFinset R s p = ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x) := by rfl
 
+@[grind =]
 theorem coeff_truncFinset {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∈ s) :
     (truncFinset R s p).coeff x = p.coeff x := by
   classical
-  simp [truncFinset_apply, MvPolynomial.coeff_sum]
-  aesop
+  simp [truncFinset_apply, MvPolynomial.coeff_sum, h]
 
+@[grind =]
 theorem coeff_truncFinset_eq_zero {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∉ s) :
     (truncFinset R s p).coeff x = 0 := by
   classical
-  simp [truncFinset_apply, MvPolynomial.coeff_sum]
-  aesop
+  simp [truncFinset_apply, MvPolynomial.coeff_sum, h]
 
 theorem truncFinset_monomial {x : σ →₀ ℕ} (r : R) (h : x ∈ s) :
     truncFinset R s (monomial x r) = MvPolynomial.monomial x r := by
   classical
-  ext y; by_cases hy : y ∈ s
-  · rw [coeff_truncFinset _ hy, coeff_monomial, MvPolynomial.coeff_monomial]
-    simp [eq_comm]
-  rw [coeff_truncFinset_eq_zero _ hy, MvPolynomial.coeff_monomial, if_neg (by aesop)]
+  ext
+  grind [coeff_monomial, MvPolynomial.coeff_monomial]
 
 theorem truncFinset_monomial_eq_zero {x : σ →₀ ℕ} (r : R) (h : x ∉ s) :
     truncFinset R s (monomial x r) = 0 := by
   classical
   ext; simp [truncFinset, MvPolynomial.coeff_sum, coeff_monomial]
-  aesop
+  grind
 
 theorem truncFinset_C (h : 0 ∈ s) (r : R) : truncFinset R s (C r) = MvPolynomial.C r :=
   truncFinset_monomial r h
@@ -115,18 +113,15 @@ theorem truncFinset_one (h : 0 ∈ s) : truncFinset R s (1 : MvPowerSeries σ R)
 
 theorem truncFinset_truncFinset {t : Finset (σ →₀ ℕ)} (h : s ⊆ t) (p : MvPowerSeries σ R) :
     truncFinset R s (truncFinset R t p) = truncFinset R s p := by
-  ext x; by_cases hx : x ∈ s
-  · rw [coeff_truncFinset _ hx, coeff_truncFinset _ hx, MvPolynomial.coeff_coe,
-      coeff_truncFinset _ (h hx)]
-  rw [coeff_truncFinset_eq_zero _ hx, coeff_truncFinset_eq_zero _ hx]
+  ext x
+  by_cases x ∈ s <;> grind [MvPolynomial.coeff_coe]
 
 theorem truncFinset_map [CommSemiring S] (f : R →+* S) (p : MvPowerSeries σ R) :
     truncFinset S s (map f p) = MvPolynomial.map f (truncFinset R s p) := by
-  ext x; by_cases hx : x ∈ s
-  · simp [coeff_map, MvPolynomial.coeff_map, coeff_truncFinset _ hx]
-  simp [MvPolynomial.coeff_map, coeff_truncFinset_eq_zero _ hx]
+  ext x
+  by_cases x ∈ s <;> grind [coeff_map, MvPolynomial.coeff_map]
 
-theorem coeff_mul_eq_coeff_truncFinset_mul_truncFinset (hs : IsLowerSet (SetLike.coe s))
+theorem coeff_mul_eq_coeff_truncFinset_mul_truncFinset (hs : IsLowerSet (s : Set (σ →₀ ℕ)))
     {x : σ →₀ ℕ} (f g : MvPowerSeries σ R) (hx : x ∈ s) : coeff x (f * g) =
       (truncFinset R s f * truncFinset R s g).coeff x := by
   classical
@@ -163,7 +158,7 @@ variable (R) in
 /-- The `n`th truncation of a multivariate formal power series to a multivariate polynomial
 
 If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
-to the naturals, then `trunc' R n f` is the multivariable polynomial obtained from `f`
+to the naturals, then `trunc R n f` is the multivariable polynomial obtained from `f`
 by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`
 and `a i < n i` for some `i`. -/
 def trunc : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Finset.Iio n)
