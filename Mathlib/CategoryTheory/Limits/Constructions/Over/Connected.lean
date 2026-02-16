@@ -159,7 +159,7 @@ def isLimitConePost [IsCofilteredOrEmpty J] {F : J ⥤ C} {c : Cone F} (i : J) (
 
 end Over
 
-instance {B : D} [IsConnected J] [HasLimitsOfShape J C] [HasLimitsOfShape J D]
+instance {B : D} [IsConnected J] [HasLimitsOfShape J C]
     [PreservesLimitsOfShape J K] :
     PreservesLimitsOfShape J (CostructuredArrow.toOver K B) where
   preservesLimit {D} := by
