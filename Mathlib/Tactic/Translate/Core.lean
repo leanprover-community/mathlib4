@@ -1265,12 +1265,6 @@ partial def copyMetaData (t : TranslateData) (cfg : Config) (src : Name) : CoreM
         for eqn in eqns do
           _ ← addTranslationAttr t eqn cfg
         eqnsAttribute.add tgt (eqns.map (findTranslationName? (← getEnv) t · |>.get!))
-    else
-      /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
-      definitions. If we don't do that, the equation lemma for `src` might be generated later
-      when doing a `rw`, but it won't be generated for `tgt`. -/
-      translateLemmas t #[src, tgt] reorder relevantArg "equation lemmas" cfg.ref fun nm ↦
-        (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   applyAttributes t cfg src tgt reorder relevantArg |>.run'.run'
 
 /-- `addTranslationAttr src cfg` adds a translation attribute to `src` with configuration `cfg`.
