@@ -5,10 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
-public import Mathlib.Order.WithBot
 
 import Mathlib.Data.Set.Lattice
 
