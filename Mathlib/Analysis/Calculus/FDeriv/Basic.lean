@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Calculus.FDeriv.Defs
 public import Mathlib.Analysis.Normed.Operator.Asymptotics
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
 import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Asymptotics.Theta
 
 /-!
 # The Fréchet derivative: basic properties
@@ -864,21 +863,10 @@ theorem HasStrictFDerivAt.isTheta_sub (hf : HasStrictFDerivAt f f' x)
     (fun p : E × E ↦ f p.1 - f p.2) =Θ[𝓝 (x, x)] (fun p ↦ p.1 - p.2) :=
   hf.isThetaTVS_sub hf' |>.isTheta
 
-@[deprecated HasStrictFDerivAt.isTheta_sub (since := "2025-02-03")]
-theorem HasStrictFDerivAt.isBigO_sub_rev {f' : E ≃L[𝕜] F}
-    (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) x) :
-    (fun p : E × E => p.1 - p.2) =O[𝓝 (x, x)] fun p : E × E => f p.1 - f p.2 :=
-  hf.isTheta_sub f'.toHomeomorph.isInducing |>.isBigO_symm
-
 theorem HasFDerivAtFilter.isTheta_sub (hf : HasFDerivAtFilter f f' L)
     (hf' : Topology.IsInducing f') :
     (fun p ↦ f p.1 - f p.2) =Θ[L] (fun p ↦ p.1 - p.2) :=
   hf.isThetaTVS_sub hf' |>.isTheta
-
-@[deprecated HasFDerivAtFilter.isTheta_sub (since := "2025-02-03")]
-theorem HasFDerivAtFilter.isBigO_sub_rev (hf : HasFDerivAtFilter f f' L) {C}
-    (hf' : AntilipschitzWith C f') : (fun p => p.1 - p.2) =O[L] fun p => f p.1 - f p.2 :=
-  hf.isTheta_sub (hf'.isInducing <| map_continuous f') |>.isBigO_symm
 
 theorem HasFDerivWithinAt.isTheta_sub (hf : HasFDerivWithinAt f f' s x)
     (hf' : Topology.IsInducing f') :

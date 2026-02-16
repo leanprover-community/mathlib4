@@ -242,8 +242,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     _ ≤ ∑ n, Λ ((y n + ε') • g n) := ?_
     _ = ∑ n, (y n + ε') * Λ (g n) := by simp
     -- That `y n + ε'` can be negative is bad in the inequalities so we artificially include `|a|`.
-    _ = ∑ n, (|a| + y n + ε') * Λ (g n) - |a| * ∑ n, Λ (g n) :=
-      by simp [add_assoc, add_mul |a|, Finset.sum_add_distrib, Finset.mul_sum]
+    _ = ∑ n, (|a| + y n + ε') * Λ (g n) - |a| * ∑ n, Λ (g n) := by
+      simp [add_assoc, add_mul |a|, Finset.sum_add_distrib, Finset.mul_sum]
     _ ≤ ∑ n, (|a| + y n + ε') * (μ.real (E n) + ε' / N) - |a| * ∑ n, Λ (g n) := ?_
     _ ≤ ∑ n, (|a| + y n + ε') * (μ.real (E n) + ε' / N) - |a| * μ.real K := ?_
     _ = ∑ n, (y n - ε') * μ.real (E n) +
