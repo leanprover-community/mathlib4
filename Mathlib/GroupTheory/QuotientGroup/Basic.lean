@@ -390,6 +390,14 @@ theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G
   simp only [mk'_apply, Subgroup.mem_comap, Subgroup.mem_center_iff, forall_mk, ← mk_mul,
     eq_iff_div_mem, mk_div]
 
+open Subgroup in
+@[to_additive]
+theorem _root_.Subgroup.Characteristic.comap_quotient_mk {H : Subgroup G} [hH : H.Characteristic]
+    {K : Subgroup (G ⧸ H)} (hK : K.Characteristic) :
+    Characteristic (K.comap (mk' H)) :=
+  characteristic_iff_comap_eq.mpr fun φ ↦ congr_arg (comap (mk' H))
+    (characteristic_iff_comap_eq.mp hK (congr H H φ (characteristic_iff_map_eq.mp hH φ)))
+
 /--
 The `MulEquiv` between the kernel of the restriction map to a normal subgroup `H` of homomorphisms
 of type `G →* A` and the group of homomorphisms `G ⧸ H →* A`.
