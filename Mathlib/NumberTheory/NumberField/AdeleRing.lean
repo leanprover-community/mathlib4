@@ -99,21 +99,120 @@ theorem mulSupport_finite (x : (FiniteAdeleRing (𝓞 K) K)ˣ) :
   simpa [Function.mulSupport, Valued.toNormedField.norm_eq_one_iff] using
     FiniteAdeleRing.unitsEquiv_finite_valued_eq_one x
 
-instance : Norm (FiniteAdeleRing (𝓞 K) K)ˣ where norm x := ∏ᶠ v, ‖x.1 v‖
+theorem hasProd_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x) :
+    HasProd (fun v ↦ ‖x.1 v‖) 0 := by
+  by_cases hx₀ : ∃ v, x v = 0
+  · have : ∃ v, ‖x v‖ = 0 := by simp [hx₀]
+    exact hasProd_zero_of_exists_eq_zero this
+  rw [FiniteAdeleRing.isUnit_iff] at hx
+  simp at hx
+  have := x.2
+  simp only [SetLike.mem_coe, Filter.eventually_cofinite] at this
+  let S := {v : HeightOneSpectrum (𝓞 K) | 1 < Valued.v (x v)}
+  let S₁ := {v : HeightOneSpectrum (𝓞 K) | Valued.v (x v) = 1}
+  let hSf : S.Finite := by
+    simpa [HeightOneSpectrum.mem_adicCompletionIntegers] using this
+  have : Fintype S := by
+    apply Set.Finite.fintype hSf
+  have hS : HasProd (fun v : S ↦ ‖x v‖) (∏ v : S, ‖x v‖) := by
+    exact hasProd_fintype _
+  have hS₁ : HasProd (fun v : S₁ ↦ ‖x v‖) 1 := by
+    have : (fun v : S₁ ↦ ‖x v‖) = 1 := by
+      ext v
+      simp
+      rw [Valued.toNormedField.norm_eq_one_iff]
+      exact v.2
+    rw [this]
+    exact hasProd_one
+  let S' := S ∪ S₁
+  have hSu : HasProd (fun (v : S') ↦ ‖x v‖) (∏ v : S, ‖x v‖) := by
+    have : Disjoint S S₁ := by
+      simp [S, S₁]
+      grind
+    have := HasProd.mul_disjoint (f := fun v ↦ ‖x v‖) this (a := ∏ v : S, ‖x v‖) (b := 1)
+      hS hS₁
+    simp at this
+    exact this
+  let T := S'ᶜ
+  have hT' : T.Infinite := by
+    push_neg at hx₀
+    specialize hx hx₀
+    have : {v | Valued.v (x v) ≠ 1} = S ∪ T := sorry
+    rw [this] at hx
+    simp at hx
+    rcases hx with (hSi | hTi)
+    · absurd hSi
+      exact hSf
+    · exact hTi
+  have hT : HasProd (fun v : T ↦ ‖x v‖) 0 := by
+    delta HasProd
+    simp
+    have : Filter.Tendsto (fun s : Finset T ↦ (∏ v ∈ s, ‖x v‖)⁻¹) Filter.atTop Filter.atTop := by
+      have h : ∀ v ∈ T, 2 ≤ ‖x v‖⁻¹ := by
+        intro v hv
+        simp [T, S', S, S₁] at hv
+        -- need some liesover stuff
+        sorry
+      have h_le : ∀ S : Finset T, 2 ^ S.card ≤ (∏ v ∈ S, ‖x v‖)⁻¹ := by
+        intro S
+        have : ∀ v ∈ S, 2 ≤ ‖x v‖⁻¹  := by
+          intro v hv
+          exact h v v.2
+        have := Finset.prod_le_prod (by grind) this
+        rw [Finset.prod_const] at this
+        apply this.trans
+        simp
+      apply Filter.tendsto_atTop_mono h_le
+      have := tendsto_pow_atTop_atTop_of_one_lt (r := (2 : ℝ)) (by norm_num)
+      apply this.comp
+      apply Filter.tendsto_atTop_atTop_of_monotone
+      · exact Finset.card_mono
+      · intro N
+        obtain ⟨t, ht, ht'⟩ := hT'.exists_subset_card_eq N
+        use t.subtype _
+        rw [Finset.card_subtype, ← ht']
+        apply le_of_eq
+        symm
+        rw [Finset.card_filter_eq_iff.2 ht]
+    have := @tendsto_inv_atTop_zero ℝ _ _ _ _ _ |>.comp this
+    apply this.congr (by simp)
+  simpa using hT.compl_mul hSu (f := fun v ↦ ‖x.1 v‖)
 
-theorem norm_def (x : (FiniteAdeleRing (𝓞 K) K)ˣ) : ‖x‖ = ∏ᶠ v, ‖x.1 v‖ := rfl
+theorem tprod_norm_of_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : IsUnit x) :
+    ∏' v, ‖x.1 v‖ = ∏ᶠ v, ‖x.1 v‖ := by
+  rw [tprod_eq_finprod]
+  exact mulSupport_finite hx.unit
+
+theorem tprod_norm_of_unit (x : (FiniteAdeleRing (𝓞 K) K)ˣ) :
+    ∏' v, ‖x.1 v‖ = ∏ᶠ v, ‖x.1 v‖ :=
+  tprod_norm_of_isUnit x.isUnit
+
+theorem tprod_eq_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬ IsUnit x) :
+    ∏' v, ‖x.1 v‖ = 0 := by
+  rw [HasProd.tprod_eq]
+  exact hasProd_zero_of_not_isUnit hx
+
+instance : Norm (FiniteAdeleRing (𝓞 K) K) where norm x := ∏' v, ‖x.1 v‖
+
+theorem norm_def (x : FiniteAdeleRing (𝓞 K) K) : ‖x‖ = ∏' v, ‖x.1 v‖ := rfl
+
+theorem norm_def_unit (x : (FiniteAdeleRing (𝓞 K) K)ˣ) : ‖x.1‖ = ∏ᶠ v, ‖x.1 v‖ :=
+  tprod_norm_of_unit x
+
+theorem norm_eq_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x) : ‖x‖ = 0 :=
+  tprod_eq_zero_of_not_isUnit hx
 
 theorem coe_norm_apply (x : Kˣ) :
-    ‖(x : (FiniteAdeleRing (𝓞 K) K)ˣ)‖ = ∏ᶠ v, FinitePlace.mk v x.1 := rfl
+    ‖(x : (FiniteAdeleRing (𝓞 K) K)ˣ).1‖ = ∏ᶠ v, FinitePlace.mk v x.1 := norm_def_unit _
 
 theorem coe_norm_apply_eq_finprod_finitePlace (x : Kˣ) :
-    ‖(x : (FiniteAdeleRing (𝓞 K) K)ˣ)‖ = ∏ᶠ v : FinitePlace K, v x := by
+    ‖(x : (FiniteAdeleRing (𝓞 K) K)ˣ).1‖ = ∏ᶠ v : FinitePlace K, v x := by
   rw [coe_norm_apply, ← finprod_comp FinitePlace.equivHeightOneSpectrum.invFun
     FinitePlace.equivHeightOneSpectrum.symm.bijective]
   exact finprod_congr fun _ ↦ rfl
 
 theorem coe_norm_eq_inv_abs_norm (x : Kˣ) :
-    ‖(x : (FiniteAdeleRing (𝓞 K) K)ˣ)‖ = |Algebra.norm ℚ x.1|⁻¹ := by
+    ‖(x : (FiniteAdeleRing (𝓞 K) K)ˣ).1‖ = |Algebra.norm ℚ x.1|⁻¹ := by
   rw [← FinitePlace.prod_eq_inv_abs_norm x.ne_zero, coe_norm_apply_eq_finprod_finitePlace]
 
 end FiniteAdeleRing
@@ -126,15 +225,22 @@ theorem isUnit_iff {x : AdeleRing (𝓞 K) K} :
   rw [Prod.isUnit_iff, Pi.isUnit_iff, FiniteAdeleRing.isUnit_iff]
   simp_rw [isUnit_iff_ne_zero]
 
--- TODO: define this for non-units; zero outside units.
--- prove `Mutipliable` everwyhere.
--- `mulSupport_finite` reduces to finprod in the unit case
-instance : Norm (AdeleRing (𝓞 K) K)ˣ where norm x := ‖x.1.1‖ * ‖(MulEquiv.prodUnits x).2‖
+instance : Norm (AdeleRing (𝓞 K) K) where norm x := ‖x.1‖ * ‖x.2‖
 
-theorem norm_def (x : (AdeleRing (𝓞 K) K)ˣ) : ‖x‖ = ‖x.1.1‖ * ‖(MulEquiv.prodUnits x).2‖ := rfl
+theorem norm_def (x : AdeleRing (𝓞 K) K) : ‖x‖ = ‖x.1‖ * ‖x.2‖ := rfl
 
-theorem norm_apply (x : (AdeleRing (𝓞 K) K)ˣ) :
-    ‖x‖ = (∏ v, ‖x.1.1 v‖ ^ v.mult) * ∏ᶠ v, ‖(MulEquiv.prodUnits x).2.1 v‖ := rfl
+theorem norm_def_unit (x : (AdeleRing (𝓞 K) K)ˣ) :
+    ‖x.1‖ = ‖x.1.1‖ * ‖(MulEquiv.prodUnits x).2.1‖ := rfl
+
+theorem norm_apply_unit (x : (AdeleRing (𝓞 K) K)ˣ) :
+    ‖x.1‖ = (∏ v, ‖x.1.1 v‖ ^ v.mult) * ∏ᶠ v, ‖(MulEquiv.prodUnits x).2.1 v‖ := by
+  rw [norm_def_unit, FiniteAdeleRing.norm_def_unit]
+  rfl
+
+theorem norm_eq_zero_of_not_isUnit {x : AdeleRing (𝓞 K) K} (hx : ¬IsUnit x) : ‖x‖ = 0 := by
+  rcases not_and_or.1 <| Prod.isUnit_iff.not.1 hx with hi | hf
+  · simp [norm_def, InfiniteAdeleRing.norm_eq_zero_of_not_isUnit hi]
+  · simp [norm_def, FiniteAdeleRing.norm_eq_zero_of_not_isUnit hf]
 
 variable (K) in
 def unitEmbedding : Kˣ →* (AdeleRing (𝓞 K) K)ˣ := Units.map (algebraMap K (AdeleRing (𝓞 K) K))
@@ -149,8 +255,8 @@ instance : Coe Kˣ (AdeleRing (𝓞 K) K)ˣ where
   coe x := unitEmbedding K x
 
 theorem coe_norm_eq_one {x : Kˣ} :
-    ‖(x : (AdeleRing (𝓞 K) K)ˣ)‖ = 1 := by
-  rw [norm_def, unitEmbedding_apply, algebraMap_fst_def, unitEmbedding_prodUnits_apply,
+    ‖(x : (AdeleRing (𝓞 K) K)ˣ).1‖ = 1 := by
+  rw [norm_def_unit, unitEmbedding_apply, algebraMap_fst_def, unitEmbedding_prodUnits_apply,
     InfiniteAdeleRing.coe_norm_eq_abs_norm, FiniteAdeleRing.coe_norm_eq_inv_abs_norm]
   simp
 

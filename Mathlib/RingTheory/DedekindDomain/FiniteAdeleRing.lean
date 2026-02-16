@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
+public import Mathlib.Topology.Algebra.RestrictedProduct.Units
 public import Mathlib.RingTheory.Valuation.Integers
 
 /-!
@@ -158,16 +159,14 @@ variable {R K}
 theorem isUnit_iff {a : FiniteAdeleRing R K} :
     IsUnit a ↔ (∀ v, a v ≠ 0) ∧ ∀ᶠ v in Filter.cofinite, Valued.v (a v) = 1 := by
   rw [RestrictedProduct.isUnit_iff]
-  simp_rw [isUnit_iff_ne_zero, adicCompletionIntegers.isUnit_iff_valued_eq_one, exists_prop,
+  simp only [isUnit_iff_ne_zero, adicCompletionIntegers.isUnit_iff_valued_eq_one, exists_prop,
     Filter.eventually_cofinite, not_and_or, Set.setOf_or]
   simpa using fun _ _ ↦ a.2
 
 theorem unitsEquiv_finite_valued_eq_one (a : (FiniteAdeleRing R K)ˣ) :
-    ∀ᶠ v in Filter.cofinite, Valued.v ((RestrictedProduct.unitsEquiv a v)).1 = 1 := by
-  filter_upwards [(RestrictedProduct.unitsEquiv a).2]
-  simp only [SetLike.mem_coe, adicCompletionIntegers.mem_units_iff_valued_eq_one,
-    RestrictedProduct.coe_unitsEquiv_apply]
-  simp
+    ∀ᶠ v in Filter.cofinite, Valued.v ((RestrictedProduct.unitsEquiv _ a v)).1 = 1 := by
+  filter_upwards [(RestrictedProduct.unitsEquiv _ a).2] using fun v h ↦
+    adicCompletionIntegers.mem_units_iff_valued_eq_one.1 h
 
 variable (R K) in
 def unitEmbedding : Kˣ →* (FiniteAdeleRing R K)ˣ := Units.map (algebraMap K (FiniteAdeleRing R K))
