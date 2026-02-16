@@ -476,6 +476,35 @@ lemma logHeight₁_zpow (x : K) (n : ℤ) : logHeight₁ (x ^ n) = n.natAbs * lo
 end Height
 
 /-!
+###
+-/
+
+namespace AbsoluteValue
+
+variable {R : Type*} [Semiring R]
+
+lemma iSup_abv_fun_mul_eq_iSup_abv_mul_iSup_abv (v : AbsoluteValue R ℝ) {ι ι' : Type*}
+    [Finite ι] [Finite ι'] (x : ι → R) (y : ι' → R) :
+    ⨆ a : ι × ι', v (x a.1 * y a.2) = (⨆ i, v (x i)) * ⨆ j, v (y j) := by
+  rcases isEmpty_or_nonempty ι
+  · simp
+  rcases isEmpty_or_nonempty ι'
+  · simp
+  simp only [map_mul]
+  refine le_antisymm (ciSup_le fun a ↦ ?_) ?_
+  · gcongr
+    · exact iSup_abv_nonneg v
+    · exact Finite.le_ciSup (fun i ↦ v (x i)) a.1
+    · exact Finite.le_ciSup (fun j ↦ v (y j)) a.2
+  · obtain ⟨i, hi⟩ := exists_eq_ciSup_of_finite (f := fun i ↦ v (x i))
+    obtain ⟨j, hj⟩ := exists_eq_ciSup_of_finite (f := fun j ↦ v (y j))
+    rw [← hi, ← hj]
+    exact Finite.le_ciSup (fun a : ι × ι' ↦ v (x a.1) * v (y a.2)) ⟨i, j⟩
+
+end AbsoluteValue
+
+
+/-!
 ### Bounds for the height of sums of field elements
 
 We prove the general case (finite sums of arbitrary length) first and deduce the result
