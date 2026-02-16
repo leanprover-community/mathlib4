@@ -655,6 +655,7 @@ jobs:
   post_steps:
     name: Post-Build Step
     needs: [build, upload_cache]
+    if: ${{ always() && needs.build.result == 'success' && (needs.upload_cache.result == 'success' || needs.upload_cache.result == 'skipped') }}
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
 
@@ -744,7 +745,8 @@ jobs:
 
   final:
     name: Post-CI job
-    if: ${{ inputs.run_post_ci }}
+    # ensure that this runs iff direct dependencies succeeded even if transitive dependencies  were skipped
+    if: ${{ always() && inputs.run_post_ci && needs.style_lint.result == 'success' && needs.build.result == 'success' && needs.post_steps.result == 'success' }}
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
