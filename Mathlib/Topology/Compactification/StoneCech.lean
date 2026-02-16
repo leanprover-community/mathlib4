@@ -131,8 +131,6 @@ theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) �
 
 section Embedding
 
-@[deprecated (since := "2025-08-14")] alias ultrafilter_pure_injective := Ultrafilter.pure_injective
-
 open TopologicalSpace
 
 /-- The range of `pure : α → Ultrafilter α` is dense in `Ultrafilter α`. -/

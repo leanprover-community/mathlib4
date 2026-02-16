@@ -124,8 +124,7 @@ def mkOfTerminalΩ₀
 instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
   { default := c.χ₀ Y,
     uniq f :=
-      have : f ≫ c.truth = c.χ₀ Y ≫ c.truth :=
-        by calc
+      have : f ≫ c.truth = c.χ₀ Y ≫ c.truth := calc
           _ = c.χ (𝟙 Y) := c.uniq (𝟙 Y) (of_horiz_isIso_mono { })
           _ = c.χ₀ Y ≫ c.truth := by simp [← (c.isPullback (𝟙 Y)).w]
       Mono.right_cancellation _ _ this }

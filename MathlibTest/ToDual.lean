@@ -32,8 +32,9 @@ attribute [to_dual existing] Lattice.toSemilatticeInf
 
 -- we still cannot reorder arguments of arguments, so `SemilatticeInf.mk` is not translatable
 /--
-error: @[to_dual] failed. The translated value is not type correct. For help, see the docstring of `to_additive`, section `Troubleshooting`. Failed to add declaration
-instSemilatticeSupOfForallLeForallMax:
+error: @[to_dual] failed to add declaration `instSemilatticeSupOfForallLeForallMax`.
+  The translated value is not type correct.
+  For help, see the docstring of `to_additive`, section `Troubleshooting`.
 Application type mismatch: The argument
   le_inf
 has type
@@ -274,3 +275,9 @@ def Top.autoParamTest {a b : α} (h : a ≤ b := by grind) : a ≤ b := h
 
 open Lean
 run_meta guard <| isDeclMeta (← getEnv) ``Bot.autoParamTest._auto_1
+
+-- Test that hypotheses can also have a translation when using `to_dual_insert_cast`
+@[to_dual self]
+def nonemptyIcc {a b : α} (_ : a ≤ b) := fun x ↦ a ≤ x ∧ x ≤ b
+
+to_dual_insert_cast nonemptyIcc := by grind
