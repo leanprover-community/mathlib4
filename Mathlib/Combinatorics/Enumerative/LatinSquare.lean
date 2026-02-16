@@ -756,8 +756,8 @@ theorem latin_rectangle_extends
           unfold Function.Bijective Function.Surjective at h3
           replace h3 := h3.2
           specialize h3 b
-          -- simp [B,symbols_not_in] at hB
-          sorry
+          simp at h3
+          exact h3
     distinct_col_entries := by 
       unfold distinct_col_entries
       intro y
