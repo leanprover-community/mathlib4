@@ -1096,7 +1096,7 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
     convert (one_smul R (y -ᵥ x)).symm
     field
 
-lemma wbtw_of_sameRay_vsub_left {x y z : P} (h : SameRay R (y -ᵥ x) (z -ᵥ x)) :
+lemma wbtw_total_of_sameRay_vsub_left {x y z : P} (h : SameRay R (y -ᵥ x) (z -ᵥ x)) :
     Wbtw R x y z ∨ Wbtw R x z y := by
   rcases h with (h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩)
   · simp_all
