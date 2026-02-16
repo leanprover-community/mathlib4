@@ -154,8 +154,8 @@ theorem AntilipschitzWith.le_mul_norm' {f : E → F} {K : ℝ≥0} (h : Antilips
     (hf : f 1 = 1) (x) : ‖x‖ ≤ K * ‖f x‖ := by
   simpa only [dist_one_right, hf] using h.le_mul_dist x 1
 
-@[to_additive antilipschitzWith_iff_exists_mul_le_mul]
-theorem antilipschitzWith_iff_exists_mul_le_mul' [MonoidHomClass 𝓕 E F] (f : 𝓕) :
+@[to_additive antilipschitzWith_iff_exists_mul_le_norm]
+theorem antilipschitzWith_iff_exists_mul_le_norm' [MonoidHomClass 𝓕 E F] {f : 𝓕} :
     (∃ K, AntilipschitzWith K f) ↔ ∃ c > 0, ∀ x, c * ‖x‖ ≤ ‖f x‖ := by
   refine ⟨fun ⟨K, hK⟩ ↦ ⟨(K + 1)⁻¹, by positivity, fun x ↦ ?_⟩, fun ⟨c, hc0, hc⟩ ↦
     ⟨⟨c⁻¹, by positivity⟩, MonoidHomClass.antilipschitz_of_bound f fun x ↦ ?_⟩⟩

@@ -590,15 +590,29 @@ alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
 def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
   OrderEmbedding.ofMapLEIff (fun r ↦ Sym2.fromRel r.prop) fun _ _ ↦ fromRel_mono_iff ..
 
-theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
-  apply Set.eq_empty_of_forall_notMem fun e => _
-  apply Sym2.ind
-  simp [-Set.bot_eq_empty, Prop.bot_eq_false]
+@[simp]
+theorem fromRel_eq_fromRell_iff_eq {r₁ r₂ : α → α → Prop} (sym₁ : Symmetric r₁)
+    (sym₂ : Symmetric r₂) : fromRel sym₁ = fromRel sym₂ ↔ r₁ = r₂ := by
+  rw [← Subtype.mk.injEq r₁ sym₁ r₂ sym₂, ← fromRelOrderEmbedding.eq_iff_eq]
+  rfl
 
-theorem fromRel_top : fromRel (fun (_ _ : α) z => z : Symmetric ⊤) = Set.univ := by
-  apply Set.eq_univ_of_forall fun e => _
-  apply Sym2.ind
-  simp [-Set.top_eq_univ, Prop.top_eq_true]
+theorem fromRel_bot : fromRel (α := α) (r := ⊥) (fun _ _ ↦ id) = ∅ :=
+  Set.eq_empty_of_forall_notMem <| Sym2.ind <| by simp
+
+@[simp]
+theorem fromRel_bot_iff {sym : Symmetric r} : fromRel sym = ∅ ↔ r = ⊥ := by
+  refine ⟨fun h ↦ ?_, (· ▸ fromRel_bot)⟩
+  ext x y
+  simpa [h] using fromRel_prop (sym := sym)
+
+theorem fromRel_top : fromRel (α := α) (r := ⊤) (fun _ _ ↦ id) = .univ :=
+  Set.eq_univ_of_forall <| Sym2.ind <| by simp
+
+@[simp]
+theorem fromRel_top_iff {sym : Symmetric r} : fromRel sym = .univ ↔ r = ⊤ := by
+  refine ⟨fun h ↦ ?_, (· ▸ fromRel_top)⟩
+  ext x y
+  simpa [h] using fromRel_prop (sym := sym)
 
 theorem fromRel_ne : fromRel (fun (_ _ : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
   ext z; exact z.ind (by simp)
@@ -613,11 +627,12 @@ lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (f
   simp [Set.subset_def, Sym2.forall, Reflexive]
 
 @[simp] lemma disjoint_diagSet_fromRel (hr : Symmetric r) :
-    Disjoint diagSet (fromRel hr) ↔ Irreflexive r := by
-  simp [Set.disjoint_left, Sym2.forall, Irreflexive]
+    Disjoint diagSet (fromRel hr) ↔ Std.Irrefl r := by
+  refine .trans ?_ ⟨(⟨·⟩), (·.irrefl)⟩
+  simp [Set.disjoint_left, Sym2.forall]
 
 @[simp] lemma fromRel_subset_compl_diagSet (hr : Symmetric r) :
-    fromRel hr ⊆ diagSetᶜ ↔ Irreflexive r := by simp [Set.subset_compl_iff_disjoint_left]
+    fromRel hr ⊆ diagSetᶜ ↔ Std.Irrefl r := by simp [Set.subset_compl_iff_disjoint_left]
 
 @[deprecated diagSet_subset_fromRel (since := "2025-12-10")]
 theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
@@ -625,16 +640,17 @@ theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
 
 @[deprecated fromRel_subset_compl_diagSet (since := "2025-12-10")]
 theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Symmetric r) :
-    Irreflexive r ↔ fromRel sym ⊆ diagSetᶜ := by simp
+    Std.Irrefl r ↔ fromRel sym ⊆ diagSetᶜ := by simp
 
-theorem fromRel_irreflexive {sym : Symmetric r} :
-    Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=
-  { mp := by intro h; apply Sym2.ind; aesop
-    mpr := fun h _ hr => h (fromRel_prop.mpr hr) rfl }
+theorem fromRel_irrefl {sym : Symmetric r} : Std.Irrefl r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z where
+  mp := by intro ⟨h⟩; apply Sym2.ind; aesop
+  mpr h := ⟨fun _ hr ↦ h (fromRel_prop.mpr hr) rfl⟩
 
-theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Irreflexive r) {a : α}
+@[deprecated (since := "2026-02-12")] alias fromRel_irreflexive := fromRel_irrefl
+
+theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Std.Irrefl r) {a : α}
     {z : Sym2 α} (hz : z ∈ fromRel sym) (h : a ∈ z) : Mem.other h ≠ a :=
-  other_ne (fromRel_irreflexive.mp irrefl hz) h
+  other_ne (fromRel_irrefl.mp irrefl hz) h
 
 instance fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
     DecidablePred (· ∈ Sym2.fromRel sym) := fun z => z.recOnSubsingleton fun _ => h _ _
