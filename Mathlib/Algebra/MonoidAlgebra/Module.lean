@@ -95,14 +95,14 @@ section ExtLemmas
 variable [Semiring k]
 
 /-- `MonoidAlgebra.single` as a `DistribMulActionHom`. -/
-@[to_additive (dont_translate := R) (relevant_arg := G) singleDistribMulActionHom
+@[to_additive (dont_translate := R) singleDistribMulActionHom
 /-- `AddMonoidAlgebra.single` as a `DistribMulActionHom`. -/]
 def singleDistribMulActionHom [Monoid R] [DistribMulAction R k] (a : G) : k →+[R] k[G] where
   __ := singleAddHom a
   map_smul' k m := by simp
 
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `MonoidAlgebra`. -/
-@[to_additive (dont_translate := R) (relevant_arg := N) (attr := ext) distribMulActionHom_ext'
+@[to_additive (dont_translate := R) (attr := ext) distribMulActionHom_ext'
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `AddMonoidAlgebra`. -/]
 theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMulAction R N]
     [DistribMulAction R k] {f g : k[G] →+[R] N}
@@ -111,8 +111,7 @@ theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMu
   Finsupp.distribMulActionHom_ext' h
 
 /-- A copy of `Finsupp.lsingle` for `MonoidAlgebra`. -/
-@[to_additive (dont_translate := R) (relevant_arg := G)
-/-- A copy of `Finsupp.lsingle` for `AddMonoidAlgebra`. -/]
+@[to_additive (dont_translate := R) /-- A copy of `Finsupp.lsingle` for `AddMonoidAlgebra`. -/]
 abbrev lsingle [Semiring R] [Module R k] (a : G) : k →ₗ[R] k[G] := Finsupp.lsingle a
 
 @[to_additive (attr := simp)]

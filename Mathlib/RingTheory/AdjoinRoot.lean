@@ -790,12 +790,7 @@ theorem Minpoly.coe_toAdjoin :
       ⟨x, self_mem_adjoin_singleton R x⟩
       (by change aeval _ _ = _; simp [← Subalgebra.coe_eq_zero, aeval_subalgebra_coe]) := rfl
 
-@[deprecated (since := "2025-07-21")] alias Minpoly.toAdjoin_apply := Minpoly.coe_toAdjoin
-@[deprecated (since := "2025-07-21")] alias Minpoly.toAdjoin_apply' := Minpoly.coe_toAdjoin
-
 theorem Minpoly.coe_toAdjoin_mk_X : Minpoly.toAdjoin R x (mk (minpoly R x) X) = x := by simp
-
-@[deprecated (since := "2025-07-21")] alias Minpoly.toAdjoin.apply_X := Minpoly.coe_toAdjoin_mk_X
 
 variable (R x)
 
