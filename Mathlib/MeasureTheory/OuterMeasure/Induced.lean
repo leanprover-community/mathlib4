@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.ENNReal.Action
-import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
+module
+
+public import Mathlib.Data.ENNReal.Action
+public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+public import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 
 /-!
 # Induced Outer Measure
@@ -14,7 +16,7 @@ We can extend a function defined on a subset of `Set α` to an outer measure.
 The underlying function is called `extend`, and the measure it induces is called
 `inducedOuterMeasure`.
 
-Some lemmas below are proven twice, once in the general case, and one where the function `m`
+Some lemmas below are proven twice, once in the general case, and once where the function `m`
 is only defined on measurable sets (i.e. when `P = MeasurableSet`). In the latter cases, we can
 remove some hypotheses in the statement. The general version has the same name, but with a prime
 at the end.
@@ -24,6 +26,8 @@ at the end.
 outer measure
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -37,7 +41,7 @@ open OuterMeasure
 
 section Extend
 
-variable {α : Type*} {P : α → Prop}
+variable {R α : Type*} {P : α → Prop}
 variable (m : ∀ s : α, P s → ℝ≥0∞)
 
 /-- We can trivially extend a function defined on a subclass of objects (with codomain `ℝ≥0∞`)
@@ -49,15 +53,14 @@ theorem extend_eq {s : α} (h : P s) : extend m s = m s h := by simp [extend, h]
 
 theorem extend_eq_top {s : α} (h : ¬P s) : extend m s = ∞ := by simp [extend, h]
 
-theorem smul_extend {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    [NoZeroSMulDivisors R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
+theorem smul_extend [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [Module.IsTorsionFree R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
     c • extend m = extend fun s h => c • m s h := by
   classical
-  ext1 s
-  dsimp [extend]
-  by_cases h : P s
-  · simp [h]
-  · simp [h, ENNReal.smul_top, hc]
+  ext s; by_cases h : P s <;> simp [extend, ENNReal.smul_top, *]
+
+lemma ennreal_smul_extend {c : ℝ≥0∞} (hc : c ≠ 0) : c • extend m = extend fun s h => c • m s h := by
+  ext s; by_cases h : P s <;> simp [extend, *]
 
 theorem le_extend {s : α} (h : P s) : m s h ≤ extend m s := by
   simp only [extend, le_iInf_iff]
@@ -107,12 +110,12 @@ section Subadditive
 include PU msU in
 theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     extend m (⋃ i, s i) ≤ ∑' i, extend m (s i) := by
-  by_cases h : ∀ i, P (s i)
+  by_cases! h : ∀ i, P (s i)
   · rw [extend_eq _ (PU h), congr_arg tsum _]
     · apply msU h
     funext i
     apply extend_eq _ (h i)
-  · obtain ⟨i, hi⟩ := not_forall.1 h
+  · obtain ⟨i, hi⟩ := h
     exact le_trans (le_iInf fun h => hi.elim h) (ENNReal.le_tsum i)
 
 end Subadditive
@@ -188,7 +191,7 @@ theorem inducedOuterMeasure_eq_iInf (s : Set α) :
   apply le_antisymm
   · simp only [le_iInf_iff]
     intro t ht hs
-    refine le_trans (measure_mono hs) ?_
+    grw [hs]
     exact le_of_eq (inducedOuterMeasure_eq' _ msU m_mono _)
   · refine le_iInf ?_
     intro f
@@ -376,7 +379,7 @@ theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
     exact ⟨univ, subset_univ s, MeasurableSet.univ, hs _ (subset_univ s) MeasurableSet.univ⟩
   · have : ∀ r > ms, ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t < r := by
       intro r hs
-      have : ∃t, MeasurableSet t ∧ s ⊆ t ∧ m t < r := by simpa [ms, iInf_lt_iff] using hs
+      have : ∃ t, MeasurableSet t ∧ s ⊆ t ∧ m t < r := by simpa [ms, iInf_lt_iff] using hs
       rcases this with ⟨t, hmt, hin, hlt⟩
       exists t
     have : ∀ n : ℕ, ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t < ms + (n : ℝ≥0∞)⁻¹ := by

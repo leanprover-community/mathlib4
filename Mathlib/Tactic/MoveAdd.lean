@@ -3,13 +3,18 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Lean.Meta
-import Mathlib.Order.Defs.LinearOrder
+module
+
+public meta import Mathlib.Lean.Meta
+public import Aesop
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Order.Defs.LinearOrder
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 
-#  `move_add` a tactic for moving summands in expressions
+# `move_add` a tactic for moving summands in expressions
 
 The tactic `move_add` rearranges summands in expressions.
 
@@ -27,7 +32,7 @@ A term preceded by `←` gets moved to the left, while a term without `←` gets
   * `move_add [← a]` changes the goal to `a + b + c` (effectively, `a` moved to the left).
   * `move_add [a]` changes the goal to `b + c + a` (effectively, `a` moved to the right);
 
-  The tactic reorders *all* sub-expressions of the target at the same same.
+  The tactic reorders *all* sub-expressions of the target at the same time.
   For instance, if `⊢ 0 < if b + a < b + a + c then a + b else b + a` is the goal, then
   * `move_add [a]` changes the goal to `0 < if b + a < b + c + a then b + a else b + a`
     (`a` moved to the right in three sums);
@@ -100,6 +105,8 @@ Currently, no attempt is made at guiding `simp` by doing a `congr`-like destruct
 This will be the content of a later PR.
 -/
 
+public meta section
+
 open Lean Expr
 
 /-- `getExprInputs e` inspects the outermost constructor of `e` and returns the array of all the
@@ -114,8 +121,8 @@ def Lean.Expr.getExprInputs : Expr → Array Expr
   | _ => #[]
 
 /-- `size e` returns the number of subexpressions of `e`. -/
-partial
-def Lean.Expr.size (e : Expr) : ℕ := (e.getExprInputs.map size).foldl (· + ·) 1
+@[deprecated Lean.Expr.sizeWithoutSharing (since := "2025-09-04")]
+partial def Lean.Expr.size (e : Expr) : ℕ := (e.getExprInputs.map size).foldl (· + ·) 1
 
 namespace Mathlib.MoveAdd
 
@@ -125,7 +132,7 @@ section reorder
 variable {α : Type*} [BEq α]
 
 /-!
-##  Reordering the variables
+## Reordering the variables
 
 This section produces the permutations of the variables for `move_add`.
 
@@ -268,7 +275,7 @@ partial def getOps (sum : Expr) : MetaM (Array ((Array Expr) × Expr)) := do
 /-- `rankSums op tgt instructions` takes as input
 * the name `op` of a binary operation,
 * an `Expr`ession `tgt`,
-* a list `instructions` of pair `(expression, boolean)`.
+* a list `instructions` of pair `(expression, Boolean)`.
 
 It extracts the maximal subexpressions of `tgt` whose head symbol is `op`
 (i.e. the maximal subexpressions that consist only of applications of the binary operation `op`),
@@ -286,7 +293,7 @@ def rankSums (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM (List (Ex
     let resummed := sumList (prepareOp sum) left_assoc? reord
     if (resummed != sum) then some (sum, resummed) else none
   return (candidates.toList.reduceOption.toArray.qsort
-    (fun x y : Expr × Expr ↦ (y.1.size  ≤ x.1.size))).toList
+    (fun x y : Expr × Expr ↦ (y.1.sizeWithoutSharing  ≤ x.1.sizeWithoutSharing))).toList
 
 /-- `permuteExpr op tgt instructions` takes the same input as `rankSums` and returns the
 expression obtained from `tgt` by replacing all `old_sum`s by the corresponding `new_sum`.
@@ -348,9 +355,6 @@ def moveOperSimpCtx : MetaM Simp.Context := do
     ]
   let simpThms ← simpNames.foldlM (·.addConst ·) ({} : SimpTheorems)
   Simp.mkContext {} (simpTheorems := #[simpThms])
-
-@[deprecated (since := "2024-12-07")]
-alias move_oper_simpCtx := moveOperSimpCtx
 
 /-- `reorderAndSimp mv op instr` takes as input an `MVarId`  `mv`, the name `op` of a binary
 operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
@@ -451,12 +455,12 @@ elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => withMa
   -- move around the operands
   replaceMainGoal (← reorderAndSimp op (← getMainGoal) instr)
 
-@[inherit_doc moveOperTac]
+@[tactic_alt moveOperTac]
 elab "move_add" rws:rwRuleSeq : tactic => do
   let hadd := mkIdent ``HAdd.hAdd
   evalTactic (← `(tactic| move_oper $hadd $rws))
 
-@[inherit_doc moveOperTac]
+@[tactic_alt moveOperTac]
 elab "move_mul" rws:rwRuleSeq : tactic => do
   let hmul := mkIdent ``HMul.hMul
   evalTactic (← `(tactic| move_oper $hmul $rws))

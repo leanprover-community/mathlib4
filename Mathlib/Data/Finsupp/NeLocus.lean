@@ -3,7 +3,9 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Finsupp
+module
+
+public import Mathlib.Algebra.Group.Finsupp
 
 /-!
 # Locus of unequal values of finitely supported functions
@@ -18,6 +20,8 @@ functions.
 In the case in which `N` is an additive group, `Finsupp.neLocus f g` coincides with
 `Finsupp.support (f - g)`.
 -/
+
+@[expose] public section
 
 
 variable {α M N P : Type*}
@@ -43,8 +47,6 @@ theorem mem_neLocus {f g : α →₀ N} {a : α} : a ∈ f.neLocus g ↔ f a ≠
 theorem notMem_neLocus {f g : α →₀ N} {a : α} : a ∉ f.neLocus g ↔ f a = g a :=
   mem_neLocus.not.trans not_ne_iff
 
-@[deprecated (since := "2025-05-23")] alias not_mem_neLocus := notMem_neLocus
-
 @[simp]
 theorem coe_neLocus : ↑(f.neLocus g) = { x | f x ≠ g x } := by
   ext
@@ -54,7 +56,7 @@ theorem coe_neLocus : ↑(f.neLocus g) = { x | f x ≠ g x } := by
 theorem neLocus_eq_empty {f g : α →₀ N} : f.neLocus g = ∅ ↔ f = g :=
   ⟨fun h =>
     ext fun a => not_not.mp (mem_neLocus.not.mp (Finset.eq_empty_iff_forall_notMem.mp h a)),
-    fun h => h ▸ by simp only [neLocus, Ne, eq_self_iff_true, not_true, Finset.filter_False]⟩
+    fun h => h ▸ by simp only [neLocus, Ne, not_true, Finset.filter_false]⟩
 
 @[simp]
 theorem nonempty_neLocus_iff {f g : α →₀ N} : (f.neLocus g).Nonempty ↔ f ≠ g :=

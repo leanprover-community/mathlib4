@@ -3,10 +3,12 @@ Copyright (c) 2024 Jineon Baek, Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.Polynomial.Wronskian
-import Mathlib.RingTheory.Radical
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.RingTheory.Polynomial.Wronskian
+public import Mathlib.RingTheory.Radical
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
 # Radical of a polynomial
@@ -15,12 +17,14 @@ This file proves some theorems on `radical` and `divRadical` of polynomials.
 See `RingTheory.Radical` for the definition of `radical` and `divRadical`.
 -/
 
+public section
+
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
 
 variable {k : Type*} [Field k] [DecidableEq k]
 
-theorem degree_radical_le {a : k[X]} (h : a ≠ 0) :
-  (radical a).degree ≤ a.degree := degree_le_of_dvd radical_dvd_self h
+theorem degree_radical_le {a : k[X]} (h : a ≠ 0) : (radical a).degree ≤ a.degree :=
+  degree_le_of_dvd radical_dvd_self h
 
 theorem natDegree_radical_le {a : k[X]} :
     (radical a).natDegree ≤ a.natDegree := by

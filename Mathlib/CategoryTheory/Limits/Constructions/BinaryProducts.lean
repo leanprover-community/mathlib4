@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 
 /-!
 # Constructing binary product from pullbacks and terminal object.
@@ -16,6 +18,8 @@ has pullbacks and a terminal object, then it has binary products.
 
 We also provide the dual.
 -/
+
+@[expose] public section
 
 
 universe v v' u u'
@@ -42,7 +46,7 @@ def isBinaryProductOfIsTerminalIsPullback (F : Discrete WalkingPair ⥤ C) (c : 
         (hX.hom_ext (_ ≫ f) (_ ≫ g))
     dsimp; rw [← J, ← J]
     apply hc.hom_ext
-    rintro (_ | (_ | _)) <;> simp only [PullbackCone.mk_π_app_one, PullbackCone.mk_π_app]
+    rintro (_ | (_ | _)) <;> simp only [PullbackCone.mk_π_app]
     exacts [(Category.assoc _ _ _).symm.trans (hc.fac_assoc c' WalkingCospan.left f).symm,
       (hc.fac c' WalkingCospan.left).symm, (hc.fac c' WalkingCospan.right).symm]
 
@@ -147,7 +151,7 @@ def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : 
     dsimp; rw [← J, ← J]
     apply hc.hom_ext
     rintro (_ | (_ | _)) <;>
-      simp only [PushoutCocone.mk_ι_app_zero, PushoutCocone.mk_ι_app, Category.assoc]
+      simp only [PushoutCocone.mk_ι_app, Category.assoc]
     on_goal 1 => congr 1
     exacts [(hc.fac c' WalkingSpan.left).symm, (hc.fac c' WalkingSpan.left).symm,
       (hc.fac c' WalkingSpan.right).symm]

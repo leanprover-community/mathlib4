@@ -3,12 +3,12 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.RingTheory.Regular.IsSMulRegular
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.Nakayama
-import Mathlib.Algebra.Equiv.TransferInstance
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Noetherian.Basic
+module
+
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.Regular.IsSMulRegular
 
 /-!
 # Regular sequences and weakly regular sequences
@@ -24,6 +24,8 @@ TODO: Koszul regular sequences, H_1-regular sequences, quasi-regular sequences, 
 
 module, regular element, regular sequence, commutative algebra
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -105,7 +107,7 @@ lemma quotOfListConsSMulTopEquivQuotSMulTopInner_naturality (f : M →ₗ[R] M�
 lemma top_eq_ofList_cons_smul_iff :
     (⊤ : Submodule R M) = Ideal.ofList (r :: rs) • ⊤ ↔
       (⊤ : Submodule R (QuotSMulTop r M)) = Ideal.ofList rs • ⊤ := by
-  conv => congr <;> rw [eq_comm, ← subsingleton_quotient_iff_eq_top]
+  conv => congr <;> rw [eq_comm, ← Quotient.subsingleton_iff]
   exact (quotOfListConsSMulTopEquivQuotSMulTopInner M r rs).toEquiv.subsingleton_congr
 
 end Submodule
@@ -201,11 +203,10 @@ lemma _root_.LinearEquiv.isWeaklyRegular_congr [Module R M₂] (e : M ≃ₗ[R] 
 lemma _root_.AddEquiv.isRegular_congr {e : M ≃+ M₂} {as bs}
     (h : List.Forall₂ (fun (r : R) (s : S) => ∀ x, e (r • x) = s • e x) as bs) :
     IsRegular M as ↔ IsRegular M₂ bs := by
-  conv => congr <;> rw [isRegular_iff, ne_eq, eq_comm,
-    ← subsingleton_quotient_iff_eq_top]
+  conv => congr <;> rw [isRegular_iff, ne_comm, ← Quotient.nontrivial_iff]
   let e' := QuotientAddGroup.congr _ _ e <|
     AddHom.map_smul_top_toAddSubgroup_of_surjective e.surjective h
-  exact and_congr (e.isWeaklyRegular_congr h) e'.subsingleton_congr.not
+  exact and_congr (e.isWeaklyRegular_congr h) e'.nontrivial_congr
 
 lemma _root_.LinearEquiv.isRegular_congr' (e : M ≃ₛₗ[σ] M₂) (rs : List R) :
     IsRegular M rs ↔ IsRegular M₂ (rs.map σ) :=
@@ -496,8 +497,8 @@ def ndrecIterModByRegularWithRing
 
 lemma quot_ofList_smul_nontrivial {rs : List R} (h : IsRegular M rs)
     (N : Submodule R M) : Nontrivial (M ⧸ Ideal.ofList rs • N) :=
-  Submodule.Quotient.nontrivial_of_lt_top _ <|
-    lt_of_le_of_lt (smul_mono_right _ le_top) h.top_ne_smul.symm.lt_top
+  Submodule.Quotient.nontrivial_iff.mpr <|
+    ne_top_of_le_ne_top h.top_ne_smul.symm (smul_mono_right _ le_top)
 
 lemma nontrivial {rs : List R} (h : IsRegular M rs) : Nontrivial M :=
   haveI := quot_ofList_smul_nontrivial h ⊤
@@ -575,7 +576,7 @@ lemma map_first_exact_on_four_term_right_exact_of_isSMulRegular_last
 
 section Perm
 
-open LinearMap in
+open _root_.LinearMap in
 private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
     (h2 : torsionBy R M b = a • torsionBy R M b → torsionBy R M b = ⊥) :
     IsWeaklyRegular M [b, a] := by
@@ -594,8 +595,6 @@ private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
 -- subsequences and regularity on poly ring. See [07DW] in stacks project
 -- We need a theory of multivariate polynomial modules first
 
--- This is needed due to a bug in the linter
-set_option linter.unusedVariables false in
 lemma IsWeaklyRegular.prototype_perm {rs : List R} (h : IsWeaklyRegular M rs)
     {rs'} (h'' : rs ~ rs') (h' : ∀ a b rs', (a :: b :: rs') <+~ rs →
       let K := torsionBy R (M ⧸ (Ideal.ofList rs' • ⊤ : Submodule R M)) b
@@ -672,8 +671,5 @@ lemma _root_.IsLocalRing.isRegular_of_perm [IsLocalRing R] [IsNoetherian R M]
     exact h4 ∘ Eq.trans (top_smul _).symm ∘ Eq.symm ∘ congrArg (· • ⊤)
   · refine ne_of_ne_of_eq h4 (congrArg (Ideal.span · • ⊤) ?_)
     exact Set.ext fun _ => h2.mem_iff
-
-@[deprecated (since := "2024-11-09")]
-alias _root_.LocalRing.isRegular_of_perm := _root_.IsLocalRing.isRegular_of_perm
 
 end RingTheory.Sequence

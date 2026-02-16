@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
 /-!
 # Pointwise Kan extensions
@@ -12,7 +14,7 @@ In this file, we define the notion of pointwise (left) Kan extension. Given two 
 `L : C ⥤ D` and `F : C ⥤ H`, and `E : LeftExtension L F`, we introduce a cocone
 `E.coconeAt Y` for the functor `CostructuredArrow.proj L Y ⋙ F : CostructuredArrow L Y ⥤ H`
 the point of which is `E.right.obj Y`, and the type `E.IsPointwiseLeftKanExtensionAt Y`
-which expresses that `E.coconeAt Y` is colimit. When this holds for all `Y : D`,
+which expresses that `E.coconeAt Y` is a colimit. When this holds for all `Y : D`,
 we may say that `E` is a pointwise left Kan extension (`E.IsPointwiseLeftKanExtension`).
 
 Conversely, when `CostructuredArrow.proj L Y ⋙ F` has a colimit, we say that
@@ -27,13 +29,15 @@ A dual API for pointwise right Kan extension is also formalized.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
 namespace Functor
 
-variable {C D D' H : Type*} [Category C] [Category D] [Category D'] [Category H]
+variable {C D D' H : Type*} [Category* C] [Category* D] [Category* D'] [Category* H]
   (L : C ⥤ D) (L' : C ⥤ D') (F : C ⥤ H)
 
 /-- The condition that a functor `F` has a pointwise left Kan extension along `L` at `Y`.
@@ -173,7 +177,7 @@ def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
       naturality := fun g₁ g₂ φ => by
         dsimp
         rw [← CostructuredArrow.w φ]
-        simp only [assoc, NatTrans.naturality_assoc, Functor.comp_map,
+        simp only [NatTrans.naturality_assoc, Functor.comp_map,
           Functor.map_comp, comp_id] }
 
 variable (L F) in
@@ -190,6 +194,9 @@ def coconeAtFunctor (Y : D) :
 /-- A left extension `E : LeftExtension L F` is a pointwise left Kan extension at `Y` when
 `E.coconeAt Y` is a colimit cocone. -/
 def IsPointwiseLeftKanExtensionAt (Y : D) := IsColimit (E.coconeAt Y)
+
+instance (Y : D) : Subsingleton (E.IsPointwiseLeftKanExtensionAt Y) :=
+  inferInstanceAs (Subsingleton (IsColimit _))
 
 variable {E} in
 lemma IsPointwiseLeftKanExtensionAt.hasPointwiseLeftKanExtensionAt
@@ -215,17 +222,27 @@ def isPointwiseLeftKanExtensionAtEquivOfIso' {Y Y' : D} (e : Y ≅ Y') :
     E.IsPointwiseLeftKanExtensionAt Y ≃ E.IsPointwiseLeftKanExtensionAt Y' where
   toFun h := E.isPointwiseLeftKanExtensionAtOfIso' h e
   invFun h := E.isPointwiseLeftKanExtensionAtOfIso' h e.symm
-  left_inv h := by
-    dsimp only [IsPointwiseLeftKanExtensionAt]
-    apply Subsingleton.elim
-  right_inv h := by
-    dsimp only [IsPointwiseLeftKanExtensionAt]
-    apply Subsingleton.elim
+  left_inv h := by subsingleton
+  right_inv h := by subsingleton
 
 namespace IsPointwiseLeftKanExtensionAt
 
 variable {E} {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y)
-  [HasColimit (CostructuredArrow.proj L Y ⋙ F)]
+
+include h in
+lemma hom_ext' {T : H} {f g : E.right.obj Y ⟶ T}
+    (hfg : ∀ ⦃X : C⦄ (φ : L.obj X ⟶ Y),
+      E.hom.app X ≫ E.right.map φ ≫ f = E.hom.app X ≫ E.right.map φ ≫ g) : f = g :=
+  h.hom_ext (fun j ↦ by simpa using hfg j.hom)
+
+@[reassoc]
+lemma comp_homEquiv_symm {Z : H}
+    (φ : CostructuredArrow.proj L Y ⋙ F ⟶ (Functor.const _).obj Z)
+    (g : CostructuredArrow L Y) :
+    E.hom.app g.left ≫ E.right.map g.hom ≫ h.homEquiv.symm φ = φ.app g := by
+  simpa using h.ι_app_homEquiv_symm φ g
+
+variable [HasColimit (CostructuredArrow.proj L Y ⋙ F)]
 
 /-- A pointwise left Kan extension of `F` along `L` applied to an object `Y` is isomorphic to
 `colimit (CostructuredArrow.proj L Y ⋙ F)`. -/
@@ -245,6 +262,14 @@ lemma ι_isoColimit_hom (g : CostructuredArrow L Y) :
   simpa using h.comp_coconePointUniqueUpToIso_hom (colimit.isColimit _) g
 
 end IsPointwiseLeftKanExtensionAt
+
+/-- Given `E : Functor.LeftExtension L F`, this is the property of objects where
+`E` is a pointwise left Kan extension. -/
+def isPointwiseLeftKanExtensionAt : ObjectProperty D :=
+  fun Y ↦ Nonempty (E.IsPointwiseLeftKanExtensionAt Y)
+
+instance : E.isPointwiseLeftKanExtensionAt.IsClosedUnderIsomorphisms where
+  of_iso e h := ⟨E.isPointwiseLeftKanExtensionAtOfIso' h.some e⟩
 
 /-- A left extension `E : LeftExtension L F` is a pointwise left Kan extension when
 it is a pointwise left Kan extension at any object. -/
@@ -349,6 +374,9 @@ def coneAtFunctor (Y : D) :
 `E.coneAt Y` is a limit cone. -/
 def IsPointwiseRightKanExtensionAt (Y : D) := IsLimit (E.coneAt Y)
 
+instance (Y : D) : Subsingleton (E.IsPointwiseRightKanExtensionAt Y) :=
+  inferInstanceAs (Subsingleton (IsLimit _))
+
 variable {E} in
 lemma IsPointwiseRightKanExtensionAt.hasPointwiseRightKanExtensionAt
     {Y : D} (h : E.IsPointwiseRightKanExtensionAt Y) :
@@ -373,17 +401,20 @@ def isPointwiseRightKanExtensionAtEquivOfIso' {Y Y' : D} (e : Y ≅ Y') :
     E.IsPointwiseRightKanExtensionAt Y ≃ E.IsPointwiseRightKanExtensionAt Y' where
   toFun h := E.isPointwiseRightKanExtensionAtOfIso' h e
   invFun h := E.isPointwiseRightKanExtensionAtOfIso' h e.symm
-  left_inv h := by
-    dsimp only [IsPointwiseRightKanExtensionAt]
-    apply Subsingleton.elim
-  right_inv h := by
-    dsimp only [IsPointwiseRightKanExtensionAt]
-    apply Subsingleton.elim
+  left_inv h := by subsingleton
+  right_inv h := by subsingleton
 
 namespace IsPointwiseRightKanExtensionAt
 
 variable {E} {Y : D} (h : E.IsPointwiseRightKanExtensionAt Y)
-  [HasLimit (StructuredArrow.proj Y L ⋙ F)]
+
+include h in
+lemma hom_ext' {T : H} {f g : T ⟶ E.left.obj Y}
+    (hfg : ∀ ⦃X : C⦄ (φ : Y ⟶ L.obj X),
+      f ≫ E.left.map φ ≫ E.hom.app X = g ≫ E.left.map φ ≫ E.hom.app X) : f = g :=
+  h.hom_ext (fun j ↦ hfg j.hom)
+
+variable [HasLimit (StructuredArrow.proj Y L ⋙ F)]
 
 /-- A pointwise right Kan extension of `F` along `L` applied to an object `Y` is isomorphic to
 `limit (StructuredArrow.proj Y L ⋙ F)`. -/
@@ -403,6 +434,14 @@ lemma isoLimit_inv_π (g : StructuredArrow Y L) :
   simpa using h.conePointUniqueUpToIso_inv_comp (limit.isLimit _) g
 
 end IsPointwiseRightKanExtensionAt
+
+/-- Given `E : Functor.RightExtension L F`, this is the property of objects where
+`E` is a pointwise right Kan extension. -/
+def isPointwiseRightKanExtensionAt : ObjectProperty D :=
+  fun Y ↦ Nonempty (E.IsPointwiseRightKanExtensionAt Y)
+
+instance : E.isPointwiseRightKanExtensionAt.IsClosedUnderIsomorphisms where
+  of_iso e h := ⟨E.isPointwiseRightKanExtensionAtOfIso' h.some e⟩
 
 /-- A right extension `E : RightExtension L F` is a pointwise right Kan extension when
 it is a pointwise right Kan extension at any object. -/
@@ -441,7 +480,7 @@ def IsPointwiseRightKanExtension.homTo (G : RightExtension L F) : G ⟶ E :=
         simpa using ((h Y₁).fac (coneAt G Y₁) ((StructuredArrow.map φ).obj X)).symm) }
     (by
       ext X
-      simpa using (h (L.obj X)).fac (RightExtension.coneAt G _) (StructuredArrow.mk (𝟙 _)) )
+      simpa using (h (L.obj X)).fac (RightExtension.coneAt G _) (StructuredArrow.mk (𝟙 _)))
 
 lemma IsPointwiseRightKanExtension.hom_ext
     {G : RightExtension L F} {f₁ f₂ : G ⟶ E} : f₁ = f₂ := by
@@ -451,7 +490,7 @@ lemma IsPointwiseRightKanExtension.hom_ext
   have eq₁ := congr_app (CostructuredArrow.w f₁) X.right
   have eq₂ := congr_app (CostructuredArrow.w f₂) X.right
   dsimp at eq₁ eq₂ ⊢
-  simp only [assoc, ← NatTrans.naturality_assoc, eq₁, eq₂]
+  simp only [← NatTrans.naturality_assoc, eq₁, eq₂]
 
 /-- A pointwise right Kan extension is universal, i.e. it is a right Kan extension. -/
 def IsPointwiseRightKanExtension.isUniversal : E.IsUniversal :=
@@ -546,7 +585,7 @@ def costructuredArrowMapCocone (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
     naturality := by simp [← G.map_comp] }
 
 @[simp]
-lemma pointwiseLeftKanExtension_desc_app (G : D ⥤ H) (α :  F ⟶ L ⋙ G) (Y : D) :
+lemma pointwiseLeftKanExtension_desc_app (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
     ((pointwiseLeftKanExtension L F).descOfIsLeftKanExtension (pointwiseLeftKanExtensionUnit L F)
       G α |>.app Y) = colimit.desc _ (costructuredArrowMapCocone L F G α Y) := by
   let β : L.pointwiseLeftKanExtension F ⟶ G :=

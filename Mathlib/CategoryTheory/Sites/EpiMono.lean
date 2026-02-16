@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Concrete
-import Mathlib.CategoryTheory.Sites.LocallyBijective
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Concrete
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 /-!
 # Morphisms of sheaves factor as a locally surjective followed by a locally injective morphism
@@ -19,11 +21,13 @@ Moreover, if we assume that the category of sheaves `Sheaf J A` is balanced
 
 -/
 
+@[expose] public section
+
 universe w v' u' v u
 
 namespace CategoryTheory
 
-open Category ConcreteCategory
+open Category ConcreteCategory Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   (A : Type u') [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type w}
@@ -35,11 +39,11 @@ namespace Sheaf
 
 /-- The class of locally injective morphisms of sheaves, see `Sheaf.IsLocallyInjective`. -/
 def locallyInjective : MorphismProperty (Sheaf J A) :=
-  fun _ _  f => IsLocallyInjective f
+  fun _ _ f => IsLocallyInjective f
 
 /-- The class of locally surjective morphisms of sheaves, see `Sheaf.IsLocallySurjective`. -/
 def locallySurjective : MorphismProperty (Sheaf J A) :=
-  fun _ _  f => IsLocallySurjective f
+  fun _ _ f => IsLocallySurjective f
 
 section
 

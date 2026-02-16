@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Flat.Localization
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Ideal.GoingDown
+module
+
+public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Ideal.GoingDown
 
 /-!
 # Flat ring homomorphisms
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Ideal.GoingDown
 In this file we define flat ring homomorphisms and show their meta properties.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -24,11 +28,9 @@ def RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+
   letI : Algebra R S := f.toAlgebra
   Module.Flat R S
 
-lemma flat_algebraMap_iff {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
+lemma RingHom.flat_algebraMap_iff {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
     (algebraMap R S).Flat ↔ Module.Flat R S := by
-  simp only [RingHom.Flat]
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [RingHom.Flat, toAlgebra_algebraMap]
 
 namespace RingHom.Flat
 
@@ -63,11 +65,8 @@ lemma respectsIso : RespectsIso Flat := by
 lemma isStableUnderBaseChange : IsStableUnderBaseChange Flat := by
   apply IsStableUnderBaseChange.mk respectsIso
   introv h
-  replace h : Module.Flat R T := by
-    rw [RingHom.Flat] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
-  suffices Module.Flat S (S ⊗[R] T) by
-    rw [RingHom.Flat]; convert this; congr; ext; simp_rw [Algebra.smul_def]; rfl
-  exact inferInstance
+  rw [flat_algebraMap_iff] at h ⊢
+  infer_instance
 
 lemma holdsForLocalizationAway : HoldsForLocalizationAway Flat := by
   introv R h
@@ -124,8 +123,38 @@ open PrimeSpectrum
 /-- `Spec S → Spec R` is generalizing if `R →+* S` is flat. -/
 lemma generalizingMap_comap {f : R →+* S} (hf : f.Flat) : GeneralizingMap (comap f) := by
   algebraize [f]
-  show GeneralizingMap (comap (algebraMap R S))
+  change GeneralizingMap (comap (algebraMap R S))
   rw [← Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap]
   infer_instance
 
+lemma of_isField (hR : IsField R) (f : R →+* S) : f.Flat := by
+  let := f.toAlgebra
+  let := hR.toField
+  rw [← f.algebraMap_toAlgebra, RingHom.flat_algebraMap_iff]
+  infer_instance
+
 end RingHom.Flat
+
+section
+
+open CategoryTheory Limits
+
+variable {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T)
+
+lemma CommRingCat.inr_injective_of_flat
+    (hf : Function.Injective f) (hg : g.hom.Flat) : Function.Injective (pushout.inr f g) := by
+  algebraize [f.hom, g.hom]
+  have : _ = pushout.inr f g := (CommRingCat.isPushout_tensorProduct R S T).inr_isoPushout_hom
+  rw [← this]
+  exact (CommRingCat.isPushout_tensorProduct R S T).isoPushout.commRingCatIsoToRingEquiv
+    |>.injective.comp (Algebra.TensorProduct.includeRight_injective (B := T) hf)
+
+lemma CommRingCat.inl_injective_of_flat
+    (hf : f.hom.Flat) (hg : Function.Injective g) : Function.Injective (pushout.inl f g) := by
+  algebraize [f.hom, g.hom]
+  have : _ = pushout.inl f g := (CommRingCat.isPushout_tensorProduct R S T).inl_isoPushout_hom
+  rw [← this]
+  exact (CommRingCat.isPushout_tensorProduct R S T).isoPushout.commRingCatIsoToRingEquiv
+    |>.injective.comp (Algebra.TensorProduct.includeLeft_injective (S := R) (A := S) hg)
+
+end

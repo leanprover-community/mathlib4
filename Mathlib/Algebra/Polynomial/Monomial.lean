@@ -3,12 +3,16 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Group.Nat.Hom
-import Mathlib.Algebra.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Hom
+public import Mathlib.Algebra.Polynomial.Basic
 
 /-!
 # Univariate monomials
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -37,7 +41,7 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
     refine ⟨n, f.coeff n, ?_⟩
     ext i
     by_cases hi : i = n
-    · simp [hi, coeff_monomial]
+    · simp [hi]
     · have : f.coeff i = 0 := by
         rw [← notMem_support_iff]
         exact fun hi' => hi (Finset.mem_singleton.1 (hn hi'))
@@ -53,7 +57,7 @@ theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a)
   set g' := g.comp (toFinsuppIso R).symm.toRingHom with hg'
   have A : f' = g' := by
     ext
-    simp [f', g', h₁, RingEquiv.toRingHom_eq_coe]
+    · simp [f', g', h₁, RingEquiv.toRingHom_eq_coe]
     simpa using h₂
   have B : f = f'.comp (toFinsuppIso R) := by
     rw [hf', RingHom.comp_assoc]

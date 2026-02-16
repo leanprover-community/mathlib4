@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.BialgCat.Basic
-import Mathlib.RingTheory.HopfAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Category.BialgCat.Basic
+public import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!
 # The category of Hopf algebras over a commutative ring
@@ -16,14 +18,18 @@ This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory
 
 universe v u
 
 variable (R : Type u) [CommRing R]
 
+set_option backward.privateInPublic true in
 /-- The category of `R`-Hopf algebras. -/
 structure HopfAlgCat where
+  private mk ::
   /-- The underlying type. -/
   carrier : Type v
   [instRing : Ring carrier]
@@ -41,6 +47,8 @@ instance : CoeSort (HopfAlgCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
 variable (R) in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The object in the category of `R`-Hopf algebras associated to an `R`-Hopf algebra. -/
 abbrev of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgCat R where

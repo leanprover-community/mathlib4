@@ -3,12 +3,14 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Order.Lattice
-import Mathlib.Data.List.Sort
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Logic.Equiv.Functor
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Order.RelSeries
+module
+
+public import Mathlib.Order.Lattice
+public import Mathlib.Data.List.Sort
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Logic.Equiv.Functor
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Order.RelSeries
 
 /-!
 # Jordan-Hölder Theorem
@@ -56,7 +58,7 @@ the Jordan-Hölder theorem for modules/groups and the API should be transferred 
 theorems in this file will have stronger versions for modules. There will also need to be an API for
 mapping composition series across homomorphisms. It is also probably possible to
 provide an instance of `JordanHolderLattice` for any `ModularLattice`, and in this case the
-Jordan-Hölder theorem will say that there is a well defined notion of length of a modular lattice.
+Jordan-Hölder theorem will say that there is a well-defined notion of length of a modular lattice.
 However an instance of `JordanHolderLattice` for a modular lattice will not be able to contain
 the correct notion of isomorphism for modules, so a separate instance for modules will still be
 required and this will clash with the instance for modular lattices, and so at least one of these
@@ -67,6 +69,8 @@ instances should not be a global instance.
 > be obtained via `ModularLattice`. This is not the case in `mathlib4`.
 > See `JordanHolderModule.instJordanHolderLattice`.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -131,7 +135,7 @@ the top. For a composition series `s`, `s.last` is the largest element of the se
 and `s.head` is the least element.
 -/
 abbrev CompositionSeries (X : Type u) [Lattice X] [JordanHolderLattice X] : Type u :=
-  RelSeries (IsMaximal (X := X))
+  RelSeries {(x, y) : X × X | IsMaximal x y}
 
 namespace CompositionSeries
 
@@ -157,25 +161,22 @@ theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) 
   rw [s.strictMono.le_iff_le, s.strictMono.le_iff_le]
   exact le_total i j
 
-theorem toList_sorted (s : CompositionSeries X) : s.toList.Sorted (· < ·) :=
-  List.pairwise_iff_get.2 fun i j h => by
-    dsimp only [RelSeries.toList]
-    rw [List.get_ofFn, List.get_ofFn]
-    exact s.strictMono h
+theorem toList_sorted (s : CompositionSeries X) : s.toList.SortedLT :=
+  List.IsChain.sortedLT <| by
+    simp_rw [List.isChain_iff_getElem, s.toList_getElem]
+    exact fun _ _ => s.strictMono (Nat.lt_succ_self _)
 
 theorem toList_nodup (s : CompositionSeries X) : s.toList.Nodup :=
   s.toList_sorted.nodup
 
 /-- Two `CompositionSeries` are equal if they have the same elements. See also `ext_fun`. -/
 @[ext]
-theorem ext {s₁ s₂ : CompositionSeries X} (h : ∀ x, x ∈ s₁ ↔ x ∈ s₂) : s₁ = s₂ :=
-  toList_injective <|
-    List.eq_of_perm_of_sorted
-      (by
-        classical
-        exact List.perm_of_nodup_nodup_toFinset_eq s₁.toList_nodup s₂.toList_nodup
-          (Finset.ext <| by simpa only [List.mem_toFinset, RelSeries.mem_toList]))
-      s₁.toList_sorted s₂.toList_sorted
+theorem ext {s₁ s₂ : CompositionSeries X} (h : ∀ x, x ∈ s₁ ↔ x ∈ s₂) : s₁ = s₂ := by
+  classical
+  apply toList_injective <|
+    (List.perm_of_nodup_nodup_toFinset_eq s₁.toList_nodup s₂.toList_nodup _).eq_of_pairwise'
+    s₁.toList_sorted.pairwise s₂.toList_sorted.pairwise
+  simpa only [Finset.ext_iff, List.mem_toFinset, RelSeries.mem_toList]
 
 @[simp]
 theorem le_last {s : CompositionSeries X} (i : Fin (s.length + 1)) : s i ≤ s.last :=
@@ -196,7 +197,6 @@ theorem head_le_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : s.head
 theorem last_eraseLast_le (s : CompositionSeries X) : s.eraseLast.last ≤ s.last := by
   simp [eraseLast, last, s.strictMono.le_iff_le, Fin.le_iff_val_le_val]
 
-open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
     (hx : x ≠ s.last) (hxs : x ∈ s) : x ∈ s.eraseLast := by
   rcases hxs with ⟨i, rfl⟩
@@ -204,18 +204,14 @@ theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
     conv_rhs => rw [← Nat.succ_sub (length_pos_of_nontrivial ⟨_, ⟨i, rfl⟩, _, s.last_mem, hx⟩),
       Nat.add_one_sub_one]
     exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [last, s.inj, Fin.ext_iff] using hx)
-  -- TODO: This can surely be improved: there is a double coercion hidden here:
-  refine ⟨Fin.castSucc (n := s.length + 1) i, ?_⟩
-  simp [Fin.ext_iff, Nat.mod_eq_of_lt hi]
+  exact ⟨⟨↑i, hi⟩, by simp⟩
 
 theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
     x ∈ s.eraseLast ↔ x ≠ s.last ∧ x ∈ s := by
   simp only [RelSeries.mem_def, eraseLast]
   constructor
   · rintro ⟨i, rfl⟩
-    have hi : (i : ℕ) < s.length := by
-      conv_rhs => rw [← Nat.add_one_sub_one s.length, Nat.succ_sub h]
-      exact i.2
+    have hi : (i : ℕ) < s.length := by lia
     simp [last, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
   · intro h
     exact mem_eraseLast_of_ne_of_mem h.1 h.2
@@ -226,10 +222,11 @@ theorem lt_last_of_mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.le
 
 theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
-  have : s.length - 1 + 1 = s.length := by
-    conv_rhs => rw [← Nat.add_one_sub_one s.length]; rw [Nat.succ_sub h]
   rw [last_eraseLast, last]
-  convert s.step ⟨s.length - 1, by omega⟩; ext; simp [this]
+  have := s.step ⟨s.length - 1, by lia⟩
+  simp only [Fin.castSucc_mk, Fin.succ_mk, mem_setOf_eq] at this
+  convert this using 3
+  exact (tsub_add_cancel_of_le h).symm
 
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
     s = snoc (eraseLast s) s.last (isMaximal_eraseLast_last h) := by

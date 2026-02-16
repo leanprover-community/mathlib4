@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
-import Mathlib.CategoryTheory.Sites.LocallyBijective
-import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
-import Mathlib.CategoryTheory.Sites.Whiskering
+module
+
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
+public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
+
 /-!
 # Equivalences of sheaf categories
 
@@ -36,6 +38,8 @@ sufficiently small limits in the sheaf category on the essentially small site.
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ w
 
 namespace CategoryTheory
@@ -53,8 +57,7 @@ instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
     let e := (asEquivalence G).symm
     convert J.top_mem U
     ext Y f
-    simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, exists_and_left,
-      Sieve.top_apply, iff_true]
+    simp only [Sieve.top_apply, iff_true]
     let g : e.inverse.obj _ ⟶ U := (e.unitInv.app Y) ≫ f
     have : (Sieve.coverByImage e.inverse U).arrows g := Presieve.in_coverByImage _ g
     replace := Sieve.downward_closed _ this (e.unit.app Y)
@@ -73,6 +76,26 @@ lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
     K = e.inverse.inducedTopology J := by
   ext
   exact (e.inverse.functorPushforward_mem_iff K J).symm
+
+lemma isDenseSubsite_functor_of_isCocontinuous
+    [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
+    e.functor.IsDenseSubsite J K where
+  functorPushforward_mem_iff {X S} := by
+    constructor
+    · intro H
+      refine J.superset_covering ?_ (e.functor.cover_lift J K H)
+      rw [(Sieve.fullyFaithfulFunctorGaloisCoinsertion e.functor X).u_l_eq S]
+    · intro H
+      refine K.superset_covering ?_
+        (e.inverse.cover_lift K J (J.pullback_stable (e.unitInv.app X) H))
+      exact fun Y f (H : S _) ↦ ⟨_, _, e.counitInv.app Y, H, by simp⟩
+
+lemma isDenseSubsite_inverse_of_isCocontinuous
+    [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
+    e.inverse.IsDenseSubsite K J :=
+  have : e.symm.functor.IsCocontinuous K J := inferInstanceAs (e.inverse.IsCocontinuous _ _)
+  have : e.symm.inverse.IsCocontinuous J K := inferInstanceAs (e.functor.IsCocontinuous _ _)
+  isDenseSubsite_functor_of_isCocontinuous _ _ e.symm
 
 variable [e.inverse.IsDenseSubsite K J]
 
@@ -109,6 +132,7 @@ def sheafCongr.counitIso : inverse J K e A ⋙ functor J K e A ≅ 𝟭 (Sheaf _
     Sheaf.hom_ext _ _ (isoWhiskerRight e.op.counitIso F.val).inv_hom_id⟩ ) (by aesop)
 
 /-- The equivalence of sheaf categories. -/
+@[simps]
 def sheafCongr : Sheaf J A ≌ Sheaf K A where
   functor := sheafCongr.functor J K e A
   inverse := sheafCongr.inverse J K e A
@@ -136,7 +160,6 @@ noncomputable
 def transportIsoSheafToPresheaf : (e.sheafCongr J K A).functor ⋙
     sheafToPresheaf K A ⋙ e.op.congrLeft.inverse ≅ sheafToPresheaf J A :=
   NatIso.ofComponents (fun F ↦ isoWhiskerRight e.op.unitIso.symm F.val)
-    (by intros; ext; simp [Equivalence.sheafCongr])
 
 /-- Transporting and sheafifying is left adjoint to taking the underlying presheaf. -/
 noncomputable
@@ -153,7 +176,7 @@ include K e in
 theorem hasSheafify : HasSheafify J A :=
   HasSheafify.mk' J A (transportSheafificationAdjunction J K e A)
 
-variable {A : Type*} [Category A] {B : Type*} [Category B] (F : A ⥤ B)
+variable {A : Type*} [Category* A] {B : Type*} [Category* B] (F : A ⥤ B)
   [K.HasSheafCompose F]
 
 include K e in
@@ -189,13 +212,14 @@ noncomputable
 def smallSheafificationAdjunction : smallSheafify J A ⊣ sheafToPresheaf J A :=
   (equivSmallModel C).transportSheafificationAdjunction J _ A
 
-noncomputable instance hasSheafifyEssentiallySmallSite : HasSheafify J A :=
+lemma hasSheafifyEssentiallySmallSite : HasSheafify J A :=
   (equivSmallModel C).hasSheafify J ((equivSmallModel C).inverse.inducedTopology J) A
 
 instance hasSheafComposeEssentiallySmallSite : HasSheafCompose J F :=
   (equivSmallModel C).hasSheafCompose J ((equivSmallModel C).inverse.inducedTopology J) F
 
-instance hasLimitsEssentiallySmallSite
+omit [HasSheafify ((equivSmallModel C).inverse.inducedTopology J) A] in
+lemma hasLimitsEssentiallySmallSite
     [HasLimits <| Sheaf ((equivSmallModel C).inverse.inducedTopology J) A] :
     HasLimitsOfSize.{max v₃ w, max v₃ w} <| Sheaf J A :=
   Adjunction.has_limits_of_equivalence ((equivSmallModel C).sheafCongr J
@@ -223,10 +247,10 @@ lemma W_inverseImage_whiskeringLeft :
     K.W.inverseImage ((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op) = J.W := by
   ext P Q f
   have h₁ : K.W (A := A) =
-    Localization.LeftBousfield.W (· ∈ Set.range (sheafToPresheaf J A ⋙
+    ObjectProperty.isLocal (· ∈ Set.range (sheafToPresheaf J A ⋙
       ((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op)).obj) := by
-    rw [W_eq_W_range_sheafToPresheaf_obj, ← LeftBousfield.W_isoClosure]
-    conv_rhs => rw [← LeftBousfield.W_isoClosure]
+    rw [W_eq_isLocal_range_sheafToPresheaf_obj, ← ObjectProperty.isoClosure_isLocal]
+    conv_rhs => rw [← ObjectProperty.isoClosure_isLocal]
     apply congr_arg
     ext P
     constructor
@@ -243,7 +267,7 @@ lemma W_inverseImage_whiskeringLeft :
     exact Function.Bijective.of_comp_iff'
       (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G P R.val R.cond)
         (fun g ↦ f ≫ g)
-  rw [h₁, J.W_eq_W_range_sheafToPresheaf_obj, MorphismProperty.inverseImage_iff]
+  rw [h₁, J.W_eq_isLocal_range_sheafToPresheaf_obj, MorphismProperty.inverseImage_iff]
   constructor
   · rintro h _ ⟨R, rfl⟩
     exact (h₂ R).1 (h _ ⟨R, rfl⟩)
@@ -284,7 +308,8 @@ lemma WEqualsLocallyBijective.transport (hG : CoverPreserving K J G) :
 variable [EssentiallySmall.{w} C]
   [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) A]
 
-instance [((equivSmallModel C).inverse.inducedTopology J).WEqualsLocallyBijective A] :
+lemma WEqualsLocallyBijective.ofEssentiallySmall
+    [((equivSmallModel C).inverse.inducedTopology J).WEqualsLocallyBijective A] :
     J.WEqualsLocallyBijective A :=
   WEqualsLocallyBijective.transport J ((equivSmallModel C).inverse.inducedTopology J)
     (equivSmallModel C).inverse (IsDenseSubsite.coverPreserving _ _ _)

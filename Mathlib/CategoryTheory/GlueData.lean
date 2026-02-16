@@ -3,11 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
-import Mathlib.CategoryTheory.Limits.Types.Shapes
+module
+
+public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
 /-!
 # Gluing data
@@ -17,6 +19,8 @@ provide the API to realize it as a multispan diagram, and also state lemmas abou
 interaction with a functor that preserves certain pullbacks.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -198,7 +202,7 @@ theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
         (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
   rcases (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
   exact ⟨i, y, by
-    simp [← Multicoequalizer.ι_sigmaπ]
+    simp
     rfl ⟩
 
 variable (F : C ⥤ C')
@@ -220,7 +224,7 @@ def mapGlueData : GlueData C' where
   f_id _ := inferInstance
   t i j := F.map (D.t i j)
   t_id i := by
-    simp [D.t_id i]
+    simp
   t' i j k :=
     (PreservesPullback.iso F (D.f i j) (D.f i k)).inv ≫
       F.map (D.t' i j k) ≫ (PreservesPullback.iso F (D.f j k) (D.f j i)).hom
@@ -239,15 +243,7 @@ def diagramIso : D.diagram.multispan ⋙ F ≅ (D.mapGlueData F).diagram.multisp
       | WalkingMultispan.left _ => Iso.refl _
       | WalkingMultispan.right _ => Iso.refl _)
     (by
-      rintro (⟨_, _⟩ | _) _ (_ | _ | _)
-      · erw [Category.comp_id, Category.id_comp, Functor.map_id]
-        rfl
-      · erw [Category.comp_id, Category.id_comp]
-        rfl
-      · erw [Category.comp_id, Category.id_comp, Functor.map_comp]
-        rfl
-      · erw [Category.comp_id, Category.id_comp, Functor.map_id]
-        rfl)
+      rintro (⟨_, _⟩ | _) _ (_ | _ | _) <;> simp)
 
 @[simp]
 theorem diagramIso_app_left (i : D.J × D.J) :
@@ -302,11 +298,8 @@ def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
 
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
-  haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
   erw [ι_preservesColimitIso_hom_assoc]
-  rw [HasColimit.isoOfNatIso_ι_hom]
-  erw [Category.id_comp]
-  rfl
+  simp [GlueData.ι]
 
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_inv (i : D.J) : (D.mapGlueData F).ι i ≫ (D.gluedIso F).inv = F.map (D.ι i) := by
@@ -394,15 +387,15 @@ instance (D : GlueData' C) (i : D.J) :
 instance (D : GlueData' C) (i j k : D.J) :
     HasPullback (D.f' i j) (D.f' i k) := by
   if hij : i = j then
-    apply (config := { allowSynthFailures := true }) hasPullback_of_left_iso
+    apply +allowSynthFailures hasPullback_of_left_iso
     simp only [GlueData'.f', dif_pos hij]
     infer_instance
   else if hik : i = k then
-    apply (config := { allowSynthFailures := true }) hasPullback_of_right_iso
+    apply +allowSynthFailures hasPullback_of_right_iso
     simp only [GlueData'.f', dif_pos hik]
     infer_instance
   else
-    have {X Y Z : C} (f : X ⟶ Y) (e : Z = X) : HEq (eqToHom e ≫ f) f := by subst e; simp
+    have {X Y Z : C} (f : X ⟶ Y) (e : Z = X) : eqToHom e ≫ f ≍ f := by subst e; simp
     convert D.f_hasPullback i j k hij hik <;> simp [GlueData'.f', hij, hik, this]
 
 open scoped Classical in
@@ -420,7 +413,7 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
       eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
   else if hjk : j = k then
     have : IsIso (pullback.snd (D.f' j k) (D.f' j i)) := by
-      apply (config := { allowSynthFailures := true }) pullback_snd_iso_of_left_iso
+      apply +allowSynthFailures pullback_snd_iso_of_left_iso
       simp only [hjk, GlueData'.f', ↓reduceDIte]
       infer_instance
     pullback.fst _ _ ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫
@@ -471,7 +464,7 @@ def GlueData.ofGlueData' (D : GlueData' C) : GlueData C where
       ext <;> simp [hij, Ne.symm hij, fst_eq_snd_of_mono_eq, pullback.condition_assoc]
     else if hjk : j = k then
       subst hjk
-      ext <;> simp [hij, Ne.symm hij, fst_eq_snd_of_mono_eq, pullback.condition_assoc]
+      ext <;> simp [hij, Ne.symm hij, fst_eq_snd_of_mono_eq]
     else
       ext <;> simp [hij, Ne.symm hij, hik, Ne.symm hik, hjk, Ne.symm hjk,
         pullback.map_comp_assoc]

@@ -2,12 +2,16 @@
 import sys
 import zulip
 import re
+import json
 
 # Usage:
-# python scripts/zulip_emoji_reactions.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $ACTION $LABEL_NAME $PR_NUMBER
+# python scripts/zulip_emoji_reactions.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $ACTION $LABEL_NAME $PR_NUMBER $LABELS_TO_KEEP
 # The first three variables identify the lean4 Zulip chat and allow the bot to access it
 # (see .github/workflows/zulip_emoji_merge_delegate.yaml),
 # see the comment below for a description of $ACTION and $LABEL_NAME.
+# $LABELS_TO_KEEP is optional, but if present, should be a JSON array of GitHub PR label names
+# Emoji reactions that correspond to these labels will not be removed
+# (see .github/workflows/zulip_emoji_labelling.yaml)
 
 ZULIP_API_KEY = sys.argv[1]
 ZULIP_EMAIL = sys.argv[2]
@@ -23,6 +27,8 @@ ZULIP_SITE = sys.argv[3]
 #   command), it is 'ready-to-merge' or 'delegated'. On a bors merge-, bors r- or bors d- command,
 #   it is 'remove-label'. (This particular value is not used in this script.)
 #   Note that `bors d-` is *not* a bors command, so only has an effect on mathlib's PR labels.
+# - if CI status changed, it is 'ci-running', 'ci-success', 'ci-failure', or 'ci-cancelled'
+#   (see .github/workflows/zulip_emoji_ci_status.yaml)
 ACTION = sys.argv[4]
 # Name of the label that was applied or removed
 # (if applicable; is 'none' if a PR was closed, reopened or merged)
@@ -32,6 +38,17 @@ PR_NUMBER = sys.argv[6]
 print(f"ACTION: '{ACTION}'")
 print(f"LABEL_NAME: '{LABEL_NAME}'")
 print(f"PR_NUMBER: '{PR_NUMBER}'")
+try:
+    LABELS_TO_KEEP = sys.argv[7]
+    print(f"Attempting to parse LABELS_TO_KEEP: '{LABELS_TO_KEEP}")
+    LABELS_TO_KEEP = json.loads(LABELS_TO_KEEP)
+    assert isinstance(LABELS_TO_KEEP, list)
+    assert '' not in LABELS_TO_KEEP
+except:
+    print(f"parsing LABELS_TO_KEEP failed; setting to empty list")
+    # an empty list is a good default since we remove reactions if the label is `not in LABELS_TO_KEEP`
+    LABELS_TO_KEEP = []
+print(f"LABELS_TO_KEEP: '{LABELS_TO_KEEP}'")
 
 # Initialize Zulip client
 client = zulip.Client(
@@ -80,7 +97,7 @@ print(f"Searching for: '{urlPR}'")
 first_by_subject = {}
 
 for message in messages:
-    if message['display_recipient'] == 'rss':
+    if message['display_recipient'] == 'rss' and message['subject'] != 'mathlib bors notifications':
         continue
     content = message['content']
     # Check for emoji reactions
@@ -95,20 +112,31 @@ for message in messages:
     has_awaiting_author = has_reaction('writing')
     has_maintainer_merge = has_reaction('hammer')
     has_closed = has_reaction('closed-pr')
+    has_ci_running = has_reaction('yellow')
+    has_ci_success = has_reaction('check')
+    has_ci_failure = has_reaction('cross_mark')
     first_in_thread = hashPR.search(message['subject']) and message['display_recipient'] == 'PR reviews' and message['subject'] not in first_by_subject
     first_by_subject[message['subject']] = message['id']
     match = urlPR.search(content) or first_in_thread
     if match:
         print(f"matched: '{message}'")
 
-        def remove_reaction(name: str, emoji_name: str, **kwargs) -> None:
-            print(f'Removing {name}')
-            result = client.remove_reaction({
-                "message_id": message['id'],
-                "emoji_name": emoji_name,
-                **kwargs
-            })
-            print(f"result: '{result}'")
+        # name: a description of the emoji to be removed
+        # emoji_name: the emoji name as used on Zulip
+        # label_name: the name of the corresponding PR label, if present in LABELS_TO_KEEP, we do not remove the reaction
+        # if there is no corresponding label (e.g. for the "closed-pr" reaction) then this should be an empty string ""
+        # additional arguments will be passed to the zulip library remove_reaction function
+        def remove_reaction(name: str, emoji_name: str, label_name: str, **kwargs) -> None:
+            if label_name not in LABELS_TO_KEEP:
+                print(f'Removing {name}')
+                result = client.remove_reaction({
+                    "message_id": message['id'],
+                    "emoji_name": emoji_name,
+                    **kwargs
+                })
+                print(f"result: '{result}'")
+            else:
+                print(f'The "{label_name}" label is present, so we will not remove the "{name}" reaction.')
         def add_reaction(name: str, emoji_name: str) -> None:
             print(f'adding {name} emoji')
             client.add_reaction({
@@ -116,31 +144,54 @@ for message in messages:
                 "emoji_name": emoji_name
             })
 
+        # CI status emojis are mutually exclusive with each other
+        # but independent of PR status emojis.
+        if ACTION.startswith('ci-'):
+            if has_ci_running:
+                remove_reaction('ci-running', 'yellow', '')
+            if has_ci_success:
+                remove_reaction('ci-success', 'check', '')
+            if has_ci_failure:
+                remove_reaction('ci-failure', 'cross_mark', '')
+            match ACTION:
+                case 'ci-running':
+                    add_reaction('ci-running', 'yellow')
+                case 'ci-success':
+                    add_reaction('ci-success', 'check')
+                case 'ci-failure':
+                    add_reaction('ci-failure', 'cross_mark')
+            continue
+
         # The maintainer merge label is different from the others, as it is not mutually exclusive
         # with them: just add or remove it manually and leave the other emojis alone.
         if LABEL_NAME == "maintainer-merge" and message['display_recipient'] != 'mathlib reviewers':
             if ACTION == "labeled":
                 add_reaction('maintainer-merge', 'hammer')
             elif ACTION == "unlabeled":
-                remove_reaction('maintainer-merge', 'hammer')
+                remove_reaction('maintainer-merge', 'hammer', 'maintainer-merge')
             continue
 
         # We should never remove any "this PR was migrated from a fork" reaction.
 
-        # Otherwise, remove all previous mutually exclusive emoji reactions.
+        # Otherwise, remove all previous mutually exclusive emoji reactions (unless
+        # LABELS_TO_KEEP contains the corresponding label). This is because otherwise this script
+        # may end up removing reactions that are still relevant. See PR https://github.com/leanprover-community/mathlib4/issues/27570
+        # Note that the 'merge' and 'closed-pr' reactions do not have a corresponding label,
+        # so we pass the empty string (which will never be in LABELS_TO_KEEP) so that they are
+        # always removed.
         # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
         print("Removing previous reactions, if present.")
         if has_peace_sign:
-            remove_reaction('delegated', 'peace_sign')
+            remove_reaction('delegated', 'peace_sign', 'delegated')
         if has_bors:
-            remove_reaction("bors", "bors", emoji_code="22134", reaction_type="realm_emoji")
+            remove_reaction("bors", "bors", "ready-to-merge", emoji_code="22134", reaction_type="realm_emoji")
         if has_merge:
-            remove_reaction('merge', 'merge')
+            remove_reaction('merge', 'merge', "")
         if has_awaiting_author:
-            remove_reaction('awaiting-author', 'writing')
+            remove_reaction('awaiting-author', 'writing', 'awaiting-author')
         if has_closed:
             # 61282 was the earlier version of the emoji.
-            remove_reaction('closed-pr', 'closed-pr', emoji_code="61293", reaction_type="realm_emoji")
+            remove_reaction('closed-pr', 'closed-pr', '', emoji_code="61293", reaction_type="realm_emoji")
 
         # Apply the appropriate emoji reaction.
         print("Applying reactions, as appropriate.")

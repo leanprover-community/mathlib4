@@ -3,10 +3,11 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.DualNumber
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Algebra.DualNumber
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Algebraic properties of dual numbers
@@ -18,6 +19,8 @@ import Mathlib.RingTheory.Nilpotent.Defs
   ring.
 
 -/
+
+@[expose] public section
 
 namespace TrivSqZeroExt
 
@@ -95,7 +98,7 @@ variable {K : Type*}
 instance [DivisionRing K] : IsLocalRing K[ε] where
   isUnit_or_isUnit_of_add_one {a b} h := by
     rw [add_comm, ← eq_sub_iff_add_eq] at h
-    rcases eq_or_ne (fst a) 0 with ha|ha <;>
+    rcases eq_or_ne (fst a) 0 with ha | ha <;>
     simp [isUnit_iff_isUnit_fst, h, ha]
 
 lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
@@ -104,7 +107,7 @@ lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
   refine (eq_or_ne I ⊤).symm.imp_left fun ht ↦ ?_
   have hd : ∀ x ∈ I, ε ∣ x := by
     intro x hxI
-    rcases isUnit_or_isNilpotent x with hx|hx
+    rcases isUnit_or_isNilpotent x with hx | hx
     · exact absurd (Ideal.eq_top_of_isUnit_mem _ hxI hx) ht
     · rwa [← isNilpotent_iff_eps_dvd]
   have hd' : ∀ x ∈ I, x ≠ 0 → ∃ r, ε = r * x := by
@@ -132,7 +135,7 @@ lemma isMaximal_span_singleton_eps [DivisionRing K] :
     (Ideal.span {ε} : Ideal K[ε]).IsMaximal := by
   refine ⟨?_, fun I hI ↦ ?_⟩
   · simp [ne_eq, Ideal.eq_top_iff_one, Ideal.mem_span_singleton', TrivSqZeroExt.ext_iff]
-  · rcases ideal_trichotomy I with rfl|rfl|rfl <;>
+  · rcases ideal_trichotomy I with rfl | rfl | rfl <;>
     first | simp at hI | simp
 
 lemma maximalIdeal_eq_span_singleton_eps [Field K] :
@@ -141,17 +144,17 @@ lemma maximalIdeal_eq_span_singleton_eps [Field K] :
 
 instance [DivisionRing K] : IsPrincipalIdealRing K[ε] where
   principal I := by
-    rcases ideal_trichotomy I with rfl|rfl|rfl
+    rcases ideal_trichotomy I with rfl | rfl | rfl
     · exact bot_isPrincipal
     · exact ⟨_, rfl⟩
     · exact top_isPrincipal
 
 lemma exists_mul_left_or_mul_right [DivisionRing K] (a b : K[ε]) :
     ∃ c, a * c = b ∨ b * c = a := by
-  rcases isUnit_or_isNilpotent a with ha|ha
+  rcases isUnit_or_isNilpotent a with ha | ha
   · lift a to K[ε]ˣ using ha
     exact ⟨a⁻¹ * b, by simp⟩
-  rcases isUnit_or_isNilpotent b with hb|hb
+  rcases isUnit_or_isNilpotent b with hb | hb
   · lift b to K[ε]ˣ using hb
     exact ⟨b⁻¹ * a, by simp⟩
   rw [isNilpotent_iff_eps_dvd] at ha hb
@@ -159,11 +162,11 @@ lemma exists_mul_left_or_mul_right [DivisionRing K] (a b : K[ε]) :
   obtain ⟨y, rfl⟩ := hb
   suffices ∃ c, fst x * fst c = fst y ∨ fst y * fst c = fst x by
     simpa [TrivSqZeroExt.ext_iff] using this
-  rcases eq_or_ne (fst x) 0 with hx|hx
+  rcases eq_or_ne (fst x) 0 with hx | hx
   · refine ⟨ε, Or.inr ?_⟩
     simp [hx]
   refine ⟨inl ((fst x)⁻¹ * fst y), ?_⟩
-  simp [← inl_mul, ← mul_assoc, mul_inv_cancel₀ hx]
+  simp [← mul_assoc, mul_inv_cancel₀ hx]
 
 end Field
 

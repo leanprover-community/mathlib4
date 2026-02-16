@@ -3,9 +3,11 @@ Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
 /-!
 # Coskeletal simplicial objects
@@ -22,6 +24,8 @@ then when `X` is `n`-coskeletal, the unit of `coskAdj n` defines an isomorphism:
 
 TODO: Prove that `X` is `n`-coskeletal whenever a certain canonical cone is a limit cone.
 -/
+
+@[expose] public section
 
 open Opposite
 

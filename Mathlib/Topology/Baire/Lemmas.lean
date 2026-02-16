@@ -3,7 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.GDelta.Basic
+module
+
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Topology.GDelta.Basic
+public import Mathlib.Topology.Constructions
 
 /-!
 # Baire spaces
@@ -15,7 +19,7 @@ and all locally compact regular spaces are Baire spaces.
 We prove the theorems in `Mathlib/Topology/Baire/CompleteMetrizable`
 and `Mathlib/Topology/Baire/LocallyCompactRegular`.
 
-In this file we prove various corollaries of Baire theorems.
+In this file we prove some lemmas about Baire spaces.
 
 The good concept underlying the theorems is that of a Gδ set, i.e., a countable intersection
 of open sets. Then Baire theorem can also be formulated as the fact that a countable
@@ -25,6 +29,8 @@ covered by a countable union of closed sets, then the union of their interiors i
 
 We also prove that in Baire spaces, the `residual` sets are exactly those containing a dense Gδ set.
 -/
+
+public section
 
 
 noncomputable section
@@ -36,12 +42,73 @@ variable {X α : Type*} {ι : Sort*}
 
 section BaireTheorem
 
-variable [TopologicalSpace X] [BaireSpace X]
+variable [TopologicalSpace X]
+
+/-- The intersection of finitely many open dense sets is dense. -/
+theorem Set.Finite.dense_sInter {s : Set (Set X)} (hs : s.Finite)
+    (ho : ∀ t ∈ s, IsOpen t) (hd : ∀ t ∈ s, Dense t) : Dense (⋂₀ s) := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp [sInter_empty]
+  | insert ha hsf ih =>
+    simp only [sInter_insert, forall_mem_insert] at hd ⊢
+    refine hd.1.inter_of_isOpen_right ?_ (hsf.isOpen_sInter (fun y hy => ho y (Or.inr hy)))
+    exact ih ((fun y hy => ho y (Or.inr hy))) (fun y hy => hd.2 y hy)
+
+/-- A finite set is Baire. -/
+theorem baire_of_finite [Finite X] : BaireSpace X where
+  baire_property f _ _ := sInter_range f ▸ (toFinite (range f)).dense_sInter (by grind) (by grind)
+
+variable [BaireSpace X]
 
 /-- Definition of a Baire space. -/
 theorem dense_iInter_of_isOpen_nat {f : ℕ → Set X} (ho : ∀ n, IsOpen (f n))
     (hd : ∀ n, Dense (f n)) : Dense (⋂ n, f n) :=
   BaireSpace.baire_property f ho hd
+
+/-- A dense Gδ subset of a Baire space is Baire. -/
+theorem IsGδ.baireSpace_of_dense {s : Set X} (hG : IsGδ s) (hd : Dense s) : BaireSpace s := by
+  constructor
+  intro f hof hdf
+  obtain ⟨V, hV⟩ : ∃ V : ℕ → Set X, (∀ n, IsOpen (V n)) ∧ s = ⋂ n, V n := eq_iInter_nat hG
+  choose g hg1 hg2 hg3 using fun n => exists_open_dense_of_open_dense_subtype hd (hof n) (hdf n)
+  have h_inter_dense : Dense (⋂ n, g n ∩ V n) := BaireSpace.baire_property (fun n ↦ g n ∩ V n)
+    (fun n => (hg1 n).inter (hV.1 n))
+    (fun n => (hg2 n).inter_of_isOpen_left (hd.mono (by simp [hV.2, iInter_subset])) (hg1 n))
+  have h_inter_eq : ⋂ n, g n ∩ V n = ⋂ n, f n := by ext; simp_all; grind
+  exact Subtype.dense_iff.mpr fun a _ ↦ h_inter_eq ▸ h_inter_dense a
+
+/-- If `p : Y → X` is an open embedding and `X` is a Baire space, then `Y` is a Baire space. -/
+theorem Topology.IsOpenEmbedding.baireSpace {Y : Type*} [TopologicalSpace Y] {p : Y → X}
+    (hp : Topology.IsOpenEmbedding p) : BaireSpace Y := by
+  constructor
+  intro f hof hdf
+  let s := range p
+  let c := fun n : ℕ => p '' f n ∪ (closure s)ᶜ
+  have c_open (n : ℕ) : IsOpen (c n) := IsOpen.union (hp.isOpenMap (f n) (hof n))
+    isClosed_closure.isOpen_compl
+  have c_dense (n : ℕ) : Dense (c n) := by
+    rw [dense_iff_closure_eq, subset_antisymm_iff]
+    have : univ ⊆ closure (c n) := calc
+      _ ⊆ (interior (closure s)) ∪ (interior (closure s))ᶜ := by grind
+      _ ⊆ closure s ∪ (interior (closure s))ᶜ := by gcongr; exact interior_subset
+      _ ⊆ closure (p '' f n) ∪ (interior (closure s))ᶜ := union_subset_union
+          (closure_minimal (hp.continuous.range_subset_closure_image_dense (hdf n))
+          isClosed_closure) (subset_refl (interior (closure s))ᶜ)
+      _ ⊆ closure (p '' f n) ∪ closure ((closure s)ᶜ) := union_subset_union (by simp) (by simp)
+      _ = closure (c n) := closure_union.symm
+    grind
+  have c_inter_dense : Dense (⋂ n, c n) := dense_iInter_of_isOpen_nat c_open c_dense
+  have c_inter_eq : ⋂ n, f n = p ⁻¹' (⋂ n, c n) := by
+    ext x
+    simp only [mem_iInter, mem_preimage, mem_union, mem_compl_iff, c]
+    refine ⟨fun h i => by grind, fun h i => ?_⟩
+    exact hp.injective.mem_set_image.mp (imp_iff_or_not.mpr (h i)
+      (subset_closure (mem_range_self x)))
+  exact c_inter_eq ▸ Dense.preimage c_inter_dense hp.isOpenMap
+
+/-- An open subset of a Baire space is Baire. -/
+theorem IsOpen.baireSpace {s : Set X} (hO : IsOpen s) : BaireSpace s :=
+  hO.isOpenEmbedding_subtypeVal.baireSpace
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with ⋂₀. -/
 theorem dense_sInter_of_isOpen {S : Set (Set X)} (ho : ∀ s ∈ S, IsOpen s) (hS : S.Countable)
@@ -83,6 +150,16 @@ theorem eventually_residual {p : X → Prop} :
 theorem dense_of_mem_residual {s : Set X} (hs : s ∈ residual X) : Dense s :=
   let ⟨_, hts, _, hd⟩ := mem_residual.1 hs
   hd.mono hts
+
+/--
+In a Baire space, every nonempty open set is non‐meagre,
+that is, it cannot be written as a countable union of nowhere‐dense sets.
+-/
+theorem not_isMeagre_of_isOpen {s : Set X} (hs : IsOpen s) (hne : s.Nonempty) : ¬ IsMeagre s := by
+  intro h
+  obtain ⟨x, hx, hxc⟩ :=
+    (dense_of_mem_residual (by rwa [IsMeagre] at h)).inter_open_nonempty s hs hne
+  exact hxc hx
 
 /-- Baire theorem: a countable intersection of dense Gδ sets is dense. Formulated here with ⋂₀. -/
 theorem dense_sInter_of_Gδ {S : Set (Set X)} (ho : ∀ s ∈ S, IsGδ s) (hS : S.Countable)
@@ -161,10 +238,27 @@ theorem dense_iUnion_interior_of_closed [Countable ι] {f : ι → Set X} (hc : 
     (hU : ⋃ i, f i = univ) : Dense (⋃ i, interior (f i)) :=
   IsGδ.univ.dense_iUnion_interior_of_closed dense_univ hc hU.ge
 
+variable [Nonempty X]
+
 /-- One of the most useful consequences of Baire theorem: if a countable union of closed sets
 covers the space, then one of the sets has nonempty interior. -/
-theorem nonempty_interior_of_iUnion_of_closed [Nonempty X] [Countable ι] {f : ι → Set X}
+theorem nonempty_interior_of_iUnion_of_closed [Countable ι] {f : ι → Set X}
     (hc : ∀ i, IsClosed (f i)) (hU : ⋃ i, f i = univ) : ∃ i, (interior <| f i).Nonempty := by
   simpa using (dense_iUnion_interior_of_closed hc hU).nonempty
+
+/-- In a nonempty Baire space, any dense `Gδ` set is not meagre. -/
+theorem not_isMeagre_of_isGδ_of_dense {s : Set X} (hs : IsGδ s) (hd : Dense s) :
+    ¬ IsMeagre s := by
+  intro h
+  rcases (mem_residual).1 h with ⟨t, hts, htG, hd'⟩
+  rcases (hd.inter_of_Gδ hs htG hd').nonempty with ⟨x, hx₁, hx₂⟩
+  exact hts hx₂ hx₁
+
+/-- In a nonempty Baire space, a residual set is not meagre. -/
+theorem not_isMeagre_of_mem_residual {s : Set X} (hs : s ∈ residual X) :
+    ¬ IsMeagre s := by
+  rcases (mem_residual (X := X)).1 hs with ⟨t, ht_sub, htGδ, ht_dense⟩
+  intro hs_meagre
+  exact not_isMeagre_of_isGδ_of_dense (X := X) htGδ ht_dense (hs_meagre.mono ht_sub)
 
 end BaireTheorem

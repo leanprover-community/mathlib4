@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.FractionalIdeal.Norm
-import Mathlib.RingTheory.FractionalIdeal.Operations
+module
+
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.FractionalIdeal.Norm
+public import Mathlib.RingTheory.FractionalIdeal.Operations
 
 /-!
 
@@ -21,6 +23,8 @@ Prove some results on the fractional ideals of number fields.
   field `K`, the absolute value of the determinant of the base change from `integralBasis` to
   `basisOfFractionalIdeal I` is equal to the norm of `I`.
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K] [NumberField K]
 
@@ -50,12 +54,11 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     rw [← (Algebra.lmul _ _).commutes, Algebra.lmul_isUnit_iff, isUnit_iff_ne_zero, eq_intCast,
       Int.cast_ne_zero]
     exact nonZeroDivisors.coe_ne_zero x
-  surj' x := by
+  surj x := by
     obtain ⟨⟨a, _, d, hd, rfl⟩, h⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) x
     refine ⟨⟨⟨Ideal.absNorm I.1.num * (algebraMap _ K a), I.1.num_le ?_⟩, d * Ideal.absNorm I.1.num,
-      ?_⟩ , ?_⟩
-    · simp_rw [FractionalIdeal.val_eq_coe, FractionalIdeal.coe_coeIdeal]
-      refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.1.num * a, ?_, ?_⟩
+      ?_⟩, ?_⟩
+    · refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.1.num * a, ?_, ?_⟩
       · exact Ideal.mul_mem_right _ _ I.1.num.absNorm_mem
       · rw [map_mul, map_natCast]
     · refine Submonoid.mul_mem _ hd (mem_nonZeroDivisors_of_ne_zero ?_)

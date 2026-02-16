@@ -3,15 +3,19 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Expand
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.RingTheory.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Expand
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 ## Polynomials over finite fields
 -/
+
+@[expose] public section
 
 
 namespace MvPolynomial
@@ -86,7 +90,7 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   intro n
   refine le_trans (Multiset.count_le_of_le _ <| degrees_indicator _) (le_of_eq ?_)
   simp_rw [← Multiset.coe_countAddMonoidHom, map_sum,
-    AddMonoidHom.map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
+    map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
   trans
   · refine Finset.sum_eq_single n ?_ ?_
     · intro b _ ne
@@ -100,7 +104,7 @@ variable [Field K]
 
 theorem eval_indicator_apply_eq_zero (a b : σ → K) (h : a ≠ b) : eval a (indicator b) = 0 := by
   obtain ⟨i, hi⟩ : ∃ i, a i ≠ b i := by rwa [Ne, funext_iff, not_forall] at h
-  simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C, sub_self,
+  simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C,
     Finset.prod_eq_zero_iff]
   refine ⟨i, Finset.mem_univ _, ?_⟩
   rw [FiniteField.pow_card_sub_one_eq_one, sub_self]
@@ -128,14 +132,9 @@ theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).ma
   refine ⟨∑ n : σ → K, e n • indicator n, ?_, ?_⟩
   · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)
   · ext n
-    simp only [_root_.map_sum, @Finset.sum_apply (σ → K) (fun _ => K) _ _ _ _ _, Pi.smul_apply,
-      map_smul]
-    simp only [evalₗ_apply]
-    trans
-    · refine Finset.sum_eq_single n (fun b _ h => ?_) ?_
-      · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
-      · exact fun h => (h <| Finset.mem_univ n).elim
-    · rw [eval_indicator_apply_eq_one, smul_eq_mul, mul_one]
+    simp only [evalₗ_apply, map_sum, smul_eval]
+    rw [Finset.sum_eq_single n] <;>
+      aesop (add simp [eval_indicator_apply_eq_zero, eval_indicator_apply_eq_one, eq_comm])
 
 end
 
@@ -200,11 +199,8 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
 
 instance [Finite σ] : FiniteDimensional K (R σ K) := by
   cases nonempty_fintype σ
-  classical
-  exact
-    IsNoetherian.iff_fg.1
-      (IsNoetherian.iff_rank_lt_aleph0.mpr <| by
-        simpa only [rank_R] using Cardinal.nat_lt_aleph0 (Fintype.card (σ → K)))
+  rw [FiniteDimensional, ← IsNoetherian.iff_fg, IsNoetherian.iff_rank_lt_aleph0]
+  simpa only [rank_R] using Cardinal.natCast_lt_aleph0
 
 open Classical in
 theorem finrank_R [Fintype σ] : Module.finrank K (R σ K) = Fintype.card (σ → K) :=

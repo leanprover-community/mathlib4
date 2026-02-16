@@ -3,8 +3,10 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Data.List.Defs
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Common
 
 /-!
 The type `List.Vector` represents lists with fixed length.
@@ -14,6 +16,8 @@ and in particular does not use `x[i]` (that is `GetElem` notation) as the prefer
 Any combination of reducing the use of `List.Vector` in Mathlib, or modernising its API,
 would be welcome.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -90,15 +94,10 @@ def get (l : Vector α n) (i : Fin n) : α :=
 instance {n m : Nat} : HAppend (Vector α n) (Vector α m) (Vector α (n + m)) where
   hAppend | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
 
-lemma append_def {n m : Nat}:
+lemma append_def {n m : Nat} :
     (HAppend.hAppend : Vector α n → Vector α m → Vector α (n + m)) =
       fun | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩ :=
   rfl
-
-/-- Appending a vector to another. -/
-@[deprecated "use `++` instead" (since := "2025-06-05")]
-def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
-  | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
 
 /-- Elimination rule for `Vector`. -/
 @[elab_as_elim]
@@ -232,10 +231,7 @@ theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList
 /-- Appending of vectors corresponds under `toList` to appending of lists. -/
 @[simp]
 theorem toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
-    toList (v ++ w) = toList v ++ toList w := by
-  cases v
-  cases w
-  rfl
+    toList (v ++ w) = toList v ++ toList w := rfl
 
 /-- `drop` of vectors corresponds under `toList` to `drop` of lists. -/
 @[simp]

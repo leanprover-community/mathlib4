@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.MeasureTheory.Integral.Average
+module
+
+public import Mathlib.MeasureTheory.Integral.Average
 
 /-!
 # Bergelson's intersectivity lemma
@@ -27,6 +29,8 @@ Restate the theorem using the upper density of a set of naturals, once we have i
 Use the ergodic theorem to deduce the refinement of the Poincaré recurrence theorem proved by
 Bergelson.
 -/
+
+public section
 
 open Filter Function MeasureTheory Set
 open scoped ENNReal
@@ -59,7 +63,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
   let f (n : ℕ) : α → ℝ≥0∞ := (↑(n + 1) : ℝ≥0∞)⁻¹ • ∑ k ∈ Finset.range (n + 1), (s k).indicator 1
   -- We gather a few simple properties of `f`.
   have hfapp : ∀ n a, f n a = (↑(n + 1))⁻¹ * ∑ k ∈ Finset.range (n + 1), (s k).indicator 1 a := by
-    simp only [f, Pi.natCast_def, Pi.smul_apply, Pi.inv_apply, Finset.sum_apply, eq_self_iff_true,
+    simp only [f, Pi.smul_apply, Finset.sum_apply,
     forall_const, imp_true_iff, smul_eq_mul]
   have hf n : Measurable (f n) := by fun_prop (disch := exact hs _)
   have hf₁ n : f n ≤ 1 := by
@@ -72,7 +76,8 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
   -- By assumption, `f n` has integral at least `r`.
   have hrf n : r ≤ ∫⁻ a, f n a ∂μ := by
     simp_rw [hfapp]
-    rw [lintegral_const_mul _ (Finset.measurable_sum _ fun _ _ ↦ measurable_one.indicator <| hs _),
+    rw [lintegral_const_mul _ <| Finset.measurable_fun_sum _
+        fun _ _ ↦ measurable_one.indicator <| hs _,
       lintegral_finset_sum _ fun _ _ ↦ measurable_one.indicator (hs _)]
     simp only [lintegral_indicator_one (hs _)]
     rw [← ENNReal.div_eq_inv_mul, ENNReal.le_div_iff_mul_le (by simp) (by simp), ← nsmul_eq_mul']
@@ -85,7 +90,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
       Eventually.of_forall fun n ↦ hf₁ _ _
   -- By the first moment method, there exists some `x ∉ N` such that `limsup f n x` is at least `r`.
   obtain ⟨x, hxN, hx⟩ := exists_notMem_null_laverage_le hμ
-    (ne_top_of_le_ne_top (measure_ne_top μ univ) this) hN₀
+    (ne_top_of_le_ne_top (by finiteness) this) hN₀
   replace hx : r / μ univ ≤ limsup (f · x) atTop :=
     calc
       _ ≤ limsup (⨍⁻ x, f · x ∂μ) atTop := le_limsup_of_le ⟨1, eventually_map.2 ?_⟩ fun b hb ↦ ?_
@@ -96,9 +101,9 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     -- This next block proves that a set of strictly positive natural density is infinite, mixed
     -- with the fact that `{n | x ∈ s n}` has strictly positive natural density.
     -- TODO: Separate it out to a lemma once we have a natural density API.
-    · refine ENNReal.div_ne_zero.2 ⟨hr₀, measure_ne_top _ _⟩ <| eq_bot_mono hx <|
+    · refine ENNReal.div_ne_zero.2 ⟨hr₀, by finiteness⟩ <| eq_bot_mono hx <|
         Tendsto.limsup_eq <| tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-        (h := fun n ↦ (n.succ : ℝ≥0∞)⁻¹ * hxs.toFinset.card) ?_ bot_le fun n ↦ mul_le_mul_left' ?_ _
+        (h := fun n ↦ (n.succ : ℝ≥0∞)⁻¹ * hxs.toFinset.card) ?_ bot_le fun n ↦ mul_le_mul_right ?_ _
       · simpa using ENNReal.Tendsto.mul_const (ENNReal.tendsto_inv_nat_nhds_zero.comp <|
           tendsto_add_atTop_nat 1) (.inr <| ENNReal.natCast_ne_top _)
       · classical

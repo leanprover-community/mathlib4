@@ -3,17 +3,21 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.CompleteBooleanAlgebra
+module
+
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Category of preorders
 
 This defines `Preord`, the category of preorders with monotone maps.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -22,6 +26,8 @@ open CategoryTheory
 
 /-- The category of preorders. -/
 structure Preord where
+  /-- Construct a bundled `Preord` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying preordered type. -/
   (carrier : Type*)
   [str : Preorder carrier]
@@ -37,9 +43,7 @@ instance : CoeSort Preord (Type u) :=
 
 attribute [coe] Preord.carrier
 
-/-- Construct a bundled `Preord` from the underlying type and typeclass. -/
-abbrev of (X : Type u) [Preorder X] : Preord := ⟨X⟩
-
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `Preord R`. -/
 @[ext]
 structure Hom (X Y : Preord.{u}) where
@@ -47,11 +51,15 @@ structure Hom (X Y : Preord.{u}) where
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category Preord.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory Preord (· →o ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -83,7 +91,7 @@ lemma coe_comp {X Y Z : Preord} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z
 
 @[simp]
 lemma forget_map {X Y : Preord} (f : X ⟶ Y) :
-    (forget Preord).map f = f := rfl
+    (forget Preord).map f = (f : X → Y) := rfl
 
 @[ext]
 lemma ext {X Y : Preord} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -112,12 +120,10 @@ lemma hom_ext {X Y : Preord} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [Preorder X] [Preorder Y] (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [Preorder X] [Preorder Y] (f : X →o Y) : (ofHom f).hom = f := rfl
 
 @[simp]
-lemma ofHom_hom {X Y : Preord} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
+lemma ofHom_hom {X Y : Preord} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [Preorder X] : ofHom OrderHom.id = 𝟙 (of X) := rfl
@@ -167,10 +173,11 @@ end Preord
 @[simps]
 def preordToCat : Preord.{u} ⥤ Cat where
   obj X := .of X.1
-  map f := f.hom.monotone.functor
+  map f := f.hom.monotone.functor.toCatHom
 
 instance : preordToCat.{u}.Faithful where
-  map_injective h := by ext x; exact Functor.congr_obj h x
+  map_injective h := by ext x; exact Functor.congr_obj congr(($h).toFunctor) x
 
 instance : preordToCat.{u}.Full where
-  map_surjective {X Y} f := ⟨⟨f.obj, @CategoryTheory.Functor.monotone X Y _ _ f⟩, rfl⟩
+  map_surjective {X Y} f := ⟨⟨f.toFunctor.obj,
+    @CategoryTheory.Functor.monotone X Y _ _ f.toFunctor⟩, rfl⟩

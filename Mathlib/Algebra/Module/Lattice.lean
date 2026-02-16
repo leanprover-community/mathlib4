@@ -3,9 +3,11 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.LinearAlgebra.Dimension.Localization
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.PID
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Localization
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Lattices
@@ -42,11 +44,14 @@ generated condition is replaced by having the discrete topology. This is for exa
 for complex tori.
 -/
 
+@[expose] public section
+
+open Module
+open scoped Pointwise
+
 universe u
 
 variable {R : Type*} [CommRing R]
-
-open Pointwise
 
 namespace Submodule
 
@@ -129,7 +134,7 @@ lemma _root_.Submodule.span_range_eq_top_of_injective_of_rank_le {M N : Type u} 
 variable (K) {V : Type*} [AddCommGroup V] [Module K V] [Module R V] [IsScalarTower R K V]
 
 /-- Any basis of an `R`-lattice in `V` defines a `K`-basis of `V`. -/
-noncomputable def _root_.Basis.extendOfIsLattice [IsFractionRing R K] {κ : Type*}
+noncomputable def _root_.Module.Basis.extendOfIsLattice [IsFractionRing R K] {κ : Type*}
     {M : Submodule R V} [IsLattice K M] (b : Basis κ R M) :
     Basis κ K V :=
   have hli : LinearIndependent K (fun i ↦ (b i).val) := by
@@ -143,7 +148,7 @@ noncomputable def _root_.Basis.extendOfIsLattice [IsFractionRing R K] {κ : Type
   Basis.mk hli hsp
 
 @[simp]
-lemma _root_.Basis.extendOfIsLattice_apply [IsFractionRing R K] {κ : Type*}
+lemma _root_.Module.Basis.extendOfIsLattice_apply [IsFractionRing R K] {κ : Type*}
     {M : Submodule R V} [IsLattice K M] (b : Basis κ R M) (k : κ) :
     b.extendOfIsLattice K k = (b k).val := by
   simp [Basis.extendOfIsLattice]
@@ -161,10 +166,10 @@ lemma of_rank_le [Module.Finite K V] [IsFractionRing R K] {M : Submodule R V}
 variable [IsPrincipalIdealRing R]
 
 /-- Any lattice over a PID is a free `R`-module.
-Note that under our conditions, `NoZeroSMulDivisors R K` simply says that `algebraMap R K` is
+Note that under our conditions, `Module.IsTorsionFree R K` simply says that `algebraMap R K` is
 injective. -/
-instance free [NoZeroSMulDivisors R K] (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
-  have := NoZeroSMulDivisors.trans_faithfulSMul R K V
+instance free [Module.IsTorsionFree R K] (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
+  have := Module.IsTorsionFree.trans_faithfulSMul R K V
   -- any torsion free finite module over a PID is free
   infer_instance
 

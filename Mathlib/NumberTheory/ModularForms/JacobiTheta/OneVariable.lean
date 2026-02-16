@@ -3,8 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
-import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+module
+
+public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
+public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 
 /-! # Jacobi's theta function
 
@@ -16,6 +18,8 @@ and proves the modular transformation properties `θ (τ + 2) = θ τ` and
 `θ (-1 / τ) = (-I * τ) ^ (1 / 2) * θ τ`, using Poisson's summation formula for the latter. We also
 show that `θ` is differentiable on `ℍ`, and `θ(τ) - 1` has exponential decay as `im τ → ∞`.
 -/
+
+@[expose] public section
 
 open Complex Real Asymptotics Filter Topology
 
@@ -46,7 +50,7 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   norm_cast
   simp_rw [jacobiTheta₂_functional_equation 0 τ, zero_pow two_ne_zero, mul_zero, zero_div,
     Complex.exp_zero, mul_one, ← mul_assoc, mul_one_div, div_self h1, one_mul,
-    UpperHalfPlane.coe_mk, inv_neg, neg_div, one_div]
+    inv_neg, neg_div, one_div]
 
 theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
     ‖cexp (π * I * (n : ℂ) ^ 2 * τ)‖ ≤ rexp (-π * τ.im) ^ n.natAbs := by

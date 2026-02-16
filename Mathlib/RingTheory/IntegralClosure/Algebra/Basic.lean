@@ -3,9 +3,11 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
-import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
 # Integral closure of a subring.
@@ -19,6 +21,8 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 * `integralClosure R A` : the integral closure of `R` in an `R`-algebra `A`.
 -/
 
+@[expose] public section
+
 
 open Polynomial Submodule
 
@@ -28,7 +32,7 @@ variable {R A B S : Type*}
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
-theorem Subalgebra.isIntegral_iff (S : Subalgebra R A) :
+theorem Subalgebra.isIntegral_iff (S : Subalgebra R B) :
     Algebra.IsIntegral R S ↔ ∀ x ∈ S, IsIntegral R x :=
   Algebra.isIntegral_def.trans <| .trans
     (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm) Subtype.forall
@@ -76,18 +80,18 @@ lemma Algebra.isIntegral_of_surjective (H : Function.Surjective (algebraMap R B)
   then all elements of `S` are integral over `R`. -/
 theorem IsIntegral.of_mem_of_fg (S : Subalgebra R B)
     (HS : S.toSubmodule.FG) (x : B) (hx : x ∈ S) : IsIntegral R x :=
-  have : Module.Finite R S := ⟨(fg_top _).mpr HS⟩
+  have : Module.Finite R S := .of_fg HS
   (isIntegral_algHom_iff S.val Subtype.val_injective).mpr (.of_finite R (⟨x, hx⟩ : S))
 
 theorem isIntegral_of_submodule_noetherian (S : Subalgebra R B)
     (H : IsNoetherian R (Subalgebra.toSubmodule S)) (x : B) (hx : x ∈ S) : IsIntegral R x :=
-  .of_mem_of_fg _ ((fg_top _).mp <| H.noetherian _) _ hx
+  .of_mem_of_fg _ ((Submodule.fg_top _).mp <| H.noetherian _) _ hx
 
 /-- Suppose `A` is an `R`-algebra, `M` is an `A`-module such that `a • m ≠ 0` for all non-zero `a`
 and `m`. If `x : A` fixes a nontrivial f.g. `R`-submodule `N` of `M`, then `x` is `R`-integral. -/
-theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R M] [Module A M]
-    [IsScalarTower R A M] [NoZeroSMulDivisors A M] (N : Submodule R M) (hN : N ≠ ⊥) (hN' : N.FG)
-    (x : A) (hx : ∀ n ∈ N, x • n ∈ N) : IsIntegral R x := by
+theorem isIntegral_of_smul_mem_submodule [IsDomain A] {M : Type*} [AddCommGroup M] [Module R M]
+    [Module A M] [IsScalarTower R A M] [Module.IsTorsionFree A M] (N : Submodule R M) (hN : N ≠ ⊥)
+    (hN' : N.FG) (x : A) (hx : ∀ n ∈ N, x • n ∈ N) : IsIntegral R x := by
   let A' : Subalgebra R A :=
     { carrier := { x | ∀ n ∈ N, x • n ∈ N }
       mul_mem' := fun {a b} ha hb n hn => smul_smul a b n ▸ ha _ (hb _ hn)
@@ -97,31 +101,24 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
       algebraMap_mem' := fun r n hn => (algebraMap_smul A r n).symm ▸ N.smul_mem r hn }
   let f : A' →ₐ[R] Module.End R N :=
     AlgHom.ofLinearMap
-      { toFun := fun x => (DistribMulAction.toLinearMap R M x).restrict x.prop
-        -- Porting note: was
-                -- `fun x y => LinearMap.ext fun n => Subtype.ext <| add_smul x y n`
-        map_add' := by intros x y; ext; exact add_smul _ _ _
-        -- Porting note: was
-                --  `fun r s => LinearMap.ext fun n => Subtype.ext <| smul_assoc r s n`
-        map_smul' := by intros r s; ext; apply smul_assoc }
-      -- Porting note: the next two lines were
-      --`(LinearMap.ext fun n => Subtype.ext <| one_smul _ _) fun x y =>`
-      --`LinearMap.ext fun n => Subtype.ext <| mul_smul x y n`
+      { toFun := fun x => (DistribSMul.toLinearMap R M x).restrict x.prop
+        map_add' := by intro x y; ext; exact add_smul _ _ _
+        map_smul' := by intro r s; ext; apply smul_assoc }
       (by ext; apply one_smul)
-      (by intros x y; ext; apply mul_smul)
+      (by intro x y; ext; apply mul_smul)
   obtain ⟨a, ha₁, ha₂⟩ : ∃ a ∈ N, a ≠ (0 : M) := by
     by_contra! h'
     apply hN
     rwa [eq_bot_iff]
   have : Function.Injective f := by
-    show Function.Injective f.toLinearMap
+    change Function.Injective f.toLinearMap
     rw [← LinearMap.ker_eq_bot, eq_bot_iff]
     intro s hs
     have : s.1 • a = 0 := congr_arg Subtype.val (LinearMap.congr_fun hs ⟨a, ha₁⟩)
-    exact Subtype.ext ((eq_zero_or_eq_zero_of_smul_eq_zero this).resolve_right ha₂)
-  show IsIntegral R (A'.val ⟨x, hx⟩)
+    exact Subtype.ext ((smul_eq_zero_iff_left ha₂).1 this)
+  change IsIntegral R (A'.val ⟨x, hx⟩)
   rw [isIntegral_algHom_iff A'.val Subtype.val_injective, ← isIntegral_algHom_iff f this]
-  haveI : Module.Finite R N := by rwa [Module.finite_def, Submodule.fg_top]
+  haveI : Module.Finite R N := by rwa [Module.Finite.iff_fg]
   apply Algebra.IsIntegral.isIntegral
 
 variable {f}
@@ -228,3 +225,51 @@ instance Algebra.IsIntegral.prod [Algebra.IsIntegral R A] [Algebra.IsIntegral R 
     (Algebra.isIntegral_def.mp ‹_› x.1).pair (Algebra.isIntegral_def.mp ‹_› x.2)
 
 end
+
+section TensorProduct
+
+variable {R A B : Type*} [CommRing R] [CommRing A]
+
+open TensorProduct
+
+theorem IsIntegral.tmul [Ring B] [Algebra R A] [Algebra R B]
+    (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x ⊗ₜ[R] y) := by
+  rw [← mul_one x, ← smul_eq_mul, ← smul_tmul']
+  exact smul _ (h.map_of_comp_eq (algebraMap R A)
+    (Algebra.TensorProduct.includeRight (R := R) (A := A) (B := B)).toRingHom
+    Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap)
+
+variable (R A B)
+
+instance Algebra.IsIntegral.tensorProduct [CommRing B]
+    [Algebra R A] [Algebra R B] [int : Algebra.IsIntegral R B] :
+    Algebra.IsIntegral A (A ⊗[R] B) where
+  isIntegral p := p.induction_on isIntegral_zero (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
+
+end TensorProduct
+
+section MulSemiringAction
+
+variable {G R K : Type*} [CommRing R] [CommRing K] [Algebra R K]
+  [Group G] [MulSemiringAction G K] [SMulCommClass G R K]
+
+instance : MulSemiringAction G (integralClosure R K) where
+  smul := fun g x ↦ ⟨g • (x : K), x.2.map (MulSemiringAction.toAlgHom R K g)⟩
+  one_smul x := by ext; exact one_smul G (x : K)
+  mul_smul g h x := by ext; exact mul_smul g h (x : K)
+  smul_zero g := by ext; exact smul_zero g
+  smul_add g x y := by ext; exact smul_add g (x : K) (y : K)
+  smul_one g := by ext; exact smul_one g
+  smul_mul g x y := by ext; exact smul_mul' g (x : K) (y : K)
+
+@[simp]
+theorem integralClosure.coe_smul (g : G) (k : integralClosure R K) :
+    (g • k : integralClosure R K) = g • (k : K) := rfl
+
+instance : SMulCommClass G R (integralClosure R K) where
+  smul_comm g r k := Subtype.ext (smul_comm g r (k : K))
+
+instance : SMulDistribClass G (integralClosure R K) K where
+  smul_distrib_smul g r k := smul_mul' g (r : K) k
+
+end MulSemiringAction

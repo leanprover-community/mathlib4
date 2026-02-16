@@ -3,9 +3,11 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth
 -/
-import Mathlib.Data.Nat.Cast.WithTop
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.WittVector.DiscreteValuationRing
+module
+
+public import Mathlib.Data.Nat.Cast.WithTop
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.WittVector.DiscreteValuationRing
 
 /-!
 # Solving equations about the Frobenius map on the field of fractions of `𝕎 k`
@@ -34,6 +36,8 @@ We approximately follow an approach sketched on MathOverflow:
 The result is a dependency for the proof of `WittVector.isocrystal_classification`,
 the classification of one-dimensional isocrystals over an algebraically closed field.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -123,9 +127,9 @@ theorem succNthVal_spec' (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k)
         nthRemainder p n bs (truncateFun (n + 1) a₂) := by
   rw [← sub_eq_zero]
   have := succNthVal_spec p n a₁ a₂ bs ha₁ ha₂
-  simp only [Polynomial.map_add, Polynomial.eval_X, Polynomial.map_pow, Polynomial.eval_C,
+  simp only [Polynomial.eval_X, Polynomial.eval_C,
     Polynomial.eval_pow, succNthDefiningPoly, Polynomial.eval_mul, Polynomial.eval_add,
-    Polynomial.eval_sub, Polynomial.map_mul, Polynomial.map_sub, Polynomial.IsRoot.def]
+    Polynomial.eval_sub, Polynomial.IsRoot.def]
     at this
   convert this using 1
   ring
@@ -159,15 +163,8 @@ theorem solution_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha�
 theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎 k) :
     solution p a₁ a₂ ^ p * a₁.coeff 0 = solution p a₁ a₂ * a₂.coeff 0 := by
   have := solution_spec p a₁ a₂
-  obtain ⟨q, hq⟩ := Nat.exists_eq_succ_of_ne_zero hp.out.ne_zero
-  have hq' : q = p - 1 := by simp only [hq, tsub_zero, Nat.succ_sub_succ_eq_sub]
-  conv_lhs =>
-    congr
-    congr
-    · skip
-    · rw [hq]
-  rw [pow_succ', hq', this]
-  field_simp [ha₁, mul_comm]
+  have := Nat.exists_eq_succ_of_ne_zero hp.out.ne_zero
+  grind
 
 end RecursionBase
 
@@ -179,11 +176,8 @@ section IsAlgClosed
 
 variable {k : Type*} [Field k] [CharP k p] [IsAlgClosed k]
 
-/-- Recursively defines the sequence of coefficients for `WittVector.frobeniusRotation`.
--/
--- Constructions by well-founded recursion are by default irreducible.
--- As we rely on definitional properties below, we mark this `@[semireducible]`.
-@[semireducible] noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0)
+/-- Recursively defines the sequence of coefficients for `WittVector.frobeniusRotation`. -/
+noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : ℕ → k
   | 0 => solution p a₁ a₂
   | n + 1 => succNthVal p n a₁ a₂ (fun i => frobeniusRotationCoeff ha₁ ha₂ i.val) ha₁ ha₂
@@ -205,15 +199,15 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
   ext n
   rcases n with - | n
   · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation,
-      frobeniusRotationCoeff]
-    apply solution_spec' _ ha₁
-  · simp only [nthRemainder_spec, WittVector.coeff_frobenius_charP, frobeniusRotationCoeff,
-      frobeniusRotation]
+      coeff_mk, frobeniusRotationCoeff]
+    exact solution_spec' _ ha₁ _
+  · simp only [nthRemainder_spec, WittVector.coeff_frobenius_charP,
+      frobeniusRotation, coeff_mk, frobeniusRotationCoeff]
     have :=
       succNthVal_spec' p n a₁ a₂ (fun i : Fin (n + 1) => frobeniusRotationCoeff p ha₁ ha₂ i.val)
         ha₁ ha₂
     simp only [frobeniusRotationCoeff, Fin.val_zero] at this
-    convert this using 3
+    convert this using 3; clear this
     apply TruncatedWittVector.ext
     intro i
     simp only [WittVector.coeff_truncateFun, WittVector.coeff_frobenius_charP]
@@ -221,6 +215,10 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
 
 local notation "φ" => IsFractionRing.ringEquivOfRingEquiv (frobeniusEquiv p k)
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) (hr' : r'.coeff 0 ≠ 0)
     (hq' : q'.coeff 0 ≠ 0) (hq : (p : 𝕎 k) ^ n * q' ∈ nonZeroDivisors (𝕎 k)) :
     let b : 𝕎 k := frobeniusRotation p hr' hq'
@@ -230,22 +228,17 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
       (p : Localization (nonZeroDivisors (𝕎 k))) ^ (m - n : ℤ) *
         algebraMap (𝕎 k) (FractionRing (𝕎 k)) b := by
   intro b
-  have key : WittVector.frobenius b * (p : 𝕎 k) ^ m * r' * (p : 𝕎 k) ^ n =
-      (p : 𝕎 k) ^ m * b * ((p : 𝕎 k) ^ n * q') := by
-    have H := congr_arg (fun x : 𝕎 k => x * (p : 𝕎 k) ^ m * (p : 𝕎 k) ^ n)
-      (frobenius_frobeniusRotation p hr' hq')
-    dsimp at H
-    refine (Eq.trans ?_ H).trans ?_ <;> ring
+  have key : WittVector.frobenius b * r' = q' * b := by
+    linear_combination frobenius_frobeniusRotation p hr' hq'
   have hq'' : algebraMap (𝕎 k) (FractionRing (𝕎 k)) q' ≠ 0 := by
     have hq''' : q' ≠ 0 := fun h => hq' (by simp [h])
     simpa only [Ne, map_zero] using
       (IsFractionRing.injective (𝕎 k) (FractionRing (𝕎 k))).ne hq'''
   rw [zpow_sub₀ (FractionRing.p_nonzero p k)]
-  field_simp [FractionRing.p_nonzero p k]
+  simp [field, FractionRing.p_nonzero p k]
   convert congr_arg (fun x => algebraMap (𝕎 k) (FractionRing (𝕎 k)) x) key using 1
-  · simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, frobeniusEquiv_apply]
-    ring
-  · simp only [RingHom.map_mul, RingHom.map_pow, map_natCast]
+  · simp only [map_mul]
+  · simp only [map_mul]
 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
     ∃ᵉ (b ≠ 0) (m : ℤ), φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by

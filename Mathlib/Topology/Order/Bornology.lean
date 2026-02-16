@@ -3,7 +3,9 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Bornology.Constructions
+module
+
+public import Mathlib.Topology.Bornology.Constructions
 
 /-!
 # Bornology of order-bounded sets
@@ -16,6 +18,8 @@ of order-boundedness (sets that are bounded above and below).
 * `orderBornology`: The bornology of order-bounded sets of a nonempty lattice.
 * `IsOrderBornology`: Typeclass predicate for a preorder to be equipped with its order-bornology.
 -/
+
+@[expose] public section
 
 open Bornology Set
 

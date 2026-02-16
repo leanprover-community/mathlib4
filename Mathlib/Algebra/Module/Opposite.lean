@@ -3,9 +3,11 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Opposite
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Opposite
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Opposite
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Module operations on `Mᵐᵒᵖ`
@@ -13,6 +15,8 @@ import Mathlib.Algebra.Ring.Opposite
 This file contains definitions that build on top of the group action definitions in
 `Mathlib/Algebra/GroupWithZero/Action/Opposite.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists LinearMap
 
@@ -22,7 +26,7 @@ variable {R M : Type*} [Semiring R] [AddCommMonoid M]
 
 -- see Note [lower instance priority]
 /-- Like `Semiring.toModule`, but multiplies on the right. -/
-instance (priority := 910) Semiring.toOppositeModule [Semiring R] : Module Rᵐᵒᵖ R :=
+instance (priority := 910) Semiring.toOppositeModule : Module Rᵐᵒᵖ R :=
   { MonoidWithZero.toOppositeMulActionWithZero R with
     smul_add := fun _ _ _ => add_mul _ _ _
     add_smul := fun _ _ _ => mul_add _ _ _ }

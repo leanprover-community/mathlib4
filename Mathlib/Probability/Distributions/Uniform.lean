@@ -3,29 +3,30 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker, Devon Tuma, Kexing Ying
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Density
-import Mathlib.Probability.ConditionalProbability
-import Mathlib.Probability.ProbabilityMassFunction.Constructions
+module
+
+public import Mathlib.Probability.Density
+public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 
 /-!
 # Uniform distributions and probability mass functions
 This file defines two related notions of uniform distributions, which will be unified in the future.
 
-# Uniform distributions
+## Uniform distributions
 
 Defines the uniform distribution for any set with finite measure.
 
-## Main definitions
+### Main definitions
 * `IsUniform X s ℙ μ` : A random variable `X` has uniform distribution on `s` under `ℙ` if the
   push-forward measure agrees with the rescaled restricted measure `μ`.
 
-# Uniform probability mass functions
+## Uniform probability mass functions
 
 This file defines a number of uniform `PMF` distributions from various inputs,
   uniformly drawing from the corresponding object.
 
-## Main definitions
+### Main definitions
 `PMF.uniformOfFinset` gives each element in the set equal probability,
   with `0` probability for elements not in the set.
 
@@ -39,9 +40,11 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 * Refactor the `PMF` definitions to come from a `uniformMeasure` on a `Finset`/`Fintype`/`Multiset`.
 -/
 
+@[expose] public section
+
 open scoped Finset MeasureTheory NNReal ENNReal
 
--- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` locale :(
+-- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` scope :(
 open TopologicalSpace MeasureTheory.Measure PMF
 
 noncomputable section
@@ -109,7 +112,7 @@ theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞
 
 theorem pdf_eq_zero_of_measure_eq_zero_or_top {X : Ω → E} {s : Set E}
     (hu : IsUniform X s ℙ μ) (hμs : μ s = 0 ∨ μ s = ∞) : pdf X ℙ μ =ᵐ[μ] 0 := by
-  rcases hμs with H|H
+  rcases hμs with H | H
   · simp only [IsUniform, ProbabilityTheory.cond, H, ENNReal.inv_zero, restrict_eq_zero.mpr H,
     smul_zero] at hu
     simp [pdf, hu]
@@ -121,7 +124,7 @@ theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
   by_cases hnt : μ s = ∞
   · simp [pdf_eq_zero_of_measure_eq_zero_or_top hu (Or.inr hnt), hnt]
   by_cases hns : μ s = 0
-  · filter_upwards [measure_zero_iff_ae_notMem.mp hns,
+  · filter_upwards [measure_eq_zero_iff_ae_notMem.mp hns,
       pdf_eq_zero_of_measure_eq_zero_or_top hu (Or.inl hns)] with x hx h'x
     simp [hx, h'x, hns]
   have : HasPDF X ℙ μ := hasPDF hns hnt hu
@@ -155,7 +158,7 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
   set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)
   have : ∀ x, ‖x‖ₑ * s.indicator ind x = s.indicator (fun x => ‖x‖ₑ * ind x) x := fun x =>
     (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
-  simp only [ind, this, lintegral_indicator hcs.measurableSet, mul_one, Algebra.id.smul_eq_mul,
+  simp only [ind, this, lintegral_indicator hcs.measurableSet, mul_one, smul_eq_mul,
     Pi.one_apply, Pi.smul_apply]
   rw [lintegral_mul_const _ measurable_enorm]
   exact ENNReal.mul_ne_top (setLIntegral_lt_top_of_isCompact hnt.2 hcs continuous_nnnorm).ne
@@ -237,15 +240,12 @@ theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (
 
 theorem uniformOfFinset_apply_of_notMem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
 
-@[deprecated (since := "2025-05-23")]
-alias uniformOfFinset_apply_of_not_mem := uniformOfFinset_apply_of_notMem
-
 @[simp]
 theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
   Set.ext
     (by
       let ⟨a, ha⟩ := hs
-      simp [mem_support_iff, Finset.ne_empty_of_mem ha])
+      simp [mem_support_iff])
 
 theorem mem_support_uniformOfFinset_iff (a : α) : a ∈ (uniformOfFinset s hs).support ↔ a ∈ s := by
   simp
@@ -276,7 +276,7 @@ open scoped Classical in
 @[simp]
 theorem toMeasure_uniformOfFinset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
     (uniformOfFinset s hs).toMeasure t = #{x ∈ s | x ∈ t} / #s :=
-  (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_uniformOfFinset_apply hs t)
+  (toMeasure_apply_eq_toOuterMeasure_apply _ ht).trans (toOuterMeasure_uniformOfFinset_apply hs t)
 
 end Measure
 
@@ -292,7 +292,7 @@ variable [Fintype α] [Nonempty α]
 
 @[simp]
 theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
-  simp [uniformOfFintype, Finset.mem_univ, if_true, uniformOfFinset_apply]
+  simp [uniformOfFintype, Finset.mem_univ, uniformOfFinset_apply]
 
 @[simp]
 theorem support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
@@ -352,7 +352,7 @@ theorem ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / (Multiset.ca
 open scoped Classical in
 @[simp]
 theorem support_ofMultiset : (ofMultiset s hs).support = s.toFinset :=
-  Set.ext (by simp [mem_support_iff, hs])
+  Set.ext (by simp [mem_support_iff])
 
 open scoped Classical in
 theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support ↔ a ∈ s.toFinset := by
@@ -361,9 +361,6 @@ theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support �
 theorem ofMultiset_apply_of_notMem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
   simpa only [ofMultiset_apply, ENNReal.div_eq_zero_iff, Nat.cast_eq_zero, Multiset.count_eq_zero,
     ENNReal.natCast_ne_top, or_false] using ha
-
-@[deprecated (since := "2025-05-23")]
-alias ofMultiset_apply_of_not_mem := ofMultiset_apply_of_notMem
 
 section Measure
 
@@ -382,7 +379,7 @@ open scoped Classical in
 @[simp]
 theorem toMeasure_ofMultiset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
     (ofMultiset s hs).toMeasure t = (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) :=
-  (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_ofMultiset_apply hs t)
+  (toMeasure_apply_eq_toOuterMeasure_apply _ ht).trans (toOuterMeasure_ofMultiset_apply hs t)
 
 end Measure
 

@@ -3,11 +3,15 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Topology.DiscreteSubset
-import Mathlib.Tactic.Peel
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Algebra.Order.Group.PosPart
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Topology.DiscreteSubset
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Type of functions with locally finite support
@@ -18,6 +22,8 @@ commutative group.
 
 Throughout the present file, `X` denotes a topologically space and `U` a subset of `X`.
 -/
+
+@[expose] public section
 
 open Filter Function Set Topology
 
@@ -41,7 +47,7 @@ structure Function.locallyFinsuppWithin [Zero Y] where
   toFun : X → Y
   /-- A proof that the support of `toFun` is contained in `U` -/
   supportWithinDomain' : toFun.support ⊆ U
-  /-- A proof the the support is locally finite within `U` -/
+  /-- A proof that the support is locally finite within `U` -/
   supportLocallyFiniteWithinDomain' : ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ toFun.support)
 
 variable (X Y) in
@@ -49,7 +55,7 @@ variable (X Y) in
 A function with locally finite support is a function with locally finite support within
 `⊤ : Set X`.
 -/
-def Function.locallyFinsupp [Zero Y] := locallyFinsuppWithin (⊤ : Set X) Y
+abbrev Function.locallyFinsupp [Zero Y] := locallyFinsuppWithin (Set.univ : Set X) Y
 
 /--
 For T1 spaces, the condition `supportLocallyFiniteWithinDomain'` is equivalent to saying that the
@@ -131,8 +137,6 @@ lemma apply_eq_zero_of_notMem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
     (hz : z ∉ U) :
     D z = 0 := notMem_support.mp fun a ↦ hz (D.supportWithinDomain a)
 
-@[deprecated (since := "2025-05-23")] alias apply_eq_zero_of_not_mem := apply_eq_zero_of_notMem
-
 /--
 On a T1 space, the support of a function with locally finite support within `U` is discrete within
 `U`.
@@ -148,10 +152,10 @@ theorem eq_zero_codiscreteWithin [Zero Y] [T1Space X] (D : locallyFinsuppWithin 
   exact D.supportLocallyFiniteWithinDomain
 
 /--
-On a T1 space, the support of a functions with locally finite support within `U` is discrete.
+On a T1 space, the support of a function with locally finite support within `U` is discrete.
 -/
 theorem discreteSupport [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
-    DiscreteTopology D.support := by
+    IsDiscrete D.support := by
   have : D.support = {x | D x = 0}ᶜ ∩ U := by
     ext x
     constructor
@@ -160,7 +164,8 @@ theorem discreteSupport [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
       rw [mem_inter_iff, mem_compl_iff, mem_setOf_eq] at hx
       tauto
   rw [this]
-  apply discreteTopology_of_codiscreteWithin
+  apply isDiscrete_of_codiscreteWithin
+  rw [compl_compl]
   apply (supportDiscreteWithin_iff_locallyFiniteWithin D.supportWithinDomain).2
   exact D.supportLocallyFiniteWithinDomain
 
@@ -204,7 +209,7 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
   carrier := {f | f.support ⊆ U ∧ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)}
   zero_mem' := by
     simp only [support_subset_iff, ne_eq, mem_setOf_eq, Pi.zero_apply, not_true_eq_false,
-      IsEmpty.forall_iff, implies_true, support_zero', inter_empty, finite_empty, and_true,
+      IsEmpty.forall_iff, implies_true, support_zero, inter_empty, finite_empty, and_true,
       true_and]
     exact fun _ _ ↦ ⟨⊤, univ_mem⟩
   add_mem' {f g} hf hg := by
@@ -218,15 +223,14 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
       use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
       apply Set.Finite.subset (s := (t₁ ∩ f.support) ∪ (t₂ ∩ g.support)) (ht₁.2.union ht₂.2)
       intro a ha
-      simp_all only [support_subset_iff, ne_eq, mem_setOf_eq, union_self, subset_inter_iff,
+      simp_all only [support_subset_iff, ne_eq, mem_setOf_eq,
         mem_inter_iff, mem_support, Pi.add_apply, mem_union, true_and]
-      by_contra hCon
-      push_neg at hCon
+      by_contra! hCon
       simp_all
   neg_mem' {f} hf := by
     simp_all
 
-protected lemma memAddSubgroup  [AddCommGroup Y] (D : locallyFinsuppWithin U Y) :
+protected lemma memAddSubgroup [AddCommGroup Y] (D : locallyFinsuppWithin U Y) :
     (D : X → Y) ∈ locallyFinsuppWithin.addSubgroup U :=
   ⟨D.supportWithinDomain, D.supportLocallyFiniteWithinDomain⟩
 
@@ -240,7 +244,7 @@ def mk_of_mem [AddCommGroup Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.ad
 instance [AddCommGroup Y] : Zero (locallyFinsuppWithin U Y) where
   zero := mk_of_mem 0 <| zero_mem _
 
-instance [AddCommGroup Y]: Add (locallyFinsuppWithin U Y) where
+instance [AddCommGroup Y] : Add (locallyFinsuppWithin U Y) where
   add D₁ D₂ := mk_of_mem (D₁ + D₂) <| add_mem D₁.memAddSubgroup D₂.memAddSubgroup
 
 instance [AddCommGroup Y] : Neg (locallyFinsuppWithin U Y) where
@@ -301,8 +305,7 @@ instance [SemilatticeSup Y] [Zero Y] : Max (locallyFinsuppWithin U Y) where
       apply Set.Finite.subset (s := (t₁ ∩ D₁.support) ∪ (t₂ ∩ D₂.support)) (ht₁.2.union ht₂.2)
       intro a ha
       simp_all only [mem_inter_iff, mem_support, ne_eq, mem_union, true_and]
-      by_contra hCon
-      push_neg at hCon
+      by_contra! hCon
       simp_all }
 
 @[simp]
@@ -326,17 +329,17 @@ instance [SemilatticeInf Y] [Zero Y] : Min (locallyFinsuppWithin U Y) where
       apply Set.Finite.subset (s := (t₁ ∩ D₁.support) ∪ (t₂ ∩ D₂.support)) (ht₁.2.union ht₂.2)
       intro a ha
       simp_all only [mem_inter_iff, mem_support, ne_eq, mem_union, true_and]
-      by_contra hCon
-      push_neg at hCon
+      by_contra! hCon
       simp_all }
 
 @[simp]
 lemma min_apply [SemilatticeInf Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {x : X} :
     min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
 
-instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
-  le := (· ≤ ·)
-  lt := (· < ·)
+section Lattice
+variable [Lattice Y]
+
+instance [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
   le_refl := by simp [le_def]
   le_trans D₁ D₂ D₃ h₁₂ h₂₃ := fun x ↦ (h₁₂ x).trans (h₂₃ x)
   le_antisymm D₁ D₂ h₁₂ h₂₁ := by
@@ -351,12 +354,75 @@ instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
   inf_le_right D₁ D₂ := fun x ↦ by simp
   le_inf D₁ D₂ D₃ h₁₃ h₂₃ := fun x ↦ by simp [h₁₃ x, h₂₃ x]
 
+variable [AddCommGroup Y]
+
+@[simp] lemma posPart_apply (a : locallyFinsuppWithin U Y) (x : X) : a⁺ x = (a x)⁺ := rfl
+@[simp] lemma negPart_apply (a : locallyFinsuppWithin U Y) (x : X) : a⁻ x = (a x)⁻ := rfl
+
+end Lattice
+
+section LinearOrder
+variable [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
+
 /--
 Functions with locally finite support within `U` form an ordered commutative group.
 -/
-instance [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]:
-    IsOrderedAddMonoid (locallyFinsuppWithin U Y) where
+instance : IsOrderedAddMonoid (locallyFinsuppWithin U Y) where
   add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
+
+/--
+The positive part of a sum is less than or equal to the sum of the positive parts.
+-/
+theorem posPart_add (f₁ f₂ : Function.locallyFinsuppWithin U Y) :
+    (f₁ + f₂)⁺ ≤ f₁⁺ + f₂⁺ := by
+  repeat rw [posPart_def]
+  intro x
+  simp only [Function.locallyFinsuppWithin.max_apply, Function.locallyFinsuppWithin.coe_add,
+    Pi.add_apply, Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply, sup_le_iff]
+  constructor
+  · simp [add_le_add]
+  · simp [add_nonneg]
+
+/--
+The negative part of a sum is less than or equal to the sum of the negative parts.
+-/
+theorem negPart_add (f₁ f₂ : Function.locallyFinsuppWithin U Y) :
+    (f₁ + f₂)⁻ ≤ f₁⁻ + f₂⁻ := by
+  repeat rw [negPart_def]
+  intro x
+  simp only [neg_add_rev, Function.locallyFinsuppWithin.max_apply,
+    Function.locallyFinsuppWithin.coe_add, Function.locallyFinsuppWithin.coe_neg, Pi.add_apply,
+    Pi.neg_apply, Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply, sup_le_iff]
+  constructor
+  · simp [add_comm, add_le_add]
+  · simp [add_nonneg]
+
+/--
+Taking the positive part of a function with locally finite support commutes with
+scalar multiplication by a natural number.
+-/
+@[simp]
+theorem nsmul_posPart (n : ℕ) (f : locallyFinsuppWithin U Y) : (n • f)⁺ = n • f⁺ := by
+  ext x
+  simp only [posPart, max_apply, coe_nsmul, Pi.smul_apply, coe_zero, Pi.zero_apply]
+  by_cases h : f x < 0
+  · simpa [max_eq_right_of_lt h] using nsmul_le_nsmul_right h.le n
+  · simpa [not_lt.1 h] using nsmul_nonneg (not_lt.1 h) n
+
+/--
+Taking the negative part of a function with locally finite support commutes with
+scalar multiplication by a natural number.
+-/
+@[simp]
+theorem nsmul_negPart (n : ℕ) (f : locallyFinsuppWithin U Y) : (n • f)⁻ = n • f⁻ := by
+  ext x
+  simp only [negPart, max_apply, coe_neg, coe_nsmul, Pi.neg_apply, Pi.smul_apply, coe_zero,
+    Pi.zero_apply]
+  by_cases h : -f x < 0
+  · simpa [max_eq_right_of_lt h] using nsmul_le_nsmul_right h.le n
+  · simpa [not_lt.1 h] using nsmul_nonneg (not_lt.1 h) n
+
+end LinearOrder
 
 /-!
 ## Restriction
@@ -390,12 +456,12 @@ lemma restrict_apply [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V 
 lemma restrict_eqOn [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) D V := by
   intro _ _
-  simp_all [restrict_apply, dite_eq_ite, ite_eq_left_iff]
+  simp_all [restrict_apply]
 
 lemma restrict_eqOn_compl [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) 0 Vᶜ := by
   intro _ hx
-  simp_all [restrict_apply, dite_eq_ite, ite_eq_left_iff, hx]
+  simp_all
 
 /-- Restriction as a group morphism -/
 noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
@@ -431,5 +497,22 @@ noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h
 lemma restrictLatticeHom_apply [AddCommGroup Y] [Lattice Y] {V : Set X}
     (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     restrictLatticeHom h D = D.restrict h := by rfl
+/--
+Restriction commutes with taking positive parts.
+-/
+lemma restrict_posPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U) :
+    D⁺.restrict h = (D.restrict h)⁺ := by
+  ext x
+  simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.posPart_apply]
+  aesop
+
+/--
+Restriction commutes with taking negative parts.
+-/
+lemma restrict_negPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U) :
+    D⁻.restrict h = (D.restrict h)⁻ := by
+  ext x
+  simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.negPart_apply]
+  aesop
 
 end Function.locallyFinsuppWithin

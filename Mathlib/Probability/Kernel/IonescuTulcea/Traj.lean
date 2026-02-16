@@ -3,13 +3,15 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
-import Mathlib.MeasureTheory.Function.FactorsThrough
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
-import Mathlib.Probability.Kernel.Composition.IntegralCompProd
-import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
-import Mathlib.Probability.Kernel.SetIntegral
+module
+
+public import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
+public import Mathlib.MeasureTheory.Function.FactorsThrough
+public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
+public import Mathlib.Probability.Kernel.CondDistrib
+public import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
+public import Mathlib.Probability.Kernel.SetIntegral
 
 /-!
 # Ionescu-Tulcea theorem
@@ -36,14 +38,18 @@ the trajectory in `X 0 × ... × X a` and outputs the distribution of the whole 
 We also provide tools to compute integrals against `traj κ a` and an expression for the conditional
 expectation.
 
-## Main definition
+## Main definitions
 
 * `traj κ a`: a kernel from `Π i : Iic a, X i` to `Π n, X n` which takes as input a trajectory
   up to time `a` and outputs the distribution of the trajectory obtained by iterating the kernels
   `κ`. Its existence is given by the Ionescu-Tulcea theorem.
+* `trajMeasure μ₀ κ`: a measure on `Π n, X n` that corresponds to the distribution of the trajectory
+  obtained by starting with the distribution `μ₀` and then iterating the kernels `κ`.
 
 ## Main statements
 
+* `map_traj_succ_self`: the pushforward of `traj κ a` along the the point at time `a + 1` is the
+  kernel `κ a`.
 * `eq_traj`: Uniqueness of `traj`: to check that `η = traj κ a` it is enough to show that
   the restriction of `η` to variables `≤ b` is `partialTraj κ a b`.
 * `traj_comp_partialTraj`: Given the distribution up to time `a`, `partialTraj κ a b`
@@ -51,6 +57,9 @@ expectation.
   `traj κ b` gives the distribution of the whole trajectory.
 * `condExp_traj`: If `a ≤ b`, the conditional expectation of `f` with respect to `traj κ a`
   given the information up to time `b` is obtained by integrating `f` against `traj κ b`.
+* `condDistrib_trajMeasure`: a regular conditional probability distribution of the point at time
+  `a + 1` given the trajectory up to time `a` corresponds to the kernel `κ a`.
+
 
 ## Implementation notes
 
@@ -71,6 +80,8 @@ see Proposition 10.6.1 in [D. L. Cohn, *Measure Theory*][cohn2013measure].
 
 Ionescu-Tulcea theorem
 -/
+
+@[expose] public section
 
 open Filter Finset Function MeasurableEquiv MeasurableSpace MeasureTheory Preorder ProbabilityTheory
 
@@ -95,8 +106,8 @@ private lemma measure_cast {a b : ℕ} (h : a = b) (μ : (n : ℕ) → Measure (
   exact Measure.map_id
 
 private lemma heq_measurableSpace_Iic_pi {a b : ℕ} (h : a = b) :
-    HEq (inferInstance : MeasurableSpace (Π i : Iic a, X i))
-    (inferInstance : MeasurableSpace (Π i : Iic b, X i)) := by cases h; rfl
+    (inferInstance : MeasurableSpace (Π i : Iic a, X i)) ≍
+      (inferInstance : MeasurableSpace (Π i : Iic b, X i)) := by cases h; rfl
 
 end castLemmas
 
@@ -111,7 +122,7 @@ def iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
   | k + 1 => if h : k + 1 ≤ a
       then x ⟨k + 1, mem_Iic.2 h⟩
       else ind k (fun i ↦ iterateInduction x ind i)
-  decreasing_by exact Nat.lt_succ.2 (mem_Iic.1 i.2)
+  decreasing_by exact Nat.lt_succ_of_le (mem_Iic.1 i.2)
 
 lemma frestrictLe_iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
     (ind : (n : ℕ) → (Π i : Iic n, X i) → X (n + 1)) :
@@ -171,7 +182,7 @@ instance [∀ n, IsZeroOrProbabilityMeasure (μ n)] (I : Finset ℕ) :
 instance [∀ n, IsProbabilityMeasure (μ n)] (I : Finset ℕ) :
     IsProbabilityMeasure (inducedFamily μ I) := by
   rw [inducedFamily]
-  exact isProbabilityMeasure_map (measurable_restrict₂ _).aemeasurable
+  exact Measure.isProbabilityMeasure_map (measurable_restrict₂ _).aemeasurable
 
 /-- Given a family of measures `μ : (n : ℕ) → Measure (Π i : Iic n, X i)`, the induced family
 equals `μ` over the intervals `Iic n`. -/
@@ -191,7 +202,7 @@ theorem isProjectiveMeasureFamily_inducedFamily
   simp only [inducedFamily]
   rw [Measure.map_map, restrict₂_comp_restrict₂,
     ← restrict₂_comp_restrict₂ J.subset_Iic_sup_id (Iic_subset_Iic.2 sls), ← Measure.map_map,
-    ← frestrictLe₂, h (J.sup id) (I.sup id) sls]
+    ← frestrictLe₂.eq_def sls, h (J.sup id) (I.sup id) sls]
   all_goals fun_prop
 
 end MeasureTheory
@@ -217,7 +228,7 @@ lemma isProjectiveMeasureFamily_partialTraj {a : ℕ} (x₀ : Π i : Iic a, X i)
 trajectory up to time `a` we can construct an additive content over cylinders. It corresponds
 to composing the kernels, starting at time `a + 1`. -/
 noncomputable def trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
-    AddContent (measurableCylinders X) :=
+    AddContent ℝ≥0∞ (measurableCylinders X) :=
   projectiveFamilyContent (isProjectiveMeasureFamily_partialTraj κ x₀)
 
 variable {κ}
@@ -270,7 +281,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
     | hi m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
-      exact ProbabilityMeasure.nonempty ⟨κ m Classical.ofNonempty, inferInstance⟩
+      exact nonempty_of_isProbabilityMeasure (κ m Classical.ofNonempty)
   -- `Fₙ` is the integral of `fₙ` from time `k + 1` to `aₙ`.
   let F n : (Π n, X n) → ℝ≥0∞ := lmarginalPartialTraj κ (k + 1) (a n) (f n)
   -- `Fₙ` converges to `l` by hypothesis.
@@ -285,7 +296,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
     · rw [← h, lmarginalPartialTraj_le _ le_rfl (mf n)]
     · rw [lmarginalPartialTraj_le _ _ (mf n), (hcte n).lmarginalPartialTraj_of_le _ (mf n),
         (hcte n).lmarginalPartialTraj_of_le _ (mf n)]
-      all_goals omega
+      all_goals lia
   -- `F` is also a bounded sequence.
   have F_le n x : F n x ≤ bound := by
     simpa [F, lmarginalPartialTraj] using lintegral_le_const (ae_of_all _ fun z ↦ le_bound _ _)
@@ -320,10 +331,10 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
   -- as `Fₙ` technically depends on all the variables, but really depends only on the first `k + 1`.
   convert this using 1
   refine (hcte n).dependsOn_lmarginalPartialTraj _ (mf n) fun i hi ↦ ?_
-  simp only [update, updateFinset, mem_Iic, F]
+  simp only [update, updateFinset, mem_Iic]
   split_ifs with h1 h2 <;> try rfl
   rw [mem_coe, mem_Iic] at hi
-  omega
+  lia
 
 /-- This is the key theorem to prove the existence of the `traj`:
 the `trajContent` of a decreasing sequence of cylinders with empty intersection
@@ -342,7 +353,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     | hi m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
-      exact ProbabilityMeasure.nonempty ⟨κ m Classical.ofNonempty, inferInstance⟩
+      exact nonempty_of_isProbabilityMeasure (κ m Classical.ofNonempty)
   -- `Aₙ` is a cylinder, it can be written as `cylinder (Iic (a n)) Sₙ`.
   have A_cyl n : ∃ a S, MeasurableSet S ∧ A n = cylinder (Iic a) S := by
     simpa [measurableCylinders_nat] using A_mem n
@@ -382,7 +393,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     exact lmarginalPartialTraj_mono _ _ (χ_anti hmn) _
   -- Therefore it converges to some function `lₖ`.
   have this k x : ∃ l, Tendsto (fun n ↦ lmarginalPartialTraj κ k (a n) (χ n) x) atTop (𝓝 l) := by
-    obtain h | h := tendsto_of_antitone (anti_lma k x)
+    obtain h | h := tendsto_atTop_of_antitone (anti_lma k x)
     · rw [OrderBot.atBot_eq] at h
       exact ⟨0, h.mono_right <| pure_le_nhds 0⟩
     · exact h
@@ -406,7 +417,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   -- for any `k ≥ p` and `n`, integrating `χ n` from time `k` to time `a n`
   -- with the trajectory up to `k` being equal to `z` gives something greater than `ε`.
   choose! ind hind using
-    fun k y h ↦ le_lmarginalPartialTraj_succ χ_dep mχ (by norm_num : (1 : ℝ≥0∞) ≠ ∞)
+    fun k y h ↦ le_lmarginalPartialTraj_succ χ_dep mχ (by simp : (1 : ℝ≥0∞) ≠ ∞)
       χ_le (anti_lma (k + 1)) (hl (k + 1)) ε y h
   let z := iterateInduction x₀ ind
   have main k (hk : p ≤ k) : ∀ x n,
@@ -417,12 +428,11 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
       intro x n
       convert hind k (fun i ↦ z i.1) h x n
       ext i
-      simp only [updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite, update, χ, z]
+      simp only [updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite, update, z]
       split_ifs with h1 h2 h3 h4 h5
-      any_goals omega
-      any_goals rfl
+      any_goals lia
       cases h2
-      rw [iterateInduction, dif_neg (by omega)]
+      rw [iterateInduction, dif_neg (by lia)]
   -- We now want to prove that the integral of `χₙ`, which is equal to the `trajContent`
   -- of `Aₙ`, converges to `0`.
   have aux x n :
@@ -531,6 +541,13 @@ lemma traj_map_frestrictLe_of_le {a b : ℕ} (hab : a ≤ b) :
       deterministic (frestrictLe₂ hab) (measurable_frestrictLe₂ _) := by
   rw [traj_map_frestrictLe, partialTraj_le]
 
+/-- The pushforward of `traj κ a` along the the point at time `a + 1` is the kernel `κ a`. -/
+lemma map_traj_succ_self {a : ℕ} : (traj κ a).map (fun x ↦ x (a + 1)) = κ a := by
+  have hf : (fun x : Π n, X n ↦ x (a + 1)) =
+      (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) ∘ frestrictLe (a + 1) := rfl
+  rw [hf, map_comp_right _ (by fun_prop) (by fun_prop), traj_map_frestrictLe,
+    map_partialTraj_succ_self]
+
 variable (κ)
 
 /-- To check that `η = traj κ a` it is enough to show that the restriction of `η` to variables `≤ b`
@@ -592,6 +609,19 @@ section integral
 
 /-! ### Integrals and `traj` -/
 
+theorem lintegral_traj₀ {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → ℝ≥0∞}
+    (mf : AEMeasurable f (traj κ a x₀)) :
+    ∫⁻ x, f x ∂traj κ a x₀ = ∫⁻ x, f (updateFinset x (Iic a) x₀) ∂traj κ a x₀ := by
+  nth_rw 1 [← traj_map_updateFinset, MeasureTheory.lintegral_map']
+  · convert mf
+    exact traj_map_updateFinset x₀
+  · exact measurable_updateFinset_left.aemeasurable
+
+theorem lintegral_traj {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → ℝ≥0∞}
+    (mf : Measurable f) :
+    ∫⁻ x, f x ∂traj κ a x₀ = ∫⁻ x, f (updateFinset x (Iic a) x₀) ∂traj κ a x₀ :=
+  lintegral_traj₀ x₀ mf.aemeasurable
+
 variable {E : Type*} [NormedAddCommGroup E]
 
 theorem integrable_traj {a b : ℕ} (hab : a ≤ b) {f : (Π n, X n) → E}
@@ -626,15 +656,22 @@ lemma partialTraj_compProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X
     (partialTraj κ a b u) ⊗ₘ (traj κ b) = (traj κ a u).map (fun x ↦ (frestrictLe b x, x)) := by
   ext s ms
   rw [Measure.map_apply, Measure.compProd_apply, ← traj_comp_partialTraj hab, comp_apply']
-  · congr with x
+  · congr 1 with x
     rw [← traj_map_updateFinset, Measure.map_apply, Measure.map_apply]
-    · congr with y
+    · congr 1 with y
       simp only [Set.mem_preimage]
       congrm (fun i ↦ ?_, fun i ↦ ?_) ∈ s <;> simp [updateFinset]
     any_goals fun_prop
     all_goals exact ms.preimage (by fun_prop)
   any_goals exact ms.preimage (by fun_prop)
   fun_prop
+
+lemma partialTraj_compProd_eq_map_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π n : Iic a, X n} :
+    (partialTraj κ a b x₀) ⊗ₘ (κ b) = (traj κ a x₀).map (fun x ↦ (frestrictLe b x, x (b + 1))) := by
+  have hf : (fun x : Π n, X n ↦ (frestrictLe b x, x (b + 1))) =
+      (Prod.map id (fun x ↦ x (b + 1))) ∘ (fun x ↦ (frestrictLe b x, x)) := rfl
+  rw [hf, ← Measure.map_map (by fun_prop) (by fun_prop), ← partialTraj_compProd_traj hab,
+    ← Measure.compProd_map (by fun_prop), map_traj_succ_self]
 
 theorem integral_traj_partialTraj' {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     {f : (Π i : Iic b, X i) → (Π n : ℕ, X n) → E}
@@ -681,7 +718,7 @@ open Filtration
 
 theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     {f : (Π n, X n) → E} (i_f : Integrable f (traj κ a x₀)) :
-    (traj κ a x₀)[f|piLE b] =ᵐ[traj κ a x₀]
+    (traj κ a x₀)[f | piLE b] =ᵐ[traj κ a x₀]
       fun x ↦ ∫ y, f y ∂traj κ b (frestrictLe b x) := by
   have i_f' : Integrable (fun x ↦ ∫ y, f y ∂(traj κ b) x)
       (((traj κ a) x₀).map (frestrictLe b)) := by
@@ -700,12 +737,12 @@ theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
 
 theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
     (x₀ : Π i : Iic a, X i) (f : (Π n, X n) → E) :
-    (traj κ a x₀)[f|piLE b] =ᵐ[traj κ a x₀]
-      fun x ↦ ∫ y, ((traj κ a x₀)[f|piLE c]) (updateFinset x (Iic c) y)
+    (traj κ a x₀)[f | piLE b] =ᵐ[traj κ a x₀]
+      fun x ↦ ∫ y, ((traj κ a x₀)[f | piLE c]) (updateFinset x (Iic c) y)
         ∂partialTraj κ b c (frestrictLe b x) := by
-  have i_cf : Integrable ((traj κ a x₀)[f|piLE c]) (traj κ a x₀) :=
+  have i_cf : Integrable ((traj κ a x₀)[f | piLE c]) (traj κ a x₀) :=
     integrable_condExp
-  have mcf : StronglyMeasurable ((traj κ a x₀)[f|piLE c]) :=
+  have mcf : StronglyMeasurable ((traj κ a x₀)[f | piLE c]) :=
     stronglyMeasurable_condExp.mono (piLE.le c)
   filter_upwards [piLE.condExp_condExp f hbc, condExp_traj hab i_cf] with x h1 h2
   rw [← h1, h2, ← traj_map_frestrictLe, Kernel.map_apply, integral_map]
@@ -717,5 +754,41 @@ theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
   exact (mcf.comp_measurable measurable_updateFinset).aestronglyMeasurable
 
 end integral
+
+section trajMeasure
+
+/-- Distribution of the trajectory obtained by starting with `μ₀` and iterating the kernels `κ`. -/
+noncomputable
+def trajMeasure (μ₀ : Measure (X 0)) (κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1)))
+    [∀ n, IsMarkovKernel (κ n)] :
+    Measure (Π n, X n) :=
+  (traj κ 0) ∘ₘ (μ₀.map (MeasurableEquiv.piUnique _).symm)
+
+variable {μ₀ : Measure (X 0)} [IsProbabilityMeasure μ₀]
+
+instance : IsProbabilityMeasure (trajMeasure μ₀ κ) := by
+  rw [trajMeasure]
+  have : IsProbabilityMeasure (μ₀.map (MeasurableEquiv.piUnique ((fun i : Iic 0 ↦ X i))).symm) :=
+    Measure.isProbabilityMeasure_map <| by fun_prop
+  infer_instance
+
+lemma map_frestrictLe_trajMeasure_compProd_eq_map_trajMeasure {a : ℕ} :
+    (trajMeasure μ₀ κ).map (frestrictLe a) ⊗ₘ κ a =
+      (trajMeasure μ₀ κ).map (fun x ↦ (frestrictLe a x, x (a + 1))) := by
+  rw [Measure.compProd_eq_comp_prod, trajMeasure, Measure.map_comp _ _ (by fun_prop),
+    traj_map_frestrictLe, Measure.comp_assoc, Measure.map_comp _ _ (by fun_prop)]
+  congr with x₀ : 1
+  rw [comp_apply, ← Measure.compProd_eq_comp_prod, map_apply _ (by fun_prop),
+    partialTraj_compProd_eq_map_traj zero_le']
+
+/-- A regular conditional probability distribution of the point at time `a + 1` given the
+trajectory up to time `a` corresponds to the kernel `κ a`. -/
+lemma condDistrib_trajMeasure {a : ℕ} [StandardBorelSpace (X (a + 1))] [Nonempty (X (a + 1))] :
+    condDistrib (fun x ↦ x (a + 1)) (frestrictLe a) (trajMeasure μ₀ κ)
+      =ᵐ[(trajMeasure μ₀ κ).map (frestrictLe a)] κ a := by
+  apply condDistrib_ae_eq_of_measure_eq_compProd_of_measurable (by fun_prop) (by fun_prop)
+  exact map_frestrictLe_trajMeasure_compProd_eq_map_trajMeasure.symm
+
+end trajMeasure
 
 end ProbabilityTheory.Kernel

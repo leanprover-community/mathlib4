@@ -3,10 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Discrete.Basic
-import Mathlib.Condensed.TopComparison
-import Mathlib.Topology.Category.CompHausLike.SigmaComparison
-import Mathlib.Topology.FiberPartition
+module
+
+public import Mathlib.Condensed.Discrete.Basic
+public import Mathlib.Condensed.TopComparison
+public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
+public import Mathlib.Topology.FiberPartition
 /-!
 
 # The sheaf of locally constant maps on `CompHausLike P`
@@ -23,7 +25,7 @@ the functor of sheaves of locally constant maps described above.
 
 The hard part of this adjunction is to define the counit. Its components are defined as follows:
 
-Let `S : CompHausLike P` and let `Y` be a finite-product preserving presheaf on `CompHausLike P`
+Let `S : CompHausLike P` and let `Y` be a finite-product-preserving presheaf on `CompHausLike P`
 (e.g. a sheaf for the coherent topology). We need to define a map `LocallyConstant S Y(*) ⟶ Y(S)`.
 Given a locally constant map `f : S → Y(*)`, let `S = S₁ ⊔ ⋯ ⊔ Sₙ` be the corresponding
 decomposition of `S` into the fibers. Let `yᵢ ∈ Y(*)` denote the value of `f` on `Sᵢ` and denote
@@ -65,6 +67,8 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
 
 -/
 
+@[expose] public section
+
 universe u w
 
 open CategoryTheory Limits LocallyConstant TopologicalSpace.Fiber Opposite Function Fiber
@@ -81,7 +85,7 @@ maps.
 def functorToPresheaves : Type (max u w) ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w) where
   obj X := {
     obj := fun ⟨S⟩ ↦ LocallyConstant S X
-    map := fun f g ↦ g.comap f.unop.hom }
+    map := fun f g ↦ g.comap f.unop.hom.hom }
   map f := { app := fun _ t ↦ t.map f }
 
 /--
@@ -122,7 +126,7 @@ lemma sigmaComparison_comp_sigmaIso [HasExplicitFiniteCoproducts.{u} P]
     (X.mapIso (sigmaIso r).op).hom ≫ sigmaComparison X (fun a ↦ (fiber r a).1) ≫
       (fun g ↦ g a) = X.map (sigmaIncl r a).op := by
   ext
-  simp only [Functor.mapIso_hom, Iso.op_hom, types_comp_apply, sigmaComparison, coe_of,
+  simp only [Functor.mapIso_hom, Iso.op_hom, types_comp_apply, sigmaComparison,
     ← FunctorToTypes.map_comp_apply]
   rfl
 
@@ -178,21 +182,21 @@ variable {T : CompHausLike.{u} P} (g : T ⟶ S)
 This is an auxiliary definition, the details do not matter. What's important is that this map exists
 so that the lemma `incl_comap` works.
 -/
-def componentHom (a : Fiber (f.comap g.hom)) :
+noncomputable def componentHom (a : Fiber (f.comap g.hom.hom)) :
     fiber _ a ⟶ fiber _ (Fiber.mk f (g a.preimage)) :=
-  TopCat.ofHom
+  ConcreteCategory.ofHom
   { toFun x := ⟨g x.val, by
       simp only [Fiber.mk, Set.mem_preimage, Set.mem_singleton_iff]
       convert map_eq_image _ _ x
       exact map_preimage_eq_image_map _ _ a⟩
     continuous_toFun := by
-      exact Continuous.subtype_mk (g.hom.continuous.comp continuous_subtype_val) _ }
       -- term mode gives "unknown free variable" error.
+      exact Continuous.subtype_mk (by fun_prop) _ }
 
 lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
     (f : LocallyConstant S.unop (Y.obj (op (CompHausLike.of P PUnit.{u + 1}))))
-      (g : S ⟶ T) (a : Fiber (f.comap g.unop.hom)) :
-        g ≫ (sigmaIncl (f.comap g.unop.hom) a).op =
+      (g : S ⟶ T) (a : Fiber (f.comap g.unop.hom.hom)) :
+        g ≫ (sigmaIncl (f.comap g.unop.hom.hom) a).op =
           (sigmaIncl f _).op ≫ (componentHom f g.unop a).op :=
   rfl
 
@@ -205,13 +209,12 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
   naturality := by
     intro S T g
     ext f
-    apply presheaf_ext (f.comap g.unop.hom)
+    apply presheaf_ext (f.comap g.unop.hom.hom)
     intro a
     simp only [op_unop, functorToPresheaves_obj_obj, types_comp_apply, functorToPresheaves_obj_map,
       incl_of_counitAppApp, ← FunctorToTypes.map_comp_apply, incl_comap]
     simp only [FunctorToTypes.map_comp_apply, incl_of_counitAppApp]
-    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
-      terminal.comp_from]
+    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp]
     apply congrArg
     exact image_eq_image_mk (g := g.unop) (a := a)
 
@@ -256,7 +259,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
   naturality X Y g := by
     have := CompHausLike.preregular hs
     apply Sheaf.hom_ext
-    simp only [functor, id_eq, eq_mpr_eq_cast, Functor.comp_obj, Functor.flip_obj_obj,
+    simp only [functor, Functor.comp_obj, Functor.flip_obj_obj,
       sheafToPresheaf_obj, Functor.id_obj, Functor.comp_map, Functor.flip_obj_map,
       sheafToPresheaf_map, Sheaf.comp_val, Functor.id_map]
     ext S (f : LocallyConstant _ _)
@@ -264,17 +267,17 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     apply presheaf_ext (f.map (g.val.app (op (CompHausLike.of P PUnit.{u + 1}))))
     intro a
     simp only [op_unop, functorToPresheaves_map_app, incl_of_counitAppApp]
-    apply presheaf_ext (f.comap (sigmaIncl _ _).hom)
+    apply presheaf_ext (f.comap (sigmaIncl _ _).hom.hom)
     intro b
-    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp, CompHausLike.coe_of,
+    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
       map_apply, IsTerminal.comp_from, ← map_preimage_eq_image_map]
     change (_ ≫ Y.val.map _) _ = (_ ≫ Y.val.map _) _
     simp only [← g.val.naturality]
-    rw [show sigmaIncl (f.comap (sigmaIncl (f.map _) a).hom) b ≫ sigmaIncl (f.map _) a =
+    rw [show sigmaIncl (f.comap (sigmaIncl (f.map _) a).hom.hom) b ≫ sigmaIncl (f.map _) a =
         CompHausLike.ofHom P (X := fiber _ b) (sigmaInclIncl f _ a b) ≫ sigmaIncl f (Fiber.mk f _)
       by ext; rfl]
     simp only [op_comp, Functor.map_comp, types_comp_apply, incl_of_counitAppApp]
-    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp, terminal.comp_from]
+    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp]
     rw [mk_image]
     change (X.val.map _ ≫ _) _ = (X.val.map _ ≫ _) _
     simp only [g.val.naturality]
@@ -288,7 +291,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     exact (mem_iff_eq_image (g.val.app _ ∘ f) _ _).symm
 
 /--
-The unit of the adjunciton is given by mapping each element to the corresponding constant map.
+The unit of the adjunction is given by mapping each element to the corresponding constant map.
 -/
 @[simps]
 def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩ where
@@ -313,7 +316,7 @@ lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
       (f.map ((unit P hs).app X))
   intro a
   erw [incl_of_counitAppApp]
-  simp only [functor_obj_val, functorToPresheaves_obj_obj, coe_of, Functor.id_obj,
+  simp only [functor_obj_val, functorToPresheaves_obj_obj, Functor.id_obj,
     counitAppAppImage, LocallyConstant.map_apply, functorToPresheaves_obj_map, Quiver.Hom.unop_op]
   ext x
   erw [← map_eq_image _ a x]
@@ -329,9 +332,8 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
   counit := counit P hs
   left_triangle_components := by
     intro X
-    simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.flip_obj_obj,
-      sheafToPresheaf_obj, functor_obj_val, functorToPresheaves_obj_obj, coe_of, whiskerRight_app,
-      Functor.associator_hom_app, whiskerLeft_app, Category.id_comp, NatTrans.id_app']
+    simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj, sheafToPresheaf_obj,
+      functor_obj_val, functorToPresheaves_obj_obj]
     apply Sheaf.hom_ext
     rw [Sheaf.comp_val, Sheaf.id_val]
     exact adjunction_left_triangle P hs X
@@ -339,16 +341,15 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
     intro X
     ext (x : X.val.obj _)
     simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj, sheafToPresheaf_obj,
-      FunctorToTypes.comp, whiskerLeft_app, unit_app, coe_of, Functor.associator_inv_app,
-      functor_obj_val, functorToPresheaves_obj_obj, types_id_apply, whiskerRight_app,
-      Functor.flip_obj_map, sheafToPresheaf_map, counit_app_val, counitApp_app, NatTrans.id_app']
+      functor_obj_val, functorToPresheaves_obj_obj, types_id_apply,
+      Functor.flip_obj_map, sheafToPresheaf_map, counit_app_val]
     have := CompHausLike.preregular hs
     letI : PreservesFiniteProducts ((sheafToPresheaf (coherentTopology _) _).obj X) :=
       inferInstanceAs (PreservesFiniteProducts (Sheaf.val _))
     apply presheaf_ext ((unit P hs).app _ x)
     intro a
     erw [incl_of_counitAppApp]
-    simp only [sheafToPresheaf_obj, unit_app, coe_of, counitAppAppImage, coe_const]
+    simp only [unit_app, counitAppAppImage, coe_const]
     erw [← map_eq_image _ a ⟨PUnit.unit, by simp [mem_iff_eq_image, ← map_preimage_eq_image]⟩]
     rfl
 
@@ -370,7 +371,6 @@ abbrev functor : Type (u + 1) ⥤ CondensedSet.{u} :=
   CompHausLike.LocallyConstant.functor.{u, u + 1} (P := fun _ ↦ True)
     (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /--
 `CondensedSet.LocallyConstant.functor` is isomorphic to `Condensed.discrete`
 (by uniqueness of adjoints).
@@ -386,10 +386,8 @@ noncomputable instance : functor.Faithful := functorFullyFaithful.faithful
 
 noncomputable instance : functor.Full := functorFullyFaithful.full
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (discrete (Type _)).Faithful := Functor.Faithful.of_iso iso
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 noncomputable instance : (discrete (Type _)).Full := Functor.Full.of_iso iso
 
 end CondensedSet.LocallyConstant
@@ -407,7 +405,6 @@ instance (S : LightProfinite.{u}) (p : S → Prop) :
   ⟨⟨(inferInstance : TotallyDisconnectedSpace (Subtype p)),
     (inferInstance : SecondCountableTopology {s | p s})⟩⟩
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /--
 `LightCondSet.LocallyConstant.functor` is isomorphic to `LightCondensed.discrete`
 (by uniqueness of adjoints).
@@ -423,10 +420,8 @@ instance : functor.{u}.Faithful := functorFullyFaithful.faithful
 
 instance : LightCondSet.LocallyConstant.functor.Full := functorFullyFaithful.full
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (LightCondensed.discrete (Type u)).Faithful := Functor.Faithful.of_iso iso.{u}
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (LightCondensed.discrete (Type u)).Full := Functor.Full.of_iso iso.{u}
 
 end LightCondSet.LocallyConstant

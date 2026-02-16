@@ -3,13 +3,16 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Analysis.NormedSpace.FunctionSeries
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Ordered
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.GDelta.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Ordered
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Urysohn's lemma
@@ -78,6 +81,8 @@ lemmas about `midpoint`.
 
 Urysohn's lemma, normal topological space, locally compact topological space
 -/
+
+@[expose] public section
 
 
 variable {X : Type*} [TopologicalSpace X]
@@ -172,8 +177,6 @@ theorem approx_of_notMem_U (c : CU P) (n : ℕ) {x : X} (hx : x ∉ c.U) : c.app
     rw [ihn, ihn, midpoint_self]
     exacts [hx, fun hU => hx <| c.left_U_subset hU]
 
-@[deprecated (since := "2025-05-24")] alias approx_of_nmem_U := approx_of_notMem_U
-
 theorem approx_nonneg (c : CU P) (n : ℕ) (x : X) : 0 ≤ c.approx n x := by
   induction n generalizing c with
   | zero => exact indicator_nonneg (fun _ _ => zero_le_one) _
@@ -207,8 +210,10 @@ theorem approx_mem_Icc_right_left (c : CU P) (n : ℕ) (x : X) :
     c.approx n x ∈ Icc (c.right.approx n x) (c.left.approx n x) := by
   induction n generalizing c with
   | zero =>
-    exact ⟨le_rfl, indicator_le_indicator_of_subset (compl_subset_compl.2 c.left_U_subset)
-      (fun _ => zero_le_one) _⟩
+    simp only [approx]
+    refine ⟨le_rfl, ?_⟩
+    grw [left_U_subset]
+    rw [Pi.one_apply]; positivity -- TODO: `positivity` doesn't prove that `1 x` is nonnegative
   | succ n ihn =>
     simp only [approx, mem_Icc]
     refine ⟨midpoint_le_midpoint ?_ (ihn _).1, midpoint_le_midpoint (ihn _).2 ?_⟩ <;>
@@ -247,8 +252,6 @@ theorem disjoint_C_support_lim (c : CU P) : Disjoint c.C (Function.support c.lim
 
 theorem lim_of_notMem_U (c : CU P) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
   simp only [CU.lim, approx_of_notMem_U c _ h, ciSup_const]
-
-@[deprecated (since := "2025-05-24")] alias lim_of_nmem_U := lim_of_notMem_U
 
 theorem lim_eq_midpoint (c : CU P) (x : X) :
     c.lim x = midpoint ℝ (c.left.lim x) (c.right.lim x) := by
@@ -299,13 +302,10 @@ theorem continuous_lim (c : CU P) : Continuous c.lim := by
         compl_subset_compl.2 c.left.left_U_subset_right_C hyl
       simp only [pow_succ, c.lim_eq_midpoint, c.left.lim_eq_midpoint,
         c.left.left.lim_of_notMem_U _ hxl, c.left.left.lim_of_notMem_U _ hyl]
-      refine (dist_midpoint_midpoint_le _ _ _ _).trans ?_
-      refine (div_le_div_of_nonneg_right (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)
-        zero_le_two).trans ?_
-      rw [dist_self, zero_add]
+      grw [dist_midpoint_midpoint_le, dist_midpoint_midpoint_le, dist_self, zero_add]
       set r := (3 / 4 : ℝ) ^ n
       calc _ ≤ (r / 2 + r) / 2 := by gcongr
-        _ = _ := by field_simp; ring
+        _ = _ := by ring
 
 end CU
 
@@ -385,7 +385,7 @@ theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompac
   refine ⟨?_, ?_, ?_⟩
   · intro x hx
     simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, Pi.zero_apply]
-    exact sub_eq_zero_of_eq (id (EqOn.symm hgt) hx)
+    exact sub_eq_zero_of_eq (hgt.symm hx)
   · intro x hx
     simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, Pi.one_apply, sub_eq_self]
     exact hgs hx
@@ -408,7 +408,7 @@ theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompact
   rcases exists_continuous_zero_one_of_isCompact hs isOpen_interior.isClosed_compl
     (disjoint_compl_right_iff_subset.mpr sk) with ⟨⟨f, hf⟩, hfs, hft, h'f⟩
   have A : t ⊆ (interior k)ᶜ := subset_compl_comm.mpr (interior_subset.trans kt)
-  refine ⟨⟨fun x ↦ 1 - f x, continuous_const.sub hf⟩, fun x hx ↦ by simpa using hfs hx,
+  refine ⟨⟨fun x ↦ 1 - f x, by fun_prop⟩, fun x hx ↦ by simpa using hfs hx,
     fun x hx ↦ by simpa [sub_eq_zero] using (hft (A hx)).symm, ?_, fun x ↦ ?_⟩
   · apply HasCompactSupport.intro' k_comp k_closed (fun x hx ↦ ?_)
     simp only [ContinuousMap.coe_mk, sub_eq_zero]
@@ -457,7 +457,7 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
   have S x : Summable (fun n ↦ u n * f n x) := Summable.of_nonneg_of_le
       (fun n ↦ mul_nonneg (u_pos n).le (f_range n x).1) (fun n ↦ I n x) u_sum
   refine ⟨⟨g, ?_⟩, ?_, hgmc.mono (subset_compl_comm.mp mt), ?_, fun x ↦ ⟨?_, ?_⟩⟩
-  · apply continuous_tsum (fun n ↦ continuous_const.mul (f n).continuous) u_sum (fun n x ↦ ?_)
+  · apply continuous_tsum (fun n ↦ by fun_prop) u_sum (fun n x ↦ ?_)
     simpa [abs_of_nonneg, (u_pos n).le, (f_range n x).1] using I n x
   · apply Subset.antisymm (fun x hx ↦ by simp [g, fs _ hx, hu]) ?_
     apply compl_subset_compl.1
@@ -474,10 +474,10 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
   · apply le_trans _ hu.le
     exact (S x).tsum_le_tsum (fun n ↦ I n x) u_sum
 
-/-- A variation of Urysohn's lemma. In a `T2Space X`, for a closed set `t` and a relatively
+/-- A variation of Urysohn's lemma. In a `R1Space X`, for a closed set `t` and a relatively
 compact open set `s` such that `t ⊆ s`, there is a continuous function `f` supported in `s`,
 `f x = 1` on `t` and `0 ≤ f x ≤ 1`. -/
-lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
+lemma exists_tsupport_one_of_isOpen_isClosed [R1Space X] {s t : Set X}
     (hs : IsOpen s) (hscp : IsCompact (closure s)) (ht : IsClosed t) (hst : t ⊆ s) :
     ∃ f : C(X, ℝ), tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
 -- separate `sᶜ` and `t` by `u` and `v`.
@@ -522,6 +522,20 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
     apply Urysohns.CU.lim_of_notMem_U
     exact notMem_compl_iff.mpr hx
 
+/-- A variation of **Urysohn's lemma**. In a Hausdorff locally compact space, for a compact set `K`
+contained in an open set `V`, there exists a compactly supported continuous function `f` such that
+`0 ≤ f ≤ 1`, `f = 1` on K and the support of `f` is contained in `V`. -/
+lemma exists_continuousMap_one_of_isCompact_subset_isOpen [R1Space X] [LocallyCompactSpace X]
+    {K V : Set X} (hK : IsCompact K) (hV : IsOpen V) (hKV : K ⊆ V) :
+    ∃ f : C(X, ℝ), Set.EqOn f 1 K ∧ IsCompact (tsupport f) ∧
+      tsupport f ⊆ V ∧ ∀ x, f x ∈ Set.Icc 0 1 := by
+  obtain ⟨U, hU1, hU2, hU3, hU4⟩ := exists_open_between_and_isCompact_closure hK hV hKV
+  obtain ⟨f, hf1, hf2, hf3⟩ := exists_tsupport_one_of_isOpen_isClosed hU1 hU4
+    isClosed_closure (hK.closure_subset_of_isOpen hU1 hU2)
+  have hfU : tsupport f ⊆ closure U := hf1.trans subset_closure
+  exact ⟨f, hf2.mono subset_closure,
+    .of_isClosed_subset hU4 isClosed_closure hfU, hfU.trans hU3, hf3⟩
+
 theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x : X) :
     ∃ f : C(X, ℝ), HasCompactSupport f ∧ 0 ≤ (f : X → ℝ) ∧ f x ≠ 0 := by
   rcases exists_compact_mem_nhds x with ⟨k, hk, k_mem⟩
@@ -529,5 +543,5 @@ theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x
     with ⟨f, fk, -, f_comp, hf⟩
   refine ⟨f, f_comp, fun x ↦ (hf x).1, ?_⟩
   have := fk (mem_of_mem_nhds k_mem)
-  simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
+  simp only [Pi.one_apply] at this
   simp [this]

@@ -3,12 +3,14 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Dynamics.FixedPoints.Prufer
-import Mathlib.Dynamics.Ergodic.Ergodic
-import Mathlib.MeasureTheory.Covering.DensityTheorem
-import Mathlib.MeasureTheory.Group.AddCircle
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Dynamics.FixedPoints.Prufer
+public import Mathlib.Dynamics.Ergodic.Ergodic
+public import Mathlib.MeasureTheory.Covering.DensityTheorem
+public import Mathlib.MeasureTheory.Group.AddCircle
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Ergodic maps of the additive circle
@@ -18,15 +20,17 @@ This file contains proofs of ergodicity for maps of the additive circle.
 ## Main definitions:
 
 * `AddCircle.ergodic_zsmul`: given `n : ℤ` such that `1 < |n|`, the self map `y ↦ n • y` on
-  the additive circle is ergodic (wrt the Haar measure).
+  the additive circle is ergodic (w.r.t. the Haar measure).
 * `AddCircle.ergodic_nsmul`: given `n : ℕ` such that `1 < n`, the self map `y ↦ n • y` on
-  the additive circle is ergodic (wrt the Haar measure).
+  the additive circle is ergodic (w.r.t. the Haar measure).
 * `AddCircle.ergodic_zsmul_add`: given `n : ℤ` such that `1 < |n|` and `x : AddCircle T`, the
-  self map `y ↦ n • y + x` on the additive circle is ergodic (wrt the Haar measure).
+  self map `y ↦ n • y + x` on the additive circle is ergodic (w.r.t. the Haar measure).
 * `AddCircle.ergodic_nsmul_add`: given `n : ℕ` such that `1 < n` and `x : AddCircle T`, the
-  self map `y ↦ n • y + x` on the additive circle is ergodic (wrt the Haar measure).
+  self map `y ↦ n • y + x` on the additive circle is ergodic (w.r.t. the Haar measure).
 
 -/
+
+public section
 
 
 open Set Function MeasureTheory MeasureTheory.Measure Filter Metric
@@ -77,7 +81,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
       ext j
       simp only [δ, Pi.inv_apply, mul_inv_rev, inv_inv, div_eq_inv_mul, ← mul_assoc]
     have hw : ∀ᶠ j in l, d ∈ closedBall d (1 * δ j) := hδ₀.mono fun j hj => by
-      simp only [comp_apply, one_mul, mem_closedBall, dist_self]
+      simp only [one_mul, mem_closedBall, dist_self]
       apply hj.le
     exact hd _ δ hδ₁ hw
   suffices ∀ᶠ j in l, μ (s ∩ I j) / μ (I j) = μ s / ENNReal.ofReal T by
@@ -113,7 +117,7 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
       have hu₁ : ∀ j, (u j +ᵥ s : Set _) =ᵐ[volume] s := fun j => by
         rw [vadd_eq_self_of_preimage_zsmul_eq_self hs' (hnu j)]
       have hu₂ : Tendsto (fun j => addOrderOf <| u j) atTop atTop := by
-        simp_rw [hu₀]; exact Nat.tendsto_pow_atTop_atTop_of_one_lt hn
+        simp_rw [hu₀]; exact tendsto_pow_atTop_atTop_of_one_lt hn
       rw [eventuallyConst_set']
       exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hs.nullMeasurableSet hu₁ hu₂ }
 

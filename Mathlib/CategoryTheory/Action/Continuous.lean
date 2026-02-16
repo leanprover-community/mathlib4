@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Action.Basic
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+module
+
+public import Mathlib.CategoryTheory.Action.Basic
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 
@@ -25,9 +27,12 @@ of `HasForget₂` instances.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits
 
-variable (V : Type*) [Category V] [HasForget V] [HasForget₂ V TopCat]
+variable (V : Type*) [Category* V] {FV : V → V → Type*} {CV : V → Type*}
+    [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV] [HasForget₂ V TopCat]
 variable (G : Type*) [Monoid G] [TopologicalSpace G]
 
 namespace Action
@@ -38,10 +43,10 @@ instance : HasForget₂ (Action V G) TopCat :=
 instance (X : Action V G) : MulAction G ((CategoryTheory.forget₂ _ TopCat).obj X) where
   smul g x := ((CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
   one_smul x := by
-    show ((CategoryTheory.forget₂ _ TopCat).map (X.ρ 1)) x = x
+    change ((CategoryTheory.forget₂ _ TopCat).map (X.ρ 1)) x = x
     simp
   mul_smul g h x := by
-    show (CategoryTheory.forget₂ _ TopCat).map (X.ρ (g * h)) x =
+    change (CategoryTheory.forget₂ _ TopCat).map (X.ρ (g * h)) x =
       ((CategoryTheory.forget₂ _ TopCat).map (X.ρ h) ≫
         (CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
     rw [← Functor.map_comp, map_mul]
@@ -65,23 +70,9 @@ open Action
 
 /-- For `HasForget₂ V TopCat`, this is the full subcategory of `Action V G` where the induced
 action is continuous. -/
-def ContAction : Type _ := ObjectProperty.FullSubcategory (IsContinuous (V := V) (G := G))
+abbrev ContAction : Type _ := ObjectProperty.FullSubcategory (IsContinuous (V := V) (G := G))
 
 namespace ContAction
-
-instance : Category (ContAction V G) :=
-  ObjectProperty.FullSubcategory.category (IsContinuous (V := V) (G := G))
-
-instance : HasForget (ContAction V G) :=
-  FullSubcategory.hasForget (IsContinuous (V := V) (G := G))
-
-instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
-    [ConcreteCategory V FV] :
-    ConcreteCategory (ContAction V G) (fun X Y => Action.HomSubtype V G X.1 Y.1) :=
-  FullSubcategory.concreteCategory (IsContinuous (V := V) (G := G))
-
-instance : HasForget₂ (ContAction V G) (Action V G) :=
-  FullSubcategory.hasForget₂ (IsContinuous (V := V) (G := G))
 
 instance : HasForget₂ (ContAction V G) V :=
   HasForget₂.trans (ContAction V G) (Action V G) V
@@ -113,7 +104,7 @@ def res (f : G →ₜ* H) : ContAction V H ⥤ ContAction V G :=
     let u : H × (forget₂ _ TopCat).obj X → (forget₂ _ TopCat).obj X :=
       fun p ↦ (forget₂ _ TopCat).map (X.obj.ρ p.1) p.2
     have : Continuous u := X.2.1
-    show Continuous (u ∘ v)
+    change Continuous (u ∘ v)
     fun_prop
 
 /-- Restricting scalars along a composition is naturally isomorphic to restricting scalars twice. -/
@@ -127,10 +118,7 @@ def resComp {K : Type*} [Monoid K] [TopologicalSpace K]
 @[simps! hom inv]
 def resCongr (f f' : G →ₜ* H) (h : f = f') : ContAction.res V f ≅ ContAction.res V f' :=
   NatIso.ofComponents (fun _ ↦ ObjectProperty.isoMk _ (Action.mkIso (Iso.refl _)
-    (by subst h; simp))) fun f ↦ by
-      apply Action.Hom.ext
-      rw [ObjectProperty.FullSubcategory.comp_def, ObjectProperty.FullSubcategory.comp_def]
-      simp
+    (by subst h; simp))) fun f ↦ ObjectProperty.hom_ext _ (Action.Hom.ext (by simp))
 
 /-- Restriction of scalars along a topological monoid isomorphism induces an equivalence of
 categories. -/
@@ -142,7 +130,6 @@ def resEquiv (f : G ≃ₜ* H) : ContAction V H ≌ ContAction V G where
     ContAction.resComp _ _ _
   counitIso := (ContAction.resComp _ _ _).symm ≪≫
     ContAction.resCongr V _ (ContinuousMonoidHom.id G) (by ext; simp)
-  functor_unitIso_comp X := (Action.resEquiv V f.toMulEquiv).functor_unitIso_comp X.obj
 
 end ContAction
 
@@ -156,12 +143,9 @@ namespace DiscreteContAction
 instance : Category (DiscreteContAction V G) :=
   ObjectProperty.FullSubcategory.category (IsDiscrete (V := V) (G := G))
 
-instance : HasForget (DiscreteContAction V G) :=
-  FullSubcategory.hasForget (IsDiscrete (V := V) (G := G))
+example : HasForget₂ V TopCat := inferInstance
 
-instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
-    [ConcreteCategory V FV] :
-    ConcreteCategory (DiscreteContAction V G) (fun X Y => Action.HomSubtype V G X.1 Y.1) :=
+instance : ConcreteCategory (DiscreteContAction V G) (fun X Y => Action.HomSubtype V G X.1 Y.1) :=
   FullSubcategory.concreteCategory (IsDiscrete (V := V) (G := G))
 
 instance : HasForget₂ (DiscreteContAction V G) (ContAction V G) :=
@@ -180,9 +164,12 @@ end DiscreteContAction
 
 namespace CategoryTheory
 
-variable {V W : Type*} [Category V] [HasForget V] [HasForget₂ V TopCat]
-  [Category W] [HasForget W] [HasForget₂ W TopCat]
-  (G : Type*) [Monoid G] [TopologicalSpace G]
+variable {V W : Type*} [Category* V] {FV : V → V → Type*} {CV : V → Type*}
+    [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
+    [ConcreteCategory V FV] [HasForget₂ V TopCat]
+    [Category* W] {FW : W → W → Type*} {CW : W → Type*} [∀ X Y, FunLike (FW X Y) (CW X) (CW Y)]
+    [ConcreteCategory W FW] [HasForget₂ W TopCat]
+    (G : Type*) [Monoid G] [TopologicalSpace G]
 
 namespace Functor
 
@@ -194,7 +181,9 @@ def mapContAction (F : V ⥤ W) (H : ∀ X : ContAction V G, ((F.mapAction G).ob
 
 /-- Continuous version of `Functor.mapActionComp`. -/
 @[simps! hom inv]
-def mapContActionComp {T : Type*} [Category T] [HasForget T] [HasForget₂ T TopCat]
+def mapContActionComp {T : Type*} [Category* T]
+    {FT : T → T → Type*} {CT : T → Type*} [∀ X Y, FunLike (FT X Y) (CT X) (CT Y)]
+    [ConcreteCategory T FT] [HasForget₂ T TopCat]
     (F : V ⥤ W) (H : ∀ X : ContAction V G, ((F.mapAction G).obj X.obj).IsContinuous)
     (F' : W ⥤ T) (H' : ∀ X : ContAction W G, ((F'.mapAction G).obj X.obj).IsContinuous) :
     Functor.mapContAction G (F ⋙ F') (fun X ↦ H' ((F.mapContAction G H).obj X)) ≅
@@ -208,8 +197,7 @@ def mapContActionCongr
     (H : ∀ X : ContAction V G, ((F.mapAction G).obj X.obj).IsContinuous)
     (H' : ∀ X : ContAction V G, ((F'.mapAction G).obj X.obj).IsContinuous) :
     Functor.mapContAction G F H ≅ Functor.mapContAction G F' H' :=
-  NatIso.ofComponents (fun X ↦ ObjectProperty.isoMk _ (Action.mkIso (e.app X.obj.V) (by simp))) <|
-    (fun f ↦ (Functor.mapActionCongr G e).hom.naturality f)
+  NatIso.ofComponents (fun X ↦ ObjectProperty.isoMk _ (Action.mkIso (e.app X.obj.V) (by simp)))
 
 end Functor
 
@@ -222,10 +210,9 @@ def Equivalence.mapContAction (E : V ≌ W)
   functor := E.functor.mapContAction G H₁
   inverse := E.inverse.mapContAction G H₂
   unitIso := Functor.mapContActionCongr G E.unitIso
-      (fun X ↦ X.2) (fun X ↦ H₂ ((E.functor.mapContAction G H₁).obj X))  ≪≫
+      (fun X ↦ X.2) (fun X ↦ H₂ ((E.functor.mapContAction G H₁).obj X)) ≪≫
     Functor.mapContActionComp G _ _ _ _
   counitIso := (Functor.mapContActionComp G _ _ _ _).symm ≪≫
     Functor.mapContActionCongr G E.counitIso _ (fun X ↦ X.2)
-  functor_unitIso_comp X := (E.mapAction G).functor_unitIso_comp X.obj
 
 end CategoryTheory

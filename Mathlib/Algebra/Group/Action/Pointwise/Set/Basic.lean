@@ -3,13 +3,15 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.Set.Pairwise.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise actions on sets
@@ -19,13 +21,15 @@ of `α`/`Set α` on `Set β`.
 
 ## Implementation notes
 
-* We put all instances in the locale `Pointwise`, so that these instances are not available by
+* We put all instances in the scope `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-  since we expect the locale to be open whenever the instances are actually used (and making the
-  instances reducible changes the behavior of `simp`.
+  since we expect the scope to be open whenever the instances are actually used (and making the
+  instances reducible changes the behavior of `simp`).
 -/
 
-assert_not_exists MonoidWithZero OrderedAddCommMonoid
+@[expose] public section
+
+assert_not_exists MonoidWithZero IsOrderedMonoid
 
 open Function MulOpposite
 open scoped Pointwise
@@ -40,9 +44,6 @@ namespace Set
 lemma smul_set_prod {M α : Type*} [SMul M α] [SMul M β] (c : M) (s : Set α) (t : Set β) :
     c • (s ×ˢ t) = (c • s) ×ˢ (c • t) :=
   prodMap_image_prod (c • ·) (c • ·) s t
-
-@[deprecated (since := "2025-03-11")]
-alias vadd_set_sum := vadd_set_prod
 
 @[to_additive]
 lemma smul_set_pi {G ι : Type*} {α : ι → Type*} [Group G] [∀ i, MulAction G (α i)]
@@ -168,15 +169,15 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of `Set α`
 on `Set β`. -/
 @[to_additive
-"An additive action of an additive monoid `α` on a type `β` gives an additive action of `Set α`
-on `Set β`"]
+/-- An additive action of an additive monoid `α` on a type `β` gives an additive action of `Set α`
+on `Set β` -/]
 protected noncomputable def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
   mul_smul _ _ _ := image2_assoc mul_smul
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Set β`. -/
 @[to_additive
-      "An additive action of an additive monoid on a type `β` gives an additive action on `Set β`."]
+/-- An additive action of an additive monoid on a type `β` gives an additive action on `Set β`. -/]
 protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
   mul_smul _ _ _ := by simp only [← image_smul, image_image, ← mul_smul]
   one_smul _ := by simp only [← image_smul, one_smul, image_id']
@@ -205,7 +206,7 @@ lemma mem_smul_set_inv {s : Set α} : a ∈ b • s⁻¹ ↔ b ∈ a • s := by
 
 @[to_additive]
 theorem preimage_smul (a : α) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a⁻¹ • t :=
-  ((MulAction.toPerm a).symm.image_eq_preimage _).symm
+  ((MulAction.toPerm a).image_symm_eq_preimage _).symm
 
 @[to_additive]
 theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹' t = a • t :=
@@ -215,24 +216,16 @@ theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹
 theorem smul_set_subset_smul_set_iff : a • A ⊆ a • B ↔ A ⊆ B :=
   image_subset_image_iff <| MulAction.injective _
 
-@[deprecated (since := "2024-12-28")]
-alias set_smul_subset_set_smul_iff := smul_set_subset_smul_set_iff
+@[to_additive]
+theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹ • B := by
+  refine image_subset_iff.trans ?_
+  congr! 1
+  exact ((MulAction.toPerm _).image_symm_eq_preimage _).symm
 
 @[to_additive]
-theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹ • B :=
-  image_subset_iff.trans <|
-    iff_of_eq <| congr_arg _ <| preimage_equiv_eq_image_symm _ <| MulAction.toPerm _
-
-@[deprecated (since := "2024-12-28")]
-alias set_smul_subset_iff := smul_set_subset_iff_subset_inv_smul_set
-
-@[to_additive]
-theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
-  Iff.symm <|
-    image_subset_iff.trans <|
-      Iff.symm <| iff_of_eq <| congr_arg _ <| image_equiv_eq_preimage_symm _ <| MulAction.toPerm _
-
-@[deprecated (since := "2024-12-28")] alias subset_set_smul_iff := subset_smul_set_iff
+theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B := by
+  refine (image_subset_iff.trans ?_).symm; congr! 1;
+  exact ((MulAction.toPerm _).image_eq_preimage_symm _).symm
 
 @[to_additive]
 theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
@@ -257,6 +250,10 @@ theorem smul_set_univ : a • (univ : Set β) = univ :=
   image_univ_of_surjective <| MulAction.surjective a
 
 @[to_additive (attr := simp)]
+theorem smul_set_eq_univ : a • s = univ ↔ s = univ := by
+  rw [smul_eq_iff_eq_inv_smul, smul_set_univ]
+
+@[to_additive (attr := simp)]
 theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ :=
   let ⟨a, ha⟩ := hs
   eq_univ_of_forall fun b ↦ ⟨a, ha, a⁻¹ • b, trivial, smul_inv_smul _ _⟩
@@ -266,9 +263,8 @@ theorem smul_set_compl : a • sᶜ = (a • s)ᶜ := by
   simp_rw [Set.compl_eq_univ_diff, smul_set_sdiff, smul_set_univ]
 
 @[to_additive]
-theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
-  rw [← nonempty_iff_ne_empty]
+theorem smul_inter_nonempty_iff {s t : Set α} {x : α} :
+    (x • s ∩ t).Nonempty ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
   constructor
   · rintro ⟨a, h, ha⟩
     obtain ⟨b, hb, rfl⟩ := mem_smul_set.mp h
@@ -276,15 +272,24 @@ theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
   · rintro ⟨a, b, ⟨ha, hb⟩, rfl⟩
     exact ⟨a, mem_inter (mem_smul_set.mpr ⟨b, hb, by simp⟩) ha⟩
 
-@[to_additive]
-theorem smul_inter_ne_empty_iff' {s t : Set α} {x : α} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
-  simp_rw [smul_inter_ne_empty_iff, div_eq_mul_inv]
+@[to_additive (attr := deprecated smul_inter_nonempty_iff (since := "2025-12-10"))]
+theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
+    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
+  rw [← nonempty_iff_ne_empty, smul_inter_nonempty_iff]
 
 @[to_additive]
-theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = MulOpposite.unop x := by
-  rw [← nonempty_iff_ne_empty]
+theorem smul_inter_nonempty_iff' {s t : Set α} {x : α} :
+    (x • s ∩ t).Nonempty ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
+  simp_rw [smul_inter_nonempty_iff, div_eq_mul_inv]
+
+@[to_additive (attr := deprecated smul_inter_nonempty_iff' (since := "2025-12-10"))]
+theorem smul_inter_ne_empty_iff' {s t : Set α} {x : α} :
+    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
+  rw [← nonempty_iff_ne_empty, smul_inter_nonempty_iff']
+
+@[to_additive]
+theorem op_smul_inter_nonempty_iff {s t : Set α} {x : αᵐᵒᵖ} :
+    (x • s ∩ t).Nonempty ↔ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = MulOpposite.unop x := by
   constructor
   · rintro ⟨a, h, ha⟩
     obtain ⟨b, hb, rfl⟩ := mem_smul_set.mp h
@@ -292,6 +297,11 @@ theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
   · rintro ⟨a, b, ⟨ha, hb⟩, H⟩
     have : MulOpposite.op (a⁻¹ * b) = x := congr_arg MulOpposite.op H
     exact ⟨b, mem_inter (mem_smul_set.mpr ⟨a, ha, by simp [← this]⟩) hb⟩
+
+@[to_additive (attr := deprecated op_smul_inter_nonempty_iff (since := "2025-12-10"))]
+theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
+    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = MulOpposite.unop x := by
+  rw [← nonempty_iff_ne_empty, op_smul_inter_nonempty_iff]
 
 @[to_additive (attr := simp)]
 theorem iUnion_inv_smul : ⋃ g : α, g⁻¹ • s = ⋃ g : α, g • s :=
@@ -321,15 +331,23 @@ lemma disjoint_smul_set_left : Disjoint (a • s) t ↔ Disjoint s (a⁻¹ • t
 lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s) t := by
   simpa using disjoint_smul_set (a := a) (s := a⁻¹ • s)
 
+@[to_additive] lemma pairwise_disjoint_smul_iff :
+    Pairwise (Disjoint on fun a : α ↦ a • s) ↔ ∀ a : α, (a • s ∩ s).Nonempty → a = 1 := by
+  simp_rw [Pairwise, disjoint_smul_set_right, ← mul_smul,
+    ← not_imp_not (b := _ ≠ _), not_ne_iff, not_disjoint_iff_nonempty_inter]
+  exact ⟨fun h a ↦ by simpa using @h a 1,
+    fun h i j ne ↦ by simpa [inv_mul_eq_one, eq_comm] using h _ ne⟩
+
 /-- Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
 `(s⁻¹ * s) ∩ (t⁻¹ * t)`.
 
 This is useful to show that the intersection of approximate subgroups is an approximate subgroup. -/
 @[to_additive
-"Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
+/-- Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
 `(-s + s) ∩ (-t + t)`.
 
-This is useful to show that the intersection of approximate subgroups is an approximate subgroup."]
+This is useful to show that the intersection of approximate subgroups is an approximate subgroup.
+-/]
 lemma exists_smul_inter_smul_subset_smul_inv_mul_inter_inv_mul (s t : Set α) (a b : α) :
     ∃ z : α, a • s ∩ b • t ⊆ z • ((s⁻¹ * s) ∩ (t⁻¹ * t)) := by
   obtain hAB | ⟨z, hzA, hzB⟩ := (a • s ∩ b • t).eq_empty_or_nonempty
@@ -357,8 +375,8 @@ variable [Group α] [CommGroup β] [FunLike F α β] [MonoidHomClass F α β]
 lemma smul_graphOn (x : α × β) (s : Set α) (f : F) :
     x • s.graphOn f = (x.1 • s).graphOn fun a ↦ x.2 / f x.1 * f a := by
   ext ⟨a, b⟩
-  simp [mem_smul_set_iff_inv_smul_mem, Prod.ext_iff, and_comm (a := _ = a), inv_mul_eq_iff_eq_mul,
-    mul_left_comm _ _⁻¹, eq_inv_mul_iff_mul_eq, ← mul_div_right_comm, div_eq_iff_eq_mul, mul_comm b]
+  simp [mem_smul_set_iff_inv_smul_mem, inv_mul_eq_iff_eq_mul, mul_left_comm _ _⁻¹,
+    eq_inv_mul_iff_mul_eq, ← mul_div_right_comm, div_eq_iff_eq_mul, mul_comm b]
 
 @[to_additive]
 lemma smul_graphOn_univ (x : α × β) (f : F) :

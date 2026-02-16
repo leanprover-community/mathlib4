@@ -3,9 +3,11 @@ Copyright (c) 2023 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-import Mathlib.Data.Set.MemPartition
-import Mathlib.Order.Filter.CountableSeparatingOn
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+public import Mathlib.Data.Set.MemPartition
+public import Mathlib.Order.Filter.CountableSeparatingOn
 
 /-!
 # Countably generated measurable spaces
@@ -39,6 +41,8 @@ The file also contains measurability results about `memPartition`, from which th
 `countablePartition` are deduced.
 
 -/
+
+@[expose] public section
 
 open Set MeasureTheory
 
@@ -157,13 +161,28 @@ theorem separating_of_generateFrom (S : Set (Set α))
     [h : @SeparatesPoints α (generateFrom S)] :
     ∀ x y : α, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y := by
   letI := generateFrom S
-  intros x y hxy
+  intro x y hxy
   rw [← forall_generateFrom_mem_iff_mem_iff] at hxy
   exact separatesPoints_def <| fun _ hs ↦ (hxy _ hs).mp
 
 theorem SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoints _ m] (h : m ≤ m') :
     @SeparatesPoints _ m' := @SeparatesPoints.mk _ m' fun _ _ hxy ↦
     @SeparatesPoints.separates _ m hsep _ _ fun _ hs ↦ hxy _ (h _ hs)
+
+theorem _root_.eq_const_of_measurable_bot [MeasurableSpace β] [Nonempty β]
+    [SeparatesPoints β] {f : α → β} (hf : Measurable[⊥] f) :
+    ∃ c, f = fun _ ↦ c := by
+  have h (a₁ : α) (a₂ : α) : f a₁ = f a₂ := by
+    by_contra! h
+    obtain ⟨s, hs, hx, hy⟩ := exists_measurableSet_of_ne h
+    obtain h' | h' := MeasurableSpace.measurableSet_bot_iff.mp (hf hs)
+    · absurd hx
+      simp [← mem_preimage, h']
+    · absurd hy
+      simp [← mem_preimage, h']
+  obtain h' | h' := isEmpty_or_nonempty α
+  · use (Classical.ofNonempty : β), funext (by simp)
+  · use f (Classical.ofNonempty : α), funext (fun x ↦ h _ _)
 
 /-- We say that a measurable space is countably separated if there is a
 countable sequence of measurable sets separating points. -/
@@ -287,7 +306,7 @@ theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
   simp_rw [← generateFrom_natGeneratingSequence α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
-  rw [← Equiv.image_eq_preimage _ _]
+  rw [← Equiv.image_eq_preimage_symm _ _]
   refine ⟨{y | y n}, by measurability, ?_⟩
   rw [← Equiv.preimage_eq_iff_eq_image]
   simp [mapNatBool]
@@ -383,7 +402,7 @@ lemma generateFrom_iUnion_memPartition (t : ℕ → Set α) :
     obtain ⟨n, hun⟩ := hu
     induction n generalizing u with
     | zero =>
-      simp only [memPartition_zero, mem_insert_iff, mem_singleton_iff] at hun
+      simp only [memPartition_zero, mem_singleton_iff] at hun
       rw [hun]
       exact MeasurableSet.univ
     | succ n ih =>
@@ -392,7 +411,7 @@ lemma generateFrom_iUnion_memPartition (t : ℕ → Set α) :
       rcases huv with rfl | rfl
       · exact (ih v hv).inter (measurableSet_generateFrom ⟨n, rfl⟩)
       · exact (ih v hv).diff (measurableSet_generateFrom ⟨n, rfl⟩)
-  · simp only [iUnion_singleton_eq_range, mem_range] at hu
+  · simp only [mem_range] at hu
     obtain ⟨n, rfl⟩ := hu
     exact generateFrom_mono (subset_iUnion _ _) _ (measurableSet_generateFrom_memPartition t n)
 
@@ -512,18 +531,19 @@ lemma measurableSet_countablePartitionSet (n : ℕ) (a : α) :
 
 section CountableOrCountablyGenerated
 
-variable {α γ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
+variable {α γ : Type*} [MeasurableSpace γ]
 
 /-- A class registering that either `α` is countable or `β` is a countably generated
 measurable space. -/
-class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
+class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace β] :
     Prop where
   countableOrCountablyGenerated : Countable α ∨ MeasurableSpace.CountablyGenerated β
 
-instance instCountableOrCountablyGeneratedOfCountable [h1 : Countable α] :
+instance instCountableOrCountablyGeneratedOfCountable [h1 : Countable α] [MeasurableSpace β] :
     CountableOrCountablyGenerated α β := ⟨Or.inl h1⟩
 
-instance instCountableOrCountablyGeneratedOfCountablyGenerated [h : CountablyGenerated β] :
+instance instCountableOrCountablyGeneratedOfCountablyGenerated [MeasurableSpace β]
+    [h : CountablyGenerated β] :
     CountableOrCountablyGenerated α β := ⟨Or.inr h⟩
 
 instance [hα : CountableOrCountablyGenerated α γ] [hβ : CountableOrCountablyGenerated β γ] :

@@ -3,8 +3,10 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.CartanSubalgebra
-import Mathlib.Algebra.Lie.Weights.Basic
+module
+
+public import Mathlib.Algebra.Lie.CartanSubalgebra
+public import Mathlib.Algebra.Lie.Weights.Basic
 
 /-!
 # Weights and roots of Lie modules and Lie algebras with respect to Cartan subalgebras
@@ -26,7 +28,7 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 -/
 
-suppress_compilation
+@[expose] public section
 
 open Set
 
@@ -72,8 +74,7 @@ lemma toEnd_pow_apply_mem {χ₁ χ₂ : H → R} {x : L} {m : M}
   induction n with
   | zero => simpa using hm
   | succ n IH =>
-    simp only [pow_succ', Module.End.mul_apply, toEnd_apply_apply,
-      Nat.cast_add, Nat.cast_one, rootSpace]
+    simp only [pow_succ', Module.End.mul_apply, toEnd_apply_apply]
     convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx IH using 2
     rw [succ_nsmul, ← add_assoc, add_comm (n • _)]
 
@@ -89,11 +90,7 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
         ⟨⁅(x : L), (m : M)⁆,
           hχ ▸ lie_mem_genWeightSpace_of_mem_genWeightSpace x.property m.property⟩
       map_add' := fun m n => by simp only [LieSubmodule.coe_add, lie_add, AddMemClass.mk_add_mk]
-      map_smul' := fun t m => by
-        conv_lhs =>
-          congr
-          rw [LieSubmodule.coe_smul, lie_smul]
-        rfl }
+      map_smul' := fun t m => by simp }
   map_add' x y := by
     ext m
     simp only [LieSubmodule.coe_add, add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply,
@@ -114,15 +111,14 @@ def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ�
         ext m
         simp only [rootSpaceWeightSpaceProductAux]
         dsimp
-        simp only [LieSubalgebra.coe_bracket_of_module, lie_lie] }
+        simp only [lie_lie] }
 
 @[simp]
 theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
     (x : rootSpace H χ₁) (m : genWeightSpace M χ₂) :
     (rootSpaceWeightSpaceProduct R L H M χ₁ χ₂ χ₃ hχ (x ⊗ₜ m) : M) = ⁅(x : L), (m : M)⁆ := by
   simp only [rootSpaceWeightSpaceProduct, rootSpaceWeightSpaceProductAux, coe_liftLie_eq_lift_coe,
-    AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, lift_apply, LinearMap.coe_mk, AddHom.coe_mk,
-    Submodule.coe_mk]
+    lift_apply, LinearMap.coe_mk, AddHom.coe_mk, Submodule.coe_mk]
 
 theorem mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace (α χ : H → R)
     {x : L} (hx : x ∈ rootSpace H α) :
@@ -173,12 +169,7 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
   use k
   let f : Module.End R H := toEnd R H H y
   let g : Module.End R L := toEnd R H L y
-  have hfg : g.comp (H : Submodule R L).subtype = (H : Submodule R L).subtype.comp f := by
-    ext z
-    simp only [toEnd_apply_apply, Submodule.subtype_apply,
-      LieSubalgebra.coe_bracket_of_module, LieSubalgebra.coe_bracket, Function.comp_apply,
-      LinearMap.coe_comp]
-    rfl
+  have hfg : g.comp (H : Submodule R L).subtype = (H : Submodule R L).subtype.comp f := rfl
   change (g ^ k).comp (H : Submodule R L).subtype ⟨x, hx⟩ = 0
   rw [Module.End.commute_pow_left_of_commute hfg k]
   have h := iterate_toEnd_mem_lowerCentralSeries R H H y ⟨x, hx⟩ k
@@ -209,7 +200,7 @@ theorem zeroRootSubalgebra_normalizer_eq_self :
   specialize hx y (le_zeroRootSubalgebra R L H hy)
   rw [mem_zeroRootSubalgebra] at hx
   obtain ⟨k, hk⟩ := hx ⟨y, hy⟩
-  rw [← lie_skew, LinearMap.map_neg, neg_eq_zero] at hk
+  rw [← lie_skew, map_neg, neg_eq_zero] at hk
   use k + 1
   rw [Module.End.iterate_succ, LinearMap.coe_comp, Function.comp_apply, toEnd_apply_apply,
     LieSubalgebra.coe_bracket_of_module, Submodule.coe_mk, hk]
@@ -282,7 +273,6 @@ lemma mem_corootSpace' {x : H} :
     x ∈ Submodule.span R ({⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} : Set H) := by
   set s : Set H := ({⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} : Set H)
   suffices H.subtype '' s = {⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} by
-    obtain ⟨x, hx⟩ := x
     erw [← (H : Submodule R L).injective_subtype.mem_set_image (s := Submodule.span R s)]
     rw [mem_image]
     simp_rw [SetLike.mem_coe]
@@ -295,5 +285,21 @@ lemma mem_corootSpace' {x : H} :
   convert
     (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property using 0
   simp [hyz]
+
+section FiniteDimensional
+
+variable {K : Type*} [Field K] [LieAlgebra K L]
+variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
+variable [LieModule.IsTriangularizable K H L]
+
+lemma cartan_sup_iSup_rootSpace_eq_top :
+    H.toLieSubmodule ⊔ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), rootSpace H α = ⊤ := by
+  rw [eq_top_iff, ← LieModule.iSup_genWeightSpace_eq_top', iSup_le_iff]
+  intro α
+  by_cases hα : α.IsZero
+  · simp [hα]
+  · exact le_sup_of_le_right <| le_iSup₂_of_le α hα (le_refl _)
+
+end FiniteDimensional
 
 end LieAlgebra
