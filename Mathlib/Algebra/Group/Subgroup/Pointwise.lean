@@ -45,7 +45,7 @@ open scoped Pointwise in
 If `H` and `K` are disjoint subgroups of `G` then `(h, k) ↦ h * k` gives a bijection between
 `H ×ᵃ K` and `H * K`
 -/
-theorem bijOn_product_mul [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
+theorem bijOn_product_mul_of_disjoint [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
     BijOn (fun (h, k) => h * k) (H ×ˢ K) (H * K : Set G) := by
   refine ⟨?_, ?_, ?_⟩
   · intro ⟨h, k⟩ HH
@@ -70,7 +70,7 @@ theorem bijOn_product_mul [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
     simp only [mul_inv_cancel_left, mul_one] at this
     have : (k2 * k1⁻¹) * k1 = 1 * k1 := by
       rw [← crux, hHK]
-    grind [inv_mul_cancel_right, one_mul]
+    grind only [= mem_prod, one_mul, inv_mul_cancel_right]
   · intro g hg
     obtain ⟨h, hh, k, hk, HH⟩ := hg
     simp only [Set.image_prod, Set.image2_mul, Set.mem_mul]
@@ -85,7 +85,7 @@ noncomputable def equivMulDisjoint [Group G] (H K : Subgroup G) (hHK : Disjoint 
     ((H : Set G) * (K : Set G) : Set G) ≃ (H:Set G) ×ˢ (K:Set G) := by
   symm
   apply Set.BijOn.equiv (fun (h, k) => h * k)
-  exact bijOn_product_mul H K hHK
+  exact bijOn_product_mul_of_disjoint H K hHK
 
 @[to_additive (attr := simp, norm_cast)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
