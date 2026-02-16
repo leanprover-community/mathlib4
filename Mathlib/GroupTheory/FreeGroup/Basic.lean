@@ -878,7 +878,6 @@ theorem sum.map_inv : sum x⁻¹ = -sum x :=
 
 end Sum
 
-
 /-- The bijection between the free group on the empty type, and a type with one element. -/
 @[to_additive
   (attr := deprecated "Use `Equiv.ofUnique (FreeGroup Empty) Unit` instead, \
@@ -914,19 +913,42 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
         simp only [zpow_neg, zpow_natCast, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
         simp [zpow_add, ih, sub_eq_add_neg])
 
-/-- We define the free group on one element as isomorphic to `Multiplicative ℤ`. -/
-  def freeGroupUnitMulEquivInt : FreeGroup Unit ≃* Multiplicative ℤ where
-    toFun := fun x ↦ Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
-    invFun := fun z ↦ FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
-    left_inv _ := by simp
-    right_inv _ := by simp
-    map_mul' _ _  := by
-      ext
-      simp [freeGroupUnitEquivInt]
+/-- The bijection between the free group on a unique type and the integers. -/
+def equivIntOfUnique [Unique α] : FreeGroup α ≃ ℤ where
+  toFun x := sum (map 1 x)
+  invFun x := of default ^ x
+  left_inv x := by
+    induction x with
+    | C1 => simp
+    | of x => simp [Unique.default_eq x]
+    | inv_of x hx => simp [Unique.default_eq x]
+    | mul x y hx hy => simp [zpow_add, hx, hy]
+  right_inv x := by
+    induction x with
+    | zero => simp
+    | succ x hx => simpa [zpow_add_one] using hx
+    | pred x hx => simpa [zpow_sub_one, ← sub_eq_add_neg] using hx
 
-/-- We define the free group on any `Unique` type as isomorphic to `Multiplicative ℤ`. -/
-def freeGroupUniqueMulEquivInt [Unique α] : FreeGroup α ≃* Multiplicative ℤ :=
-  (freeGroupCongr (Equiv.ofUnique α Unit)).trans freeGroupUnitMulEquivInt
+/-- The isomorphism between the free group on a unique type and the integers. -/
+def mulEquivIntOfUnique [Unique α] : FreeGroup α ≃* Multiplicative ℤ where
+  toFun := Multiplicative.ofAdd ∘ equivIntOfUnique
+  invFun := equivIntOfUnique.symm ∘ Multiplicative.toAdd
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_mul' _ _  := by simp [equivIntOfUnique]
+
+/-- The isomorphism between the free additive group on a unique type and the integers. -/
+def _root_.FreeAddGroup.addEquivIntOfUnique [Unique α] : FreeAddGroup α ≃+ ℤ where
+  toFun x := FreeAddGroup.sum (FreeAddGroup.map 1 x)
+  invFun x := x • FreeAddGroup.of default
+  left_inv x := by
+    induction x with
+    | C1 => simp
+    | of x => simp [Unique.default_eq x]
+    | neg_of x hx => simp [Unique.default_eq x]
+    | add x y hx hy => simp [add_zsmul, hx, hy]
+  right_inv x := by induction x <;> simp
+  map_add' x y := by simp
 
 section Category
 
