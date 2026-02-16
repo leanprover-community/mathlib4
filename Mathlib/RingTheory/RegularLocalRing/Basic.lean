@@ -6,6 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
+public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 public import Mathlib.RingTheory.RegularLocalRing.Defs
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.KrullDimension.Field
@@ -263,6 +264,21 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
         (le_trans ((Ideal.span_singleton_le_iff_mem _).mpr xmem) (maximalIdeal_le_jacobson _))
     have : (⊥ : Ideal R).IsPrime := by simpa [← this]
     exact IsDomain.of_bot_isPrime R
+
+instance [IsRegularLocalRing R] : IsDomain R := isDomain_of_isRegularLocalRing R
+
+lemma IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one [IsRegularLocalRing R]
+    (dim : ringKrullDim R = 1) : IsDiscreteValuationRing R := by
+  have nisf : ¬ IsField R := by
+    by_contra isf
+    simp [ringKrullDim_eq_zero_of_isField isf] at dim
+  apply ((IsDiscreteValuationRing.TFAE R nisf).out 0 4).mpr
+  have := (isRegularLocalRing_def R).mp ‹_›
+  simp only [dim, Nat.cast_eq_one, Set.ncard_eq_one,
+    ← Submodule.FG.generators_ncard (maximalIdeal R).fg_of_isNoetherianRing] at this
+  rcases this with ⟨a, ha⟩
+  use a
+  simpa [← ha] using (maximalIdeal R).span_generators.symm
 
 open RingTheory.Sequence in
 theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
