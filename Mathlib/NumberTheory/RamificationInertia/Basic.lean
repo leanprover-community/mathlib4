@@ -195,7 +195,19 @@ lemma ramificationIdx_eq_one_of_map_localization
   · exact hp this
   · exact IsLocalization.injective _ hp'
 
-theorem ramificationIdx_map_self_eq_one [IsDedekindDomain S] (h₁ : map f p ≠ ⊤) (h₂ : map f p ≠ ⊥) :
+variable (p P) in
+theorem ramificationIdx_le_ramificationIdx {T : Type*} [CommRing T] (Q : Ideal T) (f : R →+* S)
+    (g : S →+* T) (hp : p = Ideal.comap f P) (h : BddAbove {n | map (g.comp f) p ≤ Q ^ n}) :
+    Ideal.ramificationIdx g P Q ≤ Ideal.ramificationIdx (g.comp f) p Q := by
+  refine csSup_le_csSup' h fun n hn ↦ ?_
+  rw [Set.mem_setOf_eq, ← map_map, map_le_iff_le_comap, map_le_iff_le_comap, hp]
+  refine Ideal.comap_mono <| by rwa [← Ideal.map_le_iff_le_comap]
+
+namespace IsDedekindDomain
+
+variable [IsDedekindDomain S]
+
+theorem ramificationIdx_map_self_eq_one (h₁ : map f p ≠ ⊤) (h₂ : map f p ≠ ⊥) :
     ramificationIdx f p (map f p) = 1 := by
   refine ramificationIdx_spec (by simp) fun h ↦ ?_
   have : map f p ^ 1 = (map f p) ^ 2 := by
@@ -203,10 +215,6 @@ theorem ramificationIdx_map_self_eq_one [IsDedekindDomain S] (h₁ : map f p ≠
     exact le_antisymm h <| pow_le_self two_ne_zero
   have := IsMulTorsionFree.pow_right_injective₀ (by rwa [one_eq_top]) h₂ this
   simp_all
-
-namespace IsDedekindDomain
-
-variable [IsDedekindDomain S]
 
 theorem ramificationIdx_eq_normalizedFactors_count [DecidableEq (Ideal S)]
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime)
@@ -272,6 +280,19 @@ lemma ramificationIdx_eq_one_iff
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]
 
+theorem ramificationIdx_le_ramificationIdx [IsDomain R] [Algebra R S] [Module.IsTorsionFree R S]
+    {S₀ : Type*} [CommRing S₀] [Algebra R S₀] [Algebra S₀ S] [IsScalarTower R S₀ S] (p : Ideal R)
+    (P : Ideal S₀) (Q : Ideal S) [Q.LiesOver p] [P.LiesOver p] [Q.IsPrime] (hp : p ≠ ⊥) :
+    Ideal.ramificationIdx (algebraMap S₀ S) P Q ≤ Ideal.ramificationIdx (algebraMap R S) p Q := by
+  rw [IsScalarTower.algebraMap_eq R S₀ S]
+  refine Ideal.ramificationIdx_le_ramificationIdx p P Q (algebraMap R S₀) (algebraMap S₀ S) ?_ ?_
+  · rwa [← under_def, ← liesOver_iff]
+  · rw [← IsScalarTower.algebraMap_eq R S₀ S]
+    suffices ramificationIdx (algebraMap R S) p Q ≠ 0 by
+      contrapose! this
+      exact ramificationIdx_eq_zero (by rwa [not_bddAbove_iff] at this)
+    exact ramificationIdx_ne_zero_of_liesOver _ hp
+
 end IsDedekindDomain
 
 variable (f p P) [Algebra R S]
@@ -302,9 +323,8 @@ theorem inertiaDeg_of_subsingleton [hp : p.IsMaximal] [hQ : Subsingleton (S ⧸ 
   exact dif_neg fun h => hp.ne_top <| h.symm.trans comap_top
 
 @[simp]
-theorem inertiaDeg_algebraMap [P.LiesOver p] [p.IsMaximal] :
+theorem inertiaDeg_algebraMap [P.LiesOver p] :
     inertiaDeg p P = finrank (R ⧸ p) (S ⧸ P) := by
-  nontriviality S ⧸ P using inertiaDeg_of_subsingleton, finrank_zero_of_subsingleton
   rw [inertiaDeg, dif_pos (over_def P p).symm]
 
 theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg p P :=
@@ -338,6 +358,16 @@ theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
   rw [Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot R).symm
     ((quotEquivOfEq hP).trans (RingEquiv.quotientBot S)).symm]
   rfl
+
+theorem inertiaDeg_le_inertiaDeg {T : Type*} [CommRing T] [Algebra R T] [Algebra S T]
+    [IsScalarTower R S T] [Module.Finite R T] (Q : Ideal T) [P.LiesOver p] [Q.LiesOver P]
+    [p.IsPrime] :
+    Ideal.inertiaDeg P Q ≤ Ideal.inertiaDeg p Q := by
+  have : Q.LiesOver p := Ideal.LiesOver.trans Q P p
+  rw [inertiaDeg_algebraMap, inertiaDeg_algebraMap]
+  have : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ Q) := IsScalarTower.of_algebraMap_eq <| by
+    rintro ⟨x⟩; exact congr_arg _ (IsScalarTower.algebraMap_apply R S T x)
+  exact Module.finrank_top_le_finrank_of_isScalarTower _ _ _
 
 end DecEq
 
