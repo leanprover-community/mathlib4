@@ -29,18 +29,18 @@ universe u
 /-- The category of pointed types. -/
 structure Pointed : Type (u + 1) where
   /-- the underlying type -/
-  protected X : TypeCat.{u}
+  protected X : Type u
   /-- the distinguished element -/
   point : X
 
 namespace Pointed
 
 instance : CoeSort Pointed Type* :=
-  ⟨TypeCat.carrier ∘ Pointed.X⟩
+  ⟨Pointed.X⟩
 
 /-- Turns a point into a pointed type. -/
 abbrev of {X : Type*} (point : X) : Pointed :=
-  ⟨TypeCat.of X, point⟩
+  ⟨X, point⟩
 
 theorem coe_of {X : Type*} (point : X) : ↥(of point) = X :=
   rfl
@@ -53,6 +53,7 @@ instance : Inhabited Pointed :=
 /-- Morphisms in `Pointed`. -/
 @[ext]
 protected structure Hom (X Y : Pointed.{u}) : Type u where
+  /-- the underlying map -/
   toFun : X → Y
   /-- compatibility with the distinguished points -/
   map_point : toFun X.point = Y.point
@@ -70,7 +71,7 @@ instance (X : Pointed) : Inhabited (Pointed.Hom X X) :=
 /-- Composition of morphisms of `Pointed`. -/
 @[simps]
 def comp {X Y Z : Pointed.{u}} (f : Pointed.Hom X Y) (g : Pointed.Hom Y Z) : Pointed.Hom X Z :=
-  ⟨g.toFun ∘ f.toFun, by simp [f.map_point, g.map_point]⟩
+  ⟨g.toFun ∘ f.toFun, by rw [Function.comp_apply, f.map_point, g.map_point]⟩
 
 end Hom
 
@@ -84,11 +85,11 @@ instance largeCategory : LargeCategory Pointed where
 @[simp] lemma Hom.comp_toFun' {X Y Z : Pointed.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).toFun = g.toFun ∘ f.toFun := rfl
 
-instance (X Y : Pointed) : FunLike (Pointed.Hom X Y) X Y where
-  coe f := f.toFun
-  coe_injective' _ _ := by aesop
+instance (X Y : Pointed) : FunLike { f : X → Y // f X.point = Y.point } X Y where
+  coe f := f
+  coe_injective' _ _ := Subtype.ext
 
-instance hasForget : ConcreteCategory Pointed fun X Y => (Pointed.Hom X Y) where
+instance hasForget : ConcreteCategory Pointed fun X Y => { f : X → Y // f X.point = Y.point } where
   hom f := ⟨f.1, f.2⟩
   ofHom f := ⟨f.1, f.2⟩
 
@@ -106,15 +107,15 @@ end Pointed
 /-- `Option` as a functor from types to pointed types. This is the free functor. -/
 @[simps]
 def typeToPointed : TypeCat.{u} ⥤ Pointed.{u} where
-  obj X := ⟨TypeCat.of (Option X), none⟩
+  obj X := ⟨Option X, none⟩
   map f := ⟨Option.map f, rfl⟩
   map_id _ := Pointed.Hom.ext Option.map_id
   map_comp _ _ := Pointed.Hom.ext <| by simp; rfl
 
 /-- `typeToPointed` is the free functor. -/
 def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
+  Adjunction.mkOfHomEquiv {
+    homEquiv := fun X Y =>
         { toFun := fun f => TypeCat.ofHom ⟨f.toFun ∘ Option.some⟩
           invFun := fun f => ⟨fun o => o.elim Y.point f, rfl⟩
           left_inv := fun f => by
@@ -123,7 +124,7 @@ def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
             cases x
             · exact f.map_point.symm
             · rfl }
-      homEquiv_naturality_left_symm := fun f g => by
-        apply Pointed.Hom.ext
-        funext x
-        cases x <;> rfl }
+    homEquiv_naturality_left_symm := fun f g => by
+      apply Pointed.Hom.ext
+      funext x
+      cases x <;> rfl }
