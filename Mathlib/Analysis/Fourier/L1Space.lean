@@ -19,7 +19,7 @@ variable
 
 open SchwartzMap MeasureTheory FourierTransform ComplexInnerProductSpace
 
-open scoped ZeroAtInfty Filter Topology BoundedContinuousFunction ENNReal
+open scoped ZeroAtInfty Filter Topology BoundedContinuousFunction
 
 variable [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
 
@@ -84,6 +84,13 @@ def foo : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
     apply (norm_integral_le_integral_norm _).trans
     simp_rw [Circle.norm_smul]
     exact (L1.norm_eq_integral_norm f).symm.le)
+
+def _root_.LinearMap.mkContinuous' [NormedSpace ℂ V] {f : V → E}
+    (hadd : ∀ a b, f (a + b) = f a + f b)
+    (hsmul : ∀ (c : ℂ) a, f (c • a) = c • f a)
+    (C : ℝ)
+    (hbound : ∀ a, ‖f a‖ ≤ C * ‖a‖) : V →L[ℂ] E :=
+  LinearMap.mkContinuous {toFun := f, map_add' := hadd, map_smul' := hsmul} C hbound
 
 @[simp]
 theorem foo_apply (f : Lp (α := V) E 1) : foo f = foo₀ f := rfl
