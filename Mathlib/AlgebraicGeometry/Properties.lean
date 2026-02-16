@@ -6,6 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.AlgebraicGeometry.Limits
+public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalProperties.Reduced
 
 /-!
@@ -21,7 +23,6 @@ We provide some basic properties of schemes
 -/
 
 @[expose] public section
-
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -56,6 +57,9 @@ instance {X : Scheme.{u}} : PrespectralSpace X :=
   have (i : _) : PrespectralSpace (X.affineCover.f i).opensRange.1 :=
     this (X.affineCover.f i).opensRange (isAffineOpen_opensRange (X.affineCover.f i))
   .of_isOpenCover X.affineCover.isOpenCover_opensRange
+
+instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (IrreducibleSpace ·) :=
+  ⟨fun e ↦ e.hom.homeomorph.irreducibleSpace_iff.mp⟩
 
 /-- A scheme `X` is reduced if all `𝒪ₓ(U)` are reduced. -/
 class IsReduced : Prop where
@@ -195,6 +199,26 @@ theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : X.Opens}
   rintro rfl
   simp
 
+/-- If `X` is reduced and has finitely many irreducible components, then the stalks at the generic
+points of the irreducible components are fields. -/
+lemma isField_stalk_of_closure_mem_irreducibleComponents
+    (x : X) (hx : closure {x} ∈ irreducibleComponents X) [IsReduced X] :
+    IsField (X.presheaf.stalk x) := by
+  wlog hX : ∃ R, X = Spec R
+  · obtain ⟨i, x, rfl⟩ := X.affineCover.exists_eq x
+    have inst : IsReduced (X.affineCover.X i) := isReduced_of_isOpenImmersion (X.affineCover.f i)
+    refine (asIso <| (X.affineCover.f i).stalkMap x).commRingCatIsoToRingEquiv.isField
+      (this _ x ?_ ⟨_, rfl⟩)
+    rw [(X.affineCover.f i).isOpenEmbedding.closure_eq_preimage_closure_image, Set.image_singleton]
+    exact preimage_mem_irreducibleComponents hx (X.affineCover.f i).isOpenEmbedding
+      ⟨X.affineCover.f i x, subset_closure rfl, _, rfl⟩
+  obtain ⟨R, rfl⟩ := hX
+  replace hx : x.asIdeal ∈ minimalPrimes R := by
+    rwa [← PrimeSpectrum.vanishingIdeal_singleton, PrimeSpectrum.vanishingIdeal_mem_minimalPrimes]
+  rw [← PrimeSpectrum.subsingleton_iff_isField_of_isReduced]
+  exact IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes _ hx
+    ((Spec.structureSheaf R).presheaf.stalk x)
+
 /-- A scheme `X` is integral if its is nonempty,
 and `𝒪ₓ(U)` is an integral domain for each `U ≠ ∅`. -/
 class IsIntegral : Prop where
@@ -280,6 +304,11 @@ theorem isIntegral_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmers
   exact (asIso <| f.app (f ''ᵁ U) :
     Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
 
+lemma IsIntegral.of_isIso {X Y : Scheme.{u}} [h : IsIntegral X] (f : X ⟶ Y) [IsIso f] :
+    IsIntegral Y := by
+  suffices Nonempty Y from isIntegral_of_isOpenImmersion (inv f)
+  exact Nonempty.map f inferInstance
+
 instance {R : CommRingCat} [IsDomain R] : IrreducibleSpace (Spec R) := by
   convert PrimeSpectrum.irreducibleSpace (R := R)
 
@@ -311,5 +340,10 @@ noncomputable
 instance [IsIntegral X] : OrderTop X where
   top := genericPoint X
   le_top a := genericPoint_specializes a
+
+lemma isField_of_isIntegral_of_subsingleton (X : Scheme.{u}) [IsIntegral X] [Subsingleton X] :
+    IsField Γ(X, ⊤) := by
+  rw [← PrimeSpectrum.t1Space_iff_isField]
+  apply X.isoSpec.hom.homeomorph.t1Space
 
 end AlgebraicGeometry

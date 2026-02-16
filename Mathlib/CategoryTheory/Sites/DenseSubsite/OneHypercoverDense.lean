@@ -200,8 +200,7 @@ lemma IsOneHypercoverDense.of_hasPullbacks [HasPullbacks C] [F.Full] [F.Faithful
         have fac₂ := fac =≫ pullback.snd _ _
         simp only [Category.assoc, pullback.lift_fst, pullback.lift_snd] at fac₁ fac₂
         exact ⟨Z, q, r, ⟨k, F.preimage s, F.map_injective (by simp [fac₁]),
-          F.map_injective (by simp [fac₂])⟩, rfl⟩
-    }⟩
+          F.map_injective (by simp [fac₂])⟩, rfl⟩ }⟩
 
 namespace OneHypercoverDenseData
 

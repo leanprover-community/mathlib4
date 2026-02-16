@@ -334,8 +334,8 @@ lemma mul_haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G)
     ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
   apply NNReal.coe_injective
   calc
-    c * haarScalarFactor μ' (c • μ) = c * ((∫ x, g x ∂μ') / ∫ x, g x ∂(c • μ)) :=
-      by rw [haarScalarFactor_eq_integral_div _ _ g_cont g_comp (by simp [int_g_ne_zero, hc])]
+    c * haarScalarFactor μ' (c • μ) = c * ((∫ x, g x ∂μ') / ∫ x, g x ∂(c • μ)) := by
+      rw [haarScalarFactor_eq_integral_div _ _ g_cont g_comp (by simp [int_g_ne_zero, hc])]
     _ = c * ((∫ x, g x ∂μ') / (c • ∫ x, g x ∂μ)) := by simp
     _ = (∫ x, g x ∂μ') / (∫ x, g x ∂μ) := by
       rw [NNReal.smul_def, smul_eq_mul, ← mul_div_assoc]
