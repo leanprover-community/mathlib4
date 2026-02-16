@@ -3,8 +3,12 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Tactic.Basic
-import Mathlib.Init.Data.Int.Basic
+module
+
+public meta import Mathlib.Tactic.Basic
+public meta import Batteries.Lean.Expr
+public meta import Batteries.Lean.Meta.UnusedNames
+public import Mathlib.Tactic.Basic
 
 /-!
 # lift tactic
@@ -17,14 +21,15 @@ under a specified condition.
 lift, tactic
 -/
 
+public meta section
+
 /-- A class specifying that you can lift elements from `α` to `β` assuming `cond` is true.
   Used by the tactic `lift`. -/
 class CanLift (α β : Sort*) (coe : outParam <| β → α) (cond : outParam <| α → Prop) : Prop where
   /-- An element of `α` that satisfies `cond` belongs to the range of `coe`. -/
   prf : ∀ x : α, cond x → ∃ y : β, coe y = x
-#align can_lift CanLift
 
-instance : CanLift ℤ ℕ (fun n : ℕ ↦ n) (0 ≤ ·) :=
+instance : CanLift Int Nat (fun n : Nat ↦ n) (0 ≤ ·) :=
   ⟨fun n hn ↦ ⟨n.natAbs, Int.natAbs_of_nonneg hn⟩⟩
 
 /-- Enable automatic handling of pi types in `CanLift`. -/
@@ -33,7 +38,16 @@ instance Pi.canLift (ι : Sort*) (α β : ι → Sort*) (coe : ∀ i, β i → �
     CanLift (∀ i, α i) (∀ i, β i) (fun f i ↦ coe i (f i)) fun f ↦ ∀ i, P i (f i) where
   prf f hf := ⟨fun i => Classical.choose (CanLift.prf (f i) (hf i)),
     funext fun i => Classical.choose_spec (CanLift.prf (f i) (hf i))⟩
-#align pi.can_lift Pi.canLift
+
+/-- Enable automatic handling of product types in `CanLift`. -/
+instance Prod.instCanLift {α β γ δ : Type*} {coeβα condβα coeδγ condδγ} [CanLift α β coeβα condβα]
+    [CanLift γ δ coeδγ condδγ] :
+    CanLift (α × γ) (β × δ) (Prod.map coeβα coeδγ) (fun x ↦ condβα x.1 ∧ condδγ x.2) where
+  prf := by
+    rintro ⟨x, y⟩ ⟨hx, hy⟩
+    rcases CanLift.prf (β := β) x hx with ⟨x, rfl⟩
+    rcases CanLift.prf (β := δ) y hy with ⟨y, rfl⟩
+    exact ⟨(x, y), by simp⟩
 
 theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i, Nonempty (α i)]
     {p : ι → Prop} (f : ∀ i : Subtype p, α i) :
@@ -41,33 +55,30 @@ theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i
   haveI : DecidablePred p := fun i ↦ Classical.propDecidable (p i)
   exact ⟨fun i => if hi : p i then f ⟨i, hi⟩ else Classical.choice (ne i),
     funext fun i ↦ dif_pos i.2⟩
-#align subtype.exists_pi_extension Subtype.exists_pi_extension
 
 instance PiSubtype.canLift (ι : Sort*) (α : ι → Sort*) [∀ i, Nonempty (α i)] (p : ι → Prop) :
     CanLift (∀ i : Subtype p, α i) (∀ i, α i) (fun f i => f i) fun _ => True where
   prf f _ := Subtype.exists_pi_extension f
-#align pi_subtype.can_lift PiSubtype.canLift
 
 -- TODO: test if we need this instance in Lean 4
 instance PiSubtype.canLift' (ι : Sort*) (α : Sort*) [Nonempty α] (p : ι → Prop) :
     CanLift (Subtype p → α) (ι → α) (fun f i => f i) fun _ => True :=
   PiSubtype.canLift ι (fun _ => α) p
-#align pi_subtype.can_lift' PiSubtype.canLift'
 
 instance Subtype.canLift {α : Sort*} (p : α → Prop) :
     CanLift α { x // p x } Subtype.val p where prf a ha :=
   ⟨⟨a, ha⟩, rfl⟩
-#align subtype.can_lift Subtype.canLift
 
 namespace Mathlib.Tactic
 
-open Lean Parser Tactic Elab Tactic Meta
+open Lean Parser Elab Tactic Meta
 
 /-- Lift an expression to another type.
 * Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id id?)?)?`.
 * If `n : ℤ` and `hn : n ≥ 0` then the tactic `lift n to ℕ using hn` creates a new
   constant of type `ℕ`, also named `n` and replaces all occurrences of the old variable `(n : ℤ)`
-  with `↑n` (where `n` in the new variable). It will remove `n` and `hn` from the context.
+  with `↑n` (where `n` in the new variable). It will clear `n` from the context and
+  try to clear `hn` from the context.
   + So for example the tactic `lift n to ℕ using hn` transforms the goal
     `n : ℤ, hn : n ≥ 0, h : P n ⊢ n = 3` to `n : ℕ, h : P ↑n ⊢ ↑n = 3`
     (here `P` is some term of type `ℤ → Prop`).
@@ -100,6 +111,8 @@ open Lean Parser Tactic Elab Tactic Meta
 integer `z` (in the supertype) to `ℕ` (the subtype), given a proof that `z ≥ 0`;
 propositions concerning `z` will still be over `ℤ`. `zify` changes propositions about `ℕ` (the
 subtype) to propositions about `ℤ` (the supertype), without changing the type of any variable.
+
+The `norm_cast` tactic can be used after `lift` to normalize introduced casts.
 -/
 syntax (name := lift) "lift " term " to " term (" using " term)?
   (" with " ident (ppSpace colGt ident)? (ppSpace colGt ident)?)? : tactic
@@ -152,35 +165,23 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
     for decl in ← getLCtx do
       if decl.userName != newEqName then
         let declIdent := mkIdent decl.userName
-        -- The line below fails if $declIdent is there only once.
-        evalTactic (← `(tactic| simp (config := {failIfUnchanged := false})
-          only [← $newEqIdent] at $declIdent $declIdent))
-    evalTactic (← `(tactic| simp (config := {failIfUnchanged := false}) only [← $newEqIdent]))
+        evalTactic (← `(tactic| simp -failIfUnchanged only [← $newEqIdent] at $declIdent:ident))
+    evalTactic (← `(tactic| simp -failIfUnchanged only [← $newEqIdent]))
   -- Clear the temporary hypothesis used for the new variable name if applicable
   if isNewVar && !isNewEq then
     evalTactic (← `(tactic| clear $newEqIdent))
   -- Clear the "using" hypothesis if it's a variable in the context
   if prf.isFVar && !keepUsing then
     let some hUsingStx := hUsing | throwError "lift tactic failed: unreachable code was reached"
-    evalTactic (← `(tactic| clear $hUsingStx))
     evalTactic (← `(tactic| try clear $hUsingStx))
   if hUsing.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
 
 elab_rules : tactic
-  | `(tactic| lift $e to $t $[using $h]?) => withMainContext <| Lift.main e t h none none False
-
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName) => withMainContext <| Lift.main e t h newVarName none False
-
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName $newEqName) => withMainContext <| Lift.main e t h newVarName newEqName False
-
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName $newEqName $newPrfName) => withMainContext do
-  if h.isNone then Lift.main e t h newVarName newEqName False
-  else
-    let some h := h | unreachable!
-    if h.raw == newPrfName then Lift.main e t h newVarName newEqName True
-    else Lift.main e t h newVarName newEqName False
+| `(tactic| lift $e to $t $[using $h]? $[with $newVarName $[$newEqName]? $[$newPrfName]?]?) =>
+  withMainContext <|
+    let keepUsing := match h, newPrfName.join with
+      | some h, some newPrfName => h.raw == newPrfName
+      | _, _ => false
+    Lift.main e t h newVarName newEqName.join keepUsing
 
 end Mathlib.Tactic

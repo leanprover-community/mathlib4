@@ -3,19 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
-import Mathlib.Topology.MetricSpace.Thickening
+module
 
-#align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
+public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
 # Borel sigma algebras on (pseudo-)metric spaces
 
 ## Main statements
 
-* `measurable_dist`, `measurable_infEdist`, `measurable_norm`,
-  `Measurable.dist`, `Measurable.infEdist`, `Measurable.norm`:
+* `measurable_dist`, `measurable_infEDist`, `measurable_norm`, `measurable_enorm`,
+  `Measurable.dist`, `Measurable.infEDist`, `Measurable.norm`, `Measurable.enorm`:
   measurability of various metric-related notions;
 * `tendsto_measure_thickening_of_isClosed`:
   the measure of a closed set is the limit of the measure of its ε-thickenings as ε → 0.
@@ -25,9 +25,11 @@ import Mathlib.Topology.MetricSpace.Thickening
 
 -/
 
+public section
+
 open Set Filter MeasureTheory MeasurableSpace TopologicalSpace
 
-open scoped Classical Topology NNReal ENNReal MeasureTheory
+open scoped Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
@@ -43,60 +45,52 @@ open Metric
 @[measurability]
 theorem measurableSet_ball : MeasurableSet (Metric.ball x ε) :=
   Metric.isOpen_ball.measurableSet
-#align measurable_set_ball measurableSet_ball
 
 @[measurability]
 theorem measurableSet_closedBall : MeasurableSet (Metric.closedBall x ε) :=
-  Metric.isClosed_ball.measurableSet
-#align measurable_set_closed_ball measurableSet_closedBall
+  Metric.isClosed_closedBall.measurableSet
 
-@[measurability]
 theorem measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=
   (continuous_infDist_pt s).measurable
-#align measurable_inf_dist measurable_infDist
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.infDist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infDist (f x) s :=
   measurable_infDist.comp hf
-#align measurable.inf_dist Measurable.infDist
 
-@[measurability]
 theorem measurable_infNndist {s : Set α} : Measurable fun x => infNndist x s :=
   (continuous_infNndist_pt s).measurable
-#align measurable_inf_nndist measurable_infNndist
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.infNndist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infNndist (f x) s :=
   measurable_infNndist.comp hf
-#align measurable.inf_nndist Measurable.infNndist
 
 section
 
 variable [SecondCountableTopology α]
 
-@[measurability]
 theorem measurable_dist : Measurable fun p : α × α => dist p.1 p.2 :=
   continuous_dist.measurable
-#align measurable_dist measurable_dist
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.dist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => dist (f b) (g b) :=
-  (@continuous_dist α _).measurable2 hf hg
-#align measurable.dist Measurable.dist
+  continuous_dist.measurable2 hf hg
 
-@[measurability]
+@[fun_prop]
+lemma AEMeasurable.dist {f g : β → α} {μ : Measure β}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    AEMeasurable (fun b ↦ dist (f b) (g b)) μ :=
+  continuous_dist.aemeasurable2 hf hg
+
 theorem measurable_nndist : Measurable fun p : α × α => nndist p.1 p.2 :=
   continuous_nndist.measurable
-#align measurable_nndist measurable_nndist
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.nndist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => nndist (f b) (g b) :=
-  (@continuous_nndist α _).measurable2 hf hg
-#align measurable.nndist Measurable.nndist
+  continuous_nndist.measurable2 hf hg
 
 end
 
@@ -107,35 +101,31 @@ section PseudoEMetricSpace
 variable [PseudoEMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
 variable [MeasurableSpace β] {x : α} {ε : ℝ≥0∞}
 
-open EMetric
+open Metric
 
 @[measurability]
-theorem measurableSet_eball : MeasurableSet (EMetric.ball x ε) :=
-  EMetric.isOpen_ball.measurableSet
-#align measurable_set_eball measurableSet_eball
+theorem measurableSet_eball : MeasurableSet (Metric.eball x ε) :=
+  Metric.isOpen_eball.measurableSet
 
-@[measurability, fun_prop]
-theorem measurable_edist_right : Measurable (edist x) :=
-  (continuous_const.edist continuous_id).measurable
-#align measurable_edist_right measurable_edist_right
+@[fun_prop]
+theorem measurable_edist_right : Measurable (edist x) := by fun_prop
 
-@[measurability, fun_prop]
-theorem measurable_edist_left : Measurable fun y => edist y x :=
-  (continuous_id.edist continuous_const).measurable
-#align measurable_edist_left measurable_edist_left
+@[fun_prop]
+theorem measurable_edist_left : Measurable fun y ↦ edist y x := by fun_prop
 
-@[measurability]
-theorem measurable_infEdist {s : Set α} : Measurable fun x => infEdist x s :=
-  continuous_infEdist.measurable
-#align measurable_inf_edist measurable_infEdist
+theorem measurable_infEDist {s : Set α} : Measurable fun x => infEDist x s :=
+  continuous_infEDist.measurable
 
-@[measurability, fun_prop]
-theorem Measurable.infEdist {f : β → α} (hf : Measurable f) {s : Set α} :
-    Measurable fun x => infEdist (f x) s :=
-  measurable_infEdist.comp hf
-#align measurable.inf_edist Measurable.infEdist
+@[deprecated (since := "2026-01-08")]
+alias measurable_infEdist := measurable_infEDist
 
-open Metric EMetric
+@[fun_prop]
+protected theorem Measurable.infEDist {f : β → α} (hf : Measurable f) {s : Set α} :
+    Measurable fun x => infEDist (f x) s :=
+  measurable_infEDist.comp hf
+
+@[deprecated (since := "2026-01-08")]
+alias Measurable.infEdist := Measurable.infEDist
 
 /-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
 thickenings converges to the measure of its closure as `r` tends to `0`. -/
@@ -145,15 +135,14 @@ theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
   have A : Tendsto (fun r => μ (cthickening r s)) (𝓝[Ioi 0] 0) (𝓝 (μ (closure s))) := by
     rw [closure_eq_iInter_cthickening]
     exact
-      tendsto_measure_biInter_gt (fun r _ => isClosed_cthickening.measurableSet)
+      tendsto_measure_biInter_gt (fun r _ => isClosed_cthickening.nullMeasurableSet)
         (fun i j _ ij => cthickening_mono ij _) hs
   have B : Tendsto (fun r => μ (cthickening r s)) (𝓝[Iic 0] 0) (𝓝 (μ (closure s))) := by
     apply Tendsto.congr' _ tendsto_const_nhds
     filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
     rw [cthickening_of_nonpos hr]
   convert B.sup A
-  exact (nhds_left_sup_nhds_right' 0).symm
-#align tendsto_measure_cthickening tendsto_measure_cthickening
+  exact (nhdsLE_sup_nhdsGT 0).symm
 
 /-- If a closed set has a closed thickening with finite measure, then the measure of its closed
 `r`-thickenings converge to its measure as `r` tends to `0`. -/
@@ -162,7 +151,6 @@ theorem tendsto_measure_cthickening_of_isClosed {μ : Measure α} {s : Set α}
     Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ s)) := by
   convert tendsto_measure_cthickening hs
   exact h's.closure_eq.symm
-#align tendsto_measure_cthickening_of_is_closed tendsto_measure_cthickening_of_isClosed
 
 /-- If a set has a thickening with finite measure, then the measures of its `r`-thickenings
 converge to the measure of its closure as `r > 0` tends to `0`. -/
@@ -170,7 +158,7 @@ theorem tendsto_measure_thickening {μ : Measure α} {s : Set α}
     (hs : ∃ R > 0, μ (thickening R s) ≠ ∞) :
     Tendsto (fun r => μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ (closure s))) := by
   rw [closure_eq_iInter_thickening]
-  exact tendsto_measure_biInter_gt (fun r _ => isOpen_thickening.measurableSet)
+  exact tendsto_measure_biInter_gt (fun r _ => isOpen_thickening.nullMeasurableSet)
       (fun i j _ ij => thickening_mono ij _) hs
 
 /-- If a closed set has a thickening with finite measure, then the measure of its
@@ -183,22 +171,18 @@ theorem tendsto_measure_thickening_of_isClosed {μ : Measure α} {s : Set α}
 
 variable [SecondCountableTopology α]
 
-@[measurability]
 theorem measurable_edist : Measurable fun p : α × α => edist p.1 p.2 :=
   continuous_edist.measurable
-#align measurable_edist measurable_edist
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.edist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => edist (f b) (g b) :=
-  (@continuous_edist α _).measurable2 hf hg
-#align measurable.edist Measurable.edist
+  continuous_edist.measurable2 hf hg
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem AEMeasurable.edist {f g : β → α} {μ : Measure β} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun a => edist (f a) (g a)) μ :=
-  (@continuous_edist α _).aemeasurable2 hf hg
-#align ae_measurable.edist AEMeasurable.edist
+  continuous_edist.aemeasurable2 hf hg
 
 end PseudoEMetricSpace
 
@@ -210,79 +194,75 @@ theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpa
     Tendsto (fun r => μ (Metric.cthickening r s)) (𝓝 0) (𝓝 (μ s)) :=
   tendsto_measure_cthickening_of_isClosed
     ⟨1, zero_lt_one, hs.isBounded.cthickening.measure_lt_top.ne⟩ hs.isClosed
-#align tendsto_measure_cthickening_of_is_compact tendsto_measure_cthickening_of_isCompact
 
 /-- If a measurable space is countably generated and separates points, it arises as
-the borel sets of some second countable t4 topology (i.e. a separable metrizable one). -/
+the Borel sets of some second countable t4 topology (i.e. a separable metrizable one). -/
 theorem exists_borelSpace_of_countablyGenerated_of_separatesPoints (α : Type*)
     [m : MeasurableSpace α] [CountablyGenerated α] [SeparatesPoints α] :
-    ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ BorelSpace α := by
+    ∃ _ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ BorelSpace α := by
   rcases measurableEquiv_nat_bool_of_countablyGenerated α with ⟨s, ⟨f⟩⟩
   letI := induced f inferInstance
-  let F := f.toEquiv.toHomeomorphOfInducing $ inducing_induced _
+  let F := f.toEquiv.toHomeomorphOfIsInducing <| .induced _
   exact ⟨inferInstance, F.secondCountableTopology, F.symm.t4Space,
-    MeasurableEmbedding.borelSpace f.measurableEmbedding F.inducing⟩
+    f.measurableEmbedding.borelSpace F.isInducing⟩
 
 /-- If a measurable space on `α` is countably generated and separates points, there is some
 second countable t4 topology on `α` (i.e. a separable metrizable one) for which every
 open set is measurable. -/
 theorem exists_opensMeasurableSpace_of_countablySeparated (α : Type*)
     [m : MeasurableSpace α] [CountablySeparated α] :
-    ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ OpensMeasurableSpace α := by
+    ∃ _ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ OpensMeasurableSpace α := by
   rcases exists_countablyGenerated_le_of_countablySeparated α with ⟨m', _, _, m'le⟩
   rcases exists_borelSpace_of_countablyGenerated_of_separatesPoints (m := m') with ⟨τ, _, _, τm'⟩
   exact ⟨τ, ‹_›, ‹_›, @OpensMeasurableSpace.mk _ _ m (τm'.measurable_eq.symm.le.trans m'le)⟩
+
+
+section ContinuousENorm
+
+variable {ε : Type*} [MeasurableSpace ε] [TopologicalSpace ε] [ContinuousENorm ε]
+  [OpensMeasurableSpace ε] [MeasurableSpace β]
+
+@[fun_prop]
+lemma measurable_enorm : Measurable (enorm : ε → ℝ≥0∞) := continuous_enorm.measurable
+
+@[fun_prop]
+protected lemma Measurable.enorm {f : β → ε} (hf : Measurable f) : Measurable (‖f ·‖ₑ) :=
+  measurable_enorm.comp hf
+
+@[fun_prop]
+protected lemma AEMeasurable.enorm {f : β → ε} {μ : Measure β} (hf : AEMeasurable f μ) :
+    AEMeasurable (‖f ·‖ₑ) μ :=
+  measurable_enorm.comp_aemeasurable hf
+
+end ContinuousENorm
 
 section NormedAddCommGroup
 
 variable [MeasurableSpace α] [NormedAddCommGroup α] [OpensMeasurableSpace α] [MeasurableSpace β]
 
-@[measurability]
+@[fun_prop]
 theorem measurable_norm : Measurable (norm : α → ℝ) :=
   continuous_norm.measurable
-#align measurable_norm measurable_norm
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.norm {f : β → α} (hf : Measurable f) : Measurable fun a => norm (f a) :=
   measurable_norm.comp hf
-#align measurable.norm Measurable.norm
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem AEMeasurable.norm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => norm (f a)) μ :=
   measurable_norm.comp_aemeasurable hf
-#align ae_measurable.norm AEMeasurable.norm
 
-@[measurability]
 theorem measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
   continuous_nnnorm.measurable
-#align measurable_nnnorm measurable_nnnorm
 
-@[measurability, fun_prop]
-theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
+@[fun_prop]
+protected theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
   measurable_nnnorm.comp hf
-#align measurable.nnnorm Measurable.nnnorm
 
-@[measurability, fun_prop]
-theorem AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
+@[fun_prop]
+protected lemma AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => ‖f a‖₊) μ :=
   measurable_nnnorm.comp_aemeasurable hf
-#align ae_measurable.nnnorm AEMeasurable.nnnorm
-
-@[measurability]
-theorem measurable_ennnorm : Measurable fun x : α => (‖x‖₊ : ℝ≥0∞) :=
-  measurable_nnnorm.coe_nnreal_ennreal
-#align measurable_ennnorm measurable_ennnorm
-
-@[measurability, fun_prop]
-theorem Measurable.ennnorm {f : β → α} (hf : Measurable f) : Measurable fun a => (‖f a‖₊ : ℝ≥0∞) :=
-  hf.nnnorm.coe_nnreal_ennreal
-#align measurable.ennnorm Measurable.ennnorm
-
-@[measurability, fun_prop]
-theorem AEMeasurable.ennnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun a => (‖f a‖₊ : ℝ≥0∞)) μ :=
-  measurable_ennnorm.comp_aemeasurable hf
-#align ae_measurable.ennnorm AEMeasurable.ennnorm
 
 end NormedAddCommGroup

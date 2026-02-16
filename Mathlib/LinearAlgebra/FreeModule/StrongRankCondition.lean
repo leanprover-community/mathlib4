@@ -3,10 +3,10 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.FiniteType
-import Mathlib.LinearAlgebra.InvariantBasisNumber
+module
 
-#align_import linear_algebra.free_module.strong_rank_condition from "leanprover-community/mathlib"@"f37e88f3ec14ee5eab18a9330ace717740e9c92c"
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!
 
@@ -37,10 +37,11 @@ is injective.
 
 -/
 
+@[expose] public section
+
 
 variable (R : Type*) [CommRing R] [Nontrivial R]
 
 /-- Any nontrivial commutative ring satisfies the `StrongRankCondition`. -/
 instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R :=
   inferInstance
-#align comm_ring_strong_rank_condition commRing_strongRankCondition

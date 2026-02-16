@@ -3,16 +3,18 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Order.Synonym
+module
 
-#align_import algebra.group.order_synonym from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Order.Synonym
 
 /-!
 # Group structure on the order type synonyms
 
-Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
+Transfer algebraic instances from `α` to `αᵒᵈ`, `Lex α`, and `Colex α`.
 -/
+
+@[expose] public section
 
 
 open OrderDual
@@ -36,13 +38,9 @@ instance [h : Div α] : Div αᵒᵈ := h
 
 @[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul]
 instance OrderDual.instPow [h : Pow α β] : Pow αᵒᵈ β := h
-#align order_dual.has_pow OrderDual.instPow
-#align order_dual.has_smul OrderDual.instSMul
 
 @[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul']
 instance OrderDual.instPow' [h : Pow α β] : Pow α βᵒᵈ := h
-#align order_dual.has_pow' OrderDual.instPow'
-#align order_dual.has_smul' OrderDual.instSMul'
 
 @[to_additive]
 instance [h : Semigroup α] : Semigroup αᵒᵈ := h
@@ -92,83 +90,79 @@ instance [h : InvolutiveInv α] : InvolutiveInv αᵒᵈ := h
 @[to_additive]
 instance [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ := h
 
-@[to_additive OrderDual.subtractionMonoid]
+@[to_additive]
 instance [h : DivisionMonoid α] : DivisionMonoid αᵒᵈ := h
 
-@[to_additive OrderDual.subtractionCommMonoid]
+@[to_additive]
 instance [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ := h
 
 @[to_additive]
 instance OrderDual.instGroup [h : Group α] : Group αᵒᵈ := h
-#align order_dual.group OrderDual.instGroup
-#align order_dual.add_group OrderDual.instAddGroup
 
 @[to_additive]
 instance [h : CommGroup α] : CommGroup αᵒᵈ := h
 
 @[to_additive (attr := simp)]
 theorem toDual_one [One α] : toDual (1 : α) = 1 := rfl
-#align to_dual_one toDual_one
-#align to_dual_zero toDual_zero
 
 @[to_additive (attr := simp)]
 theorem ofDual_one [One α] : (ofDual 1 : α) = 1 := rfl
-#align of_dual_one ofDual_one
-#align of_dual_zero ofDual_zero
+
+@[to_additive (attr := simp)] lemma toDual_eq_one [One α] {a : α} : toDual a = 1 ↔ a = 1 := .rfl
+@[to_additive (attr := simp)] lemma ofDual_eq_one [One α] {a : αᵒᵈ} : ofDual a = 1 ↔ a = 1 := .rfl
 
 @[to_additive (attr := simp)]
 theorem toDual_mul [Mul α] (a b : α) : toDual (a * b) = toDual a * toDual b := rfl
-#align to_dual_mul toDual_mul
-#align to_dual_add toDual_add
 
 @[to_additive (attr := simp)]
 theorem ofDual_mul [Mul α] (a b : αᵒᵈ) : ofDual (a * b) = ofDual a * ofDual b := rfl
-#align of_dual_mul ofDual_mul
-#align of_dual_add ofDual_add
 
 @[to_additive (attr := simp)]
 theorem toDual_inv [Inv α] (a : α) : toDual a⁻¹ = (toDual a)⁻¹ := rfl
-#align to_dual_inv toDual_inv
-#align to_dual_neg toDual_neg
 
 @[to_additive (attr := simp)]
 theorem ofDual_inv [Inv α] (a : αᵒᵈ) : ofDual a⁻¹ = (ofDual a)⁻¹ := rfl
-#align of_dual_inv ofDual_inv
-#align of_dual_neg ofDual_neg
 
 @[to_additive (attr := simp)]
 theorem toDual_div [Div α] (a b : α) : toDual (a / b) = toDual a / toDual b := rfl
-#align to_dual_div toDual_div
-#align to_dual_sub toDual_sub
 
 @[to_additive (attr := simp)]
 theorem ofDual_div [Div α] (a b : αᵒᵈ) : ofDual (a / b) = ofDual a / ofDual b := rfl
-#align of_dual_div ofDual_div
-#align of_dual_sub ofDual_sub
 
 @[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toDual_smul]
 theorem toDual_pow [Pow α β] (a : α) (b : β) : toDual (a ^ b) = toDual a ^ b := rfl
-#align to_dual_pow toDual_pow
-#align to_dual_smul toDual_smul
-#align to_dual_vadd toDual_vadd
 
 @[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofDual_smul]
 theorem ofDual_pow [Pow α β] (a : αᵒᵈ) (b : β) : ofDual (a ^ b) = ofDual a ^ b := rfl
-#align of_dual_pow ofDual_pow
-#align of_dual_smul ofDual_smul
-#align of_dual_vadd ofDual_vadd
 
 @[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toDual_smul']
 theorem pow_toDual [Pow α β] (a : α) (b : β) : a ^ toDual b = a ^ b := rfl
-#align pow_to_dual pow_toDual
-#align to_dual_smul' toDual_smul'
-#align to_dual_vadd' toDual_vadd'
 
 @[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofDual_smul']
 theorem pow_ofDual [Pow α β] (a : α) (b : βᵒᵈ) : a ^ ofDual b = a ^ b := rfl
-#align pow_of_dual pow_ofDual
-#align of_dual_smul' ofDual_smul'
-#align of_dual_vadd' ofDual_vadd'
+
+section Monoid
+variable [Monoid α]
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_toDual {a : α} : IsLeftRegular (toDual a) ↔ IsLeftRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_ofDual {a : αᵒᵈ} : IsLeftRegular (ofDual a) ↔ IsLeftRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_toDual {a : α} : IsRightRegular (toDual a) ↔ IsRightRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_ofDual {a : αᵒᵈ} : IsRightRegular (ofDual a) ↔ IsRightRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRegular_toDual {a : α} : IsRegular (toDual a) ↔ IsRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRegular_ofDual {a : αᵒᵈ} : IsRegular (ofDual a) ↔ IsRegular a := .rfl
+
+end Monoid
 
 /-! ### Lexicographical order -/
 
@@ -187,19 +181,27 @@ instance [h : Div α] : Div (Lex α) := h
 
 @[to_additive (attr := to_additive) (reorder := 1 2) Lex.instSMul]
 instance Lex.instPow [h : Pow α β] : Pow (Lex α) β := h
-#align lex.has_pow Lex.instPow
-#align lex.has_smul Lex.instSMul
 
 @[to_additive (attr := to_additive) (reorder := 1 2) Lex.instSMul']
 instance Lex.instPow' [h : Pow α β] : Pow α (Lex β) := h
-#align lex.has_pow' Lex.instPow'
-#align lex.has_smul' Lex.instSMul'
 
 @[to_additive]
 instance [h : Semigroup α] : Semigroup (Lex α) := h
 
 @[to_additive]
 instance [h : CommSemigroup α] : CommSemigroup (Lex α) := h
+
+@[to_additive]
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Lex α) :=
+  inferInstanceAs <| IsLeftCancelMul α
+
+@[to_additive]
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Lex α) :=
+  inferInstanceAs <| IsRightCancelMul α
+
+@[to_additive]
+instance [Mul α] [IsCancelMul α] : IsCancelMul (Lex α) :=
+  inferInstanceAs <| IsCancelMul α
 
 @[to_additive]
 instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup (Lex α) := h
@@ -234,10 +236,10 @@ instance [h : InvolutiveInv α] : InvolutiveInv (Lex α) := h
 @[to_additive]
 instance [h : DivInvMonoid α] : DivInvMonoid (Lex α) := h
 
-@[to_additive existing OrderDual.subtractionMonoid]
+@[to_additive]
 instance [h : DivisionMonoid α] : DivisionMonoid (Lex α) := h
 
-@[to_additive existing OrderDual.subtractionCommMonoid]
+@[to_additive]
 instance [h : DivisionCommMonoid α] : DivisionCommMonoid (Lex α) := h
 
 @[to_additive]
@@ -248,64 +250,214 @@ instance [h : CommGroup α] : CommGroup (Lex α) := h
 
 @[to_additive (attr := simp)]
 theorem toLex_one [One α] : toLex (1 : α) = 1 := rfl
-#align to_lex_one toLex_one
-#align to_lex_zero toLex_zero
+
+@[to_additive (attr := simp)]
+theorem toLex_eq_one [One α] {a : α} : toLex a = 1 ↔ a = 1 := .rfl
 
 @[to_additive (attr := simp)]
 theorem ofLex_one [One α] : (ofLex 1 : α) = 1 := rfl
-#align of_lex_one ofLex_one
-#align of_lex_zero ofLex_zero
+
+@[to_additive (attr := simp)]
+theorem ofLex_eq_one [One α] {a : Lex α} : ofLex a = 1 ↔ a = 1 := .rfl
 
 @[to_additive (attr := simp)]
 theorem toLex_mul [Mul α] (a b : α) : toLex (a * b) = toLex a * toLex b := rfl
-#align to_lex_mul toLex_mul
-#align to_lex_add toLex_add
 
 @[to_additive (attr := simp)]
 theorem ofLex_mul [Mul α] (a b : Lex α) : ofLex (a * b) = ofLex a * ofLex b := rfl
-#align of_lex_mul ofLex_mul
-#align of_lex_add ofLex_add
 
 @[to_additive (attr := simp)]
 theorem toLex_inv [Inv α] (a : α) : toLex a⁻¹ = (toLex a)⁻¹ := rfl
-#align to_lex_inv toLex_inv
-#align to_lex_neg toLex_neg
 
 @[to_additive (attr := simp)]
 theorem ofLex_inv [Inv α] (a : Lex α) : ofLex a⁻¹ = (ofLex a)⁻¹ := rfl
-#align of_lex_inv ofLex_inv
-#align of_lex_neg ofLex_neg
 
 @[to_additive (attr := simp)]
 theorem toLex_div [Div α] (a b : α) : toLex (a / b) = toLex a / toLex b := rfl
-#align to_lex_div toLex_div
-#align to_lex_sub toLex_sub
 
 @[to_additive (attr := simp)]
 theorem ofLex_div [Div α] (a b : Lex α) : ofLex (a / b) = ofLex a / ofLex b := rfl
-#align of_lex_div ofLex_div
-#align of_lex_sub ofLex_sub
 
 @[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toLex_smul]
 theorem toLex_pow [Pow α β] (a : α) (b : β) : toLex (a ^ b) = toLex a ^ b := rfl
-#align to_lex_pow toLex_pow
-#align to_lex_smul toLex_smul
-#align to_lex_vadd toLex_vadd
 
 @[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofLex_smul]
 theorem ofLex_pow [Pow α β] (a : Lex α) (b : β) : ofLex (a ^ b) = ofLex a ^ b := rfl
-#align of_lex_pow ofLex_pow
-#align of_lex_smul ofLex_smul
-#align of_lex_vadd ofLex_vadd
 
 @[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toLex_smul']
 theorem pow_toLex [Pow α β] (a : α) (b : β) : a ^ toLex b = a ^ b := rfl
-#align pow_to_lex pow_toLex
-#align to_lex_smul' toLex_smul'
-#align to_lex_vadd' toLex_vadd'
 
 @[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofLex_smul']
 theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
-#align pow_of_lex pow_ofLex
-#align of_lex_smul' ofLex_smul'
-#align of_lex_vadd' ofLex_vadd'
+
+section Monoid
+variable [Monoid α]
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_toLex {a : α} : IsLeftRegular (toLex a) ↔ IsLeftRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_ofLex {a : Lex α} : IsLeftRegular (ofLex a) ↔ IsLeftRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_toLex {a : α} : IsRightRegular (toLex a) ↔ IsRightRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_ofLex {a : Lex α} : IsRightRegular (ofLex a) ↔ IsRightRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRegular_toLex {a : α} : IsRegular (toLex a) ↔ IsRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRegular_ofLex {a : Lex α} : IsRegular (ofLex a) ↔ IsRegular a := .rfl
+
+end Monoid
+
+/-! ### Colexicographical order -/
+
+
+@[to_additive]
+instance [h : One α] : One (Colex α) := h
+
+@[to_additive]
+instance [h : Mul α] : Mul (Colex α) := h
+
+@[to_additive]
+instance [h : Inv α] : Inv (Colex α) := h
+
+@[to_additive]
+instance [h : Div α] : Div (Colex α) := h
+
+@[to_additive (attr := to_additive) (reorder := 1 2) Colex.instSMul]
+instance Colex.instPow [h : Pow α β] : Pow (Colex α) β := h
+
+@[to_additive (attr := to_additive) (reorder := 1 2) Colex.instSMul']
+instance Colex.instPow' [h : Pow α β] : Pow α (Colex β) := h
+
+@[to_additive]
+instance [h : Semigroup α] : Semigroup (Colex α) := h
+
+@[to_additive]
+instance [h : CommSemigroup α] : CommSemigroup (Colex α) := h
+
+@[to_additive]
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Colex α) :=
+  inferInstanceAs <| IsLeftCancelMul α
+
+@[to_additive]
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Colex α) :=
+  inferInstanceAs <| IsRightCancelMul α
+
+@[to_additive]
+instance [Mul α] [IsCancelMul α] : IsCancelMul (Colex α) :=
+  inferInstanceAs <| IsCancelMul α
+
+@[to_additive]
+instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup (Colex α) := h
+
+@[to_additive]
+instance [h : RightCancelSemigroup α] : RightCancelSemigroup (Colex α) := h
+
+@[to_additive]
+instance [h : MulOneClass α] : MulOneClass (Colex α) := h
+
+@[to_additive]
+instance [h : Monoid α] : Monoid (Colex α) := h
+
+@[to_additive]
+instance [h : CommMonoid α] : CommMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : LeftCancelMonoid α] : LeftCancelMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : RightCancelMonoid α] : RightCancelMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : CancelMonoid α] : CancelMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : CancelCommMonoid α] : CancelCommMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : InvolutiveInv α] : InvolutiveInv (Colex α) := h
+
+@[to_additive]
+instance [h : DivInvMonoid α] : DivInvMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : DivisionMonoid α] : DivisionMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : DivisionCommMonoid α] : DivisionCommMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : Group α] : Group (Colex α) := h
+
+@[to_additive]
+instance [h : CommGroup α] : CommGroup (Colex α) := h
+
+@[to_additive (attr := simp)]
+theorem toColex_one [One α] : toColex (1 : α) = 1 := rfl
+
+@[to_additive (attr := simp)]
+theorem toColex_eq_one [One α] {a : α} : toColex a = 1 ↔ a = 1 := .rfl
+
+@[to_additive (attr := simp)]
+theorem ofColex_one [One α] : (ofColex 1 : α) = 1 := rfl
+
+@[to_additive (attr := simp)]
+theorem ofColex_eq_one [One α] {a : Colex α} : ofColex a = 1 ↔ a = 1 := .rfl
+
+@[to_additive (attr := simp)]
+theorem toColex_mul [Mul α] (a b : α) : toColex (a * b) = toColex a * toColex b := rfl
+
+@[to_additive (attr := simp)]
+theorem ofColex_mul [Mul α] (a b : Colex α) : ofColex (a * b) = ofColex a * ofColex b := rfl
+
+@[to_additive (attr := simp)]
+theorem toColex_inv [Inv α] (a : α) : toColex a⁻¹ = (toColex a)⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+theorem ofColex_inv [Inv α] (a : Colex α) : ofColex a⁻¹ = (ofColex a)⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+theorem toColex_div [Div α] (a b : α) : toColex (a / b) = toColex a / toColex b := rfl
+
+@[to_additive (attr := simp)]
+theorem ofColex_div [Div α] (a b : Colex α) : ofColex (a / b) = ofColex a / ofColex b := rfl
+
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toColex_smul]
+theorem toColex_pow [Pow α β] (a : α) (b : β) : toColex (a ^ b) = toColex a ^ b := rfl
+
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofColex_smul]
+theorem ofColex_pow [Pow α β] (a : Colex α) (b : β) : ofColex (a ^ b) = ofColex a ^ b := rfl
+
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toColex_smul']
+theorem pow_toColex [Pow α β] (a : α) (b : β) : a ^ toColex b = a ^ b := rfl
+
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofColex_smul']
+theorem pow_ofColex [Pow α β] (a : α) (b : Colex β) : a ^ ofColex b = a ^ b := rfl
+
+section Monoid
+variable [Monoid α]
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_toColex {a : α} : IsLeftRegular (toColex a) ↔ IsLeftRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_ofColex {a : Colex α} : IsLeftRegular (ofColex a) ↔ IsLeftRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_toColex {a : α} : IsRightRegular (toColex a) ↔ IsRightRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_ofColex {a : Colex α} : IsRightRegular (ofColex a) ↔ IsRightRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRegular_toColex {a : α} : IsRegular (toColex a) ↔ IsRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRegular_ofColex {a : Colex α} : IsRegular (ofColex a) ↔ IsRegular a := .rfl
+
+end Monoid

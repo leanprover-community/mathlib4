@@ -3,14 +3,17 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.NegOnePow
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 /-! Signs in constructions on homological complexes
 
 In this file, we shall introduce various typeclasses which will allow
 the construction of the total complex of a bicomplex and of the
-the monoidal category structure on categories of homological complexes (TODO).
+monoidal category structure on categories of homological complexes (TODO).
 
 The most important definition is that of `TotalComplexShape c₁ c₂ c₁₂` given
 three complex shapes `c₁`, `c₂`, `c₁₂`: it allows the definition of a total
@@ -21,19 +24,22 @@ In particular, we construct an instance of `TotalComplexShape c c c` when `c : C
 and `I` is an additive monoid equipped with a group homomorphism `ε' : Multiplicative I → ℤˣ`
 satisfying certain properties (see `ComplexShape.TensorSigns`).
 
-TODO @joelriou: add more classes for the associativity of the total complex, etc.
-
 -/
 
-variable {I₁ I₂ I₁₂ : Type*}
-  (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c₁₂ : ComplexShape I₁₂)
+@[expose] public section
 
-/-- A total complex shape for three complexes shapes `c₁`, `c₂`, `c₁₂` on three types
+assert_not_exists Field TwoSidedIdeal
+
+variable {I₁ I₂ I₃ I₁₂ I₂₃ J : Type*}
+  (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c₃ : ComplexShape I₃)
+  (c₁₂ : ComplexShape I₁₂) (c₂₃ : ComplexShape I₂₃) (c : ComplexShape J)
+
+/-- A total complex shape for three complex shapes `c₁`, `c₂`, `c₁₂` on three types
 `I₁`, `I₂` and `I₁₂` consists of the data and properties that will allow the construction
 of a total complex functor `HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂` which
 sends `K` to a complex which in degree `i₁₂ : I₁₂` consists of the coproduct
 of the `(K.X i₁).X i₂` such that `π ⟨i₁, i₂⟩ = i₁₂`. -/
-class TotalComplexShape  where
+class TotalComplexShape where
   /-- a map on indices -/
   π : I₁ × I₂ → I₁₂
   /-- the sign of the horizontal differential in the total complex -/
@@ -130,13 +136,13 @@ lemma add_rel (r : I) {p q : I} (hpq : c.Rel p q) : c.Rel (r + p) (r + q) :=
 
 @[simp]
 lemma ε_zero : c.ε 0 = 1 := by
-  apply MonoidHom.map_one
+  apply map_one
 
 lemma ε_succ {p q : I} (hpq : c.Rel p q) : c.ε q = - c.ε p :=
   TensorSigns.ε'_succ p q hpq
 
 lemma ε_add (p q : I) : c.ε (p + q) = c.ε p * c.ε q := by
-  apply MonoidHom.map_mul
+  apply map_mul
 
 lemma next_add (p q : I) (hp : c.Rel p (c.next p)) :
     c.next (p + q) = c.next p + q :=
@@ -159,8 +165,8 @@ instance : TotalComplexShape c c c where
 
 instance : TensorSigns (ComplexShape.down ℕ) where
   ε' := MonoidHom.mk' (fun (i : ℕ) => (-1 : ℤˣ) ^ i) (pow_add (-1 : ℤˣ))
-  rel_add p q r (hpq : q + 1 = p) := by dsimp; omega
-  add_rel p q r (hpq : q + 1 = p) := by dsimp; omega
+  rel_add p q r (hpq : q + 1 = p) := by dsimp; lia
+  add_rel p q r (hpq : q + 1 = p) := by dsimp; lia
   ε'_succ := by
     rintro _ q rfl
     dsimp
@@ -171,8 +177,8 @@ lemma ε_down_ℕ (n : ℕ) : (ComplexShape.down ℕ).ε n = (-1 : ℤˣ) ^ n :=
 
 instance : TensorSigns (ComplexShape.up ℤ) where
   ε' := MonoidHom.mk' Int.negOnePow Int.negOnePow_add
-  rel_add p q r (hpq : p + 1 = q) := by dsimp; omega
-  add_rel p q r (hpq : p + 1 = q) := by dsimp; omega
+  rel_add p q r (hpq : p + 1 = q) := by dsimp; lia
+  add_rel p q r (hpq : p + 1 = q) := by dsimp; lia
   ε'_succ := by
     rintro p _ rfl
     dsimp
@@ -183,7 +189,98 @@ lemma ε_up_ℤ (n : ℤ) : (ComplexShape.up ℤ).ε n = n.negOnePow := rfl
 
 end
 
+section
+
+variable (c₁ c₂)
+variable [TotalComplexShape c₁₂ c₃ c] [TotalComplexShape c₂ c₃ c₂₃] [TotalComplexShape c₁ c₂₃ c]
+
+/-- When we have six complex shapes `c₁`, `c₂`, `c₃`, `c₁₂`, `c₂₃`, `c`, and total functors
+`HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂`,
+`HomologicalComplex₂ C c₁₂ c₃ ⥤ HomologicalComplex C c`,
+`HomologicalComplex₂ C c₂ c₃ ⥤ HomologicalComplex C c₂₃`,
+`HomologicalComplex₂ C c₁ c₂₂₃ ⥤ HomologicalComplex C c`, we get two ways to
+compute the total complex of a triple complex in `HomologicalComplex₃ C c₁ c₂ c₃`, then
+under this assumption `[Associative c₁ c₂ c₃ c₁₂ c₂₃ c]`, these two complexes
+canonically identify (without introducing signs). -/
+class Associative : Prop where
+  assoc (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩
+  ε₁_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₁ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) =
+      ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₁ c₁ c₂ c₁₂ (i₁, i₂)
+  ε₂_ε₁ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₁ c₂ c₃ c₂₃ (i₂, i₃) =
+      ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₂ c₁ c₂ c₁₂ (i₁, i₂)
+  ε₂_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₂ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) =
+      (ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₂ c₂ c₃ c₂₃ (i₂, i₃))
+
+variable [Associative c₁ c₂ c₃ c₁₂ c₂₃ c]
+
+lemma assoc (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩ := by
+  apply Associative.assoc
+
+lemma associative_ε₁_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₁ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) =
+      ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₁ c₁ c₂ c₁₂ (i₁, i₂) := by
+  apply Associative.ε₁_eq_mul
+
+lemma associative_ε₂_ε₁ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₁ c₂ c₃ c₂₃ (i₂, i₃) =
+      ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₂ c₁ c₂ c₁₂ (i₁, i₂) := by
+  apply Associative.ε₂_ε₁
+
+lemma associative_ε₂_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₂ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) =
+      (ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₂ c₂ c₃ c₂₃ (i₂, i₃)) := by
+  apply Associative.ε₂_eq_mul
+
+/-- The map `I₁ × I₂ × I₃ → j` that is obtained using `TotalComplexShape c₁ c₂ c₁₂`
+and `TotalComplexShape c₁₂ c₃ c` when `c₁ : ComplexShape I₁`, `c₂ : ComplexShape I₂`,
+`c₃ : ComplexShape I₃`, `c₁₂ : ComplexShape I₁₂` and `c : ComplexShape J`. -/
+def r : I₁ × I₂ × I₃ → J := fun ⟨i₁, i₂, i₃⟩ ↦ π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩
+
+open CategoryTheory
+
+/-- The `GradedObject.BifunctorComp₁₂IndexData` which arises from complex shapes. -/
+@[reducible]
+def ρ₁₂ : GradedObject.BifunctorComp₁₂IndexData (r c₁ c₂ c₃ c₁₂ c) where
+  I₁₂ := I₁₂
+  p := π c₁ c₂ c₁₂
+  q := π c₁₂ c₃ c
+  hpq _ := rfl
+
+/-- The `GradedObject.BifunctorComp₂₃IndexData` which arises from complex shapes. -/
+@[reducible]
+def ρ₂₃ : GradedObject.BifunctorComp₂₃IndexData (r c₁ c₂ c₃ c₁₂ c) where
+  I₂₃ := I₂₃
+  p := π c₂ c₃ c₂₃
+  q := π c₁ c₂₃ c
+  hpq := fun ⟨i₁, i₂, i₃⟩ ↦ (assoc c₁ c₂ c₃ c₁₂ c₂₃ c i₁ i₂ i₃).symm
+
+end
+
+instance {I : Type*} [AddMonoid I] (c : ComplexShape I) [c.TensorSigns] :
+    Associative c c c c c c where
+  assoc := add_assoc
+  ε₁_eq_mul _ _ _ := by dsimp; rw [one_mul]
+  ε₂_ε₁ _ _ _ := by dsimp; rw [one_mul, mul_one]
+  ε₂_eq_mul _ _ _ := by dsimp; rw [ε_add]
+
 end ComplexShape
+
+/-- The total complex shape for `c₂`, `c₁` and `c₁₂` that is deduced
+from a total complex shape for `c₁`, `c₂` and `c₁₂`. -/
+def TotalComplexShape.symm [TotalComplexShape c₁ c₂ c₁₂] :
+    TotalComplexShape c₂ c₁ c₁₂ where
+  π := fun ⟨i₂, i₁⟩ ↦ ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩
+  ε₁ := fun ⟨i₂, i₁⟩ ↦ ComplexShape.ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩
+  ε₂ := fun ⟨i₂, i₁⟩ ↦ ComplexShape.ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂⟩
+  rel₁ h i₁ := ComplexShape.rel_π₂ c₁ c₁₂ i₁ h
+  rel₂ i₂ _ _ h := ComplexShape.rel_π₁ c₂ c₁₂ h i₂
+  ε₂_ε₁ h₂ h₁ := by
+    rw [neg_mul, ComplexShape.ε₂_ε₁ c₁₂ h₁ h₂, neg_mul, neg_neg]
 
 /-- A total complex shape symmetry contains the data and properties which allow the
 identification of the two total complex functors
@@ -198,6 +295,17 @@ class TotalComplexShapeSymmetry [TotalComplexShape c₁ c₂ c₁₂] [TotalComp
   σ_ε₂ (i₁ : I₁) {i₂ i₂' : I₂} (h₂ : c₂.Rel i₂ i₂') :
     σ i₁ i₂ * ComplexShape.ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = ComplexShape.ε₁ c₂ c₁ c₁₂ ⟨i₂, i₁⟩ * σ i₁ i₂'
 
+/-- The symmetry between the total complex shape for `c₁`, `c₂` and `c₁₂`,
+and its symmetric total complex shape. -/
+def TotalComplexShape.symmSymmetry [TotalComplexShape c₁ c₂ c₁₂] :
+    letI := TotalComplexShape.symm c₁ c₂ c₁₂
+    TotalComplexShapeSymmetry c₁ c₂ c₁₂ :=
+  letI := TotalComplexShape.symm c₁ c₂ c₁₂
+  { symm i₁ i₂ := rfl
+    σ _ _ := 1
+    σ_ε₁ _ _ := by aesop
+    σ_ε₂ _ _ := by aesop }
+
 namespace ComplexShape
 
 variable [TotalComplexShape c₁ c₂ c₁₂] [TotalComplexShape c₂ c₁ c₁₂]
@@ -209,6 +317,13 @@ abbrev σ (i₁ : I₁) (i₂ : I₂) : ℤˣ := TotalComplexShapeSymmetry.σ c�
 lemma π_symm (i₁ : I₁) (i₂ : I₂) :
     π c₂ c₁ c₁₂ ⟨i₂, i₁⟩ = π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ := by
   apply TotalComplexShapeSymmetry.symm
+
+/-- The symmetry bijection `(π c₂ c₁ c₁₂ ⁻¹' {j}) ≃ (π c₁ c₂ c₁₂ ⁻¹' {j})`. -/
+@[simps]
+def symmetryEquiv (j : I₁₂) :
+    (π c₂ c₁ c₁₂ ⁻¹' {j}) ≃ (π c₁ c₂ c₁₂ ⁻¹' {j}) where
+  toFun := fun ⟨⟨i₂, i₁⟩, h⟩ => ⟨⟨i₁, i₂⟩, by simpa [π_symm] using h⟩
+  invFun := fun ⟨⟨i₁, i₂⟩, h⟩ => ⟨⟨i₂, i₁⟩, by simpa [π_symm] using h⟩
 
 variable {c₁}
 
@@ -237,6 +352,26 @@ instance : TotalComplexShapeSymmetry (up ℤ) (up ℤ) (up ℤ) where
     rw [one_mul, ← Int.negOnePow_add, mul_add, mul_one]
 
 end ComplexShape
+
+/-- The obvious `TotalComplexShapeSymmetry c₂ c₁ c₁₂` deduced from a
+`TotalComplexShapeSymmetry c₁ c₂ c₁₂`. -/
+def TotalComplexShapeSymmetry.symmetry [TotalComplexShape c₁ c₂ c₁₂]
+    [TotalComplexShape c₂ c₁ c₁₂] [TotalComplexShapeSymmetry c₁ c₂ c₁₂] :
+    TotalComplexShapeSymmetry c₂ c₁ c₁₂ where
+  symm i₂ i₁ := (ComplexShape.π_symm c₁ c₂ c₁₂ i₁ i₂).symm
+  σ i₂ i₁ := ComplexShape.σ c₁ c₂ c₁₂ i₁ i₂
+  σ_ε₁ {i₂ i₂'} h₂ i₁ := by
+    apply mul_right_cancel (b := ComplexShape.ε₂ c₁ c₂ c₁₂ (i₁, i₂))
+    rw [mul_assoc]
+    nth_rw 2 [mul_comm]
+    rw [← mul_assoc, ComplexShape.σ_ε₂ c₁ c₁₂ i₁ h₂, mul_comm, ← mul_assoc,
+      Int.units_mul_self, one_mul, mul_comm, ← mul_assoc, Int.units_mul_self, one_mul]
+  σ_ε₂ i₂ i₁ i₁' h₁ := by
+    apply mul_right_cancel (b := ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂))
+    rw [mul_assoc]
+    nth_rw 2 [mul_comm]
+    rw [← mul_assoc, ComplexShape.σ_ε₁ c₂ c₁₂ h₁ i₂, mul_comm, ← mul_assoc,
+      Int.units_mul_self, one_mul, mul_comm, ← mul_assoc, Int.units_mul_self, one_mul]
 
 /-- This typeclass expresses that the signs given by `[TotalComplexShapeSymmetry c₁ c₂ c₁₂]`
 and by `[TotalComplexShapeSymmetry c₂ c₁ c₁₂]` are compatible. -/

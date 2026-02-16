@@ -3,12 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.Algebra.Lie.Submodule
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+module
 
-#align_import algebra.lie.of_associative from "leanprover-community/mathlib"@"f0f3d964763ecd0090c9eb3ae0d15871d08781c4"
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Algebra.Lie.Subalgebra
+public import Mathlib.Algebra.Lie.Submodule
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Lie algebras of associative algebras
@@ -22,17 +22,19 @@ make such a definition in this file.
 
 ## Main definitions
 
- * `LieAlgebra.ofAssociativeAlgebra`
- * `LieAlgebra.ofAssociativeAlgebraHom`
- * `LieModule.toEnd`
- * `LieAlgebra.ad`
- * `LinearEquiv.lieConj`
- * `AlgEquiv.toLieEquiv`
+* `LieAlgebra.ofAssociativeAlgebra`
+* `LieAlgebra.ofAssociativeAlgebraHom`
+* `LieModule.toEnd`
+* `LieAlgebra.ad`
+* `LinearEquiv.lieConj`
+* `AlgEquiv.toLieEquiv`
 
 ## Tags
 
 lie algebra, ring commutator, adjoint action
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -50,16 +52,13 @@ instance (priority := 100) ofAssociativeRing : LieRing A where
   lie_self := by simp only [Ring.lie_def, forall_const, sub_self]
   leibniz_lie _ _ _ := by
     simp only [Ring.lie_def, mul_sub_left_distrib, mul_sub_right_distrib, mul_assoc]; abel
-#align lie_ring.of_associative_ring LieRing.ofAssociativeRing
 
 theorem of_associative_ring_bracket (x y : A) : ⁅x, y⁆ = x * y - y * x :=
   rfl
-#align lie_ring.of_associative_ring_bracket LieRing.of_associative_ring_bracket
 
 @[simp]
 theorem lie_apply {α : Type*} (f g : α → A) (a : α) : ⁅f, g⁆ a = ⁅f a, g a⁆ :=
   rfl
-#align lie_ring.lie_apply LieRing.lie_apply
 
 end LieRing
 
@@ -82,13 +81,11 @@ abbrev LieRingModule.ofAssociativeModule : LieRingModule A M where
   add_lie := add_smul
   lie_add := smul_add
   leibniz_lie := by simp [LieRing.of_associative_ring_bracket, sub_smul, mul_smul, sub_add_cancel]
-#align lie_ring_module.of_associative_module LieRingModule.ofAssociativeModule
 
 attribute [local instance] LieRingModule.ofAssociativeModule
 
 theorem lie_eq_smul (a : A) (m : M) : ⁅a, m⁆ = a • m :=
   rfl
-#align lie_eq_smul lie_eq_smul
 
 end AssociativeModule
 
@@ -102,7 +99,6 @@ instance (priority := 100) LieAlgebra.ofAssociativeAlgebra : LieAlgebra R A wher
   lie_smul t x y := by
     rw [LieRing.of_associative_ring_bracket, LieRing.of_associative_ring_bracket,
       Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_sub]
-#align lie_algebra.of_associative_algebra LieAlgebra.ofAssociativeAlgebra
 
 attribute [local instance] LieRingModule.ofAssociativeModule
 
@@ -118,15 +114,12 @@ this cannot be a global instance. -/
 theorem LieModule.ofAssociativeModule : LieModule R A M where
   smul_lie := smul_assoc
   lie_smul := smul_algebra_smul_comm
-#align lie_module.of_associative_module LieModule.ofAssociativeModule
 
 instance Module.End.instLieRingModule : LieRingModule (Module.End R M) M :=
   LieRingModule.ofAssociativeModule
-#align module.End.lie_ring_module Module.End.instLieRingModule
 
 instance Module.End.instLieModule : LieModule R (Module.End R M) M :=
   LieModule.ofAssociativeModule
-#align module.End.lie_module Module.End.instLieModule
 
 @[simp] lemma Module.End.lie_apply (f : Module.End R M) (m : M) : ⁅f, m⁆ = f m := rfl
 
@@ -142,40 +135,27 @@ functorial. -/
 def toLieHom : A →ₗ⁅R⁆ B :=
   { f.toLinearMap with
     map_lie' := fun {_ _} => by simp [LieRing.of_associative_ring_bracket] }
-#align alg_hom.to_lie_hom AlgHom.toLieHom
 
 instance : Coe (A →ₐ[R] B) (A →ₗ⁅R⁆ B) :=
   ⟨toLieHom⟩
 
-/- Porting note: is a syntactic tautology
-@[simp]
-theorem toLieHom_coe : f.toLieHom = ↑f :=
-  rfl
--/
-#noalign alg_hom.to_lie_hom_coe
-
 @[simp]
 theorem coe_toLieHom : ((f : A →ₗ⁅R⁆ B) : A → B) = f :=
   rfl
-#align alg_hom.coe_to_lie_hom AlgHom.coe_toLieHom
 
 theorem toLieHom_apply (x : A) : f.toLieHom x = f x :=
   rfl
-#align alg_hom.to_lie_hom_apply AlgHom.toLieHom_apply
 
 @[simp]
 theorem toLieHom_id : (AlgHom.id R A : A →ₗ⁅R⁆ A) = LieHom.id :=
   rfl
-#align alg_hom.to_lie_hom_id AlgHom.toLieHom_id
 
 @[simp]
 theorem toLieHom_comp : (g.comp f : A →ₗ⁅R⁆ C) = (g : B →ₗ⁅R⁆ C).comp (f : A →ₗ⁅R⁆ B) :=
   rfl
-#align alg_hom.to_lie_hom_comp AlgHom.toLieHom_comp
 
 theorem toLieHom_injective {f g : A →ₐ[R] B} (h : (f : A →ₗ⁅R⁆ B) = (g : A →ₗ⁅R⁆ B)) : f = g := by
   ext a; exact LieHom.congr_fun h a
-#align alg_hom.to_lie_hom_injective AlgHom.toLieHom_injective
 
 end AlgHom
 
@@ -201,33 +181,75 @@ def LieModule.toEnd : L →ₗ⁅R⁆ Module.End R M where
   map_add' x y := by ext m; apply add_lie
   map_smul' t x := by ext m; apply smul_lie
   map_lie' {x y} := by ext m; apply lie_lie
-#align lie_module.to_endomorphism LieModule.toEnd
 
 /-- The adjoint action of a Lie algebra on itself. -/
 def LieAlgebra.ad : L →ₗ⁅R⁆ Module.End R L :=
   LieModule.toEnd R L L
-#align lie_algebra.ad LieAlgebra.ad
 
 @[simp]
 theorem LieAlgebra.ad_apply (x y : L) : LieAlgebra.ad R L x y = ⁅x, y⁆ :=
   rfl
-#align lie_algebra.ad_apply LieAlgebra.ad_apply
 
 @[simp]
 theorem LieModule.toEnd_module_end :
     LieModule.toEnd R (Module.End R M) M = LieHom.id := by ext g m; simp [lie_eq_smul]
-#align lie_module.to_endomorphism_module_End LieModule.toEnd_module_end
 
 theorem LieSubalgebra.toEnd_eq (K : LieSubalgebra R L) {x : K} :
     LieModule.toEnd R K M x = LieModule.toEnd R L M x :=
   rfl
-#align lie_subalgebra.to_endomorphism_eq LieSubalgebra.toEnd_eq
 
 @[simp]
 theorem LieSubalgebra.toEnd_mk (K : LieSubalgebra R L) {x : L} (hx : x ∈ K) :
     LieModule.toEnd R K M ⟨x, hx⟩ = LieModule.toEnd R L M x :=
   rfl
-#align lie_subalgebra.to_endomorphism_mk LieSubalgebra.toEnd_mk
+
+section IsFaithful
+
+open Function
+
+namespace LieModule
+
+/-- A Lie module is *faithful* if the associated map `L → End M` is injective. -/
+@[mk_iff]
+class IsFaithful : Prop where
+  injective_toEnd : Injective <| toEnd R L M
+
+@[simp]
+lemma toEnd_eq_iff [IsFaithful R L M] {x y : L} :
+    toEnd R L M x = toEnd R L M y ↔ x = y :=
+  IsFaithful.injective_toEnd.eq_iff
+
+variable {R L} in
+lemma ext_of_isFaithful [IsFaithful R L M] {x y : L} (h : ∀ m : M, ⁅x, m⁆ = ⁅y, m⁆) :
+    x = y :=
+  (toEnd_eq_iff R L M).mp <| LinearMap.ext h
+
+@[simp]
+lemma toEnd_eq_zero_iff [IsFaithful R L M] {x : L} :
+    toEnd R L M x = 0 ↔ x = 0 := by
+  rw [← (toEnd R L M).toLinearMap.map_zero]
+  exact toEnd_eq_iff R L M
+
+lemma isFaithful_iff' : IsFaithful R L M ↔ ∀ x : L, (∀ m : M, ⁅x, m⁆ = 0) → x = 0 := by
+  refine ⟨fun h x hx ↦ ?_, fun h ↦ ⟨fun x y hxy ↦ ?_⟩⟩
+  · replace hx : toEnd R L M x = 0 := by ext m; simpa using hx m
+    simpa using hx
+  · rw [← sub_eq_zero]
+    refine h _ fun m ↦ ?_
+    rw [sub_lie, sub_eq_zero, ← toEnd_apply_apply R, ← toEnd_apply_apply R, hxy]
+
+instance [IsFaithful R L M] {L' : LieSubalgebra R L} :
+    IsFaithful R L' M := by
+  refine ⟨(?_ : Injective (toEnd R L M ∘ ((↑) : L' → L)))⟩
+  exact IsFaithful.injective_toEnd.comp Subtype.val_injective
+
+instance : IsFaithful R (Module.End R M) M where
+  injective_toEnd := by simpa using injective_id
+
+end LieModule
+
+end IsFaithful
+
 
 section
 
@@ -240,7 +262,7 @@ lemma LieSubmodule.coe_toEnd_pow (N : LieSubmodule R L M) (x : L) (y : N) (n : �
     ((toEnd R L N x ^ n) y : M) = (toEnd R L M x ^ n) y := by
   induction n generalizing y with
   | zero => rfl
-  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, LieSubmodule.coe_toEnd]
+  | succ n ih => simp only [pow_succ', Module.End.mul_apply, ih, LieSubmodule.coe_toEnd]
 
 lemma LieSubalgebra.coe_ad (H : LieSubalgebra R L) (x y : H) :
     (ad R H x y : L) = ad R L x y := rfl
@@ -270,7 +292,7 @@ lemma LieModule.toEnd_pow_lie (x y : L) (z : M) (n : ℕ) :
   | succ n ih =>
     rw [Finset.sum_antidiagonal_choose_succ_nsmul
       (fun i j ↦ ⁅((ad R L x) ^ i) y, ((φ x) ^ j) z⁆) n]
-    simp only [pow_succ', LinearMap.mul_apply, ih, map_sum, map_nsmul,
+    simp only [pow_succ', Module.End.mul_apply, ih, map_sum, map_nsmul,
       toEnd_lie, nsmul_add, sum_add_distrib]
     rw [add_comm, add_left_cancel_iff, sum_congr rfl]
     rintro ⟨i, j⟩ hij
@@ -294,7 +316,7 @@ variable {M₂ : Type w₁} [AddCommGroup M₂] [Module R M₂] [LieRingModule L
 
 lemma toEnd_pow_comp_lieHom :
     (toEnd R L M₂ x ^ k) ∘ₗ f = f ∘ₗ toEnd R L M x ^ k := by
-  apply LinearMap.commute_pow_left_of_commute
+  apply Module.End.commute_pow_left_of_commute
   ext
   simp
 
@@ -314,24 +336,21 @@ theorem coe_map_toEnd_le :
     (N : Submodule R M).map (LieModule.toEnd R L M x) ≤ N := by
   rintro n ⟨m, hm, rfl⟩
   exact N.lie_mem hm
-#align lie_submodule.coe_map_to_endomorphism_le LieSubmodule.coe_map_toEnd_le
 
 variable (N x)
 
 theorem toEnd_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M)) :
     (toEnd R L M x).comp (N : Submodule R M).subtype ⟨m, hm⟩ ∈ (N : Submodule R M) := by
   simpa using N.lie_mem hm
-#align lie_submodule.to_endomorphism_comp_subtype_mem LieSubmodule.toEnd_comp_subtype_mem
 
 @[simp]
 theorem toEnd_restrict_eq_toEnd (h := N.toEnd_comp_subtype_mem x) :
     (toEnd R L M x).restrict h = toEnd R L N x := by
-  ext; simp [LinearMap.restrict_apply]
-#align lie_submodule.to_endomorphism_restrict_eq_to_endomorphism LieSubmodule.toEnd_restrict_eq_toEnd
+  rfl
 
 lemma mapsTo_pow_toEnd_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
     MapsTo ((toEnd R L M x - algebraMap R (Module.End R M) φ) ^ k) N N := by
-  rw [LinearMap.coe_pow]
+  rw [Module.End.coe_pow]
   exact MapsTo.iterate (fun m hm ↦ N.sub_mem (N.lie_mem hm) (N.smul_mem _ hm)) k
 
 end LieSubmodule
@@ -341,14 +360,12 @@ open LieAlgebra
 theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type v) [Ring A] [Algebra R A] :
     (ad R A : A → Module.End R A) = LinearMap.mulLeft R - LinearMap.mulRight R := by
   ext a b; simp [LieRing.of_associative_ring_bracket]
-#align lie_algebra.ad_eq_lmul_left_sub_lmul_right LieAlgebra.ad_eq_lmul_left_sub_lmul_right
 
 theorem LieSubalgebra.ad_comp_incl_eq (K : LieSubalgebra R L) (x : K) :
     (ad R L ↑x).comp (K.incl : K →ₗ[R] L) = (K.incl : K →ₗ[R] L).comp (ad R K x) := by
   ext y
   simp only [ad_apply, LieHom.coe_toLinearMap, LieSubalgebra.coe_incl, LinearMap.coe_comp,
     LieSubalgebra.coe_bracket, Function.comp_apply]
-#align lie_subalgebra.ad_comp_incl_eq LieSubalgebra.ad_comp_incl_eq
 
 end AdjointAction
 
@@ -362,7 +379,6 @@ def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [A
       have hxy := A'.mul_mem hx hy
       have hyx := A'.mul_mem hy hx
       exact Submodule.sub_mem (Subalgebra.toSubmodule A') hxy hyx }
-#align lie_subalgebra_of_subalgebra lieSubalgebraOfSubalgebra
 
 namespace LinearEquiv
 
@@ -375,19 +391,16 @@ def lieConj : Module.End R M₁ ≃ₗ⁅R⁆ Module.End R M₂ :=
   { e.conj with
     map_lie' := fun {f g} =>
       show e.conj ⁅f, g⁆ = ⁅e.conj f, e.conj g⁆ by
-        simp only [LieRing.of_associative_ring_bracket, LinearMap.mul_eq_comp, e.conj_comp,
+        simp only [LieRing.of_associative_ring_bracket, Module.End.mul_eq_comp, e.conj_comp,
           map_sub] }
-#align linear_equiv.lie_conj LinearEquiv.lieConj
 
 @[simp]
 theorem lieConj_apply (f : Module.End R M₁) : e.lieConj f = e.conj f :=
   rfl
-#align linear_equiv.lie_conj_apply LinearEquiv.lieConj_apply
 
 @[simp]
 theorem lieConj_symm : e.lieConj.symm = e.symm.lieConj :=
   rfl
-#align linear_equiv.lie_conj_symm LinearEquiv.lieConj_symm
 
 end LinearEquiv
 
@@ -404,17 +417,14 @@ def toLieEquiv : A₁ ≃ₗ⁅R⁆ A₂ :=
     map_lie' := fun {x y} => by
       have : e.toEquiv.toFun = e := rfl
       simp_rw [LieRing.of_associative_ring_bracket, this, map_sub, map_mul] }
-#align alg_equiv.to_lie_equiv AlgEquiv.toLieEquiv
 
 @[simp]
 theorem toLieEquiv_apply (x : A₁) : e.toLieEquiv x = e x :=
   rfl
-#align alg_equiv.to_lie_equiv_apply AlgEquiv.toLieEquiv_apply
 
 @[simp]
 theorem toLieEquiv_symm_apply (x : A₂) : e.toLieEquiv.symm x = e.symm x :=
   rfl
-#align alg_equiv.to_lie_equiv_symm_apply AlgEquiv.toLieEquiv_symm_apply
 
 end AlgEquiv
 
@@ -429,9 +439,9 @@ open LieEquiv
 /-- Given an equivalence `e` of Lie algebras from `L` to `L'`, and an element `x : L`, the conjugate
 of the endomorphism `ad(x)` of `L` by `e` is the endomorphism `ad(e x)` of `L'`. -/
 @[simp]
-lemma conj_ad_apply (e : L ≃ₗ⁅R⁆ L') (x : L) : LinearEquiv.conj e (ad R L x) = ad R L' (e x) := by
+lemma conj_ad_apply (e : L ≃ₗ⁅R⁆ L') (x : L) : e.toLinearEquiv.conj (ad R L x) = ad R L' (e x) := by
   ext y'
-  rw [LinearEquiv.conj_apply_apply, ad_apply, ad_apply, coe_to_linearEquiv, map_lie,
-    ← coe_to_linearEquiv, LinearEquiv.apply_symm_apply]
+  rw [LinearEquiv.conj_apply_apply, ad_apply, ad_apply, coe_toLinearEquiv, map_lie,
+    ← coe_toLinearEquiv, LinearEquiv.apply_symm_apply]
 
 end LieAlgebra

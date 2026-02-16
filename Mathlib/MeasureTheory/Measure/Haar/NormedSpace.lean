@@ -3,24 +3,23 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Integral.SetIntegral
+module
 
-#align_import measure_theory.measure.haar.normed_space from "leanprover-community/mathlib"@"b84aee748341da06a6d78491367e2c0e9f15e8a5"
+public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Basic properties of Haar measures on real vector spaces
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
+open Function Filter Inv MeasureTheory.Measure Module Set TopologicalSpace
 open scoped NNReal ENNReal Pointwise Topology
-
-open Inv Set Function MeasureTheory.Measure Filter
-
-open FiniteDimensional
 
 namespace MeasureTheory
 
@@ -32,31 +31,59 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [F
     [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] : NoAtoms μ := by
   infer_instance
 
-section ContinuousLinearEquiv
+section LinearEquiv
 
 variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H] [NontriviallyNormedField 𝕜]
   [TopologicalSpace G] [TopologicalSpace H] [AddCommGroup G] [AddCommGroup H]
-  [TopologicalAddGroup G] [TopologicalAddGroup H] [Module 𝕜 G] [Module 𝕜 H] (μ : Measure G)
-  [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H] [T2Space H]
-
-instance MapContinuousLinearEquiv.isAddHaarMeasure (e : G ≃L[𝕜] H) : IsAddHaarMeasure (μ.map e) :=
-  e.toAddEquiv.isAddHaarMeasure_map _ e.continuous e.symm.continuous
-#align measure_theory.measure.map_continuous_linear_equiv.is_add_haar_measure MeasureTheory.Measure.MapContinuousLinearEquiv.isAddHaarMeasure
-
-variable [CompleteSpace 𝕜] [T2Space G] [FiniteDimensional 𝕜 G] [ContinuousSMul 𝕜 G]
-  [ContinuousSMul 𝕜 H]
+  [IsTopologicalAddGroup G] [IsTopologicalAddGroup H] [Module 𝕜 G] [Module 𝕜 H] (μ : Measure G)
+  [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H]
+  [CompleteSpace 𝕜] [T2Space G] [FiniteDimensional 𝕜 G] [ContinuousSMul 𝕜 G]
+  [ContinuousSMul 𝕜 H] [T2Space H]
 
 instance MapLinearEquiv.isAddHaarMeasure (e : G ≃ₗ[𝕜] H) : IsAddHaarMeasure (μ.map e) :=
-  MapContinuousLinearEquiv.isAddHaarMeasure _ e.toContinuousLinearEquiv
-#align measure_theory.measure.map_linear_equiv.is_add_haar_measure MeasureTheory.Measure.MapLinearEquiv.isAddHaarMeasure
+  e.toContinuousLinearEquiv.isAddHaarMeasure_map _
 
-end ContinuousLinearEquiv
+end LinearEquiv
+
+section SeminormedGroup
+variable {G H : Type*} [MeasurableSpace G] [Group G] [TopologicalSpace G]
+  [IsTopologicalGroup G] [BorelSpace G] [LocallyCompactSpace G]
+  [MeasurableSpace H] [SeminormedGroup H] [OpensMeasurableSpace H]
+
+-- TODO: This could be streamlined by proving that inner regular measures always exist
+open Metric Bornology in
+@[to_additive]
+lemma _root_.MonoidHom.exists_nhds_isBounded (f : G →* H) (hf : Measurable f) (x : G) :
+    ∃ s ∈ 𝓝 x, IsBounded (f '' s) := by
+  let K : PositiveCompacts G := Classical.arbitrary _
+  obtain ⟨n, hn⟩ : ∃ n : ℕ, 0 < haar (interior K ∩ f ⁻¹' ball 1 n) := by
+    by_contra!
+    simp_rw [nonpos_iff_eq_zero, ← measure_iUnion_null_iff, ← inter_iUnion, ← preimage_iUnion,
+      iUnion_ball_nat, preimage_univ, inter_univ] at this
+    exact this.not_gt <| isOpen_interior.measure_pos _ K.interior_nonempty
+  rw [← one_mul x, ← op_smul_eq_mul]
+  refine ⟨_, smul_mem_nhds_smul _ <| div_mem_nhds_one_of_haar_pos_ne_top haar _
+    (isOpen_interior.measurableSet.inter <| hf measurableSet_ball) hn <|
+      mt (measure_mono_top <| inter_subset_left.trans interior_subset) K.isCompact.measure_ne_top,
+    ?_⟩
+  have : Bornology.IsBounded (f '' (interior K ∩ f ⁻¹' ball 1 n)) :=
+    isBounded_ball.subset <| (image_mono inter_subset_right).trans <| image_preimage_subset _ _
+  rw [image_op_smul_distrib, image_div]
+  exact (this.div this).smul _
+
+end SeminormedGroup
+
+/-- A Borel-measurable group hom from a locally compact normed group to a real normed space is
+continuous. -/
+lemma AddMonoidHom.continuous_of_measurable {G H : Type*}
+    [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace G] [LocallyCompactSpace G]
+    [SeminormedAddCommGroup H] [MeasurableSpace H] [OpensMeasurableSpace H] [NormedSpace ℝ H]
+    (f : G →+ H) (hf : Measurable f) : Continuous f :=
+  let ⟨_s, hs, hbdd⟩ := f.exists_nhds_isBounded hf 0; f.continuous_of_isBounded_nhds_zero hs hbdd
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
-
-variable {s : Set E}
 
 /-- The integral of `f (R • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
@@ -73,15 +100,13 @@ theorem integral_comp_smul (f : E → F) (R : ℝ) :
       conv_rhs => rw [this]
       simp only [hE, pow_zero, inv_one, abs_one, one_smul, integral_const]
     · have : Nontrivial E := finrank_pos_iff.1 hE
-      simp only [zero_pow hE.ne', measure_univ_of_isAddLeftInvariant, ENNReal.top_toReal, zero_smul,
-        inv_zero, abs_zero]
+      simp [zero_pow hE.ne', measure_univ_of_isAddLeftInvariant, measureReal_def]
   · calc
       (∫ x, f (R • x) ∂μ) = ∫ y, f y ∂Measure.map (fun x => R • x) μ :=
         (integral_map_equiv (Homeomorph.smul (isUnit_iff_ne_zero.2 hR).unit).toMeasurableEquiv
             f).symm
       _ = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ := by
         simp only [map_addHaar_smul μ hR, integral_smul_measure, ENNReal.toReal_ofReal, abs_nonneg]
-#align measure_theory.measure.integral_comp_smul MeasureTheory.Measure.integral_comp_smul
 
 /-- The integral of `f (R • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
@@ -89,7 +114,6 @@ thanks to the convention that a non-integrable function has integral zero. -/
 theorem integral_comp_smul_of_nonneg (f : E → F) (R : ℝ) {hR : 0 ≤ R} :
     ∫ x, f (R • x) ∂μ = (R ^ finrank ℝ E)⁻¹ • ∫ x, f x ∂μ := by
   rw [integral_comp_smul μ f R, abs_of_nonneg (inv_nonneg.2 (pow_nonneg hR _))]
-#align measure_theory.measure.integral_comp_smul_of_nonneg MeasureTheory.Measure.integral_comp_smul_of_nonneg
 
 /-- The integral of `f (R⁻¹ • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
@@ -97,7 +121,6 @@ thanks to the convention that a non-integrable function has integral zero. -/
 theorem integral_comp_inv_smul (f : E → F) (R : ℝ) :
     ∫ x, f (R⁻¹ • x) ∂μ = |R ^ finrank ℝ E| • ∫ x, f x ∂μ := by
   rw [integral_comp_smul μ f R⁻¹, inv_pow, inv_inv]
-#align measure_theory.measure.integral_comp_inv_smul MeasureTheory.Measure.integral_comp_inv_smul
 
 /-- The integral of `f (R⁻¹ • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
@@ -105,7 +128,6 @@ thanks to the convention that a non-integrable function has integral zero. -/
 theorem integral_comp_inv_smul_of_nonneg (f : E → F) {R : ℝ} (hR : 0 ≤ R) :
     ∫ x, f (R⁻¹ • x) ∂μ = R ^ finrank ℝ E • ∫ x, f x ∂μ := by
   rw [integral_comp_inv_smul μ f R, abs_of_nonneg (pow_nonneg hR _)]
-#align measure_theory.measure.integral_comp_inv_smul_of_nonneg MeasureTheory.Measure.integral_comp_inv_smul_of_nonneg
 
 theorem setIntegral_comp_smul (f : E → F) {R : ℝ} (s : Set E) (hR : R ≠ 0) :
     ∫ x in s, f (R • x) ∂μ = |(R ^ finrank ℝ E)⁻¹| • ∫ x in R • s, f x ∂μ := by
@@ -117,44 +139,33 @@ theorem setIntegral_comp_smul (f : E → F) {R : ℝ} (s : Set E) (hR : R ≠ 0)
   _ = |(R ^ finrank ℝ E)⁻¹| • ∫ y in e.symm ⁻¹' s, f y ∂μ := by
     simp [map_addHaar_smul μ hR, integral_smul_measure, ENNReal.toReal_ofReal, abs_nonneg]
   _ = |(R ^ finrank ℝ E)⁻¹| • ∫ x in R • s, f x ∂μ := by
-    congr
+    congr 3
     ext y
     rw [mem_smul_set_iff_inv_smul_mem₀ hR]
     rfl
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_comp_smul := setIntegral_comp_smul
 
 theorem setIntegral_comp_smul_of_pos (f : E → F) {R : ℝ} (s : Set E) (hR : 0 < R) :
     ∫ x in s, f (R • x) ∂μ = (R ^ finrank ℝ E)⁻¹ • ∫ x in R • s, f x ∂μ := by
   rw [setIntegral_comp_smul μ f s hR.ne', abs_of_nonneg (inv_nonneg.2 (pow_nonneg hR.le _))]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_comp_smul_of_pos := setIntegral_comp_smul_of_pos
-
 theorem integral_comp_mul_left (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y := by
-  simp_rw [← smul_eq_mul, Measure.integral_comp_smul, FiniteDimensional.finrank_self, pow_one]
-#align measure_theory.measure.integral_comp_mul_left MeasureTheory.Measure.integral_comp_mul_left
+  simp_rw [← smul_eq_mul, Measure.integral_comp_smul, Module.finrank_self, pow_one]
 
 theorem integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (a⁻¹ * x)) = |a| • ∫ y : ℝ, g y := by
-  simp_rw [← smul_eq_mul, Measure.integral_comp_inv_smul, FiniteDimensional.finrank_self, pow_one]
-#align measure_theory.measure.integral_comp_inv_mul_left MeasureTheory.Measure.integral_comp_inv_mul_left
+  simp_rw [← smul_eq_mul, Measure.integral_comp_inv_smul, Module.finrank_self, pow_one]
 
 theorem integral_comp_mul_right (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y := by
   simpa only [mul_comm] using integral_comp_mul_left g a
-#align measure_theory.measure.integral_comp_mul_right MeasureTheory.Measure.integral_comp_mul_right
 
 theorem integral_comp_inv_mul_right (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (x * a⁻¹)) = |a| • ∫ y : ℝ, g y := by
   simpa only [mul_comm] using integral_comp_inv_mul_left g a
-#align measure_theory.measure.integral_comp_inv_mul_right MeasureTheory.Measure.integral_comp_inv_mul_right
 
 theorem integral_comp_div (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x / a)) = |a| • ∫ y : ℝ, g y :=
   integral_comp_inv_mul_right g a
-#align measure_theory.measure.integral_comp_div MeasureTheory.Measure.integral_comp_div
 
 end Measure
 
@@ -168,50 +179,42 @@ theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace
     ∀ {g : E → F} (_ : Integrable g μ) {S : ℝ} (_ : S ≠ 0), Integrable (fun x => g (S • x)) μ by
     refine ⟨fun hf => ?_, fun hf => this hf hR⟩
     convert this hf (inv_ne_zero hR)
-    rw [← mul_smul, mul_inv_cancel hR, one_smul]
+    rw [← mul_smul, mul_inv_cancel₀ hR, one_smul]
   -- now prove
   intro g hg S hS
   let t := ((Homeomorph.smul (isUnit_iff_ne_zero.2 hS).unit).toMeasurableEquiv : E ≃ᵐ E)
   refine (integrable_map_equiv t g).mp (?_ : Integrable g (map (S • ·) μ))
   rwa [map_addHaar_smul μ hS, integrable_smul_measure _ ENNReal.ofReal_ne_top]
   simpa only [Ne, ENNReal.ofReal_eq_zero, not_le, abs_pos] using inv_ne_zero (pow_ne_zero _ hS)
-#align measure_theory.integrable_comp_smul_iff MeasureTheory.integrable_comp_smul_iff
 
 theorem Integrable.comp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] {μ : Measure E} [IsAddHaarMeasure μ]
     {f : E → F} (hf : Integrable f μ) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ :=
   (integrable_comp_smul_iff μ f hR).2 hf
-#align measure_theory.integrable.comp_smul MeasureTheory.Integrable.comp_smul
 
 theorem integrable_comp_mul_left_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
     (Integrable fun x => g (R * x)) ↔ Integrable g := by
   simpa only [smul_eq_mul] using integrable_comp_smul_iff volume g hR
-#align measure_theory.integrable_comp_mul_left_iff MeasureTheory.integrable_comp_mul_left_iff
 
 theorem Integrable.comp_mul_left' {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
     Integrable fun x => g (R * x) :=
   (integrable_comp_mul_left_iff g hR).2 hg
-#align measure_theory.integrable.comp_mul_left' MeasureTheory.Integrable.comp_mul_left'
 
 theorem integrable_comp_mul_right_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
     (Integrable fun x => g (x * R)) ↔ Integrable g := by
   simpa only [mul_comm] using integrable_comp_mul_left_iff g hR
-#align measure_theory.integrable_comp_mul_right_iff MeasureTheory.integrable_comp_mul_right_iff
 
 theorem Integrable.comp_mul_right' {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
     Integrable fun x => g (x * R) :=
   (integrable_comp_mul_right_iff g hR).2 hg
-#align measure_theory.integrable.comp_mul_right' MeasureTheory.Integrable.comp_mul_right'
 
 theorem integrable_comp_div_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
     (Integrable fun x => g (x / R)) ↔ Integrable g :=
   integrable_comp_mul_right_iff g (inv_ne_zero hR)
-#align measure_theory.integrable_comp_div_iff MeasureTheory.integrable_comp_div_iff
 
 theorem Integrable.comp_div {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
     Integrable fun x => g (x / R) :=
   (integrable_comp_div_iff g hR).2 hg
-#align measure_theory.integrable.comp_div MeasureTheory.Integrable.comp_div
 
 section InnerProductSpace
 
@@ -222,13 +225,13 @@ variable [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [FiniteDimensional �
   [MeasurableSpace F'] [BorelSpace F']
 
 variable (f : E' ≃ₗᵢ[ℝ] F')
-variable [NormedAddCommGroup A] [NormedSpace ℝ A]
+variable [NormedAddCommGroup A]
 
 theorem integrable_comp (g : F' → A) : Integrable (g ∘ f) ↔ Integrable g :=
-  f.measurePreserving.integrable_comp_emb f.toMeasureEquiv.measurableEmbedding
+  f.measurePreserving.integrable_comp_emb f.toMeasurableEquiv.measurableEmbedding
 
-theorem integral_comp (g : F' → A) : ∫ (x : E'), g (f x) = ∫ (y : F'), g y :=
-  f.measurePreserving.integral_comp' (f := f.toMeasureEquiv) g
+theorem integral_comp [NormedSpace ℝ A] (g : F' → A) : ∫ (x : E'), g (f x) = ∫ (y : F'), g y :=
+  f.measurePreserving.integral_comp' (f := f.toMeasurableEquiv) g
 
 end InnerProductSpace
 

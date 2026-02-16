@@ -3,13 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Riccardo Brasca
 -/
-import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
-import Mathlib.CategoryTheory.Elementwise
+module
 
-#align_import analysis.normed.group.SemiNormedGroup from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
+public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+public import Mathlib.CategoryTheory.Elementwise
 
 /-!
 # The category of seminormed groups
@@ -18,7 +17,8 @@ We define `SemiNormedGrp`, the category of seminormed groups and normed group ho
 them, as well as `SemiNormedGrp₁`, the subcategory of norm non-increasing morphisms.
 -/
 
-set_option linter.uppercaseLean3 false
+@[expose] public section
+
 
 noncomputable section
 
@@ -27,85 +27,125 @@ universe u
 open CategoryTheory
 
 /-- The category of seminormed abelian groups and bounded group homomorphisms. -/
-def SemiNormedGrp : Type (u + 1) :=
-  Bundled SeminormedAddCommGroup
-#align SemiNormedGroup SemiNormedGrp
+structure SemiNormedGrp : Type (u + 1) where
+  /-- Construct a bundled `SemiNormedGrp` from the underlying type and typeclass. -/
+  of ::
+  /-- The underlying seminormed abelian group. -/
+  carrier : Type u
+  [str : SeminormedAddCommGroup carrier]
+
+attribute [instance] SemiNormedGrp.str
 
 namespace SemiNormedGrp
 
-instance bundledHom : BundledHom @NormedAddGroupHom where
-  toFun := @NormedAddGroupHom.toFun
-  id := @NormedAddGroupHom.id
-  comp := @NormedAddGroupHom.comp
-#align SemiNormedGroup.bundled_hom SemiNormedGrp.bundledHom
-
-deriving instance LargeCategory for SemiNormedGrp
-
--- Porting note: deriving fails for ConcreteCategory, adding instance manually.
--- See https://github.com/leanprover-community/mathlib4/issues/5020
--- deriving instance LargeCategory, ConcreteCategory for SemiRingCat
-instance : ConcreteCategory SemiNormedGrp := by
-  dsimp [SemiNormedGrp]
-  infer_instance
-
 instance : CoeSort SemiNormedGrp Type* where
-  coe X := X.α
+  coe X := X.carrier
 
-/-- Construct a bundled `SemiNormedGrp` from the underlying type and typeclass. -/
-def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGrp :=
-  Bundled.of M
-#align SemiNormedGrp.of SemiNormedGrp.of
+/-- The type of morphisms in `SemiNormedGrp` -/
+@[ext]
+structure Hom (M N : SemiNormedGrp.{u}) where
+  /-- The underlying `NormedAddGroupHom`. -/
+  hom' : NormedAddGroupHom M N
 
-instance (M : SemiNormedGrp) : SeminormedAddCommGroup M :=
-  M.str
+instance : LargeCategory.{u} SemiNormedGrp where
+  Hom X Y := Hom X Y
+  id X := ⟨NormedAddGroupHom.id X⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
 
--- Porting note (#10754): added instance
-instance funLike {V W : SemiNormedGrp} : FunLike (V ⟶ W) V W where
-  coe := (forget SemiNormedGrp).map
-  coe_injective' := fun f g h => by cases f; cases g; congr
+instance : ConcreteCategory SemiNormedGrp (NormedAddGroupHom · ·) where
+  hom f := f.hom'
+  ofHom f := ⟨f⟩
 
-instance toAddMonoidHomClass {V W : SemiNormedGrp} : AddMonoidHomClass (V ⟶ W) V W where
-  map_add f := f.map_add'
-  map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
+/-- Turn a morphism in `SemiNormedGrp` back into a `NormedAddGroupHom`. -/
+abbrev Hom.hom {M N : SemiNormedGrp.{u}} (f : Hom M N) :=
+  ConcreteCategory.hom (C := SemiNormedGrp) f
 
--- Porting note (#10688): added to ease automation
+/-- Typecheck a `NormedAddGroupHom` as a morphism in `SemiNormedGrp`. -/
+abbrev ofHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+    (f : NormedAddGroupHom M N) : of M ⟶ of N :=
+  ConcreteCategory.ofHom (C := SemiNormedGrp) f
+
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom (M N : SemiNormedGrp.{u}) (f : Hom M N) :=
+  f.hom
+
+initialize_simps_projections Hom (hom' → hom)
+
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
 @[ext]
 lemma ext {M N : SemiNormedGrp} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
-  DFunLike.ext _ _ h
+  ConcreteCategory.ext_apply h
 
 @[simp]
+lemma hom_id {M : SemiNormedGrp} : (𝟙 M : M ⟶ M).hom = NormedAddGroupHom.id M := rfl
+
+/- Provided for rewriting. -/
+lemma id_apply (M : SemiNormedGrp) (r : M) :
+    (𝟙 M : M ⟶ M) r = r := by simp
+
+@[simp]
+lemma hom_comp {M N O : SemiNormedGrp} (f : M ⟶ N) (g : N ⟶ O) :
+    (f ≫ g).hom = g.hom.comp f.hom := rfl
+
+/- Provided for rewriting. -/
+lemma comp_apply {M N O : SemiNormedGrp} (f : M ⟶ N) (g : N ⟶ O) (r : M) :
+    (f ≫ g) r = g (f r) := by simp
+
+@[ext]
+lemma hom_ext {M N : SemiNormedGrp} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
+  Hom.ext hf
+
+@[simp]
+lemma hom_ofHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+    (f : NormedAddGroupHom M N) : (ofHom f).hom = f := rfl
+
+@[simp]
+lemma ofHom_hom {M N : SemiNormedGrp} (f : M ⟶ N) :
+    ofHom (Hom.hom f) = f := rfl
+
+@[simp]
+lemma ofHom_id {M : Type u} [SeminormedAddCommGroup M] :
+    ofHom (NormedAddGroupHom.id M) = 𝟙 (of M) := rfl
+
+@[simp]
+lemma ofHom_comp {M N O : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+    [SeminormedAddCommGroup O] (f : NormedAddGroupHom M N) (g : NormedAddGroupHom N O) :
+    ofHom (g.comp f) = ofHom f ≫ ofHom g :=
+  rfl
+
+lemma ofHom_apply {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+    (f : NormedAddGroupHom M N) (r : M) : ofHom f r = f r := rfl
+
+lemma inv_hom_apply {M N : SemiNormedGrp} (e : M ≅ N) (r : M) : e.inv (e.hom r) = r := by
+  simp
+
+lemma hom_inv_apply {M N : SemiNormedGrp} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
+  simp
+
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGrp.of V : Type u) = V :=
   rfl
-#align SemiNormedGroup.coe_of SemiNormedGrp.coe_of
 
--- Porting note: marked with high priority to short circuit simplifier's path
-@[simp (high)]
 theorem coe_id (V : SemiNormedGrp) : (𝟙 V : V → V) = id :=
   rfl
-#align SemiNormedGroup.coe_id SemiNormedGrp.coe_id
 
--- Porting note: marked with high priority to short circuit simplifier's path
-@[simp (high)]
 theorem coe_comp {M N K : SemiNormedGrp} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : M → K) = g ∘ f :=
   rfl
-#align SemiNormedGroup.coe_comp SemiNormedGrp.coe_comp
 
 instance : Inhabited SemiNormedGrp :=
   ⟨of PUnit⟩
 
-instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
-    Unique (SemiNormedGrp.of V) :=
-  i
-#align SemiNormedGroup.of_unique SemiNormedGrp.ofUnique
-
-instance {M N : SemiNormedGrp} : Zero (M ⟶ N) :=
-  NormedAddGroupHom.zero
+instance {M N : SemiNormedGrp} : Zero (M ⟶ N) where
+  zero := ofHom 0
 
 @[simp]
+theorem hom_zero {V W : SemiNormedGrp} : (0 : V ⟶ W).hom = 0 :=
+  rfl
+
 theorem zero_apply {V W : SemiNormedGrp} (x : V) : (0 : V ⟶ W) x = 0 :=
   rfl
-#align SemiNormedGroup.zero_apply SemiNormedGrp.zero_apply
 
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGrp where
 
@@ -113,136 +153,217 @@ theorem isZero_of_subsingleton (V : SemiNormedGrp) [Subsingleton V] : Limits.IsZ
   refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
-#align SemiNormedGroup.is_zero_of_subsingleton SemiNormedGrp.isZero_of_subsingleton
 
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGrp.{u} :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
-#align SemiNormedGroup.has_zero_object SemiNormedGrp.hasZeroObject
 
-theorem iso_isometry_of_normNoninc {V W : SemiNormedGrp} (i : V ≅ W) (h1 : i.hom.NormNoninc)
-    (h2 : i.inv.NormNoninc) : Isometry i.hom := by
+theorem iso_isometry_of_normNoninc {V W : SemiNormedGrp} (i : V ≅ W) (h1 : i.hom.hom.NormNoninc)
+    (h2 : i.inv.hom.NormNoninc) : Isometry i.hom := by
   apply AddMonoidHomClass.isometry_of_norm
   intro v
   apply le_antisymm (h1 v)
   calc
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    ‖v‖ = ‖i.inv (i.hom v)‖ := by erw [Iso.hom_inv_id_apply]
+    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [← comp_apply, Iso.hom_inv_id, id_apply]
     _ ≤ ‖i.hom v‖ := h2 _
-#align SemiNormedGroup.iso_isometry_of_norm_noninc SemiNormedGrp.iso_isometry_of_normNoninc
+
+instance Hom.add {M N : SemiNormedGrp} : Add (M ⟶ N) where
+  add f g := ofHom (f.hom + g.hom)
+
+@[simp]
+theorem hom_add {V W : SemiNormedGrp} (f g : V ⟶ W) : (f + g).hom = f.hom + g.hom :=
+  rfl
+
+instance Hom.neg {M N : SemiNormedGrp} : Neg (M ⟶ N) where
+  neg f := ofHom (- f.hom)
+
+@[simp]
+theorem hom_neg {V W : SemiNormedGrp} (f : V ⟶ W) : (-f).hom = -f.hom :=
+  rfl
+
+instance Hom.sub {M N : SemiNormedGrp} : Sub (M ⟶ N) where
+  sub f g := ofHom (f.hom - g.hom)
+
+@[simp]
+theorem hom_sub {V W : SemiNormedGrp} (f g : V ⟶ W) : (f - g).hom = f.hom - g.hom :=
+  rfl
+
+instance Hom.nsmul {M N : SemiNormedGrp} : SMul ℕ (M ⟶ N) where
+  smul n f := ofHom (n • f.hom)
+
+@[simp]
+theorem hom_nsum {V W : SemiNormedGrp} (n : ℕ) (f : V ⟶ W) : (n • f).hom = n • f.hom :=
+  rfl
+
+instance Hom.zsmul {M N : SemiNormedGrp} : SMul ℤ (M ⟶ N) where
+  smul n f := ofHom (n • f.hom)
+
+@[simp]
+theorem hom_zsum {V W : SemiNormedGrp} (n : ℤ) (f : V ⟶ W) : (n • f).hom = n • f.hom :=
+  rfl
+
+instance Hom.addCommGroup {V W : SemiNormedGrp} : AddCommGroup (V ⟶ W) :=
+  Function.Injective.addCommGroup _ ConcreteCategory.hom_injective rfl (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 end SemiNormedGrp
 
 /-- `SemiNormedGrp₁` is a type synonym for `SemiNormedGrp`,
 which we shall equip with the category structure consisting only of the norm non-increasing maps.
 -/
-def SemiNormedGrp₁ : Type (u + 1) :=
-  Bundled SeminormedAddCommGroup
-#align SemiNormedGroup₁ SemiNormedGrp₁
+structure SemiNormedGrp₁ : Type (u + 1) where
+  /-- Construct a bundled `SemiNormedGrp₁` from the underlying type and typeclass. -/
+  of ::
+  /-- The underlying seminormed abelian group. -/
+  carrier : Type u
+  [str : SeminormedAddCommGroup carrier]
+
+attribute [instance] SemiNormedGrp₁.str
 
 namespace SemiNormedGrp₁
 
 instance : CoeSort SemiNormedGrp₁ Type* where
-  coe X := X.α
+  coe X := X.carrier
+
+/-- The type of morphisms in `SemiNormedGrp₁` -/
+@[ext]
+structure Hom (M N : SemiNormedGrp₁.{u}) where
+  /-- The underlying `NormedAddGroupHom`. -/
+  hom' : NormedAddGroupHom M N
+  normNoninc : hom'.NormNoninc
 
 instance : LargeCategory.{u} SemiNormedGrp₁ where
-  Hom X Y := { f : NormedAddGroupHom X Y // f.NormNoninc }
+  Hom := Hom
   id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
-  comp {X Y Z} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
+  comp {_ _ _} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
 
--- Porting note (#10754): added instance
-instance instFunLike (X Y : SemiNormedGrp₁) : FunLike (X ⟶ Y) X Y where
+instance instFunLike (X Y : SemiNormedGrp₁) :
+    FunLike { f : NormedAddGroupHom X Y // f.NormNoninc } X Y where
   coe f := f.1.toFun
   coe_injective' _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
 
+instance : ConcreteCategory SemiNormedGrp₁
+    fun X Y => { f : NormedAddGroupHom X Y // f.NormNoninc } where
+  hom f := ⟨f.1, f.2⟩
+  ofHom f := ⟨f.1, f.2⟩
+
+instance (X Y : SemiNormedGrp₁) :
+    AddMonoidHomClass { f : NormedAddGroupHom X Y // f.NormNoninc } X Y where
+  map_add f := map_add f.1
+  map_zero f := map_zero f.1
+
+/-- Turn a morphism in `SemiNormedGrp₁` back into a norm-nonincreasing `NormedAddGroupHom`. -/
+abbrev Hom.hom {M N : SemiNormedGrp₁.{u}} (f : Hom M N) :=
+  ConcreteCategory.hom (C := SemiNormedGrp₁) f
+
+/-- Promote a `NormedAddGroupHom` to a morphism in `SemiNormedGrp₁`. -/
+abbrev mkHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+    (f : NormedAddGroupHom M N) (i : f.NormNoninc) :
+    SemiNormedGrp₁.of M ⟶ SemiNormedGrp₁.of N :=
+  ConcreteCategory.ofHom ⟨f, i⟩
+
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom (M N : SemiNormedGrp₁.{u}) (f : Hom M N) : NormedAddGroupHom M N :=
+  f.hom
+
+initialize_simps_projections Hom (hom' → hom)
+
+instance (X Y : SemiNormedGrp₁) : CoeFun (X ⟶ Y) (fun _ => X → Y) where
+  coe f := f.hom.1
+
+theorem mkHom_apply {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+    (f : NormedAddGroupHom M N) (i : f.NormNoninc) (x) :
+    mkHom f i x = f x :=
+  rfl
+
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
 @[ext]
-theorem hom_ext {M N : SemiNormedGrp₁} (f g : M ⟶ N) (w : (f : M → N) = (g : M → N)) :
-    f = g :=
-  Subtype.eq (NormedAddGroupHom.ext (congr_fun w))
-#align SemiNormedGroup₁.hom_ext SemiNormedGrp₁.hom_ext
+lemma ext {M N : SemiNormedGrp₁} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
+  ConcreteCategory.ext_apply h
 
-instance : ConcreteCategory.{u} SemiNormedGrp₁ where
-  forget :=
-    { obj := fun X => X
-      map := fun f => f }
-  forget_faithful := { }
+@[simp]
+lemma hom_id {M : SemiNormedGrp₁} : (𝟙 M : M ⟶ M).hom = NormedAddGroupHom.id M := rfl
 
--- Porting note (#10754): added instance
-instance toAddMonoidHomClass {V W : SemiNormedGrp₁} : AddMonoidHomClass (V ⟶ W) V W where
-  map_add f := f.1.map_add'
-  map_zero f := (AddMonoidHom.mk' f.1 f.1.map_add').map_zero
+/- Provided for rewriting. -/
+lemma id_apply (M : SemiNormedGrp₁) (r : M) :
+    (𝟙 M : M ⟶ M) r = r := by simp
 
-/-- Construct a bundled `SemiNormedGrp₁` from the underlying type and typeclass. -/
-def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGrp₁ :=
-  Bundled.of M
-#align SemiNormedGroup₁.of SemiNormedGrp₁.of
+@[simp]
+lemma hom_comp {M N O : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ O) :
+    (f ≫ g).hom.1 = g.hom.1.comp f.hom.1 := rfl
+
+/- Provided for rewriting. -/
+lemma comp_apply {M N O : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ O) (r : M) :
+    (f ≫ g) r = g (f r) := by simp
+
+@[ext]
+lemma hom_ext {M N : SemiNormedGrp₁} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
+  Hom.ext (congr_arg Subtype.val hf)
+
+@[simp]
+lemma hom_mkHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+    (f : NormedAddGroupHom M N) (hf : f.NormNoninc) : (mkHom f hf).hom = f := rfl
+
+@[simp]
+lemma mkHom_hom {M N : SemiNormedGrp₁} (f : M ⟶ N) :
+    mkHom (Hom.hom f) f.normNoninc = f := rfl
+
+@[simp]
+lemma mkHom_id {M : Type u} [SeminormedAddCommGroup M] :
+    mkHom (NormedAddGroupHom.id M) NormedAddGroupHom.NormNoninc.id = 𝟙 (of M) := rfl
+
+@[simp]
+lemma mkHom_comp {M N O : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+    [SeminormedAddCommGroup O] (f : NormedAddGroupHom M N) (g : NormedAddGroupHom N O)
+    (hf : f.NormNoninc) (hg : g.NormNoninc) (hgf : (g.comp f).NormNoninc) :
+    mkHom (g.comp f) hgf = mkHom f hf ≫ mkHom g hg :=
+  rfl
+
+@[simp]
+lemma inv_hom_apply {M N : SemiNormedGrp₁} (e : M ≅ N) (r : M) : e.inv (e.hom r) = r := by
+  rw [← comp_apply]
+  simp
+
+@[simp]
+lemma hom_inv_apply {M N : SemiNormedGrp₁} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
+  rw [← comp_apply]
+  simp
 
 instance (M : SemiNormedGrp₁) : SeminormedAddCommGroup M :=
   M.str
 
-/-- Promote a morphism in `SemiNormedGrp` to a morphism in `SemiNormedGrp₁`. -/
-def mkHom {M N : SemiNormedGrp} (f : M ⟶ N) (i : f.NormNoninc) :
-    SemiNormedGrp₁.of M ⟶ SemiNormedGrp₁.of N :=
-  ⟨f, i⟩
-#align SemiNormedGroup₁.mk_hom SemiNormedGrp₁.mkHom
-
--- @[simp] -- Porting note: simpNF linter claims LHS simplifies with `SemiNormedGrp₁.coe_of`
-theorem mkHom_apply {M N : SemiNormedGrp} (f : M ⟶ N) (i : f.NormNoninc) (x) :
-    mkHom f i x = f x :=
-  rfl
-#align SemiNormedGroup₁.mk_hom_apply SemiNormedGrp₁.mkHom_apply
-
 /-- Promote an isomorphism in `SemiNormedGrp` to an isomorphism in `SemiNormedGrp₁`. -/
 @[simps]
-def mkIso {M N : SemiNormedGrp} (f : M ≅ N) (i : f.hom.NormNoninc) (i' : f.inv.NormNoninc) :
+def mkIso {M N : SemiNormedGrp} (f : M ≅ N) (i : f.hom.hom.NormNoninc) (i' : f.inv.hom.NormNoninc) :
     SemiNormedGrp₁.of M ≅ SemiNormedGrp₁.of N where
-  hom := mkHom f.hom i
-  inv := mkHom f.inv i'
-  hom_inv_id := by apply Subtype.eq; exact f.hom_inv_id
-  inv_hom_id := by apply Subtype.eq; exact f.inv_hom_id
-#align SemiNormedGroup₁.mk_iso SemiNormedGrp₁.mkIso
+  hom := mkHom f.hom.hom i
+  inv := mkHom f.inv.hom i'
 
 instance : HasForget₂ SemiNormedGrp₁ SemiNormedGrp where
   forget₂ :=
-    { obj := fun X => X
-      map := fun f => f.1 }
+    { obj := fun X => SemiNormedGrp.of X
+      map := fun f => SemiNormedGrp.ofHom f.1 }
 
-@[simp]
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGrp₁.of V : Type u) = V :=
   rfl
-#align SemiNormedGroup₁.coe_of SemiNormedGrp₁.coe_of
 
--- Porting note: marked with high priority to short circuit simplifier's path
-@[simp (high)]
 theorem coe_id (V : SemiNormedGrp₁) : ⇑(𝟙 V) = id :=
   rfl
-#align SemiNormedGroup₁.coe_id SemiNormedGrp₁.coe_id
 
--- Porting note: marked with high priority to short circuit simplifier's path
-@[simp (high)]
 theorem coe_comp {M N K : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : M → K) = g ∘ f :=
   rfl
-#align SemiNormedGroup₁.coe_comp SemiNormedGrp₁.coe_comp
-
--- Porting note: deleted `coe_comp'`, as we no longer have the relevant coercion.
-#noalign SemiNormedGroup₁.coe_comp'
 
 instance : Inhabited SemiNormedGrp₁ :=
   ⟨of PUnit⟩
 
-instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
-    Unique (SemiNormedGrp₁.of V) :=
-  i
-#align SemiNormedGroup₁.of_unique SemiNormedGrp₁.ofUnique
-
--- Porting note: extracted from `Limits.HasZeroMorphisms` instance below.
 instance (X Y : SemiNormedGrp₁) : Zero (X ⟶ Y) where
   zero := ⟨0, NormedAddGroupHom.NormNoninc.zero⟩
 
 @[simp]
 theorem zero_apply {V W : SemiNormedGrp₁} (x : V) : (0 : V ⟶ W) x = 0 :=
   rfl
-#align SemiNormedGroup₁.zero_apply SemiNormedGrp₁.zero_apply
 
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGrp₁ where
 
@@ -250,11 +371,9 @@ theorem isZero_of_subsingleton (V : SemiNormedGrp₁) [Subsingleton V] : Limits.
   refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
-#align SemiNormedGroup₁.is_zero_of_subsingleton SemiNormedGrp₁.isZero_of_subsingleton
 
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGrp₁.{u} :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
-#align SemiNormedGroup₁.has_zero_object SemiNormedGrp₁.hasZeroObject
 
 theorem iso_isometry {V W : SemiNormedGrp₁} (i : V ≅ W) : Isometry i.hom := by
   change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
@@ -262,9 +381,7 @@ theorem iso_isometry {V W : SemiNormedGrp₁} (i : V ≅ W) : Isometry i.hom := 
   intro v
   apply le_antisymm (i.hom.2 v)
   calc
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    ‖v‖ = ‖i.inv (i.hom v)‖ := by erw [Iso.hom_inv_id_apply]
+    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [← comp_apply, Iso.hom_inv_id, id_apply]
     _ ≤ ‖i.hom v‖ := i.inv.2 _
-#align SemiNormedGroup₁.iso_isometry SemiNormedGrp₁.iso_isometry
 
 end SemiNormedGrp₁

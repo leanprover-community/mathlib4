@@ -3,8 +3,12 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Types
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # Binary (co)products of type-valued functors
@@ -13,6 +17,8 @@ Defines an explicit construction of binary products and coproducts of type-value
 
 Also defines isomorphisms to the categorical product and coproduct, respectively.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory.Limits
@@ -33,7 +39,7 @@ def prod : C ⥤ Type w where
 
 variable {F G}
 
-  /-- The first projection of `prod F G`, onto `F`. -/
+/-- The first projection of `prod F G`, onto `F`. -/
 @[simps]
 def prod.fst : prod F G ⟶ F where
   app _ a := a.1
@@ -174,7 +180,7 @@ variable {F G}
 def coprod.inl : F ⟶ coprod F G where
   app _ x := .inl x
 
-  /-- The right inclusion of `G` into `coprod F G`. -/
+/-- The right inclusion of `G` into `coprod F G`. -/
 @[simps]
 def coprod.inr : G ⟶ coprod F G where
   app _ x := .inr x
@@ -188,7 +194,7 @@ def coprod.desc {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ �
      cases x with
      | inl x => exact τ₁.app a x
      | inr x => exact τ₂.app a x
-  naturality _ _ _:= by
+  naturality _ _ _ := by
     ext x
     cases x with | _ => simp only [coprod, types_comp_apply, FunctorToTypes.naturality]
 

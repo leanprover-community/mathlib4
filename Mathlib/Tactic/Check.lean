@@ -3,9 +3,12 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean.Elab.Tactic.Basic
-import Lean.PrettyPrinter
-import Lean.Elab.SyntheticMVars
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Basic
+public meta import Lean.PrettyPrinter
+public meta import Lean.Elab.SyntheticMVars
 
 /-!
 # `#check` tactic
@@ -15,6 +18,8 @@ While `#check t` is similar to `have := t`, it is a little more convenient
 since it elaborates `t` in a more tolerant way and so it can be possible to get a result.
 For example, `#check` allows metavariables.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 
@@ -54,3 +59,5 @@ Like the `#check` command, the `#check` tactic allows stuck typeclass instance p
 These become metavariables in the output.
 -/
 elab tk:"#check " colGt term:term : tactic => elabCheckTactic tk true term
+
+end Mathlib.Tactic
