@@ -141,24 +141,7 @@ theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
     (map (fun y ↦ s(x, y)) xs).Disjoint xs.sym2 := by
   induction xs with
   | nil => simp
-  | cons x' xs ih =>
-    simp only [mem_cons, not_or] at h
-    rw [List.sym2, map_cons, map_cons, disjoint_cons_left, disjoint_append_right,
-      disjoint_cons_right]
-    refine ⟨?_, ⟨?_, ?_⟩, ?_⟩
-    · refine not_mem_cons_of_ne_of_not_mem ?_ (not_mem_append (by aesop) ?_)
-      · simp [h.1]
-      · simp [mk_mem_sym2_iff, h.2]
-    · simp [h.1]
-    · intro z hx hy
-      rw [List.mem_map] at hx hy
-      obtain ⟨a, hx, rfl⟩ := hx
-      obtain ⟨b, hy, hx⟩ := hy
-      simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Ne.symm h.1, false_and, Prod.swap_prod_mk,
-        false_or] at hx
-      obtain ⟨rfl, rfl⟩ := hx
-      exact h.2 hy
-    · exact ih h.2
+  | cons x' xs ih => aesop (add simp mk_mem_sym2_iff, unfold safe List.Disjoint)
 
 theorem dedup_sym2 [DecidableEq α] (xs : List α) : xs.sym2.dedup = xs.dedup.sym2 := by
   induction xs with
