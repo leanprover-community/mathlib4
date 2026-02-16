@@ -287,10 +287,6 @@ open IsLocalRing
 
 variable (R : Type*) [CommRing R]
 
-instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M] (I : Ideal R) :
-    Module.Finite (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
-  Module.Finite.of_restrictScalars_finite R _ _
-
 variable {R} in
 lemma spanFinrank_eq_finrank_quotient [IsLocalRing R] {M : Type*} [AddCommGroup M] [Module R M]
     (N : Submodule R M) (fg : N.FG) : N.spanFinrank =
