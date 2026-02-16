@@ -49,7 +49,7 @@ the last section, various properties of matrices are explored.
 - `exists_orthonormalBasis`: provides an orthonormal basis on a finite-dimensional vector space
 
 - `stdOrthonormalBasis`: provides an arbitrarily-chosen `OrthonormalBasis` of a given
-finite-dimensional inner product space
+  finite-dimensional inner product space
 
 For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.
@@ -1083,6 +1083,12 @@ theorem DirectSum.IsInternal.subordinateOrthonormalBasis_subordinate (a : Fin n)
     hV.collectedOrthonormalBasis_mem hV' (fun i => stdOrthonormalBasis 𝕜 (V i))
       ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a)
 
+theorem DirectSum.IsInternal.exists_subordinateOrthonormalBasisIndex_eq
+    (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) {i : ι} (hi : V i ≠ ⊥) :
+    ∃ a : Fin n, hV.subordinateOrthonormalBasisIndex hn a hV' = i := by
+  use hV.sigmaOrthonormalBasisIndexEquiv hn hV' ⟨i, ⟨0, by grind [finrank_eq_zero (S := V i)]⟩⟩
+  simp [subordinateOrthonormalBasisIndex_def]
+
 private def DirectSum.IsInternal.subordinateOrthonormalBasisIndexFiberEquiv
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (i : ι) :
     {a : Fin n // hV.subordinateOrthonormalBasisIndex hn a hV' = i} ≃ Fin (finrank 𝕜 (V i)) where
@@ -1261,9 +1267,10 @@ end Matrix
 open ContinuousLinearMap LinearMap in
 theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike 𝕜]
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-    [Fintype ι] [Fintype ι'] [DecidableEq ι'] (x : E) (y : F) (b : Module.Basis ι 𝕜 E)
+    [Finite ι] [Fintype ι'] [DecidableEq ι'] (x : E) (y : F) (b : Module.Basis ι 𝕜 E)
     (b' : OrthonormalBasis ι' 𝕜 F) :
     (rankOne 𝕜 x y).toMatrix b'.toBasis b = .vecMulVec (b.repr x) (star (b'.repr y)) := by
+  have := Fintype.ofFinite ι
   rw [rankOne_def', ContinuousLinearMap.coe_comp, toLinearMap_toSpanSingleton,
     toMatrix_comp _ (OrthonormalBasis.singleton Unit 𝕜).toBasis, toMatrix_toSpanSingleton,
     toLinearMap_innerSL_apply, toMatrix_innerₛₗ_apply, OrthonormalBasis.toBasis_singleton,

@@ -22,7 +22,9 @@ permissions:
 
 env:
   TRANSIENT_PREFIX: "transient: "
-  AUTO_PREFIX: "x: "
+  # Support both "x " and "x: " (legacy) prefixes
+  AUTO_PREFIX_COLON: "x: "
+  AUTO_PREFIX_SPACE: "x "
 
 jobs:
   verify:
@@ -46,8 +48,9 @@ jobs:
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
 
           # Check if any commits have transient or auto prefix
+          # Auto prefix can be "x " or "x: " (legacy)
           HAS_SPECIAL=$(git log --format="%s" "$BASE_SHA..$HEAD_SHA" | \
-            grep -E "^(${TRANSIENT_PREFIX}|${AUTO_PREFIX})" || true)
+            grep -E "^(${TRANSIENT_PREFIX}|${AUTO_PREFIX_COLON}|${AUTO_PREFIX_SPACE})" || true)
 
           if [[ -n "$HAS_SPECIAL" ]]; then
             echo "has_special=true" >> "$GITHUB_OUTPUT"
