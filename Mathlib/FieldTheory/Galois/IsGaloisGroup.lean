@@ -56,8 +56,8 @@ class IsGaloisGroup where
   isInvariant : Algebra.IsInvariant A B G
 
 variable {G A B} in
-theorem IsGaloisGroup.congr [hG : IsGaloisGroup G A B] {H : Type*} [Group H] [MulSemiringAction H B]
-    (e : H ≃* G) (he : ∀ h (x : B), (e h) • x = h • x) :
+theorem IsGaloisGroup.of_mulEquiv [hG : IsGaloisGroup G A B] {H : Type*} [Group H]
+    [MulSemiringAction H B] (e : H ≃* G) (he : ∀ h (x : B), (e h) • x = h • x) :
     IsGaloisGroup H A B where
   faithful := ⟨fun h ↦ e.injective <| hG.faithful.eq_of_smul_eq_smul <| by simpa only [he]⟩
   commutes := ⟨fun x a b ↦ by simpa [he] using hG.commutes.smul_comm (e x) a b⟩
@@ -254,7 +254,7 @@ theorem finrank_fixedPoints_eq_card_subgroup [IsGaloisGroup G K L] :
 
 variable {G K L} in
 theorem of_mulEquiv_algEquiv [IsGalois K L] (e : G ≃* Gal(L/K)) (he : ∀ g x, e g x = g • x) :
-    IsGaloisGroup G K L := .congr e he
+    IsGaloisGroup G K L := .of_mulEquiv e he
 
 instance fixedPoints [Finite G] [FaithfulSMul G L] :
     IsGaloisGroup G (FixedPoints.subfield G L) L :=
