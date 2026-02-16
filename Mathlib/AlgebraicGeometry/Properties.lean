@@ -3,12 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-/-
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.RingTheory.LocalProperties.Reduced
-import Mathlib.Topology.KrullDimension
-import Mathlib.RingTheory.Ideal.Height
-import Mathlib.Topology.Sober-/
+
 module
 
 public import Mathlib.AlgebraicGeometry.AffineScheme
@@ -381,6 +376,7 @@ lemma stalk_dim_eq_coheight {X : Scheme} (x : X) :
   rw [IsLocalization.AtPrime.ringKrullDim_eq_height x.asIdeal ((Spec R).presheaf.stalk x)]
   apply WithBot.coe_eq_coe.mpr
   exact ideal_height_eq_coheight R x
+
 lemma isField_of_isIntegral_of_subsingleton (X : Scheme.{u}) [IsIntegral X] [Subsingleton X] :
     IsField Γ(X, ⊤) := by
   rw [← PrimeSpectrum.t1Space_iff_isField]

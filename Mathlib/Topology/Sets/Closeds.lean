@@ -576,7 +576,7 @@ Given `f : U → X` a continuous open embedding, the irreducble closeds of `U` a
 to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
 -/
 noncomputable
-def closureImageOrderIso (f : β → α) (h : IsOpenEmbedding f) :
+def mapOrderIso (f : β → α) (h : IsOpenEmbedding f) :
   IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
     toFun := mapSubtype f (h.continuous)
     invFun := comapSubtype f h
