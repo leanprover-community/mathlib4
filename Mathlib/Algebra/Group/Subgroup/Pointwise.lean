@@ -43,10 +43,10 @@ variable {α G A S : Type*}
 open scoped Pointwise in
 /--
 If `H` and `K` are disjoint subgroups of `G` then `(h, k) ↦ h * k` gives a bijection between
-`H ×ᵃ K` and `H * K`
+`H ×ˢ K` and `H * K`
 -/
 theorem bijOn_product_mul_of_disjoint [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
-    BijOn (fun (h, k) => h * k) (H ×ˢ K) (H * K : Set G) := by
+    BijOn (fun hk => hk.1 * hk.2) (H ×ˢ K) (H * K : Set G) := by
   refine ⟨?_, ?_, ?_⟩
   · intro ⟨h, k⟩ HH
     simp only [mem_prod, SetLike.mem_coe] at HH
