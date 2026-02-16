@@ -131,6 +131,10 @@ lemma eq_zero_of_homogenize_eq_zero {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n
     simp [this, h]
   · exact coeff_eq_zero_of_natDegree_lt H
 
+lemma homogenize_eq_zero_iff {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
+    p.homogenize n = 0 ↔ p = 0 :=
+  ⟨eq_zero_of_homogenize_eq_zero hn, fun H ↦ by simp [H]⟩
+
 lemma eval₂_homogenize_of_eq_one {S : Type*} [CommSemiring S] {p : R[X]} {n : ℕ}
     (hn : natDegree p ≤ n) (f : R →+* S) (g : Fin 2 → S) (hg : g 1 = 1) :
     MvPolynomial.eval₂ f g (p.homogenize n) = p.eval₂ f (g 0) := by
