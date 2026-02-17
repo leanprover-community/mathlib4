@@ -1,5 +1,7 @@
 /-
-This file has been written essentially ba Damiano Testa.
+Copyright (c) 2025 Riccardo Brasca. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Riccardo Brasca, Damiano Testa
 -/
 
 import Lean.Util.CollectAxioms
@@ -20,6 +22,8 @@ namespace Mathlib.Linter
 /--
 The "detectClassical" linter emits a warning on declarations that depend on the `Classical.choice`
 axiom.
+
+This file has been written essentially ba Damiano Testa.
 -/
 register_option linter.detectClassical : Bool := {
   defValue := true
