@@ -244,8 +244,17 @@ lemma IsBaseChange.of_eq_map {R S : Type*} [CommRing R] [CommRing S] [Algebra R 
       (by simp [← Ideal.map_le_iff_le_comap, eq])).toAlgebra
     letI : IsScalarTower R (R ⧸ I) (S ⧸ J) := IsScalarTower.of_algebraMap_eq' rfl
     IsBaseChange (R ⧸ I) (Ideal.Quotient.mkₐ R J).toLinearMap := by
-
-  sorry
+  let _ := (Ideal.quotientMap (I := I) J (algebraMap R S)
+    (by simp [← Ideal.map_le_iff_le_comap, eq])).toAlgebra
+  let _ : IsScalarTower R (R ⧸ I) (S ⧸ J) := IsScalarTower.of_algebraMap_eq' rfl
+  let e : TensorProduct R (R ⧸ I) S ≃ₗ[R] S ⧸ J :=
+    (TensorProduct.quotTensorEquivQuotSMul S I).trans (Submodule.quotEquivOfEq _ _ (by simp [eq])
+    ≪≫ₗ Submodule.Quotient.restrictScalarsEquiv R J)
+  apply IsBaseChange.of_equiv (e.extendScalarsOfSurjective (Ideal.Quotient.mk_surjective (I := I)))
+  intro s
+  simp only [LinearEquiv.extendScalarsOfSurjective_apply, LinearEquiv.trans_apply, e]
+  rw [← map_one (Ideal.Quotient.mk I), TensorProduct.quotTensorEquivQuotSMul_mk_tmul]
+  simp
 
 lemma quotient_power_char_formallySmooth [IsDomain R] [IsCohenRing R] (p : ℕ) (prime : Nat.Prime p)
     (char : CharP (ResidueField R) p) (n : ℕ) (ne0 : n ≠ 0) : (Ideal.quotientMap
