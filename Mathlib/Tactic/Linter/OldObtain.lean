@@ -49,7 +49,8 @@ from mathlib: in summary,
   case... but by now, the "old" syntax is not clearly better.)
 - the old syntax *could* be slightly nicer when deferring goals: however, this is rare.
   In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
-  could also be used, as was in fact clearer. -/
+  could also be used, as was in fact clearer.
+-/
 
 meta section
 
