@@ -70,6 +70,7 @@ theorem coe_nontrivial_iff {s : Set.powersetCard α n} :
 theorem eq_iff_subset {s t : Set.powersetCard α n} : s = t ↔ (s : Finset α) ⊆ (t : Finset α) := by
   rw [Finset.subset_iff_eq_of_card_le (t.prop.trans_le s.prop.ge), Subtype.ext_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (hab : a ≠ b) :
     ∃ s : powersetCard α n, a ∈ s ∧ b ∉ s := by
   have ha' : n ≤ Set.encard {b}ᶜ := by
@@ -95,6 +96,7 @@ variable (n) {β : Type*}
 def map (f : α ↪ β) (s : powersetCard α n) : powersetCard β n :=
     ⟨Finset.map f s, by rw [mem_iff, card_map, s.prop]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_map_iff_mem_range (f : α ↪ β) (s : powersetCard α n) (b : β) :
     b ∈ map n f s ↔ b ∈ f '' s := by
   simp [map]
@@ -131,6 +133,7 @@ variable (n) (β : Type*)
 def ofFinEmb (f : Fin n ↪ β) : powersetCard β n :=
   map n f ⟨Finset.univ, by rw [mem_iff, Finset.card_univ, Fintype.card_fin]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mem_ofFinEmb_iff_mem_range (f : Fin n ↪ β) (b : β) :
     b ∈ ofFinEmb n β f ↔ b ∈ Set.range f := by
@@ -203,6 +206,7 @@ end disjUnion
 
 variable (α n)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_finset [Fintype α] :
     powersetCard α n = Finset.powersetCard n (Finset.univ : Finset α) := by
   ext; simp

@@ -317,6 +317,7 @@ lemma dist_comp_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
       gcongr
       rwa [← mul_pow]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A time-dependent bound on the distance between the `n`-th iterates of `next` on two curves -/
 lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
     (hx : x ∈ closedBall x₀ r) (α β : FunSpace t₀ x₀ r L) (n : ℕ) (t : Icc tmin tmax) :
@@ -350,6 +351,7 @@ lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
           abs_pow, abs_pow, abs_dist, NNReal.abs_eq, abs_abs, mul_div, div_div, ← abs_mul,
           ← Nat.cast_succ, ← Nat.cast_mul, ← Nat.factorial_succ, Nat.abs_cast, ← mul_pow]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th iterate of `next` is Lipschitz continuous with respect to `FunSpace`, with constant
 $(K \max(t_{\mathrm{max}}, t_{\mathrm{min}})^n / n!$. -/
 lemma dist_iterate_next_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
@@ -394,6 +396,7 @@ there is some `m : ℕ` such that `next^[m]` is a contracting map, it further su
 distance between `α` and `next^[m]^[n] α`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A key step in the base case of `exists_forall_closedBall_funSpace_dist_le_mul` -/
 lemma dist_next_next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
     (hy : y ∈ closedBall x₀ r) (α : FunSpace t₀ x₀ r L) :

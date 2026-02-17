@@ -111,6 +111,7 @@ end
 
 open Limits.WalkingCospan
 
+set_option backward.isDefEq.respectTransparency false in
 theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
     (K : GrothendieckTopology D) (G : C ⥤ D) [RepresentablyFlat G] : CompatiblePreserving K G := by
   constructor

@@ -51,6 +51,7 @@ open Finset
 
 namespace Nat
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicity of `m` in `n` is the number of positive natural numbers `i` such that `m ^ i`
 divides `n`. This set is expressed by filtering `Ico 1 b` where `b` is any bound greater than
 `log m n`. -/
@@ -125,6 +126,7 @@ theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range, ←
     sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicity of `p` in `(p * (n + 1))!` is one more than the sum
   of the multiplicities of `p` in `(p * n)!` and `n + 1`. -/
 theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
@@ -171,6 +173,7 @@ theorem multiplicity_factorial_pow {n p : ℕ} (hp : p.Prime) :
   | succ n h =>
     rw [pow_succ', hp.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.coe_add]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A prime power divides `n!` iff it is at most the sum of the quotients `n / p ^ i`.
   This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
 theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log p n < b) :
@@ -213,6 +216,7 @@ theorem emultiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb
   · rw [this]
   exact this.symm ▸ hnb
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A lower bound on the multiplicity of `p` in `choose n k`. -/
 theorem emultiplicity_le_emultiplicity_choose_add {p : ℕ} (hp : p.Prime) :
     ∀ n k : ℕ, emultiplicity p n ≤ emultiplicity p (choose n k) + emultiplicity p k
@@ -269,6 +273,7 @@ theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 �
 
 end Prime
 
+set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplicity 2 n ! < n := by
   have h2 := prime_two.prime
   refine binaryRec ?_ ?_

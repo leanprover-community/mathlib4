@@ -83,6 +83,7 @@ class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
   -- note we cannot put this in the `extends` clause
   [toDecidableEq : DecidableEq K]
 
+attribute [instance_reducible] RCLike.toPartialOrder RCLike.toDecidableEq
 scoped[ComplexOrder] attribute [instance 100] RCLike.toPartialOrder
 attribute [instance 100] RCLike.toDecidableEq
 
@@ -633,6 +634,7 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← ofReal_natCast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, rclike_simps, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnnorm]
 
 @[simp, rclike_simps]
@@ -650,6 +652,7 @@ lemma nnnorm_two : ‖(2 : K)‖₊ = 2 := nnnorm_ofNat 2
 lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
   rw [← ofReal_nnratCast]; exact norm_of_nonneg q.cast_nonneg
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, rclike_simps, norm_cast]
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]
 
@@ -733,6 +736,7 @@ theorem norm_sq_re_add_conj (x : K) : ‖x + conj x‖ ^ 2 = re (x + conj x) ^ 2
 theorem norm_sq_re_conj_add (x : K) : ‖conj x + x‖ ^ 2 = re (conj x + x) ^ 2 := by
   rw [add_comm, norm_sq_re_add_conj]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : NormSMulClass ℤ K where
   norm_smul r x := by
     rw [zsmul_eq_mul, norm_mul, ← ofReal_intCast, norm_ofReal, Int.norm_eq_abs]
@@ -939,6 +943,7 @@ lemma toPosMulReflectLT : PosMulReflectLT K where
 
 scoped[ComplexOrder] attribute [instance] RCLike.toPosMulReflectLT
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toIsStrictOrderedModule : IsStrictOrderedModule ℝ K where
   smul_lt_smul_of_pos_left r hr a b hab := by
     simpa [RCLike.lt_iff_re_im (K := K), smul_re, smul_im, hr, hr.ne'] using hab
@@ -948,6 +953,7 @@ theorem toIsStrictOrderedModule : IsStrictOrderedModule ℝ K where
 
 scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedModule
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofReal_mul_pos_iff (x : ℝ) (z : K) :
     0 < x * z ↔ (x < 0 ∧ z < 0) ∨ (0 < x ∧ 0 < z) := by
   simp only [pos_iff (K := K), neg_iff (K := K), re_ofReal_mul, im_ofReal_mul]
@@ -1017,7 +1023,7 @@ end CleanupLemmas
 section LinearMaps
 
 /-- The real part in an `RCLike` field, as a linear map. -/
-def reLm : K →ₗ[ℝ] ℝ :=
+noncomputable def reLm : K →ₗ[ℝ] ℝ :=
   { re with map_smul' := smul_re }
 
 @[simp, rclike_simps]
@@ -1043,7 +1049,7 @@ theorem continuous_re : Continuous (re : K → ℝ) :=
   reCLM.continuous
 
 /-- The imaginary part in an `RCLike` field, as a linear map. -/
-def imLm : K →ₗ[ℝ] ℝ :=
+noncomputable def imLm : K →ₗ[ℝ] ℝ :=
   { im with map_smul' := smul_im }
 
 @[simp, rclike_simps]

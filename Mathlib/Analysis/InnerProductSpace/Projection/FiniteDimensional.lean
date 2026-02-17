@@ -57,6 +57,7 @@ variable [FiniteDimensional 𝕜 K]
 theorem topologicalClosure_eq_self : K.topologicalClosure = K :=
   K.closed_of_finiteDimensional.submodule_topologicalClosure_eq
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
   by_cases hK : FiniteDimensional 𝕜 Kᗮ
@@ -134,6 +135,7 @@ end Submodule
 
 open Module Submodule
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An element `φ` of the orthogonal group of `F` can be factored as a product of reflections, and
 specifically at most as many reflections as the dimension of the complement of the fixed subspace
 of `φ`. -/
@@ -248,6 +250,7 @@ theorem OrthogonalFamily.isInternal_iff_of_isComplete [DecidableEq ι] {V : ι �
   simp only [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, hV.independent,
     true_and, orthogonal_eq_bot_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An orthogonal family of subspaces of `E` satisfies `DirectSum.IsInternal` (that is,
 they provide an internal direct sum decomposition of `E`) if and only if their span has trivial
 orthogonal complement. -/
@@ -277,6 +280,7 @@ theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Sub
     simp_rw [map_add, Finset.sum_add_distrib]
     exact congr_arg₂ (· + ·) hx hy
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a family of submodules is orthogonal, then the `orthogonalProjection` on a direct sum
 is just the coefficient of that direct sum. -/
 theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι → Submodule 𝕜 E}

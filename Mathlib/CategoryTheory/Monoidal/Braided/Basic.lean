@@ -451,6 +451,7 @@ lemma hom_ext {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (h : α.hom.hom = 
     α = β :=
   InducedCategory.hom_ext (LaxMonoidalFunctor.hom_ext h)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for morphisms in the category `LaxBraidedFunctor C D`. -/
 @[simps]
 def homMk {F G : LaxBraidedFunctor C D} (f : F.toFunctor ⟶ G.toFunctor) [NatTrans.IsMonoidal f] :
@@ -538,7 +539,8 @@ noncomputable def SymmetricCategory.ofFullyFaithful {C D : Type*} [Category* C] 
     [F.Faithful] [SymmetricCategory D] : SymmetricCategory C :=
   let h : BraidedCategory C := BraidedCategory.ofFullyFaithful F
   let _ : F.Braided := {
-    braided X Y := by simp [h, BraidedCategory.ofFullyFaithful, BraidedCategory.ofFaithful] }
+    braided X Y := by
+      simp +instances [h, BraidedCategory.ofFullyFaithful, BraidedCategory.ofFaithful] }
   .ofFaithful F
 
 @[deprecated (since := "2025-10-17")]
@@ -689,6 +691,7 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
         X₁ ◁ Y₁ ◁ (β_ X₂ Z₁).hom ▷ Y₂ ▷ Z₂ ⊗≫ 𝟙 _ := by monoidal
     _ = _ := by rw [← whisker_exchange]; monoidal
 
+set_option backward.isDefEq.respectTransparency false in
 instance tensorMonoidal : (tensor C).Monoidal :=
     Functor.CoreMonoidal.toMonoidal
       { εIso := (λ_ (𝟙_ C)).symm
@@ -774,6 +777,7 @@ end Tensor
 
 end MonoidalCategory
 
+set_option backward.isDefEq.respectTransparency false in
 instance : BraidedCategory Cᵒᵖ where
   braiding X Y := (β_ Y.unop X.unop).op
   braiding_naturality_right X {_ _} f := Quiver.Hom.unop_inj <| by simp
@@ -796,6 +800,7 @@ end OppositeLemmas
 
 namespace MonoidalOpposite
 
+set_option backward.isDefEq.respectTransparency false in
 instance instBraiding : BraidedCategory Cᴹᵒᵖ where
   braiding X Y := (β_ Y.unmop X.unmop).mop
   braiding_naturality_right X {_ _} f := Quiver.Hom.unmop_inj <| by simp
@@ -874,6 +879,6 @@ reversed braiding, upgraded to a braided functor. -/
 def SymmetricCategory.equivReverseBraiding (C : Type u₁) [Category.{v₁} C]
     [MonoidalCategory C] [SymmetricCategory C] :=
   @Functor.Braided.mk C _ _ _ C _ _ (reverseBraiding C) (𝟭 C) _ <| by
-    simp [reverseBraiding, braiding_swap_eq_inv_braiding]
+    simp +instances [reverseBraiding, braiding_swap_eq_inv_braiding]
 
 end CategoryTheory

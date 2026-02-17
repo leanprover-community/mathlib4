@@ -104,6 +104,7 @@ variable {M}
 theorem not_mem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
     ↑x ∉ s := x.prop
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_val_image {t : Set (ofFixingSubgroup M s)} :
     Disjoint s (Subtype.val '' t) := by
@@ -439,6 +440,7 @@ section Construction
 
 open Function.Embedding Fin.Embedding
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/
 @[to_additive
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/]
@@ -475,6 +477,7 @@ section TwoCriteria
 
 open MulAction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pretransitivity criterion. -/
 theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
     (hs : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s))
@@ -504,6 +507,7 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
       rw [mul_smul, mul_smul, smul_eq_iff_eq_inv_smul g]
       exact hk _ (Set.mem_smul_set_iff_inv_smul_mem.mp hy.2)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A primitivity criterion -/
 theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
     [Finite α]

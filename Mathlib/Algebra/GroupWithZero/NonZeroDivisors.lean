@@ -405,7 +405,7 @@ def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀�
   toEquiv := .subtypeQuotientEquivQuotientSubtype _ (s₂ := Associated.setoid _)
     (· ∈ nonZeroDivisors _)
     (by simp [mem_nonZeroDivisors_iff, Quotient.forall, Associates.mk_mul_mk])
-    (by simp [Associated.setoid])
+    (by simp +instances [Associated.setoid])
   map_mul' := by simp [Quotient.forall, Associates.mk_mul_mk]
 
 @[simp]

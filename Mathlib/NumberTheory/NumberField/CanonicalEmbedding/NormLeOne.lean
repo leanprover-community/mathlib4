@@ -324,6 +324,7 @@ variable [NumberField K]
 
 variable {K}
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 A fixed equiv between `Fin (rank K)` and `{w : InfinitePlace K // w ≠ w₀}`.
@@ -388,6 +389,7 @@ theorem sum_eq_zero_of_mem_span_completeFamily {x : realSpace K}
 
 variable (K)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem linearIndependent_completeFamily :
     LinearIndependent ℝ (completeFamily K) := by
   classical
@@ -526,6 +528,7 @@ theorem norm_expMapBasis_ne_zero (x : realSpace K) :
     mixedEmbedding.norm (mixedSpaceOfRealSpace (expMapBasis x)) ≠ 0 :=
   norm_expMapBasis x ▸ pow_ne_zero _ (Real.exp_ne_zero _)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem logMap_expMapBasis (x : realSpace K) :
     logMap (mixedSpaceOfRealSpace (expMapBasis x)) ∈
@@ -581,6 +584,7 @@ theorem hasFDerivAt_expMapBasis (x : realSpace K) :
   change HasFDerivAt (expMap ∘ (completeBasis K).equivFunL.symm) (fderiv_expMapBasis K x) x
   exact (hasFDerivAt_expMap _).comp x (completeBasis K).equivFunL.symm.hasFDerivAt
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical ContinuousLinearMap in
 theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
     |(fderiv_expMapBasis K x).det| =
@@ -695,6 +699,7 @@ theorem closure_paramSet_ae_interior : closure (paramSet K) =ᵐ[volume] interio
   · exact Iio_ae_eq_Iic.symm
   · exact Ioo_ae_eq_Icc.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem setLIntegral_paramSet_exp {n : ℕ} (hn : 0 < n) :
     ∫⁻ (x : realSpace K) in paramSet K, .ofReal (Real.exp (x w₀ * n)) = (n : ℝ≥0∞)⁻¹ := by
   classical
@@ -829,6 +834,7 @@ theorem isBounded_normLeOne :
   refine IsBounded.subset ?_ (Set.image_mono subset_closure)
   exact (isCompact_compactSet K).isBounded.subset (expMapBasis_closure_subset_compactSet K)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_normLeOne : volume (normLeOne K) =
     2 ^ nrRealPlaces K * NNReal.pi ^ nrComplexPlaces K * .ofReal (regulator K) := by
@@ -845,6 +851,7 @@ theorem volume_normLeOne : volume (normLeOne K) =
     ← mul_assoc, ← mul_assoc, ENNReal.inv_mul_cancel_right (pow_ne_zero _ two_ne_zero)
     (pow_ne_top ENNReal.ofNat_ne_top)]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_interior_eq_volume_closure :
     volume (interior (normLeOne K)) = volume (closure (normLeOne K)) := by
@@ -866,6 +873,7 @@ theorem volume_interior_eq_volume_closure :
     setLIntegral_expMapBasis_image measurableSet_interior (by fun_prop),
     setLIntegral_congr (closure_paramSet_ae_interior K)]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_frontier_normLeOne :
      volume (frontier (normLeOne K)) = 0 := by

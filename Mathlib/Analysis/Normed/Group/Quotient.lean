@@ -459,6 +459,7 @@ instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
         _ ≤ ‖k‖ * ‖a‖ := (norm_mk_le ..).trans (norm_smul_le k a)
         _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 
+set_option backward.isDefEq.respectTransparency false in
 instance Submodule.Quotient.normedSpace (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 M] [SMul 𝕜 R]
     [IsScalarTower 𝕜 R M] : NormedSpace 𝕜 (M ⧸ S) where
   norm_smul_le := norm_smul_le

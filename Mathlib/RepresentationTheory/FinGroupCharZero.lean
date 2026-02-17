@@ -81,6 +81,7 @@ instance [NeZero (Nat.card G : k)] (V : FDRep k G) : Projective V :=
 
 variable [IsAlgClosed k]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `G` is finite and its order is nonzero in an algebraically closed field `k`,
 then an object of `FDRep k G` is simple if and only if its space of endomorphisms is
@@ -112,6 +113,7 @@ lemma simple_iff_end_is_rank_one [NeZero (Nat.card G : k)] (V : FDRep k G) :
       apply_fun (· ≫ g) at hc
       simpa [hg] using hc.symm
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Finite G] in
 /--
 If `G` is finite and `k` an algebraically closed field of characteristic `0`,

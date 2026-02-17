@@ -135,6 +135,7 @@ lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
   simp only [neg_mul_eq_neg_mul]
   exact (exp_neg_integrableOn_Ioi _ hb).mono_set Ioc_subset_Ioi_self
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
     ∫⁻ y in Iic x, exponentialPDF r y
     = ENNReal.ofReal (if 0 ≤ x then 1 - exp (-(r * x)) else 0) := by
@@ -174,6 +175,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
       rw [integrableOn_Icc_iff_integrableOn_Ioc]
       exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The CDF of the exponential distribution equals ``1 - exp (-(r * x))`` -/
 lemma cdf_expMeasure_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
     cdf (expMeasure r) x = if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by

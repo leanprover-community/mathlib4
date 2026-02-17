@@ -282,6 +282,7 @@ lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [SeminormedGroup E] (u v : E)
   simpa [-tsub_le_iff_right, tsub_le_iff_left, two_mul, add_assoc]
     using norm_mul₃_le' (a := (u / v)) (b := v) (c := v)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive norm_add_sub_norm_sub_le_two_mul_min]
 lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (u v : E) :
     ‖u * v‖ - ‖u / v‖ ≤ 2 * min ‖u‖ ‖v‖ := by

@@ -34,6 +34,7 @@ open Filter Fin.NatCast Function MeasureTheory Set
 
 open scoped Topology
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` has derivative `f'` a.e. on `[d, b]` and `η` is positive, then there is a collection of
 pairwise disjoint closed subintervals of `[a, b]` of total length `b - a` where the slope of `f`
 on each subinterval `[x, y]` differs from `f' x` by at most `η`. -/

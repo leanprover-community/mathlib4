@@ -456,6 +456,7 @@ theorem IsPathConnected.preimage_coe {U W : Set X} (hW : IsPathConnected W) (hWU
     IsPathConnected (((↑) : U → X) ⁻¹' W) := by
   rwa [IsInducing.subtypeVal.isPathConnected_iff, Subtype.image_preimage_val, inter_eq_right.2 hWU]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsPathConnected.exists_path_through_family {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
     ∃ γ : Path (p 0) (p (last n)), range γ ⊆ s ∧ ∀ i, p i ∈ range γ := by
@@ -548,6 +549,7 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=
   Quotient.mk'_surjective.pathConnectedSpace continuous_coinduced_rng
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `IsTopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where

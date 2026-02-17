@@ -36,6 +36,7 @@ noncomputable def arcsin : ℝ → ℝ :=
 theorem arcsin_mem_Icc (x : ℝ) : arcsin x ∈ Icc (-(π / 2)) (π / 2) :=
   Subtype.coe_prop _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_arcsin : range arcsin = Icc (-(π / 2)) (π / 2) := by
   rw [arcsin, range_comp Subtype.val]
@@ -284,6 +285,7 @@ theorem arccos_le_pi (x : ℝ) : arccos x ≤ π := by
 theorem arccos_nonneg (x : ℝ) : 0 ≤ arccos x := by
   unfold arccos; linarith [arcsin_le_pi_div_two x]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem arccos_pos {x : ℝ} : 0 < arccos x ↔ x < 1 := by simp [arccos]
 
@@ -333,6 +335,7 @@ theorem arccos_eq_zero {x} : arccos x = 0 ↔ 1 ≤ x := by simp [arccos, sub_eq
 @[simp]
 theorem arccos_eq_pi_div_two {x} : arccos x = π / 2 ↔ x = 0 := by simp [arccos]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem arccos_eq_pi {x} : arccos x = π ↔ x ≤ -1 := by
   rw [arccos, sub_eq_iff_eq_add, ← sub_eq_iff_eq_add', div_two_sub_self, neg_pi_div_two_eq_arcsin]

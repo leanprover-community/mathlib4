@@ -623,6 +623,7 @@ theorem image_closure_of_isCompact [T2Space Y] {s : Set X} (hs : IsCompact (clos
   Subset.antisymm hf.image_closure <|
     closure_minimal (image_mono subset_closure) (hs.image_of_continuousOn hf).isClosed
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two continuous maps into a Hausdorff space disagree at a point iff they disagree in a
 neighborhood. -/
 theorem ContinuousAt.ne_iff_eventually_ne [T2Space Y] {x : X} {f g : X → Y}

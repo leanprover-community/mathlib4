@@ -715,6 +715,7 @@ abbrev invertibleFstOfInvertible (x : tsze R M) [Invertible x] : Invertible x.fs
   invOf_mul_self := by rw [← fst_mul, invOf_mul_self, fst_one]
   mul_invOf_self := by rw [← fst_mul, mul_invOf_self, fst_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fst_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] : (⅟x).fst = ⅟(x.fst) := by
   letI := invertibleFstOfInvertible x
   convert (rfl : _ = ⅟x.fst)
@@ -744,6 +745,7 @@ abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible 
     convert mul_right_eq_one _ _ (mul_invOf_self x.fst)
     ext <;> simp [smul_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
     (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by
   letI := invertibleOfInvertibleFst x
@@ -803,6 +805,7 @@ protected theorem inv_mul_cancel {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹ * x 
 
 variable [SMulCommClass R Rᵐᵒᵖ M]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem invOf_eq_inv (x : tsze R M) [Invertible x] : ⅟x = x⁻¹ := by
   letI := invertibleFstOfInvertible x
   ext <;> simp [fst_invOf, snd_invOf]
@@ -934,6 +937,7 @@ theorem algHom_ext' {A} [Semiring A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A
 
 variable {A : Type*} [Semiring A] [Algebra S A] [Algebra R' A]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Assemble an algebra morphism `TrivSqZeroExt R M →ₐ[S] A` from separate morphisms on `R` and `M`.
 
@@ -1082,14 +1086,17 @@ def map (f : M →ₗ[R'] N) : TrivSqZeroExt R' M →ₐ[R'] TrivSqZeroExt R' N 
 theorem map_inl (f : M →ₗ[R'] N) (r : R') : map f (inl r) = inl r := by
   rw [map, liftEquivOfComm_apply, lift_apply_inl, Algebra.ofId_apply, algebraMap_eq_inl]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_inr (f : M →ₗ[R'] N) (x : M) : map f (inr x) = inr (f x) := by
   rw [map, liftEquivOfComm_apply, lift_apply_inr, LinearMap.comp_apply, inrHom_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_map (f : M →ₗ[R'] N) (x : TrivSqZeroExt R' M) : fst (map f x) = fst x := by
   simp [map, lift_def, Algebra.ofId_apply, algebraMap_eq_inl]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_map (f : M →ₗ[R'] N) (x : TrivSqZeroExt R' M) : snd (map f x) = f (snd x) := by
   simp [map, lift_def, Algebra.ofId_apply, algebraMap_eq_inl]

@@ -217,6 +217,7 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
       (someExistsOneDivLT_subset hx₂).2
         (Set.mem_iUnion.2 ⟨n, Set.mem_iUnion.2 ⟨Nat.lt_succ_iff.mp h, hx₁⟩⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonposSeq s i) := by
   intro n m h

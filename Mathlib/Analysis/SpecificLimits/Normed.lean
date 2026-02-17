@@ -182,6 +182,7 @@ theorem tendsto_pow_const_div_const_pow_of_one_lt (k : ℕ) {r : ℝ} (hr : 1 < 
     Tendsto (fun n ↦ (n : ℝ) ^ k / r ^ n : ℕ → ℝ) atTop (𝓝 0) :=
   (isLittleO_pow_const_const_pow_of_one_lt k hr).tendsto_div_nhds_zero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `|r| < 1`, then `n ^ k r ^ n` tends to zero for any natural `k`. -/
 theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : |r| < 1) :
     Tendsto (fun n ↦ (n : ℝ) ^ k * r ^ n : ℕ → ℝ) atTop (𝓝 0) := by
@@ -715,6 +716,7 @@ section
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {b : ℝ} {f : ℕ → ℝ} {z : ℕ → E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Dirichlet's test** for monotone sequences. -/
 theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone f)
     (hf0 : Tendsto f atTop (𝓝 0)) (hgb : ∀ n, ‖∑ i ∈ range n, z i‖ ≤ b) :

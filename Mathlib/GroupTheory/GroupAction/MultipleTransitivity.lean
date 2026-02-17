@@ -604,6 +604,7 @@ theorem isMultiplyPretransitive (n : ℕ) :
 instance : IsPreprimitive (Perm α) α :=
   isPreprimitive_of_is_two_pretransitive (isMultiplyPretransitive _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 -- This is optimal, `AlternatingGroup α` is `Nat.card α - 2`-pretransitive.
 /-- A subgroup of `Perm α` is `⊤` if(f) it is `(Nat.card α - 1)`-pretransitive. -/
 theorem eq_top_of_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm α)}
@@ -677,6 +678,7 @@ theorem isMultiplyPretransitive :
     rw [← Finset.notMem_compl, hs, Finset.mem_insert, Finset.mem_singleton, not_or] at h
     simp [Equiv.swap_apply_of_ne_of_ne h.1 h.2, ← hg]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subgroup of `Equiv.Perm α` which is (card α - 2)-pretransitive
 contains `alternatingGroup α`. -/
 theorem _root_.IsMultiplyPretransitive.alternatingGroup_le

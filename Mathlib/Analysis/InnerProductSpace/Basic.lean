@@ -153,7 +153,7 @@ variable {F}
 variable {𝕜}
 
 @[deprecated (since := "2025-12-26")] alias sesqFormOfInner := innerₛₗ
-@[deprecated (since := "2025-12-26")] alias bilinFormOfRealInner := innerₗ
+@[deprecated (since := "2025-12-26")] noncomputable alias bilinFormOfRealInner := innerₗ
 
 /-- An inner product with a sum on the left. -/
 theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
@@ -337,6 +337,7 @@ variable {𝕜}
 theorem re_inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma re_inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by
   simp [sq_pos_iff]
 
@@ -700,6 +701,7 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_of_ne_zero_of_neg_mul {x : F} {r
     mul_assoc, abs_of_neg hr, neg_mul, div_neg_eq_neg_div, div_self]
   exact mul_ne_zero hr.ne (mul_self_ne_zero.2 (norm_ne_zero_iff.2 hx))
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 theorem norm_inner_eq_norm_tfae (x y : E) :
     List.TFAE [‖⟪x, y⟫‖ = ‖x‖ * ‖y‖,
@@ -804,6 +806,7 @@ theorem real_inner_div_norm_mul_norm_eq_one_iff (x y : F) :
   · rintro ⟨hx, ⟨r, ⟨hr, rfl⟩⟩⟩
     exact real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul hx hr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inner product of two vectors, divided by the product of their
 norms, has value -1 if and only if they are nonzero and one is
 a negative multiple of the other. -/
@@ -930,11 +933,11 @@ abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
     norm_sq_eq_re_inner := norm_sq_eq_re_inner
     conj_inner_symm := fun _ _ => inner_re_symm _ _
     add_left := fun x y z => by
-      simp only [Inner.rclikeToReal, inner_add_left, map_add]
+      simp +instances only [Inner.rclikeToReal, inner_add_left, map_add]
     smul_left := fun x y r => by
       letI := NormedSpace.restrictScalars ℝ 𝕜 E
       have : r • x = (r : 𝕜) • x := rfl
-      simp only [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,
+      simp +instances only [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,
         re_ofReal_mul] }
 
 variable {E}

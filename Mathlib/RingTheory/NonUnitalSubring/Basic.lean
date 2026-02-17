@@ -329,6 +329,7 @@ instance : CompleteLattice (NonUnitalSubring R) :=
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_iff' (A : NonUnitalSubring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
@@ -376,6 +377,7 @@ end NonUnitalNonAssocRing
 section NonUnitalRing
 variable [NonUnitalRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the unital version
 example : (center.instNonUnitalCommRing _).toNonUnitalRing =
       NonUnitalSubringClass.toNonUnitalRing (center R) := by
@@ -533,6 +535,7 @@ protected def gi : GaloisInsertion (@closure R _) SetLike.coe where
 theorem closure_eq (s : NonUnitalSubring R) : closure (s : Set R) = s :=
   (NonUnitalSubring.gi R).l_u_eq s
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem closure_empty : closure (∅ : Set R) = ⊥ :=
   (NonUnitalSubring.gi R).gc.l_bot
@@ -572,10 +575,12 @@ theorem comap_iInf {ι : Sort*} (f : F) (s : ι → NonUnitalSubring S) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_bot (f : R →ₙ+* S) : (⊥ : NonUnitalSubring R).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_top (f : R →ₙ+* S) : (⊤ : NonUnitalSubring S).comap f = ⊤ :=
   (gc_map_comap f).u_top

@@ -131,6 +131,7 @@ instance : LinearOrder (DegLex (α →₀ ℕ)) :=
     (fun (f : DegLex (α →₀ ℕ)) ↦ toLex ((ofDegLex f).degree, toLex (ofDegLex f)))
     (fun f g ↦ by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_iff {x y : DegLex (α →₀ ℕ)} :
     x ≤ y ↔ (ofDegLex x).degree < (ofDegLex y).degree ∨
       (ofDegLex x).degree = (ofDegLex y).degree ∧ toLex (ofDegLex x) ≤ toLex (ofDegLex y) := by
@@ -150,6 +151,7 @@ instance : IsOrderedCancelAddMonoid (DegLex (α →₀ ℕ)) where
     rw [le_iff] at h ⊢
     simpa [ofDegLex_add, map_add] using h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem single_strictAnti : StrictAnti (fun (a : α) ↦ toDegLex (single a 1)) := by
   intro _ _ h
   simp only [lt_iff, ofDegLex_toDegLex, degree_single, lt_self_iff_false, Lex.single_lt_iff, h,
@@ -197,6 +199,7 @@ open Finsupp
 
 variable {σ : Type*} [LinearOrder σ] [WellFoundedGT σ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The deg-lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
 noncomputable def degLex :
     MonomialOrder σ where

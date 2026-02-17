@@ -170,11 +170,13 @@ theorem _root_.LinearMap.IsSymmetric.clm_adjoint_eq {A : E →L[𝕜] E} (hA : A
 theorem adjoint_id : (ContinuousLinearMap.id 𝕜 E)† = ContinuousLinearMap.id 𝕜 E := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
     U.subtypeL† = U.orthogonalProjection := by
   symm
   simp [eq_adjoint_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [CompleteSpace U] :
     (U.orthogonalProjection : E →L[𝕜] U)† = U.subtypeL := by
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
@@ -743,6 +745,7 @@ theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductS
     [CompleteSpace G] (e : H ≃ₗᵢ[𝕜] K) (f : K ≃ₗᵢ[𝕜] G) :
     (e.trans f).conjStarAlgEquiv = e.conjStarAlgEquiv.trans f.conjStarAlgEquiv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open ContinuousLinearEquiv ContinuousLinearMap in
 theorem conjStarAlgEquiv_ext_iff (f g : H ≃ₗᵢ[𝕜] K) :
     f.conjStarAlgEquiv = g.conjStarAlgEquiv ↔ ∃ α : unitary 𝕜, f = α • g := by
@@ -822,6 +825,7 @@ lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
 theorem conjStarAlgEquiv_unitaryLinearIsometryEquiv (u : unitary (H →L[𝕜] H)) :
     (linearIsometryEquiv u).conjStarAlgEquiv = conjStarAlgAut 𝕜 _ u := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem conjStarAlgAut_symm_unitaryLinearIsometryEquiv (u : H ≃ₗᵢ[𝕜] H) :
     conjStarAlgAut 𝕜 _ (linearIsometryEquiv.symm u) = u.conjStarAlgEquiv := by
   simp [← conjStarAlgEquiv_unitaryLinearIsometryEquiv]

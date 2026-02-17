@@ -37,6 +37,7 @@ namespace HomologicalComplex
 
 variable [HasZeroMorphisms V] {ι : Type*} {c : ComplexShape ι}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A complex of functors gives a functor to complexes. -/
 @[simps]
 def asFunctor (C : HomologicalComplex (T ⥤ V) c) :
@@ -84,6 +85,7 @@ namespace CategoryTheory.ShortComplex
 
 variable [Abelian V] {S₁ S₂ : ShortComplex (T ⥤ V)} (f : S₁ ⟶ S₂)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_iff_evaluation :
     QuasiIso f ↔ ∀ (j : T),
       QuasiIso (((evaluation T V).obj j).mapShortComplex.map f) :=
@@ -101,12 +103,14 @@ namespace HomologicalComplex
 variable [Abelian V] {ι : Type*} {c : ComplexShape ι} {K₁ K₂ : HomologicalComplex (T ⥤ V) c}
   (f : K₁ ⟶ K₂)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIsoAt_iff_evaluation (i : ι) :
     QuasiIsoAt f i ↔ ∀ (t : T),
       QuasiIsoAt ((((evaluation T V).obj t).mapHomologicalComplex c).map f) i := by
   simp only [quasiIsoAt_iff, ShortComplex.quasiIso_iff_evaluation]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_iff_evaluation :
     QuasiIso f ↔ ∀ (t : T),
       QuasiIso ((((evaluation T V).obj t).mapHomologicalComplex c).map f) := by

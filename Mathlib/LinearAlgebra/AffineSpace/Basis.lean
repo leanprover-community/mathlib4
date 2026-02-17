@@ -118,6 +118,7 @@ theorem ind : AffineIndependent k b :=
 theorem tot : affineSpan k (range b) = ⊤ :=
   b.tot'
 
+set_option backward.isDefEq.respectTransparency false in
 include b in
 protected theorem nonempty : Nonempty ι :=
   not_isEmpty_iff.mp fun hι => by

@@ -131,6 +131,7 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedAddCommGroup F] [NormedSpace ℂ F]
   {R R₁ R₂ : ℝ} {f : E → F} {c z : E}
 
+set_option backward.isDefEq.respectTransparency false in
 open AffineMap in
 /-- Let `f : E → F` be a complex analytic map
 sending an open ball of radius `R₁` to a closed ball of radius `R₂`.
@@ -283,6 +284,7 @@ theorem norm_dslope_le_div_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R
     · exact dist_le_div_mul_dist_of_mapsTo_ball hd h_maps hz
     · simpa
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equality case in the **Schwarz Lemma**: in the setup of `norm_dslope_le_div_of_mapsTo_ball`,
 if `‖dslope f c z₀‖ = R₂ / R₁` holds at a point in the ball
 then the map `f` is affine with slope `dslope f c z₀`.

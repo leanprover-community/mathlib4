@@ -84,6 +84,7 @@ lemma nnnorm_two : ‖(2 : ℝ)‖₊ = 2 := NNReal.eq <| by simp
 @[simp 1100, norm_cast]
 lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖ = q := norm_of_nonneg q.cast_nonneg
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp 1100, norm_cast]
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
 

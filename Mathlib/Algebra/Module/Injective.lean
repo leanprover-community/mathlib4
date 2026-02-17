@@ -169,6 +169,7 @@ theorem ExtensionOf.le_max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤
 
 variable (i f) [Fact <| Function.Injective i]
 
+set_option backward.isDefEq.respectTransparency false in
 instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
   default :=
     { domain := LinearMap.range i
@@ -390,6 +391,7 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
     obtain ⟨h, H⟩ := Module.Baer.extension_property h i hi f
     exact ⟨h, DFunLike.congr_fun H⟩
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem of_injective [Small.{v} R] (inj : Module.Injective R Q) : Module.Baer R Q := by
   intro I g
   let eI := Shrink.linearEquiv R I

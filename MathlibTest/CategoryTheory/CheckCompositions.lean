@@ -11,6 +11,7 @@ variable {J : Type u} [Category.{v} J] {C : Type u₁} [Category.{v₁} C] {D : 
 
 variable [HasColimitsOfShape J C] [HasColimitsOfShape J E] [PreservesColimit F (G ⋙ H)]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 info: In composition
   colimit.ι ((F ⋙ G) ⋙ H) j ≫ (preservesColimitIso (G ⋙ H) F).inv

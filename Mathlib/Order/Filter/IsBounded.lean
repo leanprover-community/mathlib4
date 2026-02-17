@@ -277,6 +277,7 @@ lemma IsCobounded.frequently_ge [LinearOrder α] [NeBot f] (cobdd : IsCobounded 
   specialize ht t' (by filter_upwards [ev] with _ h using (not_le.mp h).le)
   exact not_lt_of_ge ht ht'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequent boundedness
 from above. -/
 lemma IsCobounded.frequently_le [LinearOrder α] [NeBot f] (cobdd : IsCobounded (· ≥ ·) f) :
@@ -665,11 +666,13 @@ lemma Monotone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_incr : Monoto
   obtain ⟨l, hl⟩ := IsCobounded.frequently_ge cobdd
   exact IsCobounded.of_frequently_ge <| f_incr.frequently_ge_map_of_frequently_ge hl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Monotone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_incr : Monotone f)
     [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
     F.IsCoboundedUnder (· ≥ ·) f :=
   Monotone.isCoboundedUnder_le_of_isCobounded (R := Rᵒᵈ) (S := Sᵒᵈ) f_incr.dual cobdd
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Antitone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_decr : Antitone f)
     [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
     F.IsCoboundedUnder (· ≤ ·) f :=

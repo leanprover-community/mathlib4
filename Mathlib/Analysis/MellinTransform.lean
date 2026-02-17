@@ -59,6 +59,7 @@ nonrec theorem MellinConvergent.div_const {f : ℝ → ℂ} {s : ℂ} (hf : Mell
     MellinConvergent (fun t => f t / a) s := by
   simpa only [MellinConvergent, smul_eq_mul, ← mul_div_assoc] using hf.div_const a
 
+set_option backward.isDefEq.respectTransparency false in
 theorem MellinConvergent.comp_mul_left {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : 0 < a) :
     MellinConvergent (fun t => f (a * t)) s ↔ MellinConvergent f s := by
   have := integrableOn_Ioi_comp_mul_left_iff (fun t : ℝ => (t : ℂ) ^ (s - 1) • f t) 0 ha
@@ -111,9 +112,11 @@ theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*}
     mellin (fun t => c • f t) s = c • mellin f s := by
   simp only [mellin, smul_comm, integral_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / a) s = mellin f s / a := by
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
   /- This is true for `a = 0` as all sides are undefined but turn out to vanish thanks to our
@@ -132,6 +135,7 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht), ofReal_sub, ofReal_one, mul_sub,
     mul_div_cancel₀ _ (ofReal_ne_zero.mpr ha), add_comm, ← add_sub_assoc, mul_one, sub_add_cancel]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
     mellin (fun t => f (a * t)) s = (a : ℂ) ^ (-s) • mellin f s := by
   simp_rw [mellin]
@@ -185,6 +189,7 @@ section MellinConvergent
 
 /-! ## Convergence of Mellin transform integrals -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma to reduce convergence statements from vector-valued functions to real
 scalar-valued functions. -/
 theorem mellin_convergent_iff_norm [NormedSpace ℂ E] {f : ℝ → E} {T : Set ℝ} (hT : T ⊆ Ioi 0)
@@ -437,6 +442,7 @@ section MellinIoc
 ## Mellin transforms of functions on `Ioc 0 1`
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Mellin transform of the indicator function of `Ioc 0 1`. -/
 theorem hasMellin_one_Ioc {s : ℂ} (hs : 0 < re s) :
     HasMellin (indicator (Ioc 0 1) (fun _ => 1 : ℝ → ℂ)) s (1 / s) := by

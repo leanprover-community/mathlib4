@@ -41,6 +41,7 @@ lemma measurable_edgeSet : Measurable (edgeSet : SimpleGraph V → Set (Sym2 V))
 lemma measurable_fromEdgeSet : Measurable (fromEdgeSet : Set (Sym2 V) → SimpleGraph V) := by
   simp only [measurable_iff_adj, fromEdgeSet_adj, ne_eq]; fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 lemma measurableEmbedding_edgeSet [Countable V] :
     MeasurableEmbedding (edgeSet : SimpleGraph V → Set (Sym2 V)) where
   injective := edgeSet_injective

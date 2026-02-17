@@ -241,6 +241,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     apply Finset.prod_eq_zero (hx i)
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Combinatorial Nullstellensatz**.
 
 Given a multi-index `t : σ →₀ ℕ` such that `t s < (S s).card` for all `s`,

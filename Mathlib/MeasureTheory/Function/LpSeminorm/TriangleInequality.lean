@@ -75,6 +75,7 @@ theorem LpAddConst_zero : LpAddConst 0 = 1 := by
   intro h
   exact lt_irrefl _ h.1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
   rw [LpAddConst]
   split_ifs with h

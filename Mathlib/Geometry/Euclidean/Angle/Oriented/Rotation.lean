@@ -90,6 +90,7 @@ theorem rotation_symm_apply (θ : Real.Angle) (x : V) :
     (o.rotation θ).symm x = Real.Angle.cos θ • x - Real.Angle.sin θ • J x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rotation_eq_matrix_toLin (θ : Real.Angle) {x : V} (hx : x ≠ 0) :
     (o.rotation θ).toLinearMap =
       Matrix.toLin (o.basisRightAngleRotation x hx) (o.basisRightAngleRotation x hx)
@@ -154,6 +155,7 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
     (o.rotation θ₁).trans (o.rotation θ₂) = o.rotation (θ₂ + θ₁) :=
   LinearIsometryEquiv.ext fun _ => by rw [← rotation_rotation, LinearIsometryEquiv.trans_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Rotating the first of two vectors by `θ` scales their Kähler form by `cos θ - sin θ * I`. -/
 @[simp]
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
@@ -183,6 +185,7 @@ theorem kahler_rotation_left' (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = (-θ).toCircle * o.kahler x y := by
   simp only [Real.Angle.toCircle_neg, Circle.coe_inv_eq_conj, kahler_rotation_left]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Rotating the second of two vectors by `θ` scales their Kähler form by `cos θ + sin θ * I`. -/
 @[simp]
 theorem kahler_rotation_right (x y : V) (θ : Real.Angle) :
@@ -348,12 +351,14 @@ theorem rotation_map (θ : Real.Angle) (f : V ≃ₗᵢ[ℝ] V') (x : V') :
     (Orientation.map (Fin 2) f.toLinearEquiv o).rotation θ x = f (o.rotation θ (f.symm x)) := by
   simp [rotation_apply, o.rightAngleRotation_map]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem _root_.Complex.rotation (θ : Real.Angle) (z : ℂ) :
     Complex.orientation.rotation θ z = θ.toCircle * z := by
   simp only [rotation_apply, Complex.rightAngleRotation, Real.Angle.coe_toCircle, real_smul]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Rotation in an oriented real inner product space of dimension 2 can be evaluated in terms of a
 complex-number representation of the space. -/
 theorem rotation_map_complex (θ : Real.Angle) (f : V ≃ₗᵢ[ℝ] ℂ)
@@ -417,6 +422,7 @@ theorem inner_smul_rotation_pi_div_two_smul_right (x : V) (r₁ r₂ : ℝ) :
     ⟪r₂ • x, r₁ • o.rotation (π / 2 : ℝ) x⟫ = 0 := by
   rw [real_inner_comm, inner_smul_rotation_pi_div_two_smul_left]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inner product between two vectors is zero if and only if the first vector is zero or
 the second is a multiple of a `π / 2` rotation of that vector. -/
 theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :

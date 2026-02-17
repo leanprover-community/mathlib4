@@ -849,6 +849,7 @@ end MultilinearMap
 
 namespace AlternatingMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Alternatizing a multilinear map that is already alternating results in a scale factor of `n!`,
 where `n` is the number of inputs. -/
 theorem coe_alternatization [DecidableEq ι] [Fintype ι] (a : M [⋀^ι]→ₗ[R] N') :

@@ -53,7 +53,8 @@ theorem IsChain.count_not_cons :
   | b, x :: l, h => by
     obtain rfl : b = !x := Bool.eq_not_iff.2 (rel_of_isChain_cons_cons h)
     rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self.symm,
-      IsChain.count_not_cons h.of_cons, length, add_assoc, Nat.mod_two_add_succ_mod_two]
+      IsChain.count_not_cons h.of_cons, length, add_assoc,
+      Nat.mod_two_add_succ_mod_two]
 
 @[deprecated (since := "2025-09-21")]
 alias Chain.count_not := IsChain.count_not_cons
@@ -92,6 +93,7 @@ theorem count_true_le_count_false_add_one (hl : IsChain (· ≠ ·) l) :
     count true l ≤ count false l + 1 :=
   hl.count_not_le_count_add_one false
 
+set_option backward.isDefEq.respectTransparency false in
 theorem two_mul_count_bool_of_even (hl : IsChain (· ≠ ·) l) (h2 : Even (length l)) (b : Bool) :
     2 * count b l = length l := by
   rw [← count_not_add_count l b, hl.count_not_eq_count h2, two_mul]

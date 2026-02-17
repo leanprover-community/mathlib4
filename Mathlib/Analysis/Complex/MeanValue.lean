@@ -32,6 +32,7 @@ For a complex differentiable function `f`, the theorems in this section compute 
 interior of a disk as circle averages of a weighted function.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The **Generalized Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is
 continuous on a closed disc of radius `R` and center `c`, and is complex differentiable at all but
@@ -88,6 +89,7 @@ center of a circle as a circle average of the function. This specializes the gen
 properties discussed in the previous section.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The **Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is continuous on a
 closed disc of radius `R` and center `c`, and is complex differentiable at all but countably many
@@ -103,6 +105,7 @@ theorem circleAverage_of_differentiable_on_off_countable (hs : s.Countable)
     have : z - c ≠ 0 := by grind [ne_of_mem_sphere]
     simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The **Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is complex
 differentiable at all points of a closed disc of radius `R` and center `c`, then the circle average

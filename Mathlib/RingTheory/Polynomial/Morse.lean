@@ -44,6 +44,7 @@ namespace Polynomial
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsDomain S]
   {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S] {f : R[X]}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the roots of `f` in `S` have at most one collision mod `p`, then a `MulSemiringAction` on
 the roots in `S` must be the identity permutation or a transposition.
 

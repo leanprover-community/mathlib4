@@ -74,12 +74,14 @@ variable [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup M'] [Module R M'] [AddCommGroup M''] [Module R M'']
     (N : Submodule R M) (r : R)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSMulRegular_submodule_iff_right_eq_zero_of_smul :
     IsSMulRegular N r ↔ ∀ x ∈ N, r • x = 0 → x = 0 :=
   isSMulRegular_iff_right_eq_zero_of_smul.trans <|
     Subtype.forall.trans <| by
       simp only [SetLike.mk_smul_mk, Submodule.mk_eq_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSMulRegular_quotient_iff_mem_of_smul_mem :
     IsSMulRegular (M ⧸ N) r ↔ ∀ x : M, r • x ∈ N → x ∈ N :=
   isSMulRegular_iff_right_eq_zero_of_smul.trans <|
@@ -105,6 +107,7 @@ lemma isSMulRegular_of_range_eq_ker {f : M →ₗ[R] M'} {g : M' →ₗ[R] M''}
   refine (congrArg f (h1.right_eq_zero_of_smul ?_)).trans f.map_zero
   exact hf <| (f.map_smul r y).trans <| hx.trans f.map_zero.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSMulRegular_of_isSMulRegular_on_submodule_on_quotient
     (h1 : IsSMulRegular N r) (h2 : IsSMulRegular (M ⧸ N) r) : IsSMulRegular M r :=
   isSMulRegular_of_range_eq_ker N.injective_subtype

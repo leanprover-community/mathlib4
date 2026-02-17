@@ -106,6 +106,7 @@ theorem edgeFinset_inf [DecidableEq V] : (G₁ ⊓ G₂).edgeFinset = G₁.edgeF
 theorem edgeFinset_sdiff [DecidableEq V] :
     (G₁ \ G₂).edgeFinset = G₁.edgeFinset \ G₂.edgeFinset := by simp [edgeFinset]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma disjoint_edgeFinset : Disjoint G₁.edgeFinset G₂.edgeFinset ↔ Disjoint G₁ G₂ := by
   simp_rw [← Finset.disjoint_coe, coe_edgeFinset, disjoint_edgeSet]
@@ -516,6 +517,7 @@ namespace Iso
 
 variable {G} {W : Type*} {G' : SimpleGraph W}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeSet] :
     #G.edgeFinset = #G'.edgeFinset := by
   apply Finset.card_eq_of_equiv
@@ -596,6 +598,7 @@ theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} (h : G.neighborS
   rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left,
     ← map_neighborFinset_induce v] at h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the neighbor set of a vertex `v` is a subset of `s`, then the degree of the vertex in the
 induced subgraph of `s` is the same as in `G`. -/
 theorem degree_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :

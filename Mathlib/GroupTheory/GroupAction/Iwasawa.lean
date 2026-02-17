@@ -58,6 +58,7 @@ variable {M α}
 
 namespace IwasawaStructure
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Iwasawa criterion : If a quasiprimitive action of a group G on X
   has an Iwasawa structure, then any normal subgroup that acts nontrivially
   contains the group of commutators. -/
@@ -78,6 +79,7 @@ theorem commutator_le (IwaS : IwasawaStructure M α) [IsQuasiPreprimitive M α]
   have hk' : k ∈ N ⊔ IwaS.T a := Subgroup.mem_sup_right hk
   exact (N ⊔ IwaS.T a).mul_mem ((N ⊔ IwaS.T a).mul_mem hg' hk') ((N ⊔ IwaS.T a).inv_mem hg')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Iwasawa criterion for simplicity -/
 theorem isSimpleGroup [Nontrivial M] (is_perfect : commutator M = ⊤)
     [IsQuasiPreprimitive M α] (IwaS : IwasawaStructure M α) (is_faithful : FaithfulSMul M α) :

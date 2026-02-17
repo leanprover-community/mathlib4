@@ -247,6 +247,7 @@ lemma isBigO_apply_r_sub_b (q : ℝ → ℝ) (hq_diff : DifferentiableOn ℝ q (
     calc b i * n ≤ 1 * n := by gcongr; exact le_of_lt <| R.b_lt_one i
                  _ = n := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rpow_p_mul_one_sub_smoothingFn_le :
     ∀ᶠ (n : ℕ) in atTop, ∀ i, (r i n) ^ (p a b) * (1 - ε (r i n))
       ≤ (b i) ^ (p a b) * n ^ (p a b) * (1 - ε n) := by
@@ -337,6 +338,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
   rw [← h₁, ← sub_le_iff_le_add']
   exact hn
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rpow_p_mul_one_add_smoothingFn_ge :
     ∀ᶠ (n : ℕ) in atTop, ∀ i, (b i) ^ (p a b) * n ^ (p a b) * (1 + ε n)
       ≤ (r i n) ^ (p a b) * (1 + ε (r i n)) := by

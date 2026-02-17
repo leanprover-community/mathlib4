@@ -53,6 +53,7 @@ theorem mem_perpBisector_iff_inner_eq_zero :
     c ∈ perpBisector p₁ p₂ ↔ ⟪c -ᵥ midpoint ℝ p₁ p₂, p₂ -ᵥ p₁⟫ = 0 :=
   inner_eq_zero_symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_perpBisector_iff_inner_pointReflection_vsub_eq_zero :
     c ∈ perpBisector p₁ p₂ ↔ ⟪Equiv.pointReflection c p₁ -ᵥ p₂, p₂ -ᵥ p₁⟫ = 0 := by
   rw [mem_perpBisector_iff_inner_eq_zero, Equiv.pointReflection_apply,
@@ -79,12 +80,14 @@ theorem direction_perpBisector (p₁ p₂ : P) :
   ext x
   exact Submodule.mem_orthogonal_singleton_iff_inner_right.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_perpBisector_iff_inner_eq_inner :
     c ∈ perpBisector p₁ p₂ ↔ ⟪c -ᵥ p₁, p₂ -ᵥ p₁⟫ = ⟪c -ᵥ p₂, p₁ -ᵥ p₂⟫ := by
   rw [Iff.comm, mem_perpBisector_iff_inner_eq_zero, ← add_neg_eq_zero, ← inner_neg_right,
     neg_vsub_eq_vsub_rev, ← inner_add_left, vsub_midpoint, invOf_eq_inv, ← smul_add,
     real_inner_smul_left]; simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_perpBisector_iff_inner_eq :
     c ∈ perpBisector p₁ p₂ ↔ ⟪c -ᵥ p₁, p₂ -ᵥ p₁⟫ = (dist p₁ p₂) ^ 2 / 2 := by
   rw [mem_perpBisector_iff_inner_eq_zero, ← vsub_sub_vsub_cancel_right _ _ p₁, inner_sub_left,
@@ -108,6 +111,7 @@ theorem perpBisector_comm (p₁ p₂ : P) : perpBisector p₁ p₂ = perpBisecto
 @[simp] theorem left_mem_perpBisector : p₁ ∈ perpBisector p₁ p₂ ↔ p₁ = p₂ := by
   rw [perpBisector_comm, right_mem_perpBisector, eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem perpBisector_self (p : P) : perpBisector p p = ⊤ :=
   top_unique fun _ ↦ by simp [mem_perpBisector_iff_inner_eq_inner]
 
@@ -154,6 +158,7 @@ theorem dist_le_of_wbtw_of_inner_eq_zero {a b c p : P}
     nlinarith [sq_nonneg (dist p a), sq_nonneg (dist a c)]
   simpa only [Real.sqrt_sq dist_nonneg] using Real.sqrt_le_sqrt h_sq_ineq
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `p` lies on the perpendicular bisector of `ab` and `b` is strictly between `a` and `c`,
 then `p` is closer to `b` than to `c`. -/
 theorem dist_lt_of_sbtw_of_mem_perpBisector {a b c p : P}

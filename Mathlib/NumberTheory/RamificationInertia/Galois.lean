@@ -351,6 +351,7 @@ variable (R K L S : Type*) [CommRing R] [CommRing S] [Algebra R S] [Field K] [Fi
     [Algebra K L] [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L]
     [IsIntegralClosure S R L] [FiniteDimensional K L]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_comap_galRestrict_eq [IsDedekindDomain R] [IsGalois K L] {p : Ideal R}
     {P₁ P₂ : Ideal S} (hP₁ : P₁ ∈ primesOver p S) (hP₂ : P₂ ∈ primesOver p S) :
     ∃ σ, P₁.comap (galRestrict R K L S σ) = P₂ := by

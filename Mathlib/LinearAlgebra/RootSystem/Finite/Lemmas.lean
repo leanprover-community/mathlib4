@@ -46,6 +46,7 @@ variable (P : RootPairing ι R M N) [Finite ι]
 local notation "Φ" => range P.root
 local notation "α" => P.root
 
+set_option backward.isDefEq.respectTransparency false in
 /-- SGA3 XXI Prop. 2.3.1 -/
 lemma coxeterWeightIn_le_four (S : Type*)
     [CommRing S] [LinearOrder S] [IsStrictOrderedRing S] [Algebra S R] [FaithfulSMul S R]
