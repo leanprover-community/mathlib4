@@ -18,6 +18,8 @@ We gather results that are used to avoid the axiom of choice.
 
 -/
 
+@[expose] public section
+
 namespace Constructive
 
 namespace List
