@@ -26,7 +26,7 @@ We also define `Sym2.GameAdd`, which is the unordered pair analog of `Prod.GameA
 
 - `Sym2.GameAdd`: the game addition relation on unordered pairs.
 - `WellFounded.sym2_gameAdd`: formalizes induction on unordered pairs, where exactly one entry
-decreases at a time.
+  decreases at a time.
 -/
 
 @[expose] public section
