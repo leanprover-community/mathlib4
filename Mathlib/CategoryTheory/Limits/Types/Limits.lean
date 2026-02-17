@@ -247,36 +247,34 @@ variable {F} in
 theorem Limit.w_apply {j j' : J} {x : (limit F : TypeCat.{u})} (f : j ⟶ j') :
     F.map f (limit.π F j x) = limit.π F j' x := by
   rw [← CategoryTheory.comp_apply]
-  exact congr_fun (congr_arg (·.as) (congr_arg TypeCat.Hom.hom (limit.w F f))) x
+  exact congr_hom (limit.w F f) x
 
 @[simp]
 theorem Limit.lift_π_apply (s : Cone F) (j : J) (x : s.pt) :
     limit.π F j (limit.lift F s x) = s.π.app j x :=
-  congr_fun (congr_arg (·.as) (congr_arg TypeCat.Hom.hom (limit.lift_π s j))) x
+  congr_hom (limit.lift_π s j) x
 
 @[simp]
 theorem Limit.map_π_apply {F G : J ⥤ TypeCat.{u}} [HasLimit F] [HasLimit G] (α : F ⟶ G) (j : J)
     (x : (limit F : TypeCat.{u})) : limit.π G j (limMap α x) = α.app j (limit.π F j x) := by
   rw [← CategoryTheory.comp_apply, CategoryTheory.comp_apply]
-  exact congr_fun (congr_arg (·.as) (congr_arg TypeCat.Hom.hom (limMap_π α j))) x
-
+  exact congr_hom (limMap_π α j) _
 -- Not `@[simp]` since `lift_w_apply` proves it.
 theorem Limit.w_apply' {F' : J ⥤ TypeCat.{v}} {j j' : J} {x : (limit F' : TypeCat.{v})}
     (f : j ⟶ j') : F'.map f (limit.π F' j x) = limit.π F' j' x := by
   rw [← CategoryTheory.comp_apply]
-  exact congr_fun (congr_arg (·.as) (congr_arg TypeCat.Hom.hom (limit.w F' f))) x
+  exact congr_hom (limit.w F' f) x
 
 -- Not `@[simp]` since `lift_π_apply` proves it.
 theorem Limit.lift_π_apply' (F' : J ⥤ TypeCat.{v}) (s : Cone F') (j : J) (x : s.pt) :
     limit.π F' j (limit.lift F' s x) = s.π.app j x :=
-  congr_fun (congr_arg (·.as) (congr_arg TypeCat.Hom.hom (limit.lift_π s j))) x
+  congr_hom (limit.lift_π s j) x
 
 -- Not `@[simp]` since `map_π_apply` proves it.
 theorem Limit.map_π_apply' {F' G' : J ⥤ TypeCat.{v}} (α : F' ⟶ G') (j : J)
     (x : (limit F' : TypeCat.{v})) : limit.π G' j (limMap α x) = α.app j (limit.π F' j x) := by
   rw [← CategoryTheory.comp_apply, CategoryTheory.comp_apply]
-  exact congr_fun (congr_arg (·.as) (congr_arg TypeCat.Hom.hom (limMap_π α j))) x
-
+  exact congr_hom (limMap_π α j) _
 end UnivLE
 
 /-!
