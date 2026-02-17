@@ -182,6 +182,14 @@ lemma GrpObj.inv_eq_inv : ι = (𝟙 G)⁻¹ := by simp [Hom.inv_def]
 @[reassoc (attr := simp)]
 lemma GrpObj.one_inv : η[G] ≫ ι = η := by simp [GrpObj.inv_eq_inv, GrpObj.comp_inv, one_eq_one]
 
+open scoped _root_.CategoryTheory.Obj in
+/-- If `G` is a group object and `F` is monoidal,
+then `Hom(X, G) → Hom(F X, F G)` preserves inverses. -/
+@[simp] lemma Functor.map_inv' {D : Type*} [Category* D] [CartesianMonoidalCategory D] (F : C ⥤ D)
+    [F.Monoidal] {X G : C} (f : X ⟶ G) [GrpObj G] :
+    F.map (f⁻¹) = (F.map f)⁻¹ := by
+  rw [eq_inv_iff_mul_eq_one, ← Functor.map_mul, inv_mul_cancel, Functor.map_one]
+
 @[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
 
 /-- The commutator of `G` as a morphism. This is the map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`,

@@ -73,6 +73,9 @@ instance [Surjective f] [Surjective g] : Surjective (f ≫ g) := ⟨g.surjective
 lemma Surjective.of_comp [Surjective (f ≫ g)] : Surjective g where
   surj := Function.Surjective.of_comp (g := f) (f ≫ g).surjective
 
+instance (priority := low) [Nonempty X] [Subsingleton Y] (f : X ⟶ Y) :
+    Surjective f := ⟨Function.surjective_to_subsingleton _⟩
+
 lemma Surjective.comp_iff [Surjective f] : Surjective (f ≫ g) ↔ Surjective g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
