@@ -6,6 +6,7 @@ Authors: Daniel Carranza
 
 module
 
+public import Mathlib.CategoryTheory.Monoidal.Closed.InternalCurrying
 public import Mathlib.CategoryTheory.Monoidal.Closed.Enrichment
 public import Mathlib.CategoryTheory.Enriched.Opposite
 public import Mathlib.CategoryTheory.Enriched.TensorProductCategory
@@ -309,67 +310,12 @@ lemma selfEnrichedPrecotensor_cone_eq (V : Type u) [Category.{u₁} V] [Monoidal
       = curry ((β_ _ _).inv ≫ (ihom.ev v).app x) :=
   rfl
 
--- Develop the interal curry-uncurry isomorphism
--- This is used to show that if `V` is a symmetric closed monoidal category then, as a `V`-cateogory,
--- it admits all cotensors
-
-/-- The currying operation taking a morphism `(z ⊗ y) ⟶ x` to a morphism `y ⟶ hom(z, x)`,
-  constructed as a morphism in `V` between internal homs. -/
-def internalHomCurry (V : Type u) (z y x : V) [Category.{u₁} V] [MonoidalCategory V] [Closed z]
-    [Closed y] [Closed (z ⊗ y)] : (ihom (z ⊗ y)).obj x ⟶ (ihom y).obj ((ihom z).obj x) :=
-  curry (curry ((α_ z y _).inv ≫ (ihom.ev _).app x))
-
-lemma internalHomCurry_uncurry_eq (V : Type u) (z y x : V) [Category.{u₁} V] [MonoidalCategory V]
-    [Closed z] [Closed y] [Closed (z ⊗ y)] : uncurry (internalHomCurry V z y x)
-      = curry ((α_ z y _).inv ≫ (ihom.ev _).app x) :=
-  uncurry_curry _
-
-lemma internalHomCurry_uncurry_uncurry_eq (V : Type u) (z y x : V) [Category.{u₁} V] [MonoidalCategory V]
-    [Closed z] [Closed y] [Closed (z ⊗ y)] : uncurry (uncurry (internalHomCurry V z y x))
-      = (α_ z y _).inv ≫ (ihom.ev _).app x := by
-  simp only [internalHomCurry_uncurry_eq, uncurry_curry]
-
-/-- The uncurrying operation taking a morphism `y ⟶ hom(z, x)` to a morphism `(z ⊗ y) ⟶ x`,
-  constructed as a morphism in `V` between internal homs. -/
-def internalHomUncurry (V : Type u) (z y x : V) [Category.{u₁} V] [MonoidalCategory V] [Closed z]
-    [Closed y] [Closed (z ⊗ y)] : (ihom y).obj ((ihom z).obj x) ⟶ (ihom (z ⊗ y)).obj x :=
-  curry ((α_ z y _).hom ≫ z ◁ (ihom.ev y).app ((ihom z).obj x) ≫ (ihom.ev z).app x)
-
-lemma internalHomUncurry_uncurry_eq (V : Type u) (z y x : V) [Category.{u₁} V] [MonoidalCategory V]
-    [Closed z] [Closed y] [Closed (z ⊗ y)] : uncurry (internalHomUncurry V z y x)
-      = (α_ z y _).hom ≫ z ◁ (ihom.ev y).app ((ihom z).obj x) ≫ (ihom.ev z).app x :=
-  uncurry_curry _
-
-theorem internalHom_uncurry_curry (V : Type u) (z x y : V) [Category.{u₁} V] [MonoidalCategory V] [Closed z]
-    [Closed y] [Closed (z ⊗ y)] : internalHomUncurry V z y x ≫ internalHomCurry V z y x = 𝟙 _ := by
-  apply uncurry_injective
-  apply uncurry_injective
-  simp only [uncurry_natural_left, uncurry_id_eq_ev, internalHomCurry_uncurry_uncurry_eq]
-  rw [associator_inv_naturality_right_assoc, ← uncurry_eq, internalHomUncurry_uncurry_eq,
-    Iso.inv_hom_id_assoc]
-  exact rfl
-
-theorem internalHom_curry_uncurry (V : Type u) (z x y : V) [Category.{u₁} V] [MonoidalCategory V] [Closed z]
-    [Closed y] [Closed (z ⊗ y)] : internalHomCurry V z y x ≫ internalHomUncurry V z y x = 𝟙 _ := by
-  apply uncurry_injective
-  rw [uncurry_natural_left, uncurry_id_eq_ev, internalHomUncurry_uncurry_eq,
-    associator_naturality_right_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, ← uncurry_eq,
-    ← uncurry_eq, internalHomCurry_uncurry_uncurry_eq, Iso.hom_inv_id_assoc _ _]
-
-def internalHomCurryIso (V : Type u) (z y x : V) [Category.{u₁} V] [MonoidalCategory V] [Closed z]
-    [Closed y] [Closed (z ⊗ y)] : (ihom (z ⊗ y)).obj x ≅ (ihom y).obj ((ihom z).obj x) where
-  hom := internalHomCurry V z y x
-  inv := internalHomUncurry V z y x
-  hom_inv_id := internalHom_curry_uncurry V z x y
-  inv_hom_id := internalHom_uncurry_curry V z x y
-
-lemma internalHomCurryIso_hom (V : Type u) (z y x : V) [Category.{u₁} V] [MonoidalCategory V] [Closed z]
-    [Closed y] [Closed (z ⊗ y)] : (internalHomCurryIso V z y x).hom = internalHomCurry V z y x := rfl
+open MonoidalClosed
 
 @[reassoc]
 def internalHomCurry_PrecotensorCone_eq (V : Type u) [Category.{u₁} V] [MonoidalCategory V]
-    [MonoidalClosed V] [BraidedCategory V] (v y x : V) : internalHomCurry V v y x
-      ≫ (selfEnrichedPrecotensor V v x).coneNatTrans y = (pre (β_ v y).inv).app x ≫ internalHomCurry V y v x := by
+    [MonoidalClosed V] [BraidedCategory V] (v y x : V) : internalHomCurry v y x
+      ≫ (selfEnrichedPrecotensor V v x).coneNatTrans y = (pre (β_ v y).inv).app x ≫ internalHomCurry y v x := by
   --Unfolding
   apply uncurry_injective
   apply uncurry_injective
@@ -391,9 +337,10 @@ def internalHomCurry_PrecotensorCone_eq (V : Type u) [Category.{u₁} V] [Monoid
   erw [associator_inv_naturality_middle_assoc]
   rw [← comp_whiskerRight_assoc]
   erw [← uncurry_eq]
-  erw [uncurry_curry]
+  rw [internalHomCurry_uncurry_eq]
   erw [braiding_inv_naturality_left_assoc]
-  rw [← uncurry_eq, uncurry_curry]
+  erw [← uncurry_eq]
+  rw [uncurry_curry]
   -- RHS
   rw [associator_inv_naturality_right_assoc]
   rw [id_tensor_pre_app_comp_ev]
@@ -401,9 +348,9 @@ def internalHomCurry_PrecotensorCone_eq (V : Type u) [Category.{u₁} V] [Monoid
 
 @[reassoc]
 def internalHomCurry_PrecotensorCone_reverse_eq (V : Type u) (v y x : V) [Category.{u₁} V] [MonoidalCategory V]
-    [MonoidalClosed V] [e : BraidedCategory V] : internalHomCurry V v y x
+    [MonoidalClosed V] [e : BraidedCategory V] : internalHomCurry v y x
       ≫ (@Precotensor.coneNatTrans V _ _ (reverseBraiding V) _ _ _ _ _ (@selfEnrichedPrecotensor V _ _ _ (reverseBraiding V) v x)) y
-      = (pre (β_ y v).hom).app x ≫ internalHomCurry V y v x := by
+      = (pre (β_ y v).hom).app x ≫ internalHomCurry y v x := by
   have p := @internalHomCurry_PrecotensorCone_eq V _ _ _ (reverseBraiding V) v y x
   have q : (BraidedCategory.braiding (self := reverseBraiding V) v y).inv = (β_ y v).hom := rfl
   rw [q] at p
@@ -415,7 +362,7 @@ instance selfEnrichedCotensor (V : Type u) [Category.{u₁} V] [MonoidalCategory
     toPrecotensor := selfEnrichedPrecotensor V v x
     coneNatTransInv := fun y => (@Precotensor.coneNatTrans V _ _ (reverseBraiding V) _ _ _ _ _ (@selfEnrichedPrecotensor V _ _ _ (reverseBraiding V) y x)) v
     NatTransInv_NatTrans_eq := fun y => by
-      refine (Iso.cancel_iso_hom_left (internalHomCurryIso V y v x) _ (𝟙 ((ihom v).obj ((ihom y).obj x)))).mp ?_
+      refine (Iso.cancel_iso_hom_left (internalHomCurryIso y v x) _ (𝟙 ((ihom v).obj ((ihom y).obj x)))).mp ?_
       rw [internalHomCurryIso_hom]
       rw [internalHomCurry_PrecotensorCone_reverse_eq_assoc]
       rw [internalHomCurry_PrecotensorCone_eq]
@@ -424,7 +371,7 @@ instance selfEnrichedCotensor (V : Type u) [Category.{u₁} V] [MonoidalCategory
       rw [← pre_map]
       simp
     NatTrans_NatTransInv_eq := fun y => by
-      refine (Iso.cancel_iso_hom_left (internalHomCurryIso V v y x) _ (𝟙 ((ihom y).obj ((ihom v).obj x)))).mp ?_
+      refine (Iso.cancel_iso_hom_left (internalHomCurryIso v y x) _ (𝟙 ((ihom y).obj ((ihom v).obj x)))).mp ?_
       rw [internalHomCurryIso_hom]
       rw [internalHomCurry_PrecotensorCone_eq_assoc]
       rw [internalHomCurry_PrecotensorCone_eq]
