@@ -520,7 +520,7 @@ Q528987:
 
 Q530152:
   title: Picard–Lindelöf theorem
-  decl: IsPicardLindelof.exists_eq_forall_mem_Icc_hasDerivWithinAt
+  decl: IsPicardLindelof.exists_eq_isIntegralCurveOn
 
 Q535366:
   title: Montel's theorem
