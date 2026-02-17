@@ -20,8 +20,8 @@ versions in this file.
   `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
 
 * `IntervalIntegrable.ae_hasDerivAt_integral` is the local version. It states that if `f : ℝ → ℝ`
-  is interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIcc a b`, the
-  derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
+  is interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIcc a b`,
+  the derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
 -/
 
 public section
