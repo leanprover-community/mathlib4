@@ -469,11 +469,8 @@ open scoped LaurentSeries
 abbrev polynomialValuationX : Valuation (RatFunc K) ℤᵐ⁰ :=
   (Polynomial.idealX K).valuation _
 
-/-- `v[K]` is notation for `(Polynomial.idealX K).valuation (RatFunc K)`. -/
-scoped notation:1024 "v[" K "]" => polynomialValuationX K
-
 theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
-    v[K] P = (PowerSeries.idealX K).valuation K⸨X⸩ P := by
+    polynomialValuationX K P = (PowerSeries.idealX K).valuation K⸨X⸩ P := by
   refine RatFunc.induction_on' P ?_
   intro f g h
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
@@ -917,7 +914,7 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
       assumption
 
 theorem uniformContinuous_withVal_equiv :
-    UniformContinuous (WithVal.equiv v[K]) :=
+    UniformContinuous (WithVal.equiv (polynomialValuationX K)) :=
   Valuation.IsEquiv.uniformContinuous_equiv rfl
     (Valuation.exists_div_eq_of_surjective <| valuation_surjective _ _) .refl
 
@@ -925,14 +922,14 @@ theorem continuous_coe : Continuous ((↑) : RatFunc K → K⸨X⸩) :=
   (isUniformInducing_iff'.1 (inducing_coe)).1.continuous
 
 /-- The `X`-adic completion as an abstract completion of `RatFunc K` -/
-abbrev ratfuncAdicComplPkg : AbstractCompletion (WithVal v[K]) :=
+abbrev ratfuncAdicComplPkg : AbstractCompletion (WithVal (polynomialValuationX K)) :=
   UniformSpace.Completion.cPkg
 
 variable (K)
 /-- Having established that the `K⸨X⸩` is complete and contains `RatFunc K` as a dense
 subspace, it gives rise to an abstract completion of `RatFunc K`. -/
 noncomputable def LaurentSeriesPkg :
-    AbstractCompletion (WithVal v[K]) where
+    AbstractCompletion (WithVal (polynomialValuationX K)) where
   space := K⸨X⸩
   coe := (↑) ∘ WithVal.equiv _
   uniformStruct := inferInstance
@@ -944,7 +941,8 @@ noncomputable def LaurentSeriesPkg :
     exact Valuation.exists_div_eq_of_surjective <| valuation_surjective _ _
   dense := .comp coe_range_dense (WithVal.equiv _).surjective.denseRange continuous_coe
 
-theorem continuous_coe' : Continuous (((↑) : RatFunc K → K⸨X⸩) ∘ WithVal.equiv v[K]) :=
+theorem continuous_coe' :
+    Continuous (((↑) : RatFunc K → K⸨X⸩) ∘ WithVal.equiv (polynomialValuationX K)) :=
   continuous_coe.comp (uniformContinuous_withVal_equiv).continuous
 
 instance : TopologicalSpace (LaurentSeriesPkg K).space :=
@@ -959,7 +957,7 @@ theorem LaurentSeries_coe (x : RatFunc K) :
 homomorphism -/
 abbrev extensionAsRingHom :=
   UniformSpace.Completion.extensionHom <|
-    (algebraMap (RatFunc K) K⸨X⸩).comp (WithVal.equiv v[K]).toRingHom
+    (algebraMap (RatFunc K) K⸨X⸩).comp (WithVal.equiv (polynomialValuationX K)).toRingHom
 
 /-- An abbreviation for the `X`-adic completion of `RatFunc K` -/
 abbrev RatFuncAdicCompl := adicCompletion (RatFunc K) (idealX K)

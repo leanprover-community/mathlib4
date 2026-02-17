@@ -103,7 +103,7 @@ def withValRingEquiv :
     induction y using induction_on
     · generalize_proofs _ _ _ H
       refine isClosed_eq ?_ continuous_id
-      refine (uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
+      exact (uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
         Padic.isDenseInducing_cast_withVal.dense (uniformContinuous_coe _)).continuous.comp
         (continuous_extension)
     · rw [extensionHom_coe]
@@ -113,7 +113,7 @@ def withValRingEquiv :
     induction y using isClosed_property (Padic.denseRange_ratCast p)
     · refine isClosed_eq ?_ continuous_id
       refine continuous_extension.comp ?_
-      refine (uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
+      exact (uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
         Padic.isDenseInducing_cast_withVal.dense (uniformContinuous_coe _)).continuous
     · have : ∀ q : ℚ, Padic.isDenseInducing_cast_withVal.extend coe' q = coe'
         ((WithVal.equiv (Rat.padicValuation p)).symm q) := by

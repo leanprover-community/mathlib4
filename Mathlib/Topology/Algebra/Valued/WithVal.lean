@@ -62,9 +62,12 @@ section Ring
 
 variable [Ring R] (v : Valuation R Γ₀)
 
-instance : Ring (WithVal v) := Equiv.ring {toFun := ofVal, invFun := toVal v}
+instance : Ring (WithVal v) := Equiv.ring { toFun := ofVal, invFun := toVal v }
 instance : Inhabited (WithVal v) := ⟨0⟩
-instance : Preorder (WithVal v) := letI := v.toPreorder; .lift ofVal
+instance : Preorder (WithVal v) := .lift (v ∘ ofVal)
+
+theorem le_def {v : Valuation R Γ₀} {a b : WithVal v} : a ≤ b ↔ v a.ofVal ≤ v b.ofVal := .rfl
+theorem lt_def {v : Valuation R Γ₀} {a b : WithVal v} : a < b ↔ v a.ofVal < v b.ofVal := .rfl
 
 lemma ofVal_toVal (x : R) : ofVal (toVal v x) = x := rfl
 @[simp] lemma toVal_ofVal (x : WithVal v) : toVal v (ofVal x) = x := rfl
@@ -111,9 +114,6 @@ lemma toVal_bijective : Function.Bijective (toVal v) :=
 @[simp] lemma toVal_eq_zero (x : R) : toVal v x = 0 ↔ x = 0 := (toVal_injective v).eq_iff
 @[simp] lemma ofVal_eq_zero (x : WithVal v) : ofVal x = 0 ↔ x = 0 := (ofVal_injective v).eq_iff
 
-theorem le_def {v : Valuation R Γ₀} {a b : WithVal v} : a ≤ b ↔ v a.ofVal ≤ v b.ofVal := .rfl
-theorem lt_def {v : Valuation R Γ₀} {a b : WithVal v} : a < b ↔ v a.ofVal < v b.ofVal := .rfl
-
 /-- The canonical ring equivalence between `WithVal v` and `R`. -/
 @[simps apply symm_apply]
 def equiv : WithVal v ≃+* R where
@@ -132,7 +132,7 @@ def map (f : R →+* S) : WithVal v →+* WithVal w := (equiv w).symm.toRingHom.
     map v u (f.comp g) = (map w u f).comp (map v w g) := rfl
 @[simp] theorem map_apply (f : R →+* S) (x : WithVal v) : map v w f x = toVal w (f x.ofVal) := rfl
 
-/-- Lft a `RingEquiv` to `WithVal`. -/
+/-- Lift a `RingEquiv` to `WithVal`. -/
 def congr (f : R ≃+* S) : WithVal v ≃+* WithVal w where
   __ := map v w f.toRingHom
   invFun := map w v f.symm.toRingHom
