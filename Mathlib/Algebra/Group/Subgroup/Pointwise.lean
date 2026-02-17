@@ -59,7 +59,7 @@ If `H` and `K` are disjoint subgroups of `G`, gives an equivalence
 between the point-wise product `H.carrier * K.carrier` and cartesian product `H ×ˢ K`.
 -/
 noncomputable def equivMulDisjoint [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
-    ((H : Set G) * (K : Set G) : Set G) ≃ (H:Set G) ×ˢ (K:Set G) :=
+    ((H : Set G) * (K : Set G) : Set G) ≃ (H : Set G) ×ˢ (K : Set G) :=
   (Set.BijOn.equiv (fun (h, k) => h * k) (bijOn_product_mul_of_disjoint H K hHK)).symm
 
 @[to_additive (attr := simp, norm_cast)]
