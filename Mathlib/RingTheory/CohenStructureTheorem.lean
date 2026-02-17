@@ -405,10 +405,10 @@ lemma isCoefficientRing_of_residueField (char : CharZero (ResidueField R))
       exact (CharP.ringChar_zero_iff_CharZero (ResidueField R)).mpr char
     simpa [this] using maximalIdeal_eq_bot
 
-lemma exists_isCoeffientRing_isCohenRing [IsAdicComplete (maximalIdeal R) R]
+lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdeal R) R]
     (charpos : ¬ CharZero (ResidueField R)) :
-    ∃ (S : Type u) (_ : CommRing S) (_ : IsDomain S) (_ : IsCohenRing S) (f : S →+* R),
-    IsCoefficientRing (Ideal.Quotient.lift (RingHom.ker f) f (by simp)) := by
+    ∃ (S : Type u) (_ : CommRing S) (_ : IsDomain S) (_ : IsCohenRing S) (f : S →+* R)
+    (_ : IsLocalHom f), Function.Bijective (ResidueField.map f) := by
   rcases exists_isCohenRing_of_not_charZero (ResidueField R) charpos with ⟨S, _, _, cohen, ⟨e⟩⟩
   use S, inferInstance, inferInstance, inferInstance
   have char := CharP.exists' (ResidueField R)
@@ -492,18 +492,39 @@ lemma exists_isCoeffientRing_isCohenRing [IsAdicComplete (maximalIdeal R) R]
       (f' ((AdicCompletion.ofAlgEquiv (maximalIdeal S)) x)))) = _
     rw [AdicCompletion.mk_smul_top_ofAlgEquiv_symm, AdicCompletion.eval_apply]
     simp [f', f_series1, f1, Ideal.quotEquivOfEq_eq_factor, ResidueField, residue]
-  let _ : IsLocalRing (S ⧸ RingHom.ker f) := by
+  have : RingHom.ker ((residue R).comp f) = maximalIdeal S := by
+    simp [eqe, ← RingHom.comap_ker, ← RingHom.ker_eq_comap_bot, IsLocalRing.ker_residue]
+  rw [← RingHom.comap_ker, IsLocalRing.ker_residue] at this
+  let _ : IsLocalHom f := ((IsLocalRing.local_hom_TFAE f).out 0 4).mpr this
+  use f, ‹_›
+  rw [(RingHom.cancel_right residue_surjective).mp ((ResidueField.map_comp_residue f).trans eqe)]
+  exact e.bijective
 
-    sorry
+lemma isCoeffientRing_of_isCohenRing [IsAdicComplete (maximalIdeal R) R]
+    (S : Type*) [CommRing S] [IsDomain S] [IsCohenRing S] (f : S →+* R)
+    [IsLocalHom f] (bij : Function.Bijective (ResidueField.map f)) :
+    IsCoefficientRing (Ideal.Quotient.lift (RingHom.ker f) f (by simp)) := by
+  let _ := Ideal.Quotient.nontrivial_iff.mpr (RingHom.ker_ne_top f)
+  let _ : IsLocalHom (Ideal.Quotient.mk (RingHom.ker f)) :=
+    IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+  let _ : IsLocalHom (algebraMap S (S ⧸ RingHom.ker f)) := ‹_›
+  let _ : IsLocalRing (S ⧸ RingHom.ker f) :=
+    IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
   let _ : IsLocalHom (Ideal.Quotient.lift (RingHom.ker f) f (by simp)) := by
     sorry
-  refine ⟨f, ⟨RingHom.lift_injective_of_ker_le_ideal _ _ fun _ a ↦ a, ?_, ?_, ?_⟩⟩
+  refine ⟨RingHom.lift_injective_of_ker_le_ideal (RingHom.ker f) _ fun _ a ↦ a, ?_, ?_, ?_⟩
   · sorry
   · sorry
-  · sorry
+  · have eqmap : maximalIdeal (S ⧸ RingHom.ker f) =
+      (maximalIdeal S).map (Ideal.Quotient.mk (RingHom.ker f)) := by
 
-lemma exists_mvPowerSeries_surjective_of_isCoeffientRing [IsAdicComplete (maximalIdeal R) R]
-    (fg : (maximalIdeal R).FG) (S : Type u) [CommRing S] (f : S →+* R) [IsCoefficientRing f] :
+      sorry
+    simp [← Algebra.ringChar_eq (ResidueField S), eqmap, IsCohenRing.span, Ideal.map_span]
+
+lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective
+    [IsAdicComplete (maximalIdeal R) R] (fg : (maximalIdeal R).FG)
+    (S : Type u) [CommRing S] [IsLocalRing S]
+    (f : S →+* R) [IsLocalHom f] (bij : Function.Bijective (ResidueField.map f)) :
     ∃ (n : ℕ) (g : MvPowerSeries (Fin n) S →+* R),
     Function.Surjective g ∧ g.comp MvPowerSeries.C = f := by
   sorry
