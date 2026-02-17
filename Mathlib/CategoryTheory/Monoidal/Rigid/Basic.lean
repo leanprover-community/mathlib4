@@ -142,10 +142,85 @@ instance ExactPairing.tensor {X₁ X₂ Y₁ Y₂ : C} [ExactPairing X₁ Y₁] 
   coevaluation' := η_ X₁ Y₁ ⊗≫ (X₁ ◁ η_ X₂ Y₂) ▷ Y₁ ⊗≫ 𝟙 _
   evaluation' := 𝟙 _ ⊗≫ Y₂ ◁ (ε_ X₁ Y₁ ▷ X₂) ⊗≫ ε_ X₂ Y₂
   coevaluation_evaluation' := by
-    sorry  -- Submitted to Aristotle, project ID: 22e6387e-8dd4-41ac-939f-072c159f7102
+    calc
+      _ = (Y₂ ⊗ Y₁) ◁ η_ X₁ Y₁ ⊗≫
+          (Y₂ ⊗ Y₁) ◁ (X₁ ◁ η_ X₂ Y₂) ▷ Y₁ ⊗≫
+          (Y₂ ◁ (ε_ X₁ Y₁ ▷ X₂)) ▷ (Y₂ ⊗ Y₁) ⊗≫
+          ε_ X₂ Y₂ ▷ (Y₂ ⊗ Y₁) := by monoidal
+      -- Group η₂ and ε₁ so they compose with ≫ (both act on the Y₁⊗X₁ factor):
+      --
+      --   Y₂  Y₁      ╭── X₁ ────────────╮
+      --   │    │      │    ╭── X₂ ───╮   │
+      --   │    │      │    │         │   │
+      --   │    ╰──ε₁──╯    │         │   │
+      --   │                │         │   │
+      --   ╰────── ε₂ ──────╯         │   │
+      --                              Y₂  Y₁
+      --
+      _ = (Y₂ ⊗ Y₁) ◁ η_ X₁ Y₁ ⊗≫
+          Y₂ ◁ ((Y₁ ⊗ X₁) ◁ η_ X₂ Y₂ ≫ ε_ X₁ Y₁ ▷ (X₂ ⊗ Y₂)) ▷ Y₁ ⊗≫
+          ε_ X₂ Y₂ ▷ (Y₂ ⊗ Y₁) := by monoidal
+      -- Slide the η₂ cup past the ε₁ cap (whisker_exchange), separating the
+      -- two zigzags into independent snakes:
+      --
+      --   Y₂   Y₁
+      --   │    │   ╭─X₁──╮
+      --   │    │   │     │
+      --   │    ╰───╯     │       ← snake for (X₁, Y₁)
+      --   │              │
+      --   │  ╭─X₂──╮     │
+      --   │  │     │     │
+      --   ╰──╯     │     │       ← snake for (X₂, Y₂)
+      --            Y₂    Y₁
+      --
+      _ = (Y₂ ⊗ Y₁) ◁ η_ X₁ Y₁ ⊗≫
+          Y₂ ◁ (ε_ X₁ Y₁ ▷ (𝟙_ C) ≫ (𝟙_ C) ◁ η_ X₂ Y₂) ▷ Y₁ ⊗≫
+          ε_ X₂ Y₂ ▷ (Y₂ ⊗ Y₁) := by
+        rw [whisker_exchange]
+      -- Separate into two snakes and cancel each.
+      _ = 𝟙 _ ⊗≫ Y₂ ◁ (Y₁ ◁ η_ X₁ Y₁ ⊗≫ ε_ X₁ Y₁ ▷ Y₁) ⊗≫
+          (Y₂ ◁ η_ X₂ Y₂ ⊗≫ ε_ X₂ Y₂ ▷ Y₂) ▷ Y₁ ⊗≫ 𝟙 _ := by monoidal
+      _ = _ := by rw [coevaluation_evaluation'', coevaluation_evaluation'']; monoidal
   evaluation_coevaluation' := by
-    -- Similar to above but for the other triangle equation.
-    admit
+    calc
+      _ = η_ X₁ Y₁ ▷ (X₁ ⊗ X₂) ⊗≫
+          (X₁ ◁ η_ X₂ Y₂) ▷ (Y₁ ⊗ X₁ ⊗ X₂) ⊗≫
+          (X₁ ⊗ X₂) ◁ (Y₂ ◁ ε_ X₁ Y₁ ▷ X₂) ⊗≫
+          (X₁ ⊗ X₂) ◁ ε_ X₂ Y₂ := by monoidal
+      -- Group η₂ and ε₁ so they compose with ≫:
+      --
+      --   ╭── Y₁ ────────────╮       X₁   X₂
+      --   │    ╭── Y₂ ───╮   │       │    │
+      --   │    │         │   │       │    │
+      --   │    │         │   ╰──ε₁───╯    │
+      --   │    │         │                │
+      --   │    │         ╰──────── ε₂ ────╯
+      --   X₁   X₂
+      --
+      _ = η_ X₁ Y₁ ▷ (X₁ ⊗ X₂) ⊗≫
+          X₁ ◁ (η_ X₂ Y₂ ▷ (Y₁ ⊗ X₁) ≫ (X₂ ⊗ Y₂) ◁ ε_ X₁ Y₁) ▷ X₂ ⊗≫
+          (X₁ ⊗ X₂) ◁ ε_ X₂ Y₂ := by monoidal
+      -- Slide the ε₁ cap past the η₂ cup (← whisker_exchange), separating the
+      -- two zigzags into independent snakes:
+      --
+      --                 X₁   X₂
+      --   ╭──Y₁──╮      │    │
+      --   │      │      │    │
+      --   │      ╰──────╯    │       ← snake for (X₁, Y₁)
+      --   │                  │
+      --   │   ╭──Y₂──╮       │
+      --   │   │      │       │
+      --   │   │      ╰───────╯       ← snake for (X₂, Y₂)
+      --   X₁  X₂
+      --
+      _ = η_ X₁ Y₁ ▷ (X₁ ⊗ X₂) ⊗≫
+          X₁ ◁ ((𝟙_ C) ◁ ε_ X₁ Y₁ ≫ η_ X₂ Y₂ ▷ (𝟙_ C)) ▷ X₂ ⊗≫
+          (X₁ ⊗ X₂) ◁ ε_ X₂ Y₂ := by
+        rw [← whisker_exchange]
+      -- Separate into two snakes and cancel each.
+      _ = 𝟙 _ ⊗≫ (η_ X₁ Y₁ ▷ X₁ ⊗≫ X₁ ◁ ε_ X₁ Y₁) ▷ X₂ ⊗≫
+          X₁ ◁ (η_ X₂ Y₂ ▷ X₂ ⊗≫ X₂ ◁ ε_ X₂ Y₂) ⊗≫ 𝟙 _ := by monoidal
+      _ = _ := by rw [evaluation_coevaluation'', evaluation_coevaluation'']; monoidal
 
 /-- A class of objects which have a right dual. -/
 class HasRightDual (X : C) where
