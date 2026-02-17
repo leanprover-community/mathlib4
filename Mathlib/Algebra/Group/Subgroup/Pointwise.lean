@@ -62,6 +62,12 @@ noncomputable def equivMulDisjoint [Group G] (H K : Subgroup G) (hHK : Disjoint 
     ((H : Set G) * (K : Set G) : Set G) ≃ (H : Set G) ×ˢ (K : Set G) :=
   (Set.BijOn.equiv (fun (h, k) => h * k) (bijOn_product_mul_of_disjoint H K hHK)).symm
 
+theorem equivMulDisjoint_def [Group G] (H K : Subgroup G) (hHK : Disjoint H K) : ∀ p : (H : Set G) ×ˢ (K : Set G),
+  ((equivMulDisjoint H K hHK).symm p).val = p.1.1 * p.1.2 := by
+  simp only [equivMulDisjoint, BijOn.equiv, Equiv.symm_symm, Equiv.ofBijective_apply,
+    MapsTo.val_restrict_apply, implies_true]
+
+
 @[to_additive (attr := simp, norm_cast)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
   Set.ext fun _ => inv_mem_iff
