@@ -26,7 +26,7 @@ sieve, pullback
 @[expose] public section
 
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
@@ -747,6 +747,13 @@ lemma ofArrows_eq_ofObjects {X : C} (hX : IsTerminal X)
   rintro ⟨i, ⟨h⟩⟩
   exact ⟨i, h, hX.hom_ext _ _⟩
 
+lemma ofObjects_mono {I : Type*} {X : I → C} {I' : Type*} {X' : I' → C} {Y : C}
+    (h : Set.range X ⊆ Set.range X') :
+    Sieve.ofObjects X Y ≤ Sieve.ofObjects X' Y := by
+  rintro Z f ⟨i, ⟨g⟩⟩
+  obtain ⟨i', h⟩ := h ⟨i, rfl⟩
+  exact ⟨i', ⟨h ▸ g⟩⟩
+
 /-- Given a morphism `h : Y ⟶ X`, send a sieve S on X to a sieve on Y
 as the inverse image of S with `_ ≫ h`. That is, `Sieve.pullback S h := (≫ h) '⁻¹ S`. -/
 @[simps]
@@ -793,6 +800,12 @@ lemma pullback_ofObjects_eq_top
   simp only [top_apply, iff_true]
   rw [mem_ofObjects_iff]
   exact ⟨i, ⟨h ≫ g⟩⟩
+
+@[simp]
+lemma pullback_ofObjects {I : Type*} (X : I → C) {Y Z : C} (f : Z ⟶ Y) :
+    (ofObjects X Y).pullback f = ofObjects X Z := by
+  ext
+  simp [Sieve.ofObjects]
 
 /-- Push a sieve `R` on `Y` forward along an arrow `f : Y ⟶ X`: `gf : Z ⟶ X` is in the sieve if `gf`
 factors through some `g : Z ⟶ Y` which is in `R`.
@@ -1092,6 +1105,12 @@ lemma mem_functorPushforward_iff_of_full_of_faithful [F.Full] [F.Faithful]
   refine ⟨fun ⟨g, hcomp, hg⟩ ↦ ?_, fun hf ↦ ⟨f, rfl, hf⟩⟩
   rwa [← F.map_injective hcomp]
 
+lemma functorPushforward_ofObjects_le
+    {I : Type*} (X : I → C) (Y : C) :
+    (ofObjects X Y).functorPushforward F ≤ ofObjects (F.obj ∘ X) (F.obj Y) := by
+  rintro Z f ⟨W, g₁, g₂, ⟨i, ⟨g₃⟩⟩, hf⟩
+  exact ⟨i, ⟨g₂ ≫ F.map g₃⟩⟩
+
 end Functor
 
 /-- A sieve induces a presheaf. -/
@@ -1150,6 +1169,57 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
 
 instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
   ⟨⟨{ app := fun _ a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
+
+/-- A variant of `Sieve.functor` with universe lifting. -/
+abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type max w v₁ :=
+  S.functor ⋙ CategoryTheory.uliftFunctor
+
+/-- A variant of `Sieve.natTransOfLe` with universe lifting. -/
+@[simps]
+def uliftNatTransOfLe {S T : Sieve X} (h : S ≤ T) :
+    Sieve.uliftFunctor.{w} S ⟶ Sieve.uliftFunctor.{w} T where
+  app _ f := ⟨f.down.1, h _ f.down.2⟩
+
+/-- A variant of `Sieve.functorInclusion` with universe lifting. -/
+@[simps! app]
+def uliftFunctorInclusion (S : Sieve X) :
+    S.uliftFunctor ⟶ uliftYoneda.obj.{w} X :=
+  Functor.whiskerRight S.functorInclusion CategoryTheory.uliftFunctor
+
+/-- A variant of `Sieve.toFunctor` with universe lifting. -/
+@[simps]
+def toUliftFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :
+    uliftYoneda.obj.{w} Y ⟶ Sieve.uliftFunctor.{w} S where
+  app Z g := ⟨g.down ≫ f, S.downward_closed hf g.down⟩
+
+theorem uliftNatTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
+    uliftNatTransOfLe.{w} h ≫ uliftFunctorInclusion.{w} _ = uliftFunctorInclusion.{w} _ :=
+  rfl
+
+/-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
+instance uliftFunctorInclusion_is_mono (S : Sieve X) :
+    Mono (Sieve.uliftFunctorInclusion.{w} S) :=
+  ⟨fun _ _ h => by
+    ext Y y
+    refine ULift.ext _ _ (Subtype.ext_iff.2 ?_)
+    simpa using congr_fun (NatTrans.congr_app h Y) y⟩
+
+/-- A variant of `Sieve.sieveOfSubfunctor` with universe lifting. -/
+@[simps]
+def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type max w v₁} (f : R ⟶ uliftYoneda.obj.{w} X) :
+    Sieve X where
+  arrows Y g := ∃ t, f.app (Opposite.op Y) t = { down := g }
+  downward_closed := by
+    intro Y Z _ ⟨t, ht⟩ g
+    refine ⟨R.map g.op t, ?_⟩
+    simp [FunctorToTypes.naturality _ _ f, ht]
+
+theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
+    Sieve.sieveOfUliftSubfunctor.{w} (S.uliftFunctorInclusion) = S := by
+  cat_disch
+
+instance uliftFunctorInclusion_top_isIso : IsIso (Sieve.uliftFunctorInclusion.{w} (⊤ : Sieve X)) :=
+  ⟨⟨{ app := fun _ a => ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 lemma ofArrows_eq_pullback_of_isPullback {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) → X i ⟶ S)
     {Y : C} {g : Y ⟶ S} {P : ι → C} {p₁ : (i : ι) → P i ⟶ Y} {p₂ : (i : ι) → P i ⟶ X i}

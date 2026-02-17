@@ -207,8 +207,6 @@ theorem variance_eq_sub [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X
     variance X μ = μ[X ^ 2] - μ[X] ^ 2 := by
   rw [← covariance_self hX.aemeasurable, covariance_eq_sub hX hX, pow_two, pow_two]
 
-@[deprecated (since := "2025-08-07")] alias variance_def' := variance_eq_sub
-
 lemma variance_add_const [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X μ) (c : ℝ) :
     Var[fun ω ↦ X ω + c; μ] = Var[X; μ] := by
   by_cases hX_Lp : MemLp X 2 μ

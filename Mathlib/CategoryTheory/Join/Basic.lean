@@ -286,8 +286,7 @@ action on edge maps. -/
 def mkNatTrans {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
     (αₗ : inclLeft C D ⋙ F ⟶ inclLeft C D ⋙ F') (αᵣ : inclRight C D ⋙ F ⟶ inclRight C D ⋙ F')
     (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
-      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' :=
-      by cat_disch) :
+      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' := by cat_disch) :
     F ⟶ F' where
   app x := match x with
     | left x => αₗ.app x
@@ -303,8 +302,7 @@ section
 variable {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
     (αₗ : inclLeft C D ⋙ F ⟶ inclLeft C D ⋙ F') (αᵣ : inclRight C D ⋙ F ⟶ inclRight C D ⋙ F')
     (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
-      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' :=
-      by cat_disch)
+      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' := by cat_disch)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -354,8 +352,7 @@ lemma mkNatTransComp
     (βₗ : inclLeft C D ⋙ F' ⟶ inclLeft C D ⋙ F'')
     (βᵣ : inclRight C D ⋙ F' ⟶ inclRight C D ⋙ F'')
     (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
-      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' :=
-      by cat_disch)
+      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' := by cat_disch)
     (h' : whiskerRight (edgeTransform C D) F' ≫ whiskerLeft (Prod.snd C D) βᵣ =
       whiskerLeft (Prod.fst C D) βₗ ≫ whiskerRight (edgeTransform C D) F'' := by cat_disch) :
     mkNatTrans (αₗ ≫ βₗ) (αᵣ ≫ βᵣ) (by simp [← h', reassoc_of% h]) =
