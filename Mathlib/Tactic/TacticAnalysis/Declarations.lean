@@ -598,7 +598,7 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
       if let [goal] := i.tacI.goalsBefore then
         let goalDecl := i.tacI.mctxBefore.decls.find! goal
         let goalPP ← i.ctxI.runMetaM goalDecl.lctx do
-          withOptions (·.setBool `pp.mvars false) do
+          withOptions (·.setBool `pp.mvars.anonymous false) do
             return toString (← Meta.ppGoal goal)
         if (hash goalPP) % fraction = 0 then
           let tac ← tac i.tacI.stx goal
