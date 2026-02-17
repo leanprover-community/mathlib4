@@ -154,6 +154,23 @@ lemma totalDegree_truncFinset (p : MvPowerSeries σ R) :
     (truncFinset R s p).totalDegree ≤ s.sup degree := by
   simpa [MvPolynomial.totalDegree] using sup_mono (support_truncFinset_subset p)
 
+lemma truncFinset_coe_eq_self_iff (p : MvPolynomial σ R) :
+    truncFinset R s p = p ↔ p.support ⊆ s := by
+  refine ⟨fun h ↦ ?_, fun h ↦ MvPolynomial.ext _ _ fun x ↦ ?_⟩
+  · rw [← h]
+    exact support_truncFinset_subset ..
+  by_cases x ∈ s <;> grind [MvPolynomial.coeff_coe]
+
+lemma truncFinset_range_eq_restrictSupport :
+    (truncFinset R s).range = MvPolynomial.restrictSupport R s := by
+  refine le_antisymm ?_ (fun p h ↦ ⟨p, ?_⟩)
+  · rintro _ ⟨p, rfl⟩
+    rw [truncFinset_apply]
+    refine Submodule.sum_mem _ (fun x hx ↦ ?_)
+    simp [MvPolynomial.monomial_mem_restrictSupport, hx]
+  rw [MvPolynomial.mem_restrictSupport_iff] at h
+  rwa [truncFinset_coe_eq_self_iff]
+
 end TruncFinset
 
 section TruncLT
