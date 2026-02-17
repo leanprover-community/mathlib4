@@ -56,11 +56,9 @@ public import Mathlib.Algebra.MvPolynomial.Degrees
 
 noncomputable section
 
-open Finset (antidiagonal mem_antidiagonal)
-
 namespace MvPowerSeries
 
-open Finsupp
+open Finsupp Finset
 
 variable {σ R S : Type*}
 
@@ -73,7 +71,7 @@ obtain a multivariate polynomial. -/
 def truncFinset (R : Type*) [CommSemiring R] (s : Finset (σ →₀ ℕ)) :
     MvPowerSeries σ R →ₗ[R] MvPolynomial σ R where
   toFun p := ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x)
-  map_add' _ _ := by simp [Finset.sum_add_distrib]
+  map_add' _ _ := by simp [sum_add_distrib]
   map_smul' _ _ := by
     classical
     ext; simp [MvPolynomial.coeff_sum]
@@ -130,7 +128,7 @@ theorem coeff_truncFinset_mul_truncFinset_eq_coeff_mul (hs : IsLowerSet (s : Set
       (truncFinset R s f * truncFinset R s g).coeff x = coeff x (f * g) := by
   classical
   simp only [MvPowerSeries.coeff_mul, MvPolynomial.coeff_mul]
-  apply Finset.sum_congr rfl
+  apply sum_congr rfl
   rintro ⟨i, j⟩ hij
   simp only [mem_antidiagonal] at hij
   rw [coeff_truncFinset _ (hs (show i ≤ x by simp [← hij]) hx),
@@ -154,26 +152,26 @@ theorem support_truncFinset_subset (p : MvPowerSeries σ R) : (truncFinset R s p
 
 lemma totalDegree_truncFinset (p : MvPowerSeries σ R) :
     (truncFinset R s p).totalDegree ≤ s.sup degree := by
-  simpa [MvPolynomial.totalDegree] using Finset.sup_mono (support_truncFinset_subset p)
+  simpa [MvPolynomial.totalDegree] using sup_mono (support_truncFinset_subset p)
 
 end TruncFinset
 
 section TruncLT
 
-variable [DecidableEq σ] [CommSemiring R] (n : σ →₀ ℕ)
+variable [DecidableEq σ] [CommSemiring R]
 
-variable (R) in
 /-- The `n`th truncation of a multivariate formal power series to a multivariate polynomial
 
 If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
 to the naturals, then `trunc R n f` is the multivariable polynomial obtained from `f`
 by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`
 and `a i < n i` for some `i`. -/
-def trunc : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Finset.Iio n)
+def trunc (R : Type*) [CommSemiring R] (n : σ →₀ ℕ) :
+    MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Iio n)
 
-theorem coeff_trunc (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
+theorem coeff_trunc (m n : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc R n φ).coeff m = if m < n then coeff m φ else 0 := by
-  simpa using coeff_truncFinset' (s := Finset.Iio n) (x := m) φ
+  simpa using coeff_truncFinset' (s := Iio n) (x := m) φ
 
 @[simp]
 theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
@@ -196,25 +194,25 @@ end TruncLT
 
 section TruncLE
 
-variable [DecidableEq σ] [CommSemiring R] (n : σ →₀ ℕ)
+variable [DecidableEq σ] [CommSemiring R]
 
-variable (R) in
 /--
 The `n`th truncation of a multivariate formal power series to a multivariate polynomial.
 
 If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
 to the naturals, then `trunc' R n f` is the multivariable polynomial obtained from `f`
 by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`. -/
-def trunc' : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Finset.Iic n)
+def trunc' (R : Type*) [CommSemiring R] (n : σ →₀ ℕ) :
+    MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Iic n)
 
 /-- Coefficients of the truncation of a multivariate power series. -/
-theorem coeff_trunc' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
+theorem coeff_trunc' (m n : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc' R n φ).coeff m = if m ≤ n then coeff m φ else 0 := by
-  simpa using coeff_truncFinset' (s := Finset.Iic n) (x := m) φ
+  simpa using coeff_truncFinset' (s := Iic n) (x := m) φ
 
 theorem trunc'_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) (φ : MvPowerSeries σ R) :
     trunc' R n (trunc' R m φ) = trunc' R n φ :=
-  truncFinset_truncFinset (Finset.Iic_subset_Iic.mpr h) φ
+  truncFinset_truncFinset (Iic_subset_Iic.mpr h) φ
 
 /-- Truncation of the multivariate power series `1` -/
 @[simp]
