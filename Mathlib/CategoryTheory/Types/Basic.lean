@@ -251,6 +251,8 @@ theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a := by simp
 theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
   rfl
 
+attribute [elementwise (attr := simp)] eqToHom_map_comp
+
 @[deprecated "Use `elementwise_of% eqToHom_map_comp` instead" (since := "2026-02-09")]
 theorem eqToHom_map_comp_apply (p : X = Y) (q : Y = Z) (x : F.obj X) :
     F.map (eqToHom q) (F.map (eqToHom p) x) = F.map (eqToHom <| p.trans q) x := by
