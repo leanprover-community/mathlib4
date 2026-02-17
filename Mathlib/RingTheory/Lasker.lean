@@ -127,7 +127,7 @@ lemma IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff [DecidableEq (Su
     p ∈ (fun J : Submodule R M ↦ radical (J.colon .univ)) '' t ↔
       IsPrime p ∧ ∃ x : M, p = radical (N.colon {x}) := by
   classical
-  replace h x : radical (colon N {x}) = (t.filter (x ∉ ·)).inf fun q ↦ radical (colon q .univ) := by
+  replace h x : radical (N.colon {x}) = (t.filter (x ∉ ·)).inf fun q ↦ radical (q.colon .univ) := by
     simp_rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply, map_finset_inf,
       Function.comp_def, radicalInfTopHom_apply, id_eq]
     rw [Finset.inf_congr rfl (fun q hq ↦ (ht.primary hq).radical_colon_singleton_eq_ite x),
