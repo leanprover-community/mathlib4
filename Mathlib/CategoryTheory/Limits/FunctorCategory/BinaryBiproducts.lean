@@ -18,8 +18,8 @@ has binary biproducts
 
 @[expose] public section
 
-open CategoryTheory CategoryTheory.Limits
-namespace CategoryTheory.Limits.BinaryBiproduct
+open CategoryTheory Limits
+namespace CategoryTheory.Limits
 
 variable {C : Type*} [Category* C] [HasZeroMorphisms C] [HasBinaryBiproducts C]
 
@@ -40,41 +40,33 @@ def pointwiseBinaryBicone : BinaryBicone F G where
   inl := { app X := biprod.inl }
   inr := { app X := biprod.inr }
 
-/-- Applying `toCone` to the bicone associated with `F` and `G` gives a limit cone. -/
-def funcBinaryBicone.isLimit : IsLimit (funcBinaryBicone F G).toCone :=
-  evaluationJointlyReflectsLimits _ fun d => by
-    refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ ((BinaryBiproduct.isLimit) (F.obj d) (G.obj d))
-    · symm; apply pairComp
-    · refine Cones.ext (Iso.refl _) ?_
-      rintro (_ | _ | _) <;> cat_disch
-
-/-- Applying `toCocone` to the bicone associated with `F` and `G` gives a colimit cocone. -/
-def funcBinaryBicone.isColimit : IsColimit (funcBinaryBicone F G).toCocone :=
-  evaluationJointlyReflectsColimits _ fun d => by
-    refine IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ ((BinaryBiproduct.isColimit) (F.obj d) (G.obj d))
-    · symm; apply pairComp
-    · refine Cocones.ext (Iso.refl _) ?_
-      rintro (_ | _ | _) <;> cat_disch
-
 /-- The bicone associated with `F` and `G` is a bilimit bicone. -/
 @[simps]
-def funcBinaryBicone.isBilimit : (funcBinaryBicone F G).IsBilimit where
-  isLimit := funcBinaryBicone.isLimit F G
-  isColimit := funcBinaryBicone.isColimit F G
+def pointwiseBinaryBicone.isBilimit : (pointwiseBinaryBicone F G).IsBilimit where
+  isLimit := evaluationJointlyReflectsLimits _ fun d => by
+    refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ ((BinaryBiproduct.isLimit) (F.obj d) (G.obj d))
+    · exact (pairComp F G ((evaluation D C).obj d)).symm
+    · refine Cones.ext (Iso.refl _) ?_
+      rintro (_ | _ | _) <;>
+      cat_disch
+  isColimit := evaluationJointlyReflectsColimits _ fun d => by
+    refine IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ ((BinaryBiproduct.isColimit) (F.obj d) (G.obj d))
+    · exact (pairComp F G ((evaluation D C).obj d)).symm
+    · refine Cocones.ext (Iso.refl _) ?_
+      rintro (_ | _ | _) <;>
+      cat_disch
 
 /-- Construction of the binary biproduct data for functors `F` and `G` -/
 @[simps]
-def funcBinaryBiproductData : BinaryBiproductData F G where
-  bicone := funcBinaryBicone F G
-  isBilimit := funcBinaryBicone.isBilimit F G
+def pointwiseBinaryBiproductData : BinaryBiproductData F G where
+  bicone := pointwiseBinaryBicone F G
+  isBilimit := pointwiseBinaryBicone.isBilimit F G
 
 /-- If `C` has binary biproducts, then the functor category `D ⥤ C` does too. -/
 instance functorCategoryHasBinaryBiproducts : HasBinaryBiproducts (D ⥤ C) where
-  has_binary_biproduct F G := ⟨⟨funcBinaryBiproductData F G⟩⟩
+  has_binary_biproduct F G := ⟨⟨pointwiseBinaryBiproductData F G⟩⟩
 
 end
-
-end BinaryBiproduct
 
 end Limits
 
