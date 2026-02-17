@@ -98,6 +98,8 @@ def powZero [BraidedCategory C] {I : C} (t : IsInitial I) [MonoidalClosed C] : I
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (mulZero t).inv]
     apply t.hom_ext
 
+-- Note: this declaration is deprecated.
+set_option linter.overlappingInstances false in
 -- TODO: Generalise the below to its commuted variants.
 -- TODO: Define a distributive category, so that zero_mul and friends can be derived from this.
 /-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/

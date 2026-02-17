@@ -16,6 +16,7 @@ public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
+public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.TacticDocumentation
 -- The following import contains the environment extension for the unused tactic linter.
@@ -96,6 +97,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.setOption
   linter.style.show
   linter.style.whitespace
+  linter.overlappingInstances
   linter.unusedDecidableInType
   linter.unusedFintypeInType
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
@@ -115,7 +117,7 @@ register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.mergeWithGrind
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
-open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType
+open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType OverlappingInstances
 
 run_cmd liftTermElabM do
   let DefinedInScripts : Array Name :=

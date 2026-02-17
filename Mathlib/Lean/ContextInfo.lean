@@ -58,15 +58,23 @@ def runCoreMWithMessages (info : ContextInfo) (x : CoreM α) : CommandElabM α :
 Copy of `ContextInfo.runMetaM` that makes use of the `CommandElabM` context for:
 * message logging (messages produced by the `CoreM` action are migrated back),
 * metavariable generation,
-* auxiliary declaration generation,
-* local instances.
+* auxiliary declaration generation
+
+If `localInstances := none` (the default), `runMetaMWithMessages` will refresh the local instances
+in the context.
 -/
-def runMetaMWithMessages (info : ContextInfo) (lctx : LocalContext) (x : MetaM α) : CommandElabM α := do
+def runMetaMWithMessages (info : ContextInfo) (lctx : LocalContext) (x : MetaM α)
+    (localInstances : Option LocalInstances := none) : CommandElabM α := do
   (·.1) <$> info.runCoreMWithMessages (Lean.Meta.MetaM.run
-      (ctx := { lctx := lctx }) (s := { mctx := info.mctx }) <|
-    -- Update the local instances, otherwise typeclass search would fail to see anything in the
-    -- local context.
-    Meta.withLocalInstances (lctx.decls.toList.filterMap id) <| x)
+      -- Use provided local instances here to avoid a closure.
+      (ctx := { lctx := lctx, localInstances := localInstances.getD #[] })
+      (s := { mctx := info.mctx }) <|
+    if localInstances.isSome then
+      x
+    else
+      -- Update the local instances, otherwise typeclass search would fail to see anything in the
+      -- local context.
+      Meta.withLocalInstances (lctx.decls.toList.filterMap id) <| x)
 
 /-- Run a tactic computation in the context of an infotree node. -/
 def runTactic (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId → MetaM α) :
