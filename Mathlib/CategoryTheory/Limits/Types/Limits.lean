@@ -104,7 +104,7 @@ variable [Small.{u} F.sections]
 /-- (internal implementation) the limit cone of a functor,
 implemented as flat sections of a pi type
 -/
-@[simps]
+@[simps pt π_app]
 noncomputable def limitCone : Cone F where
   pt := TypeCat.of (Shrink F.sections)
   π :=
@@ -239,42 +239,38 @@ theorem limit_ext_iff' (F' : J ⥤ TypeCat.{v}) (x y : (limit F' : TypeCat.{v}))
     x = y ↔ ∀ j, limit.π F' j x = limit.π F' j y :=
   ⟨fun t _ => t ▸ rfl, limit_ext' _ _ _⟩
 
--- TODO: are there other limits lemmas that should have `_apply` versions?
--- Can we generate these like with `@[reassoc]`?
--- PROJECT: prove these for any concrete category where the forgetful functor preserves limits?
-variable {F} in
-@[simp]
-theorem Limit.w_apply {j j' : J} {x : (limit F : TypeCat.{u})} (f : j ⟶ j') :
-    F.map f (limit.π F j x) = limit.π F j' x := by
-  rw [← CategoryTheory.comp_apply]
-  exact congr_hom (limit.w F f) x
+attribute [elementwise (attr := simp)] limit.lift_π limMap_π limit.w
 
-@[simp]
+variable {F} in
+@[deprecated limit.w_apply (since := "2026-02-17")]
+theorem Limit.w_apply {j j' : J} {x : (limit F : TypeCat.{u})} (f : j ⟶ j') :
+    F.map f (limit.π F j x) = limit.π F j' x :=
+  limit.w_apply _ _ _
+
+@[deprecated limit.lift_π_apply (since := "2026-02-17")]
 theorem Limit.lift_π_apply (s : Cone F) (j : J) (x : s.pt) :
     limit.π F j (limit.lift F s x) = s.π.app j x :=
-  congr_hom (limit.lift_π s j) x
+  limit.lift_π_apply _ _ _
 
-@[simp]
+@[deprecated limMap_π_apply (since := "2026-02-17")]
 theorem Limit.map_π_apply {F G : J ⥤ TypeCat.{u}} [HasLimit F] [HasLimit G] (α : F ⟶ G) (j : J)
-    (x : (limit F : TypeCat.{u})) : limit.π G j (limMap α x) = α.app j (limit.π F j x) := by
-  rw [← CategoryTheory.comp_apply, CategoryTheory.comp_apply]
-  exact congr_hom (limMap_π α j) _
--- Not `@[simp]` since `lift_w_apply` proves it.
-theorem Limit.w_apply' {F' : J ⥤ TypeCat.{v}} {j j' : J} {x : (limit F' : TypeCat.{v})}
-    (f : j ⟶ j') : F'.map f (limit.π F' j x) = limit.π F' j' x := by
-  rw [← CategoryTheory.comp_apply]
-  exact congr_hom (limit.w F' f) x
+    (x : (limit F : TypeCat.{u})) : limit.π G j (limMap α x) = α.app j (limit.π F j x) :=
+  limMap_π_apply _ _ _
 
--- Not `@[simp]` since `lift_π_apply` proves it.
+@[deprecated limit.w_apply (since := "2026-02-17")]
+theorem Limit.w_apply' {F' : J ⥤ TypeCat.{v}} {j j' : J} {x : (limit F' : TypeCat.{v})}
+    (f : j ⟶ j') : F'.map f (limit.π F' j x) = limit.π F' j' x :=
+  limit.w_apply _ _ _
+
+@[deprecated limit.lift_π_apply (since := "2026-02-17")]
 theorem Limit.lift_π_apply' (F' : J ⥤ TypeCat.{v}) (s : Cone F') (j : J) (x : s.pt) :
     limit.π F' j (limit.lift F' s x) = s.π.app j x :=
-  congr_hom (limit.lift_π s j) x
+  limit.lift_π_apply _ _ _
 
--- Not `@[simp]` since `map_π_apply` proves it.
+@[deprecated limMap_π_apply (since := "2026-02-17")]
 theorem Limit.map_π_apply' {F' G' : J ⥤ TypeCat.{v}} (α : F' ⟶ G') (j : J)
-    (x : (limit F' : TypeCat.{v})) : limit.π G' j (limMap α x) = α.app j (limit.π F' j x) := by
-  rw [← CategoryTheory.comp_apply, CategoryTheory.comp_apply]
-  exact congr_hom (limMap_π α j) _
+    (x : (limit F' : TypeCat.{v})) : limit.π G' j (limMap α x) = α.app j (limit.π F' j x) :=
+  limMap_π_apply _ _ _
 
 end UnivLE
 

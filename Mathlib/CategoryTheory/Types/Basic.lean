@@ -43,6 +43,7 @@ set_option backward.privateInPublic true in
 The category of types and functions between them. The objects and morphisms are wrapped in
 one-field structures, as usual in concrete categories.
 -/
+@[to_additive_do_translate]
 structure TypeCat where
   private mk ::
   /-- The underlying type -/
