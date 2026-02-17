@@ -341,7 +341,7 @@ variable [Subsingleton Mˣ] [Subsingleton Nˣ]
 /-- The order isomorphism between the factors of `mk m` and the factors of `mk n` induced by a
   bijection between the factors of `m` and the factors of `n` that preserves `∣`. -/
 @[simps]
-def mkFactorOrderIsoOfFactorDvdEquiv [IsCancelMulZero N]
+def mkFactorOrderIsoOfFactorDvdEquiv
     {m : M} {n : N} {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
     (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ (l' : M)) :
     Set.Iic (Associates.mk m) ≃o Set.Iic (Associates.mk n) where
