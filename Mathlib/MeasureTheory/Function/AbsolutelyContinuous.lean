@@ -48,6 +48,7 @@ We conclude that
 * if `f` is integrable on `uIcc a b`, then for any `c` in `uIcc a b`, `fun x ↦ ∫ v in c..x, f v`
   is absolutely continuous on `uIcc a b` -
   `IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
+
 ## Tags
 absolutely continuous
 -/
