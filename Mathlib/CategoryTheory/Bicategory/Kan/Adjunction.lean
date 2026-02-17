@@ -154,7 +154,7 @@ def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u)
         _ = _ := by
           rw [hτ]; dsimp only [StructuredArrow.homMk_right]
 
-/-- A left Kan lift of the identity along `u` that commutes with `u`, in the sense that
+/-- A left Kan lift `t` of the identity along `u` that commutes with `u`, in the sense that
 `t.whisker u` is a left Kan lift, is a left adjoint to `u`. The unit of this adjoint is given by
 the unit of the Kan lift. -/
 def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
