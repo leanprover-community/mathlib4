@@ -99,8 +99,8 @@ namespace Subgraph
 
 variable {G : SimpleGraph V} {G₁ G₂ : G.Subgraph} {a b : V}
 
-protected theorem loopless (G' : Subgraph G) : Irreflexive G'.Adj :=
-  fun v h ↦ G.loopless v (G'.adj_sub h)
+protected theorem loopless (G' : Subgraph G) : Std.Irrefl G'.Adj :=
+  ⟨fun v h ↦ G.loopless.irrefl v (G'.adj_sub h)⟩
 
 theorem adj_comm (G' : Subgraph G) (v w : V) : G'.Adj v w ↔ G'.Adj w v :=
   ⟨fun x ↦ G'.symm x, fun x ↦ G'.symm x⟩
@@ -136,7 +136,7 @@ theorem adj_congr_of_sym2 {H : G.Subgraph} {u v w x : V} (h2 : s(u, v) = s(w, x)
 protected def coe (G' : Subgraph G) : SimpleGraph G'.verts where
   Adj v w := G'.Adj v w
   symm _ _ h := G'.symm h
-  loopless v h := loopless G v (G'.adj_sub h)
+  loopless := ⟨fun v h ↦ loopless G |>.irrefl v (G'.adj_sub h)⟩
 
 @[simp]
 theorem Adj.adj_sub' (G' : Subgraph G) (u v : G'.verts) (h : G'.Adj u v) : G.Adj u v :=
@@ -168,7 +168,7 @@ In general, this adds in all vertices from `V` as isolated vertices. -/
 protected def spanningCoe (G' : Subgraph G) : SimpleGraph V where
   Adj := G'.Adj
   symm := G'.symm
-  loopless v hv := G.loopless v (G'.adj_sub hv)
+  loopless := ⟨fun v hv ↦ G.loopless.irrefl v (G'.adj_sub hv)⟩
 
 @[simp]
 lemma spanningCoe_coe (G' : G.Subgraph) : G'.coe.spanningCoe = G'.spanningCoe := by
@@ -254,7 +254,7 @@ lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet
   rintro e he
   induction e using Sym2.ind with | h a b =>
   rw [Subgraph.mem_edgeSet] at he
-  exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_pair_eq ..⟩
+  exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_mk ..⟩
 
 theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
@@ -1099,7 +1099,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
   · intro hs
     refine Sym2.ind ?_
     rintro ⟨v', hv'⟩ ⟨w', hw'⟩
-    simp only [Sym2.map_pair_eq, Sym2.eq]
+    simp only [Sym2.map_mk, Sym2.eq]
     contrapose!
     rintro (_ | _) <;> simpa only [Sym2.eq_swap]
   · intro h' hs
