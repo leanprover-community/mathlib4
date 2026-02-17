@@ -5,6 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.List.Sublists
 public import Mathlib.Data.List.Zip
 public import Mathlib.Data.Multiset.Bind
@@ -104,9 +106,23 @@ theorem map_single_le_powerset (s : Multiset α) : s.map singleton ≤ powerset 
     rw [← List.map_map]
     exact ((map_pure_sublist_sublists _).map _).subperm
 
+theorem zero_mem_powerset (s) : 0 ∈ @powerset α s :=
+  Multiset.mem_powerset.mpr s.zero_le
+
+theorem self_mem_powerset (s) : s ∈ @powerset α s :=
+  Multiset.mem_powerset.mpr le_rfl
+
 @[simp]
 theorem card_powerset (s : Multiset α) : card (powerset s) = 2 ^ card s :=
   Quotient.inductionOn s <| by simp
+
+
+theorem powerset_eq_singleton_empty_iff (s) : @powerset α s = {0} ↔ s = 0 where
+  mpr := by
+    rintro rfl
+    exact powerset_zero
+  mp powerset := by
+    simpa using congr(card $powerset)
 
 theorem revzip_powersetAux {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux l)) : x.1 + x.2 = ↑l := by
   rw [revzip, powersetAux_eq_map_coe, ← map_reverse, zip_map, ← revzip, List.mem_map] at h
@@ -289,5 +305,28 @@ alias ⟨Nodup.ofPowerset, Nodup.powerset⟩ := nodup_powerset
 protected theorem Nodup.powersetCard {n : ℕ} {s : Multiset α} (h : Nodup s) :
     Nodup (powersetCard n s) :=
   nodup_of_le (powersetCard_le_powerset _ _) (nodup_powerset.2 h)
+
+theorem le_powerset_iff_le {s t} :
+    @powerset α s ≤ @powerset α t ↔ s ≤ t where
+  mp powerset := Multiset.mem_powerset.mp <| Multiset.mem_of_le powerset (self_mem_powerset s)
+  mpr le :=
+    Multiset.leInductionOn le fun {l₁ l₂} hsub => by
+      rw [Multiset.powerset_coe', Multiset.powerset_coe', Multiset.coe_le]
+      exact (subperm_sublists'_sublists' hsub).map Multiset.ofList
+
+lemma powerset_mono : Monotone (@Multiset.powerset α) := by
+  unfold Monotone
+  intro a₁ a₂ a
+  exact le_powerset_iff_le.mpr a
+
+lemma powerset_injective : Function.Injective (@Multiset.powerset α) := by
+  unfold Function.Injective
+  intro a₁ a₂ a
+  exact le_antisymm
+    (le_powerset_iff_le.mp (le_of_eq a))
+    (le_powerset_iff_le.mp (le_of_eq a.symm))
+
+lemma powerset_strictMono : StrictMono (@Multiset.powerset α) := by
+  exact Monotone.strictMono_of_injective powerset_mono powerset_injective
 
 end Multiset
