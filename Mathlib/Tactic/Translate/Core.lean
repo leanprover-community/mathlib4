@@ -373,10 +373,8 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
       failure
     modify fun s => s.insert e
     match e with
-    | x@(.app e a)       =>
+    | .app e a =>
         visit e true <|> do
-          -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
-          guard !x.isConstantApplication
           if let some n := e.getAppFn.constName? then
             if let some l := t.ignoreArgsAttr.find? env n then
               if e.getAppNumArgs + 1 ∈ l then
