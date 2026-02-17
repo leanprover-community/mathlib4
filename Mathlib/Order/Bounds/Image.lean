@@ -66,33 +66,32 @@ namespace AntitoneOn
 variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} {a : α}
 
 @[to_dual]
-theorem mem_upperBounds_image (Hf : AntitoneOn f t) (Hst : s ⊆ t) (Has : a ∈ lowerBounds s)
-    (Hat : a ∈ t) : f a ∈ upperBounds (f '' s) :=
-  forall_mem_image.2 fun _ H => Hf Hat (Hst H) (Has H)
+theorem mem_upperBounds_image (Hf : AntitoneOn f t) (Hst : s ⊆ t) (Has : a ∈ lowerBounds s) :
+    a ∈ t → f a ∈ upperBounds (f '' s) :=
+  Hf.dual_right.mem_lowerBounds_image Hst Has
 
 @[to_dual]
 theorem mem_upperBounds_image_self (Hf : AntitoneOn f t) :
     a ∈ lowerBounds t → a ∈ t → f a ∈ upperBounds (f '' t) :=
-  Hf.mem_upperBounds_image subset_rfl
+  Hf.dual_right.mem_lowerBounds_image_self
 
 @[to_dual]
 theorem image_lowerBounds_subset_upperBounds_image (Hf : AntitoneOn f t) (Hst : s ⊆ t) :
-    f '' (lowerBounds s ∩ t) ⊆ upperBounds (f '' s) := by
-  rintro _ ⟨a, ha, rfl⟩
-  exact Hf.mem_upperBounds_image Hst ha.1 ha.2
+    f '' (lowerBounds s ∩ t) ⊆ upperBounds (f '' s) :=
+  Hf.dual_right.image_lowerBounds_subset_lowerBounds_image Hst
 
 /-- The image under an antitone function of a set which is bounded above is bounded below. -/
 @[to_dual /-- The image under an antitone function of a set which is bounded below is bounded
 above. -/]
 theorem map_bddAbove (Hf : AntitoneOn f t) (Hst : s ⊆ t) :
-    (upperBounds s ∩ t).Nonempty → BddBelow (f '' s) := fun ⟨C, hs, ht⟩ =>
-  ⟨f C, Hf.mem_lowerBounds_image Hst hs ht⟩
+    (upperBounds s ∩ t).Nonempty → BddBelow (f '' s) :=
+  Hf.dual_right.map_bddAbove Hst
 
 /-- An antitone map sends a greatest element of a set to a least element of its image. -/
 @[to_dual /-- An antitone map sends a least element of a set to a greatest element of its
 image. -/]
-theorem map_isGreatest (Hf : AntitoneOn f t) (Ha : IsGreatest t a) : IsLeast (f '' t) (f a) :=
-  ⟨mem_image_of_mem _ Ha.1, Hf.mem_lowerBounds_image_self Ha.2 Ha.1⟩
+theorem map_isGreatest (Hf : AntitoneOn f t) : IsGreatest t a → IsLeast (f '' t) (f a) :=
+  Hf.dual_right.map_isGreatest
 
 end AntitoneOn
 
@@ -134,25 +133,24 @@ variable [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f) {a : α} 
 include hf
 
 @[to_dual]
-theorem mem_upperBounds_image (Ha : a ∈ lowerBounds s) : f a ∈ upperBounds (f '' s) :=
-  forall_mem_image.2 fun _ H => hf (Ha H)
+theorem mem_upperBounds_image : a ∈ lowerBounds s → f a ∈ upperBounds (f '' s) :=
+  hf.dual_right.mem_lowerBounds_image
 
 @[to_dual]
-theorem image_lowerBounds_subset_upperBounds_image : f '' lowerBounds s ⊆ upperBounds (f '' s) := by
-  rintro _ ⟨a, ha, rfl⟩
-  exact hf.mem_upperBounds_image ha
+theorem image_lowerBounds_subset_upperBounds_image : f '' lowerBounds s ⊆ upperBounds (f '' s) :=
+  hf.dual_right.image_lowerBounds_subset_lowerBounds_image
 
 /-- The image under an antitone function of a set which is bounded above is bounded below. -/
 @[to_dual /-- The image under an antitone function of a set which is bounded below is bounded
 above. -/]
-theorem map_bddAbove : BddAbove s → BddBelow (f '' s)
-  | ⟨C, hC⟩ => ⟨f C, hf.mem_lowerBounds_image hC⟩
+theorem map_bddAbove : BddAbove s → BddBelow (f '' s) :=
+  hf.dual_right.map_bddAbove
 
 /-- An antitone map sends a greatest element of a set to a least element of its image. -/
 @[to_dual /-- An antitone map sends a least element of a set to a greatest element of its
 image. -/]
-theorem map_isGreatest (Ha : IsGreatest s a) : IsLeast (f '' s) (f a) :=
-  ⟨mem_image_of_mem _ Ha.1, hf.mem_lowerBounds_image Ha.2⟩
+theorem map_isGreatest : IsGreatest s a → IsLeast (f '' s) (f a) :=
+  hf.dual_right.map_isGreatest
 
 end Antitone
 
