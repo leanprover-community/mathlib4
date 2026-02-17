@@ -253,7 +253,8 @@ isomorphism between the descent data relative to `f'` that are obtained either:
 * by considering the obvious descent data relative to `f` given by an object `M : F.obj (op S)`,
   followed by the application of `pullFunctor F w : F.DescentData f ⥤ F.DescentData f'`;
 * by considering the obvious descent data relative to `f'` given by pulling
-  back the object `M` to `S'`. -/
+  back the object `M` to `S'`.
+-/
 def toDescentDataCompPullFunctorIso :
     F.toDescentData f ⋙ pullFunctor F w ≅ (F.map p.op.toLoc).toFunctor ⋙ F.toDescentData f' :=
   NatIso.ofComponents
