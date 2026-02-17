@@ -99,80 +99,80 @@ lemma weylGroup.induction' [Nonempty ι] {pred : (g : Aut P) → g ∈ P.weylGro
   simpa [sq, ← this] using mul _ _ _ _ (mem i) (mem i)
 
 lemma range_weylGroup_weightHom :
-    MonoidHom.range ((Equiv.weightHom P).restrict P.weylGroup) =
+    MonoidHom.range ((Equiv.weightHom P).domRestrict P.weylGroup) =
       Subgroup.closure (range P.reflection) := by
   refine (Subgroup.closure_eq_of_le _ ?_ ?_).symm
   · rintro - ⟨i, rfl⟩
-    simp only [MonoidHom.restrict_range, Subgroup.coe_map, Equiv.weightHom_apply, mem_image,
+    simp only [MonoidHom.domRestrict_range, Subgroup.coe_map, Equiv.weightHom_apply, mem_image,
       SetLike.mem_coe]
     use Equiv.reflection P i
     exact ⟨reflection_mem_weylGroup P i, Equiv.reflection_weightEquiv P i⟩
   · rintro fg ⟨⟨w, hw⟩, rfl⟩
     induction hw using Subgroup.closure_induction'' with
     | one =>
-      change ((Equiv.weightHom P).restrict P.weylGroup) 1 ∈ _
+      change ((Equiv.weightHom P).domRestrict P.weylGroup) 1 ∈ _
       simp only [map_one, one_mem]
     | mem w' hw' =>
       obtain ⟨i, rfl⟩ := hw'
-      simp only [MonoidHom.restrict_apply, Equiv.weightHom_apply, Equiv.reflection_weightEquiv]
+      simp only [MonoidHom.domRestrict_apply, Equiv.weightHom_apply, Equiv.reflection_weightEquiv]
       simpa only [reflection_mem_weylGroup] using Subgroup.subset_closure (mem_range_self i)
     | inv_mem w' hw' =>
       obtain ⟨i, rfl⟩ := hw'
-      simp only [Equiv.reflection_inv, MonoidHom.restrict_apply, Equiv.weightHom_apply,
+      simp only [Equiv.reflection_inv, MonoidHom.domRestrict_apply, Equiv.weightHom_apply,
         Equiv.reflection_weightEquiv]
       simpa only [reflection_mem_weylGroup] using Subgroup.subset_closure (mem_range_self i)
     | mul w₁ w₂ hw₁ hw₂ h₁ h₂ =>
       simpa only [← Submonoid.mk_mul_mk _ w₁ w₂ hw₁ hw₂, map_mul] using Subgroup.mul_mem _ h₁ h₂
 
 lemma range_weylGroup_coweightHom :
-    MonoidHom.range ((Equiv.coweightHom P).restrict P.weylGroup) =
+    MonoidHom.range ((Equiv.coweightHom P).domRestrict P.weylGroup) =
       Subgroup.closure (range (MulOpposite.op ∘ P.coreflection)) := by
   refine (Subgroup.closure_eq_of_le _ ?_ ?_).symm
   · rintro - ⟨i, rfl⟩
-    simp only [MonoidHom.restrict_range, Subgroup.coe_map, mem_image,
+    simp only [MonoidHom.domRestrict_range, Subgroup.coe_map, mem_image,
       SetLike.mem_coe]
     use Equiv.reflection P i
     refine ⟨reflection_mem_weylGroup P i, by simp⟩
   · rintro fg ⟨⟨w, hw⟩, rfl⟩
     induction hw using Subgroup.closure_induction'' with
     | one =>
-      change ((Equiv.coweightHom P).restrict P.weylGroup) 1 ∈ _
+      change ((Equiv.coweightHom P).domRestrict P.weylGroup) 1 ∈ _
       simp only [map_one, one_mem]
     | mem w' hw' =>
       obtain ⟨i, rfl⟩ := hw'
-      simp only [MonoidHom.restrict_apply, Equiv.coweightHom_apply, Equiv.reflection_coweightEquiv]
+      simp only [MonoidHom.domRestrict_apply, Equiv.coweightHom_apply,
+        Equiv.reflection_coweightEquiv]
       simpa only [reflection_mem_weylGroup] using Subgroup.subset_closure (mem_range_self i)
     | inv_mem w' hw' =>
       obtain ⟨i, rfl⟩ := hw'
-      simp only [Equiv.reflection_inv, MonoidHom.restrict_apply, Equiv.coweightHom_apply,
+      simp only [Equiv.reflection_inv, MonoidHom.domRestrict_apply, Equiv.coweightHom_apply,
         Equiv.reflection_coweightEquiv]
       simpa only [reflection_mem_weylGroup] using Subgroup.subset_closure (mem_range_self i)
     | mul w₁ w₂ hw₁ hw₂ h₁ h₂ =>
       simpa only [← Submonoid.mk_mul_mk _ w₁ w₂ hw₁ hw₂, map_mul] using Subgroup.mul_mem _ h₁ h₂
 
 /-- The permutation representation of the Weyl group induced by `reflectionPerm`. -/
-abbrev weylGroupToPerm := (Equiv.indexHom P).restrict P.weylGroup
+abbrev weylGroupToPerm := (Equiv.indexHom P).domRestrict P.weylGroup
 
 lemma range_weylGroupToPerm :
     P.weylGroupToPerm.range = Subgroup.closure (range P.reflectionPerm) := by
   refine (Subgroup.closure_eq_of_le _ ?_ ?_).symm
   · rintro - ⟨i, rfl⟩
-    simp only [MonoidHom.restrict_range, Subgroup.coe_map, mem_image,
-      SetLike.mem_coe]
+    simp only [MonoidHom.domRestrict_range, Subgroup.coe_map, mem_image, SetLike.mem_coe]
     use Equiv.reflection P i
     refine ⟨reflection_mem_weylGroup P i, by simp⟩
   · rintro fg ⟨⟨w, hw⟩, rfl⟩
     induction hw using Subgroup.closure_induction'' with
     | one =>
-      change ((Equiv.indexHom P).restrict P.weylGroup) 1 ∈ _
+      change ((Equiv.indexHom P).domRestrict P.weylGroup) 1 ∈ _
       simp only [map_one, one_mem]
     | mem w' hw' =>
       obtain ⟨i, rfl⟩ := hw'
-      simp only [MonoidHom.restrict_apply, Equiv.indexHom_apply, Equiv.reflection_indexEquiv]
+      simp only [MonoidHom.domRestrict_apply, Equiv.indexHom_apply, Equiv.reflection_indexEquiv]
       simpa only [reflection_mem_weylGroup] using Subgroup.subset_closure (mem_range_self i)
     | inv_mem w' hw' =>
       obtain ⟨i, rfl⟩ := hw'
-      simp only [Equiv.reflection_inv, MonoidHom.restrict_apply, Equiv.indexHom_apply,
+      simp only [Equiv.reflection_inv, MonoidHom.domRestrict_apply, Equiv.indexHom_apply,
         Equiv.reflection_indexEquiv]
       simpa only [reflection_mem_weylGroup] using Subgroup.subset_closure (mem_range_self i)
     | mul w₁ w₂ hw₁ hw₂ h₁ h₂ =>
