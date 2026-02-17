@@ -341,12 +341,9 @@ lemma exists_section_of_charZero [IsAdicComplete (maximalIdeal R) R]
     let h := Ideal.Quotient.factorPowSucc (maximalIdeal R) (n + 1)
     have le := (maximalIdeal R).pow_le_pow_right (Nat.le_succ (n + 1))
     have nil : IsNilpotent (RingHom.ker h) := by
-      have : RingHom.ker h = ((maximalIdeal R) ^ (n + 1)).map
-        (Ideal.Quotient.mk ((maximalIdeal R) ^ (n + 1 + 1))) := by
-        simp [h, Ideal.Quotient.factor_ker]
       use 2
-      simp only [this, ← Ideal.map_pow, Submodule.zero_eq_bot, ← pow_mul]
-      exact Ideal.map_mk_eq_bot_of_le (Ideal.pow_le_pow_right (by omega))
+      simpa [h, Ideal.Quotient.factor_ker , ← Ideal.map_pow, Submodule.zero_eq_bot, ← pow_mul]
+        using Ideal.map_mk_eq_bot_of_le (Ideal.pow_le_pow_right (by omega))
     let g := (Algebra.FormallySmooth.liftOfSurjective f.toRatAlgHom
       h.toRatAlgHom (Ideal.Quotient.factor_surjective le) nil)
     use g.toRingHom
@@ -413,7 +410,7 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
   use S, inferInstance, inferInstance, inferInstance
   have char := CharP.exists' (ResidueField R)
   simp only [charpos, false_or] at char
-  rcases char with ⟨p, _, char⟩
+  rcases char with ⟨p, prime, char⟩
   have char' : CharP (ResidueField S) p := CharP.of_ringHom_of_ne_zero
     e.symm.toRingHom p (NeZero.ne' p).symm
   have eqspan : maximalIdeal S = Ideal.span {(p : S)} := by
@@ -423,8 +420,45 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
     ∃ g : (S ⧸ (maximalIdeal S) ^ (n + 1 + 1)) →+* (R ⧸ (maximalIdeal R) ^ (n + 1 + 1)),
       (Ideal.Quotient.factorPowSucc (maximalIdeal R) (n + 1)).comp g =
       f.comp (Ideal.Quotient.factorPowSucc (maximalIdeal S) (n + 1)) := by
-
-    sorry
+    let H := Ideal.Quotient.factorPowSucc (maximalIdeal R) (n + 1)
+    have le := (maximalIdeal R).pow_le_pow_right (Nat.le_succ (n + 1))
+    have nil : IsNilpotent (RingHom.ker H) := by
+      use 2
+      simpa [H, Ideal.Quotient.factor_ker, ← Ideal.map_pow, Submodule.zero_eq_bot, ← pow_mul]
+        using Ideal.map_mk_eq_bot_of_le (Ideal.pow_le_pow_right (by omega))
+    let F := (Ideal.quotientMap (I := Ideal.span {(p ^ (n + 1 + 1) : ℤ)})
+      (Ideal.span {(p ^ (n + 1 + 1) : S)}) (Int.castRingHom S)
+      (by simp [← Ideal.map_le_iff_le_comap, Ideal.map_span]))
+    let E : S ⧸ Ideal.span {(p ^ (n + 1 + 1) : S)} ≃+* S ⧸ (maximalIdeal S) ^ (n + 1 + 1) :=
+      Ideal.quotEquivOfEq (by simp [cohen.span, ringChar.eq, Ideal.span_singleton_pow])
+    let _ := (E.toRingHom.comp F).toAlgebra
+    let _ : Algebra.FormallySmooth (ℤ ⧸ Ideal.span {(p ^ (n + 1 + 1) : ℤ)})
+      (S ⧸ maximalIdeal S ^ (n + 1 + 1)) := RingHom.FormallySmooth.of_ringEquiv_comp E F
+      (quotient_power_char_formallySmooth S p prime.out char' (n + 1 + 1) (by omega))
+    let G : ℤ ⧸ Ideal.span {(p ^ (n + 1 + 1) : ℤ)} →+* R ⧸ (maximalIdeal R) ^ (n + 1 + 1) :=
+      Ideal.quotientMap _ (Int.castRingHom R) (by
+        simp only [Ideal.span_singleton_le_iff_mem, Ideal.mem_comap, eq_intCast, Int.cast_pow]
+        apply Ideal.pow_mem_pow
+        simp [← Ideal.Quotient.eq_zero_iff_mem, char.cast_eq_zero])
+    let _ := G.toAlgebra
+    let _ := (H.comp G).toAlgebra
+    let H' : R ⧸ maximalIdeal R ^ (n + 1 + 1) →ₐ[ℤ ⧸ Ideal.span {(p ^ (n + 1 + 1) : ℤ)}]
+      R ⧸ maximalIdeal R ^ (n + 1) := {
+      __ := H
+      commutes' k := by simp [RingHom.algebraMap_toAlgebra] }
+    let f' : (S ⧸ (maximalIdeal S) ^ (n + 1 + 1)) →ₐ[ℤ ⧸ Ideal.span {(p ^ (n + 1 + 1) : ℤ)}]
+      (R ⧸ (maximalIdeal R) ^ (n + 1)) := {
+      __ := f.comp (Ideal.Quotient.factorPowSucc (maximalIdeal S) (n + 1))
+      commutes' k := by
+        rcases Ideal.Quotient.mk_surjective k with ⟨l, hl⟩
+        simp [← hl] }
+    let g := Algebra.FormallySmooth.liftOfSurjective f' H' (Ideal.Quotient.factor_surjective le) nil
+    use g.toRingHom
+    have : H'.comp g = f' := Algebra.FormallySmooth.comp_liftOfSurjective f' H'
+      (Ideal.Quotient.factor_surjective le) nil
+    ext x
+    change H'.comp g x = _
+    simp [this, f']
   let _ : Unique (S ⧸ maximalIdeal S ^ 0) :=
     @uniqueOfSubsingleton _ (Ideal.Quotient.subsingleton_iff.mpr (by simp)) 0
   let _ : Unique (R ⧸ maximalIdeal R ^ 0) :=
