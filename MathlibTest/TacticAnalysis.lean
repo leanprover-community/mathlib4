@@ -422,3 +422,22 @@ set_option linter.tacticAnalysis.unknownTacticTest true in
 example : 1 + 1 = 2 := by rfl
 
 end unknownTactic
+
+section verifyGrindSuggestions
+
+-- Test that verifyGrind doesn't crash and doesn't report false positives
+-- When grind? succeeds and its suggestion works, no warning should be produced
+-- (Info messages from grind? are suppressed; only failures produce warnings)
+
+#guard_msgs in
+set_option linter.tacticAnalysis.verifyGrind true in
+example : 1 + 1 = 2 := by
+  rfl
+
+-- Test with grind? +suggestions
+#guard_msgs in
+set_option linter.tacticAnalysis.verifyGrindSuggestions true in
+example : 1 + 1 = 2 := by
+  rfl
+
+end verifyGrindSuggestions
