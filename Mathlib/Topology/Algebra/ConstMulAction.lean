@@ -28,7 +28,7 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
   many `γ:Γ` move `K` to have nontrivial intersection with `L`.
 * `Homeomorph.smul`: scalar multiplication by an element of a group `Γ` acting on `T`
   is a homeomorphism of `T`.
-*`Homeomorph.smulOfNeZero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
+* `Homeomorph.smulOfNeZero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
   is a nonzero element of `G₀`, then scalar multiplication by `c` is a homeomorphism of `X`;
 * `Homeomorph.smul`: scalar multiplication by an element of a group `G` acting on `X`
   is a homeomorphism of `X`.
