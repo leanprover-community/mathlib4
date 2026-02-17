@@ -326,7 +326,7 @@ This default behavior is customisable as such:
 
 Here are a few extra pieces of information:
   * Run `initialize_simps_projections?` (or `set_option trace.simps.verbose true`)
-  to see the generated projections.
+    to see the generated projections.
 * Running `initialize_simps_projections MyStruct` without arguments is not necessary, it has the
   same effect if you just add `@[simps]` to a declaration.
 * It is recommended to call `@[simps]` or `initialize_simps_projections` in the same file as the
