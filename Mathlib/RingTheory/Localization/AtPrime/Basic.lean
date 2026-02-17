@@ -65,8 +65,6 @@ theorem AtPrime.nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
     have htz : (t : R) = 0 := by simpa using ht.symm
     exact t.2 (htz.symm ▸ P.zero_mem : ↑t ∈ P)
 
-@[deprecated (since := "2025-07-31")] alias AtPrime.Nontrivial := IsLocalization.AtPrime.nontrivial
-
 theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   letI := AtPrime.nontrivial S P -- Can't be a local instance because we can't figure out `P`.
   IsLocalRing.of_nonunits_add
@@ -538,9 +536,6 @@ lemma comap_map_eq_map :
   apply Ideal.mul_mem_right
   exact Ideal.mem_map_of_mem _ hγ
 
-@[deprecated (since := "2025-07-31")] alias
-  _root_.comap_map_eq_map_of_isLocalization_algebraMapSubmonoid := comap_map_eq_map
-
 variable [IsScalarTower R Rₚ Sₚ]
 
 variable (S Sₚ) in
@@ -582,9 +577,6 @@ noncomputable def equivQuotientMapMaximalIdeal [p.IsMaximal] :
     rw [mul_comm, mul_sub, IsLocalization.mul_mk'_eq_mk'_of_mul,
       IsLocalization.mk'_mul_cancel_left, ← map_mul, ← e, ← Algebra.smul_def, smul_smul,
       hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right]
-
-@[deprecated (since := "2025-07-31")] alias
-    _root_.quotMapEquivQuotMapMaximalIdealOfIsLocalization := equivQuotientMapMaximalIdeal
 
 end isomorphisms
 
