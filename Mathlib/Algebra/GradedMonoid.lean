@@ -540,7 +540,8 @@ def submonoid : Submonoid R where
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
-instance (priority := 900) instMonoid : Monoid (A 0) := inferInstanceAs <| Monoid (GradeZero.submonoid A)
+instance (priority := 900) instMonoid : Monoid (A 0) :=
+  inferInstanceAs <| Monoid (GradeZero.submonoid A)
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The commutative monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
