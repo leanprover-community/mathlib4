@@ -17,6 +17,7 @@ jobs:
       allow_pr_author: true
       allowed_teams: |
         leanprover-community/mathlib-reviewers
+        leanprover-community/mathlib-maintainers
       # Installation owner used when minting token from app secrets below.
       token_app_owner: leanprover-community
     secrets:
