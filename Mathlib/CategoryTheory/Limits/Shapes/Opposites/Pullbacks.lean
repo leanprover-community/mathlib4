@@ -84,7 +84,7 @@ def cospanOp {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     | .right => .refl _)
     (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
-/-- The canonical isomorphism relating `span f.unop g.unop` and `(cospan f g).leftOp` -/
+/-- The canonical isomorphism relating `cospan f.unop g.unop` and `(span f g).leftOp` -/
 @[simps!]
 def cospanUnop {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : X ⟶ Z) :
     cospan f.unop g.unop ≅ walkingSpanOpEquiv.inverse ⋙ (span f g).leftOp :=
