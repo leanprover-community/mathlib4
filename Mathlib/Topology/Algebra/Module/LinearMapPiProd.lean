@@ -216,7 +216,7 @@ section PiMap
 variable {ψ : ι → Type*} [∀ i, TopologicalSpace (ψ i)] [∀ i, AddCommMonoid (ψ i)]
   [∀ i, Module R (ψ i)]
 
-/-- Construct a continuous linear map two (dependent) function spaces
+/-- Construct a continuous linear map between two (dependent) function spaces
 by applying index-dependent linear maps to the coordinates.
 A bundled version of `Pi.map`.
 
