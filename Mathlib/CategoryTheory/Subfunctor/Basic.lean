@@ -49,6 +49,30 @@ variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
 instance : PartialOrder (Subfunctor F) :=
   PartialOrder.lift Subfunctor.obj (fun _ _ => Subfunctor.ext)
 
+instance : SupSet (Subfunctor F) where
+  sSup S :=
+    { obj U := sSup (Set.image (fun T ↦ T.obj U) S)
+      map f x hx := by
+        obtain ⟨_, ⟨F, h, rfl⟩, h'⟩ := hx
+        simp only [Set.sSup_eq_sUnion, Set.sUnion_image, Set.preimage_iUnion,
+          Set.mem_iUnion, Set.mem_preimage, exists_prop]
+        exact ⟨_, h, F.map f h'⟩ }
+
+instance : InfSet (Subfunctor F) where
+  sInf S :=
+    { obj U := sInf (Set.image (fun T ↦ T.obj U) S)
+      map f x hx := by
+        rintro _ ⟨F, h, rfl⟩
+        exact F.map f (hx _ ⟨_, h, rfl⟩) }
+
+protected lemma Subfunctor.isLUB_sSup (s : Set (Subfunctor F)) : IsLUB s (sSup s) := by
+  dsimp [sSup]
+  refine ⟨fun _ _ _ _ ↦ ?_, fun _ _ _ ↦ ?_⟩ <;> aesop
+
+protected lemma Subfunctor.isGLB_sInf (s : Set (Subfunctor F)) : IsGLB s (sInf s) := by
+  dsimp [sInf]
+  refine ⟨fun _ _ _ _ ↦ ?_, fun _ _ _ ↦ ?_⟩ <;> aesop
+
 instance : CompleteLattice (Subfunctor F) where
   sup F G :=
     { obj U := F.obj U ⊔ G.obj U
@@ -68,22 +92,10 @@ instance : CompleteLattice (Subfunctor F) where
   inf_le_left _ _ _ _ h := h.1
   inf_le_right _ _ _ _ h := h.2
   le_inf _ _ _ h₁ h₂ _ _ h := ⟨h₁ _ h, h₂ _ h⟩
-  sSup S :=
-    { obj U := sSup (Set.image (fun T ↦ T.obj U) S)
-      map f x hx := by
-        obtain ⟨_, ⟨F, h, rfl⟩, h'⟩ := hx
-        simp only [Set.sSup_eq_sUnion, Set.sUnion_image, Set.preimage_iUnion,
-          Set.mem_iUnion, Set.mem_preimage, exists_prop]
-        exact ⟨_, h, F.map f h'⟩ }
-  le_sSup _ _ _ _ _ := by aesop
-  sSup_le _ _ _ _ _ := by aesop
-  sInf S :=
-    { obj U := sInf (Set.image (fun T ↦ T.obj U) S)
-      map f x hx := by
-        rintro _ ⟨F, h, rfl⟩
-        exact F.map f (hx _ ⟨_, h, rfl⟩) }
-  sInf_le _ _ _ _ _ := by aesop
-  le_sInf _ _ _ _ _ := by aesop
+  isLUB_sSup_of_exists_isLUB _ _ := Subfunctor.isLUB_sSup _
+  isGLB_sInf_of_exists_isGLB _ _ := Subfunctor.isGLB_sInf _
+  exists_isLUB s := ⟨_, Subfunctor.isLUB_sSup _⟩
+  exists_isGLB s := ⟨_, Subfunctor.isGLB_sInf _⟩
   bot :=
     { obj U := ⊥
       map := by simp }

@@ -167,15 +167,17 @@ instance : InfSet (Nucleus X) where
 @[simp] lemma iInf_apply {ι : Type*} (f : ι → (Nucleus X)) (x : X) : iInf f x = ⨅ j, f j x := by
   rw [iInf, sInf_apply, iInf_range]
 
-instance : CompleteSemilatticeInf (Nucleus X) where
-  sInf_le := by simp +contextual [← coe_le_coe, Pi.le_def, iInf_le_iff]
-  le_sInf := by simp +contextual [← coe_le_coe, Pi.le_def]
+protected lemma isGLB_sInf (s : Set (Nucleus X)) : IsGLB s (sInf s) :=
+  ⟨by simp +contextual [mem_lowerBounds, ← coe_le_coe, Pi.le_def, iInf_le_iff],
+    by simp +contextual [mem_upperBounds, mem_lowerBounds, ← coe_le_coe, Pi.le_def]⟩
+
+instance : OrderSupInfSet (Nucleus X) := .ofInfSet fun _ _ ↦ Nucleus.isGLB_sInf _
 
 instance : CompleteLattice (Nucleus X) where
   __ : SemilatticeInf (Nucleus X) := inferInstance
   __ : OrderBot (Nucleus X) := inferInstance
   __ : OrderTop (Nucleus X) := inferInstance
-  __ := completeLatticeOfCompleteSemilatticeInf (Nucleus X)
+  __ := completeLatticeOfInf _ Nucleus.isGLB_sInf
 
 end CompleteLattice
 

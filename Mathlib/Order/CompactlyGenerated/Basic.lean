@@ -189,7 +189,7 @@ theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type*} [CompleteLattice α
     (hbelow : ∀ x ∈ s, x < k) : sSup s < k := by
   rw [isCompactElement_iff_le_of_directed_sSup_le] at hk
   by_contra h
-  have sSup' : sSup s ≤ k := sSup_le s k fun s hs => (hbelow s hs).le
+  have sSup' : sSup s ≤ k := sSup_le fun s hs => (hbelow s hs).le
   replace sSup : sSup s = k := eq_iff_le_not_lt.mpr ⟨sSup', h⟩
   obtain ⟨x, hxs, hkx⟩ := hk s hemp hdir sSup.symm.le
   obtain hxk := hbelow x hxs
@@ -213,7 +213,7 @@ theorem WellFoundedGT.isSupFiniteCompact [WellFoundedGT α] :
     IsSupFiniteCompact α := fun s => by
   let S := { x | ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = x }
   obtain ⟨m, ⟨t, ⟨ht₁, rfl⟩⟩, hm⟩ := wellFounded_gt.has_min S ⟨⊥, ∅, by simp⟩
-  refine ⟨t, ht₁, (sSup_le _ _ fun y hy => ?_).antisymm ?_⟩
+  refine ⟨t, ht₁, (sSup_le fun y hy => ?_).antisymm ?_⟩
   · classical
     rw [eq_of_le_of_not_lt (Finset.sup_mono (t.subset_insert y))
         (hm _ ⟨insert y t, by simp [Set.insert_subset_iff, hy, ht₁]⟩)]
@@ -265,7 +265,7 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
       suffices t.sup id ≤ sSup s by apply le_antisymm <;> assumption
       simp only [id, Finset.sup_le_iff]
       intro x hx
-      exact le_sSup _ _ (hts hx)
+      exact le_sSup (hts hx)
     exact ⟨t, hts, this⟩
 
 open List in

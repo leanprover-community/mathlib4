@@ -89,7 +89,7 @@ instance : PartialOrder (IdealSheafData X) := PartialOrder.lift ideal fun _ _ �
 
 lemma le_def {I J : IdealSheafData X} : I ≤ J ↔ ∀ U, I.ideal U ≤ J.ideal U := .rfl
 
-instance : CompleteSemilatticeSup (IdealSheafData X) where
+instance : SupSet (IdealSheafData X) where
   sSup s :=
   { ideal := sSup (ideal '' s),
     map_ideal_basicOpen := by
@@ -97,10 +97,11 @@ instance : CompleteSemilatticeSup (IdealSheafData X) where
         conv_lhs => rw [← Subtype.range_val (s := s), ← Set.range_comp]
         rfl
       simp only [this, iSup_apply, Ideal.map_iSup, map_ideal_basicOpen, implies_true] }
-  le_sSup s x hxs := le_sSup (s := ideal '' s) ⟨_, hxs, rfl⟩
-  sSup_le s i hi := sSup_le (s := ideal '' s) (Set.forall_mem_image.mpr hi)
 
-/-- The largest ideal sheaf contained in a family of ideals. -/
+instance : CompleteSemilatticeSup (IdealSheafData X) where
+  isLUB_sSup_of_exists_isLUB _ _ := .of_image (f := ideal) le_def (isLUB_sSup _)
+  exists_isLUB _ := ⟨sSup _, .of_image (f := ideal) le_def (isLUB_sSup _)⟩
+
 def ofIdeals (I : ∀ U : X.affineOpens, Ideal Γ(X, U)) : IdealSheafData X :=
   sSup { J : IdealSheafData X | J.ideal ≤ I }
 

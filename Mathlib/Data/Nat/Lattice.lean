@@ -130,16 +130,12 @@ open scoped Classical in
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
   { (inferInstance : OrderBot ℕ), (LinearOrder.toLattice : Lattice ℕ),
     (inferInstance : LinearOrder ℕ) with
-    le_csSup := fun s a hb ha ↦ by rw [sSup_def hb]; revert a ha; exact @Nat.find_spec _ _ hb
-    csSup_le := fun s a _ ha ↦ by rw [sSup_def ⟨a, ha⟩]; exact Nat.find_min' _ ha
-    le_csInf := fun s a hs hb ↦ by
-      rw [sInf_def hs]; exact hb (@Nat.find_spec (fun n ↦ n ∈ s) _ _)
-    csInf_le := fun s a _ ha ↦ by rw [sInf_def ⟨a, ha⟩]; exact Nat.find_min' _ ha
-    csSup_empty := by
-      simp only [sSup_def, Set.mem_empty_iff_false, forall_const, forall_prop_of_false,
-        not_false_iff, exists_const]
-      apply bot_unique (Nat.find_min' _ _)
-      trivial
+    isLUB_sSup_of_exists_isLUB s := fun ⟨_, h⟩ ↦ by
+      rw [sSup_def h.bddAbove]; exact Nat.isLeast_find _
+    isGLB_sInf_of_exists_isGLB s := fun ⟨_, h⟩ ↦ by
+      rw [sInf_def h.nonempty]; exact (Nat.isLeast_find _).isGLB
+    exists_isLUB_of_nonempty_of_bddAbove s hn hb := ⟨_, Nat.isLeast_find hb⟩
+    exists_isGLB_of_nonempty_of_bddBelow s hn hb := ⟨_, (Nat.isLeast_find hn).isGLB⟩
     csSup_of_not_bddAbove := by
       intro s hs
       simp only [sSup,

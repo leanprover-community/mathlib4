@@ -149,8 +149,8 @@ lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
 @[simp] lemma mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := .rfl
 
 instance : CompleteSemilatticeInf (ClosedSubmodule R M) where
-  sInf_le _ a ha _ h := mem_sInf.1 h a ha
-  le_sInf _ _ ha _ h := mem_sInf.2 fun a hi ↦ ha a hi h
+  isGLB_sInf_of_exists_isGLB _ _ := .of_image toSubmodule_le_toSubmodule isGLB_biInf
+  exists_isGLB _ := ⟨sInf _, .of_image toSubmodule_le_toSubmodule isGLB_biInf⟩
 
 instance : OrderTop (ClosedSubmodule R M) where
   top := ⟨⊤, isClosed_univ⟩
@@ -287,16 +287,20 @@ instance : SemilatticeSup (ClosedSubmodule R N) where
   le_sup_right _ _ _ hx := subset_closure <| Submodule.mem_sup_right hx
   sup_le _ _ _ ha hb := Submodule.closure_le.mpr <| sup_le_iff.mpr ⟨ha, hb⟩
 
+protected lemma isLUB_sSup (s : Set (ClosedSubmodule R N)) : IsLUB s (sSup s) :=
+  ⟨fun a ha x hx ↦ subset_closure <| Submodule.mem_iSup_of_mem _ <|
+      Submodule.mem_iSup_of_mem ha hx,
+    fun a h x ↦ by
+      rw [← ClosedSubmodule.closure_toSubmodule_eq (s := a)]
+      apply closure_mono
+      simp only [Submodule.coe_toAddSubmonoid, coe_toSubmodule]
+      intro y hy
+      simp only [SetLike.mem_coe, Submodule.mem_iSup] at hy
+      exact hy a fun b _ hz ↦ Submodule.mem_iSup _ |>.mp hz _ <| fun hb ↦ h hb⟩
+
 instance : CompleteSemilatticeSup (ClosedSubmodule R N) where
-  le_sSup s a ha x hx := subset_closure <| Submodule.mem_iSup_of_mem _ <|
-    Submodule.mem_iSup_of_mem ha hx
-  sSup_le s a h x := by
-    rw [← ClosedSubmodule.closure_toSubmodule_eq (s := a)]
-    apply closure_mono
-    simp only [Submodule.coe_toAddSubmonoid, coe_toSubmodule]
-    intro y hy
-    simp only [SetLike.mem_coe, Submodule.mem_iSup] at hy
-    exact hy a fun b _ hz ↦ Submodule.mem_iSup _ |>.mp hz _ <| fun hb ↦ h b hb
+  isLUB_sSup_of_exists_isLUB _ _ := ClosedSubmodule.isLUB_sSup _
+  exists_isLUB _ := ⟨_, ClosedSubmodule.isLUB_sSup _⟩
 
 instance : Lattice (ClosedSubmodule R N) where
 

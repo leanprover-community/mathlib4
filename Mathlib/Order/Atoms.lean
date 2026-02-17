@@ -693,7 +693,7 @@ theorem exists_mem_le_of_le_sSup_of_isAtom {α} [CompleteAtomicBooleanAlgebra α
 lemma eq_setOf_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S : Set α}
     (hS : ∀ a ∈ S, IsAtom a) : S = {a | a ≤ sSup S ∧ IsAtom a} := by
   ext a
-  refine ⟨fun h => ⟨CompleteLattice.le_sSup S a h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
+  refine ⟨fun h => ⟨le_sSup h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
   obtain ⟨b, hbS, hba⟩ := (IsAtom.le_sSup hatom).mp hale
   obtain rfl | rfl := (hS b hbS).le_iff.mp hba
   · simpa using hatom.1
@@ -889,30 +889,42 @@ variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 open Classical in
 /-- A simple `BoundedOrder` is also complete. -/
 protected noncomputable def completeLattice : CompleteLattice α :=
+  letI sSup := fun s => if ⊤ ∈ s then ⊤ else ⊥
+  letI sInf := fun s => if ⊥ ∈ s then ⊥ else ⊤
+  haveI isLUB_sSup s : IsLUB s (sSup s) := by
+    dsimp [sSup]
+    constructor
+    · intro x h
+      rcases eq_bot_or_eq_top x with (rfl | rfl)
+      · exact bot_le
+      · rw [if_pos h]
+    · intro x h
+      rcases eq_bot_or_eq_top x with (rfl | rfl)
+      · rw [if_neg]
+        intro con
+        exact bot_ne_top (eq_top_iff.2 (h con))
+      · exact le_top
+  haveI isGLB_sInf s : IsGLB s (sInf s) := by
+    dsimp [sInf]
+    constructor
+    · intro x h
+      rcases eq_bot_or_eq_top x with (rfl | rfl)
+      · rw [if_pos h]
+      · exact le_top
+    · intro x h
+      rcases eq_bot_or_eq_top x with (rfl | rfl)
+      · exact bot_le
+      · rw [if_neg]
+        intro con
+        exact top_ne_bot (eq_bot_iff.2 (h con))
   { (inferInstance : Lattice α),
     (inferInstance : BoundedOrder α) with
-    sSup := fun s => if ⊤ ∈ s then ⊤ else ⊥
-    sInf := fun s => if ⊥ ∈ s then ⊥ else ⊤
-    le_sSup := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · exact bot_le
-      · rw [if_pos h]
-    sSup_le := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · rw [if_neg]
-        intro con
-        exact bot_ne_top (eq_top_iff.2 (h ⊤ con))
-      · exact le_top
-    sInf_le := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · rw [if_pos h]
-      · exact le_top
-    le_sInf := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · exact bot_le
-      · rw [if_neg]
-        intro con
-        exact top_ne_bot (eq_bot_iff.2 (h ⊥ con)) }
+    sSup := sSup
+    sInf := sInf
+    isLUB_sSup_of_exists_isLUB _ _ := isLUB_sSup _
+    isGLB_sInf_of_exists_isGLB _ _ := isGLB_sInf _
+    exists_isLUB _ := ⟨_, isLUB_sSup _⟩
+    exists_isGLB _ := ⟨_, isGLB_sInf _⟩ }
 
 open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/

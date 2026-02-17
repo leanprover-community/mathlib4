@@ -248,21 +248,32 @@ instance : SemilatticeInf (fixedPoints f) where
   inf x y := f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y)
   __ := OrderDual.instSemilatticeInf (fixedPoints f.dual)
 
-/-- **Knaster-Tarski Theorem**: The fixed points of `f` form a complete lattice. -/
-instance completeLattice : CompleteLattice (fixedPoints f) where
+instance : SupSet (fixedPoints f) where
   sSup s :=
     f.nextFixed (sSup (Subtype.val '' s))
-      (f.le_map_sSup_subset_fixedPoints (Subtype.val '' s)
-        fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
-  le_sSup _ _ hx :=
-    Subtype.coe_le_coe.1 <| le_trans (le_sSup <| Set.mem_image_of_mem _ hx) (f.le_nextFixed _)
-  sSup_le _ _ hx := f.nextFixed_le _ <| sSup_le <| Set.forall_mem_image.2 hx
+      (f.le_map_sSup_subset_fixedPoints (Subtype.val '' s) fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
+
+instance : InfSet (fixedPoints f) where
   sInf s :=
     f.prevFixed (sInf (Subtype.val '' s))
       (f.map_sInf_subset_fixedPoints_le (Subtype.val '' s) fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
-  le_sInf _ _ hx := f.le_prevFixed _ <| le_sInf <| Set.forall_mem_image.2 hx
-  sInf_le _ _ hx :=
-    Subtype.coe_le_coe.1 <| le_trans (f.prevFixed_le _) (sInf_le <| Set.mem_image_of_mem _ hx)
+
+variable {f} in
+protected lemma isLUB_sSup (s : Set (fixedPoints f)) : IsLUB s (sSup s) :=
+  ⟨fun _ hx ↦ (le_sSup <| Set.mem_image_of_mem _ hx).trans (f.le_nextFixed _),
+    fun _ hx ↦ f.nextFixed_le _ <| sSup_le <| Set.forall_mem_image.2 hx⟩
+
+variable {f} in
+protected lemma isGLB_sInf (s : Set (fixedPoints f)) : IsGLB s (sInf s) :=
+  ⟨fun _ hx ↦ (f.prevFixed_le _).trans (sInf_le <| Set.mem_image_of_mem _ hx),
+    fun _ hx ↦ f.le_prevFixed _ <| le_sInf <| Set.forall_mem_image.2 hx⟩
+
+/-- **Knaster-Tarski Theorem**: The fixed points of `f` form a complete lattice. -/
+instance completeLattice : CompleteLattice (fixedPoints f) where
+  isLUB_sSup_of_exists_isLUB _ _ := fixedPoints.isLUB_sSup _
+  isGLB_sInf_of_exists_isGLB _ _ := fixedPoints.isGLB_sInf _
+  exists_isLUB _ := ⟨_, fixedPoints.isLUB_sSup _⟩
+  exists_isGLB _ := ⟨_, fixedPoints.isGLB_sInf _⟩
 
 open OmegaCompletePartialOrder fixedPoints
 

@@ -486,9 +486,25 @@ namespace AffineSubspace
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [S : AffineSpace V P] {ι : Sort*}
 
+instance : SupSet (AffineSubspace k P) where
+  sSup := fun s => affineSpan k (⋃ s' ∈ s, (s' : Set P))
+
+instance : InfSet (AffineSubspace k P) where
+  sInf := fun s =>
+    mk (⋂ s' ∈ s, (s' : Set P)) fun c p₁ p₂ p₃ hp₁ hp₂ hp₃ =>
+      Set.mem_iInter₂.2 fun s₂ hs₂ => by
+        rw [Set.mem_iInter₂] at *
+        exact s₂.smul_vsub_vadd_mem c (hp₁ s₂ hs₂) (hp₂ s₂ hs₂) (hp₃ s₂ hs₂)
+
+protected lemma isLUB_sSup (s : Set (AffineSubspace k P)) : IsLUB s (sSup s) :=
+  ⟨fun _ h => Set.Subset.trans (Set.subset_biUnion_of_mem h) (subset_spanPoints k _),
+    fun _ h => spanPoints_subset_coe_of_subset_coe (Set.iUnion₂_subset h)⟩
+
+protected lemma isGLB_sInf (s : Set (AffineSubspace k P)) : IsGLB s (sInf s) :=
+  .of_image SetLike.coe_subset_coe isGLB_biInf
+
 instance : CompleteLattice (AffineSubspace k P) :=
-  {
-    PartialOrder.lift ((↑) : AffineSubspace k P → Set P)
+  { PartialOrder.lift ((↑) : AffineSubspace k P → Set P)
       coe_injective with
     sup := fun s₁ s₂ => affineSpan k (s₁ ∪ s₂)
     le_sup_left := fun _ _ =>
@@ -501,10 +517,6 @@ instance : CompleteLattice (AffineSubspace k P) :=
         ⟨s₁.smul_vsub_vadd_mem c hp₁.1 hp₂.1 hp₃.1, s₂.smul_vsub_vadd_mem c hp₁.2 hp₂.2 hp₃.2⟩
     inf_le_left := fun _ _ => Set.inter_subset_left
     inf_le_right := fun _ _ => Set.inter_subset_right
-    le_sInf := fun S s₁ hs₁ => by
-      apply Set.subset_sInter
-      rintro t ⟨s, _hs, rfl⟩
-      exact Set.subset_iInter (hs₁ s)
     top :=
       { carrier := Set.univ
         smul_vsub_vadd_mem := fun _ _ _ _ _ _ _ => Set.mem_univ _ }
@@ -513,15 +525,10 @@ instance : CompleteLattice (AffineSubspace k P) :=
       { carrier := ∅
         smul_vsub_vadd_mem := fun _ _ _ _ => False.elim }
     bot_le := fun _ _ => False.elim
-    sSup := fun s => affineSpan k (⋃ s' ∈ s, (s' : Set P))
-    sInf := fun s =>
-      mk (⋂ s' ∈ s, (s' : Set P)) fun c p₁ p₂ p₃ hp₁ hp₂ hp₃ =>
-        Set.mem_iInter₂.2 fun s₂ hs₂ => by
-          rw [Set.mem_iInter₂] at *
-          exact s₂.smul_vsub_vadd_mem c (hp₁ s₂ hs₂) (hp₂ s₂ hs₂) (hp₃ s₂ hs₂)
-    le_sSup := fun _ _ h => Set.Subset.trans (Set.subset_biUnion_of_mem h) (subset_spanPoints k _)
-    sSup_le := fun _ _ h => spanPoints_subset_coe_of_subset_coe (Set.iUnion₂_subset h)
-    sInf_le := fun _ _ => Set.biInter_subset_of_mem
+    isLUB_sSup_of_exists_isLUB _ _ := AffineSubspace.isLUB_sSup _
+    isGLB_sInf_of_exists_isGLB _ _ := AffineSubspace.isGLB_sInf _
+    exists_isLUB _ := ⟨_, AffineSubspace.isLUB_sSup _⟩
+    exists_isGLB _ := ⟨_, AffineSubspace.isGLB_sInf _⟩
     le_inf := fun _ _ _ => Set.subset_inter }
 
 instance : Inhabited (AffineSubspace k P) :=

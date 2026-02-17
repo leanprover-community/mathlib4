@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Data.Set.Defs
+public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.ToDual
 
@@ -62,3 +63,40 @@ def IsCofinalFor (s t : Set α) := ∀ ⦃a⦄, a ∈ s → ∃ b ∈ t, a ≤ b
 @[to_dual /-- A set is coinitial when for every `x : α` there exists `y ∈ s` with `y ≤ x`. -/]
 def IsCofinal (s : Set α) : Prop :=
   ∀ x, ∃ y ∈ s, x ≤ y
+
+class OrderSupInfSet (α : Type*) [LE α] extends SupSet α, InfSet α where
+  protected isLUB_sSup_of_exists_isLUB s : (∃ a, IsLUB s a) → IsLUB s (sSup s)
+  protected isGLB_sInf_of_exists_isGLB s : (∃ a, IsGLB s a) → IsGLB s (sInf s)
+
+attribute [to_dual self (reorder := 3 4, 5 6)] OrderSupInfSet.mk
+attribute [to_dual existing] OrderSupInfSet.toSupSet
+attribute [to_dual existing] OrderSupInfSet.isLUB_sSup_of_exists_isLUB
+
+@[to_dual]
+theorem subset_upperBounds_lowerBounds (s : Set α) : s ⊆ upperBounds (lowerBounds s) :=
+  fun _ hx _ hy => hy hx
+
+@[to_dual]
+theorem IsGreatest.isLUB {s : Set α} {a : α} (h : IsGreatest s a) : IsLUB s a :=
+  ⟨h.2, fun _ hb => hb h.1⟩
+
+@[to_dual (attr := simp)]
+theorem isLUB_lowerBounds {s : Set α} {a : α} : IsLUB (lowerBounds s) a ↔ IsGLB s a :=
+  ⟨fun H => ⟨fun _ hx => H.2 <| subset_upperBounds_lowerBounds s hx, H.1⟩, IsGreatest.isLUB⟩
+
+@[to_dual]
+abbrev OrderSupInfSet.ofSupSet {α : Type*} [SupSet α] [LE α]
+    (isLUB_sSup_of_exists_isLUB : ∀ s : Set α, (∃ a, IsLUB s a) → IsLUB s (sSup s)) :
+    OrderSupInfSet α where
+  isLUB_sSup_of_exists_isLUB := isLUB_sSup_of_exists_isLUB
+  sInf s := sSup (lowerBounds s)
+  isGLB_sInf_of_exists_isGLB _ h :=
+    isLUB_lowerBounds.mp (isLUB_sSup_of_exists_isLUB _ (h.imp fun _ ↦ IsGreatest.isLUB))
+
+open Classical in
+noncomputable abbrev OrderSupInfSet.choose {α : Type*} [LE α] (d : α) :
+    OrderSupInfSet α where
+  sSup s := if h : ∃ x, IsLUB s x then h.choose else d
+  sInf s := if h : ∃ x, IsGLB s x then h.choose else d
+  isLUB_sSup_of_exists_isLUB _ h := dif_pos h ▸ Exists.choose_spec _
+  isGLB_sInf_of_exists_isGLB _ h := dif_pos h ▸ Exists.choose_spec _

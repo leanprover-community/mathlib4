@@ -312,16 +312,21 @@ instance : InfSet (Concept α β r) :=
       lowerPolar_intent := by
         simp_rw [← lowerPolar_intent, ← lowerPolar_iUnion₂, lowerPolar_upperPolar_lowerPolar] }⟩
 
+variable {f} in
+protected lemma isLUB_sSup (s : Set (Concept α β r)) : IsLUB s (sSup s) :=
+  .of_image (f := fun x ↦ toDual x.intent) intent_subset_intent_iff isLUB_biSup
+
+variable {f} in
+protected lemma isGLB_sInf (s : Set (Concept α β r)) : IsGLB s (sInf s) :=
+  .of_image extent_subset_extent_iff isGLB_biInf
+
 instance : CompleteLattice (Concept α β r) :=
   { Concept.instLatticeConcept,
     Concept.instBoundedOrderConcept with
-    sup := Concept.instSupConcept.max
-    le_sSup := fun _ _ hc => intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
-    sSup_le := fun _ _ hc =>
-      intent_subset_intent_iff.1 <| subset_iInter₂ fun d hd => intent_subset_intent_iff.2 <| hc d hd
-    inf := Concept.instInfConcept.min
-    sInf_le := fun _ _ => biInter_subset_of_mem
-    le_sInf := fun _ _ => subset_iInter₂ }
+    isLUB_sSup_of_exists_isLUB _ _ := Concept.isLUB_sSup _
+    isGLB_sInf_of_exists_isGLB _ _ := Concept.isGLB_sInf _
+    exists_isLUB _ := ⟨_, Concept.isLUB_sSup _⟩
+    exists_isGLB _ := ⟨_, Concept.isGLB_sInf _⟩ }
 
 @[simp]
 theorem extent_top : (⊤ : Concept α β r).extent = univ :=

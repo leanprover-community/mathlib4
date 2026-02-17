@@ -137,10 +137,10 @@ protected theorem isGLB_sInf (h₁ : s.Nonempty) (h₂ : BddBelow s) : IsGLB s (
 noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
   __ := Real.linearOrder
   __ := Real.lattice
-  le_csSup s a hs ha := (Real.isLUB_sSup ⟨a, ha⟩ hs).1 ha
-  csSup_le s a hs ha := (Real.isLUB_sSup hs ⟨a, ha⟩).2 ha
-  csInf_le s a hs ha := (Real.isGLB_sInf ⟨a, ha⟩ hs).1 ha
-  le_csInf s a hs ha := (Real.isGLB_sInf hs ⟨a, ha⟩).2 ha
+  isLUB_sSup_of_exists_isLUB _ := fun ⟨_, h⟩ ↦ Real.isLUB_sSup h.nonempty h.bddAbove
+  isGLB_sInf_of_exists_isGLB _ := fun ⟨_, h⟩ ↦ Real.isGLB_sInf h.nonempty h.bddBelow
+  exists_isLUB_of_nonempty_of_bddAbove _ hn hb := ⟨_, Real.isLUB_sSup hn hb⟩
+  exists_isGLB_of_nonempty_of_bddBelow _ hn hb := ⟨_, Real.isGLB_sInf hn hb⟩
   csSup_of_not_bddAbove s hs := by simp [hs, sSup_def]
   csInf_of_not_bddBelow s hs := by simp [hs, sInf_def, sSup_def]
 
@@ -191,7 +191,7 @@ lemma iSup_of_not_bddAbove (hf : ¬BddAbove (Set.range f)) : ⨆ i, f i = 0 := s
 theorem sSup_univ : sSup (@Set.univ ℝ) = 0 := Real.sSup_of_not_bddAbove not_bddAbove_univ
 
 @[simp]
-theorem sInf_empty : sInf (∅ : Set ℝ) = 0 := by simp [sInf_def, sSup_empty]
+theorem sInf_empty : sInf (∅ : Set ℝ) = 0 := by simp [sInf_def]
 
 @[simp] nonrec lemma iInf_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨅ i, f i = 0 := by
   rw [iInf_of_isEmpty, sInf_empty]
@@ -226,7 +226,7 @@ are at most some nonnegative number `a` to show that `sSup s ≤ a`.
 See also `csSup_le`. -/
 protected lemma sSup_le (hs : ∀ x ∈ s, x ≤ a) (ha : 0 ≤ a) : sSup s ≤ a := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
-  exacts [sSup_empty.trans_le ha, csSup_le hs' hs]
+  exacts [Real.sSup_empty.trans_le ha, csSup_le hs' hs]
 
 /-- As `⨆ i, f i = 0` when the domain of the real-valued function `f` is empty, it suffices to show
 that all values of `f` are at most some nonnegative number `a` to show that `⨆ i, f i ≤ a`.

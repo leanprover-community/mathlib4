@@ -22,6 +22,9 @@ open Int
 
 noncomputable section
 
+instance : NoBotOrder ℤ := ⟨fun x ↦ ⟨x - 1, (Int.sub_one_lt_of_le le_rfl).not_ge⟩⟩
+instance : NoTopOrder ℤ := ⟨fun x ↦ ⟨x + 1, (Int.lt_add_one_of_le le_rfl).not_ge⟩⟩
+
 open scoped Classical in
 instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder ℤ where
   __ := instLinearOrder
@@ -34,22 +37,16 @@ instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder
     if h : s.Nonempty ∧ BddBelow s then
       leastOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
     else 0
-  le_csSup s n hs hns := by
-    have : s.Nonempty ∧ BddAbove s := ⟨⟨n, hns⟩, hs⟩
-    simp only [dif_pos this]
-    exact (greatestOfBdd _ _ _).2.2 n hns
-  csSup_le s n hs hns := by
-    have : s.Nonempty ∧ BddAbove s := ⟨hs, ⟨n, hns⟩⟩
-    simp only [dif_pos this]
-    exact hns (greatestOfBdd _ (Classical.choose_spec this.2) _).2.1
-  csInf_le s n hs hns := by
-    have : s.Nonempty ∧ BddBelow s := ⟨⟨n, hns⟩, hs⟩
-    simp only [dif_pos this]
-    exact (leastOfBdd _ _ _).2.2 n hns
-  le_csInf s n hs hns := by
-    have : s.Nonempty ∧ BddBelow s := ⟨hs, ⟨n, hns⟩⟩
-    simp only [dif_pos this]
-    exact hns (leastOfBdd _ (Classical.choose_spec this.2) _).2.1
+  isLUB_sSup_of_exists_isLUB s := fun ⟨_, h⟩ ↦ by
+    rw [dif_pos ⟨h.nonempty, h.bddAbove⟩]
+    exact (isGreatest_coe_greatestOfBdd _ _ _).isLUB
+  isGLB_sInf_of_exists_isGLB s := fun ⟨_, h⟩ ↦ by
+    rw [dif_pos ⟨h.nonempty, h.bddBelow⟩]
+    exact (isLeast_coe_leastOfBdd _ _ _).isGLB
+  exists_isLUB_of_nonempty_of_bddAbove _ hn hb :=
+    ⟨greatestOfBdd hb.choose hb.choose_spec hn, (isGreatest_coe_greatestOfBdd _ _ _).isLUB⟩
+  exists_isGLB_of_nonempty_of_bddBelow _ hn hb :=
+    ⟨leastOfBdd hb.choose hb.choose_spec hn, (isLeast_coe_leastOfBdd _ _ _).isGLB⟩
   csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
   csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
 
@@ -57,9 +54,7 @@ namespace Int
 
 theorem csSup_eq_greatestOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (Hb : ∀ z ∈ s, z ≤ b)
     (Hinh : ∃ z : ℤ, z ∈ s) : sSup s = greatestOfBdd b Hb Hinh := by
-  have : s.Nonempty ∧ BddAbove s := ⟨Hinh, b, Hb⟩
-  simp only [sSup, dif_pos this]
-  convert (coe_greatestOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddAbove s)) Hinh).symm
+  convert (isGreatest_coe_greatestOfBdd _ _ _).isLUB.sSup_eq
 
 @[deprecated (since := "2025-12-24")] alias csSup_eq_greatest_of_bdd := csSup_eq_greatestOfBdd
 

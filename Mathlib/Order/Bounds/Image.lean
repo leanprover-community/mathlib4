@@ -133,6 +133,7 @@ include Hf
 theorem mem_upperBounds_image (Ha : a ∈ upperBounds s) : f a ∈ upperBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Ha H)
 
+@[to_dual existing]
 theorem mem_lowerBounds_image (Ha : a ∈ lowerBounds s) : f a ∈ lowerBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Ha H)
 
@@ -480,7 +481,7 @@ lemma bddBelow_range_prod {F : ι → α × β} :
     BddBelow (range F) ↔ BddBelow (range <| Prod.fst ∘ F) ∧ BddBelow (range <| Prod.snd ∘ F) :=
   bddAbove_range_prod (α := αᵒᵈ) (β := βᵒᵈ)
 
-theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
+theorem isLUB_prod {s : Set (α × β)} {p : α × β} :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
   refine
     ⟨fun H =>
@@ -496,7 +497,7 @@ theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
       ⟨H.1.2 <| monotone_fst.mem_upperBounds_image hq,
         H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
 
-theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
+theorem isGLB_prod {s : Set (α × β)} {p : α × β} :
     IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
   @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
 
@@ -548,15 +549,17 @@ theorem isGLB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
 
 end Pi
 
-theorem IsGLB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
+theorem IsGLB.of_image [LE α] [LE β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
     {s : Set α} {x : α} (hx : IsGLB (f '' s) (f x)) : IsGLB s x :=
   ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
-    hf.1 <| hx.2 <| Monotone.mem_lowerBounds_image (fun _ _ => hf.2) hy⟩
+    -- was `hf.1 <| hx.2 <| Monotone.mem_lowerBounds_image (fun _ _ => hf.2) hy`
+    -- but `Monotone` requires `Preorder`
+    hf.1 <| hx.2 <| forall_mem_image.2 fun _ hz ↦ hf.mpr (hy hz)⟩
 
-theorem IsLUB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
+theorem IsLUB.of_image [LE α] [LE β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
     {s : Set α} {x : α} (hx : IsLUB (f '' s) (f x)) : IsLUB s x :=
   ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
-    hf.1 <| hx.2 <| Monotone.mem_upperBounds_image (fun _ _ => hf.2) hy⟩
+    hf.1 <| hx.2 <| forall_mem_image.2 fun _ hz ↦ hf.mpr (hy hz)⟩
 
 lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀ a, f a ≤ g a)
     (hbdd : BddAbove (range g)) : BddAbove (range f) := by

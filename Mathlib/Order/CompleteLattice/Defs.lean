@@ -52,16 +52,19 @@ variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → 
 instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
   ⟨(sInf : Set α → α)⟩
 
+instance OrderDual.orderSupInfSet (α) [LE α] [OrderSupInfSet α] : OrderSupInfSet αᵒᵈ where
+  isLUB_sSup_of_exists_isLUB _ := isGLB_sInf_of_exists_isGLB (α := α)
+  isGLB_sInf_of_exists_isGLB _ := isLUB_sSup_of_exists_isLUB (α := α)
+
 /-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
 
 Nevertheless it is sometimes a useful intermediate step in constructions.
 -/
 class CompleteSemilatticeSup (α : Type*) extends PartialOrder α, SupSet α where
-  /-- Any element of a set is less than the set supremum. -/
-  le_sSup : ∀ s, ∀ a ∈ s, a ≤ sSup s
-  /-- Any upper bound is more than the set supremum. -/
-  sSup_le : ∀ s a, (∀ b ∈ s, b ≤ a) → sSup s ≤ a
+  protected isLUB_sSup_of_exists_isLUB s : (∃ a, IsLUB s a) → IsLUB s (sSup s)
+  /-- Every set has a least upper bound. -/
+  exists_isLUB : ∀ s : Set α, ∃ a, IsLUB s a
 
 /-- Note that we rarely use `CompleteSemilatticeInf`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
@@ -70,33 +73,30 @@ Nevertheless it is sometimes a useful intermediate step in constructions.
 -/
 @[to_dual]
 class CompleteSemilatticeInf (α : Type*) extends PartialOrder α, InfSet α where
-  /-- Any element of a set is more than the set infimum. -/
-  sInf_le : ∀ s, ∀ a ∈ s, sInf s ≤ a
-  /-- Any lower bound is less than the set infimum. -/
-  le_sInf : ∀ s a, (∀ b ∈ s, a ≤ b) → a ≤ sInf s
+  protected isGLB_sInf_of_exists_isGLB s : (∃ a, IsGLB s a) → IsGLB s (sInf s)
+  /-- Every set has a greatest lower bound. -/
+  exists_isGLB : ∀ s : Set α, ∃ a, IsGLB s a
 
 section
 
 variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 
-@[to_dual sInf_le]
-theorem le_sSup : a ∈ s → a ≤ sSup s :=
-  CompleteSemilatticeSup.le_sSup s a
-
-@[to_dual le_sInf]
-theorem sSup_le : (∀ b ∈ s, b ≤ a) → sSup s ≤ a :=
-  CompleteSemilatticeSup.sSup_le s a
-
 @[to_dual]
 theorem isLUB_sSup (s : Set α) : IsLUB s (sSup s) :=
-  ⟨fun _ ↦ le_sSup, fun _ ↦ sSup_le⟩
+  CompleteSemilatticeSup.isLUB_sSup_of_exists_isLUB _ (CompleteSemilatticeSup.exists_isLUB s)
+
+@[to_dual sInf_le]
+theorem le_sSup (h : a ∈ s) : a ≤ sSup s :=
+  (isLUB_sSup s).1 h
+
+@[to_dual le_sInf]
+theorem sSup_le (h : ∀ b ∈ s, b ≤ a) : sSup s ≤ a :=
+  (isLUB_sSup s).2 h
 
 @[to_dual]
 lemma isLUB_iff_sSup_eq : IsLUB s a ↔ sSup s = a :=
-  ⟨(isLUB_sSup s).unique, by rintro rfl; exact isLUB_sSup _⟩
-
-@[to_dual]
-alias ⟨IsLUB.sSup_eq, _⟩ := isLUB_iff_sSup_eq
+  letI : OrderSupInfSet α := .ofSupSet CompleteSemilatticeSup.isLUB_sSup_of_exists_isLUB
+  ⟨IsLUB.sSup_eq, by rintro rfl; exact isLUB_sSup _⟩
 
 @[to_dual sInf_le_of_le]
 theorem le_sSup_of_le (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
@@ -122,14 +122,16 @@ end
 
 @[to_dual]
 instance {α : Type*} [CompleteSemilatticeInf α] : CompleteSemilatticeSup αᵒᵈ where
-  le_sSup := @CompleteSemilatticeInf.sInf_le α _
-  sSup_le := @CompleteSemilatticeInf.le_sInf α _
+  isLUB_sSup_of_exists_isLUB := @CompleteSemilatticeInf.isGLB_sInf_of_exists_isGLB α _
+  exists_isLUB := @CompleteSemilatticeInf.exists_isGLB α _
 
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
-class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
+class CompleteLattice (α : Type*) extends Lattice α, OrderSupInfSet α, CompleteSemilatticeSup α,
     CompleteSemilatticeInf α, BoundedOrder α
 
-attribute [to_dual existing] CompleteLattice.toCompleteSemilatticeInf
+attribute [to_dual self (reorder := 4 5)] CompleteLattice.mk
+attribute [to_dual existing] CompleteLattice.toCompleteSemilatticeSup
+attribute [to_dual existing] CompleteLattice.exists_isLUB
 
 -- Shortcut instance to ensure that the path
 -- `CompleteLattice α → CompletePartialOrder α → PartialOrder α` isn't taken,
@@ -155,7 +157,7 @@ instance : CompleteLattice my_T where
 -/
 def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
     (isGLB_sInf : ∀ s : Set α, IsGLB s (sInf s)) : CompleteLattice α where
-  __ := H1; __ := H2
+  __ := H1; __ := H2; __ := OrderSupInfSet.ofInfSet fun _ _ ↦ isGLB_sInf _
   bot := sInf univ
   bot_le _ := (isGLB_sInf univ).1 trivial
   top := sInf ∅
@@ -170,11 +172,8 @@ def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
   sup_le a b c hac hbc := (isGLB_sInf _).1 <| by simp [*]
   le_sup_left _ _ := (isGLB_sInf _).2 fun _ => And.left
   le_sup_right _ _ := (isGLB_sInf _).2 fun _ => And.right
-  le_sInf s _ ha := (isGLB_sInf s).2 ha
-  sInf_le s _ ha := (isGLB_sInf s).1 ha
-  sSup s := sInf (upperBounds s)
-  le_sSup s _ ha := (isGLB_sInf (upperBounds s)).2 fun _ hb => hb ha
-  sSup_le s _ ha := (isGLB_sInf (upperBounds s)).1 ha
+  exists_isGLB s := ⟨sInf s, isGLB_sInf s⟩
+  exists_isLUB s := ⟨sInf (upperBounds s), isGLB_upperBounds.mp (isGLB_sInf _)⟩
 
 /-- Any `CompleteSemilatticeInf` is in fact a `CompleteLattice`.
 
@@ -202,7 +201,7 @@ instance : CompleteLattice my_T where
 -/
 def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
     (isLUB_sSup : ∀ s : Set α, IsLUB s (sSup s)) : CompleteLattice α where
-  __ := H1; __ := H2
+  __ := H1; __ := H2; __ := OrderSupInfSet.ofSupSet fun _ _ ↦ isLUB_sSup _
   top := sSup univ
   le_top _ := (isLUB_sSup univ).1 trivial
   bot := sSup ∅
@@ -215,11 +214,8 @@ def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
   le_inf a b c hab hac := (isLUB_sSup _).1 <| by simp [*]
   inf_le_left _ _ := (isLUB_sSup _).2 fun _ => And.left
   inf_le_right _ _ := (isLUB_sSup _).2 fun _ => And.right
-  sInf s := sSup (lowerBounds s)
-  sSup_le s _ ha := (isLUB_sSup s).2 ha
-  le_sSup s _ ha := (isLUB_sSup s).1 ha
-  sInf_le s _ ha := (isLUB_sSup (lowerBounds s)).2 fun _ hb => hb ha
-  le_sInf s _ ha := (isLUB_sSup (lowerBounds s)).1 ha
+  exists_isLUB s := ⟨sSup s, isLUB_sSup s⟩
+  exists_isGLB s := ⟨sSup (lowerBounds s), isLUB_lowerBounds.mp (isLUB_sSup _)⟩
 
 /-- Any `CompleteSemilatticeSup` is in fact a `CompleteLattice`.
 
@@ -262,10 +258,6 @@ namespace OrderDual
 
 instance instCompleteLattice [CompleteLattice α] : CompleteLattice αᵒᵈ where
   __ := instBoundedOrder α
-  le_sSup := @CompleteLattice.sInf_le α _
-  sSup_le := @CompleteLattice.le_sInf α _
-  sInf_le := @CompleteLattice.le_sSup α _
-  le_sInf := @CompleteLattice.sSup_le α _
 
 instance instCompleteLinearOrder [CompleteLinearOrder α] : CompleteLinearOrder αᵒᵈ where
   __ := instCompleteLattice
