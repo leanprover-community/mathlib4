@@ -396,8 +396,8 @@ variable [Zero M] [Zero N] [Zero P]
 
 @[simp]
 theorem mapRange_single {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
-    mapRange f hf (single a b) = single a (f b) :=
-  by classical grind
+    mapRange f hf (single a b) = single a (f b) := by
+  classical grind
 
 end MapRange
 

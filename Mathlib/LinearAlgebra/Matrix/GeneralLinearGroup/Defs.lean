@@ -50,6 +50,12 @@ namespace GeneralLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v}
 
+variable (n) in
+/-- Scalar matrix as an element of `GL n R`. -/
+@[simps!]
+def scalar [Semiring R] : Rˣ →* GL n R :=
+  Units.map (Matrix.scalar n).toMonoidHom
+
 section CoeFnInstance
 
 instance instCoeFun [Semiring R] : CoeFun (GL n R) fun _ => n → n → R where
@@ -72,6 +78,11 @@ def det : GL n R →* Rˣ where
 
 lemma det_ne_zero [Nontrivial R] (g : GL n R) : g.val.det ≠ 0 :=
   g.det.ne_zero
+
+@[simp]
+theorem det_scalar (u : Rˣ) : det (scalar n u) = u ^ Fintype.card n := by
+  ext
+  simp
 
 /-- The groups `GL n R` (notation for `Matrix.GeneralLinearGroup n R`) and
 `LinearMap.GeneralLinearGroup R (n → R)` are multiplicatively equivalent -/

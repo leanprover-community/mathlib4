@@ -31,7 +31,7 @@ In addition, this file also provides normed structures for quotients of modules 
 of (commutative) rings by ideals. The `SeminormedAddCommGroup` and `NormedAddCommGroup`
 instances described above are transferred directly, but we also define instances of `NormedSpace`,
 `SeminormedCommRing`, `NormedCommRing` and `NormedAlgebra` under appropriate type class
-assumptions on the original space. Moreover, while `QuotientAddGroup.completeSpace` works
+assumptions on the original space. Moreover, while `QuotientAddGroup.completeSpace_right` works
 out-of-the-box for quotients of `NormedAddCommGroup`s by `AddSubgroup`s, we need to transfer
 this instance in `Submodule.Quotient.completeSpace` so that it applies to these other quotients.
 
@@ -431,7 +431,7 @@ instance Submodule.Quotient.normedAddCommGroup [hS : IsClosed (S : Set M)] :
   QuotientAddGroup.instNormedAddCommGroup S.toAddSubgroup (hS := hS)
 
 instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M ⧸ S) :=
-  QuotientAddGroup.completeSpace M S.toAddSubgroup
+  QuotientAddGroup.completeSpace_right M S.toAddSubgroup
 
 /-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `Submodule.Quotient.mk m = x`
 and `‖m‖ < ‖x‖ + ε`. -/

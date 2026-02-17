@@ -257,7 +257,7 @@ theorem lt_def {p q : Seminorm 𝕜 E} : p < q ↔ p ≤ q ∧ ∃ x, p x < q x 
   @Pi.lt_def _ _ _ p q
 
 instance instSemilatticeSup : SemilatticeSup (Seminorm 𝕜 E) :=
-  Function.Injective.semilatticeSup _ DFunLike.coe_injective coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 end SMul
 
@@ -1159,9 +1159,9 @@ theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
   exact isOpen_lt hq continuous_const
 
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
-    (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) :=
+    (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) := by
   have this : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
-  by simpa only [p.ball_zero_eq] using this (Iio_mem_nhds hr)
+  simpa only [p.ball_zero_eq] using this (Iio_mem_nhds hr)
 
 lemma uniformSpace_eq_of_hasBasis
     {ι} [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul 𝕜 E]
