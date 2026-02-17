@@ -182,6 +182,14 @@ lemma GrpObj.inv_eq_inv : ι = (𝟙 G)⁻¹ := by simp [Hom.inv_def]
 @[reassoc (attr := simp)]
 lemma GrpObj.one_inv : η[G] ≫ ι = η := by simp [GrpObj.inv_eq_inv, GrpObj.comp_inv, one_eq_one]
 
+open scoped _root_.CategoryTheory.Obj in
+/-- If `G` is a group object and `F` is monoidal,
+then `Hom(X, G) → Hom(F X, F G)` preserves inverses. -/
+@[simp] lemma Functor.map_inv' {D : Type*} [Category* D] [CartesianMonoidalCategory D] (F : C ⥤ D)
+    [F.Monoidal] {X G : C} (f : X ⟶ G) [GrpObj G] :
+    F.map (f⁻¹) = (F.map f)⁻¹ := by
+  rw [eq_inv_iff_mul_eq_one, ← Functor.map_mul, inv_mul_cancel, Functor.map_one]
+
 @[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
 
 /-- The commutator of `G` as a morphism. This is the map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`,
@@ -241,8 +249,8 @@ namespace Hom
 
 @[simp] lemma hom_hom_inv (f : G ⟶ H) : f⁻¹.hom.hom = f.hom.hom⁻¹ := rfl
 @[simp] lemma hom_hom_div (f g : G ⟶ H) : (f / g).hom.hom = f.hom.hom / g.hom.hom := rfl
-@[simp] lemma hom_hom_zpow (f : G ⟶ H) (n : ℤ) : (f ^ n).hom.hom = f.hom.hom ^ n :=
-  by cases n <;> simp
+@[simp] lemma hom_hom_zpow (f : G ⟶ H) (n : ℤ) : (f ^ n).hom.hom = f.hom.hom ^ n := by
+  cases n <;> simp
 
 @[deprecated (since := "2025-12-18")] alias hom_inv := hom_hom_inv
 @[deprecated (since := "2025-12-18")] alias hom_div := hom_hom_div

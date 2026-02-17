@@ -128,9 +128,7 @@ def prodBinaryFan (X Y : TopCat.{u}) : BinaryFan X Y :=
 
 /-- The constructed binary fan is indeed a limit -/
 def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
-  lift := fun S : BinaryFan X Y => ofHom {
-    toFun := fun s => (S.fst s, S.snd s)
-    continuous_toFun := by continuity }
+  lift := fun S : BinaryFan X Y => ofHom { toFun s := (S.fst s, S.snd s) }
   fac := by
     rintro S (_ | _) <;> {dsimp; ext; rfl}
   uniq := by

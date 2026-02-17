@@ -591,9 +591,6 @@ theorem Finset.union_inr (h : Disjoint s t) (y : t) :
     Equiv.Finset.union s t h (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
   rfl
 
-@[deprecated (since := "2024-06-07")] alias Finset.union_symm_inl := Finset.union_inl
-@[deprecated (since := "2024-06-07")] alias Finset.union_symm_inr := Finset.union_inr
-
 @[simp]
 theorem Finset.union_symm_left (h : Disjoint s t) {i : α} (hi : i ∈ s)
     (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inl ⟨i, hi⟩ := by

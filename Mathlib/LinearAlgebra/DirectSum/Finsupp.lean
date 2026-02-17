@@ -194,14 +194,7 @@ lemma finsuppScalarRight_symm_apply_single (i : ι) (m : M) :
 
 theorem finsuppScalarRight_smul (s : S) (t) :
     finsuppScalarRight R S M ι (s • t) = s • finsuppScalarRight R S M ι t := by
-  induction t using TensorProduct.induction_on with
-  | zero => simp
-  | add x y hx hy => simp [hx, hy]
-  | tmul m x =>
-    simp only [smul_tmul', finsuppScalarRight_apply_tmul, Finsupp.smul_sum]
-    congr
-    ext i n j
-    simp [smul_comm n s m]
+  simp
 
 @[deprecated (since := "2026-01-01")] alias finsuppScalarRight' := finsuppScalarRight
 
