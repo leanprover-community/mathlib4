@@ -177,7 +177,7 @@ section Module
 
 variable [Ring R] (v : Valuation R Γ₀) {S : Type*}
 
-instance instSMulLeft [SMul R S] : SMul (WithVal v) S where
+instance [SMul R S] : SMul (WithVal v) S where
   smul x s := ofVal x • s
 
 theorem smul_left_def [SMul R S] (x : WithVal v) (s : S) : x • s = ofVal x • s := rfl
@@ -185,7 +185,7 @@ theorem smul_left_def [SMul R S] (x : WithVal v) (s : S) : x • s = ofVal x •
 instance [SMul R S] [FaithfulSMul R S] : FaithfulSMul (WithVal v) S where
   eq_of_smul_eq_smul h := ofVal_injective v <| FaithfulSMul.eq_of_smul_eq_smul h
 
-instance instSMulRight [SMul S R] : SMul S (WithVal v) := (equiv v).smul S
+instance [SMul S R] : SMul S (WithVal v) := (equiv v).smul S
 
 theorem smul_right_def [SMul S R] (s : S) (x : WithVal v) : s • x = toVal v (s • ofVal x) := rfl
 
@@ -194,25 +194,25 @@ instance [SMul S R] [FaithfulSMul S R] : FaithfulSMul S (WithVal v) where
     simp only [smul_right_def, toVal.injEq] at h
     exact FaithfulSMul.eq_of_smul_eq_smul fun r ↦ h (toVal v r)
 
-instance instIsScalarTowerLeft {P : Type*} [Ring R] [SMul S P] [SMul R S] [SMul R P]
+instance {P : Type*} [Ring R] [SMul S P] [SMul R S] [SMul R P]
     [IsScalarTower R S P] (v : Valuation R Γ₀) : IsScalarTower (WithVal v) S P where
   smul_assoc := by simp [smul_left_def]
 
-instance instIsScalarTowerRight {P : Type*} [Ring S] [SMul P S] [SMul R S] [SMul P R]
+instance {P : Type*} [Ring S] [SMul P S] [SMul R S] [SMul P R]
     [IsScalarTower P R S] (v : Valuation S Γ₀) : IsScalarTower P R (WithVal v) :=
   (equiv v).isScalarTower P R
 
-instance instIsScalarTower {P : Type*} [Ring S] [SMul P R] [SMul S R] [SMul P S]
+instance {P : Type*} [Ring S] [SMul P R] [SMul S R] [SMul P S]
     [IsScalarTower P S R] (v : Valuation S Γ₀) : IsScalarTower P (WithVal v) R where
   smul_assoc := by simp [smul_right_def, smul_left_def]
 
-instance instModuleLeft [AddCommMonoid S] [Module R S] : Module (WithVal v) S :=
+instance [AddCommMonoid S] [Module R S] : Module (WithVal v) S :=
   .compHom S (equiv v).toRingHom
 
-instance instFiniteLeft [AddCommMonoid S] [Module R S] [Module.Finite R S] :
+instance [AddCommMonoid S] [Module R S] [Module.Finite R S] :
     Module.Finite (WithVal v) S := .of_restrictScalars_finite R (WithVal v) S
 
-instance instModuleRight [Semiring S] [Module S R] : Module S (WithVal v) :=
+instance [Semiring S] [Module S R] : Module S (WithVal v) :=
   fast_instance% (equiv v).module S
 
 @[simp] theorem toVal_smul [SMul S R] (s : S) (r : R) : toVal v (s • r) = s • toVal v r := rfl
@@ -227,7 +227,7 @@ def linearEquiv : WithVal v ≃ₗ[R] S := (equiv v).linearEquiv R
 @[simp] theorem linearEquiv_apply (x : WithVal v) : linearEquiv R v x = x.ofVal := rfl
 @[simp] theorem linearEquiv_symm_apply (x : S) : (linearEquiv R v).symm x = toVal v x := rfl
 
-instance instFiniteRight [Module R S] [Module.Finite R S] :
+instance [Module R S] [Module.Finite R S] :
     Module.Finite R (WithVal v) := .equiv (linearEquiv R v).symm
 
 end Module
@@ -240,7 +240,7 @@ section left
 
 variable [CommRing R] (v : Valuation R Γ₀) [Semiring S] [Algebra R S]
 
-instance instAlgebraLeft : Algebra (WithVal v) S := .compHom S (equiv v).toRingHom
+instance : Algebra (WithVal v) S := .compHom S (equiv v).toRingHom
 
 theorem algebraMap_left_apply (s : WithVal v) :
     algebraMap (WithVal v) S s = algebraMap R S s.ofVal := rfl
@@ -257,7 +257,7 @@ section right
 
 variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
 
-instance instAlgebraRight : Algebra R (WithVal v) := (equiv v).algebra R
+instance : Algebra R (WithVal v) := (equiv v).algebra R
 
 theorem algebraMap_right_apply (r : R) :
     algebraMap R (WithVal v) r = toVal v (algebraMap R S r) := rfl
