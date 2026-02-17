@@ -3,16 +3,18 @@ Copyright (c) 2025 Runtian Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Runtian Zhou
 -/
-import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.Combinatorics.Quiver.SingleObj
-import Mathlib.Combinatorics.Quiver.Covering
-import Mathlib.Combinatorics.Quiver.Symmetric
-import Mathlib.Combinatorics.Quiver.ConnectedComponent
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.QuotientGroup.Basic
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.Tactic.Group
+module
+
+public import Mathlib.Combinatorics.Quiver.Basic
+public import Mathlib.Combinatorics.Quiver.SingleObj
+public import Mathlib.Combinatorics.Quiver.Covering
+public import Mathlib.Combinatorics.Quiver.Symmetric
+public import Mathlib.Combinatorics.Quiver.ConnectedComponent
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.Tactic.Group
 
 /-!
 # Schreier Graphs and Cayley Graphs
@@ -50,6 +52,8 @@ rather than the simpler `SimpleGraph` approach.
 * [Lean 3 PR #18693](https://github.com/leanprover-community/mathlib3/pull/18693)
 -/
 
+@[expose] public section
+
 namespace Quiver
 
 section Basic
@@ -58,6 +62,7 @@ variable (V : Type*) {M : Type*} [SMul M V] {S : Type*} (ι : S → M)
 
 /-- The type of vertices in a Schreier graph. This is just an alias for `V` to distinguish
 the graph structure. -/
+@[nolint unusedArguments]
 def SchreierGraph (V : Type*) {M : Type*} [SMul M V] {S : Type*} (_ι : S → M) : Type _ := V
 
 /-- Equivalence between the original vertex type and the Schreier graph type. -/
@@ -66,7 +71,7 @@ def equivSchreierGraph (V : Type*) {M : Type*} [SMul M V] {S : Type*} (ι : S �
     V ≃ SchreierGraph V ι := Equiv.refl V
 
 /-- Transport the scalar multiplication to the Schreier graph vertices. -/
-instance : SMul M (SchreierGraph V ι) where
+instance schreierGraphSMul : SMul M (SchreierGraph V ι) where
   smul x y := equivSchreierGraph V ι (x • (equivSchreierGraph V ι).symm y)
 
 /-- The quiver structure on a Schreier graph. An arrow from `x` to `y` exists when
@@ -94,7 +99,7 @@ When we have a group action, the labelling becomes a covering.
 variable (V : Type*) {M : Type*} [Group M] [MulAction M V] {S : Type*} (ι : S → M)
 
 /-- The group acts on the Schreier graph vertices. -/
-instance : MulAction M (SchreierGraph V ι) where
+instance schreierGraphMulAction : MulAction M (SchreierGraph V ι) where
   smul := SMul.smul
   one_smul x := by
     change equivSchreierGraph V ι (1 • (equivSchreierGraph V ι).symm x) = x
@@ -371,9 +376,10 @@ theorem schreierGraph_path_of_mem_closure (g : M) (hg : g ∈ Subgroup.closure (
     have p' : Path (Symmetrify.of.obj (g⁻¹ • y)) (Symmetrify.of.obj y) := p.cast rfl eq
     exact ⟨p'.reverse⟩
 
-/-- Forward direction helper: given a path in the symmetrified Schreier graph,
-there exists an element in the closure relating the endpoints. -/
-private theorem schreierGraph_reachable_forward (x : SchreierGraph V ι)
+/-- Given a path in the symmetrified Schreier graph, there exists an element in the
+closure of the generators relating the endpoints. This is the forward direction of
+`schreierGraph_reachable_iff`. -/
+theorem schreierGraph_reachable_forward (x : SchreierGraph V ι)
     (y : Symmetrify (SchreierGraph V ι))
     (p : @Path (Symmetrify (SchreierGraph V ι)) _ x y) :
     ∃ g ∈ Subgroup.closure (Set.range ι), g • x = y := by
@@ -451,7 +457,7 @@ lemma cayleyGraph_star_eq (g : CayleyGraph ι) :
 /-- The set of neighbors (targets of edges) from a vertex in a Cayley graph is contained in
 the set of products `g * s` for generators `s` in the range of `ι`. -/
 lemma cayleyGraph_neighbor_subset (g : CayleyGraph ι) :
-    {h : CayleyGraph ι | Nonempty (g ⟶ h)} ⊆ (fun m => m • g) '' (Set.range ι) := by
+    {h : CayleyGraph ι | Nonempty (g ⟶ h)} ⊆ (fun m ↦ m • g) '' (Set.range ι) := by
   intro h ⟨⟨s, hs⟩⟩
   exact ⟨ι s, Set.mem_range_self s, hs⟩
 
@@ -459,7 +465,7 @@ lemma cayleyGraph_neighbor_subset (g : CayleyGraph ι) :
 are contained in the union of `g * (generators)` and `g * (generators⁻¹)`. -/
 lemma cayleyGraph_symmetrify_neighbor_subset (g : CayleyGraph ι) :
     {h : CayleyGraph ι | Nonempty (Symmetrify.of.obj g ⟶ h)} ⊆
-    ((fun m => m • g) '' (Set.range ι)) ∪ ((fun m => m⁻¹ • g) '' (Set.range ι)) := by
+    ((fun m ↦ m • g) '' (Set.range ι)) ∪ ((fun m ↦ m⁻¹ • g) '' (Set.range ι)) := by
   intro h hedge
   -- An edge in the symmetrified graph is either a forward or backward edge
   obtain ⟨e | e⟩ := hedge
@@ -495,7 +501,7 @@ theorem cayley_preconnected (hgen : Subgroup.closure (Set.range ι) = ⊤) (x y 
   · -- g • x = y
     -- The action on M ⧸ ⊥ is left multiplication
     -- We need: (φ y * (φ x)⁻¹) • x = y
-    have h : ∀ (g : M) (q : M ⧸ (⊥ : Subgroup M)), g • q = φ.symm (g * φ q) := fun g q => by
+    have h : ∀ (g : M) (q : M ⧸ (⊥ : Subgroup M)), g • q = φ.symm (g * φ q) := fun g q ↦ by
       induction q using QuotientGroup.induction_on with
       | H m =>
         simp only [MulAction.Quotient.smul_mk, φ]
@@ -522,8 +528,8 @@ noncomputable instance schreierGraph_fintype_star [Fintype S] (x : SchreierGraph
     Fintype (Σ y, x ⟶ y) := by
   classical
   -- The star is equivalent to S: each s gives an arrow to ι s • x
-  let f : S → Σ y, x ⟶ y := fun s => ⟨ι s • x, s, rfl⟩
-  have hf : Function.Surjective f := fun ⟨y, ⟨s, hs⟩⟩ => ⟨s, by subst hs; rfl⟩
+  let f : S → Σ y, x ⟶ y := fun s ↦ ⟨ι s • x, s, rfl⟩
+  have hf : Function.Surjective f := fun ⟨y, ⟨s, hs⟩⟩ ↦ ⟨s, by subst hs; rfl⟩
   exact Fintype.ofSurjective f hf
 
 /-- When S is finite, the Cayley graph is locally finite (each vertex has finitely many
@@ -533,8 +539,8 @@ noncomputable instance cayley_locally_finite [Fintype S] (g : CayleyGraph ι) :
   schreierGraph_fintype_star (M ⧸ (⊥ : Subgroup M)) ι g
 
 /-- A Cayley graph is connected (has a single weakly connected component) when the generators
-generate the entire group and the group is nonempty. -/
-theorem cayley_connected (hgen : Subgroup.closure (Set.range ι) = ⊤) [Nonempty M] :
+generate the entire group. -/
+theorem cayley_connected (hgen : Subgroup.closure (Set.range ι) = ⊤) :
     Subsingleton (WeaklyConnectedComponent (CayleyGraph ι)) := by
   constructor
   intro c₁ c₂
@@ -550,7 +556,7 @@ end CayleyGraph
 /-!
 ### Quiver Isomorphisms
 
-A minimal definition of quiver isomorphism, sufficient for proving that left multiplication
+A minimal definition of quiver isomorphism, sufficient for proving that right multiplication
 is an automorphism of Cayley graphs.
 -/
 
@@ -639,8 +645,8 @@ variable (N : Subgroup M) [N.Normal]
 /-- Right multiplication by `g⁻¹` on the quotient `M ⧸ N`. This is well-defined because
 right multiplication preserves left cosets when `N` is normal. -/
 def quotientRightMul (g : M) : M ⧸ N → M ⧸ N :=
-  Quotient.lift (fun x => QuotientGroup.mk (x * g⁻¹))
-    (fun x y (h : QuotientGroup.leftRel N x y) => by
+  Quotient.lift (fun x ↦ QuotientGroup.mk (x * g⁻¹))
+    (fun x y (h : QuotientGroup.leftRel N x y) ↦ by
       rw [QuotientGroup.eq]
       rw [QuotientGroup.leftRel_eq] at h
       -- h : x⁻¹ * y ∈ N
@@ -662,9 +668,9 @@ theorem schreierGraph_smul_def {V : Type*} {M : Type*} [SMul M V] {S : Type*} (�
 This maps each coset `xN` to `xg⁻¹N`. -/
 @[simps]
 def schreierCosetGraph_asAutom (g : M) : SchreierCosetGraph ι N ⥤q SchreierCosetGraph ι N where
-  obj := fun x => (equivSchreierGraph (M ⧸ N) ι) (quotientRightMul N g
+  obj := fun x ↦ (equivSchreierGraph (M ⧸ N) ι) (quotientRightMul N g
       ((equivSchreierGraph (M ⧸ N) ι).symm x))
-  map := fun {x y} ⟨s, hs⟩ => ⟨s, by
+  map := fun {x y} ⟨s, hs⟩ ↦ ⟨s, by
     -- Need: ι s • (x * g⁻¹) = y * g⁻¹  (in quotient notation)
     -- We have: ι s • x = y (in the Schreier graph)
     -- Since equivSchreierGraph is Equiv.refl, everything unfolds to quotient operations
@@ -688,7 +694,7 @@ theorem schreierCosetGraph_asAutom_map_val {x y : SchreierCosetGraph ι N} (f : 
 
 omit [N.Normal] in
 /-- For Schreier graph arrows, `homOfEq` preserves the generator value. -/
-private theorem schreierGraph_homOfEq_val {x y x' y' : SchreierCosetGraph ι N}
+theorem schreierGraph_homOfEq_val {x y x' y' : SchreierCosetGraph ι N}
     (f : x ⟶ y) (hx : x = x') (hy : y = y') :
     (Quiver.homOfEq f hx hy).val = f.val := by
   subst hx hy

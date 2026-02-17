@@ -3,10 +3,12 @@ Copyright (c) 2025 Runtian Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Runtian Zhou
 -/
-import Mathlib.Combinatorics.Quiver.Schreier
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Combinatorics.Quiver.Schreier
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # Cayley Graph Examples
@@ -33,6 +35,8 @@ demonstrating the Cayley graph infrastructure defined in `Schreier.lean`.
 * `Quiver.cayleyInt_connected` - The integer Cayley graph is connected
 -/
 
+@[expose] public section
+
 namespace Quiver
 
 /-!
@@ -45,8 +49,9 @@ since the Cayley graph infrastructure uses multiplicative group notation.
 
 /-- The standard generator for the cyclic group `Multiplicative (ZMod n)`.
 This is just `1` viewed as an element of the multiplicative version of `ℤ/nℤ`. -/
+@[nolint unusedArguments]
 def cyclicGenerator (n : ℕ) : Fin 1 → Multiplicative (ZMod n) :=
-  fun _ => Multiplicative.ofAdd 1
+  fun _ ↦ Multiplicative.ofAdd 1
 
 /-- The Cayley graph of the cyclic group ℤ/nℤ with the standard generator {1}.
 This is a directed cycle of length n: each vertex k has an edge to k+1 (mod n). -/
@@ -81,7 +86,7 @@ theorem cayleyCyclic_connected (n : ℕ) [NeZero n] :
   exact cyclicGenerator_closure_eq_top n
 
 /-- The cyclic Cayley graph is locally finite (each vertex has exactly one outgoing edge). -/
-noncomputable instance cayleyCyclic_locallyFinite (n : ℕ) [NeZero n] (g : CayleyCyclic n) :
+noncomputable instance cayleyCyclic_locallyFinite (n : ℕ) (g : CayleyCyclic n) :
     Fintype (Σ h, g ⟶ h) :=
   cayley_locally_finite (cyclicGenerator n) g
 
@@ -95,7 +100,7 @@ open Equiv in
 /-- Adjacent transpositions for the symmetric group on `Fin (n+1)`.
 Maps `i : Fin n` to the transposition `swap i (i+1)`. -/
 def adjacentTranspositions (n : ℕ) : Fin n → Perm (Fin (n + 1)) :=
-  fun i => swap (Fin.castSucc i) (Fin.succ i)
+  fun i ↦ swap (Fin.castSucc i) (Fin.succ i)
 
 open Equiv in
 /-- The Cayley graph of the symmetric group S_{n+1} with adjacent transpositions.
@@ -140,8 +145,9 @@ the formalization handles infinite groups correctly.
 
 /-- The standard generator for the infinite cyclic group `ℤ` (viewed multiplicatively).
 This maps the unique element of `Fin 1` to `Multiplicative.ofAdd 1`. -/
+@[nolint unusedArguments]
 def intGenerator : Fin 1 → Multiplicative ℤ :=
-  fun _ => Multiplicative.ofAdd 1
+  fun _ ↦ Multiplicative.ofAdd 1
 
 /-- The Cayley graph of `ℤ` with the standard generator `{1}`.
 This is the bi-infinite path graph: each vertex `n` has an edge to `n + 1`. -/
