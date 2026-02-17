@@ -191,43 +191,43 @@ theorem map_pt_mem_toOpenPartialHomeomorph_target :
   map_pt_mem_toPartialHomeomorph_target := map_pt_mem_toOpenPartialHomeomorph_target
 
 theorem prodFun_implicitFunction :
-    ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.prodFun (φ.implicitFunction p.1 p.2) = p :=
+    ∀ᶠ v : F × G in 𝓝 (φ.prodFun φ.pt), φ.prodFun (φ.implicitFunction v.1 v.2) = v :=
   φ.hasStrictFDerivAt.eventually_right_inverse.mono fun ⟨_, _⟩ h => h
 
 @[deprecated (since := "2026-01-27")]
 alias prod_map_implicitFunction := prodFun_implicitFunction
 
 theorem leftFun_implicitFunction :
-    ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.leftFun (φ.implicitFunction p.1 p.2) = p.1 :=
+    ∀ᶠ v : F × G in 𝓝 (φ.prodFun φ.pt), φ.leftFun (φ.implicitFunction v.1 v.2) = v.1 :=
   φ.prodFun_implicitFunction.mono fun _ => congr_arg Prod.fst
 
 @[deprecated (since := "2026-01-27")]
 alias left_map_implicitFunction := leftFun_implicitFunction
 
 theorem rightFun_implicitFunction :
-    ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.rightFun (φ.implicitFunction p.1 p.2) = p.2 :=
+    ∀ᶠ v : F × G in 𝓝 (φ.prodFun φ.pt), φ.rightFun (φ.implicitFunction v.1 v.2) = v.2 :=
   φ.prodFun_implicitFunction.mono fun _ => congr_arg Prod.snd
 
 @[deprecated (since := "2026-01-27")]
 alias right_map_implicitFunction := rightFun_implicitFunction
 
 theorem implicitFunction_apply_image :
-    ∀ᶠ x in 𝓝 φ.pt, φ.implicitFunction (φ.leftFun x) (φ.rightFun x) = x :=
+    ∀ᶠ v in 𝓝 φ.pt, φ.implicitFunction (φ.leftFun v) (φ.rightFun v) = v :=
   φ.hasStrictFDerivAt.eventually_left_inverse
 
-theorem leftFun_implicitFunction_eq_leftFun : ∀ᶠ x in 𝓝 φ.pt,
-    φ.leftFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x)) = φ.leftFun φ.pt := by
+theorem leftFun_implicitFunction_eq_leftFun : ∀ᶠ v in 𝓝 φ.pt,
+    φ.leftFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun v)) = φ.leftFun φ.pt := by
   have := φ.leftFun_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
   rwa [← prodFun_apply, ← φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, eventually_map] at this
 
-theorem rightFun_implicitFunction_eq_rightFun : ∀ᶠ x in 𝓝 φ.pt,
-    φ.rightFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x)) = φ.rightFun x := by
+theorem rightFun_implicitFunction_eq_rightFun : ∀ᶠ v in 𝓝 φ.pt,
+    φ.rightFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun v)) = φ.rightFun v := by
   have := φ.rightFun_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
   rwa [← prodFun_apply, ← φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, eventually_map] at this
 
-theorem leftFun_eq_iff_implicitFunction : ∀ᶠ x in 𝓝 φ.pt,
-    φ.leftFun x = φ.leftFun φ.pt ↔ φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x) = x := by
-  filter_upwards [φ.implicitFunction_apply_image, φ.leftFun_implicitFunction_eq_leftFun] with x _ _
+theorem leftFun_eq_iff_implicitFunction : ∀ᶠ v in 𝓝 φ.pt,
+    φ.leftFun v = φ.leftFun φ.pt ↔ φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun v) = v := by
+  filter_upwards [φ.implicitFunction_apply_image, φ.leftFun_implicitFunction_eq_leftFun] with v _ _
   constructor <;> exact fun h => by rwa [← h]
 
 theorem map_nhds_eq : map φ.leftFun (𝓝 φ.pt) = 𝓝 (φ.leftFun φ.pt) :=

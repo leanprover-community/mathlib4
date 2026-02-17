@@ -15,12 +15,12 @@ in the product space.
 
 ## Main statements
 
-- `hasStrictFDerivAt_uncurry_coprod`: establishing strict differentiability at a point `x` in the
-  product space, this requires that both partial derivatives exist in a neighbourhood of `x` and be
-  continuous at `x`.
+- `hasStrictFDerivAt_uncurry_coprod`: establishing strict differentiability at a point `u` in the
+  product space, this requires that both partial derivatives exist in a neighbourhood of `u` and be
+  continuous at `u`.
 -/
 
-@[expose] public section
+public section
 
 open Asymptotics Filter
 open scoped Convex Topology
