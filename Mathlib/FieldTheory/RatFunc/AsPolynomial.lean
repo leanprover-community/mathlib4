@@ -45,7 +45,7 @@ open RatFunc
 
 section Domain
 
-variable [CommRing K] [IsDomain K]
+variable [CommRing K]
 
 /-- `RatFunc.C a` is the constant rational function `a`. -/
 def C : K →+* RatFunc K := algebraMap _ _
@@ -86,6 +86,8 @@ theorem algebraMap_monomial (n : ℕ) (a : K) :
 theorem aeval_X_left_eq_algebraMap (p : K[X]) :
     p.aeval (X : RatFunc K) = algebraMap K[X] (RatFunc K) p := by
   induction p using Polynomial.induction_on' <;> simp_all
+
+variable [IsDomain K]
 
 @[simp]
 lemma liftRingHom_C {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (x : K) :
@@ -214,7 +216,7 @@ end Eval
 
 section Algebra
 
-variable [CommRing K] [IsDomain K]
+variable [CommRing K]
 
 lemma transcendental_X : Transcendental K (X : RatFunc K) := by
   rw [← RatFunc.algebraMap_X, transcendental_algebraMap_iff (algebraMap_injective K)]
