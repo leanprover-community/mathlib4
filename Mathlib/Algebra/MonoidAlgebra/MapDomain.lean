@@ -196,6 +196,11 @@ noncomputable def mapRangeRingHom (f : R →+* S) : R[M] →+* S[M] where
     simp [mul_def]
     simp [MonoidAlgebra, sum_mapRange_index, map_finsuppSum, single_apply, apply_ite]
 
+@[to_additive]
+lemma coe_mapRangeRingHom (f : R →+* S) :
+    ⇑(mapRangeRingHom M f) = mapRange f (map_zero _) := by
+  simp [mapRangeRingHom]
+
 @[to_additive (attr := simp)]
 lemma mapRangeRingHom_apply (f : R →+* S) (x : R[M]) (m : M) :
     mapRangeRingHom M f x m = f (x m) := by simp [mapRangeRingHom]
@@ -275,8 +280,6 @@ lemma symm_mapRangeRingEquiv (e : R ≃+* S) :
 lemma mapRangeRingEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* T) :
     mapRangeRingEquiv M (e₁.trans e₂) =
       (mapRangeRingEquiv M e₁).trans (mapRangeRingEquiv M e₂) := by ext; simp
-
-variable [DecidableEq M] [DecidableEq N]
 
 /-- Nested monoid algebras can be taken in an arbitrary order. -/
 @[to_additive (dont_translate := R)

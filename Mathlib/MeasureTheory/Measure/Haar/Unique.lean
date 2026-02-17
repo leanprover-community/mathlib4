@@ -137,7 +137,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
   have D_cont : Continuous D := continuous_integral_apply_inv_mul hg h'g
   have D_pos : ∀ x, 0 < D x := by
     intro x
-    have C : Continuous (fun y ↦ g (y⁻¹ * x)) := hg.comp (continuous_inv.mul continuous_const)
+    have C : Continuous (fun y ↦ g (y⁻¹ * x)) := by fun_prop
     apply (integral_pos_iff_support_of_nonneg _ _).2
     · apply C.isOpen_support.measure_pos ν
       exact ⟨x * x₀⁻¹, by simpa using g_pos⟩

@@ -450,7 +450,7 @@ instance isIso_ΓSpec_adjunction_unit_app_basicOpen
   refine @IsIso.of_isIso_comp_right _ _ _ _ _ _ (X.presheaf.map
     (eqToHom (Scheme.toSpecΓ_preimage_basicOpen _ _).symm).op) _ ?_
   rw [ConcreteCategory.isIso_iff_bijective]
-  apply (config := { allowSynthFailures := true }) IsLocalization.bijective
+  apply +allowSynthFailures IsLocalization.bijective
   · exact StructureSheaf.IsLocalization.to_basicOpen _ _
   · refine isLocalization_basicOpen_of_qcqs ?_ ?_ _
     · exact isCompact_univ

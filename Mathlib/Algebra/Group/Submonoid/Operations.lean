@@ -1119,19 +1119,6 @@ end Submonoid
 
 end Units
 
-open AddSubmonoid Set
-
-namespace Nat
-
-@[simp] lemma addSubmonoidClosure_one : closure ({1} : Set ℕ) = ⊤ := by
-  refine (eq_top_iff' _).2 <| Nat.rec (zero_mem _) ?_
-  simp_rw [Nat.succ_eq_add_one]
-  exact fun n hn ↦ AddSubmonoid.add_mem _ hn <| subset_closure <| Set.mem_singleton _
-
-@[deprecated (since := "2025-08-14")] alias addSubmonoid_closure_one := addSubmonoidClosure_one
-
-end Nat
-
 namespace Submonoid
 
 variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]

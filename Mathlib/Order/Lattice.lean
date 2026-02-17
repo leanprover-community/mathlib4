@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Data.Bool.Basic
+public import Mathlib.Logic.Pairwise
 public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Order.ULift
 
@@ -579,7 +580,7 @@ variable [LinearOrder α] {a b c d : α}
 
 @[to_dual]
 theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b) :=
-  (IsTotal.total a b).elim (fun h : a ≤ b => by rwa [sup_eq_right.2 h]) fun h => by
+  (Std.Total.total a b).elim (fun h : a ≤ b => by rwa [sup_eq_right.2 h]) fun h => by
   rwa [sup_eq_left.2 h]
 
 @[to_dual (attr := simp) inf_le_iff]
@@ -603,14 +604,14 @@ theorem max_max_max_comm : max (max a b) (max c d) = max (max a c) (max b d) :=
 
 end LinearOrder
 
-theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableLE α] [IsTotal α (· ≤ ·)] :
+theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableLE α] [@Std.Total α (· ≤ ·)] :
     (· ⊔ ·) = (maxDefault : α → α → α) := by
   ext x y
   unfold maxDefault
   split_ifs with h'
   exacts [sup_of_le_right h', sup_of_le_left <| (total_of (· ≤ ·) x y).resolve_left h']
 
-theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [IsTotal α (· ≤ ·)] :
+theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [@Std.Total α (· ≤ ·)] :
     (· ⊓ ·) = (minDefault : α → α → α) := by
   ext x y
   unfold minDefault
@@ -621,7 +622,7 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [IsTotal α (· �
 
 See note [reducible non-instances]. -/
 abbrev Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
-    [DecidableLE α] [DecidableLT α] [IsTotal α (· ≤ ·)] : LinearOrder α where
+    [DecidableLE α] [DecidableLT α] [@Std.Total α (· ≤ ·)] : LinearOrder α where
   toDecidableLE := ‹_›
   toDecidableEq := ‹_›
   toDecidableLT := ‹_›
@@ -783,7 +784,7 @@ variable [LinearOrder α]
 
 theorem map_sup [SemilatticeSup β] {f : α → β} (hf : Monotone f) (x y : α) :
     f (x ⊔ y) = f x ⊔ f y :=
-  (IsTotal.total x y).elim (fun h : x ≤ y => by simp only [h, hf h, sup_of_le_right]) fun h => by
+  (Std.Total.total x y).elim (fun h : x ≤ y => by simp only [h, hf h, sup_of_le_right]) fun h => by
     simp only [h, hf h, sup_of_le_left]
 
 theorem map_inf [SemilatticeInf β] {f : α → β} (hf : Monotone f) (x y : α) :
@@ -1141,3 +1142,14 @@ end ULift
 --To avoid noncomputability poisoning from `Bool.completeBooleanAlgebra`
 instance Bool.instPartialOrder : PartialOrder Bool := inferInstance
 instance Bool.instDistribLattice : DistribLattice Bool := inferInstance
+
+variable [LinearOrder α] {p : α → α → Prop}
+
+lemma pairwise_iff_lt (hp : Symmetric p) : Pairwise p ↔ ∀ ⦃a b⦄, a < b → p a b := by
+  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ hp <| h _ _ hab
+
+lemma pairwise_iff_gt (hp : Symmetric p) : Pairwise p ↔ ∀ ⦃a b⦄, b < a → p a b := by
+  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ hp <| h _ _ hab
+
+alias ⟨_, Pairwise.of_lt⟩ := pairwise_iff_lt
+alias ⟨_, Pairwise.of_gt⟩ := pairwise_iff_gt

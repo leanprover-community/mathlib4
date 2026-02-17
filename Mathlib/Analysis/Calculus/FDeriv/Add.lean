@@ -43,7 +43,8 @@ variable {L : Filter E}
 
 section ConstSMul
 
-variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
+variable {R : Type*} [Monoid R] [DistribMulAction R F] [SMulCommClass 𝕜 R F]
+  [ContinuousConstSMul R F]
 
 /-! ### Derivative of a function multiplied by a constant -/
 
@@ -109,22 +110,11 @@ theorem fderivWithin_const_smul_of_invertible (c : R) [Invertible c]
     fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
   by_cases h : DifferentiableWithinAt 𝕜 f s x
   · exact (h.hasFDerivWithinAt.const_smul c).fderivWithin hs
-  · obtain (rfl | hc) := eq_or_ne c 0
-    · simp
-    have : ¬DifferentiableWithinAt 𝕜 (c • f) s x := by
+  · have : ¬DifferentiableWithinAt 𝕜 (c • f) s x := by
       contrapose! h
       exact (differentiableWithinAt_smul_iff c).mp h
     simp [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt this]
-
-/-- Special case of `fderivWithin_const_smul_of_invertible` over a field: any constant is allowed -/
-lemma fderivWithin_const_smul_of_field (c : 𝕜) (hs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
-  obtain (rfl | ha) := eq_or_ne c 0
-  · simp
-  · have : Invertible c := invertibleOfNonzero ha
-    ext x
-    simp [fderivWithin_const_smul_of_invertible c (f := f) hs]
 
 theorem fderiv_fun_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
     fderiv 𝕜 (fun y => c • f y) x = c • fderiv 𝕜 f x :=
@@ -145,13 +135,42 @@ theorem fderiv_const_smul_of_invertible (c : R) [Invertible c] :
     fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x := by
   simp [← fderivWithin_univ, fderivWithin_const_smul_of_invertible c uniqueDiffWithinAt_univ]
 
-/-- Special case of `fderiv_const_smul_of_invertible` over a field: any constant is allowed -/
-lemma fderiv_const_smul_of_field (c : 𝕜) : fderiv 𝕜 (c • f) = c • fderiv 𝕜 f := by
+end ConstSMul
+
+section ConstSMulDivisionRing
+
+variable {R : Type*} [DivisionSemiring R] [Module R F] [SMulCommClass 𝕜 R F]
+  [ContinuousConstSMul R F]
+
+/-- Special case of `fderivWithin_const_smul_of_invertible` over a division semiring: any constant
+is allowed.
+
+TODO: This would work for scalars in a `GroupWithZero` if we had a `DistribMulActionWithZero`
+typeclass. -/
+lemma fderivWithin_const_smul_field (c : R) (hs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
+  obtain (rfl | ha) := eq_or_ne c 0
+  · simp
+  · have : Invertible c := invertibleOfNonzero ha
+    ext x
+    simp [fderivWithin_const_smul_of_invertible c (f := f) hs]
+
+@[deprecated (since := "2026-01-11")] alias fderivWithin_const_smul_of_field :=
+  fderivWithin_const_smul_field
+
+/-- Special case of `fderiv_const_smul_of_invertible` over a division semiring: any constant is
+allowed.
+
+TODO: This would work for scalars in a `GroupWithZero` if we had a `DistribMulActionWithZero`
+typeclass. -/
+lemma fderiv_const_smul_field (c : R) : fderiv 𝕜 (c • f) = c • fderiv 𝕜 f := by
   simp_rw [← fderivWithin_univ]
   ext x
-  simp [fderivWithin_const_smul_of_field c uniqueDiffWithinAt_univ]
+  simp [fderivWithin_const_smul_field c uniqueDiffWithinAt_univ]
 
-end ConstSMul
+@[deprecated (since := "2026-01-11")] alias fderiv_const_smul_of_field := fderiv_const_smul_field
+
+end ConstSMulDivisionRing
 
 section Add
 

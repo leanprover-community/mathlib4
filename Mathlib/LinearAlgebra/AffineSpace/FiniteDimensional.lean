@@ -656,6 +656,16 @@ theorem affineIndependent_of_affineIndependent_collinear_ne {p₁ p₂ p₃ p : 
   rw [affineIndependent_iff_not_collinear_set] at ha
   exact ha h2
 
+/-- Replacing a point in an affinely independent triple with another point on the same
+line preserves affine independence. -/
+theorem affineIndependent_iff_affineIndependent_collinear_ne {p₁ p₂ p₃ p : P}
+    (hcol : Collinear k {p₂, p, p₃}) (hne1 : p₂ ≠ p) (hne2 : p₂ ≠ p₃) :
+    AffineIndependent k ![p₁, p₂, p] ↔ AffineIndependent k ![p₁, p₂, p₃] := by
+  refine ⟨fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h hcol hne2,
+    fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h ?_ hne1⟩
+  convert hcol using 1
+  aesop
+
 variable (k) in
 /-- A set of points is coplanar if their `vectorSpan` has dimension at most `2`. -/
 def Coplanar (s : Set P) : Prop :=

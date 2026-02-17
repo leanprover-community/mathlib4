@@ -143,8 +143,6 @@ def uniqueAlgEquiv [Unique M] : A[M] ≃ₐ[R] A where
   toRingEquiv := uniqueRingEquiv _
   commutes' r := by simp [Unique.eq_default]
 
-variable [DecidableEq M]
-
 variable (R) in
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R A)
@@ -166,6 +164,26 @@ lemma curryAlgEquiv_symm_single (m : M) (n : N) (a : A) :
   classical exact Finsupp.uncurry_single ..
 
 end Algebra
+
+variable (R A) in
+/-- If `f : M → N` is a homomorphism between two magmas, then `MonoidAlgebra.mapDomain f`
+is a non-unital algebra homomorphism between their magma algebras. -/
+@[to_additive (dont_translate := R A) (attr := simps apply)
+/-- If `f : M → N` is a homomorphism between two additive magmas,
+then `AddMonoidAlgebra.mapDomain f` is a non-unital algebra homomorphism
+between their additive magma algebras. -/]
+def mapDomainNonUnitalAlgHom [CommSemiring R] [Semiring A] [Algebra R A]
+    [Mul M] [Mul N] (f : M →ₙ* N) : A[M] →ₙₐ[R] A[N] where
+  __ := mapDomainNonUnitalRingHom A f
+  map_mul' := mapDomain_mul f
+  map_smul' _ _ := mapDomain_smul ..
+
+variable (A) in
+@[to_additive]
+theorem mapDomain_algebraMap {F : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    [Monoid M] [Monoid N] [FunLike F M N] [MonoidHomClass F M N] (f : F) (r : R) :
+    mapDomain f (algebraMap R A[M] r) = algebraMap R A[N] r := by
+  simp only [coe_algebraMap, mapDomain_single, map_one, (· ∘ ·)]
 
 section lift
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
@@ -232,23 +250,13 @@ theorem lift_unique (F : R[M] →ₐ[R] A) (f : R[M]) :
     rw [lift_unique' F]
     simp [lift_apply]
 
-/-- If `f : M → N` is a homomorphism between two magmas, then `MonoidAlgebra.mapDomain f`
-is a non-unital algebra homomorphism between their magma algebras. -/
-@[to_additive (dont_translate := R A) (attr := simps apply)
-/-- If `f : M → N` is a homomorphism between two additive magmas,
-then `AddMonoidAlgebra.mapDomain f` is a non-unital algebra homomorphism
-between their additive magma algebras. -/]
-def mapDomainNonUnitalAlgHom (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-    [Mul M] [Mul N] (f : M →ₙ* N) : A[M] →ₙₐ[R] A[N] where
-  __ := mapDomainNonUnitalRingHom A f
-  map_mul' := mapDomain_mul f
-  map_smul' _ _ := mapDomain_smul ..
-
-variable (A) in
-@[to_additive]
-theorem mapDomain_algebraMap {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) (r : R) :
-    mapDomain f (algebraMap R A[M] r) = algebraMap R A[N] r := by
-  simp only [coe_algebraMap, mapDomain_single, map_one, (· ∘ ·)]
+theorem lift_mapRangeRingHom_algebraMap [CommSemiring S] [Algebra S A]
+    [Algebra R S] [IsScalarTower R S A]
+    (f : M →* A) (x : R[M]) :
+    lift _ _ _ f (mapRangeRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
+  induction x using Finsupp.induction with
+  | zero => simp
+  | single_add a b f _ _ ih => simp [ih]
 
 variable (R A) in
 /-- If `f : M → N` is a monoid homomorphism, then `MonoidAlgebra.mapDomain f` is an algebra
@@ -303,8 +311,6 @@ theorem domCongr_refl : domCongr R A (.refl M) = .refl := by ext; simp
 
 @[to_additive (attr := simp)]
 theorem domCongr_symm (e : M ≃* N) : (domCongr R A e).symm = domCongr R A e.symm := rfl
-
-variable [DecidableEq M] [DecidableEq N]
 
 variable (R) in
 /-- Nested monoid algebras can be taken in an arbitrary order. -/
@@ -555,6 +561,14 @@ theorem lift_unique (F : R[M] →ₐ[R] A) (f : R[M]) :
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]
+
+theorem lift_mapRangeRingHom_algebraMap [CommSemiring S] [Algebra S A]
+    [Algebra R S] [IsScalarTower R S A]
+    (f : Multiplicative M →* A) (x : R[M]) :
+    lift _ _ _ f (mapRangeRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
+  induction x using Finsupp.induction with
+  | zero => simp
+  | single_add a b f _ _ ih => simp [ih]
 
 lemma algHom_ext_iff {φ₁ φ₂ : R[M] →ₐ[R] A} : (∀ x, φ₁ (single x 1) = φ₂ (single x 1)) ↔ φ₁ = φ₂ :=
   ⟨fun h => algHom_ext h, by rintro rfl _; rfl⟩

@@ -1253,6 +1253,26 @@ noncomputable def opcyclesIsoCokernel [HasCokernel S.f] : S.opcycles ≅ cokerne
   hom := S.descOpcycles (cokernel.π S.f) (by simp)
   inv := cokernel.desc S.f S.pOpcycles (by simp)
 
+section
+
+variable {cc : CokernelCofork S.f} (hcc : IsColimit cc)
+
+/-- The isomorphism from the point of a colimit cokernel cofork of `S.f` to `S.opcycles`. -/
+noncomputable def isoOpcyclesOfIsColimit :
+    cc.pt ≅ S.opcycles :=
+  IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel
+
+@[reassoc (attr := simp)]
+lemma π_isoOpcyclesOfIsColimit_hom : cc.π ≫ (S.isoOpcyclesOfIsColimit hcc).hom = S.pOpcycles :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom _ _ WalkingParallelPair.one
+
+@[reassoc (attr := simp)]
+lemma pOpcycles_π_isoOpcyclesOfIsColimit_inv :
+    S.pOpcycles ≫ (S.isoOpcyclesOfIsColimit hcc).inv = cc.π :=
+  IsColimit.comp_coconePointUniqueUpToIso_inv _ S.opcyclesIsCokernel WalkingParallelPair.one
+
+end
+
 /-- The morphism `S.rightHomology ⟶ A` obtained from a morphism `k : S.X₂ ⟶ A`
 such that `S.f ≫ k = 0.` -/
 @[simp]

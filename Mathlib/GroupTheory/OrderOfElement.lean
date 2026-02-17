@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.CharP.Two
 public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Subgroup.Finite
@@ -123,6 +123,12 @@ lemma not_isOfFinOrder_of_isMulTorsionFree [IsMulTorsionFree G] (ha : a ≠ 1) :
   rw [isOfFinOrder_iff_pow_eq_one]
   rintro ⟨n, hn, han⟩
   exact ha <| pow_left_injective hn.ne' <| by simpa using han
+
+@[to_additive]
+lemma IsOfFinOrder.eq_one' [IsMulTorsionFree G] {a : G} (ha : IsOfFinOrder a) :
+    a = 1 := by
+  contrapose! ha
+  apply not_isOfFinOrder_of_isMulTorsionFree ha
 
 /-- Elements of finite order are of finite order in submonoids. -/
 @[to_additive /-- Elements of finite order are of finite order in submonoids. -/]
@@ -513,6 +519,22 @@ theorem exists_orderOf_eq_prime_pow_iff :
   ⟨fun ⟨k, hk⟩ => ⟨k, by rw [← hk, pow_orderOf_eq_one]⟩, fun ⟨_, hm⟩ => by
     obtain ⟨k, _, hk⟩ := (Nat.dvd_prime_pow hp.elim).mp (orderOf_dvd_of_pow_eq_one hm)
     exact ⟨k, hk⟩⟩
+
+@[simp]
+theorem orderOf_neg_one {R} [Ring R] [Nontrivial R] :
+    orderOf (-1 : R) = if ringChar R = 2 then 1 else 2 := by
+  split_ifs with h
+  · rw [neg_one_eq_one_iff.2 h, orderOf_one]
+  apply orderOf_eq_prime
+  · simp
+  simpa [neg_one_eq_one_iff] using h
+
+lemma CharP.orderOf_eq_two_iff {R} [Ring R] [Nontrivial R] [NoZeroDivisors R] (p : ℕ)
+    (hp : p ≠ 2) [CharP R p] {x : R} : orderOf x = 2 ↔ x = -1 := by
+  simp only [orderOf_eq_prime_iff, sq_eq_one_iff, ne_eq, or_and_right, and_not_self, false_or,
+    and_iff_left_iff_imp]
+  rintro rfl
+  exact fun h ↦ hp ((ringChar.eq R p) ▸ (neg_one_eq_one_iff.1 h))
 
 end PPrime
 
