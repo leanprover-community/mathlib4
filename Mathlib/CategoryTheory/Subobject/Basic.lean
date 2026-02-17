@@ -170,6 +170,7 @@ noncomputable def representativeIso {X : C} (A : MonoOver X) :
     representative.obj ((toThinSkeleton _).obj A) ≅ A :=
   (equivMonoOver X).counitIso.app A
 
+@[simp]
 lemma toThinSkeleton_representative_eq_self {X : C} (A : Subobject X) :
     (toThinSkeleton _).obj (representative.obj A) = A :=
   Subobject.skeletal _ ⟨((equivMonoOver X).unitIso.app _).symm⟩
