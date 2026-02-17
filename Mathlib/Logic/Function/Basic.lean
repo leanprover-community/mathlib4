@@ -502,6 +502,7 @@ theorem update_of_ne {a a' : α} (h : a ≠ a') (v : β a') (f : ∀ a, β a) : 
 /--
 A congruence lemma for `Function.update`, specialized for the non-dependent case. Without this,
 `simp` can't rewrite in the fourth argument `a` because the result type depends on `a`.
+See also https://github.com/leanprover/lean4/issues/12478.
 -/
 @[congr]
 lemma update_congr {β : Sort*}
