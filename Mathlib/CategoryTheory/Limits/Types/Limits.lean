@@ -275,6 +275,7 @@ theorem Limit.map_π_apply' {F' G' : J ⥤ TypeCat.{v}} (α : F' ⟶ G') (j : J)
     (x : (limit F' : TypeCat.{v})) : limit.π G' j (limMap α x) = α.app j (limit.π F' j x) := by
   rw [← CategoryTheory.comp_apply, CategoryTheory.comp_apply]
   exact congr_hom (limMap_π α j) _
+
 end UnivLE
 
 /-!
