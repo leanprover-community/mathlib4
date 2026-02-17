@@ -822,13 +822,22 @@ theorem latin_rectangle_extends_to_latin_square
         use A''
         exact subrect_self A''
 
-y    case step => 
+    case step => 
       intro n hn n_fintype_inst f hm
-      -- let k' := Fin (Fintype.card k)
-      -- let k' := Option n
-      -- have hk'_le : Fintype.card k ≤ Fintype.card k' := by sorry
-      -- have ι' := Function.Embedding.nonempty_of_card_le hk'_le
-      -- use k' 
+      set k' := Option n with hk'
+      have hk'_card := Fintype.card_option (α := k)
+      have hk'_le : Fintype.card k ≤ Fintype.card k' := by sorry
+      have hk'_lt : Fintype.card k < Fintype.card k' := by sorry
+      have ι_h := Function.Embedding.nonempty_of_card_le hk'_le
+      let ι' : k ↪ k' := Classical.choice ι_h
+      letI : Fintype k' := (inferInstance : Fintype (Option n))
+      letI : DecidableEq k' := inferInstance
+      use k', inferInstance, inferInstance, ι'
+      simp [motive, hk']
+      intro k' A
+      replace hk' := hk'.symm
+      have H := latin_rectangle_extends_one_row A hk'_lt ι' (by sorry)
+      exact H
       sorry
     case a => exact h
     sorry
