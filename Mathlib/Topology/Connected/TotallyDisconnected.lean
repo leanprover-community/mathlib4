@@ -52,6 +52,10 @@ theorem IsPreconnected.subsingleton [TotallyDisconnectedSpace α] {s : Set α}
     (h : IsPreconnected s) : s.Subsingleton :=
   TotallyDisconnectedSpace.isTotallyDisconnected_univ s (subset_univ s) h
 
+theorem subsingleton_of_preconnected_totallyDisconnected
+    [PreconnectedSpace α] [TotallyDisconnectedSpace α] : Subsingleton α :=
+  Set.subsingleton_of_univ_subsingleton isPreconnected_univ.subsingleton
+
 instance Pi.totallyDisconnectedSpace {α : Type*} {β : α → Type*}
     [∀ a, TopologicalSpace (β a)] [∀ a, TotallyDisconnectedSpace (β a)] :
     TotallyDisconnectedSpace (∀ a : α, β a) :=
