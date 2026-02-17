@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Pullbacks and pushouts in `C` and `Cᵒᵖ`
