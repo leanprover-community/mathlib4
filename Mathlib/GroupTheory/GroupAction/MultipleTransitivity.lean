@@ -520,28 +520,37 @@ open Equiv MulAction
 
 variable {α : Type*}
 
+/-- Given two injective functions from a finite type `α` to any type `β`, there exists a
+permutation of `β` mapping one to the other. This generalizes `Equiv.Perm.exists_extending_pair`
+(which requires `β` to be finite) to the case where only the source `α` is finite. -/
+theorem exists_extending_pair' {β : Type*} [Finite α]
+    (f g : α → β) (hf : Function.Injective f) (hg : Function.Injective g) :
+    ∃ σ : Perm β, ∀ a, σ (f a) = g a := by
+  classical
+  have hcard (f : α → β) (hf : Function.Injective f) :
+      Cardinal.mk (Set.range f) = Nat.card α := by
+    rw [← Nat.cast_card (α := Set.range f), Nat.card_range_of_injective hf]
+  have hcompl : Cardinal.mk ((Set.range f)ᶜ : Set β) =
+      Cardinal.mk ((Set.range g)ᶜ : Set β) := by
+    rw [← Cardinal.add_nat_inj (Nat.card α)]
+    nth_rewrite 1 [← hcard f hf]
+    rw [← hcard g hg]
+    simp only [add_comm, Cardinal.mk_sum_compl]
+  obtain ⟨φ⟩ := Cardinal.eq.mp hcompl
+  refine ⟨Equiv.subtypeCongr
+    ((ofInjective f hf).symm.trans (ofInjective g hg)) φ, fun a => ?_⟩
+  simp only [Equiv.subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
+  rw [sumCompl_symm_apply_of_pos (Set.mem_range_self a), Sum.map_inl, sumCompl_apply_inl]
+  simp
+
 variable (α) in
 /-- The permutation group `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
 theorem isMultiplyPretransitive (n : ℕ) :
     IsMultiplyPretransitive (Perm α) α n := by
   rw [isMultiplyPretransitive_iff]
-  classical
   intro x y
-  have hcard (z : Fin n ↪ α) : Cardinal.mk (range z) = n := by
-    simp [Finset.card_image_of_injective, PLift.down_injective]
-  have hcompl : Cardinal.mk ((range x)ᶜ : Set α) = Cardinal.mk ((range y)ᶜ : Set α) := by
-    rw [← Cardinal.add_nat_inj n]
-    nth_rewrite 1 [← hcard x]
-    rw [← hcard y]
-    simp only [add_comm, Cardinal.mk_sum_compl]
-  obtain ⟨φ⟩ := Cardinal.eq.mp hcompl
-  refine ⟨Equiv.subtypeCongr
-    ((ofInjective x x.injective).symm.trans (ofInjective y y.injective)) φ,
-    Function.Embedding.ext fun i => ?_⟩
-  simp only [Function.Embedding.smul_apply, Perm.smul_def,
-    Equiv.subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
-  rw [sumCompl_symm_apply_of_pos (mem_range_self i), Sum.map_inl, sumCompl_apply_inl]
-  simp
+  obtain ⟨σ, hσ⟩ := exists_extending_pair' x y x.injective y.injective
+  exact ⟨σ, Function.Embedding.ext fun i => by simp [Function.Embedding.smul_apply, hσ]⟩
 
 /-- The action of the permutation group of `α` on `α` is preprimitive -/
 instance : IsPreprimitive (Perm α) α :=
