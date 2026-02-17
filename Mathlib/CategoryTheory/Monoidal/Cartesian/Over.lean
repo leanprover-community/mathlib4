@@ -72,6 +72,12 @@ lemma lift_left {R S T : Over X} (f : R ⟶ S) (g : R ⟶ T) :
     (lift f g).left = pullback.lift f.left g.left (f.w.trans g.w.symm) := rfl
 
 @[simp]
+lemma fst_left {R S : Over X} : (fst R S).left = pullback.fst _ _ := rfl
+
+@[simp]
+lemma snd_left {R S : Over X} : (snd R S).left = pullback.snd _ _ := rfl
+
+@[simp]
 lemma toUnit_left {R : Over X} : (toUnit R).left = R.hom := rfl
 
 @[reassoc (attr := simp)]

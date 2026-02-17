@@ -34,8 +34,6 @@ lemma ciInf_mul_ciInf_le_ciInf_mul [MulLeftMono α] [MulRightMono α]
     (⨅ i, f i) * ⨅ i, g i ≤ ⨅ i, f i * g i :=
   le_ciInf fun i ↦ mul_le_mul' (ciInf_le hf i) (ciInf_le hg i)
 
-attribute [to_dual existing ciInf_mul_ciInf_le_ciInf_mul] ciSup_mul_le_ciSup_mul_ciSup
-
 end Mul
 
 section Group
@@ -72,9 +70,5 @@ theorem le_ciInf_mul_ciInf [MulLeftMono α] [MulRightMono α] {a : α} {g : ι �
 theorem ciSup_mul_ciSup_le [MulLeftMono α] [MulRightMono α] {a : α} {g : ι → α} {h : ι' → α}
     (H : ∀ i j, g i * h j ≤ a) : iSup g * iSup h ≤ a :=
   ciSup_mul_le fun _ => mul_ciSup_le <| H _
-
-attribute [to_dual existing le_mul_ciInf] mul_ciSup_le
-attribute [to_dual existing le_ciInf_mul] ciSup_mul_le
-attribute [to_dual existing le_ciInf_mul_ciInf] ciSup_mul_ciSup_le
 
 end Group
