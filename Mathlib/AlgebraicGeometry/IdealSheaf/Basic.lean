@@ -437,7 +437,8 @@ instance : IdemCommSemiring X.IdealSheafData where
   nsmul := nsmulRec
   left_distrib := mul_inf
   right_distrib := inf_mul
-  npow_zero _ := by ext; rfl
+  npow n I := I ^ n
+  npow_zero _ := by ext; simp [show (1 : X.IdealSheafData) = ⊤ from rfl]
   npow_succ _ _ := by ext; rfl
   bot_le _ := bot_le
 
