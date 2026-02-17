@@ -136,6 +136,17 @@ theorem induced_of_isLimit :
 
 end IsLimit
 
+lemma nonempty_isLimit_iff_eq_induced {F : J ⥤ TopCat.{u}} (c : Cone F)
+    (hc : IsLimit ((forget).mapCone c)) :
+    Nonempty (IsLimit c) ↔ c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
+  refine ⟨fun ⟨hc⟩ ↦ induced_of_isLimit _ hc, fun h ↦ ⟨?_⟩⟩
+  refine .ofIsoLimit (isLimitConeOfForget _ hc) (Cones.ext ?_ ?_)
+  · refine TopCat.isoOfHomeo
+      { toEquiv := .refl _,
+        continuous_toFun := h ▸ by fun_prop,
+        continuous_invFun := h ▸ by fun_prop }
+  · intro; rfl
+
 variable (F : J ⥤ TopCat.{u})
 
 theorem limit_topology [HasLimit F] :
@@ -253,6 +264,16 @@ lemma continuous_iff_of_isColimit {X : Type u'} [TopologicalSpace X] (f : c.pt �
 
 end IsColimit
 
+lemma nonempty_isColimit_iff_eq_coinduced (c : Cocone F) (hc : IsColimit ((forget).mapCocone c)) :
+    Nonempty (IsColimit c) ↔ c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
+  refine ⟨fun ⟨hc⟩ ↦ coinduced_of_isColimit _ hc, fun h ↦ ⟨?_⟩⟩
+  refine .ofIsoColimit (isColimitCoconeOfForget _ hc) (Cocones.ext ?_ ?_)
+  · refine TopCat.isoOfHomeo
+      { toEquiv := .refl _,
+        continuous_toFun := h ▸ by fun_prop,
+        continuous_invFun := h ▸ by fun_prop }
+  · intro; rfl
+
 variable (F)
 
 theorem colimit_topology (F : J ⥤ TopCat.{u}) [HasColimit F] :
@@ -302,7 +323,7 @@ def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
 /-- The initial object of `Top` is `PEmpty`. -/
 def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
   haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
-    ⟨⟨ofHom ⟨fun x => x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
+    ⟨⟨ofHom ⟨fun x => x.elim, by fun_prop⟩⟩, fun f => by ext ⟨⟩⟩
   Limits.IsInitial.ofUnique _
 
 /-- The initial object of `Top` is `PEmpty`. -/

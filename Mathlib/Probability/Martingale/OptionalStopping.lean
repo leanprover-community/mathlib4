@@ -16,7 +16,7 @@ submartingale if and only if for all bounded stopping times `τ` and `π` such t
 stopped value of `f` at `τ` has expectation smaller than its stopped value at `π`.
 
 This file also contains Doob's maximal inequality: given a non-negative submartingale `f`, for all
-`ε : ℝ≥0`, we have `ε • μ {ε ≤ f* n} ≤ ∫ ω in {ε ≤ f* n}, f n` where `f* n ω = max_{k ≤ n}, f k ω`.
+`ε : ℝ≥0`, we have `ε • μ {ε ≤ f* n} ≤ ∫ ω in {ε ≤ f* n}, f n` where `f * n ω = max_{k ≤ n}, f k ω`.
 
 ### Main results
 
@@ -37,12 +37,12 @@ namespace MeasureTheory
 variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {𝒢 : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
   {τ π : Ω → ℕ∞}
 
--- We may generalize the below lemma to functions taking value in a `NormedLatticeAddCommGroup`.
--- Similarly, generalize `(Super/Sub)martingale.setIntegral_le`.
 /-- Given a submartingale `f` and bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 expectation of `stoppedValue f τ` is less than or equal to the expectation of `stoppedValue f π`.
 This is the forward direction of the optional stopping theorem. -/
-theorem Submartingale.expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
+theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [CompleteSpace E] [PartialOrder E] [IsOrderedAddMonoid E]
+    [IsOrderedModule ℝ E] [ClosedIciTopology E] [SigmaFiniteFiltration μ 𝒢] {f : ℕ → Ω → E}
     (hf : Submartingale f 𝒢 μ) (hτ : IsStoppingTime 𝒢 τ) (hπ : IsStoppingTime 𝒢 π) (hle : τ ≤ π)
     {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) : μ[stoppedValue f τ] ≤ μ[stoppedValue f π] := by
   rw [← sub_nonneg, ← integral_sub', stoppedValue_sub_eq_sum' hle hbdd]
@@ -68,7 +68,8 @@ theorem Submartingale.expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
 /-- The converse direction of the optional stopping theorem, i.e. a strongly adapted integrable
 process `f` is a submartingale if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 stopped value of `f` at `τ` has expectation smaller than its stopped value at `π`. -/
-theorem submartingale_of_expected_stoppedValue_mono [IsFiniteMeasure μ] (hadp : StronglyAdapted 𝒢 f)
+theorem submartingale_of_expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
+    (hadp : StronglyAdapted 𝒢 f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ τ π : Ω → ℕ∞, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
       τ ≤ π → (∃ N : ℕ, ∀ ω, π ω ≤ N) → μ[stoppedValue f τ] ≤ μ[stoppedValue f π]) :
     Submartingale f 𝒢 μ := by
@@ -89,7 +90,7 @@ theorem submartingale_of_expected_stoppedValue_mono [IsFiniteMeasure μ] (hadp :
 /-- **The optional stopping theorem** (fair game theorem): a strongly adapted integrable process `f`
 is a submartingale if and only if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 stopped value of `f` at `τ` has expectation smaller than its stopped value at `π`. -/
-theorem submartingale_iff_expected_stoppedValue_mono [IsFiniteMeasure μ]
+theorem submartingale_iff_expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
     (hadp : StronglyAdapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ) :
     Submartingale f 𝒢 μ ↔ ∀ τ π : Ω → ℕ∞, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
       τ ≤ π → (∃ N : ℕ, ∀ x, π x ≤ N) → μ[stoppedValue f τ] ≤ μ[stoppedValue f π] :=
@@ -97,8 +98,9 @@ theorem submartingale_iff_expected_stoppedValue_mono [IsFiniteMeasure μ]
     submartingale_of_expected_stoppedValue_mono hadp hint⟩
 
 /-- The stopped process of a submartingale with respect to a stopping time is a submartingale. -/
-protected theorem Submartingale.stoppedProcess [IsFiniteMeasure μ] (h : Submartingale f 𝒢 μ)
-    (hτ : IsStoppingTime 𝒢 τ) : Submartingale (stoppedProcess f τ) 𝒢 μ := by
+protected theorem Submartingale.stoppedProcess [SigmaFiniteFiltration μ 𝒢]
+    (h : Submartingale f 𝒢 μ) (hτ : IsStoppingTime 𝒢 τ) :
+    Submartingale (stoppedProcess f τ) 𝒢 μ := by
   rw [submartingale_iff_expected_stoppedValue_mono]
   · intro σ π hσ hπ hσ_le_π hπ_bdd
     simp_rw [stoppedValue_stoppedProcess]
