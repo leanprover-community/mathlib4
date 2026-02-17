@@ -12,6 +12,7 @@ public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.Fintype.OfMap
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.List.FinRange
+public import Mathlib.Data.AvoidChoice.Fin
 
 /-!
 # Instances for finite types
@@ -34,7 +35,7 @@ variable {α β γ : Type*}
 open Finset
 
 instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
-  ⟨⟨List.finRange n, List.nodup_finRange n⟩, List.mem_finRange⟩
+  ⟨⟨List.finRange n, Constructive.List.nodup_finRange n⟩, List.mem_finRange⟩
 
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
   rfl

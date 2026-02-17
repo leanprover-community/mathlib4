@@ -5,8 +5,8 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.List.FinRange
+import Batteries.Data.List.Lemmas
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Let's avoid choice!
