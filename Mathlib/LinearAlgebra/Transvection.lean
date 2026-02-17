@@ -26,7 +26,7 @@ public import Mathlib.LinearAlgebra.Dual.BaseChange
 * `LinearMap.transvections R V`: the set of transvections.
 
 * `LinearEquiv.dilatransvections R V`: the set of linear equivalences
-whose associated linear map is of the form `LinearMap.transvection f v`.
+  whose associated linear map is of the form `LinearMap.transvection f v`.
 
 * `LinearEquiv.transvection.det` shows that it has determinant `1`.
 
