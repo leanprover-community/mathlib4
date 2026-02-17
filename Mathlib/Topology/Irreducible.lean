@@ -484,3 +484,8 @@ lemma Function.Surjective.irreducibleSpace {f : X → Y} (hfc : Continuous f)
     rw [← hf.range_eq, ← Set.image_univ]
     exact (PreirreducibleSpace.isPreirreducible_univ).image _ hfc.continuousOn
   toNonempty := Nonempty.map f inferInstance
+
+lemma Homeomorph.irreducibleSpace_iff
+    (e : X ≃ₜ Y) : IrreducibleSpace X ↔ IrreducibleSpace Y :=
+  ⟨fun _ ↦ e.surjective.irreducibleSpace e.continuous,
+    fun _ ↦ e.symm.surjective.irreducibleSpace e.symm.continuous⟩

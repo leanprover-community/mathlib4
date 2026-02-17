@@ -141,7 +141,7 @@ discrete topology. -/
 @[simps! -isSimp map_hom_hom_apply]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
-  map f := ofHom _ ⟨f, by continuity⟩
+  map f := ofHom _ ⟨f, by fun_prop⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toProfiniteFullyFaithful : toProfinite.FullyFaithful where

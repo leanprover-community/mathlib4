@@ -759,13 +759,9 @@ end le
 ### `iSup` and `iInf` under `Type`
 -/
 
-
+@[to_dual iInf_of_isEmpty]
 theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
   congr_arg sSup (range_eq_empty f)
-
-@[to_dual existing iSup_of_empty']
-theorem iInf_of_isEmpty {α ι} [InfSet α] [IsEmpty ι] (f : ι → α) : iInf f = sInf (∅ : Set α) :=
-  congr_arg sInf (range_eq_empty f)
 
 @[to_dual]
 theorem iSup_of_empty [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=

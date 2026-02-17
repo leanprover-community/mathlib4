@@ -656,9 +656,9 @@ lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 :=
   ne_of_mem_of_not_mem hz zero_notMem_slitPlane
 
 /-- The slit plane includes the open unit ball of radius `1` around `1`. -/
-lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := fun z hz ↦ .inl <|
+lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := fun z hz ↦ .inl <| by
   have : -1 < z.re - 1 := neg_lt_of_abs_lt <| (abs_re_le_norm _).trans_lt hz
-  by linarith
+  linarith
 
 /-- The slit plane includes the open unit ball of radius `1` around `1`. -/
 lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slitPlane :=

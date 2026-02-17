@@ -12,6 +12,8 @@ public import Mathlib.GroupTheory.GroupAction.Transitive
 public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.Tactic.Group
 
+import all Mathlib.Algebra.Group.End -- TODO: needed for `to_additive`
+
 /-!
 # SubMulActions on complements of invariant subsets
 
@@ -210,6 +212,13 @@ end FixingSubgroupInsert
 section FixingSubgroupConj
 
 variable {s t : Set α} {g : M}
+
+/-
+FIXME: The use of `to_additive` in this section is a horrible mess.
+It requires translating `MulAut.instGroup` to `AddAut.instAddGroup` instead of `AddAut.instGroup`,
+and `MulAut.conj` shouldn't be able to translate to `AddAut.conj`, but somehow it works out.
+-/
+attribute [to_additive] MulAut.instGroup
 
 @[to_additive]
 theorem _root_.Set.conj_mem_fixingSubgroup (hg : g • t = s) {k : M} (hk : k ∈ fixingSubgroup M t) :
