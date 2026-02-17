@@ -543,14 +543,12 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
 
 variable {𝕜 E}
 
-theorem LinearMap.isCompactOperator_one_iff_finiteDimensional [LocallyCompactSpace 𝕜] :
-    IsCompactOperator (1 : E →ₗ[𝕜] E) ↔ FiniteDimensional 𝕜 E :=
+theorem isCompactOperator_id_iff_finiteDimensional [LocallyCompactSpace 𝕜] :
+    IsCompactOperator (_root_.id : E → E) ↔ FiniteDimensional 𝕜 E :=
   isCompactOperator_id_iff_locallyCompactSpace.trans
     ⟨fun _ ↦ .of_locallyCompactSpace 𝕜, fun _ ↦ .of_finiteDimensional_of_complete 𝕜 E⟩
 
-theorem ContinuousLinearMap.isCompactOperator_one_iff_finiteDimensional [LocallyCompactSpace 𝕜] :
-    IsCompactOperator (1 : E →L[𝕜] E) ↔ FiniteDimensional 𝕜 E :=
-  LinearMap.isCompactOperator_one_iff_finiteDimensional
+alias ⟨IsCompactOperator.finiteDimensional, _⟩ := isCompactOperator_id_iff_finiteDimensional
 
 end Riesz
 

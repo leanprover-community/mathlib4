@@ -74,6 +74,9 @@ theorem isCompactOperator_id_iff_locallyCompactSpace {E : Type*}
   ⟨fun ⟨_, hK, hK0⟩ ↦ hK.locallyCompactSpace_of_mem_nhds_of_addGroup hK0,
     fun _ ↦ exists_compact_mem_nhds 0⟩
 
+alias ⟨IsCompactOperator.locallyCompactSpace, isCompactOperator_id⟩ :=
+  isCompactOperator_id_iff_locallyCompactSpace
+
 section Characterizations
 
 section
