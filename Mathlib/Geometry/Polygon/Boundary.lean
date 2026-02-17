@@ -9,6 +9,8 @@ public import Mathlib.Geometry.Polygon.Simple
 public import Mathlib.Topology.Instances.AddCircle.Defs
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Topology.Algebra.Group.AddTorsor
+public import Mathlib.Topology.Algebra.Affine
 
 /-!
 # Polygon Boundary Map
@@ -277,5 +279,39 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
                   floor_frac (i+1) v hv0.le hv1] at this
               exact absurd (by exact_mod_cast this)
                 (fin_ne_succ i)
+
+theorem continuous_boundaryMap [TopologicalSpace R] [OrderTopology R] [TopologicalSpace V]
+    [TopologicalSpace P] [IsTopologicalAddTorsor P] [ContinuousSMul R V] :
+    Continuous (poly.boundaryMap R) := by
+  simp only [boundaryMap]
+  refine AddCircle.liftIco_zero_continuous (p := (n : R))
+      (f := fun t ↦ (edgePath R poly ⟨⌊t⌋.toNat % n, Nat.mod_lt _ (Nat.pos_of_neZero n)⟩)
+        (Int.fract t)) (by simp) ?_
+  apply ContinuousOn.mono (s := ⋃ k : Fin n, Icc ((k : ℕ) : R) (((k : ℕ) : R) + 1))
+  · exact (locallyFinite_of_finite _).continuousOn_iUnion (fun _ => isClosed_Icc) fun k => by
+      apply ContinuousOn.congr (f := fun t => edgePath R poly k (t - ((k : ℕ) : R)))
+      · exact (lineMap_continuous (p := poly k) (q := poly (finRotate n k))).comp
+          (continuous_id.sub continuous_const) |>.continuousOn
+      · intro t ht
+        simp only [edgePath, finRotate_apply]
+        rcases eq_or_lt_of_le ht.2 with rfl | hlt
+        · simp only [add_sub_cancel_left, lineMap_apply_one]
+          rw [show ((k : ℕ) : R) + 1 = (((k : ℕ) + 1 : ℕ) : R) from by push_cast; rfl,
+            Int.floor_natCast, Int.fract_natCast, Int.toNat_natCast, lineMap_apply_zero]
+          exact congrArg poly (Fin.ext (by simp [Fin.val_add, Nat.add_mod]))
+        · have hfloor : ⌊t⌋ = ((k : ℕ) : ℤ) := Int.floor_eq_iff.mpr
+            ⟨by exact_mod_cast ht.1, by exact_mod_cast hlt⟩
+          simp only [hfloor, Int.toNat_natCast, Nat.mod_eq_of_lt k.isLt, Fin.eta,
+            Int.fract, Int.cast_natCast]
+  · intro t ⟨ht0, htn⟩
+    simp only [Set.mem_iUnion, Set.mem_Icc]
+    by_cases htlt : t < (n : R)
+    · exact ⟨⟨⌊t⌋₊, Nat.cast_lt.mp (lt_of_le_of_lt (Nat.floor_le ht0) htlt)⟩,
+        Nat.floor_le ht0, le_of_lt (Nat.lt_floor_add_one t)⟩
+    · push_neg at htlt
+      have htn' : t = (n : R) := le_antisymm htn htlt
+      refine ⟨⟨n - 1, Nat.sub_lt (Nat.pos_of_neZero n) one_pos⟩, ?_, ?_⟩ <;> rw [htn']
+      · exact_mod_cast Nat.sub_le n 1
+      · exact_mod_cast (Nat.succ_pred_eq_of_pos (Nat.pos_of_neZero n)).symm.le
 
 end Polygon
