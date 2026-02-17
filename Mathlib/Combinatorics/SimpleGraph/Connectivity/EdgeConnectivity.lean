@@ -89,18 +89,15 @@ lemma IsEdgeConnected.connected [Nonempty V] (hk : k ≠ 0) (h : G.IsEdgeConnect
     G.Connected where
   preconnected := h.preconnected hk
 
-lemma IsEdgeReachable.le_degree [G.LocallyFinite] (h : G.IsEdgeReachable k u v) (huv : u ≠ v) :
-    k ≤ G.degree u := by
+lemma IsEdgeReachable.le_degree [Fintype (G.neighborSet u)] (h : G.IsEdgeReachable k u v)
+    (huv : u ≠ v) : k ≤ G.degree u := by
   classical
   by_contra! hh
   obtain ⟨w, _⟩ := @h (G.incidenceSet u) (by simpa [← Set.coe_fintypeCard]) |>.exists_isPath
-  have : 1 < w.support.length := by
-    by_contra! hh
-    exact huv <| Walk.eq_of_length_eq_zero (by simpa using hh)
-  simpa using w.isChain_adj_support.getElem 0 this
+  simpa using w.adj_snd <| by grind [Walk.nil_iff_length_eq, Walk.eq_of_length_eq_zero]
 
-lemma IsEdgeConnected.le_degree [G.LocallyFinite] [Nontrivial V] (h : G.IsEdgeConnected k) :
-    k ≤ G.degree u := by
+lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
+    (h : G.IsEdgeConnected k) : k ≤ G.degree u := by
   obtain ⟨v, hv⟩ := exists_ne u
   exact (h u v).le_degree hv.symm
 
