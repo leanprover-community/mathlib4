@@ -21,7 +21,7 @@ This file defines intersecting families and proves their basic properties.
   `a` and `aᶜ` cannot simultaneously be in it.
 * `Set.Intersecting.is_max_iff_card_eq`: Any maximal intersecting family takes up half the elements.
 * `Set.IsIntersectingOf`: Predicate stating that a family `𝒜` of finsets is `L`-intersecting, i.e.,
-  meaning that for all `s, t ∈ 𝒜`, `(s ∩ t).card ∈ L`.
+  meaning that for all `s, t ∈ 𝒜`, `#(s ∩ t) ∈ L`.
 
 ## References
 
@@ -34,11 +34,11 @@ assert_not_exists Monoid
 
 open Finset
 
-variable {α : Type*}
-
 namespace Set
 
 section SemilatticeInf
+
+variable {α : Type*}
 
 variable [SemilatticeInf α] [OrderBot α] {s t : Set α} {a b c : α}
 
@@ -124,6 +124,10 @@ theorem Intersecting.isUpperSet' {s : Finset α} (hs : (s : Set α).Intersecting
 
 end SemilatticeInf
 
+section
+
+variable {α : Type*}
+
 theorem Intersecting.exists_mem_set {𝒜 : Set (Set α)} (h𝒜 : 𝒜.Intersecting) {s t : Set α}
     (hs : s ∈ 𝒜) (ht : t ∈ 𝒜) : ∃ a, a ∈ s ∧ a ∈ t :=
   not_disjoint_iff.1 <| h𝒜 hs ht
@@ -191,6 +195,8 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.mul_comm]
   exact ht.card_le
 
+end
+
 /-!
 ### `L`-intersecting families
 
@@ -208,7 +214,7 @@ members of `𝒜` belong to `L ⊆ ℕ`.
 That is, for all `s, t ∈ 𝒜`, we have `|(s ∩ t)| ∈ L`.
 -/
 def IsIntersectingOf (L : Set ℕ) (𝒜 : Set (Finset α)) : Prop :=
-  ∀ ⦃s⦄, s ∈ 𝒜 → ∀ ⦃t⦄, t ∈ 𝒜 → (s ∩ t).card ∈ L
+  ∀ ⦃s⦄, s ∈ 𝒜 → ∀ ⦃t⦄, t ∈ 𝒜 → #(s ∩ t) ∈ L
 
 namespace IsIntersectingOf
 
@@ -242,7 +248,7 @@ protected theorem univ : IsIntersectingOf univ 𝒜 := by simp [IsIntersectingOf
 /--
 Every member of an `L`-intersecting family has cardinality in `L`.
 -/
-theorem card_mem (h𝒜 : IsIntersectingOf L 𝒜) : ∀ s ∈ 𝒜, s.card ∈ L := by grind [IsIntersectingOf]
+theorem card_mem (h𝒜 : IsIntersectingOf L 𝒜) : ∀ s ∈ 𝒜, #s ∈ L := by grind [IsIntersectingOf]
 
 /--
 If `0 ∉ L`, then any `L`-intersecting family is intersecting in the usual sense: every pair of
