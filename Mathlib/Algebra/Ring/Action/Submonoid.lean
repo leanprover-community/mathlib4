@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 David Ang. All rights reserved.
+Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Ang
+Authors: David Kurniadi Angdinata
 -/
 module
 
@@ -14,40 +14,67 @@ public import Mathlib.GroupTheory.GroupAction.Defs
 
 @[expose] public section
 
-variable (M α : Type*) [Monoid M]
+variable (M α β : Type*) [Monoid M]
+
+namespace FixedPoints
 
 section AddMonoid
-variable [AddMonoid α] [DistribMulAction M α]
+
+variable [AddMonoid α] [DistribMulAction M α] [AddMonoid β] [DistribMulAction M β] {f : α →+ β}
 
 /-- The additive submonoid of elements fixed under the whole action. -/
-def FixedPoints.addSubmonoid : AddSubmonoid α where
+def addSubmonoid : AddSubmonoid α where
   carrier := MulAction.fixedPoints M α
   zero_mem' := smul_zero
   add_mem' ha hb _ := by rw [smul_add, ha, hb]
 
 @[simp]
-lemma FixedPoints.mem_addSubmonoid (a : α) : a ∈ addSubmonoid M α ↔ ∀ m : M, m • a = a :=
+lemma mem_addSubmonoid (a : α) : a ∈ addSubmonoid M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
+
+variable {M α β}
+
+/-- The restriction of a `AddMonoidHom` to `FixedPoints.addSubmonoid`. -/
+def addSubmonoidMap (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a) :
+    addSubmonoid M α →+ addSubmonoid M β :=
+  f.restrict fun _ h' _ => by rw [← h, h']
+
+lemma addSubmonoidMap_injective (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a)
+    (hf : Function.Injective f) : Function.Injective <| addSubmonoidMap h :=
+  AddMonoidHom.restrict_injective _ hf
 
 end AddMonoid
 
 section AddGroup
-variable [AddGroup α] [DistribMulAction M α]
+
+variable [AddGroup α] [DistribMulAction M α] [AddGroup β] [DistribMulAction M β] {f : α →+ β}
 
 /-- The additive subgroup of elements fixed under the whole action. -/
-def FixedPoints.addSubgroup : AddSubgroup α where
+def addSubgroup : AddSubgroup α where
   __ := addSubmonoid M α
   neg_mem' ha _ := by rw [smul_neg, ha]
 
 /-- The notation for `FixedPoints.addSubgroup`, chosen to resemble `αᴹ`. -/
-notation α "^+" M:51 => FixedPoints.addSubgroup M α
+notation α "^+" M:51 => addSubgroup M α
 
 @[simp]
-lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
+lemma mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
 @[simp]
-lemma FixedPoints.addSubgroup_toAddSubmonoid : (α^+M).toAddSubmonoid = addSubmonoid M α :=
+lemma addSubgroup_toAddSubmonoid : (α^+M).toAddSubmonoid = addSubmonoid M α :=
   rfl
 
+variable {M α β}
+
+/-- The restriction of a `AddMonoidHom` to `FixedPoints.addSubgroup`. -/
+def addSubgroupMap (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a) : α^+M →+ β^+M :=
+  addSubmonoidMap h
+
+lemma addSubgroupMap_injective (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a)
+    (hf : Function.Injective f) : Function.Injective <| addSubgroupMap h :=
+  addSubmonoidMap_injective h hf
+
 end AddGroup
+
+end FixedPoints

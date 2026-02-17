@@ -268,21 +268,24 @@ theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
   haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
   transfer_eq_pow _ _ <| transferSylow_eq_pow_aux P hP g hg
 
-theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =
+theorem transferSylow_domRestrict_eq_pow : ⇑((transferSylow P hP).domRestrict (P : Subgroup G)) =
     (fun x : P => x ^ (P : Subgroup G).index) :=
   funext fun g => transferSylow_eq_pow P hP g g.2
+
+@[deprecated (since := "2026-02-10")]
+alias transferSylow_restrict_eq_pow := transferSylow_domRestrict_eq_pow
 
 /-- **Burnside's normal p-complement theorem**: If `N(P) ≤ C(P)`, then `P` has a normal
 complement. -/
 theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker P := by
-  have hf : Function.Bijective ((transferSylow P hP).restrict (P : Subgroup G)) :=
-    (transferSylow_restrict_eq_pow P hP).symm ▸ (P.2.powEquiv' P.not_dvd_index).bijective
-  rw [Function.Bijective, ← range_eq_top, restrict_range] at hf
+  have hf : Function.Bijective ((transferSylow P hP).domRestrict (P : Subgroup G)) :=
+    (transferSylow_domRestrict_eq_pow P hP).symm ▸ (P.2.powEquiv' P.not_dvd_index).bijective
+  rw [Function.Bijective, ← range_eq_top, domRestrict_range] at hf
   have := range_eq_top.mp (top_le_iff.mp (hf.2.ge.trans
     (map_le_range (transferSylow P hP) P)))
   rw [← (comap_injective this).eq_iff, comap_top, comap_map_eq, sup_comm, SetLike.ext'_iff,
     normal_mul, ← ker_eq_bot_iff, ← (map_injective (P : Subgroup G).subtype_injective).eq_iff,
-    ker_restrict, subgroupOf_map_subtype, Subgroup.map_bot, coe_top] at hf
+    ker_domRestrict, subgroupOf_map_subtype, Subgroup.map_bot, coe_top] at hf
   exact isComplement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
 
 theorem not_dvd_card_ker_transferSylow : ¬p ∣ Nat.card (transferSylow P hP).ker :=

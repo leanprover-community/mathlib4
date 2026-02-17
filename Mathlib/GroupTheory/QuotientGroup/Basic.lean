@@ -408,17 +408,17 @@ The `AddEquiv` between the kernel of the restriction map to a normal subgroup `H
 of type `G →+ A` and the group of homomorphisms `G ⧸ H →+ A`.
 -/]
 def _root_.MonoidHom.restrictHomKerEquiv (A : Type*) [CommGroup A] (H : Subgroup G) [H.Normal] :
-    (MonoidHom.restrictHom H A).ker ≃* (G ⧸ H →* A) where
+    (MonoidHom.domRestrictHom H A).ker ≃* (G ⧸ H →* A) where
   toFun := fun ⟨f, hf⟩ ↦ QuotientGroup.lift _ f
-    (by simpa [mem_ker, restrictHom_apply, restrict_eq_one_iff] using hf)
-  invFun f := ⟨f.comp (QuotientGroup.mk' H), restrict_eq_one_iff.mpr <| le_comap_mk' H f.ker⟩
+    (by simpa [mem_ker, domRestrictHom_apply, domRestrict_eq_one_iff] using hf)
+  invFun f := ⟨f.comp (QuotientGroup.mk' H), domRestrict_eq_one_iff.mpr <| le_comap_mk' H f.ker⟩
   map_mul' _ _ := by ext; simp
   left_inv _ := by simp
   right_inv _ := by ext; simp
 
 @[simp]
 theorem _root_.MonoidHom.restrictHomKerEquiv_apply_coe (A : Type*) [CommGroup A] (H : Subgroup G)
-    [H.Normal] (f : (MonoidHom.restrictHom H A).ker) (g : G) :
+    [H.Normal] (f : (MonoidHom.domRestrictHom H A).ker) (g : G) :
     restrictHomKerEquiv A H f g = f.val g := rfl
 
 @[simp]
