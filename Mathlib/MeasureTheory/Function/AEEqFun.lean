@@ -235,9 +235,9 @@ theorem coeFn_compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (hf : QuasiMeasu
   apply coeFn_mk
 
 theorem compQuasiMeasurePreserving_iterate (g : α →ₘ[μ] γ)
-    {f' : α → α} (hf : QuasiMeasurePreserving f' μ μ) (n : ℕ) :
-    (compQuasiMeasurePreserving · f' hf)^[n] g =
-    compQuasiMeasurePreserving g (f'^[n]) (QuasiMeasurePreserving.iterate hf n) := by
+    {f : α → α} (hf : QuasiMeasurePreserving f μ μ) (n : ℕ) :
+    (compQuasiMeasurePreserving · f hf)^[n] g =
+    compQuasiMeasurePreserving g (f^[n]) (QuasiMeasurePreserving.iterate hf n) := by
   ext
   grw [coeFn_compQuasiMeasurePreserving g (QuasiMeasurePreserving.iterate hf n)]
   induction n with
@@ -247,7 +247,7 @@ theorem compQuasiMeasurePreserving_iterate (g : α →ₘ[μ] γ)
       left
       rw [add_comm]
     grw [iterate_add, iterate_one, comp_apply,
-      (coeFn_compQuasiMeasurePreserving ((compQuasiMeasurePreserving · f' hf)^[n] g) hf),
+      (coeFn_compQuasiMeasurePreserving ((compQuasiMeasurePreserving · f hf)^[n] g) hf),
       iterate_add, iterate_one, ← comp_assoc]
     exact Measure.QuasiMeasurePreserving.ae_eq hf hind
 
