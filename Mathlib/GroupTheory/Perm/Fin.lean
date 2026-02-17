@@ -523,4 +523,3 @@ theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
   apply Finset.prod_comm' (by simp)
 
 end Sign
-
