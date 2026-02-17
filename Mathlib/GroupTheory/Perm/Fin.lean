@@ -5,7 +5,6 @@ Authors: Eric Wieser, Yi Yuan
 -/
 module
 
-public import Mathlib.Data.Fin.Pigeonhole
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.Perm.Option
 public import Mathlib.Logic.Equiv.Fin.Rotate
@@ -525,14 +524,3 @@ theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
 
 end Sign
 
-section Extension
-
-/-! ### Extension of injective functions to permutations -/
-
-/-- Injective `k : Fin m → Fin n` extends to a permutation agreeing with `k` on `Fin.castLE`. -/
-theorem Equiv.Perm.exists_extending_injective {m n : ℕ} (k : Fin m → Fin n)
-    (hk : Function.Injective k) :
-    ∃ σ : Perm (Fin n), ∀ i : Fin m, σ (Fin.castLE (Fin.le_of_injective k hk) i) = k i :=
-  Equiv.Perm.exists_extending_pair _ k (Fin.castLE_injective _) hk
-
-end Extension
