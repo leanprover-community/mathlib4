@@ -626,19 +626,15 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
               logWarningAt i.tacI.stx m!"`{label}` produced unparseable suggestion: {e.toMessageData}"
               continue
 
-            -- Skip empty interactive mode suggestions (just `grind => {}` with no body)
-            -- These are intermediate suggestions that aren't meant to be used standalone
+            -- Skip empty interactive mode suggestions (just `grind => {}` with no body).
+            -- These are intermediate suggestions that aren't meant to be used standalone.
+            -- Syntax structure: grind[0]="grind" [1]=optConfig [2]=only? [3]=params? [4]=(=> grindSeq)?
+            -- When [4].getNumArgs == 2: [4][0]="=>" [4][1]=grindSeq
+            -- grindSeq[0] is grindSeqBracketed: { content }, empty when content.getNumArgs == 0
             if suggestedTac.raw.getKind == ``Lean.Parser.Tactic.grind then
-              if let some seqArg := suggestedTac.raw[4]? then
-                -- Has `=>` marker in syntax (numArgs >= 2) - check if body is empty
-                if seqArg.getNumArgs >= 2 then
-                  if let some grindSeq := seqArg[1]? then
-                    -- grindSeq[0] is grindSeqBracketed: { content }
-                    -- content is at [1], check if it has no children
-                    if let some bracketed := grindSeq[0]? then
-                      if let some content := bracketed[1]? then
-                        if content.getNumArgs == 0 then
-                          continue
+              if suggestedTac.raw[4]!.getNumArgs == 2 then
+                if suggestedTac.raw[4]![1]![0]![1]!.getNumArgs == 0 then
+                  continue
 
             -- Get suggestion as string for analysis
             let suggPP ← try
