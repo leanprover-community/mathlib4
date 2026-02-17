@@ -137,8 +137,8 @@ theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p 
 /-- Given two injective functions `f` and `g` from `α` to a finite type `β`,
 there exists a permutation of `β` that maps `f` to `g`.
 
-See also `Equiv.Perm.exists_extending_pair'` for a generalization where only `α` (the source)
-needs to be finite. -/
+See also `Equiv.Perm.exists_extending_pair_of_finite_source` for a generalization where only `α`
+(the source) needs to be finite. -/
 theorem Perm.exists_extending_pair {α β : Type*} [Finite β]
     (f g : α → β) (hf : Function.Injective f) (hg : Function.Injective g) :
     ∃ σ : Perm β, ∀ a, σ (f a) = g a := by

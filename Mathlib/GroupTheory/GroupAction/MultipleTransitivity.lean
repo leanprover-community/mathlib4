@@ -523,7 +523,7 @@ variable {α : Type*}
 /-- Given two injective functions from a finite type `α` to any type `β`, there exists a
 permutation of `β` mapping one to the other. This generalizes `Equiv.Perm.exists_extending_pair`
 (which requires `β` to be finite) to the case where only the source `α` is finite. -/
-theorem exists_extending_pair' {β : Type*} [Finite α]
+theorem exists_extending_pair_of_finite_source {β : Type*} [Finite α]
     (f g : α → β) (hf : Function.Injective f) (hg : Function.Injective g) :
     ∃ σ : Perm β, ∀ a, σ (f a) = g a := by
   classical
@@ -543,14 +543,19 @@ theorem exists_extending_pair' {β : Type*} [Finite α]
   rw [sumCompl_symm_apply_of_pos (Set.mem_range_self a), Sum.map_inl, sumCompl_apply_inl]
   simp
 
+/-- For any two embeddings from a finite type into `β`, some permutation of `β` maps one to the
+other. This is the action-form of `exists_extending_pair_of_finite_source`. -/
+theorem exists_smul_eq_embedding {ι : Type*} [Finite ι] {β : Type*}
+    (x y : ι ↪ β) : ∃ σ : Perm β, σ • x = y := by
+  obtain ⟨σ, hσ⟩ := exists_extending_pair_of_finite_source x y x.injective y.injective
+  exact ⟨σ, Function.Embedding.ext fun i => by simp [Function.Embedding.smul_apply, hσ]⟩
+
 variable (α) in
 /-- The permutation group `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
 theorem isMultiplyPretransitive (n : ℕ) :
     IsMultiplyPretransitive (Perm α) α n := by
   rw [isMultiplyPretransitive_iff]
-  intro x y
-  obtain ⟨σ, hσ⟩ := exists_extending_pair' x y x.injective y.injective
-  exact ⟨σ, Function.Embedding.ext fun i => by simp [Function.Embedding.smul_apply, hσ]⟩
+  exact fun x y => exists_smul_eq_embedding x y
 
 /-- The action of the permutation group of `α` on `α` is preprimitive -/
 instance : IsPreprimitive (Perm α) α :=
