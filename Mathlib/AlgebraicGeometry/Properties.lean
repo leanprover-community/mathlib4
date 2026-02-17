@@ -346,7 +346,7 @@ open IrreducibleCloseds Set in
 @[stacks 02I4]
 lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X)
     [IsOpenImmersion f] : Order.coheight (f.base x) = Order.coheight x :=
-  coheight_eq_of_isOpenEmbedding f.base f.isOpenEmbedding
+  f.isOpenEmbedding.coheight_eq
 
 open Order in
 lemma ideal_height_eq_coheight (R : CommRingCat) (x : Spec R) :

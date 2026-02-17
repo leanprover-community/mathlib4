@@ -121,11 +121,11 @@ lemma coe_irreducibleEquivPoints_symm_apply [QuasiSober α] [T0Space α] (x : α
 
 lemma Topology.IsOpenEmbedding.coheight_eq {U X : Type*} [TopologicalSpace U] [TopologicalSpace X]
     [QuasiSober X] [T0Space X] [QuasiSober U] [T0Space U]
-    {x : U} (f : U → X) (hf : Continuous f) (hf' : IsOpenEmbedding f) :
+    {x : U} (f : U → X) (hf : IsOpenEmbedding f) :
     coheight (f x) = coheight x := by
   rw [← coheight_orderIso (irreducibleSetEquivPoints (α := X)).symm (f x),
     ← coheight_orderIso (irreducibleSetEquivPoints (α := U)).symm x,
-    ← Topology.IsOpenEmbedding.coheight_map hf']
+    ← Topology.IsOpenEmbedding.coheight_map hf]
   congr
   ext : 1
-  simp [closure_image_closure hf]
+  simp [closure_image_closure hf.continuous]
