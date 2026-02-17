@@ -175,21 +175,6 @@ theorem exists_eq_ciSup_of_finite [Nonempty ι] [Finite ι] {f : ι → α} : �
 theorem exists_eq_ciInf_of_finite [Nonempty ι] [Finite ι] {f : ι → α} : ∃ i, f i = ⨅ i, f i :=
   Nonempty.csInf_mem (range_nonempty f) (finite_range f)
 
--- Register dual pairs in this section for downstream `@[to_dual]` usage.
--- Note: Finset.Nonempty.csSup_eq_max' and Finset.ciSup_eq_max'_image cannot be registered
--- because Finset.max' / Finset.min' are not registered as @[to_dual] pairs.
-attribute [to_dual existing] Finset.Nonempty.csSup_mem
-attribute [to_dual existing] Set.Nonempty.csSup_mem
-attribute [to_dual existing Set.Finite.lt_csInf_iff] Set.Finite.csSup_lt_iff
-attribute [to_dual existing] Finset.ciSup_mem_image
-attribute [to_dual existing] Set.Finite.ciSup_mem_image
-attribute [to_dual existing Set.Finite.lt_ciInf_iff] Set.Finite.ciSup_lt_iff
-attribute [to_dual existing List.iInf_mem_map_of_exists_le_sInf_empty]
-  List.iSup_mem_map_of_exists_sSup_empty_le
-attribute [to_dual existing Multiset.iInf_mem_map_of_exists_le_sInf_empty]
-  Multiset.iSup_mem_map_of_exists_sSup_empty_le
-attribute [to_dual existing] exists_eq_ciSup_of_finite
-
 end ListMultiset
 
 end ConditionallyCompleteLinearOrder
@@ -207,8 +192,6 @@ lemma le_ciSup (i : ι) : f i ≤ ⨆ j, f j := by
 
 lemma ciInf_le (i : ι) : ⨅ j, f j ≤ f i :=
   le_ciSup (α := αᵒᵈ) f i
-
-attribute [to_dual existing Finite.ciInf_le] Finite.le_ciSup
 
 end Finite
 
@@ -246,9 +229,6 @@ lemma sup'_univ_eq_ciSup (f : ι → α) : univ.sup' univ_nonempty f = ⨆ i, f 
 
 lemma inf'_univ_eq_ciInf (f : ι → α) : univ.inf' univ_nonempty f = ⨅ i, f i := by
   simp [inf'_eq_csInf_image, iInf]
-
--- Note: sup'_eq_csSup_image / inf'_eq_csInf_image cannot be registered because
--- Finset.sup' / Finset.inf' are not registered as @[to_dual] pairs.
 
 end ConditionallyCompleteLattice
 
