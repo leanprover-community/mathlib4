@@ -29,40 +29,16 @@ variable (F G : D ⥤ C)
 
 noncomputable section
 
-/-- The biproduct `F ⊞ G` of two functors `F` and `G` -/
-@[simps]
-def biprodFunc : D ⥤ C where
-  obj P := F.obj P ⊞ G.obj P
-  map f := biprod.map (F.map f) (G.map f)
-
-/-- The projection `F ⊞ G ⟶ F` onto the first summand -/
-@[simps]
-def biprodFunc.fst : biprodFunc F G ⟶ F where
-  app X := biprod.fst
-
-/-- The projection `F ⊞ G ⟶ G` onto the second summand -/
-@[simps]
-def biprodFunc.snd : biprodFunc F G ⟶ G where
-  app X := biprod.snd
-
-/-- The inclusion `F ⟶ F ⊞ G` of the first summand -/
-@[simps]
-def biprodFunc.inl : F ⟶ biprodFunc F G where
-  app X := biprod.inl
-
-/-- The inclusion `G ⟶ F ⊞ G` of the second summand -/
-@[simps]
-def biprodFunc.inr : G ⟶ biprodFunc F G where
-  app X := biprod.inr
-
 /-- The binary bicone associated to the biproduct of functors `F` and `G` -/
 @[simps]
-def funcBinaryBicone : BinaryBicone F G where
-  pt := biprodFunc F G
-  fst := biprodFunc.fst F G
-  snd := biprodFunc.snd F G
-  inl := biprodFunc.inl F G
-  inr := biprodFunc.inr F G
+def pointwiseBinaryBicone : BinaryBicone F G where
+  pt := {
+    obj P := F.obj P ⊞ G.obj P
+    map f := biprod.map (F.map f) (G.map f) }
+  fst := { app X := biprod.fst}
+  snd := { app X := biprod.snd }
+  inl := { app X := biprod.inl }
+  inr := { app X := biprod.inr }
 
 /-- Applying `toCone` to the bicone associated with `F` and `G` gives a limit cone. -/
 def funcBinaryBicone.isLimit : IsLimit (funcBinaryBicone F G).toCone :=
