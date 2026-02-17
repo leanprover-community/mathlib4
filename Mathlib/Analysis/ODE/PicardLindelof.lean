@@ -614,8 +614,8 @@ lemma of_time_independent
 /-- A time-independent, continuously differentiable ODE satisfies the hypotheses of the
 Picard-Lindelöf theorem. -/
 lemma of_contDiffAt_one [NormedSpace ℝ E]
-    {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ (ε : ℝ) (hε : 0 < ε) (a r L K : ℝ≥0) (_ : 0 < r), IsPicardLindelof (fun _ ↦ f)
+    {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) :
+    ∃ (ε : ℝ) (hε : 0 < ε) (a r L K : ℝ≥0) (_ : 0 < r), ∀ (t₀ : ℝ), IsPicardLindelof (fun _ ↦ f)
       (tmin := t₀ - ε) (tmax := t₀ + ε) ⟨t₀, (by simp [le_of_lt hε])⟩ x₀ a r L K := by
   -- Obtain ball of radius `a` within the domain in which f is `K`-lipschitz
   obtain ⟨K, s, hs, hl⟩ := hf.exists_lipschitzOnWith
@@ -628,8 +628,7 @@ lemma of_contDiffAt_one [NormedSpace ℝ E]
       ‖f x‖ ≤ ‖f x - f x₀‖ + ‖f x₀‖ := norm_le_norm_sub_add _ _
       _ ≤ K * ‖x - x₀‖ + ‖f x₀‖ := by
         gcongr
-        rw [← dist_eq_norm, ← dist_eq_norm]
-        apply hl.dist_le_mul x _ x₀ (mem_of_mem_nhds hs)
+        apply hl.norm_sub_le _ (mem_of_mem_nhds hs)
         apply subset_trans _ has hx
         exact closedBall_subset_ball <| half_lt_self ha -- this is where we need `a / 2`
       _ ≤ K * a + ‖f x₀‖ := by
@@ -641,12 +640,11 @@ lemma of_contDiffAt_one [NormedSpace ℝ E]
   have hε0 : 0 < ε := by positivity
   refine ⟨ε, hε0,
     ⟨a / 2, le_of_lt <| half_pos ha⟩, ⟨a / 2, le_of_lt <| half_pos ha⟩ / 2,
-    ⟨L, le_of_lt hL0⟩, K, half_pos <| half_pos ha, ?_⟩
+    ⟨L, le_of_lt hL0⟩, K, half_pos <| half_pos ha, fun t₀ ↦ ?_⟩
   apply of_time_independent hb <|
     hl.mono <| subset_trans (closedBall_subset_ball (half_lt_self ha)) has
-  rw [NNReal.coe_mk, add_sub_cancel_left, sub_sub_cancel, max_self, NNReal.coe_div,
-    NNReal.coe_two, NNReal.coe_mk, mul_comm, ← le_div_iff₀ hL0, sub_half, div_right_comm (a / 2),
-    div_right_comm a]
+  simp [ε, field]
+  norm_num
 
 end
 
@@ -762,9 +760,9 @@ theorem exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
     ∃ r > (0 : ℝ), ∃ ε > (0 : ℝ), ∀ x ∈ closedBall x₀ r, ∃ α : ℝ → E, α t₀ = x ∧
       ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt α (f (α t)) t := by
-  have ⟨ε, hε, a, r, _, _, hr, hpl⟩ := IsPicardLindelof.of_contDiffAt_one hf t₀
+  have ⟨ε, hε, a, r, _, _, hr, hpl⟩ := IsPicardLindelof.of_contDiffAt_one hf
   refine ⟨r, hr, ε, hε, fun x hx ↦ ?_⟩
-  have ⟨α, hα1, hα2⟩ := hpl.exists_eq_forall_mem_Icc_hasDerivWithinAt hx
+  have ⟨α, hα1, hα2⟩ := (hpl t₀).exists_eq_forall_mem_Icc_hasDerivWithinAt hx
   refine ⟨α, hα1, fun t ht ↦ ?_⟩
   exact hα2 t (Ioo_subset_Icc_self ht) |>.hasDerivAt (Icc_mem_nhds ht.1 ht.2)
 

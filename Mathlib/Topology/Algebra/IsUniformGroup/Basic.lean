@@ -21,8 +21,9 @@ public import Mathlib.Tactic.Abel
 
 * extension of ℤ-bilinear maps to complete groups (useful for ring completions)
 
-* `QuotientGroup.completeSpace` and `QuotientAddGroup.completeSpace` guarantee that quotients
-  of first countable topological groups by normal subgroups are themselves complete. In particular,
+* `QuotientGroup.completeSpace_left` and `QuotientAddGroup.completeSpace_left` guarantee that
+  quotients of first countable topological groups by normal subgroups are themselves complete, for
+  the left uniformity. We also give versions for the right uniformity. In particular,
   the quotient of a Banach space by a subspace is complete.
 -/
 
@@ -382,8 +383,8 @@ def opUniformEquivRight
 
 /-- The equivalence between a topological group `G` and `Gᵐᵒᵖ` as a uniform equivalence when `G`
 is equipped with the left uniformity and `Gᵐᵒᵖ` with the right uniformity. -/
-@[to_additive /-- The equivalence between an additive topological group `G` and `Gᵐᵒᵖ` as a uniform
-equivalence when `G` is equipped with the left uniformity and `Gᵐᵒᵖ` with the right uniformity. -/]
+@[to_additive /-- The equivalence between an additive topological group `G` and `Gᵃᵒᵖ` as a uniform
+equivalence when `G` is equipped with the left uniformity and `Gᵃᵒᵖ` with the right uniformity. -/]
 def opUniformEquivLeft
     (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
     @UniformEquiv G Gᵐᵒᵖ (IsTopologicalGroup.leftUniformSpace G)
@@ -748,9 +749,7 @@ subspaces are complete. In contrast to `QuotientAddGroup.completeSpace_right'`, 
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
 uniform structure, so it is still provided manually via `IsTopologicalAddGroup.rightUniformSpace`.
-In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
-significant care was taken so that the uniform structure inherent in that setting coincides
-(definitionally) with the uniform structure provided here. -/]
+-/]
 instance QuotientGroup.completeSpace_right (G : Type*)
     [Group G] [us : UniformSpace G] [IsRightUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :

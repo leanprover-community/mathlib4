@@ -48,20 +48,9 @@ noncomputable instance [IrreducibleSpace X] (U : X.Opens) [Nonempty U] :
     Algebra Γ(X, U) X.functionField :=
   (X.germToFunctionField U).hom.toAlgebra
 
-noncomputable instance [IsIntegral X] : Field X.functionField := by
-  refine .ofIsUnitOrEqZero fun a ↦ ?_
-  obtain ⟨U, m, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ a
-  rw [or_iff_not_imp_right, ← (X.presheaf.germ _ _ m).hom.map_zero]
-  intro ha
-  replace ha := ne_of_apply_ne _ ha
-  have hs : genericPoint X ∈ RingedSpace.basicOpen _ s := by
-    rw [← SetLike.mem_coe, (genericPoint_spec X).mem_open_set_iff,
-      Set.univ_inter, Set.nonempty_iff_ne_empty, Ne, ← Opens.coe_bot, ← SetLike.ext'_iff]
-    · erw [basicOpen_eq_bot_iff]
-      exact ha
-    · exact (RingedSpace.basicOpen _ _).isOpen
-  have := (X.presheaf.germ _ _ hs).hom.isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)
-  rwa [Presheaf.germ_res_apply] at this
+noncomputable instance [IsIntegral X] : Field X.functionField :=
+  (isField_stalk_of_closure_mem_irreducibleComponents X _
+    (by simp [irreducibleComponents_eq_singleton])).toField
 
 theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : X) (hx : x ∈ U) :
     Function.Injective (X.presheaf.germ U x hx) := by

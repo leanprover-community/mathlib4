@@ -292,8 +292,8 @@ theorem mem_evalFrom_iff_nonempty_path {s t : σ} {x : List α} :
       have h : s = t := by simp at h; tauto
       ⟨h ▸ Path.nil s⟩
     | a :: x =>
-      have h : ∃ s' ∈ M.step s a, t ∈ M.evalFrom {s'} x :=
-        by rw [evalFrom_cons, mem_evalFrom_iff_exists, stepSet_singleton] at h; exact h
+      have h : ∃ s' ∈ M.step s a, t ∈ M.evalFrom {s'} x := by
+        rw [evalFrom_cons, mem_evalFrom_iff_exists, stepSet_singleton] at h; exact h
       let ⟨s', h₁, h₂⟩ := h
       let ⟨p'⟩ := mem_evalFrom_iff_nonempty_path.1 h₂
       ⟨Path.cons s' _ _ _ _ h₁ p'⟩

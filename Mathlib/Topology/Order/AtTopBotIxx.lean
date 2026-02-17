@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Order.Basic
 public import Mathlib.Order.SuccPred.Limit
-import Mathlib.Topology.Order.IsLUB
+import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # `Filter.atTop` and `Filter.atBot` for intervals in a linear order topology
