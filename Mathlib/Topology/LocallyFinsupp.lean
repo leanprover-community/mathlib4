@@ -88,7 +88,7 @@ lemma LocallyFiniteSupport.iff_support_locallyFinite [Zero Y] (f : X → Y) :
 
 lemma LocallyFiniteSupport.support_locallyFinite [Zero Y] (f : X → Y) (h : LocallyFiniteSupport f) :
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) :=
-    (LocallyFiniteSupport.iff_support_locallyFinite f).mpr h
+  (LocallyFiniteSupport.iff_support_locallyFinite f).mpr h
 
 lemma LocallyFiniteSupport.inter_support_finite_of_isCompact {W : Set X}
    [Zero Y] {f : X → Y} (h : LocallyFiniteSupport f)
