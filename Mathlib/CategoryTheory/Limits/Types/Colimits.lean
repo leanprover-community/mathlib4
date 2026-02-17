@@ -55,25 +55,19 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
   · intro hc
     exact
      ⟨{ desc s := TypeCat.ofHom ⟨fun x => hc.desc (F.coconeTypesEquiv.symm s) x⟩
-        fac s j := by ext x; exact congr_fun (hc.fac (F.coconeTypesEquiv.symm s) j) x
+        fac s j := by
+          ext x
+          exact congr_fun (hc.fac (F.coconeTypesEquiv.symm s) j) x
         uniq s m hm := by
-          ext x; dsimp
-          exact congr_fun (hc.funext fun j ↦ funext fun y ↦ by
-            have h1 := ConcreteCategory.congr_hom (hm j) y
-            have h2 := congr_fun (hc.fac (F.coconeTypesEquiv.symm s) j) y
-            simp only [CategoryTheory.comp_apply, Function.comp_apply] at h1 h2
-            exact h1.trans h2.symm) x }⟩
+          ext x
+          exact congr_fun (hc.funext fun j ↦ funext fun y ↦ by simp [← hm j]; rfl) x }⟩
   · rintro ⟨hc⟩
     classical
     refine ⟨⟨fun x y h ↦ ?_, fun x ↦ ?_⟩⟩
     · let f (z : F.ColimitType) : ULift.{u} Bool := ULift.up (x = z)
       suffices f x = f y by simpa [f] using this
-      suffices hkey : ∀ z, hc.desc (F.coconeTypesEquiv (F.coconeTypes.postcomp f))
-          (F.descColimitType c z) = f z by
-        have h1 := hkey x
-        have h2 := hkey y
-        rw [h] at h1
-        exact h1.symm.trans h2
+      suffices ∀ z, hc.desc (F.coconeTypesEquiv (F.coconeTypes.postcomp f))
+          (F.descColimitType c z) = f z by rw [← this x, h, ← this y]
       intro z
       obtain ⟨j, z, rfl⟩ := F.ιColimitType_jointly_surjective z
       exact ConcreteCategory.congr_hom (hc.fac _ j) z
@@ -84,10 +78,9 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
       suffices f₁ = f₂ by
         have := ConcreteCategory.congr_hom this x
         simpa [f₁, f₂] using this
-      refine hc.hom_ext fun j => by
-        ext y; simp only [coconeTypesEquiv, comp_apply, TypeCat.hom_as_apply, f₁, f₂]
-        have : ∃ a, F.descColimitType c a = c.ι j y := ⟨F.ιColimitType j y, by simp⟩
-        simp [this]
+      refine hc.hom_ext fun j => ?_
+      ext x
+      simpa [f₁, f₂] using ⟨F.ιColimitType j x, by simp; rfl⟩
 
 end Functor
 
