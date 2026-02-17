@@ -3445,6 +3445,7 @@ public import Mathlib.Computability.Primrec.List
 public import Mathlib.Computability.RecursiveIn
 public import Mathlib.Computability.Reduce
 public import Mathlib.Computability.RegularExpressions
+public import Mathlib.Computability.StateTransition
 public import Mathlib.Computability.TMComputable
 public import Mathlib.Computability.TMConfig
 public import Mathlib.Computability.TMToPartrec
