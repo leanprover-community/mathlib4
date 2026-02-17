@@ -500,7 +500,6 @@ private lemma hasFPowerSeriesOnBall_update (hh : 0 < h)
         (by simpa using hr) (mod_cast hr')).summable.norm
   · simp
   · intro y hy
-    rw [zero_add]
     -- note the `simp`s below do not automatically apply this lemma to the argument of
     -- `Function.update`, because of limitations in `simp`'s support for dependent function types,
     -- see lean4 issue #12478.
