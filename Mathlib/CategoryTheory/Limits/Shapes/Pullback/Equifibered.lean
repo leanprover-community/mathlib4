@@ -14,8 +14,8 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 ## Main definition
 - `CategoryTheory.NatTrans.Equifibered`:
-A natural transformation `α : F ⟶ G` is equifibered if every commutative square of the following
-form is a pullback.
+  A natural transformation `α : F ⟶ G` is equifibered if every commutative square of the following
+  form is a pullback.
 ```
 F(X) → F(Y)
  ↓      ↓

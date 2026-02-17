@@ -29,8 +29,8 @@ basic facts about them.
 
 - The implication from `AB5` to `AB4` is established in `AB4.ofAB5`.
 - That `HasExactColimitsOfShape J C` is invariant under equivalences in both parameters is shown
-in `HasExactColimitsOfShape.of_domain_equivalence` and
-`HasExactColimitsOfShape.of_codomain_equivalence`.
+  in `HasExactColimitsOfShape.of_domain_equivalence` and
+  `HasExactColimitsOfShape.of_codomain_equivalence`.
 
 ## Remarks
 

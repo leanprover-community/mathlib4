@@ -27,8 +27,8 @@ along the localization functor `L`.
 ## TODO
 
 - refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
-material enters mathlib: derived categories, injective/projective derivability
-structures, existence of derived functors from derivability structures.
+  material enters mathlib: derived categories, injective/projective derivability
+  structures, existence of derived functors from derivability structures.
 
 ## References
 

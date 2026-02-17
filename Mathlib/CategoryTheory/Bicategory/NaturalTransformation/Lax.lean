@@ -40,13 +40,13 @@ transformations respectively.
 
 We also provide API for going between lax transformations and strong transformations:
 * `Lax.StrongCore F G`: a structure on a lax transformation between lax functors that
-promotes it to a strong transformation.
+  promotes it to a strong transformation.
 * `Lax.mkOfLax η η'`: given a lax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfLax` gives the corresponding strong transformation.
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055),
-section 4.2.
+  section 4.2.
 
 -/
 
@@ -313,7 +313,7 @@ that is "natural up to 2-isomorphisms".
 More precisely, it consists of the following:
 * a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
 * a 2-isomorphism `η.naturality f : app a ≫ G.map f ≅ F.map f ≫ app b` for each 1-morphism
-`f : a ⟶ b`.
+  `f : a ⟶ b`.
 * These 2-isomorphisms satisfy the naturality condition, and preserve the identities and the
   compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/

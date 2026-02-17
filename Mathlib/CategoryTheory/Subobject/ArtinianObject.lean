@@ -24,7 +24,7 @@ closed under subobjects.
 ## Future works
 
 * when `C` is an abelian category, relate `IsArtinianObject` in `C`
-with `IsNoetherianObject` in `Cᵒᵖ`.
+  with `IsNoetherianObject` in `Cᵒᵖ`.
 
 -/
 

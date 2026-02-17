@@ -18,10 +18,10 @@ to define a sub-pseudofunctor `P.fullsubcategory : Pseudofunctor B Cat`.
 
 ## TODO (@joelriou)
 * Given a Grothendieck topology `J` on a category `C`, define
-a type class `Pseudofunctor.ObjectProperty.IsLocal P J` extending
-`IsClosedUnderMapObj` saying that if an object locally satisfies
-the property, then it satisfies the property. Assuming this, show that
-`P.fullsubcategory` is a stack if the original pseudofunctor was.
+  a type class `Pseudofunctor.ObjectProperty.IsLocal P J` extending
+  `IsClosedUnderMapObj` saying that if an object locally satisfies
+  the property, then it satisfies the property. Assuming this, show that
+  `P.fullsubcategory` is a stack if the original pseudofunctor was.
 
 -/
 
