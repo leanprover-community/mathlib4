@@ -17,6 +17,8 @@ In this file we define various properties of the order of vanishing, including s
 computing the order of vanishing in a discrete valuation ring.
 -/
 
+@[expose] public section
+
 variable {R : Type*} [CommRing R]
 
 open Ring
