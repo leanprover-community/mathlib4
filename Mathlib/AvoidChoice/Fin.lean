@@ -92,7 +92,7 @@ theorem prod_univ_def (f : Fin n → M) : ∏ i, f i = ((List.finRange n).map f)
 
 attribute [to_additive existing] Fin.prod
 set_option linter.existingAttributeWarning false in
-attribute [to_additive (attr := simp) existing] Fin.prod_eq_prod_map_finRange
+attribute [to_additive existing] Fin.prod_eq_prod_map_finRange
 attribute [to_additive existing] Fin.prod_succ
 
 @[to_additive]
