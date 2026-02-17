@@ -8,6 +8,7 @@ module
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.Basic
 public import Batteries.Tactic.Trans
+public import Mathlib.Data.List.Sublists
 
 /-!
 # List Sub-permutations
@@ -54,6 +55,31 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
     exacts [nil_subperm, Subperm.refl _]
 
 lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons_self _ _⟩
+
+theorem Subperm.append {l₁ l₂ r₁ r₂ : List α}
+    (hl : l₁.Subperm l₂) (hr : r₁.Subperm r₂) :
+    (l₁ ++ r₁).Subperm (l₂ ++ r₂) := by
+  obtain ⟨l, hl_perm, hl_sub⟩ := hl
+  obtain ⟨r, hr_perm, hr_sub⟩ := hr
+  exact ⟨l ++ r, hl_perm.append hr_perm, hl_sub.append hr_sub⟩
+
+theorem Subperm.map {α β} {l₁ l₂ : List α} (f : α → β)
+    (h : l₁.Subperm l₂) :
+    (l₁.map f).Subperm (l₂.map f) := by
+  obtain ⟨l, hl_perm, hl_sub⟩ := h
+  exact ⟨l.map f, hl_perm.map f, hl_sub.map f⟩
+
+lemma subperm_sublists'_sublists' {l₁ l₂ : List α}
+    (sublist : l₁.Sublist l₂) :
+    l₁.sublists'.Subperm l₂.sublists' := by
+  induction sublist with
+  | slnil => exact .refl _
+  | cons a _ ih =>
+    rw [sublists'_cons]
+    exact ih.trans (List.sublist_append_left ..).subperm
+  | cons₂ a _ ih =>
+    rw [List.sublists'_cons, List.sublists'_cons]
+    exact ih.append (ih.map _)
 
 protected alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 
