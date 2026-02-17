@@ -6,8 +6,9 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Data.Finsupp.Antidiagonal
-public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Data.Finsupp.Interval
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.Data.Nat.Lattice
 
 import Mathlib.Algebra.Group.TypeTags.Pointwise
 
@@ -319,5 +320,11 @@ theorem image_pow_eq_finsuppProd_image {α β : Type*} [CommMonoid β] {f : α �
     by simp [Finsupp.prod_add_index, pow_add]⟩ : Multiplicative (α →₀ ℕ) →* β) _ _).symm.trans ?_
   simp [-Function.comp_apply, Set.image_comp, show Multiplicative.toAdd '' s = s from
     Set.image_id _]
+
+theorem Iic_sup_degree {σ : Type*} [DecidableEq σ] {n : σ →₀ ℕ} :
+    (Finset.Iic n).sup degree = n.degree := by
+  refine le_antisymm (Finset.sup_le_iff.mpr fun _ h ↦ ?_) (Finset.le_sup (by simp))
+  rw [Finset.mem_Iic] at h
+  exact degree_mono h
 
 end Finsupp
