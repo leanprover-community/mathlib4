@@ -74,7 +74,7 @@ def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
       _ = _ := by
         rw [hτ]; dsimp only [StructuredArrow.homMk_right]
 
-/-- A left Kan extension of the identity along `f` that commutes with `f`, in the sense that
+/-- A left Kan extension `t` of the identity along `f` that commutes with `f`, in the sense that
 `t.whisker f` is a left Kan extension, is a right adjoint to `f`. The unit of this adjoint is
 given by the unit of the Kan extension. -/
 def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
