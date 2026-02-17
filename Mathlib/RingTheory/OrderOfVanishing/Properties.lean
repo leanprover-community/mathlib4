@@ -37,7 +37,9 @@ lemma ord_ne_top (a : R) (ha : a ∈ nonZeroDivisors R) : ord R a ≠ ⊤ := by
   simp [isFiniteLength_quotient_span_singleton R ha, Ring.ord, Module.length_ne_top_iff]
 
 open scoped nonZeroDivisors
-
+/--
+Order of vanishing function as a monoid homomorphism
+-/
 noncomputable
 def ordMonoidHom : R⁰ →* Multiplicative ℕ where
   toFun x := .ofAdd <| (Ring.ord R x).untop (ord_ne_top _ x.2)
@@ -146,7 +148,11 @@ lemma ord_of_isUnit (x : R) (hx : IsUnit x) : ord R x = 0 := by
 
 section IsDiscreteValuationRing
 
-
+/--
+Given a commutative ring `R`, an `R`-algebra `S` and an `R`-module `M` with a scalar tower
+`IsScalarTower R S M`, if the algebra map from `R` to `S` is surjective, then this induces an order
+isomorphism `Submodule S M ≃o Submodule R M`.
+-/
 def Submodule.orderIsoOfAlgebraMapSurjective
     {R S M : Type*} [CommRing R] [Ring S] [AddCommGroup M]
     [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
