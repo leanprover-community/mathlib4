@@ -64,7 +64,7 @@ theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ
     rfl
   rintro x ⟨_, hx'⟩; exact hx'
 
-/-- A function whose domain's cardinality is infinite but strictly greater than its domain's
+/-- A function whose domain's cardinality is infinite and strictly greater than its codomain's
 has a fiber with cardinality strictly great than the codomain. -/
 theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (h : #α < #β) (hβ : ℵ₀ ≤ #β) :
     ∃ a : α, #α < #(f ⁻¹' {a}) := by
@@ -75,9 +75,9 @@ theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (h : #α < 
   · exact infinite_pigeonhole_card f (succ #α) (succ_le_of_lt h) (hα.trans (le_succ _))
       ((lt_succ _).trans_le (isRegular_succ hα).2.ge)
 
-/-- A function whose domain's cardinality is infinite but strictly greater than its domain's
+/-- A function whose domain's cardinality is infinite and strictly greater than its codomain's
 has an infinite fiber. -/
-theorem exists_infinite_fiber {β α : Type u} (f : β → α) (h : #α < #β) (hβ : Infinite β) :
+theorem exists_infinite_fiber {β α : Type u} (f : β → α) (h : #α < #β) [hβ : Infinite β] :
     ∃ a : α, Infinite (f ⁻¹' {a}) := by
   simp_rw [Cardinal.infinite_iff] at hβ ⊢
   rcases lt_or_ge #α ℵ₀ with hα | hα
@@ -86,15 +86,15 @@ theorem exists_infinite_fiber {β α : Type u} (f : β → α) (h : #α < #β) (
     exact ⟨a, hα.trans ha.le⟩
 
 /-- A weaker version of `exists_infinite_fiber` that requires codomain to be infinite. -/
-theorem exists_infinite_fiber' {β α : Type u} (f : β → α) (h : #α < #β) (hα : Infinite α) :
+theorem exists_infinite_fiber' {β α : Type u} (f : β → α) (h : #α < #β) [hα : Infinite α] :
     ∃ a : α, Infinite (f ⁻¹' {a}) :=
-  exists_infinite_fiber f h (by
+  exists_infinite_fiber f h (hβ := by
     rw [Cardinal.infinite_iff] at hα ⊢
     exact hα.trans h.le)
 
-/-- A function whose domain's cardinality is uncountable but strictly greater than its domain's
+/-- A function whose domain's cardinality is uncountable and strictly greater than its codomain's
 has an uncountable fiber. -/
-theorem exists_uncountable_fiber {β α : Type u} (f : β → α) (h : #α < #β) (hβ : Uncountable β) :
+theorem exists_uncountable_fiber {β α : Type u} (f : β → α) (h : #α < #β) [hβ : Uncountable β] :
     ∃ a : α, Uncountable (f ⁻¹' {a}) := by
   simp_rw [← Cardinal.aleph0_lt_mk_iff, ← Order.succ_le_iff, succ_aleph0] at hβ ⊢
   rcases lt_or_ge #α ℵ₀ with hα | hα
@@ -118,7 +118,7 @@ theorem le_range_of_union_finset_eq_univ {α β : Type*} [Infinite β] (f : α �
     have m : f (u p).choose = f a := by simpa [u'] using m
     rw [← m]
     apply fun b => (u b).choose_spec
-  obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h (by infer_instance)
+  obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h
   exact (@Infinite.of_injective _ _ p (inclusion (v' a)) (inclusion_injective _)).false
 
 @[deprecated (since := "2026-01-17")] alias le_range_of_union_finset_eq_top :=
