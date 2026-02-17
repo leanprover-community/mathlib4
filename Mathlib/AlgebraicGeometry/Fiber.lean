@@ -6,8 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
-public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
+public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 
 /-!
 # Scheme-theoretic fiber

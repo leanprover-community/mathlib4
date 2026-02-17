@@ -182,7 +182,35 @@ lemma GrpObj.inv_eq_inv : ι = (𝟙 G)⁻¹ := by simp [Hom.inv_def]
 @[reassoc (attr := simp)]
 lemma GrpObj.one_inv : η[G] ≫ ι = η := by simp [GrpObj.inv_eq_inv, GrpObj.comp_inv, one_eq_one]
 
+open scoped _root_.CategoryTheory.Obj in
+/-- If `G` is a group object and `F` is monoidal,
+then `Hom(X, G) → Hom(F X, F G)` preserves inverses. -/
+@[simp] lemma Functor.map_inv' {D : Type*} [Category* D] [CartesianMonoidalCategory D] (F : C ⥤ D)
+    [F.Monoidal] {X G : C} (f : X ⟶ G) [GrpObj G] :
+    F.map (f⁻¹) = (F.map f)⁻¹ := by
+  rw [eq_inv_iff_mul_eq_one, ← Functor.map_mul, inv_mul_cancel, Functor.map_one]
+
 @[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
+
+/-- The commutator of `G` as a morphism. This is the map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`,
+see `CategoryTheory.GrpObj.lift_commutator_eq_mul_mul_inv_inv`.
+This morphism is constant with value `1` if and only if `G` is commutative
+(see `CategoryTheory.isCommMonObj_iff_commutator_eq_toUnit_η`). -/
+def GrpObj.commutator (G : C) [GrpObj G] : G ⊗ G ⟶ G :=
+  fst _ _ * snd _ _ * (fst _ _) ⁻¹ * (snd _ _) ⁻¹
+
+@[reassoc (attr := simp)]
+lemma GrpObj.lift_commutator_eq_mul_mul_inv_inv {X G : C} [GrpObj G] (f₁ f₂ : X ⟶ G) :
+    lift f₁ f₂ ≫ commutator G = f₁ * f₂ * f₁⁻¹ * f₂⁻¹ := by
+  simp [commutator, comp_mul, comp_inv]
+
+@[reassoc (attr := simp)]
+lemma GrpObj.η_whiskerRight_commutator : η ▷ G ≫ commutator G = toUnit _ ≫ η := by
+  simp [commutator, comp_mul, comp_inv, one_eq_one]
+
+@[reassoc (attr := simp)]
+lemma GrpObj.whiskerLeft_η_commutator : G ◁ η ≫ commutator G = toUnit _ ≫ η := by
+  simp [commutator, comp_mul, comp_inv, one_eq_one]
 
 variable [BraidedCategory C]
 
@@ -221,8 +249,8 @@ namespace Hom
 
 @[simp] lemma hom_hom_inv (f : G ⟶ H) : f⁻¹.hom.hom = f.hom.hom⁻¹ := rfl
 @[simp] lemma hom_hom_div (f g : G ⟶ H) : (f / g).hom.hom = f.hom.hom / g.hom.hom := rfl
-@[simp] lemma hom_hom_zpow (f : G ⟶ H) (n : ℤ) : (f ^ n).hom.hom = f.hom.hom ^ n :=
-  by cases n <;> simp
+@[simp] lemma hom_hom_zpow (f : G ⟶ H) (n : ℤ) : (f ^ n).hom.hom = f.hom.hom ^ n := by
+  cases n <;> simp
 
 @[deprecated (since := "2025-12-18")] alias hom_inv := hom_hom_inv
 @[deprecated (since := "2025-12-18")] alias hom_div := hom_hom_div
@@ -244,5 +272,18 @@ end Grp
 abbrev Hom.commGroup [IsCommMonObj G] : CommGroup (X ⟶ G) where
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
+
+section
+
+/-- `G` is a commutative group object if and only if the commutator map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`
+is constant. -/
+lemma isCommMonObj_iff_commutator_eq_toUnit_η :
+    IsCommMonObj G ↔ GrpObj.commutator G = toUnit _ ≫ η := by
+  rw [isCommMonObj_iff_isMulCommutative]
+  refine ⟨fun h ↦ ?_, fun heq X ↦ ⟨⟨fun f g ↦ ?_⟩⟩⟩
+  · simp [GrpObj.commutator, one_eq_one]
+  · simpa [one_eq_one, mul_inv_eq_iff_eq_mul] using congr(lift f g ≫ $heq)
+
+end
 
 end CategoryTheory

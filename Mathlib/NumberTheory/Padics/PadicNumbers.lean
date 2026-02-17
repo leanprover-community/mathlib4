@@ -963,8 +963,6 @@ theorem norm_intCast_lt_one_iff {k : ℤ} : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
         rw [mul_one, norm_p]
         exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
 
-@[deprecated (since := "2025-08-15")] alias norm_int_lt_one_iff_dvd := norm_intCast_lt_one_iff
-
 @[simp]
 lemma norm_natCast_lt_one_iff {n : ℕ} :
     ‖(n : ℚ_[p])‖ < 1 ↔ p ∣ n := by

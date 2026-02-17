@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Init
 public meta import Lean.LabelAttribute -- TODO: `registerLabelAttr` should be marked `meta`
+public import Lean.LabelAttribute
+public import Lean.Meta.Tactic.Simp
 
 /-!
 # Attributes used in `Mathlib`

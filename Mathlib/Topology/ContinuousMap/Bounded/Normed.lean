@@ -230,7 +230,7 @@ theorem nnnorm_eq_iSup_nnnorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
   Subtype.ext <| (norm_eq_iSup_norm f).trans <| by simp_rw [val_eq_coe, NNReal.coe_iSup, coe_nnnorm]
 
 theorem enorm_eq_iSup_enorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ := by
-  simpa only [← edist_zero_eq_enorm] using edist_eq_iSup
+  simpa only [← edist_zero_right] using edist_eq_iSup
 
 theorem abs_diff_coe_le_dist : ‖f x - g x‖ ≤ dist f g := by
   rw [dist_eq_norm]
@@ -527,13 +527,13 @@ instance instInf : Min (α →ᵇ β) where
 @[simp, norm_cast] lemma coe_inf (f g : α →ᵇ β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g := rfl
 
 instance instSemilatticeSup : SemilatticeSup (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 instance instSemilatticeInf : SemilatticeInf (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.semilatticeInf _ coe_inf
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl coe_inf
 
 instance instLattice : Lattice (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.lattice _ coe_sup coe_inf
+  DFunLike.coe_injective.lattice _ .rfl .rfl coe_sup coe_inf
 
 @[simp, norm_cast] lemma coe_abs (f : α →ᵇ β) : ⇑|f| = |⇑f| := rfl
 @[simp, norm_cast] lemma coe_posPart (f : α →ᵇ β) : ⇑f⁺ = (⇑f)⁺ := rfl
