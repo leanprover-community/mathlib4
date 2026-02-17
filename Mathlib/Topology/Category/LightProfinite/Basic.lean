@@ -95,7 +95,7 @@ discrete topology. -/
 @[simps! -isSimp map_hom_hom_apply]
 def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
   obj A := LightProfinite.of A
-  map f := CompHausLike.ofHom _ ⟨f, by continuity⟩
+  map f := CompHausLike.ofHom _ ⟨f, by fun_prop⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toLightProfiniteFullyFaithful : toLightProfinite.FullyFaithful where

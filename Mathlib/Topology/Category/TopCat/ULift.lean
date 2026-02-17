@@ -32,7 +32,7 @@ namespace TopCat
 space in `Type (max u v)`. -/
 def uliftFunctor : TopCat.{u} ⥤ TopCat.{max u v} where
   obj X := TopCat.of (ULift.{v} X)
-  map {X Y} f := ofHom ⟨ULift.map f, by continuity⟩
+  map {X Y} f := ofHom ⟨ULift.map f, by fun_prop⟩
 
 /-- Given `X : TopCat.{u}`, this is the homeomorphism `X ≃ₜ uliftFunctor.{v}.obj X`. -/
 def uliftFunctorObjHomeo (X : TopCat.{u}) : X ≃ₜ uliftFunctor.{v}.obj X :=

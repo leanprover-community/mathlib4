@@ -158,8 +158,8 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
   toFun x :=
     if (x.2 : ℝ) ≤ 1 / 2 then (F.eval x.1).extend (2 * x.2) else (G.eval x.1).extend (2 * x.2 - 1)
   continuous_toFun := continuous_if_le (continuous_induced_dom.comp continuous_snd) continuous_const
-    (F.toHomotopy.continuous.comp (by continuity)).continuousOn
-    (G.toHomotopy.continuous.comp (by continuity)).continuousOn fun x hx => by norm_num [hx]
+    (F.toHomotopy.continuous.comp (by fun_prop)).continuousOn
+    (G.toHomotopy.continuous.comp (by fun_prop)).continuousOn fun x hx ↦ by norm_num [hx]
   map_zero_left x := by simp [Path.trans]
   map_one_left x := by simp [Path.trans]
   prop' x t ht := by
