@@ -217,7 +217,7 @@ alias ⟨CovBy.isCoatom, IsCoatom.covBy_top⟩ := covBy_top_iff
 
 namespace SetLike
 
-variable {A B : Type*} [SetLike A B]
+variable {A B : Type*} [PartialOrder A] [SetLike A B] [IsConcreteLE A B]
 
 theorem isAtom_iff [OrderBot A] {K : A} :
     IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by

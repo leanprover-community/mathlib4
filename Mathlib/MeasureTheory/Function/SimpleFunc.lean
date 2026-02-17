@@ -665,18 +665,16 @@ variable [Preorder β] {s : Set α} {f f₁ f₂ g g₁ g₂ : α →ₛ β} {hs
 
 instance instPreorder : Preorder (α →ₛ β) := Preorder.lift (⇑)
 
-@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
-@[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := .rfl
+@[simp, norm_cast, gcongr] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
+@[simp, norm_cast, gcongr] lemma coe_lt_coe : ⇑f < g ↔ f < g := .rfl
 
 @[deprecated (since := "2025-10-21")] alias coe_le := coe_le_coe
 
-@[simp] lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' ↔ f ≤ g := Iff.rfl
-@[simp] lemma mk_lt_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' < mk g hg hg' ↔ f < g := Iff.rfl
+@[simp, gcongr]
+lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' ↔ f ≤ g := Iff.rfl
 
-@[gcongr] protected alias ⟨_, GCongr.mk_le_mk⟩ := mk_le_mk
-@[gcongr] protected alias ⟨_, GCongr.mk_lt_mk⟩ := mk_lt_mk
-@[gcongr] protected alias ⟨_, GCongr.coe_le_coe⟩ := coe_le_coe
-@[gcongr] protected alias ⟨_, GCongr.coe_lt_coe⟩ := coe_lt_coe
+@[simp, gcongr]
+lemma mk_lt_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' < mk g hg hg' ↔ f < g := Iff.rfl
 
 open scoped Classical in
 @[gcongr]
@@ -887,9 +885,6 @@ theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n 
 theorem monotone_eapprox (f : α → ℝ≥0∞) : Monotone (eapprox f) :=
   monotone_approx _ f
 
-@[deprecated monotone_eapprox (since := "2025-08-13")]
-lemma eapprox_mono {m n : ℕ} (hmn : m ≤ n) : eapprox f m ≤ eapprox f n := monotone_eapprox _ hmn
-
 lemma iSup_eapprox_apply (hf : Measurable f) (a : α) : ⨆ n, (eapprox f n : α →ₛ ℝ≥0∞) a = f a := by
   rw [eapprox, iSup_approx_apply ennrealRatEmbed f a hf rfl]
   refine le_antisymm (iSup_le fun i => iSup_le fun hi => hi) (le_of_not_gt ?_)
@@ -1063,8 +1058,7 @@ theorem lintegral_restrict_iUnion_of_directed {ι : Type*} [Countable ι]
   simp only [lintegral, Measure.restrict_iUnion_apply_eq_iSup hd (measurableSet_preimage ..),
     ENNReal.mul_iSup]
   refine finsetSum_iSup fun i j ↦ (hd i j).imp fun k ⟨hik, hjk⟩ ↦ fun a ↦ ?_
-  -- TODO https://github.com/leanprover-community/mathlib4/pull/14739 make `gcongr` close this goal
-  constructor <;> · gcongr; refine Measure.restrict_mono ?_ le_rfl _; assumption
+  constructor <;> gcongr
 
 theorem const_lintegral (c : ℝ≥0∞) : (const α c).lintegral μ = c * μ univ := by
   rw [lintegral]
@@ -1096,7 +1090,6 @@ theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lin
 theorem lintegral_mono_measure {f : α →ₛ ℝ≥0∞} (h : μ ≤ ν) : f.lintegral μ ≤ f.lintegral ν := by
   simp only [lintegral]
   gcongr
-  apply h
 
 /-- `SimpleFunc.lintegral` is monotone both in function and in measure. -/
 @[mono, gcongr]

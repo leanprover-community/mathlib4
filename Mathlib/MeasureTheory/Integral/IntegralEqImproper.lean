@@ -1087,7 +1087,7 @@ theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 <
     ← abs_of_pos (inv_pos.mpr hb), ← Measure.integral_comp_mul_left]
   congr
   ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Ioi _ hb, mul_div_cancel_left₀ _ hb.ne',
+  rw [← indicator_comp_right, preimage_const_mul_Ioi₀ _ hb, mul_div_cancel_left₀ _ hb.ne',
     Function.comp_def]
 
 theorem integral_comp_mul_right_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
@@ -1142,7 +1142,7 @@ theorem integrableOn_Ioi_comp_mul_left_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (
   rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet <| Ioi <| a * c)]
   convert integrable_comp_mul_left_iff ((Ioi (a * c)).indicator f) ha.ne' using 2
   ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Ioi _ ha, mul_comm a c,
+  rw [← indicator_comp_right, preimage_const_mul_Ioi₀ _ ha, mul_comm a c,
     mul_div_cancel_right₀ _ ha.ne', Function.comp_def]
 
 theorem integrableOn_Ioi_comp_mul_right_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :

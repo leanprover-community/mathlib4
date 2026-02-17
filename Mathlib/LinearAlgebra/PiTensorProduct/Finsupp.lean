@@ -20,7 +20,7 @@ public import Mathlib.RingTheory.PiTensorProduct
 
 namespace PiTensorProduct
 
-open PiTensorProduct BigOperators TensorProduct
+open PiTensorProduct TensorProduct
 
 attribute [local ext] TensorProduct.ext
 

@@ -60,8 +60,8 @@ variable {α : Type*}
 /-- We say that a type has `MeasurableAdd` if `(c + ·)` and `(· + c)` are measurable functions.
 For a typeclass assuming measurability of `uncurry (· + ·)` see `MeasurableAdd₂`. -/
 class MeasurableAdd (M : Type*) [MeasurableSpace M] [Add M] : Prop where
-  measurable_const_add : ∀ c : M, Measurable (c + ·)
-  measurable_add_const : ∀ c : M, Measurable (· + c)
+  measurable_const_add : ∀ c : M, Measurable (c + ·) := by intro; fun_prop
+  measurable_add_const : ∀ c : M, Measurable (· + c) := by intro; fun_prop
 
 export MeasurableAdd (measurable_const_add measurable_add_const)
 
@@ -76,8 +76,8 @@ export MeasurableAdd₂ (measurable_add)
 For a typeclass assuming measurability of `uncurry (*)` see `MeasurableMul₂`. -/
 @[to_additive]
 class MeasurableMul (M : Type*) [MeasurableSpace M] [Mul M] : Prop where
-  measurable_const_mul : ∀ c : M, Measurable (c * ·)
-  measurable_mul_const : ∀ c : M, Measurable (· * c)
+  measurable_const_mul : ∀ c : M, Measurable (c * ·) := by intro; fun_prop
+  measurable_mul_const : ∀ c : M, Measurable (· * c) := by intro; fun_prop
 
 export MeasurableMul (measurable_const_mul measurable_mul_const)
 
@@ -138,8 +138,7 @@ theorem AEMeasurable.mul [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEM
 
 @[to_additive]
 instance (priority := 100) MeasurableMul₂.toMeasurableMul [MeasurableMul₂ M] :
-    MeasurableMul M :=
-  ⟨fun _ => measurable_const.mul measurable_id, fun _ => measurable_id.mul measurable_const⟩
+    MeasurableMul M where
 
 @[to_additive]
 instance Pi.measurableMul {ι : Type*} {α : ι → Type*} [∀ i, Mul (α i)]
@@ -214,8 +213,8 @@ end Pow
 /-- We say that a type has `MeasurableSub` if `(c - ·)` and `(· - c)` are measurable
 functions. For a typeclass assuming measurability of `uncurry (-)` see `MeasurableSub₂`. -/
 class MeasurableSub (G : Type*) [MeasurableSpace G] [Sub G] : Prop where
-  measurable_const_sub : ∀ c : G, Measurable (c - ·)
-  measurable_sub_const : ∀ c : G, Measurable (· - c)
+  measurable_const_sub : ∀ c : G, Measurable (c - ·) := by intro; fun_prop
+  measurable_sub_const : ∀ c : G, Measurable (· - c) := by intro; fun_prop
 
 export MeasurableSub (measurable_const_sub measurable_sub_const)
 
@@ -230,8 +229,8 @@ export MeasurableSub₂ (measurable_sub)
 For a typeclass assuming measurability of `uncurry (· / ·)` see `MeasurableDiv₂`. -/
 @[to_additive]
 class MeasurableDiv (G₀ : Type*) [MeasurableSpace G₀] [Div G₀] : Prop where
-  measurable_const_div : ∀ c : G₀, Measurable (c / ·)
-  measurable_div_const : ∀ c : G₀, Measurable (· / c)
+  measurable_const_div : ∀ c : G₀, Measurable (c / ·) := by intro; fun_prop
+  measurable_div_const : ∀ c : G₀, Measurable (· / c) := by intro; fun_prop
 
 export MeasurableDiv (measurable_const_div measurable_div_const)
 
@@ -447,7 +446,7 @@ class MeasurableConstVAdd (M α : Type*) [VAdd M α] [MeasurableSpace α] : Prop
 `x ↦ c • x` is a measurable function. -/
 @[to_additive]
 class MeasurableConstSMul (M α : Type*) [SMul M α] [MeasurableSpace α] : Prop where
-  measurable_const_smul : ∀ c : M, Measurable (c • · : α → α)
+  measurable_const_smul : ∀ c : M, Measurable (c • · : α → α) := by measurability
 
 /-- We say that the action of `M` on `α` has `MeasurableVAdd` if for each `c` the map `x ↦ c +ᵥ x`
 is a measurable function and for each `x` the map `c ↦ c +ᵥ x` is a measurable function. -/
@@ -460,7 +459,7 @@ is a measurable function and for each `x` the map `c ↦ c • x` is a measurabl
 @[to_additive]
 class MeasurableSMul (M α : Type*) [SMul M α] [MeasurableSpace M] [MeasurableSpace α]
     extends MeasurableConstSMul M α where
-  measurable_smul_const : ∀ x : α, Measurable (· • x : M → α)
+  measurable_smul_const : ∀ x : α, Measurable (· • x : M → α) := by measurability
 
 /-- We say that the action of `M` on `α` has `MeasurableVAdd₂` if the map
 `(c, x) ↦ c +ᵥ x` is a measurable function. -/
@@ -485,8 +484,6 @@ export MeasurableVAdd₂ (measurable_vadd)
 @[to_additive]
 instance measurableSMul_of_mul (M : Type*) [Mul M] [MeasurableSpace M] [MeasurableMul M] :
     MeasurableSMul M M where
-  measurable_const_smul := measurable_id.const_mul
-  measurable_smul_const := measurable_id.mul_const
 
 @[to_additive]
 instance measurableSMul₂_of_mul (M : Type*) [Mul M] [MeasurableSpace M] [MeasurableMul₂ M] :
@@ -577,8 +574,6 @@ theorem AEMeasurable.smul [MeasurableSMul₂ M X] {μ : Measure α} (hf : AEMeas
 @[to_additive]
 instance (priority := 100) MeasurableSMul₂.toMeasurableSMul [MeasurableSMul₂ M X] :
     MeasurableSMul M X where
-  measurable_const_smul _ := measurable_const.smul measurable_id
-  measurable_smul_const _ := measurable_id.smul measurable_const
 
 variable [MeasurableSMul M X]
 
@@ -588,8 +583,7 @@ theorem Measurable.smul_const (hf : Measurable f) (y : X) : Measurable fun x => 
 
 @[to_additive (attr := fun_prop)]
 theorem AEMeasurable.smul_const (hf : AEMeasurable f μ) (y : X) :
-    AEMeasurable (fun x => f x • y) μ :=
-  (MeasurableSMul.measurable_smul_const y).comp_aemeasurable hf
+    AEMeasurable (fun x => f x • y) μ := by fun_prop
 
 @[to_additive]
 instance Pi.measurableSMul {ι : Type*} {α : ι → Type*} [∀ i, SMul M (α i)]
@@ -769,7 +763,6 @@ nonrec instance MeasurableSMul₂.op {M α} [MeasurableSpace M] [MeasurableSpace
 @[to_additive]
 instance measurableSMul_opposite_of_mul {M : Type*} [Mul M] [MeasurableSpace M]
     [MeasurableMul M] : MeasurableSMul Mᵐᵒᵖ M where
-  measurable_const_smul c := measurable_mul_const (unop c)
   measurable_smul_const x := measurable_mul_unop.const_mul x
 
 @[to_additive]
@@ -887,8 +880,6 @@ variable [MeasurableSpace α] [Mul α] [Div α] [Inv α]
 @[to_additive] -- See note [lower instance priority]
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableMul [DiscreteMeasurableSpace α] :
     MeasurableMul α where
-  measurable_const_mul _ := .of_discrete
-  measurable_mul_const _ := .of_discrete
 
 @[to_additive DiscreteMeasurableSpace.toMeasurableAdd₂] -- See note [lower instance priority]
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableMul₂
@@ -901,8 +892,6 @@ instance (priority := 100) DiscreteMeasurableSpace.toMeasurableInv [DiscreteMeas
 @[to_additive] -- See note [lower instance priority]
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableDiv [DiscreteMeasurableSpace α] :
     MeasurableDiv α where
-  measurable_const_div _ := .of_discrete
-  measurable_div_const _ := .of_discrete
 
 @[to_additive DiscreteMeasurableSpace.toMeasurableSub₂] -- See note [lower instance priority]
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableDiv₂

@@ -53,6 +53,8 @@ instance : SetLike (ClosedSubmodule R M) M where
   coe s := s.1
   coe_injective' _ _ h := toSubmodule_injective <| SetLike.coe_injective h
 
+instance : PartialOrder (ClosedSubmodule R M) := .ofSetLike (ClosedSubmodule R M) M
+
 lemma toCloseds_injective : Injective (toCloseds : ClosedSubmodule R M → Closeds M) :=
   fun _s _t h ↦ SetLike.coe_injective congr(($h : Set M))
 
@@ -136,7 +138,7 @@ lemma coe_iInf (f : ι → ClosedSubmodule R M) : ↑(⨅ i, f i) = ⨅ i, (f i 
   simp [← SetLike.mem_coe]
 
 instance instSemilatticeInf : SemilatticeInf (ClosedSubmodule R M) :=
-  toSubmodule_injective.semilatticeInf _ fun _ _ ↦ rfl
+  toSubmodule_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
@@ -147,12 +149,8 @@ lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
 @[simp] lemma mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := .rfl
 
 instance : CompleteSemilatticeInf (ClosedSubmodule R M) where
-  sInf_le s a ha _ := by
-    simp only [toSubmodule_sInf, Submodule.mem_iInf]
-    exact fun h ↦ h a ha
-  le_sInf s a ha b := by
-    simp only [toSubmodule_sInf, Submodule.mem_iInf]
-    exact fun a i hi ↦ ha i hi a
+  sInf_le _ a ha _ h := mem_sInf.1 h a ha
+  le_sInf _ _ ha _ h := mem_sInf.2 fun a hi ↦ ha a hi h
 
 instance : OrderTop (ClosedSubmodule R M) where
   top := ⟨⊤, isClosed_univ⟩
