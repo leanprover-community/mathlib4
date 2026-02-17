@@ -10,7 +10,6 @@ public import Mathlib.Data.List.FinRange
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Tactic.DepRewrite
-public import Mathlib.AvoidChoice.Linter
 
 /-!
 # Let's avoid choice!
