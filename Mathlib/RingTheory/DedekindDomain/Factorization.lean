@@ -32,7 +32,7 @@ prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
   `a ∈ R`, and `J` is an ideal of `R` such that `I = a⁻¹J`, then `I` is equal to the product
   `∏_v v^(val_v(J) - val_v(a))`.
   - `FractionalIdeal.finprod_heightOneSpectrum_factorization'` : If `I` is a nonzero fractional
-  ideal, then `I` is equal to the product `∏_v v^(val_v(I))`.
+    ideal, then `I` is equal to the product `∏_v v^(val_v(I))`.
 - `FractionalIdeal.finprod_heightOneSpectrum_factorization_principal` : For a nonzero `k = r/s ∈ K`,
   the fractional ideal `(k)` is equal to the product `∏_v v^(val_v(r) - val_v(s))`.
 - `FractionalIdeal.finite_factors` : If `I ≠ 0`, then `val_v(I) = 0` for all but finitely many
