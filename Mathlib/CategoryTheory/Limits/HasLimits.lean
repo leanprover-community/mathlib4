@@ -443,6 +443,12 @@ theorem hasLimit_of_equivalence_comp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] 
   haveI : HasLimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasLimit_equivalence_comp e.symm
   apply hasLimit_of_iso (e.invFunIdAssoc F)
 
+lemma hasLimit_equivalence_comp_iff (e : K ≌ J) : HasLimit (e.functor ⋙ F) ↔ HasLimit F :=
+  ⟨fun _ ↦ hasLimit_of_equivalence_comp e, fun _ ↦ inferInstance⟩
+
+lemma hasLimit_inverse_equivalence_comp_iff (e : J ≌ K) : HasLimit (e.inverse ⋙ F) ↔ HasLimit F :=
+  hasLimit_equivalence_comp_iff e.symm
+
 -- `hasLimitCompEquivalence` and `hasLimitOfCompEquivalence`
 -- are proved in `Mathlib/CategoryTheory/Adjunction/Limits.lean`.
 section LimFunctor
@@ -991,6 +997,13 @@ instance hasColimit_equivalence_comp (e : K ≌ J) [HasColimit F] : HasColimit (
 theorem hasColimit_of_equivalence_comp (e : K ≌ J) [HasColimit (e.functor ⋙ F)] : HasColimit F := by
   haveI : HasColimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasColimit_equivalence_comp e.symm
   apply hasColimit_of_iso (e.invFunIdAssoc F).symm
+
+lemma hasColimit_equivalence_comp_iff (e : K ≌ J) : HasColimit (e.functor ⋙ F) ↔ HasColimit F :=
+  ⟨fun _ ↦ hasColimit_of_equivalence_comp e, fun _ ↦ inferInstance⟩
+
+lemma hasColimit_inverse_equivalence_comp_iff (e : J ≌ K) :
+    HasColimit (e.inverse ⋙ F) ↔ HasColimit F :=
+  hasColimit_equivalence_comp_iff e.symm
 
 section ColimFunctor
 
