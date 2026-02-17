@@ -640,7 +640,7 @@ lemma Multipliable.pow (hf : Multipliable f L) (n : ℕ) :
     simp [pow_zero, multipliable_one]
   | succ n hn =>
     simp_rw [pow_succ]
-    apply Multipliable.mul hn hf
+    exact Multipliable.mul hn hf
 
 lemma Multipliable.tprod_pow [L.NeBot] (hf : Multipliable f L) (n : ℕ) :
     (∏'[L] b, f b) ^ n = ∏'[L] b, (f b) ^ n := by

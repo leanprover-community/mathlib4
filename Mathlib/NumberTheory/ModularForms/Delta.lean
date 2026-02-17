@@ -154,7 +154,7 @@ lemma delta_T_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.T) = Δ := by
   ext z
   rw [SL_slash_apply, denom, UpperHalfPlane.modular_T_smul, ModularGroup.T]
   simp [delta_eq_q_prod, eta_q, Periodic.qParam, ← exp_periodic (2 * π * I * z)]
-  ring_nf
+  ring_nf --is this non-squeeze simp safe since its before a ring?
 
 /-- The transformation formula for `η` under `S : z ↦ -1 / z`: we have
 `η(-1 / z) = (√I)⁻¹ · √z · η(z)` on the upper half-plane. -/
