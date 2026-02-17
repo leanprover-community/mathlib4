@@ -3,13 +3,14 @@ Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+module
 
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.List.FinRange
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Tactic.DepRewrite
-import Mathlib.AvoidChoice.Linter
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.List.FinRange
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Tactic.DepRewrite
+public import Mathlib.AvoidChoice.Linter
 
 /-!
 # Let's avoid choice!
