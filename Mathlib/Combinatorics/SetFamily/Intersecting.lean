@@ -20,8 +20,8 @@ This file defines intersecting families and proves their basic properties.
 * `Set.Intersecting.card_le`: An intersecting family can only take up to half the elements, because
   `a` and `aᶜ` cannot simultaneously be in it.
 * `Set.Intersecting.is_max_iff_card_eq`: Any maximal intersecting family takes up half the elements.
-* `Set.IsIntersectingWith`: Predicate stating that a family of finsets is `ℓ`-intersecting, i.e.,
-  every pair of members intersects in at least `ℓ` elements.
+* `Set.IsIntersectingOf`: Predicate stating that a family `𝒜` of finsets is `L`-intersecting, i.e.,
+  meaning that for all `s, t ∈ 𝒜`, `(s ∩ t).card ∈ L`.
 
 ## References
 
@@ -192,61 +192,74 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   exact ht.card_le
 
 /-!
-### `ℓ`-intersecting families
+### `L`-intersecting families
 
-This section defines `ℓ`-intersecting families and establishes their basic properties.
+This section defines `L`-intersecting families and establishes their basic properties.
 -/
 
-variable {ℓ : ℕ}
+variable {L L' : Set ℕ}
 variable {α : Type*} [DecidableEq α]
 variable {𝒜 ℬ : Set (Finset α)}
 
 /--
-A family `𝒜` of finite subsets of `α` is `ℓ`-intersecting if every pair of members
-intersects in at least `ℓ` elements.
+A family `𝒜` of finite subsets of `α` is `L`-intersecting if all pairwise intersection sizes of
+members of `𝒜` belong to `L ⊆ ℕ`.
 
-That is, for all `s, t ∈ 𝒜`, we have `ℓ ≤ |s ∩ t|`.
+That is, for all `s, t ∈ 𝒜`, we have `|(s ∩ t)| ∈ L`.
 -/
-def IsIntersectingWith (ℓ : ℕ) (𝒜 : Set (Finset α)) : Prop :=
-  ∀ ⦃s⦄, s ∈ 𝒜 → ∀ ⦃t⦄, t ∈ 𝒜 → ℓ ≤ (s ∩ t).card
+def IsIntersectingOf (L : Set ℕ) (𝒜 : Set (Finset α)) : Prop :=
+  ∀ ⦃s⦄, s ∈ 𝒜 → ∀ ⦃t⦄, t ∈ 𝒜 → (s ∩ t).card ∈ L
 
-namespace IsIntersectingWith
+namespace IsIntersectingOf
 
 /--
-An `ℓ`-intersecting family remains `ℓ`-intersecting under restriction to any subfamily.
+An `L`-intersecting family is also `L'`-intersecting whenever `L ⊆ L'`.
 -/
 @[gcongr]
-theorem mono (h : ℬ ⊆ 𝒜) (h𝒜 : IsIntersectingWith ℓ 𝒜) : IsIntersectingWith ℓ ℬ := by
-  grind [IsIntersectingWith]
+theorem mono (h : L ⊆ L') (hL : IsIntersectingOf L 𝒜) : IsIntersectingOf L' 𝒜 := by
+  grind [IsIntersectingOf]
 
 /--
-Every family of finite sets is `0`-intersecting.
+An `L`-intersecting family remains `L`-intersecting under restriction to any subfamily.
 -/
-theorem zero : IsIntersectingWith 0 𝒜 := by
-  simp [IsIntersectingWith]
+@[gcongr]
+theorem anti (h : ℬ ⊆ 𝒜) (h𝒜 : IsIntersectingOf L 𝒜) : IsIntersectingOf L ℬ := by
+  grind [IsIntersectingOf]
 
 /--
-The empty family of finite sets is `ℓ`-intersecting, vacuously, because it contains no pairs of
+The empty family of finite sets is `L`-intersecting, vacuously, because it contains no pairs of
 sets.
 -/
-theorem empty : IsIntersectingWith ℓ (∅ : Set (Finset α)) := by
-  simp [IsIntersectingWith]
+@[simp]
+protected theorem empty : IsIntersectingOf L (∅ : Set (Finset α)) := by simp [IsIntersectingOf]
 
 /--
-Every member of an `ℓ`-intersecting family has cardinality at least `ℓ`.
+Every family of finite sets is `univ`-intersecting.
 -/
-theorem card_le (h𝒜 : IsIntersectingWith ℓ 𝒜) : ∀ s ∈ 𝒜, ℓ ≤ s.card := by
-  grind [IsIntersectingWith]
+@[simp]
+protected theorem univ : IsIntersectingOf univ 𝒜 := by simp [IsIntersectingOf]
 
 /--
-If `ℓ ≠ 0`, an `ℓ`-intersecting family is intersecting in the usual sense, meaning that every pair
-of members has a nonempty intersection.
+Every member of an `L`-intersecting family has cardinality in `L`.
 -/
-theorem intersecting (hℓ : ℓ ≠ 0) (h𝒜 : IsIntersectingWith ℓ 𝒜) : Intersecting 𝒜 := by
-  intro a ha b hb
-  have : ℓ ≤ (a ∩ b).card := h𝒜 ha hb
-  grind [Finset.disjoint_iff_inter_eq_empty]
+theorem card_mem (h𝒜 : IsIntersectingOf L 𝒜) : ∀ s ∈ 𝒜, s.card ∈ L := by grind [IsIntersectingOf]
 
-end IsIntersectingWith
+/--
+If `0 ∉ L`, then any `L`-intersecting family is intersecting in the usual sense: every pair of
+members has a nonempty intersection.
+-/
+theorem intersecting (hL : 0 ∉ L) (h𝒜 : IsIntersectingOf L 𝒜) : Intersecting 𝒜 := by
+  intro s hs t ht
+  grind [h𝒜 hs ht, card_inter, card_union_eq_card_add_card]
+
+/--
+A family `𝒜` of finite subsets of `α` is `{0}ᶜ`-intersecting if and only if it is intersecting in in
+the usual sense.
+-/
+@[simp]
+theorem isIntersectingOf_singleton_compl : IsIntersectingOf {0}ᶜ 𝒜 ↔ Intersecting 𝒜 := by
+  simp [IsIntersectingOf, Intersecting, disjoint_iff]
+
+end IsIntersectingOf
 
 end Set
