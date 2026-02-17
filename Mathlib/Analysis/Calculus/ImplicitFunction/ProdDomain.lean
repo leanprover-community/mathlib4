@@ -91,7 +91,7 @@ theorem hasStrictFDerivAt_implicitFunctionOfProdDomain
     ext x
     rw [f'.comp_apply, ← f'.comp_inl_add_comp_inr]
     simp [map_neg, if₂]
-  exact ((dfu.implicitFunctionDataOfProdDomain if₂).hasStrictFDerivAt_implicitFunction _
+  exact ((dfu.implicitFunctionDataOfProdDomain if₂).implicitFunction_hasStrictFDerivAt _
     (ContinuousLinearMap.fst_comp_prod _ _) this).snd
 
 theorem tendsto_implicitFunctionOfProdDomain

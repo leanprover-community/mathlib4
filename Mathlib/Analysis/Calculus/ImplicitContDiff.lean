@@ -132,11 +132,11 @@ noncomputable def implicitFunctionAux (h : IsContDiffImplicitAt n f f' a) : E �
 
 lemma implicitFunctionAux_fst (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ p in 𝓝 (a.1, f a), (h.implicitFunctionAux p.1 p.2).1 = p.1 :=
-  h.implicitFunctionData.prodFun_implicitFunction.mono fun _ ↦ congr_arg Prod.fst
+  h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.fst
 
 lemma comp_implicitFunctionAux_eq_snd (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ p in 𝓝 (a.1, f a), f (h.implicitFunctionAux p.1 p.2) = p.2 :=
-  h.implicitFunctionData.prodFun_implicitFunction.mono fun _ ↦ congr_arg Prod.snd
+  h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.snd
 
 /-- Implicit function `φ` defined by `f (x, φ x) = f a`. -/
 noncomputable def implicitFunction (h : IsContDiffImplicitAt n f f' a) : E → F :=

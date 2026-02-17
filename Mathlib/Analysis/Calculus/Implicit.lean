@@ -16,7 +16,7 @@ public import Mathlib.Analysis.Normed.Module.Complemented
 We prove a few different versions of the implicit function theorem. First we define a structure
 `ImplicitFunctionData` that holds arguments for the most general version of the implicit function
 theorem, see `ImplicitFunctionData.implicitFunction` and
-`ImplicitFunctionData.hasStrictFDerivAt_implicitFunction`. This version allows a user to choose a
+`ImplicitFunctionData.implicitFunction_hasStrictFDerivAt`. This version allows a user to choose a
 specific implicit function but provides only a little convenience over the inverse function theorem.
 
 Then we define `HasStrictFDerivAt.implicitFunctionDataOfComplemented`: implicit function defined by
@@ -190,44 +190,35 @@ theorem map_pt_mem_toOpenPartialHomeomorph_target :
 @[deprecated (since := "2025-08-29")] alias
   map_pt_mem_toPartialHomeomorph_target := map_pt_mem_toOpenPartialHomeomorph_target
 
-theorem prodFun_implicitFunction :
-    ∀ᶠ v : F × G in 𝓝 (φ.prodFun φ.pt), φ.prodFun (φ.implicitFunction v.1 v.2) = v :=
+theorem prod_map_implicitFunction :
+    ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.prodFun (φ.implicitFunction p.1 p.2) = p :=
   φ.hasStrictFDerivAt.eventually_right_inverse.mono fun ⟨_, _⟩ h => h
 
-@[deprecated (since := "2026-01-27")]
-alias prod_map_implicitFunction := prodFun_implicitFunction
+theorem left_map_implicitFunction :
+    ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.leftFun (φ.implicitFunction p.1 p.2) = p.1 :=
+  φ.prod_map_implicitFunction.mono fun _ => congr_arg Prod.fst
 
-theorem leftFun_implicitFunction :
-    ∀ᶠ v : F × G in 𝓝 (φ.prodFun φ.pt), φ.leftFun (φ.implicitFunction v.1 v.2) = v.1 :=
-  φ.prodFun_implicitFunction.mono fun _ => congr_arg Prod.fst
-
-@[deprecated (since := "2026-01-27")]
-alias left_map_implicitFunction := leftFun_implicitFunction
-
-theorem rightFun_implicitFunction :
-    ∀ᶠ v : F × G in 𝓝 (φ.prodFun φ.pt), φ.rightFun (φ.implicitFunction v.1 v.2) = v.2 :=
-  φ.prodFun_implicitFunction.mono fun _ => congr_arg Prod.snd
-
-@[deprecated (since := "2026-01-27")]
-alias right_map_implicitFunction := rightFun_implicitFunction
+theorem right_map_implicitFunction :
+    ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.rightFun (φ.implicitFunction p.1 p.2) = p.2 :=
+  φ.prod_map_implicitFunction.mono fun _ => congr_arg Prod.snd
 
 theorem implicitFunction_apply_image :
-    ∀ᶠ v in 𝓝 φ.pt, φ.implicitFunction (φ.leftFun v) (φ.rightFun v) = v :=
+    ∀ᶠ x in 𝓝 φ.pt, φ.implicitFunction (φ.leftFun x) (φ.rightFun x) = x :=
   φ.hasStrictFDerivAt.eventually_left_inverse
 
-theorem leftFun_implicitFunction_eq_leftFun : ∀ᶠ v in 𝓝 φ.pt,
-    φ.leftFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun v)) = φ.leftFun φ.pt := by
-  have := φ.leftFun_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
+theorem leftFun_implicitFunction_eq_leftFun : ∀ᶠ x in 𝓝 φ.pt,
+    φ.leftFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x)) = φ.leftFun φ.pt := by
+  have := φ.left_map_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
   rwa [← prodFun_apply, ← φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, eventually_map] at this
 
-theorem rightFun_implicitFunction_eq_rightFun : ∀ᶠ v in 𝓝 φ.pt,
-    φ.rightFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun v)) = φ.rightFun v := by
-  have := φ.rightFun_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
+theorem rightFun_implicitFunction_eq_rightFun : ∀ᶠ x in 𝓝 φ.pt,
+    φ.rightFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x)) = φ.rightFun x := by
+  have := φ.right_map_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
   rwa [← prodFun_apply, ← φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, eventually_map] at this
 
-theorem leftFun_eq_iff_implicitFunction : ∀ᶠ v in 𝓝 φ.pt,
-    φ.leftFun v = φ.leftFun φ.pt ↔ φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun v) = v := by
-  filter_upwards [φ.implicitFunction_apply_image, φ.leftFun_implicitFunction_eq_leftFun] with v _ _
+theorem leftFun_eq_iff_implicitFunction : ∀ᶠ x in 𝓝 φ.pt,
+    φ.leftFun x = φ.leftFun φ.pt ↔ φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x) = x := by
+  filter_upwards [φ.implicitFunction_apply_image, φ.leftFun_implicitFunction_eq_leftFun] with _ _ _
   constructor <;> exact fun h => by rwa [← h]
 
 theorem map_nhds_eq : map φ.leftFun (𝓝 φ.pt) = 𝓝 (φ.leftFun φ.pt) :=
@@ -267,7 +258,7 @@ theorem rightDeriv_fderiv_implicitFunction (φ : ImplicitFunctionData 𝕜 E F G
     φ.rightDeriv (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt) x) = x := by
   exact φ.fderiv_implicitFunction_apply_eq_iff.mp rfl |>.right
 
-theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
+theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
     (hg'invf : φ.leftDeriv.comp g'inv = 0) :
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
@@ -275,9 +266,6 @@ theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
   ext1 x
   rw [eq_comm, fderiv_implicitFunction_apply_eq_iff]
   simp_all [DFunLike.ext_iff]
-
-@[deprecated (since := "2026-01-27")]
-alias implicitFunction_hasStrictFDerivAt := hasStrictFDerivAt_implicitFunction
 
 theorem map_implicitFunction_nhdsWithin_preimage (φ : ImplicitFunctionData 𝕜 E F G)
     (s : Set E) :
@@ -454,7 +442,7 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
     (hker : f'.ker.ClosedComplemented) :
     HasStrictFDerivAt (hf.implicitFunctionOfComplemented f f' hf' hker (f a))
       f'.ker.subtypeL 0 := by
-  convert (implicitFunctionDataOfComplemented f f' hf hf' hker).hasStrictFDerivAt_implicitFunction
+  convert (implicitFunctionDataOfComplemented f f' hf hf' hker).implicitFunction_hasStrictFDerivAt
     f'.ker.subtypeL _ _
   swap
   · ext
