@@ -799,30 +799,37 @@ lemma inclusion_induction [hk : DecidableEq k] [k_fintype_inst : Fintype k]
 
 lemma subrect_self
     (A : LatinRectangle k n α) : is_subrect A A (Function.Embedding.refl k) := by sorry
-#check Exists
 
 theorem latin_rectangle_extends_to_latin_square
     (A : LatinRectangle k n α)
     (h : Fintype.card k ≤ Fintype.card n := by omega)
     (ι : k ↪ n) :
     ∃ (A' : LatinRectangle n n α), is_subrect A A' ι := by 
-    let motive := fun (p : Σ (n : Type u) (hn : DecidableEq n) (n_fin : Fintype n), (k ↪ n)) => ∀ [Fintype p.1], 
-        -- ∀ (A : @LatinRectangle k p.1 α k_fintype_inst (p.2.2.1) α_fintype_inst α_decidable_eq_inst k_dec_eq_inst),
+            
+    let motive := fun (p : Σ (n : Type u) (hn : DecidableEq n) (n_fin : Fintype n), (k ↪ n)) => 
+    ∀ [Fintype p.1],
+        letI : DecidableEq p.1 := p.2.1
+        letI : Fintype p.1 := p.2.2.1
         ∀ (A : LatinRectangle k p.1 α),
-          ∃ (A' : LatinRectangle p.1 p.1 α), is_subrect A A' p.2.2.2
+            ∃ (A' : LatinRectangle p.1 p.1 α), is_subrect A A' p.2.2.2
+
     apply inclusion_induction (motive := motive) 
     case base => 
-      simp [motive]
-      intro h
-      intro A''
-      simp at A''
-      have ss := Fintype.subsingleton k
-      have b := ss.allEq (a := h) (b := k_fintype_inst)
-      rw [<- b] at A''
-      use A''
-      have h := subrect_self A''
+        simp [motive]
+        intro h_inst A''
+        have : h_inst = k_fintype_inst := Subsingleton.elim _ _
+        subst this
+        use A''
+        exact subrect_self A''
+
+y    case step => 
+      intro n hn n_fintype_inst f hm
+      -- let k' := Fin (Fintype.card k)
+      -- let k' := Option n
+      -- have hk'_le : Fintype.card k ≤ Fintype.card k' := by sorry
+      -- have ι' := Function.Embedding.nonempty_of_card_le hk'_le
+      -- use k' 
       sorry
-    case step => sorry
     case a => exact h
     sorry
 
