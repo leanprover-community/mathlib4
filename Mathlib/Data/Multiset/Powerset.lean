@@ -5,8 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Nat
-public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.List.Sublists
 public import Mathlib.Data.List.Zip
 public import Mathlib.Data.Multiset.Bind
@@ -116,7 +114,6 @@ theorem self_mem_powerset (s) : s ∈ @powerset α s :=
 theorem card_powerset (s : Multiset α) : card (powerset s) = 2 ^ card s :=
   Quotient.inductionOn s <| by simp
 
-
 theorem powerset_eq_singleton_empty_iff (s) : @powerset α s = {0} ↔ s = 0 where
   mpr := by
     rintro rfl
@@ -161,6 +158,29 @@ theorem revzip_powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) :
   haveI := Classical.decEq α
   simp only [fun l : List α => revzip_powersetAux_lemma l revzip_powersetAux, coe_eq_coe.2 p]
   exact (powersetAux_perm p).map _
+
+theorem le_powerset_iff_le {s t} :
+    @powerset α s ≤ @powerset α t ↔ s ≤ t where
+  mp powerset := Multiset.mem_powerset.mp <| Multiset.mem_of_le powerset (self_mem_powerset s)
+  mpr le :=
+    Multiset.leInductionOn le fun {l₁ l₂} hsub => by
+      rw [Multiset.powerset_coe', Multiset.powerset_coe', Multiset.coe_le]
+      exact (sublists'_subperm_sublists' hsub).map Multiset.ofList
+
+lemma powerset_mono : Monotone (@Multiset.powerset α) := by
+  unfold Monotone
+  intro a₁ a₂ a
+  exact le_powerset_iff_le.mpr a
+
+lemma powerset_injective : Function.Injective (@Multiset.powerset α) := by
+  unfold Function.Injective
+  intro a₁ a₂ a
+  exact le_antisymm
+    (le_powerset_iff_le.mp (le_of_eq a))
+    (le_powerset_iff_le.mp (le_of_eq a.symm))
+
+lemma powerset_strictMono : StrictMono (@Multiset.powerset α) := by
+  exact Monotone.strictMono_of_injective powerset_mono powerset_injective
 
 /-! ### powersetCard -/
 
@@ -305,28 +325,5 @@ alias ⟨Nodup.ofPowerset, Nodup.powerset⟩ := nodup_powerset
 protected theorem Nodup.powersetCard {n : ℕ} {s : Multiset α} (h : Nodup s) :
     Nodup (powersetCard n s) :=
   nodup_of_le (powersetCard_le_powerset _ _) (nodup_powerset.2 h)
-
-theorem le_powerset_iff_le {s t} :
-    @powerset α s ≤ @powerset α t ↔ s ≤ t where
-  mp powerset := Multiset.mem_powerset.mp <| Multiset.mem_of_le powerset (self_mem_powerset s)
-  mpr le :=
-    Multiset.leInductionOn le fun {l₁ l₂} hsub => by
-      rw [Multiset.powerset_coe', Multiset.powerset_coe', Multiset.coe_le]
-      exact (subperm_sublists'_sublists' hsub).map Multiset.ofList
-
-lemma powerset_mono : Monotone (@Multiset.powerset α) := by
-  unfold Monotone
-  intro a₁ a₂ a
-  exact le_powerset_iff_le.mpr a
-
-lemma powerset_injective : Function.Injective (@Multiset.powerset α) := by
-  unfold Function.Injective
-  intro a₁ a₂ a
-  exact le_antisymm
-    (le_powerset_iff_le.mp (le_of_eq a))
-    (le_powerset_iff_le.mp (le_of_eq a.symm))
-
-lemma powerset_strictMono : StrictMono (@Multiset.powerset α) := by
-  exact Monotone.strictMono_of_injective powerset_mono powerset_injective
 
 end Multiset

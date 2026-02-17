@@ -8,7 +8,6 @@ module
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.Basic
 public import Batteries.Tactic.Trans
-public import Mathlib.Data.List.Sublists
 
 /-!
 # List Sub-permutations
@@ -68,18 +67,6 @@ theorem Subperm.map {α β} {l₁ l₂ : List α} (f : α → β)
     (l₁.map f).Subperm (l₂.map f) := by
   obtain ⟨l, hl_perm, hl_sub⟩ := h
   exact ⟨l.map f, hl_perm.map f, hl_sub.map f⟩
-
-lemma subperm_sublists'_sublists' {l₁ l₂ : List α}
-    (sublist : l₁.Sublist l₂) :
-    l₁.sublists'.Subperm l₂.sublists' := by
-  induction sublist with
-  | slnil => exact .refl _
-  | cons a _ ih =>
-    rw [sublists'_cons]
-    exact ih.trans (List.sublist_append_left ..).subperm
-  | cons₂ a _ ih =>
-    rw [List.sublists'_cons, List.sublists'_cons]
-    exact ih.append (ih.map _)
 
 protected alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 

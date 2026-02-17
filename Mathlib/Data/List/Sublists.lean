@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.List.Lex
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.Nodup
@@ -353,6 +354,18 @@ theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
   · simp
   · exact nodup_sublists.mpr (nodup_finRange _)
   · exact (nodup_sublists'.mpr (nodup_finRange _))
+
+theorem sublists'_subperm_sublists' {l₁ l₂ : List α}
+    (sublist : l₁.Sublist l₂) :
+    l₁.sublists'.Subperm l₂.sublists' := by
+  induction sublist with
+  | slnil => exact .refl _
+  | cons a _ ih =>
+    rw [sublists'_cons]
+    exact ih.trans (List.sublist_append_left ..).subperm
+  | cons₂ a _ ih =>
+    rw [sublists'_cons, sublists'_cons]
+    exact ih.append (ih.map _)
 
 theorem sublists_cons_perm_append (a : α) (l : List α) :
     sublists (a :: l) ~ sublists l ++ map (cons a) (sublists l) :=
