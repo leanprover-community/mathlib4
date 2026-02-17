@@ -151,11 +151,6 @@ lemma hom_as_apply {X Y : TypeCat.{u}} (f : X ⟶ Y) (x : X) : (ConcreteCategory
 example (X : Type u) : CategoryTheory.ToType (of X) = X := by with_reducible rfl
 example (X : TypeCat.{u}) : CategoryTheory.ToType X = X.carrier := by with_reducible rfl
 
--- @[simp]
--- lemma ofHom_apply {X Y : Type u} (f : Fun X Y) (x : X) :
---     ConcreteCategory.ofHom (C := TypeCat) f x = f x :=
---   rfl
-
 @[simp]
 lemma ofHom_eq {X Y : TypeCat.{u}} (f : X ⟶ Y) : ofHom ⟨f⟩ = f :=
   rfl
@@ -179,23 +174,11 @@ end TypeCat
 
 namespace CategoryTheory
 
--- @[ext] theorem types_ext {α β : TypeCat.{u}} (f g : α ⟶ β) (h : ∀ a : α, f a = g a) : f = g :=
---   ConcreteCategory.hom_ext _ _ h
-
 theorem types_id (X : TypeCat.{u}) : (𝟙 X : _ → _) = id :=
   rfl
 
 theorem types_comp {X Y Z : TypeCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : _ → _) = g ∘ f :=
   rfl
-
--- @[simp]
--- theorem types_id_apply (X : TypeCat.{u}) (x : X) : 𝟙 X x = x :=
---   rfl
-
--- @[simp]
--- theorem types_comp_apply {X Y Z : TypeCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
---     (f ≫ g) x = g (f x) :=
---   rfl
 
 @[deprecated (since := "2026-02-09")] alias hom_inv_id_apply := Iso.hom_inv_id_apply
 @[deprecated (since := "2026-02-09")] alias inv_hom_id_apply := Iso.inv_hom_id_apply
@@ -511,54 +494,3 @@ theorem equivEquivIso_hom {X Y : Type u} (e : X ≃ Y) : equivEquivIso e = e.toI
 @[simp]
 theorem equivEquivIso_inv {X Y : TypeCat.{u}} (e : X ≅ Y) : equivEquivIso.symm e = e.toEquiv :=
   rfl
-
--- namespace TypeCat
-
--- variable {C : Type u} [Category.{v} C]
-
--- def homSet (X Y : C) : TypeCat.{v} := TypeCat.of (X ⟶ Y)
-
--- def precomp {X Y : C} (Z : C) (f : X ⟶ Y) : homSet Y Z ⟶ homSet X Z := ofHom fun g ↦ f ≫ g
-
--- @[simp]
--- lemma precomp_id (X Y : C) : precomp Y (𝟙 X) = 𝟙 _ := by
---   simp [precomp]
---   rfl
-
--- @[simp]
--- lemma precomp_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
---     precomp W (f ≫ g) = precomp W g ≫ precomp W f := by
---   ext
---   simp [precomp, ← TypeCat.ofHom_comp]
-
--- @[simp]
--- lemma precomp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : precomp _ f g = f ≫ g := rfl
-
--- @[simps!]
--- def postcomp (X : C) {Y Z : C} (g : Y ⟶ Z) : homSet X Y ⟶ homSet X Z := ofHom fun f ↦ f ≫ g
-
--- @[simp]
--- lemma postcomp_id (X Y : C) : postcomp Y (𝟙 X) = 𝟙 _ := by
---   ext
---   simp?
---   exact (CategoryTheory.id_apply (C := TypeCat) _).symm
---   rfl
---   simp [postcomp]
---   rfl
-
--- @[simp]
--- lemma postcomp_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
---     postcomp W (f ≫ g) = postcomp W f ≫ postcomp W g := by
---   ext
---   simp [postcomp, ← TypeCat.ofHom_comp]
-
--- @[simp]
--- lemma postcomp_apply {Y Z X : C} (g : Y ⟶ Z) (f : X ⟶ Y) : postcomp _ g f = f ≫ g := rfl
-
--- @[simp]
--- lemma precomp_postcomp {X Y Z W : C} (f : X ⟶ Y) (g : Z ⟶ W) :
---     precomp Z f ≫ postcomp X g = postcomp Y g ≫ precomp W f := by
---   ext
---   simp [precomp, postcomp, ← TypeCat.ofHom_comp]
-
--- end TypeCat
