@@ -23,7 +23,7 @@ derivatives](./fderiv.html). We first introduce predicates defined in terms
 of the corresponding predicates for Fréchet derivatives:
 
 - `HasDerivAtFilter f f' L` states that the function `f` has the
-  derivative `f'` along the filter `L`.
+  derivative `f'` along the filter `L : Filter (𝕜 × 𝕜)`.
 
 - `HasDerivWithinAt f f' s x` states that the function `f` has the
   derivative `f'` at the point `x` within the subset `s`.
