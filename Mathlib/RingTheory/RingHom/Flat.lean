@@ -197,7 +197,3 @@ lemma CommRingCat.inl_injective_of_flat
     |>.injective.comp (Algebra.TensorProduct.includeLeft_injective (S := R) (A := S) hg)
 
 end
-
-namespace Algebra
-
-end Algebra
