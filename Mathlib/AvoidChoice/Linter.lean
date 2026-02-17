@@ -3,9 +3,10 @@ Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Damiano Testa
 -/
+module
 
-import Lean.Util.CollectAxioms
-import Mathlib.Tactic.DeclarationNames
+public meta import Lean.Util.CollectAxioms
+public meta import Mathlib.Tactic.DeclarationNames
 import Mathlib.Init
 
 /-!
@@ -14,6 +15,8 @@ import Mathlib.Init
 The "detectClassical" linter emits a warning on declarations that depend on the `Classical.choice`
 and/or `sorryAx`.
 -/
+
+public meta section
 
 open Lean Elab Linter Command
 
