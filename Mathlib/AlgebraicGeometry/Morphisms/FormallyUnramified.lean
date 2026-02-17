@@ -189,7 +189,7 @@ one arrow `Z ⟶ X` making the diagram commute.
 @[stacks 04F1]
 protected lemma hom_ext {Z' Z : Scheme} (i : Z' ⟶ Z) (hi : IsNilpotent i.ker) [IsClosedImmersion i]
     (f : X ⟶ Y) [FormallyUnramified f]
-    (g₁ g₂ : Z ⟶ X) (hig : i ≫ g₁ = i ≫ g₂) (hgf : g₁ ≫ f = g₂ ≫ f) : g₁ = g₂ := by
+    {g₁ g₂ : Z ⟶ X} (hig : i ≫ g₁ = i ≫ g₂) (hgf : g₁ ≫ f = g₂ ≫ f) : g₁ = g₂ := by
   have : IsDominant i := by
     obtain ⟨n, hn⟩ := hi
     rw [isDominant_iff, denseRange_iff_closure_range, ← i.support_ker,
