@@ -2262,7 +2262,6 @@ public import Mathlib.Analysis.Subadditive
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.Analysis.SumOverResidueClass
 public import Mathlib.Analysis.VonNeumannAlgebra.Basic
-public import Mathlib.AvoidChoice.Fin
 public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Abelian.CommSq
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
@@ -3514,6 +3513,7 @@ public import Mathlib.Data.Analysis.Filter
 public import Mathlib.Data.Analysis.Topology
 public import Mathlib.Data.Array.Defs
 public import Mathlib.Data.Array.Extract
+public import Mathlib.Data.AvoidChoice.Fin
 public import Mathlib.Data.BitVec
 public import Mathlib.Data.Bool.AllAny
 public import Mathlib.Data.Bool.Basic
