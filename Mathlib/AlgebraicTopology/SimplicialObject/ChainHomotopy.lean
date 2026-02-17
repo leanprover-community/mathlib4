@@ -28,11 +28,13 @@ open CategoryTheory CategoryTheory.SimplicialObject
 open SimplexCategory Simplicial Opposite AlgebraicTopology
 
 namespace CategoryTheory
+namespace SimplicialHomotopy
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 variable {X Y : SimplicialObject C} {f g : X ⟶ Y}
+variable (H : SimplicialHomotopy f g)
 
-namespace SimplicialHomotopy
+namespace ToChainHomotopy
 
 /-- The degree-`n` component of the chain homotopy associated to a simplicial homotopy.
 
@@ -42,44 +44,51 @@ def chainHomotopyComponent (H : SimplicialHomotopy f g) (n : ℕ) :
     X _⦋n⦌ ⟶ Y _⦋n+1⦌ := ∑ i : Fin (n+1), ( (-1 : ℤ) ^ (i : ℕ) : ℤ ) • H.h i
 
 /-- The family of components of the induced chain homotopy -/
-noncomputable def hom (H : SimplicialHomotopy f g) : ∀ i j : ℕ,
-    ((alternatingFaceMapComplex C).obj X).X i ⟶ ((alternatingFaceMapComplex C).obj Y).X j :=
-  fun i j =>
-    if h : j = i + 1 then by
-      subst h
-      exact H.chainHomotopyComponent i
-    else 0
+noncomputable def hom (p q : ℕ) :
+    ((alternatingFaceMapComplex C).obj X).X p ⟶ ((alternatingFaceMapComplex C).obj Y).X q :=
+  if h : p + 1 = q then
+    ∑ k : Fin (p + 1), ((-1 : ℤ) ^ (k : ℕ)) • H.h k ≫ eqToHom (by simp [h])
+  else 0
 
-private lemma comm_zero_form (H : SimplicialHomotopy f g) :
+@[simp]
+lemma hom_eq (p : ℕ) :
+    hom H p (p + 1) = ∑ k : Fin (p + 1), ((-1 : ℤ) ^ (k : ℕ)) • H.h k := by
+  simp [hom]
+
+lemma hom_eq_zero (p q : ℕ) (hpq : p + 1 ≠ q) :
+    hom H p q = 0 :=
+  dif_neg hpq
+
+private lemma comm_zero (H : SimplicialHomotopy f g) :
     ((alternatingFaceMapComplex C).map g).f 0 =
-    prevD 0 H.hom + ((alternatingFaceMapComplex C).map f).f 0 := by
-  dsimp [prevD, hom, chainHomotopyComponent]
-  have h_prev : (ComplexShape.down ℕ).prev 0 = 1 := by simp [(ChainComplex.prev (α := ℕ) 0)]
-  have h_last := H.h_last_comp_δ_last 0
-  dsimp at h_last
-  rw [h_prev]
-  simp only [↓reduceDIte, Finset.univ_unique, Fin.default_eq_zero, Fin.isValue, Int.reduceNeg,
-    Fin.val_eq_zero, pow_zero, one_smul, Finset.sum_singleton, alternatingFaceMapComplex_obj_d,
-    AlternatingFaceMapComplex.objD, Nat.reduceAdd, Fin.sum_univ_two, Fin.coe_ofNat_eq_mod,
-    Nat.zero_mod, Nat.mod_succ, pow_one, neg_smul, Preadditive.comp_add, H.h_zero_comp_δ_zero 0,
-    Preadditive.comp_neg, h_last, neg_add_cancel_right]
+    prevD 0 (hom H) + ((alternatingFaceMapComplex C).map f).f 0 := by
+  rw [prevD_eq (hom H) (j := 0) (j' := 1) (by simp)]
+  simp [← H.h_last_comp_δ_last 0]
 
-private lemma comm_succ_form (H : SimplicialHomotopy f g) (n : ℕ) :
-    ((alternatingFaceMapComplex C).map g).f (n + 1) = dNext (n + 1) H.hom + prevD (n + 1) H.hom +
-      ((alternatingFaceMapComplex C).map f).f (n + 1) := by
-  dsimp [dNext, prevD, hom, chainHomotopyComponent]
-  rw [(show (ComplexShape.down ℕ).next (n + 1) = n by
-      simp only [ChainComplex.next_nat_succ]),
-      (show (ComplexShape.down ℕ).prev (n + 1) = n + 2 by
-      simp only [ChainComplex.prev, Nat.reduceEqDiff])]
-  simp only [alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD,
-    Int.reduceNeg, ↓reduceDIte]
+private lemma comm_succ (H : SimplicialHomotopy f g) (n : ℕ) :
+    ((alternatingFaceMapComplex C).map g).f (n + 1) = dNext (n + 1) (hom H) + prevD (n + 1) (hom H)
+    + ((alternatingFaceMapComplex C).map f).f (n + 1) := by
+  rw [dNext_eq (hom H) (i := n + 1) (i' := n) (by simp)]
+  rw [prevD_eq (hom H) (j := n + 1) (j' := n + 2) (by simp)]
+  simp only [alternatingFaceMapComplex_obj_X, alternatingFaceMapComplex_map_f,
+    alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, Int.reduceNeg, hom_eq]
   refine (sub_eq_iff_eq_add).1 ?_
   rw [sub_eq_add_neg]
-  simp only [Preadditive.comp_sum, Preadditive.sum_comp, ← Finset.sum_product']
-  simp only [Finset.univ_product_univ, Int.reduceNeg, Preadditive.comp_zsmul,
-    Preadditive.zsmul_comp, smul_smul]
-  -- We partition indices (j,i) based on whether i ≤ j to separate terms that behave differently
+  set dX : (X _⦋n + 1⦌ ⟶ X _⦋n⦌) := ∑ i : Fin (n + 2), ((-1 : ℤ) ^ (i : ℕ)) • X.δ i
+  set dY : (Y _⦋n + 2⦌ ⟶ Y _⦋n + 1⦌) := ∑ i : Fin (n + 3), ((-1 : ℤ) ^ (i : ℕ)) • Y.δ i
+  set hn : (X _⦋n⦌ ⟶ Y _⦋n + 1⦌) := ∑ k : Fin (n + 1), ((-1 : ℤ) ^ (k : ℕ)) • H.h k
+  set hn1 : (X _⦋n + 1⦌ ⟶ Y _⦋n + 2⦌) := ∑ k : Fin (n + 2), ((-1 : ℤ) ^ (k : ℕ)) • H.h k
+  have hdXhn : dX ≫ hn = ∑ i : Fin (n + 2), ∑ k : Fin (n + 1),
+    (((-1 : ℤ) ^ (i : ℕ)) * ((-1 : ℤ) ^ (k : ℕ))) • (X.δ i ≫ H.h k) := by
+    simp only [dX, hn, Preadditive.sum_comp]
+    simp only [Int.reduceNeg, Preadditive.comp_sum, Linear.comp_smul, Linear.smul_comp, smul_smul,
+      mul_comm]
+  have hhn1dY : hn1 ≫ dY = ∑ k : Fin (n + 2), ∑ i : Fin (n + 3),
+    (((-1 : ℤ) ^ (k : ℕ)) * ((-1 : ℤ) ^ (i : ℕ))) • (H.h k ≫ Y.δ i) := by
+    simp only [hn1, dY, Preadditive.sum_comp]
+    simp only [Int.reduceNeg, Preadditive.comp_sum, Linear.comp_smul, Linear.smul_comp, smul_smul,
+      mul_comm]
+  simp only [hdXhn, hhn1dY]
   let P := (Fin (n + 1) × Fin (n + 2))
   let S : Finset P := {x : P | (x.2 : ℕ) ≤ (x.1 : ℕ)}
   let Q := Fin (n + 3) × Fin (n + 2)
@@ -250,10 +259,21 @@ private lemma comm_succ_form (H : SimplicialHomotopy f g) (n : ℕ) :
         abel
       _ = g.app (op ⦋n+1⦌) + -f.app (op ⦋n+1⦌) := by
         simp only [H.h_zero_comp_δ_zero, H.h_last_comp_δ_last, sub_eq_add_neg]
-  rw [← Finset.sum_add_sum_compl S, (show SumQ = Sum3 + Sum4 by simpa [SumQ, Sum3, Sum4] using
-    (Finset.sum_add_sum_compl (s := U) (f := t)).symm), ← add_assoc]
-  simp only [Int.reduceNeg, h_band, h_cancel, neg_add_rev]
+  have hSumY : (∑ k : Fin (n + 2), ∑ i : Fin (n + 3),
+          (((-1 : ℤ) ^ (k : ℕ)) * ((-1 : ℤ) ^ (i : ℕ))) • (H.h k ≫ Y.δ i)) = SumQ := by
+    simp only [Int.reduceNeg, SumQ, t]
+    rw [Fintype.sum_prod_type, Finset.sum_comm]
+    simp only [Int.reduceNeg, mul_comm]
+  have hSumX : (∑ i : Fin (n + 2), ∑ k : Fin (n + 1),
+          ((-1 : ℤ) ^ (i : ℕ) * (-1 : ℤ) ^ (k : ℕ)) • (X.δ i ≫ H.h k)) = Sum1 + Sum2 := by
+    rw [← Finset.sum_union disjoint_compl_right, Finset.union_compl, ← Finset.univ_product_univ,
+      Finset.sum_product, Finset.sum_comm]
+    simp only [Int.reduceNeg, mul_comm]
+  simp only [Int.reduceNeg, hSumX, hSumY, Finset.sum_add_sum_compl (s := U) (f := t).symm, h_band,
+    h_cancel, neg_add_rev, add_assoc, SumQ, Sum3, Sum4]
   abel
+
+end ToChainHomotopy
 
 /-- A simplicial homotopy between `f` and `g` induces a chain homotopy
 between the induced morphisms on the alternating face map complexes. -/
@@ -262,14 +282,13 @@ noncomputable def toChainHomotopy (H : SimplicialHomotopy f g) :
       ((alternatingFaceMapComplex C).map g)
       ((alternatingFaceMapComplex C).map f) := by
   refine
-    { hom := H.hom
+    { hom := ToChainHomotopy.hom H
       zero := by
         intro i j hij
-        by_cases h : j = i + 1
+        by_cases h : i + 1 = j
         · exfalso
-          exact hij (by simpa [ComplexShape.down] using h.symm)
-        · unfold hom
-          simp only [alternatingFaceMapComplex_obj_X, h, ↓reduceDIte]
+          exact hij (by simpa [ComplexShape.down] using h)
+        · simp only [alternatingFaceMapComplex_obj_X, ToChainHomotopy.hom, h, ↓reduceDIte]
       comm := by
         intro n
         cases n with
@@ -279,12 +298,13 @@ noncomputable def toChainHomotopy (H : SimplicialHomotopy f g) :
               ComplexShape.down'_Rel, Nat.add_eq_zero_iff, one_ne_zero, and_false,
               not_false_eq_true, HomologicalComplex.shape, Limits.zero_comp, AddMonoidHom.mk'_apply,
               prevD, zero_add, id_eq, Nat.reduceAdd] using
-              (comm_zero_form (H := H) (C := C) (f := f) (g := g))
+              (ToChainHomotopy.comm_zero (H := H) (C := C) (f := f) (g := g))
         | succ n =>
             simpa only [ComplexShape.down, alternatingFaceMapComplex,
               AlternatingFaceMapComplex.obj_X, AlternatingFaceMapComplex.map_f, dNext,
-              AddMonoidHom.mk'_apply, hom, Nat.add_right_cancel_iff, prevD, id_eq] using
-              (comm_succ_form (H := H) (C := C) (f := f) (g := g) n) }
+              AddMonoidHom.mk'_apply, ToChainHomotopy.hom, Nat.add_right_cancel_iff,
+              prevD, id_eq] using
+              (ToChainHomotopy.comm_succ (H := H) (C := C) (f := f) (g := g) n) }
 
 theorem map_homology_eq [CategoryWithHomology C] (H : SimplicialHomotopy f g) (n : ℕ) :
     (HomologicalComplex.homologyFunctor C _ n).map ((alternatingFaceMapComplex C).map f) =
