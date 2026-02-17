@@ -487,4 +487,22 @@ instance hasFiniteColimits_opposite [HasFiniteLimits C] : HasFiniteColimits Cᵒ
 instance hasFiniteLimits_opposite [HasFiniteColimits C] : HasFiniteLimits Cᵒᵖ :=
   ⟨fun _ _ _ => hasLimitsOfShape_op_of_hasColimitsOfShape⟩
 
+lemma hasColimit_op_iff_hasLimit {F : J ⥤ C} : HasColimit F.op ↔ HasLimit F :=
+  ⟨fun _ ↦ hasLimit_of_hasColimit_op F, fun _ ↦ inferInstance⟩
+
+lemma hasColimit_leftOp_iff_hasLimit {F : J ⥤ Cᵒᵖ} : HasColimit F.leftOp ↔ HasLimit F :=
+  ⟨fun _ ↦ hasLimit_of_hasColimit_leftOp F, fun _ ↦ inferInstance⟩
+
+lemma hasColimit_rightOp_iff_hasLimit {F : Jᵒᵖ ⥤ C} : HasColimit F.rightOp ↔ HasLimit F :=
+  ⟨fun _ ↦ hasLimit_of_hasColimit_rightOp F, fun _ ↦ inferInstance⟩
+
+lemma hasLimit_op_iff_hasColimit {F : J ⥤ C} : HasLimit F.op ↔ HasColimit F :=
+  ⟨fun _ ↦ hasColimit_of_hasLimit_op F, fun _ ↦ inferInstance⟩
+
+lemma hasLimit_leftOp_iff_hasColimit {F : J ⥤ Cᵒᵖ} : HasLimit F.leftOp ↔ HasColimit F :=
+  ⟨fun _ ↦ hasColimit_of_hasLimit_leftOp F, fun _ ↦ inferInstance⟩
+
+lemma hasLimit_rightOp_iff_hasColimit {F : Jᵒᵖ ⥤ C} : HasLimit F.rightOp ↔ HasColimit F :=
+  ⟨fun _ ↦ hasColimit_of_hasLimit_rightOp F, fun _ ↦ inferInstance⟩
+
 end CategoryTheory.Limits
