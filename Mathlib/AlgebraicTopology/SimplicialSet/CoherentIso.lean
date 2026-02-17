@@ -38,9 +38,32 @@ open CategoryTheory
 namespace CategoryTheory
 
 /-- This is the free-living isomorphism as a category with objects `false` and `true`. -/
-def WalkingIso : Type u := ULift Bool
+inductive WalkingIso : Type u where
+  | zero : WalkingIso
+  | one  : WalkingIso
+
+attribute [aesop safe cases (rule_sets := [CategoryTheory])] WalkingIso
+attribute [grind cases] WalkingIso
 
 namespace WalkingIso
+
+/-- The underlying type of `WalkingIso` is equivalent to `Bool`, since they both have 2 elements. -/
+def equivBool : WalkingIso ≃ Bool where
+  toFun := fun
+    | .zero => false
+    | .one => true
+  invFun := fun
+    | false => .zero
+    | true => .one
+  left_inv := by
+    rintro (_ | _) <;>
+    rfl
+  right_inv := by
+    rintro (_ | _) <;>
+    rfl
+
+instance : DecidableEq (WalkingIso) :=
+  fun _ _ ↦ decidable_of_iff _ (Equiv.apply_eq_iff_eq equivBool)
 
 /-- The free isomorphism is the codiscrete category on two objects. -/
 instance : Category (WalkingIso) where
@@ -48,12 +71,14 @@ instance : Category (WalkingIso) where
   id _ := ⟨⟩
   comp _ _ := ⟨⟩
 
+instance homUnique {x y : WalkingIso.{u}} : Unique (x ⟶ y) := inferInstanceAs (Unique Unit)
+
 section
 
 variable {C : Type u} [Category.{v} C]
 
 /-- Functors out of `WalkingIso` define isomorphisms in the target category. -/
-def toIso (F : WalkingIso ⥤ C) : F.obj (ULift.up false) ≅ F.obj (ULift.up true) where
+def toIso (F : WalkingIso ⥤ C) : F.obj zero ≅ F.obj one where
   hom := F.map PUnit.unit
   inv := F.map PUnit.unit
   hom_inv_id := by rw [← F.map_comp, ← F.map_id]; rfl
@@ -61,39 +86,37 @@ def toIso (F : WalkingIso ⥤ C) : F.obj (ULift.up false) ≅ F.obj (ULift.up tr
 
 /-- From an isomorphism in a category, true can build a functor out of `WalkingIso` to
   that category. -/
-def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso ⥤ C where
+def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{u} ⥤ C where
   obj := fun
-    | (ULift.up false) => X
-    | (ULift.up true) => Y
+    | zero => X
+    | one => Y
   map := @fun
-    | ULift.up false, ULift.up false, _ => 𝟙 _
-    | ULift.up false, ULift.up true,  _ => e.hom
-    | ULift.up true, ULift.up false, _ => e.inv
-    | ULift.up true, ULift.up true,  _ => 𝟙 _
-  map_comp := by simp [WalkingIso, Quiver.Hom]
+    | zero, zero, _ => 𝟙 _
+    | zero, one,  _ => e.hom
+    | one, zero, _ => e.inv
+    | one, one,  _ => 𝟙 _
+  map_comp := by rintro (_ | _) (_ | _) (_ | _) <;> simp
 
 /-- An equivalence between the type of `WalkingIso`s in `C` and the type of isomorphisms in `C`. -/
 def equiv : (WalkingIso ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
-  toFun F := ⟨F.obj (ULift.up false), F.obj (ULift.up true), toIso F⟩
+  toFun F := ⟨F.obj zero, F.obj one, toIso F⟩
   invFun p := fromIso p.2.2
   right_inv := fun ⟨X, Y, e⟩ ↦ rfl
   left_inv F := by
     apply Functor.hext
-    · simp [WalkingIso]
-      constructor <;> rfl
-    · simp only [WalkingIso, ULift.forall, Bool.forall_bool, heq_eq_eq]
+    · rintro (_ | _) <;> rfl
+    · rintro (_ | _) (_ | _) (_) <;>
+    ( rw [heq_eq_eq]
       unfold fromIso toIso
       dsimp
-      constructor <;> constructor <;>
-      ( intro ⟨⟩
-        try rfl
-        try (rw [← F.map_id]; rfl) )
+      try rw [← F.map_id]
+      rfl )
 
 end
 
 /-- There are functors from the one-object category into `WalkingIso`,
-  sending the object to either `true` or `false`. -/
-def coev (i : Bool) : Fin 1 ⥤ WalkingIso := ComposableArrows.mk₀ (ULift.up i)
+  sending the object to either `zero` or `one`. -/
+def coev (i : WalkingIso) : Fin 1 ⥤ WalkingIso := ComposableArrows.mk₀ i
 
 end WalkingIso
 
@@ -111,24 +134,24 @@ namespace coherentIso
 
 /-- Since the morphisms in WalkingIso do not carry information, an n-simplex of coherentIso
   is equivalent to an (n + 1)-vector of the objects of WalkingIso. -/
-def equivFun {n : ℕ} : coherentIso _⦋n⦌ ≃ (Fin (n + 1) → Bool) where
-  toFun f := ULift.down ∘ f.obj
-  invFun f := .mk (ULift.up ∘ f) (fun _ ↦ ⟨⟩) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+def equivFun {n : ℕ} : coherentIso _⦋n⦌ ≃ (Fin (n + 1) → WalkingIso) where
+  toFun f := f.obj
+  invFun f := .mk f (fun _ ↦ ⟨⟩) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
   left_inv _ := rfl
   right_inv _ := rfl
 
-/-- Since Fin 2 has decidable equality,
+/-- Since `Bool` (and hence `WalkingIso`) has decidable equality,
   the simplices of coherentIso have decidable equality as well. -/
 instance (n : ℕ) : DecidableEq (coherentIso _⦋n⦌) :=
   fun _ _ ↦ decidable_of_iff _ (Equiv.apply_eq_iff_eq coherentIso.equivFun)
 
 /-- The source vertex of `coherentIso`. -/
 def x₀ : coherentIso _⦋0⦌ :=
-  ComposableArrows.mk₀ (ULift.up false)
+  ComposableArrows.mk₀ WalkingIso.zero
 
 /-- The target vertex of `coherentIso`. -/
 def x₁ : coherentIso _⦋0⦌ :=
-  ComposableArrows.mk₀ (ULift.up false)
+  ComposableArrows.mk₀ WalkingIso.zero
 
 /-- The forwards edge of `coherentIso`. -/
 def hom : Edge x₀ x₁ where
