@@ -415,6 +415,36 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective :
     refine fg_iff.mpr ⟨φ '' Set.range FreeGroup.of, ?_, Set.toFinite _⟩
     simp [← MonoidHom.map_closure, hφ, FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
 
+/-- A group if finitely generated if and only if there exists a surjective homomorphism from a
+`FreeGroup` on an arbitrary finite type `α` to the group. -/
+@[to_additive /-- An additive group is finitely generated iff there exists a surjective homomorphism
+from a `FreeAddGroup` on an arbitrary finite type `α` to the group. -/]
+theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite {G : Type*} [Group G] :
+    Group.FG G ↔ ∃ (α : Type) (_ : Finite α) (φ : FreeGroup α →* G), Function.Surjective φ := by
+    constructor
+    · rw [fg_iff_exists_freeGroup_hom_surjective]
+      intro ⟨S, hS, φ⟩
+      let n := hS.toFinset.card
+      let α := Fin n
+      use α, inferInstance
+      haveI := hS.fintype
+      have hn : Fintype.card S = n := by
+        simp [n]
+      let e : S ≃ α := Fintype.equivFinOfCardEq hn
+      obtain ⟨φ, hφ⟩ := φ
+      refine ⟨φ.comp (FreeGroup.map e.symm), ?_⟩
+      exact hφ.comp (FreeGroup.map_surjective (f := e.symm) e.symm.surjective)
+    · intro ⟨α, _, φ, hφ⟩
+      haveI := Fintype.ofFinite α
+      let S : Set G := Set.range (fun a : α => φ (FreeGroup.of a))
+      have hS : S.Finite := by
+        simpa [S] using (Set.finite_range (fun a : α => φ (FreeGroup.of a)))
+      have hSgen : Subgroup.closure S = ⊤ := by
+        simp [S, Set.range_comp', ← MonoidHom.map_closure, hφ,
+          FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
+      refine (Group.fg_iff).2 ?_
+      use S
+
 /-- A group is finitely generated if and only if it is finitely generated as a monoid. -/
 @[to_additive /-- An additive group is finitely generated if and only
 if it is finitely generated as an additive monoid. -/]
