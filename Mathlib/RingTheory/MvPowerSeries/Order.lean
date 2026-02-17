@@ -38,7 +38,8 @@ We work with `MvPowerSeries σ R`, for `Semiring R`, and `w : σ → ℕ`.
   weighted order is at least `n`.
 
 - `MvPowerSeries.weightedOrder_eq_nat_iff`: the weighted order is some integer `n` iff there
-  exists a nonzero coefficient of weight `n`, and all coefficients of strictly smaller weight vanish.
+  exists a nonzero coefficient of weight `n`, and all coefficients of strictly smaller weight
+  vanish.
 
 - `MvPowerSeries.weightedOrder_monomial`, `MvPowerSeries.weightedOrder_monomial_of_ne_zero`:
   the weighted order of a monomial, of a monomial with nonzero coefficient.
@@ -57,7 +58,8 @@ We work with `MvPowerSeries σ R`, for `Semiring R`, and `w : σ → ℕ`.
   and `(1 - g) * f` in weights strictly less than the weighted order of `g`.
 
 - `MvPowerSeries.coeff_mul_prod_one_sub_of_lt_weightedOrder`: the coefficients of
-  `f * Π i in s, (1 - g i)`, in weights strictly less than the weighted orders of `g i`, for `i ∈ s`.
+  `f * Π i in s, (1 - g i)`, in weights strictly less than the weighted orders of `g i`, for
+  `i ∈ s`.
 
 ## Order
 
