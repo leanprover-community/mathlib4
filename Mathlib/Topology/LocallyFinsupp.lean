@@ -76,7 +76,7 @@ A function `f : X → Y` has locally finite support if for every `z : X`, there 
 neighbourhood `t` around `z` such that `t ∩ f.support` is finite.
 -/
 def LocallyFiniteSupport [Zero Y] (f : X → Y) : Prop :=
-    ∀ z : X, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)
+  ∀ z : X, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)
 
 lemma LocallyFiniteSupport.iff_support_locallyFinite [Zero Y] (f : X → Y) :
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) ↔
