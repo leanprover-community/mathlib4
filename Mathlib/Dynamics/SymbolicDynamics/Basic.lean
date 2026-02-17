@@ -282,9 +282,7 @@ It is the subshift whose underlying set is the set of all configurations
 def mulFullShift (A G) [TopologicalSpace A] [Monoid G] : MulSubshift A G where
   carrier := Set.univ
   isClosed := isClosed_univ
-  mapsTo := by
-    intro _ _ _
-    simp
+  mapsTo := fun _ _ _ => trivial
 
 /-- A *pattern* is a finite configuration in the full shift `A^G`.
 
@@ -495,8 +493,7 @@ lemma mulExtend_apply_mul_right_of_mem
     -- we have h_eq : w' = w and w' := Classical.choose ex
     simpa [w'] using h_eq     -- <-- use `using h_eq`, only unfold `[w']`
   -- then replace the proof component (same carrier w)
-  have h3 : (⟨w, hw_w⟩ : p.support) = (⟨w, hw⟩ : p.support) := by
-    apply Subtype.ext; rfl
+  have h3 : (⟨w, hw_w⟩ : p.support) = (⟨w, hw⟩ : p.support) := rfl
   -- put the rewrites together
   calc
     p.mulExtend v (w * v)
@@ -523,7 +520,7 @@ position `g` if and only if it occurs in the original configuration `x` at
 position `g + h`. -/]
 lemma mulOccursInAt_mulShift {A G : Type*} [Monoid G] (p : Pattern A G) (x : G → A) (g h : G) :
     p.mulOccursInAt (mulShift h x) g ↔ p.mulOccursInAt x (g * h) := by
-  constructor <;> intro H u hu <;> simpa [mulShift, mul_assoc] using H u hu
+  simp only [mulOccursInAt, mulShift_apply, mul_assoc]
 
 /-- Configurations that avoid a family `F` of patterns are stable under the shift.
 
@@ -699,7 +696,7 @@ lemma finite_setOf_pattern_support_eq
       apply Subtype.ext
       cases hU
       rfl
-    right_inv := by intro f; rfl }
+    right_inv := fun _ => rfl}
   -- Give a Fintype structure to the subtype via this equivalence
   haveI : Fintype { p : Pattern A G // p.support = U } :=
     Fintype.ofEquiv (U → A) e.symm
@@ -731,7 +728,6 @@ def mulLanguageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
   { p | ∃ x ∈ X, Pattern.fromConfig x U = p }
 
 /-- The language of a subshift `Y` on a finite shape `U`. -/
-@[to_additive /-- The language of a subshift `Y` on a finite shape `U`. -/]
 def MulSubshift.languageOn {A G} [TopologicalSpace A] [Monoid G]
     (Y : MulSubshift A G) (U : Finset G) : Set (Pattern A G) :=
   SymbolicDynamics.FullShift.mulLanguageOn (A := A) (G := G) Y.carrier U
