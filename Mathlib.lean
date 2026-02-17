@@ -2262,6 +2262,8 @@ public import Mathlib.Analysis.Subadditive
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.Analysis.SumOverResidueClass
 public import Mathlib.Analysis.VonNeumannAlgebra.Basic
+public import Mathlib.AvoidChoice.Fin
+public import Mathlib.AvoidChoice.Linter
 public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Abelian.CommSq
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
