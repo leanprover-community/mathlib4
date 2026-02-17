@@ -89,6 +89,9 @@ info: Try these:
   [apply] norm_num
   Remaining subgoals:
   ⊢ Nat.Prime 37
+  [apply] ring_nf
+  Remaining subgoals:
+  ⊢ Nat.Prime 37
 -/
 #guard_msgs in
 example : Nat.Prime 37 := by hint
