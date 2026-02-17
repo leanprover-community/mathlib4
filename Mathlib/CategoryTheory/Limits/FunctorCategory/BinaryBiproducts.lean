@@ -32,10 +32,10 @@ noncomputable section
 /-- The binary bicone associated to the biproduct of functors `F` and `G` -/
 @[simps]
 def pointwiseBinaryBicone : BinaryBicone F G where
-  pt := {
-    obj P := F.obj P ⊞ G.obj P
-    map f := biprod.map (F.map f) (G.map f) }
-  fst := { app X := biprod.fst}
+  pt :=
+    { obj P := F.obj P ⊞ G.obj P
+      map f := biprod.map (F.map f) (G.map f) }
+  fst := { app X := biprod.fst }
   snd := { app X := biprod.snd }
   inl := { app X := biprod.inl }
   inr := { app X := biprod.inr }
