@@ -198,6 +198,7 @@ lemma locally_holdsForLocalizationAway (hPa : HoldsForLocalizationAway P) :
   rw [← IsScalarTower.algebraMap_eq]
   apply hPa _ r
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `P` preserves localizations, then `Locally P` is stable under composition if `P` is. -/
 lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPreserves P)
     (hPc : StableUnderComposition P) :

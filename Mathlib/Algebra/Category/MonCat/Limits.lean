@@ -62,6 +62,7 @@ noncomputable instance limitMonoid :
     Monoid (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).pt :=
   inferInstanceAs <| Monoid (Shrink (F ⋙ forget MonCat.{u}).sections)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget MonCat) j` as a `MonoidHom`. -/
 @[to_additive /-- `limit.π (F ⋙ forget AddMonCat) j` as an `AddMonoidHom`. -/]
 noncomputable def limitπMonoidHom (j : J) :
@@ -91,6 +92,7 @@ noncomputable def limitCone : Cone F :=
       naturality := fun _ _ f => MonCat.ext fun x =>
         ConcreteCategory.congr_hom ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) x } }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `MonCat` is a limit cone.
 (Internal use only; use the limits API.)
 -/
@@ -154,6 +156,7 @@ noncomputable instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
 noncomputable instance forget_preservesLimits : PreservesLimits (forget MonCat.{u}) :=
   MonCat.forget_preservesLimitsOfSize.{u, u}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 noncomputable instance forget_createsLimit :
     CreatesLimit F (forget MonCat.{u}) := by

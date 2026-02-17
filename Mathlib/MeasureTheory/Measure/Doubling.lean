@@ -114,6 +114,7 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
     gcongr
     apply le_max_left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eventually_measure_le_scaling_constant_mul (K : ℝ) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x, μ (closedBall x (K * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   filter_upwards [Classical.choose_spec

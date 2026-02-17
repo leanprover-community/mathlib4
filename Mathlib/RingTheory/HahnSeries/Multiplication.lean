@@ -359,6 +359,7 @@ theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x 
     ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
   exact support_smul_subset_vadd_support'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
     [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : R⟦Γ⟧}
     [VAdd (WithTop Γ) (WithTop Γ')] {y : HahnModule Γ' R V}
@@ -638,6 +639,7 @@ instance [CommRing R] : CommRing R⟦Γ⟧ where
 
 end Ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_nsmul_le_orderTop_pow [AddCommMonoid Γ] [LinearOrder Γ]
     [IsOrderedCancelAddMonoid Γ] [Semiring R] {x : R⟦Γ⟧} {n : ℕ} :
     n • x.orderTop ≤ (x ^ n).orderTop := by
@@ -672,11 +674,13 @@ theorem orderTop_self_sub_one_pos_iff [LinearOrder Γ] [Zero Γ] [NonAssocRing R
       orderTop_sub_ne h.1 orderTop_one ?_
     rw [h.2, leadingCoeff_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_sub_pos [PartialOrder Γ] [Zero Γ] [AddCommGroup R] [One R] {g : Γ} (hg : 0 < g)
     (r : R) :
     0 < ((1 + single g r) - 1).orderTop := by
   by_cases hr : r = 0 <;> simp [hr, hg]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The group of invertible Hahn series close to 1, i.e., those series such that subtracting 1
   yields a series with strictly positive `orderTop`. -/
 def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
@@ -756,6 +760,7 @@ instance SMulCommClass [CommSemiring R] [Module R V] :
   smul_comm r x y := by
     rw [← single_zero_smul_eq_smul Γ, ← mul_smul', mul_comm, mul_smul', single_zero_smul_eq_smul Γ]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instIsTorsionFree {Γ V : Type*} [Ring R] [IsDomain R] [AddCommGroup V] [AddCommMonoid Γ]
     [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Module R V] [Module.IsTorsionFree R V] :
     Module.IsTorsionFree R⟦Γ⟧ (HahnModule Γ R V) :=

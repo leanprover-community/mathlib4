@@ -23,6 +23,7 @@ open ModularForm UpperHalfPlane Matrix CongruenceSubgroup Matrix.SpecialLinearGr
 
 namespace SlashInvariantForm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem vAdd_apply_of_mem_strictPeriods {Γ : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
     {F : Type*} [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k]
     (f : F) (τ : ℍ) {h : ℝ} (hH : h ∈ Γ.strictPeriods) :
@@ -34,6 +35,7 @@ theorem vAdd_apply_of_mem_strictPeriods {Γ : Subgroup (GL (Fin 2) ℝ)} {k : �
   ext
   simp [σ, num, denom, coe_vadd, UpperHalfPlane.coe_smul, num, add_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem vAdd_width_periodic (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
     f ((N * n : ℝ) +ᵥ z) = f z := by
   apply vAdd_apply_of_mem_strictPeriods

@@ -42,6 +42,7 @@ namespace Module.End
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] {f : End K V}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : ℕ}
     (sep : P.Separable) (nil : minpoly K f ∣ P ^ k) :
     ∃ᵉ (n ∈ adjoin K {f}) (s ∈ adjoin K {f}), IsNilpotent n ∧ IsSemisimple s ∧ f = n + s := by
