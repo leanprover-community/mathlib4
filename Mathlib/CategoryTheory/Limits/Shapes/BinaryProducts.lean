@@ -1003,7 +1003,7 @@ end
 
 noncomputable section ProdFunctor
 
-variable {C} [Category.{v} C] [HasBinaryProducts C]
+variable {C} [HasBinaryProducts C]
 
 /-- The binary product functor. -/
 @[simps]
@@ -1327,8 +1327,6 @@ def IsLimit.binaryFanSwap (I : IsLimit s) : IsLimit s.swap where
     rintro ⟨j⟩
     specialize w ⟨WalkingPair.swap j⟩
     cases j <;> exact w
-
-@[deprecated (since := "2025-05-04")] alias IsLimit.swapBinaryFan := IsLimit.binaryFanSwap
 
 /-- Construct `HasBinaryProduct Y X` from `HasBinaryProduct X Y`.
 This can't be an instance, as it would cause a loop in typeclass search. -/

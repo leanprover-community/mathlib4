@@ -13,7 +13,7 @@ public import Mathlib.Data.Nat.Cast.Order.Ring
 # Lemmas about `invOf` in ordered (semi)rings.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] {a : R}
 

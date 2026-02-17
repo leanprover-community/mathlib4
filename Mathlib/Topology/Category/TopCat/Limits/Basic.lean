@@ -55,7 +55,7 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
 Generally you should just use `limit.isLimit F`, unless you need the actual definition
 (which is in terms of `Types.limitConeIsLimit`).
 -/
-def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v,u} F) where
+def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v, u} F) where
   lift S := ofHom
     { toFun := fun x =>
         ⟨fun _ => S.π.app _ x, fun f => by
@@ -127,7 +127,7 @@ theorem induced_of_isLimit :
   let c' := coneOfConeForget ((forget).mapCone c)
   let hc' : IsLimit c' := isLimitConeOfForget _ (isLimitOfPreserves forget hc)
   let e := IsLimit.conePointUniqueUpToIso hc' hc
-  have he (j : J) : e.inv ≫ c'.π.app j = c.π.app j  :=
+  have he (j : J) : e.inv ≫ c'.π.app j = c.π.app j :=
     IsLimit.conePointUniqueUpToIso_inv_comp hc' hc j
   apply (homeoOfIso e.symm).induced_eq.symm.trans
   dsimp [coneOfConeForget_pt, c', topologicalSpaceConePtOfConeForget]
@@ -135,6 +135,17 @@ theorem induced_of_isLimit :
   simp [← induced_compose, homeoOfIso, c']
 
 end IsLimit
+
+lemma nonempty_isLimit_iff_eq_induced {F : J ⥤ TopCat.{u}} (c : Cone F)
+    (hc : IsLimit ((forget).mapCone c)) :
+    Nonempty (IsLimit c) ↔ c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
+  refine ⟨fun ⟨hc⟩ ↦ induced_of_isLimit _ hc, fun h ↦ ⟨?_⟩⟩
+  refine .ofIsoLimit (isLimitConeOfForget _ hc) (Cones.ext ?_ ?_)
+  · refine TopCat.isoOfHomeo
+      { toEquiv := .refl _,
+        continuous_toFun := h ▸ by fun_prop,
+        continuous_invFun := h ▸ by fun_prop }
+  · intro; rfl
 
 variable (F : J ⥤ TopCat.{u})
 
@@ -252,6 +263,16 @@ lemma continuous_iff_of_isColimit {X : Type u'} [TopologicalSpace X] (f : c.pt �
   tauto
 
 end IsColimit
+
+lemma nonempty_isColimit_iff_eq_coinduced (c : Cocone F) (hc : IsColimit ((forget).mapCocone c)) :
+    Nonempty (IsColimit c) ↔ c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
+  refine ⟨fun ⟨hc⟩ ↦ coinduced_of_isColimit _ hc, fun h ↦ ⟨?_⟩⟩
+  refine .ofIsoColimit (isColimitCoconeOfForget _ hc) (Cocones.ext ?_ ?_)
+  · refine TopCat.isoOfHomeo
+      { toEquiv := .refl _,
+        continuous_toFun := h ▸ by fun_prop,
+        continuous_invFun := h ▸ by fun_prop }
+  · intro; rfl
 
 variable (F)
 

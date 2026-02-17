@@ -634,7 +634,7 @@ end lift
 
 section mkOfAdjoinEqTop
 
-variable [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [IsIntegrallyClosed R]
+variable [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyClosed R]
     {α : S} {hα : IsIntegral R α} {hα₂ : Algebra.adjoin R {α} = ⊤}
 
 variable (hα hα₂) in
@@ -666,7 +666,7 @@ variable {T : Type*} [CommRing T] [Algebra R T] (h' : IsAdjoinRoot T f) {U : Typ
 
 @[simp]
 theorem lift_algEquiv (i : R →+* U) (x hx z) :
-    h'.lift i x hx (h.algEquiv h' z) = h.lift i x hx z := by rw [← h.map_repr z]; simp [- map_repr]
+    h'.lift i x hx (h.algEquiv h' z) = h.lift i x hx z := by rw [← h.map_repr z]; simp [-map_repr]
 
 @[deprecated (since := "2025-08-13")] alias lift_aequiv := lift_algEquiv
 
@@ -684,7 +684,7 @@ namespace IsAdjoinRootMonic
 
 variable (h : IsAdjoinRootMonic S f)
 
-theorem minpoly_eq [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [IsIntegrallyClosed R]
+theorem minpoly_eq [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyClosed R]
   (hirr : Irreducible f) : minpoly R h.root = f :=
   let ⟨q, hq⟩ := minpoly.isIntegrallyClosed_dvd h.isIntegral_root h.aeval_root_self
   symm <|
@@ -701,7 +701,7 @@ section Algebra
 
 open AdjoinRoot IsAdjoinRoot minpoly PowerBasis IsAdjoinRootMonic Algebra
 
-theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S]
+theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [IsTorsionFree R S]
     [IsIntegrallyClosed R] {x : S} (hx' : IsIntegral R x) :
     minpoly R x = minpoly R (Algebra.adjoin.powerBasis' hx').gen := by
   have := isDomain_of_prime (prime_of_isIntegrallyClosed hx')

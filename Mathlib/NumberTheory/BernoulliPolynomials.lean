@@ -245,7 +245,7 @@ theorem bernoulli_eval_neg (n : ℕ) (x : ℚ) :
   simpa [mul_add] using congr_arg (Polynomial.eval x) (bernoulli_comp_neg_X n)
 
 theorem bernoulli_comp_one_sub_X (n : ℕ) :
-    (bernoulli n).comp (1 -X) = (-1) ^ n * bernoulli n := by
+    (bernoulli n).comp (1 - X) = (-1) ^ n * bernoulli n := by
   cases n with
   | zero => simp
   | succ n =>

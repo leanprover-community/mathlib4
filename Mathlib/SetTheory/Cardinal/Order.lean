@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Order.InitialSeg
@@ -208,11 +207,14 @@ theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 :=
 theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α :=
   mk_congr (Fintype.equivOfCardEq (by simp))
 
+set_option backward.privateInPublic true in
 private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
   change #(ULift.{u} _) = #(ULift.{u} _) + 1
   rw [← mk_option]
   simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance commSemiring : CommSemiring Cardinal.{u} where
   zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum _ α
   add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
@@ -305,13 +307,6 @@ instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
     inductionOn₂ a b fun α β => by
       simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id
-
-instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.commSemiring,
-    Cardinal.linearOrder with
-    bot_le _ := bot_le
-    mul_le_mul_left _ _ := mul_le_mul_left
-    zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoidWithZero Cardinal.{u} :=
@@ -556,7 +551,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
   refine (not_and_or.mp hc).elim (fun e ↦ ⟨hι.some, ?_⟩)
     (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f c · h)
   cases not_not.mp e
-  rw [← le_zero_iff] at h ⊢
+  rw [← nonpos_iff_eq_zero] at h ⊢
   exact (le_ciSup hf _).trans h
 
 /-! ### Indexed cardinal `prod` -/

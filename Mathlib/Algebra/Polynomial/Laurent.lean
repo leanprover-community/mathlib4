@@ -590,7 +590,7 @@ variable {R : Type*} [CommSemiring R]
 def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.domCongr R R <| AddEquiv.neg _
 
 @[simp] lemma invert_T (n : ℤ) : invert (T n : R[T;T⁻¹]) = T (-n) :=
-  AddMonoidAlgebra.domCongr_single _ _ _ _ _
+  AddMonoidAlgebra.domCongr_single ..
 
 @[simp] lemma invert_apply (f : R[T;T⁻¹]) (n : ℤ) : invert f n = f (-n) := by simp [invert]
 
@@ -670,7 +670,7 @@ theorem smeval_add : (f + g).smeval x = f.smeval x + g.smeval x := by
 @[simp]
 theorem smeval_C_mul (r : R) : (C r * f).smeval x = r • (f.smeval x) := by
   induction f using LaurentPolynomial.induction_on' with
-  | add p q hp hq=>
+  | add p q hp hq =>
     rw [mul_add, smeval_add, smeval_add, smul_add, hp, hq]
   | C_mul_T n s =>
     rw [← mul_assoc, ← map_mul, smeval_C_mul_T_n, smeval_C_mul_T_n, mul_smul]

@@ -28,7 +28,7 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 
 namespace PiTensorProduct
 
-open PiTensorProduct BigOperators LinearMap Module TensorProduct
+open PiTensorProduct LinearMap Module TensorProduct
 
 variable {ι : Type*}
 
@@ -47,10 +47,8 @@ noncomputable def dualDistrib [Finite ι] : (⨂[R] i, Dual R (M i)) →ₗ[R] D
 @[simp]
 theorem dualDistrib_apply [Fintype ι] (f : Π i, Dual R (M i)) (m : Π i, M i) :
     dualDistrib (⨂ₜ[R] i, f i) (⨂ₜ[R] i, m i) = ∏ i, (f i) (m i) := by
-  simp only [dualDistrib, coe_comp, Function.comp_apply,
-    compRight_apply, piTensorHomMap_tprod_tprod, AlgEquiv.toLinearMap_apply,
-    constantBaseRingEquiv_tprod]
-  convert rfl
+  rw [dualDistrib, Subsingleton.elim (Fintype.ofFinite ι) ‹_›]
+  simp
 
 end SemiRing
 

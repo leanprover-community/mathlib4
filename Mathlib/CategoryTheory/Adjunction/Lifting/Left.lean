@@ -97,7 +97,7 @@ def counitCoequalises (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) 
 /-- (Implementation)
 To construct the left adjoint, we use the coequalizer of `F' U ε_Y` with the composite
 
-`F' U F U X ⟶ F' U F U R F U' X ⟶ F' U R F' U X ⟶ F' U X`
+`F' U F U X ⟶ F' U F U R F' U X ⟶ F' U R F' U X ⟶ F' U X`
 
 where the first morphism is `F' U F ι_UX`, the second is `F' U ε_RF'UX`, and the third is `δ_F'UX`.
 We will show that this coequalizer exists and that it forms the object map for a left adjoint to
@@ -183,7 +183,7 @@ See https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 -/
 lemma isRightAdjoint_triangle_lift {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (adj₁ : F ⊣ U)
     (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) [HasReflexiveCoequalizers A]
-    [(R ⋙ U).IsRightAdjoint ] : R.IsRightAdjoint where
+    [(R ⋙ U).IsRightAdjoint] : R.IsRightAdjoint where
   exists_leftAdjoint :=
     ⟨LiftLeftAdjoint.constructLeftAdjoint R _ adj₁ (Adjunction.ofIsRightAdjoint _) h,
       ⟨Adjunction.adjunctionOfEquivLeft _ _⟩⟩

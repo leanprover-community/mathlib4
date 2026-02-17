@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # Partial sums of geometric series in a ring
@@ -20,7 +21,7 @@ which `x` and `y` commute. Even versions not using division or subtraction, vali
 are recorded.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field IsOrderedRing
 
@@ -74,7 +75,7 @@ lemma geom_sum₂_with_one (x : R) (n : ℕ) :
 /-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/
 protected lemma Commute.geom_sum₂_mul_add {x y : R} (h : Commute x y) (n : ℕ) :
     (∑ i ∈ range n, (x + y) ^ i * y ^ (n - 1 - i)) * x + y ^ n = (x + y) ^ n := by
-  let f :  ℕ → ℕ → R := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
+  let f : ℕ → ℕ → R := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
   change (∑ i ∈ range n, (f n) i) * x + y ^ n = (x + y) ^ n
   induction n with
   | zero => rw [range_zero, sum_empty, zero_mul, zero_add, pow_zero, pow_zero]

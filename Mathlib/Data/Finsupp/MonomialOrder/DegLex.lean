@@ -88,7 +88,7 @@ theorem degLex_def {r : α → α → Prop} {s : ℕ → ℕ → Prop} {a b : α
 namespace DegLex
 
 theorem wellFounded
-    {r : α → α → Prop} [IsTrichotomous α r] (hr : WellFounded (Function.swap r))
+    {r : α → α → Prop} [Std.Trichotomous r] (hr : WellFounded (Function.swap r))
     {s : ℕ → ℕ → Prop} (hs : WellFounded s) (hs0 : ∀ ⦃n⦄, ¬ s n 0) :
     WellFounded (Finsupp.DegLex r s) := by
   have wft := WellFounded.prod_lex hs (Finsupp.Lex.wellFounded' hs0 hs hr)
@@ -238,7 +238,7 @@ example : single (1 : Fin 2) 1 ≺[degLex] single 0 1 := by
   exact Nat.one_pos
 
 /-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
-example : (single 0 1 + single 1 1) ≺[degLex] single (0 : Fin 2) 2  := by
+example : (single 0 1 + single 1 1) ≺[degLex] single (0 : Fin 2) 2 := by
   rw [degLex_lt_iff, lt_iff, ofDegLex_toDegLex]
   simp only [Fin.isValue, map_add, degree_single, Nat.reduceAdd, ofDegLex_toDegLex,
     lt_self_iff_false, toLex_add, true_and, false_or]

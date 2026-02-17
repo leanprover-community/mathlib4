@@ -65,7 +65,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
           zpow_right_mono₀ (a := (p : ℚ)) (by exact_mod_cast (Nat.Prime.one_le Fact.out)) h.le
     · simp [Nat.Prime.ne_zero Fact.out]
   · intro γ
-    use (log (γ.val * exp (- 1))).natAbs
+    use (log (γ.val * exp (-1))).natAbs
     intro x y h
     set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
     set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy

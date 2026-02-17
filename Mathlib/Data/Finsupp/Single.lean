@@ -63,8 +63,15 @@ theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α)
 
 theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
   classical
-  ext
-  simp [single_apply, Set.indicator, @eq_comm _ a]
+  ext x
+  simp only [single_apply, Set.indicator, Set.mem_singleton_iff, @eq_comm _ a]
+
+theorem Set.indicator_singleton_eq (a : α) (f : α → M) :
+    Set.indicator {a} f = ⇑(single a (f a)) := by
+  classical
+  ext x
+  simp only [Set.indicator, Set.mem_singleton_iff, single_apply, @eq_comm _ a]
+  split_ifs with h <;> simp [h]
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
@@ -359,8 +366,6 @@ theorem erase_single_ne {a a' : α} {b : M} (h : a ≠ a') : erase a (single a' 
 @[simp]
 theorem erase_of_notMem_support {f : α →₀ M} {a} (haf : a ∉ f.support) : erase a f = f := by
   classical grind
-
-@[deprecated (since := "2025-05-23")] alias erase_of_not_mem_support := erase_of_notMem_support
 
 theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
   simp

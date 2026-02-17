@@ -142,6 +142,10 @@ theorem ext {f g : A →ₜ* B} (h : ∀ x, f x = g x) : f = g :=
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
   ext <| by convert DFunLike.ext_iff.1 h
 
+@[to_additive]
+theorem toMonoidHom_injective : Injective (toMonoidHom : _ → A →* B) := fun f g h =>
+  ext <| by convert DFunLike.ext_iff.1 h
+
 /-- Composition of two continuous homomorphisms. -/
 @[to_additive (attr := simps!) /-- Composition of two continuous homomorphisms. -/]
 def comp (g : B →ₜ* C) (f : A →ₜ* B) : A →ₜ* C :=
@@ -234,6 +238,16 @@ instance : CommMonoid (A →ₜ* E) where
   mul_assoc f g h := ext fun x => mul_assoc (f x) (g x) (h x)
   one_mul f := ext fun x => one_mul (f x)
   mul_one f := ext fun x => mul_one (f x)
+
+@[to_additive (attr := simp)]
+theorem mul_apply (f g : A →ₜ* E) (a : A) : (f * g) a = f a * g a := by
+  rfl
+
+@[to_additive (attr := simp)]
+theorem pow_apply (f : A →ₜ* E) (n : ℕ) (a : A) : (f ^ n) a = (f a) ^ n := by
+  induction n
+  case zero => rw [pow_zero, pow_zero, one_toFun]
+  case succ n ih => rw [pow_succ, pow_succ, ContinuousMonoidHom.mul_apply, ih]
 
 /-- Coproduct of two continuous homomorphisms to the same space. -/
 @[to_additive (attr := simps!) /-- Coproduct of two continuous homomorphisms to the same space. -/]

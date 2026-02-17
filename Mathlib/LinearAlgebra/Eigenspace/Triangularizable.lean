@@ -40,7 +40,7 @@ generalized eigenspaces span the whole space.
 eigenspace, eigenvector, eigenvalue, eigen
 -/
 
-@[expose] public section
+public section
 
 open Set Function Module Module
 

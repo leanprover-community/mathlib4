@@ -118,7 +118,7 @@ lemma symmetricIcc_eq_symmetricIoo_int : symmetricIcc ℤ = symmetricIoo ℤ := 
   simp only [← Nat.map_cast_int_atTop, Filter.map_map, Filter.mem_map, mem_atTop_sets, ge_iff_le,
     Set.mem_preimage, comp_apply]
   refine ⟨fun ⟨a, ha⟩ ↦ ⟨a + 1, fun b hb ↦ ?_⟩, fun ⟨a, ha⟩ ↦ ⟨a - 1, fun b hb ↦ ?_⟩⟩ <;>
-  [ convert ha (b - 1) (by grind) using 1; convert ha (b + 1) (by grind) using 1 ] <;>
+  [convert ha (b - 1) (by grind) using 1; convert ha (b + 1) (by grind) using 1] <;>
   simpa [Finset.ext_iff] using by grind
 
 @[to_additive]
@@ -131,11 +131,19 @@ lemma _root_.HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc {a : α}
   simpa [Pi.div_def, fun N : ℕ ↦ prod_Icc_eq_prod_Ico_mul f (show (-N : ℤ) ≤ N by lia)]
     using hf2
 
+@[deprecated (since := "2025-12-15")]
+alias HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc :=
+  _root_.HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc
+
 @[to_additive]
 lemma multipliable_symmetricIco_of_multipliable_symmetricIcc
     (hf : Multipliable f (symmetricIcc ℤ)) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     Multipliable f (symmetricIco ℤ) :=
   (hf.hasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc hf2).multipliable
+
+@[deprecated (since := "2025-12-15")]
+alias multipliable_symmetricIco_of_multiplible_symmetricIcc :=
+  multipliable_symmetricIco_of_multipliable_symmetricIcc
 
 @[to_additive]
 lemma tprod_symmetricIcc_eq_tprod_symmetricIco [T2Space α]

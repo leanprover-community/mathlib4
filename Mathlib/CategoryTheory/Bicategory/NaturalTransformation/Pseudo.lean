@@ -244,7 +244,7 @@ lemma naturality_comp_iso (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c)
 @[to_app (attr := reassoc)]
 lemma naturality_comp_inv (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
     (α.naturality (f ≫ g)).inv =
-      α.app a ◁ (G.mapComp f g).hom ≫ (α_ _ _ _).inv ≫  (α.naturality f).inv ▷ G.map g ≫
+      α.app a ◁ (G.mapComp f g).hom ≫ (α_ _ _ _).inv ≫ (α.naturality f).inv ▷ G.map g ≫
       (α_ _ _ _).hom ≫ F.map f ◁ (α.naturality g).inv ≫ (α_ _ _ _).inv ≫
       (F.mapComp f g).inv ▷ α.app c := by
   simp [naturality_comp_iso α f g]

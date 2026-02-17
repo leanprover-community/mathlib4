@@ -13,7 +13,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Real

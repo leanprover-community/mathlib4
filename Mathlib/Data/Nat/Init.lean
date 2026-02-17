@@ -6,14 +6,12 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Batteries.Tactic.Alias
-public import Batteries.Tactic.Init
 public import Mathlib.Init
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.TypeStar
-public import Mathlib.Util.AssertExists
 
 /-!
 # Basic operations on the natural numbers
@@ -35,7 +33,7 @@ See note [foundational algebra order theory].
 
 @[expose] public section
 
-library_note2 «foundational algebra order theory» /--
+library_note «foundational algebra order theory» /--
 Batteries has a home-baked development of the algebraic and order-theoretic theory of `ℕ` and `ℤ`
 which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
 libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
@@ -46,10 +44,10 @@ Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated dev
 The relevant files are:
 * `Mathlib/Data/Nat/Basic.lean` for the continuation of the home-baked development on `ℕ`
 * `Mathlib/Data/Int/Init.lean` for the continuation of the home-baked development on `ℤ`
-* `Mathlib/Algebra/Group/Nat.lean` for the monoid instances on `ℕ`
-* `Mathlib/Algebra/Group/Int.lean` for the group instance on `ℤ`
+* `Mathlib/Algebra/Group/Nat/Defs.lean` for the monoid instances on `ℕ`
+* `Mathlib/Algebra/Group/Int/Defs.lean` for the group instance on `ℤ`
 * `Mathlib/Algebra/Ring/Nat.lean` for the semiring instance on `ℕ`
-* `Mathlib/Algebra/Ring/Int.lean` for the ring instance on `ℤ`
+* `Mathlib/Algebra/Ring/Int/Defs.lean` for the ring instance on `ℤ`
 * `Mathlib/Algebra/Order/Group/Nat.lean` for the ordered monoid instance on `ℕ`
 * `Mathlib/Algebra/Order/Group/Int.lean` for the ordered group instance on `ℤ`
 * `Mathlib/Algebra/Order/Ring/Nat.lean` for the ordered semiring instance on `ℕ`
@@ -99,10 +97,6 @@ lemma two_mul_ne_two_mul_add_one : 2 * n ≠ 2 * m + 1 :=
   mt (congrArg (· % 2))
     (by rw [Nat.add_comm, add_mul_mod_self_left, mul_mod_right, mod_eq_of_lt] <;> simp)
 
-@[deprecated (since := "2025-06-05")] alias mul_right_eq_self_iff := mul_eq_left
-@[deprecated (since := "2025-06-05")] alias mul_left_eq_self_iff := mul_eq_right
-@[deprecated (since := "2025-06-05")] alias eq_zero_of_double_le := eq_zero_of_two_mul_le
-
 /-! ### `div` -/
 
 lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ n := by
@@ -111,12 +105,6 @@ lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ 
 /-- A version of `Nat.div_lt_self` using successors, rather than additional hypotheses. -/
 lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
   Nat.div_lt_self (Nat.succ_pos _) (Nat.succ_lt_succ (Nat.succ_pos _))
-
-@[deprecated (since := "2025-06-05")] alias eq_zero_of_le_half := eq_zero_of_le_div_two
-@[deprecated (since := "2025-06-05")] alias le_half_of_half_lt_sub := le_div_two_of_div_two_lt_sub
-@[deprecated (since := "2025-06-05")] alias half_le_of_sub_le_half := div_two_le_of_sub_le_div_two
-@[deprecated (since := "2025-06-05")] protected alias div_le_of_le_mul' := Nat.div_le_of_le_mul
-@[deprecated (since := "2025-06-05")] protected alias div_le_self' := Nat.div_le_self
 
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
   lia
@@ -240,17 +228,21 @@ lemma leRecOn_succ_left {C : ℕ → Sort*} {n m}
     (leRecOn h2 next (next x) : C m) = (leRecOn h1 next x : C m) :=
   leRec_succ_left (motive := fun n _ => C n) _ (fun _ _ => @next _) _ _
 
+set_option backward.privateInPublic true in
 private abbrev strongRecAux {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
     ∀ n : ℕ, ∀ m < n, p m
   | 0, _, h => by simp at h
   | n + 1, m, hmn => H _ fun l hlm ↦
       strongRecAux H n l (Nat.lt_of_lt_of_le hlm <| le_of_lt_succ hmn)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Recursion principle based on `<`. -/
 @[elab_as_elim]
 protected def strongRec' {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) : p n :=
   H n <| strongRecAux H n
 
+set_option backward.privateInPublic true in
 private lemma strongRecAux_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) :
     ∀ m (lt : m < n), strongRecAux H n m lt = H m (strongRecAux H m) :=
   n.strongRec' fun n ih m hmn ↦ by
@@ -260,6 +252,8 @@ private lemma strongRecAux_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m)
     ext l hlm
     exact (ih _ n.lt_succ_self _ _).trans (ih _ hmn _ _).symm
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma strongRec'_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
     n.strongRec' H = H n fun m _ ↦ m.strongRec' H :=
   congrArg (H n) <| by ext m lt; apply strongRecAux_spec
@@ -405,10 +399,6 @@ lemma not_pos_pow_dvd {a n : ℕ} (ha : 1 < a) (hn : 1 < n) : ¬ a ^ n ∣ a :=
   not_dvd_of_pos_of_lt (Nat.lt_trans Nat.zero_lt_one ha)
     (lt_of_eq_of_lt (Nat.pow_one a).symm ((Nat.pow_lt_pow_iff_right ha).2 hn))
 
-/-- `m` is not divisible by `n` if it is between `n * k` and `n * (k + 1)` for some `k`. -/
-@[deprecated (since := "2025-06-05")] alias not_dvd_of_between_consec_multiples :=
-  not_dvd_of_lt_of_lt_mul_succ
-
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
   lia
@@ -419,10 +409,6 @@ protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
 /-- A natural number `m` divides the sum `n + m` if and only if `m` divides `n`. -/
 @[simp] protected lemma dvd_add_self_right : m ∣ n + m ↔ m ∣ n := Nat.dvd_add_left (Nat.dvd_refl m)
 
-/-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
-@[deprecated (since := "2025-06-05")] alias not_dvd_iff_between_consec_multiples :=
-  not_dvd_iff_lt_mul_succ
-
 /-- Two natural numbers are equal if and only if they have the same multiples. -/
 lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=
   ⟨fun h => Nat.dvd_antisymm ((h _).mpr (Nat.dvd_refl _)) ((h _).mp (Nat.dvd_refl _)),
@@ -432,6 +418,12 @@ lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=
 lemma dvd_left_iff_eq : (∀ a : ℕ, a ∣ m ↔ a ∣ n) ↔ m = n :=
   ⟨fun h => Nat.dvd_antisymm ((h _).mp (Nat.dvd_refl _)) ((h _).mpr (Nat.dvd_refl _)),
     fun h n => by rw [h]⟩
+
+theorem ext_div_mod {n a b : ℕ} (H0 : a / n = b / n) (H1 : a % n = b % n) : a = b := by
+  grind [div_add_mod]
+
+theorem ext_div_mod_iff (n a b : ℕ) : a = b ↔ a / n = b / n ∧ a % n = b % n := by
+  grind [ext_div_mod]
 
 /-! ### Decidability of predicates -/
 
@@ -447,6 +439,9 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
+
+instance (n : ℤ) [NeZero n] : NeZero n.natAbs where
+  out := n.natAbs_ne_zero.mpr (NeZero.ne n)
 
 /-! ### `Nat.AtLeastTwo` -/
 

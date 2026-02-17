@@ -13,7 +13,7 @@ Comparisons between rational approximations to the square root of a natural numb
 and the real square root.
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 

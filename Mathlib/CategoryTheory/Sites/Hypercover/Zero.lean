@@ -6,12 +6,13 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Sites.Precoverage
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # 0-hypercovers
 
 Given a coverage `J` on a category `C`, we define the type
-of `0`-hypercovers of an object `S : C`. They consists of a covering family
+of `0`-hypercovers of an object `S : C`. They consist of a covering family
 of morphisms `X i ⟶ S` indexed by a type `I₀` such that the induced presieve is in `J`.
 
 We define this with respect to a coverage and not to a Grothendieck topology, because this
@@ -144,6 +145,13 @@ lemma presieve₀_restrictIndex_equiv {ι : Type w'} (e : ι ≃ E.I₀) :
   obtain ⟨i, rfl⟩ := e.surjective i
   exact ⟨i⟩
 
+@[simp]
+lemma presieve₀_restrictIndex_le {ι : Type*} (f : ι → E.I₀) :
+    (E.restrictIndex f).presieve₀ ≤ E.presieve₀ := by
+  rw [Presieve.ofArrows_le_iff]
+  intro i
+  exact .mk _
+
 /-- Replace the indexing type of a pre-`0`-hypercover. -/
 @[simps!]
 def reindex (E : PreZeroHypercover.{w} T) {ι : Type w'} (e : ι ≃ E.I₀) :
@@ -192,7 +200,7 @@ lemma presieve₀_sum : (E.sum F).presieve₀ = E.presieve₀ ⊔ F.presieve₀ 
     cases i
     · exact Or.inl (.mk _)
     · exact Or.inr (.mk _)
-  · rintro Z g (⟨⟨i⟩⟩|⟨⟨i⟩⟩)
+  · rintro Z g (⟨⟨i⟩⟩ | ⟨⟨i⟩⟩)
     · exact ⟨Sum.inl i⟩
     · exact ⟨Sum.inr i⟩
 
@@ -336,6 +344,16 @@ lemma inv_hom_h₀_comp_f {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : E.I
 lemma inv_inv_h₀_comp_f {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : F.I₀) :
     inv (e.inv.h₀ i) ≫ F.f i = E.f _ := by simp
 
+lemma Hom.sieve₀_le_sieve₀ {E F : PreZeroHypercover S} (f : E.Hom F) : E.sieve₀ ≤ F.sieve₀ := by
+  rw [Sieve.generate_le_iff, Presieve.ofArrows_le_iff]
+  intro i
+  rw [← f.w₀ i]
+  apply Sieve.downward_closed
+  exact Sieve.le_generate _ _ ⟨f.s₀ i⟩
+
+lemma sieve₀_eq_of_iso {E F : PreZeroHypercover S} (e : E ≅ F) : E.sieve₀ = F.sieve₀ :=
+  le_antisymm e.hom.sieve₀_le_sieve₀ e.inv.sieve₀_le_sieve₀
+
 end Category
 
 section Functoriality
@@ -425,6 +443,12 @@ def interLift (f : G.Hom E) (g : G.Hom F) :
     G.Hom (E.inter F) where
   s₀ i := ⟨f.s₀ i, g.s₀ i⟩
   h₀ i := pullback.lift (f.h₀ i) (g.h₀ i) (by simp)
+
+/-- The refinement given by restricting the indexing type. -/
+@[simps]
+def restrictIndexHom {ι : Type w'} (f : ι → E.I₀) : (E.restrictIndex f).Hom E where
+  s₀ := f
+  h₀ _ := 𝟙 _
 
 end
 
@@ -800,6 +824,21 @@ instance (J : Precoverage C) [Small.{w} J] {S : C} (E : ZeroHypercover.{w'} J S)
     (ZeroHypercover.restrictIndexOfSmall.{max u v} E)
   use E'.I₀, ZeroHypercover.Small.restrictFun _ ∘ ZeroHypercover.Small.restrictFun _
   exact E'.mem₀
+
+instance {D : Type*} [Category* D] {F : C ⥤ D} (J : Precoverage D) [Small.{w} J] :
+    Small.{w} (J.comap F) where
+  zeroHypercoverSmall {X} E := by
+    refine ⟨(E.map F le_rfl).restrictIndexOfSmall.I₀, ZeroHypercover.Small.restrictFun _, ?_⟩
+    simpa using (E.map F le_rfl).restrictIndexOfSmall.mem₀
+
+lemma Small.inf {J K : Precoverage C} [Small.{w} J]
+    (of_le : ∀ ⦃X : C⦄ ⦃R S : Presieve X⦄, R ≤ S → S ∈ K X → R ∈ K X) :
+    Small.{w} (J ⊓ K) where
+  zeroHypercoverSmall {S} E := by
+    refine ⟨(E.weaken (inf_le_left)).restrictIndexOfSmall.I₀,
+        ZeroHypercover.Small.restrictFun _, ⟨?_, ?_⟩⟩
+    · exact (E.weaken (inf_le_left)).restrictIndexOfSmall.mem₀
+    · exact of_le (by simp) E.mem₀.2
 
 instance [IsStableUnderBaseChange J] : RespectsIso J where
   of_iso {S E F} e h := by

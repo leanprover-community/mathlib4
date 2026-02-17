@@ -32,7 +32,7 @@ is `nhds_basis_ball`, and the fact that this basis satisfies the monotonicity cr
 corresponds to `HasSolidNorm`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology
 

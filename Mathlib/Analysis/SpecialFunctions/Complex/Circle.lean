@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.Topology.Covering.AddCircle
 
 /-!
 # Maps on the unit circle
@@ -75,7 +76,7 @@ lemma periodic_exp : Periodic exp (2 * π) := fun z ↦ exp_eq_exp.2 ⟨1, by rw
 @[simp] lemma exp_two_pi : exp (2 * π) = 1 := periodic_exp.eq.trans exp_zero
 
 lemma exp_int_mul_two_pi (n : ℤ) : exp (n * (2 * π)) = 1 :=
-  ext <| by simpa [mul_assoc] using Complex.exp_int_mul_two_pi_mul_I n
+  ext <| by simp
 
 lemma exp_two_pi_mul_int (n : ℤ) : exp (2 * π * n) = 1 := by
   simpa only [mul_comm] using exp_int_mul_two_pi n
@@ -85,7 +86,7 @@ lemma exp_eq_one {r : ℝ} : exp r = 1 ↔ ∃ n : ℤ, r = n * (2 * π) := by
     ← Complex.ofReal_inj]
 
 lemma exp_inj {r s : ℝ} : exp r = exp s ↔ r ≡ s [PMOD (2 * π)] := by
-  simp [AddCommGroup.ModEq, ← exp_eq_one, div_eq_one, eq_comm (a := exp r)]
+  simp [AddCommGroup.modEq_iff_zsmul', ← exp_eq_one, div_eq_one, eq_comm (a := exp r)]
 
 lemma exp_sub_two_pi (x : ℝ) : exp (x - 2 * π) = exp x := periodic_exp.sub_eq x
 lemma exp_add_two_pi (x : ℝ) : exp (x + 2 * π) = exp x := periodic_exp x
@@ -141,8 +142,7 @@ noncomputable def toCircle : AddCircle T → Circle :=
 theorem toCircle_apply_mk (x : ℝ) : @toCircle T x = Circle.exp (2 * π / T * x) :=
   rfl
 
-theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
-    @toCircle T (x + y) = toCircle x * toCircle y := by
+theorem toCircle_add (x y : AddCircle T) : toCircle (x + y) = toCircle x * toCircle y := by
   induction x using QuotientAddGroup.induction_on
   induction y using QuotientAddGroup.induction_on
   simp_rw [← coe_add, toCircle_apply_mk, mul_add, Circle.exp_add]
@@ -150,8 +150,20 @@ theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
 @[simp] lemma toCircle_zero : toCircle (0 : AddCircle T) = 1 := by
   rw [← QuotientAddGroup.mk_zero, toCircle_apply_mk, mul_zero, Circle.exp_zero]
 
+theorem toCircle_neg (x : AddCircle T) : toCircle (-x) = (toCircle x)⁻¹ :=
+  (mul_left_inj (toCircle x)).mp <| by simp [← toCircle_add]
+
+theorem toCircle_nsmul (x : AddCircle T) (n : ℕ) : toCircle (n • x) = toCircle x ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih => rw [succ_nsmul, toCircle_add, ih, pow_succ]
+
+theorem toCircle_zsmul (x : AddCircle T) (n : ℤ) : toCircle (n • x) = toCircle x ^ n := by
+  cases n <;> simp [toCircle_nsmul, toCircle_neg]
+
+@[fun_prop, continuity]
 theorem continuous_toCircle : Continuous (@toCircle T) :=
-  continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| continuous_const.mul continuous_id')
+  continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| by fun_prop)
 
 theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
   intro a b h
@@ -193,7 +205,35 @@ end AddCircle
 
 open AddCircle
 
--- todo: upgrade this to `IsCoveringMap Circle.exp`.
-lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp := by
-  have : Fact (0 < 2 * π) := ⟨by positivity⟩
-  exact homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))
+theorem Circle.isAddQuotientCoveringMap_exp :
+    IsAddQuotientCoveringMap exp (AddSubgroup.zmultiples (2 * Real.pi)) := by
+  convert (isAddQuotientCoveringMap_coe _).homeomorph_comp (homeomorphCircle _)
+  on_goal 2 => simp
+  ext; simp [homeomorphCircle_apply, toCircle]
+
+theorem Circle.isCoveringMap_exp : IsCoveringMap exp := isAddQuotientCoveringMap_exp.isCoveringMap
+
+lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
+  Circle.isCoveringMap_exp.isLocalHomeomorph
+
+/- TODO: this generalizes to a large class of groups, but requires an open mapping theorem for
+topological groups to show the `n`th power map is open (see https://www.mathematik.tu-darmstadt.de/media/mathematik/forschung/preprint/preprints/2480.pdf
+and https://www.math.uwaterloo.ca/~cgodsil/pdfs/topology/topgr.pdf), and discreteness of the
+kernel (see https://gemini.google.com/share/6e9ab4abcb95). -/
+theorem Circle.isQuotientCoveringMap_zpow (n : ℤ) [NeZero n] :
+    IsQuotientCoveringMap (· ^ n : Circle → _) (zpowGroupHom (α := Circle) n).ker := by
+  have hn : IsUnit (n : ℝ) := by simpa using NeZero.ne n
+  let e := AddCircle.homeomorphCircle one_ne_zero
+  refine Topology.IsQuotientMap.isQuotientCoveringMap_of_isDiscrete_ker_monoidHom
+    (f := zpowGroupHom (α := Circle) n) ?_ (Set.Finite.isDiscrete <| .of_preimage ?_ e.surjective)
+  · refine .of_comp e.continuous (continuous_zpow n) ?_
+    convert e.isQuotientMap.comp <| IsUnit.isQuotientMap_zsmul (M := ℝ)
+      (QuotientAddGroup.mk' (AddSubgroup.zmultiples (1 : ℝ))) isQuotientMap_quotient_mk' n hn
+    ext; simp [zpowGroupHom, e, homeomorphCircle_apply, toCircle_zsmul]
+  · convert finite_torsion_of_isSMulRegular_int (1 : ℝ) n fun _ ↦ by simp [NeZero.ne]
+    ext
+    simp [e, homeomorphCircle_apply, ← toCircle_zsmul, ← (injective_toCircle one_ne_zero).eq_iff]
+
+theorem Circle.isQuotientCoveringMap_npow (n : ℕ) [NeZero n] :
+    IsQuotientCoveringMap (· ^ n : Circle → _) (powMonoidHom (α := Circle) n).ker :=
+  isQuotientCoveringMap_zpow n

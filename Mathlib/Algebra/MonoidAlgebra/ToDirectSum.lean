@@ -135,7 +135,7 @@ theorem toDirectSum_sub [Ring M] (f g : AddMonoidAlgebra M ι) :
 
 @[simp]
 theorem toDirectSum_neg [Ring M] (f : AddMonoidAlgebra M ι) :
-    (- f).toDirectSum = - f.toDirectSum :=
+    (-f).toDirectSum = - f.toDirectSum :=
   Finsupp.toDFinsupp_neg _
 
 @[simp]
@@ -195,7 +195,7 @@ theorem toAddMonoidAlgebra_sub [Ring M] [∀ m : M, Decidable (m ≠ 0)] (f g : 
 
 @[simp]
 theorem toAddMonoidAlgebra_neg [Ring M] [∀ m : M, Decidable (m ≠ 0)] (f : ⨁ _ : ι, M) :
-    (- f).toAddMonoidAlgebra = - toAddMonoidAlgebra f :=
+    (-f).toAddMonoidAlgebra = - toAddMonoidAlgebra f :=
   DFinsupp.toFinsupp_neg _
 
 @[simp]
@@ -270,8 +270,8 @@ theorem AddMonoidAlgebra.toDirectSum_pow [DecidableEq ι] [AddMonoid ι] [Semiri
 
 @[simp]
 theorem DirectSum.toAddMonoidAlgebra_pow [DecidableEq ι] [AddMonoid ι] [Semiring M]
-    [∀ m : M, Decidable (m ≠ 0)] (f : ⨁ _ : ι, M) (n : ℕ):
-    (f ^ n).toAddMonoidAlgebra = toAddMonoidAlgebra f ^ n :=  by
+    [∀ m : M, Decidable (m ≠ 0)] (f : ⨁ _ : ι, M) (n : ℕ) :
+    (f ^ n).toAddMonoidAlgebra = toAddMonoidAlgebra f ^ n := by
   classical exact map_pow addMonoidAlgebraRingEquivDirectSum.symm f n
 
 end Equivs

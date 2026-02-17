@@ -372,13 +372,13 @@ namespace IntermediateField
 
 /-- In a finitely generated field extension, there exists a maximal
 separably generated field extension. -/
-lemma FG.exists_finset_maximalFor_isTranscendenceBasis_separableClosure
-    (Hfg : FG (F := F) (E := E) ⊤) :
+lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
+    [Algebra.EssFiniteType F E] :
     ∃ s : Finset E, MaximalFor (fun t : Set E ↦ IsTranscendenceBasis F ((↑) : t → E))
       (fun t ↦ (separableClosure (adjoin F t) E).restrictScalars F) s := by
   let d (s : Finset E) := Field.finInsepDegree (adjoin F (s : Set E)) E
   have Hexists : {s : Finset E | IsTranscendenceBasis F ((↑) : s → E)}.Nonempty := by
-    have ⟨s, hs⟩ := Hfg
+    have ⟨s, hs⟩ := IntermediateField.fg_top F E
     have : Algebra.IsAlgebraic (Algebra.adjoin F (s : Set E)) E := by
       rw [← isAlgebraic_adjoin_iff_top, hs, Algebra.isAlgebraic_iff_isIntegral]
       refine Algebra.isIntegral_of_surjective topEquiv.surjective
@@ -389,15 +389,19 @@ lemma FG.exists_finset_maximalFor_isTranscendenceBasis_separableClosure
   have hs := d.argminOn_mem _ Hexists
   refine ⟨s, hs, fun t ht ↦ not_lt_iff_le_imp_ge.mp fun H ↦ ?_⟩
   have : t.Finite := by
-    simp [Set.Finite, ← Cardinal.mk_lt_aleph0_iff, ht.cardinalMk_eq hs, Cardinal.nat_lt_aleph0]
+    simp [Set.Finite, ← Cardinal.mk_lt_aleph0_iff, ht.cardinalMk_eq hs, Cardinal.natCast_lt_aleph0]
   lift t to Finset E using this
   have : Module.Finite (adjoin F (s : Set E)) E := by
-    apply (config := { allowSynthFailures := true }) finite_of_fg_of_isAlgebraic
-    · exact .of_restrictScalars (K := F) (by rwa [restrictScalars_top])
+    apply +allowSynthFailures Algebra.finite_of_essFiniteType_of_isAlgebraic
+    · exact .of_comp F _ _
     · convert hs.isAlgebraic_field <;> simp [s]
   have : Module.Finite ((separableClosure (adjoin F (s : Set E)) E).restrictScalars F) E :=
     inferInstanceAs <| Module.Finite (separableClosure (adjoin F (s : Set E)) E) E
   exact d.not_lt_argminOn _ ht Hexists (by apply finrank_lt_of_gt H)
+
+@[deprecated (since := "2025-12-08")]
+alias FG.exists_finset_maximalFor_isTranscendenceBasis_separableClosure :=
+  IntermediateField.exists_finset_maximalFor_isTranscendenceBasis_separableClosure
 
 @[simp]
 theorem sepDegree_bot : sepDegree F (⊥ : IntermediateField F E) = 1 := by

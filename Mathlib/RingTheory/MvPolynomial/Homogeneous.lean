@@ -8,10 +8,9 @@ module
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.RingTheory.Ideal.BigOperators
-public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Homogeneous polynomials
@@ -367,7 +366,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
   have aux : ∀ i ∈ Finset.range n, constantCoeff ((finSuccEquiv R N F).coeff i) = 0 := by
     intro i hi
     rw [Finset.mem_range] at hi
-    apply (hF.finSuccEquiv_coeff_isHomogeneous i (n-i) (by lia)).coeff_eq_zero
+    apply (hF.finSuccEquiv_coeff_isHomogeneous i (n - i) (by lia)).coeff_eq_zero
     simp only [map_zero]
     rw [← Nat.sub_ne_zero_iff_lt] at hi
     exact hi.symm
@@ -465,7 +464,7 @@ for a version that assumes `n ≤ #R`. -/
 lemma eq_zero_of_forall_eval_eq_zero [Infinite R] {F : MvPolynomial σ R} {n : ℕ}
     (hF : F.IsHomogeneous n) (h : ∀ r : σ → R, eval r F = 0) : F = 0 := by
   apply eq_zero_of_forall_eval_eq_zero_of_le_card hF h
-  exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
+  exact Cardinal.natCast_le_aleph0.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
 /-- See `MvPolynomial.IsHomogeneous.funext_of_le_card`
 for a version that assumes `n ≤ #R`. -/
@@ -473,7 +472,7 @@ lemma funext [Infinite R] {F G : MvPolynomial σ R} {n : ℕ}
     (hF : F.IsHomogeneous n) (hG : G.IsHomogeneous n)
     (h : ∀ r : σ → R, eval r F = eval r G) : F = G := by
   apply funext_of_le_card hF hG h
-  exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
+  exact Cardinal.natCast_le_aleph0.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
 end IsDomain
 
@@ -492,7 +491,7 @@ open Finset
 /-- `homogeneousComponent n φ` is the part of `φ` that is homogeneous of degree `n`.
 See `sum_homogeneousComponent` for the statement that `φ` is equal to the sum
 of all its homogeneous components. -/
-def homogeneousComponent [CommSemiring R] (n : ℕ) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
+def homogeneousComponent (n : ℕ) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
   weightedHomogeneousComponent 1 n
 
 section HomogeneousComponent

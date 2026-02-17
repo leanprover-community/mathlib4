@@ -64,9 +64,9 @@ theorem coe_fib_neg (n : ℤ) : (fib (-n) : ℚ) = (-1) ^ (n + 1) * fib n := by
 theorem fib_add_two (n : ℤ) : fib (n + 2) = fib n + fib (n + 1) := by
   rcases n with (n | n)
   · dsimp
-    rw [show (n : ℤ) + 2 = (n + 2 : ℕ) by rfl, fib_natCast, Nat.fib_add_two]
-    rfl
-  · rw [show negSucc n = -((n + 1 : ℕ) : ℤ) by rfl, fib_neg_natCast]
+    rw [← Nat.cast_ofNat, ← Nat.cast_add, ← Nat.cast_add_one, fib_natCast, fib_natCast,
+      Nat.fib_add_two, Nat.cast_add]
+  · rw [negSucc_eq, ← Nat.cast_add_one, fib_neg_natCast]
     simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, reduceNeg, add_comm,
       add_assoc, reduceAdd, add_neg_cancel_comm_assoc, fib_neg_natCast]
     if hn0 : n = 0 then simp [hn0] else

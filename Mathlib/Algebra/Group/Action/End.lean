@@ -199,7 +199,7 @@ lemma MulAction.coe_toPermHom :
   rfl
 
 lemma MulAction.toPerm_one :
-    (MulAction.toPerm (1 : G))  = (1 : Equiv.Perm α) := by
+    (MulAction.toPerm (1 : G)) = (1 : Equiv.Perm α) := by
   aesop
 
 end Group
@@ -217,7 +217,7 @@ lemma AddAction.coe_toPermHom :
   rfl
 
 theorem AddAction.toPerm_zero :
-    (AddAction.toPerm (0 : G))  = (1 : Equiv.Perm α) := by
+    (AddAction.toPerm (0 : G)) = (1 : Equiv.Perm α) := by
   aesop
 
 end AddGroup

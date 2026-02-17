@@ -77,7 +77,7 @@ namespace Filter
 
 variable [MeasurableSpace α]
 
-/-- A filter `f` is measurably generates if each `s ∈ f` includes a measurable `t ∈ f`. -/
+/-- A filter `f` is measurably generated if each `s ∈ f` includes a measurable `t ∈ f`. -/
 class IsMeasurablyGenerated (f : Filter α) : Prop where
   exists_measurable_subset : ∀ ⦃s⦄, s ∈ f → ∃ t ∈ f, MeasurableSet t ∧ t ⊆ s
 
@@ -217,7 +217,7 @@ instance Subtype.instLawfulSingleton [MeasurableSingletonClass α] :
     LawfulSingleton α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun _ => Subtype.ext <| insert_empty_eq _⟩
 
-instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instCompl : Compl (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x => ⟨xᶜ, x.prop.compl⟩⟩
 
 @[simp]
@@ -268,6 +268,10 @@ instance Subtype.instBot : Bot (Subtype (MeasurableSet : Set α → Prop)) := �
 
 @[simp]
 theorem coe_bot : ↑(⊥ : Subtype (MeasurableSet : Set α → Prop)) = (⊥ : Set α) :=
+  rfl
+
+@[simp]
+theorem subtype_bot_eq : (⟨∅, .empty⟩ : Subtype (MeasurableSet : Set α → Prop)) = ⊥ :=
   rfl
 
 instance Subtype.instTop : Top (Subtype (MeasurableSet : Set α → Prop)) :=

@@ -37,6 +37,9 @@ attribute [instance] CountableCategory.countableObj CountableCategory.countableH
 instance countableCategoryDiscreteOfCountable (J : Type*) [Countable J] :
     CountableCategory (Discrete J) where
 
+instance {J : Type u} [Countable J] [Category* J] [Quiver.IsThin J] : CountableCategory J :=
+  CountableCategory.mk inferInstance (fun _ _ ↦ ⟨fun _ ↦ 0, fun _ _ _ ↦ Subsingleton.elim _ _⟩)
+
 instance : CountableCategory ℕ where
 
 namespace CountableCategory
@@ -50,7 +53,7 @@ abbrev ObjAsType : Type :=
 instance : Countable (ObjAsType α) := Countable.of_equiv α (equivShrink.{0} α)
 
 instance {i j : ObjAsType α} : Countable (i ⟶ j) :=
-  CountableCategory.countableHom ((equivShrink.{0} α).symm i) _
+  Countable.of_equiv _ InducedCategory.homEquiv.symm
 
 instance : CountableCategory (ObjAsType α) where
 

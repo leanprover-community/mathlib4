@@ -19,7 +19,7 @@ Precisely, for `G` a finite abelian group and two functions `c : AddChar G ℂ �
 the same as the average over `a` of the product of the `c ψ + Re (d ψ * ψ a)`.
 -/
 
-@[expose] public section
+public section
 
 open Finset
 open scoped BigOperators ComplexConjugate

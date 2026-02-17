@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Bryan Gin-ge Chen
 module
 
 public import Mathlib.Order.BooleanAlgebra.Defs
+public import Mathlib.Tactic.GRewrite
 
 /-!
 # Basic properties of Boolean algebras
@@ -86,6 +87,7 @@ private theorem sdiff_le' : x \ y ≤ x :=
     x \ y ≤ x ⊓ y ⊔ x \ y := le_sup_right
     _ = x := sup_inf_sdiff x y
 
+set_option backward.privateInPublic true in
 -- Use `sdiff_sup_self`
 private theorem sdiff_sup_self' : y \ x ⊔ x = y ⊔ x :=
   calc
@@ -117,6 +119,8 @@ theorem inf_sdiff_self_right : x ⊓ y \ x = ⊥ :=
 @[simp]
 theorem inf_sdiff_self_left : y \ x ⊓ x = ⊥ := by rw [inf_comm, inf_sdiff_self_right]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 -- see Note [lower instance priority]
 instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgebra :
     GeneralizedCoheytingAlgebra α where
@@ -627,7 +631,7 @@ protected abbrev Function.Injective.generalizedBooleanAlgebra [Max α] [Min α] 
 
 -- See note [reducible non-instances]
 /-- Pullback a `BooleanAlgebra` along an injection. -/
-protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [Top α] [Bot α] [HasCompl α]
+protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [Top α] [Bot α] [Compl α]
     [SDiff α] [HImp α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)

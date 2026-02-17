@@ -131,11 +131,9 @@ theorem arsinh_strictMono : StrictMono arsinh :=
 theorem arsinh_inj : arsinh x = arsinh y ↔ x = y :=
   arsinh_injective.eq_iff
 
-@[simp]
+@[simp, gcongr]
 theorem arsinh_le_arsinh : arsinh x ≤ arsinh y ↔ x ≤ y :=
   sinhOrderIso.symm.le_iff_le
-
-@[gcongr] protected alias ⟨_, GCongr.arsinh_le_arsinh⟩ := arsinh_le_arsinh
 
 @[simp]
 theorem arsinh_lt_arsinh : arsinh x < arsinh y ↔ x < y :=
@@ -172,12 +170,29 @@ theorem differentiable_arsinh : Differentiable ℝ arsinh := fun x =>
   (hasDerivAt_arsinh x).differentiableAt
 
 @[fun_prop]
-theorem contDiff_arsinh {n : ℕ∞} : ContDiff ℝ n arsinh :=
+theorem contDiff_arsinh {n : WithTop ℕ∞} : ContDiff ℝ n arsinh :=
   sinhHomeomorph.contDiff_symm_deriv (fun x => (cosh_pos x).ne') hasDerivAt_sinh contDiff_sinh
 
 @[continuity]
 theorem continuous_arsinh : Continuous arsinh :=
   sinhHomeomorph.symm.continuous
+
+/-- The function `Real.arsinh` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_arsinh : AnalyticAt ℝ arsinh x :=
+  contDiff_arsinh.contDiffAt.analyticAt
+
+/-- The function `Real.arsinh` is real analytic. -/
+lemma analyticWithinAt_arsinh {s : Set ℝ} : AnalyticWithinAt ℝ arsinh s x :=
+  contDiff_arsinh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.arsinh` is real analytic. -/
+theorem analyticOnNhd_arsinh {s : Set ℝ} : AnalyticOnNhd ℝ arsinh s :=
+  fun _ _ ↦ analyticAt_arsinh
+
+/-- The function `Real.arsinh` is real analytic. -/
+lemma analyticOn_arsinh {s : Set ℝ} : AnalyticOn ℝ arsinh s :=
+  contDiff_arsinh.contDiffOn.analyticOn
 
 end Real
 

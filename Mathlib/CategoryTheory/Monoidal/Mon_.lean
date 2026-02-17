@@ -11,6 +11,8 @@ public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # The category of monoids in a monoidal category.
 
@@ -72,9 +74,9 @@ namespace MonObj
 variable {M X Y : C} [MonObj M]
 
 @[inherit_doc] scoped notation "μ" => MonObj.mul
-@[inherit_doc] scoped notation "μ["M"]" => MonObj.mul (X := M)
+@[inherit_doc] scoped notation "μ[" M "]" => MonObj.mul (X := M)
 @[inherit_doc] scoped notation "η" => MonObj.one
-@[inherit_doc] scoped notation "η["M"]" => MonObj.one (X := M)
+@[inherit_doc] scoped notation "η[" M "]" => MonObj.one (X := M)
 
 attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
@@ -165,7 +167,7 @@ lemma mul_assoc_hom (f : X ⟶ M) :
 
 @[reassoc (attr := mon_tauto)]
 lemma mul_assoc_inv (f : X ⟶ M) :
-    (α_ M M X).inv ≫ (μ ⊗ₘ f) ≫ μ = (𝟙 M ⊗ₘ (𝟙 M ⊗ₘ f) ≫ μ) ≫ μ  := by simp [tensorHom_def']
+    (α_ M M X).inv ≫ (μ ⊗ₘ f) ≫ μ = (𝟙 M ⊗ₘ (𝟙 M ⊗ₘ f) ≫ μ) ≫ μ := by simp [tensorHom_def']
 
 end Mathlib.Tactic.MonTauto
 
@@ -266,7 +268,7 @@ which together form a strength that equips the tensor product functor with a mon
 and the monoid axioms for the tensor product follow from the monoid axioms for the tensor factors
 plus the properties of the strength (i.e., monoidal functor axioms).
 The strength `tensorμ` of the tensor product functor has been defined in
-`Mathlib/CategoryTheory/Monoidal/Braided.lean`.
+`Mathlib/CategoryTheory/Monoidal/Braided/Basic.lean`.
 Its properties, stated as independent lemmas in that module,
 are used extensively in the proofs below.
 Notice that we could have followed the above plan not only conceptually
@@ -280,7 +282,7 @@ The obvious candidates are the associator and unitors from `C`,
 but we need to prove that they are monoid morphisms, i.e., compatible with unit and multiplication.
 These properties translate to the monoidality of the associator and unitors
 (with respect to the monoidal structures on the functors they relate),
-which have also been proved in `Mathlib/CategoryTheory/Monoidal/Braided.lean`.
+which have also been proved in `Mathlib/CategoryTheory/Monoidal/Braided/Basic.lean`.
 
 -/
 
@@ -752,7 +754,7 @@ def mapMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] : F.mapMon ≅ F'.ma
   NatIso.ofComponents fun X ↦ Mon.mkIso (e.app _)
 
 attribute [local simp] ε_tensorHom_comp_μ_assoc in
-instance [F.LaxMonoidal] : IsMonHom (ε F) where
+instance : IsMonHom (ε F) where
 
 end LaxMonoidal
 

@@ -67,7 +67,7 @@ lemma dualSubmoduleParing_spec {N : Submodule R M} (x : B.dualSubmodule N) (y : 
 -- TODO: Show that this is perfect when `N` is a lattice and `B` is nondegenerate.
 @[simps]
 noncomputable
-def dualSubmoduleToDual [NoZeroSMulDivisors R S] (N : Submodule R M) :
+def dualSubmoduleToDual [IsDomain R] [IsTorsionFree R S] (N : Submodule R M) :
     B.dualSubmodule N →ₗ[R] Module.Dual R N :=
   { toFun := fun x ↦
     { toFun := B.dualSubmoduleParing x
@@ -79,7 +79,7 @@ def dualSubmoduleToDual [NoZeroSMulDivisors R S] (N : Submodule R M) :
     map_smul' := fun r x ↦ LinearMap.ext fun y ↦ FaithfulSMul.algebraMap_injective R S
       (by simp [← Algebra.smul_def]) }
 
-lemma dualSubmoduleToDual_injective (hB : B.Nondegenerate) [NoZeroSMulDivisors R S]
+lemma dualSubmoduleToDual_injective [IsDomain R] (hB : B.Nondegenerate) [IsTorsionFree R S]
     (N : Submodule R M) (hN : Submodule.span S (N : Set M) = ⊤) :
     Function.Injective (B.dualSubmoduleToDual N) := by
   intro x y e

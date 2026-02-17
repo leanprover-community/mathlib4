@@ -358,7 +358,7 @@ noncomputable def comapQuotientEquivRangeS (f : N →+* M)
 @[simp] theorem comapQuotientEquivRangeS_symm_mk (f : N →+* M)
     {d : RingCon N} (hcd : d = comap c f) (x : N) :
     (c.comapQuotientEquivRangeS f hcd).symm
-      (⟨f x, RingHom.mem_rangeS_self (c.mk'.comp f) x ⟩) = x :=  by
+      (⟨f x, RingHom.mem_rangeS_self (c.mk'.comp f) x ⟩) = x := by
   simp [RingEquiv.symm_apply_eq]
 
 /-- The **third isomorphism theorem for (semi-)rings**. -/
@@ -436,7 +436,7 @@ theorem comapQuotientEquivRange_mk
 @[simp] theorem comapQuotientEquivRange_symm_mk (f : N →+* M)
     {d : RingCon N} (hcd : d = comap c f) (x : N) :
     (c.comapQuotientEquivRange f hcd).symm
-      (⟨f x, RingHom.mem_range_self (c.mk'.comp f) x ⟩) = x :=  by
+      (⟨f x, RingHom.mem_range_self (c.mk'.comp f) x ⟩) = x := by
   simp [RingEquiv.symm_apply_eq, ← Subtype.coe_inj]
 
 end

@@ -73,7 +73,7 @@ lemma enrichedHom_condition {i j : J} (f : i ⟶ j) :
 @[reassoc]
 lemma enrichedHom_condition' {i j : J} (f : i ⟶ j) :
     enrichedHomπ V F₁ F₂ i ≫ (ρ_ _).inv ≫
-      _ ◁ (eHomEquiv V) (F₂.map f) ≫ eComp V _ _ _  =
+      _ ◁ (eHomEquiv V) (F₂.map f) ≫ eComp V _ _ _ =
     enrichedHomπ V F₁ F₂ j ≫ (λ_ _).inv ≫
       (eHomEquiv V) (F₁.map f) ▷ _ ≫ eComp V _ _ _ :=
   end_.condition (diagram V F₁ F₂) f
@@ -262,7 +262,7 @@ noncomputable abbrev precompEnrichedHom' {F₁' F₂' : K ⥤ C}
       rw [enrichedHom_condition_assoc, eHom_whisker_exchange,
         eHom_whisker_exchange, ← eHomWhiskerRight_comp_assoc,
         ← eHomWhiskerRight_comp_assoc, NatTrans.naturality]
-      dsimp )
+      dsimp)
 
 /-- If `F₁` and `F₂` are functors `J ⥤ C`, and `G : K ⥤ J`,
 then this is the induced morphism

@@ -6,7 +6,7 @@ Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Defs.Sequences
-public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Sequences in topological spaces
@@ -366,16 +366,30 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
   refine mem_of_superset (htl n) fun y hy => hWV N ⟨u n, hn, htW N ?_⟩
   exact ⟨ht_anti hNn (hu n), ht_anti hNn hy⟩
 
-/-- If `𝓤 β` is countably generated, then any sequentially compact set is compact. -/
+end UniformSpaceSeqCompact
+
+section MetrizableSpaceSeqCompact
+
+variable [TopologicalSpace X] [PseudoMetrizableSpace X] {s : Set X}
+
+/-- In a (pseudo)metrizable space, any sequentially compact set is compact. -/
 protected theorem IsSeqCompact.isCompact (hs : IsSeqCompact s) : IsCompact s :=
+  letI := pseudoMetrizableSpaceUniformity X
+  haveI := pseudoMetrizableSpaceUniformity_countably_generated X
   isCompact_iff_totallyBounded_isComplete.2 ⟨hs.totallyBounded, hs.isComplete⟩
 
-/-- A version of Bolzano-Weierstrass: in a uniform space with countably generated uniformity filter
-(e.g., in a metric space), a set is compact if and only if it is sequentially compact. -/
-protected theorem UniformSpace.isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
+/-- A version of **Bolzano-Weierstrass**: in a (pseudo)metrizable space, a set is compact if and
+only if it is sequentially compact. -/
+theorem isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 
-theorem UniformSpace.compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
-  simp only [← isCompact_univ_iff, seqCompactSpace_iff, UniformSpace.isCompact_iff_isSeqCompact]
+@[deprecated (since := "2025-12-23")]
+protected alias UniformSpace.isCompact_iff_isSeqCompact := isCompact_iff_isSeqCompact
 
-end UniformSpaceSeqCompact
+theorem compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
+  simp only [← isCompact_univ_iff, seqCompactSpace_iff, isCompact_iff_isSeqCompact]
+
+@[deprecated (since := "2025-12-23")]
+protected alias UniformSpace.compactSpace_iff_seqCompactSpace := compactSpace_iff_seqCompactSpace
+
+end MetrizableSpaceSeqCompact

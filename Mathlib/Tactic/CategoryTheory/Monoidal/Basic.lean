@@ -5,9 +5,9 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import Mathlib.Tactic.CategoryTheory.Coherence.Basic
-public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
-public meta import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.Coherence.Basic
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
 /-!
 # `monoidal` tactic

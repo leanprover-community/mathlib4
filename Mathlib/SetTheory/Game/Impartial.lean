@@ -3,7 +3,7 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.SetTheory.Game.Basic
 public import Mathlib.Tactic.NthRewrite
@@ -33,10 +33,13 @@ open scoped PGame
 
 namespace PGame
 
+set_option backward.privateInPublic true in
 private def ImpartialAux (G : PGame) : Prop :=
   (G ≈ -G) ∧ (∀ i, ImpartialAux (G.moveLeft i)) ∧ ∀ j, ImpartialAux (G.moveRight j)
 termination_by G
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- An impartial game is one that's equivalent to its negative, such that each left and right move
 is also impartial.
 

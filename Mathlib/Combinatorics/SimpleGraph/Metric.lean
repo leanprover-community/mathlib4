@@ -134,6 +134,14 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
   · exact le_antisymm (edist_le h.toWalk) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
+lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := by
+  by_cases huv : u = v
+  · simp [huv]
+  · simp only [huv, or_false]
+    have h : 0 < G.edist u v := edist_pos_of_ne huv
+    rw [(Order.one_le_iff_pos.mpr h).ge_iff_eq']
+    exact edist_eq_one_iff_adj
+
 lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := by
   rwa [ne_eq, ← reachable_bot.not, ← edist_ne_top_iff_reachable.not, not_not] at h
 
@@ -204,7 +212,7 @@ protected theorem Reachable.pos_dist_of_ne (h : G.Reachable u v) (hne : u ≠ v)
 protected theorem Reachable.one_lt_dist_of_ne_of_not_adj (h : G.Reachable u v) (hne : u ≠ v)
     (hnadj : ¬G.Adj u v) : 1 < G.dist u v :=
   Nat.lt_of_le_of_ne (h.pos_dist_of_ne hne) (by
-    by_contra! hc
+    by_contra hc
     obtain ⟨p, hp⟩ := Reachable.exists_walk_length_eq_dist h
     exact hnadj (Walk.exists_length_eq_one_iff.mp ⟨p, hc ▸ hp⟩))
 
@@ -280,6 +288,11 @@ theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
   have : G.dist u v ≤ G.dist u w + G.dist w v := huw.dist_triangle_left v
   lia
 
+@[deprecated Adj.diff_dist_adj (since := "2025-12-11"), nolint unusedArguments]
+theorem Connected.diff_dist_adj (_ : G.Connected) (hadj : G.Adj v w) :
+    G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
+  apply Adj.diff_dist_adj hadj
+
 theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
   classical
@@ -298,7 +311,7 @@ lemma Reachable.exists_path_of_dist (hr : G.Reachable u v) :
 
 lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
     ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
-  obtain ⟨p, h⟩ := hconn.exists_walk_length_eq_dist  u v
+  obtain ⟨p, h⟩ := hconn.exists_walk_length_eq_dist u v
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
 
 @[simp]

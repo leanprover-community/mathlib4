@@ -5,8 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Algebra.Group.Nat.Defs
-public meta import Mathlib.Tactic.ByContra
+public import Mathlib.Algebra.Group.Nat.Defs
+public meta import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Tactic.Push
 
 /-!
 # `lrat_proof` command
@@ -626,7 +627,7 @@ elab "lrat_proof " n:(ident <|> "example")
     let lrat ← unsafe evalTerm String (mkConst ``String) lrat
     let go := do
       fromLRAT cnf lrat name
-      addConstInfo n name
+      addTermInfo' n (← mkConstWithLevelParams name) (isBinder := true) |>.run'
     if n.1.isIdent then go else withoutModifyingEnv go
 
 lrat_proof example

@@ -150,7 +150,7 @@ theorem id_c_app (X : PresheafedSpace C) (U) :
   rw [id_c, map_id]
   rfl
 
-@[simp]
+@[simp, reassoc]
 theorem comp_base {X Y Z : PresheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).base = f.base ≫ g.base :=
   rfl

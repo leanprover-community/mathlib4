@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -187,8 +187,8 @@ variable (A B : CommRingCat.{u})
 @[simps! pt ι]
 def coproductCocone : BinaryCofan A B :=
   BinaryCofan.mk
-    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
-    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶ of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶ of (A ⊗[ℤ] B))
 
 @[simp]
 theorem coproductCocone_inl :
@@ -214,9 +214,9 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
     rw [Algebra.TensorProduct.liftEquiv_symm_apply_coe, Prod.mk.injEq]
     constructor
     · ext a
-      simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.left)]
+      simp [map_one, mul_one, ← hm (Discrete.mk WalkingPair.left)]
     · ext b
-      simp [map_one, ←hm (Discrete.mk WalkingPair.right)]
+      simp [map_one, ← hm (Discrete.mk WalkingPair.right)]
 
 /-- The limit cone of the tensor product `A ⊗[ℤ] B` in `CommRingCat`. -/
 def coproductColimitCocone : Limits.ColimitCocone (pair A B) :=
@@ -286,9 +286,9 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     ext x
     change m x = (BinaryFan.fst s x, BinaryFan.snd s x)
     have eq1 : (m ≫ (A.prodFan B).fst) x = (BinaryFan.fst s) x :=
-      congr_hom (h ⟨WalkingPair.left⟩) x
+      ConcreteCategory.congr_hom (h ⟨WalkingPair.left⟩) x
     have eq2 : (m ≫ (A.prodFan B).snd) x = (BinaryFan.snd s) x :=
-      congr_hom (h ⟨WalkingPair.right⟩) x
+      ConcreteCategory.congr_hom (h ⟨WalkingPair.right⟩) x
     rw [← eq1, ← eq2]
     simp [prodFan]
 

@@ -224,7 +224,7 @@ variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).ob
 /-- Auxiliary definition for `rightUnitor`. -/
 noncomputable def rightUnitor' :
     (tensorObj K (tensorUnit C c)).X ≅ K.X :=
-  GradedObject.Monoidal.tensorIso (Iso.refl _) ((tensorUnitIso C c).symm)  ≪≫
+  GradedObject.Monoidal.tensorIso (Iso.refl _) ((tensorUnitIso C c).symm) ≪≫
     GradedObject.Monoidal.rightUnitor K.X
 
 lemma rightUnitor'_inv (i : I) :

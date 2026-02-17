@@ -6,7 +6,6 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
-public import Mathlib.Analysis.LocallyConvex.StrongTopology
 
 /-!
 # Distributions
@@ -92,7 +91,7 @@ distribution is nothing more than a distribution taking values in the real vecto
 
 ### Order of distributions
 
-Based on established practice in the litterature, a natural way to express the order of a
+Based on established practice in the literature, a natural way to express the order of a
 distribution would be to introduce a predicate `Distribution.HasOrderAtMost` on the space of all
 distributions. Here though, we define a separate space `𝓓'^{n}(Ω, F)` whose elements are precisely
 distributions of order at most `n`.
@@ -180,8 +179,8 @@ section mapCLM
 /-- Any continuous linear map `A : F →L[ℝ] G` induces a continuous linear map
 `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, G)`. On locally integrable functions, this corresponds to applying `A`
 pointwise. -/
-def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
-  A.postcomp_uniformConvergenceCLM _
+noncomputable def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
+  A.postcompUniformConvergenceCLM _
 
 @[simp]
 lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :

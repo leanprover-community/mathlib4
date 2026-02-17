@@ -15,7 +15,7 @@ the same ideas, or similar results with a few minor differences. The file is div
 different general ideas.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 

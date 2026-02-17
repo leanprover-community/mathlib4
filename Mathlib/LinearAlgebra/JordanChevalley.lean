@@ -36,7 +36,7 @@ The proof given here uses Newton's method and is taken from Chambert-Loir's note
 
 -/
 
-@[expose] public section
+public section
 
 open Algebra Polynomial
 

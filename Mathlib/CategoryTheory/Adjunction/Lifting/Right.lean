@@ -103,7 +103,7 @@ To construct the right adjoint, we use the equalizer of `U' F η_X` with the com
 where the first morphism is `ι_U'FX`, the second is `U' F η_LU'FX` and the third is `U' F U δ_FX`.
 We will show that this equalizer exists and that it forms the object map for a right adjoint to `L`.
 -/
-def otherMap (X : B) : U'.obj (F.obj X) ⟶  U'.obj (F.obj (U.obj (F.obj X))) :=
+def otherMap (X : B) : U'.obj (F.obj X) ⟶ U'.obj (F.obj (U.obj (F.obj X))) :=
   adj₂.unit.app _ ≫ U'.map (F.map (adj₁.unit.app _ ≫ (U.map (adj₂.counit.app _))))
 
 /-- `(U'Fη_X, otherMap X)` is a coreflexive pair: in particular if `C` has coreflexive equalizers
@@ -211,7 +211,7 @@ variable [Category.{v₄} D]
     A → B
   U ↓   ↓ V
     C → D
-      R
+      L
 ```
 
 where `U` has a right adjoint, `A` has coreflexive equalizers and `V` has a right adjoint such that
@@ -234,7 +234,7 @@ lemma isLeftAdjoint_square_lift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (L : C
     A → B
   U ↓   ↓ V
     C → D
-      R
+      L
 ```
 
 where `U` has a right adjoint, `A` has reflexive equalizers and `V` is comonadic.

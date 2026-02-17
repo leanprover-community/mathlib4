@@ -161,7 +161,7 @@ theorem take_succ_cons {n : ℕ} {x : α} {s : Seq α} :
 theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
     (s.take k)[n]? = if n < k then s.get? n else none
   | n, 0, s => by simp [take]
-  | n, k+1, s => by
+  | n, k + 1, s => by
     rw [take]
     cases h : destruct s with
     | none =>
@@ -172,7 +172,7 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
         rw [destruct_eq_cons h]
         match n with
         | 0 => simp
-        | n+1 => simp [List.getElem?_cons_succ, getElem?_take]
+        | n + 1 => simp [List.getElem?_cons_succ, getElem?_take]
 
 theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     (h_get : s.get? m = some x) : x ∈ s.take n := by
@@ -457,7 +457,8 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
     | _, _, Or.inr ⟨a, s, S, rfl, rfl⟩ => by
       cases s
       · simp [join_cons_nil]
-      · simpa [join_cons_cons, join_cons_nil] using Or.inr ⟨_, _, S, rfl, rfl⟩
+      · simpa only [BisimO, join_cons_cons, destruct_cons, cons_append, true_and] using
+          Or.inr ⟨_, _, S, rfl, rfl⟩
 
 set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
@@ -742,7 +743,7 @@ theorem all_of_get {p : α → Prop} {s : Seq α} (h : ∀ n x, s.get? n = .some
   simp only [mem_iff_exists_get?]
   grind
 
-private lemma all_coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
+lemma all_coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
     (step : ∀ hd tl, motive (.cons hd tl) → motive tl) (n : ℕ) :
     motive (s.drop n) := by
   induction n with
@@ -923,7 +924,7 @@ theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
   by_cases ha : a.Terminates; swap
   · simp [length'_of_not_terminates ha]
   simp only [length'_of_terminates ha, length'_le_iff]
-  by_contra! hb
+  by_contra hb
   have hb_cons : b.drop (a.length ha) ≠ .nil := by
     intro hb'
     simp only [← length'_eq_zero_iff_nil, drop_length', tsub_eq_zero_iff_le, length'_le_iff] at hb'

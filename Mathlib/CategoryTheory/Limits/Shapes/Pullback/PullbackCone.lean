@@ -43,7 +43,7 @@ This file provides API for interacting with cones (resp. cocones) in the case of
 
 ## API
 We summarize the most important parts of the API for pullback cones here. The dual notions for
-pushout cones is also available in this file.
+pushout cones are also available in this file.
 
 Various ways of constructing pullback cones:
 * `PullbackCone.mk` constructs a term of `PullbackCone f g` given morphisms `fst` and `snd` such
@@ -59,6 +59,10 @@ Interaction with `IsLimit`:
   constructing the morphisms to the point of a limit `PullbackCone` from the universal property.
 * `PullbackCone.IsLimit.hom_ext` provides a convenient way to show that two morphisms to the point
   of a limit `PullbackCone` are equal.
+
+Interaction with `CommSq`:
+* `CommSq.cone` and `CommSq.cocone` provide the implicit (non-limiting) pullback cone and pushout
+  cocone associated with a commuting square
 
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
@@ -327,7 +331,7 @@ def mk {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) : Pu
   pt := W
   ι := { app := fun j => Option.casesOn j (f ≫ inl) fun j' => WalkingPair.casesOn j' inl inr
          naturality := by
-          rintro (⟨⟩|⟨⟨⟩⟩) (⟨⟩|⟨⟨⟩⟩) <;> intro f <;> cases f <;> dsimp <;> aesop }
+          rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) <;> intro f <;> cases f <;> dsimp <;> aesop }
 
 @[simp]
 theorem mk_ι_app_left {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) :
@@ -508,4 +512,42 @@ def PushoutCocone.isoMk {F : WalkingSpan ⥤ C} (t : Cocone F) :
   Cocones.ext (Iso.refl _) <| by
     rintro (_ | (_ | _)) <;> simp
 
-end CategoryTheory.Limits
+end Limits
+
+namespace CommSq
+open Limits
+variable {C : Type*} [Category* C]
+
+variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
+
+/-- The (not necessarily limiting) `PullbackCone h i` implicit in the statement
+that we have `CommSq f g h i`.
+-/
+def cone (s : CommSq f g h i) : PullbackCone h i :=
+  PullbackCone.mk _ _ s.w
+
+/-- The (not necessarily limiting) `PushoutCocone f g` implicit in the statement
+that we have `CommSq f g h i`.
+-/
+def cocone (s : CommSq f g h i) : PushoutCocone f g :=
+  PushoutCocone.mk _ _ s.w
+
+@[simp]
+theorem cone_fst (s : CommSq f g h i) : s.cone.fst = f :=
+  rfl
+
+@[simp]
+theorem cone_snd (s : CommSq f g h i) : s.cone.snd = g :=
+  rfl
+
+@[simp]
+theorem cocone_inl (s : CommSq f g h i) : s.cocone.inl = h :=
+  rfl
+
+@[simp]
+theorem cocone_inr (s : CommSq f g h i) : s.cocone.inr = i :=
+  rfl
+
+end CommSq
+
+end CategoryTheory

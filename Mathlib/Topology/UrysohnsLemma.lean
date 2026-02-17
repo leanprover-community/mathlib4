@@ -177,8 +177,6 @@ theorem approx_of_notMem_U (c : CU P) (n : ℕ) {x : X} (hx : x ∉ c.U) : c.app
     rw [ihn, ihn, midpoint_self]
     exacts [hx, fun hU => hx <| c.left_U_subset hU]
 
-@[deprecated (since := "2025-05-24")] alias approx_of_nmem_U := approx_of_notMem_U
-
 theorem approx_nonneg (c : CU P) (n : ℕ) (x : X) : 0 ≤ c.approx n x := by
   induction n generalizing c with
   | zero => exact indicator_nonneg (fun _ _ => zero_le_one) _
@@ -254,8 +252,6 @@ theorem disjoint_C_support_lim (c : CU P) : Disjoint c.C (Function.support c.lim
 
 theorem lim_of_notMem_U (c : CU P) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
   simp only [CU.lim, approx_of_notMem_U c _ h, ciSup_const]
-
-@[deprecated (since := "2025-05-24")] alias lim_of_nmem_U := lim_of_notMem_U
 
 theorem lim_eq_midpoint (c : CU P) (x : X) :
     c.lim x = midpoint ℝ (c.left.lim x) (c.right.lim x) := by
@@ -412,7 +408,7 @@ theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompact
   rcases exists_continuous_zero_one_of_isCompact hs isOpen_interior.isClosed_compl
     (disjoint_compl_right_iff_subset.mpr sk) with ⟨⟨f, hf⟩, hfs, hft, h'f⟩
   have A : t ⊆ (interior k)ᶜ := subset_compl_comm.mpr (interior_subset.trans kt)
-  refine ⟨⟨fun x ↦ 1 - f x, continuous_const.sub hf⟩, fun x hx ↦ by simpa using hfs hx,
+  refine ⟨⟨fun x ↦ 1 - f x, by fun_prop⟩, fun x hx ↦ by simpa using hfs hx,
     fun x hx ↦ by simpa [sub_eq_zero] using (hft (A hx)).symm, ?_, fun x ↦ ?_⟩
   · apply HasCompactSupport.intro' k_comp k_closed (fun x hx ↦ ?_)
     simp only [ContinuousMap.coe_mk, sub_eq_zero]

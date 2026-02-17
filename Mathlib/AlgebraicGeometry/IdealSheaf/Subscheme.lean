@@ -42,6 +42,7 @@ variable {X : Scheme.{u}}
 variable (I : IdealSheafData X)
 
 /-- `Spec (𝒪ₓ(U)/I(U))`, the object to be glued into the closed subscheme. -/
+noncomputable
 def glueDataObj (U : X.affineOpens) : Scheme :=
   Spec <| .of <| Γ(X, U) ⧸ I.ideal U
 
@@ -261,6 +262,7 @@ private lemma glueDataT'Aux_snd_ι (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓
       pullback.fst _ _ ≫ pullback.fst _ _ ≫ I.glueDataObjι U ≫ U.1.ι :=
   (pullback.lift_snd_assoc _ _ _ _).trans (IsOpenImmersion.lift_fac _ _ _)
 
+set_option backward.privateInPublic true in
 /-- (Implementation) The glue data for `𝒪ₓ/I`. -/
 @[simps]
 private noncomputable
@@ -313,6 +315,7 @@ def glueData : Scheme.GlueData where
         rw [pullback.condition_assoc, pullback.condition_assoc, X.homOfLE_ι]
   f_open i j := inferInstance
 
+set_option backward.privateInPublic true in
 /-- (Implementation) The map from `Spec(𝒪ₓ/I)` to `X`. See `IdealSheafData.subschemeι` instead. -/
 private noncomputable
 def gluedTo : I.glueData.glued ⟶ X :=
@@ -424,11 +427,14 @@ private instance : QuasiCompact I.gluedTo :=
   ⟨fun _ _ ↦ (Topology.IsClosedEmbedding.isProperMap
     ⟨I.gluedTo.isEmbedding, I.range_gluedTo ▸ I.support.isClosed⟩).isCompact_preimage⟩
 
+set_option backward.privateInPublic true in
 /-- (Implementation) The underlying space of `Spec(𝒪ₓ/I)` is homeomorphic to the support of `I`. -/
 private noncomputable
 def gluedHomeo : I.glueData.glued ≃ₜ I.support :=
   I.gluedTo.isEmbedding.toHomeomorph.trans (.setCongr I.range_gluedTo)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The subscheme associated to an ideal sheaf. -/
 noncomputable
 def subscheme : Scheme :=
@@ -436,6 +442,7 @@ def subscheme : Scheme :=
     (f := TopCat.ofHom (toContinuousMap I.gluedHomeo.symm))
     I.gluedHomeo.symm.isOpenEmbedding
 
+set_option backward.privateInPublic true in
 /-- (Implementation) The isomorphism between the subscheme and the glued scheme. -/
 private noncomputable
 def subschemeIso : I.subscheme ≅ I.glueData.glued :=
@@ -445,6 +452,8 @@ def subschemeIso : I.subscheme ≅ I.glueData.glued :=
   letI := IsOpenImmersion.isIso F
   asIso F
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The inclusion from the subscheme associated to an ideal sheaf. -/
 noncomputable
 def subschemeι : I.subscheme ⟶ X :=
@@ -477,6 +486,8 @@ private lemma opensRange_glueData_ι_subschemeIso_inv (U : X.affineOpens) :
   simp [Set.range_comp, I.range_glueData_ι, subschemeι_def, ← coe_homeoOfIso_symm,
     ← homeoOfIso_symm, ← Homeomorph.coe_symm_toEquiv, Equiv.image_symm_eq_preimage]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The subscheme associated to an ideal sheaf `I` is covered by `Spec(Γ(X, U)/I(U))`. -/
 noncomputable
 def subschemeCover : I.subscheme.AffineOpenCover where
@@ -643,6 +654,7 @@ lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
   refine (IdealSheafData.ideal_ofIdeals_le _ _).trans_eq
     (RingHom.ker_equiv_comp _ e.commRingCatIsoToRingEquiv).symm
 
+set_option backward.privateInPublic true in
 private noncomputable
 def Hom.toImageAux : X ⟶ f.image :=
   Cover.glueMorphisms ((Y.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top Y)).pullback₁ f)
@@ -653,6 +665,7 @@ def Hom.toImageAux : X ⟶ f.image :=
     simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc,
       ← pullback.condition, ← pullback.condition_assoc])
 
+set_option backward.privateInPublic true in
 private lemma Hom.toImageAux_spec :
     f.toImageAux ≫ f.imageι = f := by
   apply Cover.hom_ext ((Y.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top Y)).pullback₁ f)
@@ -660,6 +673,8 @@ private lemma Hom.toImageAux_spec :
   simp only [Hom.toImageAux, Cover.ι_glueMorphisms_assoc]
   simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc, pullback.condition]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The morphism from the domain to the scheme-theoretic image. -/
 noncomputable
 def Hom.toImage : X ⟶ f.image :=

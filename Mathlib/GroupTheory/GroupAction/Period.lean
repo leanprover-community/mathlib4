@@ -20,7 +20,7 @@ If such an `m` does not exist,
 then by convention `MulAction.period` and `AddAction.period` return 0.
 -/
 
-@[expose] public section
+public section
 
 namespace MulAction
 
