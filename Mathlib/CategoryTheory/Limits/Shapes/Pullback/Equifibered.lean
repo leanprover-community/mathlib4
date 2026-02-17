@@ -16,11 +16,11 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
 - `CategoryTheory.NatTrans.Equifibered`:
   A natural transformation `α : F ⟶ G` is equifibered if every commutative square of the following
   form is a pullback.
-```
-F(X) → F(Y)
- ↓      ↓
-G(X) → G(Y)
-```
+  ```
+  F(X) → F(Y)
+   ↓      ↓
+  G(X) → G(Y)
+  ```
 - `CategoryTheory.NatTrans.Coequifibered`: The dual notion.
 
 -/
