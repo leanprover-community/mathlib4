@@ -166,14 +166,10 @@ theorem le_of_forall_le (H : ∀ c, c ≤ a → c ≤ b) : a ≤ b := H _ le_rfl
 theorem forall_le_iff_le : (∀ ⦃c⦄, c ≤ a → c ≤ b) ↔ a ≤ b :=
   ⟨le_of_forall_le, fun h _ hca ↦ le_trans hca h⟩
 
-@[deprecated (since := "2025-07-27")] alias forall_le_iff_ge := forall_ge_iff_le
-
 /-- monotonicity of `≤` with respect to `→` -/
 @[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]
 theorem le_imp_le_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
   fun hab ↦ (h₁.trans hab).trans h₂
-
-@[deprecated (since := "2025-07-31")] alias le_implies_le_of_le_of_le := le_imp_le_of_le_of_le
 
 /-- monotonicity of `<` with respect to `→` -/
 @[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]

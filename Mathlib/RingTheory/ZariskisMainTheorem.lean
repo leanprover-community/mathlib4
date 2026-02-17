@@ -722,4 +722,38 @@ lemma QuasiFiniteAt.of_weaklyQuasiFiniteAt
     Algebra.QuasiFiniteAt R p :=
   ZariskisMainProperty.quasiFiniteAt _ (.of_finiteType_of_weaklyQuasiFiniteAt _)
 
+lemma QuasiFiniteAt.of_quasiFiniteAt_residueField
+    [FiniteType R S] (p : Ideal R) (q : Ideal S) [q.IsPrime]
+    [p.IsPrime] [q.LiesOver p]
+    (Q : Ideal (p.Fiber S)) [Q.IsPrime]
+    (hQ : Q.comap Algebra.TensorProduct.includeRight.toRingHom = q)
+    [Algebra.QuasiFiniteAt p.ResidueField Q] :
+    Algebra.QuasiFiniteAt R q :=
+  have : Algebra.WeaklyQuasiFiniteAt R q := .of_quasiFiniteAt_residueField p q Q hQ
+  .of_weaklyQuasiFiniteAt _
+
+lemma QuasiFiniteAt.of_isOpen_singleton_fiber
+    [FiniteType R S] (q : PrimeSpectrum S)
+    (H : IsOpen (X := .comap (algebraMap R S) ⁻¹' {q.comap (algebraMap R S)}) {⟨q, rfl⟩}) :
+    Algebra.QuasiFiniteAt R q.asIdeal := by
+  let p := q.comap (algebraMap R S)
+  let e := PrimeSpectrum.preimageHomeomorphFiber R S p
+  suffices Algebra.QuasiFiniteAt p.asIdeal.ResidueField (e ⟨q, rfl⟩).asIdeal from
+    .of_quasiFiniteAt_residueField _ q.asIdeal (e ⟨q, rfl⟩).asIdeal
+      congr($(e.symm_apply_apply ⟨q, rfl⟩).1.asIdeal)
+  refine .of_isOpen_singleton _ ?_
+  rwa [← Set.image_singleton, e.isOpen_image]
+
+lemma quasiFiniteAt_iff_isOpen_singleton_fiber
+    [FiniteType R S] (q : PrimeSpectrum S) :
+    Algebra.QuasiFiniteAt R q.asIdeal ↔
+      IsOpen (X := .comap (algebraMap R S) ⁻¹' {q.comap (algebraMap R S)}) {⟨q, rfl⟩} := by
+  refine ⟨fun H ↦ ?_, .of_isOpen_singleton_fiber q⟩
+  let p := q.comap (algebraMap R S)
+  let e := PrimeSpectrum.preimageHomeomorphFiber R S p
+  rw [← e.isOpen_image, Set.image_singleton]
+  suffices Algebra.QuasiFiniteAt p.asIdeal.ResidueField (e ⟨q, rfl⟩).asIdeal from
+    (QuasiFiniteAt.isClopen_singleton (R := p.asIdeal.ResidueField) _).isOpen
+  exact .baseChange q.asIdeal _ congr($(e.symm_apply_apply ⟨q, rfl⟩).1.asIdeal).symm
+
 end Algebra
