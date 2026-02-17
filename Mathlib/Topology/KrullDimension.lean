@@ -78,13 +78,6 @@ variable {α : Type*} [TopologicalSpace α]
 
 open TopologicalSpace Topology Order Set IrreducibleCloseds
 
-@[simp]
-lemma coe_mapOrderIso {U X : Type*} [TopologicalSpace U]
-    [TopologicalSpace X] {f : U → X} (hf : IsOpenEmbedding f) (Z) :
-    (mapOrderIso f hf Z : IrreducibleCloseds X) =
-      map f hf.continuous Z :=
-  rfl
-
 lemma Topology.IsOpenEmbedding.coheight_map {U X : Type*} [TopologicalSpace U]
     [TopologicalSpace X] {f : U → X} (hf : IsOpenEmbedding f)
     (Z : TopologicalSpace.IrreducibleCloseds U) :

@@ -519,11 +519,18 @@ def comap (f : β → α) (h : IsOpenEmbedding f) (V : IrreducibleCloseds α) (h
     IsPreirreducible.preimage (IsIrreducible.isPreirreducible V.2) h⟩
   isClosed' := V.3.preimage h.continuous
 
-
+/--
+Variant of map which packages the information that sets `V` in the image satisfy
+`(f ⁻¹' V).Nonempty`.
+-/
 def mapSubtype (f : β → α) (hf : Continuous f) (T : IrreducibleCloseds β) :
     {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} :=
   ⟨map f hf T, map_preimage_nonemtpy f hf T⟩
 
+/--
+Variant of comap which takes the information `(f ⁻¹' V).Nonempty` as a subtype rather than an
+extra argument as in `comap`.
+-/
 def comapSubtype (f : β → α) (h : IsOpenEmbedding f)
     (V : {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty}) :=
   comap f h V.1 V.2
