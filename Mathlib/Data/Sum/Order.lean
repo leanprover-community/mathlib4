@@ -189,8 +189,8 @@ theorem elim_mono {δ : Type*} [Preorder δ]
   generalize h x₁ = hx₁ at ⊢ hhx
   generalize h x₂ = hx₂ at ⊢ hhx
   cases hhx with
-  | inl hhx => exact hf (Prod.GCongr.mk_le_mk hx hhx)
-  | inr hhx => exact hg (Prod.GCongr.mk_le_mk hx hhx)
+  | inl hhx => exact hf (Prod.mk_le_mk.mpr ⟨hx, hhx⟩)
+  | inr hhx => exact hg (Prod.mk_le_mk.mpr ⟨hx, hhx⟩)
 
 theorem swap_mono : Monotone (Sum.swap : α ⊕ β → β ⊕ α) := by
   intro _ _ hx
