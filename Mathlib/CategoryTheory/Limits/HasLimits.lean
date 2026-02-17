@@ -258,21 +258,21 @@ morphisms from a specified object `W` to the limit object,
 and cones with cone point `W`.
 -/
 def limit.homIso (F : J ⥤ C) [HasLimit F] (W : C) :
-    ULift.{u₁} (W ⟶ limit F : Type v) ≅ F.cones.obj (op W) :=
+    TypeCat.of (ULift.{u₁} (W ⟶ limit F : Type v)) ≅ F.cones.obj (op W) :=
   (limit.isLimit F).homIso W
 
 @[simp]
-theorem limit.homIso_hom (F : J ⥤ C) [HasLimit F] {W : C} (f : ULift (W ⟶ limit F)) :
-    (limit.homIso F W).hom f = (const J).map f.down ≫ (limit.cone F).π :=
-  (limit.isLimit F).homIso_hom f
+theorem limit.homIso_hom (F : J ⥤ C) [HasLimit F] {W : C} :
+    (limit.homIso F W).hom = TypeCat.ofHom ⟨fun f ↦ (const J).map f.down ≫ (limit.cone F).π⟩ :=
+  (limit.isLimit F).homIso_hom
 
 /-- The isomorphism (in `Type`) between
 morphisms from a specified object `W` to the limit object,
 and an explicit componentwise description of cones with cone point `W`.
 -/
 def limit.homIso' (F : J ⥤ C) [HasLimit F] (W : C) :
-    ULift.{u₁} (W ⟶ limit F : Type v) ≅
-      { p : ∀ j, W ⟶ F.obj j // ∀ {j j' : J} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
+    TypeCat.of (ULift.{u₁} (W ⟶ limit F : Type v)) ≅
+      TypeCat.of { p : ∀ j, W ⟶ F.obj j // ∀ {j j' : J} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
   (limit.isLimit F).homIso' W
 
 theorem limit.lift_extend {F : J ⥤ C} [HasLimit F] (c : Cone F) {X : C} (f : X ⟶ c.pt) :
@@ -789,21 +789,22 @@ morphisms from the colimit object to a specified object `W`,
 and cocones with cone point `W`.
 -/
 def colimit.homIso (F : J ⥤ C) [HasColimit F] (W : C) :
-    ULift.{u₁} (colimit F ⟶ W : Type v) ≅ F.cocones.obj W :=
+    TypeCat.of (ULift.{u₁} (colimit F ⟶ W : Type v)) ≅ F.cocones.obj W :=
   (colimit.isColimit F).homIso W
 
 @[simp]
-theorem colimit.homIso_hom (F : J ⥤ C) [HasColimit F] {W : C} (f : ULift (colimit F ⟶ W)) :
-    (colimit.homIso F W).hom f = (colimit.cocone F).ι ≫ (const J).map f.down :=
-  (colimit.isColimit F).homIso_hom f
+theorem colimit.homIso_hom (F : J ⥤ C) [HasColimit F] {W : C} :
+    (colimit.homIso F W).hom =
+      TypeCat.ofHom ⟨fun f ↦ (colimit.cocone F).ι ≫ (const J).map f.down⟩ :=
+  (colimit.isColimit F).homIso_hom
 
 /-- The isomorphism (in `Type`) between
 morphisms from the colimit object to a specified object `W`,
 and an explicit componentwise description of cocones with cone point `W`.
 -/
 def colimit.homIso' (F : J ⥤ C) [HasColimit F] (W : C) :
-    ULift.{u₁} (colimit F ⟶ W : Type v) ≅
-      { p : ∀ j, F.obj j ⟶ W // ∀ {j j'} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
+    TypeCat.of (ULift.{u₁} (colimit F ⟶ W : Type v)) ≅
+      TypeCat.of { p : ∀ j, F.obj j ⟶ W // ∀ {j j'} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
   (colimit.isColimit F).homIso' W
 
 theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} (f : c.pt ⟶ X) :

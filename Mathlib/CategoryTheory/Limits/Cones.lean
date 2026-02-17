@@ -88,7 +88,7 @@ variable (J C)
 /-- Functorially associated to each functor `J ⥤ C`, we have the `C`-presheaf consisting of
 cones with a given cone point.
 -/
-@[simps! obj_map map_app]
+@[simps! obj_obj obj_map map_app]
 def cones : (J ⥤ C) ⥤ Cᵒᵖ ⥤ TypeCat.{max u₁ v₃} where
   obj := Functor.cones
   map f := whiskerLeft (const J).op (yoneda.map f)
@@ -96,7 +96,7 @@ def cones : (J ⥤ C) ⥤ Cᵒᵖ ⥤ TypeCat.{max u₁ v₃} where
 /-- Contravariantly associated to each functor `J ⥤ C`, we have the `C`-copresheaf consisting of
 cocones with a given cocone point.
 -/
-@[simps! obj_map map_app]
+@[simps! obj_obj obj_map map_app]
 def cocones : (J ⥤ C)ᵒᵖ ⥤ C ⥤ TypeCat.{max u₁ v₃} where
   obj F := Functor.cocones (unop F)
   map f := whiskerLeft (const J) (coyoneda.map f)

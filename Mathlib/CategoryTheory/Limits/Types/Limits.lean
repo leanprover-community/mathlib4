@@ -21,32 +21,33 @@ universe u' v u w
 
 namespace CategoryTheory.Limits.Types
 
+open ConcreteCategory
+
 section limit_characterization
 
-variable {J : Type v} [Category.{w} J] {F : J ⥤ Type u}
+variable {J : Type v} [Category.{w} J] {F : J ⥤ TypeCat.{u}}
 
 /-- Given a section of a functor F into `Type*`,
   construct a cone over F with `PUnit` as the cone point. -/
 def coneOfSection {s} (hs : s ∈ F.sections) : Cone F where
-  pt := PUnit
-  π :=
-  { app := fun j _ ↦ s j,
-    naturality := fun i j f ↦ by ext; exact (hs f).symm }
+  pt := .of PUnit
+  π := { app j := TypeCat.ofHom ⟨fun _ ↦ s j⟩, naturality _ _ f := by ext; exact (hs f).symm }
 
 /-- Given a cone over a functor F into `Type*` and an element in the cone point,
   construct a section of F. -/
 def sectionOfCone (c : Cone F) (x : c.pt) : F.sections :=
-  ⟨fun j ↦ c.π.app j x, fun f ↦ congr_fun (c.π.naturality f).symm x⟩
+  ⟨fun j ↦ c.π.app j x, fun f ↦ congr_hom (c.π.naturality f).symm x⟩
 
 theorem isLimit_iff (c : Cone F) :
     Nonempty (IsLimit c) ↔ ∀ s ∈ F.sections, ∃! x : c.pt, ∀ j, c.π.app j x = s j := by
   refine ⟨fun ⟨t⟩ s hs ↦ ?_, fun h ↦ ⟨?_⟩⟩
   · let cs := coneOfSection hs
-    exact ⟨t.lift cs ⟨⟩, fun j ↦ congr_fun (t.fac cs j) ⟨⟩,
-      fun x hx ↦ congr_fun (t.uniq cs (fun _ ↦ x) fun j ↦ funext fun _ ↦ hx j) ⟨⟩⟩
-  · choose x hx using fun c y ↦ h _ (sectionOfCone c y).2
-    exact ⟨x, fun c j ↦ funext fun y ↦ (hx c y).1 j,
-      fun c f hf ↦ funext fun y ↦ (hx c y).2 (f y) (fun j ↦ congr_fun (hf j) y)⟩
+    exact ⟨t.lift cs ⟨⟩, fun j ↦ congr_hom (t.fac cs j) ⟨⟩,
+      fun x hx ↦ congr_hom (t.uniq cs (TypeCat.ofHom ⟨fun _ ↦ x⟩) fun j ↦ by ext; exact hx j) ⟨⟩⟩
+  · have := fun c y ↦ h _ (sectionOfCone c y).2
+    choose x hx using fun c y ↦ h _ (sectionOfCone c y).2
+    exact ⟨fun d ↦ TypeCat.ofHom ⟨x d⟩, fun c j ↦ by ext y; exact (hx c y).1 j,
+      fun c f hf ↦ by ext y; exact (hx c y).2 (f y) (fun j ↦ congr_hom (hf j) y)⟩
 
 theorem isLimit_iff_bijective_sectionOfCone (c : Cone F) :
     Nonempty (IsLimit c) ↔ (Types.sectionOfCone c).Bijective := by
@@ -59,8 +60,9 @@ noncomputable def isLimitEquivSections {c : Cone F} (t : IsLimit c) :
     c.pt ≃ F.sections where
   toFun := sectionOfCone c
   invFun s := t.lift (coneOfSection s.2) ⟨⟩
-  left_inv x := (congr_fun (t.uniq (coneOfSection _) (fun _ ↦ x) fun _ ↦ rfl) ⟨⟩).symm
-  right_inv s := Subtype.ext (funext fun j ↦ congr_fun (t.fac (coneOfSection s.2) j) ⟨⟩)
+  left_inv x := (congr_hom (t.uniq (coneOfSection _)
+    (TypeCat.ofHom ⟨fun _ ↦ x⟩) fun _ ↦ rfl) ⟨⟩).symm
+  right_inv s := Subtype.ext (funext fun j ↦ congr_hom (t.fac (coneOfSection s.2) j) ⟨⟩)
 
 @[simp]
 theorem isLimitEquivSections_apply {c : Cone F} (t : IsLimit c) (j : J)
@@ -83,7 +85,7 @@ The first, in the `CategoryTheory.Limits.Types.Small` namespace,
 assumes `Small.{u} J` and constructs `J`-indexed limits in `Type u`.
 
 The second, in the `CategoryTheory.Limits.Types.TypeMax` namespace
-constructs limits for functors `F : J ⥤ Type max v u`, for `J : Type v`.
+constructs limits for functors `F : J ⥤ TypeCat.{max v u}`, for `J : Type v`.
 This construction is slightly nicer, as the limit is definitionally just `F.sections`,
 rather than `Shrink F.sections`, which makes an arbitrary choice of `u`-small representative.
 
@@ -93,7 +95,7 @@ but for now they are useful glue for the later parts of the library.
 
 namespace Small
 
-variable (F : J ⥤ Type u)
+variable (F : J ⥤ TypeCat.{u})
 
 section
 
@@ -104,12 +106,9 @@ implemented as flat sections of a pi type
 -/
 @[simps]
 noncomputable def limitCone : Cone F where
-  pt := Shrink F.sections
+  pt := TypeCat.of (Shrink F.sections)
   π :=
-    { app := fun j u => ((equivShrink F.sections).symm u).val j
-      naturality := fun j j' f => by
-        funext x
-        simp }
+    { app j := TypeCat.ofHom ⟨fun u => ((equivShrink F.sections).symm u).val j⟩ }
 
 @[ext]
 lemma limitCone_pt_ext {x y : (limitCone F).pt}
@@ -119,18 +118,18 @@ lemma limitCone_pt_ext {x y : (limitCone F).pt}
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
 noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) where
-  lift s v := equivShrink F.sections
+  lift s := TypeCat.ofHom ⟨fun v ↦ equivShrink F.sections
     { val := fun j => s.π.app j v
-      property := fun f => congr_fun (Cone.w s f) _ }
+      property := fun f => congr_hom (Cone.w s f) _ }⟩
   uniq := fun _ _ w => by
     ext x j
-    simpa using congr_fun (w j) x
+    simpa using congr_hom (w j) x
 
 end
 
 end Small
 
-theorem hasLimit_iff_small_sections (F : J ⥤ Type u) : HasLimit F ↔ Small.{u} F.sections :=
+theorem hasLimit_iff_small_sections (F : J ⥤ TypeCat.{u}) : HasLimit F ↔ Small.{u} F.sections :=
   ⟨fun _ => .mk ⟨_, ⟨(Equiv.ofBijective _
     ((isLimit_iff_bijective_sectionOfCone (limit.cone F)).mp ⟨limit.isLimit _⟩)).symm⟩⟩,
    fun _ => ⟨_, Small.limitConeIsLimit F⟩⟩
@@ -143,25 +142,21 @@ section TypeMax
 implemented as flat sections of a pi type
 -/
 @[simps]
-noncomputable def limitCone (F : J ⥤ Type max v u) : Cone F where
-  pt := F.sections
-  π :=
-    { app := fun j u => u.val j
-      naturality := fun j j' f => by
-        funext x
-        simp }
+noncomputable def limitCone (F : J ⥤ TypeCat.{max v u}) : Cone F where
+  pt := TypeCat.of F.sections
+  π := { app j := TypeCat.ofHom ⟨fun u => u.val j⟩ }
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
-noncomputable def limitConeIsLimit (F : J ⥤ Type max v u) : IsLimit (limitCone F) where
-  lift s v :=
+noncomputable def limitConeIsLimit (F : J ⥤ TypeCat.{max v u}) : IsLimit (limitCone F) where
+  lift s := TypeCat.ofHom ⟨fun v ↦
     { val := fun j => s.π.app j v
-      property := fun f => congr_fun (Cone.w s f) _ }
+      property := fun f => congr_hom (Cone.w s f) _ }⟩
   uniq := fun _ _ w => by
-    funext x
+    ext x
     apply Subtype.ext
     funext j
-    exact congr_fun (w j) x
+    exact congr_hom (w j) x
 
 end TypeMax
 
@@ -176,7 +171,7 @@ section UnivLE
 
 open UnivLE
 
-instance hasLimit [Small.{u} J] (F : J ⥤ Type u) : HasLimit F :=
+instance hasLimit [Small.{u} J] (F : J ⥤ TypeCat.{u}) : HasLimit F :=
   (hasLimit_iff_small_sections F).mpr inferInstance
 
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J (Type u) where
@@ -189,7 +184,7 @@ More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small
 instance (priority := 1300) hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} (Type u) where
   has_limits_of_shape _ := { }
 
-variable (F : J ⥤ Type u) [HasLimit F]
+variable (F : J ⥤ TypeCat.{u}) [HasLimit F]
 
 /-- The equivalence between the abstract limit of `F` in `Type max v u`
 and the "concrete" definition as the sections of `F`.
@@ -257,7 +252,7 @@ theorem Limit.lift_π_apply (s : Cone F) (j : J) (x : s.pt) :
   congr_fun (limit.lift_π s j) x
 
 @[simp]
-theorem Limit.map_π_apply {F G : J ⥤ Type u} [HasLimit F] [HasLimit G] (α : F ⟶ G) (j : J)
+theorem Limit.map_π_apply {F G : J ⥤ TypeCat.{u}} [HasLimit F] [HasLimit G] (α : F ⟶ G) (j : J)
     (x : limit F) : limit.π G j (limMap α x) = α.app j (limit.π F j x) :=
   congr_fun (limMap_π α j) x
 

@@ -240,24 +240,14 @@ def toOverYonedaCompRestrictedYoneda (A : Cᵒᵖ ⥤ TypeCat.{v}) :
 /-! ### Construction of the backward functor
 `((CostructuredArrow yoneda A)ᵒᵖ ⥤ TypeCat.{v}) ⥤ Over A` -/
 
-/-- This lemma will be key to establishing good simp normal forms. -/
-@[elementwise]
 lemma map_mkPrecomp_eqToHom {F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ TypeCat.{v}} {X Y : C} {f : X ⟶ Y}
-    {g g' : yoneda.obj Y ⟶ A} (h : g = g') :
-    F.map (eqToHom (by rw [h])) ≫ F.map (CostructuredArrow.mkPrecomp g f).op =
-      TypeCat.ofHom ⟨fun x ↦ F.map (eqToHom (by rw [h]))
-        (F.map (CostructuredArrow.mkPrecomp g' f).op x)⟩ := by
+    {g g' : yoneda.obj Y ⟶ A} (h : g = g')
+    {x : F.obj (op (CostructuredArrow.mk g'))} :
+    F.map (CostructuredArrow.mkPrecomp g f).op (F.map (eqToHom (by rw [h])) x) =
+      F.map (eqToHom (by rw [h])) (F.map (CostructuredArrow.mkPrecomp g' f).op x) := by
   cat_disch
 
-attribute [local simp] map_mkPrecomp_eqToHom map_mkPrecomp_eqToHom_apply
-
--- lemma map_mkPrecomp_eqToHom {F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} {X Y : C} {f : X ⟶ Y}
---     {g g' : yoneda.obj Y ⟶ A} (h : g = g') {x : F.obj (op (CostructuredArrow.mk g'))} :
---     F.map (CostructuredArrow.mkPrecomp g f).op (F.map (eqToHom (by rw [h])) x) =
---       F.map (eqToHom (by rw [h])) (F.map (CostructuredArrow.mkPrecomp g' f).op x) := by
---   cat_disch
-
--- attribute [local simp] map_mkPrecomp_eqToHom
+attribute [local simp] map_mkPrecomp_eqToHom
 
 /--
 To give an object of `Over A`, we will in particular need a presheaf `Cᵒᵖ ⥤ TypeCat.{v}`. This is
@@ -537,7 +527,7 @@ lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f 
   simp only [OverArrows.map₂_val, yonedaCollectionPresheaf_obj, yonedaCollectionPresheaf_map,
     Quiver.Hom.unop_op, TypeCat.ofHom_hom, Fun.as_apply, YonedaCollection.map₂_snd,
     Functor.map_comp, counitForward_val_snd, op_unop, comp_apply, eqToHom_map_comp_apply]
-  erw [map_mkPrecomp_eqToHom_apply (h := by simp)]
+  erw [map_mkPrecomp_eqToHom (h := by simp)]
   simp [this]
   rfl
 

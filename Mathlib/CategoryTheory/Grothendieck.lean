@@ -367,7 +367,7 @@ def functor {E : Cat.{v, u}} : (E ⥤ Cat.{v, u}) ⥤ Over (T := Cat.{v, u}) E w
     simp [Grothendieck.map_comp_eq α β]
     rfl
 
-variable (G : C ⥤ Type w)
+variable (G : C ⥤ TypeCat.{w})
 
 /-- Auxiliary definition for `grothendieckTypeToCat`, to speed up elaboration. -/
 @[simps!]
