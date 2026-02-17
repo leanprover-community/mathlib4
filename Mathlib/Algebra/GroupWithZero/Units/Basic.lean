@@ -148,6 +148,111 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
       exact not_isUnit_zero,
     IsUnit.ringInverse⟩
 
+/-- Class expressing the fact that a type has an inverse which is equal to zero on non-invertible
+elements. -/
+class LawfulInv (M₀ : Type*) [MonoidWithZero M₀] [Inv M₀] where
+  inv_unit (u : M₀ˣ) : (u : M₀)⁻¹ = (u⁻¹ : M₀ˣ)
+  inv_of_not_isUnit (x : M₀) (h : ¬IsUnit x) : x⁻¹ = 0
+
+export LawfulInv (inv_unit inv_of_not_isUnit)
+
+grind_pattern inv_of_not_isUnit => IsUnit x, x⁻¹
+
+namespace IsUnit
+
+variable [Inv M₀] [LawfulInv M₀]
+
+theorem inv_of_isUnit {x : M₀} (h : IsUnit x) : x⁻¹ = ((h.unit⁻¹ : M₀ˣ) : M₀) := by
+  rw [← inv_unit]; simp
+
+theorem mul_inv_cancel₀ (x : M₀) (h : IsUnit x) : x * x⁻¹ = 1 := by
+  rcases h with ⟨u, rfl⟩
+  rw [inv_unit, Units.mul_inv]
+
+theorem inv_mul_cancel₀ (x : M₀) (h : IsUnit x) : x⁻¹ * x = 1 := by
+  rcases h with ⟨u, rfl⟩
+  rw [inv_unit, Units.inv_mul]
+
+@[grind =]
+theorem _root_.isUnit_iff_mul_inv_cancel (x : M₀) : IsUnit x ↔ x * x⁻¹ = 1 := by
+  refine ⟨mul_inv_cancel₀ _, ?_⟩
+  by_cases hzero : NeZero (1 : M₀)
+  · contrapose
+    intro h
+    simp [inv_of_not_isUnit _ h]
+  · replace hzero : (0 : M₀) = 1 := by rw [not_neZero] at hzero; exact hzero.symm
+    exact fun _ => ⟨1, eq_of_zero_eq_one hzero _ _⟩
+
+@[grind =]
+theorem _root_.isUnit_iff_inv_mul_cancel (x : M₀) : IsUnit x ↔ x⁻¹ * x = 1 := by
+  refine ⟨inv_mul_cancel₀ _, ?_⟩
+  by_cases hzero : NeZero (1 : M₀)
+  · contrapose
+    intro h
+    simp [inv_of_not_isUnit _ h]
+  · replace hzero : (0 : M₀) = 1 := by rw [not_neZero] at hzero; exact hzero.symm
+    exact fun _ => ⟨1, eq_of_zero_eq_one hzero _ _⟩
+
+theorem mul_inv_cancel_right₀ (x y : M₀) (h : IsUnit x) : y * x * x⁻¹ = y := by grind
+
+theorem inv_mul_cancel_right₀ (x y : M₀) (h : IsUnit x) : y * x⁻¹ * x = y := by grind
+
+theorem mul_inv_cancel_left₀ (x y : M₀) (h : IsUnit x) : x * (x⁻¹ * y) = y := by grind
+
+theorem inv_mul_cancel_left₀ (x y : M₀) (h : IsUnit x) : x⁻¹ * (x * y) = y := by grind
+
+theorem inv_mul_eq_iff_eq_mul₀ (x y z : M₀) (h : IsUnit x) : x⁻¹ * y = z ↔ y = x * z :=
+  ⟨fun h1 => by rw [← h1, mul_inv_cancel_left₀ _ _ h],
+  fun h1 => by rw [h1, inv_mul_cancel_left₀ _ _ h]⟩
+
+theorem eq_mul_inv_iff_mul_eq₀ (x y z : M₀) (h : IsUnit z) : x = y * z⁻¹ ↔ x * z = y := by grind
+
+theorem inv₀ {a : M₀} : IsUnit a → IsUnit a⁻¹
+  | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (inv_unit u).symm⟩
+
+@[simp, grind =]
+theorem _root_.isUnit_inv_iff {a : M₀} : IsUnit a⁻¹ ↔ IsUnit a :=
+  ⟨fun h => by
+    cases subsingleton_or_nontrivial M₀
+    · convert h
+    · contrapose h
+      rw [inv_of_not_isUnit _ h]
+      exact not_isUnit_zero,
+    inv₀⟩
+
+end IsUnit
+
+namespace Ring
+
+variable (M₀) [Inv M₀] [LawfulInv M₀]
+
+@[simp, grind =]
+theorem inv_one : (1 : M₀)⁻¹ = 1 := inv_unit 1
+
+@[simp, grind =]
+theorem inv_zero : (0 : M₀)⁻¹ = 0 := by
+  nontriviality
+  exact inv_of_not_isUnit _ not_isUnit_zero
+
+section ofLawful
+
+open Classical in
+/-- Inverse that can be defined on any monoid with zero: `x⁻¹` is equal to the inverse of `x`
+whenever `x` is invertible, and zero otherwise. This can either be used as a local instance in a
+proof, or to define an inverse on a particular type. -/
+noncomputable def invOfLawful (M₀' : Type*) [MonoidWithZero M₀'] : Inv M₀' where
+  inv x := if h : IsUnit x then ((h.unit⁻¹ : M₀'ˣ) : M₀') else 0
+
+attribute [local instance] invOfLawful
+
+theorem lawfulInv_invOfLawful (M₀' : Type*) [MonoidWithZero M₀'] : LawfulInv M₀' where
+  inv_unit x := by simp [invOfLawful]
+  inv_of_not_isUnit x hx := by simp [invOfLawful, hx]
+
+end ofLawful
+
+end Ring
+
 namespace Units
 
 variable [GroupWithZero G₀]
@@ -379,6 +484,15 @@ theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
 @[simp]
 theorem Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
   funext Ring.inverse_eq_inv
+
+instance : LawfulInv G₀ where
+  inv_unit a := by simp
+  inv_of_not_isUnit a ha := by
+    simp only [inv_eq_zero]
+    by_contra ha'
+    have h₁ : a * a⁻¹ = 1 := (mul_inv_eq_one₀ ha').mpr rfl
+    have h₂ : a⁻¹ * a = 1 := (inv_mul_eq_one₀ ha').mpr rfl
+    grind [isUnit_iff_exists]
 
 end GroupWithZero
 

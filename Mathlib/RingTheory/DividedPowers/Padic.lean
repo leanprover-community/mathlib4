@@ -91,7 +91,7 @@ private lemma dpow'_norm_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) {x : ℤ_[p]}
   unfold dpow'
   by_cases hx0 : x = 0
   · rw [hx0]
-    simp [inverse_eq_inv', coe_zero, ne_eq, hn, not_false_eq_true, zero_pow, mul_zero,
+    simp [coe_zero, ne_eq, hn, not_false_eq_true, zero_pow, mul_zero,
       norm_zero, inv_nonneg, cast_nonneg]
   · have hlt : (padicValNat p n.factorial : ℤ) < n := by
       exact_mod_cast padicValNat_factorial_lt_of_ne_zero p hn
@@ -147,7 +147,7 @@ noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := 
     exact Nat.Prime.ne_zero hp.elim
   · intro n x hx
     exact ⟨⟨dpow' p n x, dpow'_int p n hx⟩, fun hn ↦ dpow'_mem p hn hx, by
-      simp [dpow', inverse_eq_inv', Coe.ringHom_apply, RatAlgebra.dpow_apply,
+      simp [dpow', Coe.ringHom_apply, RatAlgebra.dpow_apply,
         Submodule.mem_top, ↓reduceIte]⟩
 
 open Function
@@ -161,7 +161,7 @@ private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
       (Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
     have heq : Coe.ringHom ⟨dpow' p n x, dpow'_int p n hx⟩ =
         inverse (n ! : ℚ_[p]) * Coe.ringHom x ^ n := by
-      simp [dpow', inverse_eq_inv', Coe.ringHom_apply]
+      simp [dpow', Coe.ringHom_apply]
     simpa only [← hinj.eq_iff, (Exists.choose_spec (_ : ∃ a, ∃ _, Coe.ringHom a = _)).2,
       RatAlgebra.dpow_apply, Submodule.mem_top] using heq.symm
   · rfl
