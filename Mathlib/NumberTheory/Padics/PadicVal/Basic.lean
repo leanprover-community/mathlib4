@@ -213,6 +213,7 @@ theorem padicValNat_self [Fact p.Prime] : padicValNat p p = 1 := by
   rw [padicValNat_def (@Fact.out p.Prime).ne_zero]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_le_padicValNat_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0) (div : p ∣ n) :
     1 ≤ padicValNat p n := by
   rwa [← WithTop.coe_le_coe, ENat.some_eq_coe, padicValNat_eq_emultiplicity hn,

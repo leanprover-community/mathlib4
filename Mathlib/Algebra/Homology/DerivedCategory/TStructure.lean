@@ -28,6 +28,7 @@ namespace DerivedCategory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical t-structure on `DerivedCategory C`. -/
 noncomputable def TStructure.t : TStructure (DerivedCategory C) where
   le n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyLE n

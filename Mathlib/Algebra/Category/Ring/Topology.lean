@@ -145,6 +145,7 @@ instance [IsTopologicalRing R] [T1Space R] [CompactSpace R] :
 
 open Limits
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Hom(B ⊗[A] C, R)` has the subspace topology from `Hom(B, R) × Hom(C, R)`. -/
 lemma isEmbedding_pushout [IsTopologicalRing R] (φ : A ⟶ B) (ψ : A ⟶ C) :
     IsEmbedding fun f : pushout φ ψ ⟶ R ↦ (pushout.inl φ ψ ≫ f, pushout.inr φ ψ ≫ f) := by

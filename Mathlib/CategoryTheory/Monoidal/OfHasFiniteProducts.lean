@@ -98,31 +98,37 @@ theorem associator_inv (X Y Z : C) :
       prod.lift (prod.lift prod.fst (prod.snd ≫ prod.fst)) (prod.snd ≫ prod.snd) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_hom_fst (since := "2025-10-19")]
 theorem associator_hom_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ prod.fst = prod.fst ≫ prod.fst := by simp [associator_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_hom_snd_fst (since := "2025-10-19")]
 theorem associator_hom_snd_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ prod.snd ≫ prod.fst = prod.fst ≫ prod.snd := by simp [associator_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_hom_snd_snd (since := "2025-10-19")]
 theorem associator_hom_snd_snd (X Y Z : C) :
     (α_ X Y Z).hom ≫ prod.snd ≫ prod.snd = prod.snd := by simp [associator_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_inv_fst_fst (since := "2025-10-19")]
 theorem associator_inv_fst_fst (X Y Z : C) :
     (α_ X Y Z).inv ≫ prod.fst ≫ prod.fst = prod.fst := by simp [associator_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_inv_fst_snd (since := "2025-10-19")]
 theorem associator_inv_fst_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ prod.fst ≫ prod.snd = prod.snd ≫ prod.fst := by simp [associator_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_inv_snd (since := "2025-10-19")]
 theorem associator_inv_snd (X Y Z : C) :
@@ -237,6 +243,7 @@ attribute [local instance] monoidalOfHasFiniteCoproducts
 
 open MonoidalCategory
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal structure coming from finite coproducts is symmetric.
 -/
 @[simps]

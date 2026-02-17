@@ -85,6 +85,7 @@ lemma ιMultiDual_apply_nondiag {I : Type*} [LinearOrder I] (b : Basis I R M)
   rw [h, powersetCard.ofFinEmbEquiv_symm_apply, ← powersetCard.mem_coe_iff]
   exact Finset.orderEmbOfFin_mem t.val t.prop j
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), then the family
 `exteriorPower.ιMulti R n b` of the `n`-fold exterior products of its elements is linearly
 independent in the `n`th exterior power of `M`. -/
@@ -168,6 +169,7 @@ lemma finrank_eq [Module.Free R M] [Module.Finite R M] :
 
 /-! Results that only hold over a field. -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `v` is a linearly independent family of vectors (indexed by a linearly ordered type),
 then the family of its `n`-fold exterior products is also linearly independent. -/
 lemma ιMulti_family_linearIndependent_field {I : Type*} [LinearOrder I] {v : I → E}

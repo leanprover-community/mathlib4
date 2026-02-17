@@ -127,6 +127,7 @@ alias ⟨_, _root_.AddSubgroup.zmultiples_le_of_mem⟩ := AddSubgroup.zmultiples
 
 attribute [to_additive existing] zpowers_le_of_mem
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem zpowers_eq_bot {g : G} : zpowers g = ⊥ ↔ g = 1 := by rw [eq_bot_iff, zpowers_le, mem_bot]
 

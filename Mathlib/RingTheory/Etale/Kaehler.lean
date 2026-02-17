@@ -136,6 +136,7 @@ def tensorCotangentSpace
       ext a
       simp; rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation)
 If `J ≃ Q ⊗ₚ I` (e.g. when `T = Q ⊗ₚ S` and `P → Q` is flat), then `T ⊗ₛ I/I² ≃ J/J²`.
 This is the inverse. -/
@@ -271,6 +272,7 @@ end Extension
 
 variable {S}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- let `p` be a submonoid of an `R`-algebra `S`. Then `Sₚ ⊗ H¹(L_{S/R}) ≃ H¹(L_{Sₚ/R})`. -/
 noncomputable
 def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
@@ -335,6 +337,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
     rw [this]
     exact IsLocalizedModule.of_linearEquiv _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tensorH1CotangentOfIsLocalization_toLinearMap
     (M : Submonoid S) [IsLocalization M T] :
     (tensorH1CotangentOfIsLocalization R T M).toLinearMap =

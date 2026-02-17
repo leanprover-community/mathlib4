@@ -93,6 +93,7 @@ instance : Module A (IntertwiningMap ρ σ) :=
   fast_instance%
   Function.Injective.module A (coeFnAddMonoidHom ρ σ) DFunLike.coe_injective (coe_smul ρ σ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An intertwining map is the same thing as a linear map over the group ring. -/
 def equivLinearMapAsModule :
     IntertwiningMap ρ σ ≃ₗ[A] ρ.asModule →ₗ[A[G]] σ.asModule where

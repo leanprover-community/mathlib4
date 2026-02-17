@@ -285,6 +285,7 @@ def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a multilinear map `f` on `n` variables (parameterized by `Fin n`) and a subset `s` of `k`
 of these variables, one gets a new multilinear map on `Fin k` by varying these variables, and fixing
 the other ones equal to a given value `z`. It is denoted by `f.restr s hk z`, where `hk` is a

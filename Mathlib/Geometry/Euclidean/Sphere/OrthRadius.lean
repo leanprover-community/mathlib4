@@ -63,6 +63,7 @@ lemma mem_orthRadius_iff_inner_right {s : Sphere P} {p x : P} :
   rw [mem_orthRadius_iff_inner_left, ← neg_vsub_eq_vsub_rev, inner_neg_left]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma orthRadius_le_orthRadius_iff {s : Sphere P} {p q : P} :
     s.orthRadius p ≤ s.orthRadius q ↔ p = q ∨ q = s.center := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩

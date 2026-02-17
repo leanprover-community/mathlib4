@@ -337,6 +337,7 @@ variable {𝕜}
 theorem re_inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma re_inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by
   simp [sq_pos_iff]
 
@@ -690,6 +691,7 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_of_ne_zero_of_neg_mul {x : F} {r
     mul_assoc, abs_of_neg hr, neg_mul, div_neg_eq_neg_div, div_self]
   exact mul_ne_zero hr.ne (mul_self_ne_zero.2 (norm_ne_zero_iff.2 hx))
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 theorem norm_inner_eq_norm_tfae (x y : E) :
     List.TFAE [‖⟪x, y⟫‖ = ‖x‖ * ‖y‖,
@@ -794,6 +796,7 @@ theorem real_inner_div_norm_mul_norm_eq_one_iff (x y : F) :
   · rintro ⟨hx, ⟨r, ⟨hr, rfl⟩⟩⟩
     exact real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul hx hr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inner product of two vectors, divided by the product of their
 norms, has value -1 if and only if they are nonzero and one is
 a negative multiple of the other. -/

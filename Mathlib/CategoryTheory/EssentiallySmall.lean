@@ -169,6 +169,7 @@ noncomputable instance : Category.{w} (ShrinkHoms C) where
   id X := equivShrink _ (𝟙 (fromShrinkHoms X))
   comp f g := equivShrink _ ((equivShrink _).symm f ≫ (equivShrink _).symm g)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `ShrinkHoms.equivalence`. -/
 @[simps]
 noncomputable def functor : C ⥤ ShrinkHoms C where
@@ -181,6 +182,7 @@ noncomputable def inverse : ShrinkHoms C ⥤ C where
   obj X := fromShrinkHoms X
   map {X Y} f := (equivShrink (fromShrinkHoms X ⟶ fromShrinkHoms Y)).symm f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The categorical equivalence between `C` and `ShrinkHoms C`, when `C` is locally small.
 -/
 @[simps]

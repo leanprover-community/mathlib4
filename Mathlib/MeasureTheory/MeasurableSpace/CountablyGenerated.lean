@@ -348,6 +348,7 @@ lemma generateFrom_memPartition_le_succ (t : ℕ → Set α) (n : ℕ) :
     generateFrom (memPartition t n) ≤ generateFrom (memPartition t (n + 1)) :=
   generateFrom_le (fun _ hs ↦ measurableSet_succ_memPartition t n hs)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ) (s : Set α) :
     MeasurableSet[generateFrom (memPartition t n)] s
       ↔ ∃ S : Finset (Set α), ↑S ⊆ memPartition t n ∧ s = ⋃₀ S := by

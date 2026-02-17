@@ -232,6 +232,7 @@ lemma preservesLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesLimitsOf
     PreservesLimitsOfSize.{w, w'} G where
   preservesLimitsOfShape := preservesLimitsOfShape_of_natIso h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Transfer preservation of limits along an equivalence in the shape. -/
 lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J' F where
@@ -291,6 +292,7 @@ lemma preservesColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesColimi
     PreservesColimitsOfSize.{w, w'} G where
   preservesColimitsOfShape {_J} _𝒥₁ := preservesColimitsOfShape_of_natIso h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Transfer preservation of colimits along an equivalence in the shape. -/
 lemma preservesColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesColimitsOfShape J F] : PreservesColimitsOfShape J' F where

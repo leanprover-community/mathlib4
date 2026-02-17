@@ -126,6 +126,7 @@ lemma double {B : Fin 6 → ℕ} {i : Fin 6}
       · grind [swap_apply_right, single_eq_same, single_succ]
       · rw [swap_apply_of_ne_of_ne hk' hk'', single_eq_of_ne hk', this, single_eq_of_ne hk'']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `double` as many times as possible, emptying $B_i$ and doubling $B_{i+1}$ that many times. -/
 lemma doubles {B : Fin 6 → ℕ} {i : Fin 6} (rB : Reachable B) (hi : i < 4) (zB : B (i + 2) = 0) :
     Reachable (update (B - single i (B i)) (i + 1) (B (i + 1) * 2 ^ B i)) := by
@@ -144,6 +145,7 @@ lemma doubles {B : Fin 6 → ℕ} {i : Fin 6} (rB : Reachable B) (hi : i < 4) (z
       · simp_rw [single_eq_of_ne hk]
 termination_by B i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Empty $B_i$ and set $B_{i+1} = 2^{B_i}$, assuming $B_{i+1} = B_{i+2} = 0$. -/
 lemma exp {B : Fin 6 → ℕ} {i : Fin 6}
     (rB : Reachable B) (hi : i < 4) (pB : 0 < B i) (zB : B (i + 1) = 0) (zB' : B (i + 2) = 0) :

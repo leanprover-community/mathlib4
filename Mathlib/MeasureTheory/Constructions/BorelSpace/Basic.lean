@@ -658,6 +658,7 @@ lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [Topol
 instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
   MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.isInducing
 
+set_option backward.isDefEq.respectTransparency false in
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]

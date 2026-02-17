@@ -159,6 +159,7 @@ lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
     simp +unfoldPartialApp [Finset.piecewise]
   simp_rw [changeOriginSeriesTerm_apply, eq_comm]; apply this
 
+set_option backward.isDefEq.respectTransparency false in
 theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ≥0∞) < p.radius) :
     Summable fun s : Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
       ‖p (s.1 + s.2.1)‖₊ * r ^ s.2.1 * r' ^ s.1 := by

@@ -628,6 +628,7 @@ lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (f
 @[simp] lemma diagSet_subset_fromRel (hr : Symmetric r) : diagSet ⊆ fromRel hr ↔ Reflexive r := by
   simp [Set.subset_def, Sym2.forall, Reflexive]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma disjoint_diagSet_fromRel (hr : Symmetric r) :
     Disjoint diagSet (fromRel hr) ↔ Std.Irrefl r := by
   refine .trans ?_ ⟨(⟨·⟩), (·.irrefl)⟩

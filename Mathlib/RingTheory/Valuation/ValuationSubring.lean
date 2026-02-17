@@ -649,6 +649,7 @@ def principalUnitGroupOrderEmbedding : ValuationSubring K ↪o (Subgroup Kˣ)ᵒ
   inj' := principalUnitGroup_injective
   map_rel_iff' {_A _B} := principalUnitGroup_le_principalUnitGroup
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
     (x : Kˣ) ∈ A.principalUnitGroup ↔
       A.unitGroupMulEquiv x ∈ (Units.map (IsLocalRing.residue A).toMonoidHom).ker := by
@@ -689,6 +690,7 @@ theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
       Ideal.Quotient.mk _ (A.unitGroupMulEquiv x : A) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ker_unitGroupToResidueFieldUnits :
     A.unitGroupToResidueFieldUnits.ker = A.principalUnitGroup.comap A.unitGroup.subtype := by
   ext
@@ -709,6 +711,7 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
   QuotientGroup.liftEquiv _ A.surjective_unitGroupToResidueFieldUnits
     A.ker_unitGroupToResidueFieldUnits.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
     (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp
         (QuotientGroup.mk' (A.principalUnitGroup.subgroupOf A.unitGroup)) =

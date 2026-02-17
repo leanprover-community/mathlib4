@@ -62,6 +62,7 @@ protected def repr ⦃α⦄ : Sigma F α → Sigma.P F α
     let x := MvQPF.repr f
     ⟨⟨a, x.1⟩, x.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : MvQPF (Sigma F) where
   P := Sigma.P F
   abs {α} := @Sigma.abs _ _ F _ α

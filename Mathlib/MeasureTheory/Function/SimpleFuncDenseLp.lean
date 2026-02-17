@@ -456,6 +456,7 @@ protected theorem isBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp.simple
 
 attribute [local instance] simpleFunc.isBoundedSMul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
 @[instance_reducible]
@@ -716,6 +717,7 @@ variable {p μ G}
 
 variable [PartialOrder G]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeFn_nonneg (f : Lp.simpleFunc G p μ) : (0 : α → G) ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← Subtype.coe_le_coe, Lp.coeFn_nonneg, AddSubmonoid.coe_zero]
 

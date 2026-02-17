@@ -362,6 +362,7 @@ noncomputable instance instCStarModuleComplex : CStarModule ℂ E where
   norm_eq_sqrt_norm_inner_self {x} := by
     simpa only [← inner_self_re_eq_norm] using norm_eq_sqrt_re_inner x
 
+set_option backward.isDefEq.respectTransparency false in
 -- Ensures that the two ways to obtain `CStarModule ℂᵐᵒᵖ ℂ` are definitionally equal.
 example : instCStarModule (A := ℂ) = instCStarModuleComplex := by with_reducible_and_instances rfl
 

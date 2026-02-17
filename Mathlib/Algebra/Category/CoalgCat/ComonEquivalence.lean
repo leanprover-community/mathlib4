@@ -126,6 +126,7 @@ attribute [local instance] instMonoidalCategoryAux
 
 open MonoidalCategory ModuleCat.MonoidalCategory
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tensorObj_comul (K L : CoalgCat R) :
     Coalgebra.comul (R := R) (A := (K ⊗ L : CoalgCat R))
       = (TensorProduct.tensorTensorTensorComm R K K L L).toLinearMap
@@ -157,6 +158,7 @@ theorem rightUnitor_hom_toLinearMap :
 
 open TensorProduct
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj :
     Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
@@ -166,6 +168,7 @@ theorem comul_tensorObj :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj_tensorObj_right :
     Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗
@@ -177,6 +180,7 @@ theorem comul_tensorObj_tensorObj_right :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj_tensorObj_left :
     Coalgebra.comul (R := R)
@@ -189,6 +193,7 @@ theorem comul_tensorObj_tensorObj_left :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem counit_tensorObj :
     Coalgebra.counit (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
       = Coalgebra.counit (A := M ⊗[R] N) := by
@@ -196,6 +201,7 @@ theorem counit_tensorObj :
   simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem counit_tensorObj_tensorObj_right :
     Coalgebra.counit (R := R)
       (A := (CoalgCat.of R M ⊗ (CoalgCat.of R N ⊗ CoalgCat.of R P) : CoalgCat R))
@@ -204,6 +210,7 @@ theorem counit_tensorObj_tensorObj_right :
   simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem counit_tensorObj_tensorObj_left :
     Coalgebra.counit (R := R)
       (A := ((CoalgCat.of R M ⊗ CoalgCat.of R N) ⊗ CoalgCat.of R P : CoalgCat R))

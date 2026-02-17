@@ -290,6 +290,7 @@ theorem bind₂_monomial_one (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ)
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     (bind₁ f φ).vars ⊆ φ.vars.biUnion fun i => (f i).vars := by
   calc (bind₁ f φ).vars

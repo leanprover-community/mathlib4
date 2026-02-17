@@ -134,6 +134,7 @@ theorem mapComp_id_right {a b : B} (f : a ⟶ b) :
   simp only [Category.assoc]
   rw [← F.map₂_rightUnitor]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity oplax functor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᵒᵖᴸ B where
@@ -165,6 +166,7 @@ lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶
     F.mapComp' f g _ rfl = F.mapComp f g := by
   simp [mapComp']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of oplax functors. -/
 --@[simps]
 def comp (F : B ⥤ᵒᵖᴸ C) (G : C ⥤ᵒᵖᴸ D) : B ⥤ᵒᵖᴸ D where

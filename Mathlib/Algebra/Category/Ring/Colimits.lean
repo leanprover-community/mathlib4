@@ -266,6 +266,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
       rfl
     map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b => rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
@@ -564,6 +565,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
       rfl
     map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b => rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc := fun s ↦ descMorphism F s

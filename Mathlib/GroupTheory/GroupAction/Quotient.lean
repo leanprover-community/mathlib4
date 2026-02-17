@@ -338,6 +338,7 @@ instance finite_quotient_of_finite_quotient_of_finite_quotient {H : Subgroup α}
   rw [(equivSubgroupOrbits β H).finite_iff]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a group acting freely and transitively, an equivalence between the orbits under the
 action of a subgroup and the quotient group. -/
 @[to_additive /-- Given an additive group acting freely and transitively, an equivalence between the

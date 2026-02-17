@@ -169,6 +169,7 @@ theorem isSheaf_comp_uliftFunctor_iff : IsSheaf J (P ⋙ uliftFunctor.{w'}) ↔ 
 theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) := by
   rwa [isSheaf_comp_uliftFunctor_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve
 is the same as a co-cone over the sieve. Constructing a co-cone from a compatible family works for

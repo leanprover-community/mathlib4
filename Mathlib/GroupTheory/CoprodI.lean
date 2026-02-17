@@ -125,6 +125,7 @@ theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m
 
 variable {N : Type*} [Monoid N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- See note [partially-applied ext lemmas]. -/
 @[ext 1100] -- This needs a higher `ext` priority
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
@@ -177,6 +178,7 @@ theorem of_leftInverse [DecidableEq ι] (i : ι) :
 theorem of_injective (i : ι) : Function.Injective (of : M i →* _) := by
   classical exact (of_leftInverse i).injective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mrange_eq_iSup {N} [Monoid N] (f : ∀ i, M i →* N) :
     MonoidHom.mrange (lift f) = ⨆ i, MonoidHom.mrange (f i) := by
   rw [lift, Equiv.coe_fn_mk, Con.lift_range, FreeMonoid.mrange_lift,

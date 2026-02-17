@@ -153,6 +153,7 @@ def coeEmbedding (m : Multiset α) : m ↪ α × ℕ where
     rintro ⟨⟩
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Another way to coerce a `Multiset` to a type is to go through `m.toEnumFinset` and coerce
 that `Finset` to a type. -/
 @[simps]
@@ -298,6 +299,7 @@ lemma coe_consEquiv_of_eq_of_eq {v : α} (x : v ::ₘ m) (hx : ↑x = v) (hx2 : 
 lemma coe_consEquiv_of_eq_of_lt {v : α} (x : v ::ₘ m) (hx : ↑x = v) (hx2 : x.2 < m.count v) :
     consEquiv x = some ⟨x.1, ⟨x.2, by simpa [hx]⟩⟩ := by simp [consEquiv, hx, hx2.ne]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 There is some equivalence between `m` and `m.map f` which respects `f`.
 -/

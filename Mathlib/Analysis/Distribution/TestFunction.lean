@@ -316,6 +316,7 @@ noncomputable def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
 
 @[deprecated (since := "2025-12-10")] alias coe_ofSupportedInLM := coe_ofSupportedInCLM
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
 `𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
 precomposition with the inclusion `ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
@@ -373,6 +374,7 @@ theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTow
     Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
   fun f g ↦ by simp [toBoundedContinuousFunctionCLM]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : T3Space 𝓓^{n}(Ω, F) :=
   suffices T2Space 𝓓^{n}(Ω, F) from inferInstance
   .of_injective_continuous (injective_toBoundedContinuousFunctionCLM ℝ)

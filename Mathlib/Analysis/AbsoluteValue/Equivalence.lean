@@ -351,6 +351,7 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
         rcases eq_or_ne x 0 with rfl | h₀ <;>
         aesop (add simp [h.isNontrivial_congr])⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (WithAbs v)}
     (hU : U ∈ 𝓝 0) : WithAbs.equivWithAbs v w '' U ∈ 𝓝 0 := by
   rw [Metric.mem_nhds_iff] at hU ⊢
@@ -375,6 +376,7 @@ theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
     rw [← RingEquiv.coe_toEquiv_symm, WithAbs.equivWithAbs_symm] at hss
     exact Filter.mem_of_superset (h.symm.equivWithAbs_image_mem_nhds_zero hs) hss
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isEquiv_iff_isHomeomorph (v w : AbsoluteValue F ℝ) :
     v.IsEquiv w ↔ IsHomeomorph (WithAbs.equivWithAbs v w) := by
   rw [isHomeomorph_iff_isEmbedding_surjective]

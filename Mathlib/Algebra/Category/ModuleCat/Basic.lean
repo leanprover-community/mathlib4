@@ -482,6 +482,7 @@ variable (M N : ModuleCat.{v} R)
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The scalar multiplication on an object of `ModuleCat R` considered as
 a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrpCat).obj M) where
@@ -550,6 +551,7 @@ instance : SMul R (mkOfSMul' φ) := ⟨fun r (x : A) => (show A ⟶ A from φ r)
 lemma mkOfSMul'_smul (r : R) (x : mkOfSMul' φ) :
     r • x = (show A ⟶ A from φ r) x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module R (mkOfSMul' φ) where
   smul_zero _ := map_zero (N := A) _
   smul_add _ _ _ := map_add (N := A) _ _ _

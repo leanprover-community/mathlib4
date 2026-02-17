@@ -100,6 +100,7 @@ def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
   is_hausdorff := ConnectedComponents.t2
   prop := ConnectedComponents.totallyDisconnectedSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of Profinite
 spaces in compact Hausdorff spaces.
 -/
@@ -222,6 +223,7 @@ instance hasColimits : Limits.HasColimits Profinite :=
 instance forget_preservesLimits : Limits.PreservesLimits (forget Profinite) := by
   apply Limits.comp_preservesLimits Profinite.toTopCat (forget TopCat)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · dsimp [Function.Surjective]

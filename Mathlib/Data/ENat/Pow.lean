@@ -126,6 +126,7 @@ lemma epow_add : x ^ (y + z) = x ^ y * x ^ z := by
       exact one_le_iff_ne_zero.1 (one_le_epow (one_le_iff_ne_zero.1 x_2.le))
     simp only [← Nat.cast_add, epow_natCast, pow_add x]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_epow : (x * y) ^ z = x ^ z * y ^ z := by
   induction z
   · rcases lt_trichotomy x 1 with x_0 | rfl | x_2

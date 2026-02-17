@@ -141,6 +141,7 @@ def liftedLimitMapsToOriginal {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c 
     (t : IsLimit c) : F.mapCone (liftLimit t) ≅ c :=
   (CreatesLimit.lifts c t).validLift
 
+set_option backward.isDefEq.respectTransparency false in
 lemma liftedLimitMapsToOriginal_inv_map_π
     {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (j : J) :
       (liftedLimitMapsToOriginal t).inv.hom ≫ F.map ((liftLimit t).π.app j) = c.π.app j := by
@@ -148,6 +149,7 @@ lemma liftedLimitMapsToOriginal_inv_map_π
     from (by simp), ← Category.assoc, ← Cone.category_comp_hom]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma liftedLimitMapsToOriginal_hom_π
     {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (j : J) :
       (liftedLimitMapsToOriginal t).hom.hom ≫ c.π.app j = F.map ((liftLimit t).π.app j) := by
@@ -310,6 +312,7 @@ def createsLimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
     CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfLift' (limit.isLimit _) c i
 
+set_option backward.isDefEq.respectTransparency false in
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
 -- so the constructed limits may not be ideal, definitionally.

@@ -387,6 +387,7 @@ lemma cfcₙ_add : cfcₙ (fun x ↦ f x + g x) a = cfcₙ f a + cfcₙ g a := b
     congr
   · simp [cfcₙ_apply_of_not_predicate a ha]
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
@@ -678,6 +679,7 @@ variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [S
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [NonUnitalContinuousFunctionalCalculus R A p] [NonnegSpectrumClass R A]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cfcₙHom_le_iff {a : A} (ha : p a) {f g : C(σₙ R a, R)₀} :
     cfcₙHom ha f ≤ cfcₙHom ha g ↔ f ≤ g := by
   rw [← sub_nonneg, ← map_sub, cfcₙHom_nonneg_iff, sub_nonneg]
@@ -786,6 +788,7 @@ variable [CompleteSpace R]
 -- gives access to the `ContinuousFunctionalCalculus.compactSpace_spectrum` instance
 open scoped ContinuousFunctionalCalculus
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isClosedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
     IsClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
   let f : C(spectrum R a, σₙ R a) :=

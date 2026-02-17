@@ -150,12 +150,14 @@ theorem tprod_cons (i : δ) (l : List δ) (μ : ∀ i, Measure (X i)) :
     Measure.tprod (i :: l) μ = (μ i).prod (Measure.tprod l μ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinite (μ i)] :
     SigmaFinite (Measure.tprod l μ) := by
   induction l with
   | nil => rw [tprod_nil]; infer_instance
   | cons i l ih => rw [tprod_cons]; exact @prod.instSigmaFinite _ _ _ _ _ _ _ ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinite (μ i)]
     (s : ∀ i, Set (X i)) :
     Measure.tprod l μ (Set.tprod l s) = (l.map fun i => (μ i) (s i)).prod := by
@@ -617,6 +619,7 @@ instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [�
     IsInvInvariant (volume : Measure (∀ i, G i)) :=
   pi.isInvInvariant _
 
+set_option backward.isDefEq.respectTransparency false in
 instance pi.isOpenPosMeasure [∀ i, TopologicalSpace (α i)] [∀ i, IsOpenPosMeasure (μ i)] :
     IsOpenPosMeasure (MeasureTheory.Measure.pi μ) := by
   constructor

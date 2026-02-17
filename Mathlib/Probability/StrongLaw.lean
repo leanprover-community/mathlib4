@@ -310,6 +310,7 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
   filter_upwards [Ici_mem_atTop K] with N hN
   exact sum_prob_mem_Ioc_le hint hnonneg hN
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 ≤ X) (K : ℕ) :
     ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * 𝔼[truncation X j ^ 2] ≤ 2 * 𝔼[X] := by
   set Y := fun n : ℕ => truncation X n
@@ -590,6 +591,7 @@ theorem strong_law_aux7 :
 
 end StrongLawNonneg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Strong law of large numbers**, almost sure version: if `X n` is a sequence of independent
 identically distributed integrable real-valued random variables, then `∑ i ∈ range n, X i / n`
 converges almost surely to `𝔼[X 0]`. We give here the strong version, due to Etemadi, that only
@@ -690,6 +692,7 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
 
 variable [BorelSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Preliminary lemma for the strong law of large numbers for vector-valued random variables,
 assuming measurability in addition to integrability. This is weakened to ae measurability in
 the full version `ProbabilityTheory.strong_law_ae`. -/

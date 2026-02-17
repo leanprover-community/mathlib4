@@ -58,15 +58,18 @@ namespace FiniteElement
 noncomputable instance : CommRing (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsDomain (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ValuationRing (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
 instance : LinearOrder (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsStrictOrderedRing (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
@@ -173,6 +176,7 @@ instance ordConnected_preimage_mk :
     ∀ x, Set.OrdConnected (mk ⁻¹' ({x} : Set (FiniteResidueField K))) :=
   ordConnected_preimage_mk'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mk_eq_mk {x y : FiniteElement K} : mk x = mk y ↔ 0 < ArchimedeanClass.mk (x.1 - y.1) := by
   apply Quotient.eq.trans
   rw [Submodule.quotientRel_def, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
@@ -418,6 +422,7 @@ theorem stdPart_nonneg {x : K} (h : 0 ≤ x) : 0 ≤ stdPart x := by
     exact map_nonneg _ h
   · rw [stdPart_of_mk_ne_zero hx]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stdPart_nonpos {x : K} (h : x ≤ 0) : stdPart x ≤ 0 := by
   simpa using stdPart_nonneg (neg_nonneg.2 h)
 

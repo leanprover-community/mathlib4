@@ -865,10 +865,12 @@ variable [Group α] {s t : Set α} {a b : α}
 /-! Note that `Set` is not a `Group` because `s / s ≠ 1` in general. -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem one_mem_div_iff : (1 : α) ∈ s / t ↔ ¬Disjoint s t := by
   simp [not_disjoint_iff_nonempty_inter, mem_div, div_eq_one, Set.Nonempty]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma one_mem_inv_mul_iff : (1 : α) ∈ t⁻¹ * s ↔ ¬Disjoint s t := by
   aesop (add simp [not_disjoint_iff_nonempty_inter, mem_mul, mul_eq_one_iff_eq_inv, Set.Nonempty])

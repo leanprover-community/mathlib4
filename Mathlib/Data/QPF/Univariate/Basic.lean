@@ -352,6 +352,7 @@ instance [Inhabited q.P.A] : Inhabited (Cofix F) :=
 def Cofix.corec {α : Type _} (g : α → F α) (x : α) : Cofix F :=
   Quot.mk _ (corecF g x)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- destructor for type defined by `Cofix` -/
 def Cofix.dest : Cofix F → F (Cofix F) :=
   Quot.lift (fun x => Quot.mk Mcongr <$> abs (PFunctor.M.dest x))

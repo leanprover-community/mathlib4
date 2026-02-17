@@ -523,6 +523,7 @@ when `A` and `B` are merely `CommRing`s, by treating both as `ℤ`-algebras.
 -/
 example [CommRing A] [CommRing B] : CommRing (A ⊗[ℤ] B) := by infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R A B) in
 lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
     [Algebra R A] [Algebra R B] :

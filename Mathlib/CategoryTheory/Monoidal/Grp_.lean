@@ -452,6 +452,7 @@ instance instCartesianMonoidalCategory : CartesianMonoidalCategory (Grp C) where
 @[deprecated (since := "2025-12-18")] alias fst_hom := fst_hom_hom
 @[deprecated (since := "2025-12-18")] alias snd_hom := snd_hom_hom
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance : (forget₂Mon C).Monoidal where
   ε := 𝟙 _
@@ -540,11 +541,13 @@ theorem comp_mapGrp_mul (A : Grp C) :
     μ[((F ⋙ G).mapGrp.obj A).X] = LaxMonoidal.μ (F ⋙ G) _ _ ≫ (F ⋙ G).map μ[A.X] :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity functor is also the identity on group objects. -/
 @[simps!]
 def mapGrpIdIso : mapGrp (𝟭 C) ≅ 𝟭 (Grp C) :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition functor is also the composition on group objects. -/
 @[simps!]
 def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
@@ -580,6 +583,7 @@ abbrev FullyFaithful.grpObj (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :
 
 @[deprecated (since := "2025-09-13")] alias FullyFaithful.grp_Class := FullyFaithful.grpObj
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
 /-- The essential image of a full and faithful functor between cartesian-monoidal categories is the
 same on group objects as on objects. -/
@@ -626,6 +630,7 @@ open Functor
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to group objects. -/
 @[simps] def mapGrp : F.mapGrp ⊣ G.mapGrp where
   unit := mapGrpIdIso.inv ≫ mapGrpNatTrans a.unit ≫ mapGrpCompIso.hom
@@ -636,6 +641,7 @@ end Adjunction
 namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
 @[simps] def mapGrp : Grp C ≌ Grp D where
   functor := e.functor.mapGrp

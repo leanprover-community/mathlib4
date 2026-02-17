@@ -440,6 +440,7 @@ theorem mul_sum {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoi
     {f : G → k → S} : b * s.sum f = s.sum fun a c ↦ b * f a c := by
   simp only [sum, Finsupp.sum, Finset.mul_sum]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Analogue of `Finsupp.sum_ite_eq'` for `SkewMonoidAlgebra`. -/
 @[simp]
 theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoidAlgebra k G)
@@ -879,6 +880,7 @@ theorem coeff_mul_antidiagonal_of_finset (f g : SkewMonoidAlgebra k G) (x : G)
         simp only [Finset.mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
         by_cases h1 : f.coeff p.1 = 0 <;> simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_mul_antidiagonal_finsum (f g : SkewMonoidAlgebra k G) (x : G) :
     (f * g).coeff x = ∑ᶠ p ∈ {p : G × G | p.1 * p.2 = x}, f.coeff p.1 * p.1 • g.coeff p.2 := by
   have : ({p : G × G | p.1 * p.2 = x}

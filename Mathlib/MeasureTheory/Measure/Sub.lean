@@ -48,6 +48,7 @@ theorem sub_eq_zero_of_le (h : μ ≤ ν) : μ - ν = 0 :=
 theorem sub_le : μ - ν ≤ μ :=
   sub_le_of_le_add <| Measure.le_add_right le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sub_top : μ - ⊤ = 0 :=
   sub_eq_zero_of_le le_top
@@ -107,6 +108,7 @@ protected lemma add_sub_cancel [IsFiniteMeasure ν] : μ + ν - ν = μ := by
   rw [sub_apply hs (Measure.le_add_left (le_refl _)), add_apply,
     ENNReal.add_sub_cancel_right (measure_ne_top ν s)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     (μ - ν).restrict s = μ.restrict s - ν.restrict s := by
   repeat rw [sub_def]

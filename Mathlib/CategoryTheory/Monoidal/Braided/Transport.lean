@@ -26,6 +26,7 @@ namespace CategoryTheory.Monoidal
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
+set_option backward.isDefEq.respectTransparency false in
 instance Transported.instBraidedCategory (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     BraidedCategory (Transported e) :=
   .ofFaithful e.inverse (fun _ _ ↦ e.functor.mapIso (β_ _ _)) fun _ _ ↦ by
@@ -33,6 +34,7 @@ instance Transported.instBraidedCategory (e : C ≌ D) [MonoidalCategory C] [Bra
 
 local notation "e'" e => equivalenceTransported e
 
+set_option backward.isDefEq.respectTransparency false in
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).inverse.Braided where
   braided X Y := by

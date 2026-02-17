@@ -365,6 +365,7 @@ theorem support_toFinsupp (p : R[X]) : p.toFinsupp.support = p.support := by rw 
 theorem support_zero : (0 : R[X]).support = ∅ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
   rcases p with ⟨⟩
@@ -375,6 +376,7 @@ theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
 
 theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `monomial s a` is the monomial `a * X^s` -/
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
   toFun t := ⟨.single n t⟩
@@ -422,6 +424,7 @@ theorem monomial_injective (n : ℕ) : Function.Injective (monomial n : R → R[
 theorem monomial_eq_zero_iff (t : R) (n : ℕ) : monomial n t = 0 ↔ t = 0 :=
   LinearMap.map_eq_zero_iff _ (Polynomial.monomial_injective n)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem monomial_eq_monomial_iff {m n : ℕ} {a b : R} :
     monomial m a = monomial n b ↔ m = n ∧ a = b ∨ a = 0 ∧ b = 0 := by
   rw [← toFinsupp_inj, toFinsupp_monomial, toFinsupp_monomial, Finsupp.single_eq_single_iff]
@@ -568,6 +571,7 @@ def coeff : R[X] → ℕ → R
 @[simp]
 theorem coeff_ofFinsupp (p) : coeff (⟨p⟩ : R[X]) = p := by rw [coeff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_injective : Injective (coeff : R[X] → ℕ → R) := by
   rintro ⟨p⟩ ⟨q⟩
   simp only [coeff, DFunLike.coe_fn_eq, imp_self, ofFinsupp.injEq]
@@ -707,6 +711,7 @@ theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
 theorem ext {p q : R[X]} : (∀ n, coeff p n = coeff q n) → p = q :=
   ext_iff.2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Monomials generate the additive monoid of polynomials. -/
 theorem addSubmonoid_closure_setOf_eq_monomial :
     AddSubmonoid.closure { p : R[X] | ∃ n a, p = monomial n a } = ⊤ := by
@@ -809,6 +814,7 @@ theorem support_X_empty (H : (1 : R) = 0) : (X : R[X]).support = ∅ := by
 theorem support_X (H : ¬(1 : R) = 0) : (X : R[X]).support = singleton 1 := by
   rw [← pow_one X, support_X_pow H 1]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem monomial_left_inj {a : R} (ha : a ≠ 0) {i j : ℕ} :
     monomial i a = monomial j a ↔ i = j := by
   simp only [← ofFinsupp_single, ofFinsupp.injEq, Finsupp.single_left_inj ha]
@@ -953,10 +959,12 @@ theorem coeff_erase (p : R[X]) (n i : ℕ) :
   simp only [erase_def, coeff]
   exact ite_congr rfl (fun _ => rfl) (fun _ => rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem erase_zero (n : ℕ) : (0 : R[X]).erase n = 0 :=
   toFinsupp_injective <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem erase_monomial {n : ℕ} {a : R} : erase n (monomial n a) = 0 :=
   toFinsupp_injective <| by simp
@@ -1094,11 +1102,13 @@ instance ring : Ring R[X] :=
       toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_nsmul _ _)
       (fun _ _ => toFinsupp_zsmul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by
   rcases p with ⟨⟩
   rw [← ofFinsupp_neg, coeff, coeff, Finsupp.neg_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q n := by
   rcases p with ⟨⟩
@@ -1112,6 +1122,7 @@ theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
 theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
   rw [sub_eq_add_neg, map_add, monomial_neg, sub_eq_add_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rcases p with ⟨⟩
@@ -1202,6 +1213,7 @@ section repr
 
 variable [Semiring R]
 
+set_option backward.isDefEq.respectTransparency false in
 protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
   ⟨fun p prec =>
     let termPrecAndReprs : List (WithTop ℕ × Lean.Format) :=

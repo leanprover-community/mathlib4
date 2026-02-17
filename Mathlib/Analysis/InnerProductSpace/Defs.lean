@@ -418,6 +418,7 @@ def toNormedSpace : NormedSpace 𝕜 F where
     · simp [sqrt_normSq_eq_norm]
     · positivity
 
+set_option backward.isDefEq.respectTransparency false in
 omit c in
 /-- Seminormed space core structure constructed from a `PreInnerProductSpace.Core` structure -/
 lemma toSeminormedSpaceCore (c : PreInnerProductSpace.Core 𝕜 F) : SeminormedSpace.Core 𝕜 F where
@@ -484,6 +485,7 @@ section
 
 attribute [local instance] toNormedAddCommGroup
 
+set_option backward.isDefEq.respectTransparency false in
 omit cd in
 /-- Normed space core structure constructed from an `InnerProductSpace.Core` structure -/
 lemma toNormedSpaceCore (cd : InnerProductSpace.Core 𝕜 F) : NormedSpace.Core 𝕜 F where
@@ -496,6 +498,7 @@ lemma toNormedSpaceCore (cd : InnerProductSpace.Core 𝕜 F) : NormedSpace.Core 
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a topological vector space, if the unit ball of a continuous inner product is von Neumann
 bounded, then the inner product defines the same topology as the original one. -/
 lemma topology_eq

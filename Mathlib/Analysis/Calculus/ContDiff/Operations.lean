@@ -819,6 +819,7 @@ section FunctionInverse
 
 open ContinuousLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a local homeomorphism and the point `a` is in its target,
 and if `f` is `n` times continuously differentiable at `f.symm a`,
 and if the derivative at `f.symm a` is a continuous linear equivalence,

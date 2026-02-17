@@ -371,6 +371,7 @@ theorem tsum_geometric_inv_two_ge (n : ℕ) :
   simp only [← Summable.sum_add_tsum_nat_add n A, B, if_true, zero_add, zero_le',
     le_add_iff_nonneg_left, pow_add, _root_.tsum_mul_right, tsum_geometric_inv_two]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ ↦ a / 2 / 2 ^ n) a := by
   convert HasSum.mul_left (a / 2)
       (hasSum_geometric_of_lt_one (le_of_lt one_half_pos) one_half_lt_one) using 1
@@ -653,6 +654,7 @@ theorem exists_pos_sum_of_countable' {ε : ℝ≥0∞} (hε : ε ≠ 0) (ι) [Co
   let ⟨δ, δpos, hδ⟩ := exists_pos_sum_of_countable hε ι
   ⟨fun i ↦ δ i, fun i ↦ ENNReal.coe_pos.2 (δpos i), hδ⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_pos_tsum_mul_lt_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) {ι} [Countable ι] (w : ι → ℝ≥0∞)
     (hw : ∀ i, w i ≠ ∞) : ∃ δ : ι → ℝ≥0, (∀ i, 0 < δ i) ∧ (∑' i, (w i * δ i : ℝ≥0∞)) < ε := by
   lift w to ι → ℝ≥0 using hw

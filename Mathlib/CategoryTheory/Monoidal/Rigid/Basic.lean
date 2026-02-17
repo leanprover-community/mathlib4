@@ -541,6 +541,7 @@ def exactPairingCongr {X X' Y Y' : C} [ExactPairing X' Y'] (i : X ≅ X') (j : Y
   haveI : ExactPairing X' Y := exactPairingCongrRight j
   exactPairingCongrLeft i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Right duals are isomorphic. -/
 def rightDualIso {X Y₁ Y₂ : C} (p₁ : ExactPairing X Y₁) (p₂ : ExactPairing X Y₂) : Y₁ ≅ Y₂ where
   hom := @rightAdjointMate C _ _ X X ⟨Y₂⟩ ⟨Y₁⟩ (𝟙 X)
@@ -553,6 +554,7 @@ def rightDualIso {X Y₁ Y₂ : C} (p₁ : ExactPairing X Y₁) (p₂ : ExactPai
     rw [← @comp_rightAdjointMate, Category.comp_id, @rightAdjointMate_id]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Left duals are isomorphic. -/
 def leftDualIso {X₁ X₂ Y : C} (p₁ : ExactPairing X₁ Y) (p₂ : ExactPairing X₂ Y) : X₁ ≅ X₂ where
   hom := @leftAdjointMate C _ _ Y Y ⟨X₂⟩ ⟨X₁⟩ (𝟙 Y)

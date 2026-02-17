@@ -362,6 +362,7 @@ to express the program state in terms of a tape with only the stacks themselves.
 def addBottom (L : ListBlank (∀ k, Option (Γ k))) : ListBlank (Γ' K Γ) :=
   ListBlank.cons (true, L.head) (L.tail.map ⟨Prod.mk false, rfl⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem addBottom_map (L : ListBlank (∀ k, Option (Γ k))) :
     (addBottom L).map ⟨Prod.snd, by rfl⟩ = L := by
   simp only [addBottom, ListBlank.map_cons]
@@ -369,6 +370,7 @@ theorem addBottom_map (L : ListBlank (∀ k, Option (Γ k))) :
   generalize ListBlank.tail L = L'
   refine L'.induction_on fun l ↦ ?_; simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem addBottom_modifyNth (f : (∀ k, Option (Γ k)) → ∀ k, Option (Γ k))
     (L : ListBlank (∀ k, Option (Γ k))) (n : ℕ) :
     (addBottom L).modifyNth (fun a ↦ (a.1, f a.2)) n = addBottom (L.modifyNth f n) := by
@@ -376,6 +378,7 @@ theorem addBottom_modifyNth (f : (∀ k, Option (Γ k)) → ∀ k, Option (Γ k)
     simp only [addBottom, ListBlank.head_cons, ListBlank.modifyNth, ListBlank.tail_cons]
   congr; symm; apply ListBlank.map_modifyNth; intro; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem addBottom_nth_snd (L : ListBlank (∀ k, Option (Γ k))) (n : ℕ) :
     ((addBottom L).nth n).2 = L.nth n := by
   conv => rhs; rw [← addBottom_map L, ListBlank.nth_map]
