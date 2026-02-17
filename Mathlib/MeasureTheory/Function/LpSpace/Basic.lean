@@ -556,8 +556,8 @@ theorem compMeasurePreserving_val (g : Lp E p μb) (hf : MeasurePreserving f μ 
     (compMeasurePreserving f hf g).1 = g.1.compMeasurePreserving f hf :=
   rfl
 
-theorem compMeasurePreserving_val_iterate (g : Lp E p μ) {f : α → α}
-    (hf : MeasurePreserving f μ μ) (n : ℕ) :
+theorem compMeasurePreserving_val_iterate (g : Lp E p μ) {f : α → α} (hf : MeasurePreserving f μ μ)
+    (n : ℕ) :
     ((compMeasurePreserving f hf)^[n] g).1 = (AEEqFun.compMeasurePreserving · f hf)^[n] g := by
   induction n with
   | zero => rfl

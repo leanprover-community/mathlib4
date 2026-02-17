@@ -234,9 +234,8 @@ theorem coeFn_compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (hf : QuasiMeasu
   rw [compQuasiMeasurePreserving_eq_mk]
   apply coeFn_mk
 
-theorem compQuasiMeasurePreserving_iterate (g : α →ₘ[μ] γ)
-    {f : α → α} (hf : QuasiMeasurePreserving f μ μ) (n : ℕ) :
-    (compQuasiMeasurePreserving · f hf)^[n] g =
+theorem compQuasiMeasurePreserving_iterate (g : α →ₘ[μ] γ) {f : α → α}
+    (hf : QuasiMeasurePreserving f μ μ) (n : ℕ) : (compQuasiMeasurePreserving · f hf)^[n] g =
     compQuasiMeasurePreserving g (f^[n]) (QuasiMeasurePreserving.iterate hf n) := by
   ext
   grw [coeFn_compQuasiMeasurePreserving g (QuasiMeasurePreserving.iterate hf n)]
