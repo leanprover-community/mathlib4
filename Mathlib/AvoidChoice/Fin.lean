@@ -1,10 +1,22 @@
+/-
+Copyright (c) 2025 Riccardo Brasca. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Riccardo Brasca
+-/
+
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.List.FinRange
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Tactic.DepRewrite
-
 import Mathlib.AvoidChoice.Linter
+
+/-!
+# Let's avoid choice!
+
+We gather results that are used to avoid the axiom of choice.
+
+-/
 
 namespace Constructive
 
