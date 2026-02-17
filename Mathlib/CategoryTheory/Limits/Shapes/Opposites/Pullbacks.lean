@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Pullbacks and pushouts in `C` and `Cᵒᵖ`
@@ -237,13 +236,13 @@ open Opposite
 @[simp]
 lemma hasPushout_op_iff_hasPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     HasPushout f.op g.op ↔ HasPullback f g := by
-  rw [HasPushout, hasColimit_iff_of_iso (spanOp f g), Functor.Final.hasColimit_comp_iff,
+  rw [HasPushout, hasColimit_iff_of_iso (spanOp f g), hasColimit_inverse_equivalence_comp_iff,
     hasColimit_op_iff_hasLimit]
 
 @[simp]
 lemma hasPushout_unop_iff_hasPullback {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) :
     HasPushout f.unop g.unop ↔ HasPullback f g := by
-  rw [HasPushout, hasColimit_iff_of_iso (spanUnop f g), Functor.Final.hasColimit_comp_iff,
+  rw [HasPushout, hasColimit_iff_of_iso (spanUnop f g), hasColimit_inverse_equivalence_comp_iff,
     hasColimit_leftOp_iff_hasLimit]
 
 instance {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : HasPushout f.op g.op := by
@@ -313,13 +312,13 @@ section Pushout
 @[simp]
 lemma hasPullback_op_iff_hasPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     HasPullback f.op g.op ↔ HasPushout f g := by
-  rw [HasPullback, hasLimit_iff_of_iso (cospanOp f g), Functor.Initial.hasLimit_comp_iff,
+  rw [HasPullback, hasLimit_iff_of_iso (cospanOp f g), hasLimit_inverse_equivalence_comp_iff,
     hasLimit_op_iff_hasColimit]
 
 @[simp]
 lemma hasPullback_unop_iff_hasPushout {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : X ⟶ Z) :
     HasPullback f.unop g.unop ↔ HasPushout f g := by
-  rw [HasPullback, hasLimit_iff_of_iso (cospanUnop f g), Functor.Initial.hasLimit_comp_iff,
+  rw [HasPullback, hasLimit_iff_of_iso (cospanUnop f g), hasLimit_inverse_equivalence_comp_iff,
     hasLimit_leftOp_iff_hasColimit]
 
 instance {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : HasPullback f.op g.op := by
