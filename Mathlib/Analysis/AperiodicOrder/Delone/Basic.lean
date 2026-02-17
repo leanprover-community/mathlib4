@@ -132,14 +132,10 @@ lemma eq_of_mem_ball (D : DeloneSet X) {r : ℝ≥0} (hr : r ≤ D.packingRadius
     {x y z : X} (hx : x ∈ D) (hy : y ∈ D) (hxz : x ∈ ball z r) (hyz : y ∈ ball z r) :
     x = y := by
   by_contra hne
-  have h_dist : dist x y < 2 * r := by
-    calc dist x y ≤ dist x z + dist z y := dist_triangle x z y
-      _ < r + r := add_lt_add (mem_ball.mp hxz) (mem_ball'.mp hyz)
-      _ = 2 * r := by ring
-  have h_lt_packing : dist x y < D.packingRadius := by
-    have h_radius_real : r ≤ D.packingRadius / (2 : ℝ) := hr
-    linarith
-  exact (D.packingRadius_lt_dist_of_mem_ne hx hy hne).not_gt h_lt_packing
+  exact (D.packingRadius_lt_dist_of_mem_ne hx hy hne).not_gt <| calc
+    dist x y ≤ dist x z + dist y z := dist_triangle_right x y z
+    _ < r + r := by gcongr <;> simpa
+    _ ≤ D.packingRadius := by rw [← add_halves D.packingRadius, NNReal.coe_add]; gcongr
 
 /-- There exists a radius `r > 0` such that any ball of radius `r`
 centered at a point of `D` contains at most one point of `D`. -/
@@ -191,16 +187,8 @@ noncomputable def mapIsometry (f : X ≃ᵢ Y) : DeloneSet X ≃ DeloneSet Y whe
   invFun D := (D.mapBilipschitz f.symm.toEquiv 1 1 zero_lt_one zero_lt_one
       f.symm.isometry.antilipschitz f.symm.isometry.lipschitz).copy (f.symm '' D.carrier)
       D.packingRadius D.coveringRadius rfl (by simp [mapBilipschitz]) (by simp [mapBilipschitz])
-  left_inv D := by
-    ext x <;> try rfl
-    constructor
-    · rintro ⟨y, ⟨z, hz, rfl⟩, rfl⟩; simpa
-    · intro hx; exact ⟨f x, ⟨x, hx, rfl⟩, by simp⟩
-  right_inv D := by
-    ext x <;> try rfl
-    constructor
-    · rintro ⟨y, ⟨z, hz, rfl⟩, rfl⟩; simpa
-    · intro hx; exact ⟨f.symm x, ⟨x, hx, rfl⟩, by simp⟩
+  left_inv D := by ext <;> simp [copy_eq]
+  right_inv D := by ext <;> simp [copy_eq]
 
 @[simp] lemma mapIsometry_refl (D : DeloneSet X) : D.mapIsometry (.refl X) = D := by
   ext <;> simp [mapIsometry, IsometryEquiv.refl, DeloneSet.copy]
