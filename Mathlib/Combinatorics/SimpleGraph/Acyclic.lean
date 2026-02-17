@@ -333,7 +333,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
           length_cons, length_nil] at h'
       simp at h'
     rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
-    · simp only [firstDart_toProd, getVert_cons_succ, getVert_zero, Prod.swap_prod_mk]
+    · simp
     case contra =>
       suffices (f x).takeUntil y hy = .cons h .nil by
         rw [← take_spec _ hy] at h'
