@@ -663,6 +663,22 @@ lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Con
     exact C.reachable_toSimpleGraph hu hv
   nonempty := ⟨C.out, C.out_eq⟩
 
+theorem maximal_connected_induce_supp (C : G.ConnectedComponent) :
+    Maximal (G.induce · |>.Connected) C.supp := by
+  refine C.ind fun v ↦ ?_
+  refine ⟨connected_toSimpleGraph _, fun s hconn hle u hu ↦ ConnectedComponent.sound ?_⟩
+  exact hconn.preconnected ⟨u, hu⟩ ⟨v, hle rfl⟩ |>.map <| Embedding.induce s |>.toHom
+
+theorem maximal_connected_induce_iff (s : Set V) :
+    Maximal (G.induce · |>.Connected) s ↔ ∃ C : G.ConnectedComponent, C.supp = s := by
+  refine ⟨fun ⟨hconn, h⟩ ↦ ?_, fun ⟨C, h⟩ ↦ ?_⟩
+  · have ⟨v, hv⟩ := hconn.nonempty
+    suffices s ≤ (G.connectedComponentMk v).supp from
+      ⟨G.connectedComponentMk v, le_antisymm (h (connected_toSimpleGraph _) this) this⟩
+    exact fun u hu ↦ ConnectedComponent.sound <|
+      hconn.preconnected ⟨u, hu⟩ ⟨v, hv⟩ |>.map <| Embedding.induce s |>.toHom
+  · exact h ▸ maximal_connected_induce_supp _
+
 end ConnectedComponent
 
 /-- Given graph homomorphisms from each connected component of `G` to `H`, this is the graph

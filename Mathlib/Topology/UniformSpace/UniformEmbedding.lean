@@ -399,6 +399,12 @@ instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace
   exact isUniformEmbedding_inl.isUniformInducing.isComplete_range.union
     isUniformEmbedding_inr.isUniformInducing.isComplete_range
 
+theorem IsUniformEmbedding.discreteUniformity [DiscreteUniformity β] {f : α → β}
+    (hf : IsUniformEmbedding f) : DiscreteUniformity α := by
+  simp_rw [discreteUniformity_iff_eq_principal_setRelId, ← hf.comap_uniformity,
+    DiscreteUniformity.eq_principal_setRelId, comap_principal, SetRel.id, preimage_setOf_eq,
+    hf.injective.eq_iff]
+
 end
 
 theorem isUniformEmbedding_comap {α : Type*} {β : Type*} {f : α → β} [u : UniformSpace β]

@@ -8,11 +8,11 @@ module
 public import Mathlib.Analysis.Convex.EGauge
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.Seminorm
-public import Mathlib.Tactic.Peel
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Bound
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Asymptotics in a Topological Vector Space
@@ -227,7 +227,7 @@ theorem IsThetaTVS.isBigOTVS (h : f =Θ[𝕜; l] g) : f =O[𝕜; l] g := h.left
 @[symm]
 theorem IsThetaTVS.symm (h : f =Θ[𝕜; l] g) : g =Θ[𝕜; l] f := And.symm h
 
-theorem isThetaTVS_comm : f =Θ[𝕜; l] g ↔ g=Θ[𝕜; l] f := and_comm
+theorem isThetaTVS_comm : f =Θ[𝕜; l] g ↔ g =Θ[𝕜; l] f := and_comm
 
 /-!
 ### Transitivity lemmas
@@ -510,12 +510,14 @@ theorem isBigOTVS_prodMk_left [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] {k
     (fun x ↦ (f x, g x)) =O[𝕜; l] k ↔ f =O[𝕜; l] k ∧ g =O[𝕜; l] k :=
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.elim .prodMk⟩
 
+@[to_fun]
 theorem IsLittleOTVS.add [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
     (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g :=
   ContinuousLinearMap.fst 𝕜 E E + ContinuousLinearMap.snd 𝕜 E E |>.isBigOTVS_comp
     |>.trans_isLittleOTVS <| h₁.prodMk h₂
 
+@[to_fun]
 theorem IsBigOTVS.add [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
     (h₁ : f₁ =O[𝕜; l] g) (h₂ : f₂ =O[𝕜; l] g) : (f₁ + f₂) =O[𝕜; l] g :=
@@ -825,7 +827,15 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
         ac_rfl
       _ ≤ _ := div_le_egauge_ball _ _ _
 
-alias ⟨isBigOTVS.isBigO, IsBigO.isBigOTVS⟩ := isBigOTVS_iff_isBigO
+alias ⟨IsBigOTVS.isBigO, IsBigO.isBigOTVS⟩ := isBigOTVS_iff_isBigO
+
+@[deprecated (since := "2026-02-03")]
+alias isBigOTVS.isBigO := IsBigOTVS.isBigO
+
+lemma isThetaTVS_iff_isTheta : f =Θ[𝕜; l] g ↔ f =Θ[l] g :=
+  .and isBigOTVS_iff_isBigO isBigOTVS_iff_isBigO
+
+alias ⟨IsThetaTVS.isTheta, IsTheta.isThetaTVS⟩ := isThetaTVS_iff_isTheta
 
 end NormedSpace
 

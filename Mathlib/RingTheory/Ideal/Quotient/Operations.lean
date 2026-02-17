@@ -94,6 +94,16 @@ lemma quotientKerEquivOfSurjective_apply_mk {f : R →+* S} (hf : Function.Surje
     f.quotientKerEquivOfSurjective hf (Ideal.Quotient.mk _ x) = f x :=
   rfl
 
+@[simp]
+lemma quotientKerEquivOfSurjective_symm_apply {f : R →+* S} (hf : Function.Surjective f) (x : R) :
+    (RingHom.quotientKerEquivOfSurjective hf).symm (f x) = Ideal.Quotient.mk _ x := by
+  apply (RingHom.quotientKerEquivOfSurjective hf).injective
+  simp
+
+lemma quotientKerEquivOfSurjective_symm_comp {f : R →+* S} (hf : Function.Surjective f) :
+    (RingHom.quotientKerEquivOfSurjective hf).symm.toRingHom.comp f = Ideal.Quotient.mk _ := by
+  ext; simp
+
 /-- The **first isomorphism theorem** for commutative rings (`RingHom.rangeS` version). -/
 noncomputable def quotientKerEquivRangeS (f : R →+* S) : R ⧸ ker f ≃+* f.rangeS :=
   (Ideal.quotEquivOfEq f.ker_rangeSRestrict.symm).trans <|
