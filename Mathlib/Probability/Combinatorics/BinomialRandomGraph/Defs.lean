@@ -91,7 +91,7 @@ variable (p) in
   classical
   cases nonempty_fintype V
   simp only [binomialRandom, measurableEmbedding_edgeSet.comap_apply, Set.image_singleton,
-    edgeSet_subset_setOf_not_isDiag, setBernoulli_singleton, Set.toFinite]
+    edgeSet_subset_compl_diagSet, setBernoulli_singleton, Set.toFinite]
   rw [Set.ncard_diff (by simp)]
   congr!
   rw [Nat.card_eq_fintype_card, ← Sym2.card_diagSet_compl, Fintype.card_eq_nat_card,
