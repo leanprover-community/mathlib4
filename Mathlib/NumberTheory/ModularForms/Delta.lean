@@ -43,7 +43,7 @@ noncomputable section
 
 namespace ModularForm
 
-/-- The modular discriminant `Δ(z) = η(z) ^ 24`, where `η` is the Dedeking eta function. -/
+/-- The modular discriminant `Δ(z) = η(z) ^ 24`, where `η` is the Dedekind eta function. -/
 public def delta (z : ℍ) := (eta z) ^ 24
 
 local notation "Δ" => delta
