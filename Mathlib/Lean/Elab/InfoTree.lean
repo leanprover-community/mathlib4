@@ -31,20 +31,20 @@ Collects all suggestions from all `TryThisInfo`s in `trees`.
 Does not require context - works with context-free trees.
 -/
 partial def collectTryThisSuggestions (trees : PersistentArray InfoTree) : Array Suggestion :=
-  trees.toList.flatMap go |>.toArray
+  trees.foldl (init := #[]) fun acc tree => go acc tree
 where
   /-- Traverses an `InfoTree` to collect `TryThisInfo` suggestions. -/
-  go : InfoTree → List Suggestion
-    | .context _ t => go t
+  go (acc : Array Suggestion) : InfoTree → Array Suggestion
+    | .context _ t => go acc t
     | .node i children =>
-      let fromThis := match i with
+      let acc := match i with
         | .ofCustomInfo ci =>
           match ci.value.get? TryThisInfo with
-          | some tti => [tti.suggestion]
-          | none => []
-        | _ => []
-      fromThis ++ children.toList.flatMap go
-    | .hole _ => []
+          | some tti => acc.push tti.suggestion
+          | none => acc
+        | _ => acc
+      children.foldl (init := acc) fun acc tree => go acc tree
+    | .hole _ => acc
 
 namespace InfoTree
 
