@@ -1516,6 +1516,7 @@ public import Mathlib.Analysis.Analytic.RadiusLiminf
 public import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Analysis.Analytic.WithLp
 public import Mathlib.Analysis.Analytic.Within
+public import Mathlib.Analysis.AperiodicOrder.Delone.Basic
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Asymptotics.Completion
 public import Mathlib.Analysis.Asymptotics.Defs
