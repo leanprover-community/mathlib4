@@ -55,17 +55,18 @@ lemma hom_eq (p : ℕ) :
     hom H p (p + 1) = ∑ k : Fin (p + 1), ((-1 : ℤ) ^ (k : ℕ)) • H.h k := by
   simp [hom]
 
+@[simp]
 lemma hom_eq_zero (p q : ℕ) (hpq : p + 1 ≠ q) :
     hom H p q = 0 :=
   dif_neg hpq
 
-private lemma comm_zero (H : SimplicialHomotopy f g) :
+private lemma comm_zero :
     ((alternatingFaceMapComplex C).map g).f 0 =
     prevD 0 (hom H) + ((alternatingFaceMapComplex C).map f).f 0 := by
   rw [prevD_eq (hom H) (j := 0) (j' := 1) (by simp)]
   simp [← H.h_last_comp_δ_last 0]
 
-private lemma comm_succ (H : SimplicialHomotopy f g) (n : ℕ) :
+private lemma comm_succ (n : ℕ) :
     ((alternatingFaceMapComplex C).map g).f (n + 1) = dNext (n + 1) (hom H) + prevD (n + 1) (hom H)
     + ((alternatingFaceMapComplex C).map f).f (n + 1) := by
   rw [dNext_eq (hom H) (i := n + 1) (i' := n) (by simp)]
