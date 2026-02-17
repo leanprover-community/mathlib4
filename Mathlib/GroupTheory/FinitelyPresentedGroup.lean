@@ -58,7 +58,6 @@ class IsPresented (G : Type*) [Group G] : Prop where
 
 -- End of suggested additions to #PresentedGroup
 
--- Start of NormalClosureFG statements
 open Subgroup
 
 /-- Definition of subgroup that is given by the normal closure of finitely many elements. -/
@@ -74,7 +73,6 @@ theorem IsNormalClosureFG.invariant_surj_hom {G H : Type*} [Group G] [Group H]
   constructor
   · exact hSfinite.image _
   · rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
--- End of NormalClosureFG statements
 
 /-- A group is finitely presented if it admits an isomorphism to a finitely presented group. -/
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
@@ -88,16 +86,12 @@ class IsOneRelator (G : Type*) [Group G] : Prop where
       Nonempty (G ≃* PresentedGroup rels) ∧
       hrels.toFinset.card = 1
 
--- TODO calls to IsNormalClosureFG.map could be simplified? Like maybe using the iso functions.
-  -- seems like we apply a lot of `MonoidHom.ker_comp_mulEquiv + IsNormalClosureFG.map`.
-
 /-- Every finitely presented group is finitely generated. -/
 instance isFP_isFG {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG G := by
   rw [Group.fg_iff_exists_freeGroup_hom_surjective_finite]
   obtain ⟨α, hα, rels, hrels, ⟨iso⟩⟩ := h
   unfold PresentedGroup at iso
   use α, hα
-  -- TODO probably a nicer way to do this.
   let iso' := iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
   use iso'
   simpa [iso'] using
@@ -241,7 +235,7 @@ theorem iff_hom_surj_set_G {G : Type*} [Group G] :
       simpa [MonoidHom.comp_apply] using congrArg (fun m ↦ m x) hh_fcompg
     use hfsurj
     let g' : FreeGroup α →* FreeGroup S := FreeGroup.map g
-    have hg'_surj : Function.Surjective g' := FreeGroup.map_surjective g hgsurj
+    have hg'_surj : Function.Surjective g' := FreeGroup.map_surjective hgsurj
     have hhker : h.ker = Subgroup.normalClosure rels := by
       ext x
       simp [h]
