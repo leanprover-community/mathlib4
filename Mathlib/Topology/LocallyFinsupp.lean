@@ -79,8 +79,7 @@ def LocallyFiniteSupport [Zero Y] (f : X → Y) : Prop :=
   ∀ z : X, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)
 
 lemma LocallyFiniteSupport.iff_support_locallyFinite [Zero Y] (f : X → Y) :
-    LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) ↔
-    LocallyFiniteSupport f := by
+    LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) ↔ LocallyFiniteSupport f := by
   dsimp only [LocallyFinite]
   peel with z t ht
   have aux1 : t ∩ f.support = {i : f.support | ↑i ∈ t} := by aesop
