@@ -608,7 +608,7 @@ lemma iff_exists_appLE_locally
     P f ↔ ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.1) (e : V.1 ≤ f ⁻¹ᵁ U.1),
       Q (f.appLE U V e).hom := by
   have := respects_isOpenImmersion (P := P)
-    (RingHom.locally_StableUnderCompositionWithLocalizationAwaySource hQ)
+    (RingHom.locally_stableUnderCompositionWithLocalizationAwaySource hQ)
   refine ⟨fun hf x ↦ ?_,
       fun hf ↦ (IsZariskiLocalAtSource.iff_exists_resLE (P := P)).mpr <| fun x ↦ ?_⟩
   · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp Y.isBasis_affineOpens
