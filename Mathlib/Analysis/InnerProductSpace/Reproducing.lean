@@ -22,14 +22,15 @@ positive semidefinite matrices.
 - `RKHS.kerFun` : the kernel functions of a RKHS.
 - `RKHS.kerFun_dense` : the kernel functions are dense in the Hilbert space.
 - `RKHS.posSemidef_kernel`: The kernel is positive semidefinite.
-- `KernelRKHS` : RKHS constructed from a positive semidefinite matrix.
-- `Kernel_eq_Kernel` : The kernel of the constructed RKHS is equal to the matrix, this is
+- `RKHS.OfKernel` : RKHS constructed from a positive semidefinite matrix.
+- `RKHS.kernel_ofKernel` : The kernel of the constructed RKHS is equal to the matrix, this is
     essentially Moore's theorem.
-## To Do:
 
-- `Privatize KernelRKHS`
+## TODO
+
+- Privatize `RKHS.OfKernel`
 -/
-open scoped ComplexOrder
+
 open ContinuousLinearMap
 
 public section
@@ -132,7 +133,7 @@ lemma coeCLM_to_kerFun'' (x : X) (f : H) : f x = (kerFun H x).adjoint f := by si
 variable (H) in
 def kernel : Matrix X X (V →L[𝕜] V) := .of fun x y ↦ (kerFun H x).adjoint ∘L kerFun H y
 
-lemma kerFun_apply (y : X) (v : V) : kerFun H y v = fun x ↦ kernel H x y v := by
+lemma kerFun_apply (y : X) (v : V) (x : X) : kerFun H y v x = kernel H x y v := by
   simp [kernel, kerFun]
 
 lemma kernel_kerFun (x y : X) : kernel H x y = (kerFun H x).adjoint ∘L (kerFun H y) := by
@@ -164,6 +165,7 @@ lemma isHermitian_kernel : (kernel H).IsHermitian := by
   simp only [Matrix.conjTranspose_apply, star, adjoint_inner_left,
     ← inner_conj_symm _ ((kernel H _ _) _), kernel_inner, inner_conj_symm]
 
+open scoped ComplexOrder in
 variable (H) in
 theorem posSemidef_kernel : (kernel H).PosSemidef := by
   refine ⟨isHermitian_kernel H, fun s ↦ (ContinuousLinearMap.isPositive_iff' _).mpr ⟨?_,fun v ↦ ?_⟩⟩
@@ -174,21 +176,9 @@ theorem posSemidef_kernel : (kernel H).PosSemidef := by
     simp only [← Finsupp.sum_inner, ← Finsupp.inner_sum,
       inner_self_eq_norm_sq_to_K, RCLike.ofReal_nonneg, norm_nonneg, pow_succ_nonneg]
 
-end RKHS
-
 /-!
 ## Construction of RKHS from kernel
 -/
-
-section
-
-variable {X : Type*}
-variable {𝕜 : Type*} [RCLike 𝕜] --ℝ or ℂ
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
-local notation :90 "†" => starRingEnd 𝕜
-
-open InnerProductSpace
-open Submodule
 
 variable {K : Matrix X X (V →L[𝕜] V)}
 
@@ -265,10 +255,10 @@ private lemma H₀inner_def (f g : H₀ K) :
     ⟪f, g⟫_𝕜 = f.sum fun ⟨y, u⟩ z ↦ g.sum fun ⟨x, v⟩ w ↦ star z * w * ⟪(K x y) u, v⟫_𝕜 := rfl
 
 variable (K) in
-abbrev KernelRKHS := UniformSpace.Completion <| SeparationQuotient (H₀ K)
+abbrev OfKernel := UniformSpace.Completion <| SeparationQuotient (H₀ K)
 --deriving SeminormedAddCommGroup, InnerProductSpace 𝕜, CompleteSpace
 
-namespace KernelRKHS
+namespace OfKernel
 
 private abbrev kerFunAux' (x : X) : V →ₗ[𝕜] SeparationQuotient (H₀ K) where
   toFun v: SeparationQuotient (H₀ K) := SeparationQuotient.mk (Finsupp.single ⟨x,v⟩ 1)
@@ -293,13 +283,16 @@ private abbrev kerFunAux (x : X) :
     _ ≤ _ := by simp [mul_pow, mul_assoc, ← sq]
 
 variable (K) in
-def kerFun (x : X) : V →L[𝕜] (KernelRKHS K) := UniformSpace.Completion.toComplL ∘L kerFunAux x
+protected def kerFun (x : X) : V →L[𝕜] OfKernel K := UniformSpace.Completion.toComplL ∘L kerFunAux x
 
-instance instRKHS : RKHS 𝕜 X V (KernelRKHS K) where
-  coeCLM := .pi fun x ↦ (kerFun K x).adjoint
+instance instRKHS : RKHS 𝕜 X V (OfKernel K) where
+  coeCLM := .pi fun x ↦ (OfKernel.kerFun K x).adjoint
   coeCLM_injective := by
     refine (injective_iff_map_eq_zero _).mpr fun f h ↦ ?_
-    refine denseRange_ext_inner_zero 𝕜 UniformSpace.Completion.denseRange_coe ?_
+    refine Dense.eq_zero_of_inner_right (𝕜 := 𝕜)
+        (K := LinearMap.range UniformSpace.Completion.toComplL.toLinearMap) (?_) ?_
+    · exact UniformSpace.Completion.denseRange_coe
+    rintro ⟨_, v , rfl⟩
     refine (Function.Surjective.forall SeparationQuotient.surjective_mk).mpr
       fun ff ↦ ?_
     have : ff = ff.sum fun xv z ↦ .single xv z := by simp
@@ -308,7 +301,7 @@ instance instRKHS : RKHS 𝕜 X V (KernelRKHS K) where
     have (i : X × V) (a : 𝕜): ⟪UniformSpace.Completion.toComplL (𝕜 := 𝕜)
         ((SeparationQuotient.mkCLM 𝕜 (H₀ K)) (Finsupp.single i a)), f⟫_𝕜 = 0 := by
       have := (ext_iff_inner_left 𝕜).mp (congrFun h i.1) i.2
-      simp only [kerFun, coe_pi', adjoint_inner_right, coe_comp',
+      simp only [OfKernel.kerFun, coe_pi', adjoint_inner_right, coe_comp',
         UniformSpace.Completion.coe_toComplL, Function.comp_apply, LinearMap.mkContinuous_apply,
         LinearMap.coe_mk, AddHom.coe_mk, Prod.mk.eta, Pi.zero_apply, inner_zero_right] at this
       rw [← mul_zero ((†) a), ← this, ← inner_smul_left]
@@ -318,20 +311,11 @@ instance instRKHS : RKHS 𝕜 X V (KernelRKHS K) where
     simp only [this]
     simp
 
-lemma kerFun_apply (y : X) (v : V) : (kerFun K y) v = fun x ↦ (K x y) v := by
-  rw [show ⇑((kerFun K y) v) = (RKHS.coeCLM 𝕜) ((kerFun K y) v) from rfl]
-  simp only [RKHS.coeCLM]
-  ext x
-  refine ext_inner_right 𝕜 fun w ↦ ?_
-  simp [adjoint_inner_left, kerFun, H₀inner_def]
-
 @[simp]
-theorem kernel_kernelToRKHS : RKHS.kernel (KernelRKHS K) = K := by
+theorem kernel_ofKernel : kernel (OfKernel K) = K := by
   ext x y v
   refine ext_inner_right 𝕜 fun w ↦ ?_
-  simp [RKHS.kernel, adjoint_inner_left, -RKHS.inner_kerFun, -RKHS.kerFun_inner,
-    RKHS.kerFun, RKHS.coeCLM, kerFun , H₀inner_def]
+  simp [kernel, adjoint_inner_left, -inner_kerFun, -kerFun_inner,
+    kerFun, coeCLM, OfKernel.kerFun, H₀inner_def]
 
-theorem kerFun_eq_KerFun : RKHS.kerFun (KernelRKHS K) = kerFun K := by
-  ext y v x
-  simp [kerFun_apply, RKHS.kerFun_apply, ← kernel_kernelToRKHS]
+end RKHS.OfKernel
