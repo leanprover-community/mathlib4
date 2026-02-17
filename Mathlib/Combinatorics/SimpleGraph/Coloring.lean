@@ -227,14 +227,7 @@ variable (G) in
 /-- Given an embedding, there is an induced embedding of colorings. -/
 def recolorOfEmbedding {α β : Type*} (f : α ↪ β) : G.Coloring α ↪ G.Coloring β where
   toFun C := (Embedding.completeGraph f).toHom.comp C
-  inj' := by -- this was strangely painful; seems like missing lemmas about embeddings
-    intro C C' h
-    dsimp only at h
-    ext v
-    apply (Embedding.completeGraph f).inj'
-    change ((Embedding.completeGraph f).toHom.comp C) v = _
-    rw [h]
-    rfl
+  inj' C C' h := RelHom.mk.injEq C _ C' _ |>.mpr <| f.injective.comp_left <| RelHom.mk.inj h
 
 variable (G) in
 @[simp] lemma coe_recolorOfEmbedding (f : α ↪ β) :

@@ -415,19 +415,9 @@ abbrev toMonoidHom (f : LocalizationMap S N) : M →* N where
   __ := f
   map_one' := f.isLocalizationMap.map_one (f := f.toMulHom)
 
-/-- Short for `toMonoidHom`; used to apply a localization map as a function. -/
-@[to_additive /-- Short for `toAddMonoidHom`; used to apply a localization map as a function. -/]
-abbrev toMap (f : LocalizationMap S N) := f.toMonoidHom
-
-attribute [deprecated toMonoidHom (since := "2025-08-13")] toMap
-attribute [deprecated AddSubmonoid.LocalizationMap.toAddMonoidHom (since := "2025-08-13")]
-  AddSubmonoid.LocalizationMap.toMap
-
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : LocalizationMap S N → M →* N) :=
   fun f g ↦ by cases f; congr! with eq; ext; exact congr($eq _)
-
-@[deprecated (since := "2025-08-13")] alias toMap_injective := toMonoidHom_injective
 
 @[to_additive] instance : FunLike (LocalizationMap S N) M N where
   coe f := f.toMonoidHom
