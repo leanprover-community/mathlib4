@@ -28,6 +28,7 @@ universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
   {M G H X Y : C} [MonObj M] [GrpObj G] [GrpObj H]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
 def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
@@ -102,6 +103,7 @@ def yonedaGrpObjIsoOfRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{v}) (α : (F ⋙ f
   ((yonedaMonObjIsoOfRepresentableBy X (F ⋙ forget₂ GrpCat MonCat) α).hom.app Y).hom.map_mul })
       fun φ ↦ GrpCat.hom_ext <| MonoidHom.ext <| α.homEquiv_comp φ.unop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding of `Grp_C` into presheaves of groups. -/
 @[simps]
 def yonedaGrp : Grp C ⥤ Cᵒᵖ ⥤ GrpCat.{v} where
@@ -182,6 +184,14 @@ lemma GrpObj.inv_eq_inv : ι = (𝟙 G)⁻¹ := by simp [Hom.inv_def]
 @[reassoc (attr := simp)]
 lemma GrpObj.one_inv : η[G] ≫ ι = η := by simp [GrpObj.inv_eq_inv, GrpObj.comp_inv, one_eq_one]
 
+open scoped _root_.CategoryTheory.Obj in
+/-- If `G` is a group object and `F` is monoidal,
+then `Hom(X, G) → Hom(F X, F G)` preserves inverses. -/
+@[simp] lemma Functor.map_inv' {D : Type*} [Category* D] [CartesianMonoidalCategory D] (F : C ⥤ D)
+    [F.Monoidal] {X G : C} (f : X ⟶ G) [GrpObj G] :
+    F.map (f⁻¹) = (F.map f)⁻¹ := by
+  rw [eq_inv_iff_mul_eq_one, ← Functor.map_mul, inv_mul_cancel, Functor.map_one]
+
 @[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
 
 /-- The commutator of `G` as a morphism. This is the map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`,
@@ -255,8 +265,6 @@ attribute [local simp] mul_eq_mul comp_mul mul_comm mul_div_mul_comm in
 instance : IsCommMonObj H where
 
 instance [IsCommMonObj G.X] (f : G ⟶ H) : IsMonHom f where
-  one_hom := by ext; simp [Grp.instMonObj]
-  mul_hom := by ext; simp [Grp.instMonObj]
 
 end Grp
 

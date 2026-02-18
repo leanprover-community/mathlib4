@@ -69,6 +69,7 @@ theorem qParam_left_inv_mod_period (hh : h ≠ 0) (z : ℂ) :
   refine ⟨m, by rw [hm, mul_div_assoc, mul_comm (m : ℂ), ← mul_add, ← mul_assoc,
     div_mul_cancel₀ _ two_pi_I_ne_zero, mul_add, mul_div_cancel₀ _ (mod_cast hh), mul_comm]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
     ‖qParam h z‖ < Real.exp (-2 * π * A / h) ↔ A < im z := by
   rw [norm_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]
@@ -92,6 +93,7 @@ lemma contDiff_qParam (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 h) := by
   unfold qParam
   fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := by
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_
     (.of_forall fun q ↦ exp_ne_zero _)
@@ -135,6 +137,11 @@ theorem eq_cuspFunction (hh : h ≠ 0) (hf : Periodic f h) (z : ℂ) :
     exact exp_ne_zero _
   obtain ⟨m, hm⟩ := qParam_left_inv_mod_period hh z
   simpa only [this, hm] using hf.int_mul m z
+
+lemma tendsto_nhds_zero {f : ℂ → ℂ} (hcts : ContinuousAt (cuspFunction h f) 0) :
+    Tendsto (fun x ↦ f (invQParam h x)) (𝓝[≠] 0) (𝓝 (cuspFunction h f 0)) := by
+  apply (tendsto_nhdsWithin_of_tendsto_nhds hcts.tendsto).congr'
+  filter_upwards [self_mem_nhdsWithin] with a using cuspFunction_eq_of_nonzero h f
 
 end PeriodicOnℂ
 
@@ -245,5 +252,37 @@ theorem exp_decay_of_zero_at_inf (hh : 0 < h) (hf : Periodic f h)
     exp_decay_sub_of_bounded_at_inf hh hf h_hol h_zer.boundedAtFilter
 
 end HoloAtInfC
+
+section arithmetic
+
+lemma cuspFunction_smul {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) (a : ℂ) :
+    cuspFunction h (a • f) = a • cuspFunction h f := by
+  simp only [cuspFunction] at *
+  ext y
+  obtain rfl | hy := eq_or_ne y 0
+  · simpa using (Tendsto.const_mul _ (by simpa using hfcts)).limUnder_eq
+  · simp [hy]
+
+lemma cuspFunction_neg {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) :
+    cuspFunction h (-f) = -cuspFunction h f := by
+  simpa using cuspFunction_smul hfcts (-1)
+
+lemma cuspFunction_add {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    cuspFunction h (f + g) = cuspFunction h f + cuspFunction h g := by
+  simp only [cuspFunction]
+  ext y
+  obtain hy | rfl := ne_or_eq y 0
+  · simp [hy]
+  ·  simpa using (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hfcts⟩).add
+      (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hgcts⟩) |>.limUnder_eq
+
+lemma cuspFunction_sub {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    cuspFunction h (f - g) = cuspFunction h f - cuspFunction h g := by
+  simpa [sub_eq_add_neg, ← cuspFunction_neg hgcts]
+    using cuspFunction_add hfcts (by simp [cuspFunction_neg, hgcts])
+
+end arithmetic
 
 end Function.Periodic

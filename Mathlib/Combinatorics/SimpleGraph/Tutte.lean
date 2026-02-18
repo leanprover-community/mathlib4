@@ -150,6 +150,7 @@ lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfec
 
 open scoped symmDiff
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma constructs a perfect matching on `G` from two near-matchings. -/
 private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     {M1 : Subgraph (G ⊔ edge x b)} {M2 : Subgraph (G ⊔ edge a c)} (hxa : G.Adj x a)

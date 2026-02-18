@@ -108,6 +108,7 @@ variable [CommRing R] [CommRing A] [Nontrivial A]
   let b₂ : Basis ι A (span A (p : Set M)) := (b₁.baseChange A).map <| p.tensorEquivSpan A
   rw [finrank_eq_card_basis b₁, finrank_eq_card_basis b₂]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 lemma finrank_span_eq_finrank_span [IsPrincipalIdealRing R] [IsDomain R] [IsTorsionFree R M]
     (s : Set M) [Module.Finite R (span R s)] :
