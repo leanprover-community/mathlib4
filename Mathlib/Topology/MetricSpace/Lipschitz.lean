@@ -106,6 +106,7 @@ theorem mapsTo_closedBall (hf : LipschitzWith K f) (x : α) (r : ℝ) :
     MapsTo f (Metric.closedBall x r) (Metric.closedBall (f x) (K * r)) := fun _y hy =>
   hf.dist_le_mul_of_le hy
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dist_lt_mul_of_lt (hf : LipschitzWith K f) (hK : K ≠ 0) (hr : dist x y < r) :
     dist (f x) (f y) < K * r :=
   (hf.dist_le_mul x y).trans_lt <| by gcongr
@@ -182,12 +183,14 @@ protected theorem min (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (max Kf Kg) fun x => min (f x) (g x) := by
   simpa only [(· ∘ ·), one_mul] using lipschitzWith_min.comp (hf.prodMk hg)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem max_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => max (f x) a := by
   simpa only [max_eq_left (zero_le Kf)] using hf.max (LipschitzWith.const a)
 
 theorem const_max (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => max a (f x) := by
   simpa only [max_comm] using hf.max_const a
 
+set_option backward.isDefEq.respectTransparency false in
 theorem min_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => min (f x) a := by
   simpa only [max_eq_left (zero_le Kf)] using hf.min (LipschitzWith.const a)
 

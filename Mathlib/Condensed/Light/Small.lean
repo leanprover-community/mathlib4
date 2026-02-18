@@ -57,6 +57,7 @@ noncomputable def equivSmallSheafificationIso
 
 variable (R : Type u) [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Taking the free condensed module is preserved under conjugating with the equivalence between
 light condensed objects and sheaves on a small site.
