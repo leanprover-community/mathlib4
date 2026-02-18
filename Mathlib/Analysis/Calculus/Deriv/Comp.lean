@@ -165,6 +165,14 @@ theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[�
   ext x
   simp [mul_comm]
 
+@[deprecated HasDerivAtFilter.comp_hasFDerivAtFilter (since := "2026-02-17")]
+theorem HasDerivAtFilter.comp_hasFDerivAtFilter_of_eq
+    {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x) {L' : Filter 𝕜'} {L'' : Filter E}
+    (hh₂ : HasDerivAtFilter h₂ h₂' (L' ×ˢ pure y)) (hf : HasFDerivAtFilter f f' (L'' ×ˢ pure x))
+    (hL : Tendsto f L'' L') (hy : y = f x) :
+    HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') (L'' ×ˢ pure x) :=
+  hh₂.comp_hasFDerivAtFilter hf <| hL.prodMap <| by simp [hy]
+
 theorem HasStrictDerivAt.comp_hasStrictFDerivAt {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x)
     (hh : HasStrictDerivAt h₂ h₂' (f x)) (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (h₂ ∘ f) (h₂' • f') x :=
@@ -224,6 +232,13 @@ theorem HasDerivAtFilter.comp (hh₂ : HasDerivAtFilter h₂ h₂' L')
     HasDerivAtFilter (h₂ ∘ h) (h₂' * h') L := by
   rw [mul_comm]
   exact hh₂.scomp hh hL
+
+@[deprecated HasDerivAtFilter.comp (since := "2026-07-17")]
+theorem HasDerivAtFilter.comp_of_eq {L : Filter 𝕜} {L' : Filter 𝕜'}
+    (hh₂ : HasDerivAtFilter h₂ h₂' (L' ×ˢ pure y))
+    (hh : HasDerivAtFilter h h' (L ×ˢ pure x)) (hL : Tendsto h L L') (hy : y = h x) :
+    HasDerivAtFilter (h₂ ∘ h) (h₂' * h') (L ×ˢ pure x) :=
+  hh₂.comp hh <| hL.prodMap <| by simp [hy]
 
 theorem HasDerivWithinAt.comp (hh₂ : HasDerivWithinAt h₂ h₂' s' (h x))
     (hh : HasDerivWithinAt h h' s x) (hst : MapsTo h s s') :
