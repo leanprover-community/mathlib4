@@ -762,7 +762,7 @@ elab "gcongr" template:(ppSpace colGt term)?
   let (progress, unsolvedGoals) ← do
     let some e := template | g.gcongr none |>.run names
     if let some depth := e.raw.isNatLit? then
-      g.gcongr none (depth := depth) |>.run names
+      g.gcongr none depth |>.run names
     else
       -- Elaborate the template (e.g. `x * ?_ + _`)
       -- First, we replace occurrences of `?_` with `gcongrHole% ?_`
