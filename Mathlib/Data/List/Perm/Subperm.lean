@@ -55,18 +55,15 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
 
 lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons_self _ _⟩
 
-theorem Subperm.append {l₁ l₂ r₁ r₂ : List α}
-    (hl : l₁.Subperm l₂) (hr : r₁.Subperm r₂) :
-    (l₁ ++ r₁).Subperm (l₂ ++ r₂) := by
-  obtain ⟨l, hl_perm, hl_sub⟩ := hl
-  obtain ⟨r, hr_perm, hr_sub⟩ := hr
-  exact ⟨l ++ r, hl_perm.append hr_perm, hl_sub.append hr_sub⟩
+theorem Subperm.append {l₁ l₂ r₁ r₂ : List α} :
+    l₁ <+~ l₂ → r₁ <+~ r₂ → (l₁ ++ r₁) <+~ (l₂ ++ r₂)
+  | ⟨l, hl_perm, hl_sub⟩, ⟨r, hr_perm, hr_sub⟩ =>
+    ⟨l ++ r, hl_perm.append hr_perm, hl_sub.append hr_sub⟩
 
-theorem Subperm.map {α β} {l₁ l₂ : List α} (f : α → β)
-    (h : l₁.Subperm l₂) :
-    (l₁.map f).Subperm (l₂.map f) := by
-  obtain ⟨l, hl_perm, hl_sub⟩ := h
-  exact ⟨l.map f, hl_perm.map f, hl_sub.map f⟩
+theorem Subperm.map {α β} {l₁ l₂ : List α} (f : α → β) :
+    l₁ <+~ l₂ → (l₁.map f) <+~ (l₂.map f)
+  | ⟨l, hl_perm, hl_sub⟩ =>
+    ⟨l.map f, hl_perm.map f, hl_sub.map f⟩
 
 protected alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 

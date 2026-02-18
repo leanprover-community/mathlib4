@@ -355,14 +355,14 @@ theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
   · exact nodup_sublists.mpr (nodup_finRange _)
   · exact (nodup_sublists'.mpr (nodup_finRange _))
 
-theorem sublists'_subperm_sublists' {l₁ l₂ : List α}
-    (sublist : l₁.Sublist l₂) :
-    l₁.sublists'.Subperm l₂.sublists' := by
+theorem Sublist.sublists' {l₁ l₂ : List α}
+    (sublist : l₁ <+ l₂) :
+    l₁.sublists' <+ l₂.sublists' := by
   induction sublist with
   | slnil => exact .refl _
   | cons a _ ih =>
     rw [sublists'_cons]
-    exact ih.trans (List.sublist_append_left ..).subperm
+    exact ih.trans (List.sublist_append_left ..)
   | cons₂ a _ ih =>
     rw [sublists'_cons, sublists'_cons]
     exact ih.append (ih.map _)

@@ -104,17 +104,18 @@ theorem map_single_le_powerset (s : Multiset α) : s.map singleton ≤ powerset 
     rw [← List.map_map]
     exact ((map_pure_sublist_sublists _).map _).subperm
 
-theorem zero_mem_powerset (s) : 0 ∈ @powerset α s :=
+theorem zero_mem_powerset (s : Multiset α) : 0 ∈ s.powerset :=
   Multiset.mem_powerset.mpr s.zero_le
 
-theorem self_mem_powerset (s) : s ∈ @powerset α s :=
+theorem self_mem_powerset (s : Multiset α) : s ∈ s.powerset :=
   Multiset.mem_powerset.mpr le_rfl
 
 @[simp]
 theorem card_powerset (s : Multiset α) : card (powerset s) = 2 ^ card s :=
   Quotient.inductionOn s <| by simp
 
-theorem powerset_eq_singleton_empty_iff (s) : @powerset α s = {0} ↔ s = 0 where
+@[simp]
+theorem powerset_eq_singleton_zero_iff (s) : @powerset α s = {0} ↔ s = 0 where
   mpr := by
     rintro rfl
     exact powerset_zero
@@ -159,28 +160,28 @@ theorem revzip_powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) :
   simp only [fun l : List α => revzip_powersetAux_lemma l revzip_powersetAux, coe_eq_coe.2 p]
   exact (powersetAux_perm p).map _
 
-theorem le_powerset_iff_le {s t} :
-    @powerset α s ≤ @powerset α t ↔ s ≤ t where
+theorem powerset_le_powerset_iff_le {s t : Multiset α} :
+    s.powerset ≤ t.powerset ↔ s ≤ t where
   mp powerset := Multiset.mem_powerset.mp <| Multiset.mem_of_le powerset (self_mem_powerset s)
   mpr le :=
     Multiset.leInductionOn le fun {l₁ l₂} hsub => by
       rw [Multiset.powerset_coe', Multiset.powerset_coe', Multiset.coe_le]
-      exact (sublists'_subperm_sublists' hsub).map Multiset.ofList
+      exact Sublist.subperm <| (Sublist.sublists' hsub).map Multiset.ofList
 
 lemma powerset_mono : Monotone (@Multiset.powerset α) := by
   unfold Monotone
   intro a₁ a₂ a
-  exact le_powerset_iff_le.mpr a
+  exact powerset_le_powerset_iff_le.mpr a
 
 lemma powerset_injective : Function.Injective (@Multiset.powerset α) := by
   unfold Function.Injective
   intro a₁ a₂ a
   exact le_antisymm
-    (le_powerset_iff_le.mp (le_of_eq a))
-    (le_powerset_iff_le.mp (le_of_eq a.symm))
+    (powerset_le_powerset_iff_le.mp (le_of_eq a))
+    (powerset_le_powerset_iff_le.mp (le_of_eq a.symm))
 
-lemma powerset_strictMono : StrictMono (@Multiset.powerset α) := by
-  exact Monotone.strictMono_of_injective powerset_mono powerset_injective
+lemma powerset_strictMono : StrictMono (@Multiset.powerset α) :=
+  strictMono_of_le_iff_le (fun _ _ ↦ Iff.symm powerset_le_powerset_iff_le)
 
 /-! ### powersetCard -/
 
