@@ -564,13 +564,22 @@ structure State where
   TODO: change this to ``TSyntax `rcasesPat`` to allow `rintro` patterns. -/
   patterns : List (TSyntax ``binderIdent) := []
 
+/-- The context used by `GCongrM`. -/
+structure Context where
+  /-- The discharger for main goals. -/
+  mainGoalDischarger : MVarId → MetaM Bool
+  /-- The discharger for side goals. -/
+  sideGoalDischarger : MVarId → MetaM Unit
+
 /-- The monad used internally in the `gcongr` tactic. -/
-abbrev GCongrM := StateT State MetaM
+abbrev GCongrM := ReaderT Context <| StateRefT State MetaM
 
 /-- Run a `GCongrM` computation in `MetaM`. -/
-def GCongrM.run {α} (x : GCongrM α) (patterns : List (TSyntax ``binderIdent)) :
+def GCongrM.run {α} (x : GCongrM α) (patterns : List (TSyntax ``binderIdent) := [])
+    (mainGoalDischarger : MVarId → MetaM Bool := gcongrForwardDischarger)
+    (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
     MetaM (α × Array MVarId) := do
-  let (a, s) ← StateT.run x { patterns }
+  let (a, s) ← (x { mainGoalDischarger, sideGoalDischarger }).run { patterns }
   return (a, s.newGoals)
 
 /-- Add an unsolved goal to the `newGoals` array in the state. -/
@@ -583,6 +592,16 @@ private def introN (goal : MVarId) (n : Nat) : GCongrM MVarId := do
   modify ({· with patterns})
   return goal
 
+/-- Run the discharger for main goals. -/
+private def dischargeMain (mvarId : MVarId) : GCongrM Bool := do
+  (← read).mainGoalDischarger mvarId
+
+/-- Run the discharger for side goals. -/
+private def dischargeSide (mvarId : MVarId) : GCongrM Unit := do
+  let mctx ← getMCtx
+  try (← read).sideGoalDischarger (← mvarId.intros).2
+  catch _ => setMCtx mctx; pushNewGoal mvarId
+
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on
 "main" goals which are generated, and run the discharger on side goals which are generated. If there
@@ -590,9 +609,7 @@ is a user-provided template, first check that the template asks us to descend th
 match. -/
 partial def _root_.Lean.MVarId.gcongr
     (g : MVarId) (mdataLhs? : Option Bool)
-    (depth : Nat := 1000000)
-    (mainGoalDischarger : MVarId → MetaM Bool := gcongrForwardDischarger)
-    (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
+    (depth : Nat := 1000000) :
     GCongrM Bool := g.withContext do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
   if mdataLhs?.isNone then
@@ -600,7 +617,7 @@ partial def _root_.Lean.MVarId.gcongr
     -- by the provided tactic `mainGoalDischarger`, and continue on if this fails.
     try withReducible g.applyRfl; return true
     catch _ =>
-      if ← mainGoalDischarger g then
+      if ← dischargeMain g then
         return true
   -- If we have reached the depth limit, return the unsolved goal
   let depth + 1 := depth | pushNewGoal g; return false -- we know that there is no mdata to remove
@@ -614,7 +631,7 @@ partial def _root_.Lean.MVarId.gcongr
     -- then try to resolve the goal by the provided tactic `mainGoalDischarger`;
     -- if this fails, stop and report the existing goal.
     if hasHoleAnnotation mdataExpr then
-      if ← mainGoalDischarger g then
+      if ← dischargeMain g then
         return true
       -- clear the mdata from the goal
       pushNewGoal <| ← g.replaceTargetDefEq (updateRel rel mdataExpr.mdataExpr! mdataLhs)
@@ -667,14 +684,12 @@ partial def _root_.Lean.MVarId.gcongr
     -- Try the discharger on any side goals which were not resolved by the `apply`.
     for g in gs do
       if !(← g.isAssigned) && !mainSubgoals.any (·.1 == g) then
-        let mctx ← getMCtx
-        try sideGoalDischarger (← g.intros).2
-        catch _ => setMCtx mctx; pushNewGoal g
+        dischargeSide g
     for (mvarId, numHyps, isContra) in mainSubgoals do
       let mvarId ← introN mvarId numHyps
       -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal
       let mdataLhs?' := mdataLhs?.map (· != isContra)
-      discard <| mvarId.gcongr mdataLhs?' depth mainGoalDischarger sideGoalDischarger
+      discard <| mvarId.gcongr mdataLhs?' depth
     return true
   -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,
   -- report this goal back.
@@ -805,7 +820,7 @@ elab_rules : tactic
     -- forward-reasoning on that term) on each of the listed terms.
     let assum g := g.gcongrForward hyps
     -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-    let (_, unsolvedGoals) ← g.gcongr none (mainGoalDischarger := assum) |>.run []
+    let (_, unsolvedGoals) ← g.gcongr none |>.run [] assum
     match unsolvedGoals.toList with
     -- if all goals are solved, succeed!
     | [] => pure ()

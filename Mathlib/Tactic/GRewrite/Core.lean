@@ -131,7 +131,7 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
     let imp := if forwardImp then mkImp e' eNew else mkImp eNew e'
     let gcongrGoal ← mkFreshExprMVar imp
     let (_, sideGoals) ← gcongrGoal.mvarId!.gcongr forwardImp
-      (mainGoalDischarger := GRewrite.dischargeMain hrel) |>.run []
+      |>.run (mainGoalDischarger := GRewrite.dischargeMain hrel)
     -- post-process the metavariables
     postprocessAppMVars `grewrite goal newMVars binderInfos
       (synthAssignedInstances := !tactic.skipAssignedInstances.get (← getOptions))
