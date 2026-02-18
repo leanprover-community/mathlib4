@@ -395,12 +395,12 @@ lemma fderivWithin_extChartAt_comp_extChartAt_symm_range :
 /-- The manifold derivative of `extChartAt` at the basepoint is the identity. -/
 lemma mfderiv_extChartAt_self :
     mfderiv I 𝓘(𝕜, E) (extChartAt I x) x = ContinuousLinearMap.id 𝕜 _ := by
-  rw [← TangentBundle.continuousLinearMapAt_trivializationAt (by simp)]
-  rw [TangentBundle.continuousLinearMapAt_trivializationAt_eq_core (by simp)]
+  rw [← TangentBundle.continuousLinearMapAt_trivializationAt (by simp),
+    TangentBundle.continuousLinearMapAt_trivializationAt_eq_core (by simp)]
   ext v
   simpa using (tangentBundleCore I M).coordChange_self (achart H x) x (mem_chart_source H x) v
 
--- TODO: should there be a vefsion for `extChartAt`?
+-- TODO: should there be a version for `extChartAt`?
 /-- The manifold derivative within `range I` of `(extChartAt I x).symm` at the chart point is
 the identity. -/
 lemma mfderivWithin_range_extChartAt_symm :
