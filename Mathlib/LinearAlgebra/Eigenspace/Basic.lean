@@ -650,7 +650,7 @@ theorem independent_genEigenspace [IsDomain R] [IsTorsionFree R M] (f : End R M)
   classical
   suffices ∀ μ₁ (s : Finset R), μ₁ ∉ s → Disjoint (f.genEigenspace μ₁ k)
     (s.sup fun μ ↦ f.genEigenspace μ k) by
-    simp_rw [iSupIndep_iff_supIndep_of_injOn (injOn_genEigenspace f k),
+    simp_rw [iSupIndep_iff_supIndep,
       Finset.supIndep_iff_disjoint_erase]
     exact fun s μ _ ↦ this _ _ (s.notMem_erase μ)
   intro μ₁ s
