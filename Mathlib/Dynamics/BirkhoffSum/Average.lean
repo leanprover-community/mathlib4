@@ -89,7 +89,7 @@ theorem birkhoffAverage_of_comp_eq {f : α → α} {g : α → M} (h : g ∘ f =
     {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n = g := by
   funext x
   suffices (n : R)⁻¹ • n • g x = g x by simpa [birkhoffAverage, birkhoffSum_of_comp_eq h]
-  rw [← Nat.cast_smul_eq_nsmul (R := R), ← mul_smul, inv_mul_cancel₀ (by norm_cast), one_smul]
+  rw [← Nat.cast_smul_eq_nsmul (R := R), ← mul_smul, inv_mul_cancel₀ hn, one_smul]
 
 end birkhoffAverage
 
