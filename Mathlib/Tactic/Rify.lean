@@ -96,8 +96,8 @@ def rifyProof (proof : Expr) (prop : Expr) : MetaM (Expr × Expr) := do
 @[rify_simps] lemma ratCast_lt (a b : ℚ) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
 @[rify_simps] lemma ratCast_ne (a b : ℚ) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
 
-/- The following lemmas are included in `Mathlib.Data.NNReal.Basic` (so that it
-doesn't need to be imported when using this tactic for only `ℕ, ℤ`, or `ℚ`)
+/- The following lemmas are included in `Mathlib.Data.NNReal.Basic` (so that they
+don't need to be imported when using this tactic for `ℕ, ℤ`, or `ℚ`)
 
 `@[rify_simps] lemma toReal_eq (a b : ℝ≥0) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp`
 `@[rify_simps] lemma toReal_le (a b : ℝ≥0) : a ≤ b ↔ (a : ℝ) ≤ (b : ℝ) := by simp`
