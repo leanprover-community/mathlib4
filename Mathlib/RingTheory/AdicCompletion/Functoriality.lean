@@ -486,6 +486,7 @@ def finsuppSumInv : AdicCompletion I (σ →₀ M) →ₗ[AdicCompletion I R] (�
   (linearEquivFunOnFinite (AdicCompletion I R) (AdicCompletion I M) σ).symm ∘ₗ
     .pi (fun i ↦ map I (lapply i))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finsuppSumInv_comp_sum : finsuppSumInv I M σ ∘ₗ finsuppSum I M σ = .id := by
   classical
   ext
