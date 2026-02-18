@@ -72,6 +72,7 @@ lemma addHaarScalarFactor_smul_inv_eq_distribHaarChar (g : G) :
   simp_rw [← mul_smul, mul_inv_cancel, one_smul]
   exact addHaarScalarFactor_smul_eq_distribHaarChar ..
 
+set_option backward.isDefEq.respectTransparency false in
 variable (μ) in
 lemma addHaarScalarFactor_smul_eq_distribHaarChar_inv (g : G) :
     addHaarScalarFactor μ (DomMulAct.mk g • μ) = (distribHaarChar A g)⁻¹ := by

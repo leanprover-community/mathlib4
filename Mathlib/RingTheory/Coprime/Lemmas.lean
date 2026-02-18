@@ -102,6 +102,7 @@ theorem IsCoprime.of_prod_right (H1 : IsCoprime x (∏ i ∈ t, s i)) (i : I) (h
     IsCoprime x (s i) :=
   IsCoprime.prod_right_iff.1 H1 i hit
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Finset.prod_dvd_of_coprime
     (Hs : (t : Set I).Pairwise (IsCoprime on s)) (Hs1 : (∀ i ∈ t, s i ∣ z)) :
     (∏ x ∈ t, s x) ∣ z := by
@@ -125,6 +126,7 @@ end
 
 open Finset
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) :
     (∃ μ : I → R, (∑ i ∈ t, μ i * ∏ j ∈ t \ {i}, s j) = 1) ↔
       Pairwise (IsCoprime on fun i : t ↦ s i) := by

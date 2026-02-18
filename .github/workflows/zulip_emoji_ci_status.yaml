@@ -1,0 +1,101 @@
+name: Zulip emoji CI status
+
+on:
+  workflow_run:
+    workflows: ["continuous integration", "continuous integration (mathlib forks)"]
+    types: [requested, completed]
+
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: read
+  # All other permissions are implicitly 'none'
+
+jobs:
+  update_ci_emoji:
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
+    steps:
+    - name: Determine PR number
+      id: pr
+      env:
+        GH_TOKEN: ${{ github.token }}
+        HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        HEAD_REPO_OWNER: ${{ github.event.workflow_run.head_repository.owner.login }}
+        HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      run: |
+        # Try to get PR number from the workflow_run event
+        PR_NUMBER=$(echo '${{ toJSON(github.event.workflow_run.pull_requests) }}' | jq -r '.[0].number // empty')
+        # For push-triggered CI (non-fork PRs), pull_requests may be empty;
+        # fall back to looking up the PR by branch name.
+        # Use owner:branch format to avoid matching the wrong PR when
+        # multiple forks use the same branch name.
+        if [ -z "$PR_NUMBER" ]; then
+          PR_NUMBER=$(gh pr list --repo "${{ github.repository }}" --head "$HEAD_REPO_OWNER:$HEAD_BRANCH" --state open --json number,headRefOid --jq ".[] | select(.headRefOid == \"$HEAD_SHA\") | .number" 2>/dev/null || true)
+        fi
+        # If owner-qualified lookup failed, try without owner (for same-repo branches)
+        if [ -z "$PR_NUMBER" ]; then
+          PR_NUMBER=$(gh pr list --repo "${{ github.repository }}" --head "$HEAD_BRANCH" --state open --json number,headRefOid --jq ".[] | select(.headRefOid == \"$HEAD_SHA\") | .number" 2>/dev/null || true)
+        fi
+        if [ -z "$PR_NUMBER" ]; then
+          echo "No PR found for branch $HEAD_REPO_OWNER:$HEAD_BRANCH at $HEAD_SHA, skipping"
+          echo "skip=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "Found PR #$PR_NUMBER"
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Determine CI action
+      id: action
+      if: steps.pr.outputs.skip != 'true'
+      run: |
+        EVENT_ACTION="${{ github.event.action }}"
+        CONCLUSION="${{ github.event.workflow_run.conclusion }}"
+        echo "Event action: $EVENT_ACTION, conclusion: $CONCLUSION"
+        if [ "$EVENT_ACTION" = "requested" ]; then
+          echo "ci_action=ci-running" >> "$GITHUB_OUTPUT"
+        elif [ "$EVENT_ACTION" = "completed" ]; then
+          case "$CONCLUSION" in
+            success)
+              echo "ci_action=ci-success" >> "$GITHUB_OUTPUT"
+              ;;
+            cancelled)
+              # Clear the running emoji. A new run may or may not follow
+              # (manual cancel, branch deleted, etc.), so don't leave stale 🟡.
+              echo "ci_action=ci-cancelled" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "ci_action=ci-failure" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+        fi
+
+    - name: Checkout mathlib repository
+      if: steps.pr.outputs.skip != 'true' && steps.action.outputs.ci_action != 'skip'
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        ref: master
+        sparse-checkout: |
+          scripts/zulip_emoji_reactions.py
+
+    - name: Set up Python
+      if: steps.pr.outputs.skip != 'true' && steps.action.outputs.ci_action != 'skip'
+      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      if: steps.pr.outputs.skip != 'true' && steps.action.outputs.ci_action != 'skip'
+      run: |
+        python -m pip install --upgrade pip
+        pip install zulip
+
+    - name: Update CI emoji
+      if: steps.pr.outputs.skip != 'true' && steps.action.outputs.ci_action != 'skip'
+      env:
+        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+        ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
+        ZULIP_SITE: https://leanprover.zulipchat.com
+      run: |
+        python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.action.outputs.ci_action }}" "none" "${{ steps.pr.outputs.pr_number }}"

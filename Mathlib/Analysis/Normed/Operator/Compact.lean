@@ -194,6 +194,27 @@ theorem IsCompactOperator.smul {S : Type*} [Monoid S] [DistribMulAction S M₂]
   ⟨c • K, hK.image <| continuous_id.const_smul c,
     mem_of_superset hKf fun _ hx => smul_mem_smul_set hx⟩
 
+theorem IsCompactOperator.smul_unit_iff {S : Type*} [Monoid S] [DistribMulAction S M₂]
+    [ContinuousConstSMul S M₂] {f : M₁ → M₂} {c : Sˣ} :
+    IsCompactOperator (c • f) ↔ IsCompactOperator f :=
+  ⟨fun h ↦ by simpa using h.smul c⁻¹, fun h ↦ h.smul c⟩
+
+theorem IsCompactOperator.smul_isUnit_iff {S : Type*} [Monoid S] [DistribMulAction S M₂]
+    [ContinuousConstSMul S M₂] {f : M₁ → M₂} {c : S} (hc : IsUnit c) :
+    IsCompactOperator (c • f) ↔ IsCompactOperator f := by
+  obtain ⟨c, rfl⟩ := hc
+  exact smul_unit_iff
+
+theorem IsCompactOperator.smul_iff {S : Type*} [Group S] [DistribMulAction S M₂]
+    [ContinuousConstSMul S M₂] {f : M₁ → M₂} (c : S) :
+    IsCompactOperator (c • f) ↔ IsCompactOperator f :=
+  smul_isUnit_iff (Group.isUnit c)
+
+theorem IsCompactOperator.smul_iff₀ {S : Type*} [GroupWithZero S] [DistribMulAction S M₂]
+    [ContinuousConstSMul S M₂] {f : M₁ → M₂} {c : S} (hc : c ≠ 0) :
+    IsCompactOperator (c • f) ↔ IsCompactOperator f :=
+  smul_isUnit_iff hc.isUnit
+
 theorem IsCompactOperator.add [ContinuousAdd M₂] {f g : M₁ → M₂} (hf : IsCompactOperator f)
     (hg : IsCompactOperator g) : IsCompactOperator (f + g) :=
   let ⟨A, hA, hAf⟩ := hf

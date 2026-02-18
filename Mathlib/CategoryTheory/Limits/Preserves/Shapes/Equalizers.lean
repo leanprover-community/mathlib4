@@ -204,6 +204,7 @@ theorem map_π_preserves_coequalizer_inv_desc {W : D} (k : G.obj Y ⟶ W)
       (PreservesCoequalizer.iso G f g).inv ≫ coequalizer.desc k wk = k := by
   rw [← Category.assoc, map_π_preserves_coequalizer_inv, coequalizer.π_desc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem map_π_preserves_coequalizer_inv_colimMap {X' Y' : D} (f' g' : X' ⟶ Y')
     [HasCoequalizer f' g'] (p : G.obj X ⟶ X') (q : G.obj Y ⟶ Y') (wf : G.map f ≫ q = p ≫ f')

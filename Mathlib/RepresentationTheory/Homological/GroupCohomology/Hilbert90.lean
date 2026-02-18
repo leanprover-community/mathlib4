@@ -116,6 +116,7 @@ variable {K L} [IsGalois K L]
 
 open Additive Rep
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `L/K` finite and Galois, and `x : Lˣ`, this essentially says
 `(∏ σ) • x = N_{L/K}(x)`, where the product is over `σ ∈ Gal(L/K)`. -/
 theorem norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
@@ -125,6 +126,7 @@ theorem norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
 
 variable [IsCyclic (L ≃ₐ[K] L)] {g : Gal(L/K)}
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] IsCyclic.commGroup in
 /-- Hilbert's Theorem 90: given a finite cyclic Galois extension `L/K`, an element `x : L` such
 that `N_{L/K}(x) = 1`, and a generator `g` of `Gal(L/K)`, there exists `y : Lˣ`
