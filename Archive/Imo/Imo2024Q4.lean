@@ -171,6 +171,7 @@ lemma A'_mem_AI : cfg.A' ∈ line[ℝ, cfg.A, cfg.I] := by
 lemma A'_eq_homothety_A_2_I : cfg.A' = AffineMap.homothety cfg.A (2 : ℝ) cfg.I := by
   simp [A', AffineMap.homothety_apply, Equiv.pointReflection_apply, two_smul, add_vadd]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma B_eq_homothety_A_2_L : cfg.B = AffineMap.homothety cfg.A (2 : ℝ) cfg.L := by
   simp [L_eq_midpoint_AB, midpoint, AffineMap.lineMap_apply]
 
