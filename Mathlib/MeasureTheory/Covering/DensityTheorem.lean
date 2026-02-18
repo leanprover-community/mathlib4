@@ -109,6 +109,7 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
     refine le_mul_of_one_le_left (zero_le _) ?_
     exact ENNReal.one_le_coe_iff.2 (le_max_right _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter ι} (w : ι → α)
     (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0)) (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)) :
     Tendsto (fun j => closedBall (w j) (δ j)) l ((vitaliFamily μ K).filterAt x) := by

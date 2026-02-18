@@ -79,6 +79,7 @@ instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower
   rw [IsScalarTower.algebraMap_eq R₀ R, IsScalarTower.algebraMap_eq R₁ R,
     RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq R₀ R₁ R]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <| by
   rw [IsScalarTower.algebraMap_eq R₀ R P.Ring, ← RingHom.comp_assoc,
@@ -439,7 +440,7 @@ lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
 
 lemma Cotangent.finite (hP : P.ker.FG) :
     Module.Finite S P.Cotangent := by
-  refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
+  refine ⟨.of_restrictScalars (R := P.Ring) ?_⟩
   rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
     ← Submodule.map_top]
   exact ((Submodule.fg_top P.ker).mpr hP).map _

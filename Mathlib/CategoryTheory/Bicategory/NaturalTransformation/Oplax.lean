@@ -184,7 +184,7 @@ end LaxTrans
 /-- If `η` is an oplax transformation between `F` and `G`, we have a 1-morphism
 `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`. We also have a 2-morphism
 `η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism `f : a ⟶ b`.
-These 2-morphisms satisfies the naturality condition, and preserve the identities and
+These 2-morphisms satisfy the naturality condition, and preserve the identities and
 the compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
 structure OplaxTrans (F G : B ⥤ᵒᵖᴸ C) where

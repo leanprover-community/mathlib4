@@ -35,15 +35,10 @@ this is a basis over `Fin 3 → R`.
 
 @[expose] public section
 
-open Function Module Set Submodule
+open Function LinearMap Module Set Submodule
 
 namespace Pi
-
-open LinearMap
-
-open Set
-
-variable {R : Type*}
+variable {ι R M : Type*}
 
 section Module
 
@@ -60,12 +55,11 @@ theorem linearIndependent_single_one (ι R : Type*) [Semiring R] [DecidableEq ι
   exact Pi.linearIndependent_single (fun (_ : ι) (_ : Unit) ↦ (1 : R))
     <| by simp +contextual [Fintype.linearIndependent_iffₛ]
 
-lemma linearIndependent_single_of_ne_zero {ι R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
+lemma linearIndependent_single_of_ne_zero [Ring R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [IsTorsionFree R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
     LinearIndependent R fun i : ι ↦ Pi.single i (v i) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
-  exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by
-    simp +contextual [Fintype.linearIndependent_iff, hv]
+  exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by simp +contextual [hv]
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 

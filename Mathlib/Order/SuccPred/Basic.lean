@@ -69,7 +69,7 @@ class PredOrder (α : Type*) [Preorder α] where
   /-- Proof that `pred b` is the greatest element less than `b` -/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
 
-attribute [to_dual (reorder := a b)] PredOrder.le_pred_of_lt
+attribute [to_dual existing] PredOrder.le_pred_of_lt
 
 instance [Preorder α] [SuccOrder α] : PredOrder αᵒᵈ where
   pred := toDual ∘ SuccOrder.succ ∘ ofDual
@@ -915,6 +915,7 @@ section Succ
 
 variable [PartialOrder α] [SuccOrder α] [∀ a : α, Decidable (succ a = a)]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : SuccOrder (WithTop α) where
   succ a :=
     match a with
@@ -964,6 +965,7 @@ section Pred
 
 variable [Preorder α] [OrderTop α] [PredOrder α]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : PredOrder (WithTop α) where
   pred a :=
     match a with
@@ -1118,6 +1120,7 @@ section OrderIso
 
 variable {X Y : Type*} [Preorder X] [Preorder Y]
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- `SuccOrder` transfers across equivalences between orders. -/
 protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y where
@@ -1129,8 +1132,10 @@ protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y
     simp [f.le_symm_apply, h]
   succ_le_of_lt h := by rw [← le_map_inv_iff]; exact succ_le_of_lt (by simp [h])
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- `PredOrder` transfers across equivalences between orders. -/
+@[to_dual existing]
 protected abbrev PredOrder.ofOrderIso [PredOrder X] (f : X ≃o Y) :
     PredOrder Y where
   pred y := f (pred (f.symm y))

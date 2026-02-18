@@ -537,6 +537,7 @@ variable {ι R M}
 theorem piRing_apply (f : (ι → R) →ₗ[R] M) (i : ι) : piRing R M ι S f i = f (Pi.single i 1) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem piRing_symm_apply (f : ι → M) (g : ι → R) : (piRing R M ι S).symm f g = ∑ i, g i • f i := by
   simp [piRing, LinearMap.lsum_apply]
@@ -628,7 +629,7 @@ lemma Pi.mem_span_range_single_inl_iff
 
 section Extend
 
-variable (R) {η : Type x} [Semiring R] (s : ι → η)
+variable (R) {η : Type*} [Semiring R] (s : ι → η)
 
 /-- `Function.extend s f 0` as a bundled linear map. -/
 @[simps]

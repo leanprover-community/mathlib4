@@ -30,7 +30,7 @@ well as such computations in `ℝ` when the natural proof passes through a fact 
 
 noncomputable section
 
-open Set Function Filter Finset Metric Asymptotics Topology Nat NNReal ENNReal
+open Set Function Filter Finset Metric Module Asymptotics Topology Nat NNReal ENNReal
 
 variable {α : Type*}
 
@@ -182,6 +182,7 @@ theorem tendsto_pow_const_div_const_pow_of_one_lt (k : ℕ) {r : ℝ} (hr : 1 < 
     Tendsto (fun n ↦ (n : ℝ) ^ k / r ^ n : ℕ → ℝ) atTop (𝓝 0) :=
   (isLittleO_pow_const_const_pow_of_one_lt k hr).tendsto_div_nhds_zero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `|r| < 1`, then `n ^ k r ^ n` tends to zero for any natural `k`. -/
 theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : |r| < 1) :
     Tendsto (fun n ↦ (n : ℝ) ^ k * r ^ n : ℕ → ℝ) atTop (𝓝 0) := by
@@ -715,6 +716,7 @@ section
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {b : ℝ} {f : ℕ → ℝ} {z : ℕ → E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Dirichlet's test** for monotone sequences. -/
 theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone f)
     (hf0 : Tendsto f atTop (𝓝 0)) (hgb : ∀ n, ‖∑ i ∈ range n, z i‖ ≤ b) :
@@ -913,10 +915,12 @@ open Bornology
 
 variable {R K : Type*}
 
-lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded [NormedAddGroup K]
-    [NormedAddGroup R] [SMulWithZero K R] [NoZeroSMulDivisors K R] [NormSMulClass K R]
-    {f : α → K} {g : α → R} {l : Filter α}
-    (hmul : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f x • g x‖)
+section NormedAddCommGroup
+variable [NormedRing K] [IsDomain K] [NormedAddCommGroup R]
+variable [Module K R] [IsTorsionFree K R] [NormSMulClass K R]
+
+lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded {f : α → K} {g : α → R}
+    {l : Filter α} (hmul : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f x • g x‖)
     (hf : Tendsto f l (cobounded K)) :
     Tendsto g l (𝓝 0) := by
   obtain ⟨c, hc⟩ := hmul.eventually_le
@@ -930,11 +934,6 @@ lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded [NormedAddGroup K
     _ ≤ c / ‖f x‖ := by rwa [norm_smul, ← le_div_iff₀' (by positivity)] at hfgc
     _ ≤ c / (c / ε) := by gcongr
     _ = ε := div_div_cancel₀ hc0.ne'
-
-section
-
-variable [NormedRing K] [NormedAddCommGroup R]
-variable [Module K R] [NoZeroSMulDivisors K R] [NormSMulClass K R]
 
 lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
     {f₁ f₂ : α → K} {g : α → R} {t : R} {l : Filter α}
@@ -964,10 +963,10 @@ lemma tendsto_smul_comp_nat_floor_of_tendsto_nsmul [NormSMulClass ℤ K] [Linear
     apply Eventually.mono _ (fun x h ↦ norm_le_norm_of_abs_le_abs h)
     simpa using ⟨0, fun _ h ↦ mod_cast Nat.abs_floor_sub_le h⟩
 
-end
+end NormedAddCommGroup
 
 lemma tendsto_smul_comp_nat_floor_of_tendsto_mul [NormedRing K] [NormedRing R]
-    [Module K R] [NoZeroSMulDivisors K R] [NormSMulClass K R] [NormSMulClass ℤ K] [LinearOrder K]
+    [Module K R] [IsTorsionFree K R] [NormSMulClass K R] [NormSMulClass ℤ K] [LinearOrder K]
     [IsStrictOrderedRing K] [FloorSemiring K] [HasSolidNorm K] {g : ℕ → R} {t : R}
     (hg : Tendsto (fun n : ℕ ↦ (n : R) * g n) atTop (𝓝 t)) :
     Tendsto (fun x : K ↦ x • g ⌊x⌋₊) atTop (𝓝 t) :=

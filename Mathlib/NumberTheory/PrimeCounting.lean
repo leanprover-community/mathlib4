@@ -97,8 +97,6 @@ theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
 theorem tendsto_primeCounting : Tendsto π atTop atTop :=
   (tendsto_add_atTop_iff_nat 1).mpr tendsto_primeCounting'
 
-@[deprecated (since := "2025-07-08")] alias tensto_primeCounting := tendsto_primeCounting
-
 @[simp]
 theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _

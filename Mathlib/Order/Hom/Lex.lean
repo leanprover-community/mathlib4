@@ -31,7 +31,7 @@ variable {α : Type*}
 
 namespace RelIso
 
-variable {r : α → α → Prop} {x y : α} [IsTrans α r] [IsTrichotomous α r] [DecidableRel r]
+variable {r : α → α → Prop} {x y : α} [IsTrans α r] [Std.Trichotomous r] [DecidableRel r]
 
 variable (r x) in
 /-- A relation is isomorphic to the lexicographic sum of elements less than `x` and elements not
@@ -201,6 +201,7 @@ def sumLexProdLexDistrib (α β γ : Type*)
     .trans (.sumProdDistrib α β γ) <| .trans (.sumCongr toLex toLex) toLex
   map_rel_iff' := by simp [Prod.Lex.le_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Equiv.prodCongr` promoted to an order isomorphism between lexicographic products. -/
 @[simps! apply]
 def prodLexCongr {α β γ δ : Type*} [Preorder α] [Preorder β]

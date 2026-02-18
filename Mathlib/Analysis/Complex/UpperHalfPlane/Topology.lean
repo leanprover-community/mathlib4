@@ -29,13 +29,14 @@ open Complex Filter Function Set TopologicalSpace Topology
 namespace UpperHalfPlane
 
 instance : TopologicalSpace ℍ :=
-  instTopologicalSpaceSubtype
+  .induced UpperHalfPlane.coe inferInstance
+
+@[fun_prop]
+theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
+  coe_injective.isEmbedding_induced
 
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
-  IsOpen.isOpenEmbedding_subtypeVal <| isOpen_upperHalfPlaneSet
-
-theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
-  IsEmbedding.subtypeVal
+  ⟨isEmbedding_coe, by simp [isOpen_upperHalfPlaneSet]⟩
 
 @[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
@@ -49,22 +50,30 @@ theorem continuous_re : Continuous re :=
 theorem continuous_im : Continuous im :=
   Complex.continuous_im.comp continuous_coe
 
-instance : SecondCountableTopology ℍ :=
-  TopologicalSpace.Subtype.secondCountableTopology _
+@[fun_prop]
+theorem _root_.Continuous.upperHalfPlaneMk {X : Type*} [TopologicalSpace X] {f : X → ℂ}
+    (hf : Continuous f) (hf₀ : ∀ x, 0 < (f x).im) :
+    Continuous fun x ↦ mk (f x) (hf₀ x) :=
+  isEmbedding_coe.continuous_iff.mpr hf
 
-instance : T3Space ℍ := Subtype.t3Space
+instance : SecondCountableTopology ℍ :=
+  secondCountableTopology_induced ..
+
+instance : T3Space ℍ := isEmbedding_coe.t3Space
 
 instance : T4Space ℍ := inferInstance
 
-instance : ContractibleSpace ℍ :=
-  (convex_halfSpace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
+instance : ContractibleSpace ℍ := by
+  rw [isEmbedding_coe.toHomeomorph.trans (.setCongr range_coe) |>.contractibleSpace_iff]
+  exact (convex_halfSpace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
 
 instance : LocPathConnectedSpace ℍ := isOpenEmbedding_coe.locPathConnectedSpace
 
-instance : NoncompactSpace ℍ := by
-  refine ⟨fun h => ?_⟩
-  have : IsCompact (Complex.im ⁻¹' Ioi 0) := isCompact_iff_isCompact_univ.2 h
-  simpa [closure_preimage_im] using congr(0 ∈ $this.isClosed.closure_eq)
+instance : NoncompactSpace ℍ where
+  noncompact_univ h := by
+    have : IsCompact (Complex.im ⁻¹' Ioi 0) := by
+      simpa [isEmbedding_coe.isCompact_iff] using h
+    simpa [closure_preimage_im] using congr(0 ∈ $this.isClosed.closure_eq)
 
 instance : LocallyCompactSpace ℍ :=
   isOpenEmbedding_coe.locallyCompactSpace
@@ -147,11 +156,11 @@ lemma ofComplex_apply_eq_ite (w : ℂ) :
   · change (Function.invFunOn UpperHalfPlane.coe Set.univ w) = _
     simp only [invFunOn, dite_eq_right_iff, mem_univ, true_and]
     rintro ⟨a, rfl⟩
-    exact (a.prop.not_ge (by simpa using hw)).elim
+    exact (a.im_pos.not_ge (by simpa using hw)).elim
 
 lemma ofComplex_apply_of_im_pos {z : ℂ} (hz : 0 < z.im) :
-    ofComplex z = ⟨z, hz⟩ := by
-  simpa only [coe_mk_subtype] using ofComplex_apply ⟨z, hz⟩
+    ofComplex z = ⟨z, hz⟩ :=
+  ofComplex_apply ⟨z, hz⟩
 
 lemma ofComplex_apply_of_im_nonpos {w : ℂ} (hw : w.im ≤ 0) :
     ofComplex w = Classical.choice inferInstance := by
@@ -174,7 +183,7 @@ lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤
 lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
   filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
-  simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq, coe_mk_subtype]
+  simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq]
 
 end ofComplex
 

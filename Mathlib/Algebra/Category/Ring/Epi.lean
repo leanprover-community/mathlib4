@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Epi
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
@@ -22,9 +23,9 @@ open CategoryTheory TensorProduct
 
 universe u
 
-lemma CommRingCat.epi_iff_tmul_eq_tmul {R S : Type u} [CommRing R] [CommRing S] [Algebra R S] :
-    Epi (CommRingCat.ofHom (algebraMap R S)) ↔
-      ∀ s : S, s ⊗ₜ[R] 1 = 1 ⊗ₜ s := by
+lemma CommRingCat.epi_iff_epi {R S : Type u} [CommRing R] [CommRing S] [Algebra R S] :
+    Epi (CommRingCat.ofHom (algebraMap R S)) ↔ Algebra.IsEpi R S := by
+  simp_rw [Algebra.isEpi_iff_forall_one_tmul_eq, eq_comm]
   constructor
   · intro H
     have := H.1 (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom)
@@ -39,11 +40,14 @@ lemma CommRingCat.epi_iff_tmul_eq_tmul {R S : Type u} [CommRing R] [CommRing S] 
     ext s
     simpa using congr(Algebra.TensorProduct.lift f' g' (fun _ _ ↦ .all _ _) $(H s))
 
+@[deprecated (since := "2026-01-13")]
+alias CommRingCat.epi_iff_tmul_eq_tmul := CommRingCat.epi_iff_epi
+
 lemma RingHom.surjective_of_epi_of_finite {R S : CommRingCat} (f : R ⟶ S) [Epi f]
     (h₂ : RingHom.Finite f.hom) : Function.Surjective f := by
   algebraize [f.hom]
-  apply RingHom.surjective_of_tmul_eq_tmul_of_finite
-  rwa [← CommRingCat.epi_iff_tmul_eq_tmul]
+  have : Algebra.IsEpi R S := CommRingCat.epi_iff_epi.mp <| inferInstanceAs (Epi f)
+  rwa [Algebra.isEpi_iff_surjective_algebraMap_of_finite] at this
 
 lemma RingHom.surjective_iff_epi_and_finite {R S : CommRingCat} {f : R ⟶ S} :
     Function.Surjective f ↔ Epi f ∧ RingHom.Finite f.hom where

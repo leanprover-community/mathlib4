@@ -136,6 +136,7 @@ instance (priority := 100) HasSolidNorm.continuousInf : ContinuousInf α := by
     ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) HasSolidNorm.continuousSup {α : Type*}
     [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α] : ContinuousSup α :=
