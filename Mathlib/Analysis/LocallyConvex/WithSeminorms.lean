@@ -228,16 +228,19 @@ variable [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [SeminormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
+set_option backward.isDefEq.respectTransparency false in
 -- Todo: This should be phrased entirely in terms of the von Neumann bornology.
 /-- The proposition that a linear map is bounded between spaces with families of seminorms. -/
 def IsBounded (p : ι → Seminorm 𝕜 E) (q : ι' → Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) : Prop :=
   ∀ i, ∃ s : Finset ι, ∃ C : ℝ≥0, (q i).comp f ≤ C • s.sup p
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isBounded_const (ι' : Type*) [Nonempty ι'] {p : ι → Seminorm 𝕜 E} {q : Seminorm 𝕜₂ F}
     (f : E →ₛₗ[σ₁₂] F) :
     IsBounded p (fun _ : ι' => q) f ↔ ∃ (s : Finset ι) (C : ℝ≥0), q.comp f ≤ C • s.sup p := by
   simp only [IsBounded, forall_const]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem const_isBounded (ι : Type*) [Nonempty ι] {p : Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂ F}
     (f : E →ₛₗ[σ₁₂] F) : IsBounded (fun _ : ι => p) q f ↔ ∀ i, ∃ C : ℝ≥0, (q i).comp f ≤ C • p := by
   constructor <;> intro h i
@@ -246,6 +249,7 @@ theorem const_isBounded (ι : Type*) [Nonempty ι] {p : Seminorm 𝕜 E} {q : ι
   use {Classical.arbitrary ι}
   simp only [h, Finset.sup_singleton]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isBounded_sup {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂ F} {f : E →ₛₗ[σ₁₂] F}
     (hf : IsBounded p q f) (s' : Finset ι') :
     ∃ (C : ℝ≥0) (s : Finset ι), (s'.sup q).comp f ≤ C • s.sup p := by
@@ -413,6 +417,7 @@ section TopologicalSpace
 
 variable [t : TopologicalSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem SeminormFamily.withSeminorms_of_nhds [IsTopologicalAddGroup E] (p : SeminormFamily 𝕜 E ι)
     (h : 𝓝 (0 : E) = p.moduleFilterBasis.toFilterBasis.filter) : WithSeminorms p := by
   refine
@@ -654,6 +659,7 @@ theorem continuous_iff_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [Topol
     Continuous f ↔ ∀ i, Continuous ((q i).comp f) :=
   ⟨fun h i => (hq.continuous_seminorm i).comp h, continuous_of_continuous_comp hq f⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFamily 𝕝₂ F ι'}
     {_ : TopologicalSpace E} (hp : WithSeminorms p) {_ : TopologicalSpace F} (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : Seminorm.IsBounded p q f) : Continuous f := by
@@ -669,6 +675,7 @@ theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
   simp_rw [map_sum, Finset.sum_apply]
   exact (continuous_finset_sum _ fun i _ ↦ (hp.continuous_seminorm i).const_smul (C : ℝ))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cont_withSeminorms_normedSpace (F) [SeminormedAddCommGroup F] [NormedSpace 𝕝₂ F]
     [TopologicalSpace E] {p : ι → Seminorm 𝕝 E} (hp : WithSeminorms p)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∃ (s : Finset ι) (C : ℝ≥0), (normSeminorm 𝕝₂ F).comp f ≤ C • s.sup p) :
@@ -676,6 +683,7 @@ theorem cont_withSeminorms_normedSpace (F) [SeminormedAddCommGroup F] [NormedSpa
   rw [← Seminorm.isBounded_const (Fin 1)] at hf
   exact continuous_from_bounded hp (norm_withSeminorms 𝕝₂ F) f hf
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cont_normedSpace_to_withSeminorms (E) [SeminormedAddCommGroup E] [NormedSpace 𝕝 E]
     [TopologicalSpace F] {q : ι → Seminorm 𝕝₂ F} (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∀ i : ι, ∃ C : ℝ≥0, (q i).comp f ≤ C • normSeminorm 𝕝 E) :
@@ -781,6 +789,7 @@ protected theorem congr {p : SeminormFamily 𝕜 E ι} {q : SeminormFamily 𝕜 
   refine continuous_from_bounded (.mk (topology := _) rfl) (.mk (topology := _) rfl)
     LinearMap.id (by assumption)
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem finset_sups {p : SeminormFamily 𝕜 E ι} [TopologicalSpace E]
     (hp : WithSeminorms p) : WithSeminorms (fun s : Finset ι ↦ s.sup p) := by
   refine hp.congr ?_ ?_
@@ -793,6 +802,7 @@ protected theorem finset_sups {p : SeminormFamily 𝕜 E ι} [TopologicalSpace E
     rw [Finset.sup_singleton, Finset.sup_singleton, one_smul]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem partial_sups [Preorder ι] [LocallyFiniteOrderBot ι] {p : SeminormFamily 𝕜 E ι}
     [TopologicalSpace E] (hp : WithSeminorms p) : WithSeminorms (fun i ↦ (Finset.Iic i).sup p) := by
   refine hp.congr ?_ ?_
@@ -805,6 +815,7 @@ protected theorem partial_sups [Preorder ι] [LocallyFiniteOrderBot ι] {p : Sem
     rw [Finset.sup_singleton, one_smul]
     exact (Finset.le_sup (Finset.mem_Iic.mpr le_rfl) : p i ≤ (Finset.Iic i).sup p)
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem congr_equiv {p : SeminormFamily 𝕜 E ι} [t : TopologicalSpace E]
     (hp : WithSeminorms p) (e : ι' ≃ ι) : WithSeminorms (p ∘ e) := by
   refine hp.congr ?_ ?_ <;>
@@ -855,6 +866,7 @@ lemma bound_of_continuous_normedSpace (q : Seminorm 𝕜 F)
     refine (le_of_lt <| show q x < _ from hε hlt).trans ?_
     rwa [← div_le_iff₀' this, one_div_div]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `E` be a topological vector space (over a `NontriviallyNormedField`) whose topology is
 generated by some family of seminorms `p`, and let `q` be a seminorm on `E`. If `q` is continuous,
 then it is uniformly controlled by *finitely many* seminorms of `p`, that is there
@@ -892,6 +904,7 @@ open LocallyConvexSpace
 variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommGroup E] [Module 𝕜 E] [Module ℝ E]
   [IsScalarTower ℝ 𝕜 E] [TopologicalSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) :
     LocallyConvexSpace ℝ E := by
   have := hp.topologicalAddGroup
@@ -978,6 +991,7 @@ theorem Topology.IsInducing.polynormableSpace [PolynormableSpace 𝕜₂ F]
     PolynormableSpace 𝕜 E :=
   hf.withSeminorms (PolynormableSpace.withSeminorms 𝕜₂ F) |>.toPolynormableSpace
 
+set_option backward.isDefEq.respectTransparency false in
 instance [PolynormableSpace 𝕜₂ F] {S : Submodule 𝕜₂ F} :
     PolynormableSpace 𝕜₂ S :=
   IsInducing.polynormableSpace (f := S.subtype) .subtypeVal

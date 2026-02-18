@@ -161,6 +161,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [IsDomain R] [IsTo
   rw [comp_apply, hl, hk, hij]
   exact (hr i).comp <| (hr j).comp (hr i)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In characteristic zero if there is no torsion, to check that two finite families of roots and
 coroots form a root pairing, it is sufficient to check that they are stable under reflections. -/
 def mk' [CharZero R] [IsDomain R] [IsTorsionFree R M]

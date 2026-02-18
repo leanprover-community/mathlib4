@@ -95,6 +95,7 @@ def upgradeIsCompletelyPseudoMetrizable (X : Type*) [TopologicalSpace X]
 
 namespace IsCompletelyPseudoMetrizableSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Note: the priority is set to 90 to ensure that this instance is only applied after
 `PseudoEMetricSpace.pseudoMetrizableSpace`. This prevents unnecessary attempts to infer
 completeness. -/
@@ -103,6 +104,7 @@ instance (priority := 90) PseudoMetrizableSpace [TopologicalSpace X]
   letI := upgradeIsCompletelyPseudoMetrizable X
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A countable product of completely pseudometrizable spaces is completely pseudometrizable. -/
 instance pi_countable {ι : Type*} [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, IsCompletelyPseudoMetrizableSpace (X i)] :
@@ -110,6 +112,7 @@ instance pi_countable {ι : Type*} [Countable ι] {X : ι → Type*} [∀ i, Top
   letI := fun i ↦ upgradeIsCompletelyPseudoMetrizable (X i)
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of two completely pseudometrizable spaces is completely pseudometrizable. -/
 instance prod [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [TopologicalSpace Y]
     [IsCompletelyPseudoMetrizableSpace Y] : IsCompletelyPseudoMetrizableSpace (X × Y) :=
@@ -117,6 +120,7 @@ instance prod [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [Topolo
   letI := upgradeIsCompletelyPseudoMetrizable Y
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The disjoint union of two completely pseudometrizable spaces is completely pseudometrizable. -/
 instance sum [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [TopologicalSpace Y]
     [IsCompletelyPseudoMetrizableSpace Y] : IsCompletelyPseudoMetrizableSpace (X ⊕ Y) :=
@@ -124,6 +128,7 @@ instance sum [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [Topolog
   letI := upgradeIsCompletelyPseudoMetrizable Y
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a closed embedding into a completely pseudometrizable space,
 the source space is also completely pseudometrizable. -/
 theorem _root_.Topology.IsClosedEmbedding.IsCompletelyPseudoMetrizableSpace [TopologicalSpace X]
@@ -159,6 +164,7 @@ instance IsCompletelyMetrizableSpace.toIsCompletelyPseudoMetrizableSpace [Topolo
   obtain ⟨m, _⟩ := ‹_›
   use m.toPseudoMetricSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A completely pseudometrizable T0 space is completely metrizable. -/
 lemma IsCompletelyMetrizableSpace_of_isCompletelyPseudoMetrizableSpace [TopologicalSpace X]
     [IsCompletelyPseudoMetrizableSpace X] [T0Space X] :
@@ -205,6 +211,7 @@ def upgradeIsCompletelyMetrizable (X : Type*) [TopologicalSpace X] [IsCompletely
 
 namespace IsCompletelyMetrizableSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Note: the priority is set to 90 to ensure that this instance is only applied after
 `EMetricSpace.metrizableSpace`. This prevents unnecessary attempts to infer completeness. -/
 instance (priority := 90) MetrizableSpace [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
@@ -212,12 +219,14 @@ instance (priority := 90) MetrizableSpace [TopologicalSpace X] [IsCompletelyMetr
   letI := upgradeIsCompletelyMetrizable X
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A countable product of completely metrizable spaces is completely metrizable. -/
 instance pi_countable {ι : Type*} [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, IsCompletelyMetrizableSpace (X i)] : IsCompletelyMetrizableSpace (Π i, X i) := by
   letI := fun i ↦ upgradeIsCompletelyMetrizable (X i)
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A disjoint union of completely metrizable spaces is completely metrizable. -/
 instance sigma {ι : Type*} {X : ι → Type*} [∀ n, TopologicalSpace (X n)]
     [∀ n, IsCompletelyMetrizableSpace (X n)] : IsCompletelyMetrizableSpace (Σ n, X n) :=
@@ -226,6 +235,7 @@ instance sigma {ι : Type*} {X : ι → Type*} [∀ n, TopologicalSpace (X n)]
   haveI : CompleteSpace (Σ n, X n) := Metric.Sigma.completeSpace
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of two completely metrizable spaces is completely metrizable. -/
 instance prod [TopologicalSpace X] [IsCompletelyMetrizableSpace X] [TopologicalSpace Y]
     [IsCompletelyMetrizableSpace Y] : IsCompletelyMetrizableSpace (X × Y) :=
@@ -233,6 +243,7 @@ instance prod [TopologicalSpace X] [IsCompletelyMetrizableSpace X] [TopologicalS
   letI := upgradeIsCompletelyMetrizable Y
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The disjoint union of two completely metrizable spaces is completely metrizable. -/
 instance sum [TopologicalSpace X] [IsCompletelyMetrizableSpace X] [TopologicalSpace Y]
     [IsCompletelyMetrizableSpace Y] : IsCompletelyMetrizableSpace (X ⊕ Y) :=
@@ -240,6 +251,7 @@ instance sum [TopologicalSpace X] [IsCompletelyMetrizableSpace X] [TopologicalSp
   letI := upgradeIsCompletelyMetrizable Y
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a closed embedding into a completely metrizable space,
 the source space is also completely metrizable. -/
 theorem _root_.Topology.IsClosedEmbedding.IsCompletelyMetrizableSpace [TopologicalSpace X]

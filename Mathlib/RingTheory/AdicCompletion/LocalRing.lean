@@ -22,6 +22,7 @@ variable {R : Type*} [CommRing R] (m : Ideal R) [hmax : m.IsMaximal]
 
 open Ideal Quotient
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isUnit_iff_notMem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
     IsUnit r ↔ r ∉ m := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
