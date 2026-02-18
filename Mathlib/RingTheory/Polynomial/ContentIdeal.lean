@@ -86,6 +86,7 @@ theorem contentIdeal_one : (1 : R[X]).contentIdeal = ⊤ := by
 
 theorem contentIdeal_FG : p.contentIdeal.FG := ⟨p.coeffs, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contentIdeal_map_eq_map_contentIdeal (f : R →+* S) :
     (p.map f).contentIdeal = p.contentIdeal.map f := by
   suffices span ((map f p).coeffs ∪ {0}) = span (f '' p.coeffs ∪ {0}) by

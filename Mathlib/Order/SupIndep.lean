@@ -292,6 +292,7 @@ include hs in
 theorem sSupIndep.pairwiseDisjoint : s.PairwiseDisjoint id := fun _ hx y hy h =>
   disjoint_sSup_right (hs hx) ((mem_diff y).mpr ⟨hy, h.symm⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sSupIndep_singleton (a : α) : sSupIndep ({a} : Set α) := fun i hi ↦ by
   simp_all
 
@@ -466,6 +467,7 @@ lemma iSupIndep.of_coe_Iic_comp {ι : Sort*} {a : α} {t : ι → Set.Iic a}
   simp_rw [Function.comp_apply, ← Set.Iic.coe_iSup] at ht
   exact @ht x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iSupIndep_iff_supIndep {s : Finset ι} {f : ι → α} :
     iSupIndep (f ∘ ((↑) : s → ι)) ↔ s.SupIndep f := by
   classical

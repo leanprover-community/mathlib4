@@ -34,11 +34,13 @@ variable [Monoid G] [Field k] [AddCommGroup V] [Module k V]
 abbrev IsSemisimpleRepresentation :=
   ComplementedLattice (Subrepresentation ρ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleRepresentation_iff_isSemisimpleModule_asModule :
     IsSemisimpleRepresentation ρ ↔ IsSemisimpleModule k[G] ρ.asModule := by
   rw [isSemisimpleModule_iff]
   exact OrderIso.complementedLattice_iff Subrepresentation.subrepresentationSubmoduleOrderIso
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleModule_iff_isSemisimpleRepresentation_ofModule (M : Type*) [AddCommGroup M]
     [Module k[G] M] :
     IsSemisimpleModule k[G] M ↔ IsSemisimpleRepresentation (ofModule (k := k) (G := G) M) := by

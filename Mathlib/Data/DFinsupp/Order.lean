@@ -116,6 +116,7 @@ instance lattice : Lattice (Π₀ i, α i) :=
 
 variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
   coe_injective <| compl_injective <| by ext; simp [inf_eq_and_sup_eq_iff]
 
@@ -208,6 +209,7 @@ theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
 theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' <| Subset.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma support_monotone : Monotone (support (ι := ι) (β := α)) :=
   fun f g h a ha ↦ by rw [mem_support_iff, ← pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
 

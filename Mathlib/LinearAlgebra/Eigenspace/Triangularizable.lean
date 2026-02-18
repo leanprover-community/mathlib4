@@ -69,6 +69,7 @@ noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f
     Inhabited f.Eigenvalues :=
   ⟨⟨f.exists_eigenvalue.choose, f.exists_eigenvalue.choose_spec⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 -- Lemma 8.22(c) of [axler2024]
 /-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
 linear endomorphism span the whole space. -/
@@ -97,12 +98,12 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
     let f' : End K ER := f.restrict h_f_ER
     -- The dimension of `ES` is positive
     have h_dim_ES_pos : 0 < finrank K ES := by
-      dsimp only [ES]
+      dsimp +instances only [ES]
       rw [h_dim]
       apply pos_finrank_genEigenspace_of_hasEigenvalue hμ₀ (Nat.zero_lt_succ n)
     -- and the dimensions of `ES` and `ER` add up to `finrank K V`.
     have h_dim_add : finrank K ER + finrank K ES = finrank K V := by
-      dsimp only [ER, ES]
+      dsimp +instances only [ER, ES]
       rw [Module.End.genEigenspace_nat, Module.End.genEigenrange_nat]
       apply LinearMap.finrank_range_add_finrank_ker
     -- Therefore the dimension `ER` mus be smaller than `finrank K V`.
@@ -230,6 +231,7 @@ theorem eq_iSup_inf_genEigenspace [FiniteDimensional K V] (k : ℕ∞)
 
 end Submodule
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In finite dimensions, if the generalized eigenspaces of a linear endomorphism span the whole
 space then the same is true of its restriction to any invariant submodule. -/
 theorem Module.End.genEigenspace_restrict_eq_top

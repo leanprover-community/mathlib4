@@ -43,6 +43,7 @@ namespace HomComplex.CohomologyClass
 variable (K L : CochainComplex C ℤ) (n : ℤ)
   [HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) ℤ K L]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma bijective_toSmallShiftedHom_of_isKProjective [K.IsKProjective] :
     Function.Bijective (toSmallShiftedHom.{w} (K := K) (L := L) (n := n)) := by
   letI := HasDerivedCategory.standard C

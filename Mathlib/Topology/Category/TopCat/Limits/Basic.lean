@@ -99,6 +99,7 @@ def coneOfConeForget : Cone F where
         ext
         apply congr_fun (c.π.naturality φ) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
 of the underlying functor to types, the limit of `F` is `c.pt` equipped
 with the infimum of the induced topologies by the maps `c.π.app j`. -/
@@ -122,6 +123,7 @@ variable {F : J ⥤ TopCat.{u}} (c : Cone F) (hc : IsLimit c)
 
 include hc
 
+set_option backward.isDefEq.respectTransparency false in
 theorem induced_of_isLimit :
     c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
   let c' := coneOfConeForget ((forget).mapCone c)
@@ -209,6 +211,7 @@ def coconeOfCoconeForget : Cocone F where
         ext
         apply congr_fun (c.ι.naturality φ) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
 of the underlying cocone of types, the colimit of `F` is `c.pt` equipped
 with the supremum of the coinduced topologies by the maps `c.ι.app j`. -/

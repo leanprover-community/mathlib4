@@ -158,6 +158,7 @@ lemma finsuppScalarLeft_apply (pn : (ι →₀ R) ⊗[R] N) (i : ι) :
     finsuppScalarLeft R N ι pn i = TensorProduct.lid R N ((Finsupp.lapply i).rTensor N pn) := by
   simp [finsuppScalarLeft, finsuppLeft_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma finsuppScalarLeft_symm_apply_single (i : ι) (n : N) :
     (finsuppScalarLeft R N ι).symm (Finsupp.single i n) =

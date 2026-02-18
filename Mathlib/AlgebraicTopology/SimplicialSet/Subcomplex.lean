@@ -32,6 +32,7 @@ open CategoryTheory Simplicial Limits
 
 namespace SSet
 
+set_option backward.isDefEq.respectTransparency false in
 -- Note: this could be obtained as `inferInstanceAs (Balanced (_ ⥤ _))`
 -- by importing `Mathlib.CategoryTheory.Adhesive.Basic`, but we give a
 -- different proof so as to reduce imports
@@ -130,9 +131,11 @@ lemma topIso_inv_ι : (topIso X).inv ≫ Subfunctor.ι _ = 𝟙 _ := rfl
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Subsingleton (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
   allEq _ _ := by ext _ ⟨_, h⟩; simp at h
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Unique (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
   default :=
     { app := by rintro _ ⟨_, h⟩; simp at h
@@ -192,6 +195,7 @@ instance [Mono f] : Mono (toRange f) :=
 instance [Mono f] : IsIso (toRange f) :=
   isIso_of_mono_of_epi _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma range_eq_top_iff : Subcomplex.range f = ⊤ ↔ Epi f := by
   rw [NatTrans.epi_iff_epi_app, Subfunctor.ext_iff, funext_iff]
   simp only [epi_iff_surjective, Subfunctor.range_obj, Subfunctor.top_obj,
@@ -260,6 +264,7 @@ lemma image_le_iff (Z : Y.Subcomplex) :
     A.image f ≤ Z ↔ A ≤ Z.preimage f := by
   simp [Subfunctor.le_def]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma image_top : (⊤ : X.Subcomplex).image f = range f := by aesop
 
 @[simp]
