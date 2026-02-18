@@ -644,7 +644,7 @@ protected theorem Multipliable.tprod_mul [L.NeBot]
 
 @[to_additive]
 lemma Multipliable.tprod_pow [L.NeBot] (hf : Multipliable f L) (n : ℕ) :
-    ∏'[L] b, (f b) ^ n  = (∏'[L] b, f b) ^ n := by
+    ∏'[L] b, (f b) ^ n = (∏'[L] b, f b) ^ n := by
   induction n with
   | zero => simp
   | succ n hn => simp [pow_succ, (hf.pow n).tprod_mul hf, hn]
