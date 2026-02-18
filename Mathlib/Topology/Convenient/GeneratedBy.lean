@@ -74,14 +74,17 @@ instance {Y : Type v} [TopologicalSpace Y] :
     TopologicalSpace (WithGeneratedByTopology X Y) :=
   .generatedBy X (Y := Y)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isOpen_iff {U : Set (WithGeneratedByTopology X Y)} :
     IsOpen U ↔ ∀ ⦃i : ι⦄ (f : C(X i, Y)), IsOpen (f ⁻¹' (equiv.symm ⁻¹' U)) := by
   simp [isOpen_iSup_iff, isOpen_coinduced, equiv, Equiv.refl]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isClosed_iff {U : Set (WithGeneratedByTopology X Y)} :
     IsClosed U ↔ ∀ ⦃i : ι⦄ (f : C(X i, Y)), IsClosed (f ⁻¹' (equiv.symm ⁻¹' U)) := by
   simp [isClosed_iSup_iff, isClosed_coinduced, equiv, Equiv.refl]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma continuous_from_iff (g : WithGeneratedByTopology X Y → Z) :
     Continuous g ↔ ∀ ⦃i : ι⦄ (f : C(X i, Y)), Continuous (g ∘ equiv.symm ∘ f : X i → Z) := by
   simp only [continuous_iSup_dom]
@@ -122,7 +125,7 @@ class IsGeneratedBy : Prop where
 
 namespace IsGeneratedBy
 
-attribute [continuity] continuous_equiv_symm
+attribute [continuity, fun_prop] continuous_equiv_symm
 
 section
 
@@ -147,8 +150,8 @@ variable [IsGeneratedBy X Y]
 /-- The homeomorphism `WithGeneratedByTopology X Y ≃ₜ Y` when `Y` is `X`-generated. -/
 def homeomorph [IsGeneratedBy X Y] : WithGeneratedByTopology X Y ≃ₜ Y where
   toEquiv := WithGeneratedByTopology.equiv
-  continuous_toFun := by continuity
-  continuous_invFun := by continuity
+  continuous_toFun := by dsimp; fun_prop
+  continuous_invFun := by dsimp; fun_prop
 
 @[simp]
 lemma homeomorph_coe :

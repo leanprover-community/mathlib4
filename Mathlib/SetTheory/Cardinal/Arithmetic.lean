@@ -470,7 +470,68 @@ theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n 
 theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 one_lt_aleph0
 
+lemma add_lt_add_iff_of_right_lt_aleph0 {a b c : Cardinal} (hc : c < ℵ₀) :
+    a + c < b + c ↔ a < b := by
+  constructor <;> contrapose! <;> simp [add_le_add_iff_of_lt_aleph0 hc]
+
+lemma add_lt_add_iff_of_left_lt_aleph0 {a b c : Cardinal} (hc : c < ℵ₀) :
+    c + a < c + b ↔ a < b := by
+  simpa [add_comm] using add_lt_add_iff_of_right_lt_aleph0 (a := a) (b := b) hc
+
+protected lemma add_lt_add {κ₁ κ₂ μ₁ μ₂ : Cardinal}
+    (hκ : κ₁ < κ₂) (hμ : μ₁ < μ₂) : κ₁ + μ₁ < κ₂ + μ₂ := by
+  rcases le_or_gt ℵ₀ (κ₂ + μ₂) with hinf | hfin
+  · refine add_lt_of_lt hinf ?_ ?_ <;> apply lt_of_lt_of_le <;> solve | assumption | simp
+  · have hfin_ : κ₂ < ℵ₀ ∧ μ₂ < ℵ₀ := add_lt_aleph0_iff.1 hfin
+    apply lt_of_le_of_lt
+    · exact (add_le_add_iff_of_lt_aleph0 (hμ.trans hfin_.right)).mpr hκ.le
+    · simpa [add_comm] using (add_lt_add_iff_of_right_lt_aleph0 hfin_.left).mpr hμ
+
 end aleph
+
+section mul_strictMono
+
+variable {n : ℕ} {a b : Cardinal}
+
+lemma natCast_mul_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : Cardinal ↦ n * a := by
+  match n, hn with
+  | 1, _ => simpa using strictMono_id
+  | (n + 1) + 1, hneq1 =>
+    intro a μ hlt
+    push_cast
+    conv_lhs => rw [add_mul, one_mul]
+    conv_rhs => rw [add_mul, one_mul]
+    refine Cardinal.add_lt_add ?_ hlt
+    simpa using (natCast_mul_strictMono (Nat.succ_ne_zero n) hlt)
+
+lemma mul_natCast_strictMono (hn : n ≠ 0) : StrictMono fun a : Cardinal ↦ a * n :=
+  fun _ _ hlt => by simpa [mul_comm] using natCast_mul_strictMono hn hlt
+
+@[simp]
+lemma natCast_mul_inj (hn : n ≠ 0) : n * a = n * b ↔ a = b :=
+  (natCast_mul_strictMono hn).injective.eq_iff
+
+@[simp]
+lemma mul_natCast_inj (hn : n ≠ 0) : a * n = b * n ↔ a = b :=
+  (mul_natCast_strictMono hn).injective.eq_iff
+
+@[simp]
+lemma natCast_mul_le_natCast_mul (hn : n ≠ 0) : n * a ≤ n * b ↔ a ≤ b :=
+  (natCast_mul_strictMono hn).le_iff_le
+
+@[simp]
+lemma mul_natCast_le_mul_natCast (hn : n ≠ 0) : a * n ≤ b * n ↔ a ≤ b :=
+  (mul_natCast_strictMono hn).le_iff_le
+
+@[simp]
+lemma natCast_mul_lt_natCast_mul (hn : n ≠ 0) : n * a < n * b ↔ a < b :=
+  (natCast_mul_strictMono hn).lt_iff_lt
+
+@[simp]
+lemma mul_natCast_lt_mul_natCast (hn : n ≠ 0) : a * n < b * n ↔ a < b :=
+  (mul_natCast_strictMono hn).lt_iff_lt
+
+end mul_strictMono
 
 /-! ### Properties about `power` -/
 section power

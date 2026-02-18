@@ -175,6 +175,7 @@ theorem finite_iff_nonempty_fintype (α : Type*) : Finite α ↔ Nonempty (Finty
 
 /-- Noncomputably get a `Fintype` instance from a `Finite` instance. This is not an
 instance because we want `Fintype` instances to be useful for computations. -/
+@[instance_reducible]
 noncomputable def Fintype.ofFinite (α : Type*) [Finite α] : Fintype α :=
   (nonempty_fintype α).some
 

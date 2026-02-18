@@ -90,6 +90,7 @@ theorem annIdealGenerator_eq_zero_iff {a : A} : annIdealGenerator 𝕜 a = 0 ↔
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `annIdealGenerator 𝕜 a` is indeed a generator. -/
 @[simp]
 theorem span_singleton_annIdealGenerator (a : A) :

@@ -694,6 +694,7 @@ lemma indep_iff_forall_closure_ssubset_of_ssubset (hI : I ⊆ M.E := by aesop_ma
     insert_eq_of_mem hecl]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Indep.closure_diff_ssubset (hI : M.Indep I) (hX : (I ∩ X).Nonempty) :
     M.closure (I \ X) ⊂ M.closure I := by
   refine hI.closure_ssubset_closure <| diff_subset.ssubset_of_ne fun h ↦ ?_

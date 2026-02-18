@@ -38,6 +38,7 @@ lemma mul {f f' : R[X]} {I : Ideal R} (hf : f.IsDistinguishedAt I) (hf' : f'.IsD
     (f * f').IsDistinguishedAt I :=
   ⟨hf.toIsWeaklyEisensteinAt.mul hf'.toIsWeaklyEisensteinAt, hf.monic.mul hf'.monic⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_eq_X_pow {f : R[X]} {I : Ideal R} (distinguish : f.IsDistinguishedAt I) :
     f.map (Ideal.Quotient.mk I) = Polynomial.X ^ f.natDegree := by
   ext i
@@ -60,6 +61,7 @@ lemma map_ne_zero_of_eq_mul (distinguish : g.IsDistinguishedAt I)
   apply_fun PowerSeries.coeff g.natDegree at H
   simp [mapf, PowerSeries.coeff_X_pow_mul', eq_zero_iff_mem, notMem] at H
 
+set_option backward.isDefEq.respectTransparency false in
 lemma degree_eq_coe_lift_order_map (distinguish : g.IsDistinguishedAt I)
     (notMem : PowerSeries.constantCoeff h ∉ I) (eq : f = g * h) :
     g.degree = (f.map (Ideal.Quotient.mk I)).order.lift
