@@ -8,8 +8,8 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Tactic.Positivity.Core
 
+import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Data.Fintype.Order
 import Mathlib.RingTheory.Nilpotent.Defs
@@ -318,7 +318,7 @@ lemma mulHeight_smul_eq_mulHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
   have hcx : c • x ≠ 0 := by simp [hc, hx]
   simp only [mulHeight_eq hx, mulHeight_eq hcx, Pi.smul_apply, smul_eq_mul, map_mul,
     ← mul_iSup_of_nonneg <| AbsoluteValue.nonneg .., Multiset.prod_map_mul]
-  rw [finprod_mul_distrib (mulSupport_finite hc) (mulSupport_iSup_nonarchAbsVal_finite hx),
+  rw [finprod_mul_distrib (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption)),
     mul_mul_mul_comm, product_formula hc, one_mul]
 
 lemma one_le_mulHeight (x : ι → K) : 1 ≤ mulHeight x := by
@@ -538,18 +538,15 @@ heights, where `n` is the number of terms. -/
 lemma mulHeight₁_sum_le {α : Type*} {s : Finset α} (hs : s.Nonempty) (x : α → K) :
     mulHeight₁ (∑ a ∈ s, x a) ≤ #s ^ (totalWeight K) * ∏ a ∈ s, mulHeight₁ (x a) := by
   simp only [mulHeight₁_eq, totalWeight]
-  rw [prod_mul_distrib, ← prod_replicate, ← map_const,
-    ← finprod_prod_comm _ _ fun i _ ↦ mulSupport_max_nonarchAbsVal_finite (x i),
+  rw [prod_mul_distrib, ← prod_replicate, ← map_const, ← finprod_prod_comm _ _ (by fun_prop),
     ← prod_map_prod, ← mul_assoc, ← prod_map_mul]
   simp only [Function.const_apply]
   gcongr
   · exact finprod_nonneg fun _ ↦ by positivity
   · exact prod_map_nonneg fun _ h ↦ by positivity
   · exact prod_map_le_prod_map₀ _ _ (fun _ _ ↦ by positivity) fun _ _ ↦ max_abv_sum_one_le _ hs x
-  · refine finprod_le_finprod (mulSupport_max_nonarchAbsVal_finite _) (fun _ ↦ by grind) ?_ ?_
-    · exact (s.finite_toSet.biUnion fun _ _ ↦ mulSupport_max_nonarchAbsVal_finite _).subset <|
-        s.mulSupport_prod fun i (v : nonarchAbsVal) ↦ max (v.val (x i)) 1
-    · exact fun v ↦ max_abv_sum_one_le_of_isNonarchimedean (isNonarchimedean _ v.prop) _ x
+  · exact finprod_le_finprod (by fun_prop) (fun _ ↦ by grind) (by fun_prop) <|
+      fun v ↦ max_abv_sum_one_le_of_isNonarchimedean (isNonarchimedean _ v.prop) _ x
 
 open Finset in
 /-- The logarithmic height of a finite sum of field elements is at most
