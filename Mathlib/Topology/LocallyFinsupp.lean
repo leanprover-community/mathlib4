@@ -88,13 +88,13 @@ lemma LocallyFiniteSupport.iff_locallyFinite_support [Zero Y] (f : X → Y) :
 
 lemma LocallyFiniteSupport.locallyFinite_support [Zero Y] (f : X → Y) (h : LocallyFiniteSupport f) :
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) :=
-  (LocallyFiniteSupport.iff_support_locallyFinite f).mpr h
+  (LocallyFiniteSupport.iff_locallyFinite_support f).mpr h
 
 lemma LocallyFiniteSupport.finite_inter_support_of_isCompact {W : Set X}
    [Zero Y] {f : X → Y} (h : LocallyFiniteSupport f)
    (hW : IsCompact W) : (W ∩ f.support).Finite := by
   have := LocallyFinite.finite_nonempty_inter_compact
-    (LocallyFiniteSupport.support_locallyFinite f h) hW
+    (LocallyFiniteSupport.locallyFinite_support f h) hW
   have lem {α : Type u_1} (s t : Set α) : {i : s | ({↑i} ∩ t).Nonempty} = (t ∩ s) := by aesop
   rw [← lem f.support W]
   exact Finite.image Subtype.val this
