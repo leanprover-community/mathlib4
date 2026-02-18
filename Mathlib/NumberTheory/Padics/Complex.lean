@@ -88,6 +88,7 @@ theorem valuation_def (x : PadicAlgCl p) : Valued.v x = ‖x‖₊ := rfl
 /-- The coercion of the valuation of `x : PadicAlgCl p` to `ℝ` agrees with its norm. -/
 @[simp] theorem valuation_coe (x : PadicAlgCl p) : ((Valued.v x : ℝ≥0) : ℝ) = ‖x‖ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The valuation of `p : PadicAlgCl p` is `1/p`. -/
 theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap ℚ_[p] (PadicAlgCl p))]
@@ -95,6 +96,8 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 /
   rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `PadicAlgCl p` has rank one. -/
 instance : RankOne (PadicAlgCl.valued p).v where
   hom         := MonoidWithZeroHom.id ℝ≥0
@@ -106,6 +109,7 @@ instance : RankOne (PadicAlgCl.valued p).v where
       Nat.cast_eq_one]
     exact ⟨hp.ne_zero, hp.ne_one⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : UniformContinuousConstSMul ℚ_[p] (PadicAlgCl p) :=
   uniformContinuousConstSMul_of_continuousConstSMul ℚ_[p] (PadicAlgCl p)
 
@@ -119,17 +123,22 @@ abbrev PadicComplex := UniformSpace.Completion (PadicAlgCl p)
 notation "ℂ_[" p "]" => PadicComplex p
 
 namespace PadicComplex
+
+set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ_[p]` is a valued field, where the valuation is the one extending that on `PadicAlgCl p`. -/
 instance valued : Valued ℂ_[p] ℝ≥0 := inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The valuation on `ℂ_[p]` extends the valuation on `PadicAlgCl p`. -/
 theorem valuation_extends (x : PadicAlgCl p) : Valued.v (x : ℂ_[p]) = Valued.v x :=
   Valued.extension_extends _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_eq (x : PadicAlgCl p) : (x : ℂ_[p]) = algebraMap (PadicAlgCl p) ℂ_[p] x := rfl
 
 @[simp] theorem coe_zero : ((0 : PadicAlgCl p) : ℂ_[p]) = 0 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ_[p]` is an algebra over `ℚ_[p]`. -/
 instance : Algebra ℚ_[p] ℂ_[p] where
   smul := (UniformSpace.Completion.instSMul ℚ_[p] (PadicAlgCl p)).smul
@@ -141,17 +150,22 @@ instance : Algebra ℚ_[p] ℂ_[p] where
     rw [RingHom.coe_comp, Function.comp_apply, Algebra.smul_def]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower ℚ_[p] (PadicAlgCl p) ℂ_[p] := IsScalarTower.of_algebraMap_eq (congrFun rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_natCast (n : ℕ) : ((n : PadicAlgCl p) : ℂ_[p]) = (n : ℂ_[p]) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]) n, coe_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The valuation of `p : ℂ_[p]` is `1/p`. -/
 theorem valuation_p : Valued.v (p : ℂ_[p]) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]), ← coe_eq, valuation_extends,
     PadicAlgCl.valuation_p]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `ℂ_[p]` has rank one. -/
 instance : RankOne (PadicComplex.valued p).v where
   hom         := MonoidWithZeroHom.id ℝ≥0
@@ -166,12 +180,15 @@ instance : RankOne (PadicComplex.valued p).v where
 lemma rankOne_hom_eq :
     RankOne.hom (PadicComplex.valued p).v = RankOne.hom (PadicAlgCl.valued p).v := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ_[p]` is a normed field, where the norm corresponds to the extension of the `p`-adic
   valuation. -/
 instance : NormedField ℂ_[p] := Valued.toNormedField _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_def : (Norm.norm : ℂ_[p] → ℝ) = Valued.norm := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`. -/
 theorem norm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖ = ‖x‖ := by
   rw [norm_def, Valued.norm, ← coe_nnnorm, valuation_extends p x, coe_nnnorm]

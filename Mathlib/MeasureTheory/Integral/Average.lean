@@ -151,8 +151,7 @@ theorem laverage_lt_top (hf : ∫⁻ x, f x ∂μ ≠ ∞) : ⨍⁻ x, f x ∂μ
   obtain rfl | hμ := eq_or_ne μ 0
   · simp
   · rw [laverage_eq]
-    have := measure_univ_ne_zero.2 hμ
-    finiteness
+    finiteness [measure_univ_ne_zero.2 hμ]
 
 theorem setLAverage_lt_top : ∫⁻ x in s, f x ∂μ ≠ ∞ → ⨍⁻ x in s, f x ∂μ < ∞ :=
   laverage_lt_top
@@ -468,6 +467,7 @@ theorem toReal_setLAverage {f : α → ℝ≥0∞} (hf : AEMeasurable f (μ.rest
 section FirstMomentReal
 variable {N : Set α} {f : α → ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **First moment method**. An integrable function is smaller than its mean on a set of positive
 measure. -/
 theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf : IntegrableOn f s μ) :

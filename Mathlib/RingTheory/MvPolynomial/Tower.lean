@@ -56,8 +56,8 @@ lemma aeval_C_comp_left {ι : Type*} (f : σ → A) (p : MvPolynomial σ R) :
     aeval (C (σ := ι) ∘ f) p = C (aeval f p) :=
   aeval_algebraMap_apply ..
 
-theorem aeval_algebraMap_eq_zero_iff [NoZeroSMulDivisors A B] [Nontrivial B] (x : σ → A)
-    (p : MvPolynomial σ R) : aeval (algebraMap A B ∘ x) p = 0 ↔ aeval x p = 0 := by
+lemma aeval_algebraMap_eq_zero_iff [IsDomain A] [Module.IsTorsionFree A B] [Nontrivial B]
+    (x : σ → A) (p : MvPolynomial σ R) : aeval (algebraMap A B ∘ x) p = 0 ↔ aeval x p = 0 := by
   rw [aeval_algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_eq_zero,
     iff_false_intro (one_ne_zero' B), or_false]
 

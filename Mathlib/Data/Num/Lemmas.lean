@@ -297,6 +297,7 @@ end Num
 
 namespace PosNum
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem of_to_nat' : ∀ n : PosNum, Num.ofNat' (n : ℕ) = Num.pos n
   | 1 => by
@@ -563,6 +564,7 @@ instance linearOrder : LinearOrder PosNum where
 @[simp]
 theorem cast_to_num (n : PosNum) : ↑n = Num.pos n := by rw [← cast_to_nat, ← of_to_nat n]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem bit_to_nat (b n) : (bit b n : ℕ) = Nat.bit b n := by cases b <;> simp [bit, two_mul]
 
@@ -619,6 +621,7 @@ variable {α : Type*}
 
 open PosNum
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bit_to_nat (b n) : (bit b n : ℕ) = Nat.bit b n := by
   cases b <;> cases n <;> simp [bit, two_mul] <;> rfl
 
@@ -813,6 +816,7 @@ theorem castNum_ldiff : ∀ m n : Num, (ldiff m n : ℕ) = Nat.ldiff m n := by
 theorem castNum_xor : ∀ m n : Num, ↑(m ^^^ n) = (↑m ^^^ ↑n : ℕ) := by
   apply castNum_eq_bitwise PosNum.lxor <;> intros <;> (try cases_type* Bool) <;> rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n : ℕ) := by
   cases m <;> dsimp only [← shiftl_eq_shiftLeft, shiftl]

@@ -52,3 +52,7 @@ lemma Algebra.FinitePresentation.of_isLocalizationAway
 instance {S : Type*} [CommRing S] [Algebra R S] [Algebra.FinitePresentation R S] (f : S) :
     Algebra.FinitePresentation R (Localization.Away f) :=
   .of_isLocalizationAway f
+
+instance {S : Type*} [CommRing S] [Algebra R S] [Algebra.FiniteType R S] (f : S) :
+    Algebra.FiniteType R (Localization.Away f) :=
+  .trans ‹_› inferInstance

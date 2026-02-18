@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
 
 /-!
@@ -109,6 +111,7 @@ lemma abs_nnrpow_two (a : A) : abs a ^ (2 : ℝ≥0) = star a * a := by
 lemma abs_nnrpow_two_mul (a : A) (x : ℝ≥0) :
     abs a ^ (2 * x) = (star a * a) ^ x := by rw [← nnrpow_nnrpow, abs_nnrpow_two]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma abs_nnrpow (a : A) (x : ℝ≥0) :
     abs a ^ x = (star a * a) ^ (x / 2) := by
   simp only [← abs_nnrpow_two_mul, mul_div_left_comm, ne_eq, OfNat.ofNat_ne_zero,
@@ -132,10 +135,12 @@ protected lemma posPart_add_negPart (a : A) (ha : IsSelfAdjoint a := by cfc_tac)
   rw [CFC.posPart_def, CFC.negPart_def, ← cfcₙ_add .., abs_eq_cfcₙ_norm a ha]
   exact cfcₙ_congr fun x hx ↦ posPart_add_negPart x
 
+set_option backward.isDefEq.respectTransparency false in
 lemma abs_sub_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a - a = 2 • a⁻ := by
   simpa [two_smul] using
     congr($(CFC.posPart_add_negPart a) - $(CFC.posPart_sub_negPart a)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma abs_add_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a + a = 2 • a⁺ := by
   simpa [two_smul] using
     congr($(CFC.posPart_add_negPart a) + $(CFC.posPart_sub_negPart a)).symm
@@ -145,6 +150,7 @@ lemma cfcAbs_cfcAbs (a : A) : abs (abs a) = abs a := abs_of_nonneg ..
 
 variable [StarModule ℝ A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma abs_smul_nonneg {R : Type*} [Semiring R] [SMulWithZero R ℝ≥0] [SMul R A]
     [IsScalarTower R ℝ≥0 A] (r : R) (a : A) :
@@ -279,6 +285,18 @@ lemma spectrum_abs (a : A) (ha : p a := by cfc_tac) :
 end RCLike
 
 end Unital
+
+section Isometric
+
+variable [NonUnitalNormedRing A] [StarRing A] [ContinuousStar A]
+  [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
+  [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] [CompleteSpace A]
+
+protected lemma continuous_abs : Continuous (CFC.abs : A → A) :=
+  continuousOn_sqrt.comp_continuous (by fun_prop) (by cfc_tac)
+
+end Isometric
 
 section CStar
 

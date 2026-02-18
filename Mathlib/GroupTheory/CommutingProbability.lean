@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.GroupTheory.Abelianization.Finite
 public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.Qify
 
 /-!
@@ -90,6 +89,7 @@ theorem commProb_eq_one_iff [h : Nonempty M] :
 
 variable (G : Type*) [Group G]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
   rw [commProb, card_comm_eq_card_conjClasses_mul_card, Nat.cast_mul, sq]
   by_cases h : (Nat.card G : ℚ) = 0
@@ -138,13 +138,6 @@ lemma commProb_odd {n : ℕ} (hn : Odd n) :
   congr
   norm_num
 
-private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
-  Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
-
-private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
-  | 0 | 1 | 2 | 3 => by decide
-  | n + 4 => by lia
-
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
   if _ : n = 0 then [0]
@@ -178,9 +171,11 @@ lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
 abbrev Product (l : List ℕ) : Type :=
   ∀ i : Fin l.length, DihedralGroup l[i]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma commProb_nil : commProb (Product []) = 1 := by
   simp [Product, commProb_pi]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma commProb_cons (n : ℕ) (l : List ℕ) :
     commProb (Product (n :: l)) = commProb (DihedralGroup n) * commProb (Product l) := by
   simp only [commProb_pi, Fin.prod_univ_succ, Fin.getElem_fin, Fin.val_succ, Fin.val_zero,
@@ -195,20 +190,14 @@ theorem commProb_reciprocal (n : ℕ) :
   by_cases h1 : n = 1
   · rw [h1, reciprocalFactors_one, commProb_nil, Nat.cast_one, div_one]
   rcases Nat.even_or_odd n with h2 | h2
-  · have := div_two_lt h0
-    rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
+  · rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
         commProb_odd (by decide)]
     simp [field, h2.two_dvd]
     norm_num
-  · have := div_four_lt h0 h1
-    rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
-    have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.odd_iff.mp h2)
-    have hn : Odd (n % 4) := by rcases key with h | h <;> rw [h] <;> decide
-    rw [commProb_odd (hn.mul h2), div_mul_div_comm, mul_one, div_eq_div_iff, one_mul] <;> norm_cast
-    · have h0 : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
-      have h1 := (Nat.div_add_mod n 4).symm
-      zify at h0 h1 ⊢
-      linear_combination (h0 + h1 * (n % 4)) * n
+  · rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
+    have hn : Odd (n % 4) := by grind
+    rw [commProb_odd (hn.mul h2), div_mul_div_comm, div_eq_div_iff] <;> norm_cast
+    · grind [Nat.div_add_mod n 4]
     · positivity [hn.pos.ne']
 
 end DihedralGroup

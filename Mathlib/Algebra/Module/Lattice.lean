@@ -83,6 +83,7 @@ instance finite [IsLattice A M] : Module.Finite R M := by
   rw [Module.Finite.iff_fg]
   exact IsLattice.fg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The action of `Aˣ` on `R`-submodules of `V` preserves `IsLattice`. -/
 instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) where
   fg := by
@@ -133,6 +134,7 @@ lemma _root_.Submodule.span_range_eq_top_of_injective_of_rank_le {M N : Type u} 
 
 variable (K) {V : Type*} [AddCommGroup V] [Module K V] [Module R V] [IsScalarTower R K V]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any basis of an `R`-lattice in `V` defines a `K`-basis of `V`. -/
 noncomputable def _root_.Module.Basis.extendOfIsLattice [IsFractionRing R K] {κ : Type*}
     {M : Submodule R V} [IsLattice K M] (b : Basis κ R M) :
@@ -155,6 +157,7 @@ lemma _root_.Module.Basis.extendOfIsLattice_apply [IsFractionRing R K] {κ : Typ
 
 variable [IsDomain R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A finitely-generated `R`-submodule of `V` of rank at least the `K`-rank of `V`
 is a lattice. -/
 lemma of_rank_le [Module.Finite K V] [IsFractionRing R K] {M : Submodule R V}
@@ -165,11 +168,12 @@ lemma of_rank_le [Module.Finite K V] [IsFractionRing R K] {M : Submodule R V}
 
 variable [IsPrincipalIdealRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any lattice over a PID is a free `R`-module.
-Note that under our conditions, `NoZeroSMulDivisors R K` simply says that `algebraMap R K` is
+Note that under our conditions, `Module.IsTorsionFree R K` simply says that `algebraMap R K` is
 injective. -/
-instance free [NoZeroSMulDivisors R K] (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
-  have := NoZeroSMulDivisors.trans_faithfulSMul R K V
+instance free [Module.IsTorsionFree R K] (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
+  have := Module.IsTorsionFree.trans_faithfulSMul R K V
   -- any torsion free finite module over a PID is free
   infer_instance
 
@@ -190,6 +194,7 @@ lemma finrank_of_pi {ι : Type*} [Fintype ι] [IsFractionRing R K] (M : Submodul
     [IsLattice K M] : Module.finrank R M = Fintype.card ι :=
   Module.finrank_eq_of_rank_eq (IsLattice.rank_of_pi K M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The intersection of two lattices is a lattice. -/
 instance inf [Module.Finite K V] [IsFractionRing R K] (M N : Submodule R V)
     [IsLattice K M] [IsLattice K N] : IsLattice K (M ⊓ N) where

@@ -3,7 +3,7 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Markus Himmel
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.SetTheory.Game.Birthday
 public import Mathlib.SetTheory.Game.Impartial
@@ -64,12 +64,8 @@ theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.ToType := by rw [n
 theorem moveLeft_nim_heq (o : Ordinal) :
     (nim o).moveLeft ≍ fun i : o.ToType => nim i := by rw [nim]; rfl
 
-@[deprecated (since := "2025-07-05")] alias moveLeft_nim_hEq := moveLeft_nim_heq
-
 theorem moveRight_nim_heq (o : Ordinal) :
     (nim o).moveRight ≍ fun i : o.ToType => nim i := by rw [nim]; rfl
-
-@[deprecated (since := "2025-07-05")] alias moveRight_nim_hEq := moveRight_nim_heq
 
 /-- Turns an ordinal less than `o` into a left move for `nim o` and vice versa. -/
 noncomputable def toLeftMovesNim {o : Ordinal} : Set.Iio o ≃ (nim o).LeftMoves :=
@@ -276,6 +272,7 @@ theorem equiv_nim_grundyValue (G : PGame.{u}) [G.Impartial] :
     exact Equiv.trans (add_congr_left (equiv_nim_grundyValue _)) (hj ▸ Impartial.add_self _)
 termination_by G
 
+set_option backward.isDefEq.respectTransparency false in
 theorem grundyValue_eq_iff_equiv_nim {G : PGame} [G.Impartial] {o : Nimber} :
     grundyValue G = o ↔ G ≈ nim (toOrdinal o) :=
   ⟨by rintro rfl; exact equiv_nim_grundyValue G,

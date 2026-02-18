@@ -168,6 +168,7 @@ namespace WidePullbackShape
 instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
   inferInstanceAs <| Fintype (Option _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where
   elems := by
     obtain - | j' := j'
@@ -190,6 +191,7 @@ namespace WidePushoutShape
 instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) :=
   inferInstanceAs <| Fintype (Option _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
   elems := by
     obtain - | j := j

@@ -53,9 +53,11 @@ theorem _root_.Fintype.card_eq_nat_card {_ : Fintype α} : Fintype.card α = Nat
 lemma card_eq_finsetCard (s : Finset α) : Nat.card s = s.card := by
   simp only [Nat.card_eq_fintype_card, Fintype.card_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma card_eq_card_toFinset (s : Set α) [Fintype s] : Nat.card s = s.toFinset.card := by
   simp only [← Nat.card_eq_finsetCard, s.mem_toFinset]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma card_eq_card_finite_toFinset {s : Set α} (hs : s.Finite) : Nat.card s = hs.toFinset.card := by
   simp only [← Nat.card_eq_finsetCard, hs.mem_toFinset]
 
@@ -319,7 +321,7 @@ lemma card_le_card_of_injective {α β : Type*} {f : α → β} (hf : Injective 
 @[simp]
 theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
     ↑n ≤ toENat c ↔ ↑n ≤ c := by
-  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 natCast_le_aleph0]
 
 theorem _root_.Cardinal.toENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
     toENat c ≤ n ↔ c ≤ n := by simp
