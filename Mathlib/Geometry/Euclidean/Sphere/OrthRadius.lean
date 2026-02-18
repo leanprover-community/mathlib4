@@ -38,7 +38,8 @@ variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [Norme
 /-- The affine subspace orthogonal to the radius vector of the sphere `s` at the point `p` (if
 `p` lies in `s`, this is the tangent space; generally, this is the polar of the inversion of `p`
 in `s`). -/
-def orthRadius (s : Sphere P) (p : P) : AffineSubspace ℝ P := .mk' p (ℝ ∙ (p -ᵥ s.center))ᗮ
+noncomputable def orthRadius (s : Sphere P) (p : P) : AffineSubspace ℝ P :=
+  .mk' p (ℝ ∙ (p -ᵥ s.center))ᗮ
 
 instance (s : Sphere P) (p : P) : Nonempty (s.orthRadius p) := by
   rw [orthRadius]
@@ -71,12 +72,14 @@ instance (s : Sphere P) (p : P) : (s.orthRadius p).direction.HasOrthogonalProjec
   rw [mem_orthRadius_iff_inner_left, ← neg_vsub_eq_vsub_rev, inner_neg_left]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma orthogonalProjection_orthRadius_center (s : Sphere P) (p : P) :
     orthogonalProjection (s.orthRadius p) s.center = p := by
   simp_rw [orthRadius, coe_orthogonalProjection_eq_iff_mem]
   rw [← Submodule.neg_mem_iff]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma orthRadius_le_orthRadius_iff {s : Sphere P} {p q : P} :
     s.orthRadius p ≤ s.orthRadius q ↔ p = q ∨ q = s.center := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -237,6 +240,7 @@ lemma inter_orthRadius_eq_empty_of_finrank_eq_one {s : Sphere P} {p : P} (hpc : 
   rw [eq_comm, sub_eq_zero, eq_comm, sq_eq_sq₀ dist_nonneg hr]
   exact hp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inter_orthRadius_eq_empty_iff {s : Sphere P} {p : P} :
     (s ∩ s.orthRadius p : Set P) = ∅ ↔ s.radius < dist p s.center ∨
       (Module.finrank ℝ V = 1 ∧ dist p s.center < s.radius ∧ p ≠ s.center) ∨
@@ -297,6 +301,7 @@ lemma inter_orthRadius_eq_empty_iff {s : Sphere P} {p : P} :
     simpa using h.symm
   · simp [h, inter_orthRadius_eq_empty_of_radius_lt_dist]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In 2D, the line defined by `s.orthRadius p` intersects `s` at at most two points so long as `p`
 lies within `s` and not at its center.
 
@@ -354,6 +359,7 @@ lemma inter_orthRadius_eq_of_dist_le_radius [hf2 : Fact (Module.finrank ℝ V = 
   · simp [div_eq_mul_inv, smul_smul]
   · simp [norm_smul, norm_ne_zero_iff.2 hv0]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In 2D, the line defined by `s.orthRadius p` intersects `s` at exactly two points so long as `p`
 lies strictly within `s` and not at its center. -/
 lemma ncard_inter_orthRadius_eq_two_of_dist_lt_radius [hf2 : Fact (Module.finrank ℝ V = 2)]

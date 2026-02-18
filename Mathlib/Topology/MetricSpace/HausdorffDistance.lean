@@ -184,6 +184,7 @@ theorem exists_real_pos_lt_infEDist_of_notMem_closure {x : α} {E : Set α} (h :
   rcases h with ⟨ε, ⟨_, ⟨ε_pos, ε_lt⟩⟩⟩
   exact ⟨ε, ⟨ENNReal.ofReal_pos.mp ε_pos, ε_lt⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_closedEBall_of_lt_infEDist {r : ℝ≥0∞} (h : r < infEDist x s) :
     Disjoint (Metric.closedEBall x r) s := by
   rw [disjoint_left]
@@ -421,6 +422,7 @@ theorem hausdorffEDist_singleton : hausdorffEDist {x} {y} = edist x y := by
   nth_rw 2 [edist_comm]
   exact max_self _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hausdorffEDist_iUnion_le {ι : Sort*} {s t : ι → Set α} :
     hausdorffEDist (⋃ i, s i) (⋃ i, t i) ≤ ⨆ i, hausdorffEDist (s i) (t i) := by
   simp_rw [hausdorffEDist, max_le_iff, iSup_iUnion, iSup_le_iff, infEDist_iUnion]
@@ -433,6 +435,7 @@ theorem hausdorffEDist_union_le {s₁ s₂ t₁ t₂ : Set α} :
   simp_rw [union_eq_iUnion, sup_eq_iSup]
   convert hausdorffEDist_iUnion_le with (_ | _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hausdorffEDist_prod_le {s₁ t₁ : Set α} {s₂ t₂ : Set β} :
     hausdorffEDist (s₁ ×ˢ s₂) (t₁ ×ˢ t₂) ≤ max (hausdorffEDist s₁ t₁) (hausdorffEDist s₂ t₂) := by
   refine le_of_forall_ge fun _ _ => ?_
@@ -702,6 +705,7 @@ theorem _root_.IsClosed.notMem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempty
     x ∉ s ↔ 0 < infDist x s := by
   simp [h.mem_iff_infDist_zero hs, infDist_nonneg.lt_iff_ne']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by
   rcases s.eq_empty_or_nonempty with (rfl | hs)

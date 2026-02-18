@@ -75,6 +75,7 @@ section CommSemiring
 
 variable {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aeval_coe (S : Subalgebra R A) (x : S) (p : R[X]) : aeval (x : A) p = aeval x p :=
   aeval_algebraMap_apply A x p

@@ -55,6 +55,7 @@ public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.DefEqTransformations
 public import Mathlib.Tactic.DeprecateTo
+public import Mathlib.Tactic.DepRewrite
 public import Mathlib.Tactic.ErwQuestion
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ExistsI
@@ -92,6 +93,7 @@ public import Mathlib.Tactic.ScopedNS
 public import Mathlib.Tactic.Set
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.Spread
