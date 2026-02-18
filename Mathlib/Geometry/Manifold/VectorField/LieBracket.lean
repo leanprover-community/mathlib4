@@ -328,49 +328,6 @@ lemma aux_computation' :
       ((mfderiv[range I] φ.symm (φ x)).inverse) (W (φ.symm (φ x))) = W x := by
   rw [aux_computation, extChartAt_to_inv]
 
--- TODO: move to a better place!
-omit [IsManifold I 2 M] in
-/-- The `fderivWithin` of the round-trip composition `(extChartAt I x) ∘ (extChartAt I x).symm`
-at the chart point in `range I` equals the identity. -/
-lemma _root_.fderivWithin_extChartAt_comp_extChartAt_symm_range :
-    fderivWithin 𝕜 ((extChartAt I x) ∘ (extChartAt I x).symm) (range I) (extChartAt I x x) =
-      ContinuousLinearMap.id 𝕜 _ := by
-  set φ := extChartAt I x
-  have eq_nhd : ((extChartAt I x) ∘ (extChartAt I x).symm) =ᶠ[𝓝[range I] (extChartAt I x x)] id :=
-    (eventuallyEq_of_mem (extChartAt_target_mem_nhdsWithin x) (fun _ ↦ (extChartAt I x).right_inv))
-  rw [eq_nhd.fderivWithin_eq (by simp)]
-  exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
-
--- TODO: clean up this proof (and add the version for `extChartAt`)
-lemma _root_.mfderivWithin_range_extChartAt_symm :
-    mfderiv[range I] (extChartAt I x).symm (extChartAt I x x) = ContinuousLinearMap.id 𝕜 _ := by
-  set φ := extChartAt I x
-  have : MDiffAt[range I] φ.symm (φ x) :=
-    mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)
-  rw [mfderivWithin, if_pos this, writtenInExtChartAt,
-    modelWithCornersSelf_coe, range_id, inter_univ,
-    extChartAt, OpenPartialHomeomorph.extend, PartialEquiv.coe_trans,
-    ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.toFun_eq_coe,
-    extChartAt_to_inv x, ← extChartAt_coe]
-  exact fderivWithin_extChartAt_comp_extChartAt_symm_range
-
--- TODO: add pre-composition version also and move to the right location
-omit [IsManifold I 2 M] in
-lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm
-    {f : M → 𝕜} (hf : MDiffAt[s] f x) :
-    letI φ := extChartAt I x
-    DifferentiableWithinAt 𝕜 (f ∘ φ.symm) (φ.symm ⁻¹' s ∩ range I) (φ x) := by
-  obtain ⟨_, hf⟩ := mdifferentiableWithinAt_iff.mp hf
-  rwa [extChartAt_self_eq] at hf
-
--- TODO: move to the right location!
-/-- The inverse of the derivative of `(extChartAt I x).symm` at the chart point,
-applied to a tangent vector, gives back the tangent vector. -/
-lemma mfderivWithin_extChartAt_symm_inverse_apply (v : TangentSpace I x) :
-    (mfderiv[range I] (extChartAt I x).symm (extChartAt I x x)).inverse v = v := by
-  rw [mfderivWithin_range_extChartAt_symm, ContinuousLinearMap.inverse_id]
-  exact ContinuousLinearMap.id_apply ..
-
 /-- Pulling back through `extChartAt` the scalar multiplication of a vector field by
 the derivative of a scalar function equals the scalar multiplication by the manifold derivative. -/
 lemma mpullback_mfderivWithin_apply_smul {f : M → 𝕜}
