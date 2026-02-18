@@ -509,6 +509,7 @@ private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux [Fact (fin
     _ = (2 : ℤ) • ∡ B I X := by
         rw [collinear_AIX.two_zsmul_oangle_eq_right I_ne_A.symm X_ne_I]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **incenter-excenter lemma**, **trillium theorem** or **trident lemma**: given a triangle
 ABC, suppose an angle bisector from A through the incenter or excenter I meets the circumcircle
 again at X (including the case of an external bisector at A tangent to the circle, in which case
