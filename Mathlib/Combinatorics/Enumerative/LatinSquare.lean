@@ -282,10 +282,9 @@ variable {k : Type u} [k_fintype_inst : Fintype k] [Nonempty k] [k_dec_eq_inst :
 
 def is_subrect
   (A : LatinRectangle m n α)
-  (B : LatinRectangle m' n α)
-  (ι : m ↪ m') :=
-  ∀ (i : m), ∀ (j : n), A.M i j = B.M (ι i) j
-
+  (B : LatinRectangle m' n α) :=
+  ∃ (ι : m ↪ m'), ∀ (i : m), ∀ (j : n), A.M i j = B.M (ι i) j
+  
 def symbols_not_in
  (A : LatinRectangle k n α) (j : n) :=
   let D := Finset.image (col A j) Finset.univ
@@ -552,7 +551,7 @@ theorem latin_rectangle_extends_one_row
     {k' : Type u} [Fintype k'] [DecidableEq k']
     (ι : k ↪ k')
     (h₂ : Fintype.card k' = Fintype.card k + 1) :
-    ∃ (A' : LatinRectangle k' n α), is_subrect A A' ι := by
+    ∃ (A' : LatinRectangle k' n α), is_subrect A A' := by
   let B := symbols_not_in A
   have Bj_size (j : n) : Finset.card (B j) = (Fintype.card n) - (Fintype.card k) := 
     card_symbols_not_in A j
@@ -763,6 +762,7 @@ theorem latin_rectangle_extends_one_row
   unfold is_subrect
   unfold LatinRectangle.M
   simp only [A', M']
+  use ι
   intro i j
   rw [<-Function.comp_apply (f := Function.invFun ι)]
   rw [Function.invFun_comp ι.injective]
@@ -775,7 +775,6 @@ theorem latin_rectangle_extends_one_row
 #check Nat.set_induction
 #check Finset.induction_on
 
-
 -- protected theorem induction_on {α : Type*} {motive : Finset α → Prop} [DecidableEq α] (s : Finset α)
 --     (empty : motive ∅)
 --     (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : motive s :=
@@ -786,62 +785,46 @@ theorem latin_rectangle_extends_one_row
 --     (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : ∀ s, motive s :=
 --   cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert a s ha
 
-lemma inclusion_induction [hk : DecidableEq k] [k_fintype_inst : Fintype k]
-    {motive : (Σ (n : Type u) (hn : DecidableEq n) (n_fin : Fintype n), (k ↪ n)) → Prop}
-    (base : motive ⟨k, hk, k_fintype_inst, Function.Embedding.refl k⟩)
-    (step : ∀ (n : Type u) [hn : DecidableEq n] [n_fintype_inst : Fintype n] (f : k ↪ n),
-        motive ⟨n, hn, n_fintype_inst, f⟩ →
-            ∃ (k' : Type u) (k'_fintype_inst : Fintype k') (hk' : DecidableEq k') (f' : k ↪ k'),
-            motive ⟨k', hk', k'_fintype_inst, f'⟩ ∧ Fintype.card k' = Fintype.card n + 1)
-  : ∀ (n : Type u) (hn : DecidableEq n) [n_fintype_inst : Fintype n] (f : k ↪ n), 
-    Fintype.card k ≤ Fintype.card n → motive ⟨n, hn, n_fintype_inst, f⟩ := sorry
+#check Nat.set_induction_bounded
 
+-- theorem inclusion_induction 
+--   (motive : (Σ (k : Type u) (hk : Fintype k), Fintype.card k ≤ Fintype.card n) → Prop) : 
+--   motive ⟨ n, n_fintype_inst, Fintype.card n ≤ Fintype.card n ⟩:= by sorry
 
-lemma subrect_self
-    (A : LatinRectangle k n α) : is_subrect A A (Function.Embedding.refl k) := by sorry
+lemma subrect_transitive {m'' : Type*} [Fintype m'']
+  {A : LatinRectangle m n α}
+  {A' : LatinRectangle m' n α}
+  {A'' : LatinRectangle m'' n α} 
+  (h1 : is_subrect A A') (h2 : is_subrect A' A'') : is_subrect A A'' := by sorry
+
 
 theorem latin_rectangle_extends_to_latin_square
     (A : LatinRectangle k n α)
-    (h : Fintype.card k ≤ Fintype.card n := by omega)
-    (ι : k ↪ n) :
-    ∃ (A' : LatinRectangle n n α), is_subrect A A' ι := by 
-            
-    let motive := fun (p : Σ (n : Type u) (hn : DecidableEq n) (n_fin : Fintype n), (k ↪ n)) => 
-    ∀ [Fintype p.1],
-        letI : DecidableEq p.1 := p.2.1
-        letI : Fintype p.1 := p.2.2.1
-        ∀ (A : LatinRectangle k p.1 α),
-            ∃ (A' : LatinRectangle p.1 p.1 α), is_subrect A A' p.2.2.2
-
-    apply inclusion_induction (motive := motive) 
-    case base => 
-        simp [motive]
-        intro h_inst A''
-        have : h_inst = k_fintype_inst := Subsingleton.elim _ _
-        subst this
-        use A''
-        exact subrect_self A''
-
-    case step => 
-      intro n hn n_fintype_inst f hm
-      set k' := Option n with hk'
-      have hk'_card := Fintype.card_option (α := k)
-      have hk'_le : Fintype.card k ≤ Fintype.card k' := by sorry
-      have hk'_lt : Fintype.card k < Fintype.card k' := by sorry
-      have ι_h := Function.Embedding.nonempty_of_card_le hk'_le
-      let ι' : k ↪ k' := Classical.choice ι_h
-      letI : Fintype k' := (inferInstance : Fintype (Option n))
-      letI : DecidableEq k' := inferInstance
-      use k', inferInstance, inferInstance, ι'
-      simp [motive, hk']
-      intro k' A
-      replace hk' := hk'.symm
-      have H := latin_rectangle_extends_one_row A hk'_lt ι' (by sorry)
-      exact H
-      sorry
-    case a => exact h
-    sorry
-
-end Completion
-
-end LatinSquare
+    (hn : Fintype.card n > 0)
+    (h : Fintype.card k ≤ Fintype.card n := by omega) :
+    ∃ (A' : LatinRectangle n n α), is_subrect A A' := by 
+      let := Fintype.card n - Fintype.card k
+      induction h_gap : (Fintype.card n - Fintype.card k) using 
+        Nat.strong_induction_on generalizing k A with
+      | h a ih => 
+        by_cases h_full : Fintype.card k = Fintype.card n
+        . sorry
+        . set k' := Option k with hk'
+          letI : Fintype k' := (inferInstance : Fintype (Option k))
+          letI : DecidableEq k' := (inferInstance : DecidableEq (Option k))
+          have hk'_card := Fintype.card_option (α := k)
+          have hk'_le : Fintype.card k ≤ Fintype.card k' := by sorry
+          have h_k_lt_n : Fintype.card k < Fintype.card n := by sorry
+          have h_k'_le_n : Fintype.card k' ≤ Fintype.card n := by sorry
+          replace hk' := hk'.symm
+          simp [hk'] at hk'_card
+          set m := Fintype.card n - Fintype.card k' with hm
+          have hm_lt : m < a := by omega
+          have ι_h := Function.Embedding.nonempty_of_card_le hk'_le
+          let ι' : k ↪ k' := Classical.choice ι_h
+          have H := latin_rectangle_extends_one_row A h_k_lt_n ι' hk'_card
+          obtain ⟨ A', hA ⟩ := H
+          have ih := ih m hm_lt (k := k') (A := A') h_k'_le_n hm
+          obtain ⟨ A'', hA'' ⟩ := ih
+          use A''
+          exact subrect_transitive hA hA''
