@@ -78,7 +78,7 @@ private partial def getClassDataProjections (e : Expr) (acc : Array (List Nat ×
       -- `e` has already been recorded, but is being encountered as the child of a new parent at
       -- `parentIdx`. Add this parent index to `e`'s original parent indices.
       return acc.modify structIdx fun (parents, struct) => (parentIdx :: parents, struct)
-    -- In ordinary usage, where only the first invocation of `getStructureDataProjections` has no
+    -- In ordinary usage, where only the first invocation of `getClassDataProjections` has no
     -- parent, this case cannot be reached.
     return acc
   -- Record current class and recurse
@@ -197,7 +197,8 @@ register_option linter.overlappingInstances.onlyInServer : Bool := {
 }
 
 /--
-Creates a description of the current declaration in messages: "declaration `<declName>`" if the `parentDecl?` is known, and "current declaration" otherwise. May be preceded by "the".
+Creates a description of the current declaration in messages: "declaration `<declName>`" if the
+`parentDecl?` is known, and "current declaration" otherwise. May be preceded by "the".
 
 TODO: For now, this does not produce hovers on `<declName>`, since the name may clash with the aux
 decl of the same name in the local context. In the future, we should account for this, and render
