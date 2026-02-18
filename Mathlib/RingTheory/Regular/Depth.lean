@@ -176,6 +176,7 @@ lemma ModuleCat.exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R]
     use x ^ k :: rs
     simpa [len, hk] using ⟨mem, hx.pow k, reg⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono
     (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{v} R}
     (f_mono : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
@@ -191,10 +192,8 @@ lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono
     · have : (a ^ k * a) • (LinearMap.id (R := R) (M := M)) =
         (a • (LinearMap.id (M := M))).comp ((a ^ k) • (LinearMap.id (M := M))) := by
         rw [LinearMap.comp_smul, LinearMap.smul_comp, smul_smul, LinearMap.id_comp]
-      simp only [smulShortComplex, this, ofHom_comp, of_coe]
-      change Mono ((extFunctorObj N i).map (↟(a ^ k • LinearMap.id) ≫ ↟(a • LinearMap.id)))
-      rw [(extFunctorObj N i).map_comp]
-      exact mono_comp' (ih (Nat.zero_lt_of_ne_zero eq0)) f_mono
+      simpa [smulShortComplex, this, ModuleCat.ofHom_comp, ← extFunctorObj_map,
+        (extFunctorObj N i).map_comp] using mono_comp' (ih (Nat.zero_lt_of_ne_zero eq0)) f_mono
 
 lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (N : ModuleCat.{v} R) [Nntr : Nontrivial N] [Nfin : Module.Finite R N]
