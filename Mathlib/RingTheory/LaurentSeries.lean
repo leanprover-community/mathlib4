@@ -497,6 +497,7 @@ instance : Valued K⸨X⸩ ℤᵐ⁰ := Valued.mk' ((PowerSeries.idealX K).valua
 set_option backward.isDefEq.respectTransparency false in
 lemma valuation_def : (Valued.v : Valuation K⸨X⸩ ℤᵐ⁰) = (PowerSeries.idealX K).valuation _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma valuation_coe_ratFunc (f : RatFunc K) :
     Valued.v (f : K⸨X⸩) = Valued.v f := by
   simp [adicValued_apply, ← valuation_eq_LaurentSeries_valuation]
@@ -1069,6 +1070,7 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     rintro y val_y b rfl
     rw [← Valuation.map_eq_of_sub_lt _ val_y, valuedAdicCompletion_eq_valuation']
 
+set_option backward.isDefEq.respectTransparency false in
 /- The extension of the `X`-adic valuation from `RatFunc K` up to its abstract completion coincides,
 modulo the isomorphism with `K⸨X⸩`, with the `X`-adic valuation on `K⸨X⸩`. -/
 theorem valuation_compare (f : K⸨X⸩) :

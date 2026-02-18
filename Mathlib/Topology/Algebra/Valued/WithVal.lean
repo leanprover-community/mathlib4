@@ -167,6 +167,7 @@ section CommRing
 
 variable [CommRing R] (v : Valuation R Γ₀)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
 instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
 instance : (valuation v).Compatible := .ofValuation (valuation v)
@@ -209,6 +210,7 @@ instance {P : Type*} [Ring S] [SMul P R] [SMul S R] [SMul P S]
 instance [AddCommMonoid S] [Module R S] : Module (WithVal v) S :=
   .compHom S (equiv v).toRingHom
 
+set_option backward.isDefEq.respectTransparency false in
 instance [AddCommMonoid S] [Module R S] [Module.Finite R S] :
     Module.Finite (WithVal v) S := .of_restrictScalars_finite R (WithVal v) S
 
@@ -288,7 +290,9 @@ section Field
 
 variable [Field R] (v : Valuation R Γ₀)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Field (WithVal v) := fast_instance% (equiv v).field
+set_option backward.isDefEq.respectTransparency false in
 instance [NumberField R] : NumberField (WithVal v) where
 
 @[simp] lemma toVal_div (x y : R) : toVal v (x / y) = toVal v x / toVal v y := rfl
