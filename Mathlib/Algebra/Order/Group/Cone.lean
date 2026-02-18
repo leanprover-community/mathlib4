@@ -57,6 +57,9 @@ instance GroupCone.instSetLike (G : Type*) [CommGroup G] : SetLike (GroupCone G)
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
 @[to_additive]
+instance (G : Type*) [CommGroup G] : PartialOrder (GroupCone G) := .ofSetLike (GroupCone G) G
+
+@[to_additive]
 instance GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
     GroupConeClass (GroupCone G) G where
   mul_mem {C} := C.mul_mem'

@@ -70,11 +70,9 @@ theorem betaIntegral_convergent_left {u : ℂ} (hu : 0 < re u) (v : ℂ) :
   · apply continuousOn_of_forall_continuousAt
     intro x hx
     rw [uIcc_of_le (by positivity : (0 : ℝ) ≤ 1 / 2)] at hx
-    apply ContinuousAt.cpow
-    · exact (continuous_const.sub continuous_ofReal).continuousAt
-    · exact continuousAt_const
-    · norm_cast
-      exact ofReal_mem_slitPlane.2 <| by linarith only [hx.2]
+    apply ContinuousAt.cpow (by fun_prop) (by fun_prop)
+    norm_cast
+    exact ofReal_mem_slitPlane.2 <| by linarith only [hx.2]
 
 /-- The Beta integral is convergent for all `u, v` of positive real part. -/
 theorem betaIntegral_convergent {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
@@ -102,6 +100,7 @@ theorem betaIntegral_eval_one_right {u : ℂ} (hu : 0 < re u) : betaIntegral u 1
     contrapose! hu; rw [hu, zero_re]
   · rwa [sub_re, one_re, ← sub_pos, sub_neg_eq_add, sub_add_cancel]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
     ∫ x in 0..a, (x : ℂ) ^ (s - 1) * ((a : ℂ) - x) ^ (t - 1) =
     (a : ℂ) ^ (s + t - 1) * betaIntegral s t := by
@@ -122,6 +121,7 @@ theorem betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
     push_cast
     rw [mul_sub, mul_one, mul_div_cancel₀ _ ha']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Relation between Beta integral and Gamma function. -/
 theorem Gamma_mul_Gamma_eq_betaIntegral {s t : ℂ} (hs : 0 < re s) (ht : 0 < re t) :
     Gamma s * Gamma t = Gamma (s + t) * betaIntegral s t := by
@@ -140,6 +140,7 @@ theorem Gamma_mul_Gamma_eq_betaIntegral {s t : ℂ} (hs : 0 < re s) (ht : 0 < re
   suffices Complex.exp (-x) = Complex.exp (-y) * Complex.exp (-(x - y)) by rw [this]; ring
   rw [← Complex.exp_add]; congr 1; abel
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Recurrence formula for the Beta function. -/
 theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
     u * betaIntegral u (v + 1) = v * betaIntegral (u + 1) v := by
@@ -154,8 +155,7 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
         (continuousOn_of_forall_continuousAt fun x hx => ?_)
     · refine (continuousAt_cpow_const_of_re_pos (Or.inl ?_) hu).comp continuous_ofReal.continuousAt
       rw [ofReal_re]; exact hx.1
-    · refine (continuousAt_cpow_const_of_re_pos (Or.inl ?_) hv).comp
-        (continuous_const.sub continuous_ofReal).continuousAt
+    · refine (continuousAt_cpow_const_of_re_pos (Or.inl ?_) hv).comp (by fun_prop)
       rw [sub_re, one_re, ofReal_re, sub_nonneg]
       exact hx.2
   have hder : ∀ x : ℝ, x ∈ Ioo (0 : ℝ) 1 →
@@ -249,6 +249,7 @@ theorem GammaSeq_add_one_left (s : ℂ) {n : ℕ} (hn : n ≠ 0) :
     push_cast; ring
   · abel
 
+set_option backward.isDefEq.respectTransparency false in
 theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (hn : n ≠ 0) :
     GammaSeq s n = ∫ x : ℝ in 0..n, ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1) := by
   have : ∀ x : ℝ, x = x / n * n := by intro x; rw [div_mul_cancel₀]; exact Nat.cast_ne_zero.mpr hn
@@ -272,6 +273,7 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
       mul_cpow_ofReal_nonneg hx.1.le (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)).le]
   rw [A, B, cpow_natCast]; ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The main technical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
 Gamma function for `0 < re s` as the limit of a sequence of integrals over finite intervals. -/
 theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
@@ -397,6 +399,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
     mul_div_cancel_right₀, ← div_div, mul_comm z _, mul_one_div]
   exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr <| by positivity)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Euler's reflection formula for the complex Gamma function. -/
 theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (π * z) := by
   have pi_ne : (π : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr pi_ne_zero

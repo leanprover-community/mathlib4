@@ -122,7 +122,7 @@ instance : Inhabited (CommBialgCat R) := ⟨of R R⟩
 
 lemma forget_obj (A : CommBialgCat.{v} R) : (forget (CommBialgCat.{v} R)).obj A = A := rfl
 
-lemma forget_map (f : A ⟶ B) : (forget (CommBialgCat.{v} R)).map f = f := rfl
+lemma forget_map (f : A ⟶ B) : (forget (CommBialgCat.{v} R)).map f = (f : _ → _) := rfl
 
 instance : CommRing ((forget (CommBialgCat R)).obj A) := inferInstanceAs <| CommRing A
 
@@ -200,6 +200,7 @@ instance {A : Type u} [CommRing A] [Bialgebra R A] [IsCocomm R A] :
     IsCommMonObj (Opposite.op <| CommAlgCat.of R A) where
   mul_comm := by ext; exact comm_comul R _
 
+set_option backward.isDefEq.respectTransparency false in
 instance {A B : Type u} [CommRing A] [Bialgebra R A] [CommRing B] [Bialgebra R B]
     (f : A →ₐc[R] B) : IsMonHom (CommAlgCat.ofHom (f : A →ₐ[R] B)).op where
 

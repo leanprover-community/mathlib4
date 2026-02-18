@@ -124,6 +124,7 @@ For example, for `x : Fin k` and `n : Nat`,
 it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
 silently introducing wraparound arithmetic.
 -/
+@[instance_reducible]
 def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) where
   __ := Fin.instAddMonoidWithOne n
   __ := Fin.addCommGroup n

@@ -59,9 +59,11 @@ lemma stabilizer_le_aestabilizer (s : Set α) : stabilizer G s ≤ aestabilizer 
   intro g hg
   simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma aestabilizer_empty : aestabilizer G μ ∅ = ⊤ := top_unique fun _ _ ↦ by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma aestabilizer_univ : aestabilizer G μ univ = ⊤ := top_unique fun _ _ ↦ by simp
 
@@ -70,6 +72,7 @@ lemma aestabilizer_congr (h : s =ᵐ[μ] t) : aestabilizer G μ s = aestabilizer
   ext g
   rw [mem_aestabilizer, mem_aestabilizer, h.congr_right, ((smul_set_ae_eq g).2 h).congr_left]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma aestabilizer_of_aeconst (hs : EventuallyConst s (ae μ)) : aestabilizer G μ s = ⊤ := by
   refine top_unique fun g _ ↦ ?_
   cases eventuallyConst_set'.mp hs with
