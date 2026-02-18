@@ -71,36 +71,6 @@ lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module 
   apply not_nontrivial_iff_subsingleton.mpr (subsingleton_of_forall_eq 0 (fun m ↦ ?_))
   rw [← one_smul R m, Subsingleton.elim (1 : R) 0, zero_smul]
 
-namespace AddCommGrpCat
-
-variable {ι : Type v} [DecidableEq ι] (Z : ι → AddCommGrpCat.{v})
-
-open DirectSum
-
-/-- Given a function `Z : ι → AddCommGrpCat`, the `Cofan` obtained from `DirectSum.of Z i`. -/
-def coproductCocone : Cofan Z :=
-  Cofan.mk (of (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.of (fun i ↦ Z i) i)
-
-/-- `coproductCocone` is colimit. -/
-def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
-  desc s := ofHom <| DirectSum.toAddMonoid fun i ↦ (s.ι.app ⟨i⟩).hom
-  fac := by
-    rintro s ⟨i⟩
-    ext (x : Z i)
-    simp [coproductCocone, hom_comp]
-  uniq := by
-    rintro s f h
-    ext : 1
-    refine DirectSum.addHom_ext fun i x ↦ ?_
-    simpa [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using
-      congr($(h ⟨i⟩) x)
-
-/-- The isomorphism in `AddCommGrpCat` between coproduct and directsum. -/
-noncomputable def coprodIsoDirectSum [HasCoproduct Z] : ∐ Z ≅ AddCommGrpCat.of (⨁ i, Z i) :=
-  colimit.isoColimitCocone ⟨_, coproductCoconeIsColimit Z⟩
-
-end AddCommGrpCat
-
 open Module
 
 lemma subsingleton_of_pi {α β : Type*} [Nonempty α] (h : Subsingleton (α → β)) :
@@ -142,7 +112,7 @@ lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Modu
     Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
     (Shrink.linearEquiv R R).toLinearMap)) := by
     apply (LinearEquiv.restrictScalars R b.repr).symm.surjective.comp
-    apply Finsupp.mapRange_surjective _ (by simp)
+    apply Finsupp.mapRange_surjective _ (map_zero _)
     apply (Submodule.mkQ_surjective _).comp (Shrink.linearEquiv R R).surjective
   rw [← hf, ← LinearMap.range_eq_top, LinearMap.range_comp] at this
   exact LinearMap.range_eq_top.mp (IsLocalRing.map_mkQ_eq_top.mp this)
@@ -171,7 +141,7 @@ lemma basis_lift_ker_le [IsLocalRing R]
     simp only [LinearMap.mem_ker, Finsupp.mapRange.linearMap_apply, LinearMap.coe_comp,
       LinearEquiv.coe_coe, mem_comap, Finsupp.ext_iff, Finsupp.zero_apply]
     congr!
-    simp [Quotient.eq_zero_iff_mem, Shrink.ringEquiv]
+    simpa [Shrink.ringEquiv] using Ideal.Quotient.eq_zero_iff_mem
   simp only [LinearEquiv.ker_comp, this, mem_comap]
   intro h
   rw [← (Finsupp.univ_sum_single x)]
@@ -186,6 +156,7 @@ lemma basis_lift_ker_le [IsLocalRing R]
   rw [this]
   apply Submodule.smul_mem_smul (h i) (Set.mem_univ _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M ⟶ N)
     (mem : f ∈ (Module.annihilator R L) • (⊤ : Submodule R (M ⟶ N))) :
     (AddCommGrpCat.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero n)) = 0 := by
@@ -203,6 +174,7 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M 
       AddCommGrpCat.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0 := by simp [hg1, hg2]
     simpa [Ext.mk₀_add] using this
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     (le1 : HasProjectiveDimensionLE M 1) (nle0 : ¬ HasProjectiveDimensionLE M 0) :
@@ -303,6 +275,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       have lt1 : i < n := lt_of_le_of_lt (self_le_add_right _ _) lt2
       exact (iff i).mpr ⟨hn i lt1, hn (i + 1) lt2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{v} R) [Nontrivial M]
     [Module.Finite R M] (netop : projectiveDimension M ≠ ⊤) :
     projectiveDimension M + IsLocalRing.depth M =
