@@ -285,6 +285,7 @@ instance (a : Nimber.{u}) : Small.{u} (invSet a) := by
   rw [List.toNimber]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The complement of `invSet a` is nonempty. -/
 private theorem invSet_nonempty (a : Nimber) : (invSet a)ᶜ.Nonempty :=
   have := instSmallElemInvSet a -- why is this needed?

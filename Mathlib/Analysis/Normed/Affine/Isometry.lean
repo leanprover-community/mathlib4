@@ -840,6 +840,7 @@ theorem isometryEquivMap.coe_apply (φ : P₁' →ᵃⁱ[𝕜] P₂) (E : Affine
     (g : E) : ↑(E.isometryEquivMap φ g) = φ g :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem isometryEquivMap.toAffineMap_eq (φ : P₁' →ᵃⁱ[𝕜] P₂) (E : AffineSubspace 𝕜 P₁')
     [Nonempty E] :

@@ -844,6 +844,7 @@ section Basic
 
 section Monoid
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where

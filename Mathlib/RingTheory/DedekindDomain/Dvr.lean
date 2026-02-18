@@ -113,6 +113,7 @@ instance Localization.AtPrime.isDedekindDomain [IsDedekindDomain A] (P : Ideal A
     IsDedekindDomain (Localization.AtPrime P) :=
   IsLocalization.AtPrime.isDedekindDomain A P _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsLocalization.AtPrime.not_isField {P : Ideal A} (hP : P ≠ ⊥) [pP : P.IsPrime] (Aₘ : Type*)
     [CommRing Aₘ] [Algebra A Aₘ] [IsLocalization.AtPrime Aₘ P] : ¬ IsField Aₘ := by
   intro h
