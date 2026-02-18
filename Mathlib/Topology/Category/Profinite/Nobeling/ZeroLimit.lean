@@ -63,6 +63,7 @@ theorem Products.isGood_nil {I} [LinearOrder I] :
   intro h
   simp [Products.eval, Products.nil] at h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Products.span_nil_eq_top {I} [LinearOrder I] :
     Submodule.span ℤ (eval ({fun _ ↦ false} : Set (I → Bool)) '' {nil}) = ⊤ := by
   rw [Set.image_singleton, eq_top_iff]
