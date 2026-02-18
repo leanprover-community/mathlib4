@@ -573,7 +573,7 @@ section corollary
 
 section
 
-open PowerSeries
+open scoped PowerSeries
 
 lemma PowerSeries.maximalIdeal_eq_sup [IsLocalRing R] : maximalIdeal R⟦X⟧ =
     (maximalIdeal R).map PowerSeries.C ⊔ Ideal.span {X} := by
@@ -598,11 +598,6 @@ lemma PowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R
   apply IsRegularLocalRing.of_spanFinrank_maximalIdeal_le
   apply le_trans _ ringKrullDim_succ_le_ringKrullDim_powerseries
   rw [← (isRegularLocalRing_def R).mp ‹_›, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le]
-  have : maximalIdeal R⟦X⟧ = Ideal.span ((PowerSeries.C '' (maximalIdeal R).generators) ∪ {X}) := by
-
-    sorry
-  rw [this]
-  --only need `ringKrullDim_succ_le_ringKrullDim_powerseries`, the other side is true indeed
   sorry
 
 lemma MvPowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R]
