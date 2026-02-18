@@ -164,16 +164,14 @@ theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     (Module.annihilator (Localization.AtPrime p) S).minimalPrimes :=
     associated_prime_eq_minimalPrimes_isCohenMacaulay (ModuleCat.of (Localization.AtPrime p) S)
   have : maximalIdeal (Localization.AtPrime p) ∈ associatedPrimes (Localization.AtPrime p) S := by
-    have := mem_associatedPrimes_atPrime_of_mem_associatedPrimes hp
-    simp only [smul_eq_mul, S]
-    rw [Ideal.mul_top, ← Ideal.map_ofList]
-    convert this
-    rw [← Ideal.localized'_eq_map (Localization.AtPrime p) p.primeCompl]
+    convert mem_associatedPrimes_atPrime_of_mem_associatedPrimes hp
     let f := Submodule.toLocalizedQuotient' (Localization.AtPrime p) p.primeCompl
       (Algebra.linearMap R (Localization.AtPrime p)) (Ideal.ofList l)
-    exact LinearEquiv.AssociatedPrimes.eq (IsLocalizedModule.mapEquiv p.primeCompl f
+    exact LinearEquiv.AssociatedPrimes.eq
+      ((Submodule.quotEquivOfEq _ _ (by simp [Ideal.localized'_eq_map])).trans
+      (IsLocalizedModule.mapEquiv p.primeCompl f
       (LocalizedModule.mkLinearMap p.primeCompl (R ⧸ Ideal.ofList l)) (Localization.AtPrime p)
-      (LinearEquiv.refl R _))
+      (LinearEquiv.refl R _)))
   rw [eqmin, ann] at this
   simp [← ht_eq, ← height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrimes _ this, ht,
     ht_eq_len]
