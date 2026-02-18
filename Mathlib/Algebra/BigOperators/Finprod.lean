@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Notation.FiniteSupport
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Set.Finite.Lattice
 
@@ -806,6 +805,7 @@ theorem finprod_cond_eq_left : (∏ᶠ (i) (_ : i = a), f i) = f a :=
 @[to_additive (attr := simp)]
 theorem finprod_cond_eq_right : (∏ᶠ (i) (_ : a = i), f i) = f a := by simp [@eq_comm _ a]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A more general version of `finprod_mem_insert` that requires `s ∩ mulSupport f` rather than `s`
 to be finite. -/
 @[to_additive
@@ -860,6 +860,7 @@ theorem finprod_mem_pair (h : a ≠ b) : (∏ᶠ i ∈ ({a, b} : Set α), f i) =
   rw [finprod_mem_insert, finprod_mem_singleton]
   exacts [h, finite_singleton b]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of `f y` over `y ∈ g '' s` equals the product of `f (g i)` over `s`
 provided that `g` is injective on `s ∩ mulSupport (f ∘ g)`. -/
 @[to_additive

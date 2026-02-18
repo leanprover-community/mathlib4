@@ -232,6 +232,7 @@ variable (D : Type u₂) [Category.{v₂} D]
 
 namespace Equivalence
 
+set_option backward.isDefEq.respectTransparency false in
 variable {D} in
 /-- Equivalent categories have equivalent cores. -/
 @[simps!]
