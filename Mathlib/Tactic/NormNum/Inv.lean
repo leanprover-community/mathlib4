@@ -86,7 +86,7 @@ def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := 
   let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.instDivisionRing)
   return .isRat _ q n d q(isRat_mkRat $pa $pb $p)
 
-attribute [local instance] monadLiftOptionMetaM in
+--attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `NNRat.divNat a b`,
 such that `norm_num` successfully recognises both `a` and `b`, and returns `(a : ℤ) / b`. -/
 @[norm_num NNRat.divNat _ _]
@@ -97,7 +97,7 @@ def evalNNRealdivNat : NormNumExt where eval {u α} (e : Q(ℚ≥0)) : MetaM (Re
   let ⟨na, pa⟩ ← deriveNat q($a) q(AddCommMonoidWithOne.toAddMonoidWithOne)
   let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
   let rab ← derive q(($na : ℤ) / $nb : Rat)
-  let ⟨q, n, d, p⟩ ← rab.toNNRat' q(Rat.instDivisionRing.toDivisionSemiring)
+  let some ⟨q, n, d, p⟩ := rab.toNNRat' q(Rat.instDivisionRing.toDivisionSemiring) | failure
   return .isNNRat _ q n d q(isNNRat_natDiv $pa $pb $p)
 
 theorem isNat_ratCast {R : Type*} [DivisionRing R] : {q : ℚ} → {n : ℕ} →
@@ -160,7 +160,7 @@ recognizes `q`, returning the cast of `q`. -/
   match r with
   | .isNat _ na pa =>
     assumeInstancesCommute
-    return .isNat _ na q(isNat_NNRatCast $pa) --q(isNat_ratCast $pa)
+    return .isNat _ na q(isNat_NNRatCast $pa)
   | .isNNRat _ qa na da pa =>
     assumeInstancesCommute
     let some _ ← inferCharZeroOfDivisionSemiring? dα | failure
