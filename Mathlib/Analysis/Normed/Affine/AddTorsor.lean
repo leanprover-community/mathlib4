@@ -3,11 +3,14 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
-import Mathlib.Topology.Instances.RealVectorSpace
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+public import Mathlib.Topology.Instances.RealVectorSpace
 
 
 /-!
@@ -15,6 +18,8 @@ import Mathlib.Topology.Instances.RealVectorSpace
 
 This file contains lemmas about normed additive torsors over normed spaces.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -31,13 +36,6 @@ section NormedSpace
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
 
 open AffineMap
-
-theorem AffineSubspace.isClosed_direction_iff (s : AffineSubspace 𝕜 Q) :
-    IsClosed (s.direction : Set W) ↔ IsClosed (s : Set Q) := by
-  rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp [isClosed_singleton]
-  rw [← (IsometryEquiv.vaddConst x).toHomeomorph.symm.isClosed_image,
-    AffineSubspace.coe_direction_eq_vsub_set_right hx]
-  rfl
 
 @[simp]
 theorem dist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
@@ -134,6 +132,7 @@ section invertibleTwo
 
 variable [Invertible (2 : 𝕜)]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_left_midpoint (p₁ p₂ : P) : dist p₁ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖⁻¹ * dist p₁ p₂ := by
   rw [midpoint, dist_comm, dist_lineMap_left, invOf_eq_inv, ← norm_inv]
@@ -177,11 +176,12 @@ theorem dist_left_midpoint_eq_dist_right_midpoint (p₁ p₂ : P) :
     dist p₁ (midpoint 𝕜 p₁ p₂) = dist p₂ (midpoint 𝕜 p₁ p₂) := by
   rw [dist_left_midpoint p₁ p₂, dist_right_midpoint p₁ p₂]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
     dist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (dist p₁ p₃ + dist p₂ p₄) / ‖(2 : 𝕜)‖ := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, midpoint_vsub_midpoint]
   rw [midpoint_eq_smul_add, norm_smul, invOf_eq_inv, norm_inv, ← div_eq_inv_mul]
-  exact div_le_div_of_nonneg_right (norm_add_le _ _) (norm_nonneg _)
+  grw [norm_add_le]
 
 theorem nndist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
     nndist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (nndist p₁ p₃ + nndist p₂ p₄) / ‖(2 : 𝕜)‖₊ :=
@@ -213,29 +213,6 @@ theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
   AntilipschitzWith.of_le_mul_dist fun c₁ c₂ => by
     rw [dist_lineMap_lineMap, NNReal.coe_inv, ← dist_nndist, mul_left_comm,
       inv_mul_cancel₀ (dist_ne_zero.2 h), mul_one]
-
-variable (𝕜)
-
-theorem eventually_homothety_mem_of_mem_interior (x : Q) {s : Set Q} {y : Q} (hy : y ∈ interior s) :
-    ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s := by
-  rw [(NormedAddCommGroup.nhds_basis_norm_lt (1 : 𝕜)).eventually_iff]
-  rcases eq_or_ne y x with h | h
-  · use 1
-    simp [h.symm, interior_subset hy]
-  have hxy : 0 < ‖y -ᵥ x‖ := by rwa [norm_pos_iff, vsub_ne_zero]
-  obtain ⟨u, hu₁, hu₂, hu₃⟩ := mem_interior.mp hy
-  obtain ⟨ε, hε, hyε⟩ := Metric.isOpen_iff.mp hu₂ y hu₃
-  refine ⟨ε / ‖y -ᵥ x‖, div_pos hε hxy, fun δ (hδ : ‖δ - 1‖ < ε / ‖y -ᵥ x‖) => hu₁ (hyε ?_)⟩
-  rw [lt_div_iff₀ hxy, ← norm_smul, sub_smul, one_smul] at hδ
-  rwa [homothety_apply, Metric.mem_ball, dist_eq_norm_vsub W, vadd_vsub_eq_sub_vsub]
-
-theorem eventually_homothety_image_subset_of_finite_subset_interior (x : Q) {s : Set Q} {t : Set Q}
-    (ht : t.Finite) (h : t ⊆ interior s) : ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ '' t ⊆ s := by
-  suffices ∀ y ∈ t, ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s by
-    simp_rw [Set.image_subset_iff]
-    exact (Filter.eventually_all_finite ht).mpr this
-  intro y hy
-  exact eventually_homothety_mem_of_mem_interior 𝕜 x (h hy)
 
 end NormedSpace
 
@@ -269,7 +246,7 @@ open Dilation
 variable {𝕜 E : Type*} [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
 variable [Module 𝕜 E] [NormSMulClass 𝕜 E] {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
--- TODO: define `ContinuousAffineEquiv` and reimplement this as one of those.
+-- TODO: reimplement this as a `ContinuousAffineEquiv`.
 /-- Scaling by an element `k` of the scalar ring as a `DilationEquiv` with ratio `‖k‖₊`, mapping
 from a normed space to a normed torsor over that space sending `0` to `c`. -/
 @[simps]
@@ -282,7 +259,7 @@ def DilationEquiv.smulTorsor (c : P) {k : 𝕜} (hk : k ≠ 0) : E ≃ᵈ P wher
     rw [show edist (k • x +ᵥ c) (k • y +ᵥ c) = _ from (IsometryEquiv.vaddConst c).isometry ..]
     exact edist_smul₀ ..⟩
 
--- Cannot be @[simp] because `x` and `y` can not be inferred by `simp`.
+-- Cannot be @[simp] because `x` and `y` cannot be inferred by `simp`.
 lemma DilationEquiv.smulTorsor_ratio {c : P} {k : 𝕜} (hk : k ≠ 0) {x y : E}
     (h : dist x y ≠ 0) : ratio (smulTorsor c hk) = ‖k‖₊ :=
   Eq.symm <| ratio_unique_of_dist_ne_zero h <| by simp [dist_eq_norm, ← smul_sub, norm_smul]

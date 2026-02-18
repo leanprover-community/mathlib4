@@ -3,9 +3,11 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, François Dupuis
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Order.Filter.Extr
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Order.Filter.Extr
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Convex and concave functions
@@ -25,6 +27,8 @@ a convex set.
 * `StrictConvexOn 𝕜 s f`: The function `f` is strictly convex on `s` with scalars `𝕜`.
 * `StrictConcaveOn 𝕜 s f`: The function `f` is strictly concave on `s` with scalars `𝕜`.
 -/
+
+@[expose] public section
 
 open LinearMap Set Convex Pointwise
 
@@ -228,9 +232,9 @@ theorem concaveOn_of_convex_hypograph (h : Convex 𝕜 { p : E × β | p.1 ∈ s
 
 end Module
 
-section OrderedSMul
+section PosSMulMono
 
-variable [IsOrderedAddMonoid β] [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
+variable [IsOrderedAddMonoid β] [SMul 𝕜 E] [Module 𝕜 β] [PosSMulMono 𝕜 β] {s : Set E} {f : E → β}
 
 theorem ConvexOn.convex_le (hf : ConvexOn 𝕜 s f) (r : β) : Convex 𝕜 ({ x ∈ s | f x ≤ r }) :=
   fun x hx y hy a b ha hb hab =>
@@ -267,7 +271,7 @@ theorem concaveOn_iff_convex_hypograph :
     ConcaveOn 𝕜 s f ↔ Convex 𝕜 { p : E × β | p.1 ∈ s ∧ p.2 ≤ f p.1 } :=
   convexOn_iff_convex_epigraph (β := βᵒᵈ)
 
-end OrderedSMul
+end PosSMulMono
 
 section Module
 
@@ -362,9 +366,9 @@ theorem StrictConcaveOn.concaveOn {s : Set E} {f : E → β} (hf : StrictConcave
     ConcaveOn 𝕜 s f :=
   hf.dual.convexOn
 
-section OrderedSMul
+section PosSMulMono
 
-variable [IsOrderedAddMonoid β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
+variable [IsOrderedAddMonoid β] [PosSMulMono 𝕜 β] {s : Set E} {f : E → β}
 
 theorem StrictConvexOn.convex_lt (hf : StrictConvexOn 𝕜 s f) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) :=
@@ -383,7 +387,7 @@ theorem StrictConcaveOn.convex_gt (hf : StrictConcaveOn 𝕜 s f) (r : β) :
     Convex 𝕜 ({ x ∈ s | r < f x }) :=
   hf.dual.convex_lt r
 
-end OrderedSMul
+end PosSMulMono
 
 section LinearOrder
 
@@ -519,7 +523,7 @@ end DistribMulAction
 
 section Module
 
-variable [Module 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
+variable [Module 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E} {f : E → β}
 
 theorem ConvexOn.convex_lt (hf : ConvexOn 𝕜 s f) (r : β) : Convex 𝕜 ({ x ∈ s | f x < r }) :=
   convex_iff_forall_pos.2 fun x hx y hy a b ha hb hab =>
@@ -565,7 +569,7 @@ end OrderedCancelAddCommMonoid
 section LinearOrderedAddCommMonoid
 
 variable [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β]
-  [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E}
+  [SMul 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E}
   {f g : E → β}
 
 /-- The pointwise maximum of convex functions is convex. -/
@@ -665,9 +669,9 @@ section LinearOrderedCancelAddCommMonoid
 
 variable [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
 
-section OrderedSMul
+section PosSMulStrictMono
 
-variable [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f g : E → β}
+variable [SMul 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E} {f g : E → β}
 
 theorem ConvexOn.le_left_of_right_le' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) (hfy : f y ≤ f (a • x + b • y)) :
@@ -713,11 +717,11 @@ theorem ConcaveOn.right_le_of_le_left (hf : ConcaveOn 𝕜 s f) {x y z : E} (hx 
     (hz : z ∈ openSegment 𝕜 x y) (hxz : f z ≤ f x) : f y ≤ f z :=
   hf.dual.le_right_of_left_le hx hy hz hxz
 
-end OrderedSMul
+end PosSMulStrictMono
 
 section Module
 
-variable [Module 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f g : E → β}
+variable [Module 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E} {f g : E → β}
 
 /- The following lemmas don't require `Module 𝕜 E` if you add the hypothesis `x ≠ y`. At the time of
 the writing, we decided the resulting lemmas wouldn't be useful. Feel free to reintroduce them. -/
@@ -780,10 +784,7 @@ theorem neg_convexOn_iff : ConvexOn 𝕜 s (-f) ↔ ConcaveOn 𝕜 s f := by
   constructor
   · rintro ⟨hconv, h⟩
     refine ⟨hconv, fun x hx y hy a b ha hb hab => ?_⟩
-    simp? [neg_apply, neg_le, add_comm] at h says
-      simp only [Pi.neg_apply, smul_neg, le_add_neg_iff_add_le, add_comm,
-        add_neg_le_iff_le_add] at h
-    exact h hx hy ha hb hab
+    simpa [add_comm] using h hx hy ha hb hab
   · rintro ⟨hconv, h⟩
     refine ⟨hconv, fun x hx y hy a b ha hb hab => ?_⟩
     rw [← neg_le_neg_iff]
@@ -901,7 +902,7 @@ variable [AddCommMonoid β] [PartialOrder β]
 
 section Module
 
-variable [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
+variable [SMul 𝕜 E] [Module 𝕜 β] [PosSMulMono 𝕜 β] {s : Set E} {f : E → β}
 
 theorem ConvexOn.smul {c : 𝕜} (hc : 0 ≤ c) (hf : ConvexOn 𝕜 s f) : ConvexOn 𝕜 s fun x => c • f x :=
   ⟨hf.1, fun x hx y hy a b ha hb hab =>
@@ -1026,7 +1027,7 @@ theorem OrderIso.convexOn_symm (f : α ≃o β) (hf : ConcaveOn 𝕜 univ f) :
   refine ⟨convex_univ, fun x _ y _ a b ha hb hab => ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
-  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
+  simp only [hx'', hy'', OrderIso.symm_apply_apply]
   rw [← f.le_iff_le, OrderIso.apply_symm_apply]
   exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) ha hb hab
 
@@ -1045,7 +1046,7 @@ theorem OrderIso.concaveOn_symm (f : α ≃o β) (hf : ConvexOn 𝕜 univ f) :
   refine ⟨convex_univ, fun x _ y _ a b ha hb hab => ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
-  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
+  simp only [hx'', hy'', OrderIso.symm_apply_apply]
   rw [← f.le_iff_le, OrderIso.apply_symm_apply]
   exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) ha hb hab
 
@@ -1057,18 +1058,19 @@ variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 section OrderedAddCommMonoid
 variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
-  [AddCommMonoid E] [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+  [AddCommMonoid E] [SMul 𝕜 E] [Module 𝕜 β] [PosSMulMono 𝕜 β]
   {f : E → β} {s : Set E} {x y : E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A strictly convex function admits at most one global minimum. -/
 lemma StrictConvexOn.eq_of_isMinOn (hf : StrictConvexOn 𝕜 s f) (hfx : IsMinOn f s x)
     (hfy : IsMinOn f s y) (hx : x ∈ s) (hy : y ∈ s) : x = y := by
   by_contra hxy
   let z := (2 : 𝕜)⁻¹ • x + (2 : 𝕜)⁻¹ • y
-  have hz : z ∈ s := hf.1 hx hy (by norm_num) (by norm_num) <| by norm_num
+  have hz : z ∈ s := hf.1 hx hy (by simp) (by simp) <| by norm_num
   refine lt_irrefl (f z) ?_
   calc
-    f z < _ := hf.2 hx hy hxy (by norm_num) (by norm_num) <| by norm_num
+    f z < _ := hf.2 hx hy hxy (by simp) (by simp) <| by norm_num
     _ ≤ (2 : 𝕜)⁻¹ • f z + (2 : 𝕜)⁻¹ • f z := by gcongr; exacts [hfx hz, hfy hz]
     _ = f z := by rw [← _root_.add_smul]; norm_num
 
@@ -1081,7 +1083,7 @@ end OrderedAddCommMonoid
 
 section LinearOrderedCancelAddCommMonoid
 variable [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
-  [Module 𝕜 β] [OrderedSMul 𝕜 β]
+  [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
   {x y z : 𝕜} {s : Set 𝕜} {f : 𝕜 → β}
 
 theorem ConvexOn.le_right_of_left_le'' (hf : ConvexOn 𝕜 s f) (hx : x ∈ s) (hz : z ∈ s) (hxy : x < y)

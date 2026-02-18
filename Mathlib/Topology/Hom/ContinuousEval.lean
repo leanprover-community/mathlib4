@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Hom.ContinuousEvalConst
-import Mathlib.Topology.ContinuousMap.Defs
+module
+
+public import Mathlib.Topology.Hom.ContinuousEvalConst
+public import Mathlib.Topology.ContinuousMap.Defs
 
 /-!
 # Bundled maps with evaluation continuous in both variables
@@ -13,6 +15,8 @@ In this file we define a class `ContinuousEval F X Y`
 saying that `F` is a bundled morphism class (in the sense of `FunLike`)
 with a topology such that `fun (f, x) : F × X ↦ f x` is a continuous function.
 -/
+
+@[expose] public section
 
 open scoped Topology
 open Filter

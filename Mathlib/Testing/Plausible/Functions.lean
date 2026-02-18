@@ -3,11 +3,21 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Int.Range
-import Mathlib.Data.List.Sigma
-import Plausible.Functions
+module
+
+public meta import Mathlib.Data.Finsupp.ToDFinsupp
+public meta import Mathlib.Data.Int.Range
+public meta import Mathlib.Data.List.Sigma
+public meta import Plausible.Functions
+public import Batteries.Data.MLList.Basic
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Data.DFinsupp.Defs
+public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Data.Int.Range
+public import Mathlib.Data.List.Sigma
+public import Mathlib.Data.PNat.Notation
+public import Mathlib.Tactic.Bound.Init
 
 /-!
 ## `Plausible`: generators for functions
@@ -39,6 +49,8 @@ Some care must be taken for shrinking such functions to make sure
 their defining property is invariant through shrinking. Injective
 functions are an example of how complicated it can get.
 -/
+
+@[expose] public meta section
 
 universe u v
 
@@ -222,7 +234,7 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
       dsimp [List.dlookup] at h₃; split_ifs at h₃ with h
       · rw [Option.some_inj] at h₃
         subst x'; subst val
-        simp only [List.mem_cons, true_or, eq_self_iff_true]
+        simp only [List.mem_cons, true_or]
       · obtain - | ⟨h₀, h₅⟩ := h₀
         obtain - | ⟨h₂, h₄⟩ := h₂
         have h₆ := Nat.succ.inj h₁
@@ -230,7 +242,7 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
         simp only [Ne.symm h, xs_ih, List.mem_cons]
         suffices val ∈ ys by tauto
         rw [← Option.mem_def, List.mem_dlookup_iff] at h₃
-        · simp only [Prod.toSigma, List.mem_map, heq_iff_eq, Prod.exists] at h₃
+        · simp only [Prod.toSigma, List.mem_map, Prod.exists] at h₃
           rcases h₃ with ⟨a, b, h₃, h₄, h₅⟩
           apply (List.of_mem_zip h₃).2
         simp only [List.NodupKeys, List.keys, comp_def, Prod.fst_toSigma, List.map_map]
@@ -300,7 +312,7 @@ def sliceSizes : ℕ → MLList Id ℕ+
 /-- Shrink a permutation of a list, slicing a segment in the middle.
 
 The sizes of the slice being removed start at `n` (with `n` the length
-of the list) and then `n / 2`, then `n / 4`, etc down to 1. The slices
+of the list) and then `n / 2`, then `n / 4`, etc. down to 1. The slices
 will be taken at index `0`, `n / k`, `2n / k`, `3n / k`, etc.
 -/
 protected def shrinkPerm {α : Type} [DecidableEq α] :
@@ -334,9 +346,9 @@ protected def mk (xs ys : List α) (h : xs ~ ys) (h' : ys.Nodup) : InjectiveFunc
   have h₁ : ys.length ≤ xs.length := le_of_eq h.length_eq.symm
   InjectiveFunction.mapToSelf (List.toFinmap' (xs.zip ys))
     (by
-      simp only [List.toFinmap', comp_def, List.map_fst_zip, List.map_snd_zip, *, Prod.fst_toSigma,
-        Prod.snd_toSigma, List.map_map])
-    (by simp only [List.toFinmap', comp_def, List.map_snd_zip, *, Prod.snd_toSigma, List.map_map])
+      simp only [List.toFinmap', comp_def, List.map_fst_zip, List.map_snd_zip, *,
+        List.map_map])
+    (by simp only [List.toFinmap', comp_def, List.map_snd_zip, *, List.map_map])
 
 protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Injective (apply f) := by
   obtain ⟨xs, hperm, hnodup⟩ := f
@@ -348,19 +360,17 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
     induction xs with
     | nil => simp only [List.zip_nil_right, List.map_nil]
     | cons xs_hd xs_tl xs_ih =>
-      simp only [Prod.toSigma, eq_self_iff_true, Sigma.eta, List.zip_cons_cons,
+      simp only [Sigma.eta, List.zip_cons_cons,
         List.map, List.cons_inj_right]
       exact xs_ih
   revert hperm hnodup
-  rw [hxs]; intros hperm hnodup
+  rw [hxs]; intro hperm hnodup
   apply InjectiveFunction.applyId_injective
   · rwa [← h₀, hxs, hperm.nodup_iff]
   · rwa [← hxs, h₀, h₁] at hperm
 
-instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
-  proxy := InjectiveFunction ℤ
-  interp f := ⟨apply f, f.injective⟩
-  sample := do
+instance : Arbitrary (InjectiveFunction ℤ) where
+  arbitrary := do
     let ⟨sz⟩ ← Gen.up Gen.getSize
     let xs' := Int.range (-(2 * sz + 2)) (2 * sz + 2)
     let ys ← Gen.permutationOf xs'
@@ -369,7 +379,11 @@ instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function
     let r : InjectiveFunction ℤ :=
       InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| List.nodup_range.map Hinj)
     pure r
-  shrink := {shrink := @InjectiveFunction.shrink ℤ _ }
+
+instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
+  proxy := InjectiveFunction ℤ
+  interp f := ⟨apply f, f.injective⟩
+  shrink := { shrink := @InjectiveFunction.shrink ℤ _ }
 
 end InjectiveFunction
 

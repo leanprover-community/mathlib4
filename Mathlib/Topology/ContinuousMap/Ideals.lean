@@ -3,12 +3,14 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Topology.Algebra.Module.CharacterSpace
+module
+
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 /-!
 # Ideals of continuous functions
@@ -67,6 +69,8 @@ order isomorphism described above, and instead we only consider the Galois inser
 ideal, continuous function, compact, Hausdorff
 -/
 
+@[expose] public section
+
 
 open scoped NNReal
 
@@ -84,7 +88,7 @@ variable (R)
 which vanish on the complement of `s`. -/
 def idealOfSet (s : Set X) : Ideal C(X, R) where
   carrier := {f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}
-  add_mem' {f g} hf hg x hx := by simp [hf x hx, hg x hx, coe_add, Pi.add_apply, add_zero]
+  add_mem' {f g} hf hg x hx := by simp [hf x hx, hg x hx, add_zero]
   zero_mem' _ _ := rfl
   smul_mem' c _ hf x hx := mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
 
@@ -103,8 +107,6 @@ theorem mem_idealOfSet {s : Set X} {f : C(X, R)} :
 theorem notMem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
   simp_rw [mem_idealOfSet]; push_neg; rfl
 
-@[deprecated (since := "2025-05-23")] alias not_mem_idealOfSet := notMem_idealOfSet
-
 /-- Given an ideal `I` of `C(X, R)`, construct the set of points for which every function in the
 ideal vanishes on the complement. -/
 def setOfIdeal (I : Ideal C(X, R)) : Set X :=
@@ -113,8 +115,6 @@ def setOfIdeal (I : Ideal C(X, R)) : Set X :=
 theorem notMem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∉ setOfIdeal I ↔ ∀ ⦃f : C(X, R)⦄, f ∈ I → f x = 0 := by
   rw [← Set.mem_compl_iff, setOfIdeal, compl_compl, Set.mem_setOf]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_setOfIdeal := notMem_setOfIdeal
 
 theorem mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∈ setOfIdeal I ↔ ∃ f ∈ I, (f : C(X, R)) x ≠ 0 := by
@@ -165,6 +165,7 @@ open RCLike
 
 variable {X 𝕜 : Type*} [RCLike 𝕜] [TopologicalSpace X]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma used in the proof of `ContinuousMap.idealOfSet_ofIdeal_eq_closure` which may
 be useful on its own. -/
 theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c) :
@@ -233,12 +234,12 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
           simp only [mul_sub, coe_sub, coe_one, Pi.sub_apply, Pi.one_apply, mul_one]
         _ ≤ ε / 2 * ‖(1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ :=
           ((nnnorm_mul_le _ _).trans
-            (mul_le_mul_right' (not_le.mp <| show ¬ε / 2 ≤ ‖f x‖₊ from hx).le _))
-        _ ≤ ε / 2 := by simpa only [mul_one] using mul_le_mul_left' this _
+            (mul_le_mul_left (not_le.mp <| show ¬ε / 2 ≤ ‖f x‖₊ from hx).le _))
+        _ ≤ ε / 2 := by simpa only [mul_one] using mul_le_mul_right this _
   /- There is some `g' : C(X, ℝ≥0)` which is strictly positive on `t` such that the composition
     `↑g` with the natural embedding of `ℝ≥0` into `𝕜` lies in `I`. This follows from compactness of
     `t` and that we can do it in any neighborhood of a point `x ∈ t`. Indeed, since `x ∈ t`, then
-    `fₓ x ≠ 0` for some `fₓ ∈ I` and so `fun y ↦ ‖(star fₓ * fₓ) y‖₊` is strictly posiive in a
+    `fₓ x ≠ 0` for some `fₓ ∈ I` and so `fun y ↦ ‖(star fₓ * fₓ) y‖₊` is strictly positive in a
     neighborhood of `y`. Moreover, `(‖(star fₓ * fₓ) y‖₊ : 𝕜) = (star fₓ * fₓ) y`, so composition of
     this map with the natural embedding is just `star fₓ * fₓ ∈ I`. -/
   have : ∃ g' : C(X, ℝ≥0), (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g' ∈ I ∧ ∀ x ∈ t, 0 < g' x := by
@@ -271,7 +272,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       ext
       simp only [comp_apply, ContinuousMap.coe_coe, coe_mk, algebraMapCLM_apply, map_pow,
         mul_apply, star_apply, star_def]
-      simp only [normSq_eq_def', RCLike.conj_mul, ofReal_pow]
+      simp only [RCLike.conj_mul]
       rfl
   /- Get the function `g'` which is guaranteed to exist above. By the extreme value theorem and
     compactness of `t`, there is some `0 < c` such that `c ≤ g' x` for all `x ∈ t`. Then by
@@ -286,7 +287,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   refine ⟨g * g', ?_, hg, hgc.mono hgc'⟩
   convert I.mul_mem_left ((algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
   ext
-  simp only [algebraMapCLM_coe, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
+  simp only [coe_algebraMapCLM, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
 
 theorem idealOfSet_ofIdeal_isClosed {I : Ideal C(X, 𝕜)} (hI : IsClosed (I : Set C(X, 𝕜))) :
     idealOfSet 𝕜 (setOfIdeal I) = I :=
@@ -335,6 +336,7 @@ def idealOpensGI :
           (isClosed_of_closure_subset <|
               (idealOfSet_ofIdeal_eq_closure I ▸ hI : I.closure ≤ I)).closure_eq)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem idealOfSet_isMaximal_iff (s : Opens X) :
     (idealOfSet 𝕜 (s : Set X)).IsMaximal ↔ IsCoatom s := by
   rw [Ideal.isMaximal_def]
@@ -343,10 +345,11 @@ theorem idealOfSet_isMaximal_iff (s : Opens X) :
   exact idealOfSet_ofIdeal_isClosed inferInstance
 
 theorem idealOf_compl_singleton_isMaximal (x : X) : (idealOfSet 𝕜 ({x}ᶜ : Set X)).IsMaximal :=
-  (idealOfSet_isMaximal_iff 𝕜 (Closeds.singleton x).compl).mpr <| Opens.isCoatom_iff.mpr ⟨x, rfl⟩
+  (idealOfSet_isMaximal_iff 𝕜 _).mpr <| Opens.isCoatom_iff.mpr ⟨x, rfl⟩
 
 variable {𝕜}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] :
     ∃ x : X, setOfIdeal I = {x}ᶜ := by
   have h : (idealOfSet 𝕜 (setOfIdeal I)).IsMaximal :=
@@ -404,6 +407,7 @@ end ContinuousMapEval
 
 variable [CompactSpace X] [T2Space X] [RCLike 𝕜]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
   refine ⟨fun x y hxy => ?_, fun φ => ?_⟩
   · contrapose! hxy

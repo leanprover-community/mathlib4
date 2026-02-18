@@ -3,7 +3,9 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
 /-!
 # Split Equalizers
@@ -26,6 +28,8 @@ This file was adapted from `Mathlib/CategoryTheory/Limits/Shapes/SplitCoequalize
 to keep them in sync.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -54,7 +58,7 @@ satisfying `ι ≫ f = ι ≫ g` together with morphisms
 
 satisfying `ι ≫ r = 𝟙 W`, `g ≫ t = 𝟙 X` and `f ≫ t = r ≫ ι`.
 
-The name "equalizer" is appropriate, since any split equalizer is a equalizer, see
+The name "equalizer" is appropriate, since any split equalizer is an equalizer, see
 `CategoryTheory.IsSplitEqualizer.isEqualizer`.
 Split equalizers are also absolute, since a functor preserves all the structure above.
 -/
@@ -64,13 +68,13 @@ structure IsSplitEqualizer {W : C} (ι : W ⟶ X) where
   /-- A map in the opposite direction to `f` and `g` -/
   rightRetraction : Y ⟶ X
   /-- Composition of `ι` with `f` and with `g` agree -/
-  condition : ι ≫ f = ι ≫ g := by aesop_cat
+  condition : ι ≫ f = ι ≫ g := by cat_disch
   /-- `leftRetraction` splits `ι` -/
-  ι_leftRetraction : ι ≫ leftRetraction = 𝟙 W := by aesop_cat
+  ι_leftRetraction : ι ≫ leftRetraction = 𝟙 W := by cat_disch
   /-- `rightRetraction` splits `g` -/
-  bottom_rightRetraction : g ≫ rightRetraction = 𝟙 X := by aesop_cat
+  bottom_rightRetraction : g ≫ rightRetraction = 𝟙 X := by cat_disch
   /-- `f` composed with `rightRetraction` is `leftRetraction` composed with `ι` -/
-  top_rightRetraction : f ≫ rightRetraction = leftRetraction ≫ ι := by aesop_cat
+  top_rightRetraction : f ≫ rightRetraction = leftRetraction ≫ ι := by cat_disch
 
 instance {X : C} : Inhabited (IsSplitEqualizer (𝟙 X) (𝟙 X) (𝟙 X)) where
   default := { leftRetraction := 𝟙 X, rightRetraction := 𝟙 X }
@@ -107,6 +111,7 @@ def IsSplitEqualizer.asFork {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g h) :
 theorem IsSplitEqualizer.asFork_ι {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g h) :
     t.asFork.ι = h := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The fork induced by a split equalizer is an equalizer, justifying the name. In some cases it
 is more convenient to show a given fork is an equalizer by showing it is split.
@@ -157,7 +162,7 @@ instance map_is_cosplit_pair [HasSplitEqualizer f g] : HasSplitEqualizer (G.map 
 
 namespace Limits
 
-/-- If a pair has a split equalizer, it has a equalizer. -/
+/-- If a pair has a split equalizer, it has an equalizer. -/
 instance (priority := 1) hasEqualizer_of_hasSplitEqualizer [HasSplitEqualizer f g] :
     HasEqualizer f g :=
   HasLimit.mk ⟨_, (HasSplitEqualizer.isSplitEqualizer f g).isEqualizer⟩

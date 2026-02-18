@@ -3,9 +3,11 @@ Copyright (c) 2024 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu
 -/
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Spectrum.Maximal.Localization
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Spectrum.Maximal.Localization
 
 /-!
 # `IsIntegrallyClosed` is a local property
@@ -18,12 +20,15 @@ In this file, we prove that `IsIntegrallyClosed` is a local property.
   if `Rₘ` is integral closed for any maximal ideal `m` of `R`.
 -/
 
+public section
+
 open scoped nonZeroDivisors
 
 open Localization Ideal IsLocalization
 
 variable {R K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsIntegrallyClosed.iInf {ι : Type*} (S : ι → Subalgebra R K)
     (h : ∀ i, IsIntegrallyClosed (S i)) :
     IsIntegrallyClosed (⨅ i, S i : Subalgebra R K) := by
@@ -77,3 +82,14 @@ theorem IsIntegrallyClosed.of_localization_maximal [IsDomain R]
 theorem isIntegrallyClosed_ofLocalizationMaximal :
     OfLocalizationMaximal fun R _ => ([IsDomain R] → IsIntegrallyClosed R) :=
   fun _ _ h _ ↦ IsIntegrallyClosed.of_localization_maximal fun p _ hpm ↦ h p hpm
+
+variable
+  (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
+  [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
+
+theorem IsIntegrallyClosed.of_isLocalization_maximal [IsDomain R]
+    (h : ∀ (P : Ideal R) [P.IsMaximal], IsIntegrallyClosed (Rₚ P)) :
+    IsIntegrallyClosed R := .of_localization_maximal
+  (fun P _ _ ↦ .of_equiv <| ringEquivOfRingEquiv (Rₚ P) _ (RingEquiv.refl R) P.primeCompl.map_id)

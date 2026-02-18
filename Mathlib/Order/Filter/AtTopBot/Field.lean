@@ -3,12 +3,16 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Order.Filter.AtTopBot.Ring
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Order.Filter.AtTopBot.Ring
 
 /-!
 # Convergence to ±infinity in linear ordered (semi)fields
 -/
+
+public section
 
 namespace Filter
 
@@ -96,6 +100,11 @@ theorem tendsto_const_mul_pow_atTop_iff :
 
 lemma tendsto_zpow_atTop_atTop {n : ℤ} (hn : 0 < n) : Tendsto (fun x : α ↦ x ^ n) atTop atTop := by
   lift n to ℕ using hn.le; simp [(Int.natCast_pos.mp hn).ne']
+
+theorem map_div_atTop_eq (k : α) (hk : 0 < k) : map (fun a => a / k) atTop = atTop :=
+  map_atTop_eq_of_gc (fun b => k * b) 1 (fun _ _ h => div_le_div_of_nonneg_right h (le_of_lt hk))
+    (fun a b _ => (by rw [div_le_iff₀' hk]))
+    fun b _ => (by rw [mul_div_assoc, mul_div_cancel₀]; exact ne_of_gt hk)
 
 end LinearOrderedSemifield
 

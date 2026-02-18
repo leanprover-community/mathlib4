@@ -3,23 +3,28 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Cast.Prod
-import Mathlib.Data.ULift
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Algebra.Ring.GrindInstances
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Algebra.Ring.ULift
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Nat.Cast.Prod
+public import Mathlib.Data.ULift
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # Characteristic of semirings
 
 This file collects some fundamental results on the characteristic of rings that don't need the extra
-imports of `CharP/Lemmas.lean`.
+imports of `Mathlib/Algebra/CharP/Lemmas.lean`.
 
 As such, we can probably reorganize and find a better home for most of these lemmas.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset TwoSidedIdeal
 
@@ -198,7 +203,7 @@ variable [AddMonoidWithOne R]
 
 instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R × S) p := by
   obtain hp | ⟨hp⟩ := ‹ExpChar R p›
-  · have := Prod.charZero_of_left R S; exact .zero
+  · constructor
   obtain _ | _ := ‹ExpChar S p›
   · exact (Nat.not_prime_one hp).elim
   · have := Prod.charP R S p; exact .prime hp
@@ -207,14 +212,10 @@ end AddMonoidWithOne
 
 section CommRing
 
-#adaptation_note
-/-- 2025-04-19 `IsCharP` has `n` as an outparam, but `CharP` does not.
-Remove after https://github.com/leanprover-community/mathlib4/pull/24216 is merged.
--/
-set_option synthInstance.checkSynthOrder false in
-instance (α : Type*) [CommRing α] (n : ℕ) [CharP α n] : Lean.Grind.IsCharP α n where
-  ofNat_eq_zero_iff m := by
-    rw [CommRing.toGrindCommRing_ofNat]
-    simpa [← Nat.dvd_iff_mod_eq_zero] using CharP.cast_eq_zero_iff α n m
+instance (α : Type*) [Semiring α] [IsLeftCancelAdd α] (n : ℕ) [CharP α n] :
+    Lean.Grind.IsCharP α n where
+  ofNat_ext_iff {a b} := by
+    rw [Lean.Grind.Semiring.ofNat_eq_natCast, Lean.Grind.Semiring.ofNat_eq_natCast]
+    exact CharP.cast_eq_iff_mod_eq α n
 
 end CommRing

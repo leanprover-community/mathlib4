@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Data.Finset.Pi
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Finset.Sum
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Preimage of a `Finset` under an injective map.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset.sum
 
@@ -89,9 +93,10 @@ theorem map_subset_iff_subset_preimage {f : α ↪ β} {s : Finset α} {t : Fins
     s.map f ⊆ t ↔ s ⊆ t.preimage f f.injective.injOn := by
   classical rw [map_eq_image, image_subset_iff_subset_preimage]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma card_preimage (s : Finset β) (f : α → β) (hf) [DecidablePred (· ∈ Set.range f)] :
     (s.preimage f hf).card = {x ∈ s | x ∈ Set.range f}.card :=
-  card_nbij f (by simp) (by simpa) (fun b hb ↦ by aesop)
+  card_nbij f (by simp [Set.MapsTo]) (by simpa) (fun b hb ↦ by aesop)
 
 theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, Decidable (x ∈ Set.range f)]
     (hf : Set.InjOn f (f ⁻¹' ↑s)) : image f (preimage s f hf) = {x ∈ s | x ∈ Set.range f} :=
@@ -143,6 +148,7 @@ end Finset
 
 namespace Equiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an equivalence `e : α ≃ β` and `s : Finset β`, restrict `e` to an equivalence
 from `e ⁻¹' s` to `s`. -/
 @[simps]
@@ -154,6 +160,7 @@ def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.inj
 
 end Equiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing and then restricting to a `Finset` is the same as first restricting to the preimage
 of this `Finset` and then reindexing. -/
 lemma Finset.restrict_comp_piCongrLeft {π : β → Type*} (s : Finset β) (e : α ≃ β) :
@@ -161,5 +168,5 @@ lemma Finset.restrict_comp_piCongrLeft {π : β → Type*} (s : Finset β) (e : 
     ⇑((e.restrictPreimageFinset s).piCongrLeft (fun b : s ↦ (π b))) ∘
     (s.preimage e e.injective.injOn).restrict := by
   ext x b
-  simp only [comp_apply, restrict, Equiv.piCongrLeft_apply_eq_cast, cast_inj,
+  simp only [comp_apply, restrict, Equiv.piCongrLeft_apply_eq_cast,
     Equiv.restrictPreimageFinset_symm_apply_coe]

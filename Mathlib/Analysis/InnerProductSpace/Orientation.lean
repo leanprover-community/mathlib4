@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
-import Mathlib.LinearAlgebra.Orientation
+module
+
+public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
+public import Mathlib.LinearAlgebra.Orientation
 
 /-!
 # Orientations of real inner product spaces.
@@ -33,12 +35,14 @@ This file provides definitions and proves lemmas about orientations of real inne
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-open Module
+open Module InnerProductSpace
 
 open scoped RealInnerProductSpace
 
@@ -86,7 +90,7 @@ top-dimensional forms on `E`. -/
 theorem det_eq_neg_det_of_opposite_orientation (h : e.toBasis.orientation ≠ f.toBasis.orientation) :
     e.toBasis.det = -f.toBasis.det := by
   rw [e.toBasis.det.eq_smul_basis_det f.toBasis]
-  simp [e.det_to_matrix_orthonormalBasis_of_opposite_orientation f h, neg_one_smul]
+  simp [e.det_to_matrix_orthonormalBasis_of_opposite_orientation f h]
 
 variable [Nonempty ι]
 
@@ -171,11 +175,12 @@ irreducible_def volumeForm : E [⋀^Fin n]→ₗ[ℝ] ℝ := by
       exact o.eq_or_eq_neg_of_isEmpty.by_cases (fun _ => opos) fun _ => -opos
     | succ n => exact (o.finOrthonormalBasis n.succ_pos _i.out).toBasis.det
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem volumeForm_zero_pos [_i : Fact (finrank ℝ E = 0)] :
     Orientation.volumeForm (positiveOrientation : Orientation ℝ E (Fin 0)) =
       AlternatingMap.constLinearEquivOfIsEmpty 1 := by
-  simp [volumeForm, Or.by_cases, if_pos]
+  simp [volumeForm, Or.by_cases]
 
 theorem volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
     Orientation.volumeForm (-positiveOrientation : Orientation ℝ E (Fin 0)) =
@@ -188,6 +193,7 @@ theorem volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
   simpa using
     congr_arg AlternatingMap.constLinearEquivOfIsEmpty.symm (eq_zero_of_sameRay_self_neg h)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The volume form on an oriented real inner product space can be evaluated as the determinant with
 respect to any orthonormal basis of the space compatible with the orientation. -/
 theorem volumeForm_robust (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBasis.orientation = o) :
@@ -200,6 +206,7 @@ theorem volumeForm_robust (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBasis.o
     rw [same_orientation_iff_det_eq_det, hb]
     exact o.finOrthonormalBasis_orientation _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The volume form on an oriented real inner product space can be evaluated as the determinant with
 respect to any orthonormal basis of the space compatible with the orientation. -/
 theorem volumeForm_robust_neg (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBasis.orientation ≠ o) :
@@ -214,6 +221,7 @@ theorem volumeForm_robust_neg (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBas
   convert hb.symm
   exact o.finOrthonormalBasis_orientation _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem volumeForm_neg_orientation : (-o).volumeForm = -o.volumeForm := by
   rcases n with - | n
@@ -227,6 +235,7 @@ theorem volumeForm_neg_orientation : (-o).volumeForm = -o.volumeForm := by
     rw [e.toBasis.orientation_ne_iff_eq_neg, h₁]
   rw [o.volumeForm_robust e h₁, (-o).volumeForm_robust_neg e h₂]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem volumeForm_robust' (b : OrthonormalBasis (Fin n) ℝ E) (v : Fin n → E) :
     |o.volumeForm v| = |b.toBasis.det v| := by
   cases n
@@ -234,6 +243,7 @@ theorem volumeForm_robust' (b : OrthonormalBasis (Fin n) ℝ E) (v : Fin n → E
   · rw [o.volumeForm_robust (b.adjustToOrientation o) (b.orientation_adjustToOrientation o),
       b.abs_det_adjustToOrientation]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `v` be an indexed family of `n` vectors in an oriented `n`-dimensional real inner
 product space `E`. The output of the volume form of `E` when evaluated on `v` is bounded in absolute
 value by the product of the norms of the vectors `v i`. -/
@@ -255,6 +265,7 @@ theorem abs_volumeForm_apply_le (v : Fin n → E) : |o.volumeForm v| ≤ ∏ i :
 theorem volumeForm_apply_le (v : Fin n → E) : o.volumeForm v ≤ ∏ i : Fin n, ‖v i‖ :=
   (le_abs_self _).trans (o.abs_volumeForm_apply_le v)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `v` be an indexed family of `n` orthogonal vectors in an oriented `n`-dimensional
 real inner product space `E`. The output of the volume form of `E` when evaluated on `v` is, up to
 sign, the product of the norms of the vectors `v i`. -/
@@ -267,17 +278,16 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
   let b : OrthonormalBasis (Fin n.succ) ℝ E := gramSchmidtOrthonormalBasis hdim v
   have hb : b.toBasis.det v = ∏ i, ⟪b i, v i⟫ := gramSchmidtOrthonormalBasis_det hdim v
   rw [o.volumeForm_robust' b, hb, Finset.abs_prod]
-  by_cases h : ∃ i, v i = 0
+  by_cases! h : ∃ i, v i = 0
   · obtain ⟨i, hi⟩ := h
     rw [Finset.prod_eq_zero (Finset.mem_univ i), Finset.prod_eq_zero (Finset.mem_univ i)] <;>
       simp [hi]
-  push_neg at h
   congr
   ext i
   have hb : b i = ‖v i‖⁻¹ • v i := gramSchmidtOrthonormalBasis_apply_of_orthogonal hdim hv (h i)
   simp only [hb, inner_smul_left, real_inner_self_eq_norm_mul_norm, RCLike.conj_to_real]
   rw [abs_of_nonneg]
-  · field_simp
+  · field
   · positivity
 
 /-- The output of the volume form of an oriented real inner product space `E` when evaluated on an
@@ -286,6 +296,7 @@ theorem abs_volumeForm_apply_of_orthonormal (v : OrthonormalBasis (Fin n) ℝ E)
     |o.volumeForm v| = 1 := by
   simpa [o.volumeForm_robust' v v] using congr_arg abs v.toBasis.det_self
 
+set_option backward.isDefEq.respectTransparency false in
 theorem volumeForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
     [Fact (finrank ℝ F = n)] (φ : E ≃ₗᵢ[ℝ] F) (x : Fin n → F) :
     (Orientation.map (Fin n) φ.toLinearEquiv o).volumeForm x = o.volumeForm (φ.symm ∘ x) := by
@@ -301,13 +312,14 @@ theorem volumeForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ
   rw [o.volumeForm_robust e he]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The volume form is invariant under pullback by a positively-oriented isometric automorphism. -/
 theorem volumeForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
     (hφ : 0 < LinearMap.det (φ.toLinearEquiv : E →ₗ[ℝ] E)) (x : Fin n → E) :
     o.volumeForm (φ ∘ x) = o.volumeForm x := by
-  rcases n with - | n -- Porting note: need to explicitly prove `FiniteDimensional ℝ E`
+  rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl <;> simp
-  haveI : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
+  have : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
   convert o.volumeForm_map φ (φ ∘ x)
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ

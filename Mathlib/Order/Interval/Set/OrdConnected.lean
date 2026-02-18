@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.OrderEmbedding
-import Mathlib.Order.Antichain
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Order.Interval.Set.OrderEmbedding
+public import Mathlib.Order.Antichain
+public import Mathlib.Order.SetNotation
 
 /-!
 # Order-connected sets
@@ -18,6 +20,8 @@ the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If
 In this file we prove that intersection of a family of `OrdConnected` sets is `OrdConnected` and
 that all standard intervals are `OrdConnected`.
 -/
+
+@[expose] public section
 
 open scoped Interval
 open Set
@@ -127,8 +131,15 @@ theorem OrdConnected.dual {s : Set α} (hs : OrdConnected s) :
     OrdConnected (OrderDual.ofDual ⁻¹' s) :=
   ⟨fun _ hx _ hy _ hz => hs.out hy hx ⟨hz.2, hz.1⟩⟩
 
+@[instance]
+theorem dual_ordConnected {s : Set α} [OrdConnected s] : OrdConnected (ofDual ⁻¹' s) :=
+  .dual ‹OrdConnected s›
+
+@[simp]
 theorem ordConnected_dual {s : Set α} : OrdConnected (OrderDual.ofDual ⁻¹' s) ↔ OrdConnected s :=
   ⟨fun h => by simpa only [ordConnected_def] using h.dual, fun h => h.dual⟩
+
+@[deprecated (since := "2025-10-28")] alias dual_ordConnected_iff := ordConnected_dual
 
 theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
     OrdConnected (⋂₀ S) :=
@@ -215,7 +226,7 @@ theorem ordConnected_preimage {F : Type*} [FunLike F α β] [OrderHomClass F α 
 @[instance]
 theorem ordConnected_image {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) {s : Set α}
     [hs : OrdConnected s] : OrdConnected (e '' s) := by
-  erw [(e : α ≃o β).image_eq_preimage]
+  erw [(e : α ≃o β).image_eq_preimage_symm]
   apply ordConnected_preimage (e : α ≃o β).symm
 
 @[instance]
@@ -223,15 +234,6 @@ theorem ordConnected_range {E : Type*} [EquivLike E α β] [OrderIsoClass E α �
     OrdConnected (range e) := by
   simp_rw [← image_univ]
   exact ordConnected_image (e : α ≃o β)
-
-@[simp]
-theorem dual_ordConnected_iff {s : Set α} : OrdConnected (ofDual ⁻¹' s) ↔ OrdConnected s := by
-  simp_rw [ordConnected_def, toDual.surjective.forall, Icc_toDual, Subtype.forall']
-  exact forall_swap
-
-@[instance]
-theorem dual_ordConnected {s : Set α} [OrdConnected s] : OrdConnected (ofDual ⁻¹' s) :=
-  dual_ordConnected_iff.2 ‹_›
 
 /-- The preimage of an `OrdConnected` set under a map which is monotone on a set `t`,
 when intersected with `t`, is `OrdConnected`. More precisely, it is the intersection with `t`
@@ -241,7 +243,7 @@ theorem OrdConnected.preimage_monotoneOn {f : β → α} {t : Set β} {s : Set �
     ∃ u, OrdConnected u ∧ t ∩ f ⁻¹' s = t ∩ u := by
   let u := {x | (∃ y ∈ t, y ≤ x ∧ f y ∈ s) ∧ (∃ z ∈ t, x ≤ z ∧ f z ∈ s)}
   refine ⟨u, ⟨?_⟩, Subset.antisymm ?_ ?_⟩
-  · rintro x ⟨⟨y, yt, yx, ys⟩, -⟩  x' ⟨-, ⟨z, zt, x'z, zs⟩⟩ a ha
+  · rintro x ⟨⟨y, yt, yx, ys⟩, -⟩ x' ⟨-, ⟨z, zt, x'z, zs⟩⟩ a ha
     exact ⟨⟨y, yt, yx.trans ha.1, ys⟩, ⟨z, zt, ha.2.trans x'z, zs⟩⟩
   · rintro x ⟨xt, xs⟩
     exact ⟨xt, ⟨x, xt, le_rfl, xs⟩, ⟨x, xt, le_rfl, xs⟩⟩
@@ -326,6 +328,24 @@ theorem ordConnected_iff_uIcc_subset_left (hx : x ∈ s) :
 theorem ordConnected_iff_uIcc_subset_right (hx : x ∈ s) :
     OrdConnected s ↔ ∀ ⦃y⦄, y ∈ s → [[y, x]] ⊆ s := by
   simp_rw [ordConnected_iff_uIcc_subset_left hx, uIcc_comm]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem image_subtype_val_uIcc [OrdConnected s] (a b : s) :
+    Subtype.val '' [[a, b]] = [[a.1, b.1]] := by
+  simp [uIcc, (Subtype.mono_coe s).map_inf, (Subtype.mono_coe s).map_sup]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem image_subtype_val_uIoc [OrdConnected s] (a b : s) :
+    Subtype.val '' uIoc a b = uIoc a.1 b.1 := by
+  simp [uIoc, (Subtype.mono_coe s).map_inf, (Subtype.mono_coe s).map_sup]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem image_subtype_val_uIoo [OrdConnected s] (a b : s) :
+    Subtype.val '' uIoo a b = uIoo a.1 b.1 := by
+  simp [uIoo, (Subtype.mono_coe s).map_inf, (Subtype.mono_coe s).map_sup]
 
 end LinearOrder
 

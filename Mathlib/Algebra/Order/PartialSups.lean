@@ -3,18 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Order.SuccPred
-import Mathlib.Order.PartialSups
+module -- shake: keep-all
 
-/-!
-# `PartialSups` in a `SuccAddOrder`
--/
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Tactic.SetLike
+public import Mathlib.Util.CompileInductive
 
-open Finset
-
-variable {α ι : Type*} [SemilatticeSup α]
-
-@[simp]
-lemma partialSups_add_one [Add ι] [One ι] [LinearOrder ι] [LocallyFiniteOrderBot ι] [SuccAddOrder ι]
-    (f : ι → α) (i : ι) : partialSups f (i + 1) = partialSups f i ⊔ f (i + 1) :=
-  Order.succ_eq_add_one i ▸ partialSups_succ f i
+deprecated_module (since := "2025-08-18")

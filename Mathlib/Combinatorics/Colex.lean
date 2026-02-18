@@ -3,11 +3,13 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Algebra.GeomSum
-import Mathlib.Data.Finset.Slice
-import Mathlib.Data.Nat.BitIndices
-import Mathlib.Order.SupClosed
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Algebra.Order.Ring.GeomSum
+public import Mathlib.Data.Finset.Slice
+public import Mathlib.Data.Nat.BitIndices
+public import Mathlib.Order.SupClosed
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Colexigraphic order
@@ -57,6 +59,8 @@ Related files are:
 colex, colexicographic, binary
 -/
 
+@[expose] public section
+
 open Function
 
 variable {α β : Type*}
@@ -65,37 +69,69 @@ namespace Finset
 
 /-- Type synonym of `Finset α` equipped with the colexicographic order rather than the inclusion
 order. -/
-@[ext]
-structure Colex (α) where
+@[deprecated Colex (since := "2025-08-28")]
+protected structure Colex (α) where
   /-- `toColex` is the "identity" function between `Finset α` and `Finset.Colex α`. -/
-  toColex ::
+  protected toColex ::
   /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
-  (ofColex : Finset α)
-
--- TODO: Why can't we export?
---export Colex (toColex)
+  protected (ofColex : Finset α)
 
 open Colex
 
-instance : Inhabited (Colex α) := ⟨⟨∅⟩⟩
+instance : Inhabited (Colex (Finset α)) := ⟨toColex ∅⟩
 
-@[simp] lemma toColex_ofColex (s : Colex α) : toColex (ofColex s) = s := rfl
-lemma ofColex_toColex (s : Finset α) : ofColex (toColex s) = s := rfl
-lemma toColex_inj {s t : Finset α} : toColex s = toColex t ↔ s = t := by simp
-@[simp]
-lemma ofColex_inj {s t : Colex α} : ofColex s = ofColex t ↔ s = t := by cases s; cases t; simp
-lemma toColex_ne_toColex {s t : Finset α} : toColex s ≠ toColex t ↔ s ≠ t := by simp
-lemma ofColex_ne_ofColex {s t : Colex α} : ofColex s ≠ ofColex t ↔ s ≠ t := by simp
+set_option linter.deprecated false in
+@[deprecated toColex_ofColex (since := "2025-08-28")]
+protected lemma toColex_ofColex (s : Finset.Colex α) :
+    Finset.Colex.toColex (Finset.Colex.ofColex s) = s :=
+  rfl
 
-lemma toColex_injective : Injective (toColex : Finset α → Colex α) := fun _ _ ↦ toColex_inj.1
-lemma ofColex_injective : Injective (ofColex : Colex α → Finset α) := fun _ _ ↦ ofColex_inj.1
+set_option linter.deprecated false in
+@[deprecated ofColex_toColex (since := "2025-08-28")]
+protected lemma ofColex_toColex (s : Finset α) :
+    Finset.Colex.ofColex (Finset.Colex.toColex s) = s :=
+  rfl
+
+set_option linter.deprecated false in
+@[deprecated toColex_inj (since := "2025-08-28")]
+protected lemma toColex_inj {s t : Finset α} :
+    Finset.Colex.toColex s = Finset.Colex.toColex t ↔ s = t := by
+  simp
+
+set_option linter.deprecated false in
+@[deprecated ofColex_inj (since := "2025-08-28")]
+protected lemma ofColex_inj {s t : Finset.Colex α} :
+    Finset.Colex.ofColex s = Finset.Colex.ofColex t ↔ s = t := by
+  cases s; cases t; simp
+
+set_option linter.deprecated false in
+@[deprecated toColex_inj (since := "2025-08-28")]
+lemma toColex_ne_toColex {s t : Finset α} :
+    Finset.Colex.toColex s ≠ Finset.Colex.toColex t ↔ s ≠ t := by
+  simp
+
+set_option linter.deprecated false in
+@[deprecated ofColex_inj (since := "2025-08-28")]
+lemma ofColex_ne_ofColex {s t : Finset.Colex α} :
+    Finset.Colex.ofColex s ≠ Finset.Colex.ofColex t ↔ s ≠ t := by
+  simp [Finset.ofColex_inj]
+
+set_option linter.deprecated false in
+@[deprecated toColex_inj (since := "2025-08-28")]
+lemma toColex_injective : Injective (Finset.Colex.toColex : Finset α → Finset.Colex α) :=
+  fun _ _ ↦ Finset.toColex_inj.1
+
+set_option linter.deprecated false in
+@[deprecated ofColex_inj (since := "2025-08-28")]
+lemma ofColex_injective : Injective (Finset.Colex.ofColex : Finset.Colex α → Finset α) :=
+  fun _ _ ↦ Finset.ofColex_inj.1
 
 namespace Colex
 section PartialOrder
 variable [PartialOrder α] [PartialOrder β] {f : α → β} {𝒜 𝒜₁ 𝒜₂ : Finset (Finset α)}
   {s t u : Finset α} {a b : α}
 
-instance instLE : LE (Colex α) where
+instance instLE : LE (Colex (Finset α)) where
   le s t := ∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b
 
 -- TODO: This lemma is weirdly useful given how strange its statement is.
@@ -114,15 +150,18 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
   refine ⟨d, hdu, fun hds ↦ not_lt_iff_le_imp_ge.2 (hbmax hds hdt had) ?_, had⟩
   exact hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
 
+set_option backward.privateInPublic true in
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
-  by_contra! hat
+  by_contra hat
   have ⟨_b, hb₁, hb₂, _⟩ := trans_aux hst hts has hat
   exact hb₂ hb₁
 
-instance instPartialOrder : PartialOrder (Colex α) where
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+instance instPartialOrder : PartialOrder (Colex (Finset α)) where
   le_refl _ _ ha ha' := (ha' ha).elim
-  le_antisymm _ _ hst hts := Colex.ext <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
+  le_antisymm _ _ hst hts := (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
@@ -132,7 +171,7 @@ instance instPartialOrder : PartialOrder (Colex α) where
       · exact ⟨b, hbu, hbs, hab⟩
     · exact trans_aux hst htu has hat
 
-lemma le_def {s t : Colex α} :
+lemma le_def {s t : Colex (Finset α)} :
     s ≤ t ↔ ∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b :=
   Iff.rfl
 
@@ -145,13 +184,13 @@ lemma toColex_lt_toColex :
 
 /-- If `s ⊆ t`, then `s ≤ t` in the colex order. Note the converse does not hold, as inclusion does
 not form a linear order. -/
-lemma toColex_mono : Monotone (toColex : Finset α → Colex α) :=
+lemma toColex_mono : Monotone (@toColex (Finset α)) :=
   fun _s _t hst _a has hat ↦ (hat <| hst has).elim
 
 /-- If `s ⊂ t`, then `s < t` in the colex order. Note the converse does not hold, as inclusion does
 not form a linear order. -/
-lemma toColex_strictMono : StrictMono (toColex : Finset α → Colex α) :=
-  toColex_mono.strictMono_of_injective toColex_injective
+lemma toColex_strictMono : StrictMono (@toColex (Finset α)) :=
+  toColex_mono.strictMono_of_injective toColex.injective
 
 /-- If `s ⊆ t`, then `s ≤ t` in the colex order. Note the converse does not hold, as inclusion does
 not form a linear order. -/
@@ -161,12 +200,12 @@ lemma toColex_le_toColex_of_subset (h : s ⊆ t) : toColex s ≤ toColex t := to
 not form a linear order. -/
 lemma toColex_lt_toColex_of_ssubset (h : s ⊂ t) : toColex s < toColex t := toColex_strictMono h
 
-instance instOrderBot : OrderBot (Colex α) where
+instance instOrderBot : OrderBot (Colex (Finset α)) where
   bot := toColex ∅
   bot_le s a ha := by cases ha
 
 @[simp] lemma toColex_empty : toColex (∅ : Finset α) = ⊥ := rfl
-@[simp] lemma ofColex_bot : ofColex (⊥ : Colex α) = ∅ := rfl
+@[simp] lemma ofColex_bot : ofColex (⊥ : Colex (Finset α)) = ∅ := rfl
 
 /-- If `s ≤ t` in colex, and all elements in `t` are small, then all elements in `s` are small. -/
 lemma forall_le_mono (hst : toColex s ≤ toColex t) (ht : ∀ b ∈ t, b ≤ a) : ∀ b ∈ s, b ≤ a := by
@@ -187,44 +226,43 @@ lemma forall_lt_mono (hst : toColex s ≤ toColex t) (ht : ∀ b ∈ t, b < a) :
 /-- `s ≤ {a}` in colex iff all elements of `s` are strictly less than `a`, except possibly `a` in
 which case `s = {a}`. -/
 lemma toColex_le_singleton : toColex s ≤ toColex {a} ↔ ∀ b ∈ s, b ≤ a ∧ (a ∈ s → b = a) := by
-  simp only [toColex_le_toColex, mem_singleton, and_assoc, exists_eq_left]
+  simp only [toColex_le_toColex, mem_singleton, exists_eq_left]
   refine forall₂_congr fun b _ ↦ ?_; obtain rfl | hba := eq_or_ne b a <;> aesop
 
 /-- `s < {a}` in colex iff all elements of `s` are strictly less than `a`. -/
 lemma toColex_lt_singleton : toColex s < toColex {a} ↔ ∀ b ∈ s, b < a := by
-  rw [lt_iff_le_and_ne, toColex_le_singleton, toColex_ne_toColex]
+  rw [lt_iff_le_and_ne, toColex_le_singleton, ne_eq, toColex_inj]
   refine ⟨fun h b hb ↦ (h.1 _ hb).1.lt_of_ne ?_,
     fun h ↦ ⟨fun b hb ↦ ⟨(h _ hb).le, fun ha ↦ (lt_irrefl _ <| h _ ha).elim⟩, ?_⟩⟩ <;> rintro rfl
   · refine h.2 <| eq_singleton_iff_unique_mem.2 ⟨hb, fun c hc ↦ (h.1 _ hc).2 hb⟩
   · simp at h
 
 /-- `{a} ≤ s` in colex iff `s` contains an element greater than or equal to `a`. -/
-lemma singleton_le_toColex : (toColex {a} : Colex α) ≤ toColex s ↔ ∃ x ∈ s, a ≤ x := by
+lemma singleton_le_toColex : (toColex {a} : Colex (Finset α)) ≤ toColex s ↔ ∃ x ∈ s, a ≤ x := by
   simp [toColex_le_toColex]; by_cases a ∈ s <;> aesop
 
 /-- Colex is an extension of the base order. -/
-lemma singleton_le_singleton : (toColex {a} : Colex α) ≤ toColex {b} ↔ a ≤ b := by
+lemma singleton_le_singleton : (toColex ({a} : Finset α)) ≤ toColex {b} ↔ a ≤ b := by
   simp [toColex_le_singleton, eq_comm]
 
 /-- Colex is an extension of the base order. -/
-lemma singleton_lt_singleton : (toColex {a} : Colex α) < toColex {b} ↔ a < b := by
+lemma singleton_lt_singleton : (toColex ({a} : Finset α)) < toColex {b} ↔ a < b := by
   simp [toColex_lt_singleton]
 
-lemma le_iff_sdiff_subset_lowerClosure {s t : Colex α} :
-    s ≤ t ↔ (ofColex s : Set α) \ ofColex t ⊆ lowerClosure (ofColex t \ ofColex s : Set α) := by
+set_option backward.isDefEq.respectTransparency false in
+lemma le_iff_sdiff_subset_lowerClosure {s t : Colex (Finset α)} :
+    s ≤ t ↔ (↑(ofColex s) : Set α) \ ↑(ofColex t) ⊆
+      lowerClosure (↑(ofColex t) \ ↑(ofColex s) : Set α) := by
   simp [le_def, Set.subset_def, and_assoc]
 
 section DecidableEq
 variable [DecidableEq α]
 
-instance instDecidableEq : DecidableEq (Colex α) := fun s t ↦
-  decidable_of_iff' (s.ofColex = t.ofColex) Colex.ext_iff
-
-instance instDecidableLE [DecidableLE α] : DecidableLE (Colex α) :=
+instance instDecidableLE [DecidableLE α] : DecidableLE (Colex (Finset α)) :=
   fun s t ↦ decidable_of_iff'
     (∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b) Iff.rfl
 
-instance instDecidableLT [DecidableLE α] : DecidableLT (Colex α) :=
+instance instDecidableLT [DecidableLE α] : DecidableLT (Colex (Finset α)) :=
   decidableLTOfDecidableLE
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
@@ -287,12 +325,13 @@ end PartialOrder
 variable [LinearOrder α] [LinearOrder β] {f : α → β} {𝒜 𝒜₁ 𝒜₂ : Finset (Finset α)}
   {s t u : Finset α} {a b : α} {r : ℕ}
 
-instance instLinearOrder : LinearOrder (Colex α) where
+instance instLinearOrder : LinearOrder (Colex (Finset α)) where
   le_total s t := by
     classical
     obtain rfl | hts := eq_or_ne t s
     · simp
-    have ⟨a, ha, hamax⟩ := exists_max_image _ id (symmDiff_nonempty.2 <| ofColex_ne_ofColex.2 hts)
+    have ⟨a, ha, hamax⟩ := exists_max_image _ id
+      (symmDiff_nonempty.2 <| ofColex.injective.ne_iff.2 hts)
     simp_rw [mem_symmDiff] at ha hamax
     exact ha.imp (fun ha b hbs hbt ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inr ⟨hbs, hbt⟩⟩)
       (fun ha b hbt hbs ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inl ⟨hbt, hbs⟩⟩)
@@ -301,15 +340,17 @@ instance instLinearOrder : LinearOrder (Colex α) where
 
 open scoped symmDiff
 
-private lemma max_mem_aux {s t : Colex α} (hst : s ≠ t) : (ofColex s ∆ ofColex t).Nonempty := by
+set_option backward.privateInPublic true in
+private lemma max_mem_aux {s t : Colex (Finset α)} (hst : s ≠ t) :
+    (ofColex s ∆ ofColex t).Nonempty := by
   simpa
 
 lemma toColex_lt_toColex_iff_exists_forall_lt :
     toColex s < toColex t ↔ ∃ a ∈ t, a ∉ s ∧ ∀ b ∈ s, b ∉ t → b < a := by
   rw [← not_le, toColex_le_toColex, not_forall]
-  simp only [not_forall, not_exists, not_and, not_le, exists_prop, exists_and_left]
+  simp only [not_forall, not_exists, not_and, not_le, exists_prop]
 
-lemma lt_iff_exists_forall_lt {s t : Colex α} :
+lemma lt_iff_exists_forall_lt {s t : Colex (Finset α)} :
     s < t ↔ ∃ a ∈ ofColex t, a ∉ ofColex s ∧ ∀ b ∈ ofColex s, b ∉ ofColex t → b < a :=
   toColex_lt_toColex_iff_exists_forall_lt
 
@@ -327,16 +368,19 @@ lemma toColex_le_toColex_iff_max'_mem :
     refine ⟨_, h hst, ?_, le_max' _ _ <| mem_symmDiff.2 <| Or.inl ⟨has, hat⟩⟩
     simpa [mem_symmDiff, h hst] using max'_mem _ <| symmDiff_nonempty.2 hst
 
-lemma le_iff_max'_mem {s t : Colex α} :
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+lemma le_iff_max'_mem {s t : Colex (Finset α)} :
     s ≤ t ↔ ∀ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t :=
-  toColex_le_toColex_iff_max'_mem.trans
-    ⟨fun h hst ↦ h <| ofColex_ne_ofColex.2 hst, fun h hst ↦ h <| ofColex_ne_ofColex.1 hst⟩
+  toColex_le_toColex_iff_max'_mem
 
 lemma toColex_lt_toColex_iff_max'_mem :
     toColex s < toColex t ↔ ∃ hst : s ≠ t, (s ∆ t).max' (symmDiff_nonempty.2 hst) ∈ t := by
   rw [lt_iff_le_and_ne, toColex_le_toColex_iff_max'_mem]; aesop
 
-lemma lt_iff_max'_mem {s t : Colex α} :
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+lemma lt_iff_max'_mem {s t : Colex (Finset α)} :
     s < t ↔ ∃ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t := by
   rw [lt_iff_le_and_ne, le_iff_max'_mem]; aesop
 
@@ -421,12 +465,12 @@ lemma toColex_image_ofColex_strictMono (hf : StrictMono f) :
 section Fintype
 variable [Fintype α]
 
-instance instBoundedOrder : BoundedOrder (Colex α) where
+instance instBoundedOrder : BoundedOrder (Colex (Finset α)) where
   top := toColex univ
   le_top _x := toColex_le_toColex_of_subset <| subset_univ _
 
 @[simp] lemma toColex_univ : toColex (univ : Finset α) = ⊤ := rfl
-@[simp] lemma ofColex_top : ofColex (⊤ : Colex α) = univ := rfl
+@[simp] lemma ofColex_top : ofColex (⊤ : Colex (Finset α)) = univ := rfl
 
 end Fintype
 
@@ -445,13 +489,13 @@ def IsInitSeg (𝒜 : Finset (Finset α)) (r : ℕ) : Prop :=
 -/
 lemma IsInitSeg.total (h₁ : IsInitSeg 𝒜₁ r) (h₂ : IsInitSeg 𝒜₂ r) : 𝒜₁ ⊆ 𝒜₂ ∨ 𝒜₂ ⊆ 𝒜₁ := by
   classical
-  simp_rw [← sdiff_eq_empty_iff_subset, ← not_nonempty_iff_eq_empty]
+  simp_rw [← sdiff_eq_empty_iff_subset]
   by_contra! h
   have ⟨⟨s, hs⟩, t, ht⟩ := h
   rw [mem_sdiff] at hs ht
-  obtain hst | hst | hts := trichotomous_of (α := Colex α) (· < ·) (toColex s) (toColex t)
+  obtain hst | hst | hts := trichotomous_of (α := Colex (Finset α)) (· < ·) (toColex s) (toColex t)
   · exact hs.2 <| h₂.2 ht.1 ⟨hst, h₁.1 hs.1⟩
-  · simp only [toColex.injEq] at hst
+  · simp only [toColex_inj] at hst
     exact ht.2 <| hst ▸ hs.1
   · exact ht.2 <| h₁.2 hs.1 ⟨hts, h₂.1 ht.1⟩
 
@@ -507,11 +551,11 @@ section Nat
 variable {s t : Finset ℕ} {n : ℕ}
 
 lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k ∈ ofColex s, n ^ k := by
-  rintro ⟨s⟩ ⟨t⟩ hst
-  rw [toColex_lt_toColex_iff_exists_forall_lt] at hst
+  intro s t hst
+  rw [lt_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
   rw [← sum_sdiff_lt_sum_sdiff]
-  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by positivity) <|
+  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by lia) <|
     mem_sdiff.2 ⟨hat, has⟩
 
 /-- For finsets of naturals, the colexicographic order is equivalent to the order induced by the
@@ -530,7 +574,7 @@ theorem geomSum_injective {n : ℕ} (hn : 2 ≤ n) :
     Function.Injective (fun s : Finset ℕ ↦ ∑ i ∈ s, n ^ i) := by
   intro _ _ h
   rwa [le_antisymm_iff, geomSum_le_geomSum_iff_toColex_le_toColex hn,
-    geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff, Colex.toColex.injEq] at h
+    geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff] at h
 
 theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i ∈ s, n ^ i :=
   (a.lt_pow_self hn).trans_le <| single_le_sum (by simp) hi
@@ -546,18 +590,17 @@ theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i �
 /-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i ∈ s, 2^i` to `s`. -/
 @[simps] def equivBitIndices : ℕ ≃ Finset ℕ where
   toFun n := n.bitIndices.toFinset
-  invFun s := ∑ i ∈ s, 2^i
+  invFun s := ∑ i ∈ s, 2 ^ i
   left_inv := twoPowSum_toFinset_bitIndices
   right_inv := toFinset_bitIndices_twoPowSum
 
 /-- The equivalence `Nat.equivBitIndices` enumerates `Finset ℕ` in colexicographic order. -/
-@[simps] def orderIsoColex : ℕ ≃o Colex ℕ where
-  toFun n := Colex.toColex (equivBitIndices n)
-  invFun s := equivBitIndices.symm s.ofColex
+@[simps] def orderIsoColex : ℕ ≃o Colex (Finset ℕ) where
+  toFun n := toColex (equivBitIndices n)
+  invFun s := equivBitIndices.symm (ofColex s)
   left_inv n := equivBitIndices.symm_apply_apply n
-  right_inv s :=  Finset.toColex_inj.2 (equivBitIndices.apply_symm_apply s.ofColex)
-  map_rel_iff' := by simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le),
-    toFinset_bitIndices_twoPowSum]
+  right_inv s := equivBitIndices.apply_symm_apply _
+  map_rel_iff' := by simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le)]
 
 end Nat
 end Finset

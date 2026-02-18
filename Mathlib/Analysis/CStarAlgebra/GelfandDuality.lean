@@ -3,15 +3,17 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Spectrum
-import Mathlib.Analysis.CStarAlgebra.ContinuousMap
-import Mathlib.Analysis.Normed.Group.Quotient
-import Mathlib.Analysis.Normed.Algebra.Basic
-import Mathlib.Topology.ContinuousMap.Units
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.ContinuousMap.Ideals
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Spectrum
+public import Mathlib.Analysis.CStarAlgebra.ContinuousMap
+public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.Analysis.Normed.Algebra.Basic
+public import Mathlib.Topology.ContinuousMap.Units
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.ContinuousMap.Ideals
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
 # Gelfand Duality
@@ -61,6 +63,8 @@ Then `η₁ : id → F ∘ G := gelfandStarTransform` and
 Gelfand transform, character space, C⋆-algebra
 -/
 
+@[expose] public section
+
 
 open WeakDual
 
@@ -83,6 +87,7 @@ noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
       (letI := Quotient.field I; isUnit_iff_ne_zero (G₀ := A ⧸ I))).symm : A ⧸ I →ₐ[ℂ] ℂ).comp <|
     Quotient.mkₐ ℂ I
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     I.toCharacterSpace a = 0 := by
   unfold Ideal.toCharacterSpace
@@ -135,7 +140,6 @@ variable (A)
 
 /-- The Gelfand transform is an isometry when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
-  nontriviality A
   refine AddMonoidHomClass.isometry_of_norm (gelfandTransform ℂ A) fun a => ?_
   /- By `spectrum.gelfandTransform_eq`, the spectra of `star a * a` and its
     `gelfandTransform` coincide. Therefore, so do their spectral radii, and since they are
@@ -149,6 +153,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   simpa only [Function.comp_apply, NNReal.sqrt_sq] using
     congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
   refine ⟨(gelfandTransform_isometry A).injective, ?_⟩
@@ -261,6 +266,7 @@ theorem gelfandStarTransform_naturality {A B : Type*} [CommCStarAlgebra A] [Comm
       (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A : _ →⋆ₐ[ℂ] _) := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Consider the contravariant functors between compact Hausdorff spaces and commutative unital
 C⋆algebras `F : Cpct → CommCStarAlg := X ↦ C(X, ℂ)` and

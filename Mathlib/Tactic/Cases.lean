@@ -3,10 +3,13 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean.Elab.Tactic.Induction
-import Batteries.Tactic.OpenPrivate
-import Mathlib.Lean.Expr.Basic
-import Batteries.Data.List.Basic
+module
+
+public meta import Lean.Elab.Tactic.Induction
+public meta import Batteries.Data.List.Basic
+public meta import Batteries.Lean.Expr
+import all Lean.Elab.Tactic.Induction
+public import Mathlib.Init
 
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic
@@ -33,6 +36,8 @@ example (h : p ∨ q) : q ∨ p := by
 
 Prefer `cases` or `rcases` when possible, because these tactics promote structured proofs.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Elab.Tactic
@@ -67,10 +72,28 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     subgoals := subgoals.push g
   pure subgoals
 
-open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
-/-- The `induction'` tactic is similar to the `induction` tactic in Lean 4 core,
-but with slightly different syntax (such as, no requirement to name the constructors).
+/-- `induction' x` applies induction on the variable `x` of the inductive type `t` to the main goal,
+producing one goal for each constructor of `t`, in which `x` is replaced by that constructor
+applied to newly introduced variables. `induction'` adds an inductive hypothesis for
+each recursive argument to the constructor. This is a backwards-compatible variant of the
+`induction` tactic in Lean 4 core.
 
+Prefer `induction` when possible, because it promotes structured proofs.
+
+* `induction' x with n1 n2 ...` names the introduced hypotheses: arguments to constructors and
+  inductive hypotheses. This is the main difference with `induction` in core Lean.
+* `induction' e`, where `e` is an expression instead of a variable, generalizes `e` in the goal,
+  and then performs induction on the resulting variable.
+* `induction' h : e`, where `e` is an expression instead of a variable, generalizes `e` in the goal,
+  and then performs induction on the resulting variable, adding to each goal the hypothesis
+  `h : e = _` where `_` is the constructor instance.
+* `induction' x using r` uses `r` as the principle of induction. Here `r` should be a term whose
+  result type is of the form `C t1 t2 ...`, where `C` is a bound variable and `t1`, `t2`, ... (if
+  present) are bound variables.
+* `induction' x generalizing z1 z2 ...` generalizes over the local variables `z1`, `z2`, ... in the
+  inductive hypothesis.
+
+Example:
 ```
 open Nat
 
@@ -81,6 +104,7 @@ example (n : ℕ) : 0 < factorial n := by
   · rw [factorial_succ]
     apply mul_pos (succ_pos n) ih
 
+-- Though the following equivalent spellings should be preferred
 example (n : ℕ) : 0 < factorial n := by
   induction n
   case zero =>
@@ -124,27 +148,43 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.elimTarget,+)
           (generalized := fvarIds) (toClear := targetFVarIds) (toTag := toTag)
         setGoals <| (subgoals ++ result.others).toList ++ gs
 
-/-- The `cases'` tactic is similar to the `cases` tactic in Lean 4 core, but the syntax for giving
-names is different:
+/-- `cases' x`, where the variable `x` has inductive type `t`, splits the main goal,
+producing one goal for each constructor of `t`, in which `x` is replaced by that constructor
+applied to newly introduced variables. This is a backwards-compatible variant of the
+`cases` tactic in Lean 4 core.
 
+Prefer `cases`, `rcases`, or `obtain` when possible, because these tactics promote
+structured proofs.
+
+* `cases' x with n1 n2 ...` names the arguments to the constructors. This is the main difference
+  with `cases` in core Lean.
+* `cases' e`, where `e` is an expression instead of a variable, generalizes `e` in the goal,
+  and then performs induction on the resulting variable.
+* `cases' h : e`, where `e` is an expression instead of a variable, generalizes `e` in the goal,
+  and then splits by cases on the resulting variable, adding to each goal the hypothesis
+  `h : e = _` where `_` is the constructor instance.
+* `cases' x using r` uses `r` as the case matching rule. Here `r` should be a term whose result type
+  is of the form `C t1 t2 ...`, where `C` is a bound variable and `t1`, `t2`, ... (if present) are
+  bound variables.
+
+Example:
 ```
+example (h : p ∨ q) : q ∨ p := by
+  cases' h with hp hq
+  · exact Or.inr hp
+  · exact Or.inl hq
+
+-- Though the following equivalent spellings should be preferred
 example (h : p ∨ q) : q ∨ p := by
   cases h with
   | inl hp => exact Or.inr hp
   | inr hq => exact Or.inl hq
 
 example (h : p ∨ q) : q ∨ p := by
-  cases' h with hp hq
-  · exact Or.inr hp
-  · exact Or.inl hq
-
-example (h : p ∨ q) : q ∨ p := by
   rcases h with hp | hq
   · exact Or.inr hp
   · exact Or.inl hq
 ```
-
-Prefer `cases` or `rcases` when possible, because these tactics promote structured proofs.
 -/
 elab (name := cases') "cases' " tgts:(Parser.Tactic.elimTarget,+) usingArg:((" using " ident)?)
   withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do

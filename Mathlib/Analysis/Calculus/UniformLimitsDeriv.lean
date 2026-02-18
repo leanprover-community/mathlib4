@@ -3,9 +3,11 @@ Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
 -/
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.NormedSpace.RCLike
-import Mathlib.Order.Filter.Curry
+module
+
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Normed.Module.RCLike.Basic
+public import Mathlib.Order.Filter.Curry
 
 /-!
 # Swapping limits and derivatives via uniform convergence
@@ -92,6 +94,8 @@ continuous, then you can avoid the mean value theorem and much of the work aroun
 uniform convergence, limits of derivatives
 -/
 
+public section
+
 
 open Filter
 
@@ -104,6 +108,7 @@ variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 :
   [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
   {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a sequence of functions real or complex functions are eventually differentiable on a
 neighborhood of `x`, they are Cauchy _at_ `x`, and their derivatives
 are a uniform Cauchy sequence in a neighborhood of `x`, then the functions form a uniform Cauchy
@@ -162,6 +167,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
           by simp,
           fun {n} hn {y} _ => by simpa [norm_sub_rev, dist_eq_norm] using ht' _ hn.1 _ hn.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A variant of the second fundamental theorem of calculus (FTC-2): If a sequence of functions
 between real or complex normed spaces are differentiable on a ball centered at `x`, they
 form a Cauchy sequence _at_ `x`, and their derivatives are Cauchy uniformly on the ball, then the
@@ -249,6 +255,7 @@ theorem cauchy_map_of_uniformCauchySeqOn_fderiv {s : Set E} (hs : IsOpen s) (h's
     apply Metric.ball_subset_ball'; rw [dist_comm]; linarith
   exact A y (ε / 2) yt (B.trans hε) (Metric.mem_ball.2 hxy)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f_n → g` pointwise and the derivatives `(f_n)' → h` _uniformly_ converge, then
 in fact for a fixed `y`, the difference quotients `‖z - y‖⁻¹ • (f_n z - f_n y)` converge
 _uniformly_ to `‖z - y‖⁻¹ • (g z - g y)` -/
@@ -293,6 +300,7 @@ theorem difference_quotients_converge_uniformly
       (fun y hy => ((e hn (hr' hy)).2.1.sub (e hn (hr' hy)).2.2).hasFDerivWithinAt)
       (fun y hy => (e hn (hr' hy)).1.le) (convex_ball x r) (Metric.mem_ball_self hr) hy
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `(d/dx) lim_{n → ∞} f n x = lim_{n → ∞} f' n x` when the `f' n` converge
 _uniformly_ to their limit at `x`.
 
@@ -309,8 +317,9 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   -- The proof strategy follows several steps:
   --   1. The quantifiers in the definition of the derivative are
-  --      `∀ ε > 0, ∃δ > 0, ∀y ∈ B_δ(x)`. We will introduce a quantifier in the middle:
-  --      `∀ ε > 0, ∃N, ∀n ≥ N, ∃δ > 0, ∀y ∈ B_δ(x)` which will allow us to introduce the `f(') n`
+  --      `∀ ε > 0, ∃ δ > 0, ∀ y ∈ B_δ(x)`. We will introduce a quantifier in the middle:
+  --      `∀ ε > 0, ∃ N, ∀ n ≥ N, ∃ δ > 0, ∀ y ∈ B_δ(x)` which will allow us to introduce the
+  --      `f(') n`
   --   2. The order of the quantifiers `hfg` are opposite to what we need. We will be able to swap
   --      the quantifiers using the uniform convergence assumption
   rw [hasFDerivAt_iff_tendsto]

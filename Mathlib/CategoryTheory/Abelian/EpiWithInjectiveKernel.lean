@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Epimorphisms with an injective kernel
@@ -18,11 +20,13 @@ degreewise.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits ZeroObject Preadditive
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace Abelian
 
@@ -54,7 +58,7 @@ lemma epiWithInjectiveKernel_of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] :
     epiWithInjectiveKernel f := by
   rw [epiWithInjectiveKernel_iff]
   exact ⟨0, inferInstance, 0, by simp,
-    ⟨ShortComplex.Splitting.ofIsZeroOfIsIso _ (isZero_zero C) (by dsimp; infer_instance)⟩⟩
+    ⟨ShortComplex.Splitting.ofIsZeroOfIsIso _ (isZero_zero C) (by assumption)⟩⟩
 
 instance : (epiWithInjectiveKernel : MorphismProperty C).IsMultiplicative where
   id_mem _ := epiWithInjectiveKernel_of_iso _

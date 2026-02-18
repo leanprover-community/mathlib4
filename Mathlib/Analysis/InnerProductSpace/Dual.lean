@@ -3,21 +3,23 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.Normed.Group.NullSubmodule
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+public import Mathlib.Analysis.Normed.Group.NullSubmodule
+public import Mathlib.Topology.Algebra.Module.PerfectPairing
 
 /-!
 # The Fréchet-Riesz representation theorem
 
 We consider an inner product space `E` over `𝕜`, which is either `ℝ` or `ℂ`. We define
-`toDualMap`, a conjugate-linear isometric embedding of `E` into its dual, which maps an element
-`x` of the space to `fun y => ⟪x, y⟫`.
+`toDualMap`, a conjugate-linear isometric embedding of `E` into its dual, which maps an element `x`
+of the space to `fun y => ⟪x, y⟫`.
 
 Under the hypothesis of completeness (i.e., for Hilbert spaces), we upgrade this to `toDual`, a
 conjugate-linear isometric *equivalence* of `E` onto its dual; that is, we establish the
-surjectivity of `toDualMap`.  This is the Fréchet-Riesz representation theorem: every element of
-the dual of a Hilbert space `E` has the form `fun u => ⟪x, u⟫` for some `x : E`.
+surjectivity of `toDualMap`.  This is the Fréchet-Riesz representation theorem: every element of the
+dual of a Hilbert space `E` has the form `fun u => ⟪x, u⟫` for some `x : E`.
 
 For a bounded sesquilinear form `B : E →L⋆[𝕜] E →L[𝕜] 𝕜`,
 we define a map `InnerProductSpace.continuousLinearMapOfBilin B : E →L[𝕜] E`,
@@ -34,9 +36,11 @@ given by substituting `E →L[𝕜] 𝕜` with `E` using `toDual`.
 dual, Fréchet-Riesz
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open ComplexConjugate
+open ComplexConjugate Module
 
 universe u v
 
@@ -54,31 +58,42 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 local postfix:90 "†" => starRingEnd _
 
-/-- An element `x` of an inner product space `E` induces an element of the dual space `Dual 𝕜 E`,
-the map `fun y => ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric embedding of `E`
-into `Dual 𝕜 E`.
+/-- An element `x` of an inner product space `E` induces an element of the strong dual space
+`StrongDual 𝕜 E`, the map `fun y => ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric
+embedding of `E` into `StrongDual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
 see `toDual`.
 -/
-def toDualMap : E →ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
+def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   { innerSL 𝕜 with norm_map' := innerSL_apply_norm _ }
 
 variable {E}
 
 @[simp]
-theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
-  rfl
+theorem toContinuousLinearMap_toDualMap :
+    (toDualMap 𝕜 E).toContinuousLinearMap = innerSL 𝕜 := rfl
+
+@[simp]
+theorem toDualMap_apply_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ := rfl
+
+@[deprecated (since := "2025-11-15")] alias toDualMap_apply := toDualMap_apply_apply
+
+variable {𝕜} in
+@[simp]
+theorem _root_.innerSL_inj {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] {x y : E} :
+    innerSL 𝕜 x = innerSL 𝕜 y ↔ x = y :=
+  (toDualMap 𝕜 E).injective.eq_iff
 
 section NullSubmodule
 
 open LinearMap
 
 /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
+lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ (toDualMap 𝕜 E x).ker :=
   fun _ hx ↦ inner_eq_zero_of_right x ((mem_nullSubmodule_iff).mp hx)
 
 /-- The kernel of the map `x ↦ ⟪·, x⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E) :=
+lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ (toDualMap 𝕜 E).ker :=
   fun _ hx ↦ ContinuousLinearMap.ext <| fun y ↦ inner_eq_zero_of_left y hx
 
 end NullSubmodule
@@ -100,10 +115,9 @@ variable {E 𝕜}
 theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪b i, x⟫ = ⟪b i, y⟫) : x = y := by
   apply (toDualMap 𝕜 E).map_eq_iff.mp
-  refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (Basis.ext b ?_)
+  refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (b.ext ?_)
   intro i
-  simp only [ContinuousLinearMap.coe_coe]
-  rw [toDualMap_apply, toDualMap_apply]
+  simp only [ContinuousLinearMap.coe_coe, toDualMap_apply_apply]
   rw [← inner_conj_symm]
   conv_rhs => rw [← inner_conj_symm]
   exact congr_arg conj (h i)
@@ -121,11 +135,11 @@ variable [CompleteSpace E]
 /-- **Fréchet-Riesz representation**: any `ℓ` in the dual of a Hilbert space `E` is of the form
 `fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
-def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
+def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   LinearIsometryEquiv.ofSurjective (toDualMap 𝕜 E)
     (by
       intro ℓ
-      set Y := LinearMap.ker ℓ
+      set Y := ℓ.ker
       by_cases htriv : Y = ⊤
       · have hℓ : ℓ = 0 := by
           have h' := LinearMap.ker_eq_top.mp htriv
@@ -141,8 +155,8 @@ def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
         apply ContinuousLinearMap.ext
         intro x
         have h₁ : ℓ z • x - ℓ x • z ∈ Y := by
-          rw [LinearMap.mem_ker, map_sub, ContinuousLinearMap.map_smul,
-            ContinuousLinearMap.map_smul, Algebra.id.smul_eq_mul, Algebra.id.smul_eq_mul, mul_comm]
+          rw [LinearMap.mem_ker, map_sub, map_smul, map_smul, smul_eq_mul,
+            smul_eq_mul, mul_comm]
           exact sub_self (ℓ x * ℓ z)
         have h₂ : ℓ z * ⟪z, x⟫ = ℓ x * ⟪z, z⟫ :=
           haveI h₃ :=
@@ -152,36 +166,46 @@ def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
                 exact h₁
               _ = ⟪z, ℓ z • x⟫ - ⟪z, ℓ x • z⟫ := by rw [inner_sub_right]
               _ = ℓ z * ⟪z, x⟫ - ℓ x * ⟪z, z⟫ := by simp [inner_smul_right]
-          sub_eq_zero.mp (Eq.symm h₃)
-        have h₄ :=
-          calc
-            ⟪(ℓ z† / ⟪z, z⟫) • z, x⟫ = ℓ z / ⟪z, z⟫ * ⟪z, x⟫ := by simp [inner_smul_left, conj_conj]
-            _ = ℓ z * ⟪z, x⟫ / ⟪z, z⟫ := by rw [← div_mul_eq_mul_div]
-            _ = ℓ x * ⟪z, z⟫ / ⟪z, z⟫ := by rw [h₂]
-            _ = ℓ x := by field_simp [inner_self_ne_zero.2 z_ne_0]
-        exact h₄)
+          sub_eq_zero.mp h₃.symm
+        calc
+          ⟪(ℓ z† / ⟪z, z⟫) • z, x⟫ = ℓ z / ⟪z, z⟫ * ⟪z, x⟫ := by simp [inner_smul_left]
+          _ = ℓ z * ⟪z, x⟫ / ⟪z, z⟫ := by rw [← div_mul_eq_mul_div]
+          _ = ℓ x * ⟪z, z⟫ / ⟪z, z⟫ := by rw [h₂]
+          _ = ℓ x := by have : ⟪z, z⟫ ≠ 0 := inner_self_ne_zero.mpr z_ne_0; field)
 
 variable {𝕜} {E}
 
 @[simp]
-theorem toDual_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ :=
-  rfl
+theorem toDual_apply_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ := rfl
+
+@[deprecated (since := "2025-11-15")] alias toDual_apply := toDual_apply_apply
 
 @[simp]
-theorem toDual_symm_apply {x : E} {y : NormedSpace.Dual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
-  rw [← toDual_apply]
+theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
+  rw [← toDual_apply_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
 
+@[simp]
+lemma toLinearIsometry_toDual :
+    (toDual 𝕜 E).toLinearIsometry = toDualMap 𝕜 E := rfl
+
+lemma toDual_apply_eq_toDualMap_apply (x : E) :
+    toDual 𝕜 E x = toDualMap 𝕜 E x := rfl
+
 /-- Maps a bounded sesquilinear form to its continuous linear map,
-given by interpreting the form as a map `B : E →L⋆[𝕜] NormedSpace.Dual 𝕜 E`
+given by interpreting the form as a map `B : E →L⋆[𝕜] StrongDual 𝕜 E`
 and dualizing the result using `toDual`.
 -/
 def continuousLinearMapOfBilin (B : E →L⋆[𝕜] E →L[𝕜] 𝕜) : E →L[𝕜] E :=
-  comp (toDual 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap B
+  (toDual 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap.comp B
 
 local postfix:1024 "♯" => continuousLinearMapOfBilin
 
 variable (B : E →L⋆[𝕜] E →L[𝕜] 𝕜)
+
+@[simp]
+theorem continuousLinearMapOfBilin_zero : (0 : E →L⋆[𝕜] E →L[𝕜] 𝕜)♯ = 0 := by
+  simp [continuousLinearMapOfBilin]
 
 @[simp]
 theorem continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
@@ -196,5 +220,22 @@ theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪
   exact is_lax_milgram w
 
 end Normed
+
+instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
+    (innerₗ E).IsContPerfPair where
+  continuous_uncurry := continuous_inner
+  bijective_left := (toDual ℝ E).bijective
+  bijective_right := by
+    convert (toDual ℝ E).bijective
+    ext y
+    simp
+
+/-- A nonzero rank-one operator has rank one. -/
+lemma rank_rankOne {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
+    (rankOne 𝕜 x y).rank = 1 := by
+  rw [LinearMap.rank, rankOne_def, range_smulRight_apply, Module.rank_eq_one_iff_finrank_eq_one]
+  · exact finrank_span_singleton hx
+  · exact map_eq_zero_iff _ (toDualMap 𝕜 F).injective |>.not.mpr hy
 
 end InnerProductSpace

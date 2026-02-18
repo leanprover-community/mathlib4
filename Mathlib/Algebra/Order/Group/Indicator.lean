@@ -3,17 +3,21 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Algebra.Order.Group.Synonym
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+module
+
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Algebra.Order.Group.Synonym
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Support of a function in an order
 
 This file relates the support of a function to order constructions.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -113,14 +117,14 @@ lemma mulIndicator_le_mulIndicator (h : f a ≤ g a) : mulIndicator s f a ≤ mu
 lemma mulIndicator_mono (h : f ≤ g) : s.mulIndicator f ≤ s.mulIndicator g :=
   fun _ ↦ mulIndicator_le_mulIndicator (h _)
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 lemma mulIndicator_le_mulIndicator_apply_of_subset (h : s ⊆ t) (hf : 1 ≤ f a) :
     mulIndicator s f a ≤ mulIndicator t f a :=
   mulIndicator_apply_le'
     (fun ha ↦ le_mulIndicator_apply (fun _ ↦ le_rfl) fun hat ↦ (hat <| h ha).elim) fun _ ↦
     one_le_mulIndicator_apply fun _ ↦ hf
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 lemma mulIndicator_le_mulIndicator_of_subset (h : s ⊆ t) (hf : 1 ≤ f) :
     mulIndicator s f ≤ mulIndicator t f :=
   fun _ ↦ mulIndicator_le_mulIndicator_apply_of_subset h (hf _)
@@ -170,23 +174,21 @@ variable [Nonempty ι]
 lemma mulIndicator_iInter_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α → M) (x : α) :
     mulIndicator (⋂ i, s i) f x = ⨅ i, mulIndicator (s i) f x := by
   by_cases hx : x ∈ ⋂ i, s i
-  · rw [mulIndicator_of_mem hx]
-    rw [mem_iInter] at hx
-    refine le_antisymm ?_ (by simp only [mulIndicator_of_mem (hx _), ciInf_const, le_refl])
-    exact le_iInf (fun j ↦ by simp only [mulIndicator_of_mem (hx j), le_refl])
+  · simp_all
   · rw [mulIndicator_of_notMem hx]
-    simp only [mem_iInter, not_exists, not_forall] at hx
+    simp only [mem_iInter, not_forall] at hx
     rcases hx with ⟨j, hj⟩
     refine le_antisymm (by simp only [← h1, le_iInf_iff, bot_le, forall_const]) ?_
     simpa [mulIndicator_of_notMem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x
 
 @[to_additive]
-lemma iSup_mulIndicator {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f : ι → α → M}
+lemma iSup_mulIndicator {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f : ι → α → M}
     {s : ι → Set α} (h1 : (⊥ : M) = 1) (hf : Monotone f) (hs : Monotone s) :
     ⨆ i, (s i).mulIndicator (f i) = (⋃ i, s i).mulIndicator (⨆ i, f i) := by
   simp only [le_antisymm_iff, iSup_le_iff]
-  refine ⟨fun i ↦ (mulIndicator_mono (le_iSup _ _)).trans (mulIndicator_le_mulIndicator_of_subset
-    (subset_iUnion _ _) (fun _ ↦ by simp [← h1])), fun a ↦ ?_⟩
+  refine ⟨fun i ↦ ?_, fun a ↦ ?_⟩
+  · grw [← le_iSup f i, ← subset_iUnion s i]
+    intro; simp [← h1]
   by_cases ha : a ∈ ⋃ i, s i
   · obtain ⟨i, hi⟩ : ∃ i, a ∈ s i := by simpa using ha
     rw [mulIndicator_of_mem ha, iSup_apply, iSup_apply]

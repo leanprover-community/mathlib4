@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.DFinsupp.Module
+module
+
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.DFinsupp.Module
 
 /-!
 # Pointwise order on finitely supported dependent functions
@@ -18,6 +20,8 @@ This file lifts order structures on the `α i` to `Π₀ i, α i`.
   to functions.
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -112,6 +116,7 @@ instance lattice : Lattice (Π₀ i, α i) :=
 
 variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
   coe_injective <| compl_injective <| by ext; simp [inf_eq_and_sup_eq_iff]
 
@@ -204,6 +209,7 @@ theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
 theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' <| Subset.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma support_monotone : Monotone (support (ι := ι) (β := α)) :=
   fun f g h a ha ↦ by rw [mem_support_iff, ← pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
 
@@ -244,12 +250,13 @@ variable (α)
 instance : OrderedSub (Π₀ i, α i) :=
   ⟨fun _ _ _ ↦ forall_congr' fun _ ↦ tsub_le_iff_right⟩
 
-instance [∀ i, CovariantClass (α i) (α i) (· + ·) (· ≤ ·)] : CanonicallyOrderedAdd (Π₀ i, α i) where
+instance [∀ i, AddLeftMono (α i)] : CanonicallyOrderedAdd (Π₀ i, α i) where
   exists_add_of_le := by
     intro f g h
     exists g - f
     ext i
     exact (add_tsub_cancel_of_le <| h i).symm
+  le_add_self := fun _ _ _ ↦ le_add_self
   le_self_add := fun _ _ _ ↦ le_self_add
 
 variable {α} [DecidableEq ι]
@@ -257,7 +264,7 @@ variable {α} [DecidableEq ι]
 @[simp]
 theorem single_tsub : single i (a - b) = single i a - single i b := by
   ext j
-  obtain rfl | h := eq_or_ne i j
+  obtain rfl | h := eq_or_ne j i
   · rw [tsub_apply, single_eq_same, single_eq_same, single_eq_same]
   · rw [tsub_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, tsub_self]
 

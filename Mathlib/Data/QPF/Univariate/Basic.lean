@@ -3,7 +3,9 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.PFunctor.Univariate.M
+module
+
+public import Mathlib.Data.PFunctor.Univariate.M
 
 /-!
 
@@ -36,6 +38,8 @@ The present theory focuses on the univariate case for qpfs
   Functors*][avigad-carneiro-hudon2019]
 
 -/
+
+@[expose] public section
 
 
 universe u u' v
@@ -74,7 +78,6 @@ theorem id_map {α : Type _} (x : F α) : id <$> x = x := by
 theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) (x : F α) :
     (g ∘ f) <$> x = g <$> f <$> x := by
   rw [← abs_repr x]
-  obtain ⟨a, f⟩ := repr x
   rw [← abs_map, ← abs_map, ← abs_map]
   rfl
 
@@ -202,7 +205,7 @@ def Wrepr : q.P.W → q.P.W :=
   recF (PFunctor.W.mk ∘ repr)
 
 theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
-  induction' x with a f ih
+  induction x with | _ a f ih
   apply Wequiv.trans
   · change Wequiv (Wrepr ⟨a, f⟩) (PFunctor.W.mk (q.P.map Wrepr ⟨a, f⟩))
     apply Wequiv.abs'
@@ -212,6 +215,7 @@ theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
   apply Wequiv.ind; exact ih
 
 /-- Define the fixed point as the quotient of trees under the equivalence relation `Wequiv`. -/
+@[instance_reducible]
 def Wsetoid : Setoid q.P.W :=
   ⟨Wequiv, @Wequiv.refl _ _, @Wequiv.symm _ _, @Wequiv.trans _ _⟩
 
@@ -269,11 +273,11 @@ theorem Fix.ind_rec {α : Type u} (g₁ g₂ : Fix F → α)
     (h : ∀ x : F (Fix F), g₁ <$> x = g₂ <$> x → g₁ (Fix.mk x) = g₂ (Fix.mk x)) :
     ∀ x, g₁ x = g₂ x := by
   rintro ⟨x⟩
-  induction' x with a f ih
+  induction x with | _ a f ih
   change g₁ ⟦⟨a, f⟩⟧ = g₂ ⟦⟨a, f⟩⟧
   rw [← Fix.ind_aux a f]; apply h
   rw [← abs_map, ← abs_map, PFunctor.map_eq, PFunctor.map_eq]
-  congr with x
+  congr 2 with x
   apply ih
 
 theorem Fix.rec_unique {α : Type u} (g : F α → α) (h : Fix F → α)
@@ -301,7 +305,7 @@ theorem Fix.dest_mk (x : F (Fix F)) : Fix.dest (Fix.mk x) = x := by
 
 theorem Fix.ind (p : Fix F → Prop) (h : ∀ x : F (Fix F), Liftp p x → p (Fix.mk x)) : ∀ x, p x := by
   rintro ⟨x⟩
-  induction' x with a f ih
+  induction x with | _ a f ih
   change p ⟦⟨a, f⟩⟧
   rw [← Fix.ind_aux a f]
   apply h
@@ -348,6 +352,7 @@ instance [Inhabited q.P.A] : Inhabited (Cofix F) :=
 def Cofix.corec {α : Type _} (g : α → F α) (x : α) : Cofix F :=
   Quot.mk _ (corecF g x)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- destructor for type defined by `Cofix` -/
 def Cofix.dest : Cofix F → F (Cofix F) :=
   Quot.lift (fun x => Quot.mk Mcongr <$> abs (PFunctor.M.dest x))

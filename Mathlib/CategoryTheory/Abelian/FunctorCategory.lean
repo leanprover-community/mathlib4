@@ -3,15 +3,19 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+module
+
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 /-!
 # If `D` is abelian, then the functor category `C ⥤ D` is also abelian.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -43,6 +47,7 @@ def coimageObjIso : (Abelian.coimage α).obj X ≅ Abelian.coimage (α.app X) :=
         simp only [Category.comp_id, PreservesKernel.iso_hom]
         exact (kernelComparison_comp_ι _ ((evaluation C D).obj X)).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The abelian image in a functor category can be calculated componentwise. -/
 @[simps!]
 def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=

@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.LinearAlgebra.ExteriorPower.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
+module
+
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # The exterior powers as functors on the category of modules
@@ -14,6 +16,8 @@ and this extends to a functor `ModuleCat.exteriorPower.functor : ModuleCat R ⥤
 
 -/
 
+@[expose] public section
+
 universe v u
 
 open CategoryTheory
@@ -22,6 +26,7 @@ namespace ModuleCat
 
 variable {R : Type u} [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The exterior power of an object in `ModuleCat R`. -/
 def exteriorPower (M : ModuleCat.{v} R) (n : ℕ) : ModuleCat.{max u v} R :=
   ModuleCat.of R (⋀[R]^n M)
@@ -40,7 +45,7 @@ namespace AlternatingMap
 variable {M : ModuleCat.{v} R} {N : ModuleCat.{max u v} R} {n : ℕ}
 
 @[ext]
-lemma ext {φ φ' : M.AlternatingMap N n} (h : ∀ (x : Fin n → M), φ x = φ' x ) :
+lemma ext {φ φ' : M.AlternatingMap N n} (h : ∀ (x : Fin n → M), φ x = φ' x) :
     φ = φ' :=
   _root_.AlternatingMap.ext h
 
@@ -71,6 +76,7 @@ lemma hom_ext {M : ModuleCat.{v} R} {N : ModuleCat.{max u v} R} {n : ℕ}
   ext : 1
   exact exteriorPower.linearMap_ext h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `M.exteriorPower n ⟶ N` induced by an alternating map. -/
 noncomputable def desc {M : ModuleCat.{v} R} {n : ℕ} {N : ModuleCat.{max u v} R}
     (φ : M.AlternatingMap N n) : M.exteriorPower n ⟶ N :=
@@ -82,6 +88,7 @@ lemma desc_mk {M : ModuleCat.{v} R} {n : ℕ} {N : ModuleCat.{max u v} R}
     desc φ (mk x) = φ x := by
   apply exteriorPower.alternatingMapLinearEquiv_apply_ιMulti
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `M.exteriorPower n ⟶ N.exteriorPower n` induced by a morphism `M ⟶ N`
 in `ModuleCat R`. -/
 noncomputable def map {M N : ModuleCat.{v} R} (f : M ⟶ N) (n : ℕ) :
@@ -115,7 +122,7 @@ lemma iso₀_hom_naturality {M N : ModuleCat.{u} R} (f : M ⟶ N) :
     map f 0 ≫ (iso₀ N).hom = (iso₀ M).hom :=
   ModuleCat.hom_ext (exteriorPower.zeroEquiv_naturality f.hom)
 
-/-- The isomorphism `M.exteriorPower 0 ≅ M`. -/
+/-- The isomorphism `M.exteriorPower 1 ≅ M`. -/
 noncomputable def iso₁ (M : ModuleCat.{u} R) : M.exteriorPower 1 ≅ M :=
   (exteriorPower.oneEquiv R M).toModuleIso
 

@@ -3,12 +3,14 @@ Copyright (c) 2022 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.Algebraic.Cardinality
-import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Algebra.MvPolynomial.Cardinal
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.Algebraic.Cardinality
+public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 /-!
 # Classification of Algebraically closed fields
@@ -22,6 +24,8 @@ This file contains results related to classifying algebraically closed fields.
 * `IsAlgClosed.ringEquivOfCardinalEqOfCharEq` Two uncountable algebraically closed fields
   are isomorphic if they have the same characteristic and the same cardinality.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -43,6 +47,7 @@ variable {ι : Type*} (v : ι → K)
 variable {κ : Type*} (w : κ → L)
 variable (hv : AlgebraicIndependent R v)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenceBasis R v) :
     IsAlgClosure (Algebra.adjoin R (Set.range v)) K :=
   letI := RingHom.domain_nontrivial (algebraMap R K)
@@ -51,6 +56,7 @@ theorem isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenc
 
 variable (hw : AlgebraicIndependent R w)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- setting `R` to be `ZMod (ringChar R)` this result shows that if two algebraically
 closed fields have equipotent transcendence bases and the same characteristic then they are
 isomorphic. -/
@@ -79,8 +85,9 @@ variable {ι : Type w} (v : ι → K)
 variable {K' : Type u} [Field K'] [Algebra R K'] [IsAlgClosed K']
 variable {ι' : Type u} (v' : ι' → K')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
-the maximum of of the cardinality of `R`, the cardinality of a transcendence basis and
+the maximum of the cardinality of `R`, the cardinality of a transcendence basis and
 `ℵ₀`
 
 For a simpler, but less universe-polymorphic statement, see
@@ -101,7 +108,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     _ = _ := by simp
 
 /-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
-the maximum of of the cardinality of `R`, the cardinality of a transcendence basis and
+the maximum of the cardinality of `R`, the cardinality of a transcendence basis and
 `ℵ₀`
 
 A less-universe polymorphic, but simpler statement of

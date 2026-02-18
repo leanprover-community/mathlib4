@@ -3,9 +3,11 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.BialgCat.Monoidal
-import Mathlib.Algebra.Category.HopfAlgCat.Basic
-import Mathlib.RingTheory.HopfAlgebra.TensorProduct
+module
+
+public import Mathlib.Algebra.Category.BialgCat.Monoidal
+public import Mathlib.Algebra.Category.HopfAlgCat.Basic
+public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 
 /-!
 # The monoidal structure on the category of Hopf algebras
@@ -17,6 +19,8 @@ Here, we use this to declare a `MonoidalCategory` instance on the category of Ho
 the existing monoidal structure on `BialgCat`.
 -/
 
+@[expose] public section
+
 universe u
 
 namespace HopfAlgCat
@@ -24,6 +28,7 @@ open CategoryTheory MonoidalCategory TensorProduct
 
 variable (R : Type u) [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps] noncomputable instance instMonoidalCategoryStruct :
     MonoidalCategoryStruct.{u} (HopfAlgCat R) where
   tensorObj X Y := of R (X ⊗[R] Y)

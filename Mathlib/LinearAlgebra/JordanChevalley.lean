@@ -3,9 +3,11 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Dynamics.Newton
-import Mathlib.LinearAlgebra.Semisimple
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+module
+
+public import Mathlib.Dynamics.Newton
+public import Mathlib.LinearAlgebra.Semisimple
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Jordan-Chevalley-Dunford decomposition
@@ -26,13 +28,13 @@ The proof given here uses Newton's method and is taken from Chambert-Loir's note
   space over a perfect field may be written as a sum of nilpotent and semisimple endomorphisms.
   Moreover these nilpotent and semisimple components are polynomial expressions in the original
   endomorphism.
-
-## TODO
-
-* Uniqueness of decomposition (once we prove that the sum of commuting semisimple endomorphims is
-  semisimple, this will follow from `Module.End.eq_zero_of_isNilpotent_isSemisimple`).
+* `Module.End.isNilpotent_isSemisimple_unique`: the Jordan-Chevalley-Dunford decomposition is
+  unique: if `f = n₁ + s₁ = n₂ + s₂` with `nᵢ` nilpotent, `sᵢ` semisimple, and `nᵢ`, `sᵢ`
+  commuting, then `n₁ = n₂` and `s₁ = s₂`.
 
 -/
+
+public section
 
 open Algebra Polynomial
 
@@ -40,6 +42,7 @@ namespace Module.End
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] {f : End K V}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : ℕ}
     (sep : P.Separable) (nil : minpoly K f ∣ P ^ k) :
     ∃ᵉ (n ∈ adjoin K {f}) (s ∈ adjoin K {f}), IsNilpotent n ∧ IsSemisimple s ∧ f = n + s := by
@@ -55,7 +58,7 @@ theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : 
     replace h : (aeval f b) * (aeval f P') = 1 := by
       simpa only [map_add, map_mul, map_one, minpoly.dvd_iff.mp nil, mul_zero, zero_add]
         using (aeval f).congr_arg h
-    refine isUnit_of_mul_eq_one_right (aeval ff b) _ (Subtype.ext_iff.mpr ?_)
+    refine .of_mul_eq_one_right (aeval ff b) (Subtype.ext_iff.mpr ?_)
     simpa [ff, coe_aeval_mk_apply] using h
   obtain ⟨⟨s, mem⟩, ⟨⟨k, hk⟩, hss⟩, -⟩ := existsUnique_nilpotent_sub_and_aeval_eq_zero nil' sep'
   refine ⟨f - s, ?_, s, mem, ⟨k, ?_⟩, ?_, (sub_add_cancel f s).symm⟩
@@ -76,5 +79,26 @@ theorem exists_isNilpotent_isSemisimple [PerfectField K] :
   obtain ⟨g, k, sep, -, nil⟩ := exists_squarefree_dvd_pow_of_ne_zero (minpoly.ne_zero_of_finite K f)
   rw [← PerfectField.separable_iff_squarefree] at sep
   exact exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow sep nil
+
+/-- **Uniqueness of Jordan-Chevalley-Dunford decomposition**: if `f = n₁ + s₁ = n₂ + s₂` with
+`nᵢ` nilpotent, `sᵢ` semisimple, and `nᵢ`, `sᵢ` commuting, then `n₁ = n₂` and `s₁ = s₂`. -/
+theorem isNilpotent_isSemisimple_unique [PerfectField K]
+    {n₁ s₁ n₂ s₂ : End K V}
+    (hn₁ : IsNilpotent n₁) (hs₁ : s₁.IsSemisimple)
+    (hn₂ : IsNilpotent n₂) (hs₂ : s₂.IsSemisimple)
+    (hc₁ : Commute n₁ s₁) (hc₂ : Commute n₂ s₂)
+    (h₁ : f = n₁ + s₁) (h₂ : f = n₂ + s₂) :
+    n₁ = n₂ ∧ s₁ = s₂ := by
+  obtain ⟨n₀, hn₀, s₀, hs₀, hn₀_nil, hs₀_ss, h₀⟩ := f.exists_isNilpotent_isSemisimple
+  suffices ∀ {n s}, IsNilpotent n → s.IsSemisimple → Commute n s → f = n + s → s = s₀ by grind
+  intro n s hn hs hc heq
+  have hsf : Commute s f := heq ▸ hc.symm.add_right (Commute.refl s)
+  have hnf : Commute n f := heq ▸ (Commute.refl n).add_right hc
+  have hnil : IsNilpotent (s - s₀) := by
+    rw [show s - s₀ = n₀ - n from by grind]
+    exact (commute_of_mem_adjoin_singleton_of_commute hn₀ hnf).symm.isNilpotent_sub hn₀_nil hn
+  have hss : (s - s₀).IsSemisimple :=
+    hs.sub_of_commute (commute_of_mem_adjoin_singleton_of_commute hs₀ hsf) hs₀_ss
+  grind [eq_zero_of_isNilpotent_isSemisimple hnil hss]
 
 end Module.End

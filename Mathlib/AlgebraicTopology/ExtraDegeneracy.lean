@@ -3,11 +3,13 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
-import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-import Mathlib.AlgebraicTopology.CechNerve
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.CechNerve
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -27,20 +29,22 @@ simplicial objects in any category.
 
 - the structure `ExtraDegeneracy X` for any `X : SimplicialObject.Augmented C`
 - `ExtraDegeneracy.map`: extra degeneracies are preserved by the application of any
-functor `C ⥤ D`
+  functor `C ⥤ D`
 - `SSet.Augmented.StandardSimplex.extraDegeneracy`: the standard `n`-simplex has
-an extra degeneracy
+  an extra degeneracy
 - `Arrow.AugmentedCechNerve.extraDegeneracy`: the Čech nerve of a split
-epimorphism has an extra degeneracy
+  epimorphism has an extra degeneracy
 - `ExtraDegeneracy.homotopyEquiv`: in the case the category `C` is preadditive,
-if we have an extra degeneracy on `X : SimplicialObject.Augmented C`, then
-the augmentation on the alternating face map complex of `X` is a homotopy
-equivalence.
+  if we have an extra degeneracy on `X : SimplicialObject.Augmented C`, then
+  the augmentation on the alternating face map complex of `X` is a homotopy
+  equivalence.
 
 ## References
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Category SimplicialObject.Augmented Opposite Simplicial
@@ -51,7 +55,7 @@ namespace SimplicialObject
 
 namespace Augmented
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- The datum of an extra degeneracy is a technical condition on
 augmented simplicial objects. The morphisms `s'` and `s n` of the
@@ -62,23 +66,25 @@ structure ExtraDegeneracy (X : SimplicialObject.Augmented C) where
   s' : point.obj X ⟶ drop.obj X _⦋0⦌
   /-- the extra degeneracy -/
   s : ∀ n : ℕ, drop.obj X _⦋n⦌ ⟶ drop.obj X _⦋n + 1⦌
-  s'_comp_ε : s' ≫ X.hom.app (op ⦋0⦌) = 𝟙 _ := by aesop_cat
-  s₀_comp_δ₁ : s 0 ≫ X.left.δ 1 = X.hom.app (op ⦋0⦌) ≫ s' := by aesop_cat
-  s_comp_δ₀ : ∀ n : ℕ, s n ≫ X.left.δ 0 = 𝟙 _ := by aesop_cat
+  s'_comp_ε : s' ≫ X.hom.app (op ⦋0⦌) = 𝟙 _ := by cat_disch
+  s₀_comp_δ₁ : s 0 ≫ X.left.δ 1 = X.hom.app (op ⦋0⦌) ≫ s' := by cat_disch
+  s_comp_δ₀ : ∀ n : ℕ, s n ≫ X.left.δ 0 = 𝟙 _ := by cat_disch
   s_comp_δ :
-    ∀ (n : ℕ) (i : Fin (n + 2)), s (n + 1) ≫ X.left.δ i.succ = X.left.δ i ≫ s n := by aesop_cat
+    ∀ (n : ℕ) (i : Fin (n + 2)), s (n + 1) ≫ X.left.δ i.succ = X.left.δ i ≫ s n := by cat_disch
   s_comp_σ :
-    ∀ (n : ℕ) (i : Fin (n + 1)), s n ≫ X.left.σ i.succ = X.left.σ i ≫ s (n + 1) := by aesop_cat
+    ∀ (n : ℕ) (i : Fin (n + 1)), s n ≫ X.left.σ i.succ = X.left.σ i ≫ s (n + 1) := by cat_disch
 
 namespace ExtraDegeneracy
 
 attribute [reassoc] s₀_comp_δ₁ s_comp_δ s_comp_σ
+set_option backward.isDefEq.respectTransparency false in -- This is needed below.
 attribute [reassoc (attr := simp)] s'_comp_ε s_comp_δ₀
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `ed` is an extra degeneracy for `X : SimplicialObject.Augmented C` and
 `F : C ⥤ D` is a functor, then `ed.map F` is an extra degeneracy for the
 augmented simplicial object in `D` obtained by applying `F` to `X`. -/
-def map {D : Type*} [Category D] {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
+def map {D : Type*} [Category* D] {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
     (F : C ⥤ D) : ExtraDegeneracy (((whiskering _ _).obj F).obj X) where
   s' := F.map ed.s'
   s n := F.map (ed.s n)
@@ -110,6 +116,7 @@ def map {D : Type*} [Category D] {X : SimplicialObject.Augmented C} (ed : ExtraD
     erw [ed.s_comp_σ]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `X` and `Y` are isomorphic augmented simplicial objects, then an extra
 degeneracy for `X` gives also an extra degeneracy for `Y` -/
 def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegeneracy X) :
@@ -153,16 +160,13 @@ namespace Augmented
 namespace StandardSimplex
 
 /-- When `[Zero X]`, the shift of a map `f : Fin n → X`
-is a map `Fin (n+1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
+is a map `Fin (n + 1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
 def shiftFun {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin (n + 1)) : X :=
   Matrix.vecCons 0 f i
 
 @[simp]
 theorem shiftFun_zero {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) : shiftFun f 0 = 0 :=
   rfl
-
-@[deprecated (since := "2025-04-19")]
-alias shiftFun_0 := shiftFun_zero
 
 @[simp]
 theorem shiftFun_succ {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin n) :
@@ -188,6 +192,7 @@ def shift {n : ℕ} {Δ : SimplexCategory} (f : ⦋n⦌ ⟶ Δ) : ⦋n + 1⦌ �
           substs hj₁ hj₂
           simpa only [shiftFun_succ] using f.toOrderHom.monotone (Fin.succ_le_succ_iff.mp hi) }
 
+set_option backward.isDefEq.respectTransparency false in
 open SSet.stdSimplex in
 /-- The obvious extra degeneracy on the standard simplex. -/
 protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
@@ -246,10 +251,11 @@ namespace Arrow
 
 namespace AugmentedCechNerve
 
-variable {C : Type*} [Category C] (f : Arrow C)
+variable {C : Type*} [Category* C] (f : Arrow C)
   [∀ n : ℕ, HasWidePullback f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
   (S : SplitEpi f.hom)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The extra degeneracy map on the Čech nerve of a split epi. It is
 given on the `0`-projection by the given section of the split epi,
 and by shifting the indices on the other projections. -/
@@ -260,6 +266,7 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
     fun i => by
       cases i using Fin.cases <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
 -- The problem is that the type of `ExtraDegeneracy.s` is not in normal form, this causes the `erw`
 -- in the proofs below.
@@ -268,8 +275,9 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
       @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
         S.section_ := by
   dsimp [ExtraDegeneracy.s]
-  simp [WidePullback.lift_π]
+  simp
 
+set_option backward.isDefEq.respectTransparency false in
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =
@@ -281,6 +289,7 @@ theorem ExtraDegeneracy.s_comp_base (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.base _ = WidePullback.base _ := by
   apply WidePullback.lift_base
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve associated to a split epimorphism has an extra degeneracy. -/
 noncomputable def extraDegeneracy :
     SimplicialObject.Augmented.ExtraDegeneracy f.augmentedCechNerve where
@@ -288,7 +297,7 @@ noncomputable def extraDegeneracy :
   s n := ExtraDegeneracy.s f S n
   s'_comp_ε := by
     dsimp
-    simp only [augmentedCechNerve_hom_app, assoc, WidePullback.lift_base, SplitEpi.id]
+    simp only [assoc, WidePullback.lift_base, SplitEpi.id]
   s₀_comp_δ₁ := by
     dsimp [cechNerve, SimplicialObject.δ, SimplexCategory.δ]
     ext j
@@ -348,7 +357,7 @@ namespace Augmented
 namespace ExtraDegeneracy
 
 open AlgebraicTopology CategoryTheory Limits
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- The constant augmented simplicial object has an extra degeneracy. -/
 @[simps]
@@ -356,6 +365,7 @@ def const (X : C) : ExtraDegeneracy (Augmented.const.obj X) where
   s' := 𝟙 _
   s _ := 𝟙 _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a preadditive category and `X` is an augmented simplicial object
 in `C` that has an extra degeneracy, then the augmentation on the alternating
 face map complex of `X` is a homotopy equivalence. -/
@@ -380,13 +390,13 @@ noncomputable def homotopyEquiv [Preadditive C] [HasZeroObject C]
           rw [Homotopy.prevD_chainComplex, Homotopy.dNext_zero_chainComplex, zero_add]
           dsimp
           erw [ChainComplex.fromSingle₀Equiv_symm_apply_f_zero]
-          simp only [ComplexShape.down_Rel, AlternatingFaceMapComplex.obj_d_eq]
+          simp only [AlternatingFaceMapComplex.obj_d_eq]
           rw [Fin.sum_univ_two]
           simp [s_comp_δ₀, s₀_comp_δ₁]
         | succ i =>
           rw [Homotopy.prevD_chainComplex, Homotopy.dNext_succ_chainComplex]
           simp [Fin.sum_univ_succ (n := i + 2), s_comp_δ₀, Preadditive.sum_comp,
-            Preadditive.zsmul_comp, Preadditive.comp_sum, Preadditive.comp_zsmul,
+            Preadditive.comp_sum,
             s_comp_δ, pow_succ] }
 
 end ExtraDegeneracy

@@ -3,7 +3,9 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.LocallyConvex.Basic
+module
+
+public import Mathlib.Analysis.LocallyConvex.Basic
 
 /-!
 # Balanced Core and Balanced Hull
@@ -35,6 +37,8 @@ this is `balancedCore_eq_iInter`.
 
 balanced
 -/
+
+@[expose] public section
 
 
 open Set Pointwise Topology Filter
@@ -91,7 +95,7 @@ theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆
   subset_sUnion_of_mem ⟨hs, h⟩
 
 lemma Balanced.balancedCore_eq (h : Balanced 𝕜 s) : balancedCore 𝕜 s = s :=
-  le_antisymm (balancedCore_subset _) (h.subset_balancedCore_of_subset (subset_refl _))
+  le_antisymm (balancedCore_subset _) (h.subset_balancedCore_of_subset subset_rfl)
 
 theorem mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜, 1 ≤ ‖r‖ → x ∈ r • s :=
   mem_iInter₂
@@ -103,7 +107,7 @@ theorem mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ r : 𝕜, ‖r�
 `t` of `s`. -/
 theorem Balanced.balancedHull_subset_of_subset (ht : Balanced 𝕜 t) (h : s ⊆ t) :
     balancedHull 𝕜 s ⊆ t := by
-  intros x hx
+  intro x hx
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 hx
   exact ht.smul_mem hr (h hy)
 
@@ -234,6 +238,7 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
 -- We don't have a `NontriviallyNormedDivisionRing`, so we use a `NeBot` assumption instead
 variable [NeBot (𝓝[≠] (0 : 𝕜))]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜 U ∈ 𝓝 (0 : E) := by
   -- Getting neighborhoods of the origin for `0 : 𝕜` and `0 : E`
   obtain ⟨r, V, hr, hV, hrVU⟩ : ∃ (r : ℝ) (V : Set E),

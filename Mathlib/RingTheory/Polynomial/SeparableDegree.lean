@@ -3,8 +3,10 @@ Copyright (c) 2021 Jakob Scholbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.FieldTheory.Separable
 
 /-!
 
@@ -32,6 +34,8 @@ This file contains basics about the separable degree of a polynomial.
 
 separable degree, degree, polynomial
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -81,6 +85,7 @@ theorem HasSeparableContraction.dvd_degree : hf.degree ∣ f.natDegree :=
   let ⟨a, ha⟩ := hf.dvd_degree'
   Dvd.intro (q ^ a) ha
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In exponential characteristic one, the separable degree equals the degree. -/
 theorem HasSeparableContraction.eq_degree {f : F[X]} (hf : HasSeparableContraction 1 f) :
     hf.degree = f.natDegree := by
@@ -117,6 +122,7 @@ theorem contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X])
   · rw [natDegree_expand, natDegree_eq_zero_of_isUnit h, zero_mul]
   · rw [natDegree_expand, pow_zero, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The separable degree equals the degree of any separable contraction, i.e., it is unique. -/
 theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
     (hg : IsSeparableContraction q f g) : g.natDegree = hf.degree := by

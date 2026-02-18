@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-import Mathlib.Algebra.CharP.Defs
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
+public import Mathlib.Algebra.CharP.Defs
 
 /-!
 
@@ -92,6 +94,8 @@ elliptic curve, weierstrass equation, normal form
 
 -/
 
+@[expose] public section
+
 variable {R : Type*} [CommRing R] {F : Type*} [Field F] (W : WeierstrassCurve R)
 
 namespace WeierstrassCurve
@@ -162,6 +166,7 @@ a normal form of characteristic ≠ 2, provided that 2 is invertible in the ring
 @[simps]
 def toCharNeTwoNF : VariableChange R := ⟨1, 0, ⅟2 * -W.a₁, ⅟2 * -W.a₃⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance toCharNeTwoNF_spec : (W.toCharNeTwoNF • W).IsCharNeTwoNF := by
   constructor <;> simp [variableChange_a₁, variableChange_a₃]
 
@@ -263,6 +268,7 @@ It is the composition of an explicit change of variables with `WeierstrassCurve.
 def toShortNF : VariableChange R :=
   ⟨1, ⅟3 * -(W.toCharNeTwoNF • W).a₂, 0, 0⟩ * W.toCharNeTwoNF
 
+set_option backward.isDefEq.respectTransparency false in
 instance toShortNF_spec : (W.toShortNF • W).IsShortNF := by
   rw [toShortNF, mul_smul]
   constructor <;> simp [variableChange_a₁, variableChange_a₂, variableChange_a₃]
@@ -423,7 +429,7 @@ theorem toCharThreeNF_spec_of_b₂_ne_zero (hb₂ : W.b₂ ≠ 0) :
   · simp [variableChange_a₁]
   · simp [variableChange_a₃]
   · have ha₂ : W'.a₂ ≠ 0 := W.toShortNFOfCharThree_a₂ ▸ hb₂
-    field_simp [ha₂, variableChange_a₄]
+    simp [field, variableChange_a₄, -mul_eq_zero]
     linear_combination (W'.a₄ * W'.a₂ ^ 2 + W'.a₄ ^ 2) * CharP.cast_eq_zero F 3
 
 theorem toCharThreeNF_spec_of_b₂_eq_zero (hb₂ : W.b₂ = 0) : (W.toCharThreeNF • W).IsShortNF := by
@@ -667,10 +673,10 @@ theorem toCharTwoJNeZeroNF_spec (ha₁ : W.a₁ ≠ 0) :
     (W.toCharTwoJNeZeroNF ha₁ • W).IsCharTwoJNeZeroNF := by
   constructor
   · simp [toCharTwoJNeZeroNF, ha₁, variableChange_a₁]
-  · field_simp [toCharTwoJNeZeroNF, variableChange_a₃]
+  · simp [field, toCharTwoJNeZeroNF, variableChange_a₃, -mul_eq_zero]
     linear_combination (W.a₃ * W.a₁ ^ 3 + W.a₁ ^ 2 * W.a₄ + W.a₃ ^ 2) * CharP.cast_eq_zero F 2
-  · field_simp [toCharTwoJNeZeroNF, variableChange_a₄]
-    linear_combination (W.a₁ ^ 4 * W.a₃ ^ 2 + W.a₁ ^ 5 * W.a₃ * W.a₂) * CharP.cast_eq_zero F 2
+  · simp [field, toCharTwoJNeZeroNF, variableChange_a₄, -mul_eq_zero]
+    linear_combination (W.a₃ ^ 2 + W.a₁ * W.a₃ * W.a₂) * CharP.cast_eq_zero F 2
 
 /-- For a `WeierstrassCurve` defined over a field of characteristic = 2,
 there is an explicit change of variables of it to `WeierstrassCurve.IsCharTwoNF`, that is,

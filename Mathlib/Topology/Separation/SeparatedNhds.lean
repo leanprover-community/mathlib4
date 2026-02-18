@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.NhdsSet
+module
+
+public import Mathlib.Topology.Continuous
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Separated neighbourhoods
@@ -25,6 +27,8 @@ formulating separation axioms for topological spaces.
 * [Willard's *General Topology*][zbMATH02107988]
 -/
 
+@[expose] public section
+
 open Function Set Filter Topology TopologicalSpace
 
 universe u v
@@ -41,7 +45,7 @@ def SeparatedNhds : Set X → Set X → Prop := fun s t : Set X =>
   ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ s ⊆ U ∧ t ⊆ V ∧ Disjoint U V
 
 theorem separatedNhds_iff_disjoint {s t : Set X} : SeparatedNhds s t ↔ Disjoint (𝓝ˢ s) (𝓝ˢ t) := by
-  simp only [(hasBasis_nhdsSet s).disjoint_iff (hasBasis_nhdsSet t), SeparatedNhds, exists_prop, ←
+  simp only [(hasBasis_nhdsSet s).disjoint_iff (hasBasis_nhdsSet t), SeparatedNhds, ←
     exists_and_left, and_assoc, and_comm, and_left_comm]
 
 alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
@@ -50,6 +54,7 @@ alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
 def HasSeparatingCover : Set X → Set X → Prop := fun s t ↦
   ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) t
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Used to prove that a regular topological space with Lindelöf topology is a normal space,
 and a perfectly normal space is a completely normal space. -/
 theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
@@ -63,11 +68,11 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
         (h₀ ⊆ ⋃ n, u₀ n) → (∀ n, Disjoint (closure (v₀ n)) h₀) →
         (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ≤ n, v₀ m)) :=
         fun h₀ u₀ v₀ h₀_cov dis x xinh ↦ by
-      rcases h₀_cov xinh with ⟨un , ⟨n, rfl⟩ , xinun⟩
+      rcases h₀_cov xinh with ⟨un, ⟨n, rfl⟩, xinun⟩
       simp only [mem_iUnion]
       refine ⟨n, xinun, ?_⟩
-      simp_all only [closure_iUnion₂_le_nat, disjoint_right, mem_setOf_eq, mem_iUnion,
-        exists_false, exists_const, not_false_eq_true]
+      simp_all only [closure_iUnion₂_le_nat, disjoint_right, mem_iUnion,
+        exists_false, not_false_eq_true]
     refine
       ⟨⋃ n : ℕ, u n \ (closure (⋃ m ≤ n, v m)),
        ⋃ n : ℕ, v n \ (closure (⋃ m ≤ n, u m)),
@@ -95,6 +100,7 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
         fun _ ↦
           ⟨V_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) h_sub_U (UV_dis.closure_right U_open).symm⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Set.hasSeparatingCover_empty_left (s : Set X) : HasSeparatingCover ∅ s :=
   ⟨fun _ ↦ ∅, empty_subset (⋃ _, ∅),
    fun _ ↦ ⟨isOpen_empty, by simp only [closure_empty, empty_disjoint]⟩⟩

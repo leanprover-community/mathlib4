@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Set.SymmDiff
+module
+
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Symmetric difference of finite sets
@@ -16,6 +18,8 @@ This file concerns the symmetric difference operator `s Δ t` on finite sets.
 finite sets, finset
 
 -/
+
+public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -40,6 +44,7 @@ variable [DecidableEq α] {s t : Finset α} {a b : α}
 theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := by
   simp_rw [symmDiff, sup_eq_union, mem_union, mem_sdiff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_symmDiff : (↑(s ∆ t) : Set α) = (s : Set α) ∆ t :=
   Set.ext fun x => by simp [mem_symmDiff, Set.mem_symmDiff]

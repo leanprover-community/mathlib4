@@ -3,9 +3,10 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Algebra.Algebra.Unitization
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+public import Mathlib.Algebra.Algebra.Unitization
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Unitization norms
@@ -57,6 +58,8 @@ viewing `Unitization 𝕜 A` as `𝕜 × A`) by means of forgetful inheritance. 
 bornology.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -121,6 +124,7 @@ noncomputable abbrev normedRingAux : NormedRing (Unitization 𝕜 A) :=
 
 attribute [local instance] Unitization.normedRingAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This uses the wrong `NormedRing` instance (i.e.,
 `Unitization.normedRingAux`), so we only use it as a local instance to build the real one. -/
@@ -146,6 +150,7 @@ theorem nnnorm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖₊ = ‖x.fst‖₊ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖₊ :=
   NNReal.eq <| norm_eq_sup x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lipschitzWith_addEquiv :
     LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
   rw [← Real.toNNReal_ofNat]
@@ -164,6 +169,7 @@ theorem lipschitzWith_addEquiv :
           norm_le_add_norm_add (mul 𝕜 A x.snd) (algebraMap 𝕜 _ x.fst)
       _ ≤ _ := add_le_add le_sup_right le_sup_left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem antilipschitzWith_addEquiv :
     AntilipschitzWith 2 (addEquiv 𝕜 A) := by
   refine AddMonoidHomClass.antilipschitz_of_bound (addEquiv 𝕜 A) fun x => ?_
@@ -232,6 +238,7 @@ noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A) where
   norm_mul_le := normedRingAux.norm_mul_le
   norm := normedRingAux.norm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where

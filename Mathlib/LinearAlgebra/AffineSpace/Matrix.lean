@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Basis
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Basis
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # Matrix results for barycentric co-ordinates
@@ -12,6 +14,8 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 Results about the matrix of barycentric co-ordinates for a family of points in an affine space, with
 respect to some affine basis.
 -/
+
+@[expose] public section
 
 
 open Affine Matrix
@@ -67,6 +71,7 @@ theorem affineIndependent_of_toMatrix_right_inv [Fintype ι] [Finite ι'] [Decid
   replace hweq' := congr_arg (fun w => w ᵥ* A) hweq'
   simpa only [Matrix.vecMul_vecMul, hA, Matrix.vecMul_one] using hweq'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of points `p : ι' → P` and an affine basis `b`, if the matrix whose rows are the
 coordinates of `p` with respect `b` has a left inverse, then `p` spans the entire space. -/
 theorem affineSpan_eq_top_of_toMatrix_left_inv [Finite ι] [Fintype ι'] [DecidableEq ι]
@@ -84,7 +89,7 @@ theorem affineSpan_eq_top_of_toMatrix_left_inv [Finite ι] [Fintype ι'] [Decida
       _ = ∑ j, ∑ l, A i j * b.toMatrix p j l := by simp_rw [Finset.mul_sum]
       _ = ∑ l, ∑ j, A i j * b.toMatrix p j l := by rw [Finset.sum_comm]
       _ = ∑ l, (A * b.toMatrix p) i l := rfl
-      _ = 1 := by simp [hA, Matrix.one_apply, Finset.filter_eq]
+      _ = 1 := by simp [hA, Matrix.one_apply]
   have hbi : b i = Finset.univ.affineCombination k p (A i) := by
     apply b.ext_elem
     intro j

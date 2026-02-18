@@ -3,7 +3,9 @@ Copyright (c) 2021 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Heather Macbeth, Winston Yin
 -/
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
 /-!
 # Units of a normed algebra
@@ -18,11 +20,12 @@ over a field `𝕜`, the `𝕜`-linear endomorphisms of `V` are a normed `𝕜`-
 `ContinuousLinearMap.toNormedAlgebra`), so this construction provides a Lie group structure on
 its group of units, the general linear group GL(`𝕜`, `V`), as demonstrated by:
 ```
-example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] :
-    LieGroup 𝓘(𝕜, V →L[𝕜] V) (V →L[𝕜] V)ˣ := inferInstance
+example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : WithTop ℕ∞) :
+    LieGroup 𝓘(𝕜, V →L[𝕜] V) n (V →L[𝕜] V)ˣ := inferInstance
 ```
 -/
 
+@[expose] public section
 
 noncomputable section
 
@@ -51,6 +54,7 @@ manifolds. -/
 lemma contMDiff_val : ContMDiff 𝓘(𝕜, R) 𝓘(𝕜, R) n (val : Rˣ → R) :=
   contMDiff_isOpenEmbedding Units.isOpenEmbedding_val
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The units of a complete normed ring form a Lie group. -/
 instance : LieGroup 𝓘(𝕜, R) n Rˣ where
   contMDiff_mul := by
@@ -71,5 +75,8 @@ instance : LieGroup 𝓘(𝕜, R) n Rˣ where
     refine fun x => ContMDiffAt.comp x ?_ (contMDiff_val x)
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_ringInverse _ _
+
+example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : WithTop ℕ∞) :
+    LieGroup 𝓘(𝕜, V →L[𝕜] V) n (V →L[𝕜] V)ˣ := inferInstance
 
 end Units

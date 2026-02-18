@@ -3,11 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-! # Properties of integration with respect to the Lebesgue measure -/
+
+public section
 
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
@@ -29,8 +33,8 @@ theorem volume_regionBetween_eq_integral' [SigmaFinite μ] (f_int : IntegrableOn
   rfl
 
 /-- If two functions are integrable on a measurable set, and one function is less than
-    or equal to the other on that set, then the volume of the region
-    between the two functions can be represented as an integral. -/
+or equal to the other on that set, then the volume of the region
+between the two functions can be represented as an integral. -/
 theorem volume_regionBetween_eq_integral [SigmaFinite μ] (f_int : IntegrableOn f s μ)
     (g_int : IntegrableOn g s μ) (hs : MeasurableSet s) (hfg : ∀ x ∈ s, f x ≤ g x) :
     μ.prod volume (regionBetween f g s) = ENNReal.ofReal (∫ y in s, (g - f) y ∂μ) :=
@@ -44,7 +48,7 @@ section SummableNormIcc
 open ContinuousMap
 
 /- The following lemma is a minor variation on `integrable_of_summable_norm_restrict` in
-`Mathlib/MeasureTheory/Integral/SetIntegral.lean`, but it is placed here because it needs to know
+`Mathlib/MeasureTheory/Integral/Bochner/Set.lean`, but it is placed here because it needs to know
 that `Icc a b` has volume `b - a`. -/
 /-- If the sequence with `n`-th term the sup norm of `fun x ↦ f (x + n)` on the interval `Icc 0 1`,
 for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
@@ -56,8 +60,7 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] 
       (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
         ENNReal.toReal_nonneg) (fun n => ?_) hf) ?_
   · simp only [Compacts.coe_mk, le_add_iff_nonneg_right, zero_le_one, volume_real_Icc_of_le,
-      add_sub_cancel_left, mul_one, norm_le _ (norm_nonneg _), ContinuousMap.restrict_apply,
-      mem_Icc, and_imp]
+      add_sub_cancel_left, mul_one, norm_le _ (norm_nonneg _), ContinuousMap.restrict_apply]
     intro x
     have := ((f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)).norm_coe_le_norm
         ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩
@@ -76,8 +79,8 @@ of finite integrals, see `intervalIntegral.integral_comp_neg`.
 -/
 
 
-/- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
-itself, it does not apply when `f` is more complicated -/
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
 theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
   have A : MeasurableEmbedding fun x : ℝ => -x :=
@@ -86,13 +89,13 @@ theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace �
   rw [Measure.map_neg_eq_self (volume : Measure ℝ)] at this
   simp_rw [← integral_Ici_eq_integral_Ioi, this, neg_preimage, neg_Ici, neg_neg]
 
-/- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
-itself, it does not apply when `f` is more complicated -/
+@[simp]
 theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Ioi c, f (-x)) = ∫ x in Iic (-c), f x := by
   rw [← neg_neg c, ← integral_comp_neg_Iic]
   simp only [neg_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_comp_abs {f : ℝ → ℝ} :
     ∫ x, f |x| = 2 * ∫ x in Ioi (0 : ℝ), f x := by
   have eq : ∫ (x : ℝ) in Ioi 0, f |x| = ∫ (x : ℝ) in Ioi 0, f x := by
@@ -104,7 +107,7 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
       let m : MeasurableEmbedding fun x : ℝ => -x := (Homeomorph.neg ℝ).measurableEmbedding
       rw [m.integrableOn_map_iff]
       simp_rw [Function.comp_def, abs_neg, neg_preimage, neg_Iic, neg_zero]
-      exact integrableOn_Ici_iff_integrableOn_Ioi.mpr hf
+      exact Iff.mpr integrableOn_Ici_iff_integrableOn_Ioi hf
     calc
       _ = (∫ x in Iic 0, f |x|) + ∫ x in Ioi 0, f |x| := by
         rw [← setIntegral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi int_Iic hf,

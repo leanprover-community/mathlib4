@@ -3,13 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
-import Mathlib.CategoryTheory.Sites.LocallyBijective
-import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
+public import Mathlib.CategoryTheory.Sites.Sheafification
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # The sheafification functor for presheaves of modules
@@ -23,6 +25,8 @@ sheafification functor `PresheafOfModules R.val ⥤ SheafOfModules R`.
 
 -/
 
+@[expose] public section
+
 universe v v' u u'
 
 open CategoryTheory Category Limits
@@ -30,13 +34,13 @@ open CategoryTheory Category Limits
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
   {R₀ : Cᵒᵖ ⥤ RingCat.{u}} {R : Sheaf J RingCat.{u}} (α : R₀ ⟶ R.val)
   [Presheaf.IsLocallyInjective J α] [Presheaf.IsLocallySurjective J α]
-  [J.WEqualsLocallyBijective AddCommGrp.{v}]
+  [J.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
 namespace PresheafOfModules
 
 section
 
-variable [HasWeakSheafify J AddCommGrp.{v}]
+variable [HasWeakSheafify J AddCommGrpCat.{v}]
 
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings (i.e. `R` identifies to the sheafification of `R₀`), this is
@@ -45,7 +49,7 @@ the associated sheaf of modules functor `PresheafOfModules.{v} R₀ ⥤ SheafOfM
 noncomputable def sheafification : PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R where
   obj M₀ := sheafify α (CategoryTheory.toSheafify J M₀.presheaf)
   map f := sheafifyMap _ _ _ f
-    ((toPresheaf R₀ ⋙ presheafToSheaf J AddCommGrp).map f)
+    ((toPresheaf R₀ ⋙ presheafToSheaf J AddCommGrpCat).map f)
       (by apply toSheafify_naturality)
   map_id M₀ := by
     ext1
@@ -62,14 +66,14 @@ noncomputable def sheafification : PresheafOfModules.{v} R₀ ⥤ SheafOfModules
 forgets the module structures. -/
 noncomputable def sheafificationCompToSheaf :
     sheafification.{v} α ⋙ SheafOfModules.toSheaf _ ≅
-      toPresheaf _ ⋙ presheafToSheaf J AddCommGrp :=
+      toPresheaf _ ⋙ presheafToSheaf J AddCommGrpCat :=
   Iso.refl _
 
 /-- The sheafification of presheaves of modules commutes with the functor which
 forgets the module structures. -/
 noncomputable def sheafificationCompForgetCompToPresheaf :
     sheafification.{v} α ⋙ SheafOfModules.forget _ ⋙ toPresheaf _ ≅
-      toPresheaf _ ⋙ presheafToSheaf J AddCommGrp ⋙ sheafToPresheaf J AddCommGrp :=
+      toPresheaf _ ⋙ presheafToSheaf J AddCommGrpCat ⋙ sheafToPresheaf J AddCommGrpCat :=
   Iso.refl _
 
 /-- The bijection between types of morphisms which is part of the adjunction
@@ -86,11 +90,12 @@ lemma toPresheaf_map_sheafificationHomEquiv_def
     (toPresheaf R₀).map (sheafificationHomEquiv α f) =
       CategoryTheory.toSheafify J P.presheaf ≫ (toPresheaf R.val).map f.val := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toPresheaf_map_sheafificationHomEquiv
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (f : (sheafification α).obj P ⟶ F) :
     (toPresheaf R₀).map (sheafificationHomEquiv α f) =
-      (sheafificationAdjunction J AddCommGrp).homEquiv P.presheaf
+      (sheafificationAdjunction J AddCommGrpCat).homEquiv P.presheaf
         ((SheafOfModules.toSheaf _).obj F) ((SheafOfModules.toSheaf _).map f) := by
   rw [toPresheaf_map_sheafificationHomEquiv_def, Adjunction.homEquiv_unit]
   dsimp
@@ -99,13 +104,14 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (g : P ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :
     (SheafOfModules.toSheaf _).map ((sheafificationHomEquiv α).symm g) =
-      (((sheafificationAdjunction J AddCommGrp).homEquiv
+      (((sheafificationAdjunction J AddCommGrpCat).homEquiv
         P.presheaf ((SheafOfModules.toSheaf R).obj F)).symm ((toPresheaf R₀).map g)) := by
   obtain ⟨f, rfl⟩ := (sheafificationHomEquiv α).surjective g
-  apply ((sheafificationAdjunction J AddCommGrp).homEquiv _ _).injective
+  apply ((sheafificationAdjunction J AddCommGrpCat).homEquiv _ _).injective
   rw [Equiv.apply_symm_apply, Adjunction.homEquiv_unit, Equiv.symm_apply_apply]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
 `sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/
@@ -120,7 +126,7 @@ noncomputable def sheafificationAdjunction :
           toSheaf_map_sheafificationHomEquiv_symm α g]
         rw [Functor.map_comp]
         apply (CategoryTheory.sheafificationAdjunction J
-          AddCommGrp.{v}).homEquiv_naturality_left_symm
+          AddCommGrpCat.{v}).homEquiv_naturality_left_symm
       homEquiv_naturality_right := fun {P₀ M N} f g ↦ by
         apply (toPresheaf _).map_injective
         erw [toPresheaf_map_sheafificationHomEquiv] }
@@ -141,11 +147,11 @@ end
 
 section
 
-variable [HasSheafify J AddCommGrp.{v}]
+variable [HasSheafify J AddCommGrpCat.{v}]
 
 noncomputable instance :
     PreservesFiniteLimits (sheafification.{v} α ⋙ SheafOfModules.toSheaf.{v} R) :=
-  comp_preservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGrp)
+  comp_preservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGrpCat)
 
 instance : (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _).ReflectsIsomorphisms :=
   inferInstanceAs (SheafOfModules.forget.{v} R ⋙ toPresheaf _).ReflectsIsomorphisms

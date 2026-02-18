@@ -3,9 +3,11 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Topology.Algebra.Ring.Ideal
-import Mathlib.RingTheory.Ideal.Nonunits
+module
+
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Algebra.Ring.Ideal
+public import Mathlib.RingTheory.Ideal.Nonunits
 
 /-!
 # The group of units of a complete normed ring
@@ -27,6 +29,8 @@ unit and `0` if not.  The other major results of this file (notably `NormedRing.
 `NormedRing.inverse_add_norm` and `NormedRing.inverse_add_norm_diff_nth_order`) cover the asymptotic
 properties of `Ring.inverse (x + t)` as `t → 0`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -93,6 +97,7 @@ open Asymptotics Filter Metric Finset Ring
 theorem inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
   rw [← inverse_unit (Units.oneSub t h), Units.val_oneSub]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The formula `Ring.inverse (x + t) = Ring.inverse (1 + x⁻¹ * t) * x⁻¹` holds for `t` sufficiently
 small. -/
 theorem inverse_add (x : Rˣ) :
@@ -134,16 +139,13 @@ theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
 
 theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t => 1 : R → ℝ) := by
   simp only [IsBigO, IsBigOWith, Metric.eventually_nhds_iff]
-  refine ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by norm_num, fun t ht ↦ ?_⟩
+  refine ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by simp, fun t ht ↦ ?_⟩
   rw [dist_zero_right] at ht
   have ht' : ‖t‖ < 1 := by linarith
-  simp only [inverse_one_sub t ht', norm_one, mul_one, Set.mem_setOf_eq]
+  simp only [inverse_one_sub t ht', norm_one, mul_one]
   change ‖∑' n : ℕ, t ^ n‖ ≤ _
   have := tsum_geometric_le_of_norm_lt_one t ht'
-  have : (1 - ‖t‖)⁻¹ ≤ 2 := by
-    rw [← inv_inv (2 : ℝ)]
-    refine inv_anti₀ (by norm_num) ?_
-    linarith
+  have : (1 - ‖t‖)⁻¹ ≤ 2 := inv_le_of_inv_le₀ (by simp) (by linarith)
   linarith
 
 /-- The function `fun t ↦ inverse (x + t)` is O(1) as `t → 0`. -/
@@ -160,7 +162,7 @@ is `O(t ^ n)` as `t → 0`. -/
 theorem inverse_add_norm_diff_nth_order (x : Rˣ) (n : ℕ) :
     (fun t : R => inverse (↑x + t) - (∑ i ∈ range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹) =O[𝓝 (0 : R)]
       fun t => ‖t‖ ^ n := by
-  refine EventuallyEq.trans_isBigO (.sub (inverse_add_nth_order x n) (.refl _ _)) ?_
+  refine EventuallyEq.trans_isBigO (.fun_sub (inverse_add_nth_order x n) (.refl _ _)) ?_
   simp only [add_sub_cancel_left]
   refine ((isBigO_refl _ _).norm_right.mul (inverse_add_norm x)).trans ?_
   simp only [mul_one, isBigO_norm_left]

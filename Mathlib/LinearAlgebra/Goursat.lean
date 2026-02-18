@@ -3,15 +3,17 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.GroupTheory.Goursat
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.Quotient.Basic
+module
+
+public import Mathlib.GroupTheory.Goursat
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Goursat's lemma for submodules
 
-Let `M, N` be modules over a ring `R`. If `L` is a submodule of `M × N` which projects fully on
-to both factors, then there exist submodules `M' ≤ M` and `N' ≤ N` such that `M' × N' ≤ L` and the
+Let `M, N` be modules over a ring `R`. If `L` is a submodule of `M × N` which projects fully onto
+both factors, then there exist submodules `M' ≤ M` and `N' ≤ N` such that `M' × N' ≤ L` and the
 image of `L` in `(M ⧸ M') × (N ⧸ N')` is the graph of an isomorphism `M ⧸ M' ≃ₗ[R] N ⧸ N'`.
 Equivalently, `L` is equal to the preimage in `M × N` of the graph of this isomorphism
 `M ⧸ M' ≃ₗ[R] N ⧸ N'`.
@@ -19,6 +21,8 @@ Equivalently, `L` is equal to the preimage in `M × N` of the graph of this isom
 `M'` and `N'` can be explicitly constructed as `Submodule.goursatFst L` and `Submodule.goursatSnd L`
 respectively.
 -/
+
+@[expose] public section
 
 open Function Set LinearMap
 
@@ -59,6 +63,7 @@ lemma goursatFst_prod_goursatSnd_le : L.goursatFst.prod L.goursatSnd ≤ L := by
   simpa only [← toAddSubgroup_le, goursatFst_toAddSubgroup, goursatSnd_toAddSubgroup]
     using L.toAddSubgroup.goursatFst_prod_goursatSnd_le
 
+set_option backward.isDefEq.respectTransparency false in
 include hL₁ hL₂ in
 /-- **Goursat's lemma** for a submodule of a product with surjective projections.
 
@@ -74,7 +79,7 @@ lemma goursat_surjective : ∃ e : (M ⧸ L.goursatFst) ≃ₗ[R] N ⧸ L.goursa
     L.toAddSubgroup.goursat_surjective hL₁ hL₂
   -- check R-linearity of the map
   have (r : R) (x : M ⧸ L.goursatFst) : e (r • x) = r • e x := by
-    show (r • x, r • e x) ∈ e.toAddMonoidHom.graph
+    change (r • x, r • e x) ∈ e.toAddMonoidHom.graph
     rw [← he, ← Prod.smul_mk]
     have : (x, e x) ∈ e.toAddMonoidHom.graph := rfl
     rw [← he, AddMonoidHom.mem_range] at this
@@ -90,6 +95,7 @@ lemma goursat_surjective : ∃ e : (M ⧸ L.goursatFst) ≃ₗ[R] N ⧸ L.goursa
   rw [mem_toAddSubgroup, mem_graph_iff, Eq.comm]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Goursat's lemma** for an arbitrary submodule of a product.
 
 If `L` is a submodule of `M × N`, then there exist submodules `M'' ≤ M' ≤ M` and `N'' ≤ N' ≤ N` such

@@ -3,11 +3,15 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Products
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Products
 
 /-!
 # Pullbacks and pushouts in the category of topological spaces
 -/
+
+@[expose] public section
 
 open TopologicalSpace Topology
 
@@ -77,6 +81,7 @@ def pullbackIsoProdSubtype (f : X ⟶ Z) (g : Y ⟶ Z) :
     pullback f g ≅ TopCat.of { p : X × Y // f p.1 = g p.2 } :=
   (limit.isLimit _).conePointUniqueUpToIso (pullbackConeIsLimit f g)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoProdSubtype_inv_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullbackIsoProdSubtype f g).inv ≫ pullback.fst _ _ = pullbackFst f g := by
@@ -87,6 +92,7 @@ theorem pullbackIsoProdSubtype_inv_fst_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     pullback.fst f g ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).fst :=
   ConcreteCategory.congr_hom (pullbackIsoProdSubtype_inv_fst f g) x
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoProdSubtype_inv_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullbackIsoProdSubtype f g).inv ≫ pullback.snd _ _ = pullbackSnd f g := by
@@ -109,10 +115,7 @@ theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z}
     (x : ↑(pullback f g)) :
     (pullbackIsoProdSubtype f g).hom x =
       ⟨⟨pullback.fst f g x, pullback.snd f g x⟩, by
-        simpa using CategoryTheory.congr_fun pullback.condition x⟩ := by
-  apply Subtype.ext; apply Prod.ext
-  exacts [ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_fst f g) x,
-    ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_snd f g) x]
+        simpa using CategoryTheory.congr_fun pullback.condition x⟩ := rfl
 
 theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullback f g).str =
@@ -120,10 +123,11 @@ theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
         induced (pullback.snd f g) Y.str := by
   let homeo := homeoOfIso (pullbackIsoProdSubtype f g)
   refine homeo.isInducing.eq_induced.trans ?_
-  change induced homeo (induced _ ( (induced Prod.fst X.str) ⊓ (induced Prod.snd Y.str))) = _
+  change induced homeo (induced _ ((induced Prod.fst X.str) ⊓ (induced Prod.snd Y.str))) = _
   simp only [induced_compose, induced_inf]
-  congr
+  rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     Set.range (prod.lift (pullback.fst f g) (pullback.snd f g)) =
       { x | (Limits.prod.fst ≫ f) x = (Limits.prod.snd ≫ g) x } := by
@@ -138,7 +142,7 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     rintro ⟨⟨⟩⟩ <;>
       rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, limit.lift_π] <;>
       -- This used to be `simp` before https://github.com/leanprover/lean4/pull/2644
-      aesop_cat
+      cat_disch
 
 /-- The pullback along an embedding is (isomorphic to) the preimage. -/
 noncomputable
@@ -162,19 +166,16 @@ def pullbackHomeoPreimage
     ext x
     exact Exists.choose_spec x.2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isInducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     IsInducing <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨by simp [prod_topology, pullback_topology, induced_compose, ← coe_comp]⟩
-
-@[deprecated (since := "2024-10-28")] alias inducing_pullback_to_prod := isInducing_pullback_to_prod
 
 theorem isEmbedding_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     IsEmbedding <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨isInducing_pullback_to_prod f g, (TopCat.mono_iff_injective _).mp inferInstance⟩
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_pullback_to_prod := isEmbedding_pullback_to_prod
-
+set_option backward.isDefEq.respectTransparency false in
 /-- If the map `S ⟶ T` is mono, then there is a description of the image of `W ×ₛ X ⟶ Y ×ₜ Z`. -/
 theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶ S) (g₁ : Y ⟶ T)
     (g₂ : Z ⟶ T) (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) [H₃ : Mono i₃] (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁)
@@ -224,6 +225,7 @@ theorem pullback_snd_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
     use (TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨x, y⟩, eq⟩
     rw [pullbackIsoProdSubtype_inv_snd_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are embeddings,
 then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an embedding.
 
@@ -248,9 +250,6 @@ theorem pullback_map_isEmbedding {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S) (f�
     simpa [← coe_comp] using this
   rw [coe_comp]
   exact (isEmbedding_prodMap H₁ H₂).comp (isEmbedding_pullback_to_prod _ _)
-
-@[deprecated (since := "2024-10-26")]
-alias pullback_map_embedding_of_embeddings := pullback_map_isEmbedding
 
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are open embeddings, and `S ⟶ T`
 is mono, then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an open embedding.
@@ -278,6 +277,7 @@ theorem pullback_map_isOpenEmbedding {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
     · exact H₂.isOpen_range
 
 
+set_option backward.isDefEq.respectTransparency false in
 lemma snd_isEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsEmbedding f) (g : Y ⟶ S) :
     IsEmbedding <| ⇑(pullback.snd f g) := by
   convert (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isEmbedding.comp
@@ -285,9 +285,7 @@ lemma snd_isEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsEmbedding f)
         f g (𝟙 S) g H (homeoOfIso (Iso.refl _)).isEmbedding (𝟙 _) rfl (by simp))
   simp [homeoOfIso, ← coe_comp]
 
-@[deprecated (since := "2024-10-26")]
-alias snd_embedding_of_left_embedding := snd_isEmbedding_of_left
-
+set_option backward.isDefEq.respectTransparency false in
 theorem fst_isEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (H : IsEmbedding g) : IsEmbedding <| ⇑(pullback.fst f g) := by
   convert (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isEmbedding.comp
@@ -295,18 +293,13 @@ theorem fst_isEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
         f g f (𝟙 _) (homeoOfIso (Iso.refl _)).isEmbedding H (𝟙 _) rfl (by simp))
   simp [homeoOfIso, ← coe_comp]
 
-@[deprecated (since := "2024-10-26")]
-alias fst_embedding_of_right_embedding := fst_isEmbedding_of_right
-
 theorem isEmbedding_of_pullback {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S} (H₁ : IsEmbedding f)
     (H₂ : IsEmbedding g) : IsEmbedding (limit.π (cospan f g) WalkingCospan.one) := by
   convert H₂.comp (snd_isEmbedding_of_left H₁ g)
   rw [← coe_comp, ← limit.w _ WalkingCospan.Hom.inr]
   rfl
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_of_pullback_embeddings := isEmbedding_of_pullback
-
+set_option backward.isDefEq.respectTransparency false in
 theorem snd_isOpenEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsOpenEmbedding f)
     (g : Y ⟶ S) : IsOpenEmbedding <| ⇑(pullback.snd f g) := by
   convert (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isOpenEmbedding.comp
@@ -314,6 +307,7 @@ theorem snd_isOpenEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsOpenEm
         (homeoOfIso (Iso.refl _)).isOpenEmbedding (𝟙 _) rfl (by simp))
   simp [homeoOfIso, ← coe_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fst_isOpenEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (H : IsOpenEmbedding g) : IsOpenEmbedding <| ⇑(pullback.fst f g) := by
   convert (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isOpenEmbedding.comp
@@ -328,9 +322,6 @@ theorem isOpenEmbedding_of_pullback {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
   convert H₂.comp (snd_isOpenEmbedding_of_left H₁ g)
   rw [← coe_comp, ← limit.w _ WalkingCospan.Hom.inr]
   rfl
-
-@[deprecated (since := "2024-10-30")]
-alias isOpenEmbedding_of_pullback_open_embeddings := isOpenEmbedding_of_pullback
 
 theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (hg : IsEmbedding g) (H : Set.range f ⊆ Set.range g) :

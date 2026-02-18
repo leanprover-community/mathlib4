@@ -3,11 +3,13 @@ Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Statement of Fermat's Last Theorem
@@ -42,6 +44,8 @@ https://github.com/ImperialCollegeLondon/FLT .
 
 -/
 
+@[expose] public section
+
 open List
 
 /-- Statement of Fermat's Last Theorem over a given semiring with a specific exponent. -/
@@ -60,13 +64,13 @@ a proof. -/
 def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremFor n
 
 lemma fermatLastTheoremFor_zero : FermatLastTheoremFor 0 :=
-  fun _ _ _ _ _ _ ↦ by norm_num
+  fun _ _ _ _ _ _ ↦ by simp
 
 lemma not_fermatLastTheoremFor_one : ¬ FermatLastTheoremFor 1 :=
-  fun h ↦ h 1 1 2 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  fun h ↦ h 1 1 2 (by simp) (by simp) (by simp) (by simp)
 
 lemma not_fermatLastTheoremFor_two : ¬ FermatLastTheoremFor 2 :=
-  fun h ↦ h 3 4 5 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  fun h ↦ h 3 4 5 (by simp) (by simp) (by simp) (by simp)
 
 variable {R : Type*} [Semiring R] [NoZeroDivisors R] {m n : ℕ}
 
@@ -95,34 +99,34 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     · refine h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ← mul_add, habc, *]
+      simp only [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ← mul_add, *]
     · exact (by positivity : 0 < c ^ n).not_gt <| habc.symm.trans_lt <| add_neg (hn.pow_neg ha) <|
         hn.pow_neg hb
     · refine h b.natAbs c.natAbs a.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, habc, add_neg_eq_iff_eq_add,
+      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, add_neg_eq_iff_eq_add,
         eq_neg_add_iff_add_eq, *]
     · refine h a.natAbs c.natAbs b.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, habc, neg_add_eq_iff_eq_add,
-        eq_neg_add_iff_add_eq, *]
+      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, neg_add_eq_iff_eq_add,
+        *]
     · refine h c.natAbs a.natAbs b.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, habc, neg_add_eq_iff_eq_add,
+      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, neg_add_eq_iff_eq_add,
         eq_add_neg_iff_add_eq, *]
     · refine h c.natAbs b.natAbs a.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, habc, add_neg_eq_iff_eq_add,
-        eq_add_neg_iff_add_eq, *]
+      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, add_neg_eq_iff_eq_add,
+        *]
     · exact (by positivity : 0 < a ^ n + b ^ n).not_gt <| habc.trans_lt <| hn.pow_neg hc
     · refine h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, habc, *]
+      simp only [abs_of_pos, *]
   tfae_have 2 → 3
   | h, a, b, c, ha, hb, hc, habc => by
     rw [← Rat.num_ne_zero] at ha hb hc
@@ -173,9 +177,6 @@ lemma fermatLastTheoremWith'_of_semifield (𝕜 : Type*) [Semifield 𝕜] (n : �
     ⟨(mul_one a).symm, (mul_one b).symm, (mul_one c).symm⟩,
     ⟨ha.isUnit, hb.isUnit, hc.isUnit⟩⟩
 
-@[deprecated (since := "2025-03-21")]
-alias fermatLastTheoremWith'_of_field := fermatLastTheoremWith'_of_semifield
-
 lemma FermatLastTheoremWith'.fermatLastTheoremWith {R : Type*} [CommSemiring R] [IsDomain R]
     {n : ℕ} (h : FermatLastTheoremWith' R n)
     (hn : ∀ a b c : R, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
@@ -190,6 +191,7 @@ lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {R : Type*} [CommSemiring
     FermatLastTheoremWith' R n ↔ FermatLastTheoremWith R n :=
   Iff.intro (fun h ↦ h.fermatLastTheoremWith hn) (fun h ↦ h.fermatLastTheoremWith')
 
+set_option backward.isDefEq.respectTransparency false in
 lemma fermatLastTheoremWith'_nat_int_tfae (n : ℕ) :
     TFAE [FermatLastTheoremFor n, FermatLastTheoremWith' ℕ n, FermatLastTheoremWith' ℤ n] := by
   tfae_have 2 ↔ 1 := by
@@ -245,7 +247,7 @@ lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd : Finset.gcd 
     (HF : a ^ n + b ^ n + c ^ n = 0) : IsCoprime a b := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [pow_zero, Int.reduceAdd, OfNat.ofNat_ne_zero] at HF
-  refine isCoprime_of_prime_dvd  ?_ <| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
+  refine isCoprime_of_prime_dvd ?_ <| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
   · rintro ⟨rfl, rfl⟩
     simp only [ne_eq, hn, not_false_eq_true, zero_pow, add_zero, zero_add, pow_eq_zero_iff]
       at HF

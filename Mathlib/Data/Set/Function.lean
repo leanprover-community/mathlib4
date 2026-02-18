@@ -3,8 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Prod
-import Mathlib.Data.Set.Restrict
+module
+
+public import Mathlib.Data.Set.Prod
+public import Mathlib.Data.Set.Restrict
 
 /-!
 # Functions over sets
@@ -22,6 +24,8 @@ This file contains basic results on the following predicates of functions and se
   we have `Set.LeftInvOn f' f s` and `Set.RightInvOn f' f t`.
 -/
 
+@[expose] public section
+
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
 open Equiv Equiv.Perm Function
@@ -33,8 +37,8 @@ section equality
 
 variable {s s₁ s₂ : Set α} {f₁ f₂ f₃ : α → β} {g : β → γ} {a : α}
 
-/-- This lemma exists for use by `aesop` as a forward rule. -/
-@[aesop safe forward]
+/-- This lemma exists for use by `grind`/`aesop` as a forward rule. -/
+@[aesop safe forward, grind →]
 lemma EqOn.eq_of_mem (h : s.EqOn f₁ f₂) (ha : a ∈ s) : f₁ a = f₂ a :=
   h ha
 
@@ -55,7 +59,7 @@ theorem EqOn.symm (h : EqOn f₁ f₂ s) : EqOn f₂ f₁ s := fun _ hx => (h hx
 theorem eqOn_comm : EqOn f₁ f₂ s ↔ EqOn f₂ f₁ s :=
   ⟨EqOn.symm, EqOn.symm⟩
 
--- This can not be tagged as `@[refl]` with the current argument order.
+-- This cannot be tagged as `@[refl]` with the current argument order.
 -- See note below at `EqOn.trans`.
 theorem eqOn_refl (f : α → β) (s : Set α) : EqOn f f s := fun _ _ => rfl
 
@@ -67,15 +71,13 @@ theorem eqOn_refl (f : α → β) (s : Set α) : EqOn f f s := fun _ _ => rfl
 theorem EqOn.trans (h₁ : EqOn f₁ f₂ s) (h₂ : EqOn f₂ f₃ s) : EqOn f₁ f₃ s := fun _ hx =>
   (h₁ hx).trans (h₂ hx)
 
-theorem EqOn.image_eq (heq : EqOn f₁ f₂ s) : f₁ '' s = f₂ '' s :=
-  image_congr heq
+theorem EqOn.image_eq (heq : EqOn f₁ f₂ s) : f₁ '' s = f₂ '' s := by grind
 
 /-- Variant of `EqOn.image_eq`, for one function being the identity. -/
-theorem EqOn.image_eq_self {f : α → α} (h : Set.EqOn f id s) : f '' s = s := by
-  rw [h.image_eq, image_id]
+theorem EqOn.image_eq_self {f : α → α} (h : Set.EqOn f id s) : f '' s = s := by grind
 
-theorem EqOn.inter_preimage_eq (heq : EqOn f₁ f₂ s) (t : Set β) : s ∩ f₁ ⁻¹' t = s ∩ f₂ ⁻¹' t :=
-  ext fun x => and_congr_right_iff.2 fun hx => by rw [mem_preimage, mem_preimage, heq hx]
+theorem EqOn.inter_preimage_eq (heq : EqOn f₁ f₂ s) (t : Set β) : s ∩ f₁ ⁻¹' t = s ∩ f₂ ⁻¹' t := by
+  grind
 
 theorem EqOn.mono (hs : s₁ ⊆ s₂) (hf : EqOn f₁ f₂ s₂) : EqOn f₁ f₂ s₁ := fun _ hx => hf (hs hx)
 
@@ -88,6 +90,11 @@ theorem EqOn.union (h₁ : EqOn f₁ f₂ s₁) (h₂ : EqOn f₁ f₂ s₂) : E
 
 theorem EqOn.comp_left (h : s.EqOn f₁ f₂) : s.EqOn (g ∘ f₁) (g ∘ f₂) := fun _ ha =>
   congr_arg _ <| h ha
+
+theorem EqOn.comp_left₂ {α β δ γ} {op : α → β → δ} {a₁ a₂ : γ → α}
+    {b₁ b₂ : γ → β} {s : Set γ} (ha : s.EqOn a₁ a₂) (hb : s.EqOn b₁ b₂) :
+    s.EqOn (fun x ↦ op (a₁ x) (b₁ x)) (fun x ↦ op (a₂ x) (b₂ x)) :=
+  fun _ hx ↦ congr_arg₂ _ (ha hx) (hb hx)
 
 @[simp]
 theorem eqOn_range {ι : Sort*} {f : ι → α} {g₁ g₂ : α → β} :
@@ -103,14 +110,13 @@ variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂
 
 section MapsTo
 
-theorem mapsTo' : MapsTo f s t ↔ f '' s ⊆ t :=
+theorem mapsTo_iff_image_subset : MapsTo f s t ↔ f '' s ⊆ t :=
   image_subset_iff.symm
+
+@[deprecated (since := "2025-08-30")] alias mapsTo' := mapsTo_iff_image_subset
 
 theorem mapsTo_prodMap_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
   diagonal_subset_iff.2 fun _ => rfl
-
-@[deprecated (since := "2025-04-18")]
-alias mapsTo_prod_map_diagonal := mapsTo_prodMap_diagonal
 
 theorem MapsTo.subset_preimage (hf : MapsTo f s t) : s ⊆ f ⁻¹' t := hf
 
@@ -124,14 +130,14 @@ theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
   empty_subset _
 
 @[simp] theorem mapsTo_empty_iff : MapsTo f s ∅ ↔ s = ∅ := by
-  simp [mapsTo', subset_empty_iff]
+  simp [mapsTo_iff_image_subset, subset_empty_iff]
 
 /-- If `f` maps `s` to `t` and `s` is non-empty, `t` is non-empty. -/
 theorem MapsTo.nonempty (h : MapsTo f s t) (hs : s.Nonempty) : t.Nonempty :=
-  (hs.image f).mono (mapsTo'.mp h)
+  (hs.image f).mono (mapsTo_iff_image_subset.mp h)
 
 theorem MapsTo.image_subset (h : MapsTo f s t) : f '' s ⊆ t :=
-  mapsTo'.1 h
+  mapsTo_iff_image_subset.1 h
 
 theorem MapsTo.congr (h₁ : MapsTo f₁ s t) (h : EqOn f₁ f₂ s) : MapsTo f₂ s t := fun _ hx =>
   h hx ▸ h₁ hx
@@ -153,11 +159,8 @@ theorem MapsTo.iterate {f : α → α} {s : Set α} (h : MapsTo f s s) : ∀ n, 
 
 theorem MapsTo.iterate_restrict {f : α → α} {s : Set α} (h : MapsTo f s s) (n : ℕ) :
     (h.restrict f s s)^[n] = (h.iterate n).restrict _ _ _ := by
-  funext x
-  rw [Subtype.ext_iff, MapsTo.val_restrict_apply]
-  induction n generalizing x with
-  | zero => rfl
-  | succ n ihn => simp [Nat.iterate, ihn]
+  ext
+  simpa using coe_iterate_restrict _ _ _
 
 lemma mapsTo_of_subsingleton' [Subsingleton β] (f : α → β) (h : s.Nonempty → t.Nonempty) :
     MapsTo f s t :=
@@ -225,6 +228,9 @@ lemma MapsTo.comp_right {s : Set β} {t : Set γ} (hg : MapsTo g s t) (f : α �
 lemma mapsTo_univ_iff : MapsTo f univ t ↔ ∀ x, f x ∈ t :=
   ⟨fun h _ => h (mem_univ _), fun h x _ => h x⟩
 
+lemma mapsTo_univ_iff_range_subset : MapsTo f univ t ↔ range f ⊆ t :=
+  mapsTo_univ_iff.trans range_subset_iff.symm
+
 @[simp]
 lemma mapsTo_range_iff {g : ι → α} : MapsTo f (range g) t ↔ ∀ i, f (g i) ∈ t :=
   forall_mem_range
@@ -284,8 +290,10 @@ theorem injOn_insert {f : α → β} {s : Set α} {a : α} (has : a ∉ s) :
   rw [← union_singleton, injOn_union (disjoint_singleton_right.2 has)]
   simp
 
-theorem injective_iff_injOn_univ : Injective f ↔ InjOn f univ :=
-  ⟨fun h _ _ _ _ hxy => h hxy, fun h _ _ heq => h trivial trivial heq⟩
+@[simp] lemma injOn_univ : InjOn f univ ↔ Injective f := by simp [InjOn, Injective]
+
+@[deprecated injOn_univ (since := "2025-10-27")]
+theorem injective_iff_injOn_univ : Injective f ↔ InjOn f univ := injOn_univ.symm
 
 theorem injOn_of_injective (h : Injective f) {s : Set α} : InjOn f s := fun _ _ _ _ hxy => h hxy
 
@@ -373,7 +381,7 @@ theorem InjOn.image_eq_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s�
 
 lemma InjOn.image_subset_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) :
     f '' s₁ ⊆ f '' s₂ ↔ s₁ ⊆ s₂ := by
-  refine ⟨fun h' ↦ ?_, image_subset _⟩
+  refine ⟨fun h' ↦ ?_, image_mono⟩
   rw [← h.preimage_image_inter h₁, ← h.preimage_image_inter h₂]
   exact inter_subset_inter_left _ (preimage_mono h')
 
@@ -381,6 +389,7 @@ lemma InjOn.image_ssubset_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : 
     f '' s₁ ⊂ f '' s₂ ↔ s₁ ⊂ s₂ := by
   simp_rw [ssubset_def, h.image_subset_image_iff h₁ h₂, h.image_subset_image_iff h₂ h₁]
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: can this move to a better place?
 theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
     (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
@@ -388,7 +397,7 @@ theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t
   rw [← hf.image_inter hs ht, h, image_empty]
 
 lemma InjOn.image_diff {t : Set α} (h : s.InjOn f) : f '' (s \ t) = f '' s \ f '' (s ∩ t) := by
-  refine subset_antisymm (subset_diff.2 ⟨image_subset f diff_subset, ?_⟩)
+  refine subset_antisymm (subset_diff.2 ⟨image_mono diff_subset, ?_⟩)
     (diff_subset_iff.2 (by rw [← image_union, inter_union_diff]))
   exact Disjoint.image disjoint_sdiff_inter h diff_subset inter_subset_left
 
@@ -458,6 +467,10 @@ theorem surjOn_empty (f : α → β) (s : Set α) : SurjOn f s ∅ :=
 
 @[simp] lemma surjOn_singleton : SurjOn f s {b} ↔ b ∈ f '' s := singleton_subset_iff
 
+@[simp] lemma surjOn_univ_of_subsingleton_nonempty [Subsingleton β] [Nonempty β] :
+    SurjOn f s univ ↔ s.Nonempty := by
+  cases nonempty_unique β; simp [univ_unique, Subsingleton.elim (f _) default, Set.Nonempty]
+
 theorem surjOn_image (f : α → β) (s : Set α) : SurjOn f s (f '' s) :=
   Subset.rfl
 
@@ -471,7 +484,7 @@ theorem EqOn.surjOn_iff (h : EqOn f₁ f₂ s) : SurjOn f₁ s t ↔ SurjOn f₂
   ⟨fun H => H.congr h, fun H => H.congr h.symm⟩
 
 theorem SurjOn.mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) (hf : SurjOn f s₁ t₂) : SurjOn f s₂ t₁ :=
-  Subset.trans ht <| Subset.trans hf <| image_subset _ hs
+  Subset.trans ht <| Subset.trans hf <| image_mono hs
 
 theorem SurjOn.union (h₁ : SurjOn f s t₁) (h₂ : SurjOn f s t₂) : SurjOn f s (t₁ ∪ t₂) := fun _ hx =>
   hx.elim (fun hx => h₁ hx) fun hx => h₂ hx
@@ -496,7 +509,7 @@ theorem SurjOn.inter (h₁ : SurjOn f s₁ t) (h₂ : SurjOn f s₂ t) (h : InjO
 lemma surjOn_id (s : Set α) : SurjOn id s s := by simp [SurjOn]
 
 theorem SurjOn.comp (hg : SurjOn g t p) (hf : SurjOn f s t) : SurjOn (g ∘ f) s p :=
-  Subset.trans hg <| Subset.trans (image_subset g hf) <| image_comp g f s ▸ Subset.refl _
+  Subset.trans hg <| Subset.trans (image_mono hf) <| image_comp g f s ▸ Subset.refl _
 
 lemma SurjOn.of_comp (h : SurjOn (g ∘ f) s p) (hr : MapsTo f s t) : SurjOn g t p := by
   intro z hz
@@ -511,7 +524,7 @@ lemma SurjOn.iterate {f : α → α} {s : Set α} (h : SurjOn f s s) : ∀ n, Su
   | (n + 1) => (h.iterate n).comp h
 
 lemma SurjOn.comp_left (hf : SurjOn f s t) (g : β → γ) : SurjOn (g ∘ f) s (g '' t) := by
-  rw [SurjOn, image_comp g f]; exact image_subset _ hf
+  rw [SurjOn, image_comp g f]; exact image_mono hf
 
 lemma SurjOn.comp_right {s : Set β} {t : Set γ} (hf : Surjective f) (hg : SurjOn g s t) :
     SurjOn (g ∘ f) (f ⁻¹' s) t := by
@@ -524,8 +537,17 @@ lemma surjOn_of_subsingleton' [Subsingleton β] (f : α → β) (h : t.Nonempty 
 lemma surjOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : SurjOn f s s :=
   surjOn_of_subsingleton' _ id
 
-theorem surjective_iff_surjOn_univ : Surjective f ↔ SurjOn f univ univ := by
+@[simp] lemma surjOn_univ : SurjOn f univ univ ↔ Surjective f := by
   simp [Surjective, SurjOn, subset_def]
+
+protected lemma _root_.Function.Surjective.surjOn (hf : Surjective f) : SurjOn f univ t :=
+  (surjOn_univ.2 hf).mono .rfl (subset_univ _)
+
+lemma SurjOn.surjective (hf : SurjOn f s .univ) : f.Surjective :=
+  surjOn_univ.1 <| hf.mono s.subset_univ .rfl
+
+@[deprecated surjOn_univ (since := "2025-10-31")]
+theorem surjective_iff_surjOn_univ : Surjective f ↔ SurjOn f univ univ := surjOn_univ.symm
 
 theorem SurjOn.image_eq_of_mapsTo (h₁ : SurjOn f s t) (h₂ : MapsTo f s t) : f '' s = t :=
   eq_of_subset_of_subset h₂.image_subset h₁
@@ -561,6 +583,17 @@ theorem eqOn_comp_right_iff : s.EqOn (g₁ ∘ f) (g₂ ∘ f) ↔ (f '' s).EqOn
 theorem SurjOn.forall {p : β → Prop} (hf : s.SurjOn f t) (hf' : s.MapsTo f t) :
     (∀ y ∈ t, p y) ↔ (∀ x ∈ s, p (f x)) :=
   ⟨fun H x hx ↦ H (f x) (hf' hx), fun H _y hy ↦ let ⟨x, hx, hxy⟩ := hf hy; hxy ▸ H x hx⟩
+
+theorem _root_.Subtype.coind_surjective {α β} {f : α → β} {p : Set β} (h : ∀ a, f a ∈ p)
+    (hf : Set.SurjOn f Set.univ p) :
+    (Subtype.coind f h).Surjective := fun ⟨_, hb⟩ ↦
+  let ⟨a, _, ha⟩ := hf hb
+  ⟨a, Subtype.coe_injective ha⟩
+
+theorem _root_.Subtype.coind_bijective {α β} {f : α → β} {p : Set β} (h : ∀ a, f a ∈ p)
+    (hf_inj : f.Injective) (hf_surj : Set.SurjOn f Set.univ p) :
+    (Subtype.coind f h).Bijective :=
+  ⟨Subtype.coind_injective h hf_inj, Subtype.coind_surjective h hf_surj⟩
 
 end surjOn
 
@@ -670,8 +703,7 @@ theorem bijOn_image_image {p₁ : α → γ} {p₂ : β → δ} {g : γ → δ} 
     exact ⟨f a, h1 ha, by rw [comm a]⟩
   · rintro _ ⟨b, hb, rfl⟩
     obtain ⟨a, ha, rfl⟩ := h3 hb
-    rw [← image_comp, comm]
-    exact ⟨a, ha, rfl⟩
+    grind
 
 lemma BijOn.iterate {f : α → α} {s : Set α} (h : BijOn f s s) : ∀ n, BijOn f^[n] s s
   | 0 => s.bijOn_id
@@ -687,18 +719,14 @@ lemma bijOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : Bij
 theorem BijOn.bijective (h : BijOn f s t) : Bijective (h.mapsTo.restrict f s t) :=
   ⟨fun x y h' => Subtype.ext <| h.injOn x.2 y.2 <| Subtype.ext_iff.1 h', fun ⟨_, hy⟩ =>
     let ⟨x, hx, hxy⟩ := h.surjOn hy
-    ⟨⟨x, hx⟩, Subtype.eq hxy⟩⟩
+    ⟨⟨x, hx⟩, Subtype.ext hxy⟩⟩
 
-theorem bijective_iff_bijOn_univ : Bijective f ↔ BijOn f univ univ :=
-  Iff.intro
-    (fun h =>
-      let ⟨inj, surj⟩ := h
-      ⟨mapsTo_univ f _, inj.injOn, Iff.mp surjective_iff_surjOn_univ surj⟩)
-    fun h =>
-    let ⟨_map, inj, surj⟩ := h
-    ⟨Iff.mpr injective_iff_injOn_univ inj, Iff.mpr surjective_iff_surjOn_univ surj⟩
+@[simp] lemma bijOn_univ : BijOn f univ univ ↔ Bijective f := by simp [Bijective, BijOn]
 
-alias ⟨_root_.Function.Bijective.bijOn_univ, _⟩ := bijective_iff_bijOn_univ
+protected alias ⟨_, _root_.Function.Bijective.bijOn_univ⟩ := bijOn_univ
+
+@[deprecated bijOn_univ (since := "2025-10-31")]
+theorem bijective_iff_bijOn_univ : Bijective f ↔ BijOn f univ univ := bijOn_univ.symm
 
 theorem BijOn.compl (hst : BijOn f s t) (hf : Bijective f) : BijOn f sᶜ tᶜ :=
   ⟨hst.surjOn.mapsTo_compl hf.1, hf.1.injOn, hst.mapsTo.surjOn_compl hf.2⟩
@@ -719,7 +747,7 @@ theorem BijOn.insert_iff (ha : a ∉ s) (hfa : f a ∉ t) :
     have := congrArg (· \ {f a}) (image_insert_eq ▸ h.image_eq)
     simp only [mem_singleton_iff, insert_diff_of_mem] at this
     rw [diff_singleton_eq_self hfa, diff_singleton_eq_self] at this
-    · exact ⟨by simp [← this, mapsTo'], h.injOn.mono (subset_insert ..),
+    · exact ⟨by simp [← this, mapsTo_iff_image_subset], h.injOn.mono (subset_insert ..),
         by simp [← this, surjOn_image]⟩
     simp only [mem_image, not_exists, not_and]
     intro x hx
@@ -951,7 +979,7 @@ theorem _root_.Function.invFunOn_injOn_image [Nonempty α] (f : α → β) (s : 
 
 theorem _root_.Function.invFunOn_image_image_subset [Nonempty α] (f : α → β) (s : Set α) :
     (invFunOn f s) '' (f '' s) ⊆ s := by
-  rintro _ ⟨_, ⟨x,hx,rfl⟩, rfl⟩; exact invFunOn_apply_mem hx
+  rintro _ ⟨_, ⟨x, hx, rfl⟩, rfl⟩; exact invFunOn_apply_mem hx
 
 theorem SurjOn.rightInvOn_invFunOn [Nonempty α] (h : SurjOn f s t) :
     RightInvOn (invFunOn f s) f t := fun _y hy => invFunOn_eq <| h hy
@@ -1002,7 +1030,7 @@ variable (f s)
 lemma exists_subset_bijOn : ∃ s' ⊆ s, BijOn f s' (f '' s) :=
   surjOn_iff_exists_bijOn_subset.mp (surjOn_image f s)
 
-lemma exists_image_eq_and_injOn : ∃ u, f '' u =  f '' s ∧ InjOn f u :=
+lemma exists_image_eq_and_injOn : ∃ u, f '' u = f '' s ∧ InjOn f u :=
   let ⟨u, _, hfu⟩ := exists_subset_bijOn s f
   ⟨u, hfu.image_eq, hfu.injOn⟩
 
@@ -1020,7 +1048,7 @@ theorem BijOn.exists_extend_of_subset {t' : Set β} (h : BijOn f s t) (hss₁ : 
   rw [image_diff_preimage, image_inter_preimage] at hbij
   refine ⟨s ∪ r, subset_union_left, ?_, ?_, ?_, fun y hyt' ↦ ?_⟩
   · exact union_subset hss₁ <| hrss.trans <| diff_subset.trans inter_subset_left
-  · rw [mapsTo', image_union, hbij.image_eq, h.image_eq, union_subset_iff]
+  · rw [mapsTo_iff_image_subset, image_union, hbij.image_eq, h.image_eq, union_subset_iff]
     exact ⟨htt', diff_subset.trans inter_subset_right⟩
   · rw [injOn_union, and_iff_right h.injOn, and_iff_right hbij.injOn]
     · refine fun x hxs y hyr hxy ↦ (hrss hyr).2 ?_
@@ -1039,7 +1067,7 @@ theorem BijOn.exists_extend {t' : Set β} (h : BijOn f s t) (htt' : t ⊆ t') (h
 theorem InjOn.exists_subset_injOn_subset_range_eq {r : Set α} (hinj : InjOn f r) (hrs : r ⊆ s) :
     ∃ u : Set α, r ⊆ u ∧ u ⊆ s ∧ f '' u = f '' s ∧ InjOn f u := by
   obtain ⟨u, hru, hus, h⟩ := hinj.bijOn_image.exists_extend_of_subset hrs
-    (image_subset f hrs) Subset.rfl
+    (image_mono hrs) Subset.rfl
   exact ⟨u, hru, hus, h.image_eq, h.injOn⟩
 
 theorem preimage_invFun_of_mem [n : Nonempty α] {f : α → β} (hf : Injective f) {s : Set α}
@@ -1058,13 +1086,18 @@ theorem preimage_invFun_of_notMem [n : Nonempty α] {f : α → β} (hf : Inject
   · have : x ∉ f '' s := fun h' => hx (image_subset_range _ _ h')
     simp only [mem_preimage, invFun_neg hx, h, this]
 
-@[deprecated (since := "2025-05-23")] alias preimage_invFun_of_not_mem := preimage_invFun_of_notMem
-
 lemma BijOn.symm {g : β → α} (h : InvOn f g t s) (hf : BijOn f s t) : BijOn g t s :=
   ⟨h.2.mapsTo hf.surjOn, h.1.injOn, h.2.surjOn hf.mapsTo⟩
 
 lemma bijOn_comm {g : β → α} (h : InvOn f g t s) : BijOn f s t ↔ BijOn g t s :=
   ⟨BijOn.symm h, BijOn.symm h.symm⟩
+
+/-- If `t ⊆ f '' s`, there exists a preimage of `t` under `f` contained in `s` such that
+`f` restricted to `u` is injective. -/
+lemma SurjOn.exists_subset_injOn_image_eq (hfs : s.SurjOn f t) :
+    ∃ u ⊆ s, u.InjOn f ∧ f '' u = t := by
+  choose x hmem heq using hfs
+  exact ⟨range (fun a : t ↦ x a.2), by grind, fun _ ↦ by grind, by aesop⟩
 
 end Set
 
@@ -1076,9 +1109,6 @@ variable {fa : α → α} {fb : β → β} {f : α → β} {g : β → γ} {s t 
 
 theorem Injective.comp_injOn (hg : Injective g) (hf : s.InjOn f) : s.InjOn (g ∘ f) :=
   hg.injOn.comp hf (mapsTo_univ _ _)
-
-theorem Surjective.surjOn (hf : Surjective f) (s : Set β) : SurjOn f univ s :=
-  (surjective_iff_surjOn_univ.1 hf).mono (Subset.refl _) (subset_univ _)
 
 theorem LeftInverse.leftInvOn {g : β → α} (h : LeftInverse f g) (s : Set β) : LeftInvOn f g s :=
   fun x _ => h x
@@ -1111,7 +1141,7 @@ theorem surjOn_image (h : Semiconj f fa fb) (ha : SurjOn fa s t) : SurjOn fb (f 
 theorem surjOn_range (h : Semiconj f fa fb) (ha : Surjective fa) :
     SurjOn fb (range f) (range f) := by
   rw [← image_univ]
-  exact h.surjOn_image (ha.surjOn univ)
+  exact h.surjOn_image ha.surjOn
 
 theorem injOn_image (h : Semiconj f fa fb) (ha : InjOn fa s) (hf : InjOn f (fa '' s)) :
     InjOn fb (f '' s) := by
@@ -1132,7 +1162,7 @@ theorem bijOn_image (h : Semiconj f fa fb) (ha : BijOn fa s t) (hf : InjOn f t) 
 theorem bijOn_range (h : Semiconj f fa fb) (ha : Bijective fa) (hf : Injective f) :
     BijOn fb (range f) (range f) := by
   rw [← image_univ]
-  exact h.bijOn_image (bijective_iff_bijOn_univ.1 ha) hf.injOn
+  exact h.bijOn_image ha.bijOn_univ hf.injOn
 
 theorem mapsTo_preimage (h : Semiconj f fa fb) {s t : Set β} (hb : MapsTo fb s t) :
     MapsTo fa (f ⁻¹' s) (f ⁻¹' t) := fun x hx => by simp only [mem_preimage, h x, hb hx]
@@ -1151,16 +1181,10 @@ theorem update_comp_eq_of_notMem_range' {α : Sort*} {β : Type*} {γ : β → S
     (fun j => update g i a (f j)) = fun j => g (f j) :=
   (update_comp_eq_of_forall_ne' _ _) fun x hx => h ⟨x, hx⟩
 
-@[deprecated (since := "2025-05-23")]
-alias update_comp_eq_of_not_mem_range' := update_comp_eq_of_notMem_range'
-
 /-- Non-dependent version of `Function.update_comp_eq_of_notMem_range'` -/
 theorem update_comp_eq_of_notMem_range {α : Sort*} {β : Type*} {γ : Sort*} [DecidableEq β]
     (g : β → γ) {f : α → β} {i : β} (a : γ) (h : i ∉ Set.range f) : update g i a ∘ f = g ∘ f :=
   update_comp_eq_of_notMem_range' g a h
-
-@[deprecated (since := "2025-05-23")]
-alias update_comp_eq_of_not_mem_range := update_comp_eq_of_notMem_range
 
 theorem insert_injOn (s : Set α) : sᶜ.InjOn fun a => insert a s := fun _a ha _ _ =>
   (insert_inj ha).1

@@ -3,7 +3,9 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
 /-!
 # Split coequalizers
@@ -26,6 +28,8 @@ This file has been adapted to `Mathlib/CategoryTheory/Limits/Shapes/SplitEqualiz
 to keep them in sync.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -60,13 +64,13 @@ structure IsSplitCoequalizer {Z : C} (π : Y ⟶ Z) where
   /-- A map in the opposite direction to `f` and `g` -/
   leftSection : Y ⟶ X
   /-- Composition of `π` with `f` and with `g` agree -/
-  condition : f ≫ π = g ≫ π := by aesop_cat
+  condition : f ≫ π = g ≫ π := by cat_disch
   /-- `rightSection` splits `π` -/
-  rightSection_π : rightSection ≫ π = 𝟙 Z := by aesop_cat
+  rightSection_π : rightSection ≫ π = 𝟙 Z := by cat_disch
   /-- `leftSection` splits `g` -/
-  leftSection_bottom : leftSection ≫ g = 𝟙 Y := by aesop_cat
+  leftSection_bottom : leftSection ≫ g = 𝟙 Y := by cat_disch
   /-- `leftSection` composed with `f` is `pi` composed with `rightSection` -/
-  leftSection_top : leftSection ≫ f = π ≫ rightSection := by aesop_cat
+  leftSection_top : leftSection ≫ f = π ≫ rightSection := by cat_disch
 
 instance {X : C} : Inhabited (IsSplitCoequalizer (𝟙 X) (𝟙 X) (𝟙 X)) where
   default := { rightSection := 𝟙 X, leftSection := 𝟙 X }
@@ -103,6 +107,7 @@ def IsSplitCoequalizer.asCofork {Z : C} {h : Y ⟶ Z} (t : IsSplitCoequalizer f 
 theorem IsSplitCoequalizer.asCofork_π {Z : C} {h : Y ⟶ Z} (t : IsSplitCoequalizer f g h) :
     t.asCofork.π = h := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The cofork induced by a split coequalizer is a coequalizer, justifying the name. In some cases it
 is more convenient to show a given cofork is a coequalizer by showing it is split.
@@ -143,7 +148,7 @@ noncomputable def HasSplitCoequalizer.coequalizerπ [HasSplitCoequalizer f g] :
     Y ⟶ HasSplitCoequalizer.coequalizerOfSplit f g :=
   (splittable (f := f) (g := g)).choose_spec.choose
 
-/-- The coequalizer morphism `coequalizeπ` gives a split coequalizer on `f,g`. -/
+/-- The coequalizer morphism `coequalizerπ` gives a split coequalizer on `f,g`. -/
 noncomputable def HasSplitCoequalizer.isSplitCoequalizer [HasSplitCoequalizer f g] :
     IsSplitCoequalizer f g (HasSplitCoequalizer.coequalizerπ f g) :=
   Classical.choice (splittable (f := f) (g := g)).choose_spec.choose_spec

@@ -3,22 +3,22 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Patrick Massot, Floris van Doorn, Jireh Loreaux, Eric Wieser
 -/
-import Mathlib.Topology.Order.OrderClosedExtr
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Ordered
+module
+
+public import Mathlib.Topology.Order.OrderClosedExtr
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Ordered
 
 /-!
-# The First-Derivative Test
+# The First- and Second-Derivative Tests
 
 We prove the first-derivative test from calculus, in the strong form given on [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#First-derivative_test).
 
 The test is proved over the real numbers ℝ
-using `monotoneOn_of_deriv_nonneg` from [Mathlib.Analysis.Calculus.MeanValue].
+using `monotoneOn_of_deriv_nonneg` from `Mathlib/Analysis/Calculus/Deriv/MeanValue.lean`.
 
-# The Second-Derivative Test
-
-We prove the Second-Derivative Test using the First-Derivative Test.
+We prove the second-derivative test using the first-derivative test.
 Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_second-derivative_test).
 
 ## Main results
@@ -43,8 +43,10 @@ Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_s
 
 ## Tags
 
-derivative test, calculus
+derivative test, first-derivative test, second-derivative test, calculus
 -/
+
+public section
 
 
 open Set Topology
@@ -79,8 +81,8 @@ lemma isLocalMin_of_deriv_Ioo {f : ℝ → ℝ} {a b c : ℝ}
     (h₁ : ∀ x ∈ Ioo b c, 0 ≤ deriv f x) : IsLocalMin f b := by
   have := isLocalMax_of_deriv_Ioo (f := -f) g₀ g₁
     (by simp_all) hd₀.neg hd₁.neg
-    (fun x hx => deriv.neg (f := f) ▸ Left.nonneg_neg_iff.mpr <|h₀ x hx)
-    (fun x hx => deriv.neg (f := f) ▸ Left.neg_nonpos_iff.mpr <|h₁ x hx)
+    (fun x hx => deriv.neg (f := f) ▸ Left.nonneg_neg_iff.mpr <| h₀ x hx)
+    (fun x hx => deriv.neg (f := f) ▸ Left.neg_nonpos_iff.mpr <| h₁ x hx)
   exact (neg_neg f) ▸ IsLocalMax.neg this
 
 /-- The First-Derivative Test from calculus, maxima version,
@@ -144,13 +146,14 @@ lemma eventually_nhdsWithin_sign_eq_of_deriv_pos (hf : deriv f x₀ > 0) (hx : f
   · rw [sign_neg (neg_of_slope_pos hx' hx₀ hx), sign_neg (sub_neg.mpr hx')]
   · rw [sign_pos (pos_of_slope_pos hx' hx₀ hx), sign_pos (sub_pos.mpr hx')]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the derivative of `f` is negative at a root `x₀` of `f`, then locally the sign of `f x`
 matches `x₀ - x`. -/
 lemma eventually_nhdsWithin_sign_eq_of_deriv_neg (hf : deriv f x₀ < 0) (hx : f x₀ = 0) :
     ∀ᶠ x in 𝓝 x₀, sign (f x) = sign (x₀ - x) := by
   simpa [Left.sign_neg, -neg_sub, ← neg_sub x₀] using
     eventually_nhdsWithin_sign_eq_of_deriv_pos
-        (f := (-f ·)) (x₀ := x₀) (by simpa [deriv.neg]) (by simpa)
+      (f := (-f ·)) (x₀ := x₀) (by simpa [deriv.neg]) (by simpa)
 
 lemma deriv_neg_left_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ}
     (h₀ : ∀ᶠ (x : ℝ) in 𝓝[≠] x₀, sign (deriv f x) = sign (x - x₀)) :
@@ -187,6 +190,7 @@ theorem isLocalMax_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ} (h : ContinuousA
   exact isLocalMax_of_deriv h (hf.mono fun x hx ↦ differentiableAt_of_deriv_ne_zero hx)
     (hl.mono fun _ => le_of_lt) (hg.mono fun _ => le_of_lt)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The First Derivative test with a hypothesis on the sign of the derivative, minimum version. -/
 theorem isLocalMin_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ} (h : ContinuousAt f x₀)
     (hf : ∀ᶠ x in 𝓝[≠] x₀, sign (deriv f x) = sign (x - x₀)) :
@@ -202,6 +206,7 @@ theorem isLocalMin_of_deriv_deriv_pos (hf : deriv (deriv f) x₀ > 0) (hd : deri
   isLocalMin_of_sign_deriv hc <| nhdsWithin_le_nhds <|
     eventually_nhdsWithin_sign_eq_of_deriv_pos hf hd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Second-Derivative Test from calculus, maximum version. -/
 theorem isLocalMax_of_deriv_deriv_neg (hf : deriv (deriv f) x₀ < 0) (hd : deriv f x₀ = 0)
     (hc : ContinuousAt f x₀) : IsLocalMax f x₀ := by

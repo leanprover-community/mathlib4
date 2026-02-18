@@ -3,7 +3,9 @@ Copyright (c) 2023 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+module
+
+public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 /-!
 # Intrinsic frontier and interior
@@ -42,6 +44,8 @@ The main results are:
 * `IsClosed s → IsExtreme 𝕜 s (intrinsicFrontier 𝕜 s)`
 * `x ∈ s → y ∈ intrinsicInterior 𝕜 s → openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 s`
 -/
+
+@[expose] public section
 
 open AffineSubspace Set Topology
 open scoped Pointwise
@@ -89,7 +93,7 @@ theorem intrinsicFrontier_subset (hs : IsClosed s) : intrinsicFrontier 𝕜 s �
   image_subset_iff.2 (hs.preimage continuous_induced_dom).frontier_subset
 
 theorem intrinsicFrontier_subset_intrinsicClosure : intrinsicFrontier 𝕜 s ⊆ intrinsicClosure 𝕜 s :=
-  image_subset _ frontier_subset_closure
+  image_mono frontier_subset_closure
 
 theorem subset_intrinsicClosure : s ⊆ intrinsicClosure 𝕜 s :=
   fun x hx => ⟨⟨x, subset_affineSpan _ _ hx⟩, subset_closure hx, rfl⟩
@@ -199,6 +203,15 @@ theorem intrinsicClosure_idem (s : Set P) :
   rw [intrinsicClosure, preimage_image_eq _ Subtype.coe_injective]
   exact isClosed_closure
 
+set_option backward.isDefEq.respectTransparency false in
+theorem intrinsicClosure_eq_closure_inter_affineSpan (s : Set P) :
+    intrinsicClosure 𝕜 s = closure s ∩ affineSpan 𝕜 s := by
+  have h : Topology.IsInducing ((↑) : affineSpan 𝕜 s → P) := .subtypeVal
+  rw [intrinsicClosure, h.closure_eq_preimage_closure_image, Set.image_preimage_eq_inter_range,
+    Set.image_preimage_eq_of_subset ?_, Subtype.range_coe]
+  rw [Subtype.range_coe]
+  apply subset_affineSpan
+
 end AddTorsor
 
 namespace AffineIsometry
@@ -206,9 +219,6 @@ namespace AffineIsometry
 variable [NormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W] [NormedSpace 𝕜 V]
   [NormedSpace 𝕜 W] [MetricSpace P] [PseudoMetricSpace Q] [NormedAddTorsor V P]
   [NormedAddTorsor W Q]
-
--- Porting note: Removed attribute `local nolint fails_quickly`
-attribute [local instance] AffineSubspace.toNormedAddTorsor AffineSubspace.nonempty_map
 
 @[simp]
 theorem image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
@@ -285,12 +295,24 @@ theorem closure_diff_intrinsicFrontier (s : Set P) :
 
 end NormedAddTorsor
 
+section Convex
+
+variable [Field 𝕜] [LinearOrder 𝕜] [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V]
+  [IsTopologicalAddGroup V] [ContinuousConstSMul 𝕜 V] {s : Set V}
+
+protected theorem Convex.intrinsicClosure (hs : Convex 𝕜 s) : Convex 𝕜 (intrinsicClosure 𝕜 s) := by
+  rw [intrinsicClosure_eq_closure_inter_affineSpan]
+  exact hs.closure.inter (affineSpan 𝕜 s).convex
+
+end Convex
+
 private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] (φ : α ≃ₜ β)
     (s : Set β) : (interior s).Nonempty ↔ (interior (φ ⁻¹' s)).Nonempty := by
   rw [← φ.image_symm, ← φ.symm.image_interior, image_nonempty]
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The intrinsic interior of a nonempty convex set is nonempty. -/
 protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :
     (intrinsicInterior ℝ s).Nonempty := by

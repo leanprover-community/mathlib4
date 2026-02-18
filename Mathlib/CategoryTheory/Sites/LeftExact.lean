@@ -3,15 +3,19 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Limits
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import Mathlib.CategoryTheory.Adhesive
-import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+module
+
+public import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Adhesive.Basic
+public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 /-!
 # Left exactness of sheafification
 In this file we show that sheafification commutes with finite limits.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Limits Opposite
@@ -27,6 +31,7 @@ namespace CategoryTheory.GrothendieckTopology
 variable {D : Type w} [Category.{t} D]
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof of the fact that
 `J.diagramFunctor D X` preserves limits. -/
 @[simps]
@@ -62,6 +67,7 @@ lemma liftToDiagramLimitObjAux_fac {X : C} {K : Type s} [SmallCategory K]
       Multiequalizer.ι ((unop W).index (F.obj k)) i :=
   IsLimit.fac _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof of the fact that
 `J.diagramFunctor D X` preserves limits. -/
 abbrev liftToDiagramLimitObj {X : C} {K : Type s} [SmallCategory K] [HasLimitsOfShape K D]
@@ -78,6 +84,7 @@ abbrev liftToDiagramLimitObj {X : C} {K : Type s} [SmallCategory K] [HasLimitsOf
       erw [Multiequalizer.condition]
       rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 instance preservesLimit_diagramFunctor
     (X : C) (K : Type s) [SmallCategory K] [HasLimitsOfShape K D] (F : K ⥤ Cᵒᵖ ⥤ D) :
     PreservesLimit F (J.diagramFunctor D X) :=
@@ -112,10 +119,12 @@ instance preservesLimits_diagramFunctor (X : C) [HasLimitsOfSize.{max t u v, max
   apply preservesLimitsOfShape_diagramFunctor.{max t u v}
 
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-variable [HasForget.{t} D]
+variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    [ConcreteCategory D FD]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 variable [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof that `J.plusFunctor D` commutes
 with finite limits. -/
 def liftToPlusObjLimitObj {K : Type s} [SmallCategory K] [FinCategory K]
@@ -146,6 +155,7 @@ def liftToPlusObjLimitObj {K : Type s} [SmallCategory K] [FinCategory K]
         rfl)
   limit.lift _ S ≫ (HasLimit.isoOfNatIso s.symm).hom ≫ e.inv ≫ p.inv
 
+set_option backward.isDefEq.respectTransparency false in
 -- This lemma should not be used directly. Instead, one should use the fact that
 -- `J.plusFunctor D` preserves finite limits, along with the fact that
 -- evaluation preserves limits.
@@ -174,6 +184,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type s} [SmallCategory K] [FinCategory K]
   erw [colimit.ι_desc]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance preservesLimitsOfShape_plusFunctor
     (K : Type t) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
@@ -195,8 +206,7 @@ instance preservesLimitsOfShape_plusFunctor
     conv_lhs => dsimp
     simp only [Category.assoc]
     rw [ι_colimitLimitIso_limit_π_assoc]
-    simp only [NatIso.ofComponents_inv_app, colimitObjIsoColimitCompEvaluation_ι_app_hom,
-      Iso.symm_inv]
+    simp only [colimitObjIsoColimitCompEvaluation_ι_app_hom]
     conv_lhs =>
       dsimp [IsLimit.conePointUniqueUpToIso]
     rw [← Category.assoc, ← NatTrans.comp_app, limit.lift_π]
@@ -246,10 +256,10 @@ instance preservesLimitsOfShape_presheafToSheaf
     Limits.hasLimitsOfShape_of_equivalence e
   haveI : FinCategory (AsSmall.{t} (FinCategory.AsType K)) := by
     constructor
-    · show Fintype (ULift _)
+    · change Fintype (ULift _)
       infer_instance
     · intro j j'
-      show Fintype (ULift _)
+      change Fintype (ULift _)
       infer_instance
   refine @preservesLimitsOfShape_of_equiv _ _ _ _ _ _ _ _ e.symm _ (show _ from ?_)
   constructor; intro F; constructor; intro S hS; constructor
@@ -258,7 +268,7 @@ instance preservesLimitsOfShape_presheafToSheaf
     reflectsLimitsOfShape_of_reflectsIsomorphisms
   apply isLimitOfPreserves (J.sheafification D) hS
 
-instance preservesfiniteLimits_presheafToSheaf [PreservesLimits (forget D)]
+instance preservesFiniteLimits_presheafToSheaf [PreservesLimits (forget D)]
     [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] [HasFiniteLimits D] :
     PreservesFiniteLimits (plusPlusSheaf J D) := by
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{t}
@@ -273,12 +283,13 @@ def plusPlusSheafIsoPresheafToSheaf : plusPlusSheaf J D ≅ presheafToSheaf J D 
 
 /-- `plusPlusFunctor` is isomorphic to `sheafification`. -/
 def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D :=
-  isoWhiskerRight (plusPlusSheafIsoPresheafToSheaf J D) (sheafToPresheaf J D)
+  Functor.isoWhiskerRight (plusPlusSheafIsoPresheafToSheaf J D) (sheafToPresheaf J D)
 
 /-- `plusPlus` is isomorphic to `sheafify`. -/
 def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
   (sheafToPresheaf J D).mapIso ((plusPlusSheafIsoPresheafToSheaf J D).app P)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toSheafify_plusPlusIsoSheafify_hom (P : Cᵒᵖ ⥤ D) :
     J.toSheafify P ≫ (plusPlusIsoSheafify J D P).hom = toSheafify J P := by
@@ -292,6 +303,9 @@ instance [PreservesLimits (forget D)] [HasFiniteLimits D]
     [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] :
     HasSheafify J D :=
   HasSheafify.mk' J D (plusPlusAdjunction J D)
+
+instance : HasSheafify J (Type max u v) := by
+  infer_instance
 
 end
 

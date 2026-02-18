@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.ENat.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.ENat.Basic
 
 /-!
 # Extended natural numbers form a complete linear order
@@ -17,16 +19,15 @@ of `WithTop.some`.
 
 -/
 
+public section
+
 assert_not_exists Field
 
 open Set
 
--- The `CompleteLinearOrder` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
--- `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
-noncomputable instance : CompleteLinearOrder ENat :=
-  inferInstanceAs (CompleteLinearOrder (WithTop ℕ))
+noncomputable section
+deriving instance CompleteLinearOrder for ℕ∞
+end
 
 noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
   inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℕ)))
@@ -86,7 +87,6 @@ lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
   | top => simp at hx
   | coe x =>
     contrapose! h
-    simp only [not_infinite]
     apply Finite.subset <| Finite.Set.finite_image {n : ℕ | n ≤ x} (fun (n : ℕ) => (n : ℕ∞))
     intro y hy
     specialize h y hy
@@ -148,7 +148,7 @@ lemma sSup_mul : sSup s * a = ⨆ b ∈ s, b * a := by
   simp_rw [mul_comm, mul_sSup]
 
 lemma mul_iInf [Nonempty ι] : a * ⨅ i, f i = ⨅ i, a * f i := by
-  refine (le_iInf fun x ↦ (mul_le_mul_left' (iInf_le ..) a)).antisymm ?_
+  refine (le_iInf fun x ↦ by grw [iInf_le]).antisymm ?_
   obtain ⟨b, hb⟩ := ENat.exists_eq_iInf f
   rw [← hb, iInf_le_iff]
   exact fun x h ↦ h _
@@ -180,7 +180,7 @@ lemma iInf_mul_of_ne (ha₀ : a ≠ 0) : (⨅ i, f i) * a = ⨅ i, f i * a :=
 lemma add_iSup [Nonempty ι] (f : ι → ℕ∞) : a + ⨆ i, f i = ⨆ i, a + f i := by
   obtain rfl | ha := eq_or_ne a ⊤
   · simp
-  refine le_antisymm ?_ <| iSup_le fun i ↦ add_le_add_left (le_iSup ..) _
+  refine le_antisymm ?_ <| iSup_le fun i ↦ by grw [← le_iSup]
   refine add_le_of_le_tsub_left_of_le (le_iSup_of_le (Classical.arbitrary _) le_self_add) ?_
   exact iSup_le fun i ↦ ENat.le_sub_of_add_le_left ha <| le_iSup (a + f ·) i
 
@@ -228,7 +228,7 @@ lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSu
     rcases h i j with ⟨k, hk⟩
     exact le_iSup_of_le k hk
 
-lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → ℕ∞}
+lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f g : ι → ℕ∞}
     (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
   iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
 

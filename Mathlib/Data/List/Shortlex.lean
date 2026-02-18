@@ -3,10 +3,11 @@ Copyright (c) 2024 Hannah Fechtner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hannah Fechtner
 -/
+module
 
-import Mathlib.Data.List.Lex
-import Mathlib.Tactic.Linarith
-import Mathlib.Order.RelClasses
+public import Mathlib.Data.List.Lex
+public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Shortlex ordering of lists.
@@ -26,6 +27,8 @@ Related files are:
 * `Mathlib/Data/DFinsupp/WellFounded.lean`: Well-foundedness of lexicographic orders on `DFinsupp`
   and `Pi`.
 -/
+
+@[expose] public section
 
 /-! ### shortlex ordering -/
 
@@ -61,12 +64,13 @@ theorem shortlex_iff_lex {s t : List α} (h : s.length = t.length) :
     Shortlex r s t ↔ List.Lex r s t := by
   simp [shortlex_def, h]
 
-theorem shortlex_cons_iff [IsIrrefl α r] {a : α} {s t : List α} :
+theorem shortlex_cons_iff [Std.Irrefl r] {a : α} {s t : List α} :
     Shortlex r (a :: s) (a :: t) ↔ Shortlex r s t := by
   simp only [shortlex_def, length_cons, add_lt_add_iff_right, add_left_inj, List.lex_cons_iff]
 
 alias ⟨Shortlex.of_cons, Shortlex.cons⟩ := shortlex_cons_iff
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem not_shortlex_nil_right {s : List α} : ¬ Shortlex r s [] := by
   rw [shortlex_def]
@@ -85,18 +89,18 @@ theorem shortlex_singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
 
 namespace Shortlex
 
-instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortlex r) :=
-  ⟨(InvImage.isTrichotomous (by simp [Function.Injective])).trichotomous⟩
+instance trichotomous [Std.Trichotomous r] : Std.Trichotomous (Shortlex r) :=
+  ⟨(InvImage.trichotomous (by simp [Function.Injective])).trichotomous⟩
 
-instance isAsymm [IsAsymm α r] : IsAsymm (List α) (Shortlex r) :=
-  inferInstanceAs <| IsAsymm (List α) (InvImage _ _)
+instance asymm [Std.Asymm r] : Std.Asymm (Shortlex r) :=
+  inferInstanceAs <| Std.Asymm (InvImage _ _)
 
 theorem append_right {s₁ s₂ : List α} (t : List α) (h : Shortlex r s₁ s₂) :
     Shortlex r s₁ (s₂ ++ t) := by
   rcases shortlex_def.mp h with h1 | h2
   · apply of_length_lt
     rw [List.length_append]
-    omega
+    lia
   cases t with
   | nil =>
     rw [List.append_nil]
@@ -104,21 +108,21 @@ theorem append_right {s₁ s₂ : List α} (t : List α) (h : Shortlex r s₁ s�
   | cons head tail =>
     apply of_length_lt
     rw [List.length_append, List.length_cons]
-    omega
+    lia
 
 theorem append_left {t₁ t₂ : List α} (h : Shortlex r t₁ t₂) (s : List α) :
     Shortlex r (s ++ t₁) (s ++ t₂) := by
   rcases shortlex_def.mp h with h1 | h2
   · apply of_length_lt
     rw [List.length_append, List.length_append]
-    omega
+    lia
   cases s with
   | nil =>
     rw [List.nil_append, List.nil_append]
     exact h
   | cons head tail =>
     apply of_lex
-    · simp only [List.cons_append, List.length_cons, List.length_append, Nat.succ_eq_add_one,
+    · simp only [List.cons_append, List.length_cons, List.length_append,
       add_left_inj, add_right_inj]
       exact h2.1
     exact List.Lex.append_left r h2.2 (head :: tail)
@@ -147,7 +151,7 @@ private theorem _root_.Acc.shortlex {a : α} {b : List α} (aca : Acc r a)
           rw [List.length_cons, ← h2len]
           exact hl
         | @rel x xs _ _ h =>
-          simp only [List.length_cons, List.singleton_append, add_left_inj] at h2len
+          simp only [List.length_cons, add_left_inj] at h2len
           refine iha _ h (ih xs (by rw [h2len]; simp)) fun l hl => ?_
           apply ih
           rw [List.length_cons, ← h2len]

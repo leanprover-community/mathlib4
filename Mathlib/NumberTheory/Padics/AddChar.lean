@@ -3,9 +3,11 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.Padics.MahlerBasis
-import Mathlib.Topology.Algebra.Monoid.AddChar
-import Mathlib.Analysis.SpecificLimits.Normed
+module
+
+public import Mathlib.NumberTheory.Padics.MahlerBasis
+public import Mathlib.Topology.Algebra.Monoid.AddChar
+public import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
 # Additive characters of `ℤ_[p]`
@@ -19,7 +21,7 @@ Note that if the norm on `R` is not strictly multiplicative, then the condition 
 topologically nilpotent is strictly weaker than assuming `‖κ 1 - 1‖ < 1`, although they are
 equivalent if `NormMulClass R` holds.
 
-## Main definitions and theorems:
+## Main definitions and theorems:
 
 * `addChar_of_value_at_one`: given a topologically nilpotent `r : R`, construct a continuous
   additive character of `ℤ_[p]` mapping `1` to `1 + r`.
@@ -30,10 +32,12 @@ equivalent if `NormMulClass R` holds.
   sub-multiplicative), then `addChar_of_value_at_one` is a bijection between continuous additive
   characters `ℤ_[p] → R` and elements of `R` with `‖r‖ < 1`.
 
-## TODO:
+## TODO:
 
 * Show that the above equivalences are homeomorphisms, for appropriate choices of the topology.
 -/
+
+@[expose] public section
 
 open scoped fwdDiff
 open Filter Topology
@@ -51,6 +55,7 @@ lemma AddChar.tendsto_eval_one_sub_pow {κ : AddChar ℤ_[p] R} (hκ : Continuou
 namespace PadicInt
 variable [CompleteSpace R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unique continuous additive character of `ℤ_[p]` mapping `1` to `1 + r`. -/
 noncomputable def addChar_of_value_at_one (r : R) (hr : Tendsto (r ^ ·) atTop (𝓝 0)) :
     AddChar ℤ_[p] R where
@@ -60,7 +65,7 @@ noncomputable def addChar_of_value_at_one (r : R) (hr : Tendsto (r ^ ·) atTop (
       Nat.choose_self, pow_zero, one_smul]
   map_add_eq_mul' a b := by
     let F : C(ℤ_[p], R) := mahlerSeries (r ^ ·)
-    show F (a + b) = F a * F b
+    change F (a + b) = F a * F b
     -- It is fiddly to show directly that `F (a + b) = F a * F b` for general `a, b`,
     -- so we prove it for `a, b ∈ ℕ` directly, and then deduce it for all `a, b` by continuity.
     have hF (n : ℕ) : F n = (r + 1) ^ n := by
@@ -81,10 +86,11 @@ lemma coe_addChar_of_value_at_one {r : R} (hr : Tendsto (r ^ ·) atTop (𝓝 0))
     (addChar_of_value_at_one r hr : ℤ_[p] → R) = mahlerSeries (r ^ ·) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma addChar_of_value_at_one_def {r : R} (hr : Tendsto (r ^ ·) atTop (𝓝 0)) :
     addChar_of_value_at_one r hr (1 : ℤ_[p]) = 1 + r := by
-  show mahlerSeries (r ^ ·) ↑(1 : ℕ) = _
+  change mahlerSeries (r ^ ·) ↑(1 : ℕ) = _
   rw [mahlerSeries_apply_nat hr le_rfl, Finset.sum_range_succ, Finset.sum_range_one,
     Nat.choose_zero_right, Nat.choose_self, one_smul, one_smul, pow_zero, pow_one]
 

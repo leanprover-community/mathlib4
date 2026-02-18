@@ -21,6 +21,7 @@ website.
 
 open Real
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
     (cos x) ^ n - (sin x) ^ n = 1 ↔
       (∃ k : ℤ, k * π = x) ∧ Even n ∨ (∃ k : ℤ, k * (2 * π) = x) ∧ Odd n ∨
@@ -54,8 +55,8 @@ theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
               using cos_sq_add_sin_sq x
           simp [hsinx, hcosx] at this
         | 2 =>
-          rw [← cos_sq_add_sin_sq x, sub_eq_add_neg, add_right_inj, neg_eq_self ℝ] at h
-          exact absurd (pow_eq_zero h) hsinx
+          rw [← cos_sq_add_sin_sq x, sub_eq_add_neg, add_right_inj, neg_eq_self] at h
+          exact absurd (eq_zero_of_pow_eq_zero h) hsinx
         | (n + 1 + 2) =>
           set m := n + 1
           refine absurd ?_ h.not_lt

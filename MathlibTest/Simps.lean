@@ -9,11 +9,13 @@ import Mathlib.Tactic.Common
 -- set_option trace.simps.verbose true
 -- set_option pp.universes true
 set_option autoImplicit true
--- A few times, fields in this file are manually aligned. While there is some consensus this
--- is not desired, it's not important enough to change right now.
-set_option linter.style.commandStart false
 
 open Lean Meta Elab Term Command Simps
+
+/-- Tests whether `declName` has the `@[simp]` attribute in `env`. -/
+def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
+  simpExtension.getState env |>.lemmaNames.contains <| .decl declName
+
 
 structure Foo1 : Type where
   Projone : Nat
@@ -25,9 +27,9 @@ structure Foo1 : Type where
 initialize_simps_projections Foo1 (Projone → toNat, two → toBool, three → coe, as_prefix coe,
   -toBool)
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
-  let state := ((Simps.structureExt.getState env).find? `Foo1).get!
+  let state := (Simps.structureExt.find? env `Foo1).get!
   guard <| state.1 == []
   guard <| state.2.map (·.1) == #[`toNat, `toBool, `coe, `four, `five]
   liftMetaM <| guard (← isDefEq (state.2[0]!.2) (← elabTerm (← `(Foo1.Projone)) none))
@@ -58,7 +60,7 @@ initialize_simps_projections Foo2
 def Foo2.foo2 : Foo2 Nat := ⟨(0, 0)⟩
 
 -- run_cmd do
---   logInfo m!"{Simps.structureExt.getState (← getEnv) |>.find? `Foo2 |>.get!}"
+--   logInfo m!"{Simps.structureExt.find? (← getEnv) `Foo2 |>.get!}"
 
 structure Left (α : Type _) extends Foo2 α where
   moreData1 : Nat
@@ -71,9 +73,9 @@ structure Right (α : Type u) (β : Type v) extends Foo2 α where
 
 initialize_simps_projections Right (elim → newProjection, -otherData, +toFoo2)
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
-  let state := ((Simps.structureExt.getState env).find? `Right).get!
+  let state := (Simps.structureExt.find? env `Right).get!
   -- logInfo m!"{state}"
   guard <| state.1 == [`u, `v]
   guard <| state.2.map (·.1) == #[`toFoo2, `otherData, `newProjection]
@@ -124,7 +126,7 @@ namespace foo
   ⟨id, fun x ↦ x, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 /- simps adds declarations -/
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `foo.rfl_toFun |>.isSome
   guard <| env.find? `foo.rfl_invFun |>.isSome
@@ -154,7 +156,7 @@ def bar1 : ℕ := 1 -- type is not a structure
 noncomputable def bar2 {α} : α ≃ α :=
 Classical.choice ⟨foo.rfl⟩
 
-run_cmd liftCoreM <| do
+run_cmd liftCoreM do
   _ ← successIfFail <| simpsTac .missing `foo.bar1 { rhsMd := .default, simpRhs := true }
   --   "Invalid `simps` attribute. Target Nat is not a structure"
   _ ← successIfFail <| simpsTac .missing `foo.bar2 { rhsMd := .default, simpRhs := true }
@@ -202,7 +204,7 @@ def nested2 : ℕ × MyProd ℕ ℕ :=
 
 end CountNested
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `CountNested.nested1_fst |>.isSome
   guard <| env.find? `CountNested.nested1_snd_fst |>.isSome
@@ -263,7 +265,7 @@ def test_sneaky {α} : ComplicatedEquivPlusData α :=
     data := rfl
     extra := fun _ ↦ ⟨(3,5).1,(3,5).2⟩ }
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `rflWithData_toFun |>.isSome
   guard <| env.find? `rflWithData'_toFun |>.isSome
@@ -285,7 +287,7 @@ def partially_applied_term : PartiallyAppliedStr := ⟨MyProd.mk 3⟩
 @[simps]
 def another_term : PartiallyAppliedStr := ⟨fun n ↦ ⟨n + 1, n + 2⟩⟩
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `partially_applied_term_data_fst |>.isSome
   guard <| env.find? `partially_applied_term_data_snd |>.isSome
@@ -293,14 +295,14 @@ run_cmd liftTermElabM <| do
     #[`partially_applied_term_data_fst, `partially_applied_term_data_snd]
 
 structure VeryPartiallyAppliedStr where
-  (data : ∀β, ℕ → β → MyProd ℕ β)
+  (data : ∀ β, ℕ → β → MyProd ℕ β)
 
 /- if we have a partially applied constructor, we treat it as if it were eta-expanded.
   (this is not very useful, and we could remove this behavior if convenient) -/
 @[simps]
 def very_partially_applied_term : VeryPartiallyAppliedStr := ⟨@MyProd.mk ℕ⟩
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `very_partially_applied_term_data_fst |>.isSome
   guard <| env.find? `very_partially_applied_term_data_snd |>.isSome
@@ -317,7 +319,7 @@ run_cmd liftTermElabM <| do
 @[simps] def let4 : ℕ → ℕ × ℤ :=
   let m := 4; let k := 5; fun n ↦ ⟨n + m, k⟩
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `let1_fst |>.isSome
   guard <| env.find? `let2_fst |>.isSome
@@ -338,7 +340,7 @@ namespace specify
 @[simps] noncomputable def specify5 : ℕ × ℕ × ℕ := (1, Classical.choice ⟨(2, 3)⟩)
 end specify
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `specify.specify1_fst |>.isSome
   guard <| env.find? `specify.specify2_snd |>.isSome
@@ -413,14 +415,14 @@ example (n : ℕ) : myNatEquiv.toFun (myNatEquiv.toFun <| myNatEquiv.invFun n) =
     left_inv := fun ⟨_, _⟩ ↦ rfl
     right_inv := fun ⟨_, _⟩ ↦ rfl }
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `pprodEquivProd2_toFun |>.isSome
   guard <| env.find? `pprodEquivProd2_invFun |>.isSome
 
 attribute [simps toFun_fst invFun_snd] pprodEquivProd2
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `pprodEquivProd2_toFun_fst |>.isSome
   guard <| env.find? `pprodEquivProd2_invFun_snd |>.isSome
@@ -429,7 +431,7 @@ run_cmd liftTermElabM <| do
 @[simps! (notRecursive := [])] def pprodEquivProd22 : PProd ℕ ℕ ≃ ℕ × ℕ :=
   pprodEquivProd2
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `pprodEquivProd22_toFun_fst |>.isSome
   guard <| env.find? `pprodEquivProd22_toFun_snd |>.isSome
@@ -490,7 +492,7 @@ def IdentityPreunctor : Prefunctor (Type u) Nat where
   obj _ := 5
   map _ := ⟨⟨rfl⟩⟩
 
-/-- error: unknown identifier 'IdentityPreunctor_map_down_down' -/
+/-- error: Unknown identifier `IdentityPreunctor_map_down_down` -/
 #guard_msgs in
 #check IdentityPreunctor_map_down_down
 
@@ -584,10 +586,8 @@ end BSemigroup
 class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
-@[simps] def bar : ExtendingStuff ℕ :=
-  { mul := (·*·)
-    zero := 0
-    neg := Nat.succ
+@[simps!, instance_reducible] def bar : ExtendingStuff ℕ :=
+  { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
 
@@ -599,10 +599,8 @@ end
 class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
-@[simps] def new_bar : new_ExtendingStuff ℕ :=
-  { mul := (·*·)
-    zero := 0
-    neg := Nat.succ
+@[simps!, instance_reducible] def new_bar : new_ExtendingStuff ℕ :=
+  { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
 
@@ -655,7 +653,7 @@ variable {α β γ : Sort _}
 /-- See Note [custom simps projection] -/
 noncomputable def Equiv.Simps.invFun (e : α ≃ β) : β → α := Classical.choice ⟨e.invFun⟩
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   successIfFail (getRawProjections .missing `FaultyManualCoercion.Equiv)
 -- "Invalid custom projection:
 --   fun {α : Sort u_1} {β : Sort u_2} (e : α ≃ β) ↦ Classical.choice _
@@ -713,7 +711,7 @@ def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 /-- See Note [custom simps projection] -/
 def Equiv.Simps.invFun {α : Type u} {β : Type v} (e : α ≃ β) : β → α := e.symm
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   successIfFail (getRawProjections .missing `FaultyUniverses.Equiv)
 -- "Invalid custom projection:
 --   fun {α} {β} e => (Equiv.symm e).toFun
@@ -767,7 +765,7 @@ def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let data ← getRawProjections .missing `ManualProjectionNames.Equiv
   guard <| data.2.map (·.name) == #[`apply, `symm_apply]
 
@@ -806,7 +804,7 @@ def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 initialize_simps_projections Equiv (toFun → coe, as_prefix coe, invFun → symm_apply)
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let data ← getRawProjections .missing `PrefixProjectionNames.Equiv
   guard <| data.2.map (·.name) = #[`coe, `symm_apply]
   guard <| data.2.map (·.isPrefix) = #[true, false]
@@ -943,7 +941,7 @@ example (x : Bool) {z} (h : id x = z) : myRingHom x = z := by
 @[to_additive (attr := simps)]
 instance Prod.instMul {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨fun p q ↦ ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `Prod.mul_def |>.isSome
   guard <| env.find? `Prod.add_def |>.isSome
@@ -960,7 +958,7 @@ example {M N} [Add M] [Add N] (p q : M × N) : p + q = ⟨p.1 + q.1, p.2 + q.2�
 @[to_additive (attr := simps) my_add_instance]
 instance my_instance {M N} [One M] [One N] : One (M × N) := ⟨(1, 1)⟩
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `my_instance_one |>.isSome
   guard <| env.find? `my_add_instance_zero |>.isSome
@@ -1004,7 +1002,7 @@ example (h : false) (x y : { x : Fin (Nat.add 3 0) // 1 + 1 = 2 }) : myTypeDef.A
 @[to_additive (attr := simps) some_test2]
 def some_test1 (M : Type _) [CommMonoid M] : Subtype (fun _ : M ↦ True) := ⟨1, trivial⟩
 
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let env ← getEnv
   guard <| env.find? `some_test2_coe |>.isSome
 
@@ -1261,3 +1259,15 @@ structure Prod3 (X Y : Type _) extends toProd_1 : Prod X Y
 @[simps toProd_1] def foo' : Prod3 Nat Nat := { fst := 1, snd := 3 }
 
 end UnderScoreDigit
+
+namespace Grind
+
+@[simps (attr := grind =) -isSimp]
+def foo := (2, 3)
+
+example : foo.1 = 2 := by grind
+example : foo.1 = 2 := by
+  fail_if_success simp
+  rfl
+
+end Grind

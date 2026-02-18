@@ -3,14 +3,18 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Big operators for `NatAntidiagonal`
 
 This file contains theorems relevant to big operators over `Finset.NatAntidiagonal`.
 -/
+
+public section
 
 variable {M N : Type*} [CommMonoid M] [AddCommMonoid N]
 
@@ -27,6 +31,7 @@ theorem sum_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → N} :
     (∑ p ∈ antidiagonal (n + 1), f p) = f (0, n + 1) + ∑ p ∈ antidiagonal n, f (p.1 + 1, p.2) :=
   @prod_antidiagonal_succ (Multiplicative N) _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem prod_antidiagonal_swap {n : ℕ} {f : ℕ × ℕ → M} :
     ∏ p ∈ antidiagonal n, f p.swap = ∏ p ∈ antidiagonal n, f p := by
@@ -54,8 +59,8 @@ theorem prod_antidiagonal_eq_prod_range_succ_mk {M : Type*} [CommMonoid M] (f : 
 
 /-- This lemma matches more generally than `Finset.Nat.prod_antidiagonal_eq_prod_range_succ_mk` when
 using `rw ← `. -/
-@[to_additive "This lemma matches more generally than
-`Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk` when using `rw ← `."]
+@[to_additive /-- This lemma matches more generally than
+`Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk` when using `rw ← `. -/]
 theorem prod_antidiagonal_eq_prod_range_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     ∏ ij ∈ antidiagonal n, f ij.1 ij.2 = ∏ k ∈ range n.succ, f k (n - k) :=
   prod_antidiagonal_eq_prod_range_succ_mk _ _

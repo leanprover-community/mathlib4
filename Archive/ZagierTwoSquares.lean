@@ -113,6 +113,7 @@ def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
 
 variable [hk : Fact (4 * k + 1).Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `complexInvo k` is indeed an involution. -/
 theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
   change complexInvo k ∘ complexInvo k = id
@@ -160,7 +161,7 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
     rw [show x * x + 4 * x * z = x * (x + 4 * z) by linarith] at h
     rcases (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e | e
     · rw [e, mul_one] at h
-      simp_all [h, show z = 0 by linarith [e]]
+      simp_all [show z = 0 by linarith [e]]
     · simp only [e, mul_left_eq_self₀, add_eq_zero, and_false, or_false, reduceCtorEq] at h
       simp only [h, true_and]
       linarith [e]

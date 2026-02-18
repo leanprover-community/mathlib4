@@ -3,11 +3,13 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Evaluation
-import Mathlib.RingTheory.MvPowerSeries.LinearTopology
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.Topology.UniformSpace.DiscreteUniformity
+public import Mathlib.RingTheory.MvPowerSeries.Evaluation
+public import Mathlib.RingTheory.MvPowerSeries.LinearTopology
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.Topology.UniformSpace.DiscreteUniformity
+public import Mathlib.Data.ENat.Lattice
 
 /-! # Substitutions in multivariate power series
 
@@ -53,8 +55,10 @@ as it is discrete.
 
 * `MvPowerSeries.IsNilpotent_subst` asserts that the constant coefficient
   of a legit substitution is nilpotent; prove that the converse holds when
-  the kernel of `algebraMap R S` is a nilideal.
+  the kernel of `algebraMap R S` is a nil ideal.
 -/
+
+@[expose] public section
 
 namespace MvPowerSeries
 
@@ -71,14 +75,14 @@ attribute [local instance] DiscreteTopology.instContinuousSMul
 /-- Families of power series which can be substituted -/
 @[mk_iff hasSubst_def]
 structure HasSubst (a : σ → MvPowerSeries τ S) : Prop where
-  const_coeff s : IsNilpotent (constantCoeff τ S (a s))
-  coeff_zero d : {s | (a s).coeff S d ≠ 0}.Finite
+  const_coeff s : IsNilpotent (constantCoeff (a s))
+  coeff_zero d : {s | (a s).coeff d ≠ 0}.Finite
 
 variable {a : σ → MvPowerSeries τ S}
 
 lemma coeff_zero_iff [TopologicalSpace S] [DiscreteTopology S] :
     Filter.Tendsto a Filter.cofinite (nhds 0) ↔
-      ∀ d : τ →₀ ℕ, {s | (a s).coeff S d ≠ 0}.Finite := by
+      ∀ d : τ →₀ ℕ, {s | (a s).coeff d ≠ 0}.Finite := by
   simp [tendsto_iff_coeff_tendsto, coeff_zero, nhds_discrete]
 
 /-- A multivariate power series can be substituted if and only if
@@ -88,6 +92,7 @@ lemma hasSubst_iff_hasEval_of_discreteTopology [TopologicalSpace S] [DiscreteTop
   simp_rw [hasSubst_def, hasEval_def, coeff_zero_iff,
     isTopologicallyNilpotent_iff_constantCoeff_isNilpotent]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasSubst.hasEval [TopologicalSpace S] (ha : HasSubst a) :
     HasEval a := HasEval.mono (instTopologicalSpace_mono τ bot_le) <|
   (@hasSubst_iff_hasEval_of_discreteTopology σ τ _ _ a ⊥ (@DiscreteTopology.mk S ⊥ rfl)).mp ha
@@ -96,12 +101,14 @@ theorem HasSubst.zero : HasSubst (fun (_ : σ) ↦ (0 : MvPowerSeries τ S)) := 
   letI : UniformSpace S := ⊥
   simpa [hasSubst_iff_hasEval_of_discreteTopology] using HasEval.zero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasSubst.add {a b : σ → MvPowerSeries τ S} (ha : HasSubst a) (hb : HasSubst b) :
     HasSubst (a + b) := by
   letI : UniformSpace S := ⊥
   rw [hasSubst_iff_hasEval_of_discreteTopology] at ha hb ⊢
   exact ha.add hb
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasSubst.mul_left (b : σ → MvPowerSeries τ S)
     {a : σ → MvPowerSeries τ S} (ha : HasSubst a) :
     HasSubst (b * a) := by
@@ -121,6 +128,7 @@ protected theorem HasSubst.X : HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries �
   letI : UniformSpace S := ⊥
   simpa [hasSubst_iff_hasEval_of_discreteTopology] using HasEval.X
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasSubst.smul_X (a : σ → R) :
     HasSubst (a • X : σ → MvPowerSeries σ R) := by
   convert HasSubst.X.mul_left (fun s ↦ algebraMap R (MvPowerSeries σ R) (a s))
@@ -135,16 +143,20 @@ noncomputable def hasSubstIdeal : Ideal (σ → MvPowerSeries τ S) :=
 
 /-- If `σ` is finite, then the nilpotent condition is enough for `HasSubst` -/
 theorem hasSubst_of_constantCoeff_nilpotent [Finite σ]
-    {a : σ → MvPowerSeries τ S} (ha : ∀ s, IsNilpotent (constantCoeff τ S (a s))) :
+    {a : σ → MvPowerSeries τ S} (ha : ∀ s, IsNilpotent (constantCoeff (a s))) :
     HasSubst a where
   const_coeff := ha
   coeff_zero _ := Set.toFinite _
 
 /-- If `σ` is finite, then having zero constant coefficient is enough for `HasSubst` -/
 theorem hasSubst_of_constantCoeff_zero [Finite σ]
-    {a : σ → MvPowerSeries τ S} (ha : ∀ s, constantCoeff τ S (a s) = 0) :
+    {a : σ → MvPowerSeries τ S} (ha : ∀ s, constantCoeff (a s) = 0) :
     HasSubst a :=
   hasSubst_of_constantCoeff_nilpotent (fun s ↦ by simp only [ha s, IsNilpotent.zero])
+
+protected theorem HasSubst.X_pow [Finite σ] {n : ℕ} (hn : n ≠ 0) :
+    HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries σ S) ^ n) :=
+  hasSubst_of_constantCoeff_zero (by simp [hn])
 
 /-- Substitution of power series into a power series
 
@@ -159,7 +171,7 @@ noncomputable def subst (a : σ → MvPowerSeries τ S) (f : MvPowerSeries σ R)
 theorem subst_eq_eval₂
     [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S] :
     (subst : (σ → MvPowerSeries τ S) → (MvPowerSeries σ R) → _) = eval₂ (algebraMap _ _) := by
-  ext; simp [subst, DiscreteUniformity.eq_bot]
+  ext; simp +instances [subst, DiscreteUniformity.eq_bot]
 
 theorem subst_coe (p : MvPolynomial σ R) :
     subst (R := R) a p = MvPolynomial.aeval a p := by
@@ -169,6 +181,7 @@ theorem subst_coe (p : MvPolynomial σ R) :
 
 variable {a : σ → MvPowerSeries τ S}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `HasSubst a`, `MvPowerSeries.subst` is an algebra morphism. -/
 noncomputable def substAlgHom (ha : HasSubst a) :
     MvPowerSeries σ R →ₐ[R] MvPowerSeries τ S :=
@@ -176,6 +189,7 @@ noncomputable def substAlgHom (ha : HasSubst a) :
   letI : UniformSpace S := ⊥
   MvPowerSeries.aeval ha.hasEval
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Rewrite `MvPowerSeries.substAlgHom` as `MvPowerSeries.aeval`.
 
 Its use is discouraged because it introduces a topology and might lead
@@ -188,6 +202,7 @@ theorem substAlgHom_eq_aeval
   convert coe_aeval (R := R) (hasSubst_iff_hasEval_of_discreteTopology.mp ha) <;>
   exact DiscreteUniformity.eq_bot.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coe_substAlgHom (ha : HasSubst a) :
     ⇑(substAlgHom ha) = subst (R := R) a := by
@@ -195,11 +210,12 @@ theorem coe_substAlgHom (ha : HasSubst a) :
   letI : UniformSpace S := ⊥
   rw [substAlgHom_eq_aeval, coe_aeval ha.hasEval, subst_eq_eval₂]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem subst_self : subst (MvPowerSeries.X : σ → MvPowerSeries σ R) = id := by
   rw [← coe_substAlgHom HasSubst.X]
   letI : UniformSpace R := ⊥
   ext1 f
-  simp only [← coe_substAlgHom HasSubst.X, substAlgHom_eq_aeval]
+  simp only [substAlgHom_eq_aeval]
   have := aeval_unique (ε := AlgHom.id R (MvPowerSeries σ R)) continuous_id
   rw [DFunLike.ext_iff] at this
   exact this f
@@ -218,7 +234,7 @@ theorem subst_mul (ha : HasSubst a) (f g : MvPowerSeries σ R) :
   simp only [← substAlgHom_apply ha, map_mul]
 
 theorem subst_pow (ha : HasSubst a) (f : MvPowerSeries σ R) (n : ℕ) :
-    subst a (f ^ n) = (subst a f ) ^ n := by
+    subst a (f ^ n) = (subst a f) ^ n := by
   simp only [← substAlgHom_apply ha, map_pow]
 
 theorem subst_smul (ha : HasSubst a) (r : A) (f : MvPowerSeries σ R) :
@@ -234,7 +250,7 @@ theorem substAlgHom_X (ha : HasSubst a) (s : σ) :
   rw [← MvPolynomial.coe_X, substAlgHom_coe ha, MvPolynomial.aeval_X]
 
 theorem substAlgHom_monomial (ha : HasSubst a) (e : σ →₀ ℕ) (r : R) :
-    substAlgHom ha (monomial R e r) =
+    substAlgHom ha (monomial e r) =
       (algebraMap R (MvPowerSeries τ S) r) * (e.prod (fun s n ↦ (a s) ^ n)) := by
   rw [← MvPolynomial.coe_monomial, substAlgHom_coe, MvPolynomial.aeval_monomial]
 
@@ -244,39 +260,57 @@ theorem subst_X (ha : HasSubst a) (s : σ) :
   rw [← coe_substAlgHom ha, substAlgHom_X]
 
 theorem subst_monomial (ha : HasSubst a) (e : σ →₀ ℕ) (r : R) :
-    subst a (monomial R e r) =
+    subst a (monomial e r) =
       (algebraMap R (MvPowerSeries τ S) r) * (e.prod (fun s n ↦ (a s) ^ n)) := by
   rw [← coe_substAlgHom ha, substAlgHom_monomial]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuous_subst (ha : HasSubst a)
     [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S] :
     Continuous (subst a : MvPowerSeries σ R → MvPowerSeries τ S) := by
   rw [subst_eq_eval₂]
   exact continuous_eval₂ (continuous_algebraMap _ _) ha.hasEval
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_subst_finite (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
-    Set.Finite (fun d ↦ (coeff R d f) • (coeff S e (d.prod fun s e => (a s) ^ e))).support :=
+    Set.Finite (fun d ↦ coeff d f • (coeff e (d.prod fun s e => (a s) ^ e))).support :=
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   Summable.finite_support_of_discreteTopology _
-    ((hasSum_aeval ha.hasEval f).map (coeff S e) (continuous_coeff S e)).summable
+    ((hasSum_aeval ha.hasEval f).map (coeff e) (continuous_coeff S e)).summable
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
-    coeff S e (subst a f) =
-      finsum (fun d ↦ (coeff R d f) • (coeff S e (d.prod fun s e => (a s) ^ e))) := by
+    coeff e (subst a f) =
+      finsum (fun d ↦ coeff d f • (coeff e (d.prod fun s e => (a s) ^ e))) := by
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
-  have := ((hasSum_aeval ha.hasEval f).map (coeff S e) (continuous_coeff S e))
-  rw [← coe_substAlgHom ha, substAlgHom, ← this.tsum_eq, tsum_def, dif_pos this.summable]
-  exact if_pos (coeff_subst_finite ha f e)
+  have := ((hasSum_aeval ha.hasEval f).map (coeff e) (continuous_coeff S e))
+  simp [← coe_substAlgHom ha, substAlgHom, ← this.tsum_eq,
+    tsum_eq_finsum (coeff_subst_finite ha f e)]
 
 theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
-    constantCoeff τ S (subst a f) =
-      finsum (fun d ↦ (coeff R d f) • (constantCoeff τ S (d.prod fun s e => (a s) ^ e))) := by
+    constantCoeff (subst a f) =
+      finsum (fun d ↦ coeff d f • (constantCoeff (d.prod fun s e => (a s) ^ e))) := by
   simp only [← coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
+theorem constantCoeff_subst_eq_zero (ha : HasSubst a) (ha' : ∀ i, (a i).constantCoeff = 0)
+    {f : MvPowerSeries σ R} (hf : f.constantCoeff = 0) :
+    MvPowerSeries.constantCoeff (subst a f) = 0 := by
+  rw [constantCoeff_subst ha, finsum_eq_zero_of_forall_eq_zero]
+  intro d
+  by_cases hd : d = 0
+  · simp [hd, hf]
+  · have : constantCoeff (d.prod fun s e ↦ a s ^ e) = 0 := by
+      obtain ⟨i, hi⟩ : ∃ i : σ, d i ≠ 0 := by
+        by_contra! hc
+        exact hd <| Finsupp.ext hc
+      simpa [map_finsuppProd, ha'] using
+        Finset.prod_eq_zero (i := i) (by simp [hi]) (by simp [zero_pow hi])
+    rw [this, smul_zero]
+
 theorem map_algebraMap_eq_subst_X (f : MvPowerSeries σ R) :
-    map σ (algebraMap R S) f = subst X f := by
+    map (algebraMap R S) f = subst X f := by
   ext e
   rw [coeff_map, coeff_subst HasSubst.X f e, finsum_eq_single _ e]
   · rw [← MvPowerSeries.monomial_one_eq, coeff_monomial_same,
@@ -284,12 +318,26 @@ theorem map_algebraMap_eq_subst_X (f : MvPowerSeries σ R) :
   · intro d hd
     rw [← MvPowerSeries.monomial_one_eq, coeff_monomial_ne hd.symm, smul_zero]
 
+omit [Algebra R S] in
+theorem map_subst [Finite σ] {a : σ → MvPowerSeries τ R} (ha : HasSubst a) {h : R →+* S}
+    (f : MvPowerSeries σ R) :
+    (f.subst a).map h = (f.map h).subst (fun i => (a i).map h) := by
+  ext n
+  have {r : R} : h r = h.toAddMonoidHom r := rfl
+  rw [coeff_subst <| hasSubst_of_constantCoeff_nilpotent fun s => (ha.const_coeff s).map h,
+    coeff_map, coeff_subst ha, this, AddMonoidHom.map_finsum _ (coeff_subst_finite ha _ _),
+      finsum_congr]
+  intro d
+  simp [smul_eq_mul, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe, map_mul,
+    ← coeff_map, Finsupp.prod]
+
 variable
     {T : Type*} [CommRing T]
     [UniformSpace T] [T2Space T] [CompleteSpace T]
     [IsUniformAddGroup T] [IsTopologicalRing T] [IsLinearTopology T T] [Algebra R T]
     {ε : MvPowerSeries τ S →ₐ[R] T}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp_substAlgHom
     [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
     (ha : HasSubst a) (hε : Continuous ε) :
@@ -327,8 +375,8 @@ variable {υ : Type*}
   {b : τ → MvPowerSeries υ T}
 
 theorem IsNilpotent_subst (ha : HasSubst a)
-    {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff σ R f)) :
-    IsNilpotent (constantCoeff τ S ((substAlgHom ha) f)) := by
+    {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :
+    IsNilpotent (constantCoeff (substAlgHom ha f)) := by
   classical
   rw [coe_substAlgHom, constantCoeff_subst ha]
   apply isNilpotent_finsum
@@ -359,6 +407,7 @@ theorem HasSubst.comp (ha : HasSubst a) (hb : HasSubst b) :
     apply Filter.Tendsto.comp _ (ha.hasEval.tendsto_zero)
     simpa [← map_zero (substAlgHom (R := S) hb)] using (continuous_subst hb).continuousAt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) := by
   letI : UniformSpace R := ⊥
@@ -380,6 +429,49 @@ theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : MvPowerS
     subst b (subst a f) = subst (fun s ↦ subst b (a s)) f :=
   congr_fun (subst_comp_subst (R := R) ha hb) f
 
+section
+
+variable (w : τ → ℕ)
+
+theorem le_weightedOrder_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
+    ⨅ (d : σ →₀ ℕ) (_ : coeff d f ≠ 0), d.weight (weightedOrder w ∘ a) ≤
+      (f.subst a).weightedOrder w := by
+  classical
+  apply MvPowerSeries.le_weightedOrder
+  intro d hd
+  rw [coeff_subst ha, finsum_eq_zero_of_forall_eq_zero]
+  intro x
+  by_cases hfx : f.coeff x = 0
+  · simp [hfx]
+  rw [coeff_eq_zero_of_lt_weightedOrder w, smul_zero]
+  refine hd.trans_le (((biInf_le _ hfx).trans ?_).trans (le_weightedOrder_prod ..))
+  simp only [Finsupp.weight_apply, Finsupp.sum, Function.comp_apply]
+  exact Finset.sum_le_sum fun i hi ↦ .trans (by simp) (le_weightedOrder_pow ..)
+
+set_option backward.isDefEq.respectTransparency false in
+theorem le_weightedOrder_subst_of_forall_ne_zero
+    (ha : HasSubst a) (ha0 : ∀ i, a i ≠ 0) (f : MvPowerSeries σ R) :
+    f.weightedOrder (ENat.toNat ∘ weightedOrder w ∘ a) ≤ (f.subst a).weightedOrder w := by
+  refine .trans ?_ (le_weightedOrder_subst w ha f)
+  simp only [ne_eq, le_iInf_iff]
+  refine fun i hi ↦ (weightedOrder_le _ hi).trans ?_
+  simp [Finsupp.weight_apply, Finsupp.sum, (ne_zero_iff_weightedOrder_finite _).mp (ha0 _)]
+
+set_option backward.isDefEq.respectTransparency false in
+theorem le_order_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
+    (⨅ i, (a i).order) * f.order ≤ (f.subst a).order := by
+  refine .trans ?_ (MvPowerSeries.le_weightedOrder_subst _ ha _)
+  simp only [ne_eq, le_iInf_iff]
+  intro i hi
+  trans (⨅ (i : σ), (order ∘ a) i) * ↑i.degree
+  · refine mul_le_mul_right (order_le hi) _
+  · simp only [Function.comp_apply, order, Finsupp.degree, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
+      Nat.cast_sum, Finset.mul_sum, Finsupp.weight_apply, nsmul_eq_mul]
+    exact Finset.sum_le_sum fun j hj => by
+      simp [mul_comm, mul_le_mul_right (iInf_le_iff.mpr fun _ a ↦ a j)]
+
+end
+
 section rescale
 
 section CommSemiring
@@ -391,7 +483,7 @@ variable {R : Type*} [CommSemiring R]
 
 /-- The ring homomorphism taking a multivariate power series `f(X)` to `f(aX)`. -/
 noncomputable def rescale (a : σ → R) : MvPowerSeries σ R →+* MvPowerSeries σ R where
-  toFun f := fun n ↦ (n.prod fun s m ↦ a s ^ m) * f.coeff R n
+  toFun f := fun n ↦ (n.prod fun s m ↦ a s ^ m) * f.coeff n
   map_zero' := by
     ext
     simp [map_zero, coeff_apply]
@@ -430,15 +522,16 @@ noncomputable def rescale (a : σ → R) : MvPowerSeries σ R →+* MvPowerSerie
 
 @[simp]
 theorem coeff_rescale (f : MvPowerSeries σ R) (a : σ → R) (n : σ →₀ ℕ) :
-    coeff R n (rescale a f) = (n.prod fun s m ↦ a s ^ m) * f.coeff R n := by
+    coeff n (rescale a f) = (n.prod fun s m ↦ a s ^ m) * f.coeff n := by
   simp [rescale, coeff_apply]
 
 @[simp]
 theorem rescale_zero :
-    (rescale 0 : MvPowerSeries σ R →+* MvPowerSeries σ R) = (C σ R).comp (constantCoeff σ R) := by
+    (rescale 0 : MvPowerSeries σ R →+* MvPowerSeries σ R) = C.comp constantCoeff := by
   classical
   ext x n
-  simp [Function.comp_apply, RingHom.coe_comp, rescale, RingHom.coe_mk, coeff_C]
+  simp only [rescale, Pi.zero_apply, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+    RingHom.coe_comp, Function.comp_apply, coeff_C]
   split_ifs with h
   · simp [h, coeff_apply, ← @coeff_zero_eq_constantCoeff_apply, coeff_apply]
   · simp only [coeff_apply]
@@ -450,7 +543,7 @@ theorem rescale_zero :
     simpa using h
 
 theorem rescale_zero_apply (f : MvPowerSeries σ R) :
-    rescale 0 f = C σ R (constantCoeff σ R f) := by simp
+    rescale 0 f = C (constantCoeff f) := by simp
 
 @[simp]
 theorem rescale_one : rescale 1 = RingHom.id (MvPowerSeries σ R) := by
@@ -474,7 +567,7 @@ lemma rescale_homogeneous_eq_smul {n : ℕ} {r : R} {f : MvPowerSeries σ R}
   simp only [MvPowerSeries.coeff_rescale, map_smul, Finsupp.prod, Function.const_apply,
     Finset.prod_pow_eq_pow_sum, smul_eq_mul]
   by_cases he : e ∈ f.support
-  · rw [← hf e he, Finsupp.degree]
+  · rw [← hf e he, Finsupp.degree_apply]
   · simp only [Function.mem_support, ne_eq, not_not] at he
     simp [he, mul_zero, coeff_apply]
 
@@ -483,7 +576,7 @@ noncomputable def rescaleMonoidHom :
     (σ → R) →* MvPowerSeries σ R →+* MvPowerSeries σ R where
   toFun := rescale
   map_one' := rescale_one
-  map_mul' a b := by ext; simp  [mul_comm, rescale_rescale]
+  map_mul' a b := by ext; simp [mul_comm, rescale_rescale]
 
 end CommSemiring
 
@@ -498,7 +591,7 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
     finsum_eq_sum _ (coeff_subst_finite (HasSubst.smul_X a) f n)]
   simp only [Pi.smul_apply', smul_eq_mul]
   rw [Finset.sum_eq_single n _ _]
-  · simp [mul_comm, ← monomial_eq, coeff_monomial]
+  · simp [mul_comm, ← monomial_eq]
   · intro b hb hbn
     rw [← monomial_eq, coeff_monomial, if_neg (Ne.symm hbn), mul_zero]
   · intro hn
@@ -520,7 +613,7 @@ theorem rescaleAlgHom_mul (a b : σ → R) :
   simp [rescaleAlgHom_apply, rescale_rescale]
 
 theorem rescaleAlgHom_one :
-    rescaleAlgHom 1 = AlgHom.id R (MvPowerSeries σ R):= by
+    rescaleAlgHom 1 = AlgHom.id R (MvPowerSeries σ R) := by
   ext1 f
   simp [rescaleAlgHom, subst_self]
 
