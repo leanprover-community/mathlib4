@@ -609,7 +609,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   have : ∀ p ∈ s, J * ∏ q ∈ s, q.asIdeal < J * ∏ q ∈ s \ {p}, q.asIdeal := by
     intro p hps
     conv_rhs => rw [← mul_one (J * _)]
-    rw [Finset.prod_eq_mul_prod_diff_singleton hps, ← mul_assoc,
+    rw [Finset.prod_eq_mul_prod_diff_singleton_of_mem hps, ← mul_assoc,
       mul_right_comm _ p.asIdeal]
     refine mul_lt_mul_of_pos_left ?_ ?_
     · rw [Ideal.one_eq_top, lt_top_iff_ne_top]
