@@ -115,10 +115,12 @@ noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
   replace h := Finset.card_sdiff_comm h
   rw [← Fintype.subtype_card (fp \ fq) hpq, ← Fintype.subtype_card (fq \ fp) hqp] at h
   replace h := ((Fintype.card_eq (_F := (_)) (_G := (_))).mp h).some
-  have hpc : spᶜ = (sq \ sp) ∪ (sp ∪ sq)ᶜ := by grind
-  have hqc : sqᶜ = (sp \ sq) ∪ (sp ∪ sq)ᶜ := by grind
-  let epc := (Equiv.setCongr hpc).trans (Equiv.Set.union (by grind))
-  let eqc := (Equiv.setCongr hqc).trans (Equiv.Set.union (by grind))
+  have hpc : spᶜ = (sq \ sp) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
+  have hqc : sqᶜ = (sp \ sq) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
+  let epc := (Equiv.setCongr hpc).trans (Equiv.Set.union
+    (disjoint_compl_right.mono_left (Set.diff_subset.trans Set.subset_union_right)))
+  let eqc := (Equiv.setCongr hqc).trans (Equiv.Set.union
+    (disjoint_compl_right.mono_left (Set.diff_subset.trans Set.subset_union_left)))
   refine epc.trans <| .trans (h.symm.sumCongr <| .refl _) eqc.symm
 
 variable {p q : α → Prop} [DecidablePred p] [DecidablePred q] [Finite {x | p x}]
