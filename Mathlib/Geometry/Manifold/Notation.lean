@@ -697,6 +697,9 @@ where
     -- Otherwise, we recurse into the expression,
     -- depending whether we have an open subset of a space, a product, or a direct sum of spaces.
     match_expr e with
+    -- Check if `e` is an open subset of `M`, i.e. a `TopologicalSpcae.Opens`.
+    -- Because of the coercion from a subtype, the resulting expression `e` has a somewhat
+    -- complicated form.
     | Subtype _M p =>
       match (← instantiateMVars p).cleanupAnnotations with
       | .lam _x _ body _ =>
@@ -707,10 +710,9 @@ where
           | SetLike.instMembership _ _ _ =>
             match_expr sType with
             | TopologicalSpace.Opens M _ =>
-              trace[Elab.DiffGeo.MDiff] "complicated arm hit! \
-                Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
-              -- (In practice, `M` is not an `Opens`,
-              -- as `Opens X` is (currently?) not a topological space.)
+              trace[Elab.DiffGeo.MDiff] "`{e}` is an open set of `{M}`, finding a model on `{M}`"
+              -- `M` is not a open set of another manifold, as `Opens X` is (currently) not a
+              -- topological space (and this would be strange). Therefore, do not recurse into `M`.
               go M baseInfo
             | _ => return none
           | _ => return none
