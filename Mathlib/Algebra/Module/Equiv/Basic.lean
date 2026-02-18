@@ -548,6 +548,7 @@ See `LinearEquiv.conj` for the linear version of this isomorphism. -/
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism with respect to an action on the domains. -/
 @[simps] def domMulActCongrRight [Semiring S] [Module S M₁]

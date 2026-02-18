@@ -386,6 +386,7 @@ theorem coe_add' (f g : M₁ →SL[σ₁₂] M₂) : ⇑(f + g) = f + g :=
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
     ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
     intros
@@ -840,6 +841,7 @@ theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
 instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
   zsmul := (· • ·)
@@ -1295,16 +1297,12 @@ variable (𝕜 E) in
 def topDualPairing : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
   ContinuousLinearMap.coeLM 𝕜
 
-@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing := topDualPairing
-
 @[deprecated (since := "2025-09-03")] alias strongDualPairing := topDualPairing
 
 @[simp]
 theorem topDualPairing_apply (v : E →L[𝕜] 𝕜)
     (x : E) : topDualPairing 𝕜 E v x = v x :=
   rfl
-
-@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing_apply := topDualPairing_apply
 
 @[deprecated (since := "2025-09-03")] alias StrongDual.dualPairing_apply := topDualPairing_apply
 

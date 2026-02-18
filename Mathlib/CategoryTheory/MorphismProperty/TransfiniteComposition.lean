@@ -263,6 +263,7 @@ lemma mem_map_bot_le {j : J} (g : ⊥ ⟶ j) : W (hf.F.map g) := by
     exact MorphismProperty.colimitsOfShape_le _
       (.of_isColimit (hf.F.isColimitOfIsWellOrderContinuous j hj) (fun k ↦ hj' _ k.2))
 
+set_option backward.isDefEq.respectTransparency false in
 include hf hJ in
 lemma mem [W.RespectsIso] : W f :=
   (MorphismProperty.arrow_mk_iso_iff _ (Arrow.isoMk hf.isoBot.symm (Iso.refl _))).2

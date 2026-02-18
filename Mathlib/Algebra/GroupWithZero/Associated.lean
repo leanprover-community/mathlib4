@@ -63,6 +63,7 @@ instance [Monoid M] : IsTrans M Associated :=
   ⟨fun _ _ _ => Associated.trans⟩
 
 /-- The setoid of the relation `x ~ᵤ y` iff there is a unit `u` such that `x * u = y` -/
+@[instance_reducible]
 protected def setoid (M : Type*) [Monoid M] :
     Setoid M where
   r := Associated

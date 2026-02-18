@@ -158,6 +158,7 @@ noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
   inj' := toPGame_injective
   map_rel_iff' := @toPGame_le_iff
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Converts an ordinal into the corresponding game. -/
 noncomputable def toGame : Ordinal.{u} ↪o Game.{u} where
   toFun o := ⟦o.toPGame⟧
