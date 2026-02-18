@@ -18,8 +18,8 @@ public import Mathlib.RingTheory.Support
 
 # The Rees theorem
 
-In this section we proved the rees theorem for depth, which build the relation between
-the vanishing of certain `Ext` typs and length of maximal regular sequence in a certain ideal.
+In this file we prove the Rees theorem for depth, which relates the vanishing of
+certain `Ext` groups and the length of a maximal regular sequence in a certain ideal.
 
 ## Main results
 
@@ -27,8 +27,9 @@ the vanishing of certain `Ext` typs and length of maximal regular sequence in a 
   `Hom(N, M) = 0` iff there is an `M`-regular element in `Module.annihilator R N`.
   This is the case for `n = 0` in the Rees theorem.
 
-* `exists_isRegular_tfae` : For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and
-  finitely generated and nontrivial `R`-module `M` satisfying `IM < M`, we proved TFAE:
+* `exists_isRegular_tfae` (Rees theorem) : For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and
+  finitely generated and nontrivial `R`-module `M` satisfying `IM < M`,
+  the following are equivalent:
   · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
     zero locus of `I`, `∀ i < n, Ext N M i = 0`
   · `∀ i < n, Ext (A⧸I) M i = 0`
@@ -258,9 +259,9 @@ lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : I
         exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
 /--
-The Rees theorem
-For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and finitely generated and nontrivial
-`R`-module `M` satisfying `IM < M`, we proved TFAE:
+**The Rees theorem**
+For any `n : ℕ`, Noetherian ring `R`, `I : Ideal R`, and finitely generated and nontrivial
+`R`-module `M` satisfying `IM < M`, the following are equivalent:
 · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
 · `∀ i < n, Ext (A⧸I) M i = 0`
