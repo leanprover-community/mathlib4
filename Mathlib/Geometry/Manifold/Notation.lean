@@ -207,20 +207,22 @@ scoped elab:max "T% " t:term:arg : term => do
 
 namespace Elab
 
-/-- Check if an expression `e` is (after instantiating metavariables and performing `whnf`),
-a `ContinuousLinearMap` over an identity ring homomorphism and the coefficients of domain and
-codomain are reducibly definitionally equal. If so, we return the coefficient field, the domain and
-the codomain of the continuous linear maps (otherwise none). -/
-def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × Expr × Expr := do
+/-- Check if an expression `e` is a `ContinuousLinearMap` over an identity ring homomorphism where
+the coefficient fields of the domain and codomain are reducibly definitionally equal. If so, we
+return `(k, E, F)`, where `k` is the coefficient field, `E` is the domain, and `F` is the codomain
+of the continuous linear maps. Otherwise, we error.
+
+Assumes that `e` is already in `whnf` and has had metavariables instantiated. -/
+private def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Expr × Expr × Expr := do
   match_expr e with
-    | ContinuousLinearMap k S _ _ _σ E _ _ F _ _ _ _ =>
-      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous (semi-)linear maps"
-      if ← withReducible <| isDefEq k S then
-        -- TODO: check if σ is actually the identity!
-        return some (k, E, F)
-      else
-        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
-    | _ => return none
+  | ContinuousLinearMap k S _ _ σ E _ _ F _ _ _ _ =>
+    trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous (semi-)linear maps"
+    unless ← withReducible <| pureIsDefEq k S do
+      throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
+    match_expr ← whnfR σ with
+    | RingHom.id _ _ => return (k, E, F)
+    | _ => throwError "`{σ}` is not the identity continuous linear map"
+  | _ => throwError "`{e}` is not a space of continuous linear maps"
 
 /--
 Captures information when a model with corners is the trivial model on a normed space
@@ -457,8 +459,7 @@ where
     -- structure (such as, imposed deliberately through a type synonym), we do not want to infer
     -- the standard model with corners.
     -- Therefore, we only check definitional equality at reducible transparency.
-    let some (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
-      | throwError "`{e}` is not a space of continuous linear maps"
+    let (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
     let eK : Term ← Term.exprToSyntax k
     let eT : Term ← Term.exprToSyntax e
     let iTerm : Term ← ``(𝓘($eK, $eT))
@@ -539,39 +540,37 @@ where
           continuous linear maps"
         -- If `α = V →L[𝕜] V` for a `𝕜`-normed space, we also have a normed algebra structure:
         -- search for such cases as well.
-        match ← isCLMReduciblyDefeqCoefficients α with
-        | none => throwError "`{α}` is not a space of continuous linear maps either"
-        | some (k, V, W) =>
-          -- If `V` and `W` are not reducibly def-eq, the normed algebra instance should not fire:
-          -- so it suffices to check at reducible transparency.
-          if ← withReducible <| isDefEq V W then
-            trace[Elab.DiffGeo.MDiff] "`{α}` is a space of continuous `{k}`-linear maps on `{V}`"
-            let searchNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
-              trace[Elab.DiffGeo.MDiff] "considering instances of type `{type}`"
-              match_expr type with
-              | NormedSpace k R _ _ =>
-                -- We use reducible transparency to allow using a type synonym: this should not
-                -- be unfolded.
-                if ← withReducible (pureIsDefEq R V) then
-                  trace[Elab.DiffGeo.MDiff] "`{V}` is a normed space over `{k}` via `{inst}`"
-                  return some (k, R)
-                else return none
-              | _ => return none
-            match ← searchNormedSpace with
-            | some (k, _R) =>
-              trace[Elab.DiffGeo.MDiff] "found a normed space: `{V}` is a normed space over `{k}`"
-              let eK : Term ← Term.exprToSyntax k
-              let eα : Term ← Term.exprToSyntax α
-              Term.elabTerm (← ``(𝓘($eK, $eα))) none
-            | _ => throwError  "Found no `NormedSpace` structure on `{V}` among local instances"
-          else
-            -- NB. If further instances of `NormedAlgebra` arise in practice, adding another check
-            -- here is a good thing to do.
-            -- NB. We don't know the field `𝕜` here, thus using typeclass inference to determine
-            -- if `α` is a normed algebra is not a good idea. Searches `NormedAlgebra ?k α` for
-            -- unspecified `k` often loop, and are not a good idea.
-            throwError "{α}` is a space of continuous `{k}`-linear maps, but with domain `{V}` and \
-              co-domain `{W}` being not definitionally equal"
+        let (k, V, W) ← isCLMReduciblyDefeqCoefficients α
+        -- If `V` and `W` are not reducibly def-eq, the normed algebra instance should not fire:
+        -- so it suffices to check at reducible transparency.
+        if ← withReducible <| isDefEq V W then
+          trace[Elab.DiffGeo.MDiff] "`{α}` is a space of continuous `{k}`-linear maps on `{V}`"
+          let searchNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+            trace[Elab.DiffGeo.MDiff] "considering instances of type `{type}`"
+            match_expr type with
+            | NormedSpace k R _ _ =>
+              -- We use reducible transparency to allow using a type synonym: this should not
+              -- be unfolded.
+              if ← withReducible (pureIsDefEq R V) then
+                trace[Elab.DiffGeo.MDiff] "`{V}` is a normed space over `{k}` via `{inst}`"
+                return some (k, R)
+              else return none
+            | _ => return none
+          match ← searchNormedSpace with
+          | some (k, _R) =>
+            trace[Elab.DiffGeo.MDiff] "found a normed space: `{V}` is a normed space over `{k}`"
+            let eK : Term ← Term.exprToSyntax k
+            let eα : Term ← Term.exprToSyntax α
+            Term.elabTerm (← ``(𝓘($eK, $eα))) none
+          | _ => throwError  "Found no `NormedSpace` structure on `{V}` among local instances"
+        else
+          -- NB. If further instances of `NormedAlgebra` arise in practice, adding another check
+          -- here is a good thing to do.
+          -- NB. We don't know the field `𝕜` here, thus using typeclass inference to determine
+          -- if `α` is a normed algebra is not a good idea. Searches `NormedAlgebra ?k α` for
+          -- unspecified `k` often loop, and are not a good idea.
+          throwError "{α}` is a space of continuous `{k}`-linear maps, but with domain `{V}` and \
+            co-domain `{W}` being not definitionally equal"
     | _ => throwError "`{e}` is not a set of units, in particular not of a complete normed algebra"
   /-- Attempt to find a model with corners on the complex unit circle -/
   fromCircle : TermElabM Expr := do
