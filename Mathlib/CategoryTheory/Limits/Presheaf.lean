@@ -78,6 +78,7 @@ Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 def restrictedULiftYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₂) :=
     uliftYoneda.{w} ⋙ (Functor.whiskeringLeft _ _ _).obj A.op
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_comp_uliftYonedaEquiv_down (E : ℰ) {X Y : C} (f : X ⟶ Y)
     (g : uliftYoneda.{max w v₂}.obj Y ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E) :
@@ -88,6 +89,7 @@ lemma map_comp_uliftYonedaEquiv_down (E : ℰ) {X Y : C} (f : X ⟶ Y)
   simp only [comp_id] at this
   simp [id_comp, this]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `restrictedULiftYonedaHomEquiv`. -/
 def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E : ℰ) :
     (CostructuredArrow.proj uliftYoneda.{max w v₂} P ⋙ A ⟶
@@ -162,6 +164,7 @@ noncomputable def restrictedULiftYonedaHomEquiv (P : Cᵒᵖ ⥤ Type max w v₁
   (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α P).homEquiv.trans
     (restrictedULiftYonedaHomEquiv' A P E)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `L : (Cᵒᵖ ⥤ Type max v₁ v₂) ⥤ ℰ` is a pointwise left Kan extension
 of a functor `A : C ⥤ ℰ` along the Yoneda embedding,
 then `L` is a left adjoint of `restrictedULiftYoneda A : ℰ ⥤ Cᵒᵖ ⥤ Type max v₁ v₂` -/
@@ -243,6 +246,7 @@ def functorToRepresentables (P : Cᵒᵖ ⥤ Type max w v₁) :
     P.Elementsᵒᵖ ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
   (CategoryOfElements.π P).leftOp ⋙ uliftYoneda.{w}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is a cocone with point `P` for the functor `functorToRepresentables P`. It is shown in
 `colimitOfRepresentable P` that this cocone is a colimit: that is, we have exhibited an arbitrary
 presheaf `P` as a colimit of representables.
@@ -259,6 +263,7 @@ def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
         dsimp
         rw [comp_id, ← uliftYonedaEquiv_symm_map, f.unop.2] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The legs of the cocone `coconeOfRepresentable` are natural in the choice of presheaf. -/
 theorem coconeOfRepresentable_naturality
     {P₁ P₂ : Cᵒᵖ ⥤ Type max w v₁} (α : P₁ ⟶ P₂) (j : P₁.Elementsᵒᵖ) :
@@ -267,6 +272,7 @@ theorem coconeOfRepresentable_naturality
   ext T f
   simp [uliftYonedaEquiv, FunctorToTypes.naturality]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cocone with point `P` given by `coconeOfRepresentable` is a colimit:
 that is, we have exhibited an arbitrary presheaf `P` as a colimit of representables.
 
@@ -382,6 +388,7 @@ section
 
 variable {D : Type u₂} [Category.{v₁} D] (F : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (X : C) (Y : F.op.LeftExtension (yoneda.obj X)) :
     Unique (Functor.LeftExtension.mk _ (yonedaMap F X) ⟶ Y) where
   default := StructuredArrow.homMk
@@ -404,6 +411,7 @@ section
 
 variable {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (X : C) (Y : F.op.LeftExtension (uliftYoneda.{max w v₂}.obj X)) :
     Unique (Functor.LeftExtension.mk _ (uliftYonedaMap.{w} F X) ⟶ Y) where
   default := StructuredArrow.homMk
@@ -425,6 +433,7 @@ instance (X : C) : (uliftYoneda.{max w v₁}.obj (F.obj X)).IsLeftKanExtension
 section
 variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `F ⋙ uliftYoneda` is naturally isomorphic to `uliftYoneda ⋙ F.op.lan`. -/
 noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
     F ⋙ uliftYoneda.{max w v₁} ≅ uliftYoneda.{max w v₂} ⋙ F.op.lan :=
@@ -495,6 +504,7 @@ lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type max w v₁ v₂} {x y : P.Eleme
     Functor.op_map, Functor.map_comp, FunctorToTypes.comp]
   simp [uliftYoneda]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given functors `F : C ⥤ D` and `G : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ (Dᵒᵖ ⥤ Type max w v₁ v₂)`,
 and a natural transformation `φ : F ⋙ uliftYoneda ⟶ uliftYoneda ⋙ G`, this is the
 (natural) morphism `P ⟶ F.op ⋙ G.obj P` for all `P : Cᵒᵖ ⥤ Type max w v₁ v₂` that is
@@ -543,6 +553,7 @@ noncomputable def natTrans : F.op.lan ⟶ G where
     rw [Functor.descOfIsLeftKanExtension_fac_assoc, ← reassoc_of% eq,
       Functor.descOfIsLeftKanExtension_fac, presheafHom_naturality]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma natTrans_app_uliftYoneda_obj (X : C) :
     (natTrans.{w} φ).app (uliftYoneda.{max w v₂}.obj X) =
       (compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X ≫ φ.app X := by
@@ -557,6 +568,7 @@ end
 
 variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : C ⥤ D`, this definition is part of the verification that
 `Functor.LeftExtension.mk F.op.lan (compULiftYonedaIsoULiftYonedaCompLan F).hom`
 is universal, i.e. that  `F.op.lan : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ Dᵒᵖ ⥤ Type max w v₁ v₂`
@@ -570,6 +582,7 @@ noncomputable def extensionHom
     dsimp
     rw [natTrans_app_uliftYoneda_obj, Iso.hom_inv_id_app_assoc])
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext]
 lemma hom_ext {Φ : uliftYoneda.{max w v₂}.LeftExtension (F ⋙ uliftYoneda.{max w v₁})}
     (f g : Functor.LeftExtension.mk F.op.lan (compULiftYonedaIsoULiftYonedaCompLan F).hom ⟶ Φ) :
@@ -611,6 +624,7 @@ instance : F.op.lan.IsLeftKanExtension (compULiftYonedaIsoULiftYonedaCompLan.{w}
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a presheaf `P`, consider the forgetful functor from the category of representable
     presheaves over `P` to the category of presheaves. There is a tautological cocone over this
     functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
@@ -634,6 +648,7 @@ def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
       (colimitOfRepresentable.{w} P)
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a presheaf `P`, consider the forgetful functor from the category of representable
     presheaves over `P` to the category of presheaves. There is a tautological cocone over this
     functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
@@ -660,6 +675,7 @@ def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
 
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
     functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
     `yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
