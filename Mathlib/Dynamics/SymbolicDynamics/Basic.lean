@@ -377,7 +377,6 @@ variable {A : Type*} [Inhabited A]
 variable {G : Type*} [Monoid G] [IsRightCancelMul G]
 
 section PatternExtension
-open scoped Classical
 -- We assume right-cancellation throughout this section for uniqueness of preimages under (_ * v)
 -- or (_ + v).
 
@@ -391,8 +390,13 @@ Formally: given a pattern `p` with finite support in `G`, we define a configurat
 
 This produces a canonical "completion" of the pattern to a configuration,
 filling all unspecified positions with `default`. -/
-def Pattern.extendAtOrigin (p : Pattern A G) : G → A :=
-  fun i ↦ if h : i ∈ p.support then p.data ⟨i, h⟩ else default
+def Pattern.extendAtOrigin (p : Pattern A G) : G → A := by
+  classical
+  exact fun i ↦
+    if h : i ∈ p.support then
+      p.data ⟨i, h⟩
+    else
+      default
 
 /-- Translate a finite pattern `p` so that it occurs at the translate `v`, before completing into
 a configuration.
@@ -419,18 +423,19 @@ This definition does not assume right-cancellation; it only *chooses* a preimage
 Uniqueness (and the usual equations such as `Pattern.extend p v (w + v) = p.data ⟨w, _⟩`)
 require a right-cancellation hypothesis and are proved in separate lemmas.
 -/]
-noncomputable def Pattern.mulExtend (p : Pattern A G) (v : G) : G → A :=
-  fun h =>
-    if hmem : h ∈ p.support.image (· * v) then
-      -- package existence of a preimage under (_ * v)
-      let ex : ∃ w, w ∈ p.support ∧ w * v = h := by
-        simpa [Finset.mem_image] using hmem
-      let w := Classical.choose ex
-      have hw  : w ∈ p.support := (Classical.choose_spec ex).1
-      have hwv : w * v = h := (Classical.choose_spec ex).2
-      p.data ⟨w, hw⟩
-    else
-      default
+noncomputable def Pattern.mulExtend (p : Pattern A G) (v : G) : G → A := by
+  classical
+  intro h
+  if hmem : h ∈ p.support.image (· * v) then
+    -- package existence of a preimage under (_ * v)
+    let ex : ∃ w, w ∈ p.support ∧ w * v = h := by
+      simpa [Finset.mem_image] using hmem
+    let w := Classical.choose ex
+    have hw  : w ∈ p.support := (Classical.choose_spec ex).1
+    have hwv : w * v = h := (Classical.choose_spec ex).2
+    exact p.data ⟨w, hw⟩
+  else
+    exact default
 end PatternExtension
 
 namespace Pattern
@@ -544,8 +549,7 @@ lemma mapsTo_mulShift_mulForbidden {A G : Type*} [Monoid G]
 end Pattern
 
 section OccursInAtEqCylinder
-open scoped Classical
-
+open scoped Classical in
 /-- We call *occurrence set* for pattern `p` and position `g` the set of configurations
 in which a pattern `p` occurs at position `g`.
 
