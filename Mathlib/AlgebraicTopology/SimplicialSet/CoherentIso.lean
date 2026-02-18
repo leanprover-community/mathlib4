@@ -31,7 +31,7 @@ if `g` sends `hom` to `f`, then `f` has an inverse.
 
 @[expose] public section
 
-universe u v
+universe u v w
 
 open CategoryTheory
 
@@ -48,7 +48,7 @@ attribute [grind cases] WalkingIso
 namespace WalkingIso
 
 /-- The underlying type of `WalkingIso` is equivalent to `Bool`, since they both have 2 elements. -/
-def equivBool : WalkingIso ≃ Bool where
+def equivBool : WalkingIso.{u} ≃ Bool where
   toFun := fun
     | .zero => false
     | .one => true
@@ -62,11 +62,11 @@ def equivBool : WalkingIso ≃ Bool where
     rintro (_ | _) <;>
     rfl
 
-instance : DecidableEq (WalkingIso) :=
+instance : DecidableEq WalkingIso.{u} :=
   fun _ _ ↦ decidable_of_iff _ (Equiv.apply_eq_iff_eq equivBool)
 
 /-- The free isomorphism is the codiscrete category on two objects. -/
-instance : Category (WalkingIso) where
+instance : Category.{0, u} WalkingIso.{u} where
   Hom _ _ := Unit
   id _ := ⟨⟩
   comp _ _ := ⟨⟩
@@ -78,7 +78,7 @@ section
 variable {C : Type u} [Category.{v} C]
 
 /-- Functors out of `WalkingIso` define isomorphisms in the target category. -/
-def toIso (F : WalkingIso ⥤ C) : F.obj zero ≅ F.obj one where
+def toIso (F : WalkingIso.{w} ⥤ C) : F.obj zero ≅ F.obj one where
   hom := F.map PUnit.unit
   inv := F.map PUnit.unit
   hom_inv_id := by rw [← F.map_comp, ← F.map_id]; rfl
@@ -86,7 +86,7 @@ def toIso (F : WalkingIso ⥤ C) : F.obj zero ≅ F.obj one where
 
 /-- From an isomorphism in a category, true can build a functor out of `WalkingIso` to
   that category. -/
-def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{u} ⥤ C where
+def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{w} ⥤ C where
   obj := fun
     | zero => X
     | one => Y
@@ -98,7 +98,7 @@ def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{u} ⥤ C where
   map_comp := by rintro (_ | _) (_ | _) (_ | _) <;> simp
 
 /-- An equivalence between the type of `WalkingIso`s in `C` and the type of isomorphisms in `C`. -/
-def equiv : (WalkingIso ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
+def equiv : (WalkingIso.{w} ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
   toFun F := ⟨F.obj zero, F.obj one, toIso F⟩
   invFun p := fromIso p.2.2
   right_inv := fun ⟨X, Y, e⟩ ↦ rfl
@@ -116,7 +116,7 @@ end
 
 /-- There are functors from the one-object category into `WalkingIso`,
   sending the object to either `zero` or `one`. -/
-def coev (i : WalkingIso) : Fin 1 ⥤ WalkingIso := ComposableArrows.mk₀ i
+def coev (i : WalkingIso.{u}) : Fin 1 ⥤ WalkingIso.{u} := ComposableArrows.mk₀ i
 
 end WalkingIso
 
@@ -128,13 +128,13 @@ open Simplicial Edge
 
 /-- The simplicial set that encodes a single isomorphism.
   Its n-simplices are formal compositions of arrows in WalkingIso. -/
-def coherentIso : SSet := nerve WalkingIso
+def coherentIso : SSet := nerve WalkingIso.{u}
 
 namespace coherentIso
 
 /-- Since the morphisms in WalkingIso do not carry information, an n-simplex of coherentIso
   is equivalent to an (n + 1)-vector of the objects of WalkingIso. -/
-def equivFun {n : ℕ} : coherentIso _⦋n⦌ ≃ (Fin (n + 1) → WalkingIso) where
+def equivFun {n : ℕ} : coherentIso _⦋n⦌ ≃ (Fin (n + 1) → WalkingIso.{u}) where
   toFun f := f.obj
   invFun f := .mk f (fun _ ↦ ⟨⟩) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
   left_inv _ := rfl
@@ -147,11 +147,11 @@ instance (n : ℕ) : DecidableEq (coherentIso _⦋n⦌) :=
 
 /-- The source vertex of `coherentIso`. -/
 def x₀ : coherentIso _⦋0⦌ :=
-  ComposableArrows.mk₀ WalkingIso.zero
+  ComposableArrows.mk₀ WalkingIso.zero.{u}
 
 /-- The target vertex of `coherentIso`. -/
 def x₁ : coherentIso _⦋0⦌ :=
-  ComposableArrows.mk₀ WalkingIso.zero
+  ComposableArrows.mk₀ WalkingIso.one.{u}
 
 /-- The forwards edge of `coherentIso`. -/
 def hom : Edge x₀ x₁ where
