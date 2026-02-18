@@ -71,37 +71,6 @@ lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module 
   apply not_nontrivial_iff_subsingleton.mpr (subsingleton_of_forall_eq 0 (fun m ↦ ?_))
   rw [← one_smul R m, Subsingleton.elim (1 : R) 0, zero_smul]
 
-namespace AddCommGrpCat
-
-variable {ι : Type v} [DecidableEq ι] (Z : ι → AddCommGrpCat.{v})
-
-open DirectSum
-
-/-- Given a function `Z : ι → AddCommGrpCat`, the `Cofan` obtained from `DirectSum.of Z i`. -/
-def coproductCocone : Cofan Z :=
-  Cofan.mk (of (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.of (fun i ↦ Z i) i)
-
-set_option backward.isDefEq.respectTransparency false in
-/-- `coproductCocone` is colimit. -/
-def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
-  desc s := ofHom <| DirectSum.toAddMonoid fun i ↦ (s.ι.app ⟨i⟩).hom
-  fac := by
-    rintro s ⟨i⟩
-    ext (x : Z i)
-    simp [coproductCocone, hom_comp]
-  uniq := by
-    rintro s f h
-    ext : 1
-    refine DirectSum.addHom_ext fun i x ↦ ?_
-    simpa [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using
-      congr($(h ⟨i⟩) x)
-
-/-- The isomorphism in `AddCommGrpCat` between coproduct and directsum. -/
-noncomputable def coprodIsoDirectSum [HasCoproduct Z] : ∐ Z ≅ AddCommGrpCat.of (⨁ i, Z i) :=
-  colimit.isoColimitCocone ⟨_, coproductCoconeIsColimit Z⟩
-
-end AddCommGrpCat
-
 open Module
 
 lemma subsingleton_of_pi {α β : Type*} [Nonempty α] (h : Subsingleton (α → β)) :
