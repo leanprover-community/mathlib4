@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.Distributions.SetBernoulli
+public import Mathlib.Probability.Moments.ComplexMGF
 public import Mathlib.Probability.Moments.Variance
 public import Mathlib.Probability.HasLaw
 
@@ -201,6 +202,140 @@ lemma IsBinomial.ae_mem_image_natCast_Iic [MeasurableSingletonClass R]
 
 lemma IsBinomial.ae_le {X : Ω → ℕ} (hX : IsBinomial X n p P) : ∀ᵐ ω ∂P, X ω ≤ n := by
   simpa using hX.ae_mem_image_natCast_Iic
+
+namespace CharacteristicFunction
+
+open scoped Real
+
+open Complex Measure
+
+open Classical in
+private lemma cexp_mul_ncard_eq_finset_prod (z : ℂ) (s : Set ℕ) (hs : s ⊆ Set.Iio n) :
+    cexp (z * s.ncard) = ∏ i ∈ Finset.range n, if i ∈ s then cexp z else 1 := by
+  rw [mul_comm, exp_nat_mul, Finset.prod_ite, Finset.prod_const_one, mul_one, Finset.prod_const]
+  congr 1
+  rw [Set.ncard_eq_toFinset_card (hs := Set.Finite.subset (Set.finite_Iio n) hs)]
+  congr 1
+  ext i
+  simp only [Finset.mem_filter, Finset.mem_range, Set.Finite.mem_toFinset]
+  exact ⟨fun hi => ⟨hs hi, hi⟩, fun ⟨_, hi⟩ => hi⟩
+
+/-- The complex moment-generating function of a binomial distribution with success probability `p`
+and `n` independent trials is given by `z ↦ (1 - p + p * exp z) ^ n`. -/
+open Classical in
+theorem complexMGF_id_binomial (z : ℂ) :
+    complexMGF id (binomial n p) z = (1 - p + p * cexp z) ^ n := by
+  let μ := fun i ↦ (unitInterval.toNNReal p • dirac (i ∈ Set.Iio n) +
+    unitInterval.toNNReal (σ p) • dirac False)
+  calc complexMGF id (binomial n p) z
+    _ = ∫ k, cexp (z * k) ∂Bin(ℝ, n, p) := by
+      simp only [complexMGF, id_eq]
+    _ = ∫ s, cexp (z * Set.ncard s) ∂setBer(Set.Iio n, p) := by
+      rw [binomial, integral_map (by fun_prop) (by fun_prop)]
+      simp only [Function.comp_apply, ofReal_natCast]
+    _ = ∫ f, cexp (z * Set.ncard {i | f i}) ∂(infinitePi μ) := by
+      rw [setBernoulli_eq_map, integral_map (by fun_prop) (by fun_prop)]
+    _ = ∫ f, ∏ i ∈ Finset.range n, (if f i then cexp z else 1) ∂(infinitePi μ) := by
+      apply integral_congr_ae
+      have : ∀ᵐ f ∂(infinitePi μ), {i | f i} ⊆ Set.Iio n := by
+        have key := setBernoulli_ae_subset (u := Set.Iio n) (p := p)
+        rw [setBernoulli_eq_map] at key
+        exact ae_of_ae_map (by fun_prop) key
+      filter_upwards [this] with f hf
+      exact cexp_mul_ncard_eq_finset_prod z _ hf
+    _ = ∫ h, ∏ i, (if h i then cexp z else 1)
+        ∂(Measure.pi fun i : Finset.range n ↦ μ i) := by
+      simp_rw [← Finset.prod_coe_sort (Finset.range n)]
+      have hm : Measurable (fun h : Finset.range n → Prop ↦
+          ∏ i, if h i then cexp z else 1) := by fun_prop
+      exact integral_restrict_infinitePi μ hm.aestronglyMeasurable
+    _ = (∫ x : Prop, (if x then cexp z else 1)
+        ∂(unitInterval.toNNReal p • dirac True +
+          unitInterval.toNNReal (σ p) • dirac False)) ^ n := by
+      have hμ : (fun i : Finset.range n ↦ μ i) = fun _ ↦
+          (unitInterval.toNNReal p • dirac True +
+           unitInterval.toNNReal (σ p) • dirac False : Measure Prop) := by
+        ext ⟨i, hi⟩ : 1
+        simp only [μ, Set.mem_Iio, Finset.mem_range.mp hi]
+      rw [hμ]
+      have key := integral_fintype_prod_eq_pow (ι := Finset.range n)
+        (fun x : Prop ↦ if x then cexp z else 1)
+        (μ := unitInterval.toNNReal p • dirac True + unitInterval.toNNReal (σ p) • dirac False)
+      simp only [Finset.card_range, Fintype.card_coe] at key ⊢
+      exact key
+    _ = (1 - p + p * cexp z) ^ n := by
+      congr 1
+      have h1 : Integrable (fun x : Prop ↦ if x then cexp z else 1)
+          (unitInterval.toNNReal p • dirac True) :=
+        (integrable_dirac (by simp)).smul_measure_nnreal
+      have h2 : Integrable (fun x : Prop ↦ if x then cexp z else 1)
+          (unitInterval.toNNReal (σ p) • dirac False) :=
+        (integrable_dirac (by simp)).smul_measure_nnreal
+      rw [integral_add_measure h1 h2, integral_smul_nnreal_measure, integral_smul_nnreal_measure]
+      simp only [integral_dirac, NNReal.smul_def, unitInterval.toNNReal, real_smul,
+        unitInterval.coe_symm_eq]
+      push_cast
+      ring
+
+/-- The complex moment-generating function of a random variable with binomial distribution with
+success probability `p` and `n` independent trials is given by `z ↦ (1 - p + p * exp z) ^ n`. -/
+theorem complexMGF_binomial {X : Ω → ℝ} (hX : P.map X = binomial n p) (z : ℂ) :
+    complexMGF X P z = (1 - p + p * cexp z) ^ n := by
+  have hX_meas : AEMeasurable X P := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
+  rw [← complexMGF_id_map hX_meas, hX, complexMGF_id_binomial]
+
+/-- The characteristic function of a binomial distribution with success probability `p` and `n`
+independent trials is given by `t ↦ (1 - p + p * (exp (t * I))) ^ n`. -/
+theorem charFun_binomial (t : ℝ) :
+    charFun (binomial n p) t = (1 - p + p * (cexp (t * «I»))) ^ n := by
+  rw [← complexMGF_id_mul_I, complexMGF_id_binomial (t * «I»)]
+
+/-- The moment-generating function of a random variable with binomial distribution with success
+probability `p` and `n` independent trials is given by `t ↦ (1 - p + p * exp t) ^ n`. -/
+theorem mgf_binomial {X : Ω → ℝ} (hX : P.map X = binomial n p) (t : ℝ) :
+    mgf X P t = (1 - p + p * rexp t) ^ n := by
+  suffices (mgf X P t : ℂ) = (1 - p + p * rexp t) ^ n from mod_cast this
+  have hX_meas : AEMeasurable X P :=
+    aemeasurable_of_map_neZero (by rw [hX]; exact isProbabilityMeasure_binomial.neZero)
+  rw [← mgf_id_map hX_meas, ← complexMGF_ofReal, hX, complexMGF_id_binomial]
+  norm_cast
+
+theorem mgf_fun_id_binomial :
+    mgf (fun x ↦ x) (binomial n p) = fun t ↦ (1 - p + p * rexp t) ^ n := by
+  ext t
+  exact mgf_binomial (by simp) t
+
+theorem mgf_id_binomial :
+    mgf id (binomial n p) = fun t ↦ (1 - p + p * rexp t) ^ n :=
+  mgf_fun_id_binomial
+
+/-- The cumulant-generating function of a random variable with binomial distribution with success
+probability `p` and `n` independent trials is given by `t ↦ n * log (1 - p + p * exp t)`. -/
+theorem cgf_binomial {X : Ω → ℝ} (hX : P.map X = binomial n p) (t : ℝ) :
+    cgf X P t = n * Real.log (1 - p + p * rexp t) := by
+  rw [cgf, mgf_binomial hX t, Real.log_pow]
+
+lemma integrable_exp_mul_binomial (t : ℝ) :
+    Integrable (fun x ↦ rexp (t * x)) (binomial n p) := by
+  rw [← mgf_pos_iff, mgf_fun_id_binomial]
+  exact pow_pos (by
+    rcases eq_or_lt_of_le (unitInterval.nonneg p) with hp | hp
+    · simp [← hp]
+    · linarith [sub_nonneg.mpr (show (p : ℝ) ≤ 1 from unitInterval.le_one p),
+        mul_pos hp (Real.exp_pos t)]) _
+
+@[simp]
+lemma integrableExpSet_id_binomial :
+    integrableExpSet id (binomial n p) = Set.univ := by
+  ext
+  simpa [integrableExpSet] using integrable_exp_mul_binomial _
+
+@[simp]
+lemma integrableExpSet_fun_id_binomial :
+    integrableExpSet (fun x ↦ x) (binomial n p) = Set.univ :=
+  integrableExpSet_id_binomial
+
+end CharacteristicFunction
 
 /-! ### Binomial random variables -/
 
