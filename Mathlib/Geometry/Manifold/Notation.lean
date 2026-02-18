@@ -545,7 +545,7 @@ where
         -- so it suffices to check at reducible transparency.
         if ← withReducible <| isDefEq V W then
           trace[Elab.DiffGeo.MDiff] "`{α}` is a space of continuous `{k}`-linear maps on `{V}`"
-          let searchNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+          let normedSpace? ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
             trace[Elab.DiffGeo.MDiff] "considering instances of type `{type}`"
             match_expr type with
             | NormedSpace k R _ _ =>
@@ -556,7 +556,7 @@ where
                 return some (k, R)
               else return none
             | _ => return none
-          match ← searchNormedSpace with
+          match normedSpace? with
           | some (k, _R) =>
             trace[Elab.DiffGeo.MDiff] "found a normed space: `{V}` is a normed space over `{k}`"
             let eK : Term ← Term.exprToSyntax k
