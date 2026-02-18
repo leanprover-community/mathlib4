@@ -73,13 +73,9 @@ theorem birkhoffAverage_congr_ring' (S : Type*) [DivisionSemiring S] [Module S M
     birkhoffAverage (α := α) (M := M) R = birkhoffAverage S := by
   ext; apply birkhoffAverage_congr_ring
 
-theorem Function.IsFixedPt.birkhoffAverage_eq' {f : α → α} {x : α} (h : IsFixedPt f x)
+theorem Function.IsFixedPt.birkhoffAverage_eq {f : α → α} {x : α} (h : IsFixedPt f x)
     (g : α → M) {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n x = g x := by
   rw [birkhoffAverage, h.birkhoffSum_eq, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀ hn]
-
-theorem Function.IsFixedPt.birkhoffAverage_eq [CharZero R] {f : α → α} {x : α} (h : IsFixedPt f x)
-    (g : α → M) {n : ℕ} (hn : n ≠ 0) : birkhoffAverage R f g n x = g x :=
-  Function.IsFixedPt.birkhoffAverage_eq' R h g <|Nat.cast_ne_zero.mpr hn
 
 theorem Function.const.birkhoffAverage_eq₀ {f : α → α} (a : M) {n : ℕ} (hn : (n : R) ≠ 0)
     (x : α) : birkhoffAverage R f (fun _ ↦ a) n x = a := by
