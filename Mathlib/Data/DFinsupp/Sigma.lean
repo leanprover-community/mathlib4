@@ -94,6 +94,7 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
       simpa using hj
   · simp [hi]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
 def sigmaUncurry [∀ i j, Zero (δ i j)] (f : Π₀ (i) (j), δ i j) : Π₀ i : Σ _, _, δ i.1 i.2 where

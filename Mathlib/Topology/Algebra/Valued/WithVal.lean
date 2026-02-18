@@ -468,6 +468,7 @@ instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
       IsIntegralClosure.isIntegral_iff (A := R), WithVal.algebraMap_right_apply,
       (WithVal.toVal_injective v).eq_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
 `ℤ` in `K`. -/
 @[simps!]

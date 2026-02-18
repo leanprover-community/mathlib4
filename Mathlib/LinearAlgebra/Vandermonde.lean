@@ -200,6 +200,7 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
   simp only [of_apply, projVandermonde_apply_of_ne_zero h0, val_succ, val_castSucc, cons_succ, W, r]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The formula for the determinant of a projective Vandermonde matrix. -/
 theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =
     ∏ i : Fin n, ∏ j ∈ Finset.Ioi i, (v j * w i - v i * w j) := by

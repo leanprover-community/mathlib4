@@ -72,6 +72,7 @@ instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
     WithZero.denselyOrdered_set_iff_subsingleton]
   simpa using Valued.v.range_nontrivial
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: make this inferred from `IsRankOneDiscrete`, or
 -- develop the API for a completion of a base `IsDVR` ring
 instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
@@ -181,11 +182,12 @@ lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
     IsFinitePlace v ↔ ∃ w : FinitePlace K, w.val = v :=
   ⟨fun H ↦ ⟨⟨v, H⟩, rfl⟩, fun ⟨w, hw⟩ ↦ hw ▸ w.isFinitePlace⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
 theorem FinitePlace.norm_def (x : K) :
     ‖embedding v x‖ = adicAbv v x := by
-  simp [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField, Valued.norm,
+  simp +instances [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField, Valued.norm,
     Valuation.RankOne.hom, embedding_apply, adicAbv_def]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
@@ -266,6 +268,7 @@ theorem norm_embedding_eq (w : FinitePlace K) (x : K) :
 
 theorem pos_iff {w : FinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := w.1.pos_iff
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ ↔ v₁ = v₂ := by
   refine ⟨?_, fun a ↦ by rw [a]⟩
@@ -298,6 +301,7 @@ lemma maximalIdeal_injective : (fun w : FinitePlace K ↦ maximalIdeal w).Inject
 lemma maximalIdeal_inj (w₁ w₂ : FinitePlace K) : maximalIdeal w₁ = maximalIdeal w₂ ↔ w₁ = w₂ :=
   equivHeightOneSpectrum.injective.eq_iff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mulSupport_finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
     (Function.mulSupport fun w : FinitePlace K ↦ w x).Finite := by
   have (w : FinitePlace K) : w x ≠ 1 ↔ w x < 1 :=
@@ -351,6 +355,7 @@ open scoped NumberField
 lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
     (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open Ideal in
 lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K}
     (h_x_nezero : x ≠ 0) : ‖embedding v x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
