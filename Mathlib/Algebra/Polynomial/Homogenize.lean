@@ -276,9 +276,13 @@ lemma sum_eq_natDegree_of_mem_support_homogenize (p : R[X]) {s : Fin 2 →₀ �
   simp [(isHomogeneous_homogenize p).degree_eq_sum_deg_support hs, ← Finsupp.degree_apply,
         Finsupp.degree_eq_sum]
 
+/-- Summing a function over the coefficients of the homogenization of a polynomial `p`
+(of degree `p.natDegree`) gives the same result as summing over the coefficients of `p`. -/
 lemma finsuppSum_homogenize_eq {M : Type*} [AddCommMonoid M] (p : R[X]) {f : R → M} :
     (Finsupp.sum (p.homogenize p.natDegree) fun _ c ↦ f c) = p.sum fun _ c ↦ f c := by
   rw [MvPolynomial.sum_def, sum_def p]
+  -- We set up a bijection between the sets indexing the terms on both sides
+  -- and show that it maps the terms in the one sum to those in the other.
   refine Finset.sum_nbij' (fun s ↦ s 0) (fun n ↦ fun₀ | 0 => n | 1 => p.natDegree - n)
     (fun s hs ↦ ?_) (fun n hn ↦ ?_) (fun s hs ↦ ?_) (fun n hn ↦ by simp)
     fun s hs ↦ ?_
