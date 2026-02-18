@@ -154,6 +154,89 @@ instance [P.IsTriangulated] : P.IsTriangulatedClosed₃ where
 
 instance [P.IsTriangulated] : P.isoClosure.IsTriangulated where
 
+
+section
+
+variable (Q R : ObjectProperty C)
+
+/-- An object `X` satisfies `extensionProduct P Q` if there exists a distinguished triangle
+`Y ⟶ X ⟶ Z ⟶ Y⟦1⟧` such that `Y` satisfies `P` and `Z` satisfies `Q`. -/
+def extensionProduct : ObjectProperty C :=
+  fun X => ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦(1 : ℤ)⟧),
+    Triangle.mk f g h ∈ distTriang C ∧ P Y ∧ Q Z
+
+lemma prop_extensionProduct_iff (X : C) : extensionProduct P Q X ↔
+  ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦(1 : ℤ)⟧),
+    Triangle.mk f g h ∈ distTriang C ∧ P Y ∧ Q Z := Iff.rfl
+
+variable {P} in
+lemma monotone_extensionProduct_left {P' : ObjectProperty C} (h : P ≤ P') :
+    extensionProduct P Q ≤ extensionProduct P' Q := by
+  intro X ⟨Y, Z, f, g, k, hT, hP, hQ⟩
+  exact ⟨Y, Z, f, g, k, hT, h Y hP, hQ⟩
+
+variable {Q} in
+lemma monotone_extensionProduct_right {Q' : ObjectProperty C} (h : Q ≤ Q') :
+    extensionProduct P Q ≤ extensionProduct P Q' := by
+  intro X ⟨Y, Z, f, g, k, hT, hP, hQ⟩
+  exact ⟨Y, Z, f, g, k, hT, hP, h Z hQ⟩
+
+variable {P} in
+lemma le_extensionProduct_left [Q.IsClosedUnderIsomorphisms] [Q.ContainsZero] :
+    P ≤ extensionProduct P Q := by
+  intro X hX
+  exact ⟨_, _, _, _, _, contractible_distinguished X, hX, Q.prop_zero⟩
+
+variable {Q} in
+lemma le_extensionProduct_right [P.IsClosedUnderIsomorphisms] [P.ContainsZero] :
+    Q ≤ extensionProduct P Q := by
+  intro X hX
+  exact ⟨_, _, _, _, _, inv_rot_of_distTriang _ (contractible_distinguished X),
+    P.prop_of_isZero (IsZero.of_iso (isZero_zero C) (Functor.mapZeroObject _)), hX⟩
+
+instance : (extensionProduct P Q).IsClosedUnderIsomorphisms where
+  of_iso := by
+    intro X X' i ⟨Y, Z, f, g, h, hT, hP, hQ⟩
+    refine ⟨Y, Z, f ≫ i.hom, i.inv ≫ g, h, ?_, hP, hQ⟩
+    exact isomorphic_distinguished _ hT _ <| Triangle.isoMk _ _ (Iso.refl _) i.symm (Iso.refl _)
+
+lemma extensionProduct_isoClosure_left :
+    extensionProduct P.isoClosure Q = extensionProduct P Q := by
+  refine le_antisymm ?_ (monotone_extensionProduct_left Q P.le_isoClosure)
+  intro X ⟨Y, Z, f, g, h, hT, ⟨Y', hP, ⟨i⟩⟩, hQ⟩
+  refine ⟨Y', Z, i.inv ≫ f, g, h ≫ i.hom⟦1⟧', ?_, hP, hQ⟩
+  exact isomorphic_distinguished _ hT _ <| Triangle.isoMk _ _ i.symm (Iso.refl _) (Iso.refl _)
+
+lemma extensionProduct_isoClosure_right :
+    extensionProduct P Q.isoClosure = extensionProduct P Q := by
+  refine le_antisymm ?_ (monotone_extensionProduct_right _ Q.le_isoClosure)
+  intro X ⟨Y, Z, f, g, h, hT, hP, ⟨Z', hQ, ⟨i⟩⟩⟩
+  refine ⟨Y, Z', f, g ≫ i.hom, i.inv ≫ h, ?_, hP, hQ⟩
+  exact isomorphic_distinguished _ hT _ <| Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) i.symm
+
+instance [P.IsStableUnderShift ℤ] [Q.IsStableUnderShift ℤ] :
+    (extensionProduct P Q).IsStableUnderShift ℤ where
+  isStableUnderShiftBy a := IsStableUnderShiftBy.mk <| by
+    intro X ⟨Y, Z, f, g, h, hT, hP, hQ⟩
+    refine ⟨_, _, _, _, _, Triangle.shift_distinguished _ hT a, ?_, ?_⟩
+    all_goals apply IsStableUnderShiftBy.le_shift; assumption
+
+@[stacks 0FX1]
+lemma extensionProduct_assoc [IsTriangulated C] :
+    extensionProduct (extensionProduct P Q) R = extensionProduct P (extensionProduct Q R) := by
+  ext X
+  constructor
+  · intro ⟨Y, C, f, g, h, hT, ⟨A, B, f', g', h', hT', hP, hQ⟩, hR⟩
+    obtain ⟨Y, g'', h'', hT''⟩ := distinguished_cocone_triangle (f' ≫ f)
+    let o := someOctahedron rfl hT' hT hT''
+    exact ⟨_, _, _, _, _, hT'', hP, ⟨_, _, _, _, _, o.mem, hQ, hR⟩⟩
+  · intro ⟨A, Z, f, g, h, hT, hP, ⟨B, C, f', g', h', hT', hQ, hR⟩⟩
+    obtain ⟨Y, f'', h'', hT''⟩ := distinguished_cocone_triangle₁ (g ≫ g')
+    let o := someOctahedron₁ rfl hT hT' hT''
+    exact ⟨_, _, _, _, _, hT'', ⟨_, _, _, _, _, o.mem, hP, hQ⟩, hR⟩
+
+end
+
 /-- Given `P : ObjectProperty C` with `C` a pretriangulated category, this is the class
 of morphisms whose cone satisfies `P`. (The name `trW` contains the prefix `tr`
 for "triangulated", and `W` is a letter that is often used to refer to classes of

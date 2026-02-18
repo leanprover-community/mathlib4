@@ -438,6 +438,18 @@ abbrev shiftNegShift (i : A) : X⟦-i⟧⟦i⟧ ≅ X :=
 
 variable {X Y}
 
+@[simp]
+theorem shiftFunctorCompIsoId_shift_shift_neg' (i : A) :
+    (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)).inv.app X ≫ f⟦i⟧'⟦-i⟧' ≫
+    (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)).hom.app Y = f :=
+  NatIso.naturality_1 (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)) f
+
+@[simp]
+theorem shiftFunctorCompIsoId_shift_neg_shift' (i : A) :
+    (shiftFunctorCompIsoId C (-i) i (neg_add_cancel i)).inv.app X ≫ f⟦-i⟧'⟦i⟧' ≫
+    (shiftFunctorCompIsoId C (-i) i (neg_add_cancel i)).hom.app Y = f :=
+  NatIso.naturality_1 (shiftFunctorCompIsoId C (-i) i (neg_add_cancel i)) f
+
 theorem shift_shift_neg' (i : A) :
     f⟦i⟧'⟦-i⟧' = (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)).hom.app X ≫
       f ≫ (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)).inv.app Y :=
