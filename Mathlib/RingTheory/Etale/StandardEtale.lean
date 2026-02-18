@@ -80,6 +80,7 @@ def lift (x : S) (h : P.HasMap x) : P.Ring →ₐ[R] S :=
   Ideal.Quotient.liftₐ _ (aevalAeval x ↑(h.2.unit⁻¹))
     (Ideal.span_le (I := RingHom.ker _).mpr (by simp [Set.pair_subset_iff, h.1]))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma lift_X (x : S) (h : P.HasMap x) : P.lift x h P.X = x := by
   simp [lift, StandardEtalePair.Ring, StandardEtalePair.X]
@@ -95,6 +96,7 @@ lemma HasMap.isUnit_derivative_f {x : S} (h : P.HasMap x) :
     ⟨_, by simpa [h.1] using congr(aeval x $e.symm)⟩
   exact isUnit_of_dvd_unit this (.pow _ h.2)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma aeval_X_g_mul_mk_X : aeval P.X P.g * Ideal.Quotient.mk _ .X = 1 := by
   have : aeval (R := R) P.X = (Ideal.Quotient.mkₐ _ _).comp Polynomial.CAlgHom := by
     ext; simp [StandardEtalePair.Ring, StandardEtalePair.X]
@@ -103,6 +105,7 @@ lemma aeval_X_g_mul_mk_X : aeval P.X P.g * Ideal.Quotient.mk _ .X = 1 := by
   rw [← map_mul, ← map_one (Ideal.Quotient.mk _), ← sub_eq_zero, ← map_sub, mul_comm]
   exact Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.subset_span (Set.mem_insert_of_mem _ rfl))
 
+set_option backward.isDefEq.respectTransparency false in
 variable {P} in
 lemma hasMap_X : P.HasMap P.X :=
   have : aeval (R := R) P.X = (Ideal.Quotient.mkₐ _ _).comp Polynomial.CAlgHom := by
@@ -110,6 +113,7 @@ lemma hasMap_X : P.HasMap P.X :=
   ⟨this ▸ Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.subset_span (Set.mem_insert _ _)),
     IsUnit.of_mul_eq_one _ P.aeval_X_g_mul_mk_X⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable {P} in
 @[ext]
 lemma hom_ext {f g : P.Ring →ₐ[R] S} (H : f P.X = g P.X) : f = g := by
@@ -142,6 +146,7 @@ def homEquiv : (P.Ring →ₐ[R] S) ≃ { x : S // P.HasMap x } where
   left_inv f := P.hom_ext (by simp)
   right_inv x := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma existsUnique_hasMap_of_hasMap_quotient_of_sq_eq_bot
     (I : Ideal S) (hI : I ^ 2 = ⊥) (x : S) (hx : P.HasMap (Ideal.Quotient.mk I x)) :
     ∃! ε, ε ∈ I ∧ P.HasMap (x + ε) := by
@@ -206,6 +211,7 @@ def equivAwayAdjoinRoot :
   · ext; simp [Algebra.algHom]
   · ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `R[X][Y]/⟨f, Yg-1⟩ ≃ R[X][1/g]/f` -/
 def equivAwayQuotient :
     P.Ring ≃ₐ[R] Localization.Away P.g ⧸ Ideal.span {algebraMap _ (Localization.Away P.g) P.f} := by
@@ -236,6 +242,7 @@ def equivMvPolynomialQuotient :
   Ideal.quotientEquivAlg _ _ (Bivariate.equivMvPolynomial R)
     (by simp only [Ideal.map_span, Set.image_insert_eq, Set.image_singleton]; rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equivMvPolynomialQuotient_symm_apply :
     P.equivMvPolynomialQuotient.symm (Ideal.Quotient.mk _ (.X 0)) = P.X := by
@@ -396,6 +403,7 @@ instance : IsStandardEtale R R :=
       (by ext) (by ext; simp [this])
     exact e.bijective⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     {Sₛ : Type*} [CommRing Sₛ] [Algebra S Sₛ]
     [Algebra R Sₛ] [IsScalarTower R S Sₛ] (s : S) [IsLocalization.Away s Sₛ] :

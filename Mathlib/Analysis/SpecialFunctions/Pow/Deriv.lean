@@ -189,7 +189,7 @@ private theorem aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulR
 nonrec theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
     (h0 : f x ∈ slitPlane) : HasStrictDerivAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') x := by
-  simpa using (hf.cpow hg h0).hasStrictDerivAt
+  simpa using (hf.hasStrictFDerivAt.cpow hg h0).hasStrictDerivAt
 
 theorem HasStrictDerivAt.const_cpow (hf : HasStrictDerivAt f f' x) (h : c ≠ 0 ∨ f x ≠ 0) :
     HasStrictDerivAt (fun x => c ^ f x) (c ^ f x * Complex.log c * f') x :=
@@ -232,6 +232,25 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
     HasDerivWithinAt (fun x => f x ^ c) (c * f x ^ (c - 1) * f') s x :=
   (Complex.hasStrictDerivAt_cpow_const h0).hasDerivAt.comp_hasDerivWithinAt x hf
 
+theorem Complex.derivWithin_const_cpow (hf : DifferentiableWithinAt ℂ f s x) (c : ℂ) :
+    derivWithin (fun x ↦ c ^ f x) s x = log c * derivWithin f s x * c ^ f x := by
+  by_cases h : UniqueDiffWithinAt ℂ s x; swap
+  · rw [derivWithin_zero_of_not_uniqueDiffWithinAt h,
+      derivWithin_zero_of_not_uniqueDiffWithinAt h, mul_zero, zero_mul]
+  by_cases hc : c = 0; swap
+  · rw [mul_comm, ← mul_assoc]
+    exact (hf.hasDerivWithinAt.const_cpow (Or.inl hc)).derivWithin h
+  rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin] at h
+  simp only [hc, log_zero, zero_mul]
+  apply derivWithin_zero_of_frequently_mem {0, 1} (mt Set.Infinite.of_accPt (by simp))
+  simpa [zero_cpow_eq_iff, em']
+
+theorem Complex.deriv_const_cpow (hf : DifferentiableAt ℂ f x) (c : ℂ) :
+    deriv (fun x ↦ c ^ f x) x = log c * deriv f x * c ^ f x := by
+  rw [← derivWithin_univ, derivWithin_const_cpow, derivWithin_univ]
+  rwa [differentiableWithinAt_univ]
+
+set_option backward.isDefEq.respectTransparency false in
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect.
 See `hasDerivAt_ofReal_cpow_const` for an alternate formulation. -/
@@ -386,7 +405,7 @@ theorem hasStrictDerivAt_const_rpow {a : ℝ} (ha : 0 < a) (x : ℝ) :
 
 lemma differentiableAt_rpow_const_of_ne (p : ℝ) {x : ℝ} (hx : x ≠ 0) :
     DifferentiableAt ℝ (fun x => x ^ p) x :=
-  (hasStrictDerivAt_rpow_const_of_ne hx p).differentiableAt
+  (hasStrictDerivAt_rpow_const_of_ne hx p).hasStrictFDerivAt.differentiableAt
 
 theorem not_differentiableAt_rpow_const_zero {r : ℝ} (hr : r < 1) (hr' : r ≠ 0) :
     ¬ DifferentiableAt ℝ (fun x ↦ x ^ r) (0 : ℝ) := by
@@ -468,6 +487,7 @@ theorem contDiffAt_rpow_const {x p : ℝ} {n : ℕ} (h : x ≠ 0 ∨ ↑n ≤ p)
     ContDiffAt ℝ n (fun x : ℝ => x ^ p) x :=
   h.elim contDiffAt_rpow_const_of_ne contDiffAt_rpow_const_of_le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iter_deriv_rpow_const (r x : ℝ) (k : ℕ) :
     deriv^[k] (fun (x : ℝ) ↦ x ^ r) x = (descPochhammer ℝ k).eval r * x ^ (r - k) := by
   apply funext_iff.mp
@@ -712,10 +732,13 @@ theorem HasDerivAt.const_rpow (ha : 0 < a) (hf : HasDerivAt f f' x) :
   rw [← hasDerivWithinAt_univ] at *
   exact hf.const_rpow ha
 
-theorem derivWithin_const_rpow (ha : 0 < a) (hf : DifferentiableWithinAt ℝ f s x)
-    (hxs : UniqueDiffWithinAt ℝ s x) :
-    derivWithin (a ^ f ·) s x = Real.log a * derivWithin f s x * a ^ f x :=
-  (hf.hasDerivWithinAt.const_rpow ha).derivWithin hxs
+theorem derivWithin_const_rpow (ha : 0 < a) (hf : DifferentiableWithinAt ℝ f s x) :
+    derivWithin (a ^ f ·) s x = Real.log a * derivWithin f s x * a ^ f x := by
+  by_cases hxs : UniqueDiffWithinAt ℝ s x
+  · exact (hf.hasDerivWithinAt.const_rpow ha).derivWithin hxs
+  · rw [derivWithin_zero_of_not_uniqueDiffWithinAt hxs,
+      derivWithin_zero_of_not_uniqueDiffWithinAt hxs,
+      mul_zero, zero_mul]
 
 @[simp]
 theorem deriv_const_rpow (ha : 0 < a) (hf : DifferentiableAt ℝ f x) :

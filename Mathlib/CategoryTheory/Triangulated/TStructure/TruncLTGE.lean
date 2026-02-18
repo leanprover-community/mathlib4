@@ -36,6 +36,7 @@ namespace TStructure
 
 variable (t : TStructure C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two morphisms `T ⟶ T'` between distinguished triangles must coincide when
 they coincide on the middle object, and there are integers `a ≤ b` such that
 for a t-structure, we have `T.obj₁ ≤ a` and `T'.obj₃ ≥ b`. -/
@@ -174,6 +175,7 @@ is the `< n`-truncation functor. See also the natural transformation `truncLTι`
 noncomputable def truncLT (n : ℤ) : C ⥤ C :=
   TruncAux.triangleFunctor t n ⋙ Triangle.π₁
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) : (t.truncLT n).Additive where
   map_add {_ _ _ _} := by
     dsimp only [truncLT, Functor.comp_map]
@@ -190,6 +192,7 @@ is the `≥ n`-truncation functor. See also the natural transformation `truncGE�
 noncomputable def truncGE (n : ℤ) : C ⥤ C :=
   TruncAux.triangleFunctor t n ⋙ Triangle.π₃
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) : (t.truncGE n).Additive where
   map_add {_ _ _ _} := by
     dsimp only [truncGE, Functor.comp_map]

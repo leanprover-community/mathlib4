@@ -314,7 +314,7 @@ instance : Inv (NF M) where
   inv l := l.map fun (a, x) ↦ (-a, x)
 
 theorem eval_inv [CommGroupWithZero M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
-  simp only [NF.eval, List.map_map, NF.instInv, List.prod_inv]
+  simp +instances only [NF.eval, List.map_map, NF.instInv, List.prod_inv]
   congr! 2
   ext p
   simp [zpow'_neg]

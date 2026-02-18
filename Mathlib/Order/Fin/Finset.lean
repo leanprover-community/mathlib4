@@ -45,6 +45,7 @@ section
 
 variable (a b : α) (hab : a < b)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is the order isomorphism from `Fin 2` to a finset `{a, b}` when `a < b`. -/
 noncomputable def orderIsoPair :
     Fin 2 ≃o ({a, b} : Finset α) :=
@@ -64,6 +65,7 @@ section
 
 variable (a b c : α) (hab : a < b) (hbc : b < c)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is the order isomorphism from `Fin 3`
 to a finset `{a, b, c}` when `a < b` and `b < c`. -/
 noncomputable def orderIsoTriple :
