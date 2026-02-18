@@ -18,6 +18,7 @@ open InnerProductSpace Metric Real
 
 variable {f : ℂ → ℝ} {c : ℂ} {R : ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The **Mean Value Property** of harmonic functions: If `f : ℂ → ℝ` is harmonic in a neighborhood of a
 closed disc of radius `R` and center `c`, then the circle average `circleAverage f c R` equals

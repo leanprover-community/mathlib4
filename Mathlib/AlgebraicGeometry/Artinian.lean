@@ -93,6 +93,7 @@ instance [IsLocallyArtinian X] {U : X.Opens} : IsLocallyArtinian U := .of_isOpen
 instance [IsLocallyArtinian X] {U : X.OpenCover} (i) : IsLocallyArtinian (U.X i) :=
   .of_isOpenImmersion (U.f i)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian X] :
     DiscreteTopology X := by
   apply discreteTopology_iff_isOpen_singleton.mpr
@@ -142,6 +143,7 @@ theorem isLocallyArtinian_iff_of_isOpenCover {ι : Type*} {U : ι → X.Opens}
 
 instance (priority := low) {X : Scheme} [IsEmpty X] : IsLocallyArtinian X where
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) {X : Scheme} [DiscreteTopology X] [IsReduced X] :
     IsLocallyArtinian X := by
   wlog hX : Subsingleton X generalizing X
