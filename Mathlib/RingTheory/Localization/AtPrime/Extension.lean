@@ -190,12 +190,14 @@ theorem ramificationIdx_map_eq_ramificationIdx [IsDomain R] [IsTorsionFree R S] 
   · simp_rw [hP, Ideal.map_bot, ramificationIdx_bot' hp
       (FaithfulSMul.algebraMap_injective _ _),
       ramificationIdx_bot' h₁ (FaithfulSMul.algebraMap_injective Rₚ Sₚ)]
-  have h₂ : Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ) ≤ P.map (algebraMap S Sₚ) := by
-    rw [map_le_iff_le_comap]
-    exact le_of_eq <| (liesOver_iff _ _).mp <| liesOver_map_of_liesOver p Rₚ Sₚ P
-  have h_main := Eq.trans
-    (ramificationIdx_algebra_tower (map_ne_bot_of_ne_bot h₁) (map_ne_bot_of_ne_bot hp) h₂).symm
-    (ramificationIdx_algebra_tower (map_ne_bot_of_ne_bot hP) (map_ne_bot_of_ne_bot hp) le_rfl)
+  have : P.IsMaximal := IsPrime.isMaximal inferInstance hP
+  have : (Ideal.map (algebraMap S Sₚ) P).LiesOver (maximalIdeal Rₚ) :=
+    liesOver_map_of_liesOver p Rₚ Sₚ P
+  have : (Ideal.map (algebraMap S Sₚ) P).LiesOver P := by
+    rw [liesOver_iff, under_def, comap_map_eq_self_of_isMaximal _ (IsPrime.ne_top')]
+  have h_main :=
+  (ramificationIdx_algebra_tower' p (maximalIdeal Rₚ) (Ideal.map (algebraMap S Sₚ) P)).symm.trans
+    <| ramificationIdx_algebra_tower' p P (Ideal.map (algebraMap S Sₚ) P)
   rwa [ramificationIdx_map_self_eq_one IsPrime.ne_top' (map_ne_bot_of_ne_bot hP), mul_one,
     ← map_eq_maximalIdeal p, ramificationIdx_map_self_eq_one _ (map_ne_bot_of_ne_bot hp), one_mul,
     map_eq_maximalIdeal p] at h_main

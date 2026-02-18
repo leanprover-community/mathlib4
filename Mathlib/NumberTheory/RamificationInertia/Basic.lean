@@ -1015,7 +1015,7 @@ variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 /-- Let `T / S / R` be a tower of algebras, `p, P, Q` be ideals in `R, S, T` respectively,
   and `P` and `Q` are prime. If `P = Q ∩ S`, then `e (Q | p) = e (P | p) * e (Q | P)`. -/
-theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
+theorem ramificationIdx_algebra_tower₀ [IsDedekindDomain S] [IsDedekindDomain T]
     {p : Ideal R} {P : Ideal S} {Q : Ideal T} [hpm : P.IsPrime] [hqm : Q.IsPrime]
     (hg0 : map (algebraMap S T) P ≠ ⊥)
     (hfg : map (algebraMap R T) p ≠ ⊥) (hg : map (algebraMap S T) P ≤ Q) :
@@ -1023,6 +1023,21 @@ theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
     ramificationIdx (algebraMap R S) p P * ramificationIdx (algebraMap S T) P Q := by
   rw [IsScalarTower.algebraMap_eq R S T] at hfg ⊢
   exact ramificationIdx_tower hg0 hfg hg
+
+@[deprecated (since := "2026-02-18")] alias ramificationIdx_algebra_tower :=
+  ramificationIdx_algebra_tower₀
+
+theorem ramificationIdx_algebra_tower' [IsDedekindDomain S] [IsDedekindDomain T] [IsDomain R]
+    [Module.IsTorsionFree R S] [Module.IsTorsionFree S T] [Module.IsTorsionFree R T]
+    (p : Ideal R) (P : Ideal S) (Q : Ideal T) [P.IsPrime] [Q.IsPrime] [Q.LiesOver P]
+    [P.LiesOver p] :
+    ramificationIdx (algebraMap R T) p Q =
+      ramificationIdx (algebraMap R S) p P * ramificationIdx (algebraMap S T) P Q := by
+  by_cases hp : p = ⊥
+  · rw [hp, ramificationIdx_bot, ramificationIdx_bot, zero_mul]
+  have hP : P ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
+  exact ramificationIdx_algebra_tower (map_ne_bot_of_ne_bot hP) (map_ne_bot_of_ne_bot hp)
+    <| map_le_iff_le_comap.mpr <| le_of_eq <| over_def Q P
 
 /-- Let `T / S / R` be a tower of algebras, `p, P, I` be ideals in `R, S, T`, respectively,
   and `p` and `P` are maximal. If `p = P ∩ S` and `P = I ∩ S`,
