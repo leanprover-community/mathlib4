@@ -272,6 +272,7 @@ theorem equiv_nim_grundyValue (G : PGame.{u}) [G.Impartial] :
     exact Equiv.trans (add_congr_left (equiv_nim_grundyValue _)) (hj ▸ Impartial.add_self _)
 termination_by G
 
+set_option backward.isDefEq.respectTransparency false in
 theorem grundyValue_eq_iff_equiv_nim {G : PGame} [G.Impartial] {o : Nimber} :
     grundyValue G = o ↔ G ≈ nim (toOrdinal o) :=
   ⟨by rintro rfl; exact equiv_nim_grundyValue G,

@@ -134,7 +134,7 @@ lemma HoCat.exists_resolution (X : C) :
 /-- Given `X : C`, this is a cofibrant object `X'` equipped with a
 trivial fibration `X' ⟶ X` (see `HoCat.pResolutionObj`). -/
 noncomputable def HoCat.resolutionObj (X : C) : C :=
-    (exists_resolution X).choose
+  (exists_resolution X).choose
 
 instance (X : C) : IsCofibrant (HoCat.resolutionObj X) :=
   (HoCat.exists_resolution X).choose_spec.choose
@@ -219,6 +219,7 @@ noncomputable def HoCat.ιCompResolutionNatTrans :
     ext : 1
     exact HoCat.resolutionMap_fac f.hom)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (X : CofibrantObject C) :
     WeakEquivalence (HoCat.ιCompResolutionNatTrans.app X) := by
   dsimp
@@ -262,6 +263,7 @@ noncomputable def HoCat.resolutionCompToLocalizationNatTrans :
   naturality _ _ f := by
     simpa only [Functor.map_comp] using L.congr_map (HoCat.resolutionMap_fac f)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (HoCat.resolutionCompToLocalizationNatTrans L) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X

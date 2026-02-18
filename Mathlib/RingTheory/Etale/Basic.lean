@@ -126,6 +126,14 @@ lemma of_restrictScalars [FormallyUnramified R A] [FormallyEtale R B] :
   have := FormallySmooth.of_restrictScalars R A B
   .of_formallyUnramified_and_formallySmooth
 
+lemma iff_restrictScalars [FormallyEtale R A] :
+    Algebra.FormallyEtale R B ↔ Algebra.FormallyEtale A B :=
+  ⟨fun _ ↦ .of_restrictScalars (R := R), fun _ ↦ .comp _ A _⟩
+
+lemma _root_.Algebra.FormallySmooth.iff_restrictScalars [FormallyEtale R A] :
+    Algebra.FormallySmooth R B ↔ Algebra.FormallySmooth A B :=
+  ⟨fun _ ↦ .of_restrictScalars R _ _, fun _ ↦ .comp _ A _⟩
+
 @[deprecated (since := "2025-12-09")]
 alias Algebra.FormallyEtale.of_restrictScalars := of_restrictScalars
 
@@ -241,6 +249,8 @@ end Comp
 theorem of_isLocalizationAway (r : R) [IsLocalization.Away r A] : Etale R A where
   formallyEtale := Algebra.FormallyEtale.of_isLocalization (Submonoid.powers r)
   finitePresentation := IsLocalization.Away.finitePresentation r
+
+instance (s : A) [Algebra.Etale R A] : Algebra.Etale R (Localization.Away s) where
 
 @[deprecated (since := "2025-11-03")] alias of_isLocalization_Away := of_isLocalizationAway
 
