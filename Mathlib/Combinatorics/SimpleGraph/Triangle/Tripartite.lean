@@ -65,7 +65,7 @@ lemma rel_symm : Symmetric (Rel t) := fun x y h ↦ by cases h <;> constructor <
 
 /-- The tripartite-from-triangles graph. Two vertices are related iff there exists a triangle index
 containing them both. -/
-def graph (t : Finset (α × β × γ)) : SimpleGraph (α ⊕ β ⊕ γ) := ⟨Rel t, rel_symm, rel_irrefl⟩
+def graph (t : Finset (α × β × γ)) : SimpleGraph (α ⊕ β ⊕ γ) := ⟨Rel t, rel_symm, ⟨rel_irrefl⟩⟩
 
 namespace Graph
 

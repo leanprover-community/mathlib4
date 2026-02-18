@@ -78,12 +78,14 @@ def transitionMap {i j : 𝒰.I₀} (hij : i ⟶ j) :
   (isColimitOfPreserves (Over.map ⊤ (d.prop_trans hij)) (d.isColimit i)).desc
     (d.transitionCocone hij)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cocone_ι_transitionMap {i j : 𝒰.I₀} (hij : i ⟶ j) (a : J) :
     (Over.map ⊤ (d.prop_trans hij)).map ((d.cocone i).ι.app a) ≫
       d.transitionMap hij = (d.trans hij).app a ≫ (d.cocone j).ι.app a := by
   simp [transitionMap, ← Functor.mapCocone_ι_app, transitionCocone]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma transitionMap_id (i : 𝒰.I₀) :
     d.transitionMap (𝟙 i) = ((Over.mapId _ _ _).hom.app <| (d.cocone i).pt) := by
@@ -92,6 +94,7 @@ lemma transitionMap_id (i : 𝒰.I₀) :
   ext
   simp [cocone_ι_transitionMap]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma transitionMap_comp {i j k : 𝒰.I₀} (hij : i ⟶ j) (hjk : j ⟶ k) :
     d.transitionMap (hij ≫ hjk) =
@@ -111,6 +114,7 @@ noncomputable def functor : 𝒰.I₀ ⥤ Scheme where
 
 variable [∀ {i j} (hij : i ⟶ j), PreservesColimitsOfShape J (Over.pullback P ⊤ (𝒰.trans hij))]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPullback {i j : 𝒰.I₀} (hij : i ⟶ j) :
     IsPullback (d.transitionMap hij).left (d.cocone i).pt.hom
       (d.cocone j).pt.hom (𝒰.trans hij) := by
@@ -138,6 +142,7 @@ lemma isPullback {i j : 𝒰.I₀} (hij : i ⟶ j) :
   · simpa [← cancel_epi iso2.hom] using congr($(heq).left)
   · exact (Over.w iso1.inv).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The relative gluing datum associated to the family of the `colim Dᵢ`. -/
 @[simps natTrans_app, simps -isSimp functor]
 noncomputable
@@ -148,6 +153,7 @@ def relativeGluingData : 𝒰.RelativeGluingData where
 
 variable [Quiver.IsThin 𝒰.I₀] [Small.{u} 𝒰.I₀] [IsZariskiLocalAtTarget P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The result of gluing the `colim Dᵢ`. -/
 noncomputable def glued : P.Over ⊤ S :=
   Over.mk _ d.relativeGluingData.toBase <| by
@@ -158,22 +164,26 @@ noncomputable def glued : P.Over ⊤ S :=
       P.cancel_left_of_respectsIso]
     exact (d.cocone i).pt.prop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `colim Dᵢ` is the pullback of the glued object over `S` along the inclusion `𝒰ᵢ ⟶ S`. -/
 noncomputable
 def pullbackGluedIso (i : 𝒰.I₀) :
     (MorphismProperty.Over.pullback P ⊤ (𝒰.f i)).obj d.glued ≅ (d.cocone i).pt :=
   Over.isoMk (d.relativeGluingData.isPullback_natTrans_ι_toBase i).flip.isoPullback.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackGluedIso_inv_fst (i : 𝒰.I₀) : (d.pullbackGluedIso i).inv.left ≫ pullback.fst _ _ =
     colimit.ι d.relativeGluingData.functor i := by
   simp [pullbackGluedIso, glued]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackGluedIso_inv_snd (i : 𝒰.I₀) :
     (d.pullbackGluedIso i).inv.left ≫ pullback.snd _ _ = (d.cocone i).pt.hom := by
   simp [pullbackGluedIso, glued]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cocone glued from the `colim Dᵢ`. -/
 @[simps pt]
 noncomputable def gluedCocone : Cocone D := by
@@ -200,6 +210,7 @@ noncomputable def gluedCocone : Cocone D := by
       reassoc_of% this, Scheme.OpenCover.map_glueMorphismsOverOfLocallyDirected_left,
       ← Over.comp_left_assoc, ← Comma.comp_hom, ← Functor.comp_map, Cocone.w]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma fst_gluedCocone_ι (a : J) (i : 𝒰.I₀) :
     pullback.fst (D.obj a).hom (𝒰.f i) ≫
@@ -210,6 +221,7 @@ lemma fst_gluedCocone_ι (a : J) (i : 𝒰.I₀) :
   let 𝒱 : (D.obj a).left.OpenCover := 𝒰.pullback₁ (D.obj a).hom
   apply 𝒱.map_glueMorphismsOverOfLocallyDirected_left _ h1 h2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The glued cocone is colimiting. -/
 noncomputable
 def isColimitGluedCocone : IsColimit d.gluedCocone := by

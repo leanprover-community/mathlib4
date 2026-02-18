@@ -36,6 +36,7 @@ variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {A : Type w} [Category.{w'} A] [∀ X, Limits.HasLimitsOfShape (StructuredArrow X G.op) A]
 variable [G.IsDenseSubsite J K]
 
+set_option backward.isDefEq.respectTransparency false in
 include K in
 lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
     IsIso ((yoneda.map ((G.op.ranCounit.app Y.val).app (op U))).app (op X)) := by

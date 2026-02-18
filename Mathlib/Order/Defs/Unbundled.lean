@@ -185,6 +185,7 @@ def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 
 /-- `Std.Irrefl` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Irrefl (since := "2026-02-12")]
 def Irreflexive := ∀ x, ¬x ≺ x
 
 /-- `Std.Antisymm` as a definition, suitable for use in proofs. -/
@@ -208,8 +209,10 @@ variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
   fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
 
-theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
-  fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
+theorem InvImage.irrefl (h : Std.Irrefl r) : Std.Irrefl (InvImage r f) :=
+  ⟨fun (a : α) (h₁ : InvImage r f a a) ↦ h.irrefl (f a) h₁⟩
+
+@[deprecated (since := "2026-02-12")] alias InvImage.irreflexive := InvImage.irrefl
 
 end
 

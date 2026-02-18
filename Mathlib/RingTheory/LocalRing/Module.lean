@@ -73,6 +73,7 @@ theorem map_mkQ_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (Submodule.mkQ (𝔪 • ⊤)) = ⊤ ↔ N = ⊤ := by
   rw [← map_mkQ_eq (N₁ := N) le_top Module.Finite.fg_top, Submodule.map_top, Submodule.range_mkQ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (TensorProduct.mk R k M 1) = ⊤ ↔ N = ⊤ := by
   constructor
@@ -160,6 +161,7 @@ namespace Module
 
 variable [IsLocalRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is of finite presentation over a local ring `(R, 𝔪, k)` such that
 `𝔪 ⊗ M → M` is injective, then every family of elements that is a `k`-basis of
 `k ⊗ M` is an `R`-basis of `M`. -/
@@ -250,6 +252,7 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   obtain ⟨_, _, b, _⟩ := exists_basis_of_span_of_maximalIdeal_rTensor_injective H id (by simp)
   exact Free.of_basis b
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι → M)
     (h : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v)) : LinearIndependent R v := by
   rw [linearIndependent_iff']; intro s f hfv i hi
@@ -304,6 +307,7 @@ theorem free_of_flat_of_isLocalRing [Module.Finite R P] [Flat R P] : Free R P :=
   .of_basis <| .mk (IsLocalRing.linearIndependent_of_flat _ (eq ▸ w.linearIndependent)) <| by
     exact (span_eq_top_of_tmul_eq_basis _ w <| congr_fun eq).ge
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `M → N → P → 0` is a presentation of `P` over a local ring `(R, 𝔪, k)` with
 `M` finite and `N` finite free, then injectivity of `k ⊗ M → k ⊗ N` implies that `P` is free.
@@ -323,6 +327,7 @@ theorem free_of_lTensor_residueField_injective (hg : Surjective g) (h : Exact f 
 
 end Module
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a linear map `l : M → N` over a local ring `(R, 𝔪, k)`
 with `M` finite and `N` finite free,
@@ -387,6 +392,7 @@ open Ideal TensorProduct Submodule
 
 variable (R M) [Finite (MaximalSpectrum R)] [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is a finite flat module over a commutative semilocal ring `R` that has the same rank `n`
 at every maximal ideal, then `M` is free of rank `n`. -/
 @[stacks 02M9] theorem nonempty_basis_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
