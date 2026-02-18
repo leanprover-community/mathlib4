@@ -108,6 +108,40 @@ scoped[AlgebraicGeometry] notation3 "Γ(" X ", " U ")" =>
 instance {X Y : Scheme.{u}} : CoeFun (X ⟶ Y) (fun _ ↦ X → Y) where
   coe f := f.base
 
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Pretty printer for coercing morphisms between schemes to functions. -/
+@[app_delab DFunLike.coe]
+meta def delabCoeFunNotation : Delab := whenPPOption getPPNotation do
+  guard <| (← getExpr).isAppOfArity ``DFunLike.coe 5
+  withNaryArg 4 do
+  guard <| (← getExpr).isAppOfArity ``CategoryTheory.ConcreteCategory.hom 9
+  withNaryArg 8 do
+  guard <| (← getExpr).isAppOfArity ``PresheafedSpace.Hom.base 5
+  withNaryArg 4 do
+  guard <| (← getExpr).isAppOfArity ``LocallyRingedSpace.Hom.toHom 3
+  withNaryArg 2 do
+  guard <| (← getExpr).isAppOfArity ``Scheme.Hom.toLRSHom' 3
+  withNaryArg 2 do
+  `(⇑$(← delab))
+
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Pretty printer for applying morphisms of schemes to set-theoretic points. -/
+@[app_delab DFunLike.coe]
+meta def delabCoeFunAppNotation : Delab := whenPPOption getPPNotation do
+  guard <| (← getExpr).isAppOfArity ``DFunLike.coe 6
+  let func ← do
+    withNaryArg 4 do
+    guard <| (← getExpr).isAppOfArity ``CategoryTheory.ConcreteCategory.hom 9
+    withNaryArg 8 do
+    guard <| (← getExpr).isAppOfArity ``PresheafedSpace.Hom.base 5
+    withNaryArg 4 do
+    guard <| (← getExpr).isAppOfArity ``LocallyRingedSpace.Hom.toHom 3
+    withNaryArg 2 do
+    guard <| (← getExpr).isAppOfArity ``Scheme.Hom.toLRSHom' 3
+    withNaryArg 2 do
+    delab
+  `($func $(← withNaryArg 5 do delab))
+
 instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
@@ -768,6 +802,18 @@ lemma zeroLocus_span {U : X.Opens} (s : Set Γ(X, U)) :
   · simp only [Scheme.basicOpen_zero]; exact not_false
   · exact fun a b _ _ ha hb H ↦ (X.basicOpen_add_le a b H).elim ha hb
   · simp +contextual
+
+open scoped Pointwise in
+lemma zeroLocus_setMul {U : X.Opens} (s t : Set Γ(X, U)) :
+    X.zeroLocus (s * t) = X.zeroLocus s ∪ X.zeroLocus t := by
+  simp only [← Set.image2_mul, zeroLocus_def, Set.biInter_image2]
+  simp [Set.compl_inter, ← Set.union_iInter₂, ← Set.iInter₂_union]
+
+open scoped Pointwise in
+lemma zeroLocus_mul {U : X.Opens} (I J : Ideal Γ(X, U)) :
+    X.zeroLocus (U := U) ↑(I * J) = X.zeroLocus (U := U) I ∪ X.zeroLocus (U := U) J := by
+  rw [← X.zeroLocus_setMul, ← X.zeroLocus_span (U := U) (↑I * ↑J), ← Ideal.span_mul_span]
+  simp
 
 lemma zeroLocus_map {U V : X.Opens} (i : U ≤ V) (s : Set Γ(X, V)) :
     X.zeroLocus ((X.presheaf.map (homOfLE i).op).hom '' s) = X.zeroLocus s ∪ Uᶜ := by

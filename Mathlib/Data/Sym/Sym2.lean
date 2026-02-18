@@ -590,15 +590,29 @@ alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
 def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
   OrderEmbedding.ofMapLEIff (fun r ↦ Sym2.fromRel r.prop) fun _ _ ↦ fromRel_mono_iff ..
 
-theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
-  apply Set.eq_empty_of_forall_notMem fun e => _
-  apply Sym2.ind
-  simp [-Set.bot_eq_empty, Prop.bot_eq_false]
+@[simp]
+theorem fromRel_eq_fromRell_iff_eq {r₁ r₂ : α → α → Prop} (sym₁ : Symmetric r₁)
+    (sym₂ : Symmetric r₂) : fromRel sym₁ = fromRel sym₂ ↔ r₁ = r₂ := by
+  rw [← Subtype.mk.injEq r₁ sym₁ r₂ sym₂, ← fromRelOrderEmbedding.eq_iff_eq]
+  rfl
 
-theorem fromRel_top : fromRel (fun (_ _ : α) z => z : Symmetric ⊤) = Set.univ := by
-  apply Set.eq_univ_of_forall fun e => _
-  apply Sym2.ind
-  simp [-Set.top_eq_univ, Prop.top_eq_true]
+theorem fromRel_bot : fromRel (α := α) (r := ⊥) (fun _ _ ↦ id) = ∅ :=
+  Set.eq_empty_of_forall_notMem <| Sym2.ind <| by simp
+
+@[simp]
+theorem fromRel_bot_iff {sym : Symmetric r} : fromRel sym = ∅ ↔ r = ⊥ := by
+  refine ⟨fun h ↦ ?_, (· ▸ fromRel_bot)⟩
+  ext x y
+  simpa [h] using fromRel_prop (sym := sym)
+
+theorem fromRel_top : fromRel (α := α) (r := ⊤) (fun _ _ ↦ id) = .univ :=
+  Set.eq_univ_of_forall <| Sym2.ind <| by simp
+
+@[simp]
+theorem fromRel_top_iff {sym : Symmetric r} : fromRel sym = .univ ↔ r = ⊤ := by
+  refine ⟨fun h ↦ ?_, (· ▸ fromRel_top)⟩
+  ext x y
+  simpa [h] using fromRel_prop (sym := sym)
 
 theorem fromRel_ne : fromRel (fun (_ _ : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
   ext z; exact z.ind (by simp)
