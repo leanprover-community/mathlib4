@@ -8,6 +8,7 @@ module
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.Basic
 public import Batteries.Tactic.Trans
+public import Mathlib.Data.List.Perm.Basic
 
 /-!
 # List Sub-permutations
@@ -64,6 +65,18 @@ theorem Subperm.map {α β} {l₁ l₂ : List α} (f : α → β) :
     l₁ <+~ l₂ → (l₁.map f) <+~ (l₂.map f)
   | ⟨l, hl_perm, hl_sub⟩ =>
     ⟨l.map f, hl_perm.map f, hl_sub.map f⟩
+
+theorem map_subperm_map_iff {α β} {l₁ l₂ : List α} (f : α → β) (hf : Function.Injective f) :
+    (l₁.map f) <+~ (l₂.map f) ↔ l₁ <+~ l₂ where
+  mpr a := Subperm.map f a
+  mp a := by
+    obtain ⟨w, ⟨perm, sublist⟩⟩ := a
+    obtain ⟨x, ⟨sublistₓ, mapₓ⟩⟩ := List.sublist_map_iff.mp sublist
+    use x
+    constructor
+    · rw [mapₓ] at perm
+      exact (map_perm_map_iff hf).mp perm
+    · exact sublistₓ
 
 protected alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 
