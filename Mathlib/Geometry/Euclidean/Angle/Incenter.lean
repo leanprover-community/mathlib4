@@ -284,6 +284,7 @@ section Unoriented
 
 variable (t : Triangle ℝ P)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The incenter of a triangle bisects the angle at a vertex. -/
 lemma angle_incenter_eq_angle_div_two {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) :
@@ -303,6 +304,7 @@ lemma angle_incenter_eq_angle_div_two {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ �
     (t'.oangle_incenter_eq h₁₂ h₁₃ h₂₃)
     (t'.sSameSide_affineSpan_pair_incenter_point h₂₃.symm h₁₃.symm h₁₂.symm)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The excenter of a triangle opposite a vertex bisects the angle at that vertex. -/
 lemma angle_excenter_singleton_eq_angle_div_two {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) :
@@ -324,6 +326,7 @@ lemma angle_excenter_singleton_eq_angle_div_two {i₁ i₂ i₃ : Fin 3} (h₁�
   rw [Set.pair_comm]
   exact t'.sSameSide_affineSpan_pair_excenter_singleton_point h₁₃.symm h₂₃.symm h₁₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The excenter of a triangle opposite a vertex bisects the angle at another vertex. -/
 lemma angle_excenter_singleton_eq_angle_add_pi_div_two {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
     (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
@@ -344,6 +347,7 @@ lemma angle_excenter_singleton_eq_angle_add_pi_div_two {i₁ i₂ i₃ : Fin 3} 
     (t'.independent.injective.ne h₁₂) (t'.oangle_excenter_singleton_eq_add_pi h₁₂ h₁₃ h₂₃)
     (t'.sSameSide_affineSpan_pair_excenter_singleton_point h₁₃.symm h₂₃.symm h₁₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The excenter of a triangle opposite a vertex bisects the angle at another vertex. -/
 lemma angle_excenter_singleton_eq_pi_sub_angle_div_two {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
     (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
