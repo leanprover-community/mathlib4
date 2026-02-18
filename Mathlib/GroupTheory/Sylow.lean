@@ -428,10 +428,19 @@ theorem not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
   replace hP := not_dvd_index_aux (P.subtype le_normalizer)
   exact hp.1.not_dvd_mul hP (not_dvd_card_sylow p G)
 
+/-- If a Sylow `p`-subgroup has finite index, then the number of Sylow `p`-subgroups is finite. -/
+theorem finite_of_finiteIndex [Fact p.Prime] (P : Sylow p G) [P.FiniteIndex] :
+    Finite (Sylow p G) := by
+  let K := P.toSubgroup.normalCore
+  apply finite_of_ker_is_pGroup (f := QuotientGroup.mk' K)
+  rw [QuotientGroup.ker_mk']
+  exact P.isPGroup'.to_le P.toSubgroup.normalCore_le
+
 /-- A Sylow p-subgroup has index indivisible by `p`. -/
-theorem not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) [P.FiniteIndex] :
-    ¬ p ∣ P.index :=
-  P.not_dvd_index' Nat.card_pos.ne'
+theorem not_dvd_index [Fact p.Prime] (P : Sylow p G) [P.FiniteIndex] :
+    ¬ p ∣ P.index := by
+  haveI := P.finite_of_finiteIndex
+  exact P.not_dvd_index' Nat.card_pos.ne'
 
 section mapSurjective
 

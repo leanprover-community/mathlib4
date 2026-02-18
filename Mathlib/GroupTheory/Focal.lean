@@ -24,7 +24,7 @@ This file defines the focal subgroup and proves the Focal Subgroup Theorem.
 - `transferFocal H` : The transfer homomorphism `V : G →* H ⧸ H*`, defined using the
   abelian quotient `H / H*`.
 
-## Main Theorem
+## Main Theorems
 
 - `transfer_focal_eq_pow`:
   The restriction of the transfer map to `H` acts like the power map `x ↦ x ^ [G : H]` mod `H*`.
@@ -153,12 +153,12 @@ end Definitions
 
 section FocalSubgroupTheorem
 
-variable {G : Type*} [Group G] [Finite G] {p : ℕ} [Fact (Nat.Prime p)] (P : Sylow p G)
+variable {G : Type*} [Group G] {p : ℕ} [Fact p.Prime] (P : Sylow p G) [P.FiniteIndex]
 
 /-- The power map `y ↦ y^n` is surjective on `P/P*` because `gcd(n, p) = 1`. -/
 lemma focalSubgroupOf.pow_index_surjective :
     Surjective fun y : P ⧸ P.focalSubgroupOf ↦ y ^ P.index :=
-  ((P.2.to_quotient P.focalSubgroupOf).powEquiv' P.not_dvd_index).surjective
+  ((P.2.to_quotient P.focalSubgroupOf).powEquiv' (not_dvd_index P)).surjective
 
 /-- The Transfer homomorphism is surjective from `G` to `P/P*`. -/
 lemma transferFocal_surjective : Surjective (transferFocal P.toSubgroup) := by
@@ -177,7 +177,7 @@ lemma ker_restrict_transferFocal_eq_focalSubgroupOf :
   ext g
   have hQ : IsPGroup p (P ⧸ P.focalSubgroupOf) := P.2.to_quotient P.focalSubgroupOf
   rw [MonoidHom.mem_ker, MonoidHom.restrict_apply, transferFocal_eq_pow]
-  simpa using (hQ.powEquiv' P.not_dvd_index).apply_eq_iff_eq (x := g) (y := 1)
+  simpa using (hQ.powEquiv' (not_dvd_index P)).apply_eq_iff_eq (x := g) (y := 1)
 
 lemma ker_transferFocal_inf_eq_focalSubgroup : P.transferFocal.ker ⊓ P = P.focalSubgroup := by
   rw [← subgroupOf_map_subtype, ← MonoidHom.ker_restrict, ← map_focalSubgroupOf]
