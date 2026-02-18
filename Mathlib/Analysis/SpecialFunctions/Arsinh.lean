@@ -54,6 +54,7 @@ variable {x y : ℝ}
 def arsinh (x : ℝ) :=
   log (x + √(1 + x ^ 2))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exp_arsinh (x : ℝ) : exp (arsinh x) = x + √(1 + x ^ 2) := by
   apply exp_log
   rw [← neg_lt_iff_pos_add']

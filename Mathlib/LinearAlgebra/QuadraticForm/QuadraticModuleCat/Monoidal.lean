@@ -118,6 +118,7 @@ theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).inv =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))

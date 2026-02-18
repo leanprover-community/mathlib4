@@ -9,18 +9,10 @@ public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.NumberTheory.Height.Basic
 
 /-!
-# Instances of AdmissibleAbsValues
+# Heights over number fields
 
-We provide instances of `Height.AdmissibleAbsValues` for
-
-* algebraic number fields.
-
-## TODO
-
-* Fields of rational functions in `n` variables.
-
-* Finite extensions of fields with `Height.AdmissibleAbsValues`.
-
+We provide an instance of `Height.AdmissibleAbsValues` for algebraic number fields
+and set up some API.
 -/
 
 @[expose] public section
@@ -46,6 +38,7 @@ lemma mem_multisetInfinitePlace {v : AbsoluteValue K ℝ} :
     v ∈ multisetInfinitePlace K ↔ IsInfinitePlace v := by
   simp [multisetInfinitePlace, Multiset.mem_replicate, isInfinitePlace_iff, eq_comm (a := v)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma count_multisetInfinitePlace_eq_mult [DecidableEq (AbsoluteValue K ℝ)] (v : InfinitePlace K) :
     (multisetInfinitePlace K).count v.val = v.mult := by
   have : DecidableEq (InfinitePlace K) := Subtype.instDecidableEq
