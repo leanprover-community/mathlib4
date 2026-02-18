@@ -34,6 +34,7 @@ lemma Polynomial.exist_monic_mem {F : Type u} [Field F] {I : Ideal F[X]} (ne : I
   refine ⟨mul_mem_left I (C g.leadingCoeff⁻¹) gmem, ?_⟩
   simpa [Monic] using inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr gne)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     [IsCohenMacaulayLocalRing R] (p : Ideal R[X]) [p.IsPrime] (max : p.comap C = maximalIdeal R) :
     IsCohenMacaulayLocalRing (Localization.AtPrime p) := by
@@ -124,6 +125,7 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     use ((rs.map (algebraMap R R[X])) ++ [f]).map (algebraMap R[X] (Localization.AtPrime p)), reg
     simpa [cm] using mem''
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
     IsCohenMacaulayRing R[X] := by
   apply (isCohenMacaulayRing_def _).mpr (fun p hp ↦ ?_)
