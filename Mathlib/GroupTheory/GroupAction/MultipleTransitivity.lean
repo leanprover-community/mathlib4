@@ -520,34 +520,11 @@ open Equiv MulAction
 
 variable {α : Type*}
 
-/-- Given two injective functions from a finite type `α` to any type `β`, there exists a
-permutation of `β` mapping one to the other. This generalizes `Equiv.Perm.exists_extending_pair`
-(which requires `β` to be finite) to the case where only the source `α` is finite. -/
-theorem exists_extending_pair_of_finite_source {β : Type*} [Finite α]
-    (f g : α → β) (hf : Function.Injective f) (hg : Function.Injective g) :
-    ∃ σ : Perm β, ∀ a, σ (f a) = g a := by
-  classical
-  have hcard (f : α → β) (hf : Function.Injective f) :
-      Cardinal.mk (Set.range f) = Nat.card α := by
-    rw [← Nat.cast_card (α := Set.range f), Nat.card_range_of_injective hf]
-  have hcompl : Cardinal.mk ((Set.range f)ᶜ : Set β) =
-      Cardinal.mk ((Set.range g)ᶜ : Set β) := by
-    rw [← Cardinal.add_nat_inj (Nat.card α)]
-    nth_rewrite 1 [← hcard f hf]
-    rw [← hcard g hg]
-    simp only [add_comm, Cardinal.mk_sum_compl]
-  obtain ⟨φ⟩ := Cardinal.eq.mp hcompl
-  refine ⟨Equiv.subtypeCongr
-    ((ofInjective f hf).symm.trans (ofInjective g hg)) φ, fun a => ?_⟩
-  simp only [Equiv.subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
-  rw [sumCompl_symm_apply_of_pos (Set.mem_range_self a), Sum.map_inl, sumCompl_apply_inl]
-  simp
-
 /-- For any two embeddings from a finite type into `β`, some permutation of `β` maps one to the
-other. This is the action-form of `exists_extending_pair_of_finite_source`. -/
+other. This is the action-form of `Equiv.Perm.exists_extending_pair`. -/
 theorem exists_smul_eq_embedding {ι : Type*} [Finite ι] {β : Type*}
     (x y : ι ↪ β) : ∃ σ : Perm β, σ • x = y := by
-  obtain ⟨σ, hσ⟩ := exists_extending_pair_of_finite_source x y x.injective y.injective
+  obtain ⟨σ, hσ⟩ := Equiv.Perm.exists_extending_pair x y x.injective y.injective
   exact ⟨σ, Function.Embedding.ext fun i => by simp [Function.Embedding.smul_apply, hσ]⟩
 
 variable (α) in
