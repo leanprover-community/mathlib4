@@ -66,6 +66,7 @@ theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat
     IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
   | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_natDiv {a na n : ℕ} {b nb d : ℕ} (ha : IsNat a na) (hb : IsNat b nb)
     (hab : IsNNRat ((na : ℤ) / nb : ℚ) n d) : IsNNRat (NNRat.divNat a b) n d := by
     refine ⟨invertibleOfNonzero (by exact_mod_cast hab.den_nz), ?_⟩
