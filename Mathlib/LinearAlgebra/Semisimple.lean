@@ -54,11 +54,13 @@ section CommRing
 
 variable (f : End R M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear endomorphism of an `R`-module `M` is called *semisimple* if the induced `R[X]`-module
 structure on `M` is semisimple. This is equivalent to saying that every `f`-invariant `R`-submodule
 of `M` has an `f`-invariant complement: see `Module.End.isSemisimple_iff`. -/
 def IsSemisimple := IsSemisimpleModule R[X] (AEval' f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A weaker version of semisimplicity that only prescribes behaviour on finitely-generated
 submodules. -/
 def IsFinitelySemisimple : Prop :=
@@ -66,6 +68,7 @@ def IsFinitelySemisimple : Prop :=
 
 variable {f}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear endomorphism is semisimple if every invariant submodule has in invariant complement.
 
 See also `Module.End.isSemisimple_iff`. -/
@@ -79,6 +82,7 @@ lemma isSemisimple_iff :
     f.IsSemisimple ↔ ∀ p ∈ invtSubmodule f, ∃ q ∈ invtSubmodule f, IsCompl p q := by
   simp [isSemisimple_iff']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSemisimple_restrict_iff (p) (hp : p ∈ invtSubmodule f) :
     IsSemisimple (LinearMap.restrict f hp) ↔
     ∀ q ∈ f.invtSubmodule, q ≤ p → ∃ r ≤ p, r ∈ f.invtSubmodule ∧ Disjoint q r ∧ q ⊔ r = p := by
@@ -91,6 +95,7 @@ lemma isSemisimple_restrict_iff (p) (hp : p ∈ invtSubmodule f) :
     exists_and_left, exists_and_right, invtSubmodule.mk_eq_bot_iff, exists_prop, and_assoc]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear endomorphism is finitely semisimple if it is semisimple on every finitely-generated
 invariant submodule.
 
@@ -118,6 +123,7 @@ lemma isSemisimple_id [IsSemisimpleModule R M] : IsSemisimple (LinearMap.id : Mo
 @[simp] lemma isSemisimple_neg : (-f).IsSemisimple ↔ f.IsSemisimple := by
   simp [isSemisimple_iff, mem_invtSubmodule]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (f) in
 protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddCommGroup M₂] [Module R M₂]
     (g : End R M₂) (e : M ≃ₗ[R] M₂) (he : e ∘ₗ f = g ∘ₗ e) :
@@ -127,12 +133,14 @@ protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddCommGroup
   simp_rw [IsSemisimple, isSemisimpleModule_iff,
     (Submodule.orderIsoMapComap e).complementedLattice_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
   have ⟨n, h0⟩ := hn
   rw [← aeval_X (R := R) f]; rw [← aeval_X_pow (R := R) f] at h0
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
   exact hs.annihilator_isRadical _ _ ⟨n, h0⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_isNilpotent_of_isFinitelySemisimple
     (hn : IsNilpotent f) (hs : IsFinitelySemisimple f) : f = 0 := by
   have (p) (hp₁ : p ∈ f.invtSubmodule) (hp₂ : Module.Finite R p) : f.restrict hp₁ = 0 := by
@@ -164,6 +172,7 @@ lemma isSemisimple_sub_algebraMap_iff {μ : R} :
   refine fun p ↦ ⟨fun h x hx ↦ ?_, fun h x hx ↦ p.sub_mem (h hx) (p.smul_mem μ hx)⟩
   simpa using p.add_mem (h hx) (p.smul_mem μ hx)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsSemisimple.restrict {p : Submodule R M} (hp : p ∈ f.invtSubmodule) (hf : f.IsSemisimple) :
     IsSemisimple (f.restrict hp) := by
   rw [IsSemisimple] at hf ⊢
@@ -193,6 +202,7 @@ lemma isFinitelySemisimple_sub_algebraMap_iff {μ : R} :
   refine fun p ↦ ⟨fun h x hx ↦ ?_, fun h x hx ↦ p.sub_mem (h hx) (p.smul_mem μ hx)⟩
   simpa using p.add_mem (h hx) (p.smul_mem μ hx)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsFinitelySemisimple.restrict {p : Submodule R M} (hp : p ∈ f.invtSubmodule)
     (hf : f.IsFinitelySemisimple) :
     IsFinitelySemisimple (f.restrict hp) := by
@@ -217,6 +227,7 @@ lemma IsSemisimple_smul (t : K) (h : f.IsSemisimple) :
   wlog ht : t ≠ 0; · simp [not_not.mp ht]
   rwa [IsSemisimple_smul_iff ht]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimple_of_squarefree_aeval_eq_zero {p : K[X]}
     (hp : Squarefree p) (hpf : aeval f p = 0) : f.IsSemisimple := by
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M), mem_annihilator,
@@ -239,11 +250,13 @@ section
 variable (hf : f.IsSemisimple)
 include hf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The minimal polynomial of a semisimple endomorphism is square free -/
 theorem IsSemisimple.minpoly_squarefree : Squarefree (minpoly K f) :=
   IsRadical.squarefree (minpoly.ne_zero <| Algebra.IsIntegral.isIntegral _) <| by
     rw [isRadical_iff_span_singleton, span_minpoly_eq_annihilator]; exact hf.annihilator_isRadical
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
   let R := K[X] ⧸ Ideal.span {minpoly K f}
   have : Module.Finite K R :=
@@ -270,6 +283,7 @@ section PerfectField
 variable [PerfectField K] (comm : Commute f g) (hf : f.IsSemisimple) (hg : g.IsSemisimple)
 include comm hf hg
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Submodule.Quotient.quot_mk_eq_mk in
 theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin K {f, g}) :
     a.IsSemisimple := by
