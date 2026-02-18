@@ -45,11 +45,10 @@ def HasNondegenerateEdges (poly : Polygon P n) : Prop :=
 
 theorem HasNondegenerateEdges.two_le [NeZero n] {poly : Polygon P n}
     (h : poly.HasNondegenerateEdges) : 2 ≤ n := by
-  by_contra hlt
-  push_neg at hlt
-  have hn : 1 ≤ n := Nat.one_le_iff_ne_zero.mpr (NeZero.ne n)
+  by_contra! hlt
   interval_cases n
-  exact h 0 (by simp)
+  · simp_all only [neZero_zero_iff_false]
+  · exact h 0 (by simp)
 
 variable [Ring R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 
