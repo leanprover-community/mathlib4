@@ -3,9 +3,11 @@ Copyright (c) 2026 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.RingHom.Flat
-import Mathlib.RingTheory.Etale.Basic
-import Mathlib.RingTheory.Smooth.Flat
+module
+
+public import Mathlib.RingTheory.RingHom.Flat
+public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.Smooth.Flat
 
 /-!
 # Weakly étale algebras
@@ -18,6 +20,8 @@ In this file we define weakly étale algebras. An `R`-algebra `S` is weakly éta
 - Show that a weakly étale algebra is formally unramified and in particular that
   a weakly étale algebra of finite presentation is étale (@chrisflav).
 -/
+
+@[expose] public section
 
 universe u u₁ u₂ u₃ u₄ u₅
 
