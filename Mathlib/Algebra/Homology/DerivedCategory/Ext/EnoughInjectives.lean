@@ -37,6 +37,7 @@ namespace CochainComplex
 
 open HomologicalComplex
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSplitMono_from_singleFunctor_obj_of_injective
     {I : C} [Injective I] {L : CochainComplex C ℤ} {i : ℤ}
     (ι : (CochainComplex.singleFunctor C i).obj I ⟶ L) [L.IsStrictlyGE i] [QuasiIsoAt ι i] :
@@ -94,6 +95,7 @@ namespace Abelian.Ext
 
 open DerivedCategory
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_injective [HasExt.{w} C] {X I : C} {n : ℕ} [Injective I]
     (e : Ext X I (n + 1)) : e = 0 := by
   let K := (CochainComplex.singleFunctor C 0).obj X

@@ -112,6 +112,7 @@ section
 
 variable [Preadditive C] [HasFiniteBiproducts C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `HomOrthogonal.matrixDecomposition` as an additive equivalence. -/
 @[simps!]
 noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Type} [Finite α]
@@ -124,6 +125,7 @@ noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Typ
       dsimp [biproduct.components]
       simp }
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 @[simp]
 theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f : α → ι} (i : ι) :
@@ -139,6 +141,7 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f 
     convert comp_zero
     simpa using biproduct.ι_π_ne _ (Ne.symm h)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite α] [Fintype β]
     [Finite γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b))
@@ -166,6 +169,7 @@ section
 
 variable {R : Type*} [Semiring R] [Linear R C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `HomOrthogonal.MatrixDecomposition` as an `R`-linear equivalence. -/
 @[simps]
 noncomputable def matrixDecompositionLinearEquiv (o : HomOrthogonal s) {α β : Type} [Finite α]

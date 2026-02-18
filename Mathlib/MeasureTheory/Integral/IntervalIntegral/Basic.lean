@@ -518,6 +518,7 @@ section
 
 variable {f : ℝ → E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An even function is interval integrable (with respect to the volume measure) on every interval
 of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
 interval of the form `0..x`, for positive `x`.
@@ -545,6 +546,7 @@ theorem intervalIntegrable_of_even
   (intervalIntegrable_of_even₀ h₁f h₂f ha).symm.trans (b := 0)
     (intervalIntegrable_of_even₀ h₁f h₂f hb)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An odd function is interval integrable (with respect to the volume measure) on every interval
 of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
 interval of the form `0..x`, for positive `x`.
@@ -798,6 +800,7 @@ theorem integral_const' [CompleteSpace E] (c : E) :
     ∫ _ in a..b, c ∂μ = (μ.real (Ioc a b) - μ.real (Ioc b a)) • c := by
   simp only [measureReal_def, intervalIntegral, setIntegral_const, sub_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem integral_const [CompleteSpace E] (c : E) : ∫ _ in a..b, c = (b - a) • c := by
   simp only [integral_const', Real.volume_Ioc, ENNReal.toReal_ofReal', ← neg_sub b,
@@ -847,6 +850,7 @@ section Comp
 
 variable {a b c d : ℝ} (f : ℝ → E)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem integral_comp_mul_right (hc : c ≠ 0) :
     (∫ x in a..b, f (x * c)) = c⁻¹ • ∫ x in a * c..b * c, f x := by
@@ -1015,6 +1019,7 @@ theorem integral_congr {a b : ℝ} (h : EqOn f g [[a, b]]) :
     simpa [hab, integral_of_le, integral_of_ge] using
       setIntegral_congr_fun measurableSet_Ioc (h.mono Ioc_subset_Icc_self)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_add_adjacent_intervals_cancel (hab : IntervalIntegrable f μ a b)
     (hbc : IntervalIntegrable f μ b c) :
     (((∫ x in a..b, f x ∂μ) + ∫ x in b..c, f x ∂μ) + ∫ x in c..a, f x ∂μ) = 0 := by

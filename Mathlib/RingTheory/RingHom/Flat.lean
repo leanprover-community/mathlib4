@@ -127,6 +127,7 @@ lemma generalizingMap_comap {f : R →+* S} (hf : f.Flat) : GeneralizingMap (com
   rw [← Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_isField (hR : IsField R) (f : R →+* S) : f.Flat := by
   let := f.toAlgebra
   let := hR.toField

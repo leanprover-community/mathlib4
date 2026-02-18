@@ -411,6 +411,7 @@ lemma IsCircuit.strong_multi_elimination_insert (x : ι → α) (I : ι → Set 
   rw [union_diff_distrib, union_comm]
   exact union_subset_union_left _ diff_subset
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A generalization of the strong circuit elimination axiom `Matroid.IsCircuit.strong_elimination`
 to an infinite collection of circuits.
 
@@ -577,6 +578,7 @@ lemma isCocircuit_iff_minimal :
   rw [inter_assoc, inter_eq_self_of_subset_right hB.subset_ground]
   exact hX B hB
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cocircuit is a minimal set whose complement is nonspanning. -/
 lemma isCocircuit_iff_minimal_compl_nonspanning :
     M.IsCocircuit K ↔ Minimal (fun X ↦ ¬ M.Spanning (M.E \ X)) K := by
@@ -635,6 +637,7 @@ lemma IsCircuit.isCocircuit_inter_nontrivial (hC : M.IsCircuit C) (hK : M.IsCoci
   rw [nontrivial_iff_ne_singleton heCK]
   exact hC.inter_isCocircuit_ne_singleton hK
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsCircuit.isCocircuit_disjoint_or_nontrivial_inter (hC : M.IsCircuit C)
     (hK : M.IsCocircuit K) : Disjoint C K ∨ (C ∩ K).Nontrivial := by
   rw [or_iff_not_imp_left, disjoint_iff_inter_eq_empty, ← ne_eq, ← nonempty_iff_ne_empty]

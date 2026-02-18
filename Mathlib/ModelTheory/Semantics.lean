@@ -168,6 +168,7 @@ theorem realize_restrictVarLeft' [DecidableEq α] {γ : Type*} {t : L.Term (α �
       t.realize (Sum.elim v xs) :=
   realize_restrictVarLeft _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {t : L[[α]].Term β} {v : β → M} :
@@ -188,6 +189,7 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
         rw [withConstants_funMap_sumInl]
       · exact isEmptyElim f
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {t : L.Term (α ⊕ β)} {v : β → M} :
@@ -363,6 +365,7 @@ theorem realize_mapTermRel_id [L'.Structure M]
   | imp _ _ ih1 ih2 => simp [mapTermRel, Realize, ih1, ih2]
   | all _ ih => simp only [mapTermRel, Realize, ih, id]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
     {ft : ∀ n, L.Term (α ⊕ (Fin n)) → L'.Term (β ⊕ (Fin (k + n)))}
     {fr : ∀ n, L.Relations n → L'.Relations n} {n} {φ : L.BoundedFormula α n}
@@ -381,6 +384,7 @@ theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
   | imp _ _ ih1 ih2 => simp [mapTermRel, Realize, ih1, ih2]
   | all _ ih => simp [mapTermRel, Realize, ih, hv]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → β ⊕ (Fin m)} {v : β → M}
     {xs : Fin (m + n) → M} :
@@ -466,6 +470,7 @@ theorem realize_restrictFreeVar' [DecidableEq α] {n : ℕ} {φ : L.BoundedFormu
     (φ.restrictFreeVar (Set.inclusion h)).Realize (v ∘ (↑)) xs ↔ φ.Realize v xs :=
   realize_restrictFreeVar _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {φ : L[[α]].BoundedFormula β n} {v : β → M} {xs : Fin n → M} :
     (constantsVarsEquiv φ).Realize (Sum.elim (fun a => ↑(L.con a)) v) xs ↔ φ.Realize v xs := by

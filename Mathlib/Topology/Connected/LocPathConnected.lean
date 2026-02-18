@@ -264,6 +264,7 @@ instance AlexandrovDiscrete.locPathConnectedSpace [AlexandrovDiscrete X] :
   symm
   apply hy.joinedIn <;> rewrite [mem_nhdsKer_singleton] <;> [assumption; rfl]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a space is locally path-connected, the topology of its path components is discrete. -/
 instance : DiscreteTopology <| ZerothHomotopy X := by
   refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_

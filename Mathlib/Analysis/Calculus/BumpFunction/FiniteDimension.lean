@@ -77,6 +77,7 @@ theorem exists_contDiff_tsupport_subset {s : Set E} {x : E} {n : ℕ∞} (hs : s
 @[deprecated (since := "2025-12-17")]
 alias exists_smooth_tsupport_subset := exists_contDiff_tsupport_subset
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an open set `s` in a finite-dimensional real normed vector space, there exists a smooth
 function with values in `[0, 1]` whose support is exactly `s`. -/
 theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen s) :
@@ -337,6 +338,7 @@ theorem y_neg (D : ℝ) (x : E) : y D (-x) = y D x := by
   · filter_upwards with x
     simp only [φ, indicator, mem_closedBall, dist_zero_right, norm_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem y_eq_one_of_mem_closedBall {D : ℝ} {x : E} (Dpos : 0 < D)
     (hx : x ∈ closedBall (0 : E) (1 - D)) : y D x = 1 := by
   change (w D ⋆[lsmul ℝ ℝ, μ] φ) x = 1
