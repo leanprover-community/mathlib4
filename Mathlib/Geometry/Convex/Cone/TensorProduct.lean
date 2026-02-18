@@ -104,7 +104,7 @@ theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone R G) (C₂ : Po
     minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ := by
   exact Submodule.span_le.mpr (tmul_subset_maxTensorProduct C₁ C₂)
 
-variable {C₁ C₁' : PointedCone R G} {C₂ C₂' : PointedCone R H} {z : G ⊗[R] H}
+variable {C₁ : PointedCone R G} {C₂ : PointedCone R H} {z : G ⊗[R] H}
 
 /-- The minimal tensor product is commutative. -/
 @[simp]
@@ -125,6 +125,8 @@ theorem maxTensorProduct_comm :
     simpa [dualDistrib_apply_comm] using hw φ hφ ψ hψ
   · intro φ hφ ψ hψ
     simpa [dualDistrib_apply_comm] using hz ψ hψ φ hφ
+
+variable {C₁' : PointedCone R G} {C₂' : PointedCone R H}
 
 /-- `minTensorProduct` is monotone. -/
 @[gcongr]
