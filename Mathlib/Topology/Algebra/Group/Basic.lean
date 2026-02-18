@@ -145,6 +145,17 @@ theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
   discreteTopology_iff_isOpen_singleton_one.mpr h
 
 @[to_additive]
+theorem smul_connectedComponent (g h : G) : g • connectedComponent h = connectedComponent (g * h) :=
+  (Homeomorph.mulLeft g).isQuotientMap.image_connectedComponent (by simp [isConnected_singleton]) h
+
+@[to_additive]
+theorem totallyDisconnectedSpace_iff_connectedComponent_one :
+    TotallyDisconnectedSpace G ↔ connectedComponent (1 : G) = {1} :=
+  ⟨fun _ ↦ connectedComponent_eq_singleton 1,
+    fun h ↦ totallyDisconnectedSpace_iff_connectedComponent_singleton.mpr fun g ↦ by
+      rw [← mul_one g, ← smul_connectedComponent, h, Set.smul_set_singleton, smul_eq_mul]⟩
+
+@[to_additive]
 lemma Filter.tendsto_mul_const_iff (b : G) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (f · * b) l (𝓝 (c * b)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨?_, Tendsto.mul_const b⟩

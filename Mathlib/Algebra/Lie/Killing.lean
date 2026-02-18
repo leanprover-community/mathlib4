@@ -132,6 +132,7 @@ end LieEquiv
 
 end LieAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 open LieAlgebra in
 variable {K L} in
 lemma LieIdeal.isCompl_killingCompl [IsKilling K L] [Module.Finite K L] (I : LieIdeal K L) :
