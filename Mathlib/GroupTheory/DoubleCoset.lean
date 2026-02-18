@@ -55,6 +55,7 @@ theorem doubleCoset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doubleCos
     mul_assoc, mul_assoc, Subgroup.singleton_mul_subgroup hk, ← mul_assoc, ← mul_assoc,
     Subgroup.subgroup_mul_singleton hh]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_doubleCoset_of_not_disjoint {H K : Subgroup G} {a b : G}
     (h : ¬Disjoint (doubleCoset a H K) (doubleCoset b H K)) : b ∈ doubleCoset a H K := by
   rw [Set.not_disjoint_iff] at h
@@ -115,6 +116,7 @@ abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
 instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
   ⟨mk H K (1 : G)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq (H K : Subgroup G) (a b : G) :
     mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
   rw [Quotient.eq'']
