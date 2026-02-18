@@ -75,6 +75,13 @@ theorem HasDerivAtFilter.scomp (hg : HasDerivAtFilter g₁ g₁' L')
     HasDerivAtFilter (g₁ ∘ h) (h' • g₁') L := by
   simpa using ((hg.hasFDerivAtFilter.restrictScalars 𝕜).comp hh hL).hasDerivAtFilter
 
+@[deprecated HasDerivAtFilter.scomp (since := "2026-02-17")]
+theorem HasDerivAtFilter.scomp_of_eq {L : Filter 𝕜} {L' : Filter 𝕜'}
+    (hg : HasDerivAtFilter g₁ g₁' (L' ×ˢ pure y)) (hh : HasDerivAtFilter h h' (L ×ˢ pure x))
+    (hy : y = h x) (hL : Tendsto h L L') :
+    HasDerivAtFilter (g₁ ∘ h) (h' • g₁') (L ×ˢ pure x) :=
+  hg.scomp hh <| .prodMap hL <| by simp [hy]
+
 theorem HasDerivWithinAt.scomp_hasDerivAt (hg : HasDerivWithinAt g₁ g₁' s' (h x))
     (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') : HasDerivAt (g₁ ∘ h) (h' • g₁') x :=
   hg.scomp hh <| .prodMap (tendsto_nhdsWithin_iff.mpr ⟨hh.continuousAt, .of_forall hs⟩)
