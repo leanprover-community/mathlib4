@@ -404,8 +404,7 @@ lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R)
     · apply ((exists_isRegular_tfae I n M smul_lt).out 1 2).mpr
       use N
     · have rees := ((exists_isRegular_tfae I n M smul_lt).out 0 1).mpr h
-      apply rees N
-      simp [Nfin, Nntr, hsupp]
+      exact rees N Nntr Nfin (le_of_eq hsupp)
   simp only [moduleDepth_eq_sup_nat, Ideal.depth]
   congr
   ext n
@@ -578,8 +577,7 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
     use rs
   · simp only [← len, ENat.coe_lt_top, Nat.cast_lt, true_and]
     have rees := ((exists_isRegular_tfae I rs.length M smul_lt).out 3 0).mp (by use rs)
-    apply rees N
-    simp [Nntr, Nfin, hsupp]
+    exact rees N Nntr Nfin (le_of_eq hsupp)
 
 lemma IsLocalRing.ideal_depth_eq_sSup_length_regular [IsLocalRing R] [IsNoetherianRing R]
     (I : Ideal R) (netop : I ≠ ⊤) (M : ModuleCat.{v} R) [Module.Finite R M]
