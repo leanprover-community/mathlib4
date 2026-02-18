@@ -69,6 +69,7 @@ instance : ProperSpace ℤ :=
 instance : IsOrderBornology ℤ :=
   .of_isCompactIcc 0 (by simp [Int.closedBall_eq_Icc]) (by simp [Int.closedBall_eq_Icc])
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cobounded_eq : Bornology.cobounded ℤ = atBot ⊔ atTop := by
   simp_rw [← comap_dist_right_atTop (0 : ℤ), dist_eq', sub_zero,

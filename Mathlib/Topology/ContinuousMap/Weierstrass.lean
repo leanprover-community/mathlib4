@@ -87,6 +87,7 @@ theorem continuousMap_mem_polynomialFunctions_closure (a b : ℝ) (f : C(Set.Icc
 
 open scoped Polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An alternative statement of Weierstrass' theorem,
 for those who like their epsilons.
 

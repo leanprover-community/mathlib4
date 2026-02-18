@@ -156,6 +156,7 @@ alias iteratedPDeriv_succ_left := LineDeriv.iteratedLineDerivOp_succ_left
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv_succ_right := LineDeriv.iteratedLineDerivOp_succ_right
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E, F)} {x : E} :
     ∂^{m} f x = iteratedFDeriv ℝ n f x m := by
   induction n generalizing x with

@@ -89,6 +89,7 @@ instance : BoundedOrder (Subrepresentation ρ) where
   bot := ⟨⊥, by simp⟩
   bot_le _ := bot_le (α := Submodule A W)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subrepresentation of `ρ` can be thought of as an `A[G]` submodule of `ρ.asModule`.
 -/
 def asSubmodule (σ : Subrepresentation ρ) : Submodule A[G] ρ.asModule where
@@ -135,6 +136,7 @@ def ofSubmodule (N : Submodule A[G] M) :
 @[simp]
 lemma mem_ofSubmodule_iff {N : Submodule A[G] M} {m : M} : m ∈ ofSubmodule N ↔ m ∈ N := by rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An `A[G]`-submodule of `ρ.asModule` can be thought of as a subrepresentation of `ρ`.
 -/
 def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
