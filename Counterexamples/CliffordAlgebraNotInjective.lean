@@ -100,6 +100,7 @@ theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZM
   rintro x ⟨_, ⟨i, rfl⟩, rfl⟩
   rw [map_mul, constantCoeff_X, mul_zero, Submodule.bot_coe, Set.mem_singleton_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `k` has characteristic 2. -/
 instance K.charP : CharP K 2 := by
   dsimp only [K]
@@ -116,6 +117,7 @@ local notation "α" => K.gen 0
 local notation "β" => K.gen 1
 local notation "γ" => K.gen 2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The elements above square to zero -/
 @[simp]
 theorem X_sq (i : Fin 3) : K.gen i * K.gen i = (0 : K) := by
@@ -123,6 +125,7 @@ theorem X_sq (i : Fin 3) : K.gen i * K.gen i = (0 : K) := by
   rw [Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.subset_span ⟨i, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If an element multiplied by `αβγ` is zero then it squares to zero. -/
 theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
   induction x using Quotient.inductionOn'
@@ -166,6 +169,7 @@ def Q' : QuadraticForm K (Fin 3 → K) :=
 theorem Q'_add (x y : Fin 3 → K) : Q' (x + y) = Q' x + Q' y := by
   simp only [Q', QuadraticMap.sum_apply, sq_map_add_char_two, Finset.sum_add_distrib]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Q'_sub (x y : Fin 3 → K) : Q' (x - y) = Q' x - Q' y := by
   simp only [Q', QuadraticMap.sum_apply, sq_map_sub_char_two, Finset.sum_sub_distrib]
 
@@ -174,6 +178,7 @@ theorem Q'_apply (a : Fin 3 → K) : Q' a = a 0 * a 0 + a 1 * a 1 + a 2 * a 2 :=
     Q' a = a 0 * a 0 + (a 1 * a 1 + (a 2 * a 2 + 0)) := rfl
     _ = _ := by ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Q'_apply_single (i : Fin 3) (x : K) : Q' (Pi.single i x) = x * x :=
   calc
     Q' (Pi.single i x) = ∑ j : Fin 3, (Pi.single i x * Pi.single i x : Fin 3 → K) j := by
@@ -231,6 +236,7 @@ theorem gen_mul_gen (i) : gen i * gen i = 1 := by
   simp_rw [CliffordAlgebra.ι_sq_scalar, Q_apply, ← Submodule.Quotient.mk''_eq_mk,
     Quotient.liftOn'_mk'', Q'_apply_single, mul_one, map_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- By virtue of the quotient, terms of this form are zero -/
 theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
   dsimp only [gen]
@@ -261,6 +267,7 @@ is not injective, as it sends the non-zero `α * β * γ` to zero. -/
 theorem algebraMap_not_injective : ¬Function.Injective (algebraMap K <| CliffordAlgebra Q) :=
   fun h => αβγ_ne_zero <| h <| by rw [algebraMap_αβγ_eq_zero, map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Bonus counterexample: `Q` is a quadratic form that has no bilinear form. -/
 theorem Q_not_in_range_toQuadraticForm : Q ∉ Set.range BilinMap.toQuadraticMap := by
   rintro ⟨B, hB⟩

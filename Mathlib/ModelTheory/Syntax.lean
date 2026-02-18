@@ -571,12 +571,14 @@ theorem relabel_imp (g : α → β ⊕ (Fin n)) {k} (φ ψ : L.BoundedFormula α
 theorem relabel_not (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α k) :
     φ.not.relabel g = (φ.relabel g).not := by simp [BoundedFormula.not]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relabel_all (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α (k + 1)) :
     φ.all.relabel g = (φ.relabel g).all := by
   rw [relabel, mapTermRel, relabel]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relabel_ex (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α (k + 1)) :
     φ.ex.relabel g = (φ.relabel g).ex := by simp [BoundedFormula.ex]

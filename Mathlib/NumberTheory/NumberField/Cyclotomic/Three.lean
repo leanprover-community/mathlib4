@@ -123,6 +123,7 @@ theorem eq_one_or_neg_one_of_unit_of_congruent
 
 variable (x : 𝓞 K)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `(x : 𝓞 K)`. Then we have that `λ` divides one amongst `x`, `x - 1` and `x + 1`. -/
 lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
     λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x + 1 := by
