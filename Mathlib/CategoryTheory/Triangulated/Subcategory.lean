@@ -205,7 +205,7 @@ variable {P} in
 lemma le_extensionProduct_left [Q.ContainsZero] : P ≤ extensionProduct P Q := by
   intro X hX
   rw [← extensionProduct_isoClosure_right]
-  obtain ⟨Z, hZ, hQ⟩ := Q.exists_prop_of_containsZero 
+  obtain ⟨Z, hZ, hQ⟩ := Q.exists_prop_of_containsZero
   refine ⟨_, _, _, _, _, contractible_distinguished X, hX, ?_⟩
   exact ⟨Z, hQ, ⟨IsZero.iso (isZero_zero C) hZ⟩⟩
 
@@ -213,7 +213,7 @@ variable {Q} in
 lemma le_extensionProduct_right [P.ContainsZero] : Q ≤ extensionProduct P Q := by
   intro X hX
   rw [← extensionProduct_isoClosure_left]
-  obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero 
+  obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero
   refine ⟨_, _, _, _, _, inv_rot_of_distTriang _ (contractible_distinguished X), ?_, hX⟩
   exact ⟨Z, hP, ⟨IsZero.iso (Functor.map_isZero _ (isZero_zero C)) hZ⟩⟩
 
