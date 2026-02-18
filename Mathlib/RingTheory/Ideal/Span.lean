@@ -105,6 +105,7 @@ theorem mem_span_singleton' {x y : α} : x ∈ span ({y} : Set α) ↔ ∃ a, a 
 theorem mem_span_singleton_self (x : α) : x ∈ span ({x} : Set α) :=
   Submodule.mem_span_singleton_self x
 
+@[simp]
 theorem span_singleton_le_iff_mem {x : α} : span {x} ≤ I ↔ x ∈ I :=
   Submodule.span_singleton_le_iff_mem _ _
 

@@ -58,6 +58,7 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
   congr
   exact ((chartAt H (TotalSpace.proj p)).right_inv h).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y).source) :
     mfderiv I I (chartAt H y) x = tangentCoordChange I x y x := by
   have := mdifferentiableAt_atlas (I := I) (ChartedSpace.chart_mem_atlas _) hsrc
@@ -69,6 +70,7 @@ theorem UniqueMDiffOn.tangentBundle_proj_preimage {s : Set M} (hs : UniqueMDiffO
     UniqueMDiffOn I.tangent (π E (TangentSpace I) ⁻¹' s) :=
   hs.bundle_preimage _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and
 postcomposing it with derivatives of extended charts.
 Concrete version of `inTangentCoordinates_eq`. -/

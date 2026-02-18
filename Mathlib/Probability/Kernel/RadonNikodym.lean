@@ -273,6 +273,7 @@ lemma measurable_singularPart_fun_right (κ η : Kernel α γ) (a : α) :
     - ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a b) * rnDeriv κ η a b) ∘ (fun b ↦ (a, b)))
   exact (measurable_singularPart_fun κ η).comp measurable_prodMk_left
 
+set_option backward.isDefEq.respectTransparency false in
 lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFiniteKernel κ]
     [IsSFiniteKernel η] (a : α) :
     singularPart κ η a (mutuallySingularSetSlice κ η a)ᶜ = 0 := by
@@ -333,6 +334,7 @@ lemma withDensity_rnDeriv_of_subset_mutuallySingularSetSlice [IsFiniteKernel κ]
     withDensity η (rnDeriv κ η) a s = 0 :=
   measure_mono_null hs (withDensity_rnDeriv_mutuallySingularSetSlice κ η a)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice
     [IsFiniteKernel κ] [IsFiniteKernel η] {a : α} {s : Set γ} (hsm : MeasurableSet s)
     (hs : s ⊆ (mutuallySingularSetSlice κ η a)ᶜ) :

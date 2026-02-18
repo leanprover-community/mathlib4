@@ -51,10 +51,12 @@ def Scheme.Hom.fiberToSpecResidueField (f : X ⟶ Y) (y : Y) :
     (f : X ⟶ Y) (y : Y) : (f.fiber y).Over (Spec (Y.residueField y)) where
   hom := f.fiberToSpecResidueField y
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.fiberToSpecResidueField_apply (f : X ⟶ Y) (y : Y) (x : f.fiber y) :
     f.fiberToSpecResidueField y x = IsLocalRing.closedPoint (Y.residueField y) :=
   Subsingleton.elim (α := PrimeSpectrum _) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.range_fiberι (f : X ⟶ Y) (y : Y) :
     Set.range (f.fiberι y) = f ⁻¹' {y} := by
   simp [fiber, fiberι, Scheme.Pullback.range_fst, Scheme.range_fromSpecResidueField]

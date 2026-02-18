@@ -961,9 +961,9 @@ instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
       fun x y ihx ihy => by rw [map_mul, ihx, ihy])
   (pure_bind := fun x f => pure_bind f x)
   (bind_assoc := fun x => by
-    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +contextual [instMonad])
+    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +instances +contextual [instMonad])
   (bind_pure_comp := fun f x => by
-    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +contextual [instMonad])
+    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +instances +contextual [instMonad])
 
 end Category
 

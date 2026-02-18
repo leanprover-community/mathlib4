@@ -150,6 +150,7 @@ theorem Ideal.mul_homogeneous_element_mem_of_mem
   · exact I.mul_mem_left _ hx₂
   · exact I.zero_mem
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, SetLike.IsHomogeneousElem 𝒜 x) :
     (Ideal.span s).IsHomogeneous 𝒜 := by
   rintro i r hr

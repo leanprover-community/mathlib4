@@ -53,6 +53,7 @@ section NormedSpace
 
 variable [NormedSpace ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsGaussian.charFunDual_eq' [IsGaussian μ] (L : StrongDual ℝ E) :
     charFunDual μ L = exp ((L μ[id]) * I - covarianceBilinDual μ L L / 2) := by
   rw [IsGaussian.charFunDual_eq, covarianceBilinDual_self_eq_variance, integral_complex_ofReal,
@@ -133,6 +134,7 @@ section InnerProductSpace
 
 variable [InnerProductSpace ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsGaussian.charFun_eq' [IsGaussian μ] (t : E) :
     charFun μ t = exp (⟪t, μ[id]⟫ * I - covarianceBilin μ t t / 2) := by
   rw [IsGaussian.charFun_eq, covarianceBilin_self, integral_complex_ofReal,

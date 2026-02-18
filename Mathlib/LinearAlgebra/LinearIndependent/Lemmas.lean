@@ -130,6 +130,7 @@ end Indexed
 
 section repr
 
+set_option backward.isDefEq.respectTransparency false in
 variable (ι R M) in
 theorem iSupIndep_range_lsingle :
     iSupIndep fun i : ι ↦ LinearMap.range (Finsupp.lsingle (R := R) (M := M) i) := by
@@ -669,6 +670,7 @@ theorem linearIndependent_fin_succ' {n} {v : Fin (n + 1) → V} : LinearIndepend
     LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
   rw [← linearIndependent_fin_snoc, Fin.snoc_init_self]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
 vector in the complement of their span.
 -/
@@ -769,6 +771,7 @@ theorem LinearIndepOn.linearIndepOn_extend (hs : LinearIndepOn K v s) (hst : s �
   let ⟨_hbt, _hsb, _htb, hli⟩ := Classical.choose_spec (exists_linearIndepOn_extension hs hst)
   hli
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO(Mario): rewrite?
 theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
     (hs : LinearIndepOn K id s) (hst : s ⊆ (span K ↑t : Submodule K V)) :

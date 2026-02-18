@@ -395,6 +395,7 @@ lemma card_nbij' (i : α → β) (j : β → α) (hi : Set.MapsTo i s t) (hj : S
     (left_inv : Set.LeftInvOn j i s) (right_inv : Set.RightInvOn j i t) : #s = #t :=
   card_bij' (fun a _ ↦ i a) (fun b _ ↦ j b) hi hj left_inv right_inv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Specialization of `Finset.card_nbij'` that automatically fills in most arguments.
 
 See `Fintype.card_equiv` for the version where `s` and `t` are `univ`. -/
@@ -480,6 +481,7 @@ lemma surjOn_of_injOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hinj :
   have : s.image f ⊆ t := by aesop (add simp Finset.subset_iff)
   exact eq_of_subset_of_card_le this (hst.trans_eq (card_image_of_injOn hinj).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given an injective map `f` defined on a finite set `s` to another finite set `t`, if `t` is no
 larger than `s`, then `f` is surjective to `t` when restricted to `s`.
@@ -509,6 +511,7 @@ lemma injOn_of_surjOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hsurj 
   rw [← card_image_iff]
   lia
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a surjective map `f` defined on a finite set `s` to another finite set `t`, if `s` is no
 larger than `t`, then `f` is injective when restricted to `s`.
@@ -722,8 +725,6 @@ theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b :=
 theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
-
-@[deprecated (since := "2025-08-14")] alias exists_ne_of_one_lt_card := exists_mem_ne
 
 /-- If a Finset in a Pi type is nontrivial (has at least two elements), then
   its projection to some factor is nontrivial, and the fibers of the projection
