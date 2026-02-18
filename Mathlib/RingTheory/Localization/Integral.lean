@@ -47,7 +47,7 @@ theorem exists_integer_polynomial_multiple (p : S[X]) :
 theorem exists_integer_polynomial_multiple_and_support_subset (p : S[X]) :
     ∃ (b : M) (q : R[X]), q.map (algebraMap R S) = (b : R) • p ∧ q.support ⊆ p.support := by
   obtain ⟨b, hq⟩ := exists_integer_polynomial_multiple M p
-  obtain ⟨q', h₁, h₂⟩ := mem_lifts_and_support_eq (f := (algebraMap R S)) hq
+  obtain ⟨q', h₁, h₂⟩ := exists_support_eq_of_mem_lifts (f := (algebraMap R S)) hq
   exact ⟨b, q', h₁, h₂ ▸ support_smul b p⟩
 
 /-- `integerNormalization p` normalizes `p` to have integer coefficients
