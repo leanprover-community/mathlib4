@@ -58,6 +58,7 @@ private lemma monotoneOn_nnrpow_Ioo {p : ℝ≥0} (hp : p ∈ Ioo 0 1) :
   filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
   exact monotoneOn_cfcₙ_rpowIntegrand₀₁ hp ht
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `a ↦ a ^ p` is operator monotone for `p ∈ [0,1]`. -/
 lemma monotone_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
     Monotone (fun a : A => a ^ p) := by

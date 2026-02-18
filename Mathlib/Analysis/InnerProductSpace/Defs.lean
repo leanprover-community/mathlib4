@@ -206,6 +206,7 @@ local postfix:90 "†" => starRingEnd _
 /-- Inner product defined by the `PreInnerProductSpace.Core` structure. We can't reuse
 `PreInnerProductSpace.Core.toInner` because it takes `PreInnerProductSpace.Core` as an explicit
 argument. -/
+@[instance_reducible]
 def toPreInner' : Inner 𝕜 F :=
   c.toInner
 
@@ -368,6 +369,7 @@ theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ 
 
 /-- (Semi)norm constructed from a `PreInnerProductSpace.Core` structure, defined to be the square
 root of the scalar product. -/
+@[instance_reducible]
 def toNorm : Norm F where norm x := √(re ⟪x, x⟫)
 
 attribute [local instance] toNorm
@@ -388,6 +390,7 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
       _ = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) := by simp only [inner_self_eq_norm_mul_norm]; ring
 
 /-- Seminormed group structure constructed from a `PreInnerProductSpace.Core` structure -/
+@[instance_reducible]
 def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
   AddGroupSeminorm.toSeminormedAddCommGroup
     { toFun := fun x => √(re ⟪x, x⟫)
@@ -415,6 +418,7 @@ def toNormedSpace : NormedSpace 𝕜 F where
     · simp [sqrt_normSq_eq_norm]
     · positivity
 
+set_option backward.isDefEq.respectTransparency false in
 omit c in
 /-- Seminormed space core structure constructed from a `PreInnerProductSpace.Core` structure -/
 lemma toSeminormedSpaceCore (c : PreInnerProductSpace.Core 𝕜 F) : SeminormedSpace.Core 𝕜 F where
@@ -437,6 +441,7 @@ local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
 /-- Inner product defined by the `InnerProductSpace.Core` structure. We can't reuse
 `InnerProductSpace.Core.toInner` because it takes `InnerProductSpace.Core` as an explicit
 argument. -/
+@[instance_reducible]
 def toInner' : Inner 𝕜 F :=
   cd.toInner
 
@@ -458,6 +463,7 @@ theorem inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 ↔ x ≠ 0 :=
 attribute [local instance] toNorm
 
 /-- Normed group structure constructed from an `InnerProductSpace.Core` structure -/
+@[instance_reducible]
 def toNormedAddCommGroup : NormedAddCommGroup F :=
   AddGroupNorm.toNormedAddCommGroup
     { toFun := fun x => √(re ⟪x, x⟫)
@@ -479,6 +485,7 @@ section
 
 attribute [local instance] toNormedAddCommGroup
 
+set_option backward.isDefEq.respectTransparency false in
 omit cd in
 /-- Normed space core structure constructed from an `InnerProductSpace.Core` structure -/
 lemma toNormedSpaceCore (cd : InnerProductSpace.Core 𝕜 F) : NormedSpace.Core 𝕜 F where
@@ -491,6 +498,7 @@ lemma toNormedSpaceCore (cd : InnerProductSpace.Core 𝕜 F) : NormedSpace.Core 
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a topological vector space, if the unit ball of a continuous inner product is von Neumann
 bounded, then the inner product defines the same topology as the original one. -/
 lemma topology_eq

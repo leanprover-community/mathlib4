@@ -37,12 +37,14 @@ compared to the keys for `Submonoid.smul`
 
 /-! ### Lattice results -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem op_bot : (⊥ : Subgroup G).op = ⊥ := opEquiv.map_bot
 
 @[to_additive (attr := simp)]
 theorem op_eq_bot {S : Subgroup G} : S.op = ⊥ ↔ S = ⊥ := op_injective.eq_iff' op_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem unop_bot : (⊥ : Subgroup Gᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
 
