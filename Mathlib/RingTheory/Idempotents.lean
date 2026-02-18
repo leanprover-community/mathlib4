@@ -330,6 +330,7 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker
   refine ⟨_, ((equiv (Fintype.equivFin I)).mpr h₁),
     by ext x; simpa using congr_fun h₂ (Fintype.equivFin I x)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute {e₁ e₂ : R}
     (he₁ : IsIdempotentElem e₁) (he₂ : IsIdempotentElem e₂) (H : IsNilpotent (e₁ - e₂))
     (H' : Commute e₁ e₂) :
@@ -419,6 +420,7 @@ lemma CompleteOrthogonalIdempotents.of_prod_one_sub
   __ := he
   complete := by rwa [he.prod_one_sub, sub_eq_zero, eq_comm] at he'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A family of complete orthogonal idempotents induces an isomorphism `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
 lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempotents e) :
     Function.Bijective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
