@@ -24,10 +24,9 @@ open Qq
 variable {α : Type*}
 
 -- see note [norm_num lemma function equality]
-theorem isNNRat_ofScientific_of_true [DivisionSemiring α] :
-    {m e : ℕ} → {n : ℕ} → {d : ℕ} → IsNNRat (NNRat.divNat m (10 ^ e) : α) n d →
-    IsNNRat (OfScientific.ofScientific m true e : α) n d
-  | _, _, _, _, ⟨_, eq⟩ => ⟨‹_›, by
+theorem isNNRat_ofScientific_of_true [DivisionSemiring α] {m e : ℕ} {n : ℕ} {d : ℕ} :
+    IsNNRat (NNRat.divNat m (10 ^ e) : α) n d → IsNNRat (OfScientific.ofScientific m true e : α) n d
+  | ⟨_, eq⟩ => ⟨‹_›, by
     rw [NNRatCast.toOfScientific_def, ← eq]
     congr
     rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, Rat.divInt.eq_def]
