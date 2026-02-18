@@ -86,7 +86,7 @@ lemma LocallyFiniteSupport.iff_locallyFinite_support [Zero Y] (f : X → Y) :
   have aux2 : InjOn Subtype.val {i : f.support | ↑i ∈ t} := by aesop
   simp only [singleton_inter_nonempty, aux1, finite_image_iff aux2]
 
-lemma LocallyFiniteSupport.support_locallyFinite [Zero Y] (f : X → Y) (h : LocallyFiniteSupport f) :
+lemma LocallyFiniteSupport.locallyFinite_support [Zero Y] (f : X → Y) (h : LocallyFiniteSupport f) :
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) :=
   (LocallyFiniteSupport.iff_support_locallyFinite f).mpr h
 
