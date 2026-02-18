@@ -297,6 +297,7 @@ alias ⟨_, WellFoundedGT.isSupClosedCompact⟩ := isSupClosedCompact_iff_wellFo
 end CompleteLattice
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem WellFoundedGT.finite_of_sSupIndep [WellFoundedGT α] {s : Set α}
     (hs : sSupIndep s) : s.Finite := by
   classical

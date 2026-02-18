@@ -145,6 +145,7 @@ theorem power_eq_zero_iff_mem_sphere {s : Sphere P} {p : P} (hr : 0 ≤ s.radius
     s.power p = 0 ↔ p ∈ s := by
   rw [power, mem_sphere, sub_eq_zero, pow_left_inj₀ dist_nonneg hr two_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The power of a point is positive if and only if the point lies outside the sphere. -/
 theorem power_pos_iff_radius_lt_dist_center {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
     0 < s.power p ↔ s.radius < dist p s.center := by
@@ -155,6 +156,7 @@ theorem power_neg_iff_dist_center_lt_radius {s : Sphere P} {p : P} (hr : 0 ≤ s
   s.power p < 0 ↔ dist p s.center < s.radius := by
   rw [power, sub_neg, pow_lt_pow_iff_left₀ dist_nonneg hr two_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The power of a point is nonnegative if and only if the point lies outside or on the sphere. -/
 theorem power_nonneg_iff_radius_le_dist_center {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
     0 ≤ s.power p ↔ s.radius ≤ dist p s.center := by

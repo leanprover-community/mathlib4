@@ -773,9 +773,9 @@ lemma eq_closed_inter_nat [HereditarilyLindelofSpace X] {ι : Type*} [Nonempty �
   conv in _ = _ => rw [← compl_inj_iff]; simp
   exact eq_open_union_nat (fun i ↦ (C i)ᶜ) (fun i ↦ (h i).isOpen_compl)
 
-instance HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X] (p : X → Prop) :
-    LindelofSpace {x // p x} := by
-  apply isLindelof_iff_lindelofSpace.mp
-  exact HereditarilyLindelofSpace.isLindelof fun x ↦ p x
+instance [HereditarilyLindelofSpace X] (p : X → Prop) :
+    HereditarilyLindelofSpace {x // p x} :=
+  HereditarilyLindelofSpace.of_forall_isOpen fun _ _ =>
+    Subtype.isLindelof_iff.2 <| HereditarilyLindelofSpace.isLindelof _
 
 end Lindelof
