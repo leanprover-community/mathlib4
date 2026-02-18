@@ -151,6 +151,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Kyle Miller (@kmill): combinatorics, tactics, metaprogramming
 * Kim Morrison (@kim-em): category theory, tactics
 * Oliver Nash (@ocfnash): algebra, geometry, topology
+* Filippo A. E. Nuccio (@faenuccio): algebra, homology, number theory, functional analysis
 * Joël Riou (@joelriou): category theory, homology, algebraic geometry
 * Michael Rothgang (@grunweg): differential geometry, analysis, topology, linters
 * Damiano Testa (@adomani): algebra, algebraic geometry, number theory, tactics, linters
