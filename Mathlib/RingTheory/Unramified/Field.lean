@@ -58,6 +58,7 @@ theorem of_isSeparable [Algebra.IsSeparable K L] : FormallyUnramified K L := by
 variable [FormallyUnramified K A] [EssFiniteType K A]
 variable [FormallyUnramified K L] [EssFiniteType K L]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bijective_of_isAlgClosed_of_isLocalRing
     [IsAlgClosed K] [IsLocalRing A] :
     Function.Bijective (algebraMap K A) := by
@@ -119,6 +120,7 @@ theorem isField_of_isAlgClosed_of_isLocalRing
   exact hx ((isUnit_iff_ne_zero.mpr
     (fun e ↦ hx' ((algebraMap K A).congr_arg e))).map (algebraMap K A))
 
+set_option backward.isDefEq.respectTransparency false in
 include K in
 theorem isReduced_of_field :
     IsReduced A := by
@@ -151,6 +153,7 @@ theorem isReduced_of_field :
     (A := Localization.AtPrime M)).toField
   exact hy.eq_zero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_eq_top_of_isPurelyInseparable
     [IsPurelyInseparable K L] : (algebraMap K L).range = ⊤ := by
   classical
@@ -197,6 +200,7 @@ theorem range_eq_top_of_isPurelyInseparable
     rw [map_mul, ← Algebra.smul_def, algebraMap_eq_smul_one, eq_neg_iff_add_eq_zero.mpr e,
       smul_neg, neg_smul, neg_neg, smul_smul, this.val_inv_mul, one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSeparable : Algebra.IsSeparable K L := by
   have := finite_of_free (R := K) (S := L)
   rw [← separableClosure.eq_top_iff]
@@ -213,6 +217,7 @@ theorem iff_isSeparable (L : Type u) [Field L] [Algebra K L] [EssFiniteType K L]
 
 end Algebra.FormallyUnramified
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K A} in
 /-- If `A = K[X]/⟨p⟩` is unramified at some prime `Q`, then the minpoly of `X` in `κ(Q)`
 only divides `p` once. -/

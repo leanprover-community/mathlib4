@@ -5,6 +5,7 @@ Authors: Paul Lezeau, Xavier Roblot, Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.PowerBasis
 
@@ -116,6 +117,7 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
   · intro y hy
     exact lem ((Finsupp.mem_supported _ l).mp H hy)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A technical result telling us that `(I * S) ∩ R<x> = I * R<x>` for any ideal `I` of `R`. -/
 theorem comap_map_eq_map_adjoin_of_coprime_conductor
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
@@ -152,6 +154,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
     rw [IsScalarTower.algebraMap_eq R R<x> S, ← Ideal.map_map]
     apply Ideal.le_comap_map
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical morphism of rings from `R<x> ⧸ (I*R<x>)` to `S ⧸ (I*S)` is an isomorphism
 when `I` and `(conductor R x) ∩ R` are coprime. -/
 noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
@@ -194,3 +197,12 @@ theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap 
     (h_alg : Function.Injective (algebraMap R<x> S)) (a : R<x>) :
     quotAdjoinEquivQuotMap hx h_alg (Ideal.Quotient.mk (I.map (algebraMap R R<x>)) a) =
       Ideal.Quotient.mk (I.map (algebraMap R S)) ↑a := rfl
+
+lemma Localization.localRingHom_bijective_of_not_conductor_le
+    {P : Ideal S} [P.IsPrime] (hx : ¬ conductor R x ≤ P) {s : Subalgebra R S}
+    (hs : s = R<x>) (p : Ideal s) [p.IsPrime] [P.LiesOver p] :
+    Function.Bijective (Localization.localRingHom _ _ _ (P.over_def p)) := by
+  obtain ⟨a, ha, haP⟩ := SetLike.not_le_iff_exists.mp hx
+  replace ha (b : _) : a * b ∈ s := by simpa [hs] using ha b
+  exact Localization.localRingHom_bijective_of_saturated_inf_eq_top _
+    (top_le_iff.mp fun y _ ↦ ⟨a, ⟨haP, by simpa using ha 1⟩, ha _⟩) _

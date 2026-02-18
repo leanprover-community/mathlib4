@@ -52,7 +52,7 @@ def mkMulHom (c : Con M) : MulHom M c.Quotient where
 def ker (f : F) : Con M where
   toSetoid := Setoid.ker f
   mul' h1 h2 := by
-    dsimp [Setoid.ker, onFun] at *
+    dsimp +instances [Setoid.ker, onFun] at *
     rw [map_mul, h1, h2, map_mul]
 
 @[to_additive (attr := norm_cast)]

@@ -138,6 +138,7 @@ variable [PreconnectedSpace α]
   {s : ι → Set α} (h_nonempty : ∀ i, (s i).Nonempty) (h_disj : Pairwise (Disjoint on s))
 include h_nonempty h_disj
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a preconnected space, any disjoint family of non-empty clopen subsets has at most one
 element. -/
 lemma subsingleton_of_disjoint_isClopen
@@ -152,6 +153,7 @@ lemma subsingleton_of_disjoint_isClopen
   · rw [hi, univ_inter] at h_ne
     exact (h_nonempty j).ne_empty h_ne
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a preconnected space, any disjoint cover by non-empty open subsets has at most one
 element. -/
 lemma subsingleton_of_disjoint_isOpen_iUnion_eq_univ
@@ -164,6 +166,7 @@ lemma subsingleton_of_disjoint_isOpen_iUnion_eq_univ
   · simp
   · simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_open j
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a preconnected space, any finite disjoint cover by non-empty closed subsets has at most one
 element. -/
 lemma subsingleton_of_disjoint_isClosed_iUnion_eq_univ [Finite ι]
@@ -325,6 +328,7 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     · rcases hsu with ⟨x, hxs, hxu⟩
       exact ⟨x, hxs, ⟨hxu, h hxs⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A closed set `s` is preconnected if and only if for every cover by two closed sets that are
 disjoint, it is contained in one of the two covering sets. -/
 theorem isPreconnected_iff_subset_of_fully_disjoint_closed {s : Set α} (hs : IsClosed s) :
@@ -374,6 +378,7 @@ lemma IsClopen.biUnion_connectedComponentIn {X : Type*} [TopologicalSpace X] {u 
 
 variable [TopologicalSpace β] {f : α → β}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The preimage of a connected component is preconnected if the function has connected fibers
 and a subset is closed iff the preimage is. -/
 theorem preimage_connectedComponent_connected
