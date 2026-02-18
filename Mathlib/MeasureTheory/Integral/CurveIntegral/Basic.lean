@@ -517,8 +517,8 @@ theorem HasFDerivWithinAt.curveIntegral_segment_source' (hs : Convex ℝ s)
     ≤ ∫ x in 0..1, ‖ω x - ω a‖ * ‖b - a‖
     ≤ ε * ‖b - a‖`
   -/
-  simp only [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, Path.segment_same,
-    curveIntegral_refl, sub_zero, Asymptotics.isLittleO_iff]
+  simp only [hasFDerivWithinAt_iff_isLittleO, Path.segment_same, curveIntegral_refl, sub_zero,
+    Asymptotics.isLittleO_iff]
   intro ε hε
   obtain ⟨δ, hδ₀, hδ⟩ : ∃ δ > 0,
       ball a δ ∩ s ⊆ {z | ContinuousWithinAt ω s z ∧ dist (ω z) (ω a) ≤ ε} := by
