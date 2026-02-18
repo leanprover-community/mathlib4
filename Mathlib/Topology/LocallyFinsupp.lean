@@ -90,7 +90,7 @@ lemma LocallyFiniteSupport.locallyFinite_support [Zero Y] (f : X → Y) (h : Loc
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) :=
   (LocallyFiniteSupport.iff_support_locallyFinite f).mpr h
 
-lemma LocallyFiniteSupport.inter_support_finite_of_isCompact {W : Set X}
+lemma LocallyFiniteSupport.finite_inter_support_of_isCompact {W : Set X}
    [Zero Y] {f : X → Y} (h : LocallyFiniteSupport f)
    (hW : IsCompact W) : (W ∩ f.support).Finite := by
   have := LocallyFinite.finite_nonempty_inter_compact
