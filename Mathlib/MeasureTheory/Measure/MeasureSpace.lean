@@ -170,6 +170,7 @@ theorem measure_sUnion {S : Set (Set α)} (hs : S.Countable) (hd : S.Pairwise Di
     (h : ∀ s ∈ S, MeasurableSet s) : μ (⋃₀ S) = ∑' s : S, μ s := by
   rw [sUnion_eq_biUnion, measure_biUnion hs hd h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem measure_biUnion_finset₀ {s : Finset ι} {f : ι → Set α}
     (hd : Set.Pairwise (↑s) (AEDisjoint μ on f)) (hm : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
     μ (⋃ b ∈ s, f b) = ∑ p ∈ s, μ (f p) := by
@@ -443,6 +444,7 @@ theorem nonempty_inter_of_measure_lt_add' {m : MeasurableSpace α} (μ : Measure
   rw [inter_comm]
   exact nonempty_inter_of_measure_lt_add μ hs h't h's h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Continuity from below:
 the measure of the union of a directed sequence of (not necessarily measurable) sets
 is the supremum of the measures. -/
@@ -1078,6 +1080,7 @@ instance instCompleteSemilatticeInf {_ : MeasurableSpace α} : CompleteSemilatti
     sInf_le := fun _s _a => measure_sInf_le
     le_sInf := fun _s _a => measure_le_sInf }
 
+set_option backward.isDefEq.respectTransparency false in
 instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure α) :=
   { completeLatticeOfCompleteSemilatticeInf (Measure α) with
     top :=
@@ -1097,6 +1100,7 @@ instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure
 
 end sInf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
     (μ ⊓ ν) s = sInf {m | ∃ t, m = μ (t ∩ s) + ν (tᶜ ∩ s)} := by
   -- `(μ ⊓ ν) s` is defined as `⊓ (t : ℕ → Set α) (ht : s ⊆ ⋃ n, t n), ∑' n, μ (t n) ⊓ ν (t n)`
@@ -1172,20 +1176,24 @@ theorem toOuterMeasure_top {_ : MeasurableSpace α} :
     (⊤ : Measure α).toOuterMeasure = (⊤ : OuterMeasure α) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem top_add : ⊤ + μ = ⊤ :=
   top_unique <| Measure.le_add_right le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem add_top : μ + ⊤ = ⊤ :=
   top_unique <| Measure.le_add_left le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem zero_le {_m0 : MeasurableSpace α} (μ : Measure α) : 0 ≤ μ :=
   bot_le
 
 theorem nonpos_iff_eq_zero' : μ ≤ 0 ↔ μ = 0 :=
   μ.zero_le.ge_iff_eq'
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem measure_univ_eq_zero : μ univ = 0 ↔ μ = 0 :=
   ⟨fun h => bot_unique fun s => (h ▸ measure_mono (subset_univ s) : μ s ≤ 0), fun h =>
