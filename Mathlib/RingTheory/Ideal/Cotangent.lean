@@ -300,6 +300,7 @@ open IsLocalRing
 
 variable {R : Type*} [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma spanFinrank_eq_finrank_quotient [IsLocalRing R] {M : Type*} [AddCommGroup M] [Module R M]
     (N : Submodule R M) (fg : N.FG) : N.spanFinrank =
     Module.finrank (R ⧸ maximalIdeal R) (N ⧸ (maximalIdeal R) • (⊤ : Submodule R N)) := by
