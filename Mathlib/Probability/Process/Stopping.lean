@@ -287,6 +287,7 @@ open Filtration
 variable [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι] [OrderTopology ι]
     [DenselyOrdered ι] [FirstCountableTopology ι] {f : Filtration ι m}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous'
     {τ : Ω → WithTop ι} [hf : f.IsRightContinuous]
     (hτ1 : ∀ i, ¬ IsMax i → MeasurableSet[f i] {ω | τ ω < i})
@@ -371,6 +372,7 @@ protected theorem min_const [LinearOrder ι] {f : Filtration ι m} {τ : Ω → 
     (hτ : IsStoppingTime f τ) (i : ι) : IsStoppingTime f fun ω => min (τ ω) i :=
   hτ.min (isStoppingTime_const f i)
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma biInf [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι]
     [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
     {κ : Type*} {f : Filtration ι m} {τ : κ → Ω → WithTop ι} {s : Set κ} (hs : s.Countable)
