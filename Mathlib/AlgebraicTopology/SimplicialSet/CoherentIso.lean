@@ -77,12 +77,13 @@ section
 
 variable {C : Type u} [Category.{v} C]
 
+def iso : zero.{u} ≅ one where
+  hom := ()
+  inv := ()
+
 /-- Functors out of `WalkingIso` define isomorphisms in the target category. -/
-def toIso (F : WalkingIso.{w} ⥤ C) : F.obj zero ≅ F.obj one where
-  hom := F.map PUnit.unit
-  inv := F.map PUnit.unit
-  hom_inv_id := by rw [← F.map_comp, ← F.map_id]; rfl
-  inv_hom_id := by rw [← F.map_comp, ← F.map_id]; rfl
+@[simps!]
+def toIso (F : WalkingIso.{w} ⥤ C) : F.obj zero ≅ F.obj one := F.mapIso iso
 
 /-- From an isomorphism in a category, true can build a functor out of `WalkingIso` to
   that category. -/
