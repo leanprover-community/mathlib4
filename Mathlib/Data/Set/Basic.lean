@@ -173,10 +173,6 @@ end SetCoe
 theorem Subtype.mem {α : Type*} {s : Set α} (p : s) : (p : α) ∈ s :=
   p.prop
 
-/-- Duplicate of `Eq.subset'`, which currently has elaboration problems. -/
-theorem Eq.subset {α} {s t : Set α} : s = t → s ⊆ t :=
-  fun h₁ _ h₂ => by rw [← h₁]; exact h₂
-
 namespace Set
 
 variable {α : Type u} {β : Type v} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
@@ -421,7 +417,7 @@ theorem Nonempty.of_subtype [Nonempty (↥s)] : s.Nonempty := nonempty_subtype.m
 theorem empty_def : (∅ : Set α) = { _x : α | False } :=
   rfl
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_empty_iff_false (x : α) : x ∈ (∅ : Set α) ↔ False :=
   Iff.rfl
 
@@ -587,7 +583,7 @@ theorem MemUnion.elim {x : α} {a b : Set α} {P : Prop} (H₁ : x ∈ a ∪ b) 
     (H₃ : x ∈ b → P) : P :=
   Or.elim H₁ H₂ H₃
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_union (x : α) (a b : Set α) : x ∈ a ∪ b ↔ x ∈ a ∨ x ∈ b :=
   Iff.rfl
 
@@ -700,7 +696,7 @@ theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t :=
 theorem inter_def {s₁ s₂ : Set α} : s₁ ∩ s₂ = { a | a ∈ s₁ ∧ a ∈ s₂ } :=
   rfl
 
-@[simp, mfld_simps, grind =]
+@[simp, mfld_simps, grind =, push]
 theorem mem_inter_iff (x : α) (a b : Set α) : x ∈ a ∩ b ↔ x ∈ a ∧ x ∈ b :=
   Iff.rfl
 
@@ -934,7 +930,7 @@ theorem mem_powerset {x s : Set α} (h : x ⊆ s) : x ∈ 𝒫 s := @h
 
 theorem subset_of_mem_powerset {x s : Set α} (h : x ∈ 𝒫 s) : x ⊆ s := @h
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_powerset_iff (x s : Set α) : x ∈ 𝒫 s ↔ x ⊆ s :=
   Iff.rfl
 

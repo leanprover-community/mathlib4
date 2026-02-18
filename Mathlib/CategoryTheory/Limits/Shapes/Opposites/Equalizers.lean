@@ -174,16 +174,20 @@ end Fork
 
 namespace Cofork
 
+set_option backward.isDefEq.respectTransparency false in
 theorem op_unop_π {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : c.op.unop.π = c.π := by
   simp [Fork.unop_π, Cofork.op_ι]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unop_op_π {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : c.unop.op.π = c.π := by
   simp [Fork.op_π, Cofork.unop_ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `c` is a cofork, then `c.op.unop` is isomorphic to `c`. -/
 def opUnopIso {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : c.op.unop ≅ c :=
   Cofork.ext (Iso.refl _) (by simp [op_unop_π])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `c` is a cofork in `Cᵒᵖ`, then `c.unop.op` is isomorphic to `c`. -/
 def unopOpIso {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : c.unop.op ≅ c :=
   Cofork.ext (Iso.refl _) (by simp [unop_op_π])
@@ -192,16 +196,20 @@ end Cofork
 
 namespace Fork
 
+set_option backward.isDefEq.respectTransparency false in
 theorem op_unop_ι {X Y : C} {f g : X ⟶ Y} (c : Fork f g) : c.op.unop.ι = c.ι := by
   simp [Cofork.unop_ι, Fork.op_π]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unop_op_ι {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : c.unop.op.ι = c.ι := by
   simp [Fork.unop_π, Cofork.op_ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `c` is a fork, then `c.op.unop` is isomorphic to `c`. -/
 def opUnopIso {X Y : C} {f g : X ⟶ Y} (c : Fork f g) : c.op.unop ≅ c :=
   Fork.ext (Iso.refl _) (by simp [op_unop_ι])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `c` is a fork in `Cᵒᵖ`, then `c.unop.op` is isomorphic to `c`. -/
 def unopOpIso {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : c.unop.op ≅ c :=
   Fork.ext (Iso.refl _) (by simp [unop_op_ι])
@@ -235,12 +243,14 @@ def isColimitEquivIsLimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
     exact (IsColimit.equivIsoColimit c.unopOpIso).toFun
       ((IsColimit.precomposeHomEquiv _ _).invFun ((IsColimit.whiskerEquivalenceEquiv _).toFun h.op))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism between `(Cofork.ofπ π w).op` and `Fork.ofι π.op w'`. -/
 def ofπOpIsoOfι {X Y P : C} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
     (w' : π'.op ≫ f.op = π'.op ≫ g.op) (h : π = π') :
     (Cofork.ofπ π w).op ≅ Fork.ofι π'.op w' :=
   Fork.ext (Iso.refl _) (by simp [Cofork.op_ι, h])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism between `(Cofork.ofπ π w).unop` and `Fork.ofι π.unop w'`. -/
 def ofπUnopIsoOfι {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
     (w' : π'.unop ≫ f.unop = π'.unop ≫ g.unop) (h : π = π') :
@@ -284,6 +294,7 @@ def ofιOpIsoOfπ {X Y P : C} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f =
     (Fork.ofι ι w).op ≅ Cofork.ofπ ι'.op w' :=
   Cofork.ext (Iso.refl _) (by simp [Fork.op_π, h])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism between `(Fork.ofι ι w).unop` and `Cofork.ofπ ι.unop w.unop`. -/
 def ofιUnopIsoOfπ {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
     (w' : f.unop ≫ ι'.unop = g.unop ≫ ι'.unop) (h : ι = ι') :
@@ -320,7 +331,7 @@ def isColimitCoforkPushoutEquivIsColimitForkOpPullback
         (by simp [← op_comp]) (by simp [← op_comp]) (by simp)
   invFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitUnop f.op f.op
     pushout.condition (by rw [← unop_comp, ← unop_comp, pushout.condition]) rfl h) _
-      (pullbackIsoUnopPushout f f).symm ( .refl _) (.refl _) (by simp) (by simp) (by simp)
+      (pullbackIsoUnopPushout f f).symm (.refl _) (.refl _) (by simp) (by simp) (by simp)
   left_inv := by cat_disch
   right_inv := by cat_disch
 
@@ -336,7 +347,7 @@ def isColimitCoforkPushoutEquivIsColimitForkUnopPullback
   invFun h :=
     Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitOp f.unop f.unop pushout.condition
       (by rw [← op_comp, ← op_comp, pushout.condition]) rfl h) _
-        (pullbackIsoOpPushout f f).symm ( .refl _) (.refl _) (by simp) (by simp) (by simp)
+        (pullbackIsoOpPushout f f).symm (.refl _) (.refl _) (by simp) (by simp) (by simp)
   left_inv := by cat_disch
   right_inv := by cat_disch
 

@@ -18,6 +18,7 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 
 /-!
@@ -148,6 +149,14 @@ theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜
     ⇑f.toHomeomorphOfFiniteDimensional.symm = f.symm :=
   rfl
 
+/-- An affine map from a finite-dimensional space is automatically Lipschitz. -/
+theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :
+    ∃ K : ℝ≥0, LipschitzWith K f := by
+  let fL : E →L[𝕜] F := f.linear.toContinuousLinearMap
+  refine ⟨‖fL‖₊, LipschitzWith.of_dist_le_mul fun x y ↦ ?_⟩
+  rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', ← f.linearMap_vsub]
+  exact fL.le_opNorm _
+
 end Affine
 
 theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E => f.det := by
@@ -224,6 +233,16 @@ theorem LinearMap.injective_iff_antilipschitz [FiniteDimensional 𝕜 E] (f : E 
     exact f.exists_antilipschitzWith
   · rintro ⟨K, -, H⟩
     exact H.injective
+
+/-- An injective affine map from a finite-dimensional space is automatically anti-Lipschitz. -/
+theorem AffineMap.antilipschitzWith_of_finiteDimensional {PE PF : Type*} [MetricSpace PE]
+    [NormedAddTorsor E PE] [MetricSpace PF] [NormedAddTorsor F PF] [FiniteDimensional 𝕜 E]
+    {f : PE →ᵃ[𝕜] PF} (hf : Function.Injective f) :
+    ∃ K : ℝ≥0, AntilipschitzWith K f := by
+  obtain ⟨K, -, hK⟩ := f.linear.injective_iff_antilipschitz.mp (f.linear_injective_iff.mpr hf)
+  refine ⟨K, AntilipschitzWith.of_le_mul_dist fun x y ↦ ?_⟩
+  rw [dist_eq_norm_vsub E, dist_eq_norm_vsub F, ← f.linearMap_vsub]
+  exact ZeroHomClass.bound_of_antilipschitz f.linear hK (x -ᵥ y)
 
 open Function in
 /-- The set of injective continuous linear maps `E → F` is open,
@@ -735,6 +754,7 @@ theorem continuous_coe_repr : Continuous (fun m : M => ⇑(B.repr m)) :=
   have := Finite.of_basis B
   LinearMap.continuous_of_finiteDimensional B.equivFun.toLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 -- Note: this could be generalized if we had some typeclass to indicate "each of the projections
 -- into the basis is continuous".
 theorem continuous_toMatrix : Continuous fun (v : ι → M) => B.toMatrix v :=

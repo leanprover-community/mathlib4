@@ -45,6 +45,7 @@ namespace ContinuousMap.Homotopy
 variable [NormedSpace ℝ E] [NormedSpace ℝ F] {a b c d : E}
     {γ₁ : Path a b} {γ₂ : Path c d} {s : Set (I × I)} {t : Set E}
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable_real
     {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F}
     (φ : (γ₁ : C(I, E)).Homotopy γ₂)
@@ -214,8 +215,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
     · exact zero_le_one
     · exact s'
     · exact hs'c
-    · exact hηc.clm_apply continuousOn_const
-    · exact hηc.clm_apply continuousOn_const |>.neg
+    · fun_prop
+    · fun_prop
     · exact hf'
     · exact hg'
     · rw [integrableOn_congr_fun_ae hf'g']
@@ -289,6 +290,7 @@ namespace Convex
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
   {a b c : E} {s : Set E} {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `ω` is a closed `1`-form on a convex set,
 then `∫ᶜ x in Path.segment a b, ω x + ∫ᶜ x in Path.segment b c, ω x = ∫ᶜ x in Path.segment a c, ω x`
 for all `a b c ∈ s`.

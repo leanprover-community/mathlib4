@@ -235,10 +235,6 @@ theorem _root_.Function.Commute.set_image {f g : α → α} (h : Function.Commut
     Function.Commute (image f) (image g) :=
   Function.Semiconj.set_image h
 
-@[deprecated image_mono (since := "2025-08-01")]
-theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f '' b :=
-  image_mono h
-
 theorem image_union (f : α → β) (s t : Set α) : f '' (s ∪ t) = f '' s ∪ f '' t := by grind
 
 @[simp]
@@ -275,13 +271,13 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
 theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (s : Set α) :
-    HasCompl.compl ⁻¹' s = HasCompl.compl '' s :=
+    Compl.compl ⁻¹' s = Compl.compl '' s :=
   Set.ext fun x =>
     ⟨fun h => ⟨xᶜ, h, compl_compl x⟩, fun h =>
       Exists.elim h fun _ hy => (compl_eq_comm.mp hy.2).symm.subst hy.1⟩
 
 theorem mem_compl_image [BooleanAlgebra α] (t : α) (s : Set α) :
-    t ∈ HasCompl.compl '' s ↔ tᶜ ∈ s := by
+    t ∈ Compl.compl '' s ↔ tᶜ ∈ s := by
   simp [← preimage_compl_eq_image_compl]
 
 @[simp]
@@ -301,7 +297,7 @@ lemma image_iterate_eq {f : α → α} {n : ℕ} : image (f^[n]) = (image f)^[n]
   | succ n ih => rw [iterate_succ', iterate_succ', ← ih, image_comp_eq]
 
 theorem compl_compl_image [BooleanAlgebra α] (s : Set α) :
-    HasCompl.compl '' (HasCompl.compl '' s) = s := by
+    Compl.compl '' (Compl.compl '' s) = s := by
   rw [← image_comp, compl_comp_compl, image_id]
 
 theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
@@ -309,8 +305,12 @@ theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
 
 theorem image_pair (f : α → β) (a b : α) : f '' {a, b} = {f a, f b} := by grind
 
+theorem _root_.Function.LeftInverse.mem_preimage_iff {f : α → β} {g : β → α} (hfg : LeftInverse g f)
+    {s : Set α} {x : α} : f x ∈ g ⁻¹' s ↔ x ∈ s := by
+  rw [Set.mem_preimage, hfg x]
+
 theorem image_subset_preimage_of_inverse {f : α → β} {g : β → α} (I : LeftInverse g f) (s : Set α) :
-    f '' s ⊆ g ⁻¹' s := fun _ ⟨a, h, e⟩ => e ▸ ((I a).symm ▸ h : g (f a) ∈ s)
+    f '' s ⊆ g ⁻¹' s := fun _ ⟨_, h, e⟩ => e ▸ I.mem_preimage_iff.mpr h
 
 theorem preimage_subset_image_of_inverse {f : α → β} {g : β → α} (I : LeftInverse g f) (s : Set β) :
     f ⁻¹' s ⊆ g '' s := fun b h => ⟨f b, h, I b⟩
@@ -337,8 +337,9 @@ theorem _root_.Function.Involutive.image_eq_preimage_symm {f : α → α} (hf : 
 
 theorem mem_image_iff_of_inverse {f : α → β} {g : β → α} {b : β} {s : Set α} (h₁ : LeftInverse g f)
     (h₂ : RightInverse g f) : b ∈ f '' s ↔ g b ∈ s := by
-  rw [image_eq_preimage_of_inverse h₁ h₂]; rfl
+  rw [image_eq_preimage_of_inverse h₁ h₂, mem_preimage]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem image_compl_subset {f : α → β} {s : Set α} (H : Injective f) : f '' sᶜ ⊆ (f '' s)ᶜ :=
   Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, ← image_inter H]
 
@@ -441,6 +442,7 @@ theorem image_inter_nonempty_iff {f : α → β} {s : Set α} {t : Set β} :
     (f '' s ∩ t).Nonempty ↔ (s ∩ f ⁻¹' t).Nonempty := by
   rw [← image_inter_preimage, image_nonempty]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_image_left {f : α → β} {s : Set α} {t : Set β} :
     Disjoint (f '' s) t ↔ Disjoint s (f ⁻¹' t) := by
   simp_rw [disjoint_iff_inter_eq_empty, ← not_nonempty_iff_eq_empty, image_inter_nonempty_iff]
@@ -904,14 +906,18 @@ theorem preimage_range (f : α → β) : f ⁻¹' range f = univ :=
 
 /-- The range of a function from a `Unique` type contains just the
 function applied to its single value. -/
-theorem range_unique [h : Unique ι] : range f = {f default} := by
-  ext x
-  rw [mem_range]
-  constructor
-  · rintro ⟨i, hi⟩
-    rw [h.uniq i] at hi
-    grind
-  · grind
+theorem range_unique [Unique ι] : range f = {f default} := by
+  aesop (add simp [Unique.eq_default])
+
+@[simp]
+theorem range_singleton {x : α} (f : ({x} : Set α) → β) : range f = {f ⟨x, mem_singleton x⟩} :=
+  range_unique
+
+@[simp]
+theorem range_insert {x : α} {s : Set α} (f : ((insert x s) : Set α) → β) :
+    range f = insert (f ⟨x, mem_insert x s⟩)
+      (range fun y : s ↦ f ⟨y, mem_insert_of_mem _ y.2⟩) := by
+  aesop
 
 theorem range_diff_image_subset (f : α → β) (s : Set α) : range f \ f '' s ⊆ f '' sᶜ :=
   fun _ ⟨⟨x, h₁⟩, h₂⟩ => ⟨x, fun h => h₂ ⟨x, h, h₁⟩, h₁⟩
@@ -1104,6 +1110,10 @@ theorem LeftInverse.preimage_preimage {g : β → α} (h : LeftInverse g f) (s :
 
 protected theorem Involutive.preimage {f : α → α} (hf : Involutive f) : Involutive (preimage f) :=
   hf.rightInverse.preimage_preimage
+
+theorem LeftInverse.image_eq {f : α → β} {g : β → α} (hfg : LeftInverse g f) (s : Set α) :
+    f '' s = range f ∩ g ⁻¹' s := by
+  rw [← image_preimage_eq_range_inter, hfg.preimage_preimage]
 
 end Function
 
@@ -1321,6 +1331,7 @@ theorem _root_.Disjoint.of_image (h : Disjoint (f '' s) (f '' t)) : Disjoint s t
 theorem disjoint_image_iff (hf : Injective f) : Disjoint (f '' s) (f '' t) ↔ Disjoint s t :=
   ⟨Disjoint.of_image, disjoint_image_of_injective hf⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Disjoint.of_preimage (hf : Surjective f) {s t : Set β}
     (h : Disjoint (f ⁻¹' s) (f ⁻¹' t)) : Disjoint s t := by
   rw [disjoint_iff_inter_eq_empty, ← image_preimage_eq (_ ∩ _) hf, preimage_inter, h.inter_eq,
@@ -1331,13 +1342,14 @@ theorem disjoint_preimage_iff (hf : Surjective f) {s t : Set β} :
     Disjoint (f ⁻¹' s) (f ⁻¹' t) ↔ Disjoint s t :=
   ⟨Disjoint.of_preimage hf, Disjoint.preimage _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem preimage_eq_empty {s : Set β} (h : Disjoint s (range f)) :
     f ⁻¹' s = ∅ := by
   simpa using h.preimage f
 
 theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (range f) :=
   ⟨fun h => by
-    simp only [eq_empty_iff_forall_notMem, disjoint_iff_inter_eq_empty, mem_preimage] at h ⊢
+    simp only [eq_empty_iff_forall_notMem, mem_preimage] at h ⊢
     grind,
   preimage_eq_empty⟩
 

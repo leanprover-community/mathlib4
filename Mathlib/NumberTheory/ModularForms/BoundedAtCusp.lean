@@ -26,6 +26,7 @@ namespace UpperHalfPlane
 
 variable {g : GL (Fin 2) ℝ} {f : ℍ → ℂ} (k : ℤ)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsZeroAtImInfty.slash (hg : g 1 0 = 0) (hf : IsZeroAtImInfty f) :
     IsZeroAtImInfty (f ∣[k] g) := by
   rw [IsZeroAtImInfty, ZeroAtFilter, tendsto_zero_iff_norm_tendsto_zero] at hf ⊢

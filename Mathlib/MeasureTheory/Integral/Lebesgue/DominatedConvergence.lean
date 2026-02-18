@@ -122,7 +122,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone_aux {α : Type*} {mα : Measurabl
   have h_exists : ∀ᵐ a ∂μ, ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := by
     filter_upwards [h_bound, h_bound_finite, hf_mono] with a h_le h_fin h_mono
     have h_tendsto : Tendsto (fun i ↦ f i a) atTop atTop ∨
-        ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := tendsto_of_monotone h_mono
+        ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := tendsto_atTop_of_monotone h_mono
     rcases h_tendsto with h_absurd | h_tendsto
     · rw [tendsto_atTop_atTop_iff_of_monotone h_mono] at h_absurd
       obtain ⟨i, hi⟩ := h_absurd (F a + 1)
@@ -203,7 +203,7 @@ lemma tendsto_of_lintegral_tendsto_of_antitone {α : Type*} {mα : MeasurableSpa
     filter_upwards [h_bound] with a ha using ha 0
   have h_exists : ∀ᵐ a ∂μ, ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := by
     filter_upwards [hf_mono] with a h_mono
-    rcases _root_.tendsto_of_antitone h_mono with h | h
+    rcases _root_.tendsto_atTop_of_antitone h_mono with h | h
     · refine ⟨0, h.mono_right ?_⟩
       rw [OrderBot.atBot_eq]
       exact pure_le_nhds _

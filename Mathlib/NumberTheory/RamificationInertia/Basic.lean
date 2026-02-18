@@ -247,7 +247,7 @@ theorem ramificationIdx_ne_zero (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (le : m
     exists_mem_normalizedFactors_of_dvd hp0 hPirr (Ideal.dvd_iff_le.mpr le)
   rwa [Multiset.count_ne_zero, associated_iff_eq.mp P'_eq]
 
-theorem ramificationIdx_ne_zero_of_liesOver [Algebra R S] [NoZeroSMulDivisors R S]
+theorem ramificationIdx_ne_zero_of_liesOver [Algebra R S] [IsDomain R] [IsTorsionFree R S]
     (P : Ideal S) [hP : P.IsPrime] {p : Ideal R} (hp : p ≠ ⊥) [hPp : P.LiesOver p] :
     ramificationIdx (algebraMap R S) p P ≠ 0 :=
   IsDedekindDomain.ramificationIdx_ne_zero (map_ne_bot_of_ne_bot hp) hP <|
@@ -352,6 +352,7 @@ lemma absNorm_eq_pow_inertiaDeg_of_liesOver {S : Type*} [CommRing S] [IsDedekind
   let _ : Field (S ⧸ p) := Quotient.field p
   simpa [absNorm_apply, Submodule.cardQuot_apply] using Module.natCard_eq_pow_finrank (K := S ⧸ p)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg P)`.
 See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/
@@ -385,6 +386,7 @@ variable (K)
 
 open scoped Matrix
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K} in
 /-- If `b` mod `p` spans `S/p` as `R/p`-space, then `b` itself spans `Frac(S)` as `K`-space.
 
@@ -398,7 +400,7 @@ More precisely, we avoid quotients in this statement and instead require that `b
 -/
 theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [Module.Finite R S]
     [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [Algebra.IsAlgebraic R S]
-    [NoZeroSMulDivisors R K] (hp : p ≠ ⊤) (b : Set S)
+    [IsTorsionFree R K] (hp : p ≠ ⊤) (b : Set S)
     (hb' : Submodule.span R b ⊔ (p.map (algebraMap R S)).restrictScalars R = ⊤) :
     Submodule.span K (algebraMap S L '' b) = ⊤ := by
   have hRL : Function.Injective (algebraMap R L) := by
@@ -597,6 +599,7 @@ theorem Quotient.algebraMap_quotient_pow_ramificationIdx (x : R) :
 
 This can't be an instance since the map `f : R → S` is generally not inferable.
 -/
+@[instance_reducible]
 def Quotient.algebraQuotientOfRamificationIdxNeZero [hfp : NeZero e] :
     Algebra (R ⧸ p) (S ⧸ P) :=
   Quotient.algebraQuotientOfLEComap (le_comap_of_ramificationIdx_ne_zero hfp.out)
@@ -617,6 +620,7 @@ noncomputable def powQuotSuccInclusion (i : ℕ) :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem powQuotSuccInclusion_injective (i : ℕ) :
     Function.Injective (powQuotSuccInclusion p P i) := by
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
@@ -624,6 +628,7 @@ theorem powQuotSuccInclusion_injective (i : ℕ) :
   rw [Subtype.ext_iff] at hx0 ⊢
   rwa [powQuotSuccInclusion_apply_coe] at hx0
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`.
 See `quotientToQuotientRangePowQuotSucc` for this as a linear map,
 and `quotientRangePowQuotSuccInclusionEquiv` for this as a linear equivalence.
@@ -640,6 +645,7 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.coe_sub, Subtype.coe_mk,
       Subtype.coe_mk, map_mul, map_sub, mul_sub]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSuccAux p P a_mem (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ := by
@@ -648,6 +654,7 @@ theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a �
 section
 variable [hfp : NeZero (ramificationIdx (algebraMap R S) p P)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`. -/
 noncomputable def quotientToQuotientRangePowQuotSucc
     {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) :
@@ -668,11 +675,13 @@ noncomputable def quotientToQuotientRangePowQuotSucc
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientToQuotientRangePowQuotSucc_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSucc p P a_mem (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ :=
   quotientToQuotientRangePowQuotSuccAux_mk p P a_mem x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsPrime]
     {i : ℕ} (hi : i < e) {a : S} (a_mem : a ∈ P ^ i) (a_notMem : a ∉ P ^ (i + 1)) :
     Function.Injective (quotientToQuotientRangePowQuotSucc p P a_mem) := fun x =>
@@ -692,6 +701,7 @@ theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsP
               ((Submodule.sub_mem_iff_right _ hz).mp (Pe_le_Pi1 h))).resolve_left
           a_notMem
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
     (hP0 : P ≠ ⊥) [hP : P.IsPrime] {i : ℕ} (hi : i < e) {a : S} (a_mem : a ∈ P ^ i)
     (a_notMem : a ∉ P ^ (i + 1)) :
@@ -721,6 +731,7 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
     have := (P ^ (i + 1)).zero_mem
     contradiction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Quotienting `P^i / P^e` by its subspace `P^(i+1) ⧸ P^e` is
 `R ⧸ p`-linearly isomorphic to `S ⧸ P`. -/
 noncomputable def quotientRangePowQuotSuccInclusionEquiv [IsDedekindDomain S]
@@ -735,6 +746,7 @@ noncomputable def quotientRangePowQuotSuccInclusionEquiv [IsDedekindDomain S]
   · exact quotientToQuotientRangePowQuotSucc_injective p P hi a_mem a_notMem
   · exact quotientToQuotientRangePowQuotSucc_surjective p P hP hi a_mem a_notMem
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Since the inclusion `(P^(i + 1) / P^e) ⊂ (P^i / P^e)` has a kernel isomorphic to `P / S`,
 `[P^i / P^e : R / p] = [P^(i+1) / P^e : R / p] + [P / S : R / p]` -/
 theorem rank_pow_quot_aux [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P ≠ ⊥)

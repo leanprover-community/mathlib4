@@ -6,9 +6,9 @@ Authors: Sina Hazratpour
 module
 
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Chosen pullbacks along a morphism
@@ -79,23 +79,24 @@ def pullbackId (X : C) [ChosenPullbacksAlong (𝟙 X)] :
 
 @[reassoc (attr := simp)]
 theorem unit_pullbackId_hom_app (X : C) [ChosenPullbacksAlong (𝟙 X)] (Y : Over X) :
-  (mapPullbackAdj (𝟙 X)).unit.app Y ≫ (pullbackId X).hom.app ((Over.map (𝟙 X)).obj Y) =
-    (id X).mapPullbackAdj.unit.app Y := by
+    (mapPullbackAdj (𝟙 X)).unit.app Y ≫ (pullbackId X).hom.app ((Over.map (𝟙 X)).obj Y) =
+      (id X).mapPullbackAdj.unit.app Y := by
   rw [pullbackId, Adjunction.unit_rightAdjointUniq_hom_app]
 
 @[reassoc (attr := simp)]
 theorem unit_pullbackId_hom (X : C) [ChosenPullbacksAlong (𝟙 X)] :
-  (mapPullbackAdj (𝟙 X)).unit ≫ (Over.map (𝟙 X)).whiskerLeft (pullbackId X).hom =
-    (id X).mapPullbackAdj.unit := by
+    (mapPullbackAdj (𝟙 X)).unit ≫ (Over.map (𝟙 X)).whiskerLeft (pullbackId X).hom =
+      (id X).mapPullbackAdj.unit := by
   rw [pullbackId, Adjunction.unit_rightAdjointUniq_hom]
 
 @[reassoc (attr := simp)]
 theorem pullbackId_hom_counit (X : C) [ChosenPullbacksAlong (𝟙 X)] :
-  Functor.whiskerRight (pullbackId X).hom (Over.map (𝟙 X)) ≫ (id X).mapPullbackAdj.counit =
-    (mapPullbackAdj (𝟙 X)).counit := by
+    Functor.whiskerRight (pullbackId X).hom (Over.map (𝟙 X)) ≫ (id X).mapPullbackAdj.counit =
+      (mapPullbackAdj (𝟙 X)).counit := by
   have := Adjunction.rightAdjointUniq_hom_counit (mapPullbackAdj (𝟙 X)) (id X).mapPullbackAdj
   rw [pullbackId, Adjunction.rightAdjointUniq_hom_counit]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every isomorphism has a functorial choice of pullbacks. -/
 @[simps]
 def iso {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.hom where
@@ -137,9 +138,10 @@ theorem pullbackComp_hom_counit {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
       (mapPullbackAdj (f ≫ g)).counit := by
   rw [pullbackComp, Adjunction.rightAdjointUniq_hom_counit]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a functorial
 choice of pullbacks. -/
-@[simps]
+@[instance_reducible, simps]
 def cartesianMonoidalCategoryToUnit [CartesianMonoidalCategory C] {X : C} (f : X ⟶ 𝟙_ C) :
     ChosenPullbacksAlong f where
   pullback.obj Y := Over.mk (snd Y.left X)
@@ -147,6 +149,7 @@ def cartesianMonoidalCategoryToUnit [CartesianMonoidalCategory C] {X : C} (f : X
   mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom))
   mapPullbackAdj.counit.app U := Over.homMk (fst _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In cartesian monoidal categories, the first product projections `fst` have a functorial choice
 of pullbacks. -/
 @[simps]
@@ -157,6 +160,7 @@ def cartesianMonoidalCategoryFst [CartesianMonoidalCategory C] (X Y : C) :
   mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom ≫ snd _ _))
   mapPullbackAdj.counit.app U := Over.homMk (fst _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In cartesian monoidal categories, the second product projections `snd` have a functorial choice
 of pullbacks. -/
 @[simps]
@@ -232,6 +236,7 @@ theorem lift_fst : lift a b h ≫ fst f g = a := by
     simp only [← Adjunction.homEquiv_counit, Equiv.symm_apply_apply, adj, a']
   exact congr_arg CommaMorphism.left this
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 @[reassoc (attr := simp)]
 theorem lift_snd : lift a b h ≫ snd f g = b := by
@@ -321,6 +326,7 @@ theorem isPullback : IsPullback (fst f g) (snd f g) f g where
   w := condition
   isLimit' := ⟨isLimitPullbackCone f g⟩
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] condition in
 /-- If `g` has a chosen pullback, then `Over.ChosenPullbacksAlong.fst f g` has a chosen pullback. -/
 def chosenPullbacksAlongFst : ChosenPullbacksAlong (fst f g) where
@@ -339,6 +345,7 @@ instance hasPullbacks [ChosenPullbacks C] : HasPullbacks C :=
 noncomputable def pullbackIsoOverPullback : ChosenPullbacksAlong.pullback g ≅ Over.pullback g :=
   (ChosenPullbacksAlong.mapPullbackAdj g).rightAdjointUniq (Over.mapPullbackAdj g)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_hom_app_comp_fst (T : Over X) :
     ((pullbackIsoOverPullback g).hom.app T).left ≫ pullback.fst _ _ = fst _ _ := by
@@ -346,16 +353,19 @@ theorem pullbackIsoOverPullback_hom_app_comp_fst (T : Over X) :
     ((ChosenPullbacksAlong.mapPullbackAdj g).rightAdjointUniq_hom_app_counit
       (Over.mapPullbackAdj g) T)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_hom_app_comp_snd (T : Over X) :
     ((pullbackIsoOverPullback g).hom.app T).left ≫ pullback.snd _ _ = snd _ _ :=
   Over.w ((pullbackIsoOverPullback g).hom.app T)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_inv_app_comp_fst (T : Over X) :
     ((pullbackIsoOverPullback g).inv.app T).left ≫ fst _ _ = pullback.fst _ _ := by
   simp [← pullbackIsoOverPullback_hom_app_comp_fst, ← Over.comp_left_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_inv_app_comp_snd (T : Over X) :
     ((pullbackIsoOverPullback g).inv.app T).left ≫ snd _ _ = pullback.snd _ _ :=

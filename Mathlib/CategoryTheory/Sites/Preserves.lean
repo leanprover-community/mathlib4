@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 
 /-!
 # Sheaves preserve products
@@ -80,6 +80,7 @@ variable (hI : IsInitial I)
 -- This is the data of a particular disjoint coproduct in `C`.
 variable {α : Type*} [Small.{w} α] {X : α → C} (c : Cofan X) (hc : IsColimit c)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem piComparison_fac :
     have : HasCoproduct X := ⟨⟨c, hc⟩⟩
     piComparison F (fun x ↦ op (X x)) = F.map (opCoproductIsoProduct' hc (productIsProduct _)).inv ≫
@@ -96,6 +97,7 @@ theorem piComparison_fac :
 
 variable [(ofArrows X c.inj).HasPairwisePullbacks]
 
+set_option backward.isDefEq.respectTransparency false in
 include hc in
 /--
 If `F` preserves a particular product, then it `IsSheafFor` the corresponding presieve of arrows.
@@ -136,6 +138,7 @@ theorem firstMap_eq_secondMap :
     ext ⟨i⟩
     exact i.elim
 
+set_option backward.isDefEq.respectTransparency false in
 include hc hd hF hI in
 /--
 If `F` is a presheaf which `IsSheafFor` a presieve of arrows and the empty presieve, then it

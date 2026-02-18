@@ -63,6 +63,7 @@ class Fintype (α : Type*) where
 
 namespace Finset
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nodup_map_iff_injOn {f : α → β} {s : Finset α} :
     (Multiset.map f s.val).Nodup ↔ Set.InjOn f s := by
   simp [Multiset.nodup_map_iff_inj_on s.nodup, Set.InjOn]
@@ -102,6 +103,7 @@ theorem eq_univ_iff_forall : s = univ ↔ ∀ x, x ∈ s := by simp [Finset.ext_
 theorem eq_univ_of_forall : (∀ x, x ∈ s) → s = univ :=
   eq_univ_iff_forall.2
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_univ : ↑(univ : Finset α) = (Set.univ : Set α) := by ext; simp
 
@@ -181,7 +183,7 @@ to show the domain type when the filter is over `Finset.univ`. -/
     else
       `({$i:ident | $p})
   -- check if `t` is of the form `s₀ᶜ`, in which case we display `x ∉ s₀` instead
-  else if t.isAppOfArity ``HasCompl.compl 3 then
+  else if t.isAppOfArity ``Compl.compl 3 then
     let #[_, _, s₀] := t.getAppArgs | failure
     -- if `s₀` is a singleton, we can even use the notation `x ≠ a`
     if s₀.isAppOfArity ``Singleton.singleton 4 then
