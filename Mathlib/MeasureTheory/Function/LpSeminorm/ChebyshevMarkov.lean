@@ -14,7 +14,7 @@ In this file we formulate several versions of the Chebyshev-Markov inequality
 in terms of the `MeasureTheory.eLpNorm` seminorm.
 -/
 
-@[expose] public section
+public section
 open scoped NNReal ENNReal
 
 namespace MeasureTheory
@@ -26,7 +26,7 @@ variable {α E ε' : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
 theorem pow_mul_meas_ge_le_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     {f : α → ε'} (hf : AEStronglyMeasurable f μ) (ε : ℝ≥0∞) :
     (ε * μ { x | ε ≤ ‖f x‖ₑ ^ p.toReal }) ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
-  rw [eLpNorm_eq_lintegral_rpow_enorm hp_ne_zero hp_ne_top]
+  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_ne_zero hp_ne_top]
   gcongr
   exact mul_meas_ge_le_lintegral₀ (hf.enorm.pow_const _) ε
 

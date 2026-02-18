@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Basic
 # One-dimensional derivatives on pi-types.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 ι : Type*} [DecidableEq ι] [Finite ι] [NontriviallyNormedField 𝕜]
 

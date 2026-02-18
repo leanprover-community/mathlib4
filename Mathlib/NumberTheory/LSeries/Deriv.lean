@@ -30,7 +30,7 @@ We introduce `LSeries.logMul` as an abbreviation for the point-wise product `log
 the problem that this expression does not type-check.
 -/
 
-@[expose] public section
+public section
 
 open Complex LSeries
 
@@ -51,6 +51,7 @@ lemma LSeries.hasDerivAt_term (f : ℕ → ℂ) (n : ℕ) (s : ℂ) :
   exact HasDerivAt.const_mul (f n) (by simpa only [mul_comm, ← mul_neg_one (log n), ← mul_assoc]
     using (hasDerivAt_neg' s).const_cpow (Or.inl <| Nat.cast_ne_zero.mpr hn))
 
+set_option backward.isDefEq.respectTransparency false in
 /- This lemma proves two things at once, since their proofs are intertwined; we give separate
 non-private lemmas below that extract the two statements. -/
 private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s : ℂ}
@@ -99,6 +100,7 @@ lemma LSeriesSummable_logMul_of_lt_re {f : ℕ → ℂ} {s : ℂ} (h : abscissaO
     LSeriesSummable (logMul f) s :=
   (LSeriesSummable_logMul_and_hasDerivAt h).1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The abscissa of absolute convergence of the point-wise product of `log` and `f`
 is the same as that of `f`. -/
 @[simp]
@@ -128,6 +130,7 @@ lemma LSeries.absicssaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
   | succ n ih => simp [ih, Function.iterate_succ', Function.comp_def,
       -Function.comp_apply, -Function.iterate_succ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
 the `m`th derivative of this L-series is `(-1)^m` times the L-series of `log^m * f`. -/
 lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaOfAbsConv f < s.re) :

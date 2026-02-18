@@ -22,7 +22,7 @@ of functions.
 `Mathlib.Algebra.Order.Rearrangement` for the n-ary rearrangement inequality
 -/
 
-@[expose] public section
+public section
 
 variable {ι α β : Type*}
 
@@ -371,6 +371,7 @@ lemma monovaryOn_iff_forall_smul_nonneg :
   simp_rw [smul_nonneg_iff_pos_imp_nonneg, sub_pos, sub_nonneg, forall_and]
   exact (and_iff_right_of_imp MonovaryOn.symm).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma antivaryOn_iff_forall_smul_nonpos :
     AntivaryOn f g s ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f j - f i) • (g j - g i) ≤ 0 :=
   monovaryOn_toDual_right.symm.trans <| by rw [monovaryOn_iff_forall_smul_nonneg]; rfl
@@ -379,6 +380,7 @@ lemma monovary_iff_forall_smul_nonneg : Monovary f g ↔ ∀ i j, 0 ≤ (f j - f
   monovaryOn_univ.symm.trans <| monovaryOn_iff_forall_smul_nonneg.trans <| by
     simp only [Set.mem_univ, forall_true_left]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma antivary_iff_forall_smul_nonpos : Antivary f g ↔ ∀ i j, (f j - f i) • (g j - g i) ≤ 0 :=
 monovary_toDual_right.symm.trans <| by rw [monovary_iff_forall_smul_nonneg]; rfl
 
@@ -390,6 +392,7 @@ lemma monovaryOn_iff_smul_rearrangement :
     simp [smul_sub, sub_smul, ← add_sub_right_comm, le_sub_iff_add_le, add_comm (f i • g i),
       add_comm (f i • g j)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two functions antivary iff the rearrangement inequality holds. -/
 lemma antivaryOn_iff_smul_rearrangement :
     AntivaryOn f g s ↔
@@ -402,6 +405,7 @@ lemma monovary_iff_smul_rearrangement :
   monovaryOn_univ.symm.trans <| monovaryOn_iff_smul_rearrangement.trans <| by
     simp only [Set.mem_univ, forall_true_left]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two functions antivary iff the rearrangement inequality holds. -/
 lemma antivary_iff_smul_rearrangement :
     Antivary f g ↔ ∀ i j, f i • g i + f j • g j ≤ f i • g j + f j • g i :=

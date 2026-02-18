@@ -15,13 +15,14 @@ In this file we prove that if a function is monotone and is bounded on a set `s`
 monotone extension to the whole space.
 -/
 
-@[expose] public section
+public section
 
 
 open Set
 
 variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a function is monotone and is bounded on a set `s`, then it admits a monotone extension to
 the whole space. -/
 theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow (f '' s))

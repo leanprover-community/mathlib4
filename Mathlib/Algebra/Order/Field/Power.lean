@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Positivity.Core
 # Lemmas about powers in ordered fields.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}
@@ -65,6 +65,7 @@ alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
 @[simp]
 theorem abs_zpow (a : α) (p : ℤ) : |a ^ p| = |a| ^ p := map_zpow₀ absHom a p
 
+set_option backward.isDefEq.respectTransparency false in
 theorem abs_neg_one_zpow (p : ℤ) : |(-1 : α) ^ p| = 1 := by simp
 
 omit [IsStrictOrderedRing α] in
@@ -84,9 +85,11 @@ lemma zpow_eq_zpow_iff_of_ne_zero₀ (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b �
 lemma zpow_eq_zpow_iff_cases₀ : a ^ n = b ^ n ↔ n = 0 ∨ a = b ∨ a = -b ∧ Even n := by
   rcases eq_or_ne n 0 with rfl | hn <;> simp [zpow_eq_zpow_iff_of_ne_zero₀, *]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma zpow_eq_one_iff_of_ne_zero₀ (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 ∨ a = -1 ∧ Even n := by
   simp [← zpow_eq_zpow_iff_of_ne_zero₀ hn]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma zpow_eq_one_iff_cases₀ : a ^ n = 1 ↔ n = 0 ∨ a = 1 ∨ a = -1 ∧ Even n := by
   simp [← zpow_eq_zpow_iff_cases₀]
 
@@ -99,6 +102,7 @@ lemma zpow_eq_neg_zpow_iff₀ (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd
       zpow_natCast]
     simp [parity_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma zpow_eq_neg_one_iff₀ : a ^ n = -1 ↔ a = -1 ∧ Odd n := by
   simpa using zpow_eq_neg_zpow_iff₀ (α := α) one_ne_zero
 

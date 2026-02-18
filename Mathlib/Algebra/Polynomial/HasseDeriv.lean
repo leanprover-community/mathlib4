@@ -57,7 +57,7 @@ variable {R : Type*} [Semiring R] (k : ℕ) (f : R[X])
 /-- The `k`th Hasse derivative of a polynomial `∑ a_i X^i` is `∑ (i.choose k) a_i X^(i-k)`.
 It satisfies `k! * (hasse_deriv k f) = derivative^[k] f`. -/
 def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
-  lsum fun i => monomial (i - k) ∘ₗ DistribMulAction.toLinearMap R R (i.choose k)
+  lsum fun i => monomial (i - k) ∘ₗ DistribSMul.toLinearMap R R (i.choose k)
 
 theorem hasseDeriv_apply :
     hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) := by
@@ -80,7 +80,7 @@ theorem hasseDeriv_coeff (n : ℕ) :
     simp only [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 
 theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
-  simp only [hasseDeriv_apply, tsub_zero, Nat.choose_zero_right, Nat.cast_one, one_mul,
+  simp only [hasseDeriv_apply, Nat.choose_zero_right, Nat.cast_one, one_mul,
     sum_monomial_eq]
 
 @[simp]
@@ -125,6 +125,7 @@ theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
   rw [← monomial_one_one_eq_X, hasseDeriv_monomial, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero,
     zero_mul, monomial_zero_right]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
   induction k with
   | zero => rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
@@ -171,6 +172,7 @@ theorem hasseDeriv_comp (k l : ℕ) :
   simp only [add_tsub_cancel_left]
   field
 
+set_option backward.isDefEq.respectTransparency false in
 theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) ≤ natDegree p - n := by
   classical

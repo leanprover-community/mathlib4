@@ -321,6 +321,7 @@ def mapSpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
       Arrow.mk (Spec.map (CommRingCat.ofHom (MvPolynomial.map (σ := n) φ.hom))) :=
   Arrow.isoMk (SpecIso n S) (SpecIso n R) (by have := (SpecIso n R).inv_hom_id; simp [map_SpecMap])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_map {S T : Scheme.{max u v}} (f : S ⟶ T) :
     IsPullback (map n f) (𝔸(n; S) ↘ S) (𝔸(n; T) ↘ T) f := by
   refine (IsPullback.paste_horiz_iff (.flip <| .of_hasPullback _ _) (map_over f)).mp ?_
@@ -367,8 +368,8 @@ lemma map_reindex {n₁ n₂ : Type v} (i : n₁ → n₂) {S T : Scheme.{max u 
 def functor : (Type v)ᵒᵖ ⥤ Scheme.{max u v} ⥤ Scheme.{max u v} where
   obj n := { obj := AffineSpace n.unop, map := map n.unop, map_id := map_id, map_comp := map_comp }
   map {n m} i := { app := reindex i.unop, naturality := fun _ _ ↦ map_reindex i.unop }
-  map_id n := by ext: 2; exact reindex_id _
-  map_comp f g := by ext: 2; dsimp; exact reindex_comp _ _ _
+  map_id n := by ext : 2; exact reindex_id _
+  map_comp f g := by ext : 2; dsimp; exact reindex_comp _ _ _
 
 end functorial
 section instances

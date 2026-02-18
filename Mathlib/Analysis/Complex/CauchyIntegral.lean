@@ -158,7 +158,7 @@ function is analytic on the open ball.
 Cauchy-Goursat theorem, Cauchy integral formula
 -/
 
-@[expose] public section
+public section
 
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
@@ -177,6 +177,7 @@ section rectangle
 ## Functions on rectangles
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose that a function `f : ℂ → E` is continuous on a closed rectangle with opposite corners at
 `z w : ℂ`, is *real* differentiable at all but countably many points of the corresponding open
 rectangle, and $\frac{\partial f}{\partial \bar z}$ is integrable on this rectangle. Then the
@@ -222,6 +223,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
     (MeasurableEquiv.measurableEmbedding _)] at Hi
   simpa only [hF'] using Hi.neg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose that a function `f : ℂ → E` is continuous on a closed rectangle with opposite corners at
 `z w : ℂ`, is *real* differentiable on the corresponding open rectangle, and
 $\frac{\partial f}{\partial \bar z}$ is integrable on this rectangle. Then the integral of `f` over
@@ -240,6 +242,7 @@ theorem integral_boundary_rect_of_continuousOn_of_hasFDerivAt_real (f : ℂ → 
   integral_boundary_rect_of_hasFDerivAt_real_off_countable f f' z w ∅ countable_empty Hc
     (fun x hx => Hd x hx.1) Hi
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose that a function `f : ℂ → E` is *real* differentiable on a closed rectangle with opposite
 corners at `z w : ℂ` and $\frac{\partial f}{\partial \bar z}$ is integrable on this rectangle. Then
 the integral of `f` over the boundary of the rectangle is equal to the integral of
@@ -260,6 +263,7 @@ theorem integral_boundary_rect_of_differentiableOn_real (f : ℂ → E) (z w : �
       simpa only [← mem_interior_iff_mem_nhds, interior_reProdIm, uIcc, interior_Icc] using hx.1)
     Hi
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Cauchy-Goursat theorem** for a rectangle: the integral of a complex differentiable function
 over the boundary of a rectangle equals zero. More precisely, if `f` is continuous on a closed
 rectangle and is complex differentiable at all but countably many points of the corresponding open
@@ -504,8 +508,8 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
     have A : ContinuousAt (fun w => (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z) w := by
       have := hasFPowerSeriesOn_cauchy_integral
         ((hc.mono sphere_subset_closedBall).circleIntegrable R.coe_nonneg) hR
-      refine this.continuousOn.continuousAt (EMetric.isOpen_ball.mem_nhds ?_)
-      rwa [Metric.emetric_ball_nnreal]
+      refine this.continuousOn.continuousAt (Metric.isOpen_eball.mem_nhds ?_)
+      rwa [Metric.eball_coe]
     have B : ContinuousAt f w := hc.continuousAt (closedBall_mem_nhds_of_mem hw)
     refine tendsto_nhds_unique_of_frequently_eq A B ((mem_closure_iff_frequently.1 this).mono ?_)
     intro z hz
@@ -515,8 +519,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
   refine mem_closure_iff_nhds.2 fun t ht => ?_
   -- TODO: generalize to any vector space over `ℝ`
   set g : ℝ → ℂ := fun x => w + ofReal x
-  have : Tendsto g (𝓝 0) (𝓝 w) :=
-    (continuous_const.add continuous_ofReal).tendsto' 0 w (add_zero _)
+  have : Tendsto g (𝓝 0) (𝓝 w) := Continuous.tendsto' (by fun_prop) 0 w (add_zero _)
   rcases mem_nhds_iff_exists_Ioo_subset.1 (this <| inter_mem ht <| isOpen_ball.mem_nhds hw) with
     ⟨l, u, hlu₀, hlu_sub⟩
   obtain ⟨x, hx⟩ : (Ioo l u \ g ⁻¹' s).Nonempty := by
@@ -596,7 +599,7 @@ theorem hasFPowerSeriesOnBall_of_differentiable_off_countable {R : ℝ≥0} {c :
   r_pos := ENNReal.coe_pos.2 hR
   hasSum := fun {w} hw => by
     have hw' : c + w ∈ ball c R := by
-      simpa only [add_mem_ball_iff_norm, ← coe_nnnorm, mem_emetric_ball_zero_iff,
+      simpa only [add_mem_ball_iff_norm, ← coe_nnnorm, mem_eball_zero_iff,
         NNReal.coe_lt_coe, enorm_lt_coe] using hw
     rw [← two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
       hs hw' hc hd]

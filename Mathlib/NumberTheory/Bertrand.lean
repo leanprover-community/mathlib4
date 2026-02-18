@@ -39,7 +39,7 @@ binomial coefficient given in `Nat.four_pow_lt_mul_centralBinom`.
 Bertrand, prime, binomial coefficients
 -/
 
-@[expose] public section
+public section
 
 
 section Real
@@ -48,6 +48,7 @@ open Real
 
 namespace Bertrand
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A refined version of the `Bertrand.main_inequality` below.
 This is not best possible: it actually holds for 464 ≤ x.
 -/

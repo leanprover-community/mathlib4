@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández P
 -/
 module
 
+public import Mathlib.Algebra.Order.Monoid.Basic
 public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Ordinal.Enum
@@ -327,6 +328,12 @@ theorem preAleph_pos {o : Ordinal} : 0 < preAleph o ↔ 0 < o := by
 theorem aleph0_le_preAleph {o : Ordinal} : ℵ₀ ≤ preAleph o ↔ ω ≤ o := by
   rw [← preAleph_omega0, preAleph_le_preAleph]
 
+theorem _root_.Ordinal.card_le_preAleph (o : Ordinal) : o.card ≤ preAleph o :=
+  o.card_preOmega.trans_ge <| card_le_card <| o.le_preOmega_self
+
+theorem le_preAleph_ord (c : Cardinal) : c ≤ preAleph c.ord := by
+  simpa using c.ord.card_le_preAleph
+
 @[simp]
 theorem lift_preAleph (o : Ordinal.{u}) : lift.{v} (preAleph o) = preAleph (Ordinal.lift.{v} o) :=
   (preAleph.toInitialSeg.trans liftInitialSeg).eq
@@ -345,9 +352,6 @@ theorem preAleph_le_of_isSuccPrelimit {o : Ordinal} (l : IsSuccPrelimit o) {c} :
   obtain rfl | ho := eq_or_ne o 0
   · simp
   · exact isNormal_preAleph.le_iff_forall_le ⟨by simpa, l⟩
-
-@[deprecated (since := "2025-07-08")]
-alias preAleph_le_of_isLimit := preAleph_le_of_isSuccPrelimit
 
 theorem preAleph_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
     preAleph o = ⨆ a : Iio o, preAleph a := by
@@ -426,6 +430,12 @@ theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
 theorem aleph_pos (o : Ordinal) : 0 < ℵ_ o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)
 
+theorem _root_.Ordinal.card_le_aleph (o : Ordinal) : o.card ≤ ℵ_ o :=
+  o.card_le_preAleph.trans (preAleph_le_aleph o)
+
+theorem le_aleph_ord (c : Cardinal) : c ≤ ℵ_ c.ord := by
+  simpa using c.ord.card_le_aleph
+
 @[simp]
 theorem aleph_toNat (o : Ordinal) : toNat (ℵ_ o) = 0 :=
   toNat_apply_of_aleph0_le <| aleph0_le_aleph o
@@ -437,9 +447,6 @@ theorem aleph_toENat (o : Ordinal) : toENat (ℵ_ o) = ⊤ :=
 theorem isSuccLimit_omega (o : Ordinal) : IsSuccLimit (ω_ o) := by
   rw [← ord_aleph]
   exact isSuccLimit_ord (aleph0_le_aleph _)
-
-@[deprecated (since := "2025-07-08")]
-alias isLimit_omega := isSuccLimit_omega
 
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
@@ -584,12 +591,18 @@ theorem preBeth_omega : preBeth ω = ℵ₀ := by
     rintro ⟨a, ha⟩
     obtain ⟨n, rfl⟩ := lt_omega0.1 ha
     rw [preBeth_nat]
-    exact (nat_lt_aleph0 _).le
+    exact natCast_le_aleph0
   · simpa using preAleph_le_preBeth ω
 
 @[simp]
 theorem preBeth_pos {o : Ordinal} : 0 < preBeth o ↔ 0 < o := by
   simpa using preBeth_lt_preBeth (o₁ := 0)
+
+theorem _root_.Ordinal.card_le_preBeth (o : Ordinal) : o.card ≤ preBeth o :=
+  o.card_le_preAleph.trans (preAleph_le_preBeth o)
+
+theorem le_preBeth_ord (c : Cardinal) : c ≤ preBeth c.ord := by
+  simpa using c.ord.card_le_preBeth
 
 @[simp]
 theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
@@ -683,6 +696,12 @@ theorem beth_pos (o : Ordinal) : 0 < ℶ_ o :=
 
 theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
   (beth_pos o).ne'
+
+theorem _root_.Ordinal.card_le_beth (o : Ordinal) : o.card ≤ ℶ_ o :=
+  o.card_le_aleph.trans (aleph_le_beth o)
+
+theorem le_beth_ord (c : Cardinal) : c ≤ ℶ_ c.ord := by
+  simpa using c.ord.card_le_beth
 
 theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrelimit o := by
   rw [beth_eq_preBeth, isStrongLimit_preBeth, isSuccLimit_add_iff_of_isSuccLimit isSuccLimit_omega0]

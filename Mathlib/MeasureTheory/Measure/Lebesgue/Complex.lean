@@ -27,6 +27,7 @@ noncomputable section
 
 namespace Complex
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Measurable equivalence between `ℂ` and `ℝ² = Fin 2 → ℝ`. -/
 def measurableEquivPi : ℂ ≃ᵐ (Fin 2 → ℝ) :=
   basisOneI.equivFun.toContinuousLinearEquiv.toHomeomorph.toMeasurableEquiv
@@ -48,8 +49,9 @@ theorem measurableEquivRealProd_apply (a : ℂ) : measurableEquivRealProd a = (a
 
 @[simp]
 theorem measurableEquivRealProd_symm_apply (p : ℝ × ℝ) :
-    measurableEquivRealProd.symm p = {re := p.1, im := p.2} := rfl
+    measurableEquivRealProd.symm p = { re := p.1, im := p.2 } := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi := by
   convert (measurableEquivPi.symm.measurable.measurePreserving volume).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar,
@@ -57,6 +59,7 @@ theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi := by
     ContinuousLinearEquiv.coe_symm_toHomeomorph, Basis.map_addHaar, eq_comm]
   exact (Basis.addHaar_eq_iff _ _).mpr Complex.orthonormalBasisOneI.volume_parallelepiped
 
+set_option backward.isDefEq.respectTransparency false in
 theorem volume_preserving_equiv_real_prod : MeasurePreserving measurableEquivRealProd :=
   (volume_preserving_finTwoArrow ℝ).comp volume_preserving_equiv_pi
 

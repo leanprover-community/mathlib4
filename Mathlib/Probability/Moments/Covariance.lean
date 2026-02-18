@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.Integration
+public import Mathlib.Probability.Notation
 
 /-!
 # Covariance

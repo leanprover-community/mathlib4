@@ -6,8 +6,8 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.PiLex
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Complete linear order instance on lexicographically ordered pi types
@@ -37,9 +37,7 @@ instance : InfSet (Πₗ i, α i) where
 
 theorem sInf_apply (s : Set (Πₗ i, α i)) (i : ι) :
     sInf s i = ⨅ e : {e ∈ s | ∀ j < i, e j = sInf s j}, e.1 i := by
-  dsimp [sInf]
-  rw [inf]
-  rfl
+  simp [sInf, inf]
 
 theorem sInf_apply_le {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
     (he : e ∈ s) (h : ∀ j < i, e j = sInf s j) : sInf s i ≤ e i := by
@@ -148,6 +146,7 @@ theorem sSup_apply_le {s : Set (Colex ((i : ι) → α i))} {i : ι} {e : Colex 
     (h : ∀ f ∈ s, (∀ j > i, f j = sSup s j) → f i ≤ e i) : sSup s i ≤ e i :=
   Lex.sSup_apply_le (ι := ιᵒᵈ) h
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance completeLattice : CompleteLattice (Colex ((i : ι) → α i)) where
   sInf_le _ _ := by exact Lex.sInf_le (ι := ιᵒᵈ)
   le_sInf _ _ := by exact Lex.le_sInf (ι := ιᵒᵈ)

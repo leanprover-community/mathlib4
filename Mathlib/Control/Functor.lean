@@ -5,10 +5,10 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Data.Set.Defs
 public import Mathlib.Tactic.TypeStar
-public import Batteries.Tactic.Lint
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Functors

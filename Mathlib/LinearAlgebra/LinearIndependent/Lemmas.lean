@@ -6,14 +6,17 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 module
 
 public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fin.Rotate
 public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.Module
-public import Mathlib.Tactic.NoncommRing
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.NormNum.Ineq
+
+import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # Linear independence
@@ -55,7 +58,7 @@ assert_not_exists Cardinal
 
 noncomputable section
 
-open Function Set Submodule
+open Function Module Set Submodule
 
 universe u' u
 
@@ -127,6 +130,7 @@ end Indexed
 
 section repr
 
+set_option backward.isDefEq.respectTransparency false in
 variable (ι R M) in
 theorem iSupIndep_range_lsingle :
     iSupIndep fun i : ι ↦ LinearMap.range (Finsupp.lsingle (R := R) (M := M) i) := by
@@ -204,7 +208,7 @@ theorem exists_maximal_linearIndepOn' (v : ι → M) :
     intro f hfsupp g hgsupp hsum
     rcases eq_empty_or_nonempty c with (rfl | hn)
     · rw [show f = 0 by simpa using hfsupp, show g = 0 by simpa using hgsupp]
-    haveI : IsRefl X r := ⟨fun _ => Set.Subset.refl _⟩
+    haveI : Std.Refl r := ⟨fun _ => Set.Subset.refl _⟩
     classical
     obtain ⟨I, _I_mem, hI⟩ : ∃ I ∈ c, (f.support ∪ g.support : Set ι) ⊆ I :=
       f.support.coe_union _ ▸ hc.directedOn.exists_mem_subset_of_finset_subset_biUnion hn <| by
@@ -288,8 +292,8 @@ lemma LinearIndependent.pair_symm_iff :
     LinearIndependent R ![x, -y] ↔ LinearIndependent R ![x, y] := by
   rw [pair_symm_iff, pair_neg_left_iff, pair_symm_iff]
 
-variable {S : Type*} [CommRing S] [Module S R] [Module S M]
-  [SMulCommClass S R M] [IsScalarTower S R M] [NoZeroSMulDivisors S R]
+variable {S : Type*} [CommRing S] [IsDomain S] [Module S R] [Module S M]
+  [SMulCommClass S R M] [IsScalarTower S R M] [IsTorsionFree S R]
   (a b c d : S)
 
 lemma LinearIndependent.pair_smul_iff {u : S} (hu : u ≠ 0) :
@@ -471,8 +475,8 @@ lemma linearIndependent_algHom_toLinearMap
     (RingHom.toMonoidHom ∘ AlgHom.toRingHom)
     (fun _ _ e ↦ AlgHom.ext (DFunLike.congr_fun e :))
 
-lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
-    [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [NoZeroSMulDivisors K L] :
+lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K] [IsDomain K]
+    [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [IsTorsionFree K L] :
     LinearIndependent K (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) :=
   (linearIndependent_algHom_toLinearMap K M L).restrict_scalars' K
 
@@ -507,6 +511,17 @@ lemma LinearIndepOn.insert' {s : Set ι} {i : ι} (hs : LinearIndepOn R v s)
 lemma LinearIndepOn.id_insert' {s : Set M} {x : M} (hs : LinearIndepOn R id s)
     (hx : ∀ r : R, r • x ∈ Submodule.span R s → r = 0) : LinearIndepOn R id (insert x s) :=
   hs.insert' <| by simpa
+
+/-- If `v : ι → M` is a family of vectors and there exists a family of linear forms
+`f : ι → Dual R M` such that `f i (v j)` is `1` for `i = j` and `0` for `i ≠ j`, then
+`v` is linearly independent. -/
+theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι → Dual R M)
+    (h1 : Pairwise fun i j ↦ f i (v j) = 0)
+    (h2 : ∀ i, (f i) (v i) = 1) :
+    LinearIndependent R v := by
+  refine linearIndependent_iff'.mpr fun s g hrel i hi ↦ ?_
+  have aux (j : ι) (hjs : j ∈ s) (hji : j ≠ i) : g j * (f i) (v j) = 0 := by simp [h1 hji.symm]
+  simpa [s.sum_eq_single i aux (by aesop), h2 i] using congr_arg (f i) hrel
 
 end Module
 
@@ -600,7 +615,7 @@ theorem LinearIndepOn.mem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : Lin
 /-- A shortcut to a convenient form for the negation in `LinearIndepOn.mem_span_iff`. -/
 theorem LinearIndepOn.notMem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : LinearIndepOn K f s) :
     f a ∉ Submodule.span K (f '' s) ↔ LinearIndepOn K f (insert a s) ∧ a ∉ s := by
-  rw [h.mem_span_iff, _root_.not_imp]
+  rw [h.mem_span_iff, Classical.not_imp]
 
 theorem LinearIndepOn.mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
     a ∈ Submodule.span K s ↔ (LinearIndepOn K id (insert a s) → a ∈ s) := by
@@ -608,7 +623,7 @@ theorem LinearIndepOn.mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K i
 
 theorem LinearIndepOn.notMem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
     a ∉ Submodule.span K s ↔ LinearIndepOn K id (insert a s) ∧ a ∉ s := by
-  rw [h.mem_span_iff_id, _root_.not_imp]
+  rw [h.mem_span_iff_id, Classical.not_imp]
 
 theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
     LinearIndepOn K id {x, y} := by
@@ -655,6 +670,7 @@ theorem linearIndependent_fin_succ' {n} {v : Fin (n + 1) → V} : LinearIndepend
     LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
   rw [← linearIndependent_fin_snoc, Fin.snoc_init_self]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
 vector in the complement of their span.
 -/
@@ -755,6 +771,7 @@ theorem LinearIndepOn.linearIndepOn_extend (hs : LinearIndepOn K v s) (hst : s �
   let ⟨_hbt, _hsb, _htb, hli⟩ := Classical.choose_spec (exists_linearIndepOn_extension hs hst)
   hli
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO(Mario): rewrite?
 theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
     (hs : LinearIndepOn K id s) (hst : s ⊆ (span K ↑t : Submodule K V)) :

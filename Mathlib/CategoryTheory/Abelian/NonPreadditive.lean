@@ -14,9 +14,8 @@ public import Mathlib.CategoryTheory.Preadditive.Basic
 /-!
 # Every NonPreadditiveAbelian category is preadditive
 
-In mathlib, we define an abelian category as a preadditive category with a zero object,
-kernels and cokernels, products and coproducts and in which every monomorphism and epimorphism is
-normal.
+In mathlib, we define an abelian category as a preadditive category with finite products,
+kernels and cokernels, and in which every monomorphism and epimorphism is normal.
 
 While virtually every interesting abelian category has a natural preadditive structure (which is why
 it is included in the definition), preadditivity is not actually needed: Every category that has
@@ -41,7 +40,7 @@ categories, and will be used there.
 The construction is non-trivial and it is quite remarkable that this abelian group structure can
 be constructed purely from the existence of a few limits and colimits. Even more remarkably,
 since abelian categories admit exactly one preadditive structure (see
-`subsingletonPreadditiveOfHasBinaryBiproducts`), the construction manages to exactly
+`subsingleton_preadditive_of_hasBinaryBiproducts`), the construction manages to exactly
 reconstruct any natural preadditive structure the category may have.
 
 ## References
@@ -67,7 +66,7 @@ universe v u
 
 variable (C : Type u) [Category.{v} C]
 
-/-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, binary
+/-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, finite
 products and coproducts, and every monomorphism and every epimorphism is normal.
 
 Notice that every such category is abelian (see `CategoryTheory.NonPreadditiveAbelian.preadditive`),
@@ -187,6 +186,7 @@ section CokernelOfKernel
 
 variable {X Y : C} {f : X ⟶ Y}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a `NonPreadditiveAbelian` category, an epi is the cokernel of its kernel. More precisely:
 If `f` is an epimorphism and `s` is some limit kernel cone on `f`, then `f` is a cokernel
 of `Fork.ι s`. -/
@@ -197,6 +197,7 @@ def epiIsCokernelOfKernel [Epi f] (s : Fork f 0) (h : IsLimit s) :
       (ConeMorphism.w (Limits.IsLimit.uniqueUpToIso (limit.isLimit _) h).hom _))
     (asIso <| Abelian.factorThruCoimage f) (Abelian.coimage.fac f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a `NonPreadditiveAbelian` category, a mono is the kernel of its cokernel. More precisely:
 If `f` is a monomorphism and `s` is some colimit cokernel cocone on `f`, then `f` is a kernel
 of `Cofork.π s`. -/
@@ -219,6 +220,7 @@ abbrev r (A : C) : A ⟶ cokernel (diag A) :=
 instance mono_Δ {A : C} : Mono (diag A) :=
   mono_of_mono_fac <| prod.lift_fst _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance mono_r {A : C} : Mono (r A) := by
   let hl : IsLimit (KernelFork.ofι (diag A) (cokernel.condition (diag A))) :=
     monoIsKernelOfCokernel _ (colimit.isColimit _)
@@ -235,6 +237,7 @@ instance mono_r {A : C} : Mono (r A) := by
   apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
   rw [← hy, hyy, zero_comp, zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 instance epi_r {A : C} : Epi (r A) := by
   have hlp : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ Limits.prod.snd = 0 := prod.lift_snd _ _
   let hp1 : IsLimit (KernelFork.ofι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) := by
@@ -286,6 +289,7 @@ theorem lift_map {X Y : C} (f : X ⟶ Y) :
 def isColimitσ {X : C} : IsColimit (CokernelCofork.ofπ (σ : X ⨯ X ⟶ X) diag_σ) :=
   cokernel.cokernelIso _ σ (asIso (r X)).symm (by rw [Iso.symm_hom, asIso_inv])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is the key identity satisfied by `σ`. -/
 theorem σ_comp {X Y : C} (f : X ⟶ Y) : σ ≫ f = Limits.prod.map f f ≫ σ := by
   obtain ⟨g, hg⟩ :=
@@ -302,6 +306,7 @@ section
 
 -- We write `f - g` for `prod.lift f g ≫ σ`.
 /-- Subtraction of morphisms in a `NonPreadditiveAbelian` category. -/
+@[instance_reducible]
 def hasSub {X Y : C} : Sub (X ⟶ Y) :=
   ⟨fun f g => prod.lift f g ≫ σ⟩
 
@@ -309,6 +314,7 @@ attribute [local instance] hasSub
 
 -- We write `-f` for `0 - f`.
 /-- Negation of morphisms in a `NonPreadditiveAbelian` category. -/
+@[instance_reducible]
 def hasNeg {X Y : C} : Neg (X ⟶ Y) where
   neg := fun f => 0 - f
 
@@ -316,6 +322,7 @@ attribute [local instance] hasNeg
 
 -- We write `f + g` for `f - (-g)`.
 /-- Addition of morphisms in a `NonPreadditiveAbelian` category. -/
+@[instance_reducible]
 def hasAdd {X Y : C} : Add (X ⟶ Y) :=
   ⟨fun f g => f - -g⟩
 

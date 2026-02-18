@@ -43,6 +43,10 @@ theorem MeasureTheory.Lp.mem_boundedContinuousFunction_iff {f : Lp E p μ} :
 
 namespace BoundedContinuousFunction
 
+/-- A bounded continuous function is in `L∞`. -/
+theorem memLp_top (f : α →ᵇ E) : MemLp f ⊤ μ :=
+  ⟨by fun_prop, eLpNormEssSup_lt_top_of_ae_bound <| univ_mem' (id norm_coe_le_norm f)⟩
+
 variable [IsFiniteMeasure μ]
 
 /-- A bounded continuous function on a finite-measure space is in `Lp`. -/
@@ -192,11 +196,13 @@ theorem hasSum_of_hasSum_Lp {β : Type*} [μ.IsOpenPosMeasure]
 
 variable (μ) {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toLp_norm_eq_toLp_norm_coe :
     ‖(toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)‖ =
       ‖(BoundedContinuousFunction.toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ)‖ :=
   ContinuousLinearMap.opNorm_comp_linearIsometryEquiv _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Bound for the operator norm of `ContinuousMap.toLp`. -/
 theorem toLp_norm_le :
     ‖(toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ := by

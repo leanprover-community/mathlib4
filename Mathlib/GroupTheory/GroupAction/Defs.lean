@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Submonoid.MulAction
 public import Mathlib.Data.Set.BooleanAlgebra
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Definition of `orbit`, `fixedPoints` and `stabilizer`
@@ -279,9 +280,7 @@ variable (G α)
 @[to_additive /-- The relation 'in the same orbit'. -/]
 def orbitRel : Setoid α where
   r a b := a ∈ orbit G b
-  iseqv :=
-    ⟨mem_orbit_self, fun {a b} => by simp [orbit_eq_iff.symm, eq_comm], fun {a b} => by
-      simp +contextual [orbit_eq_iff.symm]⟩
+  iseqv := ⟨mem_orbit_self, mem_orbit_symm.mp, by grind [orbit_eq_iff]⟩
 
 variable {G α}
 
@@ -309,11 +308,12 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     rw [Set.mem_iUnion] at hx
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image]
-    refine ⟨g⁻¹ • a, ?_, by simp [f, orbitRel, Quotient.eq']⟩
+    refine ⟨g⁻¹ • a, ?_, by simp +instances [f, orbitRel, Quotient.eq']⟩
     rw [← hu₂]
     convert hu₁
     simp only [inv_smul_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_image_image_iff {U V : Set α} :
     letI := orbitRel G α

@@ -21,7 +21,7 @@ Currently this file contains two lemmas:
 fixed points, iterates
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*} [TopologicalSpace α] [T2Space α] {f : α → α}

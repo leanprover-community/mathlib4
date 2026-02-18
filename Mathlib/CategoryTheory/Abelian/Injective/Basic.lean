@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 /-!
 # Injective objects in abelian categories
 
-* Objects in an abelian categories are injective if and only if the preadditive Yoneda functor
+* Objects in an abelian category are injective if and only if the preadditive Yoneda functor
   on them preserves finite colimits.
 -/
 
@@ -37,6 +37,7 @@ instance preservesHomology_preadditiveYonedaObj_of_injective (J : C) [hJ : Injec
   letI := (injective_iff_preservesEpimorphisms_preadditive_yoneda_obj' J).mp hJ
   apply Functor.preservesHomology_of_preservesEpis_and_kernels
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The preadditive Yoneda functor on `J` preserves colimits if `J` is injective. -/
 instance preservesFiniteColimits_preadditiveYonedaObj_of_injective (J : C) [hP : Injective J] :
     PreservesFiniteColimits (preadditiveYonedaObj J) := by

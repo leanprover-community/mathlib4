@@ -84,11 +84,13 @@ noncomputable def infLERight (U V : Opens X) : U ⊓ V ⟶ V :=
 noncomputable def leSupr {ι : Type*} (U : ι → Opens X) (i : ι) : U i ⟶ iSup U :=
   (le_iSup U i).hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion `⊥ ⟶ U` as a morphism in the category of open sets.
 -/
 noncomputable def botLE (U : Opens X) : ⊥ ⟶ U :=
   bot_le.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion `U ⟶ ⊤` as a morphism in the category of open sets.
 -/
 noncomputable def leTop (U : Opens X) : U ⟶ ⊤ :=
@@ -153,6 +155,10 @@ def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
 @[simp]
 theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
   rfl
+
+@[simp]
+theorem mem_map {f : X ⟶ Y} {U : Opens Y} {x : X} :
+    x ∈ (map f).obj U ↔ f.hom x ∈ U := .rfl
 
 @[simp]
 theorem map_obj (f : X ⟶ Y) (U) (p) : (map f).obj ⟨U, p⟩ = ⟨f ⁻¹' U, p.preimage f.hom.continuous⟩ :=

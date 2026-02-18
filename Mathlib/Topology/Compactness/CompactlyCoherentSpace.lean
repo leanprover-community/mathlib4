@@ -64,7 +64,7 @@ lemma isClosed_iff [CompactlyCoherentSpace X] (A : Set X) :
 then the space is a compactly coherent space. -/
 lemma of_isOpen (h : ∀ (A : Set X), (∀ K, IsCompact K → IsOpen (K ↓∩ A)) → IsOpen A) :
     CompactlyCoherentSpace X where
-  isCoherentWith := {isOpen_of_forall_induced := h}
+  isCoherentWith := { isOpen_of_forall_induced := h }
 
 /-- If every set `A` is closed if for every compact `K` the intersection `K ∩ A` is closed in `K`,
 then the space is a compactly coherent space. -/

@@ -6,12 +6,13 @@ Floris van Doorn, Edward Ayers, Arthur Paulino, Thomas R. Murrills
 -/
 module
 
-public import Lean.Meta.Tactic.Rewrite
-public import Batteries.Tactic.Alias
-public import Lean.Elab.Binders
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+import Mathlib.Tactic.Linter.Header  --shake: keep
+public import Lean.Meta.AppBuilder
+public import Lean.Meta.Match.MatcherInfo
+public import Lean.Meta.Transform
+public import Lean.Structure
 
 /-!
 # Additional operations on Expr and related types
@@ -215,6 +216,7 @@ def type? : Expr → Option Level
 /-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
 `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
 it does a syntactic check that the expression does not depend on `yₙ`. -/
+@[deprecated "This function was implemented incorrectly" (since := "2026-02-13")]
 def isConstantApplication (e : Expr) :=
   e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
 where

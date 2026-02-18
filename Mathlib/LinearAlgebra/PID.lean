@@ -23,13 +23,14 @@ algebra import hierarchy have to depend on the theory of PIDs.
 
 -/
 
-@[expose] public section
+public section
 
 namespace LinearMap
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
   [Module.Finite R M] [Module.Free R M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a linear endomorphism of a (finite, free) module `M` takes values in a submodule `p ⊆ M`,
 then the trace of its restriction to `p` is equal to its trace on `M`. -/
 lemma trace_restrict_eq_of_forall_mem [IsDomain R] [IsPrincipalIdealRing R]

@@ -30,7 +30,7 @@ from the other possible lemmas, but we will want there to be a single set of lem
 situations.
 -/
 
-@[expose] public section
+public section
 
 open Bornology Function Metric Set
 open scoped Pointwise
@@ -120,12 +120,14 @@ end Finite
 section Fintype
 variable [Fintype ι] {s : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → ℝ} {δ : ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalise those lemmas so that they also apply to `ℝ` and `EuclideanSpace ι ℝ`
 lemma dist_inf_sup_pi (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
   refine congr_arg NNReal.toReal (Finset.sup_congr rfl fun i _ ↦ ?_)
   simp only [Real.nndist_eq', max_sub_min_eq_abs, Pi.inf_apply,
     Pi.sup_apply, Real.nnabs_of_nonneg, abs_nonneg, Real.toNNReal_abs]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dist_mono_left_pi : MonotoneOn (dist · y) (Ici y) := by
   refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)
   rw [Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₁ i)),
@@ -133,7 +135,7 @@ lemma dist_mono_left_pi : MonotoneOn (dist · y) (Ici y) := by
   grw [hy i] -- TODO(gcongr): we would like `grw [hy]` to work here
 
 lemma dist_mono_right_pi : MonotoneOn (dist x) (Ici x) := by
-  simpa only [dist_comm _ x] using dist_mono_left_pi (y := x)
+  simpa only [dist_comm] using dist_mono_left_pi (y := x)
 
 lemma dist_anti_left_pi : AntitoneOn (dist · y) (Iic y) := by
   refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)

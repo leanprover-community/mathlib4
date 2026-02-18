@@ -117,6 +117,7 @@ lemma IsAlmostIntegral.coeff [IsDomain R] [FaithfulSMul R S]
   simpa [hi, eraseLead_coeff_of_ne] using
     IH (p := p.eraseLead) _ (p.eraseLead_natDegree_le.trans_lt (by lia)) this rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00H0 "(2)"]
 protected lemma IsIntegral.coeff
     {p : S[X]} (hp : IsIntegral R[X] p) (i : ℕ) : IsIntegral R (p.coeff i) := by
@@ -143,7 +144,8 @@ protected lemma IsIntegral.coeff
   have hm₂ : p.natDegree < m := by grind
   have h₀ : algebraMap R[X] S[X] X = X := by simp
   have : (((taylor (X ^ m)) q).map (algebraMap R[X] S[X])).IsRoot (p - X ^ m) := by
-    simpa [-algebraMap_def, q, h₀] using ((q.map (algebraMap _ _)).taylor_eval (X ^ m) (p - X ^ m):)
+    simpa [-algebraMap_def, q, h₀] using
+      ((q.map (algebraMap _ _)).taylor_eval (X ^ m) (p - X ^ m) :)
   have : X ^ m - p ∣ (eval (X ^ m) q).map (algebraMap _ _) := by
     change X ^ m - p ∣ Algebra.ofId R[X] S[X] _
     rw [← coe_aeval_eq_eval, ← aeval_algHom_apply, ← neg_dvd, neg_sub]
@@ -166,6 +168,7 @@ theorem Polynomial.isIntegral_iff_isIntegral_coeff {f : S[X]} :
   simp only [← C_mul_X_pow_eq_monomial, ← map_X (algebraMap R S)]
   exact .sum _ fun i _ ↦ ((H i).map (CAlgHom (R := R))).tower_top.mul (.pow isIntegral_algebraMap _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsIntegral.of_aeval_monic_of_isIntegral_coeff {R A : Type*} [CommRing R] [CommRing A]
     [Algebra R A] {x : A} {p : A[X]} (monic : p.Monic) (deg : p.natDegree ≠ 0)
     (hx : IsIntegral R (eval x p)) (hp : ∀ i, IsIntegral R (p.coeff i)) : IsIntegral R x := by
@@ -187,6 +190,7 @@ instance {R : Type*} [CommRing R] [IsDomain R] [IsIntegrallyClosed R] :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 attribute [-simp] AlgEquiv.symm_toRingEquiv in
 theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPolynomial σ S} :

@@ -10,6 +10,7 @@ public import Mathlib.Analysis.MeanInequalitiesPow
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Data.Set.Image
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 
 /-!
 # ℓp space
@@ -349,6 +350,7 @@ def coeFnAddMonoidHom : lp E p →+ (∀ i, E i) where
 @[simp]
 theorem coeFnAddMonoidHom_apply (x : lp E p) : coeFnAddMonoidHom E p x = ⇑x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) := by
   simp
@@ -407,6 +409,7 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
     refine Real.rpow_nonneg (tsum_nonneg ?_) _
     exact fun i => Real.rpow_nonneg (norm_nonneg _) _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
   rcases p.trichotomy with (rfl | rfl | hp)

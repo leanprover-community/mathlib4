@@ -18,7 +18,7 @@ We show that two analytic functions which coincide around a point coincide on wh
 in `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -43,6 +43,7 @@ section Uniqueness
 
 open ContinuousMultilinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p : E [×n]→L[𝕜] F}
     (h : (fun y => p fun _ => y) =O[𝓝 0] fun y => ‖y‖ ^ (n + 1)) (y : E) : (p fun _ => y) = 0 := by
   obtain ⟨c, c_pos, hc⟩ := h.exists_pos
@@ -147,7 +148,7 @@ theorem HasFPowerSeriesOnBall.r_eq_top_of_exists {f : 𝕜 → E} {r : ℝ≥0�
     hasSum := fun {y} _ =>
       let ⟨r', hr'⟩ := exists_gt ‖y‖₊
       let ⟨_, hp'⟩ := h' r' hr'.ne_bot.bot_lt
-      (h.exchange_radius hp').hasSum <| mem_emetric_ball_zero_iff.mpr (ENNReal.coe_lt_coe.2 hr') }
+      (h.exchange_radius hp').hasSum <| mem_eball_zero_iff.mpr (ENNReal.coe_lt_coe.2 hr') }
 
 end Uniqueness
 
@@ -187,7 +188,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     apply ENNReal.le_sub_of_add_le_left ENNReal.coe_ne_top
     apply (add_le_add A.le (le_refl (r / 2))).trans (le_of_eq _)
     exact ENNReal.add_halves _
-  have M : EMetric.ball y (r / 2) ∈ 𝓝 x := EMetric.isOpen_ball.mem_nhds hxy
+  have M : Metric.eball y (r / 2) ∈ 𝓝 x := Metric.isOpen_eball.mem_nhds hxy
   filter_upwards [M] with z hz
   have A : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) (f z) := has_series.hasSum_sub hz
   have B : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) 0 := by

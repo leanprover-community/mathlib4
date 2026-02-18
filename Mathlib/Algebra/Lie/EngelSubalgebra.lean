@@ -60,7 +60,7 @@ def engel (x : L) : LieSubalgebra R L :=
       rw [ad_pow_lie]
       apply Finset.sum_eq_zero
       intro ij hij
-      obtain (h|h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; lia
+      obtain (h | h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; lia
       all_goals simp [Module.End.pow_map_zero_of_le h, hm, hn] }
 
 lemma mem_engel_iff (x y : L) :
@@ -71,6 +71,7 @@ lemma self_mem_engel (x : L) : x ∈ engel R x := by
   simp only [mem_engel_iff]
   exact ⟨1, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma engel_zero : engel R (0 : L) = ⊤ := by
   rw [eq_top_iff]
@@ -98,6 +99,7 @@ lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
 
 variable {R}
 
+set_option backward.isDefEq.respectTransparency false in
 open Filter in
 /-- A Lie-subalgebra of an Artinian Lie algebra is self-normalizing
 if it contains an Engel subalgebra.

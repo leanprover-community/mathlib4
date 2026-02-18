@@ -26,7 +26,7 @@ for commuting endomorphisms but there are important more general situations wher
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 
@@ -39,6 +39,7 @@ theorem mem_iInf_maxGenEigenspace_iff (χ : ι → R) (m : M) :
     m ∈ ⨅ i, (f i).maxGenEigenspace (χ i) ↔ ∀ j, ∃ k : ℕ, ((f j - χ j • ↑1) ^ k) m = 0 := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
 submodule `p` which is invariant w.r.t. every `f i`, the intersection of `p` with the simultaneous
 maximal generalised eigenspace (taken over all `i`), is the same as the simultaneous maximal
@@ -51,6 +52,7 @@ lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {μ : ι → R
   · simp [iInf_of_isEmpty]
   · simp_rw [inf_iInf, p.inf_genEigenspace _ (hfp _), Submodule.map_iInf _ p.injective_subtype]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
 distinguished index `i` whose maximal generalised `μ i`-eigenspace is invariant w.r.t. every `f j`,
 taking simultaneous maximal generalised eigenspaces is unaffected by first restricting to the
@@ -72,7 +74,7 @@ lemma iInf_maxGenEigenspace_restrict_map_subtype_eq
     ext
     rw [p.inf_genEigenspace (f _) (h _)]
 
-variable [NoZeroSMulDivisors R M]
+variable [IsDomain R] [IsTorsionFree R M]
 
 lemma disjoint_iInf_maxGenEigenspace {χ₁ χ₂ : ι → R} (h : χ₁ ≠ χ₂) :
     Disjoint (⨅ i, (f i).maxGenEigenspace (χ₁ i)) (⨅ i, (f i).maxGenEigenspace (χ₂ i)) := by
@@ -142,6 +144,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
     simp only [Submodule.coe_iInf]
     exact h l χ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of endomorphisms `i ↦ f i` which are compatible in the sense that every maximal
 generalised eigenspace of `f i` is invariant w.r.t. `f j`, if each `f i` is triangularizable, the
 family is simultaneously triangularizable. -/

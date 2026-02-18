@@ -38,8 +38,7 @@ algebra-homomorphisms.)
 
 @[expose] public section
 
-
-open Function Set
+open Function Set Metric
 
 variable (𝕜 : Type*) {V V₁ V₁' V₂ V₃ V₄ : Type*} {P₁ P₁' : Type*} (P P₂ : Type*) {P₃ P₄ : Type*}
   [NormedField 𝕜]
@@ -164,10 +163,10 @@ protected theorem antilipschitz : AntilipschitzWith 1 f :=
 protected theorem continuous : Continuous f :=
   f.isometry.continuous
 
-theorem ediam_image (s : Set P) : EMetric.diam (f '' s) = EMetric.diam s :=
+theorem ediam_image (s : Set P) : ediam (f '' s) = ediam s :=
   f.isometry.ediam_image s
 
-theorem ediam_range : EMetric.diam (range f) = EMetric.diam (univ : Set P) :=
+theorem ediam_range : ediam (range f) = ediam (univ : Set P) :=
   f.isometry.ediam_range
 
 theorem diam_image (s : Set P) : Metric.diam (f '' s) = Metric.diam s :=
@@ -634,7 +633,7 @@ protected theorem antilipschitz : AntilipschitzWith 1 e :=
   e.isometry.antilipschitz
 
 @[simp]
-theorem ediam_image (s : Set P) : EMetric.diam (e '' s) = EMetric.diam s :=
+theorem ediam_image (s : Set P) : ediam (e '' s) = ediam s :=
   e.isometry.ediam_image s
 
 @[simp]
@@ -841,6 +840,7 @@ theorem isometryEquivMap.coe_apply (φ : P₁' →ᵃⁱ[𝕜] P₂) (E : Affine
     (g : E) : ↑(E.isometryEquivMap φ g) = φ g :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem isometryEquivMap.toAffineMap_eq (φ : P₁' →ᵃⁱ[𝕜] P₂) (E : AffineSubspace 𝕜 P₁')
     [Nonempty E] :

@@ -16,7 +16,7 @@ public import Mathlib.Topology.Algebra.Polynomial
 # Analytic part of the Lindemann-Weierstrass theorem
 -/
 
-@[expose] public section
+public section
 
 namespace LindemannWeierstrass
 
@@ -25,6 +25,7 @@ noncomputable section
 open scoped Nat
 open Complex Polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
     HasDerivAt (fun x : ℝ ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s)))
       (s * (cexp (-(x • s)) * p.eval (x • s))) x := by
@@ -36,6 +37,7 @@ theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
   simp only [one_smul, eval_add, Function.comp_apply]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
     s * ∫ x in 0..1, exp (-(x • s)) * p.eval (x • s) =
       -(exp (-s) * p.sumIDeriv.eval s) + p.sumIDeriv.eval 0 := by
@@ -58,6 +60,7 @@ private theorem P_eq_integral_exp_mul_eval (f : ℂ[X]) (s : ℂ) :
   rw [integral_exp_mul_eval, mul_add, mul_neg, exp_neg, mul_inv_cancel_left₀ (exp_ne_zero s),
     neg_add_eq_sub, P]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a sequence of complex polynomials `fₚ`, a complex constant `s`, and a real constant `c` such
 that `|fₚ(xs)| ≤ c ^ p` for all `p ∈ ℕ` and `x ∈ Ioc 0 1`, then there is also a nonnegative
@@ -139,6 +142,7 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
   · push_neg at hx1
     exact pow_le_pow_right₀ hx1.le (Nat.sub_le _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 See equation (68), page 285 of [Jacobson, *Basic Algebra I, 4.12*][jacobson1974].
 

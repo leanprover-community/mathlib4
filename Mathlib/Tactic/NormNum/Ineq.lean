@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Eq
-public meta import Mathlib.Algebra.Order.Invertible
-public meta import Mathlib.Algebra.Order.Monoid.WithTop
-public meta import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Algebra.Order.Invertible
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Tactic.NormNum.Eq
+public meta import Mathlib.Tactic.NormNum.Result
 
 /-!
 # `norm_num` extensions for inequalities.
@@ -76,6 +76,7 @@ theorem isNat_lt_false [Semiring α] [PartialOrder α] [IsOrderedRing α] {a b :
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
   not_lt_of_ge (isNat_le_true hb ha h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_le_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     {a b : α} → {na nb : ℕ} → {da db : ℕ} →
     IsNNRat a na da → IsNNRat b nb db →
@@ -89,6 +90,7 @@ theorem isNNRat_le_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] 
     simp only [Nat.mul_eq, Nat.cast_mul, mul_invOf_cancel_right'] at h
     rwa [Nat.commute_cast] at h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_lt_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α] :
     {a b : α} → {na nb : ℕ} → {da db : ℕ} →
     IsNNRat a na da → IsNNRat b nb db → decide (na * db < nb * da) → a < b
@@ -111,6 +113,7 @@ theorem isNNRat_lt_false [Semiring α] [LinearOrder α] [IsStrictOrderedRing α]
     (ha : IsNNRat a na da) (hb : IsNNRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
   not_lt_of_ge (isNNRat_le_true hb ha h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isRat_le_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db →
@@ -125,6 +128,7 @@ theorem isRat_le_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
       mul_invOf_cancel_right'] at h
     rwa [Int.commute_cast] at h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isRat_lt_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α] :
     {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db < nb * da) → a < b

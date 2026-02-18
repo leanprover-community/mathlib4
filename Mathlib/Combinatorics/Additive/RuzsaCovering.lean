@@ -18,7 +18,7 @@ This file proves the Ruzsa covering lemma. This says that, for `A`, `B` finsets,
 with at most `#(A + B) / #B` copies of `B - B`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 
@@ -27,6 +27,7 @@ variable {G : Type*} [Group G] {K : ℝ}
 namespace Finset
 variable [DecidableEq G] {A B : Finset G}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Ruzsa's covering lemma**. -/
 @[to_additive /-- **Ruzsa's covering lemma** -/]
 theorem ruzsa_covering_mul (hB : B.Nonempty) (hK : #(A * B) ≤ K * #B) :

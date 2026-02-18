@@ -345,6 +345,9 @@ theorem congr_mul (f₁ f₂ : M ≃ₗ[A] M) (g₁ g₂ : N ≃ₗ[R] N) :
     (congr f g).symm (p ⊗ₜ q) = f.symm p ⊗ₜ g.symm q :=
   rfl
 
+theorem congr_eq (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
+    congr f g = TensorProduct.congr f g := rfl
+
 variable (R A M)
 
 /-- Heterobasic version of `TensorProduct.rid`. -/

@@ -162,7 +162,7 @@ section IsStrictOrder
 variable [IsStrictOrder α r] {s t : Set α}
 
 instance IsStrictOrder.subset : IsStrictOrder α fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s where
-  toIsIrrefl := ⟨fun a con => irrefl_of r a con.1⟩
+  toIrrefl := ⟨fun a con => irrefl_of r a con.1⟩
   toIsTrans := ⟨fun _ _ _ ab bc => ⟨trans_of r ab.1 bc.1, ab.2.1, bc.2.2⟩⟩
 
 theorem wellFoundedOn_iff_no_descending_seq :
@@ -310,8 +310,8 @@ theorem _root_.IsAntichain.finite_of_partiallyWellOrderedOn (ha : IsAntichain r 
   exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
     ha.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)
 
-section IsRefl
-variable [IsRefl α r]
+section Refl
+variable [Std.Refl r]
 
 protected theorem Finite.partiallyWellOrderedOn (hs : s.Finite) : s.PartiallyWellOrderedOn r :=
   hs.to_subtype.wellQuasiOrdered _
@@ -358,7 +358,7 @@ theorem partiallyWellOrderedOn_iff_finite_antichains [Std.Symm r] :
   · exact H _ _ h
   · exact mt symm (H _ _ h)
 
-end IsRefl
+end Refl
 
 section IsPreorder
 variable [IsPreorder α r]
@@ -588,7 +588,7 @@ namespace Finset
 variable {r : α → α → Prop}
 
 @[simp]
-protected theorem partiallyWellOrderedOn [IsRefl α r] (s : Finset α) :
+protected theorem partiallyWellOrderedOn [Std.Refl r] (s : Finset α) :
     (s : Set α).PartiallyWellOrderedOn r :=
   s.finite_toSet.partiallyWellOrderedOn
 
@@ -606,10 +606,12 @@ protected theorem wellFoundedOn [IsStrictOrder α r] (s : Finset α) :
   letI := partialOrderOfSO r
   s.isWF
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wellFoundedOn_sup [IsStrictOrder α r] (s : Finset ι) {f : ι → Set α} :
     (s.sup f).WellFoundedOn r ↔ ∀ i ∈ s, (f i).WellFoundedOn r :=
   Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_biUnion, hs]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem partiallyWellOrderedOn_sup (s : Finset ι) {f : ι → Set α} :
     (s.sup f).PartiallyWellOrderedOn r ↔ ∀ i ∈ s, (f i).PartiallyWellOrderedOn r :=
   Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_biUnion, hs]

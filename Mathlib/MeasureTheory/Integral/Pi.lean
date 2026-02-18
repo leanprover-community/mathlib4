@@ -16,7 +16,7 @@ that its integral is the product of the individual integrals,
 in `MeasureTheory.integral_fintype_prod_eq_prod`.
 -/
 
-@[expose] public section
+public section
 
 open Fintype MeasureTheory MeasureTheory.Measure
 
@@ -74,6 +74,7 @@ end Integrable
 
 variable [RCLike 𝕜]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of **Fubini's theorem** in `n` variables, for a natural number `n`. -/
 theorem integral_fin_nat_prod_eq_prod {n : ℕ} {E : Fin n → Type*}
     {mE : ∀ i, MeasurableSpace (E i)} {μ : (i : Fin n) → Measure (E i)} [∀ i, SigmaFinite (μ i)]

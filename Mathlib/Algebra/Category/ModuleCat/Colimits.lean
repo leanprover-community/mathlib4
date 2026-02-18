@@ -6,8 +6,9 @@ Authors: Kim Morrison, Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.Algebra.Category.Grp.Colimits
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+public import Mathlib.LinearAlgebra.DFinsupp
 
 /-!
 # The category of R-modules has all colimits.
@@ -39,6 +40,7 @@ namespace HasColimit
 
 variable [HasColimit (F ⋙ forget₂ _ AddCommGrpCat)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The induced scalar multiplication on
 `colimit (F ⋙ forget₂ _ AddCommGrpCat)`. -/
 @[simps]
@@ -47,21 +49,22 @@ noncomputable def coconePointSMul :
   toFun r := colimMap
     { app := fun j => (F.obj j).smul r
       naturality := fun _ _ _ => smul_naturality _ _ }
-  map_zero' := colimit.hom_ext (by simp)
-  map_one' := colimit.hom_ext (by simp)
+  map_zero' := colimit.hom_ext (by simp +instances)
+  map_one' := colimit.hom_ext (by simp +instances)
   map_add' r s := colimit.hom_ext (fun j => by
-    simp only [Functor.comp_obj, forget₂_obj, map_add, ι_colimMap]
+    simp +instances only [Functor.comp_obj, forget₂_obj, map_add, ι_colimMap]
     rw [Preadditive.add_comp, Preadditive.comp_add]
     simp only [ι_colimMap, Functor.comp_obj, forget₂_obj])
-  map_mul' r s := colimit.hom_ext (fun j => by simp)
+  map_mul' r s := colimit.hom_ext (fun j => by simp +instances)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cocone for `F` constructed from the colimit of
 `(F ⋙ forget₂ (ModuleCat R) AddCommGrpCat)`. -/
 @[simps]
 noncomputable def colimitCocone : Cocone F where
   pt := mkOfSMul (coconePointSMul F)
   ι :=
-    { app := fun j => homMk (colimit.ι (F ⋙ forget₂ _ AddCommGrpCat)  j) (fun r => by
+    { app := fun j => homMk (colimit.ι (F ⋙ forget₂ _ AddCommGrpCat) j) (fun r => by
         dsimp
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
         erw [mkOfSMul_smul]
@@ -72,6 +75,7 @@ noncomputable def colimitCocone : Cocone F where
         dsimp
         erw [colimit.w (F ⋙ forget₂ _ AddCommGrpCat), comp_id] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cocone for `F` constructed from the colimit of
 `(F ⋙ forget₂ (ModuleCat R) AddCommGrpCat)` is a colimit cocone. -/
 noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) where
@@ -152,5 +156,27 @@ instance : HasCoequalizers (ModuleCat.{v} R) where
 
 noncomputable example (R : Type u) [Ring R] :
     PreservesColimits (forget₂ (ModuleCat.{u} R) AddCommGrpCat) := inferInstance
+
+section
+
+variable (R : Type w) [CommRing R] (M ι : Type u) [AddCommGroup M] [Module R M]
+
+/-- The coproduct cone induced by the concrete coproduct. -/
+noncomputable
+def finsuppCocone : Cofan fun _ : ι ↦ ModuleCat.of R M :=
+  Cofan.mk (ModuleCat.of R (ι →₀ M)) fun i ↦
+    ModuleCat.ofHom (Finsupp.lsingle i (R := R) (M := ModuleCat.of R M))
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The concrete cocoproduct cone is colimiting. -/
+noncomputable
+def finsuppCoconeIsColimit : IsColimit (finsuppCocone R M ι) where
+  desc s := ModuleCat.ofHom <| Finsupp.lsum R (N := s.pt) (fun i ↦ (s.ι.app ⟨i⟩).hom)
+  fac := by aesop (add simp finsuppCocone)
+  uniq s f h := by
+    ext : 1
+    exact Finsupp.lhom_ext' fun i ↦ LinearMap.ext fun x ↦ by simpa using congr($(h ⟨i⟩) (x : M))
+
+end
 
 end ModuleCat

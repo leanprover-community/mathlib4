@@ -14,7 +14,7 @@ This file proves that a convex function from a finite-dimensional real normed sp
 continuous.
 -/
 
-@[expose] public section
+public section
 
 open FiniteDimensional Metric Set List Bornology
 open scoped Topology
@@ -71,6 +71,7 @@ lemma ConcaveOn.lipschitzOnWith_of_abs_le (hf : ConcaveOn ℝ (ball x₀ r) f) (
     LipschitzOnWith (2 * M / ε).toNNReal f (ball x₀ (r - ε)) := by
   simpa using hf.neg.lipschitzOnWith_of_abs_le hε <| by simpa using hM
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ConvexOn.exists_lipschitzOnWith_of_isBounded (hf : ConvexOn ℝ (ball x₀ r) f) (hr : r' < r)
     (hf' : IsBounded (f '' ball x₀ r)) : ∃ K, LipschitzOnWith K f (ball x₀ r') := by
   rw [isBounded_iff_subset_ball 0] at hf'
@@ -85,6 +86,7 @@ lemma ConcaveOn.exists_lipschitzOnWith_of_isBounded (hf : ConcaveOn ℝ (ball x�
   replace hf' : IsBounded ((-f) '' ball x₀ r) := by convert hf'.neg; ext; simp [neg_eq_iff_eq_neg]
   simpa using hf.neg.exists_lipschitzOnWith_of_isBounded hr hf'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ConvexOn.isBoundedUnder_abs (hf : ConvexOn ℝ C f) {x₀ : E} (hC : C ∈ 𝓝 x₀) :
     (𝓝 x₀).IsBoundedUnder (· ≤ ·) |f| ↔ (𝓝 x₀).IsBoundedUnder (· ≤ ·) f := by
   refine ⟨fun h ↦ h.mono_le <| .of_forall fun x ↦ le_abs_self _, ?_⟩
@@ -110,6 +112,7 @@ lemma ConcaveOn.isBoundedUnder_abs (hf : ConcaveOn ℝ C f) {x₀ : E} (hC : C �
     (𝓝 x₀).IsBoundedUnder (· ≤ ·) |f| ↔ (𝓝 x₀).IsBoundedUnder (· ≥ ·) f := by
   simpa [Pi.neg_def, Pi.abs_def] using hf.neg.isBoundedUnder_abs hC
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ConvexOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : ConvexOn ℝ C f) : TFAE [
     LocallyLipschitzOn C f,
     ContinuousOn f C,

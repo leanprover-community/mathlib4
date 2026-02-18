@@ -35,7 +35,7 @@ In this file we prove Fubini's theorem.
 product measure, Fubini's theorem, Fubini-Tonelli theorem
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -161,8 +161,6 @@ theorem integrable_measure_prodMk_left {s : Set (α × β)} (hs : MeasurableSet 
   simp [ofReal_toReal, hx]
 
 end Measure
-
-open Measure
 
 end MeasureTheory
 
@@ -535,6 +533,7 @@ theorem integral_integral_swap ⦃f : α → β → E⦄ (hf : Integrable (uncur
     ∫ x, ∫ y, f x y ∂ν ∂μ = ∫ y, ∫ x, f x y ∂μ ∂ν :=
   (integral_integral hf).trans (integral_prod_symm _ hf)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Change the order of integration, when one of the integrals is an interval integral. -/
 lemma intervalIntegral_integral_swap {a b : ℝ} {f : ℝ → α → E}
     (h_int : Integrable (uncurry f) ((volume.restrict (Set.uIoc a b)).prod μ)) :

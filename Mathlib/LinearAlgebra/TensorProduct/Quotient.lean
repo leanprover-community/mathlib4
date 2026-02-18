@@ -47,6 +47,7 @@ variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 attribute [local ext high] ext LinearMap.prod_ext
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `M, N` be `R`-modules, `m ≤ M` and `n ≤ N` be an `R`-submodules. Then we have a linear
 isomorphism between tensor products of the quotients and the quotient of the tensor product:
@@ -160,7 +161,7 @@ noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
   (Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <| by
     rw [← LinearMap.range_comp, ← (Submodule.topEquiv.lTensor I).range_comp, Submodule.smul_eq_map₂,
       map₂_eq_range_lift_comp_mapIncl]
-    exact congr_arg _ (TensorProduct.ext' fun _ _ ↦ rfl))
+    exact congr_arg _ (TensorProduct.ext' fun _ _ ↦ by simp))
 
 variable (M) in
 /-- Right tensoring a module with a quotient of the ring is the same as

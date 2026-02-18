@@ -169,6 +169,7 @@ theorem dpow_comp {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A)) (hnI : I ^
     rw [dpow_eq_of_mem (dpow_mem hk hx), dpow_eq_of_mem hx, dpow_eq_of_mem hx,
       mul_pow, ← pow_mul, ← mul_assoc, mul_comm k, hxmk, mul_zero, mul_zero, mul_zero]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `(n-1)!` is invertible in `A` and `I^n = 0`, then `I` admits a divided power structure.
   Proposition 1.2.7 of [B74], part (ii). -/
 noncomputable def dividedPowers {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A))
@@ -261,6 +262,7 @@ variable [Algebra ℚ R]
 
 variable (I)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `I` is an ideal in a `ℚ`-algebra `A`, then `I` admits a unique divided power structure,
   given by `dpow n x = x ^ n / n!`. -/
 noncomputable def dividedPowers : DividedPowers I where
@@ -281,6 +283,7 @@ noncomputable def dividedPowers : DividedPowers I where
 lemma dpow_apply {n : ℕ} {x : R} :
     (dividedPowers I).dpow n x = if x ∈ I then inverse (n.factorial : R) * x ^ n else 0 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 omit [DecidablePred fun x ↦ x ∈ I] in
 /-- If `I` is an ideal in a `ℚ`-algebra `A`, then the divided power structure on `I` given by
   `dpow n x = x ^ n / n!` is the only possible one. -/

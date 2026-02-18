@@ -6,6 +6,7 @@ Authors: Michael Stoll
 module
 
 public meta import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
+public import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 
 /-!
 # A `norm_num` extension for Jacobi and Legendre symbols
@@ -97,6 +98,7 @@ theorem jacobiSymNat.mod_left (a b ab : ℕ) (r : ℤ) (hab : a % b = ab) (hr : 
     jacobiSymNat a b = r := by
   rw [← hr, jacobiSymNat, jacobiSymNat, _root_.jacobiSym.mod_left a b, ← hab]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The symbol vanishes when both entries are even (and `b / 2 ≠ 0`). -/
 theorem jacobiSymNat.even_even (a b : ℕ) (hb₀ : Nat.beq (b / 2) 0 = false) (ha : a % 2 = 0)
     (hb₁ : b % 2 = 0) : jacobiSymNat a b = 0 := by

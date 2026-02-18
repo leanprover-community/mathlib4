@@ -3,7 +3,7 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Action.Basic
@@ -72,6 +72,7 @@ instance OrderedSMul.toPosSMulStrictMono : PosSMulStrictMono R M where
 instance OrderedSMul.toPosSMulReflectLT : PosSMulReflectLT R M :=
   .of_pos fun _a ha _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h ha
 
+set_option backward.isDefEq.respectTransparency false in
 instance OrderDual.instOrderedSMul : OrderedSMul R Mᵒᵈ where
   smul_lt_smul_of_pos := OrderedSMul.smul_lt_smul_of_pos (M := M)
   lt_of_smul_lt_smul_of_pos := OrderedSMul.lt_of_smul_lt_smul_of_pos (M := M)

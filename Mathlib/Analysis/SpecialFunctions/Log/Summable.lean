@@ -11,12 +11,12 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Field
 /-!
 # Summability of logarithms
 
-We give conditions under which the logarithms of a summble sequence is summable. We also use this
+We give conditions under which the logarithms of a summable sequence are summable. We also use this
 to relate summability of `f` to multipliability of `1 + f`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Type*}
 
@@ -40,6 +40,7 @@ lemma cexp_tsum_eq_tprod (hfn : ∀ i, f i ≠ 0) (hf : Summable fun i ↦ log (
     cexp (∑' i, log (f i)) = ∏' i, f i :=
   (hasProd_of_hasSum_log hfn hf.hasSum).tprod_eq.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
     Summable (fun i ↦ log (1 + f i)) := by
   apply (hf.norm.mul_left (3 / 2)).of_norm_bounded_eventually
@@ -143,6 +144,7 @@ lemma prod_vanishing_of_summable_norm (hf : Summable fun i ↦ ‖f i‖) {ε : 
   have : Set.Iio ε ∈ nhds (f 0) := by simpa [f] using Iio_mem_nhds hε
   exact ContinuousAt.preimage_mem_nhds (by fun_prop) this
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- In a complete normed ring, `∏' i, (1 + f i)` is convergent if the sum of real numbers
 `∑' i, ‖f i‖` is convergent. -/

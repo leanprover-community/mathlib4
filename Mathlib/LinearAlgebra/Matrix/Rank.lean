@@ -147,6 +147,7 @@ theorem rank_one [Nontrivial R] [DecidableEq n] :
 theorem rank_zero [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
   rw [rank, mulVecLin_zero, LinearMap.range_zero, finrank_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cRank_zero {m n : Type*} [Nontrivial R] : cRank (0 : Matrix m n R) = 0 := by
   obtain hn | hn := isEmpty_or_nonempty n
@@ -159,8 +160,6 @@ theorem eRank_zero {m n : Type*} [Nontrivial R] : eRank (0 : Matrix m n R) = 0 :
 
 theorem rank_le_card_width [Nontrivial R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card n := by
-  haveI : Module.Finite R (n → R) := Module.Finite.pi
-  haveI : Module.Free R (n → R) := Module.Free.pi _ _
   exact A.mulVecLin.finrank_range_le.trans_eq (finrank_pi _)
 
 theorem rank_le_width [Nontrivial R] {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
@@ -293,8 +292,6 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
 
 theorem rank_le_card_height [Fintype m] [Nontrivial R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card m := by
-  haveI : Module.Finite R (m → R) := Module.Finite.pi
-  haveI : Module.Free R (m → R) := Module.Free.pi _ _
   exact (Submodule.finrank_le _).trans (finrank_pi R).le
 
 theorem rank_le_height [Nontrivial R] {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
@@ -463,6 +460,7 @@ lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
 
 end Matrix
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to `cRank` then deprecate
 theorem Matrix.rank_vecMulVec.{u} {K m n : Type u} [CommRing K] [Fintype n]
     [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by

@@ -25,7 +25,7 @@ public import Mathlib.RingTheory.Ideal.Norm.RelNorm
 
 -/
 
-@[expose] public section
+public section
 
 namespace NumberField
 
@@ -33,8 +33,9 @@ variable (K 𝒪 : Type*) [Field K] [NumberField K] [CommRing 𝒪] [Algebra �
 variable [IsFractionRing 𝒪 K] [IsIntegralClosure 𝒪 ℤ K] [IsDedekindDomain 𝒪] [CharZero 𝒪]
 variable [Module.Finite ℤ 𝒪]
 
-open nonZeroDivisors IntermediateField
+open nonZeroDivisors IntermediateField Module
 
+set_option backward.isDefEq.respectTransparency false in
 lemma absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).natAbs := by
   refine (differentIdeal ℤ 𝒪).toAddSubgroup.relIndex_top_right.symm.trans ?_
   rw [← Submodule.comap_map_eq_of_injective (f := Algebra.linearMap 𝒪 K)
@@ -84,7 +85,7 @@ attribute [local instance] FractionRing.liftAlgebra in
 theorem natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow (L 𝒪' : Type*) [Field L]
     [NumberField L] [CommRing 𝒪'] [Algebra 𝒪' L] [IsFractionRing 𝒪' L] [IsIntegralClosure 𝒪' ℤ L]
     [IsDedekindDomain 𝒪'] [CharZero 𝒪'] [Algebra K L] [Algebra 𝒪 𝒪'] [Algebra 𝒪 L]
-    [IsScalarTower 𝒪 K L] [IsScalarTower 𝒪 𝒪' L] [NoZeroSMulDivisors 𝒪 𝒪'] [Module.Free ℤ 𝒪']
+    [IsScalarTower 𝒪 K L] [IsScalarTower 𝒪 𝒪' L] [IsTorsionFree 𝒪 𝒪'] [Free ℤ 𝒪']
     [Module.Finite ℤ 𝒪'] [Module.Finite 𝒪 𝒪'] :
     (discr L).natAbs = Ideal.absNorm (differentIdeal 𝒪 𝒪') *
       (discr K).natAbs ^ Module.finrank K L := by
@@ -125,6 +126,7 @@ theorem discr_dvd_discr [Algebra K L] :
     mul_comm _ (discr K ^ _), mul_assoc]
   exact Int.dvd_mul_right _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `K₁` and `K₂` be two number fields and assume that `K₁/ℚ` is Galois. If `discr K₁` and
 `discr K₂` are coprime, then they are linear disjoint over `ℚ`.
@@ -143,6 +145,7 @@ theorem linearDisjoint_of_isGalois_isCoprime_discr (K₁ K₂ : IntermediateFiel
 
 open IntermediateField IsDedekindDomain
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `K₁` and `K₂` be two number fields and assume that their different ideals (over ℤ) are coprime.
 Then, the absolute value of the discriminant of their compositum is equal to

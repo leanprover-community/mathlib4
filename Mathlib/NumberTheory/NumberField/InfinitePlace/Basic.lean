@@ -47,31 +47,44 @@ number field, infinite places
 
 open scoped Finset Topology
 
-open NumberField Fintype Module
+namespace NumberField
 
-variable {k : Type*} [Field k] (K : Type*) [Field K] {F : Type*} [Field F]
+open Fintype Module
+
+variable (K : Type*) [Field K]
 
 /-- An infinite place of a number field `K` is a place associated to a complex embedding. -/
-def NumberField.InfinitePlace := { w : AbsoluteValue K ℝ // ∃ φ : K →+* ℂ, place φ = w }
+def InfinitePlace := { w : AbsoluteValue K ℝ // ∃ φ : K →+* ℂ, place φ = w }
 
-instance [Nonempty (K →+* ℂ)] : Nonempty (NumberField.InfinitePlace K) := Set.instNonemptyRange _
+instance [Nonempty (K →+* ℂ)] : Nonempty (InfinitePlace K) := Set.instNonemptyRange _
 
 variable {K}
 
 /-- Return the infinite place defined by a complex embedding `φ`. -/
-noncomputable def NumberField.InfinitePlace.mk (φ : K →+* ℂ) : NumberField.InfinitePlace K :=
+noncomputable def InfinitePlace.mk (φ : K →+* ℂ) : InfinitePlace K :=
   ⟨place φ, ⟨φ, rfl⟩⟩
 
-namespace NumberField.InfinitePlace
+/-- A predicate singling out infinite places among the absolute values on a number field `K`. -/
+def IsInfinitePlace (w : AbsoluteValue K ℝ) : Prop :=
+  ∃ φ : K →+* ℂ, place φ = w
 
-instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
+lemma InfinitePlace.isInfinitePlace (v : InfinitePlace K) : IsInfinitePlace v.val := by
+  simp [IsInfinitePlace, v.prop]
+
+lemma isInfinitePlace_iff (v : AbsoluteValue K ℝ) :
+    IsInfinitePlace v ↔ ∃ w : InfinitePlace K, w.val = v :=
+  ⟨fun H ↦ ⟨⟨v, H⟩, rfl⟩, fun ⟨w, hw⟩ ↦ hw ▸ w.isInfinitePlace⟩
+
+namespace InfinitePlace
+
+instance : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
   coe_injective' _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
 
-lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
+lemma coe_apply (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
 
 @[ext]
-lemma ext {K : Type*} [Field K] (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
+lemma ext (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
   Subtype.ext <| AbsoluteValue.ext h
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
@@ -348,6 +361,7 @@ theorem prod_eq_abs_norm (x : K) :
     simp_rw [Finset.prod_congr rfl (this _), Finset.prod_const, card_filter_mk_eq]
   · rw [eq_ratCast, Rat.cast_abs, ← Real.norm_eq_abs, ← Complex.norm_real, Complex.ofReal_ratCast]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
     (h : ∀ ⦃z⦄, z ≠ w → z a < 1) : 1 ≤ w a := by
   suffices (1 : ℝ) ≤ |Algebra.norm ℚ (a : K)| by
@@ -445,6 +459,7 @@ theorem card_add_two_mul_card_eq_rank :
     ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 The signature of the permutation on the complex embeddings of `K` defined by sending an embedding
@@ -498,7 +513,7 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
   | inr hnegone =>
     replace hζ' := hζ'.eq_orderOf
     simp only [show f ζ = -1 from Complex.ext (by simp [hnegone]) (by simp [him]),
-      orderOf_neg_one, ringChar.eq_zero, OfNat.zero_ne_ofNat, ↓reduceIte] at hζ'
+      orderOf_neg_one, ringChar.eq_zero] at hζ'
     lia
 
 end IsPrimitiveRoot
@@ -573,6 +588,7 @@ theorem isNontrivial : v.1.IsNontrivial := by
 
 variable {v} (K)
 
+set_option backward.isDefEq.respectTransparency false in
 open Filter in
 /--
 *Weak approximation for infinite places*

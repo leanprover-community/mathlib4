@@ -315,6 +315,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left,
         union_ae_eq_univ_of_ae_eq_univ_right]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A general version of **Dirichlet's approximation theorem**.
 
 See also `AddCircle.exists_norm_nsmul_le`. -/
@@ -323,7 +324,6 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     [MeasurableSpace A] [BorelSpace A] {μ : Measure A} [μ.IsAddHaarMeasure]
     (ξ : A) {n : ℕ} (hn : 0 < n) (δ : ℝ) (hδ : μ univ ≤ (n + 1) • μ (closedBall (0 : A) (δ / 2))) :
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ δ := by
-  have : IsFiniteMeasure μ := CompactSpace.isFiniteMeasure
   let B : Icc 0 n → Set A := fun j ↦ closedBall ((j : ℕ) • ξ) (δ / 2)
   have hB : ∀ j, IsClosed (B j) := fun j ↦ isClosed_closedBall
   suffices ¬ Pairwise (Disjoint on B) by
@@ -342,10 +342,10 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
       B, μ.addHaar_closedBall_center, Finset.sum_const, Finset.card_univ, Fintype.card_Icc,
       Nat.card_Icc, tsub_zero]
     exact hδ
-  replace hδ : 0 ≤ δ/2 := by
+  replace hδ : 0 ≤ δ / 2 := by
     by_contra contra
     refine (isOpen_univ.measure_pos μ univ_nonempty).not_ge <| hδ.trans ?_
-    suffices μ (closedBall 0 (δ/2)) = 0 by simp [this]
+    suffices μ (closedBall 0 (δ / 2)) = 0 by simp [this]
     rw [not_le, ← closedBall_eq_empty (x := (0 : A))] at contra
     simp [contra]
   have h'' : ∀ j, (B j).Nonempty := by intro j; rwa [nonempty_closedBall]

@@ -30,9 +30,9 @@ As a consequence, a Gaussian measure has finite moments of all orders.
 
 -/
 
-@[expose] public section
+public section
 
-open MeasureTheory ProbabilityTheory Complex NormedSpace
+open MeasureTheory ProbabilityTheory Complex
 open scoped ENNReal NNReal Real Topology
 
 namespace ProbabilityTheory.IsGaussian
@@ -42,6 +42,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 
 section Rotation
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Characteristic function of a centered Gaussian measure.
 For a Gaussian measure, the hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` is equivalent to the simpler
 `μ[id] = 0`, but at this point we don't know yet that `μ` has a first moment so we can't use it.
@@ -72,7 +73,7 @@ lemma map_rotation_eq_self_of_forall_strongDual_eq_zero
     simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.inl_apply,
       ContinuousLinearMap.rotation_apply, smul_zero, add_zero]
     rw [← L.comp_inl_add_comp_inr]
-    simp [- neg_smul, sub_eq_add_neg]
+    simp [-neg_smul, sub_eq_add_neg]
   have h2 : (L.comp (.rotation θ)).comp (.inr ℝ E E)
       = Real.sin θ • L.comp (.inl ℝ E E) + Real.cos θ • L.comp (.inr ℝ E E) := by
     ext x
@@ -105,7 +106,7 @@ lemma integral_dual_conv_map_neg_eq_zero (L : StrongDual ℝ E) :
   _ = ∫ x, L x + ∫ y, L y ∂μ.map (ContinuousLinearEquiv.neg ℝ) ∂μ := by
     congr with x
     rw [integral_add (by fun_prop) (by fun_prop)]
-    simp [- ContinuousLinearEquiv.coe_neg, integral_const, smul_eq_mul]
+    simp [-ContinuousLinearEquiv.coe_neg, integral_const, smul_eq_mul]
   _ = ∫ x, L x ∂μ + ∫ y, L y ∂μ.map (ContinuousLinearEquiv.neg ℝ) := by
     rw [integral_add (by fun_prop) (by fun_prop)]
     simp
@@ -121,7 +122,7 @@ lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ
       (μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ))))
     (hC'_pos : 0 < C') (hC'_lt : C' < C) :
     Integrable (fun x ↦ rexp (C' * ‖x‖ ^ 2)) μ := by
-  have h_int : ∀ᵐ y ∂μ, Integrable (fun x ↦ rexp (C * ‖x - y‖^2)) μ := by
+  have h_int : ∀ᵐ y ∂μ, Integrable (fun x ↦ rexp (C * ‖x - y‖ ^ 2)) μ := by
     rw [integrable_conv_iff (by fun_prop)] at hint
     replace hC := hint.1
     simp only [ContinuousLinearEquiv.coe_neg] at hC
@@ -135,9 +136,9 @@ lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ
   obtain ⟨y, hy⟩ : ∃ y, Integrable (fun x ↦ rexp (C * ‖x - y‖ ^ 2)) μ := h_int.exists
   let ε := (C - C') / C'
   have hε : 0 < ε := div_pos (by rwa [sub_pos]) (by positivity)
-  suffices ∀ x, rexp (C' * ‖x‖ ^ 2) ≤ rexp (C/ε * ‖y‖ ^ 2) * rexp (C * ‖x - y‖ ^ 2) by
+  suffices ∀ x, rexp (C' * ‖x‖ ^ 2) ≤ rexp (C / ε * ‖y‖ ^ 2) * rexp (C * ‖x - y‖ ^ 2) by
     refine integrable_of_le_of_le (g₁ := 0)
-      (g₂ := fun x ↦ rexp (C/ε * ‖y‖ ^ 2) * rexp (C * ‖x - y‖ ^ 2)) (by fun_prop) ?_ ?_
+      (g₂ := fun x ↦ rexp (C / ε * ‖y‖ ^ 2) * rexp (C * ‖x - y‖ ^ 2)) (by fun_prop) ?_ ?_
       (integrable_const _) (hy.const_mul _)
     · exact ae_of_all _ fun _ ↦ by positivity
     · exact ae_of_all _ this
@@ -147,7 +148,7 @@ lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ
   have h_le : ‖x‖ ^ 2 ≤ (1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2 := by
     calc ‖x‖ ^ 2
     _ = ‖x - y + y‖ ^ 2 := by simp
-    _ ≤ (‖x - y‖  + ‖y‖) ^ 2 := by grw [norm_add_le (x - y) y]
+    _ ≤ (‖x - y‖ + ‖y‖) ^ 2 := by grw [norm_add_le (x - y) y]
     _ = ‖x - y‖ ^ 2 + ‖y‖ ^ 2 + 2 * ‖x - y‖ * ‖y‖ := by ring
     _ ≤ ‖x - y‖ ^ 2 + ‖y‖ ^ 2 + ε * ‖x - y‖ ^ 2 + ε⁻¹ * ‖y‖ ^ 2 := by
       simp_rw [add_assoc]
@@ -158,6 +159,7 @@ lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ
   _ ≤ C' * ((1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2) := by gcongr
   _ = C / ε * ‖y‖ ^ 2 + C * ‖x - y‖ ^ 2 := by grind
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Fernique's theorem**: for a Gaussian measure, there exists `C > 0` such that the function
 `x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
 theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian μ] :
@@ -214,6 +216,7 @@ lemma memLp_two_fun_id : MemLp (fun x ↦ x) 2 μ := memLp_two_id
 lemma integral_dual (L : StrongDual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
   L.integral_comp_comm ((memLp_id μ 1 (by simp)).integrable le_rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A Gaussian measure with variance zero is a Dirac. -/
 lemma eq_dirac_of_variance_eq_zero (h : ∀ L : StrongDual ℝ E, Var[L; μ] = 0) :
     μ = Measure.dirac (∫ x, x ∂μ) := by

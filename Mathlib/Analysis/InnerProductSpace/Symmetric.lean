@@ -89,6 +89,10 @@ theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.Is
   intro x y
   rw [add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right, add_apply]
 
+theorem isSymmetric_sum {ι : Type*} {T : ι → (E →ₗ[𝕜] E)} (s : Finset ι)
+    (hT : ∀ i ∈ s, (T i).IsSymmetric) : (∑ i ∈ s, T i).IsSymmetric := fun _ _ ↦ by
+  simpa [sum_inner, inner_sum] using Finset.sum_congr rfl fun _ hi ↦ hT _ hi _ _
+
 @[aesop safe apply]
 theorem IsSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T - S).IsSymmetric := by
@@ -219,6 +223,15 @@ theorem isSymmetric_linearIsometryEquiv_conj_iff {F : Type*} [SeminormedAddCommG
   · simp [LinearIsometryEquiv.inner_map_eq_flip, h _ (f.symm y)]
 
 end LinearMap
+
+@[simp] theorem InnerProductSpace.isSymmetric_rankOne_self (x : E) :
+    (rankOne 𝕜 x x).IsSymmetric := fun _ _ ↦ by simp [inner_smul_left, inner_smul_right, mul_comm]
+
+open ContinuousLinearMap in
+theorem InnerProductSpace.isSymmetricProjection_rankOne_self {x : E} (hx : ‖x‖ = 1) :
+    (rankOne 𝕜 x x).IsSymmetricProjection where
+  isSymmetric := isSymmetric_rankOne_self x
+  isIdempotentElem := isIdempotentElem_rankOne_self hx |>.toLinearMap
 
 theorem LinearMap.IsSymmetric.toLinearMap_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsSymmetric) :
     T.symm.IsSymmetric := fun x y ↦ by simpa using hT (T.symm x) (T.symm y) |>.symm

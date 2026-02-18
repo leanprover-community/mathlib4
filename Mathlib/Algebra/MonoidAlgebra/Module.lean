@@ -6,13 +6,8 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 module
 
 public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.Algebra.MonoidAlgebra.Lift
-public import Mathlib.LinearAlgebra.Finsupp.LSum
-public import Mathlib.LinearAlgebra.Span.Defs
-
-import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.LinearAlgebra.Finsupp.Supported
+public import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Module structure on monoid algebras
@@ -34,6 +29,7 @@ assert_not_exists NonUnitalAlgHom AlgEquiv
 noncomputable section
 
 open Finsupp hiding single
+open Module
 
 universe u₁ u₂ u₃ u₄
 
@@ -49,11 +45,6 @@ section SMul
 
 variable {S : Type*}
 
-@[to_additive (dont_translate := R) noZeroSMulDivisors]
-instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
-    NoZeroSMulDivisors R k[G] :=
-  Finsupp.noZeroSMulDivisors
-
 @[to_additive (dont_translate := R) distribMulAction]
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R k[G] :=
@@ -63,10 +54,24 @@ instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
 instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
   Finsupp.module G k
 
+@[to_additive (dont_translate := R)]
+instance instIsTorsionFree [Semiring R] [Semiring k] [Module R k] [Module.IsTorsionFree R k] :
+    Module.IsTorsionFree R (MonoidAlgebra k G) := Finsupp.moduleIsTorsionFree
+
 @[to_additive (dont_translate := R) faithfulSMul]
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
     FaithfulSMul R k[G] :=
   Finsupp.faithfulSMul
+
+/-- The standard basis for a monoid algebra. -/
+@[to_additive /-- The standard basis for an additive monoid algebra. -/]
+def basis (R k) [Semiring k] : Module.Basis R k (MonoidAlgebra k R) where
+  repr := LinearEquiv.refl k (R →₀ k)
+
+@[to_additive (dont_translate := k) (attr := simp)]
+lemma basis_apply (k) [Semiring k] (r : R) :
+    MonoidAlgebra.basis R k r = MonoidAlgebra.single r 1 :=
+  rfl
 
 /-- This is not an instance as it conflicts with `MonoidAlgebra.distribMulAction` when `G = kˣ`.
 
@@ -90,14 +95,14 @@ section ExtLemmas
 variable [Semiring k]
 
 /-- `MonoidAlgebra.single` as a `DistribMulActionHom`. -/
-@[to_additive (dont_translate := R) (relevant_arg := G) singleDistribMulActionHom
+@[to_additive (dont_translate := R) singleDistribMulActionHom
 /-- `AddMonoidAlgebra.single` as a `DistribMulActionHom`. -/]
 def singleDistribMulActionHom [Monoid R] [DistribMulAction R k] (a : G) : k →+[R] k[G] where
   __ := singleAddHom a
   map_smul' k m := by simp
 
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `MonoidAlgebra`. -/
-@[to_additive (dont_translate := R) (relevant_arg := N) (attr := ext) distribMulActionHom_ext'
+@[to_additive (dont_translate := R) (attr := ext) distribMulActionHom_ext'
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `AddMonoidAlgebra`. -/]
 theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMulAction R N]
     [DistribMulAction R k] {f g : k[G] →+[R] N}
@@ -106,8 +111,7 @@ theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMu
   Finsupp.distribMulActionHom_ext' h
 
 /-- A copy of `Finsupp.lsingle` for `MonoidAlgebra`. -/
-@[to_additive (dont_translate := R) (relevant_arg := G)
-/-- A copy of `Finsupp.lsingle` for `AddMonoidAlgebra`. -/]
+@[to_additive (dont_translate := R) /-- A copy of `Finsupp.lsingle` for `AddMonoidAlgebra`. -/]
 abbrev lsingle [Semiring R] [Module R k] (a : G) : k →ₗ[R] k[G] := Finsupp.lsingle a
 
 @[to_additive (attr := simp)]
@@ -158,11 +162,13 @@ section NonUnitalNonAssocAlgebra
 
 variable (k) [Semiring k] [DistribSMul R k] [Mul G]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R k) isScalarTower_self]
 instance isScalarTower_self [IsScalarTower R k k] : IsScalarTower R k[G] k[G] where
   smul_assoc t a b := by
     classical ext; simp [mul_apply, sum_smul_index' (b := t), smul_sum, smul_mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Note that if `k` is a `CommSemiring` then we have `SMulCommClass k k k` and so we can take
 `R = k` in the below. In other words, if the coefficients are commutative amongst themselves, they
 also commute with the algebra multiplication. -/
@@ -191,6 +197,7 @@ variable [CommSemiring k] [Monoid G]
 variable {V : Type*} [AddCommMonoid V]
 variable [Module k V] [Module k[G] V] [IsScalarTower k k[G] V]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A submodule over `k` which is stable under scalar multiplication by elements of `G` is a
 submodule over `k[G]` -/
 def submoduleOfSMulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W → of k G g • v ∈ W) :
@@ -222,6 +229,7 @@ variable [Semiring R] [Semiring S]
 lemma of'_mem_span [Nontrivial R] {m : M} {s : Set M} :
     of' R M m ∈ Submodule.span R (of' R M '' s) ↔ m ∈ s := single_mem_span_single _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the image of an element `m : M` in `R[M]` belongs the submodule generated by
 the closure of some `s : Set M` then `m ∈ closure s`. -/
 lemma mem_closure_of_mem_span_closure [AddMonoid M] [Nontrivial R] {m : M} {s : Set M}

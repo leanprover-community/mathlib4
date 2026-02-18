@@ -74,7 +74,7 @@ theorem continuous_circleTransform {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w :
     Continuous (circleTransform R z w f) := by
   apply_rules [Continuous.smul, continuous_const]
   · rw [funext <| deriv_circleMap _ _]
-    apply_rules [Continuous.mul, continuous_circleMap 0 R, continuous_const]
+    fun_prop
   · exact continuous_circleMap_inv hw
   · apply ContinuousOn.comp_continuous hf (continuous_circleMap z R)
     exact fun _ => (circleMap_mem_sphere _ hR.le) _
@@ -120,6 +120,7 @@ theorem norm_circleTransformBoundingFunction_le {R r : ℝ} (hr : r < R) (hr' : 
   have := IsCompact.exists_isMaxOn comp none (cts.mono <| prod_mono_right (subset_univ _))
   simpa [isMaxOn_iff] using this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The derivative of a `circleTransform` is locally bounded. -/
 theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ → ℂ} (hx : x ∈ ball z R)
     (hf : ContinuousOn f (sphere z R)) : ∃ B ε : ℝ, 0 < ε ∧

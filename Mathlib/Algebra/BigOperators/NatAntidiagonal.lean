@@ -14,7 +14,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 This file contains theorems relevant to big operators over `Finset.NatAntidiagonal`.
 -/
 
-@[expose] public section
+public section
 
 variable {M N : Type*} [CommMonoid M] [AddCommMonoid N]
 
@@ -31,6 +31,7 @@ theorem sum_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → N} :
     (∑ p ∈ antidiagonal (n + 1), f p) = f (0, n + 1) + ∑ p ∈ antidiagonal n, f (p.1 + 1, p.2) :=
   @prod_antidiagonal_succ (Multiplicative N) _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem prod_antidiagonal_swap {n : ℕ} {f : ℕ × ℕ → M} :
     ∏ p ∈ antidiagonal n, f p.swap = ∏ p ∈ antidiagonal n, f p := by

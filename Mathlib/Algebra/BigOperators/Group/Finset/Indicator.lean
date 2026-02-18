@@ -13,7 +13,7 @@ public import Mathlib.Order.CompleteLattice.Finset
 # Interaction of big operators with indicator functions
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 
@@ -21,6 +21,7 @@ variable {ι κ α β : Type*} [CommMonoid β]
 
 open Set
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Consider a product of `g i (f i)` over a finset.  Suppose `g` is a function such as
 `n ↦ (· ^ n)`, which maps a second argument of `1` to `1`. Then if `f` is replaced by the
 corresponding multiplicative indicator function, the finset may be replaced by a possibly larger

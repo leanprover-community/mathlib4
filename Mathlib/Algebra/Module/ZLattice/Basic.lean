@@ -265,6 +265,7 @@ theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
   · exact (vadd_mem_fundamentalDomain b (-floor b x) x).mpr rfl
   · exact (vadd_mem_fundamentalDomain b y x).mp h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `ZSpan.fractRestrict` defines an equiv map between `E ⧸ span ℤ (Set.range b)`
 and `ZSpan.fundamentalDomain b`. -/
 def quotientEquiv [Fintype ι] :
@@ -296,6 +297,7 @@ end NormedLatticeField
 
 section Real
 
+set_option backward.isDefEq.respectTransparency false in
 theorem discreteTopology_pi_basisFun [Finite ι] :
     DiscreteTopology (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
   cases nonempty_fintype ι
@@ -346,6 +348,7 @@ theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpac
     simp only [D, fundamentalDomain, Set.mem_Ico, Set.mem_setOf_eq, LinearEquiv.coe_coe,
       Set.mem_preimage, Basis.equivFun_apply, Set.mem_pi, Set.mem_univ, forall_true_left]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that the set defined
 by `ZSpan.fundamentalDomain` is a fundamental domain. -/
 protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensMeasurableSpace E]
@@ -361,6 +364,7 @@ protected theorem isAddFundamentalDomain' [Finite ι] [MeasurableSpace E] [Opens
     IsAddFundamentalDomain (span ℤ (Set.range b)).toAddSubgroup (fundamentalDomain b) μ :=
   ZSpan.isAddFundamentalDomain b μ
 
+set_option backward.isDefEq.respectTransparency false in
 theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [BorelSpace E]
     {μ : Measure E} [Measure.IsAddHaarMeasure μ] :
     μ (fundamentalDomain b) ≠ 0 := by
@@ -376,6 +380,7 @@ theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace
       Basis.map_equiv, Equiv.refl_symm, Basis.reindex_refl]
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem measureReal_fundamentalDomain
     [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :
@@ -390,6 +395,7 @@ theorem volume_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ
     mul_one, ← Matrix.det_transpose]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem volume_real_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ (ι → ℝ)) :
     volume.real (fundamentalDomain b) = |(Matrix.of b).det| := by
@@ -462,7 +468,7 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
       exact span_mono (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, subset_rfl]))
     rw [show span ℤ s = span ℤ (Set.range b) by simp [b, Basis.coe_mk, Subtype.range_coe_subtype]]
     have : Fintype s := h_lind.setFinite.fintype
-    refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ quotientEquiv b) ?_
+    refine Set.Finite.of_finite_image (f := ((↑) : _ → E) ∘ quotientEquiv b) ?_
       (Function.Injective.injOn (Subtype.coe_injective.comp (quotientEquiv b).injective))
     have : ((fundamentalDomain b) ∩ L).Finite := by
       change ((fundamentalDomain b) ∩ L.toAddSubgroup).Finite
@@ -483,11 +489,10 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
     exact fg_span (LinearIndependent.setFinite h_lind)
 
-@[deprecated (since := "2025-08-11")] alias Zlattice.FG := ZLattice.FG
-
 theorem ZLattice.module_finite [IsZLattice K L] : Module.Finite ℤ L :=
-  Module.Finite.iff_fg.mpr (ZLattice.FG K L)
+  .of_fg (ZLattice.FG K L)
 
+set_option backward.isDefEq.respectTransparency false in
 instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
     Module.Finite ℤ L := by
@@ -509,12 +514,14 @@ instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup 
       Submodule.map_top, range_subtype, h_img]⟩
   exact ZLattice.module_finite ℝ L₀
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ZLattice.module_free [IsZLattice K L] : Module.Free ℤ L := by
   have : Module.Finite ℤ L := module_finite K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   have : IsAddTorsionFree E := .of_module_rat _
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
     Module.Free ℤ L := by
@@ -522,6 +529,7 @@ instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
   have : IsAddTorsionFree E := .of_module_rat _
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
@@ -608,21 +616,24 @@ variable {ι : Type*} [hs : IsZLattice K L] (b : Basis ι ℤ L)
 
 namespace Module.Basis
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any `ℤ`-basis of `L` is also a `K`-basis of `E`. -/
 def ofZLatticeBasis : Basis ι K E := by
   have : Module.Finite ℤ L := ZLattice.module_finite K L
   have : Free ℤ L := ZLattice.module_free K L
-  let e :=  (Free.chooseBasis ℤ L).indexEquiv  b
+  let e := (Free.chooseBasis ℤ L).indexEquiv b
   have : Fintype ι := Fintype.ofEquiv _ e
   refine basisOfTopLeSpanOfCardEqFinrank (L.subtype ∘ b) ?_ ?_
   · rw [← span_span_of_tower ℤ, Set.range_comp, ← map_span, Basis.span_eq, Submodule.map_top,
       range_subtype, top_le_iff, hs.span_top]
   · rw [← Fintype.card_congr e, ← finrank_eq_card_chooseBasisIndex, ZLattice.rank K L]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofZLatticeBasis_apply (i : ι) : b.ofZLatticeBasis K L i = b i := by
   simp [Basis.ofZLatticeBasis]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofZLatticeBasis_repr_apply (x : L) (i : ι) :
     (b.ofZLatticeBasis K L).repr x i = b.repr x i := by
@@ -634,6 +645,7 @@ theorem ofZLatticeBasis_repr_apply (x : L) (i : ι) :
     LinearEquiv.coe_coe, coe_subtype, ← b.ofZLatticeBasis_apply K, repr_self,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofZLatticeBasis_span : span ℤ (Set.range (b.ofZLatticeBasis K)) = L := by
   calc span ℤ (Set.range (b.ofZLatticeBasis K))
     _ = span ℤ (L.subtype '' Set.range b) := by congr; ext; simp
@@ -650,12 +662,14 @@ theorem ZLattice.isAddFundamentalDomain {E : Type*} [NormedAddCommGroup E] [Norm
   convert ZSpan.isAddFundamentalDomain (b.ofZLatticeBasis ℝ) μ
   all_goals exact (b.ofZLatticeBasis_span ℝ).symm
 
+set_option backward.isDefEq.respectTransparency false in
 instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] :
     Countable L := by
   simp_rw [← (Module.Free.chooseBasis ℤ L).ofZLatticeBasis_span ℝ]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Assume that the set `s` spans over `ℤ` a discrete set. Then its `ℝ`-rank is equal to its `ℤ`-rank.
 -/
@@ -680,6 +694,7 @@ section Basis
 
 variable {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι → ℝ)) [DiscreteTopology L] [IsZLattice ℝ L]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Return an arbitrary `ℤ`-basis of a lattice `L` of `ι → ℝ` indexed by `ι`.
 -/
@@ -701,10 +716,10 @@ protected def ZLattice.comap (e : F →ₗ[K] E) := L.comap (e.restrictScalars �
 
 @[simp]
 theorem ZLattice.coe_comap (e : F →ₗ[K] E) :
-    (ZLattice.comap K L e : Set F) = e⁻¹' L := rfl
+    (ZLattice.comap K L e : Set F) = e ⁻¹' L := rfl
 
 theorem ZLattice.comap_refl :
-    ZLattice.comap K L (1 : E →ₗ[K] E)= L := Submodule.comap_id L
+    ZLattice.comap K L (1 : E →ₗ[K] E) = L := Submodule.comap_id L
 
 theorem ZLattice.comap_discreteTopology [hL : DiscreteTopology L] {e : F →ₗ[K] E}
     (he₁ : Continuous e) (he₂ : Function.Injective e) :
@@ -779,6 +794,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] [FiniteDimensional
   [ProperSpace F]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice K L]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Module.Basis.ofZLatticeBasis_comap (e : F ≃L[K] E) {ι : Type*} (b : Basis ι ℤ L) :
     (b.ofZLatticeComap K L e.toLinearEquiv).ofZLatticeBasis K (ZLattice.comap K L e.toLinearMap) =
     (b.ofZLatticeBasis K L).map e.symm.toLinearEquiv := by
@@ -786,5 +802,22 @@ theorem Module.Basis.ofZLatticeBasis_comap (e : F ≃L[K] E) {ι : Type*} (b : B
   simp
 
 end NormedLinearOrderedField_comap
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `f` is periodic wrt a ℤ-lattice, then the range of `f` is compact. -/
+lemma IsZLattice.isCompact_range_of_periodic
+    {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [TopologicalSpace F]
+    (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] (f : E → F) (hf : Continuous f)
+    (hf' : ∀ z w, w ∈ L → f (z + w) = f z) : IsCompact (Set.range f) := by
+  have := ZLattice.module_free ℝ L
+  let b := Module.Free.chooseBasis ℤ L
+  convert (b.ofZLatticeBasis ℝ).parallelepiped.isCompact.image hf
+  refine le_antisymm ?_ (Set.image_subset_range _ _)
+  rintro _ ⟨x, rfl⟩
+  let x' : L := b.repr.symm (Finsupp.equivFunOnFinite.symm
+    fun i ↦ ⌊(b.ofZLatticeBasis ℝ).repr x i⌋)
+  refine ⟨x + (- x'), ?_, hf' _ _ (- x').2⟩
+  simp [parallelepiped_basis_eq, x', Int.floor_le, Int.lt_floor_add_one, le_of_lt, add_comm (1 : ℝ)]
 
 end ZLattice

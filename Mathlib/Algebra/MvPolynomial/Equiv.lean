@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Fin
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Data.Finsupp.Option
 public import Mathlib.Logic.Equiv.Fin.Basic
 
@@ -291,6 +290,12 @@ def sumRingEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃+* MvPolynomial S₁ (MvPol
   · ext1; simp only [RingHom.comp_apply, sumToIter_C, iterToSum_C_C]
   · rintro ⟨⟩ <;> simp only [sumToIter_Xl, iterToSum_X, sumToIter_Xr, iterToSum_C_X]
 
+@[simp] lemma iterToSum_sumToIter (p) :
+    iterToSum R S₁ S₂ (sumToIter R S₁ S₂ p) = p := (sumRingEquiv _ _ _).symm_apply_apply _
+
+@[simp] lemma sumToIter_iterToSum (p) :
+    sumToIter R S₁ S₂ (iterToSum R S₁ S₂ p) = p := (sumRingEquiv _ _ _).apply_symm_apply _
+
 /-- The algebra isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.
@@ -435,6 +440,7 @@ theorem mem_support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : 
     m ∈ ((optionEquivLeft R σ f).coeff i).support ↔ m.optionElim i ∈ f.support := by
   simp [← optionEquivLeft_coeff_some_coeff_none]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma support_optionEquivLeft (p : MvPolynomial (Option σ) R) :
     (optionEquivLeft R σ p).support = Finset.image (fun m => m none) p.support := by
   ext i
@@ -648,6 +654,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
   · rw [← mem_support_coeff_finSuccEquiv]
     exact hσ1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ => m 0) f.support := by
   ext i
@@ -661,6 +668,7 @@ theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     refine ⟨tail m, ?_⟩
     rwa [← coeff, zero_apply, ← mem_support_iff, mem_support_coeff_finSuccEquiv, cons_tail]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {x} :
     x ∈ (finSuccEquiv R n f).support ↔ x ∈ (fun m : Fin (n + 1) →₀ _ ↦ m 0) '' f.support := by
   simpa using congr(x ∈ $(support_finSuccEquiv f))
@@ -680,6 +688,7 @@ theorem image_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} 
     rw [← h.2, cons_tail]
     simp [h.1]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_image_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {x} :
     x ∈ Finsupp.cons i '' ((finSuccEquiv R n f).coeff i).support ↔
       x ∈ f.support ∧ x 0 = i := by

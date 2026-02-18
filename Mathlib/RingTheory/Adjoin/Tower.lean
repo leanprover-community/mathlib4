@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.Adjoin.FG
   C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
 -/
 
-@[expose] public section
+public section
 
 
 open Pointwise
@@ -141,6 +141,7 @@ section Ring
 variable [CommRing A] [CommRing B] [CommRing C]
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and
 A is Noetherian, and C is algebra-finite over A, and C is module-finite over B,
 then B is algebra-finite over A.

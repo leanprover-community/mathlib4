@@ -19,7 +19,7 @@ This file contains basic results on the natural-valued floor and ceiling functio
 rounding, floor, ceil
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -80,12 +80,15 @@ lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b ≤ a) : ⌈a⌉
     · positivity
   · exact (ceil_lt_mul hb hba).le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma div_two_lt_floor (ha : 1 ≤ a) : a / 2 < ⌊a⌋₊ := by
   rw [div_eq_inv_mul]; refine mul_lt_floor ?_ ?_ ?_ <;> norm_num; assumption
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ceil_lt_two_mul (ha : 2⁻¹ < a) : ⌈a⌉₊ < 2 * a :=
   ceil_lt_mul one_lt_two (by norm_num at ha ⊢; exact ha)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ceil_le_two_mul (ha : 2⁻¹ ≤ a) : ⌈a⌉₊ ≤ 2 * a :=
   ceil_le_mul one_lt_two (by norm_num at ha ⊢; exact ha)
 

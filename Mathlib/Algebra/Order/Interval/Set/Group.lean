@@ -14,7 +14,7 @@ public import Mathlib.Logic.Pairwise
 
 /-! ### Lemmas about arithmetic operations and intervals. -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}
@@ -154,6 +154,7 @@ section OrderedCommGroup
 
 variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] (a b : α)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem pairwise_disjoint_Ioc_mul_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ioc (a * b ^ n) (a * b ^ (n + 1))) := by
@@ -169,6 +170,7 @@ theorem pairwise_disjoint_Ioc_mul_zpow :
   rw [mul_lt_mul_iff_left, zpow_lt_zpow_iff_right hb, Int.lt_add_one_iff] at i1 i2
   exact le_antisymm i1 i2
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem pairwise_disjoint_Ico_mul_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ico (a * b ^ n) (a * b ^ (n + 1))) := by

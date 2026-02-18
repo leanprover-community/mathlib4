@@ -37,7 +37,7 @@ Gauss's Lemma is one of a few results pertaining to irreducibility of primitive 
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped nonZeroDivisors Polynomial
@@ -54,6 +54,7 @@ open IsIntegrallyClosed
 
 variable (K : Type*) [Field K] [Algebra R K]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) {g : K[X]}
     (hg : g.Monic) (hd : g ∣ f.map (algebraMap R K)) :
     g ∈ lifts (algebraMap (integralClosure R K) K) := by

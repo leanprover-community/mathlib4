@@ -114,6 +114,7 @@ theorem tendsto_smoothingFun_of_eq_zero {x : R} (hx : μ x = 0) :
       (le_ciInf fun n => rpow_nonneg (apply_nonneg μ _) _)
   simpa only [hL0] using tendsto_atTop_of_eventually_const h0
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `μ 1 ≤ 1` and `μ x ≠ 0`, then `smoothingFun μ x` is the limit of
 `smoothingSeminormSeq μ x`. -/
 theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x ≠ 0) :
@@ -291,6 +292,7 @@ private theorem mu_property (n : ℕ) : μ ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ
 private theorem mu_le (n : ℕ) : mu μ hn n ≤ n := by
   simpa [mu] using (Classical.choose_spec (hn n)).1
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem mu_bdd (n : ℕ) : (mu μ hn n : ℝ) / n ∈ Set.Icc (0 : ℝ) 1 := by
   refine Set.mem_Icc.mpr ⟨div_nonneg (cast_nonneg (mu μ hn n)) (cast_nonneg n), ?_⟩
   by_cases hn0 : n = 0
@@ -515,6 +517,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
 
 end IsNonarchimedean
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun` is a ring seminorm. -/
 def smoothingSeminorm (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) : RingSeminorm R where
   toFun     := smoothingFun μ
@@ -527,7 +530,7 @@ def smoothingSeminorm (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) : RingSemi
     simp only [smoothingSeminormSeq]
     rw [zero_pow (pos_iff_ne_zero.mp hn), map_zero, zero_rpow]
     exact one_div_ne_zero (cast_ne_zero.mpr (one_le_iff_ne_zero.mp hn))
-  add_le' _ _ :=  (isNonarchimedean_smoothingFun μ hμ1 hna).add_le (smoothingFun_nonneg μ hμ1)
+  add_le' _ _ := (isNonarchimedean_smoothingFun μ hμ1 hna).add_le (smoothingFun_nonneg μ hμ1)
   neg' n := by
     simp only [smoothingFun]
     congr
@@ -551,6 +554,7 @@ theorem smoothingSeminorm_map_one_le_one (hμ1 : μ 1 ≤ 1)
     (hna : IsNonarchimedean μ) : smoothingSeminorm μ hμ1 hna 1 ≤ 1 :=
   smoothingFun_one_le μ hμ1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun μ` is
   power-multiplicative. -/
 theorem isPowMul_smoothingFun (hμ1 : μ 1 ≤ 1) : IsPowMul (smoothingFun μ) := by

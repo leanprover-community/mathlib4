@@ -150,7 +150,7 @@ lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
 -/
 
 
-section Edist
+section EDist
 
 variable [∀ i, EDist (β i)]
 
@@ -180,9 +180,9 @@ theorem edist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p β) :
 
 theorem edist_eq_iSup (f g : PiLp ∞ β) : edist f g = ⨆ i, edist (f i) (g i) := rfl
 
-end Edist
+end EDist
 
-section EdistProp
+section EDistProp
 
 variable {β}
 variable [∀ i, PseudoEMetricSpace (β i)]
@@ -203,7 +203,7 @@ protected theorem edist_comm (f g : PiLp p β) : edist f g = edist g f := by
   · simp only [edist_eq_iSup, edist_comm]
   · simp only [edist_eq_sum h, edist_comm]
 
-end EdistProp
+end EDistProp
 
 section Dist
 
@@ -298,6 +298,7 @@ with the product one. Therefore, we do not register it as an instance. Using thi
 pseudoemetric space instance, we will show that the uniform structure is equal (but not defeq) to
 the product one, and then register an instance in which we replace the uniform structure by the
 product one using this pseudoemetric space and `PseudoEMetricSpace.replaceUniformity`. -/
+@[instance_reducible]
 def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
   edist_self := PiLp.edist_self p
   edist_comm := PiLp.edist_comm p
@@ -787,6 +788,7 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_apply (e : ι ≃ ι') (v : PiL
     LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e v = Equiv.piCongrLeft' (fun _ : ι => E) e v :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
     (LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e).symm =
@@ -908,7 +910,7 @@ def sumPiLpEquivProdLpPiLp :
       ≪≫ₗ LinearEquiv.sumPiEquivProdPi _ _ _ α
       ≪≫ₗ LinearEquiv.prodCongr (WithLp.linearEquiv p _ _).symm
         (WithLp.linearEquiv _ _ _).symm
-      ≪≫ₗ (WithLp.linearEquiv  p _ _).symm
+      ≪≫ₗ (WithLp.linearEquiv p _ _).symm
   norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
     obtain rfl | hp := p.dichotomy
     · simp [← Finset.univ_disjSum_univ, Finset.sup_disjSum, Pi.norm_def]
@@ -924,6 +926,7 @@ section Single
 variable (p)
 variable [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnnorm_toLp_single (i : ι) (b : β i) :
     ‖toLp p (Pi.single i b)‖₊ = ‖b‖₊ := by
@@ -1138,6 +1141,7 @@ lemma nnnorm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (
     @NNNorm.nnnorm _ (seminormedAddCommGroupToPi p α).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isBoundedSMulSeminormedAddCommGroupToPi
     [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [SeminormedRing R]
     [∀ i, Module R (α i)] [∀ i, IsBoundedSMul R (α i)] :

@@ -12,12 +12,13 @@ public import Mathlib.Analysis.Complex.MeanValue
 # The Mean Value Property of Harmonic Functions on the Complex Plane
 -/
 
-@[expose] public section
+public section
 
 open InnerProductSpace Metric Real
 
 variable {f : ℂ → ℝ} {c : ℂ} {R : ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The **Mean Value Property** of harmonic functions: If `f : ℂ → ℝ` is harmonic in a neighborhood of a
 closed disc of radius `R` and center `c`, then the circle average `circleAverage f c R` equals
@@ -29,13 +30,14 @@ theorem HarmonicOnNhd.circleAverage_eq (hf : HarmonicOnNhd f (closedBall c |R|))
     (isOpen_setOf_harmonicAt f) hf
   rw [thickening_closedBall h₁e (abs_nonneg R)] at h₂e
   obtain ⟨F, h₁F, h₂F⟩ := harmonic_is_realOfHolomorphic h₂e
-  have h₃F : ∀ z ∈ closedBall c |R|, DifferentiableAt ℂ F z :=
-    fun x hx ↦ (h₁F x (by simp_all [lt_add_of_pos_of_le h₁e hx])).differentiableAt
+  have h₃F : DifferentiableOn ℂ F (closure (ball c |R|)) := by
+    intro x hx
+    apply (h₁F x _).differentiableWithinAt
+    grind [mem_ball, mem_closedBall.1 (closure_ball_subset_closedBall hx)]
   have h₄F : Set.EqOn (Complex.reCLM ∘ F) f (sphere c |R|) :=
     fun x hx ↦ h₂F (sphere_subset_ball (lt_add_of_pos_left |R| h₁e) hx)
   rw [← circleAverage_congr_sphere h₄F, Complex.reCLM.circleAverage_comp_comm,
-    circleAverage_of_differentiable_on h₃F]
+    h₃F.diffContOnCl.circleAverage]
   · apply h₂F
     simp [mem_ball, dist_self, add_pos_of_pos_of_nonneg h₁e (abs_nonneg R)]
-  · exact (continuousOn_of_forall_continuousAt
-      (fun x hx ↦ (h₃F x (sphere_subset_closedBall hx)).continuousAt)).circleIntegrable'
+  · apply (h₁F.continuousOn.mono (fun _ _ ↦ by simp_all [dist_eq_norm])).circleIntegrable'

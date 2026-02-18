@@ -26,11 +26,12 @@ commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra 
 norm, equivalent, power-multiplicative
 -/
 
-@[expose] public section
+public section
 
 open Filter Real
 open scoped Topology
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f : α →+* β` is bounded with respect to a ring seminorm `nα` on `α` and a
   power-multiplicative function `nβ : β → ℝ`, then `∀ x : α, nβ (f x) ≤ nα x`. -/
 theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)} [Ring α]
@@ -78,6 +79,7 @@ theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α
 
 variable {R S : Type*} [NormedCommRing R] [CommRing S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `R` is a normed commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra
   norms on `S`, then if `f₁` and `f₂` are equivalent on every subring `R[y]` for `y : S`, it
   follows that `f₁ = f₂` [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert]. -/
