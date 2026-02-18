@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.RegularLocalRing.Basic
 public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.Algebra.Algebra.Hom.Rat
@@ -566,6 +567,21 @@ lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective
 end
 
 section corollary
+
+section
+
+open PowerSeries
+
+lemma PowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R] :
+    IsRegularLocalRing R⟦X⟧ := by
+  --only need `ringKrullDim_succ_le_ringKrullDim_powerseries`, the other side is true indeed
+  sorry
+
+lemma MvPowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R]
+    {ι : Type*} [Finite ι] : IsRegularLocalRing (MvPowerSeries ι R) := by
+  sorry
+
+end
 
 variable [IsLocalRing R] [IsNoetherianRing R]
 
