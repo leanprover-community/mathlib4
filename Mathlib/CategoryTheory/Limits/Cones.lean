@@ -134,7 +134,7 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
            }
   }⟩
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp, elementwise nosimp)]
 theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
     c.π.app j ≫ F.map f = c.π.app j' := by
   rw [← c.π.naturality f]
@@ -172,6 +172,8 @@ theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
     F.map f ≫ c.ι.app j' = c.ι.app j := by
   rw [c.ι.naturality f]
   apply comp_id
+
+attribute [elementwise] Cocone.w
 
 end
 

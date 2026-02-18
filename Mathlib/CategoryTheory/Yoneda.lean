@@ -723,7 +723,7 @@ lemma yonedaEquiv_symm_naturality_left {X X' : C} (f : X' ⟶ X) (F : Cᵒᵖ �
     (x : F.obj ⟨X⟩) : yoneda.map f ≫ yonedaEquiv.symm x = yonedaEquiv.symm ((F.map f.op) x) := by
   apply yonedaEquiv.injective
   simp only [yonedaEquiv_comp, yoneda_obj_obj, yonedaEquiv_symm_app, ConcreteCategory.hom_ofHom,
-    Fun.as_apply, Equiv.apply_symm_apply]
+    TypeCat.Fun.as_apply, Equiv.apply_symm_apply]
   rw [yonedaEquiv_yoneda_map]
 
 lemma yonedaEquiv_symm_naturality_right (X : C) {F F' : Cᵒᵖ ⥤ TypeCat.{v₁}} (f : F ⟶ F')
@@ -801,7 +801,7 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C :=
           simp only [evaluationUncurried_obj, yonedaEvaluation, comp_obj, uliftFunctor_obj,
             yonedaPairing_map, prod_obj, op_obj, id_obj, op_unop, yonedaEquiv, yoneda_obj_obj,
             Equiv.toIso_hom, Equiv.coe_trans, Equiv.ulift_symm_apply, Equiv.coe_fn_mk, hom_as_apply,
-            comp_apply, ConcreteCategory.hom_ofHom, Fun.as_apply, Function.comp_apply,
+            comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.as_apply, Function.comp_apply,
             Functor.comp_map, evaluationUncurried_map, NatTrans.naturality, uliftFunctor_map]
         change (yoneda.map f.1.unop ≫ a ≫ f.2).app _ _ = _ -- regression
         simp [← NatTrans.naturality_apply])

@@ -194,7 +194,7 @@ noncomputable def limitEquivSections : (limit F : TypeCat.{u}) ≃ F.sections :=
   isLimitEquivSections (limit.isLimit F)
 
 @[simp]
-theorem limitEquivSections_apply (x : (limit F : TypeCat.{u})) (j : J) :
+theorem limitEquivSections_apply (x : (limit F :)) (j : J) :
     ((limitEquivSections F) x : ∀ j, F.obj j) j = limit.π F j x :=
   rfl
 

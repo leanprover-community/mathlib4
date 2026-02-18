@@ -35,7 +35,7 @@ variable (F : J ⥤ TypeCat.{u})
 
 /-- If `F : J ⥤ TypeCat u`, then the data of a "type-theoretic" cocone of `F`
 with a point in `TypeCat u` is the same as the data of a cocone (in a categorical sense). -/
-@[simps!]
+@[simps apply_pt symm_apply_pt apply_ι_app symm_apply_ι]
 def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
   toFun c :=
     { pt := c.pt
@@ -60,7 +60,7 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
           exact congr_fun (hc.fac (F.coconeTypesEquiv.symm s) j) x
         uniq s m hm := by
           ext x
-          exact congr_fun (hc.funext fun j ↦ funext fun y ↦ by simp [← hm j]; rfl) x }⟩
+          exact congr_fun (hc.funext fun j ↦ funext fun y ↦ by simp [← hm j]) x }⟩
   · rintro ⟨hc⟩
     classical
     refine ⟨⟨fun x y h ↦ ?_, fun x ↦ ?_⟩⟩
@@ -80,7 +80,7 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
         simpa [f₁, f₂] using this
       refine hc.hom_ext fun j => ?_
       ext x
-      simpa [f₁, f₂] using ⟨F.ιColimitType j x, by simp; rfl⟩
+      simpa [f₁, f₂] using ⟨F.ιColimitType j x, by simp⟩
 
 end Functor
 
@@ -224,8 +224,8 @@ theorem jointly_surjective_of_isColimit {F : J ⥤ TypeCat.{u}} {t : Cocone F} (
     (TypeCat.ofHom ⟨fun y ↦ ULift.up (y ≠ x)⟩))
   · refine h.hom_ext fun j ↦ ?_
     ext y
-    simp only [Functor.const_obj_obj, TypeCat.hom_as_apply, comp_apply, hom_ofHom, Fun.as_apply,
-      ne_eq, true_iff]
+    simp only [Functor.const_obj_obj, TypeCat.hom_as_apply, comp_apply, hom_ofHom,
+      TypeCat.Fun.as_apply, ne_eq, true_iff]
     exact hx j y
   · intro he
     have := ConcreteCategory.congr_hom he x

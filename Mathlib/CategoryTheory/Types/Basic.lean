@@ -49,6 +49,8 @@ structure TypeCat where
   /-- The underlying type -/
   carrier : Type u
 
+-- initialize_simps_projections TypeCat (-carrier)
+
 namespace TypeCat
 
 instance : CoeSort TypeCat.{u} (Type u) where
@@ -93,23 +95,22 @@ instance CategoryTheory.types : Category.{u} TypeCat.{u} where
   id X := .mk <| .mk (fun x => x)
   comp f g := .mk <| .mk fun x => g.hom'.as <| f.hom'.as x
 
-instance {X Y : Type*} : FunLike (Fun X Y) X Y where
+instance TypeCat.instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
   coe f := f.as
   coe_injective' _ := by aesop
 
+-- @[simp]
+-- lemma TypeCat.Fun.coe_eq_as {X Y : Type*} (f : Fun X Y) (x : X) :
+--     f.as x = @DFunLike.coe (Fun X Y) X (fun _ ↦ Y) inferInstance f x := by
+--   with_reducible rfl
+
 @[simp]
-lemma Fun.as_apply {X Y : Type*} (f : X → Y) (x : X) : (⟨f⟩ : Fun X Y) x = f x :=
+lemma TypeCat.Fun.as_apply {X Y : Type*} (f : X → Y) (x : X) : (⟨f⟩ : Fun X Y) x = f x :=
   rfl
 
--- @[simp]
--- lemma Fun.as_apply' {X Y : Type*} (f : X → Y) (x : X) : (⟨fun x ↦ f x⟩ : Fun X Y) x = f x :=
---   rfl
+def TypeCat.Fun.Simps.coe (X Y : Type*) (f : Fun X Y) := (f : _ → _)
 
--- @[simp]
--- lemma Fun.comp_apply {X Y Z : Type*} (f : X → Y) (g : Y → Z) (x : X) :
---     (⟨g⟩ : Fun Y Z) ((⟨f⟩ : Fun X Y) x) = g (f x) :=
---   rfl
-
+initialize_simps_projections TypeCat.Fun (as → coe)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -145,7 +146,7 @@ initialize_simps_projections Hom (hom' → hom)
 
 @[simp]
 lemma hom_as_apply {X Y : TypeCat.{u}} (f : X ⟶ Y) (x : X) : (ConcreteCategory.hom f).as x =
-    ConcreteCategory.hom f x :=
+    ConcreteCategory.hom f x := by
   rfl
 
 example (X : Type u) : CategoryTheory.ToType (of X) = X := by with_reducible rfl
@@ -198,7 +199,7 @@ def sections (F : J ⥤ TypeCat.{w}) : Set (∀ j, F.obj j) :=
   { u | ∀ {j j'} (f : j ⟶ j'), F.map f (u j) = u j' }
 
 @[simp]
-lemma sections_property {F : J ⥤ TypeCat.{w}} (s : (F.sections : Type _))
+lemma sections_property {F : J ⥤ TypeCat.{w}} (s : F.sections)
     {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
   s.property f
 
@@ -470,6 +471,13 @@ theorem isSplitEpi_iff_surjective {X Y : TypeCat.{u}} (f : X ⟶ Y) :
     IsSplitEpi f ↔ Function.Surjective f :=
   Iff.intro (fun _ => surjective_of_epi _)
     fun hf => (by simp only [(epi_iff_surjective f).mpr hf, isSplitEpi_of_epi])
+
+@[simps!]
+def NatIso.ofComponentsEquiv {C : Type*} [Category* C] {F G : C ⥤ TypeCat}
+    (app : ∀ X, F.obj X ≃ G.obj X)
+    (naturality : ∀ {X Y : C} (f : X ⟶ Y) (x : F.obj X),
+      app Y (F.map f x) = G.map f (app X x) := by cat_disch) : F ≅ G :=
+  NatIso.ofComponents (fun X ↦ app X |>.toIso)
 
 end CategoryTheory
 
