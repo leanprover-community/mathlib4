@@ -350,7 +350,7 @@ def someOctahedron₁ [IsTriangulated C]
     Octahedron₁ comm h₁₂ h₂₃ h₁₃ := by
   let o := someOctahedron comm (rot_of_distTriang _ h₁₂) (rot_of_distTriang _ h₂₃)
     (rot_of_distTriang _ h₁₃)
-  let m₁ := (shiftShiftNeg Z₁₂ 1).inv ≫ o.m₁⟦-1⟧' ≫ (shiftShiftNeg Z₁₃ 1).hom 
+  let m₁ := (shiftShiftNeg Z₁₂ 1).inv ≫ o.m₁⟦-1⟧' ≫ (shiftShiftNeg Z₁₃ 1).hom
   let m₃ := (shiftShiftNeg Z₁₃ 1).inv ≫ o.m₃⟦-1⟧' ≫ (shiftShiftNeg Z₂₃ 1).hom
   have eq₁ := o.comm₁
   have eq₂ := o.comm₂
