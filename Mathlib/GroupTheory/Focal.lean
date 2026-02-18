@@ -26,7 +26,7 @@ This file defines the focal subgroup and proves the Focal Subgroup Theorem.
 
 ## Main Theorems
 
-- `transfer_focal_eq_pow`:
+- `transferFocal_eq_pow`:
   The restriction of the transfer map to `H` acts like the power map `x ↦ x ^ [G : H]` mod `H*`.
 - `commutator_inf_eq_focalSubgroup`: The **Focal Subgroup Theorem**.
   For a Sylow `p`-subgroup `P` of a finite group `G`, `G' ⊓ P = P*`,
@@ -128,15 +128,12 @@ lemma commutator_le_focalSubgroup : ⁅H, H⁆ ≤ focalSubgroup H := by
 instance : IsMulCommutative (H ⧸ focalSubgroupOf H) :=
   ⟨⟨(Normal.quotient_commutative_iff_commutator_le.mpr H.commutator_le_focalSubgroupOf).comm⟩⟩
 
-/--
-The Transfer homomorphism `V : G → H/H*`.
-Defined using the abelian quotient H/H*.
--/
+/-- The transfer homomorphism `V : G → H/H*` from `G` the abelian quotient `H/H*`. -/
 noncomputable def transferFocal [H.FiniteIndex] : G →* H ⧸ focalSubgroupOf H :=
   MonoidHom.transfer (QuotientGroup.mk' (focalSubgroupOf H))
 
 /--
-The restriction of the Transfer map to `H` acts like the power map `x ↦ x^n` mod `H*`,
+The restriction of the transfer map to `H` acts like the power map `x ↦ x^n` mod `H*`,
 where `n = [G:H]`.
 -/
 theorem transferFocal_eq_pow [H.FiniteIndex] (x : H) :
