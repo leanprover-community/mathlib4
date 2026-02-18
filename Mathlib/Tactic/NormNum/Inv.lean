@@ -69,8 +69,9 @@ theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat
 set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_natDiv {a na n : ℕ} {b nb d : ℕ} (ha : IsNat a na) (hb : IsNat b nb)
     (hab : IsNNRat ((na : ℤ) / nb : ℚ) n d) : IsNNRat (NNRat.divNat a b) n d := by
-  refine ⟨invertibleOfNonzero (by exact_mod_cast hab.den_nz), ?_⟩
-  exact NNRat.cast_injective (α := ℚ) (by simpa [ha.out, hb.out] using h.out)
+    refine ⟨invertibleOfNonzero (by exact_mod_cast hab.den_nz), ?_⟩
+    match hab with
+    | .mk _ h => exact NNRat.cast_injective (α := ℚ) (by simpa [ha.out, hb.out] using h)
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
@@ -90,7 +91,7 @@ def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := 
 /-- The `norm_num` extension which identifies expressions of the form `NNRat.divNat a b`,
 such that `norm_num` successfully recognises both `a` and `b`, and returns `(a : ℤ) / b`. -/
 @[norm_num NNRat.divNat _ _]
-def evalNNRealDivNat : NormNumExt where eval {u α} (e : Q(ℚ≥0)) : MetaM (Result e) := do
+def evalNNRealdivNat : NormNumExt where eval {u α} (e : Q(ℚ≥0)) : MetaM (Result e) := do
   let .app (.app (.const ``NNRat.divNat _) (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : $e =Q NNRat.divNat $a $b := ⟨⟩
   let ra ← derive (α := α) a
