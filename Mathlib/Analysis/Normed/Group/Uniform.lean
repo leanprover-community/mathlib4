@@ -29,10 +29,7 @@ variable [SeminormedGroup E] [SeminormedGroup F] {s : Set E} {a b : E} {r : ℝ}
 
 @[to_additive]
 instance NormedGroup.to_isIsometricSMul : IsIsometricSMul E E :=
-  ⟨fun a => Isometry.of_dist_eq fun b c => by
-    have : b⁻¹ * a⁻¹ * (a * c) = b⁻¹ * c := by
-      rw [mul_assoc, ← mul_assoc a⁻¹, inv_mul_cancel, one_mul]
-    simp [dist_eq_norm_inv_mul, this]⟩
+  ⟨fun a => Isometry.of_dist_eq fun b c => by simp [dist_eq_norm_inv_mul]⟩
 
 @[to_additive]
 theorem Isometry.norm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1 = 1) (x : E) :
@@ -199,7 +196,7 @@ section SeminormedCommGroup
 variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a₁ a₂ b₁ b₂ : E} {r₁ r₂ : ℝ}
 
 @[to_additive]
-instance NormedGroup.to_isIsometricSMul_left : IsIsometricSMul Eᵐᵒᵖ E :=
+instance NormedGroup.to_isIsometricSMul_right : IsIsometricSMul Eᵐᵒᵖ E :=
   ⟨fun a => Isometry.of_dist_eq fun b c => by simp⟩
 
 @[to_additive (attr := simp)]

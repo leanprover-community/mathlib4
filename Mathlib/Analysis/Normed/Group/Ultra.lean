@@ -52,9 +52,7 @@ lemma norm_mul_le_max (x y : S) :
 lemma isUltrametricDist_of_forall_norm_mul_le_max_norm
     (h : ∀ x y : S', ‖x * y‖ ≤ max ‖x‖ ‖y‖) : IsUltrametricDist S' where
   dist_triangle_max x y z := by
-    have : x⁻¹ * y * (y⁻¹ * z) = x⁻¹ * z := by
-      rw [mul_assoc, ← mul_assoc y, mul_inv_cancel, one_mul]
-    simpa only [dist_eq_norm_inv_mul, le_max_iff, this] using h (x⁻¹ * y) (y⁻¹ * z)
+    simpa [dist_eq_norm_inv_mul] using h (x⁻¹ * y) (y⁻¹ * z)
 
 lemma isUltrametricDist_of_isNonarchimedean_norm {S' : Type*} [SeminormedAddGroup S']
     (h : IsNonarchimedean (norm : S' → ℝ)) : IsUltrametricDist S' :=
