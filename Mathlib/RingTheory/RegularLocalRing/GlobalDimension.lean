@@ -22,6 +22,7 @@ variable (R : Type u) [CommRing R]
 
 open IsLocalRing CategoryTheory
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R] [Small.{v, u} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] (i : ℕ) : IsLocalRing.depth M + i ≥ ringKrullDim R →
     ∃ n, HasProjectiveDimensionLE M n := by
