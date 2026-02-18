@@ -240,7 +240,7 @@ section projectivize
 
 variable {R : Type*} [CommSemiring R]
 
-/-- Given a polynomial `p : R[X]`, this is the family `![p₀, p₁]` of homogeneous bivariate
+/-- Given a polynomial `p : R[X]`, this is the vector `![p₀, p₁]` of homogeneous bivariate
 polynomials of degree `p.natDegree` such that `p(x) = p₀(x,1)/p₁(x,1)` and `p₁` is a monomial. -/
 noncomputable
 def toTupleMvPolynomial (p : R[X]) : Fin 2 → MvPolynomial (Fin 2) R :=
