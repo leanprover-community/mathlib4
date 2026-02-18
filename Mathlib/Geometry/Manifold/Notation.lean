@@ -42,7 +42,7 @@ In each of these cases, the models with corners are inferred from the domain and
 The search for models with corners uses the local context and is (almost) only based on expression
 structure, hence hopefully fast enough to always run.
 
-Infering models with corners supports all current `ModelWithCorners` instances in mathlib.
+Inferring models with corners supports all current `ModelWithCorners` instances in mathlib.
 This will need to be updated as new instances are added.
 
 For products of manifolds, we explicitly track if the resulting space is a product of normed spaces:
