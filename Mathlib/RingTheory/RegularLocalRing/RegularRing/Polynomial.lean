@@ -105,7 +105,7 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] :
         rcases hf with ⟨⟨x1, y1⟩, h1⟩
         rcases hg with ⟨⟨x2, y2⟩, h2⟩
         use (x2 * y1.1 + x1 * y2.1, y1 * y2)
-        simp only [Submonoid.coe_mul, map_mul, add_mul, map_add]
+        rw [Submonoid.coe_mul, map_mul, add_mul, map_add]
         nth_rw 4 [mul_comm]
         simp [← mul_assoc, h1, h2, add_comm]
       · rename_i _ _ n a
