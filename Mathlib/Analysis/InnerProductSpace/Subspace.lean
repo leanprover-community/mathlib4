@@ -250,6 +250,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 variable {ι : Type*} {G : ι → Type*}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An orthogonal family forms an independent family of subspaces; that is, any collection of
 elements each from a different subspace in the family is linearly independent. In particular, the
 pairwise intersections of elements of the family are 0. -/

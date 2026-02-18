@@ -225,6 +225,7 @@ lemma toRight_sdiff : (u \ v).toRight = u.toRight \ v.toRight := by ext x; simp
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Finsets on sum types are equivalent to pairs of finsets on each summand. -/
 @[simps apply_fst apply_snd]
 def sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃o Finset α × Finset β where

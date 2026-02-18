@@ -73,6 +73,7 @@ info: Try these:
 #guard_msgs in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 info: Try these:
   [apply] 🎉 norm_num

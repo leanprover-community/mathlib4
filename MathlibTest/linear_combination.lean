@@ -268,12 +268,14 @@ example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w 
 
 /-! ### Cases where the goal is not closed -/
 
+set_option backward.isDefEq.respectTransparency false in
 example (x y : ℚ) (h1 : x + y = 3) (h2 : 3 * x = 7) :
     x * x * y + y * x * y + 6 * x = 3 * x * y + 14 := by
   linear_combination (norm := ring_nf) x * y * h1 + h2
   guard_target = -7 + x * 3 = 0
   linear_combination h2
 
+set_option backward.isDefEq.respectTransparency false in
 example (a b c d : ℚ) (h1 : a = 4) (h2 : 3 = b) (h3 : c * 3 = d) (h4 : -d = a) :
     6 - 3 * c + 3 * a + 3 * d = 2 * b - d + 12 - 3 * a := by
   linear_combination (norm := ring_nf) 2 * h2
@@ -281,6 +283,7 @@ example (a b c d : ℚ) (h1 : a = 4) (h2 : 3 = b) (h3 : c * 3 = d) (h4 : -d = a)
   linear_combination (norm := ring_nf) 3 * h1
   linear_combination (norm := ring_nf) -3 * h4
 
+set_option backward.isDefEq.respectTransparency false in
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y = -2 * y + 1 := by
   linear_combination (norm := ring_nf)
   linear_combination h1 - 2 * h2
