@@ -378,11 +378,11 @@ def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
   else
     ty.heq?
 
-/-- Returns `true` if the provided `Expr` is of the form `sorryAx _ _`
-(This is the form produced by the `sorry` term/tactic.)
+/-- Returns `true` if the provided `Expr` is exactly of the form `sorryAx _ _`.
+This is the form produced by the `sorry` term/tactic.
 
-Contrast with `Lean.Expr.isSorry`, which returns true for any application of `sorryAx` (including
-e.g. `sorryAx α true x y z`). -/
+Contrast with `Lean.Expr.isSorry`, which additionally returns `true` for any function application of
+`sorry`/`sorryAx` (including e.g. `sorryAx α true x y z`). -/
 def isSorryAx : Expr → Bool
   | .app (.app f _ ) _ => f.isConstOf ``sorryAx
   | _ => false
