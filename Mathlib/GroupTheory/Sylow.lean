@@ -213,10 +213,9 @@ instance (H : Subgroup G) [Finite (Sylow p G)] : Finite (Sylow p H) :=
 
 /-- If a Sylow `p`-subgroup has finite index, then the number of Sylow `p`-subgroups is finite. -/
 theorem finite_of_finiteIndex (P : Sylow p G) [P.FiniteIndex] : Finite (Sylow p G) := by
-  let K := P.toSubgroup.normalCore
-  apply finite_of_ker_is_pGroup (f := QuotientGroup.mk' K)
+  apply finite_of_ker_is_pGroup (f := QuotientGroup.mk' P.normalCore)
   rw [QuotientGroup.ker_mk']
-  exact P.isPGroup'.to_le P.toSubgroup.normalCore_le
+  exact P.isPGroup'.to_le P.normalCore_le
 
 open Pointwise
 
@@ -438,7 +437,7 @@ theorem not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
 /-- A Sylow p-subgroup has index indivisible by `p`. -/
 theorem not_dvd_index [Fact p.Prime] (P : Sylow p G) [P.FiniteIndex] :
     ¬ p ∣ P.index := by
-  haveI := P.finite_of_finiteIndex
+  have := P.finite_of_finiteIndex
   exact P.not_dvd_index' Nat.card_pos.ne'
 
 section mapSurjective
