@@ -656,7 +656,7 @@ partial def _root_.Lean.MVarId.gcongr
       continue
     let some e ← getExprMVarAssignment? g | panic! "unassigned?"
     let args := e.getAppArgs
-    -- If the `apply` succeeds, iterate over the lemma's `mainSubgoals` list.
+    -- Map over the lemma's `mainSubgoals` list to find the recursive `gcongr` goals.
     let mainSubgoals := lem.mainSubgoals.map fun (i, numHyps, isContra) ↦
       -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
       -- unification ...
@@ -664,21 +664,17 @@ partial def _root_.Lean.MVarId.gcongr
         (mvarId, numHyps, isContra)
       else
         panic! "what kind of lemma is this?"
-    -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
-    -- by the `apply`.
+    -- Try the discharger on any side goals which were not resolved by the `apply`.
     for g in gs do
       if !(← g.isAssigned) && !mainSubgoals.any (·.1 == g) then
         let mctx ← getMCtx
         try sideGoalDischarger (← g.intros).2
         catch _ => setMCtx mctx; pushNewGoal g
-    -- Introduce all variables and hypotheses in this subgoal.
     for (mvarId, numHyps, isContra) in mainSubgoals do
       let mvarId ← introN mvarId numHyps
-      -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
-      -- appropriate template
+      -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal
       let mdataLhs?' := mdataLhs?.map (· != isContra)
       discard <| mvarId.gcongr mdataLhs?' depth mainGoalDischarger sideGoalDischarger
-    -- Return all unresolved subgoals, "main" or "side"
     return true
   -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,
   -- report this goal back.
