@@ -89,23 +89,41 @@ end Fintype
 
 namespace Equiv
 
-variable {α β : Type*} [Finite α]
+variable {α β : Type*}
 
-/-- If `e` is an equivalence between two subtypes of a finite type `α`, `e.toCompl`
+/-- If `e` is an equivalence between two subtypes of a type `α`, `e.toCompl`
 is an equivalence between the complement of those subtypes.
 
 See also `Equiv.compl`, for a computable version when a term of type
 `{e' : α ≃ α // ∀ x : {x // p x}, e' x = e x}` is known. -/
-noncomputable def toCompl {p q : α → Prop} (e : { x // p x } ≃ { x // q x }) :
-    { x // ¬p x } ≃ { x // ¬q x } := by
-  apply Classical.choice
-  cases nonempty_fintype α
+noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
+    (e : { x | p x } ≃ { x | q x }) : { x | ¬p x } ≃ { x | ¬q x } := by
   classical
-  exact Fintype.card_eq.mp <| Fintype.card_compl_eq_card_compl _ _ <| Fintype.card_congr e
+  let sp : Set α := {x | p x}
+  let sq : Set α := {x | q x}
+  let ip : Fintype sp := Fintype.ofFinite sp
+  let iq : Fintype sq := Fintype.ofEquiv sp e
+  let fp : Finset α := (Finset.univ : Finset sp).map (Function.Embedding.subtype p)
+  let fq : Finset α := (Finset.univ : Finset sq).map (Function.Embedding.subtype q)
+  have hp (x : α) : x ∈ fp ↔ x ∈ sp := by simp [fp, sp]
+  have hq (x : α) : x ∈ fq ↔ x ∈ sq := by simp [fq, sq]
+  have hpq (x : α) : x ∈ fp \ fq ↔ x ∈ sp \ sq := by simp [hp, hq]
+  have hqp (x : α) : x ∈ fq \ fp ↔ x ∈ sq \ sp := by simp [hp, hq]
+  have h : fp.card = fq.card := by
+    rw [← Fintype.subtype_card fp hp, ← Fintype.subtype_card fq hq]
+    convert Fintype.card_congr e
+  replace h := Finset.card_sdiff_comm h
+  rw [← Fintype.subtype_card (fp \ fq) hpq, ← Fintype.subtype_card (fq \ fp) hqp] at h
+  replace h := ((Fintype.card_eq (_F := (_)) (_G := (_))).mp h).some
+  have hpc : spᶜ = (sq \ sp) ∪ (sp ∪ sq)ᶜ := by grind
+  have hqc : sqᶜ = (sp \ sq) ∪ (sp ∪ sq)ᶜ := by grind
+  let epc := (Equiv.setCongr hpc).trans (Equiv.Set.union (by grind))
+  let eqc := (Equiv.setCongr hqc).trans (Equiv.Set.union (by grind))
+  refine epc.trans <| .trans (h.symm.sumCongr <| .refl _) eqc.symm
 
-variable {p q : α → Prop} [DecidablePred p] [DecidablePred q]
+variable {p q : α → Prop} [DecidablePred p] [DecidablePred q] [Finite {x | p x}]
 
-/-- If `e` is an equivalence between two subtypes of a fintype `α`, `e.extendSubtype`
+/-- If `e` is an equivalence between two subtypes of a type `α`, `e.extendSubtype`
 is a permutation of `α` acting like `e` on the subtypes and doing something arbitrary outside.
 
 Note that when `p = q`, `Equiv.Perm.subtypeCongr e (Equiv.refl _)` can be used instead. -/
@@ -127,22 +145,20 @@ theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
   dsimp only [extendSubtype]
   simp only [subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
-  rw [sumCompl_symm_apply_of_neg hx, Sum.map_inr, sumCompl_apply_inr]
+  simp [sumCompl_symm_apply_of_neg hx, Sum.map_inr, sumCompl_apply_inr]
 
 theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     ¬q (e.extendSubtype x) := by
   convert (e.toCompl ⟨x, hx⟩).2
-  rw [e.extendSubtype_apply_of_not_mem _ hx]
+  rw [e.extendSubtype_apply_of_not_mem _ hx, Set.mem_setOf_eq]
 
-/-- Given two injective functions `f` and `g` from `α` to a finite type `β`,
-there exists a permutation of `β` that maps `f` to `g`.
-
-See also `Equiv.Perm.exists_extending_pair_of_finite_source` for a generalization where only `α`
-(the source) needs to be finite. -/
-theorem Perm.exists_extending_pair {α β : Type*} [Finite β]
+/-- Given two injective functions `f` and `g` from a finite type `α` to any type `β`,
+there exists a permutation of `β` that maps `f` to `g`. -/
+theorem Perm.exists_extending_pair {α β : Type*} [Finite α]
     (f g : α → β) (hf : Function.Injective f) (hg : Function.Injective g) :
     ∃ σ : Perm β, ∀ a, σ (f a) = g a := by
   classical
+  have : Finite { x | x ∈ Set.range f } := .of_surjective _ (Set.codRestrict_range_surjective f)
   refine ⟨((Equiv.ofInjective f hf).symm.trans (Equiv.ofInjective g hg)).extendSubtype, ?_⟩
   simp [Equiv.extendSubtype_apply_of_mem]
 
