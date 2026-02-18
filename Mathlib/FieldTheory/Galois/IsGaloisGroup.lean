@@ -247,6 +247,7 @@ instance subgroup [hGKL : IsGaloisGroup G K L] :
   commutes := inferInstanceAs <| SMulCommClass H (FixedPoints.subfield H L) L
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finrank_fixedPoints_eq_card_subgroup [IsGaloisGroup G K L] :
     Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L = Nat.card H :=
@@ -260,6 +261,7 @@ instance fixedPoints [Finite G] [FaithfulSMul G L] :
     IsGaloisGroup G (FixedPoints.subfield G L) L :=
   of_mulEquiv_algEquiv (FixedPoints.toAlgAutMulEquiv _ _) fun _ _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
     IsGaloisGroup (fixingSubgroup G (F : Set L)) F L :=
   let e := ((mulEquivAlgEquiv G K L).subgroupMap (fixingSubgroup G (F : Set L))).trans <|
@@ -268,6 +270,7 @@ instance intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
   have := hGKL.isGalois
   .of_mulEquiv_algEquiv e fun _ _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
     Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=

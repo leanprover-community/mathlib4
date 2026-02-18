@@ -196,6 +196,7 @@ instance forget_reflectsIsomorphisms : (forget LightProfinite).ReflectsIsomorphi
   rw [isIso_iff_bijective] at hf
   exact LightProfinite.isIso_of_bijective _ hf
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
   constructor
@@ -319,6 +320,7 @@ def lightDiagramToLightProfinite : LightDiagram.{u} ⥤ LightProfinite.{u} where
   obj X := LightProfinite.of X.cone.pt
   map f := InducedCategory.homMk f.hom.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories `LightProfinite ≌ LightDiagram` -/
 noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiagram.{u} where
   functor := lightProfiniteToLightDiagram

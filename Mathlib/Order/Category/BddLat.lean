@@ -160,6 +160,7 @@ theorem forget_semilatInf_partOrd_eq_forget_bddOrd_partOrd :
       forget₂ BddLat BddOrd ⋙ forget₂ BddOrd PartOrd :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between bounded lattices from an order isomorphism
 between them. -/
 @[simps]
@@ -204,11 +205,13 @@ theorem bddLat_dual_comp_forget_to_semilatInfCat :
     forget₂ BddLat SemilatSupCat ⋙ SemilatSupCat.dual :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor that adds a bottom and a top element to a lattice. This is the free functor. -/
 def latToBddLat : Lat.{u} ⥤ BddLat where
   obj X := .of <| WithTop <| WithBot X
   map f := BddLat.ofHom <| LatticeHom.withTopWithBot f.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `latToBddLat` is left adjoint to the forgetful functor, meaning it is the free
 functor from `Lat` to `BddLat`. -/
 def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=

@@ -449,6 +449,7 @@ lemma Submodule.mem_span_iff_exists_finset_subset {s : Set M} {x : M} :
   mpr := by
     rintro ⟨n, t, hts, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span <| hts hx
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
     x ∈ span R s ↔ ∃ f : M → R, f.support ⊆ s ∧ ∑ a ∈ s, f a • a = x where
   mp := by

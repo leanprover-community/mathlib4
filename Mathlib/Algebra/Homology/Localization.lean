@@ -126,6 +126,7 @@ instance respectsIso_quasiIso : (quasiIso C c).RespectsIso := by
 lemma homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => hf i
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_eq_quasiIso_map_quotient :
     quasiIso C c = (HomologicalComplex.quasiIso C c).map (quotient C c) := by
   ext ⟨K⟩ ⟨L⟩ f
@@ -170,6 +171,7 @@ variable (C c)
 def quotientCompQhIso : HomotopyCategory.quotient C c ⋙ Qh ≅ Q := by
   apply Quotient.lift.isLift
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Qh_inverts_quasiIso : (HomotopyCategory.quasiIso C c).IsInvertedBy Qh := by
   rintro ⟨K⟩ ⟨L⟩ φ
   obtain ⟨φ, rfl⟩ := (HomotopyCategory.quotient C c).map_surjective φ

@@ -120,6 +120,7 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
   rw [h₁, h₂, cubic_depressed_eq_zero_iff hω hp_nonzero hr hs3 ht]
   simp_rw [y, eq_sub_iff_add_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The solution of the cubic equation when p equals zero. -/
 theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
     (hpz : 3 * a * c - b ^ 2 = 0)
