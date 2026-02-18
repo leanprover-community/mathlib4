@@ -269,6 +269,8 @@ namespace ConjClasses
 
 variable [Monoid α]
 
+attribute [local instance] IsConj.setoid
+
 /-- Given a conjugacy class `a`, `carrier a` is the set it represents. -/
 @[to_additive /-- Given an additive conjugacy class `a`, `carrier a` is the set it represents. -/]
 def carrier : ConjClasses α → Set α :=
