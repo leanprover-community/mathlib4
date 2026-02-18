@@ -93,6 +93,7 @@ private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
 
 include hq hα₀ hy
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
   let S := rootSystem H
@@ -176,6 +177,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 include hq hx_χ hαq in
 private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot hα₀) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by

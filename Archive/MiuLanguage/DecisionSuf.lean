@@ -49,6 +49,7 @@ namespace Miu
 
 open MiuAtom List Nat
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We start by showing that an `Miustr` `M::w` can be derived, where `w` consists only of `I`s and
 where `count I w` is a power of 2.
 -/
@@ -243,6 +244,7 @@ conditions under which `count I ys = length ys`.
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If an `Miustr` has a zero `count U` and contains no `M`, then its `count I` is its length.
 -/
 theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count U ys = 0)
@@ -284,6 +286,7 @@ relate to `count U`.
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
   induction xs with
   | nil => exfalso; rw [count] at h; contradiction
@@ -296,6 +299,7 @@ theorem eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs 
     ∃ as bs : Miustr, zs = as ++ ↑(U :: bs) :=
   append_of_mem (mem_of_count_U_eq_succ h)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ind_hyp_suf` is the inductive step of the sufficiency result.
 -/
 theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : Decstr ys) :

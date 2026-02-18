@@ -33,6 +33,7 @@ variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{v'} A FA]
 
 variable {X Y : Condensed.{u} A} (f : X ⟶ Y)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option Elab.async false in  -- TODO: universe levels from type are unified in proof
 variable
   [(coherentTopology CompHaus).WEqualsLocallyBijective A]
@@ -85,12 +86,14 @@ namespace CondensedMod
 
 variable (R : Type (u + 1)) [Ring R] {X Y : CondensedMod.{u} R} (f : X ⟶ Y)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
     ∀ (S : CompHaus) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : CompHaus) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
         f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) :=
   Condensed.epi_iff_locallySurjective_on_compHaus _ f
 
+set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff_surjective_on_stonean : Epi f ↔
     ∀ (S : Stonean), Function.Surjective (f.val.app (op S.compHaus)) :=
   have : HasLimitsOfSize.{u, u + 1} (ModuleCat R) :=
