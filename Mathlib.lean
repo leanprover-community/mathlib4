@@ -4337,6 +4337,7 @@ public import Mathlib.Geometry.Manifold.GroupLieAlgebra
 public import Mathlib.Geometry.Manifold.HasGroupoid
 public import Mathlib.Geometry.Manifold.Immersion
 public import Mathlib.Geometry.Manifold.Instances.Icc
+public import Mathlib.Geometry.Manifold.Instances.MoebiusBand
 public import Mathlib.Geometry.Manifold.Instances.Real
 public import Mathlib.Geometry.Manifold.Instances.Sphere
 public import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
