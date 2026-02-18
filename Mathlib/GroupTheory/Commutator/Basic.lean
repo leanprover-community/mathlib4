@@ -67,8 +67,8 @@ theorem map_commutatorElement : (f ⁅g₁, g₂⁆ : G') = ⁅f g₁, f g₂⁆
   simp_rw [commutatorElement_def, map_mul f, map_inv f]
 
 @[to_additive]
-theorem conjugate_commutatorElement : g₃ * ⁅g₁, g₂⁆ * g₃⁻¹ = ⁅g₃ * g₁ * g₃⁻¹, g₃ * g₂ * g₃⁻¹⁆ :=
-  map_commutatorElement (MulAut.conj g₃).toMonoidHom g₁ g₂
+theorem conjugate_commutatorElement : g₃ * ⁅g₁, g₂⁆ * g₃⁻¹ = ⁅g₃ * g₁ * g₃⁻¹, g₃ * g₂ * g₃⁻¹⁆ := by
+  simp [mul_assoc, commutatorElement_def]
 
 namespace Subgroup
 
@@ -97,6 +97,7 @@ theorem commutator_le : ⁅H₁, H₂⁆ ≤ H₃ ↔ ∀ g₁ ∈ H₁, ∀ g�
 theorem commutator_mono (h₁ : H₁ ≤ K₁) (h₂ : H₂ ≤ K₂) : ⁅H₁, H₂⁆ ≤ ⁅K₁, K₂⁆ :=
   commutator_le.mpr fun _g₁ hg₁ _g₂ hg₂ => commutator_mem_commutator (h₁ hg₁) (h₂ hg₂)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤ centralizer H₂ := by
   rw [eq_bot_iff, commutator_le]
@@ -156,10 +157,12 @@ theorem commutator_le_right [h : H₂.Normal] : ⁅H₁, H₂⁆ ≤ H₂ :=
 theorem commutator_le_left [H₁.Normal] : ⁅H₁, H₂⁆ ≤ H₁ :=
   commutator_comm H₂ H₁ ▸ commutator_le_right H₂ H₁
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem commutator_bot_left : ⁅(⊥ : Subgroup G), H₁⁆ = ⊥ :=
   le_bot_iff.mp (commutator_le_left ⊥ H₁)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem commutator_bot_right : ⁅H₁, ⊥⁆ = (⊥ : Subgroup G) :=
   le_bot_iff.mp (commutator_le_right H₁ ⊥)
@@ -196,6 +199,7 @@ instance commutator_characteristic [h₁ : Characteristic H₁] [h₂ : Characte
     commutator_le_map_commutator (characteristic_iff_le_map.mp h₁ ϕ)
       (characteristic_iff_le_map.mp h₂ ϕ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem commutator_prod_prod (K₁ K₂ : Subgroup G') :
     ⁅H₁.prod K₁, H₂.prod K₂⁆ = ⁅H₁, H₂⁆.prod ⁅K₁, K₂⁆ := by
@@ -286,10 +290,12 @@ variable {G} in
 lemma Subgroup.commutator_le_self (H : Subgroup G) : ⁅H, H⁆ ≤ H :=
   H.map_subtype_commutator.symm.trans_le (map_subtype_le _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem commutator_eq_bot_iff_center_eq_top : commutator G = ⊥ ↔ Subgroup.center G = ⊤ := by
   simp [commutator, Subgroup.commutator_eq_bot_iff_le_centralizer]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma commutator_centralizer_commutator_le_center :
     ⁅centralizer (commutator G : Set G), centralizer (commutator G)⁆ ≤ Subgroup.center G := by
@@ -309,6 +315,7 @@ lemma mem_commutatorSet_of_isConj_sq {g : G} (hg : IsConj g (g ^ 2)) : g ∈ com
   rw [commutatorElement_def, hg]
   simp only [IsUnit.mul_inv_cancel_right, Units.isUnit, mul_inv_eq_iff_eq_mul, pow_two]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma map_commutator_eq {H : Type*} [Group H] (f : G →* H) :
     (commutator G).map f = ⁅f.range, f.range⁆ := by

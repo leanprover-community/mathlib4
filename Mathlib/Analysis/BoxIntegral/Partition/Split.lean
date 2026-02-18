@@ -127,6 +127,7 @@ theorem splitUpper_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
   simp +unfoldPartialApp only [splitUpper, mk'_eq_coe, max_eq_left h.1.le,
     update, and_self]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
     Disjoint (I.splitLower i x) (I.splitUpper i x) := by
   rw [← disjoint_withBotCoe, coe_splitLower, coe_splitUpper]

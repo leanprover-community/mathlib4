@@ -86,12 +86,12 @@ theorem isConj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
     ⟨⟨c, c⁻¹, mul_inv_cancel c, inv_mul_cancel c⟩, mul_inv_eq_iff_eq_mul.1 hc⟩⟩
 
 @[to_additive]
-theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ :=
-  (map_inv (MulAut.conj b) a).symm
+theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ := by
+  simp [mul_assoc]
 
 @[to_additive (attr := simp)]
-theorem conj_mul {a b c : α} : b * a * b⁻¹ * (b * c * b⁻¹) = b * (a * c) * b⁻¹ :=
-  (map_mul (MulAut.conj b) a c).symm
+theorem conj_mul {a b c : α} : b * a * b⁻¹ * (b * c * b⁻¹) = b * (a * c) * b⁻¹ := by
+  simp [mul_assoc]
 
 @[to_additive (attr := simp)]
 theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
@@ -108,7 +108,7 @@ theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻
 
 @[to_additive]
 theorem conj_injective {x : α} : Function.Injective fun g : α => x * g * x⁻¹ :=
-  (MulAut.conj x).injective
+  fun a b ↦ by simp
 
 end Group
 
@@ -117,8 +117,8 @@ namespace IsConj
 /- This small quotient API is largely copied from the API of `Associates`;
 where possible, try to keep them in sync -/
 /-- The setoid of the relation `IsConj` iff there is a unit `u` such that `u * x = y * u` -/
-@[to_additive /-- The setoid of the relation `IsAddConj` iff there is an additive unit `u` such
-that `u + x = y + u` -/]
+@[to_additive (attr := instance_reducible) /-- The setoid of the relation `IsAddConj` iff there
+is an additive unit `u` such that `u + x = y + u` -/]
 protected def setoid (α : Type*) [Monoid α] : Setoid α where
   r := IsConj
   iseqv := ⟨IsConj.refl, IsConj.symm, IsConj.trans⟩

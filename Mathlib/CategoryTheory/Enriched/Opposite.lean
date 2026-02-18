@@ -84,6 +84,7 @@ open ForgetEnrichment
 
 variable (C : Type u) [EnrichedCategory V C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor going from the underlying category of the enriched category `Cᵒᵖ`
 to the opposite of the underlying category of the enriched category `C`. -/
 def forgetEnrichmentOppositeEquivalence.functor :
@@ -96,6 +97,7 @@ def forgetEnrichmentOppositeEquivalence.functor :
       leftUnitor_inv_braiding_assoc, ← unitors_inv_equal, ← Category.assoc]
     congr 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor going from the opposite of the underlying category of the enriched category `C`
 to the underlying category of the enriched category `Cᵒᵖ`. -/
 def forgetEnrichmentOppositeEquivalence.inverse :
@@ -113,6 +115,7 @@ def forgetEnrichmentOppositeEquivalence.inverse :
     rw [this, ← Category.assoc]
     congr 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the underlying category of the enriched category `Cᵒᵖ` and
 the opposite of the underlying category of the enriched category `C`. -/
 @[simps]
@@ -122,6 +125,7 @@ def forgetEnrichmentOppositeEquivalence : ForgetEnrichment V Cᵒᵖ ≌ (Forget
   unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
   counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `D` is an enriched ordinary category then `Dᵒᵖ` is an enriched ordinary category. -/
 instance EnrichedOrdinaryCategory.opposite {D : Type u} [Category.{v} D]
     [EnrichedOrdinaryCategory V D] : EnrichedOrdinaryCategory V Dᵒᵖ where
