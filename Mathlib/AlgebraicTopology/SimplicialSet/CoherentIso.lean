@@ -142,7 +142,7 @@ def equivFun {n : ℕ} : coherentIso _⦋n⦌ ≃ (Fin (n + 1) → WalkingIso.{u
 
 /-- Since `Bool` (and hence `WalkingIso`) has decidable equality,
   the simplices of coherentIso have decidable equality as well. -/
-instance (n : ℕ) : DecidableEq (coherentIso _⦋n⦌) :=
+instance (n : ℕ) : DecidableEq (coherentIso.{u} _⦋n⦌) :=
   fun _ _ ↦ decidable_of_iff _ (Equiv.apply_eq_iff_eq coherentIso.equivFun)
 
 /-- The source vertex of `coherentIso`. -/
@@ -154,44 +154,44 @@ def x₁ : coherentIso _⦋0⦌ :=
   ComposableArrows.mk₀ WalkingIso.one.{u}
 
 /-- The forwards edge of `coherentIso`. -/
-def hom : Edge x₀ x₁ where
+def hom : Edge.{u} x₀ x₁ where
   edge := ComposableArrows.mk₁ ⟨⟩
   src_eq := ComposableArrows.ext₀ rfl
   tgt_eq := ComposableArrows.ext₀ rfl
 
 /-- The backwards edge of `coherentIso`. -/
-def inv : Edge x₁ x₀ where
+def inv : Edge.{u} x₁ x₀ where
   edge := ComposableArrows.mk₁ ⟨⟩
   src_eq := ComposableArrows.ext₀ rfl
   tgt_eq := ComposableArrows.ext₀ rfl
 
 /-- The forwards and backwards edge of `coherentIso` compose to the identity. -/
-def homInvId : Edge.CompStruct hom inv (Edge.id x₀) where
+def homInvId : Edge.CompStruct.{u} hom inv (Edge.id x₀) where
   simplex := ComposableArrows.mk₂ ⟨⟩ ⟨⟩
   d₂ := ComposableArrows.ext₁ rfl rfl rfl
   d₀ := ComposableArrows.ext₁ rfl rfl rfl
   d₁ := ComposableArrows.ext₁ rfl rfl rfl
 
 /-- The backwards and forwards edge of `coherentIso` compose to the identity. -/
-def invHomId : Edge.CompStruct inv hom (Edge.id x₁) where
+def invHomId : Edge.CompStruct.{u} inv hom (Edge.id x₁) where
   simplex := ComposableArrows.mk₂ ⟨⟩ ⟨⟩
   d₂ := ComposableArrows.ext₁ rfl rfl rfl
   d₀ := ComposableArrows.ext₁ rfl rfl rfl
   d₁ := ComposableArrows.ext₁ rfl rfl rfl
 
 /-- The forwards edge of `coherentIso` has an inverse. -/
-def isIsoHom : Edge.InvStruct coherentIso.hom where
+def isIsoHom : Edge.InvStruct.{u} coherentIso.hom where
   inv := inv
   homInvId := homInvId
   invHomId := invHomId
 
 /-- The image of `hom` under an SSet has an inverse. -/
-def isIsoMapHom {X : SSet} (g : coherentIso ⟶ X) : InvStruct (coherentIso.hom.map g)
+def isIsoMapHom {X : SSet} (g : coherentIso ⟶ X) : InvStruct.{u} (coherentIso.hom.map g)
   := isIsoHom.map g
 
 /-- If an edge is equal to the image of `hom` under an SSet morphism,
   this edge has an inverse. -/
-def isIsoOfEqMapHom {X : SSet} {x₀ x₁ : X _⦋0⦌}
+def isIsoOfEqMapHom {X : SSet.{u}} {x₀ x₁ : X _⦋0⦌}
     {f : Edge x₀ x₁}
     {g : coherentIso ⟶ X}
     (hfg : f.edge = g.app _ hom.edge) :
