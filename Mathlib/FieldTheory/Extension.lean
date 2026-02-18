@@ -107,6 +107,7 @@ def IsExtendible (σ : Lifts F E K) : Prop :=
 section Chain
 variable (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The union of a chain of lifts. -/
 noncomputable def union : Lifts F E K :=
   let t (i : ↑(insert ⊥ c)) := i.val.carrier
@@ -120,6 +121,7 @@ noncomputable def union : Lifts F E K :=
     _ le_rfl).comp
       (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=
   have hσ := Set.mem_insert_of_mem ⊥ hσ
   let t (i : ↑(insert ⊥ c)) := i.val.carrier
@@ -136,6 +138,7 @@ theorem carrier_union : (union c hc).carrier = ⨆ i : c, i.1.carrier :=
 theorem exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c) :
     ∃ ub, ∀ a ∈ c, a ≤ ub := ⟨_, le_union c hc⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
     [Nonempty c] (hext : ∀ σ ∈ c, σ.IsExtendible) :
     (union c hc).IsExtendible := fun S ↦ by
@@ -173,6 +176,7 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
 
 end Chain
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     (h : ∀ S : Finset E, ∃ σ : Lifts F E K, (S : Set E) ⊆ σ.carrier) :
     Nonempty (E →ₐ[F] K) := by
@@ -202,6 +206,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     rw [restrictScalars_adjoin_eq_sup, sup_le_iff, adjoin_simple_le_iff]; exact ⟨hθϕ.1, hθ.1⟩
   exact hS ⟨(θ.emb.comp <| inclusion this).toRingHom, hθϕ.2⟩ θ ⟨this, fun _ ↦ rfl⟩ (hθ.2 _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a lift `x` and an integral element `s : E` over `x.carrier` whose conjugates over
 `x.carrier` are all in `K`, we can extend the lift to a lift whose carrier contains `s`. -/
 theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carrier s)
@@ -219,6 +224,7 @@ theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carr
     ⟨fun z hz ↦ algebraMap_mem x.carrier⟮s⟯ ⟨z, hz⟩, φ.commutes⟩,
     mem_adjoin_simple_self x.carrier s⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an integral element `s : E` over `F` whose `F`-conjugates are all in `K`,
 any lift can be extended to one whose carrier contains `s`. -/
 theorem exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
@@ -230,6 +236,7 @@ end Lifts
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
     (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ ((minpoly L s).map f.toRingHom).Splits) :
     ∃ φ : adjoin L S →ₐ[F] K, φ.restrictDomain L = f := by
@@ -248,6 +255,7 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
 variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
   (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ ((minpoly L s).map f.toRingHom).Splits)
 
+set_option backward.isDefEq.respectTransparency false in
 include hK in
 theorem exists_algHom_adjoin_of_splits' :
     ∃ φ : adjoin L S →ₐ[F] K, φ.restrictDomain L = f := by

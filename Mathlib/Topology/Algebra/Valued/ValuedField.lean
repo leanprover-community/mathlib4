@@ -207,6 +207,7 @@ lemma valuation_isClosedMap : IsClosedMap (v : K → Γ₀) := by
 noncomputable def extension : hat K → Γ₀ :=
   Completion.isDenseInducing_coe.extend (v : K → Γ₀)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := by
   refine Completion.isDenseInducing_coe.continuous_extend ?_
   intro x₀
