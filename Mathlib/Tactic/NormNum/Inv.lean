@@ -69,9 +69,9 @@ theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat
 set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_natDiv {a na n : ℕ} {b nb d : ℕ} (ha : IsNat a na) (hb : IsNat b nb)
     (hab : IsNNRat ((na : ℤ) / nb : ℚ) n d) : IsNNRat (NNRat.divNat a b) n d := by
-    refine ⟨invertibleOfNonzero (by exact_mod_cast hab.den_nz), ?_⟩
-    match hab with
-    | .mk _ h => exact NNRat.cast_injective (α := ℚ) (by simpa [ha.out, hb.out] using h)
+  refine ⟨invertibleOfNonzero (by exact_mod_cast hab.den_nz), ?_⟩
+  match hab with
+  | .mk _ h => exact NNRat.cast_injective (α := ℚ) (by simpa [ha.out, hb.out] using h)
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
