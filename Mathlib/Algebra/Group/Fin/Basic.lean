@@ -51,6 +51,7 @@ For example, for `x : Fin k` and `n : Nat`,
 it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
 silently introducing wraparound arithmetic.
 -/
+@[instance_reducible]
 def instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
   natCast i := Fin.ofNat n i
@@ -100,6 +101,7 @@ theorem intCast_def' {n : Nat} [NeZero n] (x : Int) :
     (x : Fin n) = if 0 ≤ x then ↑x.natAbs else -↑x.natAbs :=
   Fin.intCast_def _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_sub_one (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a - 1 := by
   cases n
   · simp

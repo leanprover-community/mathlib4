@@ -94,6 +94,7 @@ lemma exact_succ (n : ℕ) :
 theorem ι_f_succ (n : ℕ) : I.ι.f (n + 1) = 0 :=
   (isZero_single_obj_X _ _ _ _ (by simp)).eq_of_src _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem ι_f_zero_comp_complex_d :
     I.ι.f 0 ≫ I.cocomplex.d 0 1 = 0 := by
@@ -109,6 +110,7 @@ theorem complex_d_comp (n : ℕ) :
 def kernelFork : KernelFork (I.cocomplex.d 0 1) :=
   KernelFork.ofι _ I.ι_f_zero_comp_complex_d
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Z` is the kernel of `I.cocomplex.X 0 ⟶ I.cocomplex.X 1` when `I : InjectiveResolution Z`. -/
 def isLimitKernelFork : IsLimit (I.kernelFork) := by
   refine IsLimit.ofIsoLimit (I.cocomplex.cyclesIsKernel 0 1 (by simp)) (Iso.symm ?_)
@@ -119,6 +121,7 @@ def isLimitKernelFork : IsLimit (I.kernelFork) := by
     ← cancel_epi (singleObjCyclesSelfIso (ComplexShape.up ℕ) _ _).inv]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : Mono (I.ι.f n) := by
   cases n
   · exact mono_of_isLimit_fork I.isLimitKernelFork
@@ -152,6 +155,7 @@ namespace Hom
 
 attribute [reassoc (attr := simp)] ι_f_zero_comp_hom_f_zero
 
+set_option backward.isDefEq.respectTransparency false in
 variable {I I'} in
 @[reassoc (attr := simp)]
 lemma ι_comp_hom {f : Z ⟶ Z'} (φ : Hom I I' f) :

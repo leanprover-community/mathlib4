@@ -49,6 +49,7 @@ theorem IsNoetherian.injective_of_surjective_of_injective (i f : N →ₗ[R] M)
   exact LinearMap.ker_eq_bot.1 <| bot_unique <|
     f.ker_le_of_iterateMapComap_eq_succ i ⊥ n (H _ (Nat.le_succ _)) hf hi
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Orzech's theorem** for Noetherian modules: if `R` is a ring (not necessarily commutative),
 `M` is a Noetherian `R`-module, `N` is a submodule, `f : N →ₗ[R] M` is surjective, then `f` is also
 injective. -/
