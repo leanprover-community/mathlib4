@@ -163,9 +163,8 @@ recognizes `q`, returning the cast of `q`. -/
     return .isNat _ na q(isNat_NNRatCast $pa) --q(isNat_ratCast $pa)
   | .isNNRat _ qa na da pa =>
     assumeInstancesCommute
-    match (← inferCharZeroOfDivisionSemiring? dα) with
-    | some _ => return .isNNRat q(inferInstance) qa na da q(isNNRat_NNRatCast $pa)
-    | none => failure
+    let some _ ← inferCharZeroOfDivisionSemiring? dα | failure
+    return .isNNRat q(inferInstance) qa na da q(isNNRat_NNRatCast $pa)
   | _ => failure
 
 theorem isNNRat_inv_pos {α} [DivisionSemiring α] [CharZero α] {a : α} {n d : ℕ} :
