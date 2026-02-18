@@ -199,8 +199,10 @@ lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono
     · have : (a ^ k * a) • (LinearMap.id (R := R) (M := M)) =
         (a • (LinearMap.id (M := M))).comp ((a ^ k) • (LinearMap.id (M := M))) := by
         rw [LinearMap.comp_smul, LinearMap.smul_comp, smul_smul, LinearMap.id_comp]
-      simpa [smulShortComplex, this, ModuleCat.ofHom_comp, ← extFunctorObj_map,
-        (extFunctorObj N i).map_comp] using mono_comp' (ih (Nat.zero_lt_of_ne_zero eq0)) f_mono
+      simp only [smulShortComplex, this, ofHom_comp, of_coe]
+      change Mono ((extFunctorObj N i).map (↟(a ^ k • LinearMap.id) ≫ ↟(a • LinearMap.id)))
+      rw [(extFunctorObj N i).map_comp]
+      exact mono_comp' (ih (Nat.zero_lt_of_ne_zero eq0)) f_mono
 
 lemma ext_subsingleton_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (N : ModuleCat.{v} R) [Nntr : Nontrivial N] [Nfin : Module.Finite R N]
@@ -252,7 +254,7 @@ lemma ext_subsingleton_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n
           ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp N (add_zero i)))
         have mono_gk := Ext.pow_mono_of_mono a kpos i mono_g
         -- scalar multiple by `aᵏ` on `Ext N M i` is zero since `aᵏ ∈ Ann(N)`, so `Ext N M i` vanish
-        have zero_gk : gk = 0 := smul_id_postcomp_eq_zero_of_mem_ann hk i
+        have zero_gk : gk = 0 := Ext.smul_id_postcomp_eq_zero_of_mem_ann hk i
         exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
 /--
