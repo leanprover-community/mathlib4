@@ -61,14 +61,6 @@ lemma IsSMulRegular.smulShortComplex_shortExact {r : R} (reg : IsSMulRegular M r
   exact := ModuleCat.smulShortComplex_exact M r
   mono_f := by simpa [ModuleCat.smulShortComplex, ModuleCat.mono_iff_injective] using reg
 
-lemma Submodule.smul_top_eq_comap_smul_top_of_surjective {R M M₂ : Type*} [CommSemiring R]
-    [AddCommGroup M] [AddCommGroup M₂] [Module R M] [Module R M₂] (I : Ideal R) (f : M →ₗ[R] M₂)
-    (h : Function.Surjective f) : I • ⊤ ⊔ (LinearMap.ker f) = comap f (I • ⊤) := by
-  refine le_antisymm (sup_le (smul_top_le_comap_smul_top I f) (LinearMap.ker_le_comap f)) ?_
-  rw [← Submodule.comap_map_eq f (I • (⊤ : Submodule R M)),
-    Submodule.comap_le_comap_iff_of_surjective h,
-    Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr h]
-
 variable {R : Type u} [CommRing R] [Small.{v} R] {M N : ModuleCat.{v} R} {n : ℕ}
 
 lemma CategoryTheory.Abelian.Ext.smul_id_postcomp_eq_zero_of_mem_ann {r : R}
