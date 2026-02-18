@@ -133,7 +133,7 @@ lemma eq_zero_of_homogenize_eq_zero {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n
 
 lemma homogenize_eq_zero_iff {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
     p.homogenize n = 0 ↔ p = 0 :=
-  ⟨eq_zero_of_homogenize_eq_zero hn, fun H ↦ by simp [H]⟩
+  ⟨eq_zero_of_homogenize_eq_zero hn, by simp +contextual⟩
 
 lemma eval₂_homogenize_of_eq_one {S : Type*} [CommSemiring S] {p : R[X]} {n : ℕ}
     (hn : natDegree p ≤ n) (f : R →+* S) (g : Fin 2 → S) (hg : g 1 = 1) :
@@ -254,9 +254,8 @@ lemma toTupleMvPolynomial_one_eq (p : R[X]) :
     p.toTupleMvPolynomial 1 = (MvPolynomial.X 1) ^ p.natDegree :=
   rfl
 
-lemma isHomogenous_toTupleMvPolynomial (p : R[X]) :
-    ∀ i, (p.toTupleMvPolynomial i).IsHomogeneous p.natDegree := by
-  intro i
+lemma isHomogenous_toTupleMvPolynomial (p : R[X]) (i : Fin 2) :
+    (p.toTupleMvPolynomial i).IsHomogeneous p.natDegree := by
   fin_cases i
   · simp [toTupleMvPolynomial]
   · simpa [toTupleMvPolynomial] using MvPolynomial.isHomogeneous_X_pow 1 p.natDegree
