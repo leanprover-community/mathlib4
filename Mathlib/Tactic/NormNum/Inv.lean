@@ -96,7 +96,7 @@ def evalNNRealdivNat : NormNumExt where eval {u α} (e : Q(ℚ≥0)) : MetaM (Re
   let ra ← derive (α := α) a
   let ⟨na, pa⟩ ← deriveNat q($a) q(AddCommMonoidWithOne.toAddMonoidWithOne)
   let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
-  let rab ← derive q(($na : ℤ) / $nb : ℚ)
+  let rab ← derive q(($na : ℤ) / $nb : Rat)
   let ⟨q, n, d, p⟩ ← rab.toNNRat' q(Rat.instDivisionRing.toDivisionSemiring)
   return .isNNRat _ q n d q(isNNRat_natDiv $pa $pb $p)
 
