@@ -220,9 +220,9 @@ private lemma cexp_mul_ncard_eq_finset_prod (z : ℂ) (s : Set ℕ) (hs : s ⊆ 
   simp only [Finset.mem_filter, Finset.mem_range, Set.Finite.mem_toFinset]
   exact ⟨fun hi => ⟨hs hi, hi⟩, fun ⟨_, hi⟩ => hi⟩
 
+open Classical in
 /-- The complex moment-generating function of a binomial distribution with success probability `p`
 and `n` independent trials is given by `z ↦ (1 - p + p * exp z) ^ n`. -/
-open Classical in
 theorem complexMGF_id_binomial (z : ℂ) :
     complexMGF id (binomial n p) z = (1 - p + p * cexp z) ^ n := by
   let μ := fun i ↦ (unitInterval.toNNReal p • dirac (i ∈ Set.Iio n) +
