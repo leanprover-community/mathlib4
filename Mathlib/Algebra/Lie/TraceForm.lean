@@ -215,10 +215,11 @@ lemma traceForm_lieSubalgebra_mk_right (L' : LieSubalgebra R L) {x : L'} {y : L}
 
 open TensorProduct
 
-variable [LieRing.IsNilpotent L] [IsDomain R] [IsPrincipalIdealRing R]
+variable [LieRing.IsNilpotent L] [IsDomain R]
 
-lemma traceForm_eq_sum_genWeightSpaceOf
-    [NoZeroSMulDivisors R M] [IsNoetherian R M] [IsTriangularizable R L M] (z : L) :
+set_option backward.isDefEq.respectTransparency false in
+lemma traceForm_eq_sum_genWeightSpaceOf [IsPrincipalIdealRing R]
+    [Module.IsTorsionFree R M] [IsNoetherian R M] [IsTriangularizable R L M] (z : L) :
     traceForm R L M =
     ∑ χ ∈ (finite_genWeightSpaceOf_ne_bot R L M z).toFinset,
       traceForm R L (genWeightSpaceOf M χ z) := by
@@ -237,6 +238,7 @@ lemma traceForm_eq_sum_genWeightSpaceOf
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 -- In characteristic zero (or even just `LinearWeights R L M`) a stronger result holds (no
 -- `⊓ LieAlgebra.center R L`) TODO prove this using `LieModule.traceForm_eq_sum_finrank_nsmul_mul`.
 lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Module.Finite R M] :
@@ -266,7 +268,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
   rw [traceForm_apply_apply, LinearMap.zero_apply]
   let A := AlgebraicClosure (FractionRing R)
   suffices algebraMap R A (trace R _ ((φ z).comp (φ x))) = 0 by
-    have _i : NoZeroSMulDivisors R A := NoZeroSMulDivisors.trans_faithfulSMul R (FractionRing R) A
+    have that : Module.IsTorsionFree R A := .trans_faithfulSMul R (FractionRing R) A
     rw [← map_zero (algebraMap R A)] at this
     exact FaithfulSMul.algebraMap_injective R A this
   rw [← LinearMap.trace_baseChange, LinearMap.baseChange_comp, ← toEnd_baseChange,
@@ -321,6 +323,7 @@ lemma traceForm_eq_of_le_idealizer :
   rw [N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 include h hy in
 /-- Note that this result is slightly stronger than it might look at first glance: we only assume
 that `N` is trivial over `I` rather than all of `L`. This means that it applies in the important
@@ -387,6 +390,7 @@ lemma killingForm_eq :
     killingForm R I = (killingForm R L).restrict I :=
   LieSubmodule.traceForm_eq_of_le_idealizer I I <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma le_killingCompl_top_of_isLieAbelian [IsLieAbelian I] :
     I ≤ LieIdeal.killingCompl R L ⊤ := by
   intro x (hx : x ∈ I)
@@ -405,6 +409,7 @@ namespace LieModule
 variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
 variable [LieRing.IsNilpotent L] [LinearWeights K L M] [IsTriangularizable K L M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
     traceForm K L M x y = ∑ χ : Weight K L M, finrank K (genWeightSpace M χ) • (χ x * χ y) := by
   have hxy : ∀ χ : Weight K L M, MapsTo (toEnd K L M x ∘ₗ toEnd K L M y)

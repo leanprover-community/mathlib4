@@ -346,6 +346,7 @@ lemma mem_stabilizer_mk_iff (φ : K →+* ℂ) (σ : Gal(K/k)) :
   exact congr_arg AlgEquiv.symm
     (AlgEquiv.ext (g := AlgEquiv.refl) fun x ↦ φ.injective (RingHom.congr_fun H x))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsUnramified.stabilizer_eq_bot (h : IsUnramified k w) : Stab w = ⊥ := by
   rw [eq_bot_iff, ← mk_embedding w, SetLike.le_def]
   simp only [mem_stabilizer_mk_iff, Subgroup.mem_bot, forall_eq_or_imp, true_and]
@@ -357,10 +358,6 @@ lemma _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
   ext
   rw [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     ← h.ext_iff, eq_comm (a := σ)]
-
-@[deprecated (since := "2025-07-08")]
-alias _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilzer_mk :=
-NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
 
 variable (k w)
 
@@ -384,6 +381,7 @@ lemma nat_card_stabilizer_eq_one_or_two :
 
 variable {k w}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isUnramified_iff_stabilizer_eq_bot [IsGalois k K] : IsUnramified k w ↔ Stab w = ⊥ := by
   rw [← mk_embedding w, isUnramified_mk_iff_forall_isConj]
   simp only [eq_bot_iff, SetLike.le_def, mem_stabilizer_mk_iff,

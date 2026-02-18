@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.GroupWithZero.Regular
-public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
@@ -122,9 +121,6 @@ variable {F M₀ M₀' : Type*} [MonoidWithZero M₀] [MonoidWithZero M₀'] {r 
 
 lemma nonZeroDivisorsLeft_eq_nonZeroSMulDivisors :
     nonZeroDivisorsLeft M₀ = nonZeroSMulDivisors M₀ M₀ := rfl
-
-@[deprecated (since := "2025-07-16")]
-alias nonZeroDivisorsRight_eq_nonZeroSMulDivisors := nonZeroDivisorsLeft_eq_nonZeroSMulDivisors
 
 theorem mem_nonZeroDivisors_iff :
     r ∈ M₀⁰ ↔ (∀ x, r * x = 0 → x = 0) ∧ ∀ x, x * r = 0 → x = 0 := Iff.rfl
@@ -245,10 +241,6 @@ lemma noZeroDivisors_iff_forall_mem_nonZeroDivisorsRight :
 lemma noZeroDivisors_iff_forall_mem_nonZeroDivisors :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → x ∈ M₀⁰ :=
   noZeroDivisors_iff_eq_zero_of_mul
-
-lemma noZeroSMulDivisors_iff_forall_mem_nonZeroSMulDivisors {M : Type*} [Zero M] [MulAction M₀ M] :
-    NoZeroSMulDivisors M₀ M ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroSMulDivisors M₀ M :=
-  noZeroSMulDivisors_iff_right_eq_zero_of_smul
 
 lemma IsSMulRegular.mem_nonZeroSMulDivisors {M : Type*} [Zero M] [MulActionWithZero M₀ M] {m₀ : M₀}
     (h : IsSMulRegular M m₀) : m₀ ∈ nonZeroSMulDivisors M₀ M :=
@@ -372,14 +364,6 @@ variable {M₀ M : Type*} [MonoidWithZero M₀] [Zero M] [MulAction M₀ M] {x :
 
 lemma mem_nonZeroSMulDivisors_iff : x ∈ M₀⁰[M] ↔ ∀ (m : M), x • m = 0 → m = 0 := Iff.rfl
 
-@[deprecated (since := "2025-07-16")]
-alias unop_nonZeroSMulDivisors_mulOpposite_eq_nonZeroDivisors :=
-  nonZeroDivisorsLeft_eq_nonZeroSMulDivisors
-
-@[deprecated (since := "2025-07-16")]
-alias nonZeroSMulDivisors_mulOpposite_eq_op_nonZeroDivisors :=
-  nonZeroDivisorsLeft_eq_nonZeroSMulDivisors
-
 end nonZeroSMulDivisors
 
 open scoped nonZeroDivisors
@@ -421,7 +405,7 @@ def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀�
   toEquiv := .subtypeQuotientEquivQuotientSubtype _ (s₂ := Associated.setoid _)
     (· ∈ nonZeroDivisors _)
     (by simp [mem_nonZeroDivisors_iff, Quotient.forall, Associates.mk_mul_mk])
-    (by simp [Associated.setoid])
+    (by simp +instances [Associated.setoid])
   map_mul' := by simp [Quotient.forall, Associates.mk_mul_mk]
 
 @[simp]

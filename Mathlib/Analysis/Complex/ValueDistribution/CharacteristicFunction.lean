@@ -5,8 +5,8 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
-public import Mathlib.Analysis.Complex.ValueDistribution.ProximityFunction
+public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
+public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 
 /-!
 # The Characteristic Function of Value Distribution Theory
@@ -33,13 +33,13 @@ Approximation*][MR3156076] for a detailed discussion.
 
 @[expose] public section
 
-open Metric Real Set
+open Filter Metric Real Set
 
 namespace ValueDistribution
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
-  {f : ℂ → E} {a : WithTop E}
+  {f g : ℂ → E} {a : WithTop E}
 
 variable (f a) in
 /--
@@ -57,6 +57,14 @@ noncomputable def characteristic : ℝ → ℝ := proximity f a + logCounting f 
 -/
 
 /--
+If two functions differ only on a discrete set, then their characteristic functions agree, except
+perhaps at radius 0.
+-/
+theorem characteristic_congr_codiscrete {r : ℝ} (hfg : f =ᶠ[codiscrete ℂ] g) (hr : r ≠ 0) :
+    characteristic f a r = characteristic g a r := by
+  simp [characteristic, proximity_congr_codiscrete hfg hr, logCounting_congr_codiscrete hfg]
+
+/--
 The difference between the characteristic functions for the poles of `f` and `f - const` simplifies
 to the difference between the proximity functions.
 -/
@@ -64,6 +72,26 @@ to the difference between the proximity functions.
 lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : Meromorphic f) (a₀ : E) :
     characteristic f ⊤ - characteristic (f · - a₀) ⊤ = proximity f ⊤ - proximity (f · - a₀) ⊤ := by
   simp [← Pi.sub_def, characteristic, logCounting_sub_const h]
+
+/--
+The characteristic function is even.
+-/
+theorem characteristic_even :
+    (characteristic f a).Even := proximity_even.add logCounting_even
+
+/--
+For `1 ≤ r`, the characteristic function is non-negative.
+-/
+theorem characteristic_nonneg {r : ℝ} (hr : 1 ≤ r) :
+    0 ≤ characteristic f a r :=
+  add_nonneg (proximity_nonneg r) (logCounting_nonneg hr)
+
+/--
+The characteristic function is asymptotically non-negative.
+-/
+theorem characteristic_eventually_nonneg :
+    0 ≤ᶠ[Filter.atTop] characteristic f a := by
+  filter_upwards [Filter.eventually_ge_atTop 1] using fun _ hr ↦ by simp [characteristic_nonneg hr]
 
 /-!
 ## Behaviour under Arithmetic Operations
@@ -186,6 +214,7 @@ theorem characteristic_mul_top_eventuallyLE {f₁ f₂ : ℂ → ℂ}
 @[deprecated (since := "2025-12-11")]
 alias characteristic_top_mul_eventually_le := characteristic_mul_top_eventuallyLE
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 For natural numbers `n`, the characteristic function for the zeros of `f ^ n` equals `n` times the
 characteristic counting function for the zeros of `f`.
@@ -195,6 +224,7 @@ theorem characteristic_pow_zero {f : ℂ → ℂ} {n : ℕ} (hf : Meromorphic f)
     characteristic (f ^ n) 0 = n • characteristic f 0 := by
   simp_all [characteristic]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 For natural numbers `n`, the characteristic function for the poles of `f ^ n` equals `n` times the
 characteristic function for the poles of `f`.

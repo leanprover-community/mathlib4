@@ -5,6 +5,8 @@ Authors: Yury Kudryashov, Moritz Doll
 -/
 module
 
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.LinearAlgebra.Prod
 
 /-!
@@ -394,6 +396,7 @@ theorem neg_domain (f : E →ₗ.[R] F) : (-f).domain = f.domain := rfl
 theorem neg_apply (f : E →ₗ.[R] F) (x) : (-f) x = -f x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
   ⟨fun f => by
     ext x y hxy
@@ -654,11 +657,13 @@ end LinearMap
 
 namespace LinearPMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Restrict codomain of a `LinearPMap` -/
 def codRestrict (f : E →ₗ.[R] F) (p : Submodule R F) (H : ∀ x, f x ∈ p) : E →ₗ.[R] p where
   domain := f.domain
   toFun := f.toFun.codRestrict p H
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Compose two `LinearPMap`s -/
 def comp (g : F →ₗ.[R] G) (f : E →ₗ.[R] F) (H : ∀ x : f.domain, f x ∈ g.domain) : E →ₗ.[R] G :=
   g.toFun.compPMap <| f.codRestrict _ H

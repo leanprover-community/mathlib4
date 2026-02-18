@@ -96,16 +96,12 @@ def inv (R : SetRel α β) : SetRel β α := Prod.swap ⁻¹' R
 
 @[simp] lemma mem_inv : b ~[R.inv] a ↔ a ~[R] b := .rfl
 
-@[deprecated (since := "2025-07-06")] alias inv_def := mem_inv
-
 @[simp] lemma inv_inv : R.inv.inv = R := rfl
 
 @[gcongr] lemma inv_mono (h : R₁ ⊆ R₂) : R₁.inv ⊆ R₂.inv := fun (_a, _b) hab ↦ h hab
 
 @[simp] lemma inv_empty : (∅ : SetRel α β).inv = ∅ := rfl
 @[simp] lemma inv_univ : inv (.univ : SetRel α β) = .univ := rfl
-
-@[deprecated (since := "2025-07-06")] alias inv_bot := inv_empty
 
 variable (R) in
 /-- Domain of a relation. -/
@@ -114,8 +110,6 @@ def dom : Set α := {a | ∃ b, a ~[R] b}
 variable (R) in
 /-- Codomain of a relation, aka range. -/
 def cod : Set β := {b | ∃ a, a ~[R] b}
-
-@[deprecated (since := "2025-07-06")] alias codom := cod
 
 @[simp] lemma mem_dom : a ∈ R.dom ↔ ∃ b, a ~[R] b := .rfl
 @[simp] lemma mem_cod : b ∈ R.cod ↔ ∃ a, a ~[R] b := .rfl
@@ -126,13 +120,19 @@ def cod : Set β := {b | ∃ a, a ~[R] b}
 @[simp] lemma dom_empty : (∅ : SetRel α β).dom = ∅ := by aesop
 @[simp] lemma cod_empty : (∅ : SetRel α β).cod = ∅ := by aesop
 
+@[simp] lemma dom_eq_empty_iff : R.dom = ∅ ↔ R = (∅ : SetRel α β) :=
+  ⟨fun h ↦ Set.eq_empty_iff_forall_notMem.mpr <| by simp_all [Set.eq_empty_iff_forall_notMem],
+   (· ▸ dom_empty)⟩
+
+@[simp] lemma cod_eq_empty_iff : R.cod = ∅ ↔ R = (∅ : SetRel α β) :=
+  ⟨fun h ↦ Set.eq_empty_iff_forall_notMem.mpr <| by simp_all [Set.eq_empty_iff_forall_notMem],
+   (· ▸ cod_empty)⟩
+
 @[simp] lemma dom_univ [Nonempty β] : dom (.univ : SetRel α β) = .univ := by aesop
 @[simp] lemma cod_univ [Nonempty α] : cod (.univ : SetRel α β) = .univ := by aesop
 
 @[simp] lemma cod_inv : R.inv.cod = R.dom := rfl
 @[simp] lemma dom_inv : R.inv.dom = R.cod := rfl
-
-@[deprecated (since := "2025-07-06")] alias codom_inv := cod_inv
 
 /-- The identity relation. -/
 protected def id : SetRel α α := {(a₁, a₂) | a₁ = a₂}
@@ -206,9 +206,6 @@ lemma prod_comp_prod (s : Set α) (t₁ t₂ : Set β) (u : Set γ) [Decidable (
   · exact prod_comp_prod_of_disjoint hst ..
   · rw [prod_comp_prod_of_inter_nonempty <| Set.not_disjoint_iff_nonempty_inter.1 hst]
 
-@[deprecated (since := "2025-07-06")] alias comp_right_top := comp_univ
-@[deprecated (since := "2025-07-06")] alias comp_left_top := univ_comp
-
 variable (R s) in
 /-- Image of a set under a relation. -/
 def image : Set β := {b | ∃ a ∈ s, a ~[R] b}
@@ -250,18 +247,12 @@ lemma preimage_mono : Monotone R.preimage := fun _ _ ↦ preimage_subset_preimag
 variable (R) in
 lemma image_inter_subset : image R (s₁ ∩ s₂) ⊆ image R s₁ ∩ image R s₂ := image_mono.map_inf_le ..
 
-@[deprecated (since := "2025-07-06")] alias preimage_top := image_inter_subset
-
 variable (R) in
 lemma preimage_inter_subset : preimage R (t₁ ∩ t₂) ⊆ preimage R t₁ ∩ preimage R t₂ :=
   preimage_mono.map_inf_le ..
 
-@[deprecated (since := "2025-07-06")] alias image_eq_dom_of_codomain_subset := preimage_inter_subset
-
 variable (R s₁ s₂) in
 lemma image_union : image R (s₁ ∪ s₂) = image R s₁ ∪ image R s₂ := by aesop
-
-@[deprecated (since := "2025-07-06")] alias preimage_eq_codom_of_domain_subset := image_union
 
 variable (R) in
 lemma image_iUnion (s : ι → Set α) : image R (⋃ i, s i) = ⋃ i, image R (s i) := by aesop
@@ -296,8 +287,6 @@ variable (s) in
 variable (t) in
 @[simp] lemma preimage_empty_left : preimage (∅ : SetRel α β) t = ∅ := by aesop
 
-@[deprecated (since := "2025-07-06")] alias preimage_bot := preimage_empty_left
-
 @[simp] lemma image_univ_left (hs : s.Nonempty) : image (.univ : SetRel α β) s = .univ := by aesop
 @[simp] lemma preimage_univ_left (ht : t.Nonempty) : preimage (.univ : SetRel α β) t = .univ := by
   aesop
@@ -311,16 +300,15 @@ variable (R s) in
 variable (R t) in
 @[simp] lemma preimage_inter_cod : preimage R (t ∩ R.cod) = preimage R t := by aesop
 
-@[deprecated (since := "2025-07-06")] alias preimage_inter_codom_eq := preimage_inter_cod
-
 lemma inter_dom_subset_preimage_image : s ∩ R.dom ⊆ R.preimage (image R s) := by
   aesop (add simp [Set.subset_def])
 
 lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) := by
   aesop (add simp [Set.subset_def])
 
-@[deprecated (since := "2025-07-06")]
-alias image_preimage_subset_inter_codom := inter_cod_subset_image_preimage
+lemma image_eq_biUnion : R.image s = ⋃ x ∈ s, {y | x ~[R] y} := by aesop
+
+lemma preimage_eq_biUnion : R.preimage t = ⋃ y ∈ t, {x | x ~[R] y} := by aesop
 
 variable (R t) in
 /-- Core of a set `S : Set β` w.R.t `R : SetRel α β` is the set of `x : α` that are related *only*
@@ -478,6 +466,9 @@ lemma prod_subset_comm [R.IsSymm] : s₁ ×ˢ s₂ ⊆ R ↔ s₂ ×ˢ s₁ ⊆ 
   rw [← R.inv_eq_self, SetRel.inv, ← Set.image_subset_iff, Set.image_swap_prod, ← SetRel.inv,
     R.inv_eq_self]
 
+lemma preimage_eq_image [R.IsSymm] : R.preimage s = R.image s := by
+  rw [← preimage_inv, inv_eq_self]
+
 variable (R) in
 /-- The maximal symmetric relation contained in a given relation. -/
 def symmetrize : SetRel α α := R ∩ R.inv
@@ -568,8 +559,6 @@ def graph (f : α → β) : SetRel α β := {(a, b) | f a = b}
 
 @[simp] lemma mem_graph : a ~[f.graph] b ↔ f a = b := .rfl
 
-@[deprecated (since := "2025-07-06")] alias graph_def := mem_graph
-
 theorem graph_injective : Injective (graph : (α → β) → SetRel α β) := by
   aesop (add simp [Injective, Set.ext_iff])
 
@@ -600,8 +589,6 @@ lemma SetRel.exists_graph_eq_iff (R : SetRel α β) :
   constructor
   · aesop
   · exact (h _).unique (hf _)
-
-@[deprecated (since := "2025-07-06")] alias SetRelation.is_graph_iff := SetRel.exists_graph_eq_iff
 
 namespace Set
 

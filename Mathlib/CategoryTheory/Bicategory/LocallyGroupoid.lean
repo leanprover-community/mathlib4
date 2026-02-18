@@ -39,7 +39,7 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 @[kerodon 009Q]
 abbrev IsLocallyGroupoid (B : Type u₁) [Bicategory.{w₁, v₁} B] := ∀ (b c : B), IsGroupoid (b ⟶ c)
 
-/-- Given a bicategory `B`, `Pith B` is the bicategory obtain by discarding the non-invertible
+/-- Given a bicategory `B`, `Pith B` is the bicategory obtained by discarding the non-invertible
 2-cells from `B`. We implement this as a wrapper type for `B`, and use `CategoryTheory.Core`
 to discard the non-invertible morphisms. -/
 @[kerodon 00AL]
@@ -118,7 +118,7 @@ def inclusion : Pseudofunctor (Pith B) B where
 
 variable {B} in
 /-- Any pseudofunctor from a (2,1)-category to a bicategory factors through
-the pith of the target bicateogry. -/
+the pith of the target bicategory. -/
 @[simps!]
 noncomputable def pseudofunctorToPith {B' : Type u₂} [Bicategory.{w₂, v₂} B']
     [IsLocallyGroupoid B'] (F : Pseudofunctor B' B) :
@@ -133,6 +133,7 @@ section
 
 variable {B} {B' : Type u₂} [Bicategory.{w₂, v₂} B'] [IsLocallyGroupoid B'] (F : Pseudofunctor B' B)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The hom direction of the (strong) natural isomorphism of pseudofunctors
 between `(pseudofunctorToPith F).comp (inclusion B)` and `F`. -/
 noncomputable def pseudofunctorToPithCompInclusionStrongIsoHom :
@@ -140,6 +141,7 @@ noncomputable def pseudofunctorToPithCompInclusionStrongIsoHom :
   app b' := 𝟙 _
   naturality f := (ρ_ _) ≪≫ (λ_ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inv direction of the (strong) natural isomorphism of pseudofunctors
 between `(pseudofunctorToPith F).comp (inclusion B)` and `F`. -/
 noncomputable def pseudofunctorToPithCompInclusionStrongIsoInv :

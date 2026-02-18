@@ -6,13 +6,14 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Summable
+public import Mathlib.Analysis.Analytic.Binomial
+public import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.Tactic.NormNum.NatFactorial
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
-public import Mathlib.Analysis.Normed.Module.Connected
-public import Mathlib.Analysis.Analytic.Binomial
-public import Mathlib.Analysis.Meromorphic.Order
 
 /-!
 
@@ -38,6 +39,7 @@ public import Mathlib.Analysis.Meromorphic.Order
 - `PeriodPair.analyticOnNhd_weierstrassP`: `℘` is analytic away from the lattice points.
 - `PeriodPair.meromorphic_weierstrassP`: `℘` is meromorphic on the whole plane.
 - `PeriodPair.order_weierstrassP`: `℘` has a pole of order 2 at each of the lattice points.
+- `PeriodPair.derivWeierstrassP_sq` : `℘'(z)² = 4 ℘(z)³ - g₂ ℘(z) - g₃`
 
 ## tags
 
@@ -47,7 +49,8 @@ Weierstrass p-functions, Weierstrass p functions
 
 @[expose] public section
 
-open Module
+open Module Filter
+open scoped Topology Nat
 
 noncomputable section
 
@@ -65,6 +68,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] (L : PeriodPair)
 
 namespace PeriodPair
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `ℝ`-basis of `ℂ` determined by a pair of periods. -/
 protected def basis : Basis (Fin 2) ℝ ℂ :=
   basisOfLinearIndependentOfCardEqFinrank L.indep (by simp)
@@ -75,6 +79,7 @@ protected def basis : Basis (Fin 2) ℝ ℂ :=
 /-- The lattice spanned by a pair of periods. -/
 def lattice : Submodule ℤ ℂ := Submodule.span ℤ {L.ω₁, L.ω₂}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_lattice {L : PeriodPair} {x : ℂ} :
     x ∈ L.lattice ↔ ∃ m n : ℤ, m * L.ω₁ + n * L.ω₂ = x := by
   simp only [lattice, Submodule.mem_span_pair, zsmul_eq_mul]
@@ -82,6 +87,7 @@ lemma mem_lattice {L : PeriodPair} {x : ℂ} :
 lemma ω₁_mem_lattice : L.ω₁ ∈ L.lattice := Submodule.subset_span (by simp)
 lemma ω₂_mem_lattice : L.ω₂ ∈ L.lattice := Submodule.subset_span (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_ω₁_add_mul_ω₂_mem_lattice {L : PeriodPair} {α β : ℚ} :
     α * L.ω₁ + β * L.ω₂ ∈ L.lattice ↔ α.den = 1 ∧ β.den = 1 := by
   refine ⟨fun H ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
@@ -122,6 +128,7 @@ lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
   @AddSubgroup.isClosed_of_discrete _ _ _ _ _ L.lattice.toAddSubgroup
     (inferInstanceAs (DiscreteTopology L.lattice))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s := by
   convert L.isClosed_lattice.isClosedMap_subtype_val _
     (isClosed_discrete (α := L.lattice) ((↑) ⁻¹' s))
@@ -130,6 +137,10 @@ lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed
 
 lemma isOpen_compl_lattice_diff {s : Set ℂ} : IsOpen (L.lattice \ s)ᶜ :=
   (L.isClosed_of_subset_lattice Set.diff_subset).isOpen_compl
+
+open scoped Topology in
+lemma compl_lattice_diff_singleton_mem_nhds (x : ℂ) : (↑L.lattice \ {x})ᶜ ∈ 𝓝 x :=
+  L.isOpen_compl_lattice_diff.mem_nhds (by simp)
 
 instance : ProperSpace L.lattice := .of_isClosed L.isClosed_lattice
 
@@ -147,12 +158,12 @@ def latticeBasis : Basis (Fin 2) ℤ L.lattice :=
 def latticeEquivProd : L.lattice ≃ₗ[ℤ] ℤ × ℤ :=
   L.latticeBasis.repr ≪≫ₗ Finsupp.linearEquivFunOnFinite _ _ _ ≪≫ₗ .finTwoArrow ℤ ℤ
 
+set_option backward.isDefEq.respectTransparency false in
 lemma latticeEquiv_symm_apply (x : ℤ × ℤ) :
     (L.latticeEquivProd.symm x).1 = x.1 * L.ω₁ + x.2 * L.ω₂ := by
   simp [latticeEquivProd, Finsupp.linearCombination]
-  rfl
 
-open Topology Filter in
+set_option backward.isDefEq.respectTransparency false in
 lemma hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
     (u : ℝ → L.lattice → ℝ) (hu : ∀ r > 0, Summable (u r))
     (hf : ∀ r > 0, ∀ᶠ R in atTop, ∀ x, ‖x‖ < r → ∀ l : L.lattice, ‖l.1‖ = R → ‖f l x‖ ≤ u r l) :
@@ -212,6 +223,7 @@ def weierstrassPExcept (l₀ : ℂ) (z : ℂ) : ℂ :=
 @[inherit_doc weierstrassPExcept]
 scoped notation3 "℘[" L:max " - " l₀ "]" => weierstrassPExcept L l₀
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly
       (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
@@ -238,6 +250,7 @@ lemma differentiableOn_weierstrassPExcept (l₀ : ℂ) :
   · simp
   · exact .sub (.div (by fun_prop) (by fun_prop) (by aesop (add simp sub_eq_zero))) (by fun_prop)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma weierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
     ℘[L - l₀] (-z) = ℘[L - -l₀] z := by
   simp only [weierstrassPExcept]
@@ -246,6 +259,9 @@ lemma weierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
   · simp [neg_eq_iff_eq_neg]
   simp
   ring
+
+@[simp] lemma weierstrassPExcept_zero (l₀ : ℂ) :
+    ℘[L - l₀] 0 = 0 := by simp [weierstrassPExcept]
 
 end weierstrassPExcept
 
@@ -293,6 +309,7 @@ lemma differentiableOn_weierstrassP :
   convert L.differentiableOn_weierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma weierstrassP_neg (z : ℂ) : ℘[L] (-z) = ℘[L] z := by
   simp only [weierstrassP]
@@ -307,8 +324,8 @@ lemma not_continuousAt_weierstrassP (x : ℂ) (hx : x ∈ L.lattice) : ¬ Contin
   intro H
   apply (NormedField.continuousAt_zpow (n := -2) (x := (0 : ℂ))).not.mpr (by simp)
   simpa [Function.comp_def] using
-    (((H.sub ((L.differentiableOn_weierstrassPExcept x).differentiableAt (x := x)
-      (L.isOpen_compl_lattice_diff.mem_nhds (by simp))).continuousAt).add
+    (((H.sub ((L.differentiableOn_weierstrassPExcept x).differentiableAt
+      (L.compl_lattice_diff_singleton_mem_nhds x)).continuousAt).add
       (continuous_const (y := 1 / x ^ 2)).continuousAt).comp_of_eq
       (continuous_add_left x).continuousAt (add_zero _) :)
 
@@ -325,6 +342,7 @@ def derivWeierstrassPExcept (l₀ : ℂ) (z : ℂ) : ℂ :=
 @[inherit_doc derivWeierstrassPExcept]
 scoped notation3 "℘'[" L:max " - " l₀ "]" => derivWeierstrassPExcept L l₀
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else -2 / (z - l) ^ 3)
       ℘'[L - l₀] := by
@@ -397,6 +415,10 @@ lemma eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (l₀ : ℂ) :
         simpa using hl)
       exact .sub (.div (by fun_prop) (by fun_prop) (by simpa)) (by fun_prop)
 
+@[simp] lemma deriv_weierstrassPExcept_same (l : ℂ) : deriv ℘[L - l] l = ℘'[L - l] l :=
+  L.eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept l (x := l) (by simp)
+
+set_option backward.isDefEq.respectTransparency false in
 lemma derivWeierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
     ℘'[L - l₀] (-z) = - ℘'[L - (-l₀)] z := by
   simp only [derivWeierstrassPExcept]
@@ -407,16 +429,21 @@ lemma derivWeierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
   · simp [neg_eq_iff_eq_neg]
   ring
 
+@[simp] lemma derivWeierstrassPExcept_zero_zero : ℘'[L - 0] 0 = 0 := by
+  simpa [CharZero.eq_neg_self_iff] using L.derivWeierstrassPExcept_neg 0 0
+
 end derivWeierstrassPExcept
 
 section Periodicity
 
+set_option backward.isDefEq.respectTransparency false in
 lemma derivWeierstrassPExcept_add_coe (l₀ : ℂ) (z : ℂ) (l : L.lattice) :
     ℘'[L - l₀] (z + l) = ℘'[L - (l₀ - l)] z := by
   simp only [derivWeierstrassPExcept]
   rw [← (Equiv.addRight l).tsum_eq]
   simp only [Equiv.coe_addRight, Submodule.coe_add, add_sub_add_right_eq_sub, eq_sub_iff_add_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 -- Subsumed by `weierstrassP_add_coe`
 private lemma weierstrassPExcept_add_coe_aux
     (l₀ : ℂ) (hl₀ : l₀ ∈ L.lattice) (l : L.lattice) (hl : l.1 / 2 ∉ L.lattice) :
@@ -538,6 +565,7 @@ lemma differentiableOn_derivWeierstrassP :
   convert L.differentiableOn_derivWeierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma derivWeierstrassP_neg (z : ℂ) : ℘'[L] (-z) = - ℘'[L] z := by
   simp only [derivWeierstrassP]
@@ -547,6 +575,7 @@ lemma derivWeierstrassP_neg (z : ℂ) : ℘'[L] (-z) = - ℘'[L] z := by
   congr! with l
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma derivWeierstrassP_add_coe (z : ℂ) (l : L.lattice) :
     ℘'[L] (z + l) = ℘'[L] z := by
@@ -557,6 +586,7 @@ lemma derivWeierstrassP_add_coe (z : ℂ) (l : L.lattice) :
 lemma periodic_derivWeierstrassP (l : L.lattice) : ℘'[L].Periodic l :=
   (L.derivWeierstrassP_add_coe · l)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma derivWeierstrassP_zero : ℘'[L] 0 = 0 := by
   rw [← CharZero.eq_neg_self_iff, ← L.derivWeierstrassP_neg, neg_zero]
@@ -587,6 +617,7 @@ section AnalyticWeierstrassPExcept
 /-- The sum `∑ (l - x)⁻ʳ` over `l ∈ L`. This converges when `2 < r`, see `hasSum_sumInvPow`. -/
 def sumInvPow (x : ℂ) (r : ℕ) : ℂ := ∑' l : L.lattice, ((l - x) ^ r)⁻¹
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasSum_sumInvPow (x : ℂ) {r : ℕ} (hr : 2 < r) :
     HasSum (fun l : L.lattice ↦ ((l - x) ^ r)⁻¹) (L.sumInvPow x r) := by
   refine Summable.hasSum (.of_norm_bounded (ZLattice.summable_norm_sub_zpow _
@@ -600,13 +631,14 @@ See `PeriodPair.coeff_weierstrassPExceptSeries`. -/
 def weierstrassPExceptSummand (l₀ x : ℂ) (i : ℕ) (l : L.lattice) : ℂ :=
   if l.1 = l₀ then 0 else ((i + 1) * (l.1 - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (l.1 ^ (-2 : ℤ)) 0)
 
-/-- The power series exansion of `℘[L - l₀]` at `x`.
+/-- The power series expansion of `℘[L - l₀]` at `x`.
 See `PeriodPair.hasFPowerSeriesOnBall_weierstrassPExcept`. -/
 def weierstrassPExceptSeries (l₀ x : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
   letI := Classical.propDecidable
-  .ofScalars _ fun i ↦ i.casesOn (℘[L - l₀] x) fun i ↦ (i + 2) *
-    (L.sumInvPow x (i + 3) - if l₀ ∈ L.lattice then ((l₀ - x) ^ (i + 3))⁻¹ else 0)
+  .ofScalars _ fun i ↦ if i = 0 then (℘[L - l₀] x) else (i + 1) *
+    (L.sumInvPow x (i + 2) - if l₀ ∈ L.lattice then ((l₀ - x) ^ (i + 2))⁻¹ else 0)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
     (L.weierstrassPExceptSeries l₀ x).coeff i =
       ∑' l : L.lattice, L.weierstrassPExceptSummand l₀ x i l := by
@@ -618,6 +650,7 @@ lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
     · trans (i + 2) * (L.sumInvPow x (i + 3) -
         ∑' l : L.lattice, if l = ⟨l₀, hl₀⟩ then (l₀ - x) ^ (-↑(i + 3) : ℤ) else 0)
       · rw [FormalMultilinearSeries.coeff_ofScalars, tsum_ite_eq, zpow_neg, zpow_natCast]
+        simp [add_assoc, one_add_one_eq_two]
       · rw [sumInvPow, ← (hasSum_sumInvPow _ _ (by linarith)).summable.tsum_sub, ← tsum_mul_left]
         · simp_rw [Subtype.ext_iff, zpow_neg]
           congr with l
@@ -629,6 +662,7 @@ lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
       simp [h₁, tsum_mul_left, sumInvPow, add_assoc,
         one_add_one_eq_two, ← zpow_natCast, -neg_add_rev]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 In the power series expansion of `℘(z) = ∑ᵢ aᵢ (z - x)ⁱ` at some `x ∉ L`,
 each `aᵢ` can be writen as a sum over `l ∈ L`, i.e.
@@ -734,14 +768,38 @@ lemma hasFPowerSeriesOnBall_weierstrassPExcept (l₀ x : ℂ) (r : NNReal) (hr0 
     rw [weierstrassPExceptSeries, FormalMultilinearSeries.ofScalars_apply_eq,
       FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul]
 
+lemma hasFPowerSeriesAt_weierstrassPExcept (l : ℂ) :
+    HasFPowerSeriesAt ℘[L - l] (.ofScalars (𝕜 := ℂ) ℂ fun i : ℕ ↦
+      if i = 0 then ℘[L - l] l else (i + 1) * L.sumInvPow l (i + 2)) l := by
+  obtain ⟨r, h₁, h₂⟩ := Metric.nhds_basis_closedBall.mem_iff.mp
+    (L.compl_lattice_diff_singleton_mem_nhds l)
+  lift r to NNReal using h₁.le
+  simpa [weierstrassPExceptSeries] using
+    (L.hasFPowerSeriesOnBall_weierstrassPExcept l l r h₁ h₂).hasFPowerSeriesAt
+
 lemma analyticOnNhd_weierstrassPExcept (l₀ : ℂ) : AnalyticOnNhd ℂ ℘[L - l₀] (L.lattice \ {l₀})ᶜ :=
   (L.differentiableOn_weierstrassPExcept l₀).analyticOnNhd L.isOpen_compl_lattice_diff
+
+@[fun_prop]
+lemma analyticAt_weierstrassPExcept (l₀ : ℂ) : AnalyticAt ℂ ℘[L - l₀] l₀ :=
+  L.analyticOnNhd_weierstrassPExcept _ _ (by simp)
+
+attribute [local simp] Nat.factorial_ne_zero in
+lemma iteratedDeriv_weierstrassPExcept_self (l : ℂ) {n : ℕ} :
+    iteratedDeriv n ℘[L - l] l =
+      if n = 0 then ℘[L - l] l else (n + 1)! * L.sumInvPow l (n + 2) := by
+  rw [← div_mul_cancel₀ (a := iteratedDeriv _ _ _) (b := ↑n !) (by simp),
+    ← eq_div_iff_mul_eq (by simp)]
+  trans if n = 0 then ℘[L - l] l else (n + 1) * L.sumInvPow l (n + 2)
+  · simpa using congr($((L.analyticAt_weierstrassPExcept l).hasFPowerSeriesAt
+      |>.eq_formalMultilinearSeries (L.hasFPowerSeriesAt_weierstrassPExcept l)).coeff n)
+  · cases n <;> simp [Nat.factorial_succ]; field
 
 end AnalyticWeierstrassPExcept
 
 section AnalyticderivWeierstrassPExcept
 
-/-- The power series exansion of `℘'[L - l₀]` at `x`.
+/-- The power series expansion of `℘'[L - l₀]` at `x`.
 See `PeriodPair.hasFPowerSeriesOnBall_derivWeierstrassPExcept`. -/
 def derivWeierstrassPExceptSeries (l₀ x : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
   letI := Classical.propDecidable
@@ -756,20 +814,41 @@ lemma hasFPowerSeriesOnBall_derivWeierstrassPExcept (l₀ x : ℂ) (r : NNReal) 
   · have := (L.hasFPowerSeriesOnBall_weierstrassPExcept l₀ x r hr0 hr).fderiv
     convert (ContinuousLinearMap.apply ℂ ℂ (1 : ℂ)).comp_hasFPowerSeriesOnBall this
     ext n
-    simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, smul_eq_mul,
-      ContinuousLinearMap.compFormalMultilinearSeries_apply,
-      ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply, map_smul,
-      ContinuousLinearMap.apply_apply, FormalMultilinearSeries.derivSeries_coeff_one, nsmul_eq_mul,
-      Nat.cast_add, Nat.cast_one, mul_eq_mul_left_iff]
-    left
-    simp [weierstrassPExceptSeries, derivWeierstrassPExceptSeries, mul_assoc]
+    simp [weierstrassPExceptSeries, derivWeierstrassPExceptSeries]
+    ring
   · simpa using Metric.ball_subset_closedBall
+
+lemma hasFPowerSeriesAt_derivWeierstrassPExcept (l : ℂ) :
+    HasFPowerSeriesAt ℘'[L - l]
+      (.ofScalars ℂ fun i ↦ (i + 1) * (i + 2) * L.sumInvPow l (i + 3)) l := by
+  obtain ⟨r, h₁, h₂⟩ := Metric.nhds_basis_closedBall.mem_iff.mp
+    (L.compl_lattice_diff_singleton_mem_nhds l)
+  simpa [derivWeierstrassPExceptSeries] using
+    (L.hasFPowerSeriesOnBall_derivWeierstrassPExcept l l ⟨r, h₁.le⟩ h₁ h₂).hasFPowerSeriesAt
 
 lemma analyticOnNhd_derivWeierstrassPExcept (l₀ : ℂ) :
     AnalyticOnNhd ℂ ℘'[L - l₀] (L.lattice \ {l₀})ᶜ :=
   (L.differentiableOn_derivWeierstrassPExcept l₀).analyticOnNhd L.isOpen_compl_lattice_diff
 
-lemma PeriodPairs.analyticOnNhd_derivWeierstrassP : AnalyticOnNhd ℂ ℘'[L] L.latticeᶜ :=
+@[fun_prop]
+lemma analyticAt_derivWeierstrassPExcept (l₀ : ℂ) :
+    AnalyticAt ℂ ℘'[L - l₀] l₀ :=
+  L.analyticOnNhd_derivWeierstrassPExcept l₀ _ (by simp)
+
+lemma iteratedDeriv_derivWeierstrassPExcept_self (l : ℂ) {n : ℕ} :
+    iteratedDeriv n ℘'[L - l] l = (n + 2)! * L.sumInvPow l (n + 3) := by
+  have : iteratedDeriv n ℘'[L - l] l / n ! = (↑n + 1) * (↑n + 2) * L.sumInvPow l (n + 3) := by
+    simpa using congr($((L.analyticAt_derivWeierstrassPExcept l).hasFPowerSeriesAt
+      |>.eq_formalMultilinearSeries (L.hasFPowerSeriesAt_derivWeierstrassPExcept l)).coeff n)
+  simp [div_eq_iff, Nat.factorial_ne_zero, Nat.factorial_succ] at this ⊢
+  grind
+
+@[simp]
+lemma deriv_derivWeierstrassPExcept_self (l : ℂ) :
+    deriv ℘'[L - l] l = 6 * L.sumInvPow l 4 := by
+  simpa using L.iteratedDeriv_derivWeierstrassPExcept_self l (n := 1)
+
+lemma analyticOnNhd_derivWeierstrassP : AnalyticOnNhd ℂ ℘'[L] L.latticeᶜ :=
   L.differentiableOn_derivWeierstrassP.analyticOnNhd L.isClosed_lattice.isOpen_compl
 
 end AnalyticderivWeierstrassPExcept
@@ -782,9 +861,10 @@ This is the summand of this infinite sum. See `PeriodPair.coeff_weierstrassPSeri
 def weierstrassPSummand (x : ℂ) (i : ℕ) (l : L.lattice) : ℂ :=
   ((i + 1) * (l.1 - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (l.1 ^ (-2 : ℤ)) 0)
 
-/-- The power series exansion of `℘` at `x`. See `PeriodPair.hasFPowerSeriesOnBall_weierstrassP`. -/
+/-- The power series expansion of `℘` at `x`.
+See `PeriodPair.hasFPowerSeriesOnBall_weierstrassP`. -/
 def weierstrassPSeries (x : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
-  .ofScalars _ fun i ↦ i.casesOn (℘[L] x) fun i ↦ (i + 2) * L.sumInvPow x (i + 3)
+  .ofScalars _ fun i ↦ if i = 0 then (℘[L] x) else (i + 1) * L.sumInvPow x (i + 2)
 
 lemma weierstrassPExceptSeries_of_notMem (l₀ : ℂ) (hl₀ : l₀ ∉ L.lattice) :
     L.weierstrassPExceptSeries l₀ = L.weierstrassPSeries := by
@@ -828,9 +908,10 @@ lemma analyticOnNhd_weierstrassP : AnalyticOnNhd ℂ ℘[L] L.latticeᶜ :=
 
 lemma ite_eq_one_sub_sq_mul_weierstrassP (l₀ : ℂ) (hl₀ : l₀ ∈ L.lattice) (z : ℂ) :
     (if z = l₀ then 1 else (z - l₀) ^ 2 * ℘[L] z) =
-      (z - l₀) ^ 2 * L.weierstrassPExcept l₀ z + 1 - (z - l₀) ^ 2 / l₀ ^ 2 := by
+      (z - l₀) ^ 2 * ℘[L - l₀] z + 1 - (z - l₀) ^ 2 / l₀ ^ 2 := by
   grind [L.weierstrassPExcept_add ⟨_, hl₀⟩]
 
+@[fun_prop]
 lemma meromorphic_weierstrassP : Meromorphic ℘[L] := by
   intro x
   by_cases hx : x ∈ L.lattice
@@ -838,6 +919,11 @@ lemma meromorphic_weierstrassP : Meromorphic ℘[L] := by
     have := (analyticOnNhd_weierstrassPExcept L x x (by simp)).meromorphicAt
     fun_prop
   · exact (L.analyticOnNhd_weierstrassP x hx).meromorphicAt
+
+@[fun_prop]
+lemma meromorphic_derivWeierstrassP : Meromorphic ℘'[L] := by
+  rw [← deriv_weierstrassP]
+  fun_prop
 
 lemma order_weierstrassP (l₀ : ℂ) (h : l₀ ∈ L.lattice) :
     meromorphicOrderAt ℘[L] l₀ = -2 := by
@@ -857,5 +943,149 @@ lemma order_weierstrassP (l₀ : ℂ) (h : l₀ ∈ L.lattice) :
   · norm_num
 
 end Analytic
+
+section Relation
+
+/-- The Eisenstein series as a function on lattices.
+It takes `L` to the sum `∑ l⁻ʳ` over `l ∈ L`.
+TODO: Establish connections with the `ModularForm` library. -/
+def G (n : ℕ) : ℂ := ∑' l : L.lattice, (l ^ n)⁻¹
+
+@[simp]
+lemma sumInvPow_zero : L.sumInvPow 0 = L.G := by
+  ext; simp [sumInvPow, G]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma G_eq_zero_of_odd (n : ℕ) (hn : Odd n) : L.G n = 0 := by
+  rw [← CharZero.eq_neg_self_iff, G, ← tsum_neg, ← (Equiv.neg _).tsum_eq]
+  congr with l
+  simp only [Equiv.neg_apply, NegMemClass.coe_neg, neg_inv, hn.neg_pow]
+
+/-- The lattice invariant `g₂ := 60 G₄`. -/
+def g₂ : ℂ := 60 * L.G 4
+
+/-- The lattice invariant `g₃ := 140 G₆`. -/
+def g₃ : ℂ := 140 * L.G 6
+
+/-- (Implementation detail) The relation that `℘'` and `℘` satisfies.
+We will show that this is constant zero. See `PeriodPair.relation_eq_zero` -/
+private def relation (z : ℂ) : ℂ :=
+  letI := Classical.propDecidable
+  if z ∈ L.lattice then 0 else ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃
+
+@[local fun_prop]
+private lemma meromorphic_relation : Meromorphic L.relation := by
+  have : Meromorphic fun z ↦ ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃ := by fun_prop
+  refine fun z ↦ (this _).congr ?_
+  filter_upwards [self_mem_nhdsWithin, mem_nhdsWithin_of_mem_nhds
+    (L.compl_lattice_diff_singleton_mem_nhds _)] with w hw hw'
+  rw [relation, if_neg (by simp_all)]
+
+private lemma relation_mul_id_pow_six_eventuallyEq :
+    (L.relation * id ^ 6) =ᶠ[nhds 0] fun z ↦
+      (℘'[L - (0 : ℂ)] z * z ^ 3 - 2) ^ 2 - 4 *
+      (℘[L - (0 : ℂ)] z * z ^ 2 + 1) ^ 3 + L.g₂ *
+      (℘[L - (0 : ℂ)] z * z ^ 6 + z ^ 4) + L.g₃ * z ^ 6 := by
+  filter_upwards [L.compl_lattice_diff_singleton_mem_nhds _] with z hz
+  by_cases hz0 : z = 0
+  · simp [hz0, relation]; norm_num
+  replace hz : z ∉ L.lattice := by simp_all
+  simp only [Pi.mul_apply, Pi.pow_apply, relation, ↓reduceIte, hz,
+    ← ZeroMemClass.coe_zero L.lattice, L.derivWeierstrassPExcept_def, L.weierstrassPExcept_def]
+  simp
+  field
+
+@[local fun_prop]
+private lemma analyticAt_relation_mul_id_pow_six :
+    AnalyticAt ℂ (L.relation * id ^ 6) 0 := by
+  refine .congr ?_ L.relation_mul_id_pow_six_eventuallyEq.symm
+  fun_prop
+
+@[local simp]
+private lemma relation_neg (x) : L.relation (-x) = L.relation x := by
+  classical simp [relation]
+
+attribute [local fun_prop] AnalyticAt.contDiffAt in
+private lemma iteratedDeriv_six_relation_mul_id_pow_six :
+    iteratedDeriv 6 (L.relation * id ^ 6) 0 = 0 := by
+  rw [L.relation_mul_id_pow_six_eventuallyEq.iteratedDeriv_eq]
+  simp_rw [pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
+  simp (discharger := fun_prop) only [iteratedDeriv_fun_add, iteratedDeriv_fun_sub,
+    iteratedDeriv_fun_mul, iteratedDeriv_const, iteratedDeriv_fun_pow_zero,
+    iteratedDeriv_derivWeierstrassPExcept_self, iteratedDeriv_weierstrassPExcept_self]
+  simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 3 (by decide), g₃,
+    show Nat.choose 6 4 = 15 by rfl, show Nat.choose 6 3 = 20 by rfl]
+  ring
+
+set_option backward.isDefEq.respectTransparency false in
+attribute [local fun_prop] AnalyticAt.contDiffAt in
+private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
+  refine .of_meromorphicOrderAt_pos (one_pos.trans_le ?_) (by simp [relation])
+  suffices 7 ≤ meromorphicOrderAt (L.relation * id ^ 6) 0 by
+    rw [meromorphicOrderAt_mul (by fun_prop) (by fun_prop),
+      meromorphicOrderAt_pow (by fun_prop)] at this
+    rw [← WithTop.add_le_add_iff_right (z := 6) (by simp)]
+    simpa [-add_le_add_iff_left_of_ne_top] using this
+  rw [AnalyticAt.meromorphicOrderAt_eq (by fun_prop)]
+  refine ENat.monotone_map_iff.mpr Nat.mono_cast
+    ((natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (by fun_prop)).mpr fun i hi₁ ↦ ?_)
+  by_cases hi₂ : Odd i
+  · simpa [← CharZero.eq_neg_self_iff, hi₂, (show Even 6 by decide).neg_pow] using
+      (iteratedDeriv_comp_neg i (L.relation * id ^ 6) 0 :)
+  by_cases hi₃ : i = 0
+  · simp [hi₃]
+  by_cases hi₄ : i = 6
+  · exact hi₄ ▸ L.iteratedDeriv_six_relation_mul_id_pow_six
+  rw [L.relation_mul_id_pow_six_eventuallyEq.iteratedDeriv_eq]
+  simp_rw [pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
+  simp (discharger := fun_prop) only [iteratedDeriv_fun_add, iteratedDeriv_fun_sub,
+    iteratedDeriv_fun_mul, iteratedDeriv_const, iteratedDeriv_fun_pow_zero,
+    iteratedDeriv_derivWeierstrassPExcept_self, iteratedDeriv_weierstrassPExcept_self]
+  obtain rfl | rfl : i = 2 ∨ i = 4 := by grind
+  · simp [Finset.sum_range_succ]
+  · simp [Finset.sum_range_succ, show Nat.choose 4 2 = 6 by rfl, g₂]; ring
+
+@[local simp]
+private lemma relation_add_coe (x : ℂ) (l : L.lattice) :
+    L.relation (x + l) = L.relation x := by
+  simp only [relation, derivWeierstrassP_add_coe, weierstrassP_add_coe]
+  congr 1
+  simpa using (L.lattice.toAddSubgroup.add_mem_cancel_right (y := x) l.2)
+
+@[local simp]
+private lemma relation_sub_coe (x : ℂ) (l : L.lattice) :
+    L.relation (x - l) = L.relation x := by
+  rw [← L.relation_add_coe _ l, sub_add_cancel]
+
+private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
+  by_cases hx : x ∈ L.lattice
+  · lift x to L.lattice using hx
+    have := L.analyticAt_relation_zero
+    rw [← sub_self x.1] at this
+    convert this.comp (f := (· - x.1)) (by fun_prop)
+    ext a
+    simp
+  · have : AnalyticAt ℂ (fun z ↦ ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃) x := by
+      have := L.analyticOnNhd_derivWeierstrassP _ hx
+      have := L.analyticOnNhd_weierstrassP _ hx
+      fun_prop (disch := assumption)
+    apply this.congr
+    filter_upwards [L.isClosed_lattice.isOpen_compl.mem_nhds hx] with x hx
+    simp_all [relation]
+
+set_option backward.isDefEq.respectTransparency false in
+private lemma relation_eq_zero : L.relation = 0 := by
+  ext x
+  have : Differentiable ℂ L.relation := fun x ↦ (L.analyticAt_relation x).differentiableAt
+  exact (this.apply_eq_apply_of_bounded (IsZLattice.isCompact_range_of_periodic L.lattice _
+    this.continuous fun z w hw ↦ by lift w to L.lattice using hw; simp).isBounded x 0).trans
+    (if_pos (by simp))
+
+/-- `℘'(z)² = 4 ℘(z)³ - g₂ ℘(z) - g₃` -/
+lemma derivWeierstrassP_sq (z : ℂ) (hz : z ∉ L.lattice) :
+    ℘'[L] z ^ 2 = 4 * ℘[L] z ^ 3 - L.g₂ * ℘[L] z - L.g₃ := by
+  simpa [sub_eq_zero, relation, hz, sub_add] using congr($L.relation_eq_zero z)
+
+end Relation
 
 end PeriodPair

@@ -93,9 +93,7 @@ theorem continuous_proj :
   dsimp +unfoldPartialApp [Proj]
   apply continuous_pi
   intro i
-  split
-  · apply continuous_apply
-  · apply continuous_const
+  split <;> fun_prop
 
 /-- The image of `Proj π J` -/
 def π : Set (I → Bool) := (Proj J) '' C
@@ -212,6 +210,7 @@ def spanFunctor [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompac
   map_id J := by simp only [projRestricts_eq_id C (· ∈ (unop J))]; rfl
   map_comp _ _ := by rw [← CompHausLike.ofHom_comp]; congr; dsimp; rw [projRestricts_eq_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The limit cone on `spanFunctor` with point `C`. -/
 noncomputable
 def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
@@ -226,6 +225,7 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
         (leOfHom h.unop)]
       rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `spanFunctor hC ≅ indexFunctor hC` when `hC : IsCompact C`. -/
 @[simps!]
 noncomputable def spanFunctorIsoIndexFunctor
@@ -313,6 +313,7 @@ namespace Products
 instance : LinearOrder (Products I) :=
   inferInstanceAs (LinearOrder {l : List I // l.IsChain (· > ·)})
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (· < ·) l.val m.val := by
   simp

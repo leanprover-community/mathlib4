@@ -53,6 +53,7 @@ def single (a : α) (b : M) : α →₀ M where
     Pi.single a b
   mem_support_toFun a' := by grind
 
+set_option backward.isDefEq.respectTransparency false in
 @[grind =]
 theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
   classical
@@ -63,8 +64,15 @@ theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α)
 
 theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
   classical
-  ext
-  simp [single_apply, Set.indicator, @eq_comm _ a]
+  ext x
+  simp only [single_apply, Set.indicator, Set.mem_singleton_iff, @eq_comm _ a]
+
+theorem Set.indicator_singleton_eq (a : α) (f : α → M) :
+    Set.indicator {a} f = ⇑(single a (f a)) := by
+  classical
+  ext x
+  simp only [Set.indicator, Set.mem_singleton_iff, single_apply, @eq_comm _ a]
+  split_ifs with h <;> simp [h]
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
@@ -389,8 +397,8 @@ variable [Zero M] [Zero N] [Zero P]
 
 @[simp]
 theorem mapRange_single {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
-    mapRange f hf (single a b) = single a (f b) :=
-  by classical grind
+    mapRange f hf (single a b) = single a (f b) := by
+  classical grind
 
 end MapRange
 
