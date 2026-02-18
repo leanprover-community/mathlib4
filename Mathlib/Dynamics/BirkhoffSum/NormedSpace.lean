@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Dynamics.BirkhoffSum.Average
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Dynamics.BirkhoffSum.Average
 
 /-!
 # Birkhoff average in a normed space
@@ -16,6 +18,8 @@ At the time of writing, all lemmas in this file
 are motivated by the proof of the von Neumann Mean Ergodic Theorem,
 see `LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
+
+public section
 
 open Function Set Filter
 open scoped Topology ENNReal Uniformity
@@ -48,7 +52,7 @@ theorem dist_birkhoffSum_birkhoffSum_le (f : α → α) (g : α → E) (n : ℕ)
       ∑ k ∈ Finset.range n, dist (g (f^[k] x)) (g (f^[k] y)) :=
   dist_sum_sum_le _ _ _
 
-variable (𝕜 : Type*) [RCLike 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable (𝕜 : Type*) [RCLike 𝕜] [NormedSpace 𝕜 E]
 
 theorem dist_birkhoffAverage_birkhoffAverage (f : α → α) (g : α → E) (n : ℕ) (x y : α) :
     dist (birkhoffAverage 𝕜 f g n x) (birkhoffAverage 𝕜 f g n y) =
@@ -90,7 +94,7 @@ tends to zero.
 
 See also `tendsto_birkhoffAverage_apply_sub_birkhoffAverage`. -/
 theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage' {g : α → E}
-    (h : Bornology.IsBounded (range g)) (f : α → α) (x : α):
+    (h : Bornology.IsBounded (range g)) (f : α → α) (x : α) :
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) :=
   tendsto_birkhoffAverage_apply_sub_birkhoffAverage _ <| h.subset <| range_comp_subset_range _ _
 
@@ -119,7 +123,7 @@ theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : Uni
       simpa using (hf.iterate _).edist_le_mul_of_le h.le
     _ = n * ε / n := by simp
     _ ≤ ε := by
-      rcases eq_or_ne n 0 with hn | hn <;> field_simp [hn, hε.le, mul_div_cancel_left₀]
+      rcases eq_or_ne n 0 with hn | hn <;> simp [hn, hε.le, mul_div_cancel_left₀]
 
 /-- If `f : X → X` is a non-strictly contracting map (i.e., it is Lipschitz with constant `1`),
 `g : X → E` is a uniformly continuous, and `l : X → E` is a continuous function,

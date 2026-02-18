@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Andrew Yang
 -/
-import Mathlib.CategoryTheory.ComposableArrows
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+module
+
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
 /-! # Essential surjectivity of the functor induced on composable arrows
 
@@ -15,24 +17,28 @@ is essentially surjective for any `n : ℕ`.
 
 -/
 
+public section
+
 namespace CategoryTheory
 
 namespace Localization
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C)
   [L.IsLocalization W]
 
 open ComposableArrows
 
+set_option backward.isDefEq.respectTransparency false in
 lemma essSurj_mapComposableArrows_of_hasRightCalculusOfFractions
     [W.HasRightCalculusOfFractions] (n : ℕ) :
     (L.mapComposableArrows n).EssSurj where
   mem_essImage Y := by
     have := essSurj L W
-    induction n
-    · obtain ⟨Y, rfl⟩ := mk₀_surjective Y
+    induction n with
+    | zero =>
+      obtain ⟨Y, rfl⟩ := mk₀_surjective Y
       exact ⟨mk₀ _, ⟨isoMk₀ (L.objObjPreimageIso Y)⟩⟩
-    · next n hn =>
+    | succ n hn =>
       obtain ⟨Y, Z, f, rfl⟩ := ComposableArrows.precomp_surjective Y
       obtain ⟨Y', ⟨e⟩⟩ := hn Y
       obtain ⟨f', hf'⟩ := exists_rightFraction L W

@@ -3,12 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.UniformSpace.Completion
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Topology.Instances.Real
+module
 
-#align_import topology.metric_space.completion from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Topology.MetricSpace.Algebra
+public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # The completion of a metric space
@@ -19,6 +19,7 @@ by extending the distance to the completion and checking that it is indeed a dis
 it defines the same uniformity as the already defined uniform structure on the completion
 -/
 
+@[expose] public section
 
 open Set Filter UniformSpace Metric
 
@@ -41,19 +42,16 @@ instance : Dist (Completion α) :=
 protected theorem uniformContinuous_dist :
     UniformContinuous fun p : Completion α × Completion α ↦ dist p.1 p.2 :=
   uniformContinuous_extension₂ dist
-#align uniform_space.completion.uniform_continuous_dist UniformSpace.Completion.uniformContinuous_dist
 
 /-- The new distance is continuous. -/
 protected theorem continuous_dist [TopologicalSpace β] {f g : β → Completion α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x ↦ dist (f x) (g x) :=
-  Completion.uniformContinuous_dist.continuous.comp (hf.prod_mk hg : _)
-#align uniform_space.completion.continuous_dist UniformSpace.Completion.continuous_dist
+  Completion.uniformContinuous_dist.continuous.comp (hf.prodMk hg :)
 
 /-- The new distance is an extension of the original distance. -/
 @[simp]
 protected theorem dist_eq (x y : α) : dist (x : Completion α) y = dist x y :=
   Completion.extension₂_coe_coe uniformContinuous_dist _ _
-#align uniform_space.completion.dist_eq UniformSpace.Completion.dist_eq
 
 /- Let us check that the new distance satisfies the axioms of a distance, by starting from the
 properties on α and extending them to `Completion α` by continuity. -/
@@ -63,7 +61,6 @@ protected theorem dist_self (x : Completion α) : dist x x = 0 := by
     exact Completion.continuous_dist continuous_id continuous_id
   · intro a
     rw [Completion.dist_eq, dist_self]
-#align uniform_space.completion.dist_self UniformSpace.Completion.dist_self
 
 protected theorem dist_comm (x y : Completion α) : dist x y = dist y x := by
   refine induction_on₂ x y ?_ ?_
@@ -71,7 +68,6 @@ protected theorem dist_comm (x y : Completion α) : dist x y = dist y x := by
         (Completion.continuous_dist continuous_snd continuous_fst)
   · intro a b
     rw [Completion.dist_eq, Completion.dist_eq, dist_comm]
-#align uniform_space.completion.dist_comm UniformSpace.Completion.dist_comm
 
 protected theorem dist_triangle (x y z : Completion α) : dist x z ≤ dist x y + dist y z := by
   refine induction_on₃ x y z ?_ ?_
@@ -80,7 +76,6 @@ protected theorem dist_triangle (x y z : Completion α) : dist x z ≤ dist x y 
   · intro a b c
     rw [Completion.dist_eq, Completion.dist_eq, Completion.dist_eq]
     exact dist_triangle a b c
-#align uniform_space.completion.dist_triangle UniformSpace.Completion.dist_triangle
 
 /-- Elements of the uniformity (defined generally for completions) can be characterized in terms
 of the distance. -/
@@ -106,12 +101,12 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
         exact isClosed_le continuous_const Completion.uniformContinuous_dist.continuous
       · intro x y
         rw [Completion.dist_eq]
-        by_cases h : ε ≤ dist x y
+        by_cases! h : ε ≤ dist x y
         · exact Or.inl h
-        · have Z := hε (not_le.1 h)
+        · have Z := hε h
           simp only [Set.mem_setOf_eq] at Z
           exact Or.inr Z
-    simp only [not_le.mpr hxy, false_or_iff, not_le] at this
+    simp only [not_le.mpr hxy, false_or] at this
     exact ts this
   · /- Start from a set `s` containing an ε-neighborhood of the diagonal in `Completion α`. To show
         that it is an entourage, we use the fact that `dist` is uniformly continuous on
@@ -124,23 +119,15 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
     let r : Set (ℝ × ℝ) := { p | dist p.1 p.2 < ε }
     have : r ∈ uniformity ℝ := Metric.dist_mem_uniformity εpos
     have T := uniformContinuous_def.1 (@Completion.uniformContinuous_dist α _) r this
-    simp only [uniformity_prod_eq_prod, mem_prod_iff, exists_prop, Filter.mem_map,
-      Set.mem_setOf_eq] at T
+    simp only [uniformity_prod_eq_prod, mem_prod_iff, Filter.mem_map] at T
     rcases T with ⟨t1, ht1, t2, ht2, ht⟩
     refine mem_of_superset ht1 ?_
     have A : ∀ a b : Completion α, (a, b) ∈ t1 → dist a b < ε := by
       intro a b hab
       have : ((a, b), (a, a)) ∈ t1 ×ˢ t2 := ⟨hab, refl_mem_uniformity ht2⟩
-      have I := ht this
-      simp? [r, Completion.dist_self, Real.dist_eq, Completion.dist_comm] at I says
-        simp only [Real.dist_eq, gt_iff_lt, mem_setOf_eq, preimage_setOf_eq,
-          Completion.dist_self, Completion.dist_comm, zero_sub, abs_neg, r] at I
-      exact lt_of_le_of_lt (le_abs_self _) I
-    show t1 ⊆ s
-    rintro ⟨a, b⟩ hp
-    have : dist a b < ε := A a b hp
-    exact hε this
-#align uniform_space.completion.mem_uniformity_dist UniformSpace.Completion.mem_uniformity_dist
+      exact lt_of_le_of_lt (le_abs_self _)
+        (by simpa [r, Completion.dist_self, Real.dist_eq, Completion.dist_comm] using ht this)
+    grind
 
 /-- Reformulate `Completion.mem_uniformity_dist` in terms that are suitable for the definition
 of the metric space structure. -/
@@ -150,12 +137,10 @@ protected theorem uniformity_dist' :
   · simp [Completion.mem_uniformity_dist, subset_def]
   · rintro ⟨r, hr⟩ ⟨p, hp⟩
     use ⟨min r p, lt_min hr hp⟩
-    simp (config := { contextual := true }) [lt_min_iff]
-#align uniform_space.completion.uniformity_dist' UniformSpace.Completion.uniformity_dist'
+    simp +contextual
 
 protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _
-#align uniform_space.completion.uniformity_dist UniformSpace.Completion.uniformity_dist
 
 /-- Metric space structure on the completion of a pseudo_metric space. -/
 instance instMetricSpace : MetricSpace (Completion α) :=
@@ -165,24 +150,30 @@ instance instMetricSpace : MetricSpace (Completion α) :=
       dist_triangle := Completion.dist_triangle
       dist := dist
       toUniformSpace := inferInstance
-      uniformity_dist := Completion.uniformity_dist
-      edist_dist := fun x y ↦ rfl } _
-#align uniform_space.completion.metric_space UniformSpace.Completion.instMetricSpace
-
-@[deprecated eq_of_dist_eq_zero]
-protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y :=
-  eq_of_dist_eq_zero h
-#align uniform_space.completion.eq_of_dist_eq_zero UniformSpace.Completion.eq_of_dist_eq_zero
+      uniformity_dist := Completion.uniformity_dist } _
 
 /-- The embedding of a metric space in its completion is an isometry. -/
 theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
   Isometry.of_dist_eq Completion.dist_eq
-#align uniform_space.completion.coe_isometry UniformSpace.Completion.coe_isometry
 
 @[simp]
 protected theorem edist_eq (x y : α) : edist (x : Completion α) y = edist x y :=
   coe_isometry x y
-#align uniform_space.completion.edist_eq UniformSpace.Completion.edist_eq
+
+instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [IsBoundedSMul M α] :
+    IsBoundedSMul M (Completion α) where
+  dist_smul_pair' c x₁ x₂ := by
+    induction x₁, x₂ using induction_on₂ with
+    | hp => exact isClosed_le (by fun_prop) (by fun_prop)
+    | ih x₁ x₂ =>
+      rw [← coe_smul, ← coe_smul, Completion.dist_eq, Completion.dist_eq]
+      exact dist_smul_pair c x₁ x₂
+  dist_pair_smul' c₁ c₂ x := by
+    induction x using induction_on with
+    | hp => exact isClosed_le (by fun_prop) (by fun_prop)
+    | ih x =>
+      rw [← coe_smul, ← coe_smul, Completion.dist_eq, ← coe_zero, Completion.dist_eq]
+      exact dist_pair_smul c₁ c₂ x
 
 end UniformSpace.Completion
 
@@ -191,19 +182,32 @@ open UniformSpace Completion NNReal
 theorem LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
     {K : ℝ≥0} (h : LipschitzWith K f) : LipschitzWith K (Completion.extension f) :=
   LipschitzWith.of_dist_le_mul fun x y => induction_on₂ x y
-    (isClosed_le (by continuity) (by continuity)) <| by
+    (isClosed_le (by fun_prop) (by fun_prop)) <| by
       simpa only [extension_coe h.uniformContinuous, Completion.dist_eq] using h.dist_le_mul
 
 theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
     (h : LipschitzWith K f) : LipschitzWith K (Completion.map f) :=
   one_mul K ▸ (coe_isometry.lipschitz.comp h).completion_extension
 
-theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
-    (h : Isometry f) : Isometry (Completion.extension f) :=
+theorem Isometry.completion_extension [PseudoMetricSpace β] [CompleteSpace β] [T0Space β]
+    {f : α → β} (h : Isometry f) : Isometry (Completion.extension f) :=
   Isometry.of_dist_eq fun x y => induction_on₂ x y
-    (isClosed_eq (by continuity) (by continuity)) fun _ _ ↦ by
+    (isClosed_eq (by fun_prop) (by fun_prop)) fun _ _ ↦ by
       simp only [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
 
 theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.map f) :=
   (coe_isometry.comp h).completion_extension
+
+/-- The extension of an isometry to the completion of the domain. -/
+def Isometry.extensionHom [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
+    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] [CompleteSpace β]
+    [T0Space β] {f : α →+* β} (h : Isometry f) : Completion α →+* β :=
+  Completion.extensionHom f h.continuous
+
+@[simp]
+theorem Isometry.extensionHom_coe [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
+    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] [CompleteSpace β]
+    [T0Space β] {f : α →+* β} (h : Isometry f) (x : α) :
+    h.extensionHom x = f x :=
+  UniformSpace.Completion.extensionHom_coe f h.continuous _

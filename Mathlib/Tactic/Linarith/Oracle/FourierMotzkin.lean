@@ -3,7 +3,12 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Tactic.Linarith.Datatypes
+module
+
+public meta import Batteries.Lean.HashMap
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public import Batteries.Lean.HashMap
+public import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
 # The Fourier-Motzkin elimination procedure
@@ -28,10 +33,12 @@ We recursively eliminate all variables from the system. If we derive an empty cl
 we conclude that the original system was unsatisfiable.
 -/
 
-open Batteries
-open Std (format ToFormat)
+public meta section
 
-namespace Linarith
+open Batteries
+open Std (format ToFormat TreeSet)
+
+namespace Mathlib.Tactic.Linarith
 
 /-!
 ### Datatypes
@@ -45,7 +52,7 @@ they are not shared with other components of `linarith`.
 The atomic source of a comparison is an assumption, indexed by a natural number.
 Two comparisons can be added to produce a new comparison,
 and one comparison can be scaled by a natural number to produce a new comparison.
- -/
+-/
 inductive CompSource : Type
   | assump : Nat → CompSource
   | add : CompSource → CompSource → CompSource
@@ -59,12 +66,12 @@ to the number of copies of that assumption that appear in the history of `cs`.
 For example, suppose `cs` is produced by scaling assumption 2 by 5,
 and adding to that the sum of assumptions 1 and 2.
 `cs.flatten` maps `1 ↦ 1, 2 ↦ 6`.
- -/
-def CompSource.flatten : CompSource → HashMap Nat Nat
-  | (CompSource.assump n) => HashMap.empty.insert n 1
+-/
+def CompSource.flatten : CompSource → Std.HashMap Nat Nat
+  | (CompSource.assump n) => (∅ : Std.HashMap Nat Nat).insert n 1
   | (CompSource.add c1 c2) =>
       (CompSource.flatten c1).mergeWith (fun _ b b' => b + b') (CompSource.flatten c2)
-  | (CompSource.scale n c) => (CompSource.flatten c).mapVal (fun _ v => v * n)
+  | (CompSource.scale n c) => (CompSource.flatten c).map (fun _ v => v * n)
 
 /-- Formats a `CompSource` for printing. -/
 def CompSource.toString : CompSource → String
@@ -105,17 +112,17 @@ structure PComp : Type where
   back to the original assumptions. -/
   src : CompSource
   /-- The set of original assumptions which have been used in constructing this comparison. -/
-  history : RBSet ℕ Ord.compare
+  history : TreeSet ℕ Ord.compare
   /-- The variables which have been *effectively eliminated*,
   i.e. by running the elimination algorithm on that variable. -/
-  effective : RBSet ℕ Ord.compare
+  effective : TreeSet ℕ Ord.compare
   /-- The variables which have been *implicitly eliminated*.
   These are variables that appear in the historical set,
-  do not appear in `c` itself, and are not in `effective. -/
-  implicit : RBSet ℕ Ord.compare
+  do not appear in `c` itself, and are not in `effective`. -/
+  implicit : TreeSet ℕ Ord.compare
   /-- The union of all variables appearing in those original assumptions
   which appear in the `history` set. -/
-  vars : RBSet ℕ Ord.compare
+  vars : TreeSet ℕ Ord.compare
 
 /--
 Any comparison whose history is not minimal is redundant,
@@ -166,7 +173,7 @@ additional fields of `PComp`.
   `vars` but not `c.vars` or `effective`.
 (Note that the description of the implicitly eliminated variables of `c1 + c2` in the algorithm
 described in Section 6 of https://doi.org/10.1016/B978-0-444-88771-9.50019-2 seems to be wrong:
-that says it should be `(c1.implicit.union c2.implicit).sdiff explicit`.
+that says it should be `(c1.implicit.union' c2.implicit).sdiff explicit`.
 Since the implicitly eliminated sets start off empty for the assumption,
 this formula would leave them always empty.)
 -/
@@ -176,7 +183,7 @@ def PComp.add (c1 c2 : PComp) (elimVar : ℕ) : PComp :=
   let history := c1.history.union c2.history
   let vars := c1.vars.union c2.vars
   let effective := (c1.effective.union c2.effective).insert elimVar
-  let implicit := (vars.sdiff (.ofList c.vars _)).sdiff effective
+  let implicit := (vars.diff (.ofList c.vars _)).diff effective
   ⟨c, src, history, effective, implicit, vars⟩
 
 /--
@@ -188,7 +195,7 @@ No variables have been eliminated (effectively or implicitly).
 def PComp.assump (c : Comp) (n : ℕ) : PComp where
   c := c
   src := CompSource.assump n
-  history := RBSet.empty.insert n
+  history := {n}
   effective := .empty
   implicit := .empty
   vars := .ofList c.vars _
@@ -200,7 +207,7 @@ instance : ToString PComp :=
   ⟨fun p => toString p.c.coeffs ++ toString p.c.str ++ "0"⟩
 
 /-- A collection of comparisons. -/
-abbrev PCompSet := RBSet PComp PComp.cmp
+abbrev PCompSet := TreeSet PComp PComp.cmp
 
 /-! ### Elimination procedure -/
 
@@ -236,7 +243,7 @@ def elimWithSet (a : ℕ) (p : PComp) (comps : PCompSet) : PCompSet :=
   comps.foldl (fun s pc =>
   match pelimVar p pc a with
   | some pc => if pc.maybeMinimal a then s.insert pc else s
-  | none => s) RBSet.empty
+  | none => s) TreeSet.empty
 
 /--
 The state for the elimination monad.
@@ -257,7 +264,7 @@ The linarith monad extends an exceptional monad with a `LinarithData` state.
 An exception produces a contradictory `PComp`.
 -/
 abbrev LinarithM : Type → Type :=
-  StateT LinarithData (ExceptT PComp Id)
+  StateT LinarithData (ExceptT PComp Lean.Core.CoreM)
 
 /-- Returns the current max variable. -/
 def getMaxVar : LinarithM ℕ :=
@@ -271,7 +278,7 @@ def getPCompSet : LinarithM PCompSet :=
 def validate : LinarithM Unit := do
   match (← getPCompSet).toList.find? (fun p : PComp => p.isContr) with
   | none => return ()
-  | some c => throw c
+  | some c => throwThe _ c
 
 /--
 Updates the current state with a new max variable and comparisons,
@@ -295,7 +302,7 @@ def splitSetByVarSign (a : ℕ) (comps : PCompSet) : PCompSet × PCompSet × PCo
     if n > 0 then ⟨pos.insert pc, neg, notPresent⟩
     else if n < 0 then ⟨pos, neg.insert pc, notPresent⟩
     else ⟨pos, neg, notPresent.insert pc⟩)
-    ⟨RBSet.empty, RBSet.empty, RBSet.empty⟩
+    ⟨TreeSet.empty, TreeSet.empty, TreeSet.empty⟩
 
 /--
 `elimVarM a` performs one round of Fourier-Motzkin elimination, eliminating the variable `a`
@@ -303,9 +310,14 @@ from the `linarith` state.
 -/
 def elimVarM (a : ℕ) : LinarithM Unit := do
   let vs ← getMaxVar
-  if (a ≤ vs) then (do
+  if (a ≤ vs) then
+    Lean.Core.checkSystem decl_name%.toString
     let ⟨pos, neg, notPresent⟩ := splitSetByVarSign a (← getPCompSet)
-    update (vs - 1) (pos.foldl (fun s p => s.union (elimWithSet a p neg)) notPresent))
+    update (vs - 1) (← pos.foldlM (fun s p => do
+      Lean.Core.checkSystem decl_name%.toString
+      -- FIXME: `.foldl .insert` should be equivalent to `.union`, but this breaks the test from
+      -- https://github.com/leanprover-community/mathlib4/issues/8875
+      pure ((elimWithSet a p neg).foldl .insert s)) notPresent)
   else
     pure ()
 
@@ -322,13 +334,16 @@ def elimAllVarsM : LinarithM Unit := do
 those hypotheses. It produces an initial state for the elimination monad.
 -/
 def mkLinarithData (hyps : List Comp) (maxVar : ℕ) : LinarithData :=
-  ⟨maxVar, .ofList (hyps.enum.map fun ⟨n, cmp⟩ => PComp.assump cmp n) _⟩
+  ⟨maxVar, .ofList (hyps.mapIdx fun n cmp => PComp.assump cmp n) _⟩
 
 /-- An oracle that uses Fourier-Motzkin elimination. -/
 def CertificateOracle.fourierMotzkin : CertificateOracle where
-  produceCertificate hyps maxVar := match ExceptT.run
-      (StateT.run (do validate; elimAllVarsM : LinarithM Unit) (mkLinarithData hyps maxVar)) with
-  | (Except.ok _) => failure
-  | (Except.error contr) => return contr.src.flatten
+  produceCertificate hyps maxVar :=  do
+    let linarithData := mkLinarithData hyps maxVar
+    let result ←
+      (ExceptT.run (StateT.run (do validate; elimAllVarsM : LinarithM Unit) linarithData) :)
+    match result with
+    | (Except.ok _) => failure
+    | (Except.error contr) => return contr.src.flatten
 
-end Linarith
+end Mathlib.Tactic.Linarith

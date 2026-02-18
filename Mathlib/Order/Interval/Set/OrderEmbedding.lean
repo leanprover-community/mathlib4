@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.UnorderedInterval
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Order.Interval.Set.UnorderedInterval
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Preimages of intervals under order embeddings
@@ -14,6 +16,8 @@ is an interval in the domain.
 
 Note that similar statements about images require the range to be order-connected.
 -/
+
+public section
 
 open Set
 
@@ -45,6 +49,6 @@ variable [LinearOrder α]
 
 @[simp] theorem preimage_uIoc [LinearOrder β] (e : α ↪o β) (x y : α) :
     e ⁻¹' (uIoc (e x) (e y)) = uIoc x y := by
-  cases le_or_lt x y <;> simp [*]
+  cases le_total x y <;> simp [*]
 
 end OrderEmbedding

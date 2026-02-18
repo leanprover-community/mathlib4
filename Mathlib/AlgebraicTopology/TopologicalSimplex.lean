@@ -1,96 +1,66 @@
 /-
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Adam Topaz
+Authors: Johan Commelin, Adam Topaz, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Instances.NNReal
+module
 
-#align_import algebraic_topology.topological_simplex from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.Analysis.Convex.StdSimplex
+public import Mathlib.Topology.Category.TopCat.ULift
 
 /-!
 # Topological simplices
 
-We define the natural functor from `SimplexCategory` to `TopCat` sending `[n]` to the
+We define the natural functor from `SimplexCategory` to `TopCat` sending `⦋n⦌` to the
 topological `n`-simplex.
 This is used to define `TopCat.toSSet` in `AlgebraicTopology.SingularSet`.
 -/
 
-set_option linter.uppercaseLean3 false
+@[expose] public section
 
-noncomputable section
+universe u
+
+open CategoryTheory Simplicial
 
 namespace SimplexCategory
 
-open Simplicial NNReal Classical CategoryTheory
-
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
-
--- Porting note: added, should be moved
-instance (x : SimplexCategory) : Fintype (ConcreteCategory.forget.obj x) :=
-  inferInstanceAs (Fintype (Fin _))
-
-/-- The topological simplex associated to `x : SimplexCategory`.
-  This is the object part of the functor `SimplexCategory.toTop`. -/
-def toTopObj (x : SimplexCategory) := { f : x → ℝ≥0 | ∑ i, f i = 1 }
-#align simplex_category.to_Top_obj SimplexCategory.toTopObj
-
-instance (x : SimplexCategory) : CoeFun x.toTopObj fun _ => x → ℝ≥0 :=
-  ⟨fun f => (f : x → ℝ≥0)⟩
-
-@[ext]
-theorem toTopObj.ext {x : SimplexCategory} (f g : x.toTopObj) : (f : x → ℝ≥0) = g → f = g :=
-  Subtype.ext
-#align simplex_category.to_Top_obj.ext SimplexCategory.toTopObj.ext
-
-/-- A morphism in `SimplexCategory` induces a map on the associated topological spaces. -/
-def toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) : y.toTopObj :=
-  ⟨fun i => ∑ j ∈ Finset.univ.filter (f · = i), g j, by
-    simp only [toTopObj, Set.mem_setOf]
-    rw [← Finset.sum_biUnion]
-    · have hg : ∑ i : (forget SimplexCategory).obj x, g i = 1 := g.2
-      convert hg
-      simp [Finset.eq_univ_iff_forall]
-    · apply Set.pairwiseDisjoint_filter⟩
-#align simplex_category.to_Top_map SimplexCategory.toTopMap
-
-@[simp]
-theorem coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i : y) :
-    toTopMap f g i = ∑ j ∈ Finset.univ.filter (f · = i), g j :=
-  rfl
-#align simplex_category.coe_to_Top_map SimplexCategory.coe_toTopMap
-
-@[continuity]
-theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (toTopMap f) := by
-  refine Continuous.subtype_mk (continuous_pi fun i => ?_) _
-  dsimp only [coe_toTopMap]
-  exact continuous_finset_sum _ (fun j _ => (continuous_apply _).comp continuous_subtype_val)
-#align simplex_category.continuous_to_Top_map SimplexCategory.continuous_toTopMap
-
-/-- The functor associating the topological `n`-simplex to `[n] : SimplexCategory`. -/
+attribute [local simp] stdSimplex.map_comp_apply in
+/-- The functor `SimplexCategory ⥤ TopCat.{0}`
+associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
 @[simps obj map]
-def toTop : SimplexCategory ⥤ TopCat where
-  obj x := TopCat.of x.toTopObj
-  map f := ⟨toTopMap f, by continuity⟩
-  map_id := by
-    intro Δ
-    ext f
-    apply toTopObj.ext
-    funext i
-    change (Finset.univ.filter (· = i)).sum _ = _
-    simp [Finset.sum_filter, CategoryTheory.id_apply]
-  map_comp := fun f g => by
-    ext h
-    apply toTopObj.ext
-    funext i
-    dsimp
-    simp only [comp_apply, TopCat.coe_of_of, ContinuousMap.coe_mk, coe_toTopMap]
-    rw [← Finset.sum_biUnion]
-    · apply Finset.sum_congr
-      · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
-      · tauto
-    · apply Set.pairwiseDisjoint_filter
-#align simplex_category.to_Top SimplexCategory.toTop
+noncomputable def toTop₀ : CosimplicialObject TopCat.{0} where
+  obj n := TopCat.of (stdSimplex ℝ (Fin (n.len + 1)))
+  map f := TopCat.ofHom ⟨_, stdSimplex.continuous_map f⟩
+
+/-- The functor `SimplexCategory ⥤ TopCat.{u}`
+associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
+@[simps! obj map, pp_with_univ]
+noncomputable def toTop : SimplexCategory ⥤ TopCat.{u} :=
+  toTop₀ ⋙ TopCat.uliftFunctor
+
+instance (n : SimplexCategory) : Nonempty (toTop₀.obj n) := by dsimp; infer_instance
+
+instance (n : SimplexCategory) : Nonempty (toTop.{u}.obj n) := inferInstanceAs (Nonempty (ULift _))
+
+instance : Unique (toTop₀.obj ⦋0⦌) := inferInstanceAs (Unique (stdSimplex ℝ (Fin 1)))
+
+instance : Unique (toTop.{u}.obj ⦋0⦌) := inferInstanceAs (Unique (ULift _))
+
+set_option backward.isDefEq.respectTransparency false in
+instance (n : SimplexCategory) : PathConnectedSpace (toTop₀.obj n) := by dsimp; infer_instance
+
+instance (n : SimplexCategory) : PathConnectedSpace (toTop.{u}.obj n) :=
+  ULift.up_surjective.pathConnectedSpace continuous_uliftUp
+
+@[deprecated (since := "2025-08-25")] alias toTopObj := toTop₀
+@[deprecated (since := "2025-08-25")] alias toTopObj.ext := stdSimplex.ext
+@[deprecated (since := "2025-08-25")] alias toTopObj_zero_apply_zero := stdSimplex.eq_one_of_unique
+@[deprecated (since := "2025-08-25")] alias toTopObj_one_add_eq_one := stdSimplex.add_eq_one
+@[deprecated (since := "2025-08-25")] alias toTopObj_one_coe_add_coe_eq_one := stdSimplex.add_eq_one
+@[deprecated (since := "2025-08-25")] alias toTopObjOneHomeo := stdSimplexHomeomorphUnitInterval
+@[deprecated (since := "2025-08-25")] alias toTopMap := toTop₀
+@[deprecated (since := "2025-08-25")] alias coe_toTopMap := FunOnFinite.linearMap_apply_apply
+@[deprecated (since := "2025-08-25")] alias continuous_toTopMap := stdSimplex.continuous_map
 
 end SimplexCategory

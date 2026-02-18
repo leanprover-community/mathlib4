@@ -3,8 +3,9 @@ Copyright (c) 2024 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+module
 
-import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 /-!
 # ZeroAtInftyContinuousMapClass in normed additive groups
@@ -15,12 +16,15 @@ for every `ε > 0` there exists a `r : ℝ` such that for all `x : E` with `r < 
 `‖f x‖ < ε`.
 -/
 
+public section
+
 open Topology Filter
 
 variable {E F 𝓕 : Type*}
 variable [SeminormedAddGroup E] [SeminormedAddCommGroup F]
 variable [FunLike 𝓕 E F] [ZeroAtInftyContinuousMapClass 𝓕 E F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ZeroAtInftyContinuousMapClass.norm_le (f : 𝓕) (ε : ℝ) (hε : 0 < ε) :
     ∃ (r : ℝ), ∀ (x : E) (_hx : r < ‖x‖), ‖f x‖ < ε := by
   have h := zero_at_infty f
@@ -29,12 +33,13 @@ theorem ZeroAtInftyContinuousMapClass.norm_le (f : 𝓕) (ε : ℝ) (hε : 0 < �
   rcases Metric.closedBall_compl_subset_of_mem_cocompact h 0 with ⟨r, hr⟩
   use r
   intro x hr'
-  suffices x ∈ (fun x ↦ ‖f x‖) ⁻¹' Metric.ball 0 ε by aesop
+  suffices x ∈ (fun x ↦ ‖f x‖) ⁻¹' Metric.ball 0 ε by simp_all
   apply hr
-  aesop
+  simp_all
 
 variable [ProperSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem zero_at_infty_of_norm_le (f : E → F)
     (h : ∀ (ε : ℝ) (_hε : 0 < ε), ∃ (r : ℝ), ∀ (x : E) (_hx : r < ‖x‖), ‖f x‖ < ε) :
     Tendsto f (cocompact E) (𝓝 0) := by

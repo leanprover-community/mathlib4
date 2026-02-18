@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Associator
-import Mathlib.CategoryTheory.GradedObject.Single
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Associator
+public import Mathlib.CategoryTheory.GradedObject.Single
 /-!
 # The left and right unitors
 
@@ -19,6 +21,8 @@ to a triangle identity for the induced functors on graded objects.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
@@ -27,7 +31,7 @@ namespace GradedObject
 
 section LeftUnitor
 
-variable {C D I J : Type*} [Category C] [Category D]
+variable {C D I J : Type*} [Category* C] [Category* D]
   [Zero I] [DecidableEq I] [HasInitial C]
   (F : C ⥤ D ⥤ D) (X : C) (e : F.obj X ≅ 𝟭 D)
   [∀ (Y : D), PreservesColimit (Functor.empty.{0} C) (F.flip.obj Y)]
@@ -53,7 +57,7 @@ noncomputable def mapBifunctorObjSingle₀ObjIsInitial (a : I × J) (ha : a.1 �
 `p : I × J → J` such that `p ⟨0, j⟩ = j` for all `j`,
 this is the (colimit) cofan which shall be used to construct the isomorphism
 `mapBifunctorMapObj F p ((single₀ I).obj X) Y ≅ Y`, see `mapBifunctorLeftUnitor`. -/
-noncomputable def mapBifunctorLeftUnitorCofan (j : J) :
+noncomputable def mapBifunctorLeftUnitorCofan (hp : ∀ (j : J), p ⟨0, j⟩ = j) (Y) (j : J) :
     (((mapBifunctor F I J).obj ((single₀ I).obj X)).obj Y).CofanMapObjFun p j :=
   CofanMapObjFun.mk _ _ _ (Y j) (fun a ha =>
     if ha : a.1 = 0 then
@@ -67,6 +71,7 @@ lemma mapBifunctorLeftUnitorCofan_inj (j : J) :
       (F.map (singleObjApplyIso (0 : I) X).hom).app (Y j) ≫ e.hom.app (Y j) := by
   simp [mapBifunctorLeftUnitorCofan]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofan `mapBifunctorLeftUnitorCofan F X e p hp Y j` is a colimit. -/
 noncomputable def mapBifunctorLeftUnitorCofanIsColimit (j : J) :
     IsColimit (mapBifunctorLeftUnitorCofan F X e p hp Y j) :=
@@ -84,6 +89,7 @@ noncomputable def mapBifunctorLeftUnitorCofanIsColimit (j : J) :
         exact mapBifunctorObjSingle₀ObjIsInitial _ _ _ _ hi)
     (fun s m hm => by simp [← hm ⟨⟨0, j⟩, hp j⟩])
 
+include e hp in
 lemma mapBifunctorLeftUnitor_hasMap :
     HasMap (((mapBifunctor F I J).obj ((single₀ I).obj X)).obj Y) p :=
   CofanMapObjFun.hasMap _ _ _ (mapBifunctorLeftUnitorCofanIsColimit F X e p hp Y)
@@ -98,6 +104,7 @@ noncomputable def mapBifunctorLeftUnitor : mapBifunctorMapObj F p ((single₀ I)
   isoMk _ _ (fun j => (CofanMapObjFun.iso
     (mapBifunctorLeftUnitorCofanIsColimit F X e p hp Y j)).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorLeftUnitor_hom_apply (j : J) :
     ιMapBifunctorMapObj F p ((single₀ I).obj X) Y 0 j j (hp j) ≫
@@ -114,6 +121,7 @@ lemma mapBifunctorLeftUnitor_inv_apply (j : J) :
 
 variable {Y Y'}
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapBifunctorLeftUnitor_inv_naturality :
     φ ≫ (mapBifunctorLeftUnitor F X e p hp Y').inv =
@@ -123,8 +131,8 @@ lemma mapBifunctorLeftUnitor_inv_naturality :
   rw [mapBifunctorLeftUnitor_inv_apply, mapBifunctorLeftUnitor_inv_apply, assoc, assoc,
     ι_mapBifunctorMapMap]
   dsimp
-  rw [Functor.map_id, NatTrans.id_app, id_comp]
-  erw [← NatTrans.naturality_assoc, ← NatTrans.naturality_assoc]
+  rw [Functor.map_id, NatTrans.id_app, id_comp, ← NatTrans.naturality_assoc,
+    ← NatTrans.naturality_assoc]
   rfl
 
 @[reassoc]
@@ -138,7 +146,7 @@ end LeftUnitor
 
 section RightUnitor
 
-variable {C D I J : Type*} [Category C] [Category D]
+variable {C D I J : Type*} [Category* C] [Category* D]
   [Zero I] [DecidableEq I] [HasInitial C]
   (F : D ⥤ C ⥤ D) (Y : C) (e : F.flip.obj Y ≅ 𝟭 D)
   [∀ (X : D), PreservesColimit (Functor.empty.{0} C) (F.obj X)]
@@ -164,7 +172,7 @@ noncomputable def mapBifunctorObjObjSingle₀IsInitial (a : J × I) (ha : a.2 �
 `p : J × I → J` such that `p ⟨j, 0⟩ = j` for all `j`,
 this is the (colimit) cofan which shall be used to construct the isomorphism
 `mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`, see `mapBifunctorRightUnitor`. -/
-noncomputable def mapBifunctorRightUnitorCofan (j : J) :
+noncomputable def mapBifunctorRightUnitorCofan (hp : ∀ (j : J), p ⟨j, 0⟩ = j) (X) (j : J) :
     (((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y)).CofanMapObjFun p j :=
   CofanMapObjFun.mk _ _ _ (X j) (fun a ha =>
     if ha : a.2 = 0 then
@@ -178,6 +186,7 @@ lemma mapBifunctorRightUnitorCofan_inj (j : J) :
       (F.obj (X j)).map (singleObjApplyIso (0 : I) Y).hom ≫ e.hom.app (X j) := by
   simp [mapBifunctorRightUnitorCofan]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofan `mapBifunctorRightUnitorCofan F Y e p hp X j` is a colimit. -/
 noncomputable def mapBifunctorRightUnitorCofanIsColimit (j : J) :
     IsColimit (mapBifunctorRightUnitorCofan F Y e p hp X j) :=
@@ -200,6 +209,7 @@ noncomputable def mapBifunctorRightUnitorCofanIsColimit (j : J) :
       rw [← hm ⟨⟨j, 0⟩, hp j⟩, mapBifunctorRightUnitorCofan_inj, assoc, ← Functor.map_comp_assoc,
         Iso.inv_hom_id, Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc])
 
+include e hp in
 lemma mapBifunctorRightUnitor_hasMap :
     HasMap (((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y)) p :=
   CofanMapObjFun.hasMap _ _ _ (mapBifunctorRightUnitorCofanIsColimit F Y e p hp X)
@@ -214,6 +224,7 @@ noncomputable def mapBifunctorRightUnitor : mapBifunctorMapObj F p X ((single₀
   isoMk _ _ (fun j => (CofanMapObjFun.iso
     (mapBifunctorRightUnitorCofanIsColimit F Y e p hp X j)).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorRightUnitor_hom_apply (j : J) :
     ιMapBifunctorMapObj F p X ((single₀ I).obj Y) j 0 j (hp j) ≫
@@ -228,8 +239,9 @@ lemma mapBifunctorRightUnitor_inv_apply (j : J) :
       e.inv.app (X j) ≫ (F.obj (X j)).map (singleObjApplyIso (0 : I) Y).inv ≫
         ιMapBifunctorMapObj F p X ((single₀ I).obj Y) j 0 j (hp j) := rfl
 
-variable {Y Y'}
+variable {Y}
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapBifunctorRightUnitor_inv_naturality :
     φ ≫ (mapBifunctorRightUnitor F Y e p hp X').inv =
@@ -240,7 +252,7 @@ lemma mapBifunctorRightUnitor_inv_naturality :
     ι_mapBifunctorMapMap]
   dsimp
   rw [Functor.map_id, id_comp, NatTrans.naturality_assoc]
-  erw [← NatTrans.naturality_assoc]
+  erw [← NatTrans.naturality_assoc e.inv]
   rfl
 
 @[reassoc]
@@ -269,8 +281,8 @@ structure TriangleIndexData (r : I₁ × I₂ × I₃ → J) (π : I₁ × I₃ 
   h₁ (i₁ : I₁) : p₁₂ (i₁, 0) = i₁
   h₃ (i₃ : I₃) : p₂₃ (0, i₃) = i₃
 
-variable {r : I₁ × I₂ × I₃ → J} {π : I₁ × I₃ → J}
-  (τ : TriangleIndexData r π)
+variable {r : I₁ × I₂ × I₃ → J} {π : I₁ × I₃ → J} (τ : TriangleIndexData r π)
+include τ
 
 namespace TriangleIndexData
 
@@ -301,7 +313,7 @@ end
 
 section Triangle
 
-variable {C₁ C₂ C₃ D I₁ I₂ I₃ J : Type*} [Category C₁] [Category C₂] [Category C₃] [Category D]
+variable {C₁ C₂ C₃ D I₁ I₂ I₃ J : Type*} [Category* C₁] [Category* C₂] [Category* C₃] [Category* D]
   [Zero I₂] [DecidableEq I₂] [HasInitial C₂]
   {F₁ : C₁ ⥤ C₂ ⥤ C₁} {F₂ : C₂ ⥤ C₃ ⥤ C₃} {G : C₁ ⥤ C₃ ⥤ D}
   (associator : bifunctorComp₁₂ F₁ G ≅ bifunctorComp₂₃ G F₂)
@@ -320,10 +332,11 @@ variable {C₁ C₂ C₃ D I₁ I₂ I₃ J : Type*} [Category C₁] [Category C
   [HasGoodTrifunctor₁₂Obj F₁ G τ.ρ₁₂ X₁ ((single₀ I₂).obj X₂) X₃]
   [HasGoodTrifunctor₂₃Obj G F₂ τ.ρ₂₃ X₁ ((single₀ I₂).obj X₂) X₃]
   [HasMap (((mapBifunctor G I₁ I₃).obj X₁).obj X₃) π]
-  (triangle : ∀ (X₁ : C₁) (X₃ : C₃), ((associator.hom.app X₁).app X₂).app X₃ ≫
-    (G.obj X₁).map (e₂.hom.app X₃) = (G.map (e₁.hom.app X₁)).app X₃)
 
-lemma mapBifunctor_triangle :
+set_option backward.isDefEq.respectTransparency false in
+lemma mapBifunctor_triangle
+    (triangle : ∀ (X₁ : C₁) (X₃ : C₃), ((associator.hom.app X₁).app X₂).app X₃ ≫
+    (G.obj X₁).map (e₂.hom.app X₃) = (G.map (e₁.hom.app X₁)).app X₃) :
     (mapBifunctorAssociator associator τ.ρ₁₂ τ.ρ₂₃ X₁ ((single₀ I₂).obj X₂) X₃).hom ≫
     mapBifunctorMapMap G π (𝟙 X₁) (mapBifunctorLeftUnitor F₂ X₂ e₂ τ.p₂₃ τ.h₃ X₃).hom =
       mapBifunctorMapMap G π (mapBifunctorRightUnitor F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁).hom (𝟙 X₃) := by

@@ -3,10 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Order.Group.Synonym
+module
 
-#align_import algebra.group_with_zero.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.Order.Group.Synonym
 
 /-!
 # Group with zero structure on the order type synonyms
@@ -14,8 +14,8 @@ import Mathlib.Algebra.Order.Group.Synonym
 Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
 -/
 
+@[expose] public section
 
-open scoped Classical
 
 open Function
 
@@ -37,11 +37,11 @@ instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := h
 
 instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ := h
 
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero αᵒᵈ := h
+instance [Mul α] [Zero α] [h : IsLeftCancelMulZero α] : IsLeftCancelMulZero αᵒᵈ := h
+instance [Mul α] [Zero α] [h : IsRightCancelMulZero α] : IsRightCancelMulZero αᵒᵈ := h
+instance [Mul α] [Zero α] [h : IsCancelMulZero α] : IsCancelMulZero αᵒᵈ := h
 
 instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := h
-
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero αᵒᵈ := h
 
 instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ := h
 
@@ -60,11 +60,11 @@ instance [h : SemigroupWithZero α] : SemigroupWithZero (Lex α) := h
 
 instance [h : MonoidWithZero α] : MonoidWithZero (Lex α) := h
 
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero (Lex α) := h
+instance [Mul α] [Zero α] [h : IsLeftCancelMulZero α] : IsLeftCancelMulZero (Lex α) := h
+instance [Mul α] [Zero α] [h : IsRightCancelMulZero α] : IsRightCancelMulZero (Lex α) := h
+instance [Mul α] [Zero α] [h : IsCancelMulZero α] : IsCancelMulZero (Lex α) := h
 
 instance [h : CommMonoidWithZero α] : CommMonoidWithZero (Lex α) := h
-
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero (Lex α) := h
 
 instance [h : GroupWithZero α] : GroupWithZero (Lex α) := h
 

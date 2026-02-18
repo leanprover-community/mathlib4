@@ -3,17 +3,15 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Fourier.FourierTransform
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
 
-#align_import analysis.fourier.riemann_lebesgue_lemma from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
+public import Mathlib.Analysis.Fourier.FourierTransform
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+public import Mathlib.MeasureTheory.Function.ContinuousMapDense
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # The Riemann-Lebesgue Lemma
@@ -23,7 +21,7 @@ spaces `V`: if `f` is a function on `V` (valued in a complete normed space `E`),
 Fourier transform of `f`, viewed as a function on the dual space of `V`, tends to 0 along the
 cocompact filter. Here the Fourier transform is defined by
 
-`fun w : V →L[ℝ] ℝ ↦ ∫ (v : V), exp (↑(2 * π * w v) * I) • f v`.
+`fun w : StrongDual ℝ V ↦ ∫ (v : V), exp (↑(2 * π * w v) * I) • f v`.
 
 This is true for arbitrary functions, but is only interesting for `L¹` functions (if `f` is not
 integrable then the integral is zero for all `w`). This is proved first for continuous
@@ -45,9 +43,11 @@ equivalence to an inner-product space.
   reformulations explicitly using the Fourier integral.
 -/
 
+public section
+
 noncomputable section
 
-open MeasureTheory Filter Complex Set FiniteDimensional
+open MeasureTheory Filter Complex Set Module
 
 open scoped Filter Topology Real ENNReal FourierTransform RealInnerProductSpace NNReal
 
@@ -58,12 +58,9 @@ section InnerProductSpace
 variable [NormedAddCommGroup V] [MeasurableSpace V] [BorelSpace V] [InnerProductSpace ℝ V]
   [FiniteDimensional ℝ V]
 
-#align fourier_integrand_integrable Real.fourierIntegral_convergent_iff
-
-variable [CompleteSpace E]
-
 local notation3 "i" => fun (w : V) => (1 / (2 * ‖w‖ ^ 2) : ℝ) • w
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Shifting `f` by `(1 / (2 * ‖w‖ ^ 2)) • w` negates the integral in the Riemann-Lebesgue lemma. -/
 theorem fourierIntegral_half_period_translate {w : V} (hw : w ≠ 0) :
     (∫ v : V, 𝐞 (-⟪v, w⟫) • f (v + i w)) = -∫ v : V, 𝐞 (-⟪v, w⟫) • f v := by
@@ -75,22 +72,14 @@ theorem fourierIntegral_half_period_translate {w : V} (hw : w ≠ 0) :
     (fun v : V => 𝐞 (-⟪v, w⟫) • f (v + i w)) =
       fun v : V => (fun x : V => -(𝐞 (-⟪x, w⟫) • f x)) (v + i w) := by
     ext1 v
-    simp_rw [inner_add_left, hiw, Submonoid.smul_def, Real.fourierChar_apply, neg_add, mul_add,
+    simp_rw [inner_add_left, hiw, Circle.smul_def, Real.fourierChar_apply, neg_add, mul_add,
       ofReal_add, add_mul, exp_add]
-    have : 2 * π * -(1 / 2) = -π := by field_simp; ring
-    rw [this, ofReal_neg, neg_mul, exp_neg, exp_pi_mul_I, inv_neg, inv_one, mul_neg_one, neg_smul,
-      neg_neg]
-  rw [this]
-  -- Porting note:
-  -- The next three lines had just been
-  -- rw [integral_add_right_eq_self (fun (x : V) ↦ -(𝐞[-⟪x, w⟫]) • f x)
-  --       ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)]
-  -- Unfortunately now we need to specify `volume`.
-  have := integral_add_right_eq_self (μ := volume) (fun (x : V) ↦ -(𝐞 (-⟪x, w⟫) • f x))
-    ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)
-  rw [this]
-  simp only [neg_smul, integral_neg]
-#align fourier_integral_half_period_translate fourierIntegral_half_period_translate
+    match_scalars
+    have H : exp (- (π * I)) = (-1)⁻¹ := by rw [exp_neg, exp_pi_mul_I]
+    linear_combination (norm := ring_nf) cexp (-2 * π * ⟪v, w⟫ * I) * H
+  rw [this, integral_add_right_eq_self (fun (x : V) ↦ -(𝐞 (-⟪x, w⟫) • f x))
+        ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)]
+  simp only [integral_neg]
 
 /-- Rewrite the Fourier integral in a form that allows us to use uniform continuity. -/
 theorem fourierIntegral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0)
@@ -99,13 +88,13 @@ theorem fourierIntegral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0)
   simp_rw [smul_sub]
   rw [integral_sub, fourierIntegral_half_period_translate hw, sub_eq_add_neg, neg_neg, ←
     two_smul ℂ _, ← @smul_assoc _ _ _ _ _ _ (IsScalarTower.left ℂ), smul_eq_mul]
-  · norm_num
+  · simp
   exacts [(Real.fourierIntegral_convergent_iff w).2 hf,
     (Real.fourierIntegral_convergent_iff w).2 (hf.comp_add_right _)]
-#align fourier_integral_eq_half_sub_half_period_translate fourierIntegral_eq_half_sub_half_period_translate
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Riemann-Lebesgue Lemma for continuous and compactly-supported functions: the integral
-`∫ v, exp (-2 * π * ⟪w, v⟫ * I) • f v` tends to 0 wrt `cocompact V`. Note that this is primarily
+`∫ v, exp (-2 * π * ⟪w, v⟫ * I) • f v` tends to 0 w.r.t. `cocompact V`. Note that this is primarily
 of interest as a preparatory step for the more general result
 `tendsto_integral_exp_inner_smul_cocompact` in which `f` can be arbitrary. -/
 theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support (hf1 : Continuous f)
@@ -123,8 +112,8 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   have mA : MeasurableSet A := by
     suffices A = Metric.closedBall (0 : V) (R + 1) by
       rw [this]
-      exact Metric.isClosed_ball.measurableSet
-    simp_rw [Metric.closedBall, dist_eq_norm, sub_zero]
+      exact Metric.isClosed_closedBall.measurableSet
+    simp_rw [A, Metric.closedBall, dist_eq_norm, sub_zero]
   obtain ⟨B, hB_pos, hB_vol⟩ : ∃ B : ℝ≥0, 0 < B ∧ volume A ≤ B := by
     have hc : IsCompact A := by
       simpa only [Metric.closedBall, dist_eq_norm, sub_zero] using isCompact_closedBall (0 : V) _
@@ -145,12 +134,12 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     rw [norm_smul, norm_div, Real.norm_of_nonneg (mul_nonneg two_pos.le <| sq_nonneg _), norm_one,
       sq, ← div_div, ← div_div, ← div_div, div_mul_cancel₀ _ (norm_eq_zero.not.mpr hw_ne)]
   --* Rewrite integral in terms of `f v - f (v + w')`.
-  have : ‖(1 / 2 : ℂ)‖ = 2⁻¹ := by norm_num
+  have : ‖(1 / 2 : ℂ)‖ = 2⁻¹ := by simp
   rw [fourierIntegral_eq_half_sub_half_period_translate hw_ne
       (hf1.integrable_of_hasCompactSupport hf2),
-    norm_smul, this, inv_mul_eq_div, div_lt_iff' two_pos]
+    norm_smul, this, inv_mul_eq_div, div_lt_iff₀' two_pos]
   refine lt_of_le_of_lt (norm_integral_le_integral_norm _) ?_
-  simp_rw [norm_circle_smul]
+  simp_rw [Circle.norm_smul]
   --* Show integral can be taken over A only.
   have int_A : ∫ v : V, ‖f v - f (v + i w)‖ = ∫ v in A, ‖f v - f (v + i w)‖ := by
     refine (setIntegral_eq_integral_of_forall_compl_eq_zero fun v hv => ?_).symm
@@ -172,30 +161,23 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     simp_rw [norm_norm]
     simp_rw [dist_eq_norm] at hδ2
     refine fun x _ => (hδ2 ?_).le
-    rw [sub_add_cancel_left, norm_neg, hw'_nm, ← div_div, div_lt_iff (norm_pos_iff.mpr hw_ne), ←
-      div_lt_iff' hδ1, div_div]
+    rw [sub_add_cancel_left, norm_neg, hw'_nm, ← div_div, div_lt_iff₀ (norm_pos_iff.mpr hw_ne), ←
+      div_lt_iff₀' hδ1, div_div]
     exact (lt_add_of_pos_left _ one_half_pos).trans_le hw_bd
-  have bdA2 := norm_setIntegral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA ?_
-  swap
-  · apply Continuous.aestronglyMeasurable
-    exact
-      continuous_norm.comp <|
-        Continuous.sub hf1 <| Continuous.comp hf1 <| continuous_id'.add continuous_const
+  have bdA2 := norm_setIntegral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA
   have : ‖_‖ = ∫ v : V in A, ‖f v - f (v + i w)‖ :=
     Real.norm_of_nonneg (setIntegral_nonneg mA fun x _ => norm_nonneg _)
   rw [this] at bdA2
   refine bdA2.trans_lt ?_
-  rw [div_mul_eq_mul_div, div_lt_iff (NNReal.coe_pos.mpr hB_pos), mul_comm (2 : ℝ), mul_assoc,
-    mul_lt_mul_left hε]
-  rw [← ENNReal.toReal_le_toReal] at hB_vol
-  · refine hB_vol.trans_lt ?_
-    rw [(by rfl : (↑B : ENNReal).toReal = ↑B), two_mul]
-    exact lt_add_of_pos_left _ hB_pos
-  exacts [(hB_vol.trans_lt ENNReal.coe_lt_top).ne, ENNReal.coe_lt_top.ne]
-#align tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support
+  rw [div_mul_eq_mul_div, div_lt_iff₀ (NNReal.coe_pos.mpr hB_pos), mul_comm (2 : ℝ), mul_assoc,
+    mul_lt_mul_iff_right₀ hε]
+  refine (ENNReal.toReal_mono ENNReal.coe_ne_top hB_vol).trans_lt ?_
+  rw [ENNReal.coe_toReal, two_mul]
+  exact lt_add_of_pos_left _ hB_pos
 
 variable (f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Riemann-Lebesgue lemma for functions on a real inner-product space: the integral
 `∫ v, exp (-2 * π * ⟪w, v⟫ * I) • f v` tends to 0 as `w → ∞`. -/
 theorem tendsto_integral_exp_inner_smul_cocompact :
@@ -212,62 +194,66 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
             (tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support hg_cont
               hg_supp))
           _ (div_pos hε two_pos)).mp
-      (eventually_of_forall fun w hI => ?_)
+      (Eventually.of_forall fun w hI => ?_)
   rw [dist_eq_norm] at hI ⊢
   have : ‖(∫ v, 𝐞 (-⟪v, w⟫) • f v) - ∫ v, 𝐞 (-⟪v, w⟫) • g v‖ ≤ ε / 2 := by
     refine le_trans ?_ hfg
     simp_rw [← integral_sub ((Real.fourierIntegral_convergent_iff w).2 hfi)
       ((Real.fourierIntegral_convergent_iff w).2 (hg_cont.integrable_of_hasCompactSupport hg_supp)),
       ← smul_sub, ← Pi.sub_apply]
-    exact VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ bilinFormOfRealInner (f - g) w
+    exact VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ (innerₗ V) (f - g) w
   replace := add_lt_add_of_le_of_lt this hI
   rw [add_halves] at this
   refine ((le_of_eq ?_).trans (norm_add_le _ _)).trans_lt this
   simp only [sub_zero, sub_add_cancel]
-#align tendsto_integral_exp_inner_smul_cocompact tendsto_integral_exp_inner_smul_cocompact
 
 /-- The Riemann-Lebesgue lemma for functions on `ℝ`. -/
 theorem Real.tendsto_integral_exp_smul_cocompact (f : ℝ → E) :
-    Tendsto (fun w : ℝ => ∫ v : ℝ, 𝐞 (-(v * w)) • f v) (cocompact ℝ) (𝓝 0) :=
-  tendsto_integral_exp_inner_smul_cocompact f
-#align real.tendsto_integral_exp_smul_cocompact Real.tendsto_integral_exp_smul_cocompact
+    Tendsto (fun w : ℝ => ∫ v : ℝ, 𝐞 (-(v * w)) • f v) (cocompact ℝ) (𝓝 0) := by
+  simp_rw [mul_comm]
+  exact tendsto_integral_exp_inner_smul_cocompact f
 
-/-- The Riemann-Lebesgue lemma for functions on `ℝ`, formulated via `Real.fourierIntegral`. -/
-theorem Real.zero_at_infty_fourierIntegral (f : ℝ → E) : Tendsto (𝓕 f) (cocompact ℝ) (𝓝 0) :=
+/-- The Riemann-Lebesgue lemma for functions on `ℝ`, formulated via
+`Real.instFourierTransform.fourier`. -/
+theorem Real.zero_at_infty_fourier (f : ℝ → E) : Tendsto (𝓕 f) (cocompact ℝ) (𝓝 0) :=
   tendsto_integral_exp_inner_smul_cocompact f
-#align real.zero_at_infty_fourier_integral Real.zero_at_infty_fourierIntegral
 
+@[deprecated (since := "2025-11-16")]
+alias Real.zero_at_infty_fourierIntegral := Real.zero_at_infty_fourier
+
+set_option backward.isDefEq.respectTransparency false in
 /-- Riemann-Lebesgue lemma for functions on a finite-dimensional inner-product space, formulated
 via dual space. **Do not use** -- it is only a stepping stone to
 `tendsto_integral_exp_smul_cocompact` where the inner-product-space structure isn't required. -/
 theorem tendsto_integral_exp_smul_cocompact_of_inner_product (μ : Measure V) [μ.IsAddHaarMeasure] :
-    Tendsto (fun w : V →L[ℝ] ℝ => ∫ v, 𝐞 (-w v) • f v ∂μ) (cocompact (V →L[ℝ] ℝ)) (𝓝 0) := by
+    Tendsto (fun w : StrongDual ℝ V => ∫ v, 𝐞 (-w v) • f v ∂μ) (cocompact (StrongDual ℝ V))
+    (𝓝 0) := by
   rw [μ.isAddLeftInvariant_eq_smul volume]
   simp_rw [integral_smul_nnreal_measure]
   rw [← (smul_zero _ : Measure.addHaarScalarFactor μ volume • (0 : E) = 0)]
   apply Tendsto.const_smul
   let A := (InnerProductSpace.toDual ℝ V).symm
-  have : (fun w : V →L[ℝ] ℝ ↦ ∫ v, 𝐞 (-w v) • f v) = (fun w : V ↦ ∫ v, 𝐞 (-⟪v, w⟫) • f v) ∘ A := by
+  have : (fun w : StrongDual ℝ V ↦ ∫ v, 𝐞 (-w v) • f v) =
+      (fun w : V ↦ ∫ v, 𝐞 (-⟪v, w⟫) • f v) ∘ A := by
     ext1 w
     congr 1 with v : 1
     rw [← inner_conj_symm, RCLike.conj_to_real, InnerProductSpace.toDual_symm_apply]
   rw [this]
   exact (tendsto_integral_exp_inner_smul_cocompact f).comp
       A.toHomeomorph.toCocompactMap.cocompact_tendsto'
-#align tendsto_integral_exp_smul_cocompact_of_inner_product tendsto_integral_exp_smul_cocompact_of_inner_product
 
 end InnerProductSpace
 
 section NoInnerProduct
 
-variable (f) [AddCommGroup V] [TopologicalSpace V] [TopologicalAddGroup V] [T2Space V]
+variable (f) [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V] [T2Space V]
   [MeasurableSpace V] [BorelSpace V] [Module ℝ V] [ContinuousSMul ℝ V] [FiniteDimensional ℝ V]
-  [CompleteSpace E]
 
 /-- Riemann-Lebesgue lemma for functions on a finite-dimensional real vector space, formulated via
 dual space. -/
 theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasure] :
-    Tendsto (fun w : V →L[ℝ] ℝ => ∫ v, 𝐞 (-w v) • f v ∂μ) (cocompact (V →L[ℝ] ℝ)) (𝓝 0) := by
+    Tendsto (fun w : StrongDual ℝ V => ∫ v, 𝐞 (-w v) • f v ∂μ) (cocompact (StrongDual ℝ V))
+      (𝓝 0) := by
   -- We have already proved the result for inner-product spaces, formulated in a way which doesn't
   -- refer to the inner product. So we choose an arbitrary inner-product space isomorphic to V
   -- and port the result over from there.
@@ -276,57 +262,21 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   borelize V'
   -- various equivs derived from A
   let Aₘ : MeasurableEquiv V V' := A.toHomeomorph.toMeasurableEquiv
-  -- isomorphism between duals derived from A -- need to do continuity as a separate step in order
-  -- to apply `LinearMap.continuous_of_finiteDimensional`.
-  let Adualₗ : (V →L[ℝ] ℝ) ≃ₗ[ℝ] V' →L[ℝ] ℝ :=
-    { toFun := fun t => t.comp A.symm.toContinuousLinearMap
-      invFun := fun t => t.comp A.toContinuousLinearMap
-      map_add' := by
-        intro t s
-        ext1 v
-        simp only [ContinuousLinearMap.coe_comp', Function.comp_apply,
-          ContinuousLinearMap.add_apply]
-      map_smul' := by
-        intro x f
-        ext1 v
-        simp only [RingHom.id_apply, ContinuousLinearMap.coe_comp', Function.comp_apply,
-          ContinuousLinearMap.smul_apply]
-      left_inv := by
-        intro w
-        ext1 v
-        simp only [ContinuousLinearMap.coe_comp',
-          ContinuousLinearEquiv.coe_coe, Function.comp_apply,
-          ContinuousLinearEquiv.symm_apply_apply]
-      right_inv := by
-        intro w
-        ext1 v
-        simp only [ContinuousLinearMap.coe_comp',
-          ContinuousLinearEquiv.coe_coe, Function.comp_apply,
-          ContinuousLinearEquiv.apply_symm_apply] }
-  let Adual : (V →L[ℝ] ℝ) ≃L[ℝ] V' →L[ℝ] ℝ :=
-    { Adualₗ with
-      continuous_toFun := Adualₗ.toLinearMap.continuous_of_finiteDimensional
-      continuous_invFun := Adualₗ.symm.toLinearMap.continuous_of_finiteDimensional }
-  have : (μ.map Aₘ).IsAddHaarMeasure := Measure.MapContinuousLinearEquiv.isAddHaarMeasure _ A
-  convert
-    (tendsto_integral_exp_smul_cocompact_of_inner_product (f ∘ A.symm) (μ.map Aₘ)).comp
-      Adual.toHomeomorph.toCocompactMap.cocompact_tendsto' with w
-  rw [Function.comp_apply, integral_map_equiv]
-  congr 1 with v : 1
-  congr
-  · -- Porting note: added `congr_arg`
-    apply congr_arg w
-    exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
-  · exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
-#align tendsto_integral_exp_smul_cocompact tendsto_integral_exp_smul_cocompact
+  -- isomorphism between duals derived from A
+  let Adual : StrongDual ℝ V ≃L[ℝ] StrongDual ℝ V' := A.arrowCongrSL (.refl _ _)
+  have : (μ.map Aₘ).IsAddHaarMeasure := A.isAddHaarMeasure_map _
+  convert (tendsto_integral_exp_smul_cocompact_of_inner_product (f ∘ A.symm) (μ.map Aₘ)).comp
+    Adual.toHomeomorph.toCocompactMap.cocompact_tendsto' with w
+  suffices ∫ v, 𝐞 (-w v) • f v ∂μ = ∫ (x : V), 𝐞 (-w (A.symm (Aₘ x))) • f (A.symm (Aₘ x)) ∂μ by
+    simpa [Function.comp_apply, integral_map_equiv, Adual]
+  simp [Aₘ]
 
 /-- The Riemann-Lebesgue lemma, formulated in terms of `VectorFourier.fourierIntegral` (with the
-pairing in the definition of `fourier_integral` taken to be the canonical pairing between `V` and
+pairing in the definition of `fourierIntegral` taken to be the canonical pairing between `V` and
 its dual space). -/
 theorem Real.zero_at_infty_vector_fourierIntegral (μ : Measure V) [μ.IsAddHaarMeasure] :
-    Tendsto (VectorFourier.fourierIntegral 𝐞 μ (topDualPairing ℝ V).flip f) (cocompact (V →L[ℝ] ℝ))
-      (𝓝 0) :=
+    Tendsto (VectorFourier.fourierIntegral 𝐞 μ (topDualPairing ℝ V).flip f)
+      (cocompact (StrongDual ℝ V)) (𝓝 0) :=
   _root_.tendsto_integral_exp_smul_cocompact f μ
-#align real.zero_at_infty_vector_fourier_integral Real.zero_at_infty_vector_fourierIntegral
 
 end NoInnerProduct

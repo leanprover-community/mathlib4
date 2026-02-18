@@ -3,9 +3,9 @@ Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
 
-#align_import category_theory.monoidal.free.basic from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
+public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # The free monoidal category over a type
@@ -24,6 +24,8 @@ theorem. Both of these properties are proved in the file `Coherence.lean`.
 
 -/
 
+@[expose] public section
+
 
 universe v' u u'
 
@@ -37,6 +39,10 @@ section
 
 variable (C)
 
+-- Don't generate unnecessary `sizeOf_spec` or `injEq` lemmas
+-- which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
+set_option genInjectivity false in
 /--
 Given a type `C`, the free monoidal category over `C` has as objects formal expressions built from
 (formal) tensor products of terms of `C` and a formal unit. Its morphisms are compositions and
@@ -47,7 +53,6 @@ inductive FreeMonoidalCategory : Type u
   | unit : FreeMonoidalCategory
   | tensor : FreeMonoidalCategory → FreeMonoidalCategory → FreeMonoidalCategory
   deriving Inhabited
-#align category_theory.free_monoidal_category CategoryTheory.FreeMonoidalCategory
 
 end
 
@@ -55,13 +60,9 @@ local notation "F" => FreeMonoidalCategory
 
 namespace FreeMonoidalCategory
 
-attribute [nolint simpNF] unit.sizeOf_spec tensor.injEq tensor.sizeOf_spec
-
 /-- Formal compositions and tensor products of identities, unitors and associators. The morphisms
-    of the free monoidal category are obtained as a quotient of these formal morphisms by the
-    relations defining a monoidal category. -/
--- Porting note(#5171): linter not ported yet
--- @[nolint has_nonempty_instance]
+of the free monoidal category are obtained as a quotient of these formal morphisms by the
+relations defining a monoidal category. -/
 inductive Hom : F C → F C → Type u
   | id (X) : Hom X X
   | α_hom (X Y Z : F C) : Hom ((X.tensor Y).tensor Z) (X.tensor (Y.tensor Z))
@@ -74,12 +75,11 @@ inductive Hom : F C → F C → Type u
   | whiskerLeft (X : F C) {Y₁ Y₂} (f : Hom Y₁ Y₂) : Hom (X.tensor Y₁) (X.tensor Y₂)
   | whiskerRight {X₁ X₂} (f : Hom X₁ X₂) (Y : F C) : Hom (X₁.tensor Y) (X₂.tensor Y)
   | tensor {W X Y Z} (f : Hom W Y) (g : Hom X Z) : Hom (W.tensor X) (Y.tensor Z)
-#align category_theory.free_monoidal_category.hom CategoryTheory.FreeMonoidalCategory.Hom
 
 local infixr:10 " ⟶ᵐ " => Hom
 
 /-- The morphisms of the free monoidal category satisfy 21 relations ensuring that the resulting
-    category is in fact a category and that it is monoidal. -/
+category is in fact a category and that it is monoidal. -/
 inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
   | refl {X Y} (f : X ⟶ᵐ Y) : HomEquiv f f
   | symm {X Y} (f g : X ⟶ᵐ Y) : HomEquiv f g → HomEquiv g f
@@ -98,10 +98,10 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
   | id_comp {X Y} (f : X ⟶ᵐ Y) : HomEquiv ((Hom.id _).comp f) f
   | assoc {X Y U V : F C} (f : X ⟶ᵐ U) (g : U ⟶ᵐ V) (h : V ⟶ᵐ Y) :
       HomEquiv ((f.comp g).comp h) (f.comp (g.comp h))
-  | tensor_id {X Y} : HomEquiv ((Hom.id X).tensor (Hom.id Y)) (Hom.id _)
-  | tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : F C} (f₁ : X₁ ⟶ᵐ Y₁) (f₂ : X₂ ⟶ᵐ Y₂) (g₁ : Y₁ ⟶ᵐ Z₁)
-      (g₂ : Y₂ ⟶ᵐ Z₂) :
-    HomEquiv ((f₁.comp g₁).tensor (f₂.comp g₂)) ((f₁.tensor f₂).comp (g₁.tensor g₂))
+  | id_tensorHom_id {X Y} : HomEquiv ((Hom.id X).tensor (Hom.id Y)) (Hom.id _)
+  | tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : F C} (f₁ : X₁ ⟶ᵐ Y₁) (f₂ : X₂ ⟶ᵐ Y₂)
+      (g₁ : Y₁ ⟶ᵐ Z₁) (g₂ : Y₂ ⟶ᵐ Z₂) :
+    HomEquiv ((f₁.tensor f₂).comp (g₁.tensor g₂)) ((f₁.comp g₁).tensor (f₂.comp g₂))
   | whiskerLeft_id (X Y) : HomEquiv ((Hom.id Y).whiskerLeft X) (Hom.id (X.tensor Y))
   | id_whiskerRight (X Y) : HomEquiv ((Hom.id X).whiskerRight Y) (Hom.id (X.tensor Y))
   | α_hom_inv {X Y Z} : HomEquiv ((Hom.α_hom X Y Z).comp (Hom.α_inv X Y Z)) (Hom.id _)
@@ -125,19 +125,12 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
   | triangle {X Y} :
       HomEquiv ((Hom.α_hom X unit Y).comp ((Hom.l_hom Y).whiskerLeft X))
         ((Hom.ρ_hom X).whiskerRight Y)
-set_option linter.uppercaseLean3 false
-#align category_theory.free_monoidal_category.HomEquiv CategoryTheory.FreeMonoidalCategory.HomEquiv
 
 /-- We say that two formal morphisms in the free monoidal category are equivalent if they become
-    equal if we apply the relations that are true in a monoidal category. Note that we will prove
-    that there is only one equivalence class -- this is the monoidal coherence theorem. -/
-def setoidHom (X Y : F C) : Setoid (X ⟶ᵐ Y) :=
-  ⟨HomEquiv,
-    ⟨fun f => HomEquiv.refl f, @fun f g => HomEquiv.symm f g, @fun _ _ _ hfg hgh =>
-      HomEquiv.trans hfg hgh⟩⟩
-#align category_theory.free_monoidal_category.setoid_hom CategoryTheory.FreeMonoidalCategory.setoidHom
-
-attribute [instance] setoidHom
+equal if we apply the relations that are true in a monoidal category. Note that we will prove
+that there is only one equivalence class -- this is the monoidal coherence theorem. -/
+instance setoidHom (X Y : F C) : Setoid (X ⟶ᵐ Y) :=
+  ⟨HomEquiv, ⟨HomEquiv.refl, HomEquiv.symm _ _, HomEquiv.trans⟩⟩
 
 section
 
@@ -156,51 +149,48 @@ instance categoryFreeMonoidalCategory : Category.{u} (F C) where
   assoc := by
     rintro W X Y Z ⟨f⟩ ⟨g⟩ ⟨h⟩
     exact Quotient.sound (assoc f g h)
-#align category_theory.free_monoidal_category.category_free_monoidal_category CategoryTheory.FreeMonoidalCategory.categoryFreeMonoidalCategory
 
 instance : MonoidalCategory (F C) where
   tensorObj X Y := FreeMonoidalCategory.tensor X Y
   tensorHom := Quotient.map₂ Hom.tensor (fun _ _ hf _ _ hg ↦ HomEquiv.tensor hf hg)
   whiskerLeft X _ _ f := Quot.map (fun f ↦ Hom.whiskerLeft X f) (fun f f' ↦ .whiskerLeft X f f') f
   whiskerRight f Y := Quot.map (fun f ↦ Hom.whiskerRight f Y) (fun f f' ↦ .whiskerRight f f' Y) f
-  tensorHom_def := by
-    rintro W X Y Z ⟨f⟩ ⟨g⟩
+  tensorHom_def {W X Y Z} := by
+    rintro ⟨f⟩ ⟨g⟩
     exact Quotient.sound (tensorHom_def _ _)
-  tensor_id X Y := Quot.sound tensor_id
-  tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
+  id_tensorHom_id _ _ := Quot.sound id_tensorHom_id
+  tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂} := by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
-    exact Quotient.sound (tensor_comp _ _ _ _)
+    exact Quotient.sound (tensorHom_comp_tensorHom _ _ _ _)
   whiskerLeft_id X Y := Quot.sound (HomEquiv.whiskerLeft_id X Y)
   id_whiskerRight X Y := Quot.sound (HomEquiv.id_whiskerRight X Y)
   tensorUnit := FreeMonoidalCategory.unit
   associator X Y Z :=
     ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩
-  associator_naturality := @fun X₁ X₂ X₃ Y₁ Y₂ Y₃ => by
+  associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} := by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨f₃⟩
     exact Quotient.sound (associator_naturality _ _ _)
   leftUnitor X := ⟨⟦Hom.l_hom X⟧, ⟦Hom.l_inv X⟧, Quotient.sound l_hom_inv, Quotient.sound l_inv_hom⟩
-  leftUnitor_naturality := @fun X Y => by
+  leftUnitor_naturality {X Y} := by
     rintro ⟨f⟩
     exact Quotient.sound (l_naturality _)
   rightUnitor X :=
     ⟨⟦Hom.ρ_hom X⟧, ⟦Hom.ρ_inv X⟧, Quotient.sound ρ_hom_inv, Quotient.sound ρ_inv_hom⟩
-  rightUnitor_naturality := @fun X Y => by
+  rightUnitor_naturality {X Y} := by
     rintro ⟨f⟩
     exact Quotient.sound (ρ_naturality _)
-  pentagon W X Y Z := Quotient.sound pentagon
-  triangle X Y := Quotient.sound triangle
+  pentagon _ _ _ _ := Quotient.sound pentagon
+  triangle _ _ := Quotient.sound triangle
 
 @[simp]
 theorem mk_comp {X Y Z : F C} (f : X ⟶ᵐ Y) (g : Y ⟶ᵐ Z) :
     ⟦f.comp g⟧ = @CategoryStruct.comp (F C) _ _ _ _ ⟦f⟧ ⟦g⟧ :=
   rfl
-#align category_theory.free_monoidal_category.mk_comp CategoryTheory.FreeMonoidalCategory.mk_comp
 
 @[simp]
 theorem mk_tensor {X₁ Y₁ X₂ Y₂ : F C} (f : X₁ ⟶ᵐ Y₁) (g : X₂ ⟶ᵐ Y₂) :
     ⟦f.tensor g⟧ = @MonoidalCategory.tensorHom (F C) _ _ _ _ _ _ ⟦f⟧ ⟦g⟧ :=
   rfl
-#align category_theory.free_monoidal_category.mk_tensor CategoryTheory.FreeMonoidalCategory.mk_tensor
 
 @[simp]
 theorem mk_whiskerLeft (X : F C) {Y₁ Y₂ : F C} (f : Y₁ ⟶ᵐ Y₂) :
@@ -215,47 +205,38 @@ theorem mk_whiskerRight {X₁ X₂ : F C} (f : X₁ ⟶ᵐ X₂) (Y : F C) :
 @[simp]
 theorem mk_id {X : F C} : ⟦Hom.id X⟧ = 𝟙 X :=
   rfl
-#align category_theory.free_monoidal_category.mk_id CategoryTheory.FreeMonoidalCategory.mk_id
 
 @[simp]
 theorem mk_α_hom {X Y Z : F C} : ⟦Hom.α_hom X Y Z⟧ = (α_ X Y Z).hom :=
   rfl
-#align category_theory.free_monoidal_category.mk_α_hom CategoryTheory.FreeMonoidalCategory.mk_α_hom
 
 @[simp]
 theorem mk_α_inv {X Y Z : F C} : ⟦Hom.α_inv X Y Z⟧ = (α_ X Y Z).inv :=
   rfl
-#align category_theory.free_monoidal_category.mk_α_inv CategoryTheory.FreeMonoidalCategory.mk_α_inv
 
 @[simp]
 theorem mk_ρ_hom {X : F C} : ⟦Hom.ρ_hom X⟧ = (ρ_ X).hom :=
   rfl
-#align category_theory.free_monoidal_category.mk_ρ_hom CategoryTheory.FreeMonoidalCategory.mk_ρ_hom
 
 @[simp]
 theorem mk_ρ_inv {X : F C} : ⟦Hom.ρ_inv X⟧ = (ρ_ X).inv :=
   rfl
-#align category_theory.free_monoidal_category.mk_ρ_inv CategoryTheory.FreeMonoidalCategory.mk_ρ_inv
 
 @[simp]
 theorem mk_l_hom {X : F C} : ⟦Hom.l_hom X⟧ = (λ_ X).hom :=
   rfl
-#align category_theory.free_monoidal_category.mk_l_hom CategoryTheory.FreeMonoidalCategory.mk_l_hom
 
 @[simp]
 theorem mk_l_inv {X : F C} : ⟦Hom.l_inv X⟧ = (λ_ X).inv :=
   rfl
-#align category_theory.free_monoidal_category.mk_l_inv CategoryTheory.FreeMonoidalCategory.mk_l_inv
 
 @[simp]
 theorem tensor_eq_tensor {X Y : F C} : X.tensor Y = X ⊗ Y :=
   rfl
-#align category_theory.free_monoidal_category.tensor_eq_tensor CategoryTheory.FreeMonoidalCategory.tensor_eq_tensor
 
 @[simp]
 theorem unit_eq_unit : FreeMonoidalCategory.unit = 𝟙_ (F C) :=
   rfl
-#align category_theory.free_monoidal_category.unit_eq_unit CategoryTheory.FreeMonoidalCategory.unit_eq_unit
 
 /-- The abbreviation for `⟦f⟧`. -/
 /- This is useful since the notation `⟦f⟧` often behaves like an element of the quotient set,
@@ -289,9 +270,9 @@ theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C
   | whiskerLeft X f hf => exact whiskerLeft X _ (hf ⟦f⟧)
   | whiskerRight f X hf => exact whiskerRight _ X (hf ⟦f⟧)
   | @tensor W X Y Z f g hf hg =>
-      have : homMk f ⊗ homMk g = homMk f ▷ X ≫ Y ◁ homMk g :=
+      have : homMk f ⊗ₘ homMk g = homMk f ▷ X ≫ Y ◁ homMk g :=
         Quotient.sound (HomEquiv.tensorHom_def f g)
-      change motive (homMk f ⊗ homMk g)
+      change motive (homMk f ⊗ₘ homMk g)
       rw [this]
       exact comp _ _ (whiskerRight _ _ (hf ⟦f⟧)) (whiskerLeft _ _ (hg ⟦g⟧))
 
@@ -304,7 +285,6 @@ def projectObj : F C → D
   | FreeMonoidalCategory.of X => f X
   | FreeMonoidalCategory.unit => 𝟙_ D
   | FreeMonoidalCategory.tensor X Y => projectObj X ⊗ projectObj Y
-#align category_theory.free_monoidal_category.project_obj CategoryTheory.FreeMonoidalCategory.projectObj
 
 section
 
@@ -312,8 +292,7 @@ section
 open Hom
 
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
--- Porting note: here `@[simp]` generates a panic in
--- _private.Lean.Meta.Match.MatchEqs.0.Lean.Meta.Match.SimpH.substRHS
+@[simp]
 def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projectObj f Y)
   | _, _, Hom.id _ => 𝟙 _
   | _, _, α_hom _ _ _ => (α_ _ _ _).hom
@@ -325,11 +304,11 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
   | _, _, Hom.comp f g => projectMapAux f ≫ projectMapAux g
   | _, _, Hom.whiskerLeft X p => projectObj f X ◁ projectMapAux p
   | _, _, Hom.whiskerRight p X => projectMapAux p ▷ projectObj f X
-  | _, _, Hom.tensor f g => projectMapAux f ⊗ projectMapAux g
-#align category_theory.free_monoidal_category.project_map_aux CategoryTheory.FreeMonoidalCategory.projectMapAux
+  | _, _, Hom.tensor f g => projectMapAux f ⊗ₘ projectMapAux g
 
--- Porting note: this declaration generates the same panic.
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
+@[simp]
 def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :=
   Quotient.lift (projectMapAux f) <| by
     intro f g h
@@ -346,8 +325,9 @@ def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :
     | comp_id => dsimp only [projectMapAux]; rw [Category.comp_id]
     | id_comp => dsimp only [projectMapAux]; rw [Category.id_comp]
     | assoc => dsimp only [projectMapAux]; rw [Category.assoc]
-    | tensor_id => dsimp only [projectMapAux]; rw [MonoidalCategory.tensor_id]; rfl
-    | tensor_comp => dsimp only [projectMapAux]; rw [MonoidalCategory.tensor_comp]
+    | id_tensorHom_id => dsimp only [projectMapAux]; rw [MonoidalCategory.id_tensorHom_id]; rfl
+    | tensorHom_comp_tensorHom =>
+      dsimp only [projectMapAux]; rw [MonoidalCategory.tensorHom_comp_tensorHom]
     | whiskerLeft_id =>
         dsimp only [projectMapAux, projectObj]
         rw [MonoidalCategory.whiskerLeft_id]
@@ -374,36 +354,29 @@ def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :
     | triangle =>
         dsimp only [projectMapAux, projectObj]
         rw [MonoidalCategory.triangle]
-#align category_theory.free_monoidal_category.project_map CategoryTheory.FreeMonoidalCategory.projectMap
 
 end
 
-/-- If `D` is a monoidal category and we have a function `C → D`, then we have a functor from the
-    free monoidal category over `C` to the category `D`. -/
-def project : MonoidalFunctor (F C) D where
+/-- If `D` is a monoidal category and we have a function `C → D`, then we have a
+monoidal functor from the free monoidal category over `C` to the category `D`. -/
+def project : F C ⥤ D where
   obj := projectObj f
   map := projectMap f _ _
-  -- Porting note: `map_comp` and `μ_natural` were proved in mathlib3 by tidy, using induction.
-  -- We probably don't expect `aesop_cat` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
-  -- In any case I don't understand why we need to specify `using Quotient.recOn`.
   map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
-  ε := 𝟙 _
-  μ X Y := 𝟙 _
-  μ_natural_left := fun f _ => by
-    induction' f using Quotient.recOn
-    · dsimp
-      simp only [Category.comp_id, Category.id_comp]
-      rw [← tensorHom_id, ← tensorHom_id]
-      rfl
-    · rfl
-  μ_natural_right := fun _ f => by
-    induction' f using Quotient.recOn
-    · dsimp
-      simp only [Category.comp_id, Category.id_comp]
-      rw [← id_tensorHom, ← id_tensorHom]
-      rfl
-    · rfl
-#align category_theory.free_monoidal_category.project CategoryTheory.FreeMonoidalCategory.project
+
+set_option backward.isDefEq.respectTransparency false in
+instance : (project f).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso := fun _ _ ↦ Iso.refl _
+  -- Porting note: `μIso_hom_natural_left` was proved in mathlib3 by tidy, using induction.
+  -- We probably don't expect `cat_disch` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
+      μIso_hom_natural_left := fun f _ => by
+        induction f using Quotient.recOn
+        all_goals aesop
+      μIso_hom_natural_right := fun _ f => by
+        induction f using Quotient.recOn
+        all_goals aesop }
 
 end Functor
 

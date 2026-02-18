@@ -3,9 +3,11 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.InvariantForm
-import Mathlib.Algebra.Lie.Semisimple.Basic
-import Mathlib.Algebra.Lie.TraceForm
+module
+
+public import Mathlib.Algebra.Lie.InvariantForm
+public import Mathlib.Algebra.Lie.Semisimple.Basic
+public import Mathlib.Algebra.Lie.TraceForm
 
 /-!
 # Lie algebras with non-degenerate Killing forms.
@@ -25,20 +27,24 @@ This file contains basic definitions and results for such Lie algebras.
 
 ## Main declarations
 
- * `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
-   Killing form.
- * `LieAlgebra.IsKilling.instSemisimple`: if a finite-dimensional Lie algebra over a field
-   has non-singular Killing form then it is semisimple.
- * `LieAlgebra.IsKilling.instHasTrivialRadical`: if a Lie algebra over a PID
-   has non-singular Killing form then it has trivial radical.
+* `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
+  Killing form.
+* `LieAlgebra.IsKilling.instSemisimple`: if a finite-dimensional Lie algebra over a field
+  has non-singular Killing form then it is semisimple.
+* `LieAlgebra.IsKilling.instHasTrivialRadical`: if a Lie algebra over a PID
+  has non-singular Killing form then it has trivial radical.
+* `LieIdeal.isCompl_killingCompl`: if a Lie algebra has non-singular Killing form then for all
+  ideals, an ideal and its Killing orthogonal complement are complements.
 
 ## TODO
 
- * Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
+* Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
 
 -/
 
-variable (R K L M : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
+@[expose] public section
+
+variable (R K L : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
 
 namespace LieAlgebra
 
@@ -46,7 +52,7 @@ namespace LieAlgebra
 
 NB: This is not standard terminology (the literature does not seem to name Lie algebras with this
 property). -/
-class IsKilling : Prop :=
+class IsKilling : Prop where
   /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/
   killingCompl_top_eq_bot : LieIdeal.killingCompl R L ⊤ = ⊥
 
@@ -54,7 +60,7 @@ attribute [simp] IsKilling.killingCompl_top_eq_bot
 
 namespace IsKilling
 
-variable [Module.Free R L] [Module.Finite R L] [IsKilling R L]
+variable [IsKilling R L]
 
 @[simp] lemma ker_killingForm_eq_bot :
     LinearMap.ker (killingForm R L) = ⊥ := by
@@ -62,14 +68,18 @@ variable [Module.Free R L] [Module.Finite R L] [IsKilling R L]
 
 lemma killingForm_nondegenerate :
     (killingForm R L).Nondegenerate := by
-  simp [LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot]
+  refine (LieModule.traceForm_isSymm R L L).isRefl.nondegenerate_iff_separatingLeft.mpr ?_
+  simp [LinearMap.separatingLeft_iff_ker_eq_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R L} in
-lemma ideal_eq_bot_of_isLieAbelian [IsDomain R] [IsPrincipalIdealRing R]
+lemma ideal_eq_bot_of_isLieAbelian
+    [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R]
     (I : LieIdeal R L) [IsLieAbelian I] : I = ⊥ := by
   rw [eq_bot_iff, ← killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
 
+set_option backward.isDefEq.respectTransparency false in
 instance instSemisimple [IsKilling K L] [Module.Finite K L] : IsSemisimple K L := by
   apply InvariantForm.isSemisimple_of_nondegenerate (Φ := killingForm K L)
   · exact IsKilling.killingForm_nondegenerate _ _
@@ -83,7 +93,9 @@ over fields with positive characteristic.
 
 Note that when the coefficients are a field this instance is redundant since we have
 `LieAlgebra.IsKilling.instSemisimple` and `LieAlgebra.IsSemisimple.instHasTrivialRadical`. -/
-instance instHasTrivialRadical [IsDomain R] [IsPrincipalIdealRing R] : HasTrivialRadical R L :=
+instance instHasTrivialRadical
+    [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R] :
+    HasTrivialRadical R L :=
   (hasTrivialRadical_iff_no_abelian_ideals R L).mpr IsKilling.ideal_eq_bot_of_isLieAbelian
 
 end IsKilling
@@ -108,7 +120,7 @@ lemma isKilling_of_equiv [IsKilling R L] (e : L ≃ₗ⁅R⁆ L') : IsKilling R 
   refine ⟨fun hx' ↦ ?_, fun hx y _ ↦ hx ▸ LinearMap.map_zero₂ (killingForm R L') y⟩
   suffices e.symm x' ∈ LinearMap.ker (killingForm R L) by
     rw [IsKilling.ker_killingForm_eq_bot] at this
-    simpa using (e : L ≃ₗ[R] L').congr_arg this
+    simpa [map_zero] using (e : L ≃ₗ[R] L').congr_arg this
   ext y
   replace hx' : ∀ y', killingForm R L' x' y' = 0 := by simpa using hx'
   specialize hx' (e y)
@@ -119,3 +131,24 @@ alias _root_.LieEquiv.isKilling := LieAlgebra.isKilling_of_equiv
 end LieEquiv
 
 end LieAlgebra
+
+set_option backward.isDefEq.respectTransparency false in
+open LieAlgebra in
+variable {K L} in
+lemma LieIdeal.isCompl_killingCompl [IsKilling K L] [Module.Finite K L] (I : LieIdeal K L) :
+    IsCompl I I.killingCompl := by
+  suffices Disjoint I I.killingCompl by
+    rwa [← LieSubmodule.isCompl_toSubmodule, I.toSubmodule_killingCompl,
+      LinearMap.BilinForm.isCompl_orthogonal_iff_disjoint (LieModule.traceForm_isSymm K L L).isRefl,
+      ← I.toSubmodule_killingCompl, LieSubmodule.disjoint_toSubmodule]
+  suffices IsLieAbelian (I ⊓ I.killingCompl : LieIdeal K L) by
+    rw [disjoint_iff]
+    exact IsKilling.ideal_eq_bot_of_isLieAbelian _
+  suffices ∀ (x y z : L) (hx : x ∈ killingCompl K L I) (hy : y ∈ I),
+      LieModule.traceForm K L L ⁅x, y⁆ z = 0 by
+    rw [LieSubmodule.lie_abelian_iff_lie_self_eq_bot, LieSubmodule.lie_eq_bot_iff]
+    rintro x ⟨-, hx⟩ y ⟨hy, -⟩
+    exact (IsKilling.killingForm_nondegenerate K L).1 _ fun z ↦ this x y z hx hy
+  intro x y z hx hy
+  rw [LieModule.traceForm_apply_lie_apply K L L x y z, LieModule.traceForm_comm K L L]
+  exact I.mem_killingCompl.mp hx _ <| lie_mem_left K L I y z hy

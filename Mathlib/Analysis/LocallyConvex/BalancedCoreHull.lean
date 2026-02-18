@@ -3,9 +3,9 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.LocallyConvex.Basic
+module
 
-#align_import analysis.locally_convex.balanced_core_hull from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
+public import Mathlib.Analysis.LocallyConvex.Basic
 
 /-!
 # Balanced Core and Balanced Hull
@@ -38,6 +38,8 @@ this is `balancedCore_eq_iInter`.
 balanced
 -/
 
+@[expose] public section
+
 
 open Set Pointwise Topology Filter
 
@@ -56,31 +58,25 @@ variable (𝕜) [SMul 𝕜 E] {s t : Set E} {x : E}
 /-- The largest balanced subset of `s`. -/
 def balancedCore (s : Set E) :=
   ⋃₀ { t : Set E | Balanced 𝕜 t ∧ t ⊆ s }
-#align balanced_core balancedCore
 
-/-- Helper definition to prove `balanced_core_eq_iInter`-/
+/-- Helper definition to prove `balanced_core_eq_iInter` -/
 def balancedCoreAux (s : Set E) :=
   ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s
-#align balanced_core_aux balancedCoreAux
 
 /-- The smallest balanced superset of `s`. -/
 def balancedHull (s : Set E) :=
   ⋃ (r : 𝕜) (_ : ‖r‖ ≤ 1), r • s
-#align balanced_hull balancedHull
 
 variable {𝕜}
 
 theorem balancedCore_subset (s : Set E) : balancedCore 𝕜 s ⊆ s :=
   sUnion_subset fun _ ht => ht.2
-#align balanced_core_subset balancedCore_subset
 
 theorem balancedCore_empty : balancedCore 𝕜 (∅ : Set E) = ∅ :=
   eq_empty_of_subset_empty (balancedCore_subset _)
-#align balanced_core_empty balancedCore_empty
 
 theorem mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced 𝕜 t ∧ t ⊆ s ∧ x ∈ t := by
   simp_rw [balancedCore, mem_sUnion, mem_setOf_eq, and_assoc]
-#align mem_balanced_core_iff mem_balancedCore_iff
 
 theorem smul_balancedCore_subset (s : Set E) {a : 𝕜} (ha : ‖a‖ ≤ 1) :
     a • balancedCore 𝕜 s ⊆ balancedCore 𝕜 s := by
@@ -88,35 +84,40 @@ theorem smul_balancedCore_subset (s : Set E) {a : 𝕜} (ha : ‖a‖ ≤ 1) :
   rw [mem_balancedCore_iff] at hy
   rcases hy with ⟨t, ht1, ht2, hy⟩
   exact ⟨t, ⟨ht1, ht2⟩, ht1 a ha (smul_mem_smul_set hy)⟩
-#align smul_balanced_core_subset smul_balancedCore_subset
 
 theorem balancedCore_balanced (s : Set E) : Balanced 𝕜 (balancedCore 𝕜 s) := fun _ =>
   smul_balancedCore_subset s
-#align balanced_core_balanced balancedCore_balanced
 
 /-- The balanced core of `t` is maximal in the sense that it contains any balanced subset
 `s` of `t`. -/
 theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆ t) :
     s ⊆ balancedCore 𝕜 t :=
   subset_sUnion_of_mem ⟨hs, h⟩
-#align balanced.subset_core_of_subset Balanced.subset_balancedCore_of_subset
+
+lemma Balanced.balancedCore_eq (h : Balanced 𝕜 s) : balancedCore 𝕜 s = s :=
+  le_antisymm (balancedCore_subset _) (h.subset_balancedCore_of_subset subset_rfl)
 
 theorem mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜, 1 ≤ ‖r‖ → x ∈ r • s :=
   mem_iInter₂
-#align mem_balanced_core_aux_iff mem_balancedCoreAux_iff
 
 theorem mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ r : 𝕜, ‖r‖ ≤ 1 ∧ x ∈ r • s := by
   simp [balancedHull]
-#align mem_balanced_hull_iff mem_balancedHull_iff
 
 /-- The balanced hull of `s` is minimal in the sense that it is contained in any balanced superset
 `t` of `s`. -/
 theorem Balanced.balancedHull_subset_of_subset (ht : Balanced 𝕜 t) (h : s ⊆ t) :
     balancedHull 𝕜 s ⊆ t := by
-  intros x hx
+  intro x hx
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 hx
   exact ht.smul_mem hr (h hy)
-#align balanced.hull_subset_of_subset Balanced.balancedHull_subset_of_subset
+
+@[mono, gcongr]
+theorem balancedHull_mono (hst : s ⊆ t) : balancedHull 𝕜 s ⊆ balancedHull 𝕜 t := by
+  intro x hx
+  rw [mem_balancedHull_iff] at *
+  obtain ⟨r, hr₁, hr₂⟩ := hx
+  use r
+  exact ⟨hr₁, smul_set_mono hst hr₂⟩
 
 end SMul
 
@@ -126,30 +127,33 @@ variable [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
 theorem balancedCore_zero_mem (hs : (0 : E) ∈ s) : (0 : E) ∈ balancedCore 𝕜 s :=
   mem_balancedCore_iff.2 ⟨0, balanced_zero, zero_subset.2 hs, Set.zero_mem_zero⟩
-#align balanced_core_zero_mem balancedCore_zero_mem
 
 theorem balancedCore_nonempty_iff : (balancedCore 𝕜 s).Nonempty ↔ (0 : E) ∈ s :=
   ⟨fun h => zero_subset.1 <| (zero_smul_set h).superset.trans <|
     (balancedCore_balanced s (0 : 𝕜) <| norm_zero.trans_le zero_le_one).trans <|
       balancedCore_subset _,
     fun h => ⟨0, balancedCore_zero_mem h⟩⟩
-#align balanced_core_nonempty_iff balancedCore_nonempty_iff
 
-variable (𝕜)
+lemma Balanced.zero_mem (hs : Balanced 𝕜 s) (hs_nonempty : s.Nonempty) : (0 : E) ∈ s := by
+  rw [← hs.balancedCore_eq] at hs_nonempty
+  exact balancedCore_nonempty_iff.mp hs_nonempty
 
+variable (𝕜) in
 theorem subset_balancedHull [NormOneClass 𝕜] {s : Set E} : s ⊆ balancedHull 𝕜 s := fun _ hx =>
   mem_balancedHull_iff.2 ⟨1, norm_one.le, _, hx, one_smul _ _⟩
-#align subset_balanced_hull subset_balancedHull
-
-variable {𝕜}
 
 theorem balancedHull.balanced (s : Set E) : Balanced 𝕜 (balancedHull 𝕜 s) := by
   intro a ha
   simp_rw [balancedHull, smul_set_iUnion₂, subset_def, mem_iUnion₂]
   rintro x ⟨r, hr, hx⟩
   rw [← smul_assoc] at hx
-  exact ⟨a • r, (SeminormedRing.norm_mul _ _).trans (mul_le_one ha (norm_nonneg r) hr), hx⟩
-#align balanced_hull.balanced balancedHull.balanced
+  exact ⟨a • r, (norm_mul_le _ _).trans (mul_le_one₀ ha (norm_nonneg r) hr), hx⟩
+
+open Balanced in
+theorem balancedHull_add_subset [NormOneClass 𝕜] {t : Set E} :
+    balancedHull 𝕜 (s + t) ⊆ balancedHull 𝕜 s + balancedHull 𝕜 t :=
+  balancedHull_subset_of_subset (add (balancedHull.balanced _) (balancedHull.balanced _))
+    (add_subset_add (subset_balancedHull _) (subset_balancedHull _))
 
 end Module
 
@@ -157,17 +161,15 @@ end SeminormedRing
 
 section NormedField
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
 @[simp]
 theorem balancedCoreAux_empty : balancedCoreAux 𝕜 (∅ : Set E) = ∅ := by
   simp_rw [balancedCoreAux, iInter₂_eq_empty_iff, smul_set_empty]
-  exact fun _ => ⟨1, norm_one.ge, not_mem_empty _⟩
-#align balanced_core_aux_empty balancedCoreAux_empty
+  exact fun _ => ⟨1, norm_one.ge, notMem_empty _⟩
 
 theorem balancedCoreAux_subset (s : Set E) : balancedCoreAux 𝕜 s ⊆ s := fun x hx => by
   simpa only [one_smul] using mem_balancedCoreAux_iff.1 hx 1 norm_one.ge
-#align balanced_core_aux_subset balancedCoreAux_subset
 
 theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
     Balanced 𝕜 (balancedCoreAux 𝕜 s) := by
@@ -178,39 +180,34 @@ theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
   intro r hr
   have h'' : 1 ≤ ‖a⁻¹ • r‖ := by
     rw [norm_smul, norm_inv]
-    exact one_le_mul_of_one_le_of_one_le (one_le_inv (norm_pos_iff.mpr h) ha) hr
+    exact one_le_mul_of_one_le_of_one_le ((one_le_inv₀ (norm_pos_iff.mpr h)).2 ha) hr
   have h' := hy (a⁻¹ • r) h''
   rwa [smul_assoc, mem_inv_smul_set_iff₀ h] at h'
-#align balanced_core_aux_balanced balancedCoreAux_balanced
 
 theorem balancedCoreAux_maximal (h : t ⊆ s) (ht : Balanced 𝕜 t) : t ⊆ balancedCoreAux 𝕜 s := by
   refine fun x hx => mem_balancedCoreAux_iff.2 fun r hr => ?_
   rw [mem_smul_set_iff_inv_smul_mem₀ (norm_pos_iff.mp <| zero_lt_one.trans_le hr)]
   refine h (ht.smul_mem ?_ hx)
   rw [norm_inv]
-  exact inv_le_one hr
-#align balanced_core_aux_maximal balancedCoreAux_maximal
+  exact inv_le_one_of_one_le₀ hr
 
 theorem balancedCore_subset_balancedCoreAux : balancedCore 𝕜 s ⊆ balancedCoreAux 𝕜 s :=
   balancedCoreAux_maximal (balancedCore_subset s) (balancedCore_balanced s)
-#align balanced_core_subset_balanced_core_aux balancedCore_subset_balancedCoreAux
 
 theorem balancedCore_eq_iInter (hs : (0 : E) ∈ s) :
     balancedCore 𝕜 s = ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s := by
   refine balancedCore_subset_balancedCoreAux.antisymm ?_
   refine (balancedCoreAux_balanced ?_).subset_balancedCore_of_subset (balancedCoreAux_subset s)
   exact balancedCore_subset_balancedCoreAux (balancedCore_zero_mem hs)
-#align balanced_core_eq_Inter balancedCore_eq_iInter
 
 theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ a : 𝕜, ‖a‖ ≤ 1 → a • s ⊆ t) :
     s ⊆ balancedCore 𝕜 t := by
   rw [balancedCore_eq_iInter ht]
-  refine subset_iInter₂ fun a ha => ?_
-  rw [← smul_inv_smul₀ (norm_pos_iff.mp <| zero_lt_one.trans_le ha) s]
-  refine smul_set_mono (hst _ ?_)
+  refine subset_iInter₂ fun a ha ↦ ?_
+  rw [subset_smul_set_iff₀ (norm_pos_iff.mp <| zero_lt_one.trans_le ha)]
+  apply hst
   rw [norm_inv]
-  exact inv_le_one ha
-#align subset_balanced_core subset_balancedCore
+  exact inv_le_one_of_one_le₀ ha
 
 end NormedField
 
@@ -221,7 +218,7 @@ end balancedHull
 
 section Topology
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [ContinuousSMul 𝕜 E] {U : Set E}
 
 protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCore 𝕜 U) := by
@@ -237,8 +234,11 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
       exact balancedCore_nonempty_iff.mp h
     rw [this]
     exact isClosed_empty
-#align is_closed.balanced_core IsClosed.balancedCore
 
+-- We don't have a `NontriviallyNormedDivisionRing`, so we use a `NeBot` assumption instead
+variable [NeBot (𝓝[≠] (0 : 𝕜))]
+
+set_option backward.isDefEq.respectTransparency false in
 theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜 U ∈ 𝓝 (0 : E) := by
   -- Getting neighborhoods of the origin for `0 : 𝕜` and `0 : E`
   obtain ⟨r, V, hr, hV, hrVU⟩ : ∃ (r : ℝ) (V : Set E),
@@ -247,8 +247,9 @@ theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜
       continuous_smul.tendsto' (0, 0) _ (smul_zero _)
     simpa only [← Prod.exists', ← Prod.forall', ← and_imp, ← and_assoc, exists_prop] using
       h.basis_left (NormedAddCommGroup.nhds_zero_basis_norm_lt.prod_nhds (𝓝 _).basis_sets) U hU
-  rcases NormedField.exists_norm_lt 𝕜 hr with ⟨y, hy₀, hyr⟩
-  rw [norm_pos_iff] at hy₀
+  obtain ⟨y, hyr, hy₀⟩ : ∃ y : 𝕜, ‖y‖ < r ∧ y ≠ 0 :=
+    Filter.nonempty_of_mem <|
+      (nhdsWithin_hasBasis NormedAddCommGroup.nhds_zero_basis_norm_lt {0}ᶜ).mem_of_mem hr
   have : y • V ∈ 𝓝 (0 : E) := (set_smul_mem_nhds_zero_iff hy₀).mpr hV
   -- It remains to show that `y • V ⊆ balancedCore 𝕜 U`
   refine Filter.mem_of_superset this (subset_balancedCore (mem_of_mem_nhds hU) fun a ha => ?_)
@@ -257,7 +258,6 @@ theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜
   refine hrVU _ _ ?_ hz
   rw [norm_mul, ← one_mul r]
   exact mul_lt_mul' ha hyr (norm_nonneg y) one_pos
-#align balanced_core_mem_nhds_zero balancedCore_mem_nhds_zero
 
 variable (𝕜 E)
 
@@ -266,7 +266,6 @@ theorem nhds_basis_balanced :
   Filter.hasBasis_self.mpr fun s hs =>
     ⟨balancedCore 𝕜 s, balancedCore_mem_nhds_zero hs, balancedCore_balanced s,
       balancedCore_subset s⟩
-#align nhds_basis_balanced nhds_basis_balanced
 
 theorem nhds_basis_closed_balanced [RegularSpace E] :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ IsClosed s ∧ Balanced 𝕜 s) id := by
@@ -274,6 +273,5 @@ theorem nhds_basis_closed_balanced [RegularSpace E] :
     (closed_nhds_basis 0).to_hasBasis (fun s hs => ?_) fun s hs => ⟨s, ⟨hs.1, hs.2.1⟩, rfl.subset⟩
   refine ⟨balancedCore 𝕜 s, ⟨balancedCore_mem_nhds_zero hs.1, ?_⟩, balancedCore_subset s⟩
   exact ⟨hs.2.balancedCore, balancedCore_balanced s⟩
-#align nhds_basis_closed_balanced nhds_basis_closed_balanced
 
 end Topology

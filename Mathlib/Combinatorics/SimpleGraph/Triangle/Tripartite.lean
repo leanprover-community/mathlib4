@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 
 /-!
 # Construct a tripartite graph from its triangles
@@ -35,10 +37,12 @@ This construction shows up unrelatedly twice in the theory of Roth numbers:
   corner-free.
 -/
 
+@[expose] public section
+
 open Finset Function Sum3
 
-variable {α β γ 𝕜 : Type*} [LinearOrderedField 𝕜] {t : Finset (α × β × γ)} {a a' : α} {b b' : β}
-  {c c' : γ} {x : α × β × γ} {ε : 𝕜}
+variable {α β γ 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  {t : Finset (α × β × γ)} {a a' : α} {b b' : β} {c c' : γ} {x : α × β × γ}
 
 namespace SimpleGraph
 namespace TripartiteFromTriangles
@@ -57,11 +61,11 @@ Two vertices are related iff there exists a triangle index containing them both.
 open Rel
 
 lemma rel_irrefl : ∀ x, ¬ Rel t x x := fun _x hx ↦ nomatch hx
-lemma rel_symm : Symmetric (Rel t) := fun x y h ↦  by cases h <;> constructor <;> assumption
+lemma rel_symm : Symmetric (Rel t) := fun x y h ↦ by cases h <;> constructor <;> assumption
 
 /-- The tripartite-from-triangles graph. Two vertices are related iff there exists a triangle index
 containing them both. -/
-def graph (t : Finset (α × β × γ)) : SimpleGraph (α ⊕ β ⊕ γ) := ⟨Rel t, rel_symm, rel_irrefl⟩
+def graph (t : Finset (α × β × γ)) : SimpleGraph (α ⊕ β ⊕ γ) := ⟨Rel t, rel_symm, ⟨rel_irrefl⟩⟩
 
 namespace Graph
 
@@ -142,8 +146,8 @@ instance graph.instDecidableRelAdj : DecidableRel (graph t).Adj
 
 /-- This lemma reorders the elements of a triangle in the tripartite graph. It turns a triangle
 `{x, y, z}` into a triangle `{a, b, c}` where `a : α `, `b : β`, `c : γ`. -/
- lemma graph_triple ⦃x y z⦄ :
-  (graph t).Adj x y → (graph t).Adj x z → (graph t).Adj y z → ∃ a b c,
+lemma graph_triple ⦃x y z⦄ :
+    (graph t).Adj x y → (graph t).Adj x z → (graph t).Adj y z → ∃ a b c,
     ({in₀ a, in₁ b, in₂ c} : Finset (α ⊕ β ⊕ γ)) = {x, y, z} ∧ (graph t).Adj (in₀ a) (in₁ b) ∧
       (graph t).Adj (in₀ a) (in₂ c) ∧ (graph t).Adj (in₁ b) (in₂ c) := by
   rintro (_ | _ | _) (_ | _ | _) (_ | _ | _) <;>
@@ -154,8 +158,8 @@ instance graph.instDecidableRelAdj : DecidableRel (graph t).Adj
 @[simps] def toTriangle : α × β × γ ↪ Finset (α ⊕ β ⊕ γ) where
   toFun x := {in₀ x.1, in₁ x.2.1, in₂ x.2.2}
   inj' := fun ⟨a, b, c⟩ ⟨a', b', c'⟩ ↦ by simpa only [Finset.Subset.antisymm_iff, Finset.subset_iff,
-    mem_insert, mem_singleton, forall_eq_or_imp, forall_eq, Prod.mk.inj_iff, or_false, false_or,
-    in₀, in₁, in₂, Sum.inl.inj_iff, Sum.inr.inj_iff] using And.left
+    mem_insert, mem_singleton, forall_eq_or_imp, forall_eq, Prod.mk_inj, or_false, false_or,
+    in₀, in₁, in₂, Sum.inl.inj_iff, Sum.inr.inj_iff, reduceCtorEq] using And.left
 
 lemma toTriangle_is3Clique (hx : x ∈ t) : (graph t).IsNClique 3 (toTriangle x) := by
   simp only [toTriangle_apply, is3Clique_triple_iff, in₀₁_iff, in₀₂_iff, in₁₂_iff]
@@ -186,16 +190,15 @@ variable (t)
 lemma map_toTriangle_disjoint [ExplicitDisjoint t] :
     (t.map toTriangle : Set (Finset (α ⊕ β ⊕ γ))).Pairwise
       fun x y ↦ (x ∩ y : Set (α ⊕ β ⊕ γ)).Subsingleton := by
-  clear x
   intro
   simp only [Finset.coe_map, Set.mem_image, Finset.mem_coe, Prod.exists, Ne,
     forall_exists_index, and_imp]
   rintro a b c habc rfl e x y z hxyz rfl h'
   have := ne_of_apply_ne _ h'
-  simp only [Ne, Prod.mk.inj_iff, not_and] at this
+  simp only [Ne, Prod.mk_inj, not_and] at this
   simp only [toTriangle_apply, in₀, in₁, in₂, Set.mem_inter_iff, mem_insert, mem_singleton,
-    mem_coe, and_imp, Sum.forall, or_false, forall_eq, false_or, eq_self_iff_true, imp_true_iff,
-    true_and, and_true, Set.Subsingleton]
+    mem_coe, and_imp, Sum.forall,
+    Set.Subsingleton]
   suffices ¬ (a = x ∧ b = y) ∧ ¬ (a = x ∧ c = z) ∧ ¬ (b = y ∧ c = z) by aesop
   refine ⟨?_, ?_, ?_⟩
   · rintro ⟨rfl, rfl⟩
@@ -212,20 +215,20 @@ section Fintype
 variable [Fintype α] [Fintype β] [Fintype γ]
 
 lemma cliqueFinset_eq_image [NoAccidental t] : (graph t).cliqueFinset 3 = t.image toTriangle :=
-  coe_injective $ by push_cast; exact cliqueSet_eq_image _
+  coe_injective <| by push_cast; exact cliqueSet_eq_image _
 
 lemma cliqueFinset_eq_map [NoAccidental t] : (graph t).cliqueFinset 3 = t.map toTriangle := by
   simp [cliqueFinset_eq_image, map_eq_image]
 
-@[simp] lemma card_triangles [NoAccidental t] : ((graph t).cliqueFinset 3).card = t.card := by
+@[simp] lemma card_triangles [NoAccidental t] : #((graph t).cliqueFinset 3) = #t := by
   rw [cliqueFinset_eq_map, card_map]
 
 lemma farFromTriangleFree [ExplicitDisjoint t] {ε : 𝕜}
-    (ht : ε * ((Fintype.card α + Fintype.card β + Fintype.card γ) ^ 2 : ℕ) ≤ t.card) :
+    (ht : ε * ((Fintype.card α + Fintype.card β + Fintype.card γ) ^ 2 : ℕ) ≤ #t) :
     (graph t).FarFromTriangleFree ε :=
   farFromTriangleFree_of_disjoint_triangles (t.map toTriangle)
     (map_subset_iff_subset_preimage.2 fun x hx ↦ by simpa using toTriangle_is3Clique hx)
-    (map_toTriangle_disjoint t) $ by simpa [add_assoc] using ht
+    (map_toTriangle_disjoint t) <| by simpa [add_assoc] using ht
 
 end Fintype
 end DecidableEq

@@ -3,10 +3,13 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Limits.Types
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
+module
+
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Limits in the category of elements
@@ -15,7 +18,17 @@ We show that if `C` has limits of shape `I` and `A : C ⥤ Type w` preserves lim
 the category of elements of `A` has limits of shape `I` and the forgetful functor
 `π : A.Elements ⥤ C` creates them.
 
+## Further results
+
+- If `A` is (co)representable, then `A.Elements` has an initial object.
+
+## TODOs
+
+- Show that `A` is (co)representable if `A.Elements` has an initial object.
+
 -/
+
+@[expose] public section
 
 universe w v₁ v u₁ u
 
@@ -27,8 +40,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace CategoryOfElements
 
-variable {A : C ⥤ Type w} {I : Type u₁} [Category.{v₁} I] [Small.{w} I] [HasLimitsOfShape I C]
-  [PreservesLimitsOfShape I A]
+variable {A : C ⥤ Type w} {I : Type u₁} [Category.{v₁} I] [Small.{w} I]
 
 namespace CreatesLimitsAux
 
@@ -43,16 +55,19 @@ lemma π_liftedConeElement' (i : I) :
     limit.π ((F ⋙ π A) ⋙ A) i (liftedConeElement' F) = (F.obj i).2 :=
   Types.Limit.π_mk _ _ _ _
 
+variable [HasLimitsOfShape I C] [PreservesLimitsOfShape I A]
+
 /-- (implementation) A system `(Fi, fi)_i` of elements induces an element in `A(lim_i Fi)`. -/
 noncomputable def liftedConeElement : A.obj (limit (F ⋙ π A)) :=
   (preservesLimitIso A (F ⋙ π A)).inv (liftedConeElement' F)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_lift_mapCone (c : Cone F) :
     A.map (limit.lift (F ⋙ π A) ((π A).mapCone c)) c.pt.snd = liftedConeElement F := by
   apply (preservesLimitIso A (F ⋙ π A)).toEquiv.injective
   ext i
-  have h₁ := congrFun (preservesLimitsIso_hom_π A (F ⋙ π A) i)
+  have h₁ := congrFun (preservesLimitIso_hom_π A (F ⋙ π A) i)
     (A.map (limit.lift (F ⋙ π A) ((π A).mapCone c)) c.pt.snd)
   have h₂ := (c.π.app i).property
   simp_all [← FunctorToTypes.map_comp_apply, liftedConeElement]
@@ -61,10 +76,11 @@ lemma map_lift_mapCone (c : Cone F) :
 lemma map_π_liftedConeElement (i : I) :
     A.map (limit.π (F ⋙ π A) i) (liftedConeElement F) = (F.obj i).snd := by
   have := congrFun
-    (preservesLimitsIso_inv_π A (F ⋙ π A) i) (liftedConeElement' F)
+    (preservesLimitIso_inv_π A (F ⋙ π A) i) (liftedConeElement' F)
   simp_all [liftedConeElement]
 
-/-- (implementation) The constructured limit cone. -/
+set_option backward.isDefEq.respectTransparency false in
+/-- (implementation) The constructed limit cone. -/
 @[simps]
 noncomputable def liftedCone : Cone F where
   pt := ⟨_, liftedConeElement F⟩
@@ -76,13 +92,16 @@ noncomputable def liftedCone : Cone F where
 noncomputable def isValidLift : (π A).mapCone (liftedCone F) ≅ limit.cone (F ⋙ π A) :=
   Iso.refl _
 
-/-- (implementation) The constuctured limit cone is a limit cone. -/
+set_option backward.isDefEq.respectTransparency false in
+/-- (implementation) The constructed limit cone is a limit cone. -/
 noncomputable def isLimit : IsLimit (liftedCone F) where
   lift s := ⟨limit.lift (F ⋙ π A) ((π A).mapCone s), by simp⟩
   uniq s m h := ext _ _ _ <| limit.hom_ext
     fun i => by simpa using congrArg Subtype.val (h i)
 
 end CreatesLimitsAux
+
+variable [HasLimitsOfShape I C] [PreservesLimitsOfShape I A]
 
 section
 
@@ -97,6 +116,16 @@ noncomputable instance : CreatesLimitsOfShape I (π A) where
 
 instance : HasLimitsOfShape I A.Elements :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (π A)
+
+section Initial
+
+instance {F : Cᵒᵖ ⥤ Type*} [F.IsRepresentable] : HasInitial F.Elements :=
+  (Functor.Elements.isInitialOfRepresentableBy F.representableBy).hasInitial
+
+instance {F : C ⥤ Type*} [F.IsCorepresentable] : HasInitial F.Elements :=
+  (Functor.Elements.isInitialOfCorepresentableBy F.corepresentableBy).hasInitial
+
+end Initial
 
 end CategoryOfElements
 
