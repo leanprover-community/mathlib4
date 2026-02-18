@@ -391,6 +391,7 @@ end removeNe
 
 /-- Definition overidden in `Mathlib.Tactic.Linarith.NNRealPreprocessor`. -/
 initialize nnrealToRealTransform : IO.Ref (List Expr → MetaM (List Expr)) ← IO.mkRef pure
+
 /--
 If `h` is an equality or inequality between NNReals, `nnrealToReal` lifts this inequality to the
 Reals. It also adds the facts that the reals involved are nonnegative. To avoid adding the same
