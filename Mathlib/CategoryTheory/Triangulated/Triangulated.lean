@@ -39,13 +39,13 @@ octahedron axiom (TR 4). The input is given by the following diagram:
 ```
      u₁₃      v₂₃
   X₁ ────> X₃ ────> Z₂₃       Z₁₂⟦1⟧
-   🮡🮢      ^ 🮡🮢       🮡🮢      ^
- u₁₂🮡🮢 u₂₃🮣🮠  🮡🮢v₁₃    🮡🮢w₂₃ 🮣🮠v₁₂⟦1⟧'
-     V   🮣🮠    V        V   🮣🮠
+   \      ^ \        \       ^
+ u₁₂\ u₂₃/   \v₁₃     \w₂₃  /v₁₂⟦1⟧'
+     V  /     V        V   /
       X₂       Z₁₃       X₂⟦1⟧
-       🮡🮢        🮡🮢      ^
-     v₁₂🮡🮢        🮡🮢w₁₃ 🮣🮠u₁₂⟦1⟧'
-         V         V   🮣🮠
+       \        \        ^
+     v₁₂\        \w₁₃   /u₁₂⟦1⟧'
+         V        V    /
           Z₁₂ ───> X₁⟦1⟧
               w₁₂
 ```
@@ -56,13 +56,13 @@ a distinguished triangle and the completed diagram commutes:
 ```
      u₁₃      v₂₃
   X₁ ────> X₃ ────> Z₂₃ ────> Z₁₂⟦1⟧
-   🮡🮢      ^ 🮡🮢     ^ 🮡🮢      ^
- u₁₂🮡🮢 u₂₃🮣🮠  🮡🮢v₁₃🮣🮠m₃🮡🮢w₂₃ 🮣🮠v₁₂⟦1⟧'
-     V   🮣🮠    V  🮣🮠    V   🮣🮠
+   \      ^ \      ^  \       ^
+ u₁₂\ u₂₃/   \v₁₃ /m₃  \w₂₃  /v₁₂⟦1⟧'
+     V  /     V  /       V   /
       X₂       Z₁₃       X₂⟦1⟧
-       🮡🮢     ^  🮡🮢      ^
-     v₁₂🮡🮢   🮣🮠m₁ 🮡🮢w₁₃ 🮣🮠u₁₂⟦1⟧'
-         V  🮣🮠     V   🮣🮠
+       \      ^  \        ^
+     v₁₂\    /m₁  \w₁₃   /u₁₂⟦1⟧'
+         V  /      V    /
           Z₁₂ ───> X₁⟦1⟧
               w₁₂
 ```
@@ -197,13 +197,13 @@ The input is given by the following diagram:
 ```
        v₁₂       u₁₃      w₂₃
   Z₁₂ ────> X₁ ─────> X₃ ─────> Z₂₃⟦1⟧
-          ^  🮡🮢      ^ 🮡🮢
-      v₁₃🮣🮠u₁₂🮡🮢 u₂₃🮣🮠  🮡🮢w₁₃
-        🮣🮠     V   🮣🮠    V
-      Z₁₃        X₂       Z₁₃⟦1⟧
-                ^  🮡🮢
-           v₂₃🮣🮠    🮡🮢w₁₂
-             🮣🮠      V
+          ^  \       ^  \
+      v₁₃/ u₁₂\  u₂₃/    \w₁₃
+        /     V    /      V
+      Z₁₃       X₂       Z₁₃⟦1⟧
+                ^ \
+            v₂₃/   \w₁₂
+              /     V
            Z₂₃      Z₁₂⟦1⟧
 ```
 where `u₁₂ ≫ u₂₃ = u₁₃` and `(v₁₂,u₁₂,w₁₂), (v₁₃,u₁₃,w₁₃)` and `(v₂₃,u₂₃,w₂₃)`
@@ -213,14 +213,14 @@ a distinguished triangle and the completed diagram commutes:
 ```
        v₁₂       u₁₃      w₂₃
   Z₁₂ ────> X₁ ─────> X₃ ─────> Z₂₃⟦1⟧
-   🮡🮢      ^  🮡🮢      ^ 🮡🮢      ^
-  m₁🮡🮢 v₁₃🮣🮠u₁₂🮡🮢 u₂₃🮣🮠  🮡🮢w₁₃ 🮣🮠m₃⟦1⟧'
-     V   🮣🮠     V   🮣🮠    V   🮣🮠
-      Z₁₃        X₂       Z₁₃⟦1⟧
-       🮡🮢       ^  🮡🮢      ^
-      m₃🮡🮢 v₂₃🮣🮠    🮡🮢w₁₂ 🮣🮠m₁⟦1⟧'
-         V   🮣🮠      V   🮣🮠
-          Z₂₃ ────> Z₁₂⟦1⟧
+   \       ^  \       ^  \      ^
+  m₁\  v₁₃/ u₁₂\  u₂₃/    \w₁₃ /m₃⟦1⟧'
+     V   /     V    /      V  /
+      Z₁₃       X₂       Z₁₃⟦1⟧
+       \        ^ \      ^
+      m₃\   v₂₃/   \w₁₂ /m₁⟦1⟧'
+         V    /     V  /
+          Z₂₃  ────> Z₁₂⟦1⟧
 ```
 -/
 structure Octahedron₁
