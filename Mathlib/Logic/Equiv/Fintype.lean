@@ -101,8 +101,8 @@ noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
   classical
   let sp : Set α := {x | p x}
   let sq : Set α := {x | q x}
-  let ip : Fintype sp := Fintype.ofFinite sp
-  let iq : Fintype sq := Fintype.ofEquiv sp e
+  letI : Fintype sp := Fintype.ofFinite sp
+  letI : Fintype sq := Fintype.ofEquiv sp e
   let fp : Finset α := (Finset.univ : Finset sp).map (Function.Embedding.subtype p)
   let fq : Finset α := (Finset.univ : Finset sq).map (Function.Embedding.subtype q)
   have hp (x : α) : x ∈ fp ↔ x ∈ sp := by simp [fp, sp]
@@ -117,10 +117,8 @@ noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
   replace h := ((Fintype.card_eq (_F := (_)) (_G := (_))).mp h).some
   have hpc : spᶜ = (sq \ sp) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
   have hqc : sqᶜ = (sp \ sq) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
-  let epc := (Equiv.setCongr hpc).trans (Equiv.Set.union
-    (disjoint_compl_right.mono_left (Set.diff_subset.trans Set.subset_union_right)))
-  let eqc := (Equiv.setCongr hqc).trans (Equiv.Set.union
-    (disjoint_compl_right.mono_left (Set.diff_subset.trans Set.subset_union_left)))
+  let epc := (Equiv.setCongr hpc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
+  let eqc := (Equiv.setCongr hqc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
   refine epc.trans <| .trans (h.symm.sumCongr <| .refl _) eqc.symm
 
 variable {p q : α → Prop} [DecidablePred p] [DecidablePred q] [Finite {x | p x}]
@@ -160,7 +158,7 @@ theorem Perm.exists_extending_pair {α β : Type*} [Finite α]
     (f g : α → β) (hf : Function.Injective f) (hg : Function.Injective g) :
     ∃ σ : Perm β, ∀ a, σ (f a) = g a := by
   classical
-  have : Finite { x | x ∈ Set.range f } := .of_surjective _ (Set.codRestrict_range_surjective f)
+  haveI : Finite {x | x ∈ Set.range f} := .of_surjective _ (Set.codRestrict_range_surjective f)
   refine ⟨((Equiv.ofInjective f hf).symm.trans (Equiv.ofInjective g hg)).extendSubtype, ?_⟩
   simp [Equiv.extendSubtype_apply_of_mem]
 
