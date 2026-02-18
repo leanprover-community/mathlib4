@@ -137,8 +137,8 @@ lemma Ideal.quotient_smul_top_lt_of_le_smul_top (I : Ideal R) {M : Type*} [AddCo
 
 variable [Small.{v} R]
 
-lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
-    (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
+lemma ModuleCat.exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R)
+    (n : ℕ) (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (exists_N : ∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
       Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i)) :
     ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs := by
@@ -204,7 +204,7 @@ lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono
       rw [(extFunctorObj N i).map_comp]
       exact mono_comp' (ih (Nat.zero_lt_of_ne_zero eq0)) f_mono
 
-lemma ext_subsingleton_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
+lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (N : ModuleCat.{v} R) [Nntr : Nontrivial N] [Nfin : Module.Finite R N]
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
@@ -268,7 +268,7 @@ For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and finitely generated an
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
 · there exists a `M`-regular sequence of length `n` with every element in `I`
 -/
-lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
+lemma ModuleCat.exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
     [∀ N : ModuleCat.{v} R, (Nontrivial N ∧ Module.Finite R N ∧
      Module.support R N ⊆ PrimeSpectrum.zeroLocus I) → ∀ i < n, Subsingleton (Ext N M i),
@@ -290,5 +290,5 @@ lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     inferInstance, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm, suppQ, h2⟩
   tfae_have 3 → 4 := exists_isRegular_of_exists_subsingleton_ext I n M smul_lt
   tfae_have 4 → 1 := fun h4 N ⟨Nntr, Nfin, Nsupp⟩ i hi ↦
-    ext_subsingleton_of_exists_isRegular I n N Nsupp M smul_lt h4 i hi
+    subsingleton_ext_of_exists_isRegular I n N Nsupp M smul_lt h4 i hi
   tfae_finish
