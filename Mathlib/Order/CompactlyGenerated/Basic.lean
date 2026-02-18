@@ -453,29 +453,54 @@ lemma iSupIndep_iff_supIndep {ι : Type*} {f : ι → α} :
     iSupIndep f ↔ ∀ (s : Finset ι), s.SupIndep f := by
   refine ⟨fun h ↦ h.supIndep', fun h ↦ iSupIndep_def'.mpr fun i ↦ ?_⟩
   classical
-  by_cases hf : Set.InjOn f {i : ι | f i ≠ ⊥}
-  · simp_rw [disjoint_iff, inf_sSup_eq_iSup_inf_sup_finset, iSup_eq_bot, ← disjoint_iff]
-    intro s hs
-    rw [← Finset.sup_erase_bot]
-    set t := s.erase ⊥
-    replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by
-      refine hf ?_ ?_ hij <;> aesop (add norm simp [t])
-    have : (Finset.erase (insert i (t.preimage _ hf)) i).image f = t := by
-      ext a
-      simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq,
-        Finset.erase_insert_eq_erase, Finset.mem_image, t]
-      refine ⟨by aesop, fun ⟨ha, has⟩ ↦ ?_⟩
-      obtain ⟨j, hj, rfl⟩ := hs has
-      exact ⟨j, ⟨hj, ha, has⟩, rfl⟩
-    rw [← this, Finset.sup_image]
-    specialize h (insert i (t.preimage _ hf))
-    rw [Finset.supIndep_iff_disjoint_erase] at h
-    exact h i (Finset.mem_insert_self i _)
-  · simp_all only [Set.InjOn, ne_eq, Set.mem_setOf_eq, not_forall]
+  have hf : Set.InjOn f {i : ι | f i ≠ ⊥} := by
+    by_contra! hf
+    simp_all only [Set.InjOn, ne_eq, Set.mem_setOf_eq, not_forall]
     obtain ⟨x₁, hx₁, x₂, hx₂, hfeq, hneq⟩ := hf
     specialize h ({x₁, x₂} : Finset ι)
     rw [Finset.supIndep_pair hneq, disjoint_iff, hfeq, inf_idem (f x₂)] at h
     contradiction
+  simp_rw [disjoint_iff, inf_sSup_eq_iSup_inf_sup_finset, iSup_eq_bot, ← disjoint_iff]
+  intro s hs
+  rw [← Finset.sup_erase_bot]
+  set t := s.erase ⊥
+  replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by
+    refine hf ?_ ?_ hij <;> aesop (add norm simp [t])
+  have : (Finset.erase (insert i (t.preimage _ hf)) i).image f = t := by
+    ext a
+    simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq,
+      Finset.erase_insert_eq_erase, Finset.mem_image, t]
+    refine ⟨by aesop, fun ⟨ha, has⟩ ↦ ?_⟩
+    obtain ⟨j, hj, rfl⟩ := hs has
+    exact ⟨j, ⟨hj, ha, has⟩, rfl⟩
+  rw [← this, Finset.sup_image]
+  specialize h (insert i (t.preimage _ hf))
+  rw [Finset.supIndep_iff_disjoint_erase] at h
+  exact h i (Finset.mem_insert_self i _)
+
+@[deprecated iSupIndep_iff_supIndep (since := "2026-02-18")]
+lemma iSupIndep_iff_supIndep_of_injOn {ι : Type*} {f : ι → α}
+    (hf : InjOn f {i | f i ≠ ⊥}) :
+    iSupIndep f ↔ ∀ (s : Finset ι), s.SupIndep f := by
+  refine ⟨fun h ↦ h.supIndep', fun h ↦ iSupIndep_def'.mpr fun i ↦ ?_⟩
+  simp_rw [disjoint_iff, inf_sSup_eq_iSup_inf_sup_finset, iSup_eq_bot, ← disjoint_iff]
+  intro s hs
+  classical
+  rw [← Finset.sup_erase_bot]
+  set t := s.erase ⊥
+  replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by
+    refine hf ?_ ?_ hij <;> aesop (add norm simp [t])
+  have : (Finset.erase (insert i (t.preimage _ hf)) i).image f = t := by
+    ext a
+    simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq,
+      Finset.erase_insert_eq_erase, Finset.mem_image, t]
+    refine ⟨by aesop, fun ⟨ha, has⟩ ↦ ?_⟩
+    obtain ⟨j, hj, rfl⟩ := hs has
+    exact ⟨j, ⟨hj, ha, has⟩, rfl⟩
+  rw [← this, Finset.sup_image]
+  specialize h (insert i (t.preimage _ hf))
+  rw [Finset.supIndep_iff_disjoint_erase] at h
+  exact h i (Finset.mem_insert_self i _)
 
 theorem sSupIndep_iUnion_of_directed {η : Type*} {s : η → Set α}
     (hs : Directed (· ⊆ ·) s) (h : ∀ i, sSupIndep (s i)) :
