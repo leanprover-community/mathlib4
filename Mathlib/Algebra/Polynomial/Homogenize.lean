@@ -236,7 +236,7 @@ lemma eval_homogenize {p : K[X]} {n : â„•} (hn : p.natDegree â‰¤ n) (x : Fin 2 â
 
 end Semifield
 
-section to_tuple
+section projectivize
 
 variable {R : Type*} [CommSemiring R]
 
@@ -290,6 +290,6 @@ lemma finsuppSum_homogenize_eq {M : Type*} [AddCommMonoid M] (p : R[X]) {f : R â
       sum_eq_natDegree_of_mem_support_homogenize p hs]
   Â· simp [coeff_homogenize, sum_eq_natDegree_of_mem_support_homogenize p hs]
 
-end to_tuple
+end projectivize
 
 end Polynomial
