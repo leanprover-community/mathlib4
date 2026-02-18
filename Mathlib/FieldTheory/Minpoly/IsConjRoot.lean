@@ -228,6 +228,7 @@ theorem isConjRoot_iff_mem_minpoly_aroots {x y : S} (h : IsIntegral K x) :
   simp only [iff_and_self]
   exact fun _ => minpoly.ne_zero h
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 `y` is a conjugate root of `x` over `K` if and only if `y` is a root of the minimal polynomial of
 `x`. This is variant of `isConjRoot_iff_aeval_eq_zero`.
