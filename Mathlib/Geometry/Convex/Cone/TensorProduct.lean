@@ -105,6 +105,7 @@ theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone R G) (C₂ : Po
   exact Submodule.span_le.mpr (tmul_subset_maxTensorProduct C₁ C₂)
 
 variable {C₁ : PointedCone R G} {C₂ : PointedCone R H} {z : G ⊗[R] H}
+variable {C₁' : PointedCone R G} {C₂' : PointedCone R H}
 
 /-- The minimal tensor product is commutative. -/
 @[simp]
@@ -127,20 +128,18 @@ theorem maxTensorProduct_comm :
     simpa [dualDistrib_apply_comm] using hz ψ hψ φ hφ
 
 /-- `minTensorProduct` is monotone. -/
-theorem minTensorProduct_mono {C₁ C₁' : PointedCone R G} {C₂ C₂' : PointedCone R H}
-    (h₁ : C₁ ≤ C₁') (h₂ : C₂ ≤ C₂') :
+@[gcongr]
+theorem minTensorProduct_mono (h₁ : C₁ ≤ C₁') (h₂ : C₂ ≤ C₂') :
     minTensorProduct C₁ C₂ ≤ minTensorProduct C₁' C₂' :=
   Submodule.span_mono <| Set.image2_subset h₁ h₂
 
 /-- `maxTensorProduct` is monotone. -/
-theorem maxTensorProduct_mono {C₁ C₁' : PointedCone R G} {C₂ C₂' : PointedCone R H}
-    (h₁ : C₁ ≤ C₁') (h₂ : C₂ ≤ C₂') :
+theorem maxTensorProduct_mono (h₁ : C₁ ≤ C₁') (h₂ : C₂ ≤ C₂') :
     maxTensorProduct C₁ C₂ ≤ maxTensorProduct C₁' C₂' :=
   fun _ hz => mem_maxTensorProduct.mpr fun φ hφ ψ hψ =>
     mem_maxTensorProduct.mp hz φ (dual_le_dual h₁ hφ) ψ (dual_le_dual h₂ hψ)
 
-variable {G' : Type*} [AddCommGroup G'] [Module R G']
-variable {H' : Type*} [AddCommGroup H'] [Module R H']
+variable {G' H' : Type*} [AddCommGroup G'] [Module R G'] [AddCommGroup H'] [Module R H']
 
 /-- `minTensorProduct` is functorial: the image of a minimal tensor product under
 `TensorProduct.map f g` is contained in the minimal tensor product of the images. -/
