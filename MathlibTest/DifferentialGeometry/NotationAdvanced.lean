@@ -396,15 +396,9 @@ variable {E'''' : Type*} [NormedAddCommGroup E''''] [NormedSpace ℝ E''''] (σ 
 
 variable {f : M → E'' →SL[σ] E''''} in
 /--
-error: Application type mismatch: The argument
-  𝓘(ℝ, E'' →SL[σ] E'''')
-has type
-  ModelWithCorners.{0, max u_11 u_13, max u_11 u_13} ℝ (E'' →SL[σ] E'''') (E'' →SL[σ] E'''')
-but is expected to have type
-  ModelWithCorners.{u_1, _, _} 𝕜 ?E' ?H'
-in the application
-  @ContMDiff 𝕜 inst✝³⁰ E inst✝²⁹ inst✝²⁸ H inst✝²⁷ I ?M ?inst✝ ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴
-    𝓘(ℝ, E'' →SL[σ] E'''')
+error: Could not find a model with corners for `E'' →SL[σ] E''''`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 -/
 #guard_msgs in
 set_option pp.mvars.anonymous false in
