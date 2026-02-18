@@ -11,9 +11,9 @@ public import Mathlib.Data.Sign.Basic
 /-!
 # Projective general linear group
 
-In this file we define `Matrix.ProjGenLinGroup n R` as the quotient of `GL n R` modulo its center.
+In this file we define `Matrix.ProjGenLinGroup n R` as the quotient of `GL n R` by its center.
 We introduce notation `PGL(n, R)` for this group,
-which works both for `n` being a finite type and for `n` being a number.
+which works if `n` is either a finite type or a natural number.
 If `n` is a number, then `PGL(n, R)` is interpreted as `PGL(Fin n, R)`.
 -/
 
