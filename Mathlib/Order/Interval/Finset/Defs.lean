@@ -905,6 +905,7 @@ theorem top_mem_insertTop {s : Finset α} : ⊤ ∈ insertTop s := by
 
 variable (α) [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α]
 
+set_option backward.isDefEq.respectTransparency false in
 instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
   finsetIcc a b :=
     match a, b with
@@ -1021,6 +1022,7 @@ variable [Preorder α] [Preorder β]
 /-! #### Transfer locally finite orders across order isomorphisms -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrder` across an `OrderIso`. -/
 abbrev locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFiniteOrder α where
@@ -1033,6 +1035,7 @@ abbrev locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFini
   finset_mem_Ioc := by simp
   finset_mem_Ioo := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrderTop` across an `OrderIso`. -/
 abbrev locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : LocallyFiniteOrderTop α where
@@ -1041,6 +1044,7 @@ abbrev locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : Local
   finset_mem_Ici := by simp
   finset_mem_Ioi := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrderBot` across an `OrderIso`. -/
 abbrev locallyFiniteOrderBot [LocallyFiniteOrderBot β] (f : α ≃o β) : LocallyFiniteOrderBot α where
@@ -1215,7 +1219,7 @@ so when alternative constructions are available they are preferred. -/
 
 variable {y : α}
 
-instance (priority := low) [Preorder α] [DecidableLE α] [LocallyFiniteOrder α] :
+instance (priority := low) [DecidableLE α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderTop { x : α // x ≤ y } where
   finsetIoi a := Finset.Ioc a ⟨y, by rfl⟩
   finsetIci a := Finset.Icc a ⟨y, by rfl⟩
@@ -1226,7 +1230,7 @@ instance (priority := low) [Preorder α] [DecidableLE α] [LocallyFiniteOrder α
     simp only [Finset.mem_Ioc, and_iff_left_iff_imp]
     exact fun _ => b.property
 
-instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α] :
+instance (priority := low) [DecidableLT α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderTop { x : α // x < y } where
   finsetIoi a := (Finset.Ioo ↑a y).subtype _
   finsetIci a := (Finset.Ico ↑a y).subtype _
@@ -1237,7 +1241,7 @@ instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α
     simp only [Finset.mem_subtype, Finset.mem_Ioo, Subtype.coe_lt_coe, and_iff_left_iff_imp]
     exact fun _ => b.property
 
-instance (priority := low) [Preorder α] [DecidableLE α] [LocallyFiniteOrder α] :
+instance (priority := low) [DecidableLE α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderBot { x : α // y ≤ x } where
   finsetIio a := Finset.Ico ⟨y, by rfl⟩ a
   finsetIic a := Finset.Icc ⟨y, by rfl⟩ a
@@ -1248,7 +1252,7 @@ instance (priority := low) [Preorder α] [DecidableLE α] [LocallyFiniteOrder α
     simp only [Finset.mem_Ico, and_iff_right_iff_imp]
     exact fun _ => b.property
 
-instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α] :
+instance (priority := low) [DecidableLT α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderBot { x : α // y < x } where
   finsetIio a := (Finset.Ioo y ↑a).subtype _
   finsetIic a := (Finset.Ioc y ↑a).subtype _
@@ -1259,16 +1263,16 @@ instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α
     simp only [Finset.mem_subtype, Finset.mem_Ioo, Subtype.coe_lt_coe, and_iff_right_iff_imp]
     exact fun _ => b.property
 
-instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
+instance [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
   simpa only [coe_Iic] using (Finset.Iic y).finite_toSet
 
-instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
+instance [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
   simpa only [coe_Iio] using (Finset.Iio y).finite_toSet
 
-instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y ≤ x } := by
+instance [LocallyFiniteOrderTop α] : Finite { x : α // y ≤ x } := by
   simpa only [coe_Ici] using (Finset.Ici y).finite_toSet
 
-instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y < x } := by
+instance [LocallyFiniteOrderTop α] : Finite { x : α // y < x } := by
   simpa only [coe_Ioi] using (Finset.Ioi y).finite_toSet
 
 namespace Set
