@@ -311,7 +311,7 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vect
   exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt one_ne_zero
     |>.comp_mdifferentiableWithinAt _ this
 
-lemma aux_computation (Y : TangentSpace I x) :
+lemma mfderiv_extChartAt_inverse_comp_mfderivWithin_extChartAT_symm (Y : TangentSpace I x) :
     letI φ := extChartAt I x
     ((mfderiv% φ x).inverse.comp ((mfderiv[range I] φ.symm (φ x)).inverse) Y) = Y := by
   set φ := extChartAt I x
@@ -322,11 +322,11 @@ lemma aux_computation (Y : TangentSpace I x) :
   exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x)
 
 variable (x W) in
-lemma aux_computation' :
+private lemma mfderiv_extChart_inverse_comp_aux :
     letI φ := extChartAt I x
     (mfderiv% φ x).inverse.comp
       ((mfderiv[range I] φ.symm (φ x)).inverse) (W (φ.symm (φ x))) = W x := by
-  rw [aux_computation, extChartAt_to_inv]
+  rw [mfderiv_extChartAt_inverse_comp_mfderivWithin_extChartAT_symm, extChartAt_to_inv]
 
 /-- Pulling back through `extChartAt` the scalar multiplication of a vector field by
 the derivative of a scalar function equals the scalar multiplication by the manifold derivative. -/
@@ -338,7 +338,8 @@ lemma mpullback_mfderivWithin_apply_smul {f : M → 𝕜}
     mpullback I 𝓘(𝕜, E) (extChartAt I x)
         (fun x₀ ↦ (fderivWithin 𝕜 (f ∘ (extChartAt I x).symm) s' x₀) (V' x₀) • W' x₀) x =
       (mfderiv[s] f x) (V x) • W x := by
-  simp only [mpullback, mfderivWithin, hf, map_smul, ← aux_computation' x W, mpullbackWithin]
+  simp only [mpullback, mfderivWithin, hf, map_smul, ← mfderiv_extChart_inverse_comp_aux x W,
+    mpullbackWithin]
   congr 2
   rw [extChartAt_to_inv]
   exact mfderivWithin_extChartAt_symm_inverse_apply (v := V x)
@@ -354,8 +355,7 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (f • W) s x =
       (mfderivWithin I 𝓘(𝕜) f s x) (V x) • (W x) + (f x) • mlieBracketWithin I V W s x := by
-  simp only [mlieBracketWithin]
-  rw [mpullbackWithin_smul]
+  simp only [mlieBracketWithin, mpullbackWithin_smul]
   -- Simplify local notation a bit.
   set V' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I)
   set W' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm W (range I)
@@ -372,10 +372,9 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
     exact lieBracketWithin_smul_right (V := V') hf.differentiableWithinAt_comp_extChartAt_symm
       hW.differentiableWithinAt_mpullbackWithin_vectorField hs
   -- We prove the equality of each summand separately.
-  rw [← Pi.add_def, mpullback_add_apply]; congr; swap
+  rw [← Pi.add_def, mpullback_add_apply]; congr
+  · simpa only [A] using mpullback_mfderivWithin_apply_smul hf
   · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
-  simp only [A]
-  exact mpullback_mfderivWithin_apply_smul hf
 
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
