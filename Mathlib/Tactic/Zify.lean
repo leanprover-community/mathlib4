@@ -6,7 +6,6 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 module
 
 public meta import Mathlib.Tactic.Basic
-public import Aesop
 public import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Order.Basic
 public meta import Mathlib.Tactic.ToAdditive
