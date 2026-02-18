@@ -63,13 +63,12 @@ lemma IsSMulRegular.smulShortComplex_shortExact {r : R} (reg : IsSMulRegular M r
 
 variable {R : Type u} [CommRing R] [Small.{v} R] {M N : ModuleCat.{v} R} {n : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CategoryTheory.Abelian.Ext.smul_id_postcomp_eq_zero_of_mem_ann {r : R}
     (mem_ann : r ∈ Module.annihilator R N) (n : ℕ) :
     AddCommGrpCat.ofHom (((Ext.mk₀ (r • (𝟙 M)))).postcomp N (add_zero n)) = 0 := by
   ext h
   have eq0 : r • (𝟙 N) = 0 := ModuleCat.hom_ext
     (LinearMap.ext (fun x ↦ Module.mem_annihilator.mp mem_ann _))
-  have smul_id (L : ModuleCat.{v} R) : Ext.mk₀ (r • (𝟙 L)) = r • Ext.mk₀ (𝟙 L) := Ext.mk₀_smul r _
-  have : r • h = (Ext.mk₀ (r • (𝟙 N))).comp h (zero_add n) := by
-    simp [smul_id]
-  simp [smul_id, this, eq0]
+  have : r • h = (Ext.mk₀ (r • (𝟙 N))).comp h (zero_add n) := by simp [Ext.mk₀_smul]
+  simp [Ext.mk₀_smul, this, eq0]
