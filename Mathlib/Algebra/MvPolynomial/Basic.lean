@@ -533,8 +533,7 @@ theorem support_zero : (0 : MvPolynomial σ R).support = ∅ :=
 @[simp]
 lemma support_one [Nontrivial R] : (1 : MvPolynomial σ R).support = {0} := by
   classical
-  rw [show support (1 : MvPolynomial σ R) = if (1 : R) = 0 then ∅ else {0} from rfl]
-  simp
+  simp [show support (1 : MvPolynomial σ R) = if (1 : R) = 0 then ∅ else {0} from rfl]
 
 theorem support_smul {S₁ : Type*} [SMulZeroClass S₁ R] {a : S₁} {f : MvPolynomial σ R} :
     (a • f).support ⊆ f.support :=
