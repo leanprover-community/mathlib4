@@ -7583,6 +7583,7 @@ public import Mathlib.Topology.ShrinkingLemma
 public import Mathlib.Topology.Sober
 public import Mathlib.Topology.Specialization
 public import Mathlib.Topology.Spectral.Basic
+public import Mathlib.Topology.Spectral.ConstructibleTopology
 public import Mathlib.Topology.Spectral.Hom
 public import Mathlib.Topology.Spectral.Prespectral
 public import Mathlib.Topology.Subpath
