@@ -77,7 +77,8 @@ section
 
 variable {C : Type u} [Category.{v} C]
 
-def iso : zero.{u} ≅ one where
+/-- The isomorphism at the heart of `WalkingIso` -/
+def iso : zero ≅ one where
   hom := ()
   inv := ()
 
