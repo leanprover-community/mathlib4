@@ -378,6 +378,7 @@ variable {R R₁ R₂ M M₁ : Type*}
 variable [Ring R] [SeminormedAddCommGroup M] [SeminormedAddCommGroup M₁]
 variable [Module R M] [Module R M₁]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear isometry between two modules restricts to a linear isometry
 from any submodule `p` of the domain onto the image of that submodule.
 
@@ -402,6 +403,7 @@ namespace Submodule
 
 variable {R' : Type*} [Ring R'] [Module R' E] (p : Submodule R' E)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Submodule.subtype` as a `LinearIsometry`. -/
 def subtypeₗᵢ : p →ₗᵢ[R'] E :=
   ⟨p.subtype, fun _ => rfl⟩
@@ -410,10 +412,12 @@ def subtypeₗᵢ : p →ₗᵢ[R'] E :=
 theorem coe_subtypeₗᵢ : ⇑p.subtypeₗᵢ = p.subtype :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem subtypeₗᵢ_toLinearMap : p.subtypeₗᵢ.toLinearMap = p.subtype :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem subtypeₗᵢ_toContinuousLinearMap : p.subtypeₗᵢ.toContinuousLinearMap = p.subtypeL :=
   rfl
@@ -1023,6 +1027,7 @@ theorem coe_prodAssoc_symm [Module R E₂] [Module R E₃] :
     ((prodAssoc R E E₂ E₃).symm : E × E₂ × E₃ → (E × E₂) × E₃) = (Equiv.prodAssoc E E₂ E₃).symm :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `p` is a submodule that is equal to `⊤`, then `LinearIsometryEquiv.ofTop p hp` is the
 "identity" equivalence between `p` and `E`. -/
 @[simps! toLinearEquiv apply symm_apply_coe]
@@ -1032,6 +1037,7 @@ def ofTop {R : Type*} [Ring R] [Module R E] (p : Submodule R E) (hp : p = ⊤) :
 variable {R E E₂ E₃} {R' : Type*} [Ring R']
 variable [Module R' E] (p q : Submodule R' E)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `LinearEquiv.ofEq` as a `LinearIsometryEquiv`. -/
 def ofEq (hpq : p = q) : p ≃ₗᵢ[R'] q :=
   { LinearEquiv.ofEq p q hpq with norm_map' := fun _ => rfl }
@@ -1042,10 +1048,12 @@ variable {p q}
 theorem coe_ofEq_apply (h : p = q) (x : p) : (ofEq p q h x : E) = x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofEq_symm (h : p = q) : (ofEq p q h).symm = ofEq q p h.symm :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := rfl
 
@@ -1056,6 +1064,7 @@ variable [Ring R] [Ring R₂] [SeminormedAddCommGroup M] [SeminormedAddCommGroup
 variable [Module R M] [Module R₂ M₂] {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear isometry equivalence between two modules restricts to a
 linear isometry equivalence from any submodule `p` of the domain onto
 the image of that submodule.
@@ -1080,6 +1089,7 @@ theorem Module.Basis.ext_linearIsometryEquiv {ι : Type*} (b : Basis ι R E) {f�
     (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ :=
   LinearIsometryEquiv.toLinearEquiv_injective <| b.ext' h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reinterpret a `LinearIsometry` as a `LinearIsometryEquiv` to the range. -/
 @[simps! apply_coe]
 noncomputable def LinearIsometry.equivRange {R S : Type*} [Semiring R] [Ring S] [Module S E]
