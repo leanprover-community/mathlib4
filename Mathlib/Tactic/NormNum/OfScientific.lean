@@ -47,7 +47,7 @@ theorem isNat_ofScientific_of_false [DivisionSemiring α] : {m e nm ne n : ℕ} 
 to rat casts if the scientific notation is inherited from the one for rationals. -/
 @[norm_num OfScientific.ofScientific _ _ _] def evalOfScientific :
     NormNumExt where eval {u α} e := do
-  let .app (.app (.app f (m : Q(ℕ))) (b : Q(Bool))) (exp : Q(ℕ)) ← whnfR e | failure
+  let mkApp3 f (m : Q(ℕ)) (b : Q(Bool)) (exp : Q(ℕ)) ← whnfR e | failure
   let dα ← inferDivisionSemiring α
   guard <|← withNewMCtxDepth <| isDefEq f q(OfScientific.ofScientific (α := $α))
   assumeInstancesCommute
