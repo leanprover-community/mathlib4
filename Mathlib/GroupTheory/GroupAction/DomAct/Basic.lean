@@ -91,9 +91,10 @@ open Function
 /-- If `M` multiplicatively acts on `α`, then `DomMulAct M` acts on `α → β` as well as some
 bundled maps from `α`. This is a type synonym for `MulOpposite M`, so this corresponds to a right
 action of `M`. -/
-@[to_additive /-- If `M` additively acts on `α`, then `DomAddAct M` acts on `α → β` as
-well as some bundled maps from `α`. This is a type synonym for `AddOpposite M`, so this corresponds
-to a right action of `M`. -/]
+@[instance_reducible,
+  to_additive /-- If `M` additively acts on `α`, then `DomAddAct M`
+  acts on `α → β` as well as some bundled maps from `α`. This is a type synonym for
+  `AddOpposite M`, so this corresponds to a right action of `M`. -/]
 def DomMulAct (M : Type*) := MulOpposite M
 
 @[inherit_doc] postfix:max "ᵈᵐᵃ" => DomMulAct
@@ -126,6 +127,15 @@ run_cmd
 @[to_additive] instance [Mul Mᵐᵒᵖ] [IsLeftCancelMul Mᵐᵒᵖ] : IsLeftCancelMul Mᵈᵐᵃ := ‹_›
 @[to_additive] instance [Mul Mᵐᵒᵖ] [IsRightCancelMul Mᵐᵒᵖ] : IsRightCancelMul Mᵈᵐᵃ := ‹_›
 @[to_additive] instance [Mul Mᵐᵒᵖ] [IsCancelMul Mᵐᵒᵖ] : IsCancelMul Mᵈᵐᵃ := ‹_›
+
+/-- `DomMulAct` inherits `Zero` from `MulOpposite` (needed for module scalar actions). -/
+instance instZero [Zero Mᵐᵒᵖ] : Zero Mᵈᵐᵃ := ‹_›
+
+@[simp]
+lemma mk_zero [Zero M] : mk (0 : M) = 0 := rfl
+
+@[simp]
+lemma symm_mk_zero [Zero M] : mk.symm (0 : Mᵈᵐᵃ) = 0 := rfl
 
 @[to_additive (attr := simp)]
 lemma mk_one [One M] : mk (1 : M) = 1 := rfl
