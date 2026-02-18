@@ -687,10 +687,10 @@ lemma moduleDepth_quotSMulTop_succ_eq_moduleDepth (N M : ModuleCat.{v} R) (x : R
     · constructor
       · exact @Function.Injective.subsingleton _ _ _ ((AddCommGrpCat.mono_iff_injective _).mp <|
           (Ext.covariant_sequence_exact₂' N reg.smulShortComplex_shortExact i).mono_g
-          (smul_id_postcomp_eq_zero_of_mem_ann mem i)) h
+          (Ext.smul_id_postcomp_eq_zero_of_mem_ann mem i)) h
       · exact @Function.Surjective.subsingleton _ _ _ h ((AddCommGrpCat.epi_iff_surjective _).mp <|
           (Ext.covariant_sequence_exact₁' N reg.smulShortComplex_shortExact i (i + 1) rfl).epi_f
-          (smul_id_postcomp_eq_zero_of_mem_ann mem (i + 1)))
+          (Ext.smul_id_postcomp_eq_zero_of_mem_ann mem (i + 1)))
     · exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         (Ext.covariant_sequence_exact₃' N reg.smulShortComplex_shortExact i (i + 1) rfl)
         ((@AddCommGrpCat.isZero_of_subsingleton _ h1).eq_zero_of_src _)
@@ -861,6 +861,7 @@ lemma IsLocalRing.depth_quotient_regular_succ_eq_depth [IsLocalRing R] [IsNoethe
   apply depth_eq_of_algebraMap_surjective _
   simpa only [Quotient.algebraMap_eq] using Ideal.Quotient.mk_surjective
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Small.{v, u} R] in
 lemma IsLocalRing.depth_quotient_span_regular_succ_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
@@ -889,6 +890,7 @@ lemma IsLocalRing.depth_quotient_span_regular_succ_eq_depth [IsLocalRing R] [IsN
   rw [IsLocalRing.depth_eq_of_ringEquiv (Ideal.quotientEquivAlgOfEq R this).toRingEquiv,
     IsLocalRing.depth_quotient_regular_succ_eq_depth x reg mem]
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Small.{v, u} R] in
 lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRing R]
     [IsNoetherianRing R] (rs : List R) (reg : RingTheory.Sequence.IsWeaklyRegular R rs)
