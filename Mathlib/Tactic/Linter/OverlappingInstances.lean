@@ -18,10 +18,11 @@ non-defeq versions of that data. This situation, both for declarations and more 
 as an "instance diamond". This linter warns against declarations whose local contexts include
 multiple versions of the same data.
 
-This is a hybrid syntax and environment linter. The syntax linter only lints the bodies of
-declarations that appear in source. For performance reasons, the syntax linter **only** runs
-interactively in the language server. It will not run on the command line during a typical
-`lake build`.
+This is a hybrid syntax and environment linter.For performance reasons, the syntax linter **only**
+runs interactively in the language server. It will not run on the command line during a typical
+`lake build`. The syntax linter also only lints the bodies of declarations that appear in source,
+and does not currently handle declarations that do not have a "body" such as `structure`s. (The
+environment linter does handle these cases.)
 
 Note that since all proofs of a given proposition are definitionally equal, multiple different ways
 of obtaining instances of `Prop` classes pose no issue. Hence, this linter only warns against
