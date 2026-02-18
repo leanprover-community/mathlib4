@@ -216,6 +216,7 @@ def type? : Expr → Option Level
 /-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
 `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
 it does a syntactic check that the expression does not depend on `yₙ`. -/
+@[deprecated "This function was implemented incorrectly" (since := "2026-02-13")]
 def isConstantApplication (e : Expr) :=
   e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
 where

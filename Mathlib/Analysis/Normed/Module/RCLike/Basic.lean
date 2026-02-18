@@ -53,6 +53,7 @@ theorem norm_smul_inv_norm' {r : ℝ} (r_nonneg : 0 ≤ r) {x : E} (hx : x ≠ 0
   have : ‖x‖ ≠ 0 := by simp [hx]
   simp [field, norm_smul, r_nonneg, rclike_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContinuousLinearEquiv.coord_norm' {x : E} (h : x ≠ 0) :
     ‖(‖x‖ : 𝕜) • ContinuousLinearEquiv.coord 𝕜 x h‖ = 1 := by
   simp only [norm_smul, RCLike.norm_coe_norm, coord_norm, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]

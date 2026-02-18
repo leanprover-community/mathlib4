@@ -375,6 +375,7 @@ lemma measure_pos_eq_zero_of_hasSubGaussianMGF_zero (h : HasSubgaussianMGF X 0 �
   simp only [hs, measure_iUnion_null_iff, Subtype.forall]
   exact fun _ ↦ hn _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ae_eq_zero_of_hasSubgaussianMGF_zero (h : HasSubgaussianMGF X 0 κ ν) :
     ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] 0 := by
   filter_upwards [(h.neg).measure_pos_eq_zero_of_hasSubGaussianMGF_zero,
@@ -483,6 +484,7 @@ lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsZeroOrMarkov
     rwa [ENNReal.coe_ofNat, Measure.comp_compProd_comm, Measure.snd,
       memLp_map_measure_iff h.1 measurable_snd.aemeasurable] at h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `ν : Measure Ω'`, `κ : Kernel Ω' Ω` and `η : (Ω' × Ω) Ω''`, if a random variable `X : Ω → ℝ`
 has a sub-Gaussian mgf with respect to `κ` and `ν` and another random variable `Y : Ω'' → ℝ` has
 a sub-Gaussian mgf with respect to `η` and `ν ⊗ₘ κ : Measure (Ω' × Ω)`, then `X + Y` (random
@@ -836,6 +838,7 @@ protected lemma mgf_le_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] 
     · exact hm.mono_ac (tilted_absolutelyContinuous μ (u * X ·))
   _ = (‖b - a‖₊ / 2) ^ 2 := by simp [field]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Hoeffding's lemma**: with respect to a probability measure `μ`, if `X` is a random variable
 that has expectation zero and is almost surely in `Set.Icc a b` for some `a ≤ b`, then `X` has a
 sub-Gaussian moment-generating function with parameter `((b - a) / 2) ^ 2`. -/

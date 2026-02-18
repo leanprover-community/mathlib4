@@ -54,6 +54,7 @@ noncomputable def gramSchmidt [WellFoundedLT ι] (f : ι → E) (n : ι) : E :=
 termination_by n
 decreasing_by exact mem_Iio.1 i.2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :
     gramSchmidt 𝕜 f n = f n - ∑ i ∈ Iio n, (𝕜 ∙ gramSchmidt 𝕜 f i).starProjection (f n) := by

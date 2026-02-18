@@ -14,7 +14,7 @@ public import Mathlib.Data.Int.Log
 
 In this file we define `Real.logb` to be the logarithm of a real number in a given base `b`. We
 define this as the division of the natural logarithms of the argument and the base, so that we have
-a globally defined function with `logb b 0 = 0`, `logb b (-x) = logb b x` `logb 0 x = 0` and
+a globally defined function with `logb b 0 = 0`, `logb b (-x) = logb b x`, `logb 0 x = 0`, and
 `logb (-b) x = logb b x`.
 
 We prove some basic properties of this function and its relation to `rpow`.
@@ -134,6 +134,7 @@ theorem logb_rpow : logb b (b ^ x) = x := by
   rw [logb, div_eq_iff, log_rpow b_pos]
   exact log_ne_zero_of_pos_of_ne_one b_pos b_ne_one
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
   apply log_injOn_pos
   · simp only [Set.mem_Ioi]
@@ -241,7 +242,7 @@ theorem logb_nonpos_iff (hx : 0 < x) : logb b x ≤ 0 ↔ x ≤ 1 := by
 
 theorem logb_nonpos_iff' (hx : 0 ≤ x) : logb b x ≤ 0 ↔ x ≤ 1 := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · simp [le_refl, zero_le_one]
+  · simp [zero_le_one]
   exact logb_nonpos_iff hb hx
 
 theorem logb_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : logb b x ≤ 0 :=

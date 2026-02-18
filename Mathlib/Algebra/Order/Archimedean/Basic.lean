@@ -68,6 +68,7 @@ lemma MulArchimedean.comap [CommMonoid G] [LinearOrder G] [CommMonoid M] [Partia
     refine (MulArchimedean.arch (f x) (by simpa using hf h)).imp ?_
     simp [← map_pow, hf.le_iff_le]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance OrderDual.instMulArchimedean [CommGroup G] [PartialOrder G] [IsOrderedMonoid G]
     [MulArchimedean G] :

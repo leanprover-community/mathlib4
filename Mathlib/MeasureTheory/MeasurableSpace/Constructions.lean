@@ -43,6 +43,7 @@ theorem measurable_to_countable' [MeasurableSpace α] [Countable α] [Measurable
     (h : ∀ x, MeasurableSet (f ⁻¹' {x})) : Measurable f :=
   measurable_to_countable fun y => h (f y)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞} :
     Measurable f ↔ ∀ n : ℕ, MeasurableSet (f ⁻¹' {↑n}) := by
   refine ⟨fun hf n ↦ hf <| measurableSet_singleton _, fun h ↦ measurable_to_countable' fun n ↦ ?_⟩
@@ -115,6 +116,7 @@ protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, Meas
     MeasurableSet (disjointed f n) :=
   disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
   refine measurable_to_nat fun x => ?_
@@ -343,6 +345,7 @@ lemma measurableAtom_eq_of_mem {x y : β} (hx : x ∈ measurableAtom y) :
   specialize hx sᶜ hys hs.compl
   exact hx hxs
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_measurableAtom_of_notMem {x y : β} (hx : x ∉ measurableAtom y) :
     Disjoint (measurableAtom x) (measurableAtom y) := by
   rw [Set.disjoint_iff_inter_eq_empty]
@@ -904,6 +907,7 @@ variable [MeasurableSpace β] {g : β → Set α}
 random graphs. -/
 instance Set.instMeasurableSpace : MeasurableSpace (Set α) := by unfold Set; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) := by
   unfold Set; infer_instance
 
