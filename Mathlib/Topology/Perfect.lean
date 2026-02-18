@@ -265,4 +265,8 @@ theorem perfectSpace_iff_forall_not_isolated : PerfectSpace X ↔ ∀ x : X, Fil
 instance PerfectSpace.not_isolated [PerfectSpace X] (x : X) : Filter.NeBot (𝓝[≠] x) :=
   perfectSpace_iff_forall_not_isolated.mp ‹_› x
 
+@[simp]
+theorem frontier_singleton [T1Space X] [PerfectSpace X] (x : X) : frontier {x} = {x} := by
+  simp [frontier]
+
 end PerfectSpace
