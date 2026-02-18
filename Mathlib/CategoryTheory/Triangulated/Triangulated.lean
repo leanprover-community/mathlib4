@@ -56,8 +56,8 @@ a distinguished triangle and the completed diagram commutes:
 ```
      u₁₃      v₂₃
   X₁ ────> X₃ ────> Z₂₃ ────> Z₁₂⟦1⟧
-   \      ^ \      ^  \       ^
- u₁₂\ u₂₃/   \v₁₃ /m₃  \w₂₃  /v₁₂⟦1⟧'
+   \      ^ \      ^  \        ^
+ u₁₂\ u₂₃/   \v₁₃ /m₃  \w₂₃   /v₁₂⟦1⟧'
      V  /     V  /       V   /
       X₂       Z₁₃       X₂⟦1⟧
        \      ^  \        ^

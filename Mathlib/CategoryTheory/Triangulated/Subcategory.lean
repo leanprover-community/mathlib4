@@ -181,19 +181,6 @@ lemma monotone_extensionProduct_right {Q' : ObjectProperty C} (h : Q ≤ Q') :
   intro X ⟨Y, Z, f, g, k, hT, hP, hQ⟩
   exact ⟨Y, Z, f, g, k, hT, hP, h Z hQ⟩
 
-variable {P} in
-lemma le_extensionProduct_left [Q.IsClosedUnderIsomorphisms] [Q.ContainsZero] :
-    P ≤ extensionProduct P Q := by
-  intro X hX
-  exact ⟨_, _, _, _, _, contractible_distinguished X, hX, Q.prop_zero⟩
-
-variable {Q} in
-lemma le_extensionProduct_right [P.IsClosedUnderIsomorphisms] [P.ContainsZero] :
-    Q ≤ extensionProduct P Q := by
-  intro X hX
-  exact ⟨_, _, _, _, _, inv_rot_of_distTriang _ (contractible_distinguished X),
-    P.prop_of_isZero (IsZero.of_iso (isZero_zero C) (Functor.mapZeroObject _)), hX⟩
-
 instance : (extensionProduct P Q).IsClosedUnderIsomorphisms where
   of_iso := by
     intro X X' i ⟨Y, Z, f, g, h, hT, hP, hQ⟩
@@ -213,6 +200,22 @@ lemma extensionProduct_isoClosure_right :
   intro X ⟨Y, Z, f, g, h, hT, hP, ⟨Z', hQ, ⟨i⟩⟩⟩
   refine ⟨Y, Z', f, g ≫ i.hom, i.inv ≫ h, ?_, hP, hQ⟩
   exact isomorphic_distinguished _ hT _ <| Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) i.symm
+
+variable {P} in
+lemma le_extensionProduct_left [Q.ContainsZero] : P ≤ extensionProduct P Q := by
+  intro X hX
+  rw [← extensionProduct_isoClosure_right]
+  obtain ⟨Z, hZ, hQ⟩ := Q.exists_prop_of_containsZero 
+  refine ⟨_, _, _, _, _, contractible_distinguished X, hX, ?_⟩
+  exact ⟨Z, hQ, ⟨IsZero.iso (isZero_zero C) hZ⟩⟩
+
+variable {Q} in
+lemma le_extensionProduct_right [P.ContainsZero] : Q ≤ extensionProduct P Q := by
+  intro X hX
+  rw [← extensionProduct_isoClosure_left]
+  obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero 
+  refine ⟨_, _, _, _, _, inv_rot_of_distTriang _ (contractible_distinguished X), ?_, hX⟩
+  exact ⟨Z, hP, ⟨IsZero.iso (Functor.map_isZero _ (isZero_zero C)) hZ⟩⟩
 
 instance [P.IsStableUnderShift ℤ] [Q.IsStableUnderShift ℤ] :
     (extensionProduct P Q).IsStableUnderShift ℤ where
