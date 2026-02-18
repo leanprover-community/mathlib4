@@ -32,19 +32,18 @@ function, and proves its key properties including invariance under the generator
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
-open TopologicalSpace Set MeasureTheory intervalIntegral
- Metric Filter Function Complex
+open Set Function Complex
 
 open UpperHalfPlane hiding I
 
-open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
+open scoped Real
 
 noncomputable section
 
 namespace ModularForm
 
 /-- The modular discriminant `Δ(z) = η(z) ^ 24`, where `η` is the Dedekind eta function. -/
-public def delta (z : ℍ) := (eta z) ^ 24
+@[expose] public def delta (z : ℍ) := (eta z) ^ 24
 
 local notation "Δ" => delta
 
@@ -134,7 +133,7 @@ lemma eta_comp_eqOn_const_mul_csqrt_eta :
 
 end auxiliary
 
-@[expose] public section
+public section
 
 /-- The discriminant expressed as a q-expansion: `Δ(z) = q * ∏' (1 - q ^ (n + 1)) ^ 24`. -/
 lemma delta_eq_q_prod (z : ℍ) : Δ z = 𝕢 1 z * ∏' n, (1 - eta_q n z) ^ 24 := by
@@ -142,8 +141,7 @@ lemma delta_eq_q_prod (z : ℍ) : Δ z = 𝕢 1 z * ∏' n, (1 - eta_q n z) ^ 24
   congr
   · simp [Periodic.qParam, ← exp_nsmul, nsmul_eq_mul, Nat.cast_ofNat]
     grind
-  · rw [Multipliable.tprod_pow]
-    exact multipliableLocallyUniformlyOn_eta.multipliable z.2
+  · exact ((multipliableLocallyUniformlyOn_eta.multipliable z.2).tprod_pow _).symm
 
 /-- The modular discriminant is non-vanishing on the upper half-plane. -/
 lemma delta_ne_zero (z : ℍ) : Δ z ≠ 0 := by
@@ -154,7 +152,7 @@ lemma delta_T_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.T) = Δ := by
   ext z
   rw [SL_slash_apply, denom, UpperHalfPlane.modular_T_smul, ModularGroup.T]
   simp [delta_eq_q_prod, eta_q, Periodic.qParam, ← exp_periodic (2 * π * I * z)]
-  ring_nf --is this non-squeeze simp safe since its before a ring?
+  ring_nf
 
 /-- The transformation formula for `η` under `S : z ↦ -1 / z`: we have
 `η(-1 / z) = (√I)⁻¹ · √z · η(z)` on the upper half-plane. -/
@@ -162,13 +160,8 @@ lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
     (η ∘ (fun z : ℂ ↦ -1 / z))
     ((I ^ (1 / 2 : ℂ))⁻¹ • ((· ^ (1 / 2 : ℂ)) * η)) := by
   obtain ⟨z, hz, h⟩ := eta_comp_eqOn_const_mul_csqrt_eta
-  intro x hx
-  have hI : I ∈ upperHalfPlaneSet := by simp
-  have h3 := h hI
-  simp only [comp_apply, div_I, neg_mul, one_mul, neg_neg, Pi.smul_apply, Pi.mul_apply,
-    smul_eq_mul, ← mul_assoc] at h3
-  have hconst := (mul_eq_right₀ (eta_ne_zero (mem_setOf.mpr hI))).mp h3.symm
-  grind
+  have h3 :  η I = z * csqrt I * η I := by simpa [← mul_assoc] using h (show I ∈ _ by simp)
+  grind [(mul_eq_right₀ (eta_ne_zero <| by simp)).mp h3.symm]
 
 /-- The discriminant satisfies the modular transformation for `S : z ↦ -1 / z`:
 we have `Δ(-1 / z) = z ^ 12 · Δ(z)`. -/
