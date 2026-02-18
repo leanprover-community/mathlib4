@@ -1089,8 +1089,7 @@ instance isMonoidal_refl : (Equivalence.refl (C := C)).IsMonoidal :=
   inferInstanceAs (Adjunction.id (C := C)).IsMonoidal
 
 /-- The inverse of a monoidal category equivalence is also a monoidal category equivalence. -/
-instance isMonoidal_symm [e.inverse.Monoidal] [e.IsMonoidal] :
-    e.symm.IsMonoidal where
+instance isMonoidal_symm [e.IsMonoidal] : e.symm.IsMonoidal where
   leftAdjoint_ε := by
     simp only [toAdjunction]
     dsimp [symm]

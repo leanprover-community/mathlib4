@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Continuous
-public import Mathlib.Analysis.Normed.Module.Normalize
 
 /-!
 # Linear maps on inner product spaces

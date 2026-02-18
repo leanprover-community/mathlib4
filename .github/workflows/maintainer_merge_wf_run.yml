@@ -13,9 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_TRIAGE_PRIVATE_KEY }}
+
       - name: Download artifact
         id: download-artifact
-        uses: dawidd6/action-download-artifact@883bc3da0e2f55ddd0a8fc8e99378551c1991a55 # v13
+        uses: dawidd6/action-download-artifact@5c98f0b039f36ef966fdb7dfa9779262785ecb05 # v14
         with:
           workflow: maintainer_merge.yml
           name: workflow-data
@@ -140,7 +147,8 @@ jobs:
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           # labels added by GITHUB_TOKEN won't trigger the Zulip emoji workflow
-          github-token: ${{secrets.TRIAGE_TOKEN}}
+          # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const { owner, repo } = context.repo;
             const issue_number = ${{ steps.extract-data.outputs.pr_number }};
