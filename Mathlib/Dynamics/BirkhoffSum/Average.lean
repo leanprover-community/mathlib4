@@ -85,8 +85,8 @@ lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
 
 /-- If a function `g` is invariant under a function `f` (i.e., `g ∘ f = g`), then the Birkhoff
 average of `g` over `f` for `n` iterations is equal to `g`. Requires that `0 < n`. -/
-theorem birkhoffAverage_of_comp_eq [CharZero R] {f : α → α} {g : α → M} (h : g ∘ f = g)
-    {n : ℕ} (hn : n ≠ 0) : birkhoffAverage R f g n = g := by
+theorem birkhoffAverage_of_comp_eq {f : α → α} {g : α → M} (h : g ∘ f = g)
+    {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n = g := by
   funext x
   suffices (n : R)⁻¹ • n • g x = g x by simpa [birkhoffAverage, birkhoffSum_of_comp_eq h]
   rw [← Nat.cast_smul_eq_nsmul (R := R), ← mul_smul, inv_mul_cancel₀ (by norm_cast), one_smul]
