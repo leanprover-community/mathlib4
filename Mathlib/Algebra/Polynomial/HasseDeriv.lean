@@ -81,7 +81,7 @@ theorem hasseDeriv_coeff (n : ℕ) :
 
 theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
   simp only [hasseDeriv_apply, Nat.choose_zero_right, Nat.cast_one, one_mul,
-    sum_monomial_eq]
+    sum_monomial_eq, tsub_zero]
 
 @[simp]
 theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=

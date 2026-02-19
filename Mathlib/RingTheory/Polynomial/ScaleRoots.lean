@@ -287,7 +287,7 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
   use s ^ natDegree (a * p) • s ^ (natDegree b + natDegree q - natDegree (b * q)) • b.scaleRoots r
   simp only [s, smul_mul_assoc, ← mul_scaleRoots, smul_smul, mul_assoc,
     ← mul_pow, IsUnit.val_inv_mul, one_pow, mul_one, ← smul_add, one_smul, e, natDegree_one,
-    one_scaleRoots, ← add_scaleRoots_of_natDegree_eq _ _ _ this]
+    one_scaleRoots, ← add_scaleRoots_of_natDegree_eq _ _ _ this, tsub_zero]
 
 alias _root_.IsCoprime.scaleRoots := isCoprime_scaleRoots
 

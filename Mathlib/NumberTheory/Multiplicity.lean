@@ -57,7 +57,7 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
   · simp only [pow_zero, Nat.cast_zero, sub_zero, sub_self, dvd_zero, mul_zero]
   · simp only [Nat.succ_sub_succ_eq_sub, Nat.cast_succ, add_pow, Finset.sum_range_succ,
       Nat.choose_self, tsub_self, pow_one, Nat.choose_succ_self_right, pow_zero,
-      mul_one, Nat.cast_zero, zero_add, add_tsub_cancel_left]
+      mul_one, Nat.cast_zero, zero_add, add_tsub_cancel_left, tsub_zero]
     suffices p ^ 2 ∣ ∑ i ∈ range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
       convert this; abel
     apply Finset.dvd_sum
