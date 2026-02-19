@@ -96,34 +96,15 @@ theorem H.eq_zero_of_injective (F : Sheaf J AddCommGrpCat.{w}) (n : ℕ) (x : H 
     [Injective F] : x = 0 :=
   Ext.eq_zero_of_injective x
 
-variable {S : ShortComplex (Sheaf J AddCommGrpCat.{w})} (hS : S.ShortExact) (n₀ n₁ : ℕ)
-    (h : n₀ + 1 = n₁)
-
-/-- The long exact sequence on cohomology obtained from a short exact sequence of sheaves:
-If `S` is a short exact sequence of abelian sheaves, then this is the sequence
-`H S.X₁ n₀ → H S.X₂ n₀ → H S.X₃ n₀ → H S.X₁ n₁ → H S.X₂ n₁ → H S.X₃ n₁` when `n₀ + 1 = n₁` -/
-noncomputable def H.longSequence (h : n₀ + 1 = n₁ := by lia) : ComposableArrows AddCommGrpCat 5 :=
-  Ext.covariantSequence ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of.{w} (ULift ℤ)))
-    hS n₀ n₁ h
-
-theorem H.longSequence.exact (h : n₀ + 1 = n₁ := by lia) : (H.longSequence hS n₀ n₁ h).Exact :=
-  Ext.covariantSequence_exact ((constantSheaf J AddCommGrpCat).obj (AddCommGrpCat.of (ULift ℤ)))
-    hS n₀ n₁ h
-
-instance : (Functor.const Cᵒᵖ : AddCommGrpCat ⥤ Cᵒᵖ ⥤ AddCommGrpCat).Additive where
-
-instance : (constantSheaf J AddCommGrpCat).Additive :=
-  inferInstanceAs (Functor.const _ ⋙ presheafToSheaf _ _).Additive
-
 variable (F : Sheaf J AddCommGrpCat.{w}) {T : C} (hT : Limits.IsTerminal T)
 
 open AddCommGrpCat Opposite
 
 /-- The additive equivalence between `H F 0` and the evaluation of `F` at the terminal object -/
 noncomputable def H.equiv₀ : H F 0 ≃+ ((sheafSections J AddCommGrpCat).obj (op T)).obj F :=
-    AddEquiv.trans Ext.addEquiv₀ (
+    AddEquiv.trans Ext.addEquiv₀ <|
       AddEquiv.trans ((constantSheafAdj J AddCommGrpCat hT).homAddEquiv _ F)
-        (uliftZMultiplesAddEquiv _))
+        (uliftZMultiplesAddEquiv _)
 
 variable {F G : Sheaf J AddCommGrpCat.{w}} (f : F ⟶ G)
 
