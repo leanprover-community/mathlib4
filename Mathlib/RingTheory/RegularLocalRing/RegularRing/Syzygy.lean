@@ -24,11 +24,13 @@ variable (R : Type u) [CommRing R]
 
 open IsLocalRing
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsRegularLocalRing.of_isField (h : IsField R) : IsRegularLocalRing R := by
   let _ : Field R := h.toField
   apply (isRegularLocalRing_def R).mpr
   simp [maximalIdeal_eq_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsRegularRing.of_isField (h : IsField R) : IsRegularRing R := by
   let _ : Field R := h.toField
   refine (isRegularRing_iff R).mpr (fun p hp ↦ ?_)
@@ -73,6 +75,7 @@ lemma IsRegularRing.of_isDedekindDomain [IsDomain R] [IsDedekindDomain R] : IsRe
       exact le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite
         (Set.finite_singleton _)) (Set.ncard_singleton _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Hilberts_Syzygy (k : Type u) [Field k] [Small.{v, u} k] {ι : Type*} [Finite ι] :
     globalDimension.{v} (MvPolynomial ι k) = Nat.card ι := by
   let _ : IsRegularRing k := IsRegularRing.of_isField k (Field.toIsField k)
