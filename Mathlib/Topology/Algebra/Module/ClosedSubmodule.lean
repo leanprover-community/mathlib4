@@ -342,7 +342,7 @@ lemma mapEquiv_top_eq_top : ((⊤ : ClosedSubmodule R M).mapEquiv f) = ⊤ := by
   ext x; simp
 
 @[simp]
-lemma mapEquiv_inf_eq_inf_mapEquiv (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
+lemma mapEquiv_inf_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
     (s ⊓ t).mapEquiv f = s.mapEquiv f ⊓ t.mapEquiv f := by
   ext x
   simp only [Submodule.carrier_eq_coe, coe_toSubmodule, SetLike.mem_coe, toSubmodule_inf,
@@ -360,7 +360,7 @@ lemma closure_map_eq_mapEquiv_closure (s : Submodule R M) :
   simp
 
 @[simp]
-lemma mapEquiv_sup_eq_sup_mapEquiv (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
+lemma mapEquiv_sup_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
     (s ⊔ t).mapEquiv f = s.mapEquiv f ⊔ t.mapEquiv f := by
   ext x
   simp only [mapEquiv_apply, toSubmodule_sup, Submodule.carrier_eq_coe, Submodule.map_coe,
