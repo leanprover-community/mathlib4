@@ -86,6 +86,7 @@ instance instIsDomain [IsDomain R] [Module.Free R M] : IsDomain (TensorAlgebra R
 
 attribute [pp_with_univ] Cardinal.lift
 
+set_option backward.isDefEq.respectTransparency false in
 open Cardinal in
 lemma rank_eq [Nontrivial R] [Module.Free R M] :
     Module.rank R (TensorAlgebra R M) = Cardinal.lift.{uR} (sum fun n ↦ Module.rank R M ^ n) := by

@@ -17,6 +17,7 @@ public section
 
 namespace Nat
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ratSqrt_le_realSqrt (x : ℕ) {prec : ℕ} (h : 0 < prec) : ratSqrt x prec ≤ √x := by
   have := ratSqrt_sq_le (x := x) h
   have : (x.ratSqrt prec ^ 2 : ℝ) ≤ ↑x := by norm_cast

@@ -86,6 +86,7 @@ instance : IsTopologicalSemiring ℝ≥0 where
 instance : ContinuousSub ℝ≥0 :=
   ⟨((continuous_coe.fst'.sub continuous_coe.snd').max continuous_const).subtype_mk _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ContinuousInv₀ ℝ≥0 := inferInstance
 
 variable {α : Type*}

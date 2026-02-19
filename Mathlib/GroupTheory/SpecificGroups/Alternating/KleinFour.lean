@@ -189,6 +189,7 @@ theorem kleinFour_isKleinFour (hα4 : Nat.card α = 4) :
   card_four := kleinFour_card_of_card_eq_four hα4
   exponent_two := exponent_kleinFour_of_card_eq_four hα4
 
+set_option backward.isDefEq.respectTransparency false in
 theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
     kleinFour α = commutator (alternatingGroup α) := by
   have _ : (kleinFour α).Normal := normal_kleinFour hα4

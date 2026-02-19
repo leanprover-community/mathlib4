@@ -206,6 +206,7 @@ instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where
       isHomLift' := fun a ↦ by simp [lift_id_inv_isIso] }
     aesop
 
+set_option backward.isDefEq.respectTransparency false in
 instance {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) [IsIso α] : IsIso (X := F.toFunctor) α.toNatTrans := by
   rw [← forgetful_map]; infer_instance
 
