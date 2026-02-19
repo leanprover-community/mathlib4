@@ -34,7 +34,8 @@ section Unital
 section RCLike
 
 variable (𝕜 : Type*) {A : Type*} {p : A → Prop} [RCLike 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A]
-variable [TopologicalSpace A] [StarModule 𝕜 A] [ContinuousFunctionalCalculus 𝕜 A p]
+variable [TopologicalSpace A] [StarModule 𝕜 A]
+variable [ContinuousFunctionalCalculus.IsClosedEmbedding 𝕜 A p]
 variable [IsTopologicalRing A] [ContinuousStar A]
 
 open StarAlgebra
@@ -44,7 +45,7 @@ open scoped ContinuousFunctionalCalculus in
 theorem range_cfcHom {a : A} (ha : p a) :
     (cfcHom ha (R := 𝕜)).range = elemental 𝕜 a := by
   rw [StarAlgHom.range_eq_map_top, ← ContinuousMap.elemental_id_eq_top, StarAlgebra.elemental,
-    ← StarSubalgebra.topologicalClosure_map _ _ (cfcHom_isClosedEmbedding ha (R := 𝕜)).isClosedMap
+    ← StarSubalgebra.topologicalClosure_map _ _ (cfcHom_isClosedEmbedding _ ha (R := 𝕜)).isClosedMap
       (cfcHom_continuous ha), StarAlgHom.map_adjoin]
   congr
   simpa using cfcHom_id ha
@@ -68,8 +69,8 @@ end RCLike
 
 open scoped NNReal
 variable {A : Type*} [Ring A] [StarRing A] [Algebra ℝ A] [TopologicalSpace A]
-variable [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [IsTopologicalRing A] [T2Space A]
-variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
+variable [ContinuousFunctionalCalculus.IsClosedEmbedding ℝ A IsSelfAdjoint] [IsTopologicalRing A]
+variable [T2Space A] [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 
 lemma range_cfc_nnreal_eq_image_cfc_real (a : A) (ha : 0 ≤ a) :
     Set.range (cfc (R := ℝ≥0) · a) = (cfc · a) '' {f | ∀ x ∈ spectrum ℝ a, 0 ≤ f x} := by
@@ -106,7 +107,7 @@ section RCLike
 
 variable (𝕜 : Type*) {A : Type*} {p : A → Prop} [RCLike 𝕜] [NonUnitalRing A] [StarRing A]
 variable [Module 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
-variable [TopologicalSpace A] [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
+variable [TopologicalSpace A] [NonUnitalContinuousFunctionalCalculus.IsClosedEmbedding 𝕜 A p]
 variable [ContinuousConstSMul 𝕜 A] [StarModule 𝕜 A] [IsTopologicalRing A] [ContinuousStar A]
 
 open NonUnitalStarAlgebra
@@ -117,7 +118,7 @@ theorem range_cfcₙHom {a : A} (ha : p a) :
     NonUnitalStarAlgHom.range (cfcₙHom ha (R := 𝕜)) = elemental 𝕜 a := by
   rw [← NonUnitalStarAlgebra.map_top, ← ContinuousMapZero.elemental_eq_top,
     NonUnitalStarAlgebra.elemental, ← NonUnitalStarSubalgebra.topologicalClosure_map _
-    (cfcₙHom_isClosedEmbedding ha (R := 𝕜)).isClosedMap (cfcₙHom_continuous ha),
+    (cfcₙHom_isClosedEmbedding _ ha (R := 𝕜)).isClosedMap (cfcₙHom_continuous ha),
     NonUnitalStarAlgHom.map_adjoin]
   congr
   simpa using cfcₙHom_id ha
@@ -144,8 +145,9 @@ end RCLike
 open scoped NNReal
 variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℝ A] [IsScalarTower ℝ A A]
 variable [SMulCommClass ℝ A A] [TopologicalSpace A]
-variable [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [IsTopologicalRing A] [T2Space A]
-variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
+variable [NonUnitalContinuousFunctionalCalculus.IsClosedEmbedding ℝ A IsSelfAdjoint]
+variable [IsTopologicalRing A] [T2Space A] [PartialOrder A] [NonnegSpectrumClass ℝ A]
+variable [StarOrderedRing A]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma range_cfcₙ_nnreal_eq_image_cfcₙ_real (a : A) (ha : 0 ≤ a) :

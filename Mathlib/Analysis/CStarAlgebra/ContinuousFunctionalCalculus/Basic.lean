@@ -150,11 +150,10 @@ instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [CStarAlgebra
   predicate_zero := .zero
   spectrum_nonempty a _ := spectrum.nonempty a
   exists_cfc_of_predicate a ha := by
-    refine ⟨(StarAlgebra.elemental ℂ a).subtype.comp <| continuousFunctionalCalculus a,
-      ?hom_isClosedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
-    case hom_isClosedEmbedding =>
-      exact Isometry.isClosedEmbedding <|
-        isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
+    have : Isometry ((StarAlgebra.elemental ℂ a).subtype.comp <| continuousFunctionalCalculus a :
+        C(spectrum ℂ a, ℂ) →⋆ₐ[ℂ] A) :=
+      isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
+    refine ⟨_, this.continuous, this.injective, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
     case hom_id => exact congr_arg Subtype.val <| continuousFunctionalCalculus_map_id a
     case hom_map_spectrum =>
       intro f
@@ -170,9 +169,22 @@ lemma cfcHom_eq_of_isStarNormal {A : Type*} [CStarAlgebra A] (a : A) [ha : IsSta
       (StarAlgEquiv.isometry (continuousFunctionalCalculus a)).continuous
   · simp [continuousFunctionalCalculus_map_id a]
 
-instance IsStarNormal.instNonUnitalContinuousFunctionalCalculus {A : Type*}
-    [NonUnitalCStarAlgebra A] : NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal :=
-  RCLike.nonUnitalContinuousFunctionalCalculus Unitization.isStarNormal_inr
+instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
+    IsometricContinuousFunctionalCalculus ℂ A IsStarNormal where
+  isometric a ha := by
+    rw [cfcHom_eq_of_isStarNormal]
+    exact isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
+
+set_option backward.isDefEq.respectTransparency false in
+instance IsSelfAdjoint.instIsometricContinuousFunctionalCalculus :
+    IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
+  SpectrumRestricts.isometric_cfc Complex.reCLM Complex.isometry_ofReal (.zero _)
+    fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
+
+instance IsStarNormal.instNonUnitalContinuousFunctionalCalculus
+    {A : Type*} [NonUnitalCStarAlgebra A] :
+    NonUnitalContinuousFunctionalCalculus.IsClosedEmbedding ℂ A IsStarNormal :=
+  RCLike.nonUnitalContinuousFunctionalCalculusIsClosedEmbedding Unitization.isStarNormal_inr
 
 open Unitization CStarAlgebra in
 lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalCStarAlgebra A] (a : A)
@@ -462,24 +474,6 @@ lemma Unitization.real_cfcₙ_eq_cfc_inr (a : A) (f : ℝ → ℝ) (hf₀ : f 0 
 end cfc_inr
 
 /-! ### Instances of isometric continuous functional calculi -/
-
-section Unital
-
-variable {A : Type*} [CStarAlgebra A]
-
-instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
-    IsometricContinuousFunctionalCalculus ℂ A IsStarNormal where
-  isometric a ha := by
-    rw [cfcHom_eq_of_isStarNormal]
-    exact isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
-
-set_option backward.isDefEq.respectTransparency false in
-instance IsSelfAdjoint.instIsometricContinuousFunctionalCalculus :
-    IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
-  SpectrumRestricts.isometric_cfc Complex.reCLM Complex.isometry_ofReal (.zero _)
-    fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
-
-end Unital
 
 section NonUnital
 
