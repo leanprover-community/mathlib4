@@ -10,8 +10,6 @@ public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.Order.Filter.Cofinite  -- shake: keep (used in notation only)
 public import Mathlib.Algebra.Module.Pi
-public import Mathlib.Algebra.Group.Submonoid.Units
-public import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # Restricted products of sets, groups and rings
