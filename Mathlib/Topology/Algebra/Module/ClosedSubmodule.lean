@@ -311,7 +311,9 @@ namespace ClosedSubmodule
 variable (f : M ≃L[R] N)
 
 /-- A continuous equivalence `f` between modules `M` and `N` on `R` induces an equivalence between
-closed submodules in `M` and those in `N` through `map f`. -/
+closed submodules in `M` and those in `N` through `map f`.
+The definition does not use `ClosedSubmodule.map` because that has additional `ContinuousAdd` and
+`ContinuousConstSMul` type-class assumptions. -/
 def mapEquiv : ClosedSubmodule R M ≃ ClosedSubmodule R N where
   toFun s := ⟨s.toSubmodule.map f.toLinearMap, by simpa using s.isClosed⟩
   invFun t := ⟨t.toSubmodule.map f.symm.toLinearMap, by simpa using t.isClosed⟩
