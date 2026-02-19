@@ -692,15 +692,16 @@ partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : Te
         command `set_option trace.Elab.DiffGeo.MDiff true`."
     throwError "Could not find a model with corners for `{e}`.{hint}"
 where
-  go (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM (Option FindModelResult) := do
+  go (e : Expr) (baseInfo : Option (Expr × Expr)) : TermElabM (Option FindModelResult) := do
     -- At first, try finding a model with corners on the space itself.
     if let some m ← findModelInner e baseInfo then return some m
     -- Otherwise, we recurse into the expression,
     -- depending whether we have an open subset of a space, a product, or a direct sum of spaces.
     match_expr e with
-    -- Check if `e` is an open subset of `M`, i.e. a `TopologicalSpcae.Opens`.
-    -- Because of the coercion from a subtype, the resulting expression `e` has a somewhat
-    -- complicated form.
+    -- Check if `e` is an open subset of `M`, i.e. a `TopologicalSpace.Opens`.
+    -- Because `e` is the result of coercing an actual `s : TopologicalSpace.Opens M` to a `Sort`
+    -- via `Subtype`, the resulting expression `e` has a somewhat complicated form:
+    -- `Subtype fun (x : M) => x ∈ s`.
     | Subtype _M p =>
       match (← instantiateMVars p).cleanupAnnotations with
       | .lam _x _ body _ =>
