@@ -113,9 +113,7 @@ lemma evaluation_coevaluation_iso (X : C) :
 
 instance ExactPairing.of_rightDual_self (X : C) : ExactPairing Xᘁ X where
   coevaluation' := (evaluationIso X).inv
-
   evaluation' := (coevaluationIso X).inv
-
   coevaluation_evaluation' := by
     have : whiskerLeftIso X (evaluationIso X).symm ≪≫
     (α_ X Xᘁ X).symm ≪≫ whiskerRightIso (coevaluationIso X).symm X
