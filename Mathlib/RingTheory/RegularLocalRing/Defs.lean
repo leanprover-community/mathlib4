@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+public import Mathlib.RingTheory.KrullDimension.Field
 
 /-!
 # Define Regular Local Ring
@@ -59,5 +60,8 @@ lemma of_ringEquiv [IsRegularLocalRing R] {R' : Type*} [CommRing R']
 lemma iff_finrank_cotangentSpace [IsLocalRing R] [IsNoetherianRing R] :
     IsRegularLocalRing R ↔ Module.finrank (ResidueField R) (CotangentSpace R) = ringKrullDim R := by
   rw [isRegularLocalRing_def, spanFinrank_maximalIdeal_eq_finrank_cotangentSpace]
+
+instance {k : Type*} [Field k] : IsRegularLocalRing k := by
+  simp [isRegularLocalRing_def, maximalIdeal_eq_bot]
 
 end IsRegularLocalRing
