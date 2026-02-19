@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.CategoryTheory.Closed.Types
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Category.Init

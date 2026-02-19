@@ -3,6 +3,11 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+
+/-!
+# TODO: Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
+-/
+
 module
 
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic

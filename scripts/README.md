@@ -31,6 +31,10 @@ to learn about it as well!
 **Tools for manual maintenance**
 - `fix_unused.py`
   Bulk processing of unused variable warnings, replacing them with `_`.
+- `find_missing_h1_docstring.py`
+  Scans Lean files and prints paths that do not contain an H1 header (`# ...`) in any
+  docstring (`/--` or `/-!`). Defaults to all git-tracked `*.lean` files.
+  Usage: `python3 scripts/find_missing_h1_docstring.py`
 - `fix_deprecations.py`
   Automatically fixes deprecation warnings by replacing deprecated identifiers with their suggested
   replacements. Runs `lake build --no-build` to collect deprecation warnings, then applies

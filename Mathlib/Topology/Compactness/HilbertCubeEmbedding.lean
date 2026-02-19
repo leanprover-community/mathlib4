@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.Topology.Compactness.HilbertCubeEmbedding
+-/
+
 module -- shake: keep-all
 
 import Mathlib.Analysis.Normed.Group.Basic

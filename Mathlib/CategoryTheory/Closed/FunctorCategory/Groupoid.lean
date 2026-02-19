@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Category.Init

@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.CategoryTheory.Limits.FormalCoproducts
+-/
+
 module
 
 public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Basic

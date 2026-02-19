@@ -4,6 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
+
+/-!
+# TODO: Mathlib.Algebra.Module.Submodule.Equiv
+-/
+
 module
 
 public import Mathlib.Algebra.Module.Submodule.Range

@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.Algebra.QuadraticAlgebra
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.Algebra.QuadraticAlgebra.Defs

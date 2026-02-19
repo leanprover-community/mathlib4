@@ -7,6 +7,11 @@ import Mathlib.Algebra.Ring.Subsemiring.Order
 import Mathlib.Data.ZMod.Basic
 
 /-!
+# TODO: Counterexamples.CanonicallyOrderedCommSemiringTwoMul
+-/
+
+
+/-!
 
 A canonically ordered commutative semiring with two different elements `a` and `b` such that
 `a ≠ b` and `2 * a = 2 * b`.  Thus, multiplication by a fixed non-zero element of a canonically

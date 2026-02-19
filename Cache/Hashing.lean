@@ -7,6 +7,11 @@ Authors: Arthur Paulino, Jon Eugster
 import Cache.IO
 import Lean.Elab.ParseImportsFast
 
+/-!
+# TODO: Cache.Hashing
+-/
+
+
 namespace Cache.Hashing
 
 open Lean IO

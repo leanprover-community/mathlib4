@@ -3,6 +3,11 @@ Copyright (c) 2025 Aaron Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu, Wojciech Nawrocki
 -/
+
+/-!
+# TODO: Mathlib.Tactic.DepRewrite
+-/
+
 module
 
 public meta import Lean.Elab.Tactic.Simp

@@ -6,6 +6,11 @@ Authors: Seewoo Lee
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.NumberTheory.Real.Irrational
 
+/-!
+# TODO: Counterexamples.IrrationalPowerOfIrrational
+-/
+
+
 /-
 # Irrational power of irrational numbers are not necessarily irrational.
 
