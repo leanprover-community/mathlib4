@@ -179,9 +179,10 @@ namespace Finite
 variable {s t : Set α}
 
 theorem card_lt_card (ht : t.Finite) (hsub : s ⊂ t) : Nat.card s < Nat.card t := by
-  have := ht.fintype
-  have := ht.subset hsub.subset |>.fintype
-  simpa using Set.card_lt_card hsub
+  have : Fintype t := Finite.fintype ht
+  have : Fintype s := Finite.fintype (subset ht (subset_of_ssubset hsub))
+  simp only [Nat.card_eq_fintype_card]
+  exact Set.card_lt_card hsub
 
 theorem _root_.Set.ecard_le_ecard (hsub : s ⊆ t) : ENat.card s ≤ ENat.card t :=
   ENat.card_le_card_of_injective <| inclusion_injective hsub
