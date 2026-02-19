@@ -3,13 +3,17 @@ Copyright (c) 2024 Sven Manthe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sven Manthe
 -/
-import Mathlib.Order.CompleteSublattice
+module
+
+public import Mathlib.Order.CompleteSublattice
 
 /-!
 # `SetLike` instance for elements of `CompleteSublattice (Set X)`
 
 This file provides lemmas for the `SetLike` instance for elements of `CompleteSublattice (Set X)`
 -/
+
+public section
 
 attribute [local instance] SetLike.instSubtypeSet
 
@@ -27,7 +31,6 @@ lemma mem_subtype : x ∈ L.subtype T ↔ x ∈ T := Iff.rfl
 @[simp] lemma setLike_mem_sup : x ∈ S ⊔ T ↔ x ∈ S ∨ x ∈ T := by simp [← mem_subtype]
 
 @[simp] lemma setLike_mem_coe : x ∈ T.val ↔ x ∈ T := Iff.rfl
-@[simp] lemma setLike_mem_mk (U : Set X) (h : U ∈ L) : x ∈ (⟨U, h⟩ : L) ↔ x ∈ U := Iff.rfl
 
 end Sublattice
 
@@ -44,13 +47,15 @@ lemma mem_subtype : x ∈ L.subtype T ↔ x ∈ T := Iff.rfl
 @[simp] lemma mem_inf : x ∈ S ⊓ T ↔ x ∈ S ∧ x ∈ T := by simp [← mem_subtype]
 @[simp] lemma mem_sInf : x ∈ sInf 𝒮 ↔ ∀ T ∈ 𝒮, x ∈ T := by simp [← mem_subtype]
 @[simp] lemma mem_iInf : x ∈ ⨅ i : I, f i ↔ ∀ i : I, x ∈ f i := by simp [← mem_subtype]
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mem_top : x ∈ (⊤ : L) := by simp [← mem_subtype]
 
 @[simp] lemma mem_sup : x ∈ S ⊔ T ↔ x ∈ S ∨ x ∈ T := by simp [← mem_subtype]
 @[simp] lemma mem_sSup : x ∈ sSup 𝒮 ↔ ∃ T ∈ 𝒮, x ∈ T := by simp [← mem_subtype]
 @[simp] lemma mem_iSup : x ∈ ⨆ i : I, f i ↔ ∃ i : I, x ∈ f i := by simp [← mem_subtype]
-@[simp] lemma not_mem_bot : ¬ x ∈ (⊥ : L) := by simp [← mem_subtype]
 
-@[simp] lemma mem_mk (U : Set X) (h : U ∈ L) : x ∈ (⟨U, h⟩ : L) ↔ x ∈ U := Iff.rfl
+set_option backward.isDefEq.respectTransparency false in
+@[simp] lemma notMem_bot : x ∉ (⊥ : L) := by simp [← mem_subtype]
 
 end CompleteSublattice

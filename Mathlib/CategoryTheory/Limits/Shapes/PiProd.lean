@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 /-!
 
 # A product as a binary product
@@ -14,9 +16,11 @@ and its complement.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Limits
 
-variable {C I : Type*} [Category C] {X Y : I → C}
+variable {C I : Type*} [Category* C] {X Y : I → C}
   (f : (i : I) → X i ⟶ Y i) (P : I → Prop)
   [HasProduct X] [HasProduct Y]
   [HasProduct (fun (i : {x : I // P x}) ↦ X i.val)]
@@ -34,6 +38,7 @@ noncomputable def Pi.binaryFanOfProp : BinaryFan (∏ᶜ (fun (i : {x : I // P x
   BinaryFan.mk (P := ∏ᶜ X) (Pi.map' Subtype.val fun _ ↦ 𝟙 _)
     (Pi.map' Subtype.val fun _ ↦ 𝟙 _)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /--
 A product indexed by `I` is a binary product of the products indexed by a subset of `I` and its
@@ -57,6 +62,7 @@ lemma hasBinaryProduct_of_products : HasBinaryProduct (∏ᶜ (fun (i : {x : I /
 
 attribute [local instance] hasBinaryProduct_of_products
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Pi.map_eq_prod_map [∀ i, Decidable (P i)] : Pi.map f =
     ((Pi.binaryFanOfPropIsLimit X P).conePointUniqueUpToIso (prodIsProd _ _)).hom ≫
       prod.map (Pi.map (fun (i : {x : I // P x}) ↦ f i.val))
@@ -64,7 +70,6 @@ lemma Pi.map_eq_prod_map [∀ i, Decidable (P i)] : Pi.map f =
         ((Pi.binaryFanOfPropIsLimit Y P).conePointUniqueUpToIso (prodIsProd _ _)).inv := by
   rw [← Category.assoc, Iso.eq_comp_inv]
   dsimp only [IsLimit.conePointUniqueUpToIso, binaryFanOfProp, prodIsProd]
-  apply prod.hom_ext
-  all_goals aesop_cat
+  cat_disch
 
 end CategoryTheory.Limits

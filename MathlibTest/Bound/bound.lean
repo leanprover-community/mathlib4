@@ -11,7 +11,6 @@ import Mathlib.Tactic.Bound
 ## Tests for the `bound` tactic
 -/
 
-open Complex (abs)
 open scoped NNReal
 
 -- Tests that work with `bound`, but not `positivity`, `gcongr`, or `norm_num`
@@ -122,6 +121,7 @@ example {s : Set ℂ} (o : IsOpen s) (z) (h : z ∈ s) : ∃ r : ℝ, r > 0 := b
   clear o h bs z s
   bound
 
+set_option backward.isDefEq.respectTransparency false in
 -- Test various elaboration issues
 example {f : ℂ → ℂ} {z w : ℂ} {s r c e : ℝ}
       (sc : ∀ {w}, ‖w - z‖ < s → ‖f w - f z‖ < e) (wz : ‖w - z‖ < s) (wr : ‖w‖ < r)

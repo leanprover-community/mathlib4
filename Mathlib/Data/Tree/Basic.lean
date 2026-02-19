@@ -3,9 +3,11 @@ Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
-import Mathlib.Data.Nat.Notation
-import Mathlib.Tactic.TypeStar
-import Mathlib.Util.CompileInductive
+module
+
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Binary tree
@@ -23,20 +25,21 @@ additional data. We provide the notation `a △ b` for making a `Tree Unit` with
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
 -/
 
+@[expose] public section
+
 
 /-- A binary tree with values stored in non-leaf nodes. -/
 inductive Tree.{u} (α : Type u) : Type u
   | nil : Tree α
   | node : α → Tree α → Tree α → Tree α
-  deriving DecidableEq, Repr -- Porting note: Removed `has_reflect`, added `Repr`.
+  deriving DecidableEq, Repr
+compile_inductive% Tree
 
 namespace Tree
 
 universe u
 
 variable {α : Type u}
-
--- Porting note: replaced with `deriving Repr` which builds a better instance anyway
 
 instance : Inhabited (Tree α) :=
   ⟨nil⟩
@@ -119,9 +122,6 @@ def right : Tree α → Tree α
 
 /-- A node with `Unit` data -/
 scoped infixr:65 " △ " => Tree.node ()
-
--- Porting note: workaround for https://github.com/leanprover/lean4/issues/2049
-compile_inductive% Tree
 
 /-- Induction principle for `Tree Unit`s -/
 @[elab_as_elim]

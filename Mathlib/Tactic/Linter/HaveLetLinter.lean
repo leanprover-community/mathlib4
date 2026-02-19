@@ -3,13 +3,14 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Init
-import Lean.Elab.Command
-import Lean.Server.InfoUtils
+public import Mathlib.Init
+public meta import Lean.Elab.Command
+public meta import Lean.Server.InfoUtils
 
 /-!
-#  The `have` vs `let` linter
+# The `have` vs `let` linter
 
 The `have` vs `let` linter flags uses of `have` to introduce a hypothesis whose Type is not `Prop`.
 
@@ -25,6 +26,8 @@ TODO:
   should the linter act on them as well?
 -/
 
+meta section
+
 open Lean Elab Command Meta
 
 namespace Mathlib.Linter
@@ -38,7 +41,7 @@ There are three settings:
 
 The default value is `1`.
 -/
-register_option linter.haveLet : Nat := {
+public register_option linter.haveLet : Nat := {
   defValue := 0
   descr := "enable the `have` vs `let` linter:\n\
             * 0 -- inactive;\n\
@@ -50,7 +53,7 @@ namespace haveLet
 
 /-- find the `have` syntax. -/
 def isHave? : Syntax → Bool
-  | .node _ ``Lean.Parser.Tactic.tacticHave_ _ => true
+  | .node _ ``Lean.Parser.Tactic.tacticHave__ _ => true
   | _ => false
 
 end haveLet
@@ -83,7 +86,7 @@ def toFormat_propTypes (ctx : ContextInfo) (lc : LocalContext) (es : Array (Expr
 
 /-- returns the `have` syntax whose corresponding hypothesis does not have Type `Prop` and
 also a `Format`ted version of the corresponding Type. -/
-partial
+public partial
 def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
   InfoTree.foldInfoM (init := #[]) fun ctx info args => return args ++ (← do
     let .ofTacticInfo i := info | return #[]
@@ -117,11 +120,8 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
     let trees ← getInfoTrees
     for t in trees do
       for (s, fmt) in ← nonPropHaves t do
-        -- Since the linter option is not in `Bool`, the standard `Linter.logLint` does not work.
-        -- We emulate it with `logWarningAt`
-        logWarningAt s <| .tagged linter.haveLet.name
-          m!"'{fmt}' is a Type and not a Prop. Consider using 'let' instead of 'have'.\n\
-          You can disable this linter using `set_option linter.haveLet 0`"
+        logLint0Disable linter.haveLet s
+          m!"'{fmt}' is a Type and not a Prop. Consider using 'let' instead of 'have'."
 
 initialize addLinter haveLetLinter
 

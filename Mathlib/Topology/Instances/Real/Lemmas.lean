@@ -3,14 +3,21 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Periodic
-import Mathlib.Algebra.Field.Subfield.Basic
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Algebra.Ring.Real
+module
+
+public import Mathlib.Algebra.Field.Periodic
+public import Mathlib.Algebra.Field.Subfield.Basic
+public import Mathlib.Topology.Algebra.Order.Archimedean
+public import Mathlib.Topology.Algebra.Ring.Real
+
+import Mathlib.Algebra.Order.Monoid.Canonical.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-!
 # Topological properties of ℝ
 -/
+
+public section
 
 assert_not_exists UniformOnFun
 
@@ -35,7 +42,8 @@ theorem Real.isTopologicalBasis_Ioo_rat :
       exact ⟨q, p, Rat.cast_lt.1 <| hqa.trans hap, rfl⟩, ⟨hqa, hap⟩, fun _ ⟨hqa', ha'p⟩ =>
       h ⟨hlq.trans hqa', ha'p.trans hpu⟩⟩
 
-@[simp]
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about this being `@[simp]`. -/
 theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
   simp only [← comap_dist_right_atTop (0 : ℝ), Real.dist_eq, sub_zero, comap_abs_atTop]
 
@@ -59,6 +67,7 @@ theorem Real.uniformContinuous_abs : UniformContinuous (abs : ℝ → ℝ) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
     ⟨ε, ε0, fun _ _ ↦ lt_of_le_of_lt (abs_abs_sub_abs_le_abs_sub _ _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Real.continuous_inv : Continuous fun a : { r : ℝ // r ≠ 0 } => a.val⁻¹ :=
   continuousOn_inv₀.restrict
 
@@ -71,9 +80,6 @@ theorem Real.uniformContinuous_mul (s : Set (ℝ × ℝ)) {r₁ r₂ : ℝ}
       let ⟨h₁, h₂⟩ := max_lt_iff.1 h
       Hδ (H _ a.2).1 (H _ b.2).2 h₁ h₂⟩
 
--- Porting note: moved `IsTopologicalRing` instance up
-
-
 theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
   rw [Real.ball_eq_Ioo]; apply totallyBounded_Ioo
 
@@ -83,18 +89,37 @@ theorem Real.subfield_eq_of_closed {K : Subfield ℝ} (hc : IsClosed (K : Set �
   rintro - ⟨_, rfl⟩
   exact SubfieldClass.ratCast_mem K _
 
+theorem Real.exists_seq_rat_strictMono_tendsto (x : ℝ) :
+    ∃ u : ℕ → ℚ, StrictMono u ∧ (∀ n, u n < x) ∧ Tendsto (u · : ℕ → ℝ) atTop (𝓝 x) :=
+  Rat.denseRange_cast.exists_seq_strictMono_tendsto Rat.cast_strictMono.monotone x
+
+theorem Real.exists_seq_rat_strictAnti_tendsto (x : ℝ) :
+    ∃ u : ℕ → ℚ, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto (u · : ℕ → ℝ) atTop (𝓝 x) :=
+  Rat.denseRange_cast.exists_seq_strictAnti_tendsto Rat.cast_strictMono.monotone x
+
 section
 
+theorem closure_ordConnected_inter_rat {s : Set ℝ} (conn : s.OrdConnected) (nt : s.Nontrivial) :
+    closure (s ∩ .range Rat.cast) = closure s :=
+  (closure_mono inter_subset_left).antisymm <| isClosed_closure.closure_subset_iff.mpr fun x hx ↦
+    Real.mem_closure_iff.mpr fun ε ε_pos ↦ by
+      have ⟨z, hz, ne⟩ := nt.exists_ne x
+      refine ne.lt_or_gt.elim (fun lt ↦ ?_) fun lt ↦ ?_
+      · have ⟨q, h₁, h₂⟩ := exists_rat_btwn (max_lt lt (sub_lt_self x ε_pos))
+        rw [max_lt_iff] at h₁
+        refine ⟨q, ⟨conn.out hz hx ⟨h₁.1.le, h₂.le⟩, q, rfl⟩, ?_⟩
+        simpa only [abs_sub_comm, abs_of_pos (sub_pos.mpr h₂), sub_lt_comm] using h₁.2
+      · have ⟨q, h₁, h₂⟩ := exists_rat_btwn (lt_min lt (lt_add_of_pos_right x ε_pos))
+        rw [lt_min_iff] at h₂
+        refine ⟨q, ⟨conn.out hx hz ⟨h₁.le, h₂.1.le⟩, q, rfl⟩, ?_⟩
+        simpa only [abs_of_pos (sub_pos.2 h₁), sub_lt_iff_lt_add'] using h₂.2
+
 theorem closure_of_rat_image_lt {q : ℚ} :
-    closure (((↑) : ℚ → ℝ) '' { x | q < x }) = { r | ↑q ≤ r } :=
-  Subset.antisymm
-    (isClosed_Ici.closure_subset_iff.2
-      (image_subset_iff.2 fun p (h : q < p) => by simpa using h.le))
-    fun x hx => mem_closure_iff_nhds.2 fun _ ht =>
-      let ⟨ε, ε0, hε⟩ := Metric.mem_nhds_iff.1 ht
-      let ⟨p, h₁, h₂⟩ := exists_rat_btwn ((lt_add_iff_pos_right x).2 ε0)
-      ⟨p, hε <| by rwa [mem_ball, Real.dist_eq, abs_of_pos (sub_pos.2 h₁), sub_lt_iff_lt_add'],
-        mem_image_of_mem _ <| Rat.cast_lt.1 <| lt_of_le_of_lt hx.out h₁⟩
+    closure (((↑) : ℚ → ℝ) '' { x | q < x }) = { r | ↑q ≤ r } := by
+  convert closure_ordConnected_inter_rat (ordConnected_Ioi (a := (q : ℝ))) _ using 1
+  · congr!; aesop
+  · exact (closure_Ioi _).symm
+  · exact ⟨q + 1, show (q : ℝ) < _ by linarith, q + 2, show (q : ℝ) < _ by linarith, by simp⟩
 
 /- TODO(Mario): Put these back only if needed later
 lemma closure_of_rat_image_le_eq {q : ℚ} : closure ((coe : ℚ → ℝ) '' {x | q ≤ x}) = {r | ↑q ≤ r} :=
@@ -125,3 +150,65 @@ theorem Periodic.isBounded_of_continuous [PseudoMetricSpace α] {f : ℝ → α}
 end Function
 
 end Periodic
+
+section Monotone
+
+variable {ι : Type*} [Preorder ι] [Nonempty ι]
+
+/-- A monotone, bounded above sequence `f : ℕ → ℝ` on `Ici k` has the finite
+limit `sSup (f '' Ici k)`. -/
+theorem Real.tendsto_atTop_csSup_of_monotoneOn_bddAbove_nat_Ici {f : ℕ → ℝ} {k : ℕ}
+    (h_mon : MonotoneOn f (Ici k)) (h_bdd : BddAbove (f '' Ici k)) :
+    Tendsto f atTop (𝓝 (sSup (f '' Ici k))) := by
+  rw [← range_add_eq_image_Ici] at h_bdd
+  rw [Ici, ← monotone_add_nat_iff_monotoneOn_nat_Ici] at h_mon
+  rw [← tendsto_add_atTop_iff_nat k, ← range_add_eq_image_Ici, sSup_range]
+  exact tendsto_atTop_ciSup h_mon h_bdd
+
+/-- An antitone, bounded below sequence `f : ℕ → ℝ` on `Ici k` has the finite
+limit `sInf (f '' Ici k)`. -/
+theorem Real.tendsto_atTop_csInf_of_antitoneOn_bddBelow_nat_Ici {f : ℕ → ℝ} {k : ℕ}
+    (h_ant : AntitoneOn f (Ici k)) (h_bdd : BddBelow (f '' Ici k)) :
+    Tendsto f atTop (𝓝 (sInf (f '' Ici k))) := by
+  rw [← range_add_eq_image_Ici] at h_bdd
+  rw [Ici, ← antitone_add_nat_iff_antitoneOn_nat_Ici] at h_ant
+  rw [← tendsto_add_atTop_iff_nat k, ← range_add_eq_image_Ici, sInf_range]
+  exact tendsto_atTop_ciInf h_ant h_bdd
+
+variable [IsDirected ι (· ≤ ·)]
+
+/-- The limit of a monotone, bounded above function `f : ι → ℝ` is a least upper bound
+of the function. -/
+theorem Real.isLUB_of_tendsto_monotone_bddAbove {f : ι → ℝ}
+    {x : ℝ} (h_tto : Tendsto f atTop (𝓝 x))
+    (h_mon : Monotone f) (h_bdd : BddAbove (range f)) : IsLUB (range f) x := by
+  rw [tendsto_nhds_unique h_tto (tendsto_atTop_ciSup h_mon h_bdd)]
+  exact isLUB_ciSup h_bdd
+
+/-- The limit of an antitone, bounded below function `f : ι → ℝ` is a greatest lower bound
+of the function. -/
+theorem Real.isGLB_of_tendsto_antitone_bddBelow {f : ι → ℝ}
+    {x : ℝ} (h_tto : Tendsto f atTop (𝓝 x))
+    (h_ant : Antitone f) (h_bdd : BddBelow (range f)) : IsGLB (range f) x := by
+  rw [tendsto_nhds_unique h_tto (tendsto_atTop_ciInf h_ant h_bdd)]
+  exact isGLB_ciInf h_bdd
+
+/-- The limit of an antitone, bounded below sequence `f : ℕ → ℝ` on `Ici k` is a least
+upper bound of the sequence. -/
+theorem Real.isLUB_of_tendsto_monotoneOn_bddAbove_nat_Ici {f : ℕ → ℝ} {k : ℕ}
+    {x : ℝ} (h_tto : Tendsto f atTop (𝓝 x))
+    (h_mon : MonotoneOn f (Ici k)) (h_bdd : BddAbove (f '' Ici k)) : IsLUB (f '' Ici k) x := by
+  rw [tendsto_nhds_unique h_tto
+    (Real.tendsto_atTop_csSup_of_monotoneOn_bddAbove_nat_Ici h_mon h_bdd)]
+  exact isLUB_csSup (image_nonempty.mpr nonempty_Ici) h_bdd
+
+/-- The limit of an antitone, bounded below sequence `f : ℕ → ℝ` on `Ici k` is a greatest
+lower bound of the sequence. -/
+theorem Real.isGLB_of_tendsto_antitoneOn_bddBelow_nat_Ici {f : ℕ → ℝ} {k : ℕ}
+    {x : ℝ} (h_tto : Tendsto f atTop (𝓝 x))
+    (h_ant : AntitoneOn f (Ici k)) (h_bdd : BddBelow (f '' Ici k)) : IsGLB (f '' Ici k) x := by
+  rw [tendsto_nhds_unique h_tto
+    (Real.tendsto_atTop_csInf_of_antitoneOn_bddBelow_nat_Ici h_ant h_bdd)]
+  exact isGLB_csInf (image_nonempty.mpr nonempty_Ici) h_bdd
+
+end Monotone

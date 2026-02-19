@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 
 /-!
 # Legendre symbol
@@ -32,6 +34,8 @@ are squares:
 
 quadratic residue, quadratic nonresidue, Legendre symbol
 -/
+
+@[expose] public section
 
 
 open Nat
@@ -63,9 +67,10 @@ theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ 
   · rintro ⟨y, rfl⟩
     have hy : y ≠ 0 := by
       rintro rfl
-      simp [zero_pow, mul_zero, ne_eq, not_true] at ha
+      simp [mul_zero, ne_eq] at ha
     refine ⟨Units.mk0 y hy, ?_⟩; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `a : ZMod p` is nonzero, then `a^(p/2)` is either `1` or `-1`. -/
 theorem pow_div_two_eq_neg_one_or_one {a : ZMod p} (ha : a ≠ 0) :
     a ^ (p / 2) = 1 ∨ a ^ (p / 2) = -1 := by
@@ -106,6 +111,7 @@ def legendreSym (a : ℤ) : ℤ :=
 
 namespace legendreSym
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We have the congruence `legendreSym p a ≡ a ^ (p / 2) mod p`. -/
 theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) := by
   rcases eq_or_ne (ringChar (ZMod p)) 2 with hc | hc
@@ -146,7 +152,7 @@ theorem at_one : legendreSym p 1 = 1 := by rw [legendreSym, Int.cast_one, MulCha
 
 /-- The Legendre symbol is multiplicative in `a` for `p` fixed. -/
 protected theorem mul (a b : ℤ) : legendreSym p (a * b) = legendreSym p a * legendreSym p b := by
-  simp [legendreSym, Int.cast_mul, map_mul, quadraticCharFun_mul]
+  simp [legendreSym, Int.cast_mul, map_mul]
 
 /-- The Legendre symbol is a homomorphism of monoids with zero. -/
 @[simps]
@@ -176,9 +182,9 @@ theorem eq_one_iff {a : ℤ} (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = 1 �
 
 theorem eq_one_iff' {a : ℕ} (ha0 : (a : ZMod p) ≠ 0) :
     legendreSym p a = 1 ↔ IsSquare (a : ZMod p) := by
-      rw [eq_one_iff]
-      · norm_cast
-      · exact mod_cast ha0
+  rw [eq_one_iff]
+  · norm_cast
+  · exact mod_cast ha0
 
 /-- `legendreSym p a = -1` iff `a` is a nonsquare mod `p`. -/
 theorem eq_neg_one_iff {a : ℤ} : legendreSym p a = -1 ↔ ¬IsSquare (a : ZMod p) :=

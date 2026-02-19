@@ -3,19 +3,23 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Finset.BooleanAlgebra
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.Fintype.OfMap
-import Mathlib.Data.Fintype.Sets
-import Mathlib.Data.List.FinRange
+module
+
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.Fintype.OfMap
+public import Mathlib.Data.Fintype.Sets
+public import Mathlib.Data.List.FinRange
 
 /-!
 # Instances for finite types
 
 This file is a collection of basic `Fintype` instances for types such as `Fin`, `Prod` and pi types.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -103,8 +107,7 @@ theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
     Finset.univ.image (f <| l.get ·) = (l.map f).toFinset := by
   simp
 
-@[instance]
-def Unique.fintype {α : Type*} [Unique α] : Fintype α :=
+instance Unique.fintype {α : Type*} [Unique α] : Fintype α :=
   Fintype.ofSubsingleton default
 
 /-- Short-circuit instance to decrease search for `Unique.fintype`,
@@ -161,17 +164,17 @@ instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·
   Fintype.ofSurjective Quotient.mk'' Quotient.mk''_surjective
 
 instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
-    Fintype (Σ'a, β a) :=
+    Fintype (Σ' a, β a) :=
   if h : α then Fintype.ofEquiv (β h) ⟨fun x => ⟨h, x⟩, PSigma.snd, fun _ => rfl, fun ⟨_, _⟩ => rfl⟩
   else ⟨∅, fun x => (h x.1).elim⟩
 
 instance PSigma.fintypePropRight {α : Type*} {β : α → Prop} [∀ a, Decidable (β a)] [Fintype α] :
-    Fintype (Σ'a, β a) :=
+    Fintype (Σ' a, β a) :=
   Fintype.ofEquiv { a // β a }
     ⟨fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 
 instance PSigma.fintypePropProp {α : Prop} {β : α → Prop} [Decidable α] [∀ a, Decidable (β a)] :
-    Fintype (Σ'a, β a) :=
+    Fintype (Σ' a, β a) :=
   if h : ∃ a, β a then ⟨{⟨h.fst, h.snd⟩}, fun ⟨_, _⟩ => by simp⟩ else ⟨∅, fun ⟨x, y⟩ =>
     (h ⟨x, y⟩).elim⟩
 
@@ -200,8 +203,8 @@ def truncOfNonemptyFintype (α) [Nonempty α] [Fintype α] : Trunc α :=
 to `Trunc (Σ' a, P a)`, containing data.
 -/
 def truncSigmaOfExists {α} [Fintype α] {P : α → Prop} [DecidablePred P] (h : ∃ a, P a) :
-    Trunc (Σ'a, P a) :=
-  @truncOfNonemptyFintype (Σ'a, P a) ((Exists.elim h) fun a ha => ⟨⟨a, ha⟩⟩) _
+    Trunc (Σ' a, P a) :=
+  @truncOfNonemptyFintype (Σ' a, P a) ((Exists.elim h) fun a ha => ⟨⟨a, ha⟩⟩) _
 
 end Trunc
 
@@ -257,7 +260,7 @@ theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : �
     set f := seqOfForallFinsetExistsAux P r h' with hf
     have A : ∀ n : ℕ, P (f n) := by
       intro n
-      induction' n using Nat.strong_induction_on with n IH
+      induction n using Nat.strong_induction_on with | _ n IH
       have IH' : ∀ x : Fin n, P (f x) := fun n => IH n.1 n.2
       rw [hf, seqOfForallFinsetExistsAux]
       exact
@@ -280,7 +283,7 @@ some relation `r` with respect to all the points in `s`. Then one may construct 
 function `f : ℕ → α` such that `r (f m) (f n)` holds whenever `m ≠ n`.
 We also ensure that all constructed points satisfy a given predicate `P`. -/
 theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : α → α → Prop)
-    [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
+    [Std.Symm r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise (r on f) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine ⟨f, hf, fun m n hmn => ?_⟩

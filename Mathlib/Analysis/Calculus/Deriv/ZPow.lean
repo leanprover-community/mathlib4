@@ -3,8 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.Deriv.Inv
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Calculus.Deriv.Shift
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ`
@@ -12,16 +15,19 @@ import Mathlib.Analysis.Calculus.Deriv.Inv
 In this file we prove theorems about (iterated) derivatives of `x ^ m`, `m : ℤ`.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 
 derivative, power
 -/
 
+public section
+
 universe u v w
 
 open Topology Filter Asymptotics Set
+open scoped Nat
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {E : Type v} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -40,10 +46,10 @@ theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
     rw [← Int.ofNat_one, ← Int.ofNat_sub, zpow_natCast]
     norm_cast at hm
   rcases lt_trichotomy m 0 with (hm | hm | hm)
-  · have hx : x ≠ 0 := h.resolve_right hm.not_le
+  · have hx : x ≠ 0 := h.resolve_right hm.not_ge
     have := (hasStrictDerivAt_inv ?_).scomp _ (this (-m) (neg_pos.2 hm)) <;>
       [skip; exact zpow_ne_zero _ hx]
-    simp only [Function.comp_def, zpow_neg, one_div, inv_inv, smul_eq_mul] at this
+    simp only [Function.comp_def, zpow_neg, inv_inv, smul_eq_mul] at this
     convert this using 1
     rw [sq, mul_inv, inv_inv, Int.cast_neg, neg_mul, neg_mul_neg, ← zpow_add₀ hx, mul_assoc, ←
       zpow_add₀ hx]
@@ -88,15 +94,18 @@ theorem derivWithin_zpow (hxs : UniqueDiffWithinAt 𝕜 s x) (h : x ≠ 0 ∨ 0 
     derivWithin (fun x => x ^ m) s x = (m : 𝕜) * x ^ (m - 1) :=
   (hasDerivWithinAt_zpow m x h s).derivWithin hxs
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
     (deriv^[k] fun x : 𝕜 => x ^ m) =
       fun x => (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) := by
-  induction' k with k ihk
-  · simp only [one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero,
-      Function.iterate_zero]
-  · simp only [Function.iterate_succ_apply', ihk, deriv_const_mul_field', deriv_zpow',
-      Finset.prod_range_succ, Int.ofNat_succ, ← sub_sub, Int.cast_sub, Int.cast_natCast, mul_assoc]
+  induction k with
+  | zero =>
+    simp only [one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero, Function.iterate_zero]
+  | succ k ihk =>
+    simp only [Function.iterate_succ_apply', ihk, deriv_const_mul_field', deriv_zpow',
+      Finset.prod_range_succ, Int.natCast_succ, ← sub_sub, Int.cast_sub, Int.cast_natCast,
+      mul_assoc]
 
 theorem iter_deriv_zpow (m : ℤ) (x : 𝕜) (k : ℕ) :
     deriv^[k] (fun y => y ^ m) x = (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) :=
@@ -105,7 +114,7 @@ theorem iter_deriv_zpow (m : ℤ) (x : 𝕜) (k : ℕ) :
 theorem iter_deriv_pow (n : ℕ) (x : 𝕜) (k : ℕ) :
     deriv^[k] (fun x : 𝕜 => x ^ n) x = (∏ i ∈ Finset.range k, ((n : 𝕜) - i)) * x ^ (n - k) := by
   simp only [← zpow_natCast, iter_deriv_zpow, Int.cast_natCast]
-  rcases le_or_lt k n with hkn | hnk
+  rcases le_or_gt k n with hkn | hnk
   · rw [Int.ofNat_sub hkn]
   · have : (∏ i ∈ Finset.range k, (n - i : 𝕜)) = 0 :=
       Finset.prod_eq_zero (Finset.mem_range.2 hnk) (sub_self _)
@@ -118,13 +127,45 @@ theorem iter_deriv_pow' (n k : ℕ) :
   funext fun x => iter_deriv_pow n x k
 
 theorem iter_deriv_inv (k : ℕ) (x : 𝕜) :
-    deriv^[k] Inv.inv x = (∏ i ∈ Finset.range k, (-1 - i : 𝕜)) * x ^ (-1 - k : ℤ) := by
-  simpa only [zpow_neg_one, Int.cast_neg, Int.cast_one] using iter_deriv_zpow (-1) x k
+    deriv^[k] Inv.inv x = (-1) ^ k * k ! * x ^ (-1 - k : ℤ) := calc
+  deriv^[k] Inv.inv x = deriv^[k] (· ^ (-1 : ℤ)) x := by simp
+  _ = (∏ i ∈ Finset.range k, (-1 - i : 𝕜)) * x ^ (-1 - k : ℤ) := mod_cast iter_deriv_zpow (-1) x k
+  _ = (-1) ^ k * k ! * x ^ (-1 - k : ℤ) := by
+    simp only [← neg_add', Finset.prod_neg, ← Finset.prod_Ico_id_eq_factorial,
+      Finset.prod_Ico_eq_prod_range]
+    simp
 
 @[simp]
 theorem iter_deriv_inv' (k : ℕ) :
-    deriv^[k] Inv.inv = fun x : 𝕜 => (∏ i ∈ Finset.range k, (-1 - i : 𝕜)) * x ^ (-1 - k : ℤ) :=
+    deriv^[k] Inv.inv = fun x : 𝕜 => (-1) ^ k * k ! * x ^ (-1 - k : ℤ) :=
   funext (iter_deriv_inv k)
+
+open Nat Function in
+theorem iter_deriv_inv_linear (k : ℕ) (c d : 𝕜) :
+    deriv^[k] (fun x ↦ (c * x + d)⁻¹) =
+    (fun x : 𝕜 ↦ (-1) ^ k * k ! * c ^ k * (c * x + d) ^ (-1 - k : ℤ)) := by
+  induction k with
+  | zero => simp
+  | succ k ihk =>
+    rw [factorial_succ, add_comm k 1, iterate_add_apply, ihk]
+    ext z
+    simp only [Int.reduceNeg, iterate_one, deriv_const_mul_field', cast_add, cast_one]
+    by_cases hd : c = 0
+    · simp [hd]
+    · have := deriv_comp_add_const (fun x ↦ (c * x) ^ (-1 - k : ℤ)) (d / c) z
+      have h0 : (fun x ↦ (c * (x + d / c)) ^ (-1 - (k : ℤ))) =
+        (fun x ↦ (c * x + d) ^ (-1 - (k : ℤ))) := by
+        ext y
+        field_simp
+      rw [h0, deriv_comp_mul_left c (fun x ↦ (x) ^ (-1 - k : ℤ)) (z + d / c)] at this
+      simp [this]
+      field_simp
+      ring_nf
+
+theorem iter_deriv_inv_linear_sub (k : ℕ) (c d : 𝕜) :
+    deriv^[k] (fun x ↦ (c * x - d)⁻¹) =
+    (fun x : 𝕜 ↦ (-1) ^ k * k ! * c ^ k * (c * x - d) ^ (-1 - k : ℤ)) := by
+  simpa [sub_eq_add_neg] using iter_deriv_inv_linear k c (-d)
 
 variable {f : E → 𝕜} {t : Set E} {a : E}
 

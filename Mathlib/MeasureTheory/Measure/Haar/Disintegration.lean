@@ -3,9 +3,11 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Pushing a Haar measure by a linear map
@@ -22,6 +24,8 @@ TODO: this holds more generally in any locally compact group, see
 [Fremlin, *Measure Theory* (volume 4, 443Q)][fremlin_vol4]
 -/
 
+@[expose] public section
+
 open MeasureTheory Measure Set
 
 open scoped ENNReal
@@ -36,10 +40,7 @@ variable {𝕜 E F : Type*}
 variable [LocallyCompactSpace E]
 variable (L μ ν)
 
--- Instances with keys using `Submodule`
-instance (T : Submodule 𝕜 E) : BorelSpace T := Subtype.borelSpace _
-instance (T : Submodule 𝕜 E) : OpensMeasurableSpace T := Subtype.opensMeasurableSpace _
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
 additive Haar measure. The proportionality factor will be infinite if the linear map has a
 nontrivial kernel. -/
@@ -52,7 +53,7 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
   projection `P` on a complement `T` to its kernel `S`, together with a linear equivalence. -/
   have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
   have : ProperSpace F := by
-    rcases subsingleton_or_nontrivial E with hE|hE
+    rcases subsingleton_or_nontrivial E with hE | hE
     · have : Subsingleton F := Function.Surjective.subsingleton h
       infer_instance
     · have : ProperSpace 𝕜 := .of_locallyCompact_module 𝕜 E
@@ -105,6 +106,7 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
   simp only [I, h₀, Measure.map_smul, J, smul_smul, h₁]
   rw [mul_assoc, mul_comm _ c₁, ← mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
 additive Haar measure, with a positive (but maybe infinite) factor. -/
 theorem LinearMap.exists_map_addHaar_eq_smul_addHaar (h : Function.Surjective L) :
@@ -123,7 +125,7 @@ lemma ae_comp_linearMap_mem_iff (h : Function.Surjective L) {s : Set F} (hs : Me
   apply (ae_map_iff this hs).symm.trans
   rcases L.exists_map_addHaar_eq_smul_addHaar μ ν h with ⟨c, c_pos, hc⟩
   rw [hc]
-  exact ae_smul_measure_iff c_pos.ne'
+  exact ae_ennreal_smul_measure_iff c_pos.ne'
 
 /-- Given a linear map `L : E → F`, a property holds almost everywhere in `F` if and only if,
 almost everywhere in `F`, it holds almost everywhere along the subspace spanned by the

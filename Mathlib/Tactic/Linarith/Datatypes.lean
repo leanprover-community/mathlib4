@@ -3,9 +3,11 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Tactic.Linarith.Lemmas
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Util.SynthesizeUsing
+module
+
+public import Mathlib.Tactic.Linarith.Lemmas
+public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Util.SynthesizeUsing
 
 /-!
 # Datatypes for `linarith`
@@ -16,12 +18,14 @@ We split them into their own file.
 This file also contains a few convenient auxiliary functions.
 -/
 
-open Lean Elab Tactic Meta Qq Mathlib
+public meta section
+
+open Lean Elab Tactic Meta Qq
 
 initialize registerTraceClass `linarith
 initialize registerTraceClass `linarith.detail
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 /-- A shorthand for getting the types of a list of proofs terms, to trace. -/
 def linarithGetProofsMessage (l : List Expr) : MetaM MessageData := do
@@ -130,6 +134,9 @@ structure Comp : Type where
   coeffs : Linexp
 deriving Inhabited, Repr
 
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] Mathlib.Tactic.Linarith.instReprComp.repr
+
 /-- `c.vars` returns the list of variables that appear in the linear expression contained in `c`. -/
 def Comp.vars : Comp → List Nat := Linexp.vars ∘ Comp.coeffs
 
@@ -204,7 +211,7 @@ splits. The first component, an `MVarId`, is the goal corresponding to this bran
 given as a metavariable. The `List Expr` component is the list of hypotheses for `linarith`
 in this branch.
 -/
-def Branch : Type := MVarId × List Expr
+@[expose] def Branch : Type := MVarId × List Expr
 
 /--
 Some preprocessors perform branching case splits.
@@ -305,4 +312,4 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')
 
-end Linarith
+end Mathlib.Tactic.Linarith

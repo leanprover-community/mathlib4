@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
 
 /-!
 # Pushforward of presheaves of modules
@@ -14,20 +16,25 @@ induced functor `pushforward₀ : PresheafOfModules.{v} R ⥤ PresheafOfModules.
 on presheaves of modules.
 
 In case we have a morphism of presheaves of rings `S ⟶ F.op ⋙ R`, we also construct
-a functor `pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S`.
+a functor `pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S`, and
+we show that they interact with the composition of morphisms similarly as pseudofunctors.
 
 -/
 
-universe v v₁ v₂ u₁ u₂ u
+@[expose] public section
 
-open CategoryTheory
+universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
+
+open CategoryTheory Functor
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
 
 namespace PresheafOfModules
 
 variable (F : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `pushforward₀`. -/
 @[simps]
 def pushforward₀_obj (R : Dᵒᵖ ⥤ RingCat.{u}) (M : PresheafOfModules R) :
@@ -45,6 +52,7 @@ def pushforward₀_obj (R : Dᵒᵖ ⥤ RingCat.{u}) (M : PresheafOfModules R) :
         (@LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ (fun x => ?_))
       exact (M.congr_map_apply (F.op.map_comp f g) x).trans (by simp) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pushforward functor on presheaves of modules for a functor `F : C ⥤ D` and
 `R : Dᵒᵖ ⥤ RingCat`. On the underlying presheaves of abelian groups, it is induced
 by the precomposition with `F.op`. -/
@@ -55,7 +63,7 @@ def pushforward₀ (R : Dᵒᵖ ⥤ RingCat.{u}) :
 
 /-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
-def pushforward₀CompToPresheaf (R : Dᵒᵖ ⥤ RingCat.{u}) :
+noncomputable def pushforward₀CompToPresheaf (R : Dᵒᵖ ⥤ RingCat.{u}) :
     pushforward₀.{v} F R ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=
   Iso.refl _
 
@@ -99,5 +107,46 @@ lemma pushforward_map_app_apply' {M N : PresheafOfModules.{v} R} (α : M ⟶ N) 
     DFunLike.coe
       (F := ↑((ModuleCat.restrictScalars _).obj _) →ₗ[_] ↑((ModuleCat.restrictScalars _).obj _))
       (((pushforward φ).map α).app X).hom m = α.app (Opposite.op (F.obj X.unop)) m := rfl
+
+section
+
+variable (R) in
+/-- The pushforward functor by the identity morphism identifies to
+the identify functor of the category of presheaves of modules. -/
+noncomputable def pushforwardId :
+    pushforward.{v} (S := R) (F := 𝟭 _) (𝟙 R) ≅ 𝟭 _ :=
+  Iso.refl _
+
+section
+
+variable {T : Eᵒᵖ ⥤ RingCat.{u}} {G : D ⥤ E} (ψ : R ⟶ G.op ⋙ T)
+
+/-- The composition of two pushforward functors on categories of presheaves of modules
+identify to the pushforward for the composition. -/
+noncomputable def pushforwardComp :
+    pushforward.{v} ψ ⋙ pushforward.{v} φ ≅
+      pushforward.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) :=
+  Iso.refl _
+
+variable {T' : E'ᵒᵖ ⥤ RingCat.{u}} {G' : E ⥤ E'} (ψ' : T ⟶ G'.op ⋙ T')
+
+lemma pushforward_assoc :
+    (pushforward ψ').isoWhiskerLeft (pushforwardComp φ ψ) ≪≫
+      pushforwardComp (F := F ⋙ G) (φ ≫ F.op.whiskerLeft ψ) ψ' =
+    ((pushforward ψ').associator (pushforward ψ) (pushforward φ)).symm ≪≫
+      isoWhiskerRight (pushforwardComp ψ ψ') (pushforward φ) ≪≫
+        pushforwardComp (G := G ⋙ G') φ (ψ ≫ G.op.whiskerLeft ψ') := by ext; rfl
+
+end
+
+lemma pushforward_comp_id :
+    pushforwardComp.{v} (F := 𝟭 C) (𝟙 S) φ =
+      isoWhiskerLeft (pushforward.{v} φ) (pushforwardId S) ≪≫ rightUnitor _ := by ext; rfl
+
+lemma pushforward_id_comp :
+    pushforwardComp.{v} (G := 𝟭 _) φ (𝟙 R) =
+      isoWhiskerRight (pushforwardId R) (pushforward.{v} φ) ≪≫ leftUnitor _ := by ext; rfl
+
+end
 
 end PresheafOfModules

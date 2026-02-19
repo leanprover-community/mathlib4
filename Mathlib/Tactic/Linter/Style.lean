@@ -3,12 +3,15 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Lean.Elab.Command
+public meta import Lean.Elab.Command
+public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
-import Mathlib.Tactic.DeclarationNames
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Parser.Command
+public import Mathlib.Tactic.DeclarationNames
 
 /-!
 ## Style linters
@@ -19,30 +22,38 @@ Historically, some of these were ported from the `lint-style.py` Python script.
 
 This file defines the following linters:
 - the `setOption` linter checks for the presence of `set_option` commands activating
-options disallowed in mathlib: these are meant to be temporary, and not for polished code
+  options disallowed in mathlib: these are meant to be temporary, and not for polished code.
+  It also checks for `maxHeartbeats` options being present which are not scoped to single commands.
 - the `missingEnd` linter checks for sections or namespaces which are not closed by the end
-of the file: enforcing this invariant makes minimising files or moving code between files easier
+  of the file: enforcing this invariant makes minimising files or moving code between files easier
 - the `cdotLinter` linter checks for focusing dots `·` which are typed using a `.` instead:
-this is allowed Lean syntax, but it is nicer to be uniform
+  this is allowed Lean syntax, but it is nicer to be uniform
 - the `dollarSyntax` linter checks for use of the dollar sign `$` instead of the `<|` pipe operator:
-similarly, both symbols have the same meaning, but mathlib prefers `<|` for the symmetry with
-the `|>` symbol
+  similarly, both symbols have the same meaning, but mathlib prefers `<|` for the symmetry with
+  the `|>` symbol
 - the `lambdaSyntax` linter checks for uses of the `λ` symbol for anonymous functions,
-instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
+  instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
 - the `longFile` linter checks for files which have more than 1500 lines
 - the `longLine` linter checks for lines which have more than 100 characters
+- the `openClassical` linter checks for `open (scoped) Classical` statements which are not
+  scoped to a single declaration
+- the `show` linter checks for `show`s that change the goal and should be replaced by `change`
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
 -/
 
-open Lean Parser Elab Command Meta
+meta section
+
+open Lean Parser Elab Command Meta Linter
 
 namespace Mathlib.Linter
 
 /-- The `setOption` linter emits a warning on a `set_option` command, term or tactic
-which sets a `pp`, `profiler` or `trace` option. -/
-register_option linter.style.setOption : Bool := {
+which sets a `pp`, `profiler` or `trace` option.
+It also warns on an option containing `maxHeartbeats`
+(as these should be scoped as `set_option ... in` instead). -/
+public register_option linter.style.setOption : Bool := {
   defValue := false
   descr := "enable the `setOption` linter"
 }
@@ -58,28 +69,32 @@ def parseSetOption : Syntax → Option Name
   | `(tactic|set_option $name:ident $_val in $_x) => some name.getId
   | _ => none
 
-/-- Deprecated alias for `Mathlib.Linter.Style.setOption.parseSetOption`. -/
-@[deprecated parseSetOption (since := "2024-12-07")]
-def parse_set_option := @parseSetOption
-
 /-- Whether a given piece of syntax is a `set_option` command, tactic or term. -/
-def isSetOption : Syntax → Bool :=
+public def isSetOption : Syntax → Bool :=
   fun stx ↦ parseSetOption stx matches some _name
 
-/-- Deprecated alias for `Mathlib.Linter.Style.setOption.isSetOption`. -/
-@[deprecated isSetOption (since := "2024-12-07")]
-def is_set_option := @isSetOption
-
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
-which sets a `pp`, `profiler` or `trace` option.
+which sets a `debug`, `pp`, `profiler` or `trace` option.
+This also warns if an option containing `maxHeartbeats` (typically, the `maxHeartbeats` or
+`synthInstance.maxHeartbeats` option) or the `linter.flexible` option is set.
 
-**Why is this bad?** These options are good for debugging, but should not be
-used in production code.
-**How to fix this?** Remove these options: usually, they are not necessary for production code.
-(Some tests will intentionally use one of these options; in this case, simply allow the linter.)
+**Why is this bad?** The `debug`, `pp`, `profiler` and `trace` options are good for debugging,
+but should not be used in production code.
+
+`maxHeartbeats` options should be scoped as `set_option opt in ...` (and be followed by a comment
+explaining the need for them; another linter enforces this).
+The `linter.flexible` option should be scoped as `set_option opt in ...`.
+
+**How to fix this?** The `maxHeartbeats` and `linter.flexible` option changes can be scoped to
+individual commands, if they are truly necessary. The `linter.style.commandStart` option is
+deprecated and should be replaced by `linter.style.whitespace`.
+
+The `debug`, `pp`, `profiler` and `trace` are usually not necessary for production code,
+so you can simply remove them. (Some tests will intentionally use one of these options;
+in this case, simply allow the linter.)
 -/
 def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.style.setOption (← getOptions) do
+    unless getLinterValue linter.style.setOption (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -92,6 +107,14 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
                is only intended for development and not for final code. \
                If you intend to submit this contribution to the Mathlib project, \
                please remove 'set_option {name}'."
+        else if name.components.contains `maxHeartbeats || name == `linter.flexible then
+          Linter.logLint linter.style.setOption head m!"Unscoped option {name} is not allowed:\n\
+          Please scope this to individual declarations, as in\n```\nset_option {name} in\n\
+          -- comment explaining why this is necessary\n\
+          example : ... := ...\n```"
+        else if name == `linter.style.commandStart then
+          logWarningAt stx "The `linter.style.commandStart` option is deprecated, \
+            use `linter.style.whitespace` instead."
 
 initialize addLinter setOptionLinter
 
@@ -109,7 +132,7 @@ open Lean Elab Command
 /-- The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
-register_option linter.style.missingEnd : Bool := {
+public register_option linter.style.missingEnd : Bool := {
   defValue := false
   descr := "enable the missing end linter"
 }
@@ -120,18 +143,22 @@ namespace Style.missingEnd
 def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Only run this linter at the end of a module.
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    if Linter.getLinterValue linter.style.missingEnd (← getOptions) &&
+    if getLinterValue linter.style.missingEnd (← getLinterOptions) &&
         !(← MonadState.get).messages.hasErrors then
       let sc ← getScopes
       -- The last scope is always the "base scope", corresponding to no active `section`s or
       -- `namespace`s. We are interested in any *other* unclosed scopes.
       if sc.length == 1 then return
-      let ends := sc.dropLast.map fun s ↦ (s.header, s.isNoncomputable)
-      -- If the outermost scope corresponds to a `noncomputable section`, we ignore it.
-      let ends := if ends.getLast!.2 then ends.dropLast else ends
+      let ends := sc.dropLast
+      -- If the outermost scope(s) correspond to `public/meta/noncomputable section`, we ignore
+      -- them.
+      let ends := ends.reverse
+        |>.dropWhile (fun sc ↦ sc.currNamespace.isAnonymous &&
+          (sc.isMeta || sc.isPublic || sc.isNoncomputable))
+        |>.reverse
       -- If there are any further un-closed scopes, we emit a warning.
       if !ends.isEmpty then
-        let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
+        let ending := (ends.map (·.header)).foldl (init := "") fun a b ↦
           a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
         Linter.logLint linter.style.missingEnd stx
          m!"unclosed sections or namespaces; expected: '{ending}'"
@@ -141,7 +168,7 @@ initialize addLinter missingEndLinter
 end Style.missingEnd
 
 /-!
-# The `cdot` linter
+### The `cdot` linter
 
 The `cdot` linter is a syntax-linter that flags uses of the "cdot" `·` that are achieved
 by typing a character different from `·`.
@@ -154,16 +181,16 @@ The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a ch
 different from `·`.
 For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
 It also flags "isolated cdots", i.e. when the `·` is on its own line. -/
-register_option linter.style.cdot : Bool := {
+public register_option linter.style.cdot : Bool := {
   defValue := false
   descr := "enable the `cdot` linter"
 }
 
 /-- `isCDot? stx` checks whether `stx` is a `Syntax` node corresponding to a `cdot` typed with
 the character `·`. -/
-def isCDot? : Syntax → Bool
+public def isCDot? : Syntax → Bool
   | .node _ ``cdotTk #[.node _ `patternIgnore #[.node _ _ #[.atom _ v]]] => v == "·"
-  | .node _ ``Lean.Parser.Term.cdot #[.atom _ v] => v == "·"
+  | .node _ ``Lean.Parser.Term.cdot #[.atom _ v, _] => v == "·"
   | _ => false
 
 /--
@@ -189,19 +216,19 @@ namespace Style
 
 @[inherit_doc linter.style.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.style.cdot (← getOptions) do
+    unless getLinterValue linter.style.cdot (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
     for s in unwanted_cdot stx do
       Linter.logLint linter.style.cdot s
-        m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
+        m!"Please, use '·' (typed as `\\.`) instead of '.' as 'cdot'."
     -- We also check for isolated cdot's, i.e. when the cdot is on its own line.
     for cdot in Mathlib.Linter.findCDot stx do
       match cdot.find? (·.isOfKind `token.«· ») with
       | some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) =>
         if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
-          logWarningAt cdot <| .tagged linter.style.cdot.name
+          Linter.logLint linter.style.cdot cdot
             m!"This central dot `·` is isolated; please merge it with the next line."
       | _ => return
 
@@ -210,7 +237,7 @@ initialize addLinter cdotLinter
 end Style
 
 /-!
-# The `dollarSyntax` linter
+### The `dollarSyntax` linter
 
 The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
 These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`.
@@ -218,7 +245,7 @@ These are disallowed by the mathlib style guide, as using `<|` pairs better with
 
 /-- The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
 These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`. -/
-register_option linter.style.dollarSyntax : Bool := {
+public register_option linter.style.dollarSyntax : Bool := {
   defValue := false
   descr := "enable the `dollarSyntax` linter"
 }
@@ -226,7 +253,7 @@ register_option linter.style.dollarSyntax : Bool := {
 namespace Style.dollarSyntax
 
 /-- `findDollarSyntax stx` extracts from `stx` the syntax nodes of `kind` `$`. -/
-partial
+public partial
 def findDollarSyntax : Syntax → Array Syntax
   | stx@(.node _ kind args) =>
     let dargs := (args.map findDollarSyntax).flatten
@@ -237,7 +264,7 @@ def findDollarSyntax : Syntax → Array Syntax
 
 @[inherit_doc linter.style.dollarSyntax]
 def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.style.dollarSyntax (← getOptions) do
+    unless getLinterValue linter.style.dollarSyntax (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -250,7 +277,7 @@ initialize addLinter dollarSyntaxLinter
 end Style.dollarSyntax
 
 /-!
-# The `lambdaSyntax` linter
+### The `lambdaSyntax` linter
 
 The `lambdaSyntax` linter is a syntax linter that flags uses of the symbol `λ` to define anonymous
 functions, as opposed to the `fun` keyword. These are syntactically equivalent; mathlib style
@@ -261,7 +288,7 @@ prefers the latter as it is considered more readable.
 The `lambdaSyntax` linter flags uses of the symbol `λ` to define anonymous functions.
 This is syntactically equivalent to the `fun` keyword; mathlib style prefers using the latter.
 -/
-register_option linter.style.lambdaSyntax : Bool := {
+public register_option linter.style.lambdaSyntax : Bool := {
   defValue := false
   descr := "enable the `lambdaSyntax` linter"
 }
@@ -270,7 +297,7 @@ namespace Style.lambdaSyntax
 
 /--
 `findLambdaSyntax stx` extracts from `stx` all syntax nodes of `kind` `Term.fun`. -/
-partial
+public partial
 def findLambdaSyntax : Syntax → Array Syntax
   | stx@(.node _ kind args) =>
     let dargs := (args.map findLambdaSyntax).flatten
@@ -281,7 +308,7 @@ def findLambdaSyntax : Syntax → Array Syntax
 
 @[inherit_doc linter.style.lambdaSyntax]
 def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.style.lambdaSyntax (← getOptions) do
+    unless getLinterValue linter.style.lambdaSyntax (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -296,7 +323,7 @@ initialize addLinter lambdaSyntaxLinter
 end Style.lambdaSyntax
 
 /-!
-#  The "longFile" linter
+### The "longFile" linter
 
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
 (1500 by default).
@@ -308,13 +335,13 @@ The "longFile" linter emits a warning on files which are longer than a certain n
 If this option is set to `N` lines, the linter warns once a file has more than `N` lines.
 A value of `0` silences the linter entirely.
 -/
-register_option linter.style.longFile : Nat := {
+public register_option linter.style.longFile : Nat := {
   defValue := 0
   descr := "enable the longFile linter"
 }
 
 /-- The number of lines that the `longFile` linter considers the default. -/
-register_option linter.style.longFileDefValue : Nat := {
+public register_option linter.style.longFileDefValue : Nat := {
   defValue := 1500
   descr := "a soft upper bound on the number of lines of each file"
 }
@@ -331,7 +358,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
       | `(set_option linter.style.longFile $x) => TSyntax.getNat ⟨x.raw⟩ ≤ defValue
       | _ => false
   if smallOption then
-    logWarningAt stx <| .tagged linter.style.longFile.name
+    logLint0Disable linter.style.longFile stx
       m!"The default value of the `longFile` linter is {defValue}.\n\
         The current value of {linterBound} does not exceed the allowed bound.\n\
         Please, remove the `set_option linter.style.longFile {linterBound}`."
@@ -349,7 +376,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let lastLine := ((← getFileMap).toPosition init).line
     -- In this case, the file has an allowed length, and the linter option is unnecessarily set.
     if lastLine ≤ defValue && defValue < linterBound then
-      logWarningAt stx <| .tagged linter.style.longFile.name
+      logLint0Disable linter.style.longFile stx
         m!"The default value of the `longFile` linter is {defValue}.\n\
           This file is {lastLine} lines long which does not exceed the allowed bound.\n\
           Please, remove the `set_option linter.style.longFile {linterBound}`."
@@ -361,7 +388,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let candidate := max candidate defValue
     -- In this case, the file is longer than the default and also than what the option says.
     if defValue ≤ linterBound && linterBound < lastLine then
-      logWarningAt stx <| .tagged linter.style.longFile.name
+      logLint0Disable linter.style.longFile stx
         m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
           You can extend the allowed length of the file using \
           `set_option linter.style.longFile {candidate}`.\n\
@@ -372,7 +399,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- In particular, this flags any option that is set to an unnecessarily high value.
     if linterBound == candidate || linterBound + 100 == candidate then return
     else
-      logWarningAt stx <| .tagged linter.style.longFile.name
+      logLint0Disable linter.style.longFile stx
         m!"This file is {lastLine} lines long. \
           The current limit is {linterBound}, but it is expected to be {candidate}:\n\
           `set_option linter.style.longFile {candidate}`."
@@ -381,11 +408,11 @@ initialize addLinter longFileLinter
 
 end Style.longFile
 
-/-! # The "longLine linter" -/
+/-! ### The "longLine linter" -/
 
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
 We allow lines containing URLs to be longer, though. -/
-register_option linter.style.longLine : Bool := {
+public register_option linter.style.longLine : Bool := {
   defValue := false
   descr := "enable the longLine linter"
 }
@@ -394,7 +421,7 @@ namespace Style.longLine
 
 @[inherit_doc Mathlib.Linter.linter.style.longLine]
 def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.style.longLine (← getOptions) do
+    unless getLinterValue linter.style.longLine (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -408,8 +435,8 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
         let fileMap ← getFileMap
         -- `impMods` is the syntax for the modules imported in the current file
         let (impMods, _) ← Parser.parseHeader
-          { input := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
-        return impMods
+          { inputString := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
+        return impMods.raw
       else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
@@ -422,7 +449,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
           using a '\\' at the end of a line allows you to continue the string on the following \
           line, removing all intervening whitespace."
         else ""
-        Linter.logLint linter.style.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
+        Linter.logLint linter.style.longLine (.ofRange ⟨(line.drop 100).startPos, line.stopPos⟩)
           m!"This line exceeds the 100 character limit, please shorten it!{stringMsg}"
 initialize addLinter longLineLinter
 
@@ -436,7 +463,7 @@ probably have been introduced by accident.
 **How to fix this?** Use single underscores to separate parts of a name, following standard naming
 conventions.
 -/
-register_option linter.style.nameCheck : Bool := {
+public register_option linter.style.nameCheck : Bool := {
   defValue := true
   descr := "enable the `nameCheck` linter"
 }
@@ -444,8 +471,8 @@ register_option linter.style.nameCheck : Bool := {
 namespace Style.nameCheck
 
 @[inherit_doc linter.style.nameCheck]
-def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.style.nameCheck (← getOptions) do
+def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
+    unless getLinterValue linter.style.nameCheck (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return
@@ -466,5 +493,98 @@ def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
 initialize addLinter doubleUnderscore
 
 end Style.nameCheck
+
+/-! ### The "openClassical" linter -/
+
+/-- The "openClassical" linter emits a warning on `open Classical` statements which are not
+scoped to a single declaration. A non-scoped `open Classical` can hide that some theorem statements
+would be better stated with explicit decidability statements.
+-/
+public register_option linter.style.openClassical : Bool := {
+  defValue := false
+  descr := "enable the openClassical linter"
+}
+
+namespace Style.openClassical
+
+/-- If `stx` is syntax describing an `open` command, `extractOpenNames stx`
+returns an array of the syntax corresponding to the opened names,
+omitting any renamed or hidden items.
+
+This only checks independent `open` commands: for `open ... in ...` commands,
+this linter returns an empty array.
+-/
+public def extractOpenNames : Syntax → Array (TSyntax `ident)
+  | `(command|$_ in $_) => #[] -- redundant, for clarity
+  | `(command|open $decl:openDecl) => match decl with
+    | `(openDecl| $arg hiding $_*)    => #[arg]
+    | `(openDecl| $arg renaming $_,*) => #[arg]
+    | `(openDecl| $arg ($_*))         => #[arg]
+    | `(openDecl| $args*)             => args
+    | `(openDecl| scoped $args*)      => args
+    | _ => unreachable!
+  | _ => #[]
+
+@[inherit_doc Mathlib.Linter.linter.style.openClassical]
+def openClassicalLinter : Linter where run stx := do
+    unless getLinterValue linter.style.openClassical (← getLinterOptions) do
+      return
+    if (← get).messages.hasErrors then
+      return
+    -- If `stx` describes an `open` command, extract the list of opened namespaces.
+    for stxN in (extractOpenNames stx).filter (·.getId == `Classical) do
+      Linter.logLint linter.style.openClassical stxN "\
+      please avoid 'open (scoped) Classical' statements: this can hide theorem statements \
+      which would be better stated with explicit decidability statements.\n\
+      Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
+      for proofs.\nFor theorem statements, \
+      either add missing decidability assumptions or use `open Classical in`."
+
+initialize addLinter openClassicalLinter
+
+end Style.openClassical
+
+/-! ### The "show" linter -/
+
+/--
+The "show" linter emits a warning if the `show` tactic changed the goal. `show` should only be used
+to indicate intermediate goal states for proof readability. When the goal is actually changed,
+`change` should be preferred.
+-/
+public register_option linter.style.show : Bool := {
+  defValue := false
+  descr := "enable the show linter"
+}
+
+namespace Style.show
+
+@[inherit_doc Mathlib.Linter.linter.style.show]
+def showLinter : Linter where run := withSetOptionIn fun stx => do
+    unless getLinterValue linter.style.show (← getLinterOptions) do
+      return
+    if (← get).messages.hasErrors then
+      return
+    for tree in (← getInfoTrees) do
+      tree.foldInfoM (init := ()) fun ci i _ => do
+        let .ofTacticInfo tac := i | return
+        unless tac.stx.isOfKind ``Lean.Parser.Tactic.show do return
+        let some _ := tac.stx.getRange? true | return
+        let (goal :: goals) := tac.goalsBefore | return
+        let (goal' :: goals') := tac.goalsAfter | return
+        if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
+        if goal == goal' then return -- same goal, no need to check
+        let diff ← ci.runCoreM do
+          let before ← (do instantiateMVars (← goal.getType)).run' {} { mctx := tac.mctxBefore }
+          let after ← (do instantiateMVars (← goal'.getType)).run' {} { mctx := tac.mctxAfter }
+          return before != after
+        if diff then
+          logLint linter.style.show tac.stx m!"\
+          The `show` tactic should only be used to indicate intermediate goal states for \
+          readability.\nHowever, this tactic invocation changed the goal. Please use `change` \
+          instead for these purposes."
+
+initialize addLinter showLinter
+
+end Style.show
 
 end Mathlib.Linter

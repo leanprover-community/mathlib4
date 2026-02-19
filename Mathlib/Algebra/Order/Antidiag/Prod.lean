@@ -3,10 +3,12 @@ Copyright (c) 2023 Antoine Chambert-Loir and María Inés de Frutos-Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta, Eric Wieser
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Data.Finset.Basic
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Order.Interval.Finset.Defs
 
 /-! # Antidiagonal with values in general types
 
@@ -14,11 +16,11 @@ We define a type class `Finset.HasAntidiagonal A` which contains a function
 `antidiagonal : A → Finset (A × A)` such that `antidiagonal n`
 is the finset of all pairs adding to `n`, as witnessed by `mem_antidiagonal`.
 
-When `A` is a canonically ordered add monoid with locally finite order
+When `A` is a canonically ordered additive monoid with locally finite order
 this typeclass can be instantiated with `Finset.antidiagonalOfLocallyFinite`.
 This applies in particular when `A` is `ℕ`, more generally or `σ →₀ ℕ`,
 or even `ι →₀ A`  under the additional assumption `OrderedSub A`
-that make it a canonically ordered add monoid.
+that make it a canonically ordered additive monoid.
 (In fact, we would just need an `AddMonoid` with a compatible order,
 finite `Iic`, such that if `a + b = n`, then `a, b ≤ n`,
 and any finiteness condition would be OK.)
@@ -29,7 +31,7 @@ These instances are provided as `Finset.Nat.instHasAntidiagonal` and `Finsupp.in
 This is why `Finset.antidiagonalOfLocallyFinite` is an `abbrev` and not an `instance`.
 
 This definition does not exactly match with that of `Multiset.antidiagonal`
-defined in `Mathlib.Data.Multiset.Antidiagonal`, because of the multiplicities.
+defined in `Mathlib/Data/Multiset/Antidiagonal.lean`, because of the multiplicities.
 Indeed, by counting multiplicities, `Multiset α` is equivalent to `α →₀ ℕ`,
 but `Finset.antidiagonal` and `Multiset.antidiagonal` will return different objects.
 For example, for `s : Multiset ℕ := {0,0,0}`, `Multiset.antidiagonal s` has 8 elements
@@ -46,6 +48,8 @@ def s : Multiset ℕ := {0, 0, 0}
 * Define `HasMulAntidiagonal` (for monoids).
   For `PNat`, we will recover the set of divisors of a strictly positive integer.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -123,7 +127,7 @@ lemma antidiagonal_congr' (hp : p ∈ antidiagonal n) (hq : q ∈ antidiagonal n
 end AddCancelCommMonoid
 
 section CanonicallyOrderedAdd
-variable [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A] [HasAntidiagonal A]
+variable [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A] [HasAntidiagonal A]
 
 @[simp]
 theorem antidiagonal_zero : antidiagonal (0 : A) = {(0, 0)} := by
@@ -143,12 +147,12 @@ theorem antidiagonal.snd_le {n : A} {kl : A × A} (hlk : kl ∈ antidiagonal n) 
 end CanonicallyOrderedAdd
 
 section OrderedSub
-variable [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A] [Sub A] [OrderedSub A]
+variable [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A] [Sub A] [OrderedSub A]
 variable [AddLeftReflectLE A]
 variable [HasAntidiagonal A]
 
 theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
-    filter (fun x : A × A ↦ x.fst = m) (antidiagonal n) = if m ≤ n then {(m, n - m)} else ∅ := by
+    {x ∈ antidiagonal n | x.fst = m} = if m ≤ n then {(m, n - m)} else ∅ := by
   ext ⟨a, b⟩
   suffices a = m → (a + b = n ↔ m ≤ n ∧ b = n - m) by
     rw [mem_filter, mem_antidiagonal, apply_ite (fun n ↦ (a, b) ∈ n), mem_singleton,
@@ -162,7 +166,7 @@ theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
     exact add_tsub_cancel_of_le h
 
 theorem filter_snd_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
-    filter (fun x : A × A ↦ x.snd = m) (antidiagonal n) = if m ≤ n then {(n - m, m)} else ∅ := by
+    {x ∈ antidiagonal n | x.snd = m} = if m ≤ n then {(n - m, m)} else ∅ := by
   have : (fun x : A × A ↦ (x.snd = m)) ∘ Prod.swap = fun x : A × A ↦ x.fst = m := by
     ext; simp
   rw [← map_swap_antidiagonal, filter_map]
@@ -170,6 +174,7 @@ theorem filter_snd_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
 
 end OrderedSub
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The disjoint union of antidiagonals `Σ (n : A), antidiagonal n` is equivalent to the product
     `A × A`. This is such an equivalence, obtained by mapping `(n, (k, l))` to `(k, l)`. -/
 @[simps]
@@ -181,17 +186,16 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
     rintro ⟨n, ⟨k, l⟩, h⟩
     rw [mem_antidiagonal] at h
     exact Sigma.subtype_ext h rfl
-  right_inv _ := rfl
 
 variable {A : Type*}
-  [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A]
-  [LocallyFiniteOrder A] [DecidableEq A]
+  [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A]
+  [LocallyFiniteOrderBot A] [DecidableEq A]
 
-/-- In a canonically ordered add monoid, the antidiagonal can be construct by filtering.
+/-- In a canonically ordered additive monoid, the antidiagonal can be construct by filtering.
 
 Note that this is not an instance, as for some times a more efficient algorithm is available. -/
 abbrev antidiagonalOfLocallyFinite : HasAntidiagonal A where
-  antidiagonal n := Finset.filter (fun uv => uv.fst + uv.snd = n) (Finset.product (Iic n) (Iic n))
+  antidiagonal n := {uv ∈ Iic n ×ˢ Iic n | uv.fst + uv.snd = n}
   mem_antidiagonal {n} {a} := by
     simp only [mem_filter, and_iff_right_iff_imp]
     intro h

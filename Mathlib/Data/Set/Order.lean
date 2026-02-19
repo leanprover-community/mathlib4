@@ -3,11 +3,15 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Basic
+module
+
+public import Mathlib.Data.Set.Basic
 
 /-!
 # Order structures and monotonicity lemmas for `Set`
 -/
+
+public section
 
 open Function
 
@@ -20,11 +24,6 @@ variable {α : Type u} {β : Type v} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set
 section Preorder
 
 variable [Preorder α] [Preorder β] {f : α → β}
-
--- Porting note:
--- If we decide we want `Elem` to semireducible rather than reducible, we will need:
---   instance : Preorder (↑s) := Subtype.instPreorderSubtype _
--- here, along with appropriate lemmas.
 
 theorem monotoneOn_iff_monotone : MonotoneOn f s ↔
     Monotone fun a : s => f a := by

@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.Algebra.Module.ULift
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Module.ULift
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Presentations of modules
@@ -32,10 +34,13 @@ generators and relations.
 
 ## TODO
 * Relate this to `Module.FinitePresentation`
-* Behaviour of presentations with respect to the extension of scalars and
-the restriction of scalars
+* Behaviour of presentations with respect to the extension of scalars and the restriction of scalars
 
 -/
+
+@[expose] public section
+
+assert_not_exists Cardinal
 
 universe w' w'' w₀ w₁ v'' v' v u
 
@@ -67,11 +72,12 @@ def Quotient := (relations.G →₀ A) ⧸ Submodule.span A (Set.range relations
 noncomputable instance : AddCommGroup relations.Quotient := by
   dsimp only [Quotient]; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : Module A relations.Quotient := by
   dsimp only [Quotient]; infer_instance
 
 /-- The canonical (surjective) linear map `(relations.G →₀ A) →ₗ[A] relations.Quotient`. -/
-def toQuotient : (relations.G →₀ A) →ₗ[A] relations.Quotient := Submodule.mkQ _
+noncomputable def toQuotient : (relations.G →₀ A) →ₗ[A] relations.Quotient := Submodule.mkQ _
 
 variable {relations} in
 @[ext]
@@ -89,6 +95,7 @@ lemma ker_toQuotient :
     LinearMap.ker relations.toQuotient = Submodule.span A (Set.range relations.relation) :=
   Submodule.ker_mkQ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toQuotient_relation (r : relations.R) :
     relations.toQuotient (relations.relation r) = 0 := by
@@ -214,7 +221,7 @@ variable (π : (relations.G →₀ A) →ₗ[A] M) (hπ : ∀ (r : relations.R),
 for `relations.Solution M` for which the data is given as
 a linear map `π : (relations.G →₀ A) →ₗ[A] M`. (See also `ofπ'` for an alternate
 vanishing criterion.) -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 noncomputable def ofπ : relations.Solution M where
   var g := π (Finsupp.single g 1)
   linearCombination_var_relation r := by
@@ -233,7 +240,7 @@ variable (π : (relations.G →₀ A) →ₗ[A] M) (hπ : π.comp relations.map 
 
 /-- Variant of `ofπ` where the vanishing condition is expressed in terms
 of a composition of linear maps. -/
-@[simps! (config := .lemmasOnly)]
+@[simps! -isSimp]
 noncomputable def ofπ' : relations.Solution M :=
   ofπ π (fun r ↦ by
     simpa using DFunLike.congr_fun hπ (Finsupp.single r 1))
@@ -443,7 +450,7 @@ def down (h : IsPresentationCore.{max w' w''} solution) :
     IsPresentationCore.{w''} solution where
   desc s := ULift.moduleEquiv.toLinearMap.comp
     (h.desc (s.postcomp ULift.moduleEquiv.symm.toLinearMap))
-  postcomp_desc s:= by
+  postcomp_desc s := by
     simpa using congr_postcomp
       (h.postcomp_desc (s.postcomp ULift.moduleEquiv.symm.toLinearMap))
         ULift.moduleEquiv.toLinearMap
@@ -500,6 +507,7 @@ variable {A M}
 def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
     {solution : relations.Solution M} (h : solution.IsPresentation) :
     Presentation.{w₀, w₁} A M where
+  __ := relations
   toSolution := solution
   toIsPresentation := h
 

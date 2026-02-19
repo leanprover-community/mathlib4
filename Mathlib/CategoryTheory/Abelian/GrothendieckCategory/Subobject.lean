@@ -3,15 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-import Mathlib.CategoryTheory.Subobject.Lattice
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
+public import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 # Subobjects in Grothendieck abelian categories
 
-We study the complete lattice of subjects of `X : C`
+We study the complete lattice of subobjects of `X : C`
 when `C` is a Grothendieck abelian category. In particular,
 for a functor `F : J ⥤ MonoOver X` from a filtered category,
 we relate the colimit of `F` (computed in `C`) and the
@@ -19,6 +21,8 @@ supremum of the subobjects corresponding to the objects
 in the image of `F`.
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 
@@ -40,17 +44,18 @@ variable [IsFiltered J] {c : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _)}
 
 include hc hf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a Grothendieck abelian category, `X : C`, if `F : J ⥤ MonoOver X` is a
 functor from a filtered category `J`, `c` is a colimit cocone for the corresponding
 functor `J ⥤ C`, and `f : c.pt ⟶ X` is induced by the inclusions,
 then `f` is a monomorphism. -/
 lemma mono_of_isColimit_monoOver : Mono f := by
   let α : F ⋙ MonoOver.forget _ ⋙ Over.forget _ ⟶ (Functor.const _).obj X :=
-    { app j := (F.obj j).obj.hom
-      naturality _ _ f := (F.map f).w }
+    { app j := (F.obj j).obj.hom }
   have := NatTrans.mono_of_mono_app α
   exact colim.map_mono' α hc (isColimitConstCocone J X) f (by simpa using hf)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a Grothendieck abelian category, `X : C`, if `F : J ⥤ MonoOver X` is a
 functor from a filtered category `J`, the colimit of `F` (computed in `C`) gives
 a subobject of `F` which is a supremum of the subobjects corresponding to
@@ -62,8 +67,8 @@ lemma subobjectMk_of_isColimit_eq_iSup :
   apply le_antisymm
   · rw [le_iSup_iff]
     intro s H
-    induction' s using Subobject.ind with Z g _
-    let c' : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _) := Cocone.mk Z
+    induction s using Subobject.ind with | _ g
+    let c' : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _) := Cocone.mk _
       { app j := Subobject.ofMkLEMk _ _ (H j)
         naturality j j' f := by
           dsimp
@@ -77,6 +82,7 @@ lemma subobjectMk_of_isColimit_eq_iSup :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `X : C` be an object in a Grothendieck abelian category,
 `F : J ⥤ MonoOver X` a functor from a filtered category, `c` a cocone for
 the composition `F ⋙ MonoOver.forget _ : J ⥤ Over X`. We assume
@@ -102,6 +108,7 @@ noncomputable def isColimitMapCoconeOfSubobjectMkEqISup
   rw [Category.assoc, Subobject.ofMkLEMk_comp, Over.w]
   apply colimit.ι_desc
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a Grothendieck abelian category, `X : C`, if `F : J ⥤ MonoOver X` is a
 functor from a `κ`-filtered category `J` with `κ` a regular cardinal such
 that `HasCardinalLT (Subobject X) κ`, and if the colimit of `F` (computed in `C`)
@@ -113,7 +120,7 @@ lemma exists_isIso_of_functor_from_monoOver
     (c : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _)) (hc : IsColimit c)
     (f : c.pt ⟶ X) (hf : ∀ (j : J), c.ι.app j ≫ f = (F.obj j).obj.hom) (h : Epi f) :
     ∃ (j : J), IsIso (F.obj j).obj.hom := by
-  have := isFiltered_of_isCardinalDirected J κ
+  have := isFiltered_of_isCardinalFiltered J κ
   have := mono_of_isColimit_monoOver F hc f hf
   rw [Subobject.epi_iff_mk_eq_top f,
     subobjectMk_of_isColimit_eq_iSup F hc f hf] at h

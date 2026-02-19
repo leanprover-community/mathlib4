@@ -3,12 +3,14 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Combinatorics.Quiver.SingleObj
-import Mathlib.Algebra.Group.Units.Equiv
+module
+
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Combinatorics.Quiver.SingleObj
+public import Mathlib.Algebra.Group.Units.Equiv
 
 /-!
 # Single-object category
@@ -36,6 +38,8 @@ An element `x : M` can be reinterpreted as an element of `End (SingleObj.star M)
 - By default, Lean puts instances into `CategoryTheory` namespace instead of
   `CategoryTheory.SingleObj`, so we give all names explicitly.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -82,6 +86,7 @@ instance groupoid : Groupoid (SingleObj G) where
   inv_comp := mul_inv_cancel
   comp_inv := inv_mul_cancel
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_as_inv {x y : SingleObj G} (f : x ⟶ y) : inv f = f⁻¹ := by
   apply IsIso.inv_eq_of_hom_inv_id
   rw [comp_as_mul, inv_mul_cancel, id_as_one]
@@ -93,7 +98,7 @@ abbrev star : SingleObj M :=
   Quiver.SingleObj.star M
 
 /-- The endomorphisms monoid of the only object in `SingleObj M` is equivalent to the original
-     monoid M. -/
+monoid `M`. -/
 def toEnd : M ≃* End (SingleObj.star M) :=
   { Equiv.refl M with map_mul' := fun _ _ => rfl }
 
@@ -115,8 +120,8 @@ def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
     { toFun := fun x => f.map ((toEnd M) x)
       map_one' := f.map_id _
       map_mul' := fun x y => f.map_comp y x }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 theorem mapHom_id : mapHom M M (MonoidHom.id M) = 𝟭 _ :=
   rfl
@@ -129,8 +134,9 @@ theorem mapHom_comp (f : M →* N) {P : Type w} [Monoid P] (g : N →* P) :
 
 variable {C : Type v} [Category.{w} C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a function `f : C → G` from a category to a group, we get a functor
-    `C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
+`C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
 @[simps]
 def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
   obj _ := ()
@@ -140,7 +146,6 @@ def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
     simp only [SingleObj.id_as_one, mul_inv_cancel]
   map_comp := by
     intros
-    dsimp
     rw [SingleObj.comp_as_mul, ← mul_assoc, mul_left_inj, mul_assoc, inv_mul_cancel, mul_one]
 
 /-- A monoid homomorphism `f: M → End X` into the endomorphisms of an object `X` of a category `C`
@@ -149,8 +154,8 @@ induces a functor `SingleObj M ⥤ C`. -/
 def functor {X : C} (f : M →* End X) : SingleObj M ⥤ C where
   obj _ := X
   map a := f a
-  map_id _ := MonoidHom.map_one f
-  map_comp a b := MonoidHom.map_mul f b a
+  map_id _ := map_one f
+  map_comp a b := map_mul f b a
 
 /-- Construct a natural transformation between functors `SingleObj M ⥤ C` by
 giving a compatible morphism `SingleObj.star M`. -/
@@ -192,6 +197,7 @@ namespace MulEquiv
 
 variable {M : Type u} {N : Type v} [Monoid M] [Monoid N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reinterpret a monoid isomorphism `f : M ≃* N` as an equivalence `SingleObj M ≌ SingleObj N`. -/
 @[simps!]
 def toSingleObjEquiv (e : M ≃* N) : SingleObj M ≌ SingleObj N where
@@ -235,14 +241,15 @@ open CategoryTheory
 /-- The fully faithful functor from `MonCat` to `Cat`. -/
 def toCat : MonCat ⥤ Cat where
   obj x := Cat.of (SingleObj x)
-  map {x y} f := SingleObj.mapHom x y f.hom
+  map {x y} f := (SingleObj.mapHom x y f.hom).toCatHom
 
 instance toCat_full : toCat.Full where
   map_surjective y :=
-    let ⟨x, h⟩ := (SingleObj.mapHom _ _).surjective y
-    ⟨ofHom x, h⟩
+    let ⟨x, h⟩ := (SingleObj.mapHom _ _).surjective y.toFunctor
+    ⟨ofHom x, Cat.Hom.ext h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance toCat_faithful : toCat.Faithful where
-  map_injective h := MonCat.hom_ext <| by rwa [toCat, (SingleObj.mapHom _ _).apply_eq_iff_eq] at h
+  map_injective h := MonCat.hom_ext <| by simpa [toCat] using congr(($h).toFunctor)
 
 end MonCat

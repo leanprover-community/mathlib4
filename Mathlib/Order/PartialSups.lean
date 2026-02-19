@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.SuccPred.Basic
+module
+
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.SuccPred.Basic
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -34,13 +36,15 @@ One might dispute whether this sequence should start at `f 0` or `⊥`. We choos
 
 -/
 
+@[expose] public section
+
 open Finset
 
-variable {α ι : Type*}
+variable {α β ι : Type*}
 
 section SemilatticeSup
 
-variable [SemilatticeSup α]
+variable [SemilatticeSup α] [SemilatticeSup β]
 
 section Preorder
 
@@ -60,7 +64,7 @@ lemma partialSups_iff_forall {f : ι → α} (p : α → Prop)
     p (partialSups f i) ↔ ∀ j ≤ i, p (f j) := by
   classical
   rw [partialSups_apply, comp_sup'_eq_sup'_comp (γ := Propᵒᵈ) _ p, sup'_eq_sup]
-  · show (Iic i).inf (p ∘ f) ↔ _
+  · change (Iic i).inf (p ∘ f) ↔ _
     simp [Finset.inf_eq_iInf]
   · intro x y
     rw [hp]
@@ -125,6 +129,13 @@ protected lemma Pi.partialSups_apply {τ : Type*} {π : τ → Type*} [∀ t, Se
     partialSups f i t = partialSups (f · t) i := by
   simp only [partialSups_apply, Finset.sup'_apply]
 
+lemma comp_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : ι → α) (g : F) :
+    partialSups (g ∘ f) = g ∘ partialSups f := by
+  funext _; simp [partialSups]
+
+lemma map_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : F) (g : ι → α) (i : ι) :
+    partialSups (fun j ↦ f (g j)) i = f (partialSups g i) := congr($(comp_partialSups ..) i)
+
 end Preorder
 
 @[simp]
@@ -156,7 +167,7 @@ theorem partialSups_zero (f : ℕ → α) : partialSups f 0 = f 0 :=
   partialSups_bot f
 
 theorem partialSups_eq_sup'_range (f : ℕ → α) (n : ℕ) :
-    partialSups f n = (Finset.range (n + 1)).sup' nonempty_range_succ f :=
+    partialSups f n = (Finset.range (n + 1)).sup' nonempty_range_add_one f :=
   eq_of_forall_ge_iff fun _ ↦ by simp [Nat.lt_succ_iff]
 
 theorem partialSups_eq_sup_range [OrderBot α] (f : ℕ → α) (n : ℕ) :
@@ -268,10 +279,10 @@ section Set
 
 lemma partialSups_eq_sUnion_image [DecidableEq (Set α)] (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃₀ ↑((Finset.range (n + 1)).image s) := by
-  ext; simp [partialSups_eq_biSup, Nat.lt_succ_iff]
+  simp [partialSups_eq_biSup, Nat.lt_succ_iff]
 
 lemma partialSups_eq_biUnion_range (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃ i ∈ Finset.range (n + 1), s i := by
-  ext; simp [partialSups_eq_biSup, Nat.lt_succ]
+  simp [partialSups_eq_biSup, Nat.lt_succ_iff]
 
 end Set

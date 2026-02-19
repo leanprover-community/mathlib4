@@ -3,11 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.CategoryTheory.Shift.Quotient
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.Shift.Quotient
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # The shift on cochain complexes and on the homotopy category
@@ -21,6 +22,8 @@ We also show that if `F : C ⥤ D` is an additive functor, then the functors
 `F.mapHomotopyCategory (ComplexShape.up ℤ)` commute with the shift by `ℤ`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -47,12 +50,11 @@ def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
         intros
         simp only [Linear.comp_units_smul, Linear.units_smul_comp, d_comp_d, smul_zero]
       shape := fun i j hij => by
-        dsimp
         rw [K.shape, smul_zero]
         intro hij'
         apply hij
         dsimp at hij' ⊢
-        omega }
+        lia }
   map φ :=
     { f := fun _ => φ.f _
       comm' := by
@@ -63,6 +65,9 @@ def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
   map_comp := by intros; rfl
 
 instance (n : ℤ) : (shiftFunctor C n).Additive where
+
+instance (n : ℤ) {R : Type*} [Ring R] [Linear R C] :
+    Functor.Linear R (shiftFunctor C n) where
 
 variable {C}
 
@@ -83,22 +88,23 @@ functor when `n = 0`. -/
 def shiftFunctorZero' (n : ℤ) (h : n = 0) :
     shiftFunctor C n ≅ 𝟭 _ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
-    (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
-    (fun _ _ _ => by dsimp; simp [h])) (fun _ ↦ by ext; dsimp; simp)
+    (fun i => K.shiftFunctorObjXIso _ _ _ (by lia))
+    (fun _ _ _ => by simp [h])) (fun _ ↦ by ext; simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The compatibility of the shift functors on `CochainComplex C ℤ` with respect
 to the addition of integers. -/
 @[simps!]
 def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂) :
     shiftFunctor C n₁₂ ≅ shiftFunctor C n₁ ⋙ shiftFunctor C n₂ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
-    (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
+    (fun i => K.shiftFunctorObjXIso _ _ _ (by lia))
     (fun _ _ _ => by
       subst h
       dsimp
       simp only [add_comm n₁ n₂, Int.negOnePow_add, Linear.units_smul_comp,
         Linear.comp_units_smul, d_comp_XIsoOfEq_hom, smul_smul, XIsoOfEq_hom_comp_d]))
-    (by intros; ext; dsimp; simp)
+    (by intros; ext; simp)
 
 attribute [local simp] XIsoOfEq
 
@@ -110,6 +116,10 @@ instance : HasShift (CochainComplex C ℤ) ℤ := hasShiftMk _ _
 instance (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) n).Additive :=
   (inferInstance : (CochainComplex.shiftFunctor C n).Additive)
+
+instance (n : ℤ) {R : Type*} [Ring R] [Linear R C] :
+    Functor.Linear R
+      (CategoryTheory.shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) n) where
 
 end
 
@@ -133,12 +143,7 @@ lemma shiftFunctorAdd_inv_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
 lemma shiftFunctorAdd_hom_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
     ((shiftFunctorAdd (CochainComplex C ℤ) a b).hom.app K).f n =
       (K.XIsoOfEq (by dsimp; rw [add_comm a, add_assoc])).hom := by
-  have : IsIso (((shiftFunctorAdd (CochainComplex C ℤ) a b).inv.app K).f n) := by
-    rw [shiftFunctorAdd_inv_app_f]
-    infer_instance
-  rw [← cancel_mono (((shiftFunctorAdd (CochainComplex C ℤ) a b).inv.app K).f n),
-    ← comp_f, Iso.hom_inv_id_app, id_f, shiftFunctorAdd_inv_app_f]
-  simp only [XIsoOfEq, eqToIso.hom, eqToHom_trans, eqToHom_refl]
+  tauto
 
 lemma shiftFunctorAdd'_inv_app_f' (K : CochainComplex C ℤ) (a b ab : ℤ) (h : a + b = ab) (n : ℤ) :
     ((CategoryTheory.shiftFunctorAdd' (CochainComplex C ℤ) a b ab h).inv.app K).f n =
@@ -159,12 +164,7 @@ lemma shiftFunctorZero_inv_app_f (K : CochainComplex C ℤ) (n : ℤ) :
 lemma shiftFunctorZero_hom_app_f (K : CochainComplex C ℤ) (n : ℤ) :
     ((CategoryTheory.shiftFunctorZero (CochainComplex C ℤ) ℤ).hom.app K).f n =
       (K.XIsoOfEq (by dsimp; rw [add_zero])).hom := by
-  have : IsIso (((shiftFunctorZero (CochainComplex C ℤ) ℤ).inv.app K).f n) := by
-    rw [shiftFunctorZero_inv_app_f]
-    infer_instance
-  rw [← cancel_mono (((shiftFunctorZero (CochainComplex C ℤ) ℤ).inv.app K).f n), ← comp_f,
-    Iso.hom_inv_id_app, id_f, shiftFunctorZero_inv_app_f]
-  simp only [XIsoOfEq, eqToIso.hom, eqToHom_trans, eqToHom_refl]
+  tauto
 
 lemma XIsoOfEq_shift (K : CochainComplex C ℤ) (n : ℤ) {p q : ℤ} (hpq : p = q) :
     (K⟦n⟧).XIsoOfEq hpq = K.XIsoOfEq (show p + n = q + n by rw [hpq]) := rfl
@@ -209,7 +209,7 @@ def shiftEval (n i i' : ℤ) (hi : n + i = i') :
       HomologicalComplex.eval C (ComplexShape.up ℤ) i ≅
       HomologicalComplex.eval C (ComplexShape.up ℤ) i' :=
   NatIso.ofComponents (fun K => K.XIsoOfEq (by dsimp; rw [← hi, add_comm i]))
-    (by intros; dsimp; simp)
+    (by simp)
 
 end CochainComplex
 
@@ -224,6 +224,7 @@ variable (F : C ⥤ D) [F.Additive]
 
 attribute [local simp] Functor.map_zsmul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The commutation with the shift isomorphism for the functor on cochain complexes
 induced by an additive functor between preadditive categories. -/
 @[simps!]
@@ -231,19 +232,19 @@ def mapCochainComplexShiftIso (n : ℤ) :
     shiftFunctor _ n ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ) ≅
       F.mapHomologicalComplex (ComplexShape.up ℤ) ⋙ shiftFunctor _ n :=
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
-    (by dsimp; simp)) (fun _ => by ext; dsimp; rw [id_comp, comp_id])
+    (by simp)) (fun _ => by ext; dsimp; rw [id_comp, comp_id])
 
+set_option backward.isDefEq.respectTransparency false in
 instance commShiftMapCochainComplex :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ where
-  iso := F.mapCochainComplexShiftIso
-  zero := by
+  commShiftIso := F.mapCochainComplexShiftIso
+  commShiftIso_zero := by
     ext
     rw [CommShift.isoZero_hom_app]
     dsimp
-    simp only [mapCochainComplexShiftIso_hom_app_f, CochainComplex.shiftFunctorZero_inv_app_f,
-       CochainComplex.shiftFunctorZero_hom_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
-       eqToHom_map, eqToHom_trans, eqToHom_refl]
-  add := fun a b => by
+    simp only [CochainComplex.shiftFunctorZero_inv_app_f, CochainComplex.shiftFunctorZero_hom_app_f,
+       HomologicalComplex.XIsoOfEq, eqToIso, eqToHom_map, eqToHom_trans, eqToHom_refl]
+  commShiftIso_add := fun a b => by
     ext
     rw [CommShift.isoAdd_hom_app]
     dsimp
@@ -272,6 +273,7 @@ namespace Homotopy
 
 variable {C}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `h : Homotopy φ₁ φ₂` and `n : ℤ`, this is the induced homotopy
 between `φ₁⟦n⟧'` and `φ₂⟦n⟧'`. -/
 def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ₁ φ₂) (n : ℤ) :
@@ -282,15 +284,15 @@ def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ�
     rw [h.zero, smul_zero]
     intro hij'
     dsimp at hij hij'
-    omega
+    lia
   comm := fun i => by
     rw [dNext_eq _ (show (ComplexShape.up ℤ).Rel i (i + 1) by simp),
       prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1) i by simp)]
     dsimp
     simpa only [Linear.units_smul_comp, Linear.comp_units_smul, smul_smul,
       Int.units_mul_self, one_smul,
-      dNext_eq _ (show (ComplexShape.up ℤ).Rel (i + n) (i + 1 + n) by dsimp; omega),
-      prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1 + n) (i + n) by dsimp; omega)]
+      dNext_eq _ (show (ComplexShape.up ℤ).Rel (i + n) (i + 1 + n) by dsimp; lia),
+      prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1 + n) (i + n) by dsimp; lia)]
         using h.comm (i + n)
 
 end Homotopy
@@ -300,6 +302,7 @@ namespace HomotopyCategory
 instance : (homotopic C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ :=
   ⟨fun n _ _ _ _ ⟨h⟩ => ⟨h.shift n⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance hasShift :
     HasShift (HomotopyCategory C (ComplexShape.up ℤ)) ℤ := by
   dsimp only [HomotopyCategory]
@@ -312,7 +315,19 @@ noncomputable instance commShiftQuotient :
 instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := by
   have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
     Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
-  apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
+  apply Functor.additive_of_full_essSurj_comp (quotient _ _)
+
+set_option backward.isDefEq.respectTransparency false in
+instance {R : Type*} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
+    (CategoryTheory.shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Linear R where
+  map_smul := by
+    rintro ⟨X⟩ ⟨Y⟩ f r
+    obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective f
+    have h₁ := NatIso.naturality_1 ((HomotopyCategory.quotient _ _).commShiftIso n) f
+    have h₂ := NatIso.naturality_1 ((HomotopyCategory.quotient _ _).commShiftIso n) (r • f)
+    dsimp at h₁ h₂
+    rw [← Functor.map_smul, ← h₁, ← h₂]
+    simp
 
 section
 

@@ -3,12 +3,15 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Tactic.Linarith.Datatypes
-import Mathlib.Tactic.Zify
-import Mathlib.Tactic.CancelDenoms.Core
-import Batteries.Data.RBMap.Basic
-import Mathlib.Control.Basic
-import Mathlib.Util.AtomM
+module
+
+public meta import Mathlib.Control.Basic
+public meta import Mathlib.Lean.Meta.Tactic.Rewrite
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public meta import Mathlib.Util.AtomM
+public import Mathlib.Tactic.CancelDenoms.Core
+public import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Zify
 
 /-!
 # Linarith preprocessing
@@ -26,16 +29,16 @@ preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.def
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
 
-namespace Linarith
+public meta section
+
+namespace Mathlib.Tactic.Linarith
 
 /-! ### Preprocessing -/
 
 open Lean
 open Elab Tactic Meta
 open Qq
-open Mathlib
-open Mathlib.Tactic (AtomM)
-open Batteries (RBSet)
+open Std (TreeSet)
 
 /-- Processor that recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
 partial def splitConjunctions : Preprocessor where
@@ -96,13 +99,13 @@ end removeNegations
 
 section natToInt
 
-open Mathlib.Tactic.Zify
+open Zify
 
 /--
 `isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
 or the negation thereof.
 -/
-partial def isNatProp (e : Expr) : MetaM Bool := succeeds <| do
+partial def isNatProp (e : Expr) : MetaM Bool := succeeds do
   let (_, _, .const ``Nat [], _, _) ← e.ineqOrNotIneq? | failure
 
 /-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
@@ -132,13 +135,13 @@ def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
       trace[linarith] "Got exception when using cast {e.toMessageData}"
       return none
 
-
 /-- Ordering on `Expr`. -/
+@[deprecated
+  "Use `Expr.lt` and `Expr.equal` or `Expr.eqv` directly. \
+  If you need to order expressions, consider ordering them by order seen, with AtomM."
+  (since := "2025-08-31")]
 def Expr.Ord : Ord Expr :=
 ⟨fun a b => if Expr.lt a b then .lt else if a.equal b then .eq else .gt⟩
-
-attribute [local instance] Expr.Ord
-
 
 /--
 If `h` is an equality or inequality between natural numbers,
@@ -164,12 +167,20 @@ def natToInt : GlobalBranchingPreprocessor where
           pure h
       else
         pure h
-    let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet (Expr × Expr) lexOrd.compare) h => do
+    withNewMCtxDepth <| AtomM.run .reducible do
+    let nonnegs ← l.foldlM (init := ∅) fun (es : TreeSet (Nat × Nat) lexOrd.compare) h => do
       try
         let (_, _, a, b) ← (← inferType h).ineq?
-        pure <| (es.insertMany (getNatComparisons a)).insertMany (getNatComparisons b)
+        let getIndices (p : Expr × Expr) : AtomM (ℕ × ℕ) := do
+          return ((← AtomM.addAtom p.1).1, (← AtomM.addAtom p.2).1)
+        let indices_a ← (getNatComparisons a).mapM getIndices
+        let indices_b ← (getNatComparisons b).mapM getIndices
+        pure <| (es.insertMany indices_a).insertMany indices_b
       catch _ => pure es
-    pure [(g, ((← nonnegs.toList.filterMapM mk_natCast_nonneg_prf) ++ l : List Expr))]
+    let atoms : Array Expr := (← get).atoms
+    let nonneg_pfs : List Expr ← nonnegs.toList.filterMapM fun p => do
+      mk_natCast_nonneg_prf (atoms[p.1]!, atoms[p.2]!)
+    pure [(g, nonneg_pfs ++ l)]
 
 end natToInt
 
@@ -262,8 +273,8 @@ section nlinarith
 and adds them to the set `s`.
 A pair `(i, true)` is added to `s` when `atoms[i]^2` appears in `e`,
 and `(i, false)` is added to `s` when `atoms[i]*atoms[i]` appears in `e`. -/
-partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
-    AtomM (RBSet (Nat × Bool) lexOrd.compare) :=
+partial def findSquares (s : TreeSet (Nat × Bool) lexOrd.compare) (e : Expr) :
+    AtomM (TreeSet (Nat × Bool) lexOrd.compare) :=
   -- Completely traversing the expression is non-ideal,
   -- as we can descend into expressions that could not possibly be seen by `linarith`.
   -- As a result we visit expressions with bvars, which then cause panics.
@@ -292,8 +303,7 @@ private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) :=
   withTraceNode `linarith (return m!"{exceptEmoji ·} finding squares") do
   -- find the squares in `AtomM` to ensure deterministic behavior
   let s ← AtomM.run .reducible do
-    let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
-      RBSet.empty
+    let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h))) ∅
     si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
   let new_es ← s.filterMapM fun (e, is_sq) =>
     observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
@@ -401,4 +411,4 @@ def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List E
       pps.foldlM (init := [(g, l)]) fun ls pp => do
         return (← ls.mapM fun (g, l) => do pp.process g l).flatten
 
-end Linarith
+end Mathlib.Tactic.Linarith

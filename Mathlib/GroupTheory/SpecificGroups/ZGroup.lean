@@ -3,11 +3,13 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.GroupTheory.Nilpotent
-import Mathlib.GroupTheory.SchurZassenhaus
-import Mathlib.GroupTheory.SemidirectProduct
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.GroupTheory.Abelianization.Finite
+public import Mathlib.GroupTheory.Nilpotent
+public import Mathlib.GroupTheory.SchurZassenhaus
+public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
 # Z-Groups
@@ -28,6 +30,8 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
   to a semidirect product of two cyclic subgroups of coprime order.
 
 -/
+
+@[expose] public section
 
 variable (G G' G'' : Type*) [Group G] [Group G'] [Group G''] (f : G →* G') (f' : G' →* G'')
 
@@ -81,6 +85,7 @@ instance [Finite G] [IsZGroup G] (H : Subgroup G) [H.Normal] : IsZGroup (G ⧸ H
 
 section Solvable
 
+set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < ⊤ := by
   let p := (Nat.card G).minFac
@@ -135,11 +140,12 @@ end Nilpotent
 
 section Commutator
 
+set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 /-- A finite Z-group has cyclic commutator subgroup. -/
 theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) := by
-  refine WellFoundedLT.induction (C := fun H ↦ IsCyclic (⁅H, H⁆ : Subgroup G)) (⊤ : Subgroup G) ?_
-  intro H hH
+  rw [commutator_def]
+  induction (⊤ : Subgroup G) using WellFoundedLT.induction with | ind H hH
   rcases eq_or_ne H ⊥ with rfl | h
   · rw [Subgroup.commutator_bot_left]
     infer_instance
@@ -176,7 +182,7 @@ variable {p : ℕ} [Fact p.Prime]
 
 namespace IsPGroup
 
-/-- If a cyclic `p`-group `G` acts on a group `K` of coprime order, then the map `K × G → G`
+/-- If a group `K` acts on a cyclic `p`-group `G` of coprime order, then the map `K × G → G`
   defined by `(k, g) ↦ k • g * g⁻¹` is either trivial or surjective. -/
 theorem smul_mul_inv_trivial_or_surjective [IsCyclic G] (hG : IsPGroup p G)
     {K : Type*} [Group K] [MulDistribMulAction K G] (hGK : (Nat.card G).Coprime (Nat.card K)) :
@@ -203,6 +209,7 @@ theorem smul_mul_inv_trivial_or_surjective [IsCyclic G] (hG : IsPGroup p G)
     rw [h (p ^ v.cast) k u.cast hu.symm, ← zpow_mul, zpow_eq_zpow_iff_modEq]
     exact hvu.of_dvd (Int.natCast_dvd_natCast.mpr (orderOf_dvd_natCard p))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a cyclic `p`-subgroup `P` acts by conjugation on a subgroup `K` of coprime order, then
   either `⁅K, P⁆ = ⊥` or `⁅K, P⁆ = P`. -/
 theorem commutator_eq_bot_or_commutator_eq_self {P K : Subgroup G} [IsCyclic P]
@@ -224,6 +231,7 @@ namespace Sylow
 
 variable [Finite G] (P : Sylow p G) [IsCyclic P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a normal cyclic Sylow `p`-subgroup `P` has a complement `K`, then either `⁅K, P⁆ = ⊥` or
   `⁅K, P⁆ = P`. -/
 theorem commutator_eq_bot_or_commutator_eq_self [P.Normal] {K : Subgroup G}
@@ -231,6 +239,7 @@ theorem commutator_eq_bot_or_commutator_eq_self [P.Normal] {K : Subgroup G}
   P.2.commutator_eq_bot_or_commutator_eq_self (P.normalizer_eq_top ▸ le_top)
     (h.index_eq_card ▸ P.card_coprime_index)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A normal cyclic Sylow subgroup is either central or contained in the commutator subgroup. -/
 theorem le_center_or_le_commutator [P.Normal] : P ≤ Subgroup.center G ∨ P ≤ commutator G := by
   obtain ⟨K, hK⟩ := Subgroup.exists_left_complement'_of_coprime P.card_coprime_index
@@ -240,6 +249,7 @@ theorem le_center_or_le_commutator [P.Normal] : P ≤ Subgroup.center G ∨ P �
   · rw [← h, commutator_def]
     exact Subgroup.commutator_mono le_top le_top
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cyclic Sylow subgroup is either central in its normalizer or contained in the commutator
   subgroup. -/
 theorem normalizer_le_centralizer_or_le_commutator :

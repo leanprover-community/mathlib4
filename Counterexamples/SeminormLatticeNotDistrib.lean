@@ -31,10 +31,12 @@ namespace SeminormNotDistrib
 noncomputable def p : Seminorm ℝ (ℝ × ℝ) :=
   (normSeminorm ℝ ℝ).comp (LinearMap.fst _ _ _) ⊔ (normSeminorm ℝ ℝ).comp (LinearMap.snd _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 noncomputable def q1 : Seminorm ℝ (ℝ × ℝ) :=
   (4 : ℝ≥0) • (normSeminorm ℝ ℝ).comp (LinearMap.fst _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 noncomputable def q2 : Seminorm ℝ (ℝ × ℝ) :=
   (4 : ℝ≥0) • (normSeminorm ℝ ℝ).comp (LinearMap.snd _ _ _)
@@ -51,8 +53,8 @@ theorem not_distrib : ¬(p ⊔ q1) ⊓ (p ⊔ q2) ≤ p ⊔ q1 ⊓ q2 := by
   apply c; nth_rw 1 [← eq_one]
   apply le_trans _ (le_sup_inf _)
   apply le_ciInf; intro x
-  rcases le_or_lt x.fst (1 / 3) with h1 | h1
-  · rcases le_or_lt x.snd (2 / 3) with h2 | h2
+  rcases le_or_gt x.fst (1 / 3) with h1 | h1
+  · rcases le_or_gt x.snd (2 / 3) with h2 | h2
     · calc
         4 / 3 = 4 * (1 - 2 / 3) := by norm_num
         _ ≤ 4 * (1 - x.snd) := by gcongr

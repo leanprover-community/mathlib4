@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.NhdsSet
+module
+
+public import Mathlib.Topology.Continuous
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Separated neighbourhoods
@@ -24,6 +27,8 @@ formulating separation axioms for topological spaces.
 * [Willard's *General Topology*][zbMATH02107988]
 -/
 
+@[expose] public section
+
 open Function Set Filter Topology TopologicalSpace
 
 universe u v
@@ -40,7 +45,7 @@ def SeparatedNhds : Set X → Set X → Prop := fun s t : Set X =>
   ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ s ⊆ U ∧ t ⊆ V ∧ Disjoint U V
 
 theorem separatedNhds_iff_disjoint {s t : Set X} : SeparatedNhds s t ↔ Disjoint (𝓝ˢ s) (𝓝ˢ t) := by
-  simp only [(hasBasis_nhdsSet s).disjoint_iff (hasBasis_nhdsSet t), SeparatedNhds, exists_prop, ←
+  simp only [(hasBasis_nhdsSet s).disjoint_iff (hasBasis_nhdsSet t), SeparatedNhds, ←
     exists_and_left, and_assoc, and_comm, and_left_comm]
 
 alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
@@ -49,6 +54,7 @@ alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
 def HasSeparatingCover : Set X → Set X → Prop := fun s t ↦
   ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) t
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Used to prove that a regular topological space with Lindelöf topology is a normal space,
 and a perfectly normal space is a completely normal space. -/
 theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
@@ -62,11 +68,11 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
         (h₀ ⊆ ⋃ n, u₀ n) → (∀ n, Disjoint (closure (v₀ n)) h₀) →
         (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ≤ n, v₀ m)) :=
         fun h₀ u₀ v₀ h₀_cov dis x xinh ↦ by
-      rcases h₀_cov xinh with ⟨un , ⟨n, rfl⟩ , xinun⟩
+      rcases h₀_cov xinh with ⟨un, ⟨n, rfl⟩, xinun⟩
       simp only [mem_iUnion]
       refine ⟨n, xinun, ?_⟩
-      simp_all only [closure_iUnion₂_le_nat, disjoint_right, mem_setOf_eq, mem_iUnion,
-        exists_false, exists_const, not_false_eq_true]
+      simp_all only [closure_iUnion₂_le_nat, disjoint_right, mem_iUnion,
+        exists_false, not_false_eq_true]
     refine
       ⟨⋃ n : ℕ, u n \ (closure (⋃ m ≤ n, v m)),
        ⋃ n : ℕ, v n \ (closure (⋃ m ≤ n, u m)),
@@ -94,6 +100,7 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
         fun _ ↦
           ⟨V_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) h_sub_U (UV_dis.closure_right U_open).symm⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Set.hasSeparatingCover_empty_left (s : Set X) : HasSeparatingCover ∅ s :=
   ⟨fun _ ↦ ∅, empty_subset (⋃ _, ∅),
    fun _ ↦ ⟨isOpen_empty, by simp only [closure_empty, empty_disjoint]⟩⟩
@@ -154,6 +161,36 @@ theorem union_left : SeparatedNhds s u → SeparatedNhds t u → SeparatedNhds (
 
 theorem union_right (ht : SeparatedNhds s t) (hu : SeparatedNhds s u) : SeparatedNhds s (t ∪ u) :=
   (ht.symm.union_left hu.symm).symm
+
+lemma isOpen_left_of_isOpen_union (hst : SeparatedNhds s t) (hst' : IsOpen (s ∪ t)) : IsOpen s := by
+  obtain ⟨u, v, hu, hv, hsu, htv, huv⟩ := hst
+  suffices s = (s ∪ t) ∩ u from this ▸ hst'.inter hu
+  rw [union_inter_distrib_right, (huv.symm.mono_left htv).inter_eq, union_empty,
+    inter_eq_left.2 hsu]
+
+lemma isOpen_right_of_isOpen_union (hst : SeparatedNhds s t) (hst' : IsOpen (s ∪ t)) : IsOpen t :=
+  hst.symm.isOpen_left_of_isOpen_union (union_comm _ _ ▸ hst')
+
+lemma isOpen_union_iff (hst : SeparatedNhds s t) : IsOpen (s ∪ t) ↔ IsOpen s ∧ IsOpen t :=
+  ⟨fun h ↦ ⟨hst.isOpen_left_of_isOpen_union h, hst.isOpen_right_of_isOpen_union h⟩,
+    fun ⟨h1, h2⟩ ↦ h1.union h2⟩
+
+lemma isClosed_left_of_isClosed_union (hst : SeparatedNhds s t) (hst' : IsClosed (s ∪ t)) :
+    IsClosed s := by
+  obtain ⟨u, v, hu, hv, hsu, htv, huv⟩ := hst
+  rw [← isOpen_compl_iff] at hst' ⊢
+  suffices sᶜ = (s ∪ t)ᶜ ∪ v from this ▸ hst'.union hv
+  rw [← compl_inj_iff, Set.compl_union, compl_compl, compl_compl, union_inter_distrib_right,
+    (disjoint_compl_right.mono_left htv).inter_eq, union_empty, left_eq_inter, subset_compl_comm]
+  exact (huv.mono_left hsu).subset_compl_left
+
+lemma isClosed_right_of_isClosed_union (hst : SeparatedNhds s t) (hst' : IsClosed (s ∪ t)) :
+    IsClosed t :=
+  hst.symm.isClosed_left_of_isClosed_union (union_comm _ _ ▸ hst')
+
+lemma isClosed_union_iff (hst : SeparatedNhds s t) : IsClosed (s ∪ t) ↔ IsClosed s ∧ IsClosed t :=
+  ⟨fun h ↦ ⟨hst.isClosed_left_of_isClosed_union h, hst.isClosed_right_of_isClosed_union h⟩,
+    fun ⟨h1, h2⟩ ↦ h1.union h2⟩
 
 end SeparatedNhds
 

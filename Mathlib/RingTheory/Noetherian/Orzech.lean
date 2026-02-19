@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Algebra.Module.Submodule.IterateMapComap
-import Mathlib.Order.PartialSups
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.OrzechProperty
+module
+
+public import Mathlib.Algebra.Module.Submodule.IterateMapComap
+public import Mathlib.Order.PartialSups
+public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.OrzechProperty
 
 /-!
 # Noetherian rings have the Orzech property
@@ -18,6 +20,8 @@ import Mathlib.RingTheory.OrzechProperty
   `f : N →ₗ[R] M` is surjective, then `f` is also injective.
 * `IsNoetherianRing.orzechProperty`: Any Noetherian ring satisfies the Orzech property.
 -/
+
+@[expose] public section
 
 
 open Set Filter Pointwise
@@ -45,6 +49,7 @@ theorem IsNoetherian.injective_of_surjective_of_injective (i f : N →ₗ[R] M)
   exact LinearMap.ker_eq_bot.1 <| bot_unique <|
     f.ker_le_of_iterateMapComap_eq_succ i ⊥ n (H _ (Nat.le_succ _)) hf hi
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Orzech's theorem** for Noetherian modules: if `R` is a ring (not necessarily commutative),
 `M` is a Noetherian `R`-module, `N` is a submodule, `f : N →ₗ[R] M` is surjective, then `f` is also
 injective. -/
@@ -62,13 +67,13 @@ theorem IsNoetherian.bijective_of_surjective_endomorphism (f : M →ₗ[R] M)
     (s : Surjective f) : Bijective f :=
   ⟨IsNoetherian.injective_of_surjective_endomorphism f s, s⟩
 
-/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial. -/
+/-- If `M ⊕ N` embeds into `M`, for `M` Noetherian over `R`, then `N` is trivial. -/
 theorem IsNoetherian.subsingleton_of_prod_injective (f : M × N →ₗ[R] M)
     (i : Injective f) : Subsingleton N := .intro fun x y ↦ by
   have h := IsNoetherian.injective_of_surjective_of_injective f _ i LinearMap.fst_surjective
   simpa using h (show LinearMap.fst R M N (0, x) = LinearMap.fst R M N (0, y) from rfl)
 
-/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial. -/
+/-- If `M ⊕ N` embeds into `M`, for `M` Noetherian over `R`, then `N` is trivial. -/
 @[simps!]
 def IsNoetherian.equivPUnitOfProdInjective (f : M × N →ₗ[R] M)
     (i : Injective f) : N ≃ₗ[R] PUnit.{w + 1} :=

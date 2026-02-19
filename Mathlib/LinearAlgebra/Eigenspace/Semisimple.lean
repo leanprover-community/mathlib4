@@ -3,8 +3,10 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.LinearAlgebra.Semisimple
+module
+
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Semisimple
 
 /-!
 # Eigenspaces of semisimple linear endomorphisms
@@ -14,10 +16,12 @@ endomorphisms.
 
 ## Main definitions / results
 
- * `Module.End.IsSemisimple.genEigenspace_eq_eigenspace`: for a semisimple endomorphism,
-   a generalized eigenspace is an eigenspace.
+* `Module.End.IsSemisimple.genEigenspace_eq_eigenspace`: for a semisimple endomorphism,
+  a generalized eigenspace is an eigenspace.
 
 -/
+
+public section
 
 open Function Set
 
@@ -25,6 +29,7 @@ namespace Module.End
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {f g : End R M}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil
     {μ : R} {k : ℕ∞} {m : M} (hm : m ∈ f.genEigenspace μ k)
     (hfg : Commute f g) (hss : g.IsFinitelySemisimple) (hnil : IsNilpotent (f - g)) :

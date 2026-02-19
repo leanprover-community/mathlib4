@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Scheme
-import Mathlib.CategoryTheory.Comma.Over.OverClass
+module
+
+public import Mathlib.AlgebraicGeometry.Scheme
+public import Mathlib.CategoryTheory.Comma.Over.OverClass
 
 /-!
 # Typeclasses for `S`-schemes and `S`-morphisms
@@ -12,11 +14,13 @@ import Mathlib.CategoryTheory.Comma.Over.OverClass
 We define these as thin wrappers around `CategoryTheory/Comma/OverClass`.
 
 ## Main definition
-- `AlgebraicGeometry.Scheme.Over`: `X.Over S` equips `X` with a `S`-scheme structure.
+- `AlgebraicGeometry.Scheme.Over`: `X.Over S` equips `X` with an `S`-scheme structure.
   `X ↘ S : X ⟶ S` is the structure morphism.
-- `AlgebraicGeometry.Scheme.Hom.IsOver`: `f.IsOver S` asserts that `f` is a `S`-morphism.
+- `AlgebraicGeometry.Scheme.Hom.IsOver`: `f.IsOver S` asserts that `f` is an `S`-morphism.
 
 -/
+
+@[expose] public section
 
 namespace AlgebraicGeometry.Scheme
 
@@ -35,7 +39,7 @@ protected abbrev Over (X S : Scheme.{u}) := OverClass X S
 `X.CanonicallyOver S` is the typeclass containing the data of a structure morphism `X ↘ S : X ⟶ S`,
 and that `S` is (uniquely) inferable from the structure of `X`.
 -/
-abbrev CanonicallyOver := CanonicallyOverClass X S
+abbrev CanonicallyOver (X S : Scheme.{u}) := CanonicallyOverClass X S
 
 /-- Given `X.Over S` and `Y.Over S` and `f : X ⟶ Y`,
 `f.IsOver S` is the typeclass asserting `f` commutes with the structure morphisms. -/

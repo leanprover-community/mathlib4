@@ -56,9 +56,10 @@ theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
   rcases h2 with h2 | h2
   · rw [h2]; exact h1
   · rcases h1 with h1 | h1
-    · right; simp [h2, mul_mod, h1, Nat.succ_lt_succ]
+    · right; simp [h2, mul_mod, h1]
     · left; simp only [h2, mul_mod, h1, mod_mod]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `count_equiv_one_or_two_mod3_of_derivable` shows any derivable string must have a `count I` that
 is 1 or 2 modulo 3.
 -/
@@ -78,7 +79,6 @@ theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
     rw [count_append, count_append, count_append]
     simp_rw [count_cons_self, count_nil, count_cons, beq_iff_eq, reduceCtorEq, ite_false,
       add_right_comm, add_mod_right]
-    simp
   | r4 _ h_ih =>
     apply mod3_eq_1_or_mod3_eq_2 h_ih; left
     rw [count_append, count_append, count_append]
@@ -103,10 +103,12 @@ string to be derivable, namely that the string must start with an M and contain 
 /-- `Goodm xs` holds if `xs : Miustr` begins with `M` and has no `M` in its tail.
 -/
 def Goodm (xs : Miustr) : Prop :=
-  List.headI xs = M ∧ ¬M ∈ List.tail xs
+  List.headI xs = M ∧ M ∉ List.tail xs
 
+set_option backward.isDefEq.respectTransparency false in
 instance : DecidablePred Goodm := by unfold Goodm; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Demonstration that `"MI"` starts with `M` and has no `M` in its tail.
 -/
 theorem goodmi : Goodm [M, I] := by
@@ -120,12 +122,13 @@ We'll show, for each `i` from 1 to 4, that if `en` follows by Rule `i` from `st`
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ [I])) (h₂ : Goodm (xs ++ [I])) :
     Goodm (xs ++ [I, U]) := by
   obtain ⟨mhead, nmtail⟩ := h₂
   constructor
   · cases xs <;> simp_all
-  · change ¬M ∈ tail (xs ++ ([I] ++ [U]))
+  · change M ∉ tail (xs ++ ([I] ++ [U]))
     rw [← append_assoc, tail_append_singleton_of_ne_nil]
     · simp_rw [mem_append, mem_singleton, reduceCtorEq, or_false]; exact nmtail
     · simp
@@ -139,6 +142,7 @@ theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M 
     rw [cons_append] at mtail
     exact or_self_iff.mp (mem_append.mp mtail)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ [I, I, I] ++ bs))
     (h₂ : Goodm (as ++ [I, I, I] ++ bs)) : Goodm (as ++ (U :: bs)) := by
   obtain ⟨mhead, nmtail⟩ := h₂
@@ -157,6 +161,7 @@ The proof of the next lemma is identical, on the tactic level, to the previous p
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ [U, U] ++ bs))
     (h₂ : Goodm (as ++ [U, U] ++ bs)) : Goodm (as ++ bs) := by
   obtain ⟨mhead, nmtail⟩ := h₂

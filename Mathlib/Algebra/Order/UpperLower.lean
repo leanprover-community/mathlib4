@@ -3,15 +3,22 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Order.Group.Instances
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Order.Monoid.OrderDual
+public import Mathlib.Order.UpperLower.Closure
+
 /-!
 # Algebraic operations on upper/lower sets
 
 Upper/lower sets are preserved under pointwise algebraic operations in ordered groups.
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -20,7 +27,7 @@ open Pointwise
 
 section OrderedCommMonoid
 
-variable {α : Type*} [OrderedCommMonoid α] {s : Set α} {x : α}
+variable {α : Type*} [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] {s : Set α} {x : α}
 
 @[to_additive]
 theorem IsUpperSet.smul_subset (hs : IsUpperSet s) (hx : 1 ≤ x) : x • s ⊆ s :=
@@ -34,7 +41,7 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable {α : Type*} [OrderedCommGroup α] {s t : Set α} {a : α}
+variable {α : Type*} [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s t : Set α} {a : α}
 
 @[to_additive]
 theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := hs.image <| OrderIso.mulLeft _
@@ -57,9 +64,11 @@ theorem IsUpperSet.mul_right (hs : IsUpperSet s) : IsUpperSet (s * t) := by
   rw [mul_comm]
   exact hs.mul_left
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem IsLowerSet.mul_left (ht : IsLowerSet t) : IsLowerSet (s * t) := ht.toDual.mul_left
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem IsLowerSet.mul_right (hs : IsLowerSet s) : IsLowerSet (s * t) := hs.toDual.mul_right
 
@@ -79,9 +88,11 @@ theorem IsUpperSet.div_right (hs : IsUpperSet s) : IsUpperSet (s / t) := by
   rw [div_eq_mul_inv]
   exact hs.mul_right
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem IsLowerSet.div_left (ht : IsLowerSet t) : IsUpperSet (s / t) := ht.toDual.div_left
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem IsLowerSet.div_right (hs : IsLowerSet s) : IsLowerSet (s / t) := hs.toDual.div_right
 
@@ -103,18 +114,20 @@ instance : Div (UpperSet α) :=
 instance : SMul α (UpperSet α) :=
   ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
-@[to_additive (attr := simp,norm_cast)]
+omit [IsOrderedMonoid α] in
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_one : ((1 : UpperSet α) : Set α) = Set.Ici 1 :=
   rfl
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (s t : UpperSet α) : (↑(s * t) : Set α) = s * t :=
   rfl
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_div (s t : UpperSet α) : (↑(s / t) : Set α) = s / t :=
   rfl
 
+omit [IsOrderedMonoid α] in
 @[to_additive (attr := simp)]
 theorem Ici_one : Ici (1 : α) = 1 :=
   rfl
@@ -130,15 +143,14 @@ instance commSemigroup : CommSemigroup (UpperSet α) :=
 @[to_additive]
 private theorem one_mul (s : UpperSet α) : 1 * s = s :=
   SetLike.coe_injective <|
-    (subset_mul_right _ left_mem_Ici).antisymm' <| by
+    (subset_mul_right _ self_mem_Ici).antisymm' <| by
       rw [← smul_eq_mul, ← Set.iUnion_smul_set]
       exact Set.iUnion₂_subset fun _ ↦ s.upper.smul_subset
 
 @[to_additive]
 instance : CommMonoid (UpperSet α) :=
   { UpperSet.commSemigroup with
-    one := 1
-    one_mul := one_mul
+    one_mul := private one_mul
     mul_one := fun s ↦ by
       rw [mul_comm]
       exact one_mul _ }
@@ -163,14 +175,15 @@ instance : Div (LowerSet α) :=
 instance : SMul α (LowerSet α) :=
   ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (s t : LowerSet α) : (↑(s * t) : Set α) = s * t :=
   rfl
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_div (s t : LowerSet α) : (↑(s / t) : Set α) = s / t :=
   rfl
 
+omit [IsOrderedMonoid α] in
 @[to_additive (attr := simp)]
 theorem Iic_one : Iic (1 : α) = 1 :=
   rfl
@@ -186,15 +199,14 @@ instance commSemigroup : CommSemigroup (LowerSet α) :=
 @[to_additive]
 private theorem one_mul (s : LowerSet α) : 1 * s = s :=
   SetLike.coe_injective <|
-    (subset_mul_right _ right_mem_Iic).antisymm' <| by
+    (subset_mul_right _ self_mem_Iic).antisymm' <| by
       rw [← smul_eq_mul, ← Set.iUnion_smul_set]
       exact Set.iUnion₂_subset fun _ ↦ s.lower.smul_subset
 
 @[to_additive]
 instance : CommMonoid (LowerSet α) :=
   { LowerSet.commSemigroup with
-    one := 1
-    one_mul := one_mul
+    one_mul := private one_mul
     mul_one := fun s ↦ by
       rw [mul_comm]
       exact one_mul _ }
@@ -203,10 +215,12 @@ end LowerSet
 
 variable (a s t)
 
+omit [IsOrderedMonoid α] in
 @[to_additive (attr := simp)]
 theorem upperClosure_one : upperClosure (1 : Set α) = 1 :=
   upperClosure_singleton _
 
+omit [IsOrderedMonoid α] in
 @[to_additive (attr := simp)]
 theorem lowerClosure_one : lowerClosure (1 : Set α) = 1 :=
   lowerClosure_singleton _

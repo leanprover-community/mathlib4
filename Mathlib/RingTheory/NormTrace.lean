@@ -3,13 +3,18 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Norm.Defs
-import Mathlib.RingTheory.Trace.Defs
+module
+
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.RingTheory.Trace.Defs
+
 /-!
-
-# Relation between Norms and Traces
-
+# Relation between norms and traces
 -/
+
+public section
+
+open Module
 
 lemma Algebra.norm_one_add_smul {A B} [CommRing A] [CommRing B] [Algebra A B]
     [Module.Free A B] [Module.Finite A B] (a : A) (x : B) :

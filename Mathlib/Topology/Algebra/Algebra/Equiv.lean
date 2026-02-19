@@ -3,7 +3,10 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Topology.Algebra.Algebra
+module
+
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Isomorphisms of topological algebras
@@ -20,7 +23,7 @@ are also topological spaces.
 * `ContinuousAlgEquiv R A B`: the type of continuous `R`-algebra isomorphisms
   from `A` to `B` with continuous inverses.
 
-## Notations
+## Notation
 
 `A ≃A[R] B` : notation for `ContinuousAlgEquiv R A B`.
 
@@ -28,6 +31,8 @@ are also topological spaces.
 
 * continuous, isomorphism, algebra
 -/
+
+@[expose] public section
 
 open scoped Topology
 
@@ -93,6 +98,8 @@ instance continuousAlgEquivClass : ContinuousAlgEquivClass (A ≃A[R] B) R A B w
 
 theorem coe_apply (e : A ≃A[R] B) (a : A) : (e : A →A[R] B) a = e a := rfl
 
+@[simp] theorem coe_mk (e : A ≃ₐ[R] B) (he he') : ⇑(mk e he he') = e := rfl
+
 @[simp]
 theorem coe_coe (e : A ≃A[R] B) : ⇑(e : A →A[R] B) = e := rfl
 
@@ -113,6 +120,26 @@ theorem coe_inj {f g : A ≃A[R] B} : (f : A →A[R] B) = g ↔ f = g :=
 
 @[simp]
 theorem coe_toAlgEquiv (e : A ≃A[R] B) : ⇑e.toAlgEquiv = e := rfl
+
+/-- The natural coercion from a continuous algebra isomorphism
+to a continuous linear isomorphism. -/
+@[coe]
+def toContinuousLinearEquiv (e : A ≃A[R] B) : A ≃L[R] B :=
+  { e with __ := e.toLinearEquiv }
+
+instance : Coe (A ≃A[R] B) (A ≃L[R] B) := ⟨toContinuousLinearEquiv⟩
+
+@[simp]
+theorem toContinuousLinearEquiv_apply (e : A ≃A[R] B) (a : A) :
+    e.toContinuousLinearEquiv a = e a := rfl
+
+theorem toContinuousLinearMap_toContinuousLinearEquiv_eq (e : A ≃A[R] B) :
+    e.toContinuousLinearEquiv.toContinuousLinearMap
+    = e.toContinuousAlgHom.toContinuousLinearMap := rfl
+
+theorem toContinuousLinearEquiv_toLinearEquiv_eq (e : A ≃A[R] B) :
+    e.toContinuousLinearEquiv.toLinearEquiv
+    = e.toAlgEquiv.toLinearEquiv := rfl
 
 theorem isOpenMap (e : A ≃A[R] B) : IsOpenMap e :=
   e.toHomeomorph.isOpenMap
@@ -175,6 +202,10 @@ theorem coe_refl : refl R A = ContinuousAlgHom.id R A := rfl
 @[simp]
 theorem coe_refl' : ⇑(refl R A) = id := rfl
 
+@[simp]
+theorem refl_toContinuousLinearEquiv :
+    (refl R A).toContinuousLinearEquiv = .refl R A := rfl
+
 variable {R A}
 
 /-- The inverse of a continuous algebra equivalence. -/
@@ -206,6 +237,10 @@ theorem symm_toAlgEquiv (e : A ≃A[R] B) : e.symm.toAlgEquiv = e.toAlgEquiv.sym
 @[simp]
 theorem symm_toHomeomorph (e : A ≃A[R] B) : e.symm.toHomeomorph = e.toHomeomorph.symm := rfl
 
+@[simp]
+theorem toContinuousLinearEquiv_symm (e : A ≃A[R] B) :
+    e.symm.toContinuousLinearEquiv = e.toContinuousLinearEquiv.symm := rfl
+
 theorem symm_map_nhds_eq (e : A ≃A[R] B) (a : A) : Filter.map e.symm (𝓝 (e a)) = 𝓝 a :=
   e.toHomeomorph.symm_map_nhds_eq a
 
@@ -220,6 +255,11 @@ def trans (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) : A ≃A[R] C where
 theorem trans_toAlgEquiv (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) :
     (e₁.trans e₂).toAlgEquiv = e₁.toAlgEquiv.trans e₂.toAlgEquiv :=
   rfl
+
+@[simp]
+theorem trans_toContinuousLinearEquiv (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) :
+    (e₁.trans e₂).toContinuousLinearEquiv
+    = e₁.toContinuousLinearEquiv.trans e₂.toContinuousLinearEquiv := rfl
 
 @[simp]
 theorem trans_apply (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) (a : A) :
@@ -270,11 +310,11 @@ theorem symm_apply_eq (e : A ≃A[R] B) {a : A} {b : B} : e.symm b = a ↔ b = e
 theorem eq_symm_apply (e : A ≃A[R] B) {a : A} {b : B} : a = e.symm b ↔ e a = b :=
   e.toEquiv.eq_symm_apply
 
-theorem image_eq_preimage (e : A ≃A[R] B) (S : Set A) : e '' S = e.symm ⁻¹' S :=
-  e.toEquiv.image_eq_preimage S
+theorem image_eq_preimage_symm (e : A ≃A[R] B) (S : Set A) : e '' S = e.symm ⁻¹' S :=
+  e.toEquiv.image_eq_preimage_symm S
 
 theorem image_symm_eq_preimage (e : A ≃A[R] B) (S : Set B) : e.symm '' S = e ⁻¹' S := by
-  rw [e.symm.image_eq_preimage, e.symm_symm]
+  rw [e.symm.image_eq_preimage_symm, e.symm_symm]
 
 @[simp]
 theorem symm_preimage_preimage (e : A ≃A[R] B) (S : Set B) : e.symm ⁻¹' (e ⁻¹' S) = S :=
@@ -285,15 +325,40 @@ theorem preimage_symm_preimage (e : A ≃A[R] B) (S : Set A) : e ⁻¹' (e.symm 
   e.symm.symm_preimage_preimage S
 
 theorem isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂] [Ring E₁]
-    [UniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [UniformAddGroup E₂] [Algebra R E₂]
+    [IsUniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [IsUniformAddGroup E₂] [Algebra R E₂]
     (e : E₁ ≃A[R] E₂) : IsUniformEmbedding e :=
   e.toAlgEquiv.isUniformEmbedding e.toContinuousAlgHom.uniformContinuous
     e.symm.toContinuousAlgHom.uniformContinuous
 
 theorem _root_.AlgEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
-    [Ring E₁] [UniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [UniformAddGroup E₂] [Algebra R E₂]
+    [Ring E₁] [IsUniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [IsUniformAddGroup E₂] [Algebra R E₂]
     (e : E₁ ≃ₐ[R] E₂) (h₁ : Continuous e) (h₂ : Continuous e.symm) :
     IsUniformEmbedding e :=
-  ContinuousAlgEquiv.isUniformEmbedding { e with continuous_toFun := h₁ }
+  ContinuousAlgEquiv.isUniformEmbedding { e with
+    continuous_toFun := h₁
+    continuous_invFun := by dsimp; fun_prop }
+
+theorem surjective (e : A ≃A[R] B) : Function.Surjective e := e.toAlgEquiv.surjective
+
+/-- `Equiv.cast (congrArg _ h)` as a continuous algebra equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+def cast {ι : Type*} {A : ι → Type*} [(i : ι) → Semiring (A i)] [(i : ι) → Algebra R (A i)]
+    [(i : ι) → TopologicalSpace (A i)] {i j : ι} (h : i = j) :
+    A i ≃A[R] A j where
+  __ := AlgEquiv.cast h
+  continuous_toFun := by cases h; exact continuous_id
+  continuous_invFun := by cases h; exact continuous_id
+
+@[simp]
+theorem cast_apply {ι : Type*} {A : ι → Type*} [(i : ι) → Semiring (A i)]
+    [(i : ι) → Algebra R (A i)] [(i : ι) → TopologicalSpace (A i)] {i j : ι} (h : i = j) (x : A i) :
+    cast (R := R) h x = Equiv.cast (congrArg A h) x := rfl
+
+@[simp]
+theorem cast_symm_apply {ι : Type*} {A : ι → Type*} [(i : ι) → Semiring (A i)]
+    [(i : ι) → Algebra R (A i)] [(i : ι) → TopologicalSpace (A i)] {i j : ι} (h : i = j)
+    (x : A j) : (cast (R := R) h).symm x = Equiv.cast (congrArg A h.symm) x := rfl
 
 end ContinuousAlgEquiv

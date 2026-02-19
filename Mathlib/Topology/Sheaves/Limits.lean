@@ -3,13 +3,17 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.Sheaf
-import Mathlib.CategoryTheory.Sites.Limits
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+module
+
+public import Mathlib.Topology.Sheaves.Sheaf
+public import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Presheaves in `C` have limits and colimits when `C` does.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -20,7 +24,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-variable {C : Type u} [Category.{v} C] {J : Type w} [Category J]
+variable {C : Type u} [Category.{v} C] {J : Type w} [Category* J]
 
 namespace TopCat
 
@@ -44,6 +48,7 @@ instance [HasLimits C] (X : TopCat) : CreatesLimits.{v, v} (Sheaf.forget C X) wh
 
 instance [HasLimits C] (X : TopCat.{v}) : HasLimitsOfSize.{v, v} (Sheaf.{v} C X) where
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSheaf_of_isLimit [HasLimitsOfShape J C] {X : TopCat} (F : J ⥤ Presheaf.{v} C X)
     (H : ∀ j, (F.obj j).IsSheaf) {c : Cone F} (hc : IsLimit c) : c.pt.IsSheaf := by
   let F' : J ⥤ Sheaf C X :=

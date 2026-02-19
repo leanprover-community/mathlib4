@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.CommSq
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.CommSq
 
 /-!
 # The category of commutative squares
@@ -30,6 +32,8 @@ or a vertical morphism between two horizontal
 maps (`arrowArrowEquivalence'`).
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -78,10 +82,10 @@ structure Hom (sq₁ sq₂ : Square C) where
   τ₃ : sq₁.X₃ ⟶ sq₂.X₃
   /-- the bottom-right morphism -/
   τ₄ : sq₁.X₄ ⟶ sq₂.X₄
-  comm₁₂ : sq₁.f₁₂ ≫ τ₂ = τ₁ ≫ sq₂.f₁₂ := by aesop_cat
-  comm₁₃ : sq₁.f₁₃ ≫ τ₃ = τ₁ ≫ sq₂.f₁₃ := by aesop_cat
-  comm₂₄ : sq₁.f₂₄ ≫ τ₄ = τ₂ ≫ sq₂.f₂₄ := by aesop_cat
-  comm₃₄ : sq₁.f₃₄ ≫ τ₄ = τ₃ ≫ sq₂.f₃₄ := by aesop_cat
+  comm₁₂ : sq₁.f₁₂ ≫ τ₂ = τ₁ ≫ sq₂.f₁₂ := by cat_disch
+  comm₁₃ : sq₁.f₁₃ ≫ τ₃ = τ₁ ≫ sq₂.f₁₃ := by cat_disch
+  comm₂₄ : sq₁.f₂₄ ≫ τ₄ = τ₂ ≫ sq₂.f₂₄ := by cat_disch
+  comm₃₄ : sq₁.f₃₄ ≫ τ₄ = τ₃ ≫ sq₂.f₃₄ := by cat_disch
 
 namespace Hom
 
@@ -117,7 +121,7 @@ lemma hom_ext {sq₁ sq₂ : Square C} {f g : sq₁ ⟶ sq₂}
     (h₃ : f.τ₃ = g.τ₃) (h₄ : f.τ₄ = g.τ₄) : f = g :=
   Hom.ext h₁ h₂ h₃ h₄
 
-/-- Constructor for isomorphisms in `Square c` -/
+/-- Constructor for isomorphisms in `Square C` -/
 def isoMk {sq₁ sq₂ : Square C} (e₁ : sq₁.X₁ ≅ sq₂.X₁) (e₂ : sq₁.X₂ ≅ sq₂.X₂)
     (e₃ : sq₁.X₃ ≅ sq₂.X₃) (e₄ : sq₁.X₄ ≅ sq₂.X₄)
     (comm₁₂ : sq₁.f₁₂ ≫ e₂.hom = e₁.hom ≫ sq₂.f₁₂)
@@ -147,6 +151,10 @@ def isoMk {sq₁ sq₂ : Square C} (e₁ : sq₁.X₁ ≅ sq₂.X₁) (e₂ : sq
 /-- Flipping a square by switching the top-right and the bottom-left objects. -/
 @[simps]
 def flip (sq : Square C) : Square C where
+  f₁₂ := sq.f₁₃
+  f₁₃ := sq.f₁₂
+  f₂₄ := sq.f₃₄
+  f₃₄ := sq.f₂₄
   fac := sq.fac.symm
 
 /-- The functor which flips commutative squares. -/
@@ -181,7 +189,7 @@ a morphism `Arrow.mk f ⟶ Arrow.mk g` to the commutative square
 with `f` on the left side and `g` on the right side. -/
 @[simps!]
 def fromArrowArrowFunctor : Arrow (Arrow C) ⥤ Square C where
-  obj f := { fac := f.hom.w }
+  obj f := { fac := f.hom.w, .. }
   map φ :=
     { τ₁ := φ.left.left
       τ₂ := φ.right.left
@@ -216,7 +224,7 @@ a morphism `Arrow.mk f ⟶ Arrow.mk g` to the commutative square
 with `f` on the top side and `g` on the bottom side. -/
 @[simps!]
 def fromArrowArrowFunctor' : Arrow (Arrow C) ⥤ Square C where
-  obj f := { fac := f.hom.w.symm }
+  obj f := { fac := f.hom.w.symm, .. }
   map φ :=
     { τ₁ := φ.left.left
       τ₂ := φ.left.right
@@ -308,6 +316,7 @@ def unopFunctor : (Square Cᵒᵖ)ᵒᵖ ⥤ Square C where
       comm₂₄ := Quiver.Hom.op_inj (by simp)
       comm₃₄ := Quiver.Hom.op_inj (by simp) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence `(Square C)ᵒᵖ ≌ Square Cᵒᵖ`. -/
 def opEquivalence : (Square C)ᵒᵖ ≌ Square Cᵒᵖ where
   functor := opFunctor

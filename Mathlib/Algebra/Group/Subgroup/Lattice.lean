@@ -3,8 +3,10 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Group.Subgroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Group.Subgroup.Defs
 
 /-!
 # Lattice structure of subgroups
@@ -42,7 +44,9 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid Multiset Ring
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -66,9 +70,17 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 
-/-- Additive subgroup of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
+@[simp] lemma Additive.mem_toAddSubgroup (S : Subgroup G) (g : Additive G) :
+    g ∈ S.toAddSubgroup ↔ Additive.toMul g ∈ S :=
+  .rfl
+
+/-- Additive subgroups of an additive group `Additive G` are isomorphic to subgroups of `G`. -/
 abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
   Subgroup.toAddSubgroup.symm
+
+@[simp] lemma AddSubgroup.mem_toSubgroup' (S : AddSubgroup (Additive G)) (g : G) :
+    g ∈ toSubgroup' S ↔ Additive.ofMul g ∈ S :=
+  .rfl
 
 /-- Additive subgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
 -/
@@ -80,10 +92,18 @@ def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) wher
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 
+@[simp] lemma Multiplicative.mem_toSubgroup (S : AddSubgroup A) (a : Multiplicative A) :
+    a ∈ S.toSubgroup ↔ Multiplicative.toAdd a ∈ S :=
+  .rfl
+
 /-- Subgroups of an additive group `Multiplicative A` are isomorphic to additive subgroups of `A`.
 -/
 abbrev Subgroup.toAddSubgroup' : Subgroup (Multiplicative A) ≃o AddSubgroup A :=
   AddSubgroup.toSubgroup.symm
+
+@[simp] lemma Subgroup.mem_toAddSubgroup' (S : Subgroup (Multiplicative A)) (a : A) :
+    a ∈ toAddSubgroup' S ↔ Multiplicative.ofAdd a ∈ S :=
+  .rfl
 
 end mul_add
 
@@ -92,7 +112,7 @@ namespace Subgroup
 variable (H K : Subgroup G)
 
 /-- The subgroup `G` of the group `G`. -/
-@[to_additive "The `AddSubgroup G` of the `AddGroup G`."]
+@[to_additive /-- The `AddSubgroup G` of the `AddGroup G`. -/]
 instance : Top (Subgroup G) :=
   ⟨{ (⊤ : Submonoid G) with inv_mem' := fun _ => Set.mem_univ _ }⟩
 
@@ -100,14 +120,14 @@ instance : Top (Subgroup G) :=
 
 This is the group version of `Submonoid.topEquiv`. -/
 @[to_additive (attr := simps!)
-      "The top additive subgroup is isomorphic to the additive group.
+      /-- The top additive subgroup is isomorphic to the additive group.
 
-      This is the additive group version of `AddSubmonoid.topEquiv`."]
+      This is the additive group version of `AddSubmonoid.topEquiv`. -/]
 def topEquiv : (⊤ : Subgroup G) ≃* G :=
   Submonoid.topEquiv
 
 /-- The trivial subgroup `{1}` of a group `G`. -/
-@[to_additive "The trivial `AddSubgroup` `{0}` of an `AddGroup` `G`."]
+@[to_additive /-- The trivial `AddSubgroup` `{0}` of an `AddGroup` `G`. -/]
 instance : Bot (Subgroup G) :=
   ⟨{ (⊥ : Submonoid G) with inv_mem' := by simp}⟩
 
@@ -123,11 +143,11 @@ theorem mem_bot {x : G} : x ∈ (⊥ : Subgroup G) ↔ x = 1 :=
 theorem mem_top (x : G) : x ∈ (⊤ : Subgroup G) :=
   Set.mem_univ x
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_top : ((⊤ : Subgroup G) : Set G) = Set.univ :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_bot : ((⊥ : Subgroup G) : Set G) = {1} :=
   rfl
 
@@ -182,13 +202,13 @@ theorem nontrivial_iff_ne_bot (H : Subgroup G) : Nontrivial H ↔ H ≠ ⊥ := b
   simp only [ne_eq, not_forall, exists_prop]
 
 /-- A subgroup is either the trivial subgroup or nontrivial. -/
-@[to_additive "A subgroup is either the trivial subgroup or nontrivial."]
+@[to_additive /-- A subgroup is either the trivial subgroup or nontrivial. -/]
 theorem bot_or_nontrivial (H : Subgroup G) : H = ⊥ ∨ Nontrivial H := by
   have := nontrivial_iff_ne_bot H
   tauto
 
 /-- A subgroup is either the trivial subgroup or contains a non-identity element. -/
-@[to_additive "A subgroup is either the trivial subgroup or contains a nonzero element."]
+@[to_additive /-- A subgroup is either the trivial subgroup or contains a nonzero element. -/]
 theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (1 : G) := by
   convert H.bot_or_nontrivial
   rw [nontrivial_iff_exists_ne_one]
@@ -199,13 +219,13 @@ lemma ne_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a 
   simp only [ne_eq, Subtype.exists, mk_eq_one, exists_prop]
 
 /-- The inf of two subgroups is their intersection. -/
-@[to_additive "The inf of two `AddSubgroup`s is their intersection."]
+@[to_additive /-- The inf of two `AddSubgroup`s is their intersection. -/]
 instance : Min (Subgroup G) :=
   ⟨fun H₁ H₂ =>
     { H₁.toSubmonoid ⊓ H₂.toSubmonoid with
       inv_mem' := fun ⟨hx, hx'⟩ => ⟨H₁.inv_mem hx, H₂.inv_mem hx'⟩ }⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_inf (p p' : Subgroup G) : ((p ⊓ p' : Subgroup G) : Set G) = (p : Set G) ∩ p' :=
   rfl
 
@@ -228,8 +248,8 @@ theorem coe_sInf (H : Set (Subgroup G)) : ((sInf H : Subgroup G) : Set G) = ⋂ 
 theorem mem_sInf {S : Set (Subgroup G)} {x : G} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
-@[to_additive]
-theorem mem_iInf {ι : Sort*} {S : ι → Subgroup G} {x : G} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[to_additive (attr := simp)]
+theorem mem_iInf {ι : Sort*} {S : ι → Subgroup G} {x : G} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[to_additive (attr := simp, norm_cast)]
@@ -237,7 +257,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subgroup G} : (↑(⨅ i, S i) : Set G
   simp only [iInf, coe_sInf, Set.biInter_range]
 
 /-- Subgroups of a group form a complete lattice. -/
-@[to_additive "The `AddSubgroup`s of an `AddGroup` form a complete lattice."]
+@[to_additive /-- The `AddSubgroup`s of an `AddGroup` form a complete lattice. -/]
 instance : CompleteLattice (Subgroup G) :=
   { completeLatticeOfInf (Subgroup G) fun _s =>
       IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
@@ -279,7 +299,7 @@ theorem subsingleton_iff : Subsingleton (Subgroup G) ↔ Subsingleton G :=
       have : ∀ i : G, i = 1 := fun i =>
         mem_bot.mp <| Subsingleton.elim (⊤ : Subgroup G) ⊥ ▸ mem_top i
       (this x).trans (this y).symm⟩,
-    fun _ => ⟨fun x y => Subgroup.ext fun i => Subsingleton.elim 1 i ▸ by simp [Subgroup.one_mem]⟩⟩
+    fun _ => ⟨fun x y => Subgroup.ext fun i => Subsingleton.elim 1 i ▸ by simp⟩⟩
 
 @[to_additive (attr := simp)]
 theorem nontrivial_iff : Nontrivial (Subgroup G) ↔ Nontrivial G :=
@@ -295,12 +315,19 @@ instance [Subsingleton G] : Unique (Subgroup G) :=
 instance [Nontrivial G] : Nontrivial (Subgroup G) :=
   nontrivial_iff.mpr ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
+@[to_additive]
+instance [Nontrivial G] : Nontrivial (⊤ : Subgroup G) := by
+  rw [nontrivial_iff_ne_bot]
+  exact top_ne_bot
+
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem eq_top_iff' : H = ⊤ ↔ ∀ x : G, x ∈ H :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
 /-- The `Subgroup` generated by a set. -/
-@[to_additive "The `AddSubgroup` generated by a set"]
+@[to_additive /-- The `AddSubgroup` generated by a set -/]
 def closure (k : Set G) : Subgroup G :=
   sInf { K | k ⊆ K }
 
@@ -311,19 +338,22 @@ theorem mem_closure {x : G} : x ∈ closure k ↔ ∀ K : Subgroup G, k ⊆ K �
   mem_sInf
 
 /-- The subgroup generated by a set includes the set. -/
-@[to_additive (attr := simp, aesop safe 20 apply (rule_sets := [SetLike]))
-  "The `AddSubgroup` generated by a set includes the set."]
+@[to_additive (attr := simp, aesop safe 20 (rule_sets := [SetLike]))
+  /-- The `AddSubgroup` generated by a set includes the set. -/]
 theorem subset_closure : k ⊆ closure k := fun _ hx => mem_closure.2 fun _ hK => hK hx
 
+@[to_additive (attr := aesop 80% (rule_sets := [SetLike]))]
+theorem mem_closure_of_mem {s : Set G} {x : G} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
+
 @[to_additive]
-theorem not_mem_of_not_mem_closure {P : G} (hP : P ∉ closure k) : P ∉ k := fun h =>
+theorem notMem_of_notMem_closure {P : G} (hP : P ∉ closure k) : P ∉ k := fun h =>
   hP (subset_closure h)
 
 open Set
 
 /-- A subgroup `K` includes `closure k` if and only if it includes `k`. -/
 @[to_additive (attr := simp)
-  "An additive subgroup `K` includes `closure k` if and only if it includes `k`"]
+  /-- An additive subgroup `K` includes `closure k` if and only if it includes `k` -/]
 theorem closure_le : closure k ≤ K ↔ k ⊆ K :=
   ⟨Subset.trans subset_closure, fun h => sInf_le h⟩
 
@@ -338,12 +368,12 @@ of `k`.
 See also `Subgroup.closure_induction_left` and `Subgroup.closure_induction_right` for versions that
 only require showing `p` is preserved by multiplication by elements in `k`. -/
 @[to_additive (attr := elab_as_elim)
-      "An induction principle for additive closure membership. If `p`
+      /-- An induction principle for additive closure membership. If `p`
       holds for `0` and all elements of `k`, and is preserved under addition and inverses, then `p`
       holds for all elements of the additive closure of `k`.
 
       See also `AddSubgroup.closure_induction_left` and `AddSubgroup.closure_induction_left` for
-      versions that only require showing `p` is preserved by addition by elements in `k`."]
+      versions that only require showing `p` is preserved by addition by elements in `k`. -/]
 theorem closure_induction {p : (g : G) → g ∈ closure k → Prop}
     (mem : ∀ x (hx : x ∈ k), p x (subset_closure hx)) (one : p 1 (one_mem _))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
@@ -355,13 +385,10 @@ theorem closure_induction {p : (g : G) → g ∈ closure k → Prop}
       inv_mem' := fun ⟨_, hb⟩ ↦ ⟨_, inv _ _ hb⟩ }
   closure_le (K := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
-@[deprecated closure_induction (since := "2024-10-10")]
-alias closure_induction' := closure_induction
-
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)
-      "An induction principle for additive closure membership, for
-      predicates with two arguments."]
+      /-- An induction principle for additive closure membership, for
+      predicates with two arguments. -/]
 theorem closure_induction₂ {p : (x y : G) → x ∈ closure k → y ∈ closure k → Prop}
     (mem : ∀ (x) (y) (hx : x ∈ k) (hy : y ∈ k), p x y (subset_closure hx) (subset_closure hy))
     (one_left : ∀ x hx, p 1 x (one_mem _) hx) (one_right : ∀ x hx, p x 1 hx (one_mem _))
@@ -380,6 +407,7 @@ theorem closure_induction₂ {p : (x y : G) → x ∈ closure k → y ∈ closur
   | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ hx h₁ h₂
   | inv _ _ h => exact inv_right _ _ _ _ h
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem closure_closure_coe_preimage {k : Set G} : closure (((↑) : closure k → G) ⁻¹' k) = ⊤ :=
   eq_top_iff.2 fun x _ ↦ Subtype.recOn x fun _ hx' ↦
@@ -388,7 +416,7 @@ theorem closure_closure_coe_preimage {k : Set G} : closure (((↑) : closure k �
 
 variable (G) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
-@[to_additive "`closure` forms a Galois insertion with the coercion to set."]
+@[to_additive /-- `closure` forms a Galois insertion with the coercion to set. -/]
 protected def gi : GaloisInsertion (@closure G _) (↑) where
   choice s _ := closure s
   gc s t := @closure_le _ _ t s
@@ -398,16 +426,17 @@ protected def gi : GaloisInsertion (@closure G _) (↑) where
 /-- Subgroup closure of a set is monotone in its argument: if `h ⊆ k`,
 then `closure h ≤ closure k`. -/
 @[to_additive (attr := gcongr)
-      "Additive subgroup closure of a set is monotone in its argument: if `h ⊆ k`,
-      then `closure h ≤ closure k`"]
+      /-- Additive subgroup closure of a set is monotone in its argument: if `h ⊆ k`,
+      then `closure h ≤ closure k` -/]
 theorem closure_mono ⦃h k : Set G⦄ (h' : h ⊆ k) : closure h ≤ closure k :=
   (Subgroup.gi G).gc.monotone_l h'
 
 /-- Closure of a subgroup `K` equals `K`. -/
-@[to_additive (attr := simp) "Additive closure of an additive subgroup `K` equals `K`"]
+@[to_additive (attr := simp) /-- Additive closure of an additive subgroup `K` equals `K` -/]
 theorem closure_eq : closure (K : Set G) = K :=
   (Subgroup.gi G).l_u_eq K
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem closure_empty : closure (∅ : Set G) = ⊥ :=
   (Subgroup.gi G).gc.l_bot
@@ -428,6 +457,7 @@ theorem sup_eq_closure (H H' : Subgroup G) : H ⊔ H' = closure ((H : Set G) ∪
 theorem closure_iUnion {ι} (s : ι → Set G) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
   (Subgroup.gi G).gc.l_iSup
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem closure_eq_bot_iff : closure k = ⊥ ↔ k ⊆ {1} := le_bot_iff.symm.trans <| closure_le _
 
@@ -436,10 +466,10 @@ theorem iSup_eq_closure {ι : Sort*} (p : ι → Subgroup G) :
     ⨆ i, p i = closure (⋃ i, (p i : Set G)) := by simp_rw [closure_iUnion, closure_eq]
 
 /-- The subgroup generated by an element of a group equals the set of integer number powers of
-    the element. -/
+the element. -/
 @[to_additive
-      "The `AddSubgroup` generated by an element of an `AddGroup` equals the set of
-      natural number multiples of the element."]
+      /-- The `AddSubgroup` generated by an element of an `AddGroup` equals the set of
+      natural number multiples of the element. -/]
 theorem mem_closure_singleton {x y : G} : y ∈ closure ({x} : Set G) ↔ ∃ n : ℤ, x ^ n = y := by
   refine
     ⟨fun hy => closure_induction ?_ ?_ ?_ ?_ hy, fun ⟨n, hn⟩ =>
@@ -470,19 +500,80 @@ theorem closure_eq_top_of_mclosure_eq_top {S : Set G} (h : Submonoid.closure S =
     closure S = ⊤ :=
   (eq_top_iff' _).2 fun _ => le_closure_toSubmonoid _ <| h.symm ▸ trivial
 
+set_option backward.isDefEq.respectTransparency false in
+@[to_additive (attr := simp)]
+theorem closure_insert_one (s : Set G) : closure (insert 1 s) = closure s := by
+  rw [insert_eq, closure_union]
+  simp [one_mem]
+
+@[to_additive]
+theorem closure_union_one (s : Set G) : closure (s ∪ {1}) = closure s := by
+  rw [union_singleton, closure_insert_one]
+
+@[to_additive (attr := simp)]
+theorem closure_diff_one (s : Set G) : closure (s \ {1}) = closure s := by
+  rw [← closure_union_one (s \ {1}), diff_union_self, closure_union_one]
+
+theorem toAddSubgroup_closure (S : Set G) :
+    (Subgroup.closure S).toAddSubgroup = AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
+  le_antisymm (toAddSubgroup.le_symm_apply.mp <|
+      (closure_le _).mpr (AddSubgroup.subset_closure (G := Additive G)))
+    ((AddSubgroup.closure_le _).mpr (subset_closure (G := G)))
+
+theorem _root_.AddSubgroup.toSubgroup_closure {A : Type*} [AddGroup A] (S : Set A) :
+    (AddSubgroup.closure S).toSubgroup = Subgroup.closure (Multiplicative.toAdd ⁻¹' S) :=
+  Subgroup.toAddSubgroup.injective (Subgroup.toAddSubgroup_closure _).symm
+
+theorem toAddSubgroup'_closure {A : Type*} [AddGroup A] (S : Set (Multiplicative A)) :
+    (closure S).toAddSubgroup' = AddSubgroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
+  le_antisymm (toAddSubgroup'.to_galoisConnection.l_le <|
+      (closure_le _).mpr <| AddSubgroup.subset_closure (G := A))
+    ((AddSubgroup.closure_le _).mpr <| Subgroup.subset_closure (G := Multiplicative A))
+
+theorem _root_.AddSubgroup.toSubgroup'_closure (S : Set (Additive G)) :
+    (AddSubgroup.closure S).toSubgroup' = Subgroup.closure (Additive.ofMul ⁻¹' S) :=
+  congr_arg AddSubgroup.toSubgroup' (toAddSubgroup'_closure _).symm
+
+@[to_additive]
+theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subgroup G} {i : ι} (hp : p i)
+    (hK : DirectedOn ((· ≤ ·) on K) {i | p i})
+    {x : G} : x ∈ (⨆ i, ⨆ (_h : p i), K i) ↔ ∃ i, p i ∧ x ∈ K i := by
+  -- Could use the `Submonoid` version, but we limit the imports here
+  refine ⟨?_, fun ⟨i, hi', hi⟩ ↦ ?_⟩
+  · suffices x ∈ closure (⋃ i, ⋃ (_ : p i), (K i : Set G)) → ∃ i, p i ∧ x ∈ K i by
+      simpa only [closure_iUnion, closure_eq (K _)] using this
+    refine fun hx ↦ closure_induction (fun _ ↦ ?_) ?_ ?_ ?_ hx
+    · simp
+    · exact ⟨i, hp, (K i).one_mem⟩
+    · rintro x y _ _ ⟨i, hip, hi⟩ ⟨j, hjp, hj⟩
+      rcases hK i hip j hjp with ⟨k, hk, hki, hkj⟩
+      exact ⟨k, hk, mul_mem (hki hi) (hkj hj)⟩
+    · rintro _ _ ⟨i, hi', hi⟩
+      exact ⟨i, hi', inv_mem hi⟩
+  · apply le_iSup (fun i ↦ ⨆ (_ : p i), K i) i
+    simp [hi, hi']
+
 @[to_additive]
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (hK : Directed (· ≤ ·) K)
     {x : G} : x ∈ (iSup K : Subgroup G) ↔ ∃ i, x ∈ K i := by
-  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup K i hi⟩
-  suffices x ∈ closure (⋃ i, (K i : Set G)) → ∃ i, x ∈ K i by
-    simpa only [closure_iUnion, closure_eq (K _)] using this
-  refine fun hx ↦ closure_induction (fun _ ↦ mem_iUnion.1) ?_ ?_ ?_ hx
-  · exact hι.elim fun i ↦ ⟨i, (K i).one_mem⟩
-  · rintro x y _ _ ⟨i, hi⟩ ⟨j, hj⟩
-    rcases hK i j with ⟨k, hki, hkj⟩
-    exact ⟨k, mul_mem (hki hi) (hkj hj)⟩
-  · rintro _ _ ⟨i, hi⟩
-    exact ⟨i, inv_mem hi⟩
+  have : iSup K = ⨆ i : PLift ι, ⨆ (_ : True), K i.down := by simp [iSup_plift_down]
+  rw [this, mem_biSup_of_directedOn trivial]
+  · simp
+  · simp only [setOf_true]
+    rw [directedOn_onFun_iff, Set.image_univ, ← directedOn_range]
+    -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
+    intro i
+    simp only [PLift.exists]
+    intro j
+    refine (hK i.down j.down).imp ?_
+    simp
+  · exact PLift.up hι.some
+
+@[to_additive (attr := simp)]
+theorem mem_iSup_prop {p : Prop} {K : p → Subgroup G} {x : G} :
+    x ∈ ⨆ (h : p), K h ↔ x = 1 ∨ ∃ (h : p), x ∈ K h := by
+  by_cases h : p <;>
+  simp +contextual [h]
 
 @[to_additive]
 theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Directed (· ≤ ·) S) :
@@ -493,8 +584,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Di
 theorem mem_sSup_of_directedOn {K : Set (Subgroup G)} (Kne : K.Nonempty) (hK : DirectedOn (· ≤ ·) K)
     {x : G} : x ∈ sSup K ↔ ∃ s ∈ K, x ∈ s := by
   haveI : Nonempty K := Kne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, Subtype.coe_mk,
-    exists_prop]
+  simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, exists_prop]
 
 variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
 
@@ -515,7 +605,45 @@ theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
 
 @[to_additive]
 theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s) (z : t), (y : C) * z = x :=
-  mem_sup.trans <| by simp only [SetLike.exists, coe_mk, exists_prop]
+  mem_sup.trans <| by simp only [SetLike.exists, exists_prop]
+
+variable {P : C → Prop}
+
+@[to_additive, simp high]
+lemma forall_mem_sup :
+    (∀ x ∈ s ⊔ t, P x) ↔ (∀ x₁ ∈ s, ∀ x₂ ∈ t, P (x₁ * x₂)) := by
+  grind [mem_sup]
+
+@[to_additive, simp high]
+lemma exists_mem_sup :
+    (∃ x ∈ s ⊔ t, P x) ↔ (∃ x₁ ∈ s, ∃ x₂ ∈ t, P (x₁ * x₂)) := by
+  simp [mem_sup]
+
+@[to_additive]
+theorem mem_sup_of_normal_right {s t : Subgroup G} [ht : t.Normal] {x : G} :
+    x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := by
+  constructor
+  · intro hx; rw [sup_eq_closure] at hx
+    refine closure_induction ?_ ?_ ?_ ?_ hx
+    · rintro x (hx | hx)
+      · exact ⟨x, hx, 1, t.one_mem, by simp⟩
+      · exact ⟨1, s.one_mem, x, hx, by simp⟩
+    · exact ⟨1, s.one_mem, 1, t.one_mem, by simp⟩
+    · rintro _ _ _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
+      exact ⟨y₁ * y₂, s.mul_mem hy₁ hy₂,
+            (y₂⁻¹ * z₁ * y₂) * z₂, t.mul_mem (ht.conj_mem' z₁ hz₁ y₂) hz₂, by simp [mul_assoc]⟩
+    · rintro _ _ ⟨y, hy, z, hz, rfl⟩
+      exact ⟨y⁻¹, s.inv_mem hy,
+            y * z⁻¹ * y⁻¹, ht.conj_mem z⁻¹ (t.inv_mem hz) y, by simp [mul_assoc]⟩
+  · rintro ⟨y, hy, z, hz, rfl⟩; exact mul_mem_sup hy hz
+
+@[to_additive]
+theorem mem_sup_of_normal_left {s t : Subgroup G} [hs : s.Normal] {x : G} :
+    x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := by
+  have h := (sup_comm t s) ▸ mem_sup_of_normal_right (s := t) (t := s) (x := x)
+  exact h.trans
+    ⟨fun ⟨y, hy, z, hz, hp⟩ ↦ ⟨y * z * y⁻¹, hs.conj_mem z hz y, y, hy, by simp [hp]⟩,
+    fun ⟨y, hy, z, hz, hp⟩ ↦ ⟨z, hz, z⁻¹ * y * z, hs.conj_mem' y hy z, by simp [mul_assoc, hp]⟩⟩
 
 @[to_additive]
 theorem mem_closure_pair {x y z : C} :
@@ -523,15 +651,18 @@ theorem mem_closure_pair {x y z : C} :
   rw [← Set.singleton_union, Subgroup.closure_union, mem_sup]
   simp_rw [mem_closure_singleton, exists_exists_eq_and]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_def {H₁ H₂ : Subgroup G} : Disjoint H₁ H₂ ↔ ∀ {x : G}, x ∈ H₁ → x ∈ H₂ → x = 1 :=
-  disjoint_iff_inf_le.trans <| by simp only [Disjoint, SetLike.le_def, mem_inf, mem_bot, and_imp]
+  disjoint_iff_inf_le.trans <| by simp only [SetLike.le_def, mem_inf, mem_bot, and_imp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_def' {H₁ H₂ : Subgroup G} :
     Disjoint H₁ H₂ ↔ ∀ {x y : G}, x ∈ H₁ → y ∈ H₂ → x = y → x = 1 :=
   disjoint_def.trans ⟨fun h _x _y hx hy hxy ↦ h hx <| hxy.symm ▸ hy, fun h _x hx hx' ↦ h hx hx' rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_iff_mul_eq_one {H₁ H₂ : Subgroup G} :
     Disjoint H₁ H₂ ↔ ∀ {x y : G}, x ∈ H₁ → y ∈ H₂ → x * y = 1 → x = 1 ∧ y = 1 :=
@@ -541,6 +672,7 @@ theorem disjoint_iff_mul_eq_one {H₁ H₂ : Subgroup G} :
       ⟨hx1, by simpa [hx1] using hxy⟩,
       fun h _ _ hx hy hxy => (h hx (H₂.inv_mem hy) (mul_inv_eq_one.mpr hxy)).1⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mul_injective_of_disjoint {H₁ H₂ : Subgroup G} (h : Disjoint H₁ H₂) :
     Function.Injective (fun g => g.1 * g.2 : H₁ × H₂ → G) := by

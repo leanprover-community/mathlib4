@@ -3,12 +3,14 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Monad.Basic
-import Mathlib.Control.Monad.Cont
-import Mathlib.Control.Monad.Writer
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Logic.Equiv.Functor
-import Mathlib.Control.Lawful
+module
+
+public import Mathlib.Control.Monad.Basic
+public import Mathlib.Control.Monad.Cont
+public import Mathlib.Control.Monad.Writer
+public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Logic.Equiv.Functor
+public import Mathlib.Control.Lawful
 
 /-!
 # Universe lifting for type families
@@ -26,13 +28,15 @@ to transport over to `Option.{v}`. `ULiftable` is an attempt at improving the si
 
 
 ## Main definitions
-  * `ULiftable` class
+* `ULiftable` class
 
 ## Tags
 
 universe polymorphism functor
 
 -/
+
+@[expose] public section
 
 
 universe v u₀ u₁ v₀ v₁ v₂ w w₀ w₁
@@ -90,6 +94,16 @@ def upMap {F : Type u₀ → Type u₁} {G : Type max u₀ v₀ → Type v₁} [
 def downMap {F : Type max u₀ v₀ → Type u₁} {G : Type u₀ → Type v₁} [ULiftable G F]
     [Functor F] {α β} (f : α → β) (x : F α) : G β :=
   down (Functor.map (ULift.up.{v₀} ∘ f) x : F (ULift β))
+
+/-- A version of `up` for a `PUnit` return type. -/
+abbrev up' {f : Type u₀ → Type u₁} {g : Type v₀ → Type v₁} [ULiftable f g] :
+    f PUnit → g PUnit :=
+  ULiftable.congr Equiv.punitEquivPUnit
+
+/-- A version of `down` for a `PUnit` return type. -/
+abbrev down' {f : Type u₀ → Type u₁} {g : Type v₀ → Type v₁} [ULiftable f g] :
+    g PUnit → f PUnit :=
+  (ULiftable.congr Equiv.punitEquivPUnit).symm
 
 theorem up_down {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
     (x : g (ULift.{v₀} α)) : up (down x : f α) = x :=
@@ -155,7 +169,8 @@ instance WriterT.instULiftableULiftULift {m m'} [ULiftable m m'] :
     ULiftable (WriterT (ULift.{max v₀ u₀} s) m) (WriterT (ULift.{max v₁ u₀} s) m') :=
   WriterT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
 
-instance Except.instULiftable {ε : Type u₀} : ULiftable (Except.{u₀,v₁} ε) (Except.{u₀,v₂} ε) where
+instance Except.instULiftable {ε : Type u₀} :
+    ULiftable (Except.{u₀, v₁} ε) (Except.{u₀, v₂} ε) where
   congr e :=
     { toFun := Except.map e
       invFun := Except.map e.symm

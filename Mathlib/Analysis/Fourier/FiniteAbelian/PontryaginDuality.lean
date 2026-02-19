@@ -3,10 +3,14 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.DirectSum.AddChar
-import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.GroupTheory.FiniteAbelian.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.AddChar
+public import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.GroupTheory.FiniteAbelian.Basic
+public import Mathlib.Topology.Instances.AddCircle.Real
+import Mathlib.Algebra.Field.ModEq
 
 /-!
 # Pontryagin duality for finite abelian groups
@@ -20,13 +24,15 @@ Structure Theorem.
 
 ## TODO
 
-Reuse the work done in `Mathlib.GroupTheory.FiniteAbelian.Duality`. This requires to write some more
-glue.
+Reuse the work done in `Mathlib/GroupTheory/FiniteAbelian/Duality.lean`. This requires to write some
+more glue.
 -/
+
+@[expose] public section
 
 noncomputable section
 
-open Circle Finset Function Multiplicative
+open Circle Finset Function Module Multiplicative
 open Fintype (card)
 open Real hiding exp
 open scoped BigOperators DirectSum
@@ -47,13 +53,14 @@ def zmod (x : ZMod n) : AddChar (ZMod n) Circle :=
     AddCircle.toCircle_apply_mk]
 
 @[simp] lemma zmod_zero : zmod n 0 = 1 :=
-  DFunLike.ext _ _ <| by simp [ZMod.intCast_surjective.forall, zmod]
+  DFunLike.ext _ _ <| by simp [zmod]
 
 variable {n}
 
 @[simp] lemma zmod_add : ∀ x y : ZMod n, zmod n (x + y) = zmod n x * zmod n y := by
-  simp [DFunLike.ext_iff, ← Int.cast_add, zmod, add_mul, add_div, map_add_eq_mul]
+  simp [DFunLike.ext_iff, zmod, add_mul, map_add_eq_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma zmod_injective : Injective (zmod n) := by
   simp_rw [Injective, ZMod.intCast_surjective.forall]
   rintro x y h
@@ -71,14 +78,15 @@ def zmodHom : AddChar (ZMod n) (AddChar (ZMod n) Circle) where
   map_add_eq_mul' := by simp
 
 /-- Character on a product of `ZMod`s given by `x ↦ ∏ i, e ^ (2 * π * I * x i * y / n)`. -/
-private def mkZModAux {ι : Type} [DecidableEq ι] (n : ι → ℕ) [∀ i, NeZero (n i)]
+private def mkZModAux {ι : Type*} [DecidableEq ι] (n : ι → ℕ) [∀ i, NeZero (n i)]
     (u : ∀ i, ZMod (n i)) : AddChar (⨁ i, ZMod (n i)) Circle :=
   AddChar.directSum fun i ↦ zmod (n i) (u i)
 
-private lemma mkZModAux_injective {ι : Type} [DecidableEq ι] {n : ι → ℕ} [∀ i, NeZero (n i)] :
+private lemma mkZModAux_injective {ι : Type*} [DecidableEq ι] {n : ι → ℕ} [∀ i, NeZero (n i)] :
     Injective (mkZModAux n) :=
   AddChar.directSum_injective.comp fun f g h ↦ by simpa [funext_iff] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The circle-valued characters of a finite abelian group are the same as its complex-valued
 characters. -/
 def circleEquivComplex [Finite α] : AddChar α Circle ≃+ AddChar α ℂ where
@@ -144,6 +152,7 @@ lemma exists_apply_ne_zero : (∃ ψ : AddChar α ℂ, ψ a ≠ 1) ↔ a ≠ 0 :
 lemma forall_apply_eq_zero : (∀ ψ : AddChar α ℂ, ψ a = 1) ↔ a = 0 := by
   simpa using exists_apply_ne_zero.not
 
+set_option backward.isDefEq.respectTransparency false in
 lemma doubleDualEmb_injective : Injective (doubleDualEmb : α → AddChar (AddChar α ℂ) ℂ) :=
   doubleDualEmb.ker_eq_bot_iff.1 <| eq_bot_iff.2 fun a ha ↦
     forall_apply_eq_zero.1 fun ψ ↦ by simpa using DFunLike.congr_fun ha (Additive.ofMul ψ)

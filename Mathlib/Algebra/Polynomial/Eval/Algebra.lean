@@ -3,16 +3,20 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Polynomial.Eval.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 
 /-!
 # Evaluation of polynomials in an algebra
 
 This file concerns evaluating polynomials where the map is `algebraMap`
 
-TODO: merge with parts of `Algebra/Polynomial/AlgebraMap.lean`?
+TODO: merge with parts of `Mathlib/Algebra/Polynomial/AlgebraMap.lean`?
 -/
+
+public section
 
 noncomputable section
 
@@ -50,8 +54,8 @@ theorem eval₂_pow' (n : ℕ) :
 theorem eval₂_comp' : eval₂ (algebraMap R S) x (p.comp q) =
     eval₂ (algebraMap R S) (eval₂ (algebraMap R S) x q) p := by
   induction p using Polynomial.induction_on' with
-  | h_add r s hr hs => simp only [add_comp, eval₂_add, hr, hs]
-  | h_monomial n a => simp only [monomial_comp, eval₂_mul', eval₂_C, eval₂_monomial, eval₂_pow']
+  | add r s hr hs => simp only [add_comp, eval₂_add, hr, hs]
+  | monomial n a => simp only [monomial_comp, eval₂_mul', eval₂_C, eval₂_monomial, eval₂_pow']
 
 end Algebra
 

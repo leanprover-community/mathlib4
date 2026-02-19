@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Order.Filter.Bases.Finite
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Order.Filter.Bases.Finite
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # Finiteness and `Filter.atTop` and `Filter.atBot` filters
@@ -13,6 +15,8 @@ import Mathlib.Order.Filter.AtTopBot.Basic
 This file contains results on `Filter.atTop` and `Filter.atBot` that depend on
 the finiteness theory developed in Mathlib.
 -/
+
+public section
 
 variable {ι ι' α β γ : Type*}
 
@@ -74,7 +78,6 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
 /-- If `u` is a sequence which is unbounded below,
 then after any point, it reaches a value strictly smaller than all previous values.
 -/
--- @[nolint ge_or_gt] Porting note: restore attribute
 theorem low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β} (hu : Tendsto u atTop atBot) :
     ∀ N, ∃ n ≥ N, ∀ k < n, u n < u k :=
   @high_scores βᵒᵈ _ _ _ hu
@@ -144,9 +147,9 @@ theorem eventually_pow_lt_factorial_sub (c d : ℕ) : ∀ᶠ n in atTop, c ^ n <
   convert_to (c ^ 2) ^ (c ^ 2 + d' + d + 1) < (c ^ 2 + (c ^ 2 + d' + d + 1) + 1)!
   · rw [← pow_mul, ← pow_add]
     congr 1
-    omega
+    lia
   · congr 1
-    omega
+    lia
   refine (lt_of_lt_of_le ?_ Nat.factorial_mul_pow_le_factorial).trans_le <|
     (factorial_le (Nat.le_succ _))
   rw [← one_mul (_ ^ _ : ℕ)]
@@ -161,14 +164,5 @@ theorem eventually_mul_pow_lt_factorial_sub (a c d : ℕ) :
     with n hn hn0
   rw [mul_pow] at hn
   exact (Nat.mul_le_mul_right _ (Nat.le_self_pow hn0.ne' _)).trans_lt hn
-
-@[deprecated eventually_pow_lt_factorial_sub (since := "2024-09-25")]
-theorem exists_pow_lt_factorial (c : ℕ) : ∃ n0 > 1, ∀ n ≥ n0, c ^ n < (n - 1)! :=
-  let ⟨n0, h⟩ := (eventually_pow_lt_factorial_sub c 1).exists_forall_of_atTop
-  ⟨max n0 2, by omega, fun n hn ↦ h n (by omega)⟩
-
-@[deprecated eventually_mul_pow_lt_factorial_sub (since := "2024-09-25")]
-theorem exists_mul_pow_lt_factorial (a : ℕ) (c : ℕ) : ∃ n0, ∀ n ≥ n0, a * c ^ n < (n - 1)! :=
-  (eventually_mul_pow_lt_factorial_sub a c 1).exists_forall_of_atTop
 
 end Nat

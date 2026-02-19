@@ -3,8 +3,10 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Bifunctor
-import Mathlib.Control.Traversable.Basic
+module
+
+public import Mathlib.Control.Bifunctor
+public import Mathlib.Control.Traversable.Basic
 
 /-!
 # Bitraversable type class
@@ -37,6 +39,8 @@ The concepts and laws are taken from
 traversable bitraversable iterator functor bifunctor applicative
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -57,8 +61,7 @@ open Functor
 /-- Bifunctor. This typeclass asserts that a lawless bitraversable bifunctor is lawful. -/
 class LawfulBitraversable (t : Type u → Type u → Type u) [Bitraversable t] : Prop
   extends LawfulBifunctor t where
-  -- Porting note: need to specify `m := Id` because `id` no longer has a `Monad` instance
-  id_bitraverse : ∀ {α β} (x : t α β), bitraverse (m := Id) pure pure x = pure x
+  id_bitraverse : ∀ {α β} (x : t α β), (bitraverse pure pure x : Id _) = pure x
   comp_bitraverse :
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G]
       {α α' β β' γ γ'} (f : β → F γ) (f' : β' → F γ') (g : α → G β) (g' : α' → G β') (x : t α α'),

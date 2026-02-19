@@ -3,10 +3,12 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.MeasureTheory.Measure.Count
-import Mathlib.Order.Filter.ENNReal
-import Mathlib.Probability.UniformOn
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.MeasureTheory.Measure.Count
+public import Mathlib.Order.Filter.ENNReal
+public import Mathlib.Probability.UniformOn
 
 /-!
 # Essential supremum and infimum
@@ -15,18 +17,20 @@ We define the essential supremum and infimum of a function `f : α → β` with 
 almost everywhere.
 
 TODO: The essential supremum of functions `α → ℝ≥0∞` is used in particular to define the norm in
-the `L∞` space (see `Mathlib.MeasureTheory.Function.LpSpace`).
+the `L∞` space (see `Mathlib/MeasureTheory/Function/LpSeminorm/Defs.lean`).
 
 There is a different quantity which is sometimes also called essential supremum: the least
 upper-bound among measurable functions of a family of measurable functions (in an almost-everywhere
 sense). We do not define that quantity here, which is simply the supremum of a map with values in
-`α →ₘ[μ] β` (see `Mathlib.MeasureTheory.Function.AEEqFun`).
+`α →ₘ[μ] β` (see `Mathlib/MeasureTheory/Function/AEEqFun.lean`).
 
 ## Main definitions
 
 * `essSup f μ := (ae μ).limsup f`
 * `essInf f μ := (ae μ).liminf f`
 -/
+
+@[expose] public section
 
 
 open Filter MeasureTheory ProbabilityTheory Set TopologicalSpace
@@ -69,14 +73,19 @@ theorem essInf_const (c : β) (hμ : μ ≠ 0) : essInf (fun _ : α => c) μ = c
   have := NeZero.mk hμ; essInf_const' _
 
 section SMul
-variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-  [NoZeroSMulDivisors R ℝ≥0∞] {c : R}
+variable {R : Type*} [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+  [Module.IsTorsionFree R ℝ≥0∞] {c : R}
 
 @[simp]
 lemma essSup_smul_measure (hc : c ≠ 0) (f : α → β) : essSup f (c • μ) = essSup f μ := by
   simp_rw [essSup, Measure.ae_smul_measure_eq hc]
 
 end SMul
+
+@[simp]
+lemma essSup_ennreal_smul_measure {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → β) :
+    essSup f (c • μ) = essSup f μ := by
+  simp_rw [essSup, Measure.ae_ennreal_smul_measure_eq hc]
 
 variable [Nonempty α]
 
@@ -160,7 +169,7 @@ variable [CompleteLattice β]
 
 @[simp]
 theorem essSup_measure_zero {m : MeasurableSpace α} {f : α → β} : essSup f (0 : Measure α) = ⊥ :=
-  le_bot_iff.mp (sInf_le (by simp [Set.mem_setOf_eq, EventuallyLE, ae_iff]))
+  le_bot_iff.mp (sInf_le (by simp))
 
 @[simp]
 theorem essInf_measure_zero {_ : MeasurableSpace α} {f : α → β} : essInf f (0 : Measure α) = ⊤ :=
@@ -266,6 +275,7 @@ lemma essSup_piecewise {s : Set α} [DecidablePred (· ∈ s)] {g} (hs : Measura
     essSup (s.piecewise f g) μ = max (essSup f (μ.restrict s)) (essSup g (μ.restrict sᶜ)) := by
   simp only [essSup, limsup_piecewise, blimsup_eq_limsup, ae_restrict_eq, hs, hs.compl]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem essSup_indicator_eq_essSup_restrict {s : Set α} {f : α → ℝ≥0∞} (hs : MeasurableSet s) :
     essSup (s.indicator f) μ = essSup f (μ.restrict s) := by
   classical
@@ -300,6 +310,17 @@ theorem coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) (ae μ)
     eq_of_forall_le_iff fun r => by
       simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]; rfl
 
+lemma ofReal_essSup {f : α → ℝ} (h₁ : IsCoboundedUnder (· ≤ ·) (ae μ) f)
+    (h₂ : IsBoundedUnder (· ≤ ·) (ae μ) f) :
+    ENNReal.ofReal (essSup f μ) = essSup (fun a ↦ .ofReal (f a)) μ := ENNReal.ofReal_limsup
+
+lemma toReal_essSup {f : α → ℝ≥0∞} (h₁ : ∀ᵐ a ∂μ, f a ≠ ⊤)
+    (h₂ : IsBoundedUnder (· ≤ ·) (ae μ) fun i ↦ (f i).toReal) :
+    (essSup f μ).toReal = essSup (fun a ↦ (f a).toReal) μ := by
+  obtain rfl | hμ := eq_zero_or_neZero μ
+  · simp [essSup, limsup, limsSup]
+  · exact ENNReal.toReal_limsup h₁
+
 lemma essSup_restrict_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hsf : f.support ⊆ s) :
     essSup f (μ.restrict s) = essSup f μ := by
   apply le_antisymm (essSup_mono_measure' Measure.restrict_le_self)
@@ -309,7 +330,7 @@ lemma essSup_restrict_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} 
   have A : 0 < (μ.restrict t) t := by
     simp only [Measure.restrict_apply_self]
     rw [essSup_eq_sInf] at hd
-    have : d ∉ {a | μ {x | a < f x} = 0} := not_mem_of_lt_csInf hd (OrderBot.bddBelow _)
+    have : d ∉ {a | μ {x | a < f x} = 0} := notMem_of_lt_csInf hd (OrderBot.bddBelow _)
     exact bot_lt_iff_ne_bot.2 this
   have B : 0 < (μ.restrict s) t := by
     have : μ.restrict t ≤ μ.restrict s := by

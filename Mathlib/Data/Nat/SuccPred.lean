@@ -3,19 +3,25 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Algebra.Order.SuccPred
-import Mathlib.Data.Fin.Basic
-import Mathlib.Order.Nat
-import Mathlib.Order.SuccPred.Archimedean
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+public import Mathlib.Algebra.Order.SuccPred
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.Order.Nat
+public import Mathlib.Order.SuccPred.Archimedean
+public import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Successors and predecessors of naturals
 
 In this file, we show that `ℕ` is both an archimedean `succOrder` and an archimedean `predOrder`.
 -/
+
+@[expose] public section
 
 
 open Function Order
@@ -24,13 +30,16 @@ namespace Nat
 variable {m n : ℕ}
 
 -- so that Lean reads `Nat.succ` through `succ_order.succ`
-@[instance] abbrev instSuccOrder : SuccOrder ℕ :=
-  SuccOrder.ofSuccLeIff succ Nat.succ_le
+instance instSuccOrder : SuccOrder ℕ :=
+  SuccOrder.ofSuccLeIff succ Nat.succ_le_iff
 
 instance instSuccAddOrder : SuccAddOrder ℕ := ⟨fun _ => rfl⟩
 
--- so that Lean reads `Nat.pred` through `pred_order.pred`
-@[instance] abbrev instPredOrder : PredOrder ℕ where
+#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/12263
+this was `abbrev`, which is no longer allowed.
+The comment said "so that Lean reads `Nat.pred` through `pred_order.pred`"
+-/
+instance instPredOrder : PredOrder ℕ where
   pred := pred
   pred_le := pred_le
   min_of_le_pred {a} ha := by
@@ -73,13 +82,6 @@ lemma forall_ne_zero_iff (P : ℕ → Prop) :
     (∀ i, i ≠ 0 → P i) ↔ (∀ i, P (i + 1)) :=
   SuccOrder.forall_ne_bot_iff P
 
-/-! ### Covering relation -/
-
-
-@[deprecated Order.covBy_iff_add_one_eq (since := "2024-09-04")]
-protected theorem covBy_iff_succ_eq {m n : ℕ} : m ⋖ n ↔ m + 1 = n :=
-  covBy_iff_add_one_eq
-
 end Nat
 
 @[simp, norm_cast]
@@ -87,3 +89,9 @@ theorem Fin.coe_covBy_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b 
   and_congr_right' ⟨fun h _c hc => h hc, fun h c ha hb => @h ⟨c, hb.trans b.prop⟩ ha hb⟩
 
 alias ⟨_, CovBy.coe_fin⟩ := Fin.coe_covBy_iff
+
+@[simp]
+theorem withBotSucc_zero : WithBot.succ 0 = 1 := rfl
+
+@[simp]
+theorem withBotSucc_one : WithBot.succ 1 = 2 := rfl

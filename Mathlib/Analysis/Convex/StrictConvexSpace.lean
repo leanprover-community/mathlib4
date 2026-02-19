@@ -3,11 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Analysis.Normed.Module.Ray
-import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Analysis.NormedSpace.Pointwise
+module
+
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.Normed.Module.Ray
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
 /-!
 # Strictly convex spaces
@@ -54,6 +54,8 @@ formulated only for the case `𝕜 = ℝ`.
 convex, strictly convex
 -/
 
+@[expose] public section
+
 open Convex Pointwise Set Metric
 
 /-- A *strictly convex space* is a normed space where the closed balls are strictly convex. We only
@@ -61,17 +63,18 @@ require balls of positive radius with center at the origin to be strictly convex
 then prove that any closed ball is strictly convex in `strictConvex_closedBall` below.
 
 See also `StrictConvexSpace.of_strictConvex_unitClosedBall`. -/
-class StrictConvexSpace (𝕜 E : Type*) [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] : Prop where
+@[mk_iff]
+class StrictConvexSpace (𝕜 E : Type*) [NormedField 𝕜] [PartialOrder 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : Prop where
   strictConvex_closedBall : ∀ r : ℝ, 0 < r → StrictConvex 𝕜 (closedBall (0 : E) r)
 
-variable (𝕜 : Type*) {E : Type*} [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) {E : Type*} [NormedField 𝕜] [PartialOrder 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- A closed ball in a strictly convex space is strictly convex. -/
 theorem strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :
     StrictConvex 𝕜 (closedBall x r) := by
-  rcases le_or_lt r 0 with hr | hr
+  rcases le_or_gt r 0 with hr | hr
   · exact (subsingleton_closedBall x hr).strictConvex
   rw [← vadd_closedBall_zero]
   exact (StrictConvexSpace.strictConvex_closedBall r hr).vadd _
@@ -83,10 +86,7 @@ theorem StrictConvexSpace.of_strictConvex_unitClosedBall [LinearMap.CompatibleSM
     (h : StrictConvex 𝕜 (closedBall (0 : E) 1)) : StrictConvexSpace 𝕜 E :=
   ⟨fun r hr => by simpa only [smul_unitClosedBall_of_nonneg hr.le] using h.smul r⟩
 
-@[deprecated (since := "2024-12-01")]
-alias StrictConvexSpace.of_strictConvex_closed_unit_ball :=
-  StrictConvexSpace.of_strictConvex_unitClosedBall
-
+set_option backward.isDefEq.respectTransparency false in
 /-- Strict convexity is equivalent to `‖a • x + b • y‖ < 1` for all `x` and `y` of norm at most `1`
 and all strictly positive `a` and `b` such that `a + b = 1`. This lemma shows that it suffices to
 check this for points of norm one and some `a`, `b` such that `a + b = 1`. -/
@@ -103,6 +103,7 @@ theorem StrictConvexSpace.of_norm_combo_lt_one
   rwa [AffineMap.lineMap_apply_module, interior_closedBall (0 : E) one_ne_zero, mem_ball_zero_iff,
     sub_eq_iff_eq_add.2 hab.symm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StrictConvexSpace.of_norm_combo_ne_one
     (h :
       ∀ x y : E,

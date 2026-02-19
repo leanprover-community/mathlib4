@@ -1,15 +1,14 @@
 name: 'Close stale issues and PRs'
 on:
-  schedule:
-    - cron: '30 1 * * *' # every day at 01:30 UTC
   workflow_dispatch:
 
 jobs:
   stale:
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     steps:
       # until https://github.com/actions/stale/pull/1145 is merged
-      - uses: asterisk/github-actions-stale@main-only-matching-filter
+      - uses: asterisk/github-actions-stale@1b80269ed4fffa62ade5d212089f005f03cde943 # branch: main-only-matching-filter
         with:
           debug-only: 'true' # TODO: remove in follow-up PR after testing is done!
           stale-pr-label: 'stale'
@@ -20,6 +19,6 @@ jobs:
           days-before-close: 120
           # search string from the Zulip #queue link at https://leanprover-community.github.io/queue-redirect
           # "is:open is:pr -is:draft base:master sort:updated-asc status:success -label:blocked-by-other-PR -label:blocked-by-batt-PR -label:blocked-by-core-PR -label:blocked-by-qq-PR -label:merge-conflict -label:awaiting-author -label:awaiting-CI -label:awaiting-zulip -label:WIP -label:delegated -label:auto-merge-after-CI -label:ready-to-merge -label:please-adopt -label:help-wanted"
-          # We want PRs _not_ on the queue, so we keep "is:pr -is:draft base:master" (is:open is added by the action by default) as a prefix for all queries and then negate the rest of the params in separate queries to simulate boolean OR (see https://github.com/actions/stale/pull/1145)
+          # We want PRs _not_ on the queue, so we keep "is:pr -is:draft base:master" (is:open is added by the action by default) as a prefix for all queries and then negate the rest of the params in separate queries to simulate Boolean OR (see https://github.com/actions/stale/pull/1145)
           # except for label:auto-merge-after-CI and label:ready-to-merge which presumably will be noticed before they go stale
           only-matching-filter: '[ "is:pr -is:draft base:master -status:success", "is:pr -is:draft base:master label:blocked-by-other-PR", "is:pr -is:draft base:master label:blocked-by-batt-PR", "is:pr -is:draft base:master label:blocked-by-core-PR", "is:pr -is:draft base:master label:blocked-by-qq-PR", "is:pr -is:draft base:master label:merge-conflict", "is:pr -is:draft base:master label:awaiting-author", "is:pr -is:draft base:master label:awaiting-CI", "is:pr -is:draft base:master label:awaiting-zulip", "is:pr -is:draft base:master label:WIP", "is:pr -is:draft base:master label:delegated", "is:pr -is:draft base:master label:please-adopt", "is:pr -is:draft base:master label:help-wanted",  ]'

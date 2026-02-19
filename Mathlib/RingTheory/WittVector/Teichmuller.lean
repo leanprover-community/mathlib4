@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.Basic
+module
+
+public import Mathlib.RingTheory.WittVector.Basic
 
 /-!
 # Teichmüller lifts
@@ -24,6 +26,8 @@ This file defines `WittVector.teichmuller`, a monoid hom `R →* 𝕎 R`, which 
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 namespace WittVector
@@ -55,6 +59,7 @@ satisfy the ring axioms.
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem ghostComponent_teichmullerFun (r : R) (n : ℕ) :
     ghostComponent n (teichmullerFun p r) = r ^ p ^ n := by
   rw [ghostComponent_apply, aeval_wittPolynomial, Finset.sum_eq_single 0, pow_zero, one_mul,
@@ -73,7 +78,7 @@ private theorem map_teichmullerFun (f : R →+* S) (r : R) :
 private theorem teichmuller_mul_aux₁ {R : Type*} (x y : MvPolynomial R ℚ) :
     teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y := by
   apply (ghostMap.bijective_of_invertible p (MvPolynomial R ℚ)).1
-  rw [RingHom.map_mul]
+  rw [map_mul]
   ext1 n
   simp only [Pi.mul_apply, ghostMap_apply, ghostComponent_teichmullerFun, mul_pow]
 
@@ -81,7 +86,7 @@ private theorem teichmuller_mul_aux₂ {R : Type*} (x y : MvPolynomial R ℤ) :
     teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y := by
   refine map_injective (MvPolynomial.map (Int.castRingHom ℚ))
     (MvPolynomial.map_injective _ Int.cast_injective) ?_
-  simp only [teichmuller_mul_aux₁, map_teichmullerFun, RingHom.map_mul]
+  simp only [teichmuller_mul_aux₁, map_teichmullerFun, map_mul]
 
 /-- The Teichmüller lift of an element of `R` to `𝕎 R`.
 The `0`-th coefficient of `teichmuller p r` is `r`, and all others are `0`.
@@ -96,7 +101,7 @@ def teichmuller : R →* 𝕎 R where
     intro x y
     rcases counit_surjective R x with ⟨x, rfl⟩
     rcases counit_surjective R y with ⟨y, rfl⟩
-    simp only [← map_teichmullerFun, ← RingHom.map_mul, teichmuller_mul_aux₂]
+    simp only [← map_teichmullerFun, ← map_mul, teichmuller_mul_aux₂]
 
 @[simp]
 theorem teichmuller_coeff_zero (r : R) : (teichmuller p r).coeff 0 = r :=
@@ -120,5 +125,10 @@ theorem map_teichmuller (f : R →+* S) (r : R) : map f (teichmuller p r) = teic
 theorem ghostComponent_teichmuller (r : R) (n : ℕ) :
     ghostComponent n (teichmuller p r) = r ^ p ^ n :=
   ghostComponent_teichmullerFun _ _ _
+
+/-- The Teichmüller lift is set-theoretically right inverse to the constant coefficient map,
+showing that the latter is surjective. -/
+lemma constantCoeff_surjective : Function.Surjective (constantCoeff : 𝕎 R → R) :=
+  fun r ↦ ⟨teichmuller p r, rfl⟩
 
 end WittVector

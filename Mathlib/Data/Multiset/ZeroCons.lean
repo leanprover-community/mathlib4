@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Defs
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Data.Multiset.Defs
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Definition of `0` and `::ₘ`
@@ -30,6 +32,8 @@ It also defines the following predicates on multisets:
 
 * `Multiset.rec`: recursion on adding one element to a multiset at a time.
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid OrderHom
@@ -132,7 +136,7 @@ overflow in `whnf`.
 protected
 def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
-      ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b)))
+      ∀ a a' m b, C_cons a (a' ::ₘ m) (C_cons a' m b) ≍ C_cons a' (a ::ₘ m) (C_cons a m b))
     (m : Multiset α) : C m :=
   Quotient.hrecOn m (@List.rec α (fun l => C ⟦l⟧) C_0 fun a l b => C_cons a ⟦l⟧ b) fun _ _ h =>
     h.rec_heq
@@ -144,13 +148,13 @@ def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
 protected
 def recOn (m : Multiset α) (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
-      ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b))) :
+      ∀ a a' m b, C_cons a (a' ::ₘ m) (C_cons a' m b) ≍ C_cons a' (a ::ₘ m) (C_cons a m b)) :
     C m :=
   Multiset.rec C_0 C_cons C_cons_heq m
 
 variable {C_0 : C 0} {C_cons : ∀ a m, C m → C (a ::ₘ m)}
   {C_cons_heq :
-    ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b))}
+    ∀ a a' m b, C_cons a (a' ::ₘ m) (C_cons a' m b) ≍ C_cons a' (a ::ₘ m) (C_cons a m b)}
 
 @[simp]
 theorem recOn_0 : @Multiset.recOn α C (0 : Multiset α) C_0 C_cons C_cons_heq = C_0 :=
@@ -165,7 +169,7 @@ end Rec
 
 section Mem
 
-@[simp]
+@[simp, grind =]
 theorem mem_cons {a b : α} {s : Multiset α} : a ∈ b ::ₘ s ↔ a = b ∨ a ∈ s :=
   Quot.inductionOn s fun _ => List.mem_cons
 
@@ -184,15 +188,15 @@ theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a
     let ⟨l₁, l₂, e⟩ := append_of_mem h
     e.symm ▸ ⟨(l₁ ++ l₂ : List α), Quot.sound perm_middle⟩
 
-@[simp]
-theorem not_mem_zero (a : α) : a ∉ (0 : Multiset α) :=
-  List.not_mem_nil _
+@[simp, grind ←]
+theorem notMem_zero (a : α) : a ∉ (0 : Multiset α) :=
+  List.not_mem_nil
 
-theorem eq_zero_of_forall_not_mem {s : Multiset α} : (∀ x, x ∉ s) → s = 0 :=
+theorem eq_zero_of_forall_notMem {s : Multiset α} : (∀ x, x ∉ s) → s = 0 :=
   Quot.inductionOn s fun l H => by rw [eq_nil_iff_forall_not_mem.mpr H]; rfl
 
-theorem eq_zero_iff_forall_not_mem {s : Multiset α} : s = 0 ↔ ∀ a, a ∉ s :=
-  ⟨fun h => h.symm ▸ fun _ => not_mem_zero _, eq_zero_of_forall_not_mem⟩
+theorem eq_zero_iff_forall_notMem {s : Multiset α} : s = 0 ↔ ∀ a, a ∉ s :=
+  ⟨fun h => h.symm ▸ fun _ => notMem_zero _, eq_zero_of_forall_notMem⟩
 
 theorem exists_mem_of_ne_zero {s : Multiset α} : s ≠ 0 → ∃ a : α, a ∈ s :=
   Quot.inductionOn s fun l hl =>
@@ -206,7 +210,7 @@ theorem empty_or_exists_mem (s : Multiset α) : s = 0 ∨ ∃ a, a ∈ s :=
 @[simp]
 theorem zero_ne_cons {a : α} {m : Multiset α} : 0 ≠ a ::ₘ m := fun h =>
   have : a ∈ (0 : Multiset α) := h.symm ▸ mem_cons_self _ _
-  not_mem_zero _ this
+  notMem_zero _ this
 
 @[simp]
 theorem cons_ne_zero {a : α} {m : Multiset α} : a ::ₘ m ≠ 0 :=
@@ -254,7 +258,7 @@ theorem coe_singleton (a : α) : ([a] : Multiset α) = {a} :=
 
 @[simp]
 theorem mem_singleton {a b : α} : b ∈ ({a} : Multiset α) ↔ b = a := by
-  simp only [← cons_zero, mem_cons, iff_self, or_false, not_mem_zero]
+  simp only [← cons_zero, mem_cons, iff_self, or_false, notMem_zero]
 
 theorem mem_singleton_self (a : α) : a ∈ ({a} : Multiset α) := by
   rw [← cons_zero]
@@ -284,7 +288,7 @@ section Subset
 variable {s : Multiset α} {a : α}
 
 @[simp]
-theorem zero_subset (s : Multiset α) : 0 ⊆ s := fun a => (not_mem_nil a).elim
+theorem zero_subset (s : Multiset α) : 0 ⊆ s := fun _ => not_mem_nil.elim
 
 theorem subset_cons (s : Multiset α) (a : α) : s ⊆ a ::ₘ s := fun _ => mem_cons_of_mem
 
@@ -299,7 +303,7 @@ theorem cons_subset_cons {a : α} {s t : Multiset α} : s ⊆ t → a ::ₘ s �
   Quotient.inductionOn₂ s t fun _ _ => List.cons_subset_cons _
 
 theorem eq_zero_of_subset_zero {s : Multiset α} (h : s ⊆ 0) : s = 0 :=
-  eq_zero_of_forall_not_mem fun _ hx ↦ not_mem_zero _ (h hx)
+  eq_zero_of_forall_notMem fun _ hx ↦ notMem_zero _ (h hx)
 
 @[simp] lemma subset_zero : s ⊆ 0 ↔ s = 0 :=
   ⟨eq_zero_of_subset_zero, fun xeq => xeq.symm ▸ Subset.refl 0⟩
@@ -348,7 +352,7 @@ theorem lt_cons_self (s : Multiset α) (a : α) : s < a ::ₘ s :=
 theorem le_cons_self (s : Multiset α) (a : α) : s ≤ a ::ₘ s :=
   le_of_lt <| lt_cons_self _ _
 
-theorem cons_le_cons_iff (a : α) : a ::ₘ s ≤ a ::ₘ t ↔ s ≤ t :=
+@[simp] theorem cons_le_cons_iff (a : α) : a ::ₘ s ≤ a ::ₘ t ↔ s ≤ t :=
   Quotient.inductionOn₂ s t fun _ _ => subperm_cons a
 
 theorem cons_le_cons (a : α) : s ≤ t → a ::ₘ s ≤ a ::ₘ t :=
@@ -359,7 +363,7 @@ theorem cons_le_cons (a : α) : s ≤ t → a ::ₘ s ≤ a ::ₘ t :=
 
 lemma cons_lt_cons (a : α) (h : s < t) : a ::ₘ s < a ::ₘ t := cons_lt_cons_iff.2 h
 
-theorem le_cons_of_not_mem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
+theorem le_cons_of_notMem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
   refine ⟨?_, fun h => le_trans h <| le_cons_self _ _⟩
   suffices ∀ {t'}, s ≤ t' → a ∈ t' → a ::ₘ s ≤ t' by
     exact fun h => (cons_le_cons_iff a).1 (this h (mem_cons_self _ _))
@@ -372,10 +376,10 @@ theorem le_cons_of_not_mem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
     perm_middle.subperm_left.2
       ((subperm_cons _).2 <| ((sublist_or_mem_of_sublist s).resolve_right m₁).subperm)
 
-theorem cons_le_of_not_mem (hs : a ∉ s) : a ::ₘ s ≤ t ↔ a ∈ t ∧ s ≤ t := by
+theorem cons_le_of_notMem (hs : a ∉ s) : a ::ₘ s ≤ t ↔ a ∈ t ∧ s ≤ t := by
   apply Iff.intro (fun h ↦ ⟨subset_of_le h (mem_cons_self a s), le_trans (le_cons_self s a) h⟩)
   rintro ⟨h₁, h₂⟩; rcases exists_cons_of_mem h₁ with ⟨_, rfl⟩
-  exact cons_le_cons _ ((le_cons_of_not_mem hs).mp h₂)
+  exact cons_le_cons _ ((le_cons_of_notMem hs).mp h₂)
 
 @[simp]
 theorem singleton_ne_zero (a : α) : ({a} : Multiset α) ≠ 0 :=
@@ -391,7 +395,7 @@ theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
     e.symm ▸ cons_le_cons _ (zero_le _)⟩
 
 @[simp] lemma le_singleton : s ≤ {a} ↔ s = 0 ∨ s = {a} :=
-  Quot.induction_on s fun l ↦ by simp only [cons_zero, ← coe_singleton, quot_mk_to_coe'', coe_le,
+  Quot.induction_on s fun l ↦ by simp only [← coe_singleton, quot_mk_to_coe'', coe_le,
     coe_eq_zero, coe_eq_coe, perm_singleton, subperm_singleton_iff]
 
 @[simp] lemma lt_singleton : s < {a} ↔ s = 0 := by
@@ -421,7 +425,7 @@ theorem card_cons (a : α) (s : Multiset α) : card (a ::ₘ s) = card s + 1 :=
 
 @[simp]
 theorem card_singleton (a : α) : card ({a} : Multiset α) = 1 := by
-  simp only [← cons_zero, card_zero, eq_self_iff_true, card_cons]
+  simp only [← cons_zero, card_zero, card_cons]
 
 theorem card_pair (a b : α) : card {a, b} = 2 := by
   rw [insert_eq_cons, card_cons, card_singleton]
@@ -455,6 +459,12 @@ theorem card_eq_three {s : Multiset α} : card s = 3 ↔ ∃ x y z, s = {x, y, z
       (List.length_eq_three.mp h).imp fun _a =>
         Exists.imp fun _b => Exists.imp fun _c => congr_arg _,
     fun ⟨_a, _b, _c, e⟩ => e.symm ▸ rfl⟩
+
+theorem card_eq_four {s : Multiset α} : card s = 4 ↔ ∃ x y z w, s = {x, y, z, w} :=
+  ⟨Quot.inductionOn s fun _l h =>
+      (List.length_eq_four.mp h).imp fun _a =>
+        Exists.imp fun _b => Exists.imp fun _c => Exists.imp fun _d => congr_arg _,
+    fun ⟨_a, _b, _c, _d, e⟩ => e.symm ▸ rfl⟩
 
 /-! ### Map for partial functions -/
 
@@ -555,9 +565,10 @@ theorem card_eq_card_of_rel {r : α → β → Prop} {s : Multiset α} {t : Mult
 
 theorem exists_mem_of_rel_of_mem {r : α → β → Prop} {s : Multiset α} {t : Multiset β}
     (h : Rel r s t) : ∀ {a : α}, a ∈ s → ∃ b ∈ t, r a b := by
-  induction' h with x y s t hxy _hst ih
-  · simp
-  · intro a ha
+  induction h with
+  | zero => simp
+  | @cons x y s t hxy _ ih =>
+    intro a ha
     rcases mem_cons.1 ha with ha | ha
     · exact ⟨y, mem_cons_self _ _, ha.symm ▸ hxy⟩
     · rcases ih ha with ⟨b, hbt, hab⟩
@@ -580,9 +591,10 @@ theorem rel_of_forall {m1 m2 : Multiset α} {r : α → α → Prop} (h : ∀ a 
 protected nonrec
 theorem Rel.trans (r : α → α → Prop) [IsTrans α r] {s t u : Multiset α} (r1 : Rel r s t)
     (r2 : Rel r t u) : Rel r s u := by
-  induction' t using Multiset.induction_on with x t ih generalizing s u
-  · rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
-  · obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
+  induction t using Multiset.induction_on generalizing s u with
+  | empty => rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
+  | cons x t ih =>
+    obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
     obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp r2
     exact Multiset.Rel.cons (_root_.trans ha1 hb1) (ih ha2 hb2)
 
@@ -610,7 +622,7 @@ theorem Nodup.cons (m : a ∉ s) (n : Nodup s) : Nodup (a ::ₘ s) :=
 theorem Nodup.of_cons (h : Nodup (a ::ₘ s)) : Nodup s :=
   (nodup_cons.1 h).2
 
-theorem Nodup.not_mem (h : Nodup (a ::ₘ s)) : a ∉ s :=
+theorem Nodup.notMem (h : Nodup (a ::ₘ s)) : a ∉ s :=
   (nodup_cons.1 h).1
 
 end Nodup

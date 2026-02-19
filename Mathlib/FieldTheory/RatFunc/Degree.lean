@@ -3,20 +3,24 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.RingTheory.EuclideanDomain
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Polynomial.Content
+module
+
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.RingTheory.EuclideanDomain
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # The degree of rational functions
 
 ## Main definitions
 We define the degree of a rational function, with values in `ℤ`:
- - `intDegree` is the degree of a rational function, defined as the difference between the
-   `natDegree` of its numerator and the `natDegree` of its denominator. In particular,
-   `intDegree 0 = 0`.
+- `intDegree` is the degree of a rational function, defined as the difference between the
+  `natDegree` of its numerator and the `natDegree` of its denominator. In particular,
+  `intDegree 0 = 0`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -51,17 +55,20 @@ theorem intDegree_one : intDegree (1 : RatFunc K) = 0 := by
 theorem intDegree_C (k : K) : intDegree (C k) = 0 := by
   rw [intDegree, num_C, natDegree_C, denom_C, natDegree_one, sub_self]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem intDegree_X : intDegree (X : RatFunc K) = 1 := by
   rw [intDegree, num_X, Polynomial.natDegree_X, denom_X, Polynomial.natDegree_one,
     Int.ofNat_one, Int.ofNat_zero, sub_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem intDegree_polynomial {p : K[X]} :
     intDegree (algebraMap K[X] (RatFunc K) p) = natDegree p := by
   rw [intDegree, RatFunc.num_algebraMap, RatFunc.denom_algebraMap, Polynomial.natDegree_one,
     Int.ofNat_zero, sub_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem intDegree_mul {x y : RatFunc K} (hx : x ≠ 0) (hy : y ≠ 0) :
     intDegree (x * y) = intDegree x + intDegree y := by
   simp only [intDegree, add_sub, sub_add, sub_sub_eq_add_sub, sub_sub, sub_eq_sub_iff_add_eq_add]
@@ -74,6 +81,12 @@ theorem intDegree_mul {x y : RatFunc K} (hx : x ≠ 0) (hy : y ≠ 0) :
       (x * y).denom_ne_zero,
     RatFunc.num_denom_mul]
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem intDegree_inv (x : RatFunc K) : intDegree (x⁻¹) = - intDegree x := by
+  by_cases hx : x = 0 <;> simp [hx, eq_neg_iff_add_eq_zero, ← intDegree_mul (inv_ne_zero hx) hx]
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem intDegree_neg (x : RatFunc K) : intDegree (-x) = intDegree x := by
   by_cases hx : x = 0
@@ -97,11 +110,11 @@ theorem natDegree_num_mul_right_sub_natDegree_denom_mul_left_eq_intDegree {x : R
     (mul_ne_zero hs x.denom_ne_zero) (num_ne_zero hx) x.denom_ne_zero
   rw [mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem intDegree_add_le {x y : RatFunc K} (hy : y ≠ 0) (hxy : x + y ≠ 0) :
     intDegree (x + y) ≤ max (intDegree x) (intDegree y) := by
   by_cases hx : x = 0
-  · simp only [hx, zero_add, ne_eq] at hxy
-    simp [hx, hxy]
+  · simp [hx]
   rw [intDegree_add hxy, ←
     natDegree_num_mul_right_sub_natDegree_denom_mul_left_eq_intDegree hx y.denom_ne_zero,
     mul_comm y.denom, ←

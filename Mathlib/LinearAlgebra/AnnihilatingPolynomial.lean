@@ -3,15 +3,17 @@ Copyright (c) 2022 Justin Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justin Thomas
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Algebra.Polynomial.Module.AEval
+module
+
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.Algebra.Polynomial.Module.AEval
 
 /-!
 # Annihilating Ideal
 
-Given a commutative ring `R` and an `R`-algebra `A`
-Every element `a : A` defines
+Given a commutative ring `R` and an `R`-algebra `A`,
+every element `a : A` defines
 an ideal `Polynomial.annIdeal a ⊆ R[X]`.
 Simply put, this is the set of polynomials `p` where
 the polynomial evaluation `p(a)` is 0.
@@ -32,6 +34,8 @@ there are some common specializations which may be more familiar.
 * Example 2: `A = n × n` matrices with entries in `R`.
 -/
 
+@[expose] public section
+
 
 open Polynomial
 
@@ -44,7 +48,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 variable (R) in
 /-- `annIdeal R a` is the *annihilating ideal* of all `p : R[X]` such that `p(a) = 0`.
 
-The informal notation `p(a)` stand for `Polynomial.aeval a p`.
+The informal notation `p(a)` stands for `Polynomial.aeval a p`.
 Again informally, the annihilating ideal of `a` is
 `{ p ∈ R[X] | p(a) = 0 }`. This is an ideal in `R[X]`.
 The formal definition uses the kernel of the aeval map. -/
@@ -52,7 +56,7 @@ noncomputable def annIdeal (a : A) : Ideal R[X] :=
   RingHom.ker ((aeval a).toRingHom : R[X] →+* A)
 
 /-- It is useful to refer to ideal membership sometimes
- and the annihilation condition other times. -/
+and the annihilation condition other times. -/
 theorem mem_annIdeal_iff_aeval_eq_zero {a : A} {p : R[X]} : p ∈ annIdeal R a ↔ aeval a p = 0 :=
   Iff.rfl
 
@@ -69,8 +73,8 @@ open Submodule
 if one exists, otherwise `0`.
 
 Since `𝕜[X]` is a principal ideal domain there is a polynomial `g` such that
- `span 𝕜 {g} = annIdeal a`. This picks some generator.
- We prefer the monic generator of the ideal. -/
+`span 𝕜 {g} = annIdeal a`. This picks some generator.
+We prefer the monic generator of the ideal. -/
 noncomputable def annIdealGenerator (a : A) : 𝕜[X] :=
   let g := IsPrincipal.generator <| annIdeal 𝕜 a
   g * C g.leadingCoeff⁻¹
@@ -86,6 +90,7 @@ theorem annIdealGenerator_eq_zero_iff {a : A} : annIdealGenerator 𝕜 a = 0 ↔
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `annIdealGenerator 𝕜 a` is indeed a generator. -/
 @[simp]
 theorem span_singleton_annIdealGenerator (a : A) :
@@ -129,7 +134,7 @@ theorem mem_iff_annIdealGenerator_dvd {p : 𝕜[X]} {a : A} :
   rw [← Ideal.mem_span_singleton, span_singleton_annIdealGenerator]
 
 /-- The generator of the annihilating ideal has minimal degree among
- the non-zero members of the annihilating ideal -/
+the non-zero members of the annihilating ideal -/
 theorem degree_annIdealGenerator_le_of_mem (a : A) (p : 𝕜[X]) (hp : p ∈ annIdeal 𝕜 a)
     (hpn0 : p ≠ 0) : degree (annIdealGenerator 𝕜 a) ≤ degree p :=
   degree_le_of_dvd (mem_iff_annIdealGenerator_dvd.1 hp) hpn0
@@ -149,7 +154,7 @@ theorem annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpol
           q_monic.ne_zero
 
 /-- If a monic generates the annihilating ideal, it must match our choice
- of the annihilating ideal generator. -/
+of the annihilating ideal generator. -/
 theorem monic_generator_eq_minpoly (a : A) (p : 𝕜[X]) (p_monic : p.Monic)
     (p_gen : Ideal.span {p} = annIdeal 𝕜 a) : annIdealGenerator 𝕜 a = p := by
   by_cases h : p = 0

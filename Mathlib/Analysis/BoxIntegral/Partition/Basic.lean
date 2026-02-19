@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Option
-import Mathlib.Analysis.BoxIntegral.Box.Basic
-import Mathlib.Data.Set.Pairwise.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.Option
+public import Mathlib.Analysis.BoxIntegral.Box.Basic
+public import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # Partitions of rectangular boxes in `ℝⁿ`
@@ -35,6 +37,8 @@ We also define a `SemilatticeInf` structure on `BoxIntegral.Prepartition I` for 
 
 rectangular box, partition
 -/
+
+@[expose] public section
 
 open Set Finset Function
 open scoped NNReal
@@ -112,7 +116,6 @@ instance : LE (Prepartition I) :=
   ⟨fun π π' => ∀ ⦃I⦄, I ∈ π → ∃ I' ∈ π', I ≤ I'⟩
 
 instance partialOrder : PartialOrder (Prepartition I) where
-  le := (· ≤ ·)
   le_refl _ I hI := ⟨I, hI, le_rfl⟩
   le_trans _ _ _ h₁₂ h₂₃ _ hI₁ :=
     let ⟨_, hI₂, hI₁₂⟩ := h₁₂ hI₁
@@ -133,9 +136,9 @@ instance : OrderTop (Prepartition I) where
 
 instance : OrderBot (Prepartition I) where
   bot := ⟨∅,
-    fun _ hJ => (Finset.not_mem_empty _ hJ).elim,
-    fun _ hJ => (Set.not_mem_empty _ <| Finset.coe_empty ▸ hJ).elim⟩
-  bot_le _ _ hJ := (Finset.not_mem_empty _ hJ).elim
+    fun _ hJ => (Finset.notMem_empty _ hJ).elim,
+    fun _ hJ => (Set.notMem_empty _ <| Finset.coe_empty ▸ hJ).elim⟩
+  bot_le _ _ hJ := (Finset.notMem_empty _ hJ).elim
 
 instance : Inhabited (Prepartition I) := ⟨⊤⟩
 
@@ -149,8 +152,8 @@ theorem mem_top : J ∈ (⊤ : Prepartition I) ↔ J = I :=
 theorem top_boxes : (⊤ : Prepartition I).boxes = {I} := rfl
 
 @[simp]
-theorem not_mem_bot : J ∉ (⊥ : Prepartition I) :=
-  Finset.not_mem_empty _
+theorem notMem_bot : J ∉ (⊥ : Prepartition I) :=
+  Finset.notMem_empty _
 
 @[simp]
 theorem bot_boxes : (⊥ : Prepartition I).boxes = ∅ := rfl
@@ -193,7 +196,6 @@ theorem iUnion_def : π.iUnion = ⋃ J ∈ π, ↑J := rfl
 
 theorem iUnion_def' : π.iUnion = ⋃ J ∈ π.boxes, ↑J := rfl
 
--- Porting note: Previous proof was `:= Set.mem_iUnion₂`
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
   convert Set.mem_iUnion₂
@@ -250,6 +252,7 @@ theorem eq_of_boxes_subset_iUnion_superset (h₁ : π₁.boxes ⊆ π₂.boxes) 
       ⟨fun _ hJ₁ _ hJ₂ Hne =>
         (π₂.eq_of_mem_of_mem hJ₁ (h₁ hJ₂) Hne.choose_spec.1 Hne.choose_spec.2).le, h₂⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Given a prepartition `π` of a box `I` and a collection of prepartitions `πi J` of all boxes
 `J ∈ π`, returns the prepartition of `I` into the union of the boxes of all `πi J`.
@@ -260,7 +263,7 @@ function. -/
 def biUnion (πi : ∀ J : Box ι, Prepartition J) : Prepartition I where
   boxes := π.boxes.biUnion fun J => (πi J).boxes
   le_of_mem' J hJ := by
-    simp only [Finset.mem_biUnion, exists_prop, mem_boxes] at hJ
+    simp only [Finset.mem_biUnion, mem_boxes] at hJ
     rcases hJ with ⟨J', hJ', hJ⟩
     exact ((πi J').le_of_mem hJ).trans (π.le_of_mem hJ')
   pairwiseDisjoint := by
@@ -341,7 +344,7 @@ theorem biUnion_assoc (πi : ∀ J, Prepartition J) (πi' : Box ι → ∀ J : B
     (π.biUnion fun J => (πi J).biUnion (πi' J)) =
       (π.biUnion πi).biUnion fun J => πi' (π.biUnionIndex πi J) J := by
   ext J
-  simp only [mem_biUnion, exists_prop]
+  simp only [mem_biUnion]
   constructor
   · rintro ⟨J₁, hJ₁, J₂, hJ₂, hJ⟩
     refine ⟨J₂, ⟨J₁, hJ₁, hJ₂⟩, ?_⟩
@@ -422,7 +425,7 @@ def restrict (π : Prepartition I) (J : Box ι) : Prepartition J :=
       rcases Finset.mem_image.1 hJ' with ⟨J', -, rfl⟩
       exact inf_le_left)
     (by
-      simp only [Set.Pairwise, onFun, Finset.mem_coe, Finset.mem_image]
+      simp only [Set.Pairwise, Finset.mem_coe, Finset.mem_image]
       rintro _ ⟨J₁, h₁, rfl⟩ _ ⟨J₂, h₂, rfl⟩ Hne
       have : J₁ ≠ J₂ := by
         rintro rfl
@@ -542,6 +545,7 @@ theorem filter_of_true {p : Box ι → Prop} (hp : ∀ J ∈ π, p J) : π.filte
 theorem filter_true : (π.filter fun _ => True) = π :=
   π.filter_of_true fun _ _ => trivial
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).iUnion = π.iUnion \ (π.filter p).iUnion := by

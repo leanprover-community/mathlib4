@@ -3,14 +3,18 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
-import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Ideal.Pointwise
-import Mathlib.RingTheory.Ideal.Over
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Actions
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Ideal.Pointwise
+public import Mathlib.RingTheory.Ideal.Over
 
 /-!
 # Finiteness of quotient modules
 -/
+
+@[expose] public section
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 variable (P : Ideal B) (p : Ideal A) [P.LiesOver p]

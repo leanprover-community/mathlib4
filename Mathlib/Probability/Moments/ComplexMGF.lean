@@ -3,16 +3,18 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Probability.Moments.Basic
-import Mathlib.Probability.Moments.IntegrableExpMul
+module
+
+public import Mathlib.Analysis.Calculus.ParametricIntegral
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+public import Mathlib.Probability.Moments.Basic
+public import Mathlib.Probability.Moments.IntegrableExpMul
 
 /-!
-# The complex-valued moment generating function
+# The complex-valued moment-generating function
 
-The moment generating function (mgf) is `t : ℝ ↦ μ[fun ω ↦ rexp (t * X ω)]`. It can be extended to
+The moment-generating function (mgf) is `t : ℝ ↦ μ[fun ω ↦ rexp (t * X ω)]`. It can be extended to
 a complex function `z : ℂ ↦ μ[fun ω ↦ cexp (z * X ω)]`, which we call `complexMGF X μ`.
 That function is holomorphic on the vertical strip with base the interior of the interval
 of definition of the mgf.
@@ -36,23 +38,25 @@ properties of the mgf from those of the characteristic function).
 * `analyticOn_complexMGF`: `complexMGF X μ` is analytic on the vertical strip
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
 
-* `eqOn_complexMGF_of_mgf`: if two random variables have the same moment generating function,
+* `eqOn_complexMGF_of_mgf`: if two random variables have the same moment-generating function,
   then they have the same `complexMGF` on the vertical strip
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
   Once we know that equal `mgf` implies equal distributions, we will be able to show that
   the `complexMGF` are equal everywhere, not only on the strip.
   This lemma will be used in the proof of the equality of distributions.
 
+* `ext_of_complexMGF_eq`: If the complex moment-generating functions of two random variables `X`
+  and `Y` with respect to the finite measures `μ`, `μ'`, respectively, coincide, then
+  `μ.map X = μ'.map Y`. In other words, complex moment-generating functions separate the
+  distributions of random variables.
+
 ## TODO
 
-Once we have a definition for the characteristic function, we will be able to prove the following.
-
-* `x : ℝ ↦ complexMGF X μ (I * x)` is equal to the characteristic function of
-  the random variable `X`.
-* As a consequence, if two random variables have same `mgf`, then they have the same
-  characteristic function and the same distribution.
+* Prove that if two random variables have the same `mgf`, then the have the same `complexMGF`.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory Filter Finset Real Complex
@@ -63,24 +67,24 @@ namespace ProbabilityTheory
 
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ} {z ε : ℂ}
 
-/-- Complex extension of the moment generating function. -/
+/-- Complex extension of the moment-generating function. -/
 noncomputable
 def complexMGF (X : Ω → ℝ) (μ : Measure Ω) (z : ℂ) : ℂ := μ[fun ω ↦ cexp (z * X ω)]
 
 lemma complexMGF_undef (hX : AEMeasurable X μ) (h : ¬ Integrable (fun ω ↦ rexp (z.re * X ω)) μ) :
     complexMGF X μ z = 0 := by
   rw [complexMGF, integral_undef]
-  rw [← integrable_norm_iff (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
+  rw [← integrable_norm_iff (by fun_prop)]
   simpa [Complex.norm_exp] using h
 
 lemma complexMGF_id_map (hX : AEMeasurable X μ) : complexMGF id (μ.map X) = complexMGF X μ := by
   ext t
   rw [complexMGF, integral_map hX]
   · rfl
-  · exact AEMeasurable.aestronglyMeasurable <| by fun_prop
+  · fun_prop
 
 lemma complexMGF_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
-    {Y : Ω' → ℝ}  (h : IdentDistrib X Y μ μ') :
+    {Y : Ω' → ℝ} (h : IdentDistrib X Y μ μ') :
     complexMGF X μ = complexMGF Y μ' := by
   rw [← complexMGF_id_map h.aemeasurable_fst, ← complexMGF_id_map h.aemeasurable_snd, h.map_eq]
 
@@ -90,8 +94,6 @@ lemma norm_complexMGF_le_mgf : ‖complexMGF X μ z‖ ≤ mgf X μ z.re := by
   calc ‖∫ ω, cexp (z.re * X ω) * cexp (z.im * I * X ω) ∂μ‖
   _ ≤ ∫ ω, ‖cexp (z.re * X ω) * cexp (z.im * I * X ω)‖ ∂μ := norm_integral_le_integral_norm _
   _ = ∫ ω, rexp (z.re * X ω) ∂μ := by simp [Complex.norm_exp]
-
-@[deprecated (since := "2025-02-17")] alias abs_complexMGF_le_mgf := norm_complexMGF_le_mgf
 
 lemma complexMGF_ofReal (x : ℝ) : complexMGF X μ x = mgf X μ x := by
   rw [complexMGF, mgf, ← integral_complex_ofReal]
@@ -104,8 +106,20 @@ lemma re_complexMGF_ofReal' : (fun x : ℝ ↦ (complexMGF X μ x).re) = mgf X �
   ext x
   exact re_complexMGF_ofReal x
 
+set_option backward.isDefEq.respectTransparency false in
+lemma complexMGF_id_mul_I {μ : Measure ℝ} (t : ℝ) :
+    complexMGF id μ (t * I) = charFun μ t := by
+  simp only [complexMGF, id_eq, charFun, RCLike.inner_apply, conj_trivial, ofReal_mul]
+  congr with x
+  ring_nf
+
+lemma complexMGF_mul_I (hX : AEMeasurable X μ) (t : ℝ) :
+    complexMGF X μ (t * I) = charFun (μ.map X) t := by
+  rw [← complexMGF_id_map hX, complexMGF_id_mul_I]
+
 section Analytic
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `z : ℂ` with `z.re ∈ interior (integrableExpSet X μ)`, the derivative of the function
 `z' ↦ μ[X ^ n * cexp (z' * X)]` at `z` is `μ[X ^ (n + 1) * cexp (z * X)]`. -/
 lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
@@ -119,12 +133,13 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
   have h_pos : 0 < (z.re - l) ⊓ (u - z.re) := by simp [hlu.1, hlu.2]
   have ht : 0 < t := half_pos h_pos
   refine (hasDerivAt_integral_of_dominated_loc_of_deriv_le
-    (bound := fun ω ↦ |X ω| ^ (n + 1) * rexp (z.re * X ω + t/2 * |X ω|))
+    (bound := fun ω ↦ |X ω| ^ (n + 1) * rexp (z.re * X ω + t / 2 * |X ω|))
     (F := fun z ω ↦ X ω ^ n * cexp (z * X ω))
-    (F' := fun z ω ↦ X ω ^ (n + 1) * cexp (z * X ω)) (half_pos ht) ?_ ?_ ?_ ?_ ?_ ?_).2
-  · exact .of_forall fun z ↦ AEMeasurable.aestronglyMeasurable (by fun_prop)
+    (F' := fun z ω ↦ X ω ^ (n + 1) * cexp (z * X ω)) (Metric.ball_mem_nhds _ (half_pos ht))
+    ?_ ?_ ?_ ?_ ?_ ?_).2
+  · exact .of_forall fun z ↦ by fun_prop
   · exact integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet hz n
-  · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+  · fun_prop
   · refine ae_of_all _ fun ω ε hε ↦ ?_
     simp only [norm_mul, norm_pow, norm_real, Real.norm_eq_abs]
     rw [Complex.norm_exp]
@@ -224,7 +239,7 @@ they also have the same `complexMGF`. -/
 
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 
-/-- If two random variables have the same moment generating function then they have
+/-- If two random variables have the same moment-generating function then they have
 the same `integrableExpSet`. -/
 lemma integrableExpSet_eq_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0) :
     integrableExpSet X μ = integrableExpSet Y μ' := by
@@ -236,7 +251,7 @@ lemma integrableExpSet_eq_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 
   have : NeZero μ' := ⟨(not_iff_not.mpr hμμ').mp hμ⟩
   rw [← mgf_pos_iff, ← mgf_pos_iff, hXY]
 
-/-- If two random variables have the same moment generating function then they have
+/-- If two random variables have the same moment-generating function then they have
 the same `integrableExpSet`. -/
 lemma integrableExpSet_eq_of_mgf [IsProbabilityMeasure μ]
     (hXY : mgf X μ = mgf Y μ') :
@@ -249,7 +264,7 @@ lemma integrableExpSet_eq_of_mgf [IsProbabilityMeasure μ]
   rw [← hXY]
   exact (mgf_pos (by simp)).ne'
 
-/-- If two random variables have the same moment generating function then they have
+/-- If two random variables have the same moment-generating function then they have
 the same `complexMGF` on the vertical strip `{z | z.re ∈ interior (integrableExpSet X μ)}`.
 
 TODO: once we know that equal `mgf` implies equal distributions, we will be able to show that
@@ -282,7 +297,7 @@ lemma eqOn_complexMGF_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ 
     · simpa using hx_tendsto.2
   · simp [hx_eq]
 
-/-- If two random variables have the same moment generating function then they have
+/-- If two random variables have the same moment-generating function then they have
 the same `complexMGF` on the vertical strip `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
 lemma eqOn_complexMGF_of_mgf [IsProbabilityMeasure μ]
     (hXY : mgf X μ = mgf Y μ') :
@@ -296,5 +311,36 @@ lemma eqOn_complexMGF_of_mgf [IsProbabilityMeasure μ]
   exact (mgf_pos (by simp)).ne'
 
 end EqOfMGF
+
+section ext
+
+variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If the complex moment-generating functions of two random variables `X` and `Y` with respect to
+the finite measures `μ`, `μ'`, respectively, coincide, then `μ.map X = μ'.map Y`. In other words,
+complex moment-generating functions separate the distributions of random variables. -/
+theorem _root_.MeasureTheory.Measure.ext_of_complexMGF_eq [IsFiniteMeasure μ]
+    [IsFiniteMeasure μ'] (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ')
+    (h : complexMGF X μ = complexMGF Y μ') :
+    μ.map X = μ'.map Y := by
+  have inner_ne_zero (x : ℝ) (h : x ≠ 0) : innerₗ ℝ x ≠ 0 :=
+    DFunLike.ne_iff.mpr ⟨x, inner_self_ne_zero.mpr h⟩
+  apply MeasureTheory.ext_of_integral_char_eq continuous_probChar probChar_ne_one inner_ne_zero
+    continuous_inner (fun w ↦ ?_)
+  rw [funext_iff] at h
+  specialize h (Multiplicative.toAdd w * I)
+  simp_rw [complexMGF, mul_assoc, mul_comm I, ← mul_assoc] at h
+  simp only [BoundedContinuousFunction.char_apply, innerₗ_apply_apply,
+    RCLike.inner_apply, conj_trivial, probChar_apply, ofReal_mul]
+  rwa [integral_map hX (by fun_prop), integral_map hY (by fun_prop)]
+
+lemma _root_.MeasureTheory.Measure.ext_of_complexMGF_id_eq
+    {μ μ' : Measure ℝ} [IsFiniteMeasure μ] [IsFiniteMeasure μ']
+    (h : complexMGF id μ = complexMGF id μ') :
+    μ = μ' := by
+  simpa using Measure.ext_of_complexMGF_eq aemeasurable_id aemeasurable_id h
+
+end ext
 
 end ProbabilityTheory

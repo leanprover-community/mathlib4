@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Finset.Option
-import Mathlib.Data.PFun
-import Mathlib.Data.Part
+module
+
+public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.PFun
+public import Mathlib.Data.Part
 
 /-!
 # Image of a `Finset α` under a partially defined function
@@ -17,6 +19,8 @@ these definitions.
 
 finite set, image, partial function
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -69,20 +73,14 @@ theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (Part.some
   simp [eq_comm]
 
 theorem pimage_congr (h₁ : s = t) (h₂ : ∀ x ∈ t, f x = g x) : s.pimage f = t.pimage g := by
-  subst s
-  ext y
-  -- Porting note: `← exists_prop` required because `∃ x ∈ s, p x` is defined differently
-  simp +contextual only [mem_pimage, ← exists_prop, h₂]
+  aesop
 
 /-- Rewrite `s.pimage f` in terms of `Finset.filter`, `Finset.attach`, and `Finset.image`. -/
 theorem pimage_eq_image_filter : s.pimage f =
-    (filter (fun x => (f x).Dom) s).attach.image
+    {x ∈ s | (f x).Dom}.attach.image
       fun x : { x // x ∈ filter (fun x => (f x).Dom) s } =>
         (f x).get (mem_filter.mp x.coe_prop).2 := by
-  ext x
-  simp [Part.mem_eq, And.exists]
-  -- Porting note: `← exists_prop` required because `∃ x ∈ s, p x` is defined differently
-  simp only [← exists_prop]
+  aesop (add simp Part.mem_eq)
 
 theorem pimage_union [DecidableEq α] : (s ∪ t).pimage f = s.pimage f ∪ t.pimage f :=
   coe_inj.1 <| by

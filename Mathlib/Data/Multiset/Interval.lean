@@ -3,10 +3,13 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.DFinsupp.Interval
-import Mathlib.Data.DFinsupp.Multiset
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Data.Nat.Lattice
+module
+
+public import Mathlib.Data.DFinsupp.Interval
+public import Mathlib.Data.DFinsupp.Multiset
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Finite intervals of multisets
@@ -22,6 +25,8 @@ entries as it contains duplicates. We do not go via `Finsupp` as this would be n
 multisets are typically used computationally.
 
 -/
+
+@[expose] public section
 
 
 open Finset DFinsupp Function
@@ -73,6 +78,6 @@ theorem card_uIcc :
     toDFinsupp_support]
 
 theorem card_Iic : (Finset.Iic s).card = ∏ i ∈ s.toFinset, (s.count i + 1) := by
-  simp_rw [Iic_eq_Icc, card_Icc, bot_eq_zero, toFinset_zero, empty_union, count_zero, tsub_zero]
+  simp_rw [Iic_eq_Icc, card_Icc, bot_eq_zero, toFinset_zero, empty_union, count_zero]
 
 end Multiset

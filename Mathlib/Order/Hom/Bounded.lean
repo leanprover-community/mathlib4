@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.BoundedOrder.Lattice
+module
+
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Bounded order homomorphisms
@@ -26,6 +27,8 @@ be satisfied by itself and all stricter types.
 * `BotHomClass`
 * `BoundedOrderHomClass`
 -/
+
+@[expose] public section
 
 
 open Function OrderDual
@@ -128,22 +131,14 @@ instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [LE α] [Bounded
   { show OrderHomClass F α β from inferInstance, OrderIsoClass.toTopHomClass,
     OrderIsoClass.toBotHomClass with }
 
--- Porting note: the `letI` is needed because we can't make the
--- `OrderTop` parameters instance implicit in `OrderIsoClass.toTopHomClass`,
--- and they apparently can't be figured out through unification.
 @[simp]
 theorem map_eq_top_iff [LE α] [OrderTop α] [PartialOrder β] [OrderTop β] [OrderIsoClass F α β]
     (f : F) {a : α} : f a = ⊤ ↔ a = ⊤ := by
-  letI : TopHomClass F α β := OrderIsoClass.toTopHomClass
   rw [← map_top f, (EquivLike.injective f).eq_iff]
 
--- Porting note: the `letI` is needed because we can't make the
--- `OrderBot` parameters instance implicit in `OrderIsoClass.toBotHomClass`,
--- and they apparently can't be figured out through unification.
 @[simp]
 theorem map_eq_bot_iff [LE α] [OrderBot α] [PartialOrder β] [OrderBot β] [OrderIsoClass F α β]
     (f : F) {a : α} : f a = ⊥ ↔ a = ⊥ := by
-  letI : BotHomClass F α β := OrderIsoClass.toBotHomClass
   rw [← map_bot f, (EquivLike.injective f).eq_iff]
 
 end Equiv
@@ -311,8 +306,11 @@ variable [SemilatticeInf β] [OrderTop β] (f g : TopHom α β)
 instance : Min (TopHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_top, map_top, inf_top_eq]⟩⟩
 
+instance : PartialOrder (TopHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeInf (TopHom α β) :=
-  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp]
 theorem coe_inf : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
@@ -332,7 +330,7 @@ instance : Max (TopHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_top, map_top, sup_top_eq]⟩⟩
 
 instance : SemilatticeSup (TopHom α β) :=
-  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp]
 theorem coe_sup : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
@@ -344,11 +342,10 @@ theorem sup_apply (a : α) : (f ⊔ g) a = f a ⊔ g a :=
 
 end SemilatticeSup
 
-instance [Lattice β] [OrderTop β] : Lattice (TopHom α β) :=
-  DFunLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
+instance [Lattice β] [OrderTop β] : Lattice (TopHom α β) where
 
 instance [DistribLattice β] [OrderTop β] : DistribLattice (TopHom α β) :=
-  DFunLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end TopHom
 
@@ -484,8 +481,11 @@ variable [SemilatticeInf β] [OrderBot β] (f g : BotHom α β)
 instance : Min (BotHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
 
+instance : PartialOrder (BotHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeInf (BotHom α β) :=
-  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp]
 theorem coe_inf : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
@@ -505,7 +505,7 @@ instance : Max (BotHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_bot, map_bot, sup_bot_eq]⟩⟩
 
 instance : SemilatticeSup (BotHom α β) :=
-  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ => rfl
 
 @[simp]
 theorem coe_sup : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
@@ -517,18 +517,16 @@ theorem sup_apply (a : α) : (f ⊔ g) a = f a ⊔ g a :=
 
 end SemilatticeSup
 
-instance [Lattice β] [OrderBot β] : Lattice (BotHom α β) :=
-  DFunLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
+instance [Lattice β] [OrderBot β] : Lattice (BotHom α β) where
 
 instance [DistribLattice β] [OrderBot β] : DistribLattice (BotHom α β) :=
-  DFunLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end BotHom
 
 /-! ### Bounded order homomorphisms -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
--- We keep this to be consistent with Lean 3.
+-- TODO: remove this configuration and use the default configuration.
 initialize_simps_projections BoundedOrderHom (+toOrderHom, -toFun)
 
 namespace BoundedOrderHom
@@ -658,8 +656,6 @@ protected def dual :
     TopHom α β ≃ BotHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨f, f.map_top'⟩
   invFun f := ⟨f, f.map_bot'⟩
-  left_inv _ := TopHom.ext fun _ => rfl
-  right_inv _ := BotHom.ext fun _ => rfl
 
 @[simp]
 theorem dual_id : TopHom.dual (TopHom.id α) = BotHom.id _ :=
@@ -691,8 +687,6 @@ protected def dual :
     BotHom α β ≃ TopHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨f, f.map_bot'⟩
   invFun f := ⟨f, f.map_top'⟩
-  left_inv _ := BotHom.ext fun _ => rfl
-  right_inv _ := TopHom.ext fun _ => rfl
 
 @[simp]
 theorem dual_id : BotHom.dual (BotHom.id α) = TopHom.id _ :=
@@ -727,8 +721,6 @@ protected def dual :
         βᵒᵈ where
   toFun f := ⟨f.toOrderHom.dual, f.map_bot', f.map_top'⟩
   invFun f := ⟨OrderHom.dual.symm f.toOrderHom, f.map_bot', f.map_top'⟩
-  left_inv _ := ext fun _ => rfl
-  right_inv _ := ext fun _ => rfl
 
 @[simp]
 theorem dual_id : (BoundedOrderHom.id α).dual = BoundedOrderHom.id _ :=

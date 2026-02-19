@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.FieldTheory.IntermediateField.Basic
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 
@@ -16,17 +18,9 @@ covered by `SubsemiringClass.instCharZero`.
 
 -/
 
+@[expose] public section
+
 variable {F E : Type*} [Field F] [Field E] [Algebra F E]
-
-namespace Subfield
-
-variable (L : Subfield F) (p : ℕ)
-
-instance charP [CharP F p] : CharP L p := RingHom.charP _ (algebraMap _ F).injective p
-
-instance expChar [ExpChar F p] : ExpChar L p := RingHom.expChar _ (algebraMap _ F).injective p
-
-end Subfield
 
 namespace IntermediateField
 

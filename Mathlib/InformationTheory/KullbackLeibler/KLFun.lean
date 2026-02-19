@@ -3,8 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
+public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 
 /-!
 # The real function `fun x ↦ x * log x + 1 - x`
@@ -33,9 +36,11 @@ This is a continuous nonnegative, strictly convex function on [0,∞), with mini
   `llr μ ν` is integrable with respect to `μ`.
 * `integral_klFun_rnDeriv`: For two finite measures `μ ≪ ν` such that `llr μ ν` is integrable with
   respect to `μ`,
-  `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal`.
+  `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = ∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ`.
 
 -/
+
+@[expose] public section
 
 open Real MeasureTheory Filter Set
 
@@ -71,11 +76,11 @@ lemma convexOn_Ioi_klFun : ConvexOn ℝ (Ioi 0) klFun :=
 lemma continuous_klFun : Continuous klFun := by unfold klFun; fun_prop
 
 /-- `klFun` is measurable. -/
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_klFun : Measurable klFun := continuous_klFun.measurable
 
 /-- `klFun` is strongly measurable. -/
-@[measurability]
+@[fun_prop]
 lemma stronglyMeasurable_klFun : StronglyMeasurable klFun := measurable_klFun.stronglyMeasurable
 
 section Derivatives
@@ -101,12 +106,12 @@ lemma deriv_klFun : deriv klFun = log := by
 lemma not_differentiableWithinAt_klFun_Ioi_zero : ¬ DifferentiableWithinAt ℝ klFun (Ioi 0) 0 := by
   refine not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi _ ?_
   rw [deriv_klFun]
-  exact tendsto_log_nhdsWithin_zero_right
+  exact tendsto_log_nhdsGT_zero
 
 lemma not_differentiableWithinAt_klFun_Iio_zero : ¬ DifferentiableWithinAt ℝ klFun (Iio 0) 0 := by
   refine not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio _ ?_
   rw [deriv_klFun]
-  exact tendsto_log_nhdsWithin_zero_left
+  exact tendsto_log_nhdsLT_zero
 
 /-- The right derivative of `klFun` is `log x`. This also holds at `x = 0` although `klFun` is not
 differentiable there since the default value of `derivWithin` in that case is 0. -/
@@ -172,7 +177,7 @@ lemma integrable_klFun_rnDeriv_iff (hμν : μ ≪ ν) :
 
 lemma integral_klFun_rnDeriv (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν
-      = ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal := by
+      = ∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ := by
   unfold klFun
   rw [integral_sub, integral_add, integral_const, Measure.integral_toReal_rnDeriv hμν, smul_eq_mul,
     mul_one]

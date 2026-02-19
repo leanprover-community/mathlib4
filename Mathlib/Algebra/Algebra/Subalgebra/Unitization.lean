@@ -3,9 +3,11 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Unitization
-import Mathlib.Algebra.Star.Subalgebra
-import Mathlib.GroupTheory.GroupAction.Ring
+module
+
+public import Mathlib.Algebra.Algebra.Unitization
+public import Mathlib.Algebra.Star.Subalgebra
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Relating unital and non-unital substructures
@@ -42,6 +44,8 @@ this map to be injective it suffices that the range omits `1`. In this setting w
   `Unitization R s ≃⋆ₐ[R] StarAlgebra.adjoin R (s : Set A)`:
   a version of `NonUnitalSubalgebra.unitizationAlgEquiv` for star algebras.
 -/
+
+@[expose] public section
 
 /-! ## Subalgebras -/
 
@@ -84,9 +88,7 @@ theorem unitization_apply (x : Unitization R s) :
 
 theorem unitization_range : (unitization s).range = Algebra.adjoin R (s : Set A) := by
   rw [unitization, Unitization.lift_range]
-  simp only [NonUnitalAlgHom.coe_range, NonUnitalSubalgebraClass.coe_subtype,
-    Subtype.range_coe_subtype, SetLike.mem_coe]
-  rfl
+  simp
 
 end Semiring
 
@@ -155,6 +157,7 @@ namespace NonUnitalSubsemiring
 
 variable {R S : Type*} [Semiring R] [SetLike S R] [hSR : NonUnitalSubsemiringClass S R] (s : S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural `ℕ`-algebra homomorphism from the unitization of a non-unital subsemiring to
 its `Subsemiring.closure`. -/
 def unitization : Unitization ℕ s →ₐ[ℕ] R :=
@@ -164,6 +167,7 @@ def unitization : Unitization ℕ s →ₐ[ℕ] R :=
 theorem unitization_apply (x : Unitization ℕ s) : unitization s x = x.fst + x.snd :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unitization_range :
     (unitization s).range = subalgebraOfSubsemiring (.closure s) := by
   have := AddSubmonoidClass.nsmulMemClass (S := S)

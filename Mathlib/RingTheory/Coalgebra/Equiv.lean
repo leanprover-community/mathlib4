@@ -3,22 +3,26 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Hom
+module
+
+public import Mathlib.RingTheory.Coalgebra.Hom
 
 /-!
 # Isomorphisms of `R`-coalgebras
 
-This file defines bundled isomorphisms of `R`-coalgebras. We simply mimic the early parts of
-`Mathlib/Algebra/Module/Equiv.lean`.
+This file defines bundled isomorphisms of `R`-coalgebras. We largely mirror the basic API of
+`Mathlib/Algebra/Module/Equiv/Defs.lean`.
 
 ## Main definitions
 
 * `CoalgEquiv R A B`: the type of `R`-coalgebra isomorphisms between `A` and `B`.
 
-## Notations
+## Notation
 
 * `A ≃ₗc[R] B` : `R`-coalgebra equivalence from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -86,6 +90,7 @@ theorem toCoalgHom_injective : Function.Injective (toCoalgHom : (A ≃ₗc[R] B)
   fun _ _ H => toEquiv_injective <| Equiv.ext <| CoalgHom.congr_fun H
 
 instance : EquivLike (A ≃ₗc[R] B) A B where
+  coe e := e.toFun
   inv := CoalgEquiv.invFun
   coe_injective' _ _ h _ := toCoalgHom_injective (DFunLike.coe_injective h)
   left_inv := CoalgEquiv.left_inv
@@ -163,7 +168,7 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
   { (e : A ≃ₗ[R] B).symm with
     counit_comp := (LinearEquiv.comp_toLinearMap_symm_eq _ _).2 e.counit_comp.symm
     map_comp_comul := by
-      show (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
+      change (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
         = comul ∘ₗ (e : A ≃ₗ[R] B).symm
       rw [LinearEquiv.toLinearMap_symm_comp_eq]
       simp only [TensorProduct.congr, toLinearEquiv_toLinearMap,
@@ -223,8 +228,18 @@ theorem apply_symm_apply (e : A ≃ₗc[R] B) (x) :
 theorem invFun_eq_symm : e.invFun = e.symm :=
   rfl
 
+theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm := rfl
+
 @[simp]
-theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm :=
+theorem toEquiv_symm : e.symm.toEquiv = e.toEquiv.symm :=
+  rfl
+
+@[simp]
+theorem coe_toEquiv : ⇑e.toEquiv = e :=
+  rfl
+
+@[simp]
+theorem coe_symm_toEquiv : ⇑e.toEquiv.symm = e.symm :=
   rfl
 
 variable {e₁₂ : A ≃ₗc[R] B} {e₂₃ : B ≃ₗc[R] C}
@@ -245,8 +260,40 @@ theorem trans_toCoalgHom :
 theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e₂₃ : A ≃ C) :=
   rfl
 
+/-- If a coalgebra morphism has an inverse, it is a coalgebra isomorphism. -/
+def ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ : f.comp g = CoalgHom.id R B)
+    (h₂ : g.comp f = CoalgHom.id R A) : A ≃ₗc[R] B where
+  __ := f
+  toFun := f
+  invFun := g
+  left_inv := CoalgHom.ext_iff.1 h₂
+  right_inv := CoalgHom.ext_iff.1 h₁
+
+@[simp]
+theorem coe_ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ h₂) :
+    ofCoalgHom f g h₁ h₂ = f :=
+  rfl
+
+theorem ofCoalgHom_symm (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ h₂) :
+    (ofCoalgHom f g h₁ h₂).symm = ofCoalgHom g f h₂ h₁ :=
+  rfl
+
+variable {f : A →ₗc[R] B} (hf : Function.Bijective f)
+
+/-- Promotes a bijective coalgebra homomorphism to a coalgebra equivalence. -/
+@[simps apply]
+noncomputable def ofBijective : A ≃ₗc[R] B where
+  toFun := f
+  __ := f
+  __ := LinearEquiv.ofBijective (f : A →ₗ[R] B) hf
+
+@[simp]
+theorem coe_ofBijective : (CoalgEquiv.ofBijective hf : A → B) = f :=
+  rfl
+
 end
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+variable
+  [AddCommMonoid A] [Module R A] [Coalgebra R A]
   [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
 
 /-- Let `A` be an `R`-coalgebra and let `B` be an `R`-module with a `CoalgebraStruct`.
