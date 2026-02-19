@@ -595,9 +595,8 @@ lemma exist_isRegularLocalRing_surjective_of_isAdicComplete [IsAdicComplete (max
   · rcases exists_isCohenRing_residueField_map_bijective zero with ⟨S, _, _, cohen, f, _, bij⟩
     rcases exists_mvPowerSeries_surjective_of_residueField_map_bijective
       (maximalIdeal R).fg_of_isNoetherianRing _ f bij with ⟨n, g, surjg, hg⟩
-    use MvPowerSeries (Fin n) S, inferInstance
-      --MvPowerSeries.isRegularLocalRing_of_isRegularLocalRing, g, surjg
-    sorry
+    use MvPowerSeries (Fin n) S, inferInstance,
+      MvPowerSeries.isRegularLocalRing_of_isRegularLocalRing, g, surjg
 
 lemma spanFinrank_eq_of_surjective_of_ker_le {R : Type*} [CommRing R] [IsNoetherianRing R]
     [IsLocalRing R] {R' : Type*} [CommRing R'] [IsNoetherianRing R'] [IsLocalRing R']
