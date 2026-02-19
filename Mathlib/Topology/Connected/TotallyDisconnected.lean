@@ -134,7 +134,7 @@ noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
     [TopologicalSpace Y] [TotallyDisconnectedSpace Y] [ConnectedSpace X] :
     C(X, Y) ≃ Y where
   toFun f := f (Classical.arbitrary _)
-  invFun y := ⟨fun _ ↦ y, by continuity⟩
+  invFun y := ⟨fun _ ↦ y, by fun_prop⟩
   left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ f.2 _)
   right_inv _ := rfl
 
@@ -168,6 +168,12 @@ lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
 instance Subtype.totallyDisconnectedSpace {α : Type*} {p : α → Prop} [TopologicalSpace α]
     [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Subtype p) :=
   totallyDisconnectedSpace_subtype_iff.2 (isTotallyDisconnected_of_totallyDisconnectedSpace _)
+
+instance [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Additive α) :=
+  ‹TotallyDisconnectedSpace α›
+
+instance [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Multiplicative α) :=
+  ‹TotallyDisconnectedSpace α›
 
 end TotallyDisconnected
 

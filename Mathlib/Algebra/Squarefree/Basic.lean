@@ -220,6 +220,7 @@ theorem squarefree_mul_iff : Squarefree (x * y) ↔ IsRelPrime x y ∧ Squarefre
     fun ⟨hp, sqx, sqy⟩ _ dvd ↦ hp (sqy.dvd_of_squarefree_of_mul_dvd_mul_left dvd)
       (sqx.dvd_of_squarefree_of_mul_dvd_mul_right dvd)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function in
 theorem Finset.squarefree_prod_of_pairwise_isCoprime {ι : Type*} {s : Finset ι}
     {f : ι → R} (hs : Set.Pairwise s (IsRelPrime on f)) (hs' : ∀ i ∈ s, Squarefree (f i)) :
