@@ -66,7 +66,7 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
   tfae_have 2 → 3
   | h, m => by
     use finrank R M
-    suffices φ ^ finrank R M = 0 by simp only [this, LinearMap.zero_apply]
+    suffices φ ^ finrank R M = 0 by simp only [this, zero_apply]
     simpa only [h, map_pow, aeval_X] using φ.aeval_self_charpoly
   tfae_have 3 → 1
   | h => by

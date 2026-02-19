@@ -151,7 +151,7 @@ end
 instance instZero : Zero (LieDerivation R L M) where
   zero :=
     { toLinearMap := 0
-      leibniz' := fun a b => by simp only [LinearMap.zero_apply, lie_zero, sub_self] }
+      leibniz' := fun a b => by simp only [zero_apply, lie_zero, sub_self] }
 
 @[simp]
 theorem coe_zero : ⇑(0 : LieDerivation R L M) = 0 :=
@@ -171,7 +171,7 @@ instance instAdd : Add (LieDerivation R L M) where
   add D1 D2 :=
     { toLinearMap := D1 + D2
       leibniz' := fun a b ↦ by
-        simp only [LinearMap.add_apply, coeFn_coe, apply_lie_eq_sub, lie_add, add_sub_add_comm] }
+        simp only [add_apply, coeFn_coe, apply_lie_eq_sub, lie_add, add_sub_add_comm] }
 
 @[simp]
 theorem coe_add (D1 D2 : LieDerivation R L M) : ⇑(D1 + D2) = D1 + D2 :=
@@ -193,7 +193,7 @@ protected theorem map_sub : D (a - b) = D a - D b :=
 instance instNeg : Neg (LieDerivation R L M) :=
   ⟨fun D =>
     mk (-D) fun a b => by
-      simp only [LinearMap.neg_apply, coeFn_coe, apply_lie_eq_sub,
+      simp only [neg_apply, coeFn_coe, apply_lie_eq_sub,
         neg_sub, lie_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg] ⟩
 
 @[simp]
@@ -210,7 +210,7 @@ theorem neg_apply : (-D) a = -D a :=
 instance instSub : Sub (LieDerivation R L M) :=
   ⟨fun D1 D2 =>
     mk (D1 - D2 : L →ₗ[R] M) fun a b => by
-      simp only [LinearMap.sub_apply, coeFn_coe, apply_lie_eq_sub, lie_sub, sub_sub_sub_comm]⟩
+      simp only [sub_apply, coeFn_coe, apply_lie_eq_sub, lie_sub, sub_sub_sub_comm]⟩
 
 @[simp]
 theorem coe_sub (D1 D2 : LieDerivation R L M) : ⇑(D1 - D2) = D1 - D2 :=
@@ -238,7 +238,7 @@ variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulBracketCom
 instance instSMul : SMul S (LieDerivation R L M) where
   smul r D :=
     { toLinearMap := r • D
-      leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, apply_lie_eq_sub,
+      leibniz' := fun a b => by simp only [smul_apply, coeFn_coe, apply_lie_eq_sub,
         smul_sub, SMulBracketCommClass.smul_bracket_comm] }
 
 @[simp]
@@ -295,7 +295,7 @@ variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
   bracket D1 D2 := LieDerivation.mk ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ (fun a b => by
     simp only [Ring.lie_def, apply_lie_eq_add, coeFn_coe,
-      LinearMap.sub_apply, Module.End.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
+      sub_apply, Module.End.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
     abel)
 
 variable {D1 D2 : LieDerivation R L L}

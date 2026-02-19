@@ -40,6 +40,6 @@ theorem isConformalMap_iff (f : E →L[ℝ] F) :
       ⟨√c₁, Real.sqrt_pos.2 hc₁, (Real.mul_self_sqrt hc₁.le).symm⟩
     refine ⟨c, hc.ne', (c⁻¹ • f : E →ₗ[ℝ] F).isometryOfInner fun u v => ?_, ?_⟩
     · simp only [real_inner_smul_left, real_inner_smul_right, huv, mul_assoc,
-        inv_mul_cancel_left₀ hc.ne', LinearMap.smul_apply, ContinuousLinearMap.coe_coe]
+        inv_mul_cancel_left₀ hc.ne', smul_apply, ContinuousLinearMap.coe_coe]
     · ext1 x
       exact (smul_inv_smul₀ hc.ne' (f x)).symm

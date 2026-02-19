@@ -137,7 +137,7 @@ variable {R : Type*} [Field R] [NeZero (2 : R)] [Module R M] {B C : BilinForm R 
 it takes on the diagonal. -/
 lemma IsSymm.polarization (x y : M) (hB : B.IsSymm) :
     B x y = (B (x + y) (x + y) - B x x - B y y) / 2 := by
-  simp only [map_add, LinearMap.add_apply]
+  simp only [map_add, add_apply]
   rw [hB.eq y x]
   ring_nf
   rw [mul_assoc, inv_mul_cancel₀ two_ne_zero, mul_one]

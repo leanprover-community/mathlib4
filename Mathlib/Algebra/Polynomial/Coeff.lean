@@ -42,7 +42,7 @@ theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q
   rcases p with ⟨⟩
   rcases q with ⟨⟩
   simp_rw [← ofFinsupp_add, coeff]
-  exact Finsupp.add_apply _ _ _
+  exact add_apply _ _ _
 
 @[simp]
 theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :

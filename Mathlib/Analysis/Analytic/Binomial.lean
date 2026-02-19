@@ -186,7 +186,7 @@ theorem one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {z : ℂ} (hz : z �
   simp only [one_div, ContinuousLinearMap.coe_smul', H, Function.comp_def] at this
   convert (this.const_smul (c := (z ^ (a + 1))⁻¹)).congr ?_ using 2
   · ext n
-    simp only [FormalMultilinearSeries.smul_apply, ContinuousMultilinearMap.smul_apply,
+    simp only [FormalMultilinearSeries.smul_apply, ContinuousMultismul_apply,
       FormalMultilinearSeries.compContinuousLinearMap_apply]
     simp [add_assoc, pow_add _ _ (a + 1), mul_assoc]
   · intro w hw

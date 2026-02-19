@@ -77,7 +77,7 @@ lemma engel_zero : engel R (0 : L) = ⊤ := by
   rintro x -
   rw [mem_engel_iff, map_zero]
   use 1
-  simp only [pow_one, LinearMap.zero_apply]
+  simp only [pow_one, zero_apply]
 
 /-- Engel subalgebras are self-normalizing.
 See `LieSubalgebra.normalizer_eq_self_of_engel_le` for a proof that Lie-subalgebras

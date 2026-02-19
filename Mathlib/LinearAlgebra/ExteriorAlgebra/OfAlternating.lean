@@ -56,7 +56,7 @@ def liftAlternating : (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R] ExteriorAlgebr
     all_goals
       ext i : 1
       simp only [map_smul, map_add, Pi.add_apply, Pi.smul_apply, AlternatingMap.curryLeft_add,
-        AlternatingMap.curryLeft_smul, map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply]
+        AlternatingMap.curryLeft_smul, map_add, map_smul, add_apply, smul_apply]
   · -- when applied twice with the same `m`, this recursive step produces 0
     intro m x
     ext

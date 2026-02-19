@@ -478,7 +478,7 @@ private theorem floor_le_floor_add_of_mem_closure {x y i} (hy : y ∈ closure hs
   classical
   simp only [floor]
   apply Int.floor_le_floor
-  simp_rw [map_add, add_sub_right_comm, map_add, Finsupp.add_apply, le_add_iff_nonneg_right]
+  simp_rw [map_add, add_sub_right_comm, map_add, add_apply, le_add_iff_nonneg_right]
   rw [mem_closure_iff_of_fintype] at hy
   rcases hy with ⟨f, rfl⟩
   simp_rw [map_sum, Finsupp.coe_finset_sum, Finset.sum_apply]

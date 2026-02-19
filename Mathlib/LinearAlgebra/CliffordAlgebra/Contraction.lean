@@ -83,24 +83,24 @@ def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] Cliffor
   toFun d := foldr' Q (contractLeftAux Q d) (contractLeftAux_contractLeftAux Q d) 0
   map_add' d₁ d₂ :=
     LinearMap.ext fun x => by
-      rw [LinearMap.add_apply]
+      rw [add_apply]
       induction x using CliffordAlgebra.left_induction with
       | algebraMap => simp_rw [foldr'_algebraMap, smul_zero, zero_add]
       | add _ _ hx hy => rw [map_add, map_add, map_add, add_add_add_comm, hx, hy]
       | ι_mul _ _ hx =>
         rw [foldr'_ι_mul, foldr'_ι_mul, foldr'_ι_mul, hx]
         dsimp only [contractLeftAux_apply_apply]
-        rw [sub_add_sub_comm, mul_add, LinearMap.add_apply, add_smul]
+        rw [sub_add_sub_comm, mul_add, add_apply, add_smul]
   map_smul' c d :=
     LinearMap.ext fun x => by
-      rw [LinearMap.smul_apply, RingHom.id_apply]
+      rw [smul_apply, RingHom.id_apply]
       induction x using CliffordAlgebra.left_induction with
       | algebraMap => simp_rw [foldr'_algebraMap, smul_zero]
       | add _ _ hx hy => rw [map_add, map_add, smul_add, hx, hy]
       | ι_mul _ _ hx =>
         rw [foldr'_ι_mul, foldr'_ι_mul, hx]
         dsimp only [contractLeftAux_apply_apply]
-        rw [LinearMap.smul_apply, smul_assoc, mul_smul_comm, smul_sub]
+        rw [smul_apply, smul_assoc, mul_smul_comm, smul_sub]
 
 /-- Contract an element of the Clifford algebra with an element `d : Module.Dual R M` from the
 right.
@@ -300,7 +300,7 @@ theorem changeForm_self_apply (x : CliffordAlgebra Q) : changeForm (Q' := Q)
   induction x using CliffordAlgebra.left_induction with
   | algebraMap => simp_rw [changeForm_algebraMap]
   | add _ _ hx hy => rw [map_add, hx, hy]
-  | ι_mul _ _ hx => rw [changeForm_ι_mul, hx, LinearMap.zero_apply, map_zero, LinearMap.zero_apply,
+  | ι_mul _ _ hx => rw [changeForm_ι_mul, hx, zero_apply, map_zero, zero_apply,
       sub_zero]
 
 @[simp]
@@ -315,7 +315,7 @@ theorem changeForm_changeForm (x : CliffordAlgebra Q) :
   | algebraMap => simp_rw [changeForm_algebraMap]
   | add _ _ hx hy => rw [map_add, map_add, map_add, hx, hy]
   | ι_mul _ _ hx => rw [changeForm_ι_mul, map_sub, changeForm_ι_mul, changeForm_ι_mul, hx, sub_sub,
-      LinearMap.add_apply, map_add, LinearMap.add_apply, changeForm_contractLeft, hx,
+      add_apply, map_add, add_apply, changeForm_contractLeft, hx,
       add_comm (_ : CliffordAlgebra Q'')]
 
 theorem changeForm_comp_changeForm :

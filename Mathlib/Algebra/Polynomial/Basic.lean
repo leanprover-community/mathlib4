@@ -1103,7 +1103,7 @@ theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by
 theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q n := by
   rcases p with ⟨⟩
   rcases q with ⟨⟩
-  rw [← ofFinsupp_sub, coeff, coeff, coeff, Finsupp.sub_apply]
+  rw [← ofFinsupp_sub, coeff, coeff, coeff, sub_apply]
 
 @[simp]
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by

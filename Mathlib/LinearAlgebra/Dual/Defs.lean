@@ -335,7 +335,7 @@ def dualAnnihilator {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M
 @[simp]
 theorem mem_dualAnnihilator (φ : Module.Dual R M) : φ ∈ W.dualAnnihilator ↔ ∀ w ∈ W, φ w = 0 := by
   simp_rw [dualAnnihilator, LinearMap.mem_ker, LinearMap.ext_iff, dualRestrict_apply,
-    Subtype.forall, LinearMap.zero_apply]
+    Subtype.forall, zero_apply]
 
 /-- That $\operatorname{ker}(\iota^* : V^* \to W^*) = \operatorname{ann}(W)$.
 This is the definition of the dual annihilator of the submodule $W$. -/

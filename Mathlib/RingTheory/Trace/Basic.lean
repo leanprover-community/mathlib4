@@ -100,7 +100,7 @@ open IntermediateField
 
 theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
     Algebra.trace K K⟮x⟯ (AdjoinSimple.gen K x) = 0 := by
-  rw [trace_eq_zero_of_not_exists_basis, LinearMap.zero_apply]
+  rw [trace_eq_zero_of_not_exists_basis, zero_apply]
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
   refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
@@ -192,7 +192,7 @@ lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [C
     ext i j
     simp [leftMulMatrix_apply, LinearMap.toMatrix_apply]
   rw [trace_eq_zero_of_not_exists_basis _ h, trace_eq_zero_of_not_exists_basis,
-    LinearMap.zero_apply, LinearMap.zero_apply, map_zero]
+    zero_apply, zero_apply, map_zero]
   intro ⟨s, ⟨b⟩⟩
   exact h ⟨s, ⟨b.mapCoeffs e (by simp [Algebra.smul_def, ← he])⟩⟩
 
@@ -299,7 +299,7 @@ lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) 
         cases H hn
       | prime hprime =>
         rw [hn, pow_succ', SemigroupAction.mul_smul, LinearMap.map_smul_of_tower, nsmul_eq_mul,
-          CharP.cast_eq_zero, zero_mul, LinearMap.zero_apply]
+          CharP.cast_eq_zero, zero_mul, zero_apply]
   · rw [trace_eq_finrank_mul_minpoly_nextCoeff]
     obtain ⟨g, hg₁, m, hg₂⟩ :=
       (minpoly.irreducible (IsIntegral.isIntegral (R := K) x)).hasSeparableContraction p
@@ -309,7 +309,7 @@ lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) 
       cases hx hg₁
     | succ n =>
       rw [nextCoeff, if_neg, ← hg₂, coeff_expand (by positivity),
-        if_neg, neg_zero, mul_zero, LinearMap.zero_apply]
+        if_neg, neg_zero, mul_zero, zero_apply]
       · rw [natDegree_expand]
         intro h
         have := Nat.dvd_sub (dvd_mul_left (p ^ (n + 1)) g.natDegree) h

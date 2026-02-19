@@ -186,7 +186,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     suffices MapsTo (f - algebraMap K (End K V) μ') p p by
       simp only [Module.End.coe_pow, this.iterate l₀]
     intro x hx
-    rw [LinearMap.sub_apply, algebraMap_end_apply]
+    rw [sub_apply, algebraMap_end_apply]
     exact p.sub_mem (h _ hx) (smul_mem p μ' hx)
   have hg₂ : MapsTo g ↑(f.genEigenspace μ k) ↑(f.genEigenspace μ k) :=
     f.mapsTo_genEigenspace_of_comm hfg μ k

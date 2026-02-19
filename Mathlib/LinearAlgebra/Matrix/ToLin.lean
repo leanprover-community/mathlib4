@@ -209,10 +209,10 @@ def LinearMap.toMatrixRight' [DecidableEq m] : ((m → R) →ₗ[R] n → R) ≃
     simp
   map_add' f g := by
     ext i j
-    simp only [Pi.add_apply, LinearMap.add_apply, Matrix.add_apply]
+    simp only [Pi.add_apply, add_apply, Matrix.add_apply]
   map_smul' c f := by
     ext i j
-    simp only [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply, Matrix.smul_apply]
+    simp only [Pi.smul_apply, smul_apply, RingHom.id_apply, Matrix.smul_apply]
 
 /-- A `Matrix m n R` is linearly equivalent over `Rᵐᵒᵖ` to a linear map `(m → R) →ₗ[R] (n → R)`,
 by having matrices act by right multiplication. -/
@@ -373,10 +373,10 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
       Matrix.mulVecLin_apply, of_apply]
   map_add' f g := by
     ext i j
-    simp only [Pi.add_apply, LinearMap.add_apply, of_apply, Matrix.add_apply]
+    simp only [Pi.add_apply, add_apply, of_apply, Matrix.add_apply]
   map_smul' c f := by
     ext i j
-    simp only [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply, of_apply, Matrix.smul_apply]
+    simp only [Pi.smul_apply, smul_apply, RingHom.id_apply, of_apply, Matrix.smul_apply]
 
 /-- A `Matrix m n R` is linearly equivalent to a linear map `(n → R) →ₗ[R] (m → R)`.
 
@@ -1159,7 +1159,7 @@ def endVecAlgEquivMatrixEnd :
     ext
     simp only [endVecRingEquivMatrixEnd, RingEquiv.toEquiv_eq_coe, Module.algebraMap_end_eq_smul_id,
       Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk, Equiv.coe_fn_mk,
-      LinearMap.smul_apply, id_coe, id_eq, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero,
+      smul_apply, id_coe, id_eq, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero,
       LinearMap.coe_mk, AddHom.coe_mk, algebraMap_matrix_apply]
     split_ifs <;> rfl
 

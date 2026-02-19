@@ -228,9 +228,9 @@ theorem ofModule_asAlgebraHom_apply_apply (r : k[G])
       Representation.asAlgebraHom_single, Representation.ofModule,
       RestrictScalars.lsmul_apply_apply]
   · intro f g fw gw
-    simp only [fw, gw, map_add, add_smul, LinearMap.add_apply]
+    simp only [fw, gw, map_add, add_smul, add_apply]
   · intro r f w
-    simp only [w, map_smul, LinearMap.smul_apply, RestrictScalars.addEquiv_symm_map_smul_smul]
+    simp only [w, map_smul, smul_apply, RestrictScalars.addEquiv_symm_map_smul_smul]
 
 @[simp]
 theorem ofModule_asModule_act (g : G) (x : RestrictScalars k k[G] ρ.asModule) :
@@ -251,7 +251,7 @@ end
 @[simp]
 lemma single_smul (t : k) (g : G) (v : ρ.asModule) :
     MonoidAlgebra.single (g : G) t • v = t • ρ g (ρ.asModuleEquiv v) := by
-  rw [← LinearMap.smul_apply, ← asAlgebraHom_single, ← asModuleEquiv_map_smul]
+  rw [← smul_apply, ← asAlgebraHom_single, ← asModuleEquiv_map_smul]
   rfl
 
 instance : IsScalarTower k k[G] ρ.asModule where
@@ -622,7 +622,7 @@ theorem smul_tprod_one_asModule (r : k[G]) (x : V) (y : W) :
     r • (show (ρV.tprod 1).asModule from x ⊗ₜ y) = (r • show ρV.asModule from x) ⊗ₜ y := by
   change asAlgebraHom (ρV ⊗ 1) _ _ = asAlgebraHom ρV _ _ ⊗ₜ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, FunLikeOne.one_apply,
-    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
+    LinearMap.finsupp_sum_apply, smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
   simp only [Finsupp.sum, TensorProduct.sum_tmul]
   rfl
 
@@ -630,7 +630,7 @@ theorem smul_one_tprod_asModule (r : k[G]) (x : V) (y : W) :
     r • (show (1 ⊗ ρW).asModule from x ⊗ₜ y) = x ⊗ₜ (r • show ρW.asModule from y) := by
   change asAlgebraHom (1 ⊗ ρW) _ _ = _ ⊗ₜ asAlgebraHom ρW _ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, FunLikeOne.one_apply,
-    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
+    LinearMap.finsupp_sum_apply, smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
   simp only [Finsupp.sum, TensorProduct.tmul_sum, TensorProduct.tmul_smul]
 
 end TensorProduct

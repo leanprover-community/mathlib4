@@ -685,7 +685,7 @@ theorem mkPiRing_eq_iff {z₁ z₂ : M} :
   exact MultilinearMap.mkPiRing_eq_iff
 
 theorem mkPiRing_zero : ContinuousMultilinearMap.mkPiRing R ι (0 : M) = 0 := by
-  ext; rw [mkPiRing_apply, smul_zero, ContinuousMultilinearMap.zero_apply]
+  ext; rw [mkPiRing_apply, smul_zero, ContinuousMultizero_apply]
 
 theorem mkPiRing_eq_zero_iff (z : M) : ContinuousMultilinearMap.mkPiRing R ι z = 0 ↔ z = 0 := by
   rw [← mkPiRing_zero, mkPiRing_eq_iff]

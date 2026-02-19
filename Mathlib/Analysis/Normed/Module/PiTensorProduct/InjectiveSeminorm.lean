@@ -109,12 +109,12 @@ noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[�
   map_add' x y := by
     ext _
     simp only [map_add, LinearMap.mkContinuous_apply, LinearMap.coe_comp, Function.comp_apply,
-      ContinuousMultilinearMap.toMultilinearMapLinear_apply, LinearMap.add_apply,
-      LinearMap.flip_apply, LinearEquiv.coe_coe, ContinuousLinearMap.add_apply]
+      ContinuousMultilinearMap.toMultilinearMapLinear_apply, add_apply,
+      LinearMap.flip_apply, LinearEquiv.coe_coe, add_apply]
   map_smul' a x := by
     ext _
     simp only [map_smul, LinearMap.mkContinuous_apply, LinearMap.coe_comp, Function.comp_apply,
-      ContinuousMultilinearMap.toMultilinearMapLinear_apply, LinearMap.smul_apply,
+      ContinuousMultilinearMap.toMultilinearMapLinear_apply, smul_apply,
       LinearMap.flip_apply, LinearEquiv.coe_coe, RingHom.id_apply, ContinuousLinearMap.coe_smul',
       Pi.smul_apply]
 
@@ -247,9 +247,9 @@ noncomputable def liftEquiv : ContinuousMultilinearMap 𝕜 E F ≃ₗ[𝕜] (�
   toFun f := LinearMap.mkContinuous (lift f.toMultilinearMap) ‖f‖ fun x ↦
     norm_eval_le_injectiveSeminorm f x
   map_add' f g := by ext _; simp only [ContinuousMultilinearMap.toMultilinearMap_add, map_add,
-    LinearMap.mkContinuous_apply, LinearMap.add_apply, ContinuousLinearMap.add_apply]
+    LinearMap.mkContinuous_apply, add_apply, add_apply]
   map_smul' a f := by ext _; simp only [ContinuousMultilinearMap.toMultilinearMap_smul, map_smul,
-    LinearMap.mkContinuous_apply, LinearMap.smul_apply, RingHom.id_apply,
+    LinearMap.mkContinuous_apply, smul_apply, RingHom.id_apply,
     ContinuousLinearMap.coe_smul', Pi.smul_apply]
   invFun l := MultilinearMap.mkContinuous (lift.symm l.toLinearMap) ‖l‖ fun x ↦ by
     simp only [lift_symm, LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe]
@@ -405,14 +405,14 @@ protected theorem mapL_add [DecidableEq ι] (i : ι) (u v : E i →L[𝕜] E' i)
     mapL (update f i (u + v)) = mapL (update f i u) + mapL (update f i v) := by
   ext x
   simp only [mapL_apply, mapL_add_smul_aux, ContinuousLinearMap.coe_add,
-    PiTensorProduct.map_update_add, LinearMap.add_apply, ContinuousLinearMap.add_apply]
+    PiTensorProduct.map_update_add, add_apply, add_apply]
 
 open Function in
 protected theorem mapL_smul [DecidableEq ι] (i : ι) (c : 𝕜) (u : E i →L[𝕜] E' i) :
     mapL (update f i (c • u)) = c • mapL (update f i u) := by
   ext x
   simp only [mapL_apply, mapL_add_smul_aux, ContinuousLinearMap.coe_smul,
-    PiTensorProduct.map_update_smul, LinearMap.smul_apply, ContinuousLinearMap.coe_smul',
+    PiTensorProduct.map_update_smul, smul_apply, ContinuousLinearMap.coe_smul',
     Pi.smul_apply]
 
 theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by

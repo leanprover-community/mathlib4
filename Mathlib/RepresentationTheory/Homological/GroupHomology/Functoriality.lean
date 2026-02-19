@@ -101,7 +101,7 @@ lemma chainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
 
 @[simp]
 lemma chainsMap_zero : chainsMap f (0 : A ⟶ (Action.res _ f).obj B) = 0 := by
-  ext; simp [chainsMap_f, LinearMap.zero_apply (M₂ := B)]
+  ext; simp [chainsMap_f, zero_apply (M₂ := B)]
 
 lemma chainsMap_f_map_mono (hf : Function.Injective f) [Mono φ] (i : ℕ) :
     Mono ((chainsMap f φ).f i) := by
@@ -463,7 +463,7 @@ previous assumptions. -/
   /- We have `d(ve) = ∑ ρ(s(π(g))⁻¹)(v(g))·s(π(g))⁻¹g - ∑ v(g)·g + ∑ v(g)·s(π(g))`.
     The second sum is `v`, so cancels: -/
     simp only [d₂₁, ve, ModuleCat.hom_ofHom, coe_lsum, sum_mapDomain_index_inj he, sum_single,
-      LinearMap.add_apply, LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply,
+      add_apply, sub_apply, LinearMap.coe_comp, Function.comp_apply,
       lsingle_apply, sum_add, sum_sub, mul_inv_cancel_left, ← add_assoc, add_sub_cancel, e]
     intro w hw
     · obtain (hl | hr) := Finset.mem_union.1 (support_add hw)
@@ -554,7 +554,7 @@ and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
   rcases chains₁ToCoinvariantsKer_surjective
     ((Action.res _ S.subtype).obj A) ⟨d₁₀ A Y, this⟩ with ⟨(Z : S →₀ A), hZ⟩
   have H : d₁₀ A (Y - mapDomain S.subtype Z) = 0 := by
-    simpa [map_sub, sub_eq_zero, chains₁ToCoinvariantsKer, - LinearMap.sub_apply, d₁₀,
+    simpa [map_sub, sub_eq_zero, chains₁ToCoinvariantsKer, - sub_apply, d₁₀,
       sum_mapDomain_index_inj] using Subtype.ext_iff.1 hZ.symm
   use H1π A ⟨Y - mapDomain S.subtype Z, H⟩
   simp only [H1CoresCoinf_X₃, H1CoresCoinf_X₂, H1CoresCoinf_g,

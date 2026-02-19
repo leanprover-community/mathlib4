@@ -543,7 +543,7 @@ def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) :
   -- This suggests `restrictScalars` needs to be redesigned.
   ofHom (X := (restrictScalars f).obj Y)
   { toFun := fun y : Y => (g y) (1 : S)
-    map_add' := fun x y => by dsimp; rw [g.hom.map_add, LinearMap.add_apply]
+    map_add' := fun x y => by dsimp; rw [g.hom.map_add, add_apply]
     map_smul' := fun r (y : Y) => by
       dsimp
       rw [← map_smul]
@@ -572,7 +572,7 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars 
           RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
           MonoidHom.coe_coe, ZeroHom.coe_mk, smul_eq_mul, id_eq, eq_mpr_eq_cast, cast_eq,
           Functor.comp_obj]
-        rw [LinearMap.add_apply, LinearMap.coe_mk, LinearMap.coe_mk, LinearMap.coe_mk]
+        rw [add_apply, LinearMap.coe_mk, LinearMap.coe_mk, LinearMap.coe_mk]
         dsimp
         rw [smul_add]
     map_smul' := fun s (y : Y) => LinearMap.ext fun t : S => by
@@ -608,7 +608,7 @@ protected def counit' : coextendScalars f ⋙ restrictScalars f ⟶ 𝟭 (Module
     { toFun := fun g => g.toFun (1 : S)
       map_add' := fun x1 x2 => by
         dsimp
-        rw [LinearMap.add_apply]
+        rw [add_apply]
       map_smul' := fun r (g : (restrictScalars f).obj ((coextendScalars f).obj X)) => by
         dsimp
         rw [CoextendScalars.smul_apply, one_mul, ← map_smul]
@@ -708,7 +708,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     { toFun s := HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) ↦ ?_,
       map_smul' := fun (r : R) (s : S) ↦ ?_ }
     · ext
-      dsimp only [m2, evalAt_apply, LinearMap.add_apply]
+      dsimp only [m2, evalAt_apply, add_apply]
       rw [← add_smul]
     · ext x
       apply mul_smul (f r) s (g x)

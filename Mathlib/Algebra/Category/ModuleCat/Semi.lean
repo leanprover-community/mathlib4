@@ -324,7 +324,7 @@ def homAddEquiv : (M ⟶ N) ≃+ (M →ₗ[R] N) :=
 theorem subsingleton_of_isZero (h : IsZero M) : Subsingleton M := by
   refine subsingleton_of_forall_eq 0 (fun x ↦ ?_)
   rw [← LinearMap.id_apply (R := R) x, ← SemimoduleCat.hom_id]
-  simp only [(CategoryTheory.Limits.IsZero.iff_id_eq_zero M).mp h, hom_zero, LinearMap.zero_apply]
+  simp only [(CategoryTheory.Limits.IsZero.iff_id_eq_zero M).mp h, hom_zero, zero_apply]
 
 lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
   mp := subsingleton_of_isZero

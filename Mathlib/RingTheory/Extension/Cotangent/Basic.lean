@@ -229,7 +229,7 @@ def Hom.subToKer (f g : Hom P P') : P.Ring →ₗ[R] P'.ker := by
   refine ((f.toAlgHom.toLinearMap - g.toAlgHom.toLinearMap).codRestrict
     (P'.ker.restrictScalars R) ?_)
   intro x
-  simp only [LinearMap.sub_apply, AlgHom.toLinearMap_apply, ker,
+  simp only [sub_apply, AlgHom.toLinearMap_apply, ker,
     Submodule.restrictScalars_mem, RingHom.mem_ker, map_sub, algebraMap_toRingHom,
     sub_self, toAlgHom_apply]
 
@@ -294,7 +294,7 @@ lemma CotangentSpace.map_sub_map (f g : Hom P P') :
     | add => simp only [map_add, tmul_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
       Function.comp_apply, *]
     | tmul =>
-      simp only [Derivation.tensorProductTo_tmul, tmul_smul, smul_tmul', LinearMap.sub_apply,
+      simp only [Derivation.tensorProductTo_tmul, tmul_smul, smul_tmul', sub_apply,
         map_tmul, Hom.toAlgHom_apply, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
         Function.comp_apply, Hom.sub_tmul, LinearMap.map_smul_of_tower, cotangentComplex_mk,
         Hom.subToKer_apply_coe, map_sub, ← algebraMap_eq_smul_one, tmul_sub, smul_sub]
@@ -303,7 +303,7 @@ lemma Cotangent.map_sub_map (f g : Hom P P') :
     map f - map g = (f.sub g) ∘ₗ P.cotangentComplex := by
   ext x
   obtain ⟨x, rfl⟩ := mk_surjective x
-  simp only [LinearMap.sub_apply, map_mk, LinearMap.coe_comp, Function.comp_apply,
+  simp only [sub_apply, map_mk, LinearMap.coe_comp, Function.comp_apply,
     cotangentComplex_mk, Hom.sub_tmul, one_smul, val_mk]
   apply (Ideal.cotangentEquivIdeal _).injective
   ext
@@ -385,7 +385,7 @@ def H1Cotangent.map (f : Hom P P') : P.H1Cotangent →ₗ[S] P'.H1Cotangent := b
 lemma H1Cotangent.map_eq (f g : Hom P P') : map f = map g := by
   ext x
   simp only [map_apply_coe]
-  rw [← sub_eq_zero, ← Cotangent.val_sub, ← LinearMap.sub_apply, Cotangent.map_sub_map]
+  rw [← sub_eq_zero, ← Cotangent.val_sub, ← sub_apply, Cotangent.map_sub_map]
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.map_coe_ker, map_zero,
     Cotangent.val_zero]
 

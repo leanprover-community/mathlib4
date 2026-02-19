@@ -323,7 +323,7 @@ theorem exists_forall_pow_toEnd_eq_zero [IsNilpotent L M] :
   obtain ⟨k, hM⟩ := IsNilpotent.nilpotent R L M
   use k
   intro x; ext m
-  rw [Module.End.pow_apply, LinearMap.zero_apply, ← @LieSubmodule.mem_bot R L M, ← hM]
+  rw [Module.End.pow_apply, zero_apply, ← @LieSubmodule.mem_bot R L M, ← hM]
   exact iterate_toEnd_mem_lowerCentralSeries R L M x m k
 
 theorem isNilpotent_toEnd_of_isNilpotent [IsNilpotent L M] (x : L) :
@@ -339,7 +339,7 @@ theorem isNilpotent_toEnd_of_isNilpotent₂ [IsNilpotent L M] (x y : L) :
     rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by lia)
   use k
   ext m
-  rw [Module.End.pow_apply, LinearMap.zero_apply, ← LieSubmodule.mem_bot (R := R) (L := L), ← hM]
+  rw [Module.End.pow_apply, zero_apply, ← LieSubmodule.mem_bot (R := R) (L := L), ← hM]
   exact iterate_toEnd_mem_lowerCentralSeries₂ R L M x y m k
 
 @[simp] lemma maxGenEigenSpace_toEnd_eq_top [IsNilpotent L M] (x : L) :

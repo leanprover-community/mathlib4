@@ -215,7 +215,7 @@ theorem HasFiniteFPowerSeriesOnBall.eq_partialSum
   fun y hy m hm ↦ (hf.hasSum hy).unique (hasSum_sum_of_ne_finset_zero
     (f := fun m => p m (fun _ => y)) (s := Finset.range m)
     (fun N hN => by simp only; simp only [Finset.mem_range, not_lt] at hN
-                    rw [hf.finite _ (le_trans hm hN), ContinuousMultilinearMap.zero_apply]))
+                    rw [hf.finite _ (le_trans hm hN), ContinuousMultizero_apply]))
 
 /-- Variant of the previous result with the variable expressed as `y` instead of `x + y`. -/
 theorem HasFiniteFPowerSeriesOnBall.eq_partialSum'
@@ -244,7 +244,7 @@ theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ Metric
   · intro y hy
     rw [hf (x + y)]
     · convert hasSum_zero
-      rw [hp, ContinuousMultilinearMap.zero_apply]
+      rw [hp, ContinuousMultizero_apply]
     · rwa [Metric.mem_eball, edist_eq_enorm_sub, add_comm, add_sub_cancel_right,
         ← edist_zero_right, ← Metric.mem_eball]
 
@@ -362,7 +362,7 @@ lemma changeOriginSeries_sum_eq_partialSum_of_finite (p : FormalMultilinearSerie
   intro m hm
   rw [Finset.mem_range, not_lt] at hm
   rw [p.changeOriginSeries_finite_of_finite hn k (by rw [add_comm]; exact Nat.le_add_of_sub_le hm),
-    ContinuousMultilinearMap.zero_apply]
+    ContinuousMultizero_apply]
 
 /-- If `p` is a formal multilinear series such that `p m = 0` for `n ≤ m`, then
 `p.changeOrigin x k = 0` for `n ≤ k`. -/
@@ -374,7 +374,7 @@ lemma changeOrigin_finite_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
   intro m hm
   rw [Finset.mem_range] at hm
   rw [p.changeOriginSeries_finite_of_finite hn k (le_add_of_le_left hk),
-    ContinuousMultilinearMap.zero_apply]
+    ContinuousMultizero_apply]
 
 theorem hasFiniteFPowerSeriesOnBall_changeOrigin (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (k : ℕ) (hn : ∀ (m : ℕ), n + k ≤ m → p m = 0) :
@@ -395,20 +395,20 @@ theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
     · refine fun s ↦ Not.imp_symm fun hs ↦ ?_
       simp only [preimage_setOf_eq, changeOriginIndexEquiv_apply_fst, mem_setOf, not_lt] at hs
       dsimp only [f]
-      rw [changeOriginSeriesTerm_bound p hn _ _ _ hs, ContinuousMultilinearMap.zero_apply,
-        ContinuousMultilinearMap.zero_apply]
+      rw [changeOriginSeriesTerm_bound p hn _ _ _ hs, ContinuousMultizero_apply,
+        ContinuousMultizero_apply]
   have hfkl k l : HasSum (f ⟨k, l, ·⟩) (changeOriginSeries p k l (fun _ ↦ x) fun _ ↦ y) := by
     simp_rw [changeOriginSeries, ContinuousMultilinearMap.sum_apply]; apply hasSum_fintype
   have hfk k : HasSum (f ⟨k, ·⟩) (changeOrigin p x k fun _ ↦ y) := by
     have (m) (hm : m ∉ Finset.range n) : changeOriginSeries p k m (fun _ ↦ x) = 0 := by
       rw [Finset.mem_range, not_lt] at hm
       rw [changeOriginSeries_finite_of_finite _ hn _ (le_add_of_le_right hm),
-        ContinuousMultilinearMap.zero_apply]
+        ContinuousMultizero_apply]
     rw [changeOrigin, FormalMultilinearSeries.sum,
       ContinuousMultilinearMap.tsum_eval (summable_of_ne_finset_zero this)]
     refine (summable_of_ne_finset_zero (s := Finset.range n) fun m hm ↦ ?_).hasSum.sigma_of_hasSum
       (hfkl k) (summable_of_finite_support <| finsupp.preimage sigma_mk_injective.injOn)
-    rw [this m hm, ContinuousMultilinearMap.zero_apply]
+    rw [this m hm, ContinuousMultizero_apply]
   have hf : HasSum f ((p.changeOrigin x).sum y) :=
     ((p.changeOrigin x).hasSum_of_finite (fun _ ↦ changeOrigin_finite_of_finite p hn) _)
       |>.sigma_of_hasSum hfk (summable_of_finite_support finsupp)

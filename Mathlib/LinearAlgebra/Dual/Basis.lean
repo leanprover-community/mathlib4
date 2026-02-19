@@ -61,7 +61,7 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
 theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
     b.toDual (Finsupp.linearCombination R b f) (b i) = f i := by
   rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum, LinearMap.sum_apply]
-  simp_rw [map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
+  simp_rw [map_smul, smul_apply, toDual_apply, smul_eq_mul, mul_boole,
     Finset.sum_ite_eq', Finsupp.if_mem_support]
 
 @[simp]
@@ -112,7 +112,7 @@ omit [DecidableEq ι] in
 theorem sum_dual_apply_smul_coord [Fintype ι] (f : Module.Dual R M) :
     (∑ x, f (b x) • b.coord x) = f := by
   ext m
-  simp_rw [LinearMap.sum_apply, LinearMap.smul_apply, smul_eq_mul, mul_comm (f _), ← smul_eq_mul,
+  simp_rw [LinearMap.sum_apply, smul_apply, smul_eq_mul, mul_comm (f _), ← smul_eq_mul,
     ← f.map_smul, ← map_sum, Basis.coord_apply, Basis.sum_repr]
 
 section Finite
@@ -142,7 +142,7 @@ theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
     Finsupp.linearCombination R b.dualBasis f (b i) = f i := by
   cases nonempty_fintype ι
   rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype, LinearMap.sum_apply]
-  · simp_rw [LinearMap.smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole,
+  · simp_rw [smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole,
       Finset.sum_ite_eq, if_pos (Finset.mem_univ i)]
   · intro
     rw [zero_smul]

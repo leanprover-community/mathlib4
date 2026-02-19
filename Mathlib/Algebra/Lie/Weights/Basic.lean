@@ -103,8 +103,8 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
     ext m₁ m₂
     simp only [f₁, f₂, F, ← g.map_lie x (m₁ ⊗ₜ m₂), add_smul, sub_tmul, tmul_sub, smul_tmul,
       lie_tmul_right, tmul_smul, toEnd_apply_apply, map_smul, Module.End.one_apply,
-      LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply, LinearMap.coe_comp,
-      LinearMap.rTensor_tmul, map_add, LinearMap.add_apply, map_sub, LinearMap.sub_apply,
+      LieModuleHom.coe_toLinearMap, smul_apply, Function.comp_apply, LinearMap.coe_comp,
+      LinearMap.rTensor_tmul, map_add, add_apply, map_sub, sub_apply,
       LinearMap.lTensor_tmul, AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
       LinearMap.coe_restrictScalars]
     abel
@@ -129,7 +129,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
       AlgebraTensorModule.curry_apply, LinearMap.lTensor_tmul, TensorProduct.curry_apply,
       LinearMap.coe_restrictScalars]
   rw [hf_comm.add_pow']
-  simp only [Finset.sum_apply, LinearMap.coe_sum, LinearMap.smul_apply]
+  simp only [Finset.sum_apply, LinearMap.coe_sum, smul_apply]
   -- The required sum is zero because each individual term is zero.
   apply Finset.sum_eq_zero
   rintro ⟨i, j⟩ hij
@@ -337,7 +337,7 @@ lemma isNilpotent_toEnd_sub_algebraMap [IsNoetherian R M] (χ : L → R) (x : L)
   obtain ⟨k, hk⟩ := exists_genWeightSpace_le_ker_of_isNoetherian M χ x
   use k
   ext ⟨m, hm⟩
-  simp only [this, Module.End.pow_restrict _, LinearMap.zero_apply, ZeroMemClass.coe_zero,
+  simp only [this, Module.End.pow_restrict _, zero_apply, ZeroMemClass.coe_zero,
     ZeroMemClass.coe_eq_zero]
   exact ZeroMemClass.coe_eq_zero.mp (hk hm)
 

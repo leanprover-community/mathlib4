@@ -36,7 +36,7 @@ instance : Bracket (Derivation R A A) (Derivation R A A) :=
   ⟨fun D1 D2 =>
     mk' ⁅(D1 : Module.End R A), (D2 : Module.End R A)⁆ fun a b => by
       simp only [Ring.lie_def, map_add, smul_eq_mul, Module.End.mul_apply, leibniz,
-        coeFn_coe, LinearMap.sub_apply]
+        coeFn_coe, sub_apply]
       ring⟩
 
 @[simp]

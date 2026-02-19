@@ -93,7 +93,7 @@ theorem isOrtho_smul_left {x y : M₄} {a : R₄} (ha : a ≠ 0) :
     IsOrtho G (a • x) y ↔ IsOrtho G x y := by
   dsimp only [IsOrtho]
   rw [map_smul]
-  simp only [LinearMap.smul_apply, smul_eq_mul, mul_eq_zero, or_iff_right_iff_imp]
+  simp only [smul_apply, smul_eq_mul, mul_eq_zero, or_iff_right_iff_imp]
   exact fun a ↦ (ha a).elim
 
 @[simp]

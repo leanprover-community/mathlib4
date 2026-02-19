@@ -69,42 +69,42 @@ private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
     simp only [bracket'_tmul, TensorProduct.tmul_zero, lie_self]
   · intro z₁ z₂ h₁ h₂
     suffices bracket' R A L L z₁ z₂ + bracket' R A L L z₂ z₁ = 0 by
-      rw [map_add, map_add, LinearMap.add_apply, LinearMap.add_apply, h₁, h₂,
+      rw [map_add, map_add, add_apply, add_apply, h₁, h₂,
         zero_add, add_zero, add_comm, this]
     refine z₁.induction_on ?_ ?_ ?_
-    · simp only [map_zero, add_zero, LinearMap.zero_apply]
+    · simp only [map_zero, add_zero, zero_apply]
     · intro a₁ l₁; refine z₂.induction_on ?_ ?_ ?_
-      · simp only [map_zero, add_zero, LinearMap.zero_apply]
+      · simp only [map_zero, add_zero, zero_apply]
       · intro a₂ l₂
         simp only [← lie_skew l₂ l₁, mul_comm a₁ a₂, TensorProduct.tmul_neg, bracket'_tmul,
           add_neg_cancel]
       · intro y₁ y₂ hy₁ hy₂
-        simp only [hy₁, hy₂, add_add_add_comm, add_zero, LinearMap.add_apply, map_add]
+        simp only [hy₁, hy₂, add_add_add_comm, add_zero, add_apply, map_add]
     · intro y₁ y₂ hy₁ hy₂
-      simp only [add_add_add_comm, hy₁, hy₂, add_zero, LinearMap.add_apply, map_add]
+      simp only [add_add_add_comm, hy₁, hy₂, add_zero, add_apply, map_add]
 
 set_option backward.privateInPublic true in
 private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆ := by
   simp only [bracket_def]
   refine x.induction_on ?_ ?_ ?_
-  · simp only [map_zero, add_zero, LinearMap.zero_apply]
+  · simp only [map_zero, add_zero, zero_apply]
   · intro a₁ l₁
     refine y.induction_on ?_ ?_ ?_
-    · simp only [map_zero, add_zero, LinearMap.zero_apply]
+    · simp only [map_zero, add_zero, zero_apply]
     · intro a₂ l₂
       refine z.induction_on ?_ ?_ ?_
       · simp only [map_zero, add_zero]
       · intro a₃ l₃; simp only [bracket'_tmul]
         rw [mul_left_comm a₂ a₁ a₃, mul_assoc, leibniz_lie, TensorProduct.tmul_add]
       · grind
-    · grind [LinearMap.add_apply]
-  · grind [LinearMap.add_apply]
+    · grind [add_apply]
+  · grind [add_apply]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance instLieRing : LieRing (A ⊗[R] L) where
-  add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, map_add]
+  add_lie x y z := by simp only [bracket_def, add_apply, map_add]
   lie_add x y z := by simp only [bracket_def, map_add]
   lie_self := bracket_lie_self R A L
   leibniz_lie := bracket_leibniz_lie R A L L
@@ -116,12 +116,12 @@ instance instLieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := m
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
-  add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, map_add]
+  add_lie x y z := by simp only [bracket_def, add_apply, map_add]
   lie_add x y z := by simp only [bracket_def, map_add]
   leibniz_lie := bracket_leibniz_lie R A L M
 
 instance instLieModule : LieModule A (A ⊗[R] L) (A ⊗[R] M) where
-  smul_lie t x m := by simp only [bracket_def, map_smul, LinearMap.smul_apply]
+  smul_lie t x m := by simp only [bracket_def, map_smul, smul_apply]
   lie_smul _ _ _ := map_smul _ _ _
 
 /-- The Lie algebra homomorphism induced by an algebra map. -/

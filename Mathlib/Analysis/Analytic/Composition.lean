@@ -388,10 +388,10 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
     let j : Fin b.length := ⟨i.val, b.blocks_length ▸ i.prop⟩
     have A : 1 < b.blocksFun j := by convert lt_k
     ext v
-    rw [compAlongComposition_apply, ContinuousMultilinearMap.zero_apply]
+    rw [compAlongComposition_apply, ContinuousMultizero_apply]
     apply ContinuousMultilinearMap.map_coord_zero _ j
     dsimp [applyComposition]
-    rw [id_apply_of_one_lt _ _ _ A, ContinuousMultilinearMap.zero_apply]
+    rw [id_apply_of_one_lt _ _ _ A, ContinuousMultizero_apply]
   · simp
 
 @[simp]
@@ -421,7 +421,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
         lia
       ext v
       rw [compAlongComposition_apply, id_apply_of_one_lt _ _ _ A,
-        ContinuousMultilinearMap.zero_apply, ContinuousMultilinearMap.zero_apply]
+        ContinuousMultizero_apply, ContinuousMultizero_apply]
     · simp
 
 /-- Variant of `id_comp` in which the zero coefficient is given by an equality hypothesis instead
@@ -908,7 +908,7 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
   apply Finset.sum_eq_zero
   rintro c -
   ext v
-  simp only [compAlongComposition_apply, ContinuousMultilinearMap.zero_apply]
+  simp only [compAlongComposition_apply, ContinuousMultizero_apply]
   rcases le_or_gt m c.length with hc | hc
   · simp [hg.finite _ hc]
   obtain ⟨j, hj⟩ : ∃ j, n ≤ c.blocksFun j := by

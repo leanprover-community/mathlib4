@@ -168,7 +168,7 @@ theorem ext_of_adjoin_eq_top (s : Set A) (hs : adjoin R s = ⊤) (h : Set.EqOn D
 instance : Zero (Derivation R A M) :=
   ⟨{  toLinearMap := 0
       map_one_eq_zero' := rfl
-      leibniz' := fun a b => by simp only [add_zero, LinearMap.zero_apply, smul_zero] }⟩
+      leibniz' := fun a b => by simp only [add_zero, zero_apply, smul_zero] }⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : Derivation R A M) = 0 :=
@@ -186,7 +186,7 @@ instance : Add (Derivation R A M) :=
     { toLinearMap := D1 + D2
       map_one_eq_zero' := by simp
       leibniz' := fun a b => by
-        simp only [leibniz, LinearMap.add_apply, coeFn_coe, smul_add, add_add_add_comm] }⟩
+        simp only [leibniz, add_apply, coeFn_coe, smul_add, add_add_add_comm] }⟩
 
 @[simp]
 theorem coe_add (D1 D2 : Derivation R A M) : ⇑(D1 + D2) = D1 + D2 :=
@@ -211,8 +211,8 @@ variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulCommClass 
 instance : SMul S (Derivation R A M) :=
   ⟨fun r D =>
     { toLinearMap := r • D.1
-      map_one_eq_zero' := by rw [LinearMap.smul_apply, coeFn_coe, D.map_one_eq_zero, smul_zero]
-      leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, leibniz, smul_add,
+      map_one_eq_zero' := by rw [smul_apply, coeFn_coe, D.map_one_eq_zero, smul_zero]
+      leibniz' := fun a b => by simp only [smul_apply, coeFn_coe, leibniz, smul_add,
         smul_comm r (_ : A) (_ : M)] }⟩
 
 @[simp]
@@ -513,7 +513,7 @@ end Field
 instance : Neg (Derivation R A M) :=
   ⟨fun D =>
     mk' (-D) fun a b => by
-      simp only [LinearMap.neg_apply, smul_neg, neg_add_rev, leibniz, coeFn_coe, add_comm]⟩
+      simp only [neg_apply, smul_neg, neg_add_rev, leibniz, coeFn_coe, add_comm]⟩
 
 @[simp]
 theorem coe_neg (D : Derivation R A M) : ⇑(-D) = -D :=
@@ -529,7 +529,7 @@ theorem neg_apply : (-D) a = -D a :=
 instance : Sub (Derivation R A M) :=
   ⟨fun D1 D2 =>
     mk' (D1 - D2 : A →ₗ[R] M) fun a b => by
-      simp only [LinearMap.sub_apply, leibniz, coeFn_coe, smul_sub, add_sub_add_comm]⟩
+      simp only [sub_apply, leibniz, coeFn_coe, smul_sub, add_sub_add_comm]⟩
 
 @[simp]
 theorem coe_sub (D1 D2 : Derivation R A M) : ⇑(D1 - D2) = D1 - D2 :=

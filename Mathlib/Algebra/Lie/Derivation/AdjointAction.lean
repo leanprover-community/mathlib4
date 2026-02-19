@@ -47,7 +47,7 @@ def ad : L →ₗ⁅R⁆ LieDerivation R L L :=
     map_lie' := by
       intro x y
       ext z
-      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.neg_apply, coe_neg,
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, neg_apply, coe_neg,
         Pi.neg_apply, inner_apply_apply, commutator_apply]
       rw [leibniz_lie, neg_lie, neg_lie, ← lie_skew x]
       abel }

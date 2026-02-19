@@ -66,7 +66,7 @@ theorem iteratedDerivWithin_add
     iteratedDerivWithin n (f + g) s x =
       iteratedDerivWithin n f s x + iteratedDerivWithin n g s x := by
   simp_rw [iteratedDerivWithin, iteratedFDerivWithin_add_apply hf hg h hx,
-    ContinuousMultilinearMap.add_apply]
+    ContinuousMultiadd_apply]
 
 include h hx in
 theorem iteratedDerivWithin_fun_add
@@ -95,7 +95,7 @@ theorem iteratedDerivWithin_const_smul (c : R) (hf : ContDiffWithinAt 𝕜 n f s
     iteratedDerivWithin n (c • f) s x = c • iteratedDerivWithin n f s x := by
   simp_rw [iteratedDerivWithin]
   rw [iteratedFDerivWithin_const_smul_apply (a := c) hf h hx]
-  simp only [ContinuousMultilinearMap.smul_apply]
+  simp only [ContinuousMultismul_apply]
 
 include h hx in
 theorem iteratedDerivWithin_fun_const_smul (c : R) (hf : ContDiffWithinAt 𝕜 n f s x) :

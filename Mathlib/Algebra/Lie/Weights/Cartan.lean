@@ -93,12 +93,12 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
       map_smul' := fun t m => by simp }
   map_add' x y := by
     ext m
-    simp only [LieSubmodule.coe_add, add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply,
+    simp only [LieSubmodule.coe_add, add_lie, LinearMap.coe_mk, AddHom.coe_mk, add_apply,
       AddMemClass.mk_add_mk]
   map_smul' t x := by
     simp only [RingHom.id_apply]
     ext m
-    simp only [SetLike.val_smul, smul_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.smul_apply,
+    simp only [SetLike.val_smul, smul_lie, LinearMap.coe_mk, AddHom.coe_mk, smul_apply,
       SetLike.mk_smul_mk]
 
 /-- Given a nilpotent Lie subalgebra `H ⊆ L` together with `χ₁ χ₂ : H → R`, there is a natural

@@ -147,7 +147,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [IsDomain R] [IsTo
   rw [← hl]
   have hkl : (p.flip (coroot l)) (root k) = 2 := by
     simp only [hl, preReflection_apply, map_sub, map_smul, hk, LinearMap.flip_apply,
-      LinearMap.sub_apply, hp j, LinearMap.smul_apply, smul_eq_mul, hp i, mul_two,
+      sub_apply, hp j, smul_apply, smul_eq_mul, hp i, mul_two,
       sub_add_cancel_right, mul_neg, sub_neg_eq_add, sα, α, α', β]
     rw [mul_comm (p (root i) (coroot j))]
     abel

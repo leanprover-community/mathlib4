@@ -86,10 +86,10 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
   obtain ⟨w, hw⟩ := DFunLike.ne_iff.mp (hL' (v - v') (sub_ne_zero_of_ne h))
   obtain ⟨a, ha⟩ := DFunLike.ne_iff.mp he'
   use (a / (L (v - v') w)) • w
-  simp only [map_sub, LinearMap.sub_apply, char_apply, ne_eq]
+  simp only [map_sub, sub_apply, char_apply, ne_eq]
   rw [← div_eq_one_iff_eq (Circle.coe_ne_zero _), div_eq_inv_mul, ← Metric.unitSphere.coe_inv,
     ← e.map_neg_eq_inv, ← Submonoid.coe_mul, ← e.map_add_eq_mul, OneMemClass.coe_eq_one]
-  simp only [map_sub, LinearMap.sub_apply, LinearMap.zero_apply, AddChar.one_apply,
+  simp only [map_sub, sub_apply, zero_apply, AddChar.one_apply,
     map_smul, smul_eq_mul] at ha hw ⊢
   grind
 

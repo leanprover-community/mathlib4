@@ -834,7 +834,7 @@ theorem linearIndependent_iff_eq_zero_of_smul_mem_span :
     LinearIndependent R v ↔ ∀ (i : ι) (a : R), a • v i ∈ span R (v '' (univ \ {i})) → a = 0 :=
   ⟨fun hv ↦ hv.eq_zero_of_smul_mem_span, fun H =>
     linearIndependent_iff.2 fun l hl => by
-      ext i; simp only [Finsupp.zero_apply]
+      ext i; simp only [zero_apply]
       by_contra hn
       refine hn (H i _ ?_)
       refine (Finsupp.mem_span_image_iff_linearCombination R).2 ⟨Finsupp.single i (l i) - l, ?_, ?_⟩

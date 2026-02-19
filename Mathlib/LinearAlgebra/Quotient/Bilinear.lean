@@ -29,7 +29,7 @@ def liftQ₂ (M' : Submodule R M) (N' : Submodule S N) (f : M →ₛₗ[ρ] N �
     M ⧸ M' →ₛₗ[ρ] N ⧸ N' →ₛₗ[σ] P :=
   have : ∀ n ∈ N', n ∈ (M'.liftQ f hM').flip.ker := fun n hn ↦ by
     simp_rw [LinearMap.mem_ker, LinearMap.ext_iff, LinearMap.flip_apply, Submodule.Quotient.forall,
-      Submodule.liftQ_apply, ← f.flip_apply, show f.flip n = 0 from hN' hn, LinearMap.zero_apply,
+      Submodule.liftQ_apply, ← f.flip_apply, show f.flip n = 0 from hN' hn, zero_apply,
       forall_true_iff]
   (N'.liftQ (M'.liftQ f hM').flip this).flip
 

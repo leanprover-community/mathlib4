@@ -162,7 +162,7 @@ noncomputable def llift : (X → M) ≃ₗ[S] (X →₀ R) →ₗ[R] M :=
       dsimp
       ext
       simp only [coe_comp, Function.comp_apply, lsingle_apply, lift_apply, Pi.smul_apply,
-        sum_single_index, zero_smul, one_smul, LinearMap.smul_apply] }
+        sum_single_index, zero_smul, one_smul, smul_apply] }
 
 @[simp]
 theorem llift_apply (f : X → M) (x : X →₀ R) : llift M R S X f x = lift M R X f x :=

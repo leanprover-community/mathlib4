@@ -144,14 +144,14 @@ theorem modOf_apply_self_add (x : k[G]) (g : G) (d : G) : (x %ᵒᶠ g) (g + d) 
 
 theorem of'_mul_modOf (g : G) (x : k[G]) : of' k G g * x %ᵒᶠ g = 0 := by
   ext g'
-  rw [Finsupp.zero_apply]
+  rw [zero_apply]
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   · rw [modOf_apply_self_add]
   · rw [modOf_apply_of_not_exists_add _ _ _ h, of'_apply, single_mul_apply_of_not_exists_add _ _ h]
 
 theorem mul_of'_modOf (x : k[G]) (g : G) : x * of' k G g %ᵒᶠ g = 0 := by
   ext g'
-  rw [Finsupp.zero_apply]
+  rw [zero_apply]
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   · rw [modOf_apply_self_add]
   · rw [modOf_apply_of_not_exists_add _ _ _ h, of'_apply, mul_single_apply_of_not_exists_add]
@@ -163,7 +163,7 @@ theorem of'_modOf (g : G) : of' k G g %ᵒᶠ g = 0 := by
 theorem divOf_add_modOf [IsCancelAdd G] (x : k[G]) (g : G) :
     of' k G g * (x /ᵒᶠ g) + x %ᵒᶠ g = x := by
   ext g'
-  rw [Finsupp.add_apply]
+  rw [add_apply]
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   swap
   · rw [modOf_apply_of_not_exists_add x _ _ h, of'_apply, single_mul_apply_of_not_exists_add _ _ h,

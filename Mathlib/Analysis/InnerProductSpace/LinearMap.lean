@@ -84,11 +84,11 @@ theorem inner_map_self_eq_zero (T : V →ₗ[ℂ] V) : (∀ x : V, ⟪T x, x⟫_
   constructor
   · intro hT
     ext x
-    rw [LinearMap.zero_apply, ← @inner_self_eq_zero ℂ V, inner_map_polarization]
+    rw [zero_apply, ← @inner_self_eq_zero ℂ V, inner_map_polarization]
     simp only [hT]
     simp
   · rintro rfl x
-    simp only [LinearMap.zero_apply, inner_zero_left]
+    simp only [zero_apply, inner_zero_left]
 
 /--
 Two linear maps `S` and `T` are equal, if and only if the identity `⟪S x, x⟫_ℂ = ⟪T x, x⟫_ℂ` holds
@@ -97,7 +97,7 @@ for all `x`.
 theorem ext_inner_map (S T : V →ₗ[ℂ] V) : (∀ x : V, ⟪S x, x⟫_ℂ = ⟪T x, x⟫_ℂ) ↔ S = T := by
   rw [← sub_eq_zero, ← inner_map_self_eq_zero]
   refine forall_congr' fun x => ?_
-  rw [LinearMap.sub_apply, inner_sub_left, sub_eq_zero]
+  rw [sub_apply, inner_sub_left, sub_eq_zero]
 
 end Complex
 

@@ -67,7 +67,7 @@ theorem ofScalars_series_injective [Nontrivial E] : Function.Injective (ofScalar
   intro _ _
   refine Function.mtr fun h ↦ ?_
   simp_rw [FormalMultilinearSeries.ext_iff, ofScalars, ContinuousMultilinearMap.ext_iff,
-    ContinuousMultilinearMap.smul_apply]
+    ContinuousMultismul_apply]
   push_neg
   obtain ⟨n, hn⟩ := Function.ne_iff.1 h
   refine ⟨n, fun _ ↦ 1, ?_⟩

@@ -744,7 +744,7 @@ theorem det_smul_mk_coord_eq_det_update {v : ι → M} (hli : LinearIndependent 
   apply (Basis.mk hli hsp).ext
   intro k
   rcases eq_or_ne k i with (rfl | hik) <;>
-    simp only [smul_eq_mul, coe_mk, LinearMap.smul_apply,
+    simp only [smul_eq_mul, coe_mk, smul_apply,
       MultilinearMap.toLinearMap_apply]
   · rw [mk_coord_apply_eq, mul_one, update_eq_self]
     congr

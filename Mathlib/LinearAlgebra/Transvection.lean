@@ -165,7 +165,7 @@ theorem trans_of_right_eq {f g : Dual R V} {v : V}
   ext; simp [comp_of_right_eq_apply hf]
 
 @[simp]
-theorem of_left_eq_zero (v : V) (hv := LinearMap.zero_apply v) :
+theorem of_left_eq_zero (v : V) (hv := zero_apply v) :
     transvection hv = refl R V := by
   ext; simp [transvection]
 

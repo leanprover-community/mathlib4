@@ -350,7 +350,7 @@ theorem isStarNormal_iff_norm_eq_adjoint :
   have := star_eq_adjoint T ▸ coe_sub (star _ * T) _ ▸
     ((IsSelfAdjoint.star_mul_self T).sub (IsSelfAdjoint.mul_star_self T)).isSymmetric
   simp_rw [star_eq_adjoint, ← LinearMap.IsSymmetric.inner_map_self_eq_zero this,
-    LinearMap.sub_apply, inner_sub_left, coe_coe, mul_apply, adjoint_inner_left,
+    sub_apply, inner_sub_left, coe_coe, mul_apply, adjoint_inner_left,
     inner_self_eq_norm_sq_to_K, ← adjoint_inner_right T, inner_self_eq_norm_sq_to_K,
     sub_eq_zero, ← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
   norm_cast

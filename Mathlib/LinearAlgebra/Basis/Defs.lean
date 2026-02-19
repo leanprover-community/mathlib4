@@ -664,7 +664,7 @@ def coord : M →ₗ[R] R :=
   Finsupp.lapply i ∘ₗ ↑b.repr
 
 theorem forall_coord_eq_zero_iff {x : M} : (∀ i, b.coord i x = 0) ↔ x = 0 :=
-  Iff.trans (by simp only [b.coord_apply, DFunLike.ext_iff, Finsupp.zero_apply])
+  Iff.trans (by simp only [b.coord_apply, DFunLike.ext_iff, zero_apply])
     b.repr.map_eq_zero_iff
 
 /-- The sum of the coordinates of an element `m : M` with respect to a basis. -/

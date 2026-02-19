@@ -113,7 +113,7 @@ instance instAdd : Add 𝓜(𝕜, A) where
     { toProd := a.toProd + b.toProd
       central := fun x y =>
         show (a.snd + b.snd) x * y = x * (a.fst + b.fst) y by
-          simp only [ContinuousLinearMap.add_apply, mul_add, add_mul, central] }
+          simp only [add_apply, mul_add, add_mul, central] }
 
 instance instZero : Zero 𝓜(𝕜, A) where
   zero :=
@@ -132,7 +132,7 @@ instance instSub : Sub 𝓜(𝕜, A) where
     { toProd := a.toProd - b.toProd
       central := fun x y =>
         show (a.snd - b.snd) x * y = x * (a.fst - b.fst) y by
-          simp only [ContinuousLinearMap.sub_apply, _root_.sub_mul, _root_.mul_sub, central] }
+          simp only [sub_apply, _root_.sub_mul, _root_.mul_sub, central] }
 
 section Scalars
 
@@ -144,7 +144,7 @@ instance instSMul : SMul S 𝓜(𝕜, A) where
     { toProd := s • a.toProd
       central := fun x y =>
         show (s • a.snd) x * y = x * (s • a.fst) y by
-          simp only [ContinuousLinearMap.smul_apply, mul_smul_comm, smul_mul_assoc, central] }
+          simp only [smul_apply, mul_smul_comm, smul_mul_assoc, central] }
 
 @[simp]
 theorem smul_toProd (s : S) (a : 𝓜(𝕜, A)) : (s • a).toProd = s • a.toProd :=
@@ -407,7 +407,7 @@ instance instStarAddMonoid : StarAddMonoid 𝓜(𝕜, A) :=
     star_involutive := fun x => by ext <;> simp only [star_fst, star_snd, star_star]
     star_add := fun x y => by
       ext <;>
-        simp only [star_fst, star_snd, add_fst, add_snd, ContinuousLinearMap.add_apply, star_add] }
+        simp only [star_fst, star_snd, add_fst, add_snd, add_apply, star_add] }
 
 instance instStarRing : StarRing 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStarAddMonoid with

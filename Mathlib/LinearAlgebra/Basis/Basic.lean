@@ -277,8 +277,8 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M]
         right_inv := fun y => ?_
         map_add' := fun y z => ?_
         map_smul' := fun c y => ?_ }⟩
-    · simp [Finsupp.add_apply, add_smul]
-    · simp only [Finsupp.coe_smul, Pi.smul_apply, RingHom.id_apply]
+    · simp [add_apply, add_smul]
+    · simp only [smul_apply, RingHom.id_apply]
       rw [← smul_assoc]
     · refine smul_left_injective _ nz ?_
       simp only [Finsupp.single_eq_same]

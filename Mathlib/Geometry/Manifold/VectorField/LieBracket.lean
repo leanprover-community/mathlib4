@@ -574,7 +574,7 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
   have A : (extChartAt I x₀).symm (extChartAt I x₀ x₀) = x₀ := by simp
   by_cases hfi : (mfderivWithin I I' f s x₀).IsInvertible; swap
   · simp only [mlieBracketWithin_apply, mpullbackWithin_apply,
-      ContinuousLinearMap.inverse_of_not_isInvertible hfi, ContinuousLinearMap.zero_apply]
+      ContinuousLinearMap.inverse_of_not_isInvertible hfi, zero_apply]
     rw [lieBracketWithin_eq_zero_of_eq_zero]
     · simp [-extChartAt]
     · simp only [mpullbackWithin_apply]

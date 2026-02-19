@@ -117,7 +117,7 @@ theorem eq_inter_halfSpace [IsOrderedRing 𝕜] [Nontrivial 𝕜] {A B : Set E} 
   · refine ⟨0, 1, ?_⟩
     rw [eq_comm, eq_empty_iff_forall_notMem]
     rintro x ⟨-, h⟩
-    rw [ContinuousLinearMap.zero_apply] at h
+    rw [zero_apply] at h
     have : ¬(1 : 𝕜) ≤ 0 := not_le_of_gt zero_lt_one
     contradiction
   exact hAB.eq_inter_halfSpace' hB

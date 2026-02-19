@@ -208,7 +208,7 @@ lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
   ext y
   have comm : Commute (toEnd K H L ⟨x, hx⟩) (toEnd K H L y) := by
     rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, map_zero]
-  rw [traceForm_apply_apply, ← Module.End.mul_eq_comp, LinearMap.zero_apply]
+  rw [traceForm_apply_apply, ← Module.End.mul_eq_comp, zero_apply]
   exact (LinearMap.isNilpotent_trace_of_isNilpotent (comm.isNilpotent_mul_right hx')).eq_zero
 
 @[simp]
@@ -240,7 +240,7 @@ lemma traceForm_coroot (α : Weight K H L) (x : H) :
     traceForm K H L (coroot α) x = 2 • (α <| (cartanEquivDual H).symm α)⁻¹ • α x := by
   have : cartanEquivDual H ((cartanEquivDual H).symm α) x = α x := by
     rw [LinearEquiv.apply_symm_apply, Weight.toLinear_apply]
-  rw [coroot, map_nsmul, map_smul, LinearMap.smul_apply, LinearMap.smul_apply]
+  rw [coroot, map_nsmul, map_smul, smul_apply, smul_apply]
   congr 2
 
 @[simp] lemma coroot_neg [IsTriangularizable K H L] (α : Weight K H L) :
@@ -497,7 +497,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
     change killingForm K L (x : L) (z : L) = 0
     replace hx : α x = 0 := by simpa using hx
     rw [← huv, ← traceForm_apply_lie_apply, ← LieSubalgebra.coe_bracket_of_module,
-      lie_eq_smul_of_mem_rootSpace hu, hx, zero_smul, map_zero, LinearMap.zero_apply]
+      lie_eq_smul_of_mem_rootSpace hu, hx, zero_smul, map_zero, zero_apply]
   | zero => simp
   | add _ _ _ _ hx hy => simp [hx, hy]
   | smul _ _ _ hz => simp [hz]

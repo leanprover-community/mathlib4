@@ -243,7 +243,7 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
     Ne.bot_lt fun ht => by
       rw [ht] at h
       apply h
-      rw [bot_eq_zero, Nat.factorization_zero, Finsupp.zero_apply]
+      rw [bot_eq_zero, Nat.factorization_zero, zero_apply]
   rw [← Finsupp.mem_support_iff] at h
   obtain ⟨g, hg⟩ : ∃ g : G, g ^ (exponent G / p) ≠ 1 := by
     suffices key : ¬exponent G ∣ exponent G / p by

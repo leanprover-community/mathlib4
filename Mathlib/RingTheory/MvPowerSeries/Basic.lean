@@ -599,7 +599,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     dsimp at h
     subst i
     rw [mem_antidiagonal] at hij
-    rw [← hij, Finsupp.add_apply, Finsupp.single_eq_same]
+    rw [← hij, add_apply, Finsupp.single_eq_same]
     exact Nat.le_add_right n _
   · intro h
     refine ⟨fun m => coeff (m + single s n) φ, ?_⟩

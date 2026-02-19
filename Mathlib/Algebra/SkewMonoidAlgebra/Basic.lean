@@ -217,7 +217,7 @@ theorem coeff_add (p q : SkewMonoidAlgebra k G) (a : G) :
   rcases p
   rcases q
   simp_rw [← ofFinsupp_add, coeff]
-  exact Finsupp.add_apply _ _ _
+  exact add_apply _ _ _
 
 @[simp]
 theorem coeff_smul {S} [SMulZeroClass S k] (r : S) (p : SkewMonoidAlgebra k G) (a : G) :

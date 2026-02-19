@@ -119,7 +119,7 @@ lemma ext {M : ModuleCat B} {α β : KaehlerDifferential f ⟶ M}
   have : ⊤ ≤ LinearMap.ker (α - β).hom := by
     rw [← KaehlerDifferential.span_range_derivation, Submodule.span_le]
     rintro _ ⟨y, rfl⟩
-    rw [SetLike.mem_coe, LinearMap.mem_ker, ModuleCat.hom_sub, LinearMap.sub_apply, sub_eq_zero]
+    rw [SetLike.mem_coe, LinearMap.mem_ker, ModuleCat.hom_sub, sub_apply, sub_eq_zero]
     apply h
   rw [top_le_iff, LinearMap.ker_eq_top] at this
   ext : 1

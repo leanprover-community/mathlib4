@@ -210,7 +210,7 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
       rw [LinearMap.baseChange_eq_ltensor]
       erw [← LinearMap.comp_apply (i.lTensor k), ← LinearMap.lTensor_comp]
       rw [(LinearMap.exact_subtype_ker_map i).linearMap_comp_eq_zero]
-      simp only [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]
+      simp only [LinearMap.lTensor_zero, zero_apply, map_zero]
   use Basis.ofRepr iequiv.symm
   intro j
   simp [iequiv, i]
@@ -369,7 +369,7 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
       refine (subsingleton_iff_forall_eq 0).mpr fun y ↦ H (h ?_)
       rw [map_zero, map_zero, ← LinearMap.comp_apply, ← LinearMap.lTensor_comp,
         l.exact_subtype_ker_map.linearMap_comp_eq_zero, LinearMap.lTensor_zero,
-        LinearMap.zero_apply]
+        zero_apply]
     -- By Nakayama's lemma, `l` is injective.
     have : Function.Injective l := by
       rwa [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot,

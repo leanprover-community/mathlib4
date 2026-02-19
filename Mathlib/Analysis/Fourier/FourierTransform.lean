@@ -106,8 +106,8 @@ theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : AddChar 𝕜 𝕊)
   conv in L _ => rw [← add_sub_cancel_right v v₀]
   rw [integral_add_right_eq_self fun v : V ↦ (e (-L (v - v₀) w) : ℂ) • f v, ← integral_smul]
   congr 1 with v
-  rw [← smul_assoc, smul_eq_mul, ← Circle.coe_mul, ← e.map_add_eq_mul, ← LinearMap.neg_apply,
-    ← sub_eq_add_neg, ← LinearMap.sub_apply, map_sub, neg_sub]
+  rw [← smul_assoc, smul_eq_mul, ← Circle.coe_mul, ← e.map_add_eq_mul, ← neg_apply,
+    ← sub_eq_add_neg, ← sub_apply, map_sub, neg_sub]
 
 end Defs
 
@@ -264,7 +264,7 @@ theorem integral_sesq_fourierIntegral_eq_neg_flip
       Circle.smul_def, smul_eq_mul, mul_one, ← Circle.coe_inv_eq_conj, AddChar.map_neg_eq_inv,
       inv_inv]
   _ = ∫ x, (∫ ξ, M (f x) (e (-(-L.flip ξ) x) • g ξ) ∂ν) ∂μ := by
-    simp only [LinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower, LinearMap.neg_apply,
+    simp only [LinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower, neg_apply,
       neg_neg]
   _ = ∫ x, M (f x) (∫ ξ, e (-(-L.flip ξ) x) • g ξ ∂ν) ∂μ := by
     congr with x

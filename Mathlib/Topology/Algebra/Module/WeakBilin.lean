@@ -118,14 +118,14 @@ instance instContinuousAdd [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) :=
     cast (congr_arg _ ?_)
       (((coeFn_continuous B).comp continuous_fst).add ((coeFn_continuous B).comp continuous_snd))
   ext
-  simp only [Function.comp_apply, Pi.add_apply, map_add, LinearMap.add_apply]
+  simp only [Function.comp_apply, Pi.add_apply, map_add, add_apply]
 
 /-- Scalar multiplication by `𝕜` on `WeakBilin B` is continuous. -/
 instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakBilin B) := by
   refine ⟨continuous_induced_rng.2 ?_⟩
   refine cast (congr_arg _ ?_) (continuous_fst.smul ((coeFn_continuous B).comp continuous_snd))
   ext
-  simp only [Function.comp_apply, Pi.smul_apply, map_smulₛₗ, RingHom.id_apply, LinearMap.smul_apply]
+  simp only [Function.comp_apply, Pi.smul_apply, map_smulₛₗ, RingHom.id_apply, smul_apply]
 
 /--
 Map `F` into the topological dual of `E` with the weak topology induced by `F`
@@ -155,7 +155,7 @@ instance instIsTopologicalAddGroup [ContinuousAdd 𝕜] : IsTopologicalAddGroup 
     refine continuous_induced_rng.2 (continuous_pi_iff.mpr fun y => ?_)
     refine cast (congr_arg _ ?_) (eval_continuous B (-y))
     ext x
-    simp only [map_neg, Function.comp_apply, LinearMap.neg_apply]
+    simp only [map_neg, Function.comp_apply, neg_apply]
 
 end Ring
 

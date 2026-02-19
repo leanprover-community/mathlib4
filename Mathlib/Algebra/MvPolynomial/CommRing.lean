@@ -73,7 +73,7 @@ theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -
 
 @[simp, grind =]
 theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p - q) = coeff m p - coeff m q :=
-  Finsupp.sub_apply _ _ _
+  sub_apply _ _ _
 
 @[simp]
 theorem support_neg : (-p).support = p.support :=

@@ -75,7 +75,7 @@ theorem IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
   -- squeezed `simp [mul_comm]` to speed up elaboration
   simp only [e, smul_eq_mul, LinearEquiv.trans_apply, LinearEquiv.prodCongr_apply,
     LinearEquiv.refl_apply, LinearMap.ringLmapEquivSelf_symm_apply, LinearMap.coprodEquiv_apply,
-    ContinuousLinearMap.coe_prod, LinearMap.coprod_comp_prod, LinearMap.add_apply,
+    ContinuousLinearMap.coe_prod, LinearMap.coprod_comp_prod, add_apply,
     LinearMap.coe_comp, ContinuousLinearMap.coe_coe, Function.comp_apply, LinearMap.coe_smulRight,
     Module.End.one_apply, mul_comm]
 

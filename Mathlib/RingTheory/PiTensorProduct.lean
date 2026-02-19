@@ -78,7 +78,7 @@ nonrec theorem _root_.Commute.tprod {a₁ a₂ : Π i, A i} (ha : Commute a₁ a
 
 lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
     (r • tprod R x) * (s • tprod R y) = (r * s) • tprod R (x * y) := by
-  simp only [mul_def, map_smul, LinearMap.smul_apply, mul_tprod_tprod, mul_comm r s, mul_smul]
+  simp only [mul_def, map_smul, smul_apply, mul_tprod_tprod, mul_comm r s, mul_smul]
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
   __ := instMul
@@ -157,7 +157,7 @@ instance instAlgebra : Algebra R' (⨂[R] i, A i) where
   { toFun := (· • 1)
     map_one' := by simp
     map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1) by
-      rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
+      rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, smul_apply, mul_comm,
         mul_smul]
       congr
       change (1 : ⨂[R] i, A i) = 1 * 1
@@ -167,13 +167,13 @@ instance instAlgebra : Algebra R' (⨂[R] i, A i) where
   commutes' r x := by
     simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     change mul _ _ = mul _ _
-    rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply]
+    rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, smul_apply]
     change r • (1 * x) = r • (x * 1)
     rw [mul_one, one_mul]
   smul_def' r x := by
     simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     change _ = mul _ _
-    rw [LinearMap.map_smul_of_tower, LinearMap.smul_apply]
+    rw [LinearMap.map_smul_of_tower, smul_apply]
     change _ = r • (1 * x)
     rw [one_mul]
 

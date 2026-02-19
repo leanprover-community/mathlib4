@@ -78,7 +78,7 @@ lemma Cotangent.exact :
       EmbeddingLike.map_eq_zero_iff]
     ext x
     obtain ⟨⟨x, hx⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
-    simp only [map_mk, val_mk, LinearMap.zero_apply, val_zero]
+    simp only [map_mk, val_mk, zero_apply, val_zero]
     convert Q.ker.toCotangent.map_zero
     trans ((IsScalarTower.toAlgHom R _ _).comp (IsScalarTower.toAlgHom R P.Ring S)) x
     · congr

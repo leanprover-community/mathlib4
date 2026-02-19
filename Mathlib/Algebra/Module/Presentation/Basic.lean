@@ -160,7 +160,7 @@ lemma π_comp_map : solution.π.comp relations.map = 0 := by aesop
 @[simp]
 lemma π_comp_map_apply (x : relations.R →₀ A) : solution.π (relations.map x) = 0 := by
   change solution.π.comp relations.map x = 0
-  rw [π_comp_map, LinearMap.zero_apply]
+  rw [π_comp_map, zero_apply]
 
 lemma range_π : LinearMap.range solution.π = Submodule.span A (Set.range solution.var) :=
   Finsupp.range_linearCombination _

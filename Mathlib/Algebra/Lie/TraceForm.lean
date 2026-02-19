@@ -85,23 +85,23 @@ w.r.t. the trace form. -/
 lemma traceForm_apply_lie_apply' (x y z : L) :
     traceForm R L M ⁅x, y⁆ z = - traceForm R L M y ⁅x, z⁆ :=
   calc traceForm R L M ⁅x, y⁆ z
-      = - traceForm R L M ⁅y, x⁆ z := by rw [← lie_skew x y, map_neg, LinearMap.neg_apply]
+      = - traceForm R L M ⁅y, x⁆ z := by rw [← lie_skew x y, map_neg, neg_apply]
     _ = - traceForm R L M y ⁅x, z⁆ := by rw [traceForm_apply_lie_apply]
 
 lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   intro x y z
-  rw [← lie_skew, map_neg, LinearMap.neg_apply, LieModule.traceForm_apply_lie_apply R L M]
+  rw [← lie_skew, map_neg, neg_apply, LieModule.traceForm_apply_lie_apply R L M]
 
 /-- This lemma justifies the terminology "invariant" for trace forms. -/
 @[simp] lemma lie_traceForm_eq_zero (x : L) : ⁅x, traceForm R L M⁆ = 0 := by
   ext y z
-  rw [LieHom.lie_apply, LinearMap.sub_apply, Module.Dual.lie_apply, LinearMap.zero_apply,
-    LinearMap.zero_apply, traceForm_apply_lie_apply', sub_self]
+  rw [LieHom.lie_apply, sub_apply, Module.Dual.lie_apply, zero_apply,
+    zero_apply, traceForm_apply_lie_apply', sub_self]
 
 @[simp] lemma traceForm_eq_zero_of_isNilpotent [IsReduced R] [IsNilpotent L M] :
     traceForm R L M = 0 := by
   ext x y
-  simp only [traceForm_apply_apply, LinearMap.zero_apply, ← isNilpotent_iff_eq_zero]
+  simp only [traceForm_apply_apply, zero_apply, ← isNilpotent_iff_eq_zero]
   apply LinearMap.isNilpotent_trace_of_isNilpotent
   exact isNilpotent_toEnd_of_isNilpotent₂ R L M x y
 
@@ -116,7 +116,7 @@ lemma traceForm_genWeightSpace_eq [Module.Free R M]
     simpa [nsmul_eq_mul, smul_eq_mul] using mul_left_comm (χ x) d (χ y)
   have := traceForm_eq_zero_of_isNilpotent R L (shiftedGenWeightSpace R L M χ)
   replace this := LinearMap.congr_fun (LinearMap.congr_fun this x) y
-  rwa [LinearMap.zero_apply, LinearMap.zero_apply, traceForm_apply_apply,
+  rwa [zero_apply, zero_apply, traceForm_apply_apply,
     shiftedGenWeightSpace.toEnd_eq, shiftedGenWeightSpace.toEnd_eq,
     ← LinearEquiv.conj_comp, LinearMap.trace_conj', LinearMap.comp_sub, LinearMap.sub_comp,
     LinearMap.sub_comp, map_sub, map_sub, map_sub, LinearMap.comp_smul, LinearMap.smul_comp,
@@ -140,7 +140,7 @@ lemma traceForm_eq_zero_if_mem_lcs_of_mem_ucs {x y : L} (k : ℕ)
       LieSubmodule.lieIdeal_oper_eq_linear_span', LieSubmodule.mem_top, true_and] at hx
     refine Submodule.span_induction ?_ ?_ (fun z w _ _ hz hw ↦ ?_) (fun t z _ hz ↦ ?_) hx
     · rintro - ⟨z, w, hw, rfl⟩
-      rw [← lie_skew, map_neg, LinearMap.neg_apply, neg_eq_zero, traceForm_apply_lie_apply]
+      rw [← lie_skew, map_neg, neg_apply, neg_eq_zero, traceForm_apply_lie_apply]
       exact ih hw (hy _)
     · simp
     · simp [hz, hw]
@@ -263,7 +263,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
   to `AlgebraicClosure (FractionRing R)` and argue using the action of `A ⊗ L` on `A ⊗ M`. -/
   rintro z ⟨hz : z ∈ lowerCentralSeries R L L 1, hzc : z ∈ LieAlgebra.center R L⟩
   ext x
-  rw [traceForm_apply_apply, LinearMap.zero_apply]
+  rw [traceForm_apply_apply, zero_apply]
   let A := AlgebraicClosure (FractionRing R)
   suffices algebraMap R A (trace R _ ((φ z).comp (φ x))) = 0 by
     have that : Module.IsTorsionFree R A := .trans_faithfulSMul R (FractionRing R) A
@@ -448,7 +448,7 @@ lemma range_traceForm_le_span_weight :
   rintro - ⟨x, rfl⟩
   rw [LieModule.traceForm_eq_sum_finrank_nsmul, LinearMap.coe_sum, Finset.sum_apply]
   refine Submodule.sum_mem _ fun χ _ ↦ ?_
-  simp_rw [LinearMap.smul_apply, LinearMap.coe_smulRight, Weight.toLinear_apply,
+  simp_rw [smul_apply, LinearMap.coe_smulRight, Weight.toLinear_apply,
     ← Nat.cast_smul_eq_nsmul K]
   exact Submodule.smul_mem _ _ <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self χ
 

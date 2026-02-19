@@ -152,7 +152,7 @@ lemma crossProduct_ne_zero_iff_linearIndependent {F : Type*} [Field F] {v w : Fi
     crossProduct v w ≠ 0 ↔ LinearIndependent F ![v, w] := by
   rw [not_iff_comm]
   by_cases hv : v = 0
-  · rw [hv, map_zero, LinearMap.zero_apply, eq_self, iff_true]
+  · rw [hv, map_zero, zero_apply, eq_self, iff_true]
     exact fun h ↦ h.ne_zero 0 rfl
   constructor
   · rw [LinearIndependent.pair_iff' hv, not_forall_not]

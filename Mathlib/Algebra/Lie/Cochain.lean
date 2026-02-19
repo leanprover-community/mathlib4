@@ -147,7 +147,7 @@ lemma d₂₃_apply (a : twoCochain R L M) (x y z : L) :
 lemma d₂₃_comp_d₁₂ : (d₂₃ R L M) ∘ₗ (d₁₂ R L M) = 0 := by
   ext a x y z
   have (a : oneCochain R L M) (x : L) : d₁₂ R L M a x = (d₁₂ R L M a).val x := rfl
-  simp only [LinearMap.comp_apply, d₂₃_apply, LinearMap.zero_apply, this,
+  simp only [LinearMap.comp_apply, d₂₃_apply, zero_apply, this,
     d₁₂_apply_coe_apply_apply R L M, lie_sub, lie_lie]
   rw [leibniz_lie y x, leibniz_lie z x, leibniz_lie z y]
   have : a ⁅y, ⁅z, x⁆⁆ = a ⁅x, ⁅z, y⁆⁆ + a ⁅z, ⁅y, x⁆⁆ := by
@@ -175,7 +175,7 @@ lemma mem_twoCocycle_iff_of_trivial [LieModule.IsTrivial L M] (a : twoCochain R 
     abel
   · intro h
     ext x y z
-    simp only [d₂₃_apply, trivial_lie_zero, sub_self, add_zero, zero_sub, LinearMap.zero_apply]
+    simp only [d₂₃_apply, trivial_lie_zero, sub_self, add_zero, zero_sub, zero_apply]
     rw [← twoCochain_skew a x, ← twoCochain_skew a y, h x y z]
     abel
 

@@ -121,7 +121,7 @@ theorem tendsto_normSq_coprime_pair :
   have f_def : ⇑f = fun p : Fin 2 → ℝ => (p 0 : ℂ) * ↑z + p 1 := by
     ext1
     dsimp only [π₀, π₁, f, LinearMap.coe_proj, real_smul, LinearMap.coe_smulRight,
-      LinearMap.add_apply]
+      add_apply]
     rw [mul_one]
   have :
     (fun p : Fin 2 → ℤ => normSq ((p 0 : ℂ) * ↑z + ↑(p 1))) =
@@ -138,7 +138,7 @@ theorem tendsto_normSq_coprime_pair :
     apply LinearMap.ext
     intro c
     have hz : (z : ℂ).im ≠ 0 := z.2.ne'
-    rw [LinearMap.comp_apply, LinearMap.smul_apply, LinearMap.id_apply]
+    rw [LinearMap.comp_apply, smul_apply, LinearMap.id_apply]
     ext i
     dsimp only [Pi.smul_apply, LinearMap.pi_apply, smul_eq_mul]
     fin_cases i

@@ -196,7 +196,7 @@ private theorem normalizedTrace_trans_apply_aux [FiniteDimensional F E] [Algebra
   have : FiniteDimensional E E⟮a⟯ :=
     IntermediateField.adjoin.finiteDimensional (IsIntegral.isIntegral a)
   rw [normalizedTrace_def E K, inv_natCast_smul_eq (R := E) (S := F), map_smul,
-    normalizedTrace_eq_of_finiteDimensional F E, LinearMap.smul_apply, ← smul_assoc,
+    normalizedTrace_eq_of_finiteDimensional F E, smul_apply, ← smul_assoc,
     smul_eq_mul (a := _⁻¹), ← mul_inv, trace_trace, mul_comm,
     ← Nat.cast_mul, Module.finrank_mul_finrank, eq_comm]
   let E' := E⟮a⟯.restrictScalars F

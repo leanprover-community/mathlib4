@@ -143,7 +143,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
           rw [mul_comm, ← h2x, ← hSB.eq, RingHom.id_apply, ← h2y, mul_comm]
         rw [Subtype.ext_iff, ← sub_eq_zero]
         refine hNB.1 _ (fun z => ?_)
-        rw [map_sub, LinearMap.sub_apply, sub_eq_zero]
+        rw [map_sub, sub_apply, sub_eq_zero]
         refine h2.1 ?_
         dsimp only
         rw [h2x z, ← h2y z, hxy, h2xy] }

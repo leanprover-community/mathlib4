@@ -120,7 +120,7 @@ lemma isNilpotent_restrict_of_le {f : End R M} {p q : Submodule R M}
   use n
   ext ⟨x, hx⟩
   replace hn := DFunLike.congr_fun hn ⟨x, h hx⟩
-  simp_rw [LinearMap.zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_eq_zero] at hn ⊢
+  simp_rw [zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_eq_zero] at hn ⊢
   rw [Module.End.pow_restrict, LinearMap.restrict_apply] at hn ⊢
   ext
   exact (congr_arg Subtype.val hn :)
@@ -130,7 +130,7 @@ lemma isNilpotent.restrict
     IsNilpotent (f.restrict hf) := by
   obtain ⟨n, hn⟩ := hnil
   exact ⟨n, LinearMap.ext fun m ↦ by simp only [Module.End.pow_restrict n, hn,
-    LinearMap.restrict_apply, LinearMap.zero_apply]; rfl⟩
+    LinearMap.restrict_apply, zero_apply]; rfl⟩
 
 end
 

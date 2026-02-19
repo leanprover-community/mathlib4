@@ -74,7 +74,7 @@ theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠
     simpa only [ContinuousLinearMap.ext_ring_iff, Ne, norm_eq_zero] using nonzero
   refine ⟨‖map 1‖, minor₁, ⟨‖map 1‖⁻¹ • ((map : ℂ →ₗ[ℂ] E) : ℂ →ₗ[ℝ] E), ?_⟩, ?_⟩
   · intro x
-    simp only [LinearMap.smul_apply]
+    simp only [smul_apply]
     have : x = x • (1 : ℂ) := by rw [smul_eq_mul, mul_one]
     nth_rw 1 [this]
     rw [LinearMap.coe_restrictScalars]

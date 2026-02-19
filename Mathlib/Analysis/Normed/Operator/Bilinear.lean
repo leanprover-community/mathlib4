@@ -420,7 +420,7 @@ def smulRightL : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ 
     { toFun := smulRightₗ
       map_add' := fun c₁ c₂ => by
         ext x
-        simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
+        simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, add_apply]
       map_smul' := fun m c => by
         ext x
         dsimp

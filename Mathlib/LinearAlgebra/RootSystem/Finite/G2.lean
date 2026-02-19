@@ -555,7 +555,7 @@ lemma mem_allRoots (i : ι) :
   have key : B.form (P.root i) = 0 := by
     ext x
     have hx : x ∈ span R {longRoot P, shortRoot P} := by simp
-    simp only [LinearMap.zero_apply]
+    simp only [zero_apply]
     induction hx using Submodule.span_induction with
     | zero => simp
     | mem => aesop

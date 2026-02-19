@@ -58,11 +58,11 @@ lemma _root_.LinearMap.BilinForm.lieInvariant_iff [LieAlgebra R L] [LieModule R 
     Φ.lieInvariant L ↔ Φ ∈ LieModule.maxTrivSubmodule R L (LinearMap.BilinForm R M) := by
   refine ⟨fun h x ↦ ?_, fun h x y z ↦ ?_⟩
   · ext y z
-    rw [LieHom.lie_apply, LinearMap.sub_apply, Module.Dual.lie_apply, LinearMap.zero_apply,
-      LinearMap.zero_apply, h, sub_self]
+    rw [LieHom.lie_apply, sub_apply, Module.Dual.lie_apply, zero_apply,
+      zero_apply, h, sub_self]
   · replace h := LinearMap.congr_fun₂ (h x) y z
-    simp only [LieHom.lie_apply, LinearMap.sub_apply, Module.Dual.lie_apply,
-      LinearMap.zero_apply, sub_eq_zero] at h
+    simp only [LieHom.lie_apply, sub_apply, Module.Dual.lie_apply,
+      zero_apply, sub_eq_zero] at h
     simp [← h]
 
 /--
@@ -205,7 +205,7 @@ theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   simp only [orthogonal_carrier, Φ.isOrtho_def, Set.mem_setOf_eq]
   intro z hz
   rw [← neg_eq_zero, ← hΦ_inv]
-  suffices ⁅(x : L), z⁆ = 0 by simp only [this, map_zero, LinearMap.zero_apply]
+  suffices ⁅(x : L), z⁆ = 0 by simp only [this, map_zero, zero_apply]
   rw [← LieSubmodule.mem_bot (R := K) (L := L), ← (hJ.disjoint_of_ne hI hJI).eq_bot]
   apply lie_le_inf
   exact lie_mem_lie x.2 hz

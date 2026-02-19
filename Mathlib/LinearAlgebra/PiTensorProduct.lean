@@ -545,14 +545,14 @@ open Function in
 protected theorem map_update_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] t i) :
     map (update f i (u + v)) = map (update f i u) + map (update f i v) := by
   ext x
-  simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.add_apply,
+  simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, add_apply,
     MultilinearMap.map_update_add]
 
 open Function in
 protected theorem map_update_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →ₗ[R] t i) :
     map (update f i (c • u)) = c • map (update f i u) := by
   ext x
-  simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.smul_apply,
+  simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, smul_apply,
     MultilinearMap.map_update_smul]
 
 variable (R s t)
@@ -639,12 +639,12 @@ def piTensorHomMapFun₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →
 theorem piTensorHomMapFun₂_add (φ ψ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
     piTensorHomMapFun₂ (φ + ψ) = piTensorHomMapFun₂ φ + piTensorHomMapFun₂ ψ := by
   dsimp [piTensorHomMapFun₂]; ext; simp only [map_add, LinearMap.compMultilinearMap_apply,
-    lift.tprod, add_apply, LinearMap.add_apply]
+    lift.tprod, add_apply, add_apply]
 
 theorem piTensorHomMapFun₂_smul (r : R) (φ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
     piTensorHomMapFun₂ (r • φ) = r • piTensorHomMapFun₂ φ := by
   dsimp [piTensorHomMapFun₂]; ext; simp only [map_smul, LinearMap.compMultilinearMap_apply,
-    lift.tprod, smul_apply, LinearMap.smul_apply]
+    lift.tprod, smul_apply, smul_apply]
 
 /--
 Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules.

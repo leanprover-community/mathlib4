@@ -41,7 +41,7 @@ def dualSubmodule (N : Submodule R M) : Submodule R M where
   smul_mem' r a ha y hy := by
     convert (1 : Submodule R S).smul_mem r (ha y hy)
     rw [← IsScalarTower.algebraMap_smul S r a]
-    simp only [algebraMap_smul, map_smul_of_tower, LinearMap.smul_apply]
+    simp only [algebraMap_smul, map_smul_of_tower, smul_apply]
 
 lemma mem_dualSubmodule {N : Submodule R M} {x} :
     x ∈ B.dualSubmodule N ↔ ∀ y ∈ N, B x y ∈ (1 : Submodule R S) := Iff.rfl

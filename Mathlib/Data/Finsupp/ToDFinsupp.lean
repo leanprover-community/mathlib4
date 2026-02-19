@@ -266,7 +266,7 @@ def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σ i, η i) →₀ N) ≃ Π₀ i, η
     intro h
     dsimp at hg
     rw [h] at hg
-    simp only [coe_zero, Pi.zero_apply, not_true] at hg
+    simp only [zero_apply, not_true] at hg
   left_inv f := by ext; simp [split]
   right_inv f := by ext; simp [split]
 
@@ -302,7 +302,7 @@ theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σ i, η
   classical rw [Finsupp.single_apply, if_neg H]
 
 -- Without this Lean fails to find the `AddZeroClass` instance on `Π₀ i, (η i →₀ N)`.
-attribute [-instance] Finsupp.instZero
+--attribute [-instance] Finsupp.instZero
 
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_add [AddZeroClass N] (f g : (Σ i, η i) →₀ N) :
@@ -319,7 +319,7 @@ def sigmaFinsuppAddEquivDFinsupp [AddZeroClass N] : ((Σ i, η i) →₀ N) ≃+
     invFun := sigmaFinsuppEquivDFinsupp.symm
     map_add' := sigmaFinsuppEquivDFinsupp_add }
 
-attribute [-instance] Finsupp.instAddZeroClass
+--attribute [-instance] Finsupp.instAddZeroClass
 
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_smul {R} [Monoid R] [AddMonoid N] [DistribMulAction R N] (r : R)
@@ -328,7 +328,7 @@ theorem sigmaFinsuppEquivDFinsupp_smul {R} [Monoid R] [AddMonoid N] [DistribMulA
   ext
   rfl
 
-attribute [-instance] Finsupp.instAddMonoid
+--attribute [-instance] Finsupp.instAddMonoid
 
 /-- `Finsupp.split` is a linear equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 @[simps]

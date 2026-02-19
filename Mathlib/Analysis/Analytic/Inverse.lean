@@ -133,7 +133,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       (p.leftInv i x (n + 2) fun j : Fin (n + 2) => p 1 fun _ => v j) =
         -∑ c ∈ {c : Composition (n + 2) | c.length < n + 2}.toFinset,
             (p.leftInv i x c.length) (p.applyComposition c v) := by
-      simp only [leftInv, ContinuousMultilinearMap.neg_apply, neg_inj,
+      simp only [leftInv, ContinuousMultineg_apply, neg_inj,
         ContinuousMultilinearMap.sum_apply]
       convert
         (sum_toFinset_eq_subtype

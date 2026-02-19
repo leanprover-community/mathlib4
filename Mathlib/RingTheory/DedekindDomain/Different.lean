@@ -454,7 +454,7 @@ theorem dual_eq_dual_mul_dual :
     rintro _ ⟨x, rfl, _, ⟨a, ha, rfl⟩, rfl⟩ _ ⟨m, rfl⟩
     simp only [← h_alg, mul_comm _ (algebraMap _ _ _), ← Algebra.smul_def a, map_smul,
       LinearMap.toSpanSingleton_apply, Algebra.smul_def m, mul_one,
-      LinearMap.smul_apply, traceForm_apply, smul_eq_mul]
+      smul_apply, traceForm_apply, smul_eq_mul]
     rw [← FractionalIdeal.coe_one (S := B⁰)]
     refine (mem_inv_iff (by simp)).mp ha _ (trace_mem_dual_one A K L B C M _ ?_)
     exact Algebra.smul_def m x ▸ smul_mem _ _ hx
@@ -897,7 +897,7 @@ lemma dvd_differentIdeal_of_not_isSeparable
   have hx' : (e (Ideal.Quotient.mk _ x)).2 = 0 := by
     simpa [e, Ideal.Quotient.eq_zero_iff_mem]
   rw [← Algebra.trace_eq_of_algEquiv e, Algebra.trace_prod_apply,
-    Algebra.trace_eq_zero_of_not_isSeparable H, LinearMap.zero_apply, zero_add, hx', map_zero]
+    Algebra.trace_eq_zero_of_not_isSeparable H, zero_apply, zero_add, hx', map_zero]
 
 variable {A}
 

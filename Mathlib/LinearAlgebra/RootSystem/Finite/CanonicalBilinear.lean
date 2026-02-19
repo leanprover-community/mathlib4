@@ -259,7 +259,7 @@ lemma rootFormIn_self_smul_coroot (i : ι) :
     smul_sub, sub_neg_eq_add]
   rw [Finset.sum_add_distrib, ← add_assoc, ← sub_eq_iff_eq_add, RootFormIn]
   simp only [LinearMap.coe_sum, LinearMap.coe_smulRight, Finset.sum_apply,
-    coroot'In_rootSpanMem_eq_pairingIn, LinearMap.smul_apply, smul_eq_mul, Finset.sum_smul,
+    coroot'In_rootSpanMem_eq_pairingIn, smul_apply, smul_eq_mul, Finset.sum_smul,
     root_coroot_eq_pairing, Finset.sum_neg_distrib, add_neg_cancel, sub_eq_zero]
   refine Finset.sum_congr rfl ?_
   intro j hj
@@ -297,7 +297,7 @@ lemma corootForm_self_smul_root (i : ι) :
 lemma four_nsmul_coPolarization_compl_polarization_apply_root (i : ι) :
     (4 • P.CoPolarization ∘ₗ P.Polarization) (P.root i) =
     (P.RootForm (P.root i) (P.root i) * P.CorootForm (P.coroot i) (P.coroot i)) • P.root i := by
-  rw [LinearMap.smul_apply, LinearMap.comp_apply, show 4 = 2 * 2 from rfl, mul_smul, ← map_nsmul,
+  rw [smul_apply, LinearMap.comp_apply, show 4 = 2 * 2 from rfl, mul_smul, ← map_nsmul,
     ← rootForm_self_smul_coroot, map_smul, smul_comm, ← corootForm_self_smul_root, smul_smul]
 
 lemma four_smul_rootForm_sq_eq_coxeterWeight_smul (i j : ι) :

@@ -90,7 +90,7 @@ theorem reverse_apply (x : CliffordAlgebra (0 : QuadraticForm R Unit)) :
     x.reverse = x := by
   induction x using CliffordAlgebra.induction with
   | algebraMap r => exact reverse.commutes _
-  | ι x => rw [ι_eq_zero, LinearMap.zero_apply, reverse.map_zero]
+  | ι x => rw [ι_eq_zero, zero_apply, reverse.map_zero]
   | mul x₁ x₂ hx₁ hx₂ => rw [reverse.map_mul, mul_comm, hx₁, hx₂]
   | add x₁ x₂ hx₁ hx₂ => rw [reverse.map_add, hx₁, hx₂]
 

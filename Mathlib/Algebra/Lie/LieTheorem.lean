@@ -73,15 +73,15 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     simp only [Set.subset_def, Set.mem_setOf_eq, Set.mem_preimage, SetLike.mem_coe,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     induction n generalizing w
-    · simp only [zero_add, Nat.lt_one_iff, LinearMap.sub_apply, LieModule.toEnd_apply_apply,
-        LinearMap.smul_apply, Module.End.one_apply, forall_eq, pow_zero, hv w, sub_self, zero_mem]
+    · simp only [zero_add, Nat.lt_one_iff, sub_apply, LieModule.toEnd_apply_apply,
+        smul_apply, Module.End.one_apply, forall_eq, pow_zero, hv w, sub_self, zero_mem]
     · next n hn =>
       intro m hm
       obtain (hm | rfl) : m < n + 1 ∨ m = n + 1 := by lia
       · exact U'.mono (Nat.le_succ n) (hn w m hm)
       have H : ∀ w, ⁅w, (π z ^ n) v⁆ = (T χ w) ((π z ^ n) v) + χ w • ((π z ^ n) v) := by simp
-      rw [T, LinearMap.sub_apply, pow_succ', Module.End.mul_apply, LieModule.toEnd_apply_apply,
-        LieModule.toEnd_apply_apply, LinearMap.smul_apply, Module.End.one_apply, leibniz_lie,
+      rw [T, sub_apply, pow_succ', Module.End.mul_apply, LieModule.toEnd_apply_apply,
+        LieModule.toEnd_apply_apply, smul_apply, Module.End.one_apply, leibniz_lie,
         lie_swap_lie w z, H, H, lie_add, lie_smul, add_sub_assoc, add_sub_assoc, sub_self, add_zero]
       refine add_mem (neg_mem <| add_mem ?_ ?_) ?_
       · exact U'.mono n.le_succ (hn _ n n.lt_succ_self)

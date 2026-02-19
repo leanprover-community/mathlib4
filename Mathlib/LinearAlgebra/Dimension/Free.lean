@@ -270,7 +270,7 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     (basisUnique ι h).repr v i = 0 ↔ v = 0 :=
   ⟨fun hv =>
     (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j => Subsingleton.elim i j ▸ hv),
-    fun hv => by rw [hv, map_zero, Finsupp.zero_apply]⟩
+    fun hv => by rw [hv, map_zero, zero_apply]⟩
 
 variable {R : Type*} [CommSemiring R] [StrongRankCondition R]
     {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M]
@@ -289,7 +289,7 @@ theorem _root_.LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one
   ext x
   have (x : M) : x = (e.symm x) • (e 1) := by simp [← LinearEquiv.map_smul]
   rw [this x]
-  simp only [hc, map_smul, LinearMap.smul_apply, LinearMap.id_coe, id_eq]
+  simp only [hc, map_smul, smul_apply, LinearMap.id_coe, id_eq]
   rw [← this]
 
 /-- Endomorphisms of a free module of rank one are homotheties. -/

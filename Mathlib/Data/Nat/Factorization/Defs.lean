@@ -248,7 +248,7 @@ theorem factorization_mul_apply_of_coprime {p a b : ℕ} (hab : Coprime a b) :
 theorem factorization_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
     (a * b).factorization = a.factorization + b.factorization := by
   ext q
-  rw [Finsupp.add_apply, factorization_mul_apply_of_coprime hab]
+  rw [add_apply, factorization_mul_apply_of_coprime hab]
 
 /-! ### Generalisation of the "even part" and "odd part" of a natural number -/
 

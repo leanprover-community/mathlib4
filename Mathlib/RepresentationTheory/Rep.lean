@@ -826,9 +826,9 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
   · intro g
     simp only [one_smul, MonoidAlgebra.lift_single, MonoidAlgebra.of_apply]
     exact LinearMap.congr_fun (w g) x
-  · intro g h gw hw; simp only [map_add, LinearMap.add_apply, hw, gw]
+  · intro g h gw hw; simp only [map_add, add_apply, hw, gw]
   · intro r g w
-    simp only [map_smul, w, LinearMap.smul_apply]
+    simp only [map_smul, w, smul_apply]
 
 /-- Auxiliary definition for `toModuleMonoidAlgebra`. -/
 def toModuleMonoidAlgebraMap {V W : Rep k G} (f : V ⟶ W) :

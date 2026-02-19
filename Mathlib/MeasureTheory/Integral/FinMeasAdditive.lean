@@ -235,7 +235,7 @@ theorem setToSimpleFunc_zero' {T : Set α → E →L[ℝ] F'}
   · simp [hx0]
   rw [h_zero (f ⁻¹' ({x} : Set E)) (measurableSet_fiber _ _)
       (measure_preimage_lt_top_of_integrable f hf hx0),
-    ContinuousLinearMap.zero_apply]
+    zero_apply]
 
 @[simp]
 theorem setToSimpleFunc_zero_apply {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F') :
@@ -301,7 +301,7 @@ theorem setToSimpleFunc_congr' (T : Set α → E →L[ℝ] F) (h_add : FinMeasAd
           congr; rw [pair_preimage_singleton f g]
         rw [h_eq]
         exact h eq
-      simp only [this, ContinuousLinearMap.zero_apply, pair_apply]
+      simp only [this, zero_apply, pair_apply]
 
 theorem setToSimpleFunc_congr (T : Set α → E →L[ℝ] F)
     (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0) (h_add : FinMeasAdditive μ T) {f g : α →ₛ E}
@@ -349,7 +349,7 @@ theorem setToSimpleFunc_add_left' (T T' T'' : Set α → E →L[ℝ] F)
 
 theorem setToSimpleFunc_smul_left {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F') (c : ℝ)
     (f : α →ₛ F) : setToSimpleFunc (fun s => c • T s) f = c • setToSimpleFunc T f := by
-  simp_rw [setToSimpleFunc, ContinuousLinearMap.smul_apply, smul_sum]
+  simp_rw [setToSimpleFunc, smul_apply, smul_sum]
 
 theorem setToSimpleFunc_smul_left' (T T' : Set α → E →L[ℝ] F') (c : ℝ)
     (h_smul : ∀ s, MeasurableSet s → μ s < ∞ → T' s = c • T s) {f : α →ₛ E} (hf : Integrable f μ) :
@@ -359,7 +359,7 @@ theorem setToSimpleFunc_smul_left' (T T' : Set α → E →L[ℝ] F') (c : ℝ)
   suffices ∀ x ∈ {x ∈ f.range | x ≠ 0}, T' (f ⁻¹' {x}) = c • T (f ⁻¹' {x}) by
     rw [smul_sum]
     refine Finset.sum_congr rfl fun x hx => ?_
-    rw [this x hx, ContinuousLinearMap.smul_apply]
+    rw [this x hx, smul_apply]
   intro x hx
   refine
     h_smul (f ⁻¹' {x}) (measurableSet_preimage _ _) (measure_preimage_lt_top_of_integrable _ hf ?_)
@@ -518,7 +518,7 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
       T s x := by
   classical
   obtain rfl | hs_empty := s.eq_empty_or_nonempty
-  · simp only [hT_empty, ContinuousLinearMap.zero_apply, piecewise_empty, const_zero,
+  · simp only [hT_empty, zero_apply, piecewise_empty, const_zero,
       setToSimpleFunc_zero_apply]
   simp_rw [setToSimpleFunc]
   obtain rfl | hs_univ := eq_or_ne s univ
@@ -549,7 +549,7 @@ theorem setToSimpleFunc_const (T : Set α → F →L[ℝ] F') (hT_empty : T ∅ 
   cases isEmpty_or_nonempty α
   · have h_univ_empty : (univ : Set α) = ∅ := Subsingleton.elim _ _
     rw [h_univ_empty, hT_empty]
-    simp only [setToSimpleFunc, ContinuousLinearMap.zero_apply, sum_empty,
+    simp only [setToSimpleFunc, zero_apply, sum_empty,
       range_eq_empty_of_isEmpty]
   · exact setToSimpleFunc_const' T x
 

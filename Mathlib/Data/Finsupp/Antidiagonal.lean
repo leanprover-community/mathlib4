@@ -64,7 +64,7 @@ theorem antidiagonal_single (a : α) (n : ℕ) :
     simp_rw [DFunLike.ext_iff, ← forall_and]
     intro i
     replace h := DFunLike.congr_fun h i
-    simp_rw [single_apply, Finsupp.add_apply] at h ⊢
+    simp_rw [single_apply, add_apply] at h ⊢
     obtain rfl | hai := Decidable.eq_or_ne a i
     · exact ⟨if_pos rfl, if_pos rfl⟩
     · simp_rw [if_neg hai, add_eq_zero] at h ⊢

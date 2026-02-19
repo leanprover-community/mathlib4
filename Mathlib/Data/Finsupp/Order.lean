@@ -126,13 +126,13 @@ instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α (ι →₀ β) :=
   PosSMulMono.lift _ coe_le_coe coe_smul
 
 instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α (ι →₀ β) :=
-  SMulPosMono.lift _ coe_le_coe coe_smul coe_zero
+  SMulPosMono.lift _ coe_le_coe coe_smul FunLike.coe_zero
 
 instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α (ι →₀ β) :=
   PosSMulReflectLE.lift _ coe_le_coe coe_smul
 
 instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α (ι →₀ β) :=
-  SMulPosReflectLE.lift _ coe_le_coe coe_smul coe_zero
+  SMulPosReflectLE.lift _ coe_le_coe coe_smul FunLike.coe_zero
 
 end SMulZeroClass
 
@@ -143,12 +143,12 @@ instance instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α 
   PosSMulStrictMono.lift _ coe_le_coe coe_smul
 
 instance instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α (ι →₀ β) :=
-  SMulPosStrictMono.lift _ coe_le_coe coe_smul coe_zero
+  SMulPosStrictMono.lift _ coe_le_coe coe_smul FunLike.coe_zero
 
 -- `PosSMulReflectLT α (ι →₀ β)` already follows from the other instances
 
 instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι →₀ β) :=
-  SMulPosReflectLT.lift _ coe_le_coe coe_smul coe_zero
+  SMulPosReflectLT.lift _ coe_le_coe coe_smul FunLike.coe_zero
 
 end SMulWithZero
 
@@ -158,7 +158,7 @@ variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : 
 
 instance orderBot : OrderBot (ι →₀ α) where
   bot := 0
-  bot_le := by simp only [le_def, coe_zero, Pi.zero_apply, imp_true_iff, zero_le]
+  bot_le := by simp only [le_def, zero_apply, imp_true_iff, zero_le]
 
 protected theorem bot_eq_zero : (⊥ : ι →₀ α) = 0 :=
   rfl

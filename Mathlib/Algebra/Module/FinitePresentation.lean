@@ -373,7 +373,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   have hi : f ∘ₗ Finsupp.linearCombination R i = (s₀ • g) ∘ₗ π := by
     ext j
     simp only [LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply,
-      linearCombination_single, one_smul, LinearMap.map_smul_of_tower, ← hs, LinearMap.smul_apply,
+      linearCombination_single, one_smul, LinearMap.map_smul_of_tower, ← hs, smul_apply,
       i, s₀, π]
     rw [← mul_smul, Finset.prod_erase_mul]
     exact j.prop
@@ -392,7 +392,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     rw [← hτ, Submodule.span_le]
     intro x hxσ
     simp only [s₁]
-    rw [SetLike.mem_coe, LinearMap.mem_ker, LinearMap.smul_apply,
+    rw [SetLike.mem_coe, LinearMap.mem_ker, smul_apply,
       ← Finset.prod_erase_mul _ _ (Finset.mem_univ ⟨x, hxσ⟩), mul_smul]
     convert smul_zero _
     exact hs' ⟨x, hxσ⟩
@@ -415,7 +415,7 @@ lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
   use σ.prod s
   rw [← sub_eq_zero, ← LinearMap.ker_eq_top, ← top_le_iff, ← hσ, Submodule.span_le]
   intro x hx
-  simp only [SetLike.mem_coe, LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.smul_apply,
+  simp only [SetLike.mem_coe, LinearMap.mem_ker, sub_apply, smul_apply,
     sub_eq_zero, ← Finset.prod_erase_mul σ s hx, mul_smul, hs]
 
 variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
@@ -537,7 +537,7 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
   have : ∀ x, g (l' x) = s.1 • (l (f x)) := LinearMap.congr_fun H
   simp only [rs, LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.ofBijective_apply,
-    LinearMap.smul_apply, LocalizedModule.map_mk, algebraMap_end_apply]
+    smul_apply, LocalizedModule.map_mk, algebraMap_end_apply]
   rw [← map_smul, ← smul_assoc, Algebra.smul_def s.1, hsu.mul_val_inv, one_smul]
   simp only [LocalizedModule.lift_mk, OneMemClass.coe_one, map_one, IsUnit.unit_one,
     inv_one, Units.val_one, Module.End.one_apply, this]

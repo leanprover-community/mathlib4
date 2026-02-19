@@ -746,7 +746,7 @@ def LinearMap.vecCons₂ {n} (f : M →ₗ[R] M₂ →ₗ[R] M₃) (g : M →ₗ
   toFun m := LinearMap.vecCons (f m) (g m)
   map_add' x y :=
     LinearMap.ext fun z => by
-      simp only [f.map_add, g.map_add, LinearMap.add_apply, LinearMap.vecCons_apply,
+      simp only [f.map_add, g.map_add, add_apply, LinearMap.vecCons_apply,
         Matrix.cons_add_cons (f x z)]
   map_smul' r x := LinearMap.ext fun z => by simp [Matrix.smul_cons r (f x z)]
 

@@ -553,7 +553,7 @@ instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) where
   __ := ContinuousLinearMap.monoidWithZero
   __ := ContinuousLinearMap.addCommMonoid
   left_distrib f g h := ext fun x => map_add f (g x) (h x)
-  right_distrib _ _ _ := ext fun _ => LinearMap.add_apply _ _ _
+  right_distrib _ _ _ := ext fun _ => add_apply _ _ _
   toNatCast := instNatCast
   natCast_zero := zero_smul ℕ (1 : M₁ →L[R₁] M₁)
   natCast_succ n := AddMonoid.nsmul_succ n (1 : M₁ →L[R₁] M₁)

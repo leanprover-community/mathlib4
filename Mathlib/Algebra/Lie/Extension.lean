@@ -175,7 +175,7 @@ instance : LieRing (ofTwoCocycle c) where
     rw [← of_add]
     refine Equiv.congr_arg ?_
     simp only [of_symm_add, Prod.fst_add, add_lie, twoCochain_val_apply, map_add,
-      LinearMap.add_apply, Prod.snd_add, lie_add, Prod.mk_add_mk, Prod.mk.injEq, true_and]
+      add_apply, Prod.snd_add, lie_add, Prod.mk_add_mk, Prod.mk.injEq, true_and]
     abel
   lie_add x y z := by
     rw [← of_add]
@@ -191,7 +191,7 @@ instance : LieRing (ofTwoCocycle c) where
     have hc := c.2
     rw [mem_twoCocycle_iff] at hc
     have := d₂₃_apply R L M c ((ofProd c).symm x).1 ((ofProd c).symm y).1 ((ofProd c).symm z).1
-    simp only [hc, LinearMap.zero_apply] at this
+    simp only [hc, zero_apply] at this
     rw [← twoCochain_skew _ _ ⁅((ofProd c).symm x).1, ((ofProd c).symm z).1⁆,
       ← twoCochain_skew _ _ ⁅((ofProd c).symm y).1, ((ofProd c).symm z).1⁆, eq_sub_iff_add_eq,
       zero_add, neg_eq_iff_eq_neg] at this
@@ -451,7 +451,7 @@ lemma d₁₂_oneCochainOfTwoSplitting [IsLieAbelian M] (E : Extension R M L) {s
       ⁅s x, s' y⁆ = ⁅s' x, s' y⁆ + (⁅s x, s y⁆ - ⁅s' x, s y⁆) := by
     simpa [sub_sub, sub_eq_zero] using this h
   simp only [d₁₂_apply_coe_apply_apply, oneCochainOfTwoSplitting_apply, AddSubgroupClass.coe_sub,
-    twoCocycleOf_coe_coe, LinearMap.sub_apply, LinearMap.compr₂_apply, LinearMap.coe_mk,
+    twoCocycleOf_coe_coe, sub_apply, LinearMap.compr₂_apply, LinearMap.coe_mk,
     AddHom.coe_mk, LinearEquiv.coe_coe, LieEquiv.coe_toLinearEquiv]
   nth_rw 1 [← hs x]
   nth_rw 4 [← hs y]
