@@ -456,6 +456,8 @@ theorem map_surjective_of_mkQ_comp_surjective {f : M →ₗ[R] N}
 
 section finsuppSum
 
+set_option backward.isDefEq.respectTransparency false
+
 open Finsupp
 
 variable {σ : Type*}
