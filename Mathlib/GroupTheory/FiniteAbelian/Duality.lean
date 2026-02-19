@@ -23,7 +23,7 @@ the main results in this file are:
   subgroup of `G` to its dual subgroup in `G →* Mˣ`.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 namespace CommGroup
 
@@ -145,7 +145,7 @@ The image `g` of `η : (G →* Mˣ) →* Mˣ` is such that, for all `φ : G →*
 see `CommGroup.apply_monoidHomMonoidHomEquiv`.
 -/
 @[simps! symm_apply_apply]
-def monoidHomMonoidHomEquiv :
+noncomputable def monoidHomMonoidHomEquiv :
     ((G →* Mˣ) →* Mˣ) ≃* G :=
   have : HasEnoughRootsOfUnity M (Monoid.exponent (G →* Mˣ)) := by
     rwa [Monoid.exponent_eq_of_mulEquiv (monoidHom_mulEquiv_of_hasEnoughRootsOfUnity G M).some]
@@ -170,7 +170,7 @@ where `G` is a finite commutative group and `M` is a commutative monoid such tha
 `(G →* Mˣ) →* Mˣ` are both finite (this is the case for example if `M` is a commutative domain)
 and with enough `n`th roots of unity, where `n` is the exponent of `G`.
 -/
-def subgroupOrderIsoSubgroupMonoidHom : Subgroup G ≃o (Subgroup (G →* Mˣ))ᵒᵈ where
+noncomputable def subgroupOrderIsoSubgroupMonoidHom : Subgroup G ≃o (Subgroup (G →* Mˣ))ᵒᵈ where
   toFun H := OrderDual.toDual (restrictHom H Mˣ).ker
   invFun Φ := (monoidHomMonoidHomEquiv G M).mapSubgroup (restrictHom Φ.ofDual Mˣ).ker
   map_rel_iff' {H₁} {H₂} := by
