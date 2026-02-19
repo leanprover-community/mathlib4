@@ -109,6 +109,7 @@ theorem finset_sup_mul {α} (s : Finset α) (f : α → ℝ≥0) (r : ℝ≥0) :
     s.sup f * r = s.sup fun a => f a * r :=
   Finset.comp_sup_eq_sup_comp (· * r) (fun x y => NNReal.sup_mul x y r) (zero_mul r)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finset_sup_div {α} {f : α → ℝ≥0} {s : Finset α} (r : ℝ≥0) :
     s.sup f / r = s.sup fun a => f a / r := by simp only [div_eq_inv_mul, mul_finset_sup]
 
@@ -200,6 +201,7 @@ theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a �
     a ≤ iInf g * iInf h :=
   le_iInf_mul fun i => le_mul_iInf <| H i
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] lemma natCast_iSup {ι : Sort*} (f : ι → ℕ) :
     ⨆ i, f i = (⨆ i, f i : NNReal) := by
   by_cases h : BddAbove (Set.range f)
@@ -207,6 +209,7 @@ theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a �
     simp [ciSup_le_iff', ← Nat.le_floor_iff, *]
   · simp [*]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] lemma natCast_iInf {ι : Sort*} (f : ι → ℕ) :
     ⨅ i, f i = (⨅ i, f i : NNReal) := by
   obtain hι | hι := isEmpty_or_nonempty ι

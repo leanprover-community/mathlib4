@@ -262,9 +262,10 @@ theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
 theorem isUpperSet_of_isClosed (h : IsClosed s) : IsUpperSet s :=
   isLowerSet_compl.1 <| isLowerSet_of_isOpen h.isOpen_compl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_nhds_iff_not_le {β : Type*} {f : β → α} {l : Filter β} {x : α} :
     Filter.Tendsto f l (𝓝 x) ↔ ∀ y, ¬y ≤ x → ∀ᶠ z in l, ¬y ≤ f z := by
-  simp [topology_eq_lowerTopology, tendsto_nhds_generateFrom_iff, Filter.Eventually, Ici,
+  simp +instances [topology_eq_lowerTopology, tendsto_nhds_generateFrom_iff, Filter.Eventually, Ici,
     compl_setOf]
 
 /--
@@ -290,6 +291,7 @@ protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
     choose f hf using hs
     exact ⟨_, finite_range f, by simp_rw [biInter_range, hf, sInter_eq_iInter]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function `f : β → α` with lower topology in the codomain is continuous
 if and only if the preimage of every interval `Set.Ici a` is a closed set.
 -/
