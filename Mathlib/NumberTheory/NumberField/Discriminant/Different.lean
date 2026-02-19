@@ -100,6 +100,7 @@ theorem natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow (L 𝒪' : T
 
 variable (L : Type*) [Field L]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isCoprime_differentIdeal_of_isCoprime_discr {K₁ K₂ : Type*} [Field K₁]
     [NumberField K₁] [Field K₂] [NumberField K₂] [Algebra K₁ L] [Algebra K₂ L]
     (h : IsCoprime (discr K₁) (discr K₂)) :

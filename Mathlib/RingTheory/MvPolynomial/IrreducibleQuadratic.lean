@@ -151,8 +151,9 @@ theorem irreducible_of_totalDegree_eq_one
 
 variable (c : n →₀ R)
 
-#adaptation_note /-- Needed after leanprover/lean4#12564 -/
-noncomputable instance : Module R (MvPolynomial n R) :=
+#adaptation_note /-- Needed after leanprover/lean4#12564.
+Named to avoid collision with `MvPolynomial.instModule` from `Mathlib.RingTheory.MvPolynomial`. -/
+noncomputable instance instModuleSelf : Module R (MvPolynomial n R) :=
   inferInstanceAs <| Module R (AddMonoidAlgebra R (n →₀ ℕ))
 
 /-- The linear polynomial $$\sum_i c_i X_i$$. -/
