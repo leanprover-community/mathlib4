@@ -21,10 +21,12 @@ open Function
 
 namespace WithTop
 
+set_option backward.isDefEq.respectTransparency false in
 instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
     IsOrderedAddMonoid (WithTop α) where
   add_le_add_left _ _ := add_le_add_left
 
+set_option backward.isDefEq.respectTransparency false in
 instance canonicallyOrderedAdd [Add α] [Preorder α] [CanonicallyOrderedAdd α] :
     CanonicallyOrderedAdd (WithTop α) where
   le_self_add
