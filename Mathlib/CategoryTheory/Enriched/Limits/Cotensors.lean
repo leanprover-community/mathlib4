@@ -346,30 +346,39 @@ def internalHomCurry_PrecotensorCone_eq (V : Type u) [Category.{u₁} V] [Monoid
   rw [id_tensor_pre_app_comp_ev]
   simp
 
-@[reassoc]
-def internalHomCurry_PrecotensorCone_reverse_eq (V : Type u) (v y x : V) [Category.{u₁} V] [MonoidalCategory V]
-    [MonoidalClosed V] [e : BraidedCategory V] : internalHomCurry v y x
-      ≫ (@Precotensor.coneNatTrans V _ _ (reverseBraiding V) _ _ _ _ _ (@selfEnrichedPrecotensor V _ _ _ (reverseBraiding V) v x)) y
-      = (pre (β_ y v).hom).app x ≫ internalHomCurry y v x := by
-  have p := @internalHomCurry_PrecotensorCone_eq V _ _ _ (reverseBraiding V) v y x
-  have q : (BraidedCategory.braiding (self := reverseBraiding V) v y).inv = (β_ y v).hom := rfl
-  rw [q] at p
-  exact p
+-- @[reassoc]
+-- def internalHomCurry_PrecotensorCone_reverse_eq (V : Type u) (v y x : V) [Category.{u₁} V] [MonoidalCategory V]
+--     [MonoidalClosed V] [e : BraidedCategory V] : internalHomCurry v y x
+--       ≫ (@Precotensor.coneNatTrans V _ _ (reverseBraiding V) _ _ _ _ _ (@selfEnrichedPrecotensor V _ _ _ (reverseBraiding V) v x)) y
+--       = (pre (β_ y v).hom).app x ≫ internalHomCurry y v x := by
+--   have p := @internalHomCurry_PrecotensorCone_eq V _ _ _ (reverseBraiding V) v y x
+--   -- have q : (BraidedCategory.braiding (self := reverseBraiding V) v y).inv = (β_ y v).hom := rfl
+--   -- rw [q] at p
+--   exact p
 
 instance selfEnrichedCotensor (V : Type u) [Category.{u₁} V] [MonoidalCategory V] [MonoidalClosed V]
     [BraidedCategory V] : CotensoredCategory V V where
   cotensor v x := {
     toPrecotensor := selfEnrichedPrecotensor V v x
-    coneNatTransInv := fun y => (@Precotensor.coneNatTrans V _ _ (reverseBraiding V) _ _ _ _ _ (@selfEnrichedPrecotensor V _ _ _ (reverseBraiding V) y x)) v
-    NatTransInv_NatTrans_eq := fun y => by
-      refine (Iso.cancel_iso_hom_left (internalHomCurryIso y v x) _ (𝟙 ((ihom v).obj ((ihom y).obj x)))).mp ?_
-      rw [internalHomCurryIso_hom]
-      rw [internalHomCurry_PrecotensorCone_reverse_eq_assoc]
+    coneNatTransInv y := internalHomUncurry y v x ≫ ((pre (β_ y v).hom).app x) ≫ internalHomCurry y v x
+    NatTransInv_NatTrans_eq y := by
+      simp only [Category.assoc]
       rw [internalHomCurry_PrecotensorCone_eq]
-      rw [← Category.assoc, ← internalHomCurryIso_hom]
-      rw [← NatTrans.comp_app]
-      rw [← pre_map]
-      simp
+
+      -- refine (Iso.cancel_iso_hom_left (internalHomCurryIso y v x) _ (𝟙 ((ihom v).obj ((ihom y).obj x)))).mp ?_
+      -- rw [internalHomCurryIso_hom]
+
+      -- -- rw [@internalHomCurry_PrecotensorCone_eq_assoc V _ _ _ (reverseBraiding V)]
+      -- -- rw [internalHomCurry_PrecotensorCone_reverse_eq_assoc]
+
+      -- -- (pre (β_ y v).inv).app x ≫ internalHomCurry v y x ≫ (selfEnrichedPrecotensor V v x).coneNatTrans y
+      -- -- (pre (β_ v y).hom).app x ≫ internalHomCurry v y x ≫ (selfEnrichedPrecotensor V v x).coneNatTrans y
+
+      -- rw [internalHomCurry_PrecotensorCone_eq]
+      -- rw [← Category.assoc, ← internalHomCurryIso_hom]
+      -- rw [← NatTrans.comp_app]
+      -- rw [← pre_map]
+      -- simp
     NatTrans_NatTransInv_eq := fun y => by
       refine (Iso.cancel_iso_hom_left (internalHomCurryIso v y x) _ (𝟙 ((ihom y).obj ((ihom v).obj x)))).mp ?_
       rw [internalHomCurryIso_hom]
