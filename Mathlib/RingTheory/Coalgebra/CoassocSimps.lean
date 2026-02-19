@@ -181,7 +181,7 @@ attribute [coassoc_simps] assoc_comp_map_simproc
 lemma assoc_comp_map_assoc (f₃ : M₃ →ₗ[R] N₃)
     (f₁₂ : M →ₗ[R] M₁ ⊗[R] M₂) (f : P →ₗ[R] M ⊗[R] M₃) :
     α ∘ₗ (f₁₂ ⊗ₘ f₃) ∘ₗ f = (id ⊗ₘ (id ⊗ₘ f₃)) ∘ₗ α ∘ₗ (f₁₂ ⊗ₘ id) ∘ₗ f := by
-  rw [← LinearMap.comp_assoc, assoc_comp_map]
+  rw [← LinearMap.comp_assoc]
   simp only [coassoc_simps]
 
 /-- Simproc version of `assoc_comp_map_assoc` that only fires when `f₃ ≠ id`. -/
@@ -305,7 +305,7 @@ attribute [coassoc_simps] asssoc_symm_comp_map_simproc
 lemma asssoc_symm_comp_map_assoc (f₁ : M₁ →ₗ[R] N₁)
     (f₂₃ : M →ₗ[R] M₂ ⊗[R] M₃) (f : P →ₗ[R] M₁ ⊗[R] M) :
     α⁻¹ ∘ₗ (f₁ ⊗ₘ f₂₃) ∘ₗ f = ((f₁ ⊗ₘ .id) ⊗ₘ .id) ∘ₗ α⁻¹ ∘ₗ (.id ⊗ₘ f₂₃) ∘ₗ f := by
-  rw [← LinearMap.comp_assoc, asssoc_symm_comp_map]
+  rw [← LinearMap.comp_assoc]
   simp only [coassoc_simps]
 
 /-- Simproc version of `asssoc_symm_comp_map_assoc` that only fires when `f₁ ≠ id`. -/
@@ -720,6 +720,6 @@ lemma assoc_comp_map_comm_comp_comul_comp_comul_assoc
     α ∘ₗ ((β ∘ₗ δ) ⊗ₘ f) ∘ₗ δ ∘ₗ h = (id ⊗ₘ ((id ⊗ₘ f) ∘ₗ β)) ∘ₗ α ∘ₗ δ ⊗ₘ id ∘ₗ β ∘ₗ δ ∘ₗ h := by
   simp_rw [← LinearMap.comp_assoc]
   congr 1
-  simp only [LinearMap.comp_assoc, assoc_comp_map_comm_comp_comul_comp_comul]
+  simp only [coassoc_simps]
 
 end CoassocSimps
