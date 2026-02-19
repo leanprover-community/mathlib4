@@ -201,11 +201,11 @@ abbrev pseudoEMetricSpaceOfEDist'
   uniformity_edist := by rfl
 
 
-theorem EMetric.Uniformity_eq {α : Type u} [EDist α] (edist_self : ∀ x : α, edist x x = 0)
+theorem EMetric.toUniformSpace_ofEDist {α : Type u} [EDist α] (edist_self : ∀ x : α, edist x x = 0)
     (edist_comm : ∀ x y : α, edist x y = edist y x)
     (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) :
-    (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle) =
-    (pseudoEMetricSpaceOfEDist edist_self edist_comm edist_triangle).toUniformSpace := by rfl
+    (pseudoEMetricSpaceOfEDist edist_self edist_comm edist_triangle).toUniformSpace =
+      (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle) := by rfl
 
 /-- Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
