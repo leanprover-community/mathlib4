@@ -74,6 +74,7 @@ def negatorObj (X : C) : C := Xᘁ
 /--
 The unit (evaluation) isomorphism of a categorical group.
 -/
+@[simps!]
 def evaluationIso (X : C) : Xᘁ ⊗ X ≅ 𝟙_ C where
   hom := ε_ X Xᘁ
   inv := Groupoid.inv (ε_ X Xᘁ)
