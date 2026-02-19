@@ -146,7 +146,7 @@ instance ExactPairing.of_rightDual_self (X : C) : ExactPairing Xᘁ X where
 /--
 In a categorical group, the right dual of an object is also its left dual.
 -/
-instance HasLeftDual.of_CategoricalGroup (X : C) : HasLeftDual X where
+abbrev HasLeftDual.ofCategoricalGroup (X : C) : HasLeftDual X where
   leftDual := Xᘁ
   exact := ExactPairing.of_rightDual_self X
 
