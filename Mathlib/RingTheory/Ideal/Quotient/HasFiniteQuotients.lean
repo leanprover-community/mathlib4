@@ -20,18 +20,18 @@ heavy imports or do not fit elsewhere.
 
 @[expose] public section
 
-namespace Ring
+namespace Ring.HasFiniteQuotients
 
 variable {R : Type*} [CommRing R]
 
-theorem HasFiniteQuotients.MaximalOfPrime [HasFiniteQuotients R] {P : Ideal R} [P.IsPrime]
-    (hp : P ≠ ⊥) : P.IsMaximal :=
+theorem maximalOfPrime [HasFiniteQuotients R] {P : Ideal R} [P.IsPrime] (hp : P ≠ ⊥) :
+    P.IsMaximal :=
   have : IsDomain (R ⧸ P) := Ideal.Quotient.isDomain P
   have : Finite (R ⧸ P) := finiteQuotient hp
   Ideal.Quotient.maximal_of_isField P <| Finite.isField_of_domain (R ⧸ P)
 
 instance [HasFiniteQuotients R] : DimensionLEOne R :=
-  ⟨fun h _ ↦ HasFiniteQuotients.MaximalOfPrime h⟩
+  ⟨fun h _ ↦ maximalOfPrime h⟩
 
 instance [HasFiniteQuotients R] : IsNoetherianRing R := by
   refine (isNoetherianRing_iff_ideal_fg R).mpr fun I ↦ ?_
@@ -39,9 +39,9 @@ instance [HasFiniteQuotients R] : IsNoetherianRing R := by
   · exact hI ▸ Submodule.fg_bot
   obtain ⟨x, hx₁, hx₂⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hI
   refine Submodule.fg_of_fg_map_of_fg_inf_ker (Submodule.mkQ (Ideal.span {x})) ?_ ?_
-  · have := HasFiniteQuotients.finiteQuotient (I := Ideal.span {x}) (by simp [hx₂])
+  · have := finiteQuotient (I := Ideal.span {x}) (by simp [hx₂])
     exact Submodule.FG.of_finite
   · rw [Submodule.ker_mkQ, inf_eq_right.mpr ((Ideal.span_singleton_le_iff_mem I).mpr hx₁)]
     exact Ideal.fg_span {x}
 
-end Ring
+end Ring.HasFiniteQuotients
