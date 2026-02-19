@@ -56,6 +56,7 @@ noncomputable def yonedaYonedaColimit :
   _ ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) :=
         isoWhiskerLeft yoneda.op (colimitIsoFlipCompColim (F ⋙ yoneda)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X)).inv =
     (colimitObjIsoColimitCompEvaluation _ _).hom ≫
       (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) := by
@@ -72,6 +73,7 @@ theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X
   simp [largeCurriedYonedaLemma, yonedaOpCompYonedaObj, FunctorToTypes.colimit.map_ι_apply,
     map_yonedaEquiv]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance {X : C} : PreservesColimit F (coyoneda.obj (op (yoneda.obj X))) := by
   suffices IsIso (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) from
     preservesColimit_of_isIso_post _ _

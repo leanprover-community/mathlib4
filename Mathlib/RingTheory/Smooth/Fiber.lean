@@ -52,6 +52,7 @@ section IsLocalRing
 variable [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)]
   [Algebra.FormallySmooth 𝓀[R] (𝓀[R] ⊗[R] S)]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local irreducible] KaehlerDifferential in
 attribute [local instance] TensorProduct.rightAlgebra in
 /--
@@ -187,6 +188,7 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
 
 end IsLocalRing
 
+set_option backward.isDefEq.respectTransparency false in
 -- It is not hard to generalize the proof to get the full generality of the stacks tag.
 -- The hard part is figuring out the right way to state the result. Hence we refrain from this
 -- generalization until we have an application.
