@@ -6,7 +6,8 @@ Authors: Damiano Testa
 module
 
 public meta import Mathlib.Lean.Linter
-import Mathlib.Tactic.Lemma
+public import Lean.Linter.Basic
+public import Mathlib.Tactic.Lemma
 
 /-!
 # The `unnecessarySetOptionIn`
