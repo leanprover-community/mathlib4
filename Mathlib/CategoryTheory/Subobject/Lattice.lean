@@ -442,7 +442,7 @@ theorem inf_eq_map_pullback {A : C} (f₁ : Subobject A) (f₂ : Subobject A) :
     (f₁ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) := by
   convert inf_eq_map_pullback' (representative.obj f₁) f₂
   ext1
-  nth_rw 1 [← toThinSkeleton_representative_eq_self f₁]
+  nth_rw 1 [← thinSkeleton_mk_representative_eq_self f₁]
   congr
 
 theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] :

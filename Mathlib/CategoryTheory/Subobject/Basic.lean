@@ -171,8 +171,8 @@ noncomputable def representativeIso {X : C} (A : MonoOver X) :
   (equivMonoOver X).counitIso.app A
 
 @[simp]
-lemma toThinSkeleton_representative_eq_self {X : C} (A : Subobject X) :
-    (toThinSkeleton _).obj (representative.obj A) = A :=
+lemma thinSkeleton_mk_representative_eq_self {X : C} (A : Subobject X) :
+    ThinSkeleton.mk (representative.obj A) = A :=
   Subobject.skeletal _ ⟨((equivMonoOver X).unitIso.app _).symm⟩
 
 /-- Use choice to pick a representative underlying object in `C` for any `Subobject X`.
