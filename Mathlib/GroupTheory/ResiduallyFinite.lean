@@ -21,11 +21,15 @@ In this file we define residually finite groups and prove some basic properties.
 
 @[expose] public section
 
+/-- An additive group `G` is residually finite if the intersection of all finite index normal
+additive subgroups is trivial. -/
 class AddGroup.ResiduallyFinite (G : Type*) [AddGroup G] : Prop where
   inf_eq_bot : ⨅ H : FiniteIndexNormalAddSubgroup G, H.toAddSubgroup = ⊥
 
 namespace Group
 
+/-- A group `G` is residually finite if the intersection of all finite index normal subgroups is
+trivial. -/
 class ResiduallyFinite (G : Type*) [Group G] : Prop where
   inf_eq_bot : ⨅ H : FiniteIndexNormalSubgroup G, H.toSubgroup = ⊥
 
