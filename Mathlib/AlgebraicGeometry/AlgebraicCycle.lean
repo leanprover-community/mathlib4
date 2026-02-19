@@ -40,6 +40,9 @@ abbrev AlgebraicCycle (X : Scheme.{u}) (Z : Type*) [Zero Z] :=
 
 namespace AlgebraicCycle
 
+lemma locallyFiniteSupport [Zero Z] (c : AlgebraicCycle X Z) : LocallyFiniteSupport c :=
+  fun z ↦ c.supportLocallyFiniteWithinDomain' z (mem_of_subset_of_mem (fun _ a ↦ a) trivial)
+
 /-
 I think this is the data we should take in whenever we want to talk about a grading. Since
 everything should be mostly handled by typeclass inference, it should suffice to only explicitly
@@ -57,7 +60,7 @@ def dimensionGrading [AddMonoid Z] (d : ℕ∞) :
   carrier := {c : AlgebraicCycle X Z | ∀ x ∈ c.support, height x = d}
   add_mem' c₁ c₂ := by
     rename_i a b
-    simp_all only [top_eq_univ, Function.mem_support, ne_eq, mem_setOf_eq,
+    simp_all only [Function.mem_support, ne_eq, mem_setOf_eq,
       Function.locallyFinsuppWithin.coe_add, Pi.add_apply]
     intro x hx
     have : ¬ a x = 0 ∨ ¬ b x = 0 := by
@@ -89,14 +92,13 @@ variable (f : X ⟶ Y)
          (x : X)
          (z : Y)
 
-
 /--
 The cycle containing a single point with a chosen coefficient
 -/
 noncomputable
 def single (coeff : Z) : AlgebraicCycle X Z where
   toFun := Set.indicator {x} (Function.const X coeff)
-  supportWithinDomain' := by simp
+  supportWithinDomain' := by simp only [support_indicator]; exact LE.le.subset fun _ a_1 ↦ trivial
   supportLocallyFiniteWithinDomain' z hz :=
     ⟨⊤, ⟨Filter.univ_mem' fun a ↦ trivial, by simp [← Function.const_def, toFinite]⟩⟩
 
@@ -112,10 +114,17 @@ Implementation detail for the pushforward; the support of a cycle on X intersect
 of a point z : Y along a quasicompact morphism f : X ⟶ Y is finite.
 -/
 lemma preimageSupport_finite [qf : QuasiCompact f] :
- (preimageSupport f c z).Finite :=
- supportLocallyFiniteWithin_top_inter_compact_finite c.supportLocallyFiniteWithinDomain' <|
-  QuasiCompact.isCompact_preimage_singleton f z
+    (preimageSupport f c z).Finite := LocallyFiniteSupport.finite_inter_support_of_isCompact
+  c.locallyFiniteSupport  <| f.isCompact_preimage_singleton z
 
+ --supportLocallyFiniteWithin_top_inter_compact_finite c.supportLocallyFiniteWithinDomain' <|
+ -- QuasiCompact.isCompact_preimage_singleton f z
+
+noncomputable
+instance (x : X) : Module (IsLocalRing.ResidueField ↑(Y.presheaf.stalk (f x)))
+    (IsLocalRing.ResidueField ↑(X.presheaf.stalk x)) := by
+  let a := RingHom.toAlgebra (IsLocalRing.ResidueField.map (f.stalkMap x).hom)
+  exact Algebra.toModule
 /--
 Degree of `f` at a point `x` is defined to be the degree of the associated field extension
 from `κ(f x)` to `κ(x)`. We return a default value of zero when this degree is either infinite
@@ -127,8 +136,11 @@ def _root_.AlgebraicGeometry.LocallyRingedSpace.Hom.degree : ℕ := @Module.finr
     (IsLocalRing.ResidueField (X.presheaf.stalk x))
     (by infer_instance)
     (by infer_instance)
-    (by have :=
-      RingHom.toAlgebra (IsLocalRing.ResidueField.map (f.stalkMap x).hom);exact Algebra.toModule)
+    (by infer_instance)
+    --(by infer_instance)
+
+    --(by let a :=
+    --  RingHom.toAlgebra (IsLocalRing.ResidueField.map (f.stalkMap x).hom); exact Algebra.toModule)
 
 end Zero
 open Classical in
@@ -145,10 +157,30 @@ def mapAux {Y : Scheme} (f : X ⟶ Y) (x : X) : ℤ :=
   if height x = height (f.base x) then Hom.degree f x else 0
 
 
+/-
+Is this really necessary?
 
+I can't think of any application of this other than the obvious HasDegree ℤ and
+HasDegree ℕ. Maybe there's a good one though, who knows.
+-/
 class _root_.HasDegree (Z : Type*) [Semiring Z] where
   degree : ∀ {X Y : Scheme.{u}}, (X ⟶ Y) → X → Z
   degree_one {X : Scheme.{u}} (z : X) : degree (𝟙 X) z = 1
+
+/-
+I think it would be better
+-/
+variable (X) (Z) in
+structure Grading [AddMonoid Z] where
+  I : Type*
+  ι : I → AddSubmonoid (AlgebraicCycle X Z)
+
+/-
+I think this is the superior way to do gradings
+-/
+def dimensionGrading'' [AddMonoid Z] : Grading X Z where
+  I := ℕ∞
+  ι := dimensionGrading X Z
 
 
 open Classical in
@@ -163,7 +195,79 @@ kinds of scheme (I'm thinking in particular of gradings explicitly involving som
 function, in which case our m would check if the scheme is of finite type over (S, δ) or
 something).
 -/
-def h {Y : Scheme.{u}} (m : Scheme.{u} → Prop) (_ : m Y) (x : Y) : Z := sorry
+--def h {Y : Scheme.{u}} (m : Scheme.{u} → Prop) (_ : m Y) (x : Y) : Z := sorry
+
+
+/-
+How do we want algebraic cycles to work?
+
+Probably want to be able to declare a cycle with coeffients in Z like we have above.
+
+I think it's probably most sensible to just have a notion of "grading" which is structure
+Grading X Z:
+  I : Type*
+  ι : I → SubMonoid <| AlgebraicCycle X Z
+
+Maybe it's not necessary to have this there...
+
+-/
+
+
+section testing
+variable {Z : Type*} [Semiring Z] {W : Y.Opens} (hW : IsAffineOpen W)
+  (f : X ⟶ Y) (c : AlgebraicCycle X Z)
+
+
+lemma preimageSupport_inter_subset : W.carrier ∩ {z | (preimageSupport f c z).Nonempty} ⊆
+    f.base '' (f.base ⁻¹' ((W.carrier ∩ {z | (preimageSupport f c z).Nonempty})) ∩ c.support) := by
+  intro a ha
+  rw [image_preimage_inter]
+  suffices a ∈ f.base '' c.support from mem_inter ha this
+  have := ha.2.some_mem
+  simp only [preimageSupport, mem_inter_iff, mem_preimage, mem_singleton_iff,
+    Function.mem_support, ne_eq, mem_image] at this ⊢
+  exact ⟨ha.2.some, this.symm⟩
+
+lemma preimageSupport_preimage_inter_subset : f.base ⁻¹' W.carrier ∩
+    f.base ⁻¹' {z | (preimageSupport f c z).Nonempty} ∩ c.support ⊆
+    f.base ⁻¹' W.carrier ∩ (⋃ z : Y, preimageSupport f c z) := by
+  intro p hp
+  simp only [Opens.carrier_eq_coe, preimageSupport, preimage_setOf_eq, mem_inter_iff,
+    mem_preimage, SetLike.mem_coe, mem_setOf_eq, Function.mem_support, ne_eq, mem_iUnion,
+    mem_singleton_iff, exists_and_right, exists_eq', true_and] at hp ⊢
+  exact ⟨hp.1.1, hp.2⟩
+
+variable [qc : QuasiCompact f]
+
+lemma preimage_inter_support_finite_of_isAffineOpen (hW : IsAffineOpen W) :
+    (f.base ⁻¹' W.carrier ∩ c.support).Finite :=
+  LocallyFiniteSupport.finite_inter_support_of_isCompact c.locallyFiniteSupport <|
+  qc.1 W.carrier W.is_open' <| AlgebraicGeometry.IsAffineOpen.isCompact hW
+
+lemma iUnion_preimage_inter_support_finite_of_isAffineOpen (hW : IsAffineOpen W) :
+    (⋃ _ : Y, f.base ⁻¹' W.carrier ∩ c.support).Finite := by
+  suffices (f.base ⁻¹' W.carrier ∩ c.support).Finite by
+    apply Finite.subset this
+    intro a ha
+    simp only [Opens.carrier_eq_coe, mem_iUnion, mem_inter_iff, mem_preimage,
+      SetLike.mem_coe, Function.mem_support, ne_eq, exists_and_left, exists_const_iff] at ha ⊢
+    exact ⟨ha.1, ha.2.2⟩
+  exact preimage_inter_support_finite_of_isAffineOpen f c hW
+
+lemma inter_nonempty_finite (hW : IsAffineOpen W)
+   : (W.carrier ∩ {z : Y | (preimageSupport f c z).Nonempty}).Finite := by
+  refine Finite.subset (Finite.image _ ?_) (preimageSupport_inter_subset f c)
+  rw[preimage_inter]
+  apply Finite.subset _ (preimageSupport_preimage_inter_subset f c)
+  rw[inter_iUnion]
+  suffices (⋃ i : Y, f.base ⁻¹' W.carrier ∩ c.support).Finite by
+    apply Finite.subset this
+    simp only [Opens.carrier_eq_coe, iUnion_subset_iff]
+    intro y x hx
+    simp only [mem_inter_iff, mem_preimage, SetLike.mem_coe,
+      Function.mem_support, ne_eq, mem_iUnion, exists_and_left, exists_const_iff] at hx ⊢
+    exact ⟨hx.1, ⟨Nonempty.intro y, hx.2.2⟩⟩
+  exact iUnion_preimage_inter_support_finite_of_isAffineOpen f c hW
 
 
 /--
@@ -188,13 +292,20 @@ lemma map_locally_finite {Z : Type*} {Y : Scheme} [Semiring Z] [HasDegree Z]
   refine ⟨IsOpen.mem_nhds (Opens.isOpen W) hW.2.1, ?_⟩
 
   have pbfinite : (f.base ⁻¹' W ∩ Function.support c).Finite :=
-   supportLocallyFiniteWithin_top_inter_compact_finite c.supportLocallyFiniteWithinDomain' cpct
+   LocallyFiniteSupport.finite_inter_support_of_isCompact c.locallyFiniteSupport cpct
 
+   --supportLocallyFiniteWithin_top_inter_compact_finite c.supportLocallyFiniteWithinDomain' cpct
+
+
+  /-
+  Should probably prove this suffices in a separate lemma, then show this lemma we're in using
+  the reasoning in the suffices block
+  -/
   suffices (W.carrier ∩ {z : Y | (preimageSupport f c z).Nonempty}).Finite by
       apply Finite.subset this
       apply inter_subset_inter Set.Subset.rfl
       intro x
-      simp only [top_eq_univ, Function.mem_support, ne_eq, mem_setOf_eq]
+      simp only [Function.mem_support, ne_eq, mem_setOf_eq]
       contrapose!
       intro aux
       rw [Finset.sum_eq_zero]
@@ -241,6 +352,8 @@ lemma map_locally_finite {Z : Type*} {Y : Scheme} [Semiring Z] [HasDegree Z]
 
   exact pbfinite
 
+
+end testing
 /--
 The pushforward of an algebraic cycle by a quasicompact morphism.
 
@@ -253,7 +366,7 @@ def map {Z : Type*} {Y : Scheme.{u}} [Semiring Z] [HasDegree Z]
     (c : AlgebraicCycle X Z) : AlgebraicCycle Y Z
     where
   toFun z := (∑ x ∈ (preimageSupport_finite f c z).toFinset, (c x) * mapAux' h f x)
-  supportWithinDomain' := by simp
+  supportWithinDomain' := by simp; sorry
   supportLocallyFiniteWithinDomain' z _ := map_locally_finite h f c z
 
 
@@ -278,10 +391,24 @@ I don't really know if we're going to need to have some equidimensionality assum
 #check dimensionGrading
 #check (fun {X : Scheme} (x : X) ↦ height x)
 
+lemma fds (R : Type*) [CommSemiring R] : Semiring.toModule (R := R) =
+    Algebra.toModule (R := R) (A := R) := rfl
 
+/-
+This is absolutely insane and this proof should be by simp.
+-/
 noncomputable instance : HasDegree ℕ where
   degree := Hom.degree
-  degree_one := by simp [Hom.degree]
+  degree_one {M} x := by
+    dsimp [Hom.degree]
+    have := fds (IsLocalRing.ResidueField ↑(M.presheaf.stalk x))
+    let k := Module.finrank_self (IsLocalRing.ResidueField ↑(M.presheaf.stalk x))
+    convert k
+    rw [this]
+    simp [inferInstance,
+  instModuleResidueFieldCarrierStalkCommRingCatPresheafCoeContinuousMapCarrierCarrierHomTopCatBase]
+    congr
+    aesop
 
 /--
 Pushforward preserves cycles of pure dimension `d`.
@@ -294,9 +421,11 @@ def map_homogeneneous {Y : Scheme.{u}} [Semiring Z] [HasDegree Z]
     property := by
       simp only [dimensionGrading]
       intro y hy
-      simp [map, preimageSupport, mapAux'] at hy
+      simp only [map, preimageSupport, mapAux', mul_ite, mul_zero, Function.mem_support,
+        ne_eq] at hy
       obtain ⟨x, hx⟩ := Finset.exists_ne_zero_of_sum_ne_zero hy
-      simp at hx
+      simp only [Finite.mem_toFinset, mem_inter_iff, mem_preimage, mem_singleton_iff,
+        Function.mem_support, ne_eq, ite_eq_right_iff, Classical.not_imp] at hx
       have : height x = d := c.2 x hx.1.2
       simp_all
 
@@ -309,7 +438,9 @@ lemma map_id {Z : Type*} [Semiring Z] [HasDegree Z] (c : AlgebraicCycle X Z) :
    ext z
    have : (c z ≠ 0 ∧ (preimageSupport_finite (𝟙 X) c z).toFinset = {z}) ∨
           (c z = 0 ∧ (preimageSupport_finite (𝟙 X) c z).toFinset = ∅) := by
-    simp[preimageSupport_finite, preimageSupport, Finite.toFinset]
+    simp only [ne_eq, Finite.toFinset, preimageSupport, Scheme.Hom.id_base, TopCat.hom_id,
+      ContinuousMap.coe_id, preimage_id_eq, id_eq, toFinset_eq_empty, singleton_inter_eq_empty,
+      Function.mem_support, not_not, and_self]
     refine Or.elim (em (c z = 0)) (fun o ↦ Or.inr o) (fun o ↦ Or.inl ⟨o, Finset.ext (fun a ↦ ?_)⟩)
     simp only [mem_toFinset, mem_inter_iff, mem_singleton_iff, Function.mem_support, ne_eq,
       Finset.mem_singleton, and_iff_left_iff_imp]
@@ -317,7 +448,7 @@ lemma map_id {Z : Type*} [Semiring Z] [HasDegree Z] (c : AlgebraicCycle X Z) :
     assumption
    suffices (map (fun {X : Scheme} (x : X) ↦ height x) (𝟙 X) c).toFun z = c.toFun z from this
    obtain h | h := this
-   all_goals simp only [top_eq_univ, map, mapAux', Scheme.id.base, TopCat.hom_id,
+   all_goals simp only [map, mapAux', Scheme.Hom.id_base, TopCat.hom_id,
                ContinuousMap.id_apply, ↓reduceIte]
              rw[h.2]
              simp only [HasDegree.degree_one, mul_one, Finset.sum_singleton, Finset.sum_empty]
