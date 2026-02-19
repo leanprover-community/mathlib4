@@ -691,6 +691,18 @@ theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
       hst ▸
         (mul_add r s t).symm ▸ Ideal.add_mem (I * J) (mul_mem_mul_rev hsi hrj) (mul_mem_mul hri htj)
 
+theorem prod_eq_iInf_of_coprime {s : Finset ι} {J : ι → Ideal R}
+    (hp : (s : Set _).Pairwise fun (i j : ι) => J i ⊔ J j = ⊤) :
+    ∏ i ∈ s, J i = ⨅ i ∈ s, J i := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s hs ih =>
+    simp_all only [Finset.iInf_insert, Finset.coe_insert, Set.pairwise_insert, SetLike.mem_coe,
+      ne_eq, not_false_eq_true, Finset.prod_insert, forall_const]
+    obtain ⟨hp1, hp2⟩ := hp
+    rw [Ideal.mul_eq_inf_of_coprime (sup_iInf_eq_top (fun i hi ↦ (hp2 i hi (by grind)).1))]
+
 theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
     (I ⊔ ∏ i ∈ s, J i) = ⊤ :=
   Finset.prod_induction _ (fun J => I ⊔ J = ⊤)
