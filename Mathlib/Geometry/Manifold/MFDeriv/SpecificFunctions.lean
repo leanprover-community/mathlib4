@@ -532,7 +532,7 @@ lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N
       use (chartAt H' p.2).symm <| I'.symm p₀.2
     · simp_all
       use (chartAt H p.1).symm <| I.symm p₀.1
-  rw [writtenInExtChart_prod]
+  rw [writtenInExtChartAt_prod]
   apply HasFDerivWithinAt.mono ?_ better
   apply HasFDerivWithinAt.prodMap
   exacts [hf.2.mono (fst_image_prod_subset ..), hg.2.mono (snd_image_prod_subset ..)]
