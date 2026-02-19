@@ -119,6 +119,7 @@ lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
     dsimp
     rw [F.map_add]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma additive_of_comp_faithful
     (F : C ⥤ D) (G : D ⥤ E) [G.Additive] [(F ⋙ G).Additive] [Faithful G] :
     F.Additive where
@@ -161,6 +162,7 @@ open CategoryTheory.Limits
 
 open CategoryTheory.Preadditive
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
     PreservesFiniteBiproducts F where
   preserves := fun {J} _ =>
