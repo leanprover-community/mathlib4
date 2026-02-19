@@ -168,6 +168,7 @@ theorem natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow (K₁ K₂ : Inter
   exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv (𝓞 K₁) K₁)
     (FractionRing.algEquiv (𝓞 L) L) _
 
+omit [IsFractionRing 𝒪 K] [IsDedekindDomain 𝒪] [CharZero 𝒪] [Module.Finite ℤ 𝒪] in
 lemma not_dvd_discr_iff_forall_liesOver {p : ℤ} (hp : Prime p) :
     ¬ p ∣ discr K ↔ ∀ (P : Ideal 𝒪) (_ : P.IsMaximal), P.LiesOver (.span {p}) →
       Algebra.IsUnramifiedAt ℤ P := by
@@ -175,12 +176,12 @@ lemma not_dvd_discr_iff_forall_liesOver {p : ℤ} (hp : Prime p) :
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
   have := IsIntegralClosure.isFractionRing_of_finite_extension ℤ ℚ K 𝒪
   have := IsIntegralClosure.finite ℤ ℚ K 𝒪
-  have := CharZero.of_module 𝒪 K
+  have := CharZero.of_module (R := 𝒪) K
   simp_rw [← not_dvd_differentIdeal_iff]
   constructor
   · intro H P hP hP' hP''
     have := Ideal.absNorm_dvd_absNorm_of_le (Ideal.dvd_iff_le.mp hP'')
-    rw [absNorm_differentIdeal K, ← Ideal.pow_inertiaDeg_eq_absNorm P hp,
+    rw [absNorm_differentIdeal K, Ideal.absNorm_eq_pow_inertiaDeg P hp,
       ← Int.natAbs_pow, Int.natAbs_dvd_natAbs] at this
     exact H (.trans (dvd_pow_self _ (Ideal.inertiaDeg_pos' ..).ne') this)
   · intro H h
@@ -189,15 +190,16 @@ lemma not_dvd_discr_iff_forall_liesOver {p : ℤ} (hp : Prime p) :
     exact H P hP ⟨h₁.symm⟩ h₂
 
 attribute [local simp] Ideal.span_le in
+omit [IsFractionRing 𝒪 K] [IsDedekindDomain 𝒪] [CharZero 𝒪] [Module.Finite ℤ 𝒪] in
 lemma not_dvd_discr_iff_forall_mem {p : ℤ} (hp : Prime p) :
     ¬ p ∣ discr K ↔ ∀ (P : Ideal 𝒪) (_ : P.IsPrime), ↑p ∈ P →
       Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
-  have := CharZero.of_module 𝒪 K
+  have := CharZero.of_module (R := 𝒪) K
   have h := (Ideal.isPrime_of_prime
     (Ideal.prime_span_singleton_iff.mpr hp)).isMaximal (by simp [hp.ne_zero])
-  rw [NumberField.not_dvd_discr_iff_forall_liesOver (𝒪 := 𝒪) hp]
+  rw [NumberField.not_dvd_discr_iff_forall_liesOver K 𝒪 hp]
   exact ⟨fun H P hP _ ↦ H P (hP.isMaximal (by aesop)) ⟨h.eq_of_le Ideal.IsPrime.ne_top' (by simpa)⟩,
     fun H P _ h ↦ H P _ (h.1.le (Ideal.mem_span_singleton_self _))⟩
 
