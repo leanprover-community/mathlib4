@@ -33,6 +33,7 @@ universe u
 
 open TensorProduct
 
+-- TODO: Move to `Mathlib.LinearAlgebra.TensorProduct.Quotient`
 namespace TensorProduct.AlgebraTensorModule
 
 variable {R : Type*} (A B : Type*) [CommRing R] [CommRing A] [Algebra R A]
@@ -72,6 +73,7 @@ lemma tensorQuotientEquiv_symm_apply_mk_tmul (n : Submodule B N) (x : M) (y : N)
 
 end TensorProduct.AlgebraTensorModule
 
+-- TODO: Move to `Mathlib.RingTheory.TensorProduct.Basic`
 namespace Algebra.TensorProduct
 
 variable {R : Type*} (S T A : Type*) [CommRing R] [CommRing S] [Algebra R S]
@@ -113,13 +115,7 @@ def tensorQuotientEquiv (I : Ideal T) :
     have : (Ideal.Quotient.mk I) (b₁ * b₂) = Submodule.Quotient.mk (b₁ * b₂) := rfl
     simp only [LinearEquiv.coe_coe, LinearEquiv.trans_apply, e, f, g]
     rw [this, AlgebraTensorModule.tensorQuotientEquiv_apply_tmul]
-    erw [Submodule.quotEquivOfEq_mk]
-    rw [← Ideal.Quotient.mk_eq_mk]
-    rw [← Ideal.Quotient.mk_eq_mk]
-    erw [Submodule.quotEquivOfEq_mk]
-    erw [Submodule.quotEquivOfEq_mk]
-    simp only [LinearEquiv.refl_toLinearMap, LinearMap.flip_apply, mk_apply, LinearMap.id_coe,
-      id_eq]
+    simp only [← Ideal.Quotient.mk_eq_mk, AlgebraTensorModule.tensorQuotientEquiv_apply_tmul]
     rw [← Algebra.TensorProduct.tmul_mul_tmul]
     rfl
 
@@ -142,6 +138,9 @@ variable (T : Type*) [CommRing T] [Algebra R T]
 variable (I : Ideal S)
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
+
+-- TODO: Move to `Mathlib.RingTheory.Ideal.Cotangent`
+section
 
 variable {I} in
 /-- Lift a linear map `f : I →ₗ[R] M` that vanishes on products to a linear map on the
@@ -172,7 +171,20 @@ lemma Cotangent.lift_toCotangent {M : Type*} [AddCommGroup M] [Module R M]
     Cotangent.lift f hf (I.toCotangent x) = f x :=
   rfl
 
-variable (R)
+/-- The canonical map from the cotangent space to the quotient by the square is injective. -/
+lemma cotangentToQuotientSquare_injective :
+    Function.Injective I.cotangentToQuotientSquare := by
+  rw [injective_iff_map_eq_zero]
+  intro x hx
+  obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
+  rw [toCotangent_to_quotient_square] at hx
+  rw [Ideal.toCotangent_eq_zero]
+  exact (Submodule.Quotient.mk_eq_zero (I ^ 2)).mp hx
+
+end
+
+-- TODO: Move to `Mathlib.RingTheory.Ideal.Maps`
+section
 
 /-- `Algebra.idealMap S I` preserves multiplication. -/
 @[simp]
@@ -181,6 +193,10 @@ lemma _root_.Algebra.idealMap_mul {R : Type*} [CommSemiring R] (S : Type*) [Semi
     Algebra.idealMap S I (x * y) = Algebra.idealMap S I x * Algebra.idealMap S I y := by
   ext
   simp
+
+end
+
+variable (R)
 
 /-- The canonical map from the base change of the cotangent space `T ⊗[R] I/I²` to the
 cotangent space `(I · (T ⊗[R] S))/(I · (T ⊗[R] S))²` of the extended ideal. -/
@@ -231,19 +247,6 @@ lemma tensorCotangentTo_surjective :
     exact ⟨a + b, by simp only [map_add, ha, hb]; rfl⟩
   | tmul t x =>
     exact ⟨t ⊗ₜ I.toCotangent x, by simpa using (heq ..).symm⟩
-
-/-- The canonical map from the cotangent space to the quotient by the square is injective. -/
-lemma cotangentToQuotientSquare_injective :
-    Function.Injective I.cotangentToQuotientSquare := by
-  simp only [cotangentToQuotientSquare]
-  rw [injective_iff_map_eq_zero]
-  intro x hx
-  obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
-  simp only [toCotangent] at hx
-  erw [Submodule.mapQ_apply] at hx
-  simp only [Submodule.coe_subtype, Quotient.mk_eq_mk] at hx
-  rw [Ideal.toCotangent_eq_zero]
-  exact (Submodule.Quotient.mk_eq_zero (I ^ 2)).mp hx
 
 /-- If `T` is a flat `R`-module, the canonical map `tensorCotangentTo R T I` is injective. -/
 lemma tensorCotangentTo_injective_of_flat [Module.Flat R T] :
