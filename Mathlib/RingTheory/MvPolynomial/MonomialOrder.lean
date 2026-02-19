@@ -993,6 +993,7 @@ lemma sPolynomial_leadingTerm_mul' [NoZeroDivisors R] (p₁ p₂ q₁ q₂ : MvP
   · (obtain rfl | rfl | rfl | rfl := H) <;> simp
   simp [H, leadingTerm, sPolynomial_monomial_mul, degree_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
     {B : Finset ι} {g : ι → MvPolynomial σ R}
     (hd : ∀ b ∈ B,
@@ -1000,8 +1001,6 @@ lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
     (hfd : (m.toSyn <| m.degree <| ∑ b ∈ B, g b) < d) :
     ∃ (c : ι → ι → R),
       ∑ b ∈ B, g b = ∑ b₁ ∈ B, ∑ b₂ ∈ B, (c b₁ b₂) • m.sPolynomial (g b₁) (g b₂) := by
-  sorry
-  /-
   classical
   induction B using Finset.induction_on with
   | empty => simp
@@ -1035,7 +1034,6 @@ lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
       rw [sPolynomial]
       obtain (⟨h, -⟩ | h) := hd b' hb' <;>
         simp [h, ← smul_eq_C_mul, smul_sub, ← mul_smul, mul_comm (m.leadingCoeff (g b'))]
-  -/
 
 end Ring
 

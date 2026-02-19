@@ -992,13 +992,14 @@ theorem map_neg (e : M ≃SL[σ₁₂] M₂) (x : M) : e (-x) = -e x :=
 
 variable [Module R M₂] [IsTopologicalAddGroup M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pair of continuous linear maps such that `f₁ ∘ f₂ = id` generates a continuous
 linear equivalence `e` between `M` and `M₂ × f₁.ker` such that `(e x).2 = x` for `x ∈ f₁.ker`,
 `(e x).1 = f₁ x`, and `(e (f₂ y)).2 = 0`. The map is given by `e x = (f₁ x, x - f₂ (f₁ x))`. -/
 def equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M) (h : Function.RightInverse f₂ f₁) :
     M ≃L[R] M₂ × f₁.ker :=
   equivOfInverse (f₁.prod (f₁.projKerOfRightInverse f₂ h)) (f₂.coprod f₁.ker.subtypeL)
-    (fun x => by simp) fun ⟨x, y⟩ => by sorry -- simp [h x]
+    (fun x => by simp) fun ⟨x, y⟩ => by simp [h x]
 
 @[simp]
 theorem fst_equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M)
