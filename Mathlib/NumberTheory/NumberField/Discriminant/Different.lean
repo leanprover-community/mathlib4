@@ -76,9 +76,9 @@ lemma discr_mem_differentIdeal : ↑(discr K) ∈ differentIdeal ℤ 𝒪 := by
   have := (differentIdeal ℤ 𝒪).absNorm_mem
   cases (discr K).natAbs_eq with
   | inl h =>
-    rwa [absNorm_differentIdeal (K := K), ← Int.cast_natCast, ← h] at this
+    rwa [absNorm_differentIdeal K, ← Int.cast_natCast, ← h] at this
   | inr h =>
-    rwa [absNorm_differentIdeal (K := K), ← Int.cast_natCast, Int.eq_neg_comm.mp h,
+    rwa [absNorm_differentIdeal K, ← Int.cast_natCast, Int.eq_neg_comm.mp h,
       Int.cast_neg, neg_mem_iff] at this
 
 attribute [local instance] FractionRing.liftAlgebra in
@@ -180,11 +180,11 @@ lemma not_dvd_discr_iff_forall_liesOver {p : ℤ} (hp : Prime p) :
   constructor
   · intro H P hP hP' hP''
     have := Ideal.absNorm_dvd_absNorm_of_le (Ideal.dvd_iff_le.mp hP'')
-    rw [absNorm_differentIdeal (K := K), Ideal.absNorm_eq_pow_inertiaDeg P hp,
+    rw [absNorm_differentIdeal K, ← Ideal.pow_inertiaDeg_eq_absNorm P hp,
       ← Int.natAbs_pow, Int.natAbs_dvd_natAbs] at this
     exact H (.trans (dvd_pow_self _ (Ideal.inertiaDeg_pos' ..).ne') this)
   · intro H h
-    rw [← Int.dvd_natAbs, ← absNorm_differentIdeal (𝒪 := 𝒪)] at h
+    rw [← Int.dvd_natAbs, ← absNorm_differentIdeal K 𝒪] at h
     obtain ⟨P, hP, h₁, h₂⟩ := Ideal.exists_isMaximal_dvd_of_dvd_absNorm hp _ h
     exact H P hP ⟨h₁.symm⟩ h₂
 

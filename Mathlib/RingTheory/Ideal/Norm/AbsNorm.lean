@@ -6,6 +6,7 @@ Authors: Anne Baanen, Alex J. Best
 module
 
 public import Mathlib.Algebra.CharP.Quotient
+public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Determinant
 public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 public import Mathlib.RingTheory.DedekindDomain.Dvr
@@ -348,18 +349,14 @@ theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : absNorm (I : Ide
 theorem absNorm_pos_of_nonZeroDivisors (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
   absNorm_pos_iff_mem_nonZeroDivisors.mpr (SetLike.coe_mem I)
 
-/-- `ℤ` with its usual ring structure is not a field. -/
-theorem Int.not_isField : ¬IsField ℤ :=
-  fun h ↦ have := h.mul_inv_cancel (show 2 ≠ 0 by decide); by grind
-
 /-- The norm of a maximal ideal is a prime power.
 The prime is `(P.under ℤ).absNorm` and the exponent is `(P.under ℤ).inertialDeg P`.
 See `Ideal.absNorm_pow_inertiaDeg`. -/
 lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
     ∃ p n, 0 < n ∧ ↑p ∈ P ∧ p.Prime ∧ P.absNorm = p ^ n := by
-  have hP : P ≠ ⊥ := by
-    refine Ring.ne_bot_of_isMaximal_of_not_isField ‹_› fun h ↦ Int.not_isField ?_
-    exact isField_of_isIntegral_of_isField (FaithfulSMul.algebraMap_injective ℤ S) h
+  have : IsAddTorsionFree S := .of_noZeroSMulDivisors_int inferInstance
+  have := CharZero.of_noZeroSMulDivisors S S
+  have hP : P ≠ ⊥ := Ideal.IsMaximal.ne_bot_of_isIntegral_int P
   letI := Ideal.finiteQuotientOfFreeOfNeBot P hP
   cases nonempty_fintype (S ⧸ P)
   letI := Ideal.Quotient.field P
@@ -373,6 +370,7 @@ lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
 lemma exists_isMaximal_dvd_of_dvd_absNorm
     {p : ℤ} (hp : Prime p) (I : Ideal S) (hI : p ∣ I.absNorm) :
     ∃ P : Ideal S, P.IsMaximal ∧ P.under ℤ = .span {p} ∧ P ∣ I := by
+  have : IsAddTorsionFree S := .of_noZeroSMulDivisors_int inferInstance
   have : CharZero S := .of_noZeroSMulDivisors S S
   have hpMax : (Ideal.span {p}).IsMaximal :=
     ((Ideal.span_singleton_prime hp.ne_zero).mpr hp).isMaximal (by simpa using hp.ne_zero)
@@ -399,6 +397,13 @@ lemma exists_isMaximal_dvd_of_dvd_absNorm
       rw [Ideal.span_singleton_le_iff_mem]
       have : m ≠ 0 := fun h ↦ hpMax.ne_top (Ideal.span_singleton_eq_top.mpr (by simpa [h] using hp))
       exact Ideal.mem_of_dvd _ hp.symm.dvd (Ideal.pow_mem_of_mem _ (by simpa) _ this.bot_lt)
+
+/-- A version that takes a natural number and `Nat.Prime`. -/
+lemma exists_isMaximal_dvd_of_dvd_absNorm'
+    {p : ℕ} (hp : p.Prime) (I : Ideal S) (hI : p ∣ I.absNorm) :
+    ∃ P : Ideal S, P.IsMaximal ∧ P.under ℤ = .span {(p : ℤ)} ∧ P ∣ I :=
+  exists_isMaximal_dvd_of_dvd_absNorm (Int.prime_iff_natAbs_prime.mpr (by simpa)) _
+    (by exact_mod_cast hI)
 
 theorem finite_setOf_absNorm_eq [CharZero S] (n : ℕ) :
     {I : Ideal S | Ideal.absNorm I = n}.Finite := by

@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.NumberField.Discriminant.Basic
-import Mathlib.NumberTheory.NumberField.Discriminant.Different
-import Mathlib.NumberTheory.RamificationInertia.Galois
+module
+
+public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+public import Mathlib.NumberTheory.NumberField.Discriminant.Different
+public import Mathlib.NumberTheory.RamificationInertia.Galois
 
 /-!
 # Every number field has a ramified prime over `ℚ`
@@ -16,10 +18,13 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_pow_mem` an
 
 -/
 
+@[expose] public section
+
 variable {K 𝒪 : Type*} [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
 variable [IsIntegralClosure 𝒪 ℤ K]
 
-/-- If `K` is a number field with rank -/
+/-- If `K` is a number field with positive rank, then there exists some maximal ideal of `𝓞 K`
+that is ramified over `ℤ`. -/
 lemma NumberField.exists_not_isUramifiedAt_int (H : 1 < Module.finrank ℚ K) :
     ∃ (P : Ideal 𝒪) (_ : P.IsMaximal), P ≠ ⊥ ∧ ¬ Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
@@ -33,6 +38,8 @@ lemma NumberField.exists_not_isUramifiedAt_int (H : 1 < Module.finrank ℚ K) :
   exact ⟨P, hP.isMaximal (by aesop), by aesop, H⟩
 
 attribute [local simp] Ideal.span_le in
+/-- If `K` is a number field with positive rank such that `K/ℚ` is galois, then there exists
+some rational prime `p : ℤ` such that every prime of `K` over `P` is unramified. -/
 lemma NumberField.exists_not_isUramifiedAt_int_of_isGalois [IsGalois ℚ K]
     (H : 1 < Module.finrank ℚ K) :
     ∃ p : ℕ, p.Prime ∧ ∀ (P : Ideal 𝒪) (_ : P.IsPrime), ↑p ∈ P → ¬ Algebra.IsUnramifiedAt ℤ P := by
