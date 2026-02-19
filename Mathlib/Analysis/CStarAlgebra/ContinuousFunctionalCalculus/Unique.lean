@@ -111,6 +111,7 @@ section IsTopologicalRing
 
 variable [TopologicalSpace A] [IsTopologicalRing A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)` into an `ℝ`-algebra `A`, this is
 the unique extension of `φ` from `C(X, ℝ)` to `A` as a star `ℝ`-algebra homomorphism. -/
 @[simps]
@@ -263,6 +264,7 @@ lemma toNNReal_smul (r : ℝ≥0) (f : C(X, ℝ)₀) : (r • f).toNNReal = r �
   · simpa [max_eq_right h.le, NNReal.smul_def]
       using mul_nonpos_of_nonneg_of_nonpos r.coe_nonneg h.le
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toNNReal_neg_smul (r : ℝ≥0) (f : C(X, ℝ)₀) : (-(r • f)).toNNReal = r • (-f).toNNReal := by
   rw [NNReal.smul_def, ← smul_neg, ← NNReal.smul_def, toNNReal_smul]
@@ -293,6 +295,7 @@ section IsTopologicalRing
 
 variable [TopologicalSpace A] [IsTopologicalRing A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a non-unital star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)₀` into a non-unital
 `ℝ`-algebra `A`, this is the unique extension of `φ` from `C(X, ℝ)₀` to `A` as a non-unital
 star `ℝ`-algebra homomorphism. -/
@@ -328,6 +331,7 @@ noncomputable def realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ
       rw [sub_eq_add_neg, add_comm]
   map_star' f := by simp only [star_trivial, star_sub, ← map_star]
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma continuous_realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A)
     (hφ : Continuous φ) : Continuous φ.realContinuousMapZeroOfNNReal := by
@@ -336,6 +340,7 @@ lemma continuous_realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ�
 
 end IsTopologicalRing
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp high]
 lemma realContinuousMapZeroOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A)
     (f : C(X, ℝ≥0)₀) :
@@ -349,6 +354,7 @@ lemma realContinuousMapZeroOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0)₀ →
     ext x
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma realContinuousMapZeroOfNNReal_injective :
     Function.Injective (realContinuousMapZeroOfNNReal (X := X) (A := A)) := by
   intro φ ψ h
@@ -359,6 +365,7 @@ end NonUnitalStarAlgHom
 
 open ContinuousMapZero
 
+set_option backward.isDefEq.respectTransparency false in
 instance NNReal.instContinuousMapZero.UniqueHom
     [TopologicalSpace A] [IsTopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
     [T2Space A] :
@@ -423,6 +430,7 @@ variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
   [ContinuousMapZero.UniqueHom R B] [FunLike F A B] [NonUnitalAlgHomClass F S A B]
   [StarHomClass F A B]
 
+set_option backward.isDefEq.respectTransparency false in
 include S in
 /-- Non-unital star algebra homomorphisms commute with the non-unital continuous functional
 calculus. -/

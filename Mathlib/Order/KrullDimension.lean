@@ -168,6 +168,7 @@ lemma height_eq_iSup_last_eq (a : α) :
   intro n
   rw [height_le_iff', iSup₂_le_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Alternative definition of coheight, with the supremum only ranging over those series
 that begin at `a`.
@@ -210,6 +211,7 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
     simp [p']
   · simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 lemma length_le_coheight {x : α} {p : LTSeries α} (hhead : x ≤ p.head) :
     p.length ≤ coheight x :=
   length_le_height (α := αᵒᵈ) (p := p.reverse) (by simpa)
@@ -251,6 +253,7 @@ lemma height_eq_index_of_length_eq_height_last {p : LTSeries α} (h : p.length =
   norm_cast at *
   lia
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 In a maximally long series, i.e one as long as the coheight of the first element, the coheight of
 each element is its reverse index in the series.
@@ -425,6 +428,7 @@ lemma height_eq_top_iff {x : α} :
     obtain ⟨p, hlast, hp⟩ := h (n + 1)
     exact ⟨p.length, ⟨⟨⟨p, hlast⟩, by simp [hp]⟩, by simp [hp]⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The coheight of an element is infinite iff there exist series of arbitrary length ending in that
 element.
@@ -680,6 +684,7 @@ lemma krullDim_eq_length_of_finiteDimensionalOrder [FiniteDimensionalOrder α] :
       RelSeries.length_le_length_longestOf _ _) <|
     le_iSup (fun (i : LTSeries _) ↦ (i.length : WithBot (WithTop ℕ))) <| LTSeries.longestOf _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
     krullDim α = ⊤ :=
   le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
@@ -814,6 +819,7 @@ lemma krullDim_eq_iSup_height_add_coheight_of_nonempty [Nonempty α] :
         obtain ⟨p₂, hhead, hlen₂⟩ := exists_series_of_coheight_eq_coe a hch
         apply le_iSup_of_le ((p₁.smash p₂) (by simp [*])) (by simp [*])
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The Krull dimension is the supremum of the elements' heights.
 
@@ -825,6 +831,7 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
   | inl h => rw [krullDim_eq_bot, ciSup_of_empty]
   | inr h => rw [krullDim_eq_iSup_height_of_nonempty, WithBot.coe_iSup (OrderTop.bddAbove _)]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The Krull dimension is the supremum of the elements' coheights.
 
@@ -1006,6 +1013,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 @[simp] lemma coheight_coe_withTop (x : α) : coheight (x : WithTop α) = coheight x + 1 :=
   height_coe_withBot (α := αᵒᵈ) x
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma height_coe_withTop (x : α) : height (x : WithTop α) = height x := by
   apply le_antisymm
   · apply height_le
@@ -1034,6 +1042,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 @[simp] lemma coheight_coe_withBot (x : α) : coheight (x : WithBot α) = coheight x :=
   height_coe_withTop (α := αᵒᵈ) x
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
   rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_iSup_lt_height]
   norm_cast

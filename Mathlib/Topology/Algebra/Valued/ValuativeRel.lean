@@ -58,16 +58,10 @@ lemma mem_nhds_iff' {s : Set R} {x : R} :
   convert mem_nhds_iff (s := s) using 4
   simp [neg_add_eq_sub]
 
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.mem_nhds := mem_nhds_iff'
-
 lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { x | v x < γ } ⊆ s := by
   convert IsValuativeTopology.mem_nhds_iff' (x := (0 : R))
   rw [sub_zero]
-
-@[deprecated (since := "2025-08-04")]
-alias _root_.ValuativeTopology.mem_nhds_iff := mem_nhds_zero_iff
 
 /-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
 for use in porting files from `Valued` to `ValuativeRel`. -/
@@ -111,9 +105,6 @@ lemma hasBasis_nhds_zero' :
   (hasBasis_nhds_zero R).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
     fun γ hγ ↦ ⟨.mk0 γ hγ, by simp⟩
 
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
-
 variable (R) in
 instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
   have cts_add : ContinuousConstVAdd R R :=
@@ -145,9 +136,6 @@ theorem isOpen_ball (r : ValueGroupWithZero R) :
     exact ⟨Units.mk0 _ hr,
       fun y hy => (sub_add_cancel y x).symm ▸ ((v).map_add _ x).trans_lt (max_lt hy hx)⟩
 
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.isOpen_ball := isOpen_ball
-
 theorem isClosed_ball (r : ValueGroupWithZero R) :
     IsClosed {x | v x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
@@ -155,15 +143,9 @@ theorem isClosed_ball (r : ValueGroupWithZero R) :
   · exact AddSubgroup.isClosed_of_isOpen (Valuation.ltAddSubgroup v (Units.mk0 r hr))
       (isOpen_ball _)
 
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.isClosed_ball := isClosed_ball
-
 theorem isClopen_ball (r : ValueGroupWithZero R) :
     IsClopen {x | v x < r} :=
   ⟨isClosed_ball _, isOpen_ball _⟩
-
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.isClopen_ball := isClopen_ball
 
 lemma isOpen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsOpen {x | v x ≤ r} := by
@@ -173,9 +155,6 @@ lemma isOpen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr, fun y hy => (sub_add_cancel y x).symm ▸
     le_trans ((v).map_add _ _) (max_le (le_of_lt hy) hx)⟩
-
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.isOpen_closedBall := isOpen_closedBall
 
 theorem isClosed_closedBall (r : ValueGroupWithZero R) :
     IsClosed {x | v x ≤ r} := by
@@ -187,15 +166,9 @@ theorem isClosed_closedBall (r : ValueGroupWithZero R) :
   exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.isClosed_closedBall := isClosed_closedBall
-
 theorem isClopen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsClopen {x | v x ≤ r} :=
   ⟨isClosed_closedBall _, isOpen_closedBall hr⟩
-
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.isClopen_closedBall := isClopen_closedBall
 
 theorem isClopen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsClopen {x | v x = r} := by
@@ -205,16 +178,11 @@ theorem isClopen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
   rw [h]
   exact IsClopen.diff (isClopen_closedBall hr) (isClopen_ball _)
 
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.isClopen_sphere := isClopen_sphere
-
 lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsOpen {x | v x = r} :=
   isClopen_sphere hr |>.isOpen
 
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.isOpen_sphere := isOpen_sphere
-
+set_option backward.isDefEq.respectTransparency false in
 open WithZeroTopology in
 lemma continuous_valuation : Continuous v := by
   simp only [continuous_iff_continuousAt, ContinuousAt]

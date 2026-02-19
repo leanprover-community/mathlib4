@@ -6,13 +6,12 @@ Authors: Sébastien Gouëzel, David Renshaw, Heather Macbeth, Arend Mellendijk, 
 module
 
 public meta import Mathlib.Data.Ineq
-public meta import Mathlib.Util.AtLocation
-public import Mathlib.Data.Ineq
 public import Mathlib.Tactic.FieldSimp.Attr
 public import Mathlib.Tactic.FieldSimp.Discharger
 public import Mathlib.Tactic.FieldSimp.Lemmas
 public import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Util.SynthesizeUsing
+public import Mathlib.Data.Ineq
 
 /-!
 # `field_simp` tactic
@@ -53,10 +52,7 @@ namespace qNF
 number), build an `Expr` representing an object of type `NF M` (i.e. `List (ℤ × M)`) in the
 in the obvious way: by forgetting the natural numbers and gluing together the integers and `Expr`s.
 -/
-def toNF (l : qNF q($M)) : Q(NF $M) :=
-  let l' : List Q(ℤ × $M) := (l.map Prod.fst).map (fun (a, x) ↦ q(($a, $x)))
-  let qt : List Q(ℤ × $M) → Q(List (ℤ × $M)) := List.rec q([]) (fun e _ l ↦ q($e ::ᵣ $l))
-  qt l'
+def toNF (l : qNF q($M)) : Q(NF $M) := l.foldr (fun ((a, x), _) l ↦ q(($a, $x) ::ᵣ $l)) q([])
 
 /-- Given `l` of type `qNF M`, i.e. a list of `(ℤ × Q($M)) × ℕ`s (two `Expr`s and a natural
 number), apply an expression representing a function with domain `ℤ` to each of the `ℤ`
@@ -477,7 +473,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
       let pf_s ← mkDecideProofQ q($s ≠ 0)
       let ⟨G, pf_y⟩ ← Sign.pow iM y' g s
       let pf_y' := q(Eq.trans (congr_arg (· ^ $s) $pf_sgn) $pf_y)
-      pure ⟨q($y' ^ $s), ⟨G, pf_y'⟩, l.onExponent (HSMul.hSMul s), (q(NF.pow_eq_eval $pf_s $pf):)⟩
+      pure ⟨q($y' ^ $s), ⟨G, pf_y'⟩, l.onExponent (↑s * ·), (q(NF.pow_eq_eval $pf_s $pf):)⟩
   /- normalize a `(1:M)` -/
   | ~q(1) => pure ⟨q(1), ⟨Sign.plus,  q(rfl)⟩, [], q(NF.one_eq_eval $M)⟩
   /- normalize an addition: `a + b` -/

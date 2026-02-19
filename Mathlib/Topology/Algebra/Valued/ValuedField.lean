@@ -239,6 +239,7 @@ local instance : LinearOrderedCommGroupWithZero (ValueGroup₀ hv.v) :=
 noncomputable def extension : hat K → ValueGroup₀ hv.v :=
   Completion.isDenseInducing_coe.extend (v.restrict : K → (ValueGroup₀ hv.v))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuous_extension : Continuous (Valued.extension : hat K → ValueGroup₀ hv.v) := by
   refine Completion.isDenseInducing_coe.continuous_extend ?_
   intro x₀

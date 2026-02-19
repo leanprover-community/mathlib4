@@ -665,7 +665,8 @@ variable [LinearOrderedCommMonoidWithZero Γ₀]
   This is true, for example, when `A` is a finite field.
   See `Valuation.FiniteField.instIsTrivialOn`. -/
 class IsTrivialOn {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B]
-  (v : Valuation B Γ₀) where eq_one : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1
+    (v : Valuation B Γ₀) where
+  eq_one : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1
 
 attribute [grind =>] Valuation.IsTrivialOn.eq_one
 
@@ -939,6 +940,7 @@ section Basic
 
 section Monoid
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where

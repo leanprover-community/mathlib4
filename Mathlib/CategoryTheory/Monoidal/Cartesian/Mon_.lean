@@ -68,6 +68,7 @@ end MonObj
 namespace Mon
 variable [BraidedCategory C]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] tensorObj.one_def tensorObj.mul_def in
 instance : CartesianMonoidalCategory (Mon C) where
   isTerminalTensorUnit := .ofUniqueHom (fun M ↦ ⟨toUnit _⟩) fun M f ↦ by ext; exact toUnit_unique ..
@@ -100,6 +101,7 @@ instance [IsCommMonObj M.X] : IsCommMonObj M where
 
 end Mon
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
 @[simps]
@@ -235,6 +237,7 @@ def yonedaMonObj : Cᵒᵖ ⥤ MonCat.{v} where
   map_id _ := MonCat.hom_ext (MonoidHom.ext Category.id_comp)
   map_comp _ _ := MonCat.hom_ext (MonoidHom.ext (Category.assoc _ _))
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of monoids. -/
@@ -290,6 +293,7 @@ alias Mon_Class.ofRepresentableBy_yonedaMonObjRepresentableBy :=
 alias Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy :=
   MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding for `Mon_C` is fully faithful. -/
 def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
   preimage {M N} α :=
@@ -385,4 +389,10 @@ def mulEquivCongrRight (e : M ≅ N) [IsMonHom e.hom] (X : C) : (X ⟶ M) ≃* (
   ((yonedaMon.mapIso <| Mon.mkIso' e).app <| .op X).monCatIsoToMulEquiv
 
 end Hom
+
+/-- A monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all `X`. -/
+lemma isCommMonObj_iff_isMulCommutative (M : C) [MonObj M] [BraidedCategory C] :
+    IsCommMonObj M ↔ ∀ (X : C), IsMulCommutative (X ⟶ M) := by
+  exact ⟨fun h X ↦ ⟨⟨by simp [mul_comm]⟩⟩, fun h ↦ ⟨by simp [mul_eq_mul, comp_mul, mul_comm]⟩⟩
+
 end CategoryTheory

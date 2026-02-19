@@ -62,6 +62,7 @@ instance : RankLeOne (valuation (K := K)) where
   strictMono' := embedding_strictMono
 
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
+@[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
     inferInstanceAs (IsUniformAddGroup K) with
@@ -147,6 +148,7 @@ theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) <
 variable (L) (Γ₀)
 
 /-- The normed field structure determined by a rank one valuation. -/
+@[instance_reducible]
 def toNormedField : NormedField L :=
   { (inferInstance : Field L) with
     norm := norm
@@ -253,6 +255,7 @@ theorem one_lt_norm_iff : 1 < ‖x‖ ↔ 1 < val.v x := by
   rw [← map_one val.v, ← v.restrict_lt_iff]
   simpa only [map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma setOf_mem_integer_eq_closedBall :
     { x : L | x ∈ Valued.v.integer } = Metric.closedBall 0 1 := by
   ext x
@@ -263,6 +266,7 @@ end toNormedField
 /--
 The nontrivially normed field structure determined by a rank one valuation.
 -/
+@[instance_reducible]
 def toNontriviallyNormedField : NontriviallyNormedField L := {
   val.toNormedField with
   non_trivial := by

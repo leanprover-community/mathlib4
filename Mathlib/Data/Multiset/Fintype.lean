@@ -153,6 +153,7 @@ def coeEmbedding (m : Multiset α) : m ↪ α × ℕ where
     rintro ⟨⟩
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Another way to coerce a `Multiset` to a type is to go through `m.toEnumFinset` and coerce
 that `Finset` to a type. -/
 @[simps]
@@ -170,9 +171,13 @@ def coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset where
 theorem toEmbedding_coeEquiv_trans (m : Multiset α) :
     m.coeEquiv.toEmbedding.trans (Function.Embedding.subtype _) = m.coeEmbedding := by ext <;> rfl
 
-@[irreducible]
+#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/12247
+this was `@[irreducible]`, which is no longer allowed at the definition site,
+and must be applied afterwards. -/
 instance fintypeCoe : Fintype m :=
   Fintype.ofEquiv m.toEnumFinset m.coeEquiv.symm
+
+attribute [irreducible] fintypeCoe
 
 theorem map_univ_coeEmbedding (m : Multiset α) :
     (Finset.univ : Finset m).map m.coeEmbedding = m.toEnumFinset := by
@@ -294,6 +299,7 @@ lemma coe_consEquiv_of_eq_of_eq {v : α} (x : v ::ₘ m) (hx : ↑x = v) (hx2 : 
 lemma coe_consEquiv_of_eq_of_lt {v : α} (x : v ::ₘ m) (hx : ↑x = v) (hx2 : x.2 < m.count v) :
     consEquiv x = some ⟨x.1, ⟨x.2, by simpa [hx]⟩⟩ := by simp [consEquiv, hx, hx2.ne]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 There is some equivalence between `m` and `m.map f` which respects `f`.
 -/

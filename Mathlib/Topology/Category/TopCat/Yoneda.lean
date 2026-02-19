@@ -45,10 +45,11 @@ space `Y`.
 @[simps]
 def yonedaPresheaf' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
   obj X := C((unop X).1, Y)
-  map f g := ContinuousMap.comp g f.unop.hom
+  map f g := ContinuousMap.comp g (ConcreteCategory.hom f.unop)
 
 theorem comp_yonedaPresheaf' : yonedaPresheaf F Y = F.op ⋙ yonedaPresheaf' Y := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem piComparison_fac {α : Type} (X : α → TopCat) :
     piComparison (yonedaPresheaf'.{w, w'} Y) (fun x ↦ op (X x)) =
     (yonedaPresheaf' Y).map ((opCoproductIsoProduct X).inv ≫ (TopCat.sigmaIsoSigma X).inv.op) ≫
@@ -61,6 +62,7 @@ theorem piComparison_fac {α : Type} (X : α → TopCat) :
     Equiv.coe_fn_symm_mk, comp_assoc, sigmaMk_apply, ← opCoproductIsoProduct_inv_comp_ι]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The universe polymorphic Yoneda presheaf on `TopCat` preserves finite products. -/
 noncomputable instance : PreservesFiniteProducts (yonedaPresheaf'.{w, w'} Y) where
   preserves _ :=
