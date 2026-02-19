@@ -242,6 +242,24 @@ def latin_square_isomorphism
   (A : LatinSquare n α) : 
   LatinSquare n' β := latin_rectangle_isomorphism f g h (A : LatinRectangle n n α)
 
+
+structure LREquiv extends
+ Equiv (LatinRectangle m n α) (LatinRectangle m' n' β) where 
+  f : m ≃ m'
+  g : n ≃ n'
+  h : α ≃ β
+  h_toFun : toFun = latin_rectangle_isomorphism f g h 
+  
+infixl:25 " ≃◻ " => LREquiv
+
+
+#check LREquiv
+ -- where 
+ --    toFun := latin_rectangle_isomorphism f g h 
+ --    invFun := latin_rectangle_isomorphism f.symm g.symm h.symm
+ --    left_inv := by simp [Function.LeftInverse, latin_rectangle_isomorphism] 
+ --    right_inv := by simp [Function.RightInverse, Function.LeftInverse, latin_rectangle_isomorphism]
+
 -- Cyclic Example
 -- We construct an infinite family of Latin Squares from the infinite family of Cyclic Groups
 
@@ -276,7 +294,7 @@ end Isotopy
 section Completion
 
 variable {n : Type u} [Fintype n] [Nonempty n] [DecidableEq n]
-variable {k : Type u} [k_fintype_inst : Fintype k] [Nonempty k] [k_dec_eq_inst : DecidableEq k]
+variable {k : Type u} [Fintype k] [Nonempty k] [DecidableEq k]
 
 
 
@@ -769,55 +787,40 @@ theorem latin_rectangle_extends_one_row
   simp
   rfl
   
-
-#check Function.Embedding.nonempty_of_card_le
-#check IsChain
-#check Nat.set_induction
-#check Finset.induction_on
-
--- protected theorem induction_on {α : Type*} {motive : Finset α → Prop} [DecidableEq α] (s : Finset α)
---     (empty : motive ∅)
---     (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : motive s :=
---   Finset.induction empty insert s
-
--- protected theorem induction {α : Type*} {motive : Finset α → Prop} [DecidableEq α]
---     (empty : motive ∅)
---     (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : ∀ s, motive s :=
---   cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert a s ha
-
-#check Nat.set_induction_bounded
-
--- theorem inclusion_induction 
---   (motive : (Σ (k : Type u) (hk : Fintype k), Fintype.card k ≤ Fintype.card n) → Prop) : 
---   motive ⟨ n, n_fintype_inst, Fintype.card n ≤ Fintype.card n ⟩:= by sorry
-
 lemma subrect_transitive {m'' : Type*} [Fintype m'']
   {A : LatinRectangle m n α}
   {A' : LatinRectangle m' n α}
   {A'' : LatinRectangle m'' n α} 
   (h1 : is_subrect A A') (h2 : is_subrect A' A'') : is_subrect A A'' := by sorry
-
-
+  
+  
+lemma subrect_refl 
+  (e : LREquiv (m := m) (n := n) (α := α) (m' := m') (n' := n) (β := α)) :
+    ∀ A : LatinRectangle m n α, is_subrect A (e.toFun A) := by sorry
+  
 theorem latin_rectangle_extends_to_latin_square
     (A : LatinRectangle k n α)
     (hn : Fintype.card n > 0)
     (h : Fintype.card k ≤ Fintype.card n := by omega) :
     ∃ (A' : LatinRectangle n n α), is_subrect A A' := by 
-      let := Fintype.card n - Fintype.card k
       induction h_gap : (Fintype.card n - Fintype.card k) using 
         Nat.strong_induction_on generalizing k A with
       | h a ih => 
         by_cases h_full : Fintype.card k = Fintype.card n
-        . sorry
+        . let f : k ≃ n := by sorry
+          let R := latin_rectangle_isomorphism f (Equiv.refl n) (Equiv.refl α) A
+          use R
+          
+          
+          sorry
         . set k' := Option k with hk'
           letI : Fintype k' := (inferInstance : Fintype (Option k))
-          letI : DecidableEq k' := (inferInstance : DecidableEq (Option k))
           have hk'_card := Fintype.card_option (α := k)
           have hk'_le : Fintype.card k ≤ Fintype.card k' := by sorry
           have h_k_lt_n : Fintype.card k < Fintype.card n := by sorry
           have h_k'_le_n : Fintype.card k' ≤ Fintype.card n := by sorry
           replace hk' := hk'.symm
-          simp [hk'] at hk'_card
+          simp only [hk'] at hk'_card
           set m := Fintype.card n - Fintype.card k' with hm
           have hm_lt : m < a := by omega
           have ι_h := Function.Embedding.nonempty_of_card_le hk'_le
