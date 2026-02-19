@@ -84,6 +84,7 @@ def evaluationIso (X : C) : Xᘁ ⊗ X ≅ 𝟙_ C where
 /--
 The counit (coevaluation) isomorphism of a categorical group.
 -/
+@[simps!]
 def coevaluationIso (X : C) : 𝟙_ C ≅ X ⊗ Xᘁ where
   hom := η_ X Xᘁ
   inv := Groupoid.inv (η_ X Xᘁ)
