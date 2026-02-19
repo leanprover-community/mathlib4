@@ -3,11 +3,12 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Fin.Tuple.Embedding
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Set.Card
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Fin.Tuple.Embedding
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Data.Set.Card
 
 /-! # Existence of embeddings from finite types
 
@@ -32,12 +33,15 @@ Let `s : Set α` be a finite set.
   map from `Fin (m + n) ↪ α` to `Fin m ↪ α` is surjective.
 -/
 
+public section
+
 open Set Fin Function Function.Embedding
 
 namespace Fin.Embedding
 
 variable {α : Type*} {m n : ℕ} {s : Set α}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_embedding_disjoint_range_of_add_le_ENat_card
     [Finite s] (hs : s.ncard + n ≤ ENat.card α) :
     ∃ y : Fin n ↪ α, Disjoint s (range y) := by

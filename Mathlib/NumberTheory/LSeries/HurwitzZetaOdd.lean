@@ -3,10 +3,12 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.LSeries.AbstractFuncEq
-import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
-import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
-import Mathlib.NumberTheory.LSeries.Basic
+module
+
+public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
+public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
+public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
+public import Mathlib.NumberTheory.LSeries.Basic
 
 /-!
 # Odd Hurwitz zeta functions
@@ -31,7 +33,7 @@ various versions of the Jacobi theta function.
 ## Main definitions and theorems
 
 * `completedHurwitzZetaOdd`: the completed Hurwitz zeta function
-* `completedSinZeta`: the completed cosine zeta function
+* `completedSinZeta`: the completed sine zeta function
 * `differentiable_completedHurwitzZetaOdd` and `differentiable_completedSinZeta`:
   differentiability on `ℂ`
 * `completedHurwitzZetaOdd_one_sub`: the functional equation
@@ -39,6 +41,8 @@ various versions of the Jacobi theta function.
 * `hasSum_int_hurwitzZetaOdd` and `hasSum_nat_sinZeta`: relation between
   the zeta functions and corresponding Dirichlet series for `1 < re s`
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -269,6 +273,7 @@ lemma isBigO_atTop_oddKernel (a : UnitAddCircle) :
     HurwitzKernelBounds.f_int, abs_of_nonneg (exp_pos _).le] using
     norm_tsum_le_tsum_norm (hasSum_int_oddKernel b ht).summable.norm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `sinKernel a` has exponential decay at `+∞`, for any `a`. -/
 lemma isBigO_atTop_sinKernel (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (sinKernel a) (fun x ↦ Real.exp (-p * x)) := by
@@ -381,6 +386,7 @@ lemma completedSinZeta_one_sub (a : UnitAddCircle) (s : ℂ) :
 ## Relation to the Dirichlet series for `1 < re s`
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Formula for `completedSinZeta` as a Dirichlet series in the convergence range
 (first version, with sum over `ℤ`). -/
 lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
@@ -482,6 +488,7 @@ theorem hasSum_int_hurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   have : 0 < re (s + 1) := by rw [add_re, one_re]; positivity
   simp [div_right_comm _ _ (Gammaℝ _), mul_div_cancel_left₀ _ (Gammaℝ_ne_zero_of_re_pos this)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Formula for `hurwitzZetaOdd` as a Dirichlet series in the convergence range, with sum over `ℕ`
 (version with absolute values) -/
 lemma hasSum_nat_hurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :

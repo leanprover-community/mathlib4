@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
 /-!
 # Triangulated Categories
@@ -12,6 +14,8 @@ This file contains the definition of triangulated categories, which are
 pretriangulated categories which satisfy the octahedron axiom.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -23,7 +27,7 @@ open Limits Category Preadditive Pretriangulated
 
 open ZeroObject
 
-variable (C : Type*) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+variable (C : Type*) [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] [Pretriangulated C]
 
 namespace Triangulated
@@ -102,6 +106,7 @@ def triangleMorphism₂ : Triangle.mk u₁₃ v₁₃ w₁₃ ⟶ Triangle.mk u�
 
 variable (u₁₂ u₁₃ u₂₃ comm h₁₂ h₁₃ h₂₃)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When two diagrams are isomorphic, an octahedron for one gives an octahedron for the other. -/
 def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' ⟶ X₂') (u₂₃' : X₂' ⟶ X₃') (u₁₃' : X₁' ⟶ X₃')
     (comm' : u₁₂' ≫ u₂₃' = u₁₃')
@@ -143,7 +148,7 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
       iso₂₃.inv_hom_id_triangle_hom₃, eq₂₃]
     dsimp
     rw [comp_id]
-  · rw [← cancel_mono (e₂.hom⟦(1 : ℤ)⟧'), assoc, assoc, assoc,assoc, eq₂₃',
+  · rw [← cancel_mono (e₂.hom⟦(1 : ℤ)⟧'), assoc, assoc, assoc, assoc, eq₂₃',
       iso₂₃.inv_hom_id_triangle_hom₃_assoc, ← rel₂₃, ← Functor.map_comp, comm₁₂,
       Functor.map_comp, reassoc_of% eq₁₃']
   · refine isomorphic_distinguished _ H.mem _ ?_

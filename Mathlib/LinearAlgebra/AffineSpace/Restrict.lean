@@ -3,7 +3,9 @@ Copyright (c) 2022 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 /-!
 # Affine map restrictions
@@ -23,6 +25,8 @@ This file defines restrictions of affine maps.
 * The restriction in surjective if the codomain is the image of the domain.
 -/
 
+@[expose] public section
+
 
 variable {k V₁ P₁ V₂ P₂ : Type*} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂] [Module k V₁]
   [Module k V₂] [AddTorsor V₁ P₁] [AddTorsor V₂ P₂]
@@ -32,6 +36,7 @@ instance AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty
   obtain ⟨x, hx⟩ := id Ene
   exact ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Restrict domain and codomain of an affine map to the given subspaces. -/
 def AffineMap.restrict (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁} {F : AffineSubspace k P₂}
     [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) : E →ᵃ[k] F := by
@@ -54,6 +59,7 @@ theorem AffineMap.restrict.linear_aux {φ : P₁ →ᵃ[k] P₂} {E : AffineSubs
   rw [← Submodule.map_le_iff_le_comap, ← AffineSubspace.map_direction]
   exact AffineSubspace.direction_le hEF
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AffineMap.restrict.linear (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) :
     (φ.restrict hEF).linear = φ.linear.restrict (AffineMap.restrict.linear_aux hEF) :=

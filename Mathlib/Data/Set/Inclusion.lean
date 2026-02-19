@@ -3,9 +3,13 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Basic
+module
+
+public import Mathlib.Data.Set.Basic
 
 /-! # Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
+
+@[expose] public section
 
 open Function
 

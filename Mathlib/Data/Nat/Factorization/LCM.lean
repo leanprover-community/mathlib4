@@ -3,8 +3,10 @@ Copyright (c) 2025 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau
 -/
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Data.Nat.GCD.BigOperators
+module
+
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.Nat.GCD.BigOperators
 
 /-!
 # Lemmas about `factorizationLCMLeft`
@@ -12,6 +14,8 @@ import Mathlib.Data.Nat.GCD.BigOperators
 This file contains some lemmas about `factorizationLCMLeft`.
 These were split from `Mathlib.Data.Nat.Factorization.Basic` to reduce transitive imports.
 -/
+
+public section
 
 open Finset List Finsupp
 
@@ -68,6 +72,7 @@ lemma factorizationLCMLeft_mul_factorizationLCMRight (ha : a ≠ 0) (hb : b ≠ 
 
 variable (a b)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma factorizationLCMLeft_dvd_left : factorizationLCMLeft a b ∣ a := by
   rcases eq_or_ne a 0 with rfl | ha
   · simp only [dvd_zero]
@@ -82,6 +87,7 @@ lemma factorizationLCMLeft_dvd_left : factorizationLCMLeft a b ∣ a := by
     rw [factorization_lcm ha hb]; exact (lt_sup_iff.mpr <| .inl <| Nat.pos_of_ne_zero hp).ne'
   · intros; rw [pow_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma factorizationLCMRight_dvd_right : factorizationLCMRight a b ∣ b := by
   rcases eq_or_ne a 0 with rfl | ha
   · simp [factorizationLCMRight]

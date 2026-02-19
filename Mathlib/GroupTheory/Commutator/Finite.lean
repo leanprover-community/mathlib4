@@ -3,14 +3,18 @@ Copyright (c) 2021 Jordan Brown, Thomas Browning, Patrick Lutz. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.GroupTheory.Rank
-import Mathlib.GroupTheory.Index
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.GroupTheory.Commutator.Basic
+public import Mathlib.GroupTheory.Rank
+public import Mathlib.GroupTheory.Index
 
 /-!
 The commutator of a finite direct product is contained in the direct product of the commutators.
 -/
+
+@[expose] public section
 
 variable {G : Type*} [Group G]
 
@@ -81,6 +85,7 @@ instance : Finite (commutatorRepresentatives G) := Set.finite_coe_iff.mpr (Set.f
 instance closureCommutatorRepresentatives_fg : Group.FG (closureCommutatorRepresentatives G) :=
   Group.closure_finite_fg _
 
+set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 lemma rank_closureCommutatorRepresentatives_le :
     Group.rank (closureCommutatorRepresentatives G) ≤ 2 * Nat.card (commutatorSet G) := by

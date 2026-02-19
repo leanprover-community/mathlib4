@@ -3,12 +3,16 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Tactic.NormNum.Basic
+module
+
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 ## `norm_num` plugin for `^`.
 -/
+
+public meta section
 
 assert_not_exists RelIso
 
@@ -43,8 +47,11 @@ theorem IsNatPowT.trans {p : Prop} {b' c' : ℕ} (h1 : IsNatPowT p a b c)
     (h2 : IsNatPowT (Nat.pow a b = c) a b' c') : IsNatPowT p a b' c' :=
   ⟨h2.run' ∘ h1.run'⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsNatPowT.bit0 : IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b) (Nat.mul c c) :=
   ⟨fun h1 => by simp [two_mul, pow_add, ← h1]⟩
+
+set_option backward.isDefEq.respectTransparency false in
 theorem IsNatPowT.bit1 :
     IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b + nat_lit 1) (Nat.mul c (Nat.mul c a)) :=
   ⟨fun h1 => by simp [two_mul, pow_add, mul_assoc, ← h1]⟩
@@ -106,6 +113,7 @@ where
 theorem intPow_ofNat (h1 : Nat.pow a b = c) :
     Int.pow (Int.ofNat a) b = Int.ofNat c := by simp [← h1]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem intPow_negOfNat_bit0 {b' c' : ℕ} (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' = b) (hc : c' * c' = c) :
     Int.pow (Int.negOfNat a) b = Int.ofNat c := by
@@ -113,6 +121,7 @@ theorem intPow_negOfNat_bit0 {b' c' : ℕ} (h1 : Nat.pow a b' = c')
     ← h1]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem intPow_negOfNat_bit1 {b' c' : ℕ} (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' + nat_lit 1 = b) (hc : c' * (c' * a) = c) :
     Int.pow (Int.negOfNat a) b = Int.negOfNat c := by
@@ -155,6 +164,7 @@ theorem isInt_pow {α} [Ring α] : ∀ {f : α → ℕ → α} {a : α} {b : ℕ
     f = HPow.hPow → IsInt a a' → IsNat b b' → Int.pow a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 -- see note [norm_num lemma function equality]
 theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} {ad b b' cd : ℕ} :
     f = HPow.hPow → IsRat a an ad → IsNat b b' →
@@ -165,6 +175,7 @@ theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} 
   rw [← Nat.cast_pow] at this
   use this; simp [invOf_pow, Commute.mul_pow]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_pow {α} [Semiring α] {f : α → ℕ → α} {a : α} {an cn : ℕ} {ad b b' cd : ℕ} :
     f = HPow.hPow → IsNNRat a an ad → IsNat b b' →
     Nat.pow an b' = cn → Nat.pow ad b' = cd →
@@ -204,13 +215,12 @@ def evalPow.core {u : Level} {α : Q(Type u)} (e : Q(«$α»)) (f : Q(«$α» �
     let qc := mkRat zc dc.natLit!
     return .isRat dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
 
-attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
 @[norm_num _ ^ (_ : ℕ)]
 def evalPow : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
-  let ⟨nb, pb⟩ ← deriveNat b q(instAddMonoidWithOneNat)
+  let ⟨nb, pb⟩ ← deriveNat b q(Nat.instAddMonoidWithOne)
   let sα ← inferSemiring α
   let ra ← derive a
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))

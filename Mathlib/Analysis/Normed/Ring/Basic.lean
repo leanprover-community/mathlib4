@@ -3,10 +3,13 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Subgroup
-import Mathlib.Analysis.Normed.Group.Submodule
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Real
+public import Mathlib.Analysis.Normed.Group.Subgroup
+public import Mathlib.Analysis.Normed.Group.Submodule
 
 /-!
 # Normed rings
@@ -16,6 +19,8 @@ In this file we define (semi)normed rings. We also prove some theorems about the
 A normed ring instance can be constructed from a given real absolute value on a ring via
 `AbsoluteValue.toNormedRing`.
 -/
+
+@[expose] public section
 
 -- Guard against import creep.
 assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_sup_of_nonneg
@@ -378,7 +383,7 @@ lemma norm_natAbs (z : ℤ) :
 
 lemma nnnorm_natAbs (z : ℤ) :
     ‖(z.natAbs : α)‖₊ = ‖(z : α)‖₊ := by
-  simp [← NNReal.coe_inj, - Nat.cast_natAbs, norm_natAbs]
+  simp [← NNReal.coe_inj, -Nat.cast_natAbs, norm_natAbs]
 
 @[simp] lemma norm_intCast_abs (z : ℤ) :
     ‖((|z| : ℤ) : α)‖ = ‖(z : α)‖ := by
@@ -394,7 +399,7 @@ theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ �
   | 1, _ => by simp only [pow_one, le_rfl]
   | n + 2, _ => by
     simpa only [pow_succ' _ (n + 1)] using
-      le_trans (nnnorm_mul_le _ _) (mul_le_mul_left' (nnnorm_pow_le' a n.succ_pos) _)
+      le_trans (nnnorm_mul_le _ _) (mul_le_mul_right (nnnorm_pow_le' a n.succ_pos) _)
 
 /-- If `α` is a seminormed ring with `‖1‖₊ = 1`, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n`.
 See also `nnnorm_pow_le'`. -/
@@ -639,7 +644,7 @@ theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, 
 end NNReal
 
 /-- A restatement of `MetricSpace.tendsto_atTop` in terms of the norm. -/
-theorem NormedAddCommGroup.tendsto_atTop [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)]
+theorem NormedAddCommGroup.tendsto_atTop [Nonempty α] [Preorder α] [IsDirectedOrder α]
     {β : Type*} [SeminormedAddCommGroup β] {f : α → β} {b : β} :
     Tendsto f atTop (𝓝 b) ↔ ∀ ε, 0 < ε → ∃ N, ∀ n, N ≤ n → ‖f n - b‖ < ε :=
   (atTop_basis.tendsto_iff Metric.nhds_basis_ball).trans (by simp [dist_eq_norm])
@@ -647,7 +652,7 @@ theorem NormedAddCommGroup.tendsto_atTop [Nonempty α] [Preorder α] [IsDirected
 /-- A variant of `NormedAddCommGroup.tendsto_atTop` that
 uses `∃ N, ∀ n > N, ...` rather than `∃ N, ∀ n ≥ N, ...`
 -/
-theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)]
+theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [Preorder α] [IsDirectedOrder α]
     [NoMaxOrder α] {β : Type*} [SeminormedAddCommGroup β] {f : α → β} {b : β} :
     Tendsto f atTop (𝓝 b) ↔ ∀ ε, 0 < ε → ∃ N, ∀ n, N < n → ‖f n - b‖ < ε :=
   (atTop_basis_Ioi.tendsto_iff Metric.nhds_basis_ball).trans (by simp [dist_eq_norm])
@@ -661,8 +666,6 @@ for a continuous semilinear map to be bounded and this is the main use for this 
 class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (σ : R₁ →+* R₂) : Prop where
   /-- The ring homomorphism is an isometry. -/
   norm_map : ∀ {x : R₁}, ‖σ x‖ = ‖x‖
-
-@[deprecated (since := "2025-08-03")] alias RingHomIsometric.is_iso := RingHomIsometric.norm_map
 
 attribute [simp] RingHomIsometric.norm_map
 

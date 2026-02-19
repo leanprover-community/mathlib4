@@ -3,12 +3,16 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Normed.Lp.PiLp
+module
+
+public import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Analysis.Normed.Lp.PiLp
 
 /-!
 # Analyticity on `WithLp`
 -/
+
+public section
 
 open WithLp
 

@@ -3,7 +3,9 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Linear locally finite orders are densely ordered iff they are trivial
@@ -13,6 +15,8 @@ import Mathlib.Order.Interval.Finset.Basic
   A linear locally finite order is densely ordered if and only if it is a subsingleton.
 
 -/
+
+public section
 
 variable {X : Type*} [LinearOrder X] [LocallyFiniteOrder X]
 
@@ -55,6 +59,7 @@ lemma WithBot.denselyOrdered_set_iff_subsingleton {s : Set (WithBot X)} :
   · rw [← WithBot.coe_lt_coe]
     simp [hz'.trans_le']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma WithTop.denselyOrdered_set_iff_subsingleton {s : Set (WithTop X)} :
     DenselyOrdered s ↔ s.Subsingleton := by
   have he : StrictAnti (WithTop.toDual.image s) :=

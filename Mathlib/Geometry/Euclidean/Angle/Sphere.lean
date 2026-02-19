@@ -3,16 +3,20 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
-import Mathlib.Geometry.Euclidean.Circumcenter
-import Mathlib.Geometry.Euclidean.Sphere.Tangent
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
+public import Mathlib.Geometry.Euclidean.Circumcenter
+public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 
 /-!
-# Angles in circles and sphere.
+# Angles in circles and spheres
 
 This file proves results about angles in circles and spheres.
 
 -/
+
+public section
 
 
 noncomputable section
@@ -26,8 +30,8 @@ namespace Orientation
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 variable [Fact (finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2))
 
-/-- Angle at center of a circle equals twice angle at circumference, oriented vector angle
-form. -/
+/-- The angle at the center of a circle equals twice the angle at the circumference, oriented vector
+angle form. -/
 theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq {x y z : V} (hxyne : x ≠ y) (hxzne : x ≠ z)
     (hxy : ‖x‖ = ‖y‖) (hxz : ‖x‖ = ‖z‖) : o.oangle y z = (2 : ℤ) • o.oangle (y - x) (z - x) := by
   have hy : y ≠ 0 := by
@@ -46,8 +50,8 @@ theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq {x y z : V} (hxyne : x ≠ y) 
       rw [o.oangle_sub_right (sub_ne_zero_of_ne hxyne) (sub_ne_zero_of_ne hxzne) hx]
     _ = (2 : ℤ) • o.oangle (y - x) (z - x) := by rw [← oangle_neg_neg, neg_sub, neg_sub]
 
-/-- Angle at center of a circle equals twice angle at circumference, oriented vector angle
-form with radius specified. -/
+/-- The angle at the center of a circle equals twice the angle at the circumference, oriented vector
+angle form with the radius specified. -/
 theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq_real {x y z : V} (hxyne : x ≠ y) (hxzne : x ≠ z)
     {r : ℝ} (hx : ‖x‖ = r) (hy : ‖y‖ = r) (hz : ‖z‖ = r) :
     o.oangle y z = (2 : ℤ) • o.oangle (y - x) (z - x) :=
@@ -102,6 +106,26 @@ theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter {p₁ p₂ p₃ : P} :
 
 alias thales_theorem := angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter
 
+/-- Converse of Thales' theorem in 2D: if three distinct points on a circle
+    form a right angle, then the chord is a diameter. -/
+theorem isDiameter_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} {s : Sphere P}
+    [Fact (finrank ℝ V = 2)]
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s)
+    (hne₁₂ : p₁ ≠ p₂) (hne₂₃ : p₂ ≠ p₃)
+    (hangle : ∠ p₁ p₂ p₃ = π / 2) :
+    s.IsDiameter p₁ p₃ := by
+  haveI : FiniteDimensional ℝ V := .of_finrank_eq_succ (Fact.out : finrank ℝ V = 2)
+  have hne₁₃ : p₁ ≠ p₃ := fun h ↦ by
+    rw [h, angle_self_of_ne hne₂₃.symm] at hangle; linarith [Real.pi_pos]
+  have hd := Sphere.isDiameter_ofDiameter p₁ p₃
+  have h_eq : s = Sphere.ofDiameter p₁ p₃ := by
+    by_contra hne
+    have := eq_of_mem_sphere_of_mem_sphere_of_finrank_eq_two
+      (Fact.out : finrank ℝ V = 2) hne hne₁₃ hp₁ hp₃ hp₂
+      hd.left_mem hd.right_mem (angle_eq_pi_div_two_iff_mem_sphere_ofDiameter.mp hangle)
+    exact this.elim hne₁₂.symm hne₂₃
+  exact h_eq ▸ hd
+
 /-- For a tangent line to a sphere, the angle between the line and the radius at the tangent point
 equals `π / 2`. -/
 theorem IsTangentAt.angle_eq_pi_div_two {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
@@ -146,7 +170,8 @@ local notation "o" => Module.Oriented.positiveOrientation
 
 namespace Sphere
 
-/-- Angle at center of a circle equals twice angle at circumference, oriented angle version. -/
+/-- The angle at the center of a circle equals twice the angle at the circumference, oriented angle
+version. -/
 theorem oangle_center_eq_two_zsmul_oangle {s : Sphere P} {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₃ : p₂ ≠ p₃) :
     ∡ p₁ s.center p₃ = (2 : ℤ) • ∡ p₁ p₂ p₃ := by
@@ -214,6 +239,7 @@ theorem abs_oangle_center_right_toReal_lt_pi_div_two {s : Sphere P} {p₁ p₂ :
   abs_oangle_left_toReal_lt_pi_div_two_of_dist_eq
     (dist_center_eq_dist_center_of_mem_sphere' hp₂ hp₁)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two points on a circle, the center of that circle may be expressed explicitly as a
 multiple (by half the tangent of the angle between the chord and the radius at one of those
 points) of a `π / 2` rotation of the vector between those points, plus the midpoint of those
@@ -243,6 +269,7 @@ theorem inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sp
   rw [add_comm,
     two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi hp₁ hp₂ hp₃ hp₁p₂.symm hp₂p₃ hp₁p₃]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two points on a circle, the radius of that circle may be expressed explicitly as half
 the distance between those two points divided by the cosine of the angle between the chord and
 the radius at one of those points. -/
@@ -308,7 +335,11 @@ namespace Triangle
 open EuclideanGeometry
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
+  [NormedAddTorsor V P]
+
+section Oriented
+
+variable [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation
 
@@ -393,6 +424,38 @@ theorem mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i�
   rw [← circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq h₁₂ h₁₃ h₂₃ h₁' h₃' h', ←
     h₂']
   exact Simplex.mem_circumsphere _ _
+
+end Oriented
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The circumradius of a triangle may be expressed explicitly as half the length of a side
+divided by the sine of the angle at the third point (a version of the law of sines or sine rule). -/
+theorem dist_div_sin_angle_div_two_eq_circumradius (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
+    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    dist (t.points i₁) (t.points i₃) / Real.sin (∠ (t.points i₁) (t.points i₂) (t.points i₃)) / 2 =
+      t.circumradius := by
+  set S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points) with hS
+  let t' : Triangle ℝ S := t.restrict S le_rfl
+  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
+    rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
+    simp⟩
+  have : Module.Oriented ℝ S.direction (Fin 2) :=
+    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
+  convert t'.dist_div_sin_oangle_div_two_eq_circumradius h₁₂ h₁₃ h₂₃ using 3
+  · rw [← Real.Angle.sin_toReal,
+      Real.abs_sin_eq_sin_abs_of_abs_le_pi (Real.Angle.abs_toReal_le_pi _),
+      ← angle_eq_abs_oangle_toReal (t'.independent.injective.ne h₁₂)
+        (t'.independent.injective.ne h₂₃.symm)]
+    congr
+  · simp [t']
+
+/-- Twice the circumradius of a triangle may be expressed explicitly as the length of a side
+divided by the sine of the angle at the third point (a version of the law of sines or sine rule). -/
+theorem dist_div_sin_angle_eq_two_mul_circumradius (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
+    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) : dist (t.points i₁) (t.points i₃) /
+      Real.sin (∠ (t.points i₁) (t.points i₂) (t.points i₃)) = 2 * t.circumradius := by
+  rw [← t.dist_div_sin_angle_div_two_eq_circumradius h₁₂ h₁₃ h₂₃]
+  ring
 
 end Triangle
 

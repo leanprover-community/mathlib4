@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.OrdConnectedComponent
-import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Order.Interval.Set.OrdConnectedComponent
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Linear order is a completely normal Hausdorff topological space
@@ -13,6 +15,8 @@ import Mathlib.Topology.Separation.Regular
 In this file we prove that a linear order with order topology is a completely normal Hausdorff
 topological space.
 -/
+
+@[expose] public section
 
 
 open Filter Set Function OrderDual Topology Interval
@@ -27,6 +31,7 @@ theorem ordConnectedComponent_mem_nhds : ordConnectedComponent s a ∈ 𝓝 a �
   rcases exists_Icc_mem_subset_of_mem_nhds h with ⟨b, c, ha, ha', hs⟩
   exact mem_of_superset ha' (subset_ordConnectedComponent ha hs)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE (hd : Disjoint s (closure t))
     (ha : a ∈ s) : (ordConnectedSection (ordSeparatingSet s t))ᶜ ∈ 𝓝[≥] a := by
   have hmem : tᶜ ∈ 𝓝[≥] a := by

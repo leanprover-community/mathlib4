@@ -3,10 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
-import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
-import Mathlib.LinearAlgebra.TensorProduct.Opposite
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+public import Mathlib.LinearAlgebra.TensorProduct.Opposite
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # The base change of a clifford algebra
@@ -29,6 +31,8 @@ We show the additional results:
 * `CliffordAlgebra.toBaseChange_involute`: the effect of base-changing an involution.
 * `CliffordAlgebra.toBaseChange_reverse`: the effect of base-changing a reversal.
 -/
+
+@[expose] public section
 
 variable {R A V : Type*}
 variable [CommRing R] [CommRing A] [AddCommGroup V]
@@ -72,6 +76,7 @@ def ofBaseChange (Q : QuadraticForm R V) :
   change algebraMap _ _ z * ofBaseChangeAux A Q 1 = _
   rw [map_one, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Convert from the clifford algebra over a base-changed module to the base-changed clifford
 algebra. -/
 def toBaseChange (Q : QuadraticForm R V) :
@@ -99,6 +104,7 @@ def toBaseChange (Q : QuadraticForm R V) :
     toBaseChange A Q (ι (Q.baseChange A) (z ⊗ₜ v)) = z ⊗ₜ ι Q v :=
   CliffordAlgebra.lift_ι_apply _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toBaseChange_comp_involute (Q : QuadraticForm R V) :
     (toBaseChange A Q).comp (involute : CliffordAlgebra (Q.baseChange A) →ₐ[A] _) =
       (Algebra.TensorProduct.map (AlgHom.id _ _) involute).comp (toBaseChange A Q) := by
@@ -118,6 +124,7 @@ theorem toBaseChange_involute (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.ba
 
 open MulOpposite
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary theorem used to prove `toBaseChange_reverse` without needing induction. -/
 theorem toBaseChange_comp_reverseOp (Q : QuadraticForm R V) :
     (toBaseChange A Q).op.comp reverseOp =
@@ -150,6 +157,7 @@ theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.bas
 
 attribute [ext] TensorProduct.ext
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toBaseChange_comp_ofBaseChange (Q : QuadraticForm R V) :
     (toBaseChange A Q).comp (ofBaseChange A Q) = AlgHom.id _ _ := by
   ext v

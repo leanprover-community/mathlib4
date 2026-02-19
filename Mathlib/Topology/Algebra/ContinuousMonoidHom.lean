@@ -3,8 +3,11 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Nailin Guan
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Topology.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 
@@ -17,6 +20,8 @@ This file defines the space of continuous homomorphisms between two topological 
 * `ContinuousMonoidHom A B`: The continuous homomorphisms `A →* B`.
 * `ContinuousAddMonoidHom A B`: The continuous additive homomorphisms `A →+ B`.
 -/
+
+@[expose] public section
 
 assert_not_exists ContinuousLinearMap
 assert_not_exists ContinuousLinearEquiv
@@ -100,10 +105,10 @@ section
 variable {F : Type*} [FunLike F A B]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F A B` and `ContinuousMapClass F A B`
-into a`ContinuousMonoidHom`. This is declared as the default coercion from `F` to
+into a `ContinuousMonoidHom`. This is declared as the default coercion from `F` to
 `(A →ₜ* B)`. -/
 @[to_additive (attr := coe) /-- Turn an element of a type `F` satisfying
-`AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a`ContinuousAddMonoidHom`.
+`AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`.
 This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`. -/]
 def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
   { MonoidHomClass.toMonoidHom f with }
@@ -135,6 +140,10 @@ theorem ext {f g : A →ₜ* B} (h : ∀ x, f x = g x) : f = g :=
 
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
+  ext <| by convert DFunLike.ext_iff.1 h
+
+@[to_additive]
+theorem toMonoidHom_injective : Injective (toMonoidHom : _ → A →* B) := fun f g h =>
   ext <| by convert DFunLike.ext_iff.1 h
 
 /-- Composition of two continuous homomorphisms. -/
@@ -230,6 +239,16 @@ instance : CommMonoid (A →ₜ* E) where
   one_mul f := ext fun x => one_mul (f x)
   mul_one f := ext fun x => mul_one (f x)
 
+@[to_additive (attr := simp)]
+theorem mul_apply (f g : A →ₜ* E) (a : A) : (f * g) a = f a * g a := by
+  rfl
+
+@[to_additive (attr := simp)]
+theorem pow_apply (f : A →ₜ* E) (n : ℕ) (a : A) : (f ^ n) a = (f a) ^ n := by
+  induction n
+  case zero => rw [pow_zero, pow_zero, one_toFun]
+  case succ n ih => rw [pow_succ, pow_succ, ContinuousMonoidHom.mul_apply, ih]
+
 /-- Coproduct of two continuous homomorphisms to the same space. -/
 @[to_additive (attr := simps!) /-- Coproduct of two continuous homomorphisms to the same space. -/]
 def coprod (f : ContinuousMonoidHom A E) (g : ContinuousMonoidHom B E) :
@@ -271,12 +290,9 @@ section
 
 /-!
 
-# Continuous MulEquiv
+### Continuous MulEquiv
 
 This section defines the space of continuous isomorphisms between two topological groups.
-
-## Main definitions
-
 -/
 
 universe u v
@@ -358,7 +374,7 @@ theorem toHomeomorph_eq_coe (f : M ≃ₜ* N) : f.toHomeomorph = f :=
 
 /-- Makes a continuous multiplicative isomorphism from
 a homeomorphism which preserves multiplication. -/
-@[to_additive /-- Makes an continuous additive isomorphism from
+@[to_additive /-- Makes a continuous additive isomorphism from
 a homeomorphism which preserves addition. -/]
 def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
   ⟨⟨f.toEquiv,h⟩, f.continuous_toFun, f.continuous_invFun⟩
@@ -537,8 +553,6 @@ section unique
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
     [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N where
   __ := MulEquiv.ofUnique
-  continuous_toFun := by continuity
-  continuous_invFun := by continuity
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive /-- There is a unique additive monoid homomorphism between two additive monoids with

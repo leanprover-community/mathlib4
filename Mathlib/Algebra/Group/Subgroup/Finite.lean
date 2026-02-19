@@ -3,11 +3,13 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Group.Submonoid.Finite
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Set.Finite.Range
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Group.Submonoid.Finite
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Subgroups
@@ -17,6 +19,8 @@ This file provides some result on multiplicative and additive subgroups in the f
 ## Tags
 subgroup, subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -107,6 +111,7 @@ theorem eq_of_le_of_card_ge {H K : Subgroup G} [Finite K] (hle : H ≤ K)
     H = K :=
   SetLike.coe_injective <| Set.Finite.eq_of_subset_of_card_le (Set.toFinite _) hle hcard
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem eq_top_of_le_card [Finite G] (h : Nat.card G ≤ Nat.card H) : H = ⊤ :=
   eq_of_le_of_card_ge le_top (Nat.card_congr (Equiv.Set.univ G) ▸ h)

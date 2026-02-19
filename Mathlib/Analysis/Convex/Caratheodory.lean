@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.LinearAlgebra.AffineSpace.Independent
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.LinearAlgebra.AffineSpace.Independent
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Carathéodory's convexity theorem
@@ -35,6 +37,8 @@ This theorem was formalized as part of the Sphere Eversion project.
 convex hull, caratheodory
 
 -/
+
+@[expose] public section
 
 
 open Set Finset
@@ -154,6 +158,7 @@ theorem convexHull_eq_union : convexHull 𝕜 s =
   · iterate 3 convert Set.iUnion_subset _; intro
     exact convexHull_mono ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A more explicit version of `convexHull_eq_union`. -/
 theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜 s) :
     ∃ (ι : Sort (u + 1)) (_ : Fintype ι),

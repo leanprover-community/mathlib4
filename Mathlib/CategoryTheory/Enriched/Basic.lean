@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
-import Mathlib.CategoryTheory.Monoidal.Center
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
+public import Mathlib.CategoryTheory.Monoidal.Center
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Enriched categories
@@ -25,13 +27,15 @@ We don't yet define the `V`-object of natural transformations
 between a pair of `V`-functors (this requires limits in `V`),
 but we do provide a presheaf isomorphic to the Yoneda embedding of this object.
 
-We verify that when `V = Type v`, all these notion reduce to the usual ones.
+We verify that when `V = Type v`, all these notions reduce to the usual ones.
 
 ## References
 
 * [Kim Morrison, David Penneys, _Monoidal Categories Enriched in Braided Monoidal Categories_]
   [morrison-penney-enriched]
 -/
+
+@[expose] public section
 
 
 universe w w' v v' u₁ u₂ u₃
@@ -150,6 +154,7 @@ end
 
 /-- Construct an honest category from a `Type v`-enriched category.
 -/
+@[instance_reducible]
 def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Type v) C] :
     Category.{v} C where
   Hom := 𝒞.Hom
@@ -258,22 +263,16 @@ theorem ForgetEnrichment.homTo_id (X : ForgetEnrichment W C) :
     ForgetEnrichment.homTo W (𝟙 X) = eId W (ForgetEnrichment.to W X : C) :=
   Category.id_comp _
 
-@[deprecated (since := "2025-08-11")] alias forgetEnrichment_id := ForgetEnrichment.homTo_id
-
 @[simp]
 theorem ForgetEnrichment.homOf_eId (X : C) :
     ForgetEnrichment.homOf W (eId W X) = 𝟙 (of W X : C) :=
   (homTo_id W (ForgetEnrichment.of W X)).symm
-
-@[deprecated (since := "2025-08-11")] alias forgetEnrichment_id' := ForgetEnrichment.homOf_eId
 
 /-- Composition in the "underlying" category of an enriched category. -/
 @[simp]
 theorem ForgetEnrichment.homTo_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     homTo W (f ≫ g) = ((λ_ (𝟙_ W)).inv ≫ (homTo W f ⊗ₘ homTo W g)) ≫ eComp W _ _ _ :=
   rfl
-
-@[deprecated (since := "2025-08-11")] alias forgetEnrichment_comp := ForgetEnrichment.homTo_comp
 
 @[simp]
 theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
@@ -339,6 +338,7 @@ variable {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
   {D : Type u₂} [EnrichedCategory W D]
   {E : Type u₃} [EnrichedCategory W E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An enriched functor induces an honest functor of the underlying categories,
 by mapping the `(𝟙_ W)`-shaped morphisms.
 -/
@@ -382,7 +382,7 @@ variable {D : Type u₂} [EnrichedCategory V D]
 /-!
 We now turn to natural transformations between `V`-functors.
 
-The mostly commonly encountered definition of an enriched natural transformation
+The most commonly encountered definition of an enriched natural transformation
 is a collection of morphisms
 ```
 (𝟙_ W) ⟶ (F.obj X ⟶[V] G.obj X)

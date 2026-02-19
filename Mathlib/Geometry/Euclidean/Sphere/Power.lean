@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Manuel Candales, Benjamin Davidson
+Authors: Manuel Candales, Benjamin Davidson, Li Jiale
 -/
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-import Mathlib.Geometry.Euclidean.Sphere.Basic
-import Mathlib.Geometry.Euclidean.Sphere.Tangent
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+public import Mathlib.Geometry.Euclidean.Sphere.Basic
+public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 
 /-!
 # Power of a point (intersecting chords and secants)
@@ -24,6 +26,8 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 * `Sphere.mul_dist_eq_abs_power`: The product of distances equals the absolute value of power.
 * `Sphere.dist_sq_eq_mul_dist_of_tangent_and_secant`: Tangent-Secant Theorem.
 -/
+
+@[expose] public section
 
 
 open Real
@@ -141,6 +145,7 @@ theorem power_eq_zero_iff_mem_sphere {s : Sphere P} {p : P} (hr : 0 ≤ s.radius
     s.power p = 0 ↔ p ∈ s := by
   rw [power, mem_sphere, sub_eq_zero, pow_left_inj₀ dist_nonneg hr two_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The power of a point is positive if and only if the point lies outside the sphere. -/
 theorem power_pos_iff_radius_lt_dist_center {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
     0 < s.power p ↔ s.radius < dist p s.center := by
@@ -151,6 +156,7 @@ theorem power_neg_iff_dist_center_lt_radius {s : Sphere P} {p : P} (hr : 0 ≤ s
   s.power p < 0 ↔ dist p s.center < s.radius := by
   rw [power, sub_neg, pow_lt_pow_iff_left₀ dist_nonneg hr two_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The power of a point is nonnegative if and only if the point lies outside or on the sphere. -/
 theorem power_nonneg_iff_radius_le_dist_center {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
     0 ≤ s.power p ↔ s.radius ≤ dist p s.center := by
@@ -218,6 +224,29 @@ theorem dist_sq_eq_mul_dist_of_tangent_and_secant {a b t p : P} {s : Sphere P}
   rw [mul_dist_eq_power_of_radius_le_dist_center hr hp ha hb radius_le_dist,
     Sphere.power, h_tangent.dist_sq_eq_of_mem (left_mem_affineSpan_pair ℝ p t)]
   ring
+
+/-- The power of a point with respect to a sphere equals the square of its tangent length. -/
+theorem IsTangentAt.power_eq_dist_sq {s : Sphere P} {t p : P}
+    (h_tangent : s.IsTangentAt t (line[ℝ, p, t])) :
+    s.power p = dist p t ^ 2 := by
+  rw [Sphere.power, h_tangent.dist_sq_eq_of_mem (left_mem_affineSpan_pair ℝ p t)]
+  ring_nf
+
+/-- A line through a point on a sphere is tangent if and only if the squared distance
+from the external point to the tangent point equals the power of the point. -/
+theorem isTangentAt_iff_dist_sq_eq_power {t p : P} {s : Sphere P} (ht : t ∈ s) :
+    s.IsTangentAt t (line[ℝ, p, t]) ↔ dist p t ^ 2 = s.power p :=
+  ⟨fun h ↦ h.power_eq_dist_sq.symm, fun h_dist_eq ↦ by
+    have h_orth : ⟪p -ᵥ t, t -ᵥ s.center⟫ = 0 := by
+      simp only [Sphere.power, ← mem_sphere.mp ht, dist_eq_norm_vsub V, sq,
+                 ← vsub_add_vsub_cancel p t s.center] at h_dist_eq
+      exact (norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero _ _).mp (by linarith)
+    refine ⟨ht, right_mem_affineSpan_pair ℝ p t, fun x hx ↦ ?_⟩
+    rw [mem_orthRadius_iff_inner_left]
+    obtain ⟨r, hr⟩ := (vadd_right_mem_affineSpan_pair (k := ℝ)).mp (vsub_vadd x t ▸ hx)
+    rw [← hr, inner_smul_left, h_orth, mul_zero]⟩
+
+alias ⟨_, isTangentAt_of_dist_sq_eq_power⟩ := isTangentAt_iff_dist_sq_eq_power
 
 end Sphere
 

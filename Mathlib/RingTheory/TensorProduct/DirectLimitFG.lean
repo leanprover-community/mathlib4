@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir and María-Inés de Frutos Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos Fernández
 -/
+module
 
-import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Adjoin.FG
+public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Adjoin.FG
 
 /-! # Tensor products and finitely generated submodules
 
@@ -43,6 +44,8 @@ tensor products of finitely-generated modules.
   as a linear equivalence.
 -/
 
+@[expose] public section
+
 open Submodule LinearMap
 
 section Semiring
@@ -50,6 +53,7 @@ section Semiring
 universe u v
 variable {R : Type u} [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The directed system of finitely generated submodules of `M` -/
 instance Submodule.FG.directedSystem :
     DirectedSystem (ι := {P : Submodule R M // P.FG}) (F := fun P ↦ P.val)
@@ -250,6 +254,7 @@ theorem TensorProduct.Algebra.exists_of_fg :
   rw [← subtype_comp_inclusion P _ this, rTensor_comp] at hu
   exact range_comp_le_range _ _ hu
 
+set_option backward.isDefEq.respectTransparency false in
 include hA in
 theorem TensorProduct.Algebra.eq_of_fg_of_subtype_eq
     (h : rTensor N A.val.toLinearMap t = rTensor N A.val.toLinearMap t') :
@@ -318,6 +323,7 @@ theorem TensorProduct.Algebra.eq_of_fg_of_subtype_eq' {t' : A' ⊗[R] N}
   use B, le_trans le_sup_left hB_le, le_trans le_sup_right hB_le, hB
   simpa only [← rTensor_comp, ← comp_apply] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lift an element that maps to 0 -/
 theorem Submodule.exists_fg_of_baseChange_eq_zero
     (f : M →ₗ[R] N) {t : S ⊗[R] M} (ht : f.baseChange S t = 0) :

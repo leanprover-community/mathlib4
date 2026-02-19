@@ -3,9 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Floor.Div
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Factorization.Defs
+module
+
+public import Mathlib.Algebra.Order.Floor.Div
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Nat.Factorization.Defs
 
 /-!
 # Roots of natural numbers, rounded up and down
@@ -28,6 +30,8 @@ multiple of `a` as the multiples of some fixed number (aka `ceilRoot n a`). See
 
 * `norm_num` extension
 -/
+
+@[expose] public section
 
 open Finsupp
 
@@ -62,6 +66,7 @@ lemma floorRoot_def :
   simp [floorRoot]; split_ifs <;> simp [*]
 @[simp] lemma floorRoot_one_right (hn : n ≠ 0) : floorRoot n 1 = 1 := by simp [floorRoot, hn]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma floorRoot_pow_self (hn : n ≠ 0) (a : ℕ) : floorRoot n (a ^ n) = a := by
   simp [floorRoot_def, pos_iff_ne_zero.2, hn]; split_ifs <;> simp [*]
 
@@ -80,6 +85,7 @@ lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   have : p.Prime ∧ p ∣ a ∧ ¬a = 0 := by simpa using support_floorDiv_subset hp
   exact this.1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Galois connection between `a ↦ a ^ n : ℕ → ℕ` and `floorRoot n : ℕ → ℕ` where `ℕ` is ordered
 by divisibility. -/
 lemma pow_dvd_iff_dvd_floorRoot : a ^ n ∣ b ↔ a ∣ floorRoot n b := by
@@ -124,6 +130,7 @@ lemma ceilRoot_def :
   simp [ceilRoot]; split_ifs <;> simp [*]
 @[simp] lemma ceilRoot_one_right (hn : n ≠ 0) : ceilRoot n 1 = 1 := by simp [ceilRoot, hn]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ceilRoot_pow_self (hn : n ≠ 0) (a : ℕ) : ceilRoot n (a ^ n) = a := by
   simp [ceilRoot_def, pos_iff_ne_zero.2, hn]; split_ifs <;> simp [*]
 
@@ -142,6 +149,7 @@ lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   have : p.Prime ∧ p ∣ a ∧ ¬a = 0 := by simpa using support_ceilDiv_subset hp
   exact this.1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Galois connection between `ceilRoot n : ℕ → ℕ` and `a ↦ a ^ n : ℕ → ℕ` where `ℕ` is ordered
 by divisibility.
 

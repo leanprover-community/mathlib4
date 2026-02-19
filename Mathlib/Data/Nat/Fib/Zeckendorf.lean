@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Nat.Fib.Basic
+module
+
+public import Mathlib.Data.Nat.Fib.Basic
 
 /-!
 # Zeckendorf's Theorem
@@ -29,6 +31,8 @@ the lexicographic order.
 
 fibonacci, zeckendorf, digit
 -/
+
+@[expose] public section
 
 open List Nat
 
@@ -59,10 +63,10 @@ lemma IsZeckendorfRep.sum_fib_lt : ∀ {n l}, IsZeckendorfRep l → (∀ a ∈ (
       fun b hb ↦ lt_tsub_iff_right.2 <| hl.1 _ <| mem_of_mem_head? hb
     simp only [mem_append, mem_singleton, ← isChain_iff_pairwise, or_imp, forall_and, forall_eq,
       zero_add] at hl
-    simp only [map, List.sum_cons]
-    refine (add_lt_add_left (sum_fib_lt hl.2 this) _).trans_le ?_
-    rw [add_comm, ← fib_add_one (hl.1.2.trans_lt' zero_lt_two).ne']
-    exact fib_mono (hn _ rfl)
+    calc
+      fib a + (map fib l).sum < fib a + fib (a - 1) := by gcongr; exact sum_fib_lt hl.2 this
+      _ ≤ fib n := by
+        rw [add_comm, ← fib_add_one (hl.1.2.trans_lt' zero_lt_two).ne']; exact fib_mono (hn _ rfl)
 
 end List
 
@@ -76,11 +80,11 @@ lemma fib_greatestFib_le (n : ℕ) : fib (greatestFib n) ≤ n :=
   findGreatest_spec (P := (fun k ↦ fib k ≤ n)) (zero_le _) <| zero_le _
 
 lemma greatestFib_mono : Monotone greatestFib :=
-  fun _a _b hab ↦ findGreatest_mono (fun _k ↦ hab.trans') <| add_le_add_right hab _
+  fun _a _b hab ↦ findGreatest_mono (fun _k ↦ hab.trans') <| by gcongr
 
 @[simp] lemma le_greatestFib : m ≤ greatestFib n ↔ fib m ≤ n :=
   ⟨fun h ↦ (fib_mono h).trans <| fib_greatestFib_le _,
-    fun h ↦ le_findGreatest (m.le_fib_add_one.trans <| add_le_add_right h _) h⟩
+    fun h ↦ le_findGreatest (m.le_fib_add_one.trans <| by gcongr) h⟩
 
 @[simp] lemma greatestFib_lt : greatestFib m < n ↔ m < fib n :=
   lt_iff_lt_of_le_iff_le le_greatestFib
@@ -100,6 +104,7 @@ lemma greatestFib_ne_zero : greatestFib n ≠ 0 ↔ n ≠ 0 := greatestFib_eq_ze
 
 @[simp] lemma greatestFib_pos : 0 < greatestFib n ↔ 0 < n := by simp [pos_iff_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma greatestFib_sub_fib_greatestFib_le_greatestFib (hn : n ≠ 0) :
     greatestFib (n - fib (greatestFib n)) ≤ greatestFib n - 2 := by
   rw [← Nat.lt_succ_iff, greatestFib_lt, tsub_lt_iff_right n.fib_greatestFib_le, Nat.sub_succ,
@@ -137,7 +142,7 @@ lemma isZeckendorfRep_zeckendorf : ∀ n, (zeckendorf n).IsZeckendorfRep
   | 0 => by simp only [zeckendorf_zero, IsZeckendorfRep_nil]
   | n + 1 => by
     rw [zeckendorf_succ, IsZeckendorfRep, List.cons_append]
-    refine (isZeckendorfRep_zeckendorf _).cons' (fun a ha ↦ ?_)
+    refine (isZeckendorfRep_zeckendorf _).cons (fun a ha ↦ ?_)
     obtain h | h := eq_zero_or_pos (n + 1 - fib (greatestFib (n + 1)))
     · simp only [h, zeckendorf_zero, nil_append, head?_cons, Option.mem_some_iff] at ha
       subst ha
@@ -147,6 +152,7 @@ lemma isZeckendorfRep_zeckendorf : ∀ n, (zeckendorf n).IsZeckendorfRep
     exact add_le_of_le_tsub_right_of_le (le_greatestFib.2 le_add_self)
       (greatestFib_sub_fib_greatestFib_le_greatestFib n.succ_ne_zero)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma zeckendorf_sum_fib : ∀ {l}, IsZeckendorfRep l → zeckendorf (l.map fib).sum = l
   | [], _ => by simp only [map_nil, List.sum_nil, zeckendorf_zero]
   | a :: l, hl => by

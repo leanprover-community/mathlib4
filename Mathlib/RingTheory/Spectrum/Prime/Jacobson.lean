@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Jacobson.Ring
-import Mathlib.RingTheory.Spectrum.Prime.Noetherian
-import Mathlib.Topology.JacobsonSpace
+module
+
+public import Mathlib.RingTheory.Jacobson.Ring
+public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+public import Mathlib.Topology.JacobsonSpace
 
 /-!
 # The prime spectrum of a Jacobson ring
@@ -20,6 +22,8 @@ import Mathlib.Topology.JacobsonSpace
   3. `{x}` is both closed and stable under generalization
     (i.e. `x` is both a minimal prime and a maximal ideal)
 -/
+
+@[expose] public section
 
 open Ideal
 
@@ -42,6 +46,7 @@ lemma exists_isClosed_singleton_of_isJacobsonRing [IsJacobsonRing R]
   rintro x ⟨-, hx⟩
   exact sInf_le ⟨this ⟨x, hx.isPrime⟩ hx, hx⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsJacobsonRing R] : JacobsonSpace (PrimeSpectrum R) := by
   rw [jacobsonSpace_iff_locallyClosed]
   rintro S hS ⟨U, Z, hU, hZ, rfl⟩

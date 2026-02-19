@@ -3,10 +3,12 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.SetTheory.Game.Ordinal
-import Mathlib.SetTheory.Ordinal.NaturalOps
-import Mathlib.Tactic.Linter.DeprecatedModule
+module -- shake: keep-all
+
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.SetTheory.Game.Ordinal
+public import Mathlib.SetTheory.Ordinal.NaturalOps
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Birthday` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -24,15 +26,17 @@ The birthday of a pre-game can be understood as representing the depth of its ga
 other hand, the birthday of a game more closely matches Conway's original description. The lemma
 `SetTheory.Game.birthday_eq_pGameBirthday` links both definitions together.
 
-# Main declarations
+## Main declarations
 
 - `SetTheory.PGame.birthday`: The birthday of a pre-game.
 - `SetTheory.Game.birthday`: The birthday of a game.
 
-# Todo
+## Todo
 
 - Characterize the birthdays of other basic arithmetical operations.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -135,6 +139,7 @@ variable (x : PGame.{u})
 theorem neg_birthday_le : -x.birthday.toPGame ≤ x := by
   simpa only [birthday_neg, ← neg_le_iff] using le_birthday (-x)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.birthday
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
@@ -192,7 +197,7 @@ theorem birthday_quot_le_pGameBirthday (x : PGame) : birthday ⟦x⟧ ≤ x.birt
 
 @[simp]
 theorem birthday_zero : birthday 0 = 0 := by
-  rw [← Ordinal.le_zero, ← PGame.birthday_zero]
+  rw [← nonpos_iff_eq_zero, ← PGame.birthday_zero]
   exact birthday_quot_le_pGameBirthday _
 
 @[simp]
@@ -274,13 +279,14 @@ theorem birthday_sub_le (x y : Game) : (x - y).birthday ≤ x.birthday ♯ y.bir
 /- The bound `(x * y).birthday ≤ x.birthday ⨳ y.birthday` is currently an open problem. See
   https://mathoverflow.net/a/476829/147705. -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Games with bounded birthday are a small set. -/
 theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birthday x < o} := by
   induction o using Ordinal.induction with | h o IH =>
   let S := ⋃ a ∈ Set.Iio o, {x : Game.{u} | birthday x < a}
   let H : Small.{u} S := @small_biUnion _ _ _ _ _ IH
   obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_isSuccLimit o
-  · simp_rw [Ordinal.not_lt_zero]
+  · simp_rw [not_lt_zero]
     exact small_empty
   · simp_rw [Order.lt_succ_iff, le_iff_lt_or_eq]
     convert small_union.{u} {x | birthday x < a} {x | birthday x = a}

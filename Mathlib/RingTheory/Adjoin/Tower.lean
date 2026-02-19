@@ -3,7 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.Adjoin.FG
+module
+
+public import Mathlib.RingTheory.Adjoin.FG
 
 /-!
 # Adjoining elements and being finitely generated in an algebra tower
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.Adjoin.FG
 * `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is Noetherian, and
   C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
 -/
+
+public section
 
 
 open Pointwise
@@ -137,6 +141,7 @@ section Ring
 variable [CommRing A] [CommRing B] [CommRing C]
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and
 A is Noetherian, and C is algebra-finite over A, and C is module-finite over B,
 then B is algebra-finite over A.

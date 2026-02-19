@@ -3,13 +3,17 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Analysis.Normed.Operator.Bilinear
+module
+
+public import Mathlib.Analysis.Normed.Operator.Bilinear
 
 /-!
 # Operator norm: Cartesian products
 
 Interaction of operator norm with Cartesian products.
 -/
+
+@[expose] public section
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
 
@@ -40,6 +44,7 @@ end FirstSecond
 
 section OpNorm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem opNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖ = ‖(f, g)‖ :=
   le_antisymm
@@ -142,6 +147,7 @@ section FirstSecond
 
 variable (𝕜 E F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The operator norm of the first projection `E × F → E` is exactly 1 if `E` is nontrivial. -/
 @[simp] lemma norm_fst [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial E] :
@@ -152,6 +158,7 @@ variable (𝕜 E F)
   rw [norm_zero, max_eq_left (norm_nonneg e)] at this
   rwa [← mul_le_mul_iff_of_pos_right (norm_pos_iff.mpr he), one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The operator norm of the second projection `E × F → F` is exactly 1 if `F` is nontrivial. -/
 @[simp] lemma norm_snd [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F] :

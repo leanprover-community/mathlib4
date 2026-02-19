@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Tower
+module
+
+public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 
@@ -37,6 +39,8 @@ refer to restricting the scalar type in a bundled type, such as from `A →ₗ[R
 * `Submodule.restrictScalars`
 * `Subalgebra.restrictScalars`
 -/
+
+@[expose] public section
 
 
 variable (R S M A : Type*)
@@ -88,6 +92,7 @@ section
 variable [Semiring S] [AddCommMonoid M]
 
 /-- We temporarily install an action of the original ring on `RestrictScalars R S M`. -/
+@[instance_reducible]
 def RestrictScalars.moduleOrig [I : Module S M] : Module S (RestrictScalars R S M) := I
 
 variable [CommSemiring R] [Algebra R S]
@@ -200,7 +205,6 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
 instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) where
   algebraMap := (algebraMap S A).comp (algebraMap R S)
-  smul := (· • ·)
   commutes' := fun _ _ ↦ Algebra.commutes' (A := A) _ _
   smul_def' := fun _ _ ↦ Algebra.smul_def' (A := A) _ _
 

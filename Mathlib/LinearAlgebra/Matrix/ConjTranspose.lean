@@ -3,15 +3,17 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.BigOperators.RingEquiv
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Star.BigOperators
-import Mathlib.Algebra.Star.Module
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Mul
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.BigOperators.RingEquiv
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Star.BigOperators
+public import Mathlib.Algebra.Star.Module
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # Matrices over star rings.
@@ -23,6 +25,8 @@ The scope `Matrix` gives the following notation:
 * `ᴴ` for `Matrix.conjTranspose`
 
 -/
+
+@[expose] public section
 
 
 universe u u' v w
@@ -46,8 +50,6 @@ lemma conjTranspose_single [DecidableEq n] [DecidableEq m] [AddMonoid α]
     (single i j a)ᴴ = single j i (star a) := by
   change (single i j a).transpose.map starAddEquiv = single j i (star a)
   simp
-
-@[deprecated (since := "2025-05-05")] alias conjTranspose_stdBasisMatrix := conjTranspose_single
 
 section Diagonal
 
@@ -245,11 +247,13 @@ theorem conjTranspose_smul_self [Mul α] [StarMul α] (c : α) (M : Matrix m n �
     (c • M)ᴴ = MulOpposite.op (star c) • Mᴴ :=
   conjTranspose_smul_non_comm c M star_mul
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem conjTranspose_nsmul [AddMonoid α] [StarAddMonoid α] (c : ℕ) (M : Matrix m n α) :
     (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem conjTranspose_zsmul [AddGroup α] [StarAddMonoid α] (c : ℤ) (M : Matrix m n α) :
     (c • M)ᴴ = c • Mᴴ :=

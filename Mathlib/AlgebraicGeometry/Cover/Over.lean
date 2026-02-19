@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
-import Mathlib.CategoryTheory.Limits.MorphismProperty
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
 
@@ -17,6 +19,8 @@ that the component maps are morphisms of `S`-schemes.
 We provide instances of `𝒰.Over S` for standard constructions on covers.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -45,6 +49,7 @@ protected class Cover.Over {P : MorphismProperty Scheme.{u}} [P.IsStableUnderBas
   over (j : 𝒰.I₀) : (𝒰.X j).Over S := by infer_instance
   isOver_map (j : 𝒰.I₀) : (𝒰.f j).IsOver S := by infer_instance
 
+attribute [instance_reducible] Cover.Over.over
 attribute [instance] Cover.Over.over Cover.Over.isOver_map
 
 variable [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
@@ -59,6 +64,7 @@ section
 variable {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X) [W.Over S] [X.Over S]
   [𝒰.Over S] [f.IsOver S]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pullback of a cover of `S`-schemes along a morphism of `S`-schemes. This is not
 definitionally equal to `AlgebraicGeometry.Scheme.Cover.pullback₁`, as here we take
 the pullback in `Over S`, whose underlying scheme is only isomorphic but not equal to the
@@ -86,6 +92,7 @@ instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOver S f).X j).Over S where
 instance : (𝒰.pullbackCoverOver S f).Over S where
   isOver_map j := { comp_over := by exact Over.w (pullback.fst (f.asOver S) ((𝒰.f j).asOver S)) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `AlgebraicGeometry.Scheme.Cover.pullbackCoverOver` with the arguments in the
 fiber products flipped. -/
 @[simps]
@@ -116,6 +123,7 @@ variable {Q : MorphismProperty Scheme.{u}} [Q.HasOfPostcompProperty Q]
 
 variable (hX : Q (X ↘ S)) (hW : Q (W ↘ S)) (hQ : ∀ j, Q (𝒰.X j ↘ S))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pullback of a cover of `S`-schemes with `Q` along a morphism of `S`-schemes. This is not
 definitionally equal to `AlgebraicGeometry.Scheme.Cover.pullbackCover`, as here we take
 the pullback in `Q.Over ⊤ S`, whose underlying scheme is only isomorphic but not equal to the
@@ -149,6 +157,7 @@ instance : (𝒰.pullbackCoverOverProp S f hX hW hQ).Over S where
   isOver_map j :=
     { comp_over := by exact (pullback.fst (f.asOverProp S) ((𝒰.f j).asOverProp S)).w }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `AlgebraicGeometry.Scheme.Cover.pullbackCoverOverProp` with the arguments in the
 fiber products flipped. -/
 @[simps -isSimp]

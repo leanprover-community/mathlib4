@@ -3,9 +3,11 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Data.ZMod.Defs
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Tactic.Ring
 
 /-!
 # Racks and Quandles
@@ -81,6 +83,8 @@ Use `open quandles` to use these.
 
 rack, quandle
 -/
+
+@[expose] public section
 
 
 open MulOpposite
@@ -419,6 +423,7 @@ theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAc
   dsimp only [dihedralAct]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : Quandle (Dihedral n) where
   act := dihedralAct n
   self_distrib := by
@@ -644,6 +649,7 @@ theorem well_def {R : Type*} [Rack R] {G : Type*} [Group G] (f : R →◃ Quandl
 
 end toEnvelGroup.mapAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a map from a rack to a group, lift it to being a map from the enveloping group.
 More precisely, the `EnvelGroup` functor is left adjoint to `Quandle.Conj`.
 -/
@@ -676,7 +682,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
           exact F.map_mul
         | inv x ih_x =>
           have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
-          rw [hm, F.map_inv, MonoidHom.map_inv, ih_x]
+          rw [hm, map_inv, map_inv, ih_x]
 
 /-- Given a homomorphism from a rack to a group, it factors through the enveloping group.
 -/

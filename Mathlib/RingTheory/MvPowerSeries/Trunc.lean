@@ -3,10 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Data.Finsupp.Interval
-import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Data.Finsupp.Interval
+public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Algebra.MvPolynomial.Degrees
 
 /-!
 
@@ -35,7 +38,7 @@ import Mathlib.Algebra.MvPolynomial.Eval
 * `MvPowerSeries.coeff_mul_eq_coeff_trunc'_mul_trunc'` : compares the coefficients
   of a product with those of the product of truncations.
 
-* `MvPowerSeries.trunc'_one` : truncation of a the unit power series.
+* `MvPowerSeries.trunc'_one` : truncation of the unit power series.
 
 * `MvPowerSeries.trunc'_C` : truncation of a constant.
 
@@ -48,6 +51,8 @@ import Mathlib.Algebra.MvPolynomial.Eval
 * Unify both versions using a general purpose API
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -79,7 +84,7 @@ variable (R) in
 If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
 to the naturals, then `trunc' R n f` is the multivariable power series obtained from `f`
 by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`
-and $a i < n i` for some `i`. -/
+and `a i < n i` for some `i`. -/
 def trunc : MvPowerSeries σ R →+ MvPolynomial σ R where
   toFun := truncFun n
   map_zero' := by
@@ -170,6 +175,17 @@ theorem coeff_trunc' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc' R n φ).coeff m = if m ≤ n then coeff m φ else 0 :=
   coeff_truncFun' n m φ
 
+theorem trunc'_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) (φ : MvPowerSeries σ R) :
+    trunc' R n (trunc' R m φ) = trunc' R n φ := by
+  ext d
+  by_cases hd : d ≤ n
+  · symm
+    simp only [coeff_trunc', if_pos hd, MvPolynomial.coeff_coe, left_eq_ite_iff]
+    intro h'
+    have : d ≤ m := .trans hd h
+    contradiction
+  · simp [coeff_trunc', if_neg hd]
+
 /-- Truncation of the multivariate power series `1` -/
 @[simp]
 theorem trunc'_one (n : σ →₀ ℕ) : trunc' R n 1 = 1 :=
@@ -207,6 +223,21 @@ theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ)
   · rw [coeff_trunc', if_pos (le_trans le_self_add h)]
   · rw [coeff_trunc', if_pos (le_trans le_add_self h)]
 
+theorem trunc'_trunc'_pow {n : σ →₀ ℕ} {k : ℕ} (hk : 1 ≤ k) (φ : MvPowerSeries σ R) :
+    trunc' R n ((trunc' R n φ) ^ k) = trunc' R n (φ ^ k) := by
+  induction k, hk using Nat.le_induction with
+  | base => simp [trunc'_trunc']
+  | succ m h_le ih =>
+    ext d
+    by_cases hd : d ≤ n
+    · rw [coeff_trunc', if_pos hd, pow_succ, pow_succ, coeff_mul_eq_coeff_trunc'_mul_trunc' n _ _
+        hd, ih, coeff_trunc', if_pos hd, MvPolynomial.coeff_mul, coeff_mul, Finset.sum_congr rfl]
+      intro x hx
+      have le_aux₁ : x.1 ≤ n := .trans (Finset.mem_antidiagonal.mp hx ▸ self_le_add_right _ _) hd
+      have le_aux₂ : x.2 ≤ n := .trans (Finset.mem_antidiagonal.mp hx ▸ self_le_add_left _ _) hd
+      simp [coeff_trunc', if_pos le_aux₁, coeff_trunc', if_pos le_aux₂]
+    simp [coeff_trunc', if_neg hd]
+
 @[simp]
 theorem trunc'_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
     trunc' R n (C a * p) = MvPolynomial.C a * trunc' R n p := by
@@ -216,6 +247,44 @@ theorem trunc'_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
 theorem trunc'_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
     trunc' S n (map f p) = MvPolynomial.map f (trunc' R n p) := by
   ext m; simp [coeff_trunc', MvPolynomial.coeff_map, apply_ite f]
+
+section
+
+theorem totalDegree_trunc' {n : σ →₀ ℕ} (φ : MvPowerSeries σ R) :
+    (trunc' R n φ).totalDegree ≤ n.degree := by
+  have supp_aux : (trunc' R n φ).support ⊆ (Set.Icc 0 n).toFinset := fun d hd => by
+    simp only [Set.toFinset_Icc, Finset.mem_Icc, zero_le, true_and]
+    by_contra hc
+    simp [coeff_trunc', if_neg hc] at hd
+  have : Finsupp.degree n = (Set.Icc 0 n).toFinset.sup fun s ↦ s.sum fun x e ↦ e := by
+    refine eq_of_le_of_ge (Finset.le_sup (by simp)) ?_
+    · simp only [Set.toFinset_Icc, Finset.sup_le_iff, Finset.mem_Icc, zero_le, true_and]
+      intro b hb
+      simp only [Finsupp.degree, AddMonoidHom.coe_mk, ZeroHom.coe_mk, Finsupp.sum]
+      exact .trans (Finset.sum_le_sum_of_subset (b.support_mono hb))
+        (Finset.sum_le_sum fun i _ => hb i)
+  rw [MvPolynomial.totalDegree, this]
+  exact Finset.sup_mono supp_aux
+
+theorem ext_trunc' {f g : MvPowerSeries σ R} : f = g ↔ ∀ n, trunc' R n f = trunc' R n g := by
+  refine ⟨fun h => by simp [h], fun h => ?_⟩
+  ext n
+  specialize h n
+  have {f' : MvPowerSeries σ R} : f'.coeff n = (trunc' R n f').coeff n := by
+    rw [coeff_trunc', if_pos le_rfl]
+  simp_rw [this, h]
+
+open Filter in
+theorem eq_iff_frequently_trunc'_eq {f g : MvPowerSeries σ R} :
+    f = g ↔ ∃ᶠ m in atTop, trunc' R m f = trunc' R m g := by
+  refine ⟨fun h => by simp [h, atTop_neBot], fun h => ?_⟩
+  ext n
+  obtain ⟨m, hm₁, hm₂⟩ := h.forall_exists_of_atTop n
+  have {f' : MvPowerSeries σ R} : f'.coeff n = (trunc' R m f').coeff n := by
+    rw [coeff_trunc', if_pos hm₁]
+  simp [this, hm₂]
+
+end
 
 end TruncLE
 

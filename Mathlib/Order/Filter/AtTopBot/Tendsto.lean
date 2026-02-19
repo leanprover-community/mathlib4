@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Order.Filter.AtTopBot.Disjoint
-import Mathlib.Order.Filter.Tendsto
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Disjoint
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Limits of `Filter.atTop` and `Filter.atBot`
@@ -12,6 +14,8 @@ import Mathlib.Order.Filter.Tendsto
 In this file we prove many lemmas on the combination of `Filter.atTop` and `Filter.atBot`
 and `Tendsto`.
 -/
+
+public section
 
 assert_not_exists Finset
 
@@ -213,6 +217,7 @@ theorem tendsto_atTop_of_monotone_of_filter [Preorder ι] [Preorder α] {l : Fil
     (h : Monotone u) [NeBot l] (hu : Tendsto u l atTop) : Tendsto u atTop atTop :=
   h.tendsto_atTop_atTop fun b => (hu.eventually (mem_atTop b)).exists
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a monotone function `u : ι → α` tends to `atBot` along *some* non-trivial filter `l`, then
 it tends to `atBot` along `atBot`. -/
 theorem tendsto_atBot_of_monotone_of_filter [Preorder ι] [Preorder α] {l : Filter ι} {u : ι → α}

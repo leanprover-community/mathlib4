@@ -3,7 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Orthonormal
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Orthonormal
 
 /-!
 # Subspaces of inner product spaces
@@ -11,6 +13,8 @@ import Mathlib.Analysis.InnerProductSpace.Orthonormal
 This file defines the inner-product structure on a subspace of an inner-product space, and proves
 some theorems about orthogonal families of subspaces.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -245,6 +249,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 variable {ι : Type*} {G : ι → Type*}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An orthogonal family forms an independent family of subspaces; that is, any collection of
 elements each from a different subspace in the family is linearly independent. In particular, the
 pairwise intersections of elements of the family are 0. -/

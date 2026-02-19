@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Order.Partition.Equipartition
+module
+
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Order.Partition.Equipartition
 
 /-!
 # Equitabilising a partition
@@ -26,6 +28,8 @@ This file allows to blow partitions up into parts of controlled size. Given a pa
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
 
+@[expose] public section
+
 
 open Finset Nat
 
@@ -33,6 +37,7 @@ namespace Finpartition
 
 variable {α : Type*} [DecidableEq α] {s t : Finset α} {m n a b : ℕ} {P : Finpartition s}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a partition `P` of `s`, as well as a proof that `a * m + b * (m + 1) = #s`, we can
 find a new partition `Q` of `s` where each part has size `m` or `m + 1`, every part of `P` is the
 union of parts of `Q` plus at most `m` extra elements, there are `b` parts of size `m + 1` and
@@ -80,7 +85,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     least one part `u` of `P` has size `m + 1` (in which case we take `t` to be an arbitrary subset
     of `u` of size `n`). The rest of each branch is just tedious calculations to satisfy the
     induction hypothesis. -/
-  by_cases h : ∀ u ∈ P.parts, #u < m + 1
+  by_cases! h : ∀ u ∈ P.parts, #u < m + 1
   · obtain ⟨t, hts, htn⟩ := exists_subset_card_eq (hn₂.trans_eq hs)
     have ht : t.Nonempty := by rwa [← card_pos, htn]
     have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = #(s \ t) := by
@@ -98,7 +103,6 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     rw [card_insert_of_notMem, hR₃, if_neg ha, tsub_add_cancel_of_le]
     · exact hab.resolve_left ha
     · intro H; exact ht.ne_empty (le_sdiff_right.1 <| R.le <| filter_subset _ _ H)
-  push_neg at h
   obtain ⟨u, hu₁, hu₂⟩ := h
   obtain ⟨t, htu, htn⟩ := exists_subset_card_eq (hn₁.trans hu₂)
   have ht : t.Nonempty := by rwa [← card_pos, htn]

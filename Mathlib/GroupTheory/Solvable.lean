@@ -3,11 +3,13 @@ Copyright (c) 2021 Jordan Brown, Thomas Browning, Patrick Lutz. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.GroupTheory.Abelianization.Defs
-import Mathlib.GroupTheory.Perm.ViaEmbedding
-import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.GroupTheory.Perm.ViaEmbedding
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Solvable Groups
@@ -22,6 +24,8 @@ the derived series of a group.
     `general_commutator` starting with the top subgroup
 * `IsSolvable G` : the group `G` is solvable
 -/
+
+@[expose] public section
 
 open Subgroup
 
@@ -69,6 +73,7 @@ section CommutatorMap
 
 section DerivedSeriesMap
 
+set_option backward.isDefEq.respectTransparency false in
 variable (f) in
 theorem map_derivedSeries_le_derivedSeries (n : ℕ) :
     (derivedSeries G n).map f ≤ derivedSeries G' n := by
@@ -101,6 +106,7 @@ class IsSolvable : Prop where
   /-- A group `G` is solvable if its derived series is eventually trivial. -/
   solvable : ∃ n : ℕ, derivedSeries G n = ⊥
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) CommGroup.isSolvable {G : Type*} [CommGroup G] : IsSolvable G :=
   ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
 
@@ -118,6 +124,7 @@ instance (priority := 100) isSolvable_of_subsingleton [Subsingleton G] : IsSolva
 
 variable {G}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G' →* G)
     (g : G →* G'') (hfg : g.ker ≤ f.range) [hG' : IsSolvable G'] [hG'' : IsSolvable G''] :
     IsSolvable G := by
@@ -131,6 +138,7 @@ theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G'
       (le_bot_iff.mp ((map_derivedSeries_le_derivedSeries g n).trans hn.le))).trans hfg
   | succ m hm => exact commutator_le_map_commutator hm hm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G'] :
     IsSolvable G :=
   solvable_of_ker_le_range (1 : G' →* G) f ((f.ker_eq_bot_iff.mpr hf).symm ▸ bot_le)
@@ -138,6 +146,7 @@ theorem solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G
 instance subgroup_solvable_of_solvable (H : Subgroup G) [IsSolvable G] : IsSolvable H :=
   solvable_of_solvable_injective H.subtype_injective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem solvable_of_surjective (hf : Function.Surjective f) [IsSolvable G] : IsSolvable G' :=
   solvable_of_ker_le_range f (1 : G' →* G) (f.range_eq_top_of_surjective hf ▸ le_top)
 
@@ -150,6 +159,7 @@ instance solvable_prod {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
   solvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
     ⟨x.1, Prod.ext rfl hx.symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 theorem IsSolvable.commutator_lt_top_of_nontrivial [hG : IsSolvable G] [Nontrivial G] :
     commutator G < ⊤ := by
@@ -172,7 +182,7 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
   refine ⟨fun _ _ ↦ IsSolvable.commutator_lt_of_ne_bot, fun h ↦ ?_⟩
   suffices h : IsSolvable (⊤ : Subgroup G) from
     solvable_of_surjective (MonoidHom.range_eq_top.mp (range_subtype ⊤))
-  refine WellFoundedLT.induction (C := fun (H : Subgroup G) ↦ IsSolvable H) ⊤ fun H hH ↦ ?_
+  induction (⊤ : Subgroup G) using WellFoundedLT.induction with | ind H hH
   rcases eq_or_ne H ⊥ with rfl | h'
   · infer_instance
   · obtain ⟨n, hn⟩ := hH ⁅H, H⁆ (h H h')

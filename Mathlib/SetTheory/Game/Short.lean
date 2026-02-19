@@ -3,11 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module -- shake: keep-all
 
-import Mathlib.Data.Fintype.Basic
-import Mathlib.SetTheory.Cardinal.Regular
-import Mathlib.SetTheory.Game.Birthday
-import Mathlib.Tactic.Linter.DeprecatedModule
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.SetTheory.Cardinal.Regular
+public import Mathlib.SetTheory.Game.Birthday
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Short` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -23,6 +24,8 @@ We prove that the order relations `≤` and `<`, and the equivalence relation `�
 short games, although unfortunately in practice `decide` doesn't seem to be able to
 prove anything using these instances.
 -/
+
+@[expose] public section
 
 -- Porting note: The local instances `moveLeftShort'` and `fintypeLeft` (and resp. `Right`)
 -- trigger this error.
@@ -90,6 +93,7 @@ attribute [class] Short
 /-- Extracting the `Fintype` instance for the indexing type for Left's moves in a short game.
 This is an unindexed typeclass, so it can't be made a global instance.
 -/
+@[instance_reducible]
 def fintypeLeft {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} [S : Short ⟨α, β, L, R⟩] :
     Fintype α := by cases S; assumption
 
@@ -101,6 +105,7 @@ instance fintypeLeftMoves (x : PGame) [S : Short x] : Fintype x.LeftMoves := by
 /-- Extracting the `Fintype` instance for the indexing type for Right's moves in a short game.
 This is an unindexed typeclass, so it can't be made a global instance.
 -/
+@[instance_reducible]
 def fintypeRight {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} [S : Short ⟨α, β, L, R⟩] :
     Fintype β := by cases S; assumption
 
@@ -116,6 +121,7 @@ instance moveLeftShort (x : PGame) [S : Short x] (i : x.LeftMoves) : Short (x.mo
 This would be a dangerous instance potentially introducing new metavariables
 in typeclass search, so we only make it an instance locally.
 -/
+@[instance_reducible]
 def moveLeftShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (i : xl) : Short (xL i) := by
   obtain ⟨L, _⟩ := S; apply L
 
@@ -128,6 +134,7 @@ instance moveRightShort (x : PGame) [S : Short x] (j : x.RightMoves) : Short (x.
 This would be a dangerous instance potentially introducing new metavariables
 in typeclass search, so we only make it an instance locally.
 -/
+@[instance_reducible]
 def moveRightShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (j : xr) : Short (xR j) := by
   obtain ⟨_, R⟩ := S; apply R
 
@@ -201,7 +208,7 @@ instance shortNeg : ∀ (x : PGame.{u}) [Short x], Short (-x)
   | mk xl xr xL xR, _ => by
     exact Short.mk (fun i => shortNeg _) fun i => shortNeg _
 
-instance shortAdd : ∀ (x y : PGame.{u}) [Short x] [Short y], Short (x + y)
+def shortAdd : ∀ (x y : PGame.{u}) [Short x] [Short y], Short (x + y)
   | mk xl xr xL xR, mk yl yr yL yR, _, _ => by
     apply Short.mk
     all_goals
@@ -209,6 +216,12 @@ instance shortAdd : ∀ (x y : PGame.{u}) [Short x] [Short y], Short (x + y)
       · apply shortAdd
       · change Short (mk xl xr xL xR + _); apply shortAdd
 termination_by x y => (x, y)
+
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12263
+we use a wrapper instance here rather than declaring `shortAdd` as an instance directly,
+to avoid a ``instance `SetTheory.PGame.shortAdd._unary` must be marked with `@[reducible]` or
+`@[instance_reducible]`` warning. -/
+instance : ∀ (x y : PGame.{u}) [Short x] [Short y], Short (x + y) := shortAdd
 
 instance shortNat : ∀ n : ℕ, Short n
   | 0 => PGame.short0

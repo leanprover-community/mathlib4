@@ -3,11 +3,13 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.ENat.Pow
-import Mathlib.Data.ULift
-import Mathlib.Data.ZMod.Defs
-import Mathlib.SetTheory.Cardinal.ToNat
-import Mathlib.SetTheory.Cardinal.ENat
+module
+
+public import Mathlib.Data.ENat.Pow
+public import Mathlib.Data.ULift
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.SetTheory.Cardinal.ToNat
+public import Mathlib.SetTheory.Cardinal.ENat
 
 /-!
 # Finite Cardinality Functions
@@ -16,9 +18,11 @@ import Mathlib.SetTheory.Cardinal.ENat
 
 * `Nat.card α` is the cardinality of `α` as a natural number.
   If `α` is infinite, `Nat.card α = 0`.
-* `ENat.card α` is the cardinality of `α` as an  extended natural number.
+* `ENat.card α` is the cardinality of `α` as an extended natural number.
   If `α` is infinite, `ENat.card α = ⊤`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -49,9 +53,11 @@ theorem _root_.Fintype.card_eq_nat_card {_ : Fintype α} : Fintype.card α = Nat
 lemma card_eq_finsetCard (s : Finset α) : Nat.card s = s.card := by
   simp only [Nat.card_eq_fintype_card, Fintype.card_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma card_eq_card_toFinset (s : Set α) [Fintype s] : Nat.card s = s.toFinset.card := by
   simp only [← Nat.card_eq_finsetCard, s.mem_toFinset]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma card_eq_card_finite_toFinset {s : Set α} (hs : s.Finite) : Nat.card s = hs.toFinset.card := by
   simp only [← Nat.card_eq_finsetCard, hs.mem_toFinset]
 
@@ -285,7 +291,9 @@ theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
 
 @[simp] lemma card_eq_top : card α = ⊤ ↔ Infinite α := by simp [card, aleph0_le_mk_iff]
 
-@[simp] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [card]
+@[simp high] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [card]
+
+@[simp] theorem card_lt_top : card α < ⊤ ↔ Finite α := by simp [card, lt_aleph0_iff_finite]
 
 @[simp]
 theorem card_sum (α β : Type*) :
@@ -313,7 +321,7 @@ lemma card_le_card_of_injective {α β : Type*} {f : α → β} (hf : Injective 
 @[simp]
 theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
     ↑n ≤ toENat c ↔ ↑n ≤ c := by
-  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 natCast_le_aleph0]
 
 theorem _root_.Cardinal.toENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
     toENat c ≤ n ↔ c ≤ n := by simp

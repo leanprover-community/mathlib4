@@ -3,11 +3,13 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.Order.KrullDimension
-import Mathlib.RingTheory.FiniteLength
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.Order.KrullDimension
+public import Mathlib.RingTheory.FiniteLength
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 
@@ -20,6 +22,8 @@ import Mathlib.RingTheory.FiniteLength
 - `Module.length_eq_add_of_exact`: Length is additive in exact sequences.
 
 -/
+
+@[expose] public section
 
 variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
 
@@ -103,6 +107,7 @@ lemma Module.length_ne_top [IsArtinian R M] [IsNoetherian R M] : Module.length R
   rw [length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian]
   exact ⟨‹_›, ‹_›⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Module.length_submodule {N : Submodule R M} :
     Module.length R N = Order.height N := by
   apply WithBot.coe_injective
@@ -120,14 +125,17 @@ lemma LinearEquiv.length_eq {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃
   rw [Module.coe_length, Module.coe_length,
     Order.krullDim_eq_of_orderIso (Submodule.orderIsoMapComap e)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Module.length_bot :
     Module.length R (⊥ : Submodule R M) = 0 :=
   Module.length_eq_zero
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma Module.length_top :
     Module.length R (⊤ : Submodule R M) = Module.length R M := by
   rw [Module.length_submodule, Module.length_eq_height]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.height_lt_top [IsArtinian R M] [IsNoetherian R M] (N : Submodule R M) :
     Order.height N < ⊤ := by
   simpa only [← Module.length_submodule] using Module.length_ne_top.lt_top
@@ -136,6 +144,7 @@ lemma Submodule.height_strictMono [IsArtinian R M] [IsNoetherian R M] :
     StrictMono (Order.height : Submodule R M → ℕ∞) :=
   fun N _ h ↦ Order.height_strictMono h N.height_lt_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.length_lt [IsArtinian R M] [IsNoetherian R M] {N : Submodule R M} (h : N ≠ ⊤) :
     Module.length R N < Module.length R M := by
   simpa [← Module.length_top (M := M), Module.length_submodule] using height_strictMono h.lt_top
@@ -144,6 +153,7 @@ variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R 
 variable (f : N →ₗ[R] M) (g : M →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
 variable (H : Function.Exact f g)
 
+set_option backward.isDefEq.respectTransparency false in
 include hf hg H in
 /-- Length is additive in exact sequences. -/
 lemma Module.length_eq_add_of_exact :
@@ -178,6 +188,7 @@ lemma Module.length_le_of_injective : Module.length R N ≤ Module.length R M :=
     (Submodule.mkQ_surjective _) (LinearMap.exact_map_mkQ_range f)]
   exact le_self_add
 
+set_option backward.isDefEq.respectTransparency false in
 include hg in
 lemma Module.length_le_of_surjective : Module.length R P ≤ Module.length R M := by
   rw [Module.length_eq_add_of_exact (LinearMap.ker g).subtype g (Submodule.subtype_injective _) hg
@@ -205,6 +216,7 @@ lemma Module.length_pi_of_fintype : ∀ {ι : Type*} [Fintype ι]
     rw [(LinearEquiv.piOptionEquivProd _).length_eq, Module.length_prod, IH, add_comm,
       Fintype.sum_option, add_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Module.length_finsupp {ι : Type*} :
     Module.length R (ι →₀ M) = ENat.card ι * Module.length R M := by

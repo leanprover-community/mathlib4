@@ -3,8 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
-import Mathlib.SetTheory.Cardinal.ToNat
+module
+
+public import Mathlib.SetTheory.Cardinal.ToNat
+public import Mathlib.LinearAlgebra.Dimension.Basic
 
 /-!
 # Finite dimension of vector spaces
@@ -29,6 +31,8 @@ in `Dimension.lean`. Not all results have been ported yet.
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -74,17 +78,17 @@ lemma rank_eq_ofNat_iff_finrank_eq_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
 
 theorem finrank_le_of_rank_le {n : ℕ} (h : Module.rank R M ≤ ↑n) : finrank R M ≤ n := by
   rwa [← Cardinal.toNat_le_iff_le_of_lt_aleph0, toNat_natCast] at h
-  · exact h.trans_lt (nat_lt_aleph0 n)
-  · exact nat_lt_aleph0 n
+  · exact h.trans_lt natCast_lt_aleph0
+  · exact natCast_lt_aleph0
 
 theorem finrank_lt_of_rank_lt {n : ℕ} (h : Module.rank R M < ↑n) : finrank R M < n := by
   rwa [← Cardinal.toNat_lt_iff_lt_of_lt_aleph0, toNat_natCast] at h
-  · exact h.trans (nat_lt_aleph0 n)
-  · exact nat_lt_aleph0 n
+  · exact h.trans natCast_lt_aleph0
+  · exact natCast_lt_aleph0
 
 theorem lt_rank_of_lt_finrank {n : ℕ} (h : n < finrank R M) : ↑n < Module.rank R M := by
   rwa [← Cardinal.toNat_lt_iff_lt_of_lt_aleph0, toNat_natCast]
-  · exact nat_lt_aleph0 n
+  · exact natCast_lt_aleph0
   · contrapose! h
     rw [finrank, Cardinal.toNat_apply_of_aleph0_le h]
     exact n.zero_le
@@ -100,6 +104,9 @@ theorem finrank_le_finrank_of_rank_le_rank
 end Semiring
 
 end Module
+
+theorem CommSemiring.finrank_self (R) [CommSemiring R] : Module.finrank R R = 1 :=
+  finrank_eq_of_rank_eq (rank_self R)
 
 open Module
 

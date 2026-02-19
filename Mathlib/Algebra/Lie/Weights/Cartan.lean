@@ -3,8 +3,10 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.CartanSubalgebra
-import Mathlib.Algebra.Lie.Weights.Basic
+module
+
+public import Mathlib.Algebra.Lie.CartanSubalgebra
+public import Mathlib.Algebra.Lie.Weights.Basic
 
 /-!
 # Weights and roots of Lie modules and Lie algebras with respect to Cartan subalgebras
@@ -25,6 +27,8 @@ Basic definitions and properties of the above ideas are provided in this file.
   * `LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan`
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -114,7 +118,7 @@ theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ 
     (x : rootSpace H χ₁) (m : genWeightSpace M χ₂) :
     (rootSpaceWeightSpaceProduct R L H M χ₁ χ₂ χ₃ hχ (x ⊗ₜ m) : M) = ⁅(x : L), (m : M)⁆ := by
   simp only [rootSpaceWeightSpaceProduct, rootSpaceWeightSpaceProductAux, coe_liftLie_eq_lift_coe,
-    lift_apply, LinearMap.coe_mk, AddHom.coe_mk, Submodule.coe_mk]
+    lift_apply, LinearMap.coe_mk, AddHom.coe_mk]
 
 theorem mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace (α χ : H → R)
     {x : L} (hx : x ∈ rootSpace H α) :
@@ -185,6 +189,7 @@ theorem le_zeroRootSubalgebra : H ≤ zeroRootSubalgebra R L H := by
     coe_zeroRootSubalgebra, LieSubmodule.toSubmodule_le_toSubmodule]
   exact toLieSubmodule_le_rootSpace_zero R L H
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem zeroRootSubalgebra_normalizer_eq_self :
     (zeroRootSubalgebra R L H).normalizer = zeroRootSubalgebra R L H := by
@@ -196,7 +201,7 @@ theorem zeroRootSubalgebra_normalizer_eq_self :
   specialize hx y (le_zeroRootSubalgebra R L H hy)
   rw [mem_zeroRootSubalgebra] at hx
   obtain ⟨k, hk⟩ := hx ⟨y, hy⟩
-  rw [← lie_skew, LinearMap.map_neg, neg_eq_zero] at hk
+  rw [← lie_skew, map_neg, neg_eq_zero] at hk
   use k + 1
   rw [Module.End.iterate_succ, LinearMap.coe_comp, Function.comp_apply, toEnd_apply_apply,
     LieSubalgebra.coe_bracket_of_module, Submodule.coe_mk, hk]
@@ -248,6 +253,7 @@ def corootSpace : LieIdeal R H :=
   rw [← rootSpace_zero_eq]
   exact fun p ↦ (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) p).property)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_corootSpace {x : H} :
     x ∈ corootSpace α ↔
     (x : L) ∈ Submodule.span R {⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} := by
@@ -264,6 +270,7 @@ lemma mem_corootSpace {x : H} :
     {x | ∃ (a : rootSpace H α) (b : rootSpace H (-α)), ⁅(a : L), (b : L)⁆ = x} ↔ _
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_corootSpace' {x : H} :
     x ∈ corootSpace α ↔
     x ∈ Submodule.span R ({⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} : Set H) := by
@@ -281,5 +288,21 @@ lemma mem_corootSpace' {x : H} :
   convert
     (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property using 0
   simp [hyz]
+
+section FiniteDimensional
+
+variable {K : Type*} [Field K] [LieAlgebra K L]
+variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
+variable [LieModule.IsTriangularizable K H L]
+
+lemma cartan_sup_iSup_rootSpace_eq_top :
+    H.toLieSubmodule ⊔ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), rootSpace H α = ⊤ := by
+  rw [eq_top_iff, ← LieModule.iSup_genWeightSpace_eq_top', iSup_le_iff]
+  intro α
+  by_cases hα : α.IsZero
+  · simp [hα]
+  · exact le_sup_of_le_right <| le_iSup₂_of_le α hα (le_refl _)
+
+end FiniteDimensional
 
 end LieAlgebra

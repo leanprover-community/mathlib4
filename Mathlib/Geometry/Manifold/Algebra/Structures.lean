@@ -3,7 +3,9 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
 /-!
 # `C^n` structures
@@ -12,6 +14,8 @@ In this file we define `C^n` structures that build on Lie groups. We prefer usin
 term `ContMDiffRing` instead of Lie mainly because Lie ring has currently another use
 in mathematics.
 -/
+
+@[expose] public section
 
 open scoped Manifold ContDiff
 
@@ -43,6 +47,7 @@ instance (priority := 100) ContMDiffRing.toLieAddGroup (I : ModelWithCorners �
 
 end ContMDiffRing
 
+set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) instFieldContMDiffRing
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} :

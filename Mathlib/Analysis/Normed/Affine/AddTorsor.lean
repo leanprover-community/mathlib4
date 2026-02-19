@@ -3,12 +3,14 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-import Mathlib.Topology.Instances.RealVectorSpace
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+public import Mathlib.Topology.Instances.RealVectorSpace
 
 
 /-!
@@ -16,6 +18,8 @@ import Mathlib.Topology.Instances.RealVectorSpace
 
 This file contains lemmas about normed additive torsors over normed spaces.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -128,6 +132,7 @@ section invertibleTwo
 
 variable [Invertible (2 : 𝕜)]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_left_midpoint (p₁ p₂ : P) : dist p₁ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖⁻¹ * dist p₁ p₂ := by
   rw [midpoint, dist_comm, dist_lineMap_left, invOf_eq_inv, ← norm_inv]
@@ -171,6 +176,7 @@ theorem dist_left_midpoint_eq_dist_right_midpoint (p₁ p₂ : P) :
     dist p₁ (midpoint 𝕜 p₁ p₂) = dist p₂ (midpoint 𝕜 p₁ p₂) := by
   rw [dist_left_midpoint p₁ p₂, dist_right_midpoint p₁ p₂]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
     dist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (dist p₁ p₃ + dist p₂ p₄) / ‖(2 : 𝕜)‖ := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, midpoint_vsub_midpoint]

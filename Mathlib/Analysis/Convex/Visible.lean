@@ -3,13 +3,15 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.Order.Monotone
 
 /-!
 # Points in sight
@@ -22,6 +24,8 @@ elements of a set a point sees in terms of the dimension of that set.
 The art gallery problem can be stated using the visibility predicate: A set `A` (the art gallery) is
 guarded by a finite set `G` (the guards) iff `∀ a ∈ A, ∃ g ∈ G, IsVisible ℝ sᶜ a g`.
 -/
+
+@[expose] public section
 
 open AffineMap Filter Finset Set
 open scoped Cardinal Pointwise Topology
@@ -103,12 +107,11 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
         rw [smul_sum]
         simp_rw [smul_smul, mul_div_cancel₀ _ hwi.ne']
         exact add_sum_erase _ (fun i ↦ w i • a i) hi
-      simp_rw [lineMap_apply_module, ← this, smul_add, smul_smul]
-      match_scalars <;> field_simp <;> ring
+      simp_rw [lineMap_apply_module, ← this]
+      match_scalars <;> field
     refine (convex_convexHull _ _).mem_of_wbtw this hε <| (convex_convexHull _ _).sum_mem ?_ ?_ ?_
     · intro j hj
-      have := hw₀ j <| erase_subset _ _ hj
-      positivity
+      positivity [hw₀ j <| erase_subset _ _ hj]
     · rw [← sum_div, sum_erase_eq_sub hi, hw₁, div_self hwi.ne']
     · exact fun j hj ↦ subset_convexHull _ _ <| ha _ <| erase_subset _ _ hj
   · exact lt_add_of_pos_left _ <| by positivity

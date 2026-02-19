@@ -3,7 +3,9 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.RingTheory.HahnSeries.Multiplication
+module
+
+public import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
 # Vertex operators
@@ -25,6 +27,8 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 * [R. Borcherds, *Vertex Algebras, Kac-Moody Algebras, and the Monster*][borcherds1986vertex]
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -101,6 +105,7 @@ variable {Γ Γ' : Type*} [PartialOrder Γ] [PartialOrder Γ'] {R : Type*}
 
 open HahnModule
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
 series. -/
 @[simps]
@@ -112,6 +117,7 @@ def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
     intro g' hg' hAB
     exact hg' (by simp [hAB])
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem compHahnSeries_add (u v : U) :
     compHahnSeries A B (u + v) = compHahnSeries A B u + compHahnSeries A B v := by
@@ -119,6 +125,7 @@ theorem compHahnSeries_add (u v : U) :
   simp only [compHahnSeries_coeff, map_add, coeff_apply_apply, HahnSeries.coeff_add', Pi.add_apply]
   rw [← HahnSeries.coeff_add]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem compHahnSeries_smul (r : R) (u : U) :
     compHahnSeries A B (r • u) = r • compHahnSeries A B u := by

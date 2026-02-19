@@ -3,15 +3,17 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
-import Mathlib.Probability.Kernel.Composition.CompProd
-import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
+module
+
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+public import Mathlib.Probability.Kernel.Composition.CompProd
+public import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 
 /-!
 # Building a Markov kernel from a conditional cumulative distribution function
 
 Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β` be two finite kernels.
-A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `κ` with respect
+A function `f : α × β → StieltjesFunction ℝ` is called a conditional kernel CDF of `κ` with respect
 to `ν` if it is measurable, tends to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
 `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all measurable
 sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a).real (s ×ˢ Iic x)`.
@@ -23,12 +25,12 @@ denoted by `hf.toKernel f` such that `κ = ν ⊗ₖ hf.toKernel f`.
 
 Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
 
-* `ProbabilityTheory.IsCondKernelCDF`: a function `f : α × β → StieltjesFunction` is called
+* `ProbabilityTheory.IsCondKernelCDF`: a function `f : α × β → StieltjesFunction ℝ` is called
   a conditional kernel CDF of `κ` with respect to `ν` if it is measurable, tends to 0 at -∞ and
   to 1 at +∞ for all `p : α × β`, if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and
   `x : ℝ` and for all measurable sets `s : Set β`,
   `∫ b in s, f (a, b) x ∂(ν a) = (κ a).real (s ×ˢ Iic x)`.
-* `ProbabilityTheory.IsCondKernelCDF.toKernel`: from a function `f : α × β → StieltjesFunction`
+* `ProbabilityTheory.IsCondKernelCDF.toKernel`: from a function `f : α × β → StieltjesFunction ℝ`
   with the property `hf : IsCondKernelCDF f κ ν`, build a `Kernel (α × β) ℝ` such that
   `κ = ν ⊗ₖ hf.toKernel f`.
 * `ProbabilityTheory.IsRatCondKernelCDF`: a function `f : α × β → ℚ → ℝ` is called a rational
@@ -40,10 +42,12 @@ Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
 
 * `ProbabilityTheory.isCondKernelCDF_stieltjesOfMeasurableRat`: if `f : α × β → ℚ → ℝ` has the
   property `IsRatCondKernelCDF`, then `stieltjesOfMeasurableRat f` is a function
-  `α × β → StieltjesFunction` with the property `IsCondKernelCDF`.
+  `α × β → StieltjesFunction ℝ` with the property `IsCondKernelCDF`.
 * `ProbabilityTheory.compProd_toKernel`: for `hf : IsCondKernelCDF f κ ν`, `ν ⊗ₖ hf.toKernel f = κ`.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter TopologicalSpace
 
@@ -395,14 +399,14 @@ end isRatCondKernelCDFAux
 
 section IsCondKernelCDF
 
-variable {f : α × β → StieltjesFunction}
+variable {f : α × β → StieltjesFunction ℝ}
 
-/-- A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `κ` with
+/-- A function `f : α × β → StieltjesFunction ℝ` is called a conditional kernel CDF of `κ` with
 respect to `ν` if it is measurable, tends to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
 `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all
 measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a).real (s ×ˢ Iic x)`. -/
-structure IsCondKernelCDF (f : α × β → StieltjesFunction) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
-    Prop where
+structure IsCondKernelCDF (f : α × β → StieltjesFunction ℝ) (κ : Kernel α (β × ℝ))
+    (ν : Kernel α β) : Prop where
   measurable (x : ℝ) : Measurable fun p ↦ f p x
   integrable (a : α) (x : ℝ) : Integrable (fun b ↦ f (a, b) x) (ν a)
   tendsto_atTop_one (p : α × β) : Tendsto (f p) atTop (𝓝 1)
@@ -417,19 +421,19 @@ lemma IsCondKernelCDF.le_one (hf : IsCondKernelCDF f κ ν) (p : α × β) (x : 
   Monotone.ge_of_tendsto (f p).mono (hf.tendsto_atTop_one p) x
 
 lemma IsCondKernelCDF.integral
-    {f : α × β → StieltjesFunction} (hf : IsCondKernelCDF f κ ν) (a : α) (x : ℝ) :
+    {f : α × β → StieltjesFunction ℝ} (hf : IsCondKernelCDF f κ ν) (a : α) (x : ℝ) :
     ∫ b, f (a, b) x ∂(ν a) = (κ a).real (univ ×ˢ Iic x) := by
   rw [← hf.setIntegral _ MeasurableSet.univ, Measure.restrict_univ]
 
 lemma IsCondKernelCDF.setLIntegral [IsFiniteKernel κ]
-    {f : α × β → StieltjesFunction} (hf : IsCondKernelCDF f κ ν)
+    {f : α × β → StieltjesFunction ℝ} (hf : IsCondKernelCDF f κ ν)
     (a : α) {s : Set β} (hs : MeasurableSet s) (x : ℝ) :
     ∫⁻ b in s, ENNReal.ofReal (f (a, b) x) ∂(ν a) = κ a (s ×ˢ Iic x) := by
   rw [← ofReal_integral_eq_lintegral_ofReal (hf.integrable a x).restrict
     (ae_of_all _ (fun _ ↦ hf.nonneg _ _)), hf.setIntegral a hs x, ofReal_measureReal]
 
 lemma IsCondKernelCDF.lintegral [IsFiniteKernel κ]
-    {f : α × β → StieltjesFunction} (hf : IsCondKernelCDF f κ ν) (a : α) (x : ℝ) :
+    {f : α × β → StieltjesFunction ℝ} (hf : IsCondKernelCDF f κ ν) (a : α) (x : ℝ) :
     ∫⁻ b, ENNReal.ofReal (f (a, b) x) ∂(ν a) = κ a (univ ×ˢ Iic x) := by
   rw [← hf.setLIntegral _ MeasurableSet.univ, Measure.restrict_univ]
 
@@ -446,13 +450,13 @@ end IsCondKernelCDF
 
 section ToKernel
 
-variable {_ : MeasurableSpace β} {f : α × β → StieltjesFunction}
+variable {_ : MeasurableSpace β} {f : α × β → StieltjesFunction ℝ}
   {κ : Kernel α (β × ℝ)} {ν : Kernel α β}
 
-/-- A function `f : α × β → StieltjesFunction` with the property `IsCondKernelCDF f κ ν` gives a
+/-- A function `f : α × β → StieltjesFunction ℝ` with the property `IsCondKernelCDF f κ ν` gives a
 Markov kernel from `α × β` to `ℝ`, by taking for each `p : α × β` the measure defined by `f p`. -/
 noncomputable
-def IsCondKernelCDF.toKernel (f : α × β → StieltjesFunction) (hf : IsCondKernelCDF f κ ν) :
+def IsCondKernelCDF.toKernel (f : α × β → StieltjesFunction ℝ) (hf : IsCondKernelCDF f κ ν) :
     Kernel (α × β) ℝ where
   toFun p := (f p).measure
   measurable' := StieltjesFunction.measurable_measure hf.measurable
@@ -474,7 +478,7 @@ end ToKernel
 
 section
 
-variable {f : α × β → StieltjesFunction}
+variable {f : α × β → StieltjesFunction ℝ}
 
 lemma setLIntegral_toKernel_Iic [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     (a : α) (x : ℝ) {s : Set β} (hs : MeasurableSet s) :
@@ -545,6 +549,7 @@ lemma setLIntegral_toKernel_prod [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     · exact fun i ↦
         ((Kernel.measurable_coe _ (hf_meas i)).comp measurable_prodMk_left).aemeasurable.restrict
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     (a : α) {s : Set (β × ℝ)} (hs : MeasurableSet s) :

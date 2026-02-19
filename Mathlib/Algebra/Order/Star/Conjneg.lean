@@ -3,13 +3,17 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Algebra.Star.Conjneg
+module
+
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Star.Conjneg
 
 /-!
 # Order properties of conjugation-negation
 -/
+
+public section
 
 open scoped ComplexConjugate
 
@@ -29,9 +33,11 @@ end OrderedCommSemiring
 section OrderedCommRing
 variable [CommRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {f : G → R}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma conjneg_nonpos : conjneg f ≤ 0 ↔ f ≤ 0 := by
   simp_rw [← neg_nonneg, ← conjneg_neg, conjneg_nonneg]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma conjneg_neg' : conjneg f < 0 ↔ f < 0 := by
   simp_rw [← neg_pos, ← conjneg_neg, conjneg_pos]
 

@@ -3,11 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Analysis.Calculus.ContDiff.RCLike
-import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
-import Mathlib.Analysis.Complex.RealDeriv
-import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Analysis.SpecialFunctions.Exponential
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+public import Mathlib.Analysis.Complex.RealDeriv
+public import Mathlib.Analysis.SpecialFunctions.Exp
+public import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
 # Complex and real exponential
@@ -18,6 +20,8 @@ In this file we prove that `Complex.exp` and `Real.exp` are analytic functions.
 
 exp, derivative
 -/
+
+public section
 
 assert_not_exists IsConformalMap Conformal
 
@@ -32,8 +36,8 @@ section
 
 open Complex
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
-variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- The function `Complex.exp` is complex analytic. -/
 theorem analyticOnNhd_cexp : AnalyticOnNhd ℂ exp univ := by
@@ -80,6 +84,7 @@ namespace Complex
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The complex exponential is everywhere differentiable, with the derivative `exp x`. -/
 theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x := by
   rw [hasDerivAt_iff_isLittleO_nhds_zero]
@@ -111,7 +116,7 @@ theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff 𝕜 n exp :=
   analyticOnNhd_cexp.restrictScalars.contDiff
 
 theorem hasStrictDerivAt_exp (x : ℂ) : HasStrictDerivAt exp (exp x) x :=
-  contDiff_exp.contDiffAt.hasStrictDerivAt' (hasDerivAt_exp x) le_rfl
+  contDiff_exp.contDiffAt.hasStrictDerivAt' (hasDerivAt_exp x) one_ne_zero
 
 theorem hasStrictFDerivAt_exp_real (x : ℂ) : HasStrictFDerivAt exp (exp x • (1 : ℂ →L[ℝ] ℂ)) x :=
   (hasStrictDerivAt_exp x).complexToReal_fderiv

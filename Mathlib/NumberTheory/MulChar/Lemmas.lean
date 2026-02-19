@@ -3,12 +3,16 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.MulChar.Basic
-import Mathlib.RingTheory.RootsOfUnity.Complex
+module
+
+public import Mathlib.NumberTheory.MulChar.Basic
+public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # Further Results on multiplicative characters
 -/
+
+@[expose] public section
 
 namespace MulChar
 
@@ -121,6 +125,7 @@ section Fintype
 variable (F : Type*) [Field F] [Fintype F]
 variable {R : Type*} [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- There is a character of order `n` on `F` if `#F ≡ 1 mod n` and the target contains
 a primitive `n`th root of unity. -/
 lemma exists_mulChar_orderOf {n : ℕ} (h : n ∣ Fintype.card F - 1) {ζ : R}

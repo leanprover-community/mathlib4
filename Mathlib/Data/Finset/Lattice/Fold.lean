@@ -3,12 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Fold
-import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Multiset.Lattice
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Order.Hom.BoundedLattice
-import Mathlib.Order.Nat
+module
+
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Data.Finset.Sum
+public import Mathlib.Data.Multiset.Lattice
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Order.Hom.BoundedLattice
+public import Mathlib.Order.Nat
 
 /-!
 # Lattice operations on finsets
@@ -20,6 +22,8 @@ For the special case of maximum and minimum of a finset, see Max.lean.
 See also `Mathlib/Order/CompleteLattice/Finset.lean`, which is instead concerned with how big
 lattice or set operations behave when indexed by a finset.
 -/
+
+@[expose] public section
 
 open Function Multiset OrderDual
 
@@ -52,7 +56,7 @@ theorem sup_empty : (∅ : Finset β).sup f = ⊥ :=
 theorem sup_cons {b : β} (h : b ∉ s) : (cons b s h).sup f = f b ⊔ s.sup f :=
   fold_cons h
 
-@[simp]
+@[simp, grind =]
 theorem sup_insert [DecidableEq β] {b : β} : (insert b s : Finset β).sup f = f b ⊔ s.sup f :=
   fold_insert_idem
 
@@ -102,6 +106,7 @@ theorem sup_const_le : (s.sup fun _ => a) ≤ a :=
 theorem le_sup {b : β} (hb : b ∈ s) : f b ≤ s.sup f :=
   Finset.sup_le_iff.1 le_rfl _ hb
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLUB_sup : IsLUB (f '' s) (s.sup f) := by
   simp +contextual [IsLUB, IsLeast, upperBounds, lowerBounds, le_sup]
 
@@ -109,6 +114,7 @@ lemma isLUB_sup_id {s : Finset α} : IsLUB s (s.sup id) := by simpa using isLUB_
 
 theorem le_sup_of_le {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup f := h.trans <| le_sup hb
 
+@[grind _=_]
 theorem sup_union [DecidableEq β] : (s₁ ∪ s₂).sup f = s₁.sup f ⊔ s₂.sup f :=
   eq_of_forall_ge_iff fun c => by simp [or_imp, forall_and]
 
@@ -125,11 +131,11 @@ theorem sup_ite (p : β → Prop) [DecidablePred p] :
     (s.sup fun i => ite (p i) (f i) (g i)) = (s.filter p).sup f ⊔ (s.filter fun i => ¬p i).sup g :=
   fold_ite _
 
-@[gcongr]
+@[gcongr, grind ←]
 theorem sup_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.sup f ≤ s.sup g :=
   Finset.sup_le fun b hb => le_trans (h b hb) (le_sup hb)
 
-@[gcongr]
+@[gcongr, grind ←]
 theorem sup_mono (h : s₁ ⊆ s₂) : s₁.sup f ≤ s₂.sup f :=
   Finset.sup_le (fun _ hb => le_sup (h hb))
 
@@ -236,16 +242,12 @@ theorem sup_eq_bot_of_isEmpty [IsEmpty β] (f : β → α) (S : Finset β) : S.s
 theorem le_sup_dite_pos (p : β → Prop) [DecidablePred p]
     {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : p b) :
     f b h₁ ≤ s.sup fun i ↦ if h : p i then f i h else g i h := by
-  have : f b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
-  rw [this]
-  apply le_sup h₀
+  grind [le_sup_of_le]
 
 theorem le_sup_dite_neg (p : β → Prop) [DecidablePred p]
     {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : ¬p b) :
     g b h₁ ≤ s.sup fun i ↦ if h : p i then f i h else g i h := by
-  have : g b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
-  rw [this]
-  apply le_sup h₀
+  grind [le_sup_of_le]
 
 end Sup
 
@@ -254,6 +256,7 @@ theorem sup_eq_iSup [CompleteLattice β] (s : Finset α) (f : α → β) : s.sup
     (Finset.sup_le (fun a ha => le_iSup_of_le a <| le_iSup (fun _ => f a) ha))
     (iSup_le fun _ => iSup_le fun ha => le_sup ha)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sup_id_eq_sSup [CompleteLattice α] (s : Finset α) : s.sup id = sSup s := by
   simp [sSup_eq_iSup, sup_eq_iSup]
 
@@ -276,7 +279,7 @@ theorem exists_sup_ge [SemilatticeSup β] [OrderBot β] [WellFoundedGT β] (f : 
   refine ⟨t, fun a ↦ ?_⟩
   classical
   have := ht (f a ⊔ t.sup f) ⟨insert a t, by simp⟩
-  rwa [GT.gt, right_lt_sup, not_not] at this
+  rwa [right_lt_sup, not_not] at this
 
 theorem exists_sup_eq_iSup [CompleteLattice β] [WellFoundedGT β] (f : α → β) :
     ∃ t : Finset α, t.sup f = ⨆ a, f a :=
@@ -351,6 +354,7 @@ theorem le_inf_const_le : a ≤ s.inf fun _ => a :=
 theorem inf_le {b : β} (hb : b ∈ s) : s.inf f ≤ f b :=
   Finset.le_inf_iff.1 le_rfl _ hb
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isGLB_inf : IsGLB (f '' s) (s.inf f) := by
   simp +contextual [IsGLB, IsGreatest, upperBounds, lowerBounds, inf_le]
 
@@ -543,10 +547,12 @@ theorem sup_himp_left (hs : s.Nonempty) (f : ι → α) (a : α) :
     (s.sup fun b => a ⇨ f b) = a ⇨ s.sup f :=
   @inf_sdiff_right αᵒᵈ _ _ _ hs _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem compl_sup (s : Finset ι) (f : ι → α) : (s.sup f)ᶜ = s.inf fun i => (f i)ᶜ :=
   map_finset_sup (OrderIso.compl α) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem compl_inf (s : Finset ι) (f : ι → α) : (s.inf f)ᶜ = s.sup fun i => (f i)ᶜ :=
   map_finset_inf (OrderIso.compl α) _ _
@@ -687,7 +693,7 @@ variable [SemilatticeSup α]
 
 theorem sup_of_mem {s : Finset β} (f : β → α) {b : β} (h : b ∈ s) :
     ∃ a : α, s.sup ((↑) ∘ f : β → WithBot α) = ↑a :=
-  Exists.imp (fun _ => And.left) (@le_sup (WithBot α) _ _ _ _ _ _ h (f b) rfl)
+  (WithBot.le_iff_forall.1 (le_sup (α := WithBot α) h) (f b) rfl).imp fun _ ↦ And.left
 
 /-- Given nonempty finset `s` then `s.sup' H f` is the supremum of its image under `f` in (possibly
 unbounded) join-semilattice `α`, where `H` is a proof of nonemptiness. If `α` has a bottom element
@@ -823,10 +829,12 @@ section Inf'
 
 variable [SemilatticeInf α]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inf_of_mem {s : Finset β} (f : β → α) {b : β} (h : b ∈ s) :
     ∃ a : α, s.inf ((↑) ∘ f : β → WithTop α) = ↑a :=
   @sup_of_mem αᵒᵈ _ _ _ f _ h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given nonempty finset `s` then `s.inf' H f` is the infimum of its image under `f` in (possibly
 unbounded) meet-semilattice `α`, where `H` is a proof of nonemptiness. If `α` has a top element you
 may instead use `Finset.inf` which does not require `s` nonempty. -/
@@ -835,6 +843,7 @@ def inf' (s : Finset β) (H : s.Nonempty) (f : β → α) : α :=
 
 variable {s : Finset β} (H : s.Nonempty) (f : β → α)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coe_inf' : ((s.inf' H f : α) : WithTop α) = s.inf ((↑) ∘ f) :=
   @coe_sup' αᵒᵈ _ _ _ H f
@@ -960,6 +969,7 @@ variable [SemilatticeInf α] [OrderTop α]
 theorem inf'_eq_inf {s : Finset β} (H : s.Nonempty) (f : β → α) : s.inf' H f = s.inf f :=
   sup'_eq_sup (α := αᵒᵈ) H f
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_inf_of_nonempty {s : Finset β} (h : s.Nonempty) (f : β → α) :
     (↑(s.inf f) : WithTop α) = s.inf ((↑) ∘ f) :=
   coe_sup_of_nonempty (α := αᵒᵈ) h f
@@ -1070,7 +1080,7 @@ theorem lt_inf'_iff : a < s.inf' H f ↔ ∀ i ∈ s, a < f i :=
 
 theorem exists_mem_eq_sup' (f : ι → α) : ∃ i, i ∈ s ∧ s.sup' H f = f i := by
   induction H using Finset.Nonempty.cons_induction with
-  | singleton c =>  exact ⟨c, mem_singleton_self c, rfl⟩
+  | singleton c => exact ⟨c, mem_singleton_self c, rfl⟩
   | cons c s hcs hs ih =>
     rcases ih with ⟨b, hb, h'⟩
     rw [sup'_cons hs, h']
@@ -1134,14 +1144,8 @@ theorem sup_singleton_apply (s : Finset β) (f : β → α) :
   rw [mem_sup, mem_image]
   simp only [mem_singleton, eq_comm]
 
-@[deprecated (since := "2025-05-24")]
-alias sup_singleton'' := sup_singleton_apply
-
 @[simp]
 theorem sup_singleton_eq_self (s : Finset α) : s.sup singleton = s :=
   (s.sup_singleton_apply _).trans image_id
-
-@[deprecated (since := "2025-05-24")]
-alias sup_singleton' := sup_singleton_eq_self
 
 end Finset

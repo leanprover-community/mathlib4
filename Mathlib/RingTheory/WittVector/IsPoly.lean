@@ -3,9 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.MvPolynomial.Funext
-import Mathlib.Algebra.Ring.ULift
-import Mathlib.RingTheory.WittVector.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Funext
+public import Mathlib.Algebra.Ring.ULift
+public import Mathlib.RingTheory.WittVector.Basic
+public meta import Mathlib.Lean.Elab.Tactic.Basic
 /-!
 # The `IsPoly` predicate
 
@@ -88,6 +91,8 @@ Proofs of identities between polynomial functions will often follow the pattern
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
 
+@[expose] public section
+
 namespace WittVector
 
 universe u
@@ -109,6 +114,7 @@ noncomputable section
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolynomial (idx × ℕ) ℤ)
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
   ext1 n
@@ -119,6 +125,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolyn
   simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
     bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolynomial ℕ ℤ)
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
   ext1 n
@@ -271,7 +278,7 @@ instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
 @[simp]
 theorem bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
-  rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, RingHom.map_zero]
+  rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, map_zero]
 
 /-- The coefficients of `1 : 𝕎 R` as polynomials. -/
 def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
@@ -408,7 +415,7 @@ so it is easier (and prettier) to put it in a tactic script.
 -/
 syntax (name := ghostCalc) "ghost_calc" (ppSpace colGt term:max)* : tactic
 
-private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
+private meta def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
   let fvarId ← liftMetaTacticAux fun g => do
     let (fv, g') ← g.intro n
     return (fv, [g'])
@@ -416,7 +423,7 @@ private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
     Elab.Term.addLocalVarInfo ref (mkFVar fvarId)
   return fvarId
 
-private def getLocalOrIntro (t : Term) : TacticM FVarId := do
+private meta def getLocalOrIntro (t : Term) : TacticM FVarId := do
   match t with
     | `(_) => runIntro t `_
     | `($id:ident) => getFVarId id <|> runIntro id id.getId

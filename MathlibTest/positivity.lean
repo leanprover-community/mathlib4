@@ -7,7 +7,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.NumberTheory.ArithmeticFunction.Misc
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic
@@ -99,6 +99,9 @@ example {a : ℤ} (ha : 3 < a) : 0 < a := by positivity
 example {a b : ℤ} (h : 0 ≤ a + b) : 0 ≤ a + b := by positivity
 
 example {a : ℤ} (hlt : 0 ≤ a) (hne : a ≠ 0) : 0 < a := by positivity
+
+example {a b c d : ℤ} (ha : c < a) (hb : d < b) : 0 < (a - c) * (b - d) := by
+  positivity [sub_pos_of_lt ha, sub_pos_of_lt hb]
 
 section
 
@@ -249,6 +252,19 @@ example (a b : ℤ) (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a.lcm b := by positivity
 example (a : ℕ) (ha : a ≠ 0) : 0 < a.sqrt := by positivity
 example (a : ℕ) (ha : a ≠ 0) : 0 < a.totient := by positivity
 
+section NNReal
+
+example (a : ℝ) (ha : 0 < a) : 0 < a.toNNReal := by positivity
+example (a : ℝ) : 0 ≤ a.toNNReal := by positivity
+example (a : ℝ) : 0 ≤ a.nnabs := by positivity
+example (a : ℝ) (ha : 0 < a) : 0 < a.nnabs := by positivity
+example (a : ℝ) (ha : a ≠ 0) : 0 < a.nnabs := by positivity
+example (a : ℝ≥0) (ha : 0 < a) : 0 < (a : ℝ) := by positivity
+example (a : ℝ≥0) (ha : a ≠ 0) : 0 < (a : ℝ) := by positivity
+example (a : ℝ≥0) : 0 ≤ (a : ℝ) := by positivity
+
+end NNReal
+
 section ENNReal
 
 variable {a b : ℝ≥0∞}
@@ -269,6 +285,10 @@ example (ha : a ≠ 0) : 0 < 2 * a := by positivity
 example (ha : a ≠ 0) : 0 < a * 37 := by positivity
 example (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b := by positivity
 example (ha : a ≠ 0) : 0 ≤ a * b := by positivity
+
+/- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Adding.20superfluous.20hypotheses.20makes.20positivity.20fail/with/568774307 -/
+example {x y : ℝ≥0∞} : x + y + 1 ≠ 0 := by positivity
+example {x y : ℝ≥0∞} (hx : x ≠ 0) : x + y + 1 ≠ 0 := by positivity
 
 end ENNReal
 
@@ -333,6 +353,11 @@ example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b := by p
 example {a : ℝ≥0∞} : 0 < a ^ 0 := by positivity
 example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hat : a ≠ ⊤) : 0 < a ^ b := by positivity
 example {a : ℝ} : 0 < a ^ 0 := by positivity
+
+example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hat : a ≠ ⊤) : 0 < a ^ b := by positivity []
+example {a b c d : ℝ} (hab : 0 < a * b) (hb : 0 ≤ b) (hcd : c < d) :
+    0 < a ^ c + 1 / (d - c) := by
+  positivity [sub_pos_of_lt hcd, pos_of_mul_pos_left hab hb]
 
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 2 + a := by positivity
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
@@ -549,9 +574,7 @@ example (f : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∑ j �
 example (n : ℕ) (f : ℕ → ℤ) : 0 ≤ ∑ j : Fin 8, ∑ i ∈ range n, (f j ^ 2 + i ^ 2) := by positivity
 example (n : ℕ) (f : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (f j ^ 2 + 1) := by positivity
 example (f : Empty → ℤ) : 0 ≤ ∑ j : Empty, f j ^ 2 := by positivity
-example (f : ℕ → ℤ) : 0 < ∑ j ∈ ({1} : Finset ℕ), (f j ^ 2 + 1) := by
-  have : Finset.Nonempty {1} := singleton_nonempty 1
-  positivity
+example (f : ℕ → ℤ) : 0 < ∑ j ∈ ({1} : Finset ℕ), (f j ^ 2 + 1) := by positivity
 example (s : Finset ℕ) : 0 ≤ ∑ j ∈ s, j := by positivity
 example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
 example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
@@ -567,9 +590,7 @@ example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∏ j ∈ range n, a j^2 := by posit
 example (a : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∏ j ∈ s, a j^2 := by positivity
 example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∏ j : Fin 8, ∏ i ∈ range n, (a j^2 + i ^ 2) := by positivity
 example (n : ℕ) (a : ℕ → ℤ) : 0 < ∏ j : Fin (n + 1), (a j^2 + 1) := by positivity
-example (a : ℕ → ℤ) : 0 < ∏ j ∈ ({1} : Finset ℕ), (a j^2 + 1) := by
-  have : Finset.Nonempty {1} := singleton_nonempty 1
-  positivity
+example (a : ℕ → ℤ) : 0 < ∏ j ∈ ({1} : Finset ℕ), (a j^2 + 1) := by positivity
 example (s : Finset ℕ) : 0 ≤ ∏ j ∈ s, j := by positivity
 example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
 example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity

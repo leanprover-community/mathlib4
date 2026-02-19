@@ -3,9 +3,11 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.MapComap
-import Mathlib.Probability.Martingale.Convergence
-import Mathlib.Probability.Process.PartitionFiltration
+module
+
+public import Mathlib.Probability.Kernel.Composition.MapComap
+public import Mathlib.Probability.Martingale.Convergence
+public import Mathlib.Probability.Process.PartitionFiltration
 
 /-!
 # Kernel density
@@ -75,6 +77,8 @@ The construction of the density process in this file follows the proof of Theore
 generated hypothesis instead of specializing to `ℝ`.
 -/
 
+@[expose] public section
+
 open MeasureTheory Set Filter MeasurableSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
@@ -135,27 +139,28 @@ lemma measurable_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) 
 lemma measurable_densityProcess_left (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (x : γ) {s : Set β} (hs : MeasurableSet s) :
     Measurable (fun a ↦ densityProcess κ ν n a x s) :=
-  ((measurable_densityProcess κ ν n hs).comp (measurable_id.prodMk measurable_const):)
+  ((measurable_densityProcess κ ν n hs).comp (measurable_id.prodMk measurable_const) :)
 
 lemma measurable_densityProcess_right (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     {s : Set β} (a : α) (hs : MeasurableSet s) :
     Measurable (fun x ↦ densityProcess κ ν n a x s) :=
-  ((measurable_densityProcess κ ν n hs).comp (measurable_const.prodMk measurable_id):)
+  ((measurable_densityProcess κ ν n hs).comp (measurable_const.prodMk measurable_id) :)
 
 lemma measurable_countableFiltration_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Measurable[countableFiltration γ n] (fun x ↦ densityProcess κ ν n a x s) := by
   refine @Measurable.ennreal_toReal _ (countableFiltration γ n) _ ?_
-  exact (measurable_densityProcess_countableFiltration_aux κ ν n hs).comp measurable_prodMk_left
+  -- The exact also works without the `( :)`, but is a bit slow.
+  exact ((measurable_densityProcess_countableFiltration_aux κ ν n hs).comp measurable_prodMk_left :)
 
 lemma stronglyMeasurable_countableFiltration_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ)
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) :
     StronglyMeasurable[countableFiltration γ n] (fun x ↦ densityProcess κ ν n a x s) :=
   (measurable_countableFiltration_densityProcess κ ν n a hs).stronglyMeasurable
 
-lemma adapted_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) (a : α)
+lemma stronglyAdapted_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) (a : α)
     {s : Set β} (hs : MeasurableSet s) :
-    Adapted (countableFiltration γ) (fun n x ↦ densityProcess κ ν n a x s) :=
+    StronglyAdapted (countableFiltration γ) (fun n x ↦ densityProcess κ ν n a x s) :=
   fun n ↦ stronglyMeasurable_countableFiltration_densityProcess κ ν n a hs
 
 lemma densityProcess_nonneg (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
@@ -211,8 +216,7 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
   · refine ae_of_all _ (fun x ↦ ?_)
     by_cases h0 : ν a (countablePartitionSet n x) = 0
     · suffices κ a (countablePartitionSet n x ×ˢ s) = 0 by simp [h0, this]
-      have h0' : fst κ a (countablePartitionSet n x) = 0 :=
-        le_antisymm ((hκν a _).trans h0.le) zero_le'
+      have h0' : fst κ a (countablePartitionSet n x) = 0 := by simpa using (hκν a _).trans h0.le
       rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)] at h0'
       refine measure_mono_null (fun x ↦ ?_) h0'
       simp only [mem_prod, mem_setOf_eq, and_imp]
@@ -227,7 +231,7 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
   simp only [MeasureTheory.lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
   by_cases h0 : ν a u = 0
   · simp only [h0, mul_zero]
-    have h0' : fst κ a u = 0 := le_antisymm ((hκν a _).trans h0.le) zero_le'
+    have h0' : fst κ a u = 0 := by simpa using (hκν a _).trans h0.le
     rw [fst_apply' _ _ hu_meas] at h0'
     refine (measure_mono_null ?_ h0').symm
     intro p
@@ -255,7 +259,7 @@ lemma setIntegral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     rw [setIntegral_densityProcess_of_mem hκν _ _ hs (hS_subset (by simp))]
     rfl
   · intro u v huv
-    simp only [Finset.coe_sort_coe, Set.disjoint_prod, disjoint_self, bot_eq_empty]
+    simp only [Finset.coe_sort_coe, Set.disjoint_prod, disjoint_self]
     exact Or.inl (h_disj huv)
   · exact fun _ ↦ (measurableSet_countablePartition n (hS_subset (by simp))).prod hs
   · exact fun _ ↦ measurableSet_countablePartition n (hS_subset (by simp))
@@ -289,7 +293,7 @@ lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
 lemma martingale_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Martingale (fun n x ↦ densityProcess κ ν n a x s) (countableFiltration γ) (ν a) :=
-  ⟨adapted_densityProcess κ ν a hs, fun _ _ h ↦ condExp_densityProcess hκν h a hs⟩
+  ⟨stronglyAdapted_densityProcess κ ν a hs, fun _ _ h ↦ condExp_densityProcess hκν h a hs⟩
 
 lemma densityProcess_mono_set (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ)
     {s s' : Set β} (h : s ⊆ s') :
@@ -322,7 +326,7 @@ lemma densityProcess_antitone_kernel_right {ν' : Kernel α γ}
   have h_le : κ a (countablePartitionSet n x ×ˢ s) ≤ ν a (countablePartitionSet n x) :=
     meas_countablePartitionSet_le_of_fst_le hκν n a x s
   by_cases h0 : ν a (countablePartitionSet n x) = 0
-  · simp [le_antisymm (h_le.trans h0.le) zero_le', h0]
+  · simp [nonpos_iff_eq_zero.1 (h_le.trans h0.le), h0]
   gcongr
   · simp only [ne_eq, ENNReal.div_eq_top, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
@@ -409,7 +413,7 @@ lemma tendsto_eLpNorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel �
       - (countableFiltration γ).limitProcess (fun n x ↦ densityProcess κ ν n a x s) (ν a))
       1 ((ν a).restrict A)) atTop (𝓝 0) :=
   tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-    (tendsto_eLpNorm_one_densityProcess_limitProcess hκν a hs) (fun _ ↦ zero_le')
+    (tendsto_eLpNorm_one_densityProcess_limitProcess hκν a hs) (fun _ ↦ zero_le _)
     (fun _ ↦ eLpNorm_restrict_le _ _ _ _)
 
 end DensityProcess
@@ -525,6 +529,7 @@ lemma integral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     ∫ x, density κ ν a x s ∂(ν a) = (κ a).real (univ ×ˢ s) := by
   rw [← setIntegral_univ, setIntegral_density_of_measurableSet hκν 0 a hs MeasurableSet.univ]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ} (hA : MeasurableSet A) :
     ∫ x in A, density κ ν a x s ∂(ν a) = (κ a).real (A ×ˢ s) := by

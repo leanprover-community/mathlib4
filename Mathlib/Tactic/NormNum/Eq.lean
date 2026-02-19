@@ -3,11 +3,15 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum.Inv
+module
+
+public import Mathlib.Tactic.NormNum.Inv
 
 /-!
 # `norm_num` extension for equalities
 -/
+
+public meta section
 
 variable {α : Type*}
 
@@ -23,6 +27,7 @@ theorem isInt_eq_false [Ring α] [CharZero α] : {a b : α} → {a' b' : ℤ} �
     IsInt a a' → IsInt b b' → decide (a' = b') = false → ¬a = b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simpa using of_decide_eq_false h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem NNRat.invOf_denom_swap [Semiring α] (n₁ n₂ : ℕ) (a₁ a₂ : α)
     [Invertible a₁] [Invertible a₂] : n₁ * ⅟a₁ = n₂ * ⅟a₂ ↔ n₁ * a₂ = n₂ * a₁ := by
   rw [mul_invOf_eq_iff_eq_mul_right, ← Nat.commute_cast, mul_assoc,
@@ -34,6 +39,7 @@ theorem isNNRat_eq_false [Semiring α] [CharZero α] : {a b : α} → {na nb : �
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
     rw [NNRat.invOf_denom_swap]; exact mod_cast of_decide_eq_false h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Rat.invOf_denom_swap [Ring α] (n₁ n₂ : ℤ) (a₁ a₂ : α)
     [Invertible a₁] [Invertible a₂] : n₁ * ⅟a₁ = n₂ * ⅟a₂ ↔ n₁ * a₂ = n₂ * a₁ := by
   rw [mul_invOf_eq_iff_eq_mul_right, ← Int.commute_cast, mul_assoc,

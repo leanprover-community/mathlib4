@@ -3,8 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Order.Atoms
-import Mathlib.Algebra.Group.Subgroup.Basic
+module
+
+public import Mathlib.Order.Atoms
+public import Mathlib.Algebra.Group.Subgroup.Basic
 
 /-!
 # Simple groups
@@ -20,6 +22,8 @@ subgroups.
 subgroup, subgroups
 
 -/
+
+@[expose] public section
 
 
 variable {G : Type*} [Group G]
@@ -58,6 +62,7 @@ protected lemma Subgroup.isSimpleGroup_iff {H : Subgroup G} :
 
 namespace IsSimpleGroup
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance {C : Type*} [CommGroup C] [IsSimpleGroup C] : IsSimpleOrder (Subgroup C) :=
   ⟨fun H => H.normal_of_comm.eq_bot_or_eq_top⟩

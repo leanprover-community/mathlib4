@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Split
-import Mathlib.Analysis.Normed.Operator.Mul
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Split
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Box additive functions
@@ -25,6 +27,8 @@ In this file we define box-additive functions and prove that a function such tha
 
 rectangular box, additive function
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -173,6 +177,7 @@ theorem toSMul_apply (f : ι →ᵇᵃ[I₀] ℝ) (I : Box ι) (x : E) : f.toSMu
 
 end ToSMul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a box `I₀` in `ℝⁿ⁺¹`, `f x : Box (Fin n) → G` is a family of functions indexed by a real
 `x` and for `x ∈ [I₀.lower i, I₀.upper i]`, `f x` is box-additive on subboxes of the `i`-th face of
 `I₀`, then `fun J ↦ f (J.upper i) (J.face i) - f (J.lower i) (J.face i)` is box-additive on subboxes

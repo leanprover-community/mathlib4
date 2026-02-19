@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.SuccPred.Basic
+module
+
+public import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Archimedean successor and predecessor
@@ -13,6 +15,8 @@ import Mathlib.Order.SuccPred.Basic
 * `IsPredArchimedean`: `PredOrder` where `pred` iterated to an element gives all the smaller
   ones.
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 
@@ -134,7 +138,7 @@ This isn't an instance due to a loop with `LinearOrder`.
 -- See note [reducible non-instances]
 abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
      [DecidableEq α] [DecidableLE α] [DecidableLT α]
-     [IsDirected α (· ≥ ·)] : LinearOrder α where
+     [IsCodirectedOrder α] : LinearOrder α where
   le_total a b :=
     have ⟨c, ha, hb⟩ := directed_of (· ≥ ·) a b
     le_total_of_codirected ha hb
@@ -156,7 +160,7 @@ This isn't an instance due to a loop with `LinearOrder`.
 -- See note [reducible non-instances]
 abbrev IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
      [DecidableEq α] [DecidableLE α] [DecidableLT α]
-     [IsDirected α (· ≤ ·)] : LinearOrder α :=
+     [IsDirectedOrder α] : LinearOrder α :=
   letI : LinearOrder αᵒᵈ := IsSuccArchimedean.linearOrder
   inferInstanceAs (LinearOrder αᵒᵈᵒᵈ)
 
@@ -324,6 +328,7 @@ section OrderIso
 
 variable {X Y : Type*} [PartialOrder X] [PartialOrder Y]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `IsSuccArchimedean` transfers across equivalences between `SuccOrder`s. -/
 protected lemma IsSuccArchimedean.of_orderIso [SuccOrder X] [IsSuccArchimedean X] [SuccOrder Y]
     (f : X ≃o Y) : IsSuccArchimedean Y where
@@ -337,6 +342,7 @@ protected lemma IsSuccArchimedean.of_orderIso [SuccOrder X] [IsSuccArchimedean X
     | zero => simp
     | succ n IH => simp only [Function.iterate_succ', Function.comp_apply, IH, f.map_succ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `IsPredArchimedean` transfers across equivalences between `PredOrder`s. -/
 protected lemma IsPredArchimedean.of_orderIso [PredOrder X] [IsPredArchimedean X] [PredOrder Y]
     (f : X ≃o Y) : IsPredArchimedean Y where

@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
-import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.RingTheory.PowerSeries.Order
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Power series over rings with no zero divisors
@@ -14,11 +16,13 @@ that `R⟦X⟧` is an integral domain when `R` is.
 
 We then state various results about `R⟦X⟧` with `R` an integral domain.
 
-##  Instance
+## Instance
 
 If `R` has `NoZeroDivisors`, then so does `R⟦X⟧`.
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*}
@@ -38,11 +42,13 @@ end NoZeroDivisors
 
 section IsDomain
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Ring R] [IsDomain R] : IsDomain R⟦X⟧ :=
   NoZeroDivisors.to_isDomain _
 
 variable [CommRing R] [IsDomain R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The ideal spanned by the variable in the power series ring
 over an integral domain is a prime ideal. -/
 theorem span_X_isPrime : (Ideal.span ({X} : Set R⟦X⟧)).IsPrime := by
@@ -60,6 +66,7 @@ theorem X_prime : Prime (X : R⟦X⟧) := by
   · intro h
     simpa [map_zero (coeff 1)] using congr_arg (coeff 1) h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The variable of the power series ring over an integral domain is irreducible. -/
 theorem X_irreducible : Irreducible (X : R⟦X⟧) := X_prime.irreducible
 

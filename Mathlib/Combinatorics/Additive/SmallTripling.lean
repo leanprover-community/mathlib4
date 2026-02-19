@@ -3,14 +3,16 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Positivity.Finset
+public import Mathlib.Tactic.Ring
 
 /-!
 # Small tripling implies small powers
@@ -23,6 +25,8 @@ In abelian groups, the Plünnecke-Ruzsa inequality is the stronger statement tha
 implies small powers. See `Mathlib/Combinatorics/Additive/PluenneckeRuzsa.lean`.
 -/
 
+public section
+
 open Fin MulOpposite
 open List hiding tail
 open scoped Pointwise
@@ -30,6 +34,7 @@ open scoped Pointwise
 namespace Finset
 variable {G : Type*} [DecidableEq G] [Group G] {A : Finset G} {k K : ℝ} {m : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 private lemma inductive_claim_mul (hm : 3 ≤ m)
     (h : ∀ ε : Fin 3 → ℤ, (∀ i, |ε i| = 1) → #((finRange 3).map fun i ↦ A ^ ε i).prod ≤ k * #A)
@@ -53,16 +58,17 @@ private lemma inductive_claim_mul (hm : 3 ≤ m)
     calc
       (#A * #(π ε) : ℝ)
         = #A * #(V⁻¹ * W) := by
-        simp [π, V, W, List.finRange_succ_eq_map, Fin.tail, Function.comp_def, mul_assoc]
+        simp [π, V, W, List.finRange_succ, Fin.tail, Function.comp_def, mul_assoc]
       _ ≤ #(A * V) * #(A * W) := by norm_cast; exact ruzsa_triangle_inequality_invMul_mul_mul ..
       _ = #(π ![1, -ε 1, -ε 0]) * #(π <| Fin.cons 1 <| tail <| tail ε) := by
-        simp [π, V, W, List.finRange_succ_eq_map, Fin.tail, Function.comp_def]
+        simp [π, V, W, List.finRange_succ, Fin.tail, Function.comp_def]
       _ ≤ (k * #A) * (k ^ (m - 1) * #A) := by
         gcongr
         · exact h ![1, -ε 1, -ε 0] fun i ↦ by fin_cases i <;> simp [hε]
         · exact ih (Fin.cons 1 <| tail <| tail ε) <| Fin.cons (by simp) (by simp [hε, Fin.tail])
       _ = #A * (k ^ m * #A) := by rw [← pow_sub_one_mul hm₀]; ring
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 private lemma small_neg_pos_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A * A) ≤ K ^ 2 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty
@@ -95,6 +101,7 @@ private lemma small_pos_pos_neg_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A * A⁻�
   rw [← card_inv]
   simpa [mul_assoc] using small_pos_neg_neg_mul (A := A) (K := K) (by simpa)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 private lemma small_pos_neg_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * A) ≤ K ^ 3 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty
@@ -103,7 +110,7 @@ private lemma small_pos_neg_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * 
   calc
     (#A * #(A * A⁻¹ * A) : ℝ) ≤ #(A * (A * A⁻¹)) * #(A * A) := by
       norm_cast; simpa using ruzsa_triangle_inequality_invMul_mul_mul (A * A⁻¹) A A
-    _ = #(A  * A * A⁻¹) * #(A ^ 2) := by simp [pow_succ, mul_assoc]
+    _ = #(A * A * A⁻¹) * #(A ^ 2) := by simp [pow_succ, mul_assoc]
     _ ≤ (K ^ 2 * #A) * (K * #A) := by
       gcongr
       · exact small_pos_pos_neg_mul hA
@@ -117,6 +124,9 @@ private lemma small_neg_pos_neg_mul (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A * 
   rw [← card_inv]
   simpa [mul_assoc] using small_pos_neg_pos_mul (A := A) (K := K) (by simpa)
 
+-- TODO: find a good way to fix this non-terminal simp;
+-- simp is called on 8 goals, with different simp sets
+set_option linter.flexible false in
 /-- If `A` has small tripling, say with constant `K`, then `A` has small alternating powers, in the
 sense that `|A^±1 * ... * A^±1|` is at most `|A|` times a constant exponential in the number of
 terms in the product.
@@ -142,11 +152,11 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
       (hA.trans' <| by norm_cast; exact card_le_card_pow (by simp))
   rw [pow_mul]
   refine inductive_claim_mul hm (fun δ hδ ↦ ?_) ε hε
-  simp only [finRange_succ_eq_map, Nat.reduceAdd, isValue, finRange_zero, map_nil, List.map_cons,
+  simp only [finRange_succ, Nat.reduceAdd, isValue, finRange_zero, map_nil, List.map_cons,
     succ_zero_eq_one, succ_one_eq_two, List.prod_cons, prod_nil, mul_one, ← mul_assoc]
   simp only [zero_le_one, abs_eq, Int.reduceNeg, forall_iff_succ, isValue, succ_zero_eq_one,
     succ_one_eq_two, IsEmpty.forall_iff, and_true] at hδ
-  have : K ≤ K ^ 3 := le_self_pow₀ hK₁ (by cutsat)
+  have : K ≤ K ^ 3 := le_self_pow₀ hK₁ (by lia)
   have : K ^ 2 ≤ K ^ 3 := by
     gcongr
     · exact hK₁

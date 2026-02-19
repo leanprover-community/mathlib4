@@ -3,7 +3,9 @@ Copyright (c) 2024 Andrew Yang, Yaël Dillies, Javier López-Contreras. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # The distributive character of Haar measures
@@ -23,6 +25,8 @@ multiplicative instead of distributive.
 
 [Zulip](https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/canonical.20norm.20coming.20from.20Haar.20measure/near/480050592)
 -/
+
+@[expose] public section
 
 open MeasureTheory.Measure
 open scoped NNReal Pointwise ENNReal
@@ -68,6 +72,7 @@ lemma addHaarScalarFactor_smul_inv_eq_distribHaarChar (g : G) :
   simp_rw [← mul_smul, mul_inv_cancel, one_smul]
   exact addHaarScalarFactor_smul_eq_distribHaarChar ..
 
+set_option backward.isDefEq.respectTransparency false in
 variable (μ) in
 lemma addHaarScalarFactor_smul_eq_distribHaarChar_inv (g : G) :
     addHaarScalarFactor μ (DomMulAct.mk g • μ) = (distribHaarChar A g)⁻¹ := by

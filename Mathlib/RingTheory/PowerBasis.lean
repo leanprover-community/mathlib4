@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.LinearAlgebra.SModEq
-import Mathlib.RingTheory.Ideal.BigOperators
+module
+
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.LinearAlgebra.SModEq.Basic
+public import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Power basis
@@ -39,6 +41,8 @@ Throughout this file, `R`, `S`, `A`, `B` ... are `CommRing`s, and `K`, `L`, ... 
 power basis, powerbasis
 
 -/
+
+@[expose] public section
 
 open Finsupp Module Polynomial
 
@@ -75,7 +79,7 @@ theorem finite (pb : PowerBasis R S) : Module.Finite R S := .of_basis pb.basis
 /--
 Construct a power basis from a basis consisting of powers of an element.
 -/
-def _root_.Module.Basis.PowerBasis {ι : Type*} [Fintype ι] (B : Basis ι R S) {x : S}
+protected def _root_.Module.Basis.PowerBasis {ι : Type*} [Fintype ι] (B : Basis ι R S) {x : S}
     (e : ι ≃ Fin (Fintype.card ι)) (hx : ∀ i, B i = x ^ (e i : ℕ)) :
     PowerBasis R S := ⟨x, Fintype.card ι, B.reindex e, fun i ↦ by simp [hx]⟩
 
@@ -108,13 +112,12 @@ theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
       ∃ f : R[X], f.natDegree < d ∧ y = aeval x f := by
   rw [mem_span_pow']
   constructor <;>
-    · rintro ⟨f, h, hy⟩
-      refine ⟨f, ?_, hy⟩
-      by_cases hf : f = 0
-      · simp only [hf, natDegree_zero, degree_zero] at h ⊢
-        first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
-      simp_all only [degree_eq_natDegree hf]
-      · first | exact WithBot.coe_lt_coe.1 h | exact WithBot.coe_lt_coe.2 h
+  · rintro ⟨f, h, hy⟩
+    refine ⟨f, ?_, hy⟩
+    by_cases hf : f = 0
+    · simp only [hf, natDegree_zero, degree_zero] at h ⊢
+      first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
+    simpa [degree_eq_natDegree hf] using h
 
 theorem dim_ne_zero [Nontrivial S] (pb : PowerBasis R S) : pb.dim ≠ 0 := fun h =>
   not_nonempty_iff.mpr (h.symm ▸ Fin.isEmpty : IsEmpty (Fin pb.dim)) pb.basis.index_nonempty
@@ -156,6 +159,7 @@ theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
     refine Ideal.mul_mem_left _ _ <| Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) _ <|
       Nat.pos_of_ne_zero <| fun h ↦ notMem_erase i univ <| Fin.eq_mk_iff_val_eq.2 h ▸ hi
 
+set_option backward.isDefEq.respectTransparency false in
 open Submodule.Quotient in
 theorem exists_gen_dvd_sub (pb : PowerBasis A B) (b : B) : ∃ a, pb.gen ∣ b - algebraMap A B a := by
   simpa [← Ideal.mem_span_singleton, ← mk_eq_zero, mk_sub, sub_eq_zero] using pb.exists_smodEq b
@@ -262,7 +266,7 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
   rw [aeval_eq_sum_range' this, aeval_eq_sum_range' this, map_sum]
   refine Finset.sum_congr rfl fun i (hi : i ∈ Finset.range pb.dim) => ?_
   rw [Finset.mem_range] at hi
-  rw [LinearMap.map_smul]
+  rw [map_smul]
   congr
   rw [← Fin.val_mk hi, ← pb.basis_eq_pow ⟨i, hi⟩, Basis.constr_basis]
 
@@ -289,8 +293,8 @@ See `PowerBasis.liftEquiv` for a bundled equiv sending `⟨y, hy⟩` to the alge
 noncomputable def lift (pb : PowerBasis A S) (y : S') (hy : aeval y (minpoly A pb.gen) = 0) :
     S →ₐ[A] S' :=
   { pb.basis.constr A fun i => y ^ (i : ℕ) with
-    map_one' := by convert pb.constr_pow_algebraMap hy 1 using 2 <;> rw [RingHom.map_one]
-    map_zero' := by convert pb.constr_pow_algebraMap hy 0 using 2 <;> rw [RingHom.map_zero]
+    map_one' := by convert pb.constr_pow_algebraMap hy 1 using 2 <;> rw [map_one]
+    map_zero' := by convert pb.constr_pow_algebraMap hy 0 using 2 <;> rw [map_zero]
     map_mul' := pb.constr_pow_mul hy
     commutes' := pb.constr_pow_algebraMap hy }
 

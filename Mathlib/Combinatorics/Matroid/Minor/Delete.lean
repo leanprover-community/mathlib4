@@ -3,7 +3,9 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Loop
+module
+
+public import Mathlib.Combinatorics.Matroid.Loop
 
 /-!
 # Matroid Deletion
@@ -21,16 +23,18 @@ the relation `M ↾ R ≤r M` holds only with the assumption `R ⊆ M.E`,
 whereas `M ＼ D`, being defined as `M ↾ (M.E \ D)`, satisfies `M ＼ D ≤r M` unconditionally.
 This is often quite convenient.
 
-# Main Declarations
+## Main Declarations
 
 * `Matroid.delete M D`, written `M ＼ D`, is the restriction of `M` to the set `M.E \ D`,
   or equivalently the matroid on `M.E \ D` whose independent sets are the `M`-independent sets.
 
-# Naming conventions
+## Naming conventions
 
 We use the abbreviation `deleteElem` in lemma names to refer to the deletion `M ＼ {e}`
 of a single element `e : α` from `M : Matroid α`.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -80,6 +84,7 @@ lemma delete_eq_self_iff : M ＼ D = M ↔ Disjoint D M.E := by
 
 alias ⟨_, delete_eq_self⟩ := delete_eq_self_iff
 
+set_option backward.isDefEq.respectTransparency false in
 lemma deleteElem_eq_self (he : e ∉ M.E) : M ＼ {e} = M := by
   simpa
 
@@ -118,6 +123,7 @@ lemma IsRestriction.restrict_delete_of_disjoint (h : N ≤r M) (hX : Disjoint X 
   rwa [delete_delete, union_diff_self, union_comm, ← delete_delete, eq_comm,
     delete_eq_self_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsRestriction.isRestriction_deleteElem (h : N ≤r M) (he : e ∉ N.E) : N ≤r M ＼ {e} :=
   h.restrict_delete_of_disjoint (by simpa)
 
@@ -128,6 +134,7 @@ lemma delete_indep_iff : (M ＼ D).Indep I ↔ M.Indep I ∧ Disjoint I D := by
   rw [← restrict_compl, restrict_indep_iff, subset_diff, ← and_assoc,
     and_iff_left_of_imp Indep.subset_ground]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma deleteElem_indep_iff : (M ＼ {e}).Indep I ↔ M.Indep I ∧ e ∉ I := by
   simp
 
@@ -191,10 +198,12 @@ lemma Coindep.delete_spanning_iff {S : Set α} (hD : M.Coindep D) :
 
 /-! ### Loops, circuits and closure -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma delete_isLoop_iff : (M ＼ D).IsLoop e ↔ M.IsLoop e ∧ e ∉ D := by
   rw [← singleton_dep, delete_dep_iff, disjoint_singleton_left, singleton_dep]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma delete_isNonloop_iff : (M ＼ D).IsNonloop e ↔ M.IsNonloop e ∧ e ∉ D := by
   rw [← indep_singleton, delete_indep_iff, disjoint_singleton_left, indep_singleton]
@@ -204,9 +213,6 @@ lemma IsNonloop.of_delete (h : (M ＼ D).IsNonloop e) : M.IsNonloop e :=
 
 lemma isNonloop_iff_delete_of_notMem (he : e ∉ D) : M.IsNonloop e ↔ (M ＼ D).IsNonloop e :=
   ⟨fun h ↦ delete_isNonloop_iff.2 ⟨h, he⟩, fun h ↦ h.of_delete⟩
-
-@[deprecated (since := "2025-05-23")]
-alias isNonloop_iff_delete_of_not_mem := isNonloop_iff_delete_of_notMem
 
 lemma delete_loops_eq_removeLoops (M : Matroid α) : M ＼ M.loops = M.removeLoops := by
   rw [removeLoops, delete_eq_restrict, compl_loops_eq]
@@ -225,6 +231,7 @@ lemma circuit_iff_delete_of_disjoint {C : Set α} (hCD : Disjoint C D) :
     M.IsCircuit C ↔ (M ＼ D).IsCircuit C :=
   ⟨fun h ↦ delete_isCircuit_iff.2 ⟨h, hCD⟩, fun h ↦ h.of_delete⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma delete_closure_eq (M : Matroid α) (D X : Set α) :
     (M ＼ D).closure X = M.closure (X \ D) \ D := by

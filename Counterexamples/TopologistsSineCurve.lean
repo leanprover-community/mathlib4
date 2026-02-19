@@ -55,6 +55,8 @@ lemma xSeq_tendsto (y : ℝ) : Tendsto (xSeq y) atTop (𝓝 0) := by
 /-!
 ## `T` is closed
 -/
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The closure of the topologist's sine curve `S` is the set `T`. -/
 lemma closure_S : closure S = T := by
   ext ⟨x, y⟩
@@ -100,6 +102,8 @@ lemma isClosed_T : IsClosed T := by simpa only [← closure_S] using isClosed_cl
 /-!
 ## `T` is connected
 -/
+
+set_option backward.isDefEq.respectTransparency false in
 /-- `T` is connected, being the closure of the set `S` (which is obviously connected since it
 is a continuous image of the positive real line). -/
 theorem isConnected_T : IsConnected T := by
@@ -128,7 +132,7 @@ private lemma exists_unitInterval_gt {t₀ : unitInterval} (ht₀ : t₀ < 1) {�
   let s₁ := min (s₀ + δ / 2) 1
   have h_s₀_delta_pos : 0 ≤ s₀ + δ / 2 := add_nonneg t₀.2.1 (by positivity)
   have hs₁ : 0 ≤ s₁ := le_min h_s₀_delta_pos zero_le_one
-  have hs₁': s₁ ≤ 1 := min_le_right ..
+  have hs₁' : s₁ ≤ 1 := min_le_right ..
   refine ⟨⟨s₁, hs₁, hs₁'⟩, lt_min ((lt_add_iff_pos_right _).mpr (half_pos hδ)) ht₀, ?_⟩
   have h_le : s₁ ≤ s₀ + δ / 2 := min_le_left _ _
   have h_ge : s₀ ≤ s₁ := le_min (by linarith) t₀.2.2
@@ -150,6 +154,7 @@ lemma exists_mem_Ioc_of_y {y : ℝ} (hy : y ∈ Icc (-1) 1) {a : ℝ} (ha : 0 < 
   rw [dist_eq, sub_zero, abs_of_pos (xSeq_pos _ N)] at h_dist
   linarith
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set `T` is not path-connected. -/
 theorem not_isPathConnected_T : ¬ IsPathConnected T := by
   -- **Step 1**:
@@ -163,7 +168,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
   let t₀ : unitInterval := sSup {t | (p t).1 = 0}
   have h_pt₀_x : (p t₀).1 = 0 :=
     (isClosed_singleton.preimage xcoord_pathContinuous).sSup_mem ⟨0, by aesop⟩
-  obtain ⟨δ , hδ, ht⟩ : ∃ δ, 0 < δ ∧ ∀ t, dist t t₀ < δ → dist (p t) (p t₀) < 1 :=
+  obtain ⟨δ, hδ, ht⟩ : ∃ δ, 0 < δ ∧ ∀ t, dist t t₀ < δ → dist (p t) (p t₀) < 1 :=
     Metric.eventually_nhds_iff.mp <| Metric.tendsto_nhds.mp (p.continuousAt t₀) _ one_pos
   -- **Step 2**:
   -- Choose a time t₁ in (t₀, t₀ + δ) and let `a = x(p(t₁))`. Using the fact that every

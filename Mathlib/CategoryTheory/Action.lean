@@ -3,11 +3,13 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.SingleObj
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.SemidirectProduct
+module
+
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.SingleObj
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
 # Actions as functors and as categories
@@ -19,6 +21,8 @@ multiplication by `m`.
 A morphism `x ⟶ y` in this category is simply a scalar `m : M` such that `m • x = y`. In the case
 where M is a group, this category is a groupoid -- the *action groupoid*.
 -/
+
+@[expose] public section
 
 
 open MulAction SemidirectProduct
@@ -185,6 +189,7 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
       · exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
       rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `G` acting on `X`, a group homomorphism `φ : G →* (X → H) ⋊ G` can be uncurried to
 a functor from the action groupoid to `H`, provided that `φ g = (_, g)` for all `g`. -/
 @[simps]

@@ -3,10 +3,12 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.Geometry.Manifold.MFDeriv.Basic
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # `C^n` sections
@@ -18,6 +20,8 @@ In passing, we prove that binary and finite sums, differences and scalar product
 sections are `C^n`.
 
 -/
+
+@[expose] public section
 
 
 open Bundle Filter Function
@@ -80,7 +84,7 @@ lemma ContMDiff.add_section
 
 lemma ContMDiffWithinAt.neg_section
     (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀) :
-    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (- s x)) u x₀ := by
+    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (-s x)) u x₀ := by
   rw [contMDiffWithinAt_section] at hs ⊢
   set e := trivializationAt F V x₀
   refine hs.neg.congr_of_eventuallyEq ?_ ?_
@@ -93,7 +97,7 @@ lemma ContMDiffWithinAt.neg_section
 
 lemma ContMDiffAt.neg_section
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
-    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (- s x)) x₀ := by
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (-s x)) x₀ := by
   rw [← contMDiffWithinAt_univ] at hs ⊢
   exact hs.neg_section
 
@@ -377,6 +381,7 @@ instance instSub : Sub Cₛ^n⟮I; F, V⟯ :=
 theorem coe_sub (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s - t) = s - t :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance instZero : Zero Cₛ^n⟮I; F, V⟯ :=
   ⟨⟨fun _ => 0, (contMDiff_zeroSection 𝕜 V).of_le le_top⟩⟩
 
@@ -410,7 +415,7 @@ instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
 theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • ⇑s := by
   rcases z with n | n
   · refine (coe_nsmul s n).trans ?_
-    simp only [Int.ofNat_eq_coe, natCast_zsmul]
+    simp only [Int.ofNat_eq_natCast, natCast_zsmul]
   · refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_
     simp only [negSucc_zsmul]
 
@@ -439,13 +444,13 @@ instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
 
 end
 
-protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : 1 ≤ n) :
+protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : n ≠ 0) :
     MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff.mdifferentiable hn
 
 protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) :
     MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
-  s.contMDiff.mdifferentiable (mod_cast le_top)
+  s.contMDiff.mdifferentiable (by simp)
 
 protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x => TotalSpace.mk' F x (s x : V x)) x :=

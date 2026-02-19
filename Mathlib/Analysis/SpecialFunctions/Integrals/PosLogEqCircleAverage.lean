@@ -3,11 +3,13 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Complex.Harmonic.MeanValue
-import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.SpecialFunctions.Integrals.LogTrigonometric
-import Mathlib.MeasureTheory.Integral.CircleAverage
+module
+
+public import Mathlib.Analysis.Complex.Harmonic.MeanValue
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.SpecialFunctions.Integrals.LogTrigonometric
+public import Mathlib.MeasureTheory.Integral.CircleAverage
 
 /-!
 # Representation of `log⁺` as a Circle Average
@@ -15,6 +17,8 @@ import Mathlib.MeasureTheory.Integral.CircleAverage
 If `a` is any complex number, `circleAverage_log_norm_sub_const_eq_posLog` represents `log⁺ a` as
 the circle average of `log ‖· - a‖` over the unit circle.
 -/
+
+public section
 
 open Filter Interval intervalIntegral MeasureTheory Metric Real
 
@@ -34,6 +38,7 @@ lemma circleIntegrable_log_norm_sub_const (r : ℝ) : CircleIntegrable (log ‖�
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ < 1`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `a : ℂ` has norm smaller than one, then `circleAverage (log ‖· - a‖) 0 1` vanishes.
 -/
@@ -68,6 +73,7 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ = 1`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 -- Integral computation used in `circleAverage_log_norm_id_sub_const₁`
 private lemma circleAverage_log_norm_sub_const₁_integral :
     ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2 = 0 := by
@@ -96,6 +102,7 @@ private lemma circleAverage_log_norm_sub_const₁_integral :
       (by norm_num : (4 : ℝ) = 2 * 2), log_mul two_ne_zero two_ne_zero]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `a : ℂ` has norm one, then the circle average `circleAverage (log ‖· - a‖) 0 1` vanishes.
 -/
@@ -149,6 +156,7 @@ theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `1 < ‖a‖`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `a : ℂ` has norm greater than one, then `circleAverage (log ‖· - a‖) 0 1` equals `log ‖a‖`.
 -/
@@ -204,8 +212,7 @@ theorem circleAverage_log_norm_sub_const_eq_log_radius_add_posLog (hR : R ≠ 0)
     ext z
     congr
     rw [Complex.ofReal_inv R]
-    field_simp [Complex.ofReal_ne_zero.mpr hR]
-    ring
+    field [Complex.ofReal_ne_zero.mpr hR]
   _ = circleAverage (fun z ↦ log ‖R‖ + log ‖z + R⁻¹ * (c - a)‖) 0 1 := by
     apply circleAverage_congr_codiscreteWithin _ (zero_ne_one' ℝ).symm
     have : {z | ‖z + ↑R⁻¹ * (c - a)‖ ≠ 0} ∈ codiscreteWithin (Metric.sphere (0 : ℂ) |1|) := by

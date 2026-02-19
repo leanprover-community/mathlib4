@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
 
 /-!
 # Inverse function theorem
@@ -37,6 +39,8 @@ folders, and in `ContDiff.lean`.
 
 derivative, strictly differentiable, continuously differentiable, smooth, inverse function
 -/
+
+@[expose] public section
 
 open Function Set Filter Metric
 
@@ -77,8 +81,9 @@ theorem approximates_deriv_on_nhds {f : E → F} {f' : E →L[𝕜] F} {a : E}
   rcases this with ⟨s, has, hs⟩
   exact ⟨s, has, fun x hx y hy => hs (mk_mem_prod hx hy)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f' : E →L[𝕜] F} {a : E}
-    (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) (h : LinearMap.range f' = ⊤) :
+    (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) (h : f'.range = ⊤) :
     map f (𝓝 a) = 𝓝 (f a) := by
   let f'symm := f'.nonlinearRightInverseOfSurjective h
   set c : ℝ≥0 := f'symm.nnnorm⁻¹ / 2 with hc

@@ -3,8 +3,10 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-import Mathlib.NumberTheory.Cyclotomic.Basic
+module
+
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+public import Mathlib.NumberTheory.Cyclotomic.Basic
 
 /-!
 # Instances for HasEnoughRootsOfUnity
@@ -13,6 +15,8 @@ We provide an instance for `HasEnoughRootsOfUnity F n` when `F` is a separably c
 and `n` is not divisible by the characteristic. In particular, when `F` has characteristic zero,
 this hold for all `n ≠ 0`.
 -/
+
+@[expose] public section
 
 variable (F : Type*) [Field F] (n k : ℕ) [NeZero (n : F)]
 
@@ -37,9 +41,6 @@ instance hasEnoughRootsOfUnity_pow : HasEnoughRootsOfUnity F (n ^ k) :=
 
 end IsSepClosed
 
-@[deprecated (since := "2025-06-22")]
-alias IsAlgClosed.hasEnoughRootsOfUnity := IsSepClosed.hasEnoughRootsOfUnity
-
 namespace AlgebraicClosure
 
 instance hasEnoughRootsOfUnity : HasEnoughRootsOfUnity (AlgebraicClosure F) n :=
@@ -56,11 +57,13 @@ end AlgebraicClosure
 
 namespace SeparableClosure
 
+set_option backward.isDefEq.respectTransparency false in
 instance hasEnoughRootsOfUnity : HasEnoughRootsOfUnity (SeparableClosure F) n :=
   have : NeZero (n : SeparableClosure F) :=
     ‹NeZero (n : F)›.of_injective (algebraMap F (SeparableClosure F)).injective
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance hasEnoughRootsOfUnity_pow : HasEnoughRootsOfUnity (SeparableClosure F) (n ^ k) :=
   have : NeZero (n : SeparableClosure F) :=
     ‹NeZero (n : F)›.of_injective (algebraMap F (SeparableClosure F)).injective

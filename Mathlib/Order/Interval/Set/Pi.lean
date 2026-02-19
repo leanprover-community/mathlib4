@@ -3,11 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Notation.Pi.Basic
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.Interval.Set.UnorderedInterval
+module
+
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # Intervals in `pi`-space
@@ -16,6 +18,8 @@ In this we prove various simple lemmas about intervals in `Π i, α i`. Closed i
 `Iic x`, `Icc x y`) are equal to products of their projections to `α i`, while (semi-)open intervals
 usually include the corresponding products as proper subsets.
 -/
+
+public section
 
 -- Porting note: Added, since dot notation no longer works on `Function.update`
 open Function
@@ -94,6 +98,7 @@ theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (
     singleton_pi', ← inter_assoc, this]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} :
     Disjoint (pi univ fun i ↦ Ioc (x i) (update y i₀ m i))
     (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) := by

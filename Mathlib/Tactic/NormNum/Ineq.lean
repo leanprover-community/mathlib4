@@ -3,15 +3,18 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.Order.Ring.Cast
+module
+
+public import Mathlib.Algebra.Order.Invertible
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Tactic.NormNum.Eq
+public meta import Mathlib.Tactic.NormNum.Result
 
 /-!
 # `norm_num` extensions for inequalities.
 -/
+
+public meta section
 
 open Lean Meta Qq
 
@@ -73,6 +76,7 @@ theorem isNat_lt_false [Semiring α] [PartialOrder α] [IsOrderedRing α] {a b :
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
   not_lt_of_ge (isNat_le_true hb ha h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_le_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     {a b : α} → {na nb : ℕ} → {da db : ℕ} →
     IsNNRat a na da → IsNNRat b nb db →
@@ -86,6 +90,7 @@ theorem isNNRat_le_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] 
     simp only [Nat.mul_eq, Nat.cast_mul, mul_invOf_cancel_right'] at h
     rwa [Nat.commute_cast] at h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_lt_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α] :
     {a b : α} → {na nb : ℕ} → {da db : ℕ} →
     IsNNRat a na da → IsNNRat b nb db → decide (na * db < nb * da) → a < b
@@ -108,6 +113,7 @@ theorem isNNRat_lt_false [Semiring α] [LinearOrder α] [IsStrictOrderedRing α]
     (ha : IsNNRat a na da) (hb : IsNNRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
   not_lt_of_ge (isNNRat_le_true hb ha h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isRat_le_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db →
@@ -118,10 +124,11 @@ theorem isRat_le_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     have hb : 0 ≤ ⅟(db : α) := invOf_nonneg.mpr <| Nat.cast_nonneg db
     have h := (mul_le_mul_of_nonneg_left · hb) <| mul_le_mul_of_nonneg_right h ha
     rw [← mul_assoc, Int.commute_cast] at h
-    simp only [Int.ofNat_eq_coe, Int.mul_def, Int.cast_mul, Int.cast_natCast,
+    simp only [Int.ofNat_eq_natCast, Int.mul_def, Int.cast_mul, Int.cast_natCast,
       mul_invOf_cancel_right'] at h
     rwa [Int.commute_cast] at h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isRat_lt_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α] :
     {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db < nb * da) → a < b
@@ -144,7 +151,7 @@ theorem isRat_lt_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
   not_lt_of_ge (isRat_le_true hb ha h)
 
-/-! # (In)equalities -/
+/-! ### (In)equalities -/
 
 theorem isNat_lt_true [Semiring α] [PartialOrder α] [IsOrderedRing α] [CharZero α] :
     {a b : α} → {a' b' : ℕ} →

@@ -3,13 +3,15 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Int.GCD
-import Mathlib.Data.Nat.Cast.Commute
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Algebra.GroupWithZero.Invertible
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Int.GCD
+public import Mathlib.Data.Nat.Cast.Commute
 
 /-!
 # Invertibility of elements given a characteristic
@@ -19,6 +21,8 @@ characteristic zero. Some more cases are given as a `def`, to be included only
 when needed. To construct instances for concrete numbers,
 `invertibleOfNonzero` is a useful definition.
 -/
+
+@[expose] public section
 
 
 variable {R K : Type*}
@@ -58,6 +62,7 @@ def invertibleOfCoprime {n : ℕ} (h : n.Coprime p) :
   invOf_mul_self := by rw [CharP.natCast_gcdA_mul_intCast_eq_gcd, h, Nat.cast_one]
   mul_invOf_self := by rw [CharP.intCast_mul_natCast_gcdA_eq_gcd, h, Nat.cast_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem invOf_eq_of_coprime {n : ℕ} [Invertible (n : R)] (h : n.Coprime p) :
     ⅟(n : R) = n.gcdA p := by
   letI : Invertible (n : R) := invertibleOfCoprime h

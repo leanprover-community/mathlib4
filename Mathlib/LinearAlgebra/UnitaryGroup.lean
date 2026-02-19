@@ -3,11 +3,13 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.Data.Matrix.Reflection
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+module
+
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.Data.Matrix.Reflection
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # The Unitary Group
@@ -37,6 +39,8 @@ We also define the orthogonal group `Matrix.orthogonalGroup n R`, where `R` is a
 matrix group, group, unitary group, orthogonal group
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -88,7 +92,7 @@ theorem kronecker_mem_unitary {R m : Type*} [Semiring R] [StarRing R] [Fintype m
     [DecidableEq m] {U₁ : Matrix n n R} {U₂ : Matrix m m R}
     (hU₁ : U₁ ∈ unitary (Matrix n n R)) (hU₂ : U₂ ∈ unitary (Matrix m m R)) :
     U₁ ⊗ₖ U₂ ∈ unitary (Matrix (n × m) (n × m) R) := by
-  simp_rw [unitary.mem_iff, star_eq_conjTranspose, conjTranspose_kronecker']
+  simp_rw [Unitary.mem_iff, star_eq_conjTranspose, conjTranspose_kronecker']
   constructor <;> ext <;> simp only [mul_apply, submatrix_apply, kroneckerMap_apply, Prod.fst_swap,
     conjTranspose_apply, ← star_apply, Prod.snd_swap, ← mul_assoc]
   · simp_rw [mul_assoc _ (star U₁ _ _), ← Finset.univ_product_univ, Finset.sum_product]
@@ -128,7 +132,7 @@ theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
 
 @[simp]
 theorem det_isUnit (A : unitaryGroup n α) : IsUnit (A : Matrix n n α).det :=
-  isUnit_iff_isUnit_det _ |>.mp <| (unitary.toUnits A).isUnit
+  isUnit_iff_isUnit_det _ |>.mp <| (Unitary.toUnits A).isUnit
 
 section CoeLemmas
 

@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Data.Set.Sigma
-import Mathlib.Order.Filter.Defs
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Data.Set.Sigma
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.Order.Filter.Map
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Basic results on filter bases
@@ -67,6 +69,8 @@ machinery, e.g., `simp only [true_and_iff]` or `simp only [forall_const]` can he
 
 ## Main statements
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -173,6 +177,9 @@ protected theorem generate (B : FilterBasis α) : generate B.sets = B.filter := 
     exact GenerateSets.superset (GenerateSets.basic V_in) h
   · rw [le_generate_iff]
     apply mem_filter_of_mem
+
+lemma ker_filter (F : FilterBasis α) : F.filter.ker = ⋂₀ F.sets := by
+  aesop (add simp [ker, FilterBasis.filter])
 
 end FilterBasis
 
@@ -372,6 +379,9 @@ theorem HasBasis.le_basis_iff (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :
     l ≤ l' ↔ ∀ i', p' i' → ∃ i, p i ∧ s i ⊆ s' i' := by
   simp only [hl'.ge_iff, hl.mem_iff]
 
+theorem HasBasis.eq_top_iff (h : l.HasBasis p s) : l = ⊤ ↔ ∀ i, p i → s i = univ := by
+  simp [← top_le_iff, h.ge_iff]
+
 theorem HasBasis.ext (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s')
     (h : ∀ i, p i → ∃ i', p' i' ∧ s' i' ⊆ s i) (h' : ∀ i', p' i' → ∃ i, p i ∧ s i ⊆ s' i') :
     l = l' := by
@@ -503,6 +513,7 @@ theorem HasBasis.inf_principal_neBot_iff (hl : l.HasBasis p s) {t : Set α} :
     NeBot (l ⊓ 𝓟 t) ↔ ∀ ⦃i⦄, p i → (s i ∩ t).Nonempty :=
   (hl.inf_principal t).neBot_iff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasBasis.disjoint_iff (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :
     Disjoint l l' ↔ ∃ i, p i ∧ ∃ i', p' i' ∧ Disjoint (s i) (s' i') :=
   not_iff_not.mp <| by simp only [_root_.disjoint_iff, ← Ne.eq_def, ← neBot_iff, inf_eq_inter,
@@ -528,9 +539,6 @@ theorem mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∈ f ↔ f
 theorem notMem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∉ f ↔ NeBot (f ⊓ 𝓟 sᶜ) :=
   (not_congr mem_iff_inf_principal_compl).trans neBot_iff.symm
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_iff_inf_principal_compl := notMem_iff_inf_principal_compl
-
 @[simp]
 theorem disjoint_principal_right {f : Filter α} {s : Set α} : Disjoint f (𝓟 s) ↔ sᶜ ∈ f := by
   rw [mem_iff_inf_principal_compl, compl_compl, disjoint_iff]
@@ -545,6 +553,7 @@ theorem disjoint_principal_principal {s t : Set α} : Disjoint (𝓟 s) (𝓟 t)
 
 alias ⟨_, _root_.Disjoint.filter_principal⟩ := disjoint_principal_principal
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem disjoint_pure_pure {x y : α} : Disjoint (pure x : Filter α) (pure y) ↔ x ≠ y := by
   simp only [← principal_singleton, disjoint_principal_principal, disjoint_singleton]
@@ -649,7 +658,7 @@ protected theorem HasAntitoneBasis.comap {l : Filter α} {s : ι'' → Set α}
     (hf : HasAntitoneBasis l s) (m : β → α) : HasAntitoneBasis (comap m l) (m ⁻¹' s ·) :=
   ⟨hf.1.comap _, fun _ _ h ↦ preimage_mono (hf.2 h)⟩
 
-lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirected ι (· ≤ ·)]
+lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirectedOrder ι]
     {s : ι → Set α} (hs : Antitone s) : (⨅ i, 𝓟 (s i)).HasAntitoneBasis s :=
   ⟨hasBasis_iInf_principal hs.directed_ge, hs⟩
 

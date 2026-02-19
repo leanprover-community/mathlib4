@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-import Mathlib.Algebra.CharP.Defs
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
+public import Mathlib.Algebra.CharP.Defs
 
 /-!
 
@@ -92,6 +94,8 @@ elliptic curve, weierstrass equation, normal form
 
 -/
 
+@[expose] public section
+
 variable {R : Type*} [CommRing R] {F : Type*} [Field F] (W : WeierstrassCurve R)
 
 namespace WeierstrassCurve
@@ -162,6 +166,7 @@ a normal form of characteristic ≠ 2, provided that 2 is invertible in the ring
 @[simps]
 def toCharNeTwoNF : VariableChange R := ⟨1, 0, ⅟2 * -W.a₁, ⅟2 * -W.a₃⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance toCharNeTwoNF_spec : (W.toCharNeTwoNF • W).IsCharNeTwoNF := by
   constructor <;> simp [variableChange_a₁, variableChange_a₃]
 
@@ -263,6 +268,7 @@ It is the composition of an explicit change of variables with `WeierstrassCurve.
 def toShortNF : VariableChange R :=
   ⟨1, ⅟3 * -(W.toCharNeTwoNF • W).a₂, 0, 0⟩ * W.toCharNeTwoNF
 
+set_option backward.isDefEq.respectTransparency false in
 instance toShortNF_spec : (W.toShortNF • W).IsShortNF := by
   rw [toShortNF, mul_smul]
   constructor <;> simp [variableChange_a₁, variableChange_a₂, variableChange_a₃]

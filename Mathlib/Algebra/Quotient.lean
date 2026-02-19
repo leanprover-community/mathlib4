@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Tactic.Common
 
 /-!
 # Algebraic quotients
@@ -12,7 +14,7 @@ This file defines notation for algebraic quotients, e.g. quotient groups `G ⧸ 
 quotient modules `M ⧸ N` and ideal quotients `R ⧸ I`.
 
 The actual quotient structures are defined in the following files:
-* Quotient Group: `Mathlib/GroupTheory/Cosets/Defs.lean`
+* Quotient Group: `Mathlib/GroupTheory/QuotientGroup/Defs.lean`
 * Quotient Module: `Mathlib/LinearAlgebra/Quotient/Defs.lean`
 * Quotient Ring: `Mathlib/RingTheory/Ideal/Quotient/Defs.lean`
 
@@ -32,6 +34,8 @@ quotient, group quotient, quotient group, module quotient, quotient module, ring
 ideal quotient, quotient ring
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -42,19 +46,19 @@ such as groups, modules and rings.
 `A` is a parameter, despite being unused in the definition below, so it appears in the notation.
 -/
 class HasQuotient (A : outParam <| Type u) (B : Type v) where
-  /-- auxiliary quotient function, the one used will have `A` explicit -/
-  quotient' : B → Type max u v
+  /--
+  `HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient of the type `A` by `b`.
 
--- Will be provided by e.g. `Ideal.Quotient.inhabited`
-/--
-`HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient of the type `A` by `b`.
+  This differs from `HasQuotient.quotient'` in that the `A` argument is explicit,
+  which is necessary to make Lean show the notation in the goal state.
+  -/
+  Quotient (A) : B → Type max u v
 
-This differs from `HasQuotient.quotient'` in that the `A` argument is explicit,
-which is necessary to make Lean show the notation in the goal state.
--/
-abbrev HasQuotient.Quotient (A : outParam <| Type u) {B : Type v}
+/-- A deprecated variant of `HasQuotient.Quotient` -/
+@[deprecated HasQuotient.Quotient (since := "2025-12-18")]
+abbrev HasQuotient.quotient' {A : outParam <| Type u} {B : Type v}
     [HasQuotient A B] (b : B) : Type max u v :=
-  HasQuotient.quotient' b
+  HasQuotient.Quotient A b
 
 /-- Quotient notation based on the `HasQuotient` typeclass -/
 notation:35 G " ⧸ " H:34 => HasQuotient.Quotient G H
