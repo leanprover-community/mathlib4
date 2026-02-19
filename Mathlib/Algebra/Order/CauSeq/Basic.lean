@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Group.MinMax
 public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Data.Setoid.Basic
+--public import Mathlib.Data.FunLike.GroupAction
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.Tactic.GCongr
 
@@ -167,8 +168,9 @@ section Ring
 
 variable [Ring β] {abv : β → α}
 
-instance : CoeFun (CauSeq β abv) fun _ => ℕ → β :=
-  ⟨Subtype.val⟩
+instance : FunLike (CauSeq β abv) ℕ β where
+  coe := Subtype.val
+  coe_injective' := Subtype.val_injective
 
 @[ext]
 theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := Subtype.ext (funext h)
@@ -200,13 +202,16 @@ theorem bounded' (f : CauSeq β abv) (x : α) : ∃ r > x, ∀ i, abv (f i) < r 
 instance : Add (CauSeq β abv) :=
   ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
 
-@[simp, norm_cast]
+instance : FunLikeAdd (CauSeq β abv) ℕ β where
+  add_apply _ _ _ := rfl
+
+/-@[simp, norm_cast]
 theorem coe_add (f g : CauSeq β abv) : ⇑(f + g) = (f : ℕ → β) + g :=
   rfl
 
 @[simp, norm_cast]
 theorem add_apply (f g : CauSeq β abv) (i : ℕ) : (f + g) i = f i + g i :=
-  rfl
+  rfl-/
 
 variable (abv) in
 /-- The constant Cauchy sequence. -/
@@ -229,13 +234,19 @@ theorem const_inj {x y : β} : (const x : CauSeq β abv) = const y ↔ x = y :=
 instance : Zero (CauSeq β abv) :=
   ⟨const 0⟩
 
+instance : FunLikeZero (CauSeq β abv) ℕ β where
+  zero_apply _ := rfl
+
 instance : One (CauSeq β abv) :=
   ⟨const 1⟩
+
+instance : FunLikeOne (CauSeq β abv) ℕ β where
+  one_apply _ := rfl
 
 instance : Inhabited (CauSeq β abv) :=
   ⟨0⟩
 
-@[simp, norm_cast]
+/-@[simp, norm_cast]
 theorem coe_zero : ⇑(0 : CauSeq β abv) = 0 :=
   rfl
 
@@ -249,7 +260,7 @@ theorem zero_apply (i) : (0 : CauSeq β abv) i = 0 :=
 
 @[simp, norm_cast]
 theorem one_apply (i) : (1 : CauSeq β abv) i = 1 :=
-  rfl
+  rfl-/
 
 @[simp]
 theorem const_zero : const 0 = 0 :=
@@ -264,26 +275,32 @@ theorem const_add (x y : β) : const (x + y) = const x + const y :=
 
 instance : Mul (CauSeq β abv) := ⟨fun f g ↦ ⟨f * g, f.2.mul g.2⟩⟩
 
-@[simp, norm_cast]
+instance : FunLikeMul (CauSeq β abv) ℕ β where
+  mul_apply _ _ _ := rfl
+
+/-@[simp, norm_cast]
 theorem coe_mul (f g : CauSeq β abv) : ⇑(f * g) = (f : ℕ → β) * g :=
   rfl
 
 @[simp, norm_cast]
 theorem mul_apply (f g : CauSeq β abv) (i : ℕ) : (f * g) i = f i * g i :=
-  rfl
+  rfl-/
 
 theorem const_mul (x y : β) : const (x * y) = const x * const y :=
   rfl
 
 instance : Neg (CauSeq β abv) := ⟨fun f ↦ ⟨-f, f.2.neg⟩⟩
 
-@[simp, norm_cast]
+instance : FunLikeNeg (CauSeq β abv) ℕ β where
+  neg_apply _ _ := rfl
+
+/-@[simp, norm_cast]
 theorem coe_neg (f : CauSeq β abv) : ⇑(-f) = -f :=
   rfl
 
 @[simp, norm_cast]
 theorem neg_apply (f : CauSeq β abv) (i) : (-f) i = -f i :=
-  rfl
+  rfl-/
 
 theorem const_neg (x : β) : const (-x) = -const x :=
   rfl
@@ -291,13 +308,16 @@ theorem const_neg (x : β) : const (-x) = -const x :=
 instance : Sub (CauSeq β abv) :=
   ⟨fun f g => ofEq (f + -g) (fun x => f x - g x) fun i => by simp [sub_eq_add_neg]⟩
 
-@[simp, norm_cast]
+instance : FunLikeSub (CauSeq β abv) ℕ β where
+  sub_apply _ _ _ := rfl
+
+/-@[simp, norm_cast]
 theorem coe_sub (f g : CauSeq β abv) : ⇑(f - g) = (f : ℕ → β) - g :=
   rfl
 
 @[simp, norm_cast]
 theorem sub_apply (f g : CauSeq β abv) (i : ℕ) : (f - g) i = f i - g i :=
-  rfl
+  rfl-/
 
 theorem const_sub (x y : β) : const (x - y) = const x - const y :=
   rfl
@@ -309,13 +329,16 @@ variable {G : Type*} [SMul G β] [IsScalarTower G β β]
 instance : SMul G (CauSeq β abv) :=
   ⟨fun a f => (ofEq (const (a • (1 : β)) * f) (a • (f : ℕ → β))) fun _ => smul_one_mul _ _⟩
 
-@[simp, norm_cast]
+instance : FunLikeSMul G (CauSeq β abv) ℕ β where
+  smul_apply _ _ _ := rfl
+
+/-@[simp, norm_cast]
 theorem coe_smul (a : G) (f : CauSeq β abv) : ⇑(a • f) = a • (f : ℕ → β) :=
   rfl
 
 @[simp, norm_cast]
 theorem smul_apply (a : G) (f : CauSeq β abv) (i : ℕ) : (a • f) i = a • f i :=
-  rfl
+  rfl-/
 
 theorem const_smul (a : G) (x : β) : const (a • x) = a • const x :=
   rfl
@@ -325,9 +348,9 @@ instance : IsScalarTower G (CauSeq β abv) (CauSeq β abv) :=
 
 end SMul
 
-instance addGroup : AddGroup (CauSeq β abv) :=
+/-instance addGroup : AddGroup (CauSeq β abv) :=
   Function.Injective.addGroup Subtype.val Subtype.val_injective rfl coe_add coe_neg coe_sub
-    (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
+    (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _-/
 
 instance instNatCast : NatCast (CauSeq β abv) := ⟨fun n => const n⟩
 
@@ -335,7 +358,7 @@ instance instIntCast : IntCast (CauSeq β abv) := ⟨fun n => const n⟩
 
 instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
   Function.Injective.addGroupWithOne Subtype.val Subtype.val_injective rfl rfl
-  coe_add coe_neg coe_sub
+  FunLike.coe_add FunLike.coe_neg FunLike.coe_sub
   (by intros; rfl)
   (by intros; rfl)
   (by intros; rfl)
@@ -345,21 +368,27 @@ instance : Pow (CauSeq β abv) ℕ :=
   ⟨fun f n =>
     (ofEq (npowRec n f) fun i => f i ^ n) <| by induction n <;> simp [*, npowRec, pow_succ]⟩
 
-@[simp, norm_cast]
+instance : FunLikePow ℕ (CauSeq β abv) ℕ β where
+  pow_apply _ _ _ := rfl
+
+/-@[simp, norm_cast]
 theorem coe_pow (f : CauSeq β abv) (n : ℕ) : ⇑(f ^ n) = (f : ℕ → β) ^ n :=
   rfl
 
 @[simp, norm_cast]
 theorem pow_apply (f : CauSeq β abv) (n i : ℕ) : (f ^ n) i = f i ^ n :=
-  rfl
+  rfl-/
 
 theorem const_pow (x : β) (n : ℕ) : const (x ^ n) = const x ^ n :=
   rfl
 
+-- Todo: remove this
 instance ring : Ring (CauSeq β abv) :=
-  Function.Injective.ring Subtype.val Subtype.val_injective rfl rfl coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_pow (fun _ => rfl) fun _ => rfl
+  Function.Injective.ring Subtype.val Subtype.val_injective rfl rfl FunLike.coe_add FunLike.coe_mul
+    FunLike.coe_neg FunLike.coe_sub
+    FunLike.coe_smul FunLike.coe_smul FunLike.coe_pow (fun _ => rfl) fun _ => rfl
 
+-- Todo: remove this
 instance {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
   { CauSeq.ring with
     mul_comm := fun a b => ext fun n => by simp [mul_comm] }
@@ -794,7 +823,7 @@ protected theorem sup_eq_right {a b : CauSeq α abs} (h : a ≤ b) : a ⊔ b ≈
   obtain ⟨ε, ε0 : _ < _, i, h⟩ | h := h
   · intro _ _
     refine ⟨i, fun j hj => ?_⟩
-    dsimp
+    simp only [sub_apply, coe_sup, Pi.sup_apply]
     rw [← max_sub_sub_right]
     rwa [sub_self, max_eq_right, abs_zero]
     rw [sub_nonpos, ← sub_nonneg]
@@ -806,7 +835,7 @@ protected theorem inf_eq_right {a b : CauSeq α abs} (h : b ≤ a) : a ⊓ b ≈
   obtain ⟨ε, ε0 : _ < _, i, h⟩ | h := h
   · intro _ _
     refine ⟨i, fun j hj => ?_⟩
-    dsimp
+    simp only [sub_apply, coe_inf, Pi.inf_apply]
     rw [← min_sub_sub_right]
     rwa [sub_self, min_eq_right, abs_zero]
     exact ε0.le.trans (h _ hj)

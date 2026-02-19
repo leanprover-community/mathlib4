@@ -812,12 +812,21 @@ def inverse (f : M →ₗ⁅R,L⁆ N) (g : N → M) (h₁ : Function.LeftInverse
 instance : Add (M →ₗ⁅R,L⁆ N) where
   add f g := { (f : M →ₗ[R] N) + (g : M →ₗ[R] N) with map_lie' := by simp }
 
+instance : FunLikeAdd (M →ₗ⁅R,L⁆ N) M N where
+  add_apply _ _ _ := rfl
+
 instance : Sub (M →ₗ⁅R,L⁆ N) where
   sub f g := { (f : M →ₗ[R] N) - (g : M →ₗ[R] N) with map_lie' := by simp }
 
+instance : FunLikeSub (M →ₗ⁅R,L⁆ N) M N where
+  sub_apply _ _ _ := rfl
+
 instance : Neg (M →ₗ⁅R,L⁆ N) where neg f := { -(f : M →ₗ[R] N) with map_lie' := by simp }
 
-@[norm_cast, simp]
+instance : FunLikeNeg (M →ₗ⁅R,L⁆ N) M N where
+  neg_apply _ _ := rfl
+
+/-@[norm_cast, simp]
 theorem coe_add (f g : M →ₗ⁅R,L⁆ N) : ⇑(f + g) = f + g :=
   rfl
 
@@ -836,48 +845,57 @@ theorem coe_neg (f : M →ₗ⁅R,L⁆ N) : ⇑(-f) = -f :=
   rfl
 
 theorem neg_apply (f : M →ₗ⁅R,L⁆ N) (m : M) : (-f) m = -f m :=
-  rfl
+  rfl-/
 
 instance hasNSMul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
   smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
 
-@[norm_cast, simp]
+instance : FunLikeSMul ℕ (M →ₗ⁅R,L⁆ N) M N where
+  smul_apply _ _ _ := rfl
+
+/-@[norm_cast, simp]
 theorem coe_nsmul (n : ℕ) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • (⇑f) :=
   rfl
 
 theorem nsmul_apply (n : ℕ) (f : M →ₗ⁅R,L⁆ N) (m : M) : (n • f) m = n • f m :=
-  rfl
+  rfl-/
 
 instance hasZSMul : SMul ℤ (M →ₗ⁅R,L⁆ N) where
   smul z f := { z • (f : M →ₗ[R] N) with map_lie' := by simp }
 
-@[norm_cast, simp]
+instance : FunLikeSMul ℤ (M →ₗ⁅R,L⁆ N) M N where
+  smul_apply _ _ _ := rfl
+
+/-@[norm_cast, simp]
 theorem coe_zsmul (z : ℤ) (f : M →ₗ⁅R,L⁆ N) : ⇑(z • f) = z • (⇑f) :=
   rfl
 
 theorem zsmul_apply (z : ℤ) (f : M →ₗ⁅R,L⁆ N) (m : M) : (z • f) m = z • f m :=
-  rfl
+  rfl-/
 
-instance : AddCommGroup (M →ₗ⁅R,L⁆ N) :=
+/-instance : AddCommGroup (M →ₗ⁅R,L⁆ N) :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
-    (fun _ _ => coe_zsmul _ _)
+    (fun _ _ => coe_zsmul _ _)-/
 
 variable [LieAlgebra R L] [LieModule R L N]
 
 instance : SMul R (M →ₗ⁅R,L⁆ N) where
   smul t f := { t • (f : M →ₗ[R] N) with map_lie' := by simp }
 
-@[norm_cast, simp]
+instance : FunLikeSMul R (M →ₗ⁅R,L⁆ N) M N where
+  smul_apply _ _ _ := rfl
+
+/-@[norm_cast, simp]
 theorem coe_smul (t : R) (f : M →ₗ⁅R,L⁆ N) : ⇑(t • f) = t • (⇑f) :=
   rfl
 
 theorem smul_apply (t : R) (f : M →ₗ⁅R,L⁆ N) (m : M) : (t • f) m = t • f m :=
-  rfl
+  rfl-/
 
-instance : Module R (M →ₗ⁅R,L⁆ N) :=
+/-instance : Module R (M →ₗ⁅R,L⁆ N) :=
   Function.Injective.module R
     { toFun := fun f => f.toLinearMap.toFun, map_zero' := rfl, map_add' := coe_add }
-    coe_injective coe_smul
+    coe_injective coe_smul-/
 
 end LieModuleHom
 

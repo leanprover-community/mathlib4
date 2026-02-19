@@ -174,7 +174,7 @@ theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
 
 @[simp]
 theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M) = (0 : β →₀ M) := by
-  ext; simp only [equivMapDomain_apply, coe_zero, Pi.zero_apply]
+  ext; simp only [equivMapDomain_apply, zero_apply]
 
 @[to_additive (attr := simp)]
 theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N) :
@@ -272,7 +272,7 @@ theorem mapDomain_apply {f : α → β} (hf : Function.Injective f) (x : α →�
   · intro b _ hba
     exact single_eq_of_ne' (hf.ne hba)
   · intro _
-    rw [single_zero, coe_zero, Pi.zero_apply]
+    rw [single_zero, zero_apply]
 
 theorem mapDomain_notin_range {f : α → β} (x : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     mapDomain f x a = 0 := by
@@ -676,7 +676,7 @@ end Zero
 theorem filter_pos_add_filter_neg [AddZeroClass M] (f : α →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter p + f.filter fun a => ¬p a) = f :=
   DFunLike.coe_injective <| by
-    simp only [coe_add, filter_eq_indicator]
+    simp only [FunLike.coe_add, filter_eq_indicator]
     exact Set.indicator_self_add_compl { x | p x } f
 
 end Filter
@@ -791,7 +791,7 @@ def filterAddHom (p : α → Prop) [DecidablePred p] : (α →₀ M) →+ α →
   toFun := filter p
   map_zero' := filter_zero p
   map_add' f g := DFunLike.coe_injective <| by
-    simp_rw [coe_add, filter_eq_indicator]
+    simp_rw [FunLike.coe_add, filter_eq_indicator]
     exact Set.indicator_add { x | p x } f g
 
 @[simp]

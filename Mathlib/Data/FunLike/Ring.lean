@@ -42,6 +42,8 @@ instance [NonUnitalCommSemiring β] [FunLikeZero F α β] [FunLikeAdd F α β] [
     [FunLikeSMul ℕ F α β] : NonUnitalCommSemiring F :=
   fast_instance% DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul coe_smul
 
+section NegSub
+
 variable [Neg F] [Sub F] [SMul ℤ F]
 
 instance [NonUnitalNonAssocRing β] [FunLikeZero F α β] [FunLikeAdd F α β] [FunLikeMul F α β]
@@ -61,5 +63,31 @@ instance [NonUnitalCommRing β] [FunLikeZero F α β] [FunLikeAdd F α β] [FunL
     NonUnitalCommRing F :=
   fast_instance% DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     coe_smul coe_smul
+
+end NegSub
+
+variable [Pow F ℕ] [NatCast F]
+
+instance [Semiring β] [FunLikeZero F α β] [FunLikeOne F α β] [FunLikeAdd F α β] [FunLikeMul F α β]
+    [FunLikeSMul ℕ F α β] [FunLikeSMul ℕ F α β] [FunLikePow ℕ F α β] :
+    Semiring F :=
+  fast_instance% DFunLike.coe_injective.semiring _ coe_zero coe_one coe_add coe_mul
+    coe_smul coe_pow sorry
+
+variable [IntCast F] [Neg F] [Sub F] [SMul ℤ F]
+
+instance [Ring β] [FunLikeZero F α β] [FunLikeOne F α β] [FunLikeAdd F α β] [FunLikeMul F α β]
+    [FunLikeNeg F α β] [FunLikeSub F α β] [FunLikeSMul ℕ F α β] [FunLikeSMul ℤ F α β]
+    [FunLikePow ℕ F α β] :
+    Ring F :=
+  fast_instance% DFunLike.coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub
+    coe_smul coe_smul coe_pow sorry sorry
+
+instance [CommRing β] [FunLikeZero F α β] [FunLikeOne F α β] [FunLikeAdd F α β] [FunLikeMul F α β]
+    [FunLikeNeg F α β] [FunLikeSub F α β] [FunLikeSMul ℕ F α β] [FunLikeSMul ℤ F α β]
+    [FunLikePow ℕ F α β] :
+    CommRing F :=
+  fast_instance% DFunLike.coe_injective.commRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub
+    coe_smul coe_smul coe_pow sorry sorry
 
 end FunLike
