@@ -77,7 +77,7 @@ variable {s} {y}
 
 theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
   contrapose! h with c
-  rw [← cons_zero y s, c, Finsupp.coe_zero, Pi.zero_apply]
+  rw [← cons_zero y s, c, zero_apply]
 
 theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
   contrapose! h with c

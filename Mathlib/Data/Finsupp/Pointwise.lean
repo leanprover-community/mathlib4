@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Data.FunLike.Ring
 
 /-!
 # The pointwise product on `Finsupp`.
@@ -67,34 +66,7 @@ theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
     (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support :=
   subset_inter support_mul_subset_left support_mul_subset_right
 
-instance : MulZeroClass (α →₀ β) :=
-  DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
-
 end
-
-instance [SemigroupWithZero β] : SemigroupWithZero (α →₀ β) :=
-  DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
-
-instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
-
-instance [NonUnitalSemiring β] : NonUnitalSemiring (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
-
-instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
-
-instance [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
-
-instance [NonUnitalRing β] : NonUnitalRing (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ ↦ rfl)
-    fun _ _ ↦ rfl
-
-instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 -- TODO(Paul-Lez): add a `DFinsupp` version of this.
 -- Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`, so this is an

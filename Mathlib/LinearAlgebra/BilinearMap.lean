@@ -144,7 +144,7 @@ variable (R₅ P σ₂₃)
 /-- Composing a semilinear map `M → N` and a semilinear map `N → P` to form a semilinear map
 `M → P` is itself a linear map. -/
 def lcompₛₗ (f : M →ₛₗ[σ₁₂] N) : (N →ₛₗ[σ₂₃] P) →ₗ[R₅] M →ₛₗ[σ₁₃] P :=
-  letI := SMulCommClass.symm
+  letI := SMulCommClass.symm R₃ R₅ P
   flip <| LinearMap.comp (flip id) f
 
 variable {P σ₂₃ R₅}

@@ -88,7 +88,7 @@ theorem toMatrix_symm [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m 
 theorem toMatrix_refl [DecidableEq n] [Zero α] [One α] :
     ((PEquiv.refl n).toMatrix : Matrix n n α) = 1 := by
   ext
-  simp [toMatrix_apply, one_apply]
+  simp [toMatrix_apply, Matrix.one_apply]
 
 @[simp]
 theorem toMatrix_toPEquiv_apply [DecidableEq n] [Zero α] [One α] (f : m ≃ n) (i) :
@@ -161,7 +161,7 @@ theorem toMatrix_swap [DecidableEq n] [AddGroupWithOne α] (i j : n) :
       (1 : Matrix n n α) - (single i i).toMatrix - (single j j).toMatrix + (single i j).toMatrix +
         (single j i).toMatrix := by
   ext
-  dsimp [toMatrix, single, Equiv.swap_apply_def, Equiv.toPEquiv, one_apply]
+  dsimp [toMatrix, single, Equiv.swap_apply_def, Equiv.toPEquiv, Matrix.one_apply]
   split_ifs <;> simp_all
 
 @[simp]

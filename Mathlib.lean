@@ -383,7 +383,6 @@ public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Hom.CompTypeclasses
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Hom.End
-public import Mathlib.Algebra.Group.Hom.FunLike
 public import Mathlib.Algebra.Group.Hom.Instances
 public import Mathlib.Algebra.Group.Ideal
 public import Mathlib.Algebra.Group.Idempotent
@@ -729,7 +728,6 @@ public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Equiv.Opposite
 public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.GradedModule
 public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.Injective
@@ -3715,6 +3713,11 @@ public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Data.FunLike.Embedding
 public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.FunLike.Fintype
+public import Mathlib.Data.FunLike.Group
+public import Mathlib.Data.FunLike.GroupWithZero
+public import Mathlib.Data.FunLike.Hom
+public import Mathlib.Data.FunLike.Module
+public import Mathlib.Data.FunLike.Ring
 public import Mathlib.Data.Holor
 public import Mathlib.Data.Ineq
 public import Mathlib.Data.Int.AbsoluteValue

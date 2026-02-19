@@ -7,7 +7,7 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Hom.FunLike
+public import Mathlib.Data.FunLike.Group
 
 /-!
 # Additional lemmas about monoid and group homomorphisms
