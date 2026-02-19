@@ -35,6 +35,7 @@ variable {R : Type u} [CommRing R]
 
 open CategoryTheory
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Small.{v} R] (S : Submonoid R) :
     (ModuleCat.localizedModule_functor.{v} S).PreservesProjectiveObjects where
   projective_obj X {proj} := by
@@ -43,6 +44,7 @@ instance [Small.{v} R] (S : Submonoid R) :
     simpa [ModuleCat.localizedModule_functor] using
       Module.projective_of_isLocalizedModule S (X.localizedModuleMkLinearMap S)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M =
     ⨆ (p : PrimeSpectrum R), projectiveDimension (M.localizedModule p.1.primeCompl) := by
@@ -99,6 +101,7 @@ lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoet
     | top => simp
     | coe n => simpa using aux n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M =
     ⨆ (p : MaximalSpectrum R), projectiveDimension (M.localizedModule p.1.primeCompl) := by
