@@ -20,6 +20,7 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.PowerSeries.Ideal
 public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.RegularLocalRing.Basic
+public import Mathlib.RingTheory.RegularLocalRing.PowerSeries
 public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.Algebra.Algebra.Hom.Rat
 public import Mathlib.RingTheory.RingHom.Smooth
@@ -582,7 +583,21 @@ variable [IsLocalRing R] [IsNoetherianRing R]
 lemma exist_isRegularLocalRing_surjective_of_isAdicComplete [IsAdicComplete (maximalIdeal R) R] :
     ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S) (f : S →+* R),
     Function.Surjective f := by
-  sorry
+  by_cases zero : CharZero (ResidueField R)
+  · rcases exists_section_of_charZero zero with ⟨f, hf⟩
+    have bij : Function.Bijective (ResidueField.map f) :=
+      ⟨RingHom.injective _, fun x ↦ ⟨IsLocalRing.residue _ x,
+        by simpa [IsLocalRing.ResidueField.map_residue] using RingHom.congr_fun hf x⟩⟩
+    rcases exists_mvPowerSeries_surjective_of_residueField_map_bijective
+      (maximalIdeal R).fg_of_isNoetherianRing _ f bij with ⟨n, g, surjg, hg⟩
+    use MvPowerSeries (Fin n) (ResidueField R), inferInstance
+    -- MvPowerSeries.isRegularLocalRing_of_isRegularLocalRing
+    sorry
+  · rcases exists_isCohenRing_residueField_map_bijective zero with ⟨S, _, _, cohen, f, _, bij⟩
+    rcases exists_mvPowerSeries_surjective_of_residueField_map_bijective
+      (maximalIdeal R).fg_of_isNoetherianRing _ f bij with ⟨n, g, surjg, hg⟩
+    use MvPowerSeries (Fin n) (ResidueField R), inferInstance
+    sorry
 
 lemma spanFinrank_eq_of_surjective_of_ker_le {R : Type*} [CommRing R] [IsNoetherianRing R]
     [IsLocalRing R] {R' : Type*} [CommRing R'] [IsNoetherianRing R'] [IsLocalRing R']
