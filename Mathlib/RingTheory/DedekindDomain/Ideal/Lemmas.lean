@@ -500,6 +500,14 @@ theorem ideal_ne_top_iff_exists (hR : ¬IsField R) (I : Ideal R) :
   · rintro ⟨P, hP⟩
     exact ⟨((equivMaximalSpectrum hR) P).asIdeal, ((equivMaximalSpectrum hR) P).isMaximal, hP⟩
 
+theorem coprime_of_ne (P Q : HeightOneSpectrum R) (hPQ : P ≠ Q) : P.asIdeal ⊔ Q.asIdeal = ⊤ :=
+  (Ideal.IsMaximal.coprime_of_ne P.isMaximal Q.isMaximal
+    (by simpa [HeightOneSpectrum.ext_iff] using hPQ))
+
+theorem pow_sup_pow_eq_top (P Q : HeightOneSpectrum R) (hPQ : P ≠ Q) (n m : ℕ) :
+    P.asIdeal ^ n ⊔ Q.asIdeal ^ m = ⊤ :=
+  Ideal.pow_sup_pow_eq_top (P.coprime_of_ne Q hPQ)
+
 variable (R)
 
 /-- A Dedekind domain is equal to the intersection of its localizations at all its height one
