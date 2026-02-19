@@ -108,6 +108,7 @@ class IsCohenRing [IsDomain R] extends IsDiscreteValuationRing R, IsAdicComplete
     where
   span : maximalIdeal R = Ideal.span {(ringChar (ResidueField R) : R)}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ CharZero k) :
     ∃ (R : Type u) (_ : CommRing R) (_ : IsDomain R) (_ : IsCohenRing R),
       Nonempty (ResidueField R ≃+* k) := by
@@ -187,6 +188,7 @@ noncomputable def padicIntToIntQuotient (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ)
     PadicInt p →+* ℤ ⧸ (Ideal.span {(p ^ n : ℤ)}) :=
   (Int.quotientSpanNatEquivZMod (p ^ n)).symm.toRingHom.comp (PadicInt.toZModPow n)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma padicIntToIntQuotient_surjective (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ) :
     Function.Surjective (padicIntToIntQuotient p n) := by
   simpa [padicIntToIntQuotient] using ZMod.ringHom_surjective _
@@ -195,6 +197,7 @@ lemma padicIntToIntQuotient_ker (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ) :
     RingHom.ker (padicIntToIntQuotient p n) = Ideal.span {(p ^ n : ℤ_[p])} := by
   simpa [← PadicInt.ker_toZModPow, padicIntToIntQuotient] using RingHom.ker_equiv_comp _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma padicInt_to_int_quotient_comm (p : ℕ) [Fact (Nat.Prime p)] {m n : ℕ} (hle : m ≤ n) :
     padicIntToIntQuotient p m = (Ideal.Quotient.factor
       (Ideal.span_singleton_le_span_singleton.mpr (pow_dvd_pow (p : ℤ) hle))).comp
@@ -204,8 +207,9 @@ lemma padicInt_to_int_quotient_comm (p : ℕ) [Fact (Nat.Prime p)] {m n : ℕ} (
   simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
     ← PadicInt.cast_toZModPow m n hle]
   rcases ZMod.natCast_zmod_surjective ((PadicInt.toZModPow n) x) with ⟨y, hy⟩
-  simp [← hy, ZMod.cast_natCast (Nat.pow_dvd_pow p hle) y]
+  simpa [← hy, ZMod.cast_natCast (Nat.pow_dvd_pow p hle) y] using map_natCast _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For complete local ring `R` with residue field of characteristic `p`, the canonical map
 `ℤ_[p] →+* R`. -/
 noncomputable def padicIntOfCharP [IsLocalRing R] [IsAdicComplete (maximalIdeal R) R] (p : ℕ)
@@ -329,6 +333,7 @@ class IsCoefficientRing {S : Type*} [CommRing S] (f : S →+* R) extends
   residue_iso : Function.Bijective (IsLocalRing.ResidueField.map f)
   span : maximalIdeal S = Ideal.span {(ringChar (ResidueField S) : S)}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_section_of_charZero [IsAdicComplete (maximalIdeal R) R]
     (char : CharZero (ResidueField R)) :
     ∃ (f : ResidueField R →+* R), (IsLocalRing.residue R).comp f = RingHom.id _ := by
@@ -406,6 +411,7 @@ lemma isCoefficientRing_of_residueField (char : CharZero (ResidueField R))
       exact (CharP.ringChar_zero_iff_CharZero (ResidueField R)).mpr char
     simpa [this] using maximalIdeal_eq_bot
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdeal R) R]
     (charpos : ¬ CharZero (ResidueField R)) :
     ∃ (S : Type u) (_ : CommRing S) (_ : IsDomain S) (_ : IsCohenRing S) (f : S →+* R)
@@ -644,11 +650,13 @@ lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
     simp only [← add_assoc, ← dim, Nat.add_right_cancel_iff] at hn
     exact ih (S ⧸ Ideal.span {x}) inferInstance reg _ surj' hn
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exist_isRegularLocalRing_surjective_adicCompletion :
     ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S)
     (f : S →+* (AdicCompletion (maximalIdeal R) R)), Function.Surjective f :=
   exist_isRegularLocalRing_surjective_of_isAdicComplete _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exist_isRegularLocalRing_surjective_adicCompletion_ker_le :
     ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S)
     (f : S →+* (AdicCompletion (maximalIdeal R) R)),
