@@ -109,6 +109,7 @@ nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
     change f (inr a) = g (inr a)
     simpa only [inr_eq_smul_eps] using DFunLike.congr_fun hinr a)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext 1200]
 theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by

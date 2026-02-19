@@ -181,6 +181,7 @@ variable [HasZeroObject C]
 /-- Construct a `Zero C` for a category with a zero object.
 This cannot be a global instance as it will trigger for every `Zero C` typeclass search.
 -/
+@[instance_reducible]
 protected def HasZeroObject.zero' : Zero C where zero := HasZeroObject.zero.choose
 
 scoped[ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.zero'
@@ -228,10 +229,12 @@ namespace HasZeroObject
 variable [HasZeroObject C]
 
 /-- There is a unique morphism from the zero object to any object `X`. -/
+@[instance_reducible]
 protected def uniqueTo (X : C) : Unique (0 ⟶ X) :=
   ((isZero_zero C).unique_to X).some
 
 /-- There is a unique morphism from any object `X` to the zero object. -/
+@[instance_reducible]
 protected def uniqueFrom (X : C) : Unique (X ⟶ 0) :=
   ((isZero_zero C).unique_from X).some
 
