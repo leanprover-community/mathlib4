@@ -428,4 +428,10 @@ theorem algebraMap.coe_smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribCl
     (a • b : B) = a • (b : C) := by
   simp [Algebra.algebraMap_eq_smul_one, smul_distrib_smul]
 
+theorem algebraMap.smul [SMul A C] [IsScalarTower A B C] :
+    algebraMap B C (a • b) = a • (algebraMap B C b) := coe_smul _ _ _
+
+theorem algebraMap.smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass A B C] :
+    algebraMap B C (a • b) = a • (algebraMap B C b) := coe_smul' _ _ _
+
 end algebraMap
