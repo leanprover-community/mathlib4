@@ -119,6 +119,7 @@ theorem cycleGraph_degree_three_le {n : ℕ} {v : Fin (n + 3)} :
   simp only [ne_eq, sub_eq_iff_eq_add, add_assoc v, left_eq_add]
   exact ne_of_beq_false rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
   match n with
   | 0 | 1 => simp
@@ -145,6 +146,7 @@ private def cycleGraph_EulerianCircuit_cons (n : ℕ) :
       simp [cycleGraph_adj, Fin.ext_iff, Fin.sub_val_of_le]
     Walk.cons hadj (cycleGraph_EulerianCircuit_cons n ⟨m, Nat.lt_of_succ_lt h⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Eulerian trail of `cycleGraph (n + 3)` -/

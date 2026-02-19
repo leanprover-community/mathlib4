@@ -43,7 +43,7 @@ open UpperHalfPlane hiding I σ
 
 open Filter Complex Finset SummationFilter
 
-open scoped Interval Real Topology BigOperators Nat ArithmeticFunction.sigma
+open scoped Interval Real Topology Nat ArithmeticFunction.sigma
 
 @[expose] public noncomputable section
 
@@ -53,6 +53,7 @@ variable (z : ℍ)
 
 local notation "𝕢" z:100 => cexp (2 * π * I * z)
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma G2_partial_sum_eq (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summand m z =
     2 * riemannZeta 2 + ∑ m ∈ range N, -8 * π ^ 2 *
       ∑' n : ℕ+, n * 𝕢 z ^ ((m + 1) * n) := by
@@ -145,11 +146,11 @@ lemma summable_right_one_div_linear_sub_one_div_linear_succ (m : ℤ) :
 private lemma aux_sum_Ico_S_identity (N : ℕ) :
     ((z : ℂ) ^ 2)⁻¹ * (∑ x ∈ Ico (-N : ℤ) N, ∑' (n : ℤ), (((x : ℂ) * (-↑z)⁻¹ + n) ^ 2)⁻¹) =
     ∑' (n : ℤ), ∑ x ∈ Ico (-N : ℤ) N, (((n : ℂ) * z + x) ^ 2)⁻¹ := by
-  simp_rw [inv_neg, mul_neg, mul_sum]
-  rw [Summable.tsum_finsetSum (fun i hi ↦ by apply linear_left_summable (ne_zero z) i le_rfl)]
+  simp_rw [inv_neg, mul_neg, mul_sum, pow_two, ← zpow_two]
+  rw [Summable.tsum_finsetSum (fun i hi ↦ linear_left_summable (ne_zero z) i le_rfl)]
   apply sum_congr rfl fun n hn ↦ ?_
   rw [← tsum_mul_left, ← tsum_comp_neg]
-  apply tsum_congr (by grind [ne_zero z])
+  apply tsum_congr (by grind [zpow_two, ne_zero z])
 
 lemma tendsto_double_sum_S_act :
     Tendsto (fun N : ℕ ↦ (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) atTop

@@ -37,6 +37,7 @@ variable [IsLocalization M S]
 
 attribute [local instance] algebraMvPolynomial
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `S` is the localization of `R` at a submonoid `M`, then `MvPolynomial σ S`
 is the localization of `MvPolynomial σ R` at `M.map MvPolynomial.C`.
@@ -81,6 +82,7 @@ private lemma auxHom_mk (p : MvPolynomial Unit R) :
     auxHom S r p = aeval (S₁ := S) (fun _ ↦ invSelf r) p :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private noncomputable
 def auxInv : S →+* (MvPolynomial Unit R) ⧸ Ideal.span { C r * X () - 1 } :=

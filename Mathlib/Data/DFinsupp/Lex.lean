@@ -228,6 +228,7 @@ instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (Π₀ i, α i)) :=
 instance Colex.addLeftStrictMono : AddLeftStrictMono (Colex (Π₀ i, α i)) :=
   Lex.addLeftStrictMono (ι := ιᵒᵈ)
 
+set_option backward.isDefEq.respectTransparency false in
 instance Lex.addLeftMono : AddLeftMono (Lex (Π₀ i, α i)) :=
   addLeftMono_of_addLeftStrictMono _
 
@@ -247,6 +248,7 @@ instance Lex.addRightStrictMono : AddRightStrictMono (Lex (Π₀ i, α i)) :=
 instance Colex.addRightStrictMono : AddRightStrictMono (Colex (Π₀ i, α i)) :=
   Lex.addRightStrictMono (ι := ιᵒᵈ)
 
+set_option backward.isDefEq.respectTransparency false in
 instance Lex.addRightMono : AddRightMono (Lex (Π₀ i, α i)) :=
   addRightMono_of_addRightStrictMono _
 
