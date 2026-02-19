@@ -3,7 +3,9 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
+public meta import Mathlib.Lean.Linter
 import Mathlib.Tactic.Lemma
 
 /-!
@@ -18,7 +20,7 @@ The linter ignores `option`s containing `linter` as a component of their names.
 The linter also skips checking unnecessary `set_option ... in` preceding `notation`.
 -/
 
-open Lean Parser Elab Command
+open Lean Parser Elab Command Linter
 
 /-- converts
 * `theorem x ...`    to `some (example  ... , x)`,
@@ -75,7 +77,7 @@ def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
   let s ← get
   match stx with
     | `(command| set_option $opt $_ in $inner) => do
-      if !Linter.getLinterValue linter.unnecessarySetOptionIn.heartbeats (← getOptions) &&
+      if !Linter.getLinterValue linter.unnecessarySetOptionIn.heartbeats (← getLinterOptions) &&
         opt.getId == `maxHeartbeats then
           return
       if !opt.getId.components.contains `linter then
@@ -94,7 +96,7 @@ def unnecessarySetOptionIn : Linter where run cmd := do
   let mod ← getMainModule
   if mod.getRoot == `MathlibTest && mod != `MathlibTest.UnnecessarySetOptionIn then
     return
-  if Linter.getLinterValue linter.unnecessarySetOptionIn (← getOptions) then
+  if Linter.getLinterValue linter.unnecessarySetOptionIn (← getLinterOptions) then
     findSetOptionIn elabCommand cmd
 
 initialize addLinter unnecessarySetOptionIn

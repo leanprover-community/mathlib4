@@ -226,6 +226,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Tactic.Linter, `ImportGraph),
   (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
+  (`Mathlib.Tactic.Linter.UnnecessarySetOptionIn, `Mathlib.Tactic.Lemma),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Expr.Basic),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Environment),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Elab.InfoTree),
