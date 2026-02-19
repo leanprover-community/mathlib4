@@ -66,6 +66,7 @@ lemma ker_mapRange_eq_smul_top (I : Type*) [Finite I] (x : R) :
     simpa [← eq] using
       Ideal.IsTwoSided.mul_mem_of_left (z i) (Ideal.mem_span_singleton_self x)
 
+set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 lemma free_iff_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*) [AddCommGroup M]
     [Module R M] [Module.Finite R M] {x : R} (mem : x ∈ maximalIdeal R) (reg : IsSMulRegular M x) :
@@ -183,8 +184,8 @@ lemma QuotSMulTop_map_exact {f : M →ₗ[R] N} {g : N →ₗ[R] L} (exact : Fun
     use Submodule.Quotient.mk (- m)
     simp only [QuotSMulTop_map, Submodule.Quotient.mk_neg, map_neg, LinearMap.coe_mk,
       LinearMap.coe_toAddHom, Submodule.mapQ_apply, hm, Submodule.Quotient.mk_sub,
-      hy', neg_sub, sub_eq_self, Submodule.Quotient.mk_eq_zero]
-    exact Submodule.smul_mem_pointwise_smul y'' x ⊤ trivial
+      hy', neg_sub, sub_eq_self]
+    exact (Submodule.Quotient.mk_eq_zero _).mpr (Submodule.smul_mem_pointwise_smul y'' x ⊤ trivial)
 
 end
 
@@ -198,6 +199,7 @@ lemma IsSMulRegular.of_free {x : R} (reg : IsSMulRegular R x) (M : Type*) [AddCo
   apply reg.right_eq_zero_of_smul
   rw [← Finsupp.smul_apply, hy, Finsupp.zero_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 open Ideal in
 lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) [Module.Finite R M] (x : R)
@@ -276,6 +278,7 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
 
 variable {R}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] [IsNoetherianRing R]
     [Small.{v} R] (nebot : maximalIdeal R ≠ ⊥)
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n) :
@@ -334,6 +337,7 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] 
   absurd nebot
   rw [this, Module.annihilator_eq_bot.mpr inferInstance]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE [IsLocalRing R] [IsNoetherianRing R]
     [Small.{v} R] (nebot : maximalIdeal R ≠ ⊥)
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n) :
@@ -370,6 +374,7 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE [IsLocalRing R] [IsN
   rw [← Set.not_notMem, ← Set.mem_compl_iff, ← biUnion_associatedPrimes_eq_compl_regular]
   simpa using xnmem.2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetherianRing R] (x : R)
     (mem : x ∈ maximalIdeal R) (nmem : x ∉ (maximalIdeal R) ^ 2) :
     letI : IsLocalRing (R ⧸ Ideal.span {x}) :=
@@ -448,11 +453,12 @@ lemma spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetherianRing R] (x 
   have frk : Module.finrank (ResidueField R) Q = Module.finrank
     (ResidueField (R ⧸ Ideal.span {x})) (CotangentSpace (R ⧸ Ideal.span {x})) := by
     simp only [Module.finrank, rk]
-  rw [IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace, ← frk,
+  rw [spanFinrank_maximalIdeal_eq_finrank_cotangentSpace, ← frk,
     Submodule.finrank_quotient,
     finrank_span_singleton (by simpa [Ideal.toCotangent_eq_zero] using nmem),
-    ← IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace]
+    ← spanFinrank_maximalIdeal_eq_finrank_cotangentSpace]
 
+set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n)
@@ -623,11 +629,13 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
         rw [Ideal.map_le_iff_le_comap, comapeq]
       exact ne_top_of_le_ne_top Ideal.IsPrime.ne_top' this
 
+set_option backward.isDefEq.respectTransparency false in
 theorem generate_by_regular [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n) :
     ∃ rs : List R, IsRegular R rs ∧ Ideal.ofList rs = maximalIdeal R :=
   generate_by_regular_aux  h (Submodule.spanFinrank (maximalIdeal R)) rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
     [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n) :
@@ -649,6 +657,7 @@ theorem IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
   simp only [← span, exists_prop, and_true]
   exact fun r hr ↦ Ideal.subset_span hr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsRegularLocalRing.of_globalDimension_lt_top [IsLocalRing R] [IsNoetherianRing R]
     [Small.{v} R] (h : globalDimension.{v} R < ⊤) : IsRegularLocalRing R := by
   apply IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
