@@ -129,7 +129,6 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime
     absNorm_dvd_absNorm_of_le <| le_of_dvd <|
       UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hJ).trans hI
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.longLine false in
 /-- Let `K` be a number field and let `M K` be the Minkowski bound of `K`.
 To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
@@ -160,7 +159,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_I
     rcases abs_choice p with h | h <;> simp [h]
   have hple : p.natAbs ^ (span {(p.natAbs : ℤ)}).inertiaDeg P ≤ ⌊(M K)⌋₊ := by
     refine le_floor ?_
-    simpa only [hspan, ← cast_pow, pow_inertiaDeg_eq_absNorm P (hpprime (hP.under _))] using hPN
+    simpa only [hspan, ← cast_pow, ← absNorm_eq_pow_inertiaDeg P (hpprime (hP.under _))] using hPN
   have hpabsprime := Int.prime_iff_natAbs_prime.mp (hpprime (hP.under _))
   refine h _ ?_ hpabsprime _ ⟨hP, ?_⟩ hple
   · suffices 0 < (span {(p.natAbs : ℤ)}).inertiaDeg P by
