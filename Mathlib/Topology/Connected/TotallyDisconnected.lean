@@ -134,7 +134,7 @@ noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
     [TopologicalSpace Y] [TotallyDisconnectedSpace Y] [ConnectedSpace X] :
     C(X, Y) ≃ Y where
   toFun f := f (Classical.arbitrary _)
-  invFun y := ⟨fun _ ↦ y, by continuity⟩
+  invFun y := ⟨fun _ ↦ y, by fun_prop⟩
   left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ f.2 _)
   right_inv _ := rfl
 

@@ -38,6 +38,7 @@ open Polynomial IntermediateField
 variable {F E K : Type*} [Field F] [Field E] [Field K] [Algebra F E] [Algebra F K]
 variable [alg : Algebra.IsAlgebraic F E]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nonempty_algHom_of_exists_root (h : ∀ x : E, ∃ y : K, aeval y (minpoly F x) = 0) :
     Nonempty (E →ₐ[F] K) := by
   refine Lifts.nonempty_algHom_of_exist_lifts_finset fun S ↦ ⟨⟨adjoin F S, ?_⟩, subset_adjoin _ _⟩

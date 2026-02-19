@@ -149,6 +149,7 @@ lemma negMulLog_eq_neg : negMulLog = fun x ↦ -(x * log x) := by simp [negMulLo
 
 @[simp] lemma negMulLog_one : negMulLog (1 : ℝ) = 0 := by simp [negMulLog]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma negMulLog_nonneg {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) : 0 ≤ negMulLog x := by
   simpa only [negMulLog_eq_neg, neg_nonneg] using mul_log_nonpos h1 h2
 
