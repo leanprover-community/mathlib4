@@ -22,9 +22,8 @@ the unit and counit isomorphisms are natural.
 
 ## Implementation note
 
-
-We make `CategoricalGroup` as a typeclass with
-MonoidalCategory, Groupoid, and RightRigidCategory as subclasses with no additional conditions.
+A `CategoricalGroup` consists of
+MonoidalCategory, Groupoid, and RightRigidCategory typeclasses.
 Right rigidity gives the negator (right dual),
 the counit morphism (coevaluation), and the unit morphism (evaluation).
 With the groupoid structure, we can construct the unit and counit isomorphisms from the unit and
@@ -67,11 +66,6 @@ variable {C : Type u} [Groupoid.{v} C]
   [MonoidalCategory.{v} C] [RightRigidCategory C]
 
 /--
-Negator of an object in a categorical group is the right dual of the object.
--/
-def negatorObj (X : C) : C := Xᘁ
-
-/--
 The unit (evaluation) isomorphism of a categorical group.
 -/
 @[simps!]
@@ -111,52 +105,47 @@ lemma evaluation_coevaluation_iso (X : C) :
   simp only [Iso.trans_hom, whiskerRightIso_hom, Iso.symm_hom, whiskerLeftIso_hom]
   exact ExactPairing.evaluation_coevaluation X Xᘁ
 
-
-
-instance ExactPairing.of_rightDual_self (X : C) : ExactPairing Xᘁ X where
+instance ExactPairing.ofRightDualSelf (X : C) : ExactPairing Xᘁ X where
   coevaluation' := (evaluationIso X).inv
   evaluation' := (coevaluationIso X).inv
   coevaluation_evaluation' := by
     have : whiskerLeftIso X (evaluationIso X).symm ≪≫
     (α_ X Xᘁ X).symm ≪≫ whiskerRightIso (coevaluationIso X).symm X
     = (ρ_ X) ≪≫ (λ_ X).symm := by
-      apply_fun (fun f => f.symm)
-      · simp only [Iso.trans_symm, whiskerRightIso_symm, Iso.symm_symm_eq, whiskerLeftIso_symm,
+      apply Iso.symm_bijective.injective
+      simp only [Iso.trans_symm, whiskerRightIso_symm, Iso.symm_symm_eq, whiskerLeftIso_symm,
         Iso.trans_assoc]
-        exact evaluation_coevaluation_iso X
-      · simp only [Iso.symm_bijective.injective]
-    apply_fun (fun f => f.hom) at this
-    simp only [Iso.trans_hom, whiskerRightIso_hom, Iso.symm_hom, whiskerLeftIso_hom] at this
-    exact this
-
+      exact evaluation_coevaluation_iso X
+    simpa [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom] using
+      congr($(this).hom)
 
   evaluation_coevaluation' := by
     have : whiskerRightIso (evaluationIso X).symm Xᘁ ≪≫
     (α_ Xᘁ X Xᘁ) ≪≫ whiskerLeftIso Xᘁ (coevaluationIso X).symm
     = (λ_ Xᘁ) ≪≫ (ρ_ Xᘁ).symm := by
-      apply_fun (fun f => f.symm)
-      · simp only [Iso.trans_symm, whiskerLeftIso_symm, Iso.symm_symm_eq, whiskerRightIso_symm,
+      apply Iso.symm_bijective.injective
+      simp only [Iso.trans_symm, whiskerLeftIso_symm, Iso.symm_symm_eq, whiskerRightIso_symm,
         Iso.trans_assoc]
-        exact coevaluation_evaluation_iso X
-      · simp only [Iso.symm_bijective.injective]
-    apply_fun (fun f => f.hom) at this
-    simp only [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom] at this
-    exact this
+      exact coevaluation_evaluation_iso X
+    simpa [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom] using
+      congr($(this).hom)
 
 /--
 In a categorical group, the right dual of an object is also its left dual.
 -/
 abbrev HasLeftDual.ofCategoricalGroup (X : C) : HasLeftDual X where
   leftDual := Xᘁ
-  exact := ExactPairing.of_rightDual_self X
+  exact := ExactPairing.ofRightDualSelf X
 
-instance LeftRigidCategory.of_CategoricalGroup : LeftRigidCategory C where
-  leftDual := fun X => HasLeftDual.of_CategoricalGroup X
+@[simps!]
+def isoLeftDual (X : C) [HasLeftDual X] : Xᘁ ≅ (ᘁX) :=
+  leftDualIso (ExactPairing.ofRightDualSelf X) HasLeftDual.exact
 
-instance RigidCategory.of_CategoricalGroup : RigidCategory C where
-  toRightRigidCategory := inferInstance
-  toLeftRigidCategory := LeftRigidCategory.of_CategoricalGroup
+abbrev LeftRigidCategory.ofCategoricalGroup : LeftRigidCategory C where
+  leftDual := HasLeftDual.ofCategoricalGroup
 
+abbrev RigidCategory.ofCategoricalGroup : RigidCategory C where
+  toLeftRigidCategory := LeftRigidCategory.ofCategoricalGroup
 
 end CategoricalGroup
 
