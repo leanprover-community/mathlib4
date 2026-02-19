@@ -67,28 +67,11 @@ lemma Scalene.dist_ne {s : Simplex R P n} (hs : s.Scalene) {i₁ i₂ i₃ i₄ 
      fun y ↦ if h : e.symm y.val.1 < e.symm y.val.2 then ⟨(e.symm y.val.1, e.symm y.val.2), h⟩ else
       ⟨(e.symm y.val.2, e.symm y.val.1),
        Ne.lt_of_le (e.symm.injective.ne y.property.ne') (not_lt.1 h)⟩,
-     by
-       simp only [LeftInverse, Subtype.forall, Prod.forall]
-       intro i j h
-       split_ifs with h₁ h₂ h₃
-       · simp
-       · simp [h] at h₂
-       · simp [h, lt_asymm] at h₃
-       · simp,
-     by
-       simp only [RightInverse, LeftInverse, Subtype.forall, Prod.forall]
-       intro i j h
-       split_ifs with h₁ h₂ h₃
-       · simp
-       · simp [h] at h₂
-       · simp [h, lt_asymm] at h₃
-       · simp⟩
+     by grind,
+     by grind⟩
   simp_rw [Scalene]
   convert (Injective.of_comp_iff' _ (Equiv.bijective f)).symm
-  simp only [reindex_points, comp_apply, Equiv.coe_fn_mk, f]
-  split_ifs with h
-  · simp
-  · simp [dist_comm]
+  grind [reindex_points, dist_comm]
 
 /-- A simplex is equilateral if all the edge lengths are equal. -/
 def Equilateral (s : Simplex R P n) : Prop :=
