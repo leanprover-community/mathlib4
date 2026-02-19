@@ -6,7 +6,6 @@ Authors: Anne Baanen, Eric Wieser
 module
 
 public import Mathlib.Data.Fin.Tuple.Basic
-public import Aesop
 
 /-!
 # Matrix and vector notation
@@ -200,6 +199,10 @@ theorem head_cons (x : α) (u : Fin m → α) : vecHead (vecCons x u) = x :=
 theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
   ext
   simp [vecTail]
+
+@[simp]
+theorem _root_.Fin.tail_vecCons (x : α) (t : Fin n → α) : Fin.tail (Matrix.vecCons x t) = t :=
+  rfl
 
 theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _

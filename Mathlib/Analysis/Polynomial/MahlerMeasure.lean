@@ -129,7 +129,7 @@ theorem mahlerMeasure_mul (p q : ℂ[X]) :
   apply integral_congr_ae
   rw [MeasureTheory.ae_iff]
   apply Set.Finite.measure_zero _ MeasureTheory.volume
-  simp only [_root_.not_imp]
+  simp only [Classical.not_imp]
   apply Set.Finite.of_finite_image (f := circleMap 0 1) _ <|
     (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [le_of_eq, pi_nonneg])).mono (fun _ h ↦ h.1)
   apply (p * q).roots.finite_toSet.subset
@@ -189,6 +189,7 @@ theorem mahlerMeasure_X_sub_C (z : ℂ) : (X - C z).mahlerMeasure = max 1 ‖z�
 theorem mahlerMeasure_X_add_C (z : ℂ) : (X + C z).mahlerMeasure = max 1 ‖z‖ := by
   simp [← sub_neg_eq_add, ← map_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
     (C a * X + C b).mahlerMeasure = max ‖a‖ ‖b‖ := by
@@ -276,6 +277,7 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     apply norm_sum_le_of_le p.support
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 open Multiset in
 theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mahlerMeasure := by
