@@ -9,6 +9,9 @@ public import Mathlib.Probability.ProbabilityMassFunction.Basic
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
 public import Mathlib.Probability.Distributions.Uniform
+public import Mathlib.Probability.ProbabilityMassFunction.Integrals
+public import Mathlib.InformationTheory.KullbackLeibler.Basic
+public import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-!
 # Shannon Entropy for Discrete Random Variables
@@ -16,17 +19,20 @@ public import Mathlib.Probability.Distributions.Uniform
 This file defines the Shannon entropy (in nats) for discrete random variables represented
 as probability mass functions (PMFs).
 
-## Main Definitions
+## Main definitions
 
-* `entropy p`: the Shannon entropy (in nats) of a PMF `p`,
+* `shannonEntropy`: Shannon entropy (in nats) of a PMF,
   `∑' a, Real.negMulLog (ENNReal.toReal (p a))`.
 
-## Main Results
+## Main results
 
-* `entropy_nonneg`: Entropy is nonnegative
-* `entropy_eq_zero_iff`: Entropy is zero if and only if the distribution is deterministic
-* `entropy_bernoulli_eq_binEntropy`: Connection to binary entropy function
-* `entropy_uniformOfFinset`: Entropy of uniform distribution on n elements equals `log n`
+* `shannonEntropy_nonneg`: entropy is nonnegative
+* `shannonEntropy_eq_zero_iff`: entropy is zero iff the distribution is deterministic
+* `shannonEntropy_bernoulli_eq_binEntropy`: relation to the binary entropy function
+* `shannonEntropy_uniformOfFintype` / `shannonEntropy_uniformOfFinset`: entropy of
+  the uniform distribution equals `log` of the cardinality
+* `shannonEntropy_eq_log_card_sub_toReal_klDiv_uniformOfFintype`: entropy equals
+  `log (card α)` minus the KL divergence to the uniform distribution
 
 ## Tags
 
@@ -39,7 +45,7 @@ open scoped Finset MeasureTheory NNReal ENNReal
 
 namespace InformationTheory
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-! ### Basic Definitions -/
 
@@ -50,37 +56,37 @@ The PMF values live in `ENNReal`, so we convert to `ℝ` with `ENNReal.toReal`.
 
 The entropy is defined as `H(X) = ∑_{x ∈ 𝒳} p(x) · log(p(x))` where the sum
 is over all possible outcomes and we use the convention `0 · log(0) = 0`. -/
-noncomputable def entropy (p : PMF α) : ℝ :=
+noncomputable def shannonEntropy (p : PMF α) : ℝ :=
   ∑' a : α, Real.negMulLog (ENNReal.toReal (p a))
 
 /-! ### Basic Properties -/
 
 /-- Entropy of a deterministic distribution (pure) is zero. -/
-@[simp] lemma entropy_pure (a : α) : entropy (PMF.pure a) = 0 := by
+@[simp] lemma shannonEntropy_pure (a : α) : shannonEntropy (PMF.pure a) = 0 := by
   classical
-  simp only [entropy, PMF.pure_apply]
+  simp only [shannonEntropy, PMF.pure_apply]
   have h : (fun a' : α => Real.negMulLog (ENNReal.toReal (if a' = a then 1 else 0)))
       = (fun _ : α => (0 : ℝ)) := by
     funext a'
     by_cases ha : a' = a <;> simp [ha, Real.negMulLog_one, Real.negMulLog_zero]
   simp [h, tsum_zero]
 
-/-- Entropy of a PMF is non negative. -/
-@[simp] lemma entropy_nonneg (p : PMF α) : 0 ≤ entropy p := by
-  simp only [entropy]
+/-- Shannon entropy of a PMF is nonnegative. -/
+@[simp] lemma shannonEntropy_nonneg (p : PMF α) : 0 ≤ shannonEntropy p := by
+  simp only [shannonEntropy]
   refine tsum_nonneg (fun a => ?_)
   refine Real.negMulLog_nonneg ENNReal.toReal_nonneg ?_
   exact ENNReal.toReal_le_of_le_ofReal (by simp) (by
       simpa only [ENNReal.ofReal_one] using (PMF.coe_le_one p a))
 
 /-!
-### Helper lemmas for `entropy_eq_zero_iff`
+### Characterisation of zero entropy (`shannonEntropy_eq_zero_iff`)
 
 The proof that entropy is strictly positive for a non-pure distribution proceeds by extracting two
 distinct elements of the support, showing both summands are strictly positive,
 and then comparing the full sum to a partial sum that includes at least one of those positive terms.
 
-The following helper lemmas isolate the fiddly support / `toReal` / `tsum` plumbing so that the main
+The following helper lemmas isolate the support / `toReal` / `tsum` plumbing so that the main
 proof reads at a higher level.
 -/
 
@@ -133,7 +139,9 @@ private lemma negMulLog_ite_nonneg (p : PMF α) (a b : α) [DecidableEq α] :
 /-- A one-term lower bound on the “rest” of the entropy sum.
 This is used to compare the total entropy to the sum with one index removed, ensuring a positive
 contribution remains when the support has at least two points. -/
-private lemma entropy_tsum_ite_ge (p : PMF α) [Finite α] [DecidableEq α] (a a' : α) (ha' : a' ≠ a) :
+private lemma shannonEntropy_tsum_ite_ge (p : PMF α)
+  [Finite α] [DecidableEq α]
+  (a a' : α) (ha' : a' ≠ a) :
     Real.negMulLog ((p a').toReal) ≤
       ∑' b : α, if b = a then 0 else Real.negMulLog ((p b).toReal) := by
   have h_rest_summable : Summable (fun b => if b = a then 0 else Real.negMulLog ((p b).toReal)) :=
@@ -144,8 +152,8 @@ private lemma entropy_tsum_ite_ge (p : PMF α) [Finite α] [DecidableEq α] (a a
   simpa [ha'] using hle
 
 /-- Entropy is zero iff the distribution is deterministic (`PMF.pure`). -/
-lemma entropy_eq_zero_iff (p : PMF α) [Finite α] :
-  entropy p = 0 ↔ ∃ a : α, p = PMF.pure a := by
+lemma shannonEntropy_eq_zero_iff (p : PMF α) [Finite α] :
+  shannonEntropy p = 0 ↔ ∃ a : α, p = PMF.pure a := by
   classical
   constructor
   · intro hE
@@ -161,95 +169,244 @@ lemma entropy_eq_zero_iff (p : PMF α) [Finite α] :
       Real.negMulLog_pos_of_pos_lt_one ha_pos ha_lt_one
     have h2 : 0 < Real.negMulLog ((p a').toReal) :=
       Real.negMulLog_pos_of_pos_lt_one ha'_pos ha'_lt_one
-    have h_sum := entropy_tsum_ite_ge p a a' (ne_comm.1 haa')
+    have h_sum := shannonEntropy_tsum_ite_ge p a a' (ne_comm.1 haa')
     have h_summable : Summable (fun b : α => Real.negMulLog (ENNReal.toReal (p b))) :=
       Summable.of_finite
-    rw [entropy, (h_summable.tsum_eq_add_tsum_ite a)] at hE
+    rw [shannonEntropy, (h_summable.tsum_eq_add_tsum_ite a)] at hE
     linarith [h1, h2, h_sum]
   · rintro ⟨a, rfl⟩
-    simp only [entropy_pure]
+    simp only [shannonEntropy_pure]
 
 /-- If a PMF is not pure, then its entropy is strictly positive. -/
-lemma entropy_pos_of_not_pure (p : PMF α) [Finite α]
+lemma shannonEntropy_pos_of_not_pure (p : PMF α) [Finite α]
     (hp : ¬ ∃ a : α, p = PMF.pure a) :
-    0 < entropy p := by
-  have hnonneg : 0 ≤ entropy p := entropy_nonneg (α := α) p
-  have hne : entropy p ≠ 0 := by
+    0 < shannonEntropy p := by
+  have hnonneg : 0 ≤ shannonEntropy p := shannonEntropy_nonneg (α := α) p
+  have hne : shannonEntropy p ≠ 0 := by
     intro h0
-    exact hp ((entropy_eq_zero_iff p).1 h0)
+    exact hp ((shannonEntropy_eq_zero_iff p).1 h0)
   -- nonneg + ≠0 gives strict positivity in ℝ
   exact lt_of_le_of_ne hnonneg (by simpa [eq_comm] using hne)
 
-/-! ### Connection to Binary Entropy -/
+/-! ### Connection to binary entropy -/
 
 /-- The entropy of a Bernoulli PMF equals the binary entropy function. -/
-theorem entropy_bernoulli_eq_binEntropy (p : ℝ≥0) (h : p ≤ 1) :
-    entropy (PMF.bernoulli p h) = Real.binEntropy (p : ℝ) := by
-  simp only [entropy, PMF.bernoulli_apply]
+theorem shannonEntropy_bernoulli_eq_binEntropy (p : ℝ≥0) (h : p ≤ 1) :
+    shannonEntropy (PMF.bernoulli p h) = Real.binEntropy (p : ℝ) := by
+  simp only [shannonEntropy, PMF.bernoulli_apply]
   simp_all [Real.binEntropy_eq_negMulLog_add_negMulLog_one_sub, ENNReal.toReal]
 
-/-! ### Uniform distributions -/
+/-! ### Uniform distribution and relation to KL divergence
 
-/-- A helper identity used to compute entropy of the uniform distribution. -/
-lemma nat_mul_negMulLog_inv_eq_log (n : ℕ) (hn : 0 < n) :
-    (n : ℝ) * Real.negMulLog (((n : ENNReal)⁻¹).toReal) = Real.log n := by
-  -- set up positivity / nonzero facts for coercions
-  have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hn)
-  have htoReal : (((n : ENNReal)⁻¹).toReal) = (n : ℝ)⁻¹ := by
-    simp only [ENNReal.toReal_inv, ENNReal.toReal_natCast]
+The next section (`ToMeasure`) contains lemmas expressing `PMF.toMeasure` in terms of the
+counting measure. The section `UniformFintype` then adds entropy and KL divergence relative to
+the uniform distribution on a fintype. -/
+
+section ToMeasure
+
+variable [MeasurableSpace α] [MeasurableSingletonClass α]
+
+/-- The measure of a PMF equals the counting measure with density given by the PMF. -/
+private lemma toMeasure_eq_count_withDensity (p : PMF α) :
+    p.toMeasure = MeasureTheory.Measure.count.withDensity p := by
+  ext s hs
+  rw [PMF.toMeasure_apply p hs,
+    MeasureTheory.withDensity_apply (μ := MeasureTheory.Measure.count) (f := p) hs,
+    ← MeasureTheory.lintegral_indicator hs,
+    MeasureTheory.lintegral_count]
+
+/-- The measure of a PMF is absolutely continuous with respect to the counting measure. -/
+private lemma toMeasure_absolutelyContinuous_count (p : PMF α) :
+    p.toMeasure ≪ MeasureTheory.Measure.count := by
+  rw [toMeasure_eq_count_withDensity]
+  exact MeasureTheory.withDensity_absolutelyContinuous _ _
+
+end ToMeasure
+
+/-- The sum of `(p a).toReal` over a fintype equals `1` when `p` is a PMF. -/
+private lemma sum_toReal_eq_one [Fintype α] {p : PMF α} : (∑ a, (p a).toReal) = 1 := by
   calc
-    (n : ℝ) * Real.negMulLog (((n : ENNReal)⁻¹).toReal)
-        = (n : ℝ) * (-( ((n : ENNReal)⁻¹).toReal * Real.log (((n : ENNReal)⁻¹).toReal) )) := by
-          simp [htoReal, Real.negMulLog]
-    _ = -((n : ℝ) * ((n : ENNReal)⁻¹).toReal) * Real.log (((n : ENNReal)⁻¹).toReal) := by
-          ring
-    _ = -(1 : ℝ) * Real.log (((n : ENNReal)⁻¹).toReal) := by
-          simp [htoReal, hn0]
-    _ = - Real.log (((n : ENNReal)⁻¹).toReal) := by simp
-    _ = Real.log n := by
-          simp [htoReal, Real.log_inv]
+    ∑ a, (p a).toReal = (∑ a, p a).toReal := by
+      exact (ENNReal.toReal_sum (s := Finset.univ) (f := fun a => p a)
+        (by intro a ha; exact p.apply_ne_top a)).symm
+    _ = 1 := by simpa [tsum_fintype] using congrArg ENNReal.toReal (p.tsum_coe)
+
+/-- Sum identity relating the KL integrand against the uniform measure to the entropy sum. -/
+private lemma sum_mul_log_mul_card_eq [Fintype α] [Nonempty α] {p : PMF α} :
+    ∑ a, (p a).toReal * Real.log (((p a) * (Fintype.card α : ℝ≥0∞)).toReal)
+      = ∑ a, (p a).toReal * Real.log ((p a).toReal) + Real.log (Fintype.card α) := by
+  have hcard_ne_zero : (Fintype.card α : ℝ) ≠ 0 := by
+    exact_mod_cast (Fintype.card_ne_zero : Fintype.card α ≠ 0)
+  have hterm :
+      ∀ a,
+        (p a).toReal * Real.log (((p a) * (Fintype.card α : ℝ≥0∞)).toReal)
+          = (p a).toReal * Real.log ((p a).toReal)
+              + (p a).toReal * Real.log (Fintype.card α) := by
+    intro a
+    by_cases hpa : (p a).toReal = 0
+    · simp [hpa]
+    · rw [ENNReal.toReal_mul, ENNReal.toReal_natCast, Real.log_mul hpa hcard_ne_zero]
+      ring
+  calc
+    ∑ a, (p a).toReal * Real.log (((p a) * (Fintype.card α : ℝ≥0∞)).toReal)
+        = ∑ a, ((p a).toReal * Real.log ((p a).toReal)
+              + (p a).toReal * Real.log (Fintype.card α)) := by
+            refine Finset.sum_congr rfl ?_
+            intro a _
+            exact hterm a
+    _ = (∑ a, (p a).toReal * Real.log ((p a).toReal))
+          + (∑ a, (p a).toReal * Real.log (Fintype.card α)) := by
+          simp [Finset.sum_add_distrib]
+    _ = (∑ a, (p a).toReal * Real.log ((p a).toReal))
+          + (∑ a, (p a).toReal) * Real.log (Fintype.card α) := by
+          rw [← Finset.sum_mul]
+    _ = (∑ a, (p a).toReal * Real.log ((p a).toReal)) + Real.log (Fintype.card α) := by
+          simp [sum_toReal_eq_one]
+
+section UniformFintype
+
+variable [Fintype α] [Nonempty α] [MeasurableSpace α] [MeasurableSingletonClass α]
+
+/-- The measure of the uniform PMF on a fintype is the counting measure with constant density. -/
+private lemma uniform_toMeasure_eq_count_withDensity :
+    (PMF.uniformOfFintype α).toMeasure =
+      MeasureTheory.Measure.count.withDensity (fun _ : α => (Fintype.card α : ℝ≥0∞)⁻¹) := by
+  ext s hs
+  rw [PMF.toMeasure_apply _ hs,
+    MeasureTheory.withDensity_apply (μ := MeasureTheory.Measure.count)
+      (f := fun _ : α => (Fintype.card α : ℝ≥0∞)⁻¹) hs,
+    ← MeasureTheory.lintegral_indicator hs,
+    MeasureTheory.lintegral_count]
+  refine tsum_congr ?_
+  intro a
+  by_cases ha : a ∈ s <;> simp [ha, PMF.uniformOfFintype_apply]
+
+/-- The counting measure is absolutely continuous w.r.t. the uniform PMF's measure. -/
+private lemma count_absolutelyContinuous_uniformOfFintype_toMeasure :
+    MeasureTheory.Measure.count ≪ (PMF.uniformOfFintype α).toMeasure := by
+  rw [uniform_toMeasure_eq_count_withDensity]
+  exact MeasureTheory.withDensity_absolutelyContinuous'
+    (hf := (measurable_const : Measurable (fun _ : α => (Fintype.card α : ℝ≥0∞)⁻¹)).aemeasurable)
+    (by simp)
+
+/-- Any PMF's measure is absolutely continuous w.r.t. the uniform PMF's measure. -/
+private lemma toMeasure_absolutelyContinuous_uniformOfFintype_toMeasure (p : PMF α) :
+    p.toMeasure ≪ (PMF.uniformOfFintype α).toMeasure :=
+  (toMeasure_absolutelyContinuous_count (α := α) p).trans
+    (count_absolutelyContinuous_uniformOfFintype_toMeasure (α := α))
+
+/-- `klDiv(p, uniform)` equals the integral of the log-likelihood ratio. -/
+private lemma toReal_klDiv_uniformOfFintype_eq_integral_llr
+    (p : PMF α) :
+    (klDiv p.toMeasure (PMF.uniformOfFintype α).toMeasure).toReal
+      = ∫ a, MeasureTheory.llr p.toMeasure (PMF.uniformOfFintype α).toMeasure a ∂ p.toMeasure := by
+  exact toReal_klDiv_of_measure_eq
+    (toMeasure_absolutelyContinuous_uniformOfFintype_toMeasure (p:=p))
+    (by simp only [MeasureTheory.measure_univ])
+
+/-- RN derivative of `p.toMeasure` w.r.t. uniform measure (a.e. for count). -/
+private lemma rnDeriv_toMeasure_uniformOfFintype_ae (p : PMF α) :
+    p.toMeasure.rnDeriv (PMF.uniformOfFintype α).toMeasure
+      =ᵐ[MeasureTheory.Measure.count] fun a => p a * (Fintype.card α : ℝ≥0∞) := by
+  have h_rn_count :
+      p.toMeasure.rnDeriv MeasureTheory.Measure.count =ᵐ[MeasureTheory.Measure.count] p := by
+    rw [toMeasure_eq_count_withDensity]
+    exact MeasureTheory.Measure.rnDeriv_withDensity _ (by fun_prop)
+  rw [uniform_toMeasure_eq_count_withDensity]
+  have h := MeasureTheory.Measure.rnDeriv_withDensity_right
+    (μ := p.toMeasure) (ν := MeasureTheory.Measure.count)
+    (hf := (measurable_const : Measurable (fun _ : α => (Fintype.card α : ℝ≥0∞)⁻¹)).aemeasurable)
+    (hf_ne_zero := by simp)
+    (hf_ne_top := by simp)
+  filter_upwards [h, h_rn_count] with a ha hb
+  rw [hb] at ha
+  simpa [mul_comm] using ha
+
+/-- RN derivative of `p.toMeasure` w.r.t. uniform (a.e. for `p.toMeasure`). -/
+private lemma rnDeriv_uniform_ae (p : PMF α) :
+  p.toMeasure.rnDeriv (PMF.uniformOfFintype α).toMeasure
+    =ᵐ[p.toMeasure] fun a => p a * (Fintype.card α : ℝ≥0∞) :=
+    have hp_count : p.toMeasure ≪ MeasureTheory.Measure.count := by
+      rw [toMeasure_eq_count_withDensity]
+      exact MeasureTheory.withDensity_absolutelyContinuous _ _
+    hp_count.ae_eq (rnDeriv_toMeasure_uniformOfFintype_ae p)
+
+/-- Log-likelihood ratio of `p` vs the uniform measure (a.e. for `p.toMeasure`). -/
+private lemma llr_uniformOfFintype_ae {p : PMF α} :
+      MeasureTheory.llr p.toMeasure (PMF.uniformOfFintype α).toMeasure
+        =ᵐ[p.toMeasure] fun a => Real.log (((p a) * (Fintype.card α : ℝ≥0∞)).toReal) := by
+    filter_upwards [rnDeriv_uniform_ae p] with a ha
+    simp [MeasureTheory.llr, ha]
+
+/-- The KL divergence from `p` to the uniform measure as a sum over the type. -/
+private lemma toReal_klDiv_uniformOfFintype_eq_sum {p : PMF α} :
+  (klDiv p.toMeasure (PMF.uniformOfFintype α).toMeasure).toReal
+    = ∑ a, (p a).toReal * Real.log (((p a) * (Fintype.card α : ℝ≥0∞)).toReal) := by
+    simp only [toReal_klDiv_uniformOfFintype_eq_integral_llr,
+        MeasureTheory.integral_congr_ae llr_uniformOfFintype_ae,
+        PMF.integral_eq_sum, smul_eq_mul]
+
+/-- Shannon entropy equals `log (card α)` minus the KL divergence to the uniform distribution.
+Also known as the Gibbs inequality in this setting. -/
+lemma shannonEntropy_eq_log_card_sub_toReal_klDiv_uniformOfFintype (p : PMF α) :
+    shannonEntropy p = Real.log (Fintype.card α)
+      - (klDiv p.toMeasure (PMF.uniformOfFintype α).toMeasure).toReal := by
+  have hkl_final :
+      (klDiv p.toMeasure (PMF.uniformOfFintype α).toMeasure).toReal
+        = Real.log (Fintype.card α) - shannonEntropy p := by
+    rw [toReal_klDiv_uniformOfFintype_eq_sum, sum_mul_log_mul_card_eq, shannonEntropy, tsum_fintype]
+    have :
+        (∑ x, (p x).toReal * Real.log ((p x).toReal)) + Real.log (Fintype.card α)
+          = Real.log (Fintype.card α) - ∑ b, Real.negMulLog ((p b).toReal) := by
+      simp [Real.negMulLog, sub_eq_add_neg, add_comm]
+    simpa using this
+  linarith [hkl_final]
 
 /-- Entropy of the uniform distribution on a finite nonempty type is `log (card α)`. -/
-lemma entropy_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
-    entropy (PMF.uniformOfFintype α) = Real.log (Fintype.card α) := by
-  classical
-  -- unfold entropy and use that the summand is constant
-  simp [entropy, PMF.uniformOfFintype_apply, tsum_fintype, Finset.sum_const, nsmul_eq_mul]
-  -- goal is now `card * negMulLog(1/card) = log card`
-  simpa using nat_mul_negMulLog_inv_eq_log (Fintype.card α) (Fintype.card_pos)
+lemma shannonEntropy_uniformOfFintype :
+    shannonEntropy (PMF.uniformOfFintype α) = Real.log (Fintype.card α) := by
+  simpa [klDiv_self] using
+    shannonEntropy_eq_log_card_sub_toReal_klDiv_uniformOfFintype (PMF.uniformOfFintype α)
 
+end UniformFintype
 
 /-- Entropy of the uniform distribution on a nonempty finset is `log (card s)`.
-
 This works over an arbitrary type `α` (possibly infinite), because the uniform distribution on a
 finset has finite support. -/
-lemma entropy_uniformOfFinset
-    (s : Finset α) (hs : s.Nonempty) :
-    entropy (PMF.uniformOfFinset s hs : PMF α) = Real.log s.card := by
+lemma shannonEntropy_uniformOfFinset (s : Finset α) (hs : s.Nonempty) :
+    shannonEntropy (PMF.uniformOfFinset s hs : PMF α) = Real.log s.card := by
   classical
   set p : PMF α := (PMF.uniformOfFinset s hs : PMF α)
   set f : α → ℝ := fun a => Real.negMulLog (ENNReal.toReal (p a))
-  -- reduce the tsum to a finset sum using `tsum_eq_sum`
   have htsum : (∑' a : α, f a) = ∑ a ∈ s, f a := by
     refine tsum_eq_sum (s := s) ?_
     intro a ha
     simp [f, p, PMF.uniformOfFinset, ha]
-  -- unfold entropy and use htsum
-  simp only [entropy, f, htsum]
-  have hcard : 0 < s.card := hs.card_pos
-  calc
-    ∑ a ∈ s, Real.negMulLog (ENNReal.toReal (p a))
+  have hmain :
+      shannonEntropy p
         = (s.card : ℝ) * Real.negMulLog (((s.card : ENNReal)⁻¹).toReal) := by
-      have : (∑ a ∈ s, Real.negMulLog (ENNReal.toReal (p a)))
-              =
-            ∑ a ∈ s, Real.negMulLog (((s.card : ENNReal)⁻¹).toReal) := by
-        refine Finset.sum_congr rfl ?_
-        intro a ha_mem
-        -- inside s: p a = (card s)⁻¹
-        simp [p, PMF.uniformOfFinset, ha_mem]
-      simp [this, Finset.sum_const, nsmul_eq_mul]
-    _ = Real.log s.card := by
-      have h := nat_mul_negMulLog_inv_eq_log s.card hcard
-      simpa only [ENNReal.toReal_inv, ENNReal.toReal_natCast] using h
+    simp only [shannonEntropy, f, htsum]
+    have : (∑ a ∈ s, Real.negMulLog (ENNReal.toReal (p a)))
+            = ∑ a ∈ s, Real.negMulLog (((s.card : ENNReal)⁻¹).toReal) := by
+      refine Finset.sum_congr rfl ?_
+      intro a ha_mem
+      simp [p, PMF.uniformOfFinset, ha_mem]
+    simp [this, Finset.sum_const, nsmul_eq_mul]
+  have hmul_eq_log :
+      (s.card : ℝ) * Real.negMulLog (((s.card : ENNReal)⁻¹).toReal) = Real.log s.card := by
+    letI : Nonempty s := ⟨⟨hs.choose, hs.choose_spec⟩⟩
+    letI : MeasurableSpace s := ⊤
+    have h_eval :
+        shannonEntropy (PMF.uniformOfFintype s)
+          = (s.card : ℝ) * Real.negMulLog (((s.card : ENNReal)⁻¹).toReal) := by
+      simp [shannonEntropy, PMF.uniformOfFintype_apply, tsum_fintype, Finset.sum_const,
+        nsmul_eq_mul, Fintype.card_coe]
+    have h_kl :
+        shannonEntropy (PMF.uniformOfFintype s) = Real.log s.card := by
+      simpa [Fintype.card_coe, klDiv_self] using
+        (shannonEntropy_eq_log_card_sub_toReal_klDiv_uniformOfFintype
+          (α := s) (p := PMF.uniformOfFintype s))
+    linarith [h_eval, h_kl]
+  simpa [p] using hmain.trans hmul_eq_log
 
 end InformationTheory
