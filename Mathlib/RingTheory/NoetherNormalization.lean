@@ -86,10 +86,10 @@ private lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _
 private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
   (t1_comp_t1_neg f 1) (by simpa using t1_comp_t1_neg f (-1))
 
-private lemma sum_r_mul_neq (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (neq : v ≠ w) :
+private lemma sum_r_mul_ne (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (ne : v ≠ w) :
     ∑ x : Fin (n + 1), r x * v x ≠ ∑ x : Fin (n + 1), r x * w x := by
   intro h
-  refine neq <| Finsupp.ext <| congrFun <| ofFn_inj.mp ?_
+  refine ne <| Finsupp.ext <| congrFun <| ofFn_inj.mp ?_
   apply ofDigits_inj_of_len_eq (Nat.lt_add_right f.totalDegree one_lt_two)
     (by simp) (lt_up vlt) (lt_up wlt)
   simpa only [ofDigits_eq_sum_mapIdx, mapIdx_eq_ofFn, get_ofFn, length_ofFn,
@@ -117,7 +117,7 @@ private lemma degreeOf_t_ne_of_ne (hv : v ∈ f.support) (hw : w ∈ f.support) 
     (T f <| monomial v <| coeff v f).degreeOf 0 ≠
     (T f <| monomial w <| coeff w f).degreeOf 0 := by
   rw [degreeOf_zero_t _ _ <| mem_support_iff.mp hv, degreeOf_zero_t _ _ <| mem_support_iff.mp hw]
-  refine sum_r_mul_neq f v w (fun i ↦ ?_) (fun i ↦ ?_) ne <;>
+  refine sum_r_mul_ne f v w (fun i ↦ ?_) (fun i ↦ ?_) ne <;>
   exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i))
     (by lia)
 
@@ -244,9 +244,9 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     refine ⟨0, le_rfl, Quotient.mkₐ k I, fun a b hab ↦ ?_,
       isIntegral_of_surjective _ (Quotient.mkₐ_surjective k I)⟩
     rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq] at hab
-    by_contra neq
+    by_contra ne
     have eq := eq_C_of_isEmpty (a - b)
-    have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne neq <| map_zero _
+    have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne ne <| map_zero _
     obtain ⟨c, _, eqr⟩ := isUnit_iff_exists.mp ne.isUnit
     have one : c • (a - b) = 1 := by
       rw [MvPolynomial.smul_eq_C_mul, eq, ← map_mul, eqr, MvPolynomial.C_1]

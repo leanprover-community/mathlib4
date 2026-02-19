@@ -364,9 +364,9 @@ theorem smul_eq_smul [Nontrivial A] (k : 𝕜) (a : A) (ha : (σ a).Nonempty) :
 theorem nonzero_mul_comm (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
   suffices h : ∀ x y : A, σ (x * y) \ {0} ⊆ σ (y * x) \ {0} from
     Set.eq_of_subset_of_subset (h a b) (h b a)
-  rintro _ _ k ⟨k_mem, k_neq⟩
-  change ((Units.mk0 k k_neq) : 𝕜) ∈ _ at k_mem
-  exact ⟨unit_mem_mul_comm.mp k_mem, k_neq⟩
+  rintro _ _ k ⟨k_mem, k_ne⟩
+  change ((Units.mk0 k k_ne) : 𝕜) ∈ _ at k_mem
+  exact ⟨unit_mem_mul_comm.mp k_mem, k_ne⟩
 
 protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
   ext

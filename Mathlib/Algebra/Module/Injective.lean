@@ -141,8 +141,8 @@ variable {i f}
 theorem chain_linearPMap_of_chain_extensionOf {c : Set (ExtensionOf i f)}
     (hchain : IsChain (· ≤ ·) c) :
     IsChain (· ≤ ·) <| (fun x : ExtensionOf i f => x.toLinearPMap) '' c := by
-  rintro _ ⟨a, a_mem, rfl⟩ _ ⟨b, b_mem, rfl⟩ neq
-  exact hchain a_mem b_mem (ne_of_apply_ne _ neq)
+  rintro _ ⟨a, a_mem, rfl⟩ _ ⟨b, b_mem, rfl⟩ ne
+  exact hchain a_mem b_mem (ne_of_apply_ne _ ne)
 
 /-- The maximal element of every nonempty chain of `extension_of i f`. -/
 def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
