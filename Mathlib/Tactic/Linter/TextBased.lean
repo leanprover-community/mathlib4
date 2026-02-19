@@ -89,7 +89,7 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
   | unwantedUnicode c => s!"This line contains a bad unicode character \
     '{c}' ({UnicodeLinter.printCodepointHex c})."
   | triangleRewrite => "This line contains the triangle operator ▸ followed by tactic mode: \
-    Please use a mere rewrite instead, and this is simpler to maintain."
+    Please use a mere rewrite instead, as this is simpler to maintain."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
