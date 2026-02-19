@@ -390,22 +390,88 @@ Hint: failures to find a model with corners can be debugged with the command `se
 
 -- Testing the case of a map that is not the identity: we infer a model with corners, but
 -- it will not match the desired type exactly.
--- TODO: the error message could be more helpful.
-variable {E'''' : Type*} [NormedAddCommGroup E''''] [NormedSpace ℝ E''''] (σ : ℝ →+* ℝ) [RingHomIsometric σ]
+variable {E'''' : Type*} [NormedAddCommGroup E''''] [NormedSpace ℝ E'''']
+  {σ : ℝ →+* ℝ} [RingHomIsometric σ]
 
 variable {f : M → E'' →SL[σ] E''''} in
 /--
-error: Application type mismatch: The argument
-  𝓘(ℝ, E'' →SL[σ] E'''')
-has type
-  ModelWithCorners.{0, max u_11 u_13, max u_11 u_13} ℝ (E'' →SL[σ] E'''') (E'' →SL[σ] E'''')
-but is expected to have type
-  ModelWithCorners.{u_1, _, _} 𝕜 ?E' ?H'
-in the application
-  @ContMDiff 𝕜 inst✝³⁰ E inst✝²⁹ inst✝²⁸ H inst✝²⁷ I ?M ?inst✝ ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴
-    𝓘(ℝ, E'' →SL[σ] E'''')
+error: Could not find a model with corners for `E'' →SL[σ] E''''`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 -/
 #guard_msgs in
+set_option pp.mvars.anonymous false in
+#check CMDiff 2 f
+
+variable {f : M → E'' →SL[σ] E''''} in
+/--
+error: Could not find a model with corners for `E'' →SL[σ] E''''`.
+---
+trace: [Elab.DiffGeo.MDiff] Finding a model for: M
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `M` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `M` is not a `TangentBundle`
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on `M` among local instances.
+[Elab.DiffGeo.MDiff] ✅️ Manifold
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
+  [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²⁵`
+  [Elab.DiffGeo.MDiff] Found model: `I`
+[Elab.DiffGeo.MDiff] Finding a model for: E'' →SL[σ] E''''
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not a `TangentBundle`
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on `E'' →SL[σ] E''''` among local instances.
+[Elab.DiffGeo.MDiff] ❌️ Manifold
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `ChartedSpace` structure on `E'' →SL[σ]
+        E''''` among local instances, and `E'' →SL[σ]
+        E''''` is not the charted space of some type in the local context either.
+[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] `E'' →SL[σ] E''''` is a space of continuous (semi-)linear maps
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is a space of continuous (semi-)linear maps over `σ`, which is not the identity
+[Elab.DiffGeo.MDiff] ❌️ RealInterval
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not a Euclidean space, half-space or quadrant
+[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not a set of units, in particular not of a complete normed algebra
+[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not the complex unit circle
+[Elab.DiffGeo.MDiff] ❌️ Sphere
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ NormedField
+  [Elab.DiffGeo.MDiff] Failed with error:
+      failed to synthesize instance of type class
+        NontriviallyNormedField (E'' →SL[σ] E'''')
+      ⏎
+      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `InnerProductSpace` structure on `E'' →SL[σ] E''''` among local instances.
+-/
+#guard_msgs in
+set_option trace.Elab.DiffGeo.MDiff true in
 set_option pp.mvars.anonymous false in
 #check CMDiff 2 f
 
