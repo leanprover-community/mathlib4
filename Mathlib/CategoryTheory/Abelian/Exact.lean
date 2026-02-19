@@ -221,6 +221,20 @@ lemma reflects_exact_of_faithful [F.Faithful] (S : ShortComplex C) (hS : (S.map 
       (by simp only [← F.map_comp, cokernel.condition, CategoryTheory.Functor.map_zero])
   rw [F.map_comp, ← hl, ← hk, Category.assoc, reassoc_of% hS, zero_comp, comp_zero]
 
+lemma reflects_shortExact_of_faithful [F.Faithful] [F.ReflectsEpimorphisms]
+    [F.ReflectsMonomorphisms] {S : ShortComplex C} (hS : (S.map F).ShortExact) : S.ShortExact where
+  exact := F.reflects_exact_of_faithful _ hS.1
+  mono_f := F.ReflectsMonomorphisms.reflects _ hS.mono_f
+  epi_g := F.ReflectsEpimorphisms.reflects _ hS.epi_g
+
+lemma map_shortExact_iff [F.Faithful] [F.ReflectsEpimorphisms] [F.ReflectsMonomorphisms]
+    [PreservesFiniteColimits F] [PreservesFiniteLimits F] {S : ShortComplex C} :
+    (S.map F).ShortExact ↔ S.ShortExact :=
+  ⟨reflects_shortExact_of_faithful (F := F), fun h ↦ ShortComplex.ShortExact.map_of_exact h F⟩
+
+variable {C D : Type*} [Category C] [Abelian C] [Category D] [Abelian D]
+variable (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
+
 end
 
 end Functor
