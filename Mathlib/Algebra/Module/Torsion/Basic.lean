@@ -280,8 +280,14 @@ theorem torsionBySet_eq_torsionBySet_span :
   rw [Ideal.span_le]
   exact fun a ha => hx ⟨a, ha⟩
 
+@[simp]
 theorem torsionBySet_span_singleton_eq : torsionBySet R M (R ∙ a) = torsionBy R M a :=
   (torsionBySet_eq_torsionBySet_span _).symm.trans <| torsionBySet_singleton_eq _
+
+@[simp]
+theorem torsionBySet_ideal_span_singleton_eq :
+    torsionBySet R M (Ideal.span {a}) = torsionBy R M a :=
+  torsionBySet_span_singleton_eq a
 
 theorem torsionBy_le_torsionBy_of_dvd (a b : R) (dvd : a ∣ b) :
     torsionBy R M a ≤ torsionBy R M b := by
@@ -364,6 +370,14 @@ theorem torsionBySet_isTorsionBySet : IsTorsionBySet R (torsionBySet R M s) s :=
 /-- The `a`-torsion submodule is an `a`-torsion module. -/
 theorem torsionBy_isTorsionBy : IsTorsionBy R (torsionBy R M a) a := smul_torsionBy a
 
+theorem torsionBy_isTorsion_nonZeroDivisor (ha : a ∈ nonZeroDivisors R) :
+    IsTorsion R (torsionBy R M a) :=
+  (⟨⟨a, ha⟩, smul_torsionBy _ ·⟩)
+
+theorem torsionBySet_ideal_isTorsion_of_noZeroDivisors [NoZeroDivisors R] [Nontrivial R]
+    {I : Ideal R} (hbot : I ≠ ⊥) : IsTorsion R (torsionBySet R M I) := by
+  aesop (add norm Submodule.eq_bot_iff)
+
 @[simp]
 theorem torsionBy_torsionBy_eq_top : torsionBy R (torsionBy R M a) a = ⊤ :=
   (isTorsionBy_iff_torsionBy_eq_top a).mp <| torsionBy_isTorsionBy a
@@ -421,6 +435,17 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf
         exact Ideal.mul_mem_left _ _ (this j hj ij)
     · rw [← Finset.sum_smul, hμ, one_smul]
 
+theorem sup_torsionBySet_ideal_eq_torsionBySet_inf (P Q : Ideal R) {hc : P ⊔ Q = ⊤} :
+    torsionBySet R M ↑(P) ⊔ torsionBySet R M ↑(Q) = torsionBySet R M ↑(P ⊓ Q) := by
+  let map : Fin 2 → Ideal R | 0 => P | 1 => Q
+  have Finset.univ_fin2 : (Finset.univ : Finset (Fin 2)) = {0, 1} := rfl
+  have heq := Submodule.iSup_torsionBySet_ideal_eq_torsionBySet_iInf
+    (p := map) (M := M) (S := ⊤) ?_
+  · have : ⨆ i, ⨆ (_ : i = 0 ∨ i = 1), torsionBySet R M ↑(map i) =
+        torsionBySet R M ↑(map 0) ⊔ torsionBySet R M ↑(map 1) := iSup_pair
+    simpa [Finset.top_eq_univ, Finset.univ_fin2, Fin.isValue, coe_iInf, this] using heq
+  · simp_all [Set.pairwise_pair, map, sup_comm]
+
 set_option backward.isDefEq.respectTransparency false in
 theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
     S.SupIndep fun i => torsionBySet R M <| p i :=
@@ -432,6 +457,14 @@ theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i �
   dsimp at this ⊢
   rw [← this, Ideal.sup_iInf_eq_top, top_coe, torsionBySet_univ]
   intro j hj; apply hp hi (hT hj); rintro rfl; exact hiT hj
+
+theorem disjoint_torsionBySet_ideal {P Q : Ideal R} (hc : P ⊔ Q = ⊤) :
+    Disjoint (torsionBySet R M ↑(P)) (torsionBySet R M ↑(Q)) := by
+  let map : Fin 2 → Ideal R | 0 => P | 1 => Q
+  have Finset.univ_fin2 : (Finset.univ : Finset (Fin 2)) = {0, 1} := rfl
+  have heq := Submodule.supIndep_torsionBySet_ideal (p := map) (M := M) (S := ⊤) ?_
+  · simpa [Finset.top_eq_univ, Finset.univ_fin2, Fin.isValue, map] using heq
+  · aesop (add norm [Finset.univ_fin2, Set.pairwise_pair, map, sup_comm])
 
 variable {q : ι → R}
 
