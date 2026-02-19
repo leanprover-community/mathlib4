@@ -53,10 +53,10 @@ def tensorCotangentHom :
     exact mul_mem_mul ((Algebra.idealMap (T ⊗[R] S) I) x).property
       ((Algebra.idealMap (T ⊗[R] S) I) y).property
 
-@[simp]
+-- TODO: make this @[simp] when `Ideal.map` is refactored to only take `RingHom`s
 lemma tensorCotangentHom_tmul (t : T) (x : I) :
     tensorCotangentHom R T I (t ⊗ₜ[R] I.toCotangent x) =
-      t • (I.map Algebra.TensorProduct.includeRight.toRingHom).toCotangent
+      t • (I.map Algebra.TensorProduct.includeRight).toCotangent
         ⟨1 ⊗ₜ x, Ideal.mem_map_of_mem _ x.2⟩ := by
   rfl
 
@@ -117,7 +117,7 @@ def tensorCotangentEquiv [Module.Flat R T] :
   LinearEquiv.ofBijective (I.tensorCotangentHom R T)
     ⟨I.tensorCotangentHom_injective_of_flat R T, I.tensorCotangentHom_surjective R T⟩
 
-@[simp]
+-- TODO: make this @[simp] when `Ideal.map` is refactored to only take `RingHom`s
 lemma tensorCotangentEquiv_tmul [Module.Flat R T] (t : T) (x : I) :
     I.tensorCotangentEquiv R T (t ⊗ₜ I.toCotangent x) =
       t • (I.map Algebra.TensorProduct.includeRight.toRingHom).toCotangent
