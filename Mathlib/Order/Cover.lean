@@ -388,13 +388,6 @@ section LinearOrder
 
 variable [LinearOrder α] {a b c : α}
 
-theorem CovBy.Ioi_eq (h : a ⋖ b) : Ioi a = Ici b := by
-  rw [← Ioo_union_Ici_eq_Ioi h.lt, h.Ioo_eq, empty_union]
-
-@[to_dual existing]
-theorem CovBy.Iio_eq (h : a ⋖ b) : Iio b = Iic a := by
-  rw [← Iic_union_Ioo_eq_Iio h.lt, h.Ioo_eq, union_empty]
-
 @[to_dual ge_of_gt]
 theorem WCovBy.le_of_lt (hab : a ⩿ b) (hcb : c < b) : c ≤ a :=
   not_lt.1 fun hac => hab.2 hac hcb
@@ -402,6 +395,20 @@ theorem WCovBy.le_of_lt (hab : a ⩿ b) (hcb : c < b) : c ≤ a :=
 @[to_dual ge_of_gt]
 theorem CovBy.le_of_lt (hab : a ⋖ b) : c < b → c ≤ a :=
   hab.wcovBy.le_of_lt
+
+theorem CovBy.Ioi_eq (h : a ⋖ b) : Ioi a = Ici b := by
+  rw [← Ioo_union_Ici_eq_Ioi h.lt, h.Ioo_eq, empty_union]
+
+@[to_dual existing]
+theorem CovBy.Iio_eq (h : a ⋖ b) : Iio b = Iic a := by
+  rw [← Iic_union_Ioo_eq_Iio h.lt, h.Ioo_eq, union_empty]
+
+theorem CovBy.Ioo_eq_Ico (h : a ⋖ b) (c : α) : Ioo a c = Ico b c :=
+  subset_antisymm (fun _x hx ↦ ⟨h.ge_of_gt hx.1, hx.2⟩) <| Ico_subset_Ioo_left h.lt
+
+@[to_dual existing]
+theorem CovBy.Ioo_eq_Ioc (h : a ⋖ b) (c : α) : Ioo c b = Ioc c a :=
+  subset_antisymm (fun _x hx ↦ ⟨hx.1, h.le_of_lt hx.2⟩) <| Ioc_subset_Ioo_right h.lt
 
 @[to_dual unique_right]
 theorem CovBy.unique_left (ha : a ⋖ c) (hb : b ⋖ c) : a = b :=
@@ -736,10 +743,12 @@ variable [Preorder α] {a b : α}
   Set.OrdConnected.apply_covBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
   simp only [covBy_iff_Ioo_eq, ← image_coe_Ioi, coe_lt_top, image_eq_empty,
     true_and, Ioi_eq_empty_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_wcovBy_top : (a : WithTop α) ⩿ ⊤ ↔ IsMax a := by
   simp only [wcovBy_iff_Ioo_eq, ← image_coe_Ioi, le_top, image_eq_empty, true_and, Ioi_eq_empty_iff]
 

@@ -53,6 +53,7 @@ def valuation : Valuation K ℝ≥0 where
 theorem valuation_apply (x : K) : valuation x = ‖x‖₊ := rfl
 
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
+@[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
     inferInstanceAs (IsUniformAddGroup K) with
@@ -103,6 +104,7 @@ theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) <
 variable (L) (Γ₀)
 
 /-- The normed field structure determined by a rank one valuation. -/
+@[instance_reducible]
 def toNormedField : NormedField L :=
   { (inferInstance : Field L) with
     norm := norm
@@ -206,6 +208,7 @@ theorem norm_eq_one_iff : ‖x‖ = 1 ↔ val.v x = 1 := by
   rw [← (Valuation.RankOne.strictMono val.v).injective.eq_iff]
   exact eq_iff_eq_of_cmp_eq_cmp (map_one hv.hom ▸ rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma setOf_mem_integer_eq_closedBall :
     { x : L | x ∈ Valued.v.integer } = Metric.closedBall 0 1 := by
   ext x
@@ -216,6 +219,7 @@ end toNormedField
 /--
 The nontrivially normed field structure determined by a rank one valuation.
 -/
+@[instance_reducible]
 def toNontriviallyNormedField : NontriviallyNormedField L := {
   val.toNormedField with
   non_trivial := by

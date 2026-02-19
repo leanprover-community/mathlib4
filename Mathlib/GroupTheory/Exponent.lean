@@ -314,6 +314,7 @@ lemma exponent_eq_prime_iff {G : Type*} [Monoid G] [Nontrivial G] {p : ℕ} (hp 
 
 variable {G}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g) :
     exponent G ≠ 0 ↔ (Set.range (orderOf : G → ℕ)).Finite := by
@@ -361,6 +362,14 @@ theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) 
     Monoid.exponent G ∣ Monoid.exponent H :=
   exponent_dvd_of_forall_pow_eq_one fun g => e_inj (by
     rw [map_pow, pow_exponent_eq_one, map_one])
+
+/--
+The exponent of a submonoid `H ≤ G` divides the exponent of `G`.
+-/
+@[to_additive /-- The exponent of an additive submonoid `H ≤ G` divides the exponent of `G`. -/]
+theorem exponent_submonoid_dvd (H : Submonoid G) :
+    Monoid.exponent H ∣ Monoid.exponent G :=
+  Monoid.exponent_dvd_of_monoidHom H.subtype H.subtype_injective
 
 /--
 If there exists a multiplication-preserving equivalence between `G` and `H`,
@@ -644,6 +653,17 @@ end Monoid
 section Group
 
 variable [Group G]
+
+/--
+If `H` is a normal subgroup of `G`, then the exponent of `G ⧸ H` divides the exponent of `G`.
+-/
+@[to_additive
+/-- If `H` is a normal additive subgroup of `G`, then the exponent of `G ⧸ H` divides the
+exponent of `G`. -/]
+theorem Group.exponent_quotient_dvd (H : Subgroup G) [H.Normal] :
+    Monoid.exponent (G ⧸ H) ∣ Monoid.exponent G :=
+  MonoidHom.exponent_dvd (QuotientGroup.mk'_surjective H)
+
 /-- In a group of exponent two, every element is its own inverse. -/
 @[to_additive]
 lemma inv_eq_self_of_exponent_two (hG : Monoid.exponent G = 2) (x : G) :

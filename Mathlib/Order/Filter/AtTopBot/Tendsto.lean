@@ -217,6 +217,7 @@ theorem tendsto_atTop_of_monotone_of_filter [Preorder ι] [Preorder α] {l : Fil
     (h : Monotone u) [NeBot l] (hu : Tendsto u l atTop) : Tendsto u atTop atTop :=
   h.tendsto_atTop_atTop fun b => (hu.eventually (mem_atTop b)).exists
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a monotone function `u : ι → α` tends to `atBot` along *some* non-trivial filter `l`, then
 it tends to `atBot` along `atBot`. -/
 theorem tendsto_atBot_of_monotone_of_filter [Preorder ι] [Preorder α] {l : Filter ι} {u : ι → α}

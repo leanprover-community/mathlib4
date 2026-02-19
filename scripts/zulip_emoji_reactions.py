@@ -27,6 +27,8 @@ ZULIP_SITE = sys.argv[3]
 #   command), it is 'ready-to-merge' or 'delegated'. On a bors merge-, bors r- or bors d- command,
 #   it is 'remove-label'. (This particular value is not used in this script.)
 #   Note that `bors d-` is *not* a bors command, so only has an effect on mathlib's PR labels.
+# - if CI status changed, it is 'ci-running', 'ci-success', 'ci-failure', or 'ci-cancelled'
+#   (see .github/workflows/zulip_emoji_ci_status.yaml)
 ACTION = sys.argv[4]
 # Name of the label that was applied or removed
 # (if applicable; is 'none' if a PR was closed, reopened or merged)
@@ -110,6 +112,9 @@ for message in messages:
     has_awaiting_author = has_reaction('writing')
     has_maintainer_merge = has_reaction('hammer')
     has_closed = has_reaction('closed-pr')
+    has_ci_running = has_reaction('yellow')
+    has_ci_success = has_reaction('check')
+    has_ci_failure = has_reaction('cross_mark')
     first_in_thread = hashPR.search(message['subject']) and message['display_recipient'] == 'PR reviews' and message['subject'] not in first_by_subject
     first_by_subject[message['subject']] = message['id']
     match = urlPR.search(content) or first_in_thread
@@ -138,6 +143,24 @@ for message in messages:
                 "message_id": message['id'],
                 "emoji_name": emoji_name
             })
+
+        # CI status emojis are mutually exclusive with each other
+        # but independent of PR status emojis.
+        if ACTION.startswith('ci-'):
+            if has_ci_running:
+                remove_reaction('ci-running', 'yellow', '')
+            if has_ci_success:
+                remove_reaction('ci-success', 'check', '')
+            if has_ci_failure:
+                remove_reaction('ci-failure', 'cross_mark', '')
+            match ACTION:
+                case 'ci-running':
+                    add_reaction('ci-running', 'yellow')
+                case 'ci-success':
+                    add_reaction('ci-success', 'check')
+                case 'ci-failure':
+                    add_reaction('ci-failure', 'cross_mark')
+            continue
 
         # The maintainer merge label is different from the others, as it is not mutually exclusive
         # with them: just add or remove it manually and leave the other emojis alone.

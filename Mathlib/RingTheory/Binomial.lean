@@ -116,6 +116,7 @@ theorem multichoose_zero_right [MulOneClass R] [NatPowAssoc R]
     (r : R) : multichoose r 0 = 1 := by
   rw [multichoose_zero_right', npow_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem multichoose_one_right' (r : R) : multichoose r 1 = r ^ 1 := by
   rw [← nsmul_right_inj (Nat.factorial_ne_zero 1),
@@ -133,6 +134,7 @@ theorem multichoose_zero_succ (k : ℕ) : multichoose (0 : R) (k + 1) = 0 := by
     factorial_nsmul_multichoose_eq_ascPochhammer, smul_zero, ascPochhammer_succ_left,
     smeval_X_mul, zero_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ascPochhammer_succ_succ (r : R) (k : ℕ) :
     smeval (ascPochhammer ℕ (k + 1)) (r + 1) = Nat.factorial (k + 1) • multichoose (r + 1) k +
     smeval (ascPochhammer ℕ (k + 1)) r := by
@@ -189,7 +191,7 @@ theorem ascPochhammer_smeval_cast (R : Type*) [Semiring R] {S : Type*} [NonAssoc
     [Pow S ℕ] [Module R S] [IsScalarTower R S S] [NatPowAssoc S]
     (x : S) (n : ℕ) : (ascPochhammer R n).smeval x = (ascPochhammer ℕ n).smeval x := by
   induction n with
-  | zero => simp only [ascPochhammer_zero, smeval_one, one_smul]
+  | zero => simp only [ascPochhammer_zero, smeval_one]
   | succ n hn =>
     simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
     simp only [← C_eq_natCast, smeval_C_mul, hn, Nat.cast_smul_eq_nsmul R n]
@@ -203,6 +205,7 @@ theorem ascPochhammer_smeval_eq_eval [Semiring R] (r : R) (n : ℕ) :
 
 variable [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem descPochhammer_smeval_eq_ascPochhammer (r : R) (n : ℕ) :
     (descPochhammer ℤ n).smeval r = (ascPochhammer ℕ n).smeval (r - n + 1) := by
   induction n with
@@ -213,6 +216,7 @@ theorem descPochhammer_smeval_eq_ascPochhammer (r : R) (n : ℕ) :
       smeval_add, smeval_one, smeval_C]
     simp only [smeval_X, npow_one, npow_zero, zsmul_one, Int.cast_natCast, one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem descPochhammer_smeval_eq_descFactorial (n k : ℕ) :
     (descPochhammer ℤ k).smeval (n : R) = n.descFactorial k := by
   induction k with
@@ -290,6 +294,7 @@ open Polynomial
 
 variable {R : Type*} [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem smeval_ascPochhammer_self_neg : ∀ n : ℕ,
     smeval (ascPochhammer ℕ n) (-n : ℤ) = (-1) ^ n * n.factorial
@@ -443,6 +448,7 @@ theorem choose_neg' [NatPowAssoc R] (r : R) (n : ℕ) :
     choose (-r) n = Int.negOnePow n • multichoose r n := by
   rw [choose_neg, multichoose_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem descPochhammer_succ_succ_smeval {R} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
     (r : R) (k : ℕ) : smeval (descPochhammer ℤ (k + 1)) (r + 1) =
     (k + 1) • smeval (descPochhammer ℤ k) r + smeval (descPochhammer ℤ (k + 1)) r := by
@@ -463,6 +469,7 @@ theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
 
 @[deprecated (since := "2025-08-17")] alias choose_eq_nat_choose := choose_natCast
 
+set_option backward.isDefEq.respectTransparency false in
 theorem choose_smul_choose [NatPowAssoc R] (r : R) {n k : ℕ} (hkn : k ≤ n) :
     (Nat.choose n k) • choose r n = choose r k * choose (r - k) (n - k) := by
   rw [← nsmul_right_inj (Nat.factorial_ne_zero n),
