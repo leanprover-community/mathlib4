@@ -182,6 +182,8 @@ lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I
 
 section powSmulQuotInclusion
 
+set_option backward.isDefEq.respectTransparency false
+
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 namespace Submodule
