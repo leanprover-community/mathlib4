@@ -298,13 +298,9 @@ section spanRank
 
 open IsLocalRing
 
-variable (R : Type*) [CommRing R]
+variable {R : Type*} [CommRing R]
 
-instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M] (I : Ideal R) :
-    Module.Finite (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
-  Module.Finite.of_restrictScalars_finite R _ _
-
-variable {R} in
+set_option backward.isDefEq.respectTransparency false in
 lemma spanFinrank_eq_finrank_quotient [IsLocalRing R] {M : Type*} [AddCommGroup M] [Module R M]
     (N : Submodule R M) (fg : N.FG) : N.spanFinrank =
     Module.finrank (R ⧸ maximalIdeal R) (N ⧸ (maximalIdeal R) • (⊤ : Submodule R N)) := by
@@ -350,19 +346,18 @@ lemma spanFinrank_eq_finrank_quotient [IsLocalRing R] {M : Type*} [AddCommGroup 
     exact (Submodule.spanFinrank_span_le_ncard_of_finite (hGfinite.image _)).trans
       (le_of_le_of_eq (Set.ncard_image_le hGfinite) hG_ncard)
 
-variable {R} in
 lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg [IsLocalRing R]
     (fg : (maximalIdeal R).FG) :
     (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
   spanFinrank_eq_finrank_quotient _ fg
 
+variable (R) in
 lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace [IsLocalRing R] [IsNoetherianRing R] :
     (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
   spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg (maximalIdeal R).fg_of_isNoetherianRing
 
-lemma spanFinrank_le_of_surjective {R : Type*} [CommRing R] [IsNoetherianRing R]
-    [IsLocalRing R] {R' : Type*} [CommRing R'] [IsLocalRing R']
-    (f : R →+* R') (surj : Function.Surjective f) :
+lemma spanFinrank_le_of_surjective [IsNoetherianRing R] [IsLocalRing R] {R' : Type*} [CommRing R']
+    [IsLocalRing R'] (f : R →+* R') (surj : Function.Surjective f) :
     (maximalIdeal R').spanFinrank ≤ (maximalIdeal R).spanFinrank := by
   let fin := Submodule.FG.finite_generators (maximalIdeal R).fg_of_isNoetherianRing
   have hspan : Ideal.span (f '' (maximalIdeal R).generators) = maximalIdeal R' := by
@@ -374,9 +369,9 @@ lemma spanFinrank_le_of_surjective {R : Type*} [CommRing R] [IsNoetherianRing R]
   apply le_trans hle (le_of_le_of_eq (Set.ncard_image_le fin)
     (Submodule.FG.generators_ncard (maximalIdeal R).fg_of_isNoetherianRing))
 
-lemma spanFinrank_eq_of_ringEquiv {R : Type*} [CommRing R] [IsNoetherianRing R]
-    [IsLocalRing R] {R' : Type*} [CommRing R'] [IsNoetherianRing R'] [IsLocalRing R']
-    (e : R ≃+* R') : (maximalIdeal R).spanFinrank = (maximalIdeal R').spanFinrank :=
+lemma spanFinrank_eq_of_ringEquiv [IsNoetherianRing R] [IsLocalRing R] {R' : Type*} [CommRing R']
+    [IsNoetherianRing R'] [IsLocalRing R'] (e : R ≃+* R') :
+    (maximalIdeal R).spanFinrank = (maximalIdeal R').spanFinrank :=
   le_antisymm (spanFinrank_le_of_surjective e.symm.toRingHom e.symm.surjective)
     (spanFinrank_le_of_surjective e.toRingHom e.surjective)
 
