@@ -63,8 +63,6 @@ open Category MonoidalCategory CategoryTheory
 
 namespace CategoricalGroup
 
--- Since the categorical group class does not have any additional conditions,
---we just assume the following variables.
 variable {C : Type u} [Groupoid.{v} C]
   [MonoidalCategory.{v} C] [RightRigidCategory C]
 
