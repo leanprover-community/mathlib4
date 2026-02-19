@@ -163,6 +163,7 @@ instance : TotalComplexShape c c c where
     dsimp
     rw [neg_mul, one_mul, mul_one, c.ε_succ h, neg_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : TensorSigns (ComplexShape.down ℕ) where
   ε' := MonoidHom.mk' (fun (i : ℕ) => (-1 : ℤˣ) ^ i) (pow_add (-1 : ℤˣ))
   rel_add p q r (hpq : q + 1 = p) := by dsimp; lia

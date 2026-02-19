@@ -27,6 +27,7 @@ variable {R : Type*} [CommRing R]
 
 open Ideal Quotient
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isLocalRing_of_isAdicComplete_maximal (m : Ideal R) [m.IsMaximal] [IsAdicComplete m R] :
     IsLocalRing R := by
   refine IsLocalRing.of_unique_max_ideal ⟨m, ‹_›, fun m' hm' ↦ ?_⟩

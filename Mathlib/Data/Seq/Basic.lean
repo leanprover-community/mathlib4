@@ -306,6 +306,7 @@ theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append
         case cons _ s => exact ⟨s, t, u, rfl, rfl⟩
   · exact ⟨s, t, u, rfl, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
   have := h; revert this
   generalize e : append s₁ s₂ = ss; intro h; revert s₁
@@ -457,7 +458,8 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
     | _, _, Or.inr ⟨a, s, S, rfl, rfl⟩ => by
       cases s
       · simp [join_cons_nil]
-      · simpa [join_cons_cons, join_cons_nil] using Or.inr ⟨_, _, S, rfl, rfl⟩
+      · simpa only [BisimO, join_cons_cons, destruct_cons, cons_append, true_and] using
+          Or.inr ⟨_, _, S, rfl, rfl⟩
 
 set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
@@ -742,7 +744,7 @@ theorem all_of_get {p : α → Prop} {s : Seq α} (h : ∀ n x, s.get? n = .some
   simp only [mem_iff_exists_get?]
   grind
 
-private lemma all_coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
+lemma all_coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
     (step : ∀ hd tl, motive (.cons hd tl) → motive tl) (n : ℕ) :
     motive (s.drop n) := by
   induction n with

@@ -59,6 +59,7 @@ lemma WithBot.denselyOrdered_set_iff_subsingleton {s : Set (WithBot X)} :
   · rw [← WithBot.coe_lt_coe]
     simp [hz'.trans_le']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma WithTop.denselyOrdered_set_iff_subsingleton {s : Set (WithTop X)} :
     DenselyOrdered s ↔ s.Subsingleton := by
   have he : StrictAnti (WithTop.toDual.image s) :=
