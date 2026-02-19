@@ -11,7 +11,7 @@ public import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Topology.Sequences
 
 /-!
-# Continuity of the norm on (semi)groups
+# Continuity of the norm on (semi)normed groups
 
 ## Tags
 
@@ -20,13 +20,43 @@ normed group
 
 @[expose] public section
 
-variable {𝓕 α ι κ E F G : Type*}
+variable {α ι κ E F G : Type*}
 
-open Filter Function Metric Bornology ENNReal NNReal Uniformity Pointwise Topology
+open Filter Function Metric Bornology
+open ENNReal Filter NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
+variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G]
+
+open Finset
+
+section ContinuousENorm
+
+variable {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+
+@[continuity, fun_prop]
+lemma continuous_enorm : Continuous fun a : E ↦ ‖a‖ₑ := ContinuousENorm.continuous_enorm
+
+variable {X : Type*} [TopologicalSpace X] {f : X → E} {s : Set X} {a : X}
+
+@[fun_prop]
+lemma Continuous.enorm : Continuous f → Continuous (‖f ·‖ₑ) :=
+  continuous_enorm.comp
+
+lemma ContinuousAt.enorm {a : X} (h : ContinuousAt f a) : ContinuousAt (‖f ·‖ₑ) a := by fun_prop
+
+@[fun_prop]
+lemma ContinuousWithinAt.enorm {s : Set X} {a : X} (h : ContinuousWithinAt f s a) :
+    ContinuousWithinAt (‖f ·‖ₑ) s a :=
+  (ContinuousENorm.continuous_enorm.continuousWithinAt).comp (t := Set.univ) h
+    (fun _ _ ↦ by trivial)
+
+@[fun_prop]
+lemma ContinuousOn.enorm (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s :=
+  (ContinuousENorm.continuous_enorm.continuousOn).comp (t := Set.univ) h <| Set.mapsTo_univ _ _
+
+end ContinuousENorm
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
