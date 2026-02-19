@@ -187,8 +187,7 @@ def isometryEquivWeightedSumSquaresWeightedSumSquares (u : ι → Sˣ) (h : ∀ 
   map_add' x y := by simp
   map_smul' v x := by
     ext i
-    simp only [Pi.smul_apply', Pi.smul_apply, RingHom.id_apply]
-    rw [smul_comm]
+    simp only [Pi.smul_apply', Pi.smul_apply, RingHom.id_apply, smul_comm]
   map_app' x := by
     simp only [weightedSumSquares_apply, Pi.smul_apply']
     refine Finset.sum_congr rfl fun j hj => ?_
