@@ -178,6 +178,7 @@ theorem finsum_smul_mem_convex {g : ι → M → F} {t : Set F} {x : M} (hx : x 
     (hg : ∀ i, f i x ≠ 0 → g i x ∈ t) (ht : Convex ℝ t) : ∑ᶠ i, f i x • g i x ∈ t :=
   ht.finsum_mem (fun _ => f.nonneg _ _) (f.sum_eq_one hx) hg
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contMDiff_smul {g : M → F} {i} (hg : ∀ x ∈ tsupport (f i), ContMDiffAt I 𝓘(ℝ, F) n g x) :
     ContMDiff I 𝓘(ℝ, F) n fun x => f i x • g x :=
   contMDiff_of_tsupport fun x hx =>
@@ -193,6 +194,7 @@ theorem contMDiff_finsum_smul {g : ι → M → F}
   (contMDiff_finsum fun i => f.contMDiff_smul (hg i)) <|
     f.locallyFinite.subset fun _ => support_smul_subset_left _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contMDiffAt_finsum {x₀ : M} {g : ι → M → F}
     (hφ : ∀ i, x₀ ∈ tsupport (f i) → ContMDiffAt I 𝓘(ℝ, F) n (g i) x₀) :
     ContMDiffAt I 𝓘(ℝ, F) n (fun x ↦ ∑ᶠ i, f i x • g i x) x₀ := by
@@ -294,6 +296,7 @@ end SmoothPartitionOfUnity
 
 namespace BumpCovering
 
+set_option backward.isDefEq.respectTransparency false in
 -- Repeat variables to drop `[FiniteDimensional ℝ E]` and `[IsManifold I ∞ M]`
 theorem contMDiff_toPartitionOfUnity {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM}
@@ -483,6 +486,7 @@ variable (I)
 variable [FiniteDimensional ℝ E]
 variable [IsManifold I ∞ M] {n : ℕ∞}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite-dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` on `s` and to `1` on `t`.
 See also `exists_contMDiff_zero_iff_one_iff_of_isClosed`, which ensures additionally that
@@ -690,22 +694,26 @@ alias exists_smooth_forall_mem_convex_of_local_const :=
 /-- Let `M` be a smooth σ-compact manifold with extended distance. Let `K : ι → Set M` be a locally
 finite family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for
 all `i`. Then there exists a positive smooth function `δ : M → ℝ≥0` such that for any `i` and
-`x ∈ K i`, we have `EMetric.closedBall x (δ x) ⊆ U i`. -/
-theorem Emetric.exists_contMDiffMap_forall_closedBall_subset
+`x ∈ K i`, we have `Metric.closedEBall x (δ x) ⊆ U i`. -/
+theorem Metric.exists_contMDiffMap_forall_closedEBall_subset
     {M : Type*} [EMetricSpace M] [ChartedSpace H M]
     [IsManifold I ∞ M] [SigmaCompactSpace M] {K : ι → Set M} {U : ι → Set M}
     (hK : ∀ i, IsClosed (K i)) (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i)
     (hfin : LocallyFinite K) :
     ∃ δ : C^n⟮I, M; 𝓘(ℝ, ℝ), ℝ⟯,
-      (∀ x, 0 < δ x) ∧ ∀ i, ∀ x ∈ K i, EMetric.closedBall x (ENNReal.ofReal (δ x)) ⊆ U i := by
+      (∀ x, 0 < δ x) ∧ ∀ i, ∀ x ∈ K i, Metric.closedEBall x (ENNReal.ofReal (δ x)) ⊆ U i := by
   simpa only [mem_inter_iff, forall_and, mem_preimage, mem_iInter, @forall_swap ι M]
     using exists_contMDiffMap_forall_mem_convex_of_local_const I
-      EMetric.exists_forall_closedBall_subset_aux₂
-      (EMetric.exists_forall_closedBall_subset_aux₁ hK hU hKU hfin)
+      Metric.exists_forall_closedEBall_subset_aux₂
+      (Metric.exists_forall_closedEBall_subset_aux₁ hK hU hKU hfin)
+
+@[deprecated (since := "2026-01-24")]
+alias Emetric.exists_contMDiffMap_forall_closedBall_subset :=
+  Metric.exists_contMDiffMap_forall_closedEBall_subset
 
 @[deprecated (since := "2025-12-17")]
 alias Emetric.exists_smooth_forall_closedBall_subset :=
-  Emetric.exists_contMDiffMap_forall_closedBall_subset
+  Metric.exists_contMDiffMap_forall_closedEBall_subset
 
 /-- Let `M` be a smooth σ-compact manifold with a metric. Let `K : ι → Set M` be a locally finite
 family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for all
@@ -718,9 +726,9 @@ theorem Metric.exists_contMDiffMap_forall_closedBall_subset
     (hfin : LocallyFinite K) :
     ∃ δ : C^n⟮I, M; 𝓘(ℝ, ℝ), ℝ⟯,
       (∀ x, 0 < δ x) ∧ ∀ i, ∀ x ∈ K i, Metric.closedBall x (δ x) ⊆ U i := by
-  rcases Emetric.exists_contMDiffMap_forall_closedBall_subset I hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
+  rcases Metric.exists_contMDiffMap_forall_closedEBall_subset I hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
   refine ⟨δ, hδ0, fun i x hx => ?_⟩
-  rw [← Metric.emetric_closedBall (hδ0 _).le]
+  rw [← Metric.closedEBall_ofReal (hδ0 _).le]
   exact hδ i x hx
 
 @[deprecated (since := "2025-12-17")]

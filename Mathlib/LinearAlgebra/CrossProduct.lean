@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Cross products
@@ -125,6 +126,7 @@ theorem leibniz_cross (u v w : Fin 3 → R) : u ⨯₃ (v ⨯₃ w) = u ⨯₃ v
 /-- The three-dimensional vectors together with the operations + and ⨯₃ form a Lie ring.
 Note we do not make this an instance as a conflicting one already exists
 via `LieRing.ofAssociativeRing`. -/
+@[instance_reducible]
 def Cross.lieRing : LieRing (Fin 3 → R) :=
   { Pi.addCommGroup with
     bracket := fun u v => u ⨯₃ v

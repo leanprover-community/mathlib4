@@ -15,13 +15,13 @@ import Mathlib.Algebra.Order.Interval.Set.Group
 
 This file proves that:
 * `MonotoneOn.intervalIntegrable_deriv`: If `f` is monotone on `a..b`, then `f'` is interval
-integrable on `a..b`.
+  integrable on `a..b`.
 * `MonotoneOn.intervalIntegral_deriv_mem_uIcc`: If `f` is monotone on `a..b`, then the integral of
-`f'` on `a..b` is in `uIcc 0 (f b - f a)`.
+  `f'` on `a..b` is in `uIcc 0 (f b - f a)`.
 * `BoundedVariationOn.intervalIntegrable_deriv`: If `f` has bounded variation on `a..b`,
-then `f'` is interval integrable on `a..b`.
+  then `f'` is interval integrable on `a..b`.
 * `AbsolutelyContinuousOnInterval.intervalIntegrable_deriv`: If `f` is absolutely continuous on
-`a..b`, then `f'` is interval integrable on `a..b`.
+  `a..b`, then `f'` is interval integrable on `a..b`.
 
 ## Tags
 interval integrable, monotone, bounded variation, absolutely continuous
@@ -33,6 +33,7 @@ open MeasureTheory Set Filter
 
 open scoped Topology
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is monotone on `[a, b]`, then `f'` is the limit of `G n` a.e. on `[a, b]`, where each
 `G n` is `AEStronglyMeasurable` and the liminf of the lower Lebesgue integral of `‖G n ·‖ₑ` is at
 most `f b - f a`. -/
@@ -96,6 +97,7 @@ theorem MonotoneOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
   have integrable_f_deriv := integrable_of_tendsto hGf hG hG'₀
   exact (intervalIntegrable_iff_integrableOn_Icc_of_le hab).mpr integrable_f_deriv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is monotone on `a..b`, then `f'` is interval integrable on `a..b` and the integral of
 `f'` on `a..b` is in between `0` and `f b - f a`. -/
 theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}

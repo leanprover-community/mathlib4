@@ -6,7 +6,9 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Finite
-public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.GroupTheory.Coset.Defs
 
 /-!
 # Tiles for tilings
@@ -247,6 +249,7 @@ instance : SMul G (PlacedTile ps) where
   induction pt using PlacedTile.induction_on
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_smul (g : G) (pt : PlacedTile ps) :
     (g • pt : PlacedTile ps) = g • (pt : Set X) := by
   induction pt using PlacedTile.induction_on

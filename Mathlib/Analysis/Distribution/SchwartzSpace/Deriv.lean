@@ -5,10 +5,10 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
+public import Mathlib.Analysis.InnerProductSpace.Laplacian
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
@@ -23,27 +23,34 @@ In this file we define the various notions of derivatives of Schwartz functions.
 * `SchwartzMap.derivCLM`: The one-dimensional derivative as a continuous linear map
   `𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F)`
 * `SchwartzMap.instLineDeriv`: The directional derivative with notation `∂_{m} f`
+* `SchwartzMap.instLaplacian`: The Laplacian for `𝓢(E, F)` as an instance of the notation type-class
+  `Laplacian`.
 
 ## Main statements
 
 * `SchwartzMap.iteratedLineDerivOp_eq_iteratedFDeriv`: the iterated directional derivative is given
   by the applied Fréchet derivative of a Schwartz function.
+* `SchwartzMap.laplacian_eq_sum`: the Laplacian is given by the sum of second derivatives in any
+  orthonormal basis.
 * `SchwartzMap.integral_bilinear_lineDerivOp_right_eq_neg_left`: Integration by parts using the
   directional derivative `∂_{m}`
+* `SchwartzMap.integral_bilinear_laplacian_right_eq_left`: Integration by parts for the Laplacian
 
 -/
 
 @[expose] public noncomputable section
 
-variable {ι 𝕜 𝕜' D E F G H V : Type*}
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {ι 𝕜 𝕜' D E F V F F₁ F₂ F₃ : Type*}
 
 namespace SchwartzMap
+
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 section Derivatives
 
 /-! ### Derivatives of Schwartz functions -/
+
+variable [NormedSpace ℝ E]
 
 variable (𝕜)
 variable [RCLike 𝕜] [NormedSpace 𝕜 F]
@@ -89,16 +96,27 @@ theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x 
 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
-instance instLineDeriv : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
+instance : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp m f := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F) f
 
-instance instLineDerivAdd : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_add m := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F).map_add
+theorem lineDerivOp_apply_eq_fderiv (m : E) (f : 𝓢(E, F)) (x : E) :
+    ∂_{m} f x = fderiv ℝ f x m := rfl
 
-instance instLineDerivSMul : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
+instance : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
+  lineDerivOp_add m := ((SchwartzMap.evalCLM ℝ E F m).comp (fderivCLM ℝ E F)).map_add
+  lineDerivOp_left_add v w f := by
+    ext x
+    simp [lineDerivOp_apply_eq_fderiv]
+
+instance : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp_smul m := (SchwartzMap.evalCLM 𝕜 E F m ∘L fderivCLM 𝕜 E F).map_smul
 
-instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
+instance : LineDerivLeftSMul ℝ E 𝓢(E, F) 𝓢(E, F) where
+  lineDerivOp_left_smul r y f := by
+    ext x
+    simp [lineDerivOp_apply_eq_fderiv]
+
+instance : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
   continuous_lineDerivOp m := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F).continuous
 
 open LineDeriv
@@ -114,9 +132,6 @@ alias pderivCLM_apply := LineDeriv.lineDerivOpCLM_apply
 
 theorem lineDerivOp_apply (m : E) (f : 𝓢(E, F)) (x : E) : ∂_{m} f x = lineDeriv ℝ f x m :=
   f.differentiableAt.lineDeriv_eq_fderiv.symm
-
-theorem lineDerivOp_apply_eq_fderiv (m : E) (f : 𝓢(E, F)) (x : E) :
-    ∂_{m} f x = fderiv ℝ f x m := rfl
 
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 
@@ -141,6 +156,7 @@ alias iteratedPDeriv_succ_left := LineDeriv.iteratedLineDerivOp_succ_left
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv_succ_right := LineDeriv.iteratedLineDerivOp_succ_right
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E, F)} {x : E} :
     ∂^{m} f x = iteratedFDeriv ℝ n f x m := by
   induction n generalizing x with
@@ -156,7 +172,70 @@ alias iteratedPDeriv_eq_iteratedFDeriv := iteratedLineDerivOp_eq_iteratedFDeriv
 
 end Derivatives
 
+section support
+
+variable (𝕜)
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
+
+theorem tsupport_derivCLM_subset (f : 𝓢(ℝ, F)) : tsupport (derivCLM 𝕜 F f) ⊆ tsupport f := by
+  change tsupport (deriv f ·) ⊆ _
+  simp_rw [← fderiv_apply_one_eq_deriv]
+  exact tsupport_fderiv_apply_subset ℝ 1
+
+variable [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 F]
+
+theorem tsupport_fderivCLM_subset (f : 𝓢(E, F)) : tsupport (fderivCLM 𝕜 E F f) ⊆ tsupport f :=
+  tsupport_fderiv_subset ℝ
+
+open LineDeriv
+
+theorem tsupport_lineDerivOp_subset (m : E) (f : 𝓢(E, F)) :
+    tsupport (∂_{m} f : 𝓢(E, F)) ⊆ tsupport f :=
+  tsupport_fderiv_apply_subset ℝ m
+
+theorem tsupport_iteratedLineDerivOp_subset {n : ℕ} (m : Fin n → E) (f : 𝓢(E, F)) :
+    tsupport (∂^{m} f : 𝓢(E, F)) ⊆ tsupport f := by
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    rw [iteratedLineDerivOp_succ_left]
+    exact (tsupport_lineDerivOp_subset (m 0) _).trans (IH <| Fin.tail m)
+
+end support
+
+section Laplacian
+
+/-! ## Laplacian on `𝓢(E, F)` -/
+
+variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+
+open Laplacian LineDeriv
+
+instance : Laplacian 𝓢(E, F) 𝓢(E, F) where
+  laplacian := laplacianCLM ℝ E 𝓢(E, F)
+
+theorem laplacianCLM_eq' (f : 𝓢(E, F)) : laplacianCLM ℝ E 𝓢(E, F) f = Δ f := rfl
+
+theorem laplacian_eq_sum [Fintype ι] (b : OrthonormalBasis ι ℝ E) (f : 𝓢(E, F)) :
+    Δ f = ∑ i, ∂_{b i} (∂_{b i} f) :=
+  LineDeriv.laplacianCLM_eq_sum b f
+
+variable (𝕜) in
+@[simp]
+theorem laplacianCLM_eq [RCLike 𝕜] [NormedSpace 𝕜 F] (f : 𝓢(E, F)) :
+    laplacianCLM 𝕜 E 𝓢(E, F) f = Δ f := by
+  simp [laplacianCLM, laplacian_eq_sum (stdOrthonormalBasis ℝ E)]
+
+theorem laplacian_apply (f : 𝓢(E, F)) (x : E) : Δ f x = Δ (f : E → F) x := by
+  rw [laplacian_eq_sum (stdOrthonormalBasis ℝ E)]
+  simp [InnerProductSpace.laplacian_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E),
+    sum_apply, ← iteratedLineDerivOp_eq_iteratedFDeriv, iteratedLineDerivOp_succ_left]
+
+end Laplacian
+
 section integration_by_parts
+
+variable [NormedSpace ℝ E]
 
 open ENNReal MeasureTheory
 
@@ -247,5 +326,59 @@ theorem integral_clm_comp_lineDerivOp_right_eq_neg_left (f : 𝓢(D, F →L[𝕜
     ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ) v
 
 end integration_by_parts
+
+section laplacian_integration_by_parts
+
+open MeasureTheory Laplacian LineDeriv
+
+/-! ### Integration by parts -/
+
+variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+  [NormedAddCommGroup F₁] [NormedSpace ℝ F₁]
+  [NormedAddCommGroup F₂] [NormedSpace ℝ F₂]
+  [NormedAddCommGroup F₃] [NormedSpace ℝ F₃]
+  [MeasurableSpace E] {μ : Measure E} [BorelSpace E] [μ.IsAddHaarMeasure]
+
+/-- Integration by parts of Schwartz functions for the Laplacian.
+
+Version for a general bilinear map. -/
+theorem integral_bilinear_laplacian_right_eq_left (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂))
+    (L : F₁ →L[ℝ] F₂ →L[ℝ] F₃) :
+    ∫ x, L (f x) (Δ g x) ∂μ = ∫ x, L (Δ f x) (g x) ∂μ := by
+  simp_rw [laplacian_eq_sum (stdOrthonormalBasis ℝ E), sum_apply, map_sum,
+    ContinuousLinearMap.coe_sum', Finset.sum_apply]
+  rw [MeasureTheory.integral_finset_sum, MeasureTheory.integral_finset_sum]
+  · simp [integral_bilinear_lineDerivOp_right_eq_neg_left]
+  · exact fun _ _ ↦ (pairing L (∂_{_} <| ∂_{_} f) g).integrable
+  · exact fun _ _ ↦ (pairing L f (∂_{_} <| ∂_{_} g)).integrable
+
+variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
+/-- Integration by parts of Schwartz functions for the Laplacian.
+
+Version for multiplication of scalar-valued Schwartz functions. -/
+theorem integral_mul_laplacian_right_eq_left (f : 𝓢(E, 𝕜)) (g : 𝓢(E, 𝕜)) :
+    ∫ x, f x * Δ g x ∂μ = ∫ x, Δ f x * g x ∂μ :=
+  integral_bilinear_laplacian_right_eq_left f g (ContinuousLinearMap.mul ℝ 𝕜)
+
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
+
+/-- Integration by parts of Schwartz functions for the Laplacian.
+
+Version for scalar multiplication. -/
+theorem integral_smul_laplacian_right_eq_left (f : 𝓢(E, 𝕜)) (g : 𝓢(E, F)) :
+    ∫ x, f x • Δ g x ∂μ = ∫ x, Δ f x • g x ∂μ :=
+  integral_bilinear_laplacian_right_eq_left f g (ContinuousLinearMap.lsmul ℝ 𝕜)
+
+variable [NormedSpace 𝕜 F₁] [NormedSpace 𝕜 F₂]
+
+/-- Integration by parts of Schwartz functions for the Laplacian.
+
+Version for a Schwartz function with values in continuous linear maps. -/
+theorem integral_clm_comp_laplacian_right_eq_left (f : 𝓢(E, F₁ →L[𝕜] F₂)) (g : 𝓢(E, F₁)) :
+    ∫ x, f x (Δ g x) ∂μ = ∫ x, Δ f x (g x) ∂μ :=
+  integral_bilinear_laplacian_right_eq_left f g
+    ((ContinuousLinearMap.id 𝕜 (F₁ →L[𝕜] F₂)).bilinearRestrictScalars ℝ)
+
+end laplacian_integration_by_parts
 
 end SchwartzMap

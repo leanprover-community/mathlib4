@@ -53,6 +53,7 @@ variable {n : ℕ} {B₁ B₂ : Fin (n + 1) → ℝ}
 local notation3 "BoxPoly" =>
   {p : ℤ[X] | p.natDegree ≤ n ∧ ∀ i, B₁ i ≤ p.coeff i ∧ p.coeff i ≤ B₂ i}
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 theorem card_eq_of_natDegree_le_of_coeff_le :
     Set.ncard BoxPoly = ∏ i, (⌊B₂ i⌋ - ⌈B₁ i⌉ + 1).toNat := by
@@ -165,6 +166,7 @@ theorem isIntegral_of_mahlerMeasure_eq_one : IsIntegral ℤ z := by
   have : (C (1 / p.leadingCoeff) * p).Monic := by aesop (add safe (by simp [Monic.def]))
   grind [IsIntegral, RingHom.IsIntegralElem, mem_roots', IsRoot.def, eval₂_mul, eval_map]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 open Multiset in
 include h hz in
 /-- If an integer polynomial has Mahler measure equal to 1, then all its complex roots have norm at
@@ -177,6 +179,7 @@ lemma norm_root_le_one_of_mahlerMeasure_eq_one : ‖z‖ ≤ 1 := by
   _   ≤ 1 := by grind [prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff,
         norm_leadingCoeff_eq_one_of_mahlerMeasure_eq_one]
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 include hz₀ hz h in
 /-- If an integer polynomial has Mahler measure equal to 1, then all its complex nonzero roots are
@@ -190,7 +193,7 @@ to `ℚ`.
   let : NumberField K := {
     to_charZero := ℚ⟮z⟯.charZero,
     to_finiteDimensional := adjoin.finiteDimensional
-      (isIntegral_of_mahlerMeasure_eq_one h hz).tower_top}
+      (isIntegral_of_mahlerMeasure_eq_one h hz).tower_top }
 -- `y` is `z` as an element of `K`
   let y : K := ⟨z, mem_adjoin_simple_self ℚ z⟩
   suffices ∃ (n : ℕ) (_ : 0 < n), y ^ n = 1 by
