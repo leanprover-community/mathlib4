@@ -12,9 +12,9 @@ public import Mathlib.RingTheory.RegularLocalRing.Defs
 
 /-!
 # Power Series over Regular Local Ring
-
-
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R]
 
