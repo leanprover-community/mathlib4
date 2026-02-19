@@ -29,10 +29,10 @@ lemma NumberField.exists_not_isUramifiedAt_int (H : 1 < Module.finrank ℚ K) :
     ∃ (P : Ideal 𝒪) (_ : P.IsMaximal), P ≠ ⊥ ∧ ¬ Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
-  have := CharZero.of_module 𝒪 K
+  have := CharZero.of_module (R := 𝒪) K
   have := NumberField.abs_discr_gt_two H
   obtain ⟨q, hq, hqK⟩ := Int.exists_prime_and_dvd (n := discr K) (by zify; linarith)
-  have := (not_dvd_discr_iff_forall_mem (𝒪 := 𝒪) hq).not_right.mp hqK
+  have := (not_dvd_discr_iff_forall_mem K 𝒪 hq).not_right.mp hqK
   push_neg at this
   obtain ⟨P, hP, h, H⟩ := this
   exact ⟨P, hP.isMaximal (by aesop), by aesop, H⟩
@@ -47,7 +47,10 @@ lemma NumberField.exists_not_isUramifiedAt_int_of_isGalois [IsGalois ℚ K]
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
   have := IsIntegralClosure.isFractionRing_of_finite_extension ℤ ℚ K 𝒪
   have := IsIntegralClosure.finite ℤ ℚ K 𝒪
-  have := CharZero.of_module 𝒪 K
+  have := CharZero.of_module (R := 𝒪) K
+  have : MulSemiringAction Gal(K/ℚ) 𝒪 := sorry
+  have : SMulDistribClass Gal(K/ℚ) 𝒪 K := sorry
+  have := IsGaloisGroup.of_isFractionRing Gal(K/ℚ) ℤ 𝒪 ℚ K
   obtain ⟨P, _, hP, hP'⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝒪) H
   obtain ⟨p, hp : _ = Ideal.span _⟩ := IsPrincipalIdealRing.principal (P.under ℤ)
   have hp0 : p ≠ 0 := fun hp0 ↦ hP (Ideal.eq_bot_of_comap_eq_bot (hp.trans (by aesop)))
@@ -58,6 +61,6 @@ lemma NumberField.exists_not_isUramifiedAt_int_of_isGalois [IsGalois ℚ K]
   have : .span {p} = Ideal.under ℤ Q := (Ideal.IsPrime.isMaximal (hp ▸ inferInstance) (by simpa))
     |>.eq_of_le Ideal.IsPrime.ne_top' (by simpa)
   rwa [Algebra.isUnramifiedAt_iff_of_isDedekindDomain (by aesop),
-    ← Ideal.ramificationIdxIn_eq_ramificationIdx _ _ ℚ K, ← this, ← hp,
-    Ideal.ramificationIdxIn_eq_ramificationIdx _ P ℚ K,
+    ← Ideal.ramificationIdxIn_eq_ramificationIdx _ _ Gal(K/ℚ), ← this, ← hp,
+    Ideal.ramificationIdxIn_eq_ramificationIdx _ P Gal(K/ℚ),
     ← Algebra.isUnramifiedAt_iff_of_isDedekindDomain hP]
