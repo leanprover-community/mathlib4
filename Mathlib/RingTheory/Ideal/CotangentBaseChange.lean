@@ -1,4 +1,31 @@
-import Mathlib
+/-
+Copyright (c) 2025 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+import Mathlib.LinearAlgebra.TensorProduct.Quotient
+import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Ideal.Cotangent
+
+/-!
+# Base change of cotangent spaces
+
+Given an `R`-algebra `S`, an ideal `I` of `S` and a flat `R`-algebra `T`, we show that
+the base change `T ⊗[R] I/I²` of the cotangent space of `I` is naturally isomorphic to the
+cotangent space of the extended ideal `I · (T ⊗[R] S)`.
+
+## Main definitions
+
+* `TensorProduct.AlgebraTensorModule.tensorQuotientEquiv`: The tensor product of a module with
+  a quotient module is the quotient of the tensor product, as a linear equivalence compatible
+  with an auxiliary scalar action.
+* `Algebra.TensorProduct.tensorQuotientEquiv`: The tensor product of an algebra with
+  the quotient by an ideal is the quotient of the tensor product, as an algebra equivalence.
+* `Ideal.Cotangent.lift`: Lift a linear map from `I` that vanishes on products to a linear map
+  on the cotangent space `I/I²`.
+* `Ideal.tensorCotangentTo`: The canonical map `T ⊗[R] I/I² → (I · (T ⊗[R] S))/(I · (T ⊗[R] S))²`.
+* `Ideal.tensorCotangent`: When `T` is `R`-flat, `tensorCotangentTo` is a linear equivalence.
+-/
 
 noncomputable section
 
@@ -13,13 +40,16 @@ variable {R : Type*} (A B : Type*) [CommRing R] [CommRing A] [Algebra R A]
 variable (M : Type*) [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
 variable {N : Type*} [AddCommGroup N] [Module R N] [Module B N] [IsScalarTower R B N]
 
+/-- The tensor product of a module `M` with a quotient `N ⧸ n` is linearly equivalent to the
+quotient of `M ⊗ N` by the range of `M ⊗ n → M ⊗ N`, as an `A`-linear equivalence. -/
 def tensorQuotientEquiv (n : Submodule B N) :
     M ⊗[R] (N ⧸ n) ≃ₗ[A] (M ⊗[R] N) ⧸ LinearMap.range (lTensor A M (n.subtype.restrictScalars R)) :=
   let f : M ⊗[R] (N ⧸ n) ≃ₗ[R]
       M ⊗[R] N ⧸ LinearMap.range (lTensor A M (n.subtype.restrictScalars R)) :=
     TensorProduct.tensorQuotientEquiv M (n.restrictScalars R)
   f.toAddEquiv.toLinearEquiv <| fun c x ↦ by
-    simp
+    simp only [AddEquiv.coe_mk, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
+      LinearEquiv.invFun_eq_symm, Equiv.coe_fn_mk]
     induction x with
     | zero => simp
     | add x y hx hy => simp [hx, hy]
@@ -54,7 +84,8 @@ lemma map_includeRight_eq (I : Ideal T) :
   have := I.map_includeRight_eq (R := R) (A := A)
   rwa [Submodule.ext_iff] at this ⊢
 
-set_option maxHeartbeats 0 in
+/-- The tensor product of an `S`-algebra `A` over `R` with the quotient of `T` by an ideal `I`
+is isomorphic to the quotient of `A ⊗[R] T` by the extended ideal, as an `S`-algebra. -/
 def tensorQuotientEquiv (I : Ideal T) :
     A ⊗[R] (T ⧸ I) ≃ₐ[S] (A ⊗[R] T) ⧸ I.map (includeRight (A := A) (R := R)) :=
   let f : A ⊗[R] (T ⧸ I) ≃ₗ[S]
@@ -113,6 +144,8 @@ variable (I : Ideal S)
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
 variable {I} in
+/-- Lift a linear map `f : I →ₗ[R] M` that vanishes on products to a linear map on the
+cotangent space `I ⧸ I ^ 2`. -/
 def Cotangent.lift {M : Type*} [AddCommGroup M] [Module R M]
     (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
     I.Cotangent →ₗ[R] M where
@@ -124,7 +157,7 @@ def Cotangent.lift {M : Type*} [AddCommGroup M] [Module R M]
     · intro r hr y _
       exact hf ⟨r, hr⟩ y
     · intro x y hx hy
-      simp [hx, hy]
+      simp only [map_add, hx, hy, add_zero]
   map_smul' r x := by
     obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
     have : r • I.toCotangent x = I.toCotangent (r • x) := by simp
@@ -141,6 +174,7 @@ lemma Cotangent.lift_toCotangent {M : Type*} [AddCommGroup M] [Module R M]
 
 variable (R)
 
+/-- `Algebra.idealMap S I` preserves multiplication. -/
 @[simp]
 lemma _root_.Algebra.idealMap_mul {R : Type*} [CommSemiring R] (S : Type*) [Semiring S]
     [Algebra R S] (I : Ideal R) (x y : I) :
@@ -148,6 +182,8 @@ lemma _root_.Algebra.idealMap_mul {R : Type*} [CommSemiring R] (S : Type*) [Semi
   ext
   simp
 
+/-- The canonical map from the base change of the cotangent space `T ⊗[R] I/I²` to the
+cotangent space `(I · (T ⊗[R] S))/(I · (T ⊗[R] S))²` of the extended ideal. -/
 def tensorCotangentTo :
     T ⊗[R] I.Cotangent →ₗ[T] (I.map <| algebraMap S (T ⊗[R] S)).Cotangent :=
   LinearMap.liftBaseChange T <|
@@ -173,44 +209,30 @@ lemma tensorCotangentTo_surjective :
   obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
   have := I.map_includeRight_eq (R := R) (A := T)
   rw [Submodule.ext_iff] at this
-  simp at this
+  simp only [Submodule.restrictScalars_mem, LinearMap.mem_range] at this
   have hmem (y : T ⊗[R] I) :
-      (I.subtype.restrictScalars R).lTensor T y ∈ map (Algebra.TensorProduct.includeRight) I := by
-    rw [this]
-    use y
-    rfl
-  have : ∃ (y : T ⊗[R] I), ⟨(I.subtype.restrictScalars R).lTensor T y, hmem y⟩ = x := by
-    obtain ⟨y, hy⟩ := (this _).mp x.property
-    use y
-    ext
-    simpa
-  have htxm (t : T) (x : I) : t ⊗ₜ[R] ↑x ∈ map (algebraMap S (T ⊗[R] S)) I := hmem (t ⊗ₜ[R] ↑x)
+      (I.subtype.restrictScalars R).lTensor T y ∈ map (Algebra.TensorProduct.includeRight) I :=
+    (this _).mpr ⟨y, rfl⟩
+  obtain ⟨y, rfl⟩ : ∃ (y : T ⊗[R] I), ⟨(I.subtype.restrictScalars R).lTensor T y, hmem y⟩ = x :=
+    let ⟨y, hy⟩ := (this _).mp x.property
+    ⟨y, by ext; simpa⟩
+  have htxm (t : T) (x : I) :
+      t ⊗ₜ[R] ↑x ∈ map (algebraMap S (T ⊗[R] S)) I := hmem (t ⊗ₜ[R] ↑x)
   have heq (t : T) (x : I) :
       (map (algebraMap S (T ⊗[R] S)) I).toCotangent ⟨t ⊗ₜ[R] x, htxm t x⟩ =
         t • (I.map (algebraMap S (T ⊗[R] S))).toCotangent ((Algebra.idealMap (T ⊗[R] S) I) x) := by
-    have : t • (map (algebraMap S (T ⊗[R] S)) I).toCotangent ((Algebra.idealMap (T ⊗[R] S) I) x) =
-        (map (algebraMap S (T ⊗[R] S)) I).toCotangent (t • (Algebra.idealMap (T ⊗[R] S) I) x) := by
-      rw [LinearMap.map_smul_of_tower]
-    rw [this]
-    congr
-    simp
-  obtain ⟨y, rfl⟩ := this
+    rw [← LinearMap.map_smul_of_tower]; congr; simp
   induction y with
   | zero =>
-    use 0
-    simp
-    symm
-    apply map_zero
+    exact ⟨0, by simp only [map_zero]; exact (map_zero _).symm⟩
   | add x y hx hy =>
     obtain ⟨a, ha⟩ := hx
     obtain ⟨b, hb⟩ := hy
-    use a + b
-    simp only [map_add, ha, hb]
-    rfl
+    exact ⟨a + b, by simp only [map_add, ha, hb]; rfl⟩
   | tmul t x =>
-    use t ⊗ₜ I.toCotangent x
-    simpa using (heq ..).symm
+    exact ⟨t ⊗ₜ I.toCotangent x, by simpa using (heq ..).symm⟩
 
+/-- The canonical map from the cotangent space to the quotient by the square is injective. -/
 lemma cotangentToQuotientSquare_injective :
     Function.Injective I.cotangentToQuotientSquare := by
   simp only [cotangentToQuotientSquare]
@@ -223,7 +245,7 @@ lemma cotangentToQuotientSquare_injective :
   rw [Ideal.toCotangent_eq_zero]
   exact (Submodule.Quotient.mk_eq_zero (I ^ 2)).mp hx
 
-set_option maxHeartbeats 0 in
+/-- If `T` is a flat `R`-module, the canonical map `tensorCotangentTo R T I` is injective. -/
 lemma tensorCotangentTo_injective_of_flat [Module.Flat R T] :
     Function.Injective (I.tensorCotangentTo R T) := by
   let f : (I.map <| algebraMap S (T ⊗[R] S)).Cotangent →ₗ[T]
@@ -253,7 +275,11 @@ lemma tensorCotangentTo_injective_of_flat [Module.Flat R T] :
       (I.cotangentToQuotientSquare.restrictScalars R)
     apply cotangentToQuotientSquare_injective
 
-noncomputable def tensorCotangent [Module.Flat R T] :
+/-- If `T` is a flat `R`-module, the base change of the cotangent space of `I` is linearly
+equivalent to the cotangent space of the extended ideal `I · (T ⊗[R] S)`. -/
+def tensorCotangent [Module.Flat R T] :
     T ⊗[R] I.Cotangent ≃ₗ[T] (I.map <| algebraMap S (T ⊗[R] S)).Cotangent :=
   LinearEquiv.ofBijective (I.tensorCotangentTo R T)
     ⟨I.tensorCotangentTo_injective_of_flat R T, I.tensorCotangentTo_surjective R T⟩
+
+end Ideal
