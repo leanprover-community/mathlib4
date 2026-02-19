@@ -78,3 +78,5 @@ def internalHomCurryIso (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
   inv_hom_id := internalHom_uncurry_curry x y z
 
 end CategoryTheory.MonoidalClosed
+
+end
