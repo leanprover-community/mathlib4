@@ -662,8 +662,6 @@ theorem map_smulₛₗ₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (c : R) (x
 def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
   (coeLMₛₗ σ₂₃).comp L.toLinearMap
 
-@[deprecated (since := "2025-07-28")] alias toLinearMap₂ := toLinearMap₁₂
-
 @[simp] lemma toLinearMap₁₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
     L.toLinearMap₁₂ v w = L v w := rfl
 
@@ -674,8 +672,6 @@ lemma toLinearMap₁₂_injective :
 lemma toLinearMap₁₂_inj (L₁ L₂ : E →SL[σ₁₃] F →SL[σ₂₃] G) :
     L₁.toLinearMap₁₂ = L₂.toLinearMap₁₂ ↔ L₁ = L₂ :=
   toLinearMap₁₂_injective.eq_iff
-
-@[deprecated (since := "2025-07-28")] alias toLinearMap₂_apply := toLinearMap₁₂_apply
 
 end AddCommMonoid
 
@@ -743,6 +739,7 @@ variable [UniformSpace F] [IsUniformAddGroup F] [Module 𝕜 F]
   (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isUniformEmbedding_restrictScalars :
     IsUniformEmbedding (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) := by
   rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]

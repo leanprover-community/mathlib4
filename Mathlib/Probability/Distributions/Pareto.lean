@@ -93,6 +93,7 @@ lemma paretoPDFReal_nonneg (ht : 0 ≤ t) (hr : 0 ≤ r) (x : ℝ) :
 
 open Measure
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pdf of the Pareto distribution integrates to `1`. -/
 @[simp]
 lemma lintegral_paretoPDF_eq_one (ht : 0 < t) (hr : 0 < r) :

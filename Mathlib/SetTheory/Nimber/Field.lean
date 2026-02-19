@@ -3,7 +3,7 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.CharP.Two
 public import Mathlib.SetTheory.Nimber.Basic
@@ -285,6 +285,7 @@ instance (a : Nimber.{u}) : Small.{u} (invSet a) := by
   rw [List.toNimber]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The complement of `invSet a` is nonempty. -/
 private theorem invSet_nonempty (a : Nimber) : (invSet a)ᶜ.Nonempty :=
   have := instSmallElemInvSet a -- why is this needed?

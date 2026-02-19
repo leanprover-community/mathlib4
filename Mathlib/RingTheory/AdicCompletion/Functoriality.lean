@@ -133,6 +133,7 @@ private theorem adicCompletionAux_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : A
     (adicCompletionAux I f x).val n = f.reduceModIdeal (I ^ n) (x.val n) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A linear map induces a map on adic completions. -/
@@ -256,6 +257,7 @@ section Sum
 
 open DirectSum
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map from the sum of the adic completions to the adic completion
 of the sum. -/
 def sum [DecidableEq ι] :
@@ -263,12 +265,14 @@ def sum [DecidableEq ι] :
   toModule (AdicCompletion I R) ι (AdicCompletion I (⨁ j, M j))
     (fun j ↦ map I (lof R ι M j))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sum_lof [DecidableEq ι] (j : ι) (x : AdicCompletion I (M j)) :
     sum I M ((DirectSum.lof (AdicCompletion I R) ι (fun i ↦ AdicCompletion I (M i)) j) x) =
       map I (lof R ι M j) x := by
   simp [sum]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sum_of [DecidableEq ι] (j : ι) (x : AdicCompletion I (M j)) :
     sum I M ((DirectSum.of (fun i ↦ AdicCompletion I (M i)) j) x) =
@@ -278,6 +282,7 @@ theorem sum_of [DecidableEq ι] (j : ι) (x : AdicCompletion I (M j)) :
 
 variable [Fintype ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `ι` is finite, we use the equivalence of sum and product to obtain an inverse for
 `AdicCompletion.sum` from `AdicCompletion.pi`. -/
 def sumInv : AdicCompletion I (⨁ j, M j) →ₗ[AdicCompletion I R] (⨁ j, (AdicCompletion I (M j))) :=
@@ -285,6 +290,7 @@ def sumInv : AdicCompletion I (⨁ j, M j) →ₗ[AdicCompletion I R] (⨁ j, (A
   letI g := linearEquivFunOnFintype (AdicCompletion I R) ι (fun j ↦ AdicCompletion I (M j))
   g.symm.toLinearMap ∘ₗ pi I M ∘ₗ f
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem component_sumInv (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
     component (AdicCompletion I R) ι _ j (sumInv I M x) =
@@ -292,6 +298,7 @@ theorem component_sumInv (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
   apply induction_on I _ x (fun x ↦ ?_)
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumInv_apply (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
     (sumInv I M x) j = map I (component R ι _ j) x := by
@@ -300,6 +307,7 @@ theorem sumInv_apply (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
 
 variable [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by
   ext j x : 2
   apply DirectSum.ext_component (AdicCompletion I R) (fun i ↦ ?_)
@@ -311,6 +319,7 @@ theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by
   · next h => subst h; simp
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   ext f n
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq, mk_apply_coe,
@@ -321,6 +330,7 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   simp only [← Submodule.mkQ_apply, ← map_sum, ← apply_eq_component, lof_eq_of,
     DirectSum.sum_univ_of]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `ι` is finite, `sum` has `sumInv` as inverse. -/
 def sumEquivOfFintype :
     (⨁ j, (AdicCompletion I (M j))) ≃ₗ[AdicCompletion I R] AdicCompletion I (⨁ j, M j) :=
@@ -331,6 +341,7 @@ theorem sumEquivOfFintype_apply (x : ⨁ j, (AdicCompletion I (M j))) :
     sumEquivOfFintype I M x = sum I M x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumEquivOfFintype_symm_apply (x : AdicCompletion I (⨁ j, M j)) :
     (sumEquivOfFintype I M).symm x = sumInv I M x :=
@@ -344,6 +355,7 @@ open DirectSum
 
 variable [DecidableEq ι] [Fintype ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `ι` is finite, `pi` is a linear equiv. -/
 def piEquivOfFintype :
     AdicCompletion I (∀ j, M j) ≃ₗ[AdicCompletion I R] ∀ j, AdicCompletion I (M j) :=

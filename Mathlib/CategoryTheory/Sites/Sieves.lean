@@ -26,7 +26,7 @@ sieve, pullback
 @[expose] public section
 
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
@@ -177,15 +177,6 @@ lemma ofArrows.mk' {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} {Z : C} {g
   subst hg
   constructor
 
-theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
-  funext Y
-  ext g
-  constructor
-  · rintro ⟨_⟩
-    apply singleton.mk
-  · rintro ⟨_⟩
-    exact ofArrows.mk PUnit.unit
-
 instance {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
     [∀ i, HasPullback (g i) f] : (ofArrows Z g).HasPullbacks f where
   hasPullback {_} _ := fun ⟨i⟩ ↦ inferInstance
@@ -273,6 +264,17 @@ lemma ofArrows_comp_eq_of_surjective {X : C} {ι σ : Type*} {Y : ι → C}
 lemma ofArrows_le_iff {X : C} {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} {R : Presieve X} :
     Presieve.ofArrows Y f ≤ R ↔ ∀ i, R (f i) :=
   ⟨fun hle i ↦ hle _ ⟨i⟩, fun h _ g ⟨i⟩ ↦ h i⟩
+
+lemma ofArrows_of_unique {X : C} {ι : Type*} [Unique ι] {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
+    ofArrows Y f = singleton (f default) := by
+  refine le_antisymm ?_ fun Y _ ⟨⟩ ↦ ⟨default⟩
+  rw [ofArrows_le_iff]
+  intro i
+  obtain rfl : i = default := Subsingleton.elim _ _
+  simp
+
+theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
+  rw [ofArrows_of_unique]
 
 /-- A convenient constructor for a refinement of a presieve of the form `Presieve.ofArrows`.
 This contains a sieve obtained by `Sieve.bind` and `Sieve.ofArrows`, see
@@ -622,6 +624,9 @@ theorem le_generate (R : Presieve X) : R ≤ generate R :=
 theorem generate_sieve (S : Sieve X) : generate S = S :=
   giGenerate.l_u_eq S
 
+lemma generate_mono : Monotone (generate : Presieve X → _) :=
+  (giGenerate (X := X)).gc.monotone_l
+
 /-- If the identity arrow is in a sieve, the sieve is maximal. -/
 theorem id_mem_iff_eq_top : S (𝟙 X) ↔ S = ⊤ :=
   ⟨fun h => top_unique fun Y f _ => by simpa using downward_closed _ h f, fun h => h.symm ▸ trivial⟩
@@ -640,6 +645,10 @@ theorem generate_of_singleton_isSplitEpi (f : Y ⟶ X) [IsSplitEpi f] :
 @[simp]
 theorem generate_top : generate (⊤ : Presieve X) = ⊤ :=
   generate_of_contains_isSplitEpi (𝟙 _) ⟨⟩
+
+@[simp]
+lemma generate_bot : generate (⊥ : Presieve X) = ⊥ := by
+  simp only [eq_bot_iff, generate_le_iff, bot_le]
 
 @[simp]
 lemma comp_mem_iff (i : X ⟶ Y) (f : Y ⟶ Z) [IsIso i] (S : Sieve Z) :
@@ -738,6 +747,13 @@ lemma ofArrows_eq_ofObjects {X : C} (hX : IsTerminal X)
   rintro ⟨i, ⟨h⟩⟩
   exact ⟨i, h, hX.hom_ext _ _⟩
 
+lemma ofObjects_mono {I : Type*} {X : I → C} {I' : Type*} {X' : I' → C} {Y : C}
+    (h : Set.range X ⊆ Set.range X') :
+    Sieve.ofObjects X Y ≤ Sieve.ofObjects X' Y := by
+  rintro Z f ⟨i, ⟨g⟩⟩
+  obtain ⟨i', h⟩ := h ⟨i, rfl⟩
+  exact ⟨i', ⟨h ▸ g⟩⟩
+
 /-- Given a morphism `h : Y ⟶ X`, send a sieve S on X to a sieve on Y
 as the inverse image of S with `_ ≫ h`. That is, `Sieve.pullback S h := (≫ h) '⁻¹ S`. -/
 @[simps]
@@ -784,6 +800,12 @@ lemma pullback_ofObjects_eq_top
   simp only [top_apply, iff_true]
   rw [mem_ofObjects_iff]
   exact ⟨i, ⟨h ≫ g⟩⟩
+
+@[simp]
+lemma pullback_ofObjects {I : Type*} (X : I → C) {Y Z : C} (f : Z ⟶ Y) :
+    (ofObjects X Y).pullback f = ofObjects X Z := by
+  ext
+  simp [Sieve.ofObjects]
 
 /-- Push a sieve `R` on `Y` forward along an arrow `f : Y ⟶ X`: `gf : Z ⟶ X` is in the sieve if `gf`
 factors through some `g : Z ⟶ Y` which is in `R`.
@@ -1033,6 +1055,7 @@ def fullyFaithfulFunctorGaloisCoinsertion [F.Full] [F.Faithful] (X : C) :
   rw [F.map_injective h₂]
   exact S.downward_closed h₁ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma functorPushforward_functor (S : Sieve X) (e : C ≌ D) :
     S.functorPushforward e.functor = (S.pullback (e.unitInv.app X)).functorPullback e.inverse := by
   ext Y iYX
@@ -1058,10 +1081,12 @@ lemma mem_functorPushforward_inverse {X : D} {S : Sieve X} {e : C ≌ D} {f : Y 
 
 variable (e : C ≌ D)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma functorPushforward_equivalence_eq_pullback {U : C} (S : Sieve U) :
     Sieve.functorPushforward e.inverse (Sieve.functorPushforward e.functor S) =
       Sieve.pullback (e.unitInv.app U) S := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pullback_functorPushforward_equivalence_eq {X : C} (S : Sieve X) :
     Sieve.pullback (e.unit.app X) (Sieve.functorPushforward e.inverse
       (Sieve.functorPushforward e.functor S)) = S := by ext; simp
@@ -1082,6 +1107,12 @@ lemma mem_functorPushforward_iff_of_full_of_faithful [F.Full] [F.Faithful]
   rw [Sieve.mem_functorPushforward_iff_of_full]
   refine ⟨fun ⟨g, hcomp, hg⟩ ↦ ?_, fun hf ↦ ⟨f, rfl, hf⟩⟩
   rwa [← F.map_injective hcomp]
+
+lemma functorPushforward_ofObjects_le
+    {I : Type*} (X : I → C) (Y : C) :
+    (ofObjects X Y).functorPushforward F ≤ ofObjects (F.obj ∘ X) (F.obj Y) := by
+  rintro Z f ⟨W, g₁, g₂, ⟨i, ⟨g₃⟩⟩, hf⟩
+  exact ⟨i, ⟨g₂ ≫ F.map g₃⟩⟩
 
 end Functor
 
@@ -1142,6 +1173,57 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
 instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
   ⟨⟨{ app := fun _ a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
+/-- A variant of `Sieve.functor` with universe lifting. -/
+abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type max w v₁ :=
+  S.functor ⋙ CategoryTheory.uliftFunctor
+
+/-- A variant of `Sieve.natTransOfLe` with universe lifting. -/
+@[simps]
+def uliftNatTransOfLe {S T : Sieve X} (h : S ≤ T) :
+    Sieve.uliftFunctor.{w} S ⟶ Sieve.uliftFunctor.{w} T where
+  app _ f := ⟨f.down.1, h _ f.down.2⟩
+
+/-- A variant of `Sieve.functorInclusion` with universe lifting. -/
+@[simps! app]
+def uliftFunctorInclusion (S : Sieve X) :
+    S.uliftFunctor ⟶ uliftYoneda.obj.{w} X :=
+  Functor.whiskerRight S.functorInclusion CategoryTheory.uliftFunctor
+
+/-- A variant of `Sieve.toFunctor` with universe lifting. -/
+@[simps]
+def toUliftFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :
+    uliftYoneda.obj.{w} Y ⟶ Sieve.uliftFunctor.{w} S where
+  app Z g := ⟨g.down ≫ f, S.downward_closed hf g.down⟩
+
+theorem uliftNatTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
+    uliftNatTransOfLe.{w} h ≫ uliftFunctorInclusion.{w} _ = uliftFunctorInclusion.{w} _ :=
+  rfl
+
+/-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
+instance uliftFunctorInclusion_is_mono (S : Sieve X) :
+    Mono (Sieve.uliftFunctorInclusion.{w} S) :=
+  ⟨fun _ _ h => by
+    ext Y y
+    refine ULift.ext _ _ (Subtype.ext_iff.2 ?_)
+    simpa using congr_fun (NatTrans.congr_app h Y) y⟩
+
+/-- A variant of `Sieve.sieveOfSubfunctor` with universe lifting. -/
+@[simps]
+def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type max w v₁} (f : R ⟶ uliftYoneda.obj.{w} X) :
+    Sieve X where
+  arrows Y g := ∃ t, f.app (Opposite.op Y) t = { down := g }
+  downward_closed := by
+    intro Y Z _ ⟨t, ht⟩ g
+    refine ⟨R.map g.op t, ?_⟩
+    simp [FunctorToTypes.naturality _ _ f, ht]
+
+theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
+    Sieve.sieveOfUliftSubfunctor.{w} (S.uliftFunctorInclusion) = S := by
+  cat_disch
+
+instance uliftFunctorInclusion_top_isIso : IsIso (Sieve.uliftFunctorInclusion.{w} (⊤ : Sieve X)) :=
+  ⟨⟨{ app := fun _ a => ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
+
 lemma ofArrows_eq_pullback_of_isPullback {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) → X i ⟶ S)
     {Y : C} {g : Y ⟶ S} {P : ι → C} {p₁ : (i : ι) → P i ⟶ Y} {p₂ : (i : ι) → P i ⟶ X i}
     (h : ∀ (i : ι), IsPullback (p₁ i) (p₂ i) g (f i)) :
@@ -1166,5 +1248,15 @@ lemma Presieve.bind_ofArrows_le_bindOfArrows {ι : Type*} {X : C} (Z : ι → C)
   rintro T g ⟨W, v, v', hv', ⟨S, u, u', h, hu⟩, rfl⟩
   rw [← Sieve.ofArrows.fac hv', ← reassoc_of% hu]
   exact ⟨S, u, u' ≫ f _, ⟨_, _, h⟩, rfl⟩
+
+lemma Presieve.functorPushforward_overForget
+    {S : C} {X : Over S} (R : Presieve X) :
+    Presieve.functorPushforward (Over.forget S) R =
+      (Sieve.generate (Presieve.map (Over.forget S) R)).arrows := by
+  refine le_antisymm ?_ ?_
+  · rintro Y _ ⟨Z, a, b, ha, rfl⟩
+    exact ⟨Z.left, b, a.left, ⟨ha⟩, rfl⟩
+  · rintro Y _ ⟨Z, a, b, ⟨hd⟩, rfl⟩
+    exact ⟨_, _, a, hd, by simp⟩
 
 end CategoryTheory
