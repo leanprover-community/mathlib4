@@ -24,16 +24,14 @@ In this file we define residually finite groups and prove some basic properties.
 class AddGroup.ResiduallyFinite (G : Type*) [AddGroup G] : Prop where
   inf_eq_bot : ⨅ H : FiniteIndexNormalAddSubgroup G, H.toAddSubgroup = ⊥
 
-variable (G : Type*) [Group G]
-
 namespace Group
 
-class ResiduallyFinite : Prop where
+class ResiduallyFinite (G : Type*) [Group G] : Prop where
   inf_eq_bot : ⨅ H : FiniteIndexNormalSubgroup G, H.toSubgroup = ⊥
 
 attribute [to_additive existing] ResiduallyFinite
 
-variable {G}
+variable {G : Type*} [Group G]
 
 @[to_additive]
 theorem residuallyFinite_def :
