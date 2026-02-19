@@ -442,7 +442,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 [Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] `E'' →SL[σ] E''''` is a space of continuous (semi-)linear maps
   [Elab.DiffGeo.MDiff] Failed with error:
-      `σ` is not the identity continuous linear map
+      `E'' →SL[σ] E''''` is a space of continuous (semi-)linear maps over `σ`, which is not the identity
 [Elab.DiffGeo.MDiff] ❌️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `E'' →SL[σ] E''''` is not a coercion of a set to a type

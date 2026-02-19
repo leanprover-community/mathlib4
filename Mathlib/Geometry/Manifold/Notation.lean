@@ -208,10 +208,9 @@ scoped elab:max "T% " t:term:arg : term => do
 namespace Elab
 
 /-- Check if an expression `e` is a `ContinuousLinearMap` over an identity ring homomorphism where
-the coefficient fields of the domain and codomain are reducibly definitionally equal. If so, we
-return `(k, E, F)`, where `k` is the coefficient field, `E` is the domain, and `F` is the codomain
+the coefficient rings of the domain and codomain are reducibly definitionally equal. If so, we
+return `(k, E, F)`, where `k` is the coefficient ring, `E` is the domain, and `F` is the codomain
 of the continuous linear maps. Otherwise, we error.
-
 Assumes that `e` is already in `whnf` and has had metavariables instantiated. -/
 private def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Expr × Expr × Expr := do
   match_expr e with
@@ -221,7 +220,8 @@ private def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Expr × Ex
       throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
     match_expr ← whnfR σ with
     | RingHom.id _ _ => return (k, E, F)
-    | _ => throwError "`{σ}` is not the identity continuous linear map"
+    | _ => throwError "`{e}` is a space of continuous (semi-)linear maps over `{σ}`, \
+      which is not the identity"
   | _ => throwError "`{e}` is not a space of continuous linear maps"
 
 /--
