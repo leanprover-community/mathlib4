@@ -182,11 +182,12 @@ lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I
 
 section powSmulQuotInclusion
 
+set_option backward.isDefEq.respectTransparency false
+
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 namespace Submodule
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The canonical inclusion from `I ^ a • N ⧸ I ^ b • (I ^ a • N)` to `M ⧸ I ^ c • N`
 when `c = b + a`. -/
@@ -194,21 +195,18 @@ def powSmulQuotInclusion {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
     ↑(I ^ a • N) ⧸ (I ^ b • ⊤ : Submodule R ↑(I ^ a • N)) →ₗ[R] M ⧸ (I ^ c • N) :=
   mapQ _ _ (I ^ a • N).subtype <| by simp [← map_le_iff_le_comap, h, pow_add, mul_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem powSmulQuotInclusion_injective {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
     Function.Injective (powSmulQuotInclusion I M h N) := by
   rw [← LinearMap.ker_eq_bot]
   simp [powSmulQuotInclusion, mapQ, ← le_bot_iff, ker_liftQ, LinearMap.ker_comp, pow_add, mul_smul,
     map_le_iff_le_comap, ← Submodule.map_le_map_iff_of_injective (I ^ a • N).subtype_injective, h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem factorPow_powSmulQuotInclusion_comm {a b c d e : ℕ} (h : c = b + a) (h' : e = d + c) :
     (factorPow I M (show c ≤ e by lia)) ∘ₗ
       (powSmulQuotInclusion I M (show e = (b + d) + a by lia) ⊤) =
     (powSmulQuotInclusion I M h ⊤) ∘ₗ
       (factorPow I ↥(I ^ a • ⊤ : Submodule R M) (b.le_add_right d)) := by ext; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem powSmulQuotInclusion_range {a b c : ℕ} (h : c = b + a) :
     (powSmulQuotInclusion I M h ⊤).range = I ^ a • ⊤ := by
   simp [powSmulQuotInclusion, mapQ, range_liftQ, LinearMap.range_comp]
