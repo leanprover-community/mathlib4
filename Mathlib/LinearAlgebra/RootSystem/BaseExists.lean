@@ -59,6 +59,7 @@ lemma baseOf_pairwise_pairing_le_zero [CharZero R] [IsDomain R] [P.IsCrystallogr
   contrapose! this
   exact P.root_sub_root_mem_of_pairingIn_pos this hne
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma is usually established for root systems with coefficients `R` equal to `ℚ` or `ℝ`, in
 which case one may take `S = R`. However our statement allows for more general coefficients such as
 `R = ℂ` and `S = ℚ`.
@@ -113,6 +114,7 @@ section Field
 variable [Field R] [CharZero R] [Module R M] [Module R N] (P : RootPairing ι R M N)
   [P.IsRootSystem] [P.IsCrystallographic]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linearIndepOn_root_baseOf (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0) :
     LinearIndepOn R P.root (baseOf P.root f) := by
   let _i : Module ℚ M := Module.compHom M (algebraMap ℚ R)
@@ -195,6 +197,7 @@ lemma eq_baseOf_iff (s : Set ι) (f : M →+ ℚ)
 
 variable [P.IsReduced]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma baseOf_root_eq_baseOf_coroot_aux
     (f : M →+ ℚ) (g : N →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0)
     (hfg : ∀ i, 0 < f (P.root i) ↔ 0 < g (P.coroot i)) :
@@ -265,7 +268,7 @@ private lemma baseOf_root_eq_baseOf_coroot_aux
   · simpa using hij
   · obtain ⟨rfl⟩ : q = -1 := smul_left_injective ℚ (P.ne_zero j) <| by
       simp_rw [neg_smul, ← neg_eq_iff_eq_neg, ← smul_neg, ← hij, one_smul, hq']
-    lia
+    grind
 
 lemma baseOf_root_eq_baseOf_coroot
     (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0)
@@ -275,6 +278,7 @@ lemma baseOf_root_eq_baseOf_coroot
   subset_antisymm (P.baseOf_root_eq_baseOf_coroot_aux f g hf hfg)
     (P.flip.baseOf_root_eq_baseOf_coroot_aux g f hg (by aesop))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is really just an auxiliary result en route to `RootPairing.Base.mk'`. -/
 lemma coroot_mem_or_neg_mem_closure_of_root (s : Set ι)
     (hli : LinearIndepOn R P.root s)

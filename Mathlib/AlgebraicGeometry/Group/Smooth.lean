@@ -29,6 +29,7 @@ universe u
 variable {K : Type u} [Field K] [IsAlgClosed K] {G : Scheme} (f : G ⟶ Spec (.of K))
     [LocallyOfFinitePresentation f] [IsReduced G] [GrpObj (Over.mk f)]
 
+set_option backward.isDefEq.respectTransparency false in
 open MonObj MonoidalCategory CartesianMonoidalCategory in
 /--
 If `G` is a group scheme over an algebraically closed field `k` that is reduced and locally

@@ -47,6 +47,7 @@ variable {ι : Type*} (v : ι → K)
 variable {κ : Type*} (w : κ → L)
 variable (hv : AlgebraicIndependent R v)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenceBasis R v) :
     IsAlgClosure (Algebra.adjoin R (Set.range v)) K :=
   letI := RingHom.domain_nontrivial (algebraMap R K)
@@ -55,6 +56,7 @@ theorem isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenc
 
 variable (hw : AlgebraicIndependent R w)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- setting `R` to be `ZMod (ringChar R)` this result shows that if two algebraically
 closed fields have equipotent transcendence bases and the same characteristic then they are
 isomorphic. -/
@@ -83,6 +85,7 @@ variable {ι : Type w} (v : ι → K)
 variable {K' : Type u} [Field K'] [Algebra R K'] [IsAlgClosed K']
 variable {ι' : Type u} (v' : ι' → K')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
 the maximum of the cardinality of `R`, the cardinality of a transcendence basis and
 `ℵ₀`

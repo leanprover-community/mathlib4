@@ -72,10 +72,12 @@ open DirectSum
 
 variable [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coproduct cone induced by the concrete coproduct. -/
 def coproductCocone : Cofan Z :=
   Cofan.mk (ModuleCat.of R (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.lof R ι (fun i ↦ Z i) i)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The concrete coproduct cone is colimiting. -/
 def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
   desc s := ofHom <| DirectSum.toModule R ι _ fun i ↦ (s.ι.app ⟨i⟩).hom
@@ -95,17 +97,20 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
 
 variable [HasCoproduct Z]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The categorical coproduct of a family of objects in `ModuleCat`
 agrees with direct sum.
 -/
 noncomputable def coprodIsoDirectSum : ∐ Z ≅ ModuleCat.of R (⨁ i, Z i) :=
   colimit.isoColimitCocone ⟨_, coproductCoconeIsColimit Z⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, elementwise]
 theorem ι_coprodIsoDirectSum_hom (i : ι) :
     Sigma.ι Z i ≫ (coprodIsoDirectSum Z).hom = ofHom (DirectSum.lof R ι (fun i ↦ Z i) i) :=
   colimit.isoColimitCocone_ι_hom _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, elementwise]
 theorem lof_coprodIsoDirectSum_inv (i : ι) :
     ofHom (DirectSum.lof R ι (fun i ↦ Z i) i) ≫ (coprodIsoDirectSum Z).inv = Sigma.ι Z i :=

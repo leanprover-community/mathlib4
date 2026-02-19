@@ -357,13 +357,6 @@ run_cmd do
   let e : Expr := Ones 300
   let _ ← liftCoreM <| MetaM.run' <| (applyReplacementFun ToAdditive.data e).run #[] #[]
 
--- testing `isConstantApplication`
-run_cmd do
-  unless !(q((fun _ y => y) 3 4) : Q(Nat)).isConstantApplication do throwError "1"
-  unless (q((fun x _ => x) 3 4) : Q(Nat)).isConstantApplication do throwError "2"
-  unless !(q((fun x => x) 3) : Q(Nat)).isConstantApplication do throwError "3"
-  unless (q((fun _ => 5) 3) : Q(Nat)).isConstantApplication do throwError "4"
-
 @[to_additive, to_additive_dont_translate] def MonoidEnd : Type := Unit
 def Unit' : Type := Unit
 @[to_additive_do_translate] def Unit'' : Type := Unit

@@ -110,6 +110,7 @@ theorem intervalGapsWithin_injOn : (Set.Iio k).InjOn
   simp only [hj, hj', intervalGapsWithin_snd_of_lt, intervalGapsWithin_succ_fst_of_lt] at hjj'
   grind [F.orderEmbOfFin (α := α ×ₗ α) h |>.injective hjj']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem intervalGapsWithin_surjOn : (Set.Iio k).SurjOn
     (fun (j : ℕ) ↦ ((F.intervalGapsWithin h a b j).2, (F.intervalGapsWithin h a b j.succ).1))
     F := by
@@ -140,6 +141,7 @@ theorem intervalGapsWithin_snd_le {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a 
   · have := hFab (F.intervalGapsWithin_mapsTo h a b (x := j) (by grind))
     grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
     (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b)
     (hF : (SetLike.coe F).PairwiseDisjoint (fun z ↦ Set.Icc z.1 z.2)) :
@@ -172,6 +174,7 @@ theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
   have hFabi := hFab (z := G ⟨j, by omega⟩) (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)])
   simp [hFabi, this.le, hG]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem intervalGapsWithin_pairwiseDisjoint_Ioc {a b : α}
     (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :
     (Set.Iio (k + 1)).PairwiseDisjoint (fun (j : ℕ) ↦

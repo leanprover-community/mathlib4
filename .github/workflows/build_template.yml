@@ -243,6 +243,31 @@ jobs:
             echo "✅ All inputRevs in lake-manifest.json are valid"
           fi
 
+      - name: validate ProofWidgets source repository
+        # Only enforce this on the main mathlib4 repository, not on nightly-testing
+        if: github.repository == 'leanprover-community/mathlib4'
+        shell: bash
+        run: |
+          cd pr-branch
+
+          expected_url='https://github.com/leanprover-community/ProofWidgets4'
+          proofwidgets_count=$(jq '[.packages[] | select(.name == "proofwidgets")] | length' lake-manifest.json)
+          if [ "$proofwidgets_count" -ne 1 ]; then
+            echo "❌ Error: expected exactly one proofwidgets entry in lake-manifest.json, found $proofwidgets_count"
+            exit 1
+          fi
+
+          proofwidgets_url=$(jq -r '.packages[] | select(.name == "proofwidgets") | .url' lake-manifest.json)
+          normalized_url="${proofwidgets_url%.git}"
+          if [ "$normalized_url" != "$expected_url" ]; then
+            echo "❌ Error: invalid ProofWidgets source URL in lake-manifest.json"
+            echo "  expected: $expected_url"
+            echo "  found:    $proofwidgets_url"
+            exit 1
+          fi
+
+          echo "✅ ProofWidgets source URL is trusted: $proofwidgets_url"
+
       - name: verify ProofWidgets lean-toolchain matches on versioned releases
         # Only enforce this on the main mathlib4 repository, not on nightly-testing
         if: github.repository == 'leanprover-community/mathlib4'
@@ -327,6 +352,14 @@ jobs:
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
           fi
 
+      - name: fetch ProofWidgets release
+        # We need network access for ProofWidgets frontend assets.
+        # Run inside landrun so PR-controlled code remains sandboxed.
+        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake build proofwidgets:release
+
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
         continue-on-error: true # Allow workflow to continue, outcome checked later
@@ -399,17 +432,12 @@ jobs:
           ../tools-branch/scripts/lake-build-with-retry.sh Counterexamples
           # results of build at pr-branch/.lake/build_summary_Counterexamples.json
 
-      - name: prepare cache staging directory
-        if: ${{ steps.build.outcome == 'success' }}
+      - name: stage Mathlib cache files
+        if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
         shell: bash
         run: |
           rm -rf cache-staging
           mkdir -p cache-staging
-
-      - name: stage Mathlib cache files
-        if: ${{ steps.build.outcome == 'success' }}
-        shell: bash
-        run: |
           cd pr-branch
           lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
 
@@ -429,7 +457,7 @@ jobs:
 
       - name: check cache staging contents
         id: cache_staging_check
-        if: ${{ steps.build.outcome == 'success' }}
+        if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
         shell: bash
         run: |
           if find cache-staging -type f -name '*.ltar' -print -quit | grep -q .; then
@@ -439,7 +467,7 @@ jobs:
           fi
 
       - name: upload cache staging artifact
-        if: ${{ steps.cache_staging_check.outputs.has_files == 'true' }}
+        if: ${{ always() && steps.cache_staging_check.outputs.has_files == 'true' }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: cache-staging
@@ -609,7 +637,7 @@ jobs:
     # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
     # but not if any earlier step failed or was cancelled.
     # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
-    if: ${{ always() && needs.build.outputs.build-outcome == 'success' && needs.build.outputs.get-cache-outcome == 'success' && needs.build.outputs.cache-staging-has-files == 'true' }}
+    if: ${{ always() && needs.build.outputs.cache-staging-has-files == 'true' }}
     steps:
       - name: Checkout tools branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -655,6 +683,7 @@ jobs:
   post_steps:
     name: Post-Build Step
     needs: [build, upload_cache]
+    if: ${{ always() && needs.build.result == 'success' && (needs.upload_cache.result == 'success' || needs.upload_cache.result == 'skipped') }}
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
 
@@ -673,16 +702,16 @@ jobs:
       - name: get cache for Mathlib
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
-          lake exe cache get
+          lake exe cache --include-proofwidgets get
           # Run again with --repo, so ensure we actually get the oleans.
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} --include-proofwidgets get
 
       - name: get cache for Archive and Counterexamples
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
-          lake exe cache get Archive Counterexamples
+          lake exe cache --include-proofwidgets get Archive Counterexamples
           # Run again with --repo, so ensure we actually get the oleans.
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} --include-proofwidgets get Archive Counterexamples
 
       - name: verify that everything was available in the cache
         run: |
@@ -744,7 +773,8 @@ jobs:
 
   final:
     name: Post-CI job
-    if: ${{ inputs.run_post_ci }}
+    # ensure that this runs iff direct dependencies succeeded even if transitive dependencies  were skipped
+    if: ${{ always() && inputs.run_post_ci && needs.style_lint.result == 'success' && needs.build.result == 'success' && needs.post_steps.result == 'success' }}
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:

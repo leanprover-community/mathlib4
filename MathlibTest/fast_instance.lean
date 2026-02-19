@@ -62,14 +62,15 @@ instance instCommSemigroup [CommSemigroup α] : CommSemigroup (Wrapped α) :=
   fast_instance% Function.Injective.commSemigroup _ val_injective (fun _ _ => rfl)
 
 /--
-info: def testing.instSemigroup.{u_1} : {α : Type u_1} → [Semigroup α] → Semigroup (Wrapped α) :=
+info: @[instance_reducible] def testing.instSemigroup.{u_1} : {α : Type u_1} → [Semigroup α] → Semigroup (Wrapped α) :=
 fun {α} [inst : Semigroup α] => @Semigroup.mk (Wrapped α) (@instMulWrapped α (@Semigroup.toMul α inst)) ⋯
 -/
 #guard_msgs in
 set_option pp.explicit true in
 #print instSemigroup
 /--
-info: def testing.instCommSemigroup.{u_1} : {α : Type u_1} → [CommSemigroup α] → CommSemigroup (Wrapped α) :=
+info: @[instance_reducible] def testing.instCommSemigroup.{u_1} : {α : Type u_1} →
+  [CommSemigroup α] → CommSemigroup (Wrapped α) :=
 fun {α} [inst : CommSemigroup α] =>
   @CommSemigroup.mk (Wrapped α) (@instSemigroup α (@CommSemigroup.toSemigroup α inst)) ⋯
 -/

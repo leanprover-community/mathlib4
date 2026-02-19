@@ -7,7 +7,6 @@ Mario Carneiro
 module
 
 public import Mathlib.Data.List.Defs
-public import Aesop
 public import Mathlib.Logic.Basic
 
 /-! # getD and getI
