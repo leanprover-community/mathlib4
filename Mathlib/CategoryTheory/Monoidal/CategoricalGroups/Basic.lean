@@ -137,13 +137,22 @@ abbrev HasLeftDual.ofCategoricalGroup (X : C) : HasLeftDual X where
   leftDual := Xᘁ
   exact := ExactPairing.ofRightDualSelf X
 
+/--
+For an object `X` with a left dual, the left dual of `X` is isomorphic to the right dual of `X`.
+-/
 @[simps!]
 def isoLeftDual (X : C) [HasLeftDual X] : Xᘁ ≅ (ᘁX) :=
   leftDualIso (ExactPairing.ofRightDualSelf X) HasLeftDual.exact
 
+/--
+A categorical group is a left rigid category.
+-/
 abbrev LeftRigidCategory.ofCategoricalGroup : LeftRigidCategory C where
   leftDual := HasLeftDual.ofCategoricalGroup
 
+/--
+A categorical group is a rigid category.
+-/
 abbrev RigidCategory.ofCategoricalGroup : RigidCategory C where
   toLeftRigidCategory := LeftRigidCategory.ofCategoricalGroup
 
