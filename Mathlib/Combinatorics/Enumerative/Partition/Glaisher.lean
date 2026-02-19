@@ -42,6 +42,7 @@ open PowerSeries PowerSeries.WithPiTopology Finset
 section Semiring
 variable [CommSemiring R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The generating function of `Nat.Partition.restricted n p` is
 $$
 \prod_{i \in p} \sum_{j = 0}^{\infty} X^{ij}
@@ -73,6 +74,7 @@ theorem powerSeriesMk_card_restricted_eq_tprod [IsTopologicalSemiring R]
     ∏' i, if p (i + 1) then ∑' j : ℕ, X ^ ((i + 1) * j) else 1 :=
   (hasProd_powerSeriesMk_card_restricted R p).tprod_eq.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The generating function of `Nat.Partition.countRestricted n m` is
 $$
 \prod_{i = 1}^{\infty} \sum_{j = 0}^{m - 1} X^{ij}
@@ -110,6 +112,7 @@ end Semiring
 section Ring
 variable [CommRing R] [NoZeroDivisors R]
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem aux_mul_one_sub_X_pow [IsTopologicalRing R] {m : ℕ} (hm : 0 < m) :
     (∏' i, if ¬m ∣ i + 1 then ∑' j, (X : R⟦X⟧) ^ ((i + 1) * j) else 1) * ∏' i, (1 - X ^ (i + 1)) =
     ∏' i, (1 - X ^ ((i + 1) * m)) := by
@@ -133,6 +136,7 @@ private theorem aux_mul_one_sub_X_pow [IsTopologicalRing R] {m : ℕ} (hm : 0 < 
     have : (i + 1) * m - 1 + 1 = (i + 1) * m := by grind
     simp [this, pow_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 omit [TopologicalSpace R] in
 theorem powerSeriesMk_card_restricted_eq_powerSeriesMk_card_countRestricted {m : ℕ} (hm : 0 < m) :
     (PowerSeries.mk fun n ↦ (#(restricted n (¬ m ∣ ·)) : R)) =
