@@ -43,7 +43,11 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
-    ⟨`maxSynthPendingDepth, .ofNat 3⟩
+    ⟨`maxSynthPendingDepth, .ofNat 3⟩,
+    -- This feature is broken, see
+    -- https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/574421640.
+    -- We disable it here to avoid tripping over new contributors.
+    ⟨`backward.isDefEq.respectTransparency, false⟩,
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 

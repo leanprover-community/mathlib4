@@ -243,6 +243,31 @@ jobs:
             echo "✅ All inputRevs in lake-manifest.json are valid"
           fi
 
+      - name: validate ProofWidgets source repository
+        # Only enforce this on the main mathlib4 repository, not on nightly-testing
+        if: github.repository == 'leanprover-community/mathlib4'
+        shell: bash
+        run: |
+          cd pr-branch
+
+          expected_url='https://github.com/leanprover-community/ProofWidgets4'
+          proofwidgets_count=$(jq '[.packages[] | select(.name == "proofwidgets")] | length' lake-manifest.json)
+          if [ "$proofwidgets_count" -ne 1 ]; then
+            echo "❌ Error: expected exactly one proofwidgets entry in lake-manifest.json, found $proofwidgets_count"
+            exit 1
+          fi
+
+          proofwidgets_url=$(jq -r '.packages[] | select(.name == "proofwidgets") | .url' lake-manifest.json)
+          normalized_url="${proofwidgets_url%.git}"
+          if [ "$normalized_url" != "$expected_url" ]; then
+            echo "❌ Error: invalid ProofWidgets source URL in lake-manifest.json"
+            echo "  expected: $expected_url"
+            echo "  found:    $proofwidgets_url"
+            exit 1
+          fi
+
+          echo "✅ ProofWidgets source URL is trusted: $proofwidgets_url"
+
       - name: verify ProofWidgets lean-toolchain matches on versioned releases
         # Only enforce this on the main mathlib4 repository, not on nightly-testing
         if: github.repository == 'leanprover-community/mathlib4'
@@ -326,6 +351,14 @@ jobs:
             echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
           fi
+
+      - name: fetch ProofWidgets release
+        # We need network access for ProofWidgets frontend assets.
+        # Run inside landrun so PR-controlled code remains sandboxed.
+        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake build proofwidgets:release
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
@@ -669,16 +702,16 @@ jobs:
       - name: get cache for Mathlib
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
-          lake exe cache get
+          lake exe cache --include-proofwidgets get
           # Run again with --repo, so ensure we actually get the oleans.
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} --include-proofwidgets get
 
       - name: get cache for Archive and Counterexamples
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
-          lake exe cache get Archive Counterexamples
+          lake exe cache --include-proofwidgets get Archive Counterexamples
           # Run again with --repo, so ensure we actually get the oleans.
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} --include-proofwidgets get Archive Counterexamples
 
       - name: verify that everything was available in the cache
         run: |
