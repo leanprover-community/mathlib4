@@ -78,6 +78,7 @@ def eta : G ⟶ GrpCat.of (completion G) := GrpCat.ofHom {
   map_mul' _ _ := rfl
 }
 
+set_option backward.isDefEq.respectTransparency false in
 lemma denseRange : DenseRange (etaFn G) := by
   apply dense_iff_inter_open.mpr
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
@@ -138,6 +139,7 @@ def lift (f : G ⟶ GrpCat.of P) : completion G ⟶ P :=
       exact this
   }⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma lift_eta (f : G ⟶ GrpCat.of P) : eta G ≫ (forget₂ _ _).map (lift f) = f := by
   let e := isoLimittoFiniteQuotientFunctor P
@@ -158,6 +160,7 @@ lemma lift_unique (f g : completion G ⟶ P)
 
 end ProfiniteCompletion
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The profinite completion functor. -/
 @[simps]
 noncomputable def profiniteCompletion : GrpCat.{u} ⥤ ProfiniteGrp.{u} where
@@ -172,6 +175,7 @@ noncomputable def profiniteCompletion : GrpCat.{u} ⥤ ProfiniteGrp.{u} where
 
 namespace ProfiniteCompletion
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The hom-set equivalence exhibiting the adjunction. -/
 noncomputable
 def homEquiv (G : GrpCat.{u}) (P : ProfiniteGrp.{u}) :
@@ -181,6 +185,7 @@ def homEquiv (G : GrpCat.{u}) (P : ProfiniteGrp.{u}) :
   left_inv f := by apply lift_unique; simp
   right_inv f := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The profinite completion is left adjoint to the forgetful functor. -/
 noncomputable
 def adjunction : profiniteCompletion ⊣ forget₂ _ _ :=

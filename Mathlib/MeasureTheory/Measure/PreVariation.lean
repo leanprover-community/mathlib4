@@ -103,6 +103,7 @@ lemma exists_Finpartition_sum_gt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0
     a < ∑ p ∈ P.parts, f p := by
   simp_all [preVariationFun, lt_iSup_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0} (hε : 0 < ε)
     (h : preVariationFun f s ≠ ⊤) :
     ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
@@ -125,6 +126,7 @@ lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥
       _ ≤ ∑ p ∈ P.parts, f p + ε := by gcongr
   · simp [*]
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- The sup of measurable set subtypes over a finset equals the biUnion of the underlying sets. -/
 lemma Finset.sup_measurableSetSubtype_eq_biUnion {ι : Type*}

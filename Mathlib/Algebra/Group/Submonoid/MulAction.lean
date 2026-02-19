@@ -114,10 +114,6 @@ variable [Monoid M']
 instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
   inferInstance
 
-instance (R S : Type*) {T : Type*} [SMul M' R] [SMul M' S] [SMul R S] [SetLike T M']
-    [h : SMulDistribClass M' R S] (N' : T) :
-    SMulDistribClass N' R S := ⟨fun g _ _ ↦ h.smul_distrib_smul g _ _⟩
-
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
 
 end Submonoid

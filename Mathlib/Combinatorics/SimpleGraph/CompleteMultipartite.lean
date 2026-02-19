@@ -68,7 +68,7 @@ theorem bot_isCompleteMultipartite : (⊥ : SimpleGraph α).IsCompleteMultiparti
 variable {G : SimpleGraph α}
 /-- The setoid given by non-adjacency -/
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
-    ⟨(¬ G.Adj · ·), ⟨G.loopless, fun h' ↦ by rwa [adj_comm] at h', fun h1 h2 ↦ h h1 h2⟩⟩
+    ⟨(¬ G.Adj · ·), ⟨G.loopless.irrefl, fun h' ↦ by rwa [adj_comm] at h', fun h1 h2 ↦ h h1 h2⟩⟩
 
 lemma completeMultipartiteGraph.isCompleteMultipartite {ι : Type*} (V : ι → Type*) :
     (completeMultipartiteGraph V).IsCompleteMultipartite := by
@@ -211,6 +211,7 @@ abbrev completeEquipartiteGraph (r t : ℕ) : SimpleGraph (Fin r × Fin t) :=
 lemma completeEquipartiteGraph_adj {v w} :
   (completeEquipartiteGraph r t).Adj v w ↔ v.1 ≠ w.1 := by rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A `completeEquipartiteGraph` is isomorphic to a corresponding `completeMultipartiteGraph`.
 
 The difference is that the former vertices are a product type whereas the latter vertices are a
