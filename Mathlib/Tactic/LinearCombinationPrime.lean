@@ -39,7 +39,7 @@ implementation, but this version is provided for backward-compatibility.
 
 public meta section
 
-namespace Mathlib.Tactic.LinearCombination'
+namespace Mathlib.Tactic.LinearCombinationPrime
 open Lean
 open Elab Meta Term
 
@@ -264,4 +264,4 @@ elab_rules : tactic
   | `(tactic| linear_combination2%$tk $[(norm := $tac)]? $(e)?) =>
     elabLinearCombination' tk tac none e true
 
-end Mathlib.Tactic.LinearCombination'
+end Mathlib.Tactic.LinearCombinationPrime
