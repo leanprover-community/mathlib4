@@ -192,7 +192,6 @@ def isometryEquivWeightedSumSquaresWeightedSumSquares (u : ι → Sˣ) (h : ∀ 
     simp only [weightedSumSquares_apply, Pi.smul_apply']
     refine Finset.sum_congr rfl fun j hj => ?_
     rw [smul_mul_smul, Units.smul_def, smul_smul, ← pow_two, ← h]
-    push_cast
-    rfl
+    simp
 
 end QuadraticForm
