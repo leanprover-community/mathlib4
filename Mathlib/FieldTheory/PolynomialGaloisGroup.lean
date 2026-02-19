@@ -345,6 +345,7 @@ variable {p q}
 
 open scoped IntermediateField
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a separable polynomial, its Galois group has cardinality
 equal to the dimension of its splitting field over `F`. -/
 theorem card_of_separable (hp : p.Separable) : Nat.card p.Gal = finrank F p.SplittingField :=

@@ -208,6 +208,7 @@ theorem even_induction {motive : ∀ x, x ∈ evenOdd Q 0 → Prop}
   obtain ⟨r, rfl⟩ := Submodule.mem_one.mp h
   exact algebraMap r
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To show a property is true on the odd parts, it suffices to show it is true on the
 vectors, closed under addition, and under left-multiplication by a pair of vectors. -/
 @[elab_as_elim]
