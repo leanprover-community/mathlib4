@@ -59,6 +59,7 @@ instance [Faithful F] : Faithful F.mapTriangle where
     · exact congr_arg TriangleMorphism.hom₂ h
     · exact congr_arg TriangleMorphism.hom₃ h
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Full F] [Faithful F] : Full F.mapTriangle where
   map_surjective {X Y} f :=
     ⟨{hom₁ := F.preimage f.hom₁
@@ -77,6 +78,7 @@ section Additive
 
 variable [Preadditive C] [Preadditive D] [F.Additive]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `F.mapTriangle` commutes with the shift. -/
 noncomputable def mapTriangleCommShiftIso (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
@@ -113,6 +115,7 @@ noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
   commShiftIso := F.mapTriangleCommShiftIso
   commShiftIso_add _ _ := mapTriangleCommShiftIso_add ..
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `F.mapTriangle` commutes with the rotation of triangles. -/
 @[simps!]
 def mapTriangleRotateIso :
@@ -123,6 +126,7 @@ def mapTriangleRotateIso :
       ((F.commShiftIso (1 : ℤ)).symm.app _)
       (by simp) (by simp) (by simp)) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `F.mapTriangle` commutes with the inverse of the rotation of triangles. -/
 @[simps!]
 noncomputable def mapTriangleInvRotateIso [F.Additive] :
@@ -144,6 +148,7 @@ def mapTriangleIdIso : (𝟭 C).mapTriangle ≅ 𝟭 _ :=
 def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two isomorphic functors `F₁` and `F₂` induce isomorphic functors
 `F₁.mapTriangle` and `F₂.mapTriangle` if the isomorphism `F₁ ≅ F₂` is compatible
 with the shifts. -/
@@ -188,6 +193,7 @@ instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
       infer_instance
     rw [h₁, F.map_comp, F.map_comp, F.map_id, h₂, zero_comp, comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance [F.IsTriangulated] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
@@ -304,6 +310,7 @@ variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   (h : Octahedron comm h₁₂ h₂₃ h₁₃)
   (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of an octahedron by a triangulated functor. -/
 @[simps]
 def map : Octahedron (by dsimp; rw [← F.map_comp, comm])
@@ -343,6 +350,7 @@ lemma isTriangulated_of_essSurj_mapComposableArrows_two
     (comm₂₃ := ComposableArrows.naturality' e.inv 1 2)
     (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) ..⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsTriangulated.of_fully_faithful_triangulated_functor
     (F : C ⥤ D) [F.CommShift ℤ]
     [F.IsTriangulated] [F.Full] [F.Faithful] [IsTriangulated D] :

@@ -6,6 +6,7 @@ Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Christian Merten, Jingting Wang, An
 module
 
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.LinearAlgebra.Dimension.Free
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.RingTheory.Finiteness.Ideal
 
@@ -127,6 +128,9 @@ lemma spanFinrank_of_not_fg {p : Submodule R M} (hp : ¬p.FG) : p.spanFinrank = 
 lemma fg_iff_spanRank_eq_spanFinrank {p : Submodule R M} : p.spanRank = p.spanFinrank ↔ p.FG := by
   rw [spanFinrank, ← spanRank_finite_iff_fg, eq_comm]
   exact cast_toNat_eq_iff_lt_aleph0
+
+lemma FG.spanRank_eq_spanFinrank {p : Submodule R M} (fg : p.FG) : p.spanRank = p.spanFinrank :=
+  fg_iff_spanRank_eq_spanFinrank.mpr fg
 
 lemma spanRank_span_le_card (s : Set M) : (Submodule.span R s).spanRank ≤ #s := by
   rw [spanRank]
@@ -362,6 +366,17 @@ theorem Submodule.rank_eq_spanRank_of_free [Module.Free R M] [StrongRankConditio
   obtain ⟨I, B⟩ := ‹Module.Free R M›
   rw [← Basis.mk_eq_rank'' B, ← Basis.mk_eq_spanRank B, ← Cardinal.lift_id #(Set.range B),
     Cardinal.mk_range_eq_of_injective B.injective, Cardinal.lift_id _]
+
+lemma Module.finrank_eq_spanFinrank_of_free [StrongRankCondition R]
+    (M : Type*) [AddCommGroup M] [Module R M] [Module.Free R M] :
+    Module.finrank R M = (⊤ : Submodule R M).spanFinrank := by
+  by_cases fin : Module.Finite R M
+  · have : Submodule.spanFinrank (⊤ : Submodule R M) = Module.rank R M := by
+      rw [← Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fin.1,
+        Submodule.rank_eq_spanRank_of_free]
+    simpa only [← Module.finrank_eq_rank, Nat.cast_inj] using this.symm
+  · have fin' : ¬ (⊤ : Submodule R M).FG := Not.intro (fun h ↦ fin ⟨h⟩)
+    rw [Module.finrank_of_not_finite fin, Submodule.spanFinrank_of_not_fg fin']
 
 theorem Submodule.rank_le_spanRank [StrongRankCondition R] :
     Module.rank R M ≤ (⊤ : Submodule R M).spanRank := by
