@@ -119,6 +119,7 @@ As one may use the same right invariant measure, this shows that two different l
 measures will give the same integral, up to some fixed scalar.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a group with a left invariant measure `μ` and a right invariant measure `ν`, one can express
 integrals with respect to `μ` as integrals with respect to `ν` up to a constant scaling factor
 (given in the statement as `∫ x, g x ∂μ` where `g` is a fixed reference function) and an
@@ -334,8 +335,8 @@ lemma mul_haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G)
     ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
   apply NNReal.coe_injective
   calc
-    c * haarScalarFactor μ' (c • μ) = c * ((∫ x, g x ∂μ') / ∫ x, g x ∂(c • μ)) :=
-      by rw [haarScalarFactor_eq_integral_div _ _ g_cont g_comp (by simp [int_g_ne_zero, hc])]
+    c * haarScalarFactor μ' (c • μ) = c * ((∫ x, g x ∂μ') / ∫ x, g x ∂(c • μ)) := by
+      rw [haarScalarFactor_eq_integral_div _ _ g_cont g_comp (by simp [int_g_ne_zero, hc])]
     _ = c * ((∫ x, g x ∂μ') / (c • ∫ x, g x ∂μ)) := by simp
     _ = (∫ x, g x ∂μ') / (∫ x, g x ∂μ) := by
       rw [NNReal.smul_def, smul_eq_mul, ← mul_div_assoc]
@@ -433,6 +434,7 @@ and `μ'` coincide on these supersets, this yields `μ s = μ' s`.
 See `measure_isMulInvariant_eq_smul_of_isCompact_closure`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two left invariant measures give the same mass to level sets of continuous compactly supported
 functions, up to the scalar `haarScalarFactor μ' μ`.
 
@@ -687,6 +689,7 @@ Two Haar measures give the same measure to open sets (or more generally to sets 
 positive), up to the scalar `haarScalarFactor μ' μ `.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive measure_isAddHaarMeasure_eq_smul_of_isEverywherePos]
 theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ']
@@ -901,6 +904,7 @@ theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G]
   rw [haarMeasure_unique μ K, h, smul_smul]
   exact smul_absolutelyContinuous
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A continuous surjective monoid homomorphism of topological groups with compact codomain
 is measure preserving, provided that the Haar measures on the domain and on the codomain
 have the same total mass.

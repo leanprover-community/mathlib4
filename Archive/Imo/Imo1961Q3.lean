@@ -21,6 +21,7 @@ website.
 
 open Real
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
     (cos x) ^ n - (sin x) ^ n = 1 ↔
       (∃ k : ℤ, k * π = x) ∧ Even n ∨ (∃ k : ℤ, k * (2 * π) = x) ∧ Odd n ∨

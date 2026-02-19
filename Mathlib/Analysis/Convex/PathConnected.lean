@@ -34,6 +34,7 @@ namespace Path
 @[simps]
 protected def segment (a b : E) : Path a b where
   toFun t := lineMap a b (t : ℝ)
+  continuous_toFun := by unfold lineMap; continuity
   source' := by simp
   target' := by simp
 
