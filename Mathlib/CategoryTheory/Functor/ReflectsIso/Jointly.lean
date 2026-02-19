@@ -6,7 +6,9 @@ Authors: Joël Riou, Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Limits.EpiMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Families of functors which jointly reflect isomorphisms
@@ -25,7 +27,6 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type*} [Category C] {I : Type*} {D : I → Type*} [∀ i, Category (D i)]
-  (F : ∀ i, C ⥤ D i)
 
 /-- A family of functors jointly reflects isomorphisms if for every morphism `f : X ⟶ Y`
 such that the image of `f` under all `F i` is an isomorphism, then `f` is an isomorphism. -/
@@ -42,7 +43,12 @@ such that the image of `f` under all `F i` is an epimorphism, then `f` is an epi
 structure JointlyReflectEpimorphisms (F : ∀ i, C ⥤ D i) : Prop where
   epi {X Y : C} (f : X ⟶ Y) [∀ i, Epi ((F i).map f)] : Epi f
 
-variable {F}
+/-- A family of functors is jointly faithful if whenever two morphisms `f : X ⟶ Y`
+and `g : X ⟶ Y` become equal after applying all functors `F i`, then `f = g`. -/
+structure JointlyFaithful (F : ∀ i, C ⥤ D i) : Prop where
+  map_injective {X Y : C} (f g : X ⟶ Y) (h : ∀ i, (F i).map f = (F i).map g) : f = g
+
+variable {F : ∀ i, C ⥤ D i}
 
 namespace JointlyReflectIsomorphisms
 
@@ -80,6 +86,16 @@ lemma jointlyReflectEpimorphisms [∀ i, PreservesColimitsOfShape WalkingSpan (F
     [HasPushouts C] :
     JointlyReflectEpimorphisms F where
   epi f _ := h.epi f
+
+lemma jointlyFaithful [∀ i, PreservesLimitsOfShape WalkingParallelPair (F i)] [HasEqualizers C] :
+    JointlyFaithful F where
+  map_injective {X Y} f g hfg := by
+    suffices IsIso (equalizer.ι f g) from eq_of_epi_equalizer
+    have (i : I) : IsIso ((F i).map (equalizer.ι f g)) := by
+      let hc := isLimitForkMapOfIsLimit (F i) _ (equalizerIsEqualizer f g)
+      obtain ⟨l, hl⟩ := Fork.IsLimit.lift' hc (𝟙 _) (by simpa using hfg i)
+      exact ⟨l, Fork.IsLimit.hom_ext hc (by cat_disch), by cat_disch⟩
+    exact h.isIso _
 
 end JointlyReflectIsomorphisms
 
