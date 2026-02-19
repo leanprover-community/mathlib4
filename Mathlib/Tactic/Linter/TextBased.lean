@@ -61,6 +61,9 @@ inductive StyleError where
   | semicolon
   /-- A unicode character was used that isn't allowed -/
   | unwantedUnicode (c : Char)
+  /-- The triange `▸` followed by a tactic proof -/
+  | triangleRewrite
+
 deriving BEq, Inhabited
 
 /-- How to format style errors -/
@@ -77,14 +80,16 @@ public inductive ErrorFormat
 
 /-- Create the underlying error message for a given `StyleError`. -/
 def StyleError.errorMessage (err : StyleError) : String := match err with
-  | StyleError.adaptationNote =>
+  | adaptationNote =>
     "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
   | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
     endings (\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | semicolon => "This line contains a space before a semicolon"
-  | StyleError.unwantedUnicode c => s!"This line contains a bad unicode character \
+  | unwantedUnicode c => s!"This line contains a bad unicode character \
     '{c}' ({UnicodeLinter.printCodepointHex c})."
+  | triangleRewrite => "This line contains the triangle operator ▸ followed by tactic mode: \
+    Please use a mere rewrite instead, and this is simpler to maintain."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -95,6 +100,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.trailingWhitespace => "ERR_TWS"
   | StyleError.semicolon => "ERR_SEM"
   | StyleError.unwantedUnicode _ => "ERR_UNICODE"
+  | StyleError.triangleRewrite => "ERR_TRI"
 
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
@@ -182,6 +188,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_SEM" => some (StyleError.semicolon)
         | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
+        | "ERR_TRI" => some (StyleError.triangleRewrite)
         | "ERR_UNICODE" => do
           -- extract the offending unicode character from `errorMessage`
           -- (if the offending character is 'C', `errorMessage[7] == "'C'"` )
@@ -271,6 +278,19 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
       fixedLines := fixedLines.set! idx (line.replace (String.ofList [' ', ';']) ";")
   return (errors, if errors.size > 0 then some fixedLines else none)
 
+/-- Lint on any occurrences of the triangle rewrite operator ▸ followed by tactic mode. -/
+public register_option linter.triangleRewrite : Bool := { defValue := true }
+
+@[inherit_doc linter.triangleRewrite]
+def triangleRewriteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.triangleRewrite opts do return (#[], none)
+
+  let mut errors := Array.mkEmpty 0
+  for h : idx in [:lines.size] do
+    if lines[idx].containsSubstr "▸ by" then
+      errors := errors.push (StyleError.triangleRewrite, idx + 1)
+  return (errors, none)
+
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
@@ -341,6 +361,7 @@ def allLinters : Array TextbasedLinter := #[
     adaptationNoteLinter,
     semicolonLinter,
     trailingWhitespaceLinter,
+    triangleRewriteLinter,
     unicodeLinter,
   ]
 
