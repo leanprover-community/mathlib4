@@ -136,8 +136,8 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd,
       LinearIndependent.pair_iff, not_forall, not_and] at h
     obtain ⟨s, t, h, hst⟩ := h
-    simp only [b.ext_elem_iff, map_add, _root_.map_smul, coe_add, Finsupp.coe_smul,
-      Pi.add_apply, Pi.smul_apply, smul_eq_mul, map_zero, Finsupp.coe_zero, Pi.zero_apply] at h
+    simp only [b.ext_elem_iff, map_add, _root_.map_smul, add_apply, smul_apply, smul_eq_mul,
+      map_zero, zero_apply] at h
     have hx : x = b i + r • b j := by
       simp only [Basis.repr_symm_apply, linearCombination_apply, x]
       rw [← add_right_cancel_iff, sum_update_add] <;>

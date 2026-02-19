@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.Data.FunLike.Module
 public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
@@ -115,25 +116,10 @@ instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R
     let ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun m : M => by simpa using DFunLike.congr_fun (h (single a m)) a
 
-variable (α M)
-
-instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
-    DistribMulAction R (α →₀ M) :=
-  { Finsupp.distribSMul _ _ with
-    one_smul := fun x => ext fun y => one_smul R (x y)
-    mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
-
-instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
-  { toDistribMulAction := Finsupp.distribMulAction α M
-    zero_smul := fun _ => ext fun _ => zero_smul _ _
-    add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
-
-variable {α M}
-
 @[simp]
 theorem support_smul_eq [Semiring R] [IsDomain R] [AddCommMonoid M] [Module R M]
     [Module.IsTorsionFree R M] {b : R} (hb : b ≠ 0) {g : α →₀ M} : (b • g).support = g.support :=
-  Finset.ext fun a => by simp [Finsupp.smul_apply, hb]
+  Finset.ext fun a => by simp [smul_apply, hb]
 
 section
 
@@ -143,7 +129,7 @@ variable {p : α → Prop} [DecidablePred p]
 theorem filter_smul [Zero M] [SMulZeroClass R M] {b : R} {v : α →₀ M} :
     (b • v).filter p = b • v.filter p :=
   DFunLike.coe_injective <| by
-    simp only [filter_eq_indicator, coe_smul]
+    simp only [filter_eq_indicator, FunLike.coe_smul]
     exact Set.indicator_const_smul { x | p x } b v
 
 end

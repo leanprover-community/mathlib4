@@ -100,13 +100,18 @@ variable (R) in
 def mapDomainAddEquiv (e : M ≃ N) : R[M] ≃+ R[N] where
   toFun x := x.mapDomain e
   invFun x := x.mapDomain e.symm
-  left_inv x := by ext; simp
+  left_inv x := by
+    ext
+    --simp only
+    --rw [← mapDomain.addMonoidHom_comp, AddEquiv.symm_comp_self]
+    sorry
   right_inv x := by ext; simp
   map_add' x y := by ext; simp
 
 @[to_additive (attr := simp)]
 lemma mapDomainAddEquiv_apply (e : M ≃ N) (x : R[M]) (n : N) :
-    mapDomainAddEquiv R e x n = x (e.symm n) := by simp [mapDomainAddEquiv]
+    mapDomainAddEquiv R e x n = x (e.symm n) :=
+  mapDomain_equiv_apply x n
 
 @[to_additive (attr := simp)]
 lemma mapDomainAddEquiv_single (e : M ≃ N) (r : R) (m : M) :

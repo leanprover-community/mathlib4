@@ -294,7 +294,7 @@ theorem degreeOf_mul_X_of_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
   congr
   ext
   simp only [Finsupp.single, add_eq_left, addRightEmbedding_apply, coe_mk,
-    Pi.add_apply, comp_apply, Finsupp.coe_add, Pi.single_eq_of_ne h]
+    add_apply, comp_apply, Pi.single_eq_of_ne h]
 
 theorem degreeOf_mul_X_self (j : σ) (f : MvPolynomial σ R) :
     degreeOf j (f * X j) ≤ degreeOf j f + 1 := by

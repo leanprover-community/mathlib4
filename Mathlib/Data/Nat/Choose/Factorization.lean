@@ -46,7 +46,7 @@ theorem factorization_factorial {p : ℕ} (hp : p.Prime) :
     calc
       (n + 1)!.factorization p = (n + 1).factorization p + (n)!.factorization p := by
         rw [factorial_succ, factorization_mul (zero_ne_add_one n).symm n.factorial_ne_zero,
-          coe_add, Pi.add_apply]
+          add_apply]
       _ = #{i ∈ Ico 1 b | p ^ i ∣ n + 1} + ∑ i ∈ Ico 1 b, n / p ^ i := by
         rw [factorization_factorial hp ((log_mono_right <| le_succ _).trans_lt hb), add_left_inj]
         apply factorization_eq_card_pow_dvd_of_lt hp (zero_lt_succ n)
@@ -78,8 +78,7 @@ theorem factorization_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
     (mem_Ico.mp hx).left), ← sum_Ico_consecutive _ h1 h3, add_assoc, sum_Ico_succ_top h2,
     ← prod_Ico_id_eq_factorial, factorization_prod_apply (fun _ hx ↦ ne_zero_of_lt
     (mem_Ico.mp hx).left), factorization_mul (ne_zero_of_lt h0) (zero_ne_add_one n).symm,
-    coe_add, Pi.add_apply, hp.factorization_self, sum_congr rfl h4, sum_const_zero, zero_add,
-    add_comm 1]
+    add_apply, hp.factorization_self, sum_congr rfl h4, sum_const_zero, zero_add, add_comm 1]
 
 /-- The factorization of `p` in `(p * n)!` is `n` more than that of `n!`. -/
 theorem factorization_factorial_mul {n p : ℕ} (hp : p.Prime) :
@@ -116,12 +115,12 @@ theorem factorization_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k
   have h₁ : (choose (n + k) k).factorization p + (k ! * n !).factorization p
     = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} + (k ! * n !).factorization p := by
     have h2 := (add_tsub_cancel_right n k) ▸ choose_mul_factorial_mul_factorial (le_add_left k n)
-    rw [← Pi.add_apply, ← coe_add, ← factorization_mul (ne_of_gt <| choose_pos (le_add_left k n))
-      (by positivity), ← mul_assoc, h2,
-      factorization_factorial hp hnb, factorization_mul (factorial_ne_zero k) (factorial_ne_zero n),
-      coe_add, Pi.add_apply, factorization_factorial hp ((log_mono_right (le_add_left k n)).trans_lt
-      hnb), factorization_factorial hp ((log_mono_right (le_add_left n k)).trans_lt
-      (add_comm n k ▸ hnb)), multiplicity_choose_aux hp (le_add_left k n)]
+    rw [← add_apply, ← factorization_mul (ne_of_gt <| choose_pos (le_add_left k n)) (by positivity),
+      ← mul_assoc, h2, factorization_factorial hp hnb, factorization_mul (factorial_ne_zero k)
+      (factorial_ne_zero n), add_apply, factorization_factorial hp
+      ((log_mono_right (le_add_left k n)).trans_lt hnb), factorization_factorial hp
+      ((log_mono_right (le_add_left n k)).trans_lt (add_comm n k ▸ hnb)),
+      multiplicity_choose_aux hp (le_add_left k n)]
     simp only [add_tsub_cancel_right, add_comm]
   exact Nat.add_right_cancel h₁
 
@@ -145,7 +144,7 @@ theorem factorization_le_factorization_choose_add {p : ℕ} :
   | n, 0, _, _ => by tauto
   | 0, x + 1, _, _ => by simp
   | n + 1, k + 1, hkn, hk => by
-    rw [← Pi.add_apply, ← coe_add, ← factorization_mul (ne_of_gt <| choose_pos hkn)
+    rw [← add_apply, ← factorization_mul (ne_of_gt <| choose_pos hkn)
       (zero_ne_add_one k).symm]
     refine factorization_le_factorization_of_dvd_right ?_ (zero_ne_add_one n).symm
       (Nat.mul_ne_zero (ne_of_gt <| choose_pos hkn) (by positivity))
@@ -243,8 +242,8 @@ theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factor
   induction n with
   | zero => simp
   | succ n hn =>
-    rw [factorial_succ, factorization_mul n.succ_ne_zero n.factorial_ne_zero, Finsupp.coe_add,
-      Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
+    rw [factorial_succ, factorization_mul n.succ_ne_zero n.factorial_ne_zero, add_apply,
+      hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
 
 theorem factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
   by_cases! hnk : n < k; · simp [choose_eq_zero_of_lt hnk]

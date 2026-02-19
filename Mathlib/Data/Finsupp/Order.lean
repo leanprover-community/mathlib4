@@ -123,16 +123,16 @@ section SMulZeroClass
 variable [Zero α] [Preorder α] [Zero β] [Preorder β] [SMulZeroClass α β]
 
 instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α (ι →₀ β) :=
-  PosSMulMono.lift _ coe_le_coe coe_smul
+  PosSMulMono.lift DFunLike.coe coe_le_coe FunLike.coe_smul
 
 instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α (ι →₀ β) :=
-  SMulPosMono.lift _ coe_le_coe coe_smul FunLike.coe_zero
+  SMulPosMono.lift _ coe_le_coe FunLike.coe_smul FunLike.coe_zero
 
 instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α (ι →₀ β) :=
-  PosSMulReflectLE.lift _ coe_le_coe coe_smul
+  PosSMulReflectLE.lift DFunLike.coe coe_le_coe FunLike.coe_smul
 
 instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α (ι →₀ β) :=
-  SMulPosReflectLE.lift _ coe_le_coe coe_smul FunLike.coe_zero
+  SMulPosReflectLE.lift DFunLike.coe coe_le_coe FunLike.coe_smul FunLike.coe_zero
 
 end SMulZeroClass
 
@@ -140,15 +140,15 @@ section SMulWithZero
 variable [Zero α] [PartialOrder α] [Zero β] [PartialOrder β] [SMulWithZero α β]
 
 instance instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α (ι →₀ β) :=
-  PosSMulStrictMono.lift _ coe_le_coe coe_smul
+  PosSMulStrictMono.lift DFunLike.coe coe_le_coe FunLike.coe_smul
 
 instance instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α (ι →₀ β) :=
-  SMulPosStrictMono.lift _ coe_le_coe coe_smul FunLike.coe_zero
+  SMulPosStrictMono.lift _ coe_le_coe FunLike.coe_smul FunLike.coe_zero
 
 -- `PosSMulReflectLT α (ι →₀ β)` already follows from the other instances
 
 instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι →₀ β) :=
-  SMulPosReflectLT.lift _ coe_le_coe coe_smul FunLike.coe_zero
+  SMulPosReflectLT.lift _ coe_le_coe FunLike.coe_smul FunLike.coe_zero
 
 end SMulWithZero
 

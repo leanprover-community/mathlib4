@@ -167,7 +167,7 @@ theorem fract_apply (m : E) : fract b m = m - floor b m := rfl
 
 @[simp]
 theorem repr_fract_apply (m : E) (i : ι) : b.repr (fract b m) i = Int.fract (b.repr m i) := by
-  rw [fract, map_sub, Finsupp.coe_sub, Pi.sub_apply, repr_floor_apply, Int.fract]
+  rw [fract, map_sub, sub_apply, repr_floor_apply, Int.fract]
 
 @[simp]
 theorem fract_fract (m : E) : fract b (fract b m) = fract b m :=
@@ -180,7 +180,7 @@ theorem fract_zSpan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
   refine (Basis.ext_elem_iff b).mpr fun i => ?_
   simp_rw [repr_fract_apply, Int.fract_eq_fract]
   use (b.restrictScalars ℤ).repr ⟨v, h⟩ i
-  rw [map_add, Finsupp.coe_add, Pi.add_apply, add_tsub_cancel_right,
+  rw [map_add, add_apply, add_tsub_cancel_right,
     ← eq_intCast (algebraMap ℤ K) _, Basis.restrictScalars_repr_apply, coe_mk]
 
 @[simp]
@@ -208,8 +208,8 @@ theorem fract_eq_fract (m n : E) : fract b m = fract b n ↔ -m + n ∈ span ℤ
   classical
   rw [eq_comm, Basis.ext_elem_iff b]
   simp_rw [repr_fract_apply, Int.fract_eq_fract, eq_comm, Basis.mem_span_iff_repr_mem,
-    sub_eq_neg_add, map_add, map_neg, Finsupp.coe_add, Finsupp.coe_neg, Pi.add_apply,
-    Pi.neg_apply, ← eq_intCast (algebraMap ℤ K) _, Set.mem_range]
+    sub_eq_neg_add, map_add, map_neg, add_apply, neg_apply, ← eq_intCast (algebraMap ℤ K) _,
+    Set.mem_range]
 
 theorem norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b i‖ := by
   classical

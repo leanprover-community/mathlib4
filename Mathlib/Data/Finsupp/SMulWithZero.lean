@@ -52,15 +52,18 @@ Throughout this section, some `Monoid` and `Semiring` arguments are specified wi
 `[]`. See note [implicit instance arguments].
 -/
 
-@[simp, norm_cast]
+instance [Zero M] [SMulZeroClass R M] : FunLikeSMul R (α →₀ M) α M where
+  smul_apply _ _ _ := rfl
+
+/-@[simp, norm_cast]
 theorem coe_smul [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) : ⇑(b • v) = b • ⇑v :=
   rfl
 
 theorem smul_apply [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) (a : α) :
     (b • v) a = b • v a :=
-  rfl
+  rfl-/
 
-instance instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) where
+/-instance instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) where
   zero_smul f := by ext i; exact zero_smul _ _
 
 variable (α M)
@@ -79,9 +82,9 @@ instance smulCommClass [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMulCom
 
 instance isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ M] [IsCentralScalar R M] :
     IsCentralScalar R (α →₀ M) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _-/
 
-variable {α M}
+--variable {α M}
 
 theorem support_smul [Zero M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
     (b • g).support ⊆ g.support := fun a => by

@@ -243,7 +243,7 @@ variable [FloorDiv α β] {f : ι →₀ β} {a : α}
 noncomputable instance instFloorDiv : FloorDiv α (ι →₀ β) where
   floorDiv f a := f.mapRange (· ⌊/⌋ a) <| zero_floorDiv _
   floorDiv_gc _a ha f _g := forall_congr' fun i ↦ by
-    simpa only [coe_smul, Pi.smul_apply, mapRange_apply] using gc_floorDiv_smul ha (f i) _
+    simpa only [smul_apply, mapRange_apply] using gc_floorDiv_smul ha (f i) _
   floorDiv_nonpos a ha f := by ext i; exact floorDiv_of_nonpos ha _
   zero_floorDiv a := by ext; exact zero_floorDiv _
 
@@ -262,7 +262,7 @@ variable [CeilDiv α β] {f : ι →₀ β} {a : α}
 noncomputable instance instCeilDiv : CeilDiv α (ι →₀ β) where
   ceilDiv f a := f.mapRange (· ⌈/⌉ a) <| zero_ceilDiv _
   ceilDiv_gc _a ha f _g := forall_congr' fun i ↦ by
-    simpa only [coe_smul, Pi.smul_apply, mapRange_apply] using gc_smul_ceilDiv ha (f i) _
+    simpa only [smul_apply, mapRange_apply] using gc_smul_ceilDiv ha (f i) _
   ceilDiv_nonpos a ha f := by ext i; exact ceilDiv_of_nonpos ha _
   zero_ceilDiv a := by ext; exact zero_ceilDiv _
 

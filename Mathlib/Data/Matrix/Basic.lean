@@ -648,7 +648,7 @@ def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (M
   invFun M := M.unop.transpose.map op
   left_inv _ := by aesop
   right_inv _ := by aesop
-  map_mul' _ _ := unop_injective <| by ext; simp [transpose, mul_apply]
+  map_mul' _ _ := unop_injective <| by ext; simp [transpose, Matrix.mul_apply]
   map_add' _ _ := by aesop
 
 end RingEquiv
@@ -662,7 +662,7 @@ theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
     IsStablyFiniteRing αᵐᵒᵖ ↔ IsStablyFiniteRing α where
   mp _ :=
   ⟨fun n ↦ let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) α ↦ M.map (op ∘ op), by aesop⟩
-               fun _ _ ↦ by ext; simp [mul_apply]
+               fun _ _ ↦ by ext; simp [Matrix.mul_apply]
   .of_injective f (map_injective (op_injective.comp op_injective))⟩
   mpr _ := inferInstance
 

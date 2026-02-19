@@ -114,13 +114,13 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
       left_inv := fun w => by
         apply_fun b.repr using b.repr.toEquiv.injective
         apply_fun Equiv.finsuppUnique
-        simp only [map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
-          smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
+        simp only [map_smulₛₗ, Finsupp.single_eq_same,
+          smul_eq_mul, smul_apply, Equiv.finsuppUnique_apply]
         exact div_mul_cancel₀ _ h
       right_inv := fun f => by
         ext
-        simp only [map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
-          RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
+        simp only [map_smulₛₗ, Finsupp.single_eq_same,
+          RingHom.id_apply, smul_eq_mul, smul_apply]
         exact mul_div_cancel_right₀ _ h }
 
 @[simp]

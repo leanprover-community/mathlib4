@@ -124,8 +124,7 @@ theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn
           fun i => i.trans ((@dvd_mul_left a b b hab.symm).mpr (dvd_refl b))⟩
   obtain ⟨p, k, hp, _, rfl⟩ := (isPrimePow_nat_iff _).1 hn
   simp only [hp.pow_dvd_iff_le_factorization (mul_ne_zero ha hb), Nat.factorization_mul ha hb,
-    hp.pow_dvd_iff_le_factorization ha, hp.pow_dvd_iff_le_factorization hb, Pi.add_apply,
-    Finsupp.coe_add]
+    hp.pow_dvd_iff_le_factorization ha, hp.pow_dvd_iff_le_factorization hb, add_apply]
   have : a.factorization p = 0 ∨ b.factorization p = 0 := by
     rw [← Finsupp.notMem_support_iff, ← Finsupp.notMem_support_iff, ← not_and_or, ←
       Finset.mem_inter]
@@ -156,7 +155,7 @@ def Nat.Primes.prodNatEquiv : Nat.Primes × ℕ ≃ {n : ℕ // IsPrimePow n} wh
   left_inv := fun (p, k) ↦ by
     simp only [p.prop.pow_minFac k.add_one_ne_zero, Subtype.coe_eta, factorization_pow, p.prop,
       Prime.factorization, Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.single_add,
-      Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_same, add_tsub_cancel_right]
+      add_apply, Finsupp.single_eq_same, add_tsub_cancel_right]
   right_inv n := by
     ext1
     dsimp only

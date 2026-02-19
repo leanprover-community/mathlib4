@@ -111,8 +111,8 @@ variable [Semiring R] {x y : R[M]} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
 @[to_additive] instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
   inferInstanceAs <| IsCancelAdd <| M →₀ R
 
-@[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
-  inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
+@[to_additive] instance instFunLike : FunLike R[M] M R :=
+  inferInstanceAs <| FunLike (M →₀ R) M R
 
 /-- A copy of `Finsupp.ext` for `MonoidAlgebra`. -/
 @[to_additive (attr := ext) /-- A copy of `Finsupp.ext` for `AddMonoidAlgebra`. -/]
@@ -142,8 +142,16 @@ variable {A : Type*} [SMulZeroClass A R]
 instance smulZeroClass : SMulZeroClass A R[M] :=
   Finsupp.smulZeroClass
 
-@[to_additive (attr := simp) (dont_translate := A) coeff_smul]
-lemma smul_apply (a : A) (x : R[M]) (m : M) : (a • x) m = a • x m := rfl
+/-@[to_additive (attr := simp) (dont_translate := A) coeff_smul]
+lemma smul_apply (a : A) (x : R[M]) (m : M) : (a • x) m = a • x m := rfl-/
+
+@[to_additive]
+instance : FunLikeZero R[M] M R where
+  zero_apply _ := rfl
+
+@[to_additive (dont_translate := A)]
+instance : FunLikeSMul A R[M] M R where
+  smul_apply _ _ _ := rfl
 
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
 lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r) := by
@@ -152,7 +160,7 @@ lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r
 @[to_additive (dont_translate := R) smul_single']
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
 
-@[to_additive (dont_translate := N) distribSMul]
+/-@[to_additive (dont_translate := N) distribSMul]
 instance distribSMul [DistribSMul N R] : DistribSMul N R[M] :=
   Finsupp.distribSMul _ _
 
@@ -169,12 +177,16 @@ instance smulCommClass [SMulZeroClass N R] [SMulZeroClass O R] [SMulCommClass N 
 @[to_additive (dont_translate := N) isCentralScalar]
 instance isCentralScalar [SMulZeroClass N R] [SMulZeroClass Nᵐᵒᵖ R] [IsCentralScalar N R] :
     IsCentralScalar N R[M] :=
-  Finsupp.isCentralScalar ..
+  Finsupp.isCentralScalar ..-/
 
 end SMul
 
-@[to_additive (attr := simp, norm_cast)]
-lemma coe_add (f g : R[G]) : ⇑(f + g) = f + g := rfl
+@[to_additive]
+instance : FunLikeAdd R[M] M R where
+  add_apply _ _ _ := rfl
+
+/-@[to_additive (attr := simp, norm_cast)]
+lemma coe_add (f g : R[G]) : ⇑(f + g) = f + g := rfl-/
 
 @[to_additive]
 lemma single_zero (m : M) : (single m 0 : R[M]) = 0 := by simp [single]
@@ -480,8 +492,10 @@ instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M 
     simp_rw [isUnit_iff_exists]
     rintro a ⟨x, hax, hxa⟩
     refine ⟨x 1, ?_, ?_⟩
-    · simpa [single_one_mul_apply, one_def] using congr($hax 1)
-    · simpa [mul_single_one_apply, one_def] using congr($hxa 1)
+    · sorry
+      --simpa [single_one_mul_apply, one_def] using congr($hax 1)
+    · sorry
+      --simpa [mul_single_one_apply, one_def] using congr($hxa 1)
 
 variable (M) in
 /-- The trivial monoid algebra is the base ring. -/

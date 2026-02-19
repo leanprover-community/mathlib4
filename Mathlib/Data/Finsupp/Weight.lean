@@ -177,7 +177,7 @@ theorem weight_eq_zero_iff_eq_zero
   constructor
   · intro h
     ext s
-    simp only [Finsupp.coe_zero, Pi.zero_apply]
+    simp only [zero_apply]
     by_contra hs
     apply NonTorsionWeight.ne_zero ℕ w s
     rw [← nonpos_iff_eq_zero, ← h]
@@ -232,7 +232,7 @@ lemma degree_eq_zero_iff {R : Type*}
     (d : σ →₀ R) :
     degree d = 0 ↔ d = 0 := by
   simp only [degree_apply, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
-    DFunLike.ext_iff, coe_zero, Pi.zero_apply]
+    DFunLike.ext_iff, zero_apply]
 
 theorem le_degree {R : Type*}
     [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]

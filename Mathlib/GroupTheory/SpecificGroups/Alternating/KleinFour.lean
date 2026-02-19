@@ -104,9 +104,8 @@ theorem card_two_sylow_of_card_eq_four (hα4 : Nat.card α = 4) (S : Sylow 2 (al
     Nat.card S = 4 := by
   rw [Sylow.card_eq_multiplicity, card_of_card_eq_four hα4]
   have : 12 = 2 ^ 2 * 3 := by simp
-  rw [this, Nat.factorization_mul_apply_of_coprime (by decide), Nat.factorization_pow,
-    Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, Nat.prime_two.factorization_self,
-    Nat.factorization_eq_zero_of_not_dvd (by decide)]
+  rw [this, Nat.factorization_mul_apply_of_coprime (by decide), Nat.factorization_pow, smul_apply,
+    smul_eq_mul, Nat.prime_two.factorization_self, Nat.factorization_eq_zero_of_not_dvd (by decide)]
   simp
 
 theorem coe_two_sylow_of_card_eq_four

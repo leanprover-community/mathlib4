@@ -29,6 +29,10 @@ end SMulInstances
 
 section ModuleInstance
 
+instance [Monoid M] [AddMonoid β] [AddMonoid F] [DistribMulAction M β] [SMul M F]
+    [FunLikeZero F α β] [FunLikeAdd F α β] [FunLikeSMul M F α β] : DistribMulAction M F :=
+  DFunLike.coe_injective.distribMulAction (coeAddHom F α β) FunLike.coe_smul
+
 variable [Semiring M] [AddCommMonoid β] [Module M β]
   [Zero F] [Add F] [SMul ℕ F] [SMul M F]
   [FunLikeZero F α β] [FunLikeAdd F α β] [FunLikeSMul ℕ F α β] [FunLikeSMul M F α β]

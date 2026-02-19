@@ -224,8 +224,8 @@ def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
   LinearEquiv.trans b.repr
     ({ Finsupp.equivFunOnFinite with
         toFun := (↑)
-        map_add' := Finsupp.coe_add
-        map_smul' := Finsupp.coe_smul } :
+        map_add' := FunLike.coe_add
+        map_smul' := FunLike.coe_smul } :
       (ι →₀ R) ≃ₗ[R] ι → R)
 
 /-- A module over a finite ring that admits a finite basis is finite. -/
@@ -436,10 +436,10 @@ theorem reindexRange_repr' (x : M) {bi : M} {i : ι} (h : b i = bi) :
   apply (b.repr_apply_eq (fun x i => b.reindexRange.repr x ⟨b i, _⟩) _ _ _ x i).symm
   · intro x y
     ext i
-    simp only [Pi.add_apply, map_add, Finsupp.coe_add]
+    simp
   · intro c x
     ext i
-    simp only [Pi.smul_apply, map_smul, Finsupp.coe_smul]
+    simp
   · intro i
     ext j
     simp only [reindexRange_repr_self]
@@ -643,7 +643,7 @@ theorem sum_repr_mul_repr {ι'} [Fintype ι'] (b' : Basis ι' R M) (x : M) (i : 
   conv_rhs => rw [← b'.sum_repr x]
   simp_rw [map_sum, map_smul, Finset.sum_apply']
   refine Finset.sum_congr rfl fun j _ => ?_
-  rw [Finsupp.smul_apply, smul_eq_mul, mul_comm]
+  rw [smul_apply, smul_eq_mul, mul_comm]
 
 end CommSemiring
 

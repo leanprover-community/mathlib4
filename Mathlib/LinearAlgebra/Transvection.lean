@@ -427,7 +427,7 @@ private theorem det_ofField [FiniteDimensional K V] (f : Dual K V) (v : V) :
     ext x y
     rw [toMatrix_apply, transvection.apply, Matrix.transvection]
     simp only [hj.2, Basis.coord_apply, Basis.repr_self, hj.1, map_add, map_smul,
-      Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.coe_add, Pi.add_apply, Matrix.add_apply]
+      Finsupp.smul_single, smul_eq_mul, mul_one, add_apply, Matrix.add_apply]
     apply congr_arg₂
     · by_cases h : x = y
       · rw [h]; simp
@@ -452,8 +452,8 @@ private theorem det_ofField [FiniteDimensional K V] (f : Dual K V) (v : V) :
       · simp
     ext x y
     rw [toMatrix_apply, transvection.apply, Matrix.diagonal]
-    simp only [map_add, Basis.repr_self, map_smul, Finsupp.coe_add, Finsupp.coe_smul,
-      Pi.add_apply, Pi.smul_apply, smul_eq_mul, Matrix.of_apply]
+    simp only [map_add, Basis.repr_self, map_smul, add_apply, smul_apply, smul_eq_mul,
+      Matrix.of_apply]
     rw [hv, Function.update_apply, Basis.repr_self, Pi.one_apply, hf]
     simp only [smul_apply, Basis.coord_apply, Basis.repr_self, smul_eq_mul,
       Finsupp.single_eq_same, mul_one]

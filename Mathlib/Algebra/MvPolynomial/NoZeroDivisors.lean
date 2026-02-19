@@ -175,7 +175,7 @@ theorem dvd_smul_X_iff_exists {i : σ} {r : R} (hr : r ≠ 0) :
     by_cases hm : m i = 0
     · left
       ext j
-      simp only [Finsupp.coe_zero, Pi.zero_apply, ← Nat.le_zero]
+      simp only [zero_apply, ← Nat.le_zero]
       by_cases hj : j = i
       · rw [← hm, hj]
       · exact (hmn j).trans (Finsupp.single_eq_of_ne hj).le

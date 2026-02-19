@@ -287,7 +287,7 @@ theorem X_dvd_mul_iff [IsCancelMulZero R] :
       apply Finset.sum_eq_zero
       intro x hx
       simp only [Finset.mem_antidiagonal] at hx
-      simp only [← hx, Finsupp.coe_add, Pi.add_apply, Nat.add_eq_zero_iff, not_and_or] at hn
+      simp only [← hx, add_apply, Nat.add_eq_zero_iff, not_and_or] at hn
       rcases hn with hn | hn
       · rw [coeff_modMonomial_of_le, zero_mul]
         simpa [← Nat.one_le_iff_ne_zero] using hn

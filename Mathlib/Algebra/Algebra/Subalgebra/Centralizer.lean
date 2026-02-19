@@ -87,7 +87,7 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
     simp only [Finsupp.coe_lsum]
     rw [sum_of_support_subset (s := b.support) (hs := Finsupp.support_smul) (h := by simp),
       sum_of_support_subset (s := b.support) (hs := support_mapRange) (h := by simp)]
-    simpa only [Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, LinearMap.flip_apply,
+    simpa only [smul_apply, smul_eq_mul, LinearMap.flip_apply,
       TensorProduct.mk_apply, Finsupp.mapRange_apply] using hw
   · rintro ⟨w, rfl⟩
     rw [Subalgebra.mem_centralizer_iff]

@@ -91,7 +91,7 @@ theorem norm_isNonarchimedean (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
     IsNonarchimedean B.norm := fun x y ↦ by
   obtain ⟨ixy, _, hixy⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖(B.repr (x + y)) i‖)
   have hxy : ‖B.repr (x + y) ixy‖ ≤ max ‖B.repr x ixy‖ ‖B.repr y ixy‖ := by
-    rw [map_add, Finsupp.coe_add, Pi.add_apply]; exact hna _ _
+    rw [map_add, add_apply]; exact hna _ _
   rw [Basis.norm, hixy]
   rcases le_max_iff.mp hxy with (hx | hy)
   · exact le_max_of_le_left (le_trans hx (norm_repr_le_norm B ixy))
@@ -123,7 +123,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
       IsNonarchimedean.finset_image_add hna'
         (fun i ↦ (B.repr x i • ∑ i_1 : ι, B.repr y i_1 • B.repr (B i * B i_1)) ixy)
         (univ : Finset ι)
-    simp only [Finsupp.coe_smul, Finsupp.coe_finset_sum, Pi.smul_apply, sum_apply, smul_eq_mul,
+    simp only [Finsupp.coe_finset_sum, smul_apply, sum_apply, smul_eq_mul,
       norm_mul] at hk ⊢
     apply le_trans hk
     -- We use the above property again.
