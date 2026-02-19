@@ -177,23 +177,21 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
     rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
     simp⟩
   have hp₂ : p₂ ∈ S := by
-    suffices hmem : p₂ ∈ affineSpan ℝ ({p₁, p}: Set P) by
-      exact affineSpan_mono ℝ (by simp [ht]; grind) hmem
+    suffices hmem : p₂ ∈ affineSpan ℝ {p₁, p} by exact affineSpan_mono ℝ (by simp [ht]; grind) hmem
     simp [hp₁p₂_sbtw.wbtw.collinear.mem_affineSpan_of_mem_of_ne _ _ _ hp₁p₂_sbtw.left_ne]
   have hp₄ : p₄ ∈ S := by
-    suffices hmem : p₄ ∈ affineSpan ℝ ({p₃, p}: Set P) by
-      exact affineSpan_mono ℝ (by simp [ht]; grind) hmem
+    suffices hmem : p₄ ∈ affineSpan ℝ {p₃, p} by exact affineSpan_mono ℝ (by simp [ht]; grind) hmem
     simp [hp₃p₄_sbtw.wbtw.collinear.mem_affineSpan_of_mem_of_ne _ _ _ hp₃p₄_sbtw.left_ne]
   let s_isom : AffineIsometry ℝ S P := S.subtypeₐᵢ
-  let p₁' : S := ⟨p₁, mem_affineSpan ℝ (s:= Set.range t.points) (by aesop)⟩
-  let p' : S := ⟨p, mem_affineSpan ℝ (s:= Set.range t.points) (by aesop)⟩
-  let p₃' : S := ⟨p₃, mem_affineSpan ℝ (s:= Set.range t.points) (by aesop)⟩
+  let p₁' : S := ⟨p₁, mem_affineSpan ℝ (s := Set.range t.points) (by aesop)⟩
+  let p' : S := ⟨p, mem_affineSpan ℝ (s := Set.range t.points) (by aesop)⟩
+  let p₃' : S := ⟨p₃, mem_affineSpan ℝ (s := Set.range t.points) (by aesop)⟩
   let p₂' : S := ⟨p₂, hp₂⟩
   let p₄' : S := ⟨p₄, hp₄⟩
-  have h_dist : dist p₁' p' * dist p₂' p' = dist p₃' p' * dist p₄' p' := by
+  have h_dist' : dist p₁' p' * dist p₂' p' = dist p₃' p' * dist p₄' p' := by
     simpa [dist_eq_norm_vsub, ← s_isom.dist_map] using h
-  have hp₁p₂' : ∠ p₁' p' p₂' = π := by simpa [AffineIsometry.angle_map s_isom]
-  have hp₃p₄' : ∠ p₃' p' p₄' = π := by simpa [AffineIsometry.angle_map s_isom]
+  have hp₁'p₂' : ∠ p₁' p' p₂' = π := by simpa [AffineIsometry.angle_map s_isom]
+  have hp₃'p₄' : ∠ p₃' p' p₄' = π := by simpa [AffineIsometry.angle_map s_isom]
   suffices h_cospherical' : Cospherical {p₁', p₂', p₃', p₄'} by
     have h_cosp := Cospherical.subtype_val h_cospherical'
     grind [Set.image_insert_eq, Set.image_singleton]
@@ -207,7 +205,7 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
       ← s_isom.toAffineMap.affineIndependent_iff s_isom.injective]
     convert hindep
     ext i; fin_cases i <;> rfl
-  exact cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_dim_two h_dist hp₁p₂' hp₃p₄' hncol
+  exact cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_dim_two h_dist' hp₁'p₂' hp₃'p₄' hncol
 
 /-- **Intersecting Secants Theorem**. -/
 theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
