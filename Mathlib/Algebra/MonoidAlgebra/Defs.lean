@@ -240,6 +240,10 @@ theorem single_apply {a a' : M} {b : R} [Decidable (a = a')] :
     single a b a' = if a = a' then b else 0 :=
   Finsupp.single_apply
 
+@[simp]
+theorem single_eq_same {a : M} {b : R} : single a b a = b :=
+  Finsupp.single_eq_same
+
 @[to_additive (attr := simp)]
 lemma single_eq_zero : single m r = 0 ↔ r = 0 := Finsupp.single_eq_zero
 
@@ -492,10 +496,8 @@ instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M 
     simp_rw [isUnit_iff_exists]
     rintro a ⟨x, hax, hxa⟩
     refine ⟨x 1, ?_, ?_⟩
-    · sorry
-      --simpa [single_one_mul_apply, one_def] using congr($hax 1)
-    · sorry
-      --simpa [mul_single_one_apply, one_def] using congr($hxa 1)
+    · simpa [single_one_mul_apply, one_def] using congr($hax 1)
+    · simpa [mul_single_one_apply, one_def] using congr($hxa 1)
 
 variable (M) in
 /-- The trivial monoid algebra is the base ring. -/
