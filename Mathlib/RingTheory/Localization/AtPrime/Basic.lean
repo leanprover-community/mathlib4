@@ -585,3 +585,11 @@ noncomputable def equivQuotientMapMaximalIdeal [p.IsMaximal] :
 end isomorphisms
 
 end IsLocalization.AtPrime
+
+lemma Ideal.map_atPrime_eq_top_of_not_le {I : Ideal R} {p : Ideal R} [p.IsPrime] (hle : ¬ I ≤ p) :
+    Ideal.map (algebraMap R (Localization.AtPrime p)) I = ⊤ := by
+  simp only [SetLike.le_def, not_forall] at hle
+  obtain ⟨y, hy, hny⟩ := hle
+  apply Ideal.eq_top_of_isUnit_mem
+  · exact Ideal.mem_map_of_mem (algebraMap R _) hy
+  · exact IsLocalization.map_units _ (⟨y, hny⟩ : p.primeCompl)
