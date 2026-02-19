@@ -53,9 +53,9 @@ theorem Ideal.eq_span_singleton_of_mem_of_notMem_sq_of_notMem_prime_ne {P : Idea
   symm
   split_ifs with hQ
   · subst hQ
-    apply Ideal.count_normalizedFactors_eq <;> simpa [span_singleton_le_iff_mem]
+    apply Ideal.count_normalizedFactors_eq <;> simpa
   by_cases hQp : IsPrime Q
-  · apply Ideal.count_normalizedFactors_eq <;> simp [span_singleton_le_iff_mem, hxQ _ hQp hQ]
+  · apply Ideal.count_normalizedFactors_eq <;> simp [hxQ _ hQp hQ]
   exact Multiset.count_eq_zero.mpr fun hQi ↦
     hQp <| isPrime_of_prime <| irreducible_iff_prime.mp <| irreducible_of_normalized_factor _ hQi
 
