@@ -86,7 +86,7 @@ lemma surjective_of_surjective_of_injective_of_left_exact (hi₂ : Function.Surj
     (hi₃ : Function.Injective i₃) (hg₀ : Function.Injective g₁) : Function.Surjective i₁ := by
   refine surjective_of_surjective_of_surjective_of_injective (1 : Unit →* M₁) f₁ f₂ (1 : Unit →* N₁)
     g₁ g₂ 1 i₁ i₂ i₃ (by simp) hc₁ hc₂ hf₁ (fun y ↦ ?_) hg₁ (fun | .unit => ⟨0, rfl⟩) hi₂ hi₃
-  simp only [Set.mem_range, one_apply, exists_const]
+  simp only [Set.mem_range, FunLikOne.one_apply, exists_const]
   exact ⟨fun h ↦ (hg₀ ((map_one _).trans h.symm)), fun h ↦ h ▸ (map_one _)⟩
 
 include hf₁ hf₂ hg₁ hc₁ hc₂ hc₃ in

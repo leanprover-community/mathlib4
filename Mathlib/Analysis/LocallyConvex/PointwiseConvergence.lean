@@ -98,8 +98,8 @@ Use `PointwiseConvergenceCLM.precomp` for the special case of the adjoint operat
 def mkCLM (A : (E →SL[σ] F) →ₗ[𝕜₂] D →SL[τ] G) (hbound : ∀ (f : D), ∃ (s : Finset E) (C : ℝ≥0),
   ∀ (B : E →SL[σ] F), ∃ (g : E) (_hb : g ∈ s), ‖(A B) f‖ ≤ C • ‖B g‖) :
     (E →SLₚₜ[σ] F) →L[𝕜₂] D →SLₚₜ[τ] G where
-  __ := (toUniformConvergenceCLM _ _ _).toLinearMap.comp
-    (A.comp (toUniformConvergenceCLM _ _ _).symm.toLinearMap)
+  toLinearMap := (toUniformConvergenceCLM _ _ _).toLinearMap ∘ₗ A ∘ₗ
+    (toUniformConvergenceCLM _ _ _).symm.toLinearMap
   cont := by
     apply Seminorm.continuous_from_bounded PointwiseConvergenceCLM.withSeminorms
       PointwiseConvergenceCLM.withSeminorms A

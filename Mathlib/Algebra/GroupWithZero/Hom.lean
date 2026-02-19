@@ -215,7 +215,7 @@ monoid with zero morphism sending `x` to `f x * g x`. -/
 instance {β} [CommMonoidWithZero β] : Mul (α →*₀ β) where
   mul f g :=
     { (f * g : α →* β) with
-      map_zero' := by dsimp; rw [map_zero, zero_mul] }
+      map_zero' := by simp }
 
 /-- The trivial homomorphism between monoids with zero, sending 0 to 0 and all other elements to 1.
 -/

@@ -40,19 +40,15 @@ lemma natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) : (↑n : AddMonoid.End 
 @[simp] lemma ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :
     (ofNat(n) : AddMonoid.End M) m = n • m := rfl
 
-instance instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
-  { AddMonoid.End.instMonoid M,
-    AddMonoidHom.instAddCommMonoid,
-    AddMonoid.End.instAddMonoidWithOne M with
-    zero_mul := fun _ => AddMonoidHom.ext fun _ => rfl,
-    mul_zero := fun _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_zero _,
-    left_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_add _ _ _,
-    right_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => rfl }
+instance instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) where
+  zero_mul := fun _ => AddMonoidHom.ext fun _ => rfl
+  mul_zero := fun _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_zero _
+  left_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_add _ _ _
+  right_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => rfl
 
-instance instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
-  { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
-    intCast := fun z => z • (1 : AddMonoid.End M),
-    intCast_ofNat := natCast_zsmul _,
-    intCast_negSucc := negSucc_zsmul _ }
+instance instRing [AddCommGroup M] : Ring (AddMonoid.End M) where
+  intCast := fun z => z • (1 : AddMonoid.End M)
+  intCast_ofNat := natCast_zsmul _
+  intCast_negSucc := negSucc_zsmul _
 
 end AddMonoid.End

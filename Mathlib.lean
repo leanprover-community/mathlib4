@@ -3716,6 +3716,11 @@ public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Data.FunLike.Embedding
 public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.FunLike.Fintype
+public import Mathlib.Data.FunLike.Group
+public import Mathlib.Data.FunLike.GroupWithZero
+public import Mathlib.Data.FunLike.Hom
+public import Mathlib.Data.FunLike.Module
+public import Mathlib.Data.FunLike.Ring
 public import Mathlib.Data.Holor
 public import Mathlib.Data.Ineq
 public import Mathlib.Data.Int.AbsoluteValue

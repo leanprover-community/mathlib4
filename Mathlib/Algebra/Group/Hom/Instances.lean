@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.InjSurj
-public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Tactic.FastInstance
 
 /-!
@@ -56,7 +55,23 @@ instance MonoidHom.instPow [MulOneClass M] [CommMonoid N] : Pow (M →* N) ℕ w
       map_one' := by simp
       map_mul' x y := by simp [mul_pow] }
 
-@[to_additive (attr := simp)]
+@[to_additive ZeroHom.instFunLikeNatSMul]
+instance OneHom.instFunLikeNatPow [One M] [Monoid N] : FunLikePow ℕ (OneHom M N) M N where
+  pow_apply _ _ _ := rfl
+
+@[to_additive AddMonoidHom.instFunLikeNatSMul]
+instance MonoidHom.instFunLikeNatPow [MulOneClass M] [CommMonoid N] :
+    FunLikePow ℕ (M →* N) M N where
+  pow_apply _ _ _ := rfl
+
+instance AddMonoid.End.instNatSMul [AddCommMonoid M] : SMul ℕ (AddMonoid.End M) :=
+  AddMonoidHom.instNatSMul
+
+instance AddMonoid.End.instFunLikeNatSMul [AddCommMonoid M] :
+    FunLikeSMul ℕ (AddMonoid.End M) M M where
+  smul_apply _ _ _ := rfl
+
+/-@[to_additive (attr := simp)]
 lemma OneHom.pow_apply [One M] [Monoid N] (f : OneHom M N) (n : ℕ) (x : M) :
     (f ^ n) x = f x ^ n :=
   rfl
@@ -64,8 +79,8 @@ lemma OneHom.pow_apply [One M] [Monoid N] (f : OneHom M N) (n : ℕ) (x : M) :
 @[to_additive (attr := simp)]
 lemma MonoidHom.pow_apply [MulOneClass M] [CommMonoid N] (f : M →* N) (n : ℕ) (x : M) :
     (f ^ n) x = f x ^ n :=
-  rfl
-
+  rfl-/
+/-
 /-- `OneHom M N` is a `Monoid` if `N` is. -/
 @[to_additive /-- `ZeroHom M N` is an `AddMonoid` if `N` is. -/]
 instance OneHom.instMonoid [One M] [Monoid N] : Monoid (OneHom M N) :=
@@ -82,7 +97,7 @@ instance OneHom.instCommMonoid [One M] [CommMonoid N] : CommMonoid (OneHom M N) 
 @[to_additive /-- `(M →+ N)` is an `AddCommMonoid` if `N` is commutative. -/]
 instance MonoidHom.instCommMonoid [MulOneClass M] [CommMonoid N] : CommMonoid (M →* N) :=
   fast_instance%
-    DFunLike.coe_injective.commMonoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    DFunLike.coe_injective.commMonoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)-/
 
 instance ZeroHom.instIntSMul [Zero M] [AddGroup N] : SMul ℤ (ZeroHom M N) where
   smul a f :=
@@ -108,7 +123,21 @@ instance MonoidHom.instIntPow [MulOneClass M] [CommGroup N] : Pow (M →* N) ℤ
       map_one' := by simp
       map_mul' x y := by simp [mul_zpow] }
 
-@[to_additive (attr := simp)]
+@[to_additive ZeroHom.instFunLikeIntSMul]
+instance OneHom.instFunLikeIntPow [One M] [Group N] : FunLikePow ℤ (OneHom M N) M N where
+  pow_apply _ _ _ := rfl
+
+@[to_additive AddMonoidHom.instFunLikeIntSMul]
+instance MonoidHom.instFunLikeIntPow [MulOneClass M] [CommGroup N] : FunLikePow ℤ (M →* N) M N where
+  pow_apply _ _ _ := rfl
+
+instance AddMonoid.End.instIntSMul [AddCommGroup M] : SMul ℤ (AddMonoid.End M) :=
+  AddMonoidHom.instIntSMul
+
+instance AddMonoid.End.instFunLikeIntPow [AddCommGroup M] : FunLikeSMul ℤ (AddMonoid.End M) M M :=
+  AddMonoidHom.instFunLikeIntSMul
+
+/-@[to_additive (attr := simp)]
 lemma OneHom.zpow_apply [One M] [Group N] (f : OneHom M N) (z : ℤ) (x : M) :
     (f ^ z) x = f x ^ z :=
   rfl
@@ -116,8 +145,9 @@ lemma OneHom.zpow_apply [One M] [Group N] (f : OneHom M N) (z : ℤ) (x : M) :
 @[to_additive (attr := simp)]
 lemma MonoidHom.zpow_apply [MulOneClass M] [CommGroup N] (f : M →* N) (z : ℤ) (x : M) :
     (f ^ z) x = f x ^ z :=
-  rfl
+  rfl-/
 
+/-
 /-- If `G` is a group, then so is `OneHom M G`. -/
 @[to_additive /-- If `G` is an additive group, then so is `ZeroHom M G`. -/]
 instance OneHom.instGroup [One M] [Group N] : Group (OneHom M N) :=
@@ -160,23 +190,20 @@ instance [MulOneClass M] [CommMonoid N] [IsRightCancelMul N] : IsRightCancelMul 
 instance [One M] [MulOneClass N] [IsCancelMul N] : IsCancelMul (OneHom M N) where
 
 @[to_additive]
-instance [MulOneClass M] [CommMonoid N] [IsCancelMul N] : IsCancelMul (M →* N) where
+instance [MulOneClass M] [CommMonoid N] [IsCancelMul N] : IsCancelMul (M →* N) where-/
 
 section End
 
-instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
-  AddMonoidHom.instAddCommMonoid
-
-@[simp]
+/-@[simp]
 theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
-  rfl
+  rfl-/
 
 -- Note: `@[simp]` omitted because `(1 : AddMonoid.End M) = id` by `AddMonoid.End.coe_one`
 theorem AddMonoid.End.one_apply [AddZeroClass M] (m : M) : (1 : AddMonoid.End M) m = m :=
   rfl
 
-instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
-  AddMonoidHom.instAddCommGroup
+/-instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
+  AddMonoidHom.instAddCommGroup-/
 
 instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) :=
   { intCast := fun z => z • (1 : AddMonoid.End M) }
@@ -210,8 +237,8 @@ def flip {mM : MulOneClass M} {mN : MulOneClass N} {mP : CommMonoid P} (f : M �
     N →* M →* P where
   toFun y :=
     { toFun := fun x => f x y,
-      map_one' := by simp [f.map_one, one_apply],
-      map_mul' := fun x₁ x₂ => by simp [f.map_mul, mul_apply] }
+      map_one' := by simp [f.map_one],
+      map_mul' := fun x₁ x₂ => by simp [f.map_mul] }
   map_one' := ext fun x => (f x).map_one
   map_mul' y₁ y₂ := ext fun x => (f x).map_mul y₁ y₂
 

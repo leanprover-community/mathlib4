@@ -111,7 +111,7 @@ theorem sum_incMatrix_apply [Fintype (Sym2 α)] [Fintype (neighborSet G a)] :
 theorem incMatrix_mul_transpose_diag [Fintype (Sym2 α)] [Fintype (neighborSet G a)] :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a a = G.degree a := by
   rw [← sum_incMatrix_apply]
-  simp only [mul_apply, incMatrix_apply', transpose_apply, mul_ite, mul_one, mul_zero]
+  simp only [Matrix.mul_apply, incMatrix_apply', transpose_apply, mul_ite, mul_one, mul_zero]
   simp_all only [ite_true, sum_boole]
 
 theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :

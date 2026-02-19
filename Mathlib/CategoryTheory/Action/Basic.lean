@@ -305,10 +305,7 @@ def actionPUnitEquivalence : Action V PUnit ≌ V where
     { obj := fun X => ⟨X, 1⟩
       map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
   unitIso :=
-    NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
-      simp only [Functor.id_obj, MonoidHom.one_apply, End.one_def, Functor.comp_obj,
-        forget_obj, Iso.refl_hom, Category.comp_id]
-      exact ρ_one X
+    NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by simpa using ρ_one X
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
 @[deprecated (since := "2026-02-08")] alias actionPunitEquivalence := actionPUnitEquivalence

@@ -151,6 +151,8 @@ end auxiliaryDefs
 
 open ComplexOrder
 
+set_option maxHeartbeats 250000 in
+-- the `use {..}` is at fault
 /-- The ⋆-algebra equivalence version of
 `ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`.
 

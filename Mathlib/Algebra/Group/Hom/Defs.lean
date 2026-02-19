@@ -142,7 +142,7 @@ you should parametrize over `(F : Type*) [AddMonoidHomClass F M N] (f : F)`.
 When you extend this structure, make sure to extend `AddMonoidHomClass`.
 -/
 structure AddMonoidHom (M : Type*) (N : Type*) [AddZero M] [AddZero N]
-  extends ZeroHom M N, AddHom M N
+  extends ZeroHom M N, M →ₙ+ N
 
 attribute [nolint docBlame] AddMonoidHom.toAddHom
 attribute [nolint docBlame] AddMonoidHom.toZeroHom
@@ -346,7 +346,7 @@ instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
   ⟨MulHomClass.toMulHom⟩
 
 @[to_additive (attr := simp)]
-theorem MulHom.coe_coe [MulHomClass F M N] (f : F) : ((f : MulHom M N) : M → N) = f := rfl
+theorem MulHom.coe_coe [MulHomClass F M N] (f : F) : ((f : M →ₙ* N) : M → N) = f := rfl
 
 end Mul
 
@@ -1004,7 +1004,7 @@ theorem OneHom.one_comp [One M] [One N] [One P] (f : OneHom M N) :
 @[to_additive (attr := simp)]
 theorem OneHom.comp_one [One M] [One N] [One P] (f : OneHom N P) : f.comp (1 : OneHom M N) = 1 := by
   ext
-  simp only [map_one, OneHom.coe_comp, Function.comp_apply, OneHom.one_apply]
+  simp
 
 @[to_additive]
 instance [One M] [One N] : Inhabited (OneHom M N) := ⟨1⟩

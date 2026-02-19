@@ -966,7 +966,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma idemFst_add_idemSnd :
     idemFst + idemSnd = (1 : AddMonoid.End (WithLp p (α × β))) := AddMonoidHom.ext
   fun x => by
-    rw [AddMonoidHom.add_apply, idemFst_apply, idemSnd_apply, AddMonoid.End.coe_one, id_eq,
+    rw [FunLikeAdd.add_apply, idemFst_apply, idemSnd_apply, AddMonoid.End.coe_one, id_eq,
       ← toLp_add, Prod.mk_add_mk, zero_add, add_zero]
     rfl
 
