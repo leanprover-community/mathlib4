@@ -48,10 +48,6 @@ We define the following variants.
   It is invariant under scaling by nonzero elements of `K`.
 * `Finsupp.mulHeight x` and `Finsupp.logHeight x` for `x : α →₀ K`. This is the same
   as the height of `x` restricted to the support of `x`.
-* (TODO)
-  `Projectivization.mulHeight` and `Projectivization.logHeight` on
-  `Projectivization K (ι → K)` (with a `Fintype ι`). This is the height of a point
-  on projective space (with fixed basis).
 
 ## TODO
 
