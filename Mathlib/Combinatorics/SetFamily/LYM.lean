@@ -180,7 +180,7 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
   | zero =>
     simp only [cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
       zero_add, range_one, sum_singleton,
-      choose_self, cast_one, div_one, cast_le]
+      choose_self, cast_one, div_one, cast_le, tsub_zero]
     exact card_le_card (slice_subset_falling _ _)
   | succ k ih =>
     rw [sum_range_succ, ← slice_union_shadow_falling_succ,
