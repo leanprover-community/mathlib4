@@ -246,6 +246,18 @@ section freeDFinsuppEquiv
 variable {ι' : Type*} [DecidableEq ι] [Fintype ι] [CommSemiring R]
   [∀ i, Fintype (κ i)] [∀ i, DecidableEq (κ i)]
 
+section
+
+variable {M₁ : ι → Type*} {M₂ : Type*}
+variable [∀ i, AddCommMonoid (M₁ i)] [(i : ι) → Module R (M₁ i)] [AddCommMonoid M₂] [Module R M₂]
+
+/-instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := fast_instance%
+  coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl-/
+
+end
+
+-- MultilinearMap R (fun x ↦ R) M₂
+
 /--
 The linear equivalence of multilinear maps on free modules over `R` indexed by `fun i => κ i` on
 the domain and `ι'` on the codomain and the dependent, finitely supported maps from
@@ -253,6 +265,9 @@ the domain and `ι'` on the codomain and the dependent, finitely supported maps 
 -/
 def freeDFinsuppEquiv :
     (Π₀ (_ : (Π i, κ i) × ι'), R) ≃ₗ[R] MultilinearMap R (fun i => Π₀ _ : κ i, R) (Π₀ _ : ι', R) :=
+  letI : ((i : ι) → κ i) → AddCommMonoid (MultilinearMap R (fun _ : ι ↦ R) (Π₀ (_ : ι'), R)) := by
+    intro
+    apply FunLike.instAddCommMonoid
   (DFinsupp.domLCongr (M := fun _ => R) (Equiv.sigmaEquivProd _ _).symm) ≪≫ₗ
   (DFinsupp.sigmaCurryLEquiv (M := fun _ _ => R)) ≪≫ₗ
   DFinsupp.linearEquivFunOnFintype ≪≫ₗ
@@ -260,6 +275,9 @@ def freeDFinsuppEquiv :
   fromDFinsuppEquiv κ R (M := fun _ _ => R)
 
 theorem freeDFinsuppEquiv_def (f : Π₀ (_ : (Π i, κ i) × ι'), R) :
+    letI : ((i : ι) → κ i) → AddCommMonoid (MultilinearMap R (fun _ : ι ↦ R) (Π₀ (_ : ι'), R)) := by
+      intro
+      apply FunLike.instAddCommMonoid
     freeDFinsuppEquiv f =
       fromDFinsuppEquiv κ R
       (LinearEquiv.piCongrRight (fun _ => MultilinearMap.piRingEquiv) <|

@@ -29,8 +29,27 @@ end SMulInstances
 
 section ModuleInstance
 
-instance [Monoid M] [AddMonoid β] [AddMonoid F] [DistribMulAction M β] [SMul M F]
-    [FunLikeZero F α β] [FunLikeAdd F α β] [FunLikeSMul M F α β] : DistribMulAction M F :=
+instance instIsCentralScalar [SMul M F] [SMul Mᵐᵒᵖ F] [SMul M β] [SMul Mᵐᵒᵖ β] [IsCentralScalar M β]
+    [FunLikeSMul M F α β] [FunLikeSMul Mᵐᵒᵖ F α β] :
+    IsCentralScalar M F where
+  op_smul_eq_smul a b := by
+    apply DFunLike.ext
+    intro x
+    simp [op_smul_eq_smul]
+
+instance instDistribSMul [AddZeroClass β] [AddZeroClass F] [DistribSMul M β]
+    [SMul M F] [FunLikeZero F α β] [FunLikeAdd F α β] [FunLikeSMul M F α β] :
+    DistribSMul M F :=
+  DFunLike.coe_injective.distribSMul (coeAddHom F α β) FunLike.coe_smul
+
+@[to_additive]
+instance instMulAction [SMul M F] [Monoid M] [MulAction M β] [FunLikeSMul M F α β] :
+    MulAction M F :=
+  DFunLike.coe_injective.mulAction _ FunLike.coe_smul
+
+instance instDistribMulAction [Monoid M] [AddMonoid β] [AddMonoid F] [DistribMulAction M β]
+    [SMul M F] [FunLikeZero F α β] [FunLikeAdd F α β] [FunLikeSMul M F α β] :
+    DistribMulAction M F :=
   DFunLike.coe_injective.distribMulAction (coeAddHom F α β) FunLike.coe_smul
 
 variable [Semiring M] [AddCommMonoid β] [Module M β]

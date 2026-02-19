@@ -216,6 +216,9 @@ instance : SMul S (MultilinearMap R M₁ M₂) :=
 instance : FunLikeSMul S (MultilinearMap R M₁ M₂) ((i : ι) → M₁ i) M₂ where
   smul_apply _ _ _ := rfl
 
+/-instance : FunLikeSMul ℕ (MultilinearMap R M₁ M₂) ((i : ι) → M₁ i) M₂ where
+  smul_apply _ _ _ := rfl-/
+
 /-@[simp]
 theorem smul_apply (f : MultilinearMap R M₁ M₂) (c : S) (m : ∀ i, M₁ i) : (c • f) m = c • f m :=
   rfl
@@ -224,9 +227,7 @@ theorem coe_smul (c : S) (f : MultilinearMap R M₁ M₂) : ⇑(c • f) = c •
 
 end SMul
 
-/-instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := fast_instance%
-  coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
-
+/-
 /-- Coercion of a multilinear map to a function as an additive monoid homomorphism. -/
 @[simps] def coeAddMonoidHom : MultilinearMap R M₁ M₂ →+ (((i : ι) → M₁ i) → M₂) where
   toFun := DFunLike.coe; map_zero' := rfl; map_add' _ _ := rfl-/
@@ -899,12 +900,15 @@ section Module
 
 variable [Semiring S] [Module S M₂] [SMulCommClass R S M₂]
 
-/- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
-addition and scalar multiplication.
+/-
+/-- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
+addition and scalar multiplication. -/
 instance : Module S (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.module _ coeAddMonoidHom fun _ _ ↦ rfl-/
 
--- Todo: remove this
+/-instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := fast_instance%
+  coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl-/
+
 instance [Module.IsTorsionFree S M₂] : Module.IsTorsionFree S (MultilinearMap R M₁ M₂) :=
   coe_injective.moduleIsTorsionFree _ FunLike.coe_smul
 
@@ -1317,9 +1321,14 @@ instance : FunLikeSub (MultilinearMap R M₁ M₂) ((i : ι) → M₁ i) M₂ wh
 theorem sub_apply (m : ∀ i, M₁ i) : (f - g) m = f m - g m :=
   rfl-/
 
+/-instance : FunLikeSMul ℤ (MultilinearMap R M₁ M₂) ((i : ι) → M₁ i) M₂ where
+  smul_apply _ _ _ := rfl-/
+
 /-instance : AddCommGroup (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl)-/
+
+example : AddCommGroup (MultilinearMap R M₁ M₂) := by infer_instance
 
 end RangeAddCommGroup
 

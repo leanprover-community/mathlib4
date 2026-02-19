@@ -759,8 +759,7 @@ variable {S S₁ S₂ : Type*}
 
 instance [AddMonoid k] [DistribSMul S k] :
     DistribSMul S (SkewMonoidAlgebra k G) where
-  __ := toFinsupp_injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
-    toFinsupp_smul
+  __ := toFinsupp_injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_smul
 
 instance [Monoid S] [AddMonoid k] [DistribMulAction S k] :
     DistribMulAction S (SkewMonoidAlgebra k G) where

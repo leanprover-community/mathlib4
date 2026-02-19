@@ -321,7 +321,7 @@ instance AddMonoid.nat_smulCommClass {M A : Type*} [AddMonoid A] [DistribSMul M 
   smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_nsmul y n).symm
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
-instance AddMonoid.nat_smulCommClass' {M A : Type*} [AddMonoid A] [DistribSMul M A] :
+theorem AddMonoid.nat_smulCommClass' {M A : Type*} [AddMonoid A] [DistribSMul M A] :
     SMulCommClass M ℕ A :=
   .symm _ _ _
 

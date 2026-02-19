@@ -747,6 +747,15 @@ instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
 instance : FunLikeSMul S (M →ₛₗ[σ₁₂] M₂) M M₂ where
   smul_apply _ _ _ := rfl
 
+instance : SMul ℕ (M →ₛₗ[σ₁₂] M₂) :=
+  ⟨fun a f ↦
+    { toFun := a • (f : M → M₂)
+      map_add' := fun x y ↦ by simp only [Pi.smul_apply, f.map_add, smul_add]
+      map_smul' := fun c x ↦ by simp [Pi.smul_apply, smul_comm] }⟩
+
+instance : FunLikeSMul ℕ (M →ₛₗ[σ₁₂] M₂) M M₂ where
+  smul_apply _ _ _ := rfl
+
 instance [SMulCommClass S T M₂] : SMulCommClass S T (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun _ _ _ ↦ ext fun _ ↦ smul_comm _ _ _⟩
 
@@ -755,9 +764,9 @@ instance [SMulCommClass S T M₂] : SMulCommClass S T (M →ₛₗ[σ₁₂] M�
 instance [SMul S T] [IsScalarTower S T M₂] : IsScalarTower S T (M →ₛₗ[σ₁₂] M₂) where
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc _ _ _
 
-instance [DistribSMul Sᵐᵒᵖ M₂] [SMulCommClass R₂ Sᵐᵒᵖ M₂] [IsCentralScalar S M₂] :
+/-instance [DistribSMul Sᵐᵒᵖ M₂] [SMulCommClass R₂ Sᵐᵒᵖ M₂] [IsCentralScalar S M₂] :
     IsCentralScalar S (M →ₛₗ[σ₁₂] M₂) where
-  op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
+  op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _-/
 
 end SMul
 

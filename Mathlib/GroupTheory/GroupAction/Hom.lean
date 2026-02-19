@@ -424,16 +424,31 @@ instance [SMul M X] [SMul N Y] [SMul R Y] [SMulCommClass N R Y] :
     SMul R (X →ₑ[σ] Y) where
   smul h f := ⟨h • f, by simp [smul_comm _ h]⟩
 
-@[to_additive (attr := simp, norm_cast)]
+instance [SMul M X] [SMul N Y] [SMul R Y] [SMulCommClass N R Y] :
+    FunLikeSMul R (X →ₑ[σ] Y) X Y where
+  smul_apply _ _ _ := rfl
+
+instance [SMul M X] [SMul N Y] [SMul ℕ Y] [SMulCommClass ℕ N Y] :
+    SMul ℕ (X →ₑ[σ] Y) where
+  smul h f := ⟨h • f, by simp [smul_comm]⟩
+
+instance [SMul M X] [SMul N Y] [SMul ℕ Y] [SMulCommClass ℕ N Y] :
+    FunLikeSMul ℕ (X →ₑ[σ] Y) X Y where
+  smul_apply _ _ _ := rfl
+
+/-@[to_additive (attr := simp, norm_cast)]
 lemma coe_smul [SMul M X] [SMul N Y] [SMul R Y] [SMulCommClass N R Y] (f : X →ₑ[σ] Y) (r : R) :
-    ⇑(r • f) = r • ⇑f := rfl
+    ⇑(r • f) = r • ⇑f := rfl-/
 
 instance [SMul M X] [Zero Y] [SMulZeroClass N Y] :
     Zero (X →ₑ[σ] Y) where
   zero := ⟨0, by simp⟩
 
-@[simp, norm_cast]
-lemma coe_zero [SMul M X] [Zero Y] [SMulZeroClass N Y] : ⇑(0 : X →ₑ[σ] Y) = 0 := rfl
+instance [SMul M X] [Zero Y] [SMulZeroClass N Y] : FunLikeZero (X →ₑ[σ] Y) X Y where
+  zero_apply _ := rfl
+
+/-@[simp, norm_cast]
+lemma coe_zero [SMul M X] [Zero Y] [SMulZeroClass N Y] : ⇑(0 : X →ₑ[σ] Y) = 0 := rfl-/
 
 instance [SMul M X] [AddZeroClass Y] [DistribSMul N Y] :
     AddZeroClass (X →ₑ[σ] Y) where

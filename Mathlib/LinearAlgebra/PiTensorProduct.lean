@@ -206,6 +206,10 @@ section DistribMulAction
 variable [Monoid R₁] [DistribMulAction R₁ R] [SMulCommClass R₁ R R]
 variable [Monoid R₂] [DistribMulAction R₂ R] [SMulCommClass R₂ R R]
 
+variable (f : ⨂[R] i, s i) (n : ℕ)
+
+#check n • f
+
 -- Most of the time we want the instance below this one, which is easier for typeclass resolution
 -- to find.
 instance hasSMul' : SMul R₁ (⨂[R] i, s i) :=
@@ -215,6 +219,13 @@ instance hasSMul' : SMul R₁ (⨂[R] i, s i) :=
       (fun f ↦ by simp [zero_tprodCoeff]) (fun r' f i m₁ m₂ ↦ by simp [add_tprodCoeff])
       (fun r' r'' f ↦ by simp [add_tprodCoeff']) fun z f i r' ↦ by
       simp [smul_tprodCoeff, mul_smul_comm]⟩
+
+variable (f : ⨂[R] i, s i) (n : ℕ)
+
+#check PiTensorProduct.hasSMul' (R₁ := ℕ) (R := R) (ι := ι) (s := s)
+#check AddMonoid.toNatSMul (M := (⨂[R] i, s i))
+
+#check n • f
 
 instance : SMul R (⨂[R] i, s i) :=
   PiTensorProduct.hasSMul'
@@ -557,6 +568,14 @@ protected theorem map_update_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →
 
 variable (R s t)
 
+--set_option trace.Meta.synthInstance tru
+
+example : FunLikeSMul ℕ ((⨂[R] (i : ι), s i) →ₗ[R] ⨂[R] (i : ι), t i) (⨂[R] (i : ι), s i) (⨂[R] (i : ι), t i) :=
+  LinearMap.instFunLikeSMulNat (M := (⨂[R] (i : ι), s i)) (M₂ := ⨂[R] (i : ι), t i)
+    (σ₁₂ := RingHom.id R)
+
+example : AddCommMonoid ((⨂[R] (i : ι), s i) →ₗ[R] ⨂[R] (i : ι), t i) := FunLike.instAddCommMonoid
+
 /-- The tensor of a family of linear maps from `sᵢ` to `tᵢ`, as a multilinear map of
 the family.
 -/
@@ -568,6 +587,17 @@ noncomputable def mapMultilinear :
   map_update_add' _ _ _ _ := PiTensorProduct.map_update_add _ _ _ _
 
 variable {R s t}
+
+example : SMul ℕ (MultilinearMap R s (⨂[R] (i : ι), t i)) :=
+  MultilinearMap.instSMul
+
+example : FunLikeSMul ℕ (MultilinearMap R s (⨂[R] (i : ι), t i)) ((i : ι) → s i) (⨂[R] (i : ι), t i) :=
+  MultilinearMap.instFunLikeSMulForall (S := ℕ) (R := R) (M₁ := s) (M₂ := (⨂[R] (i : ι), t i))
+
+example : AddCommMonoid (MultilinearMap R s (⨂[R] (i : ι), t i)) :=
+  FunLike.instAddCommMonoid
+
+#exit
 
 /--
 Let `sᵢ` and `tᵢ` be families of `R`-modules.

@@ -21,7 +21,7 @@ variable {F α β : Type*} [FunLike F α β]
 
 section CoercionHom
 
-variable [MulOne F] [Monoid β] [FunLikeOne F α β] [FunLikeMul F α β]
+variable [MulOne F] [MulOneClass β] [FunLikeOne F α β] [FunLikeMul F α β]
 
 variable (F α β) in
 /-- Coercion as a multiplicative homomorphism. -/

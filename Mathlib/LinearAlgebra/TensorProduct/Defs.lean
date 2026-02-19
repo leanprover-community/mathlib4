@@ -262,6 +262,10 @@ instance leftHasSMul : SMul R' (M ⊗[R] N) :=
 instance : SMul R (M ⊗[R] N) :=
   TensorProduct.leftHasSMul
 
+instance : SMul ℕ (M ⊗[R] N) :=
+  letI : SMulCommClass R ℕ M := AddMonoid.nat_smulCommClass'
+  TensorProduct.leftHasSMul
+
 protected theorem smul_zero (r : R') : r • (0 : M ⊗[R] N) = 0 :=
   map_zero _
 

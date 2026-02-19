@@ -211,7 +211,14 @@ instance instSMul : SMul S (M [⋀^ι]→ₗ[R] N) :=
     { c • (f : MultilinearMap R (fun _ : ι => M) N) with
       map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }⟩
 
-@[simp]
+instance : FunLikeSMul S (M [⋀^ι]→ₗ[R] N) (ι → M) N where
+  smul_apply _ _ _ := rfl
+
+@[norm_cast]
+theorem coe_smul' (c : S) : ↑(c • f) = c • (f : MultilinearMap R (fun _ : ι => M) N) :=
+  rfl
+
+/-@[simp]
 theorem smul_apply (c : S) (m : ι → M) : (c • f) m = c • f m :=
   rfl
 
@@ -220,15 +227,15 @@ theorem coe_smul (c : S) : ↑(c • f) = c • (f : MultilinearMap R (fun _ : �
   rfl
 
 theorem coeFn_smul (c : S) (f : M [⋀^ι]→ₗ[R] N) : ⇑(c • f) = c • ⇑f :=
-  rfl
+  rfl-/
 
-instance instSMulCommClass {T : Type*} [Monoid T] [DistribMulAction T N] [SMulCommClass R T N]
+/-instance instSMulCommClass {T : Type*} [Monoid T] [DistribMulAction T N] [SMulCommClass R T N]
     [SMulCommClass S T N] : SMulCommClass S T (M [⋀^ι]→ₗ[R] N) where
   smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 
 instance instIsCentralScalar [DistribMulAction Sᵐᵒᵖ N] [IsCentralScalar S N] :
     IsCentralScalar S (M [⋀^ι]→ₗ[R] N) :=
-  ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
+  ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩-/
 
 end SMul
 
@@ -278,25 +285,31 @@ instance instAdd : Add (M [⋀^ι]→ₗ[R] N) where
       map_eq_zero_of_eq' := fun v i j h hij => by
         simp [a.map_eq_zero_of_eq v h hij, b.map_eq_zero_of_eq v h hij] }
 
-@[simp]
+instance : FunLikeAdd (M [⋀^ι]→ₗ[R] N) (ι → M) N where
+  add_apply _ _ _ := rfl
+
+/-@[simp]
 theorem add_apply : (f + f') v = f v + f' v :=
-  rfl
+  rfl-/
 
 @[norm_cast]
-theorem coe_add : (↑(f + f') : MultilinearMap R (fun _ : ι => M) N) = f + f' :=
+theorem coe_add' : (↑(f + f') : MultilinearMap R (fun _ : ι => M) N) = f + f' :=
   rfl
 
 instance instZero : Zero (M [⋀^ι]→ₗ[R] N) :=
   ⟨{ (0 : MultilinearMap R (fun _ : ι => M) N) with
       map_eq_zero_of_eq' := fun _ _ _ _ _ => by simp }⟩
 
-@[simp]
+instance : FunLikeZero (M [⋀^ι]→ₗ[R] N) (ι → M) N where
+  zero_apply _ := rfl
+
+/-@[simp]
 theorem zero_apply : (0 : M [⋀^ι]→ₗ[R] N) v = 0 :=
   rfl
 
 @[norm_cast]
 theorem coe_zero : ((0 : M [⋀^ι]→ₗ[R] N) : MultilinearMap R (fun _ : ι => M) N) = 0 :=
-  rfl
+  rfl-/
 
 @[simp]
 theorem mk_zero :
@@ -306,21 +319,24 @@ theorem mk_zero :
 instance instInhabited : Inhabited (M [⋀^ι]→ₗ[R] N) :=
   ⟨0⟩
 
-instance instAddCommMonoid : AddCommMonoid (M [⋀^ι]→ₗ[R] N) := fast_instance%
-  coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => coeFn_smul _ _
+/-instance instAddCommMonoid : AddCommMonoid (M [⋀^ι]→ₗ[R] N) := fast_instance%
+  coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => coeFn_smul _ _-/
 
 instance instNeg : Neg (M [⋀^ι]→ₗ[R] N') :=
   ⟨fun f =>
     { -(f : MultilinearMap R (fun _ : ι => M) N') with
       map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }⟩
 
-@[simp]
+instance : FunLikeNeg (M [⋀^ι]→ₗ[R] N') (ι → M) N' where
+  neg_apply _ _ := rfl
+
+/-@[simp]
 theorem neg_apply (m : ι → M) : (-g) m = -g m :=
   rfl
 
 @[norm_cast]
 theorem coe_neg : ((-g : M [⋀^ι]→ₗ[R] N') : MultilinearMap R (fun _ : ι => M) N') = -g :=
-  rfl
+  rfl-/
 
 instance instSub : Sub (M [⋀^ι]→ₗ[R] N') :=
   ⟨fun f g =>
@@ -328,27 +344,30 @@ instance instSub : Sub (M [⋀^ι]→ₗ[R] N') :=
       map_eq_zero_of_eq' := fun v i j h hij => by
         simp [f.map_eq_zero_of_eq v h hij, g.map_eq_zero_of_eq v h hij] }⟩
 
-@[simp]
+instance : FunLikeSub (M [⋀^ι]→ₗ[R] N') (ι → M) N' where
+  sub_apply _ _ _ := rfl
+
+/-@[simp]
 theorem sub_apply (m : ι → M) : (g - g₂) m = g m - g₂ m :=
   rfl
 
 @[norm_cast]
 theorem coe_sub : (↑(g - g₂) : MultilinearMap R (fun _ : ι => M) N') = g - g₂ :=
-  rfl
+  rfl-/
 
-instance instAddCommGroup : AddCommGroup (M [⋀^ι]→ₗ[R] N') := fast_instance%
+/-instance instAddCommGroup : AddCommGroup (M [⋀^ι]→ₗ[R] N') := fast_instance%
   coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
+    (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _-/
 
 section DistribMulAction
 
 variable {S : Type*} [Monoid S] [DistribMulAction S N] [SMulCommClass R S N]
 
-instance instDistribMulAction : DistribMulAction S (M [⋀^ι]→ₗ[R] N) where
+/-instance instDistribMulAction : DistribMulAction S (M [⋀^ι]→ₗ[R] N) where
   one_smul _ := ext fun _ => one_smul _ _
   mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
   smul_zero _ := ext fun _ => smul_zero _
-  smul_add _ _ _ := ext fun _ => smul_add _ _ _
+  smul_add _ _ _ := ext fun _ => smul_add _ _ _-/
 
 end DistribMulAction
 
@@ -356,14 +375,14 @@ section Module
 
 variable {S : Type*} [Semiring S] [Module S N] [SMulCommClass R S N]
 
-/-- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
+/- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
 addition and scalar multiplication. -/
-instance instModule : Module S (M [⋀^ι]→ₗ[R] N) where
+/-instance instModule : Module S (M [⋀^ι]→ₗ[R] N) where
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
-  zero_smul _ := ext fun _ => zero_smul _ _
+  zero_smul _ := ext fun _ => zero_smul _ _-/
 
 instance instIsTorsionFree [IsTorsionFree S N] : IsTorsionFree S (M [⋀^ι]→ₗ[R] N) :=
-  coe_injective.moduleIsTorsionFree _ coeFn_smul
+  coe_injective.moduleIsTorsionFree _ FunLike.coe_smul
 
 /-- Embedding of alternating maps into multilinear maps as a linear map. -/
 @[simps]
@@ -533,7 +552,7 @@ theorem add_compLinearMap (f₁ f₂ : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R
 theorem compLinearMap_zero [Nonempty ι] (f : M [⋀^ι]→ₗ[R] N) :
     f.compLinearMap (0 : M₂ →ₗ[R] M) = 0 := by
   ext
-  simp_rw [compLinearMap_apply, zero_apply, ← Pi.zero_def, map_zero, zero_apply]
+  simp_rw [compLinearMap_apply, zero_apply, ← Pi.zero_def, map_zero]
 
 /-- Composing an alternating map with the identity linear map in each argument. -/
 @[simp]
@@ -827,11 +846,11 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
   map_add' a b := by
     ext
     simp only [mk_coe, AlternatingMap.coe_mk, sum_apply, smul_apply, domDomCongr_apply, add_apply,
-      smul_add, Finset.sum_add_distrib, AlternatingMap.add_apply]
+      smul_add, Finset.sum_add_distrib, add_apply]
   map_zero' := by
     ext
     simp only [mk_coe, AlternatingMap.coe_mk, sum_apply, smul_apply, domDomCongr_apply,
-      zero_apply, smul_zero, Finset.sum_const_zero, AlternatingMap.zero_apply]
+      zero_apply, smul_zero, Finset.sum_const_zero, zero_apply]
 
 theorem alternatization_def (m : MultilinearMap R (fun _ : ι => M) N') :
     ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=
@@ -855,9 +874,9 @@ theorem coe_alternatization [DecidableEq ι] [Fintype ι] (a : M [⋀^ι]→ₗ[
     MultilinearMap.alternatization (a : MultilinearMap R (fun _ => M) N')
     = Nat.factorial (Fintype.card ι) • a := by
   apply AlternatingMap.coe_injective
-  simp_rw [MultilinearMap.alternatization_def, ← coe_domDomCongr, domDomCongr_perm, coe_smul,
+  simp_rw [MultilinearMap.alternatization_def, ← coe_domDomCongr, domDomCongr_perm, coe_smul',
     smul_smul, Int.units_mul_self, one_smul, Finset.sum_const, Finset.card_univ, Fintype.card_perm,
-    ← coe_multilinearMap, coe_smul]
+    ← coe_multilinearMap, coe_smul']
 
 end AlternatingMap
 

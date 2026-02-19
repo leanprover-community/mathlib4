@@ -48,11 +48,11 @@ variable {S : Type*}
 @[to_additive (dont_translate := R) distribMulAction]
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R k[G] :=
-  Finsupp.distribMulAction G k
+  FunLike.instDistribMulAction
 
 @[to_additive (dont_translate := R)]
 instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
-  Finsupp.module G k
+  FunLike.instModule
 
 @[to_additive (dont_translate := R)]
 instance instIsTorsionFree [Semiring R] [Semiring k] [Module R k] [Module.IsTorsionFree R k] :
@@ -64,8 +64,11 @@ instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonem
   Finsupp.faithfulSMul
 
 /-- The standard basis for a monoid algebra. -/
-@[to_additive /-- The standard basis for an additive monoid algebra. -/]
 def basis (R k) [Semiring k] : Module.Basis R k (MonoidAlgebra k R) where
+  repr := LinearEquiv.refl k (R →₀ k)
+
+/-- The standard basis for an additive monoid algebra. -/
+def _root_.AddMonoidAlgebra.basis (R k) [Semiring k] : Module.Basis R k (AddMonoidAlgebra k R) where
   repr := LinearEquiv.refl k (R →₀ k)
 
 @[to_additive (dont_translate := k) (attr := simp)]
@@ -177,7 +180,7 @@ instance smulCommClass_self [SMulCommClass R k k] : SMulCommClass R k[G] k[G] wh
     -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
     classical
     simp only [smul_eq_mul, mul_apply]
-    rw [coe_smul]
+    rw [FunLike.coe_smul]
     refine Eq.symm (Eq.trans (congr_arg (sum a)
       (funext₂ fun a₁ b₁ => sum_smul_index' (g := b) (b := t) ?_)) ?_) <;>
     simp only [mul_apply, Finsupp.sum, Finset.smul_sum, smul_ite, mul_smul_comm,
