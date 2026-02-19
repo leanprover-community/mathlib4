@@ -49,6 +49,7 @@ lemma IsLocalRing.ResidueField.map_bijective_of_surjective [IsLocalRing R] {S : 
   apply Ideal.Quotient.lift_surjective_of_surjective
   convert Function.Surjective.comp (Ideal.Quotient.mk_surjective (I := (maximalIdeal S))) surj
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     (sub : (S : Set R) ⊆ maximalIdeal R) :
     [∃ (T : Finset R), S ⊆ T ∧ T.card = ringKrullDim R ∧ Ideal.span T = maximalIdeal R,
@@ -196,6 +197,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
       exact Submodule.spanFinrank_span_le_ncard_of_finite (Set.toFinite (S ∪ U))
   tfae_finish
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quotient_span_singleton [IsRegularLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (nmem : x ∉ (maximalIdeal R) ^ 2) : IsRegularLocalRing (R ⧸ Ideal.span {x}) ∧
     (ringKrullDim (R ⧸ Ideal.span {x}) + 1 = ringKrullDim R) := by
@@ -305,9 +307,8 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
       simpa [sub, card] using span)
   have : IsDomain (R ⧸ Ideal.ofList (List.take i rs)) := by
     refine @isDomain_of_isRegularLocalRing _ _ ?_
-    simp only [Ideal.ofList]
-    rw [← List.coe_toFinset (List.take i rs)]
-    exact reg.1
+    convert reg.1
+    <;> exact (List.take i rs).coe_toFinset.symm
   apply IsSMulRegular.of_right_eq_zero_of_smul (fun x hx ↦ ?_)
   have : (Ideal.Quotient.mk (Ideal.ofList (List.take i rs))) rs[i] ≠ 0 := by
     simp only [ne_eq, Ideal.Quotient.eq_zero_iff_mem]
