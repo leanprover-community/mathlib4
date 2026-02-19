@@ -280,7 +280,6 @@ theorem torsionBySet_eq_torsionBySet_span :
   rw [Ideal.span_le]
   exact fun a ha => hx ⟨a, ha⟩
 
-@[simp]
 theorem torsionBySet_span_singleton_eq : torsionBySet R M (R ∙ a) = torsionBy R M a :=
   (torsionBySet_eq_torsionBySet_span _).symm.trans <| torsionBySet_singleton_eq _
 
