@@ -106,8 +106,8 @@ such that `G →* Mˣ` and `H →* Mˣ` are both finite (this is the case for ex
 commutative domain) and with enough `n`th roots of unity, where `n` is the exponent
 of `G`, then any homomorphism `H →* Mˣ` can be extended to an homomorphism `G →* Mˣ`.
 -/
-theorem _root_.MonoidHom.restrict_surjective (H : Subgroup G) [Finite (G →* Mˣ)]
-    [Finite (H →* Mˣ)] : Function.Surjective (MonoidHom.restrictHom H Mˣ) := by
+theorem _root_.MonoidHom.restrict_surjective (H : Subgroup G) :
+    Function.Surjective (MonoidHom.restrictHom H Mˣ) := by
   have : Fintype H := Fintype.ofFinite H
   have : HasEnoughRootsOfUnity M (Monoid.exponent H) :=
     hM.of_dvd M <| Monoid.exponent_submonoid_dvd H.toSubmonoid
@@ -133,14 +133,11 @@ theorem forall_monoidHom_apply_eq_one_iff (H : Subgroup G) (x : G) :
   rw [coe_comp, Function.comp_apply, QuotientGroup.coe_mk', (QuotientGroup.eq_one_iff _).mpr hx,
     map_one]
 
-variable [Finite (G →* Mˣ)] [Finite ((G →* Mˣ) →* Mˣ)]
-
 variable (G) in
 /--
 The `MulEquiv` between the double dual `(G →* Mˣ) →* Mˣ` of a finite commutative group `G`
-and itself  where `M` is a commutative monoid such that `G →* Mˣ` and `(G →* Mˣ) →* Mˣ` are
-both finite (this is the case for example if `M` is a commutative domain) and with enough
-`n`th roots of unity, where `n` is the exponent of `G`.
+and itself  where `M` is a commutative monoid with enough `n`th roots of unity, where `n` is
+the exponent of `G`.
 The image `g` of `η : (G →* Mˣ) →* Mˣ` is such that, for all `φ : G →* Mˣ`, we have `φ g = η g`,
 see `CommGroup.apply_monoidHomMonoidHomEquiv`.
 -/
@@ -166,9 +163,8 @@ theorem apply_monoidHomMonoidHomEquiv (φ : G →* Mˣ) (η : (G →* Mˣ) →* 
 variable (G) in
 /--
 The order reversing bijection that sends a subgroup of `G` to its dual subgroup in `G →* Mˣ`
-where `G` is a finite commutative group and `M` is a commutative monoid such that `G →* Mˣ` and
-`(G →* Mˣ) →* Mˣ` are both finite (this is the case for example if `M` is a commutative domain)
-and with enough `n`th roots of unity, where `n` is the exponent of `G`.
+where `G` is a finite commutative group and `M` is a commutative monoid with enough `n`th roots of
+unity, where `n` is the exponent of `G`.
 -/
 noncomputable def subgroupOrderIsoSubgroupMonoidHom : Subgroup G ≃o (Subgroup (G →* Mˣ))ᵒᵈ where
   toFun H := OrderDual.toDual (restrictHom H Mˣ).ker
