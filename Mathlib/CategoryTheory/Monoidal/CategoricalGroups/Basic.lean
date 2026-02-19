@@ -61,13 +61,6 @@ namespace CategoryTheory
 
 open Category MonoidalCategory CategoryTheory
 
-
-/-- `CategoricalGroup` is a monoidal groupoid that is also a right rigid category.
-The negator is the right dual. -/
-class CategoricalGroup (C : Type u) [Groupoid.{v} C] [MonoidalCategory.{v} C]
-[RightRigidCategory C]
-
-
 namespace CategoricalGroup
 
 -- Since the categorical group class does not have any additional conditions,
