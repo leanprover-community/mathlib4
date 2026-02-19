@@ -408,7 +408,7 @@ variable {f : M → E'' →SL[σ] E''''} in
 /--
 error: Could not find a model with corners for `E'' →SL[σ] E''''`.
 ---
-trace: [Elab.DiffGeo.MDiff] Finding a model for: M
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `M` is not a `Bundle.TotalSpace`.
@@ -422,7 +422,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²⁵`
   [Elab.DiffGeo.MDiff] Found model: `I`
-[Elab.DiffGeo.MDiff] Finding a model for: E'' →SL[σ] E''''
+[Elab.DiffGeo.MDiff] Finding a model with corners for: `E'' →SL[σ] E''''`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `E'' →SL[σ] E''''` is not a `Bundle.TotalSpace`.
@@ -442,7 +442,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
 [Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] `E'' →SL[σ] E''''` is a space of continuous (semi-)linear maps
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[σ] E''''` is a space of continuous (semi-)linear maps over `σ`, which is not the identity
+      `σ` is not the identity continuous linear map
 [Elab.DiffGeo.MDiff] ❌️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `E'' →SL[σ] E''''` is not a coercion of a set to a type

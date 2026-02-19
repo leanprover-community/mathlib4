@@ -293,24 +293,6 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM FindModelRe
     s.restore true
     return none
 
-/-- Check if an expression `e` is a `ContinuousLinearMap` over an identity ring homomorphism where
-the coefficient rings of the domain and codomain are reducibly definitionally equal. If so, we
-return `(k, E, F)`, where `k` is the coefficient ring, `E` is the domain, and `F` is the codomain
-of the continuous linear maps. Otherwise, we error.
-
-Assumes that `e` is already in `whnf` and has had metavariables instantiated. -/
-private def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Expr × Expr × Expr := do
-  match_expr e with
-  | ContinuousLinearMap k S _ _ σ E _ _ F _ _ _ _ =>
-    trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous (semi-)linear maps"
-    unless ← withReducible <| pureIsDefEq k S do
-      throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
-    match_expr ← whnfR σ with
-    | RingHom.id _ _ => return (k, E, F)
-    | _ => throwError "`{e}` is a space of continuous (semi-)linear maps over `{σ}`, \
-      which is not the identity"
-  | _ => throwError "`{e}` is not a space of continuous linear maps"
-
 set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
