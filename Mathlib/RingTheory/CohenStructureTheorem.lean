@@ -571,41 +571,6 @@ end
 
 section corollary
 
-section
-
-open scoped PowerSeries
-
-lemma PowerSeries.maximalIdeal_eq_sup [IsLocalRing R] : maximalIdeal R⟦X⟧ =
-    (maximalIdeal R).map PowerSeries.C ⊔ Ideal.span {X} := by
-  have maxeq : maximalIdeal R⟦X⟧ = (maximalIdeal R).comap constantCoeff := by
-    ext
-    simp only [mem_maximalIdeal, mem_nonunits_iff, isUnit_iff_constantCoeff]
-    rw [← mem_nonunits_iff, ← mem_maximalIdeal, ← Ideal.mem_comap]
-  have eqker : RingHom.ker (constantCoeff (R := R)) = Ideal.span {X} := by
-    ext g
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · have := PowerSeries.sub_const_eq_shift_mul_X g
-      simp only [RingHom.mem_ker.mp h, map_zero, sub_zero] at this
-      rw [this, Ideal.mem_span_singleton']
-      use (mk fun p ↦ (coeff (p + 1)) g)
-    · rcases Ideal.mem_span_singleton'.mp h with ⟨w, hw⟩
-      simp [← hw]
-  rw [maxeq, ← eqker, ← Ideal.comap_map_of_surjective' _ PowerSeries.constantCoeff_surj,
-    Ideal.map_map, constantCoeff_comp_C, Ideal.map_id]
-
-lemma PowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R] :
-    IsRegularLocalRing R⟦X⟧ := by
-  apply IsRegularLocalRing.of_spanFinrank_maximalIdeal_le
-  apply le_trans _ ringKrullDim_succ_le_ringKrullDim_powerseries
-  rw [← (isRegularLocalRing_def R).mp ‹_›, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le]
-  sorry
-
-lemma MvPowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R]
-    {ι : Type*} [Finite ι] : IsRegularLocalRing (MvPowerSeries ι R) := by
-  sorry
-
-end
-
 variable [IsLocalRing R] [IsNoetherianRing R]
 
 lemma exist_isRegularLocalRing_surjective_of_isAdicComplete [IsAdicComplete (maximalIdeal R) R] :
