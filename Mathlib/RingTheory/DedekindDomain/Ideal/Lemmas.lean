@@ -661,11 +661,11 @@ theorem normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity (hI : I
 
 end
 
-section ChineseRemainder
+noncomputable section ChineseRemainder
 
 open Ideal UniqueFactorizationMonoid
 
-variable {R}
+variable {R ι}
 
 theorem Ring.DimensionLeOne.prime_le_prime_iff_eq [Ring.DimensionLEOne R] {P Q : Ideal R}
     [hP : P.IsPrime] [hQ : Q.IsPrime] (hP0 : P ≠ ⊥) : P ≤ Q ↔ P = Q :=
@@ -763,54 +763,50 @@ theorem Ideal.le_mul_of_no_prime_factors {I J K : Ideal R}
 
 /-- The intersection of distinct prime powers in a Dedekind domain is the product of these
 prime powers. -/
-theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f : ι → Ideal R)
-    (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (f i))
-    (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
+theorem IsDedekindDomain.HeightOneSpectrum.inf_prime_pow_eq_prod (s : Finset ι) (e : ι → ℕ)
+    (f : ι → HeightOneSpectrum R) (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
+    (s.inf fun i => (f i).asIdeal ^ e i) = ∏ i ∈ s, (f i).asIdeal ^ e i := by
+  rw [prod_eq_iInf_of_coprime]
+  · rw [Finset.inf_eq_iInf s fun i ↦ (f i).asIdeal ^ e i]
+  · intro i hi j hj hij
+    exact HeightOneSpectrum.pow_sup_pow_eq_top _ _ (coprime i hi j hj hij) _ _
+
+/-- The intersection of distinct prime powers in a Dedekind domain is the product of these
+prime powers. -/
+theorem IsDedekindDomain.inf_prime_pow_eq_prod (s : Finset ι) (f : ι → Ideal R)
+    (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (f i)) (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
     (s.inf fun i => f i ^ e i) = ∏ i ∈ s, f i ^ e i := by
-  letI := Classical.decEq ι
-  revert prime coprime
-  refine s.induction ?_ ?_
-  · simp
-  intro a s ha ih prime coprime
-  specialize
-    ih (fun i hi => prime i (Finset.mem_insert_of_mem hi)) fun i hi j hj =>
-      coprime i (Finset.mem_insert_of_mem hi) j (Finset.mem_insert_of_mem hj)
-  rw [Finset.inf_insert, Finset.prod_insert ha, ih]
-  refine le_antisymm (Ideal.le_mul_of_no_prime_factors ?_ inf_le_left inf_le_right) Ideal.mul_le_inf
-  intro P hPa hPs hPp
-  obtain ⟨b, hb, hPb⟩ := hPp.prod_le.mp hPs
-  haveI := Ideal.isPrime_of_prime (prime a (Finset.mem_insert_self a s))
-  haveI := Ideal.isPrime_of_prime (prime b (Finset.mem_insert_of_mem hb))
-  refine coprime a (Finset.mem_insert_self a s) b (Finset.mem_insert_of_mem hb) ?_ ?_
-  · exact (ne_of_mem_of_not_mem hb ha).symm
-  · refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp (hPp.le_of_pow_le hPa)).trans
-      ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp (hPp.le_of_pow_le hPb)).symm
-    · exact (prime a (Finset.mem_insert_self a s)).ne_zero
-    · exact (prime b (Finset.mem_insert_of_mem hb)).ne_zero
+  rw [prod_eq_iInf_of_coprime, Finset.inf_eq_iInf s fun i ↦ (f i) ^ e i]
+  intro i hi j hj hij
+  exact pow_sup_pow_eq_top (IsMaximal.coprime_of_ne
+    (IsPrime.isMaximal (isPrime_of_prime (prime i hi)) (prime i hi).ne_zero)
+    (IsPrime.isMaximal (isPrime_of_prime (prime j hj)) (prime j hj).ne_zero)
+    (coprime i hi j hj hij))
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
-noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R)
-    (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i, Prime (P i))
-    (coprime : Pairwise fun i j => P i ≠ P j)
-    (prod_eq : ∏ i, P i ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ P i ^ e i :=
+def IsDedekindDomain.HeightOneSpectrum.quotientEquivPiOfProdEq [Fintype ι] (I : Ideal R)
+    (P : ι → HeightOneSpectrum R) (e : ι → ℕ) (coprime : Pairwise fun i j => P i ≠ P j)
+    (prod_eq : ∏ i, (P i).asIdeal ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ (P i).asIdeal ^ e i :=
   (Ideal.quotEquivOfEq
-    (by
-      simp only [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ, ciInf_pos,
-        ← IsDedekindDomain.inf_prime_pow_eq_prod _ _ _ (fun i _ => prime i)
-        (coprime.set_pairwise _)])).trans <|
-    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => Ideal.coprime_of_no_prime_ge <| by
-      intro P hPi hPj hPp
-      haveI := Ideal.isPrime_of_prime (prime i)
-      haveI := Ideal.isPrime_of_prime (prime j)
-      exact coprime hij <| ((Ring.DimensionLeOne.prime_le_prime_iff_eq (prime i).ne_zero).mp
-        (hPp.le_of_pow_le hPi)).trans <| Eq.symm <|
-          (Ring.DimensionLeOne.prime_le_prime_iff_eq (prime j).ne_zero).mp (hPp.le_of_pow_le hPj)
+    (by simp [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ,
+      ← HeightOneSpectrum.inf_prime_pow_eq_prod _ _ _ (coprime.set_pairwise _)])).trans <|
+    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => by
+      rw [Function.onFun, Ideal.isCoprime_iff_sup_eq]
+      exact HeightOneSpectrum.pow_sup_pow_eq_top _ _ (coprime hij) _ _
+
+/-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
+`∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
+def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R) (P : ι → Ideal R)
+    (e : ι → ℕ) (prime : ∀ i, Prime (P i)) (coprime : Pairwise fun i j => P i ≠ P j)
+    (prod_eq : ∏ i, P i ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ P i ^ e i :=
+  IsDedekindDomain.HeightOneSpectrum.quotientEquivPiOfProdEq I
+    (fun i ↦ ⟨P i, (isPrime_of_prime (prime i)), (prime i).ne_zero⟩) e (by grind) prod_eq
 
 open scoped Classical in
 /-- **Chinese remainder theorem** for a Dedekind domain: `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`,
 where `P i` ranges over the prime factors of `I` and `e i` over the multiplicities. -/
-noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
+def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
     R ⧸ I ≃+* ∀ P : (factors I).toFinset, R ⧸ (P : Ideal R) ^ (Multiset.count ↑P (factors I)) :=
   IsDedekindDomain.quotientEquivPiOfProdEq _ _ _
     (fun P : (factors I).toFinset => prime_of_factor _ (Multiset.mem_toFinset.mp P.prop))
@@ -834,7 +830,7 @@ theorem IsDedekindDomain.quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥
 This is a version of `IsDedekindDomain.quotientEquivPiOfProdEq` where we restrict
 the product to a finite subset `s` of a potentially infinite indexing type `ι`.
 -/
-noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
+def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
     (I : Ideal R) (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
     (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j)
     (prod_eq : ∏ i ∈ s, P i ^ e i = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
