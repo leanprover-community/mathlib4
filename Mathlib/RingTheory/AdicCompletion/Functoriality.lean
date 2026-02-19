@@ -471,7 +471,6 @@ theorem finsuppSum_single_of (i : σ) (m : M) : finsuppSum I M σ (single i (of 
     of I (σ →₀ M) (single i m) := by
   ext; simp [finsuppSum]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_finsuppLEquivDirectSum_comp_finsuppSum [DecidableEq σ] :
     map I (finsuppLEquivDirectSum R M σ) ∘ₗ finsuppSum I M σ = sum I (fun _ : σ ↦ M) ∘ₗ
       (finsuppLEquivDirectSum (AdicCompletion I R) (AdicCompletion I M) σ) := by
@@ -486,7 +485,6 @@ def finsuppSumInv : AdicCompletion I (σ →₀ M) →ₗ[AdicCompletion I R] (�
   (linearEquivFunOnFinite (AdicCompletion I R) (AdicCompletion I M) σ).symm ∘ₗ
     .pi (fun i ↦ map I (lapply i))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finsuppSumInv_comp_sum : finsuppSumInv I M σ ∘ₗ finsuppSum I M σ = .id := by
   classical
   ext
