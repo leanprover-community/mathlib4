@@ -36,17 +36,19 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 variable {G : Type*} [Group G]
 
 variable (R A G) in
-@[to_additive (dont_translate := R) (relevant_arg := G)]
+@[to_additive (dont_translate := R)]
 instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
   antipode := Finsupp.lsum R fun g => Finsupp.lsingle g⁻¹ ∘ₗ antipode R
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma antipode_single (g : G) (a : A) :
     antipode R (single g a) = single g⁻¹ (antipode R a) := by
   simp [MonoidAlgebra, antipode]
 
+set_option backward.isDefEq.respectTransparency false in
 open Coalgebra in
-@[to_additive (dont_translate := R A) (relevant_arg := G)]
+@[to_additive (dont_translate := R A)]
 instance instHopfAlgebra : HopfAlgebra R A[G] where
   mul_antipode_rTensor_comul := by
     ext a b : 2

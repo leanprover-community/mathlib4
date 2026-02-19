@@ -90,6 +90,7 @@ lemma toPresheaf_map_sheafificationHomEquiv_def
     (toPresheaf R₀).map (sheafificationHomEquiv α f) =
       CategoryTheory.toSheafify J P.presheaf ≫ (toPresheaf R.val).map f.val := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toPresheaf_map_sheafificationHomEquiv
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (f : (sheafification α).obj P ⟶ F) :
@@ -110,6 +111,7 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
   rw [Equiv.apply_symm_apply, Adjunction.homEquiv_unit, Equiv.symm_apply_apply]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
 `sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/

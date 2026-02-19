@@ -66,6 +66,7 @@ instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] [IsU
     FormallyUnramified (Localization.AtPrime p) (Localization.AtPrime q) :=
   .of_restrictScalars R _ _
 
+set_option backward.isDefEq.respectTransparency false in
 open _root_.TensorProduct in
 /-- If `A` is an `R`-algebra unramified at `Q`, `P` is the prime of `R` lying under `Q`,
 then `κ(P) ⊗ A` is unramified at `Q'` (the prime corresponding to `Q`) over `κ(P)`. -/

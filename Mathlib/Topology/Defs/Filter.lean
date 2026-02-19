@@ -223,6 +223,7 @@ def Inseparable (x y : X) : Prop :=
 variable (X)
 
 /-- Specialization forms a preorder on the topological space. -/
+@[instance_reducible]
 def specializationPreorder : Preorder X :=
   { Preorder.lift (OrderDual.toDual ∘ 𝓝) with
     le := fun x y => y ⤳ x
