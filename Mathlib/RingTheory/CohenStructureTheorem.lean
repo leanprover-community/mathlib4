@@ -275,7 +275,6 @@ lemma quotient_power_char_formallySmooth [IsDomain R] [IsCohenRing R] (p : ℕ) 
   | succ n ih =>
     by_cases eq0 : n = 0
     · rw [eq0, zero_add]
-
       --should be able to obtain by extension is separable
       sorry
     · have ih' := ih eq0
