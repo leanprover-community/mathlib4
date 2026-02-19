@@ -187,6 +187,7 @@ noncomputable def compactlyGeneratedAdjunctionCounitHomeo
     (X : TopCat.{u + 1}) [UCompactlyGeneratedSpace.{u} X] :
     X.toCondensedSet.toTopCat ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
+  continuous_toFun := show Continuous (topCatAdjunctionCounit X) by fun_prop
   continuous_invFun := by
     apply continuous_from_uCompactlyGeneratedSpace
     exact fun _ _ ↦ continuous_coinducingCoprod X.toCondensedSet _

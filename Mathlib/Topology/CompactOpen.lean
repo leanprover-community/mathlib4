@@ -303,6 +303,7 @@ discrete. -/
 @[simps toEquiv]
 def homeoFnOfDiscrete : C(X, Y) ≃ₜ (X → Y) where
   __ := equivFnOfDiscrete
+  continuous_toFun := by eta_expand; dsimp; fun_prop
   continuous_invFun :=
     continuous_compactOpen.2 fun K hK U hU ↦ isOpen_set_pi hK.finite_of_discrete fun _ _ ↦ hU
 

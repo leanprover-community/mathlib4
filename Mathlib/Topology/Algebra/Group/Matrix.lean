@@ -34,7 +34,7 @@ namespace Matrix.GeneralLinearGroup
 /-- The determinant is continuous as a map from the general linear group to the units. -/
 @[continuity, fun_prop] protected lemma continuous_det :
     Continuous (det : GL n R → Rˣ) := by
-  simp_rw [Units.continuous_iff, ← map_inv]
+  simp_rw [Units.continuous_iff, ← map_invm, Function.comp_def, val_det_apply]
   constructor <;> fun_prop
 
 @[continuity, fun_prop]
@@ -76,7 +76,7 @@ section toGL -- results on the map from `SL` to `GL`
 
 /-- The natural map from `SL n A` to `GL n A` is continuous. -/
 lemma continuous_toGL : Continuous (toGL : SL n R → GL n R) := by
-  simp_rw [Units.continuous_iff, ← map_inv]
+  simp_rw [Units.continuous_iff, ← map_inv, Function.comp_def, val_toGL_apply]
   constructor <;> fun_prop
 
 /-- The natural map from `SL n A` to `GL n A` is inducing, i.e. the topology on

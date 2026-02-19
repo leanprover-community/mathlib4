@@ -428,8 +428,8 @@ variable (R M₁ M₂ M₃ M₄ : Type*) [Semiring R]
 This is `LinearEquiv.prodProdProdComm` prodAssoc as a continuous linear equivalence. -/
 def prodProdProdComm : ((M₁ × M₂) × M₃ × M₄) ≃L[R] (M₁ × M₃) × M₂ × M₄ where
   toLinearEquiv := LinearEquiv.prodProdProdComm R M₁ M₂ M₃ M₄
-  continuous_toFun := by fun_prop
-  continuous_invFun := by fun_prop
+  continuous_toFun := by eta_expand; dsimp; fun_prop
+  continuous_invFun := by eta_expand; dsimp; fun_prop
 
 @[simp]
 theorem prodProdProdComm_symm :

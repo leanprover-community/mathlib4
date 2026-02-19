@@ -154,6 +154,8 @@ def refl : P₁ ≃ᴬ[k] P₁ where
   toEquiv := Equiv.refl P₁
   linear := LinearEquiv.refl k V₁
   map_vadd' _ _ := rfl
+  continuous_toFun := by eta_expand; dsimp; fun_prop
+  continuous_invFun := by eta_expand; dsimp; fun_prop
 
 @[simp]
 theorem coe_refl : ⇑(refl k P₁) = id :=
