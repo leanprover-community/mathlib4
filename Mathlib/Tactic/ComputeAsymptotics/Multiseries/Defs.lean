@@ -926,70 +926,84 @@ end Sorted
 
 section Approximates
 
-mutual
-  /-- Auxilliary monotone map, for which `Approximates` is the greatest fixed point. -/
-  def Approximates.T (basis : Basis) : (MultiseriesExpansion basis → Prop) →o
-      (MultiseriesExpansion basis → Prop) :=
-    match (generalizing := true) basis with
-    | [] => {
-      toFun := fun P ms => True
-      monotone' := monotone_const
-    }
-    | .cons basis_hd basis_tl => {
-      toFun := fun P ms =>
-        (ms.seq = .nil ∧ ms.toFun =ᶠ[atTop] 0) ∨
-        (∃ (exp : ℝ) (coef : MultiseriesExpansion basis_tl) (tl : Multiseries basis_hd basis_tl),
-          ms.seq = .cons exp coef tl ∧ coef.Approximates ∧
-          Majorized ms.toFun basis_hd exp ∧
-          P (mk tl (ms.toFun - basis_hd ^ exp * coef.toFun)))
-      monotone' P Q hPQ ms hP := by
-        change ∀ ms, P ms → Q ms at hPQ
-        generalize Approximates = A at *
-        grind
-    }
+coinductive Approximates : {basis : Basis} → (ms : MultiseriesExpansion basis) → Prop
+| const (ms : MultiseriesExpansion []) : Approximates ms
+| nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ) (hf : f =ᶠ[atTop] 0) :
+  Approximates (mk (@Multiseries.nil basis_hd basis_tl) f)
+| cons {basis_hd f : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl}
+    (h_coef : Approximates coef) (h_maj : Majorized f basis_hd exp)
+    (h_tl : Approximates (mk tl (f - basis_hd ^ exp * coef.toFun))) :
+  Approximates (mk (.cons exp coef tl) f)
 
-  /-- Coinductive predicate stating that `ms` approximates `f` on `basis`. This means that
-  * If `basis = []`, i.e. ms is just a real number, then `f =ᶠ[atTop] ms`.
-  * If `basis ≠ []`, and `ms = nil`, then `f =ᶠ[atTop] 0`.
-  * If `basis = basis_hd :: basis_tl`, and `ms = cons (exp, coef) tl`, then
-    `f` is Majorized with exponent `exp` by `basis_hd`,
-    `coef` approximates some function `fC`, and
-    `tl` approximates `f - fC * basis_hd ^ exp`
-  -/
-  def Approximates {basis} (ms : MultiseriesExpansion basis) : Prop :=
-    (Approximates.T basis).gfp ms
-end
+-- mutual
+--   /-- Auxilliary monotone map, for which `Approximates` is the greatest fixed point. -/
+--   def Approximates.T (basis : Basis) : (MultiseriesExpansion basis → Prop) →o
+--       (MultiseriesExpansion basis → Prop) :=
+--     match (generalizing := true) basis with
+--     | [] => {
+--       toFun := fun P ms => True
+--       monotone' := monotone_const
+--     }
+--     | .cons basis_hd basis_tl => {
+--       toFun := fun P ms =>
+--         (ms.seq = .nil ∧ ms.toFun =ᶠ[atTop] 0) ∨
+--         (∃ (exp : ℝ) (coef : MultiseriesExpansion basis_tl) (tl : Multiseries basis_hd basis_tl),
+--           ms.seq = .cons exp coef tl ∧ coef.Approximates ∧
+--           Majorized ms.toFun basis_hd exp ∧
+--           P (mk tl (ms.toFun - basis_hd ^ exp * coef.toFun)))
+--       monotone' P Q hPQ ms hP := by
+--         change ∀ ms, P ms → Q ms at hPQ
+--         generalize Approximates = A at *
+--         grind
+--     }
+
+--   /-- Coinductive predicate stating that `ms` approximates `f` on `basis`. This means that
+--   * If `basis = []`, i.e. ms is just a real number, then `f =ᶠ[atTop] ms`.
+--   * If `basis ≠ []`, and `ms = nil`, then `f =ᶠ[atTop] 0`.
+--   * If `basis = basis_hd :: basis_tl`, and `ms = cons (exp, coef) tl`, then
+--     `f` is Majorized with exponent `exp` by `basis_hd`,
+--     `coef` approximates some function `fC`, and
+--     `tl` approximates `f - fC * basis_hd ^ exp`
+--   -/
+--   def Approximates {basis} (ms : MultiseriesExpansion basis) : Prop :=
+--     (Approximates.T basis).gfp ms
+-- end
+
+
 
 variable {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
-private theorem Approximates.step {basis} {ms : MultiseriesExpansion basis} :
-    ms.Approximates ↔ Approximates.T basis Approximates ms := by
-  conv_lhs => unfold Approximates; rw [← OrderHom.isFixedPt_gfp]
-  conv_rhs => arg 2; eta_expand; unfold Approximates; change OrderHom.gfp _
+-- private theorem Approximates.step {basis} {ms : MultiseriesExpansion basis} :
+--     ms.Approximates ↔ Approximates.T basis Approximates ms := by
+--   conv_lhs => unfold Approximates; rw [← OrderHom.isFixedPt_gfp]
+--   conv_rhs => arg 2; eta_expand; unfold Approximates; change OrderHom.gfp _
 
-@[simp]
-theorem Approximates.const {c : MultiseriesExpansion []} : Approximates c := by
-  rw [Approximates.step]
-  simp [T]
+-- @[simp]
+-- theorem Approximates.const {c : MultiseriesExpansion []} : Approximates c := by
+--   rw [Approximates.step]
+--   simp [T]
 
-/-- `[]` approximates zero function. -/
-theorem Approximates.nil (h : f =ᶠ[atTop] 0) :
-    @Approximates (basis_hd :: basis_tl) (mk .nil f) := by
-  rw [Approximates.step]
-  simpa [T]
+-- /-- `[]` approximates zero function. -/
+-- theorem Approximates.nil (h : f =ᶠ[atTop] 0) :
+--     @Approximates (basis_hd :: basis_tl) (mk .nil f) := by
+--   rw [Approximates.step]
+--   simpa [T]
 
-/-- `cons (exp, coef) tl` approximates `f` when `f` can be Majorized with exponent `exp`, and
-there exists some function `fC` such that `coef` approximates `fC` and `tl` approximates
-`f - fC * basis_hd ^ exp`. -/
-theorem Approximates.cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
-    {tl : Multiseries basis_hd basis_tl}
-    (h_coef : coef.Approximates)
-    (h_maj : Majorized f basis_hd exp)
-    (h_tl : (mk (basis_hd := basis_hd) tl (f - basis_hd ^ exp * coef.toFun)).Approximates) :
-    @Approximates (basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
-  rw [Approximates.step]
-  simp [T]
-  grind
+-- /-- `cons (exp, coef) tl` approximates `f` when `f` can be Majorized with exponent `exp`, and
+-- there exists some function `fC` such that `coef` approximates `fC` and `tl` approximates
+-- `f - fC * basis_hd ^ exp`. -/
+-- theorem Approximates.cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+--     {tl : Multiseries basis_hd basis_tl}
+--     (h_coef : coef.Approximates)
+--     (h_maj : Majorized f basis_hd exp)
+--     (h_tl : (mk (basis_hd := basis_hd) tl (f - basis_hd ^ exp * coef.toFun)).Approximates) :
+--     @Approximates (basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
+--   rw [Approximates.step]
+--   simp [T]
+--   grind
+
+#check Approximates.coinduct
 
 theorem Approximates.coind {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (motive : MultiseriesExpansion (basis_hd :: basis_tl) → Prop)
@@ -1009,9 +1023,12 @@ theorem Approximates.coind {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
   unfold Approximates
   aesop
 
+#check Approximates.casesOn
+
 /-- If `[]` approximates `f`, then `f = 0` eventually. -/
 theorem Approximates_nil (h : @Approximates (basis_hd :: basis_tl) (mk .nil f)) :
     f =ᶠ[atTop] 0 := by
+  cases h
   rw [Approximates.step] at h
   simpa [Approximates.T] using h
 
