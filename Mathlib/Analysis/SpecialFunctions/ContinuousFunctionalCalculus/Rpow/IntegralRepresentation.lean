@@ -145,7 +145,6 @@ lemma rpowIntegrand₀₁_monotoneOn (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) :
     simp only [rpowIntegrand₀₁, mem_Ici] at hx h ⊢
     gcongr
 
-set_option backward.isDefEq.respectTransparency false in
 lemma continuousOn_rpowIntegrand₀₁_uncurry (hp : p ∈ Ioo 0 1) (s : Set ℝ) (hs : s ⊆ Ici 0) :
     ContinuousOn (rpowIntegrand₀₁ p).uncurry (Ioi 0 ×ˢ s) := by
   let g : ℝ × ℝ → ℝ := fun q => q.1 ^ (p - 1) * q.2 / (q.1 + q.2)

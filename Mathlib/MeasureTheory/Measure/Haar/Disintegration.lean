@@ -106,7 +106,6 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
   simp only [I, h₀, Measure.map_smul, J, smul_smul, h₁]
   rw [mul_assoc, mul_comm _ c₁, ← mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
 additive Haar measure, with a positive (but maybe infinite) factor. -/
 theorem LinearMap.exists_map_addHaar_eq_smul_addHaar (h : Function.Surjective L) :

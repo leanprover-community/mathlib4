@@ -212,7 +212,6 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
 
 variable [CompleteSpace 𝓧]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a second countable complete metric space, a set of probability measures with compact closure
 is tight. -/
 theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :

@@ -112,7 +112,6 @@ lemma ConcaveOn.isBoundedUnder_abs (hf : ConcaveOn ℝ C f) {x₀ : E} (hC : C �
     (𝓝 x₀).IsBoundedUnder (· ≤ ·) |f| ↔ (𝓝 x₀).IsBoundedUnder (· ≥ ·) f := by
   simpa [Pi.neg_def, Pi.abs_def] using hf.neg.isBoundedUnder_abs hC
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ConvexOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : ConvexOn ℝ C f) : TFAE [
     LocallyLipschitzOn C f,
     ContinuousOn f C,

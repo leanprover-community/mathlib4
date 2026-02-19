@@ -277,7 +277,6 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     apply norm_sum_le_of_le p.support
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 open Multiset in
 theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mahlerMeasure := by

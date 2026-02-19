@@ -173,7 +173,6 @@ instance [NeZero n] : Fintype (QuaternionGroup n) :=
 instance : Nontrivial (QuaternionGroup n) :=
   ⟨⟨a 0, xa 0, by simp [- a_zero]⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `0 < n`, then `QuaternionGroup n` has `4n` elements.
 -/
 theorem card [NeZero n] : Fintype.card (QuaternionGroup n) = 4 * n := by
@@ -195,7 +194,6 @@ theorem a_one_pow_n : (a 1 : QuaternionGroup n) ^ (2 * n) = 1 := by
 @[simp]
 theorem xa_sq (i : ZMod (2 * n)) : xa i ^ 2 = a n := by simp [sq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
   calc xa i ^ 4

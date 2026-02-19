@@ -315,7 +315,6 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left,
         union_ae_eq_univ_of_ae_eq_univ_right]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A general version of **Dirichlet's approximation theorem**.
 
 See also `AddCircle.exists_norm_nsmul_le`. -/

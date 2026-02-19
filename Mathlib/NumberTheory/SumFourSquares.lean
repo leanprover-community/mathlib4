@@ -42,7 +42,6 @@ theorem Nat.euler_four_squares (a b c d x y z w : ℕ) :
 
 namespace Int
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2) :
     m = ((x - y) / 2) ^ 2 + ((x + y) / 2) ^ 2 :=
   have : Even (x ^ 2 + y ^ 2) := by simp [← h]

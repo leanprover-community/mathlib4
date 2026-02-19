@@ -114,7 +114,6 @@ lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] 
     schnirelmannDensity A ≤ schnirelmannDensity B :=
   ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by gcongr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
 lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ A := by
   rw [le_antisymm_iff, and_iff_right schnirelmannDensity_le_one]
@@ -218,7 +217,6 @@ lemma schnirelmannDensity_setOf_even : schnirelmannDensity (setOf Even) = 0 :=
 lemma schnirelmannDensity_setOf_prime : schnirelmannDensity (setOf Nat.Prime) = 0 :=
   schnirelmannDensity_eq_zero_of_one_notMem <| by simp [Nat.not_prime_one]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Schnirelmann density of the set of naturals which are `1 mod m` is `m⁻¹`, for any `m ≠ 1`.
 

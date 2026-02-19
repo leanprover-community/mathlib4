@@ -147,7 +147,6 @@ private instance UsefulCompression.instDecidableRel :
     DecidableRel (α := Finset α) UsefulCompression :=
   fun _ _ ↦ inferInstanceAs (Decidable (_ ∧ _))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Applying a good compression will decrease measure, keep cardinality, keep sizes and decrease
 shadow. In particular, 'good' means it's useful, and every smaller compression won't make a
 difference. -/
