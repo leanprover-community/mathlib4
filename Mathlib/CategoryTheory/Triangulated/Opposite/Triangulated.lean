@@ -39,7 +39,7 @@ scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ where
     let o := Triangulated.someOctahedron₁ (by aesop) ((mem_distTriang_op_iff _).mp h₂₃)
       ((mem_distTriang_op_iff _).mp h₁₂) ((mem_distTriang_op_iff _).mp h₁₃)
     refine ⟨o.m₃.op, o.m₁.op, congr($(o.comm₄).op), ?_, congr($(o.comm₁).op), ?_, ?_⟩
-    · have eq₃ := congr($(o.comm₃).op) 
+    · have eq₃ := congr($(o.comm₃).op)
       dsimp at eq₃
       rw [← Category.assoc, ← op_comp, ← Functor.map_comp,
         NatIso.cancel_natIso_inv_right (opShiftFunctorEquivalence C _).unitIso] at eq₃
