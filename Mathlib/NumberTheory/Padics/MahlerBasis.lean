@@ -271,6 +271,7 @@ lemma norm_mahlerTerm : ‖(mahlerTerm a n : C(ℤ_[p], E))‖ = ‖a‖ := by
     refine le_trans ?_ <| (mahlerTerm a n).norm_coe_le_norm n
     simp [mahlerTerm_apply, mahler_natCast_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mahlerTerm_one : (mahlerTerm 1 n : C(ℤ_[p], ℤ_[p])) = mahler n := by
   ext; simp [mahlerTerm_apply]

@@ -51,6 +51,7 @@ variable {S : Cᵒᵖ ⥤ CommRingCat.{u}} {F : C ⥤ D} {S' R : Dᵒᵖ ⥤ Com
   (M N : PresheafOfModules.{v} (R ⋙ forget₂ _ _))
   (φ : S ⟶ F.op ⋙ R) (φ' : S' ⟶ R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a morphism of presheaves of commutative rings `φ : S ⟶ F.op ⋙ R`,
 this is the type of relative `φ`-derivation of a presheaf of `R`-modules `M`. -/
 @[ext]
