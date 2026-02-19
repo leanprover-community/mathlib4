@@ -15,7 +15,7 @@ For a closed monoidal category `C`, we construct the isomorphism of internal hom
 
 -/
 
-public section
+@[expose] public section
 
 universe u v
 
@@ -69,15 +69,12 @@ theorem internalHom_curry_uncurry (x y z : C) [Closed x] [Closed y] [Closed (x �
     ← uncurry_eq, internalHomCurry_uncurry_uncurry_eq, Iso.hom_inv_id_assoc _ _]
 
 /-- The internal currying-uncurrying isomorphism `C(x ⊗ y, z) ≅ C(y, C(x, z))`. -/
+@[simps]
 def internalHomCurryIso (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
     (ihom (x ⊗ y)).obj z ≅ (ihom y).obj ((ihom x).obj z) where
   hom := internalHomCurry x y z
   inv := internalHomUncurry x y z
   hom_inv_id := internalHom_curry_uncurry x y z
   inv_hom_id := internalHom_uncurry_curry x y z
-
-lemma internalHomCurryIso_hom (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
-    (internalHomCurryIso x y z).hom = internalHomCurry x y z := by
-  exact rfl
 
 end CategoryTheory.MonoidalClosed
