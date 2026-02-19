@@ -22,7 +22,7 @@ heavy imports or do not fit elsewhere.
 
 namespace Ring
 
-variable (R : Type*) [CommRing R]
+variable {R : Type*} [CommRing R]
 
 theorem HasFiniteQuotients.MaximalOfPrime [HasFiniteQuotients R] {P : Ideal R} [P.IsPrime]
     (hp : P ≠ ⊥) : P.IsMaximal :=
@@ -31,7 +31,7 @@ theorem HasFiniteQuotients.MaximalOfPrime [HasFiniteQuotients R] {P : Ideal R} [
   Ideal.Quotient.maximal_of_isField P <| Finite.isField_of_domain (R ⧸ P)
 
 instance [HasFiniteQuotients R] : DimensionLEOne R :=
-  ⟨fun h _ ↦ HasFiniteQuotients.MaximalOfPrime R h⟩
+  ⟨fun h _ ↦ HasFiniteQuotients.MaximalOfPrime h⟩
 
 instance [HasFiniteQuotients R] : IsNoetherianRing R := by
   refine (isNoetherianRing_iff_ideal_fg R).mpr fun I ↦ ?_
