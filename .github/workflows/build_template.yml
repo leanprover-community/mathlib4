@@ -323,7 +323,7 @@ jobs:
 
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
           echo "Attempting to fetch olean for Mathlib/Init.lean from cache..."
-          ../tools-branch/.lake/build/bin/cache get Mathlib/Init.lean
+          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get Mathlib/Init.lean
 
       - name: get cache (2/3 - test Mathlib.Init cache)
         id: get_cache_part2_test
@@ -343,10 +343,10 @@ jobs:
           if [[ "${{ steps.get_cache_part2_test.outcome }}" == "success" ]]; then
             echo "Fetching all remaining cache..."
 
-            ../tools-branch/.lake/build/bin/cache get
+            ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get
 
             # Run again with --repo, to ensure we actually get the oleans.
-            ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+            ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} --skip-proofwidgets get
           else
             echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
@@ -413,8 +413,8 @@ jobs:
         shell: bash
         run: |
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache get Archive.lean
-          ../tools-branch/.lake/build/bin/cache get Counterexamples.lean
+          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get Archive.lean
+          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get Counterexamples.lean
 
       - name: build archive
         id: archive
@@ -708,16 +708,16 @@ jobs:
       - name: get cache for Mathlib
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
-          lake exe cache --include-proofwidgets get
+          lake exe cache get
           # Run again with --repo, so ensure we actually get the oleans.
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} --include-proofwidgets get
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
 
       - name: get cache for Archive and Counterexamples
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
-          lake exe cache --include-proofwidgets get Archive Counterexamples
+          lake exe cache get Archive Counterexamples
           # Run again with --repo, so ensure we actually get the oleans.
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} --include-proofwidgets get Archive Counterexamples
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
 
       - name: verify that everything was available in the cache
         run: |
