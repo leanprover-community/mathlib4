@@ -660,10 +660,9 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
   apply C.congr' _
   filter_upwards [self_mem_nhdsWithin]
   rintro r (rpos : 0 < r)
-  calc
-    μ (s ∩ ({x} + r • t)) / μ (closedBall x r) * (μ (closedBall x r) / μ ({x} + r • u)) =
-        μ (closedBall x r) * (μ (closedBall x r))⁻¹ * (μ (s ∩ ({x} + r • t)) / μ ({x} + r • u)) :=
-      by simp only [div_eq_mul_inv]; ring
+  calc μ (s ∩ ({x} + r • t)) / μ (closedBall x r) * (μ (closedBall x r) / μ ({x} + r • u))
+    _ = μ (closedBall x r) * (μ (closedBall x r))⁻¹ *
+        (μ (s ∩ ({x} + r • t)) / μ ({x} + r • u)) := by simp only [div_eq_mul_inv]; ring
     _ = μ (s ∩ ({x} + r • t)) / μ ({x} + r • u) := by
       rw [ENNReal.mul_inv_cancel (measure_closedBall_pos μ x rpos).ne'
           measure_closedBall_lt_top.ne,
