@@ -150,6 +150,7 @@ theorem Disjoint.exists_open_convexes (disj : Disjoint s t)
   simp_rw [UniformSpace.ball, ← preimage_comp, sub_eq_neg_add] at hV
   exact hV
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a locally convex space, every point `x` and closed convex set `s ∌ x` admit disjoint convex
 open neighborhoods. -/
 lemma exists_open_convex_of_notMem (hx : x ∉ s) (hsconv : Convex 𝕜 s) (hsclosed : IsClosed s) :
@@ -196,6 +197,16 @@ protected theorem LocallyConvexSpace.induced {t : TopologicalSpace F} [LocallyCo
     hs.linear_preimage f
   rw [nhds_induced]
   exact (LocallyConvexSpace.convex_basis <| f x).comap f
+
+theorem Topology.IsInducing.locallyConvexSpace [TopologicalSpace F] [LocallyConvexSpace 𝕜 F]
+    [TopologicalSpace E] {f : E →ₗ[𝕜] F} (hf : IsInducing f) :
+    LocallyConvexSpace 𝕜 E := by
+  rw [hf.eq_induced]
+  exact .induced f
+
+instance [TopologicalSpace E] [LocallyConvexSpace 𝕜 E] {S : Submodule 𝕜 E} :
+    LocallyConvexSpace 𝕜 S :=
+  IsInducing.locallyConvexSpace (f := S.subtype) .subtypeVal
 
 instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMonoid (X i)]
     [∀ i, TopologicalSpace (X i)] [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] :

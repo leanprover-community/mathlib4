@@ -113,7 +113,7 @@ theorem ContinuousOn.mapsToRestrict {t : Set β} (hf : ContinuousOn f s) (ht : M
     Continuous (ht.restrict f s t) :=
   hf.restrict.codRestrict _
 
-@[deprecated (since := "05-09-2025")]
+@[deprecated (since := "2025-09-05")]
 alias ContinuousOn.restrict_mapsTo := ContinuousOn.mapsToRestrict
 
 theorem continuousOn_iff' :

@@ -6,6 +6,7 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Data.Finsupp.Fintype
 public import Mathlib.LinearAlgebra.Basis.Basic
@@ -87,11 +88,6 @@ Here `ι = ChooseBasisIndex R M`. -/
 noncomputable def chooseBasis : Basis (ChooseBasisIndex R M) R M :=
   ((Module.free_iff_set R M).mp ‹_›).choose_spec.some
 
-/-- The isomorphism `M ≃ₗ[R] (ChooseBasisIndex R M →₀ R)`. -/
-@[deprecated Module.Free.chooseBasis (since := "2025-08-01")]
-noncomputable def repr : M ≃ₗ[R] ChooseBasisIndex R M →₀ R :=
-  (chooseBasis R M).repr
-
 /-- The universal property of free modules: giving a function `(ChooseBasisIndex R M) → N`, for `N`
 an `R`-module, is the same as giving an `R`-linear map `M →ₗ[R] N`.
 
@@ -127,6 +123,9 @@ instance. -/
 theorem of_equiv' {P : Type v} [AddCommMonoid P] [Module R P] (_ : Module.Free R P)
     (e : P ≃ₗ[R] N) : Module.Free R N :=
   of_equiv e
+
+instance Module.free_shrink [Module.Free R M] [Small.{w} M] : Module.Free R (Shrink.{w} M) :=
+  Module.Free.of_equiv (Shrink.linearEquiv R M).symm
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma of_ringEquiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]

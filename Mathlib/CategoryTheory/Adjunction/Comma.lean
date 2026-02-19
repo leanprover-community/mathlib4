@@ -84,6 +84,7 @@ section OfTerminals
 
 variable [∀ A, HasTerminal (CostructuredArrow G A)]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] eq_iff_true_of_subsingleton in
 /-- Implementation: If each costructured arrow category on `G` has a terminal object, an equivalence
 which is helpful for constructing a right adjoint to `G`.
@@ -103,9 +104,10 @@ def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
     rw [this]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If each costructured arrow category on `G` has a terminal object, construct a right adjoint to `G`.
-It is shown that it is a right adjoint in `adjunctionOfStructuredArrowInitials`.
+It is shown that it is a right adjoint in `adjunctionOfCostructuredArrowTerminals`.
 -/
 def rightAdjointOfCostructuredArrowTerminals : C ⥤ D :=
   Adjunction.rightAdjointOfEquiv (rightAdjointOfCostructuredArrowTerminalsAux G)
@@ -132,6 +134,7 @@ variable {F : C ⥤ D}
 
 attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/
 def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
@@ -141,6 +144,7 @@ def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
     apply StructuredArrow.ext
     simp [← StructuredArrow.w m]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a right adjoint to `F`, we can construct a terminal object in each costructured arrow
 category on `F`. -/
 def mkTerminalOfRightAdjoint (h : F ⊣ G) (A : D) :

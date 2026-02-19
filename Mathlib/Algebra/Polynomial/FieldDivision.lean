@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -67,6 +68,7 @@ theorem isRoot_iterate_derivative_of_lt_rootMultiplicity {p : R[X]} {t : R} {n :
   dvd_iff_isRoot.mp <| (dvd_pow_self _ <| Nat.sub_ne_zero_of_lt hn).trans
     (pow_sub_dvd_iterate_derivative_of_pow_dvd _ <| p.pow_rootMultiplicity_dvd t)
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
     (derivative^[p.rootMultiplicity t] p).eval t =
@@ -141,12 +143,14 @@ end CommRing
 
 section IsDomain
 
-variable [CommRing R] [IsDomain R]
+variable [CommRing R]
 
 theorem one_lt_rootMultiplicity_iff_isRoot_gcd
     [GCDMonoid R[X]] {p : R[X]} {t : R} (h : p ≠ 0) :
     1 < p.rootMultiplicity t ↔ (gcd p (derivative p)).IsRoot t := by
   simp_rw [one_lt_rootMultiplicity_iff_isRoot h, ← dvd_iff_isRoot, dvd_gcd_iff]
+
+variable [NoZeroDivisors R]
 
 theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt : p.IsRoot t) :
     p.derivative.rootMultiplicity t = p.rootMultiplicity t - 1 := by
@@ -155,6 +159,7 @@ theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt
   exact derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors hpt <|
     mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 ((rootMultiplicity_pos h).2 hpt).ne'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p : R[X]) (t : R) :
     p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
   by_cases h : p.IsRoot t
@@ -189,6 +194,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
   by_contra hg
   have hdfg0 : f.derivative * g ≠ 0 := mul_ne_zero hdf0 (by rintro rfl; simp at hg)
   have hr' := congr_arg (rootMultiplicity a) hr
+  have : IsDomain R := {}
   rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
     rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
@@ -230,7 +236,8 @@ theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := b
   simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
     Units.val_one, Polynomial.C.map_one, mul_one]
 
-theorem roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
+theorem roots_normalize {R} [CommRing R] [IsDomain R] [NormalizationMonoid R] {p : R[X]} :
+    (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 
 theorem normUnit_X : normUnit (X : Polynomial R) = 1 := by
@@ -292,7 +299,7 @@ variable [Field R] {p q : R[X]}
 
 theorem isUnit_iff_degree_eq_zero : IsUnit p ↔ degree p = 0 :=
   ⟨degree_eq_zero_of_isUnit, fun h =>
-    have : degree p ≤ 0 := by simp [*, le_refl]
+    have : degree p ≤ 0 := by simp [*]
     have hc : coeff p 0 ≠ 0 := fun hc => by
       rw [eq_C_of_degree_le_zero this, hc] at h; simp only [map_zero] at h; contradiction
     isUnit_iff_dvd_one.2
@@ -388,6 +395,7 @@ theorem degree_add_div (hq0 : q ≠ 0) (hpq : degree q ≤ degree p) :
   conv_rhs =>
     rw [← EuclideanDomain.div_add_mod p q, degree_add_eq_left_of_degree_lt this, degree_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degree_div_le (p q : R[X]) : degree (p / q) ≤ degree p := by
   by_cases hq : q = 0
   · simp [hq]
@@ -402,12 +410,14 @@ theorem degree_div_lt (hp : p ≠ 0) (hq : 0 < degree q) : degree (p / q) < degr
 theorem isUnit_map [Field k] (f : R →+* k) : IsUnit (p.map f) ↔ IsUnit p := by
   simp_rw [isUnit_iff_degree_eq_zero, degree_map]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_div [Field k] (f : R →+* k) : (p / q).map f = p.map f / q.map f := by
   if hq0 : q = 0 then simp [hq0]
   else
     rw [div_def, div_def, Polynomial.map_mul, map_divByMonic f (monic_mul_leadingCoeff_inv hq0),
       Polynomial.map_mul, map_C, leadingCoeff_map, map_inv₀]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_mod [Field k] (f : R →+* k) : (p % q).map f = p.map f % q.map f := by
   by_cases hq0 : q = 0
   · simp [hq0]
@@ -548,6 +558,7 @@ theorem normalize_eq_self_iff_monic [DecidableEq R] {p : Polynomial R} (hp : p �
     normalize p = p ↔ p.Monic :=
   ⟨fun h ↦ h ▸ monic_normalize hp, fun h ↦ Monic.normalize_eq_self h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem leadingCoeff_div (hpq : q.degree ≤ p.degree) :
     (p / q).leadingCoeff = p.leadingCoeff / q.leadingCoeff := by
   by_cases hq : q = 0
@@ -583,6 +594,7 @@ theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
         one_mul]⟩,
     fun h => dvd_trans h (dvd_mul_left _ _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
     (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
@@ -684,6 +696,7 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
   simp only [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
 
+set_option backward.isDefEq.respectTransparency false in
 open UniqueFactorizationMonoid in
 /--
 The normalized factors of a polynomial over a field times its leading coefficient give
@@ -716,6 +729,7 @@ theorem monic_mapAlg_iff [Semiring S] [Nontrivial S] [Algebra R S] {p : R[X]} :
     (mapAlg R S p).Monic ↔ p.Monic := by
   simp [mapAlg_eq_map, monic_map_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mod_eq_of_dvd_sub {p₁ p₂ q : R[X]} (h : q ∣ p₁ - p₂) : p₁ % q = p₂ % q := by
   obtain rfl | hq := eq_or_ne q 0
   · simpa [sub_eq_zero] using h
