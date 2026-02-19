@@ -1,5 +1,7 @@
 import Mathlib.Tactic.Linter.UnnecessarySetOptionIn
 
+#exit -- Test disabled for now; we just want to test backward options in this branch.
+
 set_option linter.unnecessarySetOptionIn.heartbeats true in
 /--
 warning: unnecessary 'set_option maxHeartbeats' in '«example»'

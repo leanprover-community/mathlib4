@@ -79,7 +79,7 @@ def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
   match stx with
     | `(command| set_option $opt $_ in $inner) => do
       if !Linter.getLinterValue linter.unnecessarySetOptionIn.heartbeats (← getLinterOptions) &&
-        opt.getId == `maxHeartbeats then
+        opt.getId.getRoot != `backward then
           return
       if !opt.getId.components.contains `linter then
         if let some (exm, id) := (← toExample inner) then
