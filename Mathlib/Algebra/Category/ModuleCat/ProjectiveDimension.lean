@@ -30,6 +30,7 @@ section
 
 variable {R' : Type u'} [CommRing R'] (e : R ≃+* R')
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma hasProjectiveDimensionLE_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N)
