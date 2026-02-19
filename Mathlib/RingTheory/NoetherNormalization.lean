@@ -24,7 +24,7 @@ First, we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to itself s
 More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to `X_0`.
 Here we choose `r_i` to be `up ^ i` where `up` is big enough, so that `T` maps
 different monomials of `f` to polynomials with different degrees in `X_0`.
-See `degreeOf_t_ne_of_neq`.
+See `degreeOf_t_ne_of_ne`.
 
 Secondly, we construct the following maps: let `I` be an ideal containing `f` and
 let `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]` be the natural isomorphism.
@@ -113,11 +113,11 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
     rw [add_comm (Polynomial.C _), natDegree_X_pow_add_C, mul_comm])
 
 /- `T` maps different monomials of `f` to polynomials with different degrees in `X_0`. -/
-private lemma degreeOf_t_ne_of_neq (hv : v ∈ f.support) (hw : w ∈ f.support) (neq : v ≠ w) :
+private lemma degreeOf_t_ne_of_ne (hv : v ∈ f.support) (hw : w ∈ f.support) (ne : v ≠ w) :
     (T f <| monomial v <| coeff v f).degreeOf 0 ≠
     (T f <| monomial w <| coeff w f).degreeOf 0 := by
   rw [degreeOf_zero_t _ _ <| mem_support_iff.mp hv, degreeOf_zero_t _ _ <| mem_support_iff.mp hw]
-  refine sum_r_mul_neq f v w (fun i ↦ ?_) (fun i ↦ ?_) neq <;>
+  refine sum_r_mul_neq f v w (fun i ↦ ?_) (fun i ↦ ?_) ne <;>
   exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i))
     (by lia)
 
@@ -154,7 +154,7 @@ private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
     obtain ⟨h1, h2⟩ := Finset.mem_sdiff.mp hx
     apply degree_lt_degree <| lt_of_le_of_ne (vs x h1) ?_
     simpa only [natDegree_finSuccEquiv]
-      using degreeOf_t_ne_of_neq f _ _ h1 vin <| ne_of_not_mem_cons h2
+      using degreeOf_t_ne_of_ne f _ _ h1 vin <| ne_of_not_mem_cons h2
   have coeff : (finSuccEquiv k n ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff =
       (finSuccEquiv k n ((T f) (h v))).leadingCoeff := by
     simp only [map_add, map_sum]
