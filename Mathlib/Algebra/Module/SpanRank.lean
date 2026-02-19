@@ -257,20 +257,67 @@ end Submodule
 section map
 
 universe u
-section Submodule
+namespace Submodule
 
-variable {R : Type*} {M N : Type u} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
-  [Module R N] (f : M →ₗ[R] N) (p : Submodule R M)
+section Semilinear
 
-lemma Submodule.spanRank_map_le : (p.map f).spanRank ≤ p.spanRank := by
+variable {R S : Type*} {M N : Type u} [Semiring R] [Semiring S] {σ : R →+* S}
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module S N]
+
+lemma spanRank_map_le [RingHomSurjective σ] (f : M →ₛₗ[σ] N)
+    (p : Submodule R M) : (p.map f).spanRank ≤ p.spanRank := by
   rw [← generators_card p, FG.spanRank_le_iff_exists_span_set_card_le]
   exact ⟨f '' p.generators, Cardinal.mk_image_le, le_antisymm (span_le.2 (fun n ⟨m, hm, h⟩ ↦
     ⟨m, span_generators p ▸ subset_span hm, h⟩)) (by simp [span_generators])⟩
 
-variable {p} in
-lemma Submodule.spanFinrank_map_le_of_fg (hp : p.FG) : (p.map f).spanFinrank ≤ p.spanFinrank :=
+lemma spanFinrank_map_le_of_fg [RingHomSurjective σ] (f : M →ₛₗ[σ] N)
+    {p : Submodule R M} (hp : p.FG) : (p.map f).spanFinrank ≤ p.spanFinrank :=
   (Cardinal.toNat_le_iff_le_of_lt_aleph0 (spanRank_finite_iff_fg.mpr (FG.map f hp))
     (spanRank_finite_iff_fg.mpr hp)).2 (p.spanRank_map_le f)
+
+lemma spanRank_map_eq_of_injective [RingHomSurjective σ] (f : M →ₛₗ[σ] N)
+    (hf : Function.Injective f) (p : Submodule R M) : (p.map f).spanRank = p.spanRank := by
+  refine (spanRank_map_le f p).antisymm ?_
+  obtain ⟨s, hs, e⟩ := (p.map f).exists_span_set_card_eq_spanRank
+  obtain ⟨s, rfl⟩ : ∃ y, f '' y = s := Set.subset_range_iff_exists_image_eq.mp
+    ((subset_span.trans e.le).trans LinearMap.map_le_range)
+  obtain rfl : span R s = p := by simpa [(map_injective_of_injective hf).eq_iff] using e
+  grw [← hs, spanRank_span_le_card, Cardinal.mk_image_eq hf]
+
+lemma spanRank_range_le [RingHomSurjective σ] (f : M →ₛₗ[σ] N) :
+    (LinearMap.range f).spanRank ≤ (⊤ : Submodule R M).spanRank := by
+  simpa using spanRank_map_le f ⊤
+
+@[simp]
+lemma spanRank_top (p : Submodule R M) : (⊤ : Submodule R p).spanRank = p.spanRank := by
+  simpa using (spanRank_map_eq_of_injective _ p.subtype_injective ⊤).symm
+
+lemma spanRank_eq_of_equiv
+    {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    (e : M ≃ₛₗ[σ] N) : (⊤ : Submodule R M).spanRank = (⊤ : Submodule S N).spanRank := by
+  rw [← spanRank_map_eq_of_injective e.toLinearMap e.injective ⊤, map_top, LinearEquiv.range]
+
+end Semilinear
+
+section RestrictScalars
+
+variable {R S : Type*} {M : Type u} [CommSemiring R] [Semiring S] [AddCommMonoid M]
+  [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+
+lemma le_spanRank_restrictScalars (N : Submodule S M) :
+    N.spanRank ≤ (N.restrictScalars R).spanRank := by
+  obtain ⟨s, hs, e⟩ := (N.restrictScalars R).exists_span_set_card_eq_spanRank
+  obtain rfl : span S s = N :=
+    le_antisymm (span_le.mpr (span_le.mp e.le:)) (e.ge.trans (span_le_restrictScalars R S s))
+  grw [← hs, spanRank_span_le_card]
+
+lemma spanRank_restrictScalars_eq (H : Function.Surjective (algebraMap R S))
+    (N : Submodule S M) : (N.restrictScalars R).spanRank = N.spanRank := by
+  refine N.le_spanRank_restrictScalars.antisymm' ?_
+  obtain ⟨s, hs, rfl⟩ := N.exists_span_set_card_eq_spanRank
+  grw [restrictScalars_span R S H s, ← hs, spanRank_span_le_card]
+
+end RestrictScalars
 
 end Submodule
 

@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.SetTheory.Game.Basic
 public import Mathlib.SetTheory.Ordinal.NaturalOps
@@ -158,6 +158,7 @@ noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
   inj' := toPGame_injective
   map_rel_iff' := @toPGame_le_iff
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Converts an ordinal into the corresponding game. -/
 noncomputable def toGame : Ordinal.{u} ↪o Game.{u} where
   toFun o := ⟦o.toPGame⟧
