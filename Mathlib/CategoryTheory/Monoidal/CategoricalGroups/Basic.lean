@@ -102,11 +102,9 @@ lemma coevaluation_evaluation_iso (X : C) :
 /--
 The zig-zag axiom 2: Elevating the evaluation-coevaluation axiom to an equality of isomorphism.
 -/
-lemma evaluation_coevaluation_iso (X : C) : (whiskerRightIso (coevaluationIso X) X) ≪≫
-(α_ X Xᘁ X) ≪≫
-whiskerLeftIso X (evaluationIso X)
-=
-(λ_ X) ≪≫ (ρ_ X).symm := by
+lemma evaluation_coevaluation_iso (X : C) : 
+    (whiskerRightIso (coevaluationIso X) X) ≪≫ (α_ X Xᘁ X) ≪≫ 
+      whiskerLeftIso X (evaluationIso X) = (λ_ X) ≪≫ (ρ_ X).symm := by
   ext
   simp only [Iso.trans_hom, whiskerRightIso_hom, Iso.symm_hom, whiskerLeftIso_hom]
   exact ExactPairing.evaluation_coevaluation X Xᘁ
