@@ -102,7 +102,6 @@ lemma scaleRoots_C (r c : R) : (C c).scaleRoots r = C c := by
 lemma scaleRoots_one (p : R[X]) :
     p.scaleRoots 1 = p := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma scaleRoots_zero (p : R[X]) :
     p.scaleRoots 0 = p.leadingCoeff • X ^ p.natDegree := by

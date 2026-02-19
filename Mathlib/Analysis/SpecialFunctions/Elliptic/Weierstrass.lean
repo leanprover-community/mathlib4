@@ -79,7 +79,6 @@ protected def basis : Basis (Fin 2) ℝ ℂ :=
 /-- The lattice spanned by a pair of periods. -/
 def lattice : Submodule ℤ ℂ := Submodule.span ℤ {L.ω₁, L.ω₂}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_lattice {L : PeriodPair} {x : ℂ} :
     x ∈ L.lattice ↔ ∃ m n : ℤ, m * L.ω₁ + n * L.ω₂ = x := by
   simp only [lattice, Submodule.mem_span_pair, zsmul_eq_mul]
@@ -586,7 +585,6 @@ lemma derivWeierstrassP_add_coe (z : ℂ) (l : L.lattice) :
 lemma periodic_derivWeierstrassP (l : L.lattice) : ℘'[L].Periodic l :=
   (L.derivWeierstrassP_add_coe · l)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma derivWeierstrassP_zero : ℘'[L] 0 = 0 := by
   rw [← CharZero.eq_neg_self_iff, ← L.derivWeierstrassP_neg, neg_zero]
@@ -638,7 +636,6 @@ def weierstrassPExceptSeries (l₀ x : ℂ) : FormalMultilinearSeries ℂ ℂ �
   .ofScalars _ fun i ↦ if i = 0 then (℘[L - l₀] x) else (i + 1) *
     (L.sumInvPow x (i + 2) - if l₀ ∈ L.lattice then ((l₀ - x) ^ (i + 2))⁻¹ else 0)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
     (L.weierstrassPExceptSeries l₀ x).coeff i =
       ∑' l : L.lattice, L.weierstrassPExceptSummand l₀ x i l := by

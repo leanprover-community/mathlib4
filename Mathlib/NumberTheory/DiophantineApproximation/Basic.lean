@@ -400,7 +400,6 @@ private theorem aux₁ : 0 < fract ξ := by
   norm_cast at H
   linarith only [hv, H]
 
-set_option backward.isDefEq.respectTransparency false in
 -- An auxiliary lemma for the inductive step.
 private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   obtain ⟨hcop, _, h⟩ := h

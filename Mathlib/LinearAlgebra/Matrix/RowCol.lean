@@ -180,7 +180,6 @@ theorem replicateRow_mul_replicateCol_apply [Fintype m] [Mul α] [AddCommMonoid 
     (i j) : (replicateRow ι v * replicateCol ι w) i j = v ⬝ᵥ w :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diag_replicateCol_mul_replicateRow [Mul α] [AddCommMonoid α] [Unique ι] (a b : n → α) :
     diag (replicateCol ι a * replicateRow ι b) = a * b := by
@@ -189,7 +188,6 @@ theorem diag_replicateCol_mul_replicateRow [Mul α] [AddCommMonoid α] [Unique �
 
 variable (ι)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem vecMulVec_eq [Mul α] [AddCommMonoid α] [Unique ι] (w : m → α) (v : n → α) :
     vecMulVec w v = replicateCol ι w * replicateRow ι v := by
   ext

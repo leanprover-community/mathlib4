@@ -296,7 +296,6 @@ end SmoothPartitionOfUnity
 
 namespace BumpCovering
 
-set_option backward.isDefEq.respectTransparency false in
 -- Repeat variables to drop `[FiniteDimensional ℝ E]` and `[IsManifold I ∞ M]`
 theorem contMDiff_toPartitionOfUnity {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM}

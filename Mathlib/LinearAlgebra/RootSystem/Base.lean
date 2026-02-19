@@ -500,7 +500,6 @@ lemma IsPos.sub {i j k : ι}
   rw [isPos_iff', b.height_sub hk, height_one_of_mem_support hj]
   lia
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsPos.exists_mem_support_pos_pairingIn [P.IsCrystallographic] {i : ι} (h₀ : b.IsPos i) :
     ∃ j ∈ b.support, 0 < P.pairingIn ℤ j i := by
   by_contra! contra
@@ -588,7 +587,6 @@ lemma IsPos.induction_on_add
     rw [isPos_iff] at h₀
     lia
 
-set_option backward.isDefEq.respectTransparency false in
 omit [P.IsReduced] in
 /-- This lemma is included mostly for comparison with the informal literature. Usually
 `RootPairing.Base.IsPos.induction_on_add` will be more useful. -/

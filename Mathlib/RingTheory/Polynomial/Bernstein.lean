@@ -281,7 +281,6 @@ open Polynomial
 
 open MvPolynomial hiding X
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_smul (n : ℕ) :
     (∑ ν ∈ Finset.range (n + 1), ν • bernsteinPolynomial R n ν) = n • X := by
   -- We calculate the `x`-derivative of `(x+y)^n`, evaluated at `y=(1-x)`,

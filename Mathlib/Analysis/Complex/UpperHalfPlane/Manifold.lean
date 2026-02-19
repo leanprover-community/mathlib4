@@ -92,7 +92,6 @@ lemma contMDiff_inv_denom (g : GL (Fin 2) ℝ) :
     ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ : ℍ ↦ (denom g τ)⁻¹) := by
   simpa using contMDiff_denom_zpow g (-1)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Each element of `GL(2, ℝ)⁺` defines a map of `C ^ n` manifolds `ℍ → ℍ`. -/
 lemma contMDiff_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
     ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ : ℍ ↦ g • τ) := fun τ ↦ by

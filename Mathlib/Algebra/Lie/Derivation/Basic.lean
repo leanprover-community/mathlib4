@@ -128,7 +128,6 @@ section
 
 open Finset Nat
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The general Leibniz rule for Lie derivatives. -/
 theorem iterate_apply_lie (D : LieDerivation R L L) (n : ℕ) (a b : L) :
     D^[n] ⁅a, b⁆ = ∑ ij ∈ antidiagonal n, choose n ij.1 • ⁅D^[ij.1] a, D^[ij.2] b⁆ := by

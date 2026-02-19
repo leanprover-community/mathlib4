@@ -173,7 +173,6 @@ theorem prod_Ico_id_eq_factorial : ∀ n : ℕ, (∏ x ∈ Ico 1 (n + 1), x) = n
 
 section GaussSum
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Gauss' summation formula -/
 theorem sum_range_id_mul_two (n : ℕ) : (∑ i ∈ range n, i) * 2 = n * (n - 1) :=
   calc

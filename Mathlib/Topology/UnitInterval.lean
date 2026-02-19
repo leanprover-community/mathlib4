@@ -52,26 +52,19 @@ theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / 
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
 
-set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 := coe_eq_one.not
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] theorem coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] theorem coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_le_left {x y : I} : x * y ≤ x :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_le_right {x y : I} : x * y ≤ y :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 
@@ -84,12 +77,10 @@ def symm : I → I := fun t => ⟨1 - t, Icc.mem_iff_one_sub_mem.mp t.prop⟩
 @[inherit_doc]
 scoped notation "σ" => unitInterval.symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem symm_zero : σ 0 = 1 :=
   Subtype.ext <| by simp [symm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem symm_one : σ 1 = 0 :=
   Subtype.ext <| by simp [symm]
@@ -142,12 +133,10 @@ theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.e
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma symm_eq_one {i : I} : σ i = 1 ↔ i = 0 := by
   rw [← symm_zero, symm_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma symm_eq_zero {i : I} : σ i = 0 ↔ i = 1 := by
   rw [← symm_one, symm_inj]
@@ -192,23 +181,18 @@ theorem one_minus_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.2.1
 theorem add_pos {t : I} {x : ℝ} (hx : 0 < x) : 0 < (x + t : ℝ) :=
   add_pos_of_pos_of_nonneg hx <| nonneg _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- like `unitInterval.nonneg`, but with the inequality in `I`. -/
 theorem nonneg' {t : I} : 0 ≤ t :=
   t.2.1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- like `unitInterval.le_one`, but with the inequality in `I`. -/
 theorem le_one' {t : I} : t ≤ 1 :=
   t.2.2
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma pos_iff_ne_zero {x : I} : 0 < x ↔ x ≠ 0 := bot_lt_iff_ne_bot
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma lt_one_iff_ne_one {x : I} : x < 1 ↔ x ≠ 1 := lt_top_iff_ne_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_one_or_eq_zero_of_le_mul {i j : I} (h : i ≤ j * i) : i = 0 ∨ j = 1 := by
   contrapose! h
   rw [← unitInterval.lt_one_iff_ne_one, ← coe_lt_one, ← unitInterval.pos_iff_ne_zero,
@@ -216,7 +200,6 @@ lemma eq_one_or_eq_zero_of_le_mul {i j : I} (h : i ≤ j * i) : i = 0 ∨ j = 1 
   rw [← Subtype.coe_lt_coe, coe_mul]
   simpa using mul_lt_mul_of_pos_right h.right h.left
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)⟩⟩
 
 theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
@@ -243,7 +226,6 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
     (h : ∀ c ∈ t, f c ∈ unitInterval) :
     ∏ c ∈ t, f c ∈ unitInterval := _root_.prod_mem (S := unitInterval.submonoid) h
 
-set_option backward.isDefEq.respectTransparency false in
 instance : LinearOrderedCommMonoidWithZero I where
   zero_mul i := zero_mul i
   mul_zero i := mul_zero i
@@ -334,12 +316,10 @@ def convexCombo {a b : ℝ} (x y : Icc a b) (t : unitInterval) : Icc a b :=
 theorem coe_convexCombo {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
   (convexCombo x y t : ℝ) = (1 - t) * x + t * y := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem convexCombo_zero {a b : ℝ} (x y : Icc a b) : convexCombo x y 0 = x := by
   simp [convexCombo]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem convexCombo_one {a b : ℝ} (x y : Icc a b) : convexCombo x y 1 = y := by
   simp [convexCombo]
@@ -566,10 +546,8 @@ open NNReal
 /-- The coercion from `I` to `ℝ≥0`. -/
 def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toNNReal_one : toNNReal 1 = 1 := rfl
 
 @[fun_prop] lemma toNNReal_continuous : Continuous toNNReal := by delta toNNReal; fun_prop

@@ -283,7 +283,6 @@ variable {ι : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField �
   [RingHomIsometric σ₁₂] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalent characterizations for equicontinuity of a family of continuous linear maps
 between normed spaces. See also `WithSeminorms.equicontinuous_TFAE` for similar characterizations
 between spaces satisfying `WithSeminorms`. -/

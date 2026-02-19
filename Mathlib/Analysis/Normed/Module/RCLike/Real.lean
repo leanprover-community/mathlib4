@@ -73,7 +73,6 @@ theorem frontier_ball (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (ball x r) = sphere x r := by
   rw [frontier, closure_ball x hr, isOpen_ball.interior_eq, closedBall_diff_ball]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (closedBall x r) = ball x r := by
   rcases hr.lt_or_gt with hr | hr

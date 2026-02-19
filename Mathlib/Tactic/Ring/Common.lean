@@ -680,7 +680,6 @@ end
 
 theorem smul_int {a b c : ℤ} (h : (a * b : ℤ) = c) : a • b = c := h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul_eq_intCast {R} [CommRing R] {a' b c : R} {a : ℤ} (_ : ((a : ℤ) : R) = a')
     (_ : a' * b = c) : a • b = c := by
   subst_vars; simp

@@ -210,7 +210,6 @@ theorem integral_one : (∫ _ in a..b, (1 : ℝ)) = b - a := by
 
 theorem integral_const_on_unit_interval : ∫ _ in a..a + 1, b = b := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem integral_inv (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x in a..b, x⁻¹ = log (b / a) := by
   have h' := fun x (hx : x ∈ [[a, b]]) => ne_of_mem_of_not_mem hx h

@@ -759,7 +759,6 @@ end Core
 variable {G H : Type*} [SeminormedAddCommGroup G] [SeminormedAddCommGroup H] [NormedSpace ℝ H]
   {s : Set G}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A group homomorphism from a normed group to a real normed space,
 bounded on a neighborhood of `0`, must be continuous. -/
 lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 𝓝 (0 : G))

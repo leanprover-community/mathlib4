@@ -40,7 +40,6 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 noncomputable section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Local homeomorphism between a real (semi)normed space and the unit ball.
 See also `Homeomorph.unitBall`. -/
 @[simps -isSimp]

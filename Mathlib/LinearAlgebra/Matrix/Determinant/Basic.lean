@@ -62,7 +62,6 @@ def det (M : Matrix n n R) : R :=
 theorem det_apply (M : Matrix n n R) : M.det = ∑ σ : Perm n, Equiv.Perm.sign σ • ∏ i, M (σ i) i :=
   MultilinearMap.alternatization_apply _ M
 
-set_option backward.isDefEq.respectTransparency false in
 -- This is what the old definition was. We use it to avoid having to change the old proofs below
 theorem det_apply' (M : Matrix n n R) : M.det = ∑ σ : Perm n, ε σ * ∏ i, M (σ i) i := by
   simp [det_apply, Units.smul_def]
@@ -209,7 +208,6 @@ theorem det_transpose (M : Matrix n n R) : Mᵀ.det = M.det := by
   apply Fintype.prod_equiv σ
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Permuting the columns changes the sign of the determinant. -/
 theorem det_permute (σ : Perm n) (M : Matrix n n R) :
     (M.submatrix σ id).det = Perm.sign σ * M.det :=

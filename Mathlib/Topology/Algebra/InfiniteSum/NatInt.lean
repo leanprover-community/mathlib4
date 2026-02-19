@@ -73,7 +73,6 @@ theorem zero_mul {f : ℕ → M} (h : HasProd (fun n ↦ f (n + 1)) m) :
     HasProd f (f 0 * m) := by
   simpa only [prod_range_one] using h.prod_range_mul
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem even_mul_odd {f : ℕ → M} (he : HasProd (fun k ↦ f (2 * k)) m)
     (ho : HasProd (fun k ↦ f (2 * k + 1)) m') : HasProd f (m * m') := by

@@ -332,7 +332,6 @@ def coinvariantsShortComplex : ShortComplex (Rep k G) where
   g := toCoinvariantsMkQ A S
   zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex A S).ShortExact where
   exact := (forget₂ _ (ModuleCat k)).reflects_exact_of_faithful _ <|
     (ShortComplex.moduleCat_exact_iff _).2

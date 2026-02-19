@@ -296,7 +296,6 @@ theorem smul_centroid_vsub_point_eq_smul_faceOppositeCentroid_vsub_point [CharZe
   rw [smul_faceOppositeCentroid_vsub_point_eq_sum_vsub s i,
     smul_centroid_vsub_point_eq_sum_vsub s i]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The vector between two `faceOppositeCentroid` equals `n⁻¹` times the vector between the
 corresponding vertices. -/
 theorem faceOppositeCentroid_vsub_faceOppositeCentroid [CharZero k] (s : Affine.Simplex k P n)

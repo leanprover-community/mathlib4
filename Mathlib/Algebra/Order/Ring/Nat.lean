@@ -29,7 +29,6 @@ instance instIsStrictOrderedRing : IsStrictOrderedRing ℕ where
   mul_lt_mul_of_pos_left _a ha _b _c hbc := Nat.mul_lt_mul_of_pos_left hbc ha
   mul_lt_mul_of_pos_right _a ha _b _c hbc := Nat.mul_lt_mul_of_pos_right hbc ha
 
-set_option backward.isDefEq.respectTransparency false in
 instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ where
   bot := 0
   bot_le := zero_le

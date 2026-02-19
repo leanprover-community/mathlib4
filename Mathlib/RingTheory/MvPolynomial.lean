@@ -59,7 +59,6 @@ instance : Module K (MvPolynomial σ K) :=
 theorem finrank_eq_zero [Nonempty σ] : Module.finrank K (MvPolynomial σ K) = 0 :=
   (basisMonomials σ K).linearIndependent.finrank_eq_zero_of_infinite
 
-set_option backward.isDefEq.respectTransparency false in
 omit [Nontrivial K] in
 theorem finrank_eq_one [IsEmpty σ] : Module.finrank K (MvPolynomial σ K) = 1 :=
   Module.rank_eq_one_iff_finrank_eq_one.mp <| by

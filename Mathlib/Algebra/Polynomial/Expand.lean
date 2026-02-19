@@ -309,7 +309,6 @@ section IsDomain
 
 variable (R : Type u) [CommRing R] [IsDomain R]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isLocalHom_expand {p : ℕ} (hp : 0 < p) : IsLocalHom (expand R p) := by
   refine ⟨fun f hf1 => ?_⟩
   have hf2 := eq_C_of_degree_eq_zero (degree_eq_zero_of_isUnit hf1)

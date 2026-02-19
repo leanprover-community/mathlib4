@@ -117,7 +117,6 @@ theorem NonTorsionWeight.ne_zero [Nontrivial R] [NonTorsionWeight R w] (s : σ) 
   apply zero_ne_one.symm (α := R)
   exact NonTorsionWeight.eq_zero_of_smul_eq_zero h
 
-set_option backward.isDefEq.respectTransparency false in
 variable {w} in
 lemma weight_sub_single_add {f : σ →₀ ℕ} {i : σ} (hi : f i ≠ 0) :
     (f - single i 1).weight w + w i = f.weight w := by

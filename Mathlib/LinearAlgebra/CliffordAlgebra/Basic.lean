@@ -239,7 +239,6 @@ theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebr
     _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← map_sub, ← map_sub]
     _ = algebraMap R _ (QuadraticMap.polar Q a b) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible.
 
 To show a function squares to the quadratic form, it suffices to show that

@@ -96,7 +96,6 @@ theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Meas
   refine (norm_integral_le_integral_norm _).trans (le_of_eq ?_)
   simp_rw [Circle.norm_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier integral converts right-translation into scalar multiplication by a phase factor. -/
 theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : AddChar 𝕜 𝕊) (μ : Measure V)
     [μ.IsAddRightInvariant] (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (v₀ : V) :
@@ -240,7 +239,6 @@ theorem integral_fourierIntegral_smul_eq_flip
       ∫ x, (f x) • (fourierIntegral e ν L.flip g x) ∂μ :=
   integral_bilin_fourierIntegral_eq_flip (ContinuousLinearMap.lsmul ℂ ℂ) he hL hf hg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform satisfies `∫ 𝓕 f * conj g = ∫ f * conj (𝓕⁻¹ g)`, which together
 with the Fourier inversion theorem yields Plancherel's theorem. The stated version is more
 convenient since it does only require integrability of `f` and `g`.

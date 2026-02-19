@@ -121,7 +121,6 @@ instance : IsIntegrallyClosed T :=
 
 variable [PerfectField (FractionRing R)]
 
-set_option backward.isDefEq.respectTransparency false in
 local instance : Algebra.IsSeparable L E :=
   Algebra.isSeparable_tower_top_of_isSeparable K L E
 

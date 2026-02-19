@@ -474,7 +474,6 @@ theorem natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
   exact Finset.card_le_card <| Multiset.toFinset_subset.mpr <|
     Multiset.Le.subset <| roots.le_of_dvd (map_ne_zero h2) <| map_dvd _ h1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a field `F` is of exponential characteristic `q`, then `Polynomial.expand F (q ^ n) f`
 and `f` have the same separable degree. -/
 theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
@@ -568,7 +567,6 @@ theorem eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic)
   exact ⟨_, y, h2, by rwa [h3, Multiset.map_nsmul, Multiset.map_singleton, Multiset.prod_nsmul,
     Multiset.prod_singleton] at h1⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a monic irreducible polynomial over a field `F` of exponential characteristic `q` has
 separable degree one, then it is of the form `X ^ (q ^ n) - C y` for some natural number `n`,
 and some element `y` of `F`, such that either `n = 0` or `y` has no `q`-th root in `F`. -/

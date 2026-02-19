@@ -733,7 +733,6 @@ theorem discr [hK : IsCyclotomicExtension {n} ℚ K] :
     simp_rw +contextual [← pow_mul, Nat.div_mul_right_comm (this _), Nat.totient_mul h]
     rw [mul_pow, mul_comm n₂.totient]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem natAbs_discr [hK : IsCyclotomicExtension {n} ℚ K] :
     haveI : NumberField K := IsCyclotomicExtension.numberField {n} ℚ K
     (NumberField.discr K).natAbs = n ^ φ n / ∏ p ∈ n.primeFactors, p ^ (φ n / (p - 1)) := by

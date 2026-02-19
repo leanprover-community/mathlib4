@@ -329,7 +329,6 @@ noncomputable abbrev boundOfDiscBdd : ℝ≥0 := sqrt N * (2 : ℝ≥0) ^ rankOf
 
 variable {N} (hK : |discr K| ≤ N)
 
-set_option backward.isDefEq.respectTransparency false in
 include hK in
 /-- If `|discr K| ≤ N` then the degree of `K` is at most `rankOfDiscrBdd`. -/
 theorem rank_le_rankOfDiscrBdd :

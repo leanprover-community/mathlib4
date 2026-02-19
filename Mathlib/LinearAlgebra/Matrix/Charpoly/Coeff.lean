@@ -258,7 +258,6 @@ theorem pow_eq_aeval_mod_charpoly (M : Matrix n n R) (k : ℕ) :
 
 section Ideal
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k : ℕ) :
     M.charpoly.coeff k ∈ I ^ (Fintype.card n - k) := by
   delta charpoly

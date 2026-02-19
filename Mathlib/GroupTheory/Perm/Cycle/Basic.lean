@@ -1075,7 +1075,6 @@ theorem zpow_eq_ofSubtype_subtypePerm_iff
         ← notMem_support]
       exact fun hx' ↦ hx (hc (support_zpow_le _ _ hx'))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cycle_zpow_mem_support_iff {g : Perm α}
     (hg : g.IsCycle) {n : ℤ} {x : α} (hx : g x ≠ x) :
     (g ^ n) x = x ↔ n % #g.support = 0 := by
