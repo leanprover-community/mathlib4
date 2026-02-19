@@ -189,11 +189,17 @@ theorem _root_.Set.ecard_le_ecard (hsub : s ⊆ t) : ENat.card s ≤ ENat.card t
 
 theorem ecard_lt_ecard (hs : s.Finite) (hsub : s ⊂ t) : ENat.card s < ENat.card t := by
   classical
-  refine lt_of_le_not_ge (ecard_le_ecard hsub.subset) fun hle ↦ not_subset_of_ssubset hsub ?_
-  rw [← diff_eq_empty, ← Set.isEmpty_coe_sort, ← ENat.card_eq_zero_iff_empty, ← nonpos_iff_eq_zero]
-  apply WithTop.le_of_add_le_add_right (ENat.card_lt_top.mpr hs).ne
-  rw [← ENat.card_sum, ← ENat.card_congr <| Equiv.Set.union disjoint_sdiff_left,
-    diff_union_of_subset hsub.subset]
+  suffices ENat.card t ≤ ENat.card s → t ⊆ s from
+    lt_of_le_not_ge (ecard_le_ecard hsub.subset) fun hle ↦ not_subset_of_ssubset hsub <| this hle
+  intro hle
+  suffices ENat.card ↑(t \ s) ≤ 0 by
+    rwa [← diff_eq_empty, ← Set.isEmpty_coe_sort, ← ENat.card_eq_zero_iff_empty,
+      ← nonpos_iff_eq_zero]
+  suffices ENat.card ↑(t \ s) + ENat.card ↑s ≤ 0 + ENat.card ↑s from
+    WithTop.le_of_add_le_add_right (ENat.card_lt_top.mpr hs).ne this
+  suffices ENat.card ↑t ≤ 0 + ENat.card ↑s by
+    rwa [← ENat.card_sum, ← ENat.card_congr <| Equiv.Set.union disjoint_sdiff_left,
+      diff_union_of_subset hsub.subset]
   exact le_add_of_le_right hle
 
 theorem card_strictMonoOn : StrictMonoOn (α := Set α) (Nat.card ∘ (↑)) (setOf Set.Finite) :=
