@@ -40,6 +40,8 @@ public section
 
 noncomputable section
 
+set_option backward.isDefEq.respectTransparency false
+
 open Submodule Finsupp
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
