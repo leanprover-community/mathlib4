@@ -209,17 +209,29 @@ end IntertwiningMap
 
 /-- Equivalence between representations is a bijective intertwining map. -/
 @[ext]
-structure Equivalence extends IntertwiningMap ρ σ, V ≃+ W
+structure Equiv extends IntertwiningMap ρ σ, V ≃ W
 
 /-- The additive equivalence of types underlying an equivalence of representations. -/
-add_decl_doc Equivalence.toAddEquiv
+add_decl_doc Equiv.toEquiv
 
 /-- The intertwining map underlying an equivalence of representations. -/
-add_decl_doc Equivalence.toIntertwiningMap
+add_decl_doc Equiv.toIntertwiningMap
 
-namespace Equivalence
+namespace Equiv
 
-variable {ρ σ} (φ : Equivalence ρ σ)
+variable {ρ σ} (φ : Equiv ρ σ)
+
+instance : EquivLike (Equiv ρ σ) V W where
+  coe φ := φ.toFun
+  inv φ := φ.invFun
+  left_inv e := e.left_inv
+  right_inv e := e.right_inv
+  coe_injective' _ _ := Equiv.ext
+
+/-- The additive equivalence of types underlying an equivalence of representations. -/
+def toAddEquiv : V ≃+ W := { __ := φ }
+
+@[simp] lemma coe_toAddEquiv : ⇑φ.toAddEquiv = ⇑φ := rfl
 
 /-- Underlying linear isomorphism of an equivalence of representations. -/
 def toLinearEquiv : V ≃ₗ[A] W :=
@@ -240,20 +252,22 @@ theorem conj (g : G) : σ g = (toLinearEquiv φ).conj (ρ g) := by
     φ.toIntertwiningMap.isIntertwining]
   rw [← toLinearEquiv_apply, LinearEquiv.apply_symm_apply]
 
-end Equivalence
+end Equiv
 
 end
 
-namespace Equivalence
+namespace Equiv
 
 variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V] [AddCommGroup W]
     [Module k W] [FiniteDimensional k V] [FiniteDimensional k W]
     (ρ : Representation k G V) (σ : Representation k G W)
 
 /-- dualTensorHom as an equivalence of representations. -/
-noncomputable def dualTensorHom_equivalence : Equivalence (tprod ρ.dual σ) (linHom ρ σ) where
-  toAddEquiv := dualTensorHomEquivOfBasis (R := k) (M := V) (N := W)
+noncomputable def dualTensorHom_equivalence : Equiv (tprod ρ.dual σ) (linHom ρ σ) where
+  toEquiv := dualTensorHomEquivOfBasis (R := k) (M := V) (N := W)
       (b := Module.Free.chooseBasis k V)
+  map_add' := dualTensorHomEquivOfBasis (R := k) (M := V) (N := W)
+      (b := Module.Free.chooseBasis k V).map_add
   map_smul' := dualTensorHomEquivOfBasis (R := k) (M := V) (N := W)
       (b := Module.Free.chooseBasis k V).map_smul
   isIntertwining' g v := by
@@ -262,6 +276,6 @@ noncomputable def dualTensorHom_equivalence : Equivalence (tprod ρ.dual σ) (li
         (dualTensorHom_comm (ρV := ρ) (ρW := σ) (k := k) (V := V) (W := W) g))
 
 
-end Equivalence
+end Equiv
 
 end Representation
