@@ -17,11 +17,18 @@ public section
 namespace QuadraticForm
 open QuadraticMap
 
-@[deprecated "Use QuadraticForm.equivalent" (since := "2026-01-19")]
+@[deprecated "Use QuadraticForm.equivalent_weightedSumSquares_of_isAlgClosed"
+  (since := "2026-01-19")]
+theorem equivalent_sum_squares {M : Type*} [AddCommGroup M] [Module ℂ M] [FiniteDimensional ℂ M]
+    (Q : QuadraticForm ℂ M) (hQ : (associated (R := ℂ) Q).SeparatingLeft) :
+    Equivalent Q (weightedSumSquares ℂ (1 : Fin (Module.finrank ℂ M) → ℂ)) :=
+  equivalent_weightedSumSquares_of_isAlgClosed Q hQ
+
+@[deprecated "Use QuadraticForm.equivalent_of_isAlgClosed" (since := "2026-01-19")]
 theorem complex_equivalent {M : Type*} [AddCommGroup M] [Module ℂ M]
     [FiniteDimensional ℂ M] (Q₁ Q₂ : QuadraticForm ℂ M)
     (hQ₁ : (associated Q₁).SeparatingLeft)
     (hQ₂ : (associated Q₂).SeparatingLeft) : Equivalent Q₁ Q₂ :=
-  equivalent Q₁ Q₂ hQ₁ hQ₂
+  equivalent_of_isAlgClosed Q₁ Q₂ hQ₁ hQ₂
 
 end QuadraticForm

@@ -165,12 +165,20 @@ theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm
   simp_rw [LinearMap.IsOrtho, associated_eq_self_apply] at hv₂
   exact ⟨fun i => Units.mk0 _ (hv₂ i), ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
 
+variable {ι S R : Type*}
+variable [Fintype ι] [CommSemiring R] [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
+variable [IsScalarTower S R R]
+variable {w : ι → S} {w' : ι → S}
+
+/-- The isometry between two weighted sum of squares of equal weights. -/
+def weightedSumSquaresCongr (h : w = w') :
+    IsometryEquiv (weightedSumSquares R w) (weightedSumSquares R w') where
+  __ := LinearEquiv.refl R (ι → R)
+  map_app' := by simp [h]
+
 /-- The isometry between two weighted sum of squares, give that each weight is scaled by the square
 of a unit. -/
-def isometryEquivWeightedSumSquares₂ {ι : Type*} [Fintype ι]
-    {S R : Type*} [CommSemiring R]
-    [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] [IsScalarTower S R R]
-    (w : ι → S) (w' : ι → S) (u : ι → Sˣ) (h : ∀ i, w' i * u i ^ 2 = w i) :
+def isometryEquivWeightedSumSquaresWeightedSumSquares (u : ι → Sˣ) (h : ∀ i, w' i * u i ^ 2 = w i) :
     IsometryEquiv (weightedSumSquares R w) (weightedSumSquares R w') where
   toFun x := u • x
   invFun x := u⁻¹ • x
