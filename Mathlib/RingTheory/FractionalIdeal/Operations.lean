@@ -513,6 +513,7 @@ theorem eq_zero_or_one (I : FractionalIdeal K⁰ L) : I = 0 ∨ I = 1 := by
     rw [← div_mul_cancel₀ x y_ne, map_mul, ← Algebra.smul_def]
     exact smul_mem (M := L) I (x / y) y_mem
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_zero_or_one_of_isField (hF : IsField R₁) (I : FractionalIdeal R₁⁰ K) : I = 0 ∨ I = 1 :=
   letI : Field R₁ := hF.toField
   eq_zero_or_one I
@@ -587,6 +588,7 @@ theorem mem_spanSingleton {x y : P} : x ∈ spanSingleton S y ↔ ∃ z : R, z �
 theorem mem_spanSingleton_self (x : P) : x ∈ spanSingleton S x :=
   (mem_spanSingleton S).mpr ⟨1, one_smul _ _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (P) in
 /-- A version of `FractionalIdeal.den_mul_self_eq_num` in terms of fractional ideals. -/
 theorem den_mul_self_eq_num' (I : FractionalIdeal S P) :

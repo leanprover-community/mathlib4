@@ -551,6 +551,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
   {f' : E →L[𝕜] F} {x : E}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasFDerivWithinAt_comp_smul_smul_iff {c : 𝕜} :
     HasFDerivWithinAt (f <| c • ·) (c • f') s x ↔ HasFDerivWithinAt f f' (c • s) (c • x) := by
   rcases eq_or_ne c 0 with rfl | hc
@@ -568,6 +569,7 @@ theorem hasFDerivWithinAt_comp_smul_iff_smul {c : 𝕜} (hc : c ≠ 0) :
   lift c to 𝕜ˣ using IsUnit.mk0 c hc
   exact (ContinuousLinearEquiv.smulLeft c).comp_hasFDerivWithinAt_iff.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fderivWithin_comp_smul_eq_fderivWithin_smul (c : 𝕜) :
     fderivWithin 𝕜 (f <| c • ·) s x = fderivWithin 𝕜 (c • f) (c • s) (c • x) := by
   rcases eq_or_ne c 0 with rfl | hc

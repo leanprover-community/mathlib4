@@ -68,6 +68,15 @@ theorem isCompactOperator_zero {M₁ M₂ : Type*} [Zero M₁] [TopologicalSpace
     [TopologicalSpace M₂] [Zero M₂] : IsCompactOperator (0 : M₁ → M₂) :=
   ⟨{0}, isCompact_singleton, mem_of_superset univ_mem fun _ _ => rfl⟩
 
+theorem isCompactOperator_id_iff_locallyCompactSpace {E : Type*}
+    [AddGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] :
+    IsCompactOperator (id : E → E) ↔ LocallyCompactSpace E :=
+  ⟨fun ⟨_, hK, hK0⟩ ↦ hK.locallyCompactSpace_of_mem_nhds_of_addGroup hK0,
+    fun _ ↦ exists_compact_mem_nhds 0⟩
+
+alias ⟨IsCompactOperator.locallyCompactSpace, isCompactOperator_id⟩ :=
+  isCompactOperator_id_iff_locallyCompactSpace
+
 section Characterizations
 
 section

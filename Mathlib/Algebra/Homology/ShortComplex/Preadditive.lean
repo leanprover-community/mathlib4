@@ -493,6 +493,7 @@ def comp (h : Homotopy φ₁ φ₂) {ψ₁ ψ₂ : S₂ ⟶ S₃} (h' : Homotopy
     Homotopy (φ₁ ≫ ψ₁) (φ₂ ≫ ψ₂) :=
   (h.compRight ψ₁).trans (h'.compLeft φ₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy between morphisms in `ShortComplex Cᵒᵖ` that is induced by a homotopy
 between morphisms in `ShortComplex C`. -/
 @[simps]
@@ -507,6 +508,7 @@ def op (h : Homotopy φ₁ φ₂) : Homotopy (opMap φ₁) (opMap φ₂) where
   comm₂ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₂]; abel)
   comm₃ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₁]; abel)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy between morphisms in `ShortComplex C` that is induced by a homotopy
 between morphisms in `ShortComplex Cᵒᵖ`. -/
 @[simps]

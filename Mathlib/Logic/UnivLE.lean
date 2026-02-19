@@ -41,7 +41,11 @@ it could be bigger than both!
 See also `Mathlib/CategoryTheory/UnivLE.lean` for the statement that the stronger definition is
 equivalent to `EssSurj (uliftFunctor : Type v ⥤ Type max u v)`.
 -/
-@[pp_with_univ, mk_iff]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, both universe parameters would default to
+-- output (since there are no input parameters at all).
+-- See Note [universe output parameters and typeclass caching].
+@[univ_out_params, pp_with_univ, mk_iff]
 class UnivLE : Prop where
   small (α : Type u) : Small.{v} α
 
