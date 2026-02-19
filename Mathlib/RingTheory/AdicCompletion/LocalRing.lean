@@ -39,6 +39,7 @@ open IsLocalRing
 
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.ker_eval_eq_range (n : ℕ) : (AdicCompletion.eval I M n).ker =
     (AdicCompletion.map I ((I ^ n) • (⊤ : Submodule R M)).subtype).range.restrictScalars R := by
   let InM := (I ^ n) • (⊤ : Submodule R M)
@@ -118,6 +119,7 @@ lemma AdicCompletion.le_ker_eval (n : ℕ) :
   refine Submodule.smul_induction_on hx (fun r memr m _ ↦ ?_) (fun x y hx hy ↦ add_mem hx hy)
   simpa using Module.isTorsionBySet_quotient_ideal_smul M (I ^ n) (a := ⟨r, memr⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.ker_eval (fg : I.FG) (n : ℕ) :
     (AdicCompletion.eval I M n).ker = (I ^ n) • (⊤ : Submodule R _) := by
   have fg' : (I ^ n).FG := fg.pow
@@ -159,6 +161,7 @@ lemma AdicCompletion.isAdicComplete (fg : I.FG) : IsAdicComplete I (AdicCompleti
       simp [this]
     · simp [SModEq.sub_mem, ← AdicCompletion.ker_eval I M fg]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.isAdicComplete_self (fg : I.FG) :
     IsAdicComplete (I.map (algebraMap R (AdicCompletion I R))) (AdicCompletion I R) where
   haus' x hx := by
@@ -181,6 +184,7 @@ lemma AdicCompletion.isAdicComplete_self (fg : I.FG) :
       rw [← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map]
       simp [← AdicCompletion.ker_eval I R fg, eval]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.isMaximal_map (m : Ideal R) [m.IsMaximal] (le : I ≤ m) (fg : I.FG) :
     (m.map (algebraMap R (AdicCompletion I R))).IsMaximal := by
   have compeq : (AdicCompletion.evalOneₐ I).toRingHom.comp (algebraMap R (AdicCompletion I R)) =
@@ -234,6 +238,7 @@ lemma AdicCompletion.maximalIdeal_eq_map [IsNoetherianRing R] [IsLocalRing R] :
   (IsLocalRing.eq_maximalIdeal (AdicCompletion.isMaximal_map _ _ (le_refl _)
     (maximalIdeal R).fg_of_isNoetherianRing)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.mem_maximalIdeal_iff_eval_one_eq_zero [IsNoetherianRing R] [IsLocalRing R]
     (x : AdicCompletion (maximalIdeal R) R) :
     x ∈ maximalIdeal (AdicCompletion (maximalIdeal R) R) ↔ x.1 1 = 0 := by
@@ -290,6 +295,7 @@ lemma AdicCompletion.residueField_map_bijective [IsNoetherianRing R] [IsLocalRin
       (algebraMap R (AdicCompletion (maximalIdeal R) R))) :=
     AdicCompletion.residueField_map_bijective_of_fg (maximalIdeal R).fg_of_isNoetherianRing
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.spanFinrank_maximalIdeal_eq [IsNoetherianRing R] [IsLocalRing R] :
     (maximalIdeal (AdicCompletion (maximalIdeal R) R)).spanFinrank =
     (maximalIdeal R).spanFinrank := by

@@ -37,6 +37,7 @@ namespace UpperHalfPlane
 `τ ↦ -conj τ`. -/
 def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![-1, 0; 0, 1] (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
   simp [UpperHalfPlane.coe_smul, σ, J, show ¬(1 : ℝ) < 0 by simp, num, denom]
 
@@ -68,6 +69,7 @@ private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDifferentiab
   refine .mul (.mul ?_ mdifferentiable_const) (mdifferentiable_denom_zpow g _)
   simpa only [σ, hg, ↓reduceIte] using hf.comp (mdifferentiable_smul hg)
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
     f ∣[k] J = fun τ : ℍ ↦ conj (f <| ofComplex <| -(conj ↑τ)) := by
   simp [slash_def, J_smul]
@@ -84,6 +86,7 @@ private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDifferentiable �
   have := hf.differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds this)
   simpa using (this.comp _ differentiable_neg.differentiableAt).star_star.neg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The weight `k` slash action of `GL(2, ℝ)` preserves holomorphic functions. -/
 lemma MDifferentiable.slash {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
     (k : ℤ) (g : GL (Fin 2) ℝ) : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] g) := by
@@ -285,6 +288,7 @@ theorem IsGLPos.smul_apply (f : ModularForm Γ k) (n : α) (z : ℍ) : (n • f)
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance instNeg : Neg (ModularForm Γ k) :=
   ⟨fun f =>
     { toSlashInvariantForm := -f.1
@@ -479,6 +483,7 @@ theorem IsGLPos.smul_apply (f : CuspForm Γ k) (n : α) {z : ℍ} : (n • f) z 
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance instNeg : Neg (CuspForm Γ k) :=
   ⟨fun f =>
     { toSlashInvariantForm := -f.1
@@ -598,17 +603,17 @@ def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
   holo' := MDifferentiable.prod (t := s) (f := fun (i : ι) ↦ (F i).1)
       (by intro (i : ι) hi; simpa using (F i).holo')
   bdd_at_cusps' hc γ hγ := by
-    change IsBoundedAtImInfty (((∏ i ∈ s, ((F i).1 : ℍ → ℂ)) ∣[m] γ))
-    rw [hm, prod_slash_sum_weights, IsBoundedAtImInfty]
+    simp only [SlashInvariantForm.toFun_eq_coe, coe_prod, SlashInvariantForm.coe_mk, hm,
+      prod_slash_sum_weights, IsBoundedAtImInfty]
     refine BoundedAtFilter.smul _ (BoundedAtFilter.prod (s := s) ?_)
     intro i hi
-    simpa [toFun_eq_coe, IsBoundedAtImInfty] using (F i).bdd_at_cusps' hc γ hγ
+    simpa using (F i).bdd_at_cusps' hc γ hγ
 
 /-- Given `ModularForm`'s `F i` of weight `k`, define the form which as a function is a product of
 those indexed by `s : Finset ι` with weight `#s * k`. -/
 @[simps! -fullyApplied]
 def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
-     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
   prod (s := s) (s.card * k) (by simp) F
 
