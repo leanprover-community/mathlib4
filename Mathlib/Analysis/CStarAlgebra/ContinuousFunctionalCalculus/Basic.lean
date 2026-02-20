@@ -62,7 +62,7 @@ variable {A : Type*}
 
 namespace StarAlgebra.elemental
 
-variable  [CStarAlgebra A]
+variable [CStarAlgebra A]
 
 instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [StarRing A]
     [ContinuousStar A] [StarModule R A] (a : A) [IsStarNormal a] :

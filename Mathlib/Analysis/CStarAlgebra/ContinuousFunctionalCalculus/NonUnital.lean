@@ -727,7 +727,7 @@ noncomputable def cfcₙHomSuperset {a : A} (ha : p a) {s : Set R} (hs : σₙ R
 lemma cfcₙHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
     Continuous (cfcₙHomSuperset ha hs) :=
   have : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
-  (cfcₙHom_continuous ha).comp <| ContinuousMapZero.continuous_comp_left _
+  (cfcₙHom_continuous ha).comp <| ContinuousMapZero.continuous_precomp _
 
 lemma cfcₙHomSuperset_id {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
     haveI : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
