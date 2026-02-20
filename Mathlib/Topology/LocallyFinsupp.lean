@@ -99,6 +99,10 @@ lemma LocallyFiniteSupport.finite_inter_support_of_isCompact {W : Set X}
   rw [← lem f.support W]
   exact Finite.image Subtype.val this
 
+lemma Function.locallyFinsupp.locallyFiniteSupport [Zero Y] (f : locallyFinsupp X Y) :
+    LocallyFiniteSupport f.toFun :=
+  fun z ↦ f.supportLocallyFiniteWithinDomain' z (mem_of_subset_of_mem (fun _ a ↦ a) trivial)
+
 namespace Function.locallyFinsuppWithin
 
 /--
