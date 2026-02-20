@@ -228,6 +228,11 @@ theorem coeff_trunc'_mul_trunc'_eq_coeff_mul (n : σ →₀ ℕ)
     (trunc' R n f * trunc' R n g).coeff m = coeff m (f * g) :=
   coeff_truncFinset_mul_truncFinset_eq_coeff_mul (by intro; grind) f g (by simpa)
 
+@[deprecated coeff_trunc'_mul_trunc'_eq_coeff_mul (since := "2026-02-20")]
+theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ) (f g : MvPowerSeries σ R) {m : σ →₀ ℕ}
+    (h : m ≤ n) : coeff m (f * g) = (trunc' R n f * trunc' R n g).coeff m :=
+  (coeff_trunc'_mul_trunc'_eq_coeff_mul n f g h).symm
+
 theorem trunc'_trunc'_pow {n : σ →₀ ℕ} {k : ℕ} (hk : 1 ≤ k) (φ : MvPowerSeries σ R) :
     trunc' R n ((trunc' R n φ) ^ k) = trunc' R n (φ ^ k) :=
   truncFinset_truncFinset_pow (by intro; grind) hk φ
@@ -245,7 +250,7 @@ section
 
 theorem totalDegree_trunc' {n : σ →₀ ℕ} (φ : MvPowerSeries σ R) :
     (trunc' R n φ).totalDegree ≤ n.degree := by
-  simpa [← sup_Iic_of_monotone n degree degree_mono] using totalDegree_truncFinset ..
+  simpa [← sup_Iic_of_monotone n degree degree_mono] using totalDegree_truncFinset φ
 
 theorem ext_trunc' {f g : MvPowerSeries σ R} : f = g ↔ ∀ n, trunc' R n f = trunc' R n g := by
   refine ⟨fun h => by simp [h], fun h => ?_⟩
