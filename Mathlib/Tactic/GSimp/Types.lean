@@ -1,6 +1,11 @@
+/-
+Copyright (c) 2026 Jovan Gerbscheid. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jovan Gerbscheid
+-/
 module
 
-public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Tactic.GSimp.GSimpTheorems
 
 public meta section
 
@@ -86,71 +91,30 @@ structure Config where
   Otherwise, when it is `false`, it iteratively applies this simplification procedure.
   -/
   singlePass : Bool := false
-
-abbrev GSimpTheoremKey := DiscrTree.Key
-
-/--
-The fields `levelParams` and `proof` are used to encode the proof of the simp theorem.
-If the `proof` is a global declaration `c`, we store `Expr.const c []` at `proof` without the
-universe levels, and `levelParams` is set to `#[]`
-When using the lemma, we create fresh universe metavariables.
-Motivation: most simp theorems are global declarations,
-and this approach is faster and saves memory.
-
-The field `levelParams` is not empty only when we elaborate an expression provided by the user,
-and it contains universe metavariables.
-Then, we use `abstractMVars` to abstract the universe metavariables and create new fresh universe
-parameters that are stored at the field `levelParams`.
--/
-structure GSimpTheorem where
-  relation : Name
-  inv : Bool
-  keys : Array GSimpTheoremKey := #[]
   /--
-  It stores universe parameter names for universe polymorphic proofs.
-  Recall that it is non-empty only when we elaborate an expression provided by the user.
-  When `proof` is just a constant,
-  we can use the universe parameter names stored in the declaration.
+  If `failIfUnchanged` is `true` (default: `true`), then calls to `simp`, `dsimp`, or `simp_all`
+  will fail if they do not make progress.
   -/
-  levelParams : Array Name := #[]
-  proof : Expr
-  priority : Nat  := eval_prio default
-  post : Bool := true
-  /-- `perm` is true if lhs and rhs are identical modulo permutation of variables. -/
-  perm : Bool := false
+  failIfUnchanged   : Bool := true
   /--
-  `origin` is mainly relevant for producing trace messages.
-  It is also viewed an `id` used to "erase" `simp` theorems from `SimpTheorems`.
+  When `index` (default : `true`) is `false`, `simp` will only use the root symbol
+  to find candidate `simp` theorems. It approximates Lean 3 `simp` behavior.
   -/
-  origin : Origin
-  deriving Inhabited
+  index             : Bool := true
 
-abbrev GSimpTheoremTree := NameMap (DiscrTree GSimpTheorem)
-
-/--
-The theorems in a gsimp set.
--/
-structure GSimpTheorems where
-  pre : GSimpTheoremTree := {}
-  post : GSimpTheoremTree := {}
-  lemmaNames : PHashSet Origin := {}
-  /--
-  Constants (and let-declaration `FVarId`) to unfold.
-  When `zetaDelta := false`, the simplifier will expand a let-declaration if it is in this set.
-  -/
-  toUnfold : PHashSet Name := {}
-  erased : PHashSet Origin := {}
-  toUnfoldThms : PHashMap Name (Array Name) := {}
-  deriving Inhabited
 
 structure Context where
-  config : Config := {}
+  config : Config
   gsimpTheorems : GSimpTheorems
   gcongrTheorems : GCongr.GCongrLemmas
+  /-- The index in the array of caches that is relevant to the current relation. -/
   idx : CacheIndex
+  /-- The current relation. -/
   rel : Expr
+  /-- The name of the current relation. -/
   relName : Name
-  inv : Bool
+  /-- Whether we are using the relation in the reverse direction. -/
+  inv : Bool := false
 
 
 private opaque MethodsRefPointed : NonemptyType.{0}
@@ -163,12 +127,22 @@ instance : Nonempty MethodsRef :=
 /-- The monad used by `gsimp`. -/
 abbrev GSimpM := ReaderT MethodsRef <| ReaderT Context StateRefT State MetaM
 
+def getContext : GSimpM Context := readThe Context
 
 def getGCongrTheorems : GSimpM GCongr.GCongrLemmas :=
-  return (← readThe Context).gcongrTheorems
+  return (← getContext).gcongrTheorems
 
 def getConfig : GSimpM Config :=
-  return (← readThe Context).config
+  return (← getContext).config
+
+def isInv : GSimpM Bool :=
+  return (← getContext).inv
+
+def withContra {α} (isContra : Bool) (x : GSimpM α) : GSimpM α :=
+  if isContra then
+    withTheReader Context (fun ctx ↦ { ctx with inv := !ctx.inv }) x
+  else
+    x
 
 @[inline] def withFreshCache {α} (x : GSimpM α) : GSimpM α := do
   let cacheSaved := (← get).cache
@@ -177,7 +151,7 @@ def getConfig : GSimpM Config :=
 
 def getCacheIdx (rel : Expr) : GSimpM CacheIndex := do
   let c := (← get).cache
-  if (← readThe Context).inv then
+  if ← isInv then
     if let some idx := c.invRelMap[rel]? then
       return idx
     else
@@ -212,7 +186,7 @@ def Result.getProof (rel : Expr) (idx : CacheIndex) (r : Result) : GSimpM Expr :
   | none => return .app (← getRfl rel idx) r.expr
 
 /-- `trans` is assumed to have type `∀ a b c, a ~ b → b ~ c → a ~ c`. -/
-def Result.mkTrans (e rel : Expr) (inv : Bool) (idx : CacheIndex) (r₁ r₂ : Result) :
+def Result.mkTrans (e rel : Expr) (idx : CacheIndex) (r₁ r₂ : Result) :
     GSimpM Result := do
   match r₁.proof? with
   | none => return r₂
@@ -220,20 +194,20 @@ def Result.mkTrans (e rel : Expr) (inv : Bool) (idx : CacheIndex) (r₁ r₂ : R
     | none => return { r₂ with proof? := p₁ }
     | some p₂ =>
       let trans ← getTrans rel idx
-      if inv then
+      if ← isInv then
         return { r₂ with proof? := mkApp5 trans r₂.expr r₁.expr e p₂ p₁ }
       else
         return { r₂ with proof? := mkApp5 trans e r₁.expr r₂.expr p₁ p₂ }
 
 /-- `symmRel` is assumed to have type `∀ a b, a ~ b → b ~ a`. -/
-def mkSymm (e symmRel : Expr) (inv : Bool) (r : Result) : Result :=
+def mkSymm (e symmRel : Expr) (r : Result) : GSimpM Result := do
   match r.proof? with
-  | none => r
+  | none => return r
   | some p =>
-    if inv then
-      { r with proof? := mkApp3 symmRel r.expr e p}
+    if ← isInv then
+      return { r with proof? := mkApp3 symmRel r.expr e p}
     else
-      { r with proof? := mkApp3 symmRel e r.expr p }
+      return { r with proof? := mkApp3 symmRel e r.expr p }
 
 /--
 Result type for a simplification procedure. We have `pre` and `post` simplification procedures.
