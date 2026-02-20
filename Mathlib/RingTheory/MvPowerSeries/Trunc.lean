@@ -250,8 +250,7 @@ section
 
 theorem totalDegree_trunc' {n : σ →₀ ℕ} (φ : MvPowerSeries σ R) :
     (trunc' R n φ).totalDegree ≤ n.degree := by
-  rw [← sup_Iic_of_monotone n degree degree_mono]
-  exact totalDegree_truncFinset φ
+  simpa [← sup_Iic_of_monotone n degree degree_mono] using totalDegree_truncFinset φ
 
 theorem ext_trunc' {f g : MvPowerSeries σ R} : f = g ↔ ∀ n, trunc' R n f = trunc' R n g := by
   refine ⟨fun h => by simp [h], fun h => ?_⟩
