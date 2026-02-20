@@ -72,7 +72,7 @@ structure Grading [AddMonoid Z] (N : Type*) where
     {c : AlgebraicCycle X Z | ∀ x ∈ c.support, dim x = d} := by aesop
 
 /--
-Subgroup of cycles of pure dimension `d`.
+Submonoid of cycles of pure dimension `d`.
 -/
 def dimensionGradingAddSubmonoid [AddMonoid Z] (d : ℕ∞) :
     AddSubmonoid (AlgebraicCycle X Z) where
@@ -98,6 +98,34 @@ noncomputable
 def dimensionGrading [AddMonoid Z] : Grading X Z ℕ∞ where
   dim := Order.height
   homogeneousCycles := dimensionGradingAddSubmonoid X Z
+
+/--
+Submonoid of cycles of pure codimension `d`.
+-/
+def codimensionGradingAddSubmonoid [AddMonoid Z] (d : ℕ∞) :
+    AddSubmonoid (AlgebraicCycle X Z) where
+  carrier := {c : AlgebraicCycle X Z | ∀ x ∈ c.support, coheight x = d}
+  add_mem' c₁ c₂ := by
+    rename_i a b
+    simp_all only [Function.mem_support, ne_eq, mem_setOf_eq,
+      Function.locallyFinsuppWithin.coe_add, Pi.add_apply]
+    intro x hx
+    have : ¬ a x = 0 ∨ ¬ b x = 0 := by
+      by_contra h
+      simp_all
+    exact Or.elim this (c₁ x) (c₂ x)
+  zero_mem' := by simp
+
+/--
+Grading on `AlgebraicCycle X Z` by codimension, where codimension of a point is defined to be the
+coheight in the specialization order. Note this notion of codimension falls apart a bit outside of
+contexts where there are some equidimensionality hypotheses. In these contexts, the theory of
+dimension functions is more appropriate to use.
+-/
+noncomputable
+def codimensionGrading [AddMonoid Z] : Grading X Z ℕ∞ where
+  dim := Order.coheight
+  homogeneousCycles := codimensionGradingAddSubmonoid X Z
 
 variable {X Z}
 
