@@ -66,6 +66,12 @@ class IsOrderedCancelMonoid (α : Type*) [CommMonoid α] [PartialOrder α] exten
   protected le_of_mul_le_mul_right : ∀ a b c : α, b * a ≤ c * a → b ≤ c := fun a b c h ↦ by
     rw [mul_comm _ a, mul_comm _ a] at h; exact le_of_mul_le_mul_left a b c h
 
+instance [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
+    Lean.Grind.OrderedAdd α where
+  add_le_left_iff {a b} c := ⟨
+    fun h ↦ IsOrderedAddMonoid.add_le_add_left a b h c,
+    IsOrderedCancelAddMonoid.le_of_add_le_add_right c a b⟩
+
 section IsOrderedCancelMonoid
 variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
 
