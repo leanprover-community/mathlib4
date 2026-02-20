@@ -30,7 +30,7 @@ Description of Latin Squares
 ## TODO
 
 * [DONE] Add theorem that a k-1 × n Latin rectangle can be extended to a k × n Latin rectangle.
-* Corollary, any k x n Latin rectangle can be extneded to a Latin square.
+* [DONE] Corollary, any k x n Latin rectangle can be extneded to a Latin square.
 * Add that a n x n Latin rectangle is a Latin square.
   This will lead to a computable definition of Latin square.
 * Add Ryser's theorem using partial Latin squares.
@@ -878,3 +878,6 @@ theorem latin_rectangle_extends_to_latin_square
           obtain ⟨ A'', hA'' ⟩ := ih
           use A''
           exact subrect_transitive hA hA''
+
+#print axioms latin_rectangle_extends_to_latin_square
+
