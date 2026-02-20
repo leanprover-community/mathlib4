@@ -44,6 +44,8 @@ This property is also called US space or semi-hausdorff space in the literature.
 
 @[expose] public section
 
+universe u
+
 open Topology Filter Function
 
 variable (X : Type*) {Y : Type*} [TopologicalSpace X]
@@ -89,7 +91,7 @@ instance ULift.instSeqT2Space [SeqT2Space X] : SeqT2Space (ULift X) :=
   IsEmbedding.uliftDown.seqT2Space
 
 /-- Products of sequentially T₂ spaces are sequentially T₂. -/
-instance Pi.seqT2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
+instance Pi.seqT2Space {Y : X → Type u} [∀ a, TopologicalSpace (Y a)]
     [∀ a, SeqT2Space (Y a)] : SeqT2Space (∀ a, Y a) := by
   constructor
   intro f _ _ ha hb
