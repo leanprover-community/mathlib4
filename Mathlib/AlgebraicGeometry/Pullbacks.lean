@@ -271,7 +271,6 @@ def gluedLiftPullbackMap (i j : 𝒰.I₀) :
   · simpa using pullback.condition
   · simp only [Category.comp_id, Category.id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem gluedLiftPullbackMap_fst (i j : 𝒰.I₀) :
     gluedLiftPullbackMap 𝒰 f g s i j ≫ pullback.fst _ _ =

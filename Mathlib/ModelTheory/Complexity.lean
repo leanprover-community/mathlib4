@@ -134,7 +134,6 @@ theorem IsPrenex.induction_on_all_not {P : ∀ {n}, L.BoundedFormula α n → Pr
     (hn : ∀ {m} {ψ : L.BoundedFormula α m}, P ψ → P ψ.not) : P φ :=
   IsPrenex.recOn h hq (fun _ => ha) fun _ ih => hn (ha (hn ih))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsPrenex.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex)
     (f : α → β ⊕ (Fin n)) : (φ.relabel f).IsPrenex :=
   IsPrenex.recOn h (fun h => (h.relabel f).isPrenex) (fun _ h => by simp [h.all])
