@@ -7538,6 +7538,7 @@ public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Separation.SeparatedNhds
 public import Mathlib.Topology.Sequences
+public import Mathlib.Topology.SequentiallyHausdorff
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.CompactOpenCovered
 public import Mathlib.Topology.Sets.Compacts
