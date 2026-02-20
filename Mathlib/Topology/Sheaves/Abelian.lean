@@ -34,18 +34,18 @@ variable {X : TopCat.{u}}
 
 section
 
-variable {A : Type v₁} [Category.{v₂} A] [HasSheafify (Opens.grothendieckTopology X) A] [Abelian A]
+variable {C : Type v₁} [Category.{v₂} C] [HasSheafify (Opens.grothendieckTopology X) C] [Abelian C]
 
-noncomputable instance : Abelian (Presheaf A X) := inferInstanceAs (Abelian (_ ⥤ _))
+noncomputable instance : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤ _))
 
 namespace Sheaf
 
-instance : Abelian (Sheaf A X) := inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
+instance : Abelian (Sheaf C X) := inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
 
-instance : (Sheaf.forget A X).Additive where
+instance : (Sheaf.forget C X).Additive where
 
-instance [Category.{u} A] [Abelian A] [IsGrothendieckAbelian.{u} A]
-    [HasSheafify (Opens.grothendieckTopology X) A] : IsGrothendieckAbelian.{u} (Sheaf A X) :=
+instance [Category.{u} C] [Abelian C] [IsGrothendieckAbelian.{u} C]
+    [HasSheafify (Opens.grothendieckTopology X) C] : IsGrothendieckAbelian.{u} (Sheaf C X) :=
   inferInstanceAs (IsGrothendieckAbelian (CategoryTheory.Sheaf _ _))
 
 end Sheaf
