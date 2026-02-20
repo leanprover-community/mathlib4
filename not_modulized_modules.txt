@@ -1,11 +1,5 @@
 not modulized: MathlibTest/zmod.lean (compiler bug!)
-not modulized: MathlibTest/Clean.lean
-not modulized: MathlibTest/Nat/log.lean
-not modulized: MathlibTest/Real.lean
-not modulized: MathlibTest/CalcQuestionMark.lean
-not modulized: MathlibTest/FBinop.lean
 not modulized: MathlibTest/LibraryRewrite.lean
-not modulized: MathlibTest/peel.lean
 not modulized: MathlibTest/ring.lean
 not modulized: MathlibTest/apply_rules.lean
 not modulized: MathlibTest/MaxPowDiv.lean
@@ -15,12 +9,10 @@ not modulized: MathlibTest/lift.lean
 not modulized: MathlibTest/GuardGoalNums.lean
 not modulized: MathlibTest/linear_combination.lean
 not modulized: MathlibTest/says.lean
-not modulized: MathlibTest/Use.lean
 not modulized: MathlibTest/search/BestFirst.lean
 not modulized: MathlibTest/DefEqTransformations.lean
 not modulized: MathlibTest/norm_num_rpow.lean
 not modulized: MathlibTest/register_try_tactic.lean
-not modulized: MathlibTest/Replace.lean
 not modulized: MathlibTest/Find.lean
 not modulized: MathlibTest/matrix.lean
 not modulized: MathlibTest/TypeCheck.lean
@@ -29,7 +21,6 @@ not modulized: MathlibTest/ClearExcept.lean
 not modulized: MathlibTest/ImplicitUniverses.lean
 not modulized: MathlibTest/IsBoundedDefault.lean
 not modulized: MathlibTest/nontriviality.lean
-not modulized: MathlibTest/choose.lean
 not modulized: MathlibTest/Explode.lean
 not modulized: MathlibTest/factorial.lean
 not modulized: MathlibTest/symbolFrequency.lean
@@ -251,7 +242,6 @@ not modulized: MathlibTest/ExtractGoal.lean
 not modulized: MathlibTest/DeprecateTo.lean
 not modulized: MathlibTest/norm_num_ordinal.lean
 not modulized: MathlibTest/TransImports.lean
-not modulized: MathlibTest/Rify.lean
 not modulized: MathlibTest/StacksAttribute.lean
 not modulized: MathlibTest/NoncommRing.lean
 not modulized: MathlibTest/abel.lean
@@ -264,5 +254,5 @@ not modulized: MathlibTest/byContra.lean
 not modulized: MathlibTest/observe.lean
 not modulized: MathlibTest/Header.lean
 not modulized: MathlibTest/coe.lean
-not modulized: MathlibTest/SplitIfs.lean
+not modulized: MathlibTest/SplitIfs.lean (cannot use `#print axioms` in a `module`)
 not modulized: MathlibTest/delaborators.lean

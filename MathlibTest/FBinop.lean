@@ -1,9 +1,10 @@
+module
 import Mathlib.Tactic.FBinop
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.SetLike.Basic
 
-private axiom test_sorry : ∀ {α}, α
+axiom test_sorry : ∀ {α}, α
 universe u v w
 set_option autoImplicit true
 
@@ -15,7 +16,7 @@ class SProd' (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   sprod : α → β → γ
 
 -- This notation binds more strongly than (pre)images, unions and intersections.
-@[inherit_doc SProd'.sprod] infixr:82 " ×ˢ' " => SProd'.sprod
+@[inherit_doc SProd'.sprod] local infixr:82 " ×ˢ' " => SProd'.sprod
 macro_rules | `($x ×ˢ' $y)   => `(fbinop% SProd'.sprod $x $y)
 
 @[default_instance]

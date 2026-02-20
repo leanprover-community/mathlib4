@@ -1,12 +1,7 @@
-/-
-! This file was ported from Lean 3 source file `test/real.lean`
-! leanprover-community/mathlib commit d7943885503965d07ccaeb390d65fbc3f45962e6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
--/
+module
 import Mathlib.Data.Real.Basic
 
-private axiom test_sorry : ∀ {α}, α
+axiom test_sorry : ∀ {α}, α
 unsafe def testRepr (r : ℝ) (s : String) : Lean.Elab.Command.CommandElabM Unit :=
 unless toString (repr r) = s do throwError "got {repr r}"
 
