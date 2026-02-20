@@ -113,6 +113,7 @@ section
 
 variable {M : Type*} [TopologicalSpace M] [Mul M]
 
+@[to_additive]
 instance [ContinuousMul M] : SeparatelyContinuousMul M where
   continuous_const_mul := continuous_const.mul continuous_id
   continuous_mul_const := continuous_id.mul continuous_const
@@ -129,12 +130,12 @@ theorem continuous_mul_const (m : M) : Continuous (· * m) :=
 
 @[to_additive]
 theorem Filter.Tendsto.const_mul {α : Type*} {f : α → M} {x : Filter α} {a : M}
-    (hf : Tendsto f x (𝓝 a)) (b : M) : Tendsto (b * f ·) x (𝓝 (b * a)) :=
+    (b : M) (hf : Tendsto f x (𝓝 a)) : Tendsto (b * f ·) x (𝓝 (b * a)) :=
   continuous_const_mul  b |>.tendsto _ |>.comp hf
 
 @[to_additive]
 theorem Filter.Tendsto.mul_const {α : Type*} {f : α → M} {x : Filter α} {a : M}
-    (hf : Tendsto f x (𝓝 a)) (b : M) : Tendsto (f · * b) x (𝓝 (a * b)) :=
+    (b : M) (hf : Tendsto f x (𝓝 a)) : Tendsto (f · * b) x (𝓝 (a * b)) :=
   continuous_mul_const b |>.tendsto _ |>.comp hf
 
 variable {X : Type*} [TopologicalSpace X] {f g : X → M} {s : Set X} {x : X}
@@ -150,22 +151,22 @@ theorem Continuous.const_mul (hf : Continuous f) (b : M) : Continuous (b * f ·)
 @[to_additive (attr := fun_prop)]
 theorem ContinuousWithinAt.mul_const (hf : ContinuousWithinAt f s x) (b : M) :
     ContinuousWithinAt (f · * b) s x :=
-  Filter.Tendsto.mul_const hf b
+  Filter.Tendsto.mul_const b hf
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousWithinAt.const_mul (hf : ContinuousWithinAt f s x) (b : M) :
     ContinuousWithinAt (b * f ·) s x :=
-  Filter.Tendsto.const_mul hf b
+  Filter.Tendsto.const_mul b hf
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousAt.mul_const (hf : ContinuousAt f x) (b : M) :
     ContinuousAt (f · * b) x :=
-  Filter.Tendsto.mul_const hf b
+  Filter.Tendsto.mul_const b hf
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousAt.const_mul (hf : ContinuousAt f x) (b : M) :
     ContinuousAt (b * f ·) x :=
-  Filter.Tendsto.const_mul hf b
+  Filter.Tendsto.const_mul b hf
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousOn.mul_const (hf : ContinuousOn f s) (b : M) :
