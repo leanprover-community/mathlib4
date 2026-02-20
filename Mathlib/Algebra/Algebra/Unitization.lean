@@ -849,6 +849,7 @@ lemma isIdempotentElem_inr_iff (R : Type*) {A : Type*} [MulZeroClass R]
 
 alias ⟨_, IsIdempotentElem.inr⟩ := isIdempotentElem_inr_iff
 
+@[grind =]
 lemma isStarProjection_inr_iff {R A : Type*} [Semiring R] [StarRing R] [NonUnitalSemiring A]
     [StarRing A] [Module R A] {p : A} :
     IsStarProjection (p : Unitization R A) ↔ IsStarProjection p := by
