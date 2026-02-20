@@ -37,6 +37,7 @@ section
 
 open DerivedCategory
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Functor.mapTriangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
     F.mapDerivedCategory.map (triangleOfSESδ hS) =
@@ -84,6 +85,7 @@ lemma Functor.mapTriangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.
   rw [IsIso.eq_comp_inv, ← Q.map_comp,
     CochainComplex.mappingCone.descShortComplex_mapHomologicalComplex]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Functor.mapShiftedHom_singleδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     {S : ShortComplex C} (hS : S.ShortExact) :
     (F.mapDerivedCategorySingleFunctor 0).inv.app S.X₃ ≫
@@ -238,6 +240,7 @@ end
 
 namespace Abelian.Ext
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mapExt_mk₀_eq_mk₀_map [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} (f : X ⟶ Y) :
     (mk₀ f).mapExactFunctor F = mk₀ (F.map f) := by
   simp only [Ext.mapExactFunctor, Functor.comp_obj, Int.cast_ofNat_Int, mk₀]
@@ -261,10 +264,10 @@ lemma mapExt_comp_eq_comp_mapExt [HasExt.{w} C] [HasExt.{w'} D] {X Y Z : C} {a b
     (α.comp β h).mapExactFunctor F = (α.mapExactFunctor F).comp (β.mapExactFunctor F) h := by
   simp only [mapExactFunctor, Functor.comp_obj, comp]
   have h' : b + a = (c : ℤ) := by simp [← h, add_comm]
-  rw [(F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
+  exact (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
     (ComplexShape.up ℤ)).smallShiftedHomMap_comp
     ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y)
-    ((F.mapCochainComplexSingleFunctor 0).app Z) α β h']
+    ((F.mapCochainComplexSingleFunctor 0).app Z) α β h'
 
 attribute [local instance] HasDerivedCategory.standard in
 lemma mapExt_extClass_eq_extClass_map [HasExt.{w} C] [HasExt.{w'} D] {S : ShortComplex C}

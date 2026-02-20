@@ -42,6 +42,7 @@ noncomputable def triangleOfSESδ :
     Q.map (CochainComplex.mappingCone.triangle S.f).mor₃ ≫
     (Q.commShiftIso (1 : ℤ)).hom.app S.X₁
 
+set_option backward.isDefEq.respectTransparency false in
 lemma triangleOfSESδ_naturality {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (hS₁ : S₁.ShortExact)
     (hS₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) : (triangleOfSESδ hS₁) ≫ ((shiftFunctor
     (DerivedCategory C) (1 : ℤ)).map (Q.map f.τ₁)) = (Q.map f.τ₃) ≫ triangleOfSESδ hS₂ := by
