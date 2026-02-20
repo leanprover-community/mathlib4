@@ -61,7 +61,7 @@ inductive StyleError where
   | semicolon
   /-- A unicode character was used that isn't allowed -/
   | unwantedUnicode (c : Char)
-  /-- The triange `▸` followed by a tactic proof -/
+  /-- The triangle `▸` followed by a tactic proof -/
   | triangleRewrite
 
 deriving BEq, Inhabited
