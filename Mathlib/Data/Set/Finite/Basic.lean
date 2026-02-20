@@ -839,6 +839,16 @@ end Infinite
 noncomputable def Infinite.natEmbedding (s : Set α) (h : s.Infinite) : ℕ ↪ s :=
   h.to_subtype.natEmbedding
 
+theorem Infinite.exists_subset_countable_infinite {α : Type u} {s : Set α} (hs : s.Infinite) :
+    ∃ t ⊆ s, t.Countable ∧ t.Infinite := by
+  obtain ⟨f, hf⟩ := Infinite.natEmbedding s hs
+  refine ⟨range (Subtype.val ∘ f), ?_, ?_, ?_⟩
+  · intro _ ⟨y, hy⟩
+    rw [← hy]
+    exact Subtype.coe_prop (f y)
+  · exact countable_range (Subtype.val ∘ f)
+  · exact infinite_range_of_injective <| Injective.comp Subtype.val_injective hf
+
 theorem Infinite.exists_subset_card_eq {s : Set α} (hs : s.Infinite) (n : ℕ) :
     ∃ t : Finset α, ↑t ⊆ s ∧ t.card = n :=
   ⟨((Finset.range n).map (hs.natEmbedding _)).map (Embedding.subtype _), by simp⟩
