@@ -116,7 +116,6 @@ variable [S.FiniteIndex]
 
 attribute [local instance] Subgroup.fintypeQuotientOfFiniteIndex
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
 `S`, and `A` a `k`-linear `S`-representation. This is the `k`-linear map
@@ -132,7 +131,6 @@ noncomputable def coindToInd : coind S.subtype A →ₗ[k] ind S.subtype A where
   map_smul' _ _ := by simpa [Finset.smul_sum] using Finset.sum_congr rfl fun z _ =>
     Quotient.inductionOn z fun _ => by simp
 
-set_option backward.isDefEq.respectTransparency false in
 omit [DecidableRel (QuotientGroup.rightRel S)] in
 lemma coindToInd_of_support_subset_orbit (g : G) (f : coind S.subtype A)
     (hx : f.1.support ⊆ MulAction.orbit S g) :

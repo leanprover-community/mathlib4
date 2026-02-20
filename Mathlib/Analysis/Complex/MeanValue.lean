@@ -32,7 +32,6 @@ For a complex differentiable function `f`, the theorems in this section compute 
 interior of a disk as circle averages of a weighted function.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The **Generalized Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is
 continuous on a closed disc of radius `R` and center `c`, and is complex differentiable at all but
