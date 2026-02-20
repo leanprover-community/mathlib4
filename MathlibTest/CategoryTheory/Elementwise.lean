@@ -1,6 +1,7 @@
 module
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.Algebra.Category.MonCat.Basic
+-- TODO: remove `public`s after #34466 is in release
+public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.Algebra.Category.MonCat.Basic
 
 set_option autoImplicit true
 
