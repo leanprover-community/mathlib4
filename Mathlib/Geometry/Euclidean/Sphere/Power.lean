@@ -121,7 +121,7 @@ theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi {a b c d p : P}
   rw [EuclideanGeometry.angle_eq_pi_iff_sbtw] at hapb hcpd
   exact mul_dist_eq_mul_dist_of_cospherical h hapb.wbtw.mem_affineSpan hcpd.wbtw.mem_affineSpan
 
-private lemma cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_dim_two
+private lemma cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux
     [Fact (finrank ℝ V = 2)] [Oriented ℝ V (Fin 2)] {p₁ p₂ p₃ p₄ p : P}
     (h : dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p)
     (hp₁p₂ : ∠ p₁ p p₂ = π) (hp₃p₄ : ∠ p₃ p p₄ = π) (hn : ¬ Collinear ℝ ({p₁, p, p₃} : Set P)) :
@@ -133,11 +133,10 @@ private lemma cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_dim_two
   have hcol_p₁pp₂ := hp₁p₂.wbtw.collinear
   have hcol_p₃pp₄ := hp₃p₄.wbtw.collinear
   have h_notcol_p₁p₂p₃ : ¬ Collinear ℝ ({p₁, p₂, p₃} : Set P) := by
-    intro hcol
-    suffices hcol : Collinear ℝ ({p₁, p, p₃} : Set P) by grind
-    suffices hcol_all : Collinear ℝ ({p₃, p, p₁, p₂} : Set P) by grind [Collinear.subset _ hcol_all]
-    have hne_p₁p₂ : p₁ ≠ p₂ := hp₁p₂.left_ne_right
-    grind [collinear_insert_insert_of_mem_affineSpan_pair, Collinear.mem_affineSpan_of_mem_of_ne]
+    have : AffineIndependent ℝ ![p₁, p, p₃] := affineIndependent_iff_not_collinear_set.mpr hn
+    rw [← affineIndependent_iff_not_collinear_set]
+    grind [hp₁p₂.left_ne_right, affineIndependent_of_affineIndependent_collinear_ne,
+      AffineIndependent.comm_left, AffineIndependent.comm_right]
   apply cospherical_of_two_zsmul_oangle_eq_of_not_collinear ?_ h_notcol_p₁p₂p₃
   suffices ∡ p₁ p₂ p₃ = ∡ p₁ p₄ p₃ by grind
   suffices ∠ p₁ p₂ p₃ = ∠ p₁ p₄ p₃ by
@@ -173,9 +172,6 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
   have hindep : AffineIndependent ℝ ![p₁, p, p₃] := affineIndependent_iff_not_collinear_set.mpr hn
   set t : Affine.Triangle ℝ P := ⟨_, hindep⟩ with ht
   set S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points) with hS
-  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
-    rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
-    simp⟩
   have hp₂ : p₂ ∈ S := by
     suffices hmem : p₂ ∈ affineSpan ℝ {p₁, p} by exact affineSpan_mono ℝ (by simp [ht]; grind) hmem
     simp [hp₁p₂_sbtw.wbtw.collinear.mem_affineSpan_of_mem_of_ne _ _ _ hp₁p₂_sbtw.left_ne]
@@ -205,7 +201,7 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
       ← s_isom.toAffineMap.affineIndependent_iff s_isom.injective]
     convert hindep
     ext i; fin_cases i <;> rfl
-  exact cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_dim_two h_dist' hp₁'p₂' hp₃'p₄' hncol
+  exact cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux h_dist' hp₁'p₂' hp₃'p₄' hncol
 
 /-- **Intersecting Secants Theorem**. -/
 theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
