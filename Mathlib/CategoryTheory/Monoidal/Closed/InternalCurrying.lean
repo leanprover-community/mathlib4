@@ -33,7 +33,7 @@ def ihomCurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
     (ihom (x ⊗ y)).obj z ⟶ (ihom y).obj ((ihom x).obj z) :=
   curry (curry ((α_ x y _).inv ≫ (ihom.ev _).app z))
 
-lemma internalHomCurry_uncurry_eq (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
+lemma uncurry_ihomCurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
     uncurry (internalHomCurry x y z) = curry ((α_ x y _).inv ≫ (ihom.ev _).app z) :=
   uncurry_curry _
 
