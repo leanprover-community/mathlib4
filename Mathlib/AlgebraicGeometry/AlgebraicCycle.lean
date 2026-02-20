@@ -3,13 +3,15 @@ Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raphael Douglas Giles
 -/
-import Mathlib.AlgebraicGeometry.Fiber
-import Mathlib.AlgebraicGeometry.Morphisms.Proper
-import Mathlib.Combinatorics.Quiver.ReflQuiver
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.Topology.LocallyFinsupp
-import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.DirectSum.Decomposition
+module
+
+public import Mathlib.AlgebraicGeometry.Fiber
+public import Mathlib.AlgebraicGeometry.Morphisms.Proper
+public import Mathlib.Combinatorics.Quiver.ReflQuiver
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.Topology.LocallyFinsupp
+public import Mathlib.Algebra.GradedMonoid
+public import Mathlib.Algebra.DirectSum.Decomposition
 
 /-!
 # Algebraic Cycles
@@ -22,6 +24,8 @@ Here we're making use of the equivalence between irreducible closed subsets of a
 generic points in order to reuse the API in Function.locallyFinsupp, hence the slightly
 nonstandard definition.
 -/
+
+@[expose] public section
 
 open AlgebraicGeometry Set Order LocallyRingedSpace Topology TopologicalSpace
   CategoryTheory
