@@ -4809,6 +4809,7 @@ public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.LinearAlgebra.Matrix.Unique
 public import Mathlib.LinearAlgebra.Matrix.Vec
+public import Mathlib.LinearAlgebra.Matrix.WithConv
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 public import Mathlib.LinearAlgebra.Multilinear.Basis
