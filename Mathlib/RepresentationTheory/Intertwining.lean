@@ -209,10 +209,10 @@ end IntertwiningMap
 
 /-- Equivalence between representations is a bijective intertwining map. -/
 @[ext]
-structure Equiv extends IntertwiningMap ρ σ, V ≃ W
+structure Equiv extends IntertwiningMap ρ σ, V ≃ₗ[A] W
 
-/-- The additive equivalence of types underlying an equivalence of representations. -/
-add_decl_doc Equiv.toEquiv
+/-- Underlying linear isomorphism of an equivalence of representations. -/
+add_decl_doc Equiv.toLinearEquiv
 
 /-- The intertwining map underlying an equivalence of representations. -/
 add_decl_doc Equiv.toIntertwiningMap
@@ -228,29 +228,25 @@ instance : EquivLike (Equiv ρ σ) V W where
   right_inv e := e.right_inv
   coe_injective' _ _ := Equiv.ext
 
-/-- The additive equivalence of types underlying an equivalence of representations. -/
-def toAddEquiv : V ≃+ W := { __ := φ }
+@[simp] lemma coe_toIntertwiningMap : ⇑φ.toIntertwiningMap = ⇑φ := rfl
+
+@[simp] lemma coe_toLinearEquiv : ⇑φ.toLinearEquiv = ⇑φ := rfl
 
 @[simp] lemma coe_toAddEquiv : ⇑φ.toAddEquiv = ⇑φ := rfl
 
-/-- Underlying linear isomorphism of an equivalence of representations. -/
-def toLinearEquiv : V ≃ₗ[A] W :=
-  AddEquiv.toLinearEquiv φ.toAddEquiv φ.toLinearMap.map_smul
+@[simp] lemma coe_toEquiv : ⇑φ.toEquiv = ⇑φ := rfl
+
+@[simp] lemma coe_invFun : φ.invFun = EquivLike.inv φ := rfl
 
 @[simp]
-theorem toLinearEquiv_toLinearMap_eq_toIntertwiningMap_toLinearMap :
+theorem toLinearEquiv_toLinearMap :
   LinearEquiv.toLinearMap φ.toLinearEquiv = φ.toIntertwiningMap.toLinearMap := rfl
 
 @[simp]
 theorem toLinearEquiv_apply (v : V) :
-  (toLinearEquiv φ) v = φ.toIntertwiningMap v := rfl
+  φ.toLinearEquiv v = φ.toIntertwiningMap v := rfl
 
-theorem conj (g : G) : σ g = (toLinearEquiv φ).conj (ρ g) := by
-  rw [LinearMap.ext_iff]
-  intro w
-  simp only [LinearEquiv.conj_apply_apply, toLinearEquiv_apply,
-    φ.toIntertwiningMap.isIntertwining]
-  rw [← toLinearEquiv_apply, LinearEquiv.apply_symm_apply]
+theorem conj_apply_self (g : G) : φ.conj (ρ g) = σ g := by ext; simp [φ.isIntertwining]
 
 end Equiv
 
@@ -264,12 +260,8 @@ variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V] [Ad
 
 /-- dualTensorHom as an equivalence of representations. -/
 noncomputable def dualTensorHom_equivalence : Equiv (tprod ρ.dual σ) (linHom ρ σ) where
-  toEquiv := dualTensorHomEquivOfBasis (R := k) (M := V) (N := W)
+  toLinearEquiv := dualTensorHomEquivOfBasis (R := k) (M := V) (N := W)
       (b := Module.Free.chooseBasis k V)
-  map_add' := dualTensorHomEquivOfBasis (R := k) (M := V) (N := W)
-      (b := Module.Free.chooseBasis k V).map_add
-  map_smul' := dualTensorHomEquivOfBasis (R := k) (M := V) (N := W)
-      (b := Module.Free.chooseBasis k V).map_smul
   isIntertwining' g v := by
     simpa [tprod_apply] using
       (congrArg (fun f => f v)
