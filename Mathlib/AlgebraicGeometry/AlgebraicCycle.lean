@@ -51,16 +51,25 @@ abbrev AlgebraicCycle (X : Scheme.{u}) (Z : Type*) [Zero Z] :=
 
 namespace AlgebraicCycle
 
-/-
+/--
 In the context of algebraic cycles, gradings tend to be defined using functions on
 the components of the cycles (mainly different notions of dimension and codimension).
 Here we define a notion of grading defined by such a dimension/codimension function.
 -/
 structure Grading [AddMonoid Z] (N : Type*) where
-  f : X → N
-  mon (d : N) : AddSubmonoid (AlgebraicCycle X Z)
-  mon_carrier (d : N) : (mon d).carrier =
-    {c : AlgebraicCycle X Z | ∀ x ∈ c.support, f x = d} := by aesop
+  /--
+  The "dimension function" associated with the grading
+  -/
+  dim : X → N
+  /--
+  Given `d` in `N`, we have an additive submonoid of homogeneous cycles
+  -/
+  homogeneousCycles (d : N) : AddSubmonoid (AlgebraicCycle X Z)
+  /--
+  Proof that `mon` is the
+  -/
+  homogeneousCycles_carrier (d : N) : (homogeneousCycles d).carrier =
+    {c : AlgebraicCycle X Z | ∀ x ∈ c.support, dim x = d} := by aesop
 
 /--
 Subgroup of cycles of pure dimension `d`.
@@ -87,8 +96,8 @@ dimension functions is more appropriate to use.
 -/
 noncomputable
 def dimensionGrading [AddMonoid Z] : Grading X Z ℕ∞ where
-  f := Order.height
-  mon := dimensionGradingAddSubmonoid X Z
+  dim := Order.height
+  homogeneousCycles := dimensionGradingAddSubmonoid X Z
 
 variable {X Z}
 
@@ -154,7 +163,13 @@ The class `HasDegree Z` states the properties needed of such a degree function t
 notion of pushforward from `AlgebraicCycle X Z` to `AlgebraicCycle Y Z`.
 -/
 class HasDegree (Z : Type*) [Semiring Z] where
+  /--
+  The degree of a morrphism at a point
+  -/
   degree : ∀ {X Y : Scheme.{u}}, (X ⟶ Y) → X → Z
+  /--
+  The degree of the identity at any point is `1`.
+  -/
   degree_one {X : Scheme.{u}} (z : X) : degree (𝟙 X) z = 1
 
 
@@ -167,7 +182,7 @@ noncomputable
 def mapAux {N : Type*} [Semiring Z] [HasDegree Z] {Y : Scheme}
     (gx : Grading X Z N) (gy : Grading Y Z N)
     (f : X ⟶ Y) (x : X) : Z :=
-  if gx.f x = gy.f (f.base x) then HasDegree.degree f x else 0
+  if gx.dim x = gy.dim (f.base x) then HasDegree.degree f x else 0
 
 section map
 
@@ -265,9 +280,10 @@ def map (gx : Grading X Z N) (gy : Grading Y Z N) : AlgebraicCycle Y Z
 /--
 Pushforward preserves cycles of pure dimension `d` in the dimension grading.
 -/
-noncomputable
-def map_homogeneneous {d : ℕ∞} (c : AlgebraicCycle X Z) (hc : c ∈ (dimensionGrading X Z).mon d) :
-    map f c (dimensionGrading X Z) (dimensionGrading Y Z) ∈ (dimensionGrading Y Z).mon d := by
+lemma map_homogeneneous {d : ℕ∞} (c : AlgebraicCycle X Z)
+    (hc : c ∈ (dimensionGrading X Z).homogeneousCycles d) :
+    map f c (dimensionGrading X Z) (dimensionGrading Y Z) ∈
+    (dimensionGrading Y Z).homogeneousCycles d := by
   simp only [dimensionGrading]
   intro y hy
   simp only [map, preimageSupport, mapAux, mul_ite, mul_zero, Function.mem_support,
