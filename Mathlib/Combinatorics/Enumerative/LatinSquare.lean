@@ -846,7 +846,7 @@ theorem latin_rectangle_extends_to_latin_square
         Nat.strong_induction_on generalizing k A with
       | h a ih => 
         by_cases h_full : Fintype.card k = Fintype.card n
-        . let f : k ≃ n := by sorry
+        . let f : k ≃ n := Fintype.equivOfCardEq h_full
           let A' := latin_rectangle_isomorphism f (Equiv.refl n) (Equiv.refl α) A
           have h_sim : A ≃◻ A' := by 
             simp [LR_equiv_iso f (Equiv.refl n) (Equiv.refl α) A,A']
@@ -855,11 +855,11 @@ theorem latin_rectangle_extends_to_latin_square
         . set k' := Option k with hk'
           letI : Fintype k' := (inferInstance : Fintype (Option k))
           have hk'_card := Fintype.card_option (α := k)
-          have hk'_le : Fintype.card k ≤ Fintype.card k' := by sorry
-          have h_k_lt_n : Fintype.card k < Fintype.card n := by sorry
-          have h_k'_le_n : Fintype.card k' ≤ Fintype.card n := by sorry
           replace hk' := hk'.symm
           simp only [hk'] at hk'_card
+          have hk'_le : Fintype.card k ≤ Fintype.card k' := by omega
+          have h_k_lt_n : Fintype.card k < Fintype.card n := by omega
+          have h_k'_le_n : Fintype.card k' ≤ Fintype.card n := by omega
           set m := Fintype.card n - Fintype.card k' with hm
           have hm_lt : m < a := by omega
           have ι_h := Function.Embedding.nonempty_of_card_le hk'_le
