@@ -675,14 +675,14 @@ lemma Integrable.measure_ge_lt_top {f : α → β} [Lattice β] [HasSolidNorm β
     μ {a : α | ε ≤ f a} < ∞ :=
   lt_of_le_of_lt (measure_mono fun x hx => norm_le_norm_of_abs_le_abs <|
     (abs_of_nonneg ε_pos.le).symm ▸ hx.trans (le_abs_self (f x)))
-    (hf.measure_norm_ge_lt_top (by simp; grind))
+    (hf.measure_norm_ge_lt_top (by positivity [ε_pos.ne']))
 
 /-- If `f` is integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
 measure. -/
 lemma Integrable.measure_le_lt_top {f : α → β} [Lattice β] [HasSolidNorm β] [AddLeftMono β]
     (hf : Integrable f μ) {c : β} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
-  have : 0 < ‖c‖ := by simp; grind
+  have : 0 < ‖c‖ := by positivity [c_neg.ne]
   refine lt_of_le_of_lt (measure_mono fun x hx => ?_) (hf.measure_norm_ge_lt_top this)
   have : -c ≤ -f x := by simp; grind
   exact norm_le_norm_of_abs_le_abs <| abs_of_nonpos c_neg.le ▸ this.trans (neg_le_abs _)
@@ -708,6 +708,7 @@ theorem LipschitzWith.integrable_comp_iff_of_antilipschitz {K K'} {f : α → β
     Integrable (g ∘ f) μ ↔ Integrable f μ := by
   simp [← memLp_one_iff_integrable, hg.memLp_comp_iff_of_antilipschitz hg' g0]
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem Integrable.real_toNNReal {f : α → ℝ} (hf : Integrable f μ) :
     Integrable (fun x => ((f x).toNNReal : ℝ)) μ := by
@@ -832,6 +833,7 @@ theorem memL1_smul_of_L1_withDensity {f : α → ℝ≥0} (f_meas : Measurable f
 
 variable (μ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `u ↦ f • u` is an isometry between the `L^1` spaces for `μ.withDensity f` and `μ`. -/
 noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f) :
     Lp E 1 (μ.withDensity fun x => f x) →ₗᵢ[ℝ] Lp E 1 μ where

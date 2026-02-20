@@ -74,6 +74,7 @@ open MorphismProperty
 
 variable [Limits.HasPullbacks C] [J.IsStableUnderBaseChange]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `J` is a subcanonical precoverage, isomorphisms are local on the target for `J`. -/
 instance : (isomorphisms C).IsLocalAtTarget J := by
   refine .mk_of_isStableUnderBaseChange fun {X Y} f 𝒰 (H : ∀ i, IsIso _) ↦ ⟨?_, ?_, ?_⟩
@@ -85,6 +86,7 @@ instance : (isomorphisms C).IsLocalAtTarget J := by
   · exact (𝒰.pullback₁ f).hom_ext fun i ↦ by simp [pullback.condition_assoc]
   · exact 𝒰.hom_ext fun i ↦ by simp [pullback.condition]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 To show that
 ```
