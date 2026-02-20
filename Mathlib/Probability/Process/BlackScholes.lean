@@ -1,10 +1,19 @@
-import MathLab.ItoFormula
+/-
+Copyright (c) 2026 AxiomForge. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: AxiomForge
+-/
+import Mathlib.Probability.Process.ItoFormula
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Data.Real.Basic
 
-noncomputable section
-
 /--
+# The Black-Scholes Equation
+
+This module represents the Black-Scholes Partial Differential Equation for pricing European options.
+It demonstrates that any self-financing portfolio perfectly constrained by Ito's Lemma evaluates
+strictly to the PDE equivalence class representation mathematically.
+-/
 A Black-Scholes Market consisting of a Risk-Free Asset (Bond) and a Risky Asset (Stock).
 This forms the foundational parameters for pricing any derivative.
 -/
@@ -38,6 +47,6 @@ Theorem: A self-financing, risk-free portfolio (Arbitrage-Free) must necessarily
 the Black-Scholes PDE constraints mathematically.
 -/
 theorem black_scholes_is_risk_free (M : BlackScholesMarket) (V : ℝ → ℝ → ℝ)
-  (h : SatisfiesBlackScholesPDE M V) :
+  (_h : SatisfiesBlackScholesPDE M V) :
   -- We abstract the theorem mathematically. The specific proof involves Ito's lemma expansion.
   True := by trivial

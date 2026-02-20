@@ -1,11 +1,24 @@
+/-
+Copyright (c) 2026 AxiomForge. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: AxiomForge
+-/
 import Mathlib.Probability.Process.Adapted
 import Mathlib.Probability.Process.Stopping
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.Data.Real.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Basic
-import MathLab.BrownianMotion
+import Mathlib.Probability.Process.BrownianMotion
 import Aesop
 
+/--
+# Ito Integral for Elementary Predictable Processes
+
+This module defines the discrete summation representing the stochastic integral
+of an elementary predictable process with respect to a Wiener Process (Brownian Motion).
+-/
+
+set_option linter.unusedSectionVars false
 noncomputable section
 open MeasureTheory ProbabilityTheory TopologicalSpace Filter Finset
 open scoped Topology ENNReal MeasureTheory BigOperators
@@ -59,4 +72,5 @@ theorem itoIntegralElementary_smul (c : ℝ) (H : ElementaryPredictableProcess �
   -- Use Mathlib's algebraic summation pull-out rule for multiplication
   -- ∑ c * (H * ΔW) = c * ∑ (H * ΔW)
   simp_rw [mul_assoc]
-  exact (Finset.mul_sum (Finset.univ) (fun i => H.values i ω * (W (H.times i.succ) ω - W (H.times i.castSucc) ω)) c).symm
+  exact (Finset.mul_sum (Finset.univ) (fun i =>
+    H.values i ω * (W (H.times i.succ) ω - W (H.times i.castSucc) ω)) c).symm

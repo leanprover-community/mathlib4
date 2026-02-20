@@ -1,6 +1,18 @@
-import MathLab.BrownianMotion
+/-
+Copyright (c) 2026 AxiomForge. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: AxiomForge
+-/
+import Mathlib.Probability.Process.BrownianMotion
 import Mathlib.Data.Real.Basic
 import Aesop
+
+/--
+# Ito's Lemma / Stochastic Formula
+
+This module establishes the core algebraic substitution rules for Ito Calculus.
+Most importantly it proves (dW)² = dt.
+-/
 
 namespace StochasticCalculus
 
@@ -71,7 +83,8 @@ their cross variation dx * dy is purely determined by their volatilities (b * d)
 -/
 theorem ito_cross_variation (a b c d : ℝ) :
   ({ dt_coeff := a, dW_coeff := b } : StochasticDifferential) *
-  ({ dt_coeff := c, dW_coeff := d } : StochasticDifferential) = { dt_coeff := b * d, dW_coeff := 0 } := by
+  ({ dt_coeff := c, dW_coeff := d } : StochasticDifferential) =
+    { dt_coeff := b * d, dW_coeff := 0 } := by
   rfl
 
 end StochasticCalculus

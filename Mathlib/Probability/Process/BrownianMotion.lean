@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 AxiomForge. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: AxiomForge
+-/
 import Mathlib.Probability.Process.Adapted
 import Mathlib.Probability.Process.Stopping
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
@@ -6,6 +11,13 @@ import Mathlib.Analysis.Calculus.FDeriv.Basic
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
 import Mathlib.Probability.Independence.Basic
 import Aesop
+
+/--
+# Brownian Motion (Wiener Process)
+
+This module defines the foundational axioms of the Standard Wiener Process.
+It establishes the core probability measure required for stochastic calculus.
+-/
 
 noncomputable section
 open MeasureTheory ProbabilityTheory TopologicalSpace Filter
