@@ -120,11 +120,11 @@ instance [ContinuousMul M] : SeparatelyContinuousMul M where
 
 variable [SeparatelyContinuousMul M]
 
-@[to_additive (attr := fun_prop)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_const_mul (m : M) : Continuous (m * ·) :=
   SeparatelyContinuousMul.continuous_const_mul
 
-@[to_additive (attr := fun_prop)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_mul_const (m : M) : Continuous (· * m) :=
   SeparatelyContinuousMul.continuous_mul_const
 
@@ -140,11 +140,11 @@ theorem Filter.Tendsto.mul_const {α : Type*} {f : α → M} {x : Filter α} {a 
 
 variable {X : Type*} [TopologicalSpace X] {f g : X → M} {s : Set X} {x : X}
 
-@[to_additive (attr := fun_prop)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.mul_const (hf : Continuous f) (b : M) : Continuous (f · * b) :=
   continuous_mul_const b |>.comp hf
 
-@[to_additive (attr := fun_prop)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.const_mul (hf : Continuous f) (b : M) : Continuous (b * f ·) :=
   continuous_const_mul b |>.comp hf
 
