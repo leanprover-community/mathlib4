@@ -474,6 +474,7 @@ private theorem inner_le_Lp_mul_Lp_of_norm_eq_zero (f g : ι → ℝ≥0) {p q :
   rw [sum_eq_zero_iff] at hf
   exact (rpow_eq_zero_iff.mp (hf i his)).left
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Hölder inequality**: The scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. Version for sums over finite sets,
 with `ℝ≥0`-valued functions. -/
@@ -530,6 +531,7 @@ theorem Lr_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q r : ℝ} (hpqr : p.HolderTri
   simp only [← rpow_mul, mul_rpow]
   field_simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Weighted Hölder inequality**. -/
 lemma inner_le_weight_mul_Lp (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι → ℝ≥0) :
     ∑ i ∈ s, w i * f i ≤ (∑ i ∈ s, w i) ^ (1 - p⁻¹) * (∑ i ∈ s, w i * f i ^ p) ^ p⁻¹ := by
@@ -572,6 +574,7 @@ theorem summable_and_Lr_rpow_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q r : �
   have H₂ : Summable _ := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
   exact ⟨H₂, H₂.tsum_le_of_sum_le H₁⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `NNReal`-valued
 functions. For an alternative version, convenient if the infinite sums are already expressed as
@@ -684,6 +687,7 @@ theorem Lp_add_le (f g : ι → ℝ≥0) {p : ℝ} (hp : 1 ≤ p) :
   exact
     add_le_add ((isGreatest_Lp s f hpq).2 ⟨φ, hφ, rfl⟩) ((isGreatest_Lp s g hpq).2 ⟨φ, hφ, rfl⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Minkowski inequality**: the `L_p` seminorm of the infinite sum of two vectors is less than or
 equal to the infinite sum of the `L_p`-seminorms of the summands, if these infinite sums both
 exist. A version for `NNReal`-valued functions. For an alternative version, convenient if the
@@ -768,6 +772,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
   push_cast at this
   exact this
 
+set_option backward.isDefEq.respectTransparency false in
 -- for some reason `exact_mod_cast` can't replace this argument
 /-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `Real`-valued functions. -/
@@ -1006,6 +1011,7 @@ theorem inner_le_Lp_mul_Lq (hpq : p.HolderConjugate q) :
     · refine Finset.sum_congr rfl fun i hi => ?_
       simp [H'.1 i hi, H'.2 i hi, -WithZero.coe_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Weighted Hölder inequality**. -/
 lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι → ℝ≥0∞) :
     ∑ i ∈ s, w i * f i ≤ (∑ i ∈ s, w i) ^ (1 - p⁻¹) * (∑ i ∈ s, w i * f i ^ p) ^ p⁻¹ := by
@@ -1069,9 +1075,7 @@ theorem Lp_add_le (hp : 1 ≤ p) :
       (@NNReal.Lp_add_le _ s (fun i => ENNReal.toNNReal (f i)) (fun i => ENNReal.toNNReal (g i)) _
         hp)
   push_cast [ENNReal.coe_rpow_of_nonneg, le_of_lt pos, le_of_lt (one_div_pos.2 pos)] at this
-  convert this using 2 <;> [skip; congr 1; congr 1] <;>
-    · refine Finset.sum_congr rfl fun i hi => ?_
-      simp [H'.1 i hi, H'.2 i hi]
+  simp_all
 
 end ENNReal
 

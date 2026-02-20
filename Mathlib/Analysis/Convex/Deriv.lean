@@ -75,6 +75,7 @@ theorem StrictMonoOn.exists_slope_lt_deriv_aux {x y : ℝ} {f : ℝ → ℝ} (hf
   rw [← ha]
   exact hf'_mono ⟨hxa, hay⟩ ⟨hxa.trans hab, hby⟩ hab
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StrictMonoOn.exists_slope_lt_deriv {x y : ℝ} {f : ℝ → ℝ} (hf : ContinuousOn f (Icc x y))
     (hxy : x < y) (hf'_mono : StrictMonoOn (deriv f) (Ioo x y)) :
     ∃ a ∈ Ioo x y, (f y - f x) / (y - x) < deriv f a := by
@@ -118,6 +119,7 @@ theorem StrictMonoOn.exists_deriv_lt_slope_aux {x y : ℝ} {f : ℝ → ℝ} (hf
   rw [← ha]
   exact hf'_mono ⟨hxb, hba.trans hay⟩ ⟨hxa, hay⟩ hba
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StrictMonoOn.exists_deriv_lt_slope {x y : ℝ} {f : ℝ → ℝ} (hf : ContinuousOn f (Icc x y))
     (hxy : x < y) (hf'_mono : StrictMonoOn (deriv f) (Ioo x y)) :
     ∃ a ∈ Ioo x y, deriv f a < (f y - f x) / (y - x) := by
@@ -687,6 +689,7 @@ theorem monotoneOn_deriv (hfc : ConvexOn ℝ S f) (hfd : ∀ x ∈ S, Differenti
   · rfl
   exact (hfc.deriv_le_slope hx hy hxy' (hfd x hx)).trans (hfc.slope_le_deriv hx hy hxy' (hfd y hy))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isMinOn_of_leftDeriv_nonpos_of_rightDeriv_nonneg (hf : ConvexOn ℝ S f) (hx : x ∈ interior S)
     (hf_ld : derivWithin f (Iio x) x ≤ 0) (hf_rd : 0 ≤ derivWithin f (Ioi x) x) :
     IsMinOn f S x := by

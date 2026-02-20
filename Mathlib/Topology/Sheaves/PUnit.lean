@@ -24,6 +24,7 @@ open CategoryTheory CategoryTheory.Limits TopCat Opposite
 
 variable {C : Type u} [Category.{v} C]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤) (F : Presheaf C X)
     (it : IsTerminal <| F.obj <| op ⊥) : F.IsSheaf := fun c U s hs => by
   have : IndiscreteTopology X := ⟨hind⟩
