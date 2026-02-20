@@ -137,7 +137,7 @@ lemma snd_mono {β : Type*} [Preorder β] : Monotone (snd : (_ : ι) × β → �
 
 @[gcongr]
 lemma mk_mono [∀ i, Preorder (α i)] (i : ι) : Monotone (mk i : α i → Σ i, α i) := by
-  simp only [Monotone, mk_le_mk_iff, imp_self, implies_true]
+  simp [Monotone]
 
 lemma rec_mono {δ β : Type*} [Preorder δ] [Preorder β] [∀ i, Preorder (α i)]
     {f : δ → (i : ι) × α i} (hf : Monotone f)
