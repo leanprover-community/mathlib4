@@ -61,14 +61,9 @@ namespace Sheaf
 
 open Presheaf
 
-variable {X : TopCat.{u}} {C : Type v} [Category.{u} C] [HasColimits C] (p₀ : X)
-
-instance [HasTerminal C] : (forget C X ⋙ stalkFunctor C p₀).IsLeftAdjoint :=
-  have : ∀ U : Opens X, Decidable (p₀ ∈ U) := fun _ ↦ Classical.dec _
-  (stalkSkyscraperSheafAdjunction p₀).isLeftAdjoint
-
-variable {FC : C → C → Type*} {CC : C → Type u} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
-  [ConcreteCategory C FC] [PreservesFilteredColimits (CategoryTheory.forget C)] [HasLimits C]
+variable {X : TopCat.{u}} (p₀ : X) {C : Type v} [Category.{u} C] [HasColimits C] [HasLimits C]
+  {FC : C → C → Type*} {CC : C → Type u} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+  [ConcreteCategory C FC] [PreservesFilteredColimits (CategoryTheory.forget C)]
   [PreservesLimits (CategoryTheory.forget C)] [Abelian C]
   [HasSheafify (Opens.grothendieckTopology X) C]
 
@@ -87,7 +82,6 @@ instance : Limits.PreservesFiniteLimits (forget C X ⋙ stalkFunctor C p₀) :=
 
 open ZeroObject
 
-omit [PreservesLimits (CategoryTheory.forget C)]
 /-- A sheaf is zero if and only if its stalks are all zero. -/
 lemma isZero_iff_stalkFunctor_obj_isZero (F : Sheaf C X)
     [PreservesLimits (CategoryTheory.forget C)] :
