@@ -243,6 +243,11 @@ theorem comp [Algebra A B] [IsScalarTower R A B] [Etale R A] [Etale A B] : Etale
 /-- Étale is stable under base change. -/
 instance baseChange [Etale R A] : Etale B (B ⊗[R] A) where
 
+lemma of_restrictScalars [Algebra A B] [IsScalarTower R A B] [Etale R A] [Etale R B] :
+    Etale A B where
+  finitePresentation := .of_restrict_scalars_finitePresentation R A B
+  formallyEtale := .of_restrictScalars (R := R)
+
 end Comp
 
 /-- Localization at an element is étale. -/

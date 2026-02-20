@@ -833,11 +833,17 @@ lemma AlgEquiv.default_apply [Subsingleton S] [Subsingleton T] (x : S) :
 end
 
 /-- The algebra equivalence between `ULift A` and `A`. -/
-@[simps! -isSimp apply]
+@[simps! apply, simps! -isSimp symm_apply]
 def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A] :
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   commutes' _ := rfl
+
+@[simp]
+lemma ULift.down_algEquiv_symm_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    (a : A) :
+    (ULift.algEquiv (R := R).symm a).down = a :=
+  rfl
 
 /-- If an `R`-algebra `A` is isomorphic to `R` as `R`-module, then the canonical map `R → A` is an
 equivalence of `R`-algebras.

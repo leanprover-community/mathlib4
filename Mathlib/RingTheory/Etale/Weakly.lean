@@ -272,102 +272,6 @@ namespace Algebra
 
 section
 
-variable (R S A B : Type*) [CommRing R] [CommRing S] [Algebra R S]
-  [CommRing A] [CommRing B] [Algebra R A] [Algebra R B] [Algebra A B] [Algebra S B]
-  [IsScalarTower R A B] [IsScalarTower R S B] [Algebra.IsPushout R S A B]
-variable (C : Type*) [CommRing C] [Algebra R C] [Algebra A C] [IsScalarTower R A C]
-
-noncomputable def IsPushout.cancelBaseChangeAlg : B ⊗[A] C ≃ₐ[S] S ⊗[R] C := by
-  refine AlgEquiv.symm
-    (AlgEquiv.ofLinearEquiv (IsPushout.cancelBaseChange R S A B C).symm ?_ ?_)
-  · simp [TensorProduct.one_def]
-  · apply LinearMap.map_mul_of_map_mul_tmul
-    simp
-
-@[simp]
-lemma IsPushout.toLinearEquiv_cancelBaseChangeAlg :
-    (IsPushout.cancelBaseChangeAlg R S A B C).toLinearEquiv =
-      IsPushout.cancelBaseChange R S A B C := by
-  rfl
-
-@[simp]
-lemma IsPushout.cancelBaseChangeAlg_tmul (c : C) :
-    IsPushout.cancelBaseChangeAlg R S A B C (1 ⊗ₜ c) = 1 ⊗ₜ c := by
-  simp [cancelBaseChangeAlg]
-
-@[simp]
-lemma IsPushout.cancelBaseChangeAlg_symm_tmul (s : S) (c : C) :
-    (IsPushout.cancelBaseChangeAlg R S A B C).symm (s ⊗ₜ c) = algebraMap S B s ⊗ₜ c := by
-  simp [cancelBaseChangeAlg]
-
-variable (D : Type*) [CommRing D] [Algebra R D] [Algebra A D] [IsScalarTower R A D]
-
-attribute [local instance] TensorProduct.rightAlgebra in
-lemma IsPushout.cancelBaseChange_symm_comp_lTensor :
-    AlgHom.comp (IsPushout.cancelBaseChangeAlg R S A (S ⊗[R] A) C).symm.toAlgHom
-      (TensorProduct.lTensor _ (IsScalarTower.toAlgHom R A C)) =
-      TensorProduct.includeLeft := by
-  ext
-  simp [← TensorProduct.one_def, ← TensorProduct.tmul_one_eq_one_tmul, RingHom.algebraMap_toAlgebra]
-
-end
-
-section
-
-attribute [local instance] TensorProduct.rightAlgebra in
-lemma TensorProduct.flat_lTensor {R S : Type*} (A : Type*) {B D : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-    [CommRing B] [Algebra R B] [CommRing D] [Algebra R D]
-    {f : B →ₐ[R] D} (hf : f.Flat) :
-    (TensorProduct.lTensor (S := S) A f).Flat := by
-  algebraize [f.toRingHom, (lTensor (S := A) A f).toRingHom]
-  let e : A ⊗[R] D ≃ₐ[A ⊗[R] B] (A ⊗[R] B) ⊗[B] D :=
-    { __ := (Algebra.IsPushout.cancelBaseChangeAlg _ _ _ _ _).symm,
-      commutes' x := congr($(IsPushout.cancelBaseChange_symm_comp_lTensor R A B D) x) }
-  exact .of_linearEquiv e.toLinearEquiv
-
-lemma TensorProduct.flat_map {R S A B C D : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-    [CommRing B] [Algebra R B] [CommRing C] [Algebra R C]
-    [Algebra S C] [IsScalarTower R S C] [CommRing D] [Algebra R D]
-    {f : A →ₐ[S] C} {g : B →ₐ[R] D}
-    (hf : f.Flat) (hg : g.Flat) :
-    (TensorProduct.map f g).Flat := by
-  have heq : TensorProduct.map f g =
-      (TensorProduct.map f (.id R D)).comp (TensorProduct.map (.id _ _) g) := by
-    ext <;> simp
-  rw [heq]
-  refine RingHom.Flat.comp ?_ ?_
-  · exact TensorProduct.flat_lTensor _ hg
-  · have : (map f (AlgHom.id R D)).restrictScalars R =
-        (TensorProduct.comm _ _ _).toAlgHom.comp
-          ((lTensor _ (f.restrictScalars R)).comp
-            (TensorProduct.comm _ _ _).toAlgHom) := by
-      ext <;> simp
-    change ((map f (AlgHom.id R D)).restrictScalars R).Flat
-    rw [this]
-    refine RingHom.Flat.comp ?_ (.of_bijective <| AlgEquiv.bijective _)
-    change RingHom.Flat (RingHom.comp (lTensor D (AlgHom.restrictScalars R f)).toRingHom _)
-    exact RingHom.Flat.comp (.of_bijective <| (TensorProduct.comm R A D).bijective)
-      (TensorProduct.flat_lTensor D hf)
-
-end
-
-section
-
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-
-instance [Etale R S] : Smooth R S where
-
-lemma Etale.of_restrictScalars (R S T : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    [Etale R S] [Etale R T] :
-    Etale S T where
-  finitePresentation := .of_restrict_scalars_finitePresentation R S T
-  formallyEtale := .of_restrictScalars (R := R)
-
-end
-
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 /-- `S` is a weakly-étale `R`-algebra if both `R → S` and `S ⊗[R] S → R` are flat. -/
@@ -431,7 +335,7 @@ instance {T : Type*} [CommRing T] [Algebra R T] [WeaklyEtale R S] :
     rw [this]
     refine RingHom.Flat.comp ?_ ?_
     · exact .of_bijective e.bijective
-    · refine TensorProduct.flat_map ?_ ?_
+    · refine RingHom.Flat.tensorProductMap ?_ ?_
       · exact .of_bijective Function.bijective_id
       · exact WeaklyEtale.flat_lmul' R S
 
