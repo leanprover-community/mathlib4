@@ -71,8 +71,8 @@ theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtom
 to Boolean combinations of atomic formulas. -/
 inductive IsQF : L.BoundedFormula α n → Prop
   | falsum : IsQF falsum
-  | of_isAtomic {φ} (h : IsAtomic φ) : IsQF φ
-  | imp {φ₁ φ₂} (h₁ : IsQF φ₁) (h₂ : IsQF φ₂) : IsQF (φ₁.imp φ₂)
+  | of_isAtomic {φ :  L.BoundedFormula α n} (h : IsAtomic φ) : IsQF φ
+  | imp {φ₁ φ₂ :  L.BoundedFormula α n} (h₁ : IsQF φ₁) (h₂ : IsQF φ₂) : IsQF (φ₁.imp φ₂)
 
 theorem IsAtomic.isQF {φ : L.BoundedFormula α n} : IsAtomic φ → IsQF φ :=
   IsQF.of_isAtomic
@@ -117,9 +117,9 @@ theorem not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con
 /-- Indicates that a bounded formula is in prenex normal form - that is, it consists of quantifiers
   applied to a quantifier-free formula. -/
 inductive IsPrenex : ∀ {n}, L.BoundedFormula α n → Prop
-  | of_isQF {n} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsPrenex φ
-  | all {n} {φ : L.BoundedFormula α (n + 1)} (h : IsPrenex φ) : IsPrenex φ.all
-  | ex {n} {φ : L.BoundedFormula α (n + 1)} (h : IsPrenex φ) : IsPrenex φ.ex
+  | of_isQF {n : ℕ} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsPrenex φ
+  | all {n : ℕ} {φ : L.BoundedFormula α (n + 1)} (h : IsPrenex φ) : IsPrenex φ.all
+  | ex {n : ℕ} {φ : L.BoundedFormula α (n + 1)} (h : IsPrenex φ) : IsPrenex φ.ex
 
 theorem IsQF.isPrenex {φ : L.BoundedFormula α n} : IsQF φ → IsPrenex φ :=
   IsPrenex.of_isQF
@@ -330,8 +330,8 @@ theorem induction_on_exists_not {P : ∀ {m}, L.BoundedFormula α m → Prop} (�
 /-- A universal formula is a formula defined by applying only universal quantifiers to a
 quantifier-free formula. -/
 inductive IsUniversal : ∀ {n}, L.BoundedFormula α n → Prop
-  | of_isQF {n} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsUniversal φ
-  | all {n} {φ : L.BoundedFormula α (n + 1)} (h : IsUniversal φ) : IsUniversal φ.all
+  | of_isQF {n : ℕ} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsUniversal φ
+  | all {n : ℕ} {φ : L.BoundedFormula α (n + 1)} (h : IsUniversal φ) : IsUniversal φ.all
 
 lemma IsQF.isUniversal {φ : L.BoundedFormula α n} : IsQF φ → IsUniversal φ :=
   IsUniversal.of_isQF
@@ -342,8 +342,8 @@ lemma IsAtomic.isUniversal {φ : L.BoundedFormula α n} (h : IsAtomic φ) : IsUn
 /-- An existential formula is a formula defined by applying only existential quantifiers to a
 quantifier-free formula. -/
 inductive IsExistential : ∀ {n}, L.BoundedFormula α n → Prop
-  | of_isQF {n} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsExistential φ
-  | ex {n} {φ : L.BoundedFormula α (n + 1)} (h : IsExistential φ) : IsExistential φ.ex
+  | of_isQF {n : ℕ} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsExistential φ
+  | ex {n : ℕ} {φ : L.BoundedFormula α (n + 1)} (h : IsExistential φ) : IsExistential φ.ex
 
 lemma IsQF.isExistential {φ : L.BoundedFormula α n} : IsQF φ → IsExistential φ :=
   IsExistential.of_isQF
