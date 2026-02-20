@@ -131,6 +131,7 @@ noncomputable def sqrt : Matrix n n 𝕜 :=
   hA.1.eigenvectorUnitary.1 * diagonal ((↑) ∘ (√·) ∘ hA.1.eigenvalues) *
   (star hA.1.eigenvectorUnitary : Matrix n n 𝕜)
 
+set_option linter.unusedDecidableInType false in
 set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sqrt_nonneg (since := "2025-09-22")]
 lemma posSemidef_sqrt : PosSemidef (CFC.sqrt A) := CFC.sqrt_nonneg A |>.posSemidef
@@ -141,6 +142,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sq_sqrt (since := "2025-09-22")]
 lemma sq_sqrt : (CFC.sqrt A) ^ 2 = A := CFC.sq_sqrt A
 
+set_option linter.unusedDecidableInType false in
 set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sqrt_mul_sqrt_self (since := "2025-09-22")]
 lemma sqrt_mul_self : CFC.sqrt A * CFC.sqrt A = A := CFC.sqrt_mul_sqrt_self A
@@ -166,6 +168,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : CFC.sqrt A = B ↔ A = B ^ 2 := by
   simpa [eq_comm, sq] using CFC.sqrt_eq_iff A B hA.nonneg hB.nonneg
 
+set_option linter.unusedDecidableInType false in
 set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sqrt_eq_zero_iff (since := "2025-09-22")]
 lemma sqrt_eq_zero_iff : CFC.sqrt A = 0 ↔ A = 0 := CFC.sqrt_eq_zero_iff A
@@ -274,6 +277,7 @@ theorem PosDef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDe
   classical
   rw [hA.isStrictlyPositive.commute_iff hB.isStrictlyPositive, isStrictlyPositive_iff_posDef]
 
+set_option linter.unusedDecidableInType false in
 set_option backward.isDefEq.respectTransparency false in
 @[deprecated IsStrictlyPositive.sqrt (since := "2025-09-26")]
 lemma PosDef.posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
