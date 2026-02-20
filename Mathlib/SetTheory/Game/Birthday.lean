@@ -279,6 +279,7 @@ theorem birthday_sub_le (x y : Game) : (x - y).birthday ≤ x.birthday ♯ y.bir
 /- The bound `(x * y).birthday ≤ x.birthday ⨳ y.birthday` is currently an open problem. See
   https://mathoverflow.net/a/476829/147705. -/
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- Games with bounded birthday are a small set. -/
 theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birthday x < o} := by
