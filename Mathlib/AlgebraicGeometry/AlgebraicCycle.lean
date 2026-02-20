@@ -131,6 +131,7 @@ instance moduleResidueFieldExtension (x : X) :
     (IsLocalRing.ResidueField ↑(X.presheaf.stalk x)) :=
   letI := RingHom.toAlgebra (IsLocalRing.ResidueField.map (f.stalkMap x).hom)
   Algebra.toModule
+
 /--
 Degree of `f` at a point `x` is defined to be the degree of the associated field extension
 from `κ(f x)` to `κ(x)`. We return a default value of zero when this degree is either infinite
@@ -163,8 +164,7 @@ Implementation detail for pushforward: function used to define the coefficient o
 of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
 -/
 noncomputable
-def mapAux {N : Type*} [AddMonoid N] [Semiring Z]
-    [HasDegree Z] {Y : Scheme}
+def mapAux {N : Type*} [Semiring Z] [HasDegree Z] {Y : Scheme}
     (gx : Grading X Z N) (gy : Grading Y Z N)
     (f : X ⟶ Y) (x : X) : Z :=
   if gx.f x = gy.f (f.base x) then HasDegree.degree f x else 0
@@ -225,7 +225,7 @@ lemma inter_nonempty_finite (hW : IsAffineOpen W)
     exact ⟨hx.1, ⟨Nonempty.intro y, hx.2.2⟩⟩
   exact iUnion_preimage_inter_support_finite_of_isAffineOpen f c hW
 
-variable {N : Type*} [AddMonoid N] [HasDegree Z]
+variable {N : Type*} [HasDegree Z]
 
 /--
 The pushforward of an algebraic cycle has locally finite support.
