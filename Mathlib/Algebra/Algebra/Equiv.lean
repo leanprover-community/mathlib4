@@ -24,7 +24,7 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 @[expose] public section
 
-universe u v w u₁ v₁
+universe u v w u₁ v₁ u₂ u₃
 
 /-- An equivalence of algebras (denoted as `A ≃ₐ[R] B`)
 is an equivalence of rings commuting with the actions of scalars. -/
@@ -844,6 +844,29 @@ lemma ULift.down_algEquiv_symm_apply {R A : Type*} [CommSemiring R] [Semiring A]
     (a : A) :
     (ULift.algEquiv (R := R).symm a).down = a :=
   rfl
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S]
+  [Semiring T] [Algebra R S] [Algebra R T]
+
+attribute [local instance] ULift.algebra' in
+/-- `ULift` is functorial for algebra homomorphisms. -/
+def AlgHom.ulift (f : S →ₐ[R] T) :
+    ULift.{u₁} S →ₐ[ULift.{u₂} R] ULift.{u₃} T where
+  __ := AlgHom.comp ULift.algEquiv.symm.toAlgHom (f.comp ULift.algEquiv.toAlgHom)
+  commutes' _ := by simp
+
+@[simp]
+lemma AlgHom.down_ulift_apply (f : S →ₐ[R] T) (x : ULift S) :
+    (f.ulift x).down = f x.down :=
+  rfl
+
+lemma AlgHom.ulift_apply (f : S →ₐ[R] T) (x : ULift S) :
+    f.ulift x = ⟨f x.down⟩ :=
+  rfl
+
+end
 
 /-- If an `R`-algebra `A` is isomorphic to `R` as `R`-module, then the canonical map `R → A` is an
 equivalence of `R`-algebras.

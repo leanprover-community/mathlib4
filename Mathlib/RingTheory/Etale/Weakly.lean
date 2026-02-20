@@ -27,14 +27,6 @@ universe u u₁ u₂ u₃ u₄ u₅
 
 open TensorProduct
 
-@[instance_reducible]
-def ULift.algebra' (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
-    Algebra (ULift.{u} R) A where
-  __ := ULift.module
-  algebraMap := (algebraMap R A).comp ULift.ringEquiv.toRingHom
-  commutes' _ _ := Algebra.commutes ..
-  smul_def' _ _ := Algebra.smul_def' ..
-
 def RingHom.ulift {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) :
     ULift.{u₁} R →+* ULift.{u₂} S :=
@@ -94,10 +86,8 @@ lemma RingHom.Flat.iff_comp_ringEquiv {R S T : Type*} [CommRing R] [CommRing S]
 lemma RingHom.Flat.ulift_iff {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S} :
     (ulift.{u₁, u₂} f).Flat ↔ f.Flat := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · rw [← RingHom.comp_ulift_eq.{u₁, u₂} f]
-    erw [RingHom.Flat.iff_ringEquiv_comp]
-    erw [RingHom.Flat.iff_comp_ringEquiv]
-    assumption
+  · rwa [← RingHom.comp_ulift_eq.{u₁, u₂} f, RingHom.Flat.iff_ringEquiv_comp,
+      RingHom.Flat.iff_comp_ringEquiv]
   · exact .comp (.comp (.of_bijective <| Equiv.bijective _) hf)
       (.of_bijective <| Equiv.bijective _)
 
@@ -117,6 +107,8 @@ def TensorProduct.congrRing
       map_add' _ _ := by ext; simp
       map_smul' s x := by ext; obtain ⟨r, rfl⟩ := h s; simp }
   .ofLinear f (lift b) (by ext; rfl) (by ext; rfl)
+
+#find_home! TensorProduct.congrRing
 
 @[simp]
 lemma TensorProduct.congrRing_tmul
@@ -227,15 +219,6 @@ lemma Algebra.TensorProduct.uliftEquiv_symm_tmul
     [Semiring B] [Algebra R B] (a : ULift A) (b : ULift B) :
     (uliftEquiv R S A B).symm (a ⊗ₜ b) = ⟨a.down ⊗ₜ b.down⟩ :=
   rfl
-
-lemma ULift.algEquiv_symm_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    (a : A) :
-    ULift.algEquiv (R := R).symm a = ⟨a⟩ := rfl
-
-@[simp]
-lemma ULift.down_algEquiv_symm_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    (a : A) :
-    (ULift.algEquiv (R := R).symm a).down = a := rfl
 
 open CategoryTheory Limits
 
