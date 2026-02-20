@@ -240,8 +240,6 @@ A ring `R` has finite quotients if the quotient `R ⧸ I` is finite for all nonz
 class Ring.HasFiniteQuotients (R : Type*) [CommRing R] : Prop where
   (finiteQuotient : ∀ {I : Ideal R}, I ≠ ⊥ → Finite (R ⧸ I))
 
-/--
-A finite ring has finite quotient.
--/
+/-- A finite ring has finite quotients. -/
 instance (R : Type*) [CommRing R] [Finite R] : Ring.HasFiniteQuotients R :=
   ⟨fun _ ↦ Quotient.finite _⟩
