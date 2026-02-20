@@ -29,6 +29,7 @@ open CategoryTheory Abelian
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I : Ideal R) :
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
     ∀ g : I →ₗ[R] M, ∃ g' : R →ₗ[R] M, ∀ (x : R) (mem : x ∈ I), g' x = g ⟨x, mem⟩ := by
