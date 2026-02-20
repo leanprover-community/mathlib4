@@ -94,15 +94,15 @@ protected def liftTell (empty : ω) : MonadLift M (WriterT ω M) where
 
 instance [EmptyCollection ω] [Append ω] : Monad (WriterT ω M) := monad ∅ (· ++ ·)
 instance [EmptyCollection ω] : MonadLift M (WriterT ω M) := WriterT.liftTell ∅
-instance [Monoid ω] : Monad (WriterT ω M) := monad 1 (· * ·)
-instance [Monoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 1
+instance [AddMonoid ω] : Monad (WriterT ω M) := monad 0 (· + ·)
+instance [AddMonoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 0
 
-instance [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
+instance [AddMonoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
   (bind_pure_comp := by
     simp [Bind.bind, Functor.map, Pure.pure, WriterT.mk, bind_pure_comp])
   (id_map := by simp [Functor.map, WriterT.mk])
   (pure_bind := by simp [Bind.bind, Pure.pure, WriterT.mk])
-  (bind_assoc := by simp [Bind.bind, mul_assoc, WriterT.mk, ← bind_pure_comp])
+  (bind_assoc := by simp [Bind.bind, add_assoc, WriterT.mk, ← bind_pure_comp])
 
 instance : MonadWriter ω (WriterT ω M) where
   tell := fun w ↦ WriterT.mk <| pure (⟨⟩, w)
