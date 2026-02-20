@@ -291,6 +291,7 @@ lemma range_faceOpposite_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex 
 
 section restrict
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Restrict an affine simplex to an affine subspace that contains it. -/
 @[simps]
 def restrict {n : ℕ} (s : Affine.Simplex k P n) (S : AffineSubspace k P)
@@ -301,6 +302,7 @@ def restrict {n : ℕ} (s : Affine.Simplex k P n) (S : AffineSubspace k P)
   { points i := ⟨s.points i, hS <| mem_affineSpan _ <| Set.mem_range_self _⟩
     independent := AffineIndependent.of_comp S.subtype s.independent }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Restricting to `S₁` then mapping to a larger `S₂` is the same as restricting to `S₂`. -/
 @[simp]
 theorem restrict_map_inclusion {n : ℕ} (s : Affine.Simplex k P n)
@@ -311,6 +313,7 @@ theorem restrict_map_inclusion {n : ℕ} (s : Affine.Simplex k P n)
       s.restrict S₂ (hS₁.trans hS₂) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_subtype_restrict
     {n : ℕ} (S : AffineSubspace k P) [Nonempty S] (s : Affine.Simplex k S n) :
@@ -318,6 +321,7 @@ theorem map_subtype_restrict
       S (affineSpan_le.2 <| by rintro x ⟨y, rfl⟩; exact Subtype.prop _) = s := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Restricting to `S₁` then mapping through the restriction of `f` to `S₁ →ᵃ[k] S₂` is the same
 as mapping through unrestricted `f`, then restricting to `S₂`. -/
 theorem restrict_map_restrict
@@ -332,6 +336,7 @@ theorem restrict_map_restrict
           (AffineSubspace.map_mono f hS₁) |>.trans hfS) := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Restricting to `affineSpan k (Set.range s.points)` can be reversed by mapping through
 `AffineSubspace.subtype`. -/
 @[simp]
@@ -339,12 +344,14 @@ theorem restrict_map_subtype {n : ℕ} (s : Affine.Simplex k P n) :
     (s.restrict _ le_rfl).map (AffineSubspace.subtype _) Subtype.coe_injective = s :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_reindex {m n : ℕ} (s : Affine.Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1))
     {S : AffineSubspace k P} (hS : affineSpan k (Set.range s.points) ≤ S) :
     letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.reindex e).restrict S (s.reindex_range_points e ▸ hS) = (s.restrict S hS).reindex e :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma face_restrict {n : ℕ} (s : Affine.Simplex k P n) {S : AffineSubspace k P}
     (hS : affineSpan k (Set.range s.points) ≤ S) {fs : Finset (Fin (n + 1))} {m : ℕ}
     (h : #fs = m + 1) :
@@ -356,6 +363,7 @@ lemma face_restrict {n : ℕ} (s : Affine.Simplex k P n) {S : AffineSubspace k P
   simp_rw [Affine.Simplex.face_points]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma faceOpposite_restrict {n : ℕ} [NeZero n] (s : Affine.Simplex k P n) {S : AffineSubspace k P}
     (hS : affineSpan k (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
     letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
@@ -437,6 +445,7 @@ lemma setInterior_map (I : Set k) {n : ℕ} (s : Simplex k P n) {f : P →ᵃ[k]
       rw [s.map_points, Set.range_comp, ← AffineSubspace.map_span, AffineSubspace.mem_map]
       exact ⟨q, (Set.mem_of_mem_of_subset hq s.setInterior_subset_affineSpan), hqp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma setInterior_restrict (I : Set k) {n : ℕ} (s : Simplex k P n) {S : AffineSubspace k P}
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
@@ -529,6 +538,7 @@ lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
   · rintro rfl
     exact ⟨1, by simp [affineCombination_apply]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 omit [PartialOrder k] in
 lemma affineCombination_mem_setInterior_face_iff_mem (I : Set k) {n : ℕ} (s : Simplex k P n)
     {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {w : Fin (n + 1) → k}
@@ -599,12 +609,14 @@ lemma closedInterior_map {n : ℕ} (s : Simplex k P n) {f : P →ᵃ[k] P₂} (h
     (s.map f hf).closedInterior = f '' s.closedInterior :=
   s.setInterior_map _ hf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma interior_restrict {n : ℕ} (s : Simplex k P n) {S : AffineSubspace k P}
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).interior = S.subtype ⁻¹' s.interior :=
   s.setInterior_restrict _ hS
 
+set_option backward.isDefEq.respectTransparency false in
 lemma closedInterior_restrict {n : ℕ} (s : Simplex k P n) {S : AffineSubspace k P}
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance

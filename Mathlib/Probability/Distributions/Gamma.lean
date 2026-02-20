@@ -28,6 +28,7 @@ open scoped ENNReal NNReal
 
 open MeasureTheory Real Set Filter Topology
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A Lebesgue Integral from -∞ to y can be expressed as the sum of one from -∞ to 0 and 0 to x -/
 lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z ≤ y) :
     ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
@@ -97,6 +98,7 @@ lemma gammaPDFReal_nonneg {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
 
 open Measure
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pdf of the gamma distribution integrates to 1 -/
 @[simp]
 lemma lintegral_gammaPDF_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :

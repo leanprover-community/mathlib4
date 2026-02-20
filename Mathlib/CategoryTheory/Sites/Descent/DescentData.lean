@@ -123,6 +123,7 @@ lemma id_hom (D : F.DescentData f) (i : ι) : Hom.hom (𝟙 D) i = 𝟙 _ := rfl
 lemma comp_hom {D₁ D₂ D₃ : F.DescentData f} (φ : D₁ ⟶ D₂) (φ' : D₂ ⟶ D₃) (i : ι) :
     (φ ≫ φ').hom i = φ.hom i ≫ φ'.hom i := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of morphisms `f : X i ⟶ S`, and `M : F.obj (.mk (op S))`,
 this is the object in `F.DescentData f` that is obtained by pulling back `M`
 over the `X i`. -/
@@ -158,6 +159,7 @@ def isoMk {D₁ D₂ : F.DescentData f} (e : ∀ (i : ι), D₁.obj i ≅ D₂.o
 
 end DescentData
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `F.obj (.mk (op S)) ⥤ F.DescentData f`. -/
 @[simps]
 def toDescentData : F.obj (.mk (op S)) ⥤ F.DescentData f where
@@ -182,6 +184,7 @@ def pullFunctorObjHom (D : F.DescentData f)
       (by simp [w, reassoc_of% hf₂]) ≫
     (F.mapComp (p' j₂).op.toLoc f₂.op.toLoc).hom.toNatTrans.app _
 
+set_option backward.isDefEq.respectTransparency false in -- Needed below.
 @[reassoc]
 lemma pullFunctorObjHom_eq (D : F.DescentData f)
     ⦃Y : C⦄ (q : Y ⟶ S') ⦃j₁ j₂ : ι'⦄ (f₁ : Y ⟶ X' j₁) (f₂ : Y ⟶ X' j₂)
@@ -198,6 +201,7 @@ lemma pullFunctorObjHom_eq (D : F.DescentData f)
   subst hq' hf₁' hf₂'
   simp [mapComp'_eq_mapComp, pullFunctorObjHom]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `pullFunctor`. -/
 @[simps]
 def pullFunctorObj (D : F.DescentData f) :
@@ -227,6 +231,7 @@ def pullFunctorObj (D : F.DescentData f) :
 
 variable (F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S'`, and suitable
 commutative diagrams `p' j ≫ f (α j) = f' j ≫ p`, this is the
 induced functor `F.DescentData f ⥤ F.DescentData f'`. (Up to a (unique) isomorphism,
@@ -247,6 +252,7 @@ def pullFunctor : F.DescentData f ⥤ F.DescentData f' where
         rw [mapComp'_inv_naturality_assoc, ← mapComp'_hom_naturality,
           reassoc_of% this] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given families of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S'`, suitable
 commutative diagrams `w j : p' j ≫ f (α j) = f' j ≫ p`, this is the natural
 isomorphism between the descent data relative to `f'` that are obtained either:
@@ -287,6 +293,7 @@ def toDescentDataCompPullFunctorIso :
       ext i
       exact (F.isoMapOfCommSq (CommSq.mk (w i)).op.toLoc).inv.toNatTrans.naturality f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Up to a (unique) isomorphism, the functor
 `pullFunctor : F.DescentData f ⥤ F.DescentData f'` does not depend
 on the auxiliary data. -/
@@ -310,6 +317,7 @@ def pullFunctorIso {β : ι' → ι} {p'' : ∀ j, X' j ⟶ X (β j)}
       ext j
       exact φ.comm _ _ _ rfl (by cat_disch))
 
+set_option backward.isDefEq.respectTransparency false in
 variable (S) in
 /-- The functor `F.DescentData f ⥤ F.DescentData f` corresponding to `pullFunctor`
 applied to identity morphisms is isomorphic to the identity functor. -/
@@ -322,6 +330,7 @@ def pullFunctorIdIso :
     rw [pullFunctorObjHom_eq_assoc _ _ _ _ _ q f₁ f₂ rfl]
     simp [mapComp'_id_comp_inv_app_assoc, mapComp'_id_comp_hom_app, ← Functor.map_comp]))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition of two functors `pullFunctor` is isomorphic to `pullFunctor` applied
 to the compositions. -/
 @[simps!]
@@ -351,6 +360,7 @@ def pullFunctorCompIso
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 variable {f} in
 /-- Up to an equivalence, the category `DescentData` for a pseudofunctor `F` and
 a family of morphisms `f : X i ⟶ S` is unchanged when we replace `S` by an isomorphic object,
@@ -423,6 +433,7 @@ lemma isEquivalence_toDescentData_iff_of_sieve_eq
   exact ⟨fun _ ↦ inferInstance,
     fun _ ↦ Functor.isEquivalence_of_comp_right _ e.functor⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms between objects in the image of the functor `F.toDescentData f`
 identify to compatible families of sections of the presheaf `F.presheafHom M N` on
 the object `Over.mk (𝟙 S)`, relatively to the family of morphisms in `Over S`
@@ -443,6 +454,7 @@ def subtypeCompatibleHomEquiv {M N : F.obj (.mk (op S))} :
           map_eq_pullHom (g.hom i₂) f₂.left Z.hom Z.hom (Over.w f₂) (Over.w f₂),
           cancel_epi, cancel_mono] using g.comm Z.hom f₁.left f₂.left (Over.w f₁) (Over.w f₂) }
 
+set_option backward.isDefEq.respectTransparency false in
 lemma subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
     {M N : F.obj (.mk (op S))} (φ : M ⟶ N) :
     subtypeCompatibleHomEquiv F f (Presieve.Arrows.toCompatible _ _
@@ -579,6 +591,7 @@ lemma isPrestackFor_iff_isSheafFor' {S : C} (R : Sieve S) :
     change R.arrows b.left
     simpa [fac] using R.downward_closed h d.left
 
+set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 lemma IsPrestackFor.isSheafFor'
     {S₀ : C} (S : Over S₀) {R : Sieve S} (hF : F.IsPrestackFor (Sieve.overEquiv _ R).arrows)

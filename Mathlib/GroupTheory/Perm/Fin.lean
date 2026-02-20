@@ -145,6 +145,7 @@ theorem cycleRange_of_gt (h : i < j) : cycleRange i j = j := by
   rw [cycleRange, Perm.extendDomain_apply_not_subtype]
   simpa using h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cycleRange_of_le [NeZero n] (h : i ≤ j) :
     cycleRange j i = if i = j then 0 else i + 1 := by
   have iin : i ∈ Set.range (castLEEmb (n := j + 1) (by lia)) := by
@@ -356,6 +357,7 @@ lemma cycleIcc_to_cycleRange (hij : i ≤ j)
   simp [hij, ((j - i).castLT (sub_val_lt_sub hij)).cycleRange.extendDomain_apply_subtype
     (natAdd_castLEEmb _).toEquivRange kin]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cycleIcc_of_gt (h : j < k) : (cycleIcc i j) k = k := by
   by_cases hij : i ≤ j
   · have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
@@ -370,6 +372,7 @@ theorem cycleIcc_of_gt (h : j < k) : (cycleIcc i j) k = k := by
     · exact lt_def.mpr (by simpa [sub_val_of_le hij] using by lia)
   · simp [hij]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
     (cycleIcc i j) k = if k = j then i else k + 1 := by

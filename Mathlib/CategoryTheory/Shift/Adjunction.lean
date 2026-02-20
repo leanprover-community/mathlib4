@@ -82,6 +82,7 @@ abbrev CompatibilityUnit :=
 abbrev CompatibilityCounit :=
   ∀ (Y : D), adj.counit.app (Y⟦a⟧) = F.map (e₂.hom.app Y) ≫ e₁.hom.app _ ≫ (adj.counit.app Y)⟦a⟧'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an adjunction `adj : F ⊣ G`, `a` in `A` and commutation isomorphisms
 `e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` and
 `e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`, compatibility of `e₁` and `e₂` with the
@@ -103,6 +104,7 @@ lemma compatibilityCounit_of_compatibilityUnit (h : CompatibilityUnit adj e₁ e
   simp only [right_triangle_components, ← Functor.map_comp_assoc, Functor.map_id, id_comp,
     Iso.hom_inv_id_app, Functor.comp_obj]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an adjunction `adj : F ⊣ G`, `a` in `A` and commutation isomorphisms
 `e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` and
 `e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`, if `e₁` and `e₂` are compatible with the
@@ -118,6 +120,7 @@ lemma compatibilityUnit_right (h : CompatibilityUnit adj e₁ e₂) (Y : D) :
   simp only [Functor.comp_obj, Iso.inv_hom_id_app, Functor.id_obj, Functor.comp_map, assoc, comp_id,
     ← (shiftFunctor C a).map_comp, right_triangle_components, Functor.map_id]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an adjunction `adj : F ⊣ G`, `a` in `A` and commutation isomorphisms
 `e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` and
 `e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`, if `e₁` and `e₂` are compatible with the
@@ -156,6 +159,7 @@ lemma compatibilityUnit_unique_left (h : CompatibilityUnit adj e₁ e₂)
   rw [compatibilityCounit_left adj e₁ e₂ (compatibilityCounit_of_compatibilityUnit adj _ _ h),
     compatibilityCounit_left adj e₁' e₂ (compatibilityCounit_of_compatibilityUnit adj _ _ h')]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The isomorphisms `Functor.CommShift.isoZero F` and `Functor.CommShift.isoZero G` are
 compatible with the unit of an adjunction `F ⊣ G`.
@@ -168,6 +172,7 @@ lemma compatibilityUnit_isoZero : CompatibilityUnit adj (Functor.CommShift.isoZe
     ← cancel_mono ((shiftFunctorZero C A).hom.app _), ← G.map_comp_assoc, Iso.inv_hom_id_app,
     Functor.id_obj, Functor.map_id, id_comp, NatTrans.naturality, Functor.id_map, assoc, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an adjunction `adj : F ⊣ G`, `a, b` in `A` and commutation isomorphisms
 between shifts by `a` (resp. `b`) and `F` and `G`, if these commutation isomorphisms are
 compatible with the unit of `adj`, then so are the commutation isomorphisms between shifts
@@ -213,6 +218,7 @@ lemma unit_app_commShiftIso_hom_app [adj.CommShift A] (a : A) (X : C) :
     adj.unit.app (X⟦a⟧) ≫ ((F ⋙ G).commShiftIso a).hom.app X = (adj.unit.app X)⟦a⟧' := by
   simpa using (NatTrans.shift_app_comm adj.unit a X).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma unit_app_shift_commShiftIso_inv_app [adj.CommShift A] (a : A) (X : C) :
     (adj.unit.app X)⟦a⟧' ≫ ((F ⋙ G).commShiftIso a).inv.app X = adj.unit.app (X⟦a⟧) := by
@@ -223,6 +229,7 @@ lemma commShiftIso_hom_app_counit_app_shift [adj.CommShift A] (a : A) (Y : D) :
     ((G ⋙ F).commShiftIso a).hom.app Y ≫ (adj.counit.app Y)⟦a⟧' = adj.counit.app (Y⟦a⟧) := by
   simpa using (NatTrans.shift_app_comm adj.counit a Y)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma commShiftIso_inv_app_counit_app [adj.CommShift A] (a : A) (Y : D) :
     ((G ⋙ F).commShiftIso a).inv.app Y ≫ adj.counit.app (Y⟦a⟧) = (adj.counit.app Y)⟦a⟧' := by
@@ -278,6 +285,7 @@ lemma shift_unit_app [adj.CommShift A] (a : A) (X : C) :
           (G.commShiftIso a).hom.app (F.obj X) := by
   simpa [Functor.commShiftIso_comp_hom_app] using NatTrans.shift_app_comm adj.unit a X
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shift_counit_app [adj.CommShift A] (a : A) (Y : D) :
     (adj.counit.app Y)⟦a⟧' =
@@ -324,6 +332,7 @@ lemma iso_hom_app (X : D) :
   obtain rfl : b = -a := by rw [← add_left_inj a, h, neg_add_cancel]
   simp [iso, iso', shiftEquiv']
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma iso_inv_app (Y : D) :
     (iso adj a).inv.app Y =
@@ -345,6 +354,7 @@ lemma iso_inv_app (Y : D) :
   slice_lhs 3 4 => rw [← Functor.map_comp, ← Functor.map_comp, Iso.inv_hom_id_app]
   simp only [Functor.comp_obj, Functor.map_id, id_comp, assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The commutation isomorphisms of `Adjunction.RightAdjointCommShift.iso` are compatible with
 the unit of the adjunction.
@@ -434,6 +444,7 @@ lemma iso_inv_app (Y : C) :
   obtain rfl : b = -a := eq_neg_of_add_eq_zero_right h
   simp [iso, iso', shiftEquiv']
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The commutation isomorphisms of `Adjunction.LeftAdjointCommShift.iso` are compatible with
 the unit of the adjunction.
@@ -532,6 +543,7 @@ instance : (Equivalence.refl (C := C)).inverse.CommShift A := by
   dsimp
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The identity equivalence is compatible with shifts.
 -/
@@ -602,6 +614,7 @@ this constructs the unique compatible `CommShift` structure on `E.functor`.
 noncomputable def commShiftFunctor [E.inverse.CommShift A] : E.functor.CommShift A :=
   E.symm.toAdjunction.rightAdjointCommShift A
 
+set_option backward.isDefEq.respectTransparency false in
 lemma commShift_of_inverse [E.inverse.CommShift A] :
     letI := E.commShiftFunctor A
     E.CommShift A := by

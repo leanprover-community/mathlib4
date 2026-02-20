@@ -501,6 +501,7 @@ lemma pullback₃.map_p₁_comp : F.map (p₁ hf₁ f₂ f₃) ≫ f₁ = π _ _
 lemma pullback₃.map_p₂_comp : F.map (p₂ hf₁ f₂ f₃) ≫ f₂ = π _ _ _ := by
   simp [π, p₁, p₂, ← hf₁.w f₂]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullback₃.map_p₃_comp : F.map (p₃ hf₁ f₂ f₃) ≫ f₃ = π _ _ _ := by
   simp [π, p₁, p₃, ← hf₁.w f₃, pullback.condition]
@@ -516,14 +517,17 @@ noncomputable def lift₃ : Z ⟶ pullback₃ hf₁ f₂ f₃ :=
   pullback.lift (hf₁.lift' x₁ x₂ h₁₂)
     (hf₁.lift' x₁ x₃ h₁₃) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma lift₃_p₁ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ pullback₃.p₁ hf₁ f₂ f₃ = x₁ := by
   simp [lift₃, pullback₃.p₁]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma lift₃_p₂ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ pullback₃.p₂ hf₁ f₂ f₃ = x₂ := by
   simp [lift₃, pullback₃.p₂]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma lift₃_p₃ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ pullback₃.p₃ hf₁ f₂ f₃ = x₃ := by
   simp [lift₃, pullback₃.p₃]
@@ -565,6 +569,7 @@ variable [HasPullbacks D] [HasBinaryProducts D] [HasTerminal D]
 variable [Full F]
 variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assume that
 1. `C` has binary products,
 2. `D` has pullbacks, binary products and a terminal object, and
@@ -613,6 +618,7 @@ lemma toPullbackTerminal {X : D} {a : C}
   apply (respectsIso F).toRespectsRight.postcomp _ (inferInstance : IsIso _) _
   exact map_preimage F (_ ≫ pbIso.hom) ▸ map F (F.preimage _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assume that
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and

@@ -96,6 +96,7 @@ section
 
 variable {ι' : Type*} [Category ι'] (F : ι' ⥤ ι)
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Precomp.map Precomp.obj δ in
 /-- The precomposition of a spectral object with a functor. -/
 def precomp : SpectralObject C ι' where
