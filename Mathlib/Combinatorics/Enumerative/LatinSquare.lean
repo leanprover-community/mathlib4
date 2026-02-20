@@ -329,11 +329,10 @@ variable {n : Type u} [Fintype n] [Nonempty n] [DecidableEq n]
 variable {k : Type u} [Fintype k] [Nonempty k] [DecidableEq k]
 
 
-
 def is_subrect
   (A : LatinRectangle m n α)
-  (B : LatinRectangle m' n α) :=
-  ∃ (ι : m ↪ m'), ∀ (i : m), ∀ (j : n), A.M i j = B.M (ι i) j
+  (B : LatinRectangle m' n' α) :=
+  ∃ (ι : m ↪ m') (ι' : n ↪ n') (h : α ≃ α), ∀ (i : m), ∀ (j : n), B.M (ι i) (ι' j) = h (A.M i j) 
   
 def symbols_not_in
  (A : LatinRectangle k n α) (j : n) :=
@@ -813,6 +812,8 @@ theorem latin_rectangle_extends_one_row
   unfold LatinRectangle.M
   simp only [A', M']
   use ι
+  use (Equiv.refl n)
+  use (Equiv.refl α)
   intro i j
   rw [<-Function.comp_apply (f := Function.invFun ι)]
   rw [Function.invFun_comp ι.injective]
@@ -822,18 +823,19 @@ theorem latin_rectangle_extends_one_row
 lemma subrect_transitive {m'' : Type*} [Fintype m'']
   {A : LatinRectangle m n α}
   {A' : LatinRectangle m' n α}
-  {A'' : LatinRectangle m'' n α} 
+  {A'' : LatinRectangle m'' n α}
   (h1 : is_subrect A A') (h2 : is_subrect A' A'') : is_subrect A A'' := by sorry
   
-  
--- lemma subrect_refl 
---   (e : LREquiv (m := m) (n := n) (α := α) (m' := m') (n' := n) (β := α)) :
---     ∀ A : LatinRectangle m n α, is_subrect A (e.toFun A) := by sorry
-
 lemma subrect_refl 
   {A : LatinRectangle m n α}
   {A' : LatinRectangle m' n α} (h : A ≃◻ A') :
-  is_subrect A A' := by sorry
+  is_subrect A A' := by 
+    obtain ⟨f,g,h,hrfl⟩ := h
+    simp [is_subrect]
+    use f 
+    use g
+    use h
+    exact hrfl
 
 theorem latin_rectangle_extends_to_latin_square
     (A : LatinRectangle k n α)
