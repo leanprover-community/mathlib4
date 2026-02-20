@@ -243,17 +243,49 @@ def latin_square_isomorphism
   LatinSquare n' β := latin_rectangle_isomorphism f g h (A : LatinRectangle n n α)
 
 
-structure LREquiv extends
- Equiv (LatinRectangle m n α) (LatinRectangle m' n' β) where 
-  f : m ≃ m'
-  g : n ≃ n'
-  h : α ≃ β
-  h_toFun : toFun = latin_rectangle_isomorphism f g h 
+-- structure LREquiv extends
+--  Equiv (LatinRectangle m n α) (LatinRectangle m' n' β) where 
+--   f : m ≃ m'
+--   g : n ≃ n'
+--   h : α ≃ β
+--   h_toFun : toFun = latin_rectangle_isomorphism f g h 
   
-infixl:25 " ≃◻ " => LREquiv
+-- infixl:25 " ≃◻ " => LREquiv
 
 
-#check LREquiv
+structure LREquiv (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) where
+  (f : m ≃ m') 
+  (g : n ≃ n') 
+  (h : α ≃ β) 
+  (map_rel : ∀ (r : m) (c : n), 
+    A'.M (f r) (g c) = h (A.M r c))
+    
+def LRIsomorphic (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) :=
+  Nonempty (LREquiv A A')
+  
+infixl:25 " ≃◻ " => LRIsomorphic
+  
+lemma LR_equiv_iso
+  (f : m ≃ m')
+  (g : n ≃ n')
+  (h : α ≃ β)
+  (A : LatinRectangle m n α) : A ≃◻ (latin_rectangle_isomorphism f g h A) := 
+    ⟨ f, g, h, by simp [latin_rectangle_isomorphism] ⟩
+    
+
+def R_iso
+  (f : m ≃ m')
+  (g : n ≃ n')
+  (h : α ≃ β)
+    (A : LatinRectangle m n α) : LREquiv A (latin_rectangle_isomorphism f g h A) := {
+    f := f
+    g := g
+    h := h
+    map_rel := by simp [latin_rectangle_isomorphism]
+}
+
+
+
  -- where 
  --    toFun := latin_rectangle_isomorphism f g h 
  --    invFun := latin_rectangle_isomorphism f.symm g.symm h.symm
@@ -794,10 +826,15 @@ lemma subrect_transitive {m'' : Type*} [Fintype m'']
   (h1 : is_subrect A A') (h2 : is_subrect A' A'') : is_subrect A A'' := by sorry
   
   
+-- lemma subrect_refl 
+--   (e : LREquiv (m := m) (n := n) (α := α) (m' := m') (n' := n) (β := α)) :
+--     ∀ A : LatinRectangle m n α, is_subrect A (e.toFun A) := by sorry
+
 lemma subrect_refl 
-  (e : LREquiv (m := m) (n := n) (α := α) (m' := m') (n' := n) (β := α)) :
-    ∀ A : LatinRectangle m n α, is_subrect A (e.toFun A) := by sorry
-  
+  {A : LatinRectangle m n α}
+  {A' : LatinRectangle m' n α} (h : A ≃◻ A') :
+  is_subrect A A' := by sorry
+
 theorem latin_rectangle_extends_to_latin_square
     (A : LatinRectangle k n α)
     (hn : Fintype.card n > 0)
@@ -808,11 +845,11 @@ theorem latin_rectangle_extends_to_latin_square
       | h a ih => 
         by_cases h_full : Fintype.card k = Fintype.card n
         . let f : k ≃ n := by sorry
-          let R := latin_rectangle_isomorphism f (Equiv.refl n) (Equiv.refl α) A
-          use R
-          
-          
-          sorry
+          let A' := latin_rectangle_isomorphism f (Equiv.refl n) (Equiv.refl α) A
+          have h_sim : A ≃◻ A' := by 
+            simp [LR_equiv_iso f (Equiv.refl n) (Equiv.refl α) A,A']
+          use A'
+          exact subrect_refl h_sim
         . set k' := Option k with hk'
           letI : Fintype k' := (inferInstance : Fintype (Option k))
           have hk'_card := Fintype.card_option (α := k)
