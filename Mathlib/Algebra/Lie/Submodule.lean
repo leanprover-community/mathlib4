@@ -778,12 +778,10 @@ theorem mem_map_of_mem {m : M} (h : m ∈ N) : f m ∈ N.map f :=
 theorem mem_comap {m : M} : m ∈ comap f N' ↔ f m ∈ N' :=
   Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comap_incl_eq_top : N₂.comap N.incl = ⊤ ↔ N ≤ N₂ := by
   rw [← LieSubmodule.toSubmodule_inj, LieSubmodule.toSubmodule_comap, LieSubmodule.incl_coe,
     LieSubmodule.top_toSubmodule, Submodule.comap_subtype_eq_top, toSubmodule_le_toSubmodule]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
   simp only [← toSubmodule_inj, toSubmodule_comap, incl_coe, bot_toSubmodule,
     inf_toSubmodule]
@@ -932,13 +930,11 @@ variable (N : LieSubmodule R L M)
 @[simp]
 theorem ker_incl : N.incl.ker = ⊥ := (LieModuleHom.ker_eq_bot N.incl).mpr <| injective_incl N
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_incl : N.incl.range = N := by
   simp only [← toSubmodule_inj, LieModuleHom.toSubmodule_range, incl_coe]
   rw [Submodule.range_subtype]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_incl_self : comap N.incl N = ⊤ := by
   simp only [← toSubmodule_inj, toSubmodule_comap, incl_coe, top_toSubmodule]

@@ -103,7 +103,6 @@ theorem mongePoint_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProdu
   rw [← Simplex.centroid, ← Simplex.centroid]
   simp [centroid_map, circumcenter_map]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Sylvester's theorem**: The position of the Monge point relative to the circumcenter via the
 sum of vectors to the vertices. -/
 theorem smul_mongePoint_vsub_circumcenter_eq_sum_vsub {n : ℕ} (s : Simplex ℝ P (n + 2)) :

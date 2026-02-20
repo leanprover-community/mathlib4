@@ -187,7 +187,6 @@ def minpoly : Polynomial (FixedPoints.subfield G F) :=
 
 namespace minpoly
 
-set_option backward.isDefEq.respectTransparency false in
 theorem monic : (minpoly G F x).Monic := by
   simp only [minpoly]
   rw [Polynomial.monic_toSubring]
@@ -203,12 +202,10 @@ theorem eval₂' :
     Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x (minpoly G F x) = 0 :=
   eval₂ G F x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ne_one : minpoly G F x ≠ (1 : Polynomial (FixedPoints.subfield G F)) := fun H =>
   have := eval₂ G F x
   (one_ne_zero : (1 : F) ≠ 0) <| by rwa [H, Polynomial.eval₂_one] at this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (hf : Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x f = 0) :
     minpoly G F x ∣ f := by
@@ -226,7 +223,6 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     MulSemiringActionHom.coe_polynomial, IsInvariantSubring.coe_subtypeHom',
     Polynomial.eval_map, Subfield.toSubring_subtype_eq_subtype, hf, smul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 -- Why is this so slow?
 theorem irreducible_aux (f g : Polynomial (FixedPoints.subfield G F)) (hf : f.Monic) (hg : g.Monic)
     (hfg : f * g = minpoly G F x) : f = 1 ∨ g = 1 := by
@@ -276,7 +272,6 @@ section Finite
 
 variable [Finite G]
 
-set_option backward.isDefEq.respectTransparency false in
 instance normal : Normal (FixedPoints.subfield G F) F where
   isAlgebraic x := (isIntegral G F x).isAlgebraic
   splits' x := by
@@ -285,7 +280,6 @@ instance normal : Normal (FixedPoints.subfield G F) F where
       Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
     exact Polynomial.Splits.prod fun _ _ => Polynomial.Splits.X_sub_C _
 
-set_option backward.isDefEq.respectTransparency false in
 instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
   classical
   exact ⟨fun x => by

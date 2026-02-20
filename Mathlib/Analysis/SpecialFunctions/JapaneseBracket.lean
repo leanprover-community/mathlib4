@@ -73,7 +73,6 @@ theorem closedBall_rpow_sub_one_eq_empty_aux {r t : ℝ} (hr : 0 < r) (ht : 1 < 
 variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 variable {E}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ) < r) :
     (∫⁻ x : ℝ in Ioc 0 1, ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n)) < ∞ := by
   have hr : 0 < r := lt_of_le_of_lt n.cast_nonneg hnr
