@@ -31,13 +31,12 @@ This concept is used to give an equivalent definition of immersions and submersi
   which is a continuous linear map itself
 * `ContinuousLinearMap.HasRightInverse`: a continuous linear map admits a right inverse
   which is a continuous linear map itself
-* `ContinuousLinearMap.Splits`: `f` splits iff it is injective, has closed range and `range f`
-  admits a closed complement
 
 * `ContinuousLinearMap.HasLeftInverse.isClosed_range`: if `f` has a continuous left inverse,
   its range is closed
 * `ContinuousLinearMap.HasLeftInverse.closedComplemented_range`: if `f` has a continuous left
   inverse, its range admits a closed complement
+* `ContinuousLinearMap.HasLeftInverse.complement`: a choice of closed complement for `range f`
 * `ContinuousLinearMap.HasLeftInverse.of_injective_of_isClosed_range_of_closedComplement_range`:
   if `f` is injective and has closed range with a closed complement, it admits a continuous left
   inverse
@@ -289,7 +288,7 @@ lemma _root_.ContinuousLinearEquiv.hasRightInverse (f : E ≃L[R] F) :
   ext y
   exact f.injective <| by simpa using f.hasRightInverse.rightInverse_rightInverse y
 
-/-- An invertible continuous linear map splits. -/
+/-- An invertible continuous linear map has a continuous right inverse. -/
 lemma of_isInvertible (hf : IsInvertible f) : f.HasRightInverse := by
   obtain ⟨e, rfl⟩ := hf
   exact e.hasRightInverse
