@@ -92,12 +92,14 @@ noncomputable def extendScalars' [UnivLE.{v, v'}] [Small.{v'} S] :
 
 variable [UnivLE.{v, v'}] [Small.{v'} S]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (extendScalars' R S).Additive where
   map_add {X Y} f g := by
     simp only [extendScalars', ExtendScalars'.map', hom_add, LinearMap.baseChange_add]
     ext x
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma extendScalars'_map_exact [Module.Flat R S]
     (T : ShortComplex (ModuleCat.{v} R)) (h : T.Exact) :
     (T.map (extendScalars' R S)).Exact := by
@@ -124,6 +126,7 @@ instance [Module.Flat R S] : Limits.PreservesFiniteColimits (extendScalars' R S)
 
 namespace Algebra'
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 scoped instance extendScalars'_linear :
     letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
@@ -155,6 +158,7 @@ noncomputable instance (n : ℕ) (M N : ModuleCat.{v'} S) : Module R (Ext M N n)
   letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) (M N : ModuleCat.{v'} S) : IsScalarTower R S (Ext M N n) where
   smul_assoc r s z := by
     simp only [Ext.smul_eq_comp_mk₀, Ext.comp_assoc_of_second_deg_zero, Ext.mk₀_comp_mk₀,
@@ -166,6 +170,7 @@ instance (M N : ModuleCat.{v'} S) : Module R (M ⟶ N) :=
   letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (M N : ModuleCat.{v'} S) : IsScalarTower R S (M ⟶ N) where
   smul_assoc r s x := by
     rw [Algebra.smul_def, ← smul_smul]
@@ -185,6 +190,7 @@ lemma ModuleCat.extendScalars'_map_LinearMap_eq_mapAddHom (M N : ModuleCat.{v} R
   extendScalars'_map_LinearMap.{v, v'} S M N =
   (ModuleCat.extendScalars'.{v, v'} R S).mapAddHom (X := M) (Y := N) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Small.{v} R] in
 lemma CategoryTheory.isBaseChange_hom [IsNoetherianRing R] [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.Finite R M] :
@@ -236,6 +242,7 @@ lemma ModuleCat.extendScalars'.mapExtLinearMap_eq_mapExt [Module.Flat R S]
 
 open ModuleCat
 
+set_option backward.isDefEq.respectTransparency false in
 theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ) :
     IsBaseChange S (extendScalars'.mapExtLinearMap.{v, v'} S M N n) := by
@@ -322,6 +329,7 @@ noncomputable def ModuleCat.iso_extendScalars'_of_isBaseChange' {M : ModuleCat.{
 
 namespace CategoryTheory.Abelian
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomprohism on `Ext` induced by `ModuleCat.iso_extendScalars'_of_isBaseChange`. -/
 noncomputable def Ext.isBaseChangeMap_aux {M N : ModuleCat.{v} R}
     {MS NS : ModuleCat.{v'} S} (f : M →ₗ[R] (RestrictScalars R S MS))
@@ -335,6 +343,7 @@ noncomputable def Ext.isBaseChangeMap_aux {M N : ModuleCat.{v} R}
   (iso_extendScalars'_of_isBaseChange S f isb1).op).app NS)).addCommGroupIsoToAddEquiv
   map_smul' s x := by simp [Iso.addCommGroupIsoToAddEquiv] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomprohism on `Ext` induced by `ModuleCat.iso_extendScalars'_of_isBaseChange'`. -/
 noncomputable def Ext.isBaseChangeMap_aux' {M N : ModuleCat.{v} R}
     {MS NS : ModuleCat.{v'} S} [Module R MS] [IsScalarTower R S MS]
