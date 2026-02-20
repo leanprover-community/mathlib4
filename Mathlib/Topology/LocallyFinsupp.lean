@@ -232,7 +232,7 @@ protected def addSubmonoid [AddMonoid Y] : AddSubmonoid (X → Y) where
       by_contra! hCon
       simp_all
 
-protected lemma memAddSubmonoid  [AddMonoid Y] (D : locallyFinsuppWithin U Y) :
+protected lemma memAddSubmonoid [AddMonoid Y] (D : locallyFinsuppWithin U Y) :
     (D : X → Y) ∈ locallyFinsuppWithin.addSubmonoid U :=
   ⟨D.supportWithinDomain, D.supportLocallyFiniteWithinDomain⟩
 
@@ -245,7 +245,7 @@ protected def addSubgroup [AddGroup Y] : AddSubgroup (X → Y) where
   __ := locallyFinsuppWithin.addSubmonoid U
   neg_mem' {f} hf := by simp_all
 
-protected lemma memAddSubgroup  [AddGroup Y] (D : locallyFinsuppWithin U Y) :
+protected lemma memAddSubgroup [AddGroup Y] (D : locallyFinsuppWithin U Y) :
     (D : X → Y) ∈ locallyFinsuppWithin.addSubgroup U :=
   ⟨D.supportWithinDomain, D.supportLocallyFiniteWithinDomain⟩
 
@@ -259,7 +259,7 @@ def mk_of_mem [AddMonoid Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSu
 instance [AddMonoid Y] : Zero (locallyFinsuppWithin U Y) where
   zero := mk_of_mem 0 <| zero_mem _
 
-instance [AddMonoid Y]: Add (locallyFinsuppWithin U Y) where
+instance [AddMonoid Y] : Add (locallyFinsuppWithin U Y) where
   add D₁ D₂ := mk_of_mem (D₁ + D₂) <| add_mem D₁.memAddSubmonoid D₂.memAddSubmonoid
 
 instance [AddMonoid Y] : SMul ℕ (locallyFinsuppWithin U Y) where
