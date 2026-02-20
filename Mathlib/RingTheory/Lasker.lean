@@ -9,6 +9,8 @@ public import Mathlib.Order.Irreducible
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.RingTheory.IsPrimary
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 
 /-!
 # Lasker ring
@@ -120,6 +122,20 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)
   exact ⟨t, h1, h2, h3, h4⟩
 
 end Submodule
+
+lemma Ideal.IsMinimalPrimaryDecomposition.minimalPrimes_subset_image_radical
+    [DecidableEq (Ideal R)]
+    {I : Ideal R} {t : Finset (Ideal R)} (ht : I.IsMinimalPrimaryDecomposition t) :
+    I.minimalPrimes ⊆ radical '' t := by
+  intro p hp
+  have htp : t.inf radical ≤ p := by
+    rw [← hp.1.1.radical]
+    refine le_trans ?_ (radical_mono hp.1.2)
+    rw [← ht.inf_eq, ← radicalInfTopHom_apply, map_finset_inf]
+    rfl
+  obtain ⟨q, hqt, hqp⟩ := (IsPrime.inf_le' hp.1.1).mp htp
+  exact ⟨q, hqt, le_antisymm hqp (hp.2 ⟨isPrime_radical (ht.primary hqt),
+    ht.inf_eq.symm.trans_le ((Finset.inf_le hqt).trans le_radical)⟩ hqp)⟩
 
 @[deprecated (since := "2026-01-19")]
 alias Ideal.decomposition_erase_inf := Submodule.decomposition_erase_inf

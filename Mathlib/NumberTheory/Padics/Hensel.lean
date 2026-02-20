@@ -53,6 +53,7 @@ theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring
 
 open Filter Metric
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem comp_tendsto_lim {p : ℕ} [Fact p.Prime] {F : Polynomial ℤ_[p]}
     (ncs : CauSeq ℤ_[p] norm) : Tendsto (fun i => F.eval (ncs i)) atTop (𝓝 (F.eval ncs.lim)) :=
   Filter.Tendsto.comp (@Polynomial.continuousAt _ _ _ _ F _) ncs.tendsto_limit
@@ -359,6 +360,7 @@ private theorem T_pos : T > 0 := by
   rw [T_def]
   exact div_pos (norm_pos_iff.2 hnsol) (deriv_sq_norm_pos hnorm)
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem newton_seq_succ_dist_weak (n : ℕ) :
     ‖newton_seq (n + 2) - newton_seq (n + 1)‖ < ‖F.aeval a‖ / ‖F.derivative.aeval a‖ :=
   have : 2 ≤ 2 ^ (n + 1) := by
