@@ -45,6 +45,7 @@ open scoped NNReal ENNReal Topology
 
 namespace Vitali
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Vitali covering theorem**: given a set `t` of subsets of a type, one may extract a disjoint
 subfamily `u` such that the `τ`-enlargement of this family covers all elements of `t`, where `τ > 1`
 is any fixed number.
@@ -153,6 +154,7 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
       · rw [← not_disjoint_iff_nonempty_inter] at hcb
         exact (hcb (H _ H')).elim
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Vitali covering theorem, closed balls version: given a family `t` of closed balls, one can
 extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by the τ-times
 dilations of balls in `u`, for some `τ > 3`. -/

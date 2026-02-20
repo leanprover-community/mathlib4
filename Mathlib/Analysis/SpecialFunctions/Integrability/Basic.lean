@@ -65,6 +65,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
     simp only [Pi.smul_apply, smul_eq_mul, log_neg_eq_log, mul_comm,
       rpow_def_of_pos hx.1, rpow_def_of_neg (by linarith [hx.1] : -x < 0)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The power function `x ↦ x^s` is integrable on `(0, t)` iff `-1 < s`. -/
 lemma integrableOn_Ioo_rpow_iff {s t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s := by
@@ -166,6 +167,7 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
     rw [Complex.ofReal_cpow_of_nonpos this, mul_comm]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The complex power function `x ↦ x^s` is integrable on `(0, t)` iff `-1 < s.re`. -/
 theorem integrableOn_Ioo_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s.re := by
@@ -222,6 +224,7 @@ hypothesis on the interval, but assuming the measure is the volume.
 theorem intervalIntegrable_log (h : (0 : ℝ) ∉ [[a, b]]) : IntervalIntegrable log μ a b :=
   IntervalIntegrable.log continuousOn_id fun _ hx => ne_of_mem_of_not_mem hx h
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The real logarithm is interval integrable (with respect to the volume measure) on every interval.
 See `intervalIntegrable_log` for a version applying to any locally finite measure, but with an

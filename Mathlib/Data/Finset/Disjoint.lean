@@ -101,6 +101,7 @@ theorem disjoint_singleton : Disjoint ({a} : Finset α) {b} ↔ a ≠ b := by
 theorem disjoint_self_iff_empty (s : Finset α) : Disjoint s s ↔ s = ∅ :=
   disjoint_self
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem disjoint_coe : Disjoint (s : Set α) t ↔ Disjoint s t := by
   simp only [Finset.disjoint_left, Set.disjoint_left, mem_coe]
@@ -135,6 +136,7 @@ def disjUnion (s t : Finset α) (h : Disjoint s t) : Finset α :=
 theorem mem_disjUnion {α s t h a} : a ∈ @disjUnion α s t h ↔ a ∈ s ∨ a ∈ t := by
   rcases s with ⟨⟨s⟩⟩; rcases t with ⟨⟨t⟩⟩; apply List.mem_append
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_disjUnion {s t : Finset α} (h : Disjoint s t) :
     (disjUnion s t h : Set α) = (s : Set α) ∪ t :=

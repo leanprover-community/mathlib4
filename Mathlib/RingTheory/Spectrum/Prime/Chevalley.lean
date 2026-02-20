@@ -67,6 +67,7 @@ lemma isOpenMap_comap_of_hasGoingDown_of_finitePresentation
     (isConstructible_comap_image (RingHom.finitePresentation_algebraMap.mpr ‹_›)
       isConstructible_basicOpen)
 
+set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 @[stacks 037G]
 theorem isOpenMap_comap_algebraMap_tensorProduct_of_field
