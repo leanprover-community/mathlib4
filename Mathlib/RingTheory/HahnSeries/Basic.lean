@@ -271,7 +271,10 @@ theorem orderTop_of_ne_zero (hx : x ≠ 0) :
 @[deprecated (since := "2025-08-19")] alias orderTop_of_ne := orderTop_of_ne_zero
 
 @[simp] lemma orderTop_eq_top : orderTop x = ⊤ ↔ x = 0 := by simp [orderTop]
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma orderTop_lt_top : orderTop x < ⊤ ↔ x ≠ 0 := by simp [lt_top_iff_ne_top]
+
 lemma orderTop_ne_top : orderTop x ≠ ⊤ ↔ x ≠ 0 := orderTop_eq_top.not
 
 @[deprecated (since := "2025-08-19")] alias orderTop_eq_top_iff := orderTop_eq_top
@@ -302,6 +305,7 @@ theorem orderTop_ne_of_coeff_eq_zero {x : R⟦Γ⟧} {i : Γ} (hx : x.coeff i = 
     x.orderTop ≠ i :=
   fun h ↦ coeff_orderTop_ne h hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_le_of_coeff_ne_zero {Γ} [LinearOrder Γ] {x : R⟦Γ⟧}
     {g : Γ} (h : x.coeff g ≠ 0) : x.orderTop ≤ g := by
   rw [orderTop_of_ne_zero (ne_zero_of_coeff_ne_zero h), WithTop.coe_le_coe]
@@ -313,6 +317,7 @@ theorem orderTop_single (h : r ≠ 0) : (single a r).orderTop = a :=
     (WithTop.coe_inj.mpr (support_single_subset
       ((single a r).isWF_support.min_mem (support_nonempty_iff.2 (single_ne_zero h)))))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_single_le : a ≤ (single a r).orderTop := by
   by_cases hr : r = 0
   · simp only [hr, map_zero, orderTop_zero, le_top]
@@ -321,6 +326,7 @@ theorem orderTop_single_le : a ≤ (single a r).orderTop := by
 theorem lt_orderTop_single {g g' : Γ} (hgg' : g < g') : g < (single g' r).orderTop :=
   lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hgg') orderTop_single_le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_eq_zero_of_lt_orderTop {x : R⟦Γ⟧} {i : Γ} (hi : i < x.orderTop) :
     x.coeff i = 0 := by
   rcases eq_or_ne x 0 with (rfl | hx)
@@ -413,6 +419,7 @@ theorem coeff_eq_zero_of_lt_order {x : R⟦Γ⟧} {i : Γ} (hi : i < x.order) : 
   rw [order_of_ne hx]
   exact Set.IsWF.not_lt_min _ _ hi
 
+set_option backward.isDefEq.respectTransparency false in
 theorem zero_lt_orderTop_iff {x : R⟦Γ⟧} (hx : x ≠ 0) :
     0 < x.orderTop ↔ 0 < x.order := by
   simp_all [orderTop_of_ne_zero hx, order_of_ne hx]
@@ -422,6 +429,7 @@ theorem zero_lt_orderTop_of_order {x : R⟦Γ⟧} (hx : 0 < x.order) : 0 < x.ord
   · simp_all only [order_zero, lt_self_iff_false]
   · exact (zero_lt_orderTop_iff h).mpr hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem zero_le_orderTop_iff {x : R⟦Γ⟧} : 0 ≤ x.orderTop ↔ 0 ≤ x.order := by
   by_cases h : x = 0
   · simp_all
@@ -549,6 +557,7 @@ theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ (m : Γ),
 theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_orderTop_iff_forall {x : R⟦Γ⟧} {i : WithTop Γ} :
     i ≤ x.orderTop ↔ ∀ j : Γ, j < i → x.coeff j = 0 where
   mp hi j hj := coeff_eq_zero_of_lt_orderTop (hj.trans_le hi)
@@ -558,6 +567,7 @@ theorem le_orderTop_iff_forall {x : R⟦Γ⟧} {i : WithTop Γ} :
     · by_contra! hi
       exact x.isWF_support.min_mem (support_nonempty_iff.2 h) (H _ (orderTop_of_ne_zero h ▸ hi))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_lt_iff_exists {x : R⟦Γ⟧} {i : WithTop Γ} :
     x.orderTop < i ↔ ∃ j : Γ, j < i ∧ x.coeff j ≠ 0 := by
   rw [← not_le, le_orderTop_iff_forall]

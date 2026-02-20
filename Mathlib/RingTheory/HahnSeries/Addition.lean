@@ -64,6 +64,7 @@ instance : SMulZeroClass R V⟦Γ⟧ where
     ext
     simp only [coeff_smul, coeff_zero, smul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_smul_not_lt (r : R) (x : V⟦Γ⟧) : ¬ (r • x).orderTop < x.orderTop := by
   by_cases hrx : r • x = 0
   · rw [hrx, orderTop_zero]
@@ -196,6 +197,7 @@ protected theorem min_le_min_add {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧} (hx : x
   rw [← Set.IsWF.min_union]
   exact Set.IsWF.min_le_min_of_subset (support_add_subset (x := x) (y := y))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem min_orderTop_le_orderTop_add {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧} :
     min x.orderTop y.orderTop ≤ (x + y).orderTop := by
   by_cases hx : x = 0; · simp [hx]
@@ -212,6 +214,7 @@ theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : R⟦Γ⟧}
   rw [order_of_ne hx, order_of_ne hy, order_of_ne hxy]
   exact HahnSeries.min_le_min_add hx hy hxy
 
+set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_add_eq_left {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧}
     (hxy : x.orderTop < y.orderTop) : (x + y).orderTop = x.orderTop := by
   have hx : x ≠ 0 := orderTop_ne_top.1 hxy.ne_top
@@ -231,6 +234,7 @@ theorem orderTop_add_eq_right {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧}
     (x := addOppositeEquiv.symm (.op y))
     (y := addOppositeEquiv.symm (.op x))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem leadingCoeff_add_eq_left {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧}
     (hxy : x.orderTop < y.orderTop) : (x + y).leadingCoeff = x.leadingCoeff := by
   have hx : x ≠ 0 := orderTop_ne_top.1 hxy.ne_top

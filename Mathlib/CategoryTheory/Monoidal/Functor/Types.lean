@@ -26,6 +26,7 @@ section
 
 variable (F : Type* → Type*) [Applicative F] [LawfulApplicative F]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] map_seq seq_map_assoc
   LawfulApplicative.pure_seq LawfulApplicative.seq_assoc in
 /-- A lawful `Applicative` gives a category theory `LaxMonoidal` functor

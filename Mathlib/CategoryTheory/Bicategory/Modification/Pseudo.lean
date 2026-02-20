@@ -64,6 +64,7 @@ namespace Modification
 
 variable (Γ : Modification η θ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The modification between the corresponding strong transformation of the underlying oplax
 functors. -/
 @[simps]

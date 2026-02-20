@@ -106,12 +106,14 @@ theorem adjointDomainMkCLM_apply (y : T.adjointDomain) (x : T.domain) :
     adjointDomainMkCLM T y x = ⟪(y : F), T x⟫ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unique continuous extension of the operator `adjointDomainMkCLM` to `E`. -/
 def adjointDomainMkCLMExtend (y : T.adjointDomain) : StrongDual 𝕜 E :=
   (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain)
 
 variable {T}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem adjointDomainMkCLMExtend_apply (hT : Dense (T.domain : Set E)) (y : T.adjointDomain)
     (x : T.domain) : adjointDomainMkCLMExtend T y (x : E) = ⟪(y : F), T x⟫ :=
@@ -212,7 +214,7 @@ theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
     (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
   ext x y hxy
   · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true,
-      LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, coe_innerₛₗ_apply]
+      LinearPMap.mem_adjoint_domain_iff]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
   refine LinearPMap.adjoint_apply_eq hp _ fun v => ?_
   simp only [adjoint_inner_left, LinearMap.toPMap_apply, coe_coe]
