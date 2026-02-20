@@ -112,6 +112,7 @@ theorem isPrimePow_pow_iff {n k : ℕ} (hk : k ≠ 0) : IsPrimePow (n ^ k) ↔ I
   apply existsUnique_congr
   simp +contextual [Nat.prime_iff, Prime.dvd_pow_iff_dvd, hk]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn : IsPrimePow n) :
     n ∣ a * b ↔ n ∣ a ∨ n ∣ b := by
   rcases eq_or_ne a 0 with (rfl | ha)

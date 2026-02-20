@@ -183,6 +183,7 @@ lemma smul_def [SMul ℂ α] (z : Circle) (a : α) : z • a = (z : ℂ) • a :
 instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [ContinuousSMul ℂ α] :
     ContinuousSMul Circle α := Submonoid.continuousSMul
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
     (u : Circle) (v : E) :

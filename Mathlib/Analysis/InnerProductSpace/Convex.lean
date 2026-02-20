@@ -41,6 +41,6 @@ instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConve
       exact pow_pos hε _
     rw [sub_sub_cancel]
     refine le_sqrt_of_sq_le ?_
-    rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
+    rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm_mul ℝ x y), ← sq ‖x - y‖, hx, hy]
     ring_nf
     gcongr⟩

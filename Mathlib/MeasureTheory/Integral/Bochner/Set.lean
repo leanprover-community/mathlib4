@@ -850,6 +850,7 @@ section IntegrableUnion
 
 variable {ι : Type*} [Countable ι] {μ : Measure X} [NormedAddCommGroup E]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → Set X}
     (hi : ∀ i : ι, IntegrableOn f (s i) μ)
     (h : Summable fun i : ι => ∫ x : X in s i, ‖f x‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
@@ -1087,6 +1088,7 @@ theorem continuous_parametric_integral_of_continuous
   · exact integrableOn_const hs.measure_ne_top
   · filter_upwards using (by fun_prop)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Consider a parameterized integral `x ↦ ∫ y, L (g y) (f x y)` where `L` is bilinear,
 `g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
 integral depends continuously on `x`. -/

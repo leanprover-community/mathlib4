@@ -295,6 +295,7 @@ section CpowLimits2
 
 namespace Complex
 
+set_option backward.isDefEq.respectTransparency false in
 /-- See also `continuousAt_cpow` and `Complex.continuousAt_cpow_of_re_pos`. -/
 theorem continuousAt_cpow_zero_of_re_pos {z : ℂ} (hz : 0 < z.re) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) (0, z) := by
@@ -336,6 +337,7 @@ theorem continuousAt_cpow_const_of_re_pos {z w : ℂ} (hz : 0 ≤ re z ∨ im z 
   Tendsto.comp (@continuousAt_cpow_of_re_pos (z, w) hz hw)
     (continuousAt_id.prodMk continuousAt_const)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Continuity of `(x, y) ↦ x ^ y` as a function on `ℝ × ℂ`. -/
 theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun p => (p.1 : ℂ) ^ p.2 : ℝ × ℂ → ℂ) (x, y) := by

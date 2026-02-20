@@ -690,6 +690,7 @@ namespace Classical
 
 -- use shortened names to avoid conflict when classical namespace is open.
 /-- Any prop `p` is decidable classically. A shorthand for `Classical.propDecidable`. -/
+@[instance_reducible]
 noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 
 variable {α : Sort*}
