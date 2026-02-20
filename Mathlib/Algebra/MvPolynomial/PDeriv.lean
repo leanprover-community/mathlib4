@@ -158,13 +158,6 @@ lemma pderiv_sumToIter {σ ι} (p i) :
   | add p q _ _ => simp_all
   | mul_X p n _ => cases n <;> simp_all [pderiv_X, Pi.single_apply, apply_ite]
 
-theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R} {i : σ} :
-    pderiv i (map φ f) = map φ (pderiv i f) := by
-  apply induction_on f (fun r ↦ by simp) (fun p q hp hq ↦ by simp [hp, hq]) fun p j eq ↦ ?_
-  obtain rfl | h := eq_or_ne j i
-  · simp [eq]
-  · simp [eq, h]
-
 end PDeriv
 
 end MvPolynomial

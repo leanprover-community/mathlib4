@@ -174,6 +174,14 @@ lemma smul_basis_mul_Y (p q : R[X]) : (p • (1 : W'.CoordinateRing) + q • mk 
   simp only [smul, add_mul, mul_assoc, ← sq, Y_sq, map_sub, map_mul]
   ring1
 
+lemma algebraMap_poly_injective : Function.Injective (algebraMap R[X] W'.CoordinateRing) :=
+  (injective_iff_map_eq_zero _).mpr fun p hp ↦ And.left <|
+    smul_basis_eq_zero (W' := W') (q := 0) <| by
+      rwa [Algebra.smul_def, mul_one, zero_smul, add_zero]
+
+lemma algebraMap_injective' : Function.Injective (algebraMap R W'.CoordinateRing) :=
+  (CoordinateRing.algebraMap_poly_injective (W' := W')).comp C_injective
+
 variable (W') in
 /-- The ring homomorphism `R[W] →+* S[W.map f]` induced by a ring homomorphism `f : R →+* S`. -/
 noncomputable def map (f : R →+* S) : W'.CoordinateRing →+* (W'.map f).toAffine.CoordinateRing :=
@@ -489,6 +497,10 @@ lemma zero_def : 0 = (.zero : W'.Point) :=
 
 lemma some_ne_zero {x y : R} (h : W'.Nonsingular x y) : Point.some h ≠ 0 := by
   rintro (_ | _)
+
+lemma some_eq_some_iff {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Nonsingular x₁ y₁)
+    (h₂ : W'.Nonsingular x₂ y₂) : some h₁ = some h₂ ↔ x₁ = x₂ ∧ y₁ = y₂ :=
+  ⟨by rintro (_ | _); trivial, by rintro ⟨rfl, rfl⟩; rfl⟩
 
 /-- The negation of a nonsingular point on a Weierstrass curve in affine coordinates.
 

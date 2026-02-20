@@ -5,7 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
-public import Init.Data.Int.DivModLemmas
+public import Init.Data.Int.DivMod
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.Order.Ring.Abs
@@ -79,6 +79,8 @@ elliptic, divisibility, sequence
 
 @[expose] public section
 
+universe u v
+
 variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (W : ℤ → R)
 variable {F} [FunLike F R S] [RingHomClass F R S] (f : F)
 
@@ -88,8 +90,9 @@ namespace EllSequence
 
 /-- The expression `W((m+n)/2) * W((m-n)/2)` is the basic building block of elliptic relations,
 where integers `m` and `n` should have the same parity. -/
-def addMulSub (m n : ℤ) : R := W ((m + n).div 2) * W ((m - n).div 2)
--- Implementation note: we use `Int.div _ 2` instead of `_ / 2` so that `(-m).div 2 = -(m.div 2)`
+def addMulSub (m n : ℤ) : R := W ((m + n).tdiv 2) * W ((m - n).tdiv 2)
+-- Implementation note: we use `Int.tdiv _ 2` instead of `_ / 2` so that
+-- `(-m).tdiv 2 = -(m.tdiv 2)`
 -- and lemmas like `addMulSub_neg₀` hold unconditionally, even though in the case we care about
 -- (`m` and `n` both even or both odd) both are equal.
 
@@ -118,7 +121,7 @@ lemma net_eq_rel₄ {p q r s : ℤ} :
     net W p q r s = rel₄ W (2 * p + s) (2 * q + s) (2 * r + s) s := by
   simp_rw [net, rel₄, addMulSub, add_add_add_comm _ s, add_sub_add_comm, sub_self, add_zero,
     add_assoc, ← two_mul, add_sub_cancel_right, ← left_distrib, ← mul_sub_left_distrib,
-    Int.mul_div_cancel_left _ two_ne_zero]
+    Int.mul_tdiv_cancel_left _ two_ne_zero]
   ring
 
 /-- The three-index elliptic relation, obtained by
@@ -143,7 +146,7 @@ def invarDenom (s n : ℤ) : R := W (n + s) * W n * W (n - s)
 theorem invar_of_net (net_eq_zero : ∀ p q r s, net W p q r s = 0) (s m n : ℤ) :
     invarNum W s m * invarDenom W s n = invarNum W s n * invarDenom W s m := by
   simp_rw [invarNum, invarDenom]
-  linear_combination (norm := (simp_rw [net]; ring_nf))
+  linear_combination (norm := (simp_rw [net]; ring_nf; simp only [Nat.rawCast]))
     net_eq_zero m n s 0 * W m * W n * W (2 * s) ^ 2
       - (net_eq_zero m n s s * W (m - s) * W (n - s)
         + net_eq_zero (m - s) (n - s) s s * W (m + s) * W (n + s)
@@ -154,25 +157,25 @@ lemma net_add_sub_iff (m n : ℤ) :
       W (2 * (m + n)) * W (m - n) * W m * W n =
         (W (2 * m + n) * W (2 * n) * W m - W (m + 2 * n) * W (2 * m) * W n) * W (m + n) := by
   rw [net]; conv_rhs => rw [← sub_eq_zero]
-  ring_nf
+  ring_nf; simp only [Nat.rawCast]
 
 lemma addMulSub_two_zero : addMulSub W 2 0 = W 1 ^ 2 := (sq _).symm
 lemma addMulSub_three_one : addMulSub W 3 1 = W 2 * W 1 := rfl
 
 lemma addMulSub_even (m n : ℤ) : addMulSub W (2 * m) (2 * n) = W (m + n) * W (m - n) := by
-  simp_rw [addMulSub, ← left_distrib, ← mul_sub_left_distrib, Int.mul_div_cancel_left _ two_ne_zero]
+  simp_rw [addMulSub, ← left_distrib, ← mul_sub_left_distrib, Int.mul_tdiv_cancel_left _ two_ne_zero]
 
 lemma addMulSub_odd (m n : ℤ) :
     addMulSub W (2 * m + 1) (2 * n + 1) = W (m + n + 1) * W (m - n) := by
-  have h k := Int.mul_div_cancel_left k two_ne_zero
+  have h k := Int.mul_tdiv_cancel_left k two_ne_zero
   rw [addMulSub, ← h (m + n + 1), ← h (m - n)]; congr <;> ring
 
 lemma addMulSub_same (zero : W 0 = 0) (m : ℤ) : addMulSub W m m = 0 := by
-  rw [addMulSub, sub_self, Int.zero_div, zero, mul_zero]
+  rw [addMulSub, sub_self, Int.zero_tdiv, zero, mul_zero]
 
 lemma addMulSub_neg₀ (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
     addMulSub W (-m) n = addMulSub W m n := by
-  simp_rw [addMulSub, ← neg_add', neg_add_eq_sub, ← neg_sub m, Int.neg_div, neg]; ring
+  simp_rw [addMulSub, ← neg_add', neg_add_eq_sub, ← neg_sub m, Int.neg_tdiv, neg]; ring
 
 lemma addMulSub_neg₁ (m n : ℤ) : addMulSub W m (-n) = addMulSub W m n := by
   rw [addMulSub, addMulSub, mul_comm]; abel_nf
@@ -186,7 +189,7 @@ lemma addMulSub_abs₁ (m n : ℤ) : addMulSub W m |n| = addMulSub W m n := by
 
 lemma addMulSub_swap (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
     addMulSub W m n = - addMulSub W n m := by
-  rw [addMulSub, addMulSub, ← neg_sub, Int.neg_div, neg]; ring_nf
+  rw [addMulSub, addMulSub, ← neg_sub, Int.neg_tdiv, neg]; ring_nf
 
 section transf
 
@@ -206,11 +209,13 @@ namespace HaveSameParity₄
 open Int Equiv
 
 variable {W a b c d} (same : HaveSameParity₄ a b c d)
+include same
 
 lemma rel₄_eq_net : rel₄ W a b c d = net W ((a - d) / 2) ((b - d) / 2) ((c - d) / 2) d := by
   have h := @Int.two_mul_ediv_two_of_even
   rw [net_eq_rel₄, h, h, h]; · simp_rw [sub_add_cancel]
-  all_goals simp only [← negOnePow_eq_iff, same.1, same.2.1, same.2.2]
+  all_goals rw [← negOnePow_eq_iff]
+  exacts [same.1.trans (same.2.1.trans same.2.2), same.2.1.trans same.2.2, same.2.2]
 
 lemma even_sum : Even (a + b + c + d) := by
   simp_rw [← negOnePow_eq_one_iff, negOnePow_add,
@@ -227,8 +232,11 @@ protected lemma abs : HaveSameParity₄ |a| |b| |c| |d| := by
 lemma perm (σ : Perm (Fin 4)) :
     ∀ t : Fin 4 → ℤ, HaveSameParity₄ (t 0) (t 1) (t 2) (t 3) →
       HaveSameParity₄ (t (σ 0)) (t (σ 1)) (t (σ 2)) (t (σ 3)) := by
-  have := (Perm.mclosure_swap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
-  refine Submonoid.closure_induction this ?_ (fun _ ↦ id) fun σ τ hσ hτ t same ↦ ?_
+  have hmem := (Perm.mclosure_swap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
+  refine Submonoid.closure_induction
+    (motive := fun σ _ ↦ ∀ t : Fin 4 → ℤ, HaveSameParity₄ (t 0) (t 1) (t 2) (t 3) →
+      HaveSameParity₄ (t (σ 0)) (t (σ 1)) (t (σ 2)) (t (σ 3)))
+    ?_ (fun _ ↦ id) (fun σ τ _ _ hσ hτ t same ↦ ?_) hmem
   on_goal 2 => simp_rw [Perm.mul_apply]; exact hτ (t ∘ σ) (hσ _ same)
   rintro _ ⟨i, rfl⟩ t ⟨h₀₁, h₁₂, h₂₃⟩; fin_cases i
   exacts [⟨h₀₁.symm, h₀₁ ▸ h₁₂, h₂₃⟩, ⟨h₀₁ ▸ h₁₂, h₁₂.symm, h₁₂ ▸ h₂₃⟩, ⟨h₀₁, h₁₂ ▸ h₂₃, h₂₃.symm⟩]
@@ -242,7 +250,7 @@ lemma six_le_of_strictAnti₄ (anti : StrictAnti₄ a b c d) : 6 ≤ a := by
 
 variable (W) in
 /-- A hybrid product formed by one factor from an `addMulSub` and one from another `addMulSub`. -/
-def addMulSub₄ (a b c d : ℤ) : R := W ((a + b).div 2) * W ((c - d).div 2)
+def addMulSub₄ (a b c d : ℤ) : R := W ((a + b).tdiv 2) * W ((c - d).tdiv 2)
 
 lemma addMulSub₄_mul_addMulSub₄ :
     addMulSub₄ W a b c d * addMulSub₄ W c d a b = addMulSub W a b * addMulSub W c d := by
@@ -342,12 +350,12 @@ lemma rel₃_iff_oddRec (m : ℤ) : Rel₃ W (m + 1) m 1 ↔ OddRec W m := by
   rw [Rel₃, OddRec]; ring_nf
 
 lemma rel₃_iff_evenRec (m : ℤ) : Rel₃ W (m + 1) (m - 1) 1 ↔ EvenRec W m := by
-  rw [Rel₃, EvenRec]; ring_nf
+  rw [Rel₃, EvenRec]; ring_nf; simp only [Nat.rawCast]
 
 lemma rel₄_iff_evenRec (m : ℤ) : rel₄ W (2 * m + 1) (2 * m - 1) 3 1 = 0 ↔ EvenRec W m := by
   rw [iff_comm, EvenRec, ← sub_eq_zero, show 2 * m - 1 = 2 * (m - 1) + 1 by ring]
   convert_to _ ↔ rel₄ W _ _ (2 * 1 + 1) (2 * 0 + 1) = 0
-  simp_rw [rel₄, addMulSub_odd]; ring_nf
+  simp_rw [rel₄, addMulSub_odd]; ring_nf; simp only [Nat.rawCast]
 
 /-- The minimal possible fourth index in the four-index elliptic relation given the first index. -/
 def dMin (a : ℤ) : ℤ := if Even a then 0 else 1
@@ -362,7 +370,9 @@ lemma negOnePow_cMin_eq_dMin (a : ℤ) : (cMin a).negOnePow = (dMin a).negOnePow
   rw [cMin, Int.negOnePow_add]; exact mul_one _
 
 lemma negOnePow_dMin (a : ℤ) : (dMin a).negOnePow = a.negOnePow := by
-  rw [dMin]; split_ifs with h <;> simp [h, Int.negOnePow_even, Int.negOnePow_odd]
+  rw [dMin]; split_ifs with h
+  · simp [Int.negOnePow_even, h]
+  · simp [Int.negOnePow_odd, Int.not_even_iff_odd.mp h]
 
 lemma negOnePow_cMin (a : ℤ) : (cMin a).negOnePow = a.negOnePow := by
   rw [negOnePow_cMin_eq_dMin, negOnePow_dMin]
@@ -388,6 +398,7 @@ def Rel₄OfValid (a b c d : ℤ) : Prop :=
 
 variable {a c₀ d₀ : ℤ} (par : c₀.negOnePow = d₀.negOnePow) (le : 0 ≤ d₀) (lt : d₀ < c₀)
   (rel : ∀ {a' b}, a' ≤ a → Rel₄OfValid W a' b c₀ d₀) (mem : addMulSub W c₀ d₀ ∈ R⁰)
+include par le lt rel mem
 
 /-- If `rel₄` holds for all quadruples of the form `(a', b, c₀, d₀)` for arbitrary `b` and
 `a' < a`, then it holds for `(a, b, c, c₀)` and `(a, b, c, d₀)` for arbitrary `b` and `c`
@@ -424,7 +435,7 @@ and combine them to remove technical conditions about the relative order of the 
 theorem rel₄_of_min₂ (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (rel : ∀ {a' b}, a' ≤ a → Rel₄OfValid W a' b (cMin a) (dMin a)) (b c d : ℤ) :
     Rel₄OfValid W a b c d := fun same anti ↦ by
-  obtain hc|hc := lt_or_le (cMin a) d
+  obtain hc|hc := lt_or_ge (cMin a) d
   · refine rel₄_of_fix₂ (negOnePow_cMin_eq_dMin a) (dMin_nonneg a) (dMin_lt_cMin a) rel
       (addMulSub_mem_nonZeroDivisors one two a) _ _ _ hc ?_ same anti
     rw [negOnePow_dMin, same.1, same.2.1, same.2.2]
@@ -466,7 +477,7 @@ theorem rel₄_of_anti_oddRec_evenRec (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     · ring
     · linarith only [h6, ha']
   · have nea : ¬ Even a := by
-      rw [← ha', ← Int.odd_iff_not_even]; convert odd_two_mul_add_one (m + 1) using 1; ring
+      rw [← ha', ← Int.not_even_iff_odd]; convert odd_two_mul_add_one (m + 1) using 1; ring
     simp_rw [cMin, dMin, if_neg nea]
     convert (rel₄_iff_evenRec W (m + 1)).mpr (evenRec _ ?_) using 2
     on_goal 3 => linarith only [h6, ha']
@@ -477,6 +488,7 @@ end Rel₄OfValid
 section Perm
 
 variable (neg : ∀ k, W (-k) = -W k)
+include neg
 
 lemma rel₄_abs {m n r s : ℤ} : rel₄ W |m| |n| |r| |s| = rel₄ W m n r s := by
   simp_rw [rel₄, addMulSub_abs₀ W neg, addMulSub_abs₁]
@@ -498,8 +510,10 @@ def relFin4 (t : Fin 4 → ℤ) : R := rel₄ W (t 0) (t 1) (t 2) (t 3)
 
 /-- `rel₄` is invariant (up to sign) under permutation of the four indices. -/
 theorem relFin4_perm (σ : Perm (Fin 4)) : ∀ t, relFin4 W (t ∘ σ) = Perm.sign σ • relFin4 W t := by
-  have := (Perm.mclosure_swap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
-  refine Submonoid.closure_induction this ?_ (by simp) fun σ τ hσ hτ t ↦ ?_
+  have hmem := (Perm.mclosure_swap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
+  refine Submonoid.closure_induction
+    (motive := fun σ _ ↦ ∀ t, relFin4 W (t ∘ σ) = Perm.sign σ • relFin4 W t)
+    ?_ (by simp) (fun σ τ _ _ hσ hτ t ↦ ?_) hmem
   · rintro _ ⟨i, rfl⟩ t; fin_cases i <;>
       rw [Perm.sign_swap (Fin.castSucc_lt_succ _).ne, Units.neg_smul, one_smul]
     exacts [rel₄_swap₀₁ neg, rel₄_swap₁₂ neg, rel₄_swap₂₃ neg]
@@ -509,6 +523,7 @@ lemma relFin4_perm' (σ : Perm (Fin 4)) (t) : Perm.sign σ • relFin4 W (t ∘ 
   rw [relFin4_perm neg, ← mul_smul, Int.units_mul_self, one_smul]
 
 variable (zero : W 0 = 0)
+include zero
 
 /-! `rel₄` is trivial when two indices are equal. -/
 
@@ -523,6 +538,7 @@ lemma rel₄_same₂₃ (m n r : ℤ) : rel₄ W m n r r = 0 := by
 
 variable (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
   (oddRec : ∀ m ≥ 2, OddRec W m) (evenRec : ∀ m ≥ 3, EvenRec W m)
+include one two oddRec evenRec
 
 /-- The four-index `rel₄` relations follow from
 the single-index `oddRec` and `evenRec` recursive relations. -/
@@ -601,6 +617,7 @@ namespace IsEllSequence
 open EllSequence
 
 variable (ell : IsEllSequence W)
+include ell
 
 lemma oddRec (m : ℤ) : OddRec W m := (rel₃_iff_oddRec W m).mp (ell _ _ _)
 lemma evenRec (m : ℤ) : EvenRec W m := (rel₃_iff_evenRec W m).mp (ell _ _ _)
@@ -624,6 +641,7 @@ lemma sub_add_neg_sub_mul_eq_zero (m n r : ℤ) :
   convert this using 4 <;> ring_nf
 
 variable (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
+include one two
 
 /-- An elliptic sequence is an odd function, provided its first two terms are not zero divisors. -/
 lemma neg (m : ℤ) : W (-m) = - W m := by
@@ -1130,6 +1148,7 @@ end Map
 section
 
 variable {b c d} {U : ℤ → R} (ellW : IsEllSequence W) (ellU : IsEllSequence U)
+include ellW ellU
 open MvPolynomial
 
 /-- A normalised EDS is in fact an elliptic sequenc. -/
@@ -1181,6 +1200,7 @@ section Divisibility
 
 variable (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
   (dvd₁₂ : W 1 ∣ W 2) (dvd₁₃ : W 1 ∣ W 3) (dvd₂₄ : W 2 ∣ W 4)
+include one two dvd₁₂ dvd₁₃ dvd₂₄
 
 theorem IsEllSequence.eq_normEDS_of_dvd : ∃ b c d, W = (W 1 * normEDS b c d ·) :=
   have ⟨b, h₁₂⟩ := dvd₁₂; have ⟨c, h₁₃⟩ := dvd₁₃; have ⟨d, h₂₄⟩ := dvd₂₄

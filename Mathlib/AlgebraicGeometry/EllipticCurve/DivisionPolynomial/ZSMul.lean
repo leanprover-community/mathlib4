@@ -60,7 +60,7 @@ Equivalently, we aim to prove the formula in affine coordinates: `n • (X,Y) = 
 for `n ≠ 0` (`Universal.Affine.zsmul_point_eq_smulX_smulY`), but this time it is easier to use
 the usual strong induction on `n` rather than the even-odd induction, because we have formulas
 expressing the affine coordinates of `(n+1) • P` in terms of those of `P`, `n • P` and
-`(n-1) • P` (`Affine.addX_eq_subX_sub`, `Affine.addY_sub_negY`).
+`(n-1) • P` (`Affine.addX_eq_addX_negY_sub`, `Affine.addY_sub_negY_addY`).
 We only need to verify the base cases `n = 1` and `n = 2`, and the induction step is handled
 by fancy identities of division polynomials and elliptic divisibility sequences
 (`smulX_sub_sub_smulX_add`, `smulX_add` and `smulY_add_sub_negY`).
@@ -72,7 +72,7 @@ instead of `Frac(Universal.Ring) = Frac(ℤ[A₁,A₂,A₃,A₄,A₆,X,Y]/⟨P�
 result by specializing the characteristic 0, universal result.
 -/
 
-open scoped PolynomialPolynomial
+open scoped Polynomial.Bivariate
 
 namespace WeierstrassCurve
 
@@ -323,7 +323,7 @@ theorem zsmul_point_eq_smulX_smulY : n ≠ 0 →
     obtain _|_|_|n := n
     · exact (h0 rfl).elim
     · simp_rw [zero_add, Nat.cast_one, one_zsmul, smulX_one, smulY_one]
-      exact ⟨EllipticCurve.Affine.nonsingular pointedCurve equation_point, rfl⟩
+      exact ⟨equation_iff_nonsingular.mp equation_point, rfl⟩
     all_goals obtain ⟨ns, eq⟩ := ih 1 (by omega) one_ne_zero
     · erw [← addX_smul_one_smul_one, ← addY_smul_one_smul_one, zero_add, add_zsmul _ 1 1, eq]
       exact ⟨Affine.nonsingular_add ns ns fun _ ↦ smulY_one_ne_negY,
@@ -338,13 +338,13 @@ theorem zsmul_point_eq_smulX_smulY : n ≠ 0 →
     let L := _U.slope (smulX n2) (smulX 1) (smulY n2) (smulY 1)
     have X_eq : smulX (n2 + 1 : ℕ) = _U.addX (smulX n2) (smulX 1) L := by
       rw [Nat.cast_add, Nat.cast_one, smulX_add one_ne_zero (by omega) (by omega) (by omega),
-        Affine.addX_eq_subX_sub _ _ ne, sub_eq_add_neg (n2 : ℤ), ← eq1.1]; rfl
+        Affine.addX_eq_addX_negY_sub _ _ ne, sub_eq_add_neg (n2 : ℤ), ← eq1.1]; rfl
     have Y_eq : smulY (n2 + 1 : ℕ) = _U.addY (smulX n2) (smulX 1) (smulY n2) L := by
       rw [← mul_cancel_left_mem_nonZeroDivisors (mem_nonZeroDivisors_of_ne_zero Field.two_ne_zero),
         ← add_right_cancel_iff (a := _U.a₁ * smulX (n2 + 1 : ℕ) + _U.a₃)]
       convert smulY_add_sub_negY (n := n2) one_ne_zero (by omega) (by omega) (by omega) using 1
       · simp_rw [Affine.negY, Nat.cast_add]; ring_nf
-      convert _U.addY_sub_negY (smulY n2) (smulY 1) ne using 1
+      convert _U.addY_sub_negY_addY (smulY n2) (smulY 1) ne using 1
       · rw [Affine.negY, ← X_eq]; ring
       · rw [← X_eq]; rfl
     rw [X_eq, Y_eq, n2.cast_add, add_zsmul, eq, eq2]
