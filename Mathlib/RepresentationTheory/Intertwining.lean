@@ -230,11 +230,7 @@ instance : EquivLike (Equiv ρ σ) V W where
 
 @[simp] lemma coe_toIntertwiningMap : ⇑φ.toIntertwiningMap = ⇑φ := rfl
 
-@[simp] lemma coe_toLinearEquiv : ⇑φ.toLinearEquiv = ⇑φ := rfl
-
-@[simp] lemma coe_toAddEquiv : ⇑φ.toAddEquiv = ⇑φ := rfl
-
-@[simp] lemma coe_toEquiv : ⇑φ.toEquiv = ⇑φ := rfl
+@[simp] lemma coe_toLinearMap : ⇑φ.toLinearMap = ⇑φ := rfl
 
 @[simp] lemma coe_invFun : φ.invFun = EquivLike.inv φ := rfl
 
