@@ -134,9 +134,6 @@ lemma mulSupport_one : mulSupport (1 : ι → M) = ∅ := mulSupport_eq_empty_if
 @[to_additive (attr := simp)]
 lemma mulSupport_fun_one : mulSupport (fun _ ↦ 1 : ι → M) = ∅ := mulSupport_one
 
-@[deprecated (since := "2025-07-31")] alias support_zero' := support_zero
-@[deprecated (since := "2025-07-31")] alias mulSupport_one' := mulSupport_one
-
 @[to_additive]
 lemma mulSupport_const {c : M} (hc : c ≠ 1) : (mulSupport fun _ : ι ↦ c) = Set.univ := by
   ext x; simp [hc]
@@ -185,11 +182,6 @@ lemma mulSupport_prodMk' (f : ι → M × N) :
     mulSupport f = (mulSupport fun x ↦ (f x).1) ∪ mulSupport fun x ↦ (f x).2 := by
   simp only [← mulSupport_prodMk]
 
-@[deprecated (since := "2025-07-31")] alias support_prod_mk := support_prodMk
-@[deprecated (since := "2025-07-31")] alias mulSupport_prod_mk := mulSupport_prodMk
-@[deprecated (since := "2025-07-31")] alias support_prod_mk' := support_prodMk'
-@[deprecated (since := "2025-07-31")] alias mulSupport_prod_mk' := mulSupport_prodMk'
-
 @[to_additive]
 lemma mulSupport_along_fiber_subset (f : ι × κ → M) (i : ι) :
     (mulSupport fun j ↦ f (i, j)) ⊆ (mulSupport f).image Prod.snd :=
@@ -202,9 +194,6 @@ lemma mulSupport_curry (f : ι × κ → M) : (mulSupport f.curry) = (mulSupport
 @[to_additive]
 lemma mulSupport_fun_curry (f : ι × κ → M) :
     mulSupport (fun i j ↦ f (i, j)) = (mulSupport f).image Prod.fst := mulSupport_curry f
-
-@[deprecated (since := "2025-07-31")] alias support_curry' := support_fun_curry
-@[deprecated (since := "2025-07-31")] alias mulSupport_curry' := mulSupport_fun_curry
 
 end Function
 
@@ -241,6 +230,7 @@ lemma subsingleton_mulSupport_mulSingle : (mulSupport (mulSingle i a)).Subsingle
   rw [mulSupport_mulSingle]
   split_ifs with h <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma mulSupport_mulSingle_disjoint (ha : a ≠ 1) (hb : b ≠ 1) :
     Disjoint (mulSupport (mulSingle i a)) (mulSupport (mulSingle j b)) ↔ i ≠ j := by

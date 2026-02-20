@@ -177,6 +177,7 @@ theorem f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)
   simpa only [smul_eq_mul] using
     hf_conv.2 hn' (by linarith : 0 < (n + 1 : ℝ)) (by linarith : 0 ≤ 1 - x) hx.le (by linarith)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Linear lower bound for `f (x + n)` on unit interval -/
 theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn : 2 ≤ n) (hx : 0 < x) :
@@ -327,6 +328,7 @@ section StrictMono
 
 theorem Gamma_two : Gamma 2 = 1 := by simp [Nat.factorial_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   -- This can also be proved using the closed-form evaluation of `Gamma (1 / 2)` in
   -- `Mathlib/Analysis/SpecialFunctions/Gaussian/GaussianIntegral.lean`, but we give a
@@ -349,10 +351,12 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
       exp_log] <;>
     norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Gamma_strictAntiOn_Ioc : StrictAntiOn Gamma (Ioc 0 1) :=
   convexOn_Gamma.strictAntiOn (by simp) (by norm_num) <|
     Gamma_one.symm ▸ Gamma_three_div_two_lt_one
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
   convert
     convexOn_Gamma.strictMonoOn (by simp : (0 : ℝ) < 3 / 2)

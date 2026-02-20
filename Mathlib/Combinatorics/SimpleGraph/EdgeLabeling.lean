@@ -123,7 +123,7 @@ def mk (f : ∀ x y : V, G.Adj x y → K)
     (f_symm : ∀ (x y : V) (H : G.Adj x y), f y x H.symm = f x y H) : EdgeLabeling G K
   | ⟨e, he⟩ => by
     revert he
-    refine Sym2.hrec (fun xy ↦ f xy.1 xy.2) (fun a b ↦ ?_) e
+    refine Sym2.hrec f (fun a b ↦ ?_) e
     apply Function.hfunext (by simp [adj_comm])
     grind
 
@@ -152,12 +152,14 @@ theorem labelGraph_le (C : EdgeLabeling G K) {k : K} : C.labelGraph k ≤ G := b
   intro x y
   grind [labelGraph_adj]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pairwise_disjoint_labelGraph {C : EdgeLabeling G K} :
     Pairwise fun k l ↦ Disjoint (C.labelGraph k) (C.labelGraph l) := by
   intro _ _ h
   rw [disjoint_left]
   grind [labelGraph_adj]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pairwiseDisjoint_univ_labelGraph {C : EdgeLabeling G K} :
     Set.PairwiseDisjoint (@Set.univ K) C.labelGraph := by
   intro _ _ _ _ h
