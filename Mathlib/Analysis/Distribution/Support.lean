@@ -70,8 +70,11 @@ section Zero
 
 variable [Zero V]
 
-/-- The distributional support is the smallest closed subset of `E` on which a distribution does not
-vanish. -/
+/-- The distributional support of `f` is the intersection of all closed sets `s` such that `f`
+vanishes on the complement of `s`.
+
+To make this definition work for all types of distributions, we define it for any function from
+a `FunLike` type to a type with zero. -/
 def dsupport (f : F → V) : Set α := ⋂₀ { s | IsVanishingOn f sᶜ ∧ IsClosed s}
 
 theorem mem_dsupport_iff (x : α) :
