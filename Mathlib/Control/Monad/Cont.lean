@@ -189,20 +189,20 @@ instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
 def WriterT.mkLabel {α β ω} [EmptyCollection ω] : Label (α × ω) m β → Label α (WriterT ω m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (a, ∅)⟩
 
-def WriterT.mkLabel' {α β ω} [Monoid ω] : Label (α × ω) m β → Label α (WriterT ω m) β
-  | ⟨f⟩ => ⟨fun a => monadLift <| f (a, 1)⟩
+def WriterT.mkLabel' {α β ω} [AddMonoid ω] : Label (α × ω) m β → Label α (WriterT ω m) β
+  | ⟨f⟩ => ⟨fun a => monadLift <| f (a, 0)⟩
 
 theorem WriterT.goto_mkLabel {α β ω : Type _} [EmptyCollection ω] (x : Label (α × ω) m β) (i : α) :
     goto (WriterT.mkLabel x) i = monadLift (goto x (i, ∅)) := by cases x; rfl
 
-theorem WriterT.goto_mkLabel' {α β ω : Type _} [Monoid ω] (x : Label (α × ω) m β) (i : α) :
-    goto (WriterT.mkLabel' x) i = monadLift (goto x (i, 1)) := by cases x; rfl
+theorem WriterT.goto_mkLabel' {α β ω : Type _} [AddMonoid ω] (x : Label (α × ω) m β) (i : α) :
+    goto (WriterT.mkLabel' x) i = monadLift (goto x (i, 0)) := by cases x; rfl
 
 nonrec def WriterT.callCC [MonadCont m] {α β ω : Type _} [EmptyCollection ω]
     (f : Label α (WriterT ω m) β → WriterT ω m α) : WriterT ω m α :=
   WriterT.mk <| callCC (WriterT.run ∘ f ∘ WriterT.mkLabel : Label (α × ω) m β → m (α × ω))
 
-def WriterT.callCC' [MonadCont m] {α β ω : Type _} [Monoid ω]
+def WriterT.callCC' [MonadCont m] {α β ω : Type _} [AddMonoid ω]
     (f : Label α (WriterT ω m) β → WriterT ω m α) : WriterT ω m α :=
   WriterT.mk <|
     MonadCont.callCC (WriterT.run ∘ f ∘ WriterT.mkLabel' : Label (α × ω) m β → m (α × ω))
@@ -212,7 +212,7 @@ end
 instance (ω) [Monad m] [EmptyCollection ω] [MonadCont m] : MonadCont (WriterT ω m) where
   callCC := WriterT.callCC
 
-instance (ω) [Monad m] [Monoid ω] [MonadCont m] : MonadCont (WriterT ω m) where
+instance (ω) [Monad m] [AddMonoid ω] [MonadCont m] : MonadCont (WriterT ω m) where
   callCC := WriterT.callCC'
 
 def StateT.mkLabel {α β σ : Type u} : Label (α × σ) m (β × σ) → Label α (StateT σ m) β
