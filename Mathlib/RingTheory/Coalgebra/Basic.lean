@@ -283,7 +283,7 @@ instance instCoalgebra : Coalgebra R (A × B) where
     · rw [comp_assoc, comul_comp_inr, ← comp_assoc, lTensor_comp_map, counit_comp_inr,
         ← rTensor_comp_lTensor, comp_assoc, lTensor_counit_comp_comul, rTensor_comp_flip_mk]
   coassoc := by
-    dsimp only [instCoalgebraStruct]
+    dsimp +instances only [instCoalgebraStruct]
     ext x : 2 <;> dsimp only [comp_apply, LinearEquiv.coe_coe, coe_inl, coe_inr, coprod_apply]
     · simp only [map_zero, add_zero]
       simp_rw [← comp_apply, ← comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inl,
@@ -569,20 +569,20 @@ abbrev coalgebra [AddCommMonoid B] [Module R B] [Coalgebra R B] (e : A ≃ B) :
       ext
       apply (TensorProduct.map_bijective (f := .id) Function.bijective_id
         (e.linearEquiv R).bijective).injective
-      simpa [coalgebraStruct, LinearMap.comp_assoc, TensorProduct.map_map, LinearMap.rTensor]
-        using Coalgebra.rTensor_counit_comul _
+      simpa +instances [coalgebraStruct, LinearMap.comp_assoc, TensorProduct.map_map,
+        LinearMap.rTensor] using Coalgebra.rTensor_counit_comul _
     lTensor_counit_comp_comul := by
       ext
       apply (TensorProduct.map_bijective (g := .id) (e.linearEquiv R).bijective
         Function.bijective_id).injective
-      simpa [coalgebraStruct, LinearMap.comp_assoc, TensorProduct.map_map, LinearMap.lTensor]
-        using Coalgebra.lTensor_counit_comul _
+      simpa +instances [coalgebraStruct, LinearMap.comp_assoc, TensorProduct.map_map,
+        LinearMap.lTensor] using Coalgebra.lTensor_counit_comul _
     coassoc := by
       ext
       apply (TensorProduct.map_bijective (e.linearEquiv R).bijective <|
         TensorProduct.map_bijective (e.linearEquiv R).bijective
         (e.linearEquiv R).bijective).injective
-      simp [coalgebraStruct, e.tensorProductAssoc_def R, TensorProduct.congr,
+      simp +instances [coalgebraStruct, e.tensorProductAssoc_def R, TensorProduct.congr,
         ← LinearMap.comp_assoc, TensorProduct.map_map, ← TensorProduct.map_comp]
       simpa [LinearMap.comp_assoc, -coassoc_apply] using coassoc_apply (R := R) (A := B) _ }
 
