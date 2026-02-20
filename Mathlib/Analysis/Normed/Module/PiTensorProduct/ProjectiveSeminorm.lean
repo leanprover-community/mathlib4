@@ -80,6 +80,11 @@ theorem bddBelow_projectiveSemiNormAux (x : ⨂[𝕜] i, E i) :
     BddBelow (Set.range (fun (p : lifts x) ↦ projectiveSeminormAux p.1)) :=
   ⟨0, by simp [mem_lowerBounds, projectiveSeminormAux_nonneg]⟩
 
+-- This definition will be replaced by a `Norm` instance in a follow-up PR.
+/-- The projective seminorm on `⨂[𝕜] i, Eᵢ`. It sends an element `x` of `⨂[𝕜] i, Eᵢ` to the
+infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` ∈ `Π i, Eᵢ`)
+of `∑ j, Π i, ‖mⱼ i‖`. See `PiTensorProduct.projectiveSeminorm` for a version bundled as a
+`Seminorm`. -/
 noncomputable def projectiveSeminormFun : (⨂[𝕜] i, E i) → ℝ :=
   fun x ↦ iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.val)
 
