@@ -23,6 +23,10 @@ https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/injective
 * `PiTensorProduct.toDualContinuousMultilinearMap`: The `𝕜`-linear map from
   `⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending `x` to the map
   `f ↦ f x`.
+
+## TODO
+* Reimplement `injectiveSeminorm`.
+
 -/
 
 @[expose] public section
