@@ -244,11 +244,12 @@ noncomputable def liftEquiv : ContinuousMultilinearMap 𝕜 E F ≃ₗ[𝕜] (�
 linear equivalence between `ContinuousMultilinearMap 𝕜 E F` and `(⨂[𝕜] i, Eᵢ) →L[𝕜] F`
 (induced by `PiTensorProduct.lift`). Here we give the upgrade of this equivalence to
 an isometric linear equivalence; in particular, it is a continuous linear equivalence. -/
-noncomputable def liftIsometry : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F := by
-  refine LinearIsometryEquiv.ofBounds (liftEquiv 𝕜 E F) (fun f ↦ ?_) (fun f ↦ ?_)
-  · exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) (norm_eval_le_injectiveSeminorm f)
-  · rw [liftEquiv_symm_apply]
-    exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _
+noncomputable def liftIsometry : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F :=
+  LinearIsometryEquiv.ofBounds (liftEquiv 𝕜 E F)
+  (fun f ↦ LinearMap.mkContinuous_norm_le _ (norm_nonneg f) (norm_eval_le_injectiveSeminorm f))
+  (fun f ↦ by
+      rw [liftEquiv_symm_apply]
+      exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
 
 variable {𝕜 E F}
 
