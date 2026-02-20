@@ -824,7 +824,15 @@ lemma subrect_transitive {m'' : Type*} [Fintype m'']
   {A : LatinRectangle m n α}
   {A' : LatinRectangle m' n α}
   {A'' : LatinRectangle m'' n α}
-  (h1 : is_subrect A A') (h2 : is_subrect A' A'') : is_subrect A A'' := by sorry
+  (h1 : is_subrect A A') (h2 : is_subrect A' A'') : is_subrect A A'' := by 
+    unfold is_subrect at *
+    obtain ⟨f,g,h,h1⟩ := h1
+    obtain ⟨f',g',h',h2⟩ := h2
+    set f'' := Function.Embedding.trans f f'
+    set g'' := Function.Embedding.trans g g'
+    set h'' := Equiv.trans h h'
+    use f'', g'', h''
+    simp [h'', f'', g'',h2,h1]
   
 lemma subrect_refl 
   {A : LatinRectangle m n α}
