@@ -744,7 +744,7 @@ theorem continuous_iff_le_induced {t₁ : TopologicalSpace α} {t₂ : Topologic
 lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
     Continuous[t, generateFrom b] f ↔ ∀ s ∈ b, IsOpen (f ⁻¹' s) := by
   rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]
-  simp only [isOpen_coinduced, subset_def, mem_setOf]
+  simp only [isOpen_coinduced, preimage_id', subset_def, mem_setOf]
 
 @[continuity, fun_prop]
 theorem continuous_induced_dom {t : TopologicalSpace β} : Continuous[induced f t, t] f :=
