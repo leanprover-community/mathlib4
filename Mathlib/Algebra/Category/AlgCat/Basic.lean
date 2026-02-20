@@ -186,6 +186,7 @@ def free : Type u ⥤ AlgCat.{u} R where
   obj S := of R (FreeAlgebra R S)
   map f := ofHom <| FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgCat.{u} R) :=
   Adjunction.mkOfHomEquiv
