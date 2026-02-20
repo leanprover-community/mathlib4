@@ -163,13 +163,11 @@ namespace TemperedDistribution
 
 /-! ## Tempered distributions -/
 
-open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
-
-open scoped Nat NNReal ContDiff
+open SchwartzMap
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
 
-variable {f : 𝓢'(E, F)} {g : 𝓢'(E, F)} {s s₁ s₂ : Set E}
+variable {f : 𝓢'(E, F)} {s : Set E}
 
 section IsVanishingOn
 
