@@ -1128,7 +1128,7 @@ class ContinuousFunctionalCalculus.IsClosedEmbedding (R A : Type*) (p : outParam
 lemma cfcHom_isClosedEmbedding {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
     [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A]
     [StarRing A] [Algebra R A] [instCFC : ContinuousFunctionalCalculus.IsClosedEmbedding R A p]
-    (a : A) (ha : p a) : IsClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
+    {a : A} (ha : p a) : IsClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   ContinuousFunctionalCalculus.IsClosedEmbedding.isClosedEmbedding a ha
 
 end IsClosedEmbedding

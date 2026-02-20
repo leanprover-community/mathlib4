@@ -45,7 +45,7 @@ open scoped ContinuousFunctionalCalculus in
 theorem range_cfcHom {a : A} (ha : p a) :
     (cfcHom ha (R := 𝕜)).range = elemental 𝕜 a := by
   rw [StarAlgHom.range_eq_map_top, ← ContinuousMap.elemental_id_eq_top, StarAlgebra.elemental,
-    ← StarSubalgebra.topologicalClosure_map _ _ (cfcHom_isClosedEmbedding _ ha (R := 𝕜)).isClosedMap
+    ← StarSubalgebra.topologicalClosure_map _ _ (cfcHom_isClosedEmbedding ha (R := 𝕜)).isClosedMap
       (cfcHom_continuous ha), StarAlgHom.map_adjoin]
   congr
   simpa using cfcHom_id ha
@@ -118,7 +118,7 @@ theorem range_cfcₙHom {a : A} (ha : p a) :
     NonUnitalStarAlgHom.range (cfcₙHom ha (R := 𝕜)) = elemental 𝕜 a := by
   rw [← NonUnitalStarAlgebra.map_top, ← ContinuousMapZero.elemental_eq_top,
     NonUnitalStarAlgebra.elemental, ← NonUnitalStarSubalgebra.topologicalClosure_map _
-    (cfcₙHom_isClosedEmbedding _ ha (R := 𝕜)).isClosedMap (cfcₙHom_continuous ha),
+    (cfcₙHom_isClosedEmbedding ha (R := 𝕜)).isClosedMap (cfcₙHom_continuous ha),
     NonUnitalStarAlgHom.map_adjoin]
   congr
   simpa using cfcₙHom_id ha

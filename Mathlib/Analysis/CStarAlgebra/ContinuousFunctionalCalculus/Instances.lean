@@ -97,16 +97,10 @@ lemma spec_cfcₙAux (f : C(σₙ 𝕜 a, 𝕜)₀) : σ 𝕜 (cfcₙAux hp₁ a
   rw [cfcHom_map_spectrum (hp₁.mpr ha) (R := 𝕜) _]
   simp
 
--- generalize variables?
-instance Unitization.instT2Space (𝕜 A : Type*)
-    [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A] :
-    T2Space (Unitization 𝕜 A) :=
-  Unitization.uniformEquivProd.symm.toHomeomorph.t2Space
-
 open Unitization in
 lemma isClosedEmbedding_cfcₙAux : IsClosedEmbedding (cfcₙAux hp₁ a ha) := by
   simp only [cfcₙAux, NonUnitalStarAlgHom.coe_comp]
-  refine ((cfcHom_isClosedEmbedding _ (hp₁.mpr ha)).comp ?_).comp
+  refine ((cfcHom_isClosedEmbedding (hp₁.mpr ha)).comp ?_).comp
     ContinuousMapZero.isClosedEmbedding_toContinuousMap
   let e : C(σₙ 𝕜 a, 𝕜) ≃ₜ C(σ 𝕜 (a : A⁺¹), 𝕜) :=
     (Homeomorph.setCongr (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a)).arrowCongr (.refl _)
@@ -130,14 +124,6 @@ lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
     simp only [NonUnitalStarAlgHom.coe_range]
     convert IsClosed.preimage this (isClosed_singleton (x := 0))
     aesop
-
-
--- generalize variables?
-@[fun_prop]
-protected theorem Unitization.continuous_snd (𝕜 A : Type*)
-    [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A] :
-    Continuous (snd : Unitization 𝕜 A → A) :=
-  continuous_snd.comp <| map_continuous Unitization.uniformEquivProd.toHomeomorph
 
 variable [CStarRing A]
 

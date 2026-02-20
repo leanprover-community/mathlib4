@@ -120,12 +120,22 @@ lemma isClosedEmbedding_toContinuousMap [T1Space R] :
     exact isClosed_singleton.preimage <| continuous_eval_const 0
 
 @[fun_prop]
-lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] [TopologicalSpace Z] [Zero X] [Zero Y] [Zero Z] (f : C(X, Y)₀) :
-    Continuous fun g : C(Y, Z)₀ ↦ g.comp f := by
+lemma continuous_precomp (f : C(X, Y)₀) : Continuous fun g : C(Y, R)₀ ↦ g.comp f := by
   rw [continuous_induced_rng]
-  change Continuous fun g : C(Y, Z)₀ ↦ (g : C(Y, Z)).comp (f : C(X, Y))
+  change Continuous fun g : C(Y, R)₀ ↦ (g : C(Y, R)).comp (f : C(X, Y))
   fun_prop
+
+@[deprecated (since := "2026-02-20")] alias continuous_comp_left := continuous_precomp
+
+theorem postcomp_injective (g : C(Y, R)₀) (hg : Injective g) :
+    Injective (g.comp : C(X, Y)₀ → C(X, R)₀) :=
+  fun _ _ h ↦ ext fun x ↦ hg congr($h x)
+
+@[fun_prop]
+theorem continuous_postcomp (g : C(Y, R)₀) : Continuous (g.comp  : C(X, Y)₀ → C(X, R)₀) := by
+  rw [ContinuousMapZero.isEmbedding_toContinuousMap.continuous_iff]
+  exact g.toContinuousMap.continuous_postcomp |>.comp <|
+    ContinuousMapZero.isEmbedding_toContinuousMap.continuous
 
 /-- The identity function as an element of `C(s, R)₀` when `0 ∈ (s : Set R)`. -/
 @[simps!]

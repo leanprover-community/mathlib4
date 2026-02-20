@@ -80,13 +80,6 @@ lemma starAlgHom_id {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A} {f : C(S, R
   ext x
   exact h.rightInvOn x.2
 
--- Move to Mathlib.Topology.CompactOpen
-open ContinuousMap in
-theorem _root_.ContinuousMap.postcomp_injective {X Y Z : Type*} [TopologicalSpace X]
-  [TopologicalSpace Y] [TopologicalSpace Z] (g : C(Y, Z)) (hg : Function.Injective g) :
-    Function.Injective (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
-  fun _ _ ↦ (cancel_left hg).1
-
 open ContinuousMap in
 lemma starAlgHom_injective {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A}
     (hφ : Function.Injective φ) {f : C(S, R)} (h : SpectrumRestricts a f)
@@ -205,7 +198,7 @@ protected theorem cfc_isClosedEmbedding (f : C(S, R)) (halg : IsUniformEmbedding
   isClosedEmbedding a ha := by
     have := SpectrumRestricts.cfc f halg.isClosedEmbedding h0 h
     rw [cfcHom_eq_restrict f ha ((h a).mp ha).1 ((h a).mp ha).2]
-    exact isClosedEmbedding_starAlgHom (cfcHom_isClosedEmbedding _ ((h a).mp ha).1)
+    exact isClosedEmbedding_starAlgHom (cfcHom_isClosedEmbedding ((h a).mp ha).1)
       ((h a).mp ha).2 halg
 
 end SpectrumRestricts
@@ -261,30 +254,6 @@ lemma nonUnitalStarAlgHom_id {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
   convert h_id
   ext x
   exact h.rightInvOn x.2
-
--- Move to Mathlib.Topology.CompactOpen
-open ContinuousMapZero in
-theorem _root_.ContinuousMapZero.postcomp_injective {X Y Z : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] [TopologicalSpace Z] [Zero X] [Zero Y] [Zero Z] (g : C(Y, Z)₀)
-    (hg : Function.Injective g) :
-    Function.Injective (ContinuousMapZero.comp g : C(X, Y)₀ → C(X, Z)₀) :=
-  fun _ _ h ↦ ext fun x ↦ hg congr($h x)
-
-open ContinuousMapZero in
-theorem _root_.ContinuousMapZero.continuous_postcomp {X Y Z : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] [TopologicalSpace Z] [Zero X] [Zero Y] [Zero Z] (g : C(Y, Z)₀) :
-    Continuous (ContinuousMapZero.comp g : C(X, Y)₀ → C(X, Z)₀) := by
-  rw [ContinuousMapZero.isEmbedding_toContinuousMap.continuous_iff]
-  exact g.toContinuousMap.continuous_postcomp |>.comp <|
-    ContinuousMapZero.isEmbedding_toContinuousMap.continuous
-
-open ContinuousMapZero in
-theorem _root_.ContinuousMapZero.continuous_precomp {X Y Z : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] [TopologicalSpace Z] [Zero X] [Zero Y] [Zero Z] (g : C(X, Y)₀) :
-    Continuous (ContinuousMapZero.comp · g : C(Y, Z)₀ → C(X, Z)₀) := by
-  rw [ContinuousMapZero.isEmbedding_toContinuousMap.continuous_iff]
-  exact g.toContinuousMap.continuous_precomp |>.comp <|
-    ContinuousMapZero.isEmbedding_toContinuousMap.continuous
 
 open ContinuousMapZero in
 lemma nonUnitalStarAlgHom_injective {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
@@ -417,7 +386,7 @@ protected theorem cfcₙ_isClosedEmbedding (f : C(S, R)) (halg : IsUniformEmbedd
   isClosedEmbedding a ha := by
     have := QuasispectrumRestricts.cfc f halg.isClosedEmbedding h0 h
     rw [cfcₙHom_eq_restrict f ha ((h a).mp ha).1 ((h a).mp ha).2]
-    exact isClosedEmbedding_nonUnitalStarAlgHom (cfcₙHom_isClosedEmbedding _ ((h a).mp ha).1)
+    exact isClosedEmbedding_nonUnitalStarAlgHom (cfcₙHom_isClosedEmbedding ((h a).mp ha).1)
       ((h a).mp ha).2 halg
 
 end QuasispectrumRestricts
