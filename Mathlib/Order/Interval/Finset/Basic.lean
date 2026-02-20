@@ -460,8 +460,8 @@ def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where
 
 theorem sup_Iic_of_monotone (α : Type*) [Preorder α] [LocallyFiniteOrderBot α] (a : α)
     {β : Type*} [SemilatticeSup β] [OrderBot β] (f : α → β) (hf : Monotone f) :
-    (Finset.Iic a).sup f = f a :=
-  le_antisymm (Finset.sup_le_iff.mpr fun _ h ↦ hf (by simpa using h)) (Finset.le_sup (by simp))
+    (Iic a).sup f = f a :=
+  le_antisymm (Finset.sup_le_iff.mpr fun _ h ↦ hf (by simpa using h)) (le_sup (by simp))
 
 end LocallyFiniteOrderBot
 
