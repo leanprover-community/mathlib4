@@ -373,10 +373,8 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
       failure
     modify fun s => s.insert e
     match e with
-    | x@(.app e a)       =>
+    | .app e a =>
         visit e true <|> do
-          -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
-          guard !x.isConstantApplication
           if let some n := e.getAppFn.constName? then
             if let some l := t.ignoreArgsAttr.find? env n then
               if e.getAppNumArgs + 1 ∈ l then
@@ -839,6 +837,9 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if let some prio ← getInstancePriority? src then
     let attr_kind := (← getInstanceAttrKind? src).getD .global
+    -- Copy instance_reducible status before adding instance attribute
+    if (← getReducibilityStatus src) matches .instanceReducible then
+      setReducibilityStatus tgt .instanceReducible
     trace[translate_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 

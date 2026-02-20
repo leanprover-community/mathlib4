@@ -57,6 +57,7 @@ variable [ModularFormClass F Γ(1) k]
 
 lemma one_mem_strictPeriods_SL2Z : (1 : ℝ) ∈ Γ(1).strictPeriods := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
     Set.EqOn (cuspFunction 1 f) (const ℂ (cuspFunction 1 f 0)) (Metric.ball 0 1) := by
   refine eq_const_of_exists_le (fun q hq ↦ ?_) (exp_nonneg (-π)) ?_ (fun q hq ↦ ?_)
@@ -72,6 +73,7 @@ private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
         by simpa [← eq_cuspFunction f _ one_mem_strictPeriods_SL2Z one_ne_zero,
           qParam_right_inv one_ne_zero hq'] using hξ₂⟩
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem levelOne_nonpos_wt_const (hk : k ≤ 0) (f : F) :
     f = Function.const ℍ (cuspFunction 1 f 0) := by
   ext z

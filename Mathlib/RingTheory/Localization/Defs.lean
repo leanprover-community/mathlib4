@@ -483,6 +483,7 @@ theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w'
     mul_comm]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a localization map `f : R →+* S` for a submonoid `M ⊆ R` and a map of `CommSemiring`s
 `g : R →+* P` such that `g y` is invertible for all `y : M`, the homomorphism induced from
 `S` to `P` sending `z : S` to `g x * (g y)⁻¹`, where `(x, y) : R × M` are such that

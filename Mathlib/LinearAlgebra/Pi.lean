@@ -124,7 +124,7 @@ instance CompatibleSMul.pi (R S M N ι : Type*) [Semiring S]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι → N) R S where
   map_smul f r m := by ext i; apply ((LinearMap.proj i).comp f).map_smul_of_tower
 
-/-- Construct a linear map two (dependent) function spaces
+/-- Construct a linear map between two (dependent) function spaces
 by applying index-dependent linear maps to the coordinates.
 A bundled version of `Pi.map`.
 
@@ -552,6 +552,7 @@ variable {ι R M}
 theorem piRing_apply (f : (ι → R) →ₗ[R] M) (i : ι) : piRing R M ι S f i = f (Pi.single i 1) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem piRing_symm_apply (f : ι → M) (g : ι → R) : (piRing R M ι S).symm f g = ∑ i, g i • f i := by
   simp [piRing, LinearMap.lsum_apply]

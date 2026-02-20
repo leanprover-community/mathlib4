@@ -352,12 +352,14 @@ theorem emptyGraph_eq_bot (V : Type u) : emptyGraph V = ⊥ :=
 
 variable {G}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_bot_iff_forall_not_adj : G = ⊥ ↔ ∀ a b : V, ¬G.Adj a b := by
   simp [← le_bot_iff, le_iff_adj]
 
 theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
   simp [eq_bot_iff_forall_not_adj]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_iff_forall_ne_adj : G = ⊤ ↔ ∀ a b : V, a ≠ b → G.Adj a b := by
   simp [← top_le_iff, le_iff_adj]
 
@@ -509,6 +511,7 @@ theorem edgeSet_bot : (⊥ : SimpleGraph V).edgeSet = ∅ :=
 theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
   Sym2.diagSet_compl_eq_fromRel_ne.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem edgeSet_subset_compl_diagSet : G.edgeSet ⊆ Sym2.diagSetᶜ := by
   simpa [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding] using G.loopless
@@ -533,6 +536,7 @@ theorem edgeSet_sdiff : (G₁ \ G₂).edgeSet = G₁.edgeSet \ G₂.edgeSet := b
 
 variable {G G₁ G₂}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma disjoint_edgeSet : Disjoint G₁.edgeSet G₂.edgeSet ↔ Disjoint G₁ G₂ := by
   rw [Set.disjoint_iff, disjoint_iff_inf_le, ← edgeSet_inf, ← edgeSet_bot, ← Set.le_iff_subset,
     OrderEmbedding.le_iff_le]
@@ -629,6 +633,7 @@ theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
 @[simp] lemma fromEdgeSet_le {s : Set (Sym2 V)} :
     fromEdgeSet s ≤ G ↔ s \ Sym2.diagSet ⊆ G.edgeSet := by simp [← edgeSet_subset_edgeSet]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma edgeSet_eq_iff : G.edgeSet = s ↔ G = fromEdgeSet s ∧ Disjoint s Sym2.diagSet where
   mp := by rintro rfl; simp +contextual [Set.disjoint_right]
   mpr := by rintro ⟨rfl, hs⟩; simp [hs]
@@ -668,11 +673,13 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
   simpa using Set.diff_subset_diff h fun _ a ↦ a
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by
   conv_rhs => rw [← Set.diff_union_inter s Sym2.diagSet]
   rw [← disjoint_edgeSet, edgeSet_fromEdgeSet]
   grind [edgeSet_subset_compl_diagSet]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma fromEdgeSet_disjoint : Disjoint (fromEdgeSet s) G ↔ Disjoint s G.edgeSet := by
   rw [disjoint_comm, disjoint_fromEdgeSet, disjoint_comm]
 
@@ -682,6 +689,7 @@ instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
 
 end FromEdgeSet
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_left {G H : SimpleGraph V} : Disjoint G H ↔ ∀ x y, G.Adj x y → ¬H.Adj x y := by
   simp [← disjoint_edgeSet, Set.disjoint_left, Sym2.forall]
 
@@ -755,6 +763,7 @@ theorem adj_incidenceSet_inter {v : V} {e : Sym2 V} (he : e ∈ G.edgeSet) (h : 
   · rintro rfl
     exact ⟨⟨he, h⟩, he, Sym2.other_mem _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem compl_neighborSet_disjoint (G : SimpleGraph V) (v : V) :
     Disjoint (G.neighborSet v) (Gᶜ.neighborSet v) := by
   rw [Set.disjoint_iff]

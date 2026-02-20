@@ -419,6 +419,7 @@ variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a `SMul`. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
+@[instance_reducible]
 protected def smul : SMul 𝕜 (Lp.simpleFunc E p μ) :=
   ⟨fun k f =>
     ⟨k • (f : Lp E p μ), by
@@ -437,6 +438,7 @@ theorem coe_smul (c : 𝕜) (f : Lp.simpleFunc E p μ) :
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a module. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
+@[instance_reducible]
 protected def module : Module 𝕜 (Lp.simpleFunc E p μ) where
   one_smul f := by ext1; exact one_smul _ _
   mul_smul x y f := by ext1; exact mul_smul _ _ _
@@ -454,8 +456,10 @@ protected theorem isBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp.simple
 
 attribute [local instance] simpleFunc.isBoundedSMul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
+@[instance_reducible]
 protected def normedSpace {𝕜} [NormedField 𝕜] [NormedSpace 𝕜 E] [Fact (1 ≤ p)] :
     NormedSpace 𝕜 (Lp.simpleFunc E p μ) :=
   ⟨norm_smul_le (α := 𝕜) (β := Lp.simpleFunc E p μ)⟩
@@ -713,6 +717,7 @@ variable {p μ G}
 
 variable [PartialOrder G]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeFn_nonneg (f : Lp.simpleFunc G p μ) : (0 : α → G) ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← Subtype.coe_le_coe, Lp.coeFn_nonneg, AddSubmonoid.coe_zero]
 
