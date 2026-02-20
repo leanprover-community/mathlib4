@@ -176,7 +176,7 @@ variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
  [Module R M₂₃] [Module S M₂₃] [IsScalarTower R S M₂₃]
 
 /-- (Implementation): Use the more linear `IsTensorProduct.assoc`. -/
-noncomputable def assocAux
+private noncomputable def assocAux
     (f : M₁ →ₗ[R] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.restrictScalars₁₂ R R))
     (g : M₂ →ₗ[S] M₃ →ₗ[S] M₂₃) (hg : IsTensorProduct g) :
     M₁₂ ⊗[S] M₃ ≃ₗ[R] M₁ ⊗[R] M₂₃ :=
@@ -204,12 +204,12 @@ variable (f : M₁ →ₗ[R] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.re
   (g : M₂ →ₗ[S] M₃ →ₗ[S] M₂₃) (hg : IsTensorProduct g)
 
 @[simp]
-lemma assocAux_symm_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
+private lemma assocAux_symm_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
     (IsTensorProduct.assocAux f hf g hg).symm (x₁ ⊗ₜ g x₂ x₃) = f x₁ x₂ ⊗ₜ x₃ := by
   simp [IsTensorProduct.assocAux]
 
 @[simp]
-lemma assocAux_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
+private lemma assocAux_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
     IsTensorProduct.assocAux f hf g hg (f x₁ x₂ ⊗ₜ x₃) = x₁ ⊗ₜ g x₂ x₃ := by
   have : hf.equiv.symm (f x₁ x₂) = x₁ ⊗ₜ x₂ := hf.equiv_symm_apply _ _
   simp [IsTensorProduct.assocAux, this]
@@ -219,6 +219,7 @@ This is the canonical isomorphism `(M₁ ⊗[R] M₂) ⊗[S] M₃ ≃ₗ[T] M₁
 We state this for a general `M₁₂ = M₁ ⊗[R] M₂` and `M₂₃ = M₂ ⊗[R] M₃`.
 For the version where `R` and `S` are flipped, see `TensorProduct.AlgebraTensorModule.assoc`.
 -/
+@[no_expose]
 noncomputable def assoc {T : Type*} [CommSemiring T] [Algebra R T] [Module T M₁]
     [IsScalarTower R T M₁] [Module T M₁₂] [SMulCommClass S T M₁₂] [IsScalarTower R T M₁₂]
     (f : M₁ →ₗ[T] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.restrictScalars₁₂ R R))
@@ -255,6 +256,30 @@ lemma assoc_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
 lemma assoc_symm_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
     (assoc f hf g hg).symm (x₁ ⊗ₜ g x₂ x₃) = f x₁ x₂ ⊗ₜ x₃ :=
   assocAux_symm_tmul (f.restrictScalars₁₂ R S) hf g hg _ _ _
+
+/-- Variant of `IsTensorProduct.assoc` taking an `R`-bilinear map `f` and proofs that
+`f` is `T` linear in the first and `S`-linear in the second argument. -/
+noncomputable def assocOfMapSMul (f : M₁ →ₗ[R] M₂ →ₗ[R] M₁₂) (hf : IsTensorProduct f)
+    (g : M₂ →ₗ[S] M₃ →ₗ[S] M₂₃) (hg : IsTensorProduct g)
+    (h₁ : ∀ (t : T) (x : M₁) (y : M₂), f (t • x) y = t • f x y)
+    (h₂ : ∀ (s : S) (x : M₁) (y : M₂), f x (s • y) = s • f x y) :
+    M₁₂ ⊗[S] M₃ ≃ₗ[T] M₁ ⊗[R] M₂₃ :=
+  IsTensorProduct.assoc (.mk₂' _ _ (f ·) (by simp) (by simp [h₁]) (by simp) (by simp [h₂])) hf g hg
+
+variable (f : M₁ →ₗ[R] M₂ →ₗ[R] M₁₂) (hf : IsTensorProduct f)
+  (g : M₂ →ₗ[S] M₃ →ₗ[S] M₂₃) (hg : IsTensorProduct g)
+  (h₁ : ∀ (t : T) (x : M₁) (y : M₂), f (t • x) y = t • f x y)
+  (h₂ : ∀ (s : S) (x : M₁) (y : M₂), f x (s • y) = s • f x y)
+
+@[simp]
+lemma assocOfMapSMul_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
+    assocOfMapSMul f hf g hg h₁ h₂ (f x₁ x₂ ⊗ₜ x₃) = x₁ ⊗ₜ g x₂ x₃ :=
+  IsTensorProduct.assoc_tmul ..
+
+@[simp]
+lemma assocOfMapSMul_symm_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
+    (assocOfMapSMul f hf g hg h₁ h₂).symm (x₁ ⊗ₜ g x₂ x₃) = f x₁ x₂ ⊗ₜ x₃ :=
+  IsTensorProduct.assoc_symm_tmul ..
 
 end
 
