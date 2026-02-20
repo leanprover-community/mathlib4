@@ -1066,12 +1066,10 @@ theorem cast_neg {n : ℕ} {R} [Ring R] {a : R} :
     IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
   | ⟨e⟩ => by simp [e]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cast_nnrat {n : ℕ} {d : ℕ} {R} [DivisionSemiring R] {a : R} :
     IsNNRat a n d → a = NNRat.rawCast n d + 0
   | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cast_rat {n : ℤ} {d : ℕ} {R} [DivisionRing R] {a : R} :
     IsRat a n d → a = Rat.rawCast n d + 0
   | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]

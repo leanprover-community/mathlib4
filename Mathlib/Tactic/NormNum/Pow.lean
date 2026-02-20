@@ -164,7 +164,6 @@ theorem isInt_pow {α} [Ring α] : ∀ {f : α → ℕ → α} {a : α} {b : ℕ
     f = HPow.hPow → IsInt a a' → IsNat b b' → Int.pow a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 -- see note [norm_num lemma function equality]
 theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} {ad b b' cd : ℕ} :
     f = HPow.hPow → IsRat a an ad → IsNat b b' →
@@ -175,7 +174,6 @@ theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} 
   rw [← Nat.cast_pow] at this
   use this; simp [invOf_pow, Commute.mul_pow]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_pow {α} [Semiring α] {f : α → ℕ → α} {a : α} {an cn : ℕ} {ad b b' cd : ℕ} :
     f = HPow.hPow → IsNNRat a an ad → IsNat b b' →
     Nat.pow an b' = cn → Nat.pow ad b' = cd →
