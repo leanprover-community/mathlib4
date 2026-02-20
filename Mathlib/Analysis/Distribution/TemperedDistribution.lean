@@ -16,22 +16,22 @@ public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
 ## Main definitions
 
 * `TemperedDistribution E F`: The space `𝓢(E, ℂ) →L[ℂ] F` equipped with the pointwise
-convergence topology.
+  convergence topology.
 * `MeasureTheory.Measure.toTemperedDistribution`: Every measure of temperate growth is a tempered
-distribution.
+  distribution.
 * `Function.HasTemperateGrowth.toTemperedDistribution`: Every function of temperate growth is a
-tempered distribution.
+  tempered distribution.
 * `SchwartzMap.toTemperedDistributionCLM`: The canonical map from `𝓢` to `𝓢'` as a continuous linear
-map.
+  map.
 * `MeasureTheory.Lp.toTemperedDistribution`: Every `Lp` function is a tempered distribution.
 * `TemperedDistribution.mulLeftCLM`: Multiplication with temperate growth function as a continuous
-linear map.
+  linear map.
 * `TemperedDistribution.instLineDeriv`: The directional derivative on tempered distributions.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
 * `𝓢'(E, F)`: The space of tempered distributions `TemperedDistribution E F` scoped in
-`SchwartzMap`
+  `SchwartzMap`
 -/
 
 @[expose] public noncomputable section
@@ -53,7 +53,7 @@ abbrev TemperedDistribution := 𝓢(E, ℂ) →Lₚₜ[ℂ] F
 /- Since mathlib is missing quite a few results that show that continuity of linear maps and
 convergence of sequences can be checked for strong duals of Fréchet-Montel spaces pointwise, we
 use the pointwise topology for now and not the strong topology. The pointwise topology is
-conventially used in PDE texts, but has the downside that it is not barrelled, hence the uniform
+conventionally used in PDE texts, but has the downside that it is not barrelled, hence the uniform
 boundedness principle does not hold. -/
 
 @[inherit_doc]

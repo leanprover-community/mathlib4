@@ -92,6 +92,10 @@ This definition is an abbreviation of `RelEmbedding (≤) (≤)`. -/
 abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
   @RelEmbedding α β (· ≤ ·) (· ≤ ·)
 
+to_dual_insert_cast_fun OrderEmbedding :=
+  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩,
+  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩
+
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
 
@@ -99,6 +103,10 @@ infixl:25 " ↪o " => OrderEmbedding
 This definition is an abbreviation of `RelIso (≤) (≤)`. -/
 abbrev OrderIso (α β : Type*) [LE α] [LE β] :=
   @RelIso α β (· ≤ ·) (· ≤ ·)
+
+to_dual_insert_cast_fun OrderIso :=
+  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩,
+  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩
 
 /-- Notation for an `OrderIso`. -/
 infixl:25 " ≃o " => OrderIso
@@ -199,6 +207,7 @@ theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b <
   rw [← map_lt_map_iff f]
   simp only [EquivLike.apply_inv_apply]
 
+@[to_dual self]
 theorem map_inv_lt_map_inv_iff (f : F) {a b : β} :
     EquivLike.inv f b < EquivLike.inv f a ↔ b < a := by
   simp
@@ -359,7 +368,7 @@ theorem comp_const (γ : Type*) [Preorder γ] (f : α →o β) (c : α) :
 protected def prod (f : α →o β) (g : α →o γ) : α →o β × γ :=
   ⟨fun x => (f x, g x), fun _ _ h => ⟨f.mono h, g.mono h⟩⟩
 
-@[mono]
+@[mono, to_dual self]
 theorem prod_mono {f₁ f₂ : α →o β} (hf : f₁ ≤ f₂) {g₁ g₂ : α →o γ} (hg : g₁ ≤ g₂) :
     f₁.prod g₁ ≤ f₂.prod g₂ := fun _ => Prod.le_def.2 ⟨hf _, hg _⟩
 
@@ -554,10 +563,11 @@ namespace OrderEmbedding
 variable [Preorder α] [Preorder β] (f : α ↪o β)
 
 /-- `<` is preserved by order embeddings of preorders. -/
+@[to_dual gtEmbedding /-- `>` is preserved by order embeddings of preorders. -/]
 def ltEmbedding : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop) :=
   { f with map_rel_iff' := by simp [lt_iff_le_not_ge, f.map_rel_iff] }
 
-@[simp]
+@[to_dual (attr := simp) gtEmbedding_apply]
 theorem ltEmbedding_apply (x : α) : f.ltEmbedding x = f x :=
   rfl
 
@@ -580,6 +590,7 @@ protected theorem strictMono : StrictMono f := fun _ _ => f.lt_iff_lt.2
 protected theorem acc (a : α) : Acc (· < ·) (f a) → Acc (· < ·) a :=
   f.ltEmbedding.acc a
 
+@[to_dual none]
 protected theorem wellFounded (f : α ↪o β) :
     WellFounded ((· < ·) : β → β → Prop) → WellFounded ((· < ·) : α → α → Prop) :=
   f.ltEmbedding.wellFounded
@@ -592,14 +603,10 @@ protected def dual : αᵒᵈ ↪o βᵒᵈ :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
 
 /-- A preorder which embeds into a well-founded preorder is itself well-founded. -/
+@[to_dual /-- A preorder which embeds into a preorder in which `(· > ·)` is well-founded
+also has `(· > ·)` well-founded. -/]
 protected theorem wellFoundedLT [WellFoundedLT β] (f : α ↪o β) : WellFoundedLT α where
   wf := f.wellFounded IsWellFounded.wf
-
-/-- A preorder which embeds into a preorder in which `(· > ·)` is well-founded
-also has `(· > ·)` well-founded. -/
-@[to_dual existing]
-protected theorem wellFoundedGT [WellFoundedGT β] (f : α ↪o β) : WellFoundedGT α :=
-  @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ _ f.dual
 
 -- `to_dual` cannot yet reorder arguments of arguments
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
@@ -931,18 +938,13 @@ section LE
 
 variable [LE α] [LE β]
 
-@[to_dual self]
+@[gcongr, to_dual self]
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
 
-@[gcongr] protected alias ⟨_, GCongr.orderIso_apply_le_apply⟩ := le_iff_le
-
+@[to_dual symm_apply_le]
 theorem le_symm_apply (e : α ≃o β) {x : α} {y : β} : x ≤ e.symm y ↔ e x ≤ y :=
   e.rel_symm_apply
-
-@[to_dual existing le_symm_apply]
-theorem symm_apply_le (e : α ≃o β) {x : α} {y : β} : e.symm y ≤ x ↔ y ≤ e x :=
-  e.symm_apply_rel
 
 end LE
 
@@ -954,35 +956,34 @@ protected theorem monotone (e : α ≃o β) : Monotone e :=
 protected theorem strictMono (e : α ≃o β) : StrictMono e :=
   e.toOrderEmbedding.strictMono
 
-@[simp, to_dual self]
+@[simp, gcongr, to_dual self]
 theorem lt_iff_lt (e : α ≃o β) {x y : α} : e x < e y ↔ x < y :=
   e.toOrderEmbedding.lt_iff_lt
 
-@[gcongr] protected alias ⟨_, GCongr.orderIso_apply_lt_apply⟩ := lt_iff_lt
-
+@[to_dual symm_apply_lt]
 theorem lt_symm_apply (e : α ≃o β) {x : α} {y : β} : x < e.symm y ↔ e x < y := by
   rw [← e.lt_iff_lt, e.apply_symm_apply]
 
-@[to_dual existing lt_symm_apply]
-theorem symm_apply_lt (e : α ≃o β) {x : α} {y : β} : e.symm y < x ↔ y < e x := by
-  rw [← e.lt_iff_lt, e.apply_symm_apply]
-
 /-- Converts an `OrderIso` into a `RelIso (<) (<)`. -/
+@[to_dual toRelIsoGT /-- Converts an `OrderIso` into a `RelIso (>) (>)`. -/]
 def toRelIsoLT (e : α ≃o β) : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop) :=
   ⟨e.toEquiv, lt_iff_lt e⟩
 
-@[simp]
+@[to_dual (attr := simp) toRelIsoGT_apply]
 theorem toRelIsoLT_apply (e : α ≃o β) (x : α) : e.toRelIsoLT x = e x :=
   rfl
 
-@[simp]
 theorem toRelIsoLT_symm (e : α ≃o β) : e.symm.toRelIsoLT = e.toRelIsoLT.symm :=
   rfl
 
-@[simp]
+@[to_dual existing toRelIsoLT_symm] -- TODO: `to_dual` should be able to generate this by itself.
+theorem toRelIsoGT_symm (e : α ≃o β) : e.symm.toRelIsoGT = e.toRelIsoGT.symm :=
+  rfl
+
+@[to_dual (attr := simp) coe_toRelIsoGT]
 theorem coe_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT = e := rfl
 
-@[simp]
+@[to_dual (attr := simp) coe_symm_toRelIsoGT]
 theorem coe_symm_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT.symm = e.symm := rfl
 
 /-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/

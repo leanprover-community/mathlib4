@@ -295,12 +295,10 @@ theorem coeIdeal_le_coeIdeal' [IsLocalization S P] (h : S ≤ nonZeroDivisors R)
     (I : FractionalIdeal S P) ≤ J ↔ I ≤ J :=
   coeSubmodule_le_coeSubmodule h
 
-@[simp]
+@[simp, gcongr]
 theorem coeIdeal_le_coeIdeal (K : Type*) [CommRing K] [Algebra R K] [IsFractionRing R K]
     {I J : Ideal R} : (I : FractionalIdeal R⁰ K) ≤ J ↔ I ≤ J :=
   IsFractionRing.coeSubmodule_le_coeSubmodule
-
-@[gcongr] protected alias ⟨_, GCongr.coeIdeal_le_coeIdeal⟩ := coeIdeal_le_coeIdeal
 
 instance : Zero (FractionalIdeal S P) :=
   ⟨(0 : Ideal R)⟩
@@ -472,10 +470,7 @@ theorem coe_sup (I J : FractionalIdeal S P) : ↑(I ⊔ J) = (I ⊔ J : Submodul
   rfl
 
 instance lattice : Lattice (FractionalIdeal S P) :=
-  Function.Injective.lattice _ Subtype.coe_injective coe_sup coe_inf
-
-instance : SemilatticeSup (FractionalIdeal S P) :=
-  { FractionalIdeal.lattice with }
+  Function.Injective.lattice _ Subtype.coe_injective .rfl .rfl coe_sup coe_inf
 
 end Lattice
 
