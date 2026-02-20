@@ -174,7 +174,7 @@ class HasDegree (Z : Type*) [Semiring Z] where
 
 
 open Classical in
-/-
+/--
 Implementation detail for pushforward: function used to define the coefficient of the pushforward
 of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
 -/
