@@ -74,6 +74,23 @@ theorem _root_.ULift.algebraMap_eq (r : R) :
 theorem _root_.ULift.down_algebraMap (r : R) : (algebraMap R (ULift A) r).down = algebraMap R A r :=
   rfl
 
+/-- If `A` is an `R`-algebra, it is also a `ULift R`-algebra. In particular, `Ulift R` is a
+`ULift A` algebra. This is not an instance, because it causes a non-reducible diamond in the case
+where `A = Ulift R`. -/
+@[instance_reducible]
+def _root_.ULift.algebra' (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
+    Algebra (ULift.{u} R) A where
+  __ := ULift.module
+  algebraMap := (algebraMap R A).comp ULift.ringEquiv.toRingHom
+  commutes' _ _ := Algebra.commutes ..
+  smul_def' _ _ := Algebra.smul_def' ..
+
+attribute [local instance] ULift.algebra' in
+/-- This references the `ULift.algebra'` instance. -/
+@[simp]
+lemma _root_.ULift.algebraMap_apply' (r : ULift R) :
+    algebraMap (ULift R) A r = algebraMap R A r.down := rfl
+
 end ULift
 
 section SubsemiringAlgebra
