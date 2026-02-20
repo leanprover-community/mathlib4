@@ -115,12 +115,12 @@ instance {M : Type*} [CommMonoid M] : HasEnoughRootsOfUnity M 1 where
   prim := ⟨1, by simp⟩
   cyc := isCyclic_of_subsingleton
 
-instance {L M : Type*} [LeftCancelMonoid L] [Finite L] [CommMonoid M]
-    [HasEnoughRootsOfUnity M (Monoid.exponent L)] :
-    Finite (L →* Mˣ) := by
-  let S := rootsOfUnity (Monoid.exponent L) M
-  have : Finite (L →* S) := .of_injective _ DFunLike.coe_injective
-  refine .of_surjective (fun f : L →* S ↦ (Subgroup.subtype _).comp f) fun f ↦ ?_
+instance {G M : Type*} [Group G] [Finite G] [CommMonoid M]
+    [HasEnoughRootsOfUnity M (Monoid.exponent G)] :
+    Finite (G →* Mˣ) := by
+  let S := rootsOfUnity (Monoid.exponent G) M
+  have : Finite (G →* S) := .of_injective _ DFunLike.coe_injective
+  refine .of_surjective (fun f : G →* S ↦ (Subgroup.subtype _).comp f) fun f ↦ ?_
   have H a : f a ∈ S := by
     rw [mem_rootsOfUnity, ← map_pow, Monoid.pow_exponent_eq_one, map_one]
   exact ⟨.codRestrict f S H, MonoidHom.ext fun _ ↦ by simp⟩
