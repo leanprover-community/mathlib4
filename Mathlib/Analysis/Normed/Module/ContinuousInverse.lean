@@ -33,8 +33,14 @@ This concept is used to give an equivalent definition of immersions and submersi
   which is a continuous linear map itself
 * `ContinuousLinearMap.Splits`: `f` splits iff it is injective, has closed range and `range f`
   admits a closed complement
-* `ContinuousLinearMap.HasLeftInverse.splits` and `ContinuousLinearMap.Splits.hasLeftInverse`:
-  `f` splits if and only if it admits a continuous left inverse
+
+* `ContinuousLinearMap.HasLeftInverse.isClosed_range`: if `f` has a continuous left inverse,
+  its range is closed
+* `ContinuousLinearMap.HasLeftInverse.closedComplemented_range`: if `f` has a continuous left
+  inverse, its range admits a closed complement
+* `ContinuousLinearMap.HasLeftInverse.of_injective_of_isClosed_range_of_closedComplement_range`:
+  if `f` is injective and has closed range with a closed complement, it admits a continuous left
+  inverse
 
 * `ContinuousLinearEquiv.hasRightInverse` and `ContinuousLinearEquiv.hasRightInverse`:
   a continuous linear equivalence admits a continuous left (resp. right) inverse
@@ -188,63 +194,16 @@ lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 
 
 end NontriviallyNormedField
 
-end HasLeftInverse
-
 /-! An equivalent characterisation of maps with a continuous left inverse -/
-section
+section Ring
 
-variable {R E F : Type*} [Ring R]
-  [TopologicalSpace E] [AddCommGroup E] [Module R E]
-  [TopologicalSpace F] [AddCommGroup F] [Module R F]
-
-/-- A continuous linear map `f : E → F` **splits** iff it is injective, has closed range and
-its image has a closed complement. -/
-@[expose] protected def Splits (f : E →L[R] F) : Prop :=
-  Injective f ∧ IsClosed (range f) ∧ Submodule.ClosedComplemented f.range
-
-namespace Splits
-
-variable {f g : E →L[R] F}
-
-lemma injective (h : f.Splits) : Injective f := h.1
-
-lemma isClosed_range (h : f.Splits) : IsClosed (Set.range f) := h.2.1
-
-lemma closedComplemented (h : f.Splits) : Submodule.ClosedComplemented f.range :=
-  h.2.2
-
-lemma congr (hf : f.Splits) (hfg : g = f) : g.Splits := hfg ▸ hf
-
-variable [T1Space F]
-
-/-- Choice of a closed complement of `range f` -/
-def complement (h : f.Splits) : Submodule R F :=
-  h.closedComplemented.complement
-
-lemma isClosed_complement (h : f.Splits) : IsClosed (X := F) h.complement :=
-  h.closedComplemented.isClosed_complement
-
-lemma isCompl_complement (h : f.Splits) : IsCompl f.range h.complement :=
-  h.closedComplemented.isCompl_complement
-
-end Splits
-
--- This definition needs stronger hypotheses.
+-- The next lemmas assume we are working over a ring.
 variable {R E E' F F' G : Type*} [Ring R]
   [TopologicalSpace E] [AddCommGroup E] [Module R E]
-  [TopologicalSpace E'] [AddCommMonoid E'] [Module R E']
-  [TopologicalSpace F] [AddCommGroup F] [Module R F]
-  [TopologicalSpace F'] [AddCommMonoid F'] [Module R F'] [IsTopologicalAddGroup F] [T1Space F]
+  [TopologicalSpace F] [AddCommGroup F] [Module R F] {f : E →L[R] F}
 
-lemma HasLeftInverse.isClosed_range {f : E →L[R] F} (hf : f.HasLeftInverse) :
-    IsClosed (range f) := by
-  -- `range f = ker (f ∘ g - id)` is closed since `f ∘ g - id` is continuous.
-  rw [← f.range_toLinearMap, ← f.coe_range,
-    f.range_eq_ker_of_leftInverse (hf.leftInverse_leftInverse)]
-  exact ((f.comp hf.leftInverse) - (ContinuousLinearMap.id R F)).isClosed_ker
-
-lemma HasLeftInverse.splits {f : E →L[R] F} (hf : f.HasLeftInverse) : f.Splits := by
-  refine ⟨hf.injective, hf.isClosed_range, ?_⟩
+/-- If `f` has a continuous left inverse, its range admits a closed complement. -/
+lemma closedComplemented_range (hf : f.HasLeftInverse) : Submodule.ClosedComplemented f.range := by
   -- Idea of proof: let g be a left inverse for f. Then ker g is a closed subspace of F,
   -- and a complement to range f.
   -- Mathlib's definition of closed complement takes a continuous projection to f.range instead
@@ -256,21 +215,52 @@ lemma HasLeftInverse.splits {f : E →L[R] F} (hf : f.HasLeftInverse) : f.Splits
   simp only [coe_coe, coe_codRestrict_apply, coe_comp', Function.comp_apply]
   rw [hf.leftInverse_leftInverse]
 
+section
+
+variable [T1Space F]
+
+lemma isClosed_range (hf : f.HasLeftInverse) [IsTopologicalAddGroup F] :
+    IsClosed (range f) := by
+  -- `range f = ker (f ∘ g - id)` is closed since `f ∘ g - id` is continuous.
+  rw [← f.range_toLinearMap, ← f.coe_range,
+    f.range_eq_ker_of_leftInverse (hf.leftInverse_leftInverse)]
+  exact ((f.comp hf.leftInverse) - (ContinuousLinearMap.id R F)).isClosed_ker
+
+/-- Choice of a closed complement of `range f` -/
+def complement (h : f.HasLeftInverse) : Submodule R F :=
+  h.closedComplemented_range.complement
+
+lemma isClosed_complement (h : f.HasLeftInverse) : IsClosed (X := F) h.complement :=
+  h.closedComplemented_range.isClosed_complement
+
+lemma isCompl_complement (h : f.HasLeftInverse) : IsCompl f.range h.complement :=
+  h.closedComplemented_range.isCompl_complement
+
+end
+
+end Ring
+
+section
+
 variable {R E F : Type*} [NontriviallyNormedField R]
   [NormedAddCommGroup E] [NormedSpace R E] [CompleteSpace E]
   [NormedAddCommGroup F] [NormedSpace R F] [CompleteSpace F]
 
-/-- A split linear map between Banach spaces has a continuous left inverse. -/
-lemma Splits.hasLeftInverse {f : E →L[R] F} (hf : f.Splits) : f.HasLeftInverse := by
+/-- A continuous linear map between Banach spaces has a continuous left inverse if it isjective,
+has closed range and its range has a closed complement. -/
+lemma of_injective_of_isClosed_range_of_closedComplement_range {f : E →L[R] F}
+    (hf : Injective f) (hf' : IsClosed (range f)) (hf'' : Submodule.ClosedComplemented f.range) :
+    f.HasLeftInverse := by
   have : (f.rangeRestrict).ker = ⊥ := by
-    rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf.injective
+    rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf
   -- We compose the continuous inverse of `f : E → range f` with the projection `p : F → range f`.
-  obtain ⟨p, hp⟩ := hf.closedComplemented
-  let g := f.leftInverse_of_injective_of_isClosed_range hf.injective hf.isClosed_range
-  refine ⟨g.comp p, fun x ↦ ?_⟩
-  simpa [g, hp ⟨f x, by simp⟩] using f.rangeRestrict.leftInverse_apply_of_inj this x
+  obtain ⟨p, hp⟩ := hf''
+  refine ⟨(f.leftInverse_of_injective_of_isClosed_range hf hf').comp p, fun x ↦ ?_⟩
+  simpa [hp ⟨f x, by simp⟩] using f.rangeRestrict.leftInverse_apply_of_inj this x
 
 end
+
+end HasLeftInverse
 
 namespace HasRightInverse
 
