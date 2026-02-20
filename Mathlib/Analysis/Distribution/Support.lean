@@ -54,59 +54,11 @@ a `FunLike` type to a type with zero. -/
 def IsVanishingOn (f : F → V) (s : Set α) : Prop :=
     ∀ (u : F), tsupport u ⊆ s → f u = 0
 
-variable (F V s) in
-@[simp, grind .]
-theorem isVanishingOn_zero : IsVanishingOn (0 : F → V) s := by
-  simp [IsVanishingOn]
-
-@[simp]
-theorem isVanishingOn_univ_iff : IsVanishingOn f Set.univ ↔ f = 0 := by
-  refine ⟨fun hf ↦ ?_, fun hf ↦ by simp [hf]⟩
-  ext u
-  simpa [IsVanishingOn] using hf u
-
 @[gcongr]
 theorem IsVanishingOn.mono (hs : s₂ ⊆ s₁) (hf : IsVanishingOn f s₁) : IsVanishingOn f s₂ :=
   fun u hu ↦ hf u (hu.trans hs)
 
 end Zero
-
-section Monoid
-
-@[grind .]
-theorem IsVanishingOn.add [AddMonoid V] (hf : IsVanishingOn f s₁) (hg : IsVanishingOn g s₂) :
-    IsVanishingOn (f + g) (s₁ ∩ s₂) := by
-  intro u hu
-  simp [hf u (hu.trans Set.inter_subset_left), hg u (hu.trans Set.inter_subset_right)]
-
-variable [SubtractionMonoid V]
-
-@[grind .]
-theorem IsVanishingOn.neg (hf : IsVanishingOn f s) :
-    IsVanishingOn (-f) s := by
-  intro u hu
-  simpa using hf u hu
-
-@[grind .]
-theorem IsVanishingOn.sub (hf : IsVanishingOn f s₁)
-    (hg : IsVanishingOn g s₂) :
-    IsVanishingOn (f - g) (s₁ ∩ s₂) := by
-  intro u hu
-  simp [hf u (hu.trans Set.inter_subset_left), hg u (hu.trans Set.inter_subset_right)]
-
-end Monoid
-
-section Module
-
-variable [Semiring R] [AddCommMonoid V] [Module R V]
-
-@[grind .]
-theorem IsVanishingOn.smul (hf : IsVanishingOn f s) (r : R) :
-    IsVanishingOn (r • f) s := by
-  intro u hu
-  simp [hf u hu]
-
-end Module
 
 end IsVanishingOn
 
@@ -166,45 +118,7 @@ theorem dsupport_subset_dsupport
 theorem isClosed_dsupport : IsClosed (dsupport f) := by
   grind [dsupport, isClosed_sInter]
 
-@[simp]
-theorem dsupport_zero : dsupport (0 : F → V) = ∅ := by
-  simp only [dsupport, isVanishingOn_zero, true_and, Set.sInter_eq_empty_iff, Set.mem_setOf_eq]
-  intro x
-  use ∅
-  simp
-
 end Zero
-
-section Monoid
-
-theorem dsupport_add_subset [AddMonoid V] : dsupport (f + g) ⊆ dsupport f ∪ dsupport g := by
-  rw [← Set.compl_subset_compl, Set.compl_union]
-  intro x hx
-  rw [mem_dsupport_compl_iff]
-  simp only [Set.mem_inter_iff, mem_dsupport_compl_iff] at hx
-  obtain ⟨⟨s₁, hs₁, hs₁', hs₁''⟩, s₂, hs₂, hs₂', hs₂''⟩ := hx
-  use s₁ ∩ s₂
-  exact ⟨hs₁.add hs₂, hs₁'.inter hs₂', Set.mem_inter hs₁'' hs₂''⟩
-
-variable [SubtractionMonoid V]
-
-@[simp]
-theorem dsupport_neg_eq : dsupport (-f) = dsupport f := by
-  apply subset_antisymm
-  all_goals grind [neg_neg]
-
-theorem dsupport_sub_dsubset : dsupport (f - g) ⊆ dsupport f ∪ dsupport g := by
-  grw [sub_eq_add_neg, dsupport_add_subset, dsupport_neg_eq]
-
-end Monoid
-
-section Module
-
-variable [Semiring R] [AddCommMonoid V] [Module R V]
-
-theorem dsupport_smul_subset (r : R) : dsupport (r • f) ⊆ dsupport f := by grind
-
-end Module
 
 end dsupport
 
