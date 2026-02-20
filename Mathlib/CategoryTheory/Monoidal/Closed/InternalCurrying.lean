@@ -52,6 +52,7 @@ lemma internalHomUncurry_uncurry_eq (x y z : C) [Closed x] [Closed y] [Closed (x
     (α_ x y _).hom ≫ x ◁ (ihom.ev y).app ((ihom x).obj z) ≫ (ihom.ev x).app z :=
   uncurry_curry _
 
+@[reassoc (attr := simp)]
 theorem internalHom_uncurry_curry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
     internalHomUncurry x y z ≫ internalHomCurry x y z = 𝟙 _ := by
   apply uncurry_injective
@@ -61,6 +62,7 @@ theorem internalHom_uncurry_curry (x y z : C) [Closed x] [Closed y] [Closed (x �
     Iso.inv_hom_id_assoc]
   exact rfl
 
+@[reassoc (attr := simp)]
 theorem internalHom_curry_uncurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
     internalHomCurry x y z ≫ internalHomUncurry x y z = 𝟙 _ := by
   apply uncurry_injective
