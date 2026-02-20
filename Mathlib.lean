@@ -5928,9 +5928,13 @@ public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 public import Mathlib.Probability.ProbabilityMassFunction.Integrals
 public import Mathlib.Probability.ProbabilityMassFunction.Monad
 public import Mathlib.Probability.Process.Adapted
+public import Mathlib.Probability.Process.BlackScholes
+public import Mathlib.Probability.Process.BrownianMotion
 public import Mathlib.Probability.Process.Filtration
 public import Mathlib.Probability.Process.FiniteDimensionalLaws
 public import Mathlib.Probability.Process.HittingTime
+public import Mathlib.Probability.Process.ItoFormula
+public import Mathlib.Probability.Process.ItoIntegral
 public import Mathlib.Probability.Process.Kolmogorov
 public import Mathlib.Probability.Process.PartitionFiltration
 public import Mathlib.Probability.Process.Predictable
