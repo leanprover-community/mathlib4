@@ -82,6 +82,7 @@ instance : Limits.PreservesFiniteLimits (forget C X ⋙ stalkFunctor C p₀) :=
 
 open ZeroObject
 
+omit [PreservesLimits (CategoryTheory.forget C)]
 /-- A sheaf is zero if and only if its stalks are all zero. -/
 lemma isZero_iff_stalkFunctor_obj_isZero (F : Sheaf C X)
     [PreservesLimits (CategoryTheory.forget C)] :
