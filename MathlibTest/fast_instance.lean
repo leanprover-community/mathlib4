@@ -1,6 +1,9 @@
-import Mathlib.Tactic.FastInstance
-import Mathlib.Logic.Function.Defs
-import Mathlib.Tactic.Spread
+module
+public import Mathlib.Tactic.FastInstance
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Tactic.Spread
+
+@[expose] public section
 
 namespace testing
 set_option autoImplicit false
@@ -62,14 +65,15 @@ instance instCommSemigroup [CommSemigroup α] : CommSemigroup (Wrapped α) :=
   fast_instance% Function.Injective.commSemigroup _ val_injective (fun _ _ => rfl)
 
 /--
-info: @[instance_reducible] def testing.instSemigroup.{u_1} : {α : Type u_1} → [Semigroup α] → Semigroup (Wrapped α) :=
+info: @[instance_reducible, expose] def testing.instSemigroup.{u_1} : {α : Type u_1} →
+  [Semigroup α] → Semigroup (Wrapped α) :=
 fun {α} [inst : Semigroup α] => @Semigroup.mk (Wrapped α) (@instMulWrapped α (@Semigroup.toMul α inst)) ⋯
 -/
 #guard_msgs in
 set_option pp.explicit true in
 #print instSemigroup
 /--
-info: @[instance_reducible] def testing.instCommSemigroup.{u_1} : {α : Type u_1} →
+info: @[instance_reducible, expose] def testing.instCommSemigroup.{u_1} : {α : Type u_1} →
   [CommSemigroup α] → CommSemigroup (Wrapped α) :=
 fun {α} [inst : CommSemigroup α] =>
   @CommSemigroup.mk (Wrapped α) (@instSemigroup α (@CommSemigroup.toSemigroup α inst)) ⋯

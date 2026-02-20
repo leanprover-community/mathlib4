@@ -1,3 +1,5 @@
+module
+public import Lean.Elab.Tactic
 import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Data.ENNReal.Basic
