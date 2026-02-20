@@ -45,6 +45,7 @@ theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = padicV
     · simp
     · simp [← padicValNat_eq_emultiplicity', *]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
     padicValNat p n = multiplicity p n :=
   .symm <| multiplicity_eq_of_emultiplicity_eq_some <| .symm <|

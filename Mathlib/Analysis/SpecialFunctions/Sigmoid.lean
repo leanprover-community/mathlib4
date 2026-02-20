@@ -64,6 +64,7 @@ noncomputable def sigmoid (x : ℝ) := (1 + exp (-x))⁻¹
 
 lemma sigmoid_def (x : ℝ) : sigmoid x = (1 + exp (-x))⁻¹ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma sigmoid_zero : sigmoid 0 = 2⁻¹ := by norm_num [sigmoid]
 
@@ -114,6 +115,7 @@ lemma sigmoid_mul_rexp_neg (x : ℝ) : sigmoid x * exp (-x) = sigmoid (-x) := by
   rw [sigmoid_neg, sigmoid_def]
   field
 
+set_option backward.isDefEq.respectTransparency false in
 open Set in
 lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
   refine subset_antisymm ?_ fun x hx ↦ ?_
@@ -125,6 +127,7 @@ lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
 
 open Topology Filter
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
   simpa using Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
     by norm_num
@@ -187,6 +190,7 @@ open ContDiff in
 lemma ContDiff.sigmoid (hf : ContDiff ℝ ω f) : ContDiff ℝ ω (sigmoid ∘ f) :=
   contDiff_sigmoid.comp hf
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma differentiable_sigmoid : Differentiable ℝ sigmoid :=
    contDiff_sigmoid.of_le le_top |>.differentiable_one

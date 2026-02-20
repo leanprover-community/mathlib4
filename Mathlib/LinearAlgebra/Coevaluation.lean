@@ -45,6 +45,7 @@ def coevaluation : K →ₗ[K] V ⊗[K] Module.Dual K V :=
   (Basis.singleton Unit K).constr K fun _ =>
     ∑ i : Basis.ofVectorSpaceIndex K V, bV i ⊗ₜ[K] bV.coord i
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coevaluation_apply_one :
     (coevaluation K V) (1 : K) =
       let bV := Basis.ofVectorSpace K V
