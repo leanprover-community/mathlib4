@@ -35,6 +35,22 @@ variable {ι α M N X : Type*} [TopologicalSpace X]
 theorem continuous_one [TopologicalSpace M] [One M] : Continuous (1 : X → M) :=
   @continuous_const _ _ _ _ 1
 
+namespace MulOpposite
+
+/-- If multiplication is separately continuous in `α`, then it also is in `αᵐᵒᵖ`. -/
+@[to_additive /-- If addition is separately continuous in `α`, then it also is in `αᵃᵒᵖ`. -/]
+instance [TopologicalSpace α] [Mul α] [SeparatelyContinuousMul α] :
+    SeparatelyContinuousMul αᵐᵒᵖ where
+  continuous_mul_const := continuous_op.comp (continuous_unop.const_mul (unop _))
+  continuous_const_mul := continuous_op.comp (continuous_unop.mul_const (unop _))
+
+/-- If multiplication is continuous in `α`, then it also is in `αᵐᵒᵖ`. -/
+@[to_additive /-- If addition is continuous in `α`, then it also is in `αᵃᵒᵖ`. -/]
+instance [TopologicalSpace α] [Mul α] [ContinuousMul α] : ContinuousMul αᵐᵒᵖ :=
+  ⟨continuous_op.comp (continuous_unop.snd'.mul continuous_unop.fst')⟩
+
+end MulOpposite
+
 section SeparatelyContinuousMul
 
 variable [TopologicalSpace M] [Mul M] [SeparatelyContinuousMul M]
@@ -374,6 +390,34 @@ instance Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul 
     (S : Submonoid M) : ContinuousMul S :=
   S.toSubsemigroup.continuousMul
 
+open MulOpposite in
+@[to_additive]
+theorem Topology.IsInducing.separatelyContinuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
+    [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [SeparatelyContinuousMul N]
+    (f : F) (hf : IsInducing f) : SeparatelyContinuousMul M where
+  continuous_const_mul := (hf.continuousConstSMul f (map_mul f _ _)).1 _
+  continuous_mul_const {m} :=
+    have := ((opHomeomorph.isInducing.comp hf).comp (opHomeomorph.symm.isInducing)
+      |>.continuousConstSMul (fun x ↦ op (f (unop x))) (by simp)).1 (op m)
+    continuous_unop.comp <| this.comp continuous_op
+
+@[to_additive]
+theorem separatelyContinuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
+    [MulHomClass F M N] [TopologicalSpace N] [SeparatelyContinuousMul N] (f : F) :
+    @SeparatelyContinuousMul M (induced f ‹_›) _ :=
+  letI := induced f ‹_›
+  IsInducing.separatelyContinuousMul f ⟨rfl⟩
+
+@[to_additive]
+instance Subsemigroup.separatelyContinuousMul [TopologicalSpace M] [Semigroup M]
+    [SeparatelyContinuousMul M] (S : Subsemigroup M) : SeparatelyContinuousMul S :=
+  IsInducing.separatelyContinuousMul
+    ({ toFun := (↑), map_mul' := fun _ _ => rfl } : MulHom S M) ⟨rfl⟩
+
+@[to_additive]
+instance Submonoid.separatelyContinuousMul [TopologicalSpace M] [Monoid M]
+    [SeparatelyContinuousMul M] (S : Submonoid M) : SeparatelyContinuousMul S :=
+  S.toSubsemigroup.separatelyContinuousMul
 section MulZeroClass
 
 open Filter
@@ -553,20 +597,6 @@ end MulOneClass
 section ContinuousMul
 
 section Semigroup
-
--- Move to `Topology.Constructions.SumProd`
-/-- The hypotheses on `f` are slightly weaker here compared to `mem_map_closure₂`. That
-lemma requires `f` to be jointly continuous, whereas here we only require continuity in each
-variable separately. -/
-theorem map_mem_closure₂' {X Y Z : Type*}
-    [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    {f : X → Y → Z} {x : X} {y : Y} {s : Set X} {t : Set Y} {u : Set Z}
-    (hf₁ : ∀ x, Continuous (f x)) (hf₂ : ∀ y, Continuous (f · y))
-    (hx : x ∈ closure s) (hy : y ∈ closure t) (h : ∀ a ∈ s, ∀ b ∈ t, f a b ∈ u) :
-    f x y ∈ closure u := by
-  rw [← isClosed_closure.closure_eq]
-  apply map_mem_closure (hf₁ x) hy fun b hb ↦ ?_
-  apply map_mem_closure (hf₂ b) hx fun a ha ↦ h a ha b hb
 
 variable [TopologicalSpace M] [Semigroup M] [SeparatelyContinuousMul M]
 
@@ -824,22 +854,6 @@ instance (priority := 100) SMulCommClass.continuousConstSMul {R A : Type*} [Mono
     fun_prop
 
 end ContinuousMul
-
-namespace MulOpposite
-
-/-- If multiplication is separately continuous in `α`, then it also is in `αᵐᵒᵖ`. -/
-@[to_additive /-- If addition is separately continuous in `α`, then it also is in `αᵃᵒᵖ`. -/]
-instance [TopologicalSpace α] [Mul α] [SeparatelyContinuousMul α] :
-    SeparatelyContinuousMul αᵐᵒᵖ where
-  continuous_mul_const := continuous_op.comp (continuous_unop.const_mul (unop _))
-  continuous_const_mul := continuous_op.comp (continuous_unop.mul_const (unop _))
-
-/-- If multiplication is continuous in `α`, then it also is in `αᵐᵒᵖ`. -/
-@[to_additive /-- If addition is continuous in `α`, then it also is in `αᵃᵒᵖ`. -/]
-instance [TopologicalSpace α] [Mul α] [ContinuousMul α] : ContinuousMul αᵐᵒᵖ :=
-  ⟨continuous_op.comp (continuous_unop.snd'.mul continuous_unop.fst')⟩
-
-end MulOpposite
 
 namespace Units
 

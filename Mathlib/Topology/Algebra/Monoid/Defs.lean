@@ -36,7 +36,8 @@ open scoped Topology
 semigroup. A topological additive monoid over `M`, for example, is obtained by requiring both the
 instances `AddMonoid M` and `ContinuousAdd M`.
 
-Continuity in only the left/right argument can be stated using
+Continuity in each argument separately can be stated using `SeparatelyContinuousAdd α`. If one wants
+only continuity in either the left or right argument, but not both one can use
 `ContinuousConstVAdd α α`/`ContinuousConstVAdd αᵐᵒᵖ α`. -/
 class ContinuousAdd (M : Type*) [TopologicalSpace M] [Add M] : Prop where
   continuous_add : Continuous fun p : M × M => p.1 + p.2
@@ -52,14 +53,18 @@ only continuity in either the left or right argument, but not both one can use
 class ContinuousMul (M : Type*) [TopologicalSpace M] [Mul M] : Prop where
   continuous_mul : Continuous fun p : M × M => p.1 * p.2
 
+/-- A type class encoding that addition is continuous in each argument. This is weaker than
+`ContinuousAdd`. -/
 class SeparatelyContinuousAdd (M : Type*) [TopologicalSpace M] [Add M] : Prop where
-  continuous_const_add {a} : Continuous fun b : M => a + b
-  continuous_add_const {a} : Continuous fun b : M => b + a
+  continuous_const_add {a : M} : Continuous (a + ·)
+  continuous_add_const {a : M} : Continuous (· + a)
 
+/-- A type class encoding that addition is continuous in each argument. This is weaker than
+`ContinuousMul`. -/
 @[to_additive]
 class SeparatelyContinuousMul (M : Type*) [TopologicalSpace M] [Mul M] : Prop where
-  continuous_const_mul {a} : Continuous fun b : M => a * b
-  continuous_mul_const {a} : Continuous fun b : M => b * a
+  continuous_const_mul {a : M} : Continuous (a * ·)
+  continuous_mul_const {a : M} : Continuous (· * a)
 
 section ContinuousMul
 
