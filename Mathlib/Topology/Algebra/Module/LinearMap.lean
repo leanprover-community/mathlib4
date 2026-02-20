@@ -386,17 +386,14 @@ theorem coe_add' (f g : M₁ →SL[σ₁₂] M₂) : ⇑(f + g) = f + g :=
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
     ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
+-- The `AddMonoid` instance exists to help speedup unification
 set_option backward.isDefEq.respectTransparency false in
-instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
+instance : AddMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
     intros
     ext
     apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_zero := by
-    intros
-    ext
-    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
-  add_comm := by
     intros
     ext
     apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
@@ -411,6 +408,13 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   nsmul_succ n f := by
     ext
     simp [add_smul]
+
+set_option backward.isDefEq.respectTransparency false in
+instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
+  add_comm := by
+    intros
+    ext
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
 
 @[simp, norm_cast]
 theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
