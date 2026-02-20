@@ -137,7 +137,7 @@ theorem compRingEquiv_apply (M : Matrix I I (Matrix J J R)) :
 theorem compRingEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
     (compRingEquiv I J R).symm M = (comp I I J J R).symm M := rfl
 
-instance (R) [MulOne R] [AddCommMonoid R] [Fintype I] [DecidableEq I] [IsStablyFiniteRing R] :
+instance (R) [MulOne R] [AddCommMonoid R] [DecidableEq I] [IsStablyFiniteRing R] :
     IsStablyFiniteRing (Matrix I I R) :=
   ⟨fun n ↦ .of_injective (MonoidHom.mk ⟨_, comp_one⟩ (compRingEquiv (Fin n) I R).map_mul)
     (RingEquiv.injective _)⟩

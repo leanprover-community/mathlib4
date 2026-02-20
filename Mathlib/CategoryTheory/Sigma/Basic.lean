@@ -166,6 +166,7 @@ lemma descUniq_inv_app (q : (Σ i, C i) ⥤ D) (h : ∀ i, incl i ⋙ q ≅ F i)
     (descUniq F q h).inv.app ⟨i, X⟩ = (h i).inv.app X :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `q₁` and `q₂` when restricted to each subcategory `C i` agree, then `q₁` and `q₂` are isomorphic.
 -/
@@ -201,6 +202,7 @@ def inclCompMap (j : J) : incl j ⋙ map C g ≅ incl (g j) :=
 
 variable (I)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Sigma.map` applied to the identity function is just the identity functor. -/
 @[simps!]
 def mapId : map C (id : I → I) ≅ 𝟭 (Σ i, C i) :=
