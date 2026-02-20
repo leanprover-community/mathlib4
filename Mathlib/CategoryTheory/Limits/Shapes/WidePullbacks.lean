@@ -79,7 +79,7 @@ open Lean Elab Tactic
 /- Pointing note: experimenting with manual scoping of aesop tactics. Attempted to define
 aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 /-- An aesop tactic for bulk cases on morphisms in `WidePushoutShape` -/
-def evalCasesBash : TacticM Unit := do
+meta def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
       (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _)))
@@ -209,7 +209,7 @@ instance Hom.inhabited : Inhabited (Hom (none : WidePushoutShape J) none) :=
 open Lean Elab Tactic
 -- Pointing note: experimenting with manual scoping of aesop tactics; only this worked
 /-- An aesop tactic for bulk cases on morphisms in `WidePushoutShape` -/
-def evalCasesBash' : TacticM Unit := do
+meta def evalCasesBash' : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePushoutShape _,
       (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _)))
