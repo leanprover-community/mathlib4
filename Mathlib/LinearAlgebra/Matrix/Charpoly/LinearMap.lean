@@ -99,6 +99,7 @@ theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
       PiToModule.fromMatrix_apply_single_one]
     apply h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : Matrix.Represents b A' f') : (A * A').Represents b (f * f') := by
   delta Matrix.Represents PiToModule.fromMatrix
@@ -108,6 +109,7 @@ theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h
   rw [← h'.congr_fun, ← h.congr_fun]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
   delta Matrix.Represents PiToModule.fromMatrix
   rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_one]

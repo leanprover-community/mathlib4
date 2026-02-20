@@ -1795,7 +1795,7 @@ Q1683356:
 
 Q1687147:
   title: Sprague–Grundy theorem
-  decl: SetTheory.PGame.equiv_nim_grundyValue
+  url: https://github.com/vihdzp/combinatorial-games/blob/master/CombinatorialGames/Game/Impartial/Grundy.lean
   authors: Fox Thomson
   date: 2020
 

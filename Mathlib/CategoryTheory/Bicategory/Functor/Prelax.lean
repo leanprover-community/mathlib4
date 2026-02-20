@@ -22,7 +22,7 @@ oplax functors.
 
 A PrelaxFunctorStruct `F` between quivers `B` and `C`, such that both have been equipped with quiver
 structures on the hom-types, consists of
-* a function between objects `F.obj : B ⟶ C`,
+* a function between objects `F.obj : B → C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
 
@@ -136,8 +136,8 @@ def mkOfHomFunctors (F : B → C) (F' : (a : B) → (b : B) → (a ⟶ b) ⥤ (F
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : PrelaxFunctor B B where
   toPrelaxFunctorStruct := PrelaxFunctorStruct.id B
 
-instance : Inhabited (PrelaxFunctorStruct B B) :=
-  ⟨PrelaxFunctorStruct.id B⟩
+instance : Inhabited (PrelaxFunctor B B) :=
+  ⟨PrelaxFunctor.id B⟩
 
 variable (F : PrelaxFunctor B C)
 
@@ -161,7 +161,7 @@ section
 
 variable {a b : B}
 
-/-- A prelax functor `F` sends 2-isomorphisms `η : f ≅ f` to 2-isomorphisms
+/-- A prelax functor `F` sends 2-isomorphisms `η : f ≅ g` to 2-isomorphisms
 `F.map f ≅ F.map g`. -/
 @[simps!]
 abbrev map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=

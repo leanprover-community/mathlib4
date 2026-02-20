@@ -125,6 +125,7 @@ section Fintype
 variable (F : Type*) [Field F] [Fintype F]
 variable {R : Type*} [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- There is a character of order `n` on `F` if `#F ≡ 1 mod n` and the target contains
 a primitive `n`th root of unity. -/
 lemma exists_mulChar_orderOf {n : ℕ} (h : n ∣ Fintype.card F - 1) {ζ : R}
