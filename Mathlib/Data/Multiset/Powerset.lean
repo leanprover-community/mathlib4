@@ -168,11 +168,6 @@ theorem powerset_le_powerset_iff_le {s t : Multiset α} :
       rw [Multiset.powerset_coe', Multiset.powerset_coe', Multiset.coe_le]
       exact Sublist.subperm <| (Sublist.sublists' hsub).map Multiset.ofList
 
-lemma powerset_mono : Monotone (@Multiset.powerset α) := by
-  unfold Monotone
-  intro a₁ a₂ a
-  exact powerset_le_powerset_iff_le.mpr a
-
 lemma powerset_injective : Function.Injective (@Multiset.powerset α) := by
   unfold Function.Injective
   intro a₁ a₂ a
@@ -182,6 +177,9 @@ lemma powerset_injective : Function.Injective (@Multiset.powerset α) := by
 
 lemma powerset_strictMono : StrictMono (@Multiset.powerset α) :=
   strictMono_of_le_iff_le (fun _ _ ↦ Iff.symm powerset_le_powerset_iff_le)
+
+lemma powerset_mono : Monotone (@Multiset.powerset α) :=
+  powerset_strictMono.monotone
 
 /-! ### powersetCard -/
 

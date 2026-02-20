@@ -66,7 +66,7 @@ theorem Subperm.map {α β} {l₁ l₂ : List α} (f : α → β) :
   | ⟨l, hl_perm, hl_sub⟩ =>
     ⟨l.map f, hl_perm.map f, hl_sub.map f⟩
 
-theorem map_subperm_map_iff {α β} {l₁ l₂ : List α} (f : α → β) (hf : Function.Injective f) :
+theorem map_subperm_map_iff {α β} {l₁ l₂ : List α} {f : α → β} (hf : Function.Injective f) :
     (l₁.map f) <+~ (l₂.map f) ↔ l₁ <+~ l₂ where
   mpr a := Subperm.map f a
   mp a := by

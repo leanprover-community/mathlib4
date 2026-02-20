@@ -367,6 +367,11 @@ theorem Sublist.sublists' {l₁ l₂ : List α}
     rw [sublists'_cons, sublists'_cons]
     exact ih.append (ih.map _)
 
+theorem sublist_sublists'_iff_sublist {l₁ l₂ : List α} :
+    l₁.sublists' <+ l₂.sublists' ↔ l₁ <+ l₂ where
+  mpr := Sublist.sublists'
+  mp sublist := mem_sublists'.mp (sublist.subset (mem_sublists'.mpr (List.Sublist.refl _)))
+
 theorem sublists_cons_perm_append (a : α) (l : List α) :
     sublists (a :: l) ~ sublists l ++ map (cons a) (sublists l) :=
   Perm.trans (sublists_perm_sublists' _) <| by
