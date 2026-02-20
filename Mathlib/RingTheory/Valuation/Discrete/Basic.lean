@@ -273,7 +273,6 @@ section Uniformizer
 
 variable {v} [hv : v.IsRankOneDiscrete]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An element associated to a uniformizer is itself a uniformizer. -/
 theorem IsUniformizer.of_associated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁)
     (H : Associated π₁ π₂) : IsUniformizer v π₂ := by

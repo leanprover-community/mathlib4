@@ -296,7 +296,6 @@ theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
   Set.ext fun z => by
     rw [mem_leftCoset_iff, Set.mem_setOf_eq, eq_comm, QuotientGroup.eq, SetLike.mem_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 open MulAction in
 @[to_additive]
 lemma orbit_mk_eq_smul (x : α) : MulAction.orbitRel.Quotient.orbit (x : α ⧸ s) = x • s := by

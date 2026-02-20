@@ -850,7 +850,6 @@ section Comp
 
 variable {a b c d : ℝ} (f : ℝ → E)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem integral_comp_mul_right (hc : c ≠ 0) :
     (∫ x in a..b, f (x * c)) = c⁻¹ • ∫ x in a * c..b * c, f x := by

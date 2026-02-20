@@ -62,7 +62,6 @@ variable [CompleteSpace E] (I : Box (Fin (n + 1))) {i : Fin (n + 1)}
 
 open MeasureTheory
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for the divergence theorem. -/
 theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) → ℝ) → E}
     {f' : (Fin (n + 1) → ℝ) →L[ℝ] E} (hfc : ContinuousOn f (Box.Icc I)) {x : Fin (n + 1) → ℝ}

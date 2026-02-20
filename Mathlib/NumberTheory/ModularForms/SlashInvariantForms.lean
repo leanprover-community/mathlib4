@@ -180,7 +180,6 @@ theorem smul_applyℝ (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) :
 
 end smulℝ
 
-set_option backward.isDefEq.respectTransparency false in
 instance instNeg : Neg (SlashInvariantForm Γ k) :=
   ⟨fun f =>
     { toFun := -f
