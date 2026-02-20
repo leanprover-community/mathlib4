@@ -5,13 +5,11 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Indicator
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.MeasureTheory.Function.AEEqFun
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 
 /-!
 # Basic theorems about ℒp space
@@ -59,7 +57,7 @@ theorem eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top {f : α → ε} (hp_ne_ze
     intro h
     have hp' := ENNReal.toReal_pos hp_ne_zero hp_ne_top
     have : 0 < 1 / p.toReal := div_pos zero_lt_one hp'
-    simpa [eLpNorm_eq_lintegral_rpow_enorm hp_ne_zero hp_ne_top] using
+    simpa [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_ne_zero hp_ne_top] using
       ENNReal.rpow_lt_top_of_nonneg (le_of_lt this) (ne_of_lt h)⟩
 
 end Top
@@ -451,6 +449,7 @@ theorem eLpNorm_norm (f : α → F) : eLpNorm (fun x => ‖f x‖) p μ = eLpNor
 theorem eLpNorm_enorm (f : α → ε) : eLpNorm (fun x ↦ ‖f x‖ₑ) p μ = eLpNorm f p μ :=
   eLpNorm_congr_enorm_ae <| Eventually.of_forall fun _ => enorm_enorm _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eLpNorm'_enorm_rpow (f : α → ε) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (‖f ·‖ₑ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
   simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
@@ -462,6 +461,7 @@ lemma eLpNorm_ofReal (f : α → ℝ) (hf : ∀ᵐ x ∂μ, 0 ≤ f x) :
     eLpNorm (ENNReal.ofReal ∘ f) p μ = eLpNorm f p μ :=
   eLpNorm_congr_enorm_ae <| hf.mono fun _x hx ↦ Real.enorm_ofReal_of_nonneg hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (fun x => ‖f x‖ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
   simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
@@ -867,7 +867,7 @@ theorem eLpNorm_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))
   by_cases hp_top : p = ∞
   · simp_rw [hp_top, eLpNorm_exponent_top]
     exact eLpNormEssSup_map_measure hg hf
-  simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp_zero hp_top,
+  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_zero hp_top,
     lintegral_map' (hg.enorm.pow_const p.toReal) hf, Function.comp_apply]
 
 theorem memLp_map_measure_iff (hg : AEStronglyMeasurable g (Measure.map f μ))
@@ -903,7 +903,7 @@ theorem _root_.MeasurableEmbedding.eLpNorm_map_measure (hf : MeasurableEmbedding
   by_cases hp : p = ∞
   · simp_rw [hp, eLpNorm_exponent_top]
     exact hf.essSup_map_measure
-  · simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp_zero hp, hf.lintegral_map, Function.comp_apply]
+  · simp [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_zero hp, hf.lintegral_map]
 
 theorem _root_.MeasurableEmbedding.memLp_map_measure_iff (hf : MeasurableEmbedding f) :
     MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ := by
@@ -934,7 +934,7 @@ theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {p : ℝ≥0∞} {f : ℕ → α
       (lt_of_le_of_lt
           (lintegral_liminf_le fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
           (lt_of_le_of_lt ?_ (by finiteness : (R : ℝ≥0∞) ^ p.toReal < ∞))).ne
-  simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp hp', one_div] at hbdd
+  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp', one_div] at hbdd
   simp_rw [liminf_eq, eventually_atTop]
   exact
     sSup_le fun b ⟨a, ha⟩ =>

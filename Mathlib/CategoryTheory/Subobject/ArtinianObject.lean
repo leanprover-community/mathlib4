@@ -153,6 +153,7 @@ noncomputable def simpleSubobjectArrow {X : C} [IsArtinianObject X] (h : ¬IsZer
     simpleSubobject h ⟶ X :=
   (exists_simple_subobject h).choose.arrow
 
+set_option backward.isDefEq.respectTransparency false in
 instance mono_simpleSubobjectArrow {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
     Mono (simpleSubobjectArrow h) := by
   dsimp only [simpleSubobjectArrow]
