@@ -29,7 +29,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 /-- The currying operation taking a morphism `(z ⊗ y) ⟶ x` to a morphism `y ⟶ C(z, x)`,
   constructed as a morphism in `C` between internal homs. -/
-def internalHomCurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
+def ihomCurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
     (ihom (x ⊗ y)).obj z ⟶ (ihom y).obj ((ihom x).obj z) :=
   curry (curry ((α_ x y _).inv ≫ (ihom.ev _).app z))
 
