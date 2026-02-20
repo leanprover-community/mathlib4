@@ -118,7 +118,7 @@ lemma double {B : Fin 6 → ℕ} {i : Fin 6}
   ext k; simp only [comp_apply, add_apply, sub_apply]
   have (j : Fin 6) : j + 1 + 1 = j + 2 := by grind
   rcases eq_or_ne k i with rfl | hk
-  · rw [swap_apply_of_ne_of_ne (by simp) (by simp), single_succ, this, single_add_two, tsub_zero]
+  · rw [swap_apply_of_ne_of_ne (by simp) (by simp), single_succ, this, single_add_two, Nat.sub_zero]
   · rcases eq_or_ne k (i + 1) with rfl | hk'
     · grind [swap_apply_left, single_eq_same]
     · rw [single_eq_of_ne hk']
