@@ -72,8 +72,9 @@ theorem ofFn_coeff_eq_val_of_lt {n i : ℕ} (v : Fin n → R) (hi : i < n) :
 
 /-- If `n ≤ i` the `i`-th coefficient of `ofFn n v` is `0`. -/
 @[simp]
-theorem ofFn_coeff_eq_zero_of_ge {n i : ℕ} (v : Fin n → R) (hi : n ≤ i) : (ofFn n v).coeff i = 0 :=
-  by simp [ofFn, Nat.not_lt_of_ge hi]
+theorem ofFn_coeff_eq_zero_of_ge {n i : ℕ} (v : Fin n → R) (hi : n ≤ i) :
+    (ofFn n v).coeff i = 0 := by
+  simp [ofFn, Nat.not_lt_of_ge hi]
 
 /-- `ofFn n v` has `natDegree` smaller than `n`. -/
 theorem ofFn_natDegree_lt {n : ℕ} (h : 1 ≤ n) (v : Fin n → R) : (ofFn n v).natDegree < n := by
@@ -88,6 +89,7 @@ theorem ofFn_degree_lt {n : ℕ} (v : Fin n → R) : (ofFn n v).degree < n := by
   · exact (natDegree_lt_iff_degree_lt h).mp
       <| ofFn_natDegree_lt (Nat.one_le_iff_ne_zero.mpr <| ne_zero_of_ofFn_ne_zero h) _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofFn_eq_sum_monomial {n : ℕ} (v : Fin n → R) : ofFn n v =
     ∑ i : Fin n, monomial i (v i) := by
   by_cases h : n = 0

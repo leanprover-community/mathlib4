@@ -112,6 +112,7 @@ section Real
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F →L[ℝ] F}
     (hT : (T : F →ₗ[ℝ] F).IsSymmetric) (x₀ : F) :
     HasStrictFDerivAt T.reApplyInnerSelf (2 • (innerSL ℝ (T x₀))) x₀ := by
@@ -123,6 +124,7 @@ theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F �
 
 variable [CompleteSpace F] {T : F →L[ℝ] F}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : F) ‖x₀‖) x₀) :
     ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • x₀ + b • T x₀ = 0 := by

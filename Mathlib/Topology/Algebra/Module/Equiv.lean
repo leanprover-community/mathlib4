@@ -1355,6 +1355,7 @@ variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] 
 
 open ContinuousLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `p` is a closed complemented submodule,
 then there exists a submodule `q` and a continuous linear equivalence `M ≃L[R] (p × q)` such that
 `e (x : p) = (x, 0)`, `e (y : q) = (0, y)`, and `e.symm x = x.1 + x.2`.

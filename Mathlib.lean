@@ -3157,6 +3157,7 @@ public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.CategoryTheory.Sites.Plus
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.CategoryTheory.Sites.Point.Category
+public import Mathlib.CategoryTheory.Sites.Point.Conservative
 public import Mathlib.CategoryTheory.Sites.Point.Over
 public import Mathlib.CategoryTheory.Sites.Precoverage
 public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
@@ -5288,6 +5289,7 @@ public import Mathlib.ModelTheory.Algebra.Ring.Basic
 public import Mathlib.ModelTheory.Algebra.Ring.Definability
 public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 public import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
+public import Mathlib.ModelTheory.Arithmetic.Presburger.Definability
 public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
 public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
 public import Mathlib.ModelTheory.Basic
@@ -5373,6 +5375,7 @@ public import Mathlib.NumberTheory.Harmonic.Int
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 public import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.NumberTheory.Height.NumberField
+public import Mathlib.NumberTheory.Height.Projectivization
 public import Mathlib.NumberTheory.JacobiSum.Basic
 public import Mathlib.NumberTheory.KummerDedekind
 public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
@@ -5670,6 +5673,7 @@ public import Mathlib.Order.Filter.Ultrafilter.Basic
 public import Mathlib.Order.Filter.Ultrafilter.Defs
 public import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.Fin.Clamp
 public import Mathlib.Order.Fin.Finset
 public import Mathlib.Order.Fin.SuccAboveOrderIso
 public import Mathlib.Order.Fin.Tuple
@@ -6644,17 +6648,7 @@ public import Mathlib.SetTheory.Cardinal.Subfield
 public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.SetTheory.Cardinal.UnivLE
 public import Mathlib.SetTheory.Descriptive.Tree
-public import Mathlib.SetTheory.Game.Basic
-public import Mathlib.SetTheory.Game.Birthday
-public import Mathlib.SetTheory.Game.Domineering
-public import Mathlib.SetTheory.Game.Impartial
-public import Mathlib.SetTheory.Game.Nim
-public import Mathlib.SetTheory.Game.Ordinal
-public import Mathlib.SetTheory.Game.Short
-public import Mathlib.SetTheory.Game.State
 public import Mathlib.SetTheory.Lists
-public import Mathlib.SetTheory.Nimber.Basic
-public import Mathlib.SetTheory.Nimber.Field
 public import Mathlib.SetTheory.Ordinal.Arithmetic
 public import Mathlib.SetTheory.Ordinal.Basic
 public import Mathlib.SetTheory.Ordinal.CantorNormalForm
@@ -6663,18 +6657,11 @@ public import Mathlib.SetTheory.Ordinal.Exponential
 public import Mathlib.SetTheory.Ordinal.Family
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 public import Mathlib.SetTheory.Ordinal.FixedPointApproximants
-public import Mathlib.SetTheory.Ordinal.NaturalOps
 public import Mathlib.SetTheory.Ordinal.Notation
 public import Mathlib.SetTheory.Ordinal.Principal
 public import Mathlib.SetTheory.Ordinal.Rank
 public import Mathlib.SetTheory.Ordinal.Topology
 public import Mathlib.SetTheory.Ordinal.Veblen
-public import Mathlib.SetTheory.PGame.Algebra
-public import Mathlib.SetTheory.PGame.Basic
-public import Mathlib.SetTheory.PGame.Order
-public import Mathlib.SetTheory.Surreal.Basic
-public import Mathlib.SetTheory.Surreal.Dyadic
-public import Mathlib.SetTheory.Surreal.Multiplication
 public import Mathlib.SetTheory.ZFC.Basic
 public import Mathlib.SetTheory.ZFC.Cardinal
 public import Mathlib.SetTheory.ZFC.Class
@@ -7135,6 +7122,7 @@ public import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
 public import Mathlib.Topology.Algebra.ProperConstSMul
 public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
+public import Mathlib.Topology.Algebra.RestrictedProduct.Units
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.Ring.Compact
 public import Mathlib.Topology.Algebra.Ring.Ideal
@@ -7145,6 +7133,7 @@ public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 public import Mathlib.Topology.Algebra.SeparationQuotient.Hom
 public import Mathlib.Topology.Algebra.SeparationQuotient.Section
 public import Mathlib.Topology.Algebra.Star
+public import Mathlib.Topology.Algebra.Star.LinearMap
 public import Mathlib.Topology.Algebra.Star.Real
 public import Mathlib.Topology.Algebra.Star.Unitary
 public import Mathlib.Topology.Algebra.StarSubalgebra

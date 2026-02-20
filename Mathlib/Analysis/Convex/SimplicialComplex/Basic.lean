@@ -101,6 +101,7 @@ theorem convexHull_inter_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
 theorem down_closed {s t} (hs : s ∈ K.faces) (hst : t ⊆ s) (ht : t.Nonempty) : t ∈ K.faces :=
   (K.isRelLowerSet_faces hs).2 hst ht
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The conclusion is the usual meaning of "glue nicely" in textbooks. It turns out to be quite
 unusable, as it's about faces as sets in space rather than simplices. Further, additional structure
 on `𝕜` means the only choice of `u` is `s ∩ t` (but it's hard to prove). -/

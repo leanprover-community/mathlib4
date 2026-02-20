@@ -308,11 +308,12 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     rw [Set.mem_iUnion] at hx
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image]
-    refine ⟨g⁻¹ • a, ?_, by simp [f, orbitRel, Quotient.eq']⟩
+    refine ⟨g⁻¹ • a, ?_, by simp +instances [f, orbitRel, Quotient.eq']⟩
     rw [← hu₂]
     convert hu₁
     simp only [inv_smul_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_image_image_iff {U V : Set α} :
     letI := orbitRel G α
