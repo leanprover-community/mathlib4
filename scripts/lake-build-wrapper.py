@@ -74,6 +74,10 @@ class BuildOutputProcessor:
         self.infos = []
         self.current_block = []
         self.group_open = False
+
+        self.file_info_re = re.compile(r'\[(\d+)/(\d+)\]\s+(\S+)\s+([^\s]+)')
+        self.progress_re = re.compile(r'\[(\d+)/(\d+)\]')
+
         class _State(Enum):
             OUTSIDE = auto()
             GROUP_OPEN = auto()  # progress (✔) group is open
@@ -111,7 +115,7 @@ class BuildOutputProcessor:
         Precondition: no group is currently open (caller closed it if necessary).
         """
         stripped = line.strip()
-        first_match = re.search(r'\[(\d+)/(\d+)\]', stripped)
+        first_match = self.progress_re.search(stripped)
         if first_match:
             group_name = f"Build progress [starting at {first_match.group(1)}/{first_match.group(2)}]"
         else:
@@ -176,7 +180,7 @@ class BuildOutputProcessor:
         If the target contains a colon (e.g. batteries:extraDep), it is treated
         as a non-file target and no filename is generated.
         """
-        match = re.search(r'\[(\d+)/(\d+)\]\s+(\S+)\s+([^\s]+)', line)
+        match = self.file_info_re.search(line)
         if not match:
             return {}
 
@@ -185,8 +189,8 @@ class BuildOutputProcessor:
         if ':' in target:
             file_path = None
         else:
-            # Single regex replacement: dots → slashes, then append .lean
-            file_path = re.sub(r'\.', '/', target) + '.lean'
+            # dots → slashes, then append .lean
+            file_path = target.replace('.', '/') + '.lean'
 
         return {
             'current': int(match.group(1)),
