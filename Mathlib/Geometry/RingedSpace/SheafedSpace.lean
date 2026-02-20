@@ -275,7 +275,6 @@ lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
   replace e := congr_arg InducedCategory.Hom.hom e
   congr 1
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local ext] DFunLike.ext in
 include instCC in
 lemma epi_of_base_surjective_of_stalk_mono {X Y : SheafedSpace C} (f : X ⟶ Y)

@@ -294,7 +294,6 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
           (ContinuousMap.comp ⟨Subtype.val, by fun_prop⟩ H.toContinuousMap).curry).uncurry.comp <|
     (ContinuousMap.id I).prodMap (Cube.splitAt i)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     (toLoop i p).Homotopic (toLoop i q) → Homotopic p q := by
   refine Nonempty.map fun H ↦ ⟨⟨homotopyFrom i H, ?_, ?_⟩, ?_⟩

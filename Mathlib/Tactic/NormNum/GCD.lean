@@ -208,7 +208,6 @@ def evalIntLCM : NormNumExt where eval {u α} e := do
   let ⟨ed, pf⟩ := proveIntLCM ex ey
   return .isNat _ ed q(isInt_lcm $p $q $pf)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isInt_ratNum : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
     IsRat q n d → n.natAbs = n' → n'.gcd d = 1 → IsInt q.num n
   | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by
@@ -218,7 +217,6 @@ theorem isInt_ratNum : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
       Rat.inv_natCast_den_of_pos this, Rat.inv_natCast_num_of_pos this,
       Rat.num_intCast, one_mul, mul_one, h, Nat.cast_one, Int.ediv_one, Int.cast_id]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNat_ratDen : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
     IsRat q n d → n.natAbs = n' → n'.gcd d = 1 → IsNat q.den d
   | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by

@@ -179,7 +179,7 @@ theorem resultant_zero_right : resultant f 0 m n = 0 ^ m * f.coeff 0 ^ n := by
   obtain _ | m := m; · simp
   have (i : Fin (m + 1 + n)) : sylvester f 0 (m + 1) n i ⟨0, by lia⟩ = 0 := by
     simp [sylvester, show (0 : Fin (m + 1 + n)) = Fin.castAdd _ 0 from rfl, Fin.addCases_left]
-  simpa [resultant] using Matrix.det_eq_zero_of_column_eq_zero ⟨0, by simp⟩ this
+  simpa [resultant] using Matrix.det_eq_zero_of_column_eq_zero ⟨0, by lia⟩ this
 
 @[simp]
 theorem resultant_zero_left : resultant 0 g m n = 0 ^ n * g.coeff 0 ^ m := by
@@ -296,7 +296,6 @@ lemma resultant_C_mul_left (r : R) :
   rw [resultant_comm, resultant_C_mul_right, resultant_comm, mul_left_comm, ← mul_assoc ((-1) ^ _),
     mul_comm n m, ← mul_pow, neg_one_mul, neg_neg, one_pow, one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
     resultant f g (m + 1) n = (-1) ^ n * g.coeff n * resultant f g m n := by
   obtain _ | n := n
@@ -405,7 +404,6 @@ theorem resultant_C_left (r : R) :
     f.resultant (X + C r) m 1 = (-1) ^ m * eval (-r) f := by
   rw [← resultant_X_sub_C_right f m (-r) hf, map_neg, sub_neg_eq_add]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` are monic and splits, then `Res(f, g) = ∏ (α - β)`,
 where `α` and `β` runs through the roots of `f` and `g` respectively. -/
 lemma resultant_eq_prod_roots_sub
@@ -737,7 +735,6 @@ nonrec lemma resultant_scaleRoots (f g : R[X]) (r : R) :
     rw [← hf', ← hg', resultant_map_map]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma resultant_integralNormalization (f g : R[X]) (hg : g.natDegree ≠ 0) :
     resultant (f.scaleRoots g.leadingCoeff) g.integralNormalization =
       g.leadingCoeff ^ (f.natDegree * (g.natDegree - 1)) * resultant f g := by

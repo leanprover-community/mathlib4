@@ -200,6 +200,7 @@ def transposePath {i j : n} (p : @Quiver.Path n A.toQuiver i j) :
     exact (@Quiver.Path.comp n (toQuiver Aᵀ) c b i (@Quiver.Hom.toPath n (toQuiver Aᵀ) c b
       (PLift.up eT)) ih)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Irreducibility is invariant under transpose. -/
 theorem IsIrreducible.transpose (hA : IsIrreducible A) : IsIrreducible Aᵀ := by
   have hA_T_nonneg : ∀ i j, 0 ≤ Aᵀ i j := fun i j => by

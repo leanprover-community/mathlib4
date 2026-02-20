@@ -782,7 +782,6 @@ lemma pullbackSpecIso_hom_snd :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (toRingHom includeRight)) = pullback.snd _ _ := by
   rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackSpecIso_hom_base :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (algebraMap R _)) =

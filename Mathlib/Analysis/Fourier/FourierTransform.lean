@@ -463,7 +463,6 @@ lemma fourierInv_eq' (f : V → E) (w : V) :
 @[deprecated (since := "2025-11-16")]
 alias fourierIntegralInv_eq' := fourierInv_eq'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fourier_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W) :
     𝓕 (f ∘ A) w = (𝓕 f) (A w) := by
   simp only [fourier_eq, ← A.inner_map_map, Function.comp_apply,

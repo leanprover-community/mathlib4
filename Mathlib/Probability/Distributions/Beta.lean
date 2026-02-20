@@ -75,7 +75,6 @@ lemma betaPDF_of_pos_lt_one {α β x : ℝ} (hx_pos : 0 < x) (hx_lt : x < 1) :
     betaPDF α β x = ENNReal.ofReal ((1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1)) := by
   rw [betaPDF_eq, if_pos ⟨hx_pos, hx_lt⟩]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lintegral_betaPDF {α β : ℝ} :
     ∫⁻ x, betaPDF α β x =
       ∫⁻ (x : ℝ) in Ioo 0 1, ENNReal.ofReal (1 / beta α β * x ^ (α - 1) * (1 - x) ^ (β - 1)) := by

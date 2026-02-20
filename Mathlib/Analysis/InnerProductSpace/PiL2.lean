@@ -1276,7 +1276,6 @@ theorem LinearMap.toMatrix_innerₛₗ_apply [Fintype n] [DecidableEq n] [Fintyp
 
 end Matrix
 
-set_option backward.isDefEq.respectTransparency false in
 open ContinuousLinearMap LinearMap in
 theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike 𝕜]
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]

@@ -858,7 +858,6 @@ lemma algebraMap_apply {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra 
     (S : Subalgebra R A) (x : S) : algebraMap S A x = x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem rangeS_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S : Subalgebra R A) : (algebraMap S A).rangeS = S.toSubsemiring := by
