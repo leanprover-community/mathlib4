@@ -161,6 +161,39 @@ end
 
 variable [IsDenseSubsite J₀ J F]
 
+variable {F J₀ J} in
+/-- Constructor for `IsOneHypercoverDense.{w} F J₀ J` for a dense subsite
+when the functor `F : C₀ ⥤ C` is fully faithful, `C` has pullbacks, and
+any object in `C` admits a `w`-small covering family consisting of objects in `C₀`. -/
+lemma IsOneHypercoverDense.of_hasPullbacks [HasPullbacks C] [F.Full] [F.Faithful]
+    (hF : ∀ (S : C), ∃ (ι : Type w) (U : ι → C₀) (f : ∀ i, F.obj (U i) ⟶ S),
+      Sieve.ofArrows _ f ∈ J S) :
+    IsOneHypercoverDense.{w} F J₀ J where
+  nonempty_oneHypercoverDenseData S := by
+    choose ι U f hf using hF
+    exact ⟨{
+      I₀ := ι S
+      X := U S
+      f := f S
+      I₁ i j := ι (pullback (f _ i) (f _ j))
+      Y i j := U (pullback (f _ i) (f _ j))
+      p₁ i j k := F.preimage (f _ k ≫ pullback.fst _ _)
+      p₂ i j k := F.preimage (f _ k ≫ pullback.snd _ _)
+      w i j k := by simp [pullback.condition]
+      mem₀ := hf S
+      mem₁₀ i j W₀ p₁ p₂ hp := by
+        have := IsDenseSubsite.isCoverDense J₀ J F
+        rw [← functorPushforward_mem_iff J₀ J F]
+        refine J.superset_covering ?_
+          (IsCoverDense.functorPullback_pushforward_covering
+            ⟨_, J.pullback_stable (pullback.lift _ _ hp) (hf (pullback (f _ i) (f _ j)))⟩)
+        rintro T _ ⟨Z, q, r, ⟨_, s, _, ⟨k⟩, fac⟩, rfl⟩
+        have fac₁ := fac =≫ pullback.fst _ _
+        have fac₂ := fac =≫ pullback.snd _ _
+        simp only [Category.assoc, pullback.lift_fst, pullback.lift_snd] at fac₁ fac₂
+        exact ⟨Z, q, r, ⟨k, F.preimage s, F.map_injective (by simp [fac₁]),
+          F.map_injective (by simp [fac₂])⟩, rfl⟩ }⟩
+
 namespace OneHypercoverDenseData
 
 variable {F J₀ J}
@@ -169,6 +202,7 @@ section
 
 variable {X : C} (data : OneHypercoverDenseData.{w} F J₀ J X)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) (p₂ : W ⟶ F.obj (data.X i₂))
     (w : p₁ ≫ data.f i₁ = p₂ ≫ data.f i₂) : data.toPreOneHypercover.sieve₁ p₁ p₂ ∈ J W := by
   have := IsDenseSubsite.isCoverDense J₀ J F
@@ -239,6 +273,7 @@ def sieve : Sieve X₀ where
     rintro Y₀ Z₀ g ⟨h⟩ p
     exact ⟨{ i₀ := h.i₀, q := F.map p ≫ h.q, fac := by rw [assoc, h.fac, map_comp_assoc]}⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sieve_mem : sieve data f ∈ J₀ X₀ := by
   have := IsDenseSubsite.isCoverDense J₀ J F
   have := IsDenseSubsite.isLocallyFull J₀ J F
@@ -316,6 +351,7 @@ lemma lift_map (i : (data X).I₀) :
     lift hG₀ hG s ≫ G.map ((data X).f i).op = liftAux hG₀ s i :=
   Multifork.IsLimit.fac _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma fac (a : S.Arrow) :
     lift hG₀ hG s ≫ G.map a.f.op = s.ι a :=
@@ -341,6 +377,7 @@ lemma fac (a : S.Arrow) :
             r := ⟨_, 𝟙 _, F.map d ≫ F.map b ≫ (data a.Y).f i, by
               simp only [fac₁, fac₂, assoc, id_comp]⟩ }))
 
+set_option backward.isDefEq.respectTransparency false in
 variable {s} in
 include hG hG₀ in
 lemma hom_ext {f₁ f₂ : s.pt ⟶ G.obj (op X)}
@@ -443,6 +480,7 @@ noncomputable abbrev presheafObjMultifork (X : C) :
   Multifork.ofι _ (presheafObj data G₀ X) (presheafObjπ data G₀ X)
     (fun _ ↦ presheafObj_condition _ _ _ _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multifork `presheafObjMultifork` is a limit. -/
 noncomputable def presheafObjIsLimit (X : C) :
     IsLimit (presheafObjMultifork data G₀ X) :=
@@ -540,6 +578,7 @@ lemma presheafMap_π {X Y : C} (f : X ⟶ Y) (i : (data X).I₀) :
       restriction data G₀ ((data X).f i ≫ f) :=
   Multiequalizer.lift_ι _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma presheafMap_restriction {X Y : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) (g : X ⟶ Y) :
     presheafMap data G₀ g ≫ restriction data G₀ f = restriction data G₀ (f ≫ g) := by

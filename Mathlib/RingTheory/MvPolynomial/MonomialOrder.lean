@@ -519,6 +519,7 @@ theorem degree_mul [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (
   obtain ⟨hf, hg⟩ := h
   rw [leadingCoeff, degree_mul hf hg, ← coeff_mul_of_degree_add]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Monomial degree of powers -/
 theorem degree_pow_le {f : MvPolynomial σ R} (n : ℕ) :
     m.degree (f ^ n) ≼[m] n • (m.degree f) := by
@@ -530,6 +531,7 @@ theorem degree_pow_le {f : MvPolynomial σ R} (n : ℕ) :
       simp only [map_add, add_le_add_iff_right]
       exact hrec
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_pow_nsmul_degree (f : MvPolynomial σ R) (n : ℕ) :
     (f ^ n).coeff (n • m.degree f) = m.leadingCoeff f ^ n := by
   induction n with

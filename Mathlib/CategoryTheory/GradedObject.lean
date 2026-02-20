@@ -181,6 +181,7 @@ theorem eqToHom_apply {β : Type w} {X Y : β → C} (h : X = Y) (b : β) :
   subst h
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between β-graded objects and γ-graded objects,
 given an equivalence between β and γ.
 -/

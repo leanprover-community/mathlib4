@@ -24,9 +24,9 @@ then every object of `Rep k G` (resp. `FDRep k G`) is injective and projective.
 We also give two simpleness criteria for an object `V` of `FDRep k G`, when `k` is
 an algebraically closed field in which the order of `G` is invertible:
 * `FDRep.simple_iff_end_is_rank_one`: `V` is simple if and only `V ⟶ V` is a `k`-vector
-space of dimension `1`.
+  space of dimension `1`.
 * `FDRep.simple_iff_char_is_norm_one`: when `k` is characteristic zero, `V` is simple
-if and only if `∑ g : G, V.character g * V.character g⁻¹ = Fintype.card G`.
+  if and only if `∑ g : G, V.character g * V.character g⁻¹ = Fintype.card G`.
 
 -/
 
@@ -81,6 +81,7 @@ instance [NeZero (Nat.card G : k)] (V : FDRep k G) : Projective V :=
 
 variable [IsAlgClosed k]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `G` is finite and its order is nonzero in an algebraically closed field `k`,
 then an object of `FDRep k G` is simple if and only if its space of endomorphisms is
@@ -112,6 +113,7 @@ lemma simple_iff_end_is_rank_one [NeZero (Nat.card G : k)] (V : FDRep k G) :
       apply_fun (· ≫ g) at hc
       simpa [hg] using hc.symm
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Finite G] in
 /--
 If `G` is finite and `k` an algebraically closed field of characteristic `0`,

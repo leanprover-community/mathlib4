@@ -52,6 +52,7 @@ instance [FormallyUnramified R S] :
 
 variable [EssFiniteType R S]
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00UW "(2)"]
 instance [FormallyUnramified R S] :
     Module.Finite (ResidueField R) (ResidueField S) :=
@@ -59,11 +60,13 @@ instance [FormallyUnramified R S] :
   have : EssFiniteType (ResidueField R) (ResidueField S) := .of_comp R _ _
   FormallyUnramified.finite_of_free _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00UW "(2)"]
 instance [FormallyUnramified R S] :
     Algebra.IsSeparable (ResidueField R) (ResidueField S) :=
   FormallyUnramified.isSeparable _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R S] :
     IsField (S ⧸ (maximalIdeal R).map (algebraMap R S)) := by
   let mR := (maximalIdeal R).map (algebraMap R S)
@@ -191,6 +194,7 @@ lemma finite_of_primesOver_eq_singleton [Module.Finite R S] [q.LiesOver p] :
       map_mul, mul_assoc, mul_left_comm, IsLocalization.mk'_spec'_mk, ← map_mul]
   exact Submodule.subset_span ⟨_, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma localRingHom_surjective_of_primesOver_eq_singleton
     [Module.Finite R S] [q.LiesOver p] [Algebra.IsUnramifiedAt R q]
     (H : Function.Surjective (algebraMap p.ResidueField q.ResidueField)) :
@@ -243,6 +247,7 @@ lemma exists_awayMap_injective_of_localRingHom_injective
   dsimp only at hk ⊢
   rw [pow_add, mul_assoc, e, mul_pow, ← e, mul_assoc, mul_left_comm, hk, mul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_awayMap_bijective_of_localRingHom_bijective
     [Module.Finite R S] [q.LiesOver p] (hRS : (RingHom.ker (algebraMap R S)).FG)
     (H : Function.Bijective (localRingHom p q (algebraMap R S) (q.over_def p))) :
