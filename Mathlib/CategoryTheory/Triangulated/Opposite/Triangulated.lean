@@ -36,7 +36,7 @@ set_option backward.isDefEq.respectTransparency false in
 scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ where
   octahedron_axiom := by
     intro X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ u₁₂ u₂₃ u₁₃ comm v₁₂ w₁₂ h₁₂ v₂₃ w₂₃ h₂₃ v₁₃ w₁₃ h₁₃
-    let o := Triangulated.someOctahedron₁ (by aesop) ((mem_distTriang_op_iff _).mp h₂₃)
+    let o := Triangulated.someOctahedron' (by aesop) ((mem_distTriang_op_iff _).mp h₂₃)
       ((mem_distTriang_op_iff _).mp h₁₂) ((mem_distTriang_op_iff _).mp h₁₃)
     refine ⟨o.m₃.op, o.m₁.op, congr($(o.comm₄).op), ?_, congr($(o.comm₁).op), ?_, ?_⟩
     · have eq₃ := congr($(o.comm₃).op)
