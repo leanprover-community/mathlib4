@@ -80,7 +80,7 @@ theorem truncFinset_apply (p : MvPowerSeries σ R) :
     truncFinset R s p = ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x) := by rfl
 
 @[grind =]
-theorem coeff_truncFinset {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∈ s) :
+theorem coeff_truncFinset_of_mem {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∈ s) :
     (truncFinset R s p).coeff x = p.coeff x := by
   classical
   simp [truncFinset_apply, MvPolynomial.coeff_sum, h]
@@ -91,7 +91,7 @@ theorem coeff_truncFinset_eq_zero {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (
   classical
   simp [truncFinset_apply, MvPolynomial.coeff_sum, h]
 
-lemma coeff_truncFinset' [DecidableEq σ] {x : σ →₀ ℕ} (p : MvPowerSeries σ R) :
+lemma coeff_truncFinset [DecidableEq σ] {x : σ →₀ ℕ} (p : MvPowerSeries σ R) :
     (truncFinset R s p).coeff x = if x ∈ s then p.coeff x else 0 := by
   simp [truncFinset_apply, MvPolynomial.coeff_sum]
 
@@ -131,8 +131,8 @@ theorem coeff_truncFinset_mul_truncFinset_eq_coeff_mul (hs : IsLowerSet (s : Set
   apply sum_congr rfl
   rintro ⟨i, j⟩ hij
   simp only [mem_antidiagonal] at hij
-  rw [coeff_truncFinset _ (hs (show i ≤ x by simp [← hij]) hx),
-    coeff_truncFinset _ (hs (show j ≤ x by simp [← hij]) hx)]
+  rw [coeff_truncFinset_of_mem _ (hs (show i ≤ x by simp [← hij]) hx),
+    coeff_truncFinset_of_mem _ (hs (show j ≤ x by simp [← hij]) hx)]
 
 theorem truncFinset_truncFinset_pow (hs : IsLowerSet (s : Set (σ →₀ ℕ))) {k : ℕ} (hk : 1 ≤ k)
     (p : MvPowerSeries σ R) : truncFinset R s ((truncFinset R s p) ^ k) =
@@ -141,7 +141,7 @@ theorem truncFinset_truncFinset_pow (hs : IsLowerSet (s : Set (σ →₀ ℕ))) 
   | base => simp [truncFinset_truncFinset]
   | succ n hmn ih =>
     ext x; by_cases hx : x ∈ s
-    · rw [coeff_truncFinset _ hx, coeff_truncFinset _ hx, pow_succ,
+    · rw [coeff_truncFinset_of_mem _ hx, coeff_truncFinset_of_mem _ hx, pow_succ,
         ← coeff_truncFinset_mul_truncFinset_eq_coeff_mul hs _ _ hx, ih, truncFinset_truncFinset
         (by rfl), pow_succ, coeff_truncFinset_mul_truncFinset_eq_coeff_mul hs _ _ hx]
     simp [coeff_truncFinset_eq_zero _ hx]
@@ -171,7 +171,7 @@ def trunc (R : Type*) [CommSemiring R] (n : σ →₀ ℕ) :
 
 theorem coeff_trunc (m n : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc R n φ).coeff m = if m < n then coeff m φ else 0 := by
-  simpa using coeff_truncFinset' (s := Iio n) (x := m) φ
+  simpa using coeff_truncFinset (s := Iio n) (x := m) φ
 
 @[simp]
 theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
@@ -208,7 +208,7 @@ def trunc' (R : Type*) [CommSemiring R] (n : σ →₀ ℕ) :
 /-- Coefficients of the truncation of a multivariate power series. -/
 theorem coeff_trunc' (m n : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc' R n φ).coeff m = if m ≤ n then coeff m φ else 0 := by
-  simpa using coeff_truncFinset' (s := Iic n) (x := m) φ
+  simpa using coeff_truncFinset (s := Iic n) (x := m) φ
 
 theorem trunc'_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) (φ : MvPowerSeries σ R) :
     trunc' R n (trunc' R m φ) = trunc' R n φ :=
@@ -245,7 +245,7 @@ section
 
 theorem totalDegree_trunc' {n : σ →₀ ℕ} (φ : MvPowerSeries σ R) :
     (trunc' R n φ).totalDegree ≤ n.degree := by
-  simpa [← Iic_sup_degree] using totalDegree_truncFinset ..
+  simpa [← sup_Iic_of_monotone n degree degree_mono] using totalDegree_truncFinset ..
 
 theorem ext_trunc' {f g : MvPowerSeries σ R} : f = g ↔ ∀ n, trunc' R n f = trunc' R n g := by
   refine ⟨fun h => by simp [h], fun h => ?_⟩
