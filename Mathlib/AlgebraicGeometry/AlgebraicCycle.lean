@@ -58,15 +58,15 @@ Here we define a notion of grading defined by such a dimension/codimension funct
 -/
 structure Grading [AddMonoid Z] (N : Type*) where
   /--
-  The "dimension function" associated with the grading
+  The "dimension function" associated with the grading.
   -/
   dim : X → N
   /--
-  Given `d` in `N`, we have an additive submonoid of homogeneous cycles
+  Given `d` in `N`, we have an additive submonoid of `d`-homogeneous cycles.
   -/
   homogeneousCycles (d : N) : AddSubmonoid (AlgebraicCycle X Z)
   /--
-  Proof that `mon` is the
+  Proof that `homogeneousCycles d` is the set of `d`-homogeneous cycles.
   -/
   homogeneousCycles_carrier (d : N) : (homogeneousCycles d).carrier =
     {c : AlgebraicCycle X Z | ∀ x ∈ c.support, dim x = d} := by aesop
