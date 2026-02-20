@@ -167,7 +167,7 @@ variable {ι : Type*} {ρ : ι → Type*} [∀ i, Preorder (ρ i)]
 /-- Constructs a chain of `Sigma`s from a chain of elements of the same index. -/
 def inj {i} (c : Chain (ρ i)) : Chain ((i : ι) × ρ i) where
   toFun n := ⟨i, c n⟩
-  monotone' _ _ hn := Sigma.mk_mono i (c.monotone hn)
+  monotone' _ _ _ := by dsimp; gcongr
 
 @[simp]
 lemma inj_coe {i} (c : Chain (ρ i)) (n : ℕ) : (inj c) n = ⟨i, c n⟩ := rfl
@@ -175,20 +175,18 @@ lemma inj_coe {i} (c : Chain (ρ i)) (n : ℕ) : (inj c) n = ⟨i, c n⟩ := rfl
 /-- Converts a chain of coproducts into a coproduct of chains. -/
 def toSigma (c : Chain ((i : ι) × ρ i)) : (i : ι) × Chain (ρ i) where
   fst := (c 0).fst
-  snd := {
-    toFun n :=
-      have : (c n).fst = (c 0).fst := by grind [Sigma.le_def, c.monotone (Nat.zero_le n)]
-      this ▸ (c n).snd
-    monotone' i₁ i₂ hi := by
-      dsimp only
-      generalize_proofs h
-      replace hi := c.monotone hi
-      generalize c i₁ = c₁, c i₂ = c₂ at *
-      rcases hi with ⟨_, _, _, hi⟩
-      dsimp at h
-      subst h
-      apply hi
-  }
+  snd.toFun n :=
+    have : (c n).fst = (c 0).fst := by grind [Sigma.le_def, c.monotone (Nat.zero_le n)]
+    this ▸ (c n).snd
+  snd.monotone' i₁ i₂ hi := by
+    dsimp only
+    generalize_proofs h
+    replace hi := c.monotone hi
+    generalize c i₁ = c₁, c i₂ = c₂ at *
+    rcases hi with ⟨_, _, _, hi⟩
+    dsimp at h
+    subst h
+    apply hi
 
 @[simp]
 lemma toSigma_inj {i} (c : Chain (ρ i)) : toSigma (inj c) = ⟨i, c⟩ := rfl
@@ -291,9 +289,8 @@ lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a 
 @[simp]
 lemma ωSup_const (a : α) : ωSup (Chain.const a) = a := by
   apply le_antisymm
-  · simp only [ωSup_le_iff, const_coe, le_refl, implies_true]
-  · apply le_ωSup_of_le 0
-    simp only [const_coe, le_refl]
+  · simp
+  · exact le_ωSup_of_le 0 (by simp)
 
 lemma ωSup_congr {c₁ c₂ : Chain α} (hc : ∀ n, c₁ n = c₂ n) : ωSup c₁ = ωSup c₂ := by
   congr 1
@@ -544,14 +541,13 @@ instance : OmegaCompletePartialOrder ((i : ι) × ρ i) where
   ωSup c := ⟨(toSigma c).fst, ωSup (toSigma c).snd⟩
   le_ωSup c i := by
     cases c using sigma_cases
-    simp only [inj_coe, toSigma_inj, ge_iff_le, mk_le_mk_iff, le_ωSup]
+    simp [le_ωSup]
   ωSup_le := by
     rintro c ⟨x, y⟩ h
     cases c using sigma_cases with | mk i c =>
     simp only [toSigma_inj, ge_iff_le]
-    rcases h 0 with ⟨_, _, _, h₀⟩
-    simp only [inj_coe, ge_iff_le, mk_le_mk_iff] at h
-    simp only [mk_le_mk_iff, ωSup_le_iff, h, implies_true]
+    rcases h 0
+    simpa using h
 
 @[simp]
 lemma ωSup_inj {i} (c : Chain (ρ i)) : ωSup (Chain.inj c) = ⟨i, ωSup c⟩ := rfl
@@ -567,15 +563,14 @@ lemma ωScottContinuous_fst [OmegaCompletePartialOrder ι] :
   · apply Sigma.fst_mono
   · cases c using sigma_cases
     change _ = ωSup (Chain.const _)
-    simp only [ωSup_inj, ωSup_const]
+    simp
 
 @[fun_prop]
 lemma ωScottContinuous_snd [OmegaCompletePartialOrder α] :
     ωScottContinuous (Sigma.snd : (_ : ι) × α → α) := by
-  apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
-  · apply Sigma.snd_mono
-  · cases c using sigma_cases
-    rfl
+  apply ωScottContinuous.of_monotone_map_ωSup ⟨Sigma.snd_mono, fun c ↦ ?_⟩
+  cases c using sigma_cases
+  rfl
 
 lemma ωScottContinuous_rec [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
     {f : α → (i : ι) × ρ i} (hf : ωScottContinuous f)
