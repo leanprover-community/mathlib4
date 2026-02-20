@@ -269,6 +269,7 @@ theorem comul_comp_snd :
 
 @[simp] theorem counit_comp_inl : counit ∘ₗ inl R A B = counit := by ext; simp
 
+set_option backward.whnf.reducibleClassField false in
 instance instCoalgebra : Coalgebra R (A × B) where
   rTensor_counit_comp_comul := by
     ext : 1
@@ -556,6 +557,7 @@ abbrev coalgebraStruct [AddCommMonoid B] [Module R B] [CoalgebraStruct R B] (e :
         comul ∘ₗ (e.linearEquiv R).toLinearMap
     counit := counit ∘ₗ (e.linearEquiv R).toLinearMap }
 
+set_option backward.whnf.reducibleClassField false in
 variable (R) in
 /-- Transfer `Coalgebra` across an `Equiv`. -/
 abbrev coalgebra [AddCommMonoid B] [Module R B] [Coalgebra R B] (e : A ≃ B) :
