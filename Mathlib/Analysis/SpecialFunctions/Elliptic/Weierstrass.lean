@@ -679,7 +679,7 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
   -- We first find a `κ > 1`,
   -- such that the ball centered at `x` with radius `κ * ‖z - x‖` does not touch `L`.
   obtain ⟨κ, hκ, hκ'⟩ : ∃ κ : ℝ, 1 < κ ∧ ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ * κ < ‖l - x‖ := by
-    obtain ⟨κ, hκ, hκ'⟩ := Metric.isOpen_iff.mp ((continuous_mul_right ‖z - x‖).isOpen_preimage _
+    obtain ⟨κ, hκ, hκ'⟩ := Metric.isOpen_iff.mp ((continuous_mul_const ‖z - x‖).isOpen_preimage _
       (isClosedMap_dist x _
       (L.isClosed_of_subset_lattice (Set.diff_subset (t := {l₀})))).upperClosure.isOpen_compl) 1
       (by simpa [Complex.dist_eq, @forall_comm ℝ, norm_sub_rev x] using hx)
