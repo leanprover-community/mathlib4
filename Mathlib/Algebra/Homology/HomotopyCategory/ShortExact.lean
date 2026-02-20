@@ -165,6 +165,7 @@ universe u' v'
 
 variable {D : Type u'} [Category.{v'} D] [Abelian D]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma descShortComplex_mapHomologicalComplex (F : C ⥤ D) [F.Additive]
     (S : ShortComplex (CochainComplex C ℤ)) :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).map (descShortComplex S) =
