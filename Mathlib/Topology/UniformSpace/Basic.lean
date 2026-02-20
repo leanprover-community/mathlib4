@@ -429,6 +429,7 @@ lemma ball_preimage {f : α → β} {U : SetRel β β} {x : α} :
   ext : 1
   simp only [UniformSpace.ball, mem_preimage, Prod.map_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem uniformSpace_comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
   ext : 2

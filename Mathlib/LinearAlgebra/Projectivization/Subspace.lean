@@ -60,6 +60,8 @@ instance : SetLike (Subspace K V) (ℙ K V) where
     cases B
     simp
 
+instance : PartialOrder (Subspace K V) := .ofSetLike (Subspace K V) (ℙ K V)
+
 @[simp]
 theorem mem_carrier_iff (A : Subspace K V) (x : ℙ K V) : x ∈ A.carrier ↔ x ∈ A :=
   Iff.refl _
@@ -130,10 +132,12 @@ instance : CompleteLattice (Subspace K V) :=
 
 instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The span of the empty set is the bottom of the lattice of subspaces. -/
 @[simp]
 theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ := gi.gc.l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The span of the entire projective space is the top of the lattice of subspaces. -/
 @[simp]
 theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by

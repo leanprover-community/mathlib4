@@ -157,7 +157,7 @@ example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
 @[to_additive bar21]
 def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
 
-run_meta guard <| argInfoAttr.find? (← getEnv) `Test.foo21 matches some ⟨[], 1⟩
+run_meta guard <| translations.find? (← getEnv) `Test.foo21 matches some ⟨`Test.bar21, [], .arg 1⟩
 
 @[to_additive bar22]
 abbrev foo22 {α} [Monoid α] (a : α) : ℕ → α
@@ -188,9 +188,9 @@ inductive MulInd : ℕ → Prop where
   | one : MulInd 1
 
 run_cmd do
-  unless findTranslation? (← getEnv) ToAdditive.data `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
-  unless findTranslation? (← getEnv) ToAdditive.data `Test.MulInd.basic == some `Test.AddInd.basic do throwError "2"
-  unless findTranslation? (← getEnv) ToAdditive.data `Test.MulInd == some `Test.AddInd do throwError "3"
+  unless findTranslationName? (← getEnv) ToAdditive.data `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
+  unless findTranslationName? (← getEnv) ToAdditive.data `Test.MulInd.basic == some `Test.AddInd.basic do throwError "2"
+  unless findTranslationName? (← getEnv) ToAdditive.data `Test.MulInd == some `Test.AddInd do throwError "3"
 
 @[to_additive addFixedNumeralTest]
 def fixedNumeralTest {α} [One α] :=
@@ -226,15 +226,13 @@ def mul_foo {α} [Monoid α] (a : α) : ℕ → α
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd liftCoreM <| successIfFail <|
-  transformDeclRec ToAdditive.data (← getRef) `Test.some_def `Test.add_some_def `Test.some_def []
+  transformDeclRec ToAdditive.data { ref := ← getRef} `Test.some_def `Test.add_some_def `Test.some_def
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
 attribute [to_additive add_some_def] some_def
 
 run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
-
-section
 
 set_option linter.unusedVariables false in
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
@@ -244,14 +242,6 @@ def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f 
 @[to_additive]
 instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One ((i : I) → f i) :=
   ⟨fun _ => 1⟩
-
-run_cmd do
-  let n ← liftCoreM <| MetaM.run' <| findRelevantArg ToAdditive.data `Test.pi.has_one
-  if n != 1 then throwError "{n} != 1"
-  let n ← liftCoreM <| MetaM.run' <| findRelevantArg ToAdditive.data `Test.foo_mul
-  if n != 4 then throwError "{n} != 4"
-
-end
 
 @[to_additive]
 def nat_pi_has_one {α : Type} [One α] : One ((x : Nat) → α) := by infer_instance
@@ -365,23 +355,16 @@ def Ones : ℕ → Q(Nat)
 -- #time
 run_cmd do
   let e : Expr := Ones 300
-  let _ ← liftCoreM <| MetaM.run' <| applyReplacementFun ToAdditive.data e
-
--- testing `isConstantApplication`
-run_cmd do
-  unless !(q((fun _ y => y) 3 4) : Q(Nat)).isConstantApplication do throwError "1"
-  unless (q((fun x _ => x) 3 4) : Q(Nat)).isConstantApplication do throwError "2"
-  unless !(q((fun x => x) 3) : Q(Nat)).isConstantApplication do throwError "3"
-  unless (q((fun _ => 5) 3) : Q(Nat)).isConstantApplication do throwError "4"
+  let _ ← liftCoreM <| MetaM.run' <| (applyReplacementFun ToAdditive.data e).run #[] #[]
 
 @[to_additive, to_additive_dont_translate] def MonoidEnd : Type := Unit
 def Unit' : Type := Unit
 @[to_additive_do_translate] def Unit'' : Type := Unit
 
 run_meta do
-  guard <| (shouldTranslate (← getEnv) ToAdditive.data q(Semigroup MonoidEnd)).any (·.isConstOf `Test.MonoidEnd)
-  guard <| (shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit')).any (·.isConstOf `Test.Unit')
-  guard <| (shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit'')).isNone
+  guard <| (← shouldTranslate (← getEnv) ToAdditive.data q(Semigroup MonoidEnd) |>.run #[] #[]).1.any (·.isConstOf `Test.MonoidEnd)
+  guard <| (← shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit') |>.run #[] #[]).1.any (·.isConstOf `Test.Unit')
+  guard <| (← shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit'') |>.run #[] #[]).1.isNone
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
@@ -456,9 +439,9 @@ insert_to_additive_translation localize add_localize
 @[to_additive] def localize.s := Nat
 
 run_cmd do
-  unless findTranslation? (← getEnv) ToAdditive.data `localize.r == some `add_localize.r do throwError "1"
-  unless findTranslation? (← getEnv) ToAdditive.data `localize   == some `add_localize   do throwError "2"
-  unless findTranslation? (← getEnv) ToAdditive.data `localize.s == some `add_localize.s do throwError "3"
+  unless findTranslationName? (← getEnv) ToAdditive.data `localize.r == some `add_localize.r do throwError "1"
+  unless findTranslationName? (← getEnv) ToAdditive.data `localize   == some `add_localize   do throwError "2"
+  unless findTranslationName? (← getEnv) ToAdditive.data `localize.s == some `add_localize.s do throwError "3"
 
 /--
 warning: The source declaration one_eq_one was given the simp-attribute(s) simp, reduce_mod_char before calling @[to_additive].
@@ -789,36 +772,54 @@ lemma simplePowZero_x'' {β} : (simplePowZero Nat β).x = 0 := by
 #check simpleNSMulZero_x''
 
 
-structure AddMonoidAlgebra' (k G : Type) where
+structure AddMonoidAlgebra (k G : Type) where
   x : G → k
 
 @[to_additive (relevant_arg := G)]
-structure MonoidAlgebra' (k G : Type) where
+structure MonoidAlgebra (k G : Type) where
   x : G → k
 
 variable {G : Type} [Monoid G]
 
 @[to_additive]
-instance : Mul (MonoidAlgebra' Nat G) where
+instance : Mul (MonoidAlgebra Nat G) where
   mul a b := ⟨fun i => a.1 i * b.1 1⟩
 
--- Unfortunately, `relevant_arg` information isn't passed to `*.casesOn`:
+-- `relevant_arg` information is inherited from the base translation in `*.casesOn`:
+@[to_additive]
+instance : Mul (MonoidAlgebra Nat G) where
+  mul | ⟨a⟩, ⟨b⟩ => ⟨fun i => a i * b 1⟩
+
+-- `to_additive` can automatically determine that `G` is the relevant argument,
+-- because `G` is relevant to the translation of `MonoidAlgebra`
+@[to_additive (dont_translate := k)]
+def monoidAlgebraFoo {k G : Type} [Inhabited k] : MonoidAlgebra k G × Nat :=
+  (⟨fun _ ↦ default⟩, 2)
+
+run_meta guard <|
+  translations.find? (← getEnv) ``monoidAlgebraFoo matches some ⟨``addMonoidAlgebraFoo, [], .arg 1⟩
+
 /--
-error: @[to_additive] failed. The translated value is not type correct. For help, see the docstring of `to_additive`, section `Troubleshooting`. Failed to add declaration
-instAddAddMonoidAlgebra'Nat_1.match_1:
-Application type mismatch: The argument
-  fun x => motive x x✝
-has type
-  AddMonoidAlgebra' ℕ G → Sort u_1
-but is expected to have type
-  MonoidAlgebra' ℕ G → Sort u_1
-in the application
-  @MonoidAlgebra'.casesOn ℕ G fun x => motive x x✝
+warning: `to_additive` correctly autogenerated `(relevant_arg := 2)` for `monoidAlgebraFoo₁`.
+You may remove the option.
+
+Note: This linter can be disabled with `set_option linter.translateRelevantArg false`
 -/
 #guard_msgs in
-@[to_additive]
-instance : Mul (MonoidAlgebra' Nat G) where
-  mul | ⟨a⟩, ⟨b⟩ => ⟨fun i => a i * b 1⟩
+@[to_additive (dont_translate := k) (relevant_arg := G)]
+def monoidAlgebraFoo₁ {k G : Type} [Inhabited k] : MonoidAlgebra k G × Nat :=
+  (⟨fun _ ↦ default⟩, 2)
+
+/--
+warning: `to_additive` determined that `(relevant_arg := 2)` is the right option for `monoidAlgebraFoo₂`, rather than `(relevant_arg := 1)`.
+You may remove the option.
+
+Note: This linter can be disabled with `set_option linter.translateRelevantArg false`
+-/
+#guard_msgs in
+@[to_additive (dont_translate := k) (relevant_arg := k)]
+def monoidAlgebraFoo₂ {k G : Type} [Inhabited k] : MonoidAlgebra k G × Nat :=
+  (⟨fun _ ↦ default⟩, 2)
 
 -- Proofs in types aren't abstracted:
 @[to_additive]

@@ -198,6 +198,7 @@ instance (f : F ⟶ G) [IsIso f] (n : A) : IsIso (f.hom n) :=
 
 variable (F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : SingleFunctors C D A`, and a functor `G : D ⥤ E` which commutes
 with the shift by `A`, this is the "composition" of `F` and `G` in `SingleFunctors C E A`. -/
 @[simps! functor shiftIso_hom_app shiftIso_inv_app]
@@ -223,6 +224,7 @@ def postcomp (G : D ⥤ E) [G.CommShift A] :
 
 variable (C A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `SingleFunctors C D A ⥤ SingleFunctors C E A` given by the postcomposition
 by a functor `G : D ⥤ E` which commutes with the shift. -/
 @[simps]
@@ -245,6 +247,7 @@ def postcompPostcompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommSh
     ext X
     simp [Functor.commShiftIso_comp_inv_app])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `F.postcomp G ≅ F.postcomp G'` induced by an isomorphism `e : G ≅ G'`
 which commutes with the shift. -/
 @[simps!]

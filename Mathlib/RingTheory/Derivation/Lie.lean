@@ -31,6 +31,7 @@ section LieStructures
 /-! ### Lie structures -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The commutator of derivations is again a derivation. -/
 instance : Bracket (Derivation R A A) (Derivation R A A) :=
   ⟨fun D1 D2 =>

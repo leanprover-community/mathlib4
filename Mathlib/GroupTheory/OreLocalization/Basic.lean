@@ -59,7 +59,8 @@ namespace OreLocalization
 variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MulAction R X]
 
 /-- The setoid on `R × S` used for the Ore localization. -/
-@[to_additive AddOreLocalization.oreEqv /-- The setoid on `R × S` used for the Ore localization. -/]
+@[to_additive (attr := instance_reducible) AddOreLocalization.oreEqv
+  /-- The setoid on `R × S` used for the Ore localization. -/]
 def oreEqv : Setoid (X × S) where
   r rs rs' := ∃ (u : S) (v : R), u • rs'.1 = v • rs.1 ∧ u * rs'.2 = v * rs.2
   iseqv := by
@@ -552,7 +553,7 @@ at the same monoid twice. -/
 /- Although the definition does not require `IsScalarTower R M X`,
 it does not make sense without it. -/
 @[to_additive (attr := nolint unusedArguments)]
-instance [SMul R X] [SMul R M] [IsScalarTower R M X] [IsScalarTower R M M] : SMul R (X[S⁻¹]) where
+instance [IsScalarTower R M X] [IsScalarTower R M M] : SMul R (X[S⁻¹]) where
   smul := OreLocalization.hsmul
 
 @[to_additive]

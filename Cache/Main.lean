@@ -11,26 +11,35 @@ Usage: cache [OPTIONS] [COMMAND]
 
 Commands:
   # No privilege required
-  get  [ARGS]   Download linked files missing on the local cache and decompress
-  get! [ARGS]   Download all linked files and decompress
-  get- [ARGS]   Download linked files missing to the local cache, but do not decompress
-  pack          Compress non-compressed build files into the local cache
-  pack!         Compress build files into the local cache (no skipping)
-  unpack        Decompress linked already downloaded files
-  unpack!       Decompress linked already downloaded files (no skipping)
-  clean         Delete non-linked files
-  clean!        Delete everything on the local cache
-  lookup [ARGS] Show information about cache files for the given Lean files
+  get  [ARGS]    Download linked files missing on the local cache and decompress
+  get! [ARGS]    Download all linked files and decompress
+  get- [ARGS]    Download linked files missing to the local cache, but do not decompress
+  pack           Compress non-compressed build files into the local cache
+  pack!          Compress build files into the local cache (no skipping)
+  unpack         Decompress linked already downloaded files
+  unpack!        Decompress linked already downloaded files (no skipping)
+  clean          Delete non-linked files
+  clean!         Delete everything on the local cache
+  lookup [ARGS]  Show information about cache files for the given Lean files
 
   # Privilege required
   put          Run 'pack' then upload linked files missing on the server
   put!         Run 'pack' then upload all linked files
-  put-unpacked 'put' only files not already 'pack'ed; intended for CI use
   commit       Write a commit on the server
   commit!      Overwrite a commit on the server
 
+  # Intended for CI use
+  unstage      Copy *.ltar files from the staging directory to the local cache
+  unstage!     Copy *.ltar files from the staging directory to the local cache (overwrite existing files)
+  stage        Move files not already 'pack'ed to an output directory
+  stage!       Move all linked cache files to an output directory
+  put-staged   Upload *.ltar files from the staging directory (privilege required)
+  put-unpacked Run 'put' only for files not already 'pack'ed (privilege required)
+
 Options:
   --repo=OWNER/REPO  Override the repository to fetch/push cache from
+  --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage' and 'put-staged': staging directory.
+  --skip-proofwidgets  Skip fetching/building ProofWidgets release assets during 'get'
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
@@ -61,21 +70,23 @@ See Cache/README.md for more details.
 
 /-- Commands which (potentially) call `curl` for downloading files -/
 def curlArgs : List String :=
-  ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
+  ["get", "get!", "get-", "put", "put!", "put-unpacked", "put-staged", "commit", "commit!"]
 
 /-- Commands which (potentially) call `leantar` for compressing or decompressing files -/
 def leanTarArgs : List String :=
-  ["get", "get!", "put", "put!", "put-unpacked", "pack", "pack!", "unpack", "lookup"]
+  ["get", "get!", "put", "put!", "put-unpacked", "pack", "pack!", "unpack", "lookup", "stage", "stage!"]
 
-/-- Parses an optional `--repo` option. -/
-def parseRepo (args : List String) : IO (Option String × List String) := do
-  if let arg :: args := args then
-    if arg.startsWith "--" then
-      if let some repo := arg.dropPrefix? "--repo=" then
-        return (some repo.toString, args)
-      else
-        throw <| IO.userError s!"unknown option: {arg}"
-  return (none, args)
+/-- Parses an optional `--foo=bar` option. -/
+def parseNamedOpt (opt : String) (args : List String) : IO (Option String) := do
+  let pref := s!"--{opt}="
+  if let some a := args.findRev? (fun a => a.startsWith pref) then
+    let val := a.drop pref.length
+    return some val.toString
+  return none
+
+/-- Parses a boolean `--foo` flag. -/
+def parseFlagOpt (opt : String) (args : List String) : Bool :=
+  args.elem s!"--{opt}"
 
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
@@ -84,7 +95,14 @@ def main (args : List String) : IO Unit := do
     Process.exit 0
   CacheM.run do
 
-  let (repo?, args) ← parseRepo args
+  -- split args and named options
+  let (options, args) := args.partition (·.startsWith "--")
+
+  -- parse relevant options, ignore the rest
+  let repo? ← parseNamedOpt "repo" options
+  let stagingDir? ← parseNamedOpt "staging-dir" options
+  let skipProofWidgets := parseFlagOpt "skip-proofwidgets" options
+
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
     -- No arguments means to start from `Mathlib.lean`
@@ -100,12 +118,24 @@ def main (args : List String) : IO Unit := do
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
-    getFiles repo? hashMap force force goodCurl decompress
+    getFiles repo? hashMap force force goodCurl decompress skipProofWidgets
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
     let repo := repo?.getD MATHLIBREPO
     putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
+  let stage outDir (unpackedOnly := true) := do
+    stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
+  let unstage (overwrite := false) := do
+    if stagingDir?.isNone then IO.println "unstage requires --staging-dir=" return else
+      unstageFiles stagingDir?.get! overwrite
+  let putStaged (stagingDir : FilePath) := do
+    let repo := repo?.getD MATHLIBREPO
+    if !(←stagingDir.isDir) then IO.println "--staging-dir must be a directory" return
+    else
+      let fileSet ← getFilesWithExtension stagingDir "ltar"
+      putFilesAbsolute repo fileSet (tempConfigFilePath := stagingDir / "curl.config") (overwrite := false) (← getToken)
+
   match args with
   | "get"  :: args => get args
   | "get!" :: args => get args (force := true)
@@ -114,6 +144,8 @@ def main (args : List String) : IO Unit := do
   | ["pack!"] => discard <| pack (overwrite := true)
   | ["unpack"] => unpackCache hashMap false
   | ["unpack!"] => unpackCache hashMap true
+  | ["unstage"] => unstage
+  | ["unstage!"] => unstage (overwrite := true)
   | ["clean"] =>
     cleanCache <| hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
@@ -121,6 +153,12 @@ def main (args : List String) : IO Unit := do
   | "put" :: _ => put
   | "put!" :: _ => put (overwrite := true)
   | "put-unpacked" :: _ => put (unpackedOnly := true)
+  | "stage" :: _ => if (stagingDir?.isNone) then IO.println "stage requires --staging-dir=" return else
+    stage stagingDir?.get!
+  | "stage!" :: _ => if (stagingDir?.isNone) then IO.println "stage! requires --staging-dir=" return else
+    stage stagingDir?.get! (unpackedOnly := false)
+  | "put-staged" :: _ => if (stagingDir?.isNone) then IO.println "put-staged requires --staging-dir=" return else
+    putStaged stagingDir?.get!
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap false (← getToken)
