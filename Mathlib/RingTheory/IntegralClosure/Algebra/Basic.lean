@@ -32,6 +32,7 @@ variable {R A B S : Type*}
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Subalgebra.isIntegral_iff (S : Subalgebra R B) :
     Algebra.IsIntegral R S ↔ ∀ x ∈ S, IsIntegral R x :=
   Algebra.isIntegral_def.trans <| .trans
@@ -76,6 +77,7 @@ lemma Algebra.isIntegral_of_surjective (H : Function.Surjective (algebraMap R B)
     Algebra.IsIntegral R B :=
   .of_surjective (Algebra.ofId R B) H
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
   then all elements of `S` are integral over `R`. -/
 theorem IsIntegral.of_mem_of_fg (S : Subalgebra R B)
@@ -87,6 +89,7 @@ theorem isIntegral_of_submodule_noetherian (S : Subalgebra R B)
     (H : IsNoetherian R (Subalgebra.toSubmodule S)) (x : B) (hx : x ∈ S) : IsIntegral R x :=
   .of_mem_of_fg _ ((Submodule.fg_top _).mp <| H.noetherian _) _ hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `A` is an `R`-algebra, `M` is an `A`-module such that `a • m ≠ 0` for all non-zero `a`
 and `m`. If `x : A` fixes a nontrivial f.g. `R`-submodule `N` of `M`, then `x` is `R`-integral. -/
 theorem isIntegral_of_smul_mem_submodule [IsDomain A] {M : Type*} [AddCommGroup M] [Module R M]

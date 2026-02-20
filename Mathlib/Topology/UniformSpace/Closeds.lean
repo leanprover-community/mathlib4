@@ -439,6 +439,7 @@ instance [CompactSpace α] : CompactSpace (Closeds α) where
   isCompact_univ := by simpa [gi.l_surjective.range_eq]
     using isCompact_univ.image continuous_closure
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem compactSpace_iff : CompactSpace (Closeds α) ↔ CompactSpace α := by
   refine ⟨fun _ => compactSpace_of_finite_subfamily_closed fun {ι} F hF₁ hF₂ => ?_,
