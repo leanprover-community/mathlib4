@@ -75,35 +75,31 @@ lemma shortExact_iff_degreewise_shortExact :
 
 end HomologicalComplex
 
-universe u v u' v'
-
 namespace CategoryTheory
 
-open Limits Abelian
+open Limits
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
-variable {D : Type u'} [Category.{v'} D] [Abelian D]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
+variable {D : Type*} [Category* D] [HasZeroMorphisms D]
 
-variable (F : C ⥤ D) [F.Additive]
+variable (F : C ⥤ D) {ι : Type*} (c : ComplexShape ι)
 
-variable [PreservesFiniteLimits F] [PreservesFiniteColimits F]
+instance [F.PreservesZeroMorphisms] {J : Type*} [Category* J] [HasLimitsOfShape J C]
+    [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J (F.mapHomologicalComplex c) :=
+  HomologicalComplex.preservesLimitsOfShape_of_eval _ (fun i ↦
+    inferInstanceAs <| PreservesLimitsOfShape J <| HomologicalComplex.eval C c i ⋙ F)
 
-lemma Functor.mapHomologicalComplex_map_exact {ι : Type*} (c : ComplexShape ι)
-    (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) :
-    (S.map (F.mapHomologicalComplex c)).Exact := by
-  refine (HomologicalComplex.exact_iff_degreewise_exact _).mpr (fun i ↦ ?_)
-  have : (F.mapHomologicalComplex c) ⋙ (HomologicalComplex.eval D c i) =
-    (HomologicalComplex.eval C c i) ⋙ F := by aesop_cat
-  simp_rw [← ShortComplex.map_comp, this, ShortComplex.map_comp]
-  exact ((HomologicalComplex.exact_iff_degreewise_exact S).mp hS i).map F
+instance [F.PreservesZeroMorphisms] {J : Type*} [Category* J] [HasColimitsOfShape J C]
+    [PreservesColimitsOfShape J F] : PreservesColimitsOfShape J (F.mapHomologicalComplex c) :=
+  HomologicalComplex.preservesColimitsOfShape_of_eval _ (fun i ↦
+    inferInstanceAs <| PreservesColimitsOfShape J <| HomologicalComplex.eval C c i ⋙ F)
 
-instance {ι : Type*} (c : ComplexShape ι) : PreservesFiniteLimits (F.mapHomologicalComplex c) := by
-  have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
-  exact (this (F.mapHomologicalComplex_map_exact c)).1
+instance [HasFiniteLimits C] [F.PreservesZeroMorphisms] [PreservesFiniteLimits F] :
+    PreservesFiniteLimits (F.mapHomologicalComplex c) :=
+  ⟨by intros; infer_instance⟩
 
-instance {ι : Type*} (c : ComplexShape ι) :
-    PreservesFiniteColimits (F.mapHomologicalComplex c) := by
-  have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
-  exact (this (F.mapHomologicalComplex_map_exact c)).2
+instance [HasFiniteColimits C] [F.PreservesZeroMorphisms] [PreservesFiniteColimits F] :
+    PreservesFiniteColimits (F.mapHomologicalComplex c) :=
+  ⟨by intros; infer_instance⟩
 
 end CategoryTheory
