@@ -51,7 +51,7 @@ namespace PiTensorProduct
 
 section NormedField
 
-variable [NontriviallyNormedField 𝕜]
+variable [NormedField 𝕜]
 
 /-- A lift of the projective seminorm to `FreeAddMonoid (𝕜 × Π i, Eᵢ)`, useful to prove the
 properties of `projectiveSeminorm`. -/
