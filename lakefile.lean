@@ -127,6 +127,9 @@ Currently, these checks are quite lenient, but could be made stricter in the fut
 lean_exe «check_title_labels» where
   srcDir := "scripts"
 
+lean_exe «check_modulized_tests» where
+  srcDir := "scripts"
+
 lean_exe mathlib_test_executable where
   root := `MathlibTest.MathlibTestExecutable
 
