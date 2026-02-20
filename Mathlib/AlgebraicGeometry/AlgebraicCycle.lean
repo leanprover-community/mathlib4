@@ -172,7 +172,6 @@ class HasDegree (Z : Type*) [Semiring Z] where
   -/
   degree_one {X : Scheme.{u}} (z : X) : degree (𝟙 X) z = 1
 
-
 open Classical in
 /--
 Implementation detail for pushforward: function used to define the coefficient of the pushforward
