@@ -343,6 +343,7 @@ theorem mem_chain_of_mem_ωSup {c : Chain (Part α)} {a : α} (h : a ∈ Part.ω
     exact h'
   · rcases h with ⟨⟨⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance omegaCompletePartialOrder :
     OmegaCompletePartialOrder (Part α) where
   ωSup := Part.ωSup

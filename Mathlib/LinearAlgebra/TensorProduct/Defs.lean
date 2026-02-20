@@ -215,6 +215,7 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
   CompatibleSMul.smul_tmul _ _ _
 
 set_option backward.privateInPublic true in
+@[instance_reducible]
 private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
@@ -287,6 +288,7 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
     simp_rw [TensorProduct.smul_add]
     rw [ihx, ihy, add_add_add_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 instance addMonoid : AddMonoid (M ⊗[R] N) :=
   { TensorProduct.addZeroClass _ _ with
     toAddSemigroup := TensorProduct.addSemigroup _ _

@@ -209,6 +209,7 @@ theorem linearIndependent_span (hs : LinearIndependent R v) :
       (fun i : ι ↦ ⟨v i, subset_span (mem_range_self i)⟩) :=
   LinearIndependent.of_comp (span R (range v)).subtype hs
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every finite subset of a linearly independent set is linearly independent. -/
 theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
     (li : LinearIndependent R ((↑) : s → M)) (t : Finset s) :
@@ -247,6 +248,7 @@ theorem LinearIndependent.disjoint_span_image (hv : LinearIndependent R v) {s t 
   have : l₁ = 0 := Submodule.disjoint_def.mp (Finsupp.disjoint_supported_supported hs) _ hl₁ hl₂
   simp [this]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LinearIndependent.notMem_span_image [Nontrivial R] (hv : LinearIndependent R v) {s : Set ι}
     {x : ι} (h : x ∉ s) : v x ∉ Submodule.span R (v '' s) := by
   have h' : v x ∈ Submodule.span R (v '' {x}) := by
