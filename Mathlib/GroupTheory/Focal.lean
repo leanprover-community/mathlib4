@@ -138,7 +138,7 @@ where `n = [G:H]`.
 -/
 theorem transferFocal_eq_pow [H.FiniteIndex] (x : H) :
     transferFocal H x = (x : H ⧸ H.focalSubgroupOf) ^ H.index := by
-  haveI : Fintype (Quotient (MulAction.orbitRel (zpowers (x : G)) (G ⧸ H))) :=
+  have : Fintype (Quotient (MulAction.orbitRel (zpowers (x : G)) (G ⧸ H))) :=
     Fintype.ofFinite _
   rw [transferFocal, index_eq_sum_minimalPeriod H x, ← Finset.prod_pow_eq_pow_sum,
     MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot]
