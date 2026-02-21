@@ -96,8 +96,7 @@ theorem isAlgebraic_adjoin_simple_X' : Algebra.IsAlgebraic K⟮f⟯ (RatFunc K) 
   exact f.adjoinAdjoinXEquiv.isAlgebraic
 
 theorem natDegree_denom_le_natDegree_minpolyX : f.denom.natDegree ≤ f.minpolyX.natDegree :=
-  Polynomial.le_natDegree_of_ne_zero fun H ↦ hf (f.eq_C_of_minpolyX_coeff_eq_zero
-    (congr_arg Subtype.val H))
+  Polynomial.le_natDegree_of_ne_zero fun H ↦ hf (f.eq_C_of_minpolyX_coeff_eq_zero congr($(H).val))
 
 theorem natDegree_num_le_natDegree_minpolyX : f.num.natDegree ≤ f.minpolyX.natDegree := by
   have f_ne_zero : f ≠ 0 := by
@@ -105,7 +104,7 @@ theorem natDegree_num_le_natDegree_minpolyX : f.num.natDegree ≤ f.minpolyX.nat
     exact hf ⟨0, (RingHom.map_zero C).symm⟩
   apply Polynomial.le_natDegree_of_ne_zero
   intro H
-  replace H := congr_arg Subtype.val H
+  replace H := congr($(H).val)
   simp only [Polynomial.coeff_sub, Polynomial.coeff_map, Polynomial.coeff_natDegree,
     Polynomial.coeff_C_mul, AddSubgroupClass.coe_sub, SubalgebraClass.coe_algebraMap,
     algebraMap_eq_C, MulMemClass.coe_mul, AdjoinSimple.coe_gen, ZeroMemClass.coe_zero] at H
@@ -118,15 +117,15 @@ omit hf in
 theorem natDegree_minpolyX : f.minpolyX.natDegree = max f.num.natDegree f.denom.natDegree := by
   by_cases hf : ∃ c, f = C c
   · obtain ⟨c, rfl⟩ := hf
-    simp [C_minpolyX]
+    simp
   apply le_antisymm
   · have : f.minpolyX.natDegree ≤ _ := Polynomial.natDegree_sub_le _ _
     rw [Polynomial.natDegree_map, Polynomial.natDegree_C_mul fun H ↦
-      hf ⟨0, by simpa [map_zero] using congr_arg Subtype.val H⟩,
+      hf ⟨0, by simpa [map_zero] using congr($(H).val)⟩,
       Polynomial.natDegree_map] at this
     exact this
   · exact max_le (natDegree_num_le_natDegree_minpolyX f hf) <| Polynomial.le_natDegree_of_ne_zero
-      fun H ↦ hf (f.eq_C_of_minpolyX_coeff_eq_zero (congr_arg Subtype.val H))
+      fun H ↦ hf (f.eq_C_of_minpolyX_coeff_eq_zero congr($(H).val))
 
 theorem transcendental_of_ne_C : Transcendental K f := by
   intro H
@@ -134,7 +133,6 @@ theorem transcendental_of_ne_C : Transcendental K f := by
   have tr : Algebra.Transcendental K (RatFunc K) := by infer_instance
   rw [Algebra.transcendental_iff_not_isAlgebraic] at tr
   exact tr <| Algebra.IsAlgebraic.trans _ _ _ (alg := f.isAlgebraic_adjoin_simple_X' hf)
-
 
 theorem transcendental_of_ne_C' :
     Transcendental K (⟨f, Algebra.self_mem_adjoin_singleton K f⟩ : K[f]):= by
