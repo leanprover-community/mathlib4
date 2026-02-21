@@ -3514,7 +3514,7 @@ public import Mathlib.Data.Analysis.Filter
 public import Mathlib.Data.Analysis.Topology
 public import Mathlib.Data.Array.Defs
 public import Mathlib.Data.Array.Extract
-public import Mathlib.Data.AvoidChoice.Fin
+public import Mathlib.Data.AvoidChoice.List
 public import Mathlib.Data.BitVec
 public import Mathlib.Data.Bool.AllAny
 public import Mathlib.Data.Bool.Basic
