@@ -588,16 +588,16 @@ end OrderDual
 instance Prop.instCompl : Compl Prop :=
   ⟨Not⟩
 
-@[to_dual]
+@[to_dual instHNot]
 instance Pi.instCompl [∀ i, Compl (π i)] : Compl (∀ i, π i) :=
   ⟨fun x i ↦ (x i)ᶜ⟩
 
-@[to_dual (attr := push ←)]
+@[to_dual (attr := push ←) hnot_def]
 theorem Pi.compl_def [∀ i, Compl (π i)] (x : ∀ i, π i) :
     xᶜ = fun i ↦ (x i)ᶜ :=
   rfl
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) hnot_apply]
 theorem Pi.compl_apply [∀ i, Compl (π i)] (x : ∀ i, π i) (i : ι) :
     xᶜ i = (x i)ᶜ :=
   rfl
@@ -721,6 +721,7 @@ theorem lt_update_self_iff : x < update x i a ↔ x i < a := by simp [lt_iff_le_
 
 end Function
 
+-- `to_dual` cannot yet reorder arguments of arguments
 instance Pi.instSDiff [∀ i, SDiff (π i)] : SDiff (∀ i, π i) :=
   ⟨fun x y i ↦ x i \ y i⟩
 
@@ -728,12 +729,12 @@ instance Pi.instSDiff [∀ i, SDiff (π i)] : SDiff (∀ i, π i) :=
 instance Pi.instHImp [∀ i, HImp (π i)] : HImp (∀ i, π i) :=
   ⟨fun x y i ↦ x i ⇨ y i⟩
 
-@[to_dual (attr := push ←)]
+@[to_dual (attr := push ←) himp_def]
 theorem Pi.sdiff_def [∀ i, SDiff (π i)] (x y : ∀ i, π i) :
     x \ y = fun i ↦ x i \ y i :=
   rfl
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) himp_apply]
 theorem Pi.sdiff_apply [∀ i, SDiff (π i)] (x y : ∀ i, π i) (i : ι) :
     (x \ y) i = x i \ y i :=
   rfl

@@ -58,6 +58,7 @@ variable {ι α β : Type*}
 section
 variable (α β)
 
+-- `to_dual` cannot yet reorder arguments of arguments
 instance Prod.instHImp [HImp α] [HImp β] : HImp (α × β) :=
   ⟨fun a b => (a.1 ⇨ b.1, a.2 ⇨ b.2)⟩
 
@@ -65,7 +66,7 @@ instance Prod.instHImp [HImp α] [HImp β] : HImp (α × β) :=
 instance Prod.instHNot [HNot α] [HNot β] : HNot (α × β) :=
   ⟨fun a => (￢a.1, ￢a.2)⟩
 
-@[to_dual existing]
+@[to_dual existing instHImp]
 instance Prod.instSDiff [SDiff α] [SDiff β] : SDiff (α × β) :=
   ⟨fun a b => (a.1 \ b.1, a.2 \ b.2)⟩
 
@@ -532,11 +533,11 @@ theorem himp_bot (a : α) : a ⇨ ⊥ = aᶜ :=
 theorem bot_himp (a : α) : ⊥ ⇨ a = ⊤ :=
   himp_eq_top_iff.2 bot_le
 
-@[to_dual]
+@[to_dual hnot_inf_distrib]
 theorem compl_sup_distrib (a b : α) : (a ⊔ b)ᶜ = aᶜ ⊓ bᶜ := by
   simp_rw [← himp_bot, sup_himp_distrib]
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) hnot_inf]
 theorem compl_sup : (a ⊔ b)ᶜ = aᶜ ⊓ bᶜ :=
   compl_sup_distrib _ _
 
@@ -584,27 +585,27 @@ alias le_compl_iff_le_compl := le_compl_comm
 @[to_dual hnot_le_of_hnot_le]
 alias ⟨le_compl_of_le_compl, _⟩ := le_compl_comm
 
-@[to_dual]
+@[to_dual codisjoint_hnot_left]
 theorem disjoint_compl_left : Disjoint aᶜ a :=
   disjoint_iff_inf_le.mpr <| le_himp_iff.1 (himp_bot _).ge
 
-@[to_dual]
+@[to_dual codisjoint_hnot_right]
 theorem disjoint_compl_right : Disjoint a aᶜ :=
   disjoint_compl_left.symm
 
-@[to_dual]
+@[to_dual codisjoint_hnot_left]
 theorem LE.le.disjoint_compl_left (h : b ≤ a) : Disjoint aᶜ b :=
   _root_.disjoint_compl_left.mono_right h
 
-@[to_dual]
+@[to_dual codisjoint_hnot_right]
 theorem LE.le.disjoint_compl_right (h : a ≤ b) : Disjoint a bᶜ :=
   _root_.disjoint_compl_right.mono_left h
 
-@[to_dual]
+@[to_dual hnot_eq]
 theorem IsCompl.compl_eq (h : IsCompl a b) : aᶜ = b :=
   h.1.le_compl_left.antisymm' <| Disjoint.le_of_codisjoint disjoint_compl_left h.2
 
-@[to_dual]
+@[to_dual eq_hnot]
 theorem IsCompl.eq_compl (h : IsCompl a b) : a = bᶜ :=
   h.1.le_compl_right.antisymm <| Disjoint.le_of_codisjoint disjoint_compl_left h.2.symm
 
@@ -612,44 +613,44 @@ theorem IsCompl.eq_compl (h : IsCompl a b) : a = bᶜ :=
 theorem compl_unique (h₀ : a ⊓ b = ⊥) (h₁ : a ⊔ b = ⊤) : aᶜ = b :=
   (IsCompl.of_eq h₀ h₁).compl_eq
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) sup_hnot_self]
 theorem inf_compl_self (a : α) : a ⊓ aᶜ = ⊥ :=
   disjoint_compl_right.eq_bot
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) hnot_sup_self]
 theorem compl_inf_self (a : α) : aᶜ ⊓ a = ⊥ :=
   disjoint_compl_left.eq_bot
 
-@[to_dual]
+@[to_dual sup_hnot_eq_top]
 theorem inf_compl_eq_bot : a ⊓ aᶜ = ⊥ :=
   inf_compl_self _
 
-@[to_dual]
+@[to_dual hnot_sup_eq_top]
 theorem compl_inf_eq_bot : aᶜ ⊓ a = ⊥ :=
   compl_inf_self _
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) hnot_bot]
 theorem compl_top : (⊤ : α)ᶜ = ⊥ :=
   eq_of_forall_le_iff fun a => by rw [le_compl_iff_disjoint_right, disjoint_top, le_bot_iff]
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) hnot_top]
 theorem compl_bot : (⊥ : α)ᶜ = ⊤ := by rw [← himp_bot, himp_self]
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) le_hnot_self]
 theorem le_compl_self : a ≤ aᶜ ↔ a = ⊥ := by
   rw [le_compl_iff_disjoint_left, disjoint_self]
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) ne_hnot_self]
 theorem ne_compl_self [Nontrivial α] : a ≠ aᶜ := by
   intro h
   cases le_compl_self.1 (le_of_eq h)
   simp at h
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) hnot_ne_self]
 theorem compl_ne_self [Nontrivial α] : aᶜ ≠ a :=
   ne_comm.1 ne_compl_self
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) lt_hnot_self]
 theorem lt_compl_self [Nontrivial α] : a < aᶜ ↔ a = ⊥ := by
   rw [lt_iff_le_and_ne]; simp
 
@@ -657,23 +658,23 @@ theorem lt_compl_self [Nontrivial α] : a < aᶜ ↔ a = ⊥ := by
 theorem le_compl_compl : a ≤ aᶜᶜ :=
   disjoint_compl_right.le_compl_right
 
-@[to_dual]
+@[to_dual hnot_anti]
 theorem compl_anti : Antitone (compl : α → α) := fun _ _ h =>
   le_compl_comm.1 <| h.trans le_compl_compl
 
-@[to_dual (attr := gcongr)]
+@[to_dual (attr := gcongr) hnot_le_hnot]
 theorem compl_le_compl (h : a ≤ b) : bᶜ ≤ aᶜ :=
   compl_anti h
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) hnot_hnot_hnot]
 theorem compl_compl_compl (a : α) : aᶜᶜᶜ = aᶜ :=
   (compl_anti le_compl_compl).antisymm le_compl_compl
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) codisjoint_hnot_hnot_left_iff]
 theorem disjoint_compl_compl_left_iff : Disjoint aᶜᶜ b ↔ Disjoint a b := by
   simp_rw [← le_compl_iff_disjoint_left, compl_compl_compl]
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) codisjoint_hnot_hnot_right_iff]
 theorem disjoint_compl_compl_right_iff : Disjoint a bᶜᶜ ↔ Disjoint a b := by
   simp_rw [← le_compl_iff_disjoint_right, compl_compl_compl]
 
@@ -681,14 +682,14 @@ theorem disjoint_compl_compl_right_iff : Disjoint a bᶜᶜ ↔ Disjoint a b := 
 theorem compl_sup_compl_le : aᶜ ⊔ bᶜ ≤ (a ⊓ b)ᶜ :=
   sup_le (compl_anti inf_le_left) <| compl_anti inf_le_right
 
-@[to_dual]
+@[to_dual hnot_hnot_sup_distrib]
 theorem compl_compl_inf_distrib (a b : α) : (a ⊓ b)ᶜᶜ = aᶜᶜ ⊓ bᶜᶜ := by
   refine ((compl_anti compl_sup_compl_le).trans (compl_sup_distrib _ _).le).antisymm ?_
   rw [le_compl_iff_disjoint_right, disjoint_assoc, disjoint_compl_compl_left_iff,
     disjoint_left_comm, disjoint_compl_compl_left_iff, ← disjoint_assoc, inf_comm]
   exact disjoint_compl_right
 
-@[to_dual]
+@[to_dual hnot_hnot_sdiff_distrib]
 theorem compl_compl_himp_distrib (a b : α) : (a ⇨ b)ᶜᶜ = aᶜᶜ ⇨ bᶜᶜ := by
   apply le_antisymm
   · rw [le_himp_iff, ← compl_compl_inf_distrib]
@@ -715,10 +716,10 @@ instance OrderDual.instHeytingAlgebra {α : Type u_2} [CoheytingAlgebra α] : He
 theorem ofDual_hnot (a : αᵒᵈ) : ofDual (￢a) = (ofDual a)ᶜ :=
   rfl
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) ofDual_himp]
 theorem ofDual_sdiff (a b : αᵒᵈ) : ofDual (a \ b) = ofDual b ⇨ ofDual a :=
   rfl
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) toDual_hnot]
 theorem toDual_compl (a : α) : toDual aᶜ = ￢toDual a :=
   rfl
 
@@ -930,11 +931,11 @@ theorem sup_eq : a ⊔ b = unit :=
   rfl
 
 @[to_dual (attr := simp)]
-theorem compl_eq : aᶜ = unit :=
+theorem hnot_eq : ￢a = unit :=
   rfl
 
 @[to_dual (attr := simp)]
-theorem sdiff_eq : a \ b = unit :=
+theorem himp_eq : a ⇨ b = unit :=
   rfl
 
 end PUnit
