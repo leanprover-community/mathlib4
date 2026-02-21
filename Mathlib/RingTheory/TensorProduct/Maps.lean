@@ -269,38 +269,39 @@ theorem rid_symm_apply (a : A) : (TensorProduct.rid R S A).symm a = a ⊗ₜ 1 :
 
 section CompatibleSMul
 
-variable (R S A B : Type*) [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable (R S T A B : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring T] [Semiring A]
+  [Semiring B]
 variable [Algebra R A] [Algebra R B] [Algebra S A] [Algebra S B]
+variable [Algebra R T] [Algebra T A] [IsScalarTower R T A]
+variable [Algebra S T] [IsScalarTower S T A]
 variable [SMulCommClass R S A] [CompatibleSMul R S A B]
 
 /-- If A and B are both R- and S-algebras and their actions on them commute,
 and if the S-action on `A ⊗[R] B` can switch between the two factors, then there is a
-canonical S-algebra homomorphism from `A ⊗[S] B` to `A ⊗[R] B`. -/
-def mapOfCompatibleSMul : A ⊗[S] B →ₐ[S] A ⊗[R] B :=
-  .ofLinearMap (_root_.TensorProduct.mapOfCompatibleSMul R S A B) rfl fun x ↦
+canonical T-algebra homomorphism from `A ⊗[S] B` to `A ⊗[R] B`. -/
+def mapOfCompatibleSMul : A ⊗[S] B →ₐ[T] A ⊗[R] B :=
+  .ofLinearMap (_root_.TensorProduct.mapOfCompatibleSMul R S T A B) rfl fun x ↦
     x.induction_on (by simp) (fun _ _ y ↦ y.induction_on (by simp) (by simp)
       fun _ _ h h' ↦ by simp only [mul_add, map_add, h, h'])
       fun _ _ h h' _ ↦ by simp only [add_mul, map_add, h, h']
 
-@[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R S A B (m ⊗ₜ n) = m ⊗ₜ n :=
+@[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R S T A B (m ⊗ₜ n) = m ⊗ₜ n :=
   rfl
 
-theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R S A B) :=
-  _root_.TensorProduct.mapOfCompatibleSMul_surjective R S A B
+theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R S T A B) :=
+  _root_.TensorProduct.mapOfCompatibleSMul_surjective R S T A B
 
 attribute [local instance] SMulCommClass.symm
 
-/-- `mapOfCompatibleSMul R S A B` is also A-linear. -/
-def mapOfCompatibleSMul' : A ⊗[S] B →ₐ[R] A ⊗[R] B :=
-  .ofLinearMap (_root_.TensorProduct.mapOfCompatibleSMul' R S A B) rfl
-    (map_mul <| mapOfCompatibleSMul R S A B)
+@[deprecated (since := "2026-02-21")]
+alias mapOfCompatibleSMul' := mapOfCompatibleSMul
 
 /-- If the R- and S-actions on A and B satisfy `CompatibleSMul` both ways,
 then `A ⊗[S] B` is canonically isomorphic to `A ⊗[R] B`. -/
-def equivOfCompatibleSMul [CompatibleSMul S R A B] : A ⊗[S] B ≃ₐ[S] A ⊗[R] B where
-  __ := mapOfCompatibleSMul R S A B
-  invFun := mapOfCompatibleSMul S R A B
-  __ := _root_.TensorProduct.equivOfCompatibleSMul R S A B
+def equivOfCompatibleSMul [CompatibleSMul S R A B] : A ⊗[S] B ≃ₐ[T] A ⊗[R] B where
+  __ := mapOfCompatibleSMul R S T A B
+  invFun := mapOfCompatibleSMul S R T A B
+  __ := _root_.TensorProduct.equivOfCompatibleSMul R S T A B
 
 variable [Algebra R S] [CompatibleSMul R S S A] [CompatibleSMul S R S A]
 omit [SMulCommClass R S A]
@@ -308,7 +309,7 @@ omit [SMulCommClass R S A]
 /-- If the R- and S- action on S and A satisfy `CompatibleSMul` both ways,
 then `S ⊗[R] A` is canonically isomorphic to `A`. -/
 def lidOfCompatibleSMul : S ⊗[R] A ≃ₐ[S] A :=
-  (equivOfCompatibleSMul R S S A).symm.trans (TensorProduct.lid _ _)
+  (equivOfCompatibleSMul R S S S A).symm.trans (TensorProduct.lid _ _)
 
 theorem lidOfCompatibleSMul_tmul (s a) : lidOfCompatibleSMul R S A (s ⊗ₜ[R] a) = s • a := rfl
 
@@ -666,7 +667,7 @@ def lmul'' : S ⊗[R] S →ₐ[S] S :=
     (fun a₁ a₂ b₁ b₂ => by simp [mul_mul_mul_comm]) <| by simp
 
 theorem lmul''_eq_lid_comp_mapOfCompatibleSMul :
-    lmul'' R = (TensorProduct.lid S S).toAlgHom.comp (mapOfCompatibleSMul' _ _ _ _) := by
+    lmul'' R = (TensorProduct.lid S S).toAlgHom.comp (mapOfCompatibleSMul _ _ _ _ _) := by
   ext; rfl
 
 /-- `LinearMap.mul'` as an `AlgHom` over the base ring. -/
