@@ -20,7 +20,7 @@ open scoped MonoidAlgebra
 
 namespace Representation
 
-section
+section Monoid
 
 variable {A G V W U : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
   [AddCommMonoid U] [Module A V] [Module A W] [Module A U] (ρ : Representation A G V)
@@ -246,9 +246,11 @@ theorem conj_apply_self (g : G) : φ.conj (ρ g) = σ g := by ext; simp [φ.isIn
 
 end Equiv
 
-end
+end Monoid
 
 namespace Equiv
+
+section Group
 
 variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V] [AddCommGroup W]
     [Module k W] [FiniteDimensional k V] [FiniteDimensional k W]
@@ -263,6 +265,7 @@ noncomputable def dualTensorHom_equivalence : Equiv (tprod ρ.dual σ) (linHom �
       (congrArg (fun f => f v)
         (dualTensorHom_comm (ρV := ρ) (ρW := σ) (k := k) (V := V) (W := W) g))
 
+end Group
 
 end Equiv
 
