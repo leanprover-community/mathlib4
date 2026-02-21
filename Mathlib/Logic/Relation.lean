@@ -589,7 +589,7 @@ theorem transGen_eq_self (trans : IsTrans α r) : TransGen r = r :=
       | tail _ hcd hac => exact trans.trans _ _ _ hac hcd, TransGen.single⟩
 
 @[deprecated inferInstance (since := "2026-02-21")]
-theorem transitive_transGen : IsTrans α (TransGen r) := ⟨fun _ _ _ ↦ TransGen.trans⟩
+theorem transitive_transGen : IsTrans α (TransGen r) := inferInstance
 
 @[grind =]
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
@@ -668,9 +668,6 @@ theorem reflTransGen_eq_self (refl : Reflexive r) (trans : IsTrans α r) : ReflT
 
 theorem reflexive_reflTransGen : Reflexive (ReflTransGen r) := fun _ ↦ refl
 
-@[deprecated inferInstance (since := "2026-02-21")]
-theorem transitive_reflTransGen : IsTrans α (ReflTransGen r) := ⟨@trans α r⟩
-
 instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
   ⟨head⟩
 
@@ -682,6 +679,9 @@ instance : Std.Refl (ReflTransGen r) :=
 
 instance : IsTrans α (ReflTransGen r) :=
   ⟨@ReflTransGen.trans α r⟩
+
+@[deprecated inferInstance (since := "2026-02-21")]
+theorem transitive_reflTransGen : IsTrans α (ReflTransGen r) := inferInstance
 
 @[grind =]
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
