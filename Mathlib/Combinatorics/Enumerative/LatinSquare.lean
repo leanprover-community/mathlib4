@@ -31,7 +31,7 @@ Description of Latin Squares
 
 * [DONE] Add theorem that a k-1 × n Latin rectangle can be extended to a k × n Latin rectangle.
 * [DONE] Corollary, any k x n Latin rectangle can be extneded to a Latin square.
-* Add that a n x n Latin rectangle is a Latin square.
+* [DONE] Add that a n x n Latin rectangle is a Latin square.
   This will lead to a computable definition of Latin square.
 * Add Ryser's theorem using partial Latin squares.
 * Add Evan's Conjeture.
@@ -49,7 +49,7 @@ universe u u' v
 
 variable {m m' : Type*} [Fintype m] [Fintype m'] 
 variable {n n' : Type*} [Fintype n] [Fintype n']
-variable {α β : Type v} [α_fintype_inst : Fintype α] [α_decidable_eq_inst : DecidableEq α] [Fintype β] [DecidableEq β]
+variable {α β : Type v} [Fintype α] [DecidableEq α] [Fintype β] [DecidableEq β]
 
 section LatinSquare
 
@@ -242,17 +242,6 @@ def latin_square_isomorphism
   (A : LatinSquare n α) : 
   LatinSquare n' β := latin_rectangle_isomorphism f g h (A : LatinRectangle n n α)
 
-
--- structure LREquiv extends
---  Equiv (LatinRectangle m n α) (LatinRectangle m' n' β) where 
---   f : m ≃ m'
---   g : n ≃ n'
---   h : α ≃ β
---   h_toFun : toFun = latin_rectangle_isomorphism f g h 
-  
--- infixl:25 " ≃◻ " => LREquiv
-
-
 structure LREquiv (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) where
   (f : m ≃ m') 
   (g : n ≃ n') 
@@ -283,17 +272,6 @@ def R_iso
     h := h
     map_rel := by simp [latin_rectangle_isomorphism]
 }
-
-
-
- -- where 
- --    toFun := latin_rectangle_isomorphism f g h 
- --    invFun := latin_rectangle_isomorphism f.symm g.symm h.symm
- --    left_inv := by simp [Function.LeftInverse, latin_rectangle_isomorphism] 
- --    right_inv := by simp [Function.RightInverse, Function.LeftInverse, latin_rectangle_isomorphism]
-
--- Cyclic Example
--- We construct an infinite family of Latin Squares from the infinite family of Cyclic Groups
 
 -- For example, addGroup_to_cayley_table (ZMod.finEquiv 5).toEquiv
 
@@ -879,5 +857,4 @@ theorem latin_rectangle_extends_to_latin_square
           use A''
           exact subrect_transitive hA hA''
 
-#print axioms latin_rectangle_extends_to_latin_square
-
+end Completion
