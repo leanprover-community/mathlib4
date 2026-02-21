@@ -327,7 +327,7 @@ lemma not_continuousAt_weierstrassP (x : ℂ) (hx : x ∈ L.lattice) : ¬ Contin
     (((H.sub ((L.differentiableOn_weierstrassPExcept x).differentiableAt
       (L.compl_lattice_diff_singleton_mem_nhds x)).continuousAt).add
       (continuous_const (y := 1 / x ^ 2)).continuousAt).comp_of_eq
-      (continuous_const_addd x).continuousAt (add_zero _) :)
+      (continuous_const_add x).continuousAt (add_zero _) :)
 
 end weierstrassP
 
