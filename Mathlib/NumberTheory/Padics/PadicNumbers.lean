@@ -1113,7 +1113,7 @@ lemma valuation_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 @[simp]
 lemma valuation_one : valuation (1 : ℚ_[p]) = 0 := by
-  rw [← Nat.cast_one, valuation_natCast, padicValNat.one, cast_zero]
+  rw [← Nat.cast_one, valuation_natCast, padicValNat_one_right, cast_zero]
 
 -- not @[simp], since simp can prove it
 lemma valuation_p : valuation (p : ℚ_[p]) = 1 := by

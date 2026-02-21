@@ -75,9 +75,7 @@ namespace padicValNat
 variable {p : ℕ}
 
 /-- If `p ≠ 0` and `p ≠ 1`, then `padicValNat p p` is `1`. -/
-@[simp]
-theorem self (hp : 1 < p) : padicValNat p p = 1 := by
-  simp [padicValNat_def', ne_zero_of_lt hp, hp.ne']
+alias self := padicValNat_base
 
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
   eq_zero_iff.2 <| Or.inr <| Or.inr h

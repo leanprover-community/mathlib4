@@ -67,13 +67,11 @@ namespace padicValNat
 
 open List
 
-/-- `padicValNat p 0` is `0` for any `p`. -/
-@[simp]
-protected theorem zero : padicValNat p 0 = 0 := by simp [padicValNat]
+@[deprecated padicValNat_zero_right (since := "2026-02-20")]
+protected theorem zero : padicValNat p 0 = 0 := padicValNat_zero_right p
 
-/-- `padicValNat p 1` is `0` for any `p`. -/
-@[simp]
-protected theorem one : padicValNat p 1 = 0 := by simp [padicValNat]
+@[deprecated padicValNat_one_right (since := "2026-02-20")]
+protected theorem one : padicValNat p 1 = 0 := padicValNat_one_right p
 
 @[simp]
 theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p ∣ n := by
