@@ -126,6 +126,7 @@ lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.
       ((@AddCommGrpCat.isZero_of_subsingleton _ (h1 h2.1)).eq_zero_of_tgt _)
     exact AddCommGrpCat.subsingleton_of_isZero this
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ)
     (p : Ideal R) [p.IsPrime] (ne : p ≠ maximalIdeal R) (h : ∀ q > p, q.IsPrime →
       Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ q))) M (n + 1))) :
@@ -207,8 +208,8 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.
           obtain ⟨r, hrq, hrp⟩ := Set.exists_of_ssubset hqp
           apply ringKrullDim_succ_le_of_surjective (r := Ideal.Quotient.mk p.1 r)
             (Ideal.Quotient.factor hqp.le) (Ideal.Quotient.factor_surjective hqp.le)
-          · simpa [Ideal.Quotient.eq_zero_iff_mem] using hrp
-          · simpa [Ideal.Quotient.eq_zero_iff_mem] using hrq
+          · simpa using Ideal.Quotient.eq_zero_iff_mem.not.mpr hrp
+          · simpa using Ideal.Quotient.eq_zero_iff_mem.mpr hrq
         apply ih (i + 1) (Nat.le_add_right_of_le hi) this
   rcases exist_nat_eq' R with ⟨n, hn⟩
   apply this n
@@ -230,6 +231,7 @@ lemma injectiveDimension_eq_sInf_of_finite (M : ModuleCat.{v} R) [Module.Finite 
     intro k hk
     exact h k (lt_of_lt_of_le hi (Nat.cast_le.mpr hk))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_lt_iff_of_finite (M : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ) :
     injectiveDimension M < n ↔ ∀ (i : ℕ), n ≤ i →
       Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i) := by
@@ -295,6 +297,7 @@ def ModuleCat.restrictScalars_fullyFaithful_of_surjective (h : Function.Surjecti
 
 end restrictScalars
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasProjectiveDimensionLE_finsupp_quotient_regular [Small.{v} R] (ι : Type v) {x : R}
     (regR : IsSMulRegular R x) :
     HasProjectiveDimensionLE (ModuleCat.of R (ι →₀ Shrink.{v} (R ⧸ Ideal.span {x}))) 1 := by
@@ -336,6 +339,7 @@ lemma hasProjectiveDimensionLE_finsupp_quotient_regular [Small.{v} R] (ι : Type
 
 variable [Small.{v} R]
 
+set_option backward.isDefEq.respectTransparency false in
 open Limits in
 lemma extClass_postcomp_bijective_of_isSMulRegular {M : ModuleCat.{v} R} {x : R}
     (regM : IsSMulRegular M x) (N : ModuleCat.{v} R) (ann : x • 𝟙 N = 0) :
@@ -354,6 +358,7 @@ lemma extClass_postcomp_bijective_of_isSMulRegular {M : ModuleCat.{v} R} {x : R}
       Ext.comp_smul, Ext.comp_smul, ← Ext.smul_comp, ← Ext.mk₀_smul]
     simp [ann]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `Ext N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)) n →+
   Ext ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) M (n + 1)`
   is bijective. -/
@@ -431,6 +436,7 @@ section
 
 variable [Small.{v} R]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
     (regR : IsSMulRegular R x) (regM : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) (n : ℕ) :
     letI : IsLocalRing (R ⧸ Ideal.span {x}) :=
@@ -452,7 +458,7 @@ lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
   let k' := (ModuleCat.of (R ⧸ Ideal.span {x})
     (Shrink.{v} ((R ⧸ Ideal.span {x}) ⧸ maximalIdeal (R ⧸ Ideal.span {x}))))
   let e' : (R ⧸ maximalIdeal R) ≃ₗ[R] (R ⧸ Ideal.span {x}) ⧸ maximalIdeal (R ⧸ Ideal.span {x}) :=
-    { __ :=RingEquiv.ofBijective _ (ResidueField.map_bijective_of_surjective
+    { __ := RingEquiv.ofBijective _ (ResidueField.map_bijective_of_surjective
         (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective)
       map_smul' r y := by
         simp only [RingEquiv.toEquiv_eq_coe, Algebra.smul_def, Ideal.Quotient.algebraMap_eq,
@@ -475,6 +481,7 @@ local instance finite_QuotSMulTop' (M : Type*) [AddCommGroup M] [Module R M] [Mo
     map_smul' r m := rfl }
   exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] [IsNoetherianRing R]
     {M : ModuleCat.{v} R} [Module.Finite R M] {x : R} (regR : IsSMulRegular R x)
     (regM : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
