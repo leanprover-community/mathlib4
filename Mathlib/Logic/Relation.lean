@@ -588,13 +588,12 @@ theorem transGen_eq_self (trans : IsTrans α r) : TransGen r = r :=
       | single hc => exact hc
       | tail _ hcd hac => exact trans.trans _ _ _ hac hcd, TransGen.single⟩
 
-theorem isTrans_transGen : IsTrans α (TransGen r) := ⟨fun _ _ _ ↦ TransGen.trans⟩
-
-@[deprecated (since := "2026-02-21")] alias transitive_transGen := isTrans_transGen
+@[deprecated inferInstance (since := "2026-02-21")]
+theorem transitive_transGen : IsTrans α (TransGen r) := ⟨fun _ _ _ ↦ TransGen.trans⟩
 
 @[grind =]
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
-  transGen_eq_self isTrans_transGen
+  transGen_eq_self inferInstance
 
 theorem TransGen.lift {p : β → β → Prop} {a b : α} (f : α → β) (h : ∀ a b, r a b → p (f a) (f b))
     (hab : TransGen r a b) : TransGen p (f a) (f b) := by
@@ -669,9 +668,8 @@ theorem reflTransGen_eq_self (refl : Reflexive r) (trans : IsTrans α r) : ReflT
 
 theorem reflexive_reflTransGen : Reflexive (ReflTransGen r) := fun _ ↦ refl
 
-theorem isTrans_reflTransGen : IsTrans α (ReflTransGen r) := ⟨fun _ _ _ ↦ trans⟩
-
-@[deprecated (since := "2026-02-21")] alias transitive_reflTransGen := isTrans_reflTransGen
+@[deprecated inferInstance (since := "2026-02-21")]
+theorem transitive_reflTransGen : IsTrans α (ReflTransGen r) := ⟨@trans α r⟩
 
 instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
   ⟨head⟩
@@ -687,7 +685,7 @@ instance : IsTrans α (ReflTransGen r) :=
 
 @[grind =]
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
-  reflTransGen_eq_self reflexive_reflTransGen isTrans_reflTransGen
+  reflTransGen_eq_self reflexive_reflTransGen inferInstance
 
 theorem ReflTransGen.lift' {p : β → β → Prop} {a b : α} (f : α → β)
     (h : ∀ a b, r a b → ReflTransGen p (f a) (f b))
@@ -819,7 +817,7 @@ theorem equivalence_join (hr : Reflexive r) (ht : IsTrans α r)
 theorem equivalence_join_reflTransGen
     (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d) :
     Equivalence (Join (ReflTransGen r)) :=
-  equivalence_join reflexive_reflTransGen isTrans_reflTransGen fun _ _ _ ↦ church_rosser h
+  equivalence_join reflexive_reflTransGen inferInstance fun _ _ _ ↦ church_rosser h
 
 theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : ∀ a b, r' a b → r a b) :
     Join r' a b → r a b
