@@ -130,6 +130,18 @@ lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x 
       g.app (op X) ≫ Φ.toPresheafFiber X x Q :=
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
 
+/-- The colimit cocone which defines `Φ.presheafFiber.obj P` for any `P : Cᵒᵖ ⥤ A`. -/
+@[simps]
+noncomputable def presheafFiberCocone (P : Cᵒᵖ ⥤ A) :
+    Cocone ((CategoryOfElements.π Φ.fiber).op ⋙ P) where
+  pt := Φ.presheafFiber.obj P
+  ι.app x := Φ.toPresheafFiber x.unop.1 x.unop.2 P
+
+/-- The cocone `Φ.presheafFiberCocone P` is a colimit. -/
+noncomputable def isColimitPresheafFiberCocone (P : Cᵒᵖ ⥤ A) :
+    IsColimit (Φ.presheafFiberCocone P) :=
+  colimit.isColimit _
+
 section
 
 variable {P : Cᵒᵖ ⥤ A} {T : A}
