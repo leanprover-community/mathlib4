@@ -133,6 +133,9 @@ theorem divMaxPow_mul_pow_padicValNat (p n : ℕ) : divMaxPow n p * p ^ padicVal
 theorem pow_padicValNat_mul_divMaxPow (p n : ℕ) : p ^ padicValNat p n * divMaxPow n p = n := by
   rw [Nat.mul_comm, divMaxPow_mul_pow_padicValNat]
 
+theorem _root_.pow_padicValNat_dvd (p n : ℕ) : p ^ padicValNat p n ∣ n :=
+  ⟨divMaxPow n p, by simp⟩
+
 theorem not_dvd_divMaxPow {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) : ¬p ∣ divMaxPow n p := by
   simp [divMaxPow, maxPowDvdDiv, maxPowDvdDiv.go_spec, *]
 
@@ -239,5 +242,26 @@ theorem fst_maxPowDvdDiv (p n : ℕ) : (p.maxPowDvdDiv n).1 = padicValNat p n :=
 
 @[simp]
 theorem snd_maxPowDvdDiv (p n : ℕ) : (p.maxPowDvdDiv n).2 = n.divMaxPow p := rfl
+
+@[deprecated (since := "2026-02-20")]
+alias maxPowDiv := padicValNat
+
+@[deprecated (since := "2026-02-20")]
+alias maxPowDiv.base_mul_eq_succ := padicValNat_base_mul
+
+@[deprecated (since := "2026-02-20")]
+alias maxPowDiv.base_pow_mul := padicValNat_base_pow_mul
+
+@[deprecated (since := "2026-02-20")]
+alias ⟨_, maxPowDiv.le_of_dvd⟩ := pow_dvd_iff_le_padicValNat
+
+@[deprecated (since := "2026-02-20")]
+alias maxPowDiv.pow_dvd := pow_padicValNat_dvd
+
+@[deprecated (since := "2026-02-20")]
+alias maxPowDiv.zero := padicValNat_zero_right
+
+@[deprecated (since := "2026-02-20")]
+alias maxPowDiv.zero_base := padicValNat_zero_left
 
 end Nat

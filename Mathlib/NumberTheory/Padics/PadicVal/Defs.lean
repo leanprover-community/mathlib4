@@ -38,6 +38,7 @@ theorem padicValNat_eq_emultiplicity' {p n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) 
     pow_dvd_iff_le_padicValNat hp hn]
   simp
 
+@[simp]
 theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = padicValNat p n := by
   rcases eq_or_ne p 1 with rfl | hp
   · simp
@@ -45,7 +46,6 @@ theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = padicV
     · simp
     · simp [← padicValNat_eq_emultiplicity', *]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
     padicValNat p n = multiplicity p n :=
   .symm <| multiplicity_eq_of_emultiplicity_eq_some <| .symm <|
@@ -65,7 +65,11 @@ theorem padicValNat_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0
 
 namespace padicValNat
 
-open List
+@[deprecated (since := "2026-02-20")]
+alias maxPowDiv_eq_emultiplicity := padicValNat_eq_emultiplicity
+
+@[deprecated (since := "2026-02-20")]
+alias maxPowDiv_eq_multiplicity := padicValNat_def'
 
 @[deprecated padicValNat_zero_right (since := "2026-02-20")]
 protected theorem zero : padicValNat p 0 = 0 := padicValNat_zero_right p
