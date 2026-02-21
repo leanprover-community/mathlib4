@@ -41,6 +41,7 @@ variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteCo
 
 open Ext
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughProjectives C] [F.PreservesProjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExtAddHom X Y n) := by
@@ -84,6 +85,7 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
     · ext x
       simp [g, g', Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_extClass_eq_extClass_map]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughInjectives C] [F.PreservesInjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExtAddHom X Y n) := by

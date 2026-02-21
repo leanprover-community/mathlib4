@@ -112,6 +112,7 @@ lemma netMaxcard_antitone (T : X → X) (F : Set X) (n : ℕ) :
     Antitone fun U : SetRel X X ↦ netMaxcard T F U n :=
   fun _ _ U_V ↦ biSup_mono fun _ h ↦ h.of_entourage_subset U_V
 
+set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     netMaxcard T F U n < ⊤ ↔
     ∃ s : Finset X, IsDynNetIn T F U n s ∧ (s.card : ℕ∞) = netMaxcard T F U n := by
@@ -187,6 +188,7 @@ lemma netMaxcard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : netMaxcard T F 
   refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     netMaxcard T F U n = ⊤ ↔ ∀ k : ℕ, ∃ s : Finset X, IsDynNetIn T F U n s ∧ k ≤ s.card := by
   apply Iff.intro <;> intro h

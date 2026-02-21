@@ -34,7 +34,7 @@ and that a monic polynomial that lifts can be lifted to a monic polynomial (of t
 ## Implementation details
 
 In general `R` and `S` are semirings, so `lifts` is a semiring. In the case of rings, see
-`lifts_iff_lifts_ring`.
+`lifts_iff_liftsRing`.
 
 Since we do not assume `R` to be commutative, we cannot say in general that the set of polynomials
 that lift is a subalgebra. (By `lift_iff` this is true if `R` is commutative.)

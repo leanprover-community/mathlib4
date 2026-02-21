@@ -33,6 +33,7 @@ variable {C : Type*} [Category* C] [Abelian C]
 
 namespace CochainComplex
 
+set_option backward.isDefEq.respectTransparency false in -- Needed in homologySequenceδ_triangleh
 @[reassoc]
 lemma homologySequenceδ_quotient_mapTriangle_obj
     (T : Triangle (CochainComplex C ℤ)) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
@@ -66,6 +67,7 @@ lemma inl_v_descShortComplex_f (i j : ℤ) (h : i + (-1) = j) :
 
 variable {S}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (homologyFunctor C (up ℤ) 0).homologySequenceδ (triangleh S.f) n₀ n₁ h =
       (homologyFunctorFactors C (up ℤ) n₀).hom.app _ ≫
@@ -114,6 +116,7 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
 
 open ComposableArrows
 
+set_option backward.isDefEq.respectTransparency false in
 include hS in
 lemma quasiIso_descShortComplex : QuasiIso (descShortComplex S) where
   quasiIsoAt n := by
@@ -162,6 +165,7 @@ universe u' v'
 
 variable {D : Type u'} [Category.{v'} D] [Abelian D]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma descShortComplex_mapHomologicalComplex (F : C ⥤ D) [F.Additive]
     (S : ShortComplex (CochainComplex C ℤ)) :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).map (descShortComplex S) =
