@@ -96,9 +96,8 @@ private lemma lie_e_f_same_aux (k : ι) (hki : k ≠ i) (hki' : k ≠ P.reflecti
   classical
   have h_lin_ind : LinearIndependent R ![P.root i, P.root k] := by
     rw [LinearIndependent.pair_symm_iff, IsReduced.linearIndependent_iff]
-    constructor
-    · assumption
-    · rwa [ne_eq, root_eq_neg_iff]
+    refine ⟨hki, ?_⟩
+    rwa [ne_eq, root_eq_neg_iff]
   suffices (∑ x, if P.root k = P.root i + P.root x then
               (P.chainBotCoeff i x + 1 : R) * (P.chainTopCoeff i k + 1) else 0) -
             (∑ x, if P.root k = P.root x - P.root i then
@@ -273,8 +272,8 @@ lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
   letI := P.indexNeg
   classical
   ext (k | k) (l | l)
-  · suffices j ≠ i by simp_all [-indexNeg_neg, e, f]
-    exact hij.symm
+  · rw [ne_comm] at hij
+    simp_all [-indexNeg_neg, e, f]
   · exact lie_e_f_ne_aux₀ k l
   · have aux₁ : P.root k ≠ P.root i - P.root j :=
       fun contra ↦ b.sub_notMem_range_root i.property j.property ⟨k, contra⟩
@@ -309,8 +308,8 @@ lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
       simp [Finset.sum_ite_of_false aux₃, Finset.sum_ite_of_false aux₄]
     by_cases h₆ : P.root l + P.root i ∈ range P.root; swap
     · have h₇ : P.root l - P.root j ∉ range P.root := by
-        have : P.root l ≠ -P.root i := by simpa only [ne_eq, SetLike.coe_eq_coe, root_eq_neg_iff]
-        rwa [b.root_sub_mem_iff_root_add_mem i j l hij' i.property j.property h₃ this h₅]
+        rwa [b.root_sub_mem_iff_root_add_mem i j l hij' i.property j.property h₃ _ h₅]
+        simpa
       have aux₃ : ∀ x ∈ Finset.univ,
           ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j) := by
         rintro x - ⟨hx, -⟩; exact h₆ ⟨x, by rw [hx]; abel⟩
