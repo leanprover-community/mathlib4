@@ -34,7 +34,7 @@ variable [ContinuousAdd F] [ContinuousSMul 𝕜 F]
 variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
 variable [ContinuousAdd G] [ContinuousSMul 𝕜 G]
 variable {g : F → G} {f : E → F} {g' : F →L[𝕜] G} {f' : E →L[𝕜] F}
-variable (x : E) {s : Set E} {y : F} {t : Set F} {L : Filter E}
+variable (x : E) {s : Set E} {y : F} {t : Set F} {L : Filter (E × E)}
 
 /-!
 ### Derivative of the composition of two functions
@@ -43,8 +43,7 @@ For composition lemmas, we put `x` explicit to help the elaborator, as otherwise
 get confused since there are too many possibilities for composition. -/
 
 
-variable (x)
-
+omit [ContinuousAdd E] [ContinuousSMul 𝕜 E] in
 theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter (F × F)}
     (hg : HasFDerivAtFilter g g' L') (hf : HasFDerivAtFilter f f' L)
     (hL : Tendsto (Prod.map f f) L L') :
@@ -230,7 +229,7 @@ theorem fderiv_comp_fderivWithin (hg : DifferentiableAt 𝕜 g (f x))
 end TwoFunctions
 
 section Iterate
-variable {f : E → E} {f' : E →L[𝕜] E} {s : Set E} {x : E} {L : Filter E}
+variable {f : E → E} {f' : E →L[𝕜] E} {s : Set E} {x : E} {L : Filter (E × E)}
 
 @[fun_prop]
 protected theorem Differentiable.iterate (hf : Differentiable 𝕜 f) (n : ℕ) :
@@ -242,9 +241,9 @@ protected theorem DifferentiableOn.iterate (hf : DifferentiableOn 𝕜 f s)
     (hs : MapsTo f s s) (n : ℕ) : DifferentiableOn 𝕜 f^[n] s :=
   Nat.recOn n differentiableOn_id fun _ ihn => ihn.comp hf hs
 
-protected theorem HasFDerivAtFilter.iterate (hf : HasFDerivAtFilter f f' x L) (hL : Tendsto f L L)
-    (hx : f x = x) (n : ℕ) :
-    HasFDerivAtFilter f^[n] (f' ^ n) x L := by
+protected theorem HasFDerivAtFilter.iterate (hf : HasFDerivAtFilter f f' L)
+    (hL : Tendsto (Prod.map f f) L L) (n : ℕ) :
+    HasFDerivAtFilter f^[n] (f' ^ n) L := by
   induction n with
   | zero => exact hasFDerivAtFilter_id L
   | succ n ihn =>
@@ -254,9 +253,8 @@ protected theorem HasFDerivAtFilter.iterate (hf : HasFDerivAtFilter f f' x L) (h
 @[fun_prop]
 protected theorem HasFDerivAt.iterate (hf : HasFDerivAt f f' x) (hx : f x = x) (n : ℕ) :
     HasFDerivAt f^[n] (f' ^ n) x := by
-  refine HasFDerivAtFilter.iterate hf ?_ hx n
-  convert hf.continuousAt.tendsto
-  exact hx.symm
+  refine HasFDerivAtFilter.iterate hf ?_ n
+  simpa [hx] using hf.continuousAt.tendsto.prodMap (tendsto_pure_pure f x)
 
 @[fun_prop]
 protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
