@@ -6,6 +6,7 @@ Authors: Riccardo Brasca
 module
 
 public import Batteries.Data.List.Lemmas
+public import Mathlib.Init
 
 /-!
 # Let's avoid choice!
