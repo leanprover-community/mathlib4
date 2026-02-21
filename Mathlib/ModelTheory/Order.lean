@@ -292,7 +292,7 @@ variable [Preorder M] [L.OrderedStructure M]
 instance model_preorder : M ⊨ L.preorderTheory := by
   simp only [preorderTheory, Theory.model_insert_iff, Relations.realize_reflexive, relMap_leSymb,
     Theory.model_singleton_iff, Relations.realize_transitive]
-  exact ⟨le_refl, fun _ _ _ => le_trans⟩
+  exact ⟨le_refl, ⟨fun _ _ _ => le_trans⟩⟩
 
 @[simp]
 theorem Term.realize_lt {t₁ t₂ : L.Term (α ⊕ (Fin n))}
@@ -376,8 +376,8 @@ def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
   __ := L.leOfStructure M
   le_refl := Relations.realize_reflexive.1 ((Theory.model_iff _).1 h _
     (by simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, true_or]))
-  le_trans := Relations.realize_transitive.1 ((Theory.model_iff _).1 h _
-    (by simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, or_true]))
+  le_trans := (Relations.realize_transitive.mp <| Theory.model_iff _ |>.mp h _ <|
+    by simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, or_true]).trans
 
 /-- Any model of a theory of partial orders is a partial order. -/
 def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where

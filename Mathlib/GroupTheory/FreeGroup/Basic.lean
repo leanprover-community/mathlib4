@@ -321,10 +321,10 @@ theorem Step.sublist (H : Red.Step L₁ L₂) : L₂ <+ L₁ := by
 @[to_additive
 /-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of `w₁`. -/]
 protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
-  @reflTransGen_of_transitive_reflexive
+  @reflTransGen_of_isTrans_reflexive
     _ (fun a b => b <+ a) _ _ _
     (fun l => List.Sublist.refl l)
-    (fun _a _b _c hab hbc => List.Sublist.trans hbc hab)
+    ⟨fun _a _b _c hab hbc => List.Sublist.trans hbc hab⟩
     (fun _ _ => Red.Step.sublist)
 
 @[to_additive]
