@@ -37,7 +37,7 @@ goals, so it is available to the user indirectly as the "degenerate" case of tha
 by calling `linear_combination` without arguments.
 -/
 
-public meta section
+public section
 
 namespace Mathlib.Tactic.Ring
 
@@ -111,6 +111,8 @@ theorem lt_add_of_pos_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsS
   _root_.lt_add_of_pos_left a h
 
 end Lemma
+
+meta section
 
 /-- Inductive type carrying the two kinds of errors which can arise in the metaprograms
 `Mathlib.Tactic.Ring.evalLE.lean` and `Mathlib.Tactic.Ring.evalLT.lean`. -/
@@ -251,5 +253,7 @@ def proveLT (g : MVarId) : MetaM Unit := do
     | notComparable =>
       throwError "ring failed, ring expressions not equal up to an additive constant\n{g'.mvarId!}"
     | tooSmall => throwError "comparison failed, LHS is at least as large\n{g'.mvarId!}"
+
+end
 
 end Mathlib.Tactic.Ring
