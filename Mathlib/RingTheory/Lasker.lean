@@ -141,6 +141,10 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes [Decidabl
     obtain ⟨q, hq1, hq2⟩ := eq_inf_of_isPrime_inf hp
     exact ⟨q, Finset.mem_of_mem_filter q hq1, hq2⟩
 
+@[deprecated (since := "2026-01-19")]
+alias IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff :=
+  IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
+
 end Submodule
 
 lemma Ideal.IsMinimalPrimaryDecomposition.minimalPrimes_subset_image_radical
