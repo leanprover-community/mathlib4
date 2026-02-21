@@ -96,8 +96,10 @@ The `vecPerm` simproc computes the new entries of a vector after applying a perm
 This can be used to simplify expressions as follows:
 ```
 example {a b c : Nat} : ![a, b, c] ∘ Equiv.swap 0 1 = ![b, a, c] := by
-  simp only [vecPerm]
+  simp [vecPerm, Equiv.swap_apply_def]
 ```
+Note that for this simproc to work, simp needs to be able to simplify the individual applications
+of the permutation, i.e. the user may need to provide additional simp lemmas.
 -/
 simproc_decl vecPerm (_ ∘ (_ : Fin _ → Fin _)) := fun e ↦ do
   let ⟨_, ~q(Fin $n → $α), ~q(($v) ∘ ($p : _ → Fin $n'))⟩ ← inferTypeQ' e | return .continue
