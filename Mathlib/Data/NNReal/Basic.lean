@@ -140,6 +140,8 @@ typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSu
 theorem sub_div (a b c : ℝ≥0) : (a - b) / c = a / c - b / c :=
   tsub_div _ _ _
 
+/-- This lemma is needed for the `norm_cast` simp set. Outside of this use case `Nat.coe_sub`
+should be used. -/
 @[norm_cast]
 protected theorem coe_sub_of_lt {a b : ℝ≥0} (h : a < b) :
     ((b - a : ℝ≥0) : ℝ) = b - a := NNReal.coe_sub h.le

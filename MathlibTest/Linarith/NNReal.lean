@@ -1,4 +1,6 @@
 import Mathlib.Tactic.Linarith.NNRealPreprocessor
+import Mathlib.Data.ENNReal.Operations
+import Mathlib.Data.ENNReal.Inv
 
 open NNReal
 
