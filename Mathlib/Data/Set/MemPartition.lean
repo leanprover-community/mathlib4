@@ -141,6 +141,7 @@ lemma mem_memPartitionSet (f : ℕ → Set α) (n : ℕ) (a : α) : a ∈ memPar
     rw [memPartitionSet_succ]
     split_ifs with h <;> exact ⟨ih, h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma memPartitionSet_eq_iff {f : ℕ → Set α} {n : ℕ} (a : α) {s : Set α}
     (hs : s ∈ memPartition f n) :
     memPartitionSet f n a = s ↔ a ∈ s := by
