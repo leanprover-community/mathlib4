@@ -429,6 +429,10 @@ theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
 theorem Iio_ssubset_Iio (h : a < b) : Iio a ⊂ Iio b := by
   simpa [← coe_ssubset] using Set.Iio_ssubset_Iio h
 
+theorem sup_Iic_of_monotone {β : Type*} [SemilatticeSup β] [OrderBot β] {f : α → β}
+    (hf : Monotone f) : (Iic a).sup f = f a :=
+  le_antisymm (Finset.sup_le_iff.mpr fun _ h ↦ hf (by simpa using h)) (le_sup (by simp))
+
 variable [LocallyFiniteOrder α]
 
 theorem Icc_subset_Iic_self : Icc a b ⊆ Iic b := by
@@ -457,11 +461,6 @@ set_option backward.isDefEq.respectTransparency false in
 def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where
   toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
   invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
-
-omit [LocallyFiniteOrder α] in
-theorem sup_Iic_of_monotone {β : Type*} [SemilatticeSup β] [OrderBot β] {f : α → β}
-    (hf : Monotone f) : (Iic a).sup f = f a :=
-  le_antisymm (Finset.sup_le_iff.mpr fun _ h ↦ hf (by simpa using h)) (le_sup (by simp))
 
 end LocallyFiniteOrderBot
 
