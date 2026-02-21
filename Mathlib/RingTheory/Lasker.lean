@@ -108,6 +108,11 @@ structure IsMinimalPrimaryDecomposition [DecidableEq (Submodule R M)]
   distinct : (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical)
   minimal : ∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J
 
+lemma IsMinimalPrimaryDecomposition.injOn [DecidableEq (Submodule R M)]
+    (N : Submodule R M) (t : Finset (Submodule R M)) (ht : N.IsMinimalPrimaryDecomposition t) :
+    Set.InjOn (fun J ↦ (J.colon Set.univ).radical) (t : Set (Submodule R M)) :=
+  Set.injOn_iff_pairwise_ne.mpr ht.distinct
+
 lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)]
     (h : IsLasker R M) (N : Submodule R M) :
     ∃ t : Finset (Submodule R M), N.IsMinimalPrimaryDecomposition t := by
@@ -146,11 +151,17 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes [Decidabl
 alias IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff :=
   IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
 
+lemma IsMinimalPrimaryDecomposition.mem_associatedPrimes [DecidableEq (Submodule R M)]
+    {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t)
+    {q : Submodule R M} (hq : q ∈ t) : (q.colon Set.univ).radical ∈ N.associatedPrimes := by
+  rw [← ht.image_radical_eq_associated_primes]
+  exact Set.mem_image_of_mem _ hq
+
 instance {N : Submodule R M} (q : N.associatedPrimes) : q.1.IsPrime := q.2.1
 
 open LocalizedModule IsLocalizedModule in
 /-- The second uniqueness theorem for primary decomposition, Theorem 4.10 in Atiyah-Macdonald. -/
-theorem IsMinimalPrimaryDecomposition.foobar'
+lemma IsMinimalPrimaryDecomposition.foobar'
     {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M] [DecidableEq (Submodule R M)]
     [DecidableEq (Ideal R)]
     {I : Submodule R M} {t : Finset (Submodule R M)} (ht : I.IsMinimalPrimaryDecomposition t)
@@ -159,17 +170,12 @@ theorem IsMinimalPrimaryDecomposition.foobar'
     (hs' : (s.image fun q ↦ (q.colon Set.univ).radical) = s₀.image (↑)) :
     ⨅ q ∈ s, q = (I.localized₀ (⨅ q ∈ s₀, q.1.primeCompl) (mkLinearMap
       (⨅ q ∈ s₀, q.1.primeCompl) M)).comap (mkLinearMap (⨅ q ∈ s₀, q.1.primeCompl) M) := by
-  have tada : ∀ q ∈ t, (q.colon Set.univ).radical ∈ I.associatedPrimes := by
-    rw [← ht.image_radical_eq_associated_primes]
-    exact fun q hq ↦ ⟨q, hq, rfl⟩
   have ax (q : Submodule R M) (hqt : q ∈ t)
-      (hqs : ⟨(q.colon Set.univ).radical, tada q hqt⟩ ∈ s₀) : q ∈ s := by
+      (hqs : ⟨(q.colon Set.univ).radical, ht.mem_associatedPrimes hqt⟩ ∈ s₀) : q ∈ s := by
     have key := Finset.mem_image_of_mem Subtype.val hqs
     rw [← hs', Finset.mem_image] at key
     obtain ⟨q', hq', hq''⟩ := key
-    suffices q' = q by rwa [← this]
-    contrapose! hq''
-    exact ht.distinct (hs hq') hqt hq''
+    rwa [← ht.injOn I t (hs hq') hqt hq'']
   set S := ⨅ q ∈ s₀, q.1.primeCompl
   set f := mkLinearMap S M
   rw [← ht.inf_eq, ← localized₀FrameHom_apply, map_finset_inf, Submodule.comap_finsetInf]
@@ -199,8 +205,8 @@ theorem IsMinimalPrimaryDecomposition.foobar'
     exact key0 q hq (c * a).2
   have key2 : ∀ q ∈ t \ s, (localized₀ S f q).comap f = ⊤ := by
     intro q hq
-    obtain ⟨hqt, hqs⟩ := Finset.mem_sdiff.mp hq
-    replace hqs : ¬ ((q.colon Set.univ) : Set R) ⊆ ⋃ r ∈ s, (r.colon Set.univ).radical := by
+    replace hq : ¬ ((q.colon Set.univ) : Set R) ⊆ ⋃ r ∈ s, (r.colon Set.univ).radical := by
+      obtain ⟨hqt, hqs⟩ := Finset.mem_sdiff.mp hq
       contrapose! hqs
       obtain ⟨r, hrs, h⟩ := (Ideal.subset_union_prime
         ⊥ ⊥ fun q hq _ _ ↦ (ht.primary (hs hq)).isPrime_radical_colon).mp hqs
@@ -210,7 +216,7 @@ theorem IsMinimalPrimaryDecomposition.foobar'
       obtain ⟨p, hps, hpr⟩ := hrs
       rw [← Ideal.radical_le_radical_iff, ← hpr] at h
       exact ax q hqt (hs₀ h hps)
-    obtain ⟨y, hy1, hy2⟩ := Set.not_subset_iff_exists_mem_notMem.mp hqs
+    obtain ⟨y, hy1, hy2⟩ := Set.not_subset_iff_exists_mem_notMem.mp hq
     replace hy2 : y ∈ S := by
       simp only [Submonoid.mem_iInf, Ideal.mem_primeCompl_iff, Subtype.forall, S]
       intro r hrI hrs
