@@ -73,6 +73,7 @@ lemma isColimit_mk (c : CofanTypes.{w} F)
       obtain ⟨i, y, rfl⟩ := h₁ x
       exact ⟨(Discrete.functor F).ιColimitType ⟨i⟩ y, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 lemma isColimit_sigma : Functor.CoconeTypes.IsColimit (sigma F) :=
   isColimit_mk _ (by aesop)
@@ -86,6 +87,7 @@ from the Sigma type to the point of the cofan. -/
 def fromSigma (c : CofanTypes.{w} F) (x : Σ (i : C), F i) : c.pt :=
   c.inj x.1 x.2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isColimit_iff_bijective_fromSigma (c : CofanTypes.{w} F) :
     c.IsColimit ↔ Function.Bijective c.fromSigma := by
   rw [(isColimit_sigma F).iff_bijective]
@@ -195,8 +197,10 @@ noncomputable def initialIso : ⊥_ Type u ≅ PEmpty :=
   colimit.isoColimitCocone initialColimitCocone.{u, 0}
 
 /-- The initial object in `Type u` is `PEmpty`. -/
-noncomputable def isInitialPunit : IsInitial (PEmpty : Type u) :=
+noncomputable def isInitialPEmpty : IsInitial (PEmpty : Type u) :=
   initialIsInitial.ofIso initialIso
+
+@[deprecated (since := "2026-02-08")] alias isInitialPunit := isInitialPEmpty
 
 /-- An object in `Type u` is initial if and only if it is empty. -/
 lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := by
@@ -204,7 +208,7 @@ lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := b
   · intro ⟨h⟩
     exact Function.isEmpty (IsInitial.to h PEmpty)
   · intro h
-    exact ⟨IsInitial.ofIso Types.isInitialPunit <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
+    exact ⟨IsInitial.ofIso Types.isInitialPEmpty <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
 
 
 /-- The sum type `X ⊕ Y` forms a cocone for the binary coproduct of `X` and `Y`. -/
@@ -255,6 +259,7 @@ theorem binaryCoproductIso_inr_comp_inv (X Y : Type u) :
 
 open Function (Injective)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
       Injective c.inl ∧ Injective c.inr ∧ IsCompl (Set.range c.inl) (Set.range c.inr) := by
@@ -301,6 +306,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
         dsimp
         split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any monomorphism in `Type` is a coproduct injection. -/
 noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
     IsColimit (BinaryCofan.mk f (Subtype.val : ↑(Set.range f)ᶜ → Y)) := by

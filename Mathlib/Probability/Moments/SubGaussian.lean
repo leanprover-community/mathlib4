@@ -375,6 +375,7 @@ lemma measure_pos_eq_zero_of_hasSubGaussianMGF_zero (h : HasSubgaussianMGF X 0 �
   simp only [hs, measure_iUnion_null_iff, Subtype.forall]
   exact fun _ ↦ hn _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ae_eq_zero_of_hasSubgaussianMGF_zero (h : HasSubgaussianMGF X 0 κ ν) :
     ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] 0 := by
   filter_upwards [(h.neg).measure_pos_eq_zero_of_hasSubGaussianMGF_zero,
@@ -483,6 +484,7 @@ lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsZeroOrMarkov
     rwa [ENNReal.coe_ofNat, Measure.comp_compProd_comm, Measure.snd,
       memLp_map_measure_iff h.1 measurable_snd.aemeasurable] at h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `ν : Measure Ω'`, `κ : Kernel Ω' Ω` and `η : (Ω' × Ω) Ω''`, if a random variable `X : Ω → ℝ`
 has a sub-Gaussian mgf with respect to `κ` and `ν` and another random variable `Y : Ω'' → ℝ` has
 a sub-Gaussian mgf with respect to `η` and `ν ⊗ₘ κ : Measure (Ω' × Ω)`, then `X + Y` (random
@@ -836,6 +838,7 @@ protected lemma mgf_le_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] 
     · exact hm.mono_ac (tilted_absolutelyContinuous μ (u * X ·))
   _ = (‖b - a‖₊ / 2) ^ 2 := by simp [field]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Hoeffding's lemma**: with respect to a probability measure `μ`, if `X` is a random variable
 that has expectation zero and is almost surely in `Set.Icc a b` for some `a ≤ b`, then `X` has a
 sub-Gaussian moment-generating function with parameter `((b - a) / 2) ^ 2`. -/
@@ -877,7 +880,7 @@ a sub-sigma-algebra `m` and `Y` is conditionally sub-Gaussian with parameter `cY
 
 `HasSubgaussianMGF X cX (μ.trim hm)` can be obtained from `HasSubgaussianMGF X cX μ` if `X` is
 `m`-measurable. See `HasSubgaussianMGF.trim`. -/
-lemma HasSubgaussianMGF_add_of_HasCondSubgaussianMGF [IsFiniteMeasure μ]
+lemma HasSubgaussianMGF.add_of_hasCondSubgaussianMGF [IsFiniteMeasure μ]
     {Y : Ω → ℝ} {cX cY : ℝ≥0} (hm : m ≤ mΩ)
     (hX : HasSubgaussianMGF X cX (μ.trim hm)) (hY : HasCondSubgaussianMGF m hm Y cY μ) :
     HasSubgaussianMGF (X + Y) (cX + cY) μ := by
@@ -895,13 +898,17 @@ lemma HasSubgaussianMGF_add_of_HasCondSubgaussianMGF [IsFiniteMeasure μ]
   ext
   rw [Kernel.const_apply, ← Measure.compProd, compProd_trim_condExpKernel]
 
+@[deprecated (since := "2026-01-27")]
+alias HasSubgaussianMGF_add_of_HasCondSubgaussianMGF :=
+  HasSubgaussianMGF.add_of_hasCondSubgaussianMGF
+
 variable {Y : ℕ → Ω → ℝ} {cY : ℕ → ℝ≥0} {ℱ : Filtration ℕ mΩ}
 
 /-- Let `Y` be a random process strongly adapted to a filtration `ℱ`, such that for all `i : ℕ`,
 `Y i` is conditionally sub-Gaussian with parameter `cY i` with respect to `ℱ (i - 1)`.
 In particular, `n ↦ ∑ i ∈ range n, Y i` is a martingale.
 Then the sum `∑ i ∈ range n, Y i` is sub-Gaussian with parameter `∑ i ∈ range n, cY i`. -/
-lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
+lemma HasSubgaussianMGF.sum_of_hasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     (h_adapted : StronglyAdapted ℱ Y) (h0 : HasSubgaussianMGF (Y 0) (cY 0) μ) (n : ℕ)
     (h_subG : ∀ i < n - 1, HasCondSubgaussianMGF (ℱ i) (ℱ.le i) (Y (i + 1)) (cY (i + 1)) μ) :
     HasSubgaussianMGF (fun ω ↦ ∑ i ∈ Finset.range n, Y i ω) (∑ i ∈ Finset.range n, cY i) μ := by
@@ -913,21 +920,28 @@ lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure
     | succ n =>
       specialize hn fun i hi ↦ h_subG i (by lia)
       simp_rw [Finset.sum_range_succ _ (n + 1)]
-      refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n (by lia))
+      refine HasSubgaussianMGF.add_of_hasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n (by lia))
       refine HasSubgaussianMGF.trim (ℱ.le n) ?_ hn
       refine Finset.measurable_fun_sum (Finset.range (n + 1)) fun m hm ↦
         ((h_adapted m).mono (ℱ.mono ?_)).measurable
       simp only [Finset.mem_range] at hm
       lia
 
+@[deprecated (since := "2026-01-27")]
+alias HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF :=
+  HasSubgaussianMGF.sum_of_hasCondSubgaussianMGF
+
 /-- **Azuma-Hoeffding inequality** for sub-Gaussian random variables. -/
-lemma measure_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
+lemma measure_sum_ge_le_of_hasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     (h_adapted : StronglyAdapted ℱ Y) (h0 : HasSubgaussianMGF (Y 0) (cY 0) μ) (n : ℕ)
     (h_subG : ∀ i < n - 1, HasCondSubgaussianMGF (ℱ i) (ℱ.le i) (Y (i + 1)) (cY (i + 1)) μ)
     {ε : ℝ} (hε : 0 ≤ ε) :
     μ.real {ω | ε ≤ ∑ i ∈ Finset.range n, Y i ω}
       ≤ exp (-ε ^ 2 / (2 * ∑ i ∈ Finset.range n, cY i)) :=
-  (HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF h_adapted h0 n h_subG).measure_ge_le hε
+  (HasSubgaussianMGF.sum_of_hasCondSubgaussianMGF h_adapted h0 n h_subG).measure_ge_le hε
+
+@[deprecated (since := "2026-01-27")]
+alias measure_sum_ge_le_of_HasCondSubgaussianMGF := measure_sum_ge_le_of_hasCondSubgaussianMGF
 
 end Martingale
 

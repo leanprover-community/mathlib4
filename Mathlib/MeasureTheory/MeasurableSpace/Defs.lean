@@ -464,9 +464,10 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
   change GenerateMeasurable (⋃₀ _) _ ↔ _
   simp [← setOf_exists]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
-  simp only [iSup, measurableSet_sSup, exists_range_iff]
+  simp only [measurableSet_sSup, exists_range_iff]
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
     ⨆ n, m n = generateFrom { s | ∃ n, MeasurableSet[m n] s } := by
@@ -511,20 +512,22 @@ theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ =>
 @[fun_prop]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 
+attribute [local push ←] Function.comp_def
+@[to_fun]
 protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (g ∘ f) :=
   fun _ h => hf (hg h)
 
-@[fun_prop]
-protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
-    Measurable (fun x => g (f x)) := Measurable.comp hg hf
+attribute [fun_prop] Measurable.fun_comp
+
+@[deprecated (since := "2026-01-23")] alias Measurable.comp' := Measurable.fun_comp
 
 @[simp, fun_prop]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
     Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
 
+@[fun_prop]
 theorem Measurable.le {α} {m m0 : MeasurableSpace α} {_ : MeasurableSpace β} (hm : m ≤ m0)
     {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs => hm _ (hf hs)
 

@@ -47,7 +47,7 @@ variable [TopologicalSpace R] [TopologicalSpace A]
 @[continuity, fun_prop]
 theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) := by
   rw [algebraMap_eq_smul_one']
-  exact continuous_id.smul continuous_const
+  fun_prop
 
 theorem continuous_algebraMap_iff_smul [ContinuousMul A] :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by

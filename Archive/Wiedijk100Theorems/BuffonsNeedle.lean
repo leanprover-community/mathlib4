@@ -122,22 +122,20 @@ The possible x-positions and angle relative to the y-axis of a needle.
 -/
 abbrev needleSpace : Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
 
+set_option backward.isDefEq.respectTransparency false in
 include hd in
 lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
   simp_rw [MeasureTheory.Measure.volume_eq_prod, MeasureTheory.Measure.prod_prod, Real.volume_Icc,
     ENNReal.ofReal_mul hd.le]
   ring_nf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) := by
   unfold needleCrossesIndicator
-  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.and ?l ?r))
-  all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
-  case' l => refine isClosed_le continuous_fst ?_
-  case' r => refine isClosed_le (Continuous.neg continuous_fst) ?_
-  all_goals
-    refine Continuous.mul (Continuous.mul ?_ continuous_const) continuous_const
-    simp_rw [← Function.comp_apply (f := Real.sin) (g := Prod.snd),
-      Continuous.comp Real.continuous_sin continuous_snd]
+  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.and ?_ ?_)) <;>
+    simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
+  · exact isClosed_le continuous_fst (by fun_prop)
+  · exact isClosed_le continuous_fst.neg (by fun_prop)
 
 lemma stronglyMeasurable_needleCrossesIndicator :
     MeasureTheory.StronglyMeasurable (needleCrossesIndicator l) := by
@@ -183,6 +181,7 @@ lemma integrable_needleCrossesIndicator :
       neg_div, sub_neg_eq_add, add_halves, sub_zero, ← ENNReal.ofReal_mul hd.le,
       ENNReal.ofReal_lt_top]
 
+set_option backward.isDefEq.respectTransparency false in
 include hd hB hBₘ in
 /--
 This is a common step in both the short and the long case to simplify the expectation of the
@@ -247,6 +246,7 @@ lemma short_needle_inter_eq (h : l ≤ d) (θ : ℝ) :
     min_div_div_right zero_le_two, neg_mul, max_neg_neg, mul_comm,
     min_eq_right ((mul_le_of_le_one_right hl.le θ.sin_le_one).trans h)]
 
+set_option backward.isDefEq.respectTransparency false in
 include hd hBₘ hB hl in
 /--
 Buffon's Needle, the short case (`l ≤ d`). The probability of the needle crossing a line
@@ -274,8 +274,7 @@ the integral lemmas below.
 -/
 lemma intervalIntegrable_min_const_sin_mul (a b : ℝ) :
     IntervalIntegrable (fun (θ : ℝ) => min d (θ.sin * l)) ℙ a b := by
-  apply Continuous.intervalIntegrable
-  exact Continuous.min continuous_const (Continuous.mul Real.continuous_sin continuous_const)
+  apply Continuous.intervalIntegrable (by fun_prop)
 
 /--
 This equality is useful since `θ.sin` is increasing in `0..π / 2` (but not in `0..π`).
@@ -291,6 +290,7 @@ lemma integral_min_eq_two_mul :
       (by ring : -(π / 2) + π = π / 2), two_mul]
   all_goals exact intervalIntegrable_min_const_sin_mul d l _ _
 
+set_option backward.isDefEq.respectTransparency false in
 include hd hl in
 /--
 The first of two adjacent integrals in the long case. In the range `0..(d / l).arcsin`, we
@@ -328,6 +328,7 @@ lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
     simp_rw [min_eq_left ((div_le_iff₀ hl).mp ((Real.arcsin_le_iff_le_sin' hθ_mem).mp hθ₁))]
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_const, smul_eq_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in
 include hd hBₘ hB hl in
 /-- Buffon's Needle, the long case (`d ≤ l`) -/

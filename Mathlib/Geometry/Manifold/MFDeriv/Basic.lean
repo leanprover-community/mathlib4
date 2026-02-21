@@ -670,6 +670,7 @@ protected theorem HasMFDerivWithinAt.mfderivWithin (h : HasMFDerivWithinAt I I' 
   ext
   rw [hxs.eq h h.mdifferentiableWithinAt.hasMFDerivWithinAt]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasMFDerivWithinAt.mfderivWithin_eq_zero (h : HasMFDerivWithinAt I I' f s x 0) :
     mfderivWithin I I' f s x = 0 := by
   simp only [mfld_simps, mfderivWithin, h.mdifferentiableWithinAt, ↓reduceIte]
@@ -836,8 +837,15 @@ theorem tangentMapWithin_proj {p : TangentBundle I M} :
   rfl
 
 @[simp, mfld_simps]
+lemma tangentMapWithin_snd {X : TangentSpace I x} :
+    (tangentMapWithin I I' f s X).2 = (mfderivWithin I I' f s x) X := rfl
+
+@[simp, mfld_simps]
 theorem tangentMap_proj {p : TangentBundle I M} : (tangentMap I I' f p).proj = f p.proj :=
   rfl
+
+@[simp, mfld_simps]
+lemma tangentMap_snd {X : TangentSpace I x} : (tangentMap I I' f X).2 = (mfderiv I I' f x) X := rfl
 
 /-- If two sets coincide locally around `x`, except maybe at a point `y`, then their
 preimage under `extChartAt x` coincide locally, except maybe at `extChartAt I x x`. -/
@@ -1037,6 +1045,7 @@ theorem MDifferentiableWithinAt.mfderivWithin_mono_of_mem_nhdsWithin
     mfderivWithin I I' f t x = mfderivWithin I I' f s x :=
   (HasMFDerivWithinAt.mono_of_mem_nhdsWithin h.hasMFDerivWithinAt h₁).mfderivWithin hxt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Filter.EventuallyEq.mfderivWithin_eq (hL : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     mfderivWithin I I' f₁ s x = mfderivWithin I I' f s x := by
   by_cases h : MDifferentiableWithinAt I I' f s x
