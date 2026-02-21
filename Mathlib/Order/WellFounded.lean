@@ -135,6 +135,8 @@ section LinearOrder
 
 variable [LinearOrder β] [Preorder γ]
 
+-- TODO: the name `WellFounded.min` is incorrect when the assumption is that `>` is well-founded.
+@[to_dual none]
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
     {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
