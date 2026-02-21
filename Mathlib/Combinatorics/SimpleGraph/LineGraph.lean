@@ -42,7 +42,7 @@ lemma lineGraph_adj_iff_exists {e₁ e₂ : G.edgeSet} :
 @[simp] lemma lineGraph_bot : (⊥ : SimpleGraph V).lineGraph = ⊥ := by aesop (add simp lineGraph)
 
 /-- Lift a copy between graphs to an embedding between their line graphs -/
-def Embedding.ofLineGraph (f : Copy G G') : G.lineGraph ↪g G'.lineGraph where
+def Copy.toLineGraphEmbedding (f : Copy G G') : G.lineGraph ↪g G'.lineGraph where
   toFun e := ⟨e.val.map f, by rcases e with ⟨⟨⟩, h⟩; exact f.toHom.map_adj h⟩
   inj' _ _ h := SetCoe.ext <| Sym2.map.injective f.injective <| Subtype.mk.inj h
   map_rel_iff' := by
@@ -52,27 +52,25 @@ def Embedding.ofLineGraph (f : Copy G G') : G.lineGraph ↪g G'.lineGraph where
     exact Sym2.map.injective f.injective |>.eq_iff.not
 
 theorem IsIndContained.lineGraph (h : G ⊴ G') : G.lineGraph ⊴ G'.lineGraph :=
-  ⟨.ofLineGraph h.some.toCopy⟩
+  ⟨h.some.toCopy.toLineGraphEmbedding⟩
 
-theorem IsIndContained.lineGraph_of_isContained (h : G ⊑ G') : G.lineGraph ⊴ G'.lineGraph :=
-  ⟨.ofLineGraph h.some⟩
-
-alias IsContained.isIndContained_lineGraph := IsIndContained.lineGraph_of_isContained
+theorem IsContained.isIndContained_lineGraph (h : G ⊑ G') : G.lineGraph ⊴ G'.lineGraph :=
+  ⟨h.some.toLineGraphEmbedding⟩
 
 /-- Lift a copy between graphs to a copy between their line graphs -/
-def Copy.ofLineGraph (f : Copy G G') : Copy G.lineGraph G'.lineGraph :=
-  Embedding.ofLineGraph f |>.toCopy
+def Copy.lineGraph (f : Copy G G') : Copy G.lineGraph G'.lineGraph :=
+  f.toLineGraphEmbedding.toCopy
 
 theorem IsContained.lineGraph (h : G ⊑ G') : G.lineGraph ⊑ G'.lineGraph :=
-  ⟨h.some.ofLineGraph⟩
+  ⟨h.some.lineGraph⟩
 
 /-- Lift an isomorphism between graphs to an isomorphism between their line graphs -/
-def Iso.ofLineGraph (f : G ≃g G') : G.lineGraph ≃g G'.lineGraph where
-  toFun := f.toCopy.ofLineGraph
-  invFun := f.symm.toCopy.ofLineGraph
-  left_inv _ := by simp [Copy.ofLineGraph, Embedding.ofLineGraph, Sym2.map_map]
-  right_inv _ := by simp [Copy.ofLineGraph, Embedding.ofLineGraph, Sym2.map_map]
-  map_rel_iff' := Embedding.ofLineGraph f.toCopy |>.map_rel_iff
+def Iso.lineGraph (f : G ≃g G') : G.lineGraph ≃g G'.lineGraph where
+  toFun := f.toCopy.lineGraph
+  invFun := f.symm.toCopy.lineGraph
+  left_inv _ := by simp [Copy.lineGraph, Copy.toLineGraphEmbedding, Sym2.map_map]
+  right_inv _ := by simp [Copy.lineGraph, Copy.toLineGraphEmbedding, Sym2.map_map]
+  map_rel_iff' := Copy.toLineGraphEmbedding f.toCopy |>.map_rel_iff
 
 theorem IsSubgraph.lineGraph {G' : SimpleGraph V} (h : G ≤ G') :
     G.lineGraph.map (.subtype _) ≤ G'.lineGraph.map (.subtype _) := by
