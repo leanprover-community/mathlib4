@@ -479,7 +479,7 @@ variable [∀ q oa q', Decidable (q' ∈ M.step q oa)]
 local notation "n" => FinEnum.card (ExtendedState σ)
 
 /-- An equivalence mapping the extended state space `ExtendedState σ` to the disjoint union
-`Sum (Fin 2) σ`. This is a helper used to derive the `FinEnum` instance for `ExtendedState σ`-/
+`Sum (Fin 2) σ`. This is a helper used to derive the `FinEnum` instance for `ExtendedState σ`. -/
 def ExtendedState.equivSum (σ : Type*) : ExtendedState σ ≃ Sum (Fin 2) σ where
   toFun := fun
     | .start   => .inl 0
