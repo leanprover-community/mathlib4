@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # The tensor product of R-algebras
@@ -522,6 +523,7 @@ when `A` and `B` are merely `CommRing`s, by treating both as `ℤ`-algebras.
 -/
 example [CommRing A] [CommRing B] : CommRing (A ⊗[ℤ] B) := by infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R A B) in
 lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
     [Algebra R A] [Algebra R B] :
@@ -538,6 +540,17 @@ lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
     · exact mul_mem (Subring.subset_closure (.inl ⟨x, rfl⟩))
         (Subring.subset_closure (.inr ⟨_, rfl⟩))
   | add x y _ _ => exact add_mem ‹_› ‹_›
+
+/-- If `s` generates `T` as an `R`-algebra,
+then `{ 1 ⊗ x | x ∈ s }` generates `A ⊗[R] T` as an `A`-algebra. -/
+lemma adjoin_one_tmul_image_eq_top [CommSemiring R] [CommSemiring A]
+    [Semiring B] [Algebra R A] [Algebra R B]
+    (s : Set B) (hs : adjoin R s = ⊤) : adjoin A (((1 : A) ⊗ₜ[R] ·) '' s) = ⊤ := by
+  suffices h : adjoin A ((⊤ : Subalgebra R B).map (includeRight (A := A)) : Set (A ⊗[R] B)) = ⊤ by
+    simp [← h, ← hs, AlgHom.map_adjoin, -adjoin_toSubsemiring, adjoin_adjoin_of_tower]
+  rw [← Algebra.toSubmodule_eq_top, ← top_le_iff, Algebra.map_top, ← Submodule.baseChange_top,
+    Submodule.baseChange_eq_span, Submodule.map_top]
+  exact span_le_adjoin _ _
 
 variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
@@ -599,6 +612,7 @@ multiplication, and one from this would-be instance. Arguably we could live with
 case the real fix is to address the ambiguity in notation, probably along the lines outlined here:
 https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.234773.20base.20change/near/240929258
 -/
+@[instance_reducible]
 protected def module : Module (A ⊗[R] B) M where
   smul x m := moduleAux x m
   zero_smul m := by simp only [(· • ·), map_zero, LinearMap.zero_apply]

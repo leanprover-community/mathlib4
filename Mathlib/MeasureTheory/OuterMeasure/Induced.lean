@@ -353,6 +353,7 @@ theorem trim_eq_iInf' (s : Set α) : m.trim s = ⨅ t : { t // s ⊆ t ∧ Measu
 theorem trim_trim (m : OuterMeasure α) : m.trim.trim = m.trim :=
   trim_eq_trim_iff.2 fun _s => m.trim_eq
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trim_top : (⊤ : OuterMeasure α).trim = ⊤ :=
   top_unique <| le_trim _

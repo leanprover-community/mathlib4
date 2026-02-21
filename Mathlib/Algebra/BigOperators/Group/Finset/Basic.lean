@@ -487,6 +487,7 @@ theorem prod_extend_by_one [DecidableEq ι] (s : Finset ι) (f : ι → M) :
     ∏ i ∈ s, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i :=
   (prod_congr rfl) fun _i hi => if_pos hi
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Also see `Finset.prod_ite_mem_eq` -/
 @[to_additive /-- Also see `Finset.sum_ite_mem_eq` -/]
 theorem prod_eq_prod_extend (f : s → M) : ∏ x, f x = ∏ x ∈ s, Subtype.val.extend f 1 x := by

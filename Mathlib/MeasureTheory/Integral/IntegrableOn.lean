@@ -78,9 +78,6 @@ theorem HasFiniteIntegral.restrict_of_bounded [NormedAddCommGroup E] {f : α →
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
   .of_bounded hf
 
-@[deprecated (since := "2025-07-26")]
-alias hasFiniteIntegral_restrict_of_bounded := HasFiniteIntegral.restrict_of_bounded
-
 variable [NormedAddCommGroup E] {f g : α → ε} {s t : Set α} {μ ν : Measure α}
   [TopologicalSpace ε] [ContinuousENorm ε]
 
@@ -237,6 +234,7 @@ theorem integrableOn_finite_iUnion [PseudoMetrizableSpace ε] [Finite β] {t : �
   cases nonempty_fintype β
   simpa using integrableOn_finset_iUnion (f := f) (μ := μ) (s := Finset.univ) (t := t)
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalise this lemma and the next to enorm classes; this entails assuming that
 -- f is finite on almost every element of `s`
 lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
