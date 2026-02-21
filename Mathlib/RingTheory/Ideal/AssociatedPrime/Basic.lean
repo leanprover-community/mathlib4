@@ -197,6 +197,7 @@ theorem isAssociatedPrime_iff_exists_injective_linearMap :
 
 variable {I J M}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J (R ⧸ I)) :
     J = I.radical := by
   obtain ⟨hJ, x, e⟩ := h

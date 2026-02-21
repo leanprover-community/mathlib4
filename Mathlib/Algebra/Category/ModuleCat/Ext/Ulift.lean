@@ -48,6 +48,7 @@ end
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given linear equivalence of `R`-modules `M ≃ₗ[R] M'` and `N ≃ₗ[R] N'`,
 the linear equivalence `Ext M N n ≃ₗ[R] Ext M' N' n`. -/
 noncomputable def ModuleCat.extLinearEquivOfLinearEquiv [Small.{v} R] [Small.{v'} R]
@@ -105,6 +106,7 @@ namespace ModuleCat
 
 attribute [local instance] RingHomInvPair.of_ringEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forward function of `ModuleCat.extRestrictScalarsSemiLinearEquiv`. -/
 noncomputable def extRestrictScalarsSemiLinearMap [Small.{v} R] [Small.{v} R']
     (M N : ModuleCat.{v} R') (n : ℕ) : Ext M N n →ₛₗ[RingHomClass.toRingHom e.symm]
@@ -142,6 +144,7 @@ noncomputable def iso_restrictScalars {M' : ModuleCat.{v} R'} {M : ModuleCat.{v}
     map_smul' r m := by simp }
   e.toModuleIso
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given semi linear equivalence `M ≃ M'` and `N ≃ N'` with respect to `R ≃+* R'`
 within same universe, the semi linear equivalence `Ext M N n ≃ Ext M' N' n`. -/
 noncomputable def extSemiLinearEquivOfSemiLinearEquiv_equal_universe [Small.{v} R] [Small.{v} R']

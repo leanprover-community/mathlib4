@@ -359,6 +359,7 @@ instance : CompleteLattice (Subring R) :=
     inf_le_right := fun _s _t _x => And.right
     le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_iff' (A : Subring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
@@ -632,6 +633,7 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
 theorem closure_eq (s : Subring R) : closure (s : Set R) = s :=
   (Subring.gi R).l_u_eq s
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem closure_empty : closure (∅ : Set R) = ⊥ :=
   (Subring.gi R).gc.l_bot
@@ -649,6 +651,7 @@ theorem closure_iUnion {ι} (s : ι → Set R) : closure (⋃ i, s i) = ⨆ i, c
 theorem closure_sUnion (s : Set (Set R)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
   (Subring.gi R).gc.l_sSup
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem closure_singleton_intCast (n : ℤ) : closure {(n : R)} = ⊥ :=
   bot_unique <| closure_le.2 <| Set.singleton_subset_iff.mpr <| intCast_mem _ _
@@ -702,10 +705,12 @@ theorem comap_iInf {ι : Sort*} (f : R →+* S) (s : ι → Subring S) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_bot (f : R →+* S) : (⊥ : Subring R).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_top (f : R →+* S) : (⊤ : Subring S).comap f = ⊤ :=
   (gc_map_comap f).u_top
@@ -888,6 +893,7 @@ theorem range_fst : (fst R S).rangeS = ⊤ :=
 theorem range_snd : (snd R S).rangeS = ⊤ :=
   (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_bot_sup_bot_prod (s : Subring R) (t : Subring S) : s.prod ⊥ ⊔ prod ⊥ t = s.prod t :=
   le_antisymm (sup_le (prod_mono_right s bot_le) (prod_mono_left t bot_le)) fun p hp =>
@@ -1107,10 +1113,12 @@ theorem map_comap_eq_self
     {f : R →+* S} {t : Subring S} (h : t ≤ f.range) : (t.comap f).map f = t := by
   simpa only [inf_of_le_left h] using Subring.map_comap_eq f t
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_comap_eq_self_of_surjective
     {f : R →+* S} (hf : Function.Surjective f) (t : Subring S) : (t.comap f).map f = t :=
   map_comap_eq_self <| by simp [hf]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comap_map_eq (f : R →+* S) (s : Subring R) :
     (s.map f).comap f = s ⊔ closure (f ⁻¹' {0}) := by
   apply le_antisymm
@@ -1125,6 +1133,7 @@ theorem comap_map_eq (f : R →+* S) (s : Subring R) :
     rw [sup_eq_left, closure_le]
     exact (Set.image_preimage_subset f {0}).trans (Set.singleton_subset_iff.2 (s.map f).zero_mem)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comap_map_eq_self {f : R →+* S} {s : Subring R}
     (h : f ⁻¹' {0} ⊆ s) : (s.map f).comap f = s := by
   convert comap_map_eq f s
@@ -1136,6 +1145,7 @@ theorem comap_map_eq_self_of_injective
 
 end Subring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by
   convert AddSubgroup.zsmul_mem G h k using 1
