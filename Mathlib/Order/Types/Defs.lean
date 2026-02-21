@@ -167,7 +167,7 @@ def liftOn₂ (o₁ o₂ : OrderType) (f : ∀ (α) [LinearOrder α] (β) [Linea
     (c : ∀ (α₁) [LinearOrder α₁] (β₁) [LinearOrder β₁] (α₂) [LinearOrder α₂] (β₂) [LinearOrder β₂],
       type α₁ = type α₂ → type β₁ = type β₂ → f α₁ β₁ = f α₂ β₂) : δ :=
   Quotient.liftOn₂ o₁ o₂ (fun w v ↦ f w v)
-    fun w₁ w₂ v₁ v₂ hw hv ↦  c w₁ w₂ v₁ v₂ (Quotient.sound hw) (Quotient.sound hv)
+    fun w₁ w₂ v₁ v₂ hw hv ↦ c w₁ w₂ v₁ v₂ (Quotient.sound hw) (Quotient.sound hv)
 
 @[simp]
 theorem liftOn_type (f : ∀ (α) [LinearOrder α], δ)

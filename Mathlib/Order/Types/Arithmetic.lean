@@ -83,7 +83,7 @@ instance : Mul OrderType.{u} where
       (Classical.choice <| type_eq_type.mp ha) |> type_congr
 
 instance : HMul OrderType.{u} OrderType.{v} OrderType.{max u v} where
-  hMul o₁ o₂ :=  OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (s ×ₗ r))
+  hMul o₁ o₂ := OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (s ×ₗ r))
     fun _ _ _ _ _ _ _ _ ha hb ↦ Prod.Lex.prodLexCongr (Classical.choice <| type_eq_type.mp hb)
       (Classical.choice <| type_eq_type.mp ha) |> type_congr
 
@@ -111,7 +111,7 @@ instance (n : Nat) : OfNat OrderType n where
 instance : LeftDistribClass OrderType where
   left_distrib a b c := by
     refine inductionOn₃ a b c (fun _ _ _ _ _ _ ↦ ?_)
-    simp only [← type_lex_prod,← type_lex_sum]
+    simp only [← type_lex_prod, ← type_lex_sum]
     exact (Prod.Lex.sumLexProdLexDistrib _ _ _).type_congr
 
 /-- The order type of the rational numbers. -/

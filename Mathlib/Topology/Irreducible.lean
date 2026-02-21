@@ -413,7 +413,7 @@ lemma IsIrreducible.preimage (ht : IsIrreducible t) {f : Y → X}
 
 lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber
     (ht : t ∈ irreducibleComponents X) {f : Y → X} (hf₁ : Continuous f) (hf₂ : IsOpenMap f)
-    (hf₃ : ∀ x, IsPreirreducible (f ⁻¹'{x})) (h : (t ∩ range f).Nonempty) :
+    (hf₃ : ∀ x, IsPreirreducible (f ⁻¹' {x})) (h : (t ∩ range f).Nonempty) :
     f ⁻¹' t ∈ irreducibleComponents Y := by
   refine ⟨ht.1.preimage_of_isPreirreducible_fiber f hf₂ hf₃ h, fun u hu htu ↦ image_subset_iff.mp
     (subset_closure.trans (ht.2 (hu.image f hf₁.continuousOn).closure ?_))⟩
