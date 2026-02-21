@@ -109,6 +109,7 @@ choosing an identification `s ≃ Fin s.card` and proving that the end result do
 choice.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The finset of functions `ι → μ` with support contained in `s` and sum `n`. -/
 def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
   refine (Fintype.truncEquivFinOfCardEq <| Fintype.card_coe s).lift
@@ -125,6 +126,7 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
 
 variable {s : Finset ι} {n : μ} {f : ι → μ}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mem_piAntidiag : f ∈ piAntidiag s n ↔ s.sum f = n ∧ ∀ i, f i ≠ 0 → i ∈ s := by
   rw [piAntidiag]
   induction Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with | _ e

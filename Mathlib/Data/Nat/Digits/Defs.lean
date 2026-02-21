@@ -207,8 +207,6 @@ theorem coe_ofDigits (α : Type*) [Semiring α] (b : ℕ) (L : List ℕ) :
   | nil => simp [ofDigits]
   | cons d L ih => dsimp [ofDigits]; push_cast; rw [ih]
 
-@[deprecated (since := "2025-08-14")] alias coe_int_ofDigits := coe_ofDigits
-
 theorem digits_zero_of_eq_zero {b : ℕ} (h : b ≠ 0) :
     ∀ {L : List ℕ} (_ : ofDigits b L = 0), ∀ l ∈ L, l = 0
   | _ :: _, h0, _, List.Mem.head .. => Nat.eq_zero_of_add_eq_zero_right h0

@@ -76,10 +76,6 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
         rw [mem_colon_singleton, mul_pow, mul_smul, ← mem_colon_singleton]
         exact Ideal.pow_mem_of_mem _ (by simpa using ht) n hn
 
-@[deprecated (since := "2025-08-15")]
-alias mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule :=
-  mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
-
 lemma mem_associatedPrimes_atPrime_of_mem_associatedPrimes
     {p : Ideal R} [p.IsPrime] (ass : p ∈ associatedPrimes R M) :
     maximalIdeal (Localization.AtPrime p) ∈
