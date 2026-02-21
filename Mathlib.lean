@@ -3243,6 +3243,7 @@ public import Mathlib.CategoryTheory.Triangulated.TriangleShift
 public import Mathlib.CategoryTheory.Triangulated.Triangulated
 public import Mathlib.CategoryTheory.Triangulated.Yoneda
 public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.CategoryTheory.Types.Epimorphisms
 public import Mathlib.CategoryTheory.Types.Monomorphisms
 public import Mathlib.CategoryTheory.Types.Set
 public import Mathlib.CategoryTheory.UnivLE
