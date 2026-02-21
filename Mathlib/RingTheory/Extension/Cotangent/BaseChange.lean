@@ -1,7 +1,30 @@
+/-
+Copyright (c) 2025 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
 import Mathlib.RingTheory.Ideal.CotangentBaseChange
 import Mathlib.RingTheory.Extension.Cotangent.Basic
 import Mathlib.Algebra.FiveLemma
 import Mathlib.RingTheory.Kaehler.TensorProduct
+
+/-!
+# Base change for the naive cotangent complex
+
+This file shows that the cotangent space and first homology of the naive cotangent complex
+commute with base change.
+
+## Main results
+
+- `Algebra.Extension.tensorCotangentSpace`: If `T` is an `R`-algebra, there is a `T`-linear
+  isomorphism `T ⊗[R] P.CotangentSpace ≃ₗ[T] (P.baseChange).CotangentSpace`.
+- `Algebra.Extension.tensorCotangent'`: If `T` is flat over `R`, there is a `T`-linear
+  isomorphism `T ⊗[R] P.Cotangent ≃ₗ[T] (P.baseChange).Cotangent`.
+- `Algebra.Extension.tensorH1Cotangent'`: If `T` is flat over `R`, there is a `T`-linear
+  isomorphism `T ⊗[R] P.H1Cotangent ≃ₗ[T] (P.baseChange).H1Cotangent`.
+- `Algebra.tensorH1CotangentOfFlat`: Flat base change commutes with `H1Cotangent`.
+
+-/
 
 suppress_compilation
 
@@ -9,42 +32,179 @@ universe u
 
 open TensorProduct
 
+@[simps]
+def AddEquiv.linearEquiv {α : Type*} {β : Type*} (A : Type*) [Semiring A] [AddCommMonoid α]
+    [AddCommMonoid β] [Module A β] (e : α ≃+ β) :
+    letI := e.module A
+    α ≃ₗ[A] β :=
+  letI := e.module A
+  { __ := e
+    map_smul' _ _ := e.apply_symm_apply _ }
+
+/-
+
+`(M₁ ⊗[R] M₂) ⊗[A] M₃ ≃ₗ[B] M₁ ⊗[R] (M₂ ⊗[A] M₃)`
+
+-/
+
+section
+
+variable {R S : Type*} [CommSemiring R] [CommSemiring S]
+ [Algebra R S]
+ {M₁ M₂ M₃ M₁₂ M₂₃ M'' : Type*}
+ [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+ [AddCommMonoid M₁₂] [AddCommMonoid M₂₃] [AddCommMonoid M'']
+ [Module R M₁]
+ [Module R M₂] [Module S M₂] [IsScalarTower R S M₂]
+ [Module R M₃] [Module S M₃] [IsScalarTower R S M₃]
+ [Module R M₁₂] [Module S M₁₂] [IsScalarTower R S M₁₂]
+ [Module R M₂₃] [Module S M₂₃] [IsScalarTower R S M₂₃]
+ [Module R M''] [Module S M''] [IsScalarTower R S M'']
+
+/-- (Implementation): Use the more linear `IsTensorProduct.assoc`. -/
+def IsTensorProduct.assocAux
+    (f : M₁ →ₗ[R] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.restrictScalars₁₂ R R))
+    (g : M₂ →ₗ[S] M₃ →ₗ[S] M₂₃) (hg : IsTensorProduct g) :
+    M₁₂ ⊗[S] M₃ ≃ₗ[R] M₁ ⊗[R] M₂₃ :=
+  letI : Module S (M₁ ⊗[R] M₂) :=
+    AddEquiv.module S hf.equiv.toAddEquiv
+  haveI heq (s : S) (y : M₁) (x : M₂) : s • y ⊗ₜ[R] x = y ⊗ₜ[R] (s • x) := by
+    change hf.equiv.symm (s • _) = _
+    dsimp
+    rw [← map_smul]
+    apply hf.equiv_symm_apply
+  haveI : IsScalarTower R S (M₁ ⊗[R] M₂) := hf.equiv.isScalarTower S
+  letI e₀ : M₂ ⊗[R] M₁ ≃ₗ[S] M₁ ⊗[R] M₂ :=
+    { __ := TensorProduct.comm R M₂ M₁
+      map_smul' s x := by induction x <;> simp_all [TensorProduct.smul_tmul'] }
+  LinearEquiv.symm <|
+    TensorProduct.congr (.refl _ _) (hg.equiv.symm.restrictScalars R) ≪≫ₗ
+    TensorProduct.comm _ _ _ ≪≫ₗ
+    (AlgebraTensorModule.congr (TensorProduct.comm _ _ _) (.refl _ _)).restrictScalars R ≪≫ₗ
+    (AlgebraTensorModule.assoc R S S M₃ M₂ M₁).restrictScalars R ≪≫ₗ
+    (TensorProduct.comm _ _ _).restrictScalars R ≪≫ₗ
+    (TensorProduct.congr e₀ (.refl _ _)).restrictScalars R ≪≫ₗ
+    (TensorProduct.congr (hf.equiv.linearEquiv S) (.refl _ _)).restrictScalars R
+
+variable (f : M₁ →ₗ[R] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.restrictScalars₁₂ R R))
+  (g : M₂ →ₗ[S] M₃ →ₗ[S] M₂₃) (hg : IsTensorProduct g)
+
+@[simp]
+lemma IsTensorProduct.assocAux_symm_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
+    (IsTensorProduct.assocAux f hf g hg).symm (x₁ ⊗ₜ g x₂ x₃) = f x₁ x₂ ⊗ₜ x₃ := by
+  simp [IsTensorProduct.assocAux]
+
+@[simp]
+lemma IsTensorProduct.assocAux_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
+    IsTensorProduct.assocAux f hf g hg (f x₁ x₂ ⊗ₜ x₃) = x₁ ⊗ₜ g x₂ x₃ := by
+  have : hf.equiv.symm (f x₁ x₂) = x₁ ⊗ₜ x₂ := hf.equiv_symm_apply _ _
+  simp [IsTensorProduct.assocAux, this]
+
+/-- This is the canonical isomorphism `(M₁ ⊗[R] M₂) ⊗[S] M₃ ≃ₗ[T] M₁ ⊗[R] (M₂ ⊗[S] M₃)`.
+For the version where `R` and `S` are flipped, see `TensorProduct.AlgebraTensorModule.assoc`. -/
+def IsTensorProduct.assoc {T : Type*} [CommSemiring T] [Algebra R T]
+    [Module T M₁] [IsScalarTower R T M₁] [Module T M₁₂] [SMulCommClass S T M₁₂]
+    [IsScalarTower R T M₁₂]
+    (f : M₁ →ₗ[T] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.restrictScalars₁₂ R R))
+    (g : M₂ →ₗ[S] M₃ →ₗ[S] M₂₃) (hg : IsTensorProduct g) :
+    M₁₂ ⊗[S] M₃ ≃ₗ[T] M₁ ⊗[R] M₂₃ where
+  toAddEquiv := IsTensorProduct.assocAux (f.restrictScalars₁₂ R S) hf g hg
+  map_smul' t x := by
+    induction x with
+    | zero => simp
+    | add x y _ _ => simp_all
+    | tmul x y =>
+    obtain ⟨x, rfl⟩ := hf.equiv.surjective x
+    induction x with
+    | zero => simp
+    | add x y _ _ => simp_all [add_tmul]
+    | tmul x z =>
+      have : t • (f x) z = f (t • x) z := by simp
+      dsimp
+      rw [smul_tmul', this, ← f.restrictScalars₁₂_apply_apply R S,
+        ← f.restrictScalars₁₂_apply_apply R S, IsTensorProduct.assocAux_tmul,
+        IsTensorProduct.assocAux_tmul, TensorProduct.smul_tmul']
+
+variable {T : Type*} [CommSemiring T] [Algebra R T]
+  [Module T M₁] [IsScalarTower R T M₁] [Module T M₁₂] [SMulCommClass S T M₁₂]
+  [IsScalarTower R T M₁₂]
+  (f : M₁ →ₗ[T] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.restrictScalars₁₂ R R))
+  (g : M₂ →ₗ[S] M₃ →ₗ[S] M₂₃) (hg : IsTensorProduct g)
+
+@[simp]
+lemma IsTensorProduct.assoc_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
+    IsTensorProduct.assoc f hf g hg (f x₁ x₂ ⊗ₜ x₃) = x₁ ⊗ₜ g x₂ x₃ :=
+  IsTensorProduct.assocAux_tmul (f.restrictScalars₁₂ R S) hf g hg _ _ _
+
+@[simp]
+lemma IsTensorProduct.assoc_symm_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
+    (IsTensorProduct.assoc f hf g hg).symm (x₁ ⊗ₜ g x₂ x₃) = f x₁ x₂ ⊗ₜ x₃ :=
+  IsTensorProduct.assocAux_symm_tmul (f.restrictScalars₁₂ R S) hf g hg _ _ _
+
+/-- This is the canonical isomorphism `(M₁ ⊗[R] M₂) ⊗[S] M₃ ≃ₗ[T] M₁ ⊗[R] (M₂ ⊗[S] M₃)`.
+For the version where `R` and `S` are flipped, see `TensorProduct.AlgebraTensorModule.assoc`. -/
+def IsTensorProduct.assocOfMapSMul {T : Type*} [CommSemiring T] [Algebra R T]
+    [Module T M₁] [IsScalarTower R T M₁] [Module T M₁₂] [SMulCommClass S T M₁₂]
+    [IsScalarTower R T M₁₂]
+    (f : M₁ →ₗ[R] M₂ →ₗ[R] M₁₂) (hf : IsTensorProduct f)
+    (g : M₂ →ₗ[S] M₃ →ₗ[S] M₂₃) (hg : IsTensorProduct g)
+    (h₁ : ∀ (t : T) (x : M₁) (y : M₂), f (t • x) y = t • f x y)
+    (h₂ : ∀ (s : S) (x : M₁) (y : M₂), f x (s • y) = s • f x y) :
+    M₁₂ ⊗[S] M₃ ≃ₗ[T] M₁ ⊗[R] M₂₃ :=
+  IsTensorProduct.assoc (.mk₂' _ _ (f ·) (by simp) (by simp [h₁]) (by simp) (by simp [h₂])) hf g hg
+
+variable
+  (f : M₁ →ₗ[R] M₂ →ₗ[R] M₁₂) (hf : IsTensorProduct f)
+  (g : M₂ →ₗ[S] M₃ →ₗ[S] M₂₃) (hg : IsTensorProduct g)
+  (h₁ : ∀ (t : T) (x : M₁) (y : M₂), f (t • x) y = t • f x y)
+  (h₂ : ∀ (s : S) (x : M₁) (y : M₂), f x (s • y) = s • f x y)
+
+@[simp]
+lemma IsTensorProduct.assocOfMapSMul_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
+    IsTensorProduct.assocOfMapSMul f hf g hg h₁ h₂ (f x₁ x₂ ⊗ₜ x₃) = x₁ ⊗ₜ g x₂ x₃ :=
+  IsTensorProduct.assoc_tmul ..
+
+@[simp]
+lemma IsTensorProduct.assocOfMapSMul_symm_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
+    (IsTensorProduct.assocOfMapSMul f hf g hg h₁ h₂).symm (x₁ ⊗ₜ g x₂ x₃) = f x₁ x₂ ⊗ₜ x₃ :=
+  IsTensorProduct.assoc_symm_tmul ..
+
+end
+
 namespace Algebra
 
-namespace TensorProduct
+/-!
+### Auxiliary lemmas to be moved
 
-variable {R S T A : Type*} [CommRing R] [CommRing S] [Algebra R S]
-  [CommRing T] [Algebra R T]
-  [CommRing A] [Algebra R A]
-
-attribute [local instance] rightAlgebra
-
-variable {M : Type*} [AddCommGroup M] [Module R M] [Algebra A T]
-  [Module A M] [Algebra R A] [IsScalarTower R A M]
-  [Algebra R T] [IsScalarTower R A T]
-  [SMulCommClass R A T]
-
-end TensorProduct
+The following lemma belongs in `Mathlib.RingTheory.Extension.Cotangent.Basic`.
+-/
 
 namespace Extension
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (P : Extension R S)
-variable (T : Type*) [CommRing T] [Algebra R T]
 
+/-- The sequence `H¹(L_{S/R}) → P.Cotangent → P.CotangentSpace` is exact. -/
 lemma exact_hCotangentι_cotangentComplex :
     Function.Exact h1Cotangentι P.cotangentComplex := by
   rw [LinearMap.exact_iff]
   symm
   apply Submodule.range_subtype
 
-attribute [local instance] Algebra.TensorProduct.rightAlgebra
+end Extension
 
-noncomputable
-def toBaseChange : P.Hom (P.baseChange (T := T)) where
-  toRingHom := TensorProduct.includeRight.toRingHom
-  toRingHom_algebraMap x := by simp [baseChange]
-  algebraMap_toRingHom x := rfl
+/-!
+### Part 1: Cotangent space base change
+
+This section establishes the base change isomorphism for the cotangent space and conormal space
+of a presentation.
+-/
+
+namespace Extension
+
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable (P : Extension R S)
+variable (T : Type*) [CommRing T] [Algebra R T]
 
 end Extension
 
@@ -54,169 +214,81 @@ variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 variable (P : Extension.{u, u, u} R S)
 variable (T : Type u) [CommRing T] [Algebra R T]
 
-attribute [local instance] SMulCommClass.of_commMonoid
-
-attribute [local instance] Algebra.TensorProduct.rightAlgebra
-
-local instance : Algebra P.Ring (T ⊗[R] S) :=
-  (algebraMap _ _).comp (algebraMap P.Ring S) |>.toAlgebra
-
-def commTensorProd : S ⊗[R] T ≃ₗ[P.Ring] T ⊗[R] S :=
-  (_root_.TensorProduct.comm ..).toAddEquiv.toLinearEquiv <| by
-    intro c x
-    induction x with
-    | zero => simp
-    | add x y hx hy =>
-        simp only [LinearEquiv.coe_toAddEquiv, LinearEquiv.coe_addEquiv_apply] at hx hy
-        simp [hx, hy]
-    | tmul s t =>
-        simp only [LinearEquiv.coe_toAddEquiv, LinearEquiv.coe_addEquiv_apply, comm_tmul]
-        change (_root_.TensorProduct.comm R S T) ((c • s) ⊗ₜ[R] t) = c • t ⊗ₜ[R] s
-        simp [comm_tmul, Algebra.smul_def, RingHom.algebraMap_toAlgebra]
-
-instance : IsScalarTower P.Ring S (T ⊗[R] S) :=
-  IsScalarTower.of_algebraMap_eq' rfl
-
-instance : IsScalarTower R P.Ring (T ⊗[R] S) :=
-  IsScalarTower.of_algebraMap_eq <| fun x ↦ by
-    simp only [TensorProduct.algebraMap_apply, RingHom.algebraMap_toAlgebra]
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
-      TensorProduct.includeRight_apply]
-    rw [← IsScalarTower.algebraMap_apply, ← mul_one (algebraMap R T x), ← smul_eq_mul, ← smul_tmul']
-    conv_rhs => rw [← mul_one (algebraMap R S x), ← Algebra.smul_def]
-    simp
-
-def myAssoc : T ⊗[R] (S ⊗[P.Ring] Ω[P.Ring⁄R]) ≃ₗ[R] (T ⊗[R] S) ⊗[P.Ring] Ω[P.Ring⁄R] :=
-  let e₁ : T ⊗[R] (S ⊗[P.Ring] Ω[P.Ring⁄R]) ≃ₗ[R] (S ⊗[P.Ring] Ω[P.Ring⁄R]) ⊗[R] T :=
-    _root_.TensorProduct.comm ..
-  let e₂ : (S ⊗[P.Ring] Ω[P.Ring⁄R]) ⊗[R] T ≃ₗ[R] (Ω[P.Ring⁄R] ⊗[P.Ring] S) ⊗[R] T :=
-    AlgebraTensorModule.congr
-      ((_root_.TensorProduct.comm ..).restrictScalars R) (LinearEquiv.refl R T)
-  let e₃ : (Ω[P.Ring⁄R] ⊗[P.Ring] S) ⊗[R] T ≃ₗ[P.Ring] Ω[P.Ring⁄R] ⊗[P.Ring] (S ⊗[R] T) :=
-    AlgebraTensorModule.assoc ..
-  let e₄ : Ω[P.Ring⁄R] ⊗[P.Ring] (S ⊗[R] T) ≃ₗ[R] (S ⊗[R] T) ⊗[P.Ring] Ω[P.Ring⁄R] :=
-    (_root_.TensorProduct.comm ..).restrictScalars R
-  let eaux : S ⊗[R] T ≃ₗ[P.Ring] T ⊗[R] S := commTensorProd ..
-  let e₅ : (S ⊗[R] T) ⊗[P.Ring] Ω[P.Ring⁄R] ≃ₗ[P.Ring] (T ⊗[R] S) ⊗[P.Ring] Ω[P.Ring⁄R] :=
-    AlgebraTensorModule.congr eaux (LinearEquiv.refl _ _)
-  e₁ ≪≫ₗ e₂ ≪≫ₗ e₃.restrictScalars R ≪≫ₗ e₄ ≪≫ₗ e₅.restrictScalars R
-
-lemma myAssoc_tmul (t : T) (s : S) (x : Ω[P.Ring⁄R]) :
-    P.myAssoc T (t ⊗ₜ (s ⊗ₜ x)) = (t ⊗ₜ s) ⊗ₜ x :=
-  rfl
-
-def myAssocE : T ⊗[R] (S ⊗[P.Ring] Ω[P.Ring⁄R]) ≃ₗ[T] (T ⊗[R] S) ⊗[P.Ring] Ω[P.Ring⁄R] :=
-  (myAssoc ..).toAddEquiv.toLinearEquiv <| fun c x ↦ by
-    induction x with
-    | zero => rw [smul_zero, AddEquiv.map_zero, smul_zero]
-    | add x y hx hy =>
-    dsimp only [LinearEquiv.coe_toAddEquiv, LinearEquiv.coe_addEquiv_apply] at hx hy ⊢
-    rw [smul_add, LinearEquiv.map_add, LinearEquiv.map_add, hx, hy, smul_add]
-    | tmul t x =>
-    induction x with
-    | zero => rw [tmul_zero, smul_zero, AddEquiv.map_zero, smul_zero]
-    | add x y hx hy =>
-    dsimp only [LinearEquiv.coe_toAddEquiv, LinearEquiv.coe_addEquiv_apply] at hx hy ⊢
-    rw [tmul_add, smul_add, LinearEquiv.map_add, hx, hy, LinearEquiv.map_add, smul_add]
-    | tmul s x =>
-    dsimp only [LinearEquiv.coe_toAddEquiv, LinearEquiv.coe_addEquiv_apply]
-    have : c • t ⊗ₜ[R] (s ⊗ₜ[P.Ring] x) = (c • t) ⊗ₜ[R] (s ⊗ₜ[P.Ring] x) := rfl
-    rw [this, myAssoc_tmul, myAssoc_tmul]
-    rfl
-
-@[simp]
-lemma myAssocE_tmul (t : T) (s : S) (x : Ω[P.Ring⁄R]) :
-    P.myAssocE T (t ⊗ₜ (s ⊗ₜ x)) = (t ⊗ₜ s) ⊗ₜ x :=
-  rfl
-
-set_option maxHeartbeats 0 in
 noncomputable
-def tensorCotangentSpace' :
-    T ⊗[R] P.CotangentSpace ≃ₗ[T] (P.baseChange (T := T)).CotangentSpace := by
-  let PT : Extension T (T ⊗[R] S) := P.baseChange
-  let _ : Algebra P.Ring PT.Ring :=
-    inferInstanceAs <| Algebra P.Ring (T ⊗[R] P.Ring)
-  have : IsScalarTower R P.Ring PT.Ring :=
-    IsScalarTower.of_algebraMap_eq <| fun x ↦ by
-      simp only [baseChange, RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-        AlgHom.commutes, TensorProduct.algebraMap_apply, PT]
+def tensorCotangentSpace : T ⊗[R] P.CotangentSpace ≃ₗ[T] (P.baseChange (T := T)).CotangentSpace :=
+  letI := P.algebraBaseChange T
+  letI : Algebra S (T ⊗[R] S) := TensorProduct.rightAlgebra
+  letI : Algebra P.Ring (T ⊗[R] S) := Algebra.compHom _ (algebraMap P.Ring S)
+  haveI : IsScalarTower R P.Ring (T ⊗[R] S) :=
+    .of_algebraMap_eq fun x ↦ by
+      rw [TensorProduct.algebraMap_apply, RingHom.algebraMap_toAlgebra,
+        Algebra.TensorProduct.tmul_one_eq_one_tmul, IsScalarTower.algebraMap_apply R P.Ring]
       rfl
-  have : IsPushout R T P.Ring PT.Ring := by
-    rw [IsPushout.comm]
-    dsimp [PT, baseChange]
-    sorry
-    --convert _root_.TensorProduct.isPushout_rightAlgebra' R P.Ring T
-    --ext x (y : T ⊗[R] P.Ring)
-    --rw [Algebra.smul_def]
-    --simp only [TensorProduct.algebraMap_apply]
-    --rw [Algebra.compHom_smul_def]
-    --rw [Algebra.smul_def]
-    --simp
-  have : IsScalarTower P.Ring PT.Ring (T ⊗[R] S) :=
-    IsScalarTower.of_algebraMap_eq' rfl
-  have : IsScalarTower T PT.Ring (T ⊗[R] S) :=
-    IsScalarTower.of_algebraMap_eq <| fun x ↦ by
-      simp [PT, baseChange, RingHom.algebraMap_toAlgebra]
-  let e : PT.Ring ⊗[P.Ring] Ω[P.Ring⁄R] ≃ₗ[PT.Ring] Ω[PT.Ring⁄T] :=
-    KaehlerDifferential.tensorKaehlerEquiv _ _ _ _
-  dsimp only [CotangentSpace]
-  let e' :
-      (T ⊗[R] S) ⊗[PT.Ring] (PT.Ring ⊗[P.Ring] Ω[P.Ring⁄R]) ≃ₗ[PT.Ring]
-      (T ⊗[R] S) ⊗[PT.Ring] Ω[PT.Ring⁄T] :=
-    AlgebraTensorModule.congr (LinearEquiv.refl _ _) e
-  let e₂ : T ⊗[R] (S ⊗[P.Ring] Ω[P.Ring⁄R]) ≃ₗ[T] (T ⊗[R] S) ⊗[P.Ring] Ω[P.Ring⁄R] :=
-    myAssocE ..
-  let e₃ : (T ⊗[R] S) ⊗[P.Ring] Ω[P.Ring⁄R] ≃ₗ[T]
-      (T ⊗[R] S) ⊗[PT.Ring] (PT.Ring ⊗[P.Ring] Ω[P.Ring⁄R]) :=
-    (AlgebraTensorModule.cancelBaseChange _ PT.Ring PT.Ring _ _).symm.restrictScalars T
-  let e'' : T ⊗[R] (S ⊗[P.Ring] Ω[P.Ring⁄R]) ≃ₗ[T]
-      (T ⊗[R] S) ⊗[PT.Ring] (PT.Ring ⊗[P.Ring] Ω[P.Ring⁄R]) :=
-    e₂ ≪≫ₗ e₃
-  exact e'' ≪≫ₗ e'.restrictScalars T
+  letI PT : Extension T (T ⊗[R] S) := P.baseChange
+  haveI : IsPushout R T P.Ring PT.Ring := by
+    convert TensorProduct.isPushout (R := R) (T := P.Ring) (S := T)
+    exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  haveI : IsScalarTower P.Ring PT.Ring (T ⊗[R] S) := .of_algebraMap_eq' rfl
+  (IsTensorProduct.assocOfMapSMul (TensorProduct.mk R T S) (isTensorProduct _ _ _)
+    (TensorProduct.mk _ _ _) (isTensorProduct _ _ _) (by simp [Algebra.smul_def])
+    (by simp [Algebra.smul_def, RingHom.algebraMap_toAlgebra])).symm ≪≫ₗ
+  (AlgebraTensorModule.cancelBaseChange _ PT.Ring PT.Ring _ _).symm.restrictScalars T ≪≫ₗ
+  (AlgebraTensorModule.congr (LinearEquiv.refl PT.Ring (T ⊗[R] S))
+    (KaehlerDifferential.tensorKaehlerEquiv R T P.Ring PT.Ring)).restrictScalars T
 
-noncomputable local instance : Algebra P.Ring (P.baseChange (T := T)).Ring :=
-  TensorProduct.includeRight.toRingHom.toAlgebra
-
-set_option maxHeartbeats 0 in
+attribute [local instance] algebraBaseChange in
 @[simp]
-lemma tensorCotangentSpace'_tmul (t : T) (x : P.CotangentSpace) :
-    P.tensorCotangentSpace' T (t ⊗ₜ x) = t • CotangentSpace.map (P.toBaseChange T) x := by
-  dsimp only [CotangentSpace] at x
-  induction (x : S ⊗[P.Ring] Ω[P.Ring⁄R]) with
-  | zero => rw [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero, smul_zero]
-  | add x y hx hy => rw [tmul_add, LinearEquiv.map_add, LinearMap.map_add, smul_add, hx, hy]
-  | tmul s y =>
-  simp [tensorCotangentSpace']
-  have : y ∈ Submodule.span P.Ring (Set.range (KaehlerDifferential.D R P.Ring)) := by
+lemma tensorCotangentSpace_tmul_tmul (t : T) (s : S) (x : Ω[P.Ring⁄R]) :
+    P.tensorCotangentSpace T (t ⊗ₜ (s ⊗ₜ x)) = t ⊗ₜ s ⊗ₜ KaehlerDifferential.map _ _ _ _ x := by
+  simp only [tensorCotangentSpace, LinearEquiv.trans_apply, LinearEquiv.restrictScalars_apply,
+    ← mk_apply s x, IsTensorProduct.assocOfMapSMul_symm_tmul]
+  simp only [mk_apply, AlgebraTensorModule.cancelBaseChange_symm_tmul,
+    AlgebraTensorModule.congr_tmul, LinearEquiv.refl_apply]
+  have this : x ∈ Submodule.span P.Ring (Set.range (KaehlerDifferential.D R P.Ring)) := by
     rw [KaehlerDifferential.span_range_derivation]
     trivial
   induction this using Submodule.span_induction with
+  | zero => simp
+  | add x y _ _ hx hy => simp [tmul_add, hx, hy]
   | mem y hy =>
     obtain ⟨y, rfl⟩ := hy
-    rw [CotangentSpace.map_tmul, KaehlerDifferential.tensorKaehlerEquiv_tmul_D]
-    rw [one_smul, smul_tmul', Algebra.smul_def, RingHom.algebraMap_toAlgebra,
-      RingHom.algebraMap_toAlgebra]
     simp
-    rfl
   | smul a x _ hx =>
-    have h1 : a • (1 : (P.baseChange (T := T)).Ring) ⊗ₜ[P.Ring] x =
-        algebraMap P.Ring (P.baseChange (T := T)).Ring a • 1 ⊗ₜ x :=
-      rfl
-    have h2 : a • s ⊗ₜ[P.Ring] x = algebraMap P.Ring S a • s ⊗ₜ x := by
-      rw [smul_tmul', Algebra.smul_def, ← smul_eq_mul, smul_tmul']
-    rw [tmul_smul, tmul_smul, h1, LinearEquiv.map_smul, tmul_smul, hx, h2, LinearMap.map_smul,
-      smul_comm]
-    rfl
-  | add x y _ _ hx hy =>
-    rw [tmul_add, LinearEquiv.map_add, tmul_add, tmul_add, LinearMap.map_add, smul_add, hx, hy]
-  | zero =>
-    rw [tmul_zero, tmul_zero, LinearEquiv.map_zero, tmul_zero, LinearMap.map_zero, smul_zero]
+    rw [tmul_smul, ← algebraMap_smul (P.baseChange (T := T)).Ring a, LinearEquiv.map_smul,
+      tmul_smul, hx, LinearMap.map_smul, ← algebraMap_smul (P.baseChange (T := T)).Ring a,
+      tmul_smul]
+
+lemma CotangentSpace.map_tmul' {R : Type*} {S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] {P : Extension R S} {R' : Type*} {S' : Type*} [CommRing R'] [CommRing S']
+    [Algebra R' S'] {P' : Extension R' S'} [Algebra R R'] [Algebra S S'] [Algebra R S']
+    [IsScalarTower R R' S'] (f : P.Hom P') (x : S) (y : Ω[P.Ring⁄R]) :
+    letI : Algebra P.Ring P'.Ring := f.toAlgHom.toAlgebra
+    (CotangentSpace.map f) (x ⊗ₜ[P.Ring] y) =
+      (algebraMap S S') x ⊗ₜ[P'.Ring] KaehlerDifferential.map _ _ _ _ y := by
+  rw [CotangentSpace.map, LinearMap.liftBaseChange_tmul, LinearMap.coe_comp, Function.comp_apply,
+    LinearMap.restrictScalars_apply, mk_apply, smul_tmul', Algebra.smul_def, mul_one]
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+@[simp]
+lemma tensorCotangentSpace_tmul (t : T) (x : P.CotangentSpace) :
+    P.tensorCotangentSpace T (t ⊗ₜ x) = t • CotangentSpace.map (P.toBaseChange T) x := by
+  dsimp only [CotangentSpace] at x
+  induction x with
+  | zero => rw [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero, smul_zero]
+  | add x y hx hy => rw [tmul_add, LinearEquiv.map_add, LinearMap.map_add, smul_add, hx, hy]
+  | tmul s y =>
+  simp [tensorCotangentSpace_tmul_tmul,
+    CotangentSpace.map_tmul', smul_tmul', Algebra.smul_def, RingHom.algebraMap_toAlgebra]
 
 end Extension
 
 end Algebra
 
-open TensorProduct
+/-!
+### Auxiliary lemma to be moved
+
+The following lemma belongs in `Mathlib.RingTheory.Ideal.Cotangent`.
+-/
 
 namespace Ideal
 
@@ -224,6 +296,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (T : Type*) [CommRing T] [Algebra R T]
 variable (I : Ideal S)
 
+/-- A linear isomorphism between cotangent spaces induced by an equality of ideals. -/
 def Cotangent.equivOfEq (I J : Ideal S) (hIJ : I = J) :
     I.Cotangent ≃ₗ[S] J.Cotangent where
   __ := Cotangent.lift (J.toCotangent ∘ₗ LinearEquiv.ofEq I J hIJ) <| fun x y ↦ by
@@ -257,22 +330,24 @@ variable {ι : Type*}
 variable (P : Generators R S ι)
 variable (T : Type u) [CommRing T] [Algebra R T]
 
+/-- The canonical hom from the base change of `P.toExtension` to the extension
+corresponding to `P.baseChange`. -/
 noncomputable
 def baseChangeFromBaseChange :
     (P.toExtension.baseChange (T := T)).Hom (P.baseChange (T := T)).toExtension where
   toRingHom := (MvPolynomial.algebraTensorAlgEquiv R T).toRingHom
   toRingHom_algebraMap x := by
-    simp only [toExtension_Ring, Extension.baseChange, toExtension_commRing,
+    simp only [toExtension_Ring, Extension.baseChange,
       AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom,
       TensorProduct.algebraMap_apply, algebraMap_self, RingHom.id_apply, MvPolynomial.algebraMap_eq]
-    show (MvPolynomial.algebraTensorAlgEquiv R T) (x ⊗ₜ[R] 1) = MvPolynomial.C x
+    change (MvPolynomial.algebraTensorAlgEquiv R T) (x ⊗ₜ[R] 1) = MvPolynomial.C x
     simp only [MvPolynomial.algebraTensorAlgEquiv_tmul, map_one, smul_def,
       MvPolynomial.algebraMap_eq, mul_one]
   algebraMap_toRingHom x := by
-    simp only [Extension.baseChange, toExtension_Ring, toExtension_commRing, toExtension_algebra₂,
+    simp only [Extension.baseChange, toExtension_Ring,
       AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom,
       algebraMap_apply, algebraMap_self, RingHomCompTriple.comp_apply] at x ⊢
-    show (MvPolynomial.aeval (P.baseChange T).val) (MvPolynomial.algebraTensorAlgEquiv R T x) = _
+    change (MvPolynomial.aeval (P.baseChange T).val) (MvPolynomial.algebraTensorAlgEquiv R T x) = _
     induction x with
     | zero => simp
     | add x y hx hy =>
@@ -286,7 +361,7 @@ def baseChangeFromBaseChange :
       | C r =>
         simp only [MvPolynomial.algHom_C, TensorProduct.algebraMap_apply,
           TensorProduct.tmul_mul_tmul, mul_one, RingHom.algebraMap_toAlgebra,
-          AlgHom.toRingHom_eq_coe, RingHom.coe_coe, TensorProduct.map_tmul, AlgHom.coe_id, id_eq]
+          AlgHom.toRingHom_eq_coe, RingHom.coe_coe]
         rw [mul_comm, ← Algebra.smul_def, ← smul_tmul', ← tmul_smul, Algebra.smul_def, mul_one]
         simp
       | mul_X p i hp =>
@@ -298,6 +373,8 @@ def baseChangeFromBaseChange :
         rw [tmul_add, RingHom.map_add]
 
 set_option maxHeartbeats 0 in
+-- The proof requires substantial heartbeats due to the complex computation
+-- with `MvPolynomial.algebraTensorAlgEquiv`.
 noncomputable
 def baseChangeToBaseChange :
     (P.baseChange (T := T)).toExtension.Hom (P.toExtension.baseChange (T := T)) where
@@ -305,22 +382,22 @@ def baseChangeToBaseChange :
   algebraMap_toRingHom x := by
     have := (P.baseChangeFromBaseChange T).algebraMap_toRingHom <|
       (MvPolynomial.algebraTensorAlgEquiv R T).symm.toRingHom x
-    simp only [toExtension_Ring, toExtension_commRing, toExtension_algebra₂,
+    simp only [toExtension_Ring,
       baseChangeFromBaseChange, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
       AlgEquiv.toRingEquiv_toRingHom, AlgEquiv.symm_toRingEquiv, RingHom.coe_coe, algebraMap_apply,
       algebraMap_self, RingHomCompTriple.comp_apply] at this
     convert this.symm
-    show _ = (MvPolynomial.aeval (P.baseChange T).val)
+    change _ = (MvPolynomial.aeval (P.baseChange T).val)
       ((MvPolynomial.algebraTensorAlgEquiv R T) (((MvPolynomial.algebraTensorAlgEquiv R T)).symm x))
-    simp only [algebraMap_self, toExtension_Ring, toExtension_commRing, toExtension_algebra₂,
+    simp only [algebraMap_self, toExtension_Ring,
       algebraMap_apply, MvPolynomial.map_aeval, RingHomCompTriple.comp_eq, baseChange_val,
       RingHom.id_apply, MvPolynomial.coe_eval₂Hom, AlgEquiv.apply_symm_apply]
     rfl
   toRingHom_algebraMap x := by
-    simp only [toExtension_Ring, toExtension_commRing, AlgEquiv.toRingEquiv_eq_coe,
+    simp only [toExtension_Ring, AlgEquiv.toRingEquiv_eq_coe,
       AlgEquiv.symm_toRingEquiv, RingEquiv.toRingHom_eq_coe, MvPolynomial.algebraMap_eq,
       algebraMap_self, RingHom.id_apply]
-    show (MvPolynomial.algebraTensorAlgEquiv R T).symm _ = _
+    change (MvPolynomial.algebraTensorAlgEquiv R T).symm _ = _
     rw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
     rfl
 
@@ -348,15 +425,18 @@ def valEquiv : P.Cotangent ≃ₗ[P.Ring] P.ker.Cotangent where
   left_inv x := rfl
   right_inv x := rfl
 
+/-- If `T` is flat over `R`, there is a `T`-linear isomorphism
+`T ⊗[R] P.Cotangent ≃ₗ[T] (P.baseChange).Cotangent`. -/
 noncomputable def tensorCotangent' [Module.Flat R T] :
     T ⊗[R] P.Cotangent ≃ₗ[T] (P.baseChange (T := T)).Cotangent :=
   let e₀ : T ⊗[R] P.Cotangent ≃ₗ[T] T ⊗[R] P.ker.Cotangent :=
     AlgebraTensorModule.congr (LinearEquiv.refl T T) (P.valEquiv.restrictScalars R)
   let e₁ := P.ker.tensorCotangentEquiv R T
   have : (Ideal.map (algebraMap P.Ring (T ⊗[R] P.Ring)) P.ker) = (P.baseChange (T := T)).ker := by
-    simp [Extension.ker, RingHom.algebraMap_toAlgebra]
+    simp only [Extension.ker, RingHom.algebraMap_toAlgebra]
     symm
-    exact Algebra.TensorProduct.lTensor_ker _ P.algebraMap_surjective
+    exact Algebra.TensorProduct.lTensor_ker (A := T) (IsScalarTower.toAlgHom R P.Ring S)
+      P.algebraMap_surjective
   let e₂ : (Ideal.map (algebraMap P.Ring (T ⊗[R] P.Ring)) P.ker).Cotangent ≃ₗ[T]
       (P.baseChange (T := T)).ker.Cotangent :=
     (Ideal.Cotangent.equivOfEq _ _ this).restrictScalars T
@@ -374,6 +454,13 @@ lemma tensorCotangent'_tmul [Module.Flat R T] (t : T) (x : P.Cotangent) :
     Hom.toAlgHom_apply]
   rfl
 
+/-!
+### Part 2: H1Cotangent base change
+
+This section establishes that `H1Cotangent` commutes with flat base change.
+-/
+
+/-- The canonical map `T ⊗[R] P.H1Cotangent →ₗ[T] (P.baseChange).H1Cotangent`. -/
 noncomputable
 def tensorToH1Cotangent :
     T ⊗[R] P.H1Cotangent →ₗ[T] (P.baseChange (T := T)).H1Cotangent :=
@@ -386,7 +473,6 @@ lemma tensorToH1Cotangent_tmul (t : T) (x : P.H1Cotangent) :
     (P.tensorToH1Cotangent T (t ⊗ₜ x)).val = t • Cotangent.map (P.toBaseChange T) x.val :=
   rfl
 
-set_option maxHeartbeats 0 in
 lemma tensorToH1Cotangent_bijective_of_flat [Module.Flat R T] :
     Function.Bijective (P.tensorToH1Cotangent T) := by
   apply LinearMap.bijective_of_surjective_of_bijective_of_bijective_of_injective (M₁ := Unit)
@@ -405,7 +491,7 @@ lemma tensorToH1Cotangent_bijective_of_flat [Module.Flat R T] :
     0
     ((P.tensorToH1Cotangent T).restrictScalars R)
     ((P.tensorCotangent' T).restrictScalars R)
-    ((P.tensorCotangentSpace' T).restrictScalars R)
+    ((P.tensorCotangentSpace T).restrictScalars R)
   · simp
   · simp
   · ext t x
@@ -413,7 +499,7 @@ lemma tensorToH1Cotangent_bijective_of_flat [Module.Flat R T] :
   · ext t x
     simp [CotangentSpace.map_cotangentComplex]
   · tauto
-  · simp
+  · simp only [LinearMap.exact_zero_iff_injective]
     apply Module.Flat.lTensor_preserves_injective_linearMap
     simp only [LinearMap.coe_restrictScalars]
     exact h1Cotangentι_injective
@@ -429,8 +515,10 @@ lemma tensorToH1Cotangent_bijective_of_flat [Module.Flat R T] :
   · tauto
   · simp
   · exact (P.tensorCotangent' T).bijective
-  · exact (P.tensorCotangentSpace' T).injective
+  · exact (P.tensorCotangentSpace T).injective
 
+/-- If `T` is flat over `R`, there is a `T`-linear isomorphism
+`T ⊗[R] P.H1Cotangent ≃ₗ[T] (P.baseChange).H1Cotangent`. -/
 noncomputable def tensorH1Cotangent' [Module.Flat R T] :
     T ⊗[R] P.H1Cotangent ≃ₗ[T] (P.baseChange (T := T)).H1Cotangent :=
   LinearEquiv.ofBijective (P.tensorToH1Cotangent T)
