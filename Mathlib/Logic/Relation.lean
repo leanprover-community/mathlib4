@@ -52,8 +52,6 @@ the bundled version, see `Rel`.
 
 @[expose] public section
 
-set_option backward.isDefEq.respectTransparency false
-
 open Function
 
 variable {α β γ δ ε ζ : Type*}
