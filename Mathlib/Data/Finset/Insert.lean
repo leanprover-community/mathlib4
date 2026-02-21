@@ -213,6 +213,7 @@ instance (i : α) : Unique ({i} : Finset α) where
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance Nontrivial.instDecidablePred : DecidablePred (Finset.Nontrivial (α := α)) := fun s =>
   /-
   We don't use `Finset.one_lt_card_iff_nontrivial`
@@ -289,6 +290,7 @@ theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
 theorem nonempty_mk {m : Multiset α} {hm} : (⟨m, hm⟩ : Finset α).Nonempty ↔ m ≠ 0 := by
   induction m using Multiset.induction_on <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coe_cons {a s h} : (@cons α a s h : Set α) = insert a (s : Set α) := by
   ext
@@ -387,6 +389,7 @@ theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=
 @[simp, norm_cast]
 theorem coe_insert (a : α) (s : Finset α) : ↑(insert a s) = (insert a s : Set α) := by grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ insert y (s : Set α) := by
   simp
 
@@ -447,6 +450,7 @@ theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
 theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a s ⊆ insert a t := by
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
   simp_rw [← coe_subset]; simp [ha]
 
