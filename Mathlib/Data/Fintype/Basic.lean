@@ -37,7 +37,8 @@ open Finset
 instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
   ⟨⟨List.finRange n, Constructive.List.nodup_finRange n⟩, List.mem_finRange⟩
 
-theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
+theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) =
+    ⟨List.finRange n, Constructive.List.nodup_finRange n⟩ :=
   rfl
 
 theorem Finset.val_univ_fin (n : ℕ) : (Finset.univ : Finset (Fin n)).val = List.finRange n := rfl

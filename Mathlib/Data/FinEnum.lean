@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.AvoidChoice.List
 public import Mathlib.Data.List.ProdSigma
 public import Mathlib.Data.List.Pi
 
@@ -69,7 +70,8 @@ theorem mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
 
 @[simp]
 theorem nodup_toList [FinEnum α] : List.Nodup (toList α) := by
-  simp only [toList]; apply List.Nodup.map <;> [apply Equiv.injective; apply List.nodup_finRange]
+  simp only [toList]; apply List.Nodup.map <;> [apply Equiv.injective;
+    apply Constructive.List.nodup_finRange]
 
 /-- create a `FinEnum` instance using a surjection -/
 def ofSurjective {β} (f : β → α) [DecidableEq α] [FinEnum β] (h : Surjective f) : FinEnum α :=

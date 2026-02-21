@@ -9,6 +9,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.AvoidChoice.List
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
@@ -1215,10 +1216,10 @@ for `A^ι` with any finite type `ι`. -/
 protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A :=
   MultilinearMap.mk' (fun m ↦ (List.ofFn m).prod)
     (fun m i x y ↦ by
-      simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul,
+      simp [List.ofFn_eq_map, (Constructive.List.nodup_finRange n).map_update, List.prod_set, add_mul,
         mul_add, add_mul])
     (fun m i c x ↦ by
-      simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set])
+      simp [List.ofFn_eq_map, (Constructive.List.nodup_finRange n).map_update, List.prod_set])
 
 variable {R A n}
 

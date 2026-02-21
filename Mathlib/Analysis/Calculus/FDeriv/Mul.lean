@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.FDeriv.Bilinear
+public import Mathlib.Data.AvoidChoice.List
 
 /-!
 # Multiplicative operations on derivatives
@@ -457,7 +458,8 @@ theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Finite ι] {l : List ι} {
   have := Fintype.ofFinite ι
   refine hasStrictFDerivAt_list_prod'.congr_fderiv ?_
   conv_rhs => arg 1; arg 2; rw [← List.map_get_finRange l]
-  simp only [List.map_map, ← List.sum_toFinset _ (List.nodup_finRange _), List.toFinset_finRange,
+  simp only [List.map_map, ← List.sum_toFinset _ (Constructive.List.nodup_finRange _),
+    List.toFinset_finRange,
     Function.comp_def, ((List.erase_getElem _).map _).prod_eq, List.eraseIdx_eq_take_drop_succ,
     List.map_append, List.prod_append, List.get_eq_getElem, Fin.getElem_fin, Nat.succ_eq_add_one]
   exact Finset.sum_congr rfl fun i _ ↦ by
