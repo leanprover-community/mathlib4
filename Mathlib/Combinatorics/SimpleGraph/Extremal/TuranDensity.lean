@@ -28,8 +28,9 @@ This file defines the **Turán density** of a simple graph.
 * `SimpleGraph.isEquivalent_extremalNumber` is the proof that `extremalNumber n H` is
   asymptotically equivalent to `turanDensity H * n.choose 2` as `n` approaches `∞`.
 
-* `SimpleGraph.isContained_of_card_edgeFinset` is the proof that `n`-vertex simple graphs having
-  at least `(turanDensity H + o(1)) * n ^ 2` edges contain `H`, for sufficently large `n`.
+* `SimpleGraph.isContained_of_card_edgeFinset` is the proof that `card V`-vertex simple graphs
+  having at least `(turanDensity H + o(1)) * (card V) ^ 2` edges contain `H`, for sufficently large
+  `card V`.
 -/
 
 @[expose] public section
@@ -39,7 +40,7 @@ open Asymptotics Filter Finset Fintype Topology
 
 namespace SimpleGraph
 
-variable {V W : Type*} {G : SimpleGraph V} {H : SimpleGraph W}
+variable {W : Type*}
 
 lemma antitoneOn_extremalNumber_div_choose_two (H : SimpleGraph W) :
     AntitoneOn (fun n ↦ (extremalNumber n H / n.choose 2 : ℝ)) (Set.Ici 2) := by
@@ -104,7 +105,7 @@ theorem tendsto_turanDensity (H : SimpleGraph W) :
 
 /-- `extremalNumber n H` is asymptotically equivalent to `turanDensity H * n.choose 2` as `n`
 approaches `∞`. -/
-theorem isEquivalent_extremalNumber (h : turanDensity H ≠ 0) :
+theorem isEquivalent_extremalNumber {H : SimpleGraph W} (h : turanDensity H ≠ 0) :
     (fun n ↦ (extremalNumber n H : ℝ)) ~[atTop] (fun n ↦ (turanDensity H * n.choose 2 : ℝ)) := by
   have hπ := tendsto_turanDensity H
   apply Tendsto.const_mul (1 / turanDensity H : ℝ) at hπ
@@ -137,5 +138,30 @@ theorem eventually_isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ}
         rw [← Fintype.card_fin n]
       exact hcard_edges.trans (mod_cast card_edgeFinset_le_extremalNumber h_free)
     · exact antitoneOn_extremalNumber_div_choose_two H hm (hm.trans hn) hn
+
+open Classical in
+/-- The edge density of `H`-free simple graphs on `turanDensityConst H ε` vertices
+is at most `turanDensity H + ε`.
+
+Contrapositively, `turanDensity H + ε` is the density at which `H` is always contained in simple
+graphs on `turanDensityConst H ε` vertices.
+
+Note that this value is only defined for positive `ε` and `turanDensityConst H ε = 0` for non
+positive `ε`. -/
+noncomputable abbrev turanDensityConst (H : SimpleGraph W) (ε : ℝ) :=
+  if h : ε > 0 then
+    Nat.find <| eventually_atTop.mp <| eventually_isContained_of_card_edgeFinset H h
+  else 0
+
+open Classical in
+/-- Simple graphs on `card V` vertices having at least `(turanDensity H + o(1)) * (card V) ^ 2`
+edges contain `H`, for sufficiently large `card V`. -/
+theorem isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ} (hε_pos : 0 < ε)
+    {V : Type*} [Fintype V] (h_verts : card V ≥ turanDensityConst H ε)
+    (G : SimpleGraph V) [DecidableRel G.Adj] :
+    #G.edgeFinset ≥ (turanDensity H + ε) * (card V).choose 2 → H ⊑ G := by
+  rw [Iso.card_edgeFinset_eq (G.overFinIso rfl), isContained_congr Iso.refl (G.overFinIso rfl)]
+  apply Nat.find_spec <| eventually_atTop.mp <| eventually_isContained_of_card_edgeFinset H hε_pos
+  simpa only [turanDensityConst, hε_pos, ↓reduceDIte] using h_verts
 
 end SimpleGraph
