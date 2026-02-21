@@ -83,7 +83,7 @@ macro_rules
 meta def mkRifyContext : MetaM Simp.Context := do
   let result ← #[`zify_simps, `qify_simps, `rify_simps, `push_cast].mapM fun ext ↦ do
     let some ext ← getSimpExtension? ext | failure
-    return (← ext.getTheorems)
+    ext.getTheorems
   Simp.mkContext {failIfUnchanged := false} (simpTheorems := result)
 
 /-- Translate a proof and the proposition into rified form. -/
