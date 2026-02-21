@@ -276,7 +276,7 @@ theorem isTuranMaximal_of_iso (f : G ≃g turanGraph n r) (hr : 0 < r) : G.IsTur
   obtain ⟨J, _, j⟩ := exists_isTuranMaximal (V := V) hr
   obtain ⟨g⟩ := j.nonempty_iso_turanGraph
   rw [f.card_eq, Fintype.card_fin] at g
-  use (turanGraph_cliqueFree (n := n) hr).comap f,
+  use (turanGraph_cliqueFree (n := n) hr).comap f.isContained,
     fun H _ cf ↦ (f.symm.comp g).card_edgeFinset_eq ▸ j.2 cf
 
 /-- Turán-maximality with `0 < r` transfers across graph isomorphisms. -/
