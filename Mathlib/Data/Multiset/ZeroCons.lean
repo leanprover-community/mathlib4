@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Data.AvoidChoice.List
 
 /-!
 # Definition of `0` and `::ₘ`
@@ -193,7 +194,7 @@ theorem notMem_zero (a : α) : a ∉ (0 : Multiset α) :=
   List.not_mem_nil
 
 theorem eq_zero_of_forall_notMem {s : Multiset α} : (∀ x, x ∉ s) → s = 0 :=
-  Quot.inductionOn s fun l H => by rw [eq_nil_iff_forall_not_mem.mpr H]; rfl
+  Quot.inductionOn s fun l H => by rw [Constructive.List.eq_nil_iff_forall_not_mem.mpr H]; rfl
 
 theorem eq_zero_iff_forall_notMem {s : Multiset α} : s = 0 ↔ ∀ a, a ∉ s :=
   ⟨fun h => h.symm ▸ fun _ => notMem_zero _, eq_zero_of_forall_notMem⟩
