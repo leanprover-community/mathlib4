@@ -134,37 +134,9 @@ theorem transcendental_of_ne_C : Transcendental K f := by
   rw [Algebra.transcendental_iff_not_isAlgebraic] at tr
   exact tr <| Algebra.IsAlgebraic.trans _ _ _ (alg := f.isAlgebraic_adjoin_simple_X' hf)
 
-theorem transcendental_of_ne_C' :
-    Transcendental K (⟨f, Algebra.self_mem_adjoin_singleton K f⟩ : K[f]):= by
-  rw [← transcendental_algebraMap_iff
-      (FaithfulSMul.algebraMap_injective (Algebra.adjoin K {f}) (RatFunc K))]
-  exact f.transcendental_of_ne_C hf
-
-/-- The equivalence between `K[X]` and `K[f]` as `K`-algebras. Here, `f` is required to
-be non-constant. -/
-noncomputable def adjoinSimpleEquiv : K[X] ≃ₐ[K] K[f] :=
-  AlgEquiv.ofBijective (Polynomial.aeval ⟨f, Algebra.self_mem_adjoin_singleton K f⟩) <| by
-    refine ⟨transcendental_iff_injective.mp (f.transcendental_of_ne_C' hf), ?_⟩
-    rw [← AlgHom.range_eq_top, eq_top_iff]
-    rintro ⟨g, g_mem⟩ _
-    obtain ⟨r, rfl⟩ := Algebra.adjoin_mem_exists_aeval _ _ g_mem
-    exact ⟨r, by ext; simp⟩
-
-@[simp]
-theorem adjoinSimpleEquiv_coe : (f.adjoinSimpleEquiv hf : K[X] →+* K[f]) =
-    Polynomial.aeval (R := K) (⟨f, Algebra.self_mem_adjoin_singleton K f⟩ : K[f]) := rfl
-
-@[simp]
-theorem adjoinSimpleEquiv_apply (g : K[X]) : f.adjoinSimpleEquiv hf g =
-    Polynomial.aeval (⟨f, Algebra.self_mem_adjoin_singleton K f⟩ : K[f]) g := rfl
-
-lemma algEquivOfTranscendental_apply_X :
-    f.adjoinSimpleEquiv hf Polynomial.X = ⟨f, Algebra.subset_adjoin rfl⟩ := by
-  rw [adjoinSimpleEquiv_apply, Subtype.ext_iff, Polynomial.coe_aeval_mk_apply, Polynomial.aeval_X]
-
 theorem irreducible_minpolyX : Irreducible f.minpolyX := by
-  have : UniqueFactorizationMonoid K[f] :=
-    (f.adjoinSimpleEquiv hf).toMulEquiv.uniqueFactorizationMonoid inferInstance
+  let e := Polynomial.algEquivOfTranscendental K f (f.transcendental_of_ne_C hf)
+  have : UniqueFactorizationMonoid K[f] := e.toMulEquiv.uniqueFactorizationMonoid inferInstance
   let φ : K[f][X] := f.num.map (algebraMap ..) -
     Polynomial.C (⟨f, Algebra.self_mem_adjoin_singleton K f⟩ : K[f]) * f.denom.map (algebraMap ..)
   suffices Irreducible φ by
@@ -185,10 +157,11 @@ theorem irreducible_minpolyX : Irreducible f.minpolyX := by
       exact hf this
   let φ' : K[X][X] := f.num.map (algebraMap ..) -
     Polynomial.C Polynomial.X * f.denom.map (algebraMap ..)
-  have φ'_map : φ'.mapEquiv (f.adjoinSimpleEquiv hf).toRingEquiv = φ := by
-    simp only [φ', AlgEquiv.toRingEquiv_eq_coe, Polynomial.algebraMap_eq, Polynomial.mapEquiv_apply,
-      AlgEquiv.toRingEquiv_toRingHom, adjoinSimpleEquiv_coe, Polynomial.map_sub, Polynomial.map_map,
-      Polynomial.map_mul, Polynomial.map_C, RingHom.coe_coe, Polynomial.aeval_X]
+  have φ'_map : φ'.mapEquiv e.toRingEquiv = φ := by
+    simp only [AlgEquiv.toRingEquiv_eq_coe, Polynomial.algebraMap_eq, Polynomial.mapEquiv_apply,
+      AlgEquiv.toRingEquiv_toRingHom, Polynomial.algEquivOfTranscendental_apply,
+      Polynomial.map_sub, Polynomial.map_map, Polynomial.map_mul, Polynomial.map_C, RingHom.coe_coe,
+      Polynomial.aeval_X, φ', e]
     congr 2 <;> ext <;> simp
   rw [← φ'_map, MulEquiv.irreducible_iff]
   have : φ' = Polynomial.Bivariate.swap
