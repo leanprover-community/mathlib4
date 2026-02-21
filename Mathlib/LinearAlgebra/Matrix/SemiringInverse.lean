@@ -195,6 +195,7 @@ theorem detp_smul_add_adjp (hAB : A * B = 1) :
   simp_rw [mul_add, ← mul_assoc, hAB, one_mul, mul_smul, mul_one] at key
   rwa [add_comm, eq_comm, add_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem detp_smul_adjp (hAB : A * B = 1) :
     A + (detp 1 A • adjp (-1) B + detp (-1) A • adjp 1 B) =
       detp 1 A • adjp 1 B + detp (-1) A • adjp (-1) B := by
@@ -206,6 +207,7 @@ theorem detp_smul_adjp (hAB : A * B = 1) :
   rwa [add_add_add_comm, ← add_smul, add_add_add_comm, ← add_smul, ← h0, add_smul, one_smul,
     add_comm A, add_assoc, ((isAddUnit_detp_mul_detp hAB).smul_right _).add_right_inj] at h
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) instIsStablyFiniteRingOfCommSemiring : IsStablyFiniteRing R := by
   refine ⟨fun n ↦ ⟨fun {A B} hAB ↦ ?_⟩⟩
   have h0 := detp_mul A B

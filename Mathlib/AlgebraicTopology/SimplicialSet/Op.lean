@@ -20,10 +20,10 @@ We use an abbreviation `X.op` for `opFunctor.obj X`.
 ## TODO
 
 * Show that this involution sends `Δ[n]` to itself, and that via
-this identification, the horn `horn n i` is sent to `horn n i.rev` (@joelriou)
+  this identification, the horn `horn n i` is sent to `horn n i.rev` (@joelriou)
 * Construct an isomorphism `nerve Cᵒᵖ ≅ (nerve C).op` (@robin-carlier)
 * Show that the topological realization of `X.op` identifies to the
-topological realization of `X` (@joelriou)
+  topological realization of `X` (@joelriou)
 
 -/
 
@@ -55,16 +55,19 @@ lemma op_map (X : SSet.{u}) {n m : SimplexCategoryᵒᵖ} (f : n ⟶ m) (x : X.o
       opObjEquiv.symm (X.map (SimplexCategory.rev.map f.unop).op (opObjEquiv x)) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma op_δ (X : SSet.{u}) {n : ℕ} (i : Fin (n + 2)) (x : X _⦋n + 1⦌) :
     X.op.δ i x = opObjEquiv.symm (X.δ i.rev (opObjEquiv x)) := by
   simp [SimplicialObject.δ, op_map]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma op_σ (X : SSet.{u}) {n : ℕ} (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.op.σ i x = opObjEquiv.symm (X.σ i.rev (opObjEquiv x)) := by
   simp [SimplicialObject.σ, op_map]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] op_map in
 /-- The functor `opFunctor : SSet ⥤ SSet` is an involution. -/
 @[simps!]

@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.LinearDisjoint
 public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.UniqueFactorizationDomain.ClassGroup
 
 /-!
 # The Picard group of a commutative ring
@@ -50,7 +51,6 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 ## TODO
 
 Show:
-- All unique factorization domains have trivial Picard group.
 - Invertible modules over a commutative ring have the same cardinality as the ring.
 
 - Establish other characterizations of invertible modules, e.g. they are modules that
@@ -568,6 +568,7 @@ theorem mapRingHom_mapRingHom {M : Pic R} :
     mapRingHom g (mapRingHom f M) = mapRingHom (g.comp f) M :=
   congr($mapRingHom_comp_mapRingHom M)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mapRingHom_id : mapRingHom (.id R) = .id _ := by
   rw [mapRingHom, mapAlgebra_self]
 
@@ -590,6 +591,7 @@ variable (A : Type*) [CommSemiring A] [Algebra R A]
 defined to be the kernel of `Pic.mapAlgebra R A`. -/
 noncomputable def relPic : Subgroup (Pic R) := (Pic.mapAlgebra R A).ker
 
+set_option backward.isDefEq.respectTransparency false in
 theorem relPic_eq_top [Subsingleton (Pic A)] : relPic R A = ⊤ :=
   top_unique fun _ _ ↦ Subsingleton.elim ..
 
@@ -852,6 +854,12 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
     ClassGroup R ≃* Pic R :=
   (mulEquivUnitsSubmoduleQuotRange R).trans <| .trans (Submodule.unitsQuotEquivRelPic R _) <|
     .trans (.subgroupCongr <| relPic_eq_top R _) Subgroup.topEquiv
+
+/-- The Picard group of a domain with normalizable gcd is trivial.
+This includes unique factorization domains. -/
+@[stacks 0BCH]
+instance (R) [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)] : Subsingleton (Pic R) :=
+  Equiv.subsingleton (ClassGroup.equivPic R).toEquiv.symm
 
 end PicardGroup
 
