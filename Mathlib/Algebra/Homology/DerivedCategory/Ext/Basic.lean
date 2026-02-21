@@ -306,7 +306,6 @@ lemma comp_mk₀_id (α : Ext X Y n) :
     α.comp (mk₀ (𝟙 Y)) (add_zero n) = α := by
   letI := HasDerivedCategory.standard C; ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 variable (X Y) in
 @[simp]
 lemma mk₀_zero : mk₀ (0 : X ⟶ Y) = 0 := by

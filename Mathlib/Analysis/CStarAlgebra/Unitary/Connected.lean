@@ -239,7 +239,6 @@ lemma Unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le (u : unitary A)
   unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le :=
   Unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma Unitary.continuousOn_argSelfAdjoint :
     ContinuousOn (argSelfAdjoint : unitary A → selfAdjoint A) (ball (1 : unitary A) 2) := by

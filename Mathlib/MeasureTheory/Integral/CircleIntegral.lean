@@ -344,7 +344,6 @@ def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
 /-- `∮ z in C(c, R), f z` is the circle integral $\oint_{|z-c|=R} f(z)\,dz$. -/
 notation3 "∮ "(...)" in ""C("c", "R")"", "r:60:(scoped f => circleIntegral f c R) => r
 
-set_option backward.isDefEq.respectTransparency false in
 theorem circleIntegral_def_Icc (f : ℂ → E) (c : ℂ) (R : ℝ) :
     (∮ z in C(c, R), f z) = ∫ θ in Icc 0 (2 * π),
     deriv (circleMap c R) θ • f (circleMap c R θ) := by

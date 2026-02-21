@@ -166,7 +166,6 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   ext
   rwa [← sub_eq_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
 @[simp]
 theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]

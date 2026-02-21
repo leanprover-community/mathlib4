@@ -99,7 +99,6 @@ lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
 
 variable {R}
 
-set_option backward.isDefEq.respectTransparency false in
 open Filter in
 /-- A Lie-subalgebra of an Artinian Lie algebra is self-normalizing
 if it contains an Engel subalgebra.

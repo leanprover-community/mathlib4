@@ -209,7 +209,6 @@ end Affine.Simplex
 
 namespace Affine.Triangle
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eulerPoint_eq_midpoint (s : Triangle ℝ P) (i : Fin 3) :
     s.eulerPoint i = midpoint ℝ s.orthocenter (s.points i) := by
   apply vsub_right_cancel (p := s.points i)
