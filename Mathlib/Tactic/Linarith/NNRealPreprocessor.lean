@@ -47,7 +47,7 @@ partial def getNNRealCoes (e : Expr) : List Expr :=
     | (``HAdd.hAdd, #[_, _, _, _, a, b]) => getNNRealCoes a ++ getNNRealCoes b
     | (``HMul.hMul, #[_, _, _, _, a, b]) => getNNRealCoes a ++ getNNRealCoes b
     | (``HSub.hSub, #[_, _, _, _, a, b]) => getNNRealCoes a ++ getNNRealCoes b
-    | (``HDiv.hDiv, #[_, _, _, _, a, b]) => getNNRealCoes a
+    | (``HDiv.hDiv, #[_, _, _, _, a, _]) => getNNRealCoes a
     | (``Neg.neg, #[_, _, a]) => getNNRealCoes a
     | _ => []
 
@@ -62,7 +62,7 @@ initialize nnrealToRealTransform.set fun l => do
   let l ← l.mapM fun e => do
     let t ← whnfR (← instantiateMVars (← inferType e))
     if ← isNNRealProp t then
-      return (← rifyProof e t).1
+      return (← Rify.rifyProof e t).1
     else
       return e
   let atoms : List Expr ← withNewMCtxDepth <| AtomM.run .reducible do
