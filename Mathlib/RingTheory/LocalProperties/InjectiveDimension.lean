@@ -31,6 +31,7 @@ variable {R : Type u} [CommRing R]
 
 open CategoryTheory Limits
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Small.{v} R] [IsNoetherianRing R] (S : Submonoid R) :
     (ModuleCat.localizedModule_functor.{v} S).PreservesInjectiveObjects where
   injective_obj X {inj} := by
