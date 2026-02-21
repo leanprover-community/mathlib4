@@ -411,7 +411,7 @@ lemma IsPath.from_accept {u : ExtendedState σ} {x : List (Option α)}
   | cons _ _ _ _ _ h_step _ => simp at h_step
 
 lemma IsPath.state_accept {s : σ} {x : List (Option α)}
-    (h : M.toSingleεNFA.IsPath (.state s) .accept x):
+    (h : M.toSingleεNFA.IsPath (.state s) .accept x) :
     ∃ t x', t ∈ M.accept ∧ x = x' ++ [none] ∧ M.IsPath s t x' := by
   generalize hs : (ExtendedState.state s) = ss at h
   generalize ha : ExtendedState.accept = a' at h
@@ -424,71 +424,46 @@ lemma IsPath.state_accept {s : σ} {x : List (Option α)}
     cases oa with
     | some a =>
       simp only [toSingleεNFA_step, mem_image] at h_step
-      rcases h_step with ⟨t, ht, ht'⟩
-      subst ht'
-      have ⟨t', x'', ht', hx'', h_before⟩ := ih rfl rfl
-      use t', some a :: x''
-      and_intros
-      · exact ht'
-      · simpa
-      · exact cons t s t' (some a) x'' ht h_before
+      rcases h_step with ⟨t, ht, rfl⟩
+      rcases ih rfl rfl with ⟨t', x'', ht', rfl, h_before⟩
+      exact ⟨t', some a :: x'', ht', by simp, cons t s t' (some a) x'' ht h_before⟩
     | none =>
       simp only [toSingleεNFA_step, mem_union, mem_image, mem_ite_empty_right,
         mem_singleton_iff] at h_step
-      rcases h_step with ⟨t, ht, ht'⟩ | ⟨hs, ht'⟩
-      · subst ht'
-        have ⟨t', x'', ht', hx'', h_before⟩ := ih rfl rfl
-        use t', none :: x''
-        and_intros
-        · exact ht'
-        · simpa
-        · exact cons t s t' none x'' ht h_before
-      · subst ht'
-        rcases IsPath.from_accept h_path with ⟨_, rfl⟩
-        use s, []
-        simpa
+      rcases h_step with ⟨t, ht, rfl⟩ | ⟨hs, rfl⟩
+      · rcases ih rfl rfl with ⟨t', x'', ht', hx'', h_before⟩
+        exact ⟨t', none :: x'', ht', by simpa, cons t s t' none x'' ht h_before⟩
+      · rcases IsPath.from_accept h_path with ⟨_, rfl⟩
+        exact ⟨s, [], by simpa⟩
 
 theorem accepts_toSingleεNFA : M.toSingleεNFA.accepts = M.accepts := by
   ext x
   constructor
   · intro h
     apply (mem_accepts_iff_exists_path M).mpr
-    have ⟨s₁, s₂, x', hs₁, hs₂, hx, h_path⟩ := (mem_accepts_iff_exists_path (M.toSingleεNFA)).mp h
+    rcases (mem_accepts_iff_exists_path (M.toSingleεNFA)).mp h with
+      ⟨s₁, s₂, x', hs₁, hs₂, rfl, h_path⟩
     simp only [toSingleεNFA_start, mem_singleton_iff, toSingleεNFA_accept] at hs₁ hs₂
-    subst hx hs₁ hs₂
+    subst hs₁ hs₂
     cases h_path with
     | cons t' s' u oa x'' h_step h_rest =>
       cases oa with
-      | some a =>
-        simp at h_step
+      | some a => simp at h_step
       | none =>
         simp only [toSingleεNFA_step, mem_image] at h_step
         rcases h_step with ⟨s, hs, rfl⟩
-        have ⟨t, y, ht, hy, h_before⟩ := IsPath.state_accept h_rest
-        subst hy
-        use s, t, y
-        and_intros
-        · exact hs
-        · exact ht
-        · simp [List.reduceOption_append]
-        · exact h_before
+        rcases IsPath.state_accept h_rest with ⟨t, y, ht, rfl, h_before⟩
+        exact ⟨s, t, y, hs, ht, by simp [List.reduceOption_append], h_before⟩
   · intro h
     apply (mem_accepts_iff_exists_path (M.toSingleεNFA)).mpr
-    have ⟨s₁, s₂, x', hs₁, hs₂, hx, hx'⟩ := (mem_accepts_iff_exists_path M).mp h
-    subst hx
+    rcases (mem_accepts_iff_exists_path M).mp h with ⟨s₁, s₂, x', hs₁, hs₂, rfl, hx'⟩
     use .start, .accept, [none] ++ x' ++ [none]
     and_intros
     · simp
     · simp
     · simp [List.reduceOption_append]
     · simp only [isPath_append]
-      use .state s₂
-      constructor
-      · use .state s₁
-        constructor
-        · simpa
-        · exact IsPath.toSingleεNFA_lift_extendedState hx'
-      · simpa
+      exact ⟨.state s₂, ⟨.state s₁, by simpa, IsPath.toSingleεNFA_lift_extendedState hx'⟩, by simpa⟩
 
 end toSingleεNFA
 
@@ -675,35 +650,23 @@ theorem isRestrictedMatch_iff_exists_isRestrictedPath
     | direct i' j' x' h_match =>
       rw [mem_matches'_directRegex] at h_match
       rcases h_match with ⟨a, rfl, h_step⟩ | ⟨rfl, h_step | rfl⟩
-      · use [a]
-        simpa using IsRestrictedPath.step i' j' (some a) h_step
-      · use [none]
-        simpa using IsRestrictedPath.step i' j' none h_step
-      · use []
-        simpa using IsRestrictedPath.nil i'
+      · exact ⟨[a], by simpa using IsRestrictedPath.step i' j' (some a) h_step⟩
+      · exact ⟨[none], by simpa using IsRestrictedPath.step i' j' none h_step⟩
+      · exact ⟨[], by simpa using IsRestrictedPath.nil i'⟩
     | trans i' j' m y₁ y₂ h₁ hlt h₂ ih₁ ih₂ =>
       rcases ih₁ with ⟨x₁, rfl, hx₁⟩
       rcases ih₂ with ⟨x₂, rfl, hx₂⟩
-      use x₁ ++ x₂
-      constructor
-      · rw [List.reduceOption_append]
-      · exact IsRestrictedPath.trans i' j' m x₁ x₂ hx₁ hlt hx₂
+      exact ⟨x₁ ++ x₂, by rw [List.reduceOption_append],
+        IsRestrictedPath.trans i' j' m x₁ x₂ hx₁ hlt hx₂⟩
   · rintro ⟨y, rfl, h⟩
     induction h with
-    | nil i' =>
-      rw [List.reduceOption_nil]
-      exact isRestrictedMatch_nil
+    | nil i' => exact isRestrictedMatch_nil
     | step i' j' oa h_step =>
       apply IsRestrictedMatch.direct
       rw [mem_matches'_directRegex]
       cases oa with
-      | some a =>
-        left
-        use a
-        simp [h_step]
-      | none =>
-        right
-        simp [h_step]
+      | some a => exact Or.inl ⟨a, rfl, h_step⟩
+      | none   => exact Or.inr ⟨rfl, Or.inl h_step⟩
     | trans i' j' m x₁ x₂ hx₁ hlt hx₂ ih₁ ih₂ =>
       rw [List.reduceOption_append]
       exact IsRestrictedMatch.trans i' j' m x₁.reduceOption x₂.reduceOption ih₁ hlt ih₂
@@ -727,13 +690,38 @@ lemma mem_matches_mul_star_mul {R_to R_loop R_from : RegularExpression α} {w : 
   · rintro ⟨u, ⟨w₁, hw₁, w₂, hw₂, rfl⟩, w₃, hw₃, rfl⟩
     use w₁, w₂, w₃
   · rintro ⟨w₁, w₂, w₃, rfl, hw₁, hw₂, hw₃⟩
-    use w₁ ++ w₂
-    constructor
-    · use w₁
-      constructor
-      · exact hw₁
-      · use w₂
-    · use w₃
+    exact ⟨w₁ ++ w₂, ⟨w₁, hw₁, w₂, hw₂, rfl⟩, w₃, hw₃, rfl⟩
+
+omit [Fintype α] [LinearOrder α] in
+lemma mem_matches_star_concat {R : RegularExpression α} {w₁ w₂ : List α}
+    (h₁ : w₁ ∈ R.star.matches') (h₂ : w₂ ∈ R.star.matches') :
+    w₁ ++ w₂ ∈ R.star.matches' := by
+  rw [matches'_star, Language.mem_kstar] at *
+  rcases h₁ with ⟨L₁, rfl, hL₁⟩
+  rcases h₂ with ⟨L₂, rfl, hL₂⟩
+  exact ⟨L₁ ++ L₂, by simp, List.forall_mem_append.mpr ⟨hL₁, hL₂⟩⟩
+
+omit [Fintype α] [LinearOrder α] in
+lemma mem_matches_star_singleton {R : RegularExpression α} {w : List α}
+    (h : w ∈ R.matches') : w ∈ R.star.matches' := by
+  rw [matches'_star, Language.mem_kstar]
+  exact ⟨[w], by simpa⟩
+
+lemma isRestrictedMatch_star {k : ℕ} {m : Fin n} {w : List α}
+    (h : w ∈ (pathRegex M k m m).star.matches')
+    (ih : ∀ {x}, x ∈ (pathRegex M k m m).matches' → IsRestrictedMatch M k m m x)
+    (hm : m.val < k + 1) :
+    IsRestrictedMatch M (k + 1) m m w := by
+  rw [matches'_star, Language.mem_kstar] at h
+  rcases h with ⟨L, rfl, hL⟩
+  induction L with
+  | nil => exact isRestrictedMatch_nil
+  | cons z L' ih' =>
+    simp only [List.forall_mem_cons] at hL
+    apply IsRestrictedMatch.trans m m m
+    · exact IsRestrictedMatch.mono (ih hL.left) (Nat.le_succ k)
+    · exact hm
+    · exact ih' hL.right
 
 lemma isRestrictedMatch_of_mem_pathRegex {k : ℕ} {i j : Fin n} {w : List α}
     (h : w ∈ (pathRegex M k i j).matches') :
@@ -746,29 +734,16 @@ lemma isRestrictedMatch_of_mem_pathRegex {k : ℕ} {i j : Fin n} {w : List α}
     simp only [pathRegex] at h
     split_ifs at h with hlt
     · rw [matches'_add, Language.mem_add, mem_matches_mul_star_mul] at h
-      rcases h with ⟨w₁, w₂, w₃, rfl, hw₁, hw₂, hw₃⟩ | h
+      rcases h with ⟨w₁, w₂, w₃, rfl, hw₁, hw₂, hw₃⟩ | h_old
       · apply IsRestrictedMatch.trans (m := ⟨k', hlt⟩)
         · apply IsRestrictedMatch.trans (m := ⟨k', hlt⟩)
-          · exact IsRestrictedMatch.mono (ih hw₁) (by simp)
+          · exact IsRestrictedMatch.mono (ih hw₁) (Nat.le_succ k')
           · simp
-          · rw [matches'_star, Language.mem_kstar] at hw₂
-            rcases hw₂ with ⟨L, rfl, hL⟩
-            induction L with
-            | nil =>
-              rw [List.flatten_nil]
-              exact isRestrictedMatch_nil
-            | cons z L' ih' =>
-              rw [← List.singleton_append, List.flatten_append]
-              simp only [List.mem_cons, forall_eq_or_imp] at hL
-              apply IsRestrictedMatch.trans ⟨k', hlt⟩ ⟨k', hlt⟩ ⟨k', hlt⟩
-              · simp only [List.flatten_cons, List.flatten_nil, List.append_nil]
-                exact IsRestrictedMatch.mono (ih hL.left) (by simp)
-              · simp
-              · exact ih' hL.right
+          · exact isRestrictedMatch_star hw₂ ih (lt_add_one _)
         · simp
-        · exact IsRestrictedMatch.mono (ih hw₃) (by simp)
-      · exact IsRestrictedMatch.mono (ih h) (by simp)
-    · exact IsRestrictedMatch.mono (ih h) (by simp)
+        · exact IsRestrictedMatch.mono (ih hw₃) (Nat.le_succ k')
+      · exact IsRestrictedMatch.mono (ih h_old) (Nat.le_succ k')
+    · exact IsRestrictedMatch.mono (ih h) (Nat.le_succ k')
 
 lemma pathRegex_mono {k k' : ℕ} {i j : Fin n} {x : List α}
     (hle : k ≤ k') (h : x ∈ (pathRegex M k i j).matches') :
@@ -778,8 +753,7 @@ lemma pathRegex_mono {k k' : ℕ} {i j : Fin n} {x : List α}
   | step hn ih =>
     simp only [pathRegex]
     split_ifs
-    · right
-      exact ih
+    · exact Or.inr ih
     · exact ih
 
 lemma pathRegex_trans {k : ℕ} {i j m : Fin n} (hm : m.val < k)
@@ -797,87 +771,30 @@ lemma pathRegex_trans {k : ℕ} {i j m : Fin n} (hm : m.val < k)
       <;> rcases h₁ with ⟨y₁, y₂, y₃, rfl, hy₁, hy₂, hy₃⟩ | h_old₁
       <;> rcases h₂ with ⟨z₁, z₂, z₃, rfl, hz₁, hz₂, hz₃⟩ | h_old₂
       · left
-        use y₁, y₂ ++ y₃ ++ z₁ ++ z₂, z₃
-        and_intros
-        · simp
-        · exact hy₁
-        · rcases hy₂ with ⟨L₁, rfl, hL₁⟩
-          rcases hz₂ with ⟨L₂, rfl, hL₂⟩
-          use L₁ ++ [y₃ ++ z₁] ++ L₂
-          constructor
-          · simp
-          · simp only [List.append_assoc, List.cons_append, List.nil_append, List.mem_append,
-              List.mem_cons]
-            rintro y (hy | rfl | hy)
-            · exact hL₁ y hy
-            · exact ih hm hy₃ hz₁
-            · exact hL₂ y hy
-        · exact hz₃
+        refine ⟨y₁, y₂ ++ y₃ ++ z₁ ++ z₂, z₃, by simp, hy₁, ?_, hz₃⟩
+        have h₁ := ih hm hy₃ hz₁
+        have h₂ := mem_matches_star_concat hy₂ (mem_matches_star_singleton h₁)
+        rw [← List.append_assoc] at h₂
+        exact mem_matches_star_concat h₂ hz₂
       · left
-        use y₁, y₂, y₃ ++ x₂
-        and_intros
-        · simp
-        · exact hy₁
-        · exact hy₂
-        · exact ih hm hy₃ h_old₂
+        exact ⟨y₁, y₂, y₃ ++ x₂, by simp, hy₁, hy₂, ih hm hy₃ h_old₂⟩
       · left
-        use x₁ ++ z₁, z₂, z₃
-        and_intros
-        · simp
-        · exact ih hm h_old₁ hz₁
-        · exact hz₂
-        · exact hz₃
+        exact ⟨x₁ ++ z₁, z₂, z₃, by simp, ih hm h_old₁ hz₁, hz₂, hz₃⟩
       · right
         exact ih hm h_old₁ h_old₂
       · left
-        use y₁, y₂ ++ y₃ ++ z₁ ++ z₂, z₃
-        and_intros
-        · simp
-        · exact hy₁
-        · rcases hy₂ with ⟨L₁, rfl, hL₁⟩
-          rcases hz₂ with ⟨L₂, rfl, hL₂⟩
-          use L₁ ++ [y₃] ++ [z₁] ++ L₂
-          constructor
-          · simp
-          · simp only [List.append_assoc, List.cons_append, List.nil_append, List.mem_append,
-              List.mem_cons]
-            rintro y (hy | rfl | rfl | hy)
-            · exact hL₁ y hy
-            · exact hy₃
-            · exact hz₁
-            · exact hL₂ y hy
-        · exact hz₃
+        refine ⟨y₁, y₂ ++ y₃ ++ z₁ ++ z₂, z₃, by simp, hy₁, ?_, hz₃⟩
+        have h₁ := mem_matches_star_concat hy₂ (mem_matches_star_singleton hy₃)
+        have h₂ := mem_matches_star_concat h₁ (mem_matches_star_singleton hz₁)
+        exact mem_matches_star_concat h₂ hz₂
       · left
-        use y₁, y₂ ++ y₃, x₂
-        and_intros
-        · simp
-        · exact hy₁
-        · rcases hy₂ with ⟨L, rfl, hL⟩
-          use L ++ [y₃]
-          constructor
-          · simp
-          · rw [List.forall_mem_append, List.forall_mem_singleton]
-            exact ⟨hL, hy₃⟩
-        · exact h_old₂
+        refine ⟨y₁, y₂ ++ y₃, x₂, by simp, hy₁, ?_, h_old₂⟩
+        exact mem_matches_star_concat hy₂ (mem_matches_star_singleton hy₃)
       · left
-        use x₁, z₁ ++ z₂, z₃
-        and_intros
-        · simp
-        · use h_old₁
-        · rcases hz₂ with ⟨L, rfl, hL⟩
-          use [z₁] ++ L
-          constructor
-          · simp
-          · rw [List.forall_mem_append, List.forall_mem_singleton]
-            exact ⟨hz₁, hL⟩
-        · exact hz₃
+        refine ⟨x₁, z₁ ++ z₂, z₃, by simp, h_old₁, ?_, hz₃⟩
+        exact mem_matches_star_concat (mem_matches_star_singleton hz₁) hz₂
       · left
-        use x₁, [], x₂
-        and_intros
-        · simp
-        · exact h_old₁
-        · refine ⟨[], by simp⟩
-        · exact h_old₂
+        exact ⟨x₁, [], x₂, by simp, h_old₁, ⟨[], rfl, by simp⟩, h_old₂⟩
     · rcases lt_or_eq_of_le (Nat.le_of_lt_succ hm) with hm | rfl
       · exact ih hm h₁ h₂
       · simp at hk'
