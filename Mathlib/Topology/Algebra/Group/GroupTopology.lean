@@ -110,6 +110,7 @@ instance : Bot (GroupTopology α) :=
 theorem toTopologicalSpace_bot : (⊥ : GroupTopology α).toTopologicalSpace = ⊥ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance : BoundedOrder (GroupTopology α) where
   le_top x := show x.toTopologicalSpace ≤ ⊤ from le_top
@@ -188,6 +189,7 @@ topology such that `f` is continuous and `β` is a topological group. -/
 def coinduced {α β : Type*} [t : TopologicalSpace α] [Group β] (f : α → β) : GroupTopology β :=
   sInf { b : GroupTopology β | TopologicalSpace.coinduced f t ≤ b.toTopologicalSpace }
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β] (f : α → β) :
     Continuous[t, (coinduced f).toTopologicalSpace] f := by

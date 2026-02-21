@@ -225,6 +225,7 @@ variable (K L : Type*) [Field K] [Field L]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]
   [Algebra.IsInvariant A B G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A technical lemma for `fixed_of_fixed1`. -/
 private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
     ∃ a b : B, (∀ g : G, g • a = a) ∧ a ∉ Q ∧
@@ -281,6 +282,7 @@ private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
     · rw [smul_zero, sub_zero]
       exact hr' h⁻¹ hh
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A technical lemma for `fixed_of_fixed1`. -/
 private theorem fixed_of_fixed1_aux2 [DecidableEq (Ideal B)] (b₀ : B)
     (hx : ∀ g : G, g • Q = Q → algebraMap B (B ⧸ Q) (g • b₀) = algebraMap B (B ⧸ Q) b₀) :
@@ -308,6 +310,7 @@ private theorem fixed_of_fixed1_aux3 [NoZeroDivisors B] {b : B} {i j : ℕ} {p :
     zero_eq_mul, or_iff_left (pow_ne_zero j ha), pow_eq_zero_iff hi, sub_eq_zero] at hf
   exact hf.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
 private theorem fixed_of_fixed1 [Module.IsTorsionFree (B ⧸ Q) L] (f : Gal(L/K)) (b : B ⧸ Q)
     (hx : ∀ g : MulAction.stabilizer G Q, Ideal.Quotient.stabilizerHom Q P G g b = b) :
@@ -484,6 +487,7 @@ lemma Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under
     refine .trans ?_ (σ.apply_symm_apply _)
     rw [← h₂, ← e, h₁]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Ideal.Quotient.field in
 include G in
 /--

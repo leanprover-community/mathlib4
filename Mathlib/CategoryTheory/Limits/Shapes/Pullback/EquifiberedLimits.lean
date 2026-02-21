@@ -24,6 +24,7 @@ open Limits Functor ObjectProperty
 
 variable {J K C D ι : Type*} [Category* J] [Category* C] [Category* K] [Category* D]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
     IsClosedUnderLimitsOfShape (fun f : Over F ↦ f.hom.Equifibered) J := by
   wlog hJ : IsConnected J generalizing J
@@ -57,6 +58,7 @@ instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
     simp [← NatTrans.naturality, reassoc_of% hm₁]
   · simpa [← NatTrans.comp_app]
 
+set_option backward.isDefEq.respectTransparency false in
 open Over in
 instance (F : C ⥤ D) [∀ a b : C, HasProductsOfShape (a ⟶ b) D] :
     IsClosedUnderColimitsOfShape (fun f : Under F ↦ f.hom.Coequifibered) J := by

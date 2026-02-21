@@ -173,6 +173,7 @@ theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
     HasFiniteIntegral (fun _ : α => c) μ :=
   hasFiniteIntegral_const_iff.2 <| .inr ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasFiniteIntegral.of_mem_Icc_of_ne_top [IsFiniteMeasure μ]
     {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞} (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     HasFiniteIntegral X μ := by
@@ -426,11 +427,13 @@ section PosPart
 
 /-! Lemmas used for defining the positive part of an `L¹` function -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem HasFiniteIntegral.max_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => max (f a) 0) μ :=
   hf.mono <| Eventually.of_forall fun x => by simp [abs_le, le_abs_self]
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem HasFiniteIntegral.min_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => min (f a) 0) μ :=

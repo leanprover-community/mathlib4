@@ -261,6 +261,7 @@ lemma IsMIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
     isMIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := b) hv (hγ.comp_add _) hγ _
   rw [comp_apply, add_sub_cancel, heq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A global integral curve is injective xor periodic with positive period. -/
 lemma IsMIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
     (hγ : IsMIntegralCurve γ v)

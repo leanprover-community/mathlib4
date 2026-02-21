@@ -100,6 +100,7 @@ protected theorem LieGroup.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
 instance {a : WithTop ℕ∞} [LieGroup I ∞ G] [h : ENat.LEInfty a] : LieGroup I a G :=
   LieGroup.of_le h.out
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance {a : WithTop ℕ∞} [LieGroup I ω G] : LieGroup I a G :=
   LieGroup.of_le le_top
@@ -235,6 +236,7 @@ protected theorem ContMDiffInv₀.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
 instance {a : WithTop ℕ∞} [ContMDiffInv₀ I ∞ G] [h : ENat.LEInfty a] : ContMDiffInv₀ I a G :=
   ContMDiffInv₀.of_le h.out
 
+set_option backward.isDefEq.respectTransparency false in
 instance {a : WithTop ℕ∞} [ContMDiffInv₀ I ω G] : ContMDiffInv₀ I a G :=
   ContMDiffInv₀.of_le le_top
 

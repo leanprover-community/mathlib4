@@ -23,6 +23,7 @@ variable {α M₀ : Type*} [CommMonoidWithZero M₀] {f : α →₀ M₀}
 
 namespace Finsupp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sym2_support_eq_preimage_support_mul [NoZeroDivisors M₀] (f : α →₀ M₀) :
     f.support.sym2 = map f ⁻¹' mul.support := by ext ⟨a, b⟩; simp
 
