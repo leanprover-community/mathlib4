@@ -879,7 +879,7 @@ theorem ContinuousOn.union_of_isClosed {f : α → β} (hfs : ContinuousOn f s) 
     rwa [ht.closure_eq]
 
 /-- A function is continuous on two closed sets iff it is also continuous on their union. -/
-theorem continouousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht : IsClosed t) :
+theorem continuousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht : IsClosed t) :
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isClosed h.right hs ht⟩
@@ -890,7 +890,7 @@ theorem ContinuousOn.union_of_isOpen {f : α → β} (hfs : ContinuousOn f s) (h
   union_continuousAt hs hfs fun _ hx ↦ ht.continuousOn_iff.mp hft hx
 
 /-- A function is continuous on two open sets iff it is also continuous on their union. -/
-theorem continouousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : IsOpen t) :
+theorem continuousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : IsOpen t) :
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isOpen h.right hs ht⟩
