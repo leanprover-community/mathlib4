@@ -107,12 +107,6 @@ structure IsMinimalPrimaryDecomposition [DecidableEq (Submodule R M)]
   distinct : (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical)
   minimal : ∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J
 
-protected lemma IsMinimalPrimaryDecomposition.le_radical [DecidableEq (Ideal R)]
-    {I : Ideal R} {t : Finset (Ideal R)}
-    (ht : I.IsMinimalPrimaryDecomposition t) {q : Ideal R} (hq : q ∈ t) : I ≤ q.radical := by
-  rw [← ht.inf_eq]
-  exact (Finset.inf_le hq).trans le_radical
-
 lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)]
     (h : IsLasker R M) (N : Submodule R M) :
     ∃ t : Finset (Submodule R M), N.IsMinimalPrimaryDecomposition t := by
@@ -128,7 +122,7 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes [Decidabl
     {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t) :
     (fun J : (Submodule R M) ↦ (J.colon Set.univ).radical) '' t = N.associatedPrimes := by
   classical
-  replace h x : radical (N.colon {x}) = (t.filter (x ∉ ·)).inf fun q ↦ radical (q.colon .univ) := by
+  have h x : radical (N.colon {x}) = (t.filter (x ∉ ·)).inf fun q ↦ radical (q.colon .univ) := by
     simp_rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply, map_finset_inf,
       Function.comp_def, radicalInfTopHom_apply, id_eq]
     rw [Finset.inf_congr rfl (fun q hq ↦ (ht.primary hq).radical_colon_singleton_eq_ite x),
@@ -137,7 +131,7 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes [Decidabl
   constructor
   · rintro ⟨q, hqt, rfl⟩
     obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
-    refine ⟨(ht.primary hqt).isPrime_radical_colon, x, ?_⟩
+    use (ht.primary hqt).isPrime_radical_colon, x
     rw [h, ← Finset.insert_erase (Finset.mem_filter.mpr ⟨hqt, hxq⟩), Finset.inf_insert,
       eq_comm, inf_eq_left, Finset.le_inf_iff]
     simp only [mem_finsetInf, Finset.mem_erase] at hxt
@@ -160,7 +154,8 @@ lemma Ideal.IsMinimalPrimaryDecomposition.minimalPrimes_subset_image_radical
     rw [← ht.inf_eq, ← radicalInfTopHom_apply, map_finset_inf]
     rfl
   obtain ⟨q, hqt, hqp⟩ := (IsPrime.inf_le' hp.1.1).mp htp
-  exact ⟨q, hqt, le_antisymm hqp (hp.2 ⟨isPrime_radical (ht.primary hqt), ht.le_radical hqt⟩ hqp)⟩
+  exact ⟨q, hqt, le_antisymm hqp (hp.2 ⟨isPrime_radical (ht.primary hqt),
+    ht.inf_eq.symm.trans_le ((Finset.inf_le hqt).trans le_radical)⟩ hqp)⟩
 
 namespace Submodule
 
