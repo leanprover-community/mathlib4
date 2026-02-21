@@ -12,6 +12,7 @@ public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.Prod.Basic
 public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Data.AvoidChoice.List
 
 /-! # sublists
 
@@ -351,8 +352,8 @@ theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
   apply Perm.map
   apply (perm_ext_iff_of_nodup _ _).mpr
   · simp
-  · exact nodup_sublists.mpr (nodup_finRange _)
-  · exact (nodup_sublists'.mpr (nodup_finRange _))
+  · exact nodup_sublists.mpr (Constructive.List.nodup_finRange _)
+  · exact (nodup_sublists'.mpr (Constructive.List.nodup_finRange _))
 
 theorem sublists_cons_perm_append (a : α) (l : List α) :
     sublists (a :: l) ~ sublists l ++ map (cons a) (sublists l) :=
