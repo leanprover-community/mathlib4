@@ -208,7 +208,7 @@ theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivi
 section
 
 theorem toLin_restrict_ker_eq_inf_ker (B : BilinForm K V) (W : Subspace K V) :
-    (LinearMap.ker <| B.domRestrict W).map W.subtype = (W ⊓ B.ker : Subspace K V) := by
+    (LinearMap.ker <| B.domRestrict W).map W.subtype = W ⊓ B.ker := by
   ext x; constructor <;> intro hx
   · rcases hx with ⟨⟨x, hx⟩, hker, rfl⟩
     constructor
