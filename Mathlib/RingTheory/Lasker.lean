@@ -133,9 +133,9 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)
 In any minimal primary decomposition `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly
 the associated primes of `I`. -/
 lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
-    {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq (Submodule R M)]
-    {I : Submodule R M} {t : Finset (Submodule R M)} (ht : I.IsMinimalPrimaryDecomposition t) :
-    (fun J : (Submodule R M) ↦ (J.colon Set.univ).radical) '' t = I.associatedPrimes := by
+    [DecidableEq (Submodule R M)]
+    {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t) :
+    (fun J : (Submodule R M) ↦ (J.colon Set.univ).radical) '' t = N.associatedPrimes := by
   classical
   have h {x} q (hq : q ∈ t) :
       (q.colon {x}).radical = if x ∈ q then ⊤ else (q.colon Set.univ).radical := by
@@ -143,7 +143,7 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
     · rwa [radical_eq_top, colon_eq_top_iff_subset, Set.singleton_subset_iff]
     · exact (ht.primary hq).radical_colon_singleton_of_notMem hx
   replace h x :
-      radical (I.colon {x}) = (t.filter (x ∉ ·)).inf (fun q ↦ (q.colon Set.univ).radical) := by
+      radical (N.colon {x}) = (t.filter (x ∉ ·)).inf (fun q ↦ (q.colon Set.univ).radical) := by
     rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply]
     simp [Function.comp_def, Finset.inf_congr rfl h, Finset.inf_ite]
   ext p
