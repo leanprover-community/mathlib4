@@ -65,6 +65,12 @@ theorem tendsto_inv_nhdsGT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 :
 theorem tendsto_inv_atTop_nhdsGT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
   inv_atTop₀.le
 
+theorem tendsto_nhdsGT_zero_of_comp_inv_tendsto_atTop {f : 𝕜 → α}
+    (h : Tendsto (fun x ↦ f x⁻¹) atTop l) :
+    Tendsto f (𝓝[>] 0) l := by
+  convert h.comp tendsto_inv_nhdsGT_zero
+  grind [inv_inv]
+
 theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
   tendsto_inv_atTop_nhdsGT_zero.mono_right inf_le_left
 
@@ -80,6 +86,7 @@ theorem tendsto_pow_neg_atTop {n : ℕ} (hn : n ≠ 0) :
     Tendsto (fun x : 𝕜 => x ^ (-(n : ℤ))) atTop (𝓝 0) := by
   simpa only [zpow_neg, zpow_natCast] using (tendsto_pow_atTop (α := 𝕜) hn).inv_tendsto_atTop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
     Tendsto (fun x : 𝕜 => x ^ n) atTop (𝓝 0) := by
   lift -n to ℕ using le_of_lt (neg_pos.mpr hn) with N h
@@ -192,6 +199,12 @@ lemma inv_nhdsLT_zero : (𝓝[<] (0 : 𝕜))⁻¹ = atBot := by
 /-- The function `x ↦ x⁻¹` tends to `-∞` on the left of `0`. -/
 theorem tendsto_inv_nhdsLT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
   inv_nhdsLT_zero.le
+
+theorem tendsto_nhdsLT_zero_of_comp_inv_tendsto_atBot {f : 𝕜 → α}
+    (h : Tendsto (fun x ↦ f x⁻¹) atBot l) :
+    Tendsto f (𝓝[<] 0) l := by
+  convert h.comp tendsto_inv_nhdsLT_zero
+  grind
 
 /-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
 theorem tendsto_inv_atBot_nhdsLT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=

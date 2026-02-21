@@ -108,6 +108,7 @@ section CommRing
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {S : Submodule R M}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPrimary_iff_zero_divisor_quotient_imp_nilpotent_smul :
     S.IsPrimary ↔ S ≠ ⊤ ∧ ∀ (r : R) (x : M ⧸ S), x ≠ 0 → r • x = 0 →
       ∃ n : ℕ, r ^ n • (⊤ : Submodule R (M ⧸ S)) = ⊥ := by
