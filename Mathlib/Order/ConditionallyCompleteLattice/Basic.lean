@@ -563,7 +563,7 @@ theorem le_csInf_iff' (hs : s.Nonempty) : b ≤ sInf s ↔ b ∈ lowerBounds s :
 theorem csInf_mem (hs : s.Nonempty) : sInf s ∈ s :=
   (isLeast_csInf hs).1
 
-lemma sInf_eq_iff (hs : s.Nonempty) (n : α) :
+lemma csInf_eq_iff (hs : s.Nonempty) (n : α) :
      sInf s = n ↔ n ∈ s ∧ ∀ a ∈ s, n ≤ a := by
   have : OrderBot α := WellFoundedLT.toOrderBot
   constructor

@@ -61,7 +61,7 @@ lemma iInf_eq_coe_iff {f : ι → ℕ∞} {n : ℕ} :
     ⨅ i, f i = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
   by_cases! hι : IsEmpty ι
   · simp [iInf_of_isEmpty]
-  apply iInf_eq_iff
+  apply ciInf_eq_iff
 
 lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   cases isEmpty_or_nonempty ι
