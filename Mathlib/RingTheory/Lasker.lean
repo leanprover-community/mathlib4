@@ -160,7 +160,7 @@ lemma IsMinimalPrimaryDecomposition.mem_associatedPrimes [DecidableEq (Submodule
 instance {N : Submodule R M} (q : N.associatedPrimes) : q.1.IsPrime := q.2.1
 
 open LocalizedModule in
-lemma IsMinimalPrimaryDecomposition.foobar
+lemma IsMinimalPrimaryDecomposition.comap_localized₀_eq_ite
     {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M] [DecidableEq (Ideal R)]
     {I : Submodule R M}
     (s₀ : Finset I.associatedPrimes) (hs₀ : IsLowerSet (s₀ : Set I.associatedPrimes))
@@ -218,8 +218,8 @@ lemma IsMinimalPrimaryDecomposition.comap_localized₀_eq_iInf
   suffices ∀ q ∈ t, (localized₀ S f q).comap f = if q ∈ s then q else ⊤ by
     rw [Finset.inf_congr rfl this, Finset.inf_ite, Finset.inf_top, inf_top_eq,
       Finset.filter_mem_eq_inter, Finset.inter_eq_right.mpr hs, Finset.inf_eq_iInf]
-  refine fun q hqt ↦ (IsMinimalPrimaryDecomposition.foobar s₀ hs₀ q (ht.primary hqt)
-    ⟨(q.colon Set.univ).radical, ht.mem_associatedPrimes hqt⟩ rfl).trans ?_
+  refine fun q hqt ↦ (IsMinimalPrimaryDecomposition.comap_localized₀_eq_ite s₀ hs₀ q
+    (ht.primary hqt) ⟨(q.colon Set.univ).radical, ht.mem_associatedPrimes hqt⟩ rfl).trans ?_
   refine ite_cond_congr (le_antisymm (fun hqs ↦ ?_) (fun hqs ↦ ?_))
   · have key := Finset.mem_image_of_mem Subtype.val hqs
     rw [← hs', Finset.mem_image] at key
