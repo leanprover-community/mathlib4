@@ -478,6 +478,8 @@ variable [∀ q oa q', Decidable (q' ∈ M.step q oa)]
 
 local notation "n" => FinEnum.card (ExtendedState σ)
 
+/-- An equivalence mapping the extended state space `ExtendedState σ` to the disjoint union
+`Sum (Fin 2) σ`. This is a helper used to derive the `FinEnum` instance for `ExtendedState σ`-/
 def ExtendedState.equivSum (σ : Type*) : ExtendedState σ ≃ Sum (Fin 2) σ where
   toFun := fun
     | .start   => .inl 0
@@ -497,6 +499,8 @@ def ExtendedState.equivSum (σ : Type*) : ExtendedState σ ≃ Sum (Fin 2) σ wh
 instance [FinEnum σ] : FinEnum (ExtendedState σ) :=
   FinEnum.ofEquiv (Sum (Fin 2) σ) (ExtendedState.equivSum σ)
 
+/-- The bijection indexing every state in the extended NFA with a unique integer in `Fin n`.
+This allows `pathRegex` to implement Kleene's algorithm. -/
 def e : ExtendedState σ ≃ Fin n := FinEnum.equiv
 
 variable (M) in
@@ -564,7 +568,9 @@ theorem mem_matches'_directRegex {i j : Fin n} {x : List α} :
 
 variable (M) in
 /-- The regex matching all words that result in a path from a state indexed `i` to a state indexed
-`j` using no intermediate state with index greater than or equal to `k`. -/
+`j` using no intermediate state with index greater than or equal to `k`.
+
+Implements Kleene's algorithm for computing the regex. -/
 @[simp]
 def pathRegex (k : ℕ) (i j : Fin n) : RegularExpression α :=
   match k, i, j with
