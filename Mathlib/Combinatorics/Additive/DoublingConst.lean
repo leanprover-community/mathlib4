@@ -107,6 +107,7 @@ lemma mulConst_inv_right (A B : Finset G) : σₘ[A, B⁻¹] = δₘ[A, B] := by
 lemma divConst_inv_right (A B : Finset G) : δₘ[A, B⁻¹] = σₘ[A, B] := by
   rw [mulConst, divConst, div_inv_eq_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma one_le_mulConst (hA : A.Nonempty) (hB : B.Nonempty) : 1 ≤ σₘ[A, B] := by
   rw [mulConst, one_le_div₀]

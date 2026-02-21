@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
-import Mathlib.Analysis.Asymptotics.Lemmas
 
 /-!
 # Fréchet derivative of constant functions
@@ -36,10 +35,32 @@ variable {f : E → F} {x : E} {s : Set E}
 
 section Const
 
+theorem hasFDerivAtFilter_const (c : F) (L : Filter (E × E)) :
+    HasFDerivAtFilter (fun _ => c) (0 : E →L[𝕜] F) L :=
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by simp
+
+theorem hasFDerivAtFilter_zero (L : Filter (E × E)) :
+    HasFDerivAtFilter (0 : E → F) (0 : E →L[𝕜] F) L := hasFDerivAtFilter_const _ _
+
+theorem hasFDerivAtFilter_one [One F] (L : Filter (E × E)) :
+    HasFDerivAtFilter (1 : E → F) (0 : E →L[𝕜] F) L := hasFDerivAtFilter_const _ _
+
+theorem hasFDerivAtFilter_natCast [NatCast F] (n : ℕ) (L : Filter (E × E)) :
+    HasFDerivAtFilter (n : E → F) (0 : E →L[𝕜] F) L :=
+  hasFDerivAtFilter_const _ _
+
+theorem hasFDerivAtFilter_intCast [IntCast F] (z : ℤ) (L : Filter (E × E)) :
+    HasFDerivAtFilter (z : E → F) (0 : E →L[𝕜] F) L :=
+  hasFDerivAtFilter_const _ _
+
+theorem hasFDerivAtFilter_ofNat (n : ℕ) [OfNat F n] (L : Filter (E × E)) :
+    HasFDerivAtFilter (ofNat(n) : E → F) (0 : E →L[𝕜] F) L :=
+  hasFDerivAtFilter_const _ _
+
 @[fun_prop]
 theorem hasStrictFDerivAt_const (c : F) (x : E) :
     HasStrictFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by simp
+  hasFDerivAtFilter_const _ _
 
 @[fun_prop]
 theorem hasStrictFDerivAt_zero (x : E) :
@@ -61,32 +82,10 @@ theorem hasStrictFDerivAt_intCast [IntCast F] (z : ℤ) (x : E) :
 theorem hasStrictFDerivAt_ofNat (n : ℕ) [OfNat F n] (x : E) :
     HasStrictFDerivAt (ofNat(n) : E → F) (0 : E →L[𝕜] F) x := hasStrictFDerivAt_const _ _
 
-theorem hasFDerivAtFilter_const (c : F) (x : E) (L : Filter E) :
-    HasFDerivAtFilter (fun _ => c) (0 : E →L[𝕜] F) x L :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by simp
-
-theorem hasFDerivAtFilter_zero (x : E) (L : Filter E) :
-    HasFDerivAtFilter (0 : E → F) (0 : E →L[𝕜] F) x L := hasFDerivAtFilter_const _ _ _
-
-theorem hasFDerivAtFilter_one [One F] (x : E) (L : Filter E) :
-    HasFDerivAtFilter (1 : E → F) (0 : E →L[𝕜] F) x L := hasFDerivAtFilter_const _ _ _
-
-theorem hasFDerivAtFilter_natCast [NatCast F] (n : ℕ) (x : E) (L : Filter E) :
-    HasFDerivAtFilter (n : E → F) (0 : E →L[𝕜] F) x L :=
-  hasFDerivAtFilter_const _ _ _
-
-theorem hasFDerivAtFilter_intCast [IntCast F] (z : ℤ) (x : E) (L : Filter E) :
-    HasFDerivAtFilter (z : E → F) (0 : E →L[𝕜] F) x L :=
-  hasFDerivAtFilter_const _ _ _
-
-theorem hasFDerivAtFilter_ofNat (n : ℕ) [OfNat F n] (x : E) (L : Filter E) :
-    HasFDerivAtFilter (ofNat(n) : E → F) (0 : E →L[𝕜] F) x L :=
-  hasFDerivAtFilter_const _ _ _
-
 @[fun_prop]
 theorem hasFDerivWithinAt_const (c : F) (x : E) (s : Set E) :
     HasFDerivWithinAt (fun _ => c) (0 : E →L[𝕜] F) s x :=
-  hasFDerivAtFilter_const _ _ _
+  hasFDerivAtFilter_const _ _
 
 @[fun_prop]
 theorem hasFDerivWithinAt_zero (x : E) (s : Set E) :
@@ -113,7 +112,7 @@ theorem hasFDerivWithinAt_ofNat (n : ℕ) [OfNat F n] (x : E) (s : Set E) :
 
 @[fun_prop]
 theorem hasFDerivAt_const (c : F) (x : E) : HasFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
-  hasFDerivAtFilter_const _ _ _
+  hasFDerivAtFilter_const _ _
 
 @[fun_prop]
 theorem hasFDerivAt_zero (x : E) :
@@ -298,11 +297,9 @@ theorem hasFDerivWithinAt_singleton (f : E → F) (x : E) :
 @[fun_prop]
 theorem hasFDerivWithinAt_of_subsingleton [h : Subsingleton E] (f : E → F) (s : Set E) (x : E) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x := by
-  by_cases hs : s = ∅
-  · simp [hs]
-  · obtain ⟨a, rfl⟩ := exists_eq_singleton_iff_nonempty_subsingleton (s := s)|>.mpr
-      ⟨by rwa [nonempty_iff_ne_empty], subsingleton_of_subsingleton⟩
-    exact HasFDerivWithinAt.singleton
+  obtain rfl | ⟨a, rfl⟩ := s.eq_empty_or_singleton_of_subsingleton
+  · simp
+  · exact HasFDerivWithinAt.singleton
 
 @[fun_prop]
 theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :

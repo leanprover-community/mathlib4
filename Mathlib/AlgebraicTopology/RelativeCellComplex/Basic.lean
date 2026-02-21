@@ -74,6 +74,7 @@ variable {c} in
 def Cells.ι (γ : Cells c) : B γ.j γ.i ⟶ Y :=
   (c.attachCells γ.j γ.hj).cell γ.k ≫ c.incl.app (Order.succ γ.j)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hom_ext {Z : C} {φ₁ φ₂ : Y ⟶ Z} (h₀ : f ≫ φ₁ = f ≫ φ₂)
     (h : ∀ (γ : Cells c), γ.ι ≫ φ₁ = γ.ι ≫ φ₂) :
     φ₁ = φ₂ := by

@@ -423,6 +423,7 @@ theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAc
   dsimp only [dihedralAct]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : Quandle (Dihedral n) where
   act := dihedralAct n
   self_distrib := by
@@ -648,6 +649,7 @@ theorem well_def {R : Type*} [Rack R] {G : Type*} [Group G] (f : R →◃ Quandl
 
 end toEnvelGroup.mapAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a map from a rack to a group, lift it to being a map from the enveloping group.
 More precisely, the `EnvelGroup` functor is left adjoint to `Quandle.Conj`.
 -/
