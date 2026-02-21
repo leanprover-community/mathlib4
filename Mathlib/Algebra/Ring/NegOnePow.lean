@@ -115,7 +115,7 @@ lemma cast_negOnePow_natCast (R : Type*) [Ring R] (n : ℕ) : negOnePow n = (-1 
 lemma coe_negOnePow_natCast (n : ℕ) : negOnePow n = (-1 : ℤ) ^ n := cast_negOnePow_natCast ..
 
 /-- The cast of `negOnePow n` to a ring equals `(-1) ^ n.natAbs`. -/
-lemma cast_negOnePow_eq_neg_one_pow_natAbs (R : Type*) [Ring R] (n : ℤ) :
+lemma coe_negOnePow (R : Type*) [Ring R] (n : ℤ) :
     (n.negOnePow : R) = (-1 : R) ^ n.natAbs := by
   cases n with
   | ofNat n => exact cast_negOnePow_natCast R n
