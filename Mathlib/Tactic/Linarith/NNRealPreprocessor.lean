@@ -31,7 +31,7 @@ open Rify NNReal
 or the negation thereof.
 -/
 partial def isNNRealProp (e : Expr) : MetaM Bool := succeeds do
-  let (_, _, .const ``NNReal [], _, _) ← e.ineqOrNotIneq? | failure
+  let (_, _, .const ``NNReal _, _, _) ← e.ineqOrNotIneq? | failure
 
 /-- If `e` is of the form `((x : ℝ≥0) : ℝ)`, `NNReal.toReal e` returns `x`. -/
 def isNNRealtoReal (e : Expr) : Option Expr :=
