@@ -82,6 +82,7 @@ namespace StrongTrans
 
 variable {F G : B ⥤ᵖ C}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The strong transformation of oplax functors induced by a strong transformation of
 pseudofunctors. -/
 @[simps]

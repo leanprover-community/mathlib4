@@ -21,6 +21,7 @@ In particular finitely generated field extensions over perfect fields are smooth
 
 variable {K L ι : Type*} [Field L] [Field K] [Algebra K L]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped IntermediateField.algebraAdjoinAdjoin in
 lemma Algebra.FormallySmooth.adjoin_of_algebraicIndependent {v : ι → L}
     (hb : AlgebraicIndependent K v) :
@@ -40,6 +41,7 @@ lemma Algebra.FormallySmooth.of_algebraicIndependent {v : ι → L}
   rw [hb'] at this
   exact .of_equiv IntermediateField.topEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Separably generated extensions are formally smooth. -/
 lemma Algebra.FormallySmooth.of_algebraicIndependent_of_isSeparable [EssFiniteType K L]
     {v : ι → L} (hb : AlgebraicIndependent K v)
@@ -52,6 +54,7 @@ lemma Algebra.FormallySmooth.of_algebraicIndependent_of_isSeparable [EssFiniteTy
     (FormallyEtale.iff_isSeparable _ _).mpr inferInstance
   exact .comp _ (IntermediateField.adjoin K (Set.range v)) _
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) Algebra.FormallySmooth.of_perfectField
     [PerfectField K] [Algebra.EssFiniteType K L] : Algebra.FormallySmooth K L := by
   obtain ⟨s, hs, H⟩ := exists_isTranscendenceBasis_and_isSeparable_of_perfectField K L
