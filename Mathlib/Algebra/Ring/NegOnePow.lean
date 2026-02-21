@@ -123,7 +123,7 @@ lemma coe_negOnePow (R : Type*) [Ring R] (n : ℤ) :
 
 /-- Specialization of `cast_negOnePow_eq_neg_one_pow_natAbs` to `ℤ`. -/
 @[simp]
-lemma coe_negOnePow_eq_neg_one_pow_natAbs (n : ℤ) :
+lemma coe_int_negOnePow (n : ℤ) :
     (n.negOnePow : ℤ) = (-1 : ℤ) ^ n.natAbs :=
   cast_negOnePow_eq_neg_one_pow_natAbs ..
 
