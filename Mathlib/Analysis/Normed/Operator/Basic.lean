@@ -61,15 +61,15 @@ variable [SemilinearMapClass 𝓕 σ₁₂ E F]
 
 theorem ball_zero_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {r : ℝ}
     (hr : 0 < r) : ball 0 r ⊆ Set.range f ↔ (⇑f).Surjective :=
-  absorbent_ball (by simpa) |>.subset_range_iff_surjective
+  absorbent_ball (by simpa) |>.subset_range_iff_surjective (f := (f : E →ₛₗ[σ₁₂] F))
 
 theorem ball_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
     (hr : 0 < r) : ball x r ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
-  rw [← ball_zero_subset_range_iff_surjective hr]
+  rw [← ball_zero_subset_range_iff_surjective hr, ← LinearMap.coe_coe]
   simp_rw [← LinearMap.coe_range, Set.subset_def, SetLike.mem_coe] at h ⊢
   intro _ _
-  rw [← Submodule.add_mem_iff_left (LinearMap.range f) (h _ <| mem_ball_self hr)]
+  rw [← Submodule.add_mem_iff_left (f : E →ₛₗ[σ₁₂] F).range (h _ <| mem_ball_self hr)]
   apply h
   simp_all
 
@@ -319,21 +319,28 @@ theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
   (f + g).opNorm_le_bound (add_nonneg f.opNorm_nonneg g.opNorm_nonneg) fun x =>
     (norm_add_le_of_le (f.le_opNorm x) (g.le_opNorm x)).trans_eq (add_mul _ _ _).symm
 
-
-/-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
-(Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
-theorem norm_id_of_nontrivial_seminorm (h : ∃ x : E, ‖x‖ ≠ 0) : ‖ContinuousLinearMap.id 𝕜 E‖ = 1 :=
+/-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
+theorem norm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖ = 1 :=
   le_antisymm norm_id_le <| by
-    let ⟨x, hx⟩ := h
+    let ⟨x, hx⟩ := exists_norm_ne_zero E
     have := (ContinuousLinearMap.id 𝕜 E).ratio_le_opNorm x
     rwa [id_apply, div_self hx] at this
 
-theorem opNorm_smul_le {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F]
+instance normOneClass [NontrivialTopology E] : NormOneClass (E →L[𝕜] E) :=
+  ⟨norm_id⟩
+
+/-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
+(Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
+@[deprecated norm_id (since := "2025-09-03")]
+theorem norm_id_of_nontrivial_seminorm (h : ∃ x : E, ‖x‖ ≠ 0) : ‖ContinuousLinearMap.id 𝕜 E‖ = 1 :=
+  letI : NontrivialTopology E := .of_exists_norm_ne_zero h
+  norm_id
+
+theorem opNorm_smul_le {𝕜' : Type*} [DistribSMul 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F]
+    [SeminormedAddCommGroup 𝕜'] [IsBoundedSMul 𝕜' F]
     (c : 𝕜') (f : E →SL[σ₁₂] F) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun _ => by
-    rw [smul_apply, norm_smul, mul_assoc]
-    gcongr
-    apply le_opNorm
+    grw [smul_apply, norm_smul_le, mul_assoc, le_opNorm]
 
 theorem opNorm_le_iff_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} :
     ‖f‖ ≤ K ↔ LipschitzWith K f :=
@@ -379,6 +386,11 @@ instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .repla
 /-- Continuous linear maps themselves form a seminormed space with respect to the operator norm. -/
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
 
+/-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
+theorem nnnorm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖₊ = 1 :=
+  NNReal.eq norm_id
+
 instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
   ⟨opNorm_smul_le⟩
@@ -411,6 +423,16 @@ lemma le_opNorm_enorm (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
   rw [← ENNReal.ofReal_mul (by positivity)]
   gcongr
   exact f.le_opNorm x
+
+set_option backward.isDefEq.respectTransparency false in
+variable {f} in
+theorem homothety_norm [NontrivialTopology E] (f : E →SL[σ₁₂] F) {a : ℝ}
+    (hf : ∀ x, ‖f x‖ = a * ‖x‖) : ‖f‖ = a := by
+  obtain ⟨x, hx⟩ := exists_norm_ne_zero E
+  replace hx : 0 < ‖x‖ := lt_of_le_of_ne' (norm_nonneg _) hx
+  have ha : 0 ≤ a := by simpa only [hf, hx, mul_nonneg_iff_of_pos_right] using norm_nonneg (f x)
+  apply le_antisymm (f.opNorm_le_bound ha fun y => le_of_eq (hf y))
+  simpa only [hf, hx, mul_le_mul_iff_left₀] using f.le_opNorm x
 
 end OpNorm
 
@@ -483,6 +505,7 @@ end LinearIsometry
 
 namespace Submodule
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_subtypeL_le (K : Submodule 𝕜 E) : ‖K.subtypeL‖ ≤ 1 :=
   K.subtypeₗᵢ.norm_toContinuousLinearMap_le
 

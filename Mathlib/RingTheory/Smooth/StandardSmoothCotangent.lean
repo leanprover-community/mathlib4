@@ -53,6 +53,7 @@ noncomputable def cotangentComplexAux [Finite σ] (P : PreSubmersivePresentation
   Finsupp.linearEquivFunOnFinite S S σ ∘ₗ Finsupp.lcomapDomain _ P.map_inj ∘ₗ
     P.cotangentSpaceBasis.repr.toLinearMap ∘ₗ P.toExtension.cotangentComplex
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cotangentComplexAux_apply [Finite σ] (P : PreSubmersivePresentation R S ι σ)
     (x : P.ker) (i : σ) :
     P.cotangentComplexAux (Cotangent.mk x) i = (aeval P.val) (pderiv (P.map i) x.val) := by
@@ -74,6 +75,7 @@ namespace SubmersivePresentation
 
 variable [Finite σ] (P : SubmersivePresentation R S ι σ)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cotangentComplexAux_injective [Finite σ] : Function.Injective P.cotangentComplexAux := by
   rw [← LinearMap.ker_eq_bot, eq_bot_iff]
   intro x hx
@@ -188,9 +190,6 @@ lemma sectionCotangent_zero_of_notMem_range (i : ι) (hi : i ∉ Set.range P.map
   simp only [Basis.repr_self, map_zero, Pi.zero_apply, Finsupp.single_apply] at hi
   grind
 
-@[deprecated (since := "2025-05-23")]
-alias sectionCotangent_zero_of_not_mem_range := sectionCotangent_zero_of_notMem_range
-
 /--
 Given a submersive presentation of `S` as `R`-algebra, any indexing type `κ` complementary to
 the `σ` in `ι` indexes a basis of `Ω[S⁄R]`.
@@ -214,6 +213,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     simp [Finsupp.single_eq_pi_single]
   · exact hcompl.2
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma basisKaehlerOfIsCompl_apply {κ : Type*} {f : κ → ι}
     (hf : Function.Injective f) (hcompl : IsCompl (Set.range f) (Set.range P.map)) (k : κ) :

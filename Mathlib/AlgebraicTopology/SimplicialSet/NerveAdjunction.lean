@@ -10,6 +10,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 
 /-!
 # The adjunction between the nerve and the homotopy category functor
@@ -63,6 +64,7 @@ variable {n : ℕ} {X Y : Truncated.{u} 2} (f₀ : X _⦋0⦌₂ → Y _⦋0⦌�
 
 namespace liftOfStrictSegal
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `SSet.Truncated.liftOfStrictSegal`. -/
 def f₂ (x : X _⦋2⦌₂) : Y _⦋2⦌₂ :=
   (hY.spineEquiv 2).symm
@@ -271,6 +273,7 @@ lemma homToNerveMk_app_edge (F : X.HomotopyCategory ⥤ C) {x y : X _⦋0⦌₂}
   exact ComposableArrows.arrowEquiv.injective
     (congr_arg F.mapArrow.obj (congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `2`-truncated simplicial set `X` and a category `C`,
 this is the bijection between morphism `X.HomotopyCategory ⥤ C`
 and `X ⟶ (truncation 2).obj (nerve C)` which is part of the adjunction
@@ -299,6 +302,7 @@ def functorEquiv :
         simp only [← f.tgt_eq, FunctorToTypes.naturality]
         rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homToNerveMk_comp {D : Type u} [SmallCategory D]
     (F : X.HomotopyCategory ⥤ C) (G : C ⥤ D) :
@@ -418,6 +422,7 @@ namespace hoFunctor
 
 instance : hoFunctor.IsLeftAdjoint := nerveAdjunction.isLeftAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 instance (C D : Type u) [Category.{u} C] [Category.{u} D] :
     IsIso (prodComparison hoFunctor (nerve C) (nerve D)) := by
   have : IsIso (nerveFunctor.map (prodComparison hoFunctor (nerve C) (nerve D))) := by
@@ -433,6 +438,7 @@ instance isIso_prodComparison_stdSimplex.{w} (n m : ℕ) :
   IsIso.of_isIso_fac_right (prodComparison_natural
     hoFunctor (stdSimplex.isoNerve n).hom (stdSimplex.isoNerve m).hom).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
     (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
     IsIso (prodComparison hoFunctor D X) := by
@@ -443,6 +449,7 @@ lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
   exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans hoFunctor _) _
     (Presheaf.isColimitTautologicalCocone' X)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isIso_prodComparison (X Y : SSet) :
     IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
@@ -466,27 +473,6 @@ instance preservesBinaryProducts :
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves finite products of simplicial sets. -/
 instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
   PreservesFiniteProducts.of_preserves_binary_and_terminal _
-
-/-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
-noncomputable instance Monoidal : hoFunctor.Monoidal :=
-  .ofChosenFiniteProducts hoFunctor
-
-open MonoidalCategory
-
-/-- An equivalence between the vertices of a simplicial set `X` and the
-objects of `hoFunctor.obj X`. -/
-def unitHomEquiv (X : SSet.{u}) :
-    (𝟙_ SSet ⟶ X) ≃ Cat.chosenTerminal ⥤ hoFunctor.obj X :=
-  (SSet.unitHomEquiv X).trans <|
-    (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
-
-theorem unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
-    hoFunctor.unitHomEquiv X x = (Functor.LaxMonoidal.ε hoFunctor).toFunctor ⋙
-      (hoFunctor.map x).toFunctor := by
-  simp only [Cat.of_α, unitHomEquiv, Equiv.trans_apply,
-    Functor.CoreMonoidal.toMonoidal_toLaxMonoidal]
-  rw [Equiv.symm_apply_eq, ← Equiv.eq_symm_apply]
-  rfl
 
 end hoFunctor
 

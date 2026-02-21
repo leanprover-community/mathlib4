@@ -77,6 +77,7 @@ def functorOp : Iᵒᵖ ⥤ CostructuredArrow toProfinite.op ⟨c.pt⟩ :=
 -- We check that the opposite of the original diagram factors through `Profinite.Extend.functorOp`.
 example : functorOp c ⋙ CostructuredArrow.proj toProfinite.op ⟨c.pt⟩ ≅ F.op := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] uliftCategory in
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then
@@ -116,6 +117,7 @@ section Limit
 
 variable {C : Type*} [Category* C] (G : Profinite ⥤ C)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a functor `G` from `Profinite` and `S : Profinite`, we obtain a cone on
 `(StructuredArrow.proj S toProfinite ⋙ toProfinite ⋙ G)` with cone point `G.obj S`.

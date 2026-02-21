@@ -29,7 +29,7 @@ rational number, that is `↑v = q` for some `q : ℚ`.
 rational, continued fraction, termination
 -/
 
-@[expose] public section
+public section
 
 
 namespace GenContFract
@@ -274,7 +274,7 @@ theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
   | zero =>
     intro ifp_zero stream_zero_eq
     have : IntFractPair.of q = ifp_zero := by injection stream_zero_eq
-    simp [le_refl, this.symm]
+    simp [this.symm]
   | succ n IH =>
     intro ifp_succ_n stream_succ_nth_eq
     suffices ifp_succ_n.fr.num + 1 ≤ (IntFractPair.of q).fr.num - n by

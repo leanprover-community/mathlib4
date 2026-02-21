@@ -59,6 +59,7 @@ satisfy the ring axioms.
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem ghostComponent_teichmullerFun (r : R) (n : ℕ) :
     ghostComponent n (teichmullerFun p r) = r ^ p ^ n := by
   rw [ghostComponent_apply, aeval_wittPolynomial, Finset.sum_eq_single 0, pow_zero, one_mul,
@@ -124,5 +125,10 @@ theorem map_teichmuller (f : R →+* S) (r : R) : map f (teichmuller p r) = teic
 theorem ghostComponent_teichmuller (r : R) (n : ℕ) :
     ghostComponent n (teichmuller p r) = r ^ p ^ n :=
   ghostComponent_teichmullerFun _ _ _
+
+/-- The Teichmüller lift is set-theoretically right inverse to the constant coefficient map,
+showing that the latter is surjective. -/
+lemma constantCoeff_surjective : Function.Surjective (constantCoeff : 𝕎 R → R) :=
+  fun r ↦ ⟨teichmuller p r, rfl⟩
 
 end WittVector

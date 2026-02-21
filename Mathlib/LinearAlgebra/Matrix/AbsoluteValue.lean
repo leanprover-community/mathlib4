@@ -25,7 +25,7 @@ This file proves some bounds on matrices involving absolute values.
   then the determinant of the linear combination is bounded by `n! (s * y * x)^n`
 -/
 
-@[expose] public section
+public section
 
 
 open Matrix

@@ -86,17 +86,15 @@ lemma pool_subset_Icc : ∀ {t}, pool a t ⊆ Icc 0 2014
     intro x hx
     simp_rw [pool, mem_map, Equiv.coe_toEmbedding, Equiv.subRight_apply] at hx
     obtain ⟨y, my, rfl⟩ := hx
-    suffices y ∈ Icc 1 2015 by rw [mem_Icc] at this ⊢; lia
+    suffices y ∈ Icc 1 2015 by rw [mem_Icc] at this ⊢; grind
     rw [mem_insert, mem_erase] at my; rcases my with h | ⟨h₁, h₂⟩
     · exact h ▸ ha.1 t
-    · have := pool_subset_Icc h₂; rw [mem_Icc] at this ⊢; lia
+    · have := pool_subset_Icc h₂; rw [mem_Icc] at this ⊢; grind
 
 lemma notMem_pool_self : a t ∉ pool a t := by
   by_contra h
   obtain ⟨u, lu, hu⟩ := exists_add_eq_of_mem_pool h
   exact lu.ne (ha.2 hu)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_pool_self := notMem_pool_self
 
 /-- The number of balls stays unchanged if there is a ball with height 0 and increases by 1
 otherwise. -/
@@ -177,6 +175,7 @@ lemma sum_pool_le : ∑ x ∈ pool a t, x ≤ ∑ i ∈ range (b - 1), (2014 - i
 
 end Sums
 
+set_option backward.isDefEq.respectTransparency false in
 theorem result (ha : Condition a) :
     ∃ b > 0, ∃ N, ∀ m ≥ N, ∀ n > m, |∑ j ∈ Ico m n, (a j - b)| ≤ 1007 ^ 2 := by
   obtain ⟨b, N, hbN⟩ := exists_max_card_pool ha

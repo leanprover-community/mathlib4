@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Data.FunLike.Basic
 
 /-!
 # Big operators on a list in ordered groups with zeros
@@ -15,7 +16,7 @@ This file contains the results concerning the interaction of list big operators 
 groups with zeros.
 -/
 
-@[expose] public section
+public section
 
 namespace List
 variable {R : Type*} [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneClass R] [PosMulMono R]

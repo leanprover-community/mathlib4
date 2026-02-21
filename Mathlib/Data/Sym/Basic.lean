@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Group.Multiset
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Data.Vector.Basic
-public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -173,8 +172,6 @@ lemma «exists» {p : Sym α n → Prop} :
 theorem notMem_nil (a : α) : a ∉ (nil : Sym α 0) :=
   Multiset.notMem_zero a
 
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
-
 @[simp]
 theorem mem_cons : a ∈ b ::ₛ s ↔ a = b ∨ a ∈ s :=
   Multiset.mem_cons
@@ -278,6 +275,7 @@ theorem val_replicate : (replicate n a).val = Multiset.replicate n a := by
 theorem mem_replicate : b ∈ replicate n a ↔ n ≠ 0 ∧ b = a :=
   Multiset.mem_replicate
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a := by
   rw [Subtype.ext_iff, val_replicate, Multiset.eq_replicate]
   exact and_iff_right s.2
@@ -394,6 +392,7 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n where
   left_inv x := by rw [map_map, Equiv.symm_comp_self, map_id]
   right_inv x := by rw [map_map, Equiv.self_comp_symm, map_id]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
 an element of the symmetric power on `{x // x ∈ s}`. -/
 def attach (s : Sym α n) : Sym { x // x ∈ s } n :=
@@ -549,9 +548,6 @@ theorem count_coe_fill_self_of_notMem [DecidableEq α] {a : α} {i : Fin (n + 1)
     count a (fill a i s : Multiset α) = i := by
   simp [coe_fill, coe_replicate, hx]
 
-@[deprecated (since := "2025-05-23")]
-alias count_coe_fill_self_of_not_mem := count_coe_fill_self_of_notMem
-
 theorem count_coe_fill_of_ne [DecidableEq α] {a x : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
     (hx : x ≠ a) :
     count x (fill a i s : Multiset α) = count x s := by
@@ -592,9 +588,6 @@ theorem encode_of_none_notMem [DecidableEq α] (s : Sym (Option α) n.succ) (h :
         (s.attach.map fun o =>
           o.1.get <| Option.ne_none_iff_isSome.1 <| ne_of_mem_of_not_mem o.2 h) :=
   dif_neg h
-
-@[deprecated (since := "2025-05-23")]
-alias encode_of_not_none_mem := encode_of_none_notMem
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
 def decode : Sym (Option α) n ⊕ Sym α n.succ → Sym (Option α) n.succ

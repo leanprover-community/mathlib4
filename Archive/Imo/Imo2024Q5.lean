@@ -7,8 +7,9 @@ import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.List.ChainOfFn
 import Mathlib.Data.List.TakeWhile
 import Mathlib.Data.Nat.Dist
-import Mathlib.Order.Fin.Basic
+import Mathlib.Data.Fintype.Fin
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.FinCases
 
 /-!
 # IMO 2024 Q5
@@ -134,10 +135,6 @@ lemma MonsterData.reflect_reflect (m : MonsterData N) : m.reflect.reflect = m :=
 lemma MonsterData.notMem_monsterCells_of_fst_eq_zero (m : MonsterData N)
     {c : Cell N} (hc : c.1 = 0) : c ∉ m.monsterCells := by
   simp [monsterCells, Prod.ext_iff, hc]
-
-@[deprecated (since := "2025-05-23")]
-alias MonsterData.not_mem_monsterCells_of_fst_eq_zero :=
-  MonsterData.notMem_monsterCells_of_fst_eq_zero
 
 lemma MonsterData.le_N_of_mem_monsterCells {m : MonsterData N} {c : Cell N}
     (hc : c ∈ m.monsterCells) : (c.1 : ℕ) ≤ N := by
@@ -377,19 +374,19 @@ lemma Path.findFstEq_fst_sub_one_mem (p : Path N) {r : Fin (N + 2)} (hr : r ≠ 
   rcases p with ⟨cells, nonempty, head_first_row, last_last_row, valid_move_seq⟩
   dsimp only at h1 hcrc ⊢
   have hd : ∃ c ∈ cells, decide (r ≤ c.1) = true := ⟨cr, hcrc, by simpa using hcrr.symm.le⟩
-  have hd' : cells.dropWhile (fun c ↦ ! decide (r ≤ c.1)) ≠ [] := by simpa using hd
-  have ht : cells.takeWhile (fun c ↦ ! decide (r ≤ c.1)) ≠ [] := by
+  have hd' : cells.dropWhile (fun c ↦ !decide (r ≤ c.1)) ≠ [] := by simpa using hd
+  have ht : cells.takeWhile (fun c ↦ !decide (r ≤ c.1)) ≠ [] := by
     intro h
     rw [List.takeWhile_eq_nil_iff] at h
     replace h := h (by lia)
     simp [List.getElem_zero, head_first_row, hr] at h
   simp_rw [cells.find?_eq_head_dropWhile_not hd, Option.get_some]
-  rw [← cells.takeWhile_append_dropWhile (p := fun c ↦ ! decide (r ≤ c.1)),
+  rw [← cells.takeWhile_append_dropWhile (p := fun c ↦ !decide (r ≤ c.1)),
     List.isChain_append] at valid_move_seq
   have ha := valid_move_seq.2.2
   simp only [List.head?_eq_some_head hd', List.getLast?_eq_some_getLast ht, Option.mem_def,
     Option.some.injEq, forall_eq'] at ha
-  nth_rw 1 [← cells.takeWhile_append_dropWhile (p := fun c ↦ ! decide (r ≤ c.1))]
+  nth_rw 1 [← cells.takeWhile_append_dropWhile (p := fun c ↦ !decide (r ≤ c.1))]
   refine List.mem_append_left _ ?_
   convert List.getLast_mem ht using 1
   have htr : ((List.takeWhile (fun c ↦ !decide (r ≤ c.1)) cells).getLast ht).1 < r := by
@@ -491,8 +488,8 @@ lemma Strategy.play_one (s : Strategy N) (m : MonsterData N) {k : ℕ} (hk : 1 <
     s.play m k ⟨1, hk⟩ = (s ![(s Fin.elim0).firstMonster m]).firstMonster m := by
   have hk' : 2 ≤ k := by lia
   rw [s.play_apply_of_le m one_lt_two hk']
-  simp only [play, Fin.snoc, lt_self_iff_false, ↓reduceDIte, Nat.reduceAdd,
-    Fin.mk_one, Fin.isValue, cast_eq, Nat.succ_eq_add_one]
+  simp only [play, Fin.snoc, lt_self_iff_false, ↓reduceDIte, Nat.reduceAdd, cast_eq,
+    Nat.succ_eq_add_one]
   congr
   refine funext fun i ↦ ?_
   simp_rw [Fin.fin_one_eq_zero]

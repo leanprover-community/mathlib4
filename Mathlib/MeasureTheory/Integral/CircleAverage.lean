@@ -57,6 +57,13 @@ noncomputable def circleAverage : E :=
 lemma circleAverage_def :
     circleAverage f c R = (2 * π)⁻¹ • ∫ θ in 0..2 * π, f (circleMap c R θ) := rfl
 
+/--
+If 'f' is *not* circle integrable, then the circle average is zero by definition.
+-/
+theorem circleAverage.integral_undef (hf : ¬CircleIntegrable f c R) :
+    circleAverage f c R = 0 := by
+  simp_all [circleAverage, CircleIntegrable, intervalIntegral.integral_undef]
+
 /-- Expression of `circleAverage` in terms of interval averages. -/
 lemma circleAverage_eq_intervalAverage :
     circleAverage f c R = ⨍ θ in 0..2 * π, f (circleMap c R θ) := by
@@ -180,6 +187,7 @@ theorem circleAverage_zero_one_congr_inv {f : ℂ → E} :
 ## Constant Functions
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The circle average of a constant function equals the constant.
 -/
@@ -217,6 +225,7 @@ theorem circleAverage_mono {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℝ} (hf₁ 
   apply intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos) hf₁ hf₂
   exact fun x _ ↦ by simp [h (circleMap c R x)]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `f x` is smaller than `a` on for every point of the circle, then the circle average of `f` is
 smaller than `a`.
@@ -229,6 +238,7 @@ theorem circleAverage_mono_on_of_le_circle {f : ℂ → ℝ} {a : ℝ} (hf : Cir
   exact intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos) hf
     intervalIntegrable_const (fun θ _ ↦ h₂f (circleMap c R θ) (circleMap_mem_sphere' c R θ))
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Analogue of `intervalIntegral.abs_integral_le_integral_abs`: The absolute value of a circle average
 is less than or equal to the circle average of the absolute value of the function.
@@ -238,6 +248,20 @@ theorem abs_circleAverage_le_circleAverage_abs {f : ℂ → ℝ} :
   rw [circleAverage, circleAverage, smul_eq_mul, smul_eq_mul, abs_mul,
     abs_of_pos (inv_pos.2 two_pi_pos), mul_le_mul_iff_of_pos_left (inv_pos.2 two_pi_pos)]
   exact intervalIntegral.abs_integral_le_integral_abs (le_of_lt two_pi_pos)
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+The circle average of a nonnegative function is nonnegative.
+-/
+theorem circleAverage_nonneg_of_nonneg {c : ℂ} {R : ℝ} {f : ℂ → ℝ}
+    (h₂f : ∀ x ∈ Metric.sphere c |R|, 0 ≤ f x) :
+    0 ≤ circleAverage f c R := by
+  by_cases hf : CircleIntegrable f c R
+  · rw [← circleAverage_const 0 c |R|, circleAverage, circleAverage, smul_eq_mul, smul_eq_mul,
+      mul_le_mul_iff_of_pos_left (inv_pos.2 two_pi_pos)]
+    apply intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos)
+      intervalIntegrable_const hf (fun θ _ ↦ h₂f (circleMap c R θ) (circleMap_mem_sphere' c R θ))
+  · rw [circleAverage.integral_undef hf]
 
 /-!
 ## Commutativity with Linear Maps

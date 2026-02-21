@@ -64,6 +64,7 @@ instance : IsTopologicalDivisionRing K := by
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuation K x ≤ γ } := by
   obtain ⟨γ, rfl⟩ := ValuativeRel.valuation_surjective γ
   by_cases hγ : γ = 0
@@ -75,7 +76,7 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
       ∃ r', r' ≠ 0 ∧ valuation K r' < 1 ∧ { x | valuation K x ≤ valuation K r' } ⊆ s := by
     obtain ⟨r, hr, hrs⟩ := (IsValuativeTopology.hasBasis_nhds_zero' K).mem_iff.mp hs
     obtain ⟨r', hr', hr⟩ := Valuation.IsNontrivial.exists_lt_one (v := valuation K)
-    simp only [ne_eq, map_eq_zero] at hr'
+    simp only [ne_eq] at hr'
     obtain hr1 | hr1 := lt_or_ge r 1
     · obtain ⟨r, rfl⟩ := ValuativeRel.valuation_surjective r
       simp only [ne_eq, map_eq_zero] at hr
@@ -104,6 +105,7 @@ instance : IsDiscreteValuationRing 𝒪[K] :=
   haveI : CompactSpace (Valued.integer K) := inferInstanceAs (CompactSpace 𝒪[K])
   Valued.integer.isDiscreteValuationRing_of_compactSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The value group of a local field is (uniquely) isomorphic to `ℤᵐ⁰`. -/
 noncomputable
 def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by

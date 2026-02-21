@@ -22,15 +22,14 @@ def foo : Mathlib.TacticAnalysis.Config :=
     (reportSuccess := true) (reportFailure := true)
 
 /--
-warning: `simp only` left unsolved goals where `simp` succeeded.
+warning: `simp only` failed where `simp` succeeded.
 Original tactic:
   simp
-Replacement tactic:
-  simp only
-Unsolved goals:
-  [⊢ (List.map (fun x => x + 1) [1, 2, 3]).sum = 9 ]
+Counterexample:
+  import Init.Data.List.Basic
 -/
-#guard_msgs in
+-- The counterexample name contains a number that varies between runs, so we can't fully test this.
+#guard_msgs (substring := true) in
 set_option linter.tacticAnalysis.dummy true in
 example : List.sum ([1,2,3].map fun x ↦ x + 1) = 9 := by
   simp
@@ -70,6 +69,29 @@ example : Fact (x = z) where
   out := by
     rw [xy]
     rw [yz]
+
+-- Tactics inside `have ... := by ...` should be analyzed.
+-- Previously these were missed because `have ... := by ...` is parsed as one node.
+/--
+warning: Try this: rw [xy, yz]
+-/
+#guard_msgs in
+example : x = z := by
+  have _h : x = z := by
+    rw [xy]
+    rw [yz]
+  exact _h
+
+-- Same for `let ... := by ...`
+/--
+warning: Try this: rw [xy, yz]
+-/
+#guard_msgs in
+example : x = z := by
+  let _h : x = z := by
+    rw [xy]
+    rw [yz]
+  exact _h
 
 universe u
 
@@ -209,6 +231,15 @@ example : ∀ a b : Unit, a = b := by
   intro a b
   rfl
 
+-- Intros separated by an intervening tactic should NOT be merged.
+-- Regression test for a bug where tactics were incorrectly grouped across intervening tactics.
+#guard_msgs in
+example : True → ∀ n > 0, True := by
+  intro h
+  have := 0
+  intro n hn
+  trivial
+
 end introMerge
 
 section tryAtEachStep
@@ -266,10 +297,9 @@ example : P 37 := by
   trivial
 
 set_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions true in
--- FIXME: why is the dagger here?
 /--
 info: Try this:
-  [apply] simp_all +suggestions✝ only [p]
+  [apply] simp_all only [p]
 ---
 info: `trivial` can be replaced with `simp_all? +suggestions✝`
 -/
@@ -391,3 +421,22 @@ set_option linter.tacticAnalysis.unknownTacticTest true in
 example : 1 + 1 = 2 := by rfl
 
 end unknownTactic
+
+section verifyGrindSuggestions
+
+-- Test that verifyGrind doesn't crash and doesn't report false positives
+-- When grind? succeeds and its suggestion works, no warning should be produced
+-- (Info messages from grind? are suppressed; only failures produce warnings)
+
+#guard_msgs in
+set_option linter.tacticAnalysis.verifyGrind true in
+example : 1 + 1 = 2 := by
+  rfl
+
+-- Test with grind? +suggestions
+#guard_msgs in
+set_option linter.tacticAnalysis.verifyGrindSuggestions true in
+example : 1 + 1 = 2 := by
+  rfl
+
+end verifyGrindSuggestions

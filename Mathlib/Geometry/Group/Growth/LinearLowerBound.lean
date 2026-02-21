@@ -15,7 +15,7 @@ public import Mathlib.Data.Nat.SuccPred
 This file proves that the growth of a set generating an infinite group is at least linear.
 -/
 
-@[expose] public section
+public section
 
 open Subgroup
 open scoped Pointwise
@@ -23,6 +23,7 @@ open scoped Pointwise
 namespace Finset
 variable {G : Type*} [Group G] [DecidableEq G] {X : Finset G} {n : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma pow_ssubset_pow_succ_of_pow_ne_closure (hX₁ : (1 : G) ∈ X) (hX : X.Nontrivial)
     (hXclosure : (X ^ n : Set G) ≠ closure (X : Set G)) : X ^ n ⊂ X ^ (n + 1) := by

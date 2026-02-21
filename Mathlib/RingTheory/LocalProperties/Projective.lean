@@ -27,7 +27,7 @@ public import Mathlib.RingTheory.LocalProperties.Submodule
 
 -/
 
-@[expose] public section
+public section
 
 universe uM
 
@@ -121,12 +121,11 @@ theorem LinearMap.split_surjective_of_localization_maximal
       simp only [coe_comp, coe_restrictScalars, Function.comp_apply,
         LocalizedModule.mkLinearMap_apply, LocalizedModule.map_mk, llcomp_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.IsMaximal),
     Module.Projective (Localization.AtPrime I) (LocalizedModule I.primeCompl M))
     [Module.FinitePresentation R M] : Module.Projective R M := by
   have : Module.Finite R M := by infer_instance
-  have : (⊤ : Submodule R M).FG := this.fg_top
-  have : ∃ (s : Finset M), _ := this
   obtain ⟨s, hs⟩ := this
   let N := s →₀ R
   let f : N →ₗ[R] M := Finsupp.linearCombination R (Subtype.val : s → M)

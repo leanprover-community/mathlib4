@@ -125,6 +125,7 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
     obtain ⟨y, hy⟩ := h ⟨r, rfl⟩
     grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finite n]
     {σ : Perm (m ⊕ n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
     σ ∈ (sumCongrHom m n).range := by
@@ -222,12 +223,6 @@ theorem apply_mem_fixedPoints_iff_mem_of_mem_centralizer {g p : Perm α}
   simp only [Function.mem_fixedPoints_iff]
   rw [← mul_apply, ← hp, mul_apply, EmbeddingLike.apply_eq_iff_eq]
 
-@[deprecated (since := "2025-05-19")]
-alias mem_fixedPoints_iff_apply_mem_of_mem_centralizer :=
-  apply_mem_fixedPoints_iff_mem_of_mem_centralizer
-
-
-
 variable [DecidableEq α]
 
 lemma disjoint_ofSubtype_of_memFixedPoints_self {g : Perm α}
@@ -259,6 +254,7 @@ lemma ofSubtype_support_disjoint {σ : Perm α} (x : Perm (Function.fixedPoints 
 
 open Subgroup
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_of_disjoint_support {H K : Subgroup (Perm α)}
     (h : ∀ a ∈ H, ∀ b ∈ K, _root_.Disjoint a.support b.support) :
     _root_.Disjoint H K := by
@@ -278,6 +274,7 @@ lemma support_closure_subset_union (S : Set (Perm α)) :
     exact ⟨hc, hd⟩
   · simp only [support_inv, imp_self, implies_true]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_support_closure_of_disjoint_support {S T : Set (Perm α)}
     (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :
     ∀ a ∈ closure S, ∀ b ∈ closure T, _root_.Disjoint a.support b.support := by
@@ -288,6 +285,7 @@ lemma disjoint_support_closure_of_disjoint_support {S T : Set (Perm α)}
   simp_rw [Set.disjoint_iUnion_left, Set.disjoint_iUnion_right, Finset.disjoint_coe] at key
   exact key h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_closure_of_disjoint_support {S T : Set (Perm α)}
     (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :
     _root_.Disjoint (closure S) (closure T) := by

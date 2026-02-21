@@ -155,8 +155,6 @@ theorem top_boxes : (⊤ : Prepartition I).boxes = {I} := rfl
 theorem notMem_bot : J ∉ (⊥ : Prepartition I) :=
   Finset.notMem_empty _
 
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
-
 @[simp]
 theorem bot_boxes : (⊥ : Prepartition I).boxes = ∅ := rfl
 
@@ -254,6 +252,7 @@ theorem eq_of_boxes_subset_iUnion_superset (h₁ : π₁.boxes ⊆ π₂.boxes) 
       ⟨fun _ hJ₁ _ hJ₂ Hne =>
         (π₂.eq_of_mem_of_mem hJ₁ (h₁ hJ₂) Hne.choose_spec.1 Hne.choose_spec.2).le, h₂⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Given a prepartition `π` of a box `I` and a collection of prepartitions `πi J` of all boxes
 `J ∈ π`, returns the prepartition of `I` into the union of the boxes of all `πi J`.
@@ -546,6 +545,7 @@ theorem filter_of_true {p : Box ι → Prop} (hp : ∀ J ∈ π, p J) : π.filte
 theorem filter_true : (π.filter fun _ => True) = π :=
   π.filter_of_true fun _ _ => trivial
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).iUnion = π.iUnion \ (π.filter p).iUnion := by

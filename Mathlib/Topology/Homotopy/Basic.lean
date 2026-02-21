@@ -175,6 +175,7 @@ theorem extend_of_mem_I (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ∈ I) :
     F.extend t = F.curry ⟨t, ht⟩ :=
   Set.IccExtend_of_mem (zero_le_one' ℝ) F.curry ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem extend_zero (F : Homotopy f₀ f₁) : F.extend 0 = f₀ := by simp
 theorem extend_one (F : Homotopy f₀ f₁) : F.extend 1 = f₁ := by simp
 
@@ -218,19 +219,17 @@ theorem symm_bijective {f₀ f₁ : C(X, Y)} :
     Function.Bijective (Homotopy.symm : Homotopy f₀ f₁ → Homotopy f₁ f₀) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given `Homotopy f₀ f₁` and `Homotopy f₁ f₂`, we can define a `Homotopy f₀ f₂` by putting the first
 homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 -/
 def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) : Homotopy f₀ f₂ where
   toFun x := if (x.1 : ℝ) ≤ 1 / 2 then F.extend (2 * x.1) x.2 else G.extend (2 * x.1 - 1) x.2
-  continuous_toFun := by
-    refine
-      continuous_if_le (by fun_prop) continuous_const
-        (F.continuous.comp (by continuity)).continuousOn
-        (G.continuous.comp (by continuity)).continuousOn ?_
-    rintro x hx
-    norm_num [hx]
+  continuous_toFun :=
+    continuous_if_le (by fun_prop) continuous_const
+      (F.continuous.comp (by fun_prop)).continuousOn
+      (G.continuous.comp (by fun_prop)).continuousOn (fun x hx ↦ by norm_num [hx])
   map_zero_left x := by norm_num
   map_one_left x := by norm_num
 
@@ -245,6 +244,7 @@ theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Hom
       · rw [extend, ContinuousMap.coe_IccExtend, Set.IccExtend_of_mem]
         rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     (F.trans G).symm = G.symm.trans F.symm := by
   ext ⟨t, _⟩
@@ -289,14 +289,6 @@ def comp {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)} (G : Homotopy g₀ g₁) (F
 def compContinuousMap {g₀ g₁ : C(Y, Z)} (G : Homotopy g₀ g₁) (f : C(X, Y)) :
     Homotopy (g₀.comp f) (g₁.comp f) :=
   G.comp (.refl f)
-
-/-- If we have a `Homotopy f₀ f₁` and a `Homotopy g₀ g₁`, then we can compose them and get a
-`Homotopy (g₀.comp f₀) (g₁.comp f₁)`.
--/
-@[simps!, deprecated comp (since := "2025-05-12")]
-def hcomp {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)} (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
-    Homotopy (g₀.comp f₀) (g₁.comp f₁) :=
-  G.comp F
 
 /-- Let `F` be a homotopy between `f₀ : C(X, Y)` and `f₁ : C(X, Y)`. Let `G` be a homotopy between
 `g₀ : C(X, Z)` and `g₁ : C(X, Z)`. Then `F.prodMk G` is the homotopy between `f₀.prodMk g₀` and
@@ -356,11 +348,6 @@ theorem comp {g₀ g₁ : C(Y, Z)} {f₀ f₁ : C(X, Y)} (hg : Homotopic g₀ g�
     Homotopic (g₀.comp f₀) (g₁.comp f₁) :=
   hg.map2 Homotopy.comp hf
 
-@[deprecated comp (since := "2025-05-12")]
-theorem hcomp {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)} (h₀ : Homotopic f₀ f₁) (h₁ : Homotopic g₀ g₁) :
-    Homotopic (g₀.comp f₀) (g₁.comp f₁) :=
-  h₁.comp h₀
-
 theorem equivalence : Equivalence (@Homotopic X Y _ _) :=
   ⟨refl, by apply symm, by apply trans⟩
 
@@ -395,8 +382,7 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
   -- TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
-  prop' : ∀ t, P ⟨fun x => toFun (t, x),
-    Continuous.comp continuous_toFun (continuous_const.prodMk continuous_id')⟩
+  prop' : ∀ t, P ⟨fun x ↦ toFun (t, x), continuous_toFun.comp (by fun_prop)⟩
 
 namespace HomotopyWith
 

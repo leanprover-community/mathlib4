@@ -172,7 +172,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
     rcases this with ⟨I, hI, hI'⟩
     convert hI.right
     by_cases hJ : J = I.map (algebraMap R S)
-    · rw [hJ, comap_map_of_isPrime_disjoint (powers y) S I (IsMaximal.isPrime hI.right)]
+    · rw [hJ, comap_map_of_isPrime_disjoint (powers y) S (IsMaximal.isPrime hI.right)]
       rwa [disjoint_powers_iff_notMem y hI.right.isPrime.isRadical]
     · have hI_p : (I.map (algebraMap R S)).IsPrime := by
         refine isPrime_of_isPrime_disjoint (powers y) _ I hI.right.isPrime ?_
@@ -195,7 +195,7 @@ theorem IsLocalization.isMaximal_of_isMaximal_disjoint
     [IsJacobsonRing R] (I : Ideal R) (hI : I.IsMaximal)
     (hy : y ∉ I) : (I.map (algebraMap R S)).IsMaximal := by
   rw [isMaximal_iff_isMaximal_disjoint S y,
-    comap_map_of_isPrime_disjoint (powers y) S I (IsMaximal.isPrime hI)
+    comap_map_of_isPrime_disjoint (powers y) S (IsMaximal.isPrime hI)
       ((disjoint_powers_iff_notMem y hI.isPrime.isRadical).2 hy)]
   exact ⟨hI, hy⟩
 
@@ -206,7 +206,7 @@ def IsLocalization.orderIsoOfMaximal [IsJacobsonRing R] :
   toFun p := ⟨Ideal.comap (algebraMap R S) p.1, (isMaximal_iff_isMaximal_disjoint S y p.1).1 p.2⟩
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isMaximal_of_isMaximal_disjoint y p.1 p.2.1 p.2.2⟩
   left_inv J := Subtype.ext (map_comap (powers y) S J)
-  right_inv I := Subtype.ext (comap_map_of_isPrime_disjoint _ _ I.1 (IsMaximal.isPrime I.2.1)
+  right_inv I := Subtype.ext (comap_map_of_isPrime_disjoint _ _ (IsMaximal.isPrime I.2.1)
     ((disjoint_powers_iff_notMem y I.2.1.isPrime.isRadical).2 I.2.2))
   map_rel_iff' {I I'} := ⟨fun h => show I.val ≤ I'.val from
     map_comap (powers y) S I.val ▸ map_comap (powers y) S I'.val ▸ Ideal.map_mono h,
@@ -240,7 +240,7 @@ theorem isJacobsonRing_localization [H : IsJacobsonRing R] : IsJacobsonRing S :=
   refine iInf_le_iInf_of_subset fun I hI => ⟨map (algebraMap R S) I, ⟨?_, ?_⟩⟩
   · exact ⟨le_trans (le_of_eq (IsLocalization.map_comap (powers y) S P').symm) (map_mono hI.1),
       isMaximal_of_isMaximal_disjoint y _ hI.2.1 hI.2.2⟩
-  · exact IsLocalization.comap_map_of_isPrime_disjoint _ S I (IsMaximal.isPrime hI.2.1)
+  · exact IsLocalization.comap_map_of_isPrime_disjoint _ S (IsMaximal.isPrime hI.2.1)
       ((disjoint_powers_iff_notMem y hI.2.1.isPrime.isRadical).2 hI.2.2)
 
 end Localization
@@ -268,6 +268,7 @@ lemma mem_closure_X_union_C {R : Type*} [Ring R] (p : R[X]) :
 variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
 variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `I` is a prime ideal of `R[X]` and `pX ∈ I` is a non-constant polynomial,
   then the map `R →+* R[x]/I` descends to an integral map when localizing at `pX.leadingCoeff`.
   In particular `X` is integral because it satisfies `pX`, and constants are trivially integral,
@@ -301,7 +302,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
     ((algebraMap (R[X] ⧸ P) Sₘ).comp (Ideal.Quotient.mk P) '' insert X { p | p.degree ≤ 0 }) ?_
     ((algebraMap (R[X] ⧸ P) Sₘ) p') ?_
   · rintro x ⟨p, hp, rfl⟩
-    simp only [Set.mem_insert_iff] at hp
+    push _ ∈ _ at hp
     rcases hp with hy | hy
     · rw [hy]
       refine φ.isIntegralElem_localization_at_leadingCoeff ((Ideal.Quotient.mk P) X)
@@ -309,7 +310,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
       · rwa [eval₂_map, hφ', ← hom_eval₂, Quotient.eq_zero_iff_mem, eval₂_C_X]
       · use 1
         simp only [P', pow_one]
-    · rw [Set.mem_setOf_eq, degree_le_zero_iff] at hy
+    · rw [degree_le_zero_iff] at hy
       rw [hy]
       refine ⟨X - C (algebraMap _ _ ((Ideal.Quotient.mk P') (p.coeff 0))), monic_X_sub_C _, ?_⟩
       simp only [eval₂_sub, eval₂_X, eval₂_C]
@@ -349,7 +350,7 @@ theorem jacobson_bot_of_integral_localization
   -- Remainder of the proof is pulling and pushing ideals around the square and the quotient square
   have : (I.comap (algebraMap S Sₘ)).IsPrime := comap_isPrime _ I
   have : (I.comap φ').IsPrime := comap_isPrime φ' I
-  have : (⊥ : Ideal (S ⧸ I.comap (algebraMap S Sₘ))).IsPrime := bot_prime
+  have : (⊥ : Ideal (S ⧸ I.comap (algebraMap S Sₘ))).IsPrime := isPrime_bot
   have hcomm : φ'.comp (algebraMap R Rₘ) = (algebraMap S Sₘ).comp φ := IsLocalization.map_comp _
   let f := quotientMap (I.comap (algebraMap S Sₘ)) φ le_rfl
   let g := quotientMap I (algebraMap S Sₘ) le_rfl
@@ -366,6 +367,7 @@ theorem jacobson_bot_of_integral_localization
         (IsLocalization.surjective_quotientMap_of_maximal_of_localization (Submonoid.powers x) Rₘ
           (by rwa [comap_comap, hcomm, ← bot_quotient_isMaximal_iff]))).trans _ _ (hφ'.quotient _))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Used to bootstrap the proof of `isJacobsonRing_polynomial_iff_isJacobsonRing`.
   That theorem is more general and should be used instead of this one. -/
 private theorem isJacobsonRing_polynomial_of_domain (R : Type*) [CommRing R] [IsDomain R]
@@ -432,6 +434,7 @@ section
 variable {R : Type*} [CommRing R]
 variable (P : Ideal R[X]) [hP : P.IsMaximal]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
     (hP' : ∀ x : R, C x ∈ P → x = 0) :
     IsMaximal (comap (C : R →+* R[X]) P : Ideal R) := by
@@ -453,7 +456,7 @@ theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
         (by simpa only [a, leadingCoeff_eq_zero, Polynomial.map_zero] using hp0')
   have hM : (0 : R ⧸ P') ∉ M := fun ⟨n, hn⟩ => hp0 (eq_zero_of_pow_eq_zero hn)
   suffices (⊥ : Ideal (Localization M)).IsMaximal by
-    rw [← IsLocalization.comap_map_of_isPrime_disjoint M (Localization M) ⊥ bot_prime
+    rw [← IsLocalization.comap_map_of_isPrime_disjoint M (Localization M) isPrime_bot
       (disjoint_iff_inf_le.mpr fun x hx => hM (hx.2 ▸ hx.1))]
     exact ((IsLocalization.isMaximal_iff_isMaximal_disjoint (Localization M) a _).mp
       (by rwa [Ideal.map_bot])).1
@@ -514,6 +517,7 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
 
 variable [IsJacobsonRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `R` is a Jacobson ring, and `P` is a maximal ideal of `R[X]`,
   then `R → R[X]/P` is an integral map. -/
 theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :

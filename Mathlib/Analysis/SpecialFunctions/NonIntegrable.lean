@@ -38,7 +38,7 @@ latter lemma to prove that the function `fun x => x⁻¹` is integrable on `a..b
 integrable function
 -/
 
-@[expose] public section
+public section
 
 
 open scoped MeasureTheory Topology Interval NNReal ENNReal
@@ -184,6 +184,7 @@ theorem not_intervalIntegrable_of_sub_inv_isBigO_punctured {f : ℝ → F} {a b 
     (A.mono fun x hx => hx.differentiableAt) B
     (hf.congr' (A.mono fun x hx => hx.deriv.symm) EventuallyEq.rfl) hne hc
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `fun x => (x - c)⁻¹` is integrable on `a..b` if and only if
 `a = b` or `c ∉ [a, b]`. -/
 @[simp]
@@ -205,7 +206,7 @@ theorem intervalIntegrable_inv_iff {a b : ℝ} :
   simp only [← intervalIntegrable_sub_inv_iff, sub_zero]
 
 /-- The function `fun x ↦ x⁻¹` is not integrable on any interval `[a, +∞)`. -/
-theorem not_IntegrableOn_Ici_inv {a : ℝ} :
+theorem not_integrableOn_Ici_inv {a : ℝ} :
     ¬ IntegrableOn (fun x => x⁻¹) (Ici a) := by
   have A : ∀ᶠ x in atTop, HasDerivAt (fun x => Real.log x) x⁻¹ x := by
     filter_upwards [Ioi_mem_atTop 0] with x hx using Real.hasDerivAt_log (ne_of_gt hx)
@@ -215,7 +216,11 @@ theorem not_IntegrableOn_Ici_inv {a : ℝ} :
     (A.mono (fun x hx ↦ hx.differentiableAt)) B
     (Filter.EventuallyEq.isBigO (A.mono (fun x hx ↦ hx.deriv)))
 
+@[deprecated (since := "2026-01-30")] alias not_IntegrableOn_Ici_inv := not_integrableOn_Ici_inv
+
 /-- The function `fun x ↦ x⁻¹` is not integrable on any interval `(a, +∞)`. -/
-theorem not_IntegrableOn_Ioi_inv {a : ℝ} :
+theorem not_integrableOn_Ioi_inv {a : ℝ} :
     ¬ IntegrableOn (·⁻¹) (Ioi a) := by
-  simpa only [IntegrableOn, restrict_Ioi_eq_restrict_Ici] using not_IntegrableOn_Ici_inv
+  simpa only [IntegrableOn, restrict_Ioi_eq_restrict_Ici] using not_integrableOn_Ici_inv
+
+@[deprecated (since := "2026-01-30")] alias not_IntegrableOn_Ioi_inv := not_integrableOn_Ioi_inv

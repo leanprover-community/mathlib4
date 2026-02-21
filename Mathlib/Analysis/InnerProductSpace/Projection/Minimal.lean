@@ -16,7 +16,7 @@ This is the key tool that is used to define `Submodule.orthogonalProjection` in
 `Mathlib/Analysis/InnerProductSpace/Projection/Basic.lean`.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -27,6 +27,7 @@ local notation "absR" => @abs ℝ _ _
 
 open Topology RCLike Real Filter InnerProductSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Existence of minimizers**, aka the **Hilbert projection theorem**.
 
 Let `u` be a point in a real inner product space, and let `K` be a nonempty complete convex subset.
@@ -97,7 +98,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
               change u + u - (wq + wp) = u - wq + (u - wp)
               abel
             rw [eq₁, eq₂]
-          _ = 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) := parallelogram_law_with_norm ℝ _ _
+          _ = 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) := parallelogram_law_with_norm_mul ℝ _ _
       have eq : δ ≤ ‖u - half • (wq + wp)‖ := by
         rw [smul_add]
         apply δ_le'
@@ -127,10 +128,8 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   -- Prove that it satisfies all requirements.
   rcases cauchySeq_tendsto_of_isComplete h₁ (fun n => Subtype.mem _) seq_is_cauchy with
     ⟨v, hv, w_tendsto⟩
-  use v
-  use hv
-  have h_cont : Continuous fun v => ‖u - v‖ :=
-    Continuous.comp continuous_norm (Continuous.sub continuous_const continuous_id)
+  use v, hv
+  have h_cont : Continuous fun v => ‖u - v‖ := by fun_prop
   have : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 ‖u - v‖) := by
     convert Tendsto.comp h_cont.continuousAt w_tendsto
   exact tendsto_nhds_unique this norm_tendsto
@@ -232,7 +231,6 @@ This point `v` is usually called the orthogonal projection of `u` onto `K`.
 theorem exists_norm_eq_iInf_of_complete_subspace (h : IsComplete (↑K : Set E)) :
     ∀ u : E, ∃ v ∈ K, ‖u - v‖ = ⨅ w : (K : Set E), ‖u - w‖ := by
   letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
-  letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
   let K' : Submodule ℝ E := Submodule.restrictScalars ℝ K
   exact exists_norm_eq_iInf_of_complete_convex ⟨0, K'.zero_mem⟩ h K'.convex
 
@@ -288,7 +286,6 @@ for all `w ∈ K`, `⟪u - v, w⟫ = 0` (i.e., `u - v` is orthogonal to the subs
 theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
     (‖u - v‖ = ⨅ w : K, ‖u - w‖) ↔ ∀ w ∈ K, ⟪u - v, w⟫ = 0 := by
   letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
-  letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
   let K' : Submodule ℝ E := K.restrictScalars ℝ
   constructor
   · intro H

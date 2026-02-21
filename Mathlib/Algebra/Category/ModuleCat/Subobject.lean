@@ -35,6 +35,7 @@ namespace ModuleCat
 
 variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The categorical subobjects of a module `M` are in one-to-one correspondence with its
 submodules. -/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
@@ -47,7 +48,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
           apply LinearEquiv.ofBijective (LinearMap.codRestrict
             (LinearMap.range S.arrow.hom) S.arrow.hom _)
           constructor
-          · simp [← LinearMap.ker_eq_bot,  ker_eq_bot_of_mono]
+          · simp [← LinearMap.ker_eq_bot, ker_eq_bot_of_mono]
           · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict,
               Submodule.comap_subtype_self]
             exact LinearMap.mem_range_self _
@@ -80,11 +81,12 @@ noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
     LinearMap.ker f.hom →ₗ[R] kernelSubobject f :=
   (kernelSubobjectIso f ≪≫ ModuleCat.kernelIsoKer f).inv.hom
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f.hom) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10959): the whole proof was just `simp [toKernelSubobject]`.
-  simp [toKernelSubobject, -hom_comp, ← ConcreteCategory.comp_apply]
+  simp [toKernelSubobject, -hom_comp, ← CategoryTheory.comp_apply]
 
 /-- An extensionality lemma showing that two elements of a cokernel by an image
 are equal if they differ by an element of the image.

@@ -72,6 +72,7 @@ noncomputable def fromRightResolution :
       isoOfHom_hom, isoOfHom_hom_inv_id_assoc, assoc, ← L.map_comp_assoc,
       φ.comm, isoOfHom_hom_inv_id_assoc])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isConnected :
     IsConnected ((TwoSquare.mk Φ.functor (Φ.functor ⋙ L) L (𝟭 _)
       (Functor.rightUnitor _).inv).CostructuredArrowDownwards y) := by
@@ -112,7 +113,6 @@ categories of right resolutions of arrows are nonempty. -/
 lemma mk' [Φ.IsLocalizedEquivalence] : Φ.IsRightDerivabilityStructure := by
   rw [Φ.isRightDerivabilityStructure_iff (Φ.functor ⋙ W₂.Q) W₂.Q (𝟭 _)
     (Functor.rightUnitor _).symm, TwoSquare.guitartExact_iff_isConnected_downwards]
-  intro X₂ X₃ g
   apply Constructor.isConnected
 
 end

@@ -189,6 +189,7 @@ an instance because its `Seq` projection is not equal to the `Filter.seq` functi
 section
 
 /-- The monad structure on filters. -/
+@[instance_reducible]
 protected def monad : Monad Filter where map := @Filter.map
 
 attribute [local instance] Filter.monad
@@ -241,8 +242,6 @@ theorem comap_id' : comap (fun x => x) f = f := comap_id
 
 theorem comap_const_of_notMem {x : β} (ht : t ∈ g) (hx : x ∉ t) : comap (fun _ : α => x) g = ⊥ :=
   empty_mem_iff_bot.1 <| mem_comap'.2 <| mem_of_superset ht fun _ hx' _ h => hx <| h.symm ▸ hx'
-
-@[deprecated (since := "2025-05-23")] alias comap_const_of_not_mem := comap_const_of_notMem
 
 theorem comap_const_of_mem {x : β} (h : ∀ t ∈ g, x ∈ t) : comap (fun _ : α => x) g = ⊤ :=
   top_unique fun _ hs => univ_mem' fun _ => h _ (mem_comap'.1 hs) rfl
@@ -991,7 +990,7 @@ variable {α β : Type*} {F : Filter α} {G : Filter β}
 theorem Filter.map_surjOn_Iic_iff_le_map {m : α → β} :
     SurjOn (map m) (Iic F) (Iic G) ↔ G ≤ map m F := by
   refine ⟨fun hm ↦ ?_, fun hm ↦ ?_⟩
-  · rcases hm right_mem_Iic with ⟨H, (hHF : H ≤ F), rfl⟩
+  · rcases hm self_mem_Iic with ⟨H, (hHF : H ≤ F), rfl⟩
     exact map_mono hHF
   · have : RightInvOn (F ⊓ comap m ·) (map m) (Iic G) :=
       fun H (hHG : H ≤ G) ↦ by simpa [Filter.push_pull] using hHG.trans hm

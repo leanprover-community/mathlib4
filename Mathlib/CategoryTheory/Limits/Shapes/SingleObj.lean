@@ -40,6 +40,7 @@ namespace SingleObj
 
 variable {M G : Type v} [Monoid M] [Group G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The induced `G`-action on the target of `J : SingleObj G ⥤ Type u`. -/
 instance (J : SingleObj M ⥤ Type u) : MulAction M (J.obj (SingleObj.star M)) where
   smul g x := J.map g x
@@ -86,9 +87,6 @@ lemma colimitTypeRel_iff_orbitRel (x y : J.obj (SingleObj.star G)) :
   change (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)
   grind
 
-@[deprecated (since := "2025-06-22")] alias Types.Quot.Rel.iff_orbitRel :=
-  colimitTypeRel_iff_orbitRel
-
 /-- The explicit quotient construction of the colimit of `J : SingleObj G ⥤ Type u` is
 equivalent to the quotient of `J.obj (SingleObj.star G)` by the induced action. -/
 @[simps]
@@ -100,9 +98,6 @@ def colimitTypeRelEquivOrbitRelQuotient :
     Quot.sound <| (colimitTypeRel_iff_orbitRel J a b).mpr h
   left_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
   right_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
-
-@[deprecated (since := "2025-06-22")] alias Types.Quot.equivOrbitRelQuotient :=
-  colimitTypeRelEquivOrbitRelQuotient
 
 /-- The colimit of `J : SingleObj G ⥤ Type u` is equivalent to the quotient of
 `J.obj (SingleObj.star G)` by the induced action. -/

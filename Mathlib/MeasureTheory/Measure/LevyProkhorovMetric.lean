@@ -104,10 +104,12 @@ lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
   simpa only [← add_assoc] using h (δ + x) B (ENNReal.lt_add_right δ_top x_pos.ne.symm)
     (by simp only [add_lt_top, Ne.lt_top δ_top, x_lt_top, and_self]) B_mble
 
+set_option backward.isDefEq.respectTransparency false in
 lemma levyProkhorovEDist_le_max_measure_univ (μ ν : Measure Ω) :
     levyProkhorovEDist μ ν ≤ max (μ univ) (ν univ) := by
   refine sInf_le fun B _ ↦ ⟨?_, ?_⟩ <;> apply le_add_left <;> simp [measure_mono]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma levyProkhorovEDist_lt_top (μ ν : Measure Ω) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     levyProkhorovEDist μ ν < ∞ :=
   (levyProkhorovEDist_le_max_measure_univ μ ν).trans_lt <| by simp [measure_lt_top]
@@ -248,7 +250,7 @@ lemma levyProkhorovDist_le_of_forall_le
   intro ε B ε_gt ε_lt_top B_mble
   have ε_gt' : δ < ε.toReal := by
     refine (ofReal_lt_ofReal_iff ?_).mp ?_
-    · exact ENNReal.toReal_pos (ne_zero_of_lt ε_gt) ε_lt_top.ne
+    · exact ENNReal.toReal_pos ε_gt.bot_lt.ne' ε_lt_top.ne
     · simpa [ofReal_toReal_eq_iff.mpr ε_lt_top.ne] using ε_gt
   convert h ε.toReal B ε_gt' B_mble
   exact (ENNReal.ofReal_toReal ε_lt_top.ne).symm
@@ -472,7 +474,7 @@ lemma LevyProkhorov.continuous_toMeasure_probabilityMeasure :
         linarith [εs_pos n, dist_nonneg (x := μs n) (y := ν)]
     rw [add_zero] at ε_of_room
     have key := (tendsto_integral_meas_thickening_le f (A := Ioc 0 ‖f‖) (by simp) P).comp ε_of_room'
-    have aux : ∀ (z : ℝ), Iio (z + δ/2) ∈ 𝓝 z := fun z ↦ Iio_mem_nhds (by linarith)
+    have aux : ∀ (z : ℝ), Iio (z + δ / 2) ∈ 𝓝 z := fun z ↦ Iio_mem_nhds (by linarith)
     filter_upwards [key (aux _), ε_of_room <| Iio_mem_nhds <| half_pos <|
                       mul_pos (inv_pos.mpr norm_f_pos) δ_pos]
       with n hn hn'
@@ -595,7 +597,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
   -- Instead of the whole space `Ω = ⋃ n ∈ ℕ, Es n`, focus on a large but finite
   -- union `⋃ n < N, Es n`, chosen in such a way that the complement has small `P`-mass,
   -- `P (⋃ n < N, Es n)ᶜ < ε/3`.
-  obtain ⟨N, hN⟩ : ∃ N, P.toMeasure (⋃ j ∈ Iio N, Es j)ᶜ < ENNReal.ofReal (ε/3) := by
+  obtain ⟨N, hN⟩ : ∃ N, P.toMeasure (⋃ j ∈ Iio N, Es j)ᶜ < ENNReal.ofReal (ε / 3) := by
     have exhaust := @tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint Ω _ P.toMeasure _
                     Es (fun n ↦ (Es_mble n).nullMeasurableSet) Es_disjoint
     simp only [tendsto_atTop_nhds, Function.comp_apply] at exhaust
@@ -608,8 +610,8 @@ lemma continuous_ofMeasure_probabilityMeasure :
   -- With the finite `N` fixed above, consider the finite collection of open sets of the form
   -- `Gs J = thickening (ε/3) (⋃ j ∈ J, Es j)`, where `J ⊆ {0, 1, ..., N-1}`.
   have Js_finite : Set.Finite {J | J ⊆ Iio N} := Finite.finite_subsets <| finite_Iio N
-  set Gs := (fun (J : Set ℕ) ↦ thickening (ε/3) (⋃ j ∈ J, Es j)) '' {J | J ⊆ Iio N}
-  have Gs_open : ∀ (J : Set ℕ), IsOpen (thickening (ε/3) (⋃ j ∈ J, Es j)) :=
+  set Gs := (fun (J : Set ℕ) ↦ thickening (ε / 3) (⋃ j ∈ J, Es j)) '' {J | J ⊆ Iio N}
+  have Gs_open : ∀ (J : Set ℕ), IsOpen (thickening (ε / 3) (⋃ j ∈ J, Es j)) :=
     fun J ↦ isOpen_thickening
   -- Any open set `G ⊆ Ω` determines a neighborhood of `P` consisting of those `Q` that
   -- satisfy `P G < Q G + ε/3`.
@@ -624,7 +626,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
   -- Note that in order to show that the Lévy-Prokhorov distance between `P` and `Q` is small
   -- (`≤ 2*ε/3`), it suffices to show that for arbitrary subsets `B ⊆ Ω`, the measure `P B` is
   -- bounded above up to a small error by the `Q`-measure of a small thickening of `B`.
-  apply lt_of_le_of_lt ?_ (show 2*(ε/3) < ε by linarith)
+  apply lt_of_le_of_lt ?_ (show 2 * (ε / 3) < ε by linarith)
   rw [dist_comm, dist_probabilityMeasure_def]
   -- Fix an arbitrary set `B ⊆ Ω`, and an arbitrary `δ > 2*ε/3` to gain some room for error
   -- and for thickening.
@@ -634,8 +636,8 @@ lemma continuous_ofMeasure_probabilityMeasure :
   -- except for what happens in the small complement `(⋃ n < N, Es n)ᶜ`, the set `B` is
   -- contained in `Gs JB`, and conversely `Gs JB` only contains points within `δ` from `B`.
   set JB := {i | (B ∩ Es i).Nonempty ∧ i ∈ Iio N}
-  have B_subset : B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Iio N, Es j)ᶜ := by
-    suffices B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Ici N, Es j) by
+  have B_subset : B ⊆ (⋃ i ∈ JB, thickening (ε / 3) (Es i)) ∪ (⋃ j ∈ Iio N, Es j)ᶜ := by
+    suffices B ⊆ (⋃ i ∈ JB, thickening (ε / 3) (Es i)) ∪ (⋃ j ∈ Ici N, Es j) by
       refine this.trans <| union_subset_union le_rfl ?_
       intro ω hω
       simp only [mem_Ici, mem_iUnion, exists_prop] at hω

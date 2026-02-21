@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Antidiag.Pi
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
-public import Mathlib.Tactic.IntervalCases
-import Mathlib.Data.PNat.Basic
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Sets of tuples with a fixed product
@@ -26,7 +25,7 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 @[expose] public section
 
 open Finset
-open scoped BigOperators ArithmeticFunction
+open scoped ArithmeticFunction
 namespace PNat
 
 instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) :=

@@ -144,6 +144,7 @@ section s_gt_one
 ## Evaluation of the sum for `1 < s`
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
     term n s = 1 / (s - 1) * (1 / n ^ (s - 1) - 1 / (n + 1) ^ (s - 1))
     - n / s * (1 / n ^ s - 1 / (n + 1) ^ s) := by
@@ -311,7 +312,7 @@ lemma tendsto_riemannZeta_sub_one_div_nhds_right :
   · apply tendsto_const_nhds.sub
     rw [← one_mul (term_tsum 1)]
     apply (tendsto_id.mono_left nhdsWithin_le_nhds).mul
-    have := continuousOn_term_tsum.continuousWithinAt left_mem_Ici
+    have := continuousOn_term_tsum.continuousWithinAt self_mem_Ici
     exact Tendsto.mono_left this (nhdsWithin_mono _ Ioi_subset_Ici_self)
 
 /-- The function `ζ s - 1 / (s - 1)` tends to `γ` as `s → 1`. -/

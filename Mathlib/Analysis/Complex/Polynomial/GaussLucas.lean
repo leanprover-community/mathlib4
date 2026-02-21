@@ -16,7 +16,7 @@ are included in the convex hull of the roots of the polynomial.
 -/
 
 @[expose] public section
-open scoped BigOperators Polynomial ComplexConjugate
+open scoped Polynomial ComplexConjugate
 
 namespace Polynomial
 
@@ -51,6 +51,7 @@ theorem sum_derivRootWeight_pos (hP : 0 < degree P) (z : ℂ) :
       apply Splits.roots_ne_zero (IsAlgClosed.splits _)
       rwa [← pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- *Gauss-Lucas Theorem*: if $P$ is a nonconstant polynomial with complex coefficients,
 then all zeros of $P'$ belong to the convex hull of the set of zeros of $P$.
 
@@ -60,7 +61,6 @@ See also `rootSet_derivative_subset_convexHull_rootSet` below.
 theorem eq_centerMass_of_eval_derivative_eq_zero (hP : 0 < P.degree)
     (hz : P.derivative.eval z = 0) :
     z = P.roots.toFinset.centerMass (P.derivRootWeight z) id := by
-  have hP₀ : P ≠ 0 := by rintro rfl; simp at hP
   set weight : ℂ → ℝ := P.derivRootWeight z
   set s := P.roots.toFinset
   suffices ∑ x ∈ s, weight x • (z - x) = 0 by calc

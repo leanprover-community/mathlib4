@@ -42,6 +42,7 @@ variable {α : Type*} {M : Matroid α} {I B X : Set α}
 
 section dual
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `M : Matroid α`, the `IndepMatroid α` whose independent sets are
   the subsets of `M.E` that are disjoint from some base of `M` -/
 @[simps] def dualIndepMatroid (M : Matroid α) : IndepMatroid α where
@@ -90,7 +91,7 @@ section dual
         inter_union_distrib_left, hdj.symm.inter_eq, empty_union, diff_eq, ← inter_assoc,
         ← diff_eq, diff_subset_comm, diff_eq, inter_assoc, ← diff_eq, inter_comm]
       exact subset_trans (inter_subset_inter_right _ hB''.subset_ground) hXJ
-    obtain ⟨B₁,hB₁,hI'B₁,hB₁I⟩ := (hB'.indep.subset hI').exists_isBase_subset_union_isBase hB''
+    obtain ⟨B₁, hB₁, hI'B₁, hB₁I⟩ := (hB'.indep.subset hI').exists_isBase_subset_union_isBase hB''
     rw [union_comm, ← union_assoc, union_eq_self_of_subset_right inter_subset_left] at hB₁I
     obtain rfl : B₁ = B' := by
       refine hB₁.eq_of_subset_indep hB'.indep (fun e he ↦ ?_)
@@ -100,7 +101,7 @@ section dual
       exact hB₁.indep.subset (insert_subset he (subset_union_right.trans hI'B₁))
     by_contra hdj'
     obtain ⟨e, heJ, heB'⟩ := not_disjoint_iff.mp hdj'
-    obtain (heB'' | ⟨-,heX⟩ ) := hB₁I heB'
+    obtain (heB'' | ⟨-, heX⟩) := hB₁I heB'
     · exact hdj.ne_of_mem heJ heB'' rfl
     exact heX (hJX heJ)
   subset_ground := by tauto
@@ -121,6 +122,7 @@ theorem dual_indep_iff_exists (hI : I ⊆ M.E := by aesop_mat) :
     M✶.Indep I ↔ (∃ B, M.IsBase B ∧ Disjoint I B) := by
   rw [dual_indep_iff_exists', and_iff_right hI]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dual_dep_iff_forall : (M✶.Dep I) ↔ (∀ B, M.IsBase B → (I ∩ B).Nonempty) ∧ I ⊆ M.E := by
   simp_rw [dep_iff, dual_indep_iff_exists', dual_ground, and_congr_left_iff, not_and,
     not_exists, not_and, not_disjoint_iff_nonempty_inter, Classical.imp_iff_right_iff,
@@ -173,6 +175,7 @@ theorem IsBase.compl_isBase_of_dual (h : M✶.IsBase B) : M.IsBase (M.E \ B) :=
 theorem IsBase.compl_isBase_dual (h : M.IsBase B) : M✶.IsBase (M.E \ B) := by
   rwa [dual_isBase_iff, diff_diff_cancel_left h.subset_ground]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsBase.compl_inter_isBasis_of_inter_isBasis (hB : M.IsBase B) (hBX : M.IsBasis (B ∩ X) X) :
     M✶.IsBasis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
   refine Indep.isBasis_of_forall_insert ?_ inter_subset_right (fun e he ↦ ?_)

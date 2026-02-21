@@ -6,6 +6,7 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
+public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
 
@@ -479,6 +480,30 @@ theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
   · exact h.2 R hR
 
 end Presieve
+
+lemma Precoverage.isSheaf_toGrothendieck_iff_of_isStableUnderBaseChange
+    {J : Precoverage C} [J.HasPullbacks] [J.IsStableUnderBaseChange] (P : Cᵒᵖ ⥤ Type*) :
+    Presieve.IsSheaf J.toGrothendieck P ↔ ∀ ⦃X : C⦄ (R : Presieve X),
+      R ∈ J X → Presieve.IsSheafFor P R := by
+  rw [← J.toCoverage_toPrecoverage, Coverage.toGrothendieck_toPrecoverage,
+    Presieve.isSheaf_coverage]
+
+lemma Precoverage.isSheaf_toGrothendieck_iff_of_isStableUnderBaseChange_of_small {J : Precoverage C}
+    [J.IsStableUnderBaseChange] [J.HasPullbacks] [Small.{w} J] (P : Cᵒᵖ ⥤ Type*) :
+    Presieve.IsSheaf J.toGrothendieck P ↔
+      ∀ ⦃X : C⦄ (E : ZeroHypercover.{w} J X), Presieve.IsSheafFor P E.presieve₀ := by
+  rw [Precoverage.isSheaf_toGrothendieck_iff_of_isStableUnderBaseChange]
+  refine ⟨fun h X E ↦ h _ E.mem₀, fun h X R hR ↦ ?_⟩
+  obtain ⟨E₀, rfl⟩ := R.exists_eq_preZeroHypercover
+  rw [Presieve.isSheafFor_iff_generate]
+  let E : ZeroHypercover J X := ⟨E₀, hR⟩
+  apply Presieve.isSheafFor_subsieve
+      (S := .generate <| (ZeroHypercover.restrictIndexOfSmall.{w} E).presieve₀)
+  · exact Sieve.generate_mono (by simp [E])
+  · intro Y f
+    rw [← Sieve.pullbackArrows_comm, ← Presieve.isSheafFor_iff_generate,
+      ← PreZeroHypercover.presieve₀_pullback₁, ← ZeroHypercover.pullback₂_toPreZeroHypercover]
+    apply h
 
 namespace Presheaf
 

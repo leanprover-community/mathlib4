@@ -71,7 +71,7 @@ See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped ENNReal NNReal
@@ -422,6 +422,7 @@ theorem exists_upperSemicontinuous_le_integral_le (f : α → ℝ≥0)
 /-! ### Vitali-Carathéodory theorem -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Vitali-Carathéodory Theorem**: given an integrable real function `f`, there exists an
 integrable function `g > f` which is lower semicontinuous, with integral arbitrarily close
 to that of `f`. This function has to be `EReal`-valued in general. -/
@@ -500,6 +501,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
     · intro x
       exact EReal.continuousAt_add (by simp) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Vitali-Carathéodory Theorem**: given an integrable real function `f`, there exists an
 integrable function `g < f` which is upper semicontinuous, with integral arbitrarily close to that
 of `f`. This function has to be `EReal`-valued in general. -/

@@ -56,6 +56,7 @@ theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullbac
     TopCat.pullbackIsoProdSubtype_inv_snd_apply] at ha'
   simpa using ha'
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `G` preserves the relevant pullbacks and every effective epi in `C` is a quotient map (which is
 the case when `C` is `CompHaus` or `Profinite`), then `yonedaPresheaf` satisfies the equalizer
@@ -112,7 +113,7 @@ def TopCat.toSheafCompHausLike :
     have := CompHausLike.preregular hs
     rw [Presheaf.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
     refine ⟨inferInstance, ?_⟩
-    apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
+    apply +allowSynthFailures equalizerCondition_yonedaPresheaf
       (CompHausLike.compHausLikeToTop.{u} P) X
     intro Z B π he
     apply IsQuotientMap.of_surjective_continuous (hs _ he) π.hom.hom.continuous

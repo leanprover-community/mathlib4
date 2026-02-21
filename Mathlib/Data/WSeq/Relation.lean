@@ -91,7 +91,6 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
         · exact liftRel_destruct h
         · assumption
       apply Computation.LiftRel.imp _ _ _ h
-      intro a b
       apply LiftRelO.imp_right
       intro s t
       apply Or.inl⟩⟩

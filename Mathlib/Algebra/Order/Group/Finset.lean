@@ -16,7 +16,7 @@ public import Mathlib.Data.Finset.Lattice.Prod
 # `Finset.sup` in a group
 -/
 
-@[expose] public section
+public section
 
 open scoped Finset
 
@@ -44,7 +44,7 @@ lemma toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
       rw [← mem_toFinset, H, Finset.mem_singleton] at hy
       exact hy.symm
     have hx' : x ∉ s := fun h' ↦ hx <| by rwa [← mem_toFinset, H, Finset.mem_singleton] at h'
-    simp_rw [count_eq_zero_of_notMem hx', hx, ite_false, Nat.mul_zero]
+    simp_rw [count_eq_zero_of_notMem hx', hx, ite_false]
   simpa only [toFinset_nsmul _ _ H.1, toFinset_singleton] using congr($(H.2).toFinset)
 
 lemma toFinset_card_eq_one_iff (s : Multiset α) :

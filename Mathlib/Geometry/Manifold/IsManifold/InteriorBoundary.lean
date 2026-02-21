@@ -239,6 +239,7 @@ variable
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma interior_prod :
     (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by
@@ -354,33 +355,8 @@ lemma interior_disjointUnion :
     ModelWithCorners.interior (I := I) (M ⊕ M') =
       Sum.inl '' (ModelWithCorners.interior (I := I) M)
       ∪ Sum.inr '' (ModelWithCorners.interior (I := I) M') := by
-  ext p
-  constructor
-  · intro hp
-    by_cases h : Sum.isLeft p
-    · left
-      exact ⟨Sum.getLeft p h, isInteriorPoint_disjointUnion_left hp h, Sum.inl_getLeft p h⟩
-    · replace h := Sum.not_isLeft.mp h
-      right
-      exact ⟨Sum.getRight p h, isInteriorPoint_disjointUnion_right hp h, Sum.inr_getRight p h⟩
-  · intro hp
-    by_cases h : Sum.isLeft p
-    · set x := Sum.getLeft p h with x_eq
-      rw [Sum.eq_left_getLeft_of_isLeft h]
-      apply interiorPoint_inl x
-      have hp : p ∈ Sum.inl '' (ModelWithCorners.interior (I := I) M) := by
-        obtain (good | ⟨y, hy, hxy⟩) := hp
-        exacts [good, (not_isLeft_and_isRight ⟨h, by rw [← hxy]; exact rfl⟩).elim]
-      obtain ⟨x', hx', hx'p⟩ := hp
-      simpa [x_eq, ← hx'p, Sum.getLeft_inl]
-    · set x := Sum.getRight p (Sum.not_isLeft.mp h) with x_eq
-      rw [Sum.eq_right_getRight_of_isRight (Sum.not_isLeft.mp h)]
-      apply interiorPoint_inr x
-      have hp : p ∈ Sum.inr '' (ModelWithCorners.interior (I := I) M') := by
-        obtain (⟨y, hy, hxy⟩ | good) := hp
-        exacts [(not_isLeft_and_isRight ⟨by rw [← hxy]; exact rfl, Sum.not_isLeft.mp h⟩).elim, good]
-      obtain ⟨x', hx', hx'p⟩ := hp
-      simpa [x_eq, ← hx'p, Sum.getRight_inr]
+  grind [boundaryPoint_inl, boundaryPoint_inr, interior.eq_def, interiorPoint_inl,
+    interiorPoint_inr, isInteriorPoint_iff_not_isBoundaryPoint]
 
 lemma boundary_disjointUnion : ModelWithCorners.boundary (I := I) (M ⊕ M') =
       Sum.inl '' (ModelWithCorners.boundary (I := I) M)

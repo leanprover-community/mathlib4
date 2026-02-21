@@ -27,7 +27,7 @@ The latter is proved by well-founded induction via `WellFounded.induction_bot'`
 with respect to the lexicographic ordering on the finite set of all permutations of `f`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Tuple

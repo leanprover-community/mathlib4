@@ -215,6 +215,7 @@ variable [Semiring R]
 
 open scoped Function -- required for scoped `on` notation
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Can we prove one of the following two from the other one?
 /-- The **multinomial theorem**. -/
 lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
@@ -257,6 +258,7 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
   rw [if_neg, add_zero]
   exact ne_of_mem_of_not_mem ht has
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **multinomial theorem**. -/
 theorem sum_pow_of_commute (x : α → R) (s : Finset α)
     (hc : (s : Set α).Pairwise (Commute on x)) :
@@ -351,8 +353,5 @@ theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x
       rw [Multiset.filter_eq_nil]
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
-
-@[deprecated (since := "2025-05-23")]
-alias multinomial_coe_fill_of_not_mem := multinomial_coe_fill_of_notMem
 
 end Sym

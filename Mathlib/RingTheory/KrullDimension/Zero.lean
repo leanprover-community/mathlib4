@@ -47,7 +47,7 @@ example [Subsingleton R] : Ring.KrullDimLE 0 R := inferInstance
 lemma Ring.KrullDimLE.isField_of_isDomain [IsDomain R] : IsField R := by
   by_contra h
   obtain ⟨p, hp, h⟩ := Ring.not_isField_iff_exists_prime.mp h
-  exact hp.symm (Ideal.bot_prime.isMaximal'.eq_of_le h.ne_top bot_le)
+  exact hp.symm (Ideal.isPrime_bot.isMaximal'.eq_of_le h.ne_top bot_le)
 
 omit [Ring.KrullDimLE 0 R] in
 lemma ringKrullDimZero_iff_ringKrullDim_eq_zero [Nontrivial R] :
@@ -92,8 +92,6 @@ lemma le_isUnit_iff_zero_notMem [IsLocalRing R]
   have := ((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 2 rfl rfl).mp ⟨‹_›, ‹_›⟩
   exact ⟨fun h₁ h₂ ↦ not_isUnit_zero (h₁ h₂),
     fun H x hx ↦ (this x).not_left.mp fun ⟨n, hn⟩ ↦ H (hn ▸ pow_mem hx n)⟩
-
-@[deprecated (since := "2025-05-23")] alias le_isUnit_iff_zero_not_mem := le_isUnit_iff_zero_notMem
 
 variable (R) in
 theorem Ring.KrullDimLE.existsUnique_isPrime [IsLocalRing R] :
@@ -158,6 +156,15 @@ lemma Ring.KrullDimLE.isField_of_isReduced [IsReduced R] [IsLocalRing R] : IsFie
 instance PrimeSpectrum.unique_of_ringKrullDimLE_zero [IsLocalRing R] : Unique (PrimeSpectrum R) :=
   ⟨⟨IsLocalRing.closedPoint _⟩,
     fun _ ↦ PrimeSpectrum.ext (Ring.KrullDimLE.eq_maximalIdeal_of_isPrime _)⟩
+
+set_option backward.isDefEq.respectTransparency false in
+lemma PrimeSpectrum.subsingleton_iff_isField_of_isReduced
+    {R : Type*} [CommRing R] [IsReduced R] [Nontrivial R] :
+    Subsingleton (PrimeSpectrum R) ↔ IsField R := by
+  refine ⟨fun H ↦ ?_, fun H ↦ letI := H.toField; inferInstance⟩
+  have : Subsingleton (MaximalSpectrum R) := MaximalSpectrum.toPrimeSpectrum_injective.subsingleton
+  have : IsLocalRing R := .of_singleton_maximalSpectrum
+  exact Ring.KrullDimLE.isField_of_isReduced
 
 end IsLocalRing
 

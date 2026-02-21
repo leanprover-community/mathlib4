@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Functor.TwoSquare
 public import Mathlib.CategoryTheory.HomCongr
-public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Mate of natural transformations
@@ -32,11 +31,11 @@ other side is as well). This demonstrates that adjoints to a given functor are u
 isomorphism (since if `L₁ ≅ L₂` then we deduce `R₁ ≅ R₂`).
 
 Another example arises from considering the square representing that a functor `H` preserves
-products, in particular the morphism `HA ⨯ H- ⟶ H(A ⨯ -)`. Then provided `(A ⨯ -)` and `HA ⨯ -`
+products, in particular the morphism `H A ⨯ H- ⟶ H (A ⨯ -)`. Then provided `(A ⨯ -)` and `H A ⨯ -`
 have left adjoints (for instance if the relevant categories are Cartesian closed), the transferred
-natural transformation is the exponential comparison morphism: `H(A ^ -) ⟶ HA ^ H-`.
+natural transformation is the exponential comparison morphism: `H (A ^ -) ⟶ H A ^ H-`.
 Furthermore if `H` has a left adjoint `L`, this morphism is an isomorphism iff its mate
-`L(HA ⨯ -) ⟶ A ⨯ L-` is an isomorphism, see
+`L (H A ⨯ -) ⟶ A ⨯ L-` is an isomorphism, see
 https://ncatlab.org/nlab/show/Frobenius+reciprocity#InCategoryTheory.
 This also relates to Grothendieck's yoga of six operations, though this is not spelled out in
 mathlib: https://ncatlab.org/nlab/show/six+operations.
@@ -56,6 +55,7 @@ variable [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] [Category.{
 variable {G : C ⥤ E} {H : D ⥤ F} {L₁ : C ⥤ D} {R₁ : D ⥤ C} {L₂ : E ⥤ F} {R₂ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose we have a square of functors (where the top and bottom are adjunctions `L₁ ⊣ R₁`
 and `L₂ ⊣ R₂` respectively).
 
@@ -116,6 +116,7 @@ def mateEquiv : TwoSquare G L₁ L₂ H ≃ TwoSquare R₁ H G R₂ where
     rw [← assoc, ← Functor.comp_map, assoc, ← β.natTrans.naturality, ← assoc, Functor.comp_map,
       ← G.map_comp, right_triangle_components, map_id, id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A component of a transposed version of the mates correspondence. -/
 theorem mateEquiv_counit (α : TwoSquare G L₁ L₂ H) (d : D) :
     L₂.map ((mateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app _ =
@@ -128,6 +129,7 @@ theorem mateEquiv_counit_symm (α : TwoSquare R₁ H G R₂) (d : D) :
   conv_lhs => rw [← (mateEquiv adj₁ adj₂).right_inv α]
   exact (mateEquiv_counit adj₁ adj₂ ((mateEquiv adj₁ adj₂).symm α) d)
 
+set_option backward.isDefEq.respectTransparency false in
 /- A component of a transposed version of the mates correspondence. -/
 theorem unit_mateEquiv (α : TwoSquare G L₁ L₂ H) (c : C) :
     G.map (adj₁.unit.app c) ≫ (mateEquiv adj₁ adj₂ α).app _ =
@@ -161,6 +163,7 @@ variable {G₁ : A ⥤ C} {G₂ : C ⥤ E} {H₁ : B ⥤ D} {H₂ : D ⥤ F}
 variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C} {L₃ : E ⥤ F} {R₃ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The mates equivalence commutes with vertical composition. -/
 theorem mateEquiv_vcomp (α : TwoSquare G₁ L₁ L₂ H₁) (β : TwoSquare G₂ L₂ L₃ H₂) :
     (mateEquiv adj₁ adj₃) (α ≫ₕ β) = (mateEquiv adj₁ adj₂ α) ≫ᵥ (mateEquiv adj₂ adj₃ β) := by
@@ -199,6 +202,7 @@ variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : D ⥤ E} {R₂ : E ⥤ D}
 variable {L₃ : B ⥤ C} {R₃ : C ⥤ B} {L₄ : E ⥤ F} {R₄ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃) (adj₄ : L₄ ⊣ R₄)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The mates equivalence commutes with horizontal composition of squares. -/
 theorem mateEquiv_hcomp (α : TwoSquare G L₁ L₂ H) (β : TwoSquare H L₃ L₄ K) :
     (mateEquiv (adj₁.comp adj₃) (adj₂.comp adj₄)) (α ≫ᵥ β) =
@@ -274,6 +278,7 @@ def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
     _ ≃ (R₁ ⋙ 𝟭 C ⟶ 𝟭 D ⋙ R₂) := TwoSquare.equivNatTrans _ _ _ _
     _ ≃ (R₁ ⟶ R₂) := R₁.rightUnitor.homCongr R₂.leftUnitor
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A component of a transposed form of the conjugation definition. -/
 theorem conjugateEquiv_counit (α : L₂ ⟶ L₁) (d : D) :
     L₂.map ((conjugateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app d =
@@ -305,6 +310,7 @@ theorem unit_conjugateEquiv_symm (α : R₁ ⟶ R₂) (c : C) :
     conv_lhs => rw [← (conjugateEquiv adj₁ adj₂).right_inv α]
     exact (unit_conjugateEquiv adj₁ adj₂ ((conjugateEquiv adj₁ adj₂).symm α) c)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem conjugateEquiv_id : conjugateEquiv adj₁ adj₁ (𝟙 _) = 𝟙 _ := by
   ext
@@ -388,12 +394,11 @@ instance conjugateEquiv_symm_iso (α : R₁ ⟶ R₂) [IsIso α] :
       ⟨conjugateEquiv_symm_comm _ _ (by simp), conjugateEquiv_symm_comm _ _ (by simp)⟩⟩⟩
 
 /-- If `α` is a natural transformation between left adjoints whose conjugate natural transformation
-is an isomorphism, then `α` is an isomorphism. The converse is given in `Conjugate_iso`.
+is an isomorphism, then `α` is an isomorphism. The converse is given in `conjugateEquiv_iso`.
 -/
 theorem conjugateEquiv_of_iso (α : L₂ ⟶ L₁) [IsIso (conjugateEquiv adj₁ adj₂ α)] :
     IsIso α := by
-  suffices IsIso ((conjugateEquiv adj₁ adj₂).symm (conjugateEquiv adj₁ adj₂ α))
-    by simpa using this
+  suffices IsIso ((conjugateEquiv adj₁ adj₂).symm (conjugateEquiv adj₁ adj₂ α)) by simpa using this
   infer_instance
 
 /--
@@ -449,7 +454,6 @@ theorem iterated_mateEquiv_conjugateEquiv (α : TwoSquare F₁ L₁ L₂ F₂) :
     (mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α)).natTrans =
       conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
   ext d
-  unfold conjugateEquiv mateEquiv Adjunction.comp
   simp
 
 theorem iterated_mateEquiv_conjugateEquiv_symm (α : TwoSquare U₂ R₂ R₁ U₁) :
@@ -472,7 +476,6 @@ theorem mateEquiv_conjugateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
   ext b
   have vcomp := mateEquiv_vcomp adj₁ adj₂ adj₃ α (L₃.leftUnitor.hom ≫ β ≫ L₂.rightUnitor.inv)
   unfold vComp hComp at vcomp
-  unfold TwoSquare.whiskerRight TwoSquare.whiskerBottom conjugateEquiv
   have vcompb := congr_app vcomp b
   simp only [comp_obj, id_obj, whiskerLeft_comp, assoc, mateEquiv_apply, whiskerLeft_twice,
     Iso.hom_inv_id_assoc, whiskerRight_comp, comp_app, Functor.whiskerLeft_app,
@@ -490,7 +493,6 @@ theorem conjugateEquiv_mateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
   ext b
   have vcomp := mateEquiv_vcomp adj₁ adj₂ adj₃ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) β
   unfold vComp hComp at vcomp
-  unfold TwoSquare.whiskerLeft TwoSquare.whiskerTop conjugateEquiv
   have vcompb := congr_app vcomp b
   simp only [comp_obj, id_obj, whiskerRight_comp, assoc, mateEquiv_apply, whiskerLeft_comp,
     whiskerLeft_twice, comp_app, Functor.whiskerLeft_app, Functor.whiskerRight_app,
@@ -499,6 +501,7 @@ theorem conjugateEquiv_mateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
     comp_id] at vcompb
   simpa [mateEquiv]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma conjugateEquiv_associator_hom
     {L₀₁ : A ⥤ B} {R₁₀ : B ⥤ A} {L₁₂ : B ⥤ C} {R₂₁ : C ⥤ B}
     {L₂₃ : C ⥤ D} {R₃₂ : D ⥤ C} (adj₀₁ : L₀₁ ⊣ R₁₀) (adj₁₂ : L₁₂ ⊣ R₂₁)
@@ -511,12 +514,14 @@ lemma conjugateEquiv_associator_hom
     Adjunction.comp_counit_app, Category.id_comp]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma conjugateEquiv_leftUnitor_hom
     {L : A ⥤ B} {R : B ⥤ A} (adj : L ⊣ R) :
     conjugateEquiv adj (id.comp adj) (leftUnitor L).hom =
       (rightUnitor R).inv := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 lemma conjugateEquiv_rightUnitor_hom
     {L : A ⥤ B} {R : B ⥤ A} (adj : L ⊣ R) :
     conjugateEquiv adj (adj.comp id) (rightUnitor L).hom =
@@ -534,6 +539,7 @@ lemma conjugateEquiv_whiskerLeft
   simp only [comp_obj, id_obj, Functor.map_comp] at h₁ h₂
   simp [← reassoc_of% h₁, reassoc_of% h₂]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma conjugateEquiv_whiskerRight
     {L₁ L₂ : A ⥤ B} {R₁ R₂ : B ⥤ A} {L : B ⥤ C} {R : C ⥤ B}
     (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj : L ⊣ R) (τ : L₂ ⟶ L₁) :

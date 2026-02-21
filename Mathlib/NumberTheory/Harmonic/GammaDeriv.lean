@@ -19,7 +19,7 @@ We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 
 -/
 
-@[expose] public section
+public section
 
 open Nat Set Filter Topology
 
@@ -97,6 +97,7 @@ lemma hasDerivAt_Gamma_one : HasDerivAt Gamma (-γ) 1 := by
   simpa only [factorial_zero, cast_one, harmonic_zero, Rat.cast_zero, add_zero, mul_neg, one_mul,
     cast_zero, zero_add] using hasDerivAt_Gamma_nat 0
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (1 / 2) := by
   have h_diff {s : ℝ} (hs : 0 < s) : DifferentiableAt ℝ Gamma s :=
     differentiableAt_Gamma fun m ↦ ((neg_nonpos.mpr m.cast_nonneg).trans_lt hs).ne'
@@ -166,9 +167,6 @@ lemma differentiableAt_Gamma_nat_add_one (n : ℕ) :
   simp only [Ne, ← ofReal_natCast, ← ofReal_one, ← ofReal_add, ← ofReal_neg, ofReal_inj,
     eq_neg_iff_add_eq_zero]
   positivity
-
-@[deprecated (since := "2025-06-06")] alias differentiable_at_Gamma_nat_add_one :=
-  differentiableAt_Gamma_nat_add_one
 
 lemma hasDerivAt_Gamma_nat (n : ℕ) :
     HasDerivAt Gamma (n ! * (-γ + harmonic n)) (n + 1) := by

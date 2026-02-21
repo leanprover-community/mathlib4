@@ -18,7 +18,7 @@ This file shows `Finset.biUnion` could alternatively be defined in terms of `Fin
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
 
-@[expose] public section
+public section
 
 open Function Multiset OrderDual
 

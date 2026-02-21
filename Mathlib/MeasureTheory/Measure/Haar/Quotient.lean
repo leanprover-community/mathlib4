@@ -60,8 +60,6 @@ section
 instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [MeasurableSpace G]
     [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
-  measurable_const_smul g := (continuous_const_smul g).measurable
-  measurable_smul_const _ := (continuous_id.smul continuous_const).measurable
 
 end
 
@@ -183,6 +181,7 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
     · exact trans hV.symm neTopV
   exact measurableSet_quotient.mp meas_V
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a measure `μ` is left-invariant and satisfies the right scaling condition, then it
   satisfies `QuotientMeasureEqMeasurePreimage`. -/
 @[to_additive /-- If a measure `μ` is
@@ -455,7 +454,7 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
   let π : G' → G' ⧸ Γ' := QuotientAddGroup.mk
   have meas_π : Measurable π := continuous_quotient_mk'.measurable
   have H₀ : QuotientAddGroup.automorphize ((g ∘ π) * f) = g * (QuotientAddGroup.automorphize f) :=
-    by exact QuotientAddGroup.automorphize_smul_left f g
+    QuotientAddGroup.automorphize_smul_left f g
   calc ∫ (x : G'), g (π x) * f x ∂μ' =
     ∫ (x : G' ⧸ Γ'), QuotientAddGroup.automorphize ((g ∘ π) * f) x ∂μ_𝓕 := ?_
     _ = ∫ (x : G' ⧸ Γ'), g x * (QuotientAddGroup.automorphize f x) ∂μ_𝓕 := by simp [H₀]

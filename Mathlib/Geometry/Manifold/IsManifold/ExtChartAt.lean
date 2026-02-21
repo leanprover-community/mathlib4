@@ -145,18 +145,11 @@ theorem extend_image_nhds_mem_nhds_of_boundaryless [I.Boundaryless] {x} (hx : x 
   rw [← f.map_extend_nhds_of_boundaryless hx, Filter.mem_map]
   filter_upwards [h] using subset_preimage_image (f.extend I) s
 
-@[deprecated (since := "2025-05-22")]
-alias extend_image_nhd_mem_nhds_of_boundaryless := extend_image_nhds_mem_nhds_of_boundaryless
-
 theorem extend_image_nhds_mem_nhds_of_mem_interior_range {x} (hx : x ∈ f.source)
     (h'x : f.extend I x ∈ interior (range I)) {s : Set M} (h : s ∈ 𝓝 x) :
     (f.extend I) '' s ∈ 𝓝 ((f.extend I) x) := by
   rw [← f.map_extend_nhds_of_mem_interior_range hx h'x, Filter.mem_map]
   filter_upwards [h] using subset_preimage_image (f.extend I) s
-
-@[deprecated (since := "2025-05-22")]
-alias extend_image_nhd_mem_nhds_of_mem_interior_range :=
-  extend_image_nhds_mem_nhds_of_mem_interior_range
 
 theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp only [mfld_simps]
 
@@ -470,19 +463,11 @@ theorem extChartAt_image_nhds_mem_nhds_of_mem_interior_range {x y}
   rw [extChartAt]
   exact extend_image_nhds_mem_nhds_of_mem_interior_range _ (by simpa using hx) h'x h
 
-@[deprecated (since := "2025-05-22")]
-alias extChartAt_image_nhd_mem_nhds_of_mem_interior_range :=
-  extChartAt_image_nhds_mem_nhds_of_mem_interior_range
-
 variable {x} in
 theorem extChartAt_image_nhds_mem_nhds_of_boundaryless [I.Boundaryless]
     {x : M} (hx : s ∈ 𝓝 x) : extChartAt I x '' s ∈ 𝓝 (extChartAt I x x) := by
   rw [extChartAt]
   exact extend_image_nhds_mem_nhds_of_boundaryless _ (mem_chart_source H x) hx
-
-@[deprecated (since := "2025-05-22")]
-alias extChartAt_image_nhd_mem_nhds_of_boundaryless :=
-  extChartAt_image_nhds_mem_nhds_of_boundaryless
 
 theorem extChartAt_target_mem_nhdsWithin' {x y : M} (hy : y ∈ (extChartAt I x).source) :
     (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x y :=
@@ -743,17 +728,21 @@ The manifold derivative of `f` will just be the derivative of this conjugated fu
 def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
   extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I x (chartAt H x) y = y := by simp_all only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I (chartAt H x x) (chartAt H x).symm y = y := by
   simp_all only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I 𝓘(𝕜, E) x (extChartAt I x) y = y := by
   simp_all only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
@@ -766,11 +755,14 @@ variable {G G' F F' N N' : Type*}
   {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F' G'}
   [ChartedSpace G N] [ChartedSpace G' N']
 
-lemma writtenInExtChart_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
+set_option backward.isDefEq.respectTransparency false in
+lemma writtenInExtChartAt_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
     (writtenInExtChartAt (I.prod I') (J.prod J') (x, x') (Prod.map f g)) =
       Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := by
   ext p <;>
   simp [writtenInExtChartAt, I.toPartialEquiv.prod_symm, (chartAt H x).toPartialEquiv.prod_symm]
+
+@[deprecated (since := "2026-02-18")] alias writtenInExtChart_prod := writtenInExtChartAt_prod
 
 end
 
@@ -782,6 +774,7 @@ theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I :=
 theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the case of the manifold structure on a vector space, the extended charts are just the
 identity. -/
 theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = PartialEquiv.refl E := by
@@ -792,6 +785,7 @@ theorem ext_chart_model_space_apply {x y : E} : extChartAt 𝓘(𝕜, E) x y = y
 
 variable {𝕜}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem extChartAt_prod (x : M × M') :
     extChartAt (I.prod I') x = (extChartAt I x.1).prod (extChartAt I' x.2) := by
   simp only [mfld_simps]
@@ -810,8 +804,8 @@ theorem writtenInExtChartAt_chartAt_comp [ChartedSpace H H'] (x : M') {y}
 
 theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
     (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
-    ( letI := ChartedSpace.comp H H' M'
-      writtenInExtChartAt I I (chartAt H' x x) (chartAt H' x).symm y) = y := by
+    (letI := ChartedSpace.comp H H' M'
+     writtenInExtChartAt I I (chartAt H' x x) (chartAt H' x).symm y) = y := by
   letI := ChartedSpace.comp H H' M'
   simp_all only [mfld_simps, chartAt_comp]
 

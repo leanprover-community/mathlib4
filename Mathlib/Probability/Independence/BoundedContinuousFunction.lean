@@ -62,7 +62,7 @@ to `bcf`.
 independence, bounded continuous functions
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure ProbabilityTheory ENNReal
 open scoped BoundedContinuousFunction
@@ -188,6 +188,7 @@ variable [IsProbabilityMeasure P]
 
 section Indicator
 
+set_option backward.isDefEq.respectTransparency false in
 lemma indicator_indepFun_pi_of_prod_bcf
     {A : Set Ω} (mA : NullMeasurableSet A P) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ f : (s : S) → E s →ᵇ ℝ, ∫ ω in A, ∏ s, f s (X s ω) ∂P =

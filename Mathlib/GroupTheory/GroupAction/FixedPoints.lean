@@ -47,7 +47,7 @@ To properly use theorems using `fixedBy (Set α) g`, you should `open Pointwise`
 all points in `s` are fixed by `g`, whereas the former only requires that `g • x ∈ s`.
 -/
 
-@[expose] public section
+public section
 
 namespace MulAction
 open Pointwise
@@ -254,6 +254,7 @@ theorem fixedBy_eq_univ_iff_eq_one {m : M} : fixedBy α m = Set.univ ↔ m = 1 :
   rw [← (smul_left_injective' (M := M) (α := α)).eq_iff, Set.eq_univ_iff_forall]
   simp_rw [funext_iff, one_smul, mem_fixedBy]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If the image of the `(fixedBy α g)ᶜ` set by the pointwise action of `h: G`
 is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute.

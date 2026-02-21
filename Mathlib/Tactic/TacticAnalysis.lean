@@ -7,9 +7,10 @@ module
 
 public meta import Lean.Util.Heartbeats
 public meta import Lean.Server.InfoUtils
-public meta import Mathlib.Lean.ContextInfo
 public meta import Mathlib.Lean.Elab.Tactic.Meta
 public meta import Lean.Compiler.IR.CompilerM
+public import Lean.Elab.Command
+public import Mathlib.Lean.ContextInfo
 
 /-! # Tactic analysis framework
 
@@ -66,6 +67,14 @@ Convenience abbreviation for `ContextInfo.runTacticCode`. -/
 abbrev TacticNode.runTacticCode (i : TacticNode) :
     MVarId → Syntax → CommandElabM (List MVarId) :=
   i.ctxI.runTacticCode i.tacI
+
+/-- Run tactic code, capturing InfoTrees for extracting "Try this:" suggestions.
+
+Returns both the resulting goals and the InfoTrees produced during tactic execution.
+Use `collectTryThisSuggestions` from `Mathlib.Lean.Elab.InfoTree` to extract suggestions. -/
+abbrev TacticNode.runTacticCodeCapturingInfoTree (i : TacticNode) :
+    MVarId → Syntax → CommandElabM (List MVarId × PersistentArray InfoTree) :=
+  i.ctxI.runTacticCodeCapturingInfoTree i.tacI
 
 /-- Stores the configuration for a tactic analysis pass.
 
@@ -178,6 +187,15 @@ def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) :
       let childTactics := relevantChildren.filterMap Prod.fst
       let childSequences := (relevantChildren.map Prod.snd).flatten
       let stx := i.stx
+      -- Tactic sequencing operators: collect all the child tactics into a new sequence.
+      -- This must happen regardless of source info, as `have h := by ...` creates tacticSeq
+      -- nodes with synthetic source info.
+      if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented,
+          ``Lean.Parser.Term.byTactic] then
+        return (none, if childTactics.isEmpty then
+            childSequences
+          else
+            childSequences.push childTactics)
       if let some (.original _ _ _ _) := stx.getHeadInfo? then
         -- Punctuation: skip this.
         if stx.getKind ∈ [`«;», `Lean.cdotTk, `«]», nullKind, `«by»] then
@@ -185,13 +203,6 @@ def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) :
         -- Tactic modifiers: return the children unmodified.
         if stx.getKind ∈ [``Lean.Parser.Tactic.withAnnotateState] then
           return (childTactics[0]?, childSequences)
-        -- Tactic sequencing operators: collect all the child tactics into a new sequence.
-        if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented,
-            ``Lean.Parser.Term.byTactic] then
-          return (none, if childTactics.isEmpty then
-              childSequences
-            else
-              childSequences.push childTactics)
 
         -- Remaining options: plain pieces of syntax.
         -- We discard `childTactics` here, because those are either already picked up by a

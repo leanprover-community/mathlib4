@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.AddTorsor.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Topology.Connected.Basic
 
 /-!
@@ -107,7 +109,7 @@ theorem Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : T
 
 variable {f : Y → M} {g : Y → X} {b : Y} {s : Set Y}
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousWithinAt.smul (hf : ContinuousWithinAt f s b) (hg : ContinuousWithinAt g s b) :
     ContinuousWithinAt (fun x => f x • g x) s b :=
   Filter.Tendsto.smul hf hg
@@ -230,6 +232,53 @@ lemma stabilizer_isOpen [DiscreteTopology X] (x : X) : IsOpen (MulAction.stabili
 
 end Group
 
+section IsTopologicalGroup
+
+variable [Group M] [IsTopologicalGroup M] [MulAction M X]
+
+/-- A group action of a topological group on a discrete space is continuous if and only if
+each stabilizer is an open subgroup. -/
+theorem continuousSMul_iff_stabilizer_isOpen [DiscreteTopology X] :
+    ContinuousSMul M X ↔ ∀ x : X, IsOpen (MulAction.stabilizer M x : Set M) := by
+  refine ⟨fun _ _ ↦ stabilizer_isOpen .., fun h ↦ ⟨?_⟩⟩
+  rw [continuous_prod_of_discrete_right]
+  intro y
+  rw [continuous_discrete_rng]
+  intro x
+  let U := {m' : M | m' • y = x}
+  have hU : IsOpen U := by
+    by_cases hU' : U ≠ ∅
+    · obtain ⟨m, (hm : m • y = x)⟩ := Set.nonempty_iff_empty_ne.mpr hU'.symm
+      convert (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹)
+      ext; simp [← smul_smul, U, eq_inv_smul_iff.mpr hm]
+    simp_all
+  simpa using hU
+
+end IsTopologicalGroup
+
+section GroupWithZero
+
+variable {G₀ X : Type*} [GroupWithZero G₀] [Zero X] [MulActionWithZero G₀ X]
+  [TopologicalSpace G₀] [(𝓝[≠] (0 : G₀)).NeBot] [TopologicalSpace X] [ContinuousSMul G₀ X]
+
+theorem Set.univ_smul_nhds_zero {s : Set X} (hs : s ∈ 𝓝 0) : (univ : Set G₀) • s = Set.univ := by
+  refine Set.eq_univ_of_forall fun x ↦ ?_
+  have : Tendsto (· • x) (𝓝 (0 : G₀)) (𝓝 0) :=
+    zero_smul G₀ x ▸ tendsto_id.smul tendsto_const_nhds
+  rcases Filter.nonempty_of_mem (inter_mem_nhdsWithin {0}ᶜ <| mem_map.1 <| this hs)
+    with ⟨c, hc₀, hc⟩
+  simp only [mem_compl_iff, mem_singleton_iff] at hc₀
+  simp only [mem_smul, mem_univ, true_and]
+  exact ⟨c⁻¹, c • x, hc, inv_smul_smul₀ hc₀ _⟩
+
+@[simp]
+theorem Filter.top_smul_nhds_zero : (⊤ : Filter G₀) • 𝓝 (0 : X) = ⊤ := by
+  rw [(hasBasis_top.smul (basis_sets _)).eq_top_iff]
+  rintro ⟨_, s⟩ ⟨-, hs⟩
+  exact Set.univ_smul_nhds_zero hs
+
+end GroupWithZero
+
 @[to_additive]
 instance Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [ContinuousSMul M Y] :
     ContinuousSMul M (X × Y) :=
@@ -255,7 +304,7 @@ theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
   let _ := sInf ts
   { continuous_smul := by
       -- Porting note: needs `( :)`
-      rw [← (sInf_singleton (a := ‹TopologicalSpace M›):)]
+      rw [← (sInf_singleton (a := ‹TopologicalSpace M›) :)]
       exact
         continuous_sInf_rng.2 fun t ht =>
           continuous_sInf_dom₂ (Eq.refl _) ht

@@ -20,7 +20,7 @@ to subtraction on a general semiring. For example, we can't rely on existing cas
 to `↑a - 1`, the other factor is `0` anyway.
 -/
 
-@[expose] public section
+public section
 
 
 open Nat

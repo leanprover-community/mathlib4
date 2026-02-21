@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public meta import Mathlib.Data.Real.Sqrt
+public import Mathlib.Data.Real.Sqrt
 
 /-! # `norm_num` extension for `Real.sqrt`
 
@@ -24,6 +24,7 @@ lemma isNat_realSqrt {x : ℝ} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx
 lemma isNat_nnrealSqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
     IsNat (NNReal.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isNNRat_nnrealSqrt_of_isNNRat {x : ℝ≥0} {n sn : ℕ} {d sd : ℕ} (hn : sn * sn = n)
     (hd : sd * sd = d) (h : IsNNRat x n d) :
     IsNNRat (NNReal.sqrt x) sn sd := by
@@ -45,6 +46,7 @@ lemma isNat_realSqrt_of_isRat_negOfNat {x : ℝ} {num : ℕ} {denom : ℕ}
     mul_nonneg (Nat.cast_nonneg' _) (invOf_nonneg.2 <| Nat.cast_nonneg' _)
   simpa [Nat.cast_zero, Real.sqrt_eq_zero', Int.cast_negOfNat, neg_mul, neg_nonpos] using h₁
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isNNRat_realSqrt_of_isNNRat {x : ℝ} {n sn : ℕ} {d sd : ℕ} (hn : sn * sn = n)
     (hd : sd * sd = d) (h : IsNNRat x n d) :
     IsNNRat √x sn sd := by

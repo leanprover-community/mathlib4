@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Schnirelmann density
@@ -104,21 +105,16 @@ lemma schnirelmannDensity_le_of_notMem {k : ℕ} (hk : k ∉ A) :
   rw [← Ioo_insert_right hk', filter_insert, if_neg hk]
   exact filter_subset _ _
 
-@[deprecated (since := "2025-05-23")]
-alias schnirelmannDensity_le_of_not_mem := schnirelmannDensity_le_of_notMem
-
 /-- The Schnirelmann density of a set not containing `1` is `0`. -/
 lemma schnirelmannDensity_eq_zero_of_one_notMem (h : 1 ∉ A) : schnirelmannDensity A = 0 :=
   ((schnirelmannDensity_le_of_notMem h).trans (by simp)).antisymm schnirelmannDensity_nonneg
-
-@[deprecated (since := "2025-05-23")]
-alias schnirelmannDensity_eq_zero_of_one_not_mem := schnirelmannDensity_eq_zero_of_one_notMem
 
 /-- The Schnirelmann density is increasing with the set. -/
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
     schnirelmannDensity A ≤ schnirelmannDensity B :=
   ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by gcongr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
 lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ A := by
   rw [le_antisymm_iff, and_iff_right schnirelmannDensity_le_one]
@@ -194,6 +190,7 @@ end
 @[simp] lemma schnirelmannDensity_empty : schnirelmannDensity ∅ = 0 :=
   schnirelmannDensity_eq_zero_of_one_notMem (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Schnirelmann density of any finset is `0`. -/
 lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 := by
   refine le_antisymm ?_ schnirelmannDensity_nonneg
@@ -221,6 +218,7 @@ lemma schnirelmannDensity_setOf_even : schnirelmannDensity (setOf Even) = 0 :=
 lemma schnirelmannDensity_setOf_prime : schnirelmannDensity (setOf Nat.Prime) = 0 :=
   schnirelmannDensity_eq_zero_of_one_notMem <| by simp [Nat.not_prime_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The Schnirelmann density of the set of naturals which are `1 mod m` is `m⁻¹`, for any `m ≠ 1`.
 
@@ -266,9 +264,7 @@ lemma schnirelmannDensity_setOf_modeq_one {m : ℕ} :
   rcases eq_or_ne m 1 with rfl | hm
   · simp [Nat.modEq_one]
   rw [← schnirelmannDensity_setOf_mod_eq_one hm]
-  apply schnirelmannDensity_congr
-  ext n
-  simp only [Set.mem_setOf_eq, Nat.ModEq, Nat.one_mod_eq_one.mpr hm]
+  simp [Nat.ModEq, Nat.one_mod_eq_one.mpr hm]
 
 lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ := by
   have h : setOf Odd = {n | n % 2 = 1} := Set.ext fun _ => Nat.odd_iff

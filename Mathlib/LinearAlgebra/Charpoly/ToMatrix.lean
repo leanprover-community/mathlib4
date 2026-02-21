@@ -20,7 +20,7 @@ public import Mathlib.RingTheory.Finiteness.Prod
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -38,6 +38,7 @@ namespace LinearMap
 
 section Basic
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `charpoly f` is the characteristic polynomial of the matrix of `f` in any basis. -/
 @[simp]
 theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis ι R M) :
@@ -79,7 +80,7 @@ lemma LinearEquiv.charpoly_conj (e : M₁ ≃ₗ[R] M₂) (φ : Module.End R M�
   rw [← LinearMap.charpoly_toMatrix φ b, ← LinearMap.charpoly_toMatrix (e.conj φ) (b.map e)]
   congr 1
   ext i j : 1
-  simp [LinearMap.toMatrix, LinearEquiv.conj_apply]
+  simp [LinearMap.toMatrix]
 
 namespace Matrix
 

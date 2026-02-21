@@ -85,10 +85,6 @@ theorem Equiv.Perm.viaFintypeEmbedding_apply_notMem_range {b : β} (h : b ∉ Se
     e.viaFintypeEmbedding f b = b := by
   rwa [Equiv.Perm.viaFintypeEmbedding, Equiv.Perm.extendDomain_apply_not_subtype]
 
-@[deprecated (since := "2025-05-23")]
-alias Equiv.Perm.viaFintypeEmbedding_apply_not_mem_range :=
-  Equiv.Perm.viaFintypeEmbedding_apply_notMem_range
-
 end Fintype
 
 namespace Equiv

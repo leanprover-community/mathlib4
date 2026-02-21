@@ -59,14 +59,16 @@ namespace WellFounded
 
 variable {r r' : α → α → Prop}
 
-protected theorem isAsymm (h : WellFounded r) : IsAsymm α r := ⟨h.asymmetric⟩
+protected theorem asymm (h : WellFounded r) : Std.Asymm r := ⟨h.asymmetric⟩
 
-protected theorem isIrrefl (h : WellFounded r) : IsIrrefl α r := @IsAsymm.isIrrefl α r h.isAsymm
+@[deprecated (since := "2026-01-07")] protected alias isAsymm := WellFounded.asymm
 
-instance [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.rel :=
-  WellFoundedRelation.wf.isAsymm
+protected theorem irrefl (h : WellFounded r) : Std.Irrefl r := @Std.Asymm.irrefl α r h.asymm
 
-instance : IsIrrefl α WellFoundedRelation.rel := IsAsymm.isIrrefl
+@[deprecated (since := "2026-01-07")] protected alias isIrrefl := WellFounded.irrefl
+
+instance [WellFoundedRelation α] : Std.Asymm (α := α) WellFoundedRelation.rel :=
+  WellFoundedRelation.wf.asymm
 
 theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded r' :=
   Subrelation.wf (h _ _) hr
@@ -111,9 +113,6 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   refine hm ⟨_, fun y hy => ?_⟩
   by_contra hy'
   exact hm' y hy' hy
-
-@[deprecated (since := "2025-08-10")]
-alias wellFounded_iff_no_descending_seq := wellFounded_iff_isEmpty_descending_chain
 
 theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
   by_contra! hf
@@ -306,12 +305,14 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
 end Induction
 
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
+@[instance_reducible]
 noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where
   bot := h.wf.min _ Set.univ_nonempty
   bot_le a := h.wf.min_le (Set.mem_univ a)
 
 /-- A nonempty linear order with well-founded `>` has a top element. -/
+@[instance_reducible]
 noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [WellFoundedGT α] :
     OrderTop α :=
   have := WellFoundedLT.toOrderBot (α := αᵒᵈ)

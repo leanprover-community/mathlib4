@@ -24,7 +24,7 @@ compositions/products.
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory ProbabilityTheory

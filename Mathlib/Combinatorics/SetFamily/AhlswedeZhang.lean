@@ -12,9 +12,10 @@ public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Data.Finset.Sups
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Positivity
-public import Mathlib.Tactic.Ring
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 import Mathlib.Data.Rat.Defs
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # The Ahlswede-Zhang identity
@@ -133,8 +134,6 @@ lemma truncatedSup_of_mem (h : a ∈ lowerClosure s) :
 
 lemma truncatedSup_of_notMem (h : a ∉ lowerClosure s) : truncatedSup s a = ⊤ := dif_neg h
 
-@[deprecated (since := "2025-05-23")] alias truncatedSup_of_not_mem := truncatedSup_of_notMem
-
 @[simp] lemma truncatedSup_empty (a : α) : truncatedSup ∅ a = ⊤ := truncatedSup_of_notMem (by simp)
 
 @[simp] lemma truncatedSup_singleton (b a : α) : truncatedSup {b} a = if a ≤ b then b else ⊤ := by
@@ -147,6 +146,7 @@ lemma le_truncatedSup : a ≤ truncatedSup s a := by
     exact h.trans <| le_sup' id <| mem_filter.2 ⟨hb, h⟩
   · exact le_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_truncatedSup [DecidableLE β] (e : α ≃o β) (s : Finset α) (a : α) :
     e (truncatedSup s a) = truncatedSup (s.map e.toEquiv.toEmbedding) (e a) := by
   have : e a ∈ lowerClosure (s.map e.toEquiv.toEmbedding : Set β) ↔ a ∈ lowerClosure s := by simp
@@ -181,9 +181,6 @@ lemma truncatedSup_union_right (hs : a ∉ lowerClosure s) (ht : a ∈ lowerClos
 lemma truncatedSup_union_of_notMem (hs : a ∉ lowerClosure s) (ht : a ∉ lowerClosure t) :
     truncatedSup (s ∪ t) a = ⊤ := truncatedSup_of_notMem fun h ↦ (lower_aux.1 h).elim hs ht
 
-@[deprecated (since := "2025-05-23")]
-alias truncatedSup_union_of_not_mem := truncatedSup_union_of_notMem
-
 end SemilatticeSup
 
 section SemilatticeInf
@@ -213,8 +210,6 @@ lemma truncatedInf_of_mem (h : a ∈ upperClosure s) :
 
 lemma truncatedInf_of_notMem (h : a ∉ upperClosure s) : truncatedInf s a = ⊥ := dif_neg h
 
-@[deprecated (since := "2025-05-23")] alias truncatedInf_of_not_mem := truncatedInf_of_notMem
-
 lemma truncatedInf_le : truncatedInf s a ≤ a := by
   unfold truncatedInf
   split_ifs with h
@@ -229,6 +224,7 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
     id_eq]
   split_ifs <;> simp [Finset.filter_true_of_mem, *]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
     e (truncatedInf s a) = truncatedInf (s.map e.toEquiv.toEmbedding) (e a) := by
   have : e a ∈ upperClosure (s.map e.toEquiv.toEmbedding) ↔ a ∈ upperClosure s := by simp
@@ -265,9 +261,6 @@ lemma truncatedInf_union_of_notMem (hs : a ∉ upperClosure s) (ht : a ∉ upper
     truncatedInf (s ∪ t) a = ⊥ :=
   truncatedInf_of_notMem <| by rw [coe_union, upperClosure_union]; exact fun h ↦ h.elim hs ht
 
-@[deprecated (since := "2025-05-23")]
-alias truncatedInf_union_of_not_mem := truncatedInf_union_of_notMem
-
 end SemilatticeInf
 
 section DistribLattice
@@ -299,15 +292,9 @@ lemma truncatedSup_infs_of_notMem (ha : a ∉ lowerClosure s ⊓ lowerClosure t)
     truncatedSup (s ⊼ t) a = ⊤ :=
   truncatedSup_of_notMem <| by rwa [coe_infs, lowerClosure_infs]
 
-@[deprecated (since := "2025-05-23")]
-alias truncatedSup_infs_of_not_mem := truncatedSup_infs_of_notMem
-
 lemma truncatedInf_sups_of_notMem (ha : a ∉ upperClosure s ⊔ upperClosure t) :
     truncatedInf (s ⊻ t) a = ⊥ :=
   truncatedInf_of_notMem <| by rwa [coe_sups, upperClosure_sups]
-
-@[deprecated (since := "2025-05-23")]
-alias truncatedInf_sups_of_not_mem := truncatedInf_sups_of_notMem
 
 end DistribLattice
 
@@ -442,9 +429,6 @@ lemma supSum_of_univ_notMem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜
   · exact lt_add_one _
   · exact h𝒜
   · exact fun h ↦ h𝒜₂ (mem_insert_of_mem h)
-
-@[deprecated (since := "2025-05-23")]
-alias supSum_of_not_univ_mem := supSum_of_univ_notMem
 
 /-- The **Ahlswede-Zhang Identity**. -/
 lemma infSum_eq_one (h𝒜₁ : 𝒜.Nonempty) (h𝒜₀ : ∅ ∉ 𝒜) : infSum 𝒜 = 1 := by

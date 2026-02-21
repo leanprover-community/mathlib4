@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Int.Basic
+public import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Submonoids: membership criteria
@@ -40,12 +41,6 @@ submonoid, submonoids
 assert_not_exists MonoidWithZero
 
 variable {M A B : Type*}
-
-section Assoc
-
-variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {S : B}
-
-end Assoc
 
 section NonAssoc
 
@@ -401,6 +396,7 @@ theorem log_pow_eq_self [DecidableEq M] {n : M} (h : Function.Injective fun m : 
     (m : ℕ) : log (pow n m) = m :=
   pow_right_injective_iff_pow_injective.mp h <| pow_log_eq_self _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The exponentiation map is an isomorphism from the additive monoid on natural numbers to powers
 when it is injective. The inverse is given by the logarithms. -/
 @[simps]
@@ -556,3 +552,7 @@ theorem ofAdd_image_multiples_eq_powers_ofAdd [AddMonoid A] {x : A} :
   exact ofMul_image_powers_eq_multiples_ofMul
 
 end mul_add
+
+@[simp] theorem Nat.addSubmonoidClosure_one : AddSubmonoid.closure ({1} : Set ℕ) = ⊤ := by
+  ext
+  simp [AddSubmonoid.mem_closure_singleton]

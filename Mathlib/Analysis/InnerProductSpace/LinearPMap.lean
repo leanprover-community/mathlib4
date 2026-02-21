@@ -106,12 +106,14 @@ theorem adjointDomainMkCLM_apply (y : T.adjointDomain) (x : T.domain) :
     adjointDomainMkCLM T y x = ⟪(y : F), T x⟫ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unique continuous extension of the operator `adjointDomainMkCLM` to `E`. -/
 def adjointDomainMkCLMExtend (y : T.adjointDomain) : StrongDual 𝕜 E :=
   (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain)
 
 variable {T}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem adjointDomainMkCLMExtend_apply (hT : Dense (T.domain : Set E)) (y : T.adjointDomain)
     (x : T.domain) : adjointDomainMkCLMExtend T y (x : E) = ⟪(y : F), T x⟫ :=
@@ -212,7 +214,7 @@ theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
     (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
   ext x y hxy
   · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true,
-      LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, coe_innerₛₗ_apply]
+      LinearPMap.mem_adjoint_domain_iff]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
   refine LinearPMap.adjoint_apply_eq hp _ fun v => ?_
   simp only [adjoint_inner_left, LinearMap.toPMap_apply, coe_coe]
@@ -263,16 +265,17 @@ Note that the adjoint is taken with respect to the L^2 inner product on `E × F`
 as `WithLp 2 (E × F)`. -/
 protected noncomputable
 def adjoint (g : Submodule 𝕜 (E × F)) : Submodule 𝕜 (F × E) :=
-  (g.map <| (LinearEquiv.skewSwap 𝕜 F E).symm.trans
-    (WithLp.linearEquiv 2 𝕜 (F × E)).symm).orthogonal.map (WithLp.linearEquiv 2 𝕜 (F × E))
+  (g.map ((LinearEquiv.skewSwap 𝕜 F E).symm.trans
+    (WithLp.linearEquiv 2 𝕜 (F × E)).symm).toLinearMap).orthogonal.map
+      (WithLp.linearEquiv 2 𝕜 (F × E) : WithLp 2 (F × E) →ₗ[𝕜] F × E)
 
 @[simp]
 theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E) :
     x ∈ g.adjoint ↔
     ∀ a b, (a, b) ∈ g → inner 𝕜 b x.fst - inner 𝕜 a x.snd = 0 := by
-  simp only [Submodule.adjoint, mem_map, mem_orthogonal, LinearEquiv.trans_apply,
-    LinearEquiv.skewSwap_symm_apply, coe_symm_linearEquiv, Prod.exists, prod_inner_apply, ofLp_fst,
-    ofLp_snd, forall_exists_index, and_imp, coe_linearEquiv]
+  simp only [Submodule.adjoint, mem_map, mem_orthogonal, LinearEquiv.coe_coe,
+    LinearEquiv.trans_apply, LinearEquiv.skewSwap_symm_apply, coe_symm_linearEquiv, Prod.exists,
+    prod_inner_apply, ofLp_fst, ofLp_snd, forall_exists_index, and_imp, coe_linearEquiv]
   constructor
   · rintro ⟨y, h1, h2⟩ a b hab
     rw [← h2, WithLp.ofLp_fst, WithLp.ofLp_snd]
@@ -332,7 +335,7 @@ theorem adjoint_isClosed (hT : Dense (T.domain : Set E)) :
     T†.IsClosed := by
   rw [IsClosed, adjoint_graph_eq_graph_adjoint hT, Submodule.adjoint]
   simp only [Submodule.map_coe]
-  rw [LinearEquiv.image_eq_preimage_symm]
+  rw [LinearEquiv.coe_coe, LinearEquiv.image_eq_preimage_symm]
   exact (Submodule.isClosed_orthogonal _).preimage (WithLp.prod_continuous_toLp _ _ _)
 
 /-- Every self-adjoint `LinearPMap` is closed. -/

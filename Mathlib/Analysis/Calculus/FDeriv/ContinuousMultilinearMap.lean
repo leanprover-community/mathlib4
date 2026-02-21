@@ -38,7 +38,7 @@ All statements in the first section are claiming this, for various notions of di
 The second section deduces the corresponding differentiability results when `ι` is finite.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 ι E : Type*} {F G : ι → Type*} {H : Type*}
   [NontriviallyNormedField 𝕜]

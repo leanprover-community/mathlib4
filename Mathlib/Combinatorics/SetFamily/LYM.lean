@@ -129,8 +129,7 @@ def falling : Finset (Finset α) :=
 variable {𝒜 k} {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ #s = k := by
-  simp_rw [falling, mem_sup, mem_powersetCard]
-  aesop
+  grind [falling, mem_sup]
 
 variable (𝒜 k)
 
@@ -179,8 +178,8 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
       (falling (Fintype.card α - k) 𝒜).card / (Fintype.card α).choose (Fintype.card α - k) := by
   induction k with
   | zero =>
-    simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
-      zero_add, range_one, sum_singleton, tsub_zero,
+    simp only [cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
+      zero_add, range_one, sum_singleton,
       choose_self, cast_one, div_one, cast_le]
     exact card_le_card (slice_subset_falling _ _)
   | succ k ih =>
@@ -223,13 +222,14 @@ theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose
   calc
     _ = ∑ r ∈ range (Fintype.card α + 1),
         ∑ s ∈ 𝒜 with #s = r, ((Fintype.card α).choose r : 𝕜)⁻¹ := by
-      rw [sum_fiberwise_of_maps_to']; simp [Nat.lt_succ_iff, card_le_univ]
+      rw [sum_fiberwise_of_maps_to']; simp [card_le_univ]
     _ = ∑ r ∈ range (Fintype.card α + 1), (#(𝒜 # r) / (Fintype.card α).choose r : 𝕜) := by
       simp [slice, div_eq_mul_inv]
     _ ≤ 1 := lubell_yamamoto_meshalkin_inequality_sum_card_div_choose h𝒜
 
 /-! ### Sperner's theorem -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Sperner's theorem**. The size of an antichain in `Finset α` is bounded by the size of the
 maximal layer in `Finset α`. This precisely means that `Finset α` is a Sperner order. -/
 theorem _root_.IsAntichain.sperner (h𝒜 : IsAntichain (· ⊆ ·) (SetLike.coe 𝒜)) :

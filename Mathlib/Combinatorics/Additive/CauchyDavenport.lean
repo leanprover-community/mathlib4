@@ -51,7 +51,7 @@ Version for `circle`.
 additive combinatorics, number theory, sumset, cauchy-davenport
 -/
 
-@[expose] public section
+public section
 
 open Finset Function Monoid MulOpposite Subgroup
 open scoped Pointwise
@@ -182,6 +182,7 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
 
 end General
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Cauchy-Davenport Theorem** for torsion-free groups. The size of `s * t` is lower-bounded
 by `|s| + |t| - 1`. -/
 @[to_additive

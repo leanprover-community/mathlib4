@@ -19,7 +19,7 @@ that `Cᵒᵖ` is triangulated if `C` is triangulated.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -32,6 +32,7 @@ variable (C : Type*) [Category* C] [HasShift C ℤ] [HasZeroObject C] [Preadditi
 
 namespace Opposite
 
+set_option backward.isDefEq.respectTransparency false in
 scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ := by
   have : ∀ ⦃X₁ X₂ X₃ : C⦄ (u₁₂ : X₁ ⟶ X₂) (u₂₃ : X₂ ⟶ X₃),
     ∃ (Z₁₂ Z₂₃ Z₁₃ : C)
