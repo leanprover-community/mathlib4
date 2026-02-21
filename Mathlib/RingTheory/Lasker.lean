@@ -199,11 +199,10 @@ theorem IsMinimalPrimaryDecomposition.foobar'
     exact key0 q hq (c * a).2
   have key2 : ∀ q ∈ t \ s, (localized₀ S f q).comap f = ⊤ := by
     intro q hq
-    rw [eq_top_iff']
-    intro x
-    contrapose! hq
-    rw [Finset.mem_sdiff, not_and_not_right]
-    intro hqt
+    obtain ⟨hqt, hqs⟩ := Finset.mem_sdiff.mp hq
+    rw [eq_top_iff, ← map_le_iff_le_comap, map_top]
+    rintro - ⟨x, rfl⟩
+    contrapose! hqs
     suffices ((q.colon Set.univ) : Set R) ⊆ ⋃ r ∈ s, (r.colon Set.univ).radical by
       obtain ⟨r, hrs, h⟩ := (Ideal.subset_union_prime
         ⊥ ⊥ fun q hq _ _ ↦ (ht.primary (hs hq)).isPrime_radical_colon).mp this
@@ -213,9 +212,9 @@ theorem IsMinimalPrimaryDecomposition.foobar'
       obtain ⟨p, hps, hpr⟩ := hrs
       rw [← Ideal.radical_le_radical_iff, ← hpr] at h
       exact ax q hqt (hs₀ h hps)
-    contrapose! hq
-    rw [Set.not_subset_iff_exists_mem_notMem] at hq
-    obtain ⟨y, hy1, hy2⟩ := hq
+    contrapose! hqs
+    rw [Set.not_subset_iff_exists_mem_notMem] at hqs
+    obtain ⟨y, hy1, hy2⟩ := hqs
     replace hy2 : y ∈ S := by
       simp only [Submonoid.mem_iInf, Ideal.mem_primeCompl_iff, Subtype.forall, S]
       intro r hrI hrs
@@ -223,7 +222,7 @@ theorem IsMinimalPrimaryDecomposition.foobar'
       obtain ⟨r, hrt, rfl⟩ := hrI
       contrapose! hy2
       exact Set.mem_biUnion (ax r hrt hrs) hy2
-    rw [mem_comap, mem_localized₀]
+    rw [mem_localized₀]
     refine ⟨y • x, ?_, ⟨y, hy2⟩, ?_⟩
     · apply hy1
       apply Set.smul_mem_smul_set
