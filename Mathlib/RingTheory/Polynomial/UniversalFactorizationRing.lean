@@ -279,9 +279,8 @@ lemma pderiv_inr_universalFactorizationMap_X (i j) :
       Pi.single_apply, Fin.ext_iff, ← ite_and]
   · obtain h | h := lt_or_ge j.1 i.1
     · rw [Finset.sum_eq_zero, if_pos h]
-      simp only [Finset.mem_antidiagonal, Prod.forall]
-      intro a b hab
-      simp [show b ≠ i by lia]
+      simp only [Finset.mem_antidiagonal]
+      lia
     rw [Finset.sum_eq_single ⟨j.1 - i.1, i.1⟩, if_neg h.not_gt]
     · simp
     · simp only [Finset.mem_antidiagonal, ne_eq, ite_eq_right_iff, Prod.forall, Prod.mk.injEq]
