@@ -26,6 +26,7 @@ section
 open Associates UniqueFactorizationMonoid
 
 /-- `toGCDMonoid` constructs a GCD monoid out of a unique factorization domain. -/
+@[instance_reducible]
 noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CommMonoidWithZero α]
     [UniqueFactorizationMonoid α] : GCDMonoid α where
   gcd a b := Quot.out (Associates.mk a ⊓ Associates.mk b : Associates α)

@@ -69,6 +69,7 @@ theorem qParam_left_inv_mod_period (hh : h ≠ 0) (z : ℂ) :
   refine ⟨m, by rw [hm, mul_div_assoc, mul_comm (m : ℂ), ← mul_add, ← mul_assoc,
     div_mul_cancel₀ _ two_pi_I_ne_zero, mul_add, mul_div_cancel₀ _ (mod_cast hh), mul_comm]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
     ‖qParam h z‖ < Real.exp (-2 * π * A / h) ↔ A < im z := by
   rw [norm_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]
@@ -92,6 +93,7 @@ lemma contDiff_qParam (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 h) := by
   unfold qParam
   fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := by
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_
     (.of_forall fun q ↦ exp_ne_zero _)
@@ -161,7 +163,8 @@ theorem differentiableAt_cuspFunction (hh : h ≠ 0) (hf : Periodic f h)
   have diff_ne : q * (2 * π * I / h) ≠ 0 :=
     mul_ne_zero (exp_ne_zero _) (div_ne_zero two_pi_I_ne_zero <| mod_cast hh)
   let L := (qdiff.localInverse (𝕢 h) _ z) diff_ne
-  have diff_L : DifferentiableAt ℂ L q := (qdiff.to_localInverse diff_ne).differentiableAt
+  have diff_L : DifferentiableAt ℂ L q :=
+    (qdiff.to_localInverse diff_ne).hasStrictFDerivAt.differentiableAt
   have hL : 𝕢 h ∘ L =ᶠ[𝓝 q] (id : ℂ → ℂ) :=
     (qdiff.hasStrictFDerivAt_equiv diff_ne).eventually_right_inverse
   -- Thus, if F = cuspFunction h f, we have F q' = f (L q') for q' near q.

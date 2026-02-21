@@ -38,6 +38,7 @@ lemma Ideal.span_eq_top_of_span_image_evalRingHom
   ext i
   simpa [Finsupp.sum_fintype] using hf i
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_top_of_sigmaSpec_subset_of_isCompact
     (U : (Spec <| .of <| Π i, R i).Opens) (V : Set (Spec <| .of <| Π i, R i))
     (hV : ↑(sigmaSpec R).opensRange ⊆ V)
@@ -99,6 +100,7 @@ noncomputable
 def pointsPi : (Spec (.of <| Π i, R i) ⟶ X) → Π i, Spec (R i) ⟶ X :=
   fun f i ↦ Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i)) ≫ f
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pointsPi_injective [QuasiSeparatedSpace X] : Function.Injective (pointsPi R X) := by
   rintro f g e
   have := isIso_of_comp_eq_sigmaSpec R (V := equalizer f g)
@@ -114,6 +116,7 @@ lemma pointsPi_surjective_of_isAffine [IsAffine X] : Function.Surjective (points
   simp only [pointsPi, ← Spec.map_comp_assoc, Iso.comp_inv_eq]
   exact Spec.map_preimage _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     Function.Surjective (pointsPi R X) := by
   intro f

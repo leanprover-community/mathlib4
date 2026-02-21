@@ -146,6 +146,7 @@ def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
       (fun hH => w.ofBoxProdRight.cons hH.1)
       (fun hG => hG.2 ▸ w.ofBoxProdRight)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a₂ : α} {b : β} :
     ∀ (w : G.Walk a₁ a₂), (w.boxProdLeft H b).ofBoxProdLeft = w
@@ -155,6 +156,7 @@ theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a�
     · simp [ofBoxProdLeft_boxProdLeft]
     · exact ⟨h, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b₁ b₂ : α} :
     ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
@@ -225,6 +227,7 @@ protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connect
 theorem connected_boxProd : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
   ⟨fun h => ⟨h.ofBoxProdLeft, h.ofBoxProdRight⟩, fun h => h.1.boxProd h.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance boxProdFintypeNeighborSet (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] :
     Fintype ((G □ H).neighborSet x) :=
@@ -261,6 +264,7 @@ lemma reachable_boxProd {x y : α × β} :
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma edist_boxProd (x y : α × β) :
     (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
