@@ -5,8 +5,8 @@ Authors: Riccardo Brasca
 -/
 module
 
-import Batteries.Data.List.Lemmas
-import Mathlib.Algebra.Order.Group.Nat
+public import Batteries.Data.List.Lemmas
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Let's avoid choice!
@@ -57,6 +57,9 @@ theorem nodup_range {n : Nat} : Nodup (range n) := by
 theorem nodup_finRange (n) : (finRange n).Nodup := by
   rw [finRange_eq_pmap_range]
   exact (Pairwise.pmap nodup_range _) fun _ _ _ _ => @Fin.ne_of_val_ne _ ⟨_, _⟩ ⟨_, _⟩
+
+theorem eq_nil_iff_forall_not_mem {α : Type*} {l : List α} : l = [] ↔ ∀ a, a ∉ l := by
+  cases l <;> simp [-not_or]
 
 end List
 
