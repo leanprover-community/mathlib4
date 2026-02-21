@@ -1216,8 +1216,8 @@ for `A^ι` with any finite type `ι`. -/
 protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A :=
   MultilinearMap.mk' (fun m ↦ (List.ofFn m).prod)
     (fun m i x y ↦ by
-      simp [List.ofFn_eq_map, (Constructive.List.nodup_finRange n).map_update, List.prod_set, add_mul,
-        mul_add, add_mul])
+      simp [List.ofFn_eq_map, (Constructive.List.nodup_finRange n).map_update, List.prod_set,
+        add_mul, mul_add, add_mul])
     (fun m i c x ↦ by
       simp [List.ofFn_eq_map, (Constructive.List.nodup_finRange n).map_update, List.prod_set])
 
