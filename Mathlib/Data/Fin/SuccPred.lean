@@ -499,13 +499,15 @@ theorem val_sub_castPred_of_le {a b : Fin (n + 1)} (ha : a ≠ last n)
     (h : b ≤ a) : (a.castPred ha - b.castPred (ne_last_of_le_ne_last ha h)).val = (a - b).val :=
   val_sub_castLT_of_le (lt_last_iff_ne_last.mpr ha) h
 
-theorem sub_castPred_eq_castPred_sub_of_le {a b : Fin (n + 1)} (ha : a ≠ last n) (hb : b ≠ last n)
+theorem sub_castPred_eq_castPred_sub_of_le {a b : Fin (n + 1)} (ha : a ≠ last n)
     (h : b ≤ a) :
-    a.castPred ha - b.castPred hb = (a - b).castPred (sub_ne_last_of_le_of_ne_last ha h) :=
+    a.castPred ha - b.castPred (ne_last_of_le_ne_last ha h) =
+      (a - b).castPred (sub_ne_last_of_le_of_ne_last ha h) :=
   sub_castLT_eq_castLT_sub_of_le (lt_last_iff_ne_last.mpr ha) h
 
-theorem val_sub_castPred_of_le' {a b : Fin (n + 1)} (ha : a ≠ last n) (hb : b ≠ last n)
-    (h : a ≤ b) : (a.castPred ha - b.castPred hb).val = (a - b).val - 1 := by
+theorem val_sub_castPred_of_le' {a b : Fin (n + 1)} (hb : b ≠ last n)
+    (h : a ≤ b) : (a.castPred (ne_last_of_le_ne_last hb h) - b.castPred hb).val
+      = (a - b).val - 1 := by
   by_cases hab : a = b
   · subst hab
     simp [val_sub, Nat.sub_add_cancel a.is_le]
