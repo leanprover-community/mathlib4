@@ -97,7 +97,7 @@ noncomputable instance {V W : SemiNormedGrp.{u}} : NNNorm (V ⟶ W) where
   nnnorm f := nnnorm f.hom
 
 /-- The equalizer cone for a parallel pair of morphisms of seminormed groups. -/
-def fork {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) : Fork f g :=
+noncomputable def fork {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) : Fork f g :=
   @Fork.ofι _ _ _ _ _ _ (of (f - g).hom.ker)
     (ofHom (NormedAddGroupHom.incl (f - g).hom.ker)) <| by
     ext v

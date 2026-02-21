@@ -31,7 +31,7 @@ section toFn
 variable {R : Type*} [Semiring R]
 
 /-- `toFn n f` is the vector of the first `n` coefficients of the polynomial `f`. -/
-def toFn (n : ℕ) : R[X] →ₗ[R] Fin n → R := LinearMap.pi (fun i ↦ lcoeff R i)
+noncomputable def toFn (n : ℕ) : R[X] →ₗ[R] Fin n → R := LinearMap.pi (fun i ↦ lcoeff R i)
 
 theorem toFn_zero (n : ℕ) : toFn n (0 : R[X]) = 0 := by simp
 

@@ -105,12 +105,12 @@ variable {R : Type*} [CommSemiring R]
 
 variable (m) in
 /-- the degree of a multivariate polynomial with respect to a monomial ordering -/
-def degree (f : MvPolynomial σ R) : σ →₀ ℕ :=
+noncomputable def degree (f : MvPolynomial σ R) : σ →₀ ℕ :=
   m.toSyn.symm (f.support.sup m.toSyn)
 
 variable (m) in
 /-- the leading coefficient of a multivariate polynomial with respect to a monomial ordering -/
-def leadingCoeff (f : MvPolynomial σ R) : R :=
+noncomputable def leadingCoeff (f : MvPolynomial σ R) : R :=
   f.coeff (m.degree f)
 
 variable (m) in
@@ -134,7 +134,7 @@ lemma C_mul_leadingCoeff_monomial_degree (p : MvPolynomial σ R) :
     m.Monic f :=
   Subsingleton.eq_one (m.leadingCoeff f)
 
-instance Monic.decidable [DecidableEq R] (f : MvPolynomial σ R) :
+noncomputable instance Monic.decidable [DecidableEq R] (f : MvPolynomial σ R) :
     Decidable (m.Monic f) := by
   unfold Monic; infer_instance
 
