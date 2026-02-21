@@ -6,6 +6,10 @@ Authors: Fox Thomson, Yaël Dillies, Anthony DeRossi
 module
 
 public import Mathlib.Computability.NFA
+public import Mathlib.Computability.RegularExpressions
+public import Mathlib.Data.FinEnum
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Fintype.Option
 public import Mathlib.Data.List.ReduceOption
 
 /-!
@@ -360,5 +364,573 @@ theorem accept_zero : (0 : εNFA α σ).accept = ∅ :=
 @[simp]
 theorem accept_one : (1 : εNFA α σ).accept = univ :=
   rfl
+
+section toSingleεNFA
+
+variable {σ : Type*}
+variable {α : Type*}
+variable {M : εNFA α σ}
+variable [DecidablePred (· ∈ M.accept)]
+
+/-- The extended state space with a new start state and accept state. -/
+inductive ExtendedState (σ : Type*)
+  | start : ExtendedState σ
+  | accept : ExtendedState σ
+  | state (s : σ) : ExtendedState σ
+  deriving DecidableEq, Fintype
+
+variable (M) in
+/-- Transform any `εNFA` into an `εNFA` with a single start state and accept state. -/
+@[simps]
+def toSingleεNFA : εNFA α (ExtendedState σ) where
+  step q oa := match q, oa with
+    | .start, some _   => ∅
+    | .start, none     => (M.start).image .state
+    | .accept, _       => ∅
+    | .state s, some a => (M.step s (some a)).image .state
+    | .state s, none   =>
+      (M.step s none).image .state ∪
+      if s ∈ M.accept then { ExtendedState.accept } else ∅
+  start := { .start }
+  accept := { .accept }
+
+lemma IsPath.toSingleεNFA_lift_extendedState {s t : σ} {x : List (Option α)} (h : M.IsPath s t x) :
+    M.toSingleεNFA.IsPath (.state s) (.state t) x := by
+  induction h with
+  | nil _ => simp
+  | cons t' s' u oa x' h_step h_path ih =>
+    apply cons (ExtendedState.state t') (.state s') (.state u)
+    · cases oa <;> simpa
+    · exact ih
+
+lemma IsPath.from_accept {u : ExtendedState σ} {x : List (Option α)}
+    (h : M.toSingleεNFA.IsPath .accept u x) :
+    u = .accept ∧ x = [] := by
+  cases h with
+  | nil => simp
+  | cons _ _ _ _ _ h_step _ => simp at h_step
+
+lemma IsPath.state_accept {s : σ} {x : List (Option α)}
+    (h : M.toSingleεNFA.IsPath (.state s) .accept x):
+    ∃ t x', t ∈ M.accept ∧ x = x' ++ [none] ∧ M.IsPath s t x' := by
+  generalize hs : (ExtendedState.state s) = ss at h
+  generalize ha : ExtendedState.accept = a' at h
+  induction h generalizing s with
+  | nil _ =>
+    cases hs
+    cases ha
+  | cons t' s' u oa x' h_step h_path ih =>
+    subst hs ha
+    cases oa with
+    | some a =>
+      simp only [toSingleεNFA_step, mem_image] at h_step
+      rcases h_step with ⟨t, ht, ht'⟩
+      subst ht'
+      have ⟨t', x'', ht', hx'', h_before⟩ := ih rfl rfl
+      use t', some a :: x''
+      and_intros
+      · exact ht'
+      · simpa
+      · exact cons t s t' (some a) x'' ht h_before
+    | none =>
+      simp only [toSingleεNFA_step, mem_union, mem_image, mem_ite_empty_right,
+        mem_singleton_iff] at h_step
+      rcases h_step with ⟨t, ht, ht'⟩ | ⟨hs, ht'⟩
+      · subst ht'
+        have ⟨t', x'', ht', hx'', h_before⟩ := ih rfl rfl
+        use t', none :: x''
+        and_intros
+        · exact ht'
+        · simpa
+        · exact cons t s t' none x'' ht h_before
+      · subst ht'
+        rcases IsPath.from_accept h_path with ⟨_, rfl⟩
+        use s, []
+        simpa
+
+theorem accepts_toSingleεNFA : M.toSingleεNFA.accepts = M.accepts := by
+  ext x
+  constructor
+  · intro h
+    apply (mem_accepts_iff_exists_path M).mpr
+    have ⟨s₁, s₂, x', hs₁, hs₂, hx, h_path⟩ := (mem_accepts_iff_exists_path (M.toSingleεNFA)).mp h
+    simp only [toSingleεNFA_start, mem_singleton_iff, toSingleεNFA_accept] at hs₁ hs₂
+    subst hx hs₁ hs₂
+    cases h_path with
+    | cons t' s' u oa x'' h_step h_rest =>
+      cases oa with
+      | some a =>
+        simp at h_step
+      | none =>
+        simp only [toSingleεNFA_step, mem_image] at h_step
+        rcases h_step with ⟨s, hs, rfl⟩
+        have ⟨t, y, ht, hy, h_before⟩ := IsPath.state_accept h_rest
+        subst hy
+        use s, t, y
+        and_intros
+        · exact hs
+        · exact ht
+        · simp [List.reduceOption_append]
+        · exact h_before
+  · intro h
+    apply (mem_accepts_iff_exists_path (M.toSingleεNFA)).mpr
+    have ⟨s₁, s₂, x', hs₁, hs₂, hx, hx'⟩ := (mem_accepts_iff_exists_path M).mp h
+    subst hx
+    use .start, .accept, [none] ++ x' ++ [none]
+    and_intros
+    · simp
+    · simp
+    · simp [List.reduceOption_append]
+    · simp only [isPath_append]
+      use .state s₂
+      constructor
+      · use .state s₁
+        constructor
+        · simpa
+        · exact IsPath.toSingleεNFA_lift_extendedState hx'
+      · simpa
+
+end toSingleεNFA
+
+section Kleene
+
+open RegularExpression
+
+variable {σ : Type*} [FinEnum σ]
+variable {α : Type*} [Fintype α] [LinearOrder α]
+variable {M : εNFA α (ExtendedState σ)}
+variable [∀ q oa q', Decidable (q' ∈ M.step q oa)]
+
+local notation "n" => FinEnum.card (ExtendedState σ)
+
+def ExtendedState.equivSum (σ : Type*) : ExtendedState σ ≃ Sum (Fin 2) σ where
+  toFun := fun
+    | .start   => .inl 0
+    | .accept  => .inl 1
+    | .state s => .inr s
+  invFun := fun
+    | .inl ⟨0, _⟩ => .start
+    | .inl ⟨1, _⟩ => .accept
+    | .inl _      => .start
+    | .inr s      => .state s
+  left_inv := by intro x; cases x <;> rfl
+  right_inv := by
+    intro x
+    rcases x with ⟨_ | _ | _⟩ | s
+    all_goals first | rfl | contradiction
+
+instance [FinEnum σ] : FinEnum (ExtendedState σ) :=
+  FinEnum.ofEquiv (Sum (Fin 2) σ) (ExtendedState.equivSum σ)
+
+def e : ExtendedState σ ≃ Fin n := FinEnum.equiv
+
+variable (M) in
+/-- The regex matching the union of all single symbols that results in a single transition from a
+state indexed `i` to a state indexed `j` and the empty string if there also exists an epsilon
+transition. -/
+def directRegex (i j : Fin n) : RegularExpression α :=
+  let s_i := e.symm i
+  let s_j := e.symm j
+  let char_transitions : RegularExpression α :=
+    Finset.univ.sort.foldl (fun acc a =>
+      acc + (if s_j ∈ M.step s_i (some a) then char a else 0)
+    ) 0
+  let epsilon_transitions : RegularExpression α :=
+    if s_j ∈ M.step s_i none ∨ i = j then 1 else 0
+  char_transitions + epsilon_transitions
+
+theorem matches'_foldl_acc {α : Type*}
+    (L : List α) (f : α → RegularExpression α) (acc : RegularExpression α) :
+    (L.foldl (fun acc a => acc + f a) acc).matches' =
+    acc.matches' + ⨆ x ∈ L, (f x).matches' := by
+  induction L generalizing acc with
+  | nil => simp
+  | cons b L' ih =>
+    simp only [List.foldl_cons, ih, matches', add_eq_sup, List.mem_cons, iSup_or]
+    rw [iSup_sup_eq, iSup_iSup_eq_left, ← sup_assoc]
+
+theorem matches'_foldl_sum {α : Type*} (L : List α) (f : α → RegularExpression α) :
+    (L.foldl (fun acc a => acc + f a) 0).matches' =
+    ⋃ x ∈ L, (f x).matches' := by
+  simp only [matches'_foldl_acc, matches', add_eq_sup, zero_le, sup_of_le_right]
+  rfl
+
+theorem mem_matches'_directRegex {i j : Fin n} {x : List α} :
+    x ∈ (M.directRegex i j).matches' ↔
+    (∃ a, x = [a] ∧ e.symm j ∈ M.step (e.symm i) (some a)) ∨
+    (x = [] ∧ ((e.symm j ∈ M.step (e.symm i) none) ∨ i = j)) := by
+  simp only [directRegex, matches'_add, Language.mem_add, matches'_foldl_sum, Finset.mem_sort,
+    Finset.mem_univ, iUnion_true]
+  constructor
+  · rintro (⟨s, ⟨a, ha⟩, hx⟩ | hε)
+    · left
+      simp only at ha
+      subst ha
+      split_ifs at hx with h_step
+      · simp only [matches'] at hx
+        exact ⟨a, mem_singleton_iff.mp hx, h_step⟩
+      · simp [Language.zero_def] at hx
+    · right
+      split_ifs at hε with h_step
+      · simp only [matches', Language.mem_one] at hε
+        rcases h_step with h_step | rfl
+        · exact ⟨hε, Or.inl h_step⟩
+        · simp [hε]
+      · simp [Language.zero_def] at hε
+        contradiction
+  · rintro (⟨a, rfl, h_step⟩ | ⟨rfl, h_step⟩)
+    · left
+      use { [a] }
+      simp only [mem_range, mem_singleton_iff, and_true]
+      use a
+      simp [h_step]
+    · right
+      simp [h_step]
+
+variable (M) in
+/-- The regex matching all words that result in a path from a state indexed `i` to a state indexed
+`j` using no intermediate state with index greater than or equal to `k`. -/
+@[simp]
+def pathRegex (k : ℕ) (i j : Fin n) : RegularExpression α :=
+  match k, i, j with
+  | 0, i, j     => directRegex M i j
+  | k + 1, i, j =>
+    if hk : k < n then
+      let k' : Fin n := ⟨k, hk⟩
+      let R_to_k := pathRegex k i k'
+      let R_loop := pathRegex k k' k'
+      let R_from := pathRegex k k' j
+      let R_old  := pathRegex k i j
+      R_to_k * R_loop.star * R_from + R_old
+    else
+      pathRegex k i j
+
+variable (M) in
+/-- A path in the NFA restricted to intermediate states < k. -/
+inductive IsRestrictedPath (k : ℕ) : Fin n → Fin n → List (Option α) → Prop
+  | nil (i: Fin n) : IsRestrictedPath k i i []
+  | step (i j : Fin n) (oa : Option α) :
+      e.symm j ∈ M.step (e.symm i) oa →
+      IsRestrictedPath k i j [oa]
+  | trans (i j m : Fin n) (x₁ x₂ : List (Option α)) :
+      IsRestrictedPath k i m x₁ →
+      m.val < k →
+      IsRestrictedPath k m j x₂ →
+      IsRestrictedPath k i j (x₁ ++ x₂)
+
+variable (M) in
+/-- A match by a path regex in the NFA restricted to intermediate states < k. -/
+inductive IsRestrictedMatch (k : ℕ) : Fin n → Fin n → List α → Prop
+  | direct (i j : Fin n) (x : List α) :
+      x ∈ (directRegex M i j).matches' →
+      IsRestrictedMatch k i j x
+  | trans (i j m : Fin (n)) (x₁ x₂ : List α) :
+      IsRestrictedMatch k i m x₁ →
+      m.val < k →
+      IsRestrictedMatch k m j x₂ →
+      IsRestrictedMatch k i j (x₁ ++ x₂)
+
+theorem isRestrictedMatch_nil {k : ℕ} {i : Fin n} : M.IsRestrictedMatch k i i [] := by
+  apply IsRestrictedMatch.direct
+  rw [mem_matches'_directRegex]
+  right
+  simp
+
+omit [Fintype α] [LinearOrder α] [∀ q oa q', Decidable (q' ∈ M.step q oa)] in
+theorem isRestrictedPath_iff_isPath {i j : Fin n} {x : List (Option α)} :
+    M.IsRestrictedPath n i j x ↔ M.IsPath (e.symm i) (e.symm j) x := by
+  constructor
+  · intro h
+    induction h with
+    | nil _ => exact (isPath_nil M).mpr rfl
+    | step _ _ _ ih => exact IsPath.singleton M ih
+    | trans _ _ m _ _ _ _ _ ih₁ ih₂ =>
+      rw [isPath_append]
+      use e.symm m
+  · intro h
+    generalize hs : e.symm i = s at h
+    generalize hu : e.symm j = u at h
+    induction h generalizing i with
+    | nil _ =>
+      subst hs
+      rw [Equiv.apply_eq_iff_eq] at hu
+      subst hu
+      exact IsRestrictedPath.nil j
+    | cons t s' u' oa x' h_step h_path ih =>
+      subst hs hu
+      rw [← List.singleton_append]
+      apply IsRestrictedPath.trans (m := e t)
+      · apply IsRestrictedPath.step
+        simp [h_step]
+      · exact (e t).isLt
+      · exact ih (Equiv.symm_apply_apply _ _) rfl
+
+theorem isRestrictedMatch_iff_exists_isRestrictedPath
+    {k : ℕ} {i j : Fin n} {x : List α} :
+    M.IsRestrictedMatch k i j x ↔
+    ∃ y, y.reduceOption = x ∧ M.IsRestrictedPath k i j y := by
+  constructor
+  · intro h
+    induction h with
+    | direct i' j' x' h_match =>
+      rw [mem_matches'_directRegex] at h_match
+      rcases h_match with ⟨a, rfl, h_step⟩ | ⟨rfl, h_step | rfl⟩
+      · use [a]
+        simpa using IsRestrictedPath.step i' j' (some a) h_step
+      · use [none]
+        simpa using IsRestrictedPath.step i' j' none h_step
+      · use []
+        simpa using IsRestrictedPath.nil i'
+    | trans i' j' m y₁ y₂ h₁ hlt h₂ ih₁ ih₂ =>
+      rcases ih₁ with ⟨x₁, rfl, hx₁⟩
+      rcases ih₂ with ⟨x₂, rfl, hx₂⟩
+      use x₁ ++ x₂
+      constructor
+      · rw [List.reduceOption_append]
+      · exact IsRestrictedPath.trans i' j' m x₁ x₂ hx₁ hlt hx₂
+  · rintro ⟨y, rfl, h⟩
+    induction h with
+    | nil i' =>
+      rw [List.reduceOption_nil]
+      exact isRestrictedMatch_nil
+    | step i' j' oa h_step =>
+      apply IsRestrictedMatch.direct
+      rw [mem_matches'_directRegex]
+      cases oa with
+      | some a =>
+        left
+        use a
+        simp [h_step]
+      | none =>
+        right
+        simp [h_step]
+    | trans i' j' m x₁ x₂ hx₁ hlt hx₂ ih₁ ih₂ =>
+      rw [List.reduceOption_append]
+      exact IsRestrictedMatch.trans i' j' m x₁.reduceOption x₂.reduceOption ih₁ hlt ih₂
+
+lemma IsRestrictedMatch.mono {k k' : ℕ} {i j : Fin n} {w : List α}
+    (h : IsRestrictedMatch M k i j w) (hle : k ≤ k') : IsRestrictedMatch M k' i j w := by
+  induction h with
+  | direct i' j' x hx => exact direct i' j' x hx
+  | trans i' j' m x₁ x₂ _ hlt _ ih₁ ih₂ =>
+    exact trans i' j' m x₁ x₂ ih₁ (lt_of_lt_of_le hlt hle) ih₂
+
+omit [Fintype α] [LinearOrder α] in
+lemma mem_matches_mul_star_mul {R_to R_loop R_from : RegularExpression α} {w : List α} :
+    w ∈ (R_to * R_loop.star * R_from).matches' ↔
+    ∃ w₁ w₂ w₃, w = w₁ ++ w₂ ++ w₃ ∧
+                w₁ ∈ R_to.matches' ∧
+                w₂ ∈ R_loop.star.matches' ∧
+                w₃ ∈ R_from.matches' := by
+  simp only [matches'_mul, Language.mem_mul]
+  constructor
+  · rintro ⟨u, ⟨w₁, hw₁, w₂, hw₂, rfl⟩, w₃, hw₃, rfl⟩
+    use w₁, w₂, w₃
+  · rintro ⟨w₁, w₂, w₃, rfl, hw₁, hw₂, hw₃⟩
+    use w₁ ++ w₂
+    constructor
+    · use w₁
+      constructor
+      · exact hw₁
+      · use w₂
+    · use w₃
+
+lemma isRestrictedMatch_of_mem_pathRegex {k : ℕ} {i j : Fin n} {w : List α}
+    (h : w ∈ (pathRegex M k i j).matches') :
+    IsRestrictedMatch M k i j w := by
+  induction k generalizing i j w with
+  | zero =>
+    apply IsRestrictedMatch.direct
+    simp_all
+  | succ k' ih =>
+    simp only [pathRegex] at h
+    split_ifs at h with hlt
+    · rw [matches'_add, Language.mem_add, mem_matches_mul_star_mul] at h
+      rcases h with ⟨w₁, w₂, w₃, rfl, hw₁, hw₂, hw₃⟩ | h
+      · apply IsRestrictedMatch.trans (m := ⟨k', hlt⟩)
+        · apply IsRestrictedMatch.trans (m := ⟨k', hlt⟩)
+          · exact IsRestrictedMatch.mono (ih hw₁) (by simp)
+          · simp
+          · rw [matches'_star, Language.mem_kstar] at hw₂
+            rcases hw₂ with ⟨L, rfl, hL⟩
+            induction L with
+            | nil =>
+              rw [List.flatten_nil]
+              exact isRestrictedMatch_nil
+            | cons z L' ih' =>
+              rw [← List.singleton_append, List.flatten_append]
+              simp only [List.mem_cons, forall_eq_or_imp] at hL
+              apply IsRestrictedMatch.trans ⟨k', hlt⟩ ⟨k', hlt⟩ ⟨k', hlt⟩
+              · simp only [List.flatten_cons, List.flatten_nil, List.append_nil]
+                exact IsRestrictedMatch.mono (ih hL.left) (by simp)
+              · simp
+              · exact ih' hL.right
+        · simp
+        · exact IsRestrictedMatch.mono (ih hw₃) (by simp)
+      · exact IsRestrictedMatch.mono (ih h) (by simp)
+    · exact IsRestrictedMatch.mono (ih h) (by simp)
+
+lemma pathRegex_mono {k k' : ℕ} {i j : Fin n} {x : List α}
+    (hle : k ≤ k') (h : x ∈ (pathRegex M k i j).matches') :
+    x ∈ (pathRegex M k' i j).matches' := by
+  induction hle with
+  | refl => exact h
+  | step hn ih =>
+    simp only [pathRegex]
+    split_ifs
+    · right
+      exact ih
+    · exact ih
+
+lemma pathRegex_trans {k : ℕ} {i j m : Fin n} (hm : m.val < k)
+    {x₁ x₂ : List α}
+    (h₁ : x₁ ∈ (pathRegex M k i m).matches')
+    (h₂ : x₂ ∈ (pathRegex M k m j).matches') :
+    x₁ ++ x₂ ∈ (pathRegex M k i j).matches' := by
+  induction k generalizing i j m x₁ x₂ with
+  | zero => contradiction
+  | succ k' ih =>
+    simp only [pathRegex] at *
+    split_ifs at * with hk'
+    · rw [matches'_add, Language.mem_add, mem_matches_mul_star_mul] at *
+      rcases lt_or_eq_of_le (Nat.le_of_lt_succ hm) with hm | rfl
+      <;> rcases h₁ with ⟨y₁, y₂, y₃, rfl, hy₁, hy₂, hy₃⟩ | h_old₁
+      <;> rcases h₂ with ⟨z₁, z₂, z₃, rfl, hz₁, hz₂, hz₃⟩ | h_old₂
+      · left
+        use y₁, y₂ ++ y₃ ++ z₁ ++ z₂, z₃
+        and_intros
+        · simp
+        · exact hy₁
+        · rcases hy₂ with ⟨L₁, rfl, hL₁⟩
+          rcases hz₂ with ⟨L₂, rfl, hL₂⟩
+          use L₁ ++ [y₃ ++ z₁] ++ L₂
+          constructor
+          · simp
+          · simp only [List.append_assoc, List.cons_append, List.nil_append, List.mem_append,
+              List.mem_cons]
+            rintro y (hy | rfl | hy)
+            · exact hL₁ y hy
+            · exact ih hm hy₃ hz₁
+            · exact hL₂ y hy
+        · exact hz₃
+      · left
+        use y₁, y₂, y₃ ++ x₂
+        and_intros
+        · simp
+        · exact hy₁
+        · exact hy₂
+        · exact ih hm hy₃ h_old₂
+      · left
+        use x₁ ++ z₁, z₂, z₃
+        and_intros
+        · simp
+        · exact ih hm h_old₁ hz₁
+        · exact hz₂
+        · exact hz₃
+      · right
+        exact ih hm h_old₁ h_old₂
+      · left
+        use y₁, y₂ ++ y₃ ++ z₁ ++ z₂, z₃
+        and_intros
+        · simp
+        · exact hy₁
+        · rcases hy₂ with ⟨L₁, rfl, hL₁⟩
+          rcases hz₂ with ⟨L₂, rfl, hL₂⟩
+          use L₁ ++ [y₃] ++ [z₁] ++ L₂
+          constructor
+          · simp
+          · simp only [List.append_assoc, List.cons_append, List.nil_append, List.mem_append,
+              List.mem_cons]
+            rintro y (hy | rfl | rfl | hy)
+            · exact hL₁ y hy
+            · exact hy₃
+            · exact hz₁
+            · exact hL₂ y hy
+        · exact hz₃
+      · left
+        use y₁, y₂ ++ y₃, x₂
+        and_intros
+        · simp
+        · exact hy₁
+        · rcases hy₂ with ⟨L, rfl, hL⟩
+          use L ++ [y₃]
+          constructor
+          · simp
+          · rw [List.forall_mem_append, List.forall_mem_singleton]
+            exact ⟨hL, hy₃⟩
+        · exact h_old₂
+      · left
+        use x₁, z₁ ++ z₂, z₃
+        and_intros
+        · simp
+        · use h_old₁
+        · rcases hz₂ with ⟨L, rfl, hL⟩
+          use [z₁] ++ L
+          constructor
+          · simp
+          · rw [List.forall_mem_append, List.forall_mem_singleton]
+            exact ⟨hz₁, hL⟩
+        · exact hz₃
+      · left
+        use x₁, [], x₂
+        and_intros
+        · simp
+        · exact h_old₁
+        · refine ⟨[], by simp⟩
+        · exact h_old₂
+    · rcases lt_or_eq_of_le (Nat.le_of_lt_succ hm) with hm | rfl
+      · exact ih hm h₁ h₂
+      · simp at hk'
+
+lemma mem_pathRegex_of_isRestrictedMatch {k : ℕ} {i j : Fin n} {w : List α}
+    (h : IsRestrictedMatch M k i j w) :
+    w ∈ (pathRegex M k i j).matches' := by
+  induction h with
+  | direct i' j' x hx => exact pathRegex_mono (Nat.zero_le k) hx
+  | trans i' j' m x₁ x₂ hx₁ hlt hx₂ ih₁ ih₂ => exact pathRegex_trans hlt ih₁ ih₂
+
+theorem mem_pathRegex_iff_isRestrictedMatch {k : ℕ} {i j : Fin n} {w : List α} :
+    w ∈ (pathRegex M k i j).matches' ↔ IsRestrictedMatch M k i j w :=
+  ⟨isRestrictedMatch_of_mem_pathRegex, mem_pathRegex_of_isRestrictedMatch⟩
+
+instance {M : εNFA α σ}
+    [DecidablePred (· ∈ M.start)]
+    [DecidablePred (· ∈ M.accept)]
+    [∀ q oa q', Decidable (q' ∈ M.step q oa)]
+    (q : ExtendedState σ) (oa : Option α) (q' : ExtendedState σ) :
+    Decidable (q' ∈ M.toSingleεNFA.step q oa) := by
+  cases q <;> cases oa
+  <;> simp only [toSingleεNFA_step, mem_union, mem_image, mem_ite_empty_right, mem_singleton_iff]
+  <;> infer_instance
+
+/-- The regular expression that matches the language of `M`. -/
+def toRegex (M : εNFA α σ)
+    [∀ q oa q', Decidable (q' ∈ M.step q oa)]
+    [DecidablePred (· ∈ M.start)]
+    [DecidablePred (· ∈ M.accept)] :
+    RegularExpression α :=
+  pathRegex M.toSingleεNFA n (e .start) (e .accept)
+
+theorem isRestrictedMatch_iff_exists_isPath {i j : Fin n} {x : (List α)} :
+    IsRestrictedMatch M n i j x ↔
+    ∃ y : List (Option α),
+      y.reduceOption = x ∧
+      M.IsPath (e.symm i) (e.symm j) y := by
+  rw [isRestrictedMatch_iff_exists_isRestrictedPath]
+  simp_rw [isRestrictedPath_iff_isPath]
+
+theorem accepts_toRegex (M : εNFA α σ)
+    [∀ q oa q', Decidable (q' ∈ M.step q oa)]
+    [DecidablePred (· ∈ M.start)]
+    [DecidablePred (· ∈ M.accept)] :
+    (toRegex M).matches' = M.accepts := by
+  ext x
+  unfold toRegex
+  rw [mem_pathRegex_iff_isRestrictedMatch, isRestrictedMatch_iff_exists_isPath,
+    ← accepts_toSingleεNFA, Equiv.symm_apply_apply, Equiv.symm_apply_apply,
+    mem_accepts_iff_exists_path]
+  simp
+
+end Kleene
 
 end εNFA
