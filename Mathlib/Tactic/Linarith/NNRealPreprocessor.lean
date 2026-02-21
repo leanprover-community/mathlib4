@@ -22,9 +22,7 @@ public meta section
 
 namespace Mathlib.Tactic.Linarith
 
-open Lean Std TreeSet
-open Elab Tactic Meta
-open Rify NNReal
+open Lean Meta
 
 /--
 `isNNRealProp tp` is true iff `tp` is an inequality or equality between nonnegative real numbers
