@@ -9,6 +9,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
+public import Mathlib.Data.List.NodupCard
 
 /-!
 
@@ -136,11 +137,9 @@ lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComp
   IsAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
 
 theorem IsAcyclic.of_card_le_two (h : ENat.card V ≤ 2) : G.IsAcyclic := by
-  have := @Fintype.ofFinite V <| ENat.card_lt_top.mp <| h.trans_lt <| WithTop.coe_lt_top _
   intro v p hp
   have := hp.three_le_length
-  rw [ENat.card_eq_coe_fintype_card] at h
-  have := hp.support_nodup.length_le_card.trans <| Nat.cast_le.mp h
+  have := Nat.cast_le.mp <| hp.support_nodup.length_le_enat_card.trans h
   rw [List.length_tail, p.length_support] at this
   lia
 

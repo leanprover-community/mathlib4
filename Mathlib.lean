@@ -3782,6 +3782,7 @@ public import Mathlib.Data.List.ModifyLast
 public import Mathlib.Data.List.Monad
 public import Mathlib.Data.List.NatAntidiagonal
 public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.NodupCard
 public import Mathlib.Data.List.NodupEquivFin
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.OffDiag
