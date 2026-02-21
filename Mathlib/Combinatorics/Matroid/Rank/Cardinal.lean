@@ -151,7 +151,7 @@ theorem Indep.cRk_eq_cardinalMk (hI : M.Indep I) : #I = M.cRk I :=
     (hX : X ⊆ M.E := by aesop_mat) : lift.{u, v} ((M.map f hf).cRk (f '' X)) = lift (M.cRk X) := by
   nth_rw 1 [cRk, cRank, le_antisymm_iff, lift_iSup (bddAbove_range _), cRk, cRank, cRk, cRank]
   nth_rw 2 [lift_iSup (bddAbove_range _)]
-  simp only [ciSup_le_iff (bddAbove_range _), ge_iff_le, Subtype.forall, isBase_restrict_iff',
+  simp only [ciSup_le_iff (bddAbove_range _), Subtype.forall, isBase_restrict_iff',
     isBasis'_iff_isBasis hX, isBasis'_iff_isBasis (show f '' X ⊆ (M.map f hf).E from image_mono hX)]
   refine ⟨fun I hI ↦ ?_, fun I hI ↦ ?_⟩
   · obtain ⟨I, X', hIX, rfl, hXX'⟩ := map_isBasis_iff'.1 hI
@@ -174,7 +174,7 @@ theorem cRk_map_eq {β : Type u} {f : α → β} {X : Set β} (M : Matroid α) (
     lift.{v, u} ((M.comap f).cRk X) = lift (M.cRk (f '' X)) := by
   nth_rw 1 [cRk, cRank, le_antisymm_iff, lift_iSup (bddAbove_range _), cRk, cRank, cRk, cRank]
   nth_rw 2 [lift_iSup (bddAbove_range _)]
-  simp only [ciSup_le_iff (bddAbove_range _), ge_iff_le, Subtype.forall, isBase_restrict_iff',
+  simp only [ciSup_le_iff (bddAbove_range _), Subtype.forall, isBase_restrict_iff',
     comap_isBasis'_iff, and_imp]
   refine ⟨fun I hI hfI hIX ↦ ?_, fun I hIX ↦ ?_⟩
   · rw [← mk_image_eq_of_injOn_lift _ _ hfI, lift_le]

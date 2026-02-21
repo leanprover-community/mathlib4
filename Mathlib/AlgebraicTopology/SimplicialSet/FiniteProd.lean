@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 
 /-!
 # A binary product of finite simplicial sets is finite
@@ -28,6 +27,7 @@ namespace SSet
 
 variable {X₁ X₂ X₃ X₄ : SSet.{u}}
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X₁ X₂) in
 lemma iSup_subcomplexOfSimplex_prod_eq_top :
     ⨆ (x₁ : X₁.N) (x₂ : X₂.N),

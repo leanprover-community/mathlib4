@@ -70,6 +70,8 @@ instance : SetLike (Sylow p G) G where
   coe := (↑)
   coe_injective' _ _ h := ext (SetLike.coe_injective h)
 
+instance : PartialOrder (Sylow p G) := .ofSetLike (Sylow p G) G
+
 instance : SubgroupClass (Sylow p G) G where
   mul_mem := Subgroup.mul_mem _
   one_mem _ := Subgroup.one_mem _
@@ -274,6 +276,7 @@ theorem IsPGroup.inf_normalizer_sylow {P : Subgroup G} (hP : IsPGroup p P) (Q : 
         (Q.3 (hP.to_inf_left.to_sup_of_normal_right' Q.2 inf_le_right) le_sup_right)))
     (inf_le_inf_left P le_normalizer)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) {Q : Sylow p G} :
     Q ∈ fixedPoints P (Sylow p G) ↔ P ≤ Q := by
   rw [P.sylow_mem_fixedPoints_iff, ← inf_eq_left, hP.inf_normalizer_sylow, inf_eq_left]
@@ -398,6 +401,7 @@ theorem card_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
   ((congr_arg _ P.card_eq_index_normalizer).mp dvd_rfl).trans
     (index_dvd_of_le le_normalizer)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `Sylow.not_dvd_index` which is strictly stronger. -/
 private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
     [P.FiniteIndex] : ¬ p ∣ P.index := by
@@ -462,6 +466,7 @@ theorem mapSurjective_surjective (p : ℕ) [Fact p.Prime] :
 
 end mapSurjective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
@@ -522,6 +527,7 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
               (mul_mem_cancel_left (inv_mem hb₁)).1 <| by
                 rw [hx] at hb₂; simpa [mul_inv_rev, mul_assoc] using hb₂)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fixed points of the action of `H` on its cosets correspond to `normalizer H / H`. -/
 def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] :
     MulAction.fixedPoints H (G ⧸ H) ≃
@@ -742,6 +748,7 @@ theorem normalizer_normalizer {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P :
     ← subgroupOf_normalizer_eq (le_normalizer.trans le_normalizer)] at this
   exact le_antisymm (this normal_in_normalizer) le_normalizer
 
+set_option backward.isDefEq.respectTransparency false in
 theorem normal_of_all_max_subgroups_normal [Finite G]
     (hnc : ∀ H : Subgroup G, IsCoatom H → H.Normal) {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
     (P : Sylow p G) : P.Normal :=

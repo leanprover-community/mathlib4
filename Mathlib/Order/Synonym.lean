@@ -7,14 +7,13 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Logic.Nontrivial.Defs
-public import Mathlib.Order.Basic
+public import Mathlib.Order.OrderDual
 
 /-!
 # Type synonyms
 
-This file provides three type synonyms for order theory:
+This file provides two type synonyms for order theory:
 
-* `OrderDual α`: Type synonym of `α` to equip it with the dual order (`a ≤ b` becomes `b ≤ a`).
 * `Lex α`: Type synonym of `α` to equip it with its lexicographic order. The precise meaning depends
   on the type we take the lex of. Examples include `Prod`, `Sigma`, `List`, `Finset`.
 * `Colex α`: Type synonym of `α` to equip it with its colexicographic order. The precise meaning

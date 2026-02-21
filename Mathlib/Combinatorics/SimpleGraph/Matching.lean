@@ -105,6 +105,7 @@ lemma IsMatching.not_adj_left_of_ne (hM : M.IsMatching) (hvw : v ≠ w) (huv : M
 lemma IsMatching.not_adj_right_of_ne (hM : M.IsMatching) (huv : u ≠ v) (huw : M.Adj u w) :
     ¬M.Adj v w := fun hvw ↦ huv <| hM.eq_of_adj_right huw hvw
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by
   intro v hv
@@ -125,6 +126,7 @@ lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     rw [sup_comm]
     exact aux hM' (Disjoint.symm hd) hmM'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsMatching.iSup {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (f i).IsMatching)
     (hd : Pairwise fun i j ↦ Disjoint (f i).support (f j).support) :
     (⨆ i, f i).IsMatching := by
@@ -289,6 +291,7 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
   letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
   simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
+set_option backward.isDefEq.respectTransparency false in
 lemma odd_matches_node_outside [Finite V] {u : Set V}
     (hM : M.IsPerfectMatching) (c : (Subgraph.deleteVerts ⊤ u).coe.oddComponents) :
     ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.val.supp := by
@@ -384,6 +387,7 @@ lemma Walk.IsCycle.isCycles_spanningCoe_toSubgraph {u : V} {p : G.Walk u u} (hpc
   obtain ⟨_, hw⟩ := hv
   exact p.mem_verts_toSubgraph.mp <| p.toSubgraph.edge_vert hw
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Walk.IsPath.isCycles_spanningCoe_toSubgraph_sup_edge {u v} {p : G.Walk u v} (hp : p.IsPath)
     (h : u ≠ v) (hs : s(v, u) ∉ p.edges) : (p.toSubgraph.spanningCoe ⊔ edge v u).IsCycles := by
   let c := (p.mapLe (OrderTop.le_top G)).cons (by simp [h.symm] : (completeGraph V).Adj v u)
@@ -488,6 +492,7 @@ lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Finite V] {v w : V} (hcyc
   have : Fintype V := Fintype.ofFinite V
   exact reachable_sdiff_toSubgraph_spanningCoe_aux hcyc p hp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsCycles.reachable_deleteEdges [Finite V] (hadj : G.Adj v w)
     (hcyc : G.IsCycles) : (G.deleteEdges {s(v, w)}).Reachable v w := by
   have : fromEdgeSet {s(v, w)} = hadj.toWalk.toSubgraph.spanningCoe := by
@@ -572,6 +577,7 @@ lemma IsAlternating.sup_edge {u x : V} (halt : G.IsAlternating G') (hnadj : ¬G'
     · aesop
   · aesop
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatching)
     (hG' : G'.IsAlternating M.spanningCoe) (hG'cyc : G'.IsCycles) :
     (⊤ : Subgraph (M.spanningCoe ∆ G')).IsPerfectMatching := by

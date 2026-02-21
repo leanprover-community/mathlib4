@@ -136,6 +136,10 @@ instance : Top (Submodule R M) :=
 theorem top_coe : ((⊤ : Submodule R M) : Set M) = Set.univ :=
   rfl
 
+@[simp]
+theorem coe_eq_univ : (p : Set M) = Set.univ ↔ p = ⊤ := by
+  rw [iff_comm, ← SetLike.coe_set_eq, top_coe]
+
 @[simp] lemma mem_top {x : M} : x ∈ (⊤ : Submodule R M) := trivial
 
 @[simp]

@@ -12,6 +12,7 @@ public import Mathlib.Order.Interval.Set.Infinite
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.RingTheory.PowerSeries.WellKnown
 public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Hilbert polynomials
@@ -157,6 +158,7 @@ noncomputable def hilbertPoly_linearMap (d : ℕ) : F[X] →ₗ[F] F[X] where
 
 variable [CharZero F]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The key property of Hilbert polynomials. If `F` is a field with characteristic `0`, `p : F[X]` and
 `d : ℕ`, then for any large enough `n : ℕ`, `(Polynomial.hilbertPoly p d).eval (n : F)` equals the
@@ -216,6 +218,7 @@ theorem eq_hilbertPoly_of_forall_coeff_eq_eval
   ExistsUnique.unique (existsUnique_hilbertPoly p d) ⟨N, hhN⟩
     ⟨p.natDegree, fun _ x => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hilbertPoly_mul_one_sub_succ (p : F[X]) (d : ℕ) :
     hilbertPoly (p * (1 - X)) (d + 1) = hilbertPoly p d := by
   apply eq_hilbertPoly_of_forall_coeff_eq_eval (p * (1 - X)).natDegree

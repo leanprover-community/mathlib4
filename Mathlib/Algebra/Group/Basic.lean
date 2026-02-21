@@ -64,7 +64,8 @@ is equal to a multiplication on the left by `x * y`.
 @[to_additive (attr := simp) /-- Composing two additions on the left by `y` then `x`
 is equal to an addition on the left by `x + y`. -/]
 theorem comp_mul_left (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
-  grind
+  ext z
+  simp [mul_assoc]
 
 /-- Composing two multiplications on the right by `y` and `x`
 is equal to a multiplication on the right by `y * x`.
@@ -72,7 +73,8 @@ is equal to a multiplication on the right by `y * x`.
 @[to_additive (attr := simp) /-- Composing two additions on the right by `y` and `x`
 is equal to an addition on the right by `y + x`. -/]
 theorem comp_mul_right (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
-  grind
+  ext z
+  simp [mul_assoc]
 
 end Semigroup
 
@@ -115,15 +117,15 @@ variable [CommSemigroup G]
 
 @[to_additive]
 theorem mul_left_comm (a b c : G) : a * (b * c) = b * (a * c) := by
-  grind
+  rw [← mul_assoc, mul_comm a, mul_assoc]
 
 @[to_additive]
 theorem mul_right_comm (a b c : G) : a * b * c = a * c * b := by
-  grind
+  rw [mul_assoc, mul_comm b, mul_assoc]
 
 @[to_additive]
 theorem mul_mul_mul_comm (a b c d : G) : a * b * (c * d) = a * c * (b * d) := by
-  grind
+  simp only [mul_left_comm, mul_assoc]
 
 @[to_additive]
 theorem mul_mul_mul_comm' (a b c d : G) : a * b * c * d = a * c * b * d := by
@@ -131,11 +133,11 @@ theorem mul_mul_mul_comm' (a b c d : G) : a * b * c * d = a * c * b * d := by
 
 @[to_additive]
 theorem mul_rotate (a b c : G) : a * b * c = b * c * a := by
-  grind
+  simp only [mul_left_comm, mul_comm]
 
 @[to_additive]
 theorem mul_rotate' (a b c : G) : a * (b * c) = b * (c * a) := by
-  grind
+  simp only [mul_left_comm, mul_comm]
 
 end CommSemigroup
 
@@ -176,7 +178,7 @@ lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
   | n + 1, h =>
     calc
       a ^ n.succ * b ^ n.succ = a ^ n * a * (b * b ^ n) := by rw [pow_succ, pow_succ']
-      _ = a ^ n * (a * b) * b ^ n := by grind
+      _ = a ^ n * (a * b) * b ^ n := by simp only [mul_assoc]
       _ = 1 := by simp [h, pow_mul_pow_eq_one]
 
 @[to_additive (attr := simp)]
@@ -724,6 +726,14 @@ theorem div_mul_div_cancel (a b c : G) : a / b * (b / c) = a / c := by
   rw [← mul_div_assoc, div_mul_cancel]
 
 @[to_additive (attr := simp)]
+lemma mul_mul_inv_mul_cancel (a b c : G) : a * b * (b⁻¹ * c) = a * c := by
+  rw [mul_assoc, ← mul_assoc b, mul_inv_cancel, one_mul]
+
+@[to_additive (attr := simp)]
+lemma mul_inv_mul_mul_cancel (a b c : G) : a * b⁻¹ * (b * c) = a * c := by
+  rw [mul_assoc, ← mul_assoc b⁻¹, inv_mul_cancel, one_mul]
+
+@[to_additive (attr := simp)]
 theorem div_div_div_cancel_right (a b c : G) : a / c / (b / c) = a / b := by
   rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel]
 
@@ -897,8 +907,7 @@ theorem div_eq_of_eq_mul' {a b c : G} (h : a = b * c) : a / b = c := by
 
 @[to_additive (attr := simp)]
 theorem mul_div_mul_left_eq_div (a b c : G) : c * a / (c * b) = a / b := by
-  rw [div_eq_mul_inv, mul_inv_rev, mul_comm b⁻¹ c⁻¹, mul_comm c a, mul_assoc, ← mul_assoc c,
-    mul_inv_cancel, one_mul, div_eq_mul_inv]
+  simp
 
 @[to_additive eq_sub_of_add_eq']
 theorem eq_div_of_mul_eq'' (h : c * a = b) : a = b / c := by simp [h.symm]
@@ -928,6 +937,9 @@ theorem eq_div_iff_mul_eq'' : a = b / c ↔ c * a = b := by rw [eq_div_iff_mul_e
 
 @[to_additive]
 theorem div_eq_iff_eq_mul' : a / b = c ↔ a = b * c := by rw [div_eq_iff_eq_mul, mul_comm]
+
+@[to_additive]
+theorem div_eq_iff_comm : a / b = c ↔ a / c = b := by rw [div_eq_iff_eq_mul', div_eq_iff_eq_mul]
 
 @[to_additive (attr := simp)]
 theorem mul_div_cancel_left (a b : G) : a * b / a = b := by rw [div_eq_inv_mul, inv_mul_cancel_left]

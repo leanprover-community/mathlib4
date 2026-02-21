@@ -6,12 +6,17 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Algebra.Epi
-public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.LinearAlgebra.Span.Basic
-public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.Combinatorics.Matroid.Init
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Positivity
 
 /-!
 # The interaction of linear span and tensor product for mixed scalars.
@@ -103,6 +108,7 @@ variable [CommRing R] [CommRing A] [Nontrivial A]
   let b₂ : Basis ι A (span A (p : Set M)) := (b₁.baseChange A).map <| p.tensorEquivSpan A
   rw [finrank_eq_card_basis b₁, finrank_eq_card_basis b₂]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 lemma finrank_span_eq_finrank_span [IsPrincipalIdealRing R] [IsDomain R] [IsTorsionFree R M]
     (s : Set M) [Module.Finite R (span R s)] :

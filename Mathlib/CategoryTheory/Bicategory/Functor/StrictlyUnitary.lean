@@ -10,12 +10,12 @@ public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 /-!
 # Strictly unitary lax functors and pseudofunctors
 
-In this file, we define strictly unitary Lax functors and
+In this file, we define strictly unitary lax functors and
 strictly unitary pseudofunctors between bicategories.
 
-A lax functor `F` is said to be *strictly unitary* (sometimes, they are also
-called *normal*) if there is an equality `F.obj (𝟙 _) = 𝟙 (F.obj x)` and if the
-unit 2-morphism `F.obj (𝟙 _) → 𝟙 (F.obj _)` is the identity 2-morphism induced
+A lax functor `F` is said to be *strictly unitary* (sometimes, it is also
+called *normal*) if there is an equality `F.map (𝟙 X) = 𝟙 (F.obj X)` and the
+unit 2-morphism `𝟙 (F.obj X) ⟶ F.map (𝟙 X)` is the identity 2-morphism induced
 by this equality.
 
 A pseudofunctor is called *strictly unitary* (or a *normal homomorphism*) if it
@@ -31,7 +31,7 @@ lax (resp. pseudo-) functors out of `LocallyDiscrete Fin n`.
 * Define identity-component oplax natural transformations ("icons") between
 strictly unitary pseudofunctors and construct a bicategory structure on
 bicategories, strictly unitary pseudofunctors and icons.
-* Construct the Duskin of a bicategory using lax-composable arrows
+* Construct the Duskin nerve of a bicategory using lax-composable arrows
 * Construct the 2-nerve of a bicategory using pseudo-composable arrows
 
 -/
@@ -53,8 +53,8 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B]
 variable (B C)
 
 /-- A strictly unitary lax functor `F` between bicategories `B` and `C` is a
-lax functor `F` from `B` to `C` such that the structure 1-cell
-`𝟙 (obj X) ⟶ map (𝟙 X)` is in fact an identity 1-cell for every `X : B`. -/
+lax functor `F` from `B` to `C` such that the structure 2-morphism
+`𝟙 (obj X) ⟶ map (𝟙 X)` is in fact an identity 2-morphism for every `X : B`. -/
 @[kerodon 008R]
 structure StrictlyUnitaryLaxFunctor extends B ⥤ᴸ C where
   map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by rfl_cat
@@ -156,6 +156,7 @@ def id : StrictlyUnitaryLaxFunctor B B where
   map_id _ := rfl
   mapId_eq_eqToHom _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictlyUnitaryLaxFunctor`. -/
 @[simps!]
 def comp (F : StrictlyUnitaryLaxFunctor B C)
@@ -170,6 +171,7 @@ def comp (F : StrictlyUnitaryLaxFunctor B C)
 section
 attribute [local ext] StrictlyUnitaryLaxFunctor
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictlyUnitaryLaxFunctor` is strictly right unitary -/
 lemma comp_id (F : StrictlyUnitaryLaxFunctor B C) :
     F.comp (.id C) = F := by
@@ -180,6 +182,7 @@ lemma comp_id (F : StrictlyUnitaryLaxFunctor B C) :
     ext
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictlyUnitaryLaxFunctor` is strictly left unitary -/
 lemma id_comp (F : StrictlyUnitaryLaxFunctor B C) :
     (StrictlyUnitaryLaxFunctor.id B).comp F = F := by
@@ -190,6 +193,7 @@ lemma id_comp (F : StrictlyUnitaryLaxFunctor B C) :
     ext
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictlyUnitaryLaxFunctor` is strictly associative -/
 lemma comp_assoc {E : Type u₄} [Bicategory.{w₄, v₄} E]
     (F : StrictlyUnitaryLaxFunctor B C) (G : StrictlyUnitaryLaxFunctor C D)
@@ -206,11 +210,11 @@ end
 
 end StrictlyUnitaryLaxFunctor
 
-/-- A strictly unitary pseudofunctor (sometimes called a "normal homomorphism)
-`F` between bicategories `B` and `C` is a lax functor `F` from `B` to `C`
+/-- A strictly unitary pseudofunctor (sometimes called a "normal homomorphism")
+`F` between bicategories `B` and `C` is a pseudofunctor `F` from `B` to `C`
 such that the structure isomorphism `map (𝟙 X) ≅ 𝟙 (F.obj X)` is in fact an
-identity 1-cell for every `X : B` (in particular, there is an equality
-`F.map (𝟙 X) = 𝟙 (F.obj x)`). -/
+identity 2-isomorphism for every `X : B` (in particular, there is an equality
+`F.map (𝟙 X) = 𝟙 (F.obj X)`). -/
 @[kerodon 008R]
 structure StrictlyUnitaryPseudofunctor extends Pseudofunctor B C where
   map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by rfl_cat
@@ -269,7 +273,7 @@ namespace StrictlyUnitaryPseudofunctor
 
 variable {B C}
 
-/-- An alternate constructor for strictly unitary lax functors that does not
+/-- An alternate constructor for strictly unitary pseudofunctors that does not
 require the `mapId` fields, and that adapts the `map₂_leftUnitor` and
 `map₂_rightUnitor` to the fact that the functor is strictly unitary. -/
 @[simps]
@@ -295,6 +299,7 @@ def mk' (S : StrictlyUnitaryPseudofunctorCore B C) :
   map₂_whisker_right η f := by
     simpa using S.map₂_whisker_right η f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- By forgetting the inverse to `mapComp`, a `StrictlyUnitaryPseudofunctor`
 is a `StrictlyUnitaryLaxFunctor`. -/
 def toStrictlyUnitaryLaxFunctor (F : StrictlyUnitaryPseudofunctor B C) :
@@ -340,6 +345,7 @@ def id : StrictlyUnitaryPseudofunctor B B where
   map_id _ := rfl
   mapId_eq_eqToIso _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictlyUnitaryPseudofunctor`. -/
 @[simps!]
 def comp (F : StrictlyUnitaryPseudofunctor B C)

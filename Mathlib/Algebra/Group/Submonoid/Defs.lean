@@ -139,6 +139,8 @@ instance : SetLike (Submonoid M) M where
   coe s := s.carrier
   coe_injective' := SetLike.coe_injective.comp toSubsemigroup_injective
 
+@[to_additive] instance : PartialOrder (Submonoid M) := .ofSetLike (Submonoid M) M
+
 initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
 
@@ -269,7 +271,7 @@ instance : Min (Submonoid M) :=
 theorem coe_inf (p p' : Submonoid M) : ((p ⊓ p' : Submonoid M) : Set M) = (p : Set M) ∩ p' :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mem_inf {p p' : Submonoid M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
   Iff.rfl
 
@@ -280,8 +282,7 @@ theorem subsingleton_iff : Subsingleton (Submonoid M) ↔ Subsingleton M :=
       have : ∀ i : M, i = 1 := fun i =>
         mem_bot.mp <| Subsingleton.elim (⊤ : Submonoid M) ⊥ ▸ mem_top i
       (this x).trans (this y).symm⟩,
-    fun _ =>
-    ⟨fun x y => Submonoid.ext fun i => Subsingleton.elim 1 i ▸ by simp⟩⟩
+    fun _ ↦ ⟨fun x y ↦ Submonoid.ext fun i ↦ by simp [← Subsingleton.elim 1 i]⟩⟩
 
 @[to_additive (attr := simp)]
 theorem nontrivial_iff : Nontrivial (Submonoid M) ↔ Nontrivial M :=
