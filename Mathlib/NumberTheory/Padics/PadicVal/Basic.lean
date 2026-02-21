@@ -80,32 +80,6 @@ alias self := padicValNat_base
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
   eq_zero_iff.2 <| Or.inr <| Or.inr h
 
--- theorem maxPowDvd_eq_emultiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) :
---     p.maxPowDvd n = emultiplicity p n := by
---   apply (emultiplicity_eq_of_dvd_of_not_dvd pow_dvd _).symm
---   intro h
---   apply Nat.not_lt.mpr <| le_of_dvd hp hn h
---   simp
-
--- theorem maxPowDvd_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0)
---  (h : FiniteMultiplicity p n) :
---     p.maxPowDvd n = multiplicity p n := by
---   exact_mod_cast h.emultiplicity_eq_multiplicity ▸ maxPowDvd_eq_emultiplicity hp hn
-
--- /-- Allows for more efficient code for `padicValNat` -/
--- @[csimp]
--- theorem padicValNat_eq_maxPowDvd : @padicValNat = @maxPowDvd := by
---   ext p n
---   by_cases h : 1 < p ∧ 0 < n
---   · rw [padicValNat_def' h.1.ne' h.2, maxPowDvd_eq_multiplicity h.1 h.2]
---     exact Nat.finiteMultiplicity_iff.2 ⟨h.1.ne', h.2⟩
---   · rcases h with (h | h)
---     · interval_cases p
---       · simp [Classical.em]
---       · dsimp [padicValNat, maxPowDvd]
---         rw [go, if_neg]; simp
---     · simp [Nat.le_zero.mp h]
-
 end padicValNat
 
 /-- For `p ≠ 1`, the `p`-adic valuation of an integer `z ≠ 0` is the largest natural number `k` such
@@ -439,12 +413,6 @@ theorem dvd_of_one_le_padicValNat {n : ℕ} (hp : 1 ≤ padicValNat p n) : p ∣
   by_contra h
   rw [padicValNat.eq_zero_of_not_dvd h] at hp
   exact lt_irrefl 0 (lt_of_lt_of_le zero_lt_one hp)
-
-theorem pow_padicValNat_dvd {n : ℕ} : p ^ padicValNat p n ∣ n := by
-  rcases eq_or_ne n 0 with (rfl | hn); · simp
-  rcases eq_or_ne p 1 with (rfl | hp); · simp
-  apply pow_dvd_of_le_multiplicity
-  rw [padicValNat_def'] <;> assumption
 
 theorem padicValNat_dvd_iff_le [hp : Fact p.Prime] {a n : ℕ} (ha : a ≠ 0) :
     p ^ n ∣ a ↔ n ≤ padicValNat p a := by
