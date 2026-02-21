@@ -235,7 +235,7 @@ lemma StrictAnti.not_bddBelow_range_of_isPredArchimedean [NoMaxOrder α] [PredOr
 
 end bdd_range
 
-section IsWellFounded
+section WellFounded
 
 variable [PartialOrder α]
 
@@ -243,7 +243,7 @@ instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT 
     [PredOrder α] : IsPredArchimedean α :=
   ⟨fun {a b} => by
     refine WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
-      h.wf ?_ b
+      h ?_ b
     intro b ih hab
     replace hab := eq_or_lt_of_le hab
     rcases hab with (rfl | hab)
@@ -260,7 +260,7 @@ instance (priority := 100) WellFoundedGT.toIsSuccArchimedean [h : WellFoundedGT 
   let h : IsPredArchimedean αᵒᵈ := by infer_instance
   ⟨h.1⟩
 
-end IsWellFounded
+end WellFounded
 
 section OrderBot
 

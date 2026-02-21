@@ -64,7 +64,7 @@ lemma lt_iff [LT α] [LT β] {x y : α ×ₗ β} :
   Prod.lex_def
 
 instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α ×ₗ β) :=
-  instIsWellFounded
+  instWellFounded
 
 instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedRelation (α ×ₗ β) :=
   ⟨(· < ·), wellFounded_lt⟩

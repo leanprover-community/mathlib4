@@ -114,9 +114,9 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   by_contra hy'
   exact hm' y hy' hy
 
-theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
+theorem not_rel_apply_succ [h : WellFounded r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
   by_contra! hf
-  exact (wellFounded_iff_isEmpty_descending_chain.1 h.wf).elim ⟨f, hf⟩
+  exact (wellFounded_iff_isEmpty_descending_chain.1 h).elim ⟨f, hf⟩
 
 open Set
 
@@ -308,8 +308,8 @@ end Induction
 @[instance_reducible]
 noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where
-  bot := h.wf.min _ Set.univ_nonempty
-  bot_le a := h.wf.min_le (Set.mem_univ a)
+  bot := h.min _ Set.univ_nonempty
+  bot_le a := h.min_le (Set.mem_univ a)
 
 /-- A nonempty linear order with well-founded `>` has a top element. -/
 @[instance_reducible]
@@ -320,8 +320,8 @@ noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [
 
 namespace ULift
 
-instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) where
-  wf := InvImage.wf down h.wf
+instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) :=
+  InvImage.wf down h
 
 instance [LT α] [WellFoundedGT α] : WellFoundedGT (ULift α) :=
   inferInstanceAs (WellFoundedLT (ULift αᵒᵈ))

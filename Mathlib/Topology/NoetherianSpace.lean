@@ -85,7 +85,6 @@ theorem noetherianSpace_TFAE :
       ∀ s : Set α, IsCompact s,
       ∀ s : Opens α, IsCompact (s : Set α)] := by
   tfae_have 1 ↔ 2 := by
-    simp_rw [isWellFounded_iff]
     exact Opens.compl_bijective.2.wellFounded_iff (@OrderIso.compl (Set α)).lt_iff_lt.symm
   tfae_have 1 ↔ 4 := noetherianSpace_iff_opens α
   tfae_have 1 → 3 := @NoetherianSpace.isCompact α _

@@ -253,7 +253,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     refine isNoetherian_of_surjective L (LieHom.rangeRestrict (toEnd R L M)) ?_
     simp only [LinearMap.range_eq_top]
     exact LieHom.surjective_rangeRestrict (toEnd R L M)
-  obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFoundedGT_of_noetherian R L').wf.has_min s hs
+  obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFoundedGT_of_noetherian R L').has_min s hs
   obtain rfl : K = ⊤ := by grind
   exact hK₁
 

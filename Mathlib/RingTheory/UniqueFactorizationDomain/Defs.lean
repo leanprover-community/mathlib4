@@ -34,7 +34,7 @@ condition on divisibility and to the ascending chain condition on
 principal ideals in an integral domain.
 -/
 abbrev WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
-  IsWellFounded α DvdNotUnit
+  @WellFounded α DvdNotUnit
 
 theorem wellFounded_dvdNotUnit {α : Type*} [CommMonoidWithZero α] [h : WfDvdMonoid α] :
     WellFounded (DvdNotUnit (α := α)) :=
@@ -128,7 +128,7 @@ To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`
 -/
 class UniqueFactorizationMonoid (α : Type*) [CommMonoidWithZero α] : Prop
-    extends IsCancelMulZero α, IsWellFounded α DvdNotUnit where
+    extends IsCancelMulZero α, @WellFounded α DvdNotUnit where
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
 attribute [instance 100] UniqueFactorizationMonoid.toIsCancelMulZero

@@ -827,14 +827,14 @@ variable {r} in
 lemma SetRel.infiniteDimensional_inv : InfiniteDimensional r.inv ↔ InfiniteDimensional r :=
   ⟨fun _ ↦ .inv r.inv, fun _ ↦ .inv _⟩
 
-lemma SetRel.IsWellFounded.inv_of_finiteDimensional [r.FiniteDimensional] :
-    r.inv.IsWellFounded := by
-  rw [IsWellFounded, wellFounded_iff_isEmpty_descending_chain]
+lemma SetRel.WellFounded.inv_of_finiteDimensional [r.FiniteDimensional] :
+    r.inv.WellFounded := by
+  rw [WellFounded, wellFounded_iff_isEmpty_descending_chain]
   refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
   let s := RelSeries.mk (r := r) ((RelSeries.longestOf r).length + 1) (f ·) (hf ·)
   exact (RelSeries.longestOf r).length.lt_succ_self.not_ge s.length_le_length_longestOf
 
-lemma SetRel.IsWellFounded.of_finiteDimensional [r.FiniteDimensional] : r.IsWellFounded :=
+lemma SetRel.WellFounded.of_finiteDimensional [r.FiniteDimensional] : r.WellFounded :=
   .inv_of_finiteDimensional r.inv
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/

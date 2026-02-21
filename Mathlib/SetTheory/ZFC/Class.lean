@@ -97,7 +97,7 @@ theorem eq_univ_iff_forall {A : Class.{u}} : A = univ ↔ ∀ x : ZFSet, A x :=
 theorem eq_univ_of_forall {A : Class.{u}} : (∀ x : ZFSet, A x) → A = univ :=
   Set.eq_univ_of_forall
 
-theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
+instance mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
   ⟨by
     have H : ∀ x : ZFSet.{u}, @Acc Class.{u} (· ∈ ·) ↑x := by
       refine fun a => ZFSet.inductionOn a fun x IH => ⟨_, ?_⟩
@@ -106,9 +106,6 @@ theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
     refine fun A => ⟨A, ?_⟩
     rintro B ⟨x, rfl, _⟩
     exact H x⟩
-
-instance : IsWellFounded Class (· ∈ ·) :=
-  ⟨mem_wf⟩
 
 instance : WellFoundedRelation Class :=
   ⟨_, mem_wf⟩

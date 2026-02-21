@@ -55,7 +55,7 @@ theorem Lex.wellFounded' (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s)
 instance Lex.wellFoundedLT {α N} [LT α] [@Std.Trichotomous α (· < ·)] [hα : WellFoundedGT α]
     [AddMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N]
     [hN : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
-  ⟨Lex.wellFounded' (fun n => (zero_le n).not_gt) hN.wf hα.wf⟩
+  Lex.wellFounded' (fun n => (zero_le n).not_gt) hN.wf hα.wf
 
 instance Colex.wellFoundedLT {α N} [LT α] [@Std.Trichotomous α (· < ·)] [WellFoundedLT α]
     [AddMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N]
@@ -70,7 +70,7 @@ theorem Lex.wellFounded_of_finite [IsStrictTotalOrder α r] [Finite α]
 
 theorem Lex.wellFoundedLT_of_finite [LinearOrder α] [Finite α] [LT N]
     [hwf : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
-  ⟨Finsupp.Lex.wellFounded_of_finite (· < ·) hwf.1⟩
+  Finsupp.Lex.wellFounded_of_finite (· < ·) hwf.1
 
 theorem Colex.wellFoundedLT_of_finite [LinearOrder α] [Finite α] [LT N]
     [WellFoundedLT N] : WellFoundedLT (Colex (α →₀ N)) :=
@@ -78,7 +78,7 @@ theorem Colex.wellFoundedLT_of_finite [LinearOrder α] [Finite α] [LT N]
 
 protected theorem wellFoundedLT [Preorder N] [WellFoundedLT N] (hbot : ∀ n : N, ¬n < 0) :
     WellFoundedLT (α →₀ N) :=
-  ⟨InvImage.wf toDFinsupp (DFinsupp.wellFoundedLT fun _ a => hbot a).wf⟩
+  InvImage.wf toDFinsupp (DFinsupp.wellFoundedLT fun _ a => hbot a).wf
 
 instance wellFoundedLT' {N}
     [AddMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] [WellFoundedLT N] :
@@ -87,6 +87,6 @@ instance wellFoundedLT' {N}
 
 instance wellFoundedLT_of_finite [Finite α] [Preorder N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
-  ⟨InvImage.wf equivFunOnFinite Function.wellFoundedLT.wf⟩
+  InvImage.wf equivFunOnFinite Function.wellFoundedLT.wf
 
 end Finsupp

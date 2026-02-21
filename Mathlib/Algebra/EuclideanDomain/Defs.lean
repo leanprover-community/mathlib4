@@ -95,6 +95,8 @@ class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
 
 namespace EuclideanDomain
 
+attribute [instance] r_wellFounded
+
 variable {R : Type u} [EuclideanDomain R]
 
 /-- Abbreviated notation for the well-founded relation `r` in a Euclidean domain. -/
@@ -102,9 +104,6 @@ local infixl:50 " ≺ " => EuclideanDomain.r
 
 local instance wellFoundedRelation : WellFoundedRelation R where
   rel := EuclideanDomain.r
-  wf := r_wellFounded
-
-instance isWellFounded : IsWellFounded R (· ≺ ·) where
   wf := r_wellFounded
 
 -- see Note [lower instance priority]

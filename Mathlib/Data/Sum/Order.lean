@@ -99,7 +99,7 @@ instance [Std.Trichotomous r] [Std.Trichotomous s] : Std.Trichotomous (Lex r s) 
   grind [Std.Trichotomous, Lex]
 
 instance [IsWellOrder α r] [IsWellOrder β s] :
-    IsWellOrder (α ⊕ β) (Sum.Lex r s) where wf := Sum.lex_wf IsWellFounded.wf IsWellFounded.wf
+    IsWellOrder (α ⊕ β) (Sum.Lex r s) where wf := Sum.lex_wf IsWellOrder.wf IsWellOrder.wf
 
 end Lex
 

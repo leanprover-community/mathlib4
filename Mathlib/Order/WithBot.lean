@@ -747,16 +747,16 @@ instance _root_.WithTop.linearOrder [LinearOrder α] : LinearOrder (WithTop α) 
   Lattice.toLinearOrder _
 
 @[to_dual]
-instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) where
-  wf := .intro fun
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) :=
+  .intro fun
   | ⊥ => ⟨_, by simp⟩
   | (a : α) => (wellFounded_lt.1 a).rec fun _ _ ih ↦ .intro _ fun
     | ⊥, _ => ⟨_, by simp⟩
     | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
 
 @[to_dual]
-instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) where
-  wf := have acc_some (a : α) : @Acc (WithBot α) (· > ·) a :=
+instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) :=
+  have acc_some (a : α) : @Acc (WithBot α) (· > ·) a :=
     (wellFounded_gt.1 a).rec fun _ _ ih ↦ ⟨_, by simpa [WithBot.forall]⟩
   .intro fun
     | (a : α) => acc_some a

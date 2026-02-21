@@ -600,8 +600,8 @@ protected def dual : αᵒᵈ ↪o βᵒᵈ :=
 /-- A preorder which embeds into a well-founded preorder is itself well-founded. -/
 @[to_dual /-- A preorder which embeds into a preorder in which `(· > ·)` is well-founded
 also has `(· > ·)` well-founded. -/]
-protected theorem wellFoundedLT [WellFoundedLT β] (f : α ↪o β) : WellFoundedLT α where
-  wf := f.wellFounded IsWellFounded.wf
+protected theorem wellFoundedLT [i : WellFoundedLT β] (f : α ↪o β) : WellFoundedLT α :=
+  f.wellFounded i
 
 -- `to_dual` cannot yet reorder arguments of arguments
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function

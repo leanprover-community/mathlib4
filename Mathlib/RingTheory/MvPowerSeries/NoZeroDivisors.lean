@@ -143,8 +143,8 @@ instance : NoZeroDivisors (MvPowerSeries σ R) where
   eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
     letI : LinearOrder σ := LinearOrder.swap σ WellOrderingRel.isWellOrder.linearOrder
     letI : WellFoundedGT σ := by
-      change IsWellFounded σ fun x y ↦ WellOrderingRel x y
-      exact IsWellOrder.toIsWellFounded
+      change @WellFounded σ fun x y ↦ WellOrderingRel x y
+      exact IsWellOrder.toWellFounded
     simpa only [← lexOrder_eq_top_iff_eq_zero, lexOrder_mul, WithTop.add_eq_top] using h
 
 theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :

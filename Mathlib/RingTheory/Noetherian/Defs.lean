@@ -119,7 +119,7 @@ theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) :
 
 theorem isNoetherian_iff :
     IsNoetherian R M ↔ WellFounded ((· > ·) : Submodule R M → Submodule R M → Prop) := by
-  rw [isNoetherian_iff', ← isWellFounded_iff]
+  rw [isNoetherian_iff']
 
 alias ⟨IsNoetherian.wf, _⟩ := isNoetherian_iff
 

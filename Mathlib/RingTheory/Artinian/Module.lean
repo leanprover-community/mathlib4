@@ -73,7 +73,7 @@ abbrev IsArtinian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop :=
 
 theorem isArtinian_iff (R M) [Semiring R] [AddCommMonoid M] [Module R M] : IsArtinian R M ↔
     WellFounded (· < · : Submodule R M → Submodule R M → Prop) :=
-  isWellFounded_iff _ _
+  .rfl
 
 section Semiring
 
@@ -91,7 +91,7 @@ theorem isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [
     IsArtinian R M :=
   ⟨Subrelation.wf
     (fun {A B} hAB => show A.map f < B.map f from Submodule.map_strictMono_of_injective h hAB)
-    (InvImage.wf (Submodule.map f) IsWellFounded.wf)⟩
+    (InvImage.wf (Submodule.map f) inferInstance)⟩
 
 instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian R N :=
   isArtinian_of_injective N.subtype Subtype.val_injective
@@ -105,7 +105,7 @@ theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f
   ⟨Subrelation.wf
     (fun {A B} hAB =>
       show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB)
-    (InvImage.wf (Submodule.comap f) IsWellFounded.wf)⟩
+    (InvImage.wf (Submodule.comap f) inferInstance)⟩
 
 /--
 If `M` is an Artinian `R` module, and `S` is an `R`-algebra with a surjective
@@ -183,7 +183,7 @@ open Function
 /-- Any injective endomorphism of an Artinian module is surjective. -/
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
   have h := ‹IsArtinian R M›; contrapose! h
-  rw [IsArtinian, WellFoundedLT, isWellFounded_iff]
+  rw [IsArtinian, WellFoundedLT]
   refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded
   intro n
   simp_rw [pow_succ, Module.End.mul_eq_comp, LinearMap.range_comp, ← Submodule.map_top (f ^ n)]

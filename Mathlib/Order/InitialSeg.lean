@@ -154,17 +154,17 @@ theorem trans_apply (f : r ≼i s) (g : s ≼i t) (a : α) : (f.trans g) a = g (
   rfl
 
 instance subsingleton_of_trichotomous_of_irrefl [Std.Trichotomous s] [Std.Irrefl s]
-    [IsWellFounded α r] : Subsingleton (r ≼i s) where
+    [WellFounded r] : Subsingleton (r ≼i s) where
   allEq f g := by
     ext a
-    refine IsWellFounded.induction r a fun b IH =>
+    refine WellFounded.induction' r a fun b IH =>
       extensional_of_trichotomous_of_irrefl s fun x => ?_
     rw [f.exists_eq_iff_rel, g.exists_eq_iff_rel]
     exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl
 
 /-- Given a well order `s`, there is at most one initial segment embedding of `r` into `s`. -/
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
-  ⟨fun a => have := a.isWellFounded; Subsingleton.elim a⟩
+  ⟨fun a => have := a.wellFounded'; Subsingleton.elim a⟩
 
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
@@ -201,7 +201,7 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
   apply or_iff_not_imp_right.2
   intro h b
   push_neg at h
-  apply IsWellFounded.induction s b
+  apply WellFounded.induction' s b
   intro x IH
   obtain ⟨y, ⟨hy, hs⟩ | ⟨hy, hs⟩⟩ := h x
   · obtain (rfl | h) := (trichotomous y x).resolve_left hs
@@ -514,22 +514,22 @@ end InitialSeg
 
 /-- The function in `collapse`. -/
 private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { b // ¬s (f a) b } :=
-  (RelEmbedding.isWellFounded f).fix _ fun a IH =>
+  (RelEmbedding.wellFounded' f).fix' _ fun a IH =>
     have H : f a ∈ { b | ∀ a h, s (IH a h).1 b } :=
       fun b h => trans_trichotomous_left (IH b h).2 (f.map_rel_iff.2 h)
-    ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, H⟩ H⟩
+    ⟨_, WellFounded.not_lt_min inferInstance _ ⟨_, H⟩ H⟩
 
 set_option backward.privateInPublic true in
 private theorem collapseF_lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
     ∀ {a'}, r a' a → s (collapseF f a') (collapseF f a) := by
   change _ ∈ { b | ∀ a', r a' a → s (collapseF f a') b }
-  rw [collapseF, IsWellFounded.fix_eq]
+  rw [collapseF, WellFounded.fix'_eq]
   dsimp only
   exact WellFounded.min_mem _ _ _
 
 private theorem collapseF_not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
     (h : ∀ a', r a' a → s (collapseF f a') b) : ¬s b (collapseF f a) := by
-  rw [collapseF, IsWellFounded.fix_eq]
+  rw [collapseF, WellFounded.fix'_eq]
   dsimp only
   exact WellFounded.not_lt_min _ _ _ h
 

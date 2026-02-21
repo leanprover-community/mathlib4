@@ -242,7 +242,7 @@ lemma card_strictMono : StrictMono (@card α) := fun _ _ ↦ card_lt_card
 
 /-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
 instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
-  ⟨Subrelation.wf Multiset.card_lt_card (measure Multiset.card).2⟩
+  Subrelation.wf Multiset.card_lt_card (measure Multiset.card).2
 
 @[simp]
 theorem coe_reverse (l : List α) : (reverse l : Multiset α) = l :=

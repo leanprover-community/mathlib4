@@ -238,11 +238,8 @@ private theorem mem_wf_aux : ∀ {x y : PSet.{u}}, Equiv x y → Acc (· ∈ ·)
       rw [mk_func] at H
       exact mem_wf_aux H⟩
 
-theorem mem_wf : @WellFounded PSet (· ∈ ·) :=
+instance mem_wf : @WellFounded PSet (· ∈ ·) :=
   ⟨fun x => mem_wf_aux <| Equiv.refl x⟩
-
-instance : IsWellFounded PSet (· ∈ ·) :=
-  ⟨mem_wf⟩
 
 instance : WellFoundedRelation PSet :=
   ⟨_, mem_wf⟩

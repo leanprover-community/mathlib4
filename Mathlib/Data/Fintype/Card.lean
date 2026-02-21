@@ -435,11 +435,11 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
 
 -- See note [lower instance priority]
 instance (priority := 100) to_wellFoundedLT [Preorder α] : WellFoundedLT α :=
-  ⟨wellFounded_of_trans_of_irrefl _⟩
+  wellFounded_of_trans_of_irrefl _
 
 -- See note [lower instance priority]
 instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
-  ⟨wellFounded_of_trans_of_irrefl _⟩
+  wellFounded_of_trans_of_irrefl _
 
 end Finite
 

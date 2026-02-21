@@ -129,7 +129,7 @@ instance linearOrder_toType (o : Ordinal) : LinearOrder o.ToType :=
   @IsWellOrder.linearOrder _ o.out.r o.out.wo
 
 instance wellFoundedLT_toType (o : Ordinal) : WellFoundedLT o.ToType :=
-  o.out.wo.toIsWellFounded
+  o.out.wo.toWellFounded
 
 namespace Ordinal
 
@@ -254,7 +254,7 @@ open Classical in
 @[elab_as_elim]
 theorem inductionOnWellOrder {C : Ordinal → Prop} (o : Ordinal)
     (H : ∀ (α) [LinearOrder α] [WellFoundedLT α], C (typeLT α)) : C o :=
-  inductionOn o fun α r wo ↦ @H α (linearOrderOfSTO r) wo.toIsWellFounded
+  inductionOn o fun α r wo ↦ @H α (linearOrderOfSTO r) wo.toWellFounded
 
 open Classical in
 /-- To define a function on ordinals, it suffices to define them on order types of well-orders.
@@ -264,10 +264,10 @@ Since `LinearOrder` is data-carrying, `liftOnWellOrder_type` is not a definition
 def liftOnWellOrder {δ : Sort v} (o : Ordinal) (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
     (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
       typeLT α = typeLT β → f α = f β) : δ :=
-  Quotient.liftOn o (fun w ↦ @f w.α (linearOrderOfSTO w.r) w.wo.toIsWellFounded)
+  Quotient.liftOn o (fun w ↦ @f w.α (linearOrderOfSTO w.r) w.wo.toWellFounded)
     fun w₁ w₂ h ↦ @c
-      w₁.α (linearOrderOfSTO w₁.r) w₁.wo.toIsWellFounded
-      w₂.α (linearOrderOfSTO w₂.r) w₂.wo.toIsWellFounded
+      w₁.α (linearOrderOfSTO w₁.r) w₁.wo.toWellFounded
+      w₂.α (linearOrderOfSTO w₂.r) w₂.wo.toWellFounded
       (Quotient.sound h)
 
 @[simp]
@@ -573,15 +573,12 @@ theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
       (⊥ : o.ToType) :=
   rfl
 
-theorem lt_wf : @WellFounded Ordinal (· < ·) :=
+instance lt_wf : WellFoundedLT Ordinal :=
   wellFounded_iff_wellFounded_subrel.mpr (·.induction_on fun ⟨_, _, wo⟩ ↦
     RelHomClass.wellFounded (enum _) wo.wf)
 
 instance wellFoundedRelation : WellFoundedRelation Ordinal :=
   ⟨(· < ·), lt_wf⟩
-
-instance wellFoundedLT : WellFoundedLT Ordinal :=
-  ⟨lt_wf⟩
 
 instance : ConditionallyCompleteLinearOrderBot Ordinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _

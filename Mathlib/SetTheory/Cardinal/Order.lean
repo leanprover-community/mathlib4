@@ -357,7 +357,7 @@ theorem power_le_power_right {a b c : Cardinal} : a ≤ b → a ^ c ≤ b ^ c :=
 theorem power_pos {a : Cardinal} (b : Cardinal) (ha : 0 < a) : 0 < a ^ b :=
   (power_ne_zero _ ha.ne').bot_lt
 
-protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
+protected instance lt_wf : WellFoundedLT Cardinal.{u} :=
   ⟨fun a =>
     by_contradiction fun h => by
       let ι := { c : Cardinal // ¬Acc (· < ·) c }
@@ -371,9 +371,6 @@ protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
 
 instance : WellFoundedRelation Cardinal.{u} :=
   ⟨(· < ·), Cardinal.lt_wf⟩
-
-instance : WellFoundedLT Cardinal.{u} :=
-  ⟨Cardinal.lt_wf⟩
 
 instance : ConditionallyCompleteLinearOrderBot Cardinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
@@ -527,7 +524,7 @@ variable (α) in
 /-- The **well-ordering theorem** (or **Zermelo's theorem**): every type has a well-order -/
 theorem exists_wellOrder : ∃ (_ : LinearOrder α), WellFoundedLT α := by
   classical
-  exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toIsWellFounded⟩
+  exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toWellFounded⟩
 
 namespace Cardinal
 

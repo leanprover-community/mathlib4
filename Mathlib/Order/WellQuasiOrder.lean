@@ -137,7 +137,7 @@ lemma Finite.to_wellQuasiOrderedLE [Finite α] : WellQuasiOrderedLE α where
 
 instance (priority := 100) WellQuasiOrderedLE.to_wellFoundedLT [WellQuasiOrderedLE α] :
     WellFoundedLT α := by
-  rw [WellFoundedLT, isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
+  rw [WellFoundedLT, RelEmbedding.wellFounded_iff_isEmpty]
   refine ⟨fun f ↦ ?_⟩
   obtain ⟨a, b, h, hf⟩ := wellQuasiOrdered_le f
   exact (f.map_rel_iff.2 h).not_ge hf

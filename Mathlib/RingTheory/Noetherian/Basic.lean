@@ -235,7 +235,7 @@ variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 /-- If `∀ I > J, P I` implies `P J`, then `P` holds for all submodules. -/
 theorem IsNoetherian.induction [IsNoetherian R M] {P : Submodule R M → Prop}
     (hgt : ∀ I, (∀ J > I, P J) → P I) (I : Submodule R M) : P I :=
-  IsWellFounded.induction _ I hgt
+  WellFounded.induction' _ I hgt
 
 theorem LinearMap.isNoetherian_iff_of_bijective {S P} [Semiring S] [AddCommMonoid P] [Module S P]
     {σ : R →+* S} [RingHomSurjective σ] (l : M →ₛₗ[σ] P) (hl : Function.Bijective l) :

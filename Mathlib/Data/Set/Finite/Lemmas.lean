@@ -54,7 +54,7 @@ theorem Finite.induction_to {C : Set α → Prop} {S : Set α} (h : S.Finite)
   have : Finite {T : Set α // T ⊆ S} := Finite.of_equiv (Set S) (Equiv.Set.powerset S).symm
   rw [← Subtype.coe_mk (p := (· ⊆ S)) _ le_rfl]
   rw [← Subtype.coe_mk (p := (· ⊆ S)) _ hS0] at H0
-  refine Finite.to_wellFoundedGT.wf.induction_bot' (fun s hs hs' ↦ ?_) H0
+  refine Finite.to_wellFoundedGT.induction_bot' (fun s hs hs' ↦ ?_) H0
   obtain ⟨a, ⟨ha1, ha2⟩, ha'⟩ := H1 s (ssubset_of_ne_of_subset hs s.2) hs'
   exact ⟨⟨insert a s.1, insert_subset ha1 s.2⟩, Set.ssubset_insert ha2, ha'⟩
 

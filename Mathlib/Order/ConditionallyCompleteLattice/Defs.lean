@@ -103,23 +103,23 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
     [i₁ : LinearOrder α] [i₂ : OrderBot α] [h : WellFoundedLT α] :
     ConditionallyCompleteLinearOrderBot α :=
   { i₁, i₂, LinearOrder.toLattice with
-    sInf := fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥
+    sInf := fun s => if hs : s.Nonempty then h.min s hs else ⊥
     csInf_le := fun s a _ has => by
       have s_ne : s.Nonempty := ⟨a, has⟩
-      simpa [s_ne] using not_lt.1 (h.wf.not_lt_min s s_ne has)
+      simpa [s_ne] using not_lt.1 (h.not_lt_min s s_ne has)
     le_csInf := fun s a hs has => by
       simp only [hs, dif_pos]
-      exact has (h.wf.min_mem s hs)
-    sSup := fun s => if hs : (upperBounds s).Nonempty then h.wf.min _ hs else ⊥
+      exact has (h.min_mem s hs)
+    sSup := fun s => if hs : (upperBounds s).Nonempty then h.min _ hs else ⊥
     le_csSup := fun s a hs has => by
       have h's : (upperBounds s).Nonempty := hs
       simp only [h's, dif_pos]
-      exact h.wf.min_mem _ h's has
+      exact h.min_mem _ h's has
     csSup_le := fun s a _ has => by
       have h's : (upperBounds s).Nonempty := ⟨a, has⟩
       simp only [h's, dif_pos]
-      simpa using h.wf.not_lt_min _ h's has
-    csSup_empty := by simpa using eq_bot_iff.2 (not_lt.1 <| h.wf.not_lt_min _ _ <| mem_univ ⊥)
+      simpa using h.not_lt_min _ h's has
+    csSup_empty := by simpa using eq_bot_iff.2 (not_lt.1 <| h.not_lt_min _ _ <| mem_univ ⊥)
     csSup_of_not_bddAbove := by
       intro s H
       have B : ¬((upperBounds s).Nonempty) := H

@@ -539,7 +539,12 @@ instance {R : α → α → Prop} [Std.Irrefl R] : SetRel.IsIrrefl {(a, b) | R a
 variable (R) in
 /-- A relation `R` on a type `α` is well-founded if all elements of `α` are accessible within `R`.
 -/
-abbrev IsWellFounded : Prop := WellFounded (· ~[R] ·)
+abbrev WellFounded : Prop := _root_.WellFounded (· ~[R] ·)
+
+/-- A relation `R` on a type `α` is well-founded if all elements of `α` are accessible within `R`.
+-/
+@[deprecated WellFounded (since := "2026-02-21")]
+abbrev IsWellFounded : Prop := _root_.WellFounded (· ~[R] ·)
 
 variable (R S) in
 /-- A relation homomorphism with respect to a given pair of relations `R` and `S` s is a function

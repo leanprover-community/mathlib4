@@ -1173,11 +1173,8 @@ instance : Zero NONote :=
 instance : Inhabited NONote :=
   ⟨0⟩
 
-theorem lt_wf : @WellFounded NONote (· < ·) :=
+instance lt_wf : WellFoundedLT NONote :=
   InvImage.wf repr Ordinal.lt_wf
-
-instance : WellFoundedLT NONote :=
-  ⟨lt_wf⟩
 
 instance : WellFoundedRelation NONote :=
   ⟨(· < ·), lt_wf⟩

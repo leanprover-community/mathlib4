@@ -177,10 +177,7 @@ theorem _root_.Acc.cutExpand [Std.Irrefl r] {a : α} (hacc : Acc r a) : Acc (Cut
   exact ih a' ∘ hr a'
 
 /-- `CutExpand r` is well-founded when `r` is. -/
-theorem _root_.WellFounded.cutExpand (hr : WellFounded r) : WellFounded (CutExpand r) :=
+instance _root_.WellFounded.cutExpand (hr : WellFounded r) : WellFounded (CutExpand r) :=
   ⟨have := hr.irrefl; fun _ ↦ acc_of_singleton fun a _ ↦ (hr.apply a).cutExpand⟩
-
-instance [h : IsWellFounded α r] : IsWellFounded _ (CutExpand r) :=
-  ⟨h.wf.cutExpand⟩
 
 end Relation

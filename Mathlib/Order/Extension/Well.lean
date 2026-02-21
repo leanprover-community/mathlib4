@@ -18,7 +18,7 @@ well-founded order.
 
 We can map our order into two well-orders:
 * the first map respects the order but isn't necessarily injective. Namely, this is the *rank*
-  function `IsWellFounded.rank : α → Ordinal`.
+  function `WellFounded.rank : α → Ordinal`.
 * the second map is injective but doesn't necessarily respect the order. This is an arbitrary
   embedding into `Cardinal` given by `embeddingToCardinal`.
 
@@ -42,13 +42,13 @@ universe u
 
 variable {α : Type u} {r : α → α → Prop}
 
-namespace IsWellFounded
+namespace WellFounded
 
-variable {α : Type u} (r : α → α → Prop) [IsWellFounded α r]
+variable {α : Type u} (r : α → α → Prop) [WellFounded r]
 
 /-- An arbitrary well order on `α` that extends `r`.
 
-The construction maps `r` into two well-orders: the first map is `IsWellFounded.rank`, which is not
+The construction maps `r` into two well-orders: the first map is `WellFounded.rank`, which is not
 necessarily injective but respects the order `r`; the other map is the identity (with an arbitrarily
 chosen well-order on `α`), which is injective but doesn't respect `r`.
 
@@ -60,7 +60,7 @@ noncomputable def wellOrderExtension : LinearOrder α :=
   @LinearOrder.lift' α (Ordinal ×ₗ Cardinal) _ (fun a : α => (rank r a, embeddingToCardinal a))
     fun _ _ h => embeddingToCardinal.injective <| congr_arg Prod.snd h
 
-instance wellOrderExtension.isWellFounded_lt : IsWellFounded α (wellOrderExtension r).lt :=
+instance wellOrderExtension.isWellFounded_lt : WellFounded (wellOrderExtension r).lt :=
   ⟨InvImage.wf (fun a : α => (rank r a, embeddingToCardinal a)) <|
     Ordinal.lt_wf.prod_lex Cardinal.lt_wf⟩
 
@@ -70,7 +70,7 @@ instance wellOrderExtension.isWellOrder_lt : IsWellOrder α (wellOrderExtension 
 theorem exists_well_order_ge : ∃ s, r ≤ s ∧ IsWellOrder α s :=
   ⟨(wellOrderExtension r).lt, fun _ _ h => Prod.Lex.left _ _ (rank_lt_of_rel h), ⟨⟩⟩
 
-end IsWellFounded
+end WellFounded
 
 /-- A type alias for `α`, intended to extend a well-founded order on `α` to a well-order. -/
 def WellOrderExtension (α : Type*) : Type _ := α
@@ -86,8 +86,8 @@ noncomputable instance [LT α] [h : WellFoundedLT α] : LinearOrder (WellOrderEx
 
 instance WellOrderExtension.wellFoundedLT [LT α] [WellFoundedLT α] :
     WellFoundedLT (WellOrderExtension α) :=
-  IsWellFounded.wellOrderExtension.isWellFounded_lt (α := α) (· < ·)
+  WellFounded.wellOrderExtension.wellFounded_lt (α := α) (· < ·)
 
 theorem toWellOrderExtension_strictMono [Preorder α] [WellFoundedLT α] :
     StrictMono (toWellOrderExtension : α → WellOrderExtension α) := fun _ _ h =>
-  Prod.Lex.left _ _ <| IsWellFounded.rank_lt_of_rel h
+  Prod.Lex.left _ _ <| WellFounded.rank_lt_of_rel h

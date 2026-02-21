@@ -50,7 +50,7 @@ instance wfDvdMonoid_associates : WfDvdMonoid (Associates α) :=
   ⟨(mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).1 wellFounded_dvdNotUnit⟩
 
 theorem wellFoundedLT_associates : WellFoundedLT (Associates α) :=
-  ⟨Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit⟩
+  Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit
 
 end WfDvdMonoid
 

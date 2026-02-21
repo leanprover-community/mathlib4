@@ -17,9 +17,7 @@ exiled here during the port to minimize imports of `Algebra.Order.Ring.Rat`.
 
 @[expose] public section
 
-instance : WellFoundedRelation (WithTop ℕ) where
-  rel := (· < ·)
-  wf := IsWellFounded.wf
+instance : WellFoundedRelation (WithTop ℕ) := WellFoundedLT.toWellFoundedRelation
 
 theorem Nat.cast_withTop (n : ℕ) : Nat.cast n = WithTop.some n :=
   rfl

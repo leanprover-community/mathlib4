@@ -94,9 +94,10 @@ protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc
 protected theorem wellFounded [RelHomClass F r s] (f : F) : WellFounded s → WellFounded r
   | ⟨H⟩ => ⟨fun _ => RelHomClass.acc f _ (H _)⟩
 
-protected theorem isWellFounded [RelHomClass F r s] (f : F) [IsWellFounded β s] :
-    IsWellFounded α r :=
-  ⟨RelHomClass.wellFounded f IsWellFounded.wf⟩
+protected theorem wellFounded' [RelHomClass F r s] (f : F) [i : WellFounded s] : WellFounded r :=
+  RelHomClass.wellFounded f i
+
+@[deprecated (since := "2026-02-21")] alias isWellFounded := RelHomClass.wellFounded'
 
 end RelHomClass
 
@@ -360,11 +361,13 @@ protected theorem acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a := by
 protected theorem wellFounded : ∀ (_ : r ↪r s) (_ : WellFounded s), WellFounded r
   | f, ⟨H⟩ => ⟨fun _ => f.acc _ (H _)⟩
 
-protected theorem isWellFounded (f : r ↪r s) [IsWellFounded β s] : IsWellFounded α r :=
-  ⟨f.wellFounded IsWellFounded.wf⟩
+protected theorem wellFounded' (f : r ↪r s) [i : WellFounded s] : WellFounded r :=
+  f.wellFounded i
+
+@[deprecated (since := "2026-02-21")] alias isWellFounded := RelEmbedding.wellFounded'
 
 protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrder α r
-  | f, H => { f.isStrictTotalOrder with wf := f.wellFounded H.wf }
+  | f, _ => { f.isStrictTotalOrder with wf := f.wellFounded' }
 
 end RelEmbedding
 
@@ -376,11 +379,11 @@ def Subtype.relEmbedding {X : Type*} (r : X → X → Prop) (p : X → Prop) :
 
 instance Subtype.wellFoundedLT [LT α] [WellFoundedLT α] (p : α → Prop) :
     WellFoundedLT (Subtype p) :=
-  (Subtype.relEmbedding (· < ·) p).isWellFounded
+  (Subtype.relEmbedding (· < ·) p).wellFounded'
 
 instance Subtype.wellFoundedGT [LT α] [WellFoundedGT α] (p : α → Prop) :
     WellFoundedGT (Subtype p) :=
-  (Subtype.relEmbedding (· > ·) p).isWellFounded
+  (Subtype.relEmbedding (· > ·) p).wellFounded'
 
 /-- `Quotient.mk` as a relation homomorphism between the relation and the lift of a relation. -/
 @[simps]

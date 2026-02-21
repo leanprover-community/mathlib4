@@ -689,14 +689,11 @@ noncomputable def withTopAddEquiv : PartENat ≃+ ℕ∞ :=
 
 end WithTopEquiv
 
-theorem lt_wf : @WellFounded PartENat (· < ·) := by
+instance lt_wf :  WellFoundedLT PartENat := by
   classical
     change WellFounded fun a b : PartENat => a < b
     simp_rw [← withTopEquiv_lt]
     exact InvImage.wf _ wellFounded_lt
-
-instance : WellFoundedLT PartENat :=
-  ⟨lt_wf⟩
 
 instance wellFoundedRelation : WellFoundedRelation PartENat :=
   ⟨(· < ·), lt_wf⟩

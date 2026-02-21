@@ -630,8 +630,8 @@ theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
 theorem inductionOn {p : ZFSet → Prop} (x) (h : ∀ x, (∀ y ∈ x, p y) → p x) : p x :=
   mem_wf.induction x h
 
-instance : IsWellFounded ZFSet (· ∈ ·) :=
-  ⟨mem_wf⟩
+instance : @WellFounded ZFSet (· ∈ ·) :=
+  mem_wf
 
 instance : WellFoundedRelation ZFSet :=
   ⟨_, mem_wf⟩
