@@ -66,7 +66,20 @@ instance decidableMemIco [Decidable (a ≤ x ∧ x < b)] : Decidable (x ∈ Ico 
 
 instance decidableMemIcc [Decidable (a ≤ x ∧ x ≤ b)] : Decidable (x ∈ Icc a b) := by assumption
 
-instance decidableMemIoc [Decidable (a < x ∧ x ≤ b)] : Decidable (x ∈ Ioc a b) := by assumption
+@[to_dual self (reorder := a b, 6 7)]
+instance decidableMemIoo [Decidable (a < x)] [Decidable (x < b)] : Decidable (x ∈ Ioo a b) :=
+  instDecidableAnd
+
+instance decidableMemIco [Decidable (a ≤ x)] [Decidable (x < b)] : Decidable (x ∈ Ico a b) :=
+  instDecidableAnd
+
+@[to_dual self (reorder := a b, 6 7)]
+instance decidableMemIcc [Decidable (a ≤ x)] [Decidable (x ≤ b)] : Decidable (x ∈ Icc a b) :=
+  instDecidableAnd
+
+@[to_dual existing (reorder := a b, 6 7)]
+instance decidableMemIoc [Decidable (a < x)] [Decidable (x ≤ b)] : Decidable (x ∈ Ioc a b) :=
+  instDecidableAnd
 
 @[to_dual] theorem self_notMem_Iio : a ∉ Iio a := by simp
 @[to_dual] theorem self_mem_Iic : a ∈ Iic a := by simp
