@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.AdicCompletion.Noetherian
 public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.Flat.TorsionFree
+public import Mathlib.RingTheory.Kaehler.TensorProduct
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.RingTheory.PowerSeries.Basic
@@ -38,6 +39,28 @@ open IsLocalRing
 universe u v
 
 variable (R : Type u) [CommRing R]
+
+section
+
+lemma IsBaseChange.of_eq_map {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (I : Ideal R)
+    (J : Ideal S) (eq : J = I.map (algebraMap R S)) :
+    letI := (Ideal.quotientMap (I := I) J (algebraMap R S)
+      (by simp [← Ideal.map_le_iff_le_comap, eq])).toAlgebra
+    letI : IsScalarTower R (R ⧸ I) (S ⧸ J) := IsScalarTower.of_algebraMap_eq' rfl
+    IsBaseChange (R ⧸ I) (Ideal.Quotient.mkₐ R J).toLinearMap := by
+  let _ := (Ideal.quotientMap (I := I) J (algebraMap R S)
+    (by simp [← Ideal.map_le_iff_le_comap, eq])).toAlgebra
+  let _ : IsScalarTower R (R ⧸ I) (S ⧸ J) := IsScalarTower.of_algebraMap_eq' rfl
+  let e : TensorProduct R (R ⧸ I) S ≃ₗ[R] S ⧸ J :=
+    (TensorProduct.quotTensorEquivQuotSMul S I).trans (Submodule.quotEquivOfEq _ _ (by simp [eq])
+    ≪≫ₗ Submodule.Quotient.restrictScalarsEquiv R J)
+  apply IsBaseChange.of_equiv (e.extendScalarsOfSurjective (Ideal.Quotient.mk_surjective (I := I)))
+  intro s
+  simp only [LinearEquiv.extendScalarsOfSurjective_apply, LinearEquiv.trans_apply, e]
+  rw [← map_one (Ideal.Quotient.mk I), TensorProduct.quotTensorEquivQuotSMul_mk_tmul]
+  simp
+
+end
 
 section
 
@@ -98,6 +121,53 @@ lemma RingHom.FormallySmooth.of_quotient_of_flat {S : Type v} [CommRing S] (f : 
     {I : Ideal R} (sq0 : I ^ 2 = ⊥) (flat : f.Flat)
     (smoothq : (Ideal.quotientMap (I.map f) f Ideal.le_comap_map).FormallySmooth) :
     f.FormallySmooth := by
+  let _ := f.toAlgebra
+  let _ := (Ideal.quotientMap (I.map f) f Ideal.le_comap_map).toAlgebra
+  let _ : IsScalarTower R (R ⧸ I) (S ⧸ I.map f) := IsScalarTower.of_algebraMap_eq' rfl
+  let _ : Algebra.IsPushout R (R ⧸ I) S (S ⧸ I.map f) := ⟨IsBaseChange.of_eq_map I (I.map f) rfl⟩
+  let isb := KaehlerDifferential.isBaseChange R (R ⧸ I) S (S ⧸ I.map f)
+  let P := (Algebra.Generators.self R S).toExtension
+  let _ : Algebra.FormallySmooth R P.Ring := Algebra.mvPolynomial _
+  let _ : Algebra (R ⧸ I) (P.Ring ⧸ I.map (algebraMap R P.Ring)) :=
+    (Ideal.quotientMap _ (algebraMap R P.Ring) Ideal.le_comap_map).toAlgebra
+  let _ : Algebra (P.Ring ⧸ I.map (algebraMap R P.Ring)) (S ⧸ I.map f) :=
+    (Ideal.quotientMap _ (algebraMap P.Ring S) (by
+      simp [← Ideal.map_le_iff_le_comap, Ideal.map_map, ← IsScalarTower.algebraMap_eq,
+        RingHom.algebraMap_toAlgebra])).toAlgebra
+  let _ : IsScalarTower (R ⧸ I) (P.Ring ⧸ I.map (algebraMap R P.Ring)) (S ⧸ I.map f) := by
+    apply IsScalarTower.of_algebraMap_eq'
+    ext
+    simp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply, Ideal.quotientMap_mk,
+      ← IsScalarTower.algebraMap_apply]
+  let P' : Algebra.Extension (R ⧸ I) (S ⧸ I.map f) := {
+    Ring := P.Ring ⧸ I.map (algebraMap R P.Ring)
+    σ := fun x ↦ Ideal.Quotient.mk _ (P.σ (Classical.choose (Ideal.Quotient.mk_surjective x)))
+    algebraMap_σ x := by
+      simpa [RingHom.algebraMap_toAlgebra] using
+        Classical.choose_spec (Ideal.Quotient.mk_surjective x) }
+  let _ : IsScalarTower R (R ⧸ I) P'.Ring := IsScalarTower.of_algebraMap_eq' rfl
+  let _ : Algebra.IsPushout R (R ⧸ I) P.Ring P'.Ring := ⟨IsBaseChange.of_eq_map I _ rfl⟩
+  let isb' := KaehlerDifferential.isBaseChange R (R ⧸ I) P.Ring P'.Ring
+  have surj': Function.Surjective (MvPolynomial.mapAlgHom (σ := S) (Ideal.Quotient.mkₐ R I)) := by
+    intro f
+    apply MvPolynomial.mem_range_map_iff_coeffs_subset.mpr
+    exact Set.subset_range_of_surjective (Ideal.Quotient.mkₐ_surjective R I) _
+  let e' : P'.Ring ≃ₐ[R] MvPolynomial S (R ⧸ I) :=
+    (Ideal.quotientEquivAlgOfEq R (by
+      apply Eq.trans _ (MvPolynomial.ker_mapAlgHom (Ideal.Quotient.mkₐ R I)).symm
+      congr
+      exact (Ideal.Quotient.mkₐ_ker R I).symm)).trans (Ideal.quotientKerAlgEquivOfSurjective surj')
+  let e : P'.Ring ≃ₐ[R ⧸ I] MvPolynomial S (R ⧸ I) :=
+    e'.extendScalarsOfSurjective (Ideal.Quotient.mkₐ_surjective R I)
+  let _ : Algebra.FormallySmooth (R ⧸ I) P'.Ring := Algebra.FormallySmooth.of_equiv e.symm
+  let J := RingHom.ker (algebraMap P.Ring S)
+  have flatJ : Module.Flat R J := by
+    sorry
+  apply (Algebra.FormallySmooth.iff_split_injection (fun x ↦ ⟨P.σ x, P.algebraMap_σ x⟩)).mpr
+  have surjP' : Function.Surjective (algebraMap P'.Ring (S ⧸ I.map f)) :=
+    fun x ↦ ⟨P'.σ x, P'.algebraMap_σ x⟩
+  rcases (Algebra.FormallySmooth.iff_split_injection surjP').mp smoothq with ⟨σ, hσ⟩
+
   sorry
 
 end FormallySmooth
@@ -246,24 +316,6 @@ lemma padicIntOfCharP_flat_of_isCohenRing [IsLocalRing R] [IsDomain R] [IsCohenR
       (IsRegular.of_ne_zero ((map_ne_zero_iff _ inj).mpr hx.ne_zero))).isSMulRegular}
   dsimp only [RingHom.Flat]
   infer_instance
-
-lemma IsBaseChange.of_eq_map {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (I : Ideal R)
-    (J : Ideal S) (eq : J = I.map (algebraMap R S)) :
-    letI := (Ideal.quotientMap (I := I) J (algebraMap R S)
-      (by simp [← Ideal.map_le_iff_le_comap, eq])).toAlgebra
-    letI : IsScalarTower R (R ⧸ I) (S ⧸ J) := IsScalarTower.of_algebraMap_eq' rfl
-    IsBaseChange (R ⧸ I) (Ideal.Quotient.mkₐ R J).toLinearMap := by
-  let _ := (Ideal.quotientMap (I := I) J (algebraMap R S)
-    (by simp [← Ideal.map_le_iff_le_comap, eq])).toAlgebra
-  let _ : IsScalarTower R (R ⧸ I) (S ⧸ J) := IsScalarTower.of_algebraMap_eq' rfl
-  let e : TensorProduct R (R ⧸ I) S ≃ₗ[R] S ⧸ J :=
-    (TensorProduct.quotTensorEquivQuotSMul S I).trans (Submodule.quotEquivOfEq _ _ (by simp [eq])
-    ≪≫ₗ Submodule.Quotient.restrictScalarsEquiv R J)
-  apply IsBaseChange.of_equiv (e.extendScalarsOfSurjective (Ideal.Quotient.mk_surjective (I := I)))
-  intro s
-  simp only [LinearEquiv.extendScalarsOfSurjective_apply, LinearEquiv.trans_apply, e]
-  rw [← map_one (Ideal.Quotient.mk I), TensorProduct.quotTensorEquivQuotSMul_mk_tmul]
-  simp
 
 lemma quotient_power_char_formallySmooth [IsDomain R] [IsCohenRing R] (p : ℕ) (prime : Nat.Prime p)
     (char : CharP (ResidueField R) p) (n : ℕ) (ne0 : n ≠ 0) : (Ideal.quotientMap
