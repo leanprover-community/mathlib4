@@ -200,21 +200,17 @@ theorem IsMinimalPrimaryDecomposition.foobar'
   have key2 : ∀ q ∈ t \ s, (localized₀ S f q).comap f = ⊤ := by
     intro q hq
     obtain ⟨hqt, hqs⟩ := Finset.mem_sdiff.mp hq
-    rw [eq_top_iff, ← map_le_iff_le_comap, map_top]
-    rintro - ⟨x, rfl⟩
-    contrapose! hqs
-    suffices ((q.colon Set.univ) : Set R) ⊆ ⋃ r ∈ s, (r.colon Set.univ).radical by
+    replace hqs : ¬ ((q.colon Set.univ) : Set R) ⊆ ⋃ r ∈ s, (r.colon Set.univ).radical := by
+      contrapose! hqs
       obtain ⟨r, hrs, h⟩ := (Ideal.subset_union_prime
-        ⊥ ⊥ fun q hq _ _ ↦ (ht.primary (hs hq)).isPrime_radical_colon).mp this
-      replace hrs : (r.colon Set.univ).radical ∈ s.image fun q ↦ (q.colon Set.univ).radical := by
-        exact Finset.mem_image_of_mem _ hrs
+        ⊥ ⊥ fun q hq _ _ ↦ (ht.primary (hs hq)).isPrime_radical_colon).mp hqs
+      replace hrs : (r.colon Set.univ).radical ∈ s.image fun q ↦ (q.colon Set.univ).radical :=
+        Finset.mem_image_of_mem _ hrs
       rw [hs', Finset.mem_image] at hrs
       obtain ⟨p, hps, hpr⟩ := hrs
       rw [← Ideal.radical_le_radical_iff, ← hpr] at h
       exact ax q hqt (hs₀ h hps)
-    contrapose! hqs
-    rw [Set.not_subset_iff_exists_mem_notMem] at hqs
-    obtain ⟨y, hy1, hy2⟩ := hqs
+    obtain ⟨y, hy1, hy2⟩ := Set.not_subset_iff_exists_mem_notMem.mp hqs
     replace hy2 : y ∈ S := by
       simp only [Submonoid.mem_iInf, Ideal.mem_primeCompl_iff, Subtype.forall, S]
       intro r hrI hrs
@@ -222,12 +218,10 @@ theorem IsMinimalPrimaryDecomposition.foobar'
       obtain ⟨r, hrt, rfl⟩ := hrI
       contrapose! hy2
       exact Set.mem_biUnion (ax r hrt hrs) hy2
-    rw [mem_localized₀]
-    refine ⟨y • x, ?_, ⟨y, hy2⟩, ?_⟩
-    · apply hy1
-      apply Set.smul_mem_smul_set
-      trivial
-    · rw [IsLocalizedModule.mk'_eq_iff, ← LinearMap.map_smul_of_tower, Submonoid.mk_smul]
+    rw [eq_top_iff, ← map_le_iff_le_comap, map_top]
+    rintro - ⟨x, rfl⟩
+    simp_rw [mem_localized₀, IsLocalizedModule.mk'_eq_iff, ← LinearMap.map_smul_of_tower]
+    exact ⟨y • x, hy1 (Set.smul_mem_smul_set (Set.mem_univ x)), ⟨y, hy2⟩, rfl⟩
   intro q hq
   split_ifs <;> grind
 
