@@ -481,6 +481,7 @@ local instance finite_QuotSMulTop' (M : Type*) [AddCommGroup M] [Module R M] [Mo
     map_smul' r m := rfl }
   exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] [IsNoetherianRing R]
     {M : ModuleCat.{v} R} [Module.Finite R M] {x : R} (regR : IsSMulRegular R x)
     (regM : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
