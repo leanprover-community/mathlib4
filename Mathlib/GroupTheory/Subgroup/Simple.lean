@@ -62,6 +62,7 @@ protected lemma Subgroup.isSimpleGroup_iff {H : Subgroup G} :
 
 namespace IsSimpleGroup
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance {C : Type*} [CommGroup C] [IsSimpleGroup C] : IsSimpleOrder (Subgroup C) :=
   ⟨fun H => H.normal_of_comm.eq_bot_or_eq_top⟩

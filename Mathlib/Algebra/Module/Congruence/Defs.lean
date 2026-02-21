@@ -125,10 +125,12 @@ instance [Monoid S] [Add M] [MulAction S M] (c : ModuleCon S M) : MulAction S c.
 instance [AddZeroClass M] [DistribSMul S M] (c : ModuleCon S M) : DistribSMul S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.distribSMul c.mk' fun _ _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Monoid S] [AddMonoid M] [DistribMulAction S M] (c : ModuleCon S M) :
     DistribMulAction S c.Quotient := fast_instance%
   Quotient.mk''_surjective.distribMulAction c.mk' fun _ _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Semiring S] [AddCommMonoid M] [Module S M] (c : ModuleCon S M) : Module S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.module _ c.mk' fun _ _ ↦ rfl
 

@@ -156,7 +156,7 @@ parentheses. More precisely,
 Note that `f₁ ◁ f₂ ◁ f₃ ◁ η ▷ f₄ ▷ f₅` is actually `f₁ ◁ (f₂ ◁ (f₃ ◁ ((η ▷ f₄) ▷ f₅)))`.
 -/
 
-attribute [instance] homCategory
+attribute [instance_reducible, instance] homCategory
 
 attribute [reassoc]
   whiskerLeft_comp id_whiskerLeft comp_whiskerLeft comp_whiskerRight whiskerRight_id

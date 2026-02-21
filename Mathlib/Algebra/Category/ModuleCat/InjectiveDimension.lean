@@ -24,9 +24,6 @@ variable {R : Type u} [CommRing R]
 
 open CategoryTheory Abelian
 
-private instance small_of_quotient [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
-  small_of_surjective Ideal.Quotient.mk_surjective
-
 namespace CategoryTheory
 
 section

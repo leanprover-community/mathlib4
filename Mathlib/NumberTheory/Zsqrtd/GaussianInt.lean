@@ -215,6 +215,7 @@ instance : Mod ℤ[i] :=
 theorem mod_def (x y : ℤ[i]) : x % y = x - y * (x / y) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_mod_lt (x : ℤ[i]) {y : ℤ[i]} (hy : y ≠ 0) : (x % y).norm < y.norm :=
   have : (y : ℂ) ≠ 0 := by rwa [Ne, ← toComplex_zero, toComplex_inj]
   (@Int.cast_lt ℝ _ _ _ _).1 <|
