@@ -84,7 +84,7 @@ lemma ne_zero_of_lt {a b : Fin (n + 1)} (hab : a < b) : b ≠ 0 :=
 lemma ne_last_of_lt {a b : Fin (n + 1)} (hab : a < b) : a ≠ last n :=
   Fin.ne_of_lt <| Fin.lt_of_lt_of_le hab b.le_last
 
-lemma ne_last_of_le_ne_last {a b : Fin (n + 1)} (hb : b ≠ last n) (hab : a ≤ b) : a ≠ last n := by
+lemma ne_last_of_ne_last_of_le {a b : Fin (n + 1)} (hb : b ≠ last n) (hab : a ≤ b) : a ≠ last n := by
   intro rfl
   exact Nat.not_lt_of_le hab (lt_last_iff_ne_last.mpr hb)
 
@@ -93,7 +93,7 @@ lemma val_sub_lt_of_le_of_lt {a b : Fin n} (ha : a.val < m) (hab : b ≤ a) :
   rw [Fin.sub_val_of_le hab]
   exact sub_lt_of_lt ha
 
-lemma sub_ne_last_of_le_of_ne_last {a b : Fin (n + 1)} (ha : a ≠ last n) (hab : b ≤ a) :
+lemma sub_ne_last_of_ne_last_of_le {a b : Fin (n + 1)} (ha : a ≠ last n) (hab : b ≤ a) :
     a - b ≠ last n := by
   rw [← lt_last_iff_ne_last, lt_def]
   exact val_sub_lt_of_le_of_lt (val_lt_last ha) hab

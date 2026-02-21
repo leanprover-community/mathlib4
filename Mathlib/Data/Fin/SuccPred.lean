@@ -496,17 +496,17 @@ theorem val_sub_castLT_of_le' {a b : Fin m} (hb : b < n) (h : a < b) :
   omega
 
 theorem val_sub_castPred_of_le {a b : Fin (n + 1)} (ha : a ≠ last n)
-    (h : b ≤ a) : (a.castPred ha - b.castPred (ne_last_of_le_ne_last ha h)).val = (a - b).val :=
+    (h : b ≤ a) : (a.castPred ha - b.castPred (ne_last_of_ne_last_of_le ha h)).val = (a - b).val :=
   val_sub_castLT_of_le (lt_last_iff_ne_last.mpr ha) h
 
 theorem sub_castPred_eq_castPred_sub_of_le {a b : Fin (n + 1)} (ha : a ≠ last n)
     (h : b ≤ a) :
-    a.castPred ha - b.castPred (ne_last_of_le_ne_last ha h) =
-      (a - b).castPred (sub_ne_last_of_le_of_ne_last ha h) :=
+    a.castPred ha - b.castPred (ne_last_of_ne_last_of_le ha h) =
+      (a - b).castPred (sub_ne_last_of_ne_last_of_le ha h) :=
   sub_castLT_eq_castLT_sub_of_le (lt_last_iff_ne_last.mpr ha) h
 
 theorem val_sub_castPred_of_le' {a b : Fin (n + 1)} (hb : b ≠ last n)
-    (h : a ≤ b) : (a.castPred (ne_last_of_le_ne_last hb h) - b.castPred hb).val
+    (h : a ≤ b) : (a.castPred (ne_last_of_ne_last_of_le hb h) - b.castPred hb).val
       = (a - b).val - 1 := by
   by_cases hab : a = b
   · subst hab
