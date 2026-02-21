@@ -91,6 +91,7 @@ variable [Small.{v} R]
 
 open Pointwise
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `M` has projective dimension not exceeding `n`, for an `M`-regular element `a`,
 the linear equivalence `Ext M N n ⧸ a • ⊤ ≃ Ext M⧸xM N (n + 1)` induced by the long exact sequence
 `Ext M N n → Ext M N n → Ext M⧸xM N (n + 1) → 0` with first morphism scalar multiple by `a`. -/
@@ -102,7 +103,7 @@ noncomputable def quotSMulTop_ext_equiv_ext_quotSMulTop (M : ModuleCat.{v} R) (n
   let f : Ext M N n →ₗ[R] Ext (ModuleCat.of R (QuotSMulTop a M)) N (n + 1) := {
     toFun := S_exact.extClass.precomp N (add_comm 1 n)
     map_add' := by simp
-    map_smul' := by simp }
+    map_smul' := by simp } --here need set false
   have surj : Function.Surjective f := by
     have exac := Ext.contravariant_sequence_exact₃' S_exact N n (n + 1) (add_comm 1 n)
     have : Subsingleton (Ext M N (n + 1)) :=
@@ -123,6 +124,7 @@ noncomputable def quotSMulTop_ext_equiv_ext_quotSMulTop (M : ModuleCat.{v} R) (n
     simp [Submodule.mem_smul_pointwise_iff_exists]
   exact (Submodule.quotEquivOfEq _ _ ker.symm).trans (f.quotKerEquivOfSurjective surj)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The linear equivalence `Ext (R⧸(r1, ... rk)) M k ≃ M⧸(r1, ... rk)M` for `R`-regular sequence
 `(r1, ... rk)`, this is a special case of a more general result for Koszul complex. -/
 noncomputable def ext_quotient_regular_sequence_length [IsLocalRing R] [IsNoetherianRing R]
@@ -372,6 +374,7 @@ variable [Small.{v} R]
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 open associatedPrimes in
 lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M : ModuleCat.{v} R)
     [Module.Finite R M] [Nontrivial M] : supportDim R M ≤ injectiveDimension M := by
@@ -642,6 +645,7 @@ lemma add_one_eq_top_iff (a : WithBot ℕ∞) : a + 1 = ⊤ ↔ a = ⊤ := by
     | top => rfl
     | coe n => simpa using WithBot.coe_inj.not.mpr (ENat.coe_ne_top (n + 1))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_quotient_span_regular
     (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     injectiveDimension (ModuleCat.of (R ⧸ Ideal.span {x}) (R ⧸ Ideal.span {x})) + 1 =
@@ -672,6 +676,7 @@ lemma quotient_span_regular_isGorenstein_iff_isGorenstein
     ← injectiveDimension_quotient_span_regular R x reg mem]
   exact (add_one_eq_top_iff _).not
 
+set_option backward.isDefEq.respectTransparency false in
 open Ideal in
 lemma quotient_regular_isGorenstein_iff_isGorenstein (rs : List R) (reg : IsRegular R rs) :
     IsGorensteinLocalRing R ↔ IsGorensteinLocalRing (R ⧸ Ideal.ofList rs) := by
