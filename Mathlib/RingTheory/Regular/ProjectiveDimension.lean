@@ -41,6 +41,7 @@ variable (R : Type u) [CommRing R]
 
 open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R} in
 lemma mem_quotSMulTop_annihilator (x : R) (M : Type*) [AddCommGroup M] [Module R M] :
     x ∈ Module.annihilator R (QuotSMulTop x M) := by
@@ -62,6 +63,7 @@ variable {R}
 
 variable [IsNoetherianRing R] [Small.{v} R]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ext_vanish_of_for_all_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.Finite R M]
     (h : ∀ L : ModuleCat.{v} R, Module.Finite R L →  Subsingleton (Ext M L n)) :
     ∀ N : ModuleCat.{v} R, Subsingleton (Ext M N n) := by
@@ -103,6 +105,7 @@ end
 
 variable {R} [IsLocalRing R] [IsNoetherianRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M : ModuleCat.{v} R)
     [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) = projectiveDimension M + 1 := by
