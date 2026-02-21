@@ -6,7 +6,7 @@ Authors: Johns Hopkins Category Theory Seminar, Arnoud van der Leer
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
-public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 
 /-!
 # The Coherent Isomorphism
@@ -23,7 +23,7 @@ Since the morphism types in `WalkingIso` are given by `unit`, the `n`-simplices 
 equivalent to `Fin 2`-vectors of length `n + 1`. This shows that the `n`-simplices of `coherentIso`
 have decidable equality.
 Lastly, we show that `hom : coherentIso _⦋1⦌` (the edge from `false` to `true`) has an inverse,
-and `isIsoOfEqMapHom` concludes from this that for any simplicial set `X`,
+and `invStructOfEqMapHom` concludes from this that for any simplicial set `X`,
 any morphism `g : coherentIso ⟶ X` and any `f : X _⦋1⦌`,
 if `g` sends `hom` to `f`, then `f` has an inverse.
 
@@ -82,6 +82,12 @@ def iso : zero ≅ one where
   hom := ()
   inv := ()
 
+@[simp]
+lemma eq_iso_hom (f : zero ⟶ one) : f = iso.hom := rfl
+
+@[simp]
+lemma eq_iso_inv (f : one ⟶ zero) : f = iso.inv := rfl
+
 /-- Functors out of `WalkingIso` define isomorphisms in the target category. -/
 @[simps!]
 def toIso (F : WalkingIso.{w} ⥤ C) : F.obj zero ≅ F.obj one := F.mapIso iso
@@ -99,7 +105,32 @@ def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{w} ⥤ C where
     | one, one,  _ => 𝟙 _
   map_comp := by rintro (_ | _) (_ | _) (_ | _) <;> simp
 
+section
+
+variable {X Y : C} (e : X ≅ Y)
+
+@[simp]
+lemma fromIso_zero : (fromIso e).obj .zero = X := rfl
+
+@[simp]
+lemma fromIso_one : (fromIso e).obj .one = Y := rfl
+
+@[simp]
+lemma fromIso_map_zero_zero (f : zero ⟶ zero) : (fromIso e).map f = 𝟙 X := rfl
+
+@[simp]
+lemma fromIso_hom (f : zero ⟶ one) : (fromIso e).map f = e.hom := rfl
+
+@[simp]
+lemma fromIso_inv (f : one ⟶ zero) : (fromIso e).map f = e.inv := rfl
+
+@[simp]
+lemma fromIso_map_one_one (f : one ⟶ one) : (fromIso e).map f = 𝟙 Y := rfl
+
+end
+
 /-- An equivalence between the type of `WalkingIso`s in `C` and the type of isomorphisms in `C`. -/
+@[simps]
 def equiv : (WalkingIso.{w} ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
   toFun F := ⟨F.obj zero, F.obj one, toIso F⟩
   invFun p := fromIso p.2.2
@@ -116,10 +147,6 @@ def equiv : (WalkingIso.{w} ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
 
 end
 
-/-- There are functors from the one-object category into `WalkingIso`,
-  sending the object to either `zero` or `one`. -/
-def coev (i : WalkingIso.{u}) : Fin 1 ⥤ WalkingIso.{u} := ComposableArrows.mk₀ i
-
 end WalkingIso
 
 end CategoryTheory
@@ -134,13 +161,13 @@ def coherentIso : SSet := nerve WalkingIso.{u}
 
 namespace coherentIso
 
+instance : IsStrictSegal coherentIso := inferInstanceAs (IsStrictSegal (nerve _))
+
 /-- Since the morphisms in WalkingIso do not carry information, an n-simplex of coherentIso
   is equivalent to an (n + 1)-vector of the objects of WalkingIso. -/
 def equivFun {n : ℕ} : coherentIso _⦋n⦌ ≃ (Fin (n + 1) → WalkingIso.{u}) where
   toFun f := f.obj
   invFun f := .mk f (fun _ ↦ ⟨⟩) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- Since `Bool` (and hence `WalkingIso`) has decidable equality,
   the simplices of coherentIso have decidable equality as well. -/
@@ -157,48 +184,45 @@ def x₁ : coherentIso _⦋0⦌ :=
 
 /-- The forwards edge of `coherentIso`. -/
 def hom : Edge.{u} x₀ x₁ where
-  edge := ComposableArrows.mk₁ ⟨⟩
+  edge := ComposableArrows.mk₁ WalkingIso.iso.hom
   src_eq := ComposableArrows.ext₀ rfl
   tgt_eq := ComposableArrows.ext₀ rfl
 
 /-- The backwards edge of `coherentIso`. -/
 def inv : Edge.{u} x₁ x₀ where
-  edge := ComposableArrows.mk₁ ⟨⟩
+  edge := ComposableArrows.mk₁ WalkingIso.iso.inv
   src_eq := ComposableArrows.ext₀ rfl
   tgt_eq := ComposableArrows.ext₀ rfl
 
 /-- The forwards and backwards edge of `coherentIso` compose to the identity. -/
 def homInvId : Edge.CompStruct.{u} hom inv (Edge.id x₀) where
-  simplex := ComposableArrows.mk₂ ⟨⟩ ⟨⟩
+  simplex := ComposableArrows.mk₂ WalkingIso.iso.hom WalkingIso.iso.inv
   d₂ := ComposableArrows.ext₁ rfl rfl rfl
   d₀ := ComposableArrows.ext₁ rfl rfl rfl
   d₁ := ComposableArrows.ext₁ rfl rfl rfl
 
 /-- The backwards and forwards edge of `coherentIso` compose to the identity. -/
 def invHomId : Edge.CompStruct.{u} inv hom (Edge.id x₁) where
-  simplex := ComposableArrows.mk₂ ⟨⟩ ⟨⟩
+  simplex := ComposableArrows.mk₂ WalkingIso.iso.inv WalkingIso.iso.hom
   d₂ := ComposableArrows.ext₁ rfl rfl rfl
   d₀ := ComposableArrows.ext₁ rfl rfl rfl
   d₁ := ComposableArrows.ext₁ rfl rfl rfl
 
 /-- The forwards edge of `coherentIso` has an inverse. -/
-def isIsoHom : Edge.InvStruct.{u} coherentIso.hom where
+@[simps]
+def invStructHom : Edge.InvStruct.{u} coherentIso.hom where
   inv := inv
   homInvId := homInvId
   invHomId := invHomId
 
-/-- The image of `hom` under an SSet has an inverse. -/
-def isIsoMapHom {X : SSet} (g : coherentIso ⟶ X) : InvStruct.{u} (coherentIso.hom.map g)
-  := isIsoHom.map g
-
 /-- If an edge is equal to the image of `hom` under an SSet morphism,
   this edge has an inverse. -/
-def isIsoOfEqMapHom {X : SSet.{u}} {x₀ x₁ : X _⦋0⦌}
+def invStructOfEqMapHom {X : SSet.{u}} {x₀ x₁ : X _⦋0⦌}
     {f : Edge x₀ x₁}
     {g : coherentIso ⟶ X}
     (hfg : f.edge = g.app _ hom.edge) :
-  f.InvStruct :=
-  (isIsoMapHom g).ofEq hfg.symm
+    f.InvStruct :=
+  (invStructHom.map g).ofEq hfg.symm
 
 end coherentIso
 
