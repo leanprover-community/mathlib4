@@ -166,9 +166,7 @@ theorem Infinite.exists_subset_countable_infinite {α : Type u} {s : Set α} (hs
     ∃ t ⊆ s, t.Countable ∧ t.Infinite := by
   obtain ⟨f, hf⟩ := Infinite.natEmbedding s hs
   refine ⟨range (Subtype.val ∘ f), ?_, ?_, ?_⟩
-  · intro _ ⟨y, hy⟩
-    rw [← hy]
-    exact Subtype.coe_prop (f y)
+  · exact fun _ ⟨y, hy⟩ ↦ hy ▸ Subtype.coe_prop (f y)
   · exact countable_range (Subtype.val ∘ f)
   · exact infinite_range_of_injective <| Injective.comp Subtype.val_injective hf
 
