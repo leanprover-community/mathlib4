@@ -140,6 +140,7 @@ variable [Group G]
 variable {V : Type*} [AddCommGroup V] [Module k[G] V]
 variable {W : Type*} [AddCommGroup W] [Module k[G] W]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_leftInverse_of_injective (f : V →ₗ[k[G]] W) (hf : LinearMap.ker f = ⊥) :
     ∃ g : W →ₗ[k[G]] V, g.comp f = .id := by
   let A := k[G]
@@ -157,6 +158,7 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[k[G]] W) (hf : LinearMap.k
 
 namespace Submodule
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_isCompl (p : Submodule k[G] V) : ∃ q : Submodule k[G] V, IsCompl p q := by
   rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
   exact ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| DFunLike.congr_fun hf⟩

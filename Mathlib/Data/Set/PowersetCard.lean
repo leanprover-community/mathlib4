@@ -70,6 +70,7 @@ theorem coe_nontrivial_iff {s : Set.powersetCard α n} :
 theorem eq_iff_subset {s t : Set.powersetCard α n} : s = t ↔ (s : Finset α) ⊆ (t : Finset α) := by
   rw [Finset.subset_iff_eq_of_card_le (t.prop.trans_le s.prop.ge), Subtype.ext_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (hab : a ≠ b) :
     ∃ s : powersetCard α n, a ∈ s ∧ b ∉ s := by
   have ha' : n ≤ Set.encard {b}ᶜ := by
@@ -95,6 +96,7 @@ variable (n) {β : Type*}
 def map (f : α ↪ β) (s : powersetCard α n) : powersetCard β n :=
     ⟨Finset.map f s, by rw [mem_iff, card_map, s.prop]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_map_iff_mem_range (f : α ↪ β) (s : powersetCard α n) (b : β) :
     b ∈ map n f s ↔ b ∈ f '' s := by
   simp [map]
@@ -112,6 +114,12 @@ end map
 
 section of
 
+/-- The coercion of a finite set to its corresponding element of `Set.powersetCard`. -/
+def ofCard {s : Finset α} (s_card : s.card = n) : powersetCard α n := ⟨s, mem_iff.mpr s_card⟩
+
+@[simp]
+lemma val_ofCard {s : Finset α} (s_card : s.card = n) : Subtype.val (ofCard s_card) = s := rfl
+
 /-- The equivalence sending `a : α` to the singleton `{a}`. -/
 noncomputable def ofSingleton : α ≃ powersetCard α 1 where
   toFun a := ⟨{a}, Finset.card_singleton a⟩
@@ -125,6 +133,7 @@ variable (n) (β : Type*)
 def ofFinEmb (f : Fin n ↪ β) : powersetCard β n :=
   map n f ⟨Finset.univ, by rw [mem_iff, Finset.card_univ, Fintype.card_fin]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mem_ofFinEmb_iff_mem_range (f : Fin n ↪ β) (b : β) :
     b ∈ ofFinEmb n β f ↔ b ∈ Set.range f := by
@@ -176,8 +185,28 @@ theorem compl_symm : (compl hm).symm = compl ((n.add_comm m).trans hm) := rfl
 
 end compl
 
+section disjUnion
+
+variable {m : ℕ} {s : powersetCard α m} {t : powersetCard α n} (hst : Disjoint s.val t.val)
+
+/-- The disjoint union of two `powersetCard`s. -/
+def disjUnion : powersetCard α (m + n) :=
+  ⟨s.val.disjUnion t hst, by rw [mem_iff, Finset.card_disjUnion, card_eq s, card_eq t]⟩
+
+variable {hst}
+
+@[simp]
+theorem coe_disjUnion : (disjUnion hst : Finset α) = s.val.disjUnion t hst := rfl
+
+@[simp]
+theorem mem_disjUnion {a : α} : a ∈ disjUnion hst ↔ a ∈ s ∨ a ∈ t :=
+  Finset.mem_disjUnion (h := hst)
+
+end disjUnion
+
 variable (α n)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_finset [Fintype α] :
     powersetCard α n = Finset.powersetCard n (Finset.univ : Finset α) := by
   ext; simp
@@ -257,5 +286,18 @@ theorem nontrivial_iff [Finite α] :
   rw [← Finite.one_lt_card_iff_nontrivial, powersetCard.card, Nat.one_lt_iff_ne_zero_and_ne_one,
     ne_eq, Nat.choose_eq_zero_iff, ne_eq, Nat.choose_eq_one_iff]
   grind
+
+/-- The bijection between the product of `(n : ℕ)` and the finsets of `α` of cardinality `n` and
+`Finset α`. -/
+def prodEquiv : (n : ℕ) × (powersetCard α n) ≃ Finset α where
+  toFun x := x.2
+  invFun x := ⟨x.card, ⟨x, rfl⟩⟩
+  left_inv x := by ext <;> simp
+
+@[simp]
+lemma prodEquiv_apply (x : (n : ℕ) × (powersetCard α n)) : prodEquiv x = x.2 := rfl
+
+@[simp]
+lemma prodEquiv_symm_apply (s : Finset α) : prodEquiv.symm s = ⟨s.card, ⟨s, rfl⟩⟩ := rfl
 
 end Set.powersetCard

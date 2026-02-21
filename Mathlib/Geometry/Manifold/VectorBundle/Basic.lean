@@ -106,6 +106,7 @@ fiber `F` is naturally a charted space modelled on `HB.prod F`. -/
 instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F E) :=
   ChartedSpace.comp _ (B × F) _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FiberBundle.chartedSpace_chartAt (x : TotalSpace F E) :
     chartAt (ModelProd HB F) x =
       (trivializationAt F E x.proj).toOpenPartialHomeomorph ≫ₕ
@@ -133,6 +134,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜
 
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
     extChartAt (IB.prod 𝓘(𝕜, F)) x =
       (trivializationAt F E x.proj).toPartialEquiv ≫
@@ -178,7 +180,7 @@ theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x�
   simp +singlePass only [contMDiffWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
-  simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
+  simp_rw +instances [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
     PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe,
     extChartAt_self_apply, modelWithCornersSelf_coe, Function.id_def, ← chartedSpaceSelf_prod]
   refine (contMDiffWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
@@ -290,6 +292,7 @@ instance {a : WithTop ℕ∞} [ContMDiffVectorBundle ∞ F E IB] [h : ENat.LEInf
     ContMDiffVectorBundle a F E IB :=
   ContMDiffVectorBundle.of_le h.out
 
+set_option backward.isDefEq.respectTransparency false in
 instance {a : WithTop ℕ∞} [ContMDiffVectorBundle ω F E IB] : ContMDiffVectorBundle a F E IB :=
   ContMDiffVectorBundle.of_le le_top
 
