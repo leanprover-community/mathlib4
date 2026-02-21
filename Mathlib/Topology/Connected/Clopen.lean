@@ -193,17 +193,17 @@ theorem nonempty_frontier_iff [PreconnectedSpace α] {s : Set α} :
 for `y` close enough to `x`, then `P x y` holds for all `x, y`. This is a version of the fact
 that, if an equivalence relation has open classes, then it has a single equivalence class. -/
 lemma PreconnectedSpace.induction₂' [PreconnectedSpace α] (P : α → α → Prop)
-    (h : ∀ x, ∀ᶠ y in 𝓝 x, P x y ∧ P y x) (h' : Transitive P) (x y : α) :
+    (h : ∀ x, ∀ᶠ y in 𝓝 x, P x y ∧ P y x) (h' : IsTrans α P) (x y : α) :
     P x y := by
   let u := {z | P x z}
   have A : IsClosed u := by
     apply isClosed_iff_nhds.2 (fun z hz ↦ ?_)
     rcases hz _ (h z) with ⟨t, ht, h't⟩
-    exact h' h't ht.2
+    exact h'.trans x t z h't ht.2
   have B : IsOpen u := by
     apply isOpen_iff_mem_nhds.2 (fun z hz ↦ ?_)
     filter_upwards [h z] with t ht
-    exact h' hz ht.1
+    exact h'.trans x z t hz ht.1
   have C : u.Nonempty := ⟨x, (mem_of_mem_nhds (h x)).1⟩
   have D : u = Set.univ := IsClopen.eq_univ ⟨A, B⟩ C
   change y ∈ u
@@ -213,7 +213,7 @@ lemma PreconnectedSpace.induction₂' [PreconnectedSpace α] (P : α → α → 
 enough to `x`, then it holds for all `x, y`. This is a version of the fact that, if an equivalence
 relation has open classes, then it has a single equivalence class. -/
 lemma PreconnectedSpace.induction₂ [PreconnectedSpace α] (P : α → α → Prop)
-    (h : ∀ x, ∀ᶠ y in 𝓝 x, P x y) (h' : Transitive P) (h'' : Symmetric P) (x y : α) :
+    (h : ∀ x, ∀ᶠ y in 𝓝 x, P x y) (h' : IsTrans α P) (h'' : Symmetric P) (x y : α) :
     P x y := by
   refine PreconnectedSpace.induction₂' P (fun z ↦ ?_) h' x y
   filter_upwards [h z] with a ha
@@ -233,8 +233,7 @@ lemma IsPreconnected.induction₂' {s : Set α} (hs : IsPreconnected s) (P : α 
   · rintro ⟨x, hx⟩
     have Z := h x hx
     rwa [nhdsWithin_eq_map_subtype_coe] at Z
-  · rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ hab hbc
-    exact h' a b c ha hb hc hab hbc
+  · exact ⟨fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ ↦ h' a b c ha hb hc⟩
 
 /-- In a preconnected set, if a symmetric transitive relation `P x y` is true for `y` close
 enough to `x`, then it holds for all `x, y`. This is a version of the fact that, if an equivalence

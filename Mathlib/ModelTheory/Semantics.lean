@@ -977,10 +977,9 @@ theorem realize_antisymmetric :
   exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ <| imp_congr realize_rel₂ .rfl
 
 @[simp]
-theorem realize_transitive : M ⊨ r.transitive ↔ Transitive fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ =>
-    forall_congr' fun _ =>
-      forall_congr' fun _ => imp_congr realize_rel₂ (imp_congr realize_rel₂ realize_rel₂)
+theorem realize_transitive : M ⊨ r.transitive ↔ IsTrans M fun x y ↦ RelMap r ![x, y] := by
+  refine .trans ?_ ⟨IsTrans.mk, (·.trans)⟩
+  exact forall₃_congr fun _ _ _ ↦ imp_congr realize_rel₂ <| imp_congr realize_rel₂ realize_rel₂
 
 @[simp]
 theorem realize_total : M ⊨ r.total ↔ Std.Total fun x y : M ↦ RelMap r ![x, y] := by
