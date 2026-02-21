@@ -247,6 +247,7 @@ inductive Agree' : ℕ → M F → M F → Prop
 @[simp]
 theorem dest_mk (x : F (M F)) : dest (M.mk x) = x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   apply ext'

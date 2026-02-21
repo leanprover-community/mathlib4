@@ -15,12 +15,12 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferenti
 
 This file proves that:
 * `AbsolutelyContinuousOnInterval.integral_deriv_eq_sub`: If `f` is absolutely continuous on
-`uIcc a b`, then *Fundamental Theorem of Calculus* holds for `f'` on `a..b`, i.e.
-`∫ (x : ℝ) in a..b, deriv f x = f b - f a`.
+  `uIcc a b`, then *Fundamental Theorem of Calculus* holds for `f'` on `a..b`, i.e.
+  `∫ (x : ℝ) in a..b, deriv f x = f b - f a`.
 * `AbsolutelyContinuousOnInterval.integral_mul_deriv_eq_deriv_mul`:
-*Integration by Parts* holds for absolutely continuous functions, i.e. if `f` and `g` are
-absolutely continuous on `uIcc a b`, then
-`∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x`.
+  *Integration by Parts* holds for absolutely continuous functions, i.e. if `f` and `g` are
+  absolutely continuous on `uIcc a b`, then
+  `∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x`.
 
 ## Tags
 absolutely continuous, fundamental theorem of calculus, integration by parts
@@ -34,6 +34,7 @@ open Filter Fin.NatCast Function MeasureTheory Set
 
 open scoped Topology
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` has derivative `f'` a.e. on `[d, b]` and `η` is positive, then there is a collection of
 pairwise disjoint closed subintervals of `[a, b]` of total length `b - a` where the slope of `f`
 on each subinterval `[x, y]` differs from `f' x` by at most `η`. -/
