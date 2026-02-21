@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # The `arctan` function.
@@ -75,6 +76,7 @@ theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} := by
 theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
   continuousOn_iff_continuous_restrict.1 continuousOn_tan
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   refine ContinuousOn.mono continuousOn_tan fun x => ?_
   simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne]
@@ -192,10 +194,10 @@ theorem arctan_eq_zero_iff : arctan x = 0 ↔ x = 0 :=
   .trans (by rw [arctan_zero]) arctan_injective.eq_iff
 
 theorem tendsto_arctan_atTop : Tendsto arctan atTop (𝓝[<] (π / 2)) :=
-  tendsto_Ioo_atTop.mp tanOrderIso.symm.tendsto_atTop
+  tendsto_Ioo_atTop (by simp) |>.mp tanOrderIso.symm.tendsto_atTop
 
 theorem tendsto_arctan_atBot : Tendsto arctan atBot (𝓝[>] (-(π / 2))) :=
-  tendsto_Ioo_atBot.mp tanOrderIso.symm.tendsto_atBot
+  tendsto_Ioo_atBot (by simp) |>.mp tanOrderIso.symm.tendsto_atBot
 
 theorem arctan_eq_of_tan_eq (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)) :
     arctan y = x :=
@@ -329,12 +331,14 @@ theorem two_mul_arctan_sub_pi (h : x < -1) :
     2 * arctan x = arctan (2 * x / (1 - x ^ 2)) - π := by
   rw [two_mul, arctan_add_eq_sub_pi (by nlinarith) (by linarith)]; congr 2; ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem arctan_inv_2_add_arctan_inv_3 : arctan 2⁻¹ + arctan 3⁻¹ = π / 4 := by
   rw [arctan_add] <;> norm_num
 
 theorem two_mul_arctan_inv_2_sub_arctan_inv_7 : 2 * arctan 2⁻¹ - arctan 7⁻¹ = π / 4 := by
   rw [two_mul_arctan, ← arctan_one, sub_eq_iff_eq_add, arctan_add] <;> norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 theorem two_mul_arctan_inv_3_add_arctan_inv_7 : 2 * arctan 3⁻¹ + arctan 7⁻¹ = π / 4 := by
   rw [two_mul_arctan, arctan_add] <;> norm_num
 

@@ -39,6 +39,7 @@ def horn (n : ℕ) (i : Fin (n + 1)) : (Δ[n] : SSet.{u}).Subcomplex where
 /-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
 scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
+set_option backward.isDefEq.respectTransparency false in
 lemma horn_eq_iSup (n : ℕ) (i : Fin (n + 1)) :
     horn.{u} n i =
       ⨆ (j : ({i}ᶜ : Set (Fin (n + 1)))), stdSimplex.face {j.1}ᶜ := by
@@ -51,6 +52,7 @@ lemma face_le_horn {n : ℕ} (i j : Fin (n + 1)) (h : i ≠ j) :
   rw [horn_eq_iSup]
   exact le_iSup (fun (k : ({j}ᶜ : Set (Fin (n + 1)))) ↦ stdSimplex.face.{u} {k.1}ᶜ) ⟨i, h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
     (horn.{u} (n + 2) i).obj (op (.mk 0)) = ⊤ := by
@@ -81,6 +83,7 @@ section
 
 variable (n : ℕ) (i k : Fin (n + 3))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The (degenerate) subsimplex of `Λ[n+2, i]` concentrated in vertex `k`. -/
 def const (m : SimplexCategoryᵒᵖ) : Λ[n + 2, i].obj m :=
   SSet.yonedaEquiv (X := Λ[n + 2, i])
@@ -189,6 +192,7 @@ def face {n : ℕ} (i j : Fin (n + 2)) (h : j ≠ i) : (Λ[n + 1, i] : SSet.{u})
   yonedaEquiv (Subfunctor.lift (stdSimplex.δ j) (by
     simpa using face_le_horn _ _ h))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two morphisms from a horn are equal if they are equal on all suitable faces. -/
 protected
 lemma hom_ext {n : ℕ} {i : Fin (n + 2)} {S : SSet} (σ₁ σ₂ : (Λ[n + 1, i] : SSet.{u}) ⟶ S)
@@ -224,6 +228,7 @@ lemma yonedaEquiv_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ 
     yonedaEquiv (ι i j hij) = face i j hij := by
   rw [ι, Equiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
     ι i j hij ≫ Λ[n + 1, i].ι =

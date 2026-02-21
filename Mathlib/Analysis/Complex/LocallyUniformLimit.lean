@@ -62,6 +62,7 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
   refine (mul_le_mul le_rfl h2 (norm_nonneg _) (norm_nonneg _)).trans (le_of_eq ?_)
   simp [field, abs_of_nonneg Real.pi_pos.le]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
     (hg : ContinuousOn g (sphere z r)) : cderiv r (f - g) z = cderiv r f z - cderiv r g z := by
   have h1 : ContinuousOn (fun w : ℂ => ((w - z) ^ 2)⁻¹) (sphere z r) := by
@@ -197,11 +198,10 @@ section LogDeriv
 /-- The logarithmic derivative of a sequence of functions converging locally uniformly to a
 function is the logarithmic derivative of the limit function. -/
 theorem logDeriv_tendsto {ι : Type*} {p : Filter ι} {f : ι → ℂ → ℂ} {g : ℂ → ℂ}
-    {s : Set ℂ} (hs : IsOpen s) (x : s) (hF : TendstoLocallyUniformlyOn f g p s)
-    (hf : ∀ᶠ n : ι in p, DifferentiableOn ℂ (f n) s) (hg : g x ≠ 0) :
-    Tendsto (fun n : ι => logDeriv (f n) x) p (𝓝 ((logDeriv g) x)) := by
-  simp_rw [logDeriv]
-  apply Tendsto.div ((hF.deriv hf hs).tendsto_at x.2) (hF.tendsto_at x.2) hg
+    {s : Set ℂ} (hs : IsOpen s) {x : ℂ} (hx : x ∈ s) (hF : TendstoLocallyUniformlyOn f g p s)
+    (hf : ∀ᶠ n in p, DifferentiableOn ℂ (f n) s) (hg : g x ≠ 0) :
+    Tendsto (fun n ↦ logDeriv (f n) x) p (𝓝 (logDeriv g x)) :=
+  ((hF.deriv hf hs).tendsto_at hx).div (hF.tendsto_at hx) hg
 
 end LogDeriv
 

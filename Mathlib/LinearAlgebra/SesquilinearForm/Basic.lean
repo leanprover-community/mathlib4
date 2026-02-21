@@ -170,19 +170,21 @@ theorem domRestrict (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl
   simp_rw [domRestrict₁₂_apply]
   exact H _ _
 end
+
 @[simp]
 theorem flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
-  ⟨fun h x y H ↦ h y x ((B.flip_apply _ _).trans H), fun h x y ↦ h y x⟩
+  forall_comm
+
+lemma ker_flip (H : B.IsRefl) : B.flip.ker = B.ker := by
+  ext x
+  simp [LinearMap.ext_iff, H.eq_iff]
 
 theorem ker_flip_eq_bot (H : B.IsRefl) (h : LinearMap.ker B = ⊥) : LinearMap.ker B.flip = ⊥ := by
-  refine ker_eq_bot'.mpr fun _ hx ↦ ker_eq_bot'.mp h _ ?_
-  ext
-  exact H _ _ (LinearMap.congr_fun hx _)
+  rwa [H.ker_flip]
 
 theorem ker_eq_bot_iff_ker_flip_eq_bot (H : B.IsRefl) :
     LinearMap.ker B = ⊥ ↔ LinearMap.ker B.flip = ⊥ := by
-  refine ⟨ker_flip_eq_bot H, fun h ↦ ?_⟩
-  exact (congr_arg _ B.flip_flip.symm).trans (ker_flip_eq_bot (flip_isRefl_iff.mpr H) h)
+  rwa [ker_flip]
 
 end IsRefl
 
@@ -676,6 +678,16 @@ variable {M₁ M₂ I₁ I₂}
 theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
     (h : B.SeparatingLeft) : B ≠ 0 := fun h0 ↦ not_separatingLeft_zero M₁ M₂ I₁ I₂ <| h0 ▸ h
 
+/-- A bilinear map is called right-separating if
+the only element that is right-orthogonal to every other element is `0`; i.e.,
+for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`. -/
+def SeparatingRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
+  ∀ y : M₂, (∀ x : M₁, B x y = 0) → y = 0
+
+/-- A bilinear map is called non-degenerate if it is left-separating and right-separating. -/
+def Nondegenerate (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
+  SeparatingLeft B ∧ SeparatingRight B
+
 section Linear
 
 variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'] [AddCommMonoid Mₗ₂']
@@ -693,6 +705,14 @@ theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
     LinearEquiv.map_eq_zero_iff] at hx
   exact hx
 
+theorem SeparatingRight.congr (h : B.SeparatingRight) :
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingRight :=
+  SeparatingLeft.congr (B := B.flip) e₂ e₁ h
+
+theorem Nondegenerate.congr (h : B.Nondegenerate) :
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).Nondegenerate :=
+  ⟨h.1.congr e₁ e₂, h.2.congr e₁ e₂⟩
+
 @[simp]
 theorem separatingLeft_congr_iff :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
@@ -702,17 +722,18 @@ theorem separatingLeft_congr_iff :
     simp,
    SeparatingLeft.congr e₁ e₂⟩
 
+@[simp]
+theorem separatingRight_congr_iff : (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M))
+      B).SeparatingRight ↔ B.SeparatingRight :=
+  separatingLeft_congr_iff (B := B.flip) e₂ e₁
+
+@[simp]
+theorem nondegenerate_congr_iff :
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).Nondegenerate ↔ B.Nondegenerate :=
+  ⟨fun h ↦ ⟨separatingLeft_congr_iff e₁ e₂ |>.mp h.1, separatingRight_congr_iff e₁ e₂ |>.mp h.2⟩,
+    .congr e₁ e₂⟩
+
 end Linear
-
-/-- A bilinear map is called right-separating if
-the only element that is right-orthogonal to every other element is `0`; i.e.,
-for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`. -/
-def SeparatingRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
-  ∀ y : M₂, (∀ x : M₁, B x y = 0) → y = 0
-
-/-- A bilinear map is called non-degenerate if it is left-separating and right-separating. -/
-def Nondegenerate (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
-  SeparatingLeft B ∧ SeparatingRight B
 
 @[simp]
 theorem flip_separatingRight {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
@@ -781,6 +802,7 @@ lemma disjoint_ker_of_nondegenerate_restrict {B : M →ₗ[R] M →ₗ[R] M₁} 
   rw [mem_ker] at hx'
   simp [x', hx']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsSymm)
     {W : Submodule R M} (hW : IsCompl W (LinearMap.ker B)) :
     (B.domRestrict₁₂ W W).Nondegenerate := by
@@ -798,6 +820,7 @@ lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] 
     exact hx' u hu
   simpa [hW.inf_eq_bot] using hx'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of a reflexive bilinear map `B` onto a submodule `W` is
 nondegenerate if `W` has trivial intersection with its orthogonal complement,
 that is `Disjoint W (W.orthogonalBilin B)`. -/
@@ -967,6 +990,7 @@ lemma nondegenerate_iff' (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
   contrapose!
   exact exists_congr fun x ↦ ⟨by aesop, fun ⟨h₀, h⟩ ↦ Or.inl ⟨le_antisymm h (hs x), h₀⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm)
     {W : Submodule R M} :
     (B.domRestrict₁₂ W W).Nondegenerate ↔ Disjoint W (LinearMap.ker B) := by

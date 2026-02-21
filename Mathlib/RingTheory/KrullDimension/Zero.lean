@@ -157,6 +157,15 @@ instance PrimeSpectrum.unique_of_ringKrullDimLE_zero [IsLocalRing R] : Unique (P
   ⟨⟨IsLocalRing.closedPoint _⟩,
     fun _ ↦ PrimeSpectrum.ext (Ring.KrullDimLE.eq_maximalIdeal_of_isPrime _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
+lemma PrimeSpectrum.subsingleton_iff_isField_of_isReduced
+    {R : Type*} [CommRing R] [IsReduced R] [Nontrivial R] :
+    Subsingleton (PrimeSpectrum R) ↔ IsField R := by
+  refine ⟨fun H ↦ ?_, fun H ↦ letI := H.toField; inferInstance⟩
+  have : Subsingleton (MaximalSpectrum R) := MaximalSpectrum.toPrimeSpectrum_injective.subsingleton
+  have : IsLocalRing R := .of_singleton_maximalSpectrum
+  exact Ring.KrullDimLE.isField_of_isReduced
+
 end IsLocalRing
 
 end CommSemiring

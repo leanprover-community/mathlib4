@@ -18,8 +18,8 @@ terms of the Chevalley-Eilenberg algebra of a Lie-Rinehart algebra.
 
 ## References
 
-* Rinehart, G. S., Differential forms on general commutative algebras. Zbl 0113.26204
-Trans. Am. Math. Soc. 108, 195-222 (1963).
+* [Rinehart, G. S., Differential forms on general commutative algebras. Zbl 0113.26204
+  Trans. Am. Math. Soc. 108, 195-222 (1963).][rinehart_1963]
 
 -/
 
@@ -120,6 +120,7 @@ protected def id : L₁ →ₗ⁅AlgHom.id R A₁⁆ L₁ where
 
 variable [LieRinehartRing A₁ L₁] [LieRinehartAlgebra R A₁ L₁]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R A₁ L₁) in
 /-- The anchor of a given Lie-Rinehart algebra `L` over `A` interpreted as a Lie-Rinehart morphism
 to the module of derivations of `A`. -/

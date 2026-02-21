@@ -26,7 +26,7 @@ public import Mathlib.LinearAlgebra.Dual.BaseChange
 * `LinearMap.transvections R V`: the set of transvections.
 
 * `LinearEquiv.dilatransvections R V`: the set of linear equivalences
-whose associated linear map is of the form `LinearMap.transvection f v`.
+  whose associated linear map is of the form `LinearMap.transvection f v`.
 
 * `LinearEquiv.transvection.det` shows that it has determinant `1`.
 
@@ -265,8 +265,8 @@ theorem one_mem_dilatransvections : 1 ∈ dilatransvections R V :=
 @[simp]
 theorem symm_mem_dilatransvections_iff {e : V ≃ₗ[R] V} :
     e.symm ∈ dilatransvections R V ↔ e ∈ dilatransvections R V := by
-  suffices ∀ e ∈ dilatransvections R V, e.symm ∈ dilatransvections R V by
-    refine ⟨by simpa using this e.symm, this e⟩
+  suffices ∀ e ∈ dilatransvections R V, e.symm ∈ dilatransvections R V from
+    ⟨by simpa using this e.symm, this e⟩
   rintro e ⟨f, v, he⟩
   use f, - e.symm v
   ext x
@@ -284,13 +284,14 @@ theorem dilatransvections_pow_mono :
     Monotone (fun n : ℕ ↦ (dilatransvections R V) ^ n) :=
   Set.pow_right_monotone one_mem_dilatransvections
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Over a division ring, `dilatransvections` correspond to linear
 equivalences `e` such that the linear map `e - id` has rank at most 1.
 
 See also `LinearEquiv.mem_dilatransvections_iff_finrank`. -/
 theorem mem_dilatransvections_iff_rank {K : Type*} [DivisionRing K] [Module K V] {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔
-      Module.rank K (range ((e : V →ₗ[K] V)- LinearMap.id (R := K))) ≤ 1 := by
+      Module.rank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
   simp only [dilatransvections]
   constructor
   · simp only [Set.mem_setOf_eq]
@@ -334,7 +335,7 @@ theorem mem_dilatransvections_iff_finrank
     {K : Type*} [DivisionRing K] [Module K V] [Module.Finite K V]
     {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔
-      finrank K (range ((e : V →ₗ[K] V)- LinearMap.id (R := K))) ≤ 1 := by
+      finrank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
   rw [mem_dilatransvections_iff_rank, finrank, ← one_toNat,
     toNat_le_iff_le_of_lt_aleph0 (rank_lt_aleph0 K _) one_lt_aleph0]
 
@@ -485,6 +486,7 @@ private theorem det_ofDomain [Free R V] [Module.Finite R V] [IsDomain R] (f : Du
 
 open IsBaseChange
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem det [Free R V] [Module.Finite R V] (f : Dual R V) (v : V) :
     (transvection f v).det = 1 + f v := by
   rcases subsingleton_or_nontrivial R with hR | hR
