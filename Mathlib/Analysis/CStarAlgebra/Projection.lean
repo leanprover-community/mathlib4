@@ -57,6 +57,7 @@ namespace IsStarProjection
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] {p q : A}
 
+set_option backward.isDefEq.respectTransparency false in
 open CFC in
 lemma le_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
   List.TFAE
