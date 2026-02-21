@@ -59,13 +59,6 @@ instance decidableMemIio [Decidable (x < b)] : Decidable (x ∈ Iio b) := by ass
 @[to_dual]
 instance decidableMemIic [Decidable (x ≤ b)] : Decidable (x ∈ Iic b) := by assumption
 
--- TODO: these instances are awkward for `to_dual`
-instance decidableMemIoo [Decidable (a < x ∧ x < b)] : Decidable (x ∈ Ioo a b) := by assumption
-
-instance decidableMemIco [Decidable (a ≤ x ∧ x < b)] : Decidable (x ∈ Ico a b) := by assumption
-
-instance decidableMemIcc [Decidable (a ≤ x ∧ x ≤ b)] : Decidable (x ∈ Icc a b) := by assumption
-
 @[to_dual self (reorder := a b, 6 7)]
 instance decidableMemIoo [Decidable (a < x)] [Decidable (x < b)] : Decidable (x ∈ Ioo a b) :=
   instDecidableAnd
