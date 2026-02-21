@@ -43,7 +43,7 @@ lemma IsMIntegralCurveOn.comp_add (hγ : IsMIntegralCurveOn γ v s) (dt : ℝ) :
   intro t ht
   rw [comp_apply, ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
   apply HasMFDerivWithinAt.comp t (hγ (t + dt) ht) _ subset_rfl
-  refine ⟨(continuous_add_right _).continuousWithinAt, ?_⟩
+  refine ⟨(continuous_add_const _).continuousWithinAt, ?_⟩
   simp only [mfld_simps]
   exact (hasFDerivWithinAt_id _ _).add_const _
 

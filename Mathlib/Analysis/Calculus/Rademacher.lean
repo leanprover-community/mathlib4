@@ -193,11 +193,11 @@ theorem integral_lineDeriv_mul_eq
   simp_rw [_root_.sub_mul, _root_.mul_sub]
   rw [integral_sub, integral_sub, S3]
   · apply Continuous.integrable_of_hasCompactSupport
-    · exact hf.continuous.mul (hg.continuous.comp (continuous_add_right _))
+    · exact hf.continuous.mul (hg.continuous.comp (continuous_add_const _))
     · exact (h'g.comp_homeomorph (Homeomorph.addRight (t • (-v)))).mul_left
   · exact (hf.continuous.mul hg.continuous).integrable_of_hasCompactSupport h'g.mul_left
   · apply Continuous.integrable_of_hasCompactSupport
-    · exact (hf.continuous.comp (continuous_add_right _)).mul hg.continuous
+    · exact (hf.continuous.comp (continuous_add_const _)).mul hg.continuous
     · exact h'g.mul_left
   · exact (hf.continuous.mul hg.continuous).integrable_of_hasCompactSupport h'g.mul_left
 
