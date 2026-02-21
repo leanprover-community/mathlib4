@@ -59,15 +59,6 @@ private def permList {α : Type*} (vec : List α) (perm : List Nat) : List α :=
     | some entry => entry :: current
     | none => current
 
-def extraTheorems : Array Name := #[``Equiv.swap_apply_def]
-
-/-- A helper function to run `simp` with extra results listed in `extraTheorems`. -/
-def Simp.withExtraTheorems {α} (x : SimpM α) : SimpM α := do
-  let extraSimpTheorems ← extraTheorems.foldrM
-    (fun thm thmArr ↦ do return thmArr.append (← mkSimpTheoremFromConst thm)) #[]
-  let newSimpTheorems := extraSimpTheorems.foldr (fun thm simpThms ↦ simpThms.addSimpTheorem thm) {}
-  Simp.withSimpTheorems #[← getSimpTheorems, newSimpTheorems] x
-
 /-- Helper function to produce a term of type `Fin m` given by `n` (and a proof that `n < m` via
 `decide`.)
 Note: this could be inlined below, but this seems to produce a strange Qq bug. -/
@@ -86,7 +77,7 @@ def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
         let idxQ := mkNatLitQ idx
         let idxQNew ← mkFin idxQ n
         let outIdxQ := q(($perm $idxQNew : Nat))
-        let outIdxExpr := (← Simp.withExtraTheorems <| Lean.Meta.Simp.simp outIdxQ).expr
+        let outIdxExpr := (← Lean.Meta.Simp.simp outIdxQ).expr
         let some outIdx ← Lean.Meta.getNatValue? outIdxExpr | return none
         out := out ++ [outIdx]
       return out
