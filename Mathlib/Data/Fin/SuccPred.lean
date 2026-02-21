@@ -280,7 +280,6 @@ theorem val_sub_castSucc_of_le {n : ℕ} {a b : Fin n} (h : b ≤ a) :
 theorem sub_castSucc_eq_castSucc_sub_of_le {n : ℕ} {a b : Fin n} (h : b ≤ a) :
     a.castSucc - b.castSucc = (a - b).castSucc := sub_castAdd_eq_castAdd_sub_of_le h
 
-
 end Succ
 
 section Pred
