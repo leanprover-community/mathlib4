@@ -128,14 +128,11 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes [Decidabl
     {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t) :
     (fun J : (Submodule R M) ↦ (J.colon Set.univ).radical) '' t = N.associatedPrimes := by
   classical
-  have h {x} q (hq : q ∈ t) :
-      (q.colon {x}).radical = if x ∈ q then ⊤ else (q.colon Set.univ).radical := by
-    split_ifs with hx
-    · rwa [radical_eq_top, colon_eq_top_iff_subset, Set.singleton_subset_iff]
-    · exact (ht.primary hq).radical_colon_singleton_of_notMem hx
   replace h x : radical (N.colon {x}) = (t.filter (x ∉ ·)).inf fun q ↦ radical (q.colon .univ) := by
-    rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply]
-    simp [Function.comp_def, Finset.inf_congr rfl h, Finset.inf_ite]
+    simp_rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply, map_finset_inf,
+      Function.comp_def, radicalInfTopHom_apply, id_eq]
+    rw [Finset.inf_congr rfl (fun q hq ↦ (ht.primary hq).radical_colon_singleton_eq_ite x),
+      Finset.inf_ite, Finset.inf_top, top_inf_eq]
   ext p
   constructor
   · rintro ⟨q, hqt, rfl⟩
@@ -258,6 +255,27 @@ theorem IsMinimalPrimaryDecomposition.foobar'
     · rw [h.mk'_eq_iff, ← LinearMap.map_smul_of_tower, Submonoid.mk_smul]
   rw [Finset.inf_congr rfl key2, Finset.inf_congr rfl key1]
   simp [Finset.inf_eq_iInf]
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.decomposition_erase_inf := Submodule.decomposition_erase_inf
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.isPrimary_decomposition_pairwise_ne_radical :=
+  Submodule.isPrimary_decomposition_pairwise_ne_radical
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition :=
+  Submodule.exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.IsMinimalPrimaryDecomposition := Submodule.IsMinimalPrimaryDecomposition
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.IsLasker.exists_isMinimalPrimaryDecomposition :=
+  Submodule.IsLasker.exists_isMinimalPrimaryDecomposition
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.IsLasker.minimal := Submodule.IsLasker.exists_isMinimalPrimaryDecomposition
 
 end Submodule
 
