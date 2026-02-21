@@ -221,9 +221,6 @@ lemma reflects_exact_of_faithful [F.Faithful] (S : ShortComplex C) (hS : (S.map 
       (by simp only [← F.map_comp, cokernel.condition, CategoryTheory.Functor.map_zero])
   rw [F.map_comp, ← hl, ← hk, Category.assoc, reassoc_of% hS, zero_comp, comp_zero]
 
-variable {C D : Type*} [Category C] [Abelian C] [Category D] [Abelian D]
-variable (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
-
 end
 
 end Functor
