@@ -461,18 +461,18 @@ theorem completeBipartiteGraph_edgeSet_encard :
   rw [completeBipartiteGraph_edgeSet, ← ENat.card_prod, ← Set.encard_univ, ← Set.image_univ]
   exact Function.Injective.encard_image (by grind [Function.Injective]) Set.univ
 
-theorem IsBipartiteWith.nonempty_embedding_completeBipartiteGraph_edgeSet
-    (hG : G.IsBipartiteWith s t) :
-    Nonempty (G.edgeSet ↪ (completeBipartiteGraph s t).edgeSet) := by
-  refine ⟨⟨fun ⟨x, hx⟩ ↦ ?_, fun _ _ _ ↦ ?_⟩⟩
-  · by_cases! h : x.out.1 ∈ s
-    · refine ⟨s(.inl ⟨x.out.1, h⟩, .inr ⟨x.out.2, ?_⟩), by simp⟩
-      grind [hG.disjoint, hG.mem_of_adj, mem_edgeSet, Sym2.eq_out]
-    · refine ⟨s(.inr ⟨x.out.1, ?_⟩, .inl ⟨x.out.2, ?_⟩), by simp⟩
-      · grind [hG.mem_of_adj <| G.mem_edgeSet.mpr <| x.eq_out ▸ hx]
-      · grind [hG.disjoint, hG.mem_of_adj, mem_edgeSet, Sym2.eq_out]
-  · grind [Sym2.eq_out]
-
+/-- An embedding of the edges of a bipartite graph into the edges of the complete bipartite graph -/
+def IsBipartiteWith.edgeSetEmbeddingCompleteBipartiteGraph [DecidableRel (· ∈ · : V → Set V → _)]
+    (hG : G.IsBipartiteWith s t) : G.edgeSet ↪ (completeBipartiteGraph s t).edgeSet where
+  toFun := fun ⟨e, he⟩ ↦
+    e.hrec (fun u v h ↦ hG.mem_of_adj h |>.by_cases
+      (fun h ↦ ⟨s(.inl ⟨u, h.left⟩, .inr ⟨v, h.right⟩), .inl ⟨rfl, rfl⟩⟩)
+      (fun h ↦ ⟨s(.inl ⟨v, h.right⟩, .inr ⟨u, h.left⟩), .inl ⟨rfl, rfl⟩⟩)
+    ) (fun _ _ ↦ Function.hfunext (by grind) <| by grind [Or.by_cases, hG.disjoint]) he
+  inj' := by
+    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
+    change (if _ : _ then _ else _) = (if _ : _ then _ else _) → _
+    grind
 end completeBipartiteGraph
 
 section
@@ -481,7 +481,8 @@ section
 of the cardinality of the two partitions. -/
 theorem IsBipartiteWith.encard_edgeSet_le (hG : G.IsBipartiteWith s t) :
     G.edgeSet.encard ≤ s.encard * t.encard := by
-  grw [hG.nonempty_embedding_completeBipartiteGraph_edgeSet.some.encard_le]
+  classical
+  grw [hG.edgeSetEmbeddingCompleteBipartiteGraph.encard_le]
   simp [completeBipartiteGraph_edgeSet_encard]
 
 /-- Four times the cardinality of the edge set of a bipartite graph is upper bounded by
