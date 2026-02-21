@@ -227,12 +227,11 @@ As a side-effect, beta reduces any pre-existing instances of eta expanded terms.
 partial def etaExpandAll (e : Expr) : MetaM Expr := do
   let betaOrApp (f : Expr) (args : Array Expr) : Expr :=
     if f.etaExpanded?.isSome then f.beta args else mkAppN f args
-  let expand (e : Expr) : MetaM Expr := do
-    if e.isLambda then
-      return e
-    else
-      forallTelescopeReducing (← inferType e) fun xs _ => do
-        mkLambdaFVars xs (betaOrApp e xs)
+  let rec expand (e : Expr) : MetaM Expr := do
+    forallTelescopeReducing (← inferType e) fun xs _ => do
+      mkLambdaFVars xs (betaOrApp e (← xs.mapM expand))
+  let expandIfNotLambda (e : Expr) : MetaM Expr := do
+    if e.isLambda then return e else expand e
   transform e
     (pre := fun node => do
       if node.isApp then
@@ -241,7 +240,7 @@ partial def etaExpandAll (e : Expr) : MetaM Expr := do
         .done <$> expand (betaOrApp f args)
       else
         pure .continue)
-    (post := (.done <$> expand ·))
+    (post := (.done <$> expandIfNotLambda ·))
 
 /--
 `eta_expand at loc` eta expands all sub-expressions at the given location.
