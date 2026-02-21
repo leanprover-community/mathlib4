@@ -326,13 +326,6 @@ section
 
 variable {R} [IsLocalRing R]
 
-class IsCoefficientRing {S : Type*} [CommRing S] (f : S →+* R) extends
-    IsLocalRing S, IsLocalHom f where
-  inj : Function.Injective f
-  complete : IsAdicComplete (maximalIdeal S) S
-  residue_iso : Function.Bijective (IsLocalRing.ResidueField.map f)
-  span : maximalIdeal S = Ideal.span {(ringChar (ResidueField S) : S)}
-
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_section_of_charZero [IsAdicComplete (maximalIdeal R) R]
     (char : CharZero (ResidueField R)) :
@@ -395,21 +388,6 @@ lemma exists_section_of_charZero [IsAdicComplete (maximalIdeal R) R]
   ext x
   rw [RingHom.comp_apply, this, IsAdicComplete.mk_liftRingHom, f_series1]
   simp [ResidueField]
-
-lemma isCoefficientRing_of_residueField (char : CharZero (ResidueField R))
-    (f : ResidueField R →+* R) (h : (IsLocalRing.residue R).comp f = RingHom.id _) :
-    IsCoefficientRing f where
-  inj := f.injective
-  complete := by
-    rw [maximalIdeal_eq_bot]
-    exact IsAdicComplete.bot (ResidueField R)
-  residue_iso := ⟨RingHom.injective _, fun x ↦ ⟨IsLocalRing.residue _ x, by
-    simpa [IsLocalRing.ResidueField.map_residue] using RingHom.congr_fun h x⟩⟩
-  span := by
-    have : ringChar (ResidueField (ResidueField R)) = 0 := by
-      rw [← Algebra.ringChar_eq (ResidueField R)]
-      exact (CharP.ringChar_zero_iff_CharZero (ResidueField R)).mpr char
-    simpa [this] using maximalIdeal_eq_bot
 
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdeal R) R]
@@ -543,27 +521,6 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
   use f, ‹_›
   rw [(RingHom.cancel_right residue_surjective).mp ((ResidueField.map_comp_residue f).trans eqe)]
   exact e.bijective
-
-lemma isCoeffientRing_of_isCohenRing [IsAdicComplete (maximalIdeal R) R]
-    (S : Type*) [CommRing S] [IsDomain S] [IsCohenRing S] (f : S →+* R)
-    [IsLocalHom f] (bij : Function.Bijective (ResidueField.map f)) :
-    IsCoefficientRing (Ideal.Quotient.lift (RingHom.ker f) f (by simp)) := by
-  let _ := Ideal.Quotient.nontrivial_iff.mpr (RingHom.ker_ne_top f)
-  let _ : IsLocalHom (Ideal.Quotient.mk (RingHom.ker f)) :=
-    IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-  let _ : IsLocalHom (algebraMap S (S ⧸ RingHom.ker f)) := ‹_›
-  let _ : IsLocalRing (S ⧸ RingHom.ker f) :=
-    IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
-  let _ : IsLocalHom (Ideal.Quotient.lift (RingHom.ker f) f (by simp)) := by
-    sorry
-  refine ⟨RingHom.lift_injective_of_ker_le_ideal (RingHom.ker f) _ fun _ a ↦ a, ?_, ?_, ?_⟩
-  · sorry
-  · sorry
-  · have eqmap : maximalIdeal (S ⧸ RingHom.ker f) =
-      (maximalIdeal S).map (Ideal.Quotient.mk (RingHom.ker f)) := by
-
-      sorry
-    simp [← Algebra.ringChar_eq (ResidueField S), eqmap, IsCohenRing.span, Ideal.map_span]
 
 lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective
     [IsAdicComplete (maximalIdeal R) R] (fg : (maximalIdeal R).FG)
