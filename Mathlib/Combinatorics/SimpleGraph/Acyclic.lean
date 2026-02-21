@@ -125,7 +125,7 @@ theorem exists_maximal_isAcyclic_of_le_isAcyclic
     {H : SimpleGraph V} (hHG : H ≤ G) (hH : H.IsAcyclic) :
     ∃ H' : SimpleGraph V, H ≤ H' ∧ Maximal (fun H => H ≤ G ∧ H.IsAcyclic) H' := by
   refine zorn_le_nonempty₀ {H | H ≤ G ∧ H.IsAcyclic} (fun c hcs hc y hy ↦ ?_) _ ⟨hHG, hH⟩
-  refine ⟨sSup c, ⟨?_, ?_⟩, CompleteLattice.le_sSup c⟩
+  refine ⟨sSup c, ⟨?_, ?_⟩, fun _ ↦ le_sSup⟩
   · grind [sSup_le_iff]
   · exact isAcyclic_sSup_of_isAcyclic_directedOn c (by grind) hc.directedOn
 
@@ -333,7 +333,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
           length_cons, length_nil] at h'
       simp at h'
     rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
-    · simp only [firstDart_toProd, getVert_cons_succ, getVert_zero, Prod.swap_prod_mk]
+    · simp
     case contra =>
       suffices (f x).takeUntil y hy = .cons h .nil by
         rw [← take_spec _ hy] at h'
@@ -348,6 +348,7 @@ lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
     (by simpa [deleteEdges, ← edgeSet_ssubset_edgeSet])
     <| h.prop.connected_delete_edge_of_not_isBridge hbr
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
   refine ⟨fun htree ↦ ⟨htree.isConnected, fun G' h' hle u v hadj ↦ ?_⟩, isTree_of_minimal_connected⟩
   have ⟨p, hp⟩ := h'.exists_isPath u v
@@ -400,6 +401,7 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   refine h.le_of_ge ⟨?_, h.prop.right.isAcyclic_sup_fromEdgeSet_of_not_reachable this⟩ le_sup_left
   grind [Maximal, sup_le, le_iff_adj, fromEdgeSet_adj, huv.symm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
 theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (hF : F.IsAcyclic) :
     Maximal (fun F ↦ F ≤ G ∧ F.IsAcyclic) F ↔ F.Reachable = G.Reachable := by
@@ -476,6 +478,7 @@ lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
     Nat.card_eq_fintype_card, ← edgeFinset_card]
   exact Finset.card_mono <| by simpa
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isTree_iff_connected_and_card [Finite V] :
     G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V

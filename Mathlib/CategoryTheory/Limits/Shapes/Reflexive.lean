@@ -131,6 +131,7 @@ theorem IsCoreflexivePair.swap [IsCoreflexivePair f g] : IsCoreflexivePair g f :
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For an adjunction `F ⊣ G` with counit `ε`, the pair `(FGε_B, ε_FGB)` is reflexive. -/
 instance (B : D) :
     IsReflexivePair (F.map (G.map (adj.counit.app B))) (adj.counit.app (F.obj (G.obj B))) :=
@@ -517,12 +518,14 @@ def mk {X : C} (π : F.obj zero ⟶ X) (h : F.map left ≫ π = F.map right ≫ 
 lemma mk_π {X : C} (π : F.obj zero ⟶ X) (h : F.map left ≫ π = F.map right ≫ π) :
     (mk π h).π = π := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma condition (G : ReflexiveCofork F) : F.map left ≫ G.π = F.map right ≫ G.π := by
   rw [Cocone.w G left, Cocone.w G right]
 
 @[simp]
 lemma app_one_eq_π (G : ReflexiveCofork F) : G.ι.app zero = G.π := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The underlying `Cofork` of a `ReflexiveCofork`. -/
 abbrev toCofork (G : ReflexiveCofork F) : Cofork (F.map left) (F.map right) :=
   Cofork.ofπ G.π (by simp)
@@ -600,6 +603,7 @@ lemma ι_reflexiveCoequalizerIsoCoequalizer_hom :
   IsColimit.comp_coconePointUniqueUpToIso_hom
     ((ReflexiveCofork.isColimitEquiv F _).symm _) _ WalkingParallelPair.one
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_reflexiveCoequalizerIsoCoequalizer_inv :
     coequalizer.π _ _ ≫ (reflexiveCoequalizerIsoCoequalizer F).inv = colimit.ι F _ := by

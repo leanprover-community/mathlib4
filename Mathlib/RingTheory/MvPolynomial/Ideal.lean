@@ -78,6 +78,7 @@ lemma idealOfVars_eq_restrictSupportIdeal :
     obtain ⟨c, rfl⟩ := le_iff_exists_add'.mp (show single i 1 ≤ x by simp_all; lia)
     simpa [monomial_add_single] using Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 theorem pow_idealOfVars (n : ℕ) :
     idealOfVars σ R ^ n = restrictSupportIdeal _ _ ((isUpperSet_Ici n).preimage degree_mono) := by
@@ -95,6 +96,7 @@ theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
     image_pow_eq_finsuppProd_image]
   simp [monomial_eq, Set.preimage, degree]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ degree x := by
   rw [pow_idealOfVars]
