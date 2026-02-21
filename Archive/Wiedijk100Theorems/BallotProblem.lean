@@ -157,6 +157,7 @@ theorem countedSequence_nonempty : ∀ p q : ℕ, (countedSequence p q).Nonempty
 theorem sum_of_mem_countedSequence {p q} {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l.sum = p - q := by simp [(mem_countedSequence_iff_perm.1 hl).sum_eq, sub_eq_add_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_bits (p q : ℕ) :
     Disjoint (List.cons 1 '' countedSequence p (q + 1))
       (List.cons (-1) '' countedSequence (p + 1) q) := by
@@ -165,14 +166,10 @@ theorem disjoint_bits (p q : ℕ) :
 
 open MeasureTheory.Measure
 
-private def measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
+private local instance measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
 
-attribute [local instance] measurableSpace_list_int
-
-private theorem measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
+private local instance measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
   { measurableSet_singleton := fun _ => trivial }
-
-attribute [local instance] measurableSingletonClass_list_int
 
 private theorem list_int_measurableSet {s : Set (List ℤ)} : MeasurableSet s := trivial
 
@@ -320,9 +317,9 @@ theorem ballot_problem' :
     rw [div_self]
     exact Nat.cast_add_one_ne_zero p
   · intro q p qp h₁ h₂
-    haveI := uniformOn_isProbabilityMeasure
+    haveI := isProbabilityMeasure_uniformOn
       (countedSequence_finite p (q + 1)) (countedSequence_nonempty _ _)
-    haveI := uniformOn_isProbabilityMeasure
+    haveI := isProbabilityMeasure_uniformOn
       (countedSequence_finite (p + 1) q) (countedSequence_nonempty _ _)
     have h₃ : p + 1 + (q + 1) > 0 := Nat.add_pos_left (Nat.succ_pos _) _
     rw [← uniformOn_add_compl_eq {l : List ℤ | l.headI = 1} _ (countedSequence_finite _ _),
@@ -350,7 +347,7 @@ theorem ballot_problem :
     ∀ q p, q < p → uniformOn (countedSequence p q) staysPositive = (p - q) / (p + q) := by
   intro q p qp
   haveI :=
-    uniformOn_isProbabilityMeasure (countedSequence_finite p q) (countedSequence_nonempty _ _)
+    isProbabilityMeasure_uniformOn (countedSequence_finite p q) (countedSequence_nonempty _ _)
   have :
     (uniformOn (countedSequence p q) staysPositive).toReal =
       ((p - q) / (p + q) : ℝ≥0∞).toReal := by

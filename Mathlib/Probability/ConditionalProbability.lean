@@ -293,6 +293,7 @@ lemma comap_cond {i : Ω' → Ω} (hi : MeasurableEmbedding i) (hi' : ∀ᵐ ω 
 
 variable [Fintype α] [MeasurableSpace α] [DiscreteMeasurableSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **law of total probability** for a random variable taking finitely many values: a measure
 `μ` can be expressed as a linear combination of its conditional measures `μ[|X ← x]` on fibers of a
 random variable `X` valued in a fintype. -/

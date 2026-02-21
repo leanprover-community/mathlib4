@@ -36,7 +36,7 @@ namespace Finset
 
 open Multiset
 
-variable [CancelCommMonoidWithZero α] [NormalizedGCDMonoid α]
+variable [CommMonoidWithZero α] [NormalizedGCDMonoid α]
 
 /-! ### lcm -/
 
@@ -229,7 +229,7 @@ nonrec theorem gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * no
 
 theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0)
     (hg : ∀ b ∈ s, f b = s.gcd f * g b) : s.gcd g = 1 :=
-  ((@mul_right_eq_self₀ _ _ (s.gcd f) _).1 <| by
+  ((mul_right_eq_self₀ (a := s.gcd f)).1 <| by
         conv_lhs => rw [← normalize_gcd, ← gcd_mul_left, ← gcd_congr rfl hg]).resolve_right <| by
     contrapose! hs
     exact gcd_eq_zero_iff.1 hs
@@ -267,7 +267,7 @@ namespace Finset
 
 section IsDomain
 
-variable [CommRing α] [IsDomain α] [NormalizedGCDMonoid α]
+variable [CommRing α] [NormalizedGCDMonoid α]
 
 theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
     (h : ∀ x : β, x ∈ s → a ∣ f x - g x) :

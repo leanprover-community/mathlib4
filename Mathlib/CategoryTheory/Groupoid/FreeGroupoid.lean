@@ -42,7 +42,7 @@ open CategoryTheory
 
 universe u v u' v' u'' v''
 
-variable {V : Type u} [Quiver.{v + 1} V]
+variable {V : Type u} [Quiver.{v} V]
 
 /-- Shorthand for the "forward" arrow corresponding to `f` in `paths <| symmetrify V` -/
 abbrev Hom.toPosPath {X Y : V} (f : X ⟶ Y) :
@@ -70,6 +70,7 @@ open Quiver
 instance {V} [Quiver V] [Nonempty V] : Nonempty (Quiver.FreeGroupoid V) := by
   inhabit V; exact ⟨⟨@default V _⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
     HomRel.CompClosure redStep p q → HomRel.CompClosure redStep p.reverse q.reverse := by
   rintro ⟨_, _, XW, _, _, WY, _, _, f⟩
@@ -151,6 +152,7 @@ def lift (φ : V ⥤q V') : Quiver.FreeGroupoid V ⥤ V' :=
     symm
     apply Groupoid.comp_inv
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lift_spec (φ : V ⥤q V') : of V ⋙q (lift φ).toPrefunctor = φ := by
   rw [of_eq, Prefunctor.comp_assoc, Prefunctor.comp_assoc, Functor.toPrefunctor_comp]
   dsimp [lift]
@@ -178,7 +180,7 @@ section Functoriality
 
 open FreeGroupoid
 
-variable {V' : Type u'} [Quiver.{v' + 1} V'] {V'' : Type u''} [Quiver.{v'' + 1} V'']
+variable {V' : Type u'} [Quiver.{v'} V'] {V'' : Type u''} [Quiver.{v''} V'']
 
 /-- The functor of free groupoid induced by a prefunctor of quivers -/
 def freeGroupoidFunctor (φ : V ⥤q V') : Quiver.FreeGroupoid V ⥤ Quiver.FreeGroupoid V' :=

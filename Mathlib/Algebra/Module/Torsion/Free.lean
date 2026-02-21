@@ -91,20 +91,20 @@ lemma Module.IsTorsionFree.trans [Module S R] [IsTorsionFree S R] [IsScalarTower
     exact ⟨fun x y hxy ↦ hs.isSMulRegular <| by simpa using hxy,
       fun x y hxy ↦ hs.isSMulRegular <| by simpa using hxy⟩
 
-variable [IsDomain R]
+variable [IsCancelMulZero R]
 
 lemma IsSMulRegular.of_ne_zero (hr : r ≠ 0) : IsSMulRegular M r :=
-  (isRegular_of_ne_zero hr).isSMulRegular
+  (IsRegular.of_ne_zero hr).isSMulRegular
 
 variable (M) in
 lemma smul_right_injective (hr : r ≠ 0) : ((r • ·) : M → M).Injective :=
-  (isRegular_of_ne_zero hr).smul_right_injective _
+  (IsRegular.of_ne_zero hr).smul_right_injective _
 
 @[simp] lemma smul_right_inj (hr : r ≠ 0) : r • m₁ = r • m₂ ↔ m₁ = m₂ :=
-  (isRegular_of_ne_zero hr).smul_right_inj
+  (IsRegular.of_ne_zero hr).smul_right_inj
 
 lemma smul_eq_zero_iff_right (hr : r ≠ 0) : r • m = 0 ↔ m = 0 :=
-  (isRegular_of_ne_zero hr).smul_eq_zero_iff_right
+  (IsRegular.of_ne_zero hr).smul_eq_zero_iff_right
 
 lemma smul_ne_zero_iff_right (hr : r ≠ 0) : r • m ≠ 0 ↔ m ≠ 0 := (smul_eq_zero_iff_right hr).ne
 
@@ -160,14 +160,12 @@ lemma Module.IsTorsionFree.of_smul_eq_zero [Nontrivial R]
   isSMulRegular r hr m₁ m₂ hm := by
     simpa [sub_eq_zero, hr.ne_zero] using h r (m₁ - m₂) (by simpa [smul_sub, sub_eq_zero] using hm)
 
-variable [IsDomain R]
-
-lemma Module.isTorsionFree_iff_smul_eq_zero :
+lemma Module.isTorsionFree_iff_smul_eq_zero [IsDomain R] :
     IsTorsionFree R M ↔ ∀ (r : R) (m : M), r • m = 0 → r = 0 ∨ m = 0 where
   mp _ _ _ := smul_eq_zero.1
   mpr := .of_smul_eq_zero
 
-variable [IsTorsionFree R M]
+variable [IsCancelMulZero R] [IsTorsionFree R M]
 
 variable (R) in
 lemma smul_left_injective (hm : m ≠ 0) : ((· • m) : R → M).Injective := by

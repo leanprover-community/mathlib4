@@ -37,4 +37,7 @@ instance [HasColimitsOfShape K (PresheafOfModules.{v} R.val)] :
         (asIso (PresheafOfModules.sheafificationAdjunction (𝟙 R.val)).counit).symm
     exact hasColimit_of_iso e
 
+instance [HasColimitsOfSize.{w', w} (PresheafOfModules.{v} R.val)] :
+    HasColimitsOfSize.{w', w} (SheafOfModules.{v} R) where
+
 end SheafOfModules

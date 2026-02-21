@@ -165,8 +165,7 @@ variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
   `a • x = 0`. -/
 @[simps!]
 def torsionBy (a : R) : Submodule R M :=
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker https://github.com/leanprover/lean4/issues/1629
-  LinearMap.ker (DistribSMul.toLinearMap R M a)
+  (DistribSMul.toLinearMap R M a).ker
 
 /-- The submodule containing all elements `x` of `M` such that `a • x = 0` for all `a` in `s`. -/
 @[simps!]
@@ -233,7 +232,7 @@ end Defs
 lemma isSMulRegular_iff_torsionBy_eq_bot {R} (M : Type*)
     [CommRing R] [AddCommGroup M] [Module R M] (r : R) :
     IsSMulRegular M r ↔ Submodule.torsionBy R M r = ⊥ :=
-  Iff.symm (DistribSMul.toLinearMap R M r).ker_eq_bot
+  (DistribSMul.toLinearMap R M r).ker_eq_bot.symm
 
 variable {R M : Type*}
 
@@ -422,6 +421,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf
         exact Ideal.mul_mem_left _ _ (this j hj ij)
     · rw [← Finset.sum_smul, hμ, one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
     S.SupIndep fun i => torsionBySet R M <| p i :=
   fun T hT i hi hiT => by
@@ -624,6 +624,7 @@ namespace Submodule
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (I : Ideal R) : Module (R ⧸ I) (torsionBySet R M I) :=
   -- Porting note: times out without the (R := R)
   Module.IsTorsionBySet.module <| torsionBySet_isTorsionBySet (R := R) I
@@ -637,6 +638,7 @@ instance (I : Ideal R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M]
     [IsScalarTower S R R] : IsScalarTower S (R ⧸ I) (torsionBySet R M I) :=
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `a`-torsion submodule as an `(R ⧸ R ∙ a)`-module. -/
 instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy R M a) :=
   Module.IsTorsionBySet.module <|
@@ -658,6 +660,7 @@ instance (a : R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScal
     IsScalarTower S (R ⧸ R ∙ a) (torsionBy R M a) :=
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an `R`-module `M` and an element `a` in `R`, submodules of the `a`-torsion submodule of
 `M` do not depend on whether we take scalars to be `R` or `R ⧸ R ∙ a`. -/
 def submodule_torsionBy_orderIso (a : R) :
@@ -787,6 +790,7 @@ namespace QuotientTorsion
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Quotienting by the torsion submodule gives a torsion-free module. -/
 @[simp]
 theorem torsion_eq_bot : torsion R (M ⧸ torsion R M) = ⊥ :=
@@ -862,6 +866,8 @@ namespace Ideal.Quotient
 open Submodule
 
 universe w
+
+set_option backward.isDefEq.respectTransparency false in
 theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a ∈ R⁰) :
     torsionBy R (R ⧸ R ∙ a * b) a = R ∙ mk (R ∙ a * b) b := by
   ext x; rw [mem_torsionBy_iff, Submodule.mem_span_singleton]

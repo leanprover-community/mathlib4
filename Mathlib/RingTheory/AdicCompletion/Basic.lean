@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.LinearAlgebra.SModEq.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -260,6 +261,7 @@ end IsPrecomplete
 
 namespace AdicCompletion
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `AdicCompletion` is the submodule of compatible families in
 `∀ n : ℕ, M ⧸ (I ^ n • ⊤)`. -/
 def submodule : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
@@ -399,6 +401,7 @@ variable {I M}
 
 variable (I M)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsHausdorff I (AdicCompletion I M) where
   haus' x h := ext fun n ↦ by
     refine smul_induction_on (SModEq.zero.1 <| h n) (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
@@ -597,6 +600,7 @@ section Bijective
 
 variable {I}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_injective_iff : Function.Injective (of I M) ↔ IsHausdorff I M := by
   constructor
   · refine fun h ↦ ⟨fun x hx ↦ h ?_⟩

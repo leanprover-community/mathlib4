@@ -194,6 +194,7 @@ end
 section
 open scoped RealInnerProductSpace
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasStrictFDerivAt_norm_sq (x : F) :
     HasStrictFDerivAt (fun x => ‖x‖ ^ 2) (2 • (innerSL ℝ x)) x := by
   simp only [sq, ← @inner_self_eq_norm_mul_norm ℝ]
@@ -374,10 +375,10 @@ namespace OpenPartialHomeomorph
 variable {c : E} {r : ℝ}
 
 theorem contDiff_unitBallBall (hr : 0 < r) : ContDiff ℝ n (unitBallBall c r hr) :=
-  (contDiff_id.const_smul _).add contDiff_const
+  (contDiff_id.const_smul r).add contDiff_const
 
 theorem contDiff_unitBallBall_symm (hr : 0 < r) : ContDiff ℝ n (unitBallBall c r hr).symm :=
-  (contDiff_id.sub contDiff_const).const_smul _
+  (contDiff_id.sub contDiff_const).const_smul r⁻¹
 
 theorem contDiff_univBall : ContDiff ℝ n (univBall c r) := by
   unfold univBall; split_ifs with h

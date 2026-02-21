@@ -8,9 +8,10 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Splits
-public import Mathlib.RingTheory.Polynomial.Vieta
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.RingTheory.Polynomial.Vieta
+public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!
 # Polynomials and limits
@@ -138,6 +139,20 @@ theorem exists_forall_norm_le [ProperSpace R] (p : R[X]) : ∃ x, ∀ y, ‖p.ev
   else
     ⟨p.coeff 0, by rw [eq_C_of_degree_le_zero (le_of_not_gt hp0)]; simp⟩
 
+theorem isProperMap_eval [ProperSpace R] (p : R[X]) (h : 0 < degree p) : IsProperMap p.eval :=
+  isProperMap_iff_tendsto_cocompact.mpr ⟨by fun_prop, by
+    rw [← Metric.cobounded_eq_cocompact, ← tendsto_norm_atTop_iff_cobounded]
+    exact p.tendsto_norm_atTop h tendsto_norm_cobounded_atTop⟩
+
+theorem isClosedMap_eval [ProperSpace R] (p : R[X]) : IsClosedMap p.eval := by
+  obtain h | h := le_or_gt p.degree 0
+  · rw [degree_le_zero_iff.mp h]; simpa using isClosedMap_const
+  · exact (p.isProperMap_eval h).isClosedMap
+
+variable (R) in
+theorem _root_.isClosedMap_pow [ProperSpace R] (n : ℕ) : IsClosedMap fun x : R ↦ x ^ n := by
+  simpa [eval_X_pow] using (X ^ n).isClosedMap_eval
+
 section Roots
 
 open Polynomial NNReal
@@ -154,6 +169,7 @@ theorem eq_one_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (hB : B < 0) (h1
     obtain ⟨z, hz⟩ := card_pos_iff_exists_mem.mp (zero_lt_iff.mpr hB)
     exact le_trans (norm_nonneg _) (h3 z hz))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 : p.Monic)
     (h2 : Splits (p.map f)) (h3 : ∀ z ∈ (map f p).roots, ‖z‖ ≤ B) :
     ‖(map f p).coeff i‖ ≤ B ^ (p.natDegree - i) * p.natDegree.choose i := by
