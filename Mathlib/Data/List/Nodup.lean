@@ -226,8 +226,8 @@ theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
 protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
-    (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
-  grind
+    (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) :=
+  Pairwise.pmap h H fun _ _ _ _ hxy hEq ↦ hxy (hf _ _ _ _ hEq)
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
   simpa using Pairwise.filter p

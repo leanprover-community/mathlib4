@@ -58,12 +58,6 @@ theorem nodup_finRange (n) : (finRange n).Nodup := by
   rw [finRange_eq_pmap_range]
   exact (Pairwise.pmap nodup_range _) fun _ _ _ _ => @Fin.ne_of_val_ne _ ⟨_, _⟩ ⟨_, _⟩
 
-variable {α β : Type*}
-
-theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
-    (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) :=
-  Pairwise.pmap h H fun _ _ _ _ hxy hEq ↦ hxy (hf _ _ _ _ hEq)
-
 end List
 
 end Constructive
