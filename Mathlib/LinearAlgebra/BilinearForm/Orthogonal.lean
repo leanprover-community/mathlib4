@@ -218,7 +218,7 @@ theorem toLin_restrict_ker_eq_inf_ker (B : BilinForm K V) (W : Subspace K V) :
     exact ⟨⟨x, hx.1⟩, hx.right, rfl⟩
 
 theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K V) (b : B.IsRefl) :
-    (LinearMap.ker <| B.domRestrict W).map W.subtype = (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
+    (LinearMap.ker <| B.domRestrict W).map W.subtype = W ⊓ B.orthogonal ⊤ := by
   rw [orthogonal_top_eq_ker b]
   exact toLin_restrict_ker_eq_inf_ker ..
 
