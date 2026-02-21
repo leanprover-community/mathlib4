@@ -6,7 +6,6 @@ Authors: Riccardo Brasca
 module
 
 public import Batteries.Data.List.Lemmas
-public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Let's avoid choice!
@@ -19,6 +18,7 @@ We gather results that are used to avoid the axiom of choice.
 
 open List
 
+universe u
 namespace Constructive
 
 namespace List
@@ -32,7 +32,7 @@ theorem pairwise_lt_range' {s n} (step := 1) (pos : 0 < step := by simp) :
     constructor
     · intro n m
       obtain ⟨a, -, rfl⟩ := mem_range'.1 m
-      calc s < s + step := lt_add_of_pos_right _ pos
+      calc s < s + step := Nat.lt_add_of_pos_right pos
            _ ≤ s + step + step * a := Nat.le_add_right _ _
     · exact pairwise_lt_range' (s := s + step) step pos
 
@@ -44,7 +44,7 @@ theorem pairwise_le_range' {s n} (step := 1) : Pairwise (· ≤ ·) (range' s n 
     constructor
     · intro n m
       obtain ⟨a, -, rfl⟩ := mem_range'.1 m
-      rw [add_assoc]
+      rw [Nat.add_assoc]
       exact Nat.le_add_right s (step + step * a)
     · exact pairwise_le_range' (s := s + step) step
 
@@ -58,7 +58,7 @@ theorem nodup_finRange (n) : (finRange n).Nodup := by
   rw [finRange_eq_pmap_range]
   exact (Pairwise.pmap nodup_range _) fun _ _ _ _ => @Fin.ne_of_val_ne _ ⟨_, _⟩ ⟨_, _⟩
 
-theorem eq_nil_iff_forall_not_mem {α : Type*} {l : List α} : l = [] ↔ ∀ a, a ∉ l := by
+theorem eq_nil_iff_forall_not_mem {α : Type u} {l : List α} : l = [] ↔ ∀ a, a ∉ l := by
   cases l <;> simp [-not_or]
 
 end List
