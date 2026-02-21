@@ -71,7 +71,7 @@ theorem map_subperm_map_iff {α β} {l₁ l₂ : List α} {f : α → β} (hf : 
   mpr a := Subperm.map f a
   mp a := by
     obtain ⟨w, ⟨perm, sublist⟩⟩ := a
-    obtain ⟨x, ⟨sublistₓ, mapₓ⟩⟩ := List.sublist_map_iff.mp sublist
+    obtain ⟨x, ⟨sublistₓ, mapₓ⟩⟩ := sublist_map_iff.mp sublist
     use x
     constructor
     · rw [mapₓ] at perm
