@@ -272,16 +272,12 @@ lemma vanishingIdeal_isClosed_isIrreducible :
   rintro _ ⟨s, hs, rfl⟩
   exact ⟨closure s, ⟨isClosed_closure, hs.closure⟩, vanishingIdeal_closure s⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma irreducibleSpace_iff_isPrime_nilradical :
     IrreducibleSpace (PrimeSpectrum R) ↔ (nilradical R).IsPrime := by
-  refine (irreducibleSpace_def _).trans (isIrreducible_iff_vanishingIdeal_isPrime.trans ?_)
-  simp
+  simp [irreducibleSpace_def, isIrreducible_iff_vanishingIdeal_isPrime]
 
-set_option backward.isDefEq.respectTransparency false in
 instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
-  rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
-  simpa using Ideal.isPrime_bot
+  simpa [irreducibleSpace_iff_isPrime_nilradical] using Ideal.isPrime_bot
 
 instance quasiSober : QuasiSober (PrimeSpectrum R) :=
   ⟨fun {S} h₁ h₂ =>
