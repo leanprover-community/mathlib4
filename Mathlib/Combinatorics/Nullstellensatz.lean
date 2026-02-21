@@ -9,7 +9,7 @@ public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.MvPolynomial.Groebner
+public import Mathlib.RingTheory.MvPolynomial.Groebner.Division
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
