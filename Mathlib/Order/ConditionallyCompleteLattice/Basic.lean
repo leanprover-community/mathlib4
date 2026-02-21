@@ -564,7 +564,7 @@ theorem csInf_mem (hs : s.Nonempty) : sInf s ∈ s :=
   (isLeast_csInf hs).1
 
 lemma sInf_eq_iff (hs : s.Nonempty) (n : α) :
-     sInf s = n ↔ n ∈ s ∧ ∀a ∈ s, n ≤ a := by
+     sInf s = n ↔ n ∈ s ∧ ∀ a ∈ s, n ≤ a := by
   have : OrderBot α := WellFoundedLT.toOrderBot
   constructor
   · intro rfl
