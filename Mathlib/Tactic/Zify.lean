@@ -116,7 +116,7 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
 
 variable {R : Type*} [AddGroupWithOne R]
 
-@[norm_cast]
+@[deprecated "use Nat.cast_sub" (since := "2026-02-21"), norm_cast]
 theorem Nat.cast_sub_of_add_le {m n k} (h : m + k ≤ n) :
     ((n - m : ℕ) : R) = n - m := Nat.cast_sub (m.le_add_right k |>.trans h)
 
