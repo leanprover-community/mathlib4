@@ -295,21 +295,27 @@ theorem hasFDerivWithinAt_singleton (f : E → F) (x : E) :
   rw [accPt_iff_clusterPt, inf_principal]
   simp [ClusterPt]
 
-@[fun_prop]
+@[fun_prop, nontriviality]
 theorem hasFDerivWithinAt_of_subsingleton [h : Subsingleton E] (f : E → F) (s : Set E) (x : E) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x := by
   obtain rfl | ⟨a, rfl⟩ := s.eq_empty_or_singleton_of_subsingleton
   · simp
   · exact HasFDerivWithinAt.singleton
 
-@[fun_prop]
+@[fun_prop, nontriviality]
 theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :
     HasFDerivAt f (0 : E →L[𝕜] F) x := by
   rw [← hasFDerivWithinAt_univ, subsingleton_univ.eq_singleton_of_mem (mem_univ x)]
   exact hasFDerivWithinAt_singleton f x
 
+@[nontriviality]
 theorem differentiable_of_subsingleton [Subsingleton E] {f : E → F} : Differentiable 𝕜 f :=
   fun x ↦ (hasFDerivAt_of_subsingleton f x (𝕜 := 𝕜)).differentiableAt
+
+@[nontriviality]
+theorem differentiableWithinAt_of_subsingleton [Subsingleton E] :
+    DifferentiableWithinAt 𝕜 f s x :=
+  (differentiable_of_subsingleton x).differentiableWithinAt
 
 @[fun_prop]
 theorem differentiableOn_singleton : DifferentiableOn 𝕜 f {x} :=
@@ -329,11 +335,10 @@ end Const
 it is differentiable within `s` at `x`. -/
 lemma differentiableWithinAt_of_fderivWithin_injective (hf : Injective (fderivWithin 𝕜 f s x)) :
     DifferentiableWithinAt 𝕜 f s x := by
-  by_cases h: Subsingleton E
-  · exact (differentiable_of_subsingleton x).differentiableWithinAt
-  · by_contra h'
-    rw [fderivWithin_zero_of_not_differentiableWithinAt h'] at hf
-    exact h { allEq a b := hf rfl }
+  nontriviality E
+  contrapose! hf
+  rw [fderivWithin_zero_of_not_differentiableWithinAt hf]
+  exact not_injective_const
 
 /-- If `f : E → F` has injective differential at `x`, it is differentiable at `x`. -/
 lemma differentiableAt_of_fderiv_injective (hf : Injective (fderiv 𝕜 f x)) :

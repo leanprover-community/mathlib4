@@ -543,6 +543,7 @@ theorem mfderivWithin_zero_of_not_mdifferentiableWithinAt
 theorem mfderiv_zero_of_not_mdifferentiableAt (h : ¬MDifferentiableAt I I' f x) :
     mfderiv I I' f x = 0 := by simp only [mfderiv, h, if_neg, not_false_iff]
 
+@[nontriviality]
 theorem mdifferentiable_of_subsingleton [Subsingleton E] : MDifferentiable I I' f := by
   intro x
   have : Subsingleton H := I.injective.subsingleton
@@ -550,16 +551,20 @@ theorem mdifferentiable_of_subsingleton [Subsingleton E] : MDifferentiable I I' 
   simp only [mdifferentiableAt_iff, continuous_of_discreteTopology.continuousAt, true_and]
   exact (hasFDerivAt_of_subsingleton _ _).differentiableAt.differentiableWithinAt
 
+@[nontriviality]
+theorem mdifferentiableWithinAt_of_subsingleton [Subsingleton E] :
+    MDifferentiableWithinAt I I' f s x :=
+  (mdifferentiable_of_subsingleton x).mdifferentiableWithinAt
+
 /-- If `f : M → M'` has injective differential at `x` within `s`,
 it is `MDifferentiable` at `x` within `s`. -/
 lemma mdifferentiableWithinAt_of_mfderivWithin_injective
     (hf : Injective (mfderivWithin I I' f s x)) :
     MDifferentiableWithinAt I I' f s x := by
-  by_cases h: Subsingleton E
-  · exact (mdifferentiable_of_subsingleton x).mdifferentiableWithinAt
-  · by_contra h'
-    rw [mfderivWithin_zero_of_not_mdifferentiableWithinAt h'] at hf
-    exact h { allEq a b := hf rfl }
+  nontriviality E
+  contrapose! hf
+  rw [mfderivWithin_zero_of_not_mdifferentiableWithinAt hf]
+  exact not_injective_const
 
 /-- If `f : M → M'` has injective differential at `x`, it is `MDifferentiable` at `x`. -/
 lemma mdifferentiableAt_of_mfderiv_injective {f : M → M'} (hf : Injective (mfderiv I I' f x)) :
