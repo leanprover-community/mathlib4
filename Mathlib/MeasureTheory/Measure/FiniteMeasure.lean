@@ -259,6 +259,7 @@ theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure
     (⇑(c • μ) : Set Ω → ℝ≥0) = c • (⇑μ : Set Ω → ℝ≥0) := by
   funext; simp [← ENNReal.coe_inj, ENNReal.coe_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) :=
   toMeasure_injective.addCommMonoid _ toMeasure_zero toMeasure_add fun _ _ ↦ toMeasure_smul _ _
 
@@ -274,6 +275,7 @@ theorem toMeasure_sum {ι : Type*} {s : Finset ι} {ν : ι → FiniteMeasure Ω
     ↑(∑ i ∈ s, ν i) = ∑ i ∈ s, (ν i : Measure Ω) :=
   map_sum toMeasureAddMonoidHom _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
   Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
 
@@ -313,6 +315,7 @@ lemma restrict_union {μ : FiniteMeasure Ω} {s t : Set Ω} (h : Disjoint s t) (
   ext u hu
   simp [Measure.restrict_union h ht]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_biUnion_finset {ι : Type*} {μ : FiniteMeasure Ω} {T : Finset ι}
     {s : ι → Set Ω} (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = ∑ i ∈ T, μ.restrict (s i) := by
