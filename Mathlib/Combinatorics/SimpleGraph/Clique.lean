@@ -54,6 +54,7 @@ lemma not_isClique_iff : ¬ G.IsClique s ↔ ∃ (v w : s), v ≠ w ∧ ¬ G.Adj
   aesop (add simp [isClique_iff, Set.Pairwise])
 
 /-- A clique is a set of vertices whose induced graph is complete. -/
+@[simp← ]
 theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   rw [isClique_iff]
   constructor
@@ -95,9 +96,15 @@ lemma isClique_insert_of_notMem (ha : a ∉ s) :
 lemma IsClique.insert (hs : G.IsClique s) (h : ∀ b ∈ s, a ≠ b → G.Adj a b) :
     G.IsClique (insert a s) := hs.insert_of_symmetric G.symm h
 
+@[gcongr]
 theorem IsClique.mono (h : G ≤ H) : G.IsClique s → H.IsClique s := Set.Pairwise.mono' h
 
+@[gcongr]
 theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := Set.Pairwise.mono h
+
+variable (s) in
+theorem isClique_top : (⊤ : SimpleGraph α).IsClique s :=
+  fun _ _ _ _ ↦ id
 
 @[simp]
 theorem isClique_bot_iff : (⊥ : SimpleGraph α).IsClique s ↔ (s : Set α).Subsingleton :=
@@ -105,9 +112,31 @@ theorem isClique_bot_iff : (⊥ : SimpleGraph α).IsClique s ↔ (s : Set α).Su
 
 alias ⟨IsClique.subsingleton, _⟩ := isClique_bot_iff
 
+theorem isClique_univ_iff : G.IsClique .univ ↔ G = ⊤ :=
+  ⟨fun h ↦ eq_top_iff_forall_ne_adj.mpr fun _ _ ↦ h trivial trivial, (· ▸ isClique_top .univ)⟩
+
 protected theorem IsClique.map (h : G.IsClique s) {f : α ↪ β} : (G.map f).IsClique (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hab
   exact ⟨a, b, h ha hb <| ne_of_apply_ne _ hab, rfl, rfl⟩
+
+theorem isClique_sInter {S : Set (Set α)} (hn : S.Nonempty) (h : ∀ s ∈ S, G.IsClique s) :
+    G.IsClique <| ⋂₀ S := by
+  have ⟨s, hs⟩ := hn
+  exact h s hs |>.subset <| S.sInter_subset_of_mem hs
+
+theorem isClique_iInter {ι : Type*} [Nonempty ι] {s : ι → Set α} (h : ∀ i, G.IsClique (s i)) :
+    G.IsClique <| ⋂ i, s i :=
+  isClique_sInter (Set.range_nonempty s) fun _ ⟨i, hi⟩ ↦ hi ▸ h i
+
+theorem isClique_sUnion {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S) (h : ∀ s ∈ S, G.IsClique s) :
+    G.IsClique <| ⋃₀ S := by
+  intro u ⟨su, hsu, hu⟩ v ⟨sv, hsv, hv⟩
+  have ⟨s, hs, hsus, hsvs⟩ := hd su hsu sv hsv
+  exact h s hs (hsus hu) (hsvs hv)
+
+theorem isClique_iUnion {ι : Type*} {s : ι → Set α} (hd : Directed (· ⊆ ·) s)
+    (h : ∀ i, G.IsClique (s i)) : G.IsClique <| ⋃ i, s i :=
+  isClique_sUnion hd.directedOn_range fun _ ⟨i, hi⟩ ↦ hi ▸ h i
 
 theorem isClique_map_iff_of_nontrivial {f : α ↪ β} {t : Set β} (ht : t.Nontrivial) :
     (G.map f).IsClique t ↔ ∃ (s : Set α), G.IsClique s ∧ f '' s = t := by
