@@ -27,6 +27,7 @@ open Functor
 
 /-- A category is `FinallySmallFiltered.{w}` if there is a final functor
 from a filtered `w`-small category. -/
+@[pp_with_univ]
 class FinallySmallFiltered (C : Type u) [Category.{v} C] : Prop where
   /-- There is a final functor from a small filtered category. -/
   final_smallCategory (C) : ∃ (S : Type w) (_ : SmallCategory S)
@@ -34,6 +35,7 @@ class FinallySmallFiltered (C : Type u) [Category.{v} C] : Prop where
 
 /-- A category is `InitiallySmallCofiltered.{w}` if there is an initial functor
 from a cofiltered `w`-small category. -/
+@[pp_with_univ]
 class InitiallySmallCofiltered (C : Type u) [Category.{v} C] : Prop where
   /-- There is an initial functor from a small cofiltered category. -/
   initial_smallCategory (C) : ∃ (S : Type w) (_ : SmallCategory S)

@@ -54,7 +54,7 @@ structure IsConservativeFamilyOfPoints : Prop where
 namespace IsConservativeFamilyOfPoints
 
 variable {P} (hP : P.IsConservativeFamilyOfPoints)
-  (A : Type u') [Category.{v'} A] [LocallySmall.{w} C]
+  (A : Type u') [Category.{v'} A]
   [HasColimitsOfSize.{w, w} A]
   {FC : A → A → Type*} {CC : A → Type w}
   [∀ (X Y : A), FunLike (FC X Y) (CC X) (CC Y)]
