@@ -507,7 +507,7 @@ lemma mulSingle_inj {x y : G i} : mulSingle A i x = mulSingle A i y ↔ x = y :=
   (mulSingle_injective A i).eq_iff
 
 @[to_additive]
-lemma mulSingle_eq_same {i : ι} (r : G i) : mulSingle A i r i = r := Pi.mulSingle_eq_same i r
+lemma mulSingle_eq_same (r : G i) : mulSingle A i r i = r := Pi.mulSingle_eq_same i r
 
 @[to_additive]
 lemma mulSingle_eq_of_ne {i j : ι} (r : G i) (h : j ≠ i) : mulSingle A i r j = 1 :=
