@@ -140,8 +140,14 @@ theorem nodup_iff_count_le_one [BEq α] [LawfulBEq α] {l : List α} : Nodup l �
       have : replicate 2 a <+ l ↔ 1 < count a l := replicate_sublist_iff ..
       (not_congr this).trans Nat.not_lt
 
-theorem nodup_iff_count_eq_one [BEq α] [LawfulBEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 :=
-  nodup_iff_count_le_one.trans <| forall_congr' fun x => by rw [← count_pos_iff]; grind
+theorem nodup_iff_count_eq_one [BEq α] [LawfulBEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 := by
+  refine nodup_iff_count_le_one.trans <| forall_congr' fun x => ?_
+  rw [← count_pos_iff]
+  refine ⟨fun _ _ ↦ by omega, fun h ↦ ?_⟩
+  simp only [count_pos_iff] at h
+  by_cases hx : x ∈ l
+  · simp_all
+  · simp_all [count_eq_zero_of_not_mem hx]
 
 theorem get_bijective_iff [BEq α] [LawfulBEq α] : l.get.Bijective ↔ ∀ a, l.count a = 1 :=
   ⟨fun h a ↦ (nodup_iff_count_eq_one.mp <| nodup_iff_injective_get.mpr h.injective)
