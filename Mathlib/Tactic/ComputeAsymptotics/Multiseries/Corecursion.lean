@@ -349,30 +349,32 @@ theorem FriendlyOperation.op_cons_head_eq {op : Seq α → Seq α} (h : Friendly
       rw [hs, ht, dist_cons_cons_eq_one h_hd] at h
       norm_num at h
 
+def FriendlyOperation.unfold {op : Seq α → Seq α} (h : FriendlyOperation op) (hd? : Option α) :
+    Option (α × Subtype (@FriendlyOperation α)) :=
+  match hd? with
+  | none =>
+    let t := op nil
+    match t.destruct with
+    | none => none
+    | some (t_hd, t_tl) =>
+      some (t_hd, ⟨fun _ ↦ t_tl, FriendlyOperation.const⟩)
+  | some s_hd =>
+    let s := .cons s_hd nil
+    let t := op s
+    match t.destruct with
+    | none => none
+    | some (t_hd, _) =>
+      some (t_hd, ⟨fun s_tl ↦ (op (.cons s_hd s_tl)).tail, FriendlyOperation.cons_tail h⟩)
+
 /-- If the operation `op` is friendly, then there exists a function
 `T : Option α → Option (α × Subtype FriendlyOperation)` such that for all `s`,
 if `T s.head = none`, then `op s = nil`, and if `T s.head = some (hd, op')`,
 then `op s = cons hd (op' s.tail)`. One can see this as a coinductive definition
 of `FriendlyOperation`. For coinductive principle see `FriendlyOperation.coind`. -/
-theorem FriendlyOperation.destruct {op : Seq α → Seq α} (h : FriendlyOperation op) :
-    ∃ T : Option α → Option (α × Subtype FriendlyOperation),
-      ∀ s, destruct (op s) = (T s.head).map (fun (hd, op') => (hd, op'.val s.tail)) := by
-  use fun hd? ↦
-    match hd? with
-    | none =>
-      let t := op nil
-      match t.destruct with
-      | none => none
-      | some (t_hd, t_tl) =>
-        some (t_hd, ⟨fun _ ↦ t_tl, FriendlyOperation.const⟩)
-    | some s_hd =>
-      let s := .cons s_hd nil
-      let t := op s
-      match t.destruct with
-      | none => none
-      | some (t_hd, t_tl) =>
-        some (t_hd, ⟨fun s_tl ↦ (op (.cons s_hd s_tl)).tail, FriendlyOperation.cons_tail h⟩)
-  intro s
+theorem FriendlyOperation.destruct_apply_eq_unfold {op : Seq α → Seq α} (h : FriendlyOperation op)
+    {s : Seq α} :
+    destruct (op s) = (h.unfold s.head).map (fun (hd, op') => (hd, op'.val s.tail)) := by
+  unfold unfold
   cases s with
   | nil =>
     generalize op nil = t
@@ -397,8 +399,8 @@ theorem FriendlyOperation.destruct {op : Seq α → Seq α} (h : FriendlyOperati
 have the same head. -/
 theorem FriendlyOperation.op_head_eq {op : Seq α → Seq α} (h : FriendlyOperation op) {s t : Seq α}
     (h_head : s.head = t.head) : (op s).head = (op t).head := by
-  obtain ⟨T, hT⟩ := FriendlyOperation.destruct h
-  simp [Stream'.Seq.head_eq_destruct, hT s, hT t] at h_head ⊢
+  simp only [head_eq_destruct, Option.map_eq_map, h.destruct_apply_eq_unfold, Option.map_map]
+    at h_head ⊢
   simp [h_head]
   rfl
 
@@ -449,7 +451,7 @@ theorem FriendlyOperation.coind (motive : (Seq α → Seq α) → Prop)
     apply ih h_next
     simpa [dist_eq_half_of_head h_head, pow_succ'] using hn
 
-/-- A generalisation of `FriendlyOperation.coind` for that allows using `opf ∘ op'` in the tail
+/-- A generalisation of `FriendlyOperation.coind` which allows using `opf ∘ op'` in the tail
 of `op s` where `opf` is friendly and `op'` is a function satisfying `motive`. -/
 theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
     (motive : (Seq α → Seq α) → Prop)
@@ -466,12 +468,12 @@ theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
   rintro _ ⟨opf, op, rfl, h_opf, h_op⟩
   specialize h_step _ h_op
   obtain ⟨T, hT⟩ := h_step
-  obtain ⟨F, hF⟩ := FriendlyOperation.destruct h_opf
+  -- obtain ⟨F, hF⟩ := FriendlyOperation.destruct h_opf
   use fun hd? ↦
     match (T hd?) with
-    | none => (F none).map fun (hd, opf') =>
+    | none => (h_opf.unfold none).map fun (hd, opf') =>
       (hd, ⟨_, fun _ ↦ opf'.val nil, op, rfl, FriendlyOperation.const, h_op⟩)
-    | some (hd, opf', op') => (F (some hd)).map fun (hd', opf'') =>
+    | some (hd, opf', op') => (h_opf.unfold (some hd)).map fun (hd', opf'') =>
       (hd', ⟨_, opf''.val ∘ opf'.val, op'.val, rfl,
         FriendlyOperation.comp opf''.prop opf'.prop, op'.prop⟩)
   intro s
@@ -482,13 +484,11 @@ theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
   | nil =>
     symm at hT
     simp at hT
-    specialize hF nil
-    simp [hT, hF]
+    simp [hT, destruct_apply_eq_unfold h_opf]
     rfl
   | cons s_hd s_tl =>
   simp only [destruct_cons] at hT
-  specialize hF (.cons s_hd s_tl)
-  simp only [hF, Seq.tail_cons, Seq.head_cons]
+  simp only [destruct_apply_eq_unfold h_opf, Seq.tail_cons, Seq.head_cons]
   generalize T s.head = t? at *
   cases t? with
   | none => simp at hT
@@ -515,9 +515,9 @@ theorem FriendlyOperation.coind_comp_friend_right {op : Seq α → Seq α}
   rintro _ ⟨opf, op, rfl, h_opf, h_op⟩
   specialize h_step _ h_op
   obtain ⟨T, hT⟩ := h_step
-  obtain ⟨F, hF⟩ := FriendlyOperation.destruct h_opf
+  -- obtain ⟨F, hF⟩ := FriendlyOperation.destruct h_opf
   use fun hd? ↦
-    match (F hd?) with
+    match (h_opf.unfold hd?) with
     | none => (T none).map fun (hd, opf', op') =>
       (hd, ⟨_, fun _ ↦ opf'.val nil, op', rfl, FriendlyOperation.const, op'.prop⟩)
     | some (hd, opf') => (T (some hd)).map fun (hd', opf'', op') =>
@@ -525,20 +525,20 @@ theorem FriendlyOperation.coind_comp_friend_right {op : Seq α → Seq α}
         FriendlyOperation.comp opf''.prop opf'.prop, op'.prop⟩)
   intro s
   simp only [Function.comp_apply]
-  specialize hF s
+  have hF := h_opf.destruct_apply_eq_unfold (s := s)
   generalize opf s = s' at *
   cases s' with
   | nil =>
     symm at hF
-    simp at hF
-    simp [hF]
+    simp only [destruct_nil, Option.map_eq_none_iff] at hF
+    simp only [hF, Option.map_map]
     specialize hT nil
-    simp at hT
+    simp only [tail_nil, head_nil] at hT
     simp [hT]
     rfl
   | cons s_hd s_tl =>
   simp only [destruct_cons] at hF
-  generalize F s.head = t? at *
+  generalize h_opf.unfold s.head = t? at *
   cases t? with
   | none => simp at hF
   | some v =>
@@ -554,9 +554,9 @@ theorem FriendlyOperationClass.eq_of_bisim {s t : Seq α} {op : γ → Seq α �
     [FriendlyOperationClass op]
     (motive : Seq α → Seq α → Prop)
     (base : motive s t)
-    (step : ∀ s t, motive s t → (s = t) ∨
-      ∃ hd s' t' c, s = cons hd (op c s') ∧ t = cons hd (op c t') ∧
-        motive s' t') :
+    (step : ∀ u v, motive u v → (u = v) ∨
+      ∃ hd u' v' c, u = cons hd (op c u') ∧ v = cons hd (op c v') ∧
+        motive u' v') :
     s = t := by
   suffices dist s t = 0 by simpa using this
   suffices ∀ n, dist s t ≤ (2⁻¹ : ℝ) ^ n by
@@ -570,12 +570,12 @@ theorem FriendlyOperationClass.eq_of_bisim {s t : Seq α} {op : γ → Seq α �
   | zero => simp
   | succ n ih =>
     specialize step s t base
-    obtain step | ⟨hd, s', t', c, rfl, rfl, h_next⟩ := step
+    obtain step | ⟨hd, u, v, c, rfl, rfl, h_next⟩ := step
     · simp [step]
     simp only [dist_cons_cons]
     specialize ih h_next
     calc
-      _ ≤ 2⁻¹ * dist s' t' := by
+      _ ≤ 2⁻¹ * dist u v := by
         gcongr
         apply FriendlyOperation.dist_le
         apply FriendlyOperationClass.friend
