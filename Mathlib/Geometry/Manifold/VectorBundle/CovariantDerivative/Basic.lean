@@ -1137,6 +1137,35 @@ section to_trivialization
 
 variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e] [IsManifold I 1 M]
 
+-- Note: The definition below (ab)uses definitional
+-- equality of `TangentSpace (I.prod 𝓘(ℝ, F)) (↑t v)`
+-- which is $T_{t(v)} (M × F)$ and `TM v.proj × F`
+-- which is $T_{π(v)} M × F$.
+variable (I) in
+noncomputable
+def Trivialization.derivEquiv (v : TotalSpace F V) :
+    TangentSpace (I.prod 𝓘(ℝ, F)) v ≃L[ℝ] TangentSpace I v.proj × F where
+      toFun := mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v
+      map_add' := by simp
+      map_smul' := by simp
+      invFun := mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e.invFun (e v)
+      left_inv := sorry
+      right_inv := sorry
+      continuous_toFun := ContinuousLinearMap.continuous _
+      continuous_invFun := ContinuousLinearMap.continuous _
+
+noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
+    Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
+  (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj v).ker
+
+lemma Trivialization.comap_vert (v : TotalSpace F V) (hv : v.proj ∈ e.baseSet) :
+    Bundle.vert v = Submodule.comap (e.derivEquiv I v).toLinearMap
+      (Submodule.prod ⊥ ⊤) := by
+  ext x
+  simp [vert]
+  sorry
+
+
 noncomputable
 def Trivialization.pushCovDer
     (cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)) :
@@ -1163,10 +1192,6 @@ local notation "TM" => TangentSpace I
 
 -- FIXME the statement of CovariantDerivative.isCovariantDerivativeOn should work on any set
 
--- Note: The definition below (ab)uses definitional
--- equality of `TangentSpace (I.prod 𝓘(ℝ, F)) (↑t v)`
--- which is $T_{t(v)} (M × F)$ and `TM v.proj × F`
--- which is $T_{π(v)} M × F$.
 noncomputable
 def proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     TangentSpace (I.prod 𝓘(ℝ, F)) v →L[ℝ] V v.proj :=
@@ -1174,20 +1199,55 @@ def proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
   haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
     (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
   letI tproj := d_covDerOn.projection v.proj (t v).2
-  letI Tvt := mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) t v
-  t.symmL ℝ v.proj |>.comp <| tproj.comp Tvt
+  letI Tvt := t.derivEquiv I v
+  t.symmL ℝ v.proj ∘L tproj ∘L Tvt.toContinuousLinearMap
 
 noncomputable def horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
   (cov.proj v).ker
 
-noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
-    Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
-  (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj v).ker
+lemma comap_trivializationAt_horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
+    letI t := trivializationAt F V v.proj
+    haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
+      (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
+    horiz cov v = Submodule.comap (t.derivEquiv I v).toLinearMap
+      (d_covDerOn.horiz v.proj (t v).2) := by
+  -- FIXME: needing all those lets and the change is awful
+  let t := trivializationAt F V v.proj
+  let Tvt := t.derivEquiv I v
+  have hcov := t.pushCovDer_isCovariantDerivativeOn
+    (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
+  let tproj := hcov.projection v.proj (t v).2
+  let t' := t.continuousLinearEquivAt ℝ v.proj (mem_baseSet_trivializationAt F V v.proj)
+  ext u
+  change t'.symm (tproj (Tvt u)) = 0 ↔ tproj (Tvt u) = 0
+  simp
+
+lemma LinearEquiv.comap_isCompl {R R₂ M M₂ : Type*}
+  [Semiring R] [AddCommMonoid M] [Module R M] [Semiring R₂]
+  {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+  [AddCommMonoid M₂] [Module R₂ M₂]
+  (f : M ≃ₛₗ[σ₁₂] M₂) {p q : Submodule R₂ M₂} (h : IsCompl p q) :
+    IsCompl (Submodule.comap f.toLinearMap p) (Submodule.comap f.toLinearMap q) := by
+  rw [isCompl_iff, disjoint_iff, codisjoint_iff] at *
+  constructor
+  · rw [← Submodule.comap_inf, h.1]
+    simp
+  · rw [← Submodule.comap_sup_of_injective, h.2]
+    · exact Submodule.comap_top f.toLinearMap
+    · exact f.injective
+    · simp
+    · simp
 
 lemma horiz_vert_direct_sum (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     IsCompl (cov.horiz v) (vert v) := by
-  sorry
+  let t := trivializationAt F V v.proj
+  let Tvt := t.derivEquiv I v
+  have hcov := t.pushCovDer_isCovariantDerivativeOn
+    (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
+  rw [t.comap_vert _ (mem_baseSet_trivializationAt F V v.proj), comap_trivializationAt_horiz]
+  apply LinearEquiv.comap_isCompl
+  apply hcov.horiz_vert_direct_sum
 
 variable [IsManifold I 1 M]
 variable {cov : CovariantDerivative I F V}
