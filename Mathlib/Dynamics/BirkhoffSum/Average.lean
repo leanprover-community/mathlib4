@@ -97,7 +97,7 @@ open Classical in
 @[simp]
 theorem Function.const.birkhoffAverage_eq' {f : α → α} (a : M) (n : ℕ) :
     birkhoffAverage R f (fun _ ↦ a) n = fun _ ↦ if (n : R) = 0 then 0 else a := by
-  ext x; exact Function.const.birkhoffAverage_eq R a x
+  ext x; exact Function.const.birkhoffAverage_eq R a n x
 
 lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' := by
