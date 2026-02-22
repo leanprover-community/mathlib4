@@ -688,13 +688,14 @@ lemma concat_dropLast (p : G.Walk u v) (hp : G.Adj p.penultimate v) :
     u :: p.tail.support = p.support := by
   rw [← support_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
-@[simp] lemma length_tail_add_one {p : G.Walk u v} (hp : ¬ p.Nil) :
+lemma length_tail_add_one {p : G.Walk u v} (hp : ¬ p.Nil) :
     p.tail.length + 1 = p.length := by
   rw [← length_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
-lemma length_tail_sub_one {p : G.Walk u v} (hp : ¬p.Nil) :
+@[simp]
+lemma length_tail_sub_one {p : G.Walk u v} :
     p.tail.length = p.length - 1 := by
-  rw [← length_tail_add_one hp, Nat.add_one_sub_one]
+  by_cases p.Nil <;> grind [tail, drop_length]
 
 protected lemma Nil.tail {p : G.Walk v w} (hp : p.Nil) : p.tail.Nil := by
   cases p <;> simp [not_nil_cons] at hp ⊢
@@ -772,9 +773,8 @@ lemma dropLast_eq_reverse_tail_reverse {u v} (p : G.Walk u v) :
     rw [(nil_reverse.mp h).eq_nil]
     simp
   refine ext_getVert fun k ↦ ?_
-  rw [reverse_copy, getVert_copy, dropLast, take_getVert, getVert_reverse, getVert_tail,
-    getVert_reverse, length_tail_sub_one h, length_reverse]
-  grind
+  grind [reverse_copy, getVert_copy, dropLast, take_getVert, getVert_reverse, getVert_tail,
+    getVert_reverse, length_tail_sub_one, length_reverse]
 
 end Walk
 
