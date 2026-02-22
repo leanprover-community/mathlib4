@@ -105,6 +105,7 @@ variable {G} in
 lemma toAut_hom_app_apply (g : G) {X : C} (x : F.obj X) : (toAut F G g).hom.app X x = g • x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `toAut` is injective, if only the identity acts trivially on every fiber. -/
 lemma toAut_injective_of_non_trivial (h : ∀ (g : G), (∀ (X : C) (x : F.obj X), g • x = x) → g = 1) :
     Function.Injective (toAut F G) := by
@@ -153,7 +154,6 @@ lemma toAut_surjective_isGalois_finite_family (t : Aut F) {ι : Type*} [Finite �
     ∃ (g : G), ∀ (i : ι) (x : F.obj (X i)), g • x = t.hom.app (X i) x := by
   let x (i : ι) : F.obj (X i) := (nonempty_fiber_of_isConnected F (X i)).some
   let P : C := ∏ᶜ X
-  letI : Fintype ι := Fintype.ofFinite ι
   let is₁ : F.obj P ≅ ∏ᶜ fun i ↦ (F.obj (X i)) := PreservesProduct.iso F X
   let is₂ : (∏ᶜ fun i ↦ F.obj (X i) : FintypeCat) ≃ ∀ i, F.obj (X i) :=
     Limits.FintypeCat.productEquiv (fun i ↦ (F.obj (X i)))

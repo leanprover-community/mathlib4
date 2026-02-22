@@ -40,6 +40,7 @@ open ComplexConjugate
 
 local notation "|" x "|" => Complex.abs x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An element of the unit circle defines a `LinearIsometryEquiv` from `ℂ` to itself, by
 rotation. -/
 def rotation : Circle →* ℂ ≃ₗᵢ[ℝ] ℂ where
@@ -112,9 +113,9 @@ theorem LinearIsometry.im_apply_eq_im {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1)
 
 theorem LinearIsometry.re_apply_eq_re {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) (z : ℂ) : (f z).re = z.re := by
   apply LinearIsometry.re_apply_eq_re_of_add_conj_eq
-  intro z
   apply LinearIsometry.im_apply_eq_im h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
     f = LinearIsometryEquiv.refl ℝ ℂ ∨ f = conjLIE := by
   have h0 : f I = I ∨ f I = -I := by
@@ -140,6 +141,7 @@ theorem linear_isometry_complex (f : ℂ ≃ₗᵢ[ℝ] ℂ) :
   · simpa using eq_mul_of_inv_mul_eq h₁
   · exact eq_mul_of_inv_mul_eq h₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The matrix representation of `rotation a` is equal to the conformal matrix
 `!![re a, -im a; im a, re a]`. -/
 theorem toMatrix_rotation (a : Circle) :
@@ -152,6 +154,7 @@ theorem toMatrix_rotation (a : Circle) :
     Matrix.cons_val_fin_one]
   fin_cases i <;> fin_cases j <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The determinant of `rotation` (as a linear map) is equal to `1`. -/
 @[simp]
 theorem det_rotation (a : Circle) : LinearMap.det ((rotation a).toLinearEquiv : ℂ →ₗ[ℝ] ℂ) = 1 := by

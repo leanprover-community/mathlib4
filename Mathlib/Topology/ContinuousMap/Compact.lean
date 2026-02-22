@@ -389,18 +389,6 @@ end UniformContinuity
 
 end ContinuousMap
 
-section CompLeft
-
-@[deprecated (since := "2025-05-18")]
-alias ContinuousLinearMap.compLeftContinuousCompact :=
-  ContinuousLinearMap.compLeftContinuous
-
-@[deprecated (since := "2025-05-18")]
-alias ContinuousLinearMap.compLeftContinuousCompact_apply :=
-  ContinuousLinearMap.compLeftContinuous_apply
-
-end CompLeft
-
 namespace ContinuousMap
 
 section LocalNormalConvergence
@@ -416,6 +404,7 @@ open TopologicalSpace
 variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X]
 variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
   classical

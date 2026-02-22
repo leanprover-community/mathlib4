@@ -12,7 +12,7 @@ public import Mathlib.Data.Nat.Basic
 
 /-! Lemmas about `size`. -/
 
-@[expose] public section
+public section
 
 namespace Nat
 

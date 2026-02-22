@@ -70,7 +70,7 @@ a family of compact subsets of `X`, and `α` is a uniform space.
 equicontinuity, uniform convergence, ascoli
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Uniformity Topology Function UniformConvergence
 
@@ -201,6 +201,7 @@ theorem Equicontinuous.tendsto_uniformFun_iff_pi [CompactSpace X]
       rwa [tendsto_id', nhds_induced, ← map_le_iff_le_comap, h𝒢ℱ]
     rwa [ind.tendsto_nhds_iff, comp_id, ← tendsto_map'_iff, h𝒢ℱ] at H'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
 and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the uniform
 structures of uniform convergence on `𝔖` and pointwise convergence on `⋃₀ 𝔖` induce the same
@@ -340,8 +341,9 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
   -- Thus, we just have to compare the two sides of our goal when restricted to some
   -- `K ∈ 𝔖`, where we can apply `Equicontinuous.tendsto_uniformFun_iff_pi`.
   rw [← Filter.tendsto_comap_iff (g := (⋃₀ 𝔖).restrict), ← nhds_induced]
-  simp_rw [UniformOnFun.topologicalSpace_eq, Pi.induced_restrict_sUnion 𝔖 (A := fun _ ↦ α),
-    _root_.nhds_iInf, nhds_induced, tendsto_iInf, tendsto_comap_iff]
+  simp_rw +instances [UniformOnFun.topologicalSpace_eq,
+    Pi.induced_restrict_sUnion 𝔖 (A := fun _ ↦ α), _root_.nhds_iInf, nhds_induced, tendsto_iInf,
+    tendsto_comap_iff]
   congrm ∀ K (hK : K ∈ 𝔖), ?_
   have : CompactSpace K := isCompact_iff_compactSpace.mp (𝔖_compact K hK)
   rw [← (equicontinuous_restrict_iff _ |>.mpr <| F_eqcont K hK).tendsto_uniformFun_iff_pi]

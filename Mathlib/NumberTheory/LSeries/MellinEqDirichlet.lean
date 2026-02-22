@@ -13,13 +13,14 @@ Here we prove general results of the form "the Mellin transform of a power serie
 a Dirichlet series".
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex
 
 variable {ι : Type*} [Countable ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Most basic version of the "Mellin transform = Dirichlet series" argument. -/
 lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ}
     (hp : ∀ i, a i = 0 ∨ 0 < p i) (hs : 0 < s.re)
@@ -63,6 +64,7 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     rw [norm_mul, norm_real, Real.norm_eq_abs, Real.abs_exp,
       norm_cpow_eq_rpow_re_of_pos ht, sub_re, one_re]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Shortcut version for the commonly arising special case when `p i = π * q i` for some other
 sequence `q`. -/
 lemma hasSum_mellin_pi_mul {a : ι → ℂ} {q : ι → ℝ} {F : ℝ → ℂ} {s : ℂ}
@@ -85,6 +87,7 @@ lemma hasSum_mellin_pi_mul {a : ι → ℂ} {q : ι → ℝ} {F : ℝ → ℂ} {
       · rw [mul_rpow pi_pos.le h.le, ← div_div, rpow_neg pi_pos.le, ← div_eq_inv_mul]
     simpa only [this, mul_div_assoc] using h_sum.mul_left _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Version allowing some constant terms (which are omitted from the sums). -/
 lemma hasSum_mellin_pi_mul₀ {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ}
     (hp : ∀ i, 0 ≤ p i) (hs : 0 < s.re)
@@ -112,6 +115,7 @@ lemma hasSum_mellin_pi_mul₀ {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ
     · have := hp i
       rw [norm_of_nonneg (by positivity)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Tailored version for even Jacobi theta functions. -/
 lemma hasSum_mellin_pi_mul_sq {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → ℂ} {s : ℂ} (hs : 0 < s.re)
     (hF : ∀ t ∈ Ioi 0, HasSum (fun i ↦ if r i = 0 then 0 else a i * rexp (-π * r i ^ 2 * t)) (F t))

@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Invertible
-public meta import Mathlib.Data.Sigma.Basic
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Int.Cast.Basic
-public meta import Qq.MetaM
+public import Qq.MetaM
+
+public meta import Mathlib.Data.Sigma.Basic -- for the `Inhabited (Sigma β)` instance
 
 /-!
 ## The `Result` type for `norm_num`
@@ -37,9 +38,6 @@ namespace Mathlib
 namespace Meta.NormNum
 
 variable {u : Level}
-
-/-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
-def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α`
 from `Semiring α` to shrink generated proofs. -/
@@ -240,6 +238,7 @@ required in each use of a number literal at type `α`.
 @[simp]
 def _root_.Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsNNRat.to_isNat {α} [Semiring α] : ∀ {a : α} {n}, IsNNRat a (n) (nat_lit 1) → IsNat a n
   | _, num, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
 
@@ -252,33 +251,40 @@ theorem IsNat.to_isNNRat {α} [Semiring α] : ∀ {a : α} {n}, IsNat a n → Is
 theorem IsNNRat.to_isRat {α} [Ring α] : ∀ {a : α} {n d}, IsNNRat a n d → IsRat a (.ofNat n) d
   | _, _, _, ⟨inv, rfl⟩ => ⟨inv, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsRat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsRat a n (nat_lit 1) → IsInt a n
   | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
 
 theorem IsInt.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsInt a n → IsRat a n (nat_lit 1)
   | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsNNRat.to_raw_eq {n d : ℕ} [DivisionSemiring α] :
     ∀ {a}, IsNNRat (a : α) n d → a = NNRat.rawCast n d
   | _, ⟨inv, rfl⟩ => by simp [div_eq_mul_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsRat.to_raw_eq {n : ℤ} {d : ℕ} [DivisionRing α] :
     ∀ {a}, IsRat (a : α) n d → a = Rat.rawCast n d
   | _, ⟨inv, rfl⟩ => by simp [div_eq_mul_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsRat.neg_to_eq {α} [DivisionRing α] {n d} :
     {a n' d' : α} → IsRat a (.negOfNat n) d → n = n' → d = d' → a = -(n' / d')
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsNNRat.to_eq {α} [DivisionSemiring α] {n d} :
     {a n' d' : α} → IsNNRat a n d → n = n' → d = d' → a = n' / d'
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsNNRat.of_raw (α) [DivisionSemiring α] (n : ℕ) (d : ℕ)
     (h : (d : α) ≠ 0) : IsNNRat (NNRat.rawCast n d : α) n d :=
   have := invertibleOfNonzero h
   ⟨this, by simp [div_eq_mul_inv]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsRat.of_raw (α) [DivisionRing α] (n : ℤ) (d : ℕ)
     (h : (d : α) ≠ 0) : IsRat (Rat.rawCast n d : α) n d :=
   have := invertibleOfNonzero h

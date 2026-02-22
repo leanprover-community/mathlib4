@@ -18,7 +18,7 @@ by the relations given by the morphisms in the diagram) is `w`-small.
 
 -/
 
-@[expose] public section
+public section
 
 universe w u v
 
@@ -30,6 +30,7 @@ variable {J : Type u} [Category.{v} J] {F : J ⥤ AddCommGrpCat.{w}} (c : Cocone
 
 open Colimits
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `c` is a cocone of `F` such that `Quot.desc F c` is bijective, then `c` is a colimit
 cocone of `F`.

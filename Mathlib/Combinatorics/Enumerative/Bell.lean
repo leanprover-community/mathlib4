@@ -73,6 +73,7 @@ private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) :
         rw [← Nat.choose_mul_add hx, mul_comm c x, Nat.add_choose_mul_factorial_mul_factorial]
         ring_nf
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bell_mul_eq (m : Multiset ℕ) :
     m.bell * (m.map (fun j ↦ j !)).prod * ∏ j ∈ (m.toFinset.erase 0), (m.count j)!
       = m.sum ! := by
@@ -103,6 +104,7 @@ theorem bell_mul_eq (m : Multiset ℕ) :
     rw [Finset.sum_multiset_count]
     simp only [smul_eq_mul, mul_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bell_eq (m : Multiset ℕ) :
     m.bell = m.sum ! / ((m.map (fun j ↦ j !)).prod *
       ∏ j ∈ (m.toFinset.erase 0), (m.count j)!) := by
@@ -169,7 +171,7 @@ theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
   · simp
 
 theorem uniformBell_eq_div (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    uniformBell m n = (m * n) ! / (n ! ^ m * m !) := by
+    uniformBell m n = (m * n)! / (n ! ^ m * m !) := by
   rw [eq_comm]
   apply Nat.div_eq_of_eq_mul_left
   · exact Nat.mul_pos (Nat.pow_pos (Nat.factorial_pos n)) m.factorial_pos

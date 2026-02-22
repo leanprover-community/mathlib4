@@ -315,10 +315,7 @@ theorem mapAlg_comp (p : A[X]) : (mapAlg A C) p = (mapAlg B C) (mapAlg A B p) :=
 
 theorem coeff_zero_of_isScalarTower (p : A[X]) :
     (algebraMap B C) ((algebraMap A B) (p.coeff 0)) = (mapAlg A C p).coeff 0 := by
-  have h : algebraMap A C = (algebraMap B C).comp (algebraMap A B) := by
-    ext a
-    simp [Algebra.algebraMap_eq_smul_one, RingHom.coe_comp, Function.comp_apply]
-  rw [mapAlg_eq_map, coeff_map, h, RingHom.comp_apply]
+  rw [mapAlg_eq_map, coeff_map, IsScalarTower.algebraMap_eq A B C, RingHom.comp_apply]
 
 end IsScalarTower
 
@@ -403,7 +400,7 @@ theorem aeval_algHom_apply {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
     (by simp [AlgHomClass.commutes])
   rw [map_add, hp, hq, ← map_add, ← map_add]
 
-theorem aeval_smul (f : R[X]) {G : Type*} [Group G] [MulSemiringAction G A] [SMulCommClass G R A]
+theorem aeval_smul (f : R[X]) {G : Type*} [Monoid G] [MulSemiringAction G A] [SMulCommClass G R A]
     (g : G) (x : A) : f.aeval (g • x) = g • (f.aeval x) := by
   rw [← MulSemiringAction.toAlgHom_apply R, aeval_algHom_apply, MulSemiringAction.toAlgHom_apply]
 
@@ -667,6 +664,7 @@ lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
   convert map_dvd_iff <| algEquivCMulXAddC a b using 2
   simp [← comp_eq_aeval, comp_assoc, ← mul_assoc, ← C_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
   let _ := invertibleOne (α := R)
@@ -676,6 +674,7 @@ lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
   simpa using dvd_comp_X_sub_C_iff p q (-a)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
   let _ := invertibleOne (α := R)
   let _ := invertibleNeg (R := R) 1
@@ -758,8 +757,6 @@ theorem notMem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a �
   refine hQ.2 (eq_zero_of_mul_eq_zero_of_smul P (fun a ha ↦ ?_) Q (mul_comm P _ ▸ hQ.1))
   contrapose! ha
   exact h a ha
-
-@[deprecated (since := "2025-05-24")] alias nmem_nonZeroDivisors_iff := notMem_nonZeroDivisors_iff
 
 protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
   simpa [not_imp_not] using (notMem_nonZeroDivisors_iff (P := P)).not

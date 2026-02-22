@@ -55,20 +55,46 @@ export FaithfulVAdd (eq_of_vadd_eq_vadd)
 lemma smul_left_injective' [SMul M α] [FaithfulSMul M α] : Injective ((· • ·) : M → α → α) :=
   fun _ _ h ↦ FaithfulSMul.eq_of_smul_eq_smul (congr_fun h)
 
+/-- `instSMulOfMul` is faithful when there is a (right) identity. -/
+@[to_additive /-- `instVAddOfAdd` is faithful when there is a (right) identity. -/]
+instance (R : Type*) [MulOneClass R] : FaithfulSMul R R where
+  eq_of_smul_eq_smul {r₁ r₂} h := by simpa using h 1
+
+/-- `Mul.toSMulMulOpposite` is faithful when there is a (left) identity. -/
+@[to_additive /-- `Add.toVAddAddOpposite` is faithful when there is a (left) identity. -/]
+instance (R : Type*) [MulOneClass R] : FaithfulSMul Rᵐᵒᵖ R where
+  eq_of_smul_eq_smul {r₁ r₂} h := by simpa using h 1
+
+/-- `instSMulOfMul` is faithful when multiplication is right cancellative. -/
+@[to_additive /-- `instVAddOfAdd` is faithful when addition is right cancellative. -/]
+instance (R : Type*) [Mul R] [IsRightCancelMul R] : FaithfulSMul R R where
+  eq_of_smul_eq_smul {r₁ r₂} h := by simpa using h r₁
+
+/-- `Mul.toSMulMulOpposite` is faithful when multiplication is left cancellative -/
+@[to_additive /-- `Add.toVAddAddOpposite` is faithful when addition is left cancellative -/]
+instance (R : Type*) [Mul R] [IsLeftCancelMul R] : FaithfulSMul Rᵐᵒᵖ R where
+  eq_of_smul_eq_smul {r₁ r₂} h := by simpa using h r₁.unop
+
 /-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
-@[to_additive /-- `AddMonoid.toAddAction` is faithful on additive cancellative monoids. -/]
-instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
-  ⟨fun h ↦ mul_right_cancel (h 1)⟩
+@[to_additive (attr :=
+  deprecated "subsumed by `instFaithfulSMul` or `instFaithfulSMulOfIsRightCancelMul`"
+  (since := "2026-02-03"))
+  /-- `AddMonoid.toAddAction` is faithful on additive cancellative monoids. -/]
+lemma RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
+  inferInstance
 
 /-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
-@[to_additive /-- `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. -/]
-instance LeftCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
-  ⟨fun h ↦ MulOpposite.unop_injective <| mul_left_cancel (h 1)⟩
+@[to_additive (attr :=
+    deprecated "subsumed by `instFaithfulSMulMulOpposite` or \
+    `instFaithfulSMulMulOppositeOfIsLeftCancelMul`"
+    (since := "2026-02-03"))
+  /-- `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. -/]
+lemma LeftCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
+  inferInstance
 
 @[deprecated (since := "2025-09-15")]
 alias LefttCancelMonoid.to_faithfulSMul_mulOpposite := LeftCancelMonoid.to_faithfulSMul_mulOpposite
 
-instance (R : Type*) [MulOneClass R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
 
 @[to_additive]
 lemma faithfulSMul_iff_injective_smul_one (R A : Type*)

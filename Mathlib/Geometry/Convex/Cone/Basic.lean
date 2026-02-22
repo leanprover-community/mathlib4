@@ -77,6 +77,8 @@ instance : SetLike (ConvexCone R M) M where
   coe := carrier
   coe_injective' C₁ C₂ h := by cases C₁; congr!
 
+instance : PartialOrder (ConvexCone R M) := .ofSetLike (ConvexCone R M) M
+
 @[simp, norm_cast] lemma coe_mk (s : Set M) (h₁ h₂) : ↑(mk (R := R) s h₁ h₂) = s := rfl
 
 @[simp] lemma mem_mk {h₁ h₂} : x ∈ mk (R := R) s h₁ h₂ ↔ x ∈ s := .rfl
@@ -151,10 +153,6 @@ instance : Bot (ConvexCone R M) :=
 
 @[simp] lemma notMem_bot : x ∉ (⊥ : ConvexCone R M) := id
 
-@[deprecated notMem_bot (since := "2025-06-11")]
-theorem mem_bot (x : M) : (x ∈ (⊥ : ConvexCone R M)) = False :=
-  rfl
-
 @[simp, norm_cast] lemma coe_bot : ↑(⊥ : ConvexCone R M) = (∅ : Set M) := rfl
 
 @[simp, norm_cast]
@@ -175,6 +173,7 @@ variable (C₁ C₂) in
 
 @[simp, norm_cast] lemma coe_top : ↑(⊤ : ConvexCone R M) = (univ : Set M) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] lemma disjoint_coe : Disjoint (C₁ : Set M) C₂ ↔ Disjoint C₁ C₂ := by
   simp [disjoint_iff, ← coe_inf]
 
@@ -325,6 +324,7 @@ def toPreorder (C : ConvexCone R G) (h₁ : C.Pointed) : Preorder G where
   le_trans x y z xy zy := by simpa using add_mem zy xy
 
 /-- A pointed and salient cone defines a partial order. -/
+@[instance_reducible]
 def toPartialOrder (C : ConvexCone R G) (h₁ : C.Pointed) (h₂ : C.Salient) : PartialOrder G :=
   { toPreorder C h₁ with
     le_antisymm := by
@@ -342,11 +342,11 @@ lemma to_isOrderedAddMonoid (C : ConvexCone R G) (h₁ : C.Pointed) (h₂ : C.Sa
   __ := toPartialOrder C h₁ h₂
   add_le_add_left a b hab c := show b + c - (a + c) ∈ C by rwa [add_sub_add_right_eq_sub]
 
-@[deprecated (since := "2025-06-11")] alias toIsOrderedAddMonoid := to_isOrderedAddMonoid
-
 end AddCommGroup
 
 section Module
+
+section Monoid
 
 variable [AddCommMonoid M] [Module R M] {C₁ C₂ : ConvexCone R M} {x : M}
 
@@ -382,7 +382,35 @@ instance instAddCommSemigroup : AddCommSemigroup (ConvexCone R M) where
   add_assoc _ _ _ := SetLike.coe_injective <| add_assoc _ _ _
   add_comm _ _ := SetLike.coe_injective <| add_comm _ _
 
+end Monoid
+
+section Reproducing
+
+variable [AddCommGroup M] [Module R M]
+
+/-- A convex cone is reproducing if its set of element differences equals the entire module,
+i.e., every element of `M` can be written as a difference of two elements of `C`.
+
+See also (`IsGenerating`). -/
+def IsReproducing (C : ConvexCone R M) : Prop :=
+  (C : Set M) - (C : Set M) = Set.univ
+
+/-- A sufficient criterion for a convex cone `C` to be reproducing is that `Set.univ` is a subset
+of `C - C`. -/
+theorem IsReproducing.of_univ_subset {C : ConvexCone R M}
+    (h : Set.univ ⊆ (C : Set M) - (C : Set M)) : C.IsReproducing :=
+  Set.eq_univ_iff_forall.mpr fun _ ↦ h (Set.mem_univ _)
+
+/-- The set difference of a reproducing cone with itself equals `Set.univ`. -/
+lemma IsReproducing.sub_eq_univ {C : ConvexCone R M} (hC : C.IsReproducing) :
+    (C : Set M) - (C : Set M) = Set.univ :=
+  hC
+
+end Reproducing
+
 section Generating
+
+variable [AddCommMonoid M] [Module R M]
 
 /-- A convex cone `C` is generating if its linear span is the entire `R`-module `M`.
 
@@ -422,27 +450,10 @@ theorem isGenerating_bot [Subsingleton M] : (⊥ : ConvexCone R M).IsGenerating 
 
 /-- A convex cone containing a generating cone is also a generating cone. -/
 @[gcongr]
-theorem IsGenerating.mono (h : C₁ ≤ C₂) (hgen : C₁.IsGenerating) : C₂.IsGenerating := by
+theorem IsGenerating.mono {C₁ C₂ : ConvexCone R M} (h : C₁ ≤ C₂) (hgen : C₁.IsGenerating) :
+    C₂.IsGenerating := by
   rw [IsGenerating, ← top_le_iff] at hgen ⊢
   exact hgen.trans (Submodule.span_mono h)
-
-/-- A convex cone is reproducing if its set of element differences equals the entire module,
-i.e., every element of `M` can be written as a difference of two elements of `C`.
-
-See also (`IsGenerating`). -/
-def IsReproducing [AddCommGroup M] (C : ConvexCone R M) : Prop :=
-  (C : Set M) - (C : Set M) = Set.univ
-
-/-- A sufficient criteria for a convex cone `C` to be reproducing is that `Set.univ` is a subset
-of `C - C`. -/
-theorem IsReproducing.of_univ_subset [AddCommGroup M] {C : ConvexCone R M}
-    (h : Set.univ ⊆ (C : Set M) - (C : Set M)) : C.IsReproducing :=
-  Set.eq_univ_iff_forall.mpr fun _ ↦ h trivial
-
-/-- The set difference of a reproducing cone with itself equals `Set.univ`. -/
-lemma IsReproducing.sub_eq_univ [AddCommGroup M] {C : ConvexCone R M} (hC : C.IsReproducing) :
-    (C : Set M) - (C : Set M) = Set.univ :=
-  hC
 
 /-- A reproducing cone is generating. -/
 theorem IsReproducing.isGenerating {R : Type*} {M : Type*} [Ring R] [PartialOrder R]
@@ -528,6 +539,7 @@ lemma mem_hull_of_convex (hs : Convex 𝕜 s) : x ∈ hull 𝕜 s ↔ ∃ r : �
 lemma coe_hull_of_convex (hs : Convex 𝕜 s) : hull 𝕜 s = {x | ∃ r : 𝕜, 0 < r ∧ x ∈ r • s} := by
   ext; exact mem_hull_of_convex hs
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_hull_left_of_convex (hs : Convex 𝕜 s) : Disjoint (hull 𝕜 s) C ↔ Disjoint s C where
   mp := by rw [← disjoint_coe]; exact .mono_left subset_hull
   mpr := by
@@ -567,8 +579,6 @@ def toConvexCone (C : Submodule R M) : ConvexCone R M where
 @[simp]
 lemma toConvexCone_le_toConvexCone : C₁.toConvexCone ≤ C₂.toConvexCone ↔ C₁ ≤ C₂ := .rfl
 
-@[deprecated (since := "2025-06-11")] alias toConvexCone_le_iff := toConvexCone_le_toConvexCone
-
 @[simp] lemma toConvexCone_bot : (⊥ : Submodule R M).toConvexCone = 0 := rfl
 @[simp] lemma toConvexCone_top : (⊤ : Submodule R M).toConvexCone = ⊤ := rfl
 
@@ -578,8 +588,6 @@ lemma toConvexCone_inf (C₁ C₂ : Submodule R M) :
 
 @[simp]
 lemma pointed_toConvexCone (C : Submodule R M) : C.toConvexCone.Pointed := C.zero_mem
-
-@[deprecated (since := "2025-06-11")] alias toConvexCone_pointed := pointed_toConvexCone
 
 end AddCommMonoid
 
@@ -645,9 +653,6 @@ theorem coe_strictlyPositive : ↑(strictlyPositive R M) = Set.Ioi (0 : M) :=
   rfl
 
 lemma strictlyPositive_le_positive : strictlyPositive R M ≤ positive R M := fun _ => le_of_lt
-
-@[deprecated (since := "2025-05-29")]
-alias positive_le_strictlyPositive := strictlyPositive_le_positive
 
 /-- The strictly positive cone of an ordered module is always salient. -/
 theorem salient_strictlyPositive : Salient (strictlyPositive R M) :=

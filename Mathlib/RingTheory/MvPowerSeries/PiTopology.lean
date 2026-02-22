@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Order
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
-public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Instances.ENat
@@ -100,6 +99,7 @@ variable (R) in
 scoped instance : TopologicalSpace (MvPowerSeries σ R) :=
   Pi.topologicalSpace
 
+set_option backward.isDefEq.respectTransparency false in
 theorem instTopologicalSpace_mono (σ : Type*) {R : Type*} {t u : TopologicalSpace R} (htu : t ≤ u) :
     @instTopologicalSpace σ R t ≤ @instTopologicalSpace σ R u := by
   simp only [instTopologicalSpace, Pi.topologicalSpace, le_iInf_iff]
@@ -126,6 +126,7 @@ variable (R) in
 theorem continuous_constantCoeff [Semiring R] : Continuous (constantCoeff (σ := σ) (R := R)) :=
   continuous_coeff (R := R) 0
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A family of power series converges iff it converges coefficientwise -/
 theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
     (f : ι → MvPowerSeries σ R) (u : Filter ι) (g : MvPowerSeries σ R) :
@@ -157,8 +158,6 @@ theorem denseRange_toMvPowerSeries [CommSemiring R] :
     DenseRange (MvPolynomial.toMvPowerSeries (R := R) (σ := σ)) := fun f ↦ by
   classical
   exact mem_closure_of_tendsto (tendsto_trunc'_atTop f) <| .of_forall fun _ ↦ Set.mem_range_self _
-
-@[deprecated (since := "2025-05-21")] alias toMvPowerSeries_denseRange := denseRange_toMvPowerSeries
 
 variable (σ R)
 
@@ -242,6 +241,7 @@ theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
 
 variable [Semiring R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A multivariate power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
     HasSum (fun d : σ →₀ ℕ => monomial d (coeff d f)) f := by

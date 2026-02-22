@@ -24,7 +24,7 @@ open CategoryTheory Limits CompHausLike Topology
 namespace Stonean
 
 instance : HasExplicitFiniteCoproducts.{w, u} (fun Y ↦ ExtremallyDisconnected Y) where
-  hasProp _ := { hasProp := show ExtremallyDisconnected (Σ (_a : _), _) from inferInstance}
+  hasProp _ := { hasProp := show ExtremallyDisconnected (Σ (_a : _), _) from inferInstance }
 
 variable {X Y Z : Stonean} {f : X ⟶ Z} (i : Y ⟶ Z) (hi : IsOpenEmbedding f)
 include hi

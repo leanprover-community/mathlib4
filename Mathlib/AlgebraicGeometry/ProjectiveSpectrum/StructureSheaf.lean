@@ -13,8 +13,8 @@ public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 /-!
 # The structure sheaf on `ProjectiveSpectrum 𝒜`.
 
-In `Mathlib/AlgebraicGeometry/Topology.lean`, we have given a topology on `ProjectiveSpectrum 𝒜`; in
-this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
+In `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Topology.lean`, we have given a topology on
+`ProjectiveSpectrum 𝒜`; in this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
 
 ## Notation
 - `A` is a commutative ring;
@@ -119,6 +119,7 @@ theorem add_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x 
   simp only [Subtype.forall, Opens.apply_mk] at wa wb
   simp [wa y hy.1, wb y hy.2, ext_iff_val, add_mk, add_comm (sa * rb)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem neg_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) : (isLocallyFraction 𝒜).pred (-a) := fun x => by
   rcases ha x with ⟨V, m, i, j, ⟨r, r_mem⟩, ⟨s, s_mem⟩, nin, hy⟩
@@ -267,6 +268,7 @@ theorem stalkToFiberRingHom_germ (U : Opens (ProjectiveSpectrum.top 𝒜))
     stalkToFiberRingHom 𝒜 x ((Proj.structureSheaf 𝒜).presheaf.germ _ x hx s) = s.1 ⟨x, hx⟩ :=
   RingHom.ext_iff.1 (CommRingCat.hom_ext_iff.mp (germ_comp_stalkToFiberRingHom 𝒜 U x hx)) s
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_basicOpen_den (x : ProjectiveSpectrum.top 𝒜)
     (f : HomogeneousLocalization.NumDenSameDeg 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl) :
     x ∈ ProjectiveSpectrum.basicOpen 𝒜 f.den := by
@@ -284,6 +286,7 @@ def sectionInBasicOpen (x : ProjectiveSpectrum.top 𝒜) :
     ⟨ProjectiveSpectrum.basicOpen 𝒜 f.den, y.2,
       ⟨𝟙 _, ⟨f.deg, ⟨f.num, f.den, _, fun _ => rfl⟩⟩⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open HomogeneousLocalization in
 /-- Given any point `x` and `f` in the homogeneous localization at `x`, there is an element in the
 stalk at `x` obtained by `sectionInBasicOpen`. This is the inverse of `stalkToFiberRingHom`.

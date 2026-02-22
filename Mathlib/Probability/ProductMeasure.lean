@@ -60,6 +60,7 @@ section Preliminaries
 variable {ι : Type*} {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)}
 variable (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Consider a family of probability measures. You can take their products for any finite
 subfamily. This gives a projective family of measures. -/
 lemma isProjectiveMeasureFamily_pi :
@@ -74,7 +75,7 @@ lemma isProjectiveMeasureFamily_pi :
 
 /-- Consider a family of probability measures. You can take their products for any finite
 subfamily. This gives an additive content on the measurable cylinders. -/
-noncomputable def piContent : AddContent (measurableCylinders X) :=
+noncomputable def piContent : AddContent ℝ≥0∞ (measurableCylinders X) :=
   projectiveFamilyContent (isProjectiveMeasureFamily_pi μ)
 
 lemma piContent_cylinder {I : Finset ι} {S : Set (Π i : I, X i)} (hS : MeasurableSet S) :
@@ -115,6 +116,7 @@ noncomputable def infinitePiNat : Measure (Π n, X n) :=
 instance : IsProbabilityMeasure (Measure.infinitePiNat μ) := by
   rw [Measure.infinitePiNat]; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `μ : (i : Ioc a c) → Measure (X i)` be a family of measures. Up to an equivalence,
 `(⨂ i : Ioc a b, μ i) ⊗ (⨂ i : Ioc b c, μ i) = ⨂ i : Ioc a c, μ i`, where `⊗` denotes the
 product of measures. -/
@@ -131,6 +133,7 @@ lemma pi_prod_map_IocProdIoc {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c) :
   · rw [Function.extend_val_apply hx, Function.extend_val_apply (Ioc_subset_Ioc_left hab hx),
       restrict₂]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `μ : (i : Iic b) → Measure (X i)` be a family of measures. Up to an equivalence,
 `(⨂ i : Iic a, μ i) ⊗ (⨂ i : Ioc a b, μ i) = ⨂ i : Iic b, μ i`, where `⊗` denotes the
 product of measures. -/
@@ -151,6 +154,7 @@ lemma pi_prod_map_IicProdIoc {a b : ℕ} :
     · exact isProjectiveMeasureFamily_pi μ (Iic a) (Iic b) (Iic_subset_Iic.2 hba) |>.symm
     all_goals fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `μ (i + 1) : Measure (X (i + 1))` be a measure. Up to an equivalence,
 `μ i = ⨂ j : Ioc i (i + 1), μ i`, where `⊗` denotes the product of measures. -/
 lemma map_piSingleton (μ : (n : ℕ) → Measure (X n)) [∀ n, SigmaFinite (μ n)] (n : ℕ) :
@@ -166,6 +170,7 @@ lemma map_piSingleton (μ : (n : ℕ) → Measure (X n)) [∀ n, SigmaFinite (μ
 
 end Measure
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `partialTraj κ a b` is a kernel which up to an equivalence is equal to
 `Kernel.id ×ₖ (κ a ⊗ₖ ... ⊗ₖ κ (b - 1))`. This lemma therefore states that if the kernels `κ`
 are constant then their composition-product is the product measure. -/
@@ -194,6 +199,7 @@ theorem partialTraj_const_restrict₂ {a b : ℕ} :
     · rw [Set.not_nonempty_iff_eq_empty.1 hs]
       simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `partialTraj κ a b` is a kernel which up to an equivalence is equal to
 `Kernel.id ×ₖ (κ a ⊗ₖ ... ⊗ₖ κ (b - 1))`. This lemma therefore states that if the kernel `κ i`
 is constant equal to `μ i` for all `i`, then up to an equivalence
@@ -205,6 +211,7 @@ theorem partialTraj_const {a b : ℕ} :
 
 namespace Measure
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isProjectiveLimit_infinitePiNat :
     IsProjectiveLimit (infinitePiNat μ) (fun I : Finset ℕ ↦ (Measure.pi (fun i : I ↦ μ i))) := by
   intro I
@@ -240,6 +247,7 @@ open Measure
 variable {ι : Type*} {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)}
   (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If we push the product measure forward by a reindexing equivalence, we get a product measure
 on the reindexed product in the sense that it coincides with `piContent μ` over
 measurable cylinders. See `infinitePi_map_piCongrLeft` for a general version. -/
@@ -333,6 +341,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
     · rw [B_inter, measure_empty]
     · infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `projectiveFamilyContent` associated to a family of probability measures is
 σ-subadditive. -/
 theorem isSigmaSubadditive_piContent : (piContent μ).IsSigmaSubadditive := by
@@ -379,6 +388,7 @@ instance : IsProbabilityMeasure (infinitePi μ) := by
   rw [← cylinder_univ ∅, cylinder, ← map_apply (measurable_restrict _) .univ,
     infinitePi_map_restrict, measure_univ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To prove that a measure is equal to the product measure it is enough to check that it
 it gives the same measure to measurable boxes. -/
 theorem eq_infinitePi {ν : Measure (Π i, X i)}
@@ -398,6 +408,7 @@ theorem eq_infinitePi {ν : Measure (Π i, X i)}
     · exact .univ
   · exact .univ_pi ht
 
+set_option backward.isDefEq.respectTransparency false in
 lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
     (mt : ∀ i ∈ s, MeasurableSet (t i)) :
     infinitePi μ (Set.pi s t) = ∏ i ∈ s, μ i (t i) := by
@@ -432,7 +443,7 @@ lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) �
       simp only [coe_image, dite_eq_ite]
     have : s.pi t
       = ⋂ s' : Finset s,
-        (Subtype.val '' (s': Set s)).pi (fun i ↦ if i ∈ s then t i else Set.univ) := by
+        (Subtype.val '' (s' : Set s)).pi (fun i ↦ if i ∈ s then t i else Set.univ) := by
       rw [← Set.pi_iUnion_eq_iInter_pi, Set.iUnion_finset_eq_set]
       grind
     rw [this]
@@ -460,9 +471,11 @@ lemma infinitePi_singleton [Countable ι] [∀ i, MeasurableSingletonClass (X i)
 lemma infinitePi_singleton_of_fintype [Fintype ι] [∀ i, MeasurableSingletonClass (X i)]
     (f : ∀ i, X i) : infinitePi μ {f} = ∏ i, μ i {f i} := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma infinitePi_dirac (f : ∀ i, X i) : infinitePi (fun i ↦ dirac (f i)) = dirac f :=
   .symm <| eq_infinitePi _ <| by simp +contextual [MeasurableSet.pi, Finset.countable_toSet]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.measurePreserving_eval_infinitePi (i : ι) :
     MeasurePreserving (Function.eval i) (infinitePi μ) (μ i) where
   measurable := by fun_prop
@@ -584,6 +597,7 @@ theorem lintegral_restrict_infinitePi {s : Finset ι}
 
 open Filtration
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_infinitePi_of_piFinset [DecidableEq ι] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {s : Finset ι} {f : (Π i, X i) → E}
     (mf : StronglyMeasurable[piFinset s] f) (x : Π i, X i) :
@@ -596,6 +610,7 @@ theorem integral_infinitePi_of_piFinset [DecidableEq ι] {E : Type*} [NormedAddC
   exact mf.comp_measurable (measurable_updateFinset.mono le_rfl (piFinset.le s))
     |>.aestronglyMeasurable
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lintegral_infinitePi_of_piFinset [DecidableEq ι] {s : Finset ι}
     {f : (Π i, X i) → ℝ≥0∞} (mf : Measurable[piFinset s] f)
     (x : Π i, X i) : ∫⁻ y, f y ∂infinitePi μ = (∫⋯∫⁻_s, f ∂μ) x := by

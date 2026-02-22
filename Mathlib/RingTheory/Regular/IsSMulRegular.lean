@@ -26,7 +26,7 @@ it's supposed to import a minimal amount of the algebraic hierarchy.
 module, regular element, commutative algebra
 -/
 
-@[expose] public section
+public section
 
 section Congr
 
@@ -68,23 +68,20 @@ lemma IsSMulRegular.rTensor : IsSMulRegular (M' ⊗[R] M) r :=
 
 end TensorProduct
 
-lemma isSMulRegular_algebraMap_iff [CommSemiring R] [Semiring S] [Algebra R S]
-    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M] (r : R) :
-    IsSMulRegular M (algebraMap R S r) ↔ IsSMulRegular M r :=
-  (Equiv.refl M).isSMulRegular_congr (algebraMap_smul S r)
-
 section Ring
 
 variable [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup M'] [Module R M'] [AddCommGroup M''] [Module R M'']
     (N : Submodule R M) (r : R)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSMulRegular_submodule_iff_right_eq_zero_of_smul :
     IsSMulRegular N r ↔ ∀ x ∈ N, r • x = 0 → x = 0 :=
   isSMulRegular_iff_right_eq_zero_of_smul.trans <|
     Subtype.forall.trans <| by
       simp only [SetLike.mk_smul_mk, Submodule.mk_eq_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSMulRegular_quotient_iff_mem_of_smul_mem :
     IsSMulRegular (M ⧸ N) r ↔ ∀ x : M, r • x ∈ N → x ∈ N :=
   isSMulRegular_iff_right_eq_zero_of_smul.trans <|
@@ -96,16 +93,6 @@ variable {N r}
 lemma mem_of_isSMulRegular_quotient_of_smul_mem (h1 : IsSMulRegular (M ⧸ N) r)
     {x : M} (h2 : r • x ∈ N) : x ∈ N :=
   (isSMulRegular_quotient_iff_mem_of_smul_mem N r).mp h1 x h2
-
-@[deprecated (since := "2025-08-04")]
-alias isSMulRegular_on_submodule_iff_mem_imp_smul_eq_zero_imp_eq_zero :=
-  isSMulRegular_submodule_iff_right_eq_zero_of_smul
-
-@[deprecated (since := "2025-08-04")]
-alias isSMulRegular_on_quot_iff_smul_mem_implies_mem := isSMulRegular_quotient_iff_mem_of_smul_mem
-
-@[deprecated (since := "2025-08-04")]
-alias mem_of_isSMulRegular_on_quot_of_smul_mem := mem_of_isSMulRegular_quotient_of_smul_mem
 
 /-- Given a left exact sequence `0 → M → M' → M''`, if `r` is regular on both
 `M` and `M''` it's regular `M'` too. -/
@@ -120,6 +107,7 @@ lemma isSMulRegular_of_range_eq_ker {f : M →ₗ[R] M'} {g : M' →ₗ[R] M''}
   refine (congrArg f (h1.right_eq_zero_of_smul ?_)).trans f.map_zero
   exact hf <| (f.map_smul r y).trans <| hx.trans f.map_zero.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSMulRegular_of_isSMulRegular_on_submodule_on_quotient
     (h1 : IsSMulRegular N r) (h2 : IsSMulRegular (M ⧸ N) r) : IsSMulRegular M r :=
   isSMulRegular_of_range_eq_ker N.injective_subtype
@@ -166,9 +154,9 @@ variable {r}
 
 lemma IsSMulRegular.isSMulRegular_on_quot_iff_smul_top_inf_eq_smul :
     IsSMulRegular M r → (IsSMulRegular (M ⧸ N) r ↔ r • ⊤ ⊓ N ≤ r • N) := by
-  intro (h : Function.Injective (DistribMulAction.toLinearMap R M r))
+  intro (h : Function.Injective (DistribSMul.toLinearMap R M r))
   rw [isSMulRegular_on_quot_iff_lsmul_comap_le, ← map_le_map_iff_of_injective h,
-    ← LinearMap.lsmul_eq_DistribMulAction_toLinearMap,
+    ← LinearMap.lsmul_eq_distribSMultoLinearMap,
     map_comap_eq, LinearMap.range_eq_map]; rfl
 
 lemma isSMulRegular_of_ker_lsmul_eq_bot

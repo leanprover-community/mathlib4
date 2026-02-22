@@ -18,13 +18,14 @@ If `f : ℂ → ℝ` is harmonic at `x`, we show that `∂f/∂1 - I • ∂f/�
 holomorphic on the ball.  This implies in particular that harmonic functions are real-analytic.
 -/
 
-@[expose] public section
+public section
 
 open Complex InnerProductSpace Metric Topology
 
 variable
   {f : ℂ → ℝ} {x : ℂ}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : ℂ → ℝ` is harmonic at `x`, then `∂f/∂1 - I • ∂f/∂I` is complex differentiable at `x`.
 -/
@@ -55,6 +56,7 @@ theorem HarmonicAt.differentiableAt_complex_partial (hf : HarmonicAt f x) :
       add_eq_zero_iff_eq_neg] at h₂f
     simp [h₂f]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : ℂ → ℝ` is harmonic at `x`, then `∂f/∂1 - I • ∂f/∂I` is complex analytic at `x`.
 -/
@@ -64,6 +66,7 @@ theorem HarmonicAt.analyticAt_complex_partial (hf : HarmonicAt f x) :
     (fun _ hy ↦ (HarmonicAt.differentiableAt_complex_partial hy).differentiableWithinAt)
     ((isOpen_setOf_harmonicAt f).mem_nhds hf)
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 If a function `f : ℂ → ℝ` is harmonic on an open ball, then `f` is the real part of a function
 `F : ℂ → ℂ` that is holomorphic on the ball.
@@ -105,6 +108,7 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
   · simp [F]
   · assumption
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 Harmonic functions are real analytic.
 TODO: Prove this for harmonic functions on an arbitrary f.d. inner product space (not just on `ℂ`).

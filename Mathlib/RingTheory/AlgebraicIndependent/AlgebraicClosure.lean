@@ -22,7 +22,7 @@ public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
   algebraically independent over the algebraic closure.
 -/
 
-@[expose] public section
+public section
 
 open Function Algebra
 
@@ -36,6 +36,7 @@ include hx
 
 namespace AlgebraicIndependent
 
+set_option backward.isDefEq.respectTransparency false in
 theorem extendScalars [alg : Algebra.IsAlgebraic R S] : AlgebraicIndependent S x := by
   refine algebraicIndependent_of_finite_type'
     (Algebra.IsAlgebraic.injective_tower_top S hx.algebraMap_injective) fun t fin ind i hi ↦ ?_
@@ -64,14 +65,17 @@ theorem extendScalars_of_isIntegral [Algebra.IsIntegral R S] : AlgebraicIndepend
   have := Module.nontrivial R S
   exact hx.extendScalars S
 
+set_option backward.isDefEq.respectTransparency false in
 theorem subalgebraAlgebraicClosure [IsDomain R] [NoZeroDivisors A] :
     AlgebraicIndependent (Subalgebra.algebraicClosure R A) x :=
   hx.extendScalars _
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem integralClosure [NoZeroDivisors A] :
     AlgebraicIndependent (integralClosure R A) x :=
   hx.extendScalars_of_isIntegral _
 
+set_option backward.isDefEq.respectTransparency false in
 omit hx in
 protected theorem algebraicClosure {F E : Type*} [Field F] [Field E] [Algebra F E] {x : ι → E}
     (hx : AlgebraicIndependent F x) : AlgebraicIndependent (algebraicClosure F E) x :=
@@ -117,18 +121,22 @@ section Ring
 
 variable [Ring S] [Algebra E S]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_adjoin_iff {x : S} :
     IsAlgebraic (adjoin F s) x ↔ IsAlgebraic (Algebra.adjoin F s) x :=
   (IsAlgebraic.isAlgebraic_iff ..).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_adjoin_iff_top :
     Algebra.IsAlgebraic (adjoin F s) S ↔ Algebra.IsAlgebraic (Algebra.adjoin F s) S :=
   (IsAlgebraic.isAlgebraic_iff_top ..).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_adjoin_iff_bot :
     Algebra.IsAlgebraic R (adjoin F s) ↔ Algebra.IsAlgebraic R (Algebra.adjoin F s) :=
   IsAlgebraic.isAlgebraic_iff_bot ..
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_adjoin_iff {x : S} :
     Transcendental (adjoin F s) x ↔ Transcendental (Algebra.adjoin F s) x :=
   (IsAlgebraic.transcendental_iff ..).symm
@@ -137,10 +145,12 @@ end Ring
 
 variable [CommRing S] [Algebra E S]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem algebraicIndependent_adjoin_iff {x : ι → S} :
     AlgebraicIndependent (adjoin F s) x ↔ AlgebraicIndependent (Algebra.adjoin F s) x :=
   (Algebra.IsAlgebraic.algebraicIndependent_iff ..).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isTranscendenceBasis_adjoin_iff {x : ι → S} :
     IsTranscendenceBasis (adjoin F s) x ↔ IsTranscendenceBasis (Algebra.adjoin F s) x :=
   (Algebra.IsAlgebraic.isTranscendenceBasis_iff ..).symm

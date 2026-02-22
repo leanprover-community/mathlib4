@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 
@@ -45,7 +46,7 @@ set of all minimal polynomials (not proved here).
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 
@@ -75,6 +76,7 @@ theorem exists_leftTransversal_of_FiniteIndex
 
 variable {ι : Type*} {s : Finset ι} {H : Subgroup G} {g : ι → G}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem leftCoset_cover_const_iff_surjOn :
     ⋃ i ∈ s, g i • (H : Set G) = Set.univ ↔ Set.SurjOn (g · : ι → G ⧸ H) s Set.univ := by
@@ -208,6 +210,7 @@ theorem exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).FiniteIndex :
       exists_finiteIndex_of_leftCoset_cover_aux hcovers j hj hcovers'
     exact ⟨i, hi, hfi⟩
 
+set_option backward.isDefEq.respectTransparency false in
 -- Auxiliary to `leftCoset_cover_filter_FiniteIndex` and `one_le_sum_inv_index_of_leftCoset_cover`.
 @[to_additive]
 theorem leftCoset_cover_filter_FiniteIndex_aux
@@ -383,9 +386,6 @@ theorem Subspace.biUnion_ne_univ_of_top_notMem (hs : ⊤ ∉ s) : ⋃ p ∈ s, (
   have : Nontrivial (E ⧸ p) := Submodule.Quotient.nontrivial_iff.mpr (ne_of_mem_of_not_mem hp hs)
   have : Infinite (E ⧸ p) := Module.Free.infinite k (E ⧸ p)
   exact not_finite (E ⧸ p)
-
-@[deprecated (since := "2025-05-24")]
-alias Subspace.biUnion_ne_univ_of_top_nmem := Subspace.biUnion_ne_univ_of_top_notMem
 
 /-- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
 theorem Subspace.top_mem_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) = Set.univ) :

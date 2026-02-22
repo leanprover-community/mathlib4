@@ -76,8 +76,6 @@ attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
     (Rₚ) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p.asIdeal] :
     p ∈ freeLocus R M ↔ Module.Free Rₚ (Rₚ ⊗[R] M) := by
-  have := (isLocalizedModule_iff_isBaseChange p.asIdeal.primeCompl _ _).mpr
-    (TensorProduct.isBaseChange R M Rₚ)
   exact mem_freeLocus_of_isLocalization p Rₚ (f := TensorProduct.mk R Rₚ M 1)
 
 lemma freeLocus_congr {M'} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
@@ -86,6 +84,7 @@ lemma freeLocus_congr {M'} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') 
   exact mem_freeLocus_of_isLocalization _ _ _
     (LocalizedModule.mkLinearMap p.asIdeal.primeCompl M' ∘ₗ e.toLinearMap)
 
+set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 lemma comap_freeLocus_le {A} [CommRing A] [Algebra R A] :
     comap (algebraMap R A) ⁻¹' freeLocus R M ≤ freeLocus A (A ⊗[R] M) := by
@@ -355,6 +354,7 @@ lemma rankAtStalk_tensorProduct_of_isScalarTower {S : Type*} [CommRing S] [Algeb
   simp [rankAtStalk_eq_of_equiv (AlgebraTensorModule.cancelBaseChange R S S N M).symm,
     rankAtStalk_tensorProduct, rankAtStalk_baseChange]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The rank of a module `M` at a prime `p` is equal to the dimension
 of `κ(p) ⊗[R] M` as a `κ(p)`-module. -/
 lemma rankAtStalk_eq (p : PrimeSpectrum R) :

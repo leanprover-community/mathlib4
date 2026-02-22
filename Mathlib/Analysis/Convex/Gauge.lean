@@ -224,13 +224,9 @@ theorem le_gauge_of_notMem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {
   · dsimp only
     rw [← mul_smul, mul_inv_cancel_left₀ ha.ne']
 
-@[deprecated (since := "2025-05-23")] alias le_gauge_of_not_mem := le_gauge_of_notMem
-
 theorem one_le_gauge_of_notMem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ s) :
     1 ≤ gauge s x :=
   le_gauge_of_notMem hs₁ hs₂ <| by rwa [one_smul]
-
-@[deprecated (since := "2025-05-23")] alias one_le_gauge_of_not_mem := one_le_gauge_of_notMem
 
 section LinearOrderedField
 
@@ -349,6 +345,7 @@ section ContinuousSMul
 
 variable [TopologicalSpace E] [ContinuousSMul ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 open Filter in
 theorem interior_subset_gauge_lt_one (s : Set E) : interior s ⊆ { x | gauge s x < 1 } := by
   intro x hx

@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Separation.CompletelyRegular
 
 import Mathlib.Topology.UniformSpace.OfCompactT2
-import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Uniformizable Spaces
@@ -105,6 +104,7 @@ public theorem CompletelyRegularSpace.of_exists_uniformSpace
   obtain ⟨u, rfl⟩ := h
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 public theorem CompletelyRegularSpace.exists_uniformSpace [CompletelyRegularSpace X] :
     ∃ u : UniformSpace X, u.toTopologicalSpace = t :=
   ⟨uniformSpaceOfCompactR1.comap stoneCechUnit, isInducing_stoneCechUnit.eq_induced.symm⟩

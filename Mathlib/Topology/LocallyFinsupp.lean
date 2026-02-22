@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Tactic.Peel
 
 /-!
 # Type of functions with locally finite support
@@ -55,7 +56,7 @@ variable (X Y) in
 A function with locally finite support is a function with locally finite support within
 `⊤ : Set X`.
 -/
-def Function.locallyFinsupp [Zero Y] := locallyFinsuppWithin (⊤ : Set X) Y
+abbrev Function.locallyFinsupp [Zero Y] := locallyFinsuppWithin (Set.univ : Set X) Y
 
 /--
 For T1 spaces, the condition `supportLocallyFiniteWithinDomain'` is equivalent to saying that the
@@ -69,6 +70,34 @@ theorem supportDiscreteWithin_iff_locallyFiniteWithin [T1Space X] [Zero Y] {f : 
     simp only [mem_support, ne_eq, Pi.zero_apply, mem_diff, mem_setOf_eq, iff_and_self]
     exact (h ·)
   rw [EventuallyEq, Filter.Eventually, codiscreteWithin_iff_locallyFiniteComplementWithin, this]
+
+/--
+A function `f : X → Y` has locally finite support if for every `z : X`, there is a
+neighbourhood `t` around `z` such that `t ∩ f.support` is finite.
+-/
+def LocallyFiniteSupport [Zero Y] (f : X → Y) : Prop :=
+  ∀ z : X, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)
+
+lemma LocallyFiniteSupport.iff_locallyFinite_support [Zero Y] (f : X → Y) :
+    LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) ↔ LocallyFiniteSupport f := by
+  dsimp only [LocallyFinite]
+  peel with z t ht
+  have aux1 : t ∩ f.support = {i : f.support | ↑i ∈ t} := by aesop
+  have aux2 : InjOn Subtype.val {i : f.support | ↑i ∈ t} := by aesop
+  simp only [singleton_inter_nonempty, aux1, finite_image_iff aux2]
+
+lemma LocallyFiniteSupport.locallyFinite_support [Zero Y] (f : X → Y) (h : LocallyFiniteSupport f) :
+    LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) :=
+  (LocallyFiniteSupport.iff_locallyFinite_support f).mpr h
+
+lemma LocallyFiniteSupport.finite_inter_support_of_isCompact {W : Set X}
+   [Zero Y] {f : X → Y} (h : LocallyFiniteSupport f)
+   (hW : IsCompact W) : (W ∩ f.support).Finite := by
+  have := LocallyFinite.finite_nonempty_inter_compact
+    (LocallyFiniteSupport.locallyFinite_support f h) hW
+  have lem {α : Type u_1} (s t : Set α) : {i : s | ({↑i} ∩ t).Nonempty} = (t ∩ s) := by aesop
+  rw [← lem f.support W]
+  exact Finite.image Subtype.val this
 
 namespace Function.locallyFinsuppWithin
 
@@ -107,8 +136,6 @@ Simplifier lemma: Functions with locally finite support within `U` evaluate to z
 lemma apply_eq_zero_of_notMem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
     (hz : z ∉ U) :
     D z = 0 := notMem_support.mp fun a ↦ hz (D.supportWithinDomain a)
-
-@[deprecated (since := "2025-05-23")] alias apply_eq_zero_of_not_mem := apply_eq_zero_of_notMem
 
 /--
 On a T1 space, the support of a function with locally finite support within `U` is discrete within

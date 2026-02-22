@@ -13,7 +13,7 @@ public import Mathlib.Tactic.Abel
 # Summation by parts
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (f : ℕ → R) (g : ℕ → M) {m n : ℕ}

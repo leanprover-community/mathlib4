@@ -287,7 +287,7 @@ def init (k : K) (L : List (Γ k)) : Cfg Γ Λ σ :=
 
 /-- Evaluates a TM2 program to completion, with the output on the same stack as the input. -/
 def eval (M : Λ → Stmt Γ Λ σ) (k : K) (L : List (Γ k)) : Part (List (Γ k)) :=
-  (Turing.eval (step M) (init k L)).map fun c ↦ c.stk k
+  (StateTransition.eval (step M) (init k L)).map fun c ↦ c.stk k
 
 end TM2
 
@@ -337,7 +337,7 @@ theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option
     (hL : ListBlank.map (proj k) L = ListBlank.mk (List.map some S).reverse) :
     L.nth n k = S.reverse[n]? := by
   rw [← proj_map_nth, hL, ← List.map_reverse, ListBlank.nth_mk,
-    List.getI_eq_iget_getElem?, List.getElem?_map]
+    List.getI_eq_getElem?_getD, List.getElem?_map]
   cases S.reverse[n]? <;> rfl
 
 variable (K : Type*)
@@ -362,6 +362,7 @@ to express the program state in terms of a tape with only the stacks themselves.
 def addBottom (L : ListBlank (∀ k, Option (Γ k))) : ListBlank (Γ' K Γ) :=
   ListBlank.cons (true, L.head) (L.tail.map ⟨Prod.mk false, rfl⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem addBottom_map (L : ListBlank (∀ k, Option (Γ k))) :
     (addBottom L).map ⟨Prod.snd, by rfl⟩ = L := by
   simp only [addBottom, ListBlank.map_cons]
@@ -369,6 +370,7 @@ theorem addBottom_map (L : ListBlank (∀ k, Option (Γ k))) :
   generalize ListBlank.tail L = L'
   refine L'.induction_on fun l ↦ ?_; simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem addBottom_modifyNth (f : (∀ k, Option (Γ k)) → ∀ k, Option (Γ k))
     (L : ListBlank (∀ k, Option (Γ k))) (n : ℕ) :
     (addBottom L).modifyNth (fun a ↦ (a.1, f a.2)) n = addBottom (L.modifyNth f n) := by
@@ -376,6 +378,7 @@ theorem addBottom_modifyNth (f : (∀ k, Option (Γ k)) → ∀ k, Option (Γ k)
     simp only [addBottom, ListBlank.head_cons, ListBlank.modifyNth, ListBlank.tail_cons]
   congr; symm; apply ListBlank.map_modifyNth; intro; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem addBottom_nth_snd (L : ListBlank (∀ k, Option (Γ k))) (n : ℕ) :
     ((addBottom L).nth n).2 = L.nth n := by
   conv => rhs; rw [← addBottom_map L, ListBlank.nth_map]
@@ -610,6 +613,8 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
 
 end
 
+open StateTransition
+
 variable [DecidableEq K]
 variable (M : Λ → TM2.Stmt Γ Λ σ)
 
@@ -704,7 +709,7 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
   rw [(_ : TM1.init _ = _)]
   · refine ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ ?_⟩
     refine ListBlank.ext fun i ↦ ?_
-    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_getElem?, List.map_map]
+    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_getElem?_getD, List.map_map]
     have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))
       = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
     rw [this, List.getElem?_map, proj, PointedMap.mk_val]
@@ -712,9 +717,9 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
     by_cases h : k' = k
     · subst k'
       simp only [Function.update_self]
-      rw [ListBlank.nth_mk, List.getI_eq_iget_getElem?, ← List.map_reverse, List.getElem?_map]
+      rw [ListBlank.nth_mk, List.getI_eq_getElem?_getD, ← List.map_reverse, List.getElem?_map]
     · simp only [Function.update_of_ne h]
-      rw [ListBlank.nth_mk, List.getI_eq_iget_getElem?, List.map, List.reverse_nil]
+      rw [ListBlank.nth_mk, List.getI_eq_getElem?_getD, List.map, List.reverse_nil]
       cases L.reverse[i]? <;> rfl
   · rw [trInit, TM1.init]
     congr <;> cases L.reverse <;> try rfl
@@ -723,7 +728,7 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
 
 theorem tr_eval_dom (k) (L : List (Γ k)) :
     (TM1.eval (tr M) (trInit k L)).Dom ↔ (TM2.eval M k L).Dom :=
-  Turing.tr_eval_dom (tr_respects M) (trCfg_init k L)
+  StateTransition.tr_eval_dom (tr_respects M) (trCfg_init k L)
 
 theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr M) (trInit k L))
     (H₂ : L₂ ∈ TM2.eval M k L) :
@@ -732,7 +737,7 @@ theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr 
         (∀ k, L'.map (proj k) = ListBlank.mk ((S k).map some).reverse) ∧ S k = L₂ := by
   obtain ⟨c₁, h₁, rfl⟩ := (Part.mem_map_iff _).1 H₁
   obtain ⟨c₂, h₂, rfl⟩ := (Part.mem_map_iff _).1 H₂
-  obtain ⟨_, ⟨L', hT⟩, h₃⟩ := Turing.tr_eval (tr_respects M) (trCfg_init k L) h₂
+  obtain ⟨_, ⟨L', hT⟩, h₃⟩ := StateTransition.tr_eval (tr_respects M) (trCfg_init k L) h₂
   cases Part.mem_unique h₁ h₃
   exact ⟨_, L', by simp only [Tape.mk'_right₀], hT, rfl⟩
 

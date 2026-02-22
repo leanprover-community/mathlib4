@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.Analysis.Fourier.FourierTransform
 public import Mathlib.Analysis.PSeries
-public import Mathlib.Analysis.Distribution.FourierSchwartz
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 public import Mathlib.Topology.ContinuousMap.Periodic
 
@@ -19,15 +19,15 @@ We prove Poisson's summation formula `∑ (n : ℤ), f n = ∑ (n : ℤ), 𝓕 f
 Fourier transform of `f`, under the following hypotheses:
 * `f` is a continuous function `ℝ → ℂ`.
 * The sum `∑ (n : ℤ), 𝓕 f n` is convergent.
-* For all compacts `K ⊂ ℝ`, the sum `∑ (n : ℤ), sup { ‖f(x + n)‖ | x ∈ K }` is convergent.
-  See `Real.tsum_eq_tsum_fourierIntegral` for this formulation.
+* For all compacts `K ⊂ ℝ`, the sum `∑ (n : ℤ), ‖f(x + n)‖` is uniformly convergent on `K`.
+  See `Real.tsum_eq_tsum_fourier` for this formulation.
 
 These hypotheses are potentially a little awkward to apply, so we also provide the less general but
 easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which we assume `f` and
 `𝓕 f` both decay as `|x| ^ (-b)` for some `b > 1`, and the even more specific result
 `SchwartzMap.tsum_eq_tsum_fourierIntegral`, where we assume that `f` is a Schwartz function. -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -46,6 +46,7 @@ open scoped Real Filter FourierTransform
 
 open ContinuousMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The key lemma for Poisson summation: the `m`-th Fourier coefficient of the periodic function
 `∑' n : ℤ, f (x + n)` is the value at `m` of the Fourier transform of `f`. -/
 theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
@@ -122,6 +123,7 @@ section RpowDecay
 
 variable {E : Type*} [NormedAddCommGroup E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is `O(x ^ (-b))` at infinity, then so is the function
 `fun x ↦ ‖f.restrict (Icc (x + R) (x + S))‖` for any fixed `R` and `S`. -/
 theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
@@ -226,6 +228,7 @@ section Schwartz
 
 open scoped SchwartzMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Poisson's summation formula** for Schwartz functions. -/
 theorem SchwartzMap.tsum_eq_tsum_fourier (f : 𝓢(ℝ, ℂ)) (x : ℝ) :
     ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 f n * fourier n (x : UnitAddCircle) := by

@@ -37,17 +37,34 @@ universe u v
 
 variable {R S M M₂ : Type*}
 
+instance [AddMonoid M] : MulAction ℕ M where
+  one_smul := one_nsmul
+  mul_smul _ _ _ := mul_nsmul' ..
+
+instance [AddMonoid M] : SMulWithZero ℕ M where
+  smul_zero := nsmul_zero
+  zero_smul := zero_nsmul
+
+instance [SubtractionMonoid M] : MulAction ℤ M where
+  one_smul := one_zsmul
+  mul_smul _ _ _ := mul_zsmul ..
+
+instance [SubtractionMonoid M] : SMulWithZero ℤ M where
+  smul_zero := zsmul_zero
+  zero_smul := zero_zsmul
+
 section AddCommMonoid
 
 variable [AddCommMonoid M]
 
 instance AddCommMonoid.toNatModule : Module ℕ M where
-  one_smul := one_nsmul
-  mul_smul m n a := mul_nsmul' a m n
   smul_add n a b := nsmul_add a b n
   smul_zero := nsmul_zero
   zero_smul := zero_nsmul
   add_smul r s x := add_nsmul x r s
+
+theorem DistribSMul.toAddMonoidHom_eq_nsmulAddMonoidHom :
+    toAddMonoidHom M = nsmulAddMonoidHom := rfl
 
 end AddCommMonoid
 
@@ -62,6 +79,9 @@ instance AddCommGroup.toIntModule : Module ℤ M where
   smul_zero := zsmul_zero
   zero_smul := zero_zsmul
   add_smul r s x := add_zsmul x r s
+
+theorem DistribSMul.toAddMonoidHom_eq_zsmulAddGroupHom :
+    toAddMonoidHom M = zsmulAddGroupHom := rfl
 
 end AddCommGroup
 
@@ -90,6 +110,7 @@ section
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `nsmul` is equal to any other module structure via a cast. -/
 @[norm_cast]
 lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
@@ -119,6 +140,7 @@ def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
 instance AddCommMonoid.subsingletonNatModule : Subsingleton (Module ℕ M) :=
   AddCommMonoid.uniqueNatModule.instSubsingleton
 
+set_option backward.isDefEq.respectTransparency false in
 instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
   smul_assoc n x y := by
     induction n with
@@ -146,6 +168,7 @@ section
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `zsmul` is equal to any other module structure via a cast. -/
 @[norm_cast]
 lemma Int.cast_smul_eq_zsmul (n : ℤ) (b : M) : (n : R) • b = n • b := by
@@ -179,6 +202,7 @@ theorem map_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLi
     (x : ℤ) (a : M) :
     f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_zsmul, map_zsmul]
 
+set_option backward.isDefEq.respectTransparency false in
 instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
     [Module R M] : IsScalarTower ℤ R M where
   smul_assoc n x y := by

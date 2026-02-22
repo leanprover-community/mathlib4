@@ -44,17 +44,11 @@ theorem sup_orthogonal_inf_of_hasOrthogonalProjection {K₁ K₂ : Submodule �
     exact K₂.add_mem (h hy) hz.2
   · exact fun hx => ⟨v, v.prop, x - v, ⟨hvm, K₂.sub_mem hx (h v.prop)⟩, add_sub_cancel _ _⟩
 
-@[deprecated (since := "2025-07-27")] alias sup_orthogonal_inf_of_completeSpace :=
-  sup_orthogonal_inf_of_hasOrthogonalProjection
-
 variable {K} in
 /-- If `K` admits an orthogonal projection, then `K` and `Kᗮ` span the whole space. -/
 theorem sup_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection] : K ⊔ Kᗮ = ⊤ := by
   convert Submodule.sup_orthogonal_inf_of_hasOrthogonalProjection (le_top : K ≤ ⊤) using 2
   simp
-
-@[deprecated (since := "2025-07-27")] alias sup_orthogonal_of_completeSpace :=
-  sup_orthogonal_of_hasOrthogonalProjection
 
 /-- If `K` admits an orthogonal projection, then the orthogonal complement of its orthogonal
 complement is itself. -/
@@ -103,9 +97,6 @@ variable {K}
 theorem isCompl_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection] : IsCompl K Kᗮ :=
   ⟨K.orthogonal_disjoint, codisjoint_iff.2 Submodule.sup_orthogonal_of_hasOrthogonalProjection⟩
 
-@[deprecated (since := "2025-07-27")] alias isCompl_orthogonal_of_completeSpace :=
-  isCompl_orthogonal_of_hasOrthogonalProjection
-
 @[simp]
 theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [K.HasOrthogonalProjection]
     [L.HasOrthogonalProjection] : Kᗮ = Lᗮ ↔ K = L :=
@@ -150,9 +141,6 @@ theorem starProjection_tendsto_closure_iSup {ι : Type*} [Preorder ι]
   change _ ≤ ‖y - (⟨a, hU hi hI⟩ : U i)‖
   exact ciInf_le ⟨0, Set.forall_mem_range.mpr fun _ => norm_nonneg _⟩ _
 
-@[deprecated (since := "2025-07-07")] alias orthogonalProjection_tendsto_closure_iSup :=
-  starProjection_tendsto_closure_iSup
-
 /-- Given a monotone family `U` of complete submodules of `E` with dense span supremum,
 and a fixed `x : E`, the orthogonal projection of `x` on `U i` tends to `x` along `at_top`. -/
 theorem starProjection_tendsto_self {ι : Type*} [Preorder ι]
@@ -166,9 +154,6 @@ theorem starProjection_tendsto_self {ι : Type*} [Preorder ι]
   rw [eq_comm, starProjection_eq_self_iff, top_unique hU']
   trivial
 
-@[deprecated (since := "2025-07-07")] alias
-  orthogonalProjection_tendsto_self := starProjection_tendsto_self
-
 /-- The orthogonal complement satisfies `Kᗮᗮᗮ = Kᗮ`. -/
 theorem triorthogonal_eq_orthogonal : Kᗮᗮᗮ = Kᗮ :=
   (orthogonal_gc 𝕜 E).u_l_u_eq_u K
@@ -181,7 +166,8 @@ theorem topologicalClosure_eq_top_iff [CompleteSpace E] :
   · rw [← Submodule.triorthogonal_eq_orthogonal, h, Submodule.top_orthogonal_eq_bot]
   · rw [h, Submodule.bot_orthogonal_eq_top]
 
-theorem orthogonalProjection_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] (x : E) :
+set_option backward.isDefEq.respectTransparency false in
+theorem orthogonalProjection_apply_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] (x : E) :
     K.orthogonalProjection x =
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection x := by
   have : IsCompl K Kᗮ := Submodule.isCompl_orthogonal_of_hasOrthogonalProjection
@@ -190,21 +176,29 @@ theorem orthogonalProjection_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] 
   rw [map_add, orthogonalProjection_mem_subspace_eq_self,
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (Submodule.coe_mem _), add_zero]
 
-@[deprecated (since := "2025-07-11")] alias orthogonalProjection_eq_linear_proj :=
-  orthogonalProjection_eq_linearProjOfIsCompl
+@[deprecated (since := "2025-12-26")] alias orthogonalProjection_eq_linearProjOfIsCompl :=
+  orthogonalProjection_apply_eq_linearProjOfIsCompl
 
-theorem orthogonalProjection_coe_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] :
+theorem toLinearMap_orthogonalProjection_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] :
     (K.orthogonalProjection : E →ₗ[𝕜] K) =
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection :=
-  LinearMap.ext <| orthogonalProjection_eq_linearProjOfIsCompl
+  LinearMap.ext orthogonalProjection_apply_eq_linearProjOfIsCompl
 
-@[deprecated (since := "2025-07-11")] alias orthogonalProjection_coe_linearMap_eq_linearProj :=
-  orthogonalProjection_coe_eq_linearProjOfIsCompl
+@[deprecated (since := "2025-12-26")] alias orthogonalProjection_coe_eq_linearProjOfIsCompl :=
+  toLinearMap_orthogonalProjection_eq_linearProjOfIsCompl
 
 open Submodule in
-theorem starProjection_coe_eq_isCompl_projection [K.HasOrthogonalProjection] :
+theorem toLinearMap_starProjection_eq_isComplProjection [K.HasOrthogonalProjection] :
     K.starProjection.toLinearMap = K.isCompl_orthogonal_of_hasOrthogonalProjection.projection := by
-  simp [starProjection, orthogonalProjection_coe_eq_linearProjOfIsCompl, IsCompl.projection]
+  simp [starProjection, toLinearMap_orthogonalProjection_eq_linearProjOfIsCompl, IsCompl.projection]
+
+@[deprecated (since := "2025-12-26")] alias starProjection_coe_eq_isCompl_projection :=
+  toLinearMap_starProjection_eq_isComplProjection
+
+open Submodule in
+theorem starProjection_apply_eq_isComplProjection [K.HasOrthogonalProjection] (x : E) :
+    K.starProjection x = K.isCompl_orthogonal_of_hasOrthogonalProjection.projection x :=
+  congr($toLinearMap_starProjection_eq_isComplProjection x)
 
 end Submodule
 
@@ -237,3 +231,25 @@ theorem eq_zero_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : 
   hK.eq_of_inner_right fun v => by rw [inner_zero_right, h v]
 
 end Dense
+
+namespace ClosedSubmodule
+
+@[simp]
+theorem orthogonal_orthogonal_eq (K : ClosedSubmodule 𝕜 E) [K.HasOrthogonalProjection] :
+    (Kᗮ)ᗮ = K := by ext x; simp
+
+theorem orthogonal_eq_orthogonal_iff (K₁ K₂ : ClosedSubmodule 𝕜 E) [K₁.HasOrthogonalProjection]
+    [K₂.HasOrthogonalProjection] : K₁ᗮ = K₂ᗮ ↔ K₁ = K₂ :=
+  ⟨fun h ↦ by simpa using congr($hᗮ), fun h ↦ congr($hᗮ)⟩
+
+theorem orthogonal_injective [CompleteSpace E] :
+    Function.Injective (fun K : ClosedSubmodule 𝕜 E ↦ Kᗮ) :=
+  (orthogonal_eq_orthogonal_iff · · |>.mp)
+
+/-- The sup of two orthogonal subspaces equals the subspace orthogonal
+to the inf. -/
+theorem sup_orthogonal [CompleteSpace E] (K₁ K₂ : ClosedSubmodule 𝕜 E) :
+    K₁ᗮ ⊔ K₂ᗮ = (K₁ ⊓ K₂)ᗮ := by
+  simpa using congr($(inf_orthogonal K₁ᗮ K₂ᗮ)ᗮ).symm
+
+end ClosedSubmodule

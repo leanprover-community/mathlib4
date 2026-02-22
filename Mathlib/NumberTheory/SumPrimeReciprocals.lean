@@ -25,7 +25,7 @@ See the sixth proof for the infinity of primes in Chapter 1 of [aigner1999proofs
 The proof is due to Erdős.
 -/
 
-@[expose] public section
+public section
 
 open Set Nat
 open scoped Topology
@@ -41,6 +41,7 @@ lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
   exact (Nat.cast_le.mpr <| roughNumbersUpTo_card_le N k).trans <|
     cast_sum (R := ℝ) .. ▸ Finset.sum_le_sum fun n _ ↦ cast_div_le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sum over primes `k ≤ p ≤ 4^(π(k-1)+1)` over `1/p` (as a real number) is at least `1/2`. -/
 lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
     1 / 2 ≤ ∑ p ∈ (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow,
@@ -82,6 +83,7 @@ theorem not_summable_one_div_on_primes :
   refine (indicator_of_mem ?_ fun n : ℕ ↦ (1 / n : ℝ)).symm
   exact ⟨hpp, by simpa [primesBelow, hpp] using hp₂⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sum over the reciprocals of the primes diverges. -/
 theorem Nat.Primes.not_summable_one_div : ¬ Summable (fun p : Nat.Primes ↦ (1 / p : ℝ)) := by
   convert summable_subtype_iff_indicator.mp.mt not_summable_one_div_on_primes

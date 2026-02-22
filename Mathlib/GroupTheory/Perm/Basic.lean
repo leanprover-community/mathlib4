@@ -24,7 +24,7 @@ It would be good to merge the remaining lemmas with other files, e.g.
 the algebra and non-algebra parts).
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

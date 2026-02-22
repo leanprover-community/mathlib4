@@ -35,7 +35,7 @@ Hermann Minkowski.
 * [Pete L. Clark, *Geometry of Numbers with Applications to Number Theory*][clark_gon] p.28
 -/
 
-@[expose] public section
+public section
 
 
 namespace MeasureTheory
@@ -83,6 +83,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
   rw [← hvw, ← inv_smul_smul₀ (two_ne_zero' ℝ) (_ - _), smul_sub, sub_eq_add_neg, smul_add]
   refine h_conv hw (h_symm _ hv) ?_ ?_ ?_ <;> norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Minkowski Convex Body Theorem for compact domain**. If `s` is a convex compact symmetric
 domain of `E` whose volume is large enough compared to the covolume of a lattice `L` of `E`, then it
 contains a non-zero lattice point of `L`. Compared to

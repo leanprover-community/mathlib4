@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
-public import Mathlib.Order.RelClasses
 public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.Perm.Basic
@@ -16,6 +15,7 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Order.Basic
 
 /-!
 # Sums and products from lists
@@ -25,7 +25,7 @@ of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their a
 counterparts.
 -/
 
-@[expose] public section
+public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}
@@ -244,8 +244,11 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
 
-@[to_additive (attr := simp)]
-lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
+-- In order to make `to_additive` work, this theorem is adjusted to `List.sum_reverse` from core
+@[to_additive existing, simp]
+lemma prod_reverse [One α] [Mul α] [@Std.Associative α (· * ·)] [@Std.Commutative α (· * ·)]
+    [@Std.LawfulLeftIdentity α α (· * ·) 1] (l : List α) : prod l.reverse = prod l :=
+  @List.sum_reverse α ⟨1⟩ ⟨(· * ·)⟩ _ _ _ l
 
 @[to_additive]
 lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :

@@ -44,7 +44,7 @@ The key results proved here are:
 kruskal-katona, kruskal, katona, shadow, initial segments, intersecting
 -/
 
-@[expose] public section
+public section
 
 open Nat
 open scoped FinsetFamily
@@ -147,6 +147,7 @@ private instance UsefulCompression.instDecidableRel :
     DecidableRel (α := Finset α) UsefulCompression :=
   fun _ _ ↦ inferInstanceAs (Decidable (_ ∧ _))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Applying a good compression will decrease measure, keep cardinality, keep sizes and decrease
 shadow. In particular, 'good' means it's useful, and every smaller compression won't make a
 difference. -/
@@ -324,7 +325,7 @@ theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ 
         rw [mem_powersetCard] at Ah
         refine ⟨hBA.trans Ah.1, eq_tsub_of_add_eq ?_⟩
         rw [← Ah.2, ← card_sdiff_i, add_comm, card_sdiff_add_card_eq_card hBA]
-    _ ≤ #(∂ ^[i] 𝒜) := by
+    _ ≤ #(∂^[i] 𝒜) := by
       refine iterated_kk h₁ ?_ ⟨‹_›, ?_⟩
       · rwa [card_powersetCard, card_attachFin, card_range]
       simp_rw [𝒞, mem_powersetCard]

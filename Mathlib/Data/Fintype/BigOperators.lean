@@ -27,7 +27,7 @@ However many of the results here really belong in `Algebra.BigOperators.Group.Fi
 and should be moved at some point.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MulAction
 
@@ -205,6 +205,22 @@ theorem card_vector [Fintype α] (n : ℕ) :
     Fintype.card (List.Vector α n) = Fintype.card α ^ n := by
   rw [Fintype.ofEquiv_card]; simp
 
+/-- The number of strings of length `s` in any finite set is at most `D^s`. -/
+lemma Finset.card_filter_length_eq_le [Fintype α] {T : Finset (List α)} {s : ℕ} :
+    (T.filter (fun x => x.length = s)).card ≤ (Fintype.card α) ^ s := by
+  classical
+  calc
+    _ ≤ (Finset.univ.image List.ofFn).card := by
+          apply Finset.card_le_card
+          intro a ha
+          let hlen := Finset.mem_filter.mp ha
+          exact Finset.mem_image.mpr ⟨
+              (fun j : Fin s => a.get ⟨j.val, by simp [hlen]⟩),
+              by simp,
+              List.ext_get (by simp [hlen]) (by simp)⟩
+    _ = Fintype.card α ^ s := by
+          simp [card_image_of_injective univ List.ofFn_injective]
+
 /-- It is equivalent to compute the product of a function over `Fin n` or `Finset.range n`. -/
 @[to_additive /-- It is equivalent to sum a function over `fin n` or `finset.range n`. -/]
 theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
@@ -227,6 +243,7 @@ theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] 
   rw [← Finset.prod_subtype]
   simp_rw [Set.mem_toFinset]; intro; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p] [CommMonoid β]
     (f : ∀ a, p a → β) (g : ∀ a, ¬p a → β) :
     (∏ a, dite (p a) (f a) (g a)) =

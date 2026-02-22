@@ -21,7 +21,7 @@ Here we relate convexity of functions `ℝ → ℝ` to properties of their deriv
   monotone.
 -/
 
-@[expose] public section
+public section
 
 open Metric Set Asymptotics ContinuousLinearMap Filter
 open scoped Topology NNReal
@@ -75,6 +75,7 @@ theorem StrictMonoOn.exists_slope_lt_deriv_aux {x y : ℝ} {f : ℝ → ℝ} (hf
   rw [← ha]
   exact hf'_mono ⟨hxa, hay⟩ ⟨hxa.trans hab, hby⟩ hab
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StrictMonoOn.exists_slope_lt_deriv {x y : ℝ} {f : ℝ → ℝ} (hf : ContinuousOn f (Icc x y))
     (hxy : x < y) (hf'_mono : StrictMonoOn (deriv f) (Ioo x y)) :
     ∃ a ∈ Ioo x y, (f y - f x) / (y - x) < deriv f a := by
@@ -118,6 +119,7 @@ theorem StrictMonoOn.exists_deriv_lt_slope_aux {x y : ℝ} {f : ℝ → ℝ} (hf
   rw [← ha]
   exact hf'_mono ⟨hxb, hba.trans hay⟩ ⟨hxa, hay⟩ hba
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StrictMonoOn.exists_deriv_lt_slope {x y : ℝ} {f : ℝ → ℝ} (hf : ContinuousOn f (Icc x y))
     (hxy : x < y) (hf'_mono : StrictMonoOn (deriv f) (Ioo x y)) :
     ∃ a ∈ Ioo x y, deriv f a < (f y - f x) / (y - x) := by
@@ -555,7 +557,7 @@ secant line with left endpoint at `x` is bounded below by the right derivative o
 lemma le_slope_of_hasDerivWithinAt_Ioi (hfc : ConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' (Ioi x) x) :
     f' ≤ slope f x y := by
-  apply le_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' notMem_Ioi_self).mp hf'
+  apply le_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' self_notMem_Ioi).mp hf'
   simp_rw [eventually_nhdsWithin_iff, slope_def_field]
   filter_upwards [eventually_lt_nhds hxy] with t ht (ht' : x < t)
   refine hfc.secant_mono hx (?_ : t ∈ S) hy ht'.ne' hxy.ne' ht.le
@@ -615,7 +617,7 @@ line with right endpoint at `y` is bounded above by the left derivative of `f` a
 lemma slope_le_of_hasDerivWithinAt_Iio (hfc : ConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' (Iio y) y) :
     slope f x y ≤ f' := by
-  apply ge_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' notMem_Iio_self).mp hf'
+  apply ge_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' self_notMem_Iio).mp hf'
   simp_rw [eventually_nhdsWithin_iff, slope_comm f x y, slope_def_field]
   filter_upwards [eventually_gt_nhds hxy] with t ht (ht' : t < y)
   refine hfc.secant_mono hy hx (?_ : t ∈ S) hxy.ne ht'.ne ht.le
@@ -687,6 +689,7 @@ theorem monotoneOn_deriv (hfc : ConvexOn ℝ S f) (hfd : ∀ x ∈ S, Differenti
   · rfl
   exact (hfc.deriv_le_slope hx hy hxy' (hfd x hx)).trans (hfc.slope_le_deriv hx hy hxy' (hfd y hy))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isMinOn_of_leftDeriv_nonpos_of_rightDeriv_nonneg (hf : ConvexOn ℝ S f) (hx : x ∈ interior S)
     (hf_ld : derivWithin f (Iio x) x ≤ 0) (hf_rd : 0 ≤ derivWithin f (Ioi x) x) :
     IsMinOn f S x := by

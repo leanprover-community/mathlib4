@@ -327,14 +327,14 @@ theorem sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi :
     sin (angle x y) = 0 ↔ angle x y = 0 ∨ angle x y = π := by
   rw [sin_eq_zero_iff_cos_eq, cos_eq_one_iff_angle_eq_zero, cos_eq_neg_one_iff_angle_eq_pi]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sine of the angle between two vectors is 1 if and only if the angle is π / 2. -/
 theorem sin_eq_one_iff_angle_eq_pi_div_two : sin (angle x y) = 1 ↔ angle x y = π / 2 := by
   refine ⟨fun h => ?_, fun h => by rw [h, sin_pi_div_two]⟩
   rw [← cos_eq_zero_iff_angle_eq_pi_div_two, ← abs_eq_zero, abs_cos_eq_sqrt_one_sub_sin_sq, h]
   simp
 
-/-- If two vectors of equal norms has the angle between them equal to 0, then
-they are equal. -/
+/-- If the angle between two vectors of equal norm is equal to 0, then the vectors are equal. -/
 lemma eq_of_angle_eq_zero_of_norm_eq {x y : V} (hxy : angle x y = 0) (h : ‖x‖ = ‖y‖) : x = y := by
   grind [angle_eq_zero_iff, norm_smul, Real.norm_eq_abs, norm_ne_zero_iff, abs, one_smul]
 

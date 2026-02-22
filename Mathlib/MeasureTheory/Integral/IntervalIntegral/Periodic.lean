@@ -94,7 +94,7 @@ protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
       (volume.restrict (Ioc t (t + T))) :=
   measurePreserving_quotientAddGroup_mk_of_AddQuotientMeasureEqMeasurePreimage
-    volume (𝓕 := Ioc t (t+T)) (isAddFundamentalDomain_Ioc' hT.out _) _
+    volume (𝓕 := Ioc t (t + T)) (isAddFundamentalDomain_Ioc' hT.out _) _
 
 lemma add_projection_respects_measure (t : ℝ) {U : Set (AddCircle T)} (meas_U : MeasurableSet U) :
     volume U = volume (QuotientAddGroup.mk ⁻¹' U ∩ (Ioc t (t + T))) :=
@@ -114,7 +114,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
     conv_rhs => rw [← if_ctx_congr (Iff.rfl : ε < T / 2 ↔ ε < T / 2) h₁ fun _ => rfl, ← hT']
     apply coe_real_preimage_closedBall_inter_eq
     simpa only [hT', Real.closedBall_eq_Icc, zero_add, zero_sub] using Ioc_subset_Icc_self
-  rw [addHaar_closedBall_center, add_projection_respects_measure T (-(T/2))
+  rw [addHaar_closedBall_center, add_projection_respects_measure T (-(T / 2))
     measurableSet_closedBall, (by linarith : -(T / 2) + T = T / 2), h₂]
   by_cases hε : ε < T / 2
   · simp [hε, min_eq_right (by linarith : 2 * ε ≤ T)]
@@ -162,6 +162,7 @@ lemma measurePreserving_equivIoc {a : ℝ} :
   congr! with hx
   rw [equivIoc_coe_eq hx]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Subtype.measureSpace in
 /-- The lower integral of a function over `AddCircle T` is equal to the lower integral over an
 interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
@@ -184,6 +185,7 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Subtype.measureSpace in
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
 to the integral over an interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
@@ -200,6 +202,7 @@ protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
   rw [← map_map AddCircle.measurable_mk' measurable_subtype_coe, ← map_comap_subtype_coe m]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
 to the integral over an interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
 protected theorem intervalIntegral_preimage (t : ℝ) (f : AddCircle T → E) :
@@ -230,8 +233,6 @@ lemma MeasureTheory.MemLp.memLp_liftIoc {T : ℝ} [hT : Fact (0 < T)] {t : ℝ} 
   exact AddCircle.measurePreserving_equivIoc T
 
 namespace UnitAddCircle
-
-attribute [local instance] Real.fact_zero_lt_one
 
 protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
 
@@ -349,6 +350,7 @@ theorem intervalIntegral_add_eq_add (hf : Periodic f T) (t s : ℝ)
     ∫ x in t..s + T, f x = (∫ x in t..s, f x) + ∫ x in t..t + T, f x := by
   rw [hf.intervalIntegral_add_eq t s, integral_add_adjacent_intervals (h_int t s) (h_int s _)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is an integrable periodic function with period `T`, and `n` is an integer, then its
 integral over `[t, t + n • T]` is `n` times its integral over `[t, t + T]`. -/
 theorem intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)

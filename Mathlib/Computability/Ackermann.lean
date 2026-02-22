@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Computability.PartrecCode
 public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Ackermann function
@@ -88,6 +88,7 @@ theorem ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
   | zero => simp
   | succ n IH => simpa [mul_succ]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   induction n with

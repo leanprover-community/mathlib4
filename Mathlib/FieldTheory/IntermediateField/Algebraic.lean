@@ -33,6 +33,7 @@ def Subalgebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : S.IsAl
   inv_mem' x hx := Algebra.adjoin_le_iff.mpr
     (Set.singleton_subset_iff.mpr hx) (hS x hx).isIntegral.inv_mem_adjoin
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn an algebraic subalgebra into an intermediate field, `Algebra.IsAlgebraic` version. -/
 abbrev Algebra.IsAlgebraic.toIntermediateField (S : Subalgebra K L) [Algebra.IsAlgebraic K S] :
     IntermediateField K L := (S.isAlgebraic_iff.mpr ‹_›).toIntermediateField
@@ -42,6 +43,7 @@ namespace IntermediateField
 instance isAlgebraic_tower_bot [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic K S :=
   Algebra.IsAlgebraic.of_injective S.val S.val.injective
 
+set_option backward.isDefEq.respectTransparency false in
 instance isAlgebraic_tower_top [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic S L :=
   Algebra.IsAlgebraic.tower_top (K := K) S
 
@@ -52,16 +54,19 @@ variable (F E : IntermediateField K L)
 instance finiteDimensional_left [FiniteDimensional K L] : FiniteDimensional K F := .left K F L
 instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L := .right K F L
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem rank_eq_rank_subalgebra : Module.rank K F.toSubalgebra = Module.rank K F :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :=
   rfl
 
 variable {F} {E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F ≤ E` are two intermediate fields of `L / K` such that `[E : K] ≤ [F : K]` are finite,
 then `F = E`. -/
 theorem eq_of_le_of_finrank_le [hfin : FiniteDimensional K E] (h_le : F ≤ E)
@@ -75,6 +80,7 @@ theorem eq_of_le_of_finrank_eq [FiniteDimensional K E] (h_le : F ≤ E)
     (h_finrank : finrank K F = finrank K E) : F = E :=
   eq_of_le_of_finrank_le h_le h_finrank.ge
 
+set_option backward.isDefEq.respectTransparency false in
 -- If `F ≤ E` are two intermediate fields of a finite extension `L / K` such that
 -- `[L : F] ≤ [L : E]`, then `F = E`. Marked as private since it's a direct corollary of
 -- `eq_of_le_of_finrank_le'` (the `FiniteDimensional K L` implies `FiniteDimensional F L`
@@ -87,6 +93,7 @@ private theorem eq_of_le_of_finrank_le'' [FiniteDimensional K L] (h_le : F ≤ E
   have h3 : 0 < finrank E L := finrank_pos
   nlinarith
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F ≤ E` are two intermediate fields of `L / K` such that `[L : F] ≤ [L : E]` are finite,
 then `F = E`. -/
 theorem eq_of_le_of_finrank_le' [FiniteDimensional F L] (h_le : F ≤ E)
@@ -101,6 +108,7 @@ theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finrank_lt_of_gt [FiniteDimensional F L] (H : F < E) :
     Module.finrank E L < Module.finrank F L := by
   letI := (IntermediateField.inclusion H.le).toAlgebra
@@ -109,11 +117,13 @@ lemma finrank_lt_of_gt [FiniteDimensional F L] (H : F < E) :
   · exact Module.finrank_top_le_finrank_of_isScalarTower _ _ _
   · exact .symm (mt (eq_of_le_of_finrank_eq' H.le) H.ne)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finrank_dvd_of_le_left (h : F ≤ E) : finrank E L ∣ finrank F L := by
   let _ := (inclusion h).toRingHom.toAlgebra
   have : IsScalarTower F E L := IsScalarTower.of_algebraMap_eq fun x ↦ rfl
   exact Dvd.intro_left (finrank F E) (finrank_mul_finrank F E L)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finrank_dvd_of_le_right (h : F ≤ E) : finrank K F ∣ finrank K E := by
   let _ := (inclusion h).toRingHom.toAlgebra
   exact Dvd.intro (finrank F E) (finrank_mul_finrank K F E)
@@ -124,23 +134,23 @@ theorem finrank_le_of_le_left [FiniteDimensional F L] (h : F ≤ E) : finrank E 
 theorem finrank_le_of_le_right [FiniteDimensional K E] (h : F ≤ E) : finrank K F ≤ finrank K E :=
   Nat.le_of_dvd Module.finrank_pos (finrank_dvd_of_le_right h)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Mapping a finite-dimensional intermediate field along an algebra equivalence gives
 a finite-dimensional intermediate field. -/
 instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :
     FiniteDimensional K (E.map f) :=
   LinearEquiv.finiteDimensional (IntermediateField.equivMap E f).toLinearEquiv
 
-@[deprecated (since := "2025-05-02")]
-alias _root_.im_finiteDimensional := IntermediateField.finiteDimensional_map
-
 end FiniteDimensional
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_iff {x : S} : IsAlgebraic K x ↔ IsAlgebraic K (x : L) :=
   (isAlgebraic_algebraMap_iff (algebraMap S L).injective).symm
 
 theorem isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) :=
   (isIntegral_algHom_iff S.val S.val.injective).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) :=
   (minpoly.algebraMap_eq (algebraMap S L).injective x).symm
 

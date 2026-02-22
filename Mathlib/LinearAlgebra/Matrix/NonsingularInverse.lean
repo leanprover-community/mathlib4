@@ -81,6 +81,7 @@ def invertibleOfDetInvertible [Invertible A.det] : Invertible A where
   invOf_mul_self := by
     rw [smul_mul_assoc, adjugate_mul, smul_smul, invOf_mul_self, one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem invOf_eq [Invertible A.det] [Invertible A] : ⅟A = ⅟A.det • A.adjugate := by
   letI := invertibleOfDetInvertible A
   convert (rfl : ⅟A = _)
@@ -101,6 +102,7 @@ def detInvertibleOfRightInverse (h : A * B = 1) : Invertible A.det where
 def detInvertibleOfInvertible [Invertible A] : Invertible A.det :=
   detInvertibleOfLeftInverse A (⅟A) (invOf_mul_self _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem det_invOf [Invertible A] [Invertible A.det] : (⅟A).det = ⅟A.det := by
   letI := detInvertibleOfInvertible A
   convert (rfl : _ = ⅟A.det)
@@ -173,12 +175,14 @@ theorem nonsing_inv_apply_not_isUnit (h : ¬IsUnit A.det) : A⁻¹ = 0 := by
 theorem nonsing_inv_apply (h : IsUnit A.det) : A⁻¹ = (↑h.unit⁻¹ : α) • A.adjugate := by
   rw [inv_def, ← Ring.inverse_unit h.unit, IsUnit.unit_spec]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The nonsingular inverse is the same as `invOf` when `A` is invertible. -/
 @[simp]
 theorem invOf_eq_nonsing_inv [Invertible A] : ⅟A = A⁻¹ := by
   letI := detInvertibleOfInvertible A
   rw [inv_def, Ring.inverse_invertible, invOf_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Coercing the result of `Units.instInv` is the same as coercing first and applying the
 nonsingular inverse. -/
 @[simp, norm_cast]
@@ -186,6 +190,7 @@ theorem coe_units_inv (A : (Matrix n n α)ˣ) : ↑A⁻¹ = (A⁻¹ : Matrix n n
   letI := A.invertible
   rw [← invOf_eq_nonsing_inv, invOf_units]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The nonsingular inverse is the same as the general `Ring.inverse`. -/
 theorem nonsing_inv_eq_ringInverse : A⁻¹ = Ring.inverse A := by
   by_cases h_det : IsUnit A.det
@@ -217,6 +222,7 @@ instance [Invertible A] : Invertible A⁻¹ := by
   rw [← invOf_eq_nonsing_inv]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inv_inv_of_invertible [Invertible A] : A⁻¹⁻¹ = A := by
   simp only [← invOf_eq_nonsing_inv, invOf_invOf]
@@ -289,6 +295,9 @@ lemma mul_right_inj_of_invertible [Invertible A] {x y : Matrix n m α} : A * x =
 lemma mul_left_inj_of_invertible [Invertible A] {x y : Matrix m n α} : x * A = y * A ↔ x = y :=
   (mul_left_injective_of_invertible A).eq_iff
 
+lemma IsSymm.inv {A : Matrix n n α} (hA : A.IsSymm) : A⁻¹.IsSymm :=
+  hA.adjugate.smul _
+
 end Inv
 
 section InjectiveMul
@@ -336,11 +345,11 @@ variable [DecidableEq m] {R K : Type*} [CommRing R] [Field K] [Fintype m]
 
 theorem vecMul_surjective_iff_isUnit {A : Matrix m m R} :
     Function.Surjective A.vecMul ↔ IsUnit A := by
-  rw [vecMul_surjective_iff_exists_left_inverse, exists_left_inverse_iff_isUnit]
+  rw [vecMul_surjective_iff_exists_left_inverse, isUnit_iff_exists_inv']
 
 theorem mulVec_surjective_iff_isUnit {A : Matrix m m R} :
     Function.Surjective A.mulVec ↔ IsUnit A := by
-  rw [mulVec_surjective_iff_exists_right_inverse, exists_right_inverse_iff_isUnit]
+  rw [mulVec_surjective_iff_exists_right_inverse, isUnit_iff_exists_inv]
 
 theorem vecMul_injective_iff_isUnit {A : Matrix m m K} :
     Function.Injective A.vecMul ↔ IsUnit A := by
@@ -404,6 +413,7 @@ theorem nonsing_inv_cancel_or_zero : A⁻¹ * A = 1 ∧ A * A⁻¹ = 1 ∨ A⁻�
 theorem det_nonsing_inv_mul_det (h : IsUnit A.det) : A⁻¹.det * A.det = 1 := by
   rw [← det_mul, A.nonsing_inv_mul h, det_one]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem det_nonsing_inv : A⁻¹.det = Ring.inverse A.det := by
   by_cases h : IsUnit A.det
@@ -485,6 +495,7 @@ end InvEqInv
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
   rcases subsingleton_or_nontrivial α with ht | ht
@@ -494,7 +505,7 @@ theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
     subsingleton
   · have hn : Nonempty n := Fintype.card_pos_iff.mp hc
     refine nonsing_inv_apply_not_isUnit _ ?_
-    simp
+    simp [det]
 
 noncomputable instance : InvOneClass (Matrix n n α) :=
   { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }
@@ -502,9 +513,11 @@ noncomputable instance : InvOneClass (Matrix n n α) :=
 theorem inv_smul (k : α) [Invertible k] (h : IsUnit A.det) : (k • A)⁻¹ = ⅟k • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_smul' (k : αˣ) (h : IsUnit A.det) : (k • A)⁻¹ = k⁻¹ • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ = h.unit⁻¹ • A := by
   refine inv_eq_left_inv ?_
   rw [smul_mul, mul_adjugate, Units.smul_def, smul_smul, h.val_inv_mul, one_smul]
@@ -516,6 +529,7 @@ def diagonalInvertible {α} [NonAssocSemiring α] (v : n → α) [Invertible v] 
     Invertible (diagonal v) :=
   Invertible.map (diagonalRingHom n α) v
 
+set_option backward.isDefEq.respectTransparency false in
 theorem invOf_diagonal_eq {α} [Semiring α] (v : n → α) [Invertible v] [Invertible (diagonal v)] :
     ⅟(diagonal v) = diagonal (⅟v) := by
   rw [@Invertible.congr _ _ _ _ _ (diagonalInvertible v) rfl]
@@ -554,6 +568,7 @@ theorem isUnit_diagonal {v : n → α} : IsUnit (diagonal v) ↔ IsUnit v := by
   simp only [← nonempty_invertible_iff_isUnit,
     (diagonalInvertibleEquivInvertible v).nonempty_congr]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal (Ring.inverse v) := by
   rw [nonsing_inv_eq_ringInverse]
   by_cases h : IsUnit v
@@ -684,6 +699,7 @@ def invertibleOfSubmatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ 
       rw [this]
     rw [Matrix.submatrix_mul_equiv, mul_invOf_self, submatrix_one_equiv]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem invOf_submatrix_equiv_eq (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Invertible A]
     [Invertible (A.submatrix e₁ e₂)] : ⅟(A.submatrix e₁ e₂) = (⅟A).submatrix e₂ e₁ := by
   rw [@Invertible.congr _ _ _ _ _ (submatrixEquivInvertible A e₁ e₂) rfl]

@@ -14,7 +14,7 @@ public import Mathlib.Topology.ContinuousOn
 A clopen set is a set that is both closed and open.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology TopologicalSpace
 

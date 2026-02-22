@@ -8,7 +8,8 @@ module
 public import Mathlib.Data.Option.NAry
 public import Mathlib.Data.Seq.Computation
 public import Mathlib.Data.ENat.Defs
-import Batteries.Data.MLList.Basic
+public import Batteries.Data.MLList.Basic
+public import Mathlib.Data.Subtype
 
 /-!
 # Possibly infinite lists
@@ -158,6 +159,7 @@ theorem cons_left_injective (s : Seq α) : Function.Injective fun x => cons x s 
 theorem cons_right_injective (x : α) : Function.Injective (cons x) :=
   cons_injective2.right _
 
+@[simp]
 theorem cons_eq_cons {x x' : α} {s s' : Seq α} :
     (cons x s = cons x' s') ↔ (x = x' ∧ s = s') := by
   constructor
@@ -321,6 +323,7 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) :
   rw [Stream'.corec'_eq, Stream'.tail_cons]
   dsimp [Corec.f]; rw [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem corec_nil (f : β → Option (α × β)) (b : β)
     (h : f b = .none) : corec f b = nil := by
   apply destruct_eq_none
@@ -521,8 +524,6 @@ theorem mem_iff_exists_get? {s : Seq α} {x : α} : x ∈ s ↔ ∃ i, some x = 
 
 @[simp]
 theorem notMem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
-
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 theorem mem_cons (a : α) : ∀ s : Seq α, a ∈ cons a s
   | ⟨_, _⟩ => Stream'.mem_cons (some a) _

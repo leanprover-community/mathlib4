@@ -48,7 +48,7 @@ separate variables constrained by certain relations.
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
 
-@[expose] public section
+public section
 
 namespace JacobsonNoether
 
@@ -83,6 +83,7 @@ lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
     exact ha hn
   exact ⟨n, ⟨Nat.one_le_iff_ne_zero.mpr nzero, hn⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `D` is a purely inseparable extension of `k` of characteristic `p`,
   then for every element `a` of `D \ k`, there exists a natural number `m`
   greater than 0 such that `(a * x - x * a) ^ n = 0` (as linear maps) for

@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Num.ZNum
-public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Primality for binary natural numbers
@@ -61,6 +62,7 @@ def minFac : PosNum → PosNum
   | bit0 _ => 2
   | bit1 n => minFacAux (bit1 n) n 1
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
   obtain - | n := n

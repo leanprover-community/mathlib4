@@ -16,7 +16,7 @@ This file contains some lemmas about how filters `Ixx` behave as the endpoints t
 
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 
@@ -26,21 +26,25 @@ section Asymmetric
 
 variable {α : Type*} [Preorder α] [LocallyFiniteOrder α]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_Icc_atBot_prod_atTop :
     Tendsto (fun p : α × α ↦ Icc p.1 p.2) (atBot ×ˢ atTop) atTop := by
   simpa [tendsto_atTop, ← coe_subset, Set.subset_def, -eventually_and]
     using fun b i _ ↦ (eventually_le_atBot i).prod_mk (eventually_ge_atTop i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_Ioc_atBot_prod_atTop [NoBotOrder α] :
     Tendsto (fun p : α × α ↦ Ioc p.1 p.2) (atBot ×ˢ atTop) atTop := by
   simpa [tendsto_atTop, ← coe_subset, Set.subset_def, -eventually_and]
     using fun b i _ ↦ (eventually_lt_atBot i).prod_mk (eventually_ge_atTop i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_Ico_atBot_prod_atTop [NoTopOrder α] :
     Tendsto (fun p : α × α ↦ Finset.Ico p.1 p.2) (atBot ×ˢ atTop) atTop := by
   simpa [tendsto_atTop, ← coe_subset, Set.subset_def, -eventually_and]
     using fun b i _ ↦ (eventually_le_atBot i).prod_mk (eventually_gt_atTop i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_Ioo_atBot_prod_atTop [NoBotOrder α] [NoTopOrder α] :
     Tendsto (fun p : α × α ↦ Finset.Ioo p.1 p.2) (atBot ×ˢ atTop) atTop := by
   simpa [tendsto_atTop, ← coe_subset, Set.subset_def, -eventually_and]

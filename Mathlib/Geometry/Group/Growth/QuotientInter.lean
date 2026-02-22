@@ -16,7 +16,7 @@ For a group `G` and a subgroup `H ≤ G`, this file gives upper and lower bounds
 finset by its growth in `H` and `G ⧸ H`.
 -/
 
-@[expose] public section
+public section
 
 open Finset Function
 open scoped Pointwise

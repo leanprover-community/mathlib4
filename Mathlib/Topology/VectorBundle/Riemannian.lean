@@ -69,6 +69,7 @@ section Trivial
 
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A trivial vector bundle, in which the model fiber has an inner product,
 is a Riemannian bundle. -/
 instance : IsContinuousRiemannianBundle F₁ (Bundle.Trivial B F₁) := by
@@ -207,7 +208,7 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
     _ ≤ δ * (‖(G : E x →L[ℝ] F)‖ * ‖G.symm w‖) ^ 2 + g' y w w := by
       grw [← le_opNorm]
       simp
-    _ = δ * C * ‖G.symm w‖^2 + g' y w w := by ring
+    _ = δ * C * ‖G.symm w‖ ^ 2 + g' y w w := by ring
     _ = δ * C * g x (G.symm w) (G.symm w) + g' y w w := by simp [← hg]
     _ = δ * C * g' x w w + g' y w w := by
       rw [← hgx]; rfl
@@ -311,7 +312,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
     _ ≤ δ * (‖(G : E x →L[ℝ] F)‖ * ‖G.symm w‖) ^ 2 + g' x w w := by
       grw [← le_opNorm]
       simp
-    _ = δ * C * ‖G.symm w‖^2 + g' x w w := by ring
+    _ = δ * C * ‖G.symm w‖ ^ 2 + g' x w w := by ring
     _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by simp [← hg]
     _ = δ * C * g' x w w + g' x w w := by
       congr
@@ -465,11 +466,12 @@ def ContinuousRiemannianMetric.toRiemannianMetric (g : ContinuousRiemannianMetri
     let e : E b ≃L[ℝ] F := Trivialization.continuousLinearEquivAt ℝ (trivializationAt F E b) _
       (FiberBundle.mem_baseSet_trivializationAt' b)
     let m : (E b →L[ℝ] E b →L[ℝ] ℝ) ≃L[ℝ] (F →L[ℝ] F →L[ℝ] ℝ) :=
-      e.arrowCongr (e.arrowCongr (ContinuousLinearEquiv.refl ℝ ℝ ))
+      e.arrowCongr (e.arrowCongr (ContinuousLinearEquiv.refl ℝ ℝ))
     have A (v : E b) : g.inner b v v = ((fun w ↦ m (g.inner b) w w) ∘ e) v := by simp [m]
     simp only [A]
     fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a Riemannian bundle structure is defined using `g.toRiemannianMetric` where `g` is
 a `ContinuousRiemannianMetric`, then we make sure typeclass inference can infer automatically
 that the bundle is a continuous Riemannian bundle. -/

@@ -154,6 +154,7 @@ theorem iff_quotient_mvPolynomial' :
     refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f ?_ hf.2 equiv.symm.surjective
     simpa using Submodule.fg_bot
 
+set_option backward.isDefEq.respectTransparency false in
 universe v in
 /-- If `A` is a finitely presented `R`-algebra, then `MvPolynomial (Fin n) A` is finitely presented
 as `R`-algebra. -/
@@ -205,6 +206,7 @@ instance polynomial [FinitePresentation R A] : FinitePresentation R A[X] :=
 
 open MvPolynomial
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: extract out helper lemmas and tidy proof.
 @[stacks 0561]
 theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A B]
@@ -425,6 +427,12 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) (hker : (RingHom.ker f
     f.FinitePresentation := by
   rw [← f.comp_id]
   exact (id A).comp_surjective hf hker
+
+lemma of_bijective {f : A →+* B} (hf : Function.Bijective f) : f.FinitePresentation :=
+  .of_surjective f hf.2 <| by
+    have : ker f = ⊥ := by rw [← RingHom.injective_iff_ker_eq_bot]; exact hf.1
+    rw [this]
+    exact Submodule.fg_bot
 
 theorem of_finiteType [IsNoetherianRing A] {f : A →+* B} : f.FiniteType ↔ f.FinitePresentation :=
   @Algebra.FinitePresentation.of_finiteType A B _ _ f.toAlgebra _

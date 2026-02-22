@@ -30,7 +30,7 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 * `fintypeAffineCoords`: the `AffineSubspace` of `ι → k` (for `Fintype ι`) where coordinates sum
   to `1`.
-* `finsuppAffineCoords`: the `AffineSubspace of `ι →₀ k` where coordinates sum to `1`.
+* `finsuppAffineCoords`: the `AffineSubspace` of `ι →₀ k` where coordinates sum to `1`.
 * `AffineBasis`: a structure representing an affine basis of an affine space.
 * `AffineBasis.coord`: the map `P →ᵃ[k] k` corresponding to `i : ι`.
 * `AffineBasis.coord_apply_eq`: the behaviour of `AffineBasis.coord i` on `p i`.
@@ -118,6 +118,7 @@ theorem ind : AffineIndependent k b :=
 theorem tot : affineSpan k (range b) = ⊤ :=
   b.tot'
 
+set_option backward.isDefEq.respectTransparency false in
 include b in
 protected theorem nonempty : Nonempty ι :=
   not_isEmpty_iff.mp fun hι => by
@@ -212,9 +213,6 @@ theorem coord_apply_combination_of_notMem (hi : i ∉ s) {w : ι → k} (hw : s.
   classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_false,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
-
-@[deprecated (since := "2025-05-23")]
-alias coord_apply_combination_of_not_mem := coord_apply_combination_of_notMem
 
 @[simp]
 theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by

@@ -65,6 +65,7 @@ lemma IsRetrocompact.union (hs : IsRetrocompact s) (ht : IsRetrocompact t) :
 private lemma supClosed_isRetrocompact : SupClosed {s : Set X | IsRetrocompact s} :=
   fun _s hs _t ht ↦ hs.union ht
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsRetrocompact.finsetSup {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsRetrocompact (t i)) : IsRetrocompact (s.sup t) := by
   induction s using Finset.cons_induction with
@@ -469,7 +470,7 @@ lemma IsLocallyConstructible.isConstructible_of_subset_of_isCompact
     have ⟨U, hxU, hU, hUs⟩ := hs x
     have ⟨V, ⟨hV₁, hV₂⟩, hxV, hVU⟩ := PrespectralSpace.isTopologicalBasis.mem_nhds_iff.mp hxU
     have : IsConstructible (V ↓∩ s) :=
-      (hUs.preimage_of_isOpenEmbedding (IsOpenEmbedding.id.restrict hVU hV₁):)
+      (hUs.preimage_of_isOpenEmbedding (IsOpenEmbedding.id.restrict hVU hV₁) :)
     have : IsConstructible (V ∩ s) := by
       have := this.image_of_isOpenEmbedding hV₁.isOpenEmbedding_subtypeVal
         (by simpa using hV₂.isRetrocompact hV₁)

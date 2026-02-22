@@ -81,6 +81,7 @@ theorem zipWith_swap_prod_support' (l l' : List α) :
     { x | (zipWith swap l l').prod x ≠ x } ≤ l.toFinset ⊔ l'.toFinset := fun _ h ↦ by
   simpa using mem_or_mem_of_zipWith_swap_prod_ne h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem zipWith_swap_prod_support [Fintype α] (l l' : List α) :
     (zipWith swap l l').prod.support ≤ l.toFinset ⊔ l'.toFinset := by
   intro x hx
@@ -91,6 +92,7 @@ theorem support_formPerm_le' : { x | formPerm l x ≠ x } ≤ l.toFinset := by
   refine (zipWith_swap_prod_support' l l.tail).trans ?_
   simpa [Finset.subset_iff] using tail_subset l
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_formPerm_le [Fintype α] : support (formPerm l) ≤ l.toFinset := by
   intro x hx
   have hx' : x ∈ { x | formPerm l x ≠ x } := by simpa using hx
@@ -103,8 +105,6 @@ theorem mem_of_formPerm_apply_ne (h : l.formPerm x ≠ x) : x ∈ l := by
 
 theorem formPerm_apply_of_notMem (h : x ∉ l) : formPerm l x = x :=
   not_imp_comm.1 mem_of_formPerm_apply_ne h
-
-@[deprecated (since := "2025-05-23")] alias formPerm_apply_of_not_mem := formPerm_apply_of_notMem
 
 theorem formPerm_apply_mem_of_mem (h : x ∈ l) : formPerm l x ∈ l := by
   rcases l with - | ⟨y, l⟩
@@ -210,6 +210,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
       rw [← length_eq_one_iff, ← hn', (Fin.mk.inj_iff.mp h).symm]
     · simp [Nat.mod_eq_of_lt hn'] at h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
     support (formPerm l) = l.toFinset := by
   rw [← Finset.coe_inj]
@@ -327,9 +328,6 @@ alias mem_of_formPerm_ne_self := mem_of_formPerm_apply_ne
 
 @[deprecated (since := "2025-10-06")]
 alias formPerm_eq_self_of_notMem := List.formPerm_apply_of_notMem
-
-@[deprecated (since := "2025-05-23")]
-alias formPerm_eq_self_of_not_mem := List.formPerm_apply_of_notMem
 
 theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
   rcases l with - | ⟨hd, tl⟩

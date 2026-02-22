@@ -37,7 +37,7 @@ unnecessarily.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -149,6 +149,7 @@ private theorem sin_angle_eq_sin_angle_add_add_angle_add {x y : V} (hx : x ≠ 0
     simp only [← real_inner_self_eq_norm_sq, inner_add_right, inner_add_left, real_inner_comm]
     ring_nf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a parallelogram, the two parts of the inner angle add to the inner angle,
 vector angle form. -/
 theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
@@ -177,7 +178,7 @@ theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     obtain ⟨-, r₂, r₂_pos, hr₂⟩ := h
     have : (r₁ + r₂ - 1) • (x + y) = 0 := by
       rw [sub_smul, add_smul, one_smul, ← hr₁, ← hr₂, sub_eq_zero]
-    cases eq_zero_or_eq_zero_of_smul_eq_zero this
+    cases smul_eq_zero.1 this
     · linarith
     · contradiction
   obtain rfl : n = 0 := by lia
@@ -328,7 +329,7 @@ measures of the remote interior angles. -/
 theorem exterior_angle_eq_angle_add_angle {p₁ p₂ p₃ : P} (p : P) (h : Sbtw ℝ p p₁ p₂) :
     ∠ p₃ p₁ p = ∠ p₁ p₃ p₂ + ∠ p₃ p₂ p₁ := by
   linarith [angle_add_angle_eq_pi_of_angle_eq_pi p₃ h.angle₁₂₃_eq_pi,
-  angle_add_angle_add_angle_eq_pi p₃ h.right_ne.symm, angle_comm p₃ p₁ p₂]
+    angle_add_angle_add_angle_eq_pi p₃ h.right_ne.symm, angle_comm p₃ p₁ p₂]
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/
@@ -399,6 +400,7 @@ theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠
     have h2 : 0 ≤ r := nonneg_of_mul_nonneg_left h1 (dist_pos.mpr hab₁)
     exact (sq_eq_sq₀ dist_nonneg (mul_nonneg h2 dist_nonneg)).mp h'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a triangle, the smaller angle is opposite the smaller side. -/
 theorem dist_lt_of_angle_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)) :
     ∠ a c b < ∠ a b c → dist a b < dist a c := by

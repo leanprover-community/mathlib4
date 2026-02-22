@@ -396,6 +396,7 @@ namespace ModelWithCorners
 
 variable (I) (e : E ≃L[𝕜] E')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Apply a continuous linear equivalence to the model vector space. -/
 def transContinuousLinearEquiv : ModelWithCorners 𝕜 E' H where
   toPartialEquiv := I.toPartialEquiv.trans e.toEquiv.toPartialEquiv
@@ -422,49 +423,30 @@ def transContinuousLinearEquiv : ModelWithCorners 𝕜 E' H where
   continuous_toFun := e.continuous.comp I.continuous
   continuous_invFun := I.continuous_symm.comp e.symm.continuous
 
-@[deprecated (since := "2025-06-12")] alias transDiffeomorph := transContinuousLinearEquiv
-
 @[simp, mfld_simps]
 theorem coe_transContinuousLinearEquiv : ⇑(I.transContinuousLinearEquiv e) = e ∘ I :=
   rfl
-
-@[deprecated (since := "2025-06-12")] alias coe_transDiffeomorph := coe_transContinuousLinearEquiv
 
 @[simp, mfld_simps]
 theorem coe_transContinuousLinearEquiv_symm :
     ⇑(I.transContinuousLinearEquiv e).symm = I.symm ∘ e.symm := rfl
 
-@[deprecated (since := "2025-06-12")]
-alias coe_transDiffeomorph_symm := coe_transContinuousLinearEquiv_symm
-
 theorem transContinuousLinearEquiv_range : range (I.transContinuousLinearEquiv e) = e '' range I :=
   range_comp e I
-
-@[deprecated (since := "2025-06-12")]
-alias transDiffeomorph_range := transContinuousLinearEquiv_range
 
 theorem coe_extChartAt_transContinuousLinearEquiv (x : M) :
     ⇑(extChartAt (I.transContinuousLinearEquiv e) x) = e ∘ extChartAt I x :=
   rfl
 
-@[deprecated (since := "2025-06-12")]
-alias coe_extChartAt_transDiffeomorph := coe_extChartAt_transContinuousLinearEquiv
-
 theorem coe_extChartAt_transContinuousLinearEquiv_symm (x : M) :
     ⇑(extChartAt (I.transContinuousLinearEquiv e) x).symm = (extChartAt I x).symm ∘ e.symm :=
   rfl
-
-@[deprecated (since := "2025-06-12")]
-alias coe_extChartAt_transDiffeomorph_symm := coe_extChartAt_transContinuousLinearEquiv_symm
 
 theorem extChartAt_transContinuousLinearEquiv_target (x : M) :
     (extChartAt (I.transContinuousLinearEquiv e) x).target
       = e.symm ⁻¹' (extChartAt I x).target := by
   simp only [range_comp, preimage_preimage, ContinuousLinearEquiv.image_eq_preimage_symm,
     mfld_simps, ← comp_def]
-
-@[deprecated (since := "2025-06-12")]
-alias extChartAt_transDiffeomorph_target := extChartAt_transContinuousLinearEquiv_target
 
 end ModelWithCorners
 
@@ -502,9 +484,6 @@ def toTransContinuousLinearEquiv (e : E ≃L[𝕜] F) : M ≃ₘ^n⟮I, I.transC
     exact ⟨(extChartAt _ x).map_source (mem_extChartAt_source x), trivial, by
       simp only [e.symm_apply_apply, Equiv.refl_symm, Equiv.coe_refl, mfld_simps]⟩
 
-@[deprecated (since := "2025-06-12")]
-alias _root_.Diffeomorph.toTransDiffeomorph := toTransContinuousLinearEquiv
-
 variable {I M}
 
 @[simp]
@@ -513,36 +492,20 @@ theorem contMDiffWithinAt_transContinuousLinearEquiv_right {f : M' → M} {x s} 
       ↔ ContMDiffWithinAt I' I n f s x :=
   (toTransContinuousLinearEquiv I M e).contMDiffWithinAt_diffeomorph_comp_iff le_rfl
 
-@[deprecated (since := "2025-06-12")]
-alias _root_.Diffeomorph.contMDiffWithinAt_transDiffeomorph_right :=
-contMDiffWithinAt_transContinuousLinearEquiv_right
-
 @[simp]
 theorem contMDiffAt_transContinuousLinearEquiv_right {f : M' → M} {x} :
     ContMDiffAt I' (I.transContinuousLinearEquiv e) n f x ↔ ContMDiffAt I' I n f x :=
   (toTransContinuousLinearEquiv I M e).contMDiffAt_diffeomorph_comp_iff le_rfl
-
-@[deprecated (since := "2025-06-12")]
-alias _root_.Diffeomorph.contMDiffAt_transDiffeomorph_right :=
-contMDiffAt_transContinuousLinearEquiv_right
 
 @[simp]
 theorem contMDiffOn_transContinuousLinearEquiv_right {f : M' → M} {s} :
     ContMDiffOn I' (I.transContinuousLinearEquiv e) n f s ↔ ContMDiffOn I' I n f s :=
   (toTransContinuousLinearEquiv I M e).contMDiffOn_diffeomorph_comp_iff le_rfl
 
-@[deprecated (since := "2025-06-12")]
-alias _root_.Diffeomorph.contMDiffOn_transDiffeomorph_right :=
-contMDiffOn_transContinuousLinearEquiv_right
-
 @[simp]
 theorem contMDiff_transContinuousLinearEquiv_right {f : M' → M} :
     ContMDiff I' (I.transContinuousLinearEquiv e) n f ↔ ContMDiff I' I n f :=
   (toTransContinuousLinearEquiv I M e).contMDiff_diffeomorph_comp_iff le_rfl
-
-@[deprecated (since := "2025-06-12")]
-alias _root_.Diffeomorph.contMDiff_transDiffeomorph_right :=
-contMDiff_transContinuousLinearEquiv_right
 
 @[simp]
 theorem contMDiffWithinAt_transContinuousLinearEquiv_left {f : M → M'} {x s} :
@@ -550,36 +513,20 @@ theorem contMDiffWithinAt_transContinuousLinearEquiv_left {f : M → M'} {x s} :
       ↔ ContMDiffWithinAt I I' n f s x :=
   ((toTransContinuousLinearEquiv I M e).contMDiffWithinAt_comp_diffeomorph_iff le_rfl).symm
 
-@[deprecated (since := "2025-06-12")]
-alias _root_.Diffeomorph.contMDiffWithinAt_transDiffeomorph_left :=
-contMDiffWithinAt_transContinuousLinearEquiv_left
-
 @[simp]
 theorem contMDiffAt_transContinuousLinearEquiv_left {f : M → M'} {x} :
     ContMDiffAt (I.transContinuousLinearEquiv e) I' n f x ↔ ContMDiffAt I I' n f x :=
   ((toTransContinuousLinearEquiv I M e).contMDiffAt_comp_diffeomorph_iff le_rfl).symm
-
-@[deprecated (since := "2025-06-12")]
-alias _root_.Diffeomorph.contMDiffAt_transDiffeomorph_left :=
-contMDiffAt_transContinuousLinearEquiv_left
 
 @[simp]
 theorem contMDiffOn_transContinuousLinearEquiv_left {f : M → M'} {s} :
     ContMDiffOn (I.transContinuousLinearEquiv e) I' n f s ↔ ContMDiffOn I I' n f s :=
   ((toTransContinuousLinearEquiv I M e).contMDiffOn_comp_diffeomorph_iff le_rfl).symm
 
-@[deprecated (since := "2025-06-12")]
-alias _root_.Diffeomorph.contMDiffOn_transDiffeomorph_left :=
-contMDiffOn_transContinuousLinearEquiv_left
-
 @[simp]
 theorem contMDiff_transContinuousLinearEquiv_left {f : M → M'} :
     ContMDiff (I.transContinuousLinearEquiv e) I' n f ↔ ContMDiff I I' n f :=
   ((toTransContinuousLinearEquiv I M e).contMDiff_comp_diffeomorph_iff le_rfl).symm
-
-@[deprecated (since := "2025-06-12")]
-alias _root_.Diffeomorph.contMDiff_transDiffeomorph_left :=
-contMDiff_transContinuousLinearEquiv_left
 
 end ContinuousLinearEquiv
 

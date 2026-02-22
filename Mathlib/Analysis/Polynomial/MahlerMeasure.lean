@@ -6,9 +6,10 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.Analysis.Analytic.Polynomial
-public import Mathlib.Analysis.Complex.JensenFormula
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+public import Mathlib.Analysis.Polynomial.Norm
+public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 
 /-!
 # Mahler measure of complex polynomials
@@ -128,7 +129,7 @@ theorem mahlerMeasure_mul (p q : ℂ[X]) :
   apply integral_congr_ae
   rw [MeasureTheory.ae_iff]
   apply Set.Finite.measure_zero _ MeasureTheory.volume
-  simp only [_root_.not_imp]
+  simp only [Classical.not_imp]
   apply Set.Finite.of_finite_image (f := circleMap 0 1) _ <|
     (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [le_of_eq, pi_nonneg])).mono (fun _ h ↦ h.1)
   apply (p * q).roots.finite_toSet.subset
@@ -188,6 +189,7 @@ theorem mahlerMeasure_X_sub_C (z : ℂ) : (X - C z).mahlerMeasure = max 1 ‖z�
 theorem mahlerMeasure_X_add_C (z : ℂ) : (X + C z).mahlerMeasure = max 1 ‖z‖ := by
   simp [← sub_neg_eq_add, ← map_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
     (C a * X + C b).mahlerMeasure = max ‖a‖ ‖b‖ := by
@@ -224,7 +226,7 @@ theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeas
   rw [logMahlerMeasure_eq_log_MahlerMeasure] at this
   apply_fun exp at this
   rw [exp_add, exp_log <| mahlerMeasure_pos_of_ne_zero hp,
-    exp_log <|norm_pos_iff.mpr <| leadingCoeff_ne_zero.mpr hp] at this
+    exp_log <| norm_pos_iff.mpr <| leadingCoeff_ne_zero.mpr hp] at this
   simp [this, exp_multiset_sum, posLog_eq_log_max_one, exp_log]
 
 /-!
@@ -275,6 +277,7 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     apply norm_sum_le_of_le p.support
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 open Multiset in
 theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mahlerMeasure := by
@@ -309,20 +312,28 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
       · exact le_max_left 1 ‖a‖
       · exact hx.1
   --final calc block:
-  calc
-  ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
-     ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
-    gcongr with x hx
-    rw [Finset.prod_multiset_map_count, Finset.prod_multiset_count, norm_prod]
-    simp_rw [norm_pow]
-    exact this x hx
-  _  = p.natDegree.choose n * (p.roots.map (fun a ↦ 1 ⊔ ‖a‖)).prod := by
-    rw [← Finset.sum_mul]
-    congr
-    norm_cast
-    simp only [mem_powersetCard, mem_toFinset, imp_self, implies_true, sum_count_eq_card,
-      card_powersetCard, S, ← Nat.choose_symm hn]
-    congr
-    exact splits_iff_card_roots.mp <| IsAlgClosed.splits p
+  calc ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
+    _ ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
+      gcongr with x hx
+      rw [Finset.prod_multiset_map_count, Finset.prod_multiset_count, norm_prod]
+      simp_rw [norm_pow]
+      exact this x hx
+    _ = p.natDegree.choose n * (p.roots.map (fun a ↦ 1 ⊔ ‖a‖)).prod := by
+      rw [← Finset.sum_mul]
+      congr
+      norm_cast
+      simp only [mem_powersetCard, mem_toFinset, imp_self, implies_true, sum_count_eq_card,
+        card_powersetCard, S, ← Nat.choose_symm hn]
+      congr
+      exact splits_iff_card_roots.mp <| IsAlgClosed.splits p
+
+theorem supNorm_le_choose_natDegree_div_two_mul_mahlerMeasure (p : Polynomial ℂ) :
+    p.supNorm ≤ p.natDegree.choose (p.natDegree / 2) * p.mahlerMeasure := by
+  obtain ⟨i, hi⟩ := p.exists_eq_supNorm
+  calc p.supNorm = ‖p.coeff i‖ := hi
+    _ ≤ (p.natDegree.choose i) * p.mahlerMeasure := p.norm_coeff_le_choose_mul_mahlerMeasure i
+    _ ≤ (p.natDegree.choose (p.natDegree / 2)) * p.mahlerMeasure :=
+      mul_le_mul_of_nonneg_right (by exact_mod_cast Nat.choose_le_middle i p.natDegree)
+        p.mahlerMeasure_nonneg
 
 end Polynomial

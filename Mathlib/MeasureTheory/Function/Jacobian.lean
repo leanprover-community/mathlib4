@@ -51,7 +51,7 @@ For the next statements, `s` is a measurable set and `f` is differentiable on `s
 * `integral_image_eq_integral_abs_det_fderiv_smul`: for `g : E → F`, one has
     `∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ`.
 * `integrableOn_image_iff_integrableOn_abs_det_fderiv_smul`: for `g : E → F`, the function `g` is
-  integrable on `f '' s` if and only if `|(f' x).det| • g (f x))` is integrable on `s`.
+  integrable on `f '' s` if and only if `|(f' x).det| • g (f x)` is integrable on `s`.
 
 ## Implementation
 
@@ -94,7 +94,7 @@ Change of variables in integrals
 [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2]
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics
   TopologicalSpace
@@ -111,6 +111,7 @@ We state lemmas ensuring that a differentiable function can be approximated, on 
 measurable pieces, by linear maps (with a prescribed precision depending on the linear map).
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assume that a function `f` has a derivative at every point of a set `s`. Then one may cover `s`
 with countably many closed sets `t n` on which `f` is well approximated by linear maps `A n`. -/
 theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCountableTopology F]
@@ -229,7 +230,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
       rcases s_subset x xs with ⟨n, z, _⟩
       exact ⟨z⟩
     inhabit ↥T
-    exact ⟨_, Encodable.surjective_decode_iget (ℕ × T × ℕ)⟩
+    exact ⟨_, Encodable.surjective_decode_getD (ℕ × T × ℕ) default⟩
   -- these sets `t q = K n z p` will do
   refine
     ⟨fun q => K (F q).1 (F q).2.1 (F q).2.2, fun q => f' (F q).2.1, fun n => K_closed _ _ _,
@@ -284,6 +285,7 @@ to the approximating linear map.
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `f` be a function which is sufficiently close (in the Lipschitz sense) to a given linear
 map `A`. Then it expands the volume of any set by at most `m` for any `m > det A`. -/
 theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
@@ -461,6 +463,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
   -- and our choice of `δ`.
   exact hδ₀ _ _ ((hf'.to_inv h1δ).mono_num h2δ.le)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a differentiable function `f` is approximated by a linear map `A` on a set `s`, up to `δ`,
 then at almost every `x` in `s` one has `‖f' x - A‖ ≤ δ`. -/
 theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ : ℝ≥0}
@@ -802,6 +805,7 @@ directions, first up to controlled errors and then letting these errors tend to 
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) {ε : ℝ≥0} (εpos : 0 < ε) :
     μ (f '' s) ≤ (∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ) + 2 * ε * μ s := by
@@ -929,6 +933,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv (hs : MeasurableSet s)
       · intro n; exact hs.inter (u_meas n)
       · exact pairwise_disjoint_mono (disjoint_disjointed _) fun n => inter_subset_right
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) {ε : ℝ≥0} (εpos : 0 < ε) :
     (∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ) ≤ μ (f '' s) + 2 * ε * μ s := by
@@ -1181,7 +1186,7 @@ theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s
 /-! ### Change of variable formulas in integrals -/
 
 
-/- Change of variable formula for differentiable functions: if a function `f` is
+/-- Change of variable formula for differentiable functions: if a function `f` is
 injective and differentiable on a measurable set `s`, then the Lebesgue integral of a function
 `g : E → ℝ≥0∞` on `f '' s` coincides with the integral of `|(f' x).det| * g ∘ f` on `s`.
 Note that the measurability of `f '' s` is given by `measurable_image_of_fderivWithin`. -/

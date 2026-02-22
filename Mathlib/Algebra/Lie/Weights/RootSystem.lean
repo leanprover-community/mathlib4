@@ -74,6 +74,7 @@ def chainLength (α β : Weight K H L) : ℕ :=
 
 lemma chainLength_of_isZero (hα : α.IsZero) : chainLength α β = 0 := dif_pos hα
 
+set_option backward.isDefEq.respectTransparency false in
 lemma chainLength_nsmul {x} (hx : x ∈ rootSpace H (chainTop α β)) :
     chainLength α β • x = ⁅coroot α, x⁆ := by
   by_cases hα : α.IsZero
@@ -116,6 +117,7 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_le {n : ℕ} (hn : n ≤ chainLength �
   simp only [← smul_neg, ne_eq, LieSubmodule.eq_bot_iff, not_forall]
   exact ⟨_, toEnd_pow_apply_mem hf hx n, prim.pow_toEnd_f_ne_zero_of_eq_nat rfl hn⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn : chainLength α β < n) :
     rootSpace H (-(n • α) + chainTop α β) = ⊥ := by
   by_contra e
@@ -257,6 +259,7 @@ lemma chainLength_of_eq_zsmul_add (β' : Weight K H L) (n : ℤ) (hβ' : (β' : 
       chainBotCoeff_of_eq_zsmul_add α β hα β' n hβ', sub_eq_add_neg, add_add_add_comm,
       neg_add_cancel, add_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma chainTopCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
     chainTopCoeff α (0 : Weight K H L) = 1 := by
   symm
@@ -382,6 +385,7 @@ lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
 
 variable (H)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The root system of a finite-dimensional Lie algebra with non-degenerate Killing form over a
 field of characteristic zero, relative to a splitting Cartan subalgebra. -/
 def rootSystem :
@@ -390,7 +394,7 @@ def rootSystem :
     .id
     { toFun := (↑)
       inj' := by
-        intro α β h; ext x; simpa using LinearMap.congr_fun h x  }
+        intro α β h; ext x; simpa using LinearMap.congr_fun h x }
     { toFun := coroot ∘ (↑)
       inj' := by rintro ⟨α, hα⟩ ⟨β, hβ⟩ h; simpa using h }
     (fun ⟨α, hα⟩ ↦ by simpa using root_apply_coroot <| by simpa using hα)
@@ -415,10 +419,31 @@ lemma corootForm_rootSystem_eq_killing :
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
 
+set_option backward.isDefEq.respectTransparency false in
+open LieSubmodule in
+@[simp]
+lemma biSup_corootSpace_eq_top :
+    ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSpace α = ⊤ := by
+  simp only [← toSubmodule_inj, top_toSubmodule, iSup_toSubmodule,
+    ← RootPairing.IsRootSystem.span_coroot_eq_top (P := rootSystem H),
+    coe_corootSpace_eq_span_singleton, Submodule.iSup_span]
+  congr
+  ext α
+  simp [eq_comm]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma biSup_corootSubmodule_eq_cartan :
+    ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSubmodule α = H.toLieSubmodule := by
+  suffices ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSpace α = ⊤ from
+    le_antisymm (by simp) (by simp [← LieSubmodule.map_iSup, this])
+  simp
+
 instance : (rootSystem H).IsCrystallographic where
   exists_value α β :=
     ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (rootSystem H).IsReduced where
   eq_or_eq_neg := by
     intro ⟨α, hα⟩ ⟨β, hβ⟩ e

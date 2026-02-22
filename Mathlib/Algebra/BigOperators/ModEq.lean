@@ -18,7 +18,7 @@ and similarly for sums.
 We prove it for lists, multisets, and finsets, as well as for natural and integer numbers.
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 
@@ -123,6 +123,7 @@ theorem listProd_map (h : ∀ x ∈ l, f x ≡ g x [ZMOD n]) :
     (l.map f).prod ≡ (l.map g).prod [ZMOD n] := by
   induction l <;> aesop (add unsafe ModEq.mul)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem listProd_map_one (h : ∀ x ∈ l, f x ≡ 1 [ZMOD n]) : (l.map f).prod ≡ 1 [ZMOD n] :=
   (listProd_map h).trans <| by simp
 
@@ -143,6 +144,7 @@ theorem multisetProd_map {s : Multiset α} (h : ∀ x ∈ s, f x ≡ g x [ZMOD n
   rcases s with ⟨l⟩
   simpa using listProd_map (l := l) h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem multisetProd_map_one {s : Multiset α} (h : ∀ x ∈ s, f x ≡ 1 [ZMOD n]) :
     (s.map f).prod ≡ 1 [ZMOD n] := by
   simpa using multisetProd_map h

@@ -96,6 +96,7 @@ theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Meas
   refine (norm_integral_le_integral_norm _).trans (le_of_eq ?_)
   simp_rw [Circle.norm_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier integral converts right-translation into scalar multiplication by a phase factor. -/
 theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : AddChar 𝕜 𝕊) (μ : Measure V)
     [μ.IsAddRightInvariant] (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (v₀ : V) :
@@ -160,8 +161,8 @@ theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e
   · exact fun w ↦ ((fourierIntegral_convergent_iff he hL w).2 hf).1
   · exact fun w ↦ ae_of_all _ fun v ↦ le_of_eq (Circle.norm_smul _ _)
   · exact hf.norm
-  · refine ae_of_all _ fun v ↦ (he.comp ?_).smul continuous_const
-    exact (hL.comp (.prodMk_right _)).neg
+  · filter_upwards with v
+    fun_prop
 
 end Continuous
 
@@ -187,7 +188,7 @@ theorem integral_fourierIntegral_swap
   have : Integrable (fun (p : W × V) ↦ ‖M‖ * (‖g p.1‖ * ‖f p.2‖)) (ν.prod μ) :=
     (hg.norm.mul_prod hf.norm).const_mul _
   apply this.mono
-  · change AEStronglyMeasurable (fun p : W × V ↦ (M (g p.1) (e (-(L p.2) p.1) • f p.2) )) _
+  · change AEStronglyMeasurable (fun p : W × V ↦ (M (g p.1) (e (-(L p.2) p.1) • f p.2))) _
     have A : AEStronglyMeasurable (fun (p : W × V) ↦ e (-L p.2 p.1) • f p.2) (ν.prod μ) := by
       refine (Continuous.aestronglyMeasurable ?_).smul hf.1.comp_snd
       exact he.comp (hL.comp continuous_swap).neg
@@ -203,6 +204,8 @@ theorem integral_fourierIntegral_swap
     simp
 
 variable [CompleteSpace E] [CompleteSpace F]
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
 
 Version where the multiplication is replaced by a general bilinear form `M`. -/
@@ -237,6 +240,7 @@ theorem integral_fourierIntegral_smul_eq_flip
       ∫ x, (f x) • (fourierIntegral e ν L.flip g x) ∂μ :=
   integral_bilin_fourierIntegral_eq_flip (ContinuousLinearMap.lsmul ℂ ℂ) he hL hf hg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform satisfies `∫ 𝓕 f * conj g = ∫ f * conj (𝓕⁻¹ g)`, which together
 with the Fourier inversion theorem yields Plancherel's theorem. The stated version is more
 convenient since it does only require integrability of `f` and `g`.
@@ -294,6 +298,7 @@ variable {𝕜 ι E F V W : Type*} [Fintype ι] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℂ E]
   {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fourierIntegral_continuousLinearMap_apply
     {f : V → (F →L[ℝ] E)} {a : F} {w : W} (he : Continuous e) (hf : Integrable f μ) :
     fourierIntegral e μ L.toLinearMap₁₂ f w a =
@@ -303,6 +308,7 @@ theorem fourierIntegral_continuousLinearMap_apply
   · apply (fourierIntegral_convergent_iff he _ _).2 hf
     exact L.continuous₂
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fourierIntegral_continuousMultilinearMap_apply
     {f : V → (ContinuousMultilinearMap ℝ M E)} {m : (i : ι) → M i} {w : W} (he : Continuous e)
     (hf : Integrable f μ) :
@@ -457,6 +463,7 @@ lemma fourierInv_eq' (f : V → E) (w : V) :
 @[deprecated (since := "2025-11-16")]
 alias fourierIntegralInv_eq' := fourierInv_eq'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma fourier_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W) :
     𝓕 (f ∘ A) w = (𝓕 f) (A w) := by
   simp only [fourier_eq, ← A.inner_map_map, Function.comp_apply,

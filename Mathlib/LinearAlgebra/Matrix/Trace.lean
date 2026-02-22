@@ -166,6 +166,7 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
     (C : Matrix p m R) : trace (A * (B * C)) = trace (C * (A * B)) := by
   rw [← Matrix.mul_assoc, trace_mul_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
     (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = a ⬝ᵥ b := by
@@ -248,15 +249,9 @@ variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 theorem trace_single_eq_of_ne (h : i ≠ j) : trace (single i j c) = 0 := by
   simp [trace, h]
 
-@[deprecated (since := "2025-05-05")]
-alias StdBasisMatrix.trace_zero := trace_single_eq_of_ne
-
 @[simp]
 theorem trace_single_eq_same : trace (single i i c) = c := by
   simp [trace]
-
-@[deprecated (since := "2025-05-05")]
-alias StdBasisMatrix.trace_eq := trace_single_eq_same
 
 theorem trace_single_mul [NonUnitalNonAssocSemiring R] [Fintype m]
     (i : n) (j : m) (a : R) (x : Matrix m n R) :
@@ -269,6 +264,12 @@ theorem trace_mul_single [NonUnitalNonAssocSemiring R] [Fintype m]
   simp [trace, mul_apply, single, ite_and]
 
 end single
+
+theorem trace_surjective [AddCommMonoid R] [Nonempty n] :
+    Function.Surjective (trace : Matrix n n R → R) := fun r ↦ by
+  classical
+  inhabit n
+  exact ⟨single default default r, trace_single_eq_same default r⟩
 
 /-- Matrices `A` and `B` are equal iff `(x * A).trace = (x * B).trace` for all `x`. -/
 theorem ext_iff_trace_mul_left [NonAssocSemiring R] {A B : Matrix m n R} :

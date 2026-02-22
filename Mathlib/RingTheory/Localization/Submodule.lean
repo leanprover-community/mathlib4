@@ -87,6 +87,7 @@ instance {R} [CommRing R] [IsNoetherianRing R] (S : Submonoid R) :
     IsNoetherianRing (Localization S) :=
   IsLocalization.isNoetherianRing S _ ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Algebra.EssFiniteType.isNoetherianRing
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.EssFiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
@@ -113,7 +114,7 @@ variable (S)
 
 theorem coeSubmodule_injective (h : M ≤ nonZeroDivisors R) :
     Function.Injective (coeSubmodule S : Ideal R → Submodule R S) :=
-  injective_of_le_imp_le _ fun hl => (coeSubmodule_le_coeSubmodule h).mp hl
+  .of_eq_imp_le fun hl => (coeSubmodule_le_coeSubmodule h).mp hl.le
 
 theorem coeSubmodule_isPrincipal {I : Ideal R} (h : M ≤ nonZeroDivisors R) :
     (coeSubmodule S I).IsPrincipal ↔ I.IsPrincipal := by
@@ -191,7 +192,7 @@ theorem coeSubmodule_strictMono : StrictMono (coeSubmodule K : Ideal R → Submo
 variable (R K)
 
 theorem coeSubmodule_injective : Function.Injective (coeSubmodule K : Ideal R → Submodule R K) :=
-  injective_of_le_imp_le _ fun hl => coeSubmodule_le_coeSubmodule.mp hl
+  .of_eq_imp_le fun hl => coeSubmodule_le_coeSubmodule.mp hl.le
 
 @[simp]
 theorem coeSubmodule_isPrincipal {I : Ideal R} : (coeSubmodule K I).IsPrincipal ↔ I.IsPrincipal :=

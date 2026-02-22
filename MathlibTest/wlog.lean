@@ -152,6 +152,20 @@ example (x y : ℕ) : True := by
   · trivial
   · trivial
 
+-- Handle ldecls properly:
+example (x y : ℕ) : True := by
+  let z := 0
+  wlog hxy' : x ≤ y with H
+  · trivial
+  · trivial
+
+-- Handle ldecls properly:
+example (x y : ℕ) : True := by
+  let z := 0
+  wlog! hxy' : x ≤ y with H
+  · trivial
+  · trivial
+
 example (x y : ℕ) : True := by
   wlog! h : x = 0 ∨ y = 0
   · guard_hyp h :ₛ x ≠ 0 ∧ y ≠ 0

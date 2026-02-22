@@ -149,6 +149,7 @@ theorem mem_weightedHomogeneousSubmodule (w : σ → M) (m : M) (p : MvPolynomia
     p ∈ weightedHomogeneousSubmodule R w m ↔ p.IsWeightedHomogeneous w m :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The submodule `weightedHomogeneousSubmodule R w m` of homogeneous `MvPolynomial`s of
   degree `n` is equal to the `R`-submodule of all `p : (σ →₀ ℕ) →₀ R` such that
   `p.support ⊆ {d | weight w d = m}`. While equal, the former has a
@@ -295,6 +296,7 @@ theorem weighted_total_degree [SemilatticeSup M] {w : σ → M} (hφ : IsWeighte
     replace hd := Finsupp.mem_support_iff.mpr hd
     apply Finset.le_sup hd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Induction principle for weighted homogeneous polynomials. -/
 lemma induction_on {w : σ → M} {m : M}
     {motive : (p : MvPolynomial σ R) → p.IsWeightedHomogeneous w m → Prop}
@@ -350,6 +352,7 @@ theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
   letI := Classical.decEq M
   Finsupp.filter_apply (fun d : σ →₀ ℕ => weight w d = n) φ d |>.trans <| by convert rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
       ∑ d ∈ φ.support with weight w d = n, monomial d (coeff d φ) :=
@@ -610,10 +613,6 @@ theorem weightedHomogeneousComponent_eq_zero_of_notMem [DecidableEq M]
   simp only [Finset.mem_image, mem_support_iff, ne_eq, not_exists, not_and] at hi
   exact fun m hm ↦ hi m (mem_support_iff.mp hm)
 
-@[deprecated (since := "2025-05-23")]
-alias weightedHomogeneousComponent_eq_zero_of_not_mem :=
-  weightedHomogeneousComponent_eq_zero_of_notMem
-
 variable (R)
 
 /-- The `decompose'` argument of `weightedDecomposition`. -/
@@ -655,6 +654,7 @@ def weightedDecomposition [DecidableEq M] :
     exact weightedHomogeneousComponent_directSum R w x m
 
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weight, `MvPolynomial` as a graded algebra -/
 def weightedGradedAlgebra [DecidableEq M] :
     GradedAlgebra (weightedHomogeneousSubmodule R w) where

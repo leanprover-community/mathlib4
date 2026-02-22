@@ -63,11 +63,15 @@ def invMonoidHom : α →* α where
   map_one' := inv_one
   map_mul' := mul_inv
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_invMonoidHom : (invMonoidHom : α → α) = Inv.inv := rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+theorem invMonoidHom_comp_invMonoidHom : (invMonoidHom (α := α)).comp invMonoidHom = .id _ := by
+  ext; simp
 
 end DivisionCommMonoid
 
@@ -80,7 +84,7 @@ namespace OneHom
 instance [One M] [MulOneClass N] : Mul (OneHom M N) where
   mul f g :=
     { toFun m := f m * g m
-      map_one' := by simp}
+      map_one' := by simp }
 
 @[to_additive (attr := norm_cast)]
 theorem coe_mul {M N} [One M] [MulOneClass N] (f g : OneHom M N) : ⇑(f * g) = ⇑f * ⇑g := rfl
@@ -100,7 +104,7 @@ theorem mul_comp [One M] [One N] [MulOneClass P] (g₁ g₂ : OneHom N P) (f : O
 instance [One M] [InvOneClass N] : Inv (OneHom M N) where
   inv f :=
     { toFun m := (f m)⁻¹
-      map_one' := by simp}
+      map_one' := by simp }
 
 @[to_additive (attr := norm_cast)]
 theorem coe_inv {M N} [One M] [InvOneClass N] (f : OneHom M N) : ⇑(f⁻¹) = (⇑f)⁻¹ := rfl
@@ -160,7 +164,7 @@ theorem mul_comp [Mul M] [Mul N] [CommSemigroup P] (g₁ g₂ : N →ₙ* P) (f 
 theorem comp_mul [Mul M] [CommSemigroup N] [CommSemigroup P] (g : N →ₙ* P) (f₁ f₂ : M →ₙ* N) :
     g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
   ext
-  simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
+  simp
 
 end MulHom
 
@@ -252,7 +256,8 @@ lemma mul_comp [MulOneClass P] (g₁ g₂ : M →* N) (f : P →* M) :
 @[to_additive]
 lemma comp_mul [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
     g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
-  ext; simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
+  ext
+  simp
 
 end Mul
 
@@ -274,7 +279,7 @@ theorem inv_comp (φ : N →* G) (ψ : M →* N) : φ⁻¹.comp ψ = (φ.comp ψ
 @[to_additive (attr := simp)]
 theorem comp_inv (φ : G →* H) (ψ : M →* G) : φ.comp ψ⁻¹ = (φ.comp ψ)⁻¹ := by
   ext
-  simp only [Function.comp_apply, inv_apply, map_inv, coe_comp]
+  simp
 
 /-- If `f` and `g` are monoid homomorphisms to a commutative group, then `f / g` is the homomorphism
 sending `x` to `(f x) / (g x)`. -/
@@ -291,7 +296,8 @@ lemma div_comp (f g : N →* G) (h : M →* N) : (f / g).comp h = f.comp h / g.c
 
 @[to_additive (attr := simp)]
 lemma comp_div (f : G →* H) (g h : M →* G) : f.comp (g / h) = f.comp g / f.comp h := by
-  ext; simp only [Function.comp_apply, div_apply, map_div, coe_comp]
+  ext
+  simp
 
 end InvDiv
 
