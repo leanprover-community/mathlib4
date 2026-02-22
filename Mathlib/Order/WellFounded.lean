@@ -114,9 +114,6 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   by_contra hy'
   exact hm' y hy' hy
 
-@[deprecated (since := "2025-08-10")]
-alias wellFounded_iff_no_descending_seq := wellFounded_iff_isEmpty_descending_chain
-
 theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
   by_contra! hf
   exact (wellFounded_iff_isEmpty_descending_chain.1 h.wf).elim ⟨f, hf⟩
@@ -138,6 +135,8 @@ section LinearOrder
 
 variable [LinearOrder β] [Preorder γ]
 
+-- TODO: the name `WellFounded.min` is incorrect when the assumption is that `>` is well-founded.
+@[to_dual none]
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
     {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
@@ -308,12 +307,14 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
 end Induction
 
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
+@[instance_reducible]
 noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where
   bot := h.wf.min _ Set.univ_nonempty
   bot_le a := h.wf.min_le (Set.mem_univ a)
 
 /-- A nonempty linear order with well-founded `>` has a top element. -/
+@[instance_reducible]
 noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [WellFoundedGT α] :
     OrderTop α :=
   have := WellFoundedLT.toOrderBot (α := αᵒᵈ)

@@ -748,6 +748,7 @@ def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
 
 variable [Field 𝕜] [IsTopologicalRing 𝕜]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Working in continuous functions into a topological field,
 a subalgebra of functions that separates points also separates points strongly.
 

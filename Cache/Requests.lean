@@ -414,7 +414,8 @@ def monitorCurl (args : Array String) (size : Nat)
       match Lean.Json.parse line.copy with
       | .ok result =>
         match result.getObjValAs? Nat "http_code" with
-        | .ok 200 =>
+        | .ok 200
+        | .ok 201 =>
           if let .ok fn := result.getObjValAs? String "filename_effective" then
             if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
               let finalPath := (fn.dropEnd 5).copy
@@ -617,11 +618,14 @@ where
 /-- Downloads missing files, and unpacks files. -/
 def getFiles
     (repo? : Option String) (hashMap : IO.ModuleHashMap)
-    (forceDownload forceUnpack parallel decompress : Bool)
+    (forceDownload forceUnpack parallel decompress skipProofWidgets : Bool)
     : IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do checkForToolchainMismatch
-  getProofWidgets (← read).proofWidgetsBuildDir
+  if skipProofWidgets then
+    IO.println "Skipping ProofWidgets release fetch"
+  else
+    getProofWidgets (← read).proofWidgetsBuildDir
 
   let mathlibDepPath := (← read).mathlibDepPath
 
