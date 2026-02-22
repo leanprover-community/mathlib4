@@ -38,7 +38,7 @@ variable [IsLocalization M S]
 
 attribute [local instance] Polynomial.algebra Polynomial.isLocalization in
 theorem exists_integer_polynomial_multiple (p : S[X]) :
-    ∃ b : M, IsInteger R[X] ((b : R) • p) := by
+    ∃ b ∈ M, IsInteger R[X] (b • p) := by
   obtain ⟨⟨_, b, hb, rfl⟩, h⟩ := (exists_integer_multiple (Submonoid.map C M) p)
   use ⟨b, hb⟩
   rw [Subtype.coe_mk, C_eq_algebraMap, algebraMap_smul] at h
