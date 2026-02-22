@@ -351,6 +351,7 @@ theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
 We keep this as a definition (not an instance) to avoid instance search trying to search for
 `DiscreteTopology` or `Unique` instances.
 -/
+@[instance_reducible]
 def ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
     [DiscreteTopology M] [h : Unique H] : ChartedSpace H M where
   atlas :=
@@ -451,6 +452,7 @@ theorem prodChartedSpace_chartAt :
     chartAt (ModelProd H H') x = (chartAt H x.fst).prod (chartAt H' x.snd) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem chartedSpaceSelf_prod : prodChartedSpace H H H' H' = chartedSpaceSelf (H × H') := by
   ext1
   · simp [atlas, ChartedSpace.atlas]
@@ -525,14 +527,14 @@ lemma ChartedSpace.sum_chartAt_inl (x : M) :
     haveI : Nonempty H := nonempty_of_chartedSpace x
     chartAt H (Sum.inl x)
       = (chartAt H x).lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inl := by
-  simp only [chartAt, sum, nonempty_of_chartedSpace x, ↓reduceDIte]
+  simp +instances only [chartAt, sum, nonempty_of_chartedSpace x, ↓reduceDIte]
   rfl
 
 lemma ChartedSpace.sum_chartAt_inr (x' : M') :
     haveI : Nonempty H := nonempty_of_chartedSpace x'
     chartAt H (Sum.inr x')
       = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr := by
-  simp only [chartAt, sum, nonempty_of_chartedSpace x', ↓reduceDIte]
+  simp +instances only [chartAt, sum, nonempty_of_chartedSpace x', ↓reduceDIte]
   rfl
 
 @[simp, mfld_simps] lemma sum_chartAt_inl_apply {x y : M} :
@@ -553,7 +555,7 @@ lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
       ∧ e = (f.lift_openEmbedding IsOpenEmbedding.inl))
     ∨ (∃ f' : OpenPartialHomeomorph M' H, f' ∈ (atlas H M') ∧
       e = (f'.lift_openEmbedding IsOpenEmbedding.inr)) := by
-  simp only [atlas, sum, h, ↓reduceDIte] at he
+  simp +instances only [atlas, sum, h, ↓reduceDIte] at he
   obtain (⟨x, hx, hxe⟩ | ⟨x, hx, hxe⟩) := he
   · rw [← hxe]; left; use x
   · rw [← hxe]; right; use x

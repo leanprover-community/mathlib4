@@ -110,6 +110,7 @@ lemma preimage_upperClosure_compl_finset (hT : ∀ p ∈ T, InfPrime p) (F : Fin
 
 variable [TopologicalSpace α] [IsLower α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 The relative-open sets of the form `(hull T a)ᶜ` for `a` in `α` form a basis for the relative
 Lower topology.
@@ -197,7 +198,7 @@ def gi (hG : OrderGenerates T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     rw [OrderDual.le_toDual, kernel, kernel]
     exact sInf_le_sInf <| image_val_mono fun c hcS => by
       rw [hull, mem_preimage, mem_Ici]
-      exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS)
+      exact sInf_le (mem_image_of_mem Subtype.val hcS)
 
 lemma kernel_hull (hG : OrderGenerates T) (a : α) : kernel (hull T a) = a := by
   conv_rhs => rw [← OrderDual.ofDual_toDual a, ← (gi hG).l_u_eq a]
@@ -215,7 +216,7 @@ lemma closedsGC_closureOperator [TopologicalSpace α] [IsLower α]
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
   constructor
   · exact fun ⦃a⦄ a ↦ a (hull T (kernel S)) ⟨(isClosed_iff hT).mpr ⟨kernel S, rfl⟩,
-      image_subset_iff.mp (fun _ hbS => CompleteSemilatticeInf.sInf_le _ _ hbS)⟩
+      image_subset_iff.mp (fun _ hbS => sInf_le hbS)⟩
   · simp_rw [le_eq_subset, subset_sInter_iff]
     intro R hR
     rw [← (hull_kernel_of_isClosed hT hG hR.1), ← gc_closureOperator]

@@ -160,10 +160,12 @@ instance haveLebesgueDecompositionSMul' (μ ν : Measure α) [HaveLebesgueDecomp
     simp only
     rw [withDensity_smul _ hmeas, ← smul_add, ← hadd]
 
+set_option backward.isDefEq.respectTransparency false in
 instance haveLebesgueDecompositionSMul (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
     (r : ℝ≥0) : (r • μ).HaveLebesgueDecomposition ν := by
   rw [ENNReal.smul_def]; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance haveLebesgueDecompositionSMulRight (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
     (r : ℝ≥0) :
     μ.HaveLebesgueDecomposition (r • ν) where
@@ -434,6 +436,7 @@ theorem eq_singularPart {s : Measure α} {f : α → ℝ≥0∞} (hf : Measurabl
     exact hT₂ ▸ measure_mono (inter_subset_right.trans inter_subset_right)
   rw [heq' A hA, heq, restrict_apply hA, ← diff_eq, AEDisjoint.measure_diff_left hμinter]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem singularPart_smul (μ ν : Measure α) (r : ℝ≥0) :
     (r • μ).singularPart ν = r • μ.singularPart ν := by
   by_cases hr : r = 0
@@ -448,6 +451,7 @@ theorem singularPart_smul (μ ν : Measure α) (r : ℝ≥0) :
     rw [← inv_smul_smul₀ hr μ]
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem singularPart_smul_right (μ ν : Measure α) (r : ℝ≥0) (hr : r ≠ 0) :
     μ.singularPart (r • ν) = μ.singularPart ν := by
   by_cases hl : HaveLebesgueDecomposition μ ν
@@ -606,6 +610,7 @@ theorem rnDeriv_restrict_self (ν : Measure α) [SigmaFinite ν] {s : Set α} (h
   rw [← withDensity_indicator_one hs]
   exact rnDeriv_withDensity _ (measurable_one.indicator hs)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Radon-Nikodym derivative of the scalar multiple of a measure.
 See also `rnDeriv_smul_left'`, which requires sigma-finite `ν` and `μ`. -/
 theorem rnDeriv_smul_left (ν μ : Measure α) [IsFiniteMeasure ν]
@@ -623,6 +628,7 @@ theorem rnDeriv_smul_left (ν μ : Measure α) [IsFiniteMeasure ν]
   · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _
   · exact (lintegral_rnDeriv_lt_top (r • ν) μ).ne
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Radon-Nikodym derivative of the scalar multiple of a measure.
 See also `rnDeriv_smul_left_of_ne_top'`, which requires sigma-finite `ν` and `μ`. -/
 theorem rnDeriv_smul_left_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
@@ -632,6 +638,7 @@ theorem rnDeriv_smul_left_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
     rnDeriv_smul_left ν μ r.toNNReal
   simpa [ENNReal.smul_def, ENNReal.coe_toNNReal hr] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
 See also `rnDeriv_smul_right'`, which requires sigma-finite `ν` and `μ`. -/
 theorem rnDeriv_smul_right (ν μ : Measure α) [IsFiniteMeasure ν]
@@ -654,6 +661,7 @@ theorem rnDeriv_smul_right (ν μ : Measure α) [IsFiniteMeasure ν]
       smul_eq_mul, inv_mul_cancel₀ hr, one_smul]
     exact ν.haveLebesgueDecomposition_add μ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
 See also `rnDeriv_smul_right_of_ne_top'`, which requires sigma-finite `ν` and `μ`. -/
 theorem rnDeriv_smul_right_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
@@ -690,6 +698,7 @@ lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFinit
   · exact ((measurable_rnDeriv _ _).add (measurable_rnDeriv _ _)).aemeasurable
   · exact (lintegral_rnDeriv_lt_top (ν₁ + ν₂) μ).ne
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If two finite measures `μ` and `ν` are not mutually singular, there exists some `ε > 0` and
 a measurable set `E`, such that `ν(E) > 0` and `E` is positive with respect to `μ - εν`.
 
@@ -979,6 +988,7 @@ nonrec instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite
 
 section rnDeriv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Radon-Nikodym derivative of the scalar multiple of a measure.
 See also `rnDeriv_smul_left`, which has no hypothesis on `μ` but requires finite `ν`. -/
 theorem rnDeriv_smul_left' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ] (r : ℝ≥0) :
@@ -994,6 +1004,7 @@ theorem rnDeriv_smul_left' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ
   · exact (measurable_rnDeriv _ _).aemeasurable
   · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Radon-Nikodym derivative of the scalar multiple of a measure.
 See also `rnDeriv_smul_left_of_ne_top`, which has no hypothesis on `μ` but requires finite `ν`. -/
 theorem rnDeriv_smul_left_of_ne_top' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ]
@@ -1003,6 +1014,7 @@ theorem rnDeriv_smul_left_of_ne_top' (ν μ : Measure α) [SigmaFinite ν] [Sigm
     rnDeriv_smul_left' ν μ r.toNNReal
   simpa [ENNReal.smul_def, ENNReal.coe_toNNReal hr] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
 See also `rnDeriv_smul_right`, which has no hypothesis on `μ` but requires finite `ν`. -/
 theorem rnDeriv_smul_right' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ]
@@ -1023,6 +1035,7 @@ theorem rnDeriv_smul_right' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite �
   · exact (measurable_rnDeriv _ _).aemeasurable
   · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
 See also `rnDeriv_smul_right_of_ne_top`, which has no hypothesis on `μ` but requires finite `ν`. -/
 theorem rnDeriv_smul_right_of_ne_top' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ]
@@ -1057,6 +1070,27 @@ lemma rnDeriv_add_of_mutuallySingular (ν₁ ν₂ μ : Measure α)
   simp [hx_add, hx_zero]
 
 end rnDeriv
+
+lemma add_sub_of_mutuallySingular {ξ : Measure α} (h : μ ⟂ₘ ξ) : μ + (ν - ξ) = μ + ν - ξ := by
+  let s := h.nullSet
+  have hs : MeasurableSet s := h.measurableSet_nullSet
+  have h_le_s : μ.restrict s + (ν - ξ).restrict s = μ.restrict s + ν.restrict s - ξ.restrict s := by
+    rw [h.restrict_nullSet, restrict_sub_eq_restrict_sub_restrict hs]
+    simp
+  have h_le_s_compl : μ.restrict sᶜ + (ν - ξ).restrict sᶜ =
+      μ.restrict sᶜ + ν.restrict sᶜ - ξ.restrict sᶜ := by
+    rw [restrict_sub_eq_restrict_sub_restrict hs.compl, h.restrict_compl_nullSet]
+    simp
+  calc μ + (ν - ξ)
+  _ = μ.restrict s + μ.restrict sᶜ + (ν - ξ).restrict s + (ν - ξ).restrict sᶜ := by
+    rw [restrict_add_restrict_compl hs, add_assoc, restrict_add_restrict_compl hs]
+  _ = μ.restrict s + (ν - ξ).restrict s + (μ.restrict sᶜ + (ν - ξ).restrict sᶜ) := by abel
+  _ = (μ.restrict s + ν.restrict s - ξ.restrict s) +
+      (μ.restrict sᶜ + ν.restrict sᶜ - ξ.restrict sᶜ) := by rw [h_le_s, h_le_s_compl]
+  _ = (μ + ν - ξ).restrict s + (μ + ν - ξ).restrict sᶜ := by
+      simp [restrict_sub_eq_restrict_sub_restrict hs,
+        restrict_sub_eq_restrict_sub_restrict hs.compl]
+  _ = μ + ν - ξ := by rw [restrict_add_restrict_compl hs]
 
 end Measure
 

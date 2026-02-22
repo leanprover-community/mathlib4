@@ -20,13 +20,17 @@ example : (-5 : (ZMod 4)[X]) = 3 := by reduce_mod_char
 example : (-X : (ZMod 4)[X]) = 3 * X := by reduce_mod_char
 
 -- Polynomials:
+set_option backward.isDefEq.respectTransparency false in
 example : (4 * X + 3 : (ZMod 4)[X]) = 3 := by reduce_mod_char
+set_option backward.isDefEq.respectTransparency false in
 example : (5 * X ^ 2 + 4 * X + 3 : (ZMod 4)[X]) = X ^ 2 + 3 := by reduce_mod_char
 
 -- Negation:
+set_option backward.isDefEq.respectTransparency false in
 example : (X ^ 2 - 3 : (ZMod 4)[X]) = X ^ 2 + 1 := by reduce_mod_char
 
 -- Cleaning up `1 * X` and `X + 0`:
+set_option backward.isDefEq.respectTransparency false in
 example : (5 * X ^ 2 - 3 * X + 4 : (ZMod 4)[X]) = X ^ 2 + X := by reduce_mod_char
 
 -- Exponentiation:
@@ -70,6 +74,7 @@ error: unsolved goals
 example : (3 : ZMod q') ^ (q' - 1) = 1 := by reduce_mod_char
 
 -- Rewriting hypotheses:
+set_option backward.isDefEq.respectTransparency false in
 example (a : ZMod 7) (h : a + 7 = 2) : a = 2 := by
   reduce_mod_char at h
   assumption
@@ -79,10 +84,12 @@ example (a : ZMod 7) (h : a + 14 = 2) : a + 7 = 2 := by
   assumption
 
 -- A stress test:
+set_option backward.isDefEq.respectTransparency false in
 example (a b : ZMod 37) : (a + b)^37 = a^37 + b^37 := by ring_nf; reduce_mod_char
 
 -- From the zulip thread:
 -- https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/tactic.20for.20easy.20calculations.20in.20ZMod.20p.3F
+set_option backward.isDefEq.respectTransparency false in
 lemma foo (a b : ZMod 7) (h : a + 3 * b = 0) : a = 4 * b := by
   rw [eq_sub_of_add_eq h]
   reduce_mod_char
@@ -93,10 +100,12 @@ section Assumption
 
 -- From the Zulip thread:
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/reduce_mod_char.20doesn't.20work
+set_option backward.isDefEq.respectTransparency false in
 example {R} [CommRing R] [CharP R 3] (x : R) : x + x + x + x = x := by
   ring_nf
   reduce_mod_char!
 
+set_option backward.isDefEq.respectTransparency false in
 example {R} [CommRing R] [CharP R 2] (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 := by
   ring_nf
   reduce_mod_char!

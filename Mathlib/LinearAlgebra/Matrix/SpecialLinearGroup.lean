@@ -229,6 +229,7 @@ section center
 
 open Subgroup
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem center_eq_bot_of_subsingleton [Subsingleton n] :
     center (SpecialLinearGroup n R) = ⊥ :=
@@ -507,6 +508,7 @@ theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 := by
 theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : (T⁻¹ * g) 1 = g 1 := by
   simpa using T_pow_mul_apply_one (-1) g
 
+set_option backward.isDefEq.respectTransparency false in
 lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
   simp only [S, Int.reduceNeg, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
     vecMul_cons, head_cons, zero_smul, tail_cons, neg_smul, one_smul, neg_cons, neg_zero, neg_empty,

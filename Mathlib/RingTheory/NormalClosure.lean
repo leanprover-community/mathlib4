@@ -72,6 +72,7 @@ instance : Nontrivial T := inferInstanceAs (Nontrivial (integralClosure S E))
 
 instance : Algebra S T := inferInstanceAs (Algebra S (integralClosure S E))
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 This is a local instance since it is only used in this file to construct `Ring.NormalClosure`.
 -/
@@ -79,6 +80,7 @@ local instance : Algebra T E := inferInstanceAs (Algebra (integralClosure S E) E
 
 instance : Algebra R T := ((algebraMap S T).comp (algebraMap R S)).toAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 local instance : IsScalarTower S T E :=
   inferInstanceAs (IsScalarTower S (integralClosure S E) E)
 
@@ -86,6 +88,7 @@ local instance : IsIntegralClosure T S E := integralClosure.isIntegralClosure S 
 
 instance : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq' rfl
 
+set_option backward.isDefEq.respectTransparency false in
 local instance : IsScalarTower R L E := IsScalarTower.to₁₃₄ R K L E
 
 local instance : IsScalarTower R S E := IsScalarTower.to₁₂₄ R S L E
@@ -103,8 +106,10 @@ instance : FaithfulSMul R T :=
 
 variable [Module.Finite R S]
 
+set_option backward.isDefEq.respectTransparency false in
 local instance : FiniteDimensional L E := Module.Finite.right K L E
 
+set_option backward.isDefEq.respectTransparency false in
 local instance : IsFractionRing T E :=
   integralClosure.isFractionRing_of_finite_extension L E
 
@@ -113,9 +118,11 @@ instance : IsIntegrallyClosed T :=
 
 variable [PerfectField (FractionRing R)]
 
+set_option backward.isDefEq.respectTransparency false in
 local instance : Algebra.IsSeparable L E :=
   Algebra.isSeparable_tower_top_of_isSeparable K L E
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsGalois K (FractionRing T) := by
   refine IsGalois.of_equiv_equiv (F := K) («E» := E)
     (f := (FractionRing.algEquiv R K).symm.toRingEquiv)

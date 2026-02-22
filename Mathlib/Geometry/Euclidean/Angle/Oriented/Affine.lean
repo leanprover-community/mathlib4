@@ -629,6 +629,7 @@ theorem _root_.Collinear.two_zsmul_oangle_eq_right {p₁ p₂ p₃ p₃' : P}
     (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₁ p₂ p₃' := by
   rw [oangle_rev, smul_neg, h.two_zsmul_oangle_eq_left hp₃p₂ hp₃'p₂, ← smul_neg, ← oangle_rev]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two different points are equidistant from a third point if and only if that third point
 equals some multiple of a `π / 2` rotation of the vector between those points, plus the midpoint
 of those points. -/
@@ -656,6 +657,7 @@ theorem dist_eq_iff_eq_smul_rotation_pi_div_two_vadd_midpoint {p₁ p₂ p : P} 
 
 open AffineSubspace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two pairs of distinct points on the same line, such that the vectors between those
 pairs of points are on the same ray (oriented in the same direction on that line), and a fifth
 point, the angles at the fifth point between each of those two pairs of points have the same

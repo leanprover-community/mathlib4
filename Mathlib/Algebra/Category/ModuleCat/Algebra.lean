@@ -44,6 +44,7 @@ variable {k : Type u} [Field k]
 variable {A : Type w} [Ring A] [Algebra k A]
 
 /-- Type synonym for considering a module over a `k`-algebra as a `k`-module. -/
+@[instance_reducible]
 def moduleOfAlgebraModule (M : ModuleCat.{v} A) : Module k M :=
   RestrictScalars.module k A M
 

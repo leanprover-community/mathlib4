@@ -280,6 +280,7 @@ lemma radius_le_of_le {𝕜' E' F' : Type*}
   gcongr
   exact h n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The radius of the sum of two formal series is at least the minimum of their two radii. -/
 theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
     min p.radius q.radius ≤ (p + q).radius := by

@@ -42,6 +42,7 @@ open Polynomial Finset
 
 open scoped Polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     [Field F] [Algebra F K] : IsSplittingField F K (X ^ Fintype.card K - X) where
   splits' := by
@@ -77,6 +78,7 @@ namespace GaloisField
 
 variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])

@@ -17,6 +17,16 @@ IFS=$'\n\t'
 # So please do not delete the following line, or the final two lines of this script.
 {
 
+# Note: with `set -o pipefail`, avoid `cmd | grep -q .` to test if a command
+# produces output. When the command produces many lines, `grep -q` exits after
+# the first match, causing SIGPIPE on the left side, which pipefail reports as
+# a failure. Use helper functions below instead.
+
+# Check if there are unmerged (conflicting) files in the working tree.
+has_unmerged_files() {
+  [ -n "$(git diff --name-only --diff-filter=U)" ]
+}
+
 # Default values
 AUTO="no"
 
@@ -164,7 +174,7 @@ git pull --no-rebase "$NIGHTLY_REMOTE" "bump/$BUMPVERSION"
 git merge --no-edit "$MAIN_REMOTE"/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
-if git diff --name-only --diff-filter=U | grep -q .; then
+if has_unmerged_files; then
   echo
   echo "### [auto] Conflict resolution"
   echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from the newer branch"
@@ -173,13 +183,13 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   git add lean-toolchain lake-manifest.json
 
   # Check if there are more merge conflicts after auto-resolution
-  if ! git diff --name-only --diff-filter=U | grep -q .; then
+  if ! has_unmerged_files; then
     # Auto-commit the resolved conflicts if no other conflicts remain
     git commit -m "Auto-resolved conflicts in lean-toolchain and lake-manifest.json"
   fi
 fi
 
-if git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; then
+if has_unmerged_files || ! git diff-index --quiet HEAD --; then
   if [ "$AUTO" = "yes" ]; then
     echo "Auto mode enabled. Bailing out due to unresolved conflicts or uncommitted changes."
     exit 1
@@ -187,7 +197,7 @@ if git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet 
 fi
 
 # Loop until all conflicts are resolved and committed
-while git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; do
+while has_unmerged_files || ! git diff-index --quiet HEAD --; do
   echo
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from '$MAIN_REMOTE/master' into 'bump/$BUMPVERSION'"
@@ -206,7 +216,7 @@ echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from nightly-testing"
 
 # Check if the branch already exists on the nightly-testing remote
-bump_nightly_exists=$(git ls-remote --heads "$NIGHTLY_REMOTE" "bump/nightly-$NIGHTLYDATE" | grep -q . && echo "yes" || echo "no")
+bump_nightly_exists=$([ -n "$(git ls-remote --heads "$NIGHTLY_REMOTE" "bump/nightly-$NIGHTLYDATE")" ] && echo "yes" || echo "no")
 
 if [ "$bump_nightly_exists" = "yes" ]; then
   echo "Branch 'bump/nightly-$NIGHTLYDATE' already exists on $NIGHTLY_REMOTE. Reusing existing branch."
@@ -227,7 +237,7 @@ fi
 git merge --no-edit "$NIGHTLYSHA" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
-if git diff --name-only --diff-filter=U | grep -q .; then
+if has_unmerged_files; then
   echo
   echo "### [auto] Conflict resolution"
   echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from 'nightly-testing'"
@@ -235,7 +245,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   git add lean-toolchain lake-manifest.json
 fi
 
-if git diff --name-only --diff-filter=U | grep -q .; then
+if has_unmerged_files; then
   if [ "$AUTO" = "yes" ]; then
     echo "Auto mode enabled. Bailing out due to unresolved conflicts or uncommitted changes."
     exit 1
@@ -243,7 +253,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
 fi
 
 # Check if there are more merge conflicts
-if git diff --name-only --diff-filter=U | grep -q .; then
+if has_unmerged_files; then
   echo
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from nightly-testing into 'bump/nightly-$NIGHTLYDATE'"
@@ -276,7 +286,7 @@ else
 fi
 
 # Check if there is a diff between bump/nightly-$NIGHTLYDATE and bump/$BUMPVERSION
-if git diff --name-only "bump/$BUMPVERSION" "bump/nightly-$NIGHTLYDATE" | grep -q .; then
+if ! git diff --quiet "bump/$BUMPVERSION" "bump/nightly-$NIGHTLYDATE"; then
 
   echo
   echo "### [auto] create a PR for the new branch"
@@ -346,7 +356,7 @@ git pull --no-rebase "$NIGHTLY_REMOTE" nightly-testing
 git merge --no-edit "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
-if git diff --name-only --diff-filter=U | grep -q .; then
+if has_unmerged_files; then
   echo
   echo "### [auto] Conflict resolution"
   echo "### Automatically choosing lean-toolchain and lake-manifest.json from the newer branch"
@@ -355,13 +365,13 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   git add lean-toolchain lake-manifest.json
 
   # Check if there are more merge conflicts after auto-resolution
-  if ! git diff --name-only --diff-filter=U | grep -q .; then
+  if ! has_unmerged_files; then
     # Auto-commit the resolved conflicts if no other conflicts remain
     git commit -m "Auto-resolved conflicts in lean-toolchain and lake-manifest.json"
   fi
 fi
 
-if git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; then
+if has_unmerged_files || ! git diff-index --quiet HEAD --; then
   if [ "$AUTO" = "yes" ]; then
     echo "Auto mode enabled. Bailing out due to unresolved conflicts or uncommitted changes."
     echo "PR has been created, and message posted to Zulip."
@@ -371,7 +381,7 @@ if git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet 
 fi
 
 # Loop until all conflicts are resolved and committed
-while git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; do
+while has_unmerged_files || ! git diff-index --quiet HEAD --; do
   echo
   echo "### [user] Conflict resolution"
   echo "We are merging the new PR \"bump/nightly-$NIGHTLYDATE\" into 'nightly-testing'"

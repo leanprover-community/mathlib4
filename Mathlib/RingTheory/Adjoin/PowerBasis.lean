@@ -24,6 +24,7 @@ variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
 
 namespace Algebra
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The elements `1, x, ..., x ^ (d - 1)` for a basis for the `K`-module `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
@@ -47,6 +48,7 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     ext
     exact aeval_algebraMap_apply S (⟨x, _⟩ : adjoin K {x}) _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. See `Algebra.adjoin.powerBasis'` for
 a version over a more general base ring. -/
@@ -58,6 +60,7 @@ noncomputable def adjoin.powerBasis {x : S} (hx : IsIntegral K x) :
   basis := adjoin.powerBasisAux hx
   basis_eq_pow i := by rw [adjoin.powerBasisAux, Basis.mk_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `x` generates `S` over `K` and is integral over `K`, then it defines a power basis.
 See `PowerBasis.ofAdjoinEqTop'` for a version over a more general base ring.

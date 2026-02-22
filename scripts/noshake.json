@@ -189,7 +189,6 @@
   "Mathlib.Tactic.WLOG",
   "Mathlib.Tactic.Zify",
   "Mathlib.Topology.Sheaves.Init",
-  "Mathlib.Util.AssertExists",
   "Mathlib.Util.CompileInductive",
   "Mathlib.Util.Delaborators",
   "Mathlib.Util.Syntax",

@@ -33,6 +33,7 @@ info: { re := Real.ofCauchy (sorry /- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ... -/), imI
 #guard_msgs in
 #eval (⟨1, 2, 3, 4⟩ : ℍ[ℝ])
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 info: { re := ⟨0, 0⟩, imI := ⟨0, 0⟩, imJ := ⟨0, 0⟩, imK := ⟨0, 0⟩ }
 -/

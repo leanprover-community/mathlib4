@@ -289,8 +289,11 @@ instance : Max (SupHom α β) :=
       rw [Pi.sup_apply, map_sup, map_sup]
       exact sup_sup_sup_comm _ _ _ _⟩⟩
 
+instance : PartialOrder (SupHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeSup (SupHom α β) :=
-  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [Bot β] : Bot (SupHom α β) :=
   ⟨SupHom.const α ⊥⟩
@@ -331,11 +334,8 @@ theorem bot_apply [Bot β] (a : α) : (⊥ : SupHom α β) a = ⊥ :=
 theorem top_apply [Top β] (a : α) : (⊤ : SupHom α β) a = ⊤ :=
   rfl
 
-@[simp] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
+@[simp, gcongr] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
     mk toFun₁ map_sup₁ ≤ mk toFun₂ map_sup₂ ↔ toFun₁ ≤ toFun₂ := .rfl
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.SupHom.mk_le_mk⟩ := mk_le_mk
 
 /-- `Subtype.val` as a `SupHom`. -/
 def subtypeVal {P : β → Prop}
@@ -471,8 +471,11 @@ instance : Min (InfHom α β) :=
       rw [Pi.inf_apply, map_inf, map_inf]
       exact inf_inf_inf_comm _ _ _ _⟩⟩
 
+instance : PartialOrder (InfHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeInf (InfHom α β) :=
-  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [Bot β] : Bot (InfHom α β) :=
   ⟨InfHom.const α ⊥⟩
@@ -513,11 +516,8 @@ theorem bot_apply [Bot β] (a : α) : (⊥ : InfHom α β) a = ⊥ :=
 theorem top_apply [Top β] (a : α) : (⊤ : InfHom α β) a = ⊤ :=
   rfl
 
-@[simp] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_inf₁ map_inf₂) :
+@[simp, gcongr] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_inf₁ map_inf₂) :
     mk toFun₁ map_inf₁ ≤ mk toFun₂ map_inf₂ ↔ toFun₁ ≤ toFun₂ := .rfl
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.InfHom.mk_le_mk⟩ := mk_le_mk
 
 /-- `Subtype.val` as an `InfHom`. -/
 def subtypeVal {P : β → Prop}

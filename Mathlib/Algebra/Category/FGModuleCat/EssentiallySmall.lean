@@ -50,13 +50,16 @@ instance : CoeSort (FGModuleRepr R) (Type u) :=
 instance (x : FGModuleRepr R) : AddCommGroup x := by
   unfold repr; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (x : FGModuleRepr R) : Module R x := by
   unfold repr; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (x : FGModuleRepr R) : Module.Finite R x := by
   unfold repr; infer_instance
 
 /-- A non-canonical representation of a finite module (as a quotient of `Rⁿ`). -/
+@[instance_reducible]
 noncomputable def ofFinite : FGModuleRepr R where
   n := (Module.Finite.exists_fin_quot_equiv R M).choose
   S := (Module.Finite.exists_fin_quot_equiv R M).choose_spec.choose

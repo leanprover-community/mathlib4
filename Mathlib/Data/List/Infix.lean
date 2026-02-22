@@ -9,6 +9,7 @@ public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.Basic
+public import Mathlib.Data.List.Basic
 
 /-!
 # Prefixes, suffixes, infixes
@@ -167,6 +168,18 @@ theorem infix_singleton_iff (xs : List α) (x : α) :
 lemma infix_antisymm {l₁ l₂ : List α} (h₁ : l₁ <:+: l₂) (h₂ : l₂ <:+: l₁) :
     l₁ = l₂ :=
   h₁.sublist.antisymm h₂.sublist
+
+protected theorem IsPrefix.nodup {l₁ l₂ : List α} (h : l₁ <+: l₂) (hn : l₂.Nodup) :
+    l₁.Nodup :=
+  hn.sublist h.sublist
+
+protected theorem IsInfix.nodup {l₁ l₂ : List α} (h : l₁ <:+: l₂) (hn : l₂.Nodup) :
+    l₁.Nodup :=
+  hn.sublist h.sublist
+
+protected theorem IsSuffix.nodup {l₁ l₂ : List α} (h : l₁ <:+ l₂) (hn : l₂.Nodup) :
+    l₁.Nodup :=
+  hn.sublist h.sublist
 
 instance : IsPartialOrder (List α) (· <+: ·) where
   refl _ := prefix_rfl

@@ -81,7 +81,7 @@ theorem apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix 
 def toGraph [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) : SimpleGraph V where
   Adj i j := A i j = 1
   symm i j hij := by simp only; rwa [h.symm.apply i j]
-  loopless i := by simp [h]
+  loopless := ⟨fun i ↦ by simp [h]⟩
 
 instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix A) :
     DecidableRel h.toGraph.Adj := by
@@ -244,6 +244,7 @@ theorem adjMatrix_mulVec_const_apply_of_regular [NonAssocSemiring α] {d : ℕ} 
     (hd : G.IsRegularOfDegree d) {v : V} : (G.adjMatrix α *ᵥ Function.const _ a) v = d * a := by
   simp [hd v]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ) (u v : V) :
     (G.adjMatrix α ^ n) u v = Fintype.card { p : G.Walk u v | p.length = n } := by
   rw [card_set_walk_length_eq]

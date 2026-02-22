@@ -161,6 +161,7 @@ section Lemmas
 
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.IocProdIoc_preimage {a b c : ι} (hab : a ≤ b) (hbc : b ≤ c)
     (s : (i : Ioc a c) → Set (X i)) :
     IocProdIoc a b c ⁻¹' (Set.univ.pi s) =
@@ -180,6 +181,7 @@ lemma _root_.IocProdIoc_preimage {a b c : ι} (hab : a ≤ b) (hbc : b ≤ c)
 
 variable [LocallyFiniteOrderBot ι]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.IicProdIoc_preimage {a b : ι} (hab : a ≤ b) (s : (i : Iic b) → Set (X i)) :
     IicProdIoc a b ⁻¹' (Set.univ.pi s) =
       (Set.univ.pi <| frestrictLe₂ (π := (fun n ↦ Set (X n))) hab s) ×ˢ

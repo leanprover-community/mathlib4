@@ -27,6 +27,7 @@ section ScalarTower
 
 variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The norm of the extension is bounded by `‖fr‖`. -/
 theorem norm_extendTo𝕜'_bound (fr : StrongDual ℝ F) (x : F) :
     ‖(fr.extendTo𝕜' x : 𝕜)‖ ≤ ‖fr‖ * ‖x‖ := by
@@ -52,6 +53,7 @@ theorem norm_extendTo𝕜' (fr : StrongDual ℝ F) : ‖(fr.extendTo𝕜' : Stro
 
 end ScalarTower
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_extendTo𝕜 (fr : StrongDual ℝ (RestrictScalars ℝ 𝕜 F)) :
     ‖fr.extendTo𝕜‖ = ‖fr‖ :=

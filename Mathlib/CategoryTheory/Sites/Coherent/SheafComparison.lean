@@ -45,6 +45,7 @@ namespace coherentTopology
 variable [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFamilies]
   [F.Full] [F.Faithful] [F.EffectivelyEnough] [Precoherent D]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : F.IsCoverDense (coherentTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.Saturate.of
@@ -57,6 +58,7 @@ instance : F.IsCoverDense (coherentTopology _) := by
   · rw [← effectiveEpi_iff_effectiveEpiFamily]
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
       EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a))) ↔
@@ -150,6 +152,7 @@ namespace regularTopology
 variable [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis] [F.Full] [F.Faithful]
   [F.EffectivelyEnough] [Preregular D]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : F.IsCoverDense (regularTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.Saturate.of
@@ -159,6 +162,7 @@ instance : F.IsCoverDense (regularTopology _) := by
   rintro ⟨⟩
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (Y : C) (π : Y ⟶ X),
       EffectiveEpi π ∧ S.arrows π) ↔

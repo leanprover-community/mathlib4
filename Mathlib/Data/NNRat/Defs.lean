@@ -54,14 +54,21 @@ un-`@[simp]`ed):
 
 open Function
 
+set_option backward.isDefEq.respectTransparency false in
 instance Rat.instPosMulMono : PosMulMono ℚ where
   mul_le_mul_of_nonneg_left r hr p q hpq := by
     simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
 
+set_option backward.isDefEq.respectTransparency false in
 deriving instance CommSemiring for NNRat
+
+set_option backward.isDefEq.respectTransparency false in
 deriving instance AddCancelCommMonoid for NNRat
+
 deriving instance LinearOrder for NNRat
+
 deriving instance Sub for NNRat
+
 deriving instance Inhabited for NNRat
 
 namespace NNRat
@@ -176,6 +183,7 @@ theorem toNNRat_mono : Monotone toNNRat :=
 theorem toNNRat_coe (q : ℚ≥0) : toNNRat q = q :=
   ext <| max_eq_left q.2
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_coe_nat (n : ℕ) : toNNRat n = n :=
   ext <| by simp only [Nat.cast_nonneg', Rat.coe_toNNRat]; rfl
@@ -303,10 +311,11 @@ theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := 
 
 end Rat
 
+#adaptation_note /-- We can remove `_root_.` after https://github.com/leanprover/lean4/pull/12504 -/
 /-- The absolute value on `ℚ` as a map to `ℚ≥0`. -/
 @[pp_nodot]
 def Rat.nnabs (x : ℚ) : ℚ≥0 :=
-  ⟨abs x, abs_nonneg x⟩
+  ⟨abs x, _root_.abs_nonneg x⟩
 
 @[norm_cast, simp]
 theorem Rat.coe_nnabs (x : ℚ) : (Rat.nnabs x : ℚ) = abs x := rfl
@@ -365,6 +374,7 @@ lemma mk_divInt (n d : ℕ) :
 lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
   rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]
 
 @[simp] lemma num_divNat_den (q : ℚ≥0) : divNat q.num q.den = q :=

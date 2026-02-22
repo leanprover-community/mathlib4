@@ -240,7 +240,7 @@ lemma spanRank_sup_le_sum_spanRank {p q : Submodule R M} :
 
 lemma spanFinrank_eq_zero_iff_eq_bot {p : Submodule R M} (h : p.FG) :
     p.spanFinrank = 0 ↔ p = ⊥ := by
-  refine ⟨fun heq ↦ ?_, fun h ↦ h ▸ by simp⟩
+  refine ⟨fun heq ↦ ?_, fun h ↦ by simp [h]⟩
   rw [← Submodule.FG.generators_ncard h, Set.ncard_eq_zero h.finite_generators] at heq
   rw [← p.span_generators, heq, span_empty]
 

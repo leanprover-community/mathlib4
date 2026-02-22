@@ -125,6 +125,7 @@ theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m
 
 variable {N : Type*} [Monoid N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- See note [partially-applied ext lemmas]. -/
 @[ext 1100] -- This needs a higher `ext` priority
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
@@ -177,11 +178,12 @@ theorem of_leftInverse [DecidableEq ι] (i : ι) :
 theorem of_injective (i : ι) : Function.Injective (of : M i →* _) := by
   classical exact (of_leftInverse i).injective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mrange_eq_iSup {N} [Monoid N] (f : ∀ i, M i →* N) :
     MonoidHom.mrange (lift f) = ⨆ i, MonoidHom.mrange (f i) := by
   rw [lift, Equiv.coe_fn_mk, Con.lift_range, FreeMonoid.mrange_lift,
     range_sigma_eq_iUnion_range, Submonoid.closure_iUnion]
-  simp only [MonoidHom.mclosure_range]
+  simp +instances only [MonoidHom.mclosure_range]
 
 theorem lift_mrange_le {N} [Monoid N] (f : ∀ i, M i →* N) {s : Submonoid N} :
     MonoidHom.mrange (lift f) ≤ s ↔ ∀ i, MonoidHom.mrange (f i) ≤ s := by
@@ -475,7 +477,7 @@ instance summandAction (i) : MulAction (M i) (Word M) where
     apply (equivPair i).symm_apply_eq.mpr
     simp [equivPair]
   mul_smul m m' w := by
-    dsimp [instHSMul]
+    dsimp +instances [instHSMul]
     simp [mul_assoc, ← equivPair_symm, Equiv.apply_symm_apply]
 
 instance : MulAction (CoprodI M) (Word M) :=

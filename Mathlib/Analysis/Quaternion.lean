@@ -41,15 +41,18 @@ open scoped RealInnerProductSpace
 
 namespace Quaternion
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Inner ℝ ℍ :=
   ⟨fun a b => (a * star b).re⟩
 
 theorem inner_self (a : ℍ) : ⟪a, a⟫ = normSq a :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : NormedAddCommGroup ℍ :=
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
@@ -59,31 +62,39 @@ noncomputable instance : NormedAddCommGroup ℍ :=
       add_left := fun x y z => by simp only [inner_def, add_mul, re_add]
       smul_left := fun x y r => by simp [inner_def] }
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : InnerProductSpace ℝ ℍ :=
   InnerProductSpace.ofCore _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem normSq_eq_norm_mul_self (a : ℍ) : normSq a = ‖a‖ * ‖a‖ := by
   rw [← inner_self, real_inner_self_eq_norm_mul_norm]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : NormOneClass ℍ :=
   ⟨by rw [norm_eq_sqrt_real_inner, inner_self, normSq.map_one, Real.sqrt_one]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
   rw [norm_eq_sqrt_real_inner, inner_self, normSq_coe, Real.sqrt_sq_eq_abs, Real.norm_eq_abs]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_coe a
 
+set_option backward.isDefEq.respectTransparency false in
 -- This does not need to be `@[simp]`, as it is a consequence of later simp lemmas.
 theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
   simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
 
+set_option backward.isDefEq.respectTransparency false in
 -- This does not need to be `@[simp]`, as it is a consequence of later simp lemmas.
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
   norm_mul _ _ := by simp_rw [norm_eq_sqrt_real_inner, inner_self]; simp
@@ -92,6 +103,7 @@ noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
   toAlgebra := Quaternion.algebra
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CStarRing ℍ where
   norm_mul_self_le x :=
     le_of_eq <| Eq.symm <| (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
@@ -142,12 +154,13 @@ theorem coeComplex_one : ((1 : ℂ) : ℍ) = 1 :=
 @[simp, norm_cast]
 theorem coe_real_complex_mul (r : ℝ) (z : ℂ) : (r • z : ℍ) = ↑r * ↑z := by ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coeComplex_coe (r : ℝ) : ((r : ℂ) : ℍ) = r :=
   rfl
 
 /-- Coercion `ℂ →ₐ[ℝ] ℍ` as an algebra homomorphism. -/
-def ofComplex : ℂ →ₐ[ℝ] ℍ where
+noncomputable def ofComplex : ℂ →ₐ[ℝ] ℍ where
   toFun := (↑)
   map_one' := rfl
   map_zero' := rfl
@@ -158,6 +171,7 @@ def ofComplex : ℂ →ₐ[ℝ] ℍ where
 @[simp]
 theorem coe_ofComplex : ⇑ofComplex = coeComplex := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The norm of the components as a Euclidean vector equals the norm of the quaternion. -/
 lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
@@ -174,6 +188,7 @@ noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace �
     invFun := fun a => ⟨a 0, a 1, a 2, a 3⟩
     norm_map' := norm_toLp_equivTuple }
 
+set_option backward.isDefEq.respectTransparency false in
 @[continuity]
 theorem continuous_coe : Continuous (coe : ℝ → ℍ) :=
   continuous_algebraMap ℝ ℍ
@@ -181,7 +196,7 @@ theorem continuous_coe : Continuous (coe : ℝ → ℍ) :=
 @[continuity]
 theorem continuous_normSq : Continuous (normSq : ℍ → ℝ) := by
   simpa [← normSq_eq_norm_mul_self] using
-    (continuous_norm.mul continuous_norm : Continuous fun q : ℍ => ‖q‖ * ‖q‖)
+    (continuous_norm.fun_mul continuous_norm : Continuous fun q : ℍ => ‖q‖ * ‖q‖)
 
 @[continuity]
 theorem continuous_re : Continuous fun q : ℍ => q.re :=
@@ -212,6 +227,7 @@ section infinite_sum
 
 variable {α : Type*} {L : SummationFilter α}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (↑r : ℍ) L ↔ HasSum f r L :=
   ⟨fun h => by
@@ -219,6 +235,7 @@ theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (�
     h.map (show ℍ →ₗ[ℝ] ℝ from QuaternionAlgebra.reₗ _ _ _) continuous_re,
     fun h => by simpa only using h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem summable_coe {f : α → ℝ} : (Summable (fun a => (f a : ℍ)) L) ↔ Summable f L := by
   simpa only using
@@ -226,6 +243,7 @@ theorem summable_coe {f : α → ℝ} : (Summable (fun a => (f a : ℍ)) L) ↔ 
       QuaternionAlgebra.reₗ _ _ _)
       (continuous_algebraMap _ _) continuous_re re_coe
 
+set_option backward.isDefEq.respectTransparency false in
 @[norm_cast]
 theorem tsum_coe (f : α → ℝ) : (∑'[L] a, (f a : ℍ)) = ↑(∑'[L] a, f a) :=
   (Function.LeftInverse.map_tsum f (continuous_algebraMap _ _) continuous_re re_coe).symm

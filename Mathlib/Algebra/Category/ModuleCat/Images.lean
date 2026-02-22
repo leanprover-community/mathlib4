@@ -33,11 +33,13 @@ attribute [local ext] Subtype.ext
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 -- implementation details of `HasImage` for ModuleCat; use the API, not these
 /-- The image of a morphism in `ModuleCat R` is just the bundling of `LinearMap.range f` -/
 def image : ModuleCat R :=
   ModuleCat.of R (LinearMap.range f.hom)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion of `image f` into the target -/
 def image.ι : image f ⟶ H :=
   ofHom (LinearMap.range f.hom).subtype
@@ -45,6 +47,7 @@ def image.ι : image f ⟶ H :=
 instance : Mono (image.ι f) :=
   ConcreteCategory.mono_of_injective (image.ι f) Subtype.val_injective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The corestriction map to the image -/
 def factorThruImage : G ⟶ image f :=
   ofHom f.hom.rangeRestrict
@@ -56,6 +59,7 @@ attribute [local simp] image.fac
 
 variable {f}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The universal property for the image factorisation -/
 noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
   ofHom
@@ -95,16 +99,19 @@ noncomputable def isImage : IsImage (monoFactorisation f) where
   lift := image.lift
   lift_fac := image.lift_fac
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The categorical image of a morphism in `ModuleCat R` agrees with the linear algebraic range. -/
 noncomputable def imageIsoRange {G H : ModuleCat.{v} R} (f : G ⟶ H) :
     Limits.image f ≅ ModuleCat.of R (LinearMap.range f.hom) :=
   IsImage.isoExt (Image.isImage f) (isImage f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc, elementwise]
 theorem imageIsoRange_inv_image_ι {G H : ModuleCat.{v} R} (f : G ⟶ H) :
     (imageIsoRange f).inv ≫ Limits.image.ι f = ModuleCat.ofHom (LinearMap.range f.hom).subtype :=
   IsImage.isoExt_inv_m _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc, elementwise]
 theorem imageIsoRange_hom_subtype {G H : ModuleCat.{v} R} (f : G ⟶ H) :
     (imageIsoRange f).hom ≫ ModuleCat.ofHom (LinearMap.range f.hom).subtype = Limits.image.ι f := by

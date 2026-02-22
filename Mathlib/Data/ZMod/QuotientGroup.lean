@@ -56,6 +56,7 @@ open AddSubgroup AddMonoidHom AddEquiv Function
 
 variable {α β : Type*} [AddGroup α] (a : α) [AddAction α β] (b : β)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The quotient `(ℤ ∙ a) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod (a +ᵥ ·) b`. -/
 noncomputable def zmultiplesQuotientStabilizerEquiv :
     zmultiples a ⧸ stabilizer (zmultiples a) b ≃+ ZMod (minimalPeriod (a +ᵥ ·) b) :=

@@ -194,6 +194,7 @@ theorem torusIntegral_dim0 [CompleteSpace E]
     integral_dirac, Measure.pi_of_empty (fun _ : Fin 0 ↦ volume) 0,
     Measure.dirac_apply_of_mem (mem_singleton _), Subsingleton.elim (torusMap c R 0) c]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In dimension one, `torusIntegral` is the same as `circleIntegral`
 (up to the natural equivalence between `ℂ` and `Fin 1 → ℂ`). -/
 theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
@@ -209,6 +210,7 @@ theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
       (MeasurableEquiv.measurableEmbedding _), H₁, H₂]
   simp [circleMap_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Recurrent formula for `torusIntegral`, see also `torusIntegral_succ`. -/
 theorem torusIntegral_succAbove
     {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ⁺¹} (hf : TorusIntegrable f c R)

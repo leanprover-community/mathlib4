@@ -46,6 +46,7 @@ open Limits
 
 variable {C D : Type*} [Category C] [Category D]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isRegularEpiCategory_sheaf (J : GrothendieckTopology C)
     [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D]
     (h : ∀ {F G : Sheaf J D} (f : F ⟶ G) [Epi f], ∃ (I : Cᵒᵖ ⥤ D) (p : F.val ⟶ I) (i : I ⟶ G.val),

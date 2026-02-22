@@ -158,6 +158,7 @@ theorem convexHull_eq_union : convexHull 𝕜 s =
   · iterate 3 convert Set.iUnion_subset _; intro
     exact convexHull_mono ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A more explicit version of `convexHull_eq_union`. -/
 theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜 s) :
     ∃ (ι : Sort (u + 1)) (_ : Fintype ι),

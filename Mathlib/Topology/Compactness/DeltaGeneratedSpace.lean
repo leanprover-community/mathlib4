@@ -49,7 +49,7 @@ lemma deltaGenerated_le : deltaGenerated X ≤ tX :=
   open. -/
 lemma isOpen_deltaGenerated_iff {u : Set X} :
     IsOpen[deltaGenerated X] u ↔ ∀ n (p : C(Fin n → ℝ, X)), IsOpen (p ⁻¹' u) := by
-  simp_rw [deltaGenerated, isOpen_iSup_iff, isOpen_coinduced, Sigma.forall]
+  simp_rw +instances [deltaGenerated, isOpen_iSup_iff, isOpen_coinduced, Sigma.forall]
 
 /-- A map from ℝⁿ to X is continuous iff it is continuous regarding the
   delta-generated topology on X. Outside of this file, use the more general
@@ -85,6 +85,7 @@ lemma DeltaGeneratedSpace.isOpen_iff [DeltaGeneratedSpace X] {u : Set X} :
     IsOpen u ↔ ∀ (n : ℕ) (p : ContinuousMap ((Fin n) → ℝ) X), IsOpen (p ⁻¹' u) := by
   nth_rewrite 1 [eq_deltaGenerated (X := X)]; exact isOpen_deltaGenerated_iff
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A map out of a delta-generated space is continuous iff it preserves continuity of maps
   from ℝⁿ into X. -/
 lemma DeltaGeneratedSpace.continuous_iff [DeltaGeneratedSpace X] {f : X → Y} :

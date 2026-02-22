@@ -37,6 +37,7 @@ variable {G : Type*} [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2S
 
 namespace NonarchimedeanGroup
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma exists_openSubgroup_separating {a b : G} (h : a ≠ b) :
     ∃ V : OpenSubgroup G, Disjoint (a • (V : Set G)) (b • V) := by

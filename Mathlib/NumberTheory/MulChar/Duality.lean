@@ -27,18 +27,7 @@ namespace MulChar
 
 variable {M R : Type*} [CommMonoid M] [CommRing R]
 
-instance finite [Finite Mˣ] [IsDomain R] : Finite (MulChar M R) := by
-  have : Finite (Mˣ →* Rˣ) := by
-    have : Fintype Mˣ := .ofFinite _
-    let S := rootsOfUnity (Fintype.card Mˣ) R
-    let F := Mˣ →* S
-    have fF : Finite F := .of_injective _ DFunLike.coe_injective
-    refine .of_surjective (fun f : F ↦ (Subgroup.subtype _).comp f) fun f ↦ ?_
-    have H a : f a ∈ S := by simp only [mem_rootsOfUnity, ← map_pow, pow_card_eq_one, map_one, S]
-    refine ⟨.codRestrict f S H, MonoidHom.ext fun _ ↦ ?_⟩
-    simp only [MonoidHom.coe_comp, Subgroup.coe_subtype, Function.comp_apply,
-      MonoidHom.codRestrict_apply]
-  exact .of_equiv _ MulChar.equivToUnitHom.symm
+instance finite [Finite Mˣ] [IsDomain R] : Finite (MulChar M R) := .of_equiv _ equivToUnitHom.symm
 
 lemma exists_apply_ne_one_iff_exists_monoidHom (a : Mˣ) :
     (∃ χ : MulChar M R, χ a ≠ 1) ↔ ∃ φ : Mˣ →* Rˣ, φ a ≠ 1 := by

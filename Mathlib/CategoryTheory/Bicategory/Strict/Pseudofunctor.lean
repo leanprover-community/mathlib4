@@ -185,7 +185,7 @@ section
 variable {t : X₁ ⟶ Y₁} {l : X₁ ⟶ X₂} {r : Y₁ ⟶ Y₂} {b : X₂ ⟶ Y₂} (sq : CommSq t l r b)
 
 /-- Given a commutative square `CommSq t l r b` in a strict bicategory `B` and
-a pseudofunctor from `B`, this is the natural isomorphism
+a pseudofunctor from `B`, this is the isomorphism
 `F.map t ≫ F.map r ≅ F.map l ≫ F.map b`. -/
 def isoMapOfCommSq : F.map t ≫ F.map r ≅ F.map l ≫ F.map b :=
   (F.mapComp t r).symm ≪≫ F.mapComp' _ _ _ (by rw [sq.w])

@@ -62,6 +62,7 @@ variable [CompleteSpace E] (I : Box (Fin (n + 1))) {i : Fin (n + 1)}
 
 open MeasureTheory
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for the divergence theorem. -/
 theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) → ℝ) → E}
     {f' : (Fin (n + 1) → ℝ) →L[ℝ] E} (hfc : ContinuousOn f (Box.Icc I)) {x : Fin (n + 1) → ℝ}
@@ -137,6 +138,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
         ← I.volume_face_mul i]
       ac_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
 the partial derivative `fun x ↦ f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
 equal to the difference of integrals of `f` over the faces `x i = I.upper i` and `x i = I.lower i`.

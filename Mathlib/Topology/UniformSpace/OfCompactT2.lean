@@ -39,6 +39,7 @@ variable {γ : Type*}
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unique uniform structure inducing a given compact topological structure. -/
 def uniformSpaceOfCompactR1 [TopologicalSpace γ] [CompactSpace γ] [R1Space γ] : UniformSpace γ where
   uniformity := 𝓝ˢ (diagonal γ)

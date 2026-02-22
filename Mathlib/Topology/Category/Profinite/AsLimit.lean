@@ -79,6 +79,7 @@ instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lif
         -- Porting note: end replacement block
         apply hb)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `X` and the explicit limit of `X.diagram`,
 induced by lifting `X.asLimitCone`.
 -/

@@ -210,6 +210,7 @@ theorem toSphereBallBound_pos (n : ℕ) (ε : ℝ) : 0 < toSphereBallBound n ε 
     positivity
   · positivity
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A ball of radius `ε` on the unit sphere in a real normed space
 has measure at least `toSphereBallBound n ε * μ (ball 0 1)`,
 where `n` is the dimension of the space,
@@ -271,6 +272,7 @@ lemma integrable_fun_norm_addHaar {f : ℝ → F} :
   · measurability
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma integral_fun_norm_addHaar (f : ℝ → F) :
     ∫ x, f (‖x‖) ∂μ = dim E • μ.real (ball 0 1) • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y :=
   calc

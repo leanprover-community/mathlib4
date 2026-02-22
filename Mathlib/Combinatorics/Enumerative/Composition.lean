@@ -608,7 +608,7 @@ def append (c₁ : Composition m) (c₂ : Composition n) : Composition (m + n) w
 def reverse (c : Composition n) : Composition n where
   blocks := c.blocks.reverse
   blocks_pos hi := c.blocks_pos (mem_reverse.mp hi)
-  blocks_sum := by simp [List.sum_reverse]
+  blocks_sum := by simp
 
 @[simp]
 lemma reverse_reverse (c : Composition n) : c.reverse.reverse = c :=

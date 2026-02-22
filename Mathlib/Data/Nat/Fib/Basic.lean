@@ -146,6 +146,7 @@ theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fi
     simp only [fib_add_two, ih]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
   cases n
   · simp
@@ -153,6 +154,7 @@ theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) 
     simp only [← add_assoc, add_tsub_cancel_right]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fib_two_mul_add_one (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 := by
   rw [two_mul, fib_add]
   ring
@@ -177,7 +179,7 @@ Proved to be equal to `Nat.fib` in `Nat.fast_fib_eq`. -/
 def fastFib (n : ℕ) : ℕ :=
   (fastFibAux n).1
 
-theorem fast_fib_aux_bit_ff (n : ℕ) :
+theorem fastFibAux_bit_false (n : ℕ) :
     fastFibAux (bit false n) =
       let p := fastFibAux n
       (p.1 * (2 * p.2 - p.1), p.2 ^ 2 + p.1 ^ 2) := by
@@ -185,7 +187,9 @@ theorem fast_fib_aux_bit_ff (n : ℕ) :
   · rfl
   · simp
 
-theorem fast_fib_aux_bit_tt (n : ℕ) :
+@[deprecated (since := "2026-02-04")] alias fast_fib_aux_bit_ff := fastFibAux_bit_false
+
+theorem fastFibAux_bit_true (n : ℕ) :
     fastFibAux (bit true n) =
       let p := fastFibAux n
       (p.2 ^ 2 + p.1 ^ 2, p.2 * (2 * p.1 + p.2)) := by
@@ -193,15 +197,24 @@ theorem fast_fib_aux_bit_tt (n : ℕ) :
   · rfl
   · simp
 
-theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
+@[deprecated (since := "2026-02-04")] alias fast_fib_aux_bit_tt := fastFibAux_bit_true
+
+theorem fastFibAux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
   refine Nat.binaryRec ?_ ?_ n
   · simp [fastFibAux]
   · rintro (_ | _) n' ih <;>
-      simp only [fast_fib_aux_bit_ff, fast_fib_aux_bit_tt, congr_arg Prod.fst ih,
+      simp only [fastFibAux_bit_false, fastFibAux_bit_true, congr_arg Prod.fst ih,
         congr_arg Prod.snd ih, Prod.mk_inj] <;>
       simp [bit, fib_two_mul, fib_two_mul_add_one, fib_two_mul_add_two]
 
-theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]
+@[deprecated (since := "2026-02-04")] alias fast_fib_aux_eq := fastFibAux_eq
+
+theorem fastFib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fastFibAux_eq]
+
+@[deprecated (since := "2026-02-04")] alias fast_fib_eq := fastFib_eq
+
+@[csimp]
+theorem fib_eq_fastFib : fib = fastFib := by ext; rw [fastFib_eq]
 
 theorem gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (fib n) := by
   rcases Nat.eq_zero_or_pos n with rfl | h

@@ -116,6 +116,7 @@ lemma pairwise_coprime_fermatNumber :
 
 open ZMod
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Prime `a ^ n + 1` implies `n` is a power of two (**Fermat primes**). -/
 theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : n ≠ 0) (hP : (a ^ n + 1).Prime) :
     ∃ m : ℕ, n = 2 ^ m := by
@@ -127,6 +128,7 @@ theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : n ≠ 0) (hP : (a ^ 
   rw [one_pow, hP.dvd_iff_eq (Nat.lt_add_right 1 ha).ne', add_left_inj, pow_eq_self_iff ha] at h
   rw [h, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Fₙ = 2^(2^n)+1` is prime if `3^(2^(2^n-1)) = -1 mod Fₙ` (**Pépin's test**). -/
 lemma pepin_primality (n : ℕ) (h : 3 ^ (2 ^ (2 ^ n - 1)) = (-1 : ZMod (fermatNumber n))) :
     (fermatNumber n).Prime := by
@@ -193,6 +195,7 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
 ### Primality of Mersenne numbers `Mₙ = a ^ n - 1`
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Prime `a ^ n - 1` implies `a = 2` and prime `n`. -/
 theorem prime_of_pow_sub_one_prime {a n : ℕ} (hn1 : n ≠ 1) (hP : (a ^ n - 1).Prime) :
     a = 2 ∧ n.Prime := by

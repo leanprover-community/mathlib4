@@ -98,6 +98,7 @@ theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (
     singleton_pi', ← inter_assoc, this]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} :
     Disjoint (pi univ fun i ↦ Ioc (x i) (update y i₀ m i))
     (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) := by

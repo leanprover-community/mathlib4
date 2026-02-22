@@ -30,9 +30,10 @@ The following are notations in the `OrderType` namespace:
 ## References
 
 * <https://en.wikipedia.org/wiki/Order_type>
-* Dauben, J. W. Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
-  NJ: Princeton University Press, 1990.
-* Enderton, Herbert B. Elements of Set Theory. United Kingdom: Academic Press, 1977.
+* [Dauben, J. W., Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
+  NJ: Princeton University Press, 1990.][dauben_1990]
+* [Enderton, Herbert B., Elements of Set Theory. United Kingdom: Academic Press,
+  1977.][enderton_1977]
 
 ## Tags
 
@@ -64,7 +65,7 @@ This is defined through the axiom of choice. -/
 def ToType (o : OrderType) : Type u :=
   o.out.carrier
 
-/-- The local instance for some arbitrary linear order on `Type u` , order isomorphic within
+/-- The instance for some arbitrary linear order on `Type u` , order isomorphic within
 order type `o`. -/
 @[no_expose]
 instance (o : OrderType) : LinearOrder o.ToType :=
@@ -161,11 +162,25 @@ def liftOn (o : OrderType) (f : ∀ (α) [LinearOrder α], δ)
   Quotient.liftOn o (fun w ↦ f w)
     fun w₁ w₂ h ↦ c w₁ w₂ (Quotient.sound h)
 
+/-- `Quotient.liftOn₂` specialized to `OrderType`. -/
+def liftOn₂ (o₁ o₂ : OrderType) (f : ∀ (α) [LinearOrder α] (β) [LinearOrder β], δ)
+    (c : ∀ (α₁) [LinearOrder α₁] (β₁) [LinearOrder β₁] (α₂) [LinearOrder α₂] (β₂) [LinearOrder β₂],
+      type α₁ = type α₂ → type β₁ = type β₂ → f α₁ β₁ = f α₂ β₂) : δ :=
+  Quotient.liftOn₂ o₁ o₂ (fun w v ↦ f w v)
+    fun w₁ w₂ v₁ v₂ hw hv ↦  c w₁ w₂ v₁ v₂ (Quotient.sound hw) (Quotient.sound hv)
+
 @[simp]
 theorem liftOn_type (f : ∀ (α) [LinearOrder α], δ)
     (c : ∀ (α) [LinearOrder α] (β) [LinearOrder β],
-      type α = type β → f α = f β) {γ} [inst : LinearOrder γ] :
+      type α = type β → f α = f β) {γ} [LinearOrder γ] :
     liftOn (type γ) f c = f γ := by rfl
+
+@[simp]
+theorem liftOn₂_type {α : Type u} {β : Type v} {δ : Type*} [LinearOrder α] [LinearOrder β]
+     (f : ∀ (α) [LinearOrder α] (β) [LinearOrder β], δ)
+     (c : ∀ (α₁) [LinearOrder α₁] (β₁) [LinearOrder β₁] (α₂) [LinearOrder α₂] (β₂) [LinearOrder β₂],
+       type α₁ = type α₂ → type β₁ = type β₂ → f α₁ β₁ = f α₂ β₂) :
+    liftOn₂ (type α) (type β) f c = f α β := by rfl
 
 /-! ### The order on `OrderType` -/
 

@@ -238,6 +238,7 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
 -- We don't have a `NontriviallyNormedDivisionRing`, so we use a `NeBot` assumption instead
 variable [NeBot (𝓝[≠] (0 : 𝕜))]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜 U ∈ 𝓝 (0 : E) := by
   -- Getting neighborhoods of the origin for `0 : 𝕜` and `0 : E`
   obtain ⟨r, V, hr, hV, hrVU⟩ : ∃ (r : ℝ) (V : Set E),

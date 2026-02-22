@@ -42,10 +42,12 @@ instance largeCategory : LargeCategory SSet := by
   dsimp only [SSet]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance hasLimits : HasLimits SSet := by
   dsimp only [SSet]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance hasColimits : HasColimits SSet := by
   dsimp only [SSet]
   infer_instance
@@ -96,10 +98,12 @@ instance largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance hasLimits {n : ℕ} : HasLimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance hasColimits {n : ℕ} : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance

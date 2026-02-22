@@ -100,11 +100,13 @@ def lift (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) 
     rintro _ _ ⟨a, rfl, rfl⟩
     simp [hx])
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_t (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) :
     lift f x hx t = x := by
   delta HNNExtension; simp [lift, t]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_of (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) (g : G) :
     lift f x hx (of g) = f g := by
@@ -167,6 +169,7 @@ theorem toSubgroupEquiv_one : toSubgroupEquiv φ 1 = φ := rfl
 @[simp]
 theorem toSubgroupEquiv_neg_one : toSubgroupEquiv φ (-1) = φ.symm := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toSubgroupEquiv_neg_apply (u : ℤˣ) (a : toSubgroup A B u) :
     (toSubgroupEquiv φ (-u) (toSubgroupEquiv φ u a) : G) = a := by
@@ -253,8 +256,8 @@ instance : Inhabited (NormalWord d) := ⟨empty⟩
 
 instance : MulAction G (NormalWord d) :=
   { smul := fun g w => { w with head := g * w.head }
-    one_smul := by simp [instHSMul]
-    mul_smul := by simp [instHSMul, mul_assoc] }
+    one_smul := by simp +instances [instHSMul]
+    mul_smul := by simp +instances [instHSMul, mul_assoc] }
 
 theorem group_smul_def (g : G) (w : NormalWord d) :
     g • w = { w with head := g * w.head } := rfl
@@ -415,6 +418,7 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
   · simp only [unitsSMul, dif_neg h]
     simpa [Cancels] using h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     unitsSMul φ (-u) (unitsSMul φ u w) = w := by
   rw [unitsSMul]
@@ -457,6 +461,7 @@ noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
     left_inv := fun _ => by rw [unitsSMul_neg]
     right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     unitsSMul φ 1 ((g : G) • w) = (φ g : G) • (unitsSMul φ 1 w) := by
   unfold unitsSMul
@@ -473,7 +478,7 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
   · rw [dif_neg (mt this.1 hcan), dif_neg hcan]
     -- Before https://github.com/leanprover/lean4/pull/2644, all this was just
     -- `simp [← mul_smul, mul_assoc, unitsSMulGroup]`
-    simp only [toSubgroup_neg_one, unitsSMulGroup, toSubgroup_one, toSubgroupEquiv_one,
+    simp +instances only [toSubgroup_neg_one, unitsSMulGroup, toSubgroup_one, toSubgroupEquiv_one,
       SetLike.coe_sort_coe, group_smul_head, mul_inv_rev, ← mul_smul, mul_assoc, inv_mul_cancel,
       mul_one, smul_cons]
     -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
@@ -498,16 +503,16 @@ theorem prod_group_smul (g : G) (w : NormalWord d) :
 
 theorem of_smul_eq_smul (g : G) (w : NormalWord d) :
     (of g : HNNExtension G A B φ) • w = g • w := by
-  simp [instHSMul, SMul.smul, MulAction.toEndHom]
+  simp +instances [instHSMul, SMul.smul, MulAction.toEndHom]
 
 theorem t_smul_eq_unitsSMul (w : NormalWord d) :
     (t : HNNExtension G A B φ) • w = unitsSMul φ 1 w := by
-  simp [instHSMul, SMul.smul, MulAction.toEndHom]
+  simp +instances [instHSMul, SMul.smul, MulAction.toEndHom]
 
 theorem t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (t ^ (u : ℤ) : HNNExtension G A B φ) • w = unitsSMul φ u w := by
   rcases Int.units_eq_one_or u with (rfl | rfl) <;>
-    simp [instHSMul, SMul.smul, MulAction.toEndHom, Equiv.Perm.inv_def]
+    simp +instances [instHSMul, SMul.smul, MulAction.toEndHom, Equiv.Perm.inv_def]
 
 @[simp]
 theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
@@ -516,6 +521,7 @@ theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set 
     (cons g u w h1 h2).prod φ = of g * (t ^ (u : ℤ) * w.prod φ) := by
   simp [ReducedWord.prod, cons, mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (unitsSMul φ u w).prod φ = (t ^ (u : ℤ) * w.prod φ : HNNExtension G A B φ) := by
   rw [unitsSMul]
@@ -561,6 +567,7 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
     rw [← mul_right_inj x, ← ih]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (acting on two goals, with different simp sets)
 set_option linter.flexible false in
 @[simp]

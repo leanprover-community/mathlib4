@@ -295,6 +295,7 @@ lemma iff_lTensor_preserves_injective_linearMap : Flat R M ↔
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.lTensor M) :=
   iff_lTensor_preserves_injective_linearMap'
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- If `M` is flat then `M ⊗ -` is an exact functor. -/
 lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
@@ -312,6 +313,7 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
       simpa [ι, -Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.lTensor_exact _ (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- If `M` is flat then `- ⊗ M` is an exact functor. -/
 lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
@@ -589,6 +591,7 @@ theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
 
 end IsSMulRegular
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `R` be a commutative semiring, let `C` be a commutative `R`-algebra, and let `A` be an
   `R`-algebra. If `C ⊗[R] B` is reduced for all finitely generated subalgebras `B` of `A`, then
   `C ⊗[R] A` is also reduced. -/

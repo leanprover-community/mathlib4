@@ -146,6 +146,7 @@ lemma le_truncatedSup : a ≤ truncatedSup s a := by
     exact h.trans <| le_sup' id <| mem_filter.2 ⟨hb, h⟩
   · exact le_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_truncatedSup [DecidableLE β] (e : α ≃o β) (s : Finset α) (a : α) :
     e (truncatedSup s a) = truncatedSup (s.map e.toEquiv.toEmbedding) (e a) := by
   have : e a ∈ lowerClosure (s.map e.toEquiv.toEmbedding : Set β) ↔ a ∈ lowerClosure s := by simp
@@ -223,6 +224,7 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
     id_eq]
   split_ifs <;> simp [Finset.filter_true_of_mem, *]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
     e (truncatedInf s a) = truncatedInf (s.map e.toEquiv.toEmbedding) (e a) := by
   have : e a ∈ upperClosure (s.map e.toEquiv.toEmbedding) ↔ a ∈ upperClosure s := by simp

@@ -28,25 +28,23 @@ open Lean.Meta.Tactic.TryThis
 
 /--
 Collects all suggestions from all `TryThisInfo`s in `trees`.
-`trees` is visited in order and suggestions in each tree are collected in post-order.
+Does not require context - works with context-free trees.
 -/
-def collectTryThisSuggestions (trees : PersistentArray InfoTree) :
-    Array Suggestion :=
-  go.run #[] |>.2
+partial def collectTryThisSuggestions (trees : PersistentArray InfoTree) : Array Suggestion :=
+  trees.foldl (init := #[]) fun acc tree => go acc tree
 where
-  /-- Visits all trees. -/
-  go : StateM (Array Suggestion) Unit := do
-    for tree in trees do
-      tree.visitM' (postNode := visitNode)
-  /-- Visits a node in a tree. -/
-  @[nolint unusedArguments]
-  visitNode (_ctx : ContextInfo) (i : Info) (_children : PersistentArray InfoTree) :
-      StateM (Array Suggestion) Unit := do
-    let .ofCustomInfo ci := i
-      | return
-    let some tti := ci.value.get? TryThisInfo
-      | return
-    modify (·.push tti.suggestion)
+  /-- Traverses an `InfoTree` to collect `TryThisInfo` suggestions. -/
+  go (acc : Array Suggestion) : InfoTree → Array Suggestion
+    | .context _ t => go acc t
+    | .node i children =>
+      let acc := match i with
+        | .ofCustomInfo ci =>
+          match ci.value.get? TryThisInfo with
+          | some tti => acc.push tti.suggestion
+          | none => acc
+        | _ => acc
+      children.foldl (init := acc) fun acc tree => go acc tree
+    | .hole _ => acc
 
 namespace InfoTree
 

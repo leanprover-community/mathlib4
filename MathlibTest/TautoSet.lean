@@ -55,6 +55,7 @@ example (hBA : B ⊆ A) (hB : Set.univ ⊆ B): Set.univ = A := by tauto_set
 
 example (hAB : A ⊆ B) (hCD : C ⊆ D) : C \ B ⊆ D \ A := by tauto_set
 
+set_option backward.isDefEq.respectTransparency false in
 example (hAB : Disjoint A B) (hCA : C ⊆ A) : Disjoint C (B \ D) := by tauto_set
 
 example : Aᶜᶜᶜ = Aᶜ := by tauto_set
@@ -111,18 +112,23 @@ example : A ∩ B ⊆ A ∪ B := by tauto_set
 -- subset_diff_empty_eq
 example (hAB : A ⊆ B) (hBA : B \ A = ∅) : A = B := by tauto_set
 
+set_option backward.isDefEq.respectTransparency false in
 -- Disjoint.ni_of_in
 example (hAB : Disjoint A B) (ha : a ∈ A) : a ∉ B := by tauto_set
 
+set_option backward.isDefEq.respectTransparency false in
 -- disjoint_of_singleton_inter_left_wo
 example (hAB : A ∩ B = {a}) : Disjoint (A \ {a}) B := by tauto_set
 
+set_option backward.isDefEq.respectTransparency false in
 -- disjoint_of_singleton_inter_right_wo
 example (hAB : A ∩ B = {a}) : Disjoint A (B \ {a}) := by tauto_set
 
+set_option backward.isDefEq.respectTransparency false in
 -- disjoint_of_singleton_inter_both_wo
 example (hAB : A ∩ B = {a}) : Disjoint (A \ {a}) (B \ {a}) := by tauto_set
 
+set_option backward.isDefEq.respectTransparency false in
 -- union_subset_union_iff
 example (hAC : Disjoint A C) (hBC : Disjoint B C) :
     A ∪ C ⊆ B ∪ C ↔ A ⊆ B := by
@@ -131,6 +137,7 @@ example (hAC : Disjoint A C) (hBC : Disjoint B C) :
 -- symmDiff_eq_alt
 example : symmDiff A B = (A ∪ B) \ (A ∩ B) := by tauto_set
 
+set_option backward.isDefEq.respectTransparency false in
 -- symmDiff_disjoint_inter
 example : Disjoint (symmDiff A B) (A ∩ B) := by tauto_set
 

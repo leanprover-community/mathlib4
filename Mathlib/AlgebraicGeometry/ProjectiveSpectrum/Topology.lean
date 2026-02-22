@@ -353,6 +353,7 @@ theorem basicOpen_eq_zeroLocus_compl (r : A) :
 theorem basicOpen_one : basicOpen 𝒜 (1 : A) = ⊤ :=
   TopologicalSpace.Opens.ext <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basicOpen_zero : basicOpen 𝒜 (0 : A) = ⊥ :=
   TopologicalSpace.Opens.ext <| by simp

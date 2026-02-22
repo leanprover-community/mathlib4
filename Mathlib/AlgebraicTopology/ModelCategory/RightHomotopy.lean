@@ -67,6 +67,7 @@ are homotopic relative to `P.symm` -/
 def symm {f g : X ⟶ Y} (h : P.RightHomotopy f g) : P.symm.RightHomotopy g f where
   h := h.h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f₀` is homotopic to `f₁` relative to a pre-path object `P`,
 and `f₁` is homotopic to `f₂` relative to `P'`, then
 `f₀` is homotopic to `f₂` relative to `P.trans P'`. -/
@@ -254,6 +255,7 @@ lemma equivalence [ModelCategory C] (X Y : C) [IsFibrant Y] :
   symm h := h.symm
   trans h h' := h.trans h'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma postcomp [ModelCategory C] {f g : X ⟶ Y} [IsCofibrant X] (h : RightHomotopyRel f g)
     {Z : C} (p : Y ⟶ Z) : RightHomotopyRel (f ≫ p) (g ≫ p) := by
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_pathObject

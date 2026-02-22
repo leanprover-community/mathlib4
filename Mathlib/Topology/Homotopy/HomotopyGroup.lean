@@ -294,6 +294,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
           (ContinuousMap.comp ⟨Subtype.val, by fun_prop⟩ H.toContinuousMap).curry).uncurry.comp <|
     (ContinuousMap.id I).prodMap (Cube.splitAt i)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     (toLoop i p).Homotopic (toLoop i q) → Homotopic p q := by
   refine Nonempty.map fun H ↦ ⟨⟨homotopyFrom i H, ?_, ?_⟩, ?_⟩
@@ -411,11 +412,11 @@ def HomotopyGroup.pi0EquivZerothHomotopy : π_ 0 X x ≃ ZerothHomotopy X :=
 /-- The 1-dimensional generalized loops based at `x` are in bijection with loops at `x`. -/
 def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
   toFun p :=
-    Path.mk ⟨fun t ↦ p fun _ ↦ t, by continuity⟩
+    Path.mk ⟨fun t ↦ p fun _ ↦ t, by fun_prop⟩
       (GenLoop.boundary _ (fun _ ↦ 0) ⟨default, Or.inl rfl⟩)
       (GenLoop.boundary _ (fun _ ↦ 1) ⟨default, Or.inr rfl⟩)
   invFun p :=
-    ⟨⟨fun c ↦ p (c default), by continuity⟩,
+    ⟨⟨fun c ↦ p (c default), by fun_prop⟩,
       by
       rintro y ⟨i, iH | iH⟩ <;> cases Unique.eq_default i <;> apply (congr_arg p iH).trans
       exacts [p.source, p.target]⟩

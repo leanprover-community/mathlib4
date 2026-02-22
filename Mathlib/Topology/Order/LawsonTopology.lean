@@ -218,11 +218,12 @@ end Preorder
 namespace IsLawson
 variable [PartialOrder α] [TopologicalSpace α] [IsLawson α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lawson topology on a partial order is T₁. -/
 -- see Note [lower instance priority]
 instance (priority := 90) toT1Space : T1Space α where
   t1 a := by
-    simp only [IsLawson.topology_eq_lawson]
+    simp +instances only [IsLawson.topology_eq_lawson]
     rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton),
       ← WithLawson.isClosed_preimage_ofLawson]
     apply IsClosed.inter

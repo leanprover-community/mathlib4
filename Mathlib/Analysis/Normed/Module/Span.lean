@@ -101,6 +101,7 @@ namespace LinearIsometryEquiv
 
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a unit element `x` of a normed space `E` over a field `𝕜`, the natural
 linear isometry equivalence from `𝕜` to the span of `x`. -/
 noncomputable def toSpanUnitSingleton (x : E) (hx : ‖x‖ = 1) :

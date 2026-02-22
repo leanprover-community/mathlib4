@@ -203,6 +203,7 @@ end Equiv
 
 variable [FunLike F α β]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reinterpret an order isomorphism as a morphism of complete lattices. -/
 @[simps] def OrderIso.toCompleteLatticeHom [CompleteLattice α] [CompleteLattice β]
     (f : OrderIso α β) : CompleteLatticeHom α β where

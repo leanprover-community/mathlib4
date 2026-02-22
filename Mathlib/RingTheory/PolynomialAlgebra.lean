@@ -27,9 +27,9 @@ open Algebra.TensorProduct (algHomOfLinearMapTensorProduct includeLeft)
 
 noncomputable section
 
-variable (R A : Type*)
-variable [CommSemiring R]
-variable [Semiring A] [Algebra R A]
+variable (R S A : Type*)
+variable [CommSemiring R] [CommSemiring S]
+variable [Semiring A] [Algebra R A] [Algebra R S] [Algebra S A] [IsScalarTower R S A]
 
 namespace PolyEquivTensor
 
@@ -211,7 +211,12 @@ attribute [local instance] Polynomial.algebra
 @[simp]
 theorem Polynomial.algebraMap_def : algebraMap R[X] A[X] = mapRingHom (algebraMap R A) := rfl
 
-instance : IsScalarTower R R[X] A[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+instance : IsScalarTower R S[X] A[X] :=
+  have : IsScalarTower S S[X] A[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+  .to₁₃₄ _ S _ _
+
+instance : IsScalarTower R[X] S[X] A[X] := .of_algebraMap_eq' <|
+  congr(mapRingHom $(IsScalarTower.algebraMap_eq R S A)).trans (mapRingHom_comp ..).symm
 
 instance [FaithfulSMul R A] : FaithfulSMul R[X] A[X] :=
   (faithfulSMul_iff_algebraMap_injective ..).mpr

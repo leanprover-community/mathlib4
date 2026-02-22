@@ -154,7 +154,7 @@ theorem ofReal_norm_eq_lintegral (f : α →₁[μ] β) : ENNReal.ofReal ‖f‖
   (but only a.e.-equal). -/
 theorem ofReal_norm_sub_eq_lintegral (f g : α →₁[μ] β) :
     ENNReal.ofReal ‖f - g‖ = ∫⁻ x, ‖f x - g x‖ₑ ∂μ := by
-  simp_rw [ofReal_norm_eq_lintegral, ← edist_zero_eq_enorm]
+  simp_rw [ofReal_norm_eq_lintegral, ← edist_zero_right]
   apply lintegral_congr_ae
   filter_upwards [Lp.coeFn_sub f g] with _ ha
   simp only [ha, Pi.sub_apply]
@@ -220,6 +220,7 @@ theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrabl
     Pi.sub_apply, toReal_one, ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
   simp [edist_eq_enorm_sub]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
     edist (hf.toL1 f) 0 = ∫⁻ a, edist (f a) 0 ∂μ := by
   simp only [edist_zero_right, Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun]

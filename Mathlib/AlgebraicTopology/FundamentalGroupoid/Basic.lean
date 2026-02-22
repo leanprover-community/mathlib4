@@ -55,6 +55,7 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
     · apply mul_nonneg <;> grind
     · apply mul_le_one₀ <;> grind
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₀` to
   `p.trans p.symm`. -/
 def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.symm) where
@@ -91,9 +92,11 @@ theorem transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
   unfold transReflReparamAux
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
   norm_num [transReflReparamAux]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
   norm_num [transReflReparamAux]
 
@@ -135,9 +138,11 @@ theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
   unfold transAssocReparamAux
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transAssocReparamAux_zero : transAssocReparamAux 0 = 0 := by
   norm_num [transAssocReparamAux]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
   norm_num [transAssocReparamAux]
 

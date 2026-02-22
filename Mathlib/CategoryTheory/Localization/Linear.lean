@@ -73,6 +73,7 @@ variable {E : Type*} [Category* E]
   (R : Type*) [Ring R]
   [Linear R C] [Linear R D] [Linear R E] [L.Linear R]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma functor_linear_iff (F : C ⥤ E) (G : D ⥤ E) [Lifting L W F G] :
     F.Linear R ↔ G.Linear R := by
   constructor

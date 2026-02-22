@@ -191,6 +191,7 @@ protected def toSubgraph {u v : V} : G.Walk u v → G.Subgraph
   | nil => G.singletonSubgraph u
   | cons h p => G.subgraphOfAdj h ⊔ p.toSubgraph
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toSubgraph_cons_nil_eq_subgraphOfAdj (h : G.Adj u v) :
     (cons h nil).toSubgraph = G.subgraphOfAdj h := by simp
 
@@ -221,13 +222,15 @@ theorem mem_edges_toSubgraph (p : G.Walk u v) {e : Sym2 V} :
     e ∈ p.toSubgraph.edgeSet ↔ e ∈ p.edges := by induction p <;> simp [*]
 
 @[simp]
-theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = { e | e ∈ p.edges } :=
+theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = p.edgeSet :=
   Set.ext fun _ => p.mem_edges_toSubgraph
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toSubgraph_append (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).toSubgraph = p.toSubgraph ⊔ q.toSubgraph := by induction p <;> simp [*, sup_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toSubgraph_reverse (p : G.Walk u v) : p.reverse.toSubgraph = p.toSubgraph := by
   induction p with
@@ -238,6 +241,7 @@ theorem toSubgraph_reverse (p : G.Walk u v) : p.reverse.toSubgraph = p.toSubgrap
     congr
     ext <;> simp [-Set.bot_eq_empty]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toSubgraph_rotate [DecidableEq V] (c : G.Walk v v) (h : u ∈ c.support) :
     (c.rotate h).toSubgraph = c.toSubgraph := by
@@ -247,6 +251,7 @@ theorem toSubgraph_rotate [DecidableEq V] (c : G.Walk v v) (h : u ∈ c.support)
 theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
     (p.map f).toSubgraph = p.toSubgraph.map f := by induction p <;> simp [*, Subgraph.map_sup]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma adj_toSubgraph_mapLe {G' : SimpleGraph V} {w x : V} {p : G.Walk u v} (h : G ≤ G') :
     (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x := by
   simp
@@ -326,6 +331,14 @@ lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
     p.toSubgraph.Adj u' v' ↔ s(u', v') ∈ p.edges := by
   rw [← p.mem_edges_toSubgraph, Subgraph.mem_edgeSet]
 
+theorem toSubgraph_le_iff {w : G.Walk u v} (hnil : ¬w.Nil) {G' : G.Subgraph} :
+    w.toSubgraph ≤ G' ↔ w.edgeSet ⊆ G'.edgeSet := by
+  refine ⟨fun hw e he ↦ Subgraph.edgeSet_mono hw <| w.mem_edges_toSubgraph.mpr he, fun hw ↦ ?_⟩
+  refine ⟨fun v' hv' ↦ ?_, fun u' v' hadj ↦ hw <| w.mem_edges_toSubgraph.mp (hadj : s(_, _) ∈ _)⟩
+  rw [mem_verts_toSubgraph, mem_support_iff_exists_mem_edges_of_not_nil hnil] at hv'
+  have ⟨e, he, hv'e⟩ := hv'
+  exact G'.mem_verts_of_mem_edge (hw he) hv'e
+
 lemma toSubgraph_bypass_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
     p.bypass.toSubgraph ≤ p.toSubgraph := by
   constructor
@@ -341,6 +354,7 @@ def mapToSubgraph {u v : V} : ∀ w : G.Walk u v, w.toSubgraph.coe.Walk
     let h : cons .. |>.toSubgraph.coe.Adj ⟨_, h.fst_mem⟩ ⟨_, h.snd_mem⟩ := h
     cons h <| mapToSubgraph _ |>.map <| Subgraph.inclusion le_sup_right
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Mapping a walk to its own subgraph and then to the original graph produces the same walk. -/
 theorem map_mapToSubgraph_hom {u v : V} : ∀ w : G.Walk u v, w.mapToSubgraph.map w.toSubgraph.hom = w
   | nil => rfl
@@ -348,6 +362,7 @@ theorem map_mapToSubgraph_hom {u v : V} : ∀ w : G.Walk u v, w.mapToSubgraph.ma
     rw [mapToSubgraph, Walk.map, map_map]
     exact congrArg₂ _ rfl w.map_mapToSubgraph_hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Mapping a walk to its own subgraph and then to `G[s]` where `s` contains the walk's support is
 the same as inducing the walk to `s`. -/
 theorem map_mapToSubgraph_eq_induce (s : Set V) {u v : V} :
@@ -549,6 +564,7 @@ lemma Connected.adj_union {H K : G.Subgraph}
     ((⊤ : G.Subgraph).induce {u, v} ⊔ H ⊔ K).Connected :=
   connected_induce_top_sup Hconn.preconnected Kconn.preconnected uH vK huv
 
+set_option backward.isDefEq.respectTransparency false in
 lemma preconnected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
     H.Preconnected ↔ ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
   constructor
@@ -573,10 +589,12 @@ end Subgraph
 
 section induced_subgraphs
 
+set_option backward.isDefEq.respectTransparency false in
 lemma preconnected_induce_iff {s : Set V} :
     (G.induce s).Preconnected ↔ ((⊤ : G.Subgraph).induce s).Preconnected := by
   rw [induce_eq_coe_induce_top, ← Subgraph.preconnected_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma connected_induce_iff {s : Set V} :
     (G.induce s).Connected ↔ ((⊤ : G.Subgraph).induce s).Connected := by
   rw [induce_eq_coe_induce_top, ← Subgraph.connected_iff']
@@ -604,6 +622,7 @@ lemma Walk.connected_induce_support {u v : V} (p : G.Walk u v) :
   rw [← p.verts_toSubgraph]
   exact p.toSubgraph_connected.induce_verts
 
+set_option backward.isDefEq.respectTransparency false in
 lemma connected_induce_union {v w : V} {s t : Set V}
     (sconn : (G.induce s).Preconnected) (tconn : (G.induce t).Preconnected)
     (hv : v ∈ s) (hw : w ∈ t) (ha : G.Adj v w) :

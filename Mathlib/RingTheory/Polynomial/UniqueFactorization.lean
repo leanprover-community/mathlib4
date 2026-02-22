@@ -34,6 +34,7 @@ namespace Polynomial
 
 variable {R : Type*} [CommSemiring R] [NoZeroDivisors R] [WfDvdMonoid R] {f : R[X]}
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
   wf := by
     classical
@@ -127,6 +128,7 @@ private theorem uniqueFactorizationMonoid_of_fintype [Finite σ] :
       apply (finSuccEquiv D d).toMulEquiv.symm.uniqueFactorizationMonoid
       exact Polynomial.uniqueFactorizationMonoid
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) uniqueFactorizationMonoid :
     UniqueFactorizationMonoid (MvPolynomial σ D) := by
   rw [iff_exists_prime_factors]

@@ -219,6 +219,7 @@ theorem orderEmbOfFin_mem (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k)
     s.orderEmbOfFin h i ∈ s :=
   (s.orderIsoOfFin h i).2
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
     Set.range (s.orderEmbOfFin h) = s := by

@@ -87,6 +87,7 @@ lemma conjugateEquiv_leftAdjointCompIso_inv (e₀₁₂ : G₂₁ ⋙ G₁₀ �
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 lemma leftAdjointCompIso_comp_id
     {F₀₁ : C₀ ⥤ C₁} {F₁₁' : C₁ ⥤ C₁} {G₁₀ : C₁ ⥤ C₀} {G₁'₁ : C₁ ⥤ C₁}
     (adj₀₁ : F₀₁ ⊣ G₁₀) (adj₁₁' : F₁₁' ⊣ G₁'₁)
@@ -99,6 +100,7 @@ lemma leftAdjointCompIso_comp_id
   simp [leftAdjointCompIso_hom_app, leftAdjointIdIso_hom_app,
     ← Functor.map_comp_assoc, -Functor.map_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma leftAdjointCompIso_id_comp
     {F₀₀' : C₀ ⥤ C₀} {F₀'₁ : C₀ ⥤ C₁} {G₀'₀ : C₀ ⥤ C₀} {G₁₀' : C₁ ⥤ C₀}
     (adj₀₀' : F₀₀' ⊣ G₀'₀) (adj₀'₁ : F₀'₁ ⊣ G₁₀')

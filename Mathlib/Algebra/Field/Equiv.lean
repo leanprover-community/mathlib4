@@ -19,6 +19,7 @@ public section
 
 variable {A B F : Type*} [Semiring A] [Semiring B]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem IsLocalHom.isField [FunLike F A B] [MonoidWithZeroHomClass F A B] {f : F}
     [IsLocalHom f] (inj : Function.Injective f) (hB : IsField B) : IsField A where
   exists_pair_ne := have : Nontrivial B := ⟨hB.1⟩; (domain_nontrivial f (map_zero f) (map_one f)).1

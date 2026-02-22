@@ -216,6 +216,7 @@ end Prod
 section ProdOneSubPow
 variable (R : Type*) [CommRing R] [TopologicalSpace R]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem multipliable_one_sub_X_pow : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^ (n + 1) := by
   nontriviality R
   simp_rw [sub_eq_add_neg]

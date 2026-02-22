@@ -103,6 +103,7 @@ section
 
 variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 /-- Any `1`-separated set in the ball of radius `2` has cardinality at most `5 ^ dim`. This is
 useful to show that the supremum in the definition of `Besicovitch.multiplicity E` is
@@ -166,6 +167,7 @@ theorem card_le_multiplicity {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
 
 variable (E)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `δ` is small enough, a `(1-δ)`-separated set in the ball of radius `2` also has cardinality
 at most `multiplicity E`. -/
 theorem exists_goodδ :
@@ -340,6 +342,7 @@ theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
 
 variable [NormedSpace ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)
     (hδ2 : δ ≤ 1) (i j : Fin N.succ) (inej : i ≠ j) (hi : ‖a.c i‖ ≤ 2) (hj : 2 < ‖a.c j‖) :

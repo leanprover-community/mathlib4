@@ -302,10 +302,11 @@ def lifts : Type _ := Σ (s : Finset S), (MvPolynomial (Fin s.card) R) ⊗[R] M
 
 variable {S}
 
-/-- The lift of `f.toFun to the type `lifts` -/
+/-- The lift of `f.toFun` to the type `lifts` -/
 def φ (s : Finset S) : MvPolynomial (Fin s.card) R →ₐ[R] S :=
   aeval (R := R) (fun n ↦ (s.equivFin.symm n : S))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_φ (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
   simp only [φ]
   rw [← Algebra.adjoin_range_eq_range_aeval]
@@ -341,7 +342,7 @@ variable
     {B : Type u} [CommSemiring B] [Algebra R B] {ψ : B →ₐ[R] T} (q : B ⊗[R] M)
     (g : A →ₐ[R] B) (h : S →ₐ[R] T)
 
-/-- Compare the values of `PolynomialLaw.toFun' in a square diagram -/
+/-- Compare the values of `PolynomialLaw.toFun'` in a square diagram -/
 theorem toFun'_eq_of_diagram
     (h : S →ₐ[R] T) (h' : φ.range →ₐ[R] ψ.range)
     (hh' : ψ.range.val.comp h' = h.comp φ.range.val)
@@ -370,7 +371,7 @@ theorem toFun'_eq_of_diagram
     ← quotientKerEquivRangeₐ_comp_mkₐ, ← AlgHom.comp_assoc]
   simp
 
-/-- Compare the values of `PolynomialLaw.toFun' in a square diagram,
+/-- Compare the values of `PolynomialLaw.toFun'` in a square diagram,
   when one of the maps is a subalgebra inclusion. -/
 theorem toFun'_eq_of_inclusion {ψ : B →ₐ[R] S} (h : φ.range ≤ ψ.range)
     (hpq : ((Subalgebra.inclusion h).comp
@@ -531,6 +532,7 @@ variable
   (r a b : R) (f g : M →ₚₗ[R] N)
   {S : Type*} [CommSemiring S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Extension of `PolynomialLaw.zero_def` -/
 @[simp]
 theorem toFun_zero : (0 : M →ₚₗ[R] N).toFun S = 0 := by

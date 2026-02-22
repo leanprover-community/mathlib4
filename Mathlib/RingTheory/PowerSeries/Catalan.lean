@@ -44,6 +44,7 @@ lemma catalanSeries_constantCoeff : constantCoeff catalanSeries = 1 := by
   rw [← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   simp only [catalanSeries_coeff, catalan_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem catalanSeries_sq_mul_X_add_one : catalanSeries ^ 2 * X + 1 = catalanSeries := by
   ext n
   cases n with

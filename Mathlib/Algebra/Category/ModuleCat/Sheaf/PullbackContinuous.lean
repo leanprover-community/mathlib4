@@ -72,6 +72,7 @@ variable [(PresheafOfModules.pushforward.{v} φ.val).IsRightAdjoint]
 
 namespace PullbackConstruction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a left adjoint to the functor `pushforward.{v} φ` by using the
 pullback of presheaves of modules and the sheafification. -/
 noncomputable def adjunction :

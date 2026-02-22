@@ -61,6 +61,7 @@ lemma coeff_genFun (f : ℕ → ℕ → R) (n : ℕ) :
     (genFun f).coeff n = ∑ p : n.Partition, p.parts.toFinsupp.prod f :=
   PowerSeries.coeff_mk _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The summands in the formula `Nat.Partition.hasProd_genFun` tends to infinity in their order. -/
 theorem tendsto_order_genFun_term_atTop_nhds_top (f : ℕ → ℕ → R) (i : ℕ) :
     Filter.Tendsto (fun j ↦ (f (i + 1) (j + 1) • (X : R⟦X⟧) ^ ((i + 1) * (j + 1))).order)
@@ -139,6 +140,7 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {
   · ext x
     simpa [toFinsuppAntidiag] using Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hs0 hg hprod x
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : Partition n) {s : Finset ℕ}
     (hs : Icc 1 n ⊆ s) (hs0 : 0 ∉ s) :
     p.parts.toFinsupp.prod f =

@@ -439,6 +439,7 @@ theorem one_le_cosh (x : ℝ) : 1 ≤ cosh x :=
 theorem one_lt_cosh : 1 < cosh x ↔ x ≠ 0 :=
   cosh_zero ▸ cosh_lt_cosh.trans (by simp only [_root_.abs_zero, abs_pos])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sinh_sub_id_strictMono : StrictMono fun x => sinh x - x := by
   refine strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp; abel) ?_
   refine strictMonoOn_of_deriv_pos (convex_Ici _) ?_ fun x hx => ?_

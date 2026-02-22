@@ -65,6 +65,7 @@ def TopologicalSpace.compactlyGenerated (X : Type w) [TopologicalSpace X] : Topo
   let f : (Σ (i : (S : CompHaus.{u}) × C(S, X)), i.fst) → X := fun ⟨⟨_, i⟩, s⟩ ↦ i s
   coinduced f inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma continuous_from_compactlyGenerated [TopologicalSpace X] [t : TopologicalSpace Y] (f : X → Y)
     (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) :
         Continuous[compactlyGenerated.{u} X, t] f := by
@@ -80,6 +81,10 @@ This version includes an explicit universe parameter `u` which should always be 
 intended for categorical purposes. See `CompactlyGeneratedSpace` for the version without this
 parameter, intended for topological purposes.
 -/
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the compact space universe `u` would default
+-- to a universe output parameter. See Note [universe output parameters and typeclass caching].
+@[univ_out_params]
 class UCompactlyGeneratedSpace (X : Type v) [t : TopologicalSpace X] : Prop where
   /-- The topology of `X` is finer than the compactly generated topology. -/
   le_compactlyGenerated : t ≤ compactlyGenerated.{u} X
@@ -92,6 +97,7 @@ lemma eq_compactlyGenerated [t : TopologicalSpace X] [UCompactlyGeneratedSpace.{
       Sigma.forall]
     exact fun S f ↦ f.2
 
+set_option backward.isDefEq.respectTransparency false in
 instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
     UCompactlyGeneratedSpace.{u} X where
   le_compactlyGenerated := by

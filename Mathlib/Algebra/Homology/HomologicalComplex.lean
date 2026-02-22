@@ -634,6 +634,7 @@ theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
   dsimp [of]
   rw [if_pos rfl, Category.id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_d_ne {i j : α} (h : i ≠ j + 1) : (of X d sq).d i j = 0 := by
   dsimp [of]
   rw [dif_neg h]
@@ -646,6 +647,7 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 variable (X : α → V) (d_X : ∀ n, X (n + 1) ⟶ X n) (sq_X : ∀ n, d_X (n + 1) ≫ d_X n = 0) (Y : α → V)
   (d_Y : ∀ n, Y (n + 1) ⟶ Y n) (sq_Y : ∀ n, d_Y (n + 1) ≫ d_Y n = 0)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A constructor for chain maps between `α`-indexed chain complexes built using `ChainComplex.of`,
 from a dependently typed collection of morphisms.
 -/
@@ -736,6 +738,7 @@ def mkXIso (n : ℕ) :
       (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ n)]
     rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk_d (n : ℕ) :
     (mk X₀ X₁ X₂ d₀ d₁ s succ).d (n + 3) (n + 2) =
       (mkXIso X₀ X₁ X₂ d₀ d₁ s succ n).hom ≫ (succ
@@ -897,6 +900,7 @@ theorem of_d (j : α) : (of X d sq).d j (j + 1) = d j := by
   dsimp [of]
   rw [if_pos rfl, Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : (of X d sq).d i j = 0 := by
   dsimp [of]
   rw [dif_neg h]
@@ -909,6 +913,7 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n ≫ d_X (n + 1) = 0) (Y : α → V)
   (d_Y : ∀ n, Y n ⟶ Y (n + 1)) (sq_Y : ∀ n, d_Y n ≫ d_Y (n + 1) = 0)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A constructor for chain maps between `α`-indexed cochain complexes built using `CochainComplex.of`,
 from a dependently typed collection of morphisms.

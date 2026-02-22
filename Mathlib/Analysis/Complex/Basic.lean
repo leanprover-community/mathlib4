@@ -63,6 +63,7 @@ instance : DenselyNormedField ℂ where
     let ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [norm_real, Real.norm_of_nonneg (h₀.trans_lt h.1).le]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
   norm_smul_le r x := by
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_real, norm_algebraMap']
@@ -147,8 +148,11 @@ def reCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 
-lemma uniformlyContinuous_re : UniformContinuous re :=
+lemma uniformContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
+
+@[deprecated (since := "2026-02-03")] alias uniformlyContinuous_re :=
+  uniformContinuous_re
 
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
@@ -166,8 +170,11 @@ def imCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 
-lemma uniformlyContinuous_im : UniformContinuous im :=
+lemma uniformContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
+
+@[deprecated (since := "2026-02-03")] alias uniformlyContinuous_im :=
+  uniformContinuous_im
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
@@ -177,6 +184,7 @@ theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
 theorem imCLM_apply (z : ℂ) : (imCLM : ℂ → ℝ) z = z.im :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars_toSpanSingleton' (x : E) :
     ContinuousLinearMap.restrictScalars ℝ (toSpanSingleton ℂ x : ℂ →L[ℂ] E) =
       reCLM.smulRight x + I • imCLM.smulRight x := by
@@ -380,6 +388,7 @@ open scoped ComplexOrder in
 @[simp] theorem _root_.RCLike.to_complex_nonneg_iff {𝕜 : Type*} [RCLike 𝕜] {a : 𝕜} :
     0 ≤ RCLike.re a + RCLike.im a * Complex.I ↔ 0 ≤ a := RCLike.map_nonneg_iff rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `RCLike 𝕜` and `ℂ` when
 `RCLike.im RCLike.I = 1`. -/
 @[simps]
@@ -605,6 +614,7 @@ def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
 lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_setOf
 
+set_option backward.isDefEq.respectTransparency false in
 /- If `z` is non-zero, then either `z` or `-z` is in `slitPlane`. -/
 lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
     z ∈ slitPlane ∨ -z ∈ slitPlane := by
@@ -623,6 +633,7 @@ lemma isOpen_slitPlane : IsOpen slitPlane :=
 @[simp]
 lemma ofReal_mem_slitPlane {x : ℝ} : ↑x ∈ slitPlane ↔ 0 < x := by simp [mem_slitPlane_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
   simpa using ofReal_mem_slitPlane (x := -x)
@@ -650,9 +661,9 @@ lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 :=
   ne_of_mem_of_not_mem hz zero_notMem_slitPlane
 
 /-- The slit plane includes the open unit ball of radius `1` around `1`. -/
-lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := fun z hz ↦ .inl <|
+lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := fun z hz ↦ .inl <| by
   have : -1 < z.re - 1 := neg_lt_of_abs_lt <| (abs_re_le_norm _).trans_lt hz
-  by linarith
+  linarith
 
 /-- The slit plane includes the open unit ball of radius `1` around `1`. -/
 lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slitPlane :=

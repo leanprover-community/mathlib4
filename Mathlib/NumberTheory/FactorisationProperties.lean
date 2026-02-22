@@ -5,15 +5,12 @@ Authors: Colin Jones
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.Data.Finset.NatDivisors
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.NormNum.Prime
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Factorisation properties of natural numbers
@@ -182,6 +179,7 @@ theorem infinite_deficient : {n : ℕ | n.Deficient}.Infinite := by
   obtain ⟨b, h1, h2⟩ := exists_infinite_primes a.succ
   exact ⟨b, h2.deficient, h1⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem infinite_even_deficient : {n : ℕ | Even n ∧ n.Deficient}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
   intro n

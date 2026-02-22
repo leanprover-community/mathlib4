@@ -99,6 +99,7 @@ end UnitarySpectrum
 
 section Quasispectrum
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped NNReal in
 lemma CStarAlgebra.le_nnnorm_of_mem_quasispectrum {A : Type*} [NonUnitalCStarAlgebra A]
     {a : A} {x : ℝ≥0} (hx : x ∈ quasispectrum ℝ≥0 a) : x ≤ ‖a‖₊ := by
@@ -247,6 +248,7 @@ variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open Unitization
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
   have h (ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B) (x : Unitization ℂ A) :

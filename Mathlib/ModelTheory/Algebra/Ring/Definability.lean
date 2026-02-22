@@ -26,6 +26,7 @@ namespace Ring
 
 open MvPolynomial Language BoundedFormula
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mvPolynomial_zeroLocus_definable {ι K : Type*} [Field K]
     [CompatibleRing K] (S : Finset (MvPolynomial ι K)) :
     Set.Definable (⋃ p ∈ S, p.coeff '' p.support : Set K) Language.ring

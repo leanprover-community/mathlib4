@@ -207,6 +207,7 @@ theorem disjoint_filter_filter {s t : Finset α}
     Disjoint s t → Disjoint (s.filter p) (t.filter q) :=
   Disjoint.mono (filter_subset _ _) (filter_subset _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Set.pairwiseDisjoint_filter [DecidableEq β] (f : α → β) (s : Set β) (t : Finset α) :
     s.PairwiseDisjoint fun x ↦ t.filter (f · = x) := by
   rintro i - j - h u hi hj x hx

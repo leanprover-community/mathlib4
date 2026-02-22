@@ -127,6 +127,7 @@ lemma trace_comp_toEnd_genWeightSpace_eq (χ : L → R) :
   ext x
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R L M} in
 lemma zero_lt_finrank_genWeightSpace {χ : L → R} (hχ : genWeightSpace M χ ≠ ⊥) :
     0 < finrank R (genWeightSpace M χ) := by
@@ -209,6 +210,7 @@ lemma toEnd_eq (x : L) :
     (shift R L M χ).conj (toEnd R L (genWeightSpace M χ) x - χ x • LinearMap.id) := by
   tauto
 
+set_option backward.isDefEq.respectTransparency false in
 /-- By Engel's theorem, if `M` is Noetherian, the shifted action `⁅x, m⁆ - χ x • m` makes the
 `χ`-weight space into a nilpotent Lie module. -/
 instance [IsNoetherian R M] : IsNilpotent L (shiftedGenWeightSpace R L M χ) :=

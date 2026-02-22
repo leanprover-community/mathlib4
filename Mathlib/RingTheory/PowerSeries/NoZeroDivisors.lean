@@ -42,11 +42,13 @@ end NoZeroDivisors
 
 section IsDomain
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Ring R] [IsDomain R] : IsDomain R⟦X⟧ :=
   NoZeroDivisors.to_isDomain _
 
 variable [CommRing R] [IsDomain R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The ideal spanned by the variable in the power series ring
 over an integral domain is a prime ideal. -/
 theorem span_X_isPrime : (Ideal.span ({X} : Set R⟦X⟧)).IsPrime := by
@@ -64,6 +66,7 @@ theorem X_prime : Prime (X : R⟦X⟧) := by
   · intro h
     simpa [map_zero (coeff 1)] using congr_arg (coeff 1) h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The variable of the power series ring over an integral domain is irreducible. -/
 theorem X_irreducible : Irreducible (X : R⟦X⟧) := X_prime.irreducible
 

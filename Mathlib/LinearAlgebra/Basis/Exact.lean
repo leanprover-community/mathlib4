@@ -123,6 +123,7 @@ lemma Submodule.linearProjOfIsCompl_comp_surjective_of_exact
   obtain ⟨a, haq, ha⟩ : g x.val ∈ q.map g := by rwa [hmap]
   exact ⟨x - a, by simp [← ha], by simpa⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.linearProjOfIsCompl_comp_bijective_of_exact
     (hf : Function.Injective f) {p q : Submodule R M} (hpq : IsCompl p q)
     (hker : Disjoint (LinearMap.ker g) q) (hmap : Submodule.map g q = ⊤) :

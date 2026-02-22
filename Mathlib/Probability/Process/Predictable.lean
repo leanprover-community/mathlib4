@@ -74,6 +74,7 @@ lemma measurableSet_predictable_Ioi_prod [LinearOrder ι] [OrderBot ι]
     MeasurableSet[𝓕.predictable] <| Set.Ioi i ×ˢ s :=
   MeasurableSpace.measurableSet_generateFrom <| Or.inr ⟨i, s, hs, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Sets of the form `(i, j] × A` for any `A ∈ 𝓕 i` are measurable with respect to the predictable
 σ-algebra. -/
 lemma measurableSet_predictable_Ioc_prod [LinearOrder ι] [OrderBot ι]

@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Tactic.Positivity

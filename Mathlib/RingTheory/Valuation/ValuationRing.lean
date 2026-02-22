@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Valuation.Integers
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Valuation Rings

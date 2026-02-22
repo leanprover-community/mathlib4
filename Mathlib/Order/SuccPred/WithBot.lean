@@ -79,11 +79,13 @@ lemma pred_eq_pred : ∀ a : WithTop α, pred a = Order.pred a
   | ⊤ => rfl
   | (a : α) => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pred_mono : Monotone (pred : WithTop α → α)
   | _, ⊤, _ => by simp
   | ⊤, (a : α), hab => by simp at hab
   | (a : α), (b : α), hab => Order.pred_le_pred (by simpa using hab)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pred_strictMono [NoMinOrder α] : StrictMono (pred : WithTop α → α)
   | (b : α), ⊤, hab => by simp
   | (a : α), (b : α), hab => Order.pred_lt_pred (by simpa using hab)

@@ -154,7 +154,10 @@ structure GCongrKey where
   /-- The number of arguments that `head` is applied to.
   For example, `a + b ≤ a + c` has `arity := 6`, because `HAdd.hAdd` has 6 arguments. -/
   arity : Nat
-deriving Inhabited, BEq, Hashable
+deriving Inhabited, BEq
+
+instance : Ord GCongrKey where
+  compare a b := a.1.quickCmp b.1 |>.then (a.2.quickCmp b.2) |>.then (compare a.3 b.3)
 
 /-- Structure recording the data for a "generalized congruence" (`gcongr`) lemma. -/
 structure GCongrLemma where
@@ -178,7 +181,7 @@ structure GCongrLemma where
   deriving Inhabited
 
 /-- A collection of `GCongrLemma`, to be stored in the environment extension. -/
-abbrev GCongrLemmas := Std.HashMap GCongrKey (List GCongrLemma)
+abbrev GCongrLemmas := Std.TreeMap GCongrKey (List GCongrLemma)
 
 /-- Return `true` if the priority of `a` is less than or equal to the priority of `b`. -/
 def GCongrLemma.prioLE (a b : GCongrLemma) : Bool :=
@@ -186,9 +189,9 @@ def GCongrLemma.prioLE (a b : GCongrLemma) : Bool :=
 
 /-- Insert a `GCongrLemma` in a collection of lemmas, making sure that the lemmas are sorted. -/
 def addGCongrLemmaEntry (m : GCongrLemmas) (l : GCongrLemma) : GCongrLemmas :=
-  match m[l.key]? with
-  | none    => m.insert l.key [l]
-  | some es => m.insert l.key <| insert l es
+  m.alter l.key fun
+  | none    => [l]
+  | some es => insert l es
 where
   /--- Insert a `GCongrLemma` in the correct place in a list of lemmas. -/
   insert (l : GCongrLemma) : List GCongrLemma → List GCongrLemma
@@ -196,8 +199,7 @@ where
     | l'::ls => if l'.prioLE l then l::l'::ls else l' :: insert l ls
 
 /-- Environment extension for "generalized congruence" (`gcongr`) lemmas. -/
-initialize gcongrExt : SimpleScopedEnvExtension GCongrLemma
-    (Std.HashMap GCongrKey (List GCongrLemma)) ←
+initialize gcongrExt : SimpleScopedEnvExtension GCongrLemma GCongrLemmas ←
   registerSimpleScopedEnvExtension {
     addEntry := addGCongrLemmaEntry
     initial := {}
@@ -234,69 +236,70 @@ def updateRel (r e : Expr) (isLhs : Bool) : Expr :=
   | .app (.app rel lhs) rhs => if isLhs then mkApp2 rel e rhs else mkApp2 rel lhs e
   | _ => r
 
-/-- Construct the `GCongrLemma` data from a given lemma. -/
-def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : MetaM GCongrLemma := do
-  withDefault <| forallBoundedTelescope declTy numHyps fun xs targetTy => withReducible do
-    let fail {α} (m : MessageData) : MetaM α := throwError "\
-      @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
-      {m} in {targetTy}"
-    -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
-    let some (relName, lhs, rhs) := getRel (← whnf targetTy) | fail "No relation found"
-    let lhs := lhs.headBeta; let rhs := rhs.headBeta -- this is required for `Monotone fun x => ⋯`
-    let some (head, lhsArgs) := getCongrAppFnArgs lhs | fail "LHS is not suitable for congruence"
-    let some (head', rhsArgs) := getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
-    unless head == head' && lhsArgs.size == rhsArgs.size do
-      fail "LHS and RHS do not have the same head function and arity"
-    let mut pairs := #[]
-    -- iterate through each pair of corresponding (LHS/RHS) inputs to the head function `head` in
-    -- the conclusion of the lemma
-    for e1 in lhsArgs, e2 in rhsArgs do
-      -- we call such a pair a "varying argument" pair if the LHS/RHS inputs are not defeq
-      -- (and not proofs)
-      let isEq ← isDefEq e1 e2 <||> (isProof e1 <&&> isProof e2)
-      if !isEq then
-        -- verify that the "varying argument" pairs are free variables (after eta-reduction)
-        let .fvar e1 := e1.eta | fail "Not all varying arguments are free variables"
-        let .fvar e2 := e2.eta | fail "Not all varying arguments are free variables"
-        -- add such a pair to the `pairs` array
-        pairs := pairs.push (e1, e2)
-    let numVarying := pairs.size
-    if numVarying = 0 then
-      fail "LHS and RHS are the same"
-    let mut mainSubgoals := #[]
-    let mut i := 0
-    -- iterate over antecedents `hyp` to the lemma
-    for hyp in xs do
-      mainSubgoals ← forallTelescopeReducing (← inferType hyp) fun args hypTy => do
-        -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
-        -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
-        -- `rel` above)
-        let hypTy ← whnf hypTy
-        let findPair (lhs rhs : FVarId) : Option Bool :=
-          pairs.findSome? fun pair =>
-            if (lhs, rhs) == pair then false else if (rhs, lhs) == pair then true else none
-        if let some (_, lhs₁, rhs₁) := getRel hypTy then
-          if let .fvar lhs₁ := lhs₁.getAppFn then
-          if let .fvar rhs₁ := rhs₁.getAppFn then
-          -- check whether `(lhs₁, rhs₁)` is in some order one of the "varying argument" pairs from
-          -- the conclusion to the lemma
-          if let some isContra := findPair lhs₁ rhs₁ then
-            -- if yes, record the index of this antecedent as a "main subgoal", together with the
-            -- index of the "varying argument" pair it corresponds to
-            return mainSubgoals.push (i, args.size, isContra)
-        else
-          -- now check whether `hypTy` is of the form `rhs₁ _ ... _`,
-          -- and whether the last hypothesis is of the form `lhs₁ _ ... _`.
-          if let .fvar rhs₁ := hypTy.getAppFn then
-          if let some lastFVar := args.back? then
-          if let .fvar lhs₁ := (← inferType lastFVar).getAppFn then
-          if let some isContra := findPair lhs₁ rhs₁ then
-            return mainSubgoals.push (i, args.size - 1, isContra)
-        return mainSubgoals
-      i := i + 1
-    -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
-    let key := { relName, head, arity := lhsArgs.size }
-    return { key, declName, mainSubgoals, numHyps, prio, numVarying }
+/-- Try to construct the `GCongrLemma` for a lemma with hypotheses `hyps` and
+conclusion `target`. -/
+def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio : Nat) :
+    MetaM GCongrLemma := do
+  let fail {α} (m : MessageData) : MetaM α := throwError "\
+    @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
+    {m} in {target}"
+  -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
+  let some (relName, lhs, rhs) := getRel (← whnf target) | fail "No relation found"
+  let lhs := lhs.headBeta; let rhs := rhs.headBeta -- this is required for `Monotone fun x => ⋯`
+  let some (head, lhsArgs) := getCongrAppFnArgs lhs | fail "LHS is not suitable for congruence"
+  let some (head', rhsArgs) := getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
+  unless head == head' && lhsArgs.size == rhsArgs.size do
+    fail "LHS and RHS do not have the same head function and arity"
+  let mut pairs := #[]
+  -- iterate through each pair of corresponding (LHS/RHS) inputs to the head function `head` in
+  -- the conclusion of the lemma
+  for e1 in lhsArgs, e2 in rhsArgs do
+    -- we call such a pair a "varying argument" pair if the LHS/RHS inputs are not defeq
+    -- (and not proofs)
+    let isEq ← isDefEq e1 e2 <||> (isProof e1 <&&> isProof e2)
+    if !isEq then
+      -- verify that the "varying argument" pairs are free variables (after eta-reduction)
+      let .fvar e1 := e1.eta | fail "Not all varying arguments are free variables"
+      let .fvar e2 := e2.eta | fail "Not all varying arguments are free variables"
+      -- add such a pair to the `pairs` array
+      pairs := pairs.push (e1, e2)
+  let numVarying := pairs.size
+  if numVarying = 0 then
+    fail "LHS and RHS are the same"
+  let mut mainSubgoals := #[]
+  let mut i := 0
+  -- iterate over antecedents `hyp` to the lemma
+  for hyp in hyps do
+    mainSubgoals ← forallTelescopeReducing (← inferType hyp) fun args hypTy => do
+      -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
+      -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
+      -- `rel` above)
+      let hypTy ← whnf hypTy
+      let findPair (lhs rhs : FVarId) : Option Bool :=
+        pairs.findSome? fun pair =>
+          if (lhs, rhs) == pair then false else if (rhs, lhs) == pair then true else none
+      if let some (_, lhs₁, rhs₁) := getRel hypTy then
+        if let .fvar lhs₁ := lhs₁.getAppFn then
+        if let .fvar rhs₁ := rhs₁.getAppFn then
+        -- check whether `(lhs₁, rhs₁)` is in some order one of the "varying argument" pairs from
+        -- the conclusion to the lemma
+        if let some isContra := findPair lhs₁ rhs₁ then
+          -- if yes, record the index of this antecedent as a "main subgoal", together with the
+          -- index of the "varying argument" pair it corresponds to
+          return mainSubgoals.push (i, args.size, isContra)
+      else
+        -- now check whether `hypTy` is of the form `rhs₁ _ ... _`,
+        -- and whether the last hypothesis is of the form `lhs₁ _ ... _`.
+        if let .fvar rhs₁ := hypTy.getAppFn then
+        if let some lastFVar := args.back? then
+        if let .fvar lhs₁ := (← inferType lastFVar).getAppFn then
+        if let some isContra := findPair lhs₁ rhs₁ then
+          return mainSubgoals.push (i, args.size - 1, isContra)
+      return mainSubgoals
+    i := i + 1
+  -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
+  let key := { relName, head, arity := lhsArgs.size }
+  return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying }
 
 
 /-- Attribute marking "generalized congruence" (`gcongr`) lemmas.  Such lemmas must have a
@@ -319,32 +322,80 @@ Lemmas involving `<` or `≤` can also be marked `@[bound]` for use in the relat
 initialize registerBuiltinAttribute {
   name := `gcongr
   descr := "generalized congruence"
-  add := fun decl stx kind ↦ MetaM.run' do
+  add := fun declName stx kind ↦ MetaM.run' do withReducible do
     let prio ← getAttrParamOptPrio stx[1]
-    let declTy := (← getConstInfo decl).type
-    let arity := declTy.getForallArity
-    -- We have to determine how many of the hypotheses should be introduced for
-    -- processing the `gcongr` lemma. This is because of implication lemmas like `Or.imp`,
-    -- which we treat as having conclusion `a ∨ b → c ∨ d` instead of just `c ∨ d`.
-    -- Since there is only one possible arity at which the `gcongr` lemma will be accepted,
-    -- we simply attempt to process the lemmas at the different possible arities.
+    let cinfo ← getConstInfo declName
+    let type := cinfo.type
+    forallTelescope type fun xs type => do
+    -- Special case the unfolding of `Monotone`-like conclusions.
+    if type.getAppFn.constName? matches
+        `Monotone | `Antitone | `StrictMono | `StrictAnti |
+        `MonotoneOn | `AntitoneOn | `StrictMonoOn | `StrictAntiOn then
+      forallTelescope (← withDefault <| unfoldDefinition type) fun xs' type => do
+        gcongrExt.add (← makeGCongrLemma (xs ++ xs') type declName prio) kind
+      return
+    -- If the conclusion is a free variable, it is a lemma like `imp_imp_imp` or `forall_imp`,
+    -- so we revert the last two variables.
+    if type.getAppFn.isFVar then
+      let type ← mkForallFVars xs[(xs.size-2)...xs.size] type
+      gcongrExt.add (← makeGCongrLemma xs.pop.pop type declName prio) kind
+      return
     try
-      -- If the head constant is a monotonicity constant, we want it to be unfolded.
-      -- We achieve this by increasing the arity
-      let arity' := match declTy.getForallBody.getAppFn.constName? with
-        | `Monotone | `Antitone | `StrictMono | `StrictAnti => arity + 3
-        | `MonotoneOn | `AntitoneOn | `StrictMonoOn | `StrictAntiOn => arity + 5
-        | _ => arity
-      gcongrExt.add (← makeGCongrLemma decl declTy arity' prio) kind
+      -- Add a `gcongr` lemma in the "normal" way.
+      gcongrExt.add (← makeGCongrLemma xs type declName prio) kind
     catch e => try
-      guard (1 ≤ arity)
-      gcongrExt.add (← makeGCongrLemma decl declTy (arity - 1) prio) kind
-    catch _ => try
-      -- We need to use `arity - 2` for lemmas such as `imp_imp_imp` and `forall_imp`.
-      guard (2 ≤ arity)
-      gcongrExt.add (← makeGCongrLemma decl declTy (arity - 2) prio) kind
+      match_expr type with
+      | Iff lhs rhs =>
+        -- When the goal is an `↔`, try to use either of the implications.
+        try
+          -- Try using the `←` implication.
+          withLocalDeclD `_a rhs fun x => do
+            let gcongrLemma ← makeGCongrLemma (xs.push x) lhs declName prio
+            let auxType ← mkForallFVars (xs.push x) lhs
+            let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mpr []) lhs rhs <|
+              mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+            let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+            gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
+        catch _ =>
+          -- Try using the `→` implication.
+          withLocalDeclD `_a lhs fun x => do
+            let gcongrLemma ← makeGCongrLemma (xs.push x) rhs declName prio
+            let auxType ← mkForallFVars (xs.push x) rhs
+            let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mp []) lhs rhs <|
+              mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+            let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+            gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
+      | _ =>
+        -- Try to interpret the lemma as an implicational `gcongr` lemma,
+        -- such as `Or.imp : (a → c) → (b → d) → a ∨ b → c ∨ d`.
+        -- We want to support such lemmas even if the hypotheses are given in a different order.
+        -- So, we find the last hypothesis whose head matches that of the conclusion,
+        -- and move it to the end.
+        let .const c _ := type.getAppFn | failure
+        let rec findIdx (i : Nat) (h : i ≤ xs.size) : MetaM (Fin xs.size) :=
+          match i with
+          | 0 => failure
+          | i + 1 => do
+            if (← inferType xs[i]).getAppFn.isConstOf c then
+              return ⟨i, by lia⟩
+            else
+              findIdx i (by lia)
+        let i ← findIdx xs.size xs.size.le_refl
+        let type ← mkForallFVars #[xs[i]] type
+        let xs' :=  xs.eraseIdx i i.isLt
+        let gcongrLemma ← makeGCongrLemma xs' type declName prio
+        if i == xs.size - 1 then
+          -- The argument order is already correct.
+          gcongrExt.add gcongrLemma kind
+        else
+          -- We need to make an auxiliary theorem with the correct argument order.
+          let auxType ← mkForallFVars xs' type
+          let auxValue ← mkLambdaFVars (xs'.push xs[i]) <|
+            mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+          let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+          gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
     catch _ =>
-      -- If none of the arities work, we throw the error of the first attempt.
+      -- If none of the methods work, we throw the error thrown by the "normal" attempt.
       throw e
 }
 

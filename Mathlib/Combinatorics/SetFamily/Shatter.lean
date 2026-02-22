@@ -90,6 +90,7 @@ def shatterer (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 lemma subset_shatterer (h : IsLowerSet (𝒜 : Set (Finset α))) : 𝒜 ⊆ 𝒜.shatterer :=
   fun _s hs ↦ mem_shatterer.2 fun t ht ↦ ⟨t, h ht hs, inter_eq_right.2 ht⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma isLowerSet_shatterer (𝒜 : Finset (Finset α)) :
     IsLowerSet (𝒜.shatterer : Set (Finset α)) := fun s t ↦ by simpa using Shatters.mono_right
 

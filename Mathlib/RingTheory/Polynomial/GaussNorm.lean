@@ -77,6 +77,7 @@ private lemma sup'_nonneg_of_ne_zero [NonnegHomClass F R ℝ] {p : R[X]} (h : p.
     true_and]
   positivity
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i) * c ^ i = x} := by
   let f : p.support → ℝ := fun i ↦ v (p.coeff i) * c ^ i.val
   have h_fin : (f '' ⊤ ∪ {0}).Finite := by

@@ -245,6 +245,7 @@ protected theorem prod_fst : LipschitzWith 1 (@Prod.fst α β) :=
 protected theorem prod_snd : LipschitzWith 1 (@Prod.snd α β) :=
   LipschitzWith.of_edist_le fun _ _ => le_max_right _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` are Lipschitz functions, so is the induced map `f × g` to the product type. -/
 protected theorem prodMk {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
     (hg : LipschitzWith Kg g) : LipschitzWith (max Kf Kg) fun x => (f x, g x) := by
@@ -252,9 +253,11 @@ protected theorem prodMk {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f
   rw [ENNReal.coe_mono.map_max, Prod.edist_eq, max_mul]
   exact max_le_max (hf x y) (hg x y)
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem prodMk_left (a : α) : LipschitzWith 1 (Prod.mk a : β → α × β) := by
   simpa only [max_eq_right zero_le_one] using (LipschitzWith.const a).prodMk LipschitzWith.id
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem prodMk_right (b : β) : LipschitzWith 1 fun a : α => (a, b) := by
   simpa only [max_eq_left zero_le_one] using LipschitzWith.id.prodMk (LipschitzWith.const b)
 
@@ -328,6 +331,7 @@ protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : Lipschi
     (hf : LipschitzOnWith K f s) (hmaps : MapsTo f s t) : LipschitzOnWith (Kg * K) (g ∘ f) s :=
   lipschitzOnWith_iff_restrict.mpr <| hg.to_restrict.comp (hf.mapsToRestrict hmaps)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` are Lipschitz on `s`, so is the induced map `f × g` to the product type. -/
 protected theorem prodMk {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith Kf f s)
     (hg : LipschitzOnWith Kg g s) : LipschitzOnWith (max Kf Kg) (fun x => (f x, g x)) s := by

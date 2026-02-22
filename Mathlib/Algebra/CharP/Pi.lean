@@ -28,7 +28,7 @@ instance pi (ι : Type u) [hi : Nonempty ι] (R : Type v) [Semiring R] (p : ℕ)
         ⟨fun h =>
           funext fun j =>
             show Pi.evalRingHom (fun _ => R) j (↑x : ι → R) = 0 by rw [map_natCast, h],
-          fun h => map_natCast (Pi.evalRingHom (fun _ : ι => R) i) x ▸ by rw [h, map_zero]⟩⟩
+          fun h ↦ by rw [← map_natCast (Pi.evalRingHom (fun _ : ι => R) i) x, h, map_zero]⟩⟩
 
 -- diamonds
 instance pi' (ι : Type u) [Nonempty ι] (R : Type v) [CommRing R] (p : ℕ) [CharP R p] :

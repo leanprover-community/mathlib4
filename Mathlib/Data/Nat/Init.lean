@@ -72,8 +72,6 @@ alias ⟨of_le_succ, _⟩ := le_succ_iff
 
 @[deprecated (since := "2025-08-21")] alias forall_lt_succ := forall_lt_succ_right
 
-@[deprecated (since := "2025-08-15")] alias exists_lt_succ := exists_lt_succ_right
-
 lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
   | 1, _, h, _ => (h rfl).elim
@@ -418,12 +416,6 @@ lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=
 lemma dvd_left_iff_eq : (∀ a : ℕ, a ∣ m ↔ a ∣ n) ↔ m = n :=
   ⟨fun h => Nat.dvd_antisymm ((h _).mp (Nat.dvd_refl _)) ((h _).mpr (Nat.dvd_refl _)),
     fun h n => by rw [h]⟩
-
-theorem ext_div_mod {n a b : ℕ} (H0 : a / n = b / n) (H1 : a % n = b % n) : a = b := by
-  grind [div_add_mod]
-
-theorem ext_div_mod_iff (n a b : ℕ) : a = b ↔ a / n = b / n ∧ a % n = b % n := by
-  grind [ext_div_mod]
 
 /-! ### Decidability of predicates -/
 

@@ -101,6 +101,7 @@ theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
   · exact fun n => pow_zero _
   · exact fun n i₁ i₂ => pow_add _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rename_eq (f : σ → τ) (p : MvPolynomial σ R) :
     rename f p = Finsupp.mapDomain (Finsupp.mapDomain f) p := by
   simp_rw [rename, aeval_def, eval₂, Finsupp.mapDomain, algebraMap_eq, comp_apply,
@@ -255,6 +256,7 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
     · simp only [rename_rename, rename_X, map_mul]
       rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `exists_finset_rename` for two polynomials at once: for any two polynomials `p₁`, `p₂` in a
   polynomial semiring `R[σ]` of possibly infinitely many variables, `exists_finset_rename₂` yields
   a finite subset `s` of `σ` such that both `p₁` and `p₂` are contained in the polynomial semiring

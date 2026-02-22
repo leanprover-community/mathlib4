@@ -147,6 +147,7 @@ theorem map_id : K.map (MonoidHom.id G) = K :=
 theorem map_map (g : N →* P) (f : G →* N) : (K.map f).map g = K.map (g.comp f) :=
   SetLike.coe_injective <| image_image _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem map_one_eq_bot : K.map (1 : G →* N) = ⊥ :=
   eq_bot_iff.mpr <| by
@@ -253,15 +254,18 @@ theorem map_inf_eq (H K : Subgroup G) (f : G →* N) (hf : Function.Injective f)
   rw [← SetLike.coe_set_eq]
   simp [Set.image_inter hf]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem map_bot (f : G →* N) : (⊥ : Subgroup G).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma disjoint_map {f : G →* N} (hf : Function.Injective f) {H K : Subgroup G} (h : Disjoint H K) :
     Disjoint (H.map f) (K.map f) := by
   rw [disjoint_iff, ← map_inf _ _ f hf, disjoint_iff.mp h, map_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem map_top_of_surjective (f : G →* N) (h : Function.Surjective f) : Subgroup.map f ⊤ = ⊤ := by
   rw [eq_top_iff]
@@ -269,6 +273,7 @@ theorem map_top_of_surjective (f : G →* N) (h : Function.Surjective f) : Subgr
   obtain ⟨y, hy⟩ := h x
   exact ⟨y, trivial, hy⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma codisjoint_map {f : G →* N} (hf : Function.Surjective f)
     {H K : Subgroup G} (h : Codisjoint H K) : Codisjoint (H.map f) (K.map f) := by
@@ -279,6 +284,7 @@ lemma map_equiv_top {F : Type*} [EquivLike F G N] [MulEquivClass F G N] (f : F) 
     map (f : G →* N) ⊤ = ⊤ :=
   map_top_of_surjective _ (EquivLike.surjective f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem comap_top (f : G →* N) : (⊤ : Subgroup N).comap f = ⊤ :=
   (gc_map_comap f).u_top
@@ -340,6 +346,7 @@ theorem subgroupOf_bot_eq_bot : H.subgroupOf ⊥ = ⊥ :=
 theorem subgroupOf_bot_eq_top : H.subgroupOf ⊥ = ⊤ :=
   Subsingleton.elim _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem subgroupOf_self : H.subgroupOf H = ⊤ :=
   top_unique fun g _hg => g.2
@@ -357,10 +364,12 @@ theorem inf_subgroupOf_right (H K : Subgroup G) : (H ⊓ K).subgroupOf K = H.sub
 theorem inf_subgroupOf_left (H K : Subgroup G) : (K ⊓ H).subgroupOf K = H.subgroupOf K := by
   rw [inf_comm, inf_subgroupOf_right]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem subgroupOf_eq_bot {H K : Subgroup G} : H.subgroupOf K = ⊥ ↔ Disjoint H K := by
   rw [disjoint_iff, ← bot_subgroupOf, subgroupOf_inj, bot_inf_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem subgroupOf_eq_top {H K : Subgroup G} : H.subgroupOf K = ⊤ ↔ K ≤ H := by
   rw [← top_subgroupOf, subgroupOf_inj, top_inf_eq, inf_eq_right]

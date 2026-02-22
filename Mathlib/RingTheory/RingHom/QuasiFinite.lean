@@ -44,6 +44,10 @@ lemma QuasiFinite.of_comp {f : S →+* T} {g : R →+* S} (h : (f.comp g).QuasiF
   algebraize [f, g, (f.comp g)]
   exact .of_restrictScalars R S T
 
+lemma QuasiFinite.comp_iff {f : S →+* T} {g : R →+* S} (hg : g.QuasiFinite) :
+    (f.comp g).QuasiFinite ↔ f.QuasiFinite :=
+  ⟨.of_comp, (.comp · hg)⟩
+
 lemma QuasiFinite.of_finite {f : S →+* T} (hf : f.Finite) : f.QuasiFinite := by
   algebraize [f]
   exact inferInstanceAs (Algebra.QuasiFinite _ _)
@@ -64,6 +68,7 @@ lemma QuasiFinite.holdsForLocalizationAway : HoldsForLocalizationAway QuasiFinit
   introv R _
   exact quasiFinite_algebraMap.mpr (.of_isLocalization (.powers r))
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance high] Algebra.TensorProduct.leftAlgebra Algebra.toModule
     IsScalarTower.right DivisionRing.instIsArtinianRing in
 lemma QuasiFinite.ofLocalizationSpanTarget : OfLocalizationSpanTarget QuasiFinite := by
@@ -119,5 +124,9 @@ lemma QuasiFinite.of_isIntegral_of_finiteType
   algebraize [f, g, g.comp f]
   obtain ⟨s, hs⟩ := Algebra.IsStandardOpenImmersion.exists_away S T
   exact Algebra.QuasiFinite.of_isIntegral_of_finiteType s
+
+/-- The predicate for a ring hom being quasi-finite at a prime. -/
+abbrev QuasiFiniteAt {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) (p : Ideal S)
+    [p.IsPrime] : Prop := letI := f.toAlgebra; Algebra.QuasiFiniteAt R p
 
 end RingHom

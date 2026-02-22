@@ -224,7 +224,7 @@ lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
 
 -- Check uniformity is unchanged
 example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
-  with_reducible dsimp [replaceEDist]
+  dsimp +instances [replaceEDist]
 
 end PseudoEMetricSpace
 
@@ -250,11 +250,11 @@ lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
 
 -- Check uniformity is unchanged
 example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
-  with_reducible dsimp [replaceDist]
+  dsimp +instances [replaceDist]
 
 -- Check Bornology is unchanged
 example : (replaceDist m d hd).toBornology = m.toBornology := by
-  with_reducible dsimp [replaceDist]
+  dsimp +instances [replaceDist]
 
 end PseudoMetricSpace
 
@@ -280,7 +280,7 @@ lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
 
 -- Check uniformity is unchanged
 example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
-  with_reducible simp [replaceEDist_eq]
+  simp +instances [replaceEDist_eq]
 
 end EMetricSpace
 
@@ -303,10 +303,10 @@ lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
 
 -- Check uniformity is unchanged
 example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
-  with_reducible simp [replaceDist_eq]
+  simp +instances [replaceDist_eq]
 
 -- Check Bornology is unchanged
 example : (replaceDist m d hd).toBornology = m.toBornology := by
-  with_reducible simp [replaceDist_eq]
+  simp +instances [replaceDist_eq]
 
 end MetricSpace

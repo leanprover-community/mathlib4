@@ -38,7 +38,6 @@ section
 
 variable {F G : Sheaf J (Type w)} (f : F ⟶ G)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- A morphism of sheaves of types is locally bijective iff it is an isomorphism.
 (This is generalized below as `isLocallyBijective_iff_isIso`.) -/
 private lemma isLocallyBijective_iff_isIso' :
@@ -157,7 +156,6 @@ instance {D : Type w} [Category.{w'} D] {FD : D → D → Type*} {CD : D → Typ
     J.WEqualsLocallyBijective D := by
   apply WEqualsLocallyBijective.mk'
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : J.WEqualsLocallyBijective (Type (max u v)) :=
   inferInstance
 
@@ -168,6 +166,7 @@ namespace Presheaf
 variable {A}
 variable [HasWeakSheafify J A] [J.WEqualsLocallyBijective A] {P Q : Cᵒᵖ ⥤ A} (φ : P ⟶ Q)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLocallyInjective_presheafToSheaf_map_iff :
     Sheaf.IsLocallyInjective ((presheafToSheaf J A).map φ) ↔ IsLocallyInjective J φ := by
   rw [← Sheaf.isLocallyInjective_sheafToPresheaf_map_iff,
@@ -175,6 +174,7 @@ lemma isLocallyInjective_presheafToSheaf_map_iff :
     ← comp_isLocallyInjective_iff J (toSheafify J P),
     toSheafify_naturality, sheafToPresheaf_map]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLocallySurjective_presheafToSheaf_map_iff :
     Sheaf.IsLocallySurjective ((presheafToSheaf J A).map φ) ↔ IsLocallySurjective J φ := by
   rw [← Sheaf.isLocallySurjective_sheafToPresheaf_map_iff,

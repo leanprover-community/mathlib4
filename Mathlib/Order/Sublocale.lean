@@ -63,12 +63,10 @@ instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X) X
 @[simp] lemma mem_mk (carrier : Set X) (sInf_mem' himp_mem') :
     a ∈ mk carrier sInf_mem' himp_mem' ↔ a ∈ carrier := .rfl
 
-@[simp] lemma mk_le_mk (carrier₁ carrier₂ : Set X) (sInf_mem'₁ sInf_mem'₂ himp_mem'₁ himp_mem'₂) :
+@[simp, gcongr]
+lemma mk_le_mk (carrier₁ carrier₂ : Set X) (sInf_mem'₁ sInf_mem'₂ himp_mem'₁ himp_mem'₂) :
     mk carrier₁ sInf_mem'₁ himp_mem'₁ ≤ mk carrier₂ sInf_mem'₂ himp_mem'₂ ↔ carrier₁ ⊆ carrier₂ :=
   .rfl
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Sublocale.mk_le_mk⟩ := mk_le_mk
 
 initialize_simps_projections Sublocale (carrier → coe, as_prefix coe)
 
@@ -123,6 +121,7 @@ private def restrictAux (S : Sublocale X) (a : X) : S := sInf {s : S | a ≤ s}
 
 private lemma le_restrictAux : a ≤ S.restrictAux a := by simp +contextual [restrictAux]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 /-- See `Sublocale.giRestrict` for the public-facing version. -/
 private def giAux (S : Sublocale X) : GaloisInsertion S.restrictAux Subtype.val where
@@ -205,11 +204,8 @@ def toSublocale (n : Nucleus X) : Sublocale X where
 @[simp]
 lemma mem_toSublocale {n : Nucleus X} {x : X} : x ∈ n.toSublocale ↔ ∃ y, n y = x := .rfl
 
-@[simp] lemma toSublocale_le_toSublocale {m n : Nucleus X} :
+@[simp, gcongr] lemma toSublocale_le_toSublocale {m n : Nucleus X} :
     m.toSublocale ≤ n.toSublocale ↔ n ≤ m := by simp [← SetLike.coe_subset_coe]
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Nucleus.toSublocale_le_toSublocale⟩ := toSublocale_le_toSublocale
 
 @[simp] lemma restrict_toSublocale (n : Nucleus X) (x : X) :
     n.toSublocale.restrict x = ⟨n x, x, rfl⟩ := by

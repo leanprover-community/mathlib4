@@ -396,6 +396,7 @@ namespace ModelWithCorners
 
 variable (I) (e : E ≃L[𝕜] E')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Apply a continuous linear equivalence to the model vector space. -/
 def transContinuousLinearEquiv : ModelWithCorners 𝕜 E' H where
   toPartialEquiv := I.toPartialEquiv.trans e.toEquiv.toPartialEquiv

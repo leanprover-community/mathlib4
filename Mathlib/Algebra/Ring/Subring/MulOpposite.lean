@@ -80,12 +80,14 @@ theorem unop_injective : (@Subring.unop R _).Injective := opEquiv.symm.injective
 @[simp] theorem op_inj {S T : Subring R} : S.op = T.op ↔ S = T := opEquiv.eq_iff_eq
 @[simp] theorem unop_inj {S T : Subring Rᵐᵒᵖ} : S.unop = T.unop ↔ S = T := opEquiv.symm.eq_iff_eq
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem op_bot : (⊥ : Subring R).op = ⊥ := opEquiv.map_bot
 
 @[simp]
 theorem op_eq_bot {S : Subring R} : S.op = ⊥ ↔ S = ⊥ := op_injective.eq_iff' op_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem unop_bot : (⊥ : Subring Rᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
 

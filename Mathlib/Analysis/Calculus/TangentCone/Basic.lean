@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
 public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Basic properties of tangent cones and sets with unique differentiability property

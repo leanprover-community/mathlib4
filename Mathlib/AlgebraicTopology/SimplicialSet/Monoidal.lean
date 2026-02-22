@@ -131,6 +131,7 @@ lemma prod_monotone {X Y : SSet.{u}}
     A₁.prod B₁ ≤ A₂.prod B₂ :=
   fun _ _ hx => ⟨hX _ hx.1, hY _ hx.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma range_tensorHom {X₁ X₂ Y₁ Y₂ : SSet.{u}} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) :
     range (f₁ ⊗ₘ f₂) = (range f₁).prod (range f₂) := by
   ext m ⟨y₁, y₂⟩
@@ -189,6 +190,7 @@ instance : CartesianMonoidalCategory (Truncated.{u} n) :=
 instance : MonoidalClosed (Truncated.{u} n) :=
   inferInstanceAs (MonoidalClosed (_ ⥤ Type u))
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (truncation.{u} n).Monoidal :=
   inferInstanceAs ((Functor.whiskeringLeft _ _ _).obj _).Monoidal
 

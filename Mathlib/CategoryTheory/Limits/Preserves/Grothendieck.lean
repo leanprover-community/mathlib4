@@ -33,6 +33,7 @@ variable {H : Type u₂} [Category.{v₂} H]
 variable {J : Type u₃} [Category.{v₃} J]
 variable {F : C ⥤ Cat.{v₄, u₄}}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `colim` on each fiber `F.obj c` of a functor `F : C ⥤ Cat` preserves limits of shape `J`,
 then the fiberwise colimit of the limit of a functor `K : J ⥤ Grothendieck F ⥤ H` is naturally
 isomorphic to taking the limit of the composition `K ⋙ fiberwiseColim F H`. -/
@@ -61,6 +62,7 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
       intro e
       simp [← NatTrans.comp_app_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (C) (F) in
 /-- If `colim` on a category `C` preserves limits of shape `J` and if it does so for `colim` on
 every `F.obj c` for a functor `F : C ⥤ Cat`, then `colim` on `Grothendieck F` also preserves limits

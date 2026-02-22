@@ -129,6 +129,7 @@ lemma dist_r_b' : ∀ᶠ n in atTop, ∀ i, ‖(r i n : ℝ) - b i * n‖ ≤ n 
   intro i
   simpa using IsLittleO.eventuallyLE (R.dist_r_b i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_b_le_r : ∀ᶠ (n : ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n / log n ^ 2) ≤ r i n := by
   filter_upwards [R.dist_r_b'] with n hn i
   have h₁ : 0 ≤ b i := le_of_lt <| R.b_pos _
@@ -200,6 +201,7 @@ lemma tendsto_atTop_r (i : α) : Tendsto (r i) atTop atTop := by
 lemma tendsto_atTop_r_real (i : α) : Tendsto (fun n => (r i n : ℝ)) atTop atTop :=
   Tendsto.comp tendsto_natCast_atTop_atTop (R.tendsto_atTop_r i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_eventually_r_le_const_mul :
     ∃ c ∈ Set.Ioo (0 : ℝ) 1, ∀ᶠ (n : ℕ) in atTop, ∀ i, r i n ≤ c * n := by
   let c := b (max_bi b) + (1 - b (max_bi b)) / 2

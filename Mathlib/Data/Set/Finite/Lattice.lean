@@ -332,25 +332,30 @@ theorem Finite.iInf_biSup_of_antitone {ι ι' α : Type*} [Preorder ι'] [Nonemp
     (hf : ∀ i ∈ s, Antitone (f i)) : ⨅ j, ⨆ i ∈ s, f i j = ⨆ i ∈ s, ⨅ j, f i j :=
   hs.iSup_biInf_of_monotone (α := αᵒᵈ) fun i hi => (hf i hi).dual_right
 
-theorem iSup_iInf_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
+theorem _root_.iSup_iInf_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirectedOrder ι'] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
     ⨆ j, ⨅ i, f i j = ⨅ i, ⨆ j, f i j := by
   simpa only [iInf_univ] using finite_univ.iSup_biInf_of_monotone fun i _ => hf i
 
-theorem iSup_iInf_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
+theorem _root_.iSup_iInf_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsCodirectedOrder ι'] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
     ⨆ j, ⨅ i, f i j = ⨅ i, ⨆ j, f i j :=
   @iSup_iInf_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ _ fun i => (hf i).dual_left
 
-theorem iInf_iSup_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
+theorem _root_.iInf_iSup_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsCodirectedOrder ι'] [Order.Coframe α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
     ⨅ j, ⨆ i, f i j = ⨆ i, ⨅ j, f i j :=
   iSup_iInf_of_antitone (α := αᵒᵈ) fun i => (hf i).dual_right
 
-theorem iInf_iSup_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
+theorem _root_.iInf_iSup_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirectedOrder ι'] [Order.Coframe α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
     ⨅ j, ⨆ i, f i j = ⨆ i, ⨅ j, f i j :=
   iSup_iInf_of_monotone (α := αᵒᵈ) fun i => (hf i).dual_right
+
+@[deprecated (since := "2026-02-03")] protected alias iSup_iInf_of_monotone := iSup_iInf_of_monotone
+@[deprecated (since := "2026-02-03")] protected alias iSup_iInf_of_antitone := iSup_iInf_of_antitone
+@[deprecated (since := "2026-02-03")] protected alias iInf_iSup_of_monotone := iInf_iSup_of_monotone
+@[deprecated (since := "2026-02-03")] protected alias iInf_iSup_of_antitone := iInf_iSup_of_antitone
 
 /-- An increasing union distributes over finite intersection. -/
 theorem iUnion_iInter_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [IsDirectedOrder ι']

@@ -51,6 +51,7 @@ theorem toFinset_congr {s t : Set α} [Fintype s] [Fintype t] (h : s = t) :
 theorem mem_toFinset {s : Set α} [Fintype s] {a : α} : a ∈ s.toFinset ↔ a ∈ s := by
   simp [toFinset]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Many `Fintype` instances for sets are defined using an extensionally equal `Finset`.
 Rewriting `s.toFinset` with `Set.toFinset_ofFinset` replaces the term with such a `Finset`. -/
 theorem toFinset_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) :
@@ -118,6 +119,7 @@ theorem disjoint_toFinset [Fintype s] [Fintype t] :
 theorem toFinset_nontrivial [Fintype s] : s.toFinset.Nontrivial ↔ s.Nontrivial := by
   rw [Finset.Nontrivial, coe_toFinset]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem subsingleton_toFinset_iff [Fintype s] : Subsingleton s.toFinset ↔ s.Subsingleton := by
   simp
 

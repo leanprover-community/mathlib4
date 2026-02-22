@@ -42,12 +42,11 @@ namespace Module
 alias DirectedSystem.map_self := DirectedSystem.map_self'
 alias DirectedSystem.map_map := DirectedSystem.map_map'
 
-variable [DecidableEq ι]
 variable [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)] (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- The relation on the direct sum that generates the additive congruence that defines the
 colimit as a quotient. -/
-inductive DirectLimit.Eqv : DirectSum ι G → DirectSum ι G → Prop
+inductive DirectLimit.Eqv [DecidableEq ι] : DirectSum ι G → DirectSum ι G → Prop
   | of_map {i j} (h : i ≤ j) (x : G i) :
     Eqv (DirectSum.lof R ι G i x) (DirectSum.lof R ι G j <| f i j h x)
 
@@ -59,6 +58,8 @@ variable (G)
 
 /-- The direct limit of a directed system is the modules glued together along the maps. -/
 def DirectLimit [DecidableEq ι] : Type _ := (DirectLimit.moduleCon f).Quotient
+
+variable [DecidableEq ι]
 
 namespace DirectLimit
 
@@ -147,11 +148,6 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →ₗ[R] P}
 theorem lift_comp_of (F : DirectLimit G f →ₗ[R] P) :
     lift R ι G f (fun i ↦ F.comp <| of R ι G f i) (fun i j hij x ↦ by simp) = F := by
   ext; simp
-
-@[deprecated lift_comp_of (since := "2025-08-11")]
-theorem lift_unique (F : DirectLimit G f →ₗ[R] P) (x) :
-    F x = lift R ι G f (fun i ↦ F.comp <| of R ι G f i) (fun i j hij x ↦ by simp) x := by
-  rw [lift_comp_of]
 
 @[simp]
 theorem lift_of' : lift R ι G f (of R ι G f) (fun i j hij x ↦ by simp) = .id := by
@@ -362,11 +358,6 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →+ P} (h : ∀ i, g₁.comp (of G
 theorem lift_comp_of (F : DirectLimit G f →+ P) :
     lift G f _ (fun i ↦ F.comp <| of G f i) (fun i j hij x ↦ by simp) = F := by
   ext; simp
-
-@[deprecated lift_comp_of (since := "2025-08-11")]
-theorem lift_unique (F : DirectLimit G f →+ P) (x) :
-    F x = lift G f P (fun i ↦ F.comp (of G f i)) (fun i j hij x ↦ by simp) x := by
-  rw [lift_comp_of]
 
 @[simp]
 theorem lift_of' : lift G f _ (of G f) (fun i j hij x ↦ by simp) = .id _ := by

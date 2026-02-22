@@ -82,6 +82,7 @@ theorem volume_Ico {a b : ℝ} : volume (Ico a b) = ofReal (b - a) := by simp [v
 theorem volume_real_Ico {a b : ℝ} : volume.real (Ico a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem volume_real_Ico_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ico a b) = b - a := by
   simp [hab]
 
@@ -92,6 +93,7 @@ theorem volume_Icc {a b : ℝ} : volume (Icc a b) = ofReal (b - a) := by simp [v
 theorem volume_real_Icc {a b : ℝ} : volume.real (Icc a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem volume_real_Icc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Icc a b) = b - a := by
   simp [hab]
 
@@ -106,6 +108,7 @@ theorem volume_uIoo {a b : ℝ} : volume (uIoo a b) = ofReal |b - a| := by
 theorem volume_real_Ioo {a b : ℝ} : volume.real (Ioo a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem volume_real_Ioo_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioo a b) = b - a := by
   simp [hab]
 
@@ -120,6 +123,7 @@ theorem volume_uIoc {a b : ℝ} : volume (uIoc a b) = ofReal |b - a| := by
 theorem volume_real_Ioc {a b : ℝ} : volume.real (Ioc a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem volume_real_Ioc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioc a b) = b - a := by
   simp [hab]
 
@@ -177,6 +181,7 @@ instance noAtoms_volume : NoAtoms (volume : Measure ℝ) :=
 theorem volume_interval {a b : ℝ} : volume (uIcc a b) = ofReal |b - a| := by
   rw [← Icc_min_max, volume_Icc, max_sub_min_eq_abs]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem volume_real_interval {a b : ℝ} : volume.real (uIcc a b) = |b - a| := by
   simp [measureReal_def]
@@ -227,6 +232,7 @@ theorem volume_le_diam (s : Set ℝ) : volume s ≤ ediam s := by
     exact volume.mono hs.subset_Icc_sInf_sSup
   · rw [Metric.ediam_of_unbounded hs]; exact le_top
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Filter.Eventually.volume_pos_of_nhds_real {p : ℝ → Prop} {a : ℝ}
     (h : ∀ᶠ x in 𝓝 a, p x) : (0 : ℝ≥0∞) < volume { x | p x } := by
   rcases h.exists_Ioo_subset with ⟨l, u, hx, hs⟩
@@ -385,6 +391,7 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
     ENNReal.ofReal_prod_of_nonneg fun i _ => abs_nonneg (D i), ← Finset.prod_mul_distrib]
   simp only [B]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A transvection preserves Lebesgue measure. -/
 theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionStruct ι ℝ) :
     MeasurePreserving (toLin' t.toMatrix) := by

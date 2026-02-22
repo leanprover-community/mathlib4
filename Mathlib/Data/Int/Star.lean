@@ -23,6 +23,7 @@ open AddSubmonoid Set
 
 namespace Int
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma addSubmonoid_closure_range_pow {n : ℕ} (hn : Even n) :
     closure (range fun x : ℤ ↦ x ^ n) = nonneg _ := by
   refine le_antisymm (closure_le.2 <| range_subset_iff.2 hn.pow_nonneg) fun x hx ↦ ?_

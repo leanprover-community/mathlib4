@@ -17,6 +17,7 @@ In this file we provide instances for `Encodable (Π₀ i, α i)` and `Countable
 
 variable {ι : Type*} {α : ι → Type*} [∀ i, Zero (α i)]
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Encodable ι] [∀ i, Encodable (α i)] [∀ i (x : α i), Decidable (x ≠ 0)] :
     Encodable (Π₀ i, α i) :=
   letI : DecidableEq ι := Encodable.decidableEqOfEncodable _

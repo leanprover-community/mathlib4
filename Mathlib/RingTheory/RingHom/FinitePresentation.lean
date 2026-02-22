@@ -52,6 +52,7 @@ lemma of_span_eq_top_target_aux {A : Type*} [CommRing A] [Algebra R A]
 
 universe u
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Finite-presentation can be checked on a standard covering of the target. -/
 lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
     (h : ∀ i ∈ s, Algebra.FinitePresentation R (Localization.Away i)) :
@@ -113,7 +114,7 @@ lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
     obtain ⟨r, hr, hrr⟩ := this
     simp only [f']
     rw [← hrr, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk]
-    simp_rw [RingHom.coe_coe]
+    simp_rw +instances [RingHom.coe_coe]
     rw [hg']
     apply h
   exact of_span_eq_top_target_aux f' hf' t ht Ht

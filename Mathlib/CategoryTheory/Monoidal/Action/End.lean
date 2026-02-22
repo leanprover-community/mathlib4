@@ -59,6 +59,7 @@ lemma curriedActionMop_map_unmop_app {c c' : C} (f : c ⟶ c') (d : D) :
     ((curriedActionMop C D).map f).unmop.app d = f ⊵ₗ d :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open MonoidalOpposite in
 /-- When `C` acts on the left on `D`, the functor
 `curriedActionMop : C ⥤ (D ⥤ D)ᴹᵒᵖ` is monoidal, where `D ⥤ D` has the
@@ -90,6 +91,7 @@ end
 
 variable {C D}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A monoidal functor `F : C ⥤ (D ⥤ D)ᴹᵒᵖ` can be thought of as a left action
 of `C` on `D`. -/
 @[simps!]
@@ -178,6 +180,7 @@ instance curriedActionMonoidal [MonoidalRightAction C D] :
     simpa [-actionHom_leftUnitor] using
       t ⊴ᵣ (λ_ x).inv ≫= actionHom_leftUnitor x t
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A monoidal functor `F : C ⥤ D ⥤ D` can be thought of as a right action
 of `C` on `D`. -/
 @[simps!]

@@ -14,7 +14,9 @@ set -euo pipefail
 # --- Configuration ---
 TIMEOUT_SECONDS=600  # 10 minutes per command
 TRANSIENT_PREFIX="${TRANSIENT_PREFIX:-transient: }"
-AUTO_PREFIX="${AUTO_PREFIX:-x: }"
+# Support both "x <cmd>" and "x: <cmd>" (legacy) formats
+AUTO_PREFIX_COLON="${AUTO_PREFIX_COLON:-x: }"
+AUTO_PREFIX_SPACE="${AUTO_PREFIX_SPACE:-x }"
 
 # --- Colors (disabled if not a terminal) ---
 if [[ -t 1 ]]; then
@@ -47,6 +49,24 @@ show_diff_stat() {
     echo "  ... and $((line_count - max_lines)) more lines" >&2
   else
     echo "$diff_output" >&2
+  fi
+}
+
+# Check if a subject matches an auto-commit prefix
+# Returns 0 if it matches, 1 otherwise
+is_auto_commit() {
+  local subject="$1"
+  [[ "$subject" == "$AUTO_PREFIX_COLON"* || "$subject" == "$AUTO_PREFIX_SPACE"* ]]
+}
+
+# Extract the command from an auto-commit subject
+# Assumes is_auto_commit has already returned true
+get_auto_command() {
+  local subject="$1"
+  if [[ "$subject" == "$AUTO_PREFIX_COLON"* ]]; then
+    echo "${subject#$AUTO_PREFIX_COLON}"
+  else
+    echo "${subject#$AUTO_PREFIX_SPACE}"
   fi
 }
 
@@ -139,7 +159,7 @@ for commit in "${ALL_COMMITS[@]}"; do
     TRANSIENT_COMMITS+=("$commit")
   else
     NON_TRANSIENT_COMMITS+=("$commit")
-    if [[ "$subject" == "$AUTO_PREFIX"* ]]; then
+    if is_auto_commit "$subject"; then
       AUTO_COMMITS+=("$commit")
     else
       SUBSTANTIVE_COMMITS+=("$commit")
@@ -233,7 +253,8 @@ verify_auto_commit() {
   local commit="$1"
   local subject
   subject=$(git log -1 --format="%s" "$commit")
-  local command="${subject#$AUTO_PREFIX}"
+  local command
+  command=$(get_auto_command "$subject")
   local short_sha="${commit:0:7}"
 
   log_info "Verifying auto commit $short_sha: $command"

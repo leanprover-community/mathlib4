@@ -99,8 +99,8 @@ namespace Subgraph
 
 variable {G : SimpleGraph V} {G₁ G₂ : G.Subgraph} {a b : V}
 
-protected theorem loopless (G' : Subgraph G) : Irreflexive G'.Adj :=
-  fun v h ↦ G.loopless v (G'.adj_sub h)
+protected theorem loopless (G' : Subgraph G) : Std.Irrefl G'.Adj :=
+  ⟨fun v h ↦ G.loopless.irrefl v (G'.adj_sub h)⟩
 
 theorem adj_comm (G' : Subgraph G) (v w : V) : G'.Adj v w ↔ G'.Adj w v :=
   ⟨fun x ↦ G'.symm x, fun x ↦ G'.symm x⟩
@@ -136,7 +136,7 @@ theorem adj_congr_of_sym2 {H : G.Subgraph} {u v w x : V} (h2 : s(u, v) = s(w, x)
 protected def coe (G' : Subgraph G) : SimpleGraph G'.verts where
   Adj v w := G'.Adj v w
   symm _ _ h := G'.symm h
-  loopless v h := loopless G v (G'.adj_sub h)
+  loopless := ⟨fun v h ↦ loopless G |>.irrefl v (G'.adj_sub h)⟩
 
 @[simp]
 theorem Adj.adj_sub' (G' : Subgraph G) (u v : G'.verts) (h : G'.Adj u v) : G.Adj u v :=
@@ -168,7 +168,7 @@ In general, this adds in all vertices from `V` as isolated vertices. -/
 protected def spanningCoe (G' : Subgraph G) : SimpleGraph V where
   Adj := G'.Adj
   symm := G'.symm
-  loopless v hv := G.loopless v (G'.adj_sub hv)
+  loopless := ⟨fun v hv ↦ G.loopless.irrefl v (G'.adj_sub hv)⟩
 
 @[simp]
 lemma spanningCoe_coe (G' : G.Subgraph) : G'.coe.spanningCoe = G'.spanningCoe := by
@@ -254,7 +254,7 @@ lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet
   rintro e he
   induction e using Sym2.ind with | h a b =>
   rw [Subgraph.mem_edgeSet] at he
-  exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_pair_eq ..⟩
+  exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_mk ..⟩
 
 theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
@@ -448,11 +448,12 @@ theorem verts_spanningCoe_injective :
 
 /-- For subgraphs `G₁`, `G₂`, `G₁ ≤ G₂` iff `G₁.verts ⊆ G₂.verts` and
 `∀ a b, G₁.adj a b → G₂.adj a b`. -/
+instance : PartialOrder G.Subgraph where
+  __ := PartialOrder.lift _ verts_spanningCoe_injective
+  le x y := x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
+
 instance distribLattice : DistribLattice G.Subgraph :=
-  { show DistribLattice G.Subgraph from
-      verts_spanningCoe_injective.distribLattice _
-        (fun _ _ => rfl) fun _ _ => rfl with
-    le := fun x y => x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w }
+  verts_spanningCoe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance : BoundedOrder (Subgraph G) where
   le_top x := ⟨Set.subset_univ _, fun _ _ => x.adj_sub⟩
@@ -601,6 +602,7 @@ def botIso : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
 theorem edgeSet_mono {H₁ H₂ : Subgraph G} (h : H₁ ≤ H₂) : H₁.edgeSet ≤ H₂.edgeSet :=
   Sym2.ind h.2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Disjoint.edgeSet {H₁ H₂ : Subgraph G} (h : Disjoint H₁ H₂) :
     Disjoint H₁.edgeSet H₂.edgeSet :=
   disjoint_iff_inf_le.mpr <| by simpa using edgeSet_mono h.le_bot
@@ -848,6 +850,7 @@ lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
 
 end Subgraph
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
     (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
@@ -1098,7 +1101,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
   · intro hs
     refine Sym2.ind ?_
     rintro ⟨v', hv'⟩ ⟨w', hw'⟩
-    simp only [Sym2.map_pair_eq, Sym2.eq]
+    simp only [Sym2.map_mk, Sym2.eq]
     contrapose!
     rintro (_ | _) <;> simpa only [Sym2.eq_swap]
   · intro h' hs
@@ -1243,6 +1246,7 @@ instance instDecidableRel_induce_adj (s : Set V) [∀ a, Decidable (a ∈ s)] [D
     DecidableRel (G'.induce s).Adj :=
   fun _ _ ↦ instDecidableAnd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between an induced subgraph and its corresponding simple graph. -/
 def coeInduceIso (s : Set V) (h : s ⊆ G'.verts) :
     (G'.induce s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∈ s} where
@@ -1314,6 +1318,7 @@ instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
     else
       .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between a subgraph with deleted vertices and its corresponding simple graph. -/
 def coeDeleteVertsIso (s : Set V) :
     (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∉ s} where

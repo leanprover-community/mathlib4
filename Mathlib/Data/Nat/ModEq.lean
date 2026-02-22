@@ -504,6 +504,7 @@ theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n])
     _ ≡ 0 * b [MOD a.gcd n] := (Nat.modEq_zero_iff_dvd.mpr (Nat.gcd_dvd_left _ _)).mul_right b
     _ = 0 := by rw [zero_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem add_mod_add_ite (a b c : ℕ) :
     ((a + b) % c + if c ≤ a % c + b % c then c else 0) = a % c + b % c :=
   have : (a + b) % c = (a % c + b % c) % c := ((mod_modEq _ _).add <| mod_modEq _ _).symm
@@ -592,7 +593,7 @@ lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b :=
   Eq.trans h (mod_eq_of_lt hb)
 
 theorem ext_div_modEq {n a b : ℕ} (h0 : a / n = b / n) (h1 : a ≡ b [MOD n]) : a = b :=
-    ext_div_mod h0 h1
+  ext_div_mod h0 h1
 
 theorem ext_div_modEq_iff (n a b : ℕ) : a = b ↔ a / n = b / n ∧ a ≡ b [MOD n] :=
   ext_div_mod_iff _ _ _

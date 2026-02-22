@@ -112,6 +112,10 @@ theorem ExtensionOf.dExt_iff {a b : ExtensionOf i f} :
   ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
     ExtensionOf.dExt h1 h2⟩
 
+theorem ExtensionOf.toLinearPMap_injective :
+    Function.Injective (α := ExtensionOf i f) ExtensionOf.toLinearPMap :=
+  fun _ _ _ ↦ by ext <;> congr!
+
 end Ext
 
 instance : Min (ExtensionOf i f) where
@@ -125,14 +129,12 @@ instance : Min (ExtensionOf i f) where
           x ∈ X1.toLinearPMap.eqLocus X2.toLinearPMap)
       is_extension := fun _ => X1.is_extension _ }
 
+instance : PartialOrder (ExtensionOf i f) :=
+  PartialOrder.lift _ ExtensionOf.toLinearPMap_injective
+
 instance : SemilatticeInf (ExtensionOf i f) :=
-  Function.Injective.semilatticeInf ExtensionOf.toLinearPMap
-    (fun X Y h ↦
-      ExtensionOf.ext (by rw [h]) <| by
-        rw [h]
-        intros
-        rfl)
-    fun X Y ↦ LinearPMap.ext rfl fun x y h => by congr
+  ExtensionOf.toLinearPMap_injective.semilatticeInf _
+    .rfl .rfl fun X Y ↦ LinearPMap.ext rfl fun x y h ↦ by congr
 
 variable {i f}
 
@@ -167,6 +169,7 @@ theorem ExtensionOf.le_max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤
 
 variable (i f) [Fact <| Function.Injective i]
 
+set_option backward.isDefEq.respectTransparency false in
 instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
   default :=
     { domain := LinearMap.range i
@@ -388,6 +391,7 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
     obtain ⟨h, H⟩ := Module.Baer.extension_property h i hi f
     exact ⟨h, DFunLike.congr_fun H⟩
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem of_injective [Small.{v} R] (inj : Module.Injective R Q) : Module.Baer R Q := by
   intro I g
   let eI := Shrink.linearEquiv R I

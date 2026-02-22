@@ -230,6 +230,7 @@ theorem invOf_T (n : ℤ) : ⅟(T n : R[T;T⁻¹]) = T (-n) :=
 theorem isUnit_T (n : ℤ) : IsUnit (T n : R[T;T⁻¹]) :=
   isUnit_of_invertible _
 
+set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C : ∀ a, M (C a))
     (h_add : ∀ {p q}, M p → M q → M (p + q))
@@ -280,6 +281,7 @@ theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
 theorem T_mul (n : ℤ) (f : R[T;T⁻¹]) : T n * f = f * T n :=
   (commute_T n f).eq
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_eq_C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
   induction f using LaurentPolynomial.induction_on' with
   | add _ _ hp hq =>
@@ -354,6 +356,7 @@ theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f'
       simp only [Int.negSucc_eq, Polynomial.toLaurent_C, Int.natCast_succ, mul_T_assoc,
         neg_add_cancel, T_zero, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is a version of `exists_T_pow` stated as an induction principle. -/
 @[elab_as_elim]
 theorem induction_on_mul_T {motive : R[T;T⁻¹] → Prop} (f : R[T;T⁻¹])
@@ -376,15 +379,18 @@ theorem reduce_to_polynomial_of_mul_T (f : R[T;T⁻¹]) {Q : R[T;T⁻¹] → Pro
 
 section Support
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_C_mul_T (a : R) (n : ℤ) : Finsupp.support (C a * T n) ⊆ {n} := by
   rw [← single_eq_C_mul_T]
   exact support_single_subset
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_C_mul_T_of_ne_zero {a : R} (a0 : a ≠ 0) (n : ℤ) :
     Finsupp.support (C a * T n) = {n} := by
   rw [← single_eq_C_mul_T]
   exact support_single_ne_zero _ a0
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The support of a polynomial `f` is a finset in `ℕ`.  The lemma `toLaurent_support f`
 shows that the support of `f.toLaurent` is the same finset, but viewed in `ℤ` under the natural
 inclusion `ℕ ↪ ℤ`. -/
@@ -421,6 +427,7 @@ def degree (f : R[T;T⁻¹]) : WithBot ℤ :=
 theorem degree_zero : degree (0 : R[T;T⁻¹]) = ⊥ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
   refine ⟨fun h => ?_, fun h => by rw [h, degree_zero]⟩
@@ -432,6 +439,7 @@ theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
 
 section ExactDegrees
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n := by
   rw [degree, support_C_mul_T_of_ne_zero a0 n]
@@ -625,6 +633,7 @@ theorem smeval_eq_sum : f.smeval x = Finsupp.sum f fun n r => r • (x ^ n).val 
 
 theorem smeval_congr : f = g → x = y → f.smeval x = g.smeval y := by rintro rfl rfl; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem smeval_zero : (0 : R[T;T⁻¹]).smeval x = (0 : S) := by
   simp only [smeval_eq_sum, Finsupp.sum_zero_index]
@@ -662,6 +671,7 @@ section Module
 
 variable [Semiring R] [AddCommMonoid S] [Module R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem smeval_add : (f + g).smeval x = f.smeval x + g.smeval x := by
   simp only [smeval_eq_sum]

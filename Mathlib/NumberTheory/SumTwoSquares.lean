@@ -188,6 +188,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_coprime {n x y : ℕ} (h : n = 
   zify at h
   exact ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime h hc.isCoprime
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A natural number `n` is a sum of two squares if and only if `n = a^2 * b` with natural
 numbers `a` and `b` such that `-1` is a square modulo `b`. -/
 theorem Nat.eq_sq_add_sq_iff_eq_sq_mul {n : ℕ} :

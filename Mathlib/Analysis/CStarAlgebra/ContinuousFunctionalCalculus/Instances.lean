@@ -32,6 +32,8 @@ continuous functional calculus, normal, selfadjoint
 
 @[expose] public section
 
+set_option backward.isDefEq.respectTransparency false
+
 open Topology
 
 noncomputable section

@@ -97,6 +97,7 @@ open Asymptotics Filter Metric Finset Ring
 theorem inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
   rw [← inverse_unit (Units.oneSub t h), Units.val_oneSub]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The formula `Ring.inverse (x + t) = Ring.inverse (1 + x⁻¹ * t) * x⁻¹` holds for `t` sufficiently
 small. -/
 theorem inverse_add (x : Rˣ) :

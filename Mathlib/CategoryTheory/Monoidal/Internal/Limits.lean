@@ -43,6 +43,7 @@ and hence sends monoid objects to monoid objects.
 def limit (F : J ⥤ Mon C) : Mon C :=
   lim.mapMon.obj ((monFunctorCategoryEquivalence J C).inverse.obj F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.hasLimits`: a limiting cone over a functor `F : J ⥤ Mon C`.
 -/
 @[simps]
@@ -59,6 +60,7 @@ def forgetMapConeLimitConeIso (F : J ⥤ Mon C) :
     (forget C).mapCone (limitCone F) ≅ limit.cone (F ⋙ forget C) :=
   Cones.ext (Iso.refl _) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.hasLimitsOfShape`:
 the proposed cone over a functor `F : J ⥤ Mon C` is a limit cone.
 -/

@@ -131,8 +131,8 @@ instance (priority := 100) : ENormSMulClass α β where
   enorm_smul r x := by simp [enorm, nnnorm_smul]
 
 instance Pi.instNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
-    [SeminormedRing α] [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)]
-    [∀ i, NormSMulClass α (β i)] : NormSMulClass α (Π i, β i) where
+    [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)] [∀ i, NormSMulClass α (β i)] :
+    NormSMulClass α (Π i, β i) where
   norm_smul r x := by
     simp [nnnorm_def, ← coe_nnnorm, nnnorm_smul, ← NNReal.coe_mul, NNReal.mul_finset_sup]
 

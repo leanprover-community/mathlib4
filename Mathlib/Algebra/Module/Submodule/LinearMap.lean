@@ -213,6 +213,7 @@ theorem restrict_apply {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule
     (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.1 x.2⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_sub {R M M₁ : Type*}
     [Ring R] [AddCommGroup M] [AddCommGroup M₁] [Module R M] [Module R M₁]
     {p : Submodule R M} {q : Submodule R M₁} {f g : M →ₗ[R] M₁}

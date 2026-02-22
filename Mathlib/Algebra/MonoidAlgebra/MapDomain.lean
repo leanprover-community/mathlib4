@@ -47,7 +47,7 @@ lemma mapDomain_add (f : M → N) (x y : R[M]) :
 lemma mapDomain_sum (f : M → N) (x : S[M]) (v : M → S → R[M]) :
     mapDomain f (x.sum v) = x.sum fun a b ↦ mapDomain f (v a b) := Finsupp.mapDomain_sum
 
-@[to_additive (relevant_arg := M)]
+@[to_additive]
 lemma mapDomain_single : mapDomain f (single a r) = single (f a) r := by ext; simp
 
 @[to_additive]
@@ -62,6 +62,7 @@ theorem mapDomain_one [One M] [One N] {F : Type*} [FunLike F M N] [OneHomClass F
 section Mul
 variable [Mul M] [Mul N] [Mul O] [FunLike F M N] [MulHomClass F M N]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) mapDomain_mul]
 lemma mapDomain_mul (f : F) (x y : R[M]) : mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
   simp [mul_def, mapDomain_sum, add_mul, mul_add, sum_mapDomain_index]
@@ -290,6 +291,7 @@ def commRingEquiv : R[M][N] ≃+* R[N][M] :=
 @[to_additive (attr := simp)]
 lemma symm_commRingEquiv : (commRingEquiv : R[M][N] ≃+* R[N][M]).symm = commRingEquiv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma commRingEquiv_single_single (m : M) (n : N) (r : R) :
     commRingEquiv (single m <| single n r) = single n (single m r) := by

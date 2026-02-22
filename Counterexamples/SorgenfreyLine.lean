@@ -87,6 +87,7 @@ theorem nhds_basis_Ico_rat (a : ℝₗ) :
   rcases exists_rat_btwn hb with ⟨r, har, hrb⟩
   exact ⟨r, har, Ico_subset_Ico_right hrb.le⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nhds_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) := by
   refine (nhds_basis_Ico a).to_hasBasis (fun b hb => ?_) fun n hn =>
@@ -253,6 +254,7 @@ theorem nhds_prod_antitone_basis_inv_pnat (x y : ℝₗ) :
   rw [nhds_prod_eq]
   exact (nhds_antitone_basis_Ico_inv_pnat x).prod (nhds_antitone_basis_Ico_inv_pnat y)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sets of rational and irrational points of the antidiagonal `{(x, y) | x + y = 0}` cannot be
 separated by open neighborhoods. This implies that `ℝₗ × ℝₗ` is not a normal space. -/
 theorem not_separatedNhds_rat_irrational_antidiag :

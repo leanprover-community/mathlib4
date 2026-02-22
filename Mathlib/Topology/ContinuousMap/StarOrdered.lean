@@ -52,6 +52,7 @@ namespace ContinuousMap
 
 variable {α : Type*} [TopologicalSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [PartialOrder R] [NonUnitalSemiring R] [StarRing R]
     [StarOrderedRing R] [TopologicalSpace R] [ContinuousStar R] [IsTopologicalSemiring R]
     [ContinuousSqrt R] : StarOrderedRing C(α, R) := by

@@ -127,6 +127,7 @@ lemma traceDual_top' :
 
 variable [IsDomain A] [IsFractionRing A K] [FiniteDimensional K L] [Algebra.IsSeparable K L]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma traceDual_top [Decidable (IsField A)] :
     (⊤ : Submodule B L)ᵛ = if IsField A then ⊤ else ⊥ := by
   convert traceDual_top'
@@ -141,6 +142,7 @@ open Submodule
 
 variable [IsFractionRing A K]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A K) in
 lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
     [FaithfulSMul A B] (I : Submodule B (FractionRing B)) :
@@ -486,8 +488,7 @@ lemma coeSubmodule_differentIdeal_fractionRing [Algebra.IsIntegral A B]
   have := FractionalIdeal.dual_inv_le (A := A) (K := FractionRing A)
     (1 : FractionalIdeal B⁰ (FractionRing B))
   have : _ ≤ ((1 : FractionalIdeal B⁰ (FractionRing B)) : Submodule B (FractionRing B)) := this
-  simp only [← one_div] at this
-  rw [FractionalIdeal.coe_div (FractionalIdeal.dual_ne_zero _ _ _),
+  rw [← one_div, FractionalIdeal.coe_div (FractionalIdeal.dual_ne_zero _ _ _),
     FractionalIdeal.coe_dual] at this
   · simpa only [FractionalIdeal.coe_one, Submodule.one_eq_range] using this
   · exact one_ne_zero
@@ -584,6 +585,7 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomai
 
 variable {B L}
 
+set_option backward.isDefEq.respectTransparency false in
 open Pointwise Polynomial in
 lemma traceForm_dualSubmodule_adjoin
     {x : L} (hx : Algebra.adjoin K {x} = ⊤) (hAx : IsIntegral A x) :
@@ -685,6 +687,7 @@ variable (L)
 variable [IsFractionRing B L] [IsDedekindDomain A] [IsDedekindDomain B]
   [IsTorsionFree A B] [Module.Finite A B]
 
+set_option backward.isDefEq.respectTransparency false in
 include K L in
 lemma pow_sub_one_dvd_differentIdeal_aux
     {p : Ideal A} [p.IsMaximal] (P : Ideal B) {e : ℕ} (he : e ≠ 0) (hp : p ≠ ⊥)

@@ -178,6 +178,7 @@ theorem finsum_smul_mem_convex {g : ι → M → F} {t : Set F} {x : M} (hx : x 
     (hg : ∀ i, f i x ≠ 0 → g i x ∈ t) (ht : Convex ℝ t) : ∑ᶠ i, f i x • g i x ∈ t :=
   ht.finsum_mem (fun _ => f.nonneg _ _) (f.sum_eq_one hx) hg
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contMDiff_smul {g : M → F} {i} (hg : ∀ x ∈ tsupport (f i), ContMDiffAt I 𝓘(ℝ, F) n g x) :
     ContMDiff I 𝓘(ℝ, F) n fun x => f i x • g x :=
   contMDiff_of_tsupport fun x hx =>
@@ -193,6 +194,7 @@ theorem contMDiff_finsum_smul {g : ι → M → F}
   (contMDiff_finsum fun i => f.contMDiff_smul (hg i)) <|
     f.locallyFinite.subset fun _ => support_smul_subset_left _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contMDiffAt_finsum {x₀ : M} {g : ι → M → F}
     (hφ : ∀ i, x₀ ∈ tsupport (f i) → ContMDiffAt I 𝓘(ℝ, F) n (g i) x₀) :
     ContMDiffAt I 𝓘(ℝ, F) n (fun x ↦ ∑ᶠ i, f i x • g i x) x₀ := by
@@ -294,6 +296,7 @@ end SmoothPartitionOfUnity
 
 namespace BumpCovering
 
+set_option backward.isDefEq.respectTransparency false in
 -- Repeat variables to drop `[FiniteDimensional ℝ E]` and `[IsManifold I ∞ M]`
 theorem contMDiff_toPartitionOfUnity {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM}
@@ -483,6 +486,7 @@ variable (I)
 variable [FiniteDimensional ℝ E]
 variable [IsManifold I ∞ M] {n : ℕ∞}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite-dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` on `s` and to `1` on `t`.
 See also `exists_contMDiff_zero_iff_one_iff_of_isClosed`, which ensures additionally that

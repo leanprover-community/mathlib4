@@ -53,6 +53,7 @@ noncomputable def cotangentComplexAux [Finite σ] (P : PreSubmersivePresentation
   Finsupp.linearEquivFunOnFinite S S σ ∘ₗ Finsupp.lcomapDomain _ P.map_inj ∘ₗ
     P.cotangentSpaceBasis.repr.toLinearMap ∘ₗ P.toExtension.cotangentComplex
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cotangentComplexAux_apply [Finite σ] (P : PreSubmersivePresentation R S ι σ)
     (x : P.ker) (i : σ) :
     P.cotangentComplexAux (Cotangent.mk x) i = (aeval P.val) (pderiv (P.map i) x.val) := by
@@ -74,6 +75,7 @@ namespace SubmersivePresentation
 
 variable [Finite σ] (P : SubmersivePresentation R S ι σ)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cotangentComplexAux_injective [Finite σ] : Function.Injective P.cotangentComplexAux := by
   rw [← LinearMap.ker_eq_bot, eq_bot_iff]
   intro x hx
@@ -211,6 +213,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     simp [Finsupp.single_eq_pi_single]
   · exact hcompl.2
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma basisKaehlerOfIsCompl_apply {κ : Type*} {f : κ → ι}
     (hf : Function.Injective f) (hcompl : IsCompl (Set.range f) (Set.range P.map)) (k : κ) :

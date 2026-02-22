@@ -119,6 +119,7 @@ lemma IsStronglyTranscendental.of_transcendental {K : Type*} [Field K] [Algebra 
   rw [← isStronglyTranscendental_iff_of_field] at H
   exact .of_map (f := IsScalarTower.toAlgHom R S K) (FaithfulSMul.algebraMap_injective _ _) H
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00Q0]
 lemma isStronglyTranscendental_mk_of_mem_minimalPrimes [IsReduced S]
     {x : S} (hx : IsStronglyTranscendental R x) (q : Ideal S) (hq : q ∈ minimalPrimes S) :

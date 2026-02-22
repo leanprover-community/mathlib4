@@ -83,6 +83,7 @@ def centroid (p : ι → P) : P :=
 theorem centroid_def (p : ι → P) : s.centroid k p = s.affineCombination k p (s.centroidWeights k) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem centroid_univ (s : Finset P) : univ.centroid k ((↑) : s → P) = s.centroid k id := by
   rw [centroid, centroid, ← s.attach_affineCombination_coe]
   congr

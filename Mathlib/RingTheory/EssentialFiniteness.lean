@@ -157,6 +157,7 @@ lemma EssFiniteType.comp [h₁ : EssFiniteType R S] [h₂ : EssFiniteType S T] :
   · rw [← mul_smul, mul_comm, smul_mul_assoc, mul_comm, mul_comm y, mul_smul, Algebra.smul_def]
     exact mul_mem (Algebra.mem_sup_left ⟨_, h₁, rfl⟩) h₆
 
+set_option backward.isDefEq.respectTransparency false in
 open EssFiniteType in
 lemma essFiniteType_iff_exists_subalgebra : EssFiniteType R S ↔
     ∃ (S₀ : Subalgebra R S) (M : Submonoid S₀), FiniteType R S₀ ∧ IsLocalization M S := by

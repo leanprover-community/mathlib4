@@ -31,6 +31,7 @@ private theorem enle.isLinearOrder : IsLinearOrder α enle :=
   (RelEmbedding.preimage ⟨encode, encode_injective⟩ (· ≤ ·)).isLinearOrder
 
 set_option backward.privateInPublic true in
+@[instance_reducible]
 private def decidable_enle (a b : α) : Decidable (enle a b) := by
   unfold enle Order.Preimage
   infer_instance

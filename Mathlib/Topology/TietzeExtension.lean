@@ -167,6 +167,7 @@ noncomputable section
 
 namespace BoundedContinuousFunction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- One step in the proof of the Tietze extension theorem. If `e : C(X, Y)` is a closed embedding
 of a topological space into a normal topological space and `f : X →ᵇ ℝ` is a bounded continuous
 function, then there exists a bounded continuous function `g : Y →ᵇ ℝ` of the norm `‖g‖ ≤ ‖f‖ / 3`
@@ -216,6 +217,7 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : IsClosedEmb
               abs_of_nonneg (sub_nonneg.2 hle₂)]
           _ ≤ 2 / 3 * ‖f‖ := by linarith
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version with a closed
 embedding and bundled composition. If `e : C(X, Y)` is a closed embedding of a topological space
 into a normal topological space and `f : X →ᵇ ℝ` is a bounded continuous function, then there exists

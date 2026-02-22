@@ -306,6 +306,7 @@ end FiberBundle
 variable (F)
 variable (E)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a fiber bundle over a conditionally complete linear order,
 then it is trivial over any closed interval. -/
 theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinearOrder B]
@@ -672,6 +673,7 @@ theorem mem_localTrivAt_baseSet (b : B) : b ∈ (Z.localTrivAt b).baseSet := by
 theorem mk_mem_localTrivAt_source : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
   simp only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A fiber bundle constructed from core is indeed a fiber bundle. -/
 instance fiberBundle : FiberBundle F Z.Fiber where
   totalSpaceMk_isInducing' b := isInducing_iff_nhds.2 fun x ↦ by

@@ -90,6 +90,7 @@ theorem ofReal_arctan (x : ℝ) : (Real.arctan x : ℂ) = arctan x := by
   · exact Real.neg_pi_div_two_lt_arctan _
   · exact (Real.arctan_lt_pi_div_two _).le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The argument of `1 + z` for `z` in the open unit disc is always in `(-π / 2, π / 2)`. -/
 lemma arg_one_add_mem_Ioo {z : ℂ} (hz : ‖z‖ < 1) : (1 + z).arg ∈ Set.Ioo (-(π / 2)) (π / 2) := by
   rw [Set.mem_Ioo, ← abs_lt, abs_arg_lt_pi_div_two_iff, add_re, one_re, ← neg_lt_iff_pos_add']

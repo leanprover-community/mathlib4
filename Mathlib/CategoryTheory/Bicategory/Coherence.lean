@@ -72,6 +72,7 @@ bicategory.
 def inclusionPath (a b : B) : Discrete (Path.{v} a b) ⥤ Hom a b :=
   Discrete.functor inclusionPathAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion from the locally discrete bicategory on the path category into the free bicategory
 as a prelax functor. This will be promoted to a pseudofunctor after proving the coherence theorem.
 See `inclusion`.
@@ -147,6 +148,7 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
   | whisker_right _ _ ih => funext; apply congr_arg₂ _ (congr_fun ih _) rfl
   | _ => funext; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The 2-isomorphism `normalizeIso p f` is natural in `f`. -/
 theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
     (preinclusion B).map ⟨p⟩ ◁ η ≫ (normalizeIso p g).hom =

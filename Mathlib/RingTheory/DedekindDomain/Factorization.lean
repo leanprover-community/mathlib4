@@ -410,6 +410,7 @@ theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
         Nat.cast_one]
       ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `val_v(v) = 1`, when `v` is regarded as a fractional ideal. -/
 theorem count_self : count K v (v.asIdeal : FractionalIdeal R⁰ K) = 1 := by
   have hv : (v.asIdeal : FractionalIdeal R⁰ K) ≠ 0 := coeIdeal_ne_zero.mpr v.ne_bot
@@ -455,6 +456,7 @@ theorem count_zpow_self (n : ℤ) :
     count K v ((v.asIdeal : FractionalIdeal R⁰ K) ^ n) = n := by
   rw [count_zpow, count_self, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `v ≠ w` are two maximal ideals of `R`, then `val_v(w) = 0`. -/
 theorem count_maximal_coprime {w : HeightOneSpectrum R} (hw : w ≠ v) :
     count K v (w.asIdeal : FractionalIdeal R⁰ K) = 0 := by
@@ -524,6 +526,7 @@ theorem count_coe {J : Ideal R} (hJ : J ≠ 0) :
   · simpa only [ne_eq, coeIdeal_eq_zero]
   · simp only [map_one, inv_one, spanSingleton_one, one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem count_coe_nonneg (J : Ideal R) : 0 ≤ count K v J := by
   by_cases hJ : J = 0
   · simp only [hJ, Submodule.zero_eq_bot, coeIdeal_bot, count_zero, le_refl]
@@ -716,6 +719,7 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
     c.divMod b a = 0 := by
   simp [divMod, hac]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 212000 in
 -- changed for new compiler
 /-- Let `I J I' J'` be nonzero fractional ideals in a Dedekind domain with `J ≤ I` and `J' ≤ I'`.

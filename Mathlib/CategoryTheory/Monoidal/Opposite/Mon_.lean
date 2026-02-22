@@ -26,6 +26,7 @@ section mop
 
 variable (M : C) [MonObj M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `M : C` is a monoid object, then `mop M : Cᴹᵒᵖ` too. -/
 @[simps!]
 instance mopMonObj : MonObj (mop M) where
@@ -59,6 +60,7 @@ section unmop
 
 variable (M : Cᴹᵒᵖ) [MonObj M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `M : Cᴹᵒᵖ` is a monoid object, then `unmop M : C` too. -/
 @[simps -isSimp] -- not making them simp because it causes a loop.
 instance unmopMonObj : MonObj (unmop M) where

@@ -182,6 +182,7 @@ variable [HasColimits C]
 def π : D.sigmaOpens ⟶ D.glued :=
   Multicoequalizer.sigmaπ D.diagram
 
+set_option backward.isDefEq.respectTransparency false in
 instance π_epi : Epi D.π := by
   unfold π
   infer_instance
@@ -233,6 +234,7 @@ def mapGlueData : GlueData C' where
     simp only [Category.assoc, Iso.hom_inv_id_assoc, ← Functor.map_comp_assoc, D.cocycle,
       Iso.inv_hom_id, CategoryTheory.Functor.map_id, Category.id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The diagram of the image of a `GlueData` under a functor `F` is naturally isomorphic to the
 original diagram of the `GlueData` via `F`.
 -/
@@ -286,25 +288,30 @@ attribute [local instance] hasColimit_multispan_comp
 
 variable [∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasColimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
   hasColimit_of_iso (D.diagramIso F).symm
 
 attribute [local instance] hasColimit_mapGlueData_diagram
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F` preserves the gluing, we obtain an iso between the glued objects. -/
 def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
   haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
   preservesColimitIso F D.diagram.multispan ≪≫ Limits.HasColimit.isoOfNatIso (D.diagramIso F)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
   erw [ι_preservesColimitIso_hom_assoc]
   simp [GlueData.ι]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_inv (i : D.J) : (D.mapGlueData F).ι i ≫ (D.gluedIso F).inv = F.map (D.ι i) := by
   rw [Iso.comp_inv_eq, ι_gluedIso_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F` preserves the gluing, and reflects the pullback of `U i ⟶ glued` and `U j ⟶ glued`,
 then `F` reflects the fact that `V_pullback_cone` is a pullback. -/
 def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι j)) F]
@@ -426,6 +433,7 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
       pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by simp))
         (by delta f'; aesop) (by delta f'; aesop)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 The constructed `GlueData` of a `GlueData'`, where `GlueData'` is a variant of `GlueData` that only

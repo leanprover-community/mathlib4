@@ -123,6 +123,7 @@ instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
   simp only [isInducing_embedProduct.1, instTopologicalSpaceProd, induced_inf,
     instTopologicalSpaceMulOpposite, induced_compose]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
 Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/
 @[to_additive /-- An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a

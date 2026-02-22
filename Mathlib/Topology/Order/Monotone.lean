@@ -49,6 +49,7 @@ lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosed
     filter_upwards [this] with y hy
     exact hf hy.1 hb (le_of_lt hy.2)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a function is monotone on a set in a second countable topological space, then there
 are only countably many points that have several preimages. -/
 lemma MonotoneOn.countable_setOf_two_preimages [SecondCountableTopology α]

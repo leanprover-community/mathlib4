@@ -63,6 +63,7 @@ instance {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) : One (TangentSpace (𝓡�
 
 variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion map from of a closed segment to `ℝ` is smooth in the manifold sense. -/
 lemma contMDiff_subtype_coe_Icc :
     ContMDiff (𝓡∂ 1) 𝓘(ℝ) n (fun (z : Icc x y) ↦ (z : ℝ)) := by
@@ -177,6 +178,7 @@ lemma mfderivWithin_projIcc_one {z : ℝ} (hz : z ∈ Icc x y) :
   congr
   simp [projIcc_of_mem h.out.le hz]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
     mfderivWithin 𝓘(ℝ) I (f ∘ (projIcc x y h.out.le)) (Icc x y) w 1 = mfderiv (𝓡∂ 1) I f w 1 := by
   by_cases hw : MDifferentiableAt (𝓡∂ 1) I f w; swap

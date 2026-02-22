@@ -43,6 +43,7 @@ namespace CliffordAlgebra
 
 section Involute
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Grade involution, inverting the sign of each basis vector. -/
 def involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q :=
   CliffordAlgebra.lift Q ⟨-ι Q, fun m => by simp⟩
@@ -51,6 +52,7 @@ def involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q :=
 theorem involute_ι (m : M) : involute (ι Q m) = -ι Q m :=
   lift_ι_apply _ _ m
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem involute_comp_involute : involute.comp involute = AlgHom.id R (CliffordAlgebra Q) := by
   ext; simp
@@ -74,6 +76,7 @@ section Reverse
 
 open MulOpposite
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `CliffordAlgebra.reverse` as an `AlgHom` to the opposite algebra -/
 def reverseOp : CliffordAlgebra Q →ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
   CliffordAlgebra.lift Q
@@ -82,6 +85,7 @@ def reverseOp : CliffordAlgebra Q →ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
 @[simp]
 theorem reverseOp_ι (m : M) : reverseOp (ι Q m) = op (ι Q m) := lift_ι_apply _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `CliffordAlgebra.reverseEquiv` as an `AlgEquiv` to the opposite algebra -/
 @[simps! apply]
 def reverseOpEquiv : CliffordAlgebra Q ≃ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
@@ -102,6 +106,7 @@ def reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
 
 @[simp] theorem op_reverse (x : CliffordAlgebra Q) : op (reverse x) = reverseOp x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem reverse_ι (m : M) : reverse (ι Q m) = ι Q m := by simp [reverse]
 
@@ -137,6 +142,7 @@ theorem reverse_reverse : ∀ a : CliffordAlgebra Q, reverse (reverse a) = a :=
 def reverseEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q :=
   LinearEquiv.ofInvolutive reverse reverse_involutive
 
+set_option backward.isDefEq.respectTransparency false in
 theorem reverse_comp_involute :
     reverse.comp involute.toLinearMap =
       (involute.toLinearMap.comp reverse : _ →ₗ[R] CliffordAlgebra Q) := by
@@ -211,6 +217,7 @@ theorem ι_range_comap_involute :
       LinearMap.range (ι Q) := by
   rw [← submodule_map_involute_eq_comap, ι_range_map_involute]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem evenOdd_map_involute (n : ZMod 2) :
     (evenOdd Q n).map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
@@ -232,6 +239,7 @@ theorem submodule_map_reverse_eq_comap (p : Submodule R (CliffordAlgebra Q)) :
       p.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) :=
   Submodule.map_equiv_eq_comap_symm (reverseEquiv : _ ≃ₗ[R] _) _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ι_range_map_reverse :
     (LinearMap.range (ι Q)).map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q)
@@ -246,6 +254,7 @@ theorem ι_range_comap_reverse :
       = LinearMap.range (ι Q) := by
   rw [← submodule_map_reverse_eq_comap, ι_range_map_reverse]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Like `Submodule.map_mul`, but with the multiplication reversed. -/
 theorem submodule_map_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
     (p * q).map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
@@ -259,6 +268,7 @@ theorem submodule_comap_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
         p.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) := by
   simp_rw [← submodule_map_reverse_eq_comap, submodule_map_mul_reverse]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Like `Submodule.map_pow` -/
 theorem submodule_map_pow_reverse (p : Submodule R (CliffordAlgebra Q)) (n : ℕ) :
     (p ^ n).map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =

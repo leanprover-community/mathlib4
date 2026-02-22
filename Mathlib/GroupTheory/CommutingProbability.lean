@@ -89,6 +89,7 @@ theorem commProb_eq_one_iff [h : Nonempty M] :
 
 variable (G : Type*) [Group G]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
   rw [commProb, card_comm_eq_card_conjClasses_mul_card, Nat.cast_mul, sq]
   by_cases h : (Nat.card G : ℚ) = 0
@@ -170,9 +171,11 @@ lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
 abbrev Product (l : List ℕ) : Type :=
   ∀ i : Fin l.length, DihedralGroup l[i]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma commProb_nil : commProb (Product []) = 1 := by
   simp [Product, commProb_pi]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma commProb_cons (n : ℕ) (l : List ℕ) :
     commProb (Product (n :: l)) = commProb (DihedralGroup n) * commProb (Product l) := by
   simp only [commProb_pi, Fin.prod_univ_succ, Fin.getElem_fin, Fin.val_succ, Fin.val_zero,

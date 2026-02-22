@@ -37,6 +37,7 @@ namespace RingOfIntegers
 
 open FunctionField
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 noncomputable instance : Fintype (ClassGroup (ringOfIntegers Fq F)) :=
   ClassGroup.fintypeOfAdmissibleOfFinite (RatFunc Fq) F

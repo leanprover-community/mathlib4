@@ -64,6 +64,7 @@ lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.σ i x ∈ X.degenerate (n + 1) :=
   ⟨n, by lia, SimplexCategory.σ i, Set.mem_range_self x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_degenerate_iff (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f),
         x ∈ Set.range (X.map f.op) := by
@@ -211,6 +212,7 @@ lemma unique_nonDegenerate_simplex (x : X _⦋n⦌) {m : ℕ}
   ext
   simpa [g_eq_id hy₁ hy₂ hf₁] using (map_g_op_y₂ hf₁ hy₁ hy₂).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma unique_nonDegenerate_map (x : X _⦋n⦌) {m : ℕ}
     (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁] (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
     (f₂ : ⦋n⦌ ⟶ ⦋m⦌) (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) :
@@ -243,6 +245,7 @@ namespace Subcomplex
 
 variable {X} (A : X.Subcomplex)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
   rw [SSet.mem_degenerate_iff, SSet.mem_degenerate_iff]
@@ -256,11 +259,13 @@ lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     simpa [Set.mem_preimage, ← op_comp, ← FunctorToTypes.map_comp_apply,
       IsSplitEpi.id, op_id, FunctorToTypes.map_id_apply] using A.map (section_ f).op hx
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_nonDegenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by
   rw [mem_nonDegenerate_iff_notMem_degenerate,
     mem_nonDegenerate_iff_notMem_degenerate, mem_degenerate_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
     A ≤ B ↔ ∀ (n : ℕ) (x : X.nonDegenerate n), x.val ∈ A.obj _ → x.val ∈ B.obj _ := by
   constructor
@@ -274,10 +279,12 @@ lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
     rw [mem_nonDegenerate_iff] at ha
     exact B.map f.op (h _ ⟨_, ha⟩ a.prop)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_top_iff_contains_nonDegenerate :
     A = ⊤ ↔ ∀ (n : ℕ), X.nonDegenerate n ⊆ A.obj _ := by
   simpa using le_iff_contains_nonDegenerate ⊤ A
 
+set_option backward.isDefEq.respectTransparency false in
 lemma degenerate_eq_top_iff (n : ℕ) :
     degenerate A n = ⊤ ↔ (X.degenerate n ⊓ A.obj _) = A.obj _ := by
   constructor
@@ -319,6 +326,7 @@ lemma image_degenerate_le (f : X ⟶ Y) (n : ℕ) :
     (f.app _) '' (X.degenerate n) ⊆ Y.degenerate n := by
   simpa using degenerate_le_preimage f n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma degenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌) :
     f.app _ x ∈ Y.degenerate n ↔ x ∈ X.degenerate n := by
   constructor
@@ -344,6 +352,7 @@ def nonDegenerateEquivOfIso (e : X ≅ Y) {n : ℕ} :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 variable {X} in
 lemma degenerate_iff_of_mono {Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (x : X _⦋n⦌) :
     f.app _ x ∈ Y.degenerate n ↔ x ∈ X.degenerate n := by

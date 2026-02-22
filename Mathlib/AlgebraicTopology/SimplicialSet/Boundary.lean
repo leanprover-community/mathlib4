@@ -41,6 +41,7 @@ def boundary (n : ℕ) : (Δ[n] : SSet.{u}).Subcomplex where
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
 scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma boundary_eq_iSup (n : ℕ) :
     boundary.{u} n = ⨆ (i : Fin (n + 1)), stdSimplex.face {i}ᶜ := by
   ext

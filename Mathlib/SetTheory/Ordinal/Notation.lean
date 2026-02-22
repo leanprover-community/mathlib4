@@ -1096,6 +1096,7 @@ theorem fastGrowing_limit (o) {f} (h : fundamentalSequence o = Sum.inr f) :
 theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
   fastGrowing_zero' _ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]

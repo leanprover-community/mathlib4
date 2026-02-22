@@ -137,8 +137,8 @@ theorem center_im (z r) : (center z r).im = z.im * Real.cosh r :=
   rfl
 
 @[simp]
-theorem center_zero (z : ℍ) : center z 0 = z :=
-  ext' rfl <| by rw [center_im, Real.cosh_zero, mul_one]
+theorem center_zero (z : ℍ) : center z 0 = z := by
+  apply ext_re_im <;> simp
 
 theorem dist_coe_center_sq (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) ^ 2 =
     2 * z.im * w.im * (Real.cosh (dist z w) - Real.cosh r) + (w.im * Real.sinh r) ^ 2 := by
@@ -152,6 +152,7 @@ theorem dist_coe_center (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) =
     √(2 * z.im * w.im * (Real.cosh (dist z w) - Real.cosh r) + (w.im * Real.sinh r) ^ 2) := by
   rw [← sqrt_sq dist_nonneg, dist_coe_center_sq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
     cmp (dist z w) r = cmp (dist (z : ℂ) (w.center r)) (w.im * Real.sinh r) := by
   letI := metricSpaceAux
@@ -304,17 +305,20 @@ theorem image_coe_sphere (z : ℍ) (r : ℝ) :
 
 instance : ProperSpace ℍ := by
   refine ⟨fun z r => ?_⟩
-  rw [IsInducing.subtypeVal.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
+  rw [isEmbedding_coe.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by
   refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   rw [dist_of_re_eq]
   exacts [congr_arg₂ _ (log_exp _) (log_exp _), rfl]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isometry_real_vadd (a : ℝ) : Isometry (a +ᵥ · : ℍ → ℍ) :=
   Isometry.of_dist_eq fun y₁ y₂ => by simp only [dist_eq, coe_vadd, vadd_im, dist_add_left]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ → ℍ) := by
   refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   simp only [dist_eq, coe_pos_real_smul, pos_real_im]; congr 2
@@ -322,14 +326,15 @@ theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ �
     Real.norm_eq_abs, mul_left_comm]
   exact mul_div_mul_left _ _ (mt _root_.abs_eq_zero.1 a.2.ne')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `SL(2, ℝ)` acts on the upper half plane as an isometry. -/
 instance : IsIsometricSMul SL(2, ℝ) ℍ :=
   ⟨fun g => by
     have h₀ : Isometry (fun z => ModularGroup.S • z : ℍ → ℍ) :=
       Isometry.of_dist_eq fun y₁ y₂ => by
-        have h₁ : 0 ≤ im y₁ * im y₂ := mul_nonneg y₁.property.le y₂.property.le
+        have h₁ : 0 ≤ im y₁ * im y₂ := by positivity
         have h₂ : ‖(y₁ * y₂ : ℂ)‖ ≠ 0 := by simp [y₁.ne_zero, y₂.ne_zero]
-        simp_rw [modular_S_smul, inv_neg, dist_eq, coe_mk, dist_neg_neg,
+        simp_rw [modular_S_smul, inv_neg, dist_eq, dist_neg_neg,
           dist_inv_inv₀ y₁.ne_zero y₂.ne_zero, mk_im, neg_im, inv_im, coe_im, neg_div, neg_neg,
           div_mul_div_comm, ← normSq_mul, Real.sqrt_div h₁, ← norm_def, mul_div (2 : ℝ)]
         rw [div_div_div_comm, ← norm_mul, div_self h₂, div_one]

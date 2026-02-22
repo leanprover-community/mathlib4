@@ -105,12 +105,16 @@ example (x : Rat) (h : 0 < x) : 0 < x/(2/3) := by linarith
 
 variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 
+set_option backward.isDefEq.respectTransparency false in
 example (a : K) (ha : 10 / (8 + 2) ≤ a) : 1 ≤ a := by linarith
 
+set_option backward.isDefEq.respectTransparency false in
 example (a : K) (ha : 10 / 10 ^ 1 ≤ a) : 1 ≤ a := by linarith
 
+set_option backward.isDefEq.respectTransparency false in
 example (a : K) (ha : 10⁻¹ * 10 ≤ a) : 1 ≤ a := by linarith
 
+set_option backward.isDefEq.respectTransparency false in
 example (a : K) (ha : 1.0 ≤ a) : 1 ≤ a := by linarith
 
 end cancel_denoms

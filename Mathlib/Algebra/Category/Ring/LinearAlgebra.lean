@@ -27,6 +27,7 @@ open CategoryTheory Limits TensorProduct
 
 namespace CommRingCat
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nontrivial_of_isPushout_of_isField {A B C D : CommRingCat.{u}}
     (hA : IsField A) {f : A ⟶ B} {g : A ⟶ C} {inl : B ⟶ D} {inr : C ⟶ D}
     [Nontrivial B] [Nontrivial C]

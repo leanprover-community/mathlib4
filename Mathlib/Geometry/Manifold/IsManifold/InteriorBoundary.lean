@@ -239,6 +239,7 @@ variable
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma interior_prod :
     (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by

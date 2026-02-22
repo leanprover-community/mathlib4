@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
-public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.Topology.NoetherianSpace
 

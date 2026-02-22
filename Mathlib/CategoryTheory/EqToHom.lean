@@ -81,13 +81,13 @@ theorem conj_eqToHom_iff_heq' {C} [Category* C] {W X Y Z : C}
 
 theorem comp_eqToHom_iff {X Y Y' : C} (p : Y = Y') (f : X ⟶ Y) (g : X ⟶ Y') :
     f ≫ eqToHom p = g ↔ f = g ≫ eqToHom p.symm :=
-  { mp := fun h => h ▸ by simp
-    mpr := fun h => by simp [eq_whisker h (eqToHom p)] }
+  { mp h := by simp [← h]
+    mpr h := by simp [eq_whisker h (eqToHom p)] }
 
 theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) :
     eqToHom p ≫ g = f ↔ g = eqToHom p.symm ≫ f :=
-  { mp := fun h => h ▸ by simp
-    mpr := fun h => h ▸ by simp }
+  { mp h := by simp [← h]
+    mpr h := by simp [h] }
 
 theorem eqToHom_comp_heq {C} [Category* C] {W X Y : C}
     (f : Y ⟶ X) (h : W = Y) : eqToHom h ≫ f ≍ f := by

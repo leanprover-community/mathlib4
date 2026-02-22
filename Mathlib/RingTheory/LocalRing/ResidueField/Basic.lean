@@ -87,6 +87,7 @@ theorem lift_residue_apply {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] 
     [IsLocalHom f] (x) : lift f (residue R x) = f x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map on residue fields induced by a local homomorphism between local rings -/
 noncomputable def map (f : R →+* S) [IsLocalHom f] : ResidueField R →+* ResidueField S :=
   Ideal.Quotient.lift (maximalIdeal R) ((Ideal.Quotient.mk _).comp f) fun a ha => by

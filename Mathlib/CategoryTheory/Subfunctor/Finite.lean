@@ -175,6 +175,7 @@ lemma presheafIsFinite_of_epi [PresheafIsFinite F] {F' : Cᵒᵖ ⥤ Type w} (f 
     PresheafIsFinite F' :=
   ((presheafIsGeneratedBy_of_isFinite F).of_epi f).isFinite
 
+set_option backward.isDefEq.respectTransparency false in
 lemma yoneda_obj_isGeneratedBy (X : C) :
     PresheafIsGeneratedBy (yoneda.obj X) (fun (_ : Unit) ↦ 𝟙 X) := by
   simp only [Subfunctor.isGeneratedBy_iff]

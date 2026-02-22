@@ -56,6 +56,7 @@ theorem Ioc_disjoint_Ioc_of_le {d : α} (h : b ≤ c) : Disjoint (Ioc a b) (Ioc 
 theorem Ico_disjoint_Ico_same : Disjoint (Ico a b) (Ico b c) :=
   disjoint_left.mpr fun _ hab hbc => hab.2.not_ge hbc.1
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Ici_disjoint_Iic : Disjoint (Ici a) (Iic b) ↔ ¬a ≤ b := by
   rw [Set.disjoint_iff_inter_eq_empty, Ici_inter_Iic, Icc_eq_empty_iff]
@@ -155,6 +156,7 @@ section LinearOrder
 
 variable [LinearOrder α] {a₁ a₂ b₁ b₂ : α}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Ico_disjoint_Ico : Disjoint (Ico a₁ a₂) (Ico b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
   simp_rw [Set.disjoint_iff_inter_eq_empty, Ico_inter_Ico, Ico_eq_empty_iff, not_lt]
@@ -164,6 +166,7 @@ theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂
   have h : _ ↔ min (toDual a₁) (toDual b₁) ≤ max (toDual a₂) (toDual b₂) := Ico_disjoint_Ico
   simpa only [Ico_toDual] using h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Ioo_disjoint_Ioo [DenselyOrdered α] :
     Disjoint (Set.Ioo a₁ a₂) (Set.Ioo b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by

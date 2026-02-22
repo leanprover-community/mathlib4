@@ -87,6 +87,7 @@ instance {R} [CommRing R] [IsNoetherianRing R] (S : Submonoid R) :
     IsNoetherianRing (Localization S) :=
   IsLocalization.isNoetherianRing S _ ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Algebra.EssFiniteType.isNoetherianRing
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.EssFiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by

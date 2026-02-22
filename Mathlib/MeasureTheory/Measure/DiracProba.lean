@@ -29,6 +29,7 @@ open Topology Metric Filter Set ENNReal NNReal BoundedContinuousFunction
 
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [CompletelyRegularSpace X]
     {K : Set X} (K_closed : IsClosed K) {x : X} (x_notin_K : x ∉ K) :
     ∃ (f : X →ᵇ ℝ≥0), f x = 1 ∧ (∀ y ∈ K, f y = 0) := by
@@ -52,6 +53,7 @@ variable {X : Type*} [MeasurableSpace X]
 noncomputable def diracProba (x : X) : ProbabilityMeasure X :=
   ⟨Measure.dirac x, Measure.dirac.isProbabilityMeasure⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The assignment `x ↦ diracProba x` is injective if all singletons are measurable. -/
 lemma injective_diracProba {X : Type*} [MeasurableSpace X] [MeasurableSpace.SeparatesPoints X] :
     Function.Injective (fun (x : X) ↦ diracProba x) := by
@@ -78,8 +80,6 @@ lemma continuous_diracProba : Continuous (fun (x : X) ↦ diracProba x) := by
     measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable
   simp only [diracProba, ProbabilityMeasure.coe_mk, lintegral_dirac' _ f_mble]
   exact (ENNReal.continuous_coe.comp f.continuous).continuousAt
-
-@[deprecated (since := "2025-08-15")] alias injective_diracProba_of_T0 := injective_diracProba
 
 lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X)
     (h : ¬ Tendsto id L (𝓝 x)) :

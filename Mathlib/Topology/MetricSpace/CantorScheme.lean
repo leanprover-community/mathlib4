@@ -86,6 +86,7 @@ protected theorem Antitone.closureAntitone [TopologicalSpace α] (hanti : Cantor
     (hclosed : ∀ l, IsClosed (A l)) : ClosureAntitone A := fun _ _ =>
   (hclosed _).closure_eq.subset.trans (hanti _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A scheme where the children of each set are pairwise disjoint induces an injective map. -/
 theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (inducedMap A).2 := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy

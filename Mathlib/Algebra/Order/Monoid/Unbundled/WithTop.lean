@@ -162,6 +162,7 @@ protected lemma add_lt_add_right [LT α] [AddRightStrictMono α] (hz : z ≠ ⊤
     x < y → x + z < y + z := by
   lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
 
+set_option backward.isDefEq.respectTransparency false in
 @[gcongr]
 protected theorem add_lt_add [Preorder α] [AddLeftStrictMono α] [AddRightStrictMono α]
     (xz : x < z) (yw : y < w) : x + y < z + w := by
@@ -182,11 +183,13 @@ protected lemma add_lt_add_iff_left [LT α] [AddLeftStrictMono α] [AddLeftRefle
 protected lemma add_lt_add_iff_right [LT α] [AddRightStrictMono α] [AddRightReflectLT α]
     (hz : z ≠ ⊤) : x + z < y + z ↔ x < y := ⟨lt_of_add_lt_add_right, WithTop.add_lt_add_right hz⟩
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem add_lt_add_of_le_of_lt [Preorder α] [AddLeftStrictMono α]
     [AddRightMono α] (hw : w ≠ ⊤) (hwy : w ≤ y) (hxz : x < z) :
     w + x < y + z :=
   (WithTop.add_lt_add_left hw hxz).trans_le <| by gcongr
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     [AddRightStrictMono α] (hx : x ≠ ⊤) (hwy : w < y) (hxz : x ≤ z) :
     w + x < y + z :=
@@ -412,6 +415,9 @@ theorem one_lt_coe [LT α] : 1 < (a : WithBot α) ↔ 1 < a := coe_lt_coe
 
 @[to_additive (attr := simp, norm_cast) coe_lt_zero]
 theorem coe_lt_one [LT α] : (a : WithBot α) < 1 ↔ a < 1 := coe_lt_coe
+
+@[to_additive (attr := simp)]
+theorem bot_lt_one [LT α] : ⊥ < (1 : WithBot α) := bot_lt_coe _
 
 @[to_additive (attr := simp)]
 protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 : WithBot β) :=

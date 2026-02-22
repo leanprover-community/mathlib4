@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 import Mathlib.Tactic.Linter.DeprecatedModule
 import Mathlib.Tactic.Linter.Whitespace

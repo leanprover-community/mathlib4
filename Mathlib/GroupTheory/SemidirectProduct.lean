@@ -233,6 +233,7 @@ def monoidHomSubgroup {H K : Subgroup G} (h : K ≤ H.normalizer) :
     H ⋊[(H.normalizerMonoidHom).comp (inclusion h)] K →* G :=
   lift H.subtype K.subtype (by simp [DFunLike.ext_iff])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism from a semidirect product of complementary subgroups to the ambient group. -/
 @[simps!]
 noncomputable def mulEquivSubgroup {H K : Subgroup G} [H.Normal] (h : H.IsComplement' K) :

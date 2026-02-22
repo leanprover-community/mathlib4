@@ -175,6 +175,7 @@ theorem extend_of_mem_I (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ∈ I) :
     F.extend t = F.curry ⟨t, ht⟩ :=
   Set.IccExtend_of_mem (zero_le_one' ℝ) F.curry ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem extend_zero (F : Homotopy f₀ f₁) : F.extend 0 = f₀ := by simp
 theorem extend_one (F : Homotopy f₀ f₁) : F.extend 1 = f₁ := by simp
 
@@ -218,6 +219,7 @@ theorem symm_bijective {f₀ f₁ : C(X, Y)} :
     Function.Bijective (Homotopy.symm : Homotopy f₀ f₁ → Homotopy f₁ f₀) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given `Homotopy f₀ f₁` and `Homotopy f₁ f₂`, we can define a `Homotopy f₀ f₂` by putting the first
 homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
@@ -242,6 +244,7 @@ theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Hom
       · rw [extend, ContinuousMap.coe_IccExtend, Set.IccExtend_of_mem]
         rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     (F.trans G).symm = G.symm.trans F.symm := by
   ext ⟨t, _⟩

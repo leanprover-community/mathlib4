@@ -42,7 +42,7 @@ variable {α : Type*} [TopologicalSpace α]
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) IsOrderedMonoid.to_hasUpperLowerClosure
-    [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+    [CommGroup α] [Preorder α] [IsOrderedMonoid α]
     [ContinuousConstSMul α α] : HasUpperLowerClosure α where
   isUpperSet_closure s h x y hxy hx :=
     closure_mono (h.smul_subset <| one_le_div'.2 hxy) <| by

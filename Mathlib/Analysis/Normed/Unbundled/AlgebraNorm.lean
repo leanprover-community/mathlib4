@@ -89,6 +89,7 @@ theorem extends_norm' (hf1 : f 1 = 1) (a : R) : f (a • (1 : S)) = ‖a‖ := b
 theorem extends_norm (hf1 : f 1 = 1) (a : R) : f (algebraMap R S a) = ‖a‖ := by
   rw [Algebra.algebraMap_eq_smul_one]; exact extends_norm' hf1 _
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The restriction of an algebra norm to a subalgebra. -/
 def restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : AlgebraNorm R A where

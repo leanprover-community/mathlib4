@@ -55,6 +55,7 @@ theorem rnDeriv_ae_eq_condExp {hm : m ≤ m0} [hμm : SigmaFinite (μ.trim hm)] 
     exact (SignedMeasure.measurable_rnDeriv _ _).stronglyMeasurable
   · exact (SignedMeasure.measurable_rnDeriv _ _).stronglyMeasurable.aestronglyMeasurable
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: the following couple of lemmas should be generalized and proved using Jensen's inequality
 -- for the conditional expectation (not in mathlib yet) .
 theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f | m]) 1 μ ≤ eLpNorm f 1 μ := by
@@ -111,6 +112,7 @@ theorem integral_abs_condExp_le (f : α → ℝ) : ∫ x, |(μ[f | m]) x| ∂μ 
   · simp_rw [← Real.norm_eq_abs]
     exact (stronglyMeasurable_condExp.mono hm).aestronglyMeasurable.norm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem setIntegral_abs_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : α → ℝ) :
     ∫ x in s, |(μ[f | m]) x| ∂μ ≤ ∫ x in s, |f x| ∂μ := by
   by_cases hnm : m ≤ m0
@@ -169,6 +171,7 @@ theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   rw [enorm_eq_nnnorm, enorm_eq_nnnorm, ENNReal.coe_le_coe, Real.nnnorm_of_nonneg R.coe_nonneg]
   exact Subtype.mk_le_mk.2 (le_of_lt hx)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an integrable function `g`, the conditional expectations of `g` with respect to
 a sequence of sub-σ-algebras is uniformly integrable. -/
 theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {g : α → ℝ}

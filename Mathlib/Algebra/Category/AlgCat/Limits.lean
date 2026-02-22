@@ -67,6 +67,7 @@ instance limitAlgebra :
     Algebra R (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).pt :=
   inferInstanceAs <| Algebra R (Shrink (sectionsSubalgebra F))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget (AlgCat R)) j` as an `AlgHom`. -/
 def limitπAlgHom (j) :
     (Types.Small.limitCone (F ⋙ forget (AlgCat R))).pt →ₐ[R]
@@ -99,6 +100,7 @@ def limitCone : Cone F where
         ext : 1
         exact AlgHom.coe_fn_injective ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `AlgCat R` is a limit cone.
 (Internal use only; use the limits API.)
 -/

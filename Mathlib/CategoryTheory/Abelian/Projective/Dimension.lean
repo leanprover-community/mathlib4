@@ -254,6 +254,7 @@ lemma Retract.projectiveDimension_le {X Y : C} (h : Retract X Y) :
     have := hn i hi
     exact h.hasProjectiveDimensionLT i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
     projectiveDimension X < n ↔ HasProjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩

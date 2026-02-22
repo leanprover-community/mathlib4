@@ -251,6 +251,7 @@ lemma Retract.injectiveDimension_le {X Y : C} (h : Retract X Y) :
     have := hn i hi
     exact h.hasInjectiveDimensionLT i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_lt_iff {X : C} {n : ℕ} :
     injectiveDimension X < n ↔ HasInjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩

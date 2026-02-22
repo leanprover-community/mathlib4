@@ -68,6 +68,7 @@ lemma exists_res_eq_zero_of_germ_eq_zero (U : Opens X) (f : X.presheaf.obj (op U
   use V, i, hv
   simpa using hv4
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If the germ of a section `f` is a unit in the stalk at `x`, then `f` must be a unit on some small
 neighborhood around `x`.
@@ -88,6 +89,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   simp only [map_mul, map_one] at heq'
   simpa using .of_mul_eq_one _ heq'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a section `f` is a unit in each stalk, `f` must be a unit. -/
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     (h : ∀ (x) (hx : x ∈ U), IsUnit (X.presheaf.germ U x hx f)) : IsUnit f := by
@@ -113,11 +115,11 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
       ← germ_res_apply X.presheaf (iVU y) z hzVy f, ← map_mul, (hg y), map_one, map_one]
   -- We claim that these local inverses glue together to a global inverse of `f`.
   obtain ⟨gl, gl_spec, -⟩ :
-    -- We need to rephrase the result from `HasForget` to `CommRingCat`.
+    -- We need to rephrase the result from `ConcreteCategory` to `CommRingCat`.
     ∃ gl : X.presheaf.obj (op U), (∀ i, ((sheaf X).val.map (iVU i).op) gl = g i) ∧ _ :=
     X.sheaf.existsUnique_gluing' V U iVU hcover g ic
   refine .of_mul_eq_one gl <| X.sheaf.eq_of_locally_eq' V U iVU hcover _ _ fun i ↦ ?_
-  -- We need to rephrase the goal from `HasForget` to `CommRingCat`.
+  -- We need to rephrase the goal from `ConcreteCategory` to `CommRingCat`.
   change ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
   rw [map_one, map_mul, gl_spec]
   exact hg i
@@ -196,6 +198,7 @@ theorem basicOpen_mul {U : Opens X} (f g : X.presheaf.obj (op U)) :
   · simp [mem_basicOpen (hx := hx)]
   · simp [mt (basicOpen_le X _ ·) hx]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma basicOpen_pow {U : Opens X} (f : X.presheaf.obj (op U)) (n : ℕ) (h : 0 < n) :
     X.basicOpen (f ^ n) = X.basicOpen f := by

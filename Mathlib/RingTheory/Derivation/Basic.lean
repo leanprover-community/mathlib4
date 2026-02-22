@@ -20,10 +20,10 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
 - `Derivation.llcomp`: We may compose linear maps and derivations to obtain a derivation,
   and the composition is bilinear.
 
-See `RingTheory.Derivation.Lie` for
+See `Mathlib/RingTheory/Derivation/Lie.lean` for
 - `Derivation.instLieAlgebra`: The `R`-derivations from `A` to `A` form a Lie algebra over `R`.
 
-and `RingTheory.Derivation.ToSquareZero` for
+and `Mathlib/RingTheory/Derivation/ToSquareZero.lean` for
 - `derivationToSquareZeroEquivLift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 
@@ -134,6 +134,7 @@ theorem map_algebraMap : D (algebraMap R A r) = 0 := by
 theorem map_natCast (n : ℕ) : D (n : A) = 0 := by
   rw [← nsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
   induction n with

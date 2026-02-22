@@ -39,6 +39,7 @@ theorem mem_powerset {s t : Finset α} : s ∈ powerset t ↔ s ⊆ t := by
   simp [powerset, mem_mk, mem_pmap, mk.injEq, exists_prop, exists_eq_right,
     ← val_le_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_powerset (s : Finset α) :
     (s.powerset : Set (Finset α)) = ((↑) : Finset α → Set α) ⁻¹' (s : Set α).powerset := by
@@ -205,6 +206,7 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 lemma powersetCard_empty_subsingleton (n : ℕ) :
     (powersetCard n (∅ : Finset α) : Set <| Finset α).Subsingleton := by
   simp [Set.Subsingleton, subset_empty]

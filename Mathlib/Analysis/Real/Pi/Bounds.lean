@@ -35,6 +35,7 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) : 2 ^ (n + 1) * √(2 - sqrtTwoAddSerie
   refine lt_of_le_of_lt (le_of_eq ?_) this
   rw [pow_succ' _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     π < 2 ^ (n + 1) * √(2 - sqrtTwoAddSeries 0 n) + 1 / 4 ^ n := by
   have : π < (√(2 - sqrtTwoAddSeries 0 n) / 2 + 1 / (2 ^ n) ^ 3 / 4) * (2 : ℝ) ^ (n + 2) := by

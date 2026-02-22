@@ -205,6 +205,7 @@ variable (a)
 /-- An Eisenstein series of weight `k` and level `Γ(N)`, with congruence condition `a`. -/
 def _root_.eisensteinSeries (k : ℤ) (z : ℍ) : ℂ := ∑' x : gammaSet N 1 a, eisSummand k x z
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
     eisensteinSeries a k ∣[k] γ = eisensteinSeries (a ᵥ* γ) k := by
   ext1 z
@@ -214,15 +215,20 @@ lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
   congr 1
   exact (gammaSetEquiv a γ).tsum_eq (eisSummand k · z)
 
-/-- The SlashInvariantForm defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
-  and congruence condition given by `a : Fin 2 → ZMod N`. -/
-def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
+/-- The `SlashInvariantForm` defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
+and congruence condition given by `a : Fin 2 → ZMod N`. -/
+def eisensteinSeriesSIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
   toFun := eisensteinSeries a k
   slash_action_eq' A hA := by
     obtain ⟨A, (hA : A ∈ Γ(N)), rfl⟩ := hA
     simp [SpecialLinearGroup.mapGL, ← SL_slash, eisensteinSeries_slash_apply, Gamma_mem'.mp hA]
 
-lemma eisensteinSeries_SIF_apply (k : ℤ) (z : ℍ) :
-    eisensteinSeries_SIF a k z = eisensteinSeries a k z := rfl
+@[deprecated (since := "2026-02-10")]
+noncomputable alias eisensteinSeries_SIF := eisensteinSeriesSIF
+
+lemma eisensteinSeriesSIF_apply (k : ℤ) (z : ℍ) :
+    eisensteinSeriesSIF a k z = eisensteinSeries a k z := rfl
+
+@[deprecated (since := "2026-02-10")] alias eisensteinSeries_SIF_apply := eisensteinSeriesSIF_apply
 
 end EisensteinSeries

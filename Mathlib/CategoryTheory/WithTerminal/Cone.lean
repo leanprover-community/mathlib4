@@ -29,6 +29,7 @@ variable {J : Type w} [Category.{w'} J]
 namespace CategoryTheory.WithTerminal
 variable {X : C} {K : J ⥤ Over X} {F : C ⥤ D} {t : Cone K}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The category of functors `J ⥤ Over X` can be seen as part of a comma category,
 namely the comma category constructed from the identity of the category of functors
 `J ⥤ C` and the functor that maps `X : C` to the constant functor `J ⥤ C`.
@@ -58,6 +59,7 @@ def liftFromOverComp : liftFromOver.obj (K ⋙ Over.post F) ≅ liftFromOver.obj
   hom.app | star | of a => 𝟙 _
   inv.app | star | of a => 𝟙 _
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A cone of a functor `K : J ⥤ Over X` consists of an object of `Over X`, together
@@ -82,6 +84,7 @@ private def coneLift : Cone K ⥤ Cone (liftFromOver.obj K) where
     | of a => by simp [← Comma.comp_left]
   }
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- This is the inverse of the previous construction: a cone of an extended functor
@@ -147,6 +150,7 @@ instance (X : C) [HasLimitsOfSize.{w, w'} C] : HasLimitsOfSize.{w, w'} (Over X) 
 namespace WithInitial
 variable {X : C} {K : J ⥤ Under X} {F : C ⥤ D} {t : Cocone K}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The category of functors `J ⥤ Under X` can be seen as part of a comma category,
 namely the comma category constructed from the identity of the category of functors
 `J ⥤ C` and the functor that maps `X : C` to the constant functor `J ⥤ C`.
@@ -176,6 +180,7 @@ def liftFromUnderComp : liftFromUnder.obj (K ⋙ Under.post F) ≅ liftFromUnder
   hom.app | star | of a => 𝟙 _
   inv.app | star | of a => 𝟙 _
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A cocone of a functor `K : J ⥤ Under X` consists of an object of `Under X`, together
@@ -200,6 +205,7 @@ private def coconeLift : Cocone K ⥤ Cocone (liftFromUnder.obj K) where
     | of a => by simp [← Comma.comp_right]
   }
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- This is the inverse of the previous construction: a cocone of an extended functor

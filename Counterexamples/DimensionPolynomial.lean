@@ -33,6 +33,7 @@ variable (k : Type*) [Field k]
 /-- We define the commutative ring `A` as `{f ∈ k(t)⟦Y⟧ | f(0) ∈ k}` for a field `k`. -/
 abbrev A : Subring (RatFunc k)⟦X⟧ := (RatFunc.C (K := k)).range.comap PowerSeries.constantCoeff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
   have h_unit : ∀ (x : (RatFunc k)⟦X⟧) (hx : x ∈ A k), IsUnit x → IsUnit (⟨x, hx⟩ : A k) := by
     intro x ⟨z, hz⟩ ⟨y, hxy⟩
@@ -67,6 +68,7 @@ theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
   · exact ⟨0, by simp [hy_const]⟩
   · simp only [Subring.coe_mul, SubmonoidClass.coe_pow, pow_succ, ← ha, mul_assoc, mul_comm x.val _]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
   apply le_antisymm (by simpa [ringKrullDim_A_eq_one k] using Polynomial.ringKrullDim_le (R := A k))
   let φ : (A k) →+* k := by

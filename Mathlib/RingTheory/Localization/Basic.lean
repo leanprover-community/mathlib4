@@ -88,6 +88,7 @@ noncomputable abbrev mapPiEvalRingHom :
     Localization (S.comap <| Pi.evalRingHom R i) →+* Localization S :=
   map (T := S) _ (Pi.evalRingHom R i) le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open Function in
 theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
   let T := S.comap (Pi.evalRingHom R i)
@@ -462,6 +463,7 @@ end Localization
 
 open IsLocalization
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `R` is a field, then localizing at a submonoid not containing `0` adds no new elements. -/
 theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRing Rₘ]
     {M : Submonoid R} (hM : (0 : R) ∉ M) (hR : IsField R) [Algebra R Rₘ] [IsLocalization M Rₘ] :

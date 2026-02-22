@@ -429,6 +429,7 @@ lemma Over.Hom.ext {A B : P.Over Q X} {f g : A ⟶ B} (h : f.left = g.left) : f 
   · exact h
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma Over.w {A B : P.Over Q X} (f : A ⟶ B) :
     f.left ≫ B.hom = A.hom := by
@@ -494,6 +495,7 @@ lemma Under.Hom.ext {A B : P.Under Q X} {f g : A ⟶ B} (h : f.right = g.right) 
   · simp
   · exact h
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma Under.w {A B : P.Under Q X} (f : A ⟶ B) :
     A.hom ≫ f.right = B.hom := by
@@ -545,6 +547,7 @@ protected abbrev CostructuredArrow.forget :
     P.CostructuredArrow Q F X ⥤ CostructuredArrow F X :=
   Comma.forget _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reinterpreting an `F`-costructured arrow `F.obj A ⟶ X` as an arrow over `X`. -/
 @[simps]
 protected def CostructuredArrow.toOver : P.CostructuredArrow ⊤ F X ⥤ P.Over ⊤ X where
@@ -566,6 +569,7 @@ instance [F.Full] : (CostructuredArrow.toOver P F X).Full := by
 
 end CostructuredArrow
 
+set_option backward.isDefEq.respectTransparency false in
 instance HasFactorization.over
     {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
     [W₁.HasFactorization W₂] (S : C) :

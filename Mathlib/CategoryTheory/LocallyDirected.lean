@@ -56,6 +56,7 @@ instance (F : Discrete J ⥤ Type*) : F.IsLocallyDirected := by
   simp only [Discrete.functor_map_id, types_id_apply, forall_eq']
   exact fun x ↦ ⟨⟨i⟩, 𝟙 _, 𝟙 _, x, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance (F : WidePushoutShape J ⥤ Type*) [∀ i, Mono (F.map (.init i))] :
     F.IsLocallyDirected := by
   constructor

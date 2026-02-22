@@ -39,6 +39,7 @@ variable {f : ℂ → ℂ} {s : Set ℂ} {M R : ℝ} {z w : ℂ}
 
 section SchwarzTransform
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `w = z / (2M - z)`, then `z = 2M * w / (1 + w)`. This is the inverse of the
 Schwarz transform used in the proof of the Borel-Carathéodory theorem. -/
 lemma eq_mul_div_one_add_of_eq_div_sub (_ : M ≠ 0) (_ : 2 * M - z ≠ 0)

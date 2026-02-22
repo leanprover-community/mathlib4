@@ -217,6 +217,7 @@ theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Fi
   · intro _ _ h_not_in ih
     rw [Finset.sum_insert h_not_in, ih, slice_add, Finset.sum_insert h_not_in]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The original holor can be recovered from its slices by multiplying with unit vectors and
 summing up. -/
 @[simp]
@@ -273,6 +274,7 @@ theorem cprankMax_add [Mul α] [AddMonoid α] :
     · assumption
     · exact cprankMax_add hx₂ hy
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cprankMax_mul [NonUnitalNonAssocSemiring α] :
     ∀ (n : ℕ) (x : Holor α [d]) (y : Holor α ds), CPRankMax n y → CPRankMax n (x ⊗ y)
   | 0, x, _, CPRankMax.zero => by simp [mul_zero x, CPRankMax.zero]

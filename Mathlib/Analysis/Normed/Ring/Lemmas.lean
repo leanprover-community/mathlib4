@@ -40,6 +40,7 @@ theorem Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter 
   hg.op_zero_isBoundedUnder_le hf (flip (· * ·)) fun x y =>
     (norm_mul_le y x).trans_eq (mul_comm _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- Non-unital seminormed ring structure on the product of finitely many non-unital seminormed
 rings, using the sup norm. -/
@@ -209,6 +210,7 @@ end SeparationQuotient
 
 namespace NNReal
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
   rw [← isometry_subtype_coe.lipschitzWith_iff]
   have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=

@@ -239,6 +239,16 @@ theorem supIndep_product_iff {s : Finset ι} {t : Finset ι'} {f : ι × ι' →
       simpa only [sup_image, sup_product_right]
     grind [Finset.SupIndep.disjoint_sup_sup, = product_eq_sprod, = disjoint_left]
 
+protected theorem SupIndep.union [DecidableEq ι] {s t : Finset ι} {f : ι → α}
+    (hs : s.SupIndep f) (ht : t.SupIndep f) (h : Disjoint (s.sup f) (t.sup f)) :
+    (s ∪ t).SupIndep f := by
+  rw [show s ∪ t = ({s, t} : Finset _).biUnion id by simp]
+  grind [SupIndep.biUnion, supIndep_pair]
+
+protected theorem SupIndep.insert [DecidableEq ι] {i : ι} {s : Finset ι} {f : ι → α}
+    (hs : s.SupIndep f) (h : Disjoint (f i) (s.sup f)) : (insert i s).SupIndep f := by
+  grind [insert_eq, SupIndep.union, sup_singleton]
+
 end IsModularLattice
 
 section DistribLattice
@@ -282,6 +292,7 @@ include hs in
 theorem sSupIndep.pairwiseDisjoint : s.PairwiseDisjoint id := fun _ hx y hy h =>
   disjoint_sSup_right (hs hx) ((mem_diff y).mpr ⟨hy, h.symm⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sSupIndep_singleton (a : α) : sSupIndep ({a} : Set α) := fun i hi ↦ by
   simp_all
 
@@ -456,6 +467,7 @@ lemma iSupIndep.of_coe_Iic_comp {ι : Sort*} {a : α} {t : ι → Set.Iic a}
   simp_rw [Function.comp_apply, ← Set.Iic.coe_iSup] at ht
   exact @ht x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iSupIndep_iff_supIndep {s : Finset ι} {f : ι → α} :
     iSupIndep (f ∘ ((↑) : s → ι)) ↔ s.SupIndep f := by
   classical

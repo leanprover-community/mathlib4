@@ -30,6 +30,7 @@ namespace Finsupp
 
 variable [Zero α] {s : Finset ι} (f : ∀ i ∈ s, α) {i : ι}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Create an element of `ι →₀ α` from a finset `s` and a function `f` defined on this finset. -/
 def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α where
   toFun i :=

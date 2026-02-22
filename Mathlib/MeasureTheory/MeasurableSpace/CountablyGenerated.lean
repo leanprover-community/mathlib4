@@ -303,7 +303,7 @@ theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
   use range (mapNatBool α), Equiv.ofInjective _ <|
     injective_mapNatBool _,
     Measurable.subtype_mk <| measurable_mapNatBool _
-  simp_rw [← generateFrom_natGeneratingSequence α]
+  simp_rw +instances [← generateFrom_natGeneratingSequence α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
   rw [← Equiv.image_eq_preimage_symm _ _]
@@ -348,6 +348,7 @@ lemma generateFrom_memPartition_le_succ (t : ℕ → Set α) (n : ℕ) :
     generateFrom (memPartition t n) ≤ generateFrom (memPartition t (n + 1)) :=
   generateFrom_le (fun _ hs ↦ measurableSet_succ_memPartition t n hs)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ) (s : Set α) :
     MeasurableSet[generateFrom (memPartition t n)] s
       ↔ ∃ S : Finset (Set α), ↑S ⊆ memPartition t n ∧ s = ⋃₀ S := by

@@ -49,6 +49,7 @@ def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
 
 variable {F}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
     c.IsColimit ↔ Nonempty (Limits.IsColimit (F.coconeTypesEquiv c)) := by
   constructor

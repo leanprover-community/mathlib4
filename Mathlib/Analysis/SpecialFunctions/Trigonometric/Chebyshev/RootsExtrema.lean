@@ -51,6 +51,7 @@ theorem one_lt_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < x) :
   rw [← cosh_arcosh (le_of_lt hx), T_real_cosh, one_lt_cosh, mul_ne_zero_iff]
   exact ⟨by norm_cast, by assumption⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_le_negOnePow_mul_eval_T_real (n : ℤ) {x : ℝ} (hx : x ≤ -1) :
     1 ≤ n.negOnePow * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
@@ -58,6 +59,7 @@ theorem one_le_negOnePow_mul_eval_T_real (n : ℤ) {x : ℝ} (hx : x ≤ -1) :
   rw [Int.cast_negOnePow, ← mul_assoc, ← mul_zpow]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_lt_negOnePow_mul_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x < -1) :
     1 < n.negOnePow * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
@@ -203,6 +205,7 @@ theorem rootMultiplicity_U_real {n k : ℕ} (hk : k < n) :
   rw [← count_roots, roots_U_real, Multiset.count_eq_one_of_mem (by simp)]
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isLocalMax_T_real {n k : ℕ} (hn : n ≠ 0) (hk₀ : 0 < k) (hk₁ : k < n) (hk₂ : Even k) :
     IsLocalMax (T ℝ n).eval (cos (k * π / n)) := by
   have zero_lt : 0 < k * π / n := by positivity
@@ -219,6 +222,7 @@ theorem isLocalMax_T_real {n k : ℕ} (hn : n ≠ 0) (hk₀ : 0 < k) (hk₁ : k 
   · rw [← cos_zero]
     exact cos_lt_cos_of_nonneg_of_le_pi (le_refl 0) (le_of_lt lt_pi) zero_lt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isLocalMin_T_real {n k : ℕ} (hn : n ≠ 0) (hk₁ : k < n) (hk₂ : Odd k) :
     IsLocalMin (T ℝ n).eval (cos (k * π / n)) := by
   have k_pos : 0 < k := hk₂.pos

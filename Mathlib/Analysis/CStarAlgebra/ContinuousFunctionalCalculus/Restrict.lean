@@ -220,6 +220,7 @@ lemma nonUnitalStarAlgHom_id {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
 variable [TopologicalSpace A] [NonUnitalContinuousFunctionalCalculus S A q]
 variable [CompleteSpace R]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isClosedEmbedding_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
     (hφ : IsClosedEmbedding φ) {f : C(S, R)} (h : QuasispectrumRestricts a f)
     (halg : IsUniformEmbedding (algebraMap R S)) :

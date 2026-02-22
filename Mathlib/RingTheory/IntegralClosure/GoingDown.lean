@@ -24,6 +24,7 @@ open Polynomial
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Polynomial.coeff_mem_radical_span_coeff_of_dvd
     (p : R[X]) (q : R[X]) (hp : p.Monic) (hq : q.Monic)
     (H : q ∣ p) (i : ℕ) (hi : i ≠ q.natDegree) :
@@ -44,6 +45,7 @@ lemma Polynomial.coeff_mem_radical_span_coeff_of_dvd
     simpa [hq.natDegree_map, hr.ne_zero] using congr(($ha).natDegree).symm
   simpa [hi, Ideal.Quotient.eq_zero_iff_mem] using congr(($ha).coeff i)
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00H8]
 instance [IsDomain S] [FaithfulSMul R S] [Algebra.IsIntegral R S] [IsIntegrallyClosed R] :
     Algebra.HasGoingDown R S := by

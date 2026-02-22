@@ -55,6 +55,7 @@ theorem tensor_ρ {X Y : Action V G} {g : G} :
     @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ₘ Y.ρ g :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
 is isomorphic to the tensor unit of `Action V G`. -/
 def tensorUnitIso {X : V} (f : 𝟙_ V ≅ X) : 𝟙_ (Action V G) ≅ Action.mk X 1 :=
@@ -83,6 +84,7 @@ section
 
 variable [BraidedCategory V]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : BraidedCategory (Action V G) :=
   .ofFaithful (Action.forget V G) fun X Y ↦ mkIso (β_ _ _) fun g ↦ by simp
 
@@ -188,9 +190,11 @@ theorem rightDual_v [RightRigidCategory V] : Xᘁ.V = X.Vᘁ :=
 theorem leftDual_v [LeftRigidCategory V] : (ᘁX).V = ᘁX.V :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
   rw [← SingleObj.inv_as_inv]; rfl
 
@@ -213,6 +217,7 @@ noncomputable def diagonalSuccIsoTensorDiagonal [Monoid G] (n : ℕ) :
 
 variable [Group G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
@@ -246,6 +251,7 @@ noncomputable def diagonalSuccIsoTensorTrivial :
 
 variable {G}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) → G) :
     (diagonalSuccIsoTensorTrivial G n).hom.hom f =
@@ -260,6 +266,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) �
       leftRegularTensorIso_hom_hom, tensor_ρ, tensor_apply, ofMulAction_apply]
     <;> simp [ofMulAction_V, types_tensorObj_def, Fin.tail]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n → G) :
     (diagonalSuccIsoTensorTrivial G n).inv.hom (g, f) =
@@ -290,6 +297,7 @@ variable {W : Type*} [Category* W] [MonoidalCategory V] [MonoidalCategory W]
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A lax monoidal functor induces a lax monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.LaxMonoidal] : (F.mapAction G).LaxMonoidal where
@@ -314,6 +322,7 @@ lemma mapAction_ε_hom [F.LaxMonoidal] : (ε (F.mapAction G)).hom = ε F := rfl
 lemma mapAction_μ_hom [F.LaxMonoidal] (X Y : Action V G) :
     (μ (F.mapAction G) X Y).hom = μ F X.V Y.V := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An oplax monoidal functor induces an oplax monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.OplaxMonoidal] : (F.mapAction G).OplaxMonoidal where

@@ -192,9 +192,9 @@ theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.
   -- We first setup the instances
   letI := f.toAlgebra
   letI := fun r : s => (Localization.awayMap f r).toAlgebra
-  have : ∀ r : s,
-      IsLocalization ((Submonoid.powers (r : R)).map (algebraMap R S)) (Localization.Away (f r)) :=
-    by intro r; rw [Submonoid.map_powers]; exact Localization.isLocalization
+  have (r : s) : IsLocalization ((Submonoid.powers (r : R)).map (algebraMap R S))
+      (Localization.Away (f r)) := by
+    rw [Submonoid.map_powers]; exact Localization.isLocalization
   haveI : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) :=
     fun r => IsScalarTower.of_algebraMap_eq'
       (IsLocalization.map_comp (Submonoid.powers (r : R)).le_comap_map).symm

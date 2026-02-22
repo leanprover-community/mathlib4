@@ -122,7 +122,7 @@ instance : Inhabited (CommAlgCat R) := ⟨of R R⟩
 
 lemma forget_obj (A : CommAlgCat.{v} R) : (forget (CommAlgCat.{v} R)).obj A = A := rfl
 
-lemma forget_map (f : A ⟶ B) : (forget (CommAlgCat.{v} R)).map f = f := rfl
+lemma forget_map (f : A ⟶ B) : (forget (CommAlgCat.{v} R)).map f = (f : _ → _) := rfl
 
 instance : CommRing ((forget (CommAlgCat R)).obj A) := inferInstanceAs <| CommRing A
 

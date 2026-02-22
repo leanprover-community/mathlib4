@@ -7,15 +7,16 @@ module
 
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Properties of the module `α →₀ M`
 
 * `Finsupp.linearEquivFunOnFinite`: `α →₀ β` and `a → β` are equivalent if `α` is finite
 * `FunOnFinite.map`: the map `(X → M) → (Y → M)` induced by a map `f : X ⟶ Y` when
-`X` and `Y` are finite.
+  `X` and `Y` are finite.
 * `FunOnFinite.linearMmap`: the linear map `(X → M) →ₗ[R] (Y → M)` induced
-by a map `f : X ⟶ Y` when `X` and `Y` are finite.
+  by a map `f : X ⟶ Y` when `X` and `Y` are finite.
 
 ## Tags
 

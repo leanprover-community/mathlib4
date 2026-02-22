@@ -206,6 +206,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
       simp [hk]
   simp [← hq_mem, IsIrreducible.eq_top_of_invtSubmodule_reflection q hq hq₀]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Matrix in
 lemma injective_pairingIn {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsCrystallographic]
     (b : P.Base) :

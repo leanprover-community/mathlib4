@@ -168,4 +168,16 @@ instance (P : MorphismProperty Scheme) [P.DescendsAlong (@Surjective ⊓ @Flat �
   · dsimp [MorphismProperty.isomorphisms] at H ⊢
     exact IsZariskiLocalAtTarget.of_isPullback (.flip <| .of_hasPullback _ _) H
 
+instance {X Y : Scheme} (f : X ⟶ Y) [Surjective f] [Flat f] [QuasiCompact f] :
+    (Over.pullback f).Faithful :=
+  MorphismProperty.faithful_overPullback_of_isomorphisms_descendAlong
+    (P := @Surjective ⊓ @Flat ⊓ @QuasiCompact)
+    ⟨⟨inferInstance, inferInstance⟩, inferInstance⟩
+
+instance {X Y : Scheme} (f : X ⟶ Y) [Surjective f] [Flat f] [LocallyOfFinitePresentation f] :
+    (Over.pullback f).Faithful :=
+  MorphismProperty.faithful_overPullback_of_isomorphisms_descendAlong
+    (P := @Surjective ⊓ @Flat ⊓ @LocallyOfFinitePresentation)
+    ⟨⟨inferInstance, inferInstance⟩, inferInstance⟩
+
 end AlgebraicGeometry

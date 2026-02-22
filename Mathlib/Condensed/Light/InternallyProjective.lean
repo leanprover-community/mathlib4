@@ -68,6 +68,7 @@ lemma ihomPoints_symm_apply (A B : LightCondMod.{u} R) (S : LightProfinite)
       ((freeForgetAdjunction R).homEquiv _ _ (MonoidalClosed.curry x)) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A ⟶ B)
     (x : (P ⟶[LightCondMod R] A).val.obj ⟨S⟩) :
     (((ihom P).map e).val.app ⟨S⟩) x = (ihomPoints R P B S).symm (ihomPoints R P A S x ≫ e) := by
@@ -77,6 +78,7 @@ lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A 
   congr
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (π : S ⟶ S')
     (f : P ⊗ (free R).obj S'.toCondensed ⟶ B) :
     (ihomPoints R P B S).symm (P ◁ (free R).map (lightProfiniteToLightCondSet.map π) ≫ f) =
@@ -155,6 +157,7 @@ lemma internallyProjective_iff_tensor_condition' (P : LightCondMod R) : Internal
     refine ⟨S', π, hπ, (β_ _ _).hom ≫ g', ?_⟩
     simp [← hh]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a `P : LightCondSet`, the light free light condensed module `R[P]` is internally projective if
 and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all

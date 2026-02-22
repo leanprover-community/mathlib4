@@ -30,6 +30,7 @@ open scoped NNReal
 variable {𝕜 H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
 variable [Algebra ℝ (H →L[𝕜] H)] [IsScalarTower ℝ 𝕜 (H →L[𝕜] H)]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped InnerProductSpace in
 lemma IsPositive.spectrumRestricts {f : H →L[𝕜] H} (hf : f.IsPositive) :
     SpectrumRestricts f ContinuousMap.realToNNReal := by
@@ -75,6 +76,7 @@ lemma instStarOrderedRingRCLike
       | zero => exact isPositive_zero
       | add f g _ _ hf hg => exact hf.add hg
 
+set_option backward.isDefEq.respectTransparency false in
 instance instStarOrderedRing {H : Type*} [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H] : StarOrderedRing (H →L[ℂ] H) :=
   instStarOrderedRingRCLike

@@ -693,6 +693,7 @@ theorem LowerHemicontinuous.lowerHemicontinuousOn (h : LowerHemicontinuous f) (s
     LowerHemicontinuousOn f s :=
   h.semicontinuousOn s
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lowerHemicontinuousWithinAt_iff_frequently :
     LowerHemicontinuousWithinAt f s x ↔
       ∀ t, IsClosed t → (∃ᶠ x' in 𝓝[s] x, f x' ⊆ t) → f x ⊆ t := by

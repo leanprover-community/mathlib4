@@ -27,6 +27,7 @@ universe u
 
 namespace ModuleCat
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `ℤ` modules to `AddCommGrpCat` is full. -/
 instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).Full where
   map_surjective {A B}

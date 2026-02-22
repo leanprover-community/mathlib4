@@ -191,6 +191,7 @@ noncomputable def functor {J K : Type u} [LinearOrder J] [LinearOrder K]
     simp only [eComp, EnrichedCategory.comp]
     exact Functor.ext (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma functor_id (J : Type u) [LinearOrder J] :
     (functor (OrderHom.id (α := J))) = EnrichedFunctor.id _ _ := by
   refine EnrichedFunctor.ext _ (fun _ ↦ rfl) fun i j ↦ ?_

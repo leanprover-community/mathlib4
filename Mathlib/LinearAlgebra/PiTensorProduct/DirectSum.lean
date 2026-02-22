@@ -36,6 +36,7 @@ noncomputable def ofDirectSumEquiv [Finite ι] :
   have : Fintype ι := Fintype.ofFinite ι
   ofDFinsuppEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofDirectSumEquiv_tprod_lof [Fintype ι] [(i : ι) → DecidableEq (κ i)]
     (p : Π i, κ i) (x : Π i, M i (p i)) :
@@ -45,6 +46,7 @@ theorem ofDirectSumEquiv_tprod_lof [Fintype ι] [(i : ι) → DecidableEq (κ i)
   rw [ofDirectSumEquiv]
   convert ofDFinsuppEquiv_tprod_single p x
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofDirectSumEquiv_symm_lof_tprod [Fintype ι] [(i : ι) → DecidableEq (κ i)]
     (p : Π i, κ i) (x : Π i, M i (p i)) :

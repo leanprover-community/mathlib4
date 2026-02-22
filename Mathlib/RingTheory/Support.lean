@@ -194,6 +194,7 @@ variable [Module.Finite R M]
 
 open PrimeSpectrum
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Module.mem_support_iff_of_finite :
     p ∈ Module.support R M ↔ Module.annihilator R M ≤ p.asIdeal := by
   classical

@@ -329,6 +329,7 @@ theorem singularPart_neg (s : SignedMeasure α) (μ : Measure α) :
     rw [toJordanDecomposition_neg, JordanDecomposition.neg_negPart]
   rw [singularPart, singularPart, neg_sub, h₁, h₂]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : ℝ≥0) :
     (r • s).singularPart μ = r • s.singularPart μ := by
   rw [singularPart, singularPart, smul_sub, ← toSignedMeasure_smul, ← toSignedMeasure_smul]
@@ -339,6 +340,7 @@ theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : �
     · congr
       rw [toJordanDecomposition_smul, JordanDecomposition.smul_negPart, singularPart_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
     (r • s).singularPart μ = r • s.singularPart μ := by
   cases le_or_gt 0 r with
@@ -458,6 +460,7 @@ theorem integrable_rnDeriv (c : ComplexMeasure α) (μ : Measure α) : Integrabl
     ⟨memLp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _),
       memLp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ] :
     c.singularPart μ + μ.withDensityᵥ (c.rnDeriv μ) = c := by
   conv_rhs => rw [← c.toComplexMeasure_to_signedMeasure]

@@ -113,6 +113,7 @@ def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
 
 variable [hk : Fact (4 * k + 1).Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `complexInvo k` is indeed an involution. -/
 theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
   change complexInvo k ∘ complexInvo k = id

@@ -249,6 +249,7 @@ instance : SMul G (PlacedTile ps) where
   induction pt using PlacedTile.induction_on
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_smul (g : G) (pt : PlacedTile ps) :
     (g • pt : PlacedTile ps) = g • (pt : Set X) := by
   induction pt using PlacedTile.induction_on

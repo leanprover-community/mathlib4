@@ -100,7 +100,7 @@ theorem swapEquiv_symm : swapEquiv.symm = swapEquiv :=
 
 end TwoP
 
-@[simp]
+@[simp, nolint simpNF] -- mathlib builds without this simp attribute
 theorem TwoP_swap_comp_forget_to_Bipointed :
     TwoP.swap ⋙ forget₂ TwoP Bipointed = forget₂ TwoP Bipointed ⋙ Bipointed.swap :=
   rfl
@@ -131,12 +131,12 @@ theorem pointedToTwoPFst_comp_swap : pointedToTwoPFst ⋙ TwoP.swap = pointedToT
 theorem pointedToTwoPSnd_comp_swap : pointedToTwoPSnd ⋙ TwoP.swap = pointedToTwoPFst :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF] -- mathlib builds without this simp attribute
 theorem pointedToTwoPFst_comp_forget_to_bipointed :
     pointedToTwoPFst ⋙ forget₂ TwoP Bipointed = pointedToBipointedFst :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF] -- mathlib builds without this simp attribute
 theorem pointedToTwoPSnd_comp_forget_to_bipointed :
     pointedToTwoPSnd ⋙ forget₂ TwoP Bipointed = pointedToBipointedSnd :=
   rfl

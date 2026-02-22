@@ -100,6 +100,7 @@ theorem emultiplicity_eq_zero_iff_multiplicity_eq_zero :
     emultiplicity a b = 0 ↔ multiplicity a b = 0 :=
   emultiplicity_eq_iff_multiplicity_eq_of_ne_one zero_ne_one
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem multiplicity_eq_one_of_not_finiteMultiplicity (h : ¬FiniteMultiplicity a b) :
     multiplicity a b = 1 := by
@@ -350,6 +351,7 @@ theorem emultiplicity_le_emultiplicity_iff {c d : β} :
       simp_all only [not_exists, Decidable.not_not, not_true_eq_false, top_le_iff,
         dite_eq_right_iff, ENat.coe_ne_top, imp_false, not_false_eq_true, implies_true]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FiniteMultiplicity.multiplicity_le_multiplicity_iff {c d : β} (hab : FiniteMultiplicity a b)
     (hcd : FiniteMultiplicity c d) :
     multiplicity a b ≤ multiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b → c ^ n ∣ d := by
@@ -574,6 +576,7 @@ theorem multiplicity_sub_of_gt {p a b : α} (h : multiplicity p b < multiplicity
     (hfin : FiniteMultiplicity p b) : multiplicity p (a - b) = multiplicity p b := by
   rw [sub_eq_add_neg, hfin.neg.multiplicity_add_of_gt] <;> rw [multiplicity_neg]; assumption
 
+set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_add_eq_min {p a b : α}
     (h : emultiplicity p a ≠ emultiplicity p b) :
     emultiplicity p (a + b) = min (emultiplicity p a) (emultiplicity p b) := by
@@ -680,6 +683,7 @@ theorem multiplicity_mul {p a b : α} (hp : Prime p) (hfin : FiniteMultiplicity 
   rw [hfin.multiplicity_eq_iff]
   exact ⟨hdiv, hsucc⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_mul {p a b : α} (hp : Prime p) :
     emultiplicity p (a * b) = emultiplicity p a + emultiplicity p b := by
   by_cases hfin : FiniteMultiplicity p (a * b)

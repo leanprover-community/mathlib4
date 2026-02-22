@@ -38,7 +38,11 @@ namespace CategoryTheory
 
 /-- A category is `EssentiallySmall.{w}` if there exists
 an equivalence to some `S : Type w` with `[SmallCategory S]`. -/
-@[pp_with_univ]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the smallness universe `w` in
+-- `EssentiallySmall` and `LocallySmall` would default to a universe output parameter.
+-- See Note [universe output parameters and typeclass caching].
+@[univ_out_params, pp_with_univ]
 class EssentiallySmall (C : Type u) [Category.{v} C] : Prop where
   /-- An essentially small category is equivalent to some small category. -/
   equiv_smallCategory : ∃ (S : Type w) (_ : SmallCategory S), Nonempty (C ≌ S)
@@ -88,7 +92,8 @@ theorem essentiallySmallSelf : EssentiallySmall.{max w v u} C :=
 
 See `ShrinkHoms C` for a category instance where every hom set has been replaced by a small model.
 -/
-@[pp_with_univ]
+-- See comment on `EssentiallySmall` above.
+@[univ_out_params, pp_with_univ]
 class LocallySmall (C : Type u) [Category.{v} C] : Prop where
   /-- A locally small category has small hom-types. -/
   hom_small : ∀ X Y : C, Small.{w} (X ⟶ Y) := by infer_instance
@@ -164,6 +169,7 @@ noncomputable instance : Category.{w} (ShrinkHoms C) where
   id X := equivShrink _ (𝟙 (fromShrinkHoms X))
   comp f g := equivShrink _ ((equivShrink _).symm f ≫ (equivShrink _).symm g)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `ShrinkHoms.equivalence`. -/
 @[simps]
 noncomputable def functor : C ⥤ ShrinkHoms C where
@@ -176,6 +182,7 @@ noncomputable def inverse : ShrinkHoms C ⥤ C where
   obj X := fromShrinkHoms X
   map {X Y} f := (equivShrink (fromShrinkHoms X ⟶ fromShrinkHoms Y)).symm f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The categorical equivalence between `C` and `ShrinkHoms C`, when `C` is locally small.
 -/
 @[simps]

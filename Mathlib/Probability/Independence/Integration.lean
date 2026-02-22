@@ -255,18 +255,6 @@ lemma IndepFun.integral_fun_mul_eq_mul_integral
     ∫ ω, X ω * Y ω ∂μ = μ[X] * μ[Y] :=
   hXY.integral_mul_eq_mul_integral hX hY
 
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul_of_nonneg :=
-  IndepFun.integral_mul_eq_mul_integral
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul_of_integrable :=
-  IndepFun.integral_mul_eq_mul_integral
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul :=
-  IndepFun.integral_mul_eq_mul_integral
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul' :=
-  IndepFun.integral_fun_mul_eq_mul_integral
-
 /-- Independence of functions `f` and `g` into arbitrary types is characterized by the relation
   `E[(φ ∘ f) * (ψ ∘ g)] = E[φ ∘ f] * E[ψ ∘ g]` for all measurable `φ` and `ψ` with values in `ℝ`
   satisfying appropriate integrability conditions. -/

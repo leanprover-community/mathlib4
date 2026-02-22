@@ -44,6 +44,8 @@ isotypic component, fully invariant submodule
 
 @[expose] public section
 
+set_option backward.isDefEq.respectTransparency false
+
 universe u
 
 variable (R₀ R : Type*) (M : Type u) (N S : Type*) [CommSemiring R₀]

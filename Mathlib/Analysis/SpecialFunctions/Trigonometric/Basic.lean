@@ -425,9 +425,6 @@ theorem sin_neg_of_neg_of_neg_pi_lt {x : ℝ} (hx0 : x < 0) (hpx : -π < x) : si
 theorem sin_nonpos_of_nonpos_of_neg_pi_le {x : ℝ} (hx0 : x ≤ 0) (hpx : -π ≤ x) : sin x ≤ 0 :=
   neg_nonneg.1 <| sin_neg x ▸ sin_nonneg_of_nonneg_of_le_pi (neg_nonneg.2 hx0) (neg_le.1 hpx)
 
-@[deprecated (since := "2025-07-27")]
-alias sin_nonpos_of_nonnpos_of_neg_pi_le := sin_nonpos_of_nonpos_of_neg_pi_le
-
 lemma abs_sin_eq_sin_abs_of_abs_le_pi {x : ℝ} (hx : |x| ≤ π) : |sin x| = sin |x| := by
   rcases lt_or_ge x 0 with h | h
   · rw [abs_of_neg h, sin_neg,
@@ -701,6 +698,7 @@ theorem sin_sq_pi_over_two_pow_succ (n : ℕ) :
     · norm_num
   · exact add_nonneg two_pos.le (sqrtTwoAddSeries_zero_nonneg _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sin_pi_over_two_pow_succ (n : ℕ) :
     sin (π / 2 ^ (n + 2)) = √(2 - sqrtTwoAddSeries 0 n) / 2 := by
@@ -840,11 +838,13 @@ theorem quadratic_root_cos_pi_div_five :
                  _ = s * (2 * c * c) + s * (2 * c ^ 2 - 1) := by linarith
                  _ = s * (4 * c ^ 2 - 1) := by linarith
 
+set_option backward.isDefEq.respectTransparency false in
 open Polynomial in
 theorem Polynomial.isRoot_cos_pi_div_five :
     (4 • X ^ 2 - 2 • X - C 1 : ℝ[X]).IsRoot (cos (π / 5)) := by
   simpa using quadratic_root_cos_pi_div_five
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cosine of `π / 5` is `(1 + √5) / 4`. -/
 @[simp]
 theorem cos_pi_div_five : cos (π / 5) = (1 + √5) / 4 := by

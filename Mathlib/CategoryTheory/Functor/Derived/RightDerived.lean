@@ -27,8 +27,8 @@ along the localization functor `L`.
 ## TODO
 
 - refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
-material enters mathlib: derived categories, injective/projective derivability
-structures, existence of derived functors from derivability structures.
+  material enters mathlib: derived categories, injective/projective derivability
+  structures, existence of derived functors from derivability structures.
 
 ## References
 
@@ -107,6 +107,7 @@ lemma rightDerivedNatTrans_fac (τ : F ⟶ F') :
   dsimp only [rightDerivedNatTrans]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma rightDerivedNatTrans_app (τ : F ⟶ F') (X : C) :
     α.app X ≫ (rightDerivedNatTrans RF RF' α α' W τ).app (L.obj X) =

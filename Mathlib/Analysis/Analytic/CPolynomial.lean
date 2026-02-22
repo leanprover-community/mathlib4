@@ -43,6 +43,7 @@ theorem CPolynomialAt_const {v : F} : CPolynomialAt 𝕜 (fun _ => v) x :=
 theorem CPolynomialOn_const {v : F} {s : Set E} : CPolynomialOn 𝕜 (fun _ => v) s :=
   fun _ _ => CPolynomialAt_const
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasFiniteFPowerSeriesOnBall.add (hf : HasFiniteFPowerSeriesOnBall f pf x n r)
     (hg : HasFiniteFPowerSeriesOnBall g pg x m r) :
     HasFiniteFPowerSeriesOnBall (f + g) (pf + pg) x (max n m) r :=
@@ -62,6 +63,7 @@ theorem CPolynomialAt.add (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜
   let ⟨_, _, hqf⟩ := hg
   (hpf.add hqf).cpolynomialAt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasFiniteFPowerSeriesOnBall.neg (hf : HasFiniteFPowerSeriesOnBall f pf x n r) :
     HasFiniteFPowerSeriesOnBall (-f) (-pf) x n r :=
   ⟨hf.1.neg, fun m hm ↦ by rw [Pi.neg_apply, hf.finite m hm, neg_zero]⟩

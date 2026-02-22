@@ -64,6 +64,7 @@ attribute [instance] isWellOrderContinuous
 
 variable {J f} [SuccOrder J] [WellFoundedLT J] (c : TransfiniteCompositionOfShape J f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `f'` are two isomorphic morphisms, and `f` is a transfinite composition
 of shape `J`, then `f'` also is. -/
 @[simps]
@@ -86,6 +87,7 @@ def ofComposableArrows {n : ℕ} (G : ComposableArrows C n) :
   isColimit := colimitOfDiagramTerminal (Fin.isTerminalLast n) G
   fac := Category.id_comp _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a transfinite composition of shape `J`, then it is
 also a transfinite composition of shape `J'` if `J' ≃o J`. -/
 @[simps]
@@ -97,6 +99,7 @@ def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
   incl := Functor.whiskerLeft e.equivalence.functor c.incl
   isColimit := IsColimit.whiskerEquivalence (c.isColimit) e.equivalence
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a transfinite composition of shape `J`, then `F.map f` also is
 provided `F` preserves suitable colimits. -/
 @[simps]

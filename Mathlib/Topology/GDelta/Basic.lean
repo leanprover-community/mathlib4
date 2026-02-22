@@ -235,6 +235,7 @@ lemma isNowhereDense_iff_disjoint {s : Set X} :
   ⟨fun H ↦ H ▸ disjoint_empty _, fun H ↦
     H.closure_left isOpen_interior |>.mono_left interior_subset |>.eq_bot_of_self⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To check that `s` is nowhere dense, it suffices to check that `closure s` is not a
 neighborhood of any point of `s`. -/
 lemma isNowhereDense_iff_forall_notMem_nhds {s : Set X} :

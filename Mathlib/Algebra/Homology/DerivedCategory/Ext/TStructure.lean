@@ -37,6 +37,7 @@ open Localization Limits ZeroObject DerivedCategory Pretriangulated
 
 namespace HasExt
 
+set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 lemma hasSmallLocalizedShiftedHom_of_isLE_of_isGE
     [HasExt.{w} C] (K L : CochainComplex C ℤ)

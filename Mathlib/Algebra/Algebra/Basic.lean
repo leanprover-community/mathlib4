@@ -218,19 +218,19 @@ theorem End.algebraMap_isUnit_inv_apply_eq_iff {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     (↑(h.unit⁻¹) : Module.End S M) m = m' ↔ m = x • m' where
   mp H := H ▸ (isUnit_apply_inv_apply_of_isUnit h m).symm
-  mpr H :=
-    H.symm ▸ by
-      apply_fun ⇑h.unit.val using ((isUnit_iff _).mp h).injective
-      simpa using Module.End.isUnit_apply_inv_apply_of_isUnit h (x • m')
+  mpr H := by
+    apply_fun ⇑h.unit.val using ((isUnit_iff _).mp h).injective
+    rw [H]
+    simpa using Module.End.isUnit_apply_inv_apply_of_isUnit h (x • m')
 
 theorem End.algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' where
   mp H := H ▸ (isUnit_apply_inv_apply_of_isUnit h m).symm
-  mpr H :=
-    H.symm ▸ by
-      apply_fun (↑h.unit : M → M) using ((isUnit_iff _).mp h).injective
-      simpa using isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
+  mpr H := by
+    apply_fun (↑h.unit : M → M) using ((isUnit_iff _).mp h).injective
+    rw [H]
+    simpa using isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
 
 end
 

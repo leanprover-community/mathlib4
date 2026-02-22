@@ -43,6 +43,7 @@ lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : Integers v O) :
   refine ⟨fun _ ↦ wellFounded_dvdNotUnit.mono ?_, fun h ↦ ⟨h.mono ?_⟩⟩ <;>
   simp [Function.onFun, hv.dvdNotUnit_iff_lt]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function WithZero in
 lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ]
     (hv : Integers v O) :
@@ -66,6 +67,7 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ
     simp [← Subtype.coe_le_coe, hv.map_le_one]
   · simp [Function.onFun]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mrange v)]
     (hv : Integers v O) :
     IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (Set.range v) := by

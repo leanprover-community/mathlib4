@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
 # Descent of morphism properties
@@ -86,6 +87,7 @@ instance [Q.IsStableUnderBaseChange] [P.HasOfPrecompProperty Q] [P.RespectsRight
     rw [← h.1.1]
     exact RespectsRight.postcomp _ hf _ hfst
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `P` descends along `Q`, then `P.diagonal` descends along `Q`. -/
 instance [HasPullbacks C] (P Q : MorphismProperty C) [P.DescendsAlong Q] [P.RespectsIso]
     [Q.IsStableUnderBaseChange] :
@@ -109,6 +111,33 @@ instance [HasPullbacks C] (P Q : MorphismProperty C) [P.DescendsAlong Q] [P.Resp
   · rw [heq]
     iterate 4 rw [cancel_left_of_respectsIso (P := P)]
     rwa [cancel_right_of_respectsIso (P := P)]
+
+lemma eq_of_isomorphisms_descendsAlong [(MorphismProperty.isomorphisms C).DescendsAlong P]
+    [P.IsStableUnderBaseChange] [HasEqualizers C]
+    [HasPullbacks C] {X Y S T : C} {f g : X ⟶ Y} {s : X ⟶ S} {t : Y ⟶ S} (hf : f ≫ t = s)
+    (hg : g ≫ t = s) (v : T ⟶ S) (hv : P v)
+    (H :
+      pullback.map s v t v f (𝟙 T) (𝟙 S) (by simp [hf]) (by simp) =
+        pullback.map s v t v g (𝟙 T) (𝟙 S) (by simp [hg]) (by simp)) :
+    f = g := by
+  suffices IsIso (equalizer.ι f g) from Limits.eq_of_epi_equalizer
+  change MorphismProperty.isomorphisms C _
+  apply (MorphismProperty.isomorphisms C).of_isPullback_of_descendsAlong
+    (IsPullback.of_hasPullback _ _).flip (P.pullback_fst s v hv)
+  have : pullback.snd (equalizer.ι f g) (pullback.fst s v) =
+      (equalizerPullbackMapIso hf hg _).inv ≫ equalizer.ι _ _ := by
+    ext <;> simp [pullback.condition]
+  simpa [this] using equalizer.ι_of_eq H
+
+set_option backward.isDefEq.respectTransparency false in
+lemma faithful_overPullback_of_isomorphisms_descendAlong
+    [(MorphismProperty.isomorphisms C).DescendsAlong P] [P.IsStableUnderBaseChange]
+    [HasPullbacks C] [HasEqualizers C] {S T : C} {f : T ⟶ S} (hf : P f) :
+    (Over.pullback f).Faithful := by
+  refine ⟨fun {X} Y a b hab ↦ ?_⟩
+  ext
+  apply P.eq_of_isomorphisms_descendsAlong (Over.w a) (Over.w b) f hf
+  convert congr($(hab).left) <;> ext <;> simp
 
 end DescendsAlong
 

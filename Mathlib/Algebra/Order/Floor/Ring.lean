@@ -519,6 +519,7 @@ theorem fract_div_mul_self_mem_Ico (a b : k) (ha : 0 < a) : fract (b / a) * a �
   ⟨(mul_nonneg_iff_of_pos_right ha).2 (fract_nonneg (b / a)),
     (mul_lt_iff_lt_one_left ha).2 (fract_lt_one (b / a))⟩
 
+set_option backward.isDefEq.respectTransparency false in
 omit [IsStrictOrderedRing k] in
 theorem fract_div_mul_self_add_zsmul_eq (a b : k) (ha : a ≠ 0) :
     fract (b / a) * a + ⌊b / a⌋ • a = b := by
@@ -545,6 +546,7 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
     norm_cast
     rw [← Nat.cast_add, Nat.mod_add_div m n]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     fract ((m : k) / n) = ↑(m % n) / n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
@@ -796,12 +798,15 @@ lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b ≤ a) : ⌈a⌉ �
     positivity
   · exact (ceil_lt_mul hb hba).le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma div_two_lt_floor (ha : 1 ≤ a) : a / 2 < ⌊a⌋ := by
   rw [div_eq_inv_mul]; refine mul_lt_floor ?_ ?_ ?_ <;> norm_num; assumption
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ceil_lt_two_mul (ha : 2⁻¹ < a) : ⌈a⌉ < 2 * a :=
   ceil_lt_mul one_lt_two (by norm_num at ha ⊢; exact ha)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ceil_le_two_mul (ha : 2⁻¹ ≤ a) : ⌈a⌉ ≤ 2 * a :=
   ceil_le_mul one_lt_two (by norm_num at ha ⊢; exact ha)
 

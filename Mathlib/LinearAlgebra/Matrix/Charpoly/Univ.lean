@@ -59,6 +59,7 @@ lemma univ_map_eval₂Hom (M : n × n → S) :
   rw [univ, ← charpoly_map, coe_eval₂Hom, ← mvPolynomialX_map_eval₂ f (Matrix.of M.curry)]
   simp only [of_apply, Function.curry_apply, Prod.mk.eta]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma univ_map_map :
     (univ R n).map (MvPolynomial.map f) = univ S n := by
   rw [MvPolynomial.map, univ_map_eval₂Hom]; rfl

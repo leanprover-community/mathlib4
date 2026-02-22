@@ -93,7 +93,7 @@ lemma coe_comp {X Y Z : DistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : DistLat} (f : X ⟶ Y) :
-    (forget DistLat).map f = f := rfl
+    (forget DistLat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : DistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -153,6 +153,7 @@ instance hasForgetToLat : HasForget₂ DistLat Lat where
   forget₂.obj X := .of X
   forget₂.map f := Lat.ofHom f.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between distributive lattices from an order isomorphism between them.
 -/
 @[simps]

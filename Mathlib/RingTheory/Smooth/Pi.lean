@@ -26,6 +26,7 @@ namespace Algebra.FormallySmooth
 variable {R : Type*} {I : Type*} (A : I → Type*)
 variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
     FormallySmooth R (A i) := by
   classical
@@ -41,11 +42,12 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
       simp [pow_two, sub_mul, mul_sub, ← Pi.single_mul]
     · intro x y
       change Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _ * Ideal.Quotient.mk _ _
-      simp only [AlgHom.toRingHom_eq_coe, LinearMap.coe_single, Pi.single_mul, map_mul]
+      simp +instances only [AlgHom.toRingHom_eq_coe, LinearMap.coe_single, Pi.single_mul, map_mul]
   · ext x
     change (Pi.single i x) i = x
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pi_iff [Finite I] :
     FormallySmooth R (Π i, A i) ↔ ∀ i, FormallySmooth R (A i) := by
   classical

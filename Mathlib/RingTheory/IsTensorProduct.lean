@@ -349,6 +349,7 @@ theorem IsBaseChange.iff_lift_unique :
     exact ⟨h.lift g, h.lift_comp g, fun g' e => h.algHom_ext' _ _ (e.trans (h.lift_comp g).symm)⟩,
     IsBaseChange.of_lift_unique f⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap := by
   apply IsBaseChange.of_lift_unique
   intro Q I₁ I₂ I₃ I₄ g
@@ -663,6 +664,43 @@ lemma IsPushout.cancelBaseChange_tmul (m : M) :
 lemma IsPushout.cancelBaseChange_symm_tmul (s : S) (m : M) :
     (IsPushout.cancelBaseChange R S A B M).symm (s ⊗ₜ m) = algebraMap S B s ⊗ₜ m :=
   IsPushout.cancelBaseChangeAux_symm_tmul R S A B M s m
+
+variable (C : Type*) [CommRing C] [Algebra R C] [Algebra A C] [IsScalarTower R A C]
+
+/-- Algebra version of `IsPushout.cancelBaseChange`. -/
+noncomputable def IsPushout.cancelBaseChangeAlg : B ⊗[A] C ≃ₐ[S] S ⊗[R] C := by
+  refine AlgEquiv.symm
+    (AlgEquiv.ofLinearEquiv (IsPushout.cancelBaseChange R S A B C).symm ?_ ?_)
+  · simp [TensorProduct.one_def]
+  · apply LinearMap.map_mul_of_map_mul_tmul
+    simp
+
+@[simp]
+lemma IsPushout.toLinearEquiv_cancelBaseChangeAlg :
+    (IsPushout.cancelBaseChangeAlg R S A B C).toLinearEquiv =
+      IsPushout.cancelBaseChange R S A B C := by
+  rfl
+
+@[simp]
+lemma IsPushout.cancelBaseChangeAlg_tmul (c : C) :
+    IsPushout.cancelBaseChangeAlg R S A B C (1 ⊗ₜ c) = 1 ⊗ₜ c := by
+  simp [cancelBaseChangeAlg]
+
+@[simp]
+lemma IsPushout.cancelBaseChangeAlg_symm_tmul (s : S) (c : C) :
+    (IsPushout.cancelBaseChangeAlg R S A B C).symm (s ⊗ₜ c) = algebraMap S B s ⊗ₜ c := by
+  simp [cancelBaseChangeAlg]
+
+variable (S : Type*) [CommRing S] [Algebra R S] [Algebra S B] [IsScalarTower R S B]
+  [Algebra.IsPushout R S A B]
+
+attribute [local instance] TensorProduct.rightAlgebra in
+lemma IsPushout.cancelBaseChange_symm_comp_lTensor :
+    AlgHom.comp (IsPushout.cancelBaseChangeAlg R S A (S ⊗[R] A) C).symm.toAlgHom
+      (TensorProduct.lTensor _ (IsScalarTower.toAlgHom R A C)) =
+      TensorProduct.includeLeft := by
+  ext
+  simp [← TensorProduct.one_def, ← TensorProduct.tmul_one_eq_one_tmul, RingHom.algebraMap_toAlgebra]
 
 end Algebra
 

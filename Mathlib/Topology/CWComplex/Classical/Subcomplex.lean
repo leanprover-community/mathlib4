@@ -66,6 +66,7 @@ lemma CWComplex.Subcomplex.union_closedCell [T2Space X] [CWComplex C] (E : Subco
     ⋃ (n : ℕ) (j : E.I n), closedCell (C := C) n j = E :=
   (empty_union _).symm.trans (RelCWComplex.Subcomplex.union_closedCell E)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_not_mem [RelCWComplex C D]
     (E : Subcomplex C) {n : ℕ} {i : cell C n} (h : i ∉ E.I n) : Disjoint (openCell n i) E := by
   simp_rw [← union, disjoint_union_right, disjoint_iUnion_right]

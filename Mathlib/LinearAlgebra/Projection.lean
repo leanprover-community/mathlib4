@@ -52,6 +52,7 @@ theorem ker_id_sub_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) :
 theorem range_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : range f = ⊤ :=
   range_eq_top.2 fun x => ⟨x, hf x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl p (ker f) := by
   constructor
   · rw [disjoint_iff_inf_le]
@@ -70,6 +71,7 @@ namespace Submodule
 
 open LinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `q` is a complement of `p`, then `M/p ≃ q`. -/
 def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
   LinearEquiv.symm <|
@@ -92,6 +94,7 @@ theorem mk_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
     (Quotient.mk (quotientEquivOfIsCompl p q h x) : E ⧸ p) = x :=
   (quotientEquivOfIsCompl p q h).symm_apply_apply x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `q` is a complement of `p`, then `p × q` is isomorphic to `E`. -/
 def prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃ₗ[R] E := by
   apply LinearEquiv.ofBijective (p.subtype.coprod q.subtype)
@@ -223,9 +226,6 @@ theorem linearProjOfIsCompl_isCompl_projection (h : IsCompl p q) (x : E) :
     linearProjOfIsCompl p q h (h.projection x) = linearProjOfIsCompl p q h x :=
   linearProjOfIsCompl_apply_left h _
 
-@[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_idempotent :=
-  linearProjOfIsCompl_isCompl_projection
-
 /-- The linear projection onto a subspace along its complement is an idempotent. -/
 @[simp]
 theorem IsCompl.projection_isIdempotentElem (hpq : IsCompl p q) :
@@ -247,23 +247,14 @@ theorem IsCompl.projection_add_projection_eq_self (hpq : IsCompl p q) (x : E) :
   rw [← prodComm_trans_prodEquivOfIsCompl _ _ hpq]
   exact (prodEquivOfIsCompl _ _ hpq).apply_symm_apply x
 
-@[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self :=
-  IsCompl.projection_add_projection_eq_self
-
 lemma IsCompl.projection_eq_self_sub_projection (hpq : IsCompl p q) (x : E) :
     hpq.symm.projection x = x - hpq.projection x := by
   rw [eq_sub_iff_add_eq, projection_add_projection_eq_self]
-
-@[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl :=
-  IsCompl.projection_eq_self_sub_projection
 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
 @[simp] lemma IsCompl.projection_eq_self_iff (hpq : IsCompl p q) (x : E) :
     hpq.projection x = x ↔ x ∈ p := by
   rw [eq_comm, ← sub_eq_zero, ← projection_eq_self_sub_projection, projection_apply_eq_zero_iff]
-
-@[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_eq_self_iff :=
-  IsCompl.projection_eq_self_iff
 
 @[simp]
 theorem prodEquivOfIsCompl_symm_apply (hpq : IsCompl p q) (x : E) :

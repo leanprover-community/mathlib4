@@ -96,6 +96,7 @@ open CategoryTheory.Limits
 
 variable [Monoid G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When the category is `G`-Set, `cechNerveTerminalFrom` of `G` with the left regular action is
 isomorphic to `EG`, the universal cover of the classifying space of `G` as a simplicial `G`-set. -/
 def cechNerveTerminalFromIso :
@@ -198,6 +199,7 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
     Projective ((standardComplex k G).X n) := by
   classical exact inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom =
@@ -243,6 +245,7 @@ def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
   comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring
     (by simp [ModuleCat.endRingEquiv])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
 a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere else, acts as
 `∑ nᵢgᵢ ↦ ∑ nᵢ : k[G¹] → k` at 0. -/
@@ -255,6 +258,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   change mapDomain _ (single x r) _ = _
   simp [Unique.eq_default (terminal.from _), single_apply, if_pos (Subsingleton.elim _ _)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by
   ext : 3
   have : (forget₂ToModuleCat k G).d 1 0
@@ -278,12 +282,14 @@ theorem εToSingle₀_comp_eq :
   ext1
   simpa using (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quasiIso_forget₂_εToSingle₀ :
     QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
   have h : QuasiIso (forget₂ToModuleCatHomotopyEquiv k G).hom := inferInstance
   rw [← εToSingle₀_comp_eq k G] at h
   exact quasiIso_of_comp_right (hφφ' := h)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : QuasiIso (εToSingle₀ k G) := by
   rw [← HomologicalComplex.quasiIso_map_iff_of_preservesHomology _ (forget₂ _ (ModuleCat.{u} k))]
   apply quasiIso_forget₂_εToSingle₀
@@ -295,11 +301,13 @@ open HomologicalComplex.Hom standardComplex
 
 variable [Group G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
 def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := standardComplex k G
   π := εToSingle₀ k G
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 standard resolution of `k` called `standardComplex k G`. -/
@@ -330,6 +338,7 @@ lemma d_single (x : Gⁿ⁺¹) :
         single (Fin.contractNth j (· * ·) x) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
   simp [d]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =
       (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
@@ -343,6 +352,7 @@ end barComplex
 
 open barComplex
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
 differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
@@ -357,6 +367,7 @@ namespace barComplex
 @[simp]
 theorem d_def : (barComplex k G).d (n + 1) n = d k G n := ChainComplex.of_d _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphism between the bar resolution and standard resolution, with `n`th map
 `(Gⁿ →₀ k[G]) → k[Gⁿ⁺¹]` sending `(g₁, ..., gₙ) ↦ (1, g₁, g₁g₂, ..., g₁...gₙ)`. -/
 def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
@@ -366,6 +377,7 @@ def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
 
 end barComplex
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The chain complex `barComplex k G` as a projective resolution of `k` as a trivial
 `k`-linear `G`-representation. -/
 @[simps complex]
@@ -374,6 +386,7 @@ def barResolution : ProjectiveResolution (Rep.trivial k G k) where
   projective n := inferInstanceAs <| Projective (free k G (Fin n → G))
   π := (isoStandardComplex k G).hom ≫ standardComplex.εToSingle₀ k G
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 bar resolution of `k`. -/

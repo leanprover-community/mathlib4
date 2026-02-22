@@ -44,14 +44,9 @@ lemma expect_eq_zero_iff_of_nonpos (hf : ∀ i ∈ s, f i ≤ 0) :
 section PosSMulMono
 variable [PosSMulMono ℚ≥0 α] {a : α}
 
+@[gcongr]
 lemma expect_le_expect (hfg : ∀ i ∈ s, f i ≤ g i) : 𝔼 i ∈ s, f i ≤ 𝔼 i ∈ s, g i :=
   smul_le_smul_of_nonneg_left (sum_le_sum hfg) <| by positivity
-
-/-- This is a (beta-reduced) version of the standard lemma `Finset.expect_le_expect`,
-convenient for the `gcongr` tactic. -/
-@[gcongr]
-lemma _root_.GCongr.expect_le_expect (h : ∀ i ∈ s, f i ≤ g i) : s.expect f ≤ s.expect g :=
-  Finset.expect_le_expect h
 
 lemma expect_le (hs : s.Nonempty) (h : ∀ x ∈ s, f x ≤ a) : 𝔼 i ∈ s, f i ≤ a :=
   (inv_smul_le_iff_of_pos <| mod_cast hs.card_pos).2 <| by

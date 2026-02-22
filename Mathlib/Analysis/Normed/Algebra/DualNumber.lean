@@ -31,10 +31,12 @@ variable {R : Type*}
 variable [CommRing R] [Algebra ℚ R]
 variable [UniformSpace R] [IsTopologicalRing R] [T2Space R]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem exp_eps : exp (eps : DualNumber R) = 1 + eps :=
   exp_inr _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem exp_smul_eps (r : R) : exp (r • eps : DualNumber R) = 1 + r • eps := by
   rw [eps, ← inr_smul, exp_inr]

@@ -140,6 +140,7 @@ theorem lintegral_countable [MeasurableSingletonClass α] (f : α → ℝ≥0∞
       (lintegral_biUnion hs (fun _ _ => measurableSet_singleton _) (pairwiseDisjoint_fiber id s) _)
     _ = ∑' a : s, f a * μ {(a : α)} := by simp only [lintegral_singleton]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lintegral_insert [MeasurableSingletonClass α] {a : α} {s : Set α} (h : a ∉ s)
     (f : α → ℝ≥0∞) : ∫⁻ x in insert a s, f x ∂μ = f a * μ {a} + ∫⁻ x in s, f x ∂μ := by
   rw [← union_singleton, lintegral_union (measurableSet_singleton a), lintegral_singleton,

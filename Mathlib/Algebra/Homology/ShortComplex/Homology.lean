@@ -395,6 +395,7 @@ noncomputable def RightHomologyData.homologyIso (h : S.RightHomologyData) [S.Has
 
 variable (S)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma LeftHomologyData.homologyIso_leftHomologyData [S.HasHomology] :
     S.leftHomologyData.homologyIso = S.leftHomologyIso.symm := by
@@ -442,6 +443,7 @@ namespace LeftHomologyMapData
 variable {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
   (γ : LeftHomologyMapData φ h₁ h₂) [S₁.HasHomology] [S₂.HasHomology]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_eq :
     homologyMap φ = h₁.homologyIso.hom ≫ γ.φH ≫ h₂.homologyIso.inv := by
   dsimp [homologyMap, LeftHomologyData.homologyIso, leftHomologyIso,
@@ -459,6 +461,7 @@ namespace RightHomologyMapData
 variable {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
   (γ : RightHomologyMapData φ h₁ h₂) [S₁.HasHomology] [S₂.HasHomology]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_eq :
     homologyMap φ = h₁.homologyIso.hom ≫ γ.φH ≫ h₂.homologyIso.inv := by
   dsimp [homologyMap, homologyMap', RightHomologyData.homologyIso,
@@ -634,6 +637,7 @@ instance isIso_leftRightHomologyComparison' [S.HasHomology]
     S.homologyData.right]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance isIso_leftRightHomologyComparison [S.HasHomology] :
     IsIso S.leftRightHomologyComparison := by
   dsimp only [leftRightHomologyComparison]
@@ -662,6 +666,7 @@ lemma leftRightHomologyComparison'_eq_leftHomologpMap'_comp_iso_hom_comp_rightHo
   simpa only [h.leftRightHomologyComparison'_eq] using
     leftRightHomologyComparison'_compatibility h₁ h.left h₂ h.right
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma leftRightHomologyComparison'_fac (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData)
     [S.HasHomology] :
@@ -716,6 +721,7 @@ section
 
 variable [S₁.HasHomology] [S₂.HasHomology] (φ : S₁ ⟶ S₂)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma LeftHomologyData.leftHomologyIso_hom_naturality
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
@@ -724,6 +730,7 @@ lemma LeftHomologyData.leftHomologyIso_hom_naturality
   dsimp [homologyIso, ShortComplex.leftHomologyIso, homologyMap, homologyMap', leftHomologyIso]
   simp only [← leftHomologyMap'_comp, id_comp, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma LeftHomologyData.leftHomologyIso_inv_naturality
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
@@ -810,6 +817,7 @@ instance isIso_homologyMap'_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂)
   dsimp only [homologyMap']
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_homologyMap_of_epi_of_isIso_of_mono' (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology]
     (h₁ : Epi φ.τ₁) (h₂ : IsIso φ.τ₂) (h₃ : Mono φ.τ₃) :
     IsIso (homologyMap φ) := by
@@ -826,6 +834,7 @@ instance isIso_homologyFunctor_map_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) 
     IsIso ((homologyFunctor C).map φ) :=
   (inferInstance : IsIso (homologyMap φ))
 
+set_option backward.isDefEq.respectTransparency false in
 instance isIso_homologyMap_of_isIso (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology] [IsIso φ] :
     IsIso (homologyMap φ) := by
   dsimp only [homologyMap, homologyMap']
@@ -994,6 +1003,7 @@ lemma RightHomologyData.rightHomologyIso_hom_comp_homologyIso_inv (h : S.RightHo
   dsimp only [homologyIso]
   simp only [Iso.trans_inv, Iso.symm_inv, Iso.hom_inv_id_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma comp_homologyMap_comp [S₁.HasHomology] [S₂.HasHomology] (φ : S₁ ⟶ S₂)
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.RightHomologyData) :
@@ -1033,6 +1043,7 @@ lemma homologyMap'_op : (homologyMap' φ h₁ h₂).op =
       HomologyMapData.op_left, RightHomologyMapData.op_φH, Quiver.Hom.unop_op, assoc,
       ← γ.comm_assoc, Iso.hom_inv_id, comp_id])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_op [HasHomology S₁] [HasHomology S₂] :
     (homologyMap φ).op =
       (S₂.homologyOpIso).inv ≫ homologyMap (opMap φ) ≫ (S₁.homologyOpIso).hom := by

@@ -27,6 +27,7 @@ instance Real.instStarOrderedRing : StarOrderedRing ℝ :=
     rintro ⟨s, rfl⟩
     exact mul_self_nonneg s
 
+set_option backward.isDefEq.respectTransparency false in
 instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 := by
   refine .of_le_iff fun x y ↦ ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨d, rfl⟩ := exists_add_of_le h

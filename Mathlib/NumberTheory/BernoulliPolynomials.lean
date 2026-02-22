@@ -74,10 +74,12 @@ section Examples
 @[simp]
 theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bernoulli_one : bernoulli 1 = X - C 2⁻¹ := by
   simp [bernoulli, ← smul_X_eq_monomial, sum_range_succ, ← C_1, -map_one, neg_div, sub_eq_add_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
   rw [bernoulli, eval_finset_sum, sum_range_succ]
@@ -87,6 +89,7 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
     simp [tsub_eq_zero_iff_le, mem_range.1 hx]
   simp [this]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
   simp only [bernoulli, eval_finset_sum]
@@ -132,7 +135,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
     (∑ k ∈ range (n + 1), ((n + 1).choose k : ℚ) • bernoulli k) = monomial n (n + 1 : ℚ) := by
   simp_rw [bernoulli_def, Finset.smul_sum, Finset.range_eq_Ico, ← Finset.sum_Ico_Ico_comm,
     Finset.sum_Ico_eq_sum_range]
-  simp only [add_tsub_cancel_left, tsub_zero, zero_add, map_add]
+  simp only [add_tsub_cancel_left, zero_add, map_add]
   simp_rw [smul_monomial, mul_comm (_root_.bernoulli _) _, smul_eq_mul, ← mul_assoc]
   conv_lhs =>
     apply_congr
@@ -188,6 +191,7 @@ theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
   apply eq_add_of_sub_eq'
   rw [sum_range_pow_eq_bernoulli_sub]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_one_add_X (n : ℕ) :
     (bernoulli n).comp (1 + X) = bernoulli n + n • X ^ (n - 1) := by
   refine Nat.strong_induction_on n fun d hd => ?_
@@ -240,6 +244,7 @@ theorem bernoulli_comp_neg_X (n : ℕ) :
   · grind
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_eval_neg (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (-x) = (-1) ^ n * ((bernoulli n).eval x + n * x ^ (n - 1)) := by
   simpa [mul_add] using congr_arg (Polynomial.eval x) (bernoulli_comp_neg_X n)
@@ -297,7 +302,7 @@ theorem bernoulli_generating_function (t : A) :
   intro i hi
   -- deal with coefficients of e^X-1
   simp only [Nat.cast_choose ℚ (mem_range_le hi), coeff_mk, if_neg (mem_range_sub_ne_zero hi),
-    one_div, PowerSeries.coeff_one, coeff_exp, sub_zero, Algebra.smul_def,
+    PowerSeries.coeff_one, coeff_exp, sub_zero, Algebra.smul_def,
     mul_right_comm _ ((aeval t) _), ← mul_assoc, ← map_mul, ← Polynomial.C_eq_algebraMap,
     Polynomial.aeval_mul, Polynomial.aeval_C]
   -- finally cancel the Bernoulli polynomial and the algebra_map

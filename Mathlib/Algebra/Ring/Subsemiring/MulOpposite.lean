@@ -87,12 +87,14 @@ theorem unop_injective : (@Subsemiring.unop R _).Injective := opEquiv.symm.injec
 @[simp]
 theorem unop_inj {S T : Subsemiring Rᵐᵒᵖ} : S.unop = T.unop ↔ S = T := opEquiv.symm.eq_iff_eq
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem op_bot : (⊥ : Subsemiring R).op = ⊥ := opEquiv.map_bot
 
 @[simp]
 theorem op_eq_bot {S : Subsemiring R} : S.op = ⊥ ↔ S = ⊥ := op_injective.eq_iff' op_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem unop_bot : (⊥ : Subsemiring Rᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
 

@@ -100,6 +100,7 @@ def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
   is_hausdorff := ConnectedComponents.t2
   prop := ConnectedComponents.totallyDisconnectedSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of Profinite
 spaces in compact Hausdorff spaces.
 -/
@@ -125,6 +126,7 @@ theorem CompHaus.toProfinite_obj' (X : CompHaus) :
   rfl
 
 /-- Finite types are given the discrete topology. -/
+@[instance_reducible]
 def FintypeCat.botTopology (A : FintypeCat) : TopologicalSpace A := ⊥
 
 section DiscreteTopology
@@ -141,7 +143,7 @@ discrete topology. -/
 @[simps! -isSimp map_hom_hom_apply]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
-  map f := ofHom _ ⟨f, by continuity⟩
+  map f := ofHom _ ⟨f, by fun_prop⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toProfiniteFullyFaithful : toProfinite.FullyFaithful where
@@ -221,6 +223,7 @@ instance hasColimits : Limits.HasColimits Profinite :=
 instance forget_preservesLimits : Limits.PreservesLimits (forget Profinite) := by
   apply Limits.comp_preservesLimits Profinite.toTopCat (forget TopCat)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · dsimp [Function.Surjective]

@@ -1,0 +1,42 @@
+name: ci dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      tools_branch_ref:
+        description: ref for tools checkout (defaults to 'this commit')
+        required: false
+        type: string
+        default: ''
+      pr_branch_ref:
+        description: ref for building-branch checkout (defaults to 'this commit')
+        required: false
+        type: string
+        default: ''
+      run_post_ci:
+        description: Run the post-CI job?
+        required: false
+        type: boolean
+        default: false # We shouldn't need this job in typical experiments
+
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  # By default let's remove this permission (which is present in the other build pipelines)
+  # from the CI experimentation runs to avoid unwitting side effects
+  # pull-requests: write
+
+jobs:
+  build:
+    name: ci (dev branch)
+    # For sanity and intentionality, let's only trigger this from branches ci-dev/*
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
+    uses: ./.github/workflows/build_template.yml
+    with:
+      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
+      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
+      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
+      pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
+      run_post_ci: ${{ inputs.run_post_ci }}
+      runs_on: pr
+    secrets: inherit

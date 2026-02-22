@@ -107,6 +107,7 @@ theorem coePNat_prime (v : PrimeMultiset) (p : ℕ+) (h : p ∈ (v : Multiset �
 instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=
   ⟨fun v => v.map (↑)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coePNat_nat (v : PrimeMultiset) : ((v : Multiset ℕ+) : Multiset ℕ) = (v : Multiset ℕ) := by
   change (v.map ((↑) : Nat.Primes → ℕ+)).map Subtype.val = v.map Subtype.val
   rw [Multiset.map_map]
@@ -265,6 +266,7 @@ def factorMultisetEquiv : ℕ+ ≃ PrimeMultiset where
   left_inv := prod_factorMultiset
   right_inv := PrimeMultiset.factorMultiset_prod
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Factoring gives a homomorphism from the multiplicative
 monoid ℕ+ to the additive monoid of multisets. -/
 @[simp]
@@ -365,6 +367,7 @@ theorem factorMultiset_lcm (m n : ℕ+) :
     · exact dvd_lcm_left m n
     · exact dvd_lcm_right m n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The number of occurrences of p in the factor multiset of m
 is the same as the p-adic valuation of m. -/
 theorem count_factorMultiset (m : ℕ+) (p : Nat.Primes) (k : ℕ) :

@@ -86,6 +86,7 @@ lemma IsTangentAt.eq_of_isTangentAt {s : Sphere P} {p q : P} {as : AffineSubspac
     ← inner_sub_right, vsub_sub_vsub_cancel_right] at hqp
   simpa using hqp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isTangentAt_center_iff {s : Sphere P} {as : AffineSubspace ℝ P} :
     s.IsTangentAt s.center as ↔ s.radius = 0 ∧ s.center ∈ as := by
   refine ⟨?_, ?_⟩

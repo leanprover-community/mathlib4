@@ -203,6 +203,7 @@ theorem intrinsicClosure_idem (s : Set P) :
   rw [intrinsicClosure, preimage_image_eq _ Subtype.coe_injective]
   exact isClosed_closure
 
+set_option backward.isDefEq.respectTransparency false in
 theorem intrinsicClosure_eq_closure_inter_affineSpan (s : Set P) :
     intrinsicClosure 𝕜 s = closure s ∩ affineSpan 𝕜 s := by
   have h : Topology.IsInducing ((↑) : affineSpan 𝕜 s → P) := .subtypeVal
@@ -311,6 +312,7 @@ private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] 
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The intrinsic interior of a nonempty convex set is nonempty. -/
 protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :
     (intrinsicInterior ℝ s).Nonempty := by

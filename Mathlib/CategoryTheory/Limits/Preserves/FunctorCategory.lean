@@ -138,6 +138,7 @@ def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category* C] {D : Type*}
     limit (G ⋙ (whiskeringRight _ _ _).obj F) ≅ limit G ⋙ F :=
   (preservesLimitIso _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limitCompWhiskeringRightIsoLimitComp_inv_π {C : Type*} [Category* C] {D : Type*}
     [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
@@ -146,6 +147,7 @@ theorem limitCompWhiskeringRightIsoLimitComp_inv_π {C : Type*} [Category* C] {D
       limit.π (G ⋙ (whiskeringRight _ _ _).obj F) j = whiskerRight (limit.π G j) F := by
   simp [limitCompWhiskeringRightIsoLimitComp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limitCompWhiskeringRightIsoLimitComp_hom_whiskerRight_π
     {C : Type*} [Category* C] {D : Type*} [Category* D]
@@ -173,6 +175,7 @@ def colimitCompWhiskeringRightIsoColimitComp {C : Type*} [Category* C] {D : Type
     colimit (G ⋙ (whiskeringRight _ _ _).obj F) ≅ colimit G ⋙ F :=
   (preservesColimitIso _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitCompWhiskeringRightIsoColimitComp_hom {C : Type*} [Category* C] {D : Type*}
     [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
@@ -181,6 +184,7 @@ theorem ι_colimitCompWhiskeringRightIsoColimitComp_hom {C : Type*} [Category* C
       (colimitCompWhiskeringRightIsoColimitComp F G).hom = whiskerRight (colimit.ι G j) F := by
   simp [colimitCompWhiskeringRightIsoColimitComp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem whiskerRight_ι_colimitCompWhiskeringRightIsoColimitComp_inv {C : Type*} [Category* C]
     {D : Type*} [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
@@ -235,6 +239,7 @@ section
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
 variable [PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _)]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : PreservesLimitsOfShape J (colim : (K ⥤ D ⥤ C) ⥤ _) :=
   preservesLimitsOfShape_of_evaluation _ _ (fun d =>
     let i : (colim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅
@@ -252,6 +257,7 @@ section
 variable [HasColimitsOfShape J C] [HasLimitsOfShape K C]
 variable [PreservesColimitsOfShape J (lim : (K ⥤ C) ⥤ _)]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : PreservesColimitsOfShape J (lim : (K ⥤ D ⥤ C) ⥤ _) :=
   preservesColimitsOfShape_of_evaluation _ _ (fun d =>
     let i : (lim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅

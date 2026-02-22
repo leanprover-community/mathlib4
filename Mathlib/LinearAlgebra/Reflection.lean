@@ -240,6 +240,7 @@ lemma reflection_mul_reflection_pow (m : ℕ)
   ext z
   simpa using reflection_mul_reflection_pow_apply hf hg m z t ht
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A formula for $(r_1 r_2)^m z$, where $m$ is an integer and $z \in M$. -/
 lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
     (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
@@ -372,6 +373,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [IsDomain R] [IsTorsionFree R
     simpa [hn₁, hn₀.ne', hx, sub_eq_zero] using hu n
   exact u.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo hΦ₁ hΦ₂ (hg₂.comp hf₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This rather technical-looking lemma exists because it is exactly what is needed to establish a
 uniqueness result for root data. See the doc string of `Module.Dual.eq_of_preReflection_mapsTo` for
 further remarks. -/
@@ -401,6 +403,7 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [IsDomain R] [IsTorsionFree 
 variable {y}
 variable {g : Dual R M}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composite of reflections in "parallel" hyperplanes is a shear (special case). -/
 lemma reflection_reflection_iterate
     (hfx : f x = 2) (hgy : g y = 2) (hgxfy : f y * g x = 4) (n : ℕ) :

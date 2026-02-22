@@ -33,7 +33,7 @@ class FinEnum (α : Sort*) where
   equiv : α ≃ Fin card
   [decEq : DecidableEq α]
 
-attribute [instance 100] FinEnum.decEq
+attribute [instance_reducible, instance 100] FinEnum.decEq
 
 namespace FinEnum
 

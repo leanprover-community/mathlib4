@@ -75,6 +75,7 @@ namespace LieHom
 variable {R L}
 variable {L₂ : Type w} [LieRing L₂] [LieAlgebra R L₂]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 regard a `LieHom` as a `NonUnitalAlgHom`. -/
 @[simps]
@@ -84,6 +85,7 @@ def toNonUnitalAlgHom (f : L →ₗ⁅R⁆ L₂) : CommutatorRing L →ₙₐ[R]
     map_zero' := f.toLinearMap.map_zero
     map_mul' := f.map_lie }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toNonUnitalAlgHom_injective :
     Function.Injective (toNonUnitalAlgHom : _ → CommutatorRing L →ₙₐ[R] CommutatorRing L₂) :=
   fun _ _ h => ext <| NonUnitalAlgHom.congr_fun h

@@ -49,6 +49,7 @@ open NormedSpace
 section general_exponential
 variable {𝕜 : Type*} {α : Type*} [RCLike 𝕜] [TopologicalSpace α] [CompactSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma NormedSpace.exp_continuousMap_eq (f : C(α, 𝕜)) :
     exp f = (⟨exp ∘ f, exp_continuous.comp f.continuous⟩ : C(α, 𝕜)) := by
   ext a
@@ -65,6 +66,7 @@ section RCLikeNormed
 variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
   [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [ContinuousFunctionalCalculus 𝕜 A p]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped ContinuousFunctionalCalculus in
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc (exp : 𝕜 → 𝕜) a = exp a := by

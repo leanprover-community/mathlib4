@@ -9,6 +9,7 @@ public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Filter.Defs
 public import Mathlib.Tactic.IrreducibleDef
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Definitions about filters in topological spaces
@@ -223,6 +224,7 @@ def Inseparable (x y : X) : Prop :=
 variable (X)
 
 /-- Specialization forms a preorder on the topological space. -/
+@[instance_reducible]
 def specializationPreorder : Preorder X :=
   { Preorder.lift (OrderDual.toDual ∘ 𝓝) with
     le := fun x y => y ⤳ x

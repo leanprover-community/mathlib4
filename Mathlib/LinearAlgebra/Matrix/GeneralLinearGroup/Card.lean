@@ -32,6 +32,7 @@ variable [Fintype K] [Finite V]
 local notation "q" => Fintype.card K
 local notation "n" => Module.finrank K V
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Fintype.ofFinite in
 open Fintype in
 /-- The cardinal of the set of linearly independent vectors over a finite-dimensional vector space

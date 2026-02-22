@@ -99,6 +99,7 @@ theorem associatesEquivIsPrincipal_map_one :
     (associatesEquivIsPrincipal R 1 : Ideal R) = 1 := by
   rw [one_eq_mk_one, associatesEquivIsPrincipal_apply, span_singleton_one, one_eq_top]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- The `MulEquiv` version of `Ideal.associatesEquivIsPrincipal`. -/
 noncomputable def associatesMulEquivIsPrincipal :
@@ -147,6 +148,7 @@ theorem associatesNonZeroDivisorsEquivIsPrincipal_map_one :
   rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, map_one, OneMemClass.coe_one,
     associatesEquivIsPrincipal_map_one]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- The `MulEquiv` version of `Ideal.associatesNonZeroDivisorsEquivIsPrincipal`. -/
 noncomputable def associatesNonZeroDivisorsMulEquivIsPrincipal :

@@ -161,6 +161,7 @@ def self : Generators R S S where
   σ' := X
   aeval_val_σ' := aeval_X _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The extension `R[X₁,...,Xₙ] → S` given a family of generators. -/
 @[simps]
 noncomputable
@@ -210,6 +211,7 @@ end Localization
 
 variable {ι' : Type*} {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may construct the family of generators `R[X, Y] → T`. -/
 @[simps val, simps -isSimp σ]
@@ -300,6 +302,7 @@ variable {σ : Type*} {I : Ideal (MvPolynomial σ R)}
   (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R)
   (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The naive generators for a quotient `R[Xᵢ] ⧸ I`.
 If the definitional equality of the section matters, it can be explicitly provided.
@@ -534,6 +537,7 @@ def toExtendScalars (P : Generators R T ι) : Hom P (P.extendScalars S) where
   val := X
   aeval_val i := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 variable {P P'} in
 /-- Reinterpret a hom between generators as a hom between extensions. -/
 @[simps]
@@ -544,9 +548,11 @@ def Hom.toExtensionHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S
   toRingHom_algebraMap x := by simp
   algebraMap_toRingHom x := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
     [Algebra R R''] [Algebra R S''] [IsScalarTower R R'' S'']
@@ -562,6 +568,7 @@ lemma Hom.toExtensionHom_toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S']
 /-- The kernel of a presentation. -/
 noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
   simp only [ker, Extension.ker, toExtension_Ring, algebraMap_eq]
   rfl
@@ -574,6 +581,7 @@ lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
     (Generators.naive s hs).ker = I :=
   I.mk_ker
 
+set_option backward.isDefEq.respectTransparency false in
 -- FIXME: `simpNF` times out synthesizing
 -- `FaithfulSMul (Algebra.Generators.ofAlgHom f h).toExtension.Ring S`.
 @[simp, nolint simpNF]
@@ -593,6 +601,7 @@ lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R
     AlgHomClass.toRingHom_toAlgHom, AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot,
     ← ker_eq_ker_aeval_val]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
   letI : DecidableEq (ι' →₀ ℕ) := Classical.decEq _

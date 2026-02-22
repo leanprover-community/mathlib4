@@ -39,6 +39,7 @@ mapping `[x₁, x₂, ..., xₙ]` to the "monomial" `1 • x₁ * x₂ * ⋯ * x
 noncomputable def basisFreeMonoid : Basis (FreeMonoid X) R (FreeAlgebra R X) :=
   Finsupp.basisSingleOne.map equivMonoidAlgebraFreeMonoid.symm.toLinearEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module.Free R (FreeAlgebra R X) :=
   .of_equiv equivMonoidAlgebraFreeMonoid.symm.toLinearEquiv
 
@@ -53,6 +54,7 @@ end FreeAlgebra
 
 open Cardinal
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.rank_adjoin_le {R : Type u} {S : Type v} [CommRing R] [Ring S] [Algebra R S]
     (s : Set S) : Module.rank R (adjoin R s) ≤ max #s ℵ₀ := by
   rw [adjoin_eq_range_freeAlgebra_lift]

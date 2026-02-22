@@ -44,6 +44,7 @@ noncomputable def Abelian.Ext.mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] {X 
     (ComplexShape.up ℤ)).smallShiftedHomMap
     ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y) f
 
+set_option backward.isDefEq.respectTransparency false in
 open Functor in
 lemma Abelian.Ext.mapExactFunctor_hom
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]

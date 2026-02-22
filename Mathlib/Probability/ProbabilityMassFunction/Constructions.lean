@@ -173,6 +173,7 @@ theorem ofFinset_apply (a : α) : ofFinset f s h h' a = f a := rfl
 theorem support_ofFinset : (ofFinset f s h h').support = ↑s ∩ Function.support f :=
   Set.ext fun a => by simpa [mem_support_iff] using mt (h' a)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_support_ofFinset_iff (a : α) : a ∈ (ofFinset f s h h').support ↔ a ∈ s ∧ f a ≠ 0 := by
   simp
 

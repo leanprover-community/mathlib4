@@ -106,6 +106,7 @@ variable [Semiring S] [Module S M] [Module S M'] [SMulCommClass R' S M']
 instance [Module.IsTorsionFree S M'] : Module.IsTorsionFree S (M →ₛₗ[σ₁₂] M') :=
   coe_injective.moduleIsTorsionFree _ coe_smul
 
+set_option backward.isDefEq.respectTransparency false in
 instance [SMulCommClass R S M] : Module Sᵈᵐᵃ (M →ₛₗ[σ₁₂] M') where
   add_smul _ _ _ := ext fun _ ↦ by
     simp_rw [add_apply, DomMulAct.smul_linearMap_apply, ← map_add, ← add_smul]; rfl

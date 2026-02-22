@@ -34,9 +34,12 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   [Preadditive D] {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
 include adj
+
+set_option backward.isDefEq.respectTransparency false in
 lemma right_adjoint_additive [F.Additive] : G.Additive where
   map_add {X Y} f g := (adj.homEquiv _ _).symm.injective (by simp [homEquiv_counit])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma left_adjoint_additive [G.Additive] : F.Additive where
   map_add {X Y} f g := (adj.homEquiv _ _).injective (by simp [homEquiv_unit])
 

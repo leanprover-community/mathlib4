@@ -157,6 +157,7 @@ theorem sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i
     (∑ i ∈ x.support, of β i (x i)) = x :=
   DFinsupp.sum_single
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_univ_of [Fintype ι] (x : ⨁ i, β i) :
     ∑ i ∈ Finset.univ, of β i (x i) = x := by
   apply DFinsupp.ext (fun i ↦ ?_)
@@ -210,6 +211,7 @@ def toAddMonoid : (⨁ i, β i) →+ γ :=
 theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
   DFinsupp.liftAddHom_apply_single φ i x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` applies addHom_ext' here, which isn't what we want.
@@ -427,6 +429,7 @@ end map
 
 end DirectSum
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism of a finite direct sum of additive commutative monoids
 and the corresponding finite product. -/
 def DirectSum.addEquivProd {ι : Type*} [Fintype ι] (G : ι → Type*) [(i : ι) → AddCommMonoid (G i)] :

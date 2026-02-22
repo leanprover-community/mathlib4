@@ -48,11 +48,7 @@ lemma empty : IsCompactOpenCovered f ∅ :=
 lemma iff_of_unique [Unique ι] :
     IsCompactOpenCovered f U ↔ ∃ (V : Opens (X default)), IsCompact V.1 ∧ f default '' V.1 = U := by
   refine ⟨fun ⟨s, hs, V, hc, hcov⟩ ↦ ?_, fun ⟨V, hc, h⟩ ↦ ?_⟩
-  · by_cases h : s = ∅
-    · aesop
-    · obtain rfl : s = {default} := by
-        rw [← Set.univ_unique, Subsingleton.eq_univ_of_nonempty (Set.nonempty_iff_ne_empty.mpr h)]
-      aesop
+  · cases s.eq_empty_or_singleton_of_unique <;> aesop
   · refine ⟨{default}, Set.finite_singleton _, fun i h ↦ h ▸ V, fun i ↦ ?_, by simpa⟩
     rintro rfl
     simpa
@@ -98,6 +94,7 @@ lemma of_biUnion_eq_of_finite (s : Set (Set S)) (hs : ⋃ t ∈ s, t = U) (hf : 
   have := hf.to_subtype
   exact of_iUnion_eq_of_finite (fun i : s ↦ i.1) (by simpa) (by simpa)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_biUnion_eq_of_isCompact [TopologicalSpace S] {U : Set S} (hU : IsCompact U)
     (s : Set (Opens S)) (hs : ⋃ t ∈ s, t = U) (H : ∀ t ∈ s, IsCompactOpenCovered f t) :
     IsCompactOpenCovered f U := by
@@ -128,6 +125,7 @@ lemma of_finite {U : Set S} {κ : Type*} [Finite κ] (a : κ → ι) (V : ∀ k,
     IsCompactOpenCovered f U :=
   of_iUnion_eq_of_finite _ hU (fun _ ↦ .image _ (hV _))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `U` is compact-open covered and the `X i` have a basis of compact opens,
 `U` can be written as the union of images of elements of the basis. -/
 lemma exists_mem_of_isBasis {B : ∀ i, Set (Opens (X i))} (hB : ∀ i, IsBasis (B i))

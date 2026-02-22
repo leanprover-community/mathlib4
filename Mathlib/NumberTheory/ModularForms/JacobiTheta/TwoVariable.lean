@@ -79,6 +79,7 @@ lemma norm_jacobiTheta₂_term (n : ℤ) (z τ : ℂ) :
     add_re, mul_I_re, im_ofReal_mul, mul_I_re, im_ofReal_mul]
   ring_nf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A uniform upper bound for `jacobiTheta₂_term` on compact subsets. -/
 lemma norm_jacobiTheta₂_term_le {S T : ℝ} (hT : 0 < T) {z τ : ℂ}
     (hz : |im z| ≤ S) (hτ : T ≤ im τ) (n : ℤ) :
@@ -119,6 +120,7 @@ lemma summable_pow_mul_jacobiTheta₂_term_bound (S : ℝ) {T : ℝ} (hT : 0 < T
   refine tendsto_natCast_atTop_atTop.atTop_mul_atTop₀ (tendsto_atTop_add_const_right _ _ ?_)
   exact tendsto_natCast_atTop_atTop.const_mul_atTop (mul_pos pi_pos hT)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The series defining the theta function is summable if and only if `0 < im τ`. -/
 lemma summable_jacobiTheta₂_term_iff (z τ : ℂ) : Summable (jacobiTheta₂_term · z τ) ↔ 0 < im τ := by
   -- NB. This is a statement of no great mathematical interest; it is included largely to avoid
@@ -176,6 +178,7 @@ lemma norm_jacobiTheta₂_term_fderiv_le (n : ℤ) (z τ : ℂ) :
     apply mul_le_of_le_one_right (mul_nonneg pi_pos.le (pow_nonneg (abs_nonneg _) _))
     exact ContinuousLinearMap.norm_snd_le ..
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_jacobiTheta₂_term_fderiv_ge (n : ℤ) (z τ : ℂ) :
     π * |n| ^ 2 * ‖jacobiTheta₂_term n z τ‖ ≤ ‖jacobiTheta₂_term_fderiv n z τ‖ := by
   have : ‖(jacobiTheta₂_term_fderiv n z τ) (0, 1)‖ ≤ ‖jacobiTheta₂_term_fderiv n z τ‖ := by
@@ -216,6 +219,7 @@ lemma summable_jacobiTheta₂_term_fderiv_iff (z τ : ℂ) :
     refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (Int.cast_nonneg (abs_nonneg _)) _)
     exact norm_jacobiTheta₂_term_le hτ le_rfl le_rfl n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma summable_jacobiTheta₂'_term_iff (z τ : ℂ) :
     Summable (jacobiTheta₂'_term · z τ) ↔ 0 < im τ := by
   constructor
@@ -378,6 +382,7 @@ lemma continuousAt_jacobiTheta₂' (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
 ## Periodicity and conjugation
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The two-variable Jacobi theta function is periodic in `τ` with period 2. -/
 lemma jacobiTheta₂_add_right (z τ : ℂ) : jacobiTheta₂ z (τ + 2) = jacobiTheta₂ z τ := by
   refine tsum_congr (fun n ↦ ?_)
@@ -414,6 +419,7 @@ lemma jacobiTheta₂_conj (z τ : ℂ) :
   simp only [jacobiTheta₂_term, mul_neg, ← exp_conj, map_add, map_neg, map_mul, map_ofNat,
     conj_ofReal, conj_I, map_intCast, neg_mul, neg_neg, map_pow]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma jacobiTheta₂'_add_right (z τ : ℂ) : jacobiTheta₂' z (τ + 2) = jacobiTheta₂' z τ := by
   refine tsum_congr (fun n ↦ ?_)
   simp_rw [jacobiTheta₂'_term, jacobiTheta₂_term, Complex.exp_add]
@@ -427,6 +433,7 @@ lemma jacobiTheta₂'_add_left (z τ : ℂ) : jacobiTheta₂' (z + 1) τ = jacob
   simp only [mul_add, Complex.exp_add, mul_one, mul_comm _ (n : ℂ), exp_int_mul_two_pi_mul_I,
     mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma jacobiTheta₂'_add_left' (z τ : ℂ) :
     jacobiTheta₂' (z + τ) τ =
       cexp (-π * I * (τ + 2 * z)) * (jacobiTheta₂' z τ - 2 * π * I * jacobiTheta₂ z τ) := by
@@ -445,6 +452,7 @@ lemma jacobiTheta₂'_add_left' (z τ : ℂ) :
     (hasSum_jacobiTheta₂'_term z hτ).summable.tsum_sub
     ((hasSum_jacobiTheta₂_term z hτ).summable.mul_left _), tsum_mul_left]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma jacobiTheta₂'_neg_left (z τ : ℂ) : jacobiTheta₂' (-z) τ = -jacobiTheta₂' z τ := by
   rw [jacobiTheta₂', jacobiTheta₂', ← tsum_neg, ← (Equiv.neg ℤ).tsum_eq]
   congr 1 with n
@@ -453,6 +461,7 @@ lemma jacobiTheta₂'_neg_left (z τ : ℂ) : jacobiTheta₂' (-z) τ = -jacobiT
   push_cast
   ring_nf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma jacobiTheta₂'_conj (z τ : ℂ) :
     conj (jacobiTheta₂' z τ) = jacobiTheta₂' (conj z) (-conj τ) := by
   rw [← neg_inj, ← jacobiTheta₂'_neg_left, jacobiTheta₂', jacobiTheta₂', conj_tsum, ← tsum_neg]
@@ -465,6 +474,7 @@ lemma jacobiTheta₂'_conj (z τ : ℂ) :
 ## Functional equations
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functional equation for the Jacobi theta function: `jacobiTheta₂ z τ` is an explicit factor
 times `jacobiTheta₂ (z / τ) (-1 / τ)`. This is the key lemma behind the proof of the functional
 equation for L-series of even Dirichlet characters. -/

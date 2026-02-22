@@ -97,6 +97,7 @@ lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
   root_mem_or_neg_mem := b.coroot_mem_or_neg_mem
   coroot_mem_or_neg_mem := b.root_mem_or_neg_mem
 
+set_option backward.isDefEq.respectTransparency false in
 include b in
 lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
     (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j) :
@@ -149,6 +150,7 @@ lemma span_coroot_support :
     span R (P.coroot '' b.support) = P.corootSpan R :=
   b.flip.span_root_support
 
+set_option backward.isDefEq.respectTransparency false in
 open Finsupp in
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
     [IsAddTorsionFree M] [IsAddTorsionFree N]
@@ -196,6 +198,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
   rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at this
   tauto
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
     (hf : ∑ j ∈ b.support, f j • P.root j ∈ range P.root) (hf₀ : f.support ⊆ b.support) :
     0 < f ∨ f < 0 := by
@@ -240,6 +243,7 @@ lemma not_nonpos_iff_pos_of_sum_mem_range_root (f : ι → ℤ)
       exact h (le_of_lt h')
   · contrapose! h; exact h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma not_nonneg_iff_neg_of_sum_mem_range_root (f : ι → ℤ)
     (hf : ∑ j ∈ b.support, f j • P.root j ∈ range P.root) (hf₀ : f.support ⊆ b.support) :
     (¬ 0 ≤ f) ↔ f < 0 := by
@@ -330,6 +334,7 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 
 include b
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma exists_root_eq_sum_nat_or_neg (i : ι) :
     ∃ f : ι → ℕ, f.support ⊆ b.support ∧
@@ -495,6 +500,7 @@ lemma IsPos.sub {i j k : ι}
   rw [isPos_iff', b.height_sub hk, height_one_of_mem_support hj]
   lia
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsPos.exists_mem_support_pos_pairingIn [P.IsCrystallographic] {i : ι} (h₀ : b.IsPos i) :
     ∃ j ∈ b.support, 0 < P.pairingIn ℤ j i := by
   by_contra! contra
@@ -559,6 +565,7 @@ lemma IsPos.reflectionPerm {i j : ι} (hi : b.IsPos i) (hj : j ∈ b.support) (h
     rw [root_reflectionPerm, neg_smul, reflection_apply_root' ℤ, sub_eq_add_neg]
   exact hi.add_zsmul hij hj this
 
+set_option backward.isDefEq.respectTransparency false in
 omit [P.IsReduced] in
 lemma IsPos.induction_on_add
     {i : ι} (h₀ : b.IsPos i)
@@ -581,6 +588,7 @@ lemma IsPos.induction_on_add
     rw [isPos_iff] at h₀
     lia
 
+set_option backward.isDefEq.respectTransparency false in
 omit [P.IsReduced] in
 /-- This lemma is included mostly for comparison with the informal literature. Usually
 `RootPairing.Base.IsPos.induction_on_add` will be more useful. -/
@@ -614,6 +622,7 @@ lemma induction_add (i : ι) {p : ι → Prop}
   · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
     exact hi.induction_on_add h₁ h₂
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsPos.induction_on_reflect
     {i : ι} (h₀ : b.IsPos i)
     {p : ι → Prop}

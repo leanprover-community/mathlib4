@@ -105,6 +105,7 @@ section Equivalence
 
 variable {P}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsSeparating.of_equivalence
     (h : IsSeparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsSeparating (P.strictMap α.functor) := fun X Y f g H =>
@@ -113,6 +114,7 @@ lemma IsSeparating.of_equivalence
     simp only [Adjunction.homEquiv_unit, Category.assoc, ← Functor.map_comp,
       H _ (P.strictMap_obj _ hZ) h']))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsCoseparating.of_equivalence
     (h : IsCoseparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsCoseparating (P.strictMap α.functor) := fun X Y f g H =>
@@ -364,6 +366,7 @@ noncomputable abbrev ιCoproductFrom {Y : C} (f : Y ⟶ X) (hY : P Y) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 variable {P} in
 lemma IsSeparating.epi_coproductFrom (hP : P.IsSeparating)
     (X : C) [HasCoproduct (P.coproductFromFamily X)] :
@@ -402,6 +405,7 @@ noncomputable abbrev πProductTo {Y : C} (f : X ⟶ Y) (hY : P Y) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 variable {P} in
 lemma IsCoseparating.mono_productTo (hP : P.IsCoseparating)
     (X : C) [HasProduct (P.productToFamily X)] :
@@ -418,6 +422,7 @@ theorem isCoseparating_iff_mono
 
 end ObjectProperty
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An ingredient of the proof of the Special Adjoint Functor Theorem: a complete well-powered
     category with a small coseparating set has an initial object.
 
@@ -649,6 +654,7 @@ theorem isCoseparator_iff_faithful_yoneda_obj (G : C) : IsCoseparator G ↔ (yon
     (isCoseparator_def _).2 fun _ _ _ _ hfg =>
       Quiver.Hom.op_inj <| (yoneda.obj G).map_injective (funext hfg)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSeparator_iff_epi (G : C) [∀ A : C, HasCoproduct fun _ : G ⟶ A => G] :
     IsSeparator G ↔ ∀ A : C, Epi (Sigma.desc fun f : G ⟶ A => f) := by
   rw [isSeparator_def]
@@ -658,6 +664,7 @@ theorem isSeparator_iff_epi (G : C) [∀ A : C, HasCoproduct fun _ : G ⟶ A => 
     refine (cancel_epi (Sigma.desc fun f : G ⟶ X => f)).1 (colimit.hom_ext fun j => ?_)
     simpa using hh j.as
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isCoseparator_iff_mono (G : C) [∀ A : C, HasProduct fun _ : A ⟶ G => G] :
     IsCoseparator G ↔ ∀ A : C, Mono (Pi.lift fun f : A ⟶ G => f) := by
   rw [isCoseparator_def]
@@ -671,6 +678,7 @@ section ZeroMorphisms
 
 variable [HasZeroMorphisms C]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSeparator_of_isColimit_cofan {β : Type w} {f : β → C}
     (hf : ObjectProperty.IsSeparating (.ofObj f)) {c : Cofan f} (hc : IsColimit c) :
     IsSeparator c.pt := by
@@ -717,6 +725,7 @@ theorem isSeparator_sigma_of_isSeparator {β : Type w} (f : β → C) [HasCoprod
     (hb : IsSeparator (f b)) : IsSeparator (∐ f) :=
   (isSeparator_sigma _).2 <| ObjectProperty.IsSeparating.of_le hb <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isCoseparator_of_isLimit_fan {β : Type w} {f : β → C}
     (hf : ObjectProperty.IsCoseparating (.ofObj f)) {c : Fan f} (hc : IsLimit c) :
     IsCoseparator c.pt := by

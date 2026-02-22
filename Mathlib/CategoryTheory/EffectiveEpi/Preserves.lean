@@ -35,6 +35,7 @@ variable {D : Type*} [Category* D] (e : C ≌ D) {B : C}
 
 variable {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem effectiveEpiFamilyStructOfEquivalence_aux {W : D} (ε : (a : α) → e.functor.obj (X a) ⟶ W)
     (h : ∀ {Z : D} (a₁ a₂ : α) (g₁ : Z ⟶ e.functor.obj (X a₁)) (g₂ : Z ⟶ e.functor.obj (X a₂)),
       g₁ ≫ e.functor.map (π a₁) = g₂ ≫ e.functor.map (π a₂) → g₁ ≫ ε a₁ = g₂ ≫ ε a₂)
@@ -47,6 +48,7 @@ theorem effectiveEpiFamilyStructOfEquivalence_aux {W : D} (ε : (a : α) → e.f
 
 variable [EffectiveEpiFamily X π]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalences preserve effective epimorphic families -/
 def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ e.functor.obj (X a))
     (fun a ↦ e.functor.map (π a)) where
@@ -216,6 +218,7 @@ instance (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F] : ReflectsEffectiv
     have := F.finite_effectiveEpiFamily_of_map _ _ h
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
   reflects {α B} X π _ := by
     let i : (a : α) → X a ⟶ (inv F).obj (F.obj (X a)) := fun a ↦ (asEquivalence F).unit.app _

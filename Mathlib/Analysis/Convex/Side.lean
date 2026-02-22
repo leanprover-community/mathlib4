@@ -737,6 +737,7 @@ section Normed
 variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
 variable [NormedAddTorsor V P]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :
     IsConnected { y | s.WSameSide x y } := by
   obtain ⟨p, hp⟩ := h
@@ -758,6 +759,7 @@ theorem isPreconnected_setOf_wSameSide (s : AffineSubspace ℝ P) (x : P) :
     exact isPreconnected_empty
   · exact (isConnected_setOf_wSameSide x h).isPreconnected
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isConnected_setOf_sSameSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉ s)
     (h : (s : Set P).Nonempty) : IsConnected { y | s.SSameSide x y } := by
   obtain ⟨p, hp⟩ := h
@@ -778,6 +780,7 @@ theorem isPreconnected_setOf_sSameSide (s : AffineSubspace ℝ P) (x : P) :
       exact isPreconnected_empty
     · exact (isConnected_setOf_sSameSide hx h).isPreconnected
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isConnected_setOf_wOppSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :
     IsConnected { y | s.WOppSide x y } := by
   obtain ⟨p, hp⟩ := h
@@ -799,6 +802,7 @@ theorem isPreconnected_setOf_wOppSide (s : AffineSubspace ℝ P) (x : P) :
     exact isPreconnected_empty
   · exact (isConnected_setOf_wOppSide x h).isPreconnected
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isConnected_setOf_sOppSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉ s)
     (h : (s : Set P).Nonempty) : IsConnected { y | s.SOppSide x y } := by
   obtain ⟨p, hp⟩ := h

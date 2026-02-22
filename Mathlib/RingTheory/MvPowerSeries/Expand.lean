@@ -19,8 +19,8 @@ This operation is called `MvPowerSeries.expand` and it is an algebra homomorphis
 
 ### Main declaration
 
-* `MvPowerSeries.expand`: expand a multi variate power series by a factor of p, so `∑ aₙ xⁿ`
-becomes `∑ aₙ xⁿᵖ`.
+* `MvPowerSeries.expand`: expand a multi variate power series by a nonzero factor of p,
+so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/
 
 @[expose] public section

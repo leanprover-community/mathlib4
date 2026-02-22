@@ -180,6 +180,7 @@ theorem sigma_zero_apply (n : ℕ) : σ 0 n = #n.divisors := by simp [sigma_appl
 theorem sigma_zero_apply_prime_pow {p i : ℕ} (hp : p.Prime) : σ 0 (p ^ i) = i + 1 := by
   simp [sigma_apply_prime_pow hp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sigma_one (k : ℕ) : σ k 1 = 1 := by
   simp only [sigma_apply, divisors_one, sum_singleton, one_pow]
@@ -363,6 +364,7 @@ theorem cardDistinctFactors_mul {m n : ℕ} (h : m.Coprime n) : ω (m * n) = ω 
   simp [cardDistinctFactors_apply, perm_primeFactorsList_mul_of_coprime h |>.dedup |>.length_eq,
     coprime_primeFactorsList_disjoint h |>.dedup_append]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function in
 theorem cardDistinctFactors_prod {ι : Type*} {s : Finset ι} {f : ι → ℕ}
     (h : (s : Set ι).Pairwise (Coprime on f)) : ω (∏ i ∈ s, f i) = ∑ i ∈ s, ω (f i) := by

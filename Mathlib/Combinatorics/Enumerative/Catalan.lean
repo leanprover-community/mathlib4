@@ -101,7 +101,7 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
 private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatalan (n + 1) (n + 1) -
     gosperCatalan (n + 1) 0 = Nat.centralBinom (n + 1) / (n + 2) := by
   simp only [gosperCatalan, tsub_self, Nat.centralBinom_zero, Nat.cast_one, Nat.cast_add,
-    Nat.cast_zero, tsub_zero]
+    Nat.cast_zero]
   field
 
 theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n + 1) := by
@@ -174,6 +174,7 @@ theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
 theorem mem_treesOfNumNodesEq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=
   mem_treesOfNumNodesEq.mpr rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_treesOfNumNodesEq (n : ℕ) :
     ↑(treesOfNumNodesEq n) = { x : Tree Unit | x.numNodes = n } :=

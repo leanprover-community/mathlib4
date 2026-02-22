@@ -381,6 +381,7 @@ instance instSub : Sub Cₛ^n⟮I; F, V⟯ :=
 theorem coe_sub (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s - t) = s - t :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance instZero : Zero Cₛ^n⟮I; F, V⟯ :=
   ⟨⟨fun _ => 0, (contMDiff_zeroSection 𝕜 V).of_le le_top⟩⟩
 

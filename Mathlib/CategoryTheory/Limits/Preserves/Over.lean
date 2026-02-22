@@ -24,6 +24,7 @@ variable {C : Type*} [Category* C]
 
 attribute [local instance] IsFiltered.nonempty IsCofiltered.nonempty
 
+set_option backward.isDefEq.respectTransparency false in
 instance {X : C} : PreservesCofilteredLimitsOfSize (Over.forget X) := by
   refine ⟨fun J hJ hJ' ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨.ofExistsUnique fun s ↦ ?_⟩⟩⟩⟩
   obtain i := Nonempty.some (inferInstanceAs (Nonempty J))
@@ -37,6 +38,7 @@ instance {X : C} : PreservesCofilteredLimitsOfSize (Over.forget X) := by
   exact congr($(hc.uniq s' (Over.homMk f (by simp [s', ← hf]))
     fun j ↦ Over.OverMorphism.ext (hf j)).left)
 
+set_option backward.isDefEq.respectTransparency false in
 instance {X : C} : PreservesFilteredColimitsOfSize (Under.forget X) := by
   refine ⟨fun J hJ hJ' ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨.ofExistsUnique fun s ↦ ?_⟩⟩⟩⟩
   obtain i := Nonempty.some (inferInstanceAs (Nonempty J))

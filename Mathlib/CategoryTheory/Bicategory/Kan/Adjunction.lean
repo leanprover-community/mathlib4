@@ -200,6 +200,7 @@ end LeftLift
 
 namespace LeftExtension
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A left adjoint commutes with a left Kan extension. -/
 def isKanOfWhiskerLeftAdjoint
     {f : a ⟶ b} {g : a ⟶ c} {t : LeftExtension f g} (H : LeftExtension.IsKan t)

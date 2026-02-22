@@ -66,9 +66,6 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
     Nat.le_div_iff_mul_le (by positivity)]
   have := (Commute.all (b : ℤ) (a - b)).pow_add_mul_le_add_pow_of_sq_nonneg
     (by positivity) (sq_nonneg _) (sq_nonneg _) (by grind) (n + 1)
-  -- `grind` should solve this, but:  https://github.com/leanprover/lean4/issues/11539
-  simp [mul_sub, ← add_sub_assoc] at this
-  norm_cast at this
   grind
 
 private theorem nthRoot.always_exists (n a : ℕ) :

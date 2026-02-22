@@ -149,17 +149,11 @@ abbrev toLocalizationMap : M.LocalizationMap S where
   toFun := algebraMap R S
   isLocalizationMap := IsLocalization'.toIsLocalizationMap
 
-@[deprecated (since := "2025-08-01")] alias toLocalizationWithZeroMap := toLocalizationMap
-
 @[simp]
 lemma toLocalizationMap_toMonoidHom :
     (toLocalizationMap M S).toMonoidHom = (algebraMap R S : R →*₀ S) := rfl
 
-@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap := toLocalizationMap_toMonoidHom
-
 @[simp] lemma coe_toLocalizationMap : ⇑(toLocalizationMap M S) = algebraMap R S := rfl
-
-@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap_apply := coe_toLocalizationMap
 
 lemma toLocalizationMap_apply (x) : toLocalizationMap M S x = algebraMap R S x := rfl
 
@@ -489,6 +483,7 @@ theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w'
     mul_comm]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a localization map `f : R →+* S` for a submonoid `M ⊆ R` and a map of `CommSemiring`s
 `g : R →+* P` such that `g y` is invertible for all `y : M`, the homomorphism induced from
 `S` to `P` sending `z : S` to `g x * (g y)⁻¹`, where `(x, y) : R × M` are such that

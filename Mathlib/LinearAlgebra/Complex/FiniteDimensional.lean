@@ -26,6 +26,7 @@ namespace Complex
 
 instance : FiniteDimensional ℝ ℂ := basisOneI.finiteDimensional_of_finite
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ` is a finite extension of `ℝ` of degree 2, i.e `[ℂ : ℝ] = 2` -/
 @[simp, stacks 09G4]
 theorem finrank_real_complex : finrank ℝ ℂ = 2 := by

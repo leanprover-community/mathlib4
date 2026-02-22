@@ -116,6 +116,7 @@ lemma mk_of_exists_extremalEpi
     exact ExtremalEpi.isIso p (Cofan.IsColimit.desc hc φ) _
       (Cofan.IsColimit.hom_ext hc _ _ (by simp [hφ]))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma extremalEpi_coproductFrom
     (hP : IsStrongGenerator P) (X : C) [HasCoproduct (P.coproductFromFamily X)] :
     ExtremalEpi (P.coproductFrom X) where
@@ -138,6 +139,7 @@ lemma isStrongGenerator_iff_exists_extremalEpi
     (coproductIsCoproduct (P.coproductFromFamily X)).whiskerEquivalence
     (Discrete.equivalence (equivShrink.{w} _)).symm, _, hP.extremalEpi_coproductFrom X⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsStrongGenerator.mk_of_exists_colimitsOfShape
     (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.colimitsOfShape J X) :
     P.IsStrongGenerator := by

@@ -49,6 +49,7 @@ private lemma totalDegree_f₁_add_totalDegree_f₂ {a : ι → ZMod p} :
       · exact (totalDegree_smul_le ..).trans (totalDegree_X_pow ..).le
     _ < 2 * p - 1 := by have := (Fact.out : p.Prime).two_le; lia
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The prime case of the **Erdős–Ginzburg–Ziv theorem** for `ℤ/pℤ`.
 
 Any sequence of `2 * p - 1` elements of `ZMod p` contains a subsequence of `p` elements whose sum is

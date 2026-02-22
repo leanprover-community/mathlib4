@@ -52,6 +52,7 @@ structure IsRepresentedBy (F : Cᵒᵖ ⥤ Type w) {X : C} (x : F.obj (op X)) : 
 
 variable {F : Cᵒᵖ ⥤ Type w} {X : C} {x : F.obj (op X)}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsRepresentedBy.iff_isIso_uliftYonedaEquiv :
     F.IsRepresentedBy x ↔
       IsIso ((uliftYonedaEquiv (F := F ⋙ uliftFunctor.{v})).symm ⟨x⟩) := by
@@ -82,6 +83,7 @@ lemma IsRepresentedBy.representableBy_homEquiv_apply (h : F.IsRepresentedBy x)
     h.representableBy.homEquiv f = F.map f.op x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma RepresentableBy.isRepresentedBy (R : F.RepresentableBy X) :
     F.IsRepresentedBy (R.homEquiv (𝟙 X)) := by
   rw [IsRepresentedBy.iff_isIso_uliftYonedaEquiv]

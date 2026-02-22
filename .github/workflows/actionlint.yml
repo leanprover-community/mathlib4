@@ -16,4 +16,4 @@ jobs:
         uses: reviewdog/action-actionlint@e58ee9d111489c31395fbe4857b0be6e7635dbda # v1.70.0
         with:
           tool_name: actionlint
-          fail_level: error
+          fail_level: any

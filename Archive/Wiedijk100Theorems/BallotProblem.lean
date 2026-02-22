@@ -157,6 +157,7 @@ theorem countedSequence_nonempty : ∀ p q : ℕ, (countedSequence p q).Nonempty
 theorem sum_of_mem_countedSequence {p q} {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l.sum = p - q := by simp [(mem_countedSequence_iff_perm.1 hl).sum_eq, sub_eq_add_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_bits (p q : ℕ) :
     Disjoint (List.cons 1 '' countedSequence p (q + 1))
       (List.cons (-1) '' countedSequence (p + 1) q) := by
@@ -165,14 +166,10 @@ theorem disjoint_bits (p q : ℕ) :
 
 open MeasureTheory.Measure
 
-private def measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
+private local instance measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
 
-attribute [local instance] measurableSpace_list_int
-
-private theorem measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
+private local instance measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
   { measurableSet_singleton := fun _ => trivial }
-
-attribute [local instance] measurableSingletonClass_list_int
 
 private theorem list_int_measurableSet {s : Set (List ℤ)} : MeasurableSet s := trivial
 
@@ -324,7 +321,7 @@ theorem ballot_problem' :
       (countedSequence_finite p (q + 1)) (countedSequence_nonempty _ _)
     haveI := isProbabilityMeasure_uniformOn
       (countedSequence_finite (p + 1) q) (countedSequence_nonempty _ _)
-    have h₃ : p + 1 + (q + 1) > 0 := Nat.add_pos_left (Nat.succ_pos _) _
+    have h₃ : 0 < p + 1 + (q + 1) := Nat.add_pos_left (Nat.succ_pos _) _
     rw [← uniformOn_add_compl_eq {l : List ℤ | l.headI = 1} _ (countedSequence_finite _ _),
       first_vote_pos _ _ h₃, first_vote_neg _ _ h₃, ballot_pos, ballot_neg _ _ qp]
     rw [ENNReal.toReal_add, ENNReal.toReal_mul, ENNReal.toReal_mul, ← Nat.cast_add,

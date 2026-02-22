@@ -46,6 +46,7 @@ the Dold-Kan equivalence for additive categories. -/
 def Γ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
   Γ₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Dold-Kan equivalence `Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)`
 for additive categories. -/
 @[simps]

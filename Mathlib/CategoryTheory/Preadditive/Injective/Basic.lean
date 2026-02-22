@@ -133,6 +133,7 @@ instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injectiv
     · simp only [prod.lift_fst]
     · simp only [prod.lift_snd]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ᶜ c) where
   factors g f mono := by
     refine ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, ?_⟩
@@ -188,6 +189,7 @@ open CategoryTheory.Functor
 variable {D : Type u₂} [Category.{v₂} D]
 variable {L : C ⥤ D} {R : D ⥤ C} [PreservesMonomorphisms L]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem injective_of_adjoint (adj : L ⊣ R) (J : D) [Injective J] : Injective <| R.obj J :=
   ⟨fun {A} {_} g f im =>
     ⟨adj.homEquiv _ _ (factorThru ((adj.homEquiv A J).symm g) (L.map f)),
@@ -272,6 +274,7 @@ namespace Adjunction
 
 variable {D : Type*} [Category* D] {F : C ⥤ D} {G : D ⥤ C}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : Injective I) :
     Injective (G.obj I) :=
   ⟨fun {X} {Y} f g => by
@@ -281,6 +284,7 @@ theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : I
     rw [← unit_naturality_assoc, ← G.map_comp, h]
     simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem injective_of_map_injective (adj : F ⊣ G) [G.Full] [G.Faithful] (I : D)
     (hI : Injective (G.obj I)) : Injective I :=
   ⟨fun {X} {Y} f g => by

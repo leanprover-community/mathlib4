@@ -43,6 +43,7 @@ noncomputable def extEquivCohomologyClass :
       (by rw [HomologicalComplex.mem_quasiIso_iff]; infer_instance)).trans
     CochainComplex.HomComplex.CohomologyClass.equivOfIsKInjective.{w}.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
     (x : Cocycle ((singleFunctor C 0).obj X) R.cochainComplex n) :
     (R.extEquivCohomologyClass.symm (.mk x)).hom =
@@ -212,6 +213,7 @@ lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :
     by simpa [R.cochainComplex_d _ _ _ _ rfl rfl,
       ← cancel_mono (R.cochainComplexXIso m m rfl).inv] using hf, by simp [extMk]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk₀_comp_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) {X' : C} (g : X' ⟶ X) :
     (Ext.mk₀ g).comp (R.extMk f m hm hf) (zero_add _) =
@@ -228,6 +230,7 @@ lemma mk₀_comp_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n +
     ← ShiftedHom.comp_assoc _ _ _ (add_zero _) (add_zero (n : ℤ)) (by simp)]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R} in
 lemma extMk_comp_mk₀ {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0)

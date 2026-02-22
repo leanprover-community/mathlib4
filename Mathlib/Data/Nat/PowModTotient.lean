@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Data.Sym.Sym2

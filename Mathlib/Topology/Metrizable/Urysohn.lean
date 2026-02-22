@@ -34,6 +34,7 @@ section RegularSpace
 
 variable (X : Type*) [TopologicalSpace X] [RegularSpace X] [SecondCountableTopology X]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a regular topological space with second countable topology,
 there exists an inducing map to `l^∞ = ℕ →ᵇ ℝ`. -/
 theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f := by

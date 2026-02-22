@@ -121,6 +121,7 @@ lemma thickenedIndicatorAux_mono_infEDist (δ : ℝ) {E : Set α} {x y : α}
 @[deprecated (since := "2026-01-08")]
 alias thickenedIndicatorAux_mono_infEdist := thickenedIndicatorAux_mono_infEDist
 
+set_option backward.isDefEq.respectTransparency false in
 /-- As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
 pointwise (i.e., w.r.t. the product topology on `α → ℝ≥0∞`) to the indicator function of the
 closure of E.

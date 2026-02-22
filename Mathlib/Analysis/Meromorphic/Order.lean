@@ -144,6 +144,7 @@ theorem meromorphicOrderAt_ne_top_iff_eventually_ne_zero {f : 𝕜 → E} (hf : 
     simp_all [zpow_ne_zero, sub_ne_zero]
   · simp_all [meromorphicOrderAt_eq_top_iff, Eventually.frequently]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the order of a meromorphic function is negative, then this function converges to infinity
 at this point. See also the iff version `tendsto_cobounded_iff_meromorphicOrderAt_neg`. -/
 lemma tendsto_cobounded_of_meromorphicOrderAt_neg (ho : meromorphicOrderAt f x < 0) :
@@ -177,6 +178,7 @@ lemma tendsto_ne_zero_of_meromorphicOrderAt_eq_zero
   apply g_an.continuousAt.continuousWithinAt.tendsto.congr'
   filter_upwards [hg] with y hy using by simp [hy]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the order of a meromorphic function is positive, then this function converges to zero
 at this point. See also the iff version `tendsto_zero_iff_meromorphicOrderAt_pos`. -/
 lemma tendsto_zero_of_meromorphicOrderAt_pos (ho : 0 < meromorphicOrderAt f x) :
@@ -207,6 +209,7 @@ lemma tendsto_nhds_of_meromorphicOrderAt_nonneg
     exact ⟨c, hc⟩
   · exact ⟨0, tendsto_zero_of_meromorphicOrderAt_pos ho⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A meromorphic function converges to infinity iff its order is negative. -/
 lemma tendsto_cobounded_iff_meromorphicOrderAt_neg (hf : MeromorphicAt f x) :
     Tendsto f (𝓝[≠] x) (Bornology.cobounded E) ↔ meromorphicOrderAt f x < 0 := by
@@ -216,6 +219,7 @@ lemma tendsto_cobounded_iff_meromorphicOrderAt_neg (hf : MeromorphicAt f x) :
     obtain ⟨c, hc⟩ := tendsto_nhds_of_meromorphicOrderAt_nonneg hf ho
     exact not_tendsto_atTop_of_tendsto_nhds hc.norm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A meromorphic function converges to a limit iff its order is nonnegative. -/
 lemma tendsto_nhds_iff_meromorphicOrderAt_nonneg (hf : MeromorphicAt f x) :
     (∃ c, Tendsto f (𝓝[≠] x) (𝓝 c)) ↔ 0 ≤ meromorphicOrderAt f x := by
@@ -241,6 +245,7 @@ lemma tendsto_ne_zero_iff_meromorphicOrderAt_eq_zero (hf : MeromorphicAt f x) :
   · apply c_ne
     exact tendsto_nhds_unique hc (tendsto_zero_of_meromorphicOrderAt_pos ho)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A meromorphic function converges to zero iff its order is positive. -/
 lemma tendsto_zero_iff_meromorphicOrderAt_pos (hf : MeromorphicAt f x) :
     (Tendsto f (𝓝[≠] x) (𝓝 0)) ↔ 0 < meromorphicOrderAt f x := by
@@ -292,6 +297,7 @@ theorem AnalyticAt.meromorphicOrderAt_nonneg (hf : AnalyticAt 𝕜 f x) :
     0 ≤ meromorphicOrderAt f x := by
   simp [hf.meromorphicOrderAt_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a function is both meromorphic and continuous at a point, then it is analytic there. -/
 protected theorem MeromorphicAt.analyticAt {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicAt f x) (h' : ContinuousAt f x) :
@@ -484,6 +490,7 @@ theorem meromorphicOrderAt_add_of_top_right
     meromorphicOrderAt (f₁ + f₂) x = meromorphicOrderAt f₁ x := by
   rw [add_comm, meromorphicOrderAt_add_of_top_left hf₂]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The order of a sum is at least the minimum of the orders of the summands.
 -/
@@ -519,6 +526,7 @@ theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromorph
   rw [meromorphicOrderAt_congr this, meromorphicOrderAt_smul t₀ h₁g.meromorphicAt, t₁]
   exact le_add_of_nonneg_right h₁g.meromorphicOrderAt_nonneg
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Helper lemma for meromorphicOrderAt_add_of_ne.
 -/
@@ -558,6 +566,7 @@ lemma meromorphicOrderAt_add_eq_right_of_lt (hf₁ : MeromorphicAt f₁ x)
   rw [add_comm]
   exact meromorphicOrderAt_add_eq_left_of_lt hf₁ h
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If two meromorphic functions have unequal orders, then the order of their sum is
 exactly the minimum of the orders of the summands.

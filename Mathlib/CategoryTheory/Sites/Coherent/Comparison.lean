@@ -30,6 +30,7 @@ open Limits GrothendieckTopology Sieve
 
 variable (C : Type*) [Category* C]
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Precoherent C] [HasFiniteCoproducts C] : Preregular C where
   exists_fac {X Y Z} f g _ := by
     have hp := Precoherent.pullback f PUnit (fun () ↦ Z) (fun () ↦ g)
@@ -40,6 +41,7 @@ instance [Precoherent C] [HasFiniteCoproducts C] : Preregular C where
     ext b
     simpa using hι b
 
+set_option backward.isDefEq.respectTransparency false in
 instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ h := by
     refine ⟨α, inferInstance, ?_⟩
@@ -57,6 +59,7 @@ instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
       rw [← Category.assoc, pullback.condition]
       simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The union of the extensive and regular coverages generates the coherent topology on `C`. -/
 theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive C] :
     ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck =

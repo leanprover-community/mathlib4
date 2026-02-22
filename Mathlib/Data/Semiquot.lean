@@ -198,6 +198,7 @@ theorem isPure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=
 theorem IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
   | _, as, _, bs => h _ (st as) _ (st bs)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
   ⟨fun st =>
     le_antisymm st <| by

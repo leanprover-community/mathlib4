@@ -108,6 +108,14 @@ theorem exists_eq_singleton_iff_nonempty_subsingleton :
     exact ⟨singleton_nonempty a, subsingleton_singleton⟩
   · exact h.2.eq_empty_or_singleton.resolve_left h.1.ne_empty
 
+theorem eq_empty_or_singleton_of_subsingleton [Subsingleton α] (s : Set α) :
+    s = ∅ ∨ ∃ a, s = {a} :=
+  subsingleton_of_subsingleton.eq_empty_or_singleton
+
+theorem eq_empty_or_singleton_of_unique [Unique α] (s : Set α) :
+    s = ∅ ∨ s = {default} :=
+  s.eq_empty_or_singleton_of_subsingleton.imp_right fun ⟨a, ha⟩ => Unique.eq_default a ▸ ha
+
 /-- `s`, coerced to a type, is a subsingleton type if and only if `s` is a subsingleton set. -/
 @[simp, norm_cast]
 theorem subsingleton_coe (s : Set α) : Subsingleton s ↔ s.Subsingleton := by

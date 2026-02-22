@@ -114,6 +114,7 @@ end Ring
 
 variable [CommRing R] [IsDomain R] [Group G]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
     {n : ℕ} (hn : 0 < n) (g₀ : G) :
     #{g | g ^ n = g₀} ≤ Multiset.card (nthRoots n (f g₀)) := by

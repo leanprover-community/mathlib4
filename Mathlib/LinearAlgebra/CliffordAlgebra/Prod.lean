@@ -47,6 +47,7 @@ variable (f₁ : Q₁ →qᵢ Qₙ) (f₂ : Q₂ →qᵢ Qₙ) (hf : ∀ x y, Q�
 variable (m₁ : CliffordAlgebra Q₁) (m₂ : CliffordAlgebra Q₂)
 include hf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `m₁` and `m₂` are both homogeneous,
 and the quadratic spaces `Q₁` and `Q₂` map into
 orthogonal subspaces of `Qₙ` (for instance, when `Qₙ = Q₁.prod Q₂`),
@@ -109,6 +110,7 @@ theorem map_mul_map_eq_neg_of_isOrtho_of_mem_evenOdd_one
 
 end map_mul_map
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forward direction of `CliffordAlgebra.prodEquiv`. -/
 def ofProd : CliffordAlgebra (Q₁.prod Q₂) →ₐ[R] (evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂) :=
   lift _ ⟨
@@ -152,6 +154,7 @@ lemma toProd_one_tmul_ι (m₂ : M₂) : toProd Q₁ Q₂ (1 ᵍ⊗ₜ ι _ m₂
   rw [toProd, GradedTensorProduct.lift_tmul, map_one, one_mul, map_apply_ι,
     QuadraticMap.Isometry.inr_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toProd_comp_ofProd : (toProd Q₁ Q₂).comp (ofProd Q₁ Q₂) = AlgHom.id _ _ := by
   ext m <;> dsimp
   · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, Prod.mk_zero_zero,
@@ -159,6 +162,7 @@ lemma toProd_comp_ofProd : (toProd Q₁ Q₂).comp (ofProd Q₁ Q₂) = AlgHom.i
   · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, Prod.mk_zero_zero,
       map_zero, zero_add]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ofProd_comp_toProd : (ofProd Q₁ Q₂).comp (toProd Q₁ Q₂) = AlgHom.id _ _ := by
   ext <;> simp
 

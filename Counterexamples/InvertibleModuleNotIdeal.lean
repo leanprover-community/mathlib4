@@ -19,6 +19,7 @@ variable (R : Type*) [CommRing R]
 R ⊕ ⨁ₘ R⧸m where m ranges over maximal ideals of R. -/
 abbrev SqZeroExtQuotMax := TrivSqZeroExt R (Π₀ m : MaximalSpectrum R, R ⧸ m.1)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsFractionRing (SqZeroExtQuotMax R) (SqZeroExtQuotMax R) :=
   IsFractionRing.self_iff_nonZeroDivisors_le_isUnit.mpr fun x hx ↦
     TrivSqZeroExt.isUnit_iff_isUnit_fst.mpr <| of_not_not fun hr ↦ by
@@ -30,9 +31,11 @@ instance : IsFractionRing (SqZeroExtQuotMax R) (SqZeroExtQuotMax R) :=
         using (Ideal.Quotient.mk_eq_mk_iff_sub_mem ..).mpr (by simpa)
     simpa using congr(($this).snd)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- R as an algebra over `SqZeroExtQuotMax R`. -/
 abbrev SqZeroExtQuotMax.algebraBase : Algebra (SqZeroExtQuotMax R) R := TrivSqZeroExt.algebraBase ..
 
+set_option backward.isDefEq.respectTransparency false in
 open CommRing (Pic) in
 /-- If the Picard group of a commutative ring R is nontrivial, then `SqZeroExtQuotMax R`
 has an invertible module (which is the base change of an invertible ideal of R)

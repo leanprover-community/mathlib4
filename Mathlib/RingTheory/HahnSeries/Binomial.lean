@@ -73,6 +73,7 @@ theorem binomialFamily_mem_support {x : A⟦Γ⟧}
   exact le_of_lt (WithTop.coe_pos.mp (lt_of_lt_of_le (binomialFamily_orderTop_pos hx r
     (Nat.pos_of_ne_zero hn)) (orderTop_le_of_coeff_ne_zero hg)))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_hsum_binomialFamily_pos {x : A⟦Γ⟧} (hx : 0 < (x - 1).orderTop)
     (r : R) : (0 : WithTop Γ) < (SummableFamily.hsum (binomialFamily x r) - 1).orderTop := by
   obtain (_ | _) := subsingleton_or_nontrivial A
@@ -108,6 +109,7 @@ theorem pow_add {x : orderTopSubOnePos Γ R} {r s : R} : x ^ (r + s) = x ^ r * x
   suffices (x ^ (r + s)).val.val = (x ^ r * x ^ s).val.val by exact Units.val_inj.mp this
   simp [binomialFamily, hsum_powerSeriesFamily_mul, hsum_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_toOrderTopSubOnePos_pow {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) :
     HahnSeries.coeff (toOrderTopSubOnePos (orderTop_sub_pos hg r) ^ s).val (k • g) =
       Ring.choose s k • r ^ k := by

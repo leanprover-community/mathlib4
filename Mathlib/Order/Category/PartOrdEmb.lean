@@ -91,7 +91,7 @@ lemma coe_comp {X Y Z : PartOrdEmb} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X �
 
 @[simp]
 lemma forget_map {X Y : PartOrdEmb} (f : X ⟶ Y) :
-    (forget PartOrdEmb).map f = f := rfl
+    (forget PartOrdEmb).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : PartOrdEmb} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -291,6 +291,7 @@ lemma CoconePt.fac_apply (s : Cocone F) (j : J) (x : F.obj j) :
     CoconePt.desc hc s (c.ι.app j x) = s.ι.app j x :=
   congr_fun (hc.fac ((forget _).mapCocone s) j) x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A colimit cocone for `F : J ⥤ PartOrdEmb` (with `J` filtered) can be
 obtained from a colimit cocone for `F ⋙ forget _`. -/
 def isColimitCocone : IsColimit (cocone hc) where

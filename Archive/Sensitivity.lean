@@ -176,6 +176,7 @@ instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; infer_inst
 
 instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module ℝ (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
 end V
@@ -197,6 +198,7 @@ noncomputable def ε : ∀ {n : ℕ}, Q n → V n →ₗ[ℝ] ℝ
 
 variable {n : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   induction n with
@@ -284,6 +286,7 @@ is necessary since otherwise `n • v` refers to the multiplication defined
 using only the addition of `V`. -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
   induction n with
   | zero => simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
@@ -293,6 +296,7 @@ theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
 /-! We now compute the matrix of `f` in the `e` basis (`p` is the line index,
 `q` the column index). -/
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem f_matrix (p q : Q n) : |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
   induction n with
@@ -321,15 +325,18 @@ variable {m : ℕ}
 /-! Again we unpack what are the values of `g`. -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem g_apply : ∀ v, g m v = (f m v + √(m + 1) • v, v) := by
   delta g; intro v; simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
   simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Pi.prod] at h
   exact h.right
 
+set_option backward.isDefEq.respectTransparency false in
 theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √(m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
   have : √(m + 1) * √(m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
@@ -404,6 +411,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   rw [Set.toFinset_card] at hH
   linarith
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
 theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :

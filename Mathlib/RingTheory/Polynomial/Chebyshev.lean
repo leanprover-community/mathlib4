@@ -102,17 +102,20 @@ protected theorem induct' (motive : ℤ → Prop)
     apply neg (n + 2) (add_two n (neg' _ h₀) (neg' n ?_))
     convert h₁ using 1; omega
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem T_add_two : ∀ n, T R (n + 2) = 2 * X * T R (n + 1) - T R n
   | (k : ℕ) => T.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) T.eq_4 R k
 
+set_option backward.isDefEq.respectTransparency false in
 theorem T_add_one (n : ℤ) : T R (n + 1) = 2 * X * T R n - T R (n - 1) := by
   linear_combination (norm := ring_nf) T_add_two R (n - 1)
 
 theorem T_sub_two (n : ℤ) : T R (n - 2) = 2 * X * T R (n - 1) - T R n := by
   linear_combination (norm := ring_nf) T_add_two R (n - 2)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem T_sub_one (n : ℤ) : T R (n - 1) = 2 * X * T R n - T R (n + 1) := by
   linear_combination (norm := ring_nf) T_add_two R (n - 1)
 
@@ -135,6 +138,7 @@ theorem T_neg_one : T R (-1) = X := by
 theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
   unfold T; simp [pow_two, mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem T_neg (n : ℤ) : T R (-n) = T R n := by
   induction n using Polynomial.Chebyshev.induct with
@@ -162,6 +166,7 @@ theorem T_eval_one (n : ℤ) : (T R n).eval 1 = 1 := by
   | add_two n ih1 ih2 => simp [T_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [T_sub_one, -T_neg, ih1, ih2]; norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -179,6 +184,7 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
       Int.negOnePow_sub]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem T_eval_zero (n : ℤ) :
     (T R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -237,6 +243,7 @@ theorem leadingCoeff_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
       tauto
   | neg n ih => simp [ih]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n).eval x := by
   induction n using Chebyshev.induct' with
@@ -261,17 +268,20 @@ noncomputable def U : ℤ → R[X]
   | -((n : ℕ) + 1) => 2 * X * U (-n) - U (-n + 1)
   termination_by n => Int.natAbs n + Int.natAbs (n - 1)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem U_add_two : ∀ n, U R (n + 2) = 2 * X * U R (n + 1) - U R n
   | (k : ℕ) => U.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) U.eq_4 R k
 
+set_option backward.isDefEq.respectTransparency false in
 theorem U_add_one (n : ℤ) : U R (n + 1) = 2 * X * U R n - U R (n - 1) := by
   linear_combination (norm := ring_nf) U_add_two R (n - 1)
 
 theorem U_sub_two (n : ℤ) : U R (n - 2) = 2 * X * U R (n - 1) - U R n := by
   linear_combination (norm := ring_nf) U_add_two R (n - 2)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem U_sub_one (n : ℤ) : U R (n - 1) = 2 * X * U R n - U R (n + 1) := by
   linear_combination (norm := ring_nf) U_add_two R (n - 1)
 
@@ -296,6 +306,7 @@ theorem U_two : U R 2 = 4 * X ^ 2 - 1 := by
 theorem U_neg_two : U R (-2) = -1 := by
   simpa [zero_sub, Int.reduceNeg, U_neg_one, mul_zero, U_zero] using U_sub_two R 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem U_neg_sub_one (n : ℤ) : U R (-n - 1) = -U R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -330,6 +341,7 @@ theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
       sub_add_cancel]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -349,6 +361,7 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     norm_num
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem U_eval_zero (n : ℤ) :
     (U R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -455,6 +468,7 @@ theorem U_eq_zero_iff (n : ℤ) [IsDomain R] [NeZero (2 : R)] :
     U R n = 0 ↔ n = -1 :=
   ⟨fun h => by contrapose! h; exact U_ne_zero R n h, fun h => by simp [h]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem U_eq_X_mul_U_add_T (n : ℤ) : U R (n + 1) = X * U R n + T R (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp [two_mul]
@@ -498,17 +512,20 @@ noncomputable def C : ℤ → R[X]
   | -((n : ℕ) + 1) => X * C (-n) - C (-n + 1)
   termination_by n => Int.natAbs n + Int.natAbs (n - 1)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem C_add_two : ∀ n, C R (n + 2) = X * C R (n + 1) - C R n
   | (k : ℕ) => C.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) C.eq_4 R k
 
+set_option backward.isDefEq.respectTransparency false in
 theorem C_add_one (n : ℤ) : C R (n + 1) = X * C R n - C R (n - 1) := by
   linear_combination (norm := ring_nf) C_add_two R (n - 1)
 
 theorem C_sub_two (n : ℤ) : C R (n - 2) = X * C R (n - 1) - C R n := by
   linear_combination (norm := ring_nf) C_add_two R (n - 2)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem C_sub_one (n : ℤ) : C R (n - 1) = X * C R n - C R (n + 1) := by
   linear_combination (norm := ring_nf) C_add_two R (n - 1)
 
@@ -530,6 +547,7 @@ theorem C_neg_one : C R (-1) = X := by
 theorem C_two : C R 2 = X ^ 2 - 2 := by
   simpa [pow_two, mul_assoc] using C_add_two R 0
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem C_neg (n : ℤ) : C R (-n) = C R n := by
   induction n using Polynomial.Chebyshev.induct with
@@ -568,6 +586,7 @@ theorem C_eval_two (n : ℤ) : (C R n).eval 2 = 2 := by
   | add_two n ih1 ih2 => simp [C_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [C_sub_one, -C_neg, ih1, ih2]; norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
@@ -608,17 +627,20 @@ noncomputable def S : ℤ → R[X]
   | -((n : ℕ) + 1) => X * S (-n) - S (-n + 1)
   termination_by n => Int.natAbs n + Int.natAbs (n - 1)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem S_add_two : ∀ n, S R (n + 2) = X * S R (n + 1) - S R n
   | (k : ℕ) => S.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) S.eq_4 R k
 
+set_option backward.isDefEq.respectTransparency false in
 theorem S_add_one (n : ℤ) : S R (n + 1) = X * S R n - S R (n - 1) := by
   linear_combination (norm := ring_nf) S_add_two R (n - 1)
 
 theorem S_sub_two (n : ℤ) : S R (n - 2) = X * S R (n - 1) - S R n := by
   linear_combination (norm := ring_nf) S_add_two R (n - 2)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem S_sub_one (n : ℤ) : S R (n - 1) = X * S R n - S R (n + 1) := by
   linear_combination (norm := ring_nf) S_add_two R (n - 1)
 
@@ -643,6 +665,7 @@ theorem S_two : S R 2 = X ^ 2 - 1 := by
 theorem S_neg_two : S R (-2) = -1 := by
   simpa [zero_sub, Int.reduceNeg, S_neg_one, mul_zero, S_zero] using S_sub_two R 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem S_neg_sub_one (n : ℤ) : S R (-n - 1) = -S R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -677,6 +700,7 @@ theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
       sub_add_cancel]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -721,6 +745,7 @@ theorem S_eq_U_comp_half_mul_X [Invertible (2 : R)] (n : ℤ) :
     Nat.cast_ofNat, mul_invOf_self', map_one, one_mul, comp_X] at this
   assumption
 
+set_option backward.isDefEq.respectTransparency false in
 theorem S_eq_X_mul_S_add_C (n : ℤ) : 2 * S R (n + 1) = X * S R n + C R (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp [two_mul]
@@ -821,6 +846,7 @@ theorem algebraMap_eval_S [Algebra R R'] (x : R) (n : ℤ) :
     algebraMap R R' ((S R n).eval x) = (S R' n).eval (algebraMap R R' x) := by
   rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_S]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -849,6 +875,7 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     (-n - 1) * h₁ + (-(X : R[X]) ^ 2 + 1) * H₂ + (n + 1) * H₁
 
+set_option backward.isDefEq.respectTransparency false in
 theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
     ((n : R[X]) + 1) * T R (n + 1) = X * U R n - (1 - X ^ 2) * derivative (U R n) := by
   have h₁ := congr_arg derivative <| T_eq_X_mul_T_sub_pol_U R n
@@ -858,6 +885,7 @@ theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     h₁ + (n + 2) * h₂
 
+set_option backward.isDefEq.respectTransparency false in
 theorem add_one_mul_self_mul_T_eq_poly_in_T (n : ℤ) :
     ((n + 1) * n : R[X]) * (T R (n + 1)) =
     (n : R[X]) * X * derivative (T R (n + 1)) - (n + 1 : R[X]) * derivative (T R n) := by
@@ -885,6 +913,7 @@ theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
   rw [Function.iterate_succ, Function.iterate_one, Function.comp_apply]
   linear_combination (norm := (push_cast; ring_nf)) h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
     (1 - X ^ 2) * derivative^[k + 2] (T R n) =
       (2 * k + 1 : R[X]) * X * derivative^[k + 1] (T R n) -
@@ -898,6 +927,7 @@ theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
   linear_combination (norm := (push_cast; ring_nf)) h
   cases k <;> grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
     (1 - X ^ 2) * derivative^[k + 2] (U R n) =
       (2 * k + 3 : R[X]) * X * derivative^[k + 1] (U R n) -
@@ -1026,6 +1056,7 @@ theorem derivative_U_eval_one_dvd (n : ℤ) :
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
 polynomials. -/
 theorem T_mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := by
@@ -1043,6 +1074,7 @@ theorem T_mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := b
     have h₃ := T_add_two R (-k - 1)
     linear_combination (norm := ring_nf) 2 * T R m * h₃ - h₂ - h₁ - ih2 + 2 * (X : R[X]) * ih1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of two Chebyshev `C` polynomials is the sum of two other Chebyshev `C` polynomials.
 -/
 theorem C_mul_C (m k : ℤ) : C R m * C R k = C R (m + k) + C R (m - k) := by
@@ -1060,6 +1092,7 @@ theorem C_mul_C (m k : ℤ) : C R m * C R k = C R (m + k) + C R (m - k) := by
     have h₃ := C_add_two R (-k - 1)
     linear_combination (norm := ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X : R[X]) * ih1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `(m * n)`-th Chebyshev `T` polynomial is the composition of the `m`-th and `n`-th. -/
 theorem T_mul (m n : ℤ) : T R (m * n) = (T R m).comp (T R n) := by
   induction m using Polynomial.Chebyshev.induct with
@@ -1076,6 +1109,7 @@ theorem T_mul (m n : ℤ) : T R (m * n) = (T R m).comp (T R n) := by
     simp only [sub_comp, mul_comp, ofNat_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + 2 * T R n * ih1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `(m * n)`-th Chebyshev `C` polynomial is the composition of the `m`-th and `n`-th. -/
 theorem C_mul (m n : ℤ) : C R (m * n) = (C R m).comp (C R n) := by
   induction m using Polynomial.Chebyshev.induct with

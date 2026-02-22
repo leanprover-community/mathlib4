@@ -248,12 +248,12 @@ section MeasureZero
 /-! ## Meagre sets and measure zero
 In general, neither of meagre and measure zero implies the other.
 - The set of Liouville numbers is a Lebesgue measure zero subset of ℝ, but is not meagre.
-(In fact, its complement is meagre. See `Real.disjoint_residual_ae`.)
+  (In fact, its complement is meagre. See `Real.disjoint_residual_ae`.)
 
 - The complement of the set of Liouville numbers in $[0,1]$ is meagre and has measure 1.
-For another counterexample, for all $α ∈ (0,1)$, there is a generalised Cantor set $C ⊆ [0,1]$
-of measure `α`. Cantor sets are nowhere dense (hence meagre). Taking a countable union of
-fat Cantor sets whose measure approaches 1 even yields a meagre set of measure 1.
+  For another counterexample, for all $α ∈ (0,1)$, there is a generalised Cantor set $C ⊆ [0,1]$
+  of measure `α`. Cantor sets are nowhere dense (hence meagre). Taking a countable union of
+  fat Cantor sets whose measure approaches 1 even yields a meagre set of measure 1.
 
 However, with respect to a measure which is positive on non-empty open sets, *closed* measure
 zero sets are nowhere dense and σ-compact measure zero sets in a Hausdorff space are meagre.
