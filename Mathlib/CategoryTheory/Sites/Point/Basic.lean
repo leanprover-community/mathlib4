@@ -20,7 +20,7 @@ Let `C` be a category equipped with a Grothendieck topology `J`. In this file,
 we define the notion of point of the site `(C, J)`, as a
 structure `GrothendieckTopology.Point`. Such a `Φ : J.Point` consists
 in a functor `Φ.fiber : C ⥤ Type w` such that the category `Φ.fiber.Elements`
-is cofiltered (and initially small) and such that if `x : Φ.fiber.obj X`
+is initially small cofiltered and such that if `x : Φ.fiber.obj X`
 and `R` is a covering sieve of `X`, then `x` belongs to the image
 of some `y : Φ.fiber.obj Y` by a morphism `f : Y ⟶ X` which belongs to `R`.
 (This definition is essentially the definition of a fiber functor on a site
@@ -63,8 +63,8 @@ variable (J : GrothendieckTopology C)
 
 /-- Given `J` a Grothendieck topology on a category `C`, a point of the site `(C, J)`
 consists of a functor `fiber : C ⥤ Type w` such that the category `fiber.Elements`
-is initially small (which allows defining the fiber functor on presheaves by
-taking colimits) and cofiltered (so that the fiber functor on presheaves is exact),
+is initially small cofiltered, which allows defining the fiber functor on presheaves by
+taking colimits and ensures that the fiber functor on presheaves is exact,
 and such that covering sieves induce jointly surjective maps on fibers (which
 allows to show that the fibers of a presheaf and its associated sheaf are isomorphic). -/
 structure Point where
