@@ -1122,6 +1122,7 @@ noncomputable
 def Trivialization.covDeriv (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x)
     (x : M) : V x := e.symm x (mfderiv I 𝓘(ℝ, F) (fun x' ↦ (e (σ x')).2) x (X x))
 
+-- The following is probably not on the critical path
 lemma Trivialization.covDeriv_isCovariantDerivativeOn [IsManifold I 1 M] :
     IsCovariantDerivativeOn (I := I) F e.covDeriv e.baseSet where
   addX {_X _X' _σ _x} hX hX' hσ hx := by sorry
@@ -1132,15 +1133,49 @@ lemma Trivialization.covDeriv_isCovariantDerivativeOn [IsManifold I 1 M] :
 
 end from_trivialization
 
+section to_trivialization
+
+variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e] [IsManifold I 1 M]
+
+noncomputable
+def Trivialization.pushCovDer
+    (cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)) :
+    (Π x : M, TangentSpace I x) → (M → F) → (M → F) :=
+  fun X σ x ↦ e (cov X (fun x' ↦ e.symm x' <| σ x') x) |>.2
+
+variable {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    -- {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
+
+lemma Trivialization.pushCovDer_isCovariantDerivativeOn
+    (hcov : IsCovariantDerivativeOn F cov e.baseSet) :
+    IsCovariantDerivativeOn F (e.pushCovDer cov) e.baseSet :=
+  sorry
+end to_trivialization
 
 section horiz
 namespace CovariantDerivative
 
-variable [IsManifold I 1 M]
+variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
+    [T2Space M] [IsManifold I ∞ M]
+    [VectorBundle ℝ F V]
 
+local notation "TM" => TangentSpace I
+
+-- FIXME the statement of CovariantDerivative.isCovariantDerivativeOn should work on any set
+
+-- Note: The definition below (ab)uses definitional
+-- equality of `TangentSpace (I.prod 𝓘(ℝ, F)) (↑t v)`
+-- which is $T_{t(v)} (M × F)$ and `TM v.proj × F`
+-- which is $T_{π(v)} M × F$.
+noncomputable
 def proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
-    TangentSpace (I.prod 𝓘(ℝ, F)) v →L[ℝ] V v.proj := by
-  sorry
+    TangentSpace (I.prod 𝓘(ℝ, F)) v →L[ℝ] V v.proj :=
+  letI t := trivializationAt F V v.proj
+  haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
+    (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
+  letI tproj := d_covDerOn.projection v.proj (t v).2
+  letI Tvt := mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) t v
+  t.symmL ℝ v.proj |>.comp <| tproj.comp Tvt
 
 noncomputable def horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
