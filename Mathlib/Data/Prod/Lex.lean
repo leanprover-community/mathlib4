@@ -67,7 +67,7 @@ instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (
   instWellFounded
 
 instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedRelation (α ×ₗ β) :=
-  ⟨(· < ·), wellFounded_lt⟩
+  WellFoundedLT.toWellFoundedRelation
 
 /-- Dictionary / lexicographic preorder for pairs. -/
 instance instPreorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×ₗ β) where

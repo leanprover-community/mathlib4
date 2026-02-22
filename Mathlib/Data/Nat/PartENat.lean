@@ -689,7 +689,7 @@ noncomputable def withTopAddEquiv : PartENat ≃+ ℕ∞ :=
 
 end WithTopEquiv
 
-instance lt_wf :  WellFoundedLT PartENat := by
+instance lt_wf : WellFoundedLT PartENat := by
   classical
     change WellFounded fun a b : PartENat => a < b
     simp_rw [← withTopEquiv_lt]

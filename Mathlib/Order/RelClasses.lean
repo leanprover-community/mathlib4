@@ -146,7 +146,7 @@ instance InvImage.asymm [Std.Asymm r] (f : β → α) : Std.Asymm (InvImage r f)
 
 /-! ### Well-order -/
 
-
+-- TODO: upstream this attribute to core?
 attribute [class] WellFounded
 
 /-- A well-founded relation. Not to be confused with `IsWellOrder`. -/
@@ -250,6 +250,7 @@ instance (r : α → α → Prop) [i : WellFounded r] : WellFounded (Relation.Tr
 abbrev WellFoundedLT (α : Type*) [LT α] : Prop :=
   @WellFounded α (· < ·)
 
+-- TODO: deprecate
 @[to_dual wellFounded_gt]
 lemma wellFounded_lt [LT α] [i : WellFoundedLT α] : @WellFounded α (· < ·) := i
 
@@ -302,6 +303,7 @@ theorem fix_eq {motive : α → Sort*} (ind : ∀ x : α, (∀ y : α, y < x →
     ∀ x, fix ind x = ind x fun y _ => fix ind y :=
   WellFounded.fix'_eq _ ind
 
+-- TODO: rename to `WellFoundedRelation.ofWellFoundedLT`
 /-- Derive a `WellFoundedRelation` instance from a `WellFoundedLT` instance. -/
 @[to_dual (attr := instance_reducible)
   /-- Derive a `WellFoundedRelation` instance from a `WellFoundedGT` instance. -/]
