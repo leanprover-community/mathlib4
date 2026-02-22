@@ -73,11 +73,3 @@ instance : ChartedSpace H (orbitRel.Quotient G M) where
   chart_mem_atlas := by simp
 
 end
-
-
-/- We will need this later for the IsManifold part
---variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
---variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
---variable (I : ModelWithCorners 𝕜 E H)
---variable {n : ℕ∞} [IsManifold I n M]
--/
