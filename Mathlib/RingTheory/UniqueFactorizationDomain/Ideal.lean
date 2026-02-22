@@ -54,7 +54,6 @@ lemma WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt [CommSemiring α] [IsDom
     (h : {I : Ideal α | I.IsPrincipal}.WellFoundedOn (· > ·)) :
     WfDvdMonoid α := by
   have : WellFoundedGT {I : Ideal α // I.IsPrincipal} := h
-  constructor
   convert InvImage.wf (fun a => ⟨Ideal.span ({a} : Set α), _, rfl⟩) this
   ext
   exact Ideal.span_singleton_lt_span_singleton.symm

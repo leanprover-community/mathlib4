@@ -162,7 +162,7 @@ theorem wellQuasiOrderedLE_iff :
     fun ⟨hwf, hc⟩ ↦ ⟨fun f ↦ ?_⟩⟩
   obtain ⟨g, h1 | h2⟩ := exists_increasing_or_nonincreasing_subseq (· > ·) f
   · exfalso
-    apply RelEmbedding.not_wellFounded _ hwf.wf
+    apply RelEmbedding.not_wellFounded _ hwf
     exact (RelEmbedding.ofMonotone _ h1).swap
   · contrapose! hc
     refine ⟨Set.range (f ∘ g), ?_, ?_⟩

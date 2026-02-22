@@ -157,11 +157,10 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
   have : { b : S | ¬r b a }.Nonempty :=
     let ⟨b, bS, ba⟩ := hS a
     ⟨⟨b, bS⟩, ba⟩
-  let b := ‹WellFounded s›.min _ this
-  have ba : ¬r b a := ‹WellFounded s›.min_mem _ this
+  let ⟨b, ba, b_min⟩ := WellFounded.has_min (inferInstance : WellFounded s) _ this
   refine ⟨b, ⟨b.2, fun c => not_imp_not.1 fun h => ?_⟩, ba⟩
   rw [show ∀ b : S, (⟨b, b.2⟩ : S) = b by intro b; cases b; rfl]
-  exact ‹WellFounded s›.not_lt_min _ this (IsOrderConnected.neg_trans h ba)
+  apply b_min _ (IsOrderConnected.neg_trans h ba)
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 

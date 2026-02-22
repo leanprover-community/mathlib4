@@ -60,9 +60,9 @@ noncomputable def wellOrderExtension : LinearOrder α :=
   @LinearOrder.lift' α (Ordinal ×ₗ Cardinal) _ (fun a : α => (rank r a, embeddingToCardinal a))
     fun _ _ h => embeddingToCardinal.injective <| congr_arg Prod.snd h
 
-instance wellOrderExtension.isWellFounded_lt : WellFounded (wellOrderExtension r).lt :=
-  ⟨InvImage.wf (fun a : α => (rank r a, embeddingToCardinal a)) <|
-    Ordinal.lt_wf.prod_lex Cardinal.lt_wf⟩
+instance wellOrderExtension.wellFounded_lt : WellFounded (wellOrderExtension r).lt :=
+  InvImage.wf (fun a : α => (rank r a, embeddingToCardinal a)) <|
+    Ordinal.lt_wf.prod_lex Cardinal.lt_wf
 
 instance wellOrderExtension.isWellOrder_lt : IsWellOrder α (wellOrderExtension r).lt where
 
@@ -83,10 +83,6 @@ def toWellOrderExtension : α ≃ WellOrderExtension α :=
 
 noncomputable instance [LT α] [h : WellFoundedLT α] : LinearOrder (WellOrderExtension α) :=
   h.wellOrderExtension
-
-instance WellOrderExtension.wellFoundedLT [LT α] [WellFoundedLT α] :
-    WellFoundedLT (WellOrderExtension α) :=
-  WellFounded.wellOrderExtension.wellFounded_lt (α := α) (· < ·)
 
 theorem toWellOrderExtension_strictMono [Preorder α] [WellFoundedLT α] :
     StrictMono (toWellOrderExtension : α → WellOrderExtension α) := fun _ _ h =>

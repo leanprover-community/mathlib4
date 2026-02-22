@@ -37,8 +37,8 @@ abbrev WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
   @WellFounded α DvdNotUnit
 
 theorem wellFounded_dvdNotUnit {α : Type*} [CommMonoidWithZero α] [h : WfDvdMonoid α] :
-    WellFounded (DvdNotUnit (α := α)) :=
-  h.wf
+    @WellFounded α DvdNotUnit :=
+  h
 
 namespace WfDvdMonoid
 
@@ -128,10 +128,12 @@ To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`
 -/
 class UniqueFactorizationMonoid (α : Type*) [CommMonoidWithZero α] : Prop
-    extends IsCancelMulZero α, @WellFounded α DvdNotUnit where
+    extends IsCancelMulZero α where
+  [toWellFounded : @WellFounded α DvdNotUnit]
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
 attribute [instance 100] UniqueFactorizationMonoid.toIsCancelMulZero
+attribute [instance] UniqueFactorizationMonoid.toWellFounded
 
 instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
     [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α] [DecompositionMonoid α] :

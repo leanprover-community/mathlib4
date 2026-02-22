@@ -476,9 +476,8 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
 
 instance instWellFoundedGTWithZeroMultiplicativeIntLeOne :
     WellFoundedGT { v : ℤᵐ⁰ // v ≤ 1 } :=
-  { wf :=
-    (LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
-    one_ne_zero).mpr instNonemptyOfInhabited }
+  (LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
+    one_ne_zero).mpr instNonemptyOfInhabited
 
 end WellFounded
 

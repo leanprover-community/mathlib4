@@ -524,7 +524,7 @@ variable (α) in
 /-- The **well-ordering theorem** (or **Zermelo's theorem**): every type has a well-order -/
 theorem exists_wellOrder : ∃ (_ : LinearOrder α), WellFoundedLT α := by
   classical
-  exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toWellFounded⟩
+  exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.wf⟩
 
 namespace Cardinal
 

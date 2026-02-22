@@ -67,10 +67,10 @@ variable (r : α → α → Prop) [hwf : WellFounded r]
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
 `r b a`). -/
 noncomputable def rank (a : α) : Ordinal.{u} :=
-  (hwf.apply r a).rank
+  (hwf.apply a).rank
 
 theorem rank_eq (a : α) : rank r a = ⨆ b : { b // r b a }, Order.succ (rank r b) :=
-  (hwf.apply r a).rank_eq
+  (hwf.apply a).rank_eq
 
 variable {r : α → α → Prop} [hwf : WellFounded r]
 
@@ -78,7 +78,7 @@ theorem rank_lt_of_rel (h : r a b) : rank r a < rank r b :=
   Acc.rank_lt_of_rel _ h
 
 theorem mem_range_rank_of_le {o : Ordinal} (h : o ≤ rank r a) : o ∈ Set.range (rank r) := by
-  obtain ⟨b, hb, rfl⟩ := Acc.mem_range_rank_of_le (hwf.apply r a) h
+  obtain ⟨b, hb, rfl⟩ := Acc.mem_range_rank_of_le (hwf.apply a) h
   exact ⟨b, rfl⟩
 
 end WellFounded

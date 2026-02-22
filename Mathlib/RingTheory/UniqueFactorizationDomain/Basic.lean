@@ -42,12 +42,12 @@ variable [CommMonoidWithZero α]
 open Associates Nat
 
 theorem of_wfDvdMonoid_associates (_ : WfDvdMonoid (Associates α)) : WfDvdMonoid α :=
-  ⟨(mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).2 wellFounded_dvdNotUnit⟩
+  (mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).2 wellFounded_dvdNotUnit
 
 variable [WfDvdMonoid α]
 
 instance wfDvdMonoid_associates : WfDvdMonoid (Associates α) :=
-  ⟨(mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).1 wellFounded_dvdNotUnit⟩
+  (mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).1 wellFounded_dvdNotUnit
 
 theorem wellFoundedLT_associates : WellFoundedLT (Associates α) :=
   Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit
@@ -56,22 +56,21 @@ end WfDvdMonoid
 
 theorem WfDvdMonoid.of_wellFoundedLT_associates [CommMonoidWithZero α] [IsCancelMulZero α]
     (h : WellFoundedLT (Associates α)) : WfDvdMonoid α :=
-  WfDvdMonoid.of_wfDvdMonoid_associates
-    ⟨by
-      convert h.wf
-      ext
-      exact Associates.dvdNotUnit_iff_lt⟩
+  WfDvdMonoid.of_wfDvdMonoid_associates <| by
+    unfold WellFoundedLT WfDvdMonoid at *
+    convert h
+    ext
+    exact Associates.dvdNotUnit_iff_lt
 
 theorem WfDvdMonoid.iff_wellFounded_associates [CommMonoidWithZero α] [IsCancelMulZero α] :
     WfDvdMonoid α ↔ WellFoundedLT (Associates α) :=
   ⟨by apply WfDvdMonoid.wellFoundedLT_associates, WfDvdMonoid.of_wellFoundedLT_associates⟩
 
 instance Associates.ufm [CommMonoidWithZero α] [UniqueFactorizationMonoid α] :
-    UniqueFactorizationMonoid (Associates α) :=
-  { (WfDvdMonoid.wfDvdMonoid_associates : WfDvdMonoid (Associates α)) with
-    irreducible_iff_prime := by
-      rw [← Associates.irreducible_iff_prime_iff]
-      apply UniqueFactorizationMonoid.irreducible_iff_prime }
+    UniqueFactorizationMonoid (Associates α) where
+  irreducible_iff_prime := by
+    rw [← Associates.irreducible_iff_prime_iff]
+    apply UniqueFactorizationMonoid.irreducible_iff_prime
 
 theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
     ∀ {f g : Multiset α},
@@ -318,43 +317,42 @@ variable [CommMonoidWithZero α] [IsCancelMulZero α]
 variable (pf : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a)
 include pf
 
-theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
-  ⟨by
-    classical
-      refine RelHomClass.wellFounded
-        (RelHom.mk ?_ ?_ : (DvdNotUnit : α → α → Prop) →r ((· < ·) : ℕ∞ → ℕ∞ → Prop)) wellFounded_lt
-      · intro a
-        by_cases h : a = 0
-        · exact ⊤
-        exact ↑(Multiset.card (Classical.choose (pf a h)))
-      rintro a b ⟨ane0, ⟨c, hc, b_eq⟩⟩
-      rw [dif_neg ane0]
-      by_cases h : b = 0
-      · simp [h, lt_top_iff_ne_top]
-      · rw [dif_neg h, Nat.cast_lt]
-        have cne0 : c ≠ 0 := by
-          refine mt (fun con => ?_) h
-          rw [b_eq, con, mul_zero]
-        calc
-          Multiset.card (Classical.choose (pf a ane0)) <
-              _ + Multiset.card (Classical.choose (pf c cne0)) :=
-            lt_add_of_pos_right _
-              (Multiset.card_pos.mpr fun con => hc (associated_one_iff_isUnit.mp ?_))
-          _ = Multiset.card (Classical.choose (pf a ane0) + Classical.choose (pf c cne0)) :=
-            (Multiset.card_add _ _).symm
-          _ = Multiset.card (Classical.choose (pf b h)) :=
-            Multiset.card_eq_card_of_rel
-            (prime_factors_unique ?_ (Classical.choose_spec (pf _ h)).1 ?_)
-        · convert (Classical.choose_spec (pf c cne0)).2.symm
-          rw [con, Multiset.prod_zero]
-        · intro x hadd
-          rw [Multiset.mem_add] at hadd
-          rcases hadd with h | h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
-        · rw [Multiset.prod_add]
-          trans a * c
-          · apply Associated.mul_mul <;> apply (Classical.choose_spec (pf _ _)).2 <;> assumption
-          · rw [← b_eq]
-            apply (Classical.choose_spec (pf _ _)).2.symm; assumption⟩
+theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α := by
+  classical
+  refine (RelHomClass.wellFounded
+    (RelHom.mk ?_ ?_ : (DvdNotUnit : α → α → Prop) →r ((· < ·) : ℕ∞ → ℕ∞ → Prop)) wellFounded_lt)
+  · intro a
+    by_cases h : a = 0
+    · exact ⊤
+    exact ↑(Multiset.card (Classical.choose (pf a h)))
+  rintro a b ⟨ane0, ⟨c, hc, b_eq⟩⟩
+  rw [dif_neg ane0]
+  by_cases h : b = 0
+  · simp [h, lt_top_iff_ne_top]
+  · rw [dif_neg h, Nat.cast_lt]
+    have cne0 : c ≠ 0 := by
+      refine mt (fun con => ?_) h
+      rw [b_eq, con, mul_zero]
+    calc
+      Multiset.card (Classical.choose (pf a ane0)) <
+          _ + Multiset.card (Classical.choose (pf c cne0)) :=
+        lt_add_of_pos_right _
+          (Multiset.card_pos.mpr fun con => hc (associated_one_iff_isUnit.mp ?_))
+      _ = Multiset.card (Classical.choose (pf a ane0) + Classical.choose (pf c cne0)) :=
+        (Multiset.card_add _ _).symm
+      _ = Multiset.card (Classical.choose (pf b h)) :=
+        Multiset.card_eq_card_of_rel
+        (prime_factors_unique ?_ (Classical.choose_spec (pf _ h)).1 ?_)
+    · convert (Classical.choose_spec (pf c cne0)).2.symm
+      rw [con, Multiset.prod_zero]
+    · intro x hadd
+      rw [Multiset.mem_add] at hadd
+      rcases hadd with h | h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
+    · rw [Multiset.prod_add]
+      trans a * c
+      · apply Associated.mul_mul <;> apply (Classical.choose_spec (pf _ _)).2 <;> assumption
+      · rw [← b_eq]
+        apply (Classical.choose_spec (pf _ _)).2.symm; assumption
 
 theorem irreducible_iff_prime_of_exists_prime_factors {p : α} : Irreducible p ↔ Prime p := by
   by_cases hp0 : p = 0
@@ -365,9 +363,9 @@ theorem irreducible_iff_prime_of_exists_prime_factors {p : α} : Irreducible p �
   rw [hq.prime_iff]
   exact hf.1 q (Multiset.mem_singleton_self _)
 
-theorem UniqueFactorizationMonoid.of_exists_prime_factors : UniqueFactorizationMonoid α :=
-  { WfDvdMonoid.of_exists_prime_factors pf with
-    irreducible_iff_prime := irreducible_iff_prime_of_exists_prime_factors pf }
+theorem UniqueFactorizationMonoid.of_exists_prime_factors : UniqueFactorizationMonoid α where
+  toWellFounded := WfDvdMonoid.of_exists_prime_factors pf
+  irreducible_iff_prime := irreducible_iff_prime_of_exists_prime_factors pf
 
 end ExistsPrimeFactors
 

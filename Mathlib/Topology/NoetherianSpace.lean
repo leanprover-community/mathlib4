@@ -12,8 +12,8 @@ public import Mathlib.Topology.Sets.Closeds
 # Noetherian space
 
 A Noetherian space is a topological space that satisfies any of the following equivalent conditions:
-- `WellFounded ((· > ·) : TopologicalSpace.Opens α → TopologicalSpace.Opens α → Prop)`
-- `WellFounded ((· < ·) : TopologicalSpace.Closeds α → TopologicalSpace.Closeds α → Prop)`
+- `WellFoundedGT (TopologicalSpace.Opens α)`
+- `WellFoundedLT (TopologicalSpace.Closeds α)`
 - `∀ s : Set α, IsCompact s`
 - `∀ s : TopologicalSpace.Opens α, IsCompact s`
 
@@ -148,7 +148,7 @@ theorem NoetherianSpace.finite [NoetherianSpace α] [T2Space α] : Finite α :=
   Finite.of_finite_univ (NoetherianSpace.isCompact Set.univ).finite_of_discrete
 
 instance (priority := 100) Finite.to_noetherianSpace [Finite α] : NoetherianSpace α :=
-  ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
+  Finite.wellFounded_of_trans_of_irrefl _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/

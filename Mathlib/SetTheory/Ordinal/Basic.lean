@@ -129,7 +129,7 @@ instance linearOrder_toType (o : Ordinal) : LinearOrder o.ToType :=
   @IsWellOrder.linearOrder _ o.out.r o.out.wo
 
 instance wellFoundedLT_toType (o : Ordinal) : WellFoundedLT o.ToType :=
-  o.out.wo.toWellFounded
+  o.out.wo.wf
 
 namespace Ordinal
 
@@ -254,7 +254,7 @@ open Classical in
 @[elab_as_elim]
 theorem inductionOnWellOrder {C : Ordinal → Prop} (o : Ordinal)
     (H : ∀ (α) [LinearOrder α] [WellFoundedLT α], C (typeLT α)) : C o :=
-  inductionOn o fun α r wo ↦ @H α (linearOrderOfSTO r) wo.toWellFounded
+  inductionOn o fun α r wo ↦ @H α (linearOrderOfSTO r) wo.wf
 
 open Classical in
 /-- To define a function on ordinals, it suffices to define them on order types of well-orders.
@@ -264,10 +264,10 @@ Since `LinearOrder` is data-carrying, `liftOnWellOrder_type` is not a definition
 def liftOnWellOrder {δ : Sort v} (o : Ordinal) (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
     (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
       typeLT α = typeLT β → f α = f β) : δ :=
-  Quotient.liftOn o (fun w ↦ @f w.α (linearOrderOfSTO w.r) w.wo.toWellFounded)
+  Quotient.liftOn o (fun w ↦ @f w.α (linearOrderOfSTO w.r) w.wo.wf)
     fun w₁ w₂ h ↦ @c
-      w₁.α (linearOrderOfSTO w₁.r) w₁.wo.toWellFounded
-      w₂.α (linearOrderOfSTO w₂.r) w₂.wo.toWellFounded
+      w₁.α (linearOrderOfSTO w₁.r) w₁.wo.wf
+      w₂.α (linearOrderOfSTO w₂.r) w₂.wo.wf
       (Quotient.sound h)
 
 @[simp]

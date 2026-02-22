@@ -233,25 +233,24 @@ theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
     exact hsc.finsetSup_mem h ht₁
 
 theorem IsSupClosedCompact.wellFoundedGT (h : IsSupClosedCompact α) :
-    WellFoundedGT α where
-  wf := by
-    refine RelEmbedding.wellFounded_iff_isEmpty.mpr ⟨fun a => ?_⟩
-    suffices sSup (Set.range a) ∈ Set.range a by
-      obtain ⟨n, hn⟩ := Set.mem_range.mp this
-      have h' : sSup (Set.range a) < a (n + 1) := by
-        change _ > _
-        simp [← hn, a.map_rel_iff]
-      apply lt_irrefl (a (n + 1))
-      apply lt_of_le_of_lt _ h'
-      apply le_sSup
-      apply Set.mem_range_self
-    apply h (Set.range a)
-    · use a 37
-      apply Set.mem_range_self
-    · rintro x ⟨m, hm⟩ y ⟨n, hn⟩
-      use m ⊔ n
-      rw [← hm, ← hn]
-      apply RelHomClass.map_sup a
+    WellFoundedGT α := by
+  refine RelEmbedding.wellFounded_iff_isEmpty.mpr ⟨fun a => ?_⟩
+  suffices sSup (Set.range a) ∈ Set.range a by
+    obtain ⟨n, hn⟩ := Set.mem_range.mp this
+    have h' : sSup (Set.range a) < a (n + 1) := by
+      change _ > _
+      simp [← hn, a.map_rel_iff]
+    apply lt_irrefl (a (n + 1))
+    apply lt_of_le_of_lt _ h'
+    apply le_sSup
+    apply Set.mem_range_self
+  apply h (Set.range a)
+  · use a 37
+    apply Set.mem_range_self
+  · rintro x ⟨m, hm⟩ y ⟨n, hn⟩
+    use m ⊔ n
+    rw [← hm, ← hn]
+    apply RelHomClass.map_sup a
 
 theorem isSupFiniteCompact_iff_all_elements_compact :
     IsSupFiniteCompact α ↔ ∀ k : α, IsCompactElement k := by

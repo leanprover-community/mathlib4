@@ -35,36 +35,35 @@ namespace Polynomial
 variable {R : Type*} [CommSemiring R] [NoZeroDivisors R] [WfDvdMonoid R] {f : R[X]}
 
 set_option backward.isDefEq.respectTransparency false in
-instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
-  wf := by
-    classical
-      refine
-        RelHomClass.wellFounded
-          (⟨fun p : R[X] =>
-              ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), ?_⟩ :
-            DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
-          (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wf)
-      rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
-      dsimp
-      rw [Polynomial.degree_mul, if_neg ane0]
-      split_ifs with hac
-      · rw [hac, Polynomial.leadingCoeff_zero]
-        apply Prod.Lex.left
-        exact WithTop.coe_lt_top _
-      have cne0 : c ≠ 0 := right_ne_zero_of_mul hac
-      simp only [Polynomial.leadingCoeff_mul]
-      by_cases hdeg : c.degree = (0 : ℕ)
-      · simp only [hdeg, Nat.cast_zero, add_zero]
-        refine Prod.Lex.right _ ⟨?_, ⟨c.leadingCoeff, fun unit_c => not_unit_c ?_, rfl⟩⟩
-        · rwa [Ne, Polynomial.leadingCoeff_eq_zero]
-        rw [Polynomial.isUnit_iff, Polynomial.eq_C_of_degree_eq_zero hdeg]
-        use c.leadingCoeff, unit_c
-        rw [Polynomial.leadingCoeff, Polynomial.natDegree_eq_of_degree_eq_some hdeg]
-      · apply Prod.Lex.left
-        rw [Polynomial.degree_eq_natDegree cne0] at *
-        simp only [Nat.cast_inj] at hdeg
-        rw [WithTop.coe_lt_coe, Polynomial.degree_eq_natDegree ane0, ← Nat.cast_add, Nat.cast_lt]
-        exact lt_add_of_pos_right _ (Nat.pos_of_ne_zero hdeg)
+instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] := by
+  classical
+  refine
+    RelHomClass.wellFounded
+      (⟨fun p : R[X] =>
+          ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), ?_⟩ :
+        DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
+      (wellFounded_lt.prod_lex ‹WfDvdMonoid R›)
+  rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
+  dsimp
+  rw [Polynomial.degree_mul, if_neg ane0]
+  split_ifs with hac
+  · rw [hac, Polynomial.leadingCoeff_zero]
+    apply Prod.Lex.left
+    exact WithTop.coe_lt_top _
+  have cne0 : c ≠ 0 := right_ne_zero_of_mul hac
+  simp only [Polynomial.leadingCoeff_mul]
+  by_cases hdeg : c.degree = (0 : ℕ)
+  · simp only [hdeg, Nat.cast_zero, add_zero]
+    refine Prod.Lex.right _ ⟨?_, ⟨c.leadingCoeff, fun unit_c => not_unit_c ?_, rfl⟩⟩
+    · rwa [Ne, Polynomial.leadingCoeff_eq_zero]
+    rw [Polynomial.isUnit_iff, Polynomial.eq_C_of_degree_eq_zero hdeg]
+    use c.leadingCoeff, unit_c
+    rw [Polynomial.leadingCoeff, Polynomial.natDegree_eq_of_degree_eq_some hdeg]
+  · apply Prod.Lex.left
+    rw [Polynomial.degree_eq_natDegree cne0] at *
+    simp only [Nat.cast_inj] at hdeg
+    rw [WithTop.coe_lt_coe, Polynomial.degree_eq_natDegree ane0, ← Nat.cast_add, Nat.cast_lt]
+    exact lt_add_of_pos_right _ (Nat.pos_of_ne_zero hdeg)
 
 variable [Nontrivial R]
 
