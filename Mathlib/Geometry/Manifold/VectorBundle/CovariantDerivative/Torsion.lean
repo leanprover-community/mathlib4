@@ -3,7 +3,9 @@ Copyright (c) 2025 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 
 /-!
 # Torsion of a covariant derivative
@@ -15,6 +17,8 @@ import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 TODO: add a more complete doc-string
 
 -/
+
+@[expose] public section -- TODO: think if we want to expose all definitions!
 
 open Bundle Filter Module Topology Set
 
@@ -200,8 +204,6 @@ def torsion_tensorial [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ E]
 -- and related torsion-freeness to this
 -- (That will not work for torsion-freeness on a set, though.)
 
-set_option linter.style.commandStart true
-
 -- TODO: generalise tensoriality result above to `IsCovariantDerivativeOn`,
 -- so it would apply here as well
 
@@ -229,7 +231,7 @@ lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTo
 -- This should be obvious; am I doing something wrong?
 lemma isTorsionFree_iff : IsTorsionFree cov ↔
     ∀ X Y, cov X Y - cov Y X = VectorField.mlieBracket I X Y := by
-  simp [IsTorsionFree]
+  simp only [IsTorsionFree]
   constructor
   · intro h X Y
     have : torsion cov X Y = 0 := by simp [h]

@@ -3,16 +3,18 @@ Copyright (c) 2025 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-import Mathlib.Geometry.Manifold.BumpFunction
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.VectorBundle.Misc
-import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
-import Mathlib.Geometry.Manifold.VectorField.LieBracket
-import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+public import Mathlib.Geometry.Manifold.BumpFunction
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.Misc
+public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
+public import Mathlib.Geometry.Manifold.VectorField.LieBracket
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 # Covariant derivatives
@@ -27,6 +29,8 @@ open scoped Bundle Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
+@[expose] public section -- TODO: think if we want to expose all definitions!
+
 section general_lemmas -- those lemmas should move
 
 section linear_algebra
@@ -39,7 +43,7 @@ lemma exists_map_of (u : E) (u' : E') :
   by_cases h : u = 0
   · simp [h]
     tauto
-  · have indep : LinearIndepOn 𝕜 id {u} := LinearIndepOn.id_singleton 𝕜 h
+  · have indep : LinearIndepOn 𝕜 id {u} := LinearIndepOn.singleton h
     let s := indep.extend (subset_univ _)
     have hus : u ∈ s := singleton_subset_iff.mp <| indep.subset_extend (subset_univ _)
     use (Basis.extend indep).constr (M' := E') (S := 𝕜) fun _ ↦ u'

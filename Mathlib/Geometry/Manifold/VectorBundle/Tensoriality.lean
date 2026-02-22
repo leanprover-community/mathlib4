@@ -3,11 +3,13 @@ Copyright (c) 2025 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.BumpFunction
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+module
+
+public import Mathlib.Geometry.Manifold.BumpFunction
+public import Mathlib.Geometry.Manifold.MFDeriv.Basic
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
+public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
 /-!
 # The tensoriality criterion
@@ -16,6 +18,8 @@ import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 open Bundle Filter Function Topology Module
 
 open scoped Bundle Manifold ContDiff
+
+@[expose] public section -- TODO: think if we want to expose all definitions!
 
 variable {E : Type*} [NormedAddCommGroup E]
   [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
@@ -74,7 +78,7 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
        have h₁ : MDiffAt (fun x' : M ↦ (0 : ℝ)) x := mdifferentiableAt_const
        rw [show (fun x' : M ↦ (0 : V x')) = (0 : M → ℝ) • fun x' ↦ 0 by simp;rfl]
        rw [φ_smul]
-       simp
+       · simp
        · exact h₁
        -- TODO: add mdifferentiable_zeroSection and/or use it!
        apply (contMDiff_zeroSection _ _).mdifferentiableAt one_ne_zero

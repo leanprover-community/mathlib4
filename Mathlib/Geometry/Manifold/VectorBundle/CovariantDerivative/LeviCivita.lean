@@ -3,11 +3,13 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
-import Mathlib.Geometry.Manifold.VectorBundle.OrthonormalFrame
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-import Mathlib.Util.PrintSorries
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
+public import Mathlib.Geometry.Manifold.VectorBundle.OrthonormalFrame
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+public import Mathlib.Util.PrintSorries
 
 /-!
 # The Levi-Civita connection
@@ -26,6 +28,8 @@ is an isometry) and prove the Levi-Civita connection is a metric connection
 open Bundle Filter Function Module Topology
 
 open scoped Bundle Manifold ContDiff
+
+@[expose] public section -- TODO: think if we want to expose all definitions!
 
 -- Let M be a C^k real manifold modeled on (E, H), endowed with a Riemannian metric.
 variable {n : WithTop ℕ∞}
@@ -511,19 +515,20 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
   simp_rw [rhs_aux_smulX I Y Z X f]
   simp only [product_smul_left, Pi.add_apply, Pi.sub_apply, smul_eq_mul, Pi.mul_apply]
   rw [rhs_aux_smulY_apply I X hf hY hZ, rhs_aux_smulZ_apply I Z hf hX hY]
-
   -- TODO: is there a better abstraction for this kind of "Lie bracket conv mode"?
   have h1 : ⟪Z, mlieBracket I (f • Y) X⟫ x =
       - (bar _).toFun (((mfderiv% f x) (X x))) • ⟪Z, Y⟫ x + f x • ⟪Z, mlieBracket I Y X⟫ x := by
     simp_rw [product_apply, mlieBracket_smul_left (W := X) hf hY, inner_add_right]
     congr
-    · simp [bar]; rw [real_inner_smul_right]
+    · simp only [neg_smul, inner_neg_right, bar, AddHom.toFun_eq_coe, AddHom.coe_mk, smul_eq_mul,
+      neg_mul, neg_inj]
+      rw [real_inner_smul_right]
     · rw [inner_smul_right_eq_smul]
   have h2 : ⟪X, mlieBracket I Z (f • Y)⟫ x =
       (bar _).toFun (((mfderiv% f x) (Z x))) • ⟪X, Y⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
     simp_rw [product_apply, mlieBracket_smul_right (V := Z) hf hY, inner_add_right]
     congr
-    · simp [bar]; rw [real_inner_smul_right]
+    · simp only [bar, AddHom.toFun_eq_coe, AddHom.coe_mk, smul_eq_mul]; rw [real_inner_smul_right]
     · rw [inner_smul_right_eq_smul]
   rw [h1, h2, product_swap I Y Z]
 
@@ -591,7 +596,6 @@ lemma leviCivitaRhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
     leviCivitaRhs' I X Y (f • Z) x = f x • leviCivitaRhs' I X Y Z x := by
   simp only [leviCivitaRhs', rhs_aux_smulX, Pi.add_apply, Pi.sub_apply]
   rw [rhs_aux_smulY_apply _ _ hf hZ hX, rhs_aux_smulZ_apply _ _ hf hY hZ]
-
   -- Apply the product rule for the lie bracket.
   -- Let's encapsulate the going into the product and back out again.
   have h1 : ⟪Y, mlieBracket I X (f • Z)⟫ x =
@@ -700,7 +704,6 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
     choose r wo using exists_wellOrder _
     exact r
   have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
-
   -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
   let real := b.orthonormalFrame t
   have hframe := b.orthonormalFrame_isOrthonormalFrameOn t (F := E) (IB := I) (n := 1)
@@ -869,7 +872,7 @@ variable (M) in
 /-- A choice of Levi-Civita connection on the tangent bundle `TM` of a Riemannian manifold `(M, g)`:
 this is unique up to the value on non-differentiable vector fields.
 If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead. -/
-private noncomputable def LeviCivitaConnection_aux [FiniteDimensional ℝ E]
+@[no_expose] noncomputable def LeviCivitaConnection_aux [FiniteDimensional ℝ E]
     (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)) :
     CovariantDerivative I E (TangentSpace I : M → Type _) where
   -- This is the existence part of the proof: take the formula derived above
@@ -959,6 +962,7 @@ lemma foobar [Fintype ι] [FiniteDimensional ℝ E] (hf : IsCovariantDerivativeO
 -/
 
 lemma _root_.IsCovariantDerivativeOn.congr_of_christoffelSymbol_eq [Fintype ι]
+    [FiniteDimensional ℝ E] -- TODO: this is implied by Finite ι, right?
     (hf : IsCovariantDerivativeOn E f U) (hg : IsCovariantDerivativeOn E g U)
     (hs : IsLocalFrameOn I E n s U)
     (hfg : ∀ i j k, ∀ x ∈ U, ChristoffelSymbol I f hs i j k x = ChristoffelSymbol I g hs i j k x) :
@@ -974,6 +978,7 @@ lemma _root_.IsCovariantDerivativeOn.congr_of_christoffelSymbol_eq [Fintype ι]
 /-- Two covariant derivatives on `U` are equal on `U` if and only if all of their
 covariant derivatives w.r.t. some local frame on `U` are equal on `U`. -/
 lemma _root_.IsCovariantDerivativeOn.congr_iff_christoffelSymbol_eq [Fintype ι]
+    [FiniteDimensional ℝ E] -- TODO: this is implied by Finite ι, right?
     (hf : IsCovariantDerivativeOn E f U) (hg : IsCovariantDerivativeOn E g U)
     (hs : IsLocalFrameOn I E n s U) :
     (∀ X Y : Π x : M, TangentSpace I x, ∀ x ∈ U, f X Y x = g X Y x) ↔
@@ -1005,6 +1010,7 @@ variable {U : Set M} {ι : Type*} [Fintype ι] {s : ι → (x : M) → TangentSp
 A covariant derivative on `U` is torsion-free on `U` iff for each `x ∈ U`,
 the Christoffel symbols `Γᵢⱼᵏ` w.r.t. `{s i}` are symmetric. -/
 lemma isTorsionFreeOn_iff_christoffelSymbols [CompleteSpace E] {ι : Type*} [Fintype ι]
+    [FiniteDimensional ℝ E] -- TODO: this is implied by Finite ι, right?
     (hf : IsCovariantDerivativeOn E f U)
     {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U)
     (hs'' : ∀ i j, ∀ x : U, VectorField.mlieBracket I (s i) (s j) x = 0) :
@@ -1134,8 +1140,8 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
       abel
     -- now, just rewrite `inner` to take out a sum: same lemma twice
     convert this
-    sorry
-    sorry
+    · sorry
+    · sorry
 
   -- deduce the goal from `aux`
   sorry

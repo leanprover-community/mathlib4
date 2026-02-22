@@ -3,8 +3,10 @@ Copyright (c) 2025 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+module
+
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
 /-!
 # Miscellaneous pre-requisites for covariant derivatives
@@ -13,6 +15,8 @@ TODO: this file should not exist; move everything in here to a proper place
 (and PR it accordingly)
 
 -/
+
+@[expose] public section -- TODO: think if we want to expose all definitions!
 
 section -- Building continuous bilinear maps
 
