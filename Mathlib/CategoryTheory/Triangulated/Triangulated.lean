@@ -350,26 +350,26 @@ def Triangulated.someOctahedron' [IsTriangulated C]
   rw [comp_neg, neg_inj] at eq₂
   rw [neg_comp, comp_neg, neg_inj] at eq₄
   refine ⟨m₁, m₃, ?_, ?_, ?_, ?_, ?_⟩
-  · rw [← shiftFunctorCompIsoId_shift_shift_neg' v₁₃ (1 : ℤ)]
+  · rw [← shiftFunctorCompIsoId_naturality_1 v₁₃ 1 (-1) (Int.add_right_neg 1)]
     unfold m₁
     dsimp
     rw [assoc, assoc, Iso.hom_inv_id_app_assoc]
     nth_rw 2 [← assoc]
-    rw [← Functor.map_comp, eq₂, shiftFunctorCompIsoId_shift_shift_neg']
+    rw [← Functor.map_comp, eq₂, shiftFunctorCompIsoId_naturality_1]
   · unfold m₁
     dsimp
     rw [Functor.map_comp, Functor.map_comp, shift_shiftFunctorCompIsoId_hom_app,
-      shift_shiftFunctorCompIsoId_inv_app, shiftFunctorCompIsoId_shift_neg_shift', eq₁]
+      shift_shiftFunctorCompIsoId_inv_app, shiftFunctorCompIsoId_naturality_1, eq₁]
   · unfold m₃
     dsimp
     rw [Functor.map_comp, Functor.map_comp, shift_shiftFunctorCompIsoId_hom_app,
-      shift_shiftFunctorCompIsoId_inv_app, shiftFunctorCompIsoId_shift_neg_shift', eq₃]
-  · rw [← shiftFunctorCompIsoId_shift_shift_neg' v₂₃ (1 : ℤ)]
+      shift_shiftFunctorCompIsoId_inv_app, shiftFunctorCompIsoId_naturality_1, eq₃]
+  · rw [← shiftFunctorCompIsoId_naturality_1 v₂₃ 1 (-1) (Int.add_right_neg 1)]
     unfold m₃
     dsimp
     rw [assoc, assoc, Iso.hom_inv_id_app_assoc]
     nth_rw 2 [← assoc]
-    rw [← Functor.map_comp, ← eq₄, ← Functor.map_comp, shiftFunctorCompIsoId_shift_shift_neg']
+    rw [← Functor.map_comp, ← eq₄, ← Functor.map_comp, shiftFunctorCompIsoId_naturality_1]
   · apply isomorphic_distinguished _ ((Triangle.shift_distinguished_iff _ (-1 : ℤ)).mpr o.mem)
     refine Triangle.isoMk _ _ (shiftShiftNeg Z₁₂ (1 : ℤ)).symm
       (-(shiftShiftNeg Z₁₃ (1 : ℤ)).symm) (shiftShiftNeg Z₂₃ (1 : ℤ)).symm (comm₃ := ?_)
