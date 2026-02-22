@@ -199,8 +199,8 @@ lemma coeff_apply_of_notMem (hs : IsLocalFrameOn I F n s u) (hx : x ∉ u) (i : 
 
 @[simp]
 lemma coeff_apply_of_mem (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (t : Π x : M, V x) (i : ι) :
-    (LinearMap.piApply (hs.coeff i)) t x = (hs.toBasisAt hx).repr (t x) i := by
-  simp [LinearMap.piApply, coeff, hx]
+    (hs.coeff i x) (t x) = (hs.toBasisAt hx).repr (t x) i := by
+  simp [coeff, hx]
 
 lemma coeff_sum_eq [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M, V x) (hx : x ∈ u) :
     t x = ∑ i, ((LinearMap.piApply (hs.coeff i)) t x) • (s i x) := by
@@ -250,8 +250,9 @@ lemma eq_iff_coeff [VectorBundle 𝕜 F V] [FiniteDimensional 𝕜 F]
   letI := fintypeOfFiniteDimensional hs hx
   exact ⟨fun h i ↦ hs.coeff_congr h i, fun h ↦ hs.eq_of_coeff_eq hx h⟩
 
+-- TODO: do we still need this lemma?
 lemma coeff_apply_zero_at (hs : IsLocalFrameOn I F n s u) (ht : t x = 0) (i : ι) :
-    (LinearMap.piApply (hs.coeff i)) t x = 0 := by simpa using hs.coeff_congr (t' := 0) ht i
+    (hs.coeff i x) (t x) = 0 := by simp [ht]
 
 variable (hs : IsLocalFrameOn I F n s u) [VectorBundle 𝕜 F V]
 
@@ -405,12 +406,12 @@ lemma localFrame_coeff_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (i : ι) :
 variable (e b) in
 @[simp]
 lemma localFrame_coeff_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
-    (LinearMap.piApply (e.localFrame_coeff I b i)) s x = (e.basisAt b hx).repr (s x) i := by
+    (localFrame_coeff I e b i x) (s x) = (e.basisAt b hx).repr (s x) i := by
   have he := e.isLocalFrameOn_localFrame_baseSet I 1 b
   have hbasis : e.basisAt b hx = he.toBasisAt hx := by
     ext j
     simp [IsLocalFrameOn.toBasisAt, localFrame, basisAt, hx]
-  simp [localFrame_coeff, LinearMap.piApply, IsLocalFrameOn.coeff, hx, hbasis]
+  simp [localFrame_coeff, IsLocalFrameOn.coeff, hx, hbasis]
 
 variable {s s' : Π x : M, V x}
 
@@ -435,11 +436,9 @@ lemma localFrame_coeff_congr {i : ι} (hss' : s x = s' x) :
       (LinearMap.piApply (e.localFrame_coeff I b i)) s' x := by
   simpa [localFrame_coeff] using (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
 
-variable (e b) in
+variable (e b) in -- TODO: do we need this lemma still?
 lemma localFrame_coeff_apply_zero_at (hs : s x = 0) (i : ι) :
-    (LinearMap.piApply (e.localFrame_coeff I b i)) s x = 0 := by
-  simpa [localFrame_coeff] using
-    (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_apply_zero_at hs i
+    (LinearMap.piApply (e.localFrame_coeff I b i)) s x = 0 := by simp [hs]
 
 variable {n}
 
