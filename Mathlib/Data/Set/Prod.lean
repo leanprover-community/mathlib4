@@ -291,7 +291,9 @@ theorem snd_image_prod {s : Set α} (hs : s.Nonempty) (t : Set β) : Prod.snd ''
     ⟨(x, y), ⟨x_in, y_in⟩, rfl⟩
 
 theorem subset_fst_image_prod_snd_image {s : Set (α × β)} :
-    s ⊆ (Prod.fst '' s) ×ˢ (Prod.snd '' s) := fun ⟨p₁, p₂⟩ _ => by aesop
+    s ⊆ (Prod.fst '' s) ×ˢ (Prod.snd '' s) := fun ⟨p₁, p₂⟩ h => by
+  simp only [mem_prod, mem_image, Prod.exists, exists_and_right, exists_eq_right]
+  refine ⟨⟨_, h⟩, ⟨_, h⟩⟩
 
 lemma mapsTo_snd_prod {s : Set α} {t : Set β} : MapsTo Prod.snd (s ×ˢ t) t :=
   fun _ hx ↦ (mem_prod.1 hx).2
@@ -927,7 +929,9 @@ variable {α β γ δ : Type*} {s : Set α} {f : α → β}
 section graphOn
 variable {x : α × β}
 
-@[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := by aesop (add simp graphOn)
+@[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := by
+  obtain ⟨fst, snd⟩ := x
+  simp [graphOn]
 
 @[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
 @[simp] lemma graphOn_eq_empty : graphOn f s = ∅ ↔ s = ∅ := image_eq_empty
@@ -954,7 +958,7 @@ lemma image_fst_graphOn (f : α → β) (s : Set α) : Prod.fst '' graphOn f s =
 
 @[simp] lemma image_snd_graphOn (f : α → β) : Prod.snd '' s.graphOn f = f '' s := by ext x; simp
 
-lemma fst_injOn_graph : (s.graphOn f).InjOn Prod.fst := by aesop (add simp InjOn)
+lemma fst_injOn_graph : (s.graphOn f).InjOn Prod.fst := by simp_all [InjOn]
 
 lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
     s.graphOn (g ∘ f) = (fun x ↦ (x.1, g x.2)) '' s.graphOn f := by
@@ -971,7 +975,10 @@ lemma graphOn_prod_graphOn (s : Set α) (t : Set β) (f : α → γ) (g : β →
 
 lemma graphOn_prod_prodMap (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
     (s ×ˢ t).graphOn (Prod.map f g) = Equiv.prodProdProdComm .. ⁻¹' s.graphOn f ×ˢ t.graphOn g := by
-  aesop
+  ext ⟨⟨a, b⟩, ⟨c, d⟩⟩
+  simp only [mem_graphOn, mem_prod, Prod.map_apply, Prod.mk.injEq, mem_preimage,
+    Equiv.prodProdProdComm_apply]
+  apply Iff.intro <;> simp_all
 
 end graphOn
 
@@ -1006,7 +1013,7 @@ lemma exists_equiv_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjecti
     by simp [hf]
   have he₁₂ h i : e₁ h = i ↔ e₂ i = h := by
     rw [Set.ext_iff] at he₁ he₂
-    aesop (add simp [Prod.swap_eq_iff_eq_swap])
+    simp_all [Prod.swap_eq_iff_eq_swap]
   exact ⟨
   { toFun := e₁
     invFun := e₂
