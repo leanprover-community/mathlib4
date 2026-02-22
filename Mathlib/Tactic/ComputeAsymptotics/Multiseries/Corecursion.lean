@@ -44,7 +44,7 @@ where f is friendly.
 * `FriendlyOperation.coind`, `FriendlyOperation.coind_comp_friend_left`,
   `FriendlyOperation.coind_comp_friend_right`: coinduction principles for proving that an operation
   is friendly.
-* `FriendlyOperation.eq_of_bisim`: a generalisation of `Seq.eq_of_bisim'` for that allows using a
+* `FriendlyOperation.eq_of_bisim`: a generalisation of `Seq.eq_of_bisim'` that allows using a
   friendly operation in the tail of the sequences.
 
 ## Implementation details
@@ -215,7 +215,7 @@ theorem exists_fixed_point_of_contractible (F : (β →ᵤ Seq α) → (β →�
   use f
   exact hF.fixedPoint_isFixedPt
 
-/-- Main theorem of this file. It shows that there exists a funcion satisfying the corecursive
+/-- Main theorem of this file. It shows that there exists a function satisfying the corecursive
 definition of the form `def foo (x : X) := hd x :: op (foo (tlArg x))` where `f` is friendly. -/
 theorem FriendlyOperation.exists_fixed_point (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
     [h : FriendlyOperationClass op] :
@@ -349,6 +349,10 @@ theorem FriendlyOperation.op_cons_head_eq {op : Seq α → Seq α} (h : Friendly
       rw [hs, ht, dist_cons_cons_eq_one h_hd] at h
       norm_num at h
 
+/-- Decomposes a friendly operation by the head of the input sequence. Returns `none` if the output
+is `nil`, or `some (out_hd, op')` where `out_hd` is the head of the output and `op'` is a friendly
+operation mapping the tail of the input to the tail of the output. See
+`destruct_apply_eq_unfold` for the correctness statement. -/
 def FriendlyOperation.unfold {op : Seq α → Seq α} (h : FriendlyOperation op) (hd? : Option α) :
     Option (α × Subtype (@FriendlyOperation α)) :=
   match hd? with
@@ -366,11 +370,11 @@ def FriendlyOperation.unfold {op : Seq α → Seq α} (h : FriendlyOperation op)
     | some (t_hd, _) =>
       some (t_hd, ⟨fun s_tl ↦ (op (.cons s_hd s_tl)).tail, FriendlyOperation.cons_tail h⟩)
 
-/-- If the operation `op` is friendly, then there exists a function
-`T : Option α → Option (α × Subtype FriendlyOperation)` such that for all `s`,
-if `T s.head = none`, then `op s = nil`, and if `T s.head = some (hd, op')`,
-then `op s = cons hd (op' s.tail)`. One can see this as a coinductive definition
-of `FriendlyOperation`. For coinductive principle see `FriendlyOperation.coind`. -/
+/-- `unfold` correctly decomposes a friendly operation: the head of `op s` depends only on the
+head of `s` (and is given by `unfold`), while the tail of `op s` is obtained by applying the
+friendly operation returned by `unfold` to the tail of `s`. This gives a coinductive
+characterization of `FriendlyOperation`. For the coinduction principle, see
+`FriendlyOperation.coind`. -/
 theorem FriendlyOperation.destruct_apply_eq_unfold {op : Seq α → Seq α} (h : FriendlyOperation op)
     {s : Seq α} :
     destruct (op s) = (h.unfold s.head).map (fun (hd, op') => (hd, op'.val s.tail)) := by
@@ -498,7 +502,7 @@ theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
   simp [hT]
   rfl
 
-/-- A generalisation of `FriendlyOperation.coind` for that allows using `op' ∘ opf` in the head
+/-- A generalisation of `FriendlyOperation.coind` that allows using `op' ∘ opf` in the tail
 of `op s` where `opf` is friendly and `op'` is a function satisfying `motive`. -/
 theorem FriendlyOperation.coind_comp_friend_right {op : Seq α → Seq α}
     (motive : (Seq α → Seq α) → Prop)
@@ -548,7 +552,7 @@ theorem FriendlyOperation.coind_comp_friend_right {op : Seq α → Seq α}
   rw [hT]
   rfl
 
-/-- A generalisation of `Seq.eq_of_bisim'` for that allows using a friendly operation in the tail
+/-- A generalisation of `Seq.eq_of_bisim'` that allows using a friendly operation in the tail
 of the sequences. -/
 theorem FriendlyOperationClass.eq_of_bisim {s t : Seq α} {op : γ → Seq α → Seq α}
     [FriendlyOperationClass op]
