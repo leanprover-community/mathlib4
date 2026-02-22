@@ -23,7 +23,7 @@ variable {G : Type*} [Group G] [MulAction G M]
 /-- If a group `G` acts properly discontinuously on a topological space `M`,
 then the quotient map `Quotient.mk _ : M → M⧸G`
 is a covering map. -/
-lemma isCoveringMap_quotientMk :
+lemma isCoveringMap_quotientMk_of_properlyDiscontinuousSMul :
     IsCoveringMap (Quotient.mk _ : M → orbitRel.Quotient G M) :=
   IsQuotientCoveringMap.isCoveringMap (G:=_) (f:=_)
     (isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul)
@@ -39,19 +39,13 @@ variable {G : Type*} [Group G] [MulAction G M]
          [ProperlyDiscontinuousSMul G M] [ContinuousConstSMul G M]
          [IsCancelSMul G M] [T2Space M] [LocallyCompactSpace M]
 
--- where should this go?
--- should it have of_properlyDiscontinuousSMul?
--- or is it needed at all?
 /-- If a group `G` acts properly discontinuously on a topological space `M`,
 then the quotient map `Quotient.mk : M → M⧸G`
 is a local homeomorphism. -/
 lemma isLocalHomeomorph :
     IsLocalHomeomorph (Quotient.mk _ : M → orbitRel.Quotient G M) :=
-  isCoveringMap_quotientMk.isLocalHomeomorph
-
-/-
-from now on where should this go??
--/
+  isCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isLocalHomeomorph
+-- should this have of_properlyDiscontinuousSMul?
 
 /-- A chosen local homeomorphism for the quotient map
 `Quotient.mk : M → M⧸G` at a point `p : M`. -/
@@ -59,7 +53,7 @@ noncomputable def localHomeomorphAt (p : M) :
     OpenPartialHomeomorph M (orbitRel.Quotient G M) :=
   Classical.choose (isLocalHomeomorph p)
 -- this could just be
--- Classical.choose (isCoveringMap_quotientMk.isLocalHomeomorph p)
+-- Classical.choose (isCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isLocalHomeomorph p)
 
 /-- The point `p` lies in the source of `localHomeomorphAt p`. -/
 lemma mem_localHomeomorphAt_source {p : M} :
