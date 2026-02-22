@@ -207,7 +207,7 @@ lemma exists_of_isCofiltered :
   exact ⟨Dᵒᵖ, inferInstance, inferInstance, F.leftOp, inferInstance⟩
 
 instance : InitiallySmallCofiltered.{w} C where
-  final_smallCategory := exists_of_isCofiltered C
+  initial_smallCategory := exists_of_isCofiltered C
 
 end InitiallySmall
 
