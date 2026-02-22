@@ -22,12 +22,8 @@ Assume:
 
 * `G` acts on `M`
 * the action is properly discontinuous
-* the quotient map `Quotient.mk : M → orbitRel.Quotient G M`
-  is a covering map
 
-Then:
-
-* `orbitRel.Quotient G M` inherits a `ChartedSpace H` structure.
+Then `orbitRel.Quotient G M` inherits a `ChartedSpace H` structure.
 
 ## TO-DO
 
