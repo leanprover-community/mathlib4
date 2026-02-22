@@ -152,6 +152,45 @@ end CompLeft
 
 end ContinuousLinearMap
 
+section CompRight
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+variable {g : F → G} {g' : F →L[𝕜] G} {x : E} {y : F} {s : Set E} {t : Set F}
+
+theorem HasFDerivAtFilter.comp_continuousLinearMap {L : Filter (F × F)} {L' : Filter (E × E)}
+    (h : HasFDerivAtFilter g g' L) (f : E →L[𝕜] F) (hf : Filter.Tendsto (Prod.map f f) L' L) :
+    HasFDerivAtFilter (g ∘ f) (g' ∘L f) L' :=
+  .of_isLittleOTVS <| calc
+    (fun x ↦ g (f x.1) - g (f x.2) - g' (f (x.1 - x.2))) =o[𝕜; L'] (fun x ↦ f x.1 - f x.2) := by
+      simpa using h.isLittleOTVS.comp_tendsto hf
+    _ =O[𝕜; L'] fun x ↦ x.1 - x.2 := by
+      simpa [Function.comp_def] using f.isBigOTVS_comp (f := fun x : E × E ↦ x.1 - x.2)
+
+theorem HasStrictFDerivAt.comp_continuousLinearMap_of_eq (h : HasStrictFDerivAt g g' y)
+    (f : E →L[𝕜] F) (hxy : f x = y) :
+    HasStrictFDerivAt (g ∘ f) (g' ∘L f) x :=
+  HasFDerivAtFilter.comp_continuousLinearMap h f <| (f.continuous.tendsto' x y hxy).prodMap_nhds
+    (f.continuous.tendsto' x y hxy)
+
+theorem HasFDerivAt.comp_continuousLinearMap_of_eq (h : HasFDerivAt g g' y) (f : E →L[𝕜] F)
+    (hxy : f x = y) :
+    HasFDerivAt (g ∘ f) (g' ∘L f) x :=
+  HasFDerivAtFilter.comp_continuousLinearMap h f <| (f.continuous.tendsto' x y hxy).prodMap <| by
+    simpa
+
+theorem HasFDerivWithinAt.comp_continuousLinearMap_of_eq (h : HasFDerivWithinAt g g' t y)
+    (f : E →L[𝕜] F) (hxy : f x = y) (hst : Set.MapsTo f s t) :
+    HasFDerivWithinAt (g ∘ f) (g' ∘L f) s x := by
+  subst y
+  refine HasFDerivAtFilter.comp_continuousLinearMap h f ?_
+  refine f.continuous.continuousWithinAt.tendsto_nhdsWithin hst |>.prodMap ?_
+  simp
+
+end CompRight
+
+
 /-! ### Unbundled continuous linear maps -/
 
 namespace IsBoundedLinearMap

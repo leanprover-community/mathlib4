@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Defs
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
+public import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 
@@ -22,26 +23,21 @@ Cartesian products of functions, and functions into Pi-types.
 
 public section
 
-
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Metric
+open scoped NNReal ENNReal Topology
 
 noncomputable section
 
-section
-
+section Prod
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
 variable {G' : Type*} [AddCommGroup G'] [Module 𝕜 G'] [TopologicalSpace G']
 
-section CartesianProduct
-
 /-! ### Derivative of the Cartesian product of two functions -/
 
-
-section Prod
-
+section ProdMk
 variable [ContinuousSMul 𝕜 F] [ContinuousSMul 𝕜 G]
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
@@ -106,7 +102,7 @@ theorem DifferentiableWithinAt.fderivWithin_prodMk (hf₁ : DifferentiableWithin
       (fderivWithin 𝕜 f₁ s x).prod (fderivWithin 𝕜 f₂ s x) :=
   (hf₁.hasFDerivWithinAt.prodMk hf₂.hasFDerivWithinAt).fderivWithin hxs
 
-end Prod
+end ProdMk
 
 @[fun_prop]
 theorem hasFDerivAt_prodMk_left (e₀ : E) (f₀ : F) :
@@ -216,7 +212,7 @@ end Fst
 
 section Snd
 
-variable {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F}
+variable {s : Set E} {x : E} {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F} {L : Filter (E × E)}
 
 theorem hasFDerivAtFilter_snd {L : Filter ((E × F) × (E × F))} :
     HasFDerivAtFilter (@Prod.snd E F) (snd 𝕜 E F) L :=
@@ -224,7 +220,7 @@ theorem hasFDerivAtFilter_snd {L : Filter ((E × F) × (E × F))} :
 
 protected theorem HasFDerivAtFilter.snd (h : HasFDerivAtFilter f₂ f₂' L) :
     HasFDerivAtFilter (fun x => (f₂ x).2) ((snd 𝕜 F G).comp f₂') L :=
-  hasFDerivAtFilter_snd.comp h tendsto_map
+  (snd 𝕜 F G).comp_hasFDerivAtFilter h
 
 @[fun_prop]
 theorem hasStrictFDerivAt_snd : HasStrictFDerivAt (@Prod.snd E F) (snd 𝕜 E F) p :=
@@ -261,7 +257,7 @@ theorem differentiableAt_snd : DifferentiableAt 𝕜 Prod.snd p :=
 @[simp, fun_prop]
 protected theorem DifferentiableAt.snd (h : DifferentiableAt 𝕜 f₂ x) :
     DifferentiableAt 𝕜 (fun x => (f₂ x).2) x :=
-  differentiableAt_snd.comp x h
+  h.hasFDerivAt.snd.differentiableAt
 
 @[fun_prop]
 theorem differentiable_snd : Differentiable 𝕜 (Prod.snd : E × F → F) := fun _ =>
@@ -270,7 +266,7 @@ theorem differentiable_snd : Differentiable 𝕜 (Prod.snd : E × F → F) := fu
 @[simp, fun_prop]
 protected theorem Differentiable.snd (h : Differentiable 𝕜 f₂) :
     Differentiable 𝕜 fun x => (f₂ x).2 :=
-  differentiable_snd.comp h
+  (snd 𝕜 F G).comp_differentiable h
 
 @[fun_prop]
 theorem differentiableWithinAt_snd {s : Set (E × F)} : DifferentiableWithinAt 𝕜 Prod.snd s p :=
@@ -279,7 +275,7 @@ theorem differentiableWithinAt_snd {s : Set (E × F)} : DifferentiableWithinAt �
 @[fun_prop]
 protected theorem DifferentiableWithinAt.snd (h : DifferentiableWithinAt 𝕜 f₂ s x) :
     DifferentiableWithinAt 𝕜 (fun x => (f₂ x).2) s x :=
-  differentiableAt_snd.comp_differentiableWithinAt x h
+  (snd 𝕜 F G).comp_differentiableWithinAt h
 
 @[fun_prop]
 theorem differentiableOn_snd {s : Set (E × F)} : DifferentiableOn 𝕜 Prod.snd s :=
@@ -288,18 +284,27 @@ theorem differentiableOn_snd {s : Set (E × F)} : DifferentiableOn 𝕜 Prod.snd
 @[fun_prop]
 protected theorem DifferentiableOn.snd (h : DifferentiableOn 𝕜 f₂ s) :
     DifferentiableOn 𝕜 (fun x => (f₂ x).2) s :=
-  differentiable_snd.comp_differentiableOn h
+  (snd 𝕜 F G).comp_differentiableOn h
+
+variable [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+
+section
+variable [ContinuousAdd F] [ContinuousSMul 𝕜 F] [T2Space F]
 
 theorem fderiv_snd : fderiv 𝕜 Prod.snd p = snd 𝕜 E F :=
   hasFDerivAt_snd.fderiv
 
-theorem fderiv.snd (h : DifferentiableAt 𝕜 f₂ x) :
-    fderiv 𝕜 (fun x => (f₂ x).2) x = (snd 𝕜 F G).comp (fderiv 𝕜 f₂ x) :=
-  h.hasFDerivAt.snd.fderiv
-
 theorem fderivWithin_snd {s : Set (E × F)} (hs : UniqueDiffWithinAt 𝕜 s p) :
     fderivWithin 𝕜 Prod.snd s p = snd 𝕜 E F :=
   hasFDerivWithinAt_snd.fderivWithin hs
+
+end
+
+variable [ContinuousAdd G] [ContinuousSMul 𝕜 G] [T2Space G]
+
+theorem fderiv.snd (h : DifferentiableAt 𝕜 f₂ x) :
+    fderiv 𝕜 (fun x => (f₂ x).2) x = (snd 𝕜 F G).comp (fderiv 𝕜 f₂ x) :=
+  h.hasFDerivAt.snd.fderiv
 
 theorem fderivWithin.snd (hs : UniqueDiffWithinAt 𝕜 s x) (h : DifferentiableWithinAt 𝕜 f₂ s x) :
     fderivWithin 𝕜 (fun x => (f₂ x).2) s x = (snd 𝕜 F G).comp (fderivWithin 𝕜 f₂ s x) :=
@@ -309,32 +314,36 @@ end Snd
 
 section prodMap
 
-variable {f₂ : G → G'} {f₂' : G →L[𝕜] G'} {y : G} (p : E × G)
+variable [ContinuousSMul 𝕜 F] [ContinuousSMul 𝕜 G']
+variable {f : E → F} {f' : E →L[𝕜] F} {f₂ : G → G'} {f₂' : G →L[𝕜] G'} {y : G} (p : E × G)
 
 @[fun_prop]
 protected theorem HasStrictFDerivAt.prodMap (hf : HasStrictFDerivAt f f' p.1)
     (hf₂ : HasStrictFDerivAt f₂ f₂' p.2) : HasStrictFDerivAt (Prod.map f f₂) (f'.prodMap f₂') p :=
-  (hf.comp p hasStrictFDerivAt_fst).prodMk (hf₂.comp p hasStrictFDerivAt_snd)
+  (hf.comp_continuousLinearMap_of_eq (fst 𝕜 E G) rfl).prodMk
+    (hf₂.comp_continuousLinearMap_of_eq (snd 𝕜 E G) rfl)
 
 @[fun_prop]
 protected theorem HasFDerivWithinAt.prodMap {s : Set <| E × G}
     (hf : HasFDerivWithinAt f f' (Prod.fst '' s) p.1)
     (hf₂ : HasFDerivWithinAt f₂ f₂' (Prod.snd '' s) p.2) :
     HasFDerivWithinAt (Prod.map f f₂) (f'.prodMap f₂') s p :=
-  (hf.comp _ hasFDerivWithinAt_fst mapsTo_fst_prod).prodMk
-    (hf₂.comp _ hasFDerivWithinAt_snd mapsTo_snd_prod) |>.mono (by grind)
+  (hf.comp_continuousLinearMap_of_eq (fst 𝕜 E G) rfl (mapsTo_image _ _)).prodMk
+    (hf₂.comp_continuousLinearMap_of_eq (snd 𝕜 E G) rfl (mapsTo_image _ _))
 
 @[fun_prop]
 protected theorem HasFDerivAt.prodMap (hf : HasFDerivAt f f' p.1) (hf₂ : HasFDerivAt f₂ f₂' p.2) :
     HasFDerivAt (Prod.map f f₂) (f'.prodMap f₂') p :=
-  (hf.comp p hasFDerivAt_fst).prodMk (hf₂.comp p hasFDerivAt_snd)
+  (hf.comp_continuousLinearMap_of_eq (fst 𝕜 E G) rfl).prodMk
+    (hf₂.comp_continuousLinearMap_of_eq (snd 𝕜 E G) rfl)
 
 @[simp, fun_prop]
 protected theorem DifferentiableAt.prodMap (hf : DifferentiableAt 𝕜 f p.1)
     (hf₂ : DifferentiableAt 𝕜 f₂ p.2) : DifferentiableAt 𝕜 (fun p : E × G => (f p.1, f₂ p.2)) p :=
-  (hf.comp p differentiableAt_fst).prodMk (hf₂.comp p differentiableAt_snd)
+  hf.hasFDerivAt.prodMap p hf₂.hasFDerivAt |>.differentiableAt
 
 end prodMap
+end Prod
 
 section Pi
 
@@ -352,10 +361,12 @@ theorem:
   differentiability of `Φ`.
 -/
 
-
-variable {ι : Type*} {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
-  [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i}
-  {Φ' : E →L[𝕜] ∀ i, F' i}
+variable {ι 𝕜 E : Type*} [NontriviallyNormedField 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  {F' : ι → Type*} [∀ i, AddCommGroup (F' i)] [∀ i, Module 𝕜 (F' i)] [∀ i, TopologicalSpace (F' i)]
+  [∀ i, ContinuousSMul 𝕜 (F' i)]
+  {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i}
+  {Φ' : E →L[𝕜] ∀ i, F' i} {L : Filter (E × E)} {s : Set E} {x : E}
 
 @[simp]
 theorem hasFDerivAtFilter_pi' :
@@ -372,6 +383,7 @@ theorem hasStrictFDerivAt_pi' :
 theorem hasStrictFDerivAt_pi'' (hφ : ∀ i, HasStrictFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x) :
     HasStrictFDerivAt Φ Φ' x := hasStrictFDerivAt_pi'.2 hφ
 
+omit [∀ i, ContinuousSMul 𝕜 (F' i)] in
 @[fun_prop]
 theorem hasStrictFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) (proj i) f :=
@@ -396,6 +408,7 @@ theorem hasFDerivAt_pi' :
 theorem hasFDerivAt_pi'' (hφ : ∀ i, HasFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x) :
     HasFDerivAt Φ Φ' x := hasFDerivAt_pi'.2 hφ
 
+omit [∀ i, ContinuousSMul 𝕜 (F' i)] in
 @[fun_prop]
 theorem hasFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
     HasFDerivAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) (proj i) f :=
@@ -416,6 +429,7 @@ theorem hasFDerivWithinAt_pi''
     (hφ : ∀ i, HasFDerivWithinAt (fun x => Φ x i) ((proj i).comp Φ') s x) :
     HasFDerivWithinAt Φ Φ' s x := hasFDerivWithinAt_pi'.2 hφ
 
+omit [∀ i, ContinuousSMul 𝕜 (F' i)] in
 @[fun_prop]
 theorem hasFDerivWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i, F' i)) :
     HasFDerivWithinAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) (proj i) s' f :=
@@ -436,6 +450,7 @@ theorem differentiableWithinAt_pi :
 theorem differentiableWithinAt_pi'' (hφ : ∀ i, DifferentiableWithinAt 𝕜 (fun x => Φ x i) s x) :
     DifferentiableWithinAt 𝕜 Φ s x := differentiableWithinAt_pi.2 hφ
 
+omit [∀ i, ContinuousSMul 𝕜 (F' i)] in
 @[fun_prop]
 theorem differentiableWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i, F' i)) :
     DifferentiableWithinAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) s' f := by
@@ -451,6 +466,7 @@ theorem differentiableAt_pi : DifferentiableAt 𝕜 Φ x ↔ ∀ i, Differentiab
 theorem differentiableAt_pi'' (hφ : ∀ i, DifferentiableAt 𝕜 (fun x => Φ x i) x) :
     DifferentiableAt 𝕜 Φ x := differentiableAt_pi.2 hφ
 
+omit [∀ i, ContinuousSMul 𝕜 (F' i)] in
 @[fun_prop]
 theorem differentiableAt_apply (i : ι) (f : ∀ i, F' i) :
     DifferentiableAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) f :=
@@ -464,6 +480,7 @@ theorem differentiableOn_pi : DifferentiableOn 𝕜 Φ s ↔ ∀ i, Differentiab
 theorem differentiableOn_pi'' (hφ : ∀ i, DifferentiableOn 𝕜 (fun x => Φ x i) s) :
     DifferentiableOn 𝕜 Φ s := differentiableOn_pi.2 hφ
 
+omit [∀ i, ContinuousSMul 𝕜 (F' i)] in
 @[fun_prop]
 theorem differentiableOn_apply (i : ι) (s' : Set (∀ i, F' i)) :
     DifferentiableOn (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) s' :=
@@ -476,9 +493,12 @@ theorem differentiable_pi : Differentiable 𝕜 Φ ↔ ∀ i, Differentiable �
 theorem differentiable_pi'' (hφ : ∀ i, Differentiable 𝕜 fun x => Φ x i) :
     Differentiable 𝕜 Φ := differentiable_pi.2 hφ
 
+omit [∀ i, ContinuousSMul 𝕜 (F' i)] in
 @[fun_prop]
 theorem differentiable_apply (i : ι) :
     Differentiable (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) := by intro x; apply differentiableAt_apply
+
+variable [ContinuousAdd E] [ContinuousSMul 𝕜 E] [∀ i, ContinuousAdd (F' i)] [∀ i, T2Space (F' i)]
 
 -- TODO: find out which version (`φ` or `Φ`) works better with `rw`/`simp`
 theorem fderivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (φ i) s x)
@@ -500,9 +520,12 @@ as `Matrix.vecCons` is defeq to `Fin.cons`.
 -/
 section PiFin
 
-variable {n : Nat} {F' : Fin n.succ → Type*}
-variable [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
-variable {φ : E → F' 0} {φs : E → ∀ i, F' (Fin.succ i)}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {n : ℕ} {F' : Fin n.succ → Type*}
+variable [∀ i, AddCommGroup (F' i)] [∀ i, Module 𝕜 (F' i)] [∀ i, TopologicalSpace (F' i)]
+  [∀ i, ContinuousSMul 𝕜 (F' i)]
+variable {φ : E → F' 0} {φs : E → ∀ i, F' (Fin.succ i)} {s : Set E} {x : E}
 
 theorem hasFDerivAtFilter_finCons
     {φ' : E →L[𝕜] Π i, F' i} {l : Filter (E × E)} :
@@ -510,8 +533,8 @@ theorem hasFDerivAtFilter_finCons
       HasFDerivAtFilter φ (.proj 0 ∘L φ') l ∧
       HasFDerivAtFilter φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') l := by
   rw [hasFDerivAtFilter_pi', Fin.forall_fin_succ, hasFDerivAtFilter_pi']
-  dsimp [ContinuousLinearMap.comp, LinearMap.comp, Function.comp_def]
-  simp only [Fin.cons_zero, Fin.cons_succ]
+  -- TODO: `simp` fails to apply `proj_comp_piCompRightL` without hints
+  simp [← ContinuousLinearMap.comp_assoc, proj_comp_piCompRightL 𝕜 F']
 
 /-- A variant of `hasFDerivAtFilter_finCons` where the derivative variables are free on the RHS
 instead. -/
@@ -670,7 +693,3 @@ theorem Differentiable.finCons
 -- TODO: write the `Fin.cons` versions of `fderivWithin_pi` and `fderiv_pi`
 
 end PiFin
-
-end CartesianProduct
-
-end
