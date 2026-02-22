@@ -42,30 +42,29 @@ variable {G : Type*} [Group G] [MulAction G M]
 /-- If a group `G` acts properly discontinuously on a topological space `M`,
 then the quotient map `Quotient.mk : M → M⧸G`
 is a local homeomorphism. -/
-lemma isLocalHomeomorph :
+lemma isLocalHomeomorph_of_properlyDiscontinuousSMul :
     IsLocalHomeomorph (Quotient.mk _ : M → orbitRel.Quotient G M) :=
   isCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isLocalHomeomorph
--- should this have of_properlyDiscontinuousSMul?
 
 /-- A chosen local homeomorphism for the quotient map
 `Quotient.mk : M → M⧸G` at a point `p : M`. -/
 noncomputable def localHomeomorphAt (p : M) :
     OpenPartialHomeomorph M (orbitRel.Quotient G M) :=
-  Classical.choose (isLocalHomeomorph p)
+  Classical.choose (isLocalHomeomorph_of_properlyDiscontinuousSMul p)
 -- this could just be
 -- Classical.choose (isCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isLocalHomeomorph p)
 
 /-- The point `p` lies in the source of `localHomeomorphAt p`. -/
 lemma mem_localHomeomorphAt_source {p : M} :
     p ∈ (localHomeomorphAt (G:=G) p).source :=
-  (Classical.choose_spec (isLocalHomeomorph p)).1
+  (Classical.choose_spec (isLocalHomeomorph_of_properlyDiscontinuousSMul p)).1
 
 /-- The local homeomorphism `localHomeomorphAt p` coincides with
 `Quotient.mk : M → M⧸G`. -/
 lemma localHomeomorphAt_eq_quotientMk {p : M} :
     localHomeomorphAt (G:=G) p =
       (Quotient.mk _ : M → orbitRel.Quotient G M) :=
-  (Classical.choose_spec (isLocalHomeomorph p)).2.symm
+  (Classical.choose_spec (isLocalHomeomorph_of_properlyDiscontinuousSMul p)).2.symm
 
 /-- The equivalence class `⟦p⟧` lies in the target of `localHomeomorphAt p`. -/
 lemma mem_localHomeomorphAt_target {p : M} :
