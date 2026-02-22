@@ -18,7 +18,7 @@ quotient `R ⧸ I` is finite.
 - `Ring.HasFiniteQuotients.instDimensionLEOne`: A ring with finite quotients has dimension `≤ 1`.
 - `Ring.HasFiniteQuotients.instIsNoetherianRing` : A ring with finite quotients is noetherian.
 - `Ring.HasFiniteQuotients.of_module_finite`: Assume that `R` a finite quotients and that `S` is
-a finite `R`-module. Then `S` has finite quotients.
+a domain and a finite `R`-module. Then `S` has finite quotients.
 - `Ring.HasFiniteQuotients.instOfIsDomainOfFiniteInt`: A domain that is also a finite `ℤ`-module
 has finite quotients.
 
@@ -73,7 +73,7 @@ instance [HasFiniteQuotients R] : IsNoetherianRing R := by
 
 variable (R) in
 /--
-Assume that `R` a finite quotients and that `S` is a finite `R`-module. Then
+Assume that `R` a finite quotients and that `S` is a domain and a finite `R`-module. Then
 `S` has finite quotients.
 -/
 theorem of_module_finite [h : HasFiniteQuotients R] [Nontrivial R] (S : Type*) [CommRing S]
@@ -82,9 +82,6 @@ theorem of_module_finite [h : HasFiniteQuotients R] [Nontrivial R] (S : Type*) [
   classical
   let J : Ideal R := Ideal.under R I
   have : Finite (R ⧸ J) := h.finiteQuotient <| Ideal.under_ne_bot R hI
-  have : Module.Finite (R ⧸ J) (S ⧸ I) := by
-    have := Module.Finite.quotient R I
-    exact Module.Finite.of_restrictScalars_finite R (R ⧸ J) (S ⧸ I)
   exact Module.finite_of_finite (R ⧸ J)⟩
 
 /--
@@ -92,8 +89,8 @@ The ring `ℤ` has finite quotients.
 -/
 instance : HasFiniteQuotients ℤ := ⟨fun {I} hI ↦ by
   obtain ⟨n, rfl⟩ := Submodule.IsPrincipal.principal I
-  have : NeZero n.natAbs := ⟨by simpa using hI⟩
-  exact Finite.of_equiv _ n.quotientSpanEquivZMod.symm.toEquiv⟩
+  have : NeZero n := ⟨by simpa using hI⟩
+  exact inferInstanceAs <| Finite (ℤ ⧸ Ideal.span {n})⟩
 
 /--
 A domain that is also a finite `ℤ`-module has finite quotients.
