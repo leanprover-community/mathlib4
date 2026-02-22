@@ -475,6 +475,7 @@ section Frontier
 theorem closure_diff_interior (s : Set X) : closure s \ interior s = frontier s :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Interior and frontier are disjoint. -/
 lemma disjoint_interior_frontier : Disjoint (interior s) (frontier s) := by
   rw [disjoint_iff_inter_eq_empty, ← closure_diff_interior, diff_eq,
@@ -511,9 +512,11 @@ theorem frontier_interior_subset : frontier (interior s) ⊆ frontier s :=
 theorem frontier_compl (s : Set X) : frontier sᶜ = frontier s := by
   simp only [frontier_eq_closure_inter_closure, compl_compl, inter_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem frontier_univ : frontier (univ : Set X) = ∅ := by simp [frontier]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem frontier_empty : frontier (∅ : Set X) = ∅ := by simp [frontier]
 

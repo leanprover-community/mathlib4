@@ -31,6 +31,7 @@ namespace CategoryTheory.GrothendieckTopology
 variable {D : Type w} [Category.{t} D]
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof of the fact that
 `J.diagramFunctor D X` preserves limits. -/
 @[simps]
@@ -66,6 +67,7 @@ lemma liftToDiagramLimitObjAux_fac {X : C} {K : Type s} [SmallCategory K]
       Multiequalizer.ι ((unop W).index (F.obj k)) i :=
   IsLimit.fac _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof of the fact that
 `J.diagramFunctor D X` preserves limits. -/
 abbrev liftToDiagramLimitObj {X : C} {K : Type s} [SmallCategory K] [HasLimitsOfShape K D]
@@ -82,6 +84,7 @@ abbrev liftToDiagramLimitObj {X : C} {K : Type s} [SmallCategory K] [HasLimitsOf
       erw [Multiequalizer.condition]
       rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 instance preservesLimit_diagramFunctor
     (X : C) (K : Type s) [SmallCategory K] [HasLimitsOfShape K D] (F : K ⥤ Cᵒᵖ ⥤ D) :
     PreservesLimit F (J.diagramFunctor D X) :=
@@ -121,6 +124,7 @@ variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y)
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 variable [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof that `J.plusFunctor D` commutes
 with finite limits. -/
 def liftToPlusObjLimitObj {K : Type s} [SmallCategory K] [FinCategory K]
@@ -151,6 +155,7 @@ def liftToPlusObjLimitObj {K : Type s} [SmallCategory K] [FinCategory K]
         rfl)
   limit.lift _ S ≫ (HasLimit.isoOfNatIso s.symm).hom ≫ e.inv ≫ p.inv
 
+set_option backward.isDefEq.respectTransparency false in
 -- This lemma should not be used directly. Instead, one should use the fact that
 -- `J.plusFunctor D` preserves finite limits, along with the fact that
 -- evaluation preserves limits.
@@ -179,6 +184,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type s} [SmallCategory K] [FinCategory K]
   erw [colimit.ι_desc]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance preservesLimitsOfShape_plusFunctor
     (K : Type t) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
@@ -283,6 +289,7 @@ def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D
 def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
   (sheafToPresheaf J D).mapIso ((plusPlusSheafIsoPresheafToSheaf J D).app P)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toSheafify_plusPlusIsoSheafify_hom (P : Cᵒᵖ ⥤ D) :
     J.toSheafify P ≫ (plusPlusIsoSheafify J D P).hom = toSheafify J P := by

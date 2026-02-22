@@ -17,9 +17,9 @@ In this file, we define the Karoubi envelope `Karoubi C` of a category `C`.
 ## Main constructions and definitions
 
 - `Karoubi C` is the Karoubi envelope of a category `C`: it is an idempotent
-complete category. It is also preadditive when `C` is preadditive.
+  complete category. It is also preadditive when `C` is preadditive.
 - `toKaroubi C : C ⥤ Karoubi C` is a fully faithful functor, which is an equivalence
-(`toKaroubiIsEquivalence`) when `C` is idempotent complete.
+  (`toKaroubiIsEquivalence`) when `C` is idempotent complete.
 
 -/
 
@@ -287,12 +287,14 @@ def retract (X : Karoubi C) : Retract X ((toKaroubi C).obj X.X) where
 
 end Karoubi
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (toKaroubi C).PreservesEpimorphisms where
   preserves f _ := ⟨fun g h eq ↦ by
     ext
     rw [← cancel_epi f]
     simpa using eq⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (toKaroubi C).PreservesMonomorphisms where
   preserves f _ := ⟨fun g h eq ↦ by
     ext

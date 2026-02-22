@@ -97,6 +97,7 @@ theorem simply_connected_iff_paths_homotopic' :
   convert simply_connected_iff_paths_homotopic (Y := Y)
   simp [Path.Homotopic.Quotient, Setoid.eq_top_iff]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open Path.Homotopic.Quotient in
 /-- A space is simply connected if and only if it is path-connected and every loop
     at any basepoint is null-homotopic (i.e., homotopic to the constant loop). -/

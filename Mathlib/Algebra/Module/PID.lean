@@ -64,6 +64,7 @@ open Submodule
 
 open UniqueFactorizationMonoid
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible a) :
     IsSemisimpleModule R (torsionBy R M a) :=
   haveI := PrincipalIdealRing.isMaximal_of_irreducible h
@@ -149,6 +150,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
 
 open Submodule.Quotient
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ pOrder hM z))
     {k : ℕ} (f : (R ⧸ R ∙ p ^ k) →ₗ[R] M ⧸ R ∙ z) :
     ∃ x : M, p ^ k • x = 0 ∧ Submodule.Quotient.mk (p := span R {z}) x = f 1 := by
@@ -165,6 +167,7 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
 
 open Finset Multiset
 
+set_option backward.isDefEq.respectTransparency false in
 omit dec in
 /-- A finitely generated `p ^ ∞`-torsion module over a PID is isomorphic to a direct sum of some
   `R ⧸ R ∙ (p ^ e i)` for some `e i`. -/
@@ -228,6 +231,7 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
 
 end PTorsion
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A finitely generated torsion module over a PID is isomorphic to a direct sum of some
   `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
 theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTorsion R M) :
@@ -253,6 +257,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTor
 
 variable (R M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated
   module over a PID is isomorphic to the product of a free module and a direct sum of some
   `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
@@ -269,6 +274,7 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
           (h.prodCongr g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
 
+set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 theorem exists_ker_toSpanSingleton_eq_annihilator [Module.Finite R M] :
     ∃ x : M, ker (toSpanSingleton R _ x) = annihilator R M := by

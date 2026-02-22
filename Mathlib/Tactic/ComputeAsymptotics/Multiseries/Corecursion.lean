@@ -8,7 +8,8 @@ module
 public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Topology.MetricSpace.UniformConvergence
 public import Mathlib.Topology.MetricSpace.Contracting
-public import Mathlib.Data.Seq.Basic
+public import Mathlib.Data.Seq.Defs
+public import Mathlib.Tactic.ENatToNat
 
 /-!
 # Non-primitive corecursion for sequences
@@ -95,6 +96,7 @@ local instance : CompleteSpace (Seq α) := by
   rw [← PiNat.apply_eq_of_dist_lt hts (by rfl)]
   exact ht hn
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Stream'.dist_le_one (s t : Stream' α) : dist s t ≤ 1 := by
   by_cases h : s = t
   · simp [h]
@@ -110,10 +112,12 @@ local instance : BoundedSpace (Stream' α) :=
 local instance : BoundedSpace (Seq α) :=
   instBoundedSpaceSubtype
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dist_eq_two_inv_pow {s t : Seq α} (h : s ≠ t) : ∃ n, dist s t = 2⁻¹ ^ n := by
   rw [Subtype.dist_eq, PiNat.dist_eq_of_ne (Subtype.coe_ne_coe.mpr h)]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_cons_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2⁻¹ * dist s t := by
   by_cases! h : s = t
@@ -137,6 +141,7 @@ theorem dist_eq_half_of_head {s t : Seq α} (h : s.head = t.head) :
     dist s t = 2⁻¹ * dist s.tail t.tail := by
   cases s <;> cases t <;> simp at h <;> simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dist_eq_one_of_head {s t : Seq α} (h : s.head ≠ t.head) : dist s t = 1 := by
   rw [Subtype.dist_eq, PiNat.dist_eq_of_ne]
   · convert pow_zero _
@@ -215,7 +220,8 @@ theorem exists_fixed_point_of_contractible (F : (β →ᵤ Seq α) → (β →�
   use f
   exact hF.fixedPoint_isFixedPt
 
-/-- Main theorem of this file. It shows that there exists a function satisfying the corecursive
+set_option backward.isDefEq.respectTransparency false in
+/-- Main theorem of this file. It shows that there exists a funcion satisfying the corecursive
 definition of the form `def foo (x : X) := hd x :: op (foo (tlArg x))` where `f` is friendly. -/
 theorem FriendlyOperation.exists_fixed_point (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
     [h : FriendlyOperationClass op] :
