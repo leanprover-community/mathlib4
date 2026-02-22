@@ -316,8 +316,8 @@ end AddEquiv
 
 namespace LinearMap
 
--- TODO: what's a good name for this?
-def foo {R M : Type*} {V : M → Type*}
+/-- Pointwise application of a family of linear forms to a family of vectors. -/
+def piApply {R M : Type*} {V : M → Type*}
     [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)] :
     (Π x : M, V x →ₗ[R] R) →ₗ[R] (Π x : M, V x) →ₗ[R] M → R where
   toFun e :=
@@ -326,6 +326,20 @@ def foo {R M : Type*} {V : M → Type*}
       map_smul' := by intros; ext; simp }
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
+
+@[simp]
+theorem piApply_apply {R M : Type*} {V : M → Type*}
+    [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)]
+    (e : Π x : M, V x →ₗ[R] R) (s : Π x : M, V x) :
+    piApply e s = fun x ↦ e x (s x) :=
+  rfl
+
+@[simp]
+theorem piApply_apply_apply {R M : Type*} {V : M → Type*}
+    [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)]
+    (e : Π x : M, V x →ₗ[R] R) (s : Π x : M, V x) (x : M) :
+    piApply e s x = e x (s x) :=
+  rfl
 
 variable (R S M)
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
