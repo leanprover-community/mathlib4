@@ -287,7 +287,7 @@ lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
   not_le.symm.trans one_le_iff_ne_zero.not_left
 
 lemma lt_two_iff : n < 2 ↔ n = 0 ∨ n = 1 :=
-  ⟨fun h ↦ by cases n <;> simp at h ⊢; omega, fun h ↦ by cases h <;> simp_all⟩
+  ⟨fun h ↦ by cases n <;> simp at h ⊢; lia, fun h ↦ by cases h <;> simp_all⟩
 
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
   Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
