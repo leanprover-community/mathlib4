@@ -5,9 +5,10 @@ Authors: Richard M. Hill
 -/
 module
 
-public import Mathlib.RingTheory.PowerSeries.Trunc
-public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.Algebra.Polynomial.Derivation
 public import Mathlib.RingTheory.Derivation.Basic
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
 # Definitions
@@ -56,6 +57,7 @@ theorem derivativeFun_add (f g : R⟦X⟧) :
   rw [coeff_derivativeFun, map_add, map_add, coeff_derivativeFun,
     coeff_derivativeFun, add_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem derivativeFun_C (r : R) : derivativeFun (C r) = 0 := by
   ext n
   -- Note that `map_zero` didn't get picked up, apparently due to a missing `FunLike.coe`
@@ -77,6 +79,7 @@ private theorem derivativeFun_coe_mul_coe (f g : R[X]) : derivativeFun (f * g : 
   rw [← coe_mul, derivativeFun_coe, derivative_mul,
     add_comm, mul_comm _ g, ← coe_mul, ← coe_mul, Polynomial.coe_add]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Leibniz rule for formal power series**. -/
 theorem derivativeFun_mul (f g : R⟦X⟧) :
     derivativeFun (f * g) = f • g.derivativeFun + g • f.derivativeFun := by
@@ -91,12 +94,14 @@ theorem derivativeFun_mul (f g : R⟦X⟧) :
 theorem derivativeFun_one : derivativeFun (1 : R⟦X⟧) = 0 := by
   rw [← map_one C, derivativeFun_C (1 : R)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem derivativeFun_smul (r : R) (f : R⟦X⟧) : derivativeFun (r • f) = r • derivativeFun f := by
   rw [smul_eq_C_mul, smul_eq_C_mul, derivativeFun_mul, derivativeFun_C, smul_zero, add_zero,
     smul_eq_mul]
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The formal derivative of a formal power series -/
 noncomputable def derivative : Derivation R R⟦X⟧ R⟦X⟧ where
   toFun := derivativeFun
@@ -117,12 +122,8 @@ theorem coeff_derivative (f : R⟦X⟧) (n : ℕ) :
 theorem derivative_coe (f : R[X]) : d⁄dX R f = Polynomial.derivative f := derivativeFun_coe f
 
 @[simp] theorem derivative_X : d⁄dX R (X : R⟦X⟧) = 1 := by
-  ext
-  rw [coeff_derivative, coeff_one, coeff_X, boole_mul]
-  simp_rw [add_eq_right]
-  split_ifs with h
-  · rw [h, cast_zero, zero_add]
-  · rfl
+  ext n; simp only [coeff_derivative, coeff_one, coeff_X, boole_mul, add_eq_right]
+  split_ifs <;> simp_all
 
 theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
     trunc n (d⁄dX R f) = Polynomial.derivative (trunc (n + 1) f) :=
@@ -130,11 +131,7 @@ theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
 
 theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
     trunc (n - 1) (d⁄dX R f) = Polynomial.derivative (trunc n f) := by
-  cases n with
-  | zero =>
-    simp
-  | succ n =>
-    rw [succ_sub_one, trunc_derivative]
+  cases n <;> simp [trunc_derivative]
 
 end CommutativeSemiring
 
@@ -154,15 +151,18 @@ theorem derivative.ext {R} [CommRing R] [IsAddTorsionFree R] {f g} (hD : d⁄dX 
     rwa [coeff_derivative, coeff_derivative, ← cast_succ, mul_comm, ← nsmul_eq_mul,
       mul_comm, ← nsmul_eq_mul, smul_right_inj n.succ_ne_zero] at equ
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem derivative_inv {R} [CommRing R] (f : R⟦X⟧ˣ) :
     d⁄dX R ↑f⁻¹ = -(↑f⁻¹ : R⟦X⟧) ^ 2 * d⁄dX R f := by
   apply Derivation.leibniz_of_mul_eq_one
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem derivative_invOf {R} [CommRing R] (f : R⟦X⟧) [Invertible f] :
     d⁄dX R ⅟f = -⅟f ^ 2 * d⁄dX R f := by
   rw [Derivation.leibniz_invOf, smul_eq_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 The following theorem is stated only in the case that `R` is a field. This is because
 there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`.
@@ -174,5 +174,36 @@ there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`
     rwa [MvPowerSeries.inv_eq_zero]
   apply Derivation.leibniz_of_mul_eq_one
   exact PowerSeries.inv_mul_cancel (h := h)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The derivative of g^n equals n * g^(n-1) * g'. -/
+theorem derivative_pow (A : Type*) [CommSemiring A] (g : A⟦X⟧) (n : ℕ) :
+    d⁄dX A (g ^ n) = n * g ^ (n - 1) * d⁄dX A g := by
+  rw [Derivation.leibniz_pow, smul_eq_mul, nsmul_eq_mul, mul_assoc]
+
+variable (A : Type*) [CommRing A]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Chain rule for polynomials viewed as power series.  Use `derivative_subst` instead. -/
+private theorem derivative_subst_coe (p : Polynomial A) {g : A⟦X⟧} (hg : HasSubst g) :
+    d⁄dX A ((p : A⟦X⟧).subst g) = (d⁄dX A (p : A⟦X⟧)).subst g * d⁄dX A g := by
+  simp [subst_coe hg, derivative_coe, Derivation.comp_aeval_eq (a := g) (derivative A) p,
+    smul_eq_mul]
+
+theorem derivative_subst {f g : A⟦X⟧} (hg : HasSubst g) :
+    d⁄dX A (f.subst g) = (d⁄dX A f).subst g * d⁄dX A g := by
+  ext n
+  obtain ⟨m, hm⟩ := (hg.eventually_coeff_pow_eq_zero (n + 1)).exists_forall_of_atTop
+  have : coeff (n + 1) (f.subst g) = coeff (n + 1) ((↑(trunc (m + 1) f) : A⟦X⟧).subst g) := by
+    rw [coeff_subst' hg, coeff_subst' hg]
+    refine finsum_congr fun d ↦ ?_
+    obtain hd | hd := lt_or_ge d m
+    · rw [coeff_coe_trunc_of_lt (by lia)]
+    · simp [coeff_trunc, hd, hm]
+  rw [coeff_derivative, this, ← coeff_derivative, derivative_subst_coe A _ hg, coeff_mul, coeff_mul]
+  refine Finset.sum_congr rfl fun ⟨i, j⟩ hij ↦ ?_
+  congr 1
+  simp only [coeff_subst' hg, coeff_derivative, coeff_coe, coeff_trunc]
+  exact finsum_congr fun d ↦ by split_ifs <;> simp (disch := grind [Finset.mem_antidiagonal]) [hm]
 
 end PowerSeries

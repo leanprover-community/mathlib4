@@ -12,7 +12,7 @@ import Mathlib.Analysis.Asymptotics.Theta
 /-!
 # Asymptotic equivalence
 
-In this file, prove properties of the relation `IsEquivalent l u v`,
+In this file, we prove properties of the relation `IsEquivalent l u v`,
 which means that `u-v` is little o of `v` along the filter `l`.
 
 Unlike `Is(Little|Big)O` relations, this one requires `u` and `v` to have the same codomain `β`.

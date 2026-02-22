@@ -41,6 +41,7 @@ def smulShortComplex (r : R) :
     ext x
     exact (LinearMap.exact_smul_id_smul_top_mkQ M r).apply_apply_eq_zero x
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smulShortComplex_exact (r : R) : (smulShortComplex M r).Exact := by
   simp [smulShortComplex, ShortComplex.ShortExact.moduleCat_exact_iff_function_exact,
     LinearMap.exact_smul_id_smul_top_mkQ]

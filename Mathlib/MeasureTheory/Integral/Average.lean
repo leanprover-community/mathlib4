@@ -467,6 +467,7 @@ theorem toReal_setLAverage {f : α → ℝ≥0∞} (hf : AEMeasurable f (μ.rest
 section FirstMomentReal
 variable {N : Set α} {f : α → ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **First moment method**. An integrable function is smaller than its mean on a set of positive
 measure. -/
 theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf : IntegrableOn f s μ) :

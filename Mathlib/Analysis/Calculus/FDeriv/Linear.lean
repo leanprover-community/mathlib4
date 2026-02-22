@@ -43,16 +43,15 @@ This section deals with the first form, see below for the unbundled version
 -/
 
 section Basic
-variable (f : E →L[𝕜] F) {x : E} {s : Set E} {L : Filter E}
+variable (f : E →L[𝕜] F) {x : E} {s : Set E} {L : Filter (E × E)}
+
+protected theorem hasFDerivAtFilter : HasFDerivAtFilter f f L :=
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
+    simp only [f.map_sub, sub_self, Pi.zero_apply]
 
 @[fun_prop]
 protected theorem hasStrictFDerivAt : HasStrictFDerivAt f f x :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
-    simp only [f.map_sub, sub_self, Pi.zero_apply]
-
-protected theorem hasFDerivAtFilter : HasFDerivAtFilter f f x L :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
-    simp only [f.map_sub, sub_self, Pi.zero_apply]
+  f.hasFDerivAtFilter
 
 @[fun_prop]
 protected theorem hasFDerivWithinAt : HasFDerivWithinAt f f s x :=
@@ -108,17 +107,16 @@ compared to the generic chain rule.
 -/
 
 section CompLeft
-variable (g : F →L[𝕜] G) {f : E → F} {f' : E →L[𝕜] F} {s : Set E} {x : E} {L : Filter E}
+variable (g : F →L[𝕜] G) {f : E → F} {f' : E →L[𝕜] F} {s : Set E} {x : E} {L : Filter (E × E)}
 
-theorem comp_hasFDerivAtFilter (hf : HasFDerivAtFilter f f' x L) :
-    HasFDerivAtFilter (g ∘ f) (g ∘L f') x L :=
+theorem comp_hasFDerivAtFilter (hf : HasFDerivAtFilter f f' L) :
+    HasFDerivAtFilter (g ∘ f) (g ∘L f') L :=
   .of_isLittleOTVS <| by
     simpa [Function.comp_def] using g.isBigOTVS_comp.trans_isLittleOTVS hf.isLittleOTVS
 
 theorem comp_hasStrictFDerivAt (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (g ∘ f) (g ∘L f') x :=
-  .of_isLittleOTVS <| by
-    simpa [Function.comp_def] using g.isBigOTVS_comp.trans_isLittleOTVS hf.isLittleOTVS
+  g.comp_hasFDerivAtFilter hf
 
 theorem comp_hasFDerivAt (hf : HasFDerivAt f f' x) : HasFDerivAt (g ∘ f) (g ∘L f') x :=
   g.comp_hasFDerivAtFilter hf
@@ -163,10 +161,10 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {f : E → F}
 variable {x : E}
 variable {s : Set E}
-variable {L : Filter E}
+variable {L : Filter (E × E)}
 
 theorem hasFDerivAtFilter (h : IsBoundedLinearMap 𝕜 f) :
-    HasFDerivAtFilter f h.toContinuousLinearMap x L :=
+    HasFDerivAtFilter f h.toContinuousLinearMap L :=
   h.toContinuousLinearMap.hasFDerivAtFilter
 
 @[fun_prop]
