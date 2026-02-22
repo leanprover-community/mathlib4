@@ -482,16 +482,26 @@ lemma inner_eq_zero_of_right (x : E) {y : E} (h : ‖y‖ = 0) : ⟪x, y⟫_𝕜
 variable (𝕜)
 
 include 𝕜 in
-theorem parallelogram_law_with_norm (x y : E) :
+theorem parallelogram_law_with_norm_mul (x y : E) :
     ‖x + y‖ * ‖x + y‖ + ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖) := by
   simp only [← @inner_self_eq_norm_mul_norm 𝕜]
   rw [← re.map_add, parallelogram_law, two_mul, two_mul]
   simp only [re.map_add]
 
 include 𝕜 in
-theorem parallelogram_law_with_nnnorm (x y : E) :
+theorem parallelogram_law_with_norm (x y : E) :
+    ‖x + y‖ ^ 2 + ‖x - y‖ ^ 2 = 2 * (‖x‖ ^ 2 + ‖y‖ ^ 2) := by
+  simp_rw [sq, parallelogram_law_with_norm_mul 𝕜 x y]
+
+include 𝕜 in
+theorem parallelogram_law_with_nnnorm_mul (x y : E) :
     ‖x + y‖₊ * ‖x + y‖₊ + ‖x - y‖₊ * ‖x - y‖₊ = 2 * (‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊) :=
-  Subtype.ext <| parallelogram_law_with_norm 𝕜 x y
+  Subtype.ext <| parallelogram_law_with_norm_mul 𝕜 x y
+
+include 𝕜 in
+theorem parallelogram_law_with_nnnorm (x y : E) :
+    ‖x + y‖₊ ^ 2 + ‖x - y‖₊ ^ 2 = 2 * (‖x‖₊ ^ 2 + ‖y‖₊ ^ 2) := by
+  simp_rw [sq, parallelogram_law_with_nnnorm_mul 𝕜 x y]
 
 variable {𝕜}
 

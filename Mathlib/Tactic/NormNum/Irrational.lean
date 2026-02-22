@@ -169,7 +169,6 @@ private theorem not_power_rat_of_num {a b d : ℕ}
     rw [← h_odd.pow_nonneg_iff, ← hq]
     positivity
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_den k_num : ℕ}
     (hx_isNNRat : IsNNRat x x_num x_den)
     (hy_isNNRat : IsNNRat y y_num y_den)
@@ -200,7 +199,6 @@ private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_
     · apply not_power_nat_pow_of_bounds hy_den_pos hy_coprime hn1 hn2
   · positivity
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_den k_den : ℕ}
     (hx_isNNRat : IsNNRat x x_num x_den)
     (hy_isNNRat : IsNNRat y y_num y_den)

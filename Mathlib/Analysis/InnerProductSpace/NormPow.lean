@@ -35,7 +35,7 @@ theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
   by_cases hx : x = 0
   · simp only [hx, norm_zero, map_zero, smul_zero]
     have h2p : 0 < p - 1 := sub_pos.mpr hp
-    rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO]
+    refine .of_isLittleO ?_
     calc (fun x : E ↦ ‖x‖ ^ p - ‖(0 : E)‖ ^ p - 0)
         = (fun x : E ↦ ‖x‖ ^ p) := by simp [zero_lt_one.trans hp |>.ne']
       _ = (fun x : E ↦ ‖x‖ * ‖x‖ ^ (p - 1)) := by

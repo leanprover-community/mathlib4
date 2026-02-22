@@ -717,7 +717,6 @@ variable {p μ G}
 
 variable [PartialOrder G]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeFn_nonneg (f : Lp.simpleFunc G p μ) : (0 : α → G) ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← Subtype.coe_le_coe, Lp.coeFn_nonneg, AddSubmonoid.coe_zero]
 

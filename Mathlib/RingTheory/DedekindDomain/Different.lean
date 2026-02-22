@@ -142,7 +142,6 @@ open Submodule
 
 variable [IsFractionRing A K]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A K) in
 lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
     [FaithfulSMul A B] (I : Submodule B (FractionRing B)) :

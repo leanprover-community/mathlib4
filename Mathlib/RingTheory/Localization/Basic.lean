@@ -88,7 +88,6 @@ noncomputable abbrev mapPiEvalRingHom :
     Localization (S.comap <| Pi.evalRingHom R i) →+* Localization S :=
   map (T := S) _ (Pi.evalRingHom R i) le_rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open Function in
 theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
   let T := S.comap (Pi.evalRingHom R i)

@@ -36,7 +36,6 @@ namespace SemiNormedGrp₁
 
 noncomputable section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
 def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
   Cofork.ofπ

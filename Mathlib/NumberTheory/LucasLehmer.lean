@@ -399,7 +399,6 @@ instance : CharP (X q) q where
 instance : Coe (ZMod ↑q) (X q) where
   coe := ZMod.castHom dvd_rfl (X q)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `3` is not a square mod `q` then `(1 + α) ^ q = 1 - α` -/
 lemma one_add_α_pow_q [Fact q.Prime] (odd : Odd q) (leg3 : legendreSym q 3 = -1) :
     (1 + α : X q) ^ q = 1 - α := by
