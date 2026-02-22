@@ -43,7 +43,7 @@ section SchwarzTransform
 Schwarz transform used in the proof of the Borel-Carathéodory theorem. -/
 lemma eq_mul_div_one_add_of_eq_div_sub (_ : M ≠ 0) (_ : 2 * M - z ≠ 0)
     (h : w = z / (2 * M - z)) : z = 2 * M * w / (1 + w) := by
-  rw [h]; field_simp; ring_nf; rw [mul_inv_cancel_right₀]; norm_cast
+  rw [h]; field_simp; ring_nf
 
 /-- Norm inequality for the inverse Schwarz transform: if `‖w‖ < 1`, then
 `‖2M * w / (1 + w)‖ ≤ 2M * ‖w‖ / (1 - ‖w‖)`. -/
