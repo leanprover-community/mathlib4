@@ -17,3 +17,55 @@ jobs:
         with:
           tool_name: actionlint
           fail_level: any
+
+  ensure-sha-pinned-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Ensure all actions are pinned to SHA
+        shell: bash
+        run: |
+          # Check that all `uses:` values in workflow and composite action YAML
+          # files are pinned to a full commit SHA or Docker sha256 digest.
+          #
+          # Uses yq (pre-installed on GitHub runners) to parse YAML properly,
+          # avoiding false positives from run: blocks, comments, or string values,
+          # and preventing bypasses like putting a SHA in a trailing comment.
+          failed=0
+          while IFS= read -r -d '' f; do
+            # Extract all uses values: jobs.*.uses (reusable workflows)
+            # and jobs.*.steps[].uses (action steps)
+            uses_values=$(yq -r '
+              [.jobs[]? |
+                (select(.uses) | .uses),
+                (.steps[]? | select(.uses) | .uses)
+              ] | .[]' "$f" 2>/dev/null || true)
+            while IFS= read -r val; do
+              [ -z "$val" ] && continue
+              # Local actions (./path) are fine
+              [[ "$val" == ./* ]] && continue
+              # Docker actions must use @sha256:<64 hex>
+              if [[ "$val" == docker://* ]]; then
+                if [[ "$val" =~ @sha256:[0-9a-fA-F]{64}$ ]]; then
+                  continue
+                fi
+                echo "::error file=$f::Unpinned Docker action: $val"
+                echo "  Pin with @sha256:<digest>, e.g.: docker://image@sha256:abcdef..."
+                failed=1
+                continue
+              fi
+              # All other actions must use @<40 hex chars>
+              if [[ "$val" =~ @[0-9a-fA-F]{40}$ ]]; then
+                continue
+              fi
+              echo "::error file=$f::Unpinned action: $val"
+              echo "  Pin to a commit SHA, e.g.: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+              failed=1
+            done <<< "$uses_values"
+          done < <(find .github/workflows/ .github/actions/ \
+                     -type f \( -name '*.yml' -o -name '*.yaml' \) -print0 2>/dev/null)
+          if [ "$failed" -ne 0 ]; then
+            exit 1
+          fi
