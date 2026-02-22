@@ -106,23 +106,6 @@ lemma localInverseAt_apply_self {p : M}
     (mem_localHomeomorphAt_source)
     (mem_localInverseAt_source)
 
-
--- `IMPORTANT NOTE` : we actually don't use this next result
-
-/-- If `k` lies in the source of `localHomeomorphAt p`, and its image
-under `localHomeomorphAt p'` lies in the source of `localInverseAt p`,
-then the composition `(localHomeomorphAt p').trans (localInverseAt p)`
-sends `k` back to `k`. -/
-lemma localHomeomorphAt_trans_eq_localInverseAt {p p' k : M}
-    (h : k ∈ (localHomeomorphAt (G := G) p).source)
-    (h' : (localHomeomorphAt p') k ∈ (localInverseAt (G := G) p).source)
-    : ((localHomeomorphAt p').trans (localInverseAt (G := G) p)) k = k
-    := by
-  simp only [OpenPartialHomeomorph.coe_trans,
-             localHomeomorphAt_eq_quotientMk,
-             Function.comp_apply] at ⊢ h'
-  exact localInverseAt_apply_other h h'
-
 end QuotientMk
 
 end
