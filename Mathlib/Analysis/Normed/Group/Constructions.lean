@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Analysis.Normed.Group.Basic
+module
+
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Product of normed groups and other constructions
@@ -13,6 +15,8 @@ import Mathlib.Analysis.Normed.Group.Basic
 This file constructs the infinity norm on finite products of normed groups and provides instances
 for type synonyms.
 -/
+
+@[expose] public section
 
 open NNReal
 
@@ -249,7 +253,7 @@ instance Prod.seminormedGroup : SeminormedGroup (E × F) where
     simp only [Prod.norm_def, Prod.dist_eq, dist_eq_norm_div, Prod.fst_div, Prod.snd_div]
 
 /-- Multiplicative version of `Prod.nnnorm_def`.
-Earlier, this names was used for the additive version. -/
+Earlier, this name was used for the additive version. -/
 @[to_additive Prod.nnnorm_def]
 lemma Prod.nnnorm_def' (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
 
@@ -291,6 +295,7 @@ variable [Fintype ι]
 section SeminormedGroup
 variable [∀ i, SeminormedGroup (G i)] [SeminormedGroup E] (f : ∀ i, G i) {x : ∀ i, G i} {r : ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Finite product of seminormed groups, using the sup norm. -/
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.seminormedGroup : SeminormedGroup (∀ i, G i) where
@@ -393,6 +398,7 @@ instance Pi.normedCommGroup [∀ i, NormedCommGroup (G i)] : NormedCommGroup (�
     mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖₊ = ‖y‖₊ := by
   have H : ∀ b, ‖single i y b‖₊ = single (M := fun _ ↦ ℝ≥0) i ‖y‖₊ b := by

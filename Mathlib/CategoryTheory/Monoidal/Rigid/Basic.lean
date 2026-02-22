@@ -3,9 +3,11 @@ Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Rigid (autonomous) monoidal categories
@@ -56,6 +58,8 @@ and `ExactPairing X Y` is in bijection with adjunctions compatible with this rig
 rigid category, monoidal category
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory MonoidalCategory
@@ -143,8 +147,8 @@ class HasLeftDual (Y : C) where
   leftDual : C
   [exact : ExactPairing leftDual Y]
 
-attribute [instance] HasRightDual.exact
-attribute [instance] HasLeftDual.exact
+attribute [instance_reducible, instance] HasRightDual.exact
+attribute [instance_reducible, instance] HasLeftDual.exact
 
 open ExactPairing HasRightDual HasLeftDual MonoidalCategory
 
@@ -359,7 +363,7 @@ This has to be a definition rather than an instance to avoid diamonds, for examp
 `category_theory.monoidal_closed.functor_closed` and
 `CategoryTheory.Monoidal.functorHasLeftDual`. Moreover, in concrete applications there is often
 a more useful definition of the internal hom object than `ᘁY ⊗ X`, in which case the closed
-structure shouldn't come from `has_left_dual` (e.g. in the category `FinVect k`, it is more
+structure shouldn't come from `HasLeftDual` (e.g. in the category `FinVect k`, it is more
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are
 naturally isomorphic).
 -/
@@ -537,6 +541,7 @@ def exactPairingCongr {X X' Y Y' : C} [ExactPairing X' Y'] (i : X ≅ X') (j : Y
   haveI : ExactPairing X' Y := exactPairingCongrRight j
   exactPairingCongrLeft i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Right duals are isomorphic. -/
 def rightDualIso {X Y₁ Y₂ : C} (p₁ : ExactPairing X Y₁) (p₂ : ExactPairing X Y₂) : Y₁ ≅ Y₂ where
   hom := @rightAdjointMate C _ _ X X ⟨Y₂⟩ ⟨Y₁⟩ (𝟙 X)
@@ -549,6 +554,7 @@ def rightDualIso {X Y₁ Y₂ : C} (p₁ : ExactPairing X Y₁) (p₂ : ExactPai
     rw [← @comp_rightAdjointMate, Category.comp_id, @rightAdjointMate_id]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Left duals are isomorphic. -/
 def leftDualIso {X₁ X₂ Y : C} (p₁ : ExactPairing X₁ Y) (p₂ : ExactPairing X₂ Y) : X₁ ≅ X₂ where
   hom := @leftAdjointMate C _ _ Y Y ⟨X₂⟩ ⟨X₁⟩ (𝟙 Y)
@@ -579,8 +585,8 @@ class RightRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] 
 class LeftRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
   [leftDual : ∀ X : C, HasLeftDual X]
 
-attribute [instance 100] RightRigidCategory.rightDual
-attribute [instance 100] LeftRigidCategory.leftDual
+attribute [instance_reducible, instance 100] RightRigidCategory.rightDual
+attribute [instance_reducible, instance 100] LeftRigidCategory.leftDual
 
 /-- Any left rigid category is monoidal closed, with the internal hom `X ⟶[C] Y = ᘁX ⊗ Y`.
 This has to be a definition rather than an instance to avoid diamonds, for example between

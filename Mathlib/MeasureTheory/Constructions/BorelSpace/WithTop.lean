@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.Order.WithTop
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Topology.Order.WithTop
 
 /-!
 # Borel measurable space on `WithTop`
@@ -23,6 +25,8 @@ We then prove that the natural inclusion `ι → WithTop ι` is measurable, and 
 
 -/
 
+@[expose] public section
+
 
 namespace WithTop
 
@@ -39,6 +43,7 @@ noncomputable
 def MeasurableEquiv.neTopEquiv : { r : WithTop ι | r ≠ ⊤ } ≃ᵐ ι :=
   (WithTop.neTopHomeomorph ι).toMeasurableEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 lemma measurable_of_measurable_comp_coe {α : Type*} {mα : MeasurableSpace α}
     {f : WithTop ι → α} (h : Measurable fun p : ι ↦ f p) :
     Measurable f :=

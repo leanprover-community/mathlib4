@@ -3,7 +3,9 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.MeasureTheory.Covering.DensityTheorem
+module
+
+public import Mathlib.MeasureTheory.Covering.DensityTheorem
 
 /-!
 # Liminf, limsup, and uniformly locally doubling measures.
@@ -22,6 +24,8 @@ carrying a uniformly locally doubling measure.
   rather than closed thickenings.
 
 -/
+
+public section
 
 
 open Set Filter Metric MeasureTheory TopologicalSpace
@@ -173,6 +177,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : �
     exact blimsup_cthickening_ae_le_of_eventually_mul_le_aux μ p hs
       (tendsto_nhds_max_right hr) hRp hM hM' hMr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a sequence of subsets `sᵢ` of a metric space, together with a sequence of radii `rᵢ`
 such that `rᵢ → 0`, the set of points which belong to infinitely many of the closed
 `rᵢ`-thickenings of `sᵢ` is unchanged almost everywhere for a uniformly locally doubling measure if

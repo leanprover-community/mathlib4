@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Winston Yin
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Topology.Algebra.Order.Floor
-import Mathlib.Topology.MetricSpace.Contracting
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Topology.Algebra.Order.Floor
+public import Mathlib.Topology.MetricSpace.Contracting
 
 /-!
 # Picard-Lindelöf (Cauchy-Lipschitz) Theorem
@@ -65,6 +67,8 @@ differential equation, dynamical system, initial value problem, Picard-Lindelöf
 Cauchy-Lipschitz theorem
 
 -/
+
+@[expose] public section
 
 open Function intervalIntegral MeasureTheory Metric Set
 open scoped Nat NNReal Topology
@@ -202,7 +206,7 @@ instance [CompleteSpace E] : CompleteSpace (FunSpace t₀ x₀ r L) := by
   rw [range_toContinuousMap, setOf_and]
   apply isClosed_setOf_lipschitzWith L |>.preimage continuous_coeFun |>.inter
   simp_rw [mem_closedBall_iff_norm]
-  exact isClosed_le (by fun_prop) continuous_const
+  exact isClosed_le (by fun_prop) (by fun_prop)
 
 /-- Extend the domain of `α` from `Icc tmin tmax` to `ℝ` such that `α t = α tmin` for all `t ≤ tmin`
 and `α t = α tmax` for all `t ≥ tmax`. -/
@@ -313,6 +317,7 @@ lemma dist_comp_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
       gcongr
       rwa [← mul_pow]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A time-dependent bound on the distance between the `n`-th iterates of `next` on two curves -/
 lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
     (hx : x ∈ closedBall x₀ r) (α β : FunSpace t₀ x₀ r L) (n : ℕ) (t : Icc tmin tmax) :
@@ -346,6 +351,7 @@ lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
           abs_pow, abs_pow, abs_dist, NNReal.abs_eq, abs_abs, mul_div, div_div, ← abs_mul,
           ← Nat.cast_succ, ← Nat.cast_mul, ← Nat.factorial_succ, Nat.abs_cast, ← mul_pow]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th iterate of `next` is Lipschitz continuous with respect to `FunSpace`, with constant
 $(K \max(t_{\mathrm{max}}, t_{\mathrm{min}})^n / n!$. -/
 lemma dist_iterate_next_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
@@ -390,6 +396,7 @@ there is some `m : ℕ` such that `next^[m]` is a contracting map, it further su
 distance between `α` and `next^[m]^[n] α`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A key step in the base case of `exists_forall_closedBall_funSpace_dist_le_mul` -/
 lemma dist_next_next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
     (hy : y ∈ closedBall x₀ r) (α : FunSpace t₀ x₀ r L) :
@@ -482,10 +489,10 @@ lemma hasDerivWithinAt_picard_Icc
     (continuousOn_comp hf hα hmem _ ht)
   apply ContinuousOn.intervalIntegrable
   apply continuousOn_comp hf hα hmem |>.mono
-  by_cases h : t < t₀
+  by_cases! h : t < t₀
   · rw [uIcc_of_gt h]
     exact Icc_subset_Icc ht.1 ht₀.2
-  · rw [uIcc_of_le (not_lt.mp h)]
+  · rw [uIcc_of_le h]
     exact Icc_subset_Icc ht₀.1 ht.2
 
 /-- Converse of `hasDerivWithinAt_picard_Icc`: if `f` is the derivative along `α`, then `α`
@@ -503,7 +510,7 @@ lemma picard_eq_of_hasDerivAt {t : ℝ}
   exact hα t' (Ioo_subset_Icc_self ht') |>.hasDerivAt <| Icc_mem_nhds ht'.1 ht'.2
 
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
-`interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ`. -/
+`picard f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ`. -/
 lemma contDiffOn_nat_picard_Icc
     (ht₀ : t₀ ∈ Icc tmin tmax) {n : ℕ}
     (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
@@ -531,7 +538,7 @@ lemma contDiffOn_nat_picard_Icc
     exact contDiffWithinAt_singleton
 
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
-`interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ∞`.
+`picard f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ∞`.
 
 TODO: Extend to the analytic `n = ⊤` case. -/
 lemma contDiffOn_enat_picard_Icc
@@ -610,8 +617,8 @@ lemma of_time_independent
 /-- A time-independent, continuously differentiable ODE satisfies the hypotheses of the
 Picard-Lindelöf theorem. -/
 lemma of_contDiffAt_one [NormedSpace ℝ E]
-    {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ (ε : ℝ) (hε : 0 < ε) (a r L K : ℝ≥0) (_ : 0 < r), IsPicardLindelof (fun _ ↦ f)
+    {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) :
+    ∃ (ε : ℝ) (hε : 0 < ε) (a r L K : ℝ≥0) (_ : 0 < r), ∀ (t₀ : ℝ), IsPicardLindelof (fun _ ↦ f)
       (tmin := t₀ - ε) (tmax := t₀ + ε) ⟨t₀, (by simp [le_of_lt hε])⟩ x₀ a r L K := by
   -- Obtain ball of radius `a` within the domain in which f is `K`-lipschitz
   obtain ⟨K, s, hs, hl⟩ := hf.exists_lipschitzOnWith
@@ -624,8 +631,7 @@ lemma of_contDiffAt_one [NormedSpace ℝ E]
       ‖f x‖ ≤ ‖f x - f x₀‖ + ‖f x₀‖ := norm_le_norm_sub_add _ _
       _ ≤ K * ‖x - x₀‖ + ‖f x₀‖ := by
         gcongr
-        rw [← dist_eq_norm, ← dist_eq_norm]
-        apply hl.dist_le_mul x _ x₀ (mem_of_mem_nhds hs)
+        apply hl.norm_sub_le _ (mem_of_mem_nhds hs)
         apply subset_trans _ has hx
         exact closedBall_subset_ball <| half_lt_self ha -- this is where we need `a / 2`
       _ ≤ K * a + ‖f x₀‖ := by
@@ -637,12 +643,11 @@ lemma of_contDiffAt_one [NormedSpace ℝ E]
   have hε0 : 0 < ε := by positivity
   refine ⟨ε, hε0,
     ⟨a / 2, le_of_lt <| half_pos ha⟩, ⟨a / 2, le_of_lt <| half_pos ha⟩ / 2,
-    ⟨L, le_of_lt hL0⟩, K, half_pos <| half_pos ha, ?_⟩
+    ⟨L, le_of_lt hL0⟩, K, half_pos <| half_pos ha, fun t₀ ↦ ?_⟩
   apply of_time_independent hb <|
     hl.mono <| subset_trans (closedBall_subset_ball (half_lt_self ha)) has
-  rw [NNReal.coe_mk, add_sub_cancel_left, sub_sub_cancel, max_self, NNReal.coe_div,
-    NNReal.coe_two, NNReal.coe_mk, mul_comm, ← le_div_iff₀ hL0, sub_half, div_right_comm (a / 2),
-    div_right_comm a]
+  simp [ε, field]
+  norm_num
 
 end
 
@@ -685,9 +690,6 @@ theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀
     ∃ α : ℝ → E, α t₀ = x₀ ∧
       ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t :=
   exists_eq_forall_mem_Icc_hasDerivWithinAt hf (mem_closedBall_self le_rfl)
-
-@[deprecated (since := "2025-06-24")] alias exists_forall_hasDerivWithinAt_Icc_eq :=
-  exists_eq_forall_mem_Icc_hasDerivWithinAt₀
 
 open Classical in
 /-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
@@ -761,9 +763,9 @@ theorem exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
     ∃ r > (0 : ℝ), ∃ ε > (0 : ℝ), ∀ x ∈ closedBall x₀ r, ∃ α : ℝ → E, α t₀ = x ∧
       ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt α (f (α t)) t := by
-  have ⟨ε, hε, a, r, _, _, hr, hpl⟩ := IsPicardLindelof.of_contDiffAt_one hf t₀
+  have ⟨ε, hε, a, r, _, _, hr, hpl⟩ := IsPicardLindelof.of_contDiffAt_one hf
   refine ⟨r, hr, ε, hε, fun x hx ↦ ?_⟩
-  have ⟨α, hα1, hα2⟩ := hpl.exists_eq_forall_mem_Icc_hasDerivWithinAt hx
+  have ⟨α, hα1, hα2⟩ := (hpl t₀).exists_eq_forall_mem_Icc_hasDerivWithinAt hx
   refine ⟨α, hα1, fun t ht ↦ ?_⟩
   exact hα2 t (Ioo_subset_Icc_self ht) |>.hasDerivAt (Icc_mem_nhds ht.1 ht.2)
 
@@ -776,9 +778,6 @@ theorem exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt₀
   have ⟨_, hr, ε, hε, H⟩ := exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt hf t₀
   have ⟨α, hα1, hα2⟩ := H x₀ (mem_closedBall_self (le_of_lt hr))
   ⟨α, hα1, ε, hε, hα2⟩
-
-@[deprecated (since := "2025-06-24")] alias exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt :=
-  exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt₀
 
 open Classical in
 /-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits a flow

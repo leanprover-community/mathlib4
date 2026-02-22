@@ -3,11 +3,13 @@ Copyright (c) 2023 Matias Heikkilä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matias Heikkilä
 -/
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.UnitInterval
-import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.Topology.Order.Lattice
-import Mathlib.Analysis.Real.Cardinality
+module
+
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.UnitInterval
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.Order.Lattice
+public import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # Completely regular topological spaces.
@@ -50,6 +52,8 @@ space.
 * [Russell C. Walker, *The Stone-Čech Compactification*][russell1974]
 -/
 
+@[expose] public section
+
 universe u v
 
 noncomputable section
@@ -86,6 +90,7 @@ instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] :
   apply Disjoint.mono (cf.tendsto_nhdsSet_nhds hhf) cf.continuousAt
   exact disjoint_nhds_nhds.mpr (hf.symm ▸ zero_ne_one).symm
 
+set_option backward.isDefEq.respectTransparency false in
 instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] [R0Space X] :
     CompletelyRegularSpace X := by
   rw [completelyRegularSpace_iff]
@@ -122,6 +127,7 @@ lemma completelyRegularSpace_induced
     (f : X → Y) : @CompletelyRegularSpace X (t.induced f) :=
   @IsInducing.completelyRegularSpace _ (t.induced f) _ t _ _ (IsInducing.induced f)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @CompletelyRegularSpace X (t i)) : @CompletelyRegularSpace X (⨅ i, t i) := by
   letI := (⨅ i, t i) -- register this as default topological space to reduce `@`s
@@ -146,6 +152,7 @@ lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     specialize hfsU i (by tauto_set)
     exists i
 
+set_option backward.isDefEq.respectTransparency false in
 lemma completelyRegularSpace_inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
     (ht₁ : @CompletelyRegularSpace X t₁) (ht₂ : @CompletelyRegularSpace X t₂) :
     @CompletelyRegularSpace X (t₁ ⊓ t₂) := by
@@ -231,15 +238,13 @@ instance {ι : Type*} {X : ι → Type*} [t : Π (i : ι), TopologicalSpace (X i
 instance {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     [htX : T35Space X] [htY : T35Space Y] : T35Space (X × Y) where
 
+set_option backward.isDefEq.respectTransparency false in
 lemma separatesPoints_continuous_of_t35Space [T35Space X] :
     SeparatesPoints {f : X → ℝ | Continuous f} := by
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by simp_all⟩
-
-@[deprecated (since := "2025-04-13")]
-alias separatesPoints_continuous_of_completelyRegularSpace := separatesPoints_continuous_of_t35Space
 
 lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
     SeparatesPoints {f : X → I | Continuous f} := by
@@ -248,19 +253,12 @@ lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨f, f_cont, by simp_all⟩
 
-@[deprecated (since := "2025-04-13")]
-alias separatesPoints_continuous_of_completelyRegularSpace_Icc :=
-  separatesPoints_continuous_of_t35Space_Icc
-
 lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
     Function.Injective (stoneCechUnit : X → StoneCech X) := by
   intro a b hab
   contrapose hab
   obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_t35Space_Icc hab
   exact fun q ↦ fab (eq_if_stoneCechUnit_eq fc q)
-
-@[deprecated (since := "2025-04-13")]
-alias injective_stoneCechUnit_of_completelyRegularSpace := injective_stoneCechUnit_of_t35Space
 
 lemma isEmbedding_stoneCechUnit [T35Space X] :
     IsEmbedding (stoneCechUnit : X → StoneCech X) where

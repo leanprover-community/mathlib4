@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Extension.Presentation.Basic
+module
+
+public import Mathlib.RingTheory.Extension.Presentation.Submersive
 
 /-!
 # Presentations on subrings
@@ -19,6 +21,8 @@ If the presentation is finite, `R₀` may be chosen as a Noetherian ring. In thi
 this API can be used to remove Noetherian hypothesis in certain cases.
 
 -/
+
+@[expose] public section
 
 open TensorProduct
 
@@ -72,6 +76,7 @@ class HasCoeffs (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S]
     [IsScalarTower R₀ R S] where
   coeffs_subset_range : P.coeffs ⊆ Set.range (algebraMap R₀ R)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : P.HasCoeffs P.Core where
   coeffs_subset_range := by
     refine subset_trans P.coeffs_subset_core ?_
@@ -89,6 +94,7 @@ lemma HasCoeffs.of_isScalarTower {R₁ : Type*} [CommRing R₁] [Algebra R₀ R�
   refine ⟨subset_trans (P.coeffs_subset_range R₀) ?_⟩
   simp [IsScalarTower.algebraMap_eq R₀ R₁ R, RingHom.coe_comp, Set.range_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (s : Set R) : P.HasCoeffs (Algebra.adjoin R₀ s) := HasCoeffs.of_isScalarTower R₀
 
 lemma HasCoeffs.coeffs_relation_mem_range (x : σ) :
@@ -114,6 +120,7 @@ lemma aeval_val_relationOfHasCoeffs (r : σ) :
     MvPolynomial.aeval P.val (P.relationOfHasCoeffs R₀ r) = 0 := by
   rw [← MvPolynomial.aeval_map_algebraMap R, map_relationOfHasCoeffs, aeval_val_relation]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma algebraTensorAlgEquiv_symm_relation (r : σ) :
     (MvPolynomial.algebraTensorAlgEquiv R₀ R).symm (P.relation r) =
@@ -145,6 +152,7 @@ lemma tensorModelOfHasCoeffsHom_tmul (x : R) (y : MvPolynomial ι R₀) :
     P.tensorModelOfHasCoeffsHom R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (P) in
 /-- (Implementation detail): The inverse of `tensorModelOfHasCoeffsHom`. -/
 noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfHasCoeffs R₀ :=
@@ -160,6 +168,7 @@ noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfH
       Ideal.Quotient.mk_span_range, tmul_zero]).comp
     (P.quotientEquiv.restrictScalars R).symm.toAlgHom
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
     P.tensorModelOfHasCoeffsInv R₀ (MvPolynomial.aeval P.val x) =
@@ -167,6 +176,8 @@ lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
   rw [← MvPolynomial.aeval_map_algebraMap R, ← Generators.algebraMap_apply, ← quotientEquiv_mk]
   simp [tensorModelOfHasCoeffsInv, -quotientEquiv_symm, -quotientEquiv_mk]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.privateInPublic true in
 private lemma hom_comp_inv :
     (P.tensorModelOfHasCoeffsHom R₀).comp (P.tensorModelOfHasCoeffsInv R₀) = AlgHom.id R S := by
   have h : Function.Surjective
@@ -179,12 +190,15 @@ private lemma hom_comp_inv :
   ext x
   simp
 
+set_option backward.privateInPublic true in
 private lemma inv_comp_hom :
     (P.tensorModelOfHasCoeffsInv R₀).comp (P.tensorModelOfHasCoeffsHom R₀) = AlgHom.id R _ := by
   ext x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The natural isomorphism `R ⊗[R₀] S₀ ≃ₐ[R] S`. -/
 noncomputable def tensorModelOfHasCoeffsEquiv : R ⊗[R₀] P.ModelOfHasCoeffs R₀ ≃ₐ[R] S :=
   AlgEquiv.ofAlgHom (P.tensorModelOfHasCoeffsHom R₀) (P.tensorModelOfHasCoeffsInv R₀)
@@ -202,3 +216,154 @@ lemma tensorModelOfHasCoeffsEquiv_symm_tmul (x : MvPolynomial ι R₀) :
   tensorModelOfHasCoeffsInv_aeval_val _ x
 
 end Algebra.Presentation
+namespace Algebra.PreSubmersivePresentation
+
+variable (P : Algebra.PreSubmersivePresentation R S ι σ)
+variable (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+  [P.HasCoeffs R₀]
+
+/-- The presubmersive presentation on `P.ModelOfHasCoeffs R₀` provided `P.HasCoeffs R₀`. -/
+@[simps!]
+noncomputable def ofHasCoeffs :
+    Algebra.PreSubmersivePresentation R₀ (P.ModelOfHasCoeffs R₀) ι σ where
+  __ := Algebra.Presentation.naive
+  map := P.map
+  map_inj := P.map_inj
+
+end Algebra.PreSubmersivePresentation
+
+namespace Algebra.SubmersivePresentation
+
+variable [Finite σ] (P : Algebra.SubmersivePresentation R S ι σ)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one
+    [DecidableEq σ] [Fintype σ] :
+    ∃ v : σ → MvPolynomial ι R, ∑ i, v i * P.relation i =
+        P.jacobiMatrix.det * P.σ ↑(P.jacobian_isUnit.unit⁻¹) - 1 := by
+  have H : P.jacobiMatrix.det * P.σ ↑(P.jacobian_isUnit.unit⁻¹) - 1 ∈ P.ker := by
+    simp [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
+  rwa [← P.span_range_relation_eq_ker, Ideal.mem_span_range_iff_exists_fun] at H
+
+/-- An arbitrarily chosen relation exhibiting the fact that `P.jacobian` is invertible. -/
+noncomputable
+def jacobianRelations (s : σ) : MvPolynomial ι R :=
+  letI := Fintype.ofFinite σ
+  letI := Classical.decEq σ
+  P.exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one.choose s
+
+lemma jacobianRelations_spec [DecidableEq σ] [Fintype σ] :
+    ∑ i, P.jacobianRelations i * P.relation i =
+      P.jacobiMatrix.det * P.σ ↑(P.jacobian_isUnit.unit⁻¹) - 1 := by
+  delta jacobianRelations
+  convert P.exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one.choose_spec
+
+/-- The set of coefficients that is enough to descend a submersive presentation `P`. -/
+def coeffs : Set R :=
+  P.toPresentation.coeffs ∪ (P.σ (P.jacobian_isUnit.unit⁻¹ :)).coeffs ∪
+    ⋃ i, (P.jacobianRelations i).coeffs
+
+lemma finite_coeffs : P.coeffs.Finite :=
+  .union (P.toPresentation.finite_coeffs.union (by simp))
+    (.iUnion Set.finite_univ (by simp) (by simp))
+
+lemma coeffs_toPresentation_subset_coeffs : P.toPresentation.coeffs ⊆ P.coeffs :=
+  Set.subset_union_left.trans Set.subset_union_left
+
+/-- A type class witnessing the fact that `R₀` contains enough coefficients to descend
+`P` to a submersive presentation. -/
+class HasCoeffs (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S]
+    [IsScalarTower R₀ R S] where
+  coeffs_subset_range : P.coeffs ⊆ ↑(algebraMap R₀ R).range
+
+variable (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+  [P.HasCoeffs R₀]
+
+instance (priority := low) : P.toPresentation.HasCoeffs R₀ where
+  coeffs_subset_range := P.coeffs_toPresentation_subset_coeffs.trans HasCoeffs.coeffs_subset_range
+
+/-- The jacobian of a presentation in the smaller coefficient ring, provided `P.HasCoeffs R₀`. -/
+noncomputable
+def jacobianOfHasCoeffs : MvPolynomial ι R₀ :=
+  letI := Classical.decEq σ
+  letI := Fintype.ofFinite σ
+  (P.toPreSubmersivePresentation.ofHasCoeffs R₀).jacobiMatrix.det
+
+@[simp]
+lemma map_jacobianOfHasCoeffs [Fintype σ] [DecidableEq σ] :
+    (P.jacobianOfHasCoeffs R₀).map (algebraMap R₀ R) = P.jacobiMatrix.det := by
+  rw [jacobianOfHasCoeffs, @RingHom.map_det]
+  congr! 1
+  ext1 i j
+  simp [Presentation.map_relationOfHasCoeffs, ← MvPolynomial.pderiv_map,
+    PreSubmersivePresentation.jacobiMatrix_apply]
+
+@[simp]
+lemma aeval_jacobianOfHasCoeffs :
+    MvPolynomial.aeval P.val (P.jacobianOfHasCoeffs R₀) = P.jacobian := by
+  classical
+  let : Fintype σ := Fintype.ofFinite _
+  rw [← MvPolynomial.aeval_map_algebraMap R, map_jacobianOfHasCoeffs,
+    P.jacobian_eq_jacobiMatrix_det, Generators.algebraMap_apply]
+
+/-- The inverse jacobian of a presentation in the smaller coefficient ring,
+provided `P.HasCoeffs R₀`. -/
+noncomputable
+def invJacobianOfHasCoeffs : MvPolynomial ι R₀ :=
+  (MvPolynomial.mem_range_map_iff_coeffs_subset.mpr
+    ((Set.subset_union_right.trans Set.subset_union_left).trans
+      (HasCoeffs.coeffs_subset_range (P := P)))).choose
+
+@[simp]
+lemma map_invJacobianOfHasCoeffs :
+    (P.invJacobianOfHasCoeffs R₀).map (algebraMap R₀ R) = P.σ ↑(P.jacobian_isUnit.unit⁻¹) :=
+  (MvPolynomial.mem_range_map_iff_coeffs_subset.mpr
+    ((Set.subset_union_right.trans Set.subset_union_left).trans
+      (HasCoeffs.coeffs_subset_range (P := P)))).choose_spec
+
+@[simp]
+lemma aeval_invJacobianOfHasCoeffs :
+    MvPolynomial.aeval P.val (P.invJacobianOfHasCoeffs R₀) = ↑(P.jacobian_isUnit.unit⁻¹) := by
+  simpa [-map_invJacobianOfHasCoeffs, MvPolynomial.aeval_map_algebraMap] using
+    congr(MvPolynomial.aeval P.val $(P.map_invJacobianOfHasCoeffs R₀))
+
+/-- An arbitrarily chosen relation exhibiting the fact that `P.jacobian` is invertible,
+provided `P.HasCoeffs R₀`. -/
+noncomputable
+def jacobianRelationsOfHasCoeffs (i : σ) : MvPolynomial ι R₀ :=
+  (MvPolynomial.mem_range_map_iff_coeffs_subset.mpr
+    ((Set.subset_iUnion _ i).trans (Set.subset_union_right.trans
+      (HasCoeffs.coeffs_subset_range (P := P))))).choose
+
+@[simp]
+lemma map_jacobianRelationsOfHasCoeffs (i : σ) :
+    (P.jacobianRelationsOfHasCoeffs R₀ i).map (algebraMap R₀ R) = P.jacobianRelations i :=
+  (MvPolynomial.mem_range_map_iff_coeffs_subset.mpr
+    ((Set.subset_iUnion _ i).trans (Set.subset_union_right.trans
+      (HasCoeffs.coeffs_subset_range (P := P))))).choose_spec
+
+lemma sum_jacobianRelationsOfHasCoeffs_mul_relationOfHasCoeffs [FaithfulSMul R₀ R] [Fintype σ] :
+    ∑ i, P.jacobianRelationsOfHasCoeffs R₀ i * P.relationOfHasCoeffs R₀ i =
+      P.jacobianOfHasCoeffs R₀ * P.invJacobianOfHasCoeffs R₀ - 1 := by
+  classical
+  apply MvPolynomial.map_injective _ (FaithfulSMul.algebraMap_injective R₀ R)
+  simp [P.map_relationOfHasCoeffs, jacobianRelations_spec]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The submersive presentation on `P.ModelOfHasCoeffs R₀` provided `P.HasCoeffs R₀`. -/
+noncomputable
+def ofHasCoeffs [FaithfulSMul R₀ R] :
+    Algebra.SubmersivePresentation R₀ (P.ModelOfHasCoeffs R₀) ι σ where
+  __ := P.toPreSubmersivePresentation.ofHasCoeffs R₀
+  jacobian_isUnit := by
+    classical
+    let : Fintype σ := Fintype.ofFinite _
+    have := congr((Ideal.Quotient.mk _ : _ →+* P.ModelOfHasCoeffs R₀)
+      $(P.sum_jacobianRelationsOfHasCoeffs_mul_relationOfHasCoeffs R₀))
+    simp only [map_sum, map_mul, Ideal.Quotient.mk_span_range, mul_zero, Finset.sum_const_zero,
+      map_sub, map_one, @eq_comm (P.ModelOfHasCoeffs R₀) 0, sub_eq_zero] at this
+    convert IsUnit.of_mul_eq_one _ this
+    rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
+    simp [jacobianOfHasCoeffs]
+
+end Algebra.SubmersivePresentation

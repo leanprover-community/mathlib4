@@ -3,9 +3,10 @@ Copyright (c) 2024 Elliot Dean Young and Jiazhen Xia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiazhen Xia, Elliot Dean Young
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Topology.Category.TopCat.EpiMono
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Topology.Category.TopCat.EpiMono
 
 /-!
 # Euclidean spheres
@@ -14,6 +15,8 @@ This file defines the `n`-sphere `𝕊 n`, the `n`-disk `𝔻 n`, its boundary `
 `𝔹 n` as objects in `TopCat`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -67,11 +70,13 @@ def ballInclusion (n : ℕ) : 𝔹 n ⟶ 𝔻 n :=
         rw [isOpen_induced_iff, ← hst, ← hrs]
         tauto⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 instance {n : ℕ} : Mono (diskBoundaryInclusion n) := mono_iff_injective _ |>.mpr <| by
   intro ⟨x, hx⟩ ⟨y, hy⟩ h
   obtain rfl : x = y := by simpa [diskBoundaryInclusion, disk] using h
   congr
 
+set_option backward.isDefEq.respectTransparency false in
 instance {n : ℕ} : Mono (ballInclusion n) := TopCat.mono_iff_injective _ |>.mpr <| by
   intro ⟨x, hx⟩ ⟨y, hy⟩ h
   obtain rfl : x = y := by simpa [ballInclusion, disk] using h

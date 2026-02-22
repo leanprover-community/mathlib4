@@ -3,12 +3,16 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Algebra.Order.Ring.Defs
+module
+
+public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Pulling back ordered rings along injective maps
 -/
+
+public section
 
 variable {R S : Type*}
 
@@ -41,34 +45,5 @@ protected lemma isStrictOrderedRing [IsStrictOrderedRing R] [Semiring S] [Partia
     rw [← lt, mul, mul]; refine mul_lt_mul_of_pos_left (lt.2 hbc) ?_; rwa [← zero, lt]
   mul_lt_mul_of_pos_right a ha b c hbc := by
     rw [← lt, mul, mul]; refine mul_lt_mul_of_pos_right (lt.2 hbc) ?_; rwa [← zero, lt]
-
-@[deprecated (since := "2025-04-10")]
-protected alias orderedSemiring := Function.Injective.isOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias orderedCommSemiring := Function.Injective.isOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias orderedRing := Function.Injective.isOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias orderedCommRing := Function.Injective.isOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias strictOrderedSemiring := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias strictOrderedCommSemiring := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias strictOrderedRing := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias strictOrderedCommRing := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias linearOrderedSemiring := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias linearOrderedCommSemiring := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias linearOrderedRing := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias linearOrderedCommRing := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-alias linearOrderedSemifield := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-alias linearOrderedField := Function.Injective.isStrictOrderedRing
 
 end Function.Injective

@@ -3,11 +3,13 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Data.Finsupp.Interval
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.MvPowerSeries.PiTopology
-import Mathlib.Topology.Algebra.LinearTopology
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
+module
+
+public import Mathlib.Data.Finsupp.Interval
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.MvPowerSeries.PiTopology
+public import Mathlib.Topology.Algebra.LinearTopology
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-! # Linear topology on the ring of multivariate power series
 
@@ -36,6 +38,8 @@ To recover the ring case, it would remain to show that the isomorphism between
 (And likewise in the multivariate case.)
 
 -/
+
+@[expose] public section
 
 namespace MvPowerSeries
 
@@ -107,6 +111,7 @@ variable [TopologicalSpace R]
 -- We endow MvPowerSeries σ R with the product topology.
 open WithPiTopology
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the ring `R` is endowed with a linear topology, then the sets `↑basis σ R (J, d)`,
 for `J : TwoSidedIdeal R` which are neighborhoods of `0 : R` and `d : σ →₀ ℕ`,
 constitute a basis of neighborhoods of `0 : MvPowerSeries σ R` for the product topology. -/

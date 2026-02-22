@@ -3,11 +3,13 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.Topology.Algebra.Valued.ValuedField
-import Mathlib.Topology.Algebra.Valued.WithVal
-import Mathlib.Topology.GDelta.MetrizableSpace
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.NumberTheory.Padics.PadicIntegers
+public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Topology.Algebra.Valued.WithVal
+public import Mathlib.Topology.GDelta.MetrizableSpace
 
 /-!
 # Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`
@@ -25,12 +27,15 @@ which is shorthand for `UniformSpace.Completion (WithVal (Rat.padicValuation p))
 
 -/
 
+@[expose] public section
+
 namespace Padic
 
 variable {p : ℕ} [Fact p.Prime]
 
 open NNReal WithZero UniformSpace
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
     (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
   have hp0' : 0 < (p : ℚ) := by simp [Nat.Prime.pos Fact.out]
@@ -61,7 +66,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
           zpow_right_mono₀ (a := (p : ℚ)) (by exact_mod_cast (Nat.Prime.one_le Fact.out)) h.le
     · simp [Nat.Prime.ne_zero Fact.out]
   · intro γ
-    use (log (γ.val * exp (- 1))).natAbs
+    use (log (γ.val * exp (-1))).natAbs
     intro x y h
     set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
     set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
@@ -134,7 +139,7 @@ lemma coe_withValRingEquiv_symm :
       Padic.isDenseInducing_cast_withVal.extend Completion.coe' := by
   rfl
 
-/-- The `p`-adic numbers are isomophic as uniform spaces to the completion of the rationals at
+/-- The `p`-adic numbers are isomorphic as uniform spaces to the completion of the rationals at
 the `p`-adic valuation. -/
 noncomputable
 def withValUniformEquiv :
@@ -149,4 +154,51 @@ lemma toEquiv_withValUniformEquiv_eq_toEquiv_withValRingEquiv :
       (withValRingEquiv (p := p) :) :=
   rfl
 
+open UniformSpace.Completion in
+@[simp]
+theorem withValUniformEquiv_cast_apply (x : WithVal (Rat.padicValuation p)) :
+    Padic.withValUniformEquiv (p := p) x = WithVal.equiv (Rat.padicValuation p) x := by
+  simpa [Equiv.toUniformEquivOfIsUniformInducing] using
+    extension_coe (Padic.isUniformInducing_cast_withVal (p := p)).uniformContinuous _
+
+open PadicInt in
+theorem norm_rat_le_one_iff_padicValuation_le_one (p : ℕ) [Fact p.Prime] {x : ℚ} :
+    ‖(x : ℚ_[p])‖ ≤ 1 ↔ Rat.padicValuation p x ≤ 1 := by
+  rw [Rat.padicValuation_le_one_iff]
+  refine ⟨fun h ↦ ?_, fun h ↦ Padic.norm_rat_le_one h⟩
+  simpa [Nat.Prime.coprime_iff_not_dvd Fact.out] using isUnit_iff.1 <| isUnit_den _ h
+
+set_option backward.isDefEq.respectTransparency false in
+theorem withValUniformEquiv_norm_le_one_iff {p : ℕ} [Fact p.Prime]
+    (x : (Rat.padicValuation p).Completion) :
+    ‖Padic.withValUniformEquiv x‖ ≤ 1 ↔ Valued.v x ≤ 1 := by
+  induction x using UniformSpace.Completion.induction_on with
+  | hp =>
+    rw [Set.ext fun _ ↦ Iff.comm]
+    apply withValUniformEquiv.toHomeomorph.isClosed_setOf_iff (q := fun x ↦ ‖x‖ ≤ 1)
+      (Valued.isClopen_closedBall _ one_ne_zero)
+    simpa [Metric.closedBall] using IsUltrametricDist.isClopen_closedBall (0 : ℚ_[p]) one_ne_zero
+  | ih a =>
+    rw [Valued.valuedCompletion_apply, ← WithVal.apply_equiv, withValUniformEquiv_cast_apply]
+    exact (norm_rat_le_one_iff_padicValuation_le_one p)
+
 end Padic
+
+namespace PadicInt
+
+open Padic Valued
+
+variable {p : ℕ} [Fact p.Prime]
+
+/-- The `p`-adic integers are ring isomorphic to the integers of the uniform completion
+of the rationals at the `p`-adic valuation. -/
+noncomputable def withValIntegersRingEquiv {p : ℕ} [Fact p.Prime] :
+    𝒪[(Rat.padicValuation p).Completion] ≃+* ℤ_[p] :=
+  withValRingEquiv.restrict _ (subring p) fun _ ↦ (withValUniformEquiv_norm_le_one_iff _).symm
+
+/-- The `p`-adic integers are isomorphic as uniform spaces to the integers of the uniform completion
+of the rationals at the `p`-adic valuation. -/
+noncomputable def withValIntegersUniformEquiv : 𝒪[(Rat.padicValuation p).Completion] ≃ᵤ ℤ_[p] :=
+  withValUniformEquiv.subtype fun _ ↦ (withValUniformEquiv_norm_le_one_iff _).symm
+
+end PadicInt

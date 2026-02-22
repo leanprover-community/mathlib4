@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Analysis.Normed.Module.Ray
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+module
+
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.Normed.Module.Ray
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
 /-!
 # Strictly convex spaces
@@ -52,6 +54,8 @@ formulated only for the case `𝕜 = ℝ`.
 convex, strictly convex
 -/
 
+@[expose] public section
+
 open Convex Pointwise Set Metric
 
 /-- A *strictly convex space* is a normed space where the closed balls are strictly convex. We only
@@ -82,6 +86,7 @@ theorem StrictConvexSpace.of_strictConvex_unitClosedBall [LinearMap.CompatibleSM
     (h : StrictConvex 𝕜 (closedBall (0 : E) 1)) : StrictConvexSpace 𝕜 E :=
   ⟨fun r hr => by simpa only [smul_unitClosedBall_of_nonneg hr.le] using h.smul r⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Strict convexity is equivalent to `‖a • x + b • y‖ < 1` for all `x` and `y` of norm at most `1`
 and all strictly positive `a` and `b` such that `a + b = 1`. This lemma shows that it suffices to
 check this for points of norm one and some `a`, `b` such that `a + b = 1`. -/
@@ -98,6 +103,7 @@ theorem StrictConvexSpace.of_norm_combo_lt_one
   rwa [AffineMap.lineMap_apply_module, interior_closedBall (0 : E) one_ne_zero, mem_ball_zero_iff,
     sub_eq_iff_eq_add.2 hab.symm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StrictConvexSpace.of_norm_combo_ne_one
     (h :
       ∀ x y : E,

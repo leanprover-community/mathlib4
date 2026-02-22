@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Preadditive.Biproducts
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Relation between pullback/pushout squares and kernel/cokernel sequences
@@ -29,11 +31,13 @@ via the obvious map `X₁ ⟶ X₂ ⊞ X₃`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
   {X₁ X₂ X₃ X₄ : C} [HasBinaryBiproduct X₂ X₃]
 
 section Pushout
@@ -105,6 +109,7 @@ noncomputable def IsPushout.isColimitCokernelCofork (h : IsPushout f g inl inr) 
     IsColimit h.cokernelCofork :=
   h.isColimitEquivIsColimitCokernelCofork h.isColimit
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsPushout.epi_shortComplex_g (h : IsPushout f g inl inr) :
     Epi h.shortComplex.g := by
   rw [Preadditive.epi_iff_cancel_zero]
@@ -130,6 +135,7 @@ noncomputable def CommSq.shortComplex' (sq : CommSq fst snd f g) : ShortComplex 
   g := biprod.desc f (-g)
   zero := by simp [sq.w]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A commutative square in a preadditive category is a pullback square iff
 the corresponding diagram `0 ⟶ X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₁` a kernel. -/
 noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g) :
@@ -182,6 +188,7 @@ noncomputable def IsPullback.isLimitKernelFork (h : IsPullback fst snd f g) :
     IsLimit h.kernelFork :=
   h.isLimitEquivIsLimitKernelFork h.isLimit
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsPullback.mono_shortComplex'_f (h : IsPullback fst snd f g) :
     Mono h.shortComplex'.f := by
   rw [Preadditive.mono_iff_cancel_zero]

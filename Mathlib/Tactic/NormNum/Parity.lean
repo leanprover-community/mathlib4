@@ -3,8 +3,10 @@ Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Tactic.NormNum.Core
+module
+
+public import Mathlib.Algebra.Ring.Int.Parity  -- shake: keep (Qq dependency)
+public import Mathlib.Tactic.NormNum.Core
 
 /-!
 # `norm_num` extensions for `Even` and `Odd`
@@ -12,6 +14,8 @@ import Mathlib.Tactic.NormNum.Core
 In this file we provide `norm_num` extensions for `Even n` and `Odd n`,
 where `n : ℕ` or `n : ℤ`.
 -/
+
+public meta section
 
 namespace Mathlib.Meta.NormNum
 

@@ -3,15 +3,19 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.Nat.Cast.Order.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Cast of natural numbers: lemmas about bundled ordered semirings
 
 -/
+
+public section
 
 variable {R α : Type*}
 
@@ -121,6 +125,7 @@ lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :
       refine (le_add_left ?_ ?_).trans' ?_
       exact le_mul_of_one_le_right' (one_le_pow _ _ (by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma two_mul_sq_add_one_le_two_pow_two_mul (k : ℕ) : 2 * k ^ 2 + 1 ≤ 2 ^ (2 * k) := by
   induction k with
   | zero => simp

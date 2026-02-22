@@ -3,25 +3,27 @@ Copyright (c) 2022 Filippo A. E. Nuccio Mortarino Majno di Capriglio. All rights
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Junyan Xu
 -/
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Homotopy.Basic
-import Mathlib.Topology.Path
+module
+
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Homotopy.Basic
+public import Mathlib.Topology.Path
 
 /-!
 # H-spaces
 
 This file defines H-spaces mainly following the approach proposed by Serre in his paper
 *Homologie singulière des espaces fibrés*. The idea beneath `H-spaces` is that they are topological
-spaces with a binary operation `⋀ : X → X → X` that is a homotopic-theoretic weakening of an
-operation what would make `X` into a topological monoid.
-In particular, there exists a "neutral element" `e : X` such that `fun x ↦e ⋀ x` and
+spaces with a binary operation `⋀ : X → X → X` that is a homotopy-theoretic weakening of an
+operation that would make `X` into a topological monoid.
+In particular, there exists a "neutral element" `e : X` such that `fun x ↦ e ⋀ x` and
 `fun x ↦ x ⋀ e` are homotopic to the identity on `X`, see
 [the Wikipedia page of H-spaces](https://en.wikipedia.org/wiki/H-space).
 
 Some notable properties of `H-spaces` are
 * Their fundamental group is always abelian (by the same argument for topological groups);
 * Their cohomology ring comes equipped with a structure of a Hopf-algebra;
-* The loop space based at every `x : X` carries a structure of an `H-spaces`.
+* The loop space based at every `x : X` carries a structure of an `H-space`.
 
 ## Main Results
 
@@ -30,14 +32,14 @@ Some notable properties of `H-spaces` are
 * Given two `H-spaces` `X` and `Y`, their product is again an `H`-space. We show in an example that
   starting with two topological groups `G, G'`, the `H`-space structure on `G × G'` is
   definitionally equal to the product of `H-space` structures on `G` and `G'`.
-* The loop space based at every `x : X` carries a structure of an `H-spaces`.
+* The loop space based at every `x : X` carries a structure of an `H-space`.
 
 ## To Do
 * Prove that for every `NormedAddTorsor Z` and every `z : Z`, the operation
   `fun x y ↦ midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
   first three inherit the structure because they are topological groups (they are Lie groups,
-  actually), isomorphic to the invertible elements in `ℤ`, in `ℂ` and in the quaternion; and the
+  actually), isomorphic to the invertible elements in `ℤ`, in `ℂ` and in the quaternions; and the
   fourth from the fact that `S^7` coincides with the octonions of norm 1 (it is not a group, in
   particular, only has an instance of `MulOneClass`).
 
@@ -46,6 +48,8 @@ Some notable properties of `H-spaces` are
 * [J.-P. Serre, *Homologie singulière des espaces fibrés. Applications*,
   Ann. of Math (2) 1951, 54, 425–505][serre1951]
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -152,9 +156,11 @@ theorem continuous_qRight : Continuous qRight :=
   continuous_projIcc.comp <|
     Continuous.div (by fun_prop) (by fun_prop) fun _ ↦ (add_pos zero_lt_one).ne'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem qRight_zero_left (θ : I) : qRight (0, θ) = 0 :=
   Set.projIcc_of_le_left _ <| by simp only [coe_zero, mul_zero, zero_div, le_refl]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
   Set.projIcc_of_right_le _ <|
     (le_div_iff₀ <| add_pos zero_lt_one).2 <| by
@@ -163,6 +169,7 @@ theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
       simp only [add_le_add_iff_right]
       exact le_one _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem qRight_zero_right (t : I) :
     (qRight (t, 0) : ℝ) = if (t : ℝ) ≤ 1 / 2 then (2 : ℝ) * t else 1 := by
   simp only [qRight, coe_zero, add_zero, div_one]
@@ -174,6 +181,7 @@ theorem qRight_zero_right (t : I) :
     · linarith
     · exact zero_lt_one
 
+set_option backward.isDefEq.respectTransparency false in
 theorem qRight_one_right (t : I) : qRight (t, 1) = t :=
   Eq.trans (by rw [qRight]; norm_num) <| Set.projIcc_val zero_le_one _
 

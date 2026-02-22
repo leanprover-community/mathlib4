@@ -3,12 +3,14 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.Convex.Gauge
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.RingTheory.Polynomial.Bernstein
-import Mathlib.Topology.Algebra.Module.LocallyConvex
-import Mathlib.Topology.ContinuousMap.Polynomial
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.Convex.Gauge
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.RingTheory.Polynomial.Bernstein
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Topology.ContinuousMap.Polynomial
 
 /-!
 # Bernstein approximations and Weierstrass' theorem
@@ -48,6 +50,8 @@ This result proves Weierstrass' theorem that polynomials are dense in `C([0,1], 
 although we defer an abstract statement of this until later.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Filter
@@ -76,7 +80,7 @@ open Lean Meta Qq Function
 
 /-- Extension of the `positivity` tactic for Bernstein polynomials: they are always non-negative. -/
 @[positivity DFunLike.coe (bernstein _ _) _]
-def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
+meta def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
   let p ← mkAppOptM ``bernstein_nonneg #[n, ν, x]
   pure (.nonnegative p)
@@ -106,6 +110,7 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
   simpa [Finset.sum_range]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem variance {n : ℕ} (hn : n ≠ 0) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
   convert congr(Polynomial.aeval (x : ℝ) $(bernsteinPolynomial.variance ℝ n) / n ^ 2) using 1
@@ -114,9 +119,9 @@ theorem variance {n : ℕ} (hn : n ≠ 0) (x : I) :
       Polynomial.eval_natCast, Polynomial.eval_X, Polynomial.eval_one]
     field_simp
     rw [← Finset.sum_div]
-    field_simp
+    field
   · simp
-    field_simp
+    field
 
 end bernstein
 
@@ -153,10 +158,12 @@ theorem apply (n : ℕ) (f : C(I, E)) (x : I) :
     bernsteinApproximation n f x = ∑ k : Fin (n + 1), bernstein n k x • f k/ₙ := by
   simp [bernsteinApproximation]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem apply_zero (n : ℕ) (f : C(I, E)) : bernsteinApproximation n f 0 = f 0 := by
   simp [apply, Fin.sum_univ_succ, bernstein_apply, z]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem apply_one {n : ℕ} (hn : n ≠ 0) (f : C(I, E)) : bernsteinApproximation n f 1 = f 1 := by
   simp [apply, Fin.sum_univ_castSucc, bernstein_apply, hn, Nat.sub_eq_zero_iff_le]
@@ -165,6 +172,7 @@ end bernsteinApproximation
 
 open bernsteinApproximation
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Bernstein approximations
 ```
 ∑ k : Fin (n+1), f (k/n : ℝ) * n.choose k * x^k * (1-x)^(n-k)
@@ -176,7 +184,7 @@ and reproduced on wikipedia.
 -/
 theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) :
     Tendsto (fun n : ℕ => bernsteinApproximation n f) atTop (𝓝 f) := by
-  letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+  letI : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   /- Topology on a locally convex TVS is given by a family of seminorms `‖x‖_U = gauge U x`,
   where the open symmetric convex sets `U` form a basis of neighborhoods in this topology,

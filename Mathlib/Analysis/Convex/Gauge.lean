@@ -3,11 +3,13 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.Analysis.Seminorm
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # The Minkowski functional
@@ -35,6 +37,8 @@ For a real vector space,
 
 Minkowski functional, gauge
 -/
+
+@[expose] public section
 
 open NormedField Set
 open scoped Pointwise Topology NNReal
@@ -190,7 +194,7 @@ theorem gauge_add_le (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (x y : E) :
 
 theorem gauge_sum_le {ι : Type*} (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (t : Finset ι)
     (f : ι → E) : gauge s (∑ i ∈ t, f i) ≤ ∑ i ∈ t, gauge s (f i) :=
-  Finset.le_sum_of_subadditive _ gauge_zero (gauge_add_le hs absorbs) _ _
+  Finset.le_sum_of_subadditive _ gauge_zero.le (gauge_add_le hs absorbs) _ _
 
 theorem self_subset_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ => gauge_le_one_of_mem
 
@@ -220,13 +224,9 @@ theorem le_gauge_of_notMem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {
   · dsimp only
     rw [← mul_smul, mul_inv_cancel_left₀ ha.ne']
 
-@[deprecated (since := "2025-05-23")] alias le_gauge_of_not_mem := le_gauge_of_notMem
-
 theorem one_le_gauge_of_notMem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ s) :
     1 ≤ gauge s x :=
   le_gauge_of_notMem hs₁ hs₂ <| by rwa [one_smul]
-
-@[deprecated (since := "2025-05-23")] alias one_le_gauge_of_not_mem := one_le_gauge_of_notMem
 
 section LinearOrderedField
 
@@ -345,6 +345,7 @@ section ContinuousSMul
 
 variable [TopologicalSpace E] [ContinuousSMul ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 open Filter in
 theorem interior_subset_gauge_lt_one (s : Set E) : interior s ⊆ { x | gauge s x < 1 } := by
   intro x hx
@@ -395,9 +396,6 @@ theorem tendsto_gauge_nhds_zero_nhdsGE (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (
   rw [← set_smul_mem_nhds_zero_iff hε.ne'] at hs
   filter_upwards [hs] with x hx
   exact ⟨gauge_nonneg _, gauge_le_of_mem hε.le hx⟩
-
-@[deprecated (since := "2025-03-02")]
-alias tendsto_gauge_nhds_zero' := tendsto_gauge_nhds_zero_nhdsGE
 
 theorem tendsto_gauge_nhds_zero (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (𝓝 0) (𝓝 0) :=
   (tendsto_gauge_nhds_zero_nhdsGE hs).mono_right inf_le_left

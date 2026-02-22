@@ -3,11 +3,13 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Monoid.Submonoid
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Algebra.Order.Star.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Order.Monoid.Submonoid
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Algebra.Order.Star.Basic
 
 /-!
 # Star ordered ring structure on `ℤ`
@@ -15,10 +17,13 @@ import Mathlib.Algebra.Order.Star.Basic
 This file shows that `ℤ` is a `StarOrderedRing`.
 -/
 
+@[expose] public section
+
 open AddSubmonoid Set
 
 namespace Int
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma addSubmonoid_closure_range_pow {n : ℕ} (hn : Even n) :
     closure (range fun x : ℤ ↦ x ^ n) = nonneg _ := by
   refine le_antisymm (closure_le.2 <| range_subset_iff.2 hn.pow_nonneg) fun x hx ↦ ?_

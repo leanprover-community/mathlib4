@@ -3,8 +3,10 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Data.ENat.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Data.ENat.Basic
 
 /-!
 # Powers of extended natural numbers
@@ -21,6 +23,8 @@ and `α` has cardinality `y`:
 The quantity `x ^ y` for `x`, `y : ℕ∞` is defined as a `Pow` instance. It is called `epow` in
 lemmas' names.
 -/
+
+@[expose] public section
 
 namespace ENat
 
@@ -65,7 +69,7 @@ lemma epow_one : x ^ (1 : ℕ∞) = x := by
   rw [← coe_one, epow_natCast, pow_one]
 
 lemma epow_top (h : 1 < x) : x ^ (⊤ : ℕ∞) = ⊤ := by
-  simp only [instHPow, instPow, (zero_le_one.trans_lt h).ne.symm, ↓reduceIte, h.ne.symm]
+  simp +instances only [instHPow, instPow, (zero_le_one.trans_lt h).ne.symm, ↓reduceIte, h.ne.symm]
 
 lemma epow_right_mono (h : x ≠ 0) : Monotone (fun y : ℕ∞ ↦ x ^ y) := by
   intro y z y_z
@@ -122,6 +126,7 @@ lemma epow_add : x ^ (y + z) = x ^ y * x ^ z := by
       exact one_le_iff_ne_zero.1 (one_le_epow (one_le_iff_ne_zero.1 x_2.le))
     simp only [← Nat.cast_add, epow_natCast, pow_add x]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_epow : (x * y) ^ z = x ^ z * y ^ z := by
   induction z
   · rcases lt_trichotomy x 1 with x_0 | rfl | x_2

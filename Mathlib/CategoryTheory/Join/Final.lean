@@ -3,9 +3,11 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Join.Basic
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.IsConnected
+module
+
+public import Mathlib.CategoryTheory.Join.Basic
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.IsConnected
 
 /-!
 # (Co)Finality of the inclusions in joins of categories
@@ -15,9 +17,11 @@ Dually, `inclRight : C ⥤ C ⋆ D` is final if `D` is connected.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Join
 
-variable (C D : Type*) [Category C] [Category D]
+variable (C D : Type*) [Category* C] [Category* D]
 
 /-- The category of `Join.inclLeft C D`-costructured arrows with target `right d` is equivalent to
 `C`. -/
@@ -41,12 +45,12 @@ def structuredArrowEquiv (c : C) : StructuredArrow (left c) (inclRight C D) ≌ 
 
 instance [IsConnected C] : (inclLeft C D).Initial where
   out x := match x with
-    |.left _ => isConnected_of_isTerminal _ CostructuredArrow.mkIdTerminal
-    |.right d => isConnected_of_equivalent (costructuredArrowEquiv C D d).symm
+    | .left _ => isConnected_of_isTerminal _ CostructuredArrow.mkIdTerminal
+    | .right d => isConnected_of_equivalent (costructuredArrowEquiv C D d).symm
 
 instance [IsConnected D] : (inclRight C D).Final where
   out x := match x with
-    |.left c => isConnected_of_equivalent (structuredArrowEquiv C D c).symm
-    |.right _ => isConnected_of_isInitial _ (StructuredArrow.mkIdInitial (T := inclRight C D))
+    | .left c => isConnected_of_equivalent (structuredArrowEquiv C D c).symm
+    | .right _ => isConnected_of_isInitial _ (StructuredArrow.mkIdInitial (T := inclRight C D))
 
 end CategoryTheory.Join

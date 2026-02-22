@@ -3,11 +3,13 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
-import Mathlib.Algebra.AddTorsor.Defs
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+module
+
+public import Mathlib.Algebra.AddTorsor.Defs
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Torsors of additive group actions
@@ -15,6 +17,8 @@ import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 Further results for torsors, that are not in `Mathlib/Algebra/AddTorsor/Defs.lean` to avoid
 increasing imports there.
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 

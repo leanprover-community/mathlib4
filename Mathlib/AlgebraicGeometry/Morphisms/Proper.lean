@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Separated
-import Mathlib.AlgebraicGeometry.Morphisms.Finite
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 
 /-!
 
@@ -21,6 +23,8 @@ Note that we don't require quasi-compact, since this is implied by universally c
   then `Γ(X, ⊤)` is finite dimensional over `K`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -106,6 +110,10 @@ instance : MorphismProperty.HasOfPostcompProperty @IsProper @IsSeparated :=
   MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
     fun _ _ _ _ ↦ inferInstanceAs (IsProper _)
 
+instance [UniversallyClosed f] : UniversallyClosed f.toImage :=
+  have : UniversallyClosed (f.toImage ≫ f.imageι) := by simpa
+  .of_comp_of_isSeparated _ f.imageι
+
 @[stacks 01W6 "(2)"]
 lemma IsProper.of_comp [IsProper (f ≫ g)] [IsSeparated g] : IsProper f :=
   MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
@@ -143,6 +151,7 @@ theorem isField_of_universallyClosed (f : X ⟶ (Spec <| .of K))
   algebraize [F.hom]
   exact isField_of_isIntegral_of_isField' (Field.toIsField K)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is an integral scheme that is universally closed and of finite type over `Spec K`,
 then `Γ(X, ⊤)` is a finite field extension over `K`. -/
 theorem finite_appTop_of_universallyClosed (f : X ⟶ (Spec <| .of K))
@@ -157,7 +166,7 @@ theorem finite_appTop_of_universallyClosed (f : X ⟶ (Spec <| .of K))
   have : Nonempty U := ⟨⟨x, hxU⟩⟩
   apply RingHom.finite_of_algHom_finiteType_of_isJacobsonRing (A := Γ(X, U))
     (g := (X.presheaf.map (homOfLE le_top).op).hom)
-  exact LocallyOfFiniteType.finiteType_of_affine_subset ⟨⊤, isAffineOpen_top _⟩ ⟨U, hU⟩ (by simp)
+  exact f.finiteType_appLE (isAffineOpen_top _) hU (by simp)
 
 end GlobalSection
 

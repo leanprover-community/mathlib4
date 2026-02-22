@@ -3,7 +3,9 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Equivalence
+module
+
+public import Mathlib.ModelTheory.Equivalence
 
 /-!
 # Quantifier Complexity
@@ -27,6 +29,8 @@ This file defines quantifier complexity of first-order formulas, and constructs 
   formula has the same realization as the original formula.
 
 -/
+
+@[expose] public section
 
 universe u v w u' v'
 
@@ -130,6 +134,7 @@ theorem IsPrenex.induction_on_all_not {P : ∀ {n}, L.BoundedFormula α n → Pr
     (hn : ∀ {m} {ψ : L.BoundedFormula α m}, P ψ → P ψ.not) : P φ :=
   IsPrenex.recOn h hq (fun _ => ha) fun _ ih => hn (ha (hn ih))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsPrenex.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex)
     (f : α → β ⊕ (Fin n)) : (φ.relabel f).IsPrenex :=
   IsPrenex.recOn h (fun h => (h.relabel f).isPrenex) (fun _ h => by simp [h.all])

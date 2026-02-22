@@ -3,8 +3,9 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.FiberedCategory.HomLift
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 
 /-!
 # Co-Cartesian morphisms
@@ -34,6 +35,8 @@ equalities.
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory Functor Category IsHomLift
@@ -49,10 +52,12 @@ variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
 /-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is co-Cartesian if for all
 morphisms `φ' : a ⟶ b'`, also lying over `f`, there exists a unique morphism `χ : b ⟶ b'` lifting
 `𝟙 S` such that `φ' = φ ≫ χ`. -/
-class IsCocartesian : Prop extends IsHomLift p f φ where
+class IsCocartesian : Prop where
+  [toIsHomLift : IsHomLift p f φ]
   universal_property {b' : 𝒳} (φ' : a ⟶ b') [IsHomLift p f φ'] :
       ∃! χ : b ⟶ b', IsHomLift p (𝟙 S) χ ∧ φ ≫ χ = φ'
 
+attribute [instance] IsCocartesian.toIsHomLift
 /-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is strongly co-Cartesian if for
 all morphisms `φ' : a ⟶ b'` and all diagrams of the form
 ```
@@ -63,9 +68,11 @@ R --f--> S --g--> S'
 ```
 such that `φ'` lifts `f ≫ g`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`. -/
 @[stacks 02XK]
-class IsStronglyCocartesian : Prop extends IsHomLift p f φ where
+class IsStronglyCocartesian : Prop where
+  [toIsHomLift : IsHomLift p f φ]
   universal_property' {b' : 𝒳} (g : S ⟶ p.obj b') (φ' : a ⟶ b') [IsHomLift p (f ≫ g) φ'] :
       ∃! χ : b ⟶ b', IsHomLift p g χ ∧ φ ≫ χ = φ'
+attribute [instance] IsStronglyCocartesian.toIsHomLift
 
 end
 

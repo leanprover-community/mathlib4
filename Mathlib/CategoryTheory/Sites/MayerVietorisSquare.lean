@@ -3,16 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.Algebra.Category.Grp.Adjunctions
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.Square
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.CategoryTheory.Sites.Abelian
-import Mathlib.CategoryTheory.Sites.Adjunction
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
+
+public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.Algebra.Category.Grp.Adjunctions
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.Square
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
+public import Mathlib.CategoryTheory.Sites.Abelian
+public import Mathlib.CategoryTheory.Sites.Adjunction
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Mayer-Vietoris squares
@@ -50,6 +51,8 @@ that it is indeed satisfied by sheaves.
 * https://stacks.math.columbia.edu/tag/08GL
 
 -/
+
+@[expose] public section
 universe v v' u u'
 
 namespace CategoryTheory
@@ -59,6 +62,7 @@ open Limits Opposite
 variable {C : Type u} [Category.{v} C]
   {J : GrothendieckTopology C}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
     [HasWeakSheafify J (Type v)]
     (F : Sheaf J (Type v)) (sq : Square C) :
@@ -112,6 +116,7 @@ noncomputable def mk' (sq : Square C) [Mono sq.f₁₃]
     intro F
     exact (F.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff sq).2 (H F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for Mayer-Vietoris squares taking as an input
 a pullback square `sq` such that `sq.f₂₄` and `sq.f₃₄` are two monomorphisms
 which form a covering of `S.X₄`. -/
@@ -222,6 +227,7 @@ end
 variable [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrpCat.{v}]
   (S : J.MayerVietorisSquare)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The short complex of abelian sheaves
 `ℤ[S.X₁] ⟶ ℤ[S.X₂] ⊞ ℤ[S.X₃] ⟶ ℤ[S.X₄]`
 where the left map is a difference and the right map a sum. -/
@@ -243,6 +249,7 @@ noncomputable def shortComplex :
   zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrpCat.free ⋙
       presheafToSheaf J _)).cokernelCofork.condition
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Mono S.shortComplex.f := by
   have : Mono (S.shortComplex.f ≫ biprod.snd) := by
     dsimp
@@ -250,10 +257,12 @@ instance : Mono S.shortComplex.f := by
     infer_instance
   exact mono_of_mono _ biprod.snd
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Epi S.shortComplex.g :=
   (S.shortComplex.exact_and_epi_g_iff_g_is_cokernel.2
     ⟨S.isPushoutAddCommGrpFreeSheaf.isColimitCokernelCofork⟩).2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shortComplex_exact : S.shortComplex.Exact :=
   ShortComplex.exact_of_g_is_cokernel _
     S.isPushoutAddCommGrpFreeSheaf.isColimitCokernelCofork

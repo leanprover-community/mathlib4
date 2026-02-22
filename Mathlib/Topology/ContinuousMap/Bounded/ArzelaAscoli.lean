@@ -3,8 +3,10 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
-import Mathlib.Topology.MetricSpace.Equicontinuity
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+public import Mathlib.Topology.MetricSpace.Equicontinuity
 
 /-!
 # The Arzelà–Ascoli theorem for bounded continuous functions
@@ -13,6 +15,8 @@ Arzelà–Ascoli asserts that, on a compact space, a set of functions sharing a 
 continuity and taking values in a compact set forms a compact subset for the topology of
 uniform convergence. This file proves the theorem and several useful variations around it.
 -/
+
+public section
 
 open Set Metric
 

@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 
@@ -18,6 +20,8 @@ satisfies the strong rank condition, we put them into a separate file.
 
 -/
 
+public section
+
 open Module
 
 namespace Subalgebra
@@ -25,6 +29,7 @@ namespace Subalgebra
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
   (A B : Subalgebra R S)
 
+set_option backward.isDefEq.respectTransparency false in
 section
 variable [Module.Free R A] [Module.Free A (Algebra.adjoin A (B : Set S))]
 
@@ -50,6 +55,7 @@ theorem finrank_left_dvd_finrank_sup_of_free :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 section
 variable [Module.Free R B] [Module.Free B (Algebra.adjoin B (A : Set S))]
 

@@ -3,11 +3,15 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Order.Basic
-import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.Set
+module
+
+public import Mathlib.Order.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Tactic.Set
 
 /-! ### List.takeWhile and List.dropWhile -/
+
+public section
 
 namespace List
 
@@ -31,7 +35,7 @@ theorem length_dropWhile_le (l : List α) : (dropWhile p l).length ≤ l.length 
   | cons head tail ih =>
     simp only [dropWhile, length_cons]
     split
-    · cutsat
+    · lia
     · simp
 
 variable {p} {l : List α}
@@ -54,7 +58,7 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
       replace h := congrArg length h
       have := length_dropWhile_le p tl
       simp at h
-      cutsat
+      lia
     · simp [h_p_hd]
 
 @[simp]

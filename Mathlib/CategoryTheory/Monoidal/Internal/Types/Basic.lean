@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.CategoryTheory.Monoidal.CommMon_
-import Mathlib.CategoryTheory.Monoidal.Types.Basic
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.CategoryTheory.Monoidal.CommMon_
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
 # `Mon (Type u) ≌ MonCat.{u}`
@@ -15,6 +17,8 @@ is equivalent to the category of "native" bundled monoids.
 
 Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -52,6 +56,16 @@ noncomputable def inverse : MonCat.{u} ⥤ Mon (Type u) where
           mul_one := by ext ⟨_, _⟩; simp
           mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [_root_.mul_assoc] } }
   map f := .mk' f
+    (one_f := by
+      #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+      this argument was provided by the auto_param. -/
+      simp +instances only
+      cat_disch)
+    (mul_f := by
+      #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+      this argument was provided by the auto_param. -/
+      simp +instances only
+      cat_disch)
 
 end MonTypeEquivalenceMon
 
@@ -88,7 +102,7 @@ instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid
 -/
 noncomputable def functor : CommMon (Type u) ⥤ CommMonCat.{u} where
   obj A := CommMonCat.of A.X
-  map f := CommMonCat.ofHom (MonTypeEquivalenceMon.functor.map f).hom
+  map f := CommMonCat.ofHom (MonTypeEquivalenceMon.functor.map f.hom).hom
 
 /-- Converting a bundled commutative monoid to a commutative monoid object in `Type`.
 -/
@@ -99,7 +113,7 @@ noncomputable def inverse : CommMonCat.{u} ⥤ CommMon (Type u) where
         { mul_comm := by
             ext ⟨x : A, y : A⟩
             exact CommMonoid.mul_comm y x } }
-  map f := MonTypeEquivalenceMon.inverse.map ((forget₂ CommMonCat MonCat).map f)
+  map f := CommMon.homMk (MonTypeEquivalenceMon.inverse.map ((forget₂ CommMonCat MonCat).map f))
 
 end CommMonTypeEquivalenceCommMon
 

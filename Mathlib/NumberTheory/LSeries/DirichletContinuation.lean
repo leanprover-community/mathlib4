@@ -3,9 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Michael Stoll
 -/
-import Mathlib.NumberTheory.LSeries.ZMod
-import Mathlib.NumberTheory.DirichletCharacter.Basic
-import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
+module
+
+public import Mathlib.NumberTheory.LSeries.ZMod
+public import Mathlib.NumberTheory.DirichletCharacter.Basic
+public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 
 /-!
 # Analytic continuation of Dirichlet L-functions
@@ -37,6 +39,8 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
   showing that if `χ` is primitive modulo `N`, then
   `completedLFunction χ s = N ^ (s - 1 / 2) * rootNumber χ * completedLFunction χ⁻¹ s`.
 -/
+
+@[expose] public section
 
 open HurwitzZeta Complex Finset ZMod Filter
 
@@ -335,6 +339,7 @@ noncomputable abbrev LFunctionTrivChar₁ : ℂ → ℂ :=
   Function.update (fun s ↦ (s - 1) * LFunctionTrivChar n s) 1
     (∏ p ∈ n.primeFactors, (1 - (p : ℂ)⁻¹))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma LFunctionTrivChar₁_apply_one_ne_zero : LFunctionTrivChar₁ n 1 ≠ 0 := by
   simp only [Function.update_self]
   refine Finset.prod_ne_zero_iff.mpr fun p hp ↦ ?_

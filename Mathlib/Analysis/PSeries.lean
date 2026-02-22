@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Analysis.SumOverResidueClass
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Analysis.SumOverResidueClass
 
 /-!
 # Convergence of `p`-series
@@ -21,6 +23,8 @@ converges if and only if so does `∑ k, 2 ^ k f (2 ^ k)`. We prove this test in
 
 p-series, Cauchy condensation test
 -/
+
+@[expose] public section
 
 /-!
 ### Schlömilch's generalization of the Cauchy condensation test
@@ -87,14 +91,15 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
     suffices (u (n + 1) - u n) • f (u (n + 1)) ≤ ∑ k ∈ Ico (u n + 1) (u (n + 1) + 1), f k by
       rw [sum_range_succ, ← sum_Ico_consecutive]
       exacts [add_le_add ihn this,
-        (add_le_add_right (hu n.zero_le) _ : u 0 + 1 ≤ u n + 1),
-        add_le_add_right (hu n.le_succ) _]
+        (add_le_add_left (hu n.zero_le) _ : u 0 + 1 ≤ u n + 1),
+        add_le_add_left (hu n.le_succ) _]
     have : ∀ k ∈ Ico (u n + 1) (u (n + 1) + 1), f (u (n + 1)) ≤ f k := fun k hk =>
       hf (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (h_pos n)) <| (Nat.lt_succ_of_le le_rfl).trans_le
         (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
     convert sum_le_sum this
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k ∈ range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k ∈ Ico 2 (2 ^ n + 1), f k := by
   convert sum_schlomilch_le' hf (fun n => pow_pos zero_lt_two n)
@@ -148,7 +153,7 @@ theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
 
 theorem le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     ∑' k, f k ≤ f 0 + ∑' k : ℕ, 2 ^ k * f (2 ^ k) := by
-  rw [ENNReal.tsum_eq_iSup_nat' (Nat.tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)]
+  rw [ENNReal.tsum_eq_iSup_nat' (tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)]
   refine iSup_le fun n => (Finset.le_sum_condensed hf n).trans ?_
   simp only [nsmul_eq_mul, Nat.cast_pow, Nat.cast_two]
   grw [ENNReal.sum_le_tsum]
@@ -194,6 +199,7 @@ theorem summable_schlomilch_iff {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ≥0
     have : ∑ k ∈ range (u 0), (f k : ℝ≥0∞) ≠ ∞ := sum_ne_top.2 fun a _ => coe_ne_top
     simpa [h, add_eq_top, this] using le_tsum_schlomilch hf h_pos hu_strict
 
+set_option backward.isDefEq.respectTransparency false in
 open ENNReal in
 theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     (Summable fun k : ℕ => (2 : ℝ≥0) ^ k * f (2 ^ k)) ↔ Summable f := by
@@ -220,6 +226,7 @@ theorem summable_schlomilch_iff_of_nonneg {C : ℕ} {u : ℕ → ℕ} {f : ℕ �
   simp_rw [this]
   exact_mod_cast NNReal.summable_schlomilch_iff hf h_pos hu_strict hC_nonzero h_succ_diff
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Cauchy condensation test for antitone series of nonnegative real numbers. -/
 theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 ≤ f n)
     (h_mono : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
@@ -230,6 +237,25 @@ theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 
   convert summable_schlomilch_iff_of_nonneg h_nonneg h_mono (pow_pos zero_lt_two)
     (pow_right_strictMono₀ one_lt_two) two_ne_zero h_succ_diff
   simp [pow_succ, mul_two]
+
+/-- Cauchy condensation test for eventually antitone and nonnegative series of real numbers. -/
+theorem summable_condensed_iff_of_eventually_nonneg {f : ℕ → ℝ} (h_nonneg : 0 ≤ᶠ[Filter.atTop] f)
+    (h_mono : ∀ᶠ k in Filter.atTop, f (k + 1) ≤ f k) :
+    (Summable fun k : ℕ => (2 : ℝ) ^ k * f (2 ^ k)) ↔ Summable f := by
+  rw [Filter.EventuallyLE, Filter.eventually_atTop] at h_nonneg
+  rw [Filter.eventually_atTop] at h_mono
+  rcases h_nonneg with ⟨n, hn⟩
+  rcases h_mono with ⟨m, hm⟩
+  convert summable_condensed_iff_of_nonneg (f := fun k ↦ f (max k (n + m))) _ _ using 1
+  · rw [summable_congr_atTop]
+    have h_pow := tendsto_pow_atTop_atTop_of_one_lt (r := 2) (by simp)
+    filter_upwards [h_pow.eventually_ge_atTop (n + m)] with _ hk using by simp [max_eq_left hk]
+  · rw [summable_congr_atTop]
+    filter_upwards [Filter.eventually_ge_atTop (n + m)] with _ hk using by simp [max_eq_left hk]
+  · simpa [hn] using by bound
+  · intro _ _ _ _
+    apply antitoneOn_nat_Ici_of_succ_le (k := n + m) _ (by aesop) (by aesop) (by bound)
+    simpa [hn] using by bound
 
 section p_series
 

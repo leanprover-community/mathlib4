@@ -3,9 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Normed.Field.UnitBall
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Analysis.Normed.Field.UnitBall
+public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Multiplicative actions of/on balls and spheres
@@ -17,6 +18,8 @@ multiplicative actions.
 - The unit sphere in `𝕜` acts on open balls, closed balls, and spheres centered at `0` in `E`.
 -/
 
+@[expose] public section
+
 
 open Metric Set
 
@@ -25,6 +28,7 @@ variable {𝕜 𝕜' E : Type*} [NormedField 𝕜] [NormedField 𝕜'] [Seminorm
 
 section ClosedBall
 
+set_option backward.isDefEq.respectTransparency false in
 instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
   smul c x :=
     ⟨(c : 𝕜) • ↑x,
@@ -36,7 +40,7 @@ instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_closedBall_ball : ContinuousSMul (closedBall (0 : 𝕜) 1) (ball (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 instance mulActionClosedBallClosedBall :
     MulAction (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
@@ -51,7 +55,7 @@ instance mulActionClosedBallClosedBall :
 
 instance continuousSMul_closedBall_closedBall :
     ContinuousSMul (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 end ClosedBall
 
@@ -63,7 +67,7 @@ instance mulActionSphereBall : MulAction (sphere (0 : 𝕜) 1) (ball (0 : E) r) 
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_sphere_ball : ContinuousSMul (sphere (0 : 𝕜) 1) (ball (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 instance mulActionSphereClosedBall : MulAction (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
   smul c x := inclusion sphere_subset_closedBall c • x
@@ -72,7 +76,7 @@ instance mulActionSphereClosedBall : MulAction (sphere (0 : 𝕜) 1) (closedBall
 
 instance continuousSMul_sphere_closedBall :
     ContinuousSMul (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 instance mulActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
   smul c x :=
@@ -84,7 +88,7 @@ instance mulActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E)
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_sphere_sphere : ContinuousSMul (sphere (0 : 𝕜) 1) (sphere (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 end Sphere
 
@@ -173,7 +177,7 @@ variable [CharZero 𝕜]
 
 include 𝕜 in
 theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x :=
-  have := noZeroSMulDivisors_nat_iff_isAddTorsionFree.1 <| Nat.noZeroSMulDivisors 𝕜 E
+  have : IsAddTorsionFree E := .of_isTorsionFree 𝕜 E
   fun h => ne_zero_of_mem_sphere hr x (self_eq_neg.mp (by (conv_lhs => rw [h]); rfl))
 
 include 𝕜 in

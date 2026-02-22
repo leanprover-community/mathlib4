@@ -3,9 +3,12 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero, Laura Capuano, Amos Turchet
 -/
-import Mathlib.Analysis.Matrix
-import Mathlib.Data.Pi.Interval
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Data.Pi.Interval
+public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-!
 # Siegel's Lemma
@@ -30,6 +33,8 @@ the entries of the matrix
 
 See [M. Hindry and J. Silverman, Diophantine Geometry: an Introduction][hindrysilverman00].
 -/
+
+public section
 
 /- We set ‖⬝‖ to be Matrix.seminormedAddCommGroup  -/
 attribute [local instance] Matrix.seminormedAddCommGroup
@@ -75,9 +80,10 @@ private lemma image_T_subset_S [DecidableEq α] [DecidableEq β] (v) (hv : v ∈
   refine ⟨fun i ↦ ?_, fun i ↦ ?_⟩
   all_goals
     simp only [mul_neg]
-    gcongr ∑ _ : α, ?_ with j _ -- Get rid of sums
+    gcongr ∑ _ : β, ?_ with j _ -- Get rid of sums
     rw [← mul_comm (v j)] -- Move A i j to the right of the products
-    rcases le_total 0 (A i j) with hsign | hsign-- We have to distinguish cases: we have now 4 goals
+    -- We have to distinguish cases: we have now 4 goals
+    rcases le_total 0 (A i j) with hsign | hsign
   · rw [negPart_eq_zero.2 hsign]
     exact mul_nonneg (hv.1 j) hsign
   · rw [negPart_eq_neg.2 hsign]
@@ -131,6 +137,7 @@ lemma one_le_norm_A_of_ne_zero (hA : A ≠ 0) : 1 ≤ ‖A‖ := by
 
 open Real Nat
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma card_S_lt_card_T [DecidableEq α] [DecidableEq β]
     (hn : Fintype.card α < Fintype.card β) (hm : 0 < Fintype.card α) :
     #S < #T := by

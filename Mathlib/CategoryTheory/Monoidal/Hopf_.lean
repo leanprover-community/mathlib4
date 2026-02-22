@@ -3,8 +3,10 @@ Copyright (c) 2024 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Bimon_
-import Mathlib.CategoryTheory.Monoidal.Conv
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Bimon_
+public import Mathlib.CategoryTheory.Monoidal.Conv
 
 /-!
 # The category of Hopf monoids in a braided monoidal category.
@@ -16,12 +18,15 @@ import Mathlib.CategoryTheory.Monoidal.Conv
 * Show that `Hopf (ModuleCat R) ≌ HopfAlgCat R`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
 
 open scoped MonObj ComonObj
@@ -40,7 +45,7 @@ class HopfObj (X : C) extends BimonObj X where
 namespace HopfObj
 
 @[inherit_doc] scoped notation "𝒮" => HopfObj.antipode
-@[inherit_doc] scoped notation "𝒮["M"]" => HopfObj.antipode (X := M)
+@[inherit_doc] scoped notation "𝒮[" M "]" => HopfObj.antipode (X := M)
 
 attribute [reassoc (attr := simp)] antipode_left antipode_right
 
@@ -461,4 +466,4 @@ theorem antipode_antipode (A : C) [HopfObj A] (comm : (β_ _ _).hom ≫ μ[A] = 
 
 end HopfObj
 
-end
+end CategoryTheory

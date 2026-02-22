@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.CategoryTheory.Comma.Over.Basic
+module
+
+public import Mathlib.Tactic.CategoryTheory.Reassoc
+public import Mathlib.CategoryTheory.Comma.Over.Basic
 
 /-!
 # Typeclasses for `S`-objects and `S`-morphisms
@@ -24,6 +26,8 @@ For other applications use unbundled arrows or `CategoryTheory.Over`.
   `HomIsOver f S` asserts that `f` commutes with the structure morphisms.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -73,7 +77,7 @@ instance : OverClass X X := ⟨𝟙 _⟩
 instance : IsIso (S ↘ S) := inferInstanceAs (IsIso (𝟙 S))
 
 namespace CanonicallyOverClass
--- This cannot be a simp lemma be cause it loops with `comp_over`.
+-- This cannot be a simp lemma because it loops with `comp_over`.
 @[simps -isSimp]
 instance (priority := 900) [CanonicallyOverClass X Y] [OverClass Y S] : OverClass X S :=
   ⟨X ↘ Y ≫ Y ↘ S⟩
@@ -152,7 +156,7 @@ attribute [local simp] Iso.inv_comp_eq in
 instance {e : X ≅ Y} [HomIsOver e.hom S] : HomIsOver e.inv S where
 
 -- FIXME: False positive from the linter
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 attribute [local simp ←] Iso.eq_inv_comp in
 instance {e : X ≅ Y} [HomIsOver e.inv S] : HomIsOver e.hom S where
 

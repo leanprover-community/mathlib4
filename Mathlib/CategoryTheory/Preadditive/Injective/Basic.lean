@@ -3,13 +3,17 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kevin Buzzard
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 /-!
 # Injective objects and categories with enough injectives
 
 An object `J` is injective iff every morphism into `J` can be obtained by extending a monomorphism.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -29,6 +33,10 @@ class Injective (J : C) : Prop where
   factors : ∀ {X Y : C} (g : X ⟶ J) (f : X ⟶ Y) [Mono f], ∃ h : Y ⟶ J, f ≫ h = g
 
 attribute [inherit_doc Injective] Injective.factors
+
+variable (C) in
+/-- The `ObjectProperty C` corresponding to the notion of injective objects in `C`. -/
+abbrev isInjective : ObjectProperty C := Injective
 
 lemma Limits.IsZero.injective {X : C} (h : IsZero X) : Injective X where
   factors _ _ _ := ⟨h.from_ _, h.eq_of_tgt _ _⟩
@@ -125,6 +133,7 @@ instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injectiv
     · simp only [prod.lift_fst]
     · simp only [prod.lift_snd]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ᶜ c) where
   factors g f mono := by
     refine ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, ?_⟩
@@ -180,6 +189,7 @@ open CategoryTheory.Functor
 variable {D : Type u₂} [Category.{v₂} D]
 variable {L : C ⥤ D} {R : D ⥤ C} [PreservesMonomorphisms L]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem injective_of_adjoint (adj : L ⊣ R) (J : D) [Injective J] : Injective <| R.obj J :=
   ⟨fun {A} {_} g f im =>
     ⟨adj.homEquiv _ _ (factorThru ((adj.homEquiv A J).symm g) (L.map f)),
@@ -192,23 +202,35 @@ section EnoughInjectives
 
 variable [EnoughInjectives C]
 
+/-- If `C` has enough injectives, we may choose an injective presentation of `X : C`
+which is given by a zero object when `X` is a zero object. -/
+lemma exists_presentation (X : C) : ∃ (p : InjectivePresentation X), IsZero X → IsZero p.J := by
+  by_cases h : IsZero X
+  · have := h.injective
+    exact ⟨{ J := X, f := 𝟙 X}, by tauto⟩
+  · exact ⟨(EnoughInjectives.presentation X).some, by tauto⟩
+
 /-- `Injective.under X` provides an arbitrarily chosen injective object equipped with
 a monomorphism `Injective.ι : X ⟶ Injective.under X`.
 -/
 def under (X : C) : C :=
-  (EnoughInjectives.presentation X).some.J
+  (exists_presentation X).choose.J
 
 instance injective_under (X : C) : Injective (under X) :=
-  (EnoughInjectives.presentation X).some.injective
+  (exists_presentation X).choose.injective
 
 /-- The monomorphism `Injective.ι : X ⟶ Injective.under X`
 from the arbitrarily chosen injective object under `X`.
 -/
 def ι (X : C) : X ⟶ under X :=
-  (EnoughInjectives.presentation X).some.f
+  (exists_presentation X).choose.f
 
 instance ι_mono (X : C) : Mono (ι X) :=
-  (EnoughInjectives.presentation X).some.mono
+  (exists_presentation X).choose.mono
+
+lemma isZero_under (X : C) (hX : IsZero X) :
+    IsZero (under X) :=
+  (exists_presentation X).choose_spec hX
 
 section
 
@@ -250,8 +272,9 @@ end Injective
 
 namespace Adjunction
 
-variable {D : Type*} [Category D] {F : C ⥤ D} {G : D ⥤ C}
+variable {D : Type*} [Category* D] {F : C ⥤ D} {G : D ⥤ C}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : Injective I) :
     Injective (G.obj I) :=
   ⟨fun {X} {Y} f g => by
@@ -261,6 +284,7 @@ theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : I
     rw [← unit_naturality_assoc, ← G.map_comp, h]
     simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem injective_of_map_injective (adj : F ⊣ G) [G.Full] [G.Faithful] (I : D)
     (hI : Injective (G.obj I)) : Injective I :=
   ⟨fun {X} {Y} f g => by
@@ -295,7 +319,7 @@ end Adjunction
 
 namespace Functor
 
-variable {D : Type*} [Category D] (F : C ⥤ D)
+variable {D : Type*} [Category* D] (F : C ⥤ D)
 
 theorem injective_of_map_injective [F.Full] [F.Faithful]
     [F.PreservesMonomorphisms] {I : C} (hI : Injective (F.obj I)) : Injective I where
@@ -323,7 +347,7 @@ lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
 
 namespace Equivalence
 
-variable {D : Type*} [Category D] (F : C ≌ D)
+variable {D : Type*} [Category* D] (F : C ≌ D)
 
 theorem map_injective_iff (P : C) : Injective (F.functor.obj P) ↔ Injective P :=
   ⟨F.symm.toAdjunction.injective_of_map_injective P, F.symm.toAdjunction.map_injective P⟩

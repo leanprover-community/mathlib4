@@ -3,10 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Perm.Lattice
-import Mathlib.Data.Multiset.Filter
-import Mathlib.Order.MinMax
-import Mathlib.Logic.Pairwise
+module
+
+public import Mathlib.Data.List.Perm.Lattice
+public import Mathlib.Data.Multiset.Filter
+public import Mathlib.Order.MinMax
+public import Mathlib.Logic.Pairwise
 
 /-!
 # Distributive lattice structure on multisets
@@ -19,6 +21,8 @@ operators:
 * `s ∩ t`: The multiset for which the number of occurrences of each `a` is the min of the
   occurrences of `a` in `s` and `t`.
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -252,9 +256,6 @@ theorem disjoint_left {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ s �
 
 alias ⟨_root_.Disjoint.notMem_of_mem_left_multiset, _⟩ := disjoint_left
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_left_multiset := Disjoint.notMem_of_mem_left_multiset
-
 @[simp, norm_cast]
 theorem coe_disjoint (l₁ l₂ : List α) : Disjoint (l₁ : Multiset α) l₂ ↔ l₁.Disjoint l₂ :=
   disjoint_left
@@ -263,9 +264,6 @@ theorem disjoint_right {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ t �
   disjoint_comm.trans disjoint_left
 
 alias ⟨_root_.Disjoint.notMem_of_mem_right_multiset, _⟩ := disjoint_right
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_right_multiset := Disjoint.notMem_of_mem_right_multiset
 
 theorem disjoint_iff_ne {s t : Multiset α} : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp [disjoint_left, imp_not_comm]

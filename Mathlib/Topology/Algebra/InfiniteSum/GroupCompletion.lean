@@ -3,19 +3,23 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Algebra.InfiniteSum.Group
+module
+
+public import Mathlib.Topology.Algebra.GroupCompletion
+public import Mathlib.Topology.Algebra.InfiniteSum.Group
 
 /-!
 # Infinite sums in the completion of a topological group
 -/
+
+public section
 
 open UniformSpace.Completion
 
 variable {α β : Type*} [AddCommGroup α] [UniformSpace α] [IsUniformAddGroup α]
 {L : SummationFilter β}
 
-/-- A function `f` has a sum in an uniform additive group `α` if and only if it has that sum in the
+/-- A function `f` has a sum in a uniform additive group `α` if and only if it has that sum in the
 completion of `α`. -/
 theorem hasSum_iff_hasSum_compl (f : β → α) (a : α) :
     HasSum (toCompl ∘ f) a L ↔ HasSum f a L := (isDenseInducing_toCompl α).hasSum_iff f a

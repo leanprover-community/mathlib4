@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.CategoryTheory.Sites.Hypercover.One
-import Mathlib.CategoryTheory.Filtered.Basic
+module
+
+public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.CategoryTheory.Sites.Hypercover.One
+public import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # The category of `1`-hypercovers up to homotopy
@@ -25,6 +27,8 @@ In this file we define the category of `1`-hypercovers up to homotopy. This is t
 - `CategoryTheory.GrothendieckTopology.HOneHypercover.isCofiltered_of_hasPullbacks`: The
   category of `1`-hypercovers up to homotopy is cofiltered if `C` has pullbacks.
 -/
+
+@[expose] public section
 
 universe w'' w' w v u
 
@@ -50,8 +54,9 @@ structure Homotopy (f g : E.Hom F) where
 
 attribute [reassoc (attr := simp)] Homotopy.wl Homotopy.wr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Homotopic refinements induce the same map on multiequalizers. -/
-lemma Homotopy.mapMultiforkOfIsLimit_eq {A : Type*} [Category A]
+lemma Homotopy.mapMultiforkOfIsLimit_eq {A : Type*} [Category* A]
     {E F : PreOneHypercover.{w} S} {f g : E.Hom F} (H : Homotopy f g)
     (P : Cᵒᵖ ⥤ A) {c : Multifork (E.multicospanIndex P)} (hc : IsLimit c)
     (d : Multifork (F.multicospanIndex P)) :
@@ -94,10 +99,12 @@ noncomputable def cylinder (f g : E.Hom F) : PreOneHypercover.{max w w'} S where
   p₂ {p q} k := pullback.fst _ _ ≫ pullback.snd _ _
   w {_ _} k := by simp [pullback.condition]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toPullback_cylinder {i j : (cylinder f g).I₀} (k : (cylinder f g).I₁ i j) :
     (cylinder f g).toPullback k = pullback.fst _ _ := by
   apply pullback.hom_ext <;> simp [toPullback]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sieve₀_cylinder :
     (cylinder f g).sieve₀ =
       Sieve.generate
@@ -115,6 +122,7 @@ lemma sieve₀_cylinder :
     exact ⟨_, pullback.lift v o hoo'.symm, (cylinder f g).f ⟨i, j⟩, Presieve.ofArrows.mk _,
       by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sieve₁'_cylinder (i j : Σ (i : E.I₀), F.I₁ (f.s₀ i) (g.s₀ i)) :
     (cylinder f g).sieve₁' i j =
       Sieve.pullback
@@ -133,6 +141,7 @@ lemma sieve₁'_cylinder (i j : Σ (i : E.I₀), F.I₁ (f.s₀ i) (g.s₀ i)) :
     convert Sieve.ofArrows_mk _ _ (ULift.up k)
     simp [toPullback_cylinder f g ⟨k⟩]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation): The refinement morphism `cylinder f g ⟶ E`. -/
 @[simps]
 noncomputable def cylinderHom : (cylinder f g).Hom E where
@@ -152,6 +161,7 @@ noncomputable def cylinderHom : (cylinder f g).Hom E where
     simp
   w₀ := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation): The homotopy of the morphisms `cylinder f g ⟶ E ⟶ F`. -/
 noncomputable def cylinderHomotopy :
     Homotopy ((cylinderHom f g).comp f) ((cylinderHom f g).comp g) where
@@ -241,6 +251,7 @@ variable {S : C}
 
 instance : Nonempty (J.HOneHypercover S) := ⟨⟨Nonempty.some inferInstance⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has pullbacks, the category of `1`-hypercovers up to homotopy is cofiltered. -/
 instance isCofiltered_of_hasPullbacks [HasPullbacks C] : IsCofiltered (J.HOneHypercover S) where
   cone_objs {E F} :=

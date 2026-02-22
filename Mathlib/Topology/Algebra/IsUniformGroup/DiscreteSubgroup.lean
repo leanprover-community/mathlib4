@@ -3,11 +3,12 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.GroupTheory.Commensurable
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.GroupTheory.Commensurable
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-!
 # Discrete subgroups of topological groups
@@ -16,10 +17,13 @@ Note that the instance `Subgroup.isClosed_of_discrete` does not live here, in or
 be used in other files without requiring lots of group-theoretic imports.
 -/
 
+@[expose] public section
+
 open Filter Topology Uniformity
 
 variable {G : Type*} [Group G] [TopologicalSpace G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `G` has a topology, and `H ≤ K` are subgroups, then `H` as a subgroup of `K` is isomorphic,
 as a topological group, to `H` as a subgroup of `G`. This is `subgroupOfEquivOfLe` upgraded to a
 `ContinuousMulEquiv`. -/

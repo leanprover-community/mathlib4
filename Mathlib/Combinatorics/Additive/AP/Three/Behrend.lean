@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Complex.ExponentialBounds
-import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Combinatorics.Additive.AP.Three.Defs
-import Mathlib.Combinatorics.Pigeonhole
+module
+
+public import Mathlib.Analysis.Complex.ExponentialBounds
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Combinatorics.Additive.AP.Three.Defs
+public import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Behrend's bound on Roth numbers
@@ -43,12 +45,15 @@ integer points on that sphere and map them onto `ℕ` in a way that preserves ar
 3AP-free, Salem-Spencer, Behrend construction, arithmetic progression, sphere, strictly convex
 -/
 
+@[expose] public section
+
 assert_not_exists IsConformalMap Conformal
 
 open Nat hiding log
-open Finset Metric Real
+open Finset Metric Real WithLp
 open scoped Pointwise
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The frontier of a closed strictly convex set only contains trivial arithmetic progressions.
 The idea is that an arithmetic progression is contained on a line and the frontier of a strictly
 convex set does not contain lines. -/
@@ -114,13 +119,13 @@ theorem sphere_subset_box : sphere n d k ⊆ box n d :=
   filter_subset _ _
 
 theorem norm_of_mem_sphere {x : Fin n → ℕ} (hx : x ∈ sphere n d k) :
-    ‖WithLp.toLp 2 ((↑) ∘ x : Fin n → ℝ)‖ = √↑k := by
+    ‖toLp 2 ((↑) ∘ x : Fin n → ℝ)‖ = √↑k := by
   rw [EuclideanSpace.norm_eq]
   dsimp
   simp_rw [abs_cast, ← cast_pow, ← cast_sum, (mem_filter.1 hx).2]
 
 theorem sphere_subset_preimage_metric_sphere : (sphere n d k : Set (Fin n → ℕ)) ⊆
-    (fun x : Fin n → ℕ => WithLp.toLp 2 ((↑) ∘ x : Fin n → ℝ)) ⁻¹'
+    (fun x : Fin n → ℕ => toLp 2 ((↑) ∘ x : Fin n → ℝ)) ⁻¹'
       Metric.sphere (0 : PiLp 2 fun _ : Fin n => ℝ) (√↑k) :=
   fun x hx => by rw [Set.mem_preimage, mem_sphere_zero_iff_norm, norm_of_mem_sphere hx]
 
@@ -169,15 +174,16 @@ theorem map_le_of_mem_box (hx : x ∈ box n d) :
 
 nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → ℕ)) := by
   set f : (Fin n → ℕ) →+ EuclideanSpace ℝ (Fin n) :=
-    { toFun := fun f => ((↑) : ℕ → ℝ) ∘ f
-      map_zero' := funext fun _ => cast_zero
-      map_add' := fun _ _ => funext fun _ => cast_add _ _ }
+    { toFun := fun f => toLp 2 (((↑) : ℕ → ℝ) ∘ f)
+      map_zero' := PiLp.ext fun _ => cast_zero
+      map_add' := fun _ _ => PiLp.ext fun _ => cast_add _ _ }
   refine ThreeAPFree.of_image (AddMonoidHomClass.isAddFreimanHom f (Set.mapsTo_image _ _))
-    cast_injective.comp_left.injOn (Set.subset_univ _) ?_
+    ((toLp_injective 2).comp_injOn cast_injective.comp_left.injOn) (Set.subset_univ _) ?_
   refine (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => ?_)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
   exact norm_of_mem_sphere
 
+set_option backward.isDefEq.respectTransparency false in
 theorem threeAPFree_image_sphere :
     ThreeAPFree ((sphere n d k).image (map (2 * d - 1)) : Set ℕ) := by
   rw [coe_image]
@@ -196,6 +202,7 @@ theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n
     Nat.pow_le_pow_left (Nat.le_sub_one_of_lt (hx i)) _
   exact (sum_le_card_nsmul univ _ _ fun i _ => this i).trans (by rw [Finset.card_fin, smul_eq_mul])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_eq : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) = ((2 * d + 1) ^ n - 1) / 2 := by
   refine (Nat.div_eq_of_eq_mul_left zero_lt_two ?_).symm
   rw [← sum_range fun i => d * (2 * d + 1) ^ (i : ℕ), ← mul_sum, mul_right_comm, mul_comm d, ←
@@ -204,6 +211,7 @@ theorem sum_eq : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) = ((2 * d + 1) ^ n
 theorem sum_lt : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) < (2 * d + 1) ^ n :=
   sum_eq.trans_lt <| (Nat.div_le_self _ 2).trans_lt <| pred_lt (pow_pos (succ_pos _) _).ne'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
     #(sphere n d k) ≤ rothNumberNat ((2 * d - 1) ^ n) := by
   cases n
@@ -284,12 +292,13 @@ theorem two_div_one_sub_two_div_e_le_eight : 2 / (1 - 2 / exp 1) ≤ 8 := by
   · linarith [exp_one_gt_d9]
   rw [sub_pos, div_lt_one] <;> exact exp_one_gt_d9.trans' (by norm_num)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ √(log ↑N) := by
   calc
     _ ≤ log (2 ^ 3) * (69 / 50) := by
       gcongr
       · field_simp
-        simp (disch := positivity) [show 2 < Real.exp 1 from lt_trans (by norm_num1) exp_one_gt_d9]
+        simp (disch := positivity) [exp_one_gt_two]
       · norm_num1
         exact two_div_one_sub_two_div_e_le_eight
     _ ≤ √(log (2 ^ 12)) := by
@@ -307,15 +316,16 @@ theorem exp_neg_two_mul_le {x : ℝ} (hx : 0 < x) : exp (-2 * x) < exp (2 - ⌈x
     _ ≤ exp (1 - x) / (x + 1) := ?_
     _ ≤ exp (2 - ⌈x⌉₊) / (x + 1) := by gcongr
     _ < _ := by gcongr
-  rw [le_div_iff₀  (add_pos hx zero_lt_one), ← le_div_iff₀' (exp_pos _), ← exp_sub, neg_mul,
+  rw [le_div_iff₀ (add_pos hx zero_lt_one), ← le_div_iff₀' (exp_pos _), ← exp_sub, neg_mul,
     sub_neg_eq_add, two_mul, sub_add_add_cancel, add_comm _ x]
   exact le_trans (le_add_of_nonneg_right zero_le_one) (add_one_le_exp _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem div_lt_floor {x : ℝ} (hx : 2 / (1 - 2 / exp 1) ≤ x) : x / exp 1 < (⌊x / 2⌋₊ : ℝ) := by
   apply lt_of_le_of_lt _ (sub_one_lt_floor _)
   have : 0 < 1 - 2 / exp 1 := by
     rw [sub_pos, div_lt_one (exp_pos _)]
-    exact lt_of_le_of_lt (by norm_num) exp_one_gt_d9
+    exact exp_one_gt_two
   rwa [le_sub_comm, div_eq_mul_one_div x, div_eq_mul_one_div x, ← mul_sub, div_sub', ←
     div_eq_mul_one_div, mul_div_assoc', one_le_div, ← div_le_iff₀ this]
   · exact zero_lt_two
@@ -352,6 +362,7 @@ theorem three_le_nValue (hN : 64 ≤ N) : 3 ≤ nValue N := by
   · exact log_two_gt_d9.trans_le' (by norm_num1)
   · norm_num1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dValue_pos (hN₃ : 8 ≤ N) : 0 < dValue N := by
   have hN₀ : 0 < (N : ℝ) := cast_pos.2 (succ_pos'.trans_le hN₃)
   rw [dValue, floor_pos, ← log_le_log_iff zero_lt_one, log_one, log_div _ two_ne_zero, log_rpow hN₀,
@@ -387,6 +398,7 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
   · exact floor_le (div_nonneg (rpow_nonneg (cast_nonneg _) _) zero_le_two)
   apply zero_lt_two
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dValue N := by
   apply div_lt_floor _
   rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv, nValue]
@@ -410,7 +422,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
     exact hN.trans_lt' (by norm_num1)
   · refine div_pos zero_lt_two ?_
     rw [sub_pos, div_lt_one (exp_pos _)]
-    exact lt_of_le_of_lt (by norm_num1) exp_one_gt_d9
+    exact exp_one_gt_two
   positivity
 
 theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :

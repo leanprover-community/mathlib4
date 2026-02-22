@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
 
 /-!
 # Szemerédi's Regularity Lemma
@@ -61,12 +63,15 @@ We currently only prove the equipartition version of SRL.
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
 
+public section
+
 
 open Finpartition Finset Fintype Function SzemerediRegularity
 
 variable {α : Type*} [DecidableEq α] [Fintype α] (G : SimpleGraph α) [DecidableRel G.Adj] {ε : ℝ}
   {l : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Effective **Szemerédi Regularity Lemma**: For any sufficiently large graph, there is an
 `ε`-uniform equipartition of bounded size (where the bound does not depend on the graph). -/
 theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :

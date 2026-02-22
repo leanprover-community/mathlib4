@@ -3,16 +3,20 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
-import Mathlib.Geometry.Manifold.Algebra.Monoid
-import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-import Mathlib.Geometry.Manifold.Notation
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+public import Mathlib.Geometry.Manifold.Algebra.Monoid
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Differentiability of functions in vector bundles
 
 -/
+
+public section
 
 open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization Filter
 
@@ -44,7 +48,7 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
   simp +singlePass only [mdifferentiableWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
-  simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
+  simp_rw +instances [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
     PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe,
     extChartAt_self_apply, modelWithCornersSelf_coe, Function.id_def, ← chartedSpaceSelf_prod]
   refine (mdifferentiableWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
@@ -135,19 +139,19 @@ variable {IB}
 theorem mdifferentiableOn_coordChangeL :
     MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) :=
-  (contMDiffOn_coordChangeL e e').mdifferentiableOn le_rfl
+  (contMDiffOn_coordChangeL e e').mdifferentiableOn one_ne_zero
 
 theorem mdifferentiableOn_symm_coordChangeL :
     MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) :=
-  (contMDiffOn_symm_coordChangeL e e').mdifferentiableOn le_rfl
+  (contMDiffOn_symm_coordChangeL e e').mdifferentiableOn one_ne_zero
 
 variable {e e'}
 
 theorem mdifferentiableAt_coordChangeL {x : B}
     (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     MDifferentiableAt IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
-  (contMDiffAt_coordChangeL h h').mdifferentiableAt le_rfl
+  (contMDiffAt_coordChangeL h h').mdifferentiableAt one_ne_zero
 
 variable {s : Set M} {f : M → B} {g : M → F} {x : M}
 
@@ -239,7 +243,7 @@ theorem Trivialization.mdifferentiableAt_snd_comp_iff₂
     e.mdifferentiableWithinAt_snd_comp_iff₂ IB he he' hf
 
 /-- Characterization of differentiable functions into a vector bundle in terms
-of any trivialization. Version at a point within at set. -/
+of any trivialization. Version at a point within a set. -/
 theorem Trivialization.mdifferentiableWithinAt_totalSpace_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
     (f : M → TotalSpace F E) {s : Set M} {x₀ : M}
@@ -267,7 +271,7 @@ theorem Trivialization.mdifferentiableAt_totalSpace_iff
     (FiberBundle.mem_trivializationAt_proj_source) he hf]
 
 /-- Characterization of differentiable functions into a vector bundle in terms
-of any trivialization. Version at a point within at set. -/
+of any trivialization. Version at a point within a set. -/
 theorem Trivialization.mdifferentiableWithinAt_section_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
     (s : Π b : B, E b) {u : Set B} {b₀ : B}
@@ -445,7 +449,7 @@ lemma MDifferentiableWithinAt.sum_section {ι : Type*} {s : Finset ι} {t : ι �
     MDiffAt[u] (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) x₀ := by
   classical
   induction s using Finset.induction_on with
-  | empty => simpa using (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt le_rfl
+  | empty => simpa using (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt one_ne_zero
   | insert i s hi h =>
     simpa [Finset.sum_insert hi] using mdifferentiableWithinAt_add_section (hs i) h
 

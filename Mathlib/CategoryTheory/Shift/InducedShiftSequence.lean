@@ -3,13 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Shift.ShiftSequence
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Shift.ShiftSequence
 
 /-! # Induced shift sequences
 
 When `G : C ⥤ A` is a functor from a category equipped with a shift by a
-monoid `M`, we have defined in the file `CategoryTheory.Shift.ShiftSequence`
+monoid `M`, we have defined in the file `Mathlib/CategoryTheory/Shift/ShiftSequence.lean`
 a type class `G.ShiftSequence M` which provides functors `G.shift a : C ⥤ A` for all `a : M`,
 isomorphisms `shiftFunctor C n ⋙ G.shift a ≅ G.shift a'` when `n + a = a'`,
 and isomorphisms `G.isoShift a : shiftFunctor C a ⋙ G ≅ G.shift a` for all `a`, all of
@@ -19,18 +21,20 @@ The typical example shall be `[(homologyFunctor C (ComplexShape.up ℤ) 0).Shift
 for any abelian category `C` (TODO).
 
 Similarly as a shift on a category may induce a shift on a quotient or a localized
-category (see the file `CategoryTheory.Shift.Induced`), this file shows that
+category (see the file `Mathlib/CategoryTheory/Shift/Induced.lean`), this file shows that
 under certain assumptions, there is an induced "shift sequence". The main application
 will be the construction of a shift sequence for the homology functor on the
 homotopy category of cochain complexes (TODO), and also on the derived category (TODO).
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Functor
 
 namespace CategoryTheory
 
-variable {C D A : Type*} [Category C] [Category D] [Category A]
+variable {C D A : Type*} [Category* C] [Category* D] [Category* A]
   {L : C ⥤ D} {F : D ⥤ A} {G : C ⥤ A} (e : L ⋙ F ≅ G) (M : Type*)
   [AddMonoid M] [HasShift C M]
   [G.ShiftSequence M] (F' : M → D ⥤ A) (e' : ∀ m, L ⋙ F' m ≅ G.shift m)
@@ -74,6 +78,7 @@ end induced
 
 variable [HasShift D M] [L.CommShift M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an isomorphism of functors `e : L ⋙ F ≅ G` relating functors `L : C ⥤ D`,
 `F : D ⥤ A` and `G : C ⥤ A`, an additive monoid `M`, a family of functors `F' : M → D ⥤ A`
 equipped with isomorphisms `e' : ∀ m, L ⋙ F' m ≅ G.shift m`, this is the shift sequence
@@ -122,6 +127,7 @@ lemma induced_shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
         (G.shiftIso n a a' ha').hom.app X ≫ (e' a').inv.app X := by
   apply induced.shiftIso_hom_app_obj
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma induced_shiftMap {n : M} {X Y : C} (f : X ⟶ Y⟦n⟧) (a a' : M) (h : n + a = a') :
     letI := induced e M F' e'

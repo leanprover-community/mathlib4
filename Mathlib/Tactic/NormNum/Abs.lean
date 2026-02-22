@@ -3,8 +3,10 @@ Copyright (c) 2025 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Tactic.NormNum.Basic
 
 
 /-!
@@ -12,6 +14,8 @@ import Mathlib.Data.Nat.Cast.Order.Ring
 
 TODO: plugins for `mabs`, `norm`, `nnorm`, and `enorm`.
 -/
+
+public meta section
 
 namespace Mathlib.Meta.NormNum
 
@@ -29,6 +33,7 @@ theorem isNat_abs_neg {α : Type*} [Ring α] [Lattice α] [IsOrderedRing α]
   constructor
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_abs_nonneg {α : Type*} [DivisionRing α] [LinearOrder α]
     [IsStrictOrderedRing α] {a : α} {num den : ℕ} (ra : IsNNRat a num den) :
     IsNNRat |a| num den := by
@@ -38,6 +43,7 @@ theorem isNNRat_abs_nonneg {α : Type*} [DivisionRing α] [LinearOrder α]
   · exact Nat.cast_nonneg' num
   · simp only [invOf_eq_inv, inv_nonneg, Nat.cast_nonneg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_abs_neg {α : Type*} [DivisionRing α] [LinearOrder α] [IsStrictOrderedRing α]
     {a : α} {num den : ℕ} (ra : IsRat a (.negOfNat num) den) : IsNNRat |a| num den := by
   obtain ⟨ha1, rfl⟩ := ra

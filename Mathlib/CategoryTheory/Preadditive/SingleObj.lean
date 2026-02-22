@@ -3,13 +3,17 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.CategoryTheory.SingleObj
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.SingleObj
 
 /-!
 # `SingleObj α` is preadditive when `α` is a ring.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

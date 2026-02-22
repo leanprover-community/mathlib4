@@ -1,5 +1,5 @@
-import Mathlib.Algebra.Ring.GrindInstances
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Field.Defs
 
 /-!
 # Preliminary tests for `grind` using Mathlib typeclasses.

@@ -3,10 +3,12 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.MetricSpace.Algebra
-import Mathlib.Topology.MetricSpace.IsometricSMul
+module
+
+public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.MetricSpace.Algebra
+public import Mathlib.Topology.MetricSpace.IsometricSMul
 
 /-!
 # Normed groups are uniform groups
@@ -14,6 +16,8 @@ import Mathlib.Topology.MetricSpace.IsometricSMul
 This file proves lipschitzness of normed group operations and shows that normed groups are uniform
 groups.
 -/
+
+@[expose] public section
 
 variable {𝓕 E F : Type*}
 
@@ -63,10 +67,10 @@ variable [FunLike 𝓕 E F]
 
 /-- A homomorphism `f` of seminormed groups is Lipschitz, if there exists a constant `C` such that
 for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. The analogous condition for a linear map of
-(semi)normed spaces is in `Mathlib/Analysis/NormedSpace/OperatorNorm.lean`. -/
+(semi)normed spaces is in `Mathlib/Analysis/Normed/Operator/Basic.lean`. -/
 @[to_additive /-- A homomorphism `f` of seminormed groups is Lipschitz, if there exists a constant
 `C` such that for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. The analogous condition for a linear map of
-(semi)normed spaces is in `Mathlib/Analysis/NormedSpace/OperatorNorm.lean`. -/]
+(semi)normed spaces is in `Mathlib/Analysis/Normed/Operator/Basic.lean`. -/]
 theorem MonoidHomClass.lipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) (C : ℝ)
     (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) : LipschitzWith (Real.toNNReal C) f :=
   LipschitzWith.of_dist_le' fun x y => by simpa only [dist_eq_norm_div, map_div] using h (x / y)
@@ -149,6 +153,15 @@ theorem LipschitzWith.nnorm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzWi
 theorem AntilipschitzWith.le_mul_norm' {f : E → F} {K : ℝ≥0} (h : AntilipschitzWith K f)
     (hf : f 1 = 1) (x) : ‖x‖ ≤ K * ‖f x‖ := by
   simpa only [dist_one_right, hf] using h.le_mul_dist x 1
+
+@[to_additive antilipschitzWith_iff_exists_mul_le_norm]
+theorem antilipschitzWith_iff_exists_mul_le_norm' [MonoidHomClass 𝓕 E F] {f : 𝓕} :
+    (∃ K, AntilipschitzWith K f) ↔ ∃ c > 0, ∀ x, c * ‖x‖ ≤ ‖f x‖ := by
+  refine ⟨fun ⟨K, hK⟩ ↦ ⟨(K + 1)⁻¹, by positivity, fun x ↦ ?_⟩, fun ⟨c, hc0, hc⟩ ↦
+    ⟨⟨c⁻¹, by positivity⟩, MonoidHomClass.antilipschitz_of_bound f fun x ↦ ?_⟩⟩
+  · grw [hK.le_mul_norm' (map_one f), ← mul_assoc]
+    exact mul_le_of_le_one_left (norm_nonneg' (f x)) (by simp [field])
+  · grw [← hc, NNReal.coe_mk, inv_mul_cancel_left₀ hc0.ne']
 
 @[to_additive AntilipschitzWith.le_mul_nnnorm]
 theorem AntilipschitzWith.le_mul_nnnorm' {f : E → F} {K : ℝ≥0} (h : AntilipschitzWith K f)

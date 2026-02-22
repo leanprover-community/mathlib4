@@ -3,7 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Integral.SetToL1
+module
+
+public import Mathlib.MeasureTheory.Integral.SetToL1
 
 /-!
 # Bochner integral
@@ -19,7 +21,7 @@ and corresponding API.
 The Bochner integral is defined through the extension process described in the file
 `Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
-1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s * x`.
+1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s • x`.
   `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
   (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
 
@@ -40,18 +42,17 @@ The Bochner integral is defined through the extension process described in the f
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in
                 `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 * `α →₁ₛ[μ] E` : simple functions in L1 space, i.e., equivalence classes of integrable simple
-                 functions (defined in `Mathlib/MeasureTheory/Function/SimpleFuncDense`)
+                 functions (defined in `Mathlib/MeasureTheory/Function/SimpleFuncDenseLp.lean`)
 
-We also define notations for integral on a set, which are described in the file
-`Mathlib/MeasureTheory/Integral/SetIntegral.lean`.
-
-Note : `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
+Note: `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
 
 ## Tags
 
 Bochner integral, simple function, function space, Lebesgue dominated convergence theorem
 
 -/
+
+@[expose] public section
 
 
 assert_not_exists Differentiable
@@ -111,7 +112,7 @@ theorem weightedSMul_union' (s t : Set α) (ht : MeasurableSet t) (hs_finite : �
     (ht_finite : μ t ≠ ∞) (hdisj : Disjoint s t) :
     (weightedSMul μ (s ∪ t) : F →L[ℝ] F) = weightedSMul μ s + weightedSMul μ t := by
   ext1 x
-  simp_rw [add_apply, weightedSMul_apply, measureReal_union hdisj ht,add_smul]
+  simp_rw [add_apply, weightedSMul_apply, measureReal_union hdisj ht, add_smul]
 
 @[nolint unusedArguments]
 theorem weightedSMul_union (s t : Set α) (_hs : MeasurableSet s) (ht : MeasurableSet t)
@@ -179,7 +180,7 @@ section Integral
 ### The Bochner integral of simple functions
 
 Define the Bochner integral of simple functions of the type `α →ₛ β` where `β` is a normed group,
-and prove basic property of this integral.
+and prove basic properties of this integral.
 -/
 
 
@@ -205,6 +206,7 @@ theorem integral_eq_sum_filter [DecidablePred fun x : F => x ≠ 0] {m : Measura
     f.integral μ = ∑ x ∈ {x ∈ f.range | x ≠ 0}, μ.real (f ⁻¹' {x}) • x := by
   simp_rw [integral_def, setToSimpleFunc_eq_sum_filter, weightedSMul_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Bochner integral is equal to a sum over any set that includes `f.range` (except `0`). -/
 theorem integral_eq_sum_of_subset [DecidablePred fun x : F => x ≠ 0] {f : α →ₛ F} {s : Finset F}
     (hs : {x ∈ f.range | x ≠ 0} ⊆ s) :
@@ -352,8 +354,7 @@ lemma integral_mono_measure {ν} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν 
     · simp [← hx]
     simp only [measureReal_def]
     gcongr
-    · exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
-    · exact hμν _
+    exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
   · suffices ν (f ⁻¹' {f x}) = 0 by
       have A : μ (f ⁻¹' {f x}) = 0 := by simpa using (hμν _ |>.trans_eq this)
       simp [measureReal_def, A, this]
@@ -456,6 +457,7 @@ local notation "Integral" => integralCLM α E μ
 
 open ContinuousLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_Integral_le_one : ‖Integral‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ zero_le_one fun f ↦ by
     simpa [one_mul] using norm_integral_le_norm f
@@ -526,8 +528,7 @@ open ContinuousLinearMap
 variable (𝕜) in
 /-- The Bochner integral in L1 space as a continuous linear map. -/
 nonrec def integralCLM' : (α →₁[μ] E) →L[𝕜] E :=
-  (integralCLM' α E 𝕜 μ).extend (coeToLp α E 𝕜) (simpleFunc.denseRange one_ne_top)
-    simpleFunc.isUniformInducing
+  (integralCLM' α E 𝕜 μ).extend (coeToLp α E 𝕜)
 
 /-- The Bochner integral in L1 space as a continuous linear map over ℝ. -/
 def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
@@ -549,6 +550,21 @@ theorem SimpleFunc.integral_L1_eq_integral (f : α →₁ₛ[μ] E) :
     L1.integral (f : α →₁[μ] E) = SimpleFunc.integral f := by
   simp only [integral, L1.integral]
   exact setToL1_eq_setToL1SCLM (dominatedFinMeasAdditive_weightedSMul μ) f
+
+@[norm_cast]
+theorem SimpleFunc.integralCLM'_L1_eq_integral (f : α →₁ₛ[μ] E) :
+    L1.integralCLM' 𝕜 (f : α →₁[μ] E) = SimpleFunc.integral f := by
+  apply ContinuousLinearMap.extend_eq _ _ simpleFunc.isUniformInducing
+  exact simpleFunc.denseRange one_ne_top
+
+variable (𝕜) in
+theorem integral_eq' (f : α →₁[μ] E) : integral f = integralCLM' 𝕜 f := by
+  apply isClosed_property (simpleFunc.denseRange one_ne_top)
+    (isClosed_eq _ (integralCLM' 𝕜).continuous) _ f
+  · simp_rw [integral_def]
+    exact (integralCLM (E := E)).continuous
+  intro f
+  norm_cast
 
 variable (α E)
 
@@ -576,9 +592,7 @@ theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - i
 
 @[integral_simps]
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
-  simp only [integral]
-  change (integralCLM' 𝕜) (c • f) = c • (integralCLM' 𝕜) f
-  exact map_smul (integralCLM' 𝕜) c f
+  rw [integral_eq' 𝕜 f, integral_eq' 𝕜 (c • f), map_smul (integralCLM' 𝕜) c f]
 
 theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ 1 :=
   norm_setToL1_le (dominatedFinMeasAdditive_weightedSMul μ) zero_le_one

@@ -3,10 +3,12 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Measure.Prod
+module
+
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Integration with respect to the product measure
@@ -24,7 +26,7 @@ In this file we prove Fubini's theorem.
   Tonelli's theorem (see `MeasureTheory.lintegral_prod`). The lemma
   `MeasureTheory.Integrable.integral_prod_right` states that the inner integral of the right-hand
   side is integrable.
-* `MeasureTheory.integral_integral_swap_of_hasCompactSupport`: a version of Fubini theorem for
+* `MeasureTheory.integral_integral_swap_of_hasCompactSupport`: a version of Fubini's theorem for
   continuous functions with compact support, which does not assume that the measures are σ-finite
   contrary to all the usual versions of Fubini.
 
@@ -32,6 +34,8 @@ In this file we prove Fubini's theorem.
 
 product measure, Fubini's theorem, Fubini-Tonelli theorem
 -/
+
+public section
 
 
 noncomputable section
@@ -156,12 +160,7 @@ theorem integrable_measure_prodMk_left {s : Set (α × β)} (hs : MeasurableSet 
   rw [lt_top_iff_ne_top] at hx
   simp [ofReal_toReal, hx]
 
-@[deprecated (since := "2025-03-05")]
-alias MeasureTheory.Measure.integrable_measure_prod_mk_left := integrable_measure_prodMk_left
-
 end Measure
-
-open Measure
 
 end MeasureTheory
 
@@ -199,10 +198,6 @@ theorem MeasureTheory.AEStronglyMeasurable.prodMk_left [SFinite ν] {f : α × �
   filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with x hx
   exact ⟨fun y ↦ hf.mk f (x, y),
     hf.stronglyMeasurable_mk.comp_measurable measurable_prodMk_left, hx⟩
-
-@[deprecated (since := "2025-03-05")]
-alias MeasureTheory.AEStronglyMeasurable.prod_mk_left :=
-  MeasureTheory.AEStronglyMeasurable.prodMk_left
 
 theorem MeasureTheory.AEStronglyMeasurable.prodMk_right [SFinite μ] [SFinite ν] {f : α × β → X}
     (hf : AEStronglyMeasurable f (μ.prod ν)) :
@@ -347,16 +342,10 @@ theorem Integrable.smul_prod {R : Type*} [NormedRing R] [Module R E] [IsBoundedS
     Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) :=
   hf.op_fst_snd continuous_smul ⟨1, by simpa using norm_smul_le⟩ hg
 
-@[deprecated (since := "2025-04-06")]
-alias Integrable.prod_smul := Integrable.smul_prod
-
 omit [SFinite ν] in
 theorem Integrable.mul_prod {L : Type*} [NormedRing L] {f : α → L} {g : β → L} (hf : Integrable f μ)
     (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
   hf.smul_prod hg
-
-@[deprecated (since := "2025-04-06")]
-alias Integrable.prod_mul := Integrable.mul_prod
 
 theorem IntegrableOn.swap [SFinite μ] {f : α × β → E} {s : Set α} {t : Set β}
     (hf : IntegrableOn f (s ×ˢ t) (μ.prod ν)) :
@@ -544,6 +533,7 @@ theorem integral_integral_swap ⦃f : α → β → E⦄ (hf : Integrable (uncur
     ∫ x, ∫ y, f x y ∂ν ∂μ = ∫ y, ∫ x, f x y ∂μ ∂ν :=
   (integral_integral hf).trans (integral_prod_symm _ hf)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Change the order of integration, when one of the integrals is an interval integral. -/
 lemma intervalIntegral_integral_swap {a b : ℝ} {f : ℝ → α → E}
     (h_int : Integrable (uncurry f) ((volume.restrict (Set.uIoc a b)).prod μ)) :

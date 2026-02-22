@@ -3,8 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.Probability.Kernel.MeasurableLIntegral
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!
 # With Density
@@ -27,6 +29,8 @@ an s-finite kernel.
   `∫⁻ b, g b ∂(withDensity κ f a) = ∫⁻ b, f a b * g b ∂(κ a)`
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory ProbabilityTheory
@@ -189,6 +193,7 @@ theorem isFiniteKernel_withDensity_of_bounded (κ : Kernel α β) [IsFiniteKerne
   · rw [withDensity_of_not_measurable _ hf]
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `IsSFiniteKernel.withDensity`.
 If a kernel `κ` is finite, then `withDensity κ f` is s-finite. -/
 theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFiniteKernel κ]

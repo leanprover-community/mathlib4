@@ -3,7 +3,9 @@ Copyright (c) 2023 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Tactic.NormNum.Pow
+module
+
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # `norm_num` handling for expressions of the form `a ^ b % m`.
@@ -12,7 +14,8 @@ These expressions can often be evaluated efficiently in cases where first evalua
 then reducing mod `m` is not feasible. We provide a function `evalNatPowMod` which is used by the
 `reduce_mod_char` tactic to efficiently evaluate powers in rings with positive characteristic.
 
-The approach taken here is identical to (and copied from) the development in `NormNum/Pow.lean`.
+The approach taken here is identical to (and copied from) the development in
+`Mathlib/Tactic/NormNum/Pow.lean`.
 
 ## TODO
 
@@ -20,6 +23,8 @@ The approach taken here is identical to (and copied from) the development in `No
   of the form `a ^ b % m` using `evalNatPowMod`.
 
 -/
+
+public meta section
 
 assert_not_exists RelIso
 
@@ -44,6 +49,7 @@ theorem IsNatPowModT.trans (h1 : IsNatPowModT p a b m c)
     (h2 : IsNatPowModT (Nat.mod (Nat.pow a b) m = c) a b' m c') : IsNatPowModT p a b' m c' :=
   ⟨h2.run' ∘ h1.run'⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsNatPowModT.bit0 :
     IsNatPowModT (Nat.mod (Nat.pow a b) m = c) a (nat_lit 2 * b) m (Nat.mod (Nat.mul c c) m) :=
   ⟨fun h1 => by simp only [two_mul, Nat.pow_eq, pow_add, ← h1, Nat.mul_eq]; exact Nat.mul_mod ..⟩
@@ -60,6 +66,7 @@ theorem natPow_zero_natMod_succ_succ :
 
 theorem natPow_one_natMod : Nat.mod (Nat.pow a (nat_lit 1)) m = Nat.mod a m := by rw [natPow_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsNatPowModT.bit1 :
     IsNatPowModT (Nat.mod (Nat.pow a b) m = c) a (nat_lit 2 * b + 1) m
       (Nat.mod (Nat.mul c (Nat.mod (Nat.mul c a) m)) m) :=

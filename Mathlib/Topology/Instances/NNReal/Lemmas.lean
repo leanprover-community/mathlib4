@@ -3,11 +3,13 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Algebra.InfiniteSum.Ring
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.Algebra.InfiniteSum.Ring
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Topology on `ℝ≥0`
@@ -32,6 +34,8 @@ Similarly, some mathematically trivial lemmas about infinite sums are proved,
 a few of which rely on the fact that subtraction is continuous.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -58,6 +62,14 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
 @[simps -fullyApplied]
 noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
   .mk Real.toNNReal continuous_real_toNNReal
+
+@[simp]
+theorem map_coe_nhdsGT (x : ℝ≥0) : (𝓝[>] x).map toReal = 𝓝[>] ↑x := by
+  rw [isEmbedding_coe.map_nhdsWithin_eq, image_coe_Ioi]
+
+@[simp]
+theorem map_coe_nhdsGE (x : ℝ≥0) : (𝓝[≥] x).map toReal = 𝓝[≥] ↑x := by
+  rw [isEmbedding_coe.map_nhdsWithin_eq, image_coe_Ici]
 
 lemma _root_.ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
     (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
@@ -207,6 +219,7 @@ nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
   simp_rw [← tendsto_coe, coe_tsum, NNReal.coe_zero]
   exact tendsto_tsum_compl_atTop_zero fun a : α => (f a : ℝ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0`. -/
 def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
   StrictMono.orderIsoOfSurjective (fun x ↦ x ^ n) (fun x y h =>
@@ -217,29 +230,24 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
 section Monotone
 
 /-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
+@[deprecated tendsto_atTop_ciSup (since := "2026-01-14")]
 theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
-    (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
-  obtain ⟨B, hB⟩ := Real.exists_isLUB (Set.range_nonempty f) h_bdd
-  exact ⟨B, tendsto_atTop_isLUB h_mon hB⟩
+    (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) :=
+  ⟨iSup f, tendsto_atTop_ciSup h_mon h_bdd⟩
 
 /-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/
+@[deprecated tendsto_atTop_ciInf (since := "2026-01-14")]
 theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddBelow (Set.range f))
-    (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
-  obtain ⟨B, hB⟩ := Real.exists_isGLB (Set.range_nonempty f) h_bdd
-  exact ⟨B, tendsto_atTop_isGLB h_ant hB⟩
+    (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) :=
+  ⟨iInf f, tendsto_atTop_ciInf h_ant h_bdd⟩
 
+variable {ι : Type*} [Preorder ι]
+
+set_option backward.isDefEq.respectTransparency false in
 /-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
+@[deprecated tendsto_atTop_ciInf (since := "2026-01-14")]
 theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
-    ∃ r : ℝ≥0, Tendsto f atTop (𝓝 r) := by
-  have h_bdd_0 : (0 : ℝ) ∈ lowerBounds (Set.range fun n : ℕ => (f n : ℝ)) := by
-    rintro r ⟨n, hn⟩
-    simp_rw [← hn]
-    exact NNReal.coe_nonneg _
-  obtain ⟨L, hL⟩ := Real.tendsto_of_bddBelow_antitone ⟨0, h_bdd_0⟩ h_ant
-  have hL0 : 0 ≤ L :=
-    haveI h_glb : IsGLB (Set.range fun n => (f n : ℝ)) L := isGLB_of_tendsto_atTop h_ant hL
-    (le_isGLB_iff h_glb).mpr h_bdd_0
-  exact ⟨⟨L, hL0⟩, NNReal.tendsto_coe.mp hL⟩
+    ∃ r : ℝ≥0, Tendsto f atTop (𝓝 r) := ⟨iInf f, tendsto_atTop_ciInf h_ant (by simp)⟩
 
 end Monotone
 

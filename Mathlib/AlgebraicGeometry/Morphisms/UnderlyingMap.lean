@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.LocalAtTarget
-import Mathlib.AlgebraicGeometry.Morphisms.Constructors
+module
+
+public import Mathlib.Topology.LocalAtTarget
+public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 
 /-!
 
@@ -24,6 +26,8 @@ of the underlying map of topological spaces, including
 - `DenseRange` (`IsDominant`)
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Topology TopologicalSpace
 
@@ -54,12 +58,13 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 /-- A morphism of schemes is surjective if the underlying map is. -/
 @[mk_iff]
 class Surjective : Prop where
-  surj : Function.Surjective f.base
+  surj : Function.Surjective f
 
 lemma surjective_eq_topologically :
     @Surjective = topologically Function.Surjective := by ext; exact surjective_iff _
 
-lemma Scheme.Hom.surjective (f : X.Hom Y) [Surjective f] : Function.Surjective f.base :=
+@[grind .]
+lemma Scheme.Hom.surjective (f : X ⟶ Y) [Surjective f] : Function.Surjective f :=
   Surjective.surj
 
 instance (priority := 100) [IsIso f] : Surjective f := ⟨f.homeomorph.surjective⟩
@@ -67,14 +72,25 @@ instance (priority := 100) [IsIso f] : Surjective f := ⟨f.homeomorph.surjectiv
 instance [Surjective f] [Surjective g] : Surjective (f ≫ g) := ⟨g.surjective.comp f.surjective⟩
 
 lemma Surjective.of_comp [Surjective (f ≫ g)] : Surjective g where
-  surj := Function.Surjective.of_comp (g := f.base) (f ≫ g).surjective
+  surj := Function.Surjective.of_comp (g := f) (f ≫ g).surjective
+
+instance (priority := low) [Nonempty X] [Subsingleton Y] (f : X ⟶ Y) :
+    Surjective f := ⟨Function.surjective_to_subsingleton _⟩
 
 lemma Surjective.comp_iff [Surjective f] : Surjective (f ≫ g) ↔ Surjective g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
+instance : MorphismProperty.IsMultiplicative @Surjective.{u} where
+  id_mem _ := inferInstance
+  comp_mem _ _ hf hg := ⟨hg.1.comp hf.1⟩
+
 instance : MorphismProperty.RespectsIso @Surjective :=
   surjective_eq_topologically ▸ topologically_respectsIso _ (fun e ↦ e.surjective)
     (fun _ _ hf hg ↦ hg.comp hf)
+
+instance (P : MorphismProperty Scheme.{u}) :
+    MorphismProperty.HasOfPrecompProperty @Surjective P where
+  of_precomp f g _ _ := .of_comp f g
 
 instance surjective_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @Surjective := by
   have : MorphismProperty.RespectsIso @Surjective := inferInstance
@@ -86,30 +102,47 @@ instance surjective_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @Surjective 
   exact ⟨y, congr(($hy).1)⟩
 
 @[simp]
-lemma range_eq_univ [Surjective f] : Set.range f.base = Set.univ := by
+lemma range_eq_univ [Surjective f] : Set.range f = Set.univ := by
   simpa [Set.range_eq_univ] using f.surjective
 
 lemma range_eq_range_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
-    [Surjective e] (hge : e ≫ g = f) : Set.range f.base = Set.range g.base := by
+    [Surjective e] (hge : e ≫ g = f) : Set.range f = Set.range g := by
   rw [← hge]
   simp [Set.range_comp]
 
 lemma mem_range_iff_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
-    [Surjective e] (hge : e ≫ g = f) (s : S) : s ∈ Set.range f.base ↔ s ∈ Set.range g.base := by
+    [Surjective e] (hge : e ≫ g = f) (s : S) : s ∈ Set.range f ↔ s ∈ Set.range g := by
   rw [range_eq_range_of_surjective f g e hge]
 
 lemma Surjective.sigmaDesc_of_union_range_eq_univ {X : Scheme.{u}}
     {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}} {f : ∀ i, Y i ⟶ X}
-    (H : ⋃ i, Set.range (f i).base = Set.univ) : Surjective (Limits.Sigma.desc f) := by
+    (H : ⋃ i, Set.range (f i) = Set.univ) : Surjective (Limits.Sigma.desc f) := by
   refine ⟨fun x ↦ ?_⟩
   simp_rw [Set.eq_univ_iff_forall, Set.mem_iUnion] at H
   obtain ⟨i, x, rfl⟩ := H x
-  use (Limits.Sigma.ι (fun i ↦ Y i) i).base x
+  use Limits.Sigma.ι Y i x
   rw [← Scheme.Hom.comp_apply, Limits.Sigma.ι_desc]
 
 instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} (𝒰 : X.Cover (Scheme.precoverage P)) :
     Surjective (Limits.Sigma.desc fun i ↦ 𝒰.f i) :=
   Surjective.sigmaDesc_of_union_range_eq_univ 𝒰.iUnion_range
+
+/-- The single object covering by one surjective morphism satisfying `P`. -/
+@[simps! I₀ X f]
+def Scheme.Hom.cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f)
+    [Surjective f] : Cover.{v} (precoverage P) S :=
+  .singleton f <| by
+    rw [singleton_mem_precoverage_iff]
+    exact ⟨f.surjective, hf⟩
+
+@[simp]
+lemma Scheme.Hom.presieve₀_cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S)
+    (hf : P f) [Surjective f] : (f.cover hf).presieve₀ = Presieve.singleton f := by
+  simp [cover]
+
+instance {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f)
+    [Surjective f] : Unique (Scheme.Hom.cover f hf).I₀ :=
+  inferInstanceAs <| Unique PUnit
 
 end Surjective
 
@@ -183,18 +216,18 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 /-- A morphism of schemes is dominant if the underlying map has dense range. -/
 @[mk_iff]
 class IsDominant : Prop where
-  denseRange : DenseRange f.base
+  denseRange : DenseRange f
 
 lemma dominant_eq_topologically :
     @IsDominant = topologically DenseRange := by ext; exact isDominant_iff _
 
-lemma Scheme.Hom.denseRange (f : X.Hom Y) [IsDominant f] : DenseRange f.base :=
+lemma Scheme.Hom.denseRange (f : X ⟶ Y) [IsDominant f] : DenseRange f :=
   IsDominant.denseRange
 
 instance (priority := 100) [Surjective f] : IsDominant f := ⟨f.surjective.denseRange⟩
 
 instance [IsDominant f] [IsDominant g] : IsDominant (f ≫ g) :=
-  ⟨g.denseRange.comp f.denseRange g.base.hom.2⟩
+  ⟨g.denseRange.comp f.denseRange g.continuous⟩
 
 instance : MorphismProperty.IsMultiplicative @IsDominant where
   id_mem := fun _ ↦ inferInstance
@@ -202,7 +235,7 @@ instance : MorphismProperty.IsMultiplicative @IsDominant where
 
 lemma IsDominant.of_comp [H : IsDominant (f ≫ g)] : IsDominant g := by
   rw [isDominant_iff, denseRange_iff_closure_range, ← Set.univ_subset_iff] at H ⊢
-  exact H.trans (closure_mono (Set.range_comp_subset_range f.base g.base))
+  exact H.trans (closure_mono (Set.range_comp_subset_range f g))
 
 lemma IsDominant.comp_iff [IsDominant f] : IsDominant (f ≫ g) ↔ IsDominant g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
@@ -217,7 +250,7 @@ instance IsDominant.isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsDominant 
     fun _ _ _ hU _ ↦ hU.denseRange_iff_restrictPreimage
 
 lemma surjective_of_isDominant_of_isClosed_range (f : X ⟶ Y) [IsDominant f]
-    (hf : IsClosed (Set.range f.base)) :
+    (hf : IsClosed (Set.range f)) :
     Surjective f :=
   ⟨by rw [← Set.range_eq_univ, ← hf.closure_eq, f.denseRange.closure_range]⟩
 

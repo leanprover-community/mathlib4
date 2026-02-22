@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-!
 # Neighborhood bases for non-archimedean rings and modules
@@ -25,6 +27,8 @@ A special case of this construction is given by `SubmodulesBasis` where the subg
 sub-modules in a commutative algebra. This important example gives rise to the adic topology
 (studied in its own file).
 -/
+
+@[expose] public section
 
 open Set Filter Function Lattice
 
@@ -132,6 +136,7 @@ of neighborhoods of zero. -/
 def topology : TopologicalSpace A :=
   hB.toRingFilterBasis.toAddGroupFilterBasis.topology
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fun i => B i :=
   ⟨by
     intro s
@@ -142,6 +147,7 @@ theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fu
     · rintro ⟨i, -, hi⟩
       exact ⟨B i, ⟨i, rfl⟩, hi⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasBasis_nhds (a : A) :
     HasBasis (@nhds A hB.topology a) (fun _ => True) fun i => { b | b - a ∈ B i } :=
   ⟨by
@@ -179,6 +185,7 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
       rintro b b_in
       simpa using (B i).add_mem a_in b_in }
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [non-Archimedean non-instances]
 theorem nonarchimedean : @NonarchimedeanRing A _ hB.topology := by
   letI := hB.topology
@@ -300,6 +307,7 @@ def toModuleFilterBasis : ModuleFilterBasis R M where
 def topology : TopologicalSpace M :=
   hB.toModuleFilterBasis.toAddGroupFilterBasis.topology
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a submodules basis, the basis elements as open additive subgroups in the associated
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
@@ -316,6 +324,7 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
       · rintro - ⟨b, b_in, rfl⟩
         exact (B i).add_mem a_in b_in }
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [non-Archimedean non-instances]
 theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB.topology := by
   letI := hB.topology
@@ -325,7 +334,7 @@ theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB
     hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff.mp hU
   exact ⟨hB.openAddSubgroup i, hi⟩
 
-library_note2 «non-Archimedean non-instances» /--
+library_note «non-Archimedean non-instances» /--
 The non-Archimedean subgroup basis lemmas cannot be instances because some instances
 (such as `MeasureTheory.AEEqFun.instAddMonoid` or `IsTopologicalAddGroup.toContinuousAdd`)
 cause the search for `@IsTopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where

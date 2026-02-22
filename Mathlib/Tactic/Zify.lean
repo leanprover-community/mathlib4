@@ -3,10 +3,15 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
-import Mathlib.Tactic.Basic
+module
+
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Order.Basic
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
+
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Order.Basic
 
 /-!
 # `zify` tactic
@@ -23,6 +28,8 @@ example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   -/
 ```
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Zify
 
@@ -109,7 +116,8 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
 
 variable {R : Type*} [AddGroupWithOne R]
 
-@[norm_cast] theorem Nat.cast_sub_of_add_le {m n k} (h : m + k ≤ n) :
+@[deprecated "use Nat.cast_sub" (since := "2026-02-21"), norm_cast]
+theorem Nat.cast_sub_of_add_le {m n k} (h : m + k ≤ n) :
     ((n - m : ℕ) : R) = n - m := Nat.cast_sub (m.le_add_right k |>.trans h)
 
 @[norm_cast] theorem Nat.cast_sub_of_lt {m n} (h : m < n) :

@@ -3,10 +3,11 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+module
 
-import Mathlib.NumberTheory.NumberField.ClassNumber
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+public import Mathlib.NumberTheory.NumberField.ClassNumber
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 
 /-!
 # Cyclotomic fields whose ring of integers is a PID.
@@ -18,6 +19,8 @@ but the proof is more and more involved.
 * `five_pid`: If `IsCyclotomicExtension {5} ℚ K` then `𝓞 K` is a principal ideal domain.
 -/
 
+public section
+
 universe u
 
 namespace IsCyclotomicExtension.Rat
@@ -26,10 +29,11 @@ open NumberField Polynomial InfinitePlace Nat Real cyclotomic
 
 variable (K : Type u) [Field K] [NumberField K]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `IsCyclotomicExtension {3} ℚ K` then `𝓞 K` is a principal ideal domain. -/
 theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
   apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
-  rw [absdiscr_prime 3 K, IsCyclotomicExtension.finrank (n := 3) K
+  rw [discr_prime 3 K, IsCyclotomicExtension.finrank (n := 3) K
     (irreducible_rat (by simp)), nrComplexPlaces_eq_totient_div_two 3, totient_prime
       Nat.prime_three]
   simp only [Int.reduceNeg, succ_sub_succ_eq_sub, tsub_zero, zero_lt_two, Nat.div_self, pow_one,
@@ -40,11 +44,12 @@ theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞
   gcongr
   exact pi_gt_three
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `IsCyclotomicExtension {5} ℚ K` then `𝓞 K` is a principal ideal domain. -/
 theorem five_pid [IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
   have : Fact (Nat.Prime 5) := ⟨Nat.prime_five⟩
   apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
-  rw [absdiscr_prime 5 K, IsCyclotomicExtension.finrank (n := 5) K
+  rw [discr_prime 5 K, IsCyclotomicExtension.finrank (n := 5) K
     (irreducible_rat (by simp)), nrComplexPlaces_eq_totient_div_two 5,
     totient_prime Nat.prime_five]
   simp only [Int.reduceNeg, succ_sub_succ_eq_sub, tsub_zero, reduceDiv, even_two, Even.neg_pow,

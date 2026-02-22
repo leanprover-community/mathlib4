@@ -3,12 +3,16 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang, Wanyi He, Nailin Guan
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.RingTheory.QuotSMulTop
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.RingTheory.QuotSMulTop
 
 /-!
 # Categorical constructions for `IsSMulRegular`
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -37,6 +41,7 @@ def smulShortComplex (r : R) :
     ext x
     exact (LinearMap.exact_smul_id_smul_top_mkQ M r).apply_apply_eq_zero x
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smulShortComplex_exact (r : R) : (smulShortComplex M r).Exact := by
   simp [smulShortComplex, ShortComplex.ShortExact.moduleCat_exact_iff_function_exact,
     LinearMap.exact_smul_id_smul_top_mkQ]

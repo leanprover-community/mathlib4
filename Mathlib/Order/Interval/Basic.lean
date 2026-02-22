@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.SetLike.Basic
+module
+
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.SetLike.Basic
 
 /-!
 # Order intervals
@@ -18,6 +20,8 @@ interval arithmetic.
 * `NonemptyInterval`: Nonempty intervals. Pairs where the second element is greater than the first.
 * `Interval`: Intervals. Either `∅` or a nonempty interval.
 -/
+
+@[expose] public section
 
 
 open Function OrderDual Set
@@ -260,7 +264,7 @@ instance : Max (NonemptyInterval α) :=
   ⟨fun s t => ⟨⟨s.fst ⊓ t.fst, s.snd ⊔ t.snd⟩, inf_le_left.trans <| s.fst_le_snd.trans le_sup_left⟩⟩
 
 instance : SemilatticeSup (NonemptyInterval α) :=
-  toDualProd_injective.semilatticeSup _ fun _ _ => rfl
+  toDualProd_injective.semilatticeSup _ .rfl .rfl fun _ _ => rfl
 
 @[simp]
 theorem fst_sup (s t : NonemptyInterval α) : (s ⊔ t).fst = s.fst ⊓ t.fst :=
@@ -544,6 +548,7 @@ theorem coe_inf : ∀ s t : Interval α, (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t
 
 end Decidable
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem disjoint_coe (s t : Interval α) : Disjoint (s : Set α) t ↔ Disjoint s t := by
   classical
@@ -657,18 +662,8 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
             · rw [not_and_or, not_not] at h
               rcases h with h | h
               · exact ha _ h
-              · -- Porting note: ungolfed, due to identification problems
-                -- between `toProd` and `toDualProd`. Original mathport output:
-                -- cases h fun t hb c hc =>
-                --   (WithBot.coe_le_coe.1 <| ha _ hb).1.trans <|
-                --     s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha _ hc).2 }
-                exfalso
-                apply h
-                intro b hb c hc
-                have h₁ := (WithBot.coe_le_coe.1 <| ha _ hb).1
-                repeat rw [NonemptyInterval.toDualProd_apply] at h₁
-                rw [OrderDual.toDual_le_toDual] at h₁
-                exact h₁.trans (s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha _ hc).2)
+              · cases h fun b hb c hc ↦ (WithBot.coe_le_coe.1 <| ha _ hb).1.trans
+                  (s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha _ hc).2)
   }
 
 @[simp, norm_cast]

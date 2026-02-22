@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Logic.Pairwise
+module
+
+public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Logic.Pairwise
 
 /-! ### Lemmas about arithmetic operations and intervals. -/
+
+public section
 
 
 variable {α : Type*}
@@ -150,6 +154,7 @@ section OrderedCommGroup
 
 variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] (a b : α)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem pairwise_disjoint_Ioc_mul_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ioc (a * b ^ n) (a * b ^ (n + 1))) := by
@@ -165,6 +170,7 @@ theorem pairwise_disjoint_Ioc_mul_zpow :
   rw [mul_lt_mul_iff_left, zpow_lt_zpow_iff_right hb, Int.lt_add_one_iff] at i1 i2
   exact le_antisymm i1 i2
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem pairwise_disjoint_Ico_mul_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ico (a * b ^ n) (a * b ^ (n + 1))) := by
@@ -227,11 +233,13 @@ theorem pairwise_disjoint_Ico_intCast :
     Pairwise (Disjoint on fun n : ℤ => Ico (n : α) (n + 1)) := by
   simpa only [zero_add] using pairwise_disjoint_Ico_add_intCast (0 : α)
 
-theorem pairwise_disjoint_Ioo_intCast : Pairwise (Disjoint on fun n : ℤ => Ioo (n : α) (n + 1)) :=
-  by simpa only [zero_add] using pairwise_disjoint_Ioo_add_intCast (0 : α)
+theorem pairwise_disjoint_Ioo_intCast :
+    Pairwise (Disjoint on fun n : ℤ => Ioo (n : α) (n + 1)) := by
+  simpa only [zero_add] using pairwise_disjoint_Ioo_add_intCast (0 : α)
 
-theorem pairwise_disjoint_Ioc_intCast : Pairwise (Disjoint on fun n : ℤ => Ioc (n : α) (n + 1)) :=
-  by simpa only [zero_add] using pairwise_disjoint_Ioc_add_intCast (0 : α)
+theorem pairwise_disjoint_Ioc_intCast :
+    Pairwise (Disjoint on fun n : ℤ => Ioc (n : α) (n + 1)) := by
+  simpa only [zero_add] using pairwise_disjoint_Ioc_add_intCast (0 : α)
 
 end OrderedRing
 

@@ -3,9 +3,11 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Homotopy.Basic
-import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Analysis.Convex.Basic
+module
+
+public import Mathlib.Topology.Homotopy.Basic
+public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Analysis.Convex.Basic
 
 /-!
 # Homotopy between paths
@@ -28,6 +30,8 @@ In this file, we define a `Homotopy` between two `Path`s. In addition, we define
 * `Path.Homotopic.Quotient x₀ x₁` is the quotient type from `Path x₀ x₀` by `Path.Homotopic.setoid`
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -65,8 +69,10 @@ theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
   calc F (t, 1) = p₀ 1 := ContinuousMap.HomotopyRel.eq_fst _ _ (.inr rfl)
   _ = x₁ := p₀.target
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evaluating a path homotopy at an intermediate point, giving us a `Path`.
 -/
+@[simps]
 def eval (F : Homotopy p₀ p₁) (t : I) : Path x₀ x₁ where
   toFun := F.toHomotopy.curry t
   source' := by simp
@@ -75,12 +81,12 @@ def eval (F : Homotopy p₀ p₁) (t : I) : Path x₀ x₁ where
 @[simp]
 theorem eval_zero (F : Homotopy p₀ p₁) : F.eval 0 = p₀ := by
   ext t
-  simp [eval]
+  simp
 
 @[simp]
 theorem eval_one (F : Homotopy p₀ p₁) : F.eval 1 = p₁ := by
   ext t
-  simp [eval]
+  simp
 
 end
 
@@ -132,12 +138,20 @@ def cast {p₀ p₁ q₀ q₁ : Path x₀ x₁} (F : Homotopy p₀ p₁) (h₀ :
     Homotopy q₀ q₁ :=
   ContinuousMap.HomotopyRel.cast F (congr_arg _ h₀) (congr_arg _ h₁)
 
+/-- If paths `p` and `q` are homotopic as paths `x ⟶ y`,
+then they are homotopic as paths `x' ⟶ y'`, where `x' = x` and `y' = y`. -/
+@[simp]
+def pathCast {x x' y y' : X} {p q : Path x y} (F : p.Homotopy q) (hx : x' = x) (hy : y' = y) :
+    (p.cast hx hy).Homotopy (q.cast hx hy) :=
+  F
+
 end
 
 section
 
 variable {p₀ q₀ : Path x₀ x₁} {p₁ q₁ : Path x₁ x₂}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `p₀` and `q₀` are paths from `x₀` to `x₁`, `p₁` and `q₁` are paths from `x₁` to `x₂`.
 Furthermore, suppose `F : Homotopy p₀ q₀` and `G : Homotopy p₁ q₁`. Then we can define a homotopy
 from `p₀.trans p₁` to `q₀.trans q₁`.
@@ -146,8 +160,8 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
   toFun x :=
     if (x.2 : ℝ) ≤ 1 / 2 then (F.eval x.1).extend (2 * x.2) else (G.eval x.1).extend (2 * x.2 - 1)
   continuous_toFun := continuous_if_le (continuous_induced_dom.comp continuous_snd) continuous_const
-    (F.toHomotopy.continuous.comp (by continuity)).continuousOn
-    (G.toHomotopy.continuous.comp (by continuity)).continuousOn fun x hx => by norm_num [hx]
+    (F.toHomotopy.continuous.comp (by fun_prop)).continuousOn
+    (G.toHomotopy.continuous.comp (by fun_prop)).continuousOn fun x hx ↦ by norm_num [hx]
   map_zero_left x := by simp [Path.trans]
   map_one_left x := by simp [Path.trans]
   prop' x t ht := by
@@ -163,14 +177,16 @@ theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × 
       else
         G.eval x.1
           ⟨2 * x.2 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.2.2.2⟩⟩ :=
-  show ite _ _ _ = _ by split_ifs <;> exact Path.extend_extends _ _
+  show ite _ _ _ = _ by split_ifs <;> exact Path.extend_apply _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
     F.hcomp G (t, ⟨1 / 2, by norm_num, by norm_num⟩) = x₁ :=
   show ite _ _ _ = _ by norm_num
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Suppose `p` is a path, then we have a homotopy from `p` to `p.reparam f` by the convexity of `I`.
 -/
@@ -239,6 +255,9 @@ theorem refl (p : Path x₀ x₁) : p.Homotopic p :=
 theorem symm ⦃p₀ p₁ : Path x₀ x₁⦄ (h : p₀.Homotopic p₁) : p₁.Homotopic p₀ :=
   h.map Homotopy.symm
 
+theorem symm₂ {p q : Path x₀ x₁} (h : p.Homotopic q) : p.symm.Homotopic q.symm :=
+  h.map Homotopy.symm₂
+
 @[trans]
 theorem trans ⦃p₀ p₁ p₂ : Path x₀ x₁⦄ (h₀ : p₀.Homotopic p₁) (h₁ : p₁.Homotopic p₂) :
     p₀.Homotopic p₂ :=
@@ -246,6 +265,11 @@ theorem trans ⦃p₀ p₁ p₂ : Path x₀ x₁⦄ (h₀ : p₀.Homotopic p₁)
 
 theorem equivalence : Equivalence (@Homotopic X _ x₀ x₁) :=
   ⟨refl, (symm ·), (trans · ·)⟩
+
+instance : IsEquiv (Path x₀ x₁) Homotopic where
+  refl := refl
+  symm := symm
+  trans := trans
 
 nonrec theorem map {p q : Path x₀ x₁} (h : p.Homotopic q) (f : C(X, Y)) :
     Homotopic (p.map f.continuous) (q.map f.continuous) :=
@@ -255,10 +279,17 @@ theorem hcomp {p₀ p₁ : Path x₀ x₁} {q₀ q₁ : Path x₁ x₂} (hp : p�
     (hq : q₀.Homotopic q₁) : (p₀.trans q₀).Homotopic (p₁.trans q₁) :=
   hp.map2 Homotopy.hcomp hq
 
+/-- If paths `p` and `q` are homotopic as paths `x ⟶ y`,
+then they are homotopic as paths `x' ⟶ y'`, where `x' = x` and `y' = y`. -/
+theorem pathCast {p q : Path x₀ x₁} (hpq : p.Homotopic q) (hsource : x₂ = x₀) (htarget : x₃ = x₁) :
+    (p.cast hsource htarget).Homotopic (q.cast hsource htarget) :=
+  hpq
+
 /--
 The setoid on `Path`s defined by the equivalence relation `Path.Homotopic`. That is, two paths are
 equivalent if there is a `Homotopy` between them.
 -/
+@[instance_reducible]
 protected def setoid (x₀ x₁ : X) : Setoid (Path x₀ x₁) :=
   ⟨Homotopic, equivalence⟩
 
@@ -272,22 +303,119 @@ attribute [local instance] Homotopic.setoid
 instance : Inhabited (Homotopic.Quotient () ()) :=
   ⟨Quotient.mk' <| Path.refl ()⟩
 
+namespace Quotient
+
+/-- The canonical map from `Path x₀ x₁` to `Path.Homotopic.Quotient x₀ x₁`. -/
+def mk (p : Path x₀ x₁) : Path.Homotopic.Quotient x₀ x₁ :=
+  Quotient.mk' p
+
+theorem mk_surjective : Function.Surjective (@mk X _ x₀ x₁) :=
+  Quotient.mk'_surjective
+
+/-- `Path.Homotopic.Quotient.mk` is the simp normal form. -/
+@[simp] theorem mk'_eq_mk (p : Path x₀ x₁) : Quotient.mk' p = mk p := rfl
+@[simp] theorem mk''_eq_mk (p : Path x₀ x₁) : Quotient.mk'' p = mk p := rfl
+
+theorem exact {p q : Path x₀ x₁} (h : Quotient.mk p = Quotient.mk q) :
+    Homotopic p q := by
+  exact _root_.Quotient.exact h
+
+theorem eq {p q : Path x₀ x₁} : mk p = mk q ↔ Homotopic p q :=
+  _root_.Quotient.eq
+
+/--
+A reasoning principle for quotients that allows proofs about quotients to assume that all values are
+constructed with `Quotient.mk`.
+-/
+@[induction_eliminator]
+protected theorem ind {x y : X} {motive : Homotopic.Quotient x y → Prop} :
+    (mk : (a : Path x y) → motive (Quotient.mk a)) → (q : Homotopic.Quotient x y) → motive q :=
+  Quot.ind
+
+/--
+A reasoning principle for quotients that allows proofs about quotients to assume that all values are
+constructed with `Quotient.mk`. This is the two-variable version of `ind`.
+-/
+@[elab_as_elim]
+protected theorem ind₂ {Y : Type*} [TopologicalSpace Y] {x₀ y₀ : X} {x₁ y₁ : Y}
+    {motive : Homotopic.Quotient x₀ y₀ → Path.Homotopic.Quotient x₁ y₁ → Prop}
+    (mk : (a : Path x₀ y₀) → (b : Path x₁ y₁) → motive (Quotient.mk a) (Quotient.mk b))
+    (q₀ : Homotopic.Quotient x₀ y₀) (q₁ : Path.Homotopic.Quotient x₁ y₁) : motive q₀ q₁ := by
+  induction q₀ using Quot.ind with | mk a =>
+  induction q₁ using Quot.ind with | mk b =>
+  exact mk a b
+
+/-- The constant path homotopy class at a point. This is `Path.refl` descended to the quotient. -/
+def refl (x : X) : Path.Homotopic.Quotient x x :=
+  mk (Path.refl x)
+
+@[simp, grind =]
+theorem mk_refl (x : X) : mk (Path.refl x) = refl x :=
+  rfl
+
+/-- The reverse of a path homotopy class. This is `Path.symm` descended to the quotient. -/
+def symm (P : Path.Homotopic.Quotient x₀ x₁) : Path.Homotopic.Quotient x₁ x₀ :=
+  _root_.Quotient.map Path.symm (fun _ _ h => Homotopic.symm₂ h) P
+
+@[simp, grind =]
+theorem mk_symm (P : Path x₀ x₁) : mk P.symm = symm (mk P) :=
+  rfl
+
+/-- Cast a path homotopy class using equalities of endpoints. -/
+def cast {x y : X} (γ : Homotopic.Quotient x y) {x' y'} (hx : x' = x) (hy : y' = y) :
+    Homotopic.Quotient x' y' :=
+  _root_.Quotient.map (fun p => p.cast hx hy) (fun _ _ h => h) γ
+
+@[simp, grind =]
+theorem mk_cast {x y : X} (P : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) :
+    mk (P.cast hx hy) = (mk P).cast hx hy :=
+  rfl
+
+@[simp, grind =]
+theorem cast_rfl_rfl {x y : X} (γ : Homotopic.Quotient x y) : γ.cast rfl rfl = γ := by
+  induction γ using Quotient.ind with | mk γ =>
+  rfl
+
+@[simp, grind =]
+theorem cast_cast {x y : X} (γ : Homotopic.Quotient x y) {x' y'} (hx : x' = x) (hy : y' = y)
+    {x'' y''} (hx' : x'' = x') (hy' : y'' = y') :
+    (γ.cast hx hy).cast hx' hy' = γ.cast (hx'.trans hx) (hy'.trans hy) := by
+  induction γ using Quotient.ind with | mk γ =>
+  rfl
+
 /-- The composition of path homotopy classes. This is `Path.trans` descended to the quotient. -/
-def Quotient.comp (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
+def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
     Path.Homotopic.Quotient x₀ x₂ :=
   Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
 
-theorem comp_lift (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) : ⟦P₀.trans P₁⟧ = Quotient.comp ⟦P₀⟧ ⟦P₁⟧ :=
+@[deprecated (since := "2025-11-13")]
+noncomputable alias _root_.Path.Homotopic.Quotient.comp := Quotient.trans
+
+@[simp, grind =]
+theorem mk_trans (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) :
+    mk (P₀.trans P₁) = Quotient.trans (mk P₀) (mk P₁) :=
   rfl
+
+@[deprecated (since := "2025-11-13")]
+noncomputable alias _root_.Path.Homotopic.comp_lift := Quotient.mk_trans
 
 /-- The image of a path homotopy class `P₀` under a map `f`.
 This is `Path.map` descended to the quotient. -/
-def Quotient.mapFn (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
+def map (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
     Path.Homotopic.Quotient (f x₀) (f x₁) :=
-  Quotient.map (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
+  _root_.Quotient.map
+    (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
 
-theorem map_lift (P₀ : Path x₀ x₁) (f : C(X, Y)) : ⟦P₀.map f.continuous⟧ = Quotient.mapFn ⟦P₀⟧ f :=
+@[deprecated (since := "2025-11-13")]
+noncomputable alias _root_.Path.Homotopic.Quotient.mapFn := Quotient.map
+
+theorem mk_map (P₀ : Path x₀ x₁) (f : C(X, Y)) : mk (P₀.map f.continuous) = map (mk P₀) f :=
   rfl
+
+@[deprecated (since := "2025-11-13")]
+noncomputable alias _root_.Path.Homotopic.map_lift := Quotient.mk_map
+
+end Quotient
 
 -- Porting note: we didn't previously need the `α := ...` and `β := ...` hints.
 theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :

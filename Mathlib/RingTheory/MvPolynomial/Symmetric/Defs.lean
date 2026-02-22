@@ -3,9 +3,11 @@ Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang, Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Combinatorics.Enumerative.Partition
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
@@ -52,6 +54,8 @@ As in other polynomial files, we typically use the notation:
 + `φ ψ : MvPolynomial σ R`
 
 -/
+
+@[expose] public section
 
 
 open Equiv (Perm)
@@ -231,6 +235,7 @@ theorem esymmPart_indiscrete (n : ℕ) : esymmPart σ R (.indiscrete n) = esymm 
 theorem map_esymm (n : ℕ) (f : R →+* S) : map f (esymm σ R n) = esymm σ S n := by
   simp_rw [esymm, map_sum, map_prod, map_X]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rename_esymm (n : ℕ) (e : σ ≃ τ) : rename e (esymm σ R n) = esymm τ R n :=
   calc
     rename e (esymm σ R n) = ∑ x ∈ powersetCard n univ, ∏ i ∈ x, X (e i) := by
@@ -279,6 +284,7 @@ theorem support_esymm [DecidableEq σ] [Nontrivial R] (n : ℕ) : (esymm σ R n)
   rw [support_esymm']
   exact biUnion_singleton
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degrees_esymm [Nontrivial R] {n : ℕ} (hpos : 0 < n) (hn : n ≤ Fintype.card σ) :
     (esymm σ R n).degrees = (univ : Finset σ).val := by
   classical

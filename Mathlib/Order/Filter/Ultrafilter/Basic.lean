@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Ultrafilter.Defs
-import Mathlib.Order.Filter.Cofinite
-import Mathlib.Order.ZornAtoms
+module
+
+public import Mathlib.Order.Filter.Ultrafilter.Defs
+public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Order.ZornAtoms
 
 /-!
 # Ultrafilters
@@ -15,6 +17,8 @@ In this file we define
 
 * `hyperfilter`: the ultrafilter extending the cofinite filter.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -75,7 +79,7 @@ open Ultrafilter
 
 lemma atTop_eq_pure_of_isTop [PartialOrder α] {x : α} (hx : IsTop x) :
     (atTop : Filter α) = pure x :=
-  {top := x, le_top := hx : OrderTop α}.atTop_eq
+  { top := x, le_top := hx : OrderTop α }.atTop_eq
 
 lemma atBot_eq_pure_of_isBot [PartialOrder α] {x : α} (hx : IsBot x) :
     (atBot : Filter α) = pure x :=
@@ -109,13 +113,7 @@ theorem bot_ne_hyperfilter : (⊥ : Filter α) ≠ hyperfilter α :=
 theorem notMem_hyperfilter_of_finite {s : Set α} (hf : s.Finite) : s ∉ hyperfilter α := fun hy =>
   compl_notMem hy <| hyperfilter_le_cofinite hf.compl_mem_cofinite
 
-@[deprecated (since := "2025-05-24")]
-alias nmem_hyperfilter_of_finite := notMem_hyperfilter_of_finite
-
 alias _root_.Set.Finite.notMem_hyperfilter := notMem_hyperfilter_of_finite
-
-@[deprecated (since := "2025-05-24")]
-alias _root_.Set.Finite.nmem_hyperfilter := _root_.Set.Finite.notMem_hyperfilter
 
 theorem compl_mem_hyperfilter_of_finite {s : Set α} (hf : Set.Finite s) : sᶜ ∈ hyperfilter α :=
   compl_mem_iff_notMem.2 hf.notMem_hyperfilter

@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+module
+
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 # Products of subalgebras
@@ -15,6 +17,8 @@ In this file we define the product of two subalgebras as a subalgebra of the pro
 
 * `Subalgebra.prod`: the product of two subalgebras.
 -/
+
+@[expose] public section
 
 
 namespace Subalgebra

@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Localization.Equivalence
 
 /-!
 
@@ -14,6 +16,8 @@ is shown in this file that `L.op : Cᵒᵖ ⥤ Dᵒᵖ` is also a localization f
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -21,13 +25,13 @@ open CategoryTheory CategoryTheory.Category
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] {L : C ⥤ D} {W : MorphismProperty C}
+variable {C D : Type*} [Category* C] [Category* D] {L : C ⥤ D} {W : MorphismProperty C}
 
 namespace Localization
 
 /-- If `L : C ⥤ D` satisfies the universal property of the localisation
 for `W : MorphismProperty C`, then `L.op` also does. -/
-def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category E]
+def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category* E]
     (h : StrictUniversalPropertyFixedTarget L W Eᵒᵖ) :
     StrictUniversalPropertyFixedTarget L.op W.op E where
   inverts := h.inverts.op
@@ -68,10 +72,12 @@ instance IsLocalization.unop (L : Cᵒᵖ ⥤ Dᵒᵖ) (W : MorphismProperty C�
       infer_instance)
 
 @[simp]
-lemma op_iff (L : C ⥤ D) (W : MorphismProperty C) :
+lemma IsLocalization.op_iff (L : C ⥤ D) (W : MorphismProperty C) :
     L.op.IsLocalization W.op ↔ L.IsLocalization W :=
   ⟨fun _ ↦ inferInstanceAs (L.op.unop.IsLocalization W.op.unop),
     fun _ ↦ inferInstance⟩
+
+@[deprecated (since := "2025-12-10")] alias op_iff := IsLocalization.op_iff
 
 end Functor
 

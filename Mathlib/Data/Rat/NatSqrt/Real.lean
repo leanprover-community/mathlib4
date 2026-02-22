@@ -3,16 +3,21 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Rat.NatSqrt.Defs
-import Mathlib.Data.Real.Sqrt
+module
+
+public import Mathlib.Data.Rat.NatSqrt.Defs
+public import Mathlib.Data.Real.Sqrt
 
 /-!
 Comparisons between rational approximations to the square root of a natural number
 and the real square root.
 -/
 
+public section
+
 namespace Nat
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ratSqrt_le_realSqrt (x : ℕ) {prec : ℕ} (h : 0 < prec) : ratSqrt x prec ≤ √x := by
   have := ratSqrt_sq_le (x := x) h
   have : (x.ratSqrt prec ^ 2 : ℝ) ≤ ↑x := by norm_cast

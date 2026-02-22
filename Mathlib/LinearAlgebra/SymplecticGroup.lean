@@ -3,7 +3,9 @@ Copyright (c) 2022 Matej Penciak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matej Penciak, Moritz Doll, Fabien Clery
 -/
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+module
+
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # The Symplectic Group
@@ -20,6 +22,8 @@ This file defines the symplectic group and proves elementary properties.
 * For `n = 1` the symplectic group coincides with the special linear group.
 -/
 
+@[expose] public section
+
 
 open Matrix
 
@@ -35,6 +39,7 @@ section JMatrixLemmas
 def J : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 (-1) 1 0
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem J_transpose : (J l R)ᵀ = -J l R := by
   rw [J, fromBlocks_transpose, ← neg_one_smul R (fromBlocks _ _ _ _ : Matrix (l ⊕ l) (l ⊕ l) R),

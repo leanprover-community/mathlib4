@@ -3,14 +3,18 @@ Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Data.Int.ModEq
+module
+
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Tactic.NormNum.DivMod
 
 /-!
 # `norm_num` extensions for `Nat.ModEq` and `Int.ModEq`
 
 In this file we define `norm_num` extensions for `a ≡ b [MOD n]` and `a ≡ b [ZMOD n]`.
 -/
+
+public meta section
 
 namespace Mathlib.Meta.NormNum
 

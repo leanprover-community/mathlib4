@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Results about the grading structure of the tensor algebra
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.GradedAlgebra.Basic
 The main result is `TensorAlgebra.gradedAlgebra`, which says that the tensor algebra is a
 ℕ-graded algebra.
 -/
+
+@[expose] public section
 
 namespace TensorAlgebra
 
@@ -35,6 +39,7 @@ theorem GradedAlgebra.ι_apply (m : M) :
 
 variable {R M}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor algebra is graded by the powers of the submodule `(TensorAlgebra.ι R).range`. -/
 instance gradedAlgebra :
     GradedAlgebra ((LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M) ^ ·) : ℕ → Submodule R _) :=
@@ -51,7 +56,7 @@ instance gradedAlgebra :
     | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
     | add x y i hx hy ihx ihy =>
-      rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]
+      rw [map_add, ihx, ihy, ← map_add]
       rfl
     | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm

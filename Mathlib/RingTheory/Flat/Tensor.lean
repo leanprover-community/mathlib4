@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Jujian Zhang
 -/
-import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.RingTheory.Flat.Basic
+module
+
+public import Mathlib.Algebra.Module.CharacterModule
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Flat modules
@@ -23,6 +25,8 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
   A module `M` over a ring `R` is flat iff for all (finitely generated) ideals `I` of `R`, the
   tensor product of the inclusion `I → R` and the identity `M → M` is injective.
 -/
+
+public section
 
 universe u v
 
@@ -57,6 +61,7 @@ theorem iff_characterModule_baer : Flat R M ↔ Baer R (CharacterModule M) := by
   rw [equiv_iff (N := ULift.{u} M) ULift.moduleEquiv.symm, iff_characterModule_injective,
     ← Baer.iff_injective, Baer.congr (CharacterModule.congr ULift.moduleEquiv)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An `R`-module `M` is flat iff for all ideals `I` of `R`, the tensor product of the
 inclusion `I → R` and the identity `M → M` is injective. See `iff_rTensor_injective` to
 restrict to finitely generated ideals `I`. -/
@@ -70,6 +75,7 @@ theorem iff_lTensor_injective' :
     Flat R M ↔ ∀ (I : Ideal R), Function.Injective (lTensor M I.subtype) := by
   simpa [← comm_comp_rTensor_comp_comm_eq] using iff_rTensor_injective'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A module `M` over a ring `R` is flat iff for all finitely generated ideals `I` of `R`, the
 tensor product of the inclusion `I → R` and the identity `M → M` is injective. See
 `iff_rTensor_injective'` to extend to all ideals `I`. -/

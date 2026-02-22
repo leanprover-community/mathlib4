@@ -3,9 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.Antidiag.Prod
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Multiset.NatAntidiagonal
+module
+
+public import Mathlib.Algebra.Order.Antidiag.Prod
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Multiset.NatAntidiagonal
 
 /-!
 # Antidiagonals in ℕ × ℕ as finsets
@@ -19,6 +21,8 @@ generally for sums going from `0` to `n`.
 This refines files `Data.List.NatAntidiagonal` and `Data.Multiset.NatAntidiagonal`, providing an
 instance enabling `Finset.antidiagonal` on `Nat`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -39,6 +43,7 @@ lemma antidiagonal_eq_map (n : ℕ) :
     antidiagonal n = (range (n + 1)).map ⟨fun i ↦ (i, n - i), fun _ _ h ↦ (Prod.ext_iff.1 h).1⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma antidiagonal_eq_map' (n : ℕ) :
     antidiagonal n =
       (range (n + 1)).map ⟨fun i ↦ (n - i, i), fun _ _ h ↦ (Prod.ext_iff.1 h).2⟩ := by
@@ -111,6 +116,7 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
     rw [add_assoc, add_comm, add_assoc, add_comm j l, hl]
     exact Nat.sub_add_cancel h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma antidiagonal_filter_fst_le_of_le {n k : ℕ} (h : k ≤ n) :
     {a ∈ antidiagonal n | a.fst ≤ k} = (antidiagonal k).map
       (Embedding.prodMap (Embedding.refl ℕ) ⟨_, add_left_injective (n - k)⟩) := by
@@ -135,6 +141,7 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
     rw [add_right_comm, hl]
     exact tsub_add_cancel_of_le h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma antidiagonal_filter_le_snd_of_le {n k : ℕ} (h : k ≤ n) :
     {a ∈ antidiagonal n | k ≤ a.snd} = (antidiagonal (n - k)).map
       (Embedding.prodMap (Embedding.refl ℕ) ⟨_, add_left_injective k⟩) := by
@@ -147,6 +154,7 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
   ext ⟨i, j⟩
   simpa using aux₂ i j
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. -/
 @[simps]
 def antidiagonalEquivFin (n : ℕ) : antidiagonal n ≃ Fin (n + 1) where

@@ -3,9 +3,11 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.BigOperators
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # Inclusion-exclusion principle
@@ -40,6 +42,8 @@ See also `MeasureTheory.integral_biUnion_eq_sum_powerset` for the version with i
 
 * Prove that truncating the series alternatively gives an upper/lower bound to the true value.
 -/
+
+public section
 
 assert_not_exists Field
 
@@ -99,11 +103,13 @@ lemma indicator_biUnion_eq_sum_powerset (s : Finset ι) (S : ι → Set α) (f :
 
 variable [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma prod_indicator_biUnion_finset_sub_indicator (hs : s.Nonempty) (S : ι → Finset α) (a : α) :
     ∏ i ∈ s, (Set.indicator (s.biUnion S) 1 a - Set.indicator (S i) 1 a) = (0 : ℤ) := by
   convert prod_indicator_biUnion_sub_indicator hs (fun i ↦ S i) a
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Inclusion-exclusion principle** for the sum of a function over a union.
 
 The sum of a function `f` over the union of the `S i` over `i ∈ s` is the alternating sum of the
@@ -153,6 +159,7 @@ theorem inclusion_exclusion_card_biUnion (s : Finset ι) (S : ι → Finset α) 
 
 variable [Fintype α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Inclusion-exclusion principle** for the sum of a function over an intersection of complements.
 
 The sum of a function `f` over the intersection of the complements of the `S i` over `i ∈ s` is the

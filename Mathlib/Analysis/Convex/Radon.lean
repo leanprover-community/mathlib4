@@ -3,10 +3,12 @@ Copyright (c) 2023 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Data.Set.Card
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Data.Set.Card
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Radon's theorem on convex sets
@@ -17,14 +19,16 @@ hulls intersect nontrivially.
 As a corollary, we prove Helly's theorem, which is a basic result in discrete geometry on the
 intersection of convex sets. Let `X₁, ⋯, Xₙ` be a finite family of convex sets in `ℝᵈ` with
 `n ≥ d + 1`. The theorem states that if any `d + 1` sets from this family intersect nontrivially,
-then the whole family intersect nontrivially. For the infinite family of sets it is not true, as
-example of `Set.Ioo 0 (1 / n)` for `n : ℕ` shows. But the statement is true, if we assume
-compactness of sets (see `helly_theorem_compact`)
+then the whole family intersects nontrivially. For the infinite family of sets it is not true, as
+the example of `Set.Ioo 0 (1 / n)` for `n : ℕ` shows. But the statement is true if we assume
+compactness of sets (see `helly_theorem_compact`).
 
 ## Tags
 
 convex hull, affine independence, Radon, Helly
 -/
+
+public section
 
 open Fintype Finset Set
 
@@ -99,13 +103,13 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
     · exact fun i hi ↦ h_convex i (mem_of_mem_erase hi)
     · intro J hJ_ss hJ_card
       exact h_inter J (subset_trans hJ_ss (erase_subset i.val s)) hJ_card
-    · simp only [coe_mem, card_erase_of_mem]; cutsat
+    · simp only [coe_mem, card_erase_of_mem]; lia
   /- This family of vectors is not affine independent because the number of them exceeds the
   dimension of the space. -/
   have h_ind : ¬AffineIndependent 𝕜 a := by
     rw [← finrank_vectorSpan_le_iff_not_affineIndependent 𝕜 a (n := (k - 1))]
     · exact (Submodule.finrank_le (vectorSpan 𝕜 (range a))).trans (Nat.le_pred_of_lt h_card)
-    · simp only [card_coe]; cutsat
+    · simp only [card_coe]; lia
   /- Use `radon_partition` to conclude there is a subset `I` of `s` and a point `p : E` which
   lies in the convex hull of either `a '' I` or `a '' Iᶜ`. We claim that `p ∈ ⋂ i ∈ s, F i`. -/
   obtain ⟨I, p, hp_I, hp_Ic⟩ := radon_partition h_ind
@@ -152,6 +156,7 @@ theorem helly_theorem {F : ι → Set E} {s : Finset ι}
   apply Set.Nonempty.mono <| biInter_mono hI_ss_J (fun _ _ ↦ Set.Subset.rfl)
   exact h_inter J hJ_ss hJ_card
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Helly's theorem** for finite sets of convex sets.
 
 If `F` is a finite set of convex sets in a vector space of finite dimension `d`, and any `k ≤ d + 1`
@@ -182,7 +187,7 @@ theorem helly_theorem_set {F : Finset (Set E)}
   obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_subsuperset_card_eq hI_ss hI_card h_card
   have : ⋂₀ (J : Set (Set E)) ⊆ ⋂₀ I := sInter_mono (by simpa [hI_ss])
   apply Set.Nonempty.mono this
-  exact h_inter J hJ_ss (by cutsat)
+  exact h_inter J hJ_ss (by lia)
 
 /-- **Helly's theorem** for families of compact convex sets.
 
@@ -235,6 +240,7 @@ theorem helly_theorem_compact [TopologicalSpace E] [T2Space E] {F : ι → Set E
   apply Set.Nonempty.mono <| biInter_mono hJ_ss (by intro _ _; rfl)
   exact h_inter J hJ_card
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Helly's theorem** for sets of compact convex sets.
 
 If `F` is a set of compact convex sets in a vector space of finite dimension `d`, and any

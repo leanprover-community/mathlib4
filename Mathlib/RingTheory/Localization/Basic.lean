@@ -3,13 +3,15 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Data.Finite.Prod
-import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.OreLocalization.Ring
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
+public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.OreLocalization.Ring
 
 /-!
 # Localizations of commutative rings
@@ -68,6 +70,8 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
+@[expose] public section
+
 assert_not_exists Ideal
 
 open Function
@@ -84,13 +88,14 @@ noncomputable abbrev mapPiEvalRingHom :
     Localization (S.comap <| Pi.evalRingHom R i) →+* Localization S :=
   map (T := S) _ (Pi.evalRingHom R i) le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open Function in
 theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
   let T := S.comap (Pi.evalRingHom R i)
   classical
   refine ⟨fun x₁ x₂ eq ↦ ?_, fun x ↦ ?_⟩
-  · obtain ⟨r₁, s₁, rfl⟩ := mk'_surjective T x₁
-    obtain ⟨r₂, s₂, rfl⟩ := mk'_surjective T x₂
+  · obtain ⟨r₁, s₁, rfl⟩ := exists_mk'_eq T x₁
+    obtain ⟨r₂, s₂, rfl⟩ := exists_mk'_eq T x₂
     simp_rw [map_mk'] at eq
     rw [IsLocalization.eq] at eq ⊢
     obtain ⟨s, hs⟩ := eq
@@ -98,7 +103,7 @@ theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
     obtain rfl | ne := eq_or_ne j i
     · simpa using hs
     · simp [update_of_ne ne]
-  · obtain ⟨r, s, rfl⟩ := mk'_surjective S x
+  · obtain ⟨r, s, rfl⟩ := exists_mk'_eq S x
     exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩,
       by simp [map_mk']⟩
 
@@ -119,18 +124,29 @@ include M in
 variable (R M) in
 protected lemma finite [Finite R] : Finite S := by
   have : Function.Surjective (Function.uncurry (mk' (M := M) S)) := fun x ↦ by
-    simpa using IsLocalization.mk'_surjective M x
+    simpa using IsLocalization.exists_mk'_eq M x
   exact .of_surjective _ this
+
+section CompatibleSMul
+
+variable (N₁ N₂ : Type*) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
 
 variable (M S) in
 include M in
-theorem linearMap_compatibleSMul (N₁ N₂) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁]
-    [Module S N₁] [Module R N₂] [Module S N₂] [IsScalarTower R S N₁] [IsScalarTower R S N₂] :
+theorem linearMap_compatibleSMul [Module S N₁] [Module S N₂]
+    [IsScalarTower R S N₁] [IsScalarTower R S N₂] :
     LinearMap.CompatibleSMul N₁ N₂ S R where
   map_smul f s s' := by
-    obtain ⟨r, m, rfl⟩ := mk'_surjective M s
+    obtain ⟨r, m, rfl⟩ := exists_mk'_eq M s
     rw [← (map_units S m).smul_left_cancel]
     simp_rw [algebraMap_smul, ← map_smul, ← smul_assoc, smul_mk'_self, algebraMap_smul, map_smul]
+
+instance [Module (Localization M) N₁] [Module (Localization M) N₂]
+    [IsScalarTower R (Localization M) N₁] [IsScalarTower R (Localization M) N₂] :
+    LinearMap.CompatibleSMul N₁ N₂ (Localization M) R :=
+  linearMap_compatibleSMul M ..
+
+end CompatibleSMul
 
 variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 
@@ -275,7 +291,7 @@ noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
     obtain ⟨u, hu⟩ := H s.prop
     use x * u.inv
     dsimp [Algebra.ofId, RingHom.toFun_eq_coe, AlgHom.coe_mks]
-    rw [RingHom.map_mul, ← eq, ← hu, mul_assoc, ← RingHom.map_mul]
+    rw [map_mul, ← eq, ← hu, mul_assoc, ← map_mul]
     simp
 
 end at_units
@@ -288,7 +304,7 @@ variable (M N)
 
 theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃ₐ[R] P) :
     IsLocalization M P := by
-  constructor
+  constructor; constructor
   · intro y
     convert (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
     exact (h.commutes y).symm
@@ -301,6 +317,10 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
     rw [← h.symm.toEquiv.injective.eq_iff, ← IsLocalization.eq_iff_exists M S, ← h.symm.commutes, ←
       h.symm.commutes]
     exact id
+
+variable {M} in
+protected theorem self (H : M ≤ IsUnit.submonoid R) : IsLocalization M R :=
+  isLocalization_of_algEquiv _ (atUnits _ _ (S := Localization M) H).symm
 
 theorem isLocalization_iff_of_algEquiv [Algebra R P] (h : S ≃ₐ[R] P) :
     IsLocalization M S ↔ IsLocalization M P :=
@@ -443,6 +463,7 @@ end Localization
 
 open IsLocalization
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `R` is a field, then localizing at a submonoid not containing `0` adds no new elements. -/
 theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRing Rₘ]
     {M : Submonoid R} (hM : (0 : R) ∉ M) (hR : IsField R) [Algebra R Rₘ] [IsLocalization M Rₘ] :
@@ -450,7 +471,7 @@ theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRi
   letI := hR.toField
   replace hM := le_nonZeroDivisors_of_noZeroDivisors hM
   refine ⟨IsLocalization.injective _ hM, fun x => ?_⟩
-  obtain ⟨r, ⟨m, hm⟩, rfl⟩ := mk'_surjective M x
+  obtain ⟨r, ⟨m, hm⟩, rfl⟩ := exists_mk'_eq M x
   obtain ⟨n, hn⟩ := hR.mul_inv_cancel (nonZeroDivisors.ne_zero <| hM hm)
   exact ⟨r * n, by rw [eq_mk'_iff_mul_eq, ← map_mul, mul_assoc, _root_.mul_comm n, hn, mul_one]⟩
 
@@ -591,7 +612,7 @@ theorem map_injective_of_injective' {f : R →+* S} {Rₘ : Type*} [CommRing R�
     (hf' : Function.Injective f) :
     Function.Injective (map Sₘ f hf : Rₘ →+* Sₘ) := by
   refine (injective_iff_map_eq_zero (map Sₘ f hf)).mpr fun x h ↦ ?_
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
   aesop (add simp [map_mk', mk'_eq_zero_iff])
 
 end IsLocalization

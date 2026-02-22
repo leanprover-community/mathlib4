@@ -3,14 +3,18 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.Module.Defs
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.GroupWithZero.Invertible
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Module.Defs
 
 /-!
 # Further lemmas about monotonicity of scalar multiplication
 -/
+
+public section
 
 variable {𝕜 R M : Type*}
 
@@ -18,11 +22,13 @@ section Semiring
 variable [Semiring R] [Invertible (2 : R)] [Lattice M] [AddCommGroup M] [Module R M]
   [IsOrderedAddMonoid M]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 lemma inf_eq_half_smul_add_sub_abs_sub (x y : M) : x ⊓ y = (⅟2 : R) • (x + y - |y - x|) := by
   rw [← two_nsmul_inf_eq_add_sub_abs_sub x y, two_smul, ← two_smul R,
     smul_smul, invOf_mul_self, one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 lemma sup_eq_half_smul_add_add_abs_sub (x y : M) : x ⊔ y = (⅟2 : R) • (x + y + |y - x|) := by
   rw [← two_nsmul_sup_eq_add_add_abs_sub x y, two_smul, ← two_smul R,

@@ -3,7 +3,9 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.List.Sym
+module
+
+public import Mathlib.Data.List.Sym
 
 /-! # Unordered tuples of elements of a multiset
 
@@ -29,6 +31,8 @@ unordered n-tuples from a given multiset. These are multiset versions of `Nat.mu
 * `theorem strictMono_sym2 : StrictMono (Multiset.sym2 : Multiset α → _)`
 
 -/
+
+@[expose] public section
 
 namespace Multiset
 

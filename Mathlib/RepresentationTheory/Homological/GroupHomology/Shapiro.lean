@@ -3,10 +3,12 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
-import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
-import Mathlib.RepresentationTheory.Coinduced
-import Mathlib.RepresentationTheory.Induced
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+public import Mathlib.RepresentationTheory.Coinduced
+public import Mathlib.RepresentationTheory.Induced
 
 /-!
 # Shapiro's lemma for group homology
@@ -20,7 +22,7 @@ Since `Res(S)` is also exact,
 given a projective resolution `P` of `k` as a trivial `k`-linear `G`-representation,
 `Res(S)(P)` is a projective resolution of `k` as a trivial `k`-linear `S`-representation.
 
-In `Mathlib/RepresentationTheory/Homological/GroupHomology/Induced.lean`,
+In `Mathlib/RepresentationTheory/Induced.lean`,
 given a `G`-representation `X`,
 we define a natural isomorphism between the functors `Rep k S ⥤ ModuleCat k` sending `A` to
 `(Ind_S^G A ⊗ X)_G` and to `(A ⊗ Res(S)(X))_S`. Hence a projective resolution `P` of `k` as a
@@ -35,6 +37,8 @@ group homology, we conclude Shapiro's lemma: `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)
 
 -/
 
+@[expose] public section
+
 universe u
 
 namespace groupHomology
@@ -43,6 +47,7 @@ open CategoryTheory Finsupp TensorProduct Rep Representation
 
 variable {k G : Type u} [CommRing k] [Group G] (S : Subgroup G) (A : Rep k S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a subgroup
 `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism of complexes
 `(A ⊗ Res(S)(P))_S ≅ (Ind_S^G(A) ⊗ P)_G`. -/
@@ -52,6 +57,7 @@ noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
       P.complex.coinvariantsTensorObj (ind S.subtype A) :=
   (NatIso.mapHomologicalComplex (coinvariantsTensorIndNatIso S.subtype A).symm _).app _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A).` -/
 noncomputable def indIso [DecidableEq G] (A : Rep k S) (n : ℕ) :
