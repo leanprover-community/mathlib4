@@ -188,7 +188,17 @@ lemma RingHom.FormallySmooth.of_quotient_of_flat {S : Type v} [CommRing S] (f : 
       P.Ring P.Ring).compl₂ (KaehlerDifferential.map R (R ⧸ I) P.Ring P'.Ring)).comp
       (Ideal.Quotient.mkₐ P.Ring IS).toLinearMap)
   have comm : (cottoTen'.restrictScalars P.Ring).comp mapcot = mapTen.comp cottoTen := by
+    ext x
+    rcases Ideal.toCotangent_surjective _ x with ⟨y, hy⟩
+    simp only [← hy, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, mapcot]
+    change (KaehlerDifferential.kerToTensor (R ⧸ I) P'.Ring (S ⧸ IS))
+      ⟨(Ideal.Quotient.mkₐ P.Ring IP) y.1, Jle y.2⟩ =
+      mapTen ((KaehlerDifferential.kerToTensor R P.Ring S) y)
+
+    --simp [mapTen]
     --use `KaehlerDifferential.map_D`
+    sorry
+  have cotsurj : Function.Surjective mapcot := by
     sorry
   sorry
 
