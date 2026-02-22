@@ -31,7 +31,8 @@ open PowerSeries Polynomial
 variable (k : Type*) [Field k]
 
 /-- We define the commutative ring `A` as `{f ∈ k(t)⟦Y⟧ | f(0) ∈ k}` for a field `k`. -/
-abbrev A : Subring (RatFunc k)⟦X⟧ := (RatFunc.C (K := k)).range.comap PowerSeries.constantCoeff
+noncomputable abbrev A : Subring (RatFunc k)⟦X⟧ :=
+  (RatFunc.C (K := k)).range.comap PowerSeries.constantCoeff
 
 set_option backward.isDefEq.respectTransparency false in
 theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
