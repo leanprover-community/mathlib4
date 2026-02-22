@@ -81,7 +81,7 @@ lemma map_of_loc_one_jet_spec [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
   · apply (differentiableAt_const e').add
     apply diff.differentiableAt.comp
     fun_prop
-  · simp
+  · simp only [map_sub, fderiv_const_add]
     rw [fderiv_sub_const]
     change (fderiv 𝕜 φ e) u = _
     rw [φ.hasFDerivAt.fderiv]
@@ -95,13 +95,6 @@ def map_of_one_jet {x : M} (u : TangentSpace I x) {x' : M'} (u' : TangentSpace I
   ψ.symm ∘
   (map_of_loc_one_jet 𝕜 (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u')) ∘
   φ
-
-lemma ContinuousLinearMap.IsInvertible.injective {R M M₂ : Type*} [TopologicalSpace M]
-    [TopologicalSpace M₂] [Semiring R] [AddCommMonoid M] [Module R M]
-    [AddCommMonoid M₂] [Module R M₂] {f : M →L[R] M₂} (h : f.IsInvertible) :
-    Function.Injective f := by
-  rcases h with ⟨ψ, hψ⟩
-  refine Function.HasLeftInverse.injective ⟨ψ.symm, fun x ↦ ψ.symm_apply_eq.mpr (by simp [← hψ])⟩
 
 -- TODO: version assuming `x` and `x'` are in the interior, or maybe `x` is enough.
 
@@ -457,7 +450,7 @@ lemma zeroX (hf : IsCovariantDerivativeOn F f s)
   -- TODO: writing MDiffAt here yields an error!
   have : MDifferentiableAt I (I.prod 𝓘(𝕜, E)) (T% (fun x ↦ (0 : TangentSpace I x))) x := by
     apply ContMDiff.mdifferentiableAt (n := 1) --(le_refl 1)
-    swap; simp_all
+    swap; · simp_all
     sorry -- zero section is smooth!
   simpa using IsCovariantDerivativeOn.addX f hf (X := 0) this this hσ
 
@@ -925,7 +918,7 @@ lemma differenceAux_tensorial
       exact hcov.differenceAux_smul_eq hcov' σ f hx hX' hf x
     · intro σ σ' hσ hσ'
       unfold φ differenceAux
-      simp
+      simp only [Pi.sub_apply]
       rw [hcov.addσ, hcov'.addσ] <;> try assumption
       abel
 
@@ -1075,7 +1068,7 @@ lemma cov_eq_proj (hcov : IsCovariantDerivativeOn F cov s) (X : Π x : M, TM x) 
 
 noncomputable def horiz (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) :
     Submodule ℝ (TM x × F) :=
-  LinearMap.ker (hcov.projection x f)
+  (hcov.projection x f).ker
 
 lemma horiz_vert_direct_sum (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) :
     IsCompl (hcov.horiz x f) (.prod ⊥ ⊤) := by
@@ -1096,7 +1089,7 @@ lemma mem_horiz_iff_exists (hcov : IsCovariantDerivativeOn F cov s) {x : M} {f :
                  cov (extend I E u) σ x = 0 := by
   constructor
   · intro huv
-    simp [horiz] at huv
+    simp only [horiz, LinearMap.mem_ker, ContinuousLinearMap.coe_coe, projection_apply] at huv
     let w : TangentSpace 𝓘(ℝ, F) f := v
     by_cases hu : u = 0
     · subst hu
@@ -1111,7 +1104,7 @@ lemma mem_horiz_iff_exists (hcov : IsCovariantDerivativeOn F cov s) {x : M} {f :
       · rwa [mdifferentiableAt_section]
     · rwa [mdifferentiableAt_section]
   · rintro ⟨σ, σ_diff, rfl, rfl, covσ⟩
-    simp [horiz, ← covσ]
+    simp only [horiz, LinearMap.mem_ker, ContinuousLinearMap.coe_coe, projection_apply, ← covσ]
     rw [hcov.eq_one_form σ_diff, extend_apply_self]
 
 end projection_trivial_bundle
@@ -1148,11 +1141,11 @@ def proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
 
 noncomputable def horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
-  LinearMap.ker (cov.proj v)
+  (cov.proj v).ker
 
 noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
-  LinearMap.ker (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj v)
+  (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj v).ker
 
 lemma horiz_vert_direct_sum (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     IsCompl (cov.horiz v) (vert v) := by

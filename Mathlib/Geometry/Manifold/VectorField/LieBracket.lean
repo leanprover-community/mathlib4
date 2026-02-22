@@ -389,7 +389,7 @@ lemma aux_computation2 :
     have : fderivWithin 𝕜 (φ ∘ φ.symm) (range I) (φ x) = fderivWithin 𝕜 id (range I) (φ x) := by
       refine fderivWithin_congr' ?_ ?_
       · intro x' hx'
-        simp
+        simp only [comp_apply, id_eq]
         refine PartialEquiv.right_inv φ ?_
         rw [extChartAt_target]
         refine ⟨?_, hx'⟩
@@ -428,7 +428,6 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
     rwa [extChartAt_self_eq] at hf
   let aux := lieBracketWithin_smul_right (V := V') hf'
     hW.differentiableWithinAt_mpullbackWithin_vectorField hs
-
   -- rw [← Pi.smul_def']
   -- We need the cast, since on the nose `B` is a map `E → E`,
   -- while we need a map between tangent spaces.
@@ -440,11 +439,16 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   -- We prove the equality of each summand separately.
   rw [← Pi.add_def, mpullback_add_apply]; congr; swap
   · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
-
   -- This part is still TODO/ in progress!!
   unfold A
-  simp [mfderivWithin, hf]
-  simp [mpullback]
+  simp only [mpullback, extChartAt.eq_1, OpenPartialHomeomorph.extend.eq_1, PartialEquiv.coe_trans,
+    ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.toFun_eq_coe, comp_apply, extChartAt,
+    OpenPartialHomeomorph.extend, map_smul, mfderivWithin, hf, ↓reduceIte, writtenInExtChartAt,
+    OpenPartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source,
+    OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv,
+    PartialEquiv.trans_refl, PartialEquiv.refl_coe, PartialEquiv.coe_trans_symm,
+    OpenPartialHomeomorph.coe_coe_symm, ModelWithCorners.toPartialEquiv_coe_symm,
+    CompTriple.comp_eq]
   have cleanup1 : I ((chartAt H x) x) = x' := rfl
   have cleanup2 : f ∘ (chartAt H x).symm ∘ I.symm = f' := rfl
   rw [cleanup1, cleanup2, ← aux_computation x W]
@@ -501,8 +505,7 @@ lemma mlieBracketWithin_const_smul_left
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (c • V) W s x = c • mlieBracketWithin I V W s x := by
   have aux := mlieBracketWithin_smul_left (mdifferentiableWithinAt_const (c := c)) (W := W) hV hs
-  simp [mfderivWithin_const] at aux
-  exact aux
+  simpa [mfderivWithin_const] using aux
 
 lemma mlieBracket_const_smul_left
     (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x) :
@@ -516,8 +519,7 @@ lemma mlieBracketWithin_const_smul_right
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (c • W) s x = c • mlieBracketWithin I V W s x := by
   have aux := mlieBracketWithin_smul_right (mdifferentiableWithinAt_const (c := c)) (V := V) hW hs
-  simp [mfderivWithin_const] at aux
-  exact aux
+  simpa [mfderivWithin_const] using aux
 
 lemma mlieBracket_const_smul_right
     (hW : MDifferentiableAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) x) :

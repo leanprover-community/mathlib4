@@ -58,7 +58,7 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
       · rw [Pi.smul_apply', Pi.smul_apply', h]
       · simp [notMem_support.mp fun a ↦ h (hψ a)]
     have hψ' : MDifferentiableAt I 𝓘(ℝ) ψ x :=
-       ψ.contMDiffAt.mdifferentiableAt ENat.LEInfty.out
+       ψ.contMDiffAt.mdifferentiableAt (by simp)
     calc φ σ x
       _ = φ ((ψ : M → ℝ) • σ) x := by simp [φ_smul _ _ hψ' hσ]
       _ = φ ((ψ : M → ℝ) • σ') x := by rw [funext this]
@@ -71,16 +71,16 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
     induction s using Finset.induction_on with
     | empty =>
        simp only [Finset.sum_empty]
-       have h₁ : MDiffAt (fun x' : M ↦ (0 : ℝ)) x := by
-         exact contMDiffAt_const.mdifferentiableAt le_rfl
+       have h₁ : MDiffAt (fun x' : M ↦ (0 : ℝ)) x := mdifferentiableAt_const
        rw [show (fun x' : M ↦ (0 : V x')) = (0 : M → ℝ) • fun x' ↦ 0 by simp;rfl]
        rw [φ_smul]
        simp
-       exact h₁
-       apply (contMDiff_zeroSection _ _).mdifferentiableAt ENat.LEInfty.out
+       · exact h₁
+       -- TODO: add mdifferentiable_zeroSection and/or use it!
+       apply (contMDiff_zeroSection _ _).mdifferentiableAt one_ne_zero
     | insert a s ha h =>
         change φ (fun x' : M ↦ ∑ i ∈ (insert a s : Finset ι), σ i x') x = _
-        simp [Finset.sum_insert ha, ← h]
+        simp only [Finset.sum_insert ha, ← h]
         exact φ_add _ _ (hσ a) (.sum_section hσ)
   have x_mem := (FiberBundle.mem_baseSet_trivializationAt F V x)
   let b := Basis.ofVectorSpace ℝ F
@@ -88,7 +88,7 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
   let s := b.localFrame (trivializationAt F V x)
   let c := Basis.localFrame_coeff I t b
   have hs (i) : MDiffAt (T% (s i)) x:=
-    (contMDiffAt_localFrame_of_mem 1 _ b i x_mem).mdifferentiableAt le_rfl
+    (contMDiffAt_localFrame_of_mem 1 _ b i x_mem).mdifferentiableAt (by simp)
   have hc {σ : (x : M) → V x} (hσ : MDiffAt (T% σ) x) (i) :
       MDiffAt ((c i) σ) x :=
     mdifferentiableAt_localFrame_coeff x_mem b hσ i
@@ -140,7 +140,7 @@ lemma tensoriality_criterion' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDi
        simp
     | insert a s ha h =>
       change φ (fun x' : M ↦ ∑ i ∈ (insert a s : Finset ι), σ i x') x = _
-      simp [Finset.sum_insert ha, ← h]
+      simp only [Finset.sum_insert ha, ← h]
       erw [φ_add]
   have x_mem := (FiberBundle.mem_baseSet_trivializationAt F V x)
   let b := Basis.ofVectorSpace ℝ F
