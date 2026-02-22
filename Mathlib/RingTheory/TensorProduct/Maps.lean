@@ -272,8 +272,7 @@ section CompatibleSMul
 variable (R S T A B : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring T] [Semiring A]
   [Semiring B]
 variable [Algebra R A] [Algebra R B] [Algebra S A] [Algebra S B]
-variable [Algebra R T] [Algebra T A] [IsScalarTower R T A]
-variable [Algebra S T] [IsScalarTower S T A]
+variable [Algebra T A] [SMulCommClass R T A] [SMulCommClass S T A]
 variable [SMulCommClass R S A] [CompatibleSMul R S A B]
 
 /-- If A and B are both R- and S-algebras and their actions on them commute,
