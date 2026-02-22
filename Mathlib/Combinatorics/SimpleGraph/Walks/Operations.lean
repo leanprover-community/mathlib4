@@ -692,6 +692,10 @@ lemma concat_dropLast (p : G.Walk u v) (hp : G.Adj p.penultimate v) :
     p.tail.length + 1 = p.length := by
   rw [← length_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
+lemma length_tail_sub_one {p : G.Walk u v} (hp : ¬p.Nil) :
+    p.tail.length = p.length - 1 := by
+  rw [← length_tail_add_one hp, Nat.add_one_sub_one]
+
 protected lemma Nil.tail {p : G.Walk v w} (hp : p.Nil) : p.tail.Nil := by
   cases p <;> simp [not_nil_cons] at hp ⊢
 
@@ -717,31 +721,6 @@ lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
   rw [← cons_support_tail p hp, List.tail_cons]
 
 @[deprecated (since := "2025-08-26")] alias support_tail := support_tail_of_not_nil
-
-lemma dropLast_reverse_eq_reverse_tail {u v} (p : G.Walk u v) :
-    p.dropLast.reverse = p.reverse.tail.copy p.snd_reverse rfl := by
-  apply ext_support
-  rw [support_reverse, support_copy]
-  induction p with
-  | nil => rfl
-  | cons ha p ih =>
-    by_cases h : p.length = 0
-    · have := (nil_iff_length_eq.mpr h).eq
-      subst this
-      rw [length_eq_zero_iff.mp h]
-      simp
-    rw [dropLast] at ih
-    simp only [dropLast, length_cons, Nat.add_one_sub_one, take_cons_eq ha _ _ (by simpa),
-      cons_copy, support_copy, support_cons, List.reverse_cons, ih]
-    nth_rw 2 [tail]
-    simp only [drop_support_eq_support_drop_min, p.reverse_cons ha, ← concat_eq_append,
-      length_concat, length_reverse, Nat.le_add_left, inf_of_le_left, support_concat,
-      support_reverse, List.concat_eq_append, List.drop_one, ne_eq, List.reverse_eq_nil_iff,
-      support_ne_nil, not_false_eq_true, List.tail_append_of_ne_nil, List.tail_reverse,
-      List.append_cancel_right_eq]
-    rw [← ih, List.reverse_inj, take_support_eq_support_take_succ, Nat.sub_add_cancel
-      (Nat.one_le_iff_ne_zero.mpr h), ← Nat.add_sub_cancel p.length 1, ← length_support,
-      List.dropLast_eq_take]
 
 @[simp] lemma getVert_copy {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
     (p.copy h h').getVert i = p.getVert i := by
@@ -784,6 +763,18 @@ lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k
   refine ext_getVert_le_length (hpq.antisymm ?_) fun k _ ↦ h k
   by_contra!
   exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
+
+lemma dropLast_eq_reverse_tail_reverse {u v} (p : G.Walk u v) :
+    p.dropLast = (p.reverse.tail.copy p.snd_reverse rfl).reverse := by
+  by_cases h : p.reverse.Nil
+  · have := h.eq
+    subst this
+    rw [(nil_reverse.mp h).eq_nil]
+    simp
+  refine ext_getVert fun k ↦ ?_
+  rw [reverse_copy, getVert_copy, dropLast, take_getVert, getVert_reverse, getVert_tail,
+    getVert_reverse, length_tail_sub_one h, length_reverse]
+  grind
 
 end Walk
 
