@@ -32,7 +32,7 @@ theorem FG.map {R S : Type*} [Semiring R] [Semiring S] {I : Ideal R} (h : I.FG) 
   classical
     obtain ⟨s, hs⟩ := h
     refine ⟨s.image f, ?_⟩
-    rw [Finset.coe_image, ← Ideal.map_span, hs]
+    rw [Finset.coe_image, ← map_span, hs]
 
 theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : R →+* S)
     (g : S →+* A) (hf : (RingHom.ker f).FG) (hg : (RingHom.ker g).FG)
@@ -49,32 +49,27 @@ theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : 
 
 theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (h : I.radical.FG) :
     ∃ n : ℕ, I.radical ^ n ≤ I := by
-  have := le_refl I.radical; revert this
+  have := le_refl I.radical
+  revert this
   refine Submodule.fg_induction _ _ (fun J => J ≤ I.radical → ∃ n : ℕ, J ^ n ≤ I) ?_ ?_ _ h
   · intro x hx
     obtain ⟨n, hn⟩ := hx (subset_span (Set.mem_singleton x))
-    exact ⟨n, by rwa [← Ideal.span, span_singleton_pow, span_le, Set.singleton_subset_iff]⟩
+    exact ⟨n, by rwa [← span, span_singleton_pow, span_le, Set.singleton_subset_iff]⟩
   · intro J K hJ hK hJK
-    obtain ⟨n, hn⟩ := hJ fun x hx => hJK <| Ideal.mem_sup_left hx
-    obtain ⟨m, hm⟩ := hK fun x hx => hJK <| Ideal.mem_sup_right hx
+    obtain ⟨n, hn⟩ := hJ fun x hx => hJK <| mem_sup_left hx
+    obtain ⟨m, hm⟩ := hK fun x hx => hJK <| mem_sup_right hx
     use n + m
-    rw [← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup, Finset.sup_le_iff]
-    refine fun i _ => Ideal.mul_le_right.trans ?_
+    rw [← add_eq_sup, add_pow, sum_eq_sup, Finset.sup_le_iff]
+    refine fun i _ => mul_le_right.trans ?_
     obtain h | h := le_or_gt n i
-    · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow_right h).trans hn)
-    · apply Ideal.mul_le_left.trans
-      refine (Ideal.pow_le_pow_right ?_).trans hm
-      rw [add_comm, Nat.add_sub_assoc h.le]
-      apply Nat.le_add_right
+    · exact mul_le_right.trans ((pow_le_pow_right h).trans hn)
+    · exact mul_le_left.trans ((pow_le_pow_right (by omega)).trans hm)
 
 theorem exists_pow_le_of_le_radical_of_fg_radical {R : Type*} [CommSemiring R] {I J : Ideal R}
     (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
     ∃ k : ℕ, I ^ k ≤ J := by
   obtain ⟨k, hk⟩ := J.exists_radical_pow_le_of_fg hJ
-  use k
-  calc
-    I ^ k ≤ J.radical ^ k := Ideal.pow_right_mono hIJ _
-    _ ≤ J := hk
+  exact ⟨k, (pow_right_mono hIJ k).trans hk⟩
 
 lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Ideal R}
     (h' : I ≤ J.radical) (h : I.FG) :
@@ -82,15 +77,14 @@ lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Idea
   revert h'
   apply Submodule.fg_induction _ _ _ _ _ I h
   · intro x hJ
-    simp only [Ideal.submodule_span_eq, Ideal.span_le,
-      Set.singleton_subset_iff, SetLike.mem_coe] at hJ
+    simp only [submodule_span_eq, span_le, Set.singleton_subset_iff, SetLike.mem_coe] at hJ
     obtain ⟨n, hn⟩ := hJ
-    refine ⟨n, by simpa [Ideal.span_singleton_pow, Ideal.span_le]⟩
+    refine ⟨n, by simpa [span_singleton_pow, span_le]⟩
   · intro I₁ I₂ h₁ h₂ hJ
     obtain ⟨n₁, hn₁⟩ := h₁ (le_sup_left.trans hJ)
     obtain ⟨n₂, hn₂⟩ := h₂ (le_sup_right.trans hJ)
     use n₁ + n₂
-    exact Ideal.sup_pow_add_le_pow_sup_pow.trans (sup_le hn₁ hn₂)
+    exact sup_pow_add_le_pow_sup_pow.trans (sup_le hn₁ hn₂)
 
 theorem _root_.Submodule.FG.smul {I : Ideal R} [I.IsTwoSided] {N : Submodule R M}
     (hI : I.FG) (hN : N.FG) : (I • N).FG := by
@@ -104,6 +98,7 @@ theorem FG.mul {I J : Ideal R} [I.IsTwoSided] (hI : I.FG) (hJ : J.FG) : (I * J).
 
 theorem FG.pow {I : Ideal R} [I.IsTwoSided] {n : ℕ} (hI : I.FG) : (I ^ n).FG :=
   n.rec (by rw [I.pow_zero, one_eq_top]; exact fg_top R) fun n ih ↦ by
-    rw [IsTwoSided.pow_succ]; exact hI.mul ih
+    rw [IsTwoSided.pow_succ]
+    exact hI.mul ih
 
 end Ideal
