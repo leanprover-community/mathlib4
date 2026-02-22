@@ -136,11 +136,8 @@ lemma circleAverage_re_smul_on_ball_zero_aux {φ θ : ℝ} {r : ℝ} :
       / (r * exp (θ * I) - R * exp (φ * I))
       = ((R * exp (θ * I) + r * exp (φ * I)) / (R * exp (θ * I) - r * exp (φ * I))).re := by
   simp only [Complex.ext_iff, exp_ofReal_mul_I, add_re, sub_re, mul_re, div_re, ofReal_re,
-      I_re, I_im, add_im, sub_im, mul_im, div_im, ofReal_im, normSq_apply]
-  ring_nf
-  simp_rw [Real.sin_sq]
-  ring_nf
-  tauto
+    I_re, I_im, add_im, sub_im, mul_im, div_im, ofReal_im, normSq_apply]
+  grind [Real.sin_sq]
 
 /-!
 ## Integral Formulas
@@ -154,40 +151,23 @@ private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
   rcases le_or_gt R 0 with hR | hR
   · simp_all [(ball_eq_empty).2 hR]
   -- Trivial case: w is at the center
-  by_cases h₁w : w = 0
-  · subst w
-    simp only [add_zero, sub_zero]
-    have : EqOn (fun z ↦ (z / z).re • f z) f (sphere 0 |R|) := by
-      intro z hz
-      have : z ≠ 0 := by
-        by_contra h
-        simp_all [mem_sphere_iff_norm, sub_self, norm_zero, eq_comm, abs_eq_zero]
-      simp [div_self this]
-    rw [circleAverage_congr_sphere this]
-    rw [← abs_of_pos hR] at hf
-    apply hf.circleAverage
+  obtain rfl | h₁w := eq_or_ne w 0
+  · refine (circleAverage_congr_sphere fun z hz ↦ ?_).trans (abs_of_pos hR ▸ hf |>.circleAverage)
+    rw [abs_of_pos hR] at hz
+    simp [div_self (a := z) (by aesop)]
   -- General case: positive radius, w is not at the center
   let W := R * exp (w.arg * I)
   let q := ‖w‖ / R
-  have h₁q : 0 < q := div_pos (norm_pos_iff.mpr h₁w) hR
-  have h₂q : q < 1 := by
-    apply (div_lt_one hR).2
-    rwa [mem_ball, dist_zero_right] at hw
+  have h₁q : 0 < q := by positivity
+  have h₂q : q < 1 := by simpa [← div_lt_one hR] using hw
   -- Lemma used by automatisation tactics to ensure that quotients are non-zero.
   have η₀ {x : ℂ} (h : ‖x‖ ≤ R) : q * x - W ≠ 0 := by
-    by_cases h₁ : x = 0
-    · aesop
-    · have : ‖q * x‖ < ‖W‖ := by
-        calc ‖q * x‖
-          _ = ‖q‖ * ‖x‖ := by
-            rw [Complex.norm_mul, norm_real, norm_eq_abs]
-          _ < ‖x‖ := by
-            rw [norm_eq_abs, abs_of_pos h₁q]
-            apply (mul_lt_iff_lt_one_left _).2 h₂q
-            aesop
-          _ ≤ ‖W‖ := by
-            simp_all [W, abs_of_pos hR]
-      grind
+    suffices ‖q * x‖ < ‖W‖ by grind
+    calc
+      ‖q * x‖ = q * ‖x‖ := by simp [abs_of_pos h₁q]
+      _ ≤ q * R := by gcongr
+      _ < 1 * R := by gcongr
+      _ = ‖W‖ := by simp [W, abs_of_pos hR]
   -- Main computation starts here
   calc Real.circleAverage (fun z ↦ ((z + w) / (z - w)).re • f z) 0 R
     _ = Real.circleAverage (fun z ↦ (z / (z - w) - (q • z) / (q • z - W)) • f z) 0 R := by
