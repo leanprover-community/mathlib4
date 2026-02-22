@@ -43,6 +43,9 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
   {EN : Type*} [NormedAddCommGroup EN] [NormedSpace 𝕜 EN]
   {HN : Type*} [TopologicalSpace HN] (IN : ModelWithCorners 𝕜 EN HN)
   {N : Type u} [TopologicalSpace N] [ChartedSpace HN N]
+  {EP : Type*} [NormedAddCommGroup EP] [NormedSpace 𝕜 EP]
+  {HP : Type*} [TopologicalSpace HP] (IP : ModelWithCorners 𝕜 EP HP)
+  {P : Type u} [TopologicalSpace P] [ChartedSpace HP P]
 
 open AlgebraicGeometry Manifold TopologicalSpace Topology
 
@@ -173,6 +176,17 @@ lemma IsManifold.stalkMap_locallyRingedSpaceMap_evalHom (f : M → N) (hf : Cont
       smoothSheafCommRing.evalHom IN 𝓘(𝕜) N 𝕜 (f x) :=
   IsManifold.stalkMap_locallyRingedSpaceMapAux f hf x
 
+variable (IM M) in
+lemma IsManifold.locallyRingedSpace_id :
+    IsManifold.locallyRingedSpaceMap (IM := IM) (IN := IM) (M := M) id contMDiff_id = 𝟙 _ :=
+  rfl
+
+lemma IsManifold.locallyRingedSpace_comp {f : M → N} (hf : ContMDiff IM IN ∞ f)
+    {g : N → P} (hg : ContMDiff IN IP ∞ g) :
+    IsManifold.locallyRingedSpaceMap (g ∘ f) (hg.comp hf) =
+      IsManifold.locallyRingedSpaceMap f hf ≫ IsManifold.locallyRingedSpaceMap g hg :=
+  rfl
+
 -- TODO: This holds more generally if `U` is replaced by an open embedding that
 -- is also a smooth immersion.
 instance (U : Opens M) :
@@ -200,6 +214,7 @@ instance (U : Opens M) :
         apply b.symm_apply_apply
 
 /-- Viewing a manifold as a locally ringed space commutes with restriction to open subsets. -/
+@[simps]
 def IsManifold.restrictLocallyRingedSpaceIso (U : Opens M) :
     (IsManifold.locallyRingedSpace IM M).restrict U.isOpenEmbedding ≅
       IsManifold.locallyRingedSpace IM U where
