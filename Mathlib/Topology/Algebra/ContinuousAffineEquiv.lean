@@ -85,8 +85,6 @@ attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 /-- Coerce continuous affine equivalences to affine equivalences. -/
 instance coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ ≃ᵃ[k] P₂) := ⟨toAffineEquiv⟩
 
-@[deprecated (since := "2025-08-15")] alias coe_injective := toAffineEquiv_injective
-
 instance instFunLike : FunLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
   coe f := f.toAffineEquiv
   coe_injective' _ _ h := toAffineEquiv_injective (DFunLike.coe_injective h)

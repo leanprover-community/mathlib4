@@ -296,6 +296,7 @@ protected theorem IsConnected.image [TopologicalSpace β] {s : Set α} (H : IsCo
     (hf : ContinuousOn f s) : IsConnected (f '' s) :=
   ⟨image_nonempty.mpr H.nonempty, H.isPreconnected.image f hf⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isPreconnected_closed_iff {s : Set α} :
     IsPreconnected s ↔ ∀ t t', IsClosed t → IsClosed t' →
       s ⊆ t ∪ t' → (s ∩ t).Nonempty → (s ∩ t').Nonempty → (s ∩ (t ∩ t')).Nonempty :=

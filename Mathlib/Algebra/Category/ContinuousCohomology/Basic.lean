@@ -113,6 +113,7 @@ lemma d_succ (n : ℕ) :
     d R G (n + 1) = whiskerLeft (functor R G (n + 1)) (const R G) -
       (by exact whiskerRight (d R G n) (I R G)) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma d_comp_d (n : ℕ) :
     d R G n ≫ d R G (n + 1) = 0 := by
@@ -135,6 +136,7 @@ def complex : CochainComplex (Action (TopModuleCat R) G ⥤ Action (TopModuleCat
 
 end MultiInd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor taking an `R`-linear `G`-representation to its `G`-invariant submodule. -/
 def invariants : Action (TopModuleCat R) G ⥤ TopModuleCat R where
   obj M := .of R
@@ -150,6 +152,7 @@ def invariants : Action (TopModuleCat R) G ⥤ TopModuleCat R where
 instance : (invariants R G).Linear R where
 instance : (invariants R G).Additive where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `homogeneousCochains R G` is the functor taking
 an `R`-linear `G`-representation to the complex of homogeneous cochains. -/
 def homogeneousCochains : Action (TopModuleCat R) G ⥤ CochainComplex (TopModuleCat R) ℕ :=
@@ -162,6 +165,7 @@ noncomputable
 def _root_.continuousCohomology (n : ℕ) : Action (TopModuleCat R) G ⥤ TopModuleCat R :=
   homogeneousCochains R G ⋙ HomologicalComplex.homologyFunctor _ _ n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `0`-homogeneous cochains are isomorphic to `Xᴳ`. -/
 def kerHomogeneousCochainsZeroEquiv
     (X : Action (TopModuleCat R) G) (n : ℕ) (hn : n = 1) :
@@ -197,6 +201,7 @@ def kerHomogeneousCochainsZeroEquiv
   continuous_invFun := continuous_induced_rng.mpr
     (continuous_induced_rng.mpr ((ContinuousLinearMap.const R G).cont.comp continuous_subtype_val))
 
+set_option backward.isDefEq.respectTransparency false in
 open ShortComplex HomologyData in
 /-- `H⁰_cont(G, X) ≅ Xᴳ`. -/
 noncomputable

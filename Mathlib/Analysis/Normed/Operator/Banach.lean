@@ -223,6 +223,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   rw [sub_zero] at feq
   exact ⟨x, feq, x_ineq⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Banach open mapping theorem: a surjective bounded linear map between Banach spaces is
 open. -/
 protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
@@ -340,6 +341,7 @@ namespace ContinuousLinearMap
 
 variable [CompleteSpace E] [RingHomInvPair σ' σ] {f : E →SL[σ] F}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An injective continuous linear map with a closed range defines a continuous linear equivalence
 between its domain and its range. -/
 noncomputable def equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
@@ -450,6 +452,7 @@ theorem isUnit_iff_isUnit_toLinearMap {f : E →L[𝕜] E} :
     IsUnit f ↔ IsUnit (f : E →ₗ[𝕜] E) :=
   f.isUnit_iff_bijective.trans (Module.End.isUnit_iff _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Intermediate definition used to show
 `ContinuousLinearMap.closed_complemented_range_of_isCompl_of_ker_eq_bot`.
 
@@ -465,6 +468,7 @@ noncomputable def coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F
         exact h.disjoint)
     (by simp only [range_coprod, Submodule.range_subtypeL, h.sup_eq_top])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_eq_map_coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
     (h : IsCompl f.range G) [CompleteSpace G] (hker : f.ker = ⊥) :
@@ -493,6 +497,7 @@ section ClosedGraphThm
 variable [CompleteSpace E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F] (g : E →ₗ[𝕜] F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **closed graph theorem** : a linear map between two Banach spaces whose graph is closed
 is continuous. -/
 theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| E × F)) :
