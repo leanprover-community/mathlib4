@@ -184,6 +184,14 @@ theorem liftProp_iff {P : (H → H') → Set H → H → Prop} {f : M → M'} :
       Continuous f ∧ ∀ x, P (chartAt H' (f x) ∘ f ∘ (chartAt H x).symm) univ (chartAt H x x) := by
   simp_rw [LiftProp, liftPropAt_iff, forall_and, continuous_iff_continuousAt]
 
+lemma liftPropWithinAt_subtypeVal_comp_iff {P : (H → H') → Set H → H → Prop}
+    {U : Opens M'} (f : M → U) (s : Set M) (x : M) :
+    LiftPropWithinAt P (Subtype.val ∘ f) s x ↔ LiftPropWithinAt P f s x := by
+  simp only [ChartedSpace.liftPropWithinAt_iff']
+  congrm ?_ ∧ ?_
+  · exact Topology.IsEmbedding.subtypeVal.isInducing.continuousWithinAt_iff.symm
+  · rfl
+
 end ChartedSpace
 
 open ChartedSpace
@@ -546,6 +554,14 @@ theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalI
   apply hG.liftProp_id hQ
 
 end LocalInvariantProp
+
+lemma ChartedSpace.liftPropWithinAt_subtypeVal_comp_iff {U : Opens M'} (f : M → U)
+    (s : Set M) (x : M) :
+    LiftPropWithinAt P (Subtype.val ∘ f) s x ↔ LiftPropWithinAt P f s x := by
+  simp only [ChartedSpace.liftPropWithinAt_iff']
+  congrm ?_ ∧ ?_
+  · exact Topology.IsEmbedding.subtypeVal.isInducing.continuousWithinAt_iff.symm
+  · rfl
 
 section LocalStructomorph
 
