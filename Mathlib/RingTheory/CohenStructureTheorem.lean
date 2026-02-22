@@ -163,7 +163,7 @@ lemma RingHom.FormallySmooth.of_quotient_of_flat {S : Type v} [CommRing S] (f : 
   let J := RingHom.ker (algebraMap P.Ring S)
   let J' := RingHom.ker (algebraMap P'.Ring (S ⧸ IS))
   classical
-  have infeq : J ⊓ IP = J * IP := by
+  have infeq : IP ⊓ J = IP * J := by
     --this needs `S` being flat
     sorry
   apply (Algebra.FormallySmooth.iff_split_injection (fun x ↦ ⟨P.σ x, P.algebraMap_σ x⟩)).mpr
@@ -177,10 +177,40 @@ lemma RingHom.FormallySmooth.of_quotient_of_flat {S : Type v} [CommRing S] (f : 
     intro hx
     have : Ideal.Quotient.mkₐ P.Ring IP x = algebraMap P.Ring P'.Ring x := rfl
     rw [this, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply _ S, hx, map_zero]
-  let mapcot := Ideal.mapCotangent J J' (Ideal.Quotient.mkₐ P.Ring IP) Jle
-  have cotsurj : Function.Surjective mapcot := by
+  have exist_in_J {x : P'.Ring} (memJ' : x ∈ J') : ∃ y ∈ J, Ideal.Quotient.mkₐ P.Ring IP y = x := by
     --need diagram chasing
     sorry
+  have J'eqmap : J' = J.map (Ideal.Quotient.mkₐ P.Ring IP) := by
+    refine le_antisymm (fun x hx ↦ ?_) (Ideal.map_le_iff_le_comap.mpr Jle)
+    rcases exist_in_J hx with ⟨y, mem, hy⟩
+    simpa [← hy] using Ideal.mem_map_of_mem _ mem
+  let mapcot := Ideal.mapCotangent J J' (Ideal.Quotient.mkₐ P.Ring IP) Jle
+  have cotsurj : Function.Surjective mapcot := by
+    intro x
+    rcases J'.toCotangent_surjective x with ⟨x', hx'⟩
+    rcases exist_in_J x'.2 with ⟨y', mem, hy'⟩
+    use J.toCotangent ⟨y', mem⟩
+    simpa [mapcot, ← hx'] using J'.toCotangent.congr_arg (SetCoe.ext hy')
+  have cotker : LinearMap.ker mapcot = (Submodule.comap J.subtype (IP * J)).map J.toCotangent := by
+    refine le_antisymm (fun x hx ↦ ?_) ?_
+    · rcases J.toCotangent_surjective x with ⟨x', hx'⟩
+      simp only [← hx', LinearMap.mem_ker, Ideal.mapCotangent_toCotangent,
+        Ideal.toCotangent_eq_zero, mapcot, J'eqmap] at hx
+      rw [← Ideal.map_pow, ← Ideal.mem_comap, Ideal.comap_map_of_surjective' _
+        (Ideal.Quotient.mkₐ_surjective _ _)] at hx
+      rcases Submodule.mem_sup.mp hx with ⟨y, hy, z, hz, hyz⟩
+      have : y + z ∈ J := by simp [hyz]
+      have zmemJ := (Ideal.add_mem_iff_right J (Ideal.pow_le_self (by omega) hy)).mp this
+      have zmem : z ∈ IP * J := by
+        simpa [← infeq, Ideal.mem_inf] using ⟨Ideal.Quotient.eq_zero_iff_mem.mp hz, zmemJ⟩
+      have xeq : x = J.toCotangent ⟨z, zmemJ⟩ := by simpa [← hx', J.toCotangent_eq, ← hyz] using hy
+      rw [xeq]
+      exact Submodule.mem_map_of_mem (Submodule.mem_comap.mpr zmem)
+    · rw [Submodule.map_le_iff_le_comap, ← LinearMap.ker_comp]
+      intro x hx
+      simp only [LinearMap.mem_ker, LinearMap.comp_apply, Ideal.mapCotangent_toCotangent, mapcot]
+      convert map_zero J'.toCotangent
+      exact Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.mul_le_right hx)
   let cottoTen := KaehlerDifferential.kerCotangentToTensor R P.Ring S
   let cottoTen' := KaehlerDifferential.kerCotangentToTensor (R ⧸ I) P'.Ring (S ⧸ IS)
   let mapTen : TensorProduct P.Ring S Ω[P.Ring⁄R] →ₗ[P.Ring]
@@ -223,11 +253,49 @@ lemma RingHom.FormallySmooth.of_quotient_of_flat {S : Type v} [CommRing S] (f : 
     have psmul : p • 1 = s := by simpa [Algebra.smul_def, eS] using eS.eq_symm_apply.mp hp
     simp [this, Classical.choose_spec (cotsurj (toJ'cot (Finsupp.single i 1))), ← map_smul, psmul]
   let σ' := toJcot.comp eTen.toLinearMap
-  have σ'_spec : mapcot.comp σ' = (σ.restrictScalars P.Ring).comp mapTen := by
+  have σ'_spec' : mapcot.comp σ' = (σ.restrictScalars P.Ring).comp mapTen := by
     simp only [← LinearMap.comp_assoc, toJcot_spec, σ']
     apply LinearMap.ext (fun x ↦ ?_)
     exact ((σ.restrictScalars P.Ring).comp mapTen).congr_arg (eTen.symm_apply_apply x)
-  sorry
+  have σ'_spec : mapcot.comp (σ'.comp cottoTen) = mapcot := by
+    rw [← LinearMap.comp_assoc, σ'_spec', LinearMap.comp_assoc, ← comm, ← LinearMap.comp_assoc,
+      ← LinearMap.restrictScalars_comp, hσ]
+    rfl
+  let Δ : J.Cotangent →ₗ[P.Ring] J.Cotangent := LinearMap.id - (σ'.comp cottoTen)
+  have rΔle : Δ.range ≤ (Submodule.comap J.subtype (IP * J)).map J.toCotangent := by
+    rintro x ⟨y, hy⟩
+    simp only [← cotker, ← hy, LinearMap.mem_ker, Δ]
+    rw [LinearMap.sub_apply, map_sub, LinearMap.id_apply, ← LinearMap.comp_apply, σ'_spec, sub_self]
+  have leΔk : (Submodule.comap J.subtype (IP * J)).map J.toCotangent ≤ Δ.ker := by
+    have IPsq : IP * IP = ⊥ := by simp [← pow_two, IP, ← Ideal.map_pow, sq0]
+    have {x : P.Ring} (h : x ∈ IP * J) : Δ (J.toCotangent ⟨x, Ideal.mul_le_left h⟩) = 0 := by
+      induction h using Submodule.mul_induction_on' with
+      | mem_mul_mem y hy z hz =>
+        change Δ (J.toCotangent (y • ⟨z, hz⟩)) = 0
+        rw [map_smul, map_smul]
+        rcases Submodule.mem_map.mp (rΔle (Δ.mem_range_self (J.toCotangent ⟨z, hz⟩))) with
+          ⟨w, hw, eqz⟩
+        have := Ideal.mul_mem_mul hy (Submodule.mem_comap.mp hw)
+        simp only [← mul_assoc, IPsq, Submodule.bot_mul, Submodule.mem_bot] at this
+        have eq0 : y • w = 0 := SetCoe.ext this
+        rw [← eqz, ← map_smul, eq0, map_zero]
+      | add y ymem z zmem hy hz =>
+        have : (⟨y + z, Ideal.mul_le_left (add_mem ymem zmem)⟩ : J) =
+          ⟨y, Ideal.mul_le_left ymem⟩ + ⟨z, Ideal.mul_le_left zmem⟩ := rfl
+        rw [this, map_add, map_add, hy, hz, add_zero]
+    intro x hx
+    rcases  Submodule.mem_map.mp hx with ⟨x', hx', eq⟩
+    simpa [← eq] using this hx'
+  let δ : J'.Cotangent →ₗ[P.Ring] J.Cotangent :=
+    (Submodule.liftQ _ Δ (le_of_eq_of_le cotker leΔk)).comp
+    (mapcot.quotKerEquivOfSurjective cotsurj).symm.toLinearMap
+  have δ_spec : δ.comp mapcot = Δ := by
+    ext
+    simp [δ]
+  use σ' + (δ.comp (σ.restrictScalars P.Ring)).comp mapTen
+  change σ'.comp cottoTen + δ.comp ((σ.restrictScalars P.Ring).comp (mapTen.comp cottoTen)) = _
+  rw [← comm, ← LinearMap.comp_assoc mapcot, ← LinearMap.restrictScalars_comp, hσ]
+  exact add_eq_of_eq_sub' δ_spec
 
 end FormallySmooth
 
