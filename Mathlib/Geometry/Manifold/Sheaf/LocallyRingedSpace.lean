@@ -143,7 +143,7 @@ def IsManifold.locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff IM IN ∞ 
     (IsManifold.locallyRingedSpace IM M).toPresheafedSpace ⟶
       (IsManifold.locallyRingedSpace IN N).toPresheafedSpace where
   base := TopCat.ofHom ⟨f, hf.continuous⟩
-  c := (smoothSheafCommRingCompRight _ _ _ f hf).val
+  c := (smoothSheafCommRingCompRight _ _ f hf).val
 
 /-- (Implementation): Use `IsManifold.stalkMap_locallyRingedSpaceMap_evalHom`. -/
 lemma IsManifold.stalkMap_locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff IM IN ∞ f) (x : M) :

@@ -399,18 +399,13 @@ variable {IM I M R}
     = f ⟨x, hx⟩ :=
   smoothSheafCommRing.evalHom_germ IM I M R U x hx f
 
-variable {ER : Type*} [NormedAddCommGroup ER] [NormedSpace 𝕜 ER] {HR : Type*}
-  [TopologicalSpace HR] (IR : ModelWithCorners 𝕜 ER HR)
-  {R : Type u} [TopologicalSpace R] [ChartedSpace HR R] [CommRing R]
-  [ContMDiffRing IR ∞ R]
-
 /-- A smooth function `f : M → N` induces a morphism of sheaves (of rings) `𝒪_N ⟶ f_* 𝒪_M`,
 by pre-composing with `f`. -/
 @[simps! -isSimp val_app_hom_apply]
 def smoothSheafCommRingCompRight (f : M → P) (hf : ContMDiff IM IP ∞ f) :
-    smoothSheafCommRing IP IR P R ⟶
+    smoothSheafCommRing IP I P R ⟶
       (TopCat.Sheaf.pushforward _ (TopCat.ofHom ⟨f, hf.continuous⟩)).obj
-        (smoothSheafCommRing IM IR M R) where
+        (smoothSheafCommRing IM I M R) where
   val.app U := CommRingCat.ofHom
     { toFun := (smoothSheafCompRight _ _ f hf).val.app U
       map_one' := rfl
