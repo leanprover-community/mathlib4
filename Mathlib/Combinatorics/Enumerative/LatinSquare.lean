@@ -18,8 +18,6 @@ import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.LinearAlgebra.Matrix.Defs
 import Mathlib.Logic.Equiv.Embedding
 
-set_option linter.unusedDecidableInType false
-
 /-!
 # LatinSquare
 
@@ -580,14 +578,15 @@ lemma unique_missed_element
       exact hx2 hy
 
 theorem latin_rectangle_extends_one_row
-    {n : Type u} [Fintype n] [DecidableEq n]
-    {k : Type u} [Fintype k] [Nonempty k] [DecidableEq k]
+    {n : Type u} [Fintype n]
+    {k : Type u} [Fintype k] [Nonempty k]
     (A : LatinRectangle k n α)
     (h : Fintype.card k < Fintype.card n := by omega)
-    {k' : Type u} [Fintype k'] [DecidableEq k']
+    {k' : Type u} [Fintype k']
     (ι : k ↪ k')
     (h₂ : Fintype.card k' = Fintype.card k + 1) :
     ∃ (A' : LatinRectangle k' n α), is_subrect A A' := by
+    classical
   let B := symbols_not_in A
   have Bj_size (j : n) : Finset.card (B j) = (Fintype.card n) - (Fintype.card k) := 
     card_symbols_not_in A j
@@ -809,7 +808,7 @@ theorem latin_rectangle_extends_one_row
   rfl
   
 lemma subrect_transitive {m'' : Type*} [Fintype m'']
-  {n : Type u} [Fintype n] [DecidableEq n]
+  {n : Type u} [Fintype n]
   {A : LatinRectangle m n α}
   {A' : LatinRectangle m' n α}
   {A'' : LatinRectangle m'' n α}
@@ -824,7 +823,7 @@ lemma subrect_transitive {m'' : Type*} [Fintype m'']
     simp [h'', f'', g'',h2,h1]
   
 lemma subrect_refl
-  {n : Type u} [Fintype n] [DecidableEq n]
+  {n : Type u} [Fintype n]
   {A : LatinRectangle m n α}
   {A' : LatinRectangle m' n α} (h : A ≃◻ A') :
   is_subrect A A' := by 
@@ -836,7 +835,8 @@ lemma subrect_refl
     exact hrfl
 
 theorem latin_rectangle_extends_to_latin_square
-    {n : Type u} [Fintype n] [DecidableEq n]
+    {n : Type u} [Fintype n]
+    {k : Type u} [Fintype k] [Nonempty k]
     (A : LatinRectangle k n α)
     (h : Fintype.card k ≤ Fintype.card n := by omega) :
     ∃ (A' : LatinRectangle n n α), is_subrect A A' := by 
