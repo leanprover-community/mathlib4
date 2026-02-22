@@ -473,10 +473,8 @@ lemma sum_X (hf : IsCovariantDerivativeOn F f s)
   induction u using Finset.induction_on with
   | empty => simp [hf.zeroX hx hσ]
   | insert a u ha h =>
-    have : MDiffAt (T% (∑ i ∈ u, X i)) x := sorry
-    simp [Finset.sum_insert ha, ← h] -- hf.addX (hX a) this hσ hx]
-    have := hf.addX (hX a) this hσ hx
-    sorry -- simp only [hf.addX (hX a) this hσ hx]
+    have : MDiffAt (T% (∑ i ∈ u, X i)) x := by simpa using MDifferentiableAt.sum_section (s := u) hX
+    simp [Finset.sum_insert ha, ← h, hf.addX (hX a) this hσ hx]
 
 end computational_properties
 
@@ -687,23 +685,23 @@ lemma contMDiffCovariantDerivativeOn_univ_iff {cov : CovariantDerivative I F V} 
 section computational_properties
 
 @[simp]
-lemma zeroX (cov : CovariantDerivative I F V) (σ : Π x : M, V x) : cov 0 σ = 0 := by
+lemma zeroX (cov : CovariantDerivative I F V) {σ : Π x : M, V x} (hσ : MDiff (T% σ)) :
+    cov 0 σ = 0 := by
   ext x
-  apply cov.isCovariantDerivativeOn.zeroX
-  sorry
+  exact cov.isCovariantDerivativeOn.zeroX (by trivial) (hσ x)
 
 @[simp]
 lemma zeroσ [VectorBundle 𝕜 F V] (cov : CovariantDerivative I F V)
-    (X : Π x : M, TangentSpace I x) : cov X 0 = 0 := by
+    {X : Π x : M, TangentSpace I x} (hX : MDiff (T% X)) : cov X 0 = 0 := by
   ext x
-  apply cov.isCovariantDerivativeOn.zeroσ
-  sorry -- misisng hypothesis!
+  exact cov.isCovariantDerivativeOn.zeroσ (hX x)
 
 lemma sum_X (cov : CovariantDerivative I F V)
-    {ι : Type*} {s : Finset ι} {X : ι → Π x : M, TangentSpace I x} {σ : Π x : M, V x} :
+    {ι : Type*} {s : Finset ι} {X : ι → Π x : M, TangentSpace I x} {σ : Π x : M, V x}
+    (hX : ∀ i, MDiff (T% (X i))) (hσ : MDiff (T% σ)):
     cov (∑ i ∈ s, X i) σ = ∑ i ∈ s, cov (X i) σ := by
   ext x
-  sorry -- simpa using cov.isCovariantDerivativeOn.sum_X
+  simpa using cov.isCovariantDerivativeOn.sum_X trivial (fun i ↦ hX i x) (hσ x)
 
 end computational_properties
 
@@ -888,8 +886,8 @@ lemma differenceAux_smul_eq'
     (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ)
     {x : M} (hx : x ∈ u := by trivial) :
     differenceAux cov cov' (f • X) σ x = f x • differenceAux cov cov' X σ x := by
-  sorry -- TODO: need extra smoothness hypotheses!
-  -- simp [differenceAux, hcov.smulX, hcov'.smulX, smul_sub]
+  sorry -- TODO: need to assume X, σ and f are differentiable!
+  -- simp only [differenceAux, Pi.apply, hcov.smulX, hcov'.smulX, smul_sub]
 
 /-- The value of `differenceAux cov cov' X σ` at `x₀` depends only on `X x₀` and `σ x₀`. -/
 lemma differenceAux_tensorial
@@ -899,6 +897,7 @@ lemma differenceAux_tensorial
     [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ E]
     [FiniteDimensional ℝ F] [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {X X' : Π x : M, TangentSpace I x} {σ σ' : Π x : M, V x} {x₀ : M}
+    (hX : MDiffAt (T% X) x₀) -- TODO: is this hypotheses truly necessary?
     (hX' : MDiffAt (T% X') x₀)
     (hσ : MDiffAt (T% σ) x₀)
     (hσ' : MDiffAt (T% σ') x₀)
@@ -907,13 +906,14 @@ lemma differenceAux_tensorial
   trans differenceAux cov cov' X' σ x₀
   · let φ : (Π x : M, TangentSpace I x) → (Π x, V x) := fun X ↦ differenceAux cov cov' X σ
     change φ X x₀ = φ X' x₀
-    apply tensoriality_criterion' (E := E) (I := I) E (TangentSpace I) F V hXX'
-    · intro f X
-      apply hcov.differenceAux_smul_eq' hcov'
-    · intro X X'
+    -- TODO: is there a version of `tensoriality_criterion` which does not require `hX`?
+    apply tensoriality_criterion (E := E) (I := I) E (TangentSpace I) F V hX hX' hXX'
+    · intro f X hf hX
+      exact hcov.differenceAux_smul_eq' hcov' ..
+    · intro X X' hX hX'
       unfold φ differenceAux
-      sorry --simp only [Pi.sub_apply, hcov.addX, hcov'.addX]
-      --abel
+      simp only [Pi.sub_apply, hcov.addX hX hX' hσ, hcov'.addX hX hX' hσ]
+      abel
   · let φ : (Π x : M, V x) → (Π x, V x) := fun σ ↦ differenceAux cov cov' X' σ
     change φ σ x₀ = φ σ' x₀
     apply tensoriality_criterion (E := E) (I := I) F V F V hσ hσ' hσσ'
@@ -933,25 +933,21 @@ lemma isBilinearMap_differenceAux
     IsBilinearMap ℝ (fun (X₀ : TangentSpace I x) (σ₀ : V x) ↦
       differenceAux cov cov' (extend I E X₀) (extend I F σ₀) x) where
   add_left u v w := by
-    sorry --simp only [differenceAux, extend_add, Pi.sub_apply, hcov.addX, hcov'.addX]
-    --abel
-  add_right u v w := by
-    have hv := mdifferentiable_extend I F v x
-    have hw := mdifferentiable_extend I F w x
     simp only [differenceAux, extend_add, Pi.sub_apply]
-    rw [hcov.addσ _ hv hw, hcov'.addσ _ hv hw]
-    abel
-    repeat sorry -- missing smoothness hypotheses
+    rw [hcov.addX, hcov'.addX]; · abel
+    all_goals apply mdifferentiable_extend
+  add_right u v w := by
+    simp only [differenceAux, extend_add, Pi.sub_apply]
+    rw [hcov.addσ, hcov'.addσ]; · abel
+    all_goals apply mdifferentiable_extend
   smul_left a u v := by
-    unfold differenceAux
-    -- need extra smoothness hypotheses!
-    -- simp only [extend_smul, Pi.sub_apply, hcov.smul_const_X, hcov'.smul_const_X]
-    sorry -- module
+    simp only [differenceAux, extend_smul, Pi.sub_apply]
+    rw [hcov.smul_const_X, hcov'.smul_const_X]; · module
+    all_goals apply mdifferentiable_extend
   smul_right a u v := by
-    unfold differenceAux
-    -- need extra smoothness hypotheses!
-    sorry -- simp only [extend_smul, Pi.sub_apply, hcov.smul_const_σ, hcov'.smul_const_σ]
-    -- module
+    simp only [differenceAux, extend_smul, Pi.sub_apply]
+    rw [hcov.smul_const_σ, hcov'.smul_const_σ]; · module
+    all_goals apply mdifferentiable_extend
 
 variable [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
 
@@ -995,8 +991,8 @@ lemma difference_apply [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x
     difference hcov hcov' x (X x) (σ x) =
       cov X σ x - cov' X σ x := by
   simp only [difference, hx, reduceDIte]
-  exact hcov.differenceAux_tensorial hcov' hX (mdifferentiable_extend ..) hσ (extend_apply_self _)
-    (extend_apply_self _) hx
+  exact hcov.differenceAux_tensorial hcov' (mdifferentiable_extend ..) hX
+    (mdifferentiable_extend ..) hσ (extend_apply_self _) (extend_apply_self _) hx
 
 -- The classification of real connections over a trivial bundle
 section classification
@@ -1010,15 +1006,13 @@ lemma exists_one_form {cov : (Π x : M, TangentSpace I x) → (M → F) → (M �
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s) :
     ∃ (A : (x : M) → TangentSpace I x →L[ℝ] F →L[ℝ] F),
     ∀ X : (x : M) → TangentSpace I x, ∀ σ : M → F, ∀ x ∈ s,
-    MDiffAt (T% σ) x →
+    MDiffAt (T% X) x → MDiffAt (T% σ) x →
     letI d : F := mfderiv I 𝓘(ℝ, F) σ x (X x)
     cov X σ x = d + A x (X x) (σ x) := by
   use fun x ↦ hcov.difference (trivial I M F |>.mono <| subset_univ s) x
-  intro X σ x hx hσ
-  rw [difference_apply]
-  · module
-  · sorry -- TODO: missing smoothness hypothesis, right?
-  · assumption
+  intro X σ x hx hX hσ
+  rw [hcov.difference_apply _ (by trivial) hX hσ]
+  module
 
 noncomputable def one_form {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s) :
@@ -1028,16 +1022,16 @@ noncomputable def one_form {cov : (Π x : M, TangentSpace I x) → (M → F) →
 lemma eq_one_form {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
     {X : (x : M) → TangentSpace I x} {σ : M → F}
-    {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
+    {x : M} (hX : MDiffAt (T% X) x) (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
     letI d : F := mfderiv I 𝓘(ℝ, F) σ x (X x)
     cov X σ x = d + hcov.one_form x (X x) (σ x) :=
-  hcov.exists_one_form.choose_spec X σ x hx hσ
+  hcov.exists_one_form.choose_spec X σ x hx hX hσ
 
 lemma _root_.CovariantDerivative.exists_one_form
     (cov : CovariantDerivative I F (Bundle.Trivial M F)) :
     ∃ (A : (x : M) → TangentSpace I x →L[ℝ] F →L[ℝ] F),
     ∀ X : (x : M) → TangentSpace I x, ∀ σ : M → F, ∀ x,
-    MDiffAt (T% σ) x →
+    MDiffAt (T% X) x → MDiffAt (T% σ) x →
     letI d : F := mfderiv I 𝓘(ℝ, F) σ x (X x)
     cov X σ x = d + A x (X x) (σ x) := by
   simpa using cov.isCovariantDerivativeOn.exists_one_form
@@ -1065,9 +1059,9 @@ lemma projection_apply (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) 
   hcov.projection x f (v, w) = w + hcov.one_form x v f := rfl
 
 lemma cov_eq_proj (hcov : IsCovariantDerivativeOn F cov s) (X : Π x : M, TM x) (σ : M → F)
-    {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
+    {x : M} (hX : MDiffAt (T% X) x) (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
     cov X σ x = hcov.projection x (σ x) (X x, mfderiv I 𝓘(ℝ, F) σ x (X x)) := by
-  simpa using hcov.eq_one_form hσ
+  simpa using hcov.eq_one_form hX hσ
 
 noncomputable def horiz (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) :
     Submodule ℝ (TM x × F) :=
@@ -1102,13 +1096,13 @@ lemma mem_horiz_iff_exists (hcov : IsCovariantDerivativeOn F cov s) {x : M} {f :
       simp [hcov.zeroX, mdifferentiableAt_section,  mdifferentiableAt_const]
     rcases map_of_one_jet_spec u w (by tauto) with ⟨h, h', h''⟩
     use map_of_one_jet u w, ?_, h, h''
-    · rw [hcov.eq_one_form]
+    · rw [hcov.eq_one_form (mdifferentiable_extend ..)]
       · simp [w, h'', h, huv]
       · rwa [mdifferentiableAt_section]
     · rwa [mdifferentiableAt_section]
   · rintro ⟨σ, σ_diff, rfl, rfl, covσ⟩
     simp only [horiz, LinearMap.mem_ker, ContinuousLinearMap.coe_coe, projection_apply, ← covσ]
-    rw [hcov.eq_one_form σ_diff, extend_apply_self]
+    rw [hcov.eq_one_form (mdifferentiable_extend ..) σ_diff, extend_apply_self]
 
 end projection_trivial_bundle
 
