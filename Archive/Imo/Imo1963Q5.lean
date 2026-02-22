@@ -24,6 +24,7 @@ lemma sin_pi_mul_neg_div (a b : ℝ) : sin (π * (- a / b)) = - sin (π * (a / b
   ring_nf
   exact sin_neg _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem imo1963_q5 : cos (π / 7) - cos (2 * π / 7) + cos (3 * π / 7) = 1 / 2 := by
   rw [← mul_right_inj' two_sin_pi_div_seven_ne_zero, mul_add, mul_sub, ← sin_two_mul,
     two_mul_sin_mul_cos, two_mul_sin_mul_cos]

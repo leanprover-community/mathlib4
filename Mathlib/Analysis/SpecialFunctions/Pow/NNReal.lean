@@ -614,6 +614,7 @@ lemma rpow_add_of_add_pos {x : ℝ≥0∞} (hx : x ≠ ⊤) (y z : ℝ) (hyz : 0
       simp [ENNReal.zero_rpow_of_pos hyz, ENNReal.zero_rpow_of_pos hz']
   · rw [ENNReal.rpow_add _ _ hx' hx]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rpow_neg (x : ℝ≥0∞) (y : ℝ) : x ^ (-y) = (x ^ y)⁻¹ := by
   cases x with
   | top =>
@@ -631,6 +632,7 @@ theorem rpow_sub {x : ℝ≥0∞} (y z : ℝ) (hx : x ≠ 0) (h'x : x ≠ ⊤) :
 
 theorem rpow_neg_one (x : ℝ≥0∞) : x ^ (-1 : ℝ) = x⁻¹ := by simp [rpow_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rpow_mul (x : ℝ≥0∞) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ z := by
   cases x with
   | top =>
@@ -772,6 +774,7 @@ theorem rpow_le_rpow_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z ≤ y
 theorem rpow_lt_rpow_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
   (strictMono_rpow_of_pos hz).lt_iff_lt
 
+set_option backward.isDefEq.respectTransparency false in
 lemma max_rpow {x y : ℝ≥0∞} {p : ℝ} (hp : 0 ≤ p) : max x y ^ p = max (x ^ p) (y ^ p) := by
   rcases le_total x y with hxy | hxy
   · rw [max_eq_right hxy, max_eq_right (rpow_le_rpow hxy hp)]
@@ -808,7 +811,7 @@ theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (h
   cases x
   · rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
     rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
-    simp [Hy, Hz, top_rpow_of_neg, top_rpow_of_pos, le_refl] <;>
+    simp [Hy, Hz, top_rpow_of_neg, top_rpow_of_pos] <;>
     linarith
   · simp only [one_le_coe_iff] at hx
     simp [← coe_rpow_of_ne_zero (ne_of_gt (lt_of_lt_of_le zero_lt_one hx)),
@@ -828,7 +831,7 @@ theorem rpow_le_rpow_of_exponent_ge {x : ℝ≥0∞} {y z : ℝ} (hx1 : x ≤ 1)
   by_cases h : x = 0
   · rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
     rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
-    simp [Hy, Hz, h, zero_rpow_of_neg, zero_rpow_of_pos, le_refl] <;>
+    simp [Hy, Hz, h, zero_rpow_of_neg, zero_rpow_of_pos] <;>
     linarith
   · rw [coe_le_one_iff] at hx1
     simp [← coe_rpow_of_ne_zero h,
@@ -1146,6 +1149,7 @@ theorem IsNat.nnreal_rpow_eq_nnreal_pow {b : ℝ} {n : ℕ} (h : IsNat b n) (a :
     a ^ b = a ^ n := by
   rw [h.1, NNReal.rpow_natCast]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsInt.nnreal_rpow_eq_inv_nnreal_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a : ℝ≥0) :
     a ^ b = (a ^ n)⁻¹ := by
   rw [h.1, NNReal.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]

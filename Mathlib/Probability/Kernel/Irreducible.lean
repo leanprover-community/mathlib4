@@ -66,6 +66,7 @@ instance {φ : Measure α} [Subsingleton α] :
         <| MeasureTheory.nonempty_of_measure_ne_zero (μ := φ) (ne_of_lt hsp).symm
     simp [id_apply, ha]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {c : ℝ≥0∞} {φ : Measure α} {κ : Kernel α α} [hκ : IsIrreducible φ κ] :
     IsIrreducible (c • φ) κ where
   irreducible s hs hsp := by

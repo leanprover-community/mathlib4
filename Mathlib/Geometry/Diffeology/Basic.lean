@@ -369,6 +369,7 @@ class IsContDiffCompatible (X : Type*)
 /-- Diffeology on a finite-dimensional normed space. We make this a definition instead of an
 instance because we also want to have product diffeologies as an instance, and having both would
 cause instance diamonds on spaces like `Fin n → ℝ`. -/
+@[instance_reducible]
 def _root_.NormedSpace.toDiffeology (X : Type*)
     [NormedAddCommGroup X] [NormedSpace ℝ X] [FiniteDimensional ℝ X] :
     DiffeologicalSpace X :=

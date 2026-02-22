@@ -261,6 +261,7 @@ end Int
 section Monoid
 variable {M : Type*} [Monoid M] {a : M} {m n : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp) gcd_nsmul_eq_zero]
 lemma pow_gcd_eq_one : a ^ m.gcd n = 1 ↔ a ^ m = 1 ∧ a ^ n = 1 where
   mp hmn := by
