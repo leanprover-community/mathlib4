@@ -19,7 +19,7 @@ then it satisfies `FinallySmallFiltered.{w} C`. The dual result is also obtained
 
 @[expose] public section
 
-universe w v u
+universe w v' u' v u
 
 namespace CategoryTheory
 
@@ -36,7 +36,7 @@ class FinallySmallFiltered (C : Type u) [Category.{v} C] : Prop where
 from a cofiltered `w`-small category. -/
 class InitiallySmallCofiltered (C : Type u) [Category.{v} C] : Prop where
   /-- There is an initial functor from a small cofiltered category. -/
-  final_smallCategory (C) : ∃ (S : Type w) (_ : SmallCategory S)
+  initial_smallCategory (C) : ∃ (S : Type w) (_ : SmallCategory S)
     (_ : IsCofiltered S) (F : S ⥤ C), F.Initial
 
 variable (C : Type u) [Category.{v} C]
@@ -83,21 +83,21 @@ variable [InitiallySmallCofiltered.{w} C]
 a `w`-small cofiltered category equipped with an initial functor
 `fromCofilteredInitialModel C`. -/
 def CofilteredInitialModel : Type w :=
-  (InitiallySmallCofiltered.final_smallCategory C).choose
+  (InitiallySmallCofiltered.initial_smallCategory C).choose
 
 noncomputable instance : Category (CofilteredInitialModel.{w} C) :=
-  (InitiallySmallCofiltered.final_smallCategory C).choose_spec.choose
+  (InitiallySmallCofiltered.initial_smallCategory C).choose_spec.choose
 
 noncomputable instance : IsCofiltered (CofilteredInitialModel.{w} C) :=
-  (InitiallySmallCofiltered.final_smallCategory C).choose_spec.choose_spec.choose
+  (InitiallySmallCofiltered.initial_smallCategory C).choose_spec.choose_spec.choose
 
 /-- If a category `C` satisfies `InitiallySmallCofiltered.{w} C`, this is
 an initial functor `FilteredFinalModel.{w} C ⥤ C` from a `w`-small filtered category. -/
 noncomputable def fromCofilteredInitialModel : CofilteredInitialModel.{w} C ⥤ C :=
-  (InitiallySmallCofiltered.final_smallCategory C).choose_spec.choose_spec.choose_spec.choose
+  (InitiallySmallCofiltered.initial_smallCategory C).choose_spec.choose_spec.choose_spec.choose
 
 instance : (fromCofilteredInitialModel.{w} C).Initial :=
-  (InitiallySmallCofiltered.final_smallCategory C).choose_spec.choose_spec.choose_spec.choose_spec
+  (InitiallySmallCofiltered.initial_smallCategory C).choose_spec.choose_spec.choose_spec.choose_spec
 
 instance : InitiallySmall.{w} C :=
   initiallySmall_of_initial_of_essentiallySmall (fromCofilteredInitialModel.{w} C)
@@ -109,11 +109,30 @@ alias InitiallySmall.fromCofilteredInitialModel := fromCofilteredInitialModel
 
 end
 
+variable {C} in
+lemma finallySmallFiltered_of_final {C₀ : Type*} [Category* C₀] (F : C₀ ⥤ C)
+    [IsFiltered C₀] [EssentiallySmall.{w} C₀] [F.Final] :
+    FinallySmallFiltered.{w} C where
+  final_smallCategory :=
+    ⟨_, inferInstance, IsFiltered.of_equivalence (equivSmallModel.{w} C₀),
+      (equivSmallModel.{w} C₀).inverse ⋙ F, inferInstance⟩
+
+variable {C} in
+lemma initiallySmallCofiltered_of_initial {C₀ : Type*} [Category* C₀] (F : C₀ ⥤ C)
+    [IsCofiltered C₀] [EssentiallySmall.{w} C₀] [F.Initial] :
+    InitiallySmallCofiltered.{w} C where
+  initial_smallCategory :=
+    ⟨_, inferInstance, IsCofiltered.of_equivalence (equivSmallModel.{w} C₀),
+      (equivSmallModel.{w} C₀).inverse ⋙ F, inferInstance⟩
+
+
 instance [InitiallySmallCofiltered.{w} C] :
-    FinallySmallFiltered.{w} Cᵒᵖ := sorry
+    FinallySmallFiltered.{w} Cᵒᵖ :=
+  finallySmallFiltered_of_final (fromCofilteredInitialModel.{w} C).op
 
 instance [FinallySmallFiltered.{w} C] :
-    InitiallySmallCofiltered.{w} Cᵒᵖ := sorry
+    InitiallySmallCofiltered.{w} Cᵒᵖ :=
+  initiallySmallCofiltered_of_initial (fromFilteredFinalModel.{w} C).op
 
 namespace FinallySmall
 
