@@ -160,9 +160,9 @@ theorem exists_forall_mem_closedBall_exists_eq_isIntegralCurveOn
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
     ∃ r > (0 : ℝ), ∃ ε > (0 : ℝ), ∀ x ∈ closedBall x₀ r, ∃ α : ℝ → E, α t₀ = x ∧
       IsIntegralCurveOn α (fun _ ↦ f) (Ioo (t₀ - ε) (t₀ + ε)) := by
-  have ⟨ε, hε, a, r, _, _, hr, hpl⟩ := IsPicardLindelof.of_contDiffAt_one hf t₀
+  have ⟨ε, hε, a, r, _, _, hr, hpl⟩ := IsPicardLindelof.of_contDiffAt_one hf
   refine ⟨r, hr, ε, hε, fun x hx ↦ ?_⟩
-  have ⟨α, hα1, hα2⟩ := hpl.exists_eq_isIntegralCurveOn hx
+  have ⟨α, hα1, hα2⟩ := (hpl t₀).exists_eq_isIntegralCurveOn hx
   exact ⟨α, hα1, hα2.mono Ioo_subset_Icc_self⟩
 
 /-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits an
