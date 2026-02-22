@@ -254,7 +254,6 @@ theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g :
   ext ⟨Δ⟩
   apply s.hom_ext'
   intro A
-  induction Δ using SimplexCategory.rec with | _ n
   dsimp
   simp only [s.cofan_inj_comp_app, h]
 

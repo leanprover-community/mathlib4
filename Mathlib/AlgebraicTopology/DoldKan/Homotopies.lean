@@ -85,7 +85,6 @@ theorem c_mk (i j : ℕ) (h : j + 1 = i) : c.Rel i j :=
 /-- This lemma is meant to be used with `nullHomotopicMap'_f_of_not_rel_left` -/
 theorem cs_down_0_not_rel_left (j : ℕ) : ¬c.Rel 0 j := by
   intro hj
-  dsimp at hj
   apply Nat.not_succ_le_zero j
   rw [Nat.succ_eq_add_one, hj]
 
