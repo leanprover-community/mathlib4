@@ -100,7 +100,7 @@ lemma isCompleteMultipartite_iff : G.IsCompleteMultipartite ↔ ∃ (ι : Type u
 lemma IsCompleteMultipartite.colorable_of_cliqueFree {n : ℕ} (h : G.IsCompleteMultipartite)
     (hc : G.CliqueFree n) : G.Colorable (n - 1) :=
   (completeMultipartiteGraph.colorable_of_cliqueFree _ (fun _ ↦ ⟨_, h.setoid.refl _⟩) <|
-    hc.comap h.iso.symm.toEmbedding).of_hom h.iso
+    hc.comap h.iso.symm.isContained).of_hom h.iso
 
 variable (G) in
 /--
