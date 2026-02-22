@@ -474,11 +474,14 @@ where
 /-- Downloads missing files, and unpacks files. -/
 def getFiles
     (repo? : Option String) (hashMap : IO.ModuleHashMap)
-    (forceDownload forceUnpack parallel decompress : Bool)
+    (forceDownload forceUnpack parallel decompress skipProofWidgets : Bool)
     : IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do checkForToolchainMismatch
-  getProofWidgets (← read).proofWidgetsBuildDir
+  if skipProofWidgets then
+    IO.println "Skipping ProofWidgets release fetch"
+  else
+    getProofWidgets (← read).proofWidgetsBuildDir
 
   if let some repo := repo? then
     let failed ← downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)

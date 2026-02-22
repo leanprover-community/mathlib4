@@ -667,8 +667,6 @@ class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (
   /-- The ring homomorphism is an isometry. -/
   norm_map : ∀ {x : R₁}, ‖σ x‖ = ‖x‖
 
-@[deprecated (since := "2025-08-03")] alias RingHomIsometric.is_iso := RingHomIsometric.norm_map
-
 attribute [simp] RingHomIsometric.norm_map
 
 @[simp]

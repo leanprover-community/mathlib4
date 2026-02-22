@@ -150,6 +150,7 @@ theorem skewAdjointMatricesLieSubalgebraEquivTranspose_apply {m : Type w} [Decid
     (skewAdjointMatricesLieSubalgebraEquivTranspose J e h A : Matrix m m R) = e A :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_skewAdjointMatricesLieSubalgebra_unit_smul (u : Rˣ) (J A : Matrix n n R) :
     A ∈ skewAdjointMatricesLieSubalgebra (u • J) ↔ A ∈ skewAdjointMatricesLieSubalgebra J := by
   change A ∈ skewAdjointMatricesSubmodule (u • J) ↔ A ∈ skewAdjointMatricesSubmodule J

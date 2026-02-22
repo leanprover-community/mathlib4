@@ -67,6 +67,7 @@ private lemma exists_affineCombination_eq_smul_eq_aux {p : ι → P} (hp : Affin
     · simp [Finset.sum_add_distrib, ← Finset.mul_sum, hw, hfs]
     · simp [Finset.sum_add_distrib, ← Finset.mul_sum, hw, hfs]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of **Ceva's theorem** for an arbitrary indexed affinely independent family of points:
 consider some lines, each through one of the points and an affine combination of the points, and
 suppose they concur at `p'`; then `p'` is an affine combination of the points with weights

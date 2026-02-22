@@ -195,6 +195,7 @@ theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
 
 variable {G α}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
   exists_smul_eq := by
@@ -394,6 +395,7 @@ end MulAction
 section
 variable (R M : Type*) [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTorsionFree R M]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {M} in
 lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :
     MulAction.stabilizer Rˣ x = ⊥ := by

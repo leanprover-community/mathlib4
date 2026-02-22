@@ -229,6 +229,7 @@ lemma exists_pos_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
 
 -- ## Non-archimedean case: end goal
 
+set_option backward.isDefEq.respectTransparency false in
 include hf_nontriv bdd in
 /-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
 theorem equiv_padic_of_bounded :
@@ -304,7 +305,7 @@ lemma apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
   push_cast
   rw [map_mul, map_pow]
   refine mul_le_mul_of_nonneg_right ?_ <| pow_nonneg (f.nonneg _) i
-  simp only [zero_le, zero_add, tsub_zero, true_and] at hia
+  simp only [zero_le, zero_add, true_and] at hia
   exact (hcoef (List.mem_iff_get.mpr ⟨⟨i, hia.1⟩, hia.2.symm⟩)).le
 
 -- ## Step 1: if f is an AbsoluteValue and f n > 1 for some natural n, then f n > 1 for all n ≥ 2
