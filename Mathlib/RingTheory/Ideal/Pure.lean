@@ -7,6 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Flat.Tensor
+public import Mathlib.RingTheory.Ideal.IdempotentFG
+public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
@@ -61,8 +63,20 @@ lemma Ideal.inf_eq_mul_of_pure (I J : Ideal R) [I.Pure] :
   apply Module.Flat.lTensor_preserves_injective_linearMap
   exact J.injective_subtype
 
-lemma Ideal.sq_eq_self (I : Ideal R) [I.Pure] : I ^ 2 = I := by
-  simp [sq, ← Ideal.inf_eq_mul_of_pure]
+/-- If `I` is pure, `I ^ 2 = I`. The converse holds if `I` is finitely generated, see
+`Ideal.Pure.of_isIdempotentElem`. -/
+lemma Ideal.isIdempotentElem_of_pure (I : Ideal R) [I.Pure] : IsIdempotentElem I := by
+  simp [IsIdempotentElem, ← Ideal.inf_eq_mul_of_pure]
+
+lemma Ideal.Pure.of_isIdempotentElem {I : Ideal R} (h : I.FG) (h' : IsIdempotentElem I) :
+    I.Pure := by
+  rw [Ideal.isIdempotentElem_iff_of_fg _ h] at h'
+  obtain ⟨e, he, rfl⟩ := h'
+  have : Module.Flat R ((R ⧸ R ∙ e) × R ⧸ span {1 - e}) :=
+    .of_linearEquiv <| AlgEquiv.prodQuotientOfIsIdempotentElem R he he.one_sub (by simp)
+      (by grind [IsIdempotentElem]) |>.toLinearEquiv.symm
+  apply Module.Flat.of_retract (LinearMap.inl R _ (R ⧸ span {1 - e})) (LinearMap.fst R _ _)
+  simp
 
 @[stacks 04PS "(3) => (1)"]
 lemma Ideal.Pure.of_inf_eq_mul (I : Ideal R) (H : ∀ ⦃J : Ideal R⦄, J.FG → I ⊓ J = I * J) :
