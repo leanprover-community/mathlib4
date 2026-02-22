@@ -753,14 +753,14 @@ theorem latin_rectangle_extends_one_row
     dite_eq_ite, Matrix.of_apply, M']
       intro a1 a2
       split_ifs
-      rename_i if_h1 if_h2
-      . obtain ⟨a1', ha1' ⟩ := if_h1
+      all_goals rename_i if_h1 if_h2
+      · obtain ⟨a1', ha1' ⟩ := if_h1
         have h1' := Function.leftInverse_invFun ι.inj'
-        simp at h1'
+        simp only [Function.Embedding.toFun_eq_coe] at h1'
         rw [<- ha1',h1']
         obtain ⟨a2', ha2' ⟩ := if_h2
         have h2' := Function.leftInverse_invFun ι.inj'
-        simp at h2'
+        simp only [Function.Embedding.toFun_eq_coe] at h2'
         rw [<- ha2',h2']
         have h := A.distinct_col_entries
         unfold distinct_col_entries at h
@@ -768,20 +768,22 @@ theorem latin_rectangle_extends_one_row
         intro hM
         apply h at hM
         congr
-      . simp [Set.mem_setOf_eq] at hf
+      · simp only [Subtype.forall, Finset.mem_univ, forall_true_left, Set.mem_setOf_eq] at hf
         intro h
         have hfy := hf.2 y
-        simp [B, symbols_not_in] at hfy
+        simp only [symbols_not_in, Finset.mem_sdiff, Finset.mem_univ, 
+                   Finset.mem_image, Matrix.col_apply, true_and, not_exists, B] at hfy
         have hfyi := hfy (Function.invFun (⇑ι) a1)
         contradiction
-      . intro h
-        simp [Set.mem_setOf_eq] at hf
+      · intro h
+        simp only [Subtype.forall, Finset.mem_univ, forall_true_left, Set.mem_setOf_eq] at hf
         have hfy := hf.2 y
-        simp [B, symbols_not_in] at hfy
+        simp only [symbols_not_in, Finset.mem_sdiff, Finset.mem_univ, 
+                   Finset.mem_image, Matrix.col_apply, true_and, not_exists, B]  at hfy
         have hfyi := (hfy (Function.invFun (⇑ι) a2))
         have h := h.symm
         contradiction
-      . rename_i if_h1 if_h2
+      · rename_i if_h1 if_h2
         -- Here the f drops out and it really is about ι and cards
         -- If a1 and a2 aren't in the image of ι and 
         -- card codomain of ι = card domain of ι + 1 then
@@ -789,7 +791,8 @@ theorem latin_rectangle_extends_one_row
         have h := unique_missed_element ι h₂
         simp only [Finset.mem_image] at h
         intro _
-        exact ExistsUnique.unique (y₁ := a1) (y₂ := a2) h (by simpa using if_h1) (by simpa using if_h2)
+        exact ExistsUnique.unique (y₁ := a1) (y₂ := a2) h 
+          (by simpa using if_h1) (by simpa using if_h2)
     m_le_n := by omega
   }
   use A'
@@ -806,6 +809,7 @@ theorem latin_rectangle_extends_one_row
   rfl
   
 lemma subrect_transitive {m'' : Type*} [Fintype m'']
+  {n : Type u} [Fintype n] [DecidableEq n]
   {A : LatinRectangle m n α}
   {A' : LatinRectangle m' n α}
   {A'' : LatinRectangle m'' n α}
@@ -819,33 +823,34 @@ lemma subrect_transitive {m'' : Type*} [Fintype m'']
     use f'', g'', h''
     simp [h'', f'', g'',h2,h1]
   
-lemma subrect_refl 
+lemma subrect_refl
+  {n : Type u} [Fintype n] [DecidableEq n]
   {A : LatinRectangle m n α}
   {A' : LatinRectangle m' n α} (h : A ≃◻ A') :
   is_subrect A A' := by 
     obtain ⟨f,g,h,hrfl⟩ := h
-    simp [is_subrect]
+    simp only [is_subrect]
     use f 
     use g
     use h
     exact hrfl
 
 theorem latin_rectangle_extends_to_latin_square
+    {n : Type u} [Fintype n] [DecidableEq n]
     (A : LatinRectangle k n α)
-    (hn : Fintype.card n > 0)
     (h : Fintype.card k ≤ Fintype.card n := by omega) :
     ∃ (A' : LatinRectangle n n α), is_subrect A A' := by 
       induction h_gap : (Fintype.card n - Fintype.card k) using 
         Nat.strong_induction_on generalizing k A with
       | h a ih => 
         by_cases h_full : Fintype.card k = Fintype.card n
-        . let f : k ≃ n := Fintype.equivOfCardEq h_full
+        · let f : k ≃ n := Fintype.equivOfCardEq h_full
           let A' := latin_rectangle_isomorphism f (Equiv.refl n) (Equiv.refl α) A
           have h_sim : A ≃◻ A' := by 
             simp [LR_equiv_iso f (Equiv.refl n) (Equiv.refl α) A,A']
           use A'
           exact subrect_refl h_sim
-        . set k' := Option k with hk'
+        · set k' := Option k with hk'
           letI : Fintype k' := (inferInstance : Fintype (Option k))
           have hk'_card := Fintype.card_option (α := k)
           replace hk' := hk'.symm
@@ -865,3 +870,5 @@ theorem latin_rectangle_extends_to_latin_square
           exact subrect_transitive hA hA''
 
 end Completion
+
+end LatinSquare
