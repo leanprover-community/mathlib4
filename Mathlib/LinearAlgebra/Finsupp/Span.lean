@@ -88,6 +88,13 @@ lemma range_lmapDomain {β : Type*} (u : α → β) :
     intro i
     exact ⟨Finsupp.single i 1, by simp⟩
 
+lemma span_single_eq_top : span R {single i x | (i : α) (x : M)} = ⊤ := by
+  refine eq_top_iff'.mpr fun x ↦ ?_
+  induction x using Finsupp.induction_linear with
+  | zero => exact Submodule.zero_mem ..
+  | add f g f_in g_in => exact add_mem f_in g_in
+  | single a b => exact mem_span_of_mem ⟨a, b, rfl⟩
+
 end Finsupp
 
 variable {R : Type*} {M : Type*} {N : Type*}
@@ -119,3 +126,23 @@ theorem Submodule.mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
     rwa [iSup_subtype']
   · have : ⨆ (i) (_ : i ∈ S ∧ i ∈ s), i = ⨆ (i) (_ : i ∈ s), i := by convert rfl; grind
     simpa only [Finset.mem_preimage, iSup_subtype, iSup_and', this]
+
+open scoped Pointwise in
+lemma Submodule.range_lsum_smul {R M N σ : Type*} [CommSemiring R] [AddCommMonoid M]
+    [AddCommMonoid N] [Module R M] [Module R N] (φ : M →ₗ[R] N) (f : σ → R) :
+    (lsum (S := R) (f · • φ)).range = Set.range f • φ.range := by
+  simp_rw [range_eq_map, ← span_single_eq_top, ← span_univ, map_span, set_smul_span]
+  congr 1
+  aesop (add simp Set.mem_smul)
+
+open scoped Pointwise in
+theorem Submodule.image_smul_top_eq_range_lsum {R M σ : Type*} [CommSemiring R] [AddCommGroup M]
+    [Module R M] (s : Set σ) (f : σ → R) : (f '' s • ⊤ : Submodule R M) =
+      (lsum (S := R) fun i : s ↦ f i • .id).range := by
+  simpa [Set.range_comp] using (range_lsum_smul (.id (R := R) (M := M)) (f ∘ (↑) : s → R)).symm
+
+open scoped Pointwise in
+theorem Submodule.smul_top_eq_range_lsum {R M : Type*} [CommSemiring R] [AddCommGroup M]
+    [Module R M] (s : Set R) : (s • ⊤ : Submodule R M) =
+      (lsum (S := R) fun i : s ↦ i.val • .id).range := by
+  simpa using image_smul_top_eq_range_lsum (M := M) s id
