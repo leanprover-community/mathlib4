@@ -233,13 +233,3 @@ lemma Finite.of_ideal_quotient (I : Ideal R) [Finite I] [Finite (R ⧸ I)] : Fin
 
 @[deprecated (since := "2025-11-11")]
 alias Finite.of_finite_quot_finite_ideal := Finite.of_ideal_quotient
-
-/--
-A ring `R` has finite quotients if the quotient `R ⧸ I` is finite for all nonzero ideals of `R`.
--/
-class Ring.HasFiniteQuotients (R : Type*) [CommRing R] : Prop where
-  (finiteQuotient : ∀ {I : Ideal R}, I ≠ ⊥ → Finite (R ⧸ I))
-
-/-- A finite ring has finite quotients. -/
-instance (R : Type*) [CommRing R] [Finite R] : Ring.HasFiniteQuotients R :=
-  ⟨fun _ ↦ Quotient.finite _⟩
