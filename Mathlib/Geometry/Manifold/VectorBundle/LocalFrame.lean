@@ -235,18 +235,18 @@ lemma coeff_congr (hs : IsLocalFrameOn I F n s u) (htt' : t x = t' x) (i : ι) :
 a section `t` has equal frame coefficients in them. -/
 lemma coeff_eq_of_eq (hs : IsLocalFrameOn I F n s u) (hs' : IsLocalFrameOn I F n s' u)
     (hss' : ∀ i, s i x = s' i x) {t : Π x : M, V x} (i : ι) :
-    (LinearMap.piApply (hs.coeff i)) t x = (LinearMap.piApply (hs'.coeff i)) t x := by
+    (hs.coeff i x) (t x) = (hs'.coeff i x) (t x) := by
   by_cases hxe : x ∈ u
-  · simp [LinearMap.piApply, coeff, hxe]
+  · simp [coeff, hxe]
     simp_all only [toBasisAt]
-  · simp [LinearMap.piApply, coeff, hxe]
+  · simp [coeff, hxe]
 
 /-- Two sections `s` and `t` are equal at `x` if and only if their coefficients w.r.t. some local
 frame at `x` agree. -/
 lemma eq_iff_coeff [VectorBundle 𝕜 F V] [FiniteDimensional 𝕜 F]
     (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) :
     t x = t' x ↔
-      ∀ i, (LinearMap.piApply (hs.coeff i)) t x = (LinearMap.piApply (hs.coeff i)) t' x := by
+      ∀ i, (hs.coeff i x) (t x) = (hs.coeff i x) (t' x) := by
   letI := fintypeOfFiniteDimensional hs hx
   exact ⟨fun h i ↦ hs.coeff_congr h i, fun h ↦ hs.eq_of_coeff_eq hx h⟩
 
