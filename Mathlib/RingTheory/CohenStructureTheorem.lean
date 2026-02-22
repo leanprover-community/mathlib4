@@ -124,9 +124,6 @@ lemma RingHom.FormallySmooth.of_quotient_of_flat {S : Type v} [CommRing S] (f : 
   let _ := f.toAlgebra
   let IS := I.map f
   let _ := (Ideal.quotientMap IS f Ideal.le_comap_map).toAlgebra
-  let _ : IsScalarTower R (R ⧸ I) (S ⧸ IS) := IsScalarTower.of_algebraMap_eq' rfl
-  let _ : Algebra.IsPushout R (R ⧸ I) S (S ⧸ IS) := ⟨IsBaseChange.of_eq_map I (I.map f) rfl⟩
-  let isb := KaehlerDifferential.isBaseChange R (R ⧸ I) S (S ⧸ IS)
   let P := (Algebra.Generators.self R S).toExtension
   let _ : Algebra.FormallySmooth R P.Ring := Algebra.mvPolynomial _
   let IP := I.map (algebraMap R P.Ring)
@@ -148,13 +145,7 @@ lemma RingHom.FormallySmooth.of_quotient_of_flat {S : Type v} [CommRing S] (f : 
       simpa [IS, IP, RingHom.algebraMap_toAlgebra] using
         Classical.choose_spec (Ideal.Quotient.mk_surjective x) }
   let _ : IsScalarTower R (R ⧸ I) P'.Ring := IsScalarTower.of_algebraMap_eq' rfl
-  let _ : Algebra.IsPushout R (R ⧸ I) P.Ring P'.Ring := ⟨IsBaseChange.of_eq_map I _ rfl⟩
-  let isb' := KaehlerDifferential.isBaseChange R (R ⧸ I) P.Ring P'.Ring
   let _ : IsScalarTower P.Ring P'.Ring (S ⧸ IS) := IsScalarTower.of_algebraMap_eq' rfl
-  have surj': Function.Surjective (MvPolynomial.mapAlgHom (σ := S) (Ideal.Quotient.mkₐ R I)) := by
-    intro f
-    apply MvPolynomial.mem_range_map_iff_coeffs_subset.mpr
-    exact Set.subset_range_of_surjective (Ideal.Quotient.mkₐ_surjective R I) _
   let e' : P'.Ring ≃ₐ[R] MvPolynomial S (R ⧸ I) :=
     (MvPolynomial.quotientEquivQuotientMvPolynomial I).symm
   let e : P'.Ring ≃ₐ[R ⧸ I] MvPolynomial S (R ⧸ I) :=
