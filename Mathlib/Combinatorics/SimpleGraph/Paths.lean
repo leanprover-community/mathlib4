@@ -334,7 +334,7 @@ lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
 
 theorem IsCycle.isPath_dropLast {u} {p : G.Walk u u} (h : p.IsCycle) :
     p.dropLast.IsPath := by
-  rw [← isPath_reverse_iff, p.dropLast_reverse_eq_reverse_tail, isPath_copy]
+  rw [dropLast_eq_reverse_tail_reverse, reverse_copy, isPath_copy, isPath_reverse_iff]
   exact (isCycle_reverse.mpr h).isPath_tail
 
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
