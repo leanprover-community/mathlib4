@@ -359,7 +359,7 @@ theorem Ico_union_Ico (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) 
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
   grind
 
-@[deprecated Ico_union_Ico (since := "2026-02-22")]
+/-- This is a special case of `Ico_union_Ico` -/
 theorem Ico_union_Ico' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ico a b ∪ Ico c d = Ico (min a c) (max b d) :=
   Ico_union_Ico
     ((min_le_left ..).trans (h₂.trans (le_max_right ..)))
@@ -425,7 +425,7 @@ theorem Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) 
     Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) := by
   grind
 
-@[deprecated Ioc_union_Ioc (since := "2026-02-22")]
+/-- This is a special case of `Ioc_union_Ioc` -/
 theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) :=
   Ioc_union_Ioc
     ((min_le_left ..).trans (h₂.trans (le_max_right ..)))
