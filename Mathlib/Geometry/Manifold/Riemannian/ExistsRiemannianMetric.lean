@@ -3,6 +3,8 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
+
 import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.Geometry.Manifold.VectorBundle.OrthonormalFrame
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
