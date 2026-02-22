@@ -328,21 +328,30 @@ noncomputable def sheafFiberCompIso [J.HasSheafCompose F] :
 
 section Comap
 
-variable {C D : Type*} [Category* C] [Category* D]
-  {J : GrothendieckTopology C} {K : GrothendieckTopology D}
+variable {D : Type*} [Category* D] {K : GrothendieckTopology D}
+    (F : D ⥤ C) (H : CoverPreserving K J F)
 
-/-- If `F : C ⥤ D` is a representably flat and cover preserving functor between sites, then
-any point on `D` induces a point on `C` by precomposing the fiber functor with `F`. -/
+/-- If `Φ` is a point of a site `(C, J)`, `F : D ⥤ C` is a cover preserving
+functor (with respect to a topology `K` on `D`), and the category of
+elements of `F ⋙ Φ.fiber` is initially small cofiltered, then this
+point on the site `(D, K)` given by the functor `F ⋙ Φ.fiber`.
+(Note that when `Φ.fiber.Elements` is cofiltered, and `F` is representably flat,
+then `(F ⋙ Φ.fiber).Elements` is automatically cofiltered.) -/
 @[simps]
-def comap (F : C ⥤ D) [RepresentablyFlat F] (H : CoverPreserving J K F) (Φ : Point.{w} K)
-    [InitiallySmallCofiltered.{w} (F ⋙ Φ.fiber).Elements] :
-    Point.{w} J where
+def comap [InitiallySmallCofiltered.{w} (F ⋙ Φ.fiber).Elements] :
+    Point.{w} K where
   fiber := F ⋙ Φ.fiber
   jointly_surjective {X} {R} hR x := by
     obtain ⟨Y, f, ⟨W, g, h, hg, rfl⟩, y, rfl⟩ :=
       Φ.jointly_surjective (Sieve.functorPushforward F R) (H.1 hR) x
     use W, g, hg, Φ.fiber.map h y
     simp
+
+instance [RepresentablyFlat F] [IsCofiltered Φ.fiber.Elements]
+    [LocallySmall.{w} D] [InitiallySmall.{w} (F ⋙ Φ.fiber).Elements] :
+  IsCofiltered (Φ.comap F H).fiber.Elements := by
+  dsimp
+  infer_instance
 
 end Comap
 
