@@ -129,6 +129,7 @@ def isoMk {D₁ D₂ : F.DescentDataAsCoalgebra f} (e : ∀ (i : ι), D₁.obj i
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- When the index type `ι` contains a unique element, the category
 `DescentDataAsCoalgebra` identifies to the category of coalgebras
@@ -166,6 +167,7 @@ def coalgebraEquivalence (ι : Type*) [Unique ι] {X S : C} (f : X ⟶ S) :
 
 end DescentDataAsCoalgebra
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- The functor `(F.obj (.mk (op S))).obj ⥤ F.DescentDataAsCoalgebra f`
 when `f i : X i ⟶ S` is a family of morphisms. -/

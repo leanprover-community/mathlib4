@@ -404,7 +404,6 @@ theorem ae_differentiableAt {f : ℝ → ℝ} {a b : ℝ}
     ∀ᵐ (x : ℝ), x ∈ uIcc a b → DifferentiableAt ℝ f x :=
   hf.boundedVariationOn.ae_differentiableAt_of_mem_uIcc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is interval integrable on `a..b` and `c ∈ uIcc a b`, then `fun x ↦ ∫ v in c..x, f v` is
 absolutely continuous on `uIcc a b`. -/
 theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral {f : ℝ → ℝ}

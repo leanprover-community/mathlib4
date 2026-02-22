@@ -113,7 +113,6 @@ lemma simple_iff_end_is_rank_one [NeZero (Nat.card G : k)] (V : FDRep k G) :
       apply_fun (· ≫ g) at hc
       simpa [hg] using hc.symm
 
-set_option backward.isDefEq.respectTransparency false in
 omit [Finite G] in
 /--
 If `G` is finite and `k` an algebraically closed field of characteristic `0`,

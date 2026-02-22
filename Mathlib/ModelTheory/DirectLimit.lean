@@ -56,7 +56,6 @@ composing them. -/
 def natLERec (m n : ℕ) (h : m ≤ n) : G' m ↪[L] G' n :=
   Nat.leRecOn h (@fun k g => (f' k).comp g) (Embedding.refl L _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
     (natLERec f' m n h : G' m → G' n) = Nat.leRecOn h (@fun k => f' k) := by

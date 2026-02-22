@@ -218,7 +218,6 @@ theorem _root_.Pi.intrinsicStar_comul [Π i, CoalgebraStruct R (B i)]
       toConv (TensorProduct.comm R (n → R) (n → R) ∘ₗ comul) :=
   Pi.intrinsicStar_comul fun _ ↦ by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The intrinsic star convolutive ring on linear maps from `n → R` to `m → R`. -/
 instance _root_.Pi.convIntrinsicStarRingCommSemiring {m : Type*} :
     StarRing (WithConv ((n → R) →ₗ[R] m → R)) := convIntrinsicStarRing (by simp)

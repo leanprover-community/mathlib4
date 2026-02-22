@@ -133,7 +133,6 @@ private theorem adicCompletionAux_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : A
     (adicCompletionAux I f x).val n = f.reduceModIdeal (I ^ n) (x.val n) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A linear map induces a map on adic completions. -/

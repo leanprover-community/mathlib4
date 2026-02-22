@@ -228,7 +228,6 @@ protected theorem zero_mul : (0 : MvPowerSeries σ R) * φ = 0 :=
 protected theorem mul_zero : φ * 0 = 0 :=
   ext fun n => by classical simp [coeff_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial_mul (a : R) :
     coeff m (monomial n a * φ) = if n ≤ m then a * coeff (m - n) φ else 0 := by
   classical
@@ -240,7 +239,6 @@ theorem coeff_monomial_mul (a : R) :
     Finset.sum_ite_index]
   simp only [Finset.sum_singleton, coeff_monomial_same, Finset.sum_empty]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_mul_monomial (a : R) :
     coeff m (φ * monomial n a) = if n ≤ m then coeff (m - n) φ * a else 0 := by
   classical
