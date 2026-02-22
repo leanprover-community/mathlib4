@@ -3,11 +3,13 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
-import Mathlib.Analysis.SpecialFunctions.Sqrt
-import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
-import Mathlib.Geometry.Manifold.Notation
+module
+
+public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
+public import Mathlib.Analysis.SpecialFunctions.Sqrt
+public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Gram-Schmidt orthonormalisation on sections of Riemannian vector bundles
@@ -32,6 +34,8 @@ vector bundle, bundle metric, orthonormal frame, Gram-Schmidt
 
 open Manifold Bundle ContinuousLinearMap ENat Bornology
 open scoped ContDiff Topology
+
+@[expose] public section -- FIXME: re-consider if we really want to expose all definitions
 
 -- Let `V` be a smooth vector bundle with a `C^n` Riemannian structure over a `C^k` manifold `B`.
 variable
@@ -332,7 +336,7 @@ lemma contMDiffWithinAt_inner (hs : CMDiffAt[u] n (T% s) x) (hs' : s x ≠ 0) :
       exact Real.contDiffAt_sqrt (by simp [F, hs'])
     exact h1.comp x (hs.inner_bundle hs) (Set.mapsTo_image _ u)
   convert aux
-  simp [F, ← norm_eq_sqrt_real_inner]
+  simp [F]
 
 end helper
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.GramSchmidtOrtho
-import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.GramSchmidtOrtho
+public import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 
 /-!
 # Existence of orthonormal frames on Riemannian vector bundles
@@ -38,6 +40,8 @@ variable
   [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E] {n : WithTop ℕ∞}
   [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
   [IsContMDiffRiemannianBundle IB n F E]
+
+@[expose] public section -- FIXME: think if expose is desired!
 
 local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
@@ -153,18 +157,19 @@ lemma contMDiffOn_coeff (ht : CMDiff[u] n (T% t)) (i : ι) : CMDiff[u] n (hs.coe
 
 /-- A section `s` of `V` is `C^k` at `x` iff each of its coefficients in an orthogonal
 local frame near `x` is. -/
-lemma contMDiffAt_iff_coeff (hu : u ∈ 𝓝 x) :
+lemma contMDiffAt_iff_coeff [FiniteDimensional ℝ F] (hu : u ∈ 𝓝 x) :
     CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (hs.coeff i t) x :=
   ⟨fun h i ↦ hs.contMDiffAt_coeff hu h i, fun h ↦ hs.contMDiffAt_of_coeff h hu⟩
 
 /-- If `{s i}` is an orthogonal local frame on `s`, a section `s` of `V` is `C^k` on `u` iff
 each of its coefficients `hs.coeff i s` w.r.t. the local frame `{s i}` is. -/
-lemma contMDiffOn_iff_coeff : CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (hs.coeff i t) :=
+lemma contMDiffOn_iff_coeff [FiniteDimensional ℝ F] :
+    CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (hs.coeff i t) :=
   ⟨fun h i ↦ hs.contMDiffOn_coeff h i, fun hi ↦ hs.contMDiffOn_of_coeff hi⟩
 
 -- unused, just stating for convenience/nice API
 include hs in
-lemma contMDiffAt_iff_coeff' (hu : u ∈ 𝓝 x) :
+lemma contMDiffAt_iff_coeff' [FiniteDimensional ℝ F] (hu : u ∈ 𝓝 x) :
     CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (fun x ↦ ⟪s i x, t x⟫) x := by
   rw [hs.contMDiffAt_iff_coeff hu]
   have (i : ι) := Filter.eventually_of_mem hu fun x hx ↦ (hs.coeff_eq_inner' t hx i)
@@ -223,14 +228,14 @@ variable [ContMDiffVectorBundle 1 F E IB] [IsContMDiffRiemannianBundle IB 1 F E]
 variable (b e) in
 lemma _root_.mdifferentiableAt_orthonormalFrame_of_mem (i : ι) {x : B} (hx : x ∈ e.baseSet) :
     MDiffAt (T% (b.orthonormalFrame e i)) x := by
-  apply ContMDiffAt.mdifferentiableAt _ le_rfl
+  apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
   exact (contMDiffOn_orthonormalFrame_baseSet b e i).contMDiffAt <| e.open_baseSet.mem_nhds hx
 
 @[simp]
 lemma orthonormalFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) :
     b.orthonormalFrame e i x = 0 := by
-  simp only [orthonormalFrame, VectorBundle.gramSchmidtNormed, InnerProductSpace.gramSchmidtNormed]
-  simp
+  simp only [orthonormalFrame, VectorBundle.gramSchmidtNormed, InnerProductSpace.gramSchmidtNormed,
+    RCLike.ofReal_real_eq_id, id_eq, smul_eq_zero, inv_eq_zero, norm_eq_zero, or_self]
   convert InnerProductSpace.gramSchmidt_zero ℝ i
   apply localFrame_apply_of_notMem e b hx
 
