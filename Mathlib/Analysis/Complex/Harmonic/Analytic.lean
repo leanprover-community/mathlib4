@@ -20,7 +20,7 @@ holomorphic on the ball.  This implies in particular that harmonic functions are
 
 public section
 
-open Complex InnerProductSpace Metric Topology
+open Complex InnerProductSpace Metric Set Topology
 
 variable
   {f : ℂ → ℝ} {x : ℂ}
@@ -107,6 +107,41 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
   · simp_all
   · simp [F]
   · assumption
+
+/--
+If a function `f : ℂ → ℝ` is harmonic, then `f` is the real part of a holomorphic function.
+-/
+theorem InnerProductSpace.harmonic_is_realOfHolomorphic_univ {f : ℂ → ℝ}
+    (hf : HarmonicOnNhd f univ) :
+    ∃ F : ℂ → ℂ, (AnalyticOnNhd ℂ F univ) ∧ ((fun z ↦ (F z).re) = f) := by
+  let g := ofRealCLM ∘ (fderiv ℝ f · 1) - I • ofRealCLM ∘ (fderiv ℝ f · I)
+  have hg : Differentiable ℂ g :=
+    fun x ↦ (HarmonicAt.differentiableAt_complex_partial (hf x (mem_univ x)))
+  obtain ⟨F₀, hF₀⟩ := hg.isExactOn_univ
+  let F := (F₀ · - F₀ 0 + f 0)
+  have h₁F : ∀ z₁, HasDerivAt F (g z₁) z₁ := by simp_all [F]
+  have h₂F : Differentiable ℂ F := fun x ↦ (h₁F x).differentiableAt
+  use F, (h₂F.differentiableOn).analyticOnNhd isOpen_univ
+  rw [(by aesop : (fun z ↦ (F z).re) = Complex.reCLM ∘ F)]
+  ext x
+  apply (convex_univ).eqOn_of_fderivWithin_eq (𝕜 := ℝ) (x := 0)
+  · have := h₂F.restrictScalars (𝕜 := ℝ)
+    fun_prop
+  · exact fun y hy ↦ ((hf y hy).1.differentiableAt two_ne_zero).differentiableWithinAt
+  · exact isOpen_univ.uniqueDiffOn
+  · intro y hy
+    have h₃F := (h₁F y).differentiableAt
+    have h₄F := h₃F.restrictScalars (𝕜 := ℝ)
+    rw [fderivWithin_eq_fderiv (isOpen_univ.uniqueDiffWithinAt hy)
+      (reCLM.differentiableAt.comp y h₄F), fderiv_comp y (by fun_prop) h₄F,
+      ContinuousLinearMap.fderiv, h₃F.fderiv_restrictScalars (𝕜 := ℝ)]
+    ext a
+    nth_rw 2 [(by simp : a = a.re • (1 : ℂ) + a.im • (I : ℂ))]
+    rw [map_add, map_smul, map_smul]
+    simp [(h₁F y).deriv, g]
+  · simp_all
+  · simp [F]
+  · tauto
 
 set_option backward.isDefEq.respectTransparency false in
 /-

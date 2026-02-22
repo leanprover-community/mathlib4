@@ -289,4 +289,23 @@ theorem _root_.DifferentiableOn.isExactOn_ball (hf : DifferentiableOn ℂ f (bal
     IsExactOn f (ball c r) :=
   hf.isConservativeOn.isExactOn_ball hf.continuousOn
 
+/--
+**Morera's theorem for the complex plane** A continuous function on `ℂ` whose integrals on
+rectangles vanish, has primitives.
+-/
+theorem IsConservativeOn.isExactOn_univ (h₁ : Continuous f) (h₂ : IsConservativeOn f univ) :
+    IsExactOn f univ := by
+  use (wedgeIntegral 0 · f)
+  intro z _
+  have h₃ : IsConservativeOn f (ball 0 (‖z‖ + 1)) := h₂.mono (subset_univ _)
+  exact h₃.hasDerivAt_wedgeIntegral (by fun_prop) (by aesop)
+
+/--
+**Morera's theorem for the complex plane** A holomorphic function on `ℂ` has
+primitives.
+-/
+theorem _root_.Differentiable.isExactOn_univ (hf : Differentiable ℂ f) : IsExactOn f univ := by
+  apply IsConservativeOn.isExactOn_univ hf.continuous
+    ((isConservativeOn_and_continuousOn_iff_isDifferentiableOn isOpen_univ).2 hf.differentiableOn).1
+
 end Complex
