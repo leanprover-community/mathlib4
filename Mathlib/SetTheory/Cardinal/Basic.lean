@@ -1037,6 +1037,11 @@ theorem powerlt_le_powerlt_left {a b c : Cardinal} (h : b ≤ c) : a ^< b ≤ a 
 
 theorem powerlt_mono_left (a) : Monotone fun c => a ^< c := fun _ _ => powerlt_le_powerlt_left
 
+theorem powerlt_le_powerlt_right {a b c : Cardinal} (h : a ≤ b) : a ^< c ≤ b ^< c :=
+  powerlt_le.2 fun _ hx => (power_le_power_right h).trans (le_powerlt _ hx)
+
+theorem powerlt_mono_right (a) : Monotone fun c => c ^< a := fun _ _ => powerlt_le_powerlt_right
+
 theorem powerlt_succ {a b : Cardinal} (h : a ≠ 0) : a ^< succ b = a ^ b :=
   (powerlt_le.2 fun _ h' => power_le_power_left h <| le_of_lt_succ h').antisymm <|
     le_powerlt a (lt_succ b)
@@ -1056,6 +1061,19 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 := by
 theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
   convert Cardinal.iSup_of_empty _
   exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_gt
+
+theorem powerlt_one {a : Cardinal} (h : a ≠ 0) : a ^< 1 = 1 := by
+  conv_lhs => rw [← succ_zero, powerlt_succ h, power_zero]
+
+theorem powerlt_eq_zero_iff {a b : Cardinal} : a ^< b = 0 ↔ b = 0 := by
+  rcases (zero_le b).eq_or_lt with rfl | hb
+  · simp
+  rcases (zero_le a).eq_or_lt with rfl | ha
+  · simp [hb.ne', zero_powerlt hb.ne']
+  · simp only [hb.ne', iff_false, ← pos_iff_ne_zero]
+    rw [← one_le_iff_pos] at hb ⊢
+    rw [← powerlt_one ha.ne']
+    exact powerlt_le_powerlt_left hb
 
 /-- The cardinality of a set is an upper-bound for the amount of elements before the set's mex
 (minimum excluded value) -/

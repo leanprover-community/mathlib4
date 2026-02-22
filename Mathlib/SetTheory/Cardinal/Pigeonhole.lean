@@ -49,6 +49,12 @@ theorem infinite_pigeonhole_card {β α : Type u} (f : β → α) (θ : Cardinal
   use a; rw [← ha, @preimage_comp _ _ _ Subtype.val f]
   exact mk_preimage_of_injective _ _ Subtype.val_injective
 
+theorem infinite_pigeonhole_card_range {β α : Type u} (f : β → α) (θ : Cardinal) (hθ : θ ≤ #β)
+    (h₁ : ℵ₀ ≤ θ) (h₂ : #(Set.range f) < θ.ord.cof) : ∃ a : α, θ ≤ #(f ⁻¹' {a}) := by
+  rcases infinite_pigeonhole_card (rangeFactorization f) _ hθ h₁ h₂ with ⟨a, ha⟩
+  refine ⟨a, ha.trans (mk_le_mk_of_subset ?_)⟩
+  grind [rangeFactorization]
+
 theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ : Cardinal)
     (hθ : θ ≤ #s) (h₁ : ℵ₀ ≤ θ) (h₂ : #α < θ.ord.cof) :
     ∃ (a : α) (t : Set β) (h : t ⊆ s), θ ≤ #t ∧ ∀ ⦃x⦄ (hx : x ∈ t), f ⟨x, h hx⟩ = a := by
