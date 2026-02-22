@@ -252,6 +252,14 @@ theorem bind_eq_flatMap {α β} (f : α → List β) (l : List α) : l >>= f = l
 
 /-! ### concat -/
 
+variable (l) in
+/-- The unprimed lemma is about append and is wrongly named -/
+theorem dropLast_concat' (a : α) : (l.concat a).dropLast = l := by
+  simp
+
+theorem concat_dropLast (hnil : l ≠ []) : l.dropLast.concat (l.getLast hnil) = l := by
+  simp [List.dropLast_concat_getLast hnil]
+
 /-! ### reverse -/
 
 theorem reverse_cons' (a : α) (l : List α) : reverse (a :: l) = concat (reverse l) a := by
