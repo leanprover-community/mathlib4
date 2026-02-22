@@ -166,6 +166,9 @@ theorem _root_.BoundedVariationOn.locallyBoundedVariationOn {f : α → E} {s : 
     (h : BoundedVariationOn f s) : LocallyBoundedVariationOn f s := fun _ _ _ _ =>
   h.mono inter_subset_left
 
+theorem congr {f g : α → E} {s : Set α} (h : EqOn f g s) : eVariationOn f s = eVariationOn g s := by
+  grind [eVariationOn]
+
 theorem edist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y ∈ s) :
     edist (f x) (f y) ≤ eVariationOn f s := by
   wlog hxy : y ≤ x generalizing x y
@@ -777,13 +780,15 @@ theorem _root_.BoundedVariationOn.tendsto_rightLim [CompleteSpace E] [Topologica
 /-- If a function `g` is at each point `x` a limit of `f` to the left or to the right (or more
 generally a cluster point of the values of `f` around `x`) then the variation of `g` is bounded
 by that of `f`. -/
-lemma eVariationOn_le_of_mapClusterPt [TopologicalSpace α] [OrderTopology α] {f g : α → E}
-    {s : Set α} (hg : ∀ x, MapClusterPt (g x) (𝓝[s] x) f) :
+private lemma eVariationOn_le_of_mapClusterPt
+    [TopologicalSpace α] [OrderTopology α] {f g : α → E}
+    {s : Set α} (hg : ∀ x ∈ s, MapClusterPt (g x) (𝓝[s] x) f) :
     eVariationOn g s ≤ eVariationOn f s := by
   rw [eVariationOn_eq_strictMonoOn]
   apply iSup_le
   rintro ⟨n, u, u_mono, u_mem⟩
   simp only
+  have : Nonempty α := ⟨u 0⟩
   apply le_of_forall_lt (fun c hc ↦ ?_)
   have : ∀ᶠ (b : ℕ → E) in 𝓝 (fun i ↦ g (u i)),
       c < ∑ i ∈ Finset.range n, edist (b (i + 1)) (b i) := by
@@ -802,30 +807,37 @@ lemma eVariationOn_le_of_mapClusterPt [TopologicalSpace α] [OrderTopology α] {
   rw [nhds_pi] at this
   obtain ⟨J, J_fin, k, k_mem, hk⟩ : ∃ (J : Set ℕ), J.Finite ∧ ∃ k, (∀ (i : ℕ), k i ∈ 𝓝 (u i)) ∧
     J.pi k ⊆ _ := mem_pi.1 this
-  have A i : ∃ x, (f x ∈ t i ∧ x ∈ k i) ∧ x ∈ s :=
-    ((((mapClusterPt_iff_frequently.1 (hg (u i)) (t i) (t_mem i))).and_eventually
+  have A i (hi : i ∈ Iic n) : ∃ x, (f x ∈ t i ∧ x ∈ k i) ∧ x ∈ s :=
+    ((((mapClusterPt_iff_frequently.1 (hg (u i) (u_mem i hi)) (t i) (t_mem i))).and_eventually
       (mem_nhdsWithin_of_mem_nhds (k_mem i))).and_eventually self_mem_nhdsWithin).exists
-  choose v hv h'v using A
+  choose! v hv h'v using A
   have : c < ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := by
-    suffices H : f ∘ v ∈ I.pi t from ht H
+    let f' i := if i ∈ Iic n then f (v i) else g (u i)
+    have : ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) =
+        ∑ i ∈ Finset.range n, edist (f' (i + 1)) (f' i) :=
+      Finset.sum_congr rfl (fun i hi ↦ by grind)
+    rw [this]
+    suffices H : f' ∈ I.pi t from ht H
+    have A i : g (u i) ∈ t i := mem_of_mem_nhds (t_mem i)
     grind
   apply this.trans_le
   have v_mono : StrictMonoOn v (Iic n) := by
-    suffices v ∈ J.pi k by
+    let w i := if i ∈ Iic n then v i else u i
+    suffices w ∈ J.pi k by
       simp only [Finset.mem_filter, Finset.mem_product, Finset.mem_Iic, and_imp, Prod.forall] at hk
-      have W := hk this
       grind [StrictMonoOn]
+    have A i : u i ∈ k i := mem_of_mem_nhds (k_mem i)
     grind
   exact sum_le_of_monotoneOn_Iic v_mono.monotoneOn (by grind)
 
 lemma eVariationOn_leftLim_le [TopologicalSpace α] [OrderTopology α] {f : α → E} :
     eVariationOn f.leftLim univ ≤ eVariationOn f univ := by
-  apply eVariationOn_le_of_mapClusterPt (fun x ↦ ?_)
+  apply eVariationOn_le_of_mapClusterPt (fun x hx ↦ ?_)
   apply (mapClusterPt_leftLim f x).mono (nhdsWithin_mono _ (subset_univ _))
 
 lemma eVariationOn_rightLim_le [TopologicalSpace α] [OrderTopology α] {f : α → E} :
     eVariationOn f.rightLim univ ≤ eVariationOn f univ := by
-  apply eVariationOn_le_of_mapClusterPt (fun x ↦ ?_)
+  apply eVariationOn_le_of_mapClusterPt (fun x hx ↦ ?_)
   apply (mapClusterPt_rightLim f x).mono (nhdsWithin_mono _ (subset_univ _))
 
 lemma _root_.BoundedVariationOn.leftLim [TopologicalSpace α] [OrderTopology α] {f : α → E}
