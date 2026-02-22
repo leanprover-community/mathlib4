@@ -46,7 +46,7 @@ namespace Cardinal
 cardinalities are less than `κ` must contain a `θ`-sized Δ-system. Also noted as `Δ(θ, κ)`. -/
 def DeltaSystemProperty (θ κ : Cardinal.{u}) :=
   ∀ ι α (f : ι → Set α), #ι = θ → (∀ i, #(f i) < κ) →
-    ∃ (s : Set ι) (t : Set α), #s = θ ∧ s.Pairwise (f · ∩ f · = t) 
+    ∃ (s : Set ι) (t : Set α), #s = θ ∧ s.Pairwise (f · ∩ f · = t)
 
 variable {θ κ : Cardinal.{u}}
 
