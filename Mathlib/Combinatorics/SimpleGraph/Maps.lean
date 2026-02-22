@@ -369,8 +369,32 @@ abbrev toHom : G →g G' :=
 theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
   Sym2.ind (fun _ _ => f.map_adj_iff) e
 
+theorem preimage_edgeSet : Sym2.map f ⁻¹' G'.edgeSet = G.edgeSet :=
+  Set.ext fun _ ↦ map_mem_edgeSet_iff f
+
+theorem image_edgeSet_subset : Sym2.map f '' G.edgeSet ⊆ G'.edgeSet := by
+  rintro v ⟨u, hu, rfl⟩
+  rwa [map_mem_edgeSet_iff]
+
+theorem image_edgeSet : Sym2.map f '' G.edgeSet = G'.edgeSet ∩ Set.range (Sym2.map f) := by
+  apply le_antisymm <| Set.subset_inter (image_edgeSet_subset f) (Set.image_subset_range ..)
+  rintro _ ⟨huv, ⟨u, v⟩, rfl⟩
+  exact ⟨s(u, v), map_adj_iff f |>.mp huv, rfl⟩
+
 theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
   map_adj_iff f
+
+theorem preimage_neighborSet : f ⁻¹' G'.neighborSet (f v) = G.neighborSet v :=
+  Set.ext fun _ ↦ apply_mem_neighborSet_iff f
+
+theorem image_neighborSet_subset : f '' G.neighborSet v ⊆ G'.neighborSet (f v) := by
+  rintro v ⟨u, hu, rfl⟩
+  rwa [apply_mem_neighborSet_iff]
+
+theorem image_neighborSet : f '' G.neighborSet v = G'.neighborSet (f v) ∩ Set.range f := by
+  apply le_antisymm <| Set.subset_inter (image_neighborSet_subset f) (Set.image_subset_range ..)
+  rintro _ ⟨huv, u, rfl⟩
+  exact ⟨u, f.map_adj_iff.mp huv, rfl⟩
 
 /-- A graph embedding induces an embedding of edge sets. -/
 @[simps]
