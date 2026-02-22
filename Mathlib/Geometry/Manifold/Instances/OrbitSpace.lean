@@ -17,22 +17,20 @@ with a manifold structure modeled on the same model space as `M`.
 
 ## Main results
 
-Let `M` be a topological manifold modeled on `I : ModelWithCorners 𝕜 E H`.
-Assume:
+Let `M` be a topological space equipped with a `ChartedSpace H M` structure.
+Assume that a group `G` acts properly discontinuously on `M`.
 
-* `G` acts on `M`
-* the action is properly discontinuous
-
-Then `orbitRel.Quotient G M` inherits a `ChartedSpace H` structure.
+Then the orbit space `orbitRel.Quotient G M` inherits a `ChartedSpace H` structure.
 
 ## TO-DO
 
-* show that the quotient is an `IsManifold I n`
+* show that the quotient is an `IsManifold I n` for a suitable
+  `ModelWithCorners I`.
 * show smoothness of the projection map
 
 ## Implementation notes
 
-The atlas is obtained by composing a local inverse of the quotient map
+The atlas is obtained by composing a local inverse of the projection map
 (from covering theory) with a chart of `M`
 -/
 
