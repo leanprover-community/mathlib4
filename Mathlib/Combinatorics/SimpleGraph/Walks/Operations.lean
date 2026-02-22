@@ -693,8 +693,7 @@ lemma length_tail_add_one {p : G.Walk u v} (hp : ¬ p.Nil) :
   rw [← length_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
 @[simp]
-lemma length_tail_sub_one {p : G.Walk u v} :
-    p.tail.length = p.length - 1 := by
+lemma length_tail_sub_one {p : G.Walk u v} : p.tail.length = p.length - 1 := by
   cases p <;> simp
 
 protected lemma Nil.tail {p : G.Walk v w} (hp : p.Nil) : p.tail.Nil := by
