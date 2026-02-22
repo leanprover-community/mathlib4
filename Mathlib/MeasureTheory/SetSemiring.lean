@@ -546,7 +546,7 @@ protected lemma Ioc [LinearOrder α] [Nonempty α] :
       rcases Ioc_mem_setOf_Ioc_le u (min u' v) with ⟨u'', v'', h'', heq⟩
       rw [this, heq]
       exact ⟨{Set.Ioc u'' v''}, by grind, by simp, by simp⟩
-    rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by ext; simp; grind]
+    rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by grind]
     refine ⟨{Set.Ioc u u', Set.Ioc v' v}, by grind, ?_, by simp⟩
     intro a ha b hb hab
     simp [Function.onFun]
