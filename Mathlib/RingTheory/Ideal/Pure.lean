@@ -119,7 +119,7 @@ lemma Ideal.ker_piRingHom_atPrime_le (I : Ideal R) :
   by_cases hle : I ≤ m
   · convert Ideal.zero_mem _
     exact hx ⟨⟨m, hm.isPrime⟩, hle⟩
-  · simp [Ideal.map_atPrime_eq_top_of_not_le hle]
+  · simp [IsLocalization.AtPrime.map_eq_top_of_not_le _ hle]
 
 lemma Ideal.ker_piRingHom_atPrime_eq_of_pure (I : Ideal R) [I.Pure] :
     RingHom.ker
