@@ -13,7 +13,7 @@ public import Mathlib.Topology.Covering.Quotient
 
 noncomputable section
 
-namespace MulAction
+open MulAction
 
 variable {M : Type*} [TopologicalSpace M]
 variable {G : Type*} [Group G] [MulAction G M]
@@ -28,15 +28,7 @@ lemma isCoveringMap_quotientMk_of_properlyDiscontinuousSMul :
   IsQuotientCoveringMap.isCoveringMap (G:=_) (f:=_)
     (isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul)
 
-end MulAction
-
 namespace QuotientMk
-open MulAction
-
-variable {M : Type*} [TopologicalSpace M]
-variable {G : Type*} [Group G] [MulAction G M]
-         [ProperlyDiscontinuousSMul G M] [ContinuousConstSMul G M]
-         [IsCancelSMul G M] [T2Space M] [LocallyCompactSpace M]
 
 /-- If a group `G` acts properly discontinuously on a topological space `M`,
 then the quotient map `Quotient.mk : M → M⧸G`
