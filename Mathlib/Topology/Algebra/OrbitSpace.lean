@@ -14,17 +14,12 @@ public import Mathlib.Topology.Covering.Quotient
 noncomputable section
 
 namespace MulAction
--- auxiliar lemmas
--- necessary?
 
 variable {M : Type*} [TopologicalSpace M]
 variable {G : Type*} [Group G] [MulAction G M]
          [ProperlyDiscontinuousSMul G M] [ContinuousConstSMul G M]
          [IsCancelSMul G M] [T2Space M] [LocallyCompactSpace M]
--- these are all necessary for isCoveringMap_quotientMk
 
--- isCoveringMap_quotientMk_of_properlyDiscontinuousSMul?
--- should it go in Mathlib.Topology.Covering.Quotient?
 /-- If a group `G` acts properly discontinuously on a topological space `M`,
 then the quotient map `Quotient.mk _ : M → M⧸G`
 is a covering map. -/
@@ -32,6 +27,7 @@ lemma isCoveringMap_quotientMk :
     IsCoveringMap (Quotient.mk _ : M → orbitRel.Quotient G M) :=
   IsQuotientCoveringMap.isCoveringMap (G:=_) (f:=_)
     (isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul)
+-- should this go in Mathlib.Topology.Covering.Quotient?
 
 end MulAction
 
