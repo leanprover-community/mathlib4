@@ -27,7 +27,6 @@ lemma isCoveringMap_quotientMk_of_properlyDiscontinuousSMul :
     IsCoveringMap (Quotient.mk _ : M → orbitRel.Quotient G M) :=
   IsQuotientCoveringMap.isCoveringMap (G:=_) (f:=_)
     (isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul)
--- should this go in Mathlib.Topology.Covering.Quotient?
 
 end MulAction
 
@@ -51,8 +50,6 @@ lemma isLocalHomeomorph_of_properlyDiscontinuousSMul :
 noncomputable def localHomeomorphAt (p : M) :
     OpenPartialHomeomorph M (orbitRel.Quotient G M) :=
   Classical.choose (isLocalHomeomorph_of_properlyDiscontinuousSMul p)
--- this could just be
--- Classical.choose (isCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isLocalHomeomorph p)
 
 /-- The point `p` lies in the source of `localHomeomorphAt p`. -/
 lemma mem_localHomeomorphAt_source {p : M} :
