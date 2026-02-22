@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.Analysis.Complex.Harmonic.Analytic
 
-set_option backward.isDefEq.respectTransparency false
-
 /-!
 # Liouville's Theorem for Harmonic Functions on the Complex Plane
 
@@ -19,6 +17,8 @@ A real-valued, bounded harmonic function on the complex plane is constant.
 public section
 
 open Complex Real Set
+
+set_option backward.isDefEq.respectTransparency false
 
 /-
 **Liouville's theorem for harmonic functions on the complex plane** A real-valued, bounded harmonic
