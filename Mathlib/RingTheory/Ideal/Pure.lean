@@ -14,16 +14,16 @@ public import Mathlib.RingTheory.Spectrum.Prime.Basic
 # Pure ideals
 
 An ideal `I` of a ring `R` is called pure if `R ⧸ I` is flat over `R`
-(see [Stacks 04PR](https://stacks.math.columbia.edu/tag/04PR)).
-We don't actually define this term, but use `Module.Flat R (R ⧸ I)` instead. In this file we show
+(see [Stacks 04PR](https://stacks.math.columbia.edu/tag/04PR)). In this file we show
 some properties of such ideals.
 
 ## Main results and definitions
 
-- `Ideal.inf_eq_mul_of_flat`: If `I` is pure, `I ⊓ J = I * J` for every ideal `J`.
-- `Ideal.flat_of_inf_eq_mul`: If for any f.g. ideal `J`, the equality `I ⊓ J = I * J` holds, then
+- `Ideal.Pure`: An ideal `I` of `R` is pure if `R ⧸ I` is `R`-flat.
+- `Ideal.inf_eq_mul_of_pure`: If `I` is pure, `I ⊓ J = I * J` for every ideal `J`.
+- `Ideal.Pure.of_inf_eq_mul`: If for any f.g. ideal `J`, the equality `I ⊓ J = I * J` holds, then
   `I` is pure.
-- `Ideal.zeroLocus_inj_of_flat`: If `I` and `J` are pure ideals such that `V(I) = V(J)`, then
+- `Ideal.zeroLocus_inj_of_pure`: If `I` and `J` are pure ideals such that `V(I) = V(J)`, then
   `I = J`.
 -/
 
@@ -32,6 +32,11 @@ some properties of such ideals.
 variable {R : Type*} [CommRing R]
 
 open TensorProduct PrimeSpectrum
+
+/-- An ideal `I` of `R` is pure if `R ⧸ I` is a flat `R`-module. -/
+@[stacks 04PR]
+abbrev Ideal.Pure (I : Ideal R) : Prop :=
+  Module.Flat R (R ⧸ I)
 
 lemma injective_lTensor_quotient_iff_inf_eq_mul (I J : Ideal R) :
     Function.Injective (J.subtype.lTensor (R ⧸ I)) ↔ I ⊓ J = I * J := by
@@ -50,30 +55,30 @@ lemma injective_lTensor_quotient_iff_inf_eq_mul (I J : Ideal R) :
   simp [inf_comm, le_antisymm_iff, Ideal.mul_le_inf (I := I) (J := J)]
 
 @[stacks 04PS "(1) => (2)"]
-lemma Ideal.inf_eq_mul_of_flat (I J : Ideal R) [Module.Flat R (R ⧸ I)] :
+lemma Ideal.inf_eq_mul_of_pure (I J : Ideal R) [I.Pure] :
     I ⊓ J = I * J := by
   rw [← injective_lTensor_quotient_iff_inf_eq_mul]
   apply Module.Flat.lTensor_preserves_injective_linearMap
   exact J.injective_subtype
 
-lemma Ideal.sq_eq_self (I : Ideal R) [Module.Flat R (R ⧸ I)] : I ^ 2 = I := by
-  simp [sq, ← Ideal.inf_eq_mul_of_flat]
+lemma Ideal.sq_eq_self (I : Ideal R) [I.Pure] : I ^ 2 = I := by
+  simp [sq, ← Ideal.inf_eq_mul_of_pure]
 
 @[stacks 04PS "(3) => (1)"]
-lemma Ideal.flat_of_inf_eq_mul (I : Ideal R) (H : ∀ ⦃J : Ideal R⦄, J.FG → I ⊓ J = I * J) :
-    Module.Flat R (R ⧸ I) := by
-  rw [Module.Flat.iff_lTensor_injective]
+lemma Ideal.Pure.of_inf_eq_mul (I : Ideal R) (H : ∀ ⦃J : Ideal R⦄, J.FG → I ⊓ J = I * J) :
+    I.Pure := by
+  rw [Pure, Module.Flat.iff_lTensor_injective]
   intro J hJ
   rw [injective_lTensor_quotient_iff_inf_eq_mul]
   exact H hJ
 
 @[stacks 04PS "(1) => (5)"]
-lemma Ideal.exists_eq_mul_of_flat {I : Ideal R} [Module.Flat R (R ⧸ I)] {x : R} (hx : x ∈ I) :
+lemma Ideal.exists_eq_mul_of_pure {I : Ideal R} [I.Pure] {x : R} (hx : x ∈ I) :
     ∃ y ∈ I, x = x * y := by
   suffices h : x ∈ I * Ideal.span {x} by
     rw [Ideal.mem_mul_span_singleton] at h
     grind
-  rw [← I.inf_eq_mul_of_flat]
+  rw [← I.inf_eq_mul_of_pure]
   exact ⟨hx, subset_span rfl⟩
 
 @[stacks 04PS "(5) => (7)"]
@@ -102,7 +107,7 @@ lemma Ideal.ker_piRingHom_atPrime_le (I : Ideal R) :
     exact hx ⟨⟨m, hm.isPrime⟩, hle⟩
   · simp [Ideal.map_atPrime_eq_top_of_not_le hle]
 
-lemma Ideal.ker_piRingHom_atPrime_eq_of_flat (I : Ideal R) [Module.Flat R (R ⧸ I)] :
+lemma Ideal.ker_piRingHom_atPrime_eq_of_pure (I : Ideal R) [I.Pure] :
     RingHom.ker
       (Pi.ringHom fun p : zeroLocus (I : Set R) ↦
         algebraMap R (Localization.AtPrime p.val.asIdeal)) = I := by
@@ -111,13 +116,13 @@ lemma Ideal.ker_piRingHom_atPrime_eq_of_flat (I : Ideal R) [Module.Flat R (R ⧸
   ext p
   rw [Pi.ringHom_apply, Pi.zero_apply]
   exact Ideal.le_ker_atPrime_of_forall_exists_eq_mul
-    (fun x hx ↦ Ideal.exists_eq_mul_of_flat hx) p.2 hx
+    (fun x hx ↦ Ideal.exists_eq_mul_of_pure hx) p.2 hx
 
 @[stacks 04PT]
-lemma Ideal.zeroLocus_inj_of_flat {I J : Ideal R} [Module.Flat R (R ⧸ I)] [Module.Flat R (R ⧸ J)] :
+lemma Ideal.zeroLocus_inj_of_pure {I J : Ideal R} [I.Pure] [J.Pure] :
     zeroLocus (I : Set R) = zeroLocus J ↔ I = J := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ rfl⟩
-  rw [← I.ker_piRingHom_atPrime_eq_of_flat, ← J.ker_piRingHom_atPrime_eq_of_flat]
+  rw [← I.ker_piRingHom_atPrime_eq_of_pure, ← J.ker_piRingHom_atPrime_eq_of_pure]
   generalize hs : zeroLocus (I : Set R) = s
   generalize ht : zeroLocus (J : Set R) = t
   obtain rfl : s = t := by rw [← hs, ← ht, h]
