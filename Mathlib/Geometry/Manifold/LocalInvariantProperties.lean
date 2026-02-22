@@ -555,14 +555,6 @@ theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalI
 
 end LocalInvariantProp
 
-lemma ChartedSpace.liftPropWithinAt_subtypeVal_comp_iff {U : Opens M'} (f : M → U)
-    (s : Set M) (x : M) :
-    LiftPropWithinAt P (Subtype.val ∘ f) s x ↔ LiftPropWithinAt P f s x := by
-  simp only [ChartedSpace.liftPropWithinAt_iff']
-  congrm ?_ ∧ ?_
-  · exact Topology.IsEmbedding.subtypeVal.isInducing.continuousWithinAt_iff.symm
-  · rfl
-
 section LocalStructomorph
 
 variable (G)
