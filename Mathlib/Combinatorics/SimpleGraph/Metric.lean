@@ -142,6 +142,39 @@ lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := 
     rw [(Order.one_le_iff_pos.mpr h).ge_iff_eq']
     exact edist_eq_one_iff_adj
 
+lemma edist_eq_two_iff {u v : V} :
+    G.edist u v = 2 ↔ u ≠ v ∧ ¬ G.Adj u v ∧ Nonempty (G.commonNeighbors u v) := by
+  refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h ↦ le_antisymm ?_ ?_⟩
+  · simp [← G.edist_eq_zero_iff.not (b := u = v), h]
+  · simp [← edist_eq_one_iff_adj, h]
+  · obtain ⟨w, hw⟩ := exists_walk_of_edist_eq_coe h
+    use w.getVert 1
+    have h : w.getVert 1 ∈ G.commonNeighbors (w.getVert 0) (w.getVert w.length) := by
+      rw [mem_commonNeighbors]
+      apply And.intro <| w.adj_getVert_succ (Nat.lt_of_sub_eq_succ hw)
+      rw [hw]
+      exact (w.adj_getVert_succ (hw ▸ Nat.one_lt_two)).symm
+    rwa [Walk.getVert_zero, Walk.getVert_length] at h
+  · obtain ⟨w, hw⟩ := nonempty_subtype.mp h.2.2
+    rw [mem_commonNeighbors] at hw
+    have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).edist_le
+    simp_all
+  · by_contra! hc
+    cases ENat.lt_two_iff.mp hc <;> simp_all
+
+lemma two_lt_edist_iff {u v : V} :
+    2 < G.edist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ IsEmpty (G.commonNeighbors u v) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ lt_of_le_of_ne ?_ (Ne.symm ?_)⟩
+  · have hn : u ≠ v := by simp [← G.edist_eq_zero_iff.not (b := u = v), ne_of_gt (pos_of_gt h)]
+    have : ¬ G.Adj u v := by simpa [← edist_eq_one_iff_adj] using ne_of_gt (lt_trans (by decide) h)
+    use hn, this
+    by_contra! hc
+    rwa [edist_eq_two_iff.mpr ⟨hn, this, hc⟩, lt_self_iff_false 2] at h
+  · rw [← one_add_one_eq_two]
+    refine Order.add_one_le_of_lt <| lt_of_le_of_ne ?_ ?_
+    <;> grind [Order.one_le_iff_pos, pos_iff_ne_zero, edist_eq_zero_iff, edist_eq_one_iff_adj]
+  · simp_all [edist_eq_two_iff]
+
 lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := by
   rwa [ne_eq, ← reachable_bot.not, ← edist_ne_top_iff_reachable.not, not_not] at h
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+public import Mathlib.Combinatorics.SimpleGraph.Diam
 
 /-!
 # Strongly regular graphs
@@ -65,6 +66,23 @@ theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
     ext
     simp [mem_commonNeighbors]
+
+theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht : G ≠ ⊤) (hm : μ ≠ 0) :
+    G.ediam = 2 := by
+  apply le_antisymm
+  · rw [ediam_le_iff]
+    intro u v
+    by_contra! hc
+    obtain ⟨hn, ha, _⟩ := two_lt_edist_iff.mp hc
+    have h := h.of_not_adj hn ha
+    rw [Fintype.card_eq_zero] at h
+    exact false_of_ne (h ▸ hm)
+  · by_contra! hc
+    cases ENat.lt_two_iff.mp hc with
+    | inl hc =>
+      rw [ediam_eq_zero_iff_subsingleton] at hc
+      exact false_of_nontrivial_of_subsingleton V
+    | inr hc => exact ht.elim (ediam_eq_one.mp hc)
 
 /-- **Conway's 99-graph problem** (from https://oeis.org/A248380/a248380.pdf)
 can be reformulated as the existence of a strongly regular graph with params (99, 14, 1, 2).
