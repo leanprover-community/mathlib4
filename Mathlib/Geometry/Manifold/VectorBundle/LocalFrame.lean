@@ -597,7 +597,7 @@ variable {e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)} [MemTri
 
 open scoped Classical in
 
-/- Extend a vector `v ∈ V x` to a section `s` of the bundle `V` which is smooth near `x`,
+/-- Extend a vector `v ∈ V x` to a section `s` of the bundle `V` which is smooth near `x`,
 such that `s x = v` and this construction is linear in `v`.
 
 The details of this extension are unspecified (and could be subject to change).
