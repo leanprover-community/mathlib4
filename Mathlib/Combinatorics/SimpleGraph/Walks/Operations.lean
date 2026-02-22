@@ -767,14 +767,11 @@ lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k
 
 lemma dropLast_eq_reverse_tail_reverse {u v} (p : G.Walk u v) :
     p.dropLast = (p.reverse.tail.copy p.snd_reverse rfl).reverse := by
-  by_cases h : p.reverse.Nil
-  · have := h.eq
-    subst this
-    rw [(nil_reverse.mp h).eq_nil]
-    simp
+  by_cases h : p.Nil
+  · grind [Nil.eq, nil_reverse, nil_iff_eq_nil, getVert_nil, dropLast_nil, tail_nil, copy_rfl_rfl]
   refine ext_getVert fun k ↦ ?_
   grind [reverse_copy, getVert_copy, dropLast, take_getVert, getVert_reverse, getVert_tail,
-    getVert_reverse, length_tail_sub_one, length_reverse]
+    length_tail_sub_one, length_reverse]
 
 end Walk
 
