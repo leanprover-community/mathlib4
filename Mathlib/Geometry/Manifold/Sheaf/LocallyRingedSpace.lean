@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.Sheaf.Smooth
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
+public import Mathlib.CategoryTheory.Sites.JointlySurjective
+public import Mathlib.CategoryTheory.Sites.MorphismProperty
 
 /-! # Smooth manifolds as locally ringed spaces
 
@@ -128,6 +131,173 @@ def IsManifold.locallyRingedSpace : LocallyRingedSpace where
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).cond
   isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
 
+open CategoryTheory
+
+variable
+  {EN : Type*} [NormedAddCommGroup EN] [NormedSpace 𝕜 EN]
+  {HN : Type*} [TopologicalSpace HN] (IN : ModelWithCorners 𝕜 EN HN)
+variable {N : Type u} [TopologicalSpace N] [ChartedSpace HN N]
+
+lemma ChartedSpace.liftPropWithinAt_subtypeVal_comp_iff
+    {H : Type*} {M : Type*} {H' : Type*} {M' : Type*} [TopologicalSpace H] [TopologicalSpace M]
+    [ChartedSpace H M] [TopologicalSpace H'] [TopologicalSpace M'] [ChartedSpace H' M']
+    {P : (H → H') → Set H → H → Prop} {U : Opens M'} (f : M → U)
+    (s : Set M) (x : M) :
+    LiftPropWithinAt P (Subtype.val ∘ f) s x ↔ LiftPropWithinAt P f s x := by
+  simp only [ChartedSpace.liftPropWithinAt_iff']
+  congrm ?_ ∧ ?_
+  · exact IsEmbedding.subtypeVal.isInducing.continuousWithinAt_iff.symm
+  · rfl
+
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+  {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
+  {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
+  {M : Type u} [TopologicalSpace M] [ChartedSpace HM M]
+  {EN : Type*} [NormedAddCommGroup EN] [NormedSpace 𝕜 EN] {HN : Type*}
+  [TopologicalSpace HN] (IN : ModelWithCorners 𝕜 EN HN)
+  {N : Type u} [TopologicalSpace N] [ChartedSpace HN N]
+
+lemma ContMDiffWithinAt.subtypeVal_comp_iff (U : Opens N) (f : M → U) (s : Set M) (x : M) :
+    ContMDiffWithinAt IM IN ∞ (Subtype.val ∘ f) s x ↔ ContMDiffWithinAt IM IN ∞ f s x :=
+  ChartedSpace.liftPropWithinAt_subtypeVal_comp_iff ..
+
+lemma ContMDiffAt.subtypeVal_comp_iff (U : Opens N) (f : M → U) (x : M) :
+    ContMDiffAt IM IN ∞ (Subtype.val ∘ f) x ↔ ContMDiffAt IM IN ∞ f x := by
+  rw [ContMDiffAt, ContMDiffAt, ContMDiffWithinAt.subtypeVal_comp_iff]
+
+lemma ContMDiff.subtypeVal_comp_iff (U : Opens N) (f : M → U) :
+    ContMDiff IM IN ∞ (Subtype.val ∘ f) ↔ ContMDiff IM IN ∞ f := by
+  simp_rw [ContMDiff, ContMDiffAt.subtypeVal_comp_iff]
+
+section
+
+variable {IM IN}
+variable {EP : Type*} [NormedAddCommGroup EP] [NormedSpace 𝕜 EP] {HP : Type*}
+  [TopologicalSpace HP] (IP : ModelWithCorners 𝕜 EP HP)
+  (P : Type u) [TopologicalSpace P] [ChartedSpace HP P]
+
+def smoothSheafCompRight (f : M → N) (hf : ContMDiff IM IN ∞ f) :
+    smoothSheaf IN IP N P ⟶ (TopCat.Sheaf.pushforward _ (TopCat.ofHom ⟨f, hf.continuous⟩)).obj
+      (smoothSheaf IM IP M P) where
+  val.app U g := ⟨g ∘ Set.restrictPreimage _ f, by
+    apply ContMDiff.comp (I' := IN) g.2
+    rw [← ContMDiff.subtypeVal_comp_iff]
+    exact hf.comp contMDiff_subtype_val⟩
+
+end
+
+section
+
+variable {ER : Type*} [NormedAddCommGroup ER] [NormedSpace 𝕜 ER] {HR : Type*}
+  [TopologicalSpace HR] (IR : ModelWithCorners 𝕜 ER HR)
+  {R : Type u} [TopologicalSpace R] [ChartedSpace HR R] [CommRing R]
+  [ContMDiffRing IR ∞ R]
+
+def smoothSheafCommRingCompRight (f : M → N) (hf : ContMDiff IM IN ∞ f) :
+    smoothSheafCommRing IN IR N R ⟶
+      (TopCat.Sheaf.pushforward _ (TopCat.ofHom ⟨f, hf.continuous⟩)).obj
+        (smoothSheafCommRing IM IR M R) where
+  val.app U := CommRingCat.ofHom
+    { toFun := (smoothSheafCompRight _ _ f hf).val.app U
+      map_one' := rfl
+      map_mul' _ _ := rfl
+      map_zero' := rfl
+      map_add' _ _ := rfl }
+
+end
+
+/-- (Implementation): Use `IsManifold.locallyRingedSpaceMap`. -/
+def IsManifold.locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff IM IN ∞ f) :
+    (IsManifold.locallyRingedSpace IM M).toPresheafedSpace ⟶
+      (IsManifold.locallyRingedSpace IN N).toPresheafedSpace where
+  base := TopCat.ofHom ⟨f, hf.continuous⟩
+  c.app U := CommRingCat.ofHom
+    { toFun g := ⟨g ∘ Set.restrictPreimage _ f, by
+        apply ContMDiff.comp (I' := IN) g.2
+        rw [← ContMDiff.subtypeVal_comp_iff]
+        apply hf.comp
+        exact contMDiff_subtype_val⟩
+      map_one' := rfl
+      map_mul' _ _ := rfl
+      map_zero' := rfl
+      map_add' _ _ := rfl }
+  c.naturality U V g := rfl
+
+open Limits
+
+/-- (Implementation): Use `IsManifold.stalkMap_locallyRingedSpaceMap_evalHom`. -/
+lemma IsManifold.stalkMap_locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff IM IN ∞ f) (x : M) :
+    (IsManifold.locallyRingedSpaceMapAux _ _ f hf).stalkMap x ≫
+      smoothSheafCommRing.evalHom IM 𝓘(𝕜) M 𝕜 x =
+      smoothSheafCommRing.evalHom IN 𝓘(𝕜) N 𝕜 (f x) := by
+  apply TopCat.Presheaf.stalk_hom_ext
+  intro U hxU
+  rw [PresheafedSpace.stalkMap_germ_assoc]
+  ext a
+  refine Eq.trans ?_ (smoothSheafCommRing.evalHom_germ _ _ _ _ _ _ _ a).symm
+  apply smoothSheafCommRing.evalHom_germ
+
+variable {IM IN}
+
+/-- A smooth function of manifolds `f : M → N` induces a morphism of locally ringed spaces. -/
+@[simps! base]
+def IsManifold.locallyRingedSpaceMap (f : M → N) (hf : ContMDiff IM IN ∞ f) :
+    IsManifold.locallyRingedSpace IM M ⟶ IsManifold.locallyRingedSpace IN N where
+  __ := IsManifold.locallyRingedSpaceMapAux _ _ f hf
+  prop x := by
+    refine ⟨fun a ha ↦ ?_⟩
+    rw [smoothSheafCommRing.isUnit_stalk_iff, RingHom.mem_ker] at ha ⊢
+    convert ha
+    exact (congr($(IsManifold.stalkMap_locallyRingedSpaceMapAux _ _ f hf x) a)).symm
+
+@[reassoc (attr := simp)]
+lemma IsManifold.stalkMap_locallyRingedSpaceMap_evalHom (f : M → N) (hf : ContMDiff IM IN ∞ f)
+    (x : M) :
+    (IsManifold.locallyRingedSpaceMap f hf).stalkMap x ≫
+      smoothSheafCommRing.evalHom IM 𝓘(𝕜) M 𝕜 x =
+      smoothSheafCommRing.evalHom IN 𝓘(𝕜) N 𝕜 (f x) :=
+  IsManifold.stalkMap_locallyRingedSpaceMapAux _ _ f hf x
+
+-- TODO: This holds more generally if `U` is replaced by an open embedding that
+-- is also a smooth immersion.
+instance IsManifold.isOpenImmersion_locallyRingedSpaceMap (U : Opens M) :
+    LocallyRingedSpace.IsOpenImmersion
+      (IsManifold.locallyRingedSpaceMap _ (contMDiff_subtype_val (I := IM) (U := U))) where
+  base_open := U.isOpenEmbedding'
+  c_iso V := by
+    rw [ConcreteCategory.isIso_iff_bijective]
+    refine ⟨fun a b hab ↦ Subtype.ext ?_, fun ⟨g, hg⟩ ↦ ?_⟩
+    · ext ⟨x, y, hy, rfl⟩
+      exact congr($(hab).1 ⟨y, ⟨y, hy, rfl⟩⟩)
+    · let a : TopCat.of U ⟶ TopCat.of M := TopCat.ofHom ⟨Subtype.val, continuous_subtype_val⟩
+      have ha : IsOpenEmbedding a.hom := U.isOpenEmbedding'
+      let V' : Opens U := (Opens.map a).obj (ha.isOpenMap.functor.obj V)
+      let b : V' ≃ₜ ha.isOpenMap.functor.obj V :=
+        U.isOpenEmbedding'.homeomorphOfSubsetRange <| Set.image_subset_range _ V.1
+      refine ⟨⟨g ∘ b.symm, ContMDiff.comp hg ?_⟩, Subtype.ext <| funext fun _ ↦ ?_⟩
+      · refine (ContMDiff.subtypeVal_comp_iff _ _ V' _).mp ?_
+        rw [← ContMDiff.subtypeVal_comp_iff]
+        convert contMDiff_subtype_val
+        ext x
+        exact congr($(b.apply_symm_apply x).1)
+      · change g _ = _
+        congr
+        apply b.symm_apply_apply
+
+def IsManifold.restrictLocallyRingedSpaceIso (U : Opens M) :
+    (IsManifold.locallyRingedSpace IM M).restrict U.isOpenEmbedding ≅
+      IsManifold.locallyRingedSpace IM U where
+  hom := LocallyRingedSpace.IsOpenImmersion.lift
+    (IsManifold.locallyRingedSpaceMap _ contMDiff_subtype_val)
+    (LocallyRingedSpace.ofRestrict _ _) (by rfl)
+  inv := LocallyRingedSpace.IsOpenImmersion.lift
+    ((IsManifold.locallyRingedSpace IM M).ofRestrict U.isOpenEmbedding)
+    (IsManifold.locallyRingedSpaceMap _ contMDiff_subtype_val) (by rfl)
+  hom_inv_id := by
+    simp [← cancel_mono ((IsManifold.locallyRingedSpace IM M).ofRestrict U.isOpenEmbedding)]
+  inv_hom_id := by
+    simp [← cancel_mono (IsManifold.locallyRingedSpaceMap _ contMDiff_subtype_val)]
+
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
   {EM : Type u} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
   {HM : Type u} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
@@ -138,40 +308,111 @@ def ModelWithCorners.locallyRingedSpace : LocallyRingedSpace.{u} :=
 
 namespace AlgebraicGeometry
 
---def LocallyRingedSpace.LocallyIsomorphic (X Y : LocallyRingedSpace.{u}) : Prop :=
---  ∀ x : X, ∃ (U : Opens X) (_ : x ∈ U) (V : Opens Y),
---    Nonempty (X.restrict U.isOpenEmbedding ≅ Y.restrict V.isOpenEmbedding)
+namespace LocallyRingedSpace
 
+instance : MorphismProperty.IsMultiplicative @IsOpenImmersion where
+  id_mem _ := inferInstance
+  comp_mem _ _ _ _ := inferInstance
+
+instance : MorphismProperty.RespectsIso @IsOpenImmersion where
+  precomp _ (_ : IsIso _) _ _ := inferInstance
+  postcomp _ (_ : IsIso _) _ _ := inferInstance
+
+instance : MorphismProperty.IsStableUnderBaseChange @IsOpenImmersion :=
+  .mk' fun _ _ _ _ _ _ _ ↦ inferInstance
+
+def zariskiPrecoverage : Precoverage LocallyRingedSpace :=
+    Types.jointlySurjectivePrecoverage.comap (LocallyRingedSpace.forgetToTop ⋙ forget TopCat) ⊓
+      MorphismProperty.precoverage @IsOpenImmersion
+  deriving Precoverage.IsStableUnderComposition, Precoverage.HasIsos
+
+lemma ofArrows_mem_zariskiPrecoverage_iff {ι : Type*} {X : LocallyRingedSpace.{u}}
+    {Y : ι → LocallyRingedSpace.{u}} (f : ∀ i, Y i ⟶ X) :
+    Presieve.ofArrows Y f ∈ zariskiPrecoverage X ↔
+      (∀ x, ∃ i, x ∈ Set.range (f i).base) ∧ ∀ i, IsOpenImmersion (f i) := by
+  change _ ∧ _ ↔ _
+  simp only [Precoverage.mem_comap_iff, Functor.comp_obj, forgetToTop_obj, Presieve.map_ofArrows,
+    Functor.comp_map, forgetToTop_map, ConcreteCategory.forget_map_eq_coe,
+    Types.ofArrows_mem_jointlySurjectivePrecoverage_iff, Set.mem_range,
+    MorphismProperty.ofArrows_mem_precoverage, and_congr_left_iff]
+  intro
+  rfl
+
+def Hom.isOpenEmbedding {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    IsOpenEmbedding f.base :=
+  PresheafedSpace.IsOpenImmersion.base_open
+
+def Hom.opensRange {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Opens Y :=
+  ⟨Set.range f.base, f.isOpenEmbedding.isOpen_range⟩
+
+@[simp]
+lemma range_ofRestrict {U : TopCat.{u}} {X : LocallyRingedSpace.{u}} {f : U ⟶ X.toTopCat}
+    (h : IsOpenEmbedding f) :
+    Set.range (X.ofRestrict h).base = Set.range f :=
+  rfl
+
+lemma Hom.isHomeomorph {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsIso f] :
+    IsHomeomorph f.base := by
+  rw [← TopCat.isIso_iff_isHomeomorph]
+  exact Functor.map_isIso LocallyRingedSpace.forgetToTop f
+
+@[simps]
+def restrictCongr {X : LocallyRingedSpace.{u}} {U V : TopCat.{u}} {f : U ⟶ X.toTopCat}
+    (hf : IsOpenEmbedding f)
+    {g : V ⟶ X.toTopCat} (hg : IsOpenEmbedding g)
+    (H : Set.range f = Set.range g) :
+    X.restrict hf ≅ X.restrict hg where
+  hom := IsOpenImmersion.lift (X.ofRestrict hg) (X.ofRestrict hf) <| by
+    rw [range_ofRestrict, range_ofRestrict, H]
+  inv := IsOpenImmersion.lift (X.ofRestrict hf) (X.ofRestrict hg) <| by
+    rw [range_ofRestrict, range_ofRestrict, H]
+  hom_inv_id := by simp [← cancel_mono (X.ofRestrict hf)]
+  inv_hom_id := by simp [← cancel_mono (X.ofRestrict hg)]
+
+end LocallyRingedSpace
+
+/-- A locally ringed space `X` is a manifold for a given model with corners, if it is locally
+isomorphic to open subsets of `HM`. -/
 class LocallyRingedSpace.IsManifold (H : ModelWithCorners 𝕜 EM HM) (X : LocallyRingedSpace.{u}) :
     Prop where
-  forall_exists_restrict_iso (H) : ∀ x : X, ∃ (U : Opens X) (_ : x ∈ U) (V : Opens HM),
-    Nonempty (X.restrict U.isOpenEmbedding ≅ IsManifold.locallyRingedSpace H V)
+  exists_isOpenImmersion (H) : ∀ x : X, ∃ (U : Opens X) (_ : x ∈ U)
+    (f : X.restrict U.isOpenEmbedding ⟶ IsManifold.locallyRingedSpace H HM),
+    LocallyRingedSpace.IsOpenImmersion f
 
 namespace LocallyRingedSpace.IsManifold
 
 variable {H : ModelWithCorners 𝕜 EM HM}
 
 variable (H) in
-def modelOpenAt (X : LocallyRingedSpace) [X.IsManifold H] (x : X) : Opens X :=
-  (forall_exists_restrict_iso H x).choose
+lemma exists_nonempty_iso {X : LocallyRingedSpace.{u}} [X.IsManifold H] (x : X) :
+    ∃ (U : Opens X) (_ : x ∈ U) (V : Opens HM),
+      Nonempty (X.restrict U.isOpenEmbedding ≅ IsManifold.locallyRingedSpace H V) := by
+  obtain ⟨U, hxU, f, hf⟩ := exists_isOpenImmersion H x
+  use U, hxU, f.opensRange
+  refine ⟨IsOpenImmersion.isoRestrict f ≪≫ ?_ ≪≫ IsManifold.restrictLocallyRingedSpaceIso _⟩
+  exact restrictCongr _ _ Subtype.range_coe_subtype.symm
 
-lemma mem_modelOpenAt (X : LocallyRingedSpace) [X.IsManifold H] (x : X) : x ∈ modelOpenAt H X x :=
-  (forall_exists_restrict_iso H x).choose_spec.choose
-
-variable (H) in
-def openModelAt (X : LocallyRingedSpace) [X.IsManifold H] (x : X) : Opens HM :=
-  (forall_exists_restrict_iso H x).choose_spec.choose_spec.choose
-
-def restrictIsoAt (X : LocallyRingedSpace) [X.IsManifold H] (x : X) :
-    X.restrict (modelOpenAt H X x).isOpenEmbedding ≅
-      IsManifold.locallyRingedSpace H (openModelAt H X x) :=
-  (forall_exists_restrict_iso H x).choose_spec.choose_spec.choose_spec.some
+def euclideanCover (X : LocallyRingedSpace.{u}) [X.IsManifold H] :
+    zariskiPrecoverage.ZeroHypercover X where
+  I₀ := X
+  X x := IsManifold.locallyRingedSpace H (exists_nonempty_iso H x).choose_spec.choose_spec.choose
+  f x :=
+    (exists_nonempty_iso H x).choose_spec.choose_spec.choose_spec.some.inv ≫ (X.ofRestrict _)
+  mem₀ := by
+    rw [ofArrows_mem_zariskiPrecoverage_iff]
+    refine ⟨fun x ↦ ⟨x, ?_⟩, ?_⟩
+    · dsimp
+      rw [Function.Surjective.range_comp]
+      · exact ⟨⟨x, (exists_nonempty_iso H x).choose_spec.choose⟩, rfl⟩
+      · exact (Hom.isHomeomorph _).surjective
+    · intro i
+      infer_instance
 
 def chartedSpace (X : LocallyRingedSpace) [X.IsManifold H] :
     ChartedSpace HM X where
   atlas := sorry
-  chartAt x :=
-    sorry
+  chartAt x := sorry
   mem_chart_source := sorry
   chart_mem_atlas := sorry
 
