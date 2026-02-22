@@ -87,7 +87,7 @@ theorem Function.const.birkhoffAverage_eq₀' {f : α → α} (a : M) {n : ℕ} 
   ext x; exact Function.const.birkhoffAverage_eq₀ R a hn x
 
 open Classical in
-theorem Function.const.birkhoffAverage_eq {f : α → α} (a : M) {n : ℕ}
+theorem Function.const.birkhoffAverage_eq {f : α → α} (a : M) (n : ℕ)
     (x : α) : birkhoffAverage R f (fun _ ↦ a) n x = if (n : R) = 0 then 0 else a := by
   by_cases h : (n : R) = 0
   · simp [h, birkhoffAverage]
@@ -95,7 +95,7 @@ theorem Function.const.birkhoffAverage_eq {f : α → α} (a : M) {n : ℕ}
 
 open Classical in
 @[simp]
-theorem Function.const.birkhoffAverage_eq' {f : α → α} (a : M) {n : ℕ} :
+theorem Function.const.birkhoffAverage_eq' {f : α → α} (a : M) (n : ℕ) :
     birkhoffAverage R f (fun _ ↦ a) n = fun _ ↦ if (n : R) = 0 then 0 else a := by
   ext x; exact Function.const.birkhoffAverage_eq R a x
 
