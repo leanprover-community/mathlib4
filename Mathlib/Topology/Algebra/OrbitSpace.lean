@@ -9,6 +9,18 @@ public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.Covering.Quotient
 
+/-!
+# Covering and local homeomorphism structure on orbit spaces
+
+Let `G` be a group acting properly discontinuously on a topological space `M`.
+
+This file shows that the quotient map `Quotient.mk : M → orbitRel.Quotient G M`
+is a covering map, and hence a local homeomorphism.
+
+We also construct chosen local homeomorphisms and their inverses at each
+point, and establish basic properties.
+-/
+
 @[expose] public section
 
 variable {M : Type*} [TopologicalSpace M]
