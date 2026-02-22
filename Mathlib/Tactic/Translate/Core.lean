@@ -839,9 +839,9 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if let some prio ← getInstancePriority? src then
     let attr_kind := (← getInstanceAttrKind? src).getD .global
-    -- Copy instance_reducible status before adding instance attribute
-    if (← getReducibilityStatus src) matches .instanceReducible then
-      setReducibilityStatus tgt .instanceReducible
+    -- Copy implicit_reducible status before adding instance attribute
+    if (← getReducibilityStatus src) matches .implicitReducible then
+      setReducibilityStatus tgt .implicitReducible
     trace[translate_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
