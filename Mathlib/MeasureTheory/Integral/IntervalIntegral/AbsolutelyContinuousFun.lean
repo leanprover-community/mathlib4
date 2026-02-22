@@ -97,7 +97,6 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
   apply_fun fun x ↦ x.toReal at vol_sum
   rw [ENNReal.tsum_toReal_eq (by simp), ENNReal.toReal_ofReal (by linarith),
       ← Summable.hasSum_iff (by grind [tsum_def])] at vol_sum
-  convert vol_sum with z
   grind [ENNReal.toReal_ofReal]
 
 /-- If `f` is absolutely continuous on `[d, b]` and there is a collection of pairwise disjoint

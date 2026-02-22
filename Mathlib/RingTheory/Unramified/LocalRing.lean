@@ -175,7 +175,6 @@ lemma localRingHom_injective_of_primesOver_eq_singleton
   obtain ⟨r, hrp, t, e'⟩ := Ideal.exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton hq _ haq
   refine (IsLocalization.mk'_eq_zero_iff _ _).mpr
     ⟨⟨r, hrp⟩, FaithfulSMul.algebraMap_injective R S ?_⟩
-  simp only [map_mul, e', map_zero]
   grind
 
 lemma finite_of_primesOver_eq_singleton [Module.Finite R S] [q.LiesOver p] :
