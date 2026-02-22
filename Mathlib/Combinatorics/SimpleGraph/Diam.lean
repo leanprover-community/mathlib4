@@ -372,8 +372,8 @@ lemma ediam_eq_top_iff_radius_eq_top [Nonempty α] : G.ediam = ⊤ ↔ G.radius 
   intro hr
   obtain ⟨w, hw⟩ := G.exists_eccent_eq_radius
   have hdiam : G.ediam ≤ 2 * G.eccent w := ediam_le_two_mul_eccent w
-  refine ne_top_of_lt <| lt_of_le_of_lt hdiam (WithTop.mul_lt_top (ENat.coe_lt_top 2) ?_)
-  exact lt_top_iff_ne_top.mpr (hw ▸ hr)
+  exact ne_top_of_lt <| lt_of_le_of_lt hdiam <| WithTop.mul_lt_top (ENat.coe_lt_top 2) <|
+    lt_top_iff_ne_top.mpr (hw ▸ hr)
 
 lemma ediam_le_two_mul_radius : G.ediam ≤ 2 * G.radius := by
   cases isEmpty_or_nonempty α
