@@ -240,7 +240,7 @@ theorem IsNoetherian.induction [IsNoetherian R M] {P : Submodule R M → Prop}
 theorem LinearMap.isNoetherian_iff_of_bijective {S P} [Semiring S] [AddCommMonoid P] [Module S P]
     {σ : R →+* S} [RingHomSurjective σ] (l : M →ₛₗ[σ] P) (hl : Function.Bijective l) :
     IsNoetherian R M ↔ IsNoetherian S P := by
-  simp_rw [isNoetherian_iff']
+  simp_rw [isNoetherian_iff]
   let e := Submodule.orderIsoMapComapOfBijective l hl
   exact ⟨fun _ ↦ e.symm.strictMono.wellFoundedGT, fun _ ↦ e.strictMono.wellFoundedGT⟩
 
@@ -352,7 +352,7 @@ theorem isNoetherianRing_of_ringEquiv (R) [Semiring R] {S} [Semiring S] (f : R �
 
 instance {R S} [Semiring R] [Semiring S] [IsNoetherianRing R] [IsNoetherianRing S] :
     IsNoetherianRing (R × S) := by
-  rw [IsNoetherianRing, isNoetherian_iff'] at *
+  rw [IsNoetherianRing, isNoetherian_iff] at *
   exact Ideal.idealProdEquiv.toOrderEmbedding.wellFoundedGT
 
 instance {ι} [Finite ι] : ∀ {R : ι → Type*} [Π i, Semiring (R i)] [∀ i, IsNoetherianRing (R i)],

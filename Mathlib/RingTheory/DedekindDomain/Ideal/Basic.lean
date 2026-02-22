@@ -439,11 +439,10 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
     dvdNotUnit_of_dvd_of_not_dvd (Ideal.dvd_iff_le.mpr (le_of_lt h))
       (mt Ideal.dvd_iff_le.mp (not_le_of_gt h))⟩
 
-instance : WfDvdMonoid (Ideal A) where
-  wf := by
-    have : WellFoundedGT (Ideal A) := inferInstance
-    convert this.wf using 3
-    exact Ideal.dvdNotUnit_iff_lt
+instance : WfDvdMonoid (Ideal A) := by
+  unfold WfDvdMonoid
+  eta_expand; simp_rw [Ideal.dvdNotUnit_iff_lt]
+  infer_instance
 
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by

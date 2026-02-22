@@ -111,22 +111,16 @@ universe w
 variable {R M P : Type*} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
   [Module R N] [AddCommMonoid P] [Module R P]
 
-theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
+theorem isNoetherian_iff : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
   refine .trans ?_ ((CompleteLattice.wellFoundedGT_characterisations <| Submodule R M).out 0 3).symm
   exact
     ⟨fun ⟨h⟩ => fun k => (fg_iff_compact k).mp (h k), fun h =>
       ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩
 
-theorem isNoetherian_iff :
-    IsNoetherian R M ↔ WellFounded ((· > ·) : Submodule R M → Submodule R M → Prop) := by
-  rw [isNoetherian_iff']
+alias ⟨IsNoetherian.wf, isNoetherian_mk⟩ := isNoetherian_iff
 
-alias ⟨IsNoetherian.wf, _⟩ := isNoetherian_iff
-
-alias ⟨IsNoetherian.wellFoundedGT, isNoetherian_mk⟩ := isNoetherian_iff'
-
-instance wellFoundedGT [h : IsNoetherian R M] : WellFoundedGT (Submodule R M) :=
-  h.wellFoundedGT
+instance IsNoetherian.wellFoundedGT [h : IsNoetherian R M] : WellFoundedGT (Submodule R M) :=
+  h.wf
 
 theorem isNoetherian_iff_fg_wellFounded :
     IsNoetherian R M ↔ WellFoundedGT { N : Submodule R M // N.FG } := by
@@ -154,12 +148,12 @@ theorem isNoetherian_iff_fg_wellFounded :
 -/
 theorem set_has_maximal_iff_noetherian :
     (∀ a : Set <| Submodule R M, a.Nonempty → ∃ M' ∈ a, ∀ I ∈ a, ¬M' < I) ↔ IsNoetherian R M := by
-  rw [isNoetherian_iff, WellFounded.wellFounded_iff_has_min]
+  rw [isNoetherian_iff, WellFoundedGT, WellFounded.wellFounded_iff_has_min]
 
 /-- A module is Noetherian iff every increasing chain of submodules stabilizes. -/
 theorem monotone_stabilizes_iff_noetherian :
     (∀ f : ℕ →o Submodule R M, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsNoetherian R M := by
-  rw [isNoetherian_iff', wellFoundedGT_iff_monotone_chain_condition]
+  rw [isNoetherian_iff, wellFoundedGT_iff_monotone_chain_condition]
 
 variable [IsNoetherian R M]
 

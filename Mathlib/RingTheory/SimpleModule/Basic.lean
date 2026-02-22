@@ -153,7 +153,7 @@ theorem ker_toSpanSingleton_isMaximal {m : M} (hm : m ≠ 0) :
   exact congr (quotKerEquivOfSurjective _ <| toSpanSingleton_surjective R hm)
 
 open scoped IsSimpleOrder in
-instance : IsNoetherian R M := isNoetherian_iff'.mpr inferInstance
+instance : IsNoetherian R M := isNoetherian_iff.mpr inferInstance
 
 end IsSimpleModule
 
