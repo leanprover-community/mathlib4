@@ -452,10 +452,9 @@ lemma zeroX (hf : IsCovariantDerivativeOn F f s)
     {x : M} (hx : x ∈ s := by trivial)
     {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) : f 0 σ x = 0 := by
   -- TODO: writing MDiffAt here yields an error!
-  have : MDifferentiableAt I (I.prod 𝓘(𝕜, E)) (T% (fun x ↦ (0 : TangentSpace I x))) x := by
-    apply ContMDiff.mdifferentiableAt (n := 1) --(le_refl 1)
-    swap; · simp_all
-    sorry -- zero section is smooth!
+  have : MDifferentiableAt I (I.prod 𝓘(𝕜, E)) (T% (fun x ↦ (0 : TangentSpace I x))) x :=
+    -- TODO: add mdifferentiable{,At}_zeroSection
+    (contMDiff_zeroSection _ _).mdifferentiableAt one_ne_zero
   simpa using IsCovariantDerivativeOn.addX f hf (X := 0) this this hσ
 
 @[simp]
@@ -492,8 +491,8 @@ def convexCombination
     {f' : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     (hf : IsCovariantDerivativeOn F f s) (hf' : IsCovariantDerivativeOn F f' s) (g : M → 𝕜) :
     IsCovariantDerivativeOn F (fun X σ ↦ (g • (f X σ)) + (1 - g) • (f' X σ)) s where
-  addX {_X _X' _σ} _ hx hX hX' hσ := by sorry -- simp [hf.addX, hf'.addX]; module
-  smulX {_X _σ _φ} _ hx hX hσ hφ := by sorry -- simp [hf.smulX, hf'.smulX]; module
+  addX {X X' σ} x hX hX' hσ hx := by simp [hf.addX hX hX' hσ, hf'.addX hX hX' hσ]; module
+  smulX {_X _σ _φ} x hX hσ hφ hx := by simp [hf.smulX hX hσ hφ, hf'.smulX hX hσ hφ]; module
   addσ {_X _σ _σ' x} hX hσ hσ' hx := by
     simp [hf.addσ hX hσ hσ', hf'.addσ hX hσ hσ']
     module
