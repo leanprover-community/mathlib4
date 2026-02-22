@@ -373,10 +373,8 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
       failure
     modify fun s => s.insert e
     match e with
-    | x@(.app e a)       =>
+    | .app e a =>
         visit e true <|> do
-          -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
-          guard !x.isConstantApplication
           if let some n := e.getAppFn.constName? then
             if let some l := t.ignoreArgsAttr.find? env n then
               if e.getAppNumArgs + 1 ∈ l then
@@ -827,7 +825,9 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
   if isProtected (← getEnv) src then
     modifyEnv (addProtected · tgt)
   if defeqAttr.hasTag (← getEnv) src then
-    defeqAttr.setTag tgt
+    /- It can be that `src` holds reflexively but `tgt` doesn't, so we need to use `inferDefEqAttr`.
+    For example in `Ici_inter_Iic : Ici a ∩ Iic b = Icc a b := rfl`. -/
+    MetaM.run' <| inferDefEqAttr tgt
   if let some matcherInfo ← getMatcherInfo? src then
     Match.addMatcherInfo tgt matcherInfo
   -- necessary so that e.g. match equations can be generated for `tgt`
@@ -839,6 +839,9 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if let some prio ← getInstancePriority? src then
     let attr_kind := (← getInstanceAttrKind? src).getD .global
+    -- Copy instance_reducible status before adding instance attribute
+    if (← getReducibilityStatus src) matches .instanceReducible then
+      setReducibilityStatus tgt .instanceReducible
     trace[translate_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 

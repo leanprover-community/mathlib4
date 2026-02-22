@@ -53,6 +53,7 @@ theorem projective_of_free {ι : Type w} (b : Basis ι R M) : Projective M :=
   have : Module.Projective R M := Module.Projective.of_basis b
   M.projective_of_categoryTheory_projective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The category of modules has enough projectives, since every module is a quotient of a free
   module. -/
 instance enoughProjectives [Small.{v} R] : EnoughProjectives (ModuleCat.{v} R) where

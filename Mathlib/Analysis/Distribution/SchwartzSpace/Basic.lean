@@ -93,6 +93,7 @@ theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
   rcases f.decay' k n with ⟨C, hC⟩
   exact ⟨max C 1, by positivity, fun x => (hC x).trans (le_max_left _ _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every Schwartz function is smooth. -/
 @[fun_prop]
 theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
@@ -275,6 +276,7 @@ end SMul
 
 section Zero
 
+set_option backward.isDefEq.respectTransparency false in
 instance instZero : Zero 𝓢(E, F) :=
   ⟨{  toFun := fun _ => 0
       smooth' := contDiff_const
@@ -294,6 +296,7 @@ theorem coeFn_zero : ⇑(0 : 𝓢(E, F)) = (0 : E → F) :=
 theorem zero_apply {x : E} : (0 : 𝓢(E, F)) x = 0 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem seminormAux_zero (k n : ℕ) : (0 : 𝓢(E, F)).seminormAux k n = 0 :=
   le_antisymm (seminormAux_le_bound k n _ rfl.le fun _ => by simp [Pi.zero_def])
     (seminormAux_nonneg _ _ _)
@@ -513,6 +516,7 @@ variable (𝕜 E F)
 instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).moduleFilterBasis.topology'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F) := by
   have A : WithSeminorms (schwartzSeminormFamily ℝ E F) := ⟨rfl⟩
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf] at A ⊢
@@ -550,6 +554,7 @@ theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := b
 
 section HasCompactSupport
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A smooth compactly supported function is a Schwartz function. -/
 @[simps]
 def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h₁ : HasCompactSupport f)
@@ -677,6 +682,7 @@ section bilin
 
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
 def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
@@ -854,6 +860,7 @@ end pairing
 
 open ContinuousLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 F) in
 /-- Scalar multiplication with a continuous linear map as a continuous linear map on Schwartz
 functions. -/
@@ -913,6 +920,7 @@ variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
 provided that the function is temperate and growths polynomially near infinity. -/
 def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
@@ -1047,6 +1055,7 @@ lemma integral_pow_mul_iteratedFDeriv_le (f : 𝓢(D, V)) (k n : ℕ) :
 
 variable [BorelSpace D] [SecondCountableTopology D]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (μ) in
 lemma integrable_pow_mul_iteratedFDeriv
     (f : 𝓢(D, V))
@@ -1064,6 +1073,7 @@ lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
   (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
     (Eventually.of_forall (fun _ ↦ by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 μ) in
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/
 def integralCLM : 𝓢(D, V) →L[𝕜] V := by
