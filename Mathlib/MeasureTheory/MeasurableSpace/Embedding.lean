@@ -177,9 +177,11 @@ theorem MeasurableSet.exists_measurable_proj {_ : MeasurableSpace α}
 statements along measurable equivalences. -/
 structure MeasurableEquiv (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] extends α ≃ β where
   /-- The forward function of a measurable equivalence is measurable. -/
-  measurable_toFun : Measurable toEquiv := by measurability
+  measurable_toFun : Measurable toEquiv := by
+    first | measurability | eta_expand; dsimp -failIfUnchanged; measurability
   /-- The inverse function of a measurable equivalence is measurable. -/
-  measurable_invFun : Measurable toEquiv.symm := by measurability
+  measurable_invFun : Measurable toEquiv.symm := by
+    first | measurability | eta_expand; dsimp -failIfUnchanged; measurability
 
 @[inherit_doc]
 infixl:25 " ≃ᵐ " => MeasurableEquiv
@@ -374,20 +376,16 @@ def prodComm : α × β ≃ᵐ β × α where
 /-- Products of measurable spaces are associative. -/
 def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
   toEquiv := .prodAssoc α β γ
-  measurable_toFun := by eta_expand; dsimp; measurability
-  measurable_invFun := by eta_expand; dsimp; measurability
 
 /-- `PUnit` is a left identity for product of measurable spaces up to a measurable equivalence. -/
 def punitProd : PUnit × α ≃ᵐ α where
   toEquiv := Equiv.punitProd α
   measurable_toFun := measurable_snd
-  measurable_invFun := measurable_prodMk_left
 
 /-- `PUnit` is a right identity for product of measurable spaces up to a measurable equivalence. -/
 def prodPUnit : α × PUnit ≃ᵐ α where
   toEquiv := Equiv.prodPUnit α
   measurable_toFun := measurable_fst
-  measurable_invFun := measurable_prodMk_right
 
 variable [MeasurableSpace δ] in
 /-- Sums of measurable spaces are symmetric. -/
@@ -575,7 +573,6 @@ This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
 def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') where
   __ := Equiv.sumPiEquivProdPi α
-  measurable_toFun := by eta_expand; dsimp; measurability
   measurable_invFun := by
     rw [measurable_pi_iff]; rintro (i | i)
     · exact measurable_pi_iff.1 measurable_fst _

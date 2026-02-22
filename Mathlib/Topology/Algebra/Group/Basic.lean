@@ -67,10 +67,8 @@ variable [TopologicalSpace G] [Group G] [SeparatelyContinuousMul G]
 
 /-- Multiplication from the left in a topological group as a homeomorphism. -/
 @[to_additive /-- Addition from the left in a topological additive group as a homeomorphism. -/]
-protected def Homeomorph.mulLeft (a : G) : G ≃ₜ G where
-  __ := Equiv.mulLeft a
-  continuous_toFun := by eta_expand; dsimp; fun_prop
-  continuous_invFun := by eta_expand; dsimp; fun_prop
+protected def Homeomorph.mulLeft (a : G) : G ≃ₜ G :=
+  { Equiv.mulLeft a with }
 
 @[to_additive (attr := simp)]
 theorem Homeomorph.coe_mulLeft (a : G) : ⇑(Homeomorph.mulLeft a) = (a * ·) :=
@@ -103,10 +101,8 @@ theorem Filter.map_mul_left_nhdsNE {c a : G} :
 
 /-- Multiplication from the right in a topological group as a homeomorphism. -/
 @[to_additive /-- Addition from the right in a topological additive group as a homeomorphism. -/]
-protected def Homeomorph.mulRight (a : G) : G ≃ₜ G where
-  __ := Equiv.mulRight a
-  continuous_toFun := by eta_expand; dsimp; fun_prop
-  continuous_invFun := by eta_expand; dsimp; fun_prop
+protected def Homeomorph.mulRight (a : G) : G ≃ₜ G :=
+  { Equiv.mulRight a with }
 
 @[to_additive (attr := simp)]
 lemma Homeomorph.coe_mulRight (a : G) : ⇑(Homeomorph.mulRight a) = (· * a) := rfl
@@ -1061,10 +1057,8 @@ alias Filter.tendsto_const_div_iff := Filter.tendsto_const_div_iff'
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive (attr := simps! +simpRhs)
   /-- A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`. -/]
-def Homeomorph.divLeft (x : G) : G ≃ₜ G where
-  __ := Equiv.divLeft x
-  continuous_toFun := by eta_expand; dsimp; fun_prop
-  continuous_invFun := by eta_expand; dsimp; fun_prop
+def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
+  { Equiv.divLeft x with }
 
 @[to_additive]
 theorem isOpenMap_div_left (a : G) : IsOpenMap (a / ·) :=
@@ -1077,10 +1071,8 @@ theorem isClosedMap_div_left (a : G) : IsClosedMap (a / ·) :=
 /-- A version of `Homeomorph.mulRight a⁻¹ b` that is defeq to `b / a`. -/
 @[to_additive (attr := simps! +simpRhs)
   /-- A version of `Homeomorph.addRight (-a) b` that is defeq to `b - a`. -/]
-def Homeomorph.divRight (x : G) : G ≃ₜ G where
-  __ := Equiv.divRight x
-  continuous_toFun := by eta_expand; dsimp; fun_prop
-  continuous_invFun := by eta_expand; dsimp; fun_prop
+def Homeomorph.divRight (x : G) : G ≃ₜ G :=
+  { Equiv.divRight x with }
 
 @[to_additive]
 lemma isOpenMap_div_right (a : G) : IsOpenMap (· / a) := (Homeomorph.divRight a).isOpenMap

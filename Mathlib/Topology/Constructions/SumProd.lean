@@ -909,8 +909,6 @@ lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
 /-- Four-way commutativity of the disjoint union. The name matches `add_add_add_comm`. -/
 def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
   toEquiv := Equiv.sumSumSumComm X Y W Z
-  continuous_toFun := by eta_expand; dsimp; fun_prop
-  continuous_invFun := by eta_expand; dsimp; fun_prop
 
 @[simp]
 lemma sumSumSumComm_toEquiv : (sumSumSumComm W X Y Z).toEquiv = (Equiv.sumSumSumComm W X Y Z) := rfl
