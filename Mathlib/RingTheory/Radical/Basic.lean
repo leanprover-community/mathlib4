@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Squarefree.Basic
 /-!
 # Radical of an element of a unique factorization normalization monoid
 
-This file defines the radical of an element `a` of a unique factorization normalization
+This file defines the radical of an element `a` in a unique factorization normalization
 monoid as the product of normalized prime factors of `a` without duplication.
 This is different from the radical of an ideal.
 
@@ -40,7 +40,7 @@ Lemmas relating to natural numbers and integers are in `Mathlib.RingTheory.Radic
 
 ## TODO
 
-- Make a comparison with `Ideal.radical`. Especially, for principal ideal,
+- Connect this notion with `Ideal.radical`. Particularly, for a principal ideal,
   `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
 -/
 
