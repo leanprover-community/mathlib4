@@ -26,8 +26,7 @@ instance {K : Type} [Field K] : Lean.Grind.Field K :=
     zero_ne_one := sorry }
 
 instance {K : Type} [Field K] : IsDomain K := sorry
-instance [IsDomain R] : CancelCommMonoidWithZero R := sorry
-noncomputable def normalizedFactors {α : Type} [CancelCommMonoidWithZero α] (a : α) : Set α := sorry
+noncomputable def normalizedFactors {α : Type} [CommMonoidWithZero α] (a : α) : Set α := sorry
 
 structure Ideal (R : Type) [CommRing R] where
 structure Ideal.Quotient (I : Ideal R) where

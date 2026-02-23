@@ -180,7 +180,11 @@ theorem intent_injective : Injective (@intent α β r) := fun _ _ => ext'
 /-- Copy a concept, adjusting definitional equalities. -/
 @[simps!]
 def copy (c : Concept α β r) (e : Set α) (i : Set β) (he : e = c.extent) (hi : i = c.intent) :
-    Concept α β r := ⟨e, i, he ▸ hi ▸ c.upperPolar_extent, he ▸ hi ▸ c.lowerPolar_intent⟩
+    Concept α β r where
+  extent := e
+  intent := i
+  upperPolar_extent := he ▸ hi ▸ c.upperPolar_extent
+  lowerPolar_intent := he ▸ hi ▸ c.lowerPolar_intent
 
 theorem copy_eq (c : Concept α β r) (e : Set α) (i : Set β) (he hi) : c.copy e i he hi = c := by
   ext; simp_all
@@ -189,6 +193,7 @@ theorem rel_extent_intent {x y} (hx : x ∈ c.extent) (hy : y ∈ c.intent) : r 
   rw [← c.upperPolar_extent] at hy
   exact hy hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Note that if `r'` is the `≤` relation, this theorem will often not be true! -/
 theorem disjoint_extent_intent [Std.Irrefl r'] : Disjoint c'.extent c'.intent := by
   rw [disjoint_iff_forall_ne]
@@ -205,16 +210,14 @@ theorem mem_intent_of_intent_rel [IsTrans α r'] {x y} (hy : r' x y) (hx : x ∈
   rw [← upperPolar_extent]
   exact fun z hz ↦ _root_.trans (rel_extent_intent hz hx) hy
 
-theorem codisjoint_extent_intent [IsTrichotomous α r'] [IsTrans α r'] :
+theorem codisjoint_extent_intent [Std.Trichotomous r'] [IsTrans α r'] :
     Codisjoint c'.extent c'.intent := by
   rw [codisjoint_iff_le_sup]
   refine fun x _ ↦ or_iff_not_imp_left.2 fun hx ↦ ?_
   rw [← upperPolar_extent]
   intro y hy
-  obtain h | rfl | h := trichotomous_of r' x y
-  · cases hx <| mem_extent_of_rel_extent h hy
-  · contradiction
-  · assumption
+  apply Not.imp_symm <| Std.Trichotomous.trichotomous x y (hx <| mem_extent_of_rel_extent · hy)
+  exact (hx <| · ▸ hy)
 
 theorem isCompl_extent_intent [IsStrictTotalOrder α r'] (c' : Concept α α r') :
     IsCompl c'.extent c'.intent :=
@@ -246,8 +249,11 @@ instance instInfConcept : Min (Concept α β r) :=
         rw [← c.lowerPolar_intent, ← d.lowerPolar_intent, ← lowerPolar_union,
           lowerPolar_upperPolar_lowerPolar] }⟩
 
+instance : PartialOrder (Concept α β r) :=
+  PartialOrder.lift _ extent_injective
+
 instance instSemilatticeInfConcept : SemilatticeInf (Concept α β r) :=
-  (extent_injective.semilatticeInf _) fun _ _ => rfl
+  extent_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp]
 theorem extent_subset_extent_iff : c.extent ⊆ d.extent ↔ c ≤ d :=
@@ -367,6 +373,24 @@ theorem extent_sInf (S : Set (Concept α β r)) : (sInf S).extent = ⋂ c ∈ S,
 theorem intent_sInf (S : Set (Concept α β r)) :
     (sInf S).intent = upperPolar r (⋂ c ∈ S, extent c) :=
   rfl
+
+@[simp]
+theorem extent_iSup (f : ι → Concept α β r) :
+    (⨆ i, f i).extent = lowerPolar r (⋂ i, (f i).intent) := by
+  simp_rw [iSup, extent_sSup, ← Set.iInf_eq_iInter, iInf_range]
+
+@[simp]
+theorem intent_iSup (f : ι → Concept α β r) : (⨆ i, f i).intent = ⋂ i, (f i).intent := by
+  simp_rw [iSup, intent_sSup, ← Set.iInf_eq_iInter, iInf_range]
+
+@[simp]
+theorem extent_iInf (f : ι → Concept α β r) : (⨅ i, f i).extent = ⋂ i, (f i).extent := by
+  simp_rw [iInf, extent_sInf, ← Set.iInf_eq_iInter, iInf_range]
+
+@[simp]
+theorem intent_iInf (f : ι → Concept α β r) :
+    (⨅ i, f i).intent = upperPolar r (⋂ i, (f i).extent) := by
+  simp_rw [iInf, intent_sInf, ← Set.iInf_eq_iInter, iInf_range]
 
 instance : Inhabited (Concept α β r) :=
   ⟨⊥⟩

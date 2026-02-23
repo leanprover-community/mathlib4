@@ -64,6 +64,7 @@ class CopyDiscardCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C]
     /-- Discard on the unit object. -/
   discard_unit : ε[𝟙_ C] = 𝟙 (𝟙_ C) := by cat_disch
 
+attribute [instance_reducible] CopyDiscardCategory.comonObj
 attribute [instance] CopyDiscardCategory.comonObj CopyDiscardCategory.isCommComonObj
 
 end CategoryTheory

@@ -73,6 +73,7 @@ theorem isPreprimitive_stabilizer_subgroup [IsPreprimitive (stabilizer M s) s]
       map_smul' _ _ := rfl }
   IsPreprimitive.of_surjective (f := f) Function.surjective_id
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsPretransitive.of_partition
     (hs : ∀ a ∈ s, ∀ b ∈ s, ∃ g : M, g • a = b)
     (hs' : ∀ a ∈ sᶜ, ∀ b ∈ sᶜ, ∃ g : M, g • a = b)
@@ -130,6 +131,8 @@ theorem exists_mem_stabilizer_smul_eq :
   classical
   exact ⟨swap a b, swap_mem_stabilizer ha hb, swap_apply_left a b⟩
 
+@[deprecated (since := "2025-12-16")] alias moves_in := exists_mem_stabilizer_smul_eq
+
 theorem stabilizer.surjective_toPerm (s : Set α) :
     Function.Surjective (toPerm : stabilizer (Perm α) s → Perm s) := fun g ↦ by
   classical
@@ -155,6 +158,7 @@ theorem stabilizer_ne_top_of_nonempty_of_nonempty_compl
   rw [← hg, Set.mem_smul_set]
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
     (s : Set α) (G : Subgroup (Perm α))
     (hG : stabilizer (Perm α) s < G) :
@@ -244,13 +248,11 @@ lemma subsingleton_of_ssubset_of_stabilizer_le
       toFun := Subtype.val
       map_smul' _ _ := rfl }
     exact hB.preimage f'
-  let φ : stabilizer M (s : Set α) → Perm (s : Set α) := MulAction.toPerm
-  let f : (s : Set α) →ₑ[φ] (s : Set α) := {
-    toFun := id
-    map_smul' _ _ := rfl }
-  have hf : Function.Bijective f := Function.bijective_id
-  rw [isPreprimitive_congr hG hf]
-  infer_instance
+  exact isPreprimitive_stabilizer_of_surjective _ hG
+
+@[deprecated (since := "2025-12-16")]
+alias _root_.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le :=
+  subsingleton_of_ssubset_of_stabilizer_le
 
 lemma subsingleton_of_ssubset_of_stabilizer_Perm_le
     {B : Set α} {G : Subgroup (Perm α)} (hB : IsBlock G B)
@@ -328,6 +330,10 @@ lemma compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
     rw [← is_one_pretransitive_iff]
     apply ofFixingSubgroup.isMultiplyPretransitive M s rfl
 
+@[deprecated (since := "2025-12-16")]
+alias _root_.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl :=
+  compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
+
 end MulAction.IsBlock
 
 namespace Equiv.Perm
@@ -336,6 +342,7 @@ open MulAction Equiv
 
 variable [Finite α]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     {s : Set α} (h0 : s.Nonempty) (hα : s.ncard < sᶜ.ncard) :
     IsCoatom (stabilizer (Perm α) s) := by
@@ -365,7 +372,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     apply hB.eq_univ_of_card_lt
     have : sᶜ.ncard ≤ B.ncard := ncard_le_ncard this
     rw [← Set.ncard_add_ncard_compl s]
-    linarith
+    lia
   -- The proof needs 4 steps
   /- Step 1 : `sᶜ` is not a block.
        This uses that `Nat.card s < Nat.card sᶜ`.
@@ -393,8 +400,10 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     hB.subsingleton_of_stabilizer_lt_of_subset hB_not_le_sc hG hBs
   -- Step 4 : `sᶜ ⊆ B`
   have _ := isMultiplyPretransitive α (s.ncard + 1)
-  apply IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl hG.le <;> grind
+  apply MulAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl hG.le <;>
+    grind
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `MulAction.stabilizer (Perm α) s` is a maximal subgroup of `Perm α`,
 provided `s` and `sᶜ` are nonempty, and `Nat.card α ≠ 2 * Nat.card s`.
 

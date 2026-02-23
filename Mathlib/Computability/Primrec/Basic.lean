@@ -6,8 +6,8 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Ring.Nat
-public import Mathlib.Logic.Encodable.Pi
 public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Logic.Denumerable
 
 /-!
 # The primitive recursive functions
@@ -45,7 +45,6 @@ other design choices in this formalization, see [carneiro2019].
 
 @[expose] public section
 
-open List (Vector)
 open Denumerable Encodable Function
 
 namespace Nat
@@ -709,6 +708,7 @@ theorem of_graph {f : α → ℕ} (h₁ : PrimrecBounded f)
   refine (nat_findGreatest pg h₂).of_eq fun n => ?_
   exact (Nat.findGreatest_spec (P := fun b => f n = b) (hg n) rfl).symm
 
+set_option backward.isDefEq.respectTransparency false in
 -- We show that division is primitive recursive by showing that the graph is
 theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
   refine of_graph ⟨_, fst, fun p => Nat.div_le_self _ _⟩ ?_
@@ -852,6 +852,7 @@ namespace Primrec
 variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp
     Primrec (@Subtype.val α p) := by

@@ -39,6 +39,32 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [FiberBundle F V] [VectorBundle 𝕜 F V]
   -- `V` vector bundle
 
+section ErrorMetavars -- Test for error messages when the goal still has metavariables.
+
+-- The argument k is deliberately implicit; it should be explicit in a mathlib definition.
+def proj : TangentBundle 𝓘(𝕜, 𝕜) 𝕜 → 𝕜 := fun x ↦ x.2
+
+open ContDiff
+
+-- TODO: the error message could be more helpful, by saying "the goal has metavariables; maybe there is an implicit argument missing"
+/--
+error: Could not find a model with corners for `TangentBundle 𝓘(?_, ?_) ?_`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
+#guard_msgs in
+set_option pp.mvars.anonymous false in
+lemma contMDiff_proj : CMDiff ∞ (proj) := by
+  unfold proj
+  exact contMDiff_snd_tangentBundle_modelSpace 𝕜 𝓘(𝕜)
+
+-- Adding the implicit argument k works.
+example : CMDiff ∞ (proj (𝕜 := 𝕜)) := by
+  unfold proj
+  exact contMDiff_snd_tangentBundle_modelSpace 𝕜 𝓘(𝕜)
+
+end ErrorMetavars
+
 /-! Additional tests for the elaborators for `MDifferentiable{WithinAt,At,On}`. -/
 section differentiability
 
@@ -208,6 +234,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `TotalSpace F (Tan
 [Elab.DiffGeo.MDiff] ✅️ NormedSpace
   [Elab.DiffGeo.MDiff] `F` is a normed space over the field `𝕜`
   [Elab.DiffGeo.MDiff] Found model: `𝓘(𝕜, F)`
+  [Elab.DiffGeo.MDiff] This is the trivial model with corners for the normed space `F` over the base field `𝕜`.
 -/
 #guard_msgs in
 set_option trace.Elab.DiffGeo true in
@@ -244,7 +271,7 @@ Hint: Type class instance resolution failures can be inspected with the `set_opt
 end
 
 -- Inferring a model with corners on a space of continuous linear maps between normed spaces
-section
+section ContinuousLinearMap
 
 variable {f : M → E →L[𝕜] E'} in
 /-- info: MDifferentiable I 𝓘(𝕜, E →L[𝕜] E') f : Prop -/
@@ -276,7 +303,7 @@ def id' : ℝ →+* RealCopy := RingHom.id ℝ
 set_option trace.Elab.DiffGeo.MDiff true in
 variable {f : M → E'' →SL[id'] E'''} in
 /--
-error: Could not find a model with corners for `E'' →SL[id'] E'''`
+error: Could not find a model with corners for `E'' →SL[id'] E'''`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
@@ -345,18 +372,113 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 #check MDiff f
 
 variable {f : (E'' →SL[id'] E''') → E''} in
-/-- error: Could not find a model with corners for `E'' →SL[id'] E'''` -/
+/--
+error: Could not find a model with corners for `E'' →SL[id'] E'''`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiff f
 
 variable {f : M → E'' →SL[id'] E'''} in
-/-- error: Could not find a model with corners for `E'' →SL[id'] E'''` -/
+/--
+error: Could not find a model with corners for `E'' →SL[id'] E'''`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
+#check CMDiff 2 f
+
+-- Testing the case of a map that is not the identity: we infer a model with corners, but
+-- it will not match the desired type exactly.
+variable {E'''' : Type*} [NormedAddCommGroup E''''] [NormedSpace ℝ E'''']
+  {σ : ℝ →+* ℝ} [RingHomIsometric σ]
+
+variable {f : M → E'' →SL[σ] E''''} in
+/--
+error: Could not find a model with corners for `E'' →SL[σ] E''''`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
+#guard_msgs in
+set_option pp.mvars.anonymous false in
+#check CMDiff 2 f
+
+variable {f : M → E'' →SL[σ] E''''} in
+/--
+error: Could not find a model with corners for `E'' →SL[σ] E''''`.
+---
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `M` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `M` is not a `TangentBundle`
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on `M` among local instances.
+[Elab.DiffGeo.MDiff] ✅️ Manifold
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
+  [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²⁵`
+  [Elab.DiffGeo.MDiff] Found model: `I`
+[Elab.DiffGeo.MDiff] Finding a model with corners for: `E'' →SL[σ] E''''`
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not a `TangentBundle`
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on `E'' →SL[σ] E''''` among local instances.
+[Elab.DiffGeo.MDiff] ❌️ Manifold
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `ChartedSpace` structure on `E'' →SL[σ]
+        E''''` among local instances, and `E'' →SL[σ]
+        E''''` is not the charted space of some type in the local context either.
+[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] `E'' →SL[σ] E''''` is a space of continuous (semi-)linear maps
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is a space of continuous (semi-)linear maps over `σ`, which is not the identity
+[Elab.DiffGeo.MDiff] ❌️ RealInterval
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not a Euclidean space, half-space or quadrant
+[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not a set of units, in particular not of a complete normed algebra
+[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not the complex unit circle
+[Elab.DiffGeo.MDiff] ❌️ Sphere
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[σ] E''''` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ NormedField
+  [Elab.DiffGeo.MDiff] Failed with error:
+      failed to synthesize instance of type class
+        NontriviallyNormedField (E'' →SL[σ] E'''')
+      ⏎
+      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `InnerProductSpace` structure on `E'' →SL[σ] E''''` among local instances.
+-/
+#guard_msgs in
+set_option trace.Elab.DiffGeo.MDiff true in
+set_option pp.mvars.anonymous false in
 #check CMDiff 2 f
 
 end
 
-end
+end ContinuousLinearMap
 
 /-! Inferring a model with corners on a real interval -/
 section RealInterval
@@ -443,7 +565,11 @@ Hint: Type class instance resolution failures can be inspected with the `set_opt
 variable {α : Type*} {x' y' : α} {k : Set.Icc x' y' → ℝ} in
 #check MDiff k
 
-/-- error: Could not find a model with corners for `↑(Set.Icc x' y')` -/
+/--
+error: Could not find a model with corners for `↑(Set.Icc x' y')`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 variable {α : Type*} [Preorder α] {x' y' : α} {k : ℝ → Set.Icc x' y'} in
 #check CMDiff 2 k
@@ -490,7 +616,7 @@ noncomputable instance : ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y) :=
 
 set_option trace.Elab.DiffGeo.MDiff true in
 /--
-error: Could not find a model with corners for `↑(Set.Icc x y)`
+error: Could not find a model with corners for `↑(Set.Icc x y)`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Set.Icc x y)`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
@@ -543,10 +669,18 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Set.Icc x y)`
 -/
 #guard_msgs in
 #check MDiffAt g
-/-- error: Could not find a model with corners for `↑(Set.Icc x y)` -/
+/--
+error: Could not find a model with corners for `↑(Set.Icc x y)`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiff h
-/-- error: Could not find a model with corners for `↑(Set.Icc x y)` -/
+/--
+error: Could not find a model with corners for `↑(Set.Icc x y)`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check CMDiff 2 k
 
@@ -667,7 +801,11 @@ variable {f : (V →L[𝕜] V)ˣ → 𝕜} in
 
 variable {α : Type*} [Monoid α] [Ring α]
 
-/-- error: Could not find a model with corners for `αˣ` -/
+/--
+error: Could not find a model with corners for `αˣ`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 variable {f : αˣ → 𝕜} in
 #check MDiff f

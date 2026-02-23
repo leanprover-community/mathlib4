@@ -220,6 +220,7 @@ namespace Submodule
 variable {ι R : Type*} {M : ι → Type*} [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
   [∀ i, TopologicalSpace (M i)] [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s i` is a family of submodules, each is in its module,
 then the closure of their span in the indexed product of the modules
 is the product of their closures.
@@ -271,8 +272,7 @@ theorem LinearMap.continuous_on_pi {ι : Type*} {R : Type*} {M : Type*} [Finite 
       ext x
       exact f.pi_apply_eq_sum_univ x
     rw [this]
-    refine continuous_finset_sum _ fun i _ => ?_
-    exact (continuous_apply i).smul continuous_const
+    fun_prop
 
 end Pi
 

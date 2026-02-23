@@ -19,8 +19,8 @@ This operation is called `MvPowerSeries.expand` and it is an algebra homomorphis
 
 ### Main declaration
 
-* `MvPowerSeries.expand`: expand a multi variate power series by a factor of p, so `∑ aₙ xⁿ`
-becomes `∑ aₙ xⁿᵖ`.
+* `MvPowerSeries.expand`: expand a multi variate power series by a nonzero factor of p,
+so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/
 
 @[expose] public section
@@ -78,11 +78,15 @@ theorem expand_substAlgHom {f : σ → MvPowerSeries τ S} (hf : HasSubst f) {φ
     expand p hp (substAlgHom hf φ) = substAlgHom (HasSubst.expand p hp hf) φ := by
   rw [← AlgHom.comp_apply, expand_comp_substAlgHom]
 
+theorem expand_subst {f : σ → MvPowerSeries τ R} (hf : HasSubst f) {φ : MvPowerSeries σ R} :
+    expand p hp (subst f φ) = subst (fun i ↦ (f i).expand p hp) φ := by
+  rw [← substAlgHom_apply hf, expand_substAlgHom, substAlgHom_apply]
+
 end
 
-/- TODO : In the original file of multi variate polynomial, there are two theorem about rename
-here, but we don't have rename for multi variate power series. And for `eval₂Hom`, `eval₂`
-and `aevel`, the expression does't look good. -/
+/- TODO : In the original file of `MvPolynomial`, there are two theorems about `rename`
+here, but we don't have `rename` for `MvPowerSeries`. And for `eval₂Hom`, `eval₂`
+and `aeval`, the expression doesn't look good. -/
 
 variable (q : ℕ) (hq : q ≠ 0)
 
@@ -108,6 +112,12 @@ theorem coeff_expand_smul (φ : MvPowerSeries σ R) (m : σ →₀ ℕ) :
   · intro d hd
     rw [this, coeff_monomial, if_neg _, mul_zero]
     simp [nsmul_right_inj hp, hd.symm]
+
+@[simp]
+theorem constantCoeff_expand (φ : MvPowerSeries σ R) :
+    (φ.expand p hp).constantCoeff = φ.constantCoeff := by
+  conv_lhs => rw [← coeff_zero_eq_constantCoeff, ← smul_zero p, coeff_expand_smul]
+  simp
 
 theorem coeff_expand_of_not_dvd (φ : MvPowerSeries σ R) {m : σ →₀ ℕ} {i : σ} (h : ¬ p ∣ m i) :
     (expand p hp φ).coeff m = 0 := by
@@ -147,6 +157,26 @@ theorem support_expand (φ : MvPowerSeries σ R) :
   by_contra hc
   rw [Function.mem_support, ← coeff_apply φ, ← coeff_expand_smul p hp, coeff_apply, hc] at hn₁
   contradiction
+
+@[simp]
+theorem order_expand (φ : MvPowerSeries σ R) :
+    (φ.expand p hp).order = p • φ.order := by
+  by_cases! hφ : φ = 0
+  · simpa [hφ] using (ENat.mul_top (by norm_cast)).symm
+  · apply eq_of_le_of_ge
+    · obtain ⟨d, hd₁, hd₂⟩ := exists_coeff_ne_zero_and_order (ne_zero_iff_order_finite.mp hφ)
+      have : p • φ.order = (p • d).degree := by simp [← hd₂]
+      rw [this]
+      exact order_le <| (coeff_expand_smul p hp φ _) ▸ hd₁
+    · refine MvPowerSeries.le_order fun d hd => ?_
+      by_cases! h : ∀ i, p ∣ d i
+      · obtain ⟨m, hm⟩ : ∃ m, d = p • m := ⟨Finsupp.equivFunOnFinite.symm fun i => d i / p,
+          by ext i; simp [(Nat.mul_div_cancel' (h i))]⟩
+        rw [hm, coeff_expand_smul, coeff_of_lt_order]
+        simp only [hm, map_nsmul, smul_eq_mul, Nat.cast_mul, nsmul_eq_mul] at hd
+        exact lt_of_mul_lt_mul_left' hd
+      · obtain ⟨i, hi⟩ := h
+        exact coeff_expand_of_not_dvd p hp φ hi
 
 section MvPolynomial
 

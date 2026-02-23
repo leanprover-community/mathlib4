@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # Fractional ideals
@@ -135,7 +134,7 @@ defined by mapping `x` to `I.den • x`, assuming scalar multiplication by `I.de
 noncomputable abbrev equivNumOfIsSMulRegular [FaithfulSMul R P] {I : FractionalIdeal S P}
     (reg : IsSMulRegular P I.den) : I ≃ₗ[R] I.num := by
   refine LinearEquiv.trans
-    (LinearEquiv.ofBijective ((DistribMulAction.toLinearMap R P I.den).restrict fun _ hx ↦ ?_)
+    (LinearEquiv.ofBijective ((DistribSMul.toLinearMap R P I.den).restrict fun _ hx ↦ ?_)
       ⟨fun _ _ hxy ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩)
     (Submodule.equivMapOfInjective (Algebra.linearMap R P)
       (FaithfulSMul.algebraMap_injective R P) (num I)).symm
@@ -164,6 +163,8 @@ instance : SetLike (FractionalIdeal S P) P where
   coe I := ↑(I : Submodule R P)
   coe_injective' := SetLike.coe_injective.comp Subtype.coe_injective
 
+instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P) P
+
 @[simp]
 theorem mem_coe {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) ↔ x ∈ I :=
   Iff.rfl
@@ -188,7 +189,7 @@ theorem ext {I J : FractionalIdeal S P} : (∀ x, x ∈ I ↔ x ∈ J) → I = J
   change Algebra.linearMap R P _ = _
   rw [equivNum, LinearEquiv.trans_apply, LinearEquiv.ofBijective_apply, LinearMap.restrict_apply,
     Submodule.map_equivMapOfInjective_symm_apply, Subtype.coe_mk,
-    DistribMulAction.toLinearMap_apply]
+    DistribSMul.toLinearMap_apply]
 
 /-- Copy of a `FractionalIdeal` with a new underlying set equal to the old one.
 Useful to fix definitional equalities. -/
@@ -294,12 +295,10 @@ theorem coeIdeal_le_coeIdeal' [IsLocalization S P] (h : S ≤ nonZeroDivisors R)
     (I : FractionalIdeal S P) ≤ J ↔ I ≤ J :=
   coeSubmodule_le_coeSubmodule h
 
-@[simp]
+@[simp, gcongr]
 theorem coeIdeal_le_coeIdeal (K : Type*) [CommRing K] [Algebra R K] [IsFractionRing R K]
     {I J : Ideal R} : (I : FractionalIdeal R⁰ K) ≤ J ↔ I ≤ J :=
   IsFractionRing.coeSubmodule_le_coeSubmodule
-
-@[gcongr] protected alias ⟨_, GCongr.coeIdeal_le_coeIdeal⟩ := coeIdeal_le_coeIdeal
 
 instance : Zero (FractionalIdeal S P) :=
   ⟨(0 : Ideal R)⟩
@@ -370,6 +369,7 @@ theorem zero_of_num_eq_bot [IsDomain R] [Module.IsTorsionFree R P] (hS : 0 ∉ S
   have h_eq : I.den • (I : Submodule R P) = ⊥ := by rw [den_mul_self_eq_num, hI, Submodule.map_bot]
   exact (Submodule.eq_bot_iff _).mp h_eq (den I • x) ⟨x, hx, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem num_zero_eq (h_inj : Function.Injective (algebraMap R P)) :
     num (0 : FractionalIdeal S P) = 0 := by
   simpa [num, LinearMap.ker_eq_bot] using h_inj
@@ -380,11 +380,11 @@ variable (S)
 theorem coeIdeal_top : ((⊤ : Ideal R) : FractionalIdeal S P) = 1 :=
   rfl
 
+@[simp]
 theorem mem_one_iff {x : P} : x ∈ (1 : FractionalIdeal S P) ↔ ∃ x' : R, algebraMap R P x' = x :=
   Iff.intro (fun ⟨x', _, h⟩ => ⟨x', h⟩) fun ⟨x', h⟩ => ⟨x', ⟨⟩, h⟩
 
-theorem coe_mem_one (x : R) : algebraMap R P x ∈ (1 : FractionalIdeal S P) :=
-  (mem_one_iff S).mpr ⟨x, rfl⟩
+theorem coe_mem_one (x : R) : algebraMap R P x ∈ (1 : FractionalIdeal S P) := by simp
 
 theorem one_mem_one : (1 : P) ∈ (1 : FractionalIdeal S P) :=
   (mem_one_iff S).mpr ⟨1, map_one _⟩
@@ -471,10 +471,7 @@ theorem coe_sup (I J : FractionalIdeal S P) : ↑(I ⊔ J) = (I ⊔ J : Submodul
   rfl
 
 instance lattice : Lattice (FractionalIdeal S P) :=
-  Function.Injective.lattice _ Subtype.coe_injective coe_sup coe_inf
-
-instance : SemilatticeSup (FractionalIdeal S P) :=
-  { FractionalIdeal.lattice with }
+  Function.Injective.lattice _ Subtype.coe_injective .rfl .rfl coe_sup coe_inf
 
 end Lattice
 

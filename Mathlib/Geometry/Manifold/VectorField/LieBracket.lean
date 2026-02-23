@@ -91,6 +91,7 @@ lemma mlieBracketWithin_apply :
       (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm W (range I))
       ((extChartAt I x₀).symm ⁻¹' s ∩ range I)) ((extChartAt I x₀ x₀))) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_eq_lieBracketWithin {V W : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {s : Set E} :
     mlieBracketWithin 𝓘(𝕜, E) V W s = lieBracketWithin 𝕜 V W s := by
   ext x
@@ -101,6 +102,7 @@ lemma mlieBracketWithin_eq_lieBracketWithin {V W : Π (x : E), TangentSpace 𝓘
 @[simp] lemma mlieBracketWithin_univ :
     mlieBracketWithin I V W univ = mlieBracket I V W := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
     mlieBracketWithin I V W s x = 0 := by
   simp only [mlieBracketWithin, mpullback_apply]
@@ -109,12 +111,13 @@ lemma mlieBracketWithin_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
   · simp only [mpullbackWithin_apply]
     have : (extChartAt I x).symm ((extChartAt I x) x) = x := by simp
     rw [this, hV]
-    simp
+    simp +instances
   · simp only [mpullbackWithin_apply]
     have : (extChartAt I x).symm ((extChartAt I x) x) = x := by simp
     rw [this, hW]
-    simp
+    simp +instances
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_swap_apply :
     mlieBracketWithin I V W s x = - mlieBracketWithin I W V s x := by
   rw [mlieBracketWithin, lieBracketWithin_swap, mpullback_neg]
@@ -131,12 +134,14 @@ lemma mlieBracket_swap_apply : mlieBracket I V W x = - mlieBracket I W V x :=
 lemma mlieBracket_swap : mlieBracket I V W = - mlieBracket I W V :=
   mlieBracketWithin_swap
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mlieBracketWithin_self : mlieBracketWithin I V V = 0 := by
   ext x; simp [mlieBracketWithin, mpullback]
 
 @[simp] lemma mlieBracket_self : mlieBracket I V V = 0 := by
   ext x; simp_rw [mlieBracket, mlieBracketWithin_self, Pi.zero_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We have `[0, W] = 0` for all vector fields `W`: this depends on the junk value 0
 if `W` is not differentiable. Version within a set. -/
 @[simp]
@@ -308,6 +313,7 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vect
   exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
     one_ne_zero).comp_mdifferentiableWithinAt _ this
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_const_smul_left
     (hV : MDiffAt[s] (T% V) x) (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (c • V) W s x = c • mlieBracketWithin I V W s x := by
@@ -321,6 +327,7 @@ lemma mlieBracket_const_smul_left (hV : MDiffAt (T% V) x) :
   simp only [← mlieBracketWithin_univ] at hV ⊢
   exact mlieBracketWithin_const_smul_left hV (uniqueMDiffWithinAt_univ _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_const_smul_right
     (hW : MDiffAt[s] (T% W) x) (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (c • W) s x = c • mlieBracketWithin I V W s x := by
@@ -334,6 +341,7 @@ lemma mlieBracket_const_smul_right (hW : MDiffAt (T% W) x) :
   simp only [← mlieBracketWithin_univ] at hW ⊢
   exact mlieBracketWithin_const_smul_right hW (uniqueMDiffWithinAt_univ _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_add_left
     (hV : MDiffAt[s] (T% V) x) (hV₁ : MDiffAt[s] (T% V₁) x) (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (V + V₁) W s x =
@@ -405,6 +413,7 @@ section Invariance_IsSymmSndFDerivWithinAt
 
 variable [IsManifold I 2 M] [IsManifold I' 2 M'] [CompleteSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 /- The Lie bracket of vector fields on manifolds is well defined, i.e., it is invariant under
 diffeomorphisms. Auxiliary version where one assumes that all relevant sets are contained
 in chart domains. -/
@@ -539,6 +548,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
     · rw [nhdsWithin_le_iff, nhdsWithin_inter]
       exact Filter.inter_mem_inf self_mem_nhdsWithin (extChartAt_target_mem_nhdsWithin x₀)
 
+set_option backward.isDefEq.respectTransparency false in
 /- The Lie bracket of vector fields on manifolds is well defined, i.e., it is invariant under
 diffeomorphisms. -/
 lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt

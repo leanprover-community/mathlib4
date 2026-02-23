@@ -25,7 +25,7 @@ satisfies the predicate `IsRiemannianManifold 𝓘(ℝ, E) E`.
 
 In a general manifold with a Riemannian metric, we define the associated extended distance in the
 manifold, and show that it defines the same topology as the pre-existing one. Therefore, one
-may endow the manifold with an emetric space structure, see `EmetricSpace.ofRiemannianMetric`.
+may endow the manifold with an emetric space structure, see `EMetricSpace.ofRiemannianMetric`.
 By definition, it then satisfies the predicate `IsRiemannianManifold I M`.
 
 The following code block is the standard way to say "Let `M` be a `C^∞` Riemannian manifold".
@@ -96,6 +96,7 @@ two points is the infimum of the length of paths between these points.
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- The standard Riemannian metric on a vector space with an inner product, given by this inner
 product on each tangent space. -/
@@ -126,6 +127,7 @@ noncomputable def riemannianMetricVectorSpace :
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
     ‖v‖ = ‖letI V : F := v; V‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
@@ -152,6 +154,7 @@ lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
   exact fderivWithin_eq_fderiv (uniqueDiffOn_Icc zero_lt_one _ hz)
     (ContinuousAffineMap.differentiableAt _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An inner product vector space is a Riemannian manifold, i.e., the distance between two points
 is the infimum of the lengths of paths between these points. -/
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
@@ -209,6 +212,8 @@ the image of the neighborhood in the extended chart.
 open Manifold Metric
 open scoped NNReal
 
+set_option backward.isDefEq.respectTransparency false
+
 variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
   [IsManifold I 1 M] [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]
 
@@ -217,6 +222,7 @@ as in the vector space.
 
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
 structure for inner product spaces, but can be activated locally. -/
+@[instance_reducible]
 def normedAddCommGroupTangentSpaceVectorSpace (x : E) :
     NormedAddCommGroup (TangentSpace 𝓘(ℝ, E) x) :=
   inferInstanceAs (NormedAddCommGroup E)
@@ -228,6 +234,7 @@ as in the vector space.
 
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
 structure for inner product spaces, but can be activated locally. -/
+@[instance_reducible]
 def normedSpaceTangentSpaceVectorSpace (x : E) : NormedSpace ℝ (TangentSpace 𝓘(ℝ, E) x) :=
   inferInstanceAs (NormedSpace ℝ E)
 
@@ -364,13 +371,13 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
 lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
     ∀ᶠ y in 𝓝 x, riemannianEDist I x y < c := by
   rcases eventually_riemannianEDist_le_edist_extChartAt I x with ⟨C, C_pos, hC⟩
-  have : (extChartAt I x) ⁻¹' (EMetric.ball (extChartAt I x x) (c / C)) ∈ 𝓝 x := by
+  have : (extChartAt I x) ⁻¹' (Metric.eball (extChartAt I x x) (c / C)) ∈ 𝓝 x := by
     apply (continuousAt_extChartAt x).preimage_mem_nhds
-    exact EMetric.ball_mem_nhds _ (ENNReal.div_pos hc.ne' (by simp))
+    exact Metric.eball_mem_nhds _ (ENNReal.div_pos hc.ne' (by simp))
   filter_upwards [this, hC] with y hy h'y
   apply h'y.trans_lt
   have : edist (extChartAt I x x) (extChartAt I x y) < c / C := by
-    simpa only [mem_preimage, EMetric.mem_ball'] using hy
+    simpa only [mem_preimage, Metric.mem_eball'] using hy
   rwa [ENNReal.lt_div_iff_mul_lt, mul_comm] at this
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
@@ -483,7 +490,7 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     _ = r := (ENNReal.eq_div_iff (by simpa using C_pos.ne') ENNReal.coe_ne_top).mp rfl
   have : γ' t₁ ∈ (extChartAt I x).symm ⁻¹' v := by
     apply hr
-    rw [← Metric.emetric_ball_nnreal, EMetric.mem_ball, edist_eq_enorm_sub]
+    rw [← Metric.eball_coe, Metric.mem_eball, edist_eq_enorm_sub]
     convert this
     simp [γ', hγx]
   convert mem_preimage.1 this

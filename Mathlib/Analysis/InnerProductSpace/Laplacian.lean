@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-!
@@ -133,16 +134,14 @@ noncomputable def laplacianWithin : E → F :=
 @[inherit_doc]
 scoped[InnerProductSpace] notation "Δ[" s "] " f:60 => laplacianWithin f s
 
-variable (f) in
-/--
-Laplacian for functions on real inner product spaces. Use `open InnerProductSpace` to access the
-notation `Δ` for `InnerProductSpace.Laplacian`.
--/
-noncomputable def laplacian : E → F :=
-  fun x ↦ tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
+noncomputable
+instance instLaplacian : Laplacian (E → F) (E → F) where
+  laplacian f x := tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
 
-@[inherit_doc]
-scoped[InnerProductSpace] notation "Δ" => laplacian
+@[deprecated (since := "2025-12-31")]
+alias InnerProduct.laplacian := _root_.Laplacian.laplacian
+
+open Laplacian
 
 /--
 The Laplacian equals the Laplacian with respect to `Set.univ`.
@@ -176,8 +175,7 @@ theorem laplacian_eq_iteratedFDeriv_orthonormalBasis {ι : Type*} [Fintype ι]
     (v : OrthonormalBasis ι ℝ E) :
     Δ f = fun x ↦ ∑ i, iteratedFDeriv ℝ 2 f x ![v i, v i] := by
   ext x
-  simp [InnerProductSpace.laplacian, canonicalCovariantTensor_eq_sum E v,
-    tensorIteratedFDerivTwo_eq_iteratedFDeriv]
+  simp [laplacian, canonicalCovariantTensor_eq_sum E v, tensorIteratedFDerivTwo_eq_iteratedFDeriv]
 
 variable (f) in
 /--
@@ -200,6 +198,7 @@ theorem laplacian_eq_iteratedFDeriv_stdOrthonormalBasis :
       ∑ i, iteratedFDeriv ℝ 2 f x ![(stdOrthonormalBasis ℝ E) i, (stdOrthonormalBasis ℝ E) i] :=
   laplacian_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a function on `ℝ`, the Laplacian is the second derivative: version within a set. -/
 theorem laplacianWithin_eq_iteratedDerivWithin_real {e : ℝ} {s : Set ℝ} (f : ℝ → F)
     (hs : UniqueDiffOn ℝ s) (he : e ∈ s) :
@@ -218,6 +217,7 @@ theorem laplacian_eq_iteratedDeriv_real {e : ℝ} (f : ℝ → F) :
   rw [← laplacianWithin_univ, ← iteratedDerivWithin_univ,
     laplacianWithin_eq_iteratedDerivWithin_real _ (by simp) (by simp)]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Special case of the standard formula for functions on `ℂ`, with the standard real inner product
 structure.
@@ -229,6 +229,7 @@ theorem laplacianWithin_eq_iteratedFDerivWithin_complexPlane {e : ℂ} {s : Set 
   simp [laplacianWithin_eq_iteratedFDerivWithin_orthonormalBasis f hs he
     Complex.orthonormalBasisOneI]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Special case of the standard formula for functions on `ℂ`, with the standard real inner product
 structure.

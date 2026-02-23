@@ -88,16 +88,9 @@ lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
 theorem zero_mem_cantorSet : 0 ∈ cantorSet := by simp [cantorSet, zero_mem_preCantorSet]
 
 theorem preCantorSet_antitone : Antitone preCantorSet := by
-  apply antitone_nat_of_succ_le
-  intro m
-  simp only [Set.le_eq_subset, preCantorSet_succ, Set.union_subset_iff]
-  induction m with
-  | zero =>
-    simp only [preCantorSet_zero]
-    constructor <;> intro x <;>
-      simp only [Set.mem_image, Set.mem_Icc, forall_exists_index, and_imp] <;>
-      intro y _ _ _ <;> constructor <;> linarith
-  | succ m ih => grind [preCantorSet_succ, Set.image_union]
+  refine antitone_nat_of_succ_le fun m ↦ ?_
+  simp only [Set.le_eq_subset]
+  induction m with grind [preCantorSet_zero, preCantorSet_succ]
 
 lemma preCantorSet_subset_unitInterval {n : ℕ} : preCantorSet n ⊆ Set.Icc 0 1 := by
   rw [← preCantorSet_zero]
@@ -273,6 +266,7 @@ theorem cantorSequence_eq_self_sub_sum_cantorToTernary (x : ℝ) (n : ℕ) :
   | zero => simp [cantorSequence]
   | succ n ih => rw [cantorSequence_get_succ, ih, Finset.sum_range_succ]; ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofDigits_cantorToTernary_sum_le {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
     ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x) i ≤ x := by
   have h_mem := cantorSequence_mem_cantorSet hx n
@@ -281,6 +275,7 @@ theorem ofDigits_cantorToTernary_sum_le {x : ℝ} (hx : x ∈ cantorSet) {n : �
   simp only [Set.mem_Icc] at h_mem
   simpa using h_mem.left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_ofDigits_cantorToTernary_sum {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
     x - (3⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x) i := by
   have h_mem := cantorSequence_mem_cantorSet hx n

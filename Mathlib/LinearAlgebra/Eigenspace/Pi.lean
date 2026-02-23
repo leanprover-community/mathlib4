@@ -39,6 +39,7 @@ theorem mem_iInf_maxGenEigenspace_iff (χ : ι → R) (m : M) :
     m ∈ ⨅ i, (f i).maxGenEigenspace (χ i) ↔ ∀ j, ∃ k : ℕ, ((f j - χ j • ↑1) ^ k) m = 0 := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
 submodule `p` which is invariant w.r.t. every `f i`, the intersection of `p` with the simultaneous
 maximal generalised eigenspace (taken over all `i`), is the same as the simultaneous maximal
@@ -51,6 +52,7 @@ lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {μ : ι → R
   · simp [iInf_of_isEmpty]
   · simp_rw [inf_iInf, p.inf_genEigenspace _ (hfp _), Submodule.map_iInf _ p.injective_subtype]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
 distinguished index `i` whose maximal generalised `μ i`-eigenspace is invariant w.r.t. every `f j`,
 taking simultaneous maximal generalised eigenspaces is unaffected by first restricting to the
@@ -99,7 +101,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
   suffices ∀ χ (s : Finset (ι → R)) (_ : χ ∉ s),
       Disjoint (⨅ i, (f i).maxGenEigenspace (χ i))
         (s.sup fun (χ : ι → R) ↦ ⨅ i, (f i).maxGenEigenspace (χ i)) by
-    simpa only [iSupIndep_iff_supIndep_of_injOn (injOn_iInf_maxGenEigenspace f),
+    simpa only [iSupIndep_iff_supIndep,
       Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.notMem_erase χ)
   intro χ₁ s
   induction s using Finset.induction_on with
@@ -142,6 +144,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
     simp only [Submodule.coe_iInf]
     exact h l χ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of endomorphisms `i ↦ f i` which are compatible in the sense that every maximal
 generalised eigenspace of `f i` is invariant w.r.t. `f j`, if each `f i` is triangularizable, the
 family is simultaneously triangularizable. -/

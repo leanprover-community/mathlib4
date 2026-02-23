@@ -163,8 +163,6 @@ lemma stronglyAdapted_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α
     StronglyAdapted (countableFiltration γ) (fun n x ↦ densityProcess κ ν n a x s) :=
   fun n ↦ stronglyMeasurable_countableFiltration_densityProcess κ ν n a hs
 
-@[deprecated (since := "2025-12-19")] alias adapted_densityProcess := stronglyAdapted_densityProcess
-
 lemma densityProcess_nonneg (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (a : α) (x : γ) (s : Set β) :
     0 ≤ densityProcess κ ν n a x s :=
@@ -261,7 +259,7 @@ lemma setIntegral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     rw [setIntegral_densityProcess_of_mem hκν _ _ hs (hS_subset (by simp))]
     rfl
   · intro u v huv
-    simp only [Finset.coe_sort_coe, Set.disjoint_prod, disjoint_self, bot_eq_empty]
+    simp only [Finset.coe_sort_coe, Set.disjoint_prod, disjoint_self]
     exact Or.inl (h_disj huv)
   · exact fun _ ↦ (measurableSet_countablePartition n (hS_subset (by simp))).prod hs
   · exact fun _ ↦ measurableSet_countablePartition n (hS_subset (by simp))
@@ -281,7 +279,7 @@ lemma setIntegral_densityProcess_of_le (hκν : fst κ ≤ ν)
 
 lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     {i j : ℕ} (hij : i ≤ j) (a : α) {s : Set β} (hs : MeasurableSet s) :
-    (ν a)[fun x ↦ densityProcess κ ν j a x s|countableFiltration γ i]
+    (ν a)[fun x ↦ densityProcess κ ν j a x s | countableFiltration γ i]
       =ᵐ[ν a] fun x ↦ densityProcess κ ν i a x s := by
   refine (ae_eq_condExp_of_forall_setIntegral_eq ?_ ?_ ?_ ?_ ?_).symm
   · exact integrable_densityProcess hκν j a hs
@@ -531,6 +529,7 @@ lemma integral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     ∫ x, density κ ν a x s ∂(ν a) = (κ a).real (univ ×ˢ s) := by
   rw [← setIntegral_univ, setIntegral_density_of_measurableSet hκν 0 a hs MeasurableSet.univ]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ} (hA : MeasurableSet A) :
     ∫ x in A, density κ ν a x s ∂(ν a) = (κ a).real (A ×ˢ s) := by

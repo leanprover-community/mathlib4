@@ -133,6 +133,7 @@ open MeasureTheory
 
 variable [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The length of a path in a manifold is invariant under a monotone reparametrization. -/
 lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : MonotoneOn f (Icc a b))
     (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDiff[Icc (f a) (f b)] γ) :
@@ -164,6 +165,7 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
   have : 0 ≤ derivWithin f (Icc a b) t := hf.derivWithin_nonneg
   simp only [map_smul, enorm_smul, ← Real.enorm_of_nonneg this, f_im]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The length of a path in a manifold is invariant under an antitone reparametrization. -/
 lemma pathELength_comp_of_antitoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : AntitoneOn f (Icc a b))
     (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDiff[Icc (f b) (f a)] γ) :
@@ -206,6 +208,7 @@ have an extended norm, defined as the infimum of the lengths of `C^1` paths betw
 noncomputable irreducible_def riemannianEDist (x y : M) : ℝ≥0∞ :=
   ⨅ (γ : Path x y) (_ : CMDiff 1 γ), ∫⁻ x, ‖mfderiv% γ x 1‖ₑ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Riemannian edistance is bounded above by the length of any `C^1` path from `x` to `y`.
 Here, we express this using a path defined on the whole real line, considered on
 some interval `[a, b]`. -/
@@ -240,6 +243,7 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : CMDiff[Icc a b] 1 �
   · simpa [η, ContinuousAffineMap.coe_lineMap_eq] using hγ.mdifferentiableOn one_ne_zero
   · apply (AffineMap.lineMap_mono hab).monotoneOn
 
+set_option backward.isDefEq.respectTransparency false in
 omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
 /-- If some `r` is strictly larger than the Riemannian edistance between two points, there exists
 a path between these two points of length `< r`. Here, we get such a path on `[0, 1]`.
@@ -254,6 +258,7 @@ lemma exists_lt_of_riemannianEDist_lt (hr : riemannianEDist I x y < r) :
     contMDiffOn_comp_projIcc_iff.2 γ_smooth, ?_⟩
   rwa [← lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If some `r` is strictly larger than the Riemannian edistance between two points, there exists
 a path between these two points of length `< r`. Here, we get such a path on an arbitrary interval
 `[a, b]` with `a < b`, and moreover we ensure that the path is locally constant around `a` and `b`,
@@ -334,6 +339,7 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   ext t
   simp [η]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma riemannianEDist_triangle :
     riemannianEDist I x z ≤ riemannianEDist I x y + riemannianEDist I y z := by
   apply le_of_forall_gt (fun r hr ↦ ?_)

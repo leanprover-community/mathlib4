@@ -143,8 +143,7 @@ is complete.
 noncomputable def sheafInducedTopologyEquivOfIsCoverDense
     [G.IsCoverDense K] [∀ (X : Dᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) A] :
     Sheaf (G.inducedTopology K) A ≌ Sheaf K A :=
-  Functor.IsDenseSubsite.sheafEquiv G
-    (G.inducedTopology K) K A
+  Functor.IsDenseSubsite.sheafEquiv (G.inducedTopology K) K G A
 
 end Functor
 

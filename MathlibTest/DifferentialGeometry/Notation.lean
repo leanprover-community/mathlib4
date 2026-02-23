@@ -91,7 +91,11 @@ variable {s : ι → ι → (x : M) → V x} {i : ι} in
 variable {X : ι → Π x : M, TangentSpace I x} {i : ι}
 
 -- Error message is okay, but not great.
-/-- error: Could not find a model with corners for `ι` -/
+/--
+error: Could not find a model with corners for `ι`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiffAt (T% X) x
 
@@ -780,7 +784,11 @@ Hint: you can use the `T%` elaborator to convert a dependent function to a non-d
 
 -- This error message is not great: this is missing *both* a T% elaborator
 -- and an argument i.
-/-- error: Could not find a model with corners for `ι` -/
+/--
+error: Could not find a model with corners for `ι`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiffAt X' x
 
@@ -1027,6 +1035,7 @@ info: MDifferentiable (I.prod (I.prod I)) (I'.prod (𝓘(𝕜, 𝕜).prod I')) (
 -/
 #guard_msgs in
 #check MDiff (Prod.map f (Prod.map h g))
+
 /--
 info: MDifferentiable ((I.prod I).prod I) ((I'.prod I').prod 𝓘(𝕜, 𝕜)) (Prod.map (Prod.map f g) h) : Prop
 -/
@@ -1181,29 +1190,32 @@ open TopologicalSpace
 variable {s : Opens M} {t : Opens E} {u : Opens M'}
 
 variable {f : s → M'} in
-/-- error: Could not find a model with corners for `↥s` -/
+/-- info: MDifferentiable I I' f : Prop -/
 #guard_msgs in
 #check MDiff f
 
 variable {f : s → u} in
-/-- error: Could not find a model with corners for `↥s` -/
+/-- info: MDifferentiable I I' f : Prop -/
 #guard_msgs in
 #check MDiff f
 
 variable {f : u → M × E} in
-/-- error: Could not find a model with corners for `↥u` -/
+/-- info: MDifferentiable I' (I.prod 𝓘(𝕜, E)) f : Prop -/
 #guard_msgs in
 #check MDiff f
 
 variable {s : Opens (M × E)} {f : s → M × E} in
-/-- error: Could not find a model with corners for `↥s` -/
+/-- info: MDifferentiable (I.prod 𝓘(𝕜, E)) (I.prod 𝓘(𝕜, E)) f : Prop -/
 #guard_msgs in
 #check MDiff f
 
--- too advanced: variable {s : Opens (M ⊕ M)} {f : s → (M × E) ⊕ (M × E)} in
+variable {s : Opens (M ⊕ M)} {f : s → (M × E) ⊕ (M × E)} in
+/-- info: MDifferentiable I (I.prod 𝓘(𝕜, E)) f : Prop -/
+#guard_msgs in
+#check MDiff f
 
 variable {s : Opens (M ⊕ M)} {f : s → 𝕜 × E}
-/-- error: Could not find a model with corners for `↥s` -/
+/-- info: MDifferentiable I (𝓘(𝕜, 𝕜).prod 𝓘(𝕜, E)) f : Prop -/
 #guard_msgs in
 #check MDiff f
 
@@ -1224,7 +1236,7 @@ set_option trace.Elab.DiffGeo true
 variable {f : Unit → Unit}
 
 /--
-error: Could not find a model with corners for `Unit`
+error: Could not find a model with corners for `Unit`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
