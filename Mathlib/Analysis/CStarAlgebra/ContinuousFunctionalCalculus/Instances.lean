@@ -54,7 +54,7 @@ variable [StarModule 𝕜 A] {p : A → Prop} {p₁ : Unitization 𝕜 A → Pro
 local postfix:max "⁺¹" => Unitization 𝕜
 
 variable (hp₁ : ∀ {x : A}, p₁ x ↔ p x) (a : A) (ha : p a)
-variable [ContinuousFunctionalCalculus.IsClosedEmbedding 𝕜 (Unitization 𝕜 A) p₁]
+variable [ClosedEmbeddingContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁]
 
 open scoped ContinuousMapZero
 
@@ -170,7 +170,7 @@ lemma inrNonUnitalStarAlgHom_comp_cfcₙHom_eq_cfcₙAux (a : A) (ha : p a) :
 include hp₁ in
 open Unitization NonUnitalStarAlgHom in
 theorem RCLike.nonUnitalContinuousFunctionalCalculusIsClosedEmbedding :
-    NonUnitalContinuousFunctionalCalculus.IsClosedEmbedding 𝕜 A p where
+    NonUnitalClosedEmbeddingContinuousFunctionalCalculus 𝕜 A p where
   toNonUnitalContinuousFunctionalCalculus := RCLike.nonUnitalContinuousFunctionalCalculus hp₁
   isClosedEmbedding a ha := by
     apply isometry_inr (𝕜 := 𝕜) (A := A) |>.isClosedEmbedding |>.of_comp_iff.mp

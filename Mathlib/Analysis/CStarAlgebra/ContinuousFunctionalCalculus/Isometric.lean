@@ -46,7 +46,7 @@ lemma isometry_cfcHom (a : A) (ha : p a := by cfc_tac) :
     Isometry (cfcHom (show p a from ha) (R := R)) :=
   IsometricContinuousFunctionalCalculus.isometric a ha
 
-instance [CompleteSpace R] : ContinuousFunctionalCalculus.IsClosedEmbedding R A p where
+instance [CompleteSpace R] : ClosedEmbeddingContinuousFunctionalCalculus R A p where
   isClosedEmbedding a ha := (isometry_cfcHom a).isClosedEmbedding
 
 end MetricSpace
@@ -234,7 +234,7 @@ lemma isometry_cfcₙHom (a : A) (ha : p a := by cfc_tac) :
     Isometry (cfcₙHom (show p a from ha) (R := R)) :=
   NonUnitalIsometricContinuousFunctionalCalculus.isometric a ha
 
-instance [CompleteSpace R] : NonUnitalContinuousFunctionalCalculus.IsClosedEmbedding R A p where
+instance [CompleteSpace R] : NonUnitalClosedEmbeddingContinuousFunctionalCalculus R A p where
   isClosedEmbedding a ha := (isometry_cfcₙHom a).isClosedEmbedding
 
 end MetricSpace

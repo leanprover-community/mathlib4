@@ -196,6 +196,100 @@ noncomputable def gelfandStarTransform : A ≃⋆ₐ[ℂ] C(characterSpace ℂ A
 
 end ComplexCStarAlgebra
 
+
+section NonUnitalCStarAlgebra
+
+section Functions
+
+variable {X R : Type*} [TopologicalSpace X] [NormedRing R] [IsDomain R]
+
+-- A better way to do this would be to prove that the norm of a bounded
+-- continuous function agrees with the norm of the real-valued function where
+-- you compose pointwise with the norm. That should simplify the argument a
+-- bit I think, at the cost of developing more API (which is probably worthwhile).
+
+open BoundedContinuousFunction in
+/-- If the product of bounded continuous functions is zero, then the norm of their sum is the
+maximum of their norms. -/
+lemma BoundedContinuousFunction.norm_add_eq_max {f g : X →ᵇ R} (h : f * g = 0) :
+    ‖f + g‖ = max ‖f‖ ‖g‖ := by
+  have hfg : ∀ x, f x = 0 ∨ g x = 0 := by
+    simpa [DFunLike.ext_iff, mul_eq_zero] using h
+  have hfg' (x : X) : ‖(f + g) x‖ = max ‖f x‖ ‖g x‖ := by
+    obtain (h | h) := hfg x <;> simp [h]
+  apply le_antisymm
+  · rw [norm_le (by positivity)]
+    intro x
+    rw [hfg']
+    apply max_le <;> exact norm_coe_le_norm _ x |>.trans (by simp)
+  · apply max_le
+    all_goals
+      rw [norm_le (by positivity)]
+      intro x
+      grw [← (f + g).norm_coe_le_norm x, hfg']
+      simp
+
+open BoundedContinuousFunction in
+lemma ContinuousMap.norm_add_eq_max [CompactSpace X] {f g : C(X, R)} (h : f * g = 0) :
+    ‖f + g‖ = max ‖f‖ ‖g‖ := by
+  replace h : mkOfCompact f * mkOfCompact g = 0 := by ext x; simpa using congr($h x)
+  simpa using BoundedContinuousFunction.norm_add_eq_max h
+
+end Functions
+
+variable {A : Type*} [NonUnitalCommCStarAlgebra A]
+
+open scoped CStarAlgebra in
+open Unitization in
+lemma CommCStarAlgebra.norm_add_eq {A : Type*} [NonUnitalCommCStarAlgebra A]
+    {a b : A} (h : a * b = 0) : ‖a + b‖ = max ‖a‖ ‖b‖ := by
+  let f := gelfandStarTransform A⁺¹ ∘ inrNonUnitalStarAlgHom ℂ A
+  have hf : Isometry f := gelfandTransform_isometry _ |>.comp isometry_inr
+  have h0 : f 0 = 0 := by simp [f]
+  simp_rw [← hf.norm_map_of_map_zero h0, show f (a + b) = f a + f b by simp [f]]
+  exact ContinuousMap.norm_add_eq_max <| by simpa [f] using congr(f $h)
+
+open NonUnitalStarAlgebra in
+lemma IsSelfAdjoint.norm_add_eq {A : Type*} [NonUnitalCStarAlgebra A]
+    {a b : A} (hab : a * b = 0) (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) :
+    ‖a + b‖ = max ‖a‖ ‖b‖ := by
+  let S : NonUnitalStarSubalgebra ℂ A := (adjoin ℂ {a, b}).topologicalClosure
+  have hS : IsClosed (S : Set A) := (adjoin ℂ {a, b}).isClosed_topologicalClosure
+  have hab' : a * b = b * a := by
+    rw [hab, eq_comm]; simpa [ha.star_eq, hb.star_eq] using congr(star $hab)
+  let _ : NonUnitalCommRing (adjoin ℂ {a, b}) :=
+    adjoinNonUnitalCommRingOfComm ℂ (by grind) (by grind [IsSelfAdjoint.star_eq])
+  let _ : NonUnitalCommRing S := (adjoin ℂ {a, b}).nonUnitalCommRingTopologicalClosure mul_comm
+  let _ : NonUnitalCommCStarAlgebra S := { }
+  let c : S := ⟨a, subset_closure <| subset_adjoin _ _ <| by grind⟩
+  let d : S := ⟨b, subset_closure <| subset_adjoin _ _ <| by grind⟩
+  exact CommCStarAlgebra.norm_add_eq (a := c) (b := d) (h := by ext; simpa)
+
+#check IsMulCommutative
+
+/-- The element of `WeakDual.characterSpace` on `Unitization 𝕜 A` corresponding to the
+algebra homomorphism consisting of projection onto the scalar part.
+
+When `A` is a C⋆-algebra composing the inclusion map `A → A⁺¹` with the Gelfand transform
+`A⁺¹ → C(characterSpace ℂ A⁺¹, ℂ)`, is an injective non-unital star homomorphism whose range is
+precisely kernel of the evaluation map at this point. -/
+noncomputable def CharacterSpace.pt {𝕜 A : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    [NonUnitalNormedRing A] [CompleteSpace A] [NormedSpace 𝕜 A]
+    [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] [RegularNormedAlgebra 𝕜 A] :
+    characterSpace 𝕜 (Unitization 𝕜 A) :=
+  CharacterSpace.equivAlgHom.symm <| Unitization.fstHom 𝕜 A
+
+open CStarAlgebra Unitization in
+example {A : Type*} [NonUnitalCommCStarAlgebra A] : False := by
+  let g := gelfandStarTransform A⁺¹
+  let i := inrNonUnitalStarAlgHom ℂ A
+
+
+  sorry
+
+end NonUnitalCStarAlgebra
+
+#exit
 section Functoriality
 
 namespace WeakDual

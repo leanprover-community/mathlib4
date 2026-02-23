@@ -197,7 +197,7 @@ variable [NonUnitalCStarAlgebra A]
 open Unitization
 
 theorem IsStarNormal.instNonUnitalContinuousFunctionalCalculus :
-    NonUnitalContinuousFunctionalCalculus.IsClosedEmbedding ℂ A IsStarNormal :=
+    NonUnitalClosedEmbeddingContinuousFunctionalCalculus ℂ A IsStarNormal :=
   RCLike.nonUnitalContinuousFunctionalCalculusIsClosedEmbedding Unitization.isStarNormal_inr
 
 attribute [local instance] IsStarNormal.instNonUnitalContinuousFunctionalCalculus

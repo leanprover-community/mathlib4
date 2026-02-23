@@ -183,7 +183,7 @@ lemma cfc_eq_restrict (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) 
 
 end Generic
 
-variable [ContinuousFunctionalCalculus.IsClosedEmbedding S A q]
+variable [ClosedEmbeddingContinuousFunctionalCalculus S A q]
   [ContinuousMap.UniqueHom R A] [CompleteSpace R]
 
 open ContinuousFunctionalCalculus in
@@ -193,7 +193,7 @@ characterized by: `q a` and the spectrum of `a` restricts to the scalar subring 
 `ContinuousFunctionalCalculus R A p`. -/
 protected theorem cfc_isClosedEmbedding (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
     (h0 : p 0) (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) :
-    ContinuousFunctionalCalculus.IsClosedEmbedding R A p where
+    ClosedEmbeddingContinuousFunctionalCalculus R A p where
   toContinuousFunctionalCalculus := SpectrumRestricts.cfc f halg.isClosedEmbedding h0 h
   isClosedEmbedding a ha := by
     have := SpectrumRestricts.cfc f halg.isClosedEmbedding h0 h
@@ -369,7 +369,7 @@ lemma cfcₙ_eq_restrict (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S
 
 end Generic
 
-variable [NonUnitalContinuousFunctionalCalculus.IsClosedEmbedding S A q]
+variable [NonUnitalClosedEmbeddingContinuousFunctionalCalculus S A q]
   [IsScalarTower R A A] [SMulCommClass R A A]
   [ContinuousMapZero.UniqueHom R A] [CompleteSpace R]
 
@@ -380,7 +380,7 @@ characterized by: `q a` and the quasispectrum of `a` restricts to the scalar sub
 `NonUnitalContinuousFunctionalCalculus R A p`. -/
 protected theorem cfcₙ_isClosedEmbedding (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
     (h0 : p 0) (h : ∀ a, p a ↔ q a ∧ QuasispectrumRestricts a f) :
-    NonUnitalContinuousFunctionalCalculus.IsClosedEmbedding R A p where
+    NonUnitalClosedEmbeddingContinuousFunctionalCalculus R A p where
   toNonUnitalContinuousFunctionalCalculus :=
     QuasispectrumRestricts.cfc f halg.isClosedEmbedding h0 h
   isClosedEmbedding a ha := by

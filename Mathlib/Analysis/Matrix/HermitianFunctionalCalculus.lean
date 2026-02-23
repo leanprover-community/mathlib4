@@ -139,7 +139,7 @@ lemma cfcHom_eq_cfcAux : cfcHom hA.isSelfAdjoint = hA.cfcAux :=
     hA.isClosedEmbedding_cfcAux.continuous hA.cfcAux_id
 
 instance instContinuousFunctionalCalculusIsClosedEmbedding :
-    ContinuousFunctionalCalculus.IsClosedEmbedding ℝ (Matrix n n 𝕜) IsSelfAdjoint where
+    ClosedEmbeddingContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
   isClosedEmbedding _ hA := cfcHom_eq_cfcAux hA ▸ hA.isHermitian.isClosedEmbedding_cfcAux
 
 set_option backward.isDefEq.respectTransparency false in
