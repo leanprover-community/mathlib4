@@ -22,15 +22,15 @@ pullbacks.
 
 * `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
   object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
-```
-  pullback f g ---pullback.fst f g---> X
-      |                                |
-      |                                |
-pullback.snd f g                       f
-      |                                |
-      v                                v
-      Y --------------g--------------> Z
-```
+  ```
+    pullback f g ---pullback.fst f g---> X
+        |                                |
+        |                                |
+  pullback.snd f g                       f
+        |                                |
+        v                                v
+        Y --------------g--------------> Z
+  ```
 
 * `HasPushout f g`: this is an abbreviation for `HasColimit (span f g)`, and is a typeclass used to
   express the fact that a given pair of morphisms has a pushout.
@@ -38,14 +38,14 @@ pullback.snd f g                       f
   abbreviation for `HasColimitsOfShape WalkingSpan C`
 * `pushout f g`: Given a `HasPushout f g` instance, this function returns the choice of a colimit
   object corresponding to the pushout of `f` and `g`. It fits into the following diagram:
-```
+  ```
       X --------------f--------------> Y
       |                                |
       g                          pushout.inl f g
       |                                |
       v                                v
       Z ---pushout.inr f g---> pushout f g
-```
+  ```
 
 ## Main results & API
 * The following API is available for using the universal property of `pullback f g`:
