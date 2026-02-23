@@ -675,14 +675,14 @@ lemma Integrable.measure_ge_lt_top {f : α → β} [Lattice β] [HasSolidNorm β
     μ {a : α | ε ≤ f a} < ∞ :=
   lt_of_le_of_lt (measure_mono fun x hx => norm_le_norm_of_abs_le_abs <|
     (abs_of_nonneg ε_pos.le).symm ▸ hx.trans (le_abs_self (f x)))
-    (hf.measure_norm_ge_lt_top (by simp; grind))
+    (hf.measure_norm_ge_lt_top (by positivity [ε_pos.ne']))
 
 /-- If `f` is integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
 measure. -/
 lemma Integrable.measure_le_lt_top {f : α → β} [Lattice β] [HasSolidNorm β] [AddLeftMono β]
     (hf : Integrable f μ) {c : β} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
-  have : 0 < ‖c‖ := by simp; grind
+  have : 0 < ‖c‖ := by positivity [c_neg.ne]
   refine lt_of_le_of_lt (measure_mono fun x hx => ?_) (hf.measure_norm_ge_lt_top this)
   have : -c ≤ -f x := by simp; grind
   exact norm_le_norm_of_abs_le_abs <| abs_of_nonpos c_neg.le ▸ this.trans (neg_le_abs _)

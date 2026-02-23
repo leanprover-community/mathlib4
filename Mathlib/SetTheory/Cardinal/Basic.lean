@@ -990,11 +990,13 @@ theorem exists_notMem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length <
     _ = l.toFinset.card := Cardinal.mk_coe_finset
     _ ≤ l.length := Nat.cast_le.mpr (List.toFinset_card_le l)
 
-theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
+theorem exists_ne_ne_of_three_le {α : Type*} (h : 3 ≤ #α) (x y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
   have : ↑(3 : ℕ) ≤ #α := by simpa using h
   have : ↑(2 : ℕ) < #α := by rwa [← succ_le_iff, ← Cardinal.nat_succ]
   have := exists_notMem_of_length_lt [x, y] this
   simpa [not_or] using this
+
+@[deprecated (since := "2026-02-17")] alias three_le := exists_ne_ne_of_three_le
 
 /-! ### `powerlt` operation -/
 

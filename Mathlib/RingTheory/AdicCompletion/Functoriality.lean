@@ -133,24 +133,6 @@ private theorem adicCompletionAux_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : A
     (adicCompletionAux I f x).val n = f.reduceModIdeal (I ^ n) (x.val n) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-/-- A linear map induces a map on adic completions. -/
-def map (f : M →ₗ[R] N) :
-    AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N where
-  toFun := adicCompletionAux I f
-  map_add' := by simp
-  map_smul' r x := by
-    ext n
-    simp only [adicCompletionAux_val_apply, smul_eval, smul_eq_mul, RingHom.id_apply]
-    rw [val_smul_eq_evalₐ_smul, val_smul_eq_evalₐ_smul, map_smul]
-
-@[simp]
-theorem map_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
-    (map I f x).val n = f.reduceModIdeal (I ^ n) (x.val n) :=
-  rfl
-
 /-- Equality of maps out of an adic completion can be checked on Cauchy sequences. -/
 theorem map_ext {N} {f g : AdicCompletion I M → N}
     (h : ∀ (a : AdicCauchySequence I M),
@@ -175,6 +157,26 @@ theorem map_ext'' {f g : AdicCompletion I M →ₗ[R] N}
     f = g := by
   ext x
   apply induction_on I M x (fun a ↦ LinearMap.ext_iff.mp h a)
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+/-- A linear map induces a map on adic completions. -/
+def map : (M →ₗ[R] N) →ₗ[R] AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N where
+  toFun f :=
+    { toFun := adicCompletionAux I f
+      map_add' := by simp
+      map_smul' r x := by
+        ext n
+        simp only [adicCompletionAux_val_apply, smul_eval, smul_eq_mul, RingHom.id_apply]
+        rw [val_smul_eq_evalₐ_smul, val_smul_eq_evalₐ_smul, map_smul] }
+  map_add' _ _ := by ext; rfl
+  map_smul' _ _ := by ext; rfl
+
+@[simp]
+theorem map_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
+    (map I f x).val n = f.reduceModIdeal (I ^ n) (x.val n) :=
+  rfl
 
 variable (M) in
 @[simp]

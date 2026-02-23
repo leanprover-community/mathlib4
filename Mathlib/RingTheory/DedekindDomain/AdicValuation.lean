@@ -267,6 +267,10 @@ theorem intValuation_exists_uniformizer :
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at notMem
   exact Nat.eq_of_le_of_lt_succ mem notMem
 
+instance : v.intValuation.IsNontrivial :=
+  have ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
+  ⟨π, by aesop⟩
+
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤᵐ⁰)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
     v.intValuation r = exp (-1 : ℤ) := by
