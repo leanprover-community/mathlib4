@@ -425,9 +425,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
       change μ {x | ¬ x ∈ closedBall 0 a} = 0
       rw [← ae_iff]
       filter_upwards [ha] with x hx using by simp [hx]
-    · refine measurable_to_prop ?_
-      rw [show (fun x : E ↦ ‖x‖ ≤ a) ⁻¹' {True} = {x : E | ‖x‖ ≤ a} by ext; simp]
-      exact measurableSet_le (by fun_prop) (by fun_prop)
+    · fun_prop
   -- So we can assume `μ {x | ‖x‖ ≤ a} < 1`, which implies `c' < 1`
   have ha_lt : μ {x | ‖x‖ ≤ a} < 1 := lt_of_le_of_ne prob_le_one ha
   have hc'_lt : c' < 1 := lt_of_le_of_lt hc' ha_lt
