@@ -23,7 +23,7 @@ namespace CategoryTheory
 open Limits Opposite
 
 variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
-  {N : Type u'} [Category.{v'} N] (p : N ⥤ C) [InitiallySmall.{w} N]
+  {N : Type u'} [Category.{v'} N] (p : N ⥤ C) [EssentiallySmall.{w} N]
   {J : GrothendieckTopology C}
 
 namespace GrothendieckTopology.Point
@@ -31,7 +31,7 @@ namespace GrothendieckTopology.Point
 namespace ofCofiltered
 
 local instance : HasColimitsOfShape Nᵒᵖ (Type w) :=
-  hasColimitsOfShape_of_finallySmall _ _
+  hasColimitsOfShape_of_equivalence (equivSmallModel.{w} Nᵒᵖ).symm
 
 noncomputable def fiber : C ⥤ Type w :=
   shrinkYoneda.{w} ⋙ (Functor.whiskeringLeft _ _ (Type w)).obj p.op ⋙ colim
@@ -50,9 +50,14 @@ lemma fiberMk_jointly_surjective {X : C} (x : (fiber.{w} p).obj X) :
   exact ⟨U.unop, f, rfl⟩
 
 variable {p} in
-lemma exists_of_fiberMk_eq_fiberMk
+lemma exists_of_fiberMk_eq_fiberMk [IsCofiltered N]
     {U : N} {X : C} {f₁ f₂ : p.obj U ⟶ X} (hf : fiberMk f₁ = fiberMk f₂) :
     ∃ (V : N) (g : V ⟶ U), p.map g ≫ f₁ = p.map g ≫ f₂ := by
+  obtain ⟨V, g, hg⟩  :=
+    (Types.FilteredColimit.isColimit_eq_iff'
+      (colimit.isColimit (p.op ⋙ shrinkYoneda.{w}.obj X)) _ _).1 hf
+  refine ⟨V.unop, g.unop, ?_⟩
+  simp at hg
   sorry
 
 @[simp]
@@ -98,49 +103,9 @@ instance [IsCofiltered N] [EssentiallySmall.{w} N] :
     InitiallySmallCofiltered.{w} (fiber.{w} p).Elements :=
   initiallySmallCofiltered_of_initial (functor.{w} p)
 
-instance [IsCofiltered N] : InitiallySmall.{w} (fiber.{w} p).Elements :=
-  initiallySmall_of_initial_of_initiallySmall.{w} (functor.{w} p)
-
-attribute [local instance] IsCofiltered.nonempty in
-lemma isCofiltered_elements_fiber' [IsCofiltered N]
-    (h₁ : ∀ ⦃X₁ X₂ : C⦄ ⦃U : N⦄ (f₁ : p.obj U ⟶ X₁) (f₂ : p.obj U ⟶ X₂),
-      ∃ (Y : C) (V : N) (f : p.obj V ⟶ Y) (g₁ : Y ⟶ X₁) (g₂ : Y ⟶ X₂) (q : V ⟶ U),
-        f ≫ g₁ = p.map q ≫ f₁ ∧ f ≫ g₂ = p.map q ≫ f₂)
-    (h₂ : ∀ ⦃X₁ X₂ : C⦄ (φ₁ φ₂ : X₁ ⟶ X₂) ⦃U : N⦄ (f : p.obj U ⟶ X₁),
-      f ≫ φ₁ = f ≫ φ₂ → ∃ (Z : C) (g : Z ⟶ X₁) (V : N) (q : p.obj V ⟶ Z) (r : V ⟶ U),
-        g ≫ φ₁ = g ≫ φ₂ ∧ q ≫ g = p.map r ≫ f) :
-    IsCofiltered (fiber.{w} p).Elements where
-  nonempty := ⟨Functor.elementsMk _ (p.obj (Classical.arbitrary N)) (fiberMk (𝟙 _))⟩
-  cone_objs := by
-    rintro ⟨X₁, x₁⟩ ⟨X₂, x₂⟩
-    obtain ⟨U₁, f₁, rfl⟩ := fiberMk_jointly_surjective x₁
-    obtain ⟨U₂, f₂, rfl⟩ := fiberMk_jointly_surjective x₂
-    obtain ⟨Y, V, f, g₁, g₂, q, h₁, h₂⟩ :=
-      h₁ (p.map (IsCofiltered.minToLeft U₁ U₂) ≫ f₁)
-        (p.map (IsCofiltered.minToRight U₁ U₂) ≫ f₂)
-    exact ⟨Functor.elementsMk _ Y (fiberMk f), ⟨g₁, by simp [h₁]⟩, ⟨g₂, by simp [h₂]⟩, ⟨⟩⟩
-  cone_maps := by
-    rintro ⟨X₁, x₁⟩ ⟨X₂, x₂⟩ ⟨φ₁, hφ₁⟩ ⟨φ₂, hφ₂⟩
-    obtain ⟨U₁, f₁, rfl⟩ := fiberMk_jointly_surjective x₁
-    obtain ⟨U₂, f₂, rfl⟩ := fiberMk_jointly_surjective x₂
-    dsimp at φ₁ φ₂ hφ₁ hφ₂
-    simp only [fiber_map_fiberMk] at hφ₁ hφ₂
-    wlog hU : U₁ = U₂ generalizing U₁ U₂
-    · sorry
-    subst hU
-    obtain ⟨V₁, b₁, hb₁⟩ := exists_of_fiberMk_eq_fiberMk hφ₁
-    obtain ⟨V₂, b₂, hb₂⟩ := exists_of_fiberMk_eq_fiberMk hφ₂
-    wlog hV : V₁ = V₂ generalizing V₁ V₂
-    · sorry
-    subst hV
-    wlog hb : b₁ = b₂ generalizing V₁
-    · sorry
-    subst hb
-    obtain ⟨Z, g, V, q, r, h₁, h₂⟩ :=
-      h₂ φ₁ φ₂ (p.map b₁ ≫ f₁) (by simpa using hb₁.trans hb₂.symm)
-    refine ⟨Functor.elementsMk _ _ (fiberMk q), ⟨g, by simp [h₂]⟩, ?_⟩
-    ext
-    simpa
+instance [IsCofiltered N] [EssentiallySmall.{w} N] :
+    InitiallySmall.{w} (fiber.{w} p).Elements :=
+  initiallySmall_of_initial_of_essentiallySmall.{w} (functor.{w} p)
 
 attribute [local instance] IsCofiltered.nonempty in
 lemma isCofiltered_elements_fiber [IsCofiltered N]
@@ -179,7 +144,7 @@ instance isCofiltered_elements_fiber_of_hasFiniteLimits [IsCofiltered N] [HasFin
 
 end ofCofiltered
 
-variable [IsCofiltered N] [EssentiallySmall.{w} N]
+variable [IsCofiltered N]
   (hp : ∀ ⦃X : C⦄ (R : Sieve X) (_ : R ∈ J X) ⦃U : N⦄ (f : p.obj U ⟶ X),
     ∃ (Y : C) (g : Y ⟶ X) (_ : R g) (V : N) (q : V ⟶ U) (a : p.obj V ⟶ Y),
       a ≫ g = p.map q ≫ f)
