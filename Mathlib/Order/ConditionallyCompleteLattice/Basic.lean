@@ -732,7 +732,11 @@ end WithTop
 
 namespace Monotone
 
-variable [Preorder α] [ConditionallyCompleteLattice β] {f : α → β} (h_mono : Monotone f)
+variable [ConditionallyCompleteLattice β]
+
+section Preorder
+
+variable [Preorder α] {f : α → β} (h_mono : Monotone f)
 include h_mono
 
 /-! A monotone function into a conditionally complete lattice preserves the ordering properties of
@@ -760,6 +764,23 @@ theorem le_csInf_image {s : Set α} (hs : s.Nonempty) {B : α} (hB : B ∈ lower
   let f' : αᵒᵈ → βᵒᵈ := f
   exact csSup_image_le (α := αᵒᵈ) (β := βᵒᵈ)
     (show Monotone f' from fun x y hxy => h_mono hxy) hs hB
+
+end Preorder
+
+section ConditionallyCompleteLattice
+
+variable [ConditionallyCompleteLattice α] {f : α → β} (hmono : Monotone f)
+include hmono
+
+theorem csSup_image_le_csSup {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
+    sSup (f '' s) ≤ f (sSup s) :=
+  csSup_image_le hmono hne <| isLUB_csSup hne hbdd |>.left
+
+theorem csInf_image_le_csInf {s : Set α} (hne : s.Nonempty) (hbdd : BddBelow s) :
+    f (sInf s) ≤ sInf (f '' s) :=
+  le_csInf_image hmono hne <| isGLB_csInf hne hbdd |>.left
+
+end ConditionallyCompleteLattice
 
 end Monotone
 

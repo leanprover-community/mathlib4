@@ -57,10 +57,10 @@ set_option backward.isDefEq.respectTransparency false in
 theorem csInf_coe_compl_le_coe_card' {α : Type*} [ConditionallyCompleteLinearOrderBot α]
     [AddMonoidWithOne α] [AddLeftMono α] [ZeroLEOneClass α] [CharZero α] (s : Finset α) :
     sInf sᶜ ≤ (s.card : α) := by
-  grw [← csSup_Iic (a := s.card), ← Monotone.csSup_image_le Nat.mono_cast nonempty_Iic <|
-      isLUB_csSup nonempty_Iic bddAbove_Iic |>.left, ← Finset.coe_Iic]
-  refine csInf_le_csSup_of_nonempty_inter' ?_ <| Finset.finite_toSet _ |>.image _ |>.bddAbove
-  rw [← not_disjoint_iff_nonempty_inter, disjoint_compl_left_iff_subset.not]
+  rw [← csSup_Iic (a := s.card)]
+  grw [← Monotone.csSup_image_le_csSup Nat.mono_cast nonempty_Iic bddAbove_Iic]
+  refine csInf_le_csSup_of_nonempty_inter' ?_ <| Set.finite_Iic _ |>.image _ |>.bddAbove
+  rw [← not_disjoint_iff_nonempty_inter, disjoint_compl_left_iff_subset.not, ← Finset.coe_Iic]
   intro h
   norm_cast at h
   apply Finset.card_le_card at h
