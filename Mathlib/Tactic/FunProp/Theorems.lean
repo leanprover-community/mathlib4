@@ -155,6 +155,7 @@ inductive TheoremForm where
 instance : ToString TheoremForm :=
   ⟨fun x => match x with | .uncurried => "simple" | .comp => "compositional"⟩
 
+/-- Gives the theorem form using the result of `FunctionData.decomposition`. -/
 def DecompositionResult.toTheoremForm : DecompositionResult → TheoremForm
 | .uncurried => .uncurried
 | _ => .comp
