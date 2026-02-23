@@ -56,7 +56,7 @@ lemma isReduced_iff' : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
   rw [isReduced_iff]
   refine ⟨fun h i j hij hLin ↦ ?_, fun h i j hLin  ↦ ?_⟩
   · specialize h i j hLin
-    simp_all only [ne_eq, EmbeddingLike.apply_eq_iff_eq, false_or]
+    simp_all
   · rcases eq_or_ne i j with rfl | h'
     · tauto
     · exact Or.inr (h i j h' hLin)
