@@ -203,15 +203,19 @@ theorem type_unit : type (@emptyRelation Unit) = 1 :=
   rfl
 
 @[simp]
-theorem toType_empty_iff_eq_zero {o : Ordinal} : IsEmpty o.ToType ↔ o = 0 := by
+theorem isEmpty_toType_iff {o : Ordinal} : IsEmpty o.ToType ↔ o = 0 := by
   rw [← @type_eq_zero_iff_isEmpty o.ToType (· < ·), type_toType]
 
+@[deprecated (since := "2026-02-18")] alias toType_empty_iff_eq_zero := isEmpty_toType_iff
+
 instance isEmpty_toType_zero : IsEmpty (ToType 0) :=
-  toType_empty_iff_eq_zero.2 rfl
+  isEmpty_toType_iff.2 rfl
 
 @[simp]
-theorem toType_nonempty_iff_ne_zero {o : Ordinal} : Nonempty o.ToType ↔ o ≠ 0 := by
+theorem nonempty_toType_iff {o : Ordinal} : Nonempty o.ToType ↔ o ≠ 0 := by
   rw [← @type_ne_zero_iff_nonempty o.ToType (· < ·), type_toType]
+
+@[deprecated (since := "2026-02-18")] alias toType_nonempty_iff_ne_zero := nonempty_toType_iff
 
 protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
   type_ne_zero_of_nonempty _

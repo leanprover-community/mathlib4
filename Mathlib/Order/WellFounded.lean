@@ -105,6 +105,11 @@ theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h 
   let ⟨_, h'⟩ := Classical.choose_spec (H.has_min s h)
   h' _ hx
 
+/-- The minimal element of a trichotomous well-founded order is unique -/
+theorem min_eq_of_forall_not_lt [Std.Trichotomous r] (wf : WellFounded r) {s : Set α} {m : α}
+    (hms : m ∈ s) (hrm : ∀ x ∈ s, ¬r x m) : wf.min s ⟨m, hms⟩ = m :=
+  Std.Trichotomous.trichotomous _ m (hrm _ <| wf.min_mem s _) (wf.not_lt_min s _ hms)
+
 theorem wellFounded_iff_has_min {r : α → α → Prop} :
     WellFounded r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m := by
   refine ⟨fun h => h.has_min, fun h => ⟨fun x => ?_⟩⟩
@@ -113,9 +118,6 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   refine hm ⟨_, fun y hy => ?_⟩
   by_contra hy'
   exact hm' y hy' hy
-
-@[deprecated (since := "2025-08-10")]
-alias wellFounded_iff_no_descending_seq := wellFounded_iff_isEmpty_descending_chain
 
 theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
   by_contra! hf
@@ -138,6 +140,8 @@ section LinearOrder
 
 variable [LinearOrder β] [Preorder γ]
 
+-- TODO: the name `WellFounded.min` is incorrect when the assumption is that `>` is well-founded.
+@[to_dual none]
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
     {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
@@ -308,12 +312,14 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
 end Induction
 
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
+@[instance_reducible]
 noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where
   bot := h.wf.min _ Set.univ_nonempty
   bot_le a := h.wf.min_le (Set.mem_univ a)
 
 /-- A nonempty linear order with well-founded `>` has a top element. -/
+@[instance_reducible]
 noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [WellFoundedGT α] :
     OrderTop α :=
   have := WellFoundedLT.toOrderBot (α := αᵒᵈ)

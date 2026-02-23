@@ -6,7 +6,7 @@ Authors: Geno Racklin Asher
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
-public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 
@@ -233,6 +233,7 @@ instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoe
   · rw [IsAffineOpen.range_fromSpec]
     exact Set.inter_subset_left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LocallyOfFiniteType.isLocallyNoetherian
     {X Y : Scheme} (f : X ⟶ Y) [LocallyOfFiniteType f]
     [IsLocallyNoetherian Y] : IsLocallyNoetherian X := by
@@ -249,6 +250,28 @@ theorem LocallyOfFiniteType.isLocallyNoetherian
   have : φ.hom.FiniteType := HasRingHomProperty.Spec_iff.mp ‹_›
   algebraize [φ.hom]
   simp_all [Algebra.FiniteType.isNoetherianRing R]
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
+    [IsLocallyNoetherian Y] [LocallyOfFiniteType f] :
+    IsLocallyNoetherian (Limits.pullback f g) :=
+  LocallyOfFiniteType.isLocallyNoetherian (Limits.pullback.snd _ _)
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
+    [IsLocallyNoetherian X] [LocallyOfFiniteType g] :
+    IsLocallyNoetherian (Limits.pullback f g) :=
+  LocallyOfFiniteType.isLocallyNoetherian (Limits.pullback.fst _ _)
+
+instance (priority := low) {X Y : Scheme} (f : X ⟶ Y)
+    [IsLocallyNoetherian Y] [LocallyOfFiniteType f] :
+    LocallyOfFinitePresentation f := by
+  refine ⟨fun {U hU V hV} hUV ↦ ?_⟩
+  let := (f.appLE U V hUV).hom.toAlgebra
+  have : IsNoetherianRing Γ(Y, U) := IsLocallyNoetherian.component_noetherian ⟨U, hU⟩
+  exact Algebra.FinitePresentation.of_finiteType.mp (f.finiteType_appLE hU hV hUV)
+
+lemma LocallyOfFinitePresentation.iff_locallyOfFiniteType {X Y : Scheme} {f : X ⟶ Y}
+    [IsLocallyNoetherian Y] : LocallyOfFinitePresentation f ↔ LocallyOfFiniteType f :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
 /-- A scheme `X` is Noetherian if it is locally Noetherian and compact. -/
 @[mk_iff]

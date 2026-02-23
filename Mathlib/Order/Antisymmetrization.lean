@@ -290,6 +290,7 @@ theorem wellFoundedLT_antisymmetrization_iff :
     WellFoundedLT (Antisymmetrization α (· ≤ ·)) ↔ WellFoundedLT α := by
   simp_rw [isWellFounded_iff, wellFounded_antisymmetrization_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wellFoundedGT_antisymmetrization_iff :
     WellFoundedGT (Antisymmetrization α (· ≤ ·)) ↔ WellFoundedGT α := by
   simp_rw [isWellFounded_iff]
@@ -374,6 +375,7 @@ variable (α)
 noncomputable def OrderEmbedding.ofAntisymmetrization : Antisymmetrization α (· ≤ ·) ↪o α :=
   { Quotient.outRelEmbedding _ with toFun := _root_.ofAntisymmetrization _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Antisymmetrization` and `orderDual` commute. -/
 def OrderIso.dualAntisymmetrization :
     (Antisymmetrization α (· ≤ ·))ᵒᵈ ≃o Antisymmetrization αᵒᵈ (· ≤ ·) where

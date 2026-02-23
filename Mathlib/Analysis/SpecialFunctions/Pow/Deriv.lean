@@ -189,7 +189,7 @@ private theorem aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulR
 nonrec theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
     (h0 : f x ∈ slitPlane) : HasStrictDerivAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') x := by
-  simpa using (hf.cpow hg h0).hasStrictDerivAt
+  simpa using (hf.hasStrictFDerivAt.cpow hg h0).hasStrictDerivAt
 
 theorem HasStrictDerivAt.const_cpow (hf : HasStrictDerivAt f f' x) (h : c ≠ 0 ∨ f x ≠ 0) :
     HasStrictDerivAt (fun x => c ^ f x) (c ^ f x * Complex.log c * f') x :=
@@ -250,6 +250,7 @@ theorem Complex.deriv_const_cpow (hf : DifferentiableAt ℂ f x) (c : ℂ) :
   rw [← derivWithin_univ, derivWithin_const_cpow, derivWithin_univ]
   rwa [differentiableWithinAt_univ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect.
 See `hasDerivAt_ofReal_cpow_const` for an alternate formulation. -/
@@ -404,7 +405,7 @@ theorem hasStrictDerivAt_const_rpow {a : ℝ} (ha : 0 < a) (x : ℝ) :
 
 lemma differentiableAt_rpow_const_of_ne (p : ℝ) {x : ℝ} (hx : x ≠ 0) :
     DifferentiableAt ℝ (fun x => x ^ p) x :=
-  (hasStrictDerivAt_rpow_const_of_ne hx p).differentiableAt
+  (hasStrictDerivAt_rpow_const_of_ne hx p).hasStrictFDerivAt.differentiableAt
 
 theorem not_differentiableAt_rpow_const_zero {r : ℝ} (hr : r < 1) (hr' : r ≠ 0) :
     ¬ DifferentiableAt ℝ (fun x ↦ x ^ r) (0 : ℝ) := by
@@ -486,6 +487,7 @@ theorem contDiffAt_rpow_const {x p : ℝ} {n : ℕ} (h : x ≠ 0 ∨ ↑n ≤ p)
     ContDiffAt ℝ n (fun x : ℝ => x ^ p) x :=
   h.elim contDiffAt_rpow_const_of_ne contDiffAt_rpow_const_of_le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iter_deriv_rpow_const (r x : ℝ) (k : ℕ) :
     deriv^[k] (fun (x : ℝ) ↦ x ^ r) x = (descPochhammer ℝ k).eval r * x ^ (r - k) := by
   apply funext_iff.mp

@@ -143,7 +143,7 @@ lemma isParabolic_iff_exists [NeZero (2 : K)] :
 
 end Field
 
-section LinearOrderedRing
+section Preorder
 
 variable {R : Type*} [CommRing R] [Preorder R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
@@ -167,7 +167,7 @@ lemma isElliptic_conj_iff : (g.val * m * g.val⁻¹).IsElliptic ↔ m.IsElliptic
 lemma isElliptic_conj'_iff : (g.val⁻¹ * m * g.val).IsElliptic ↔ m.IsElliptic := by
   simpa using isElliptic_conj_iff g⁻¹
 
-end LinearOrderedRing
+end Preorder
 
 namespace GeneralLinearGroup
 
@@ -243,6 +243,7 @@ lemma parabolicEigenvalue_ne_zero {g : GL (Fin 2) K} [NeZero (2 : K)] (hg : IsPa
     sq_eq_zero_iff, not_or]
   exact ⟨NeZero.ne _, g.det_ne_zero⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A non-zero power of a parabolic element is parabolic. -/
 lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     {n : ℕ} (hn : n ≠ 0) : IsParabolic (g ^ n) := by
@@ -270,6 +271,7 @@ lemma isParabolic_iff_of_upperTriangular {g : GL (Fin 2) K} (hg : g 1 0 = 0) :
     g.IsParabolic ↔ g 0 0 = g 1 1 ∧ g 0 1 ≠ 0 :=
   Matrix.isParabolic_iff_of_upperTriangular hg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Specialized version of `isParabolic_iff_of_upperTriangular` intended for use with
 discrete subgroups of `GL(2, ℝ)`. -/
 lemma isParabolic_iff_of_upperTriangular_of_det [LinearOrder K] [IsStrictOrderedRing K]

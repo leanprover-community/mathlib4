@@ -29,6 +29,7 @@ namespace NNReal
 instance : OrderTopology ℝ≥0 :=
   orderTopology_of_ordConnected (t := Ici 0)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsOrderBornology ℝ≥0 := .of_isCompactIcc 0 (by simp) fun r ↦ by
   obtain hr | hr := le_or_gt 0 r <;> simp [closedBall_zero_eq_Icc, *]
 

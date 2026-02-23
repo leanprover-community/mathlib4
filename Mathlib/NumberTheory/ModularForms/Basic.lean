@@ -43,6 +43,7 @@ private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDifferentiab
   refine .mul (.mul ?_ mdifferentiable_const) (mdifferentiable_denom_zpow g _)
   simpa only [σ, hg, ↓reduceIte] using hf.comp (mdifferentiable_smul hg)
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
     f ∣[k] J = fun τ : ℍ ↦ conj (f <| ofComplex <| -(conj ↑τ)) := by
   simp [slash_def, J_smul]
@@ -59,6 +60,7 @@ private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDifferentiable �
   have := hf.differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds this)
   simpa using (this.comp _ differentiable_neg.differentiableAt).star_star.neg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The weight `k` slash action of `GL(2, ℝ)` preserves holomorphic functions. -/
 lemma MDifferentiable.slash {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
     (k : ℤ) (g : GL (Fin 2) ℝ) : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] g) := by
@@ -260,6 +262,7 @@ theorem IsGLPos.smul_apply (f : ModularForm Γ k) (n : α) (z : ℍ) : (n • f)
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance instNeg : Neg (ModularForm Γ k) :=
   ⟨fun f =>
     { toSlashInvariantForm := -f.1
@@ -454,6 +457,7 @@ theorem IsGLPos.smul_apply (f : CuspForm Γ k) (n : α) {z : ℍ} : (n • f) z 
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance instNeg : Neg (CuspForm Γ k) :=
   ⟨fun f =>
     { toSlashInvariantForm := -f.1

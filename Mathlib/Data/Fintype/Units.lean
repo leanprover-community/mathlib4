@@ -37,6 +37,7 @@ instance [Monoid α] [Finite α] : Finite αˣ := .of_injective _ Units.val_inje
 
 variable (α)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Nat.card_units [GroupWithZero α] :
     Nat.card αˣ = Nat.card α - 1 := by
   classical

@@ -491,6 +491,7 @@ theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
     ∏' x : { x // x ∈ s }, f x = ∏ x ∈ s, f x := by
   rw [← prod_attach]; exact tprod_fintype _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
     ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by
@@ -499,6 +500,7 @@ theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
 @[to_additive]
 theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β → α}
     (hf : mulSupport f ⊆ Set.range g) : ∏' c, f (g c) = ∏' b, f b := by
