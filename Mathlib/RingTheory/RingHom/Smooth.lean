@@ -138,4 +138,45 @@ lemma propertyIsLocal : PropertyIsLocal Smooth where
     (stableUnderComposition.stableUnderCompositionWithLocalizationAway
       holdsForLocalizationAway).right
 
+section
+
+universe v w
+
+variable {R : Type u} [CommRing R] {S : Type v} [CommRing S]
+
+lemma RingHom.FormallySmooth.of_comp_ringEquiv {T : Type w} [CommRing T] (e : T ≃+* R)
+    (f : R →+* S) (smooth : f.FormallySmooth) : (f.comp e.toRingHom).FormallySmooth := by
+  let _ := e.toRingHom.toAlgebra
+  let _ := f.toAlgebra
+  let _ := (f.comp e.toRingHom).toAlgebra
+  let _ : IsScalarTower T R S := IsScalarTower.of_algebraMap_eq (fun x ↦ rfl)
+  let _ : Algebra.FormallySmooth R S := smooth.toAlgebra
+  change Algebra.FormallySmooth T S
+  have smooth' : Algebra.FormallySmooth R (ULift.{max u w} S) :=
+    Algebra.FormallySmooth.of_equiv ULift.algEquiv.symm
+  rw [← Algebra.FormallySmooth.iff_of_equiv ULift.algEquiv.{w, v, max u w}]
+  rw [Algebra.FormallySmooth.iff_comp_surjective] at smooth' ⊢
+  intro B _ _ I sq g
+  let _ : Algebra R B := ((algebraMap T B).comp e.symm.toRingHom).toAlgebra
+  let _ : IsScalarTower T R B := IsScalarTower.of_algebraMap_eq (by
+    simp [RingHom.algebraMap_toAlgebra])
+  let g' : ULift.{max u w, v} S →ₐ[R] B ⧸ I := g.extendScalarsOfSurjective e.surjective
+  rcases smooth' I sq g' with ⟨a, ha⟩
+  use a.restrictScalars T
+  ext x
+  change _ = g' x
+  simp [← ha]
+
+lemma RingHom.FormallySmooth.of_ringEquiv_comp {T : Type w} [CommRing T] (e : S ≃+* T)
+    (f : R →+* S) (smooth : f.FormallySmooth) : (e.toRingHom.comp f).FormallySmooth := by
+  let _ := e.toRingHom.toAlgebra
+  let _ := f.toAlgebra
+  let _ := (e.toRingHom.comp f).toAlgebra
+  let _ : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq (fun x ↦ rfl)
+  let _ : Algebra.FormallySmooth R S := smooth.toAlgebra
+  let e' : S ≃ₐ[R] T := AlgEquiv.ofRingEquiv (f := e) (by simp [RingHom.algebraMap_toAlgebra])
+  exact Algebra.FormallySmooth.of_equiv e'
+
+end
+
 end RingHom.Smooth
