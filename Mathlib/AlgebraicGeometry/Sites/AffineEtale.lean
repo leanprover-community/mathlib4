@@ -337,7 +337,7 @@ lemma isGrothendieckAbelian_sheaf_affineEtaleTopology
   Sheaf.isGrothendieckAbelian_of_essentiallySmall _ _
 
 -- Making this an instance would create timeouts
-instance isGrothendieckAbelian_sheaf_smallEtaleTopology
+lemma isGrothendieckAbelian_sheaf_smallEtaleTopology
     [Abelian A] [IsGrothendieckAbelian.{u} A] :
     IsGrothendieckAbelian.{u} (Sheaf S.smallEtaleTopology A) :=
   have := isGrothendieckAbelian_sheaf_affineEtaleTopology S A
