@@ -283,7 +283,7 @@ of `R`), for `f : K` and `a : S`, we have that `ordFrac R f ≤ ordFrac R (a •
 `algebraMap S R a ≠ 0`.
 -/
 lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
-    [l : IsScalarTower S R K] (a : S) (ha : algebraMap S R a ≠ 0) (f : K) :
+    [IsScalarTower S R K] (a : S) (ha : algebraMap S R a ≠ 0) (f : K) :
     Ring.ordFrac R f ≤ Ring.ordFrac R (a • f) := by
   by_cases j : f = 0
   · simp[j]
