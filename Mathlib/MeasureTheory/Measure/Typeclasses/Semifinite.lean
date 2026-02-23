@@ -7,6 +7,19 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Trim
 
+/-!
+# Classes for semifinite measures
+
+We introduce the following typeclass for measures:
+
+* `SemiFinite μ`: any measurable set with positive measure has a subset with
+  finite positive measure.
+
+-/
+
+@[expose] public section
+
+namespace MeasureTheory
 
 open MeasureTheory Set
 
@@ -90,3 +103,5 @@ theorem ae_iff_ae_restrict [SemiFinite μ] {p : α → Prop} (hmp : MeasurableSe
   simp_all only [ae_iff]
   refine measure_eq_zero_of_measure_inter_finite_eq_zero hmp fun t ht => ?_
   simpa [← μ.restrict_apply' ht] using hp t ht
+
+end MeasureTheory
