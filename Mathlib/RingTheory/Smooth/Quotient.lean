@@ -18,6 +18,9 @@ public import Mathlib.RingTheory.RingHom.Smooth
 
 # Some Lemma About Formally Smooth Under Quotient
 
+In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism `f : R →+* S`,
+`I` an ideal of `R` which is square zero, if `R ⧸ I →+* S ⧸ IS` is formally smooth, so do `f`.
+
 -/
 
 @[expose] public section
@@ -28,11 +31,61 @@ universe u v
 
 variable {R : Type u} [CommRing R] {S : Type v} [CommRing S]
 
+section
+
+variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+
+set_option backward.isDefEq.respectTransparency false in
+variable (M) in
+lemma Ideal.subtype_rTensor_range (I : Ideal R) :
+    ((TensorProduct.lid R M).comp (I.subtype.rTensor M)).range = I • (⊤ : Submodule R M) := by
+  rw [← Submodule.ker_mkQ (I • (⊤ : Submodule R M)), LinearMap.range_comp,
+    ← Submodule.map_symm_eq_iff, ← Submodule.comap_equiv_eq_map_symm, ← LinearMap.ker_comp,
+    ← TensorProduct.quotTensorEquivQuotSMul_comp_mkQ_rTensor, LinearEquiv.ker_comp]
+  exact LinearMap.exact_iff.mp (rTensor_exact M (LinearMap.exact_subtype_mkQ I) I.mkQ_surjective)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat (I : Ideal R) (f : M →ₗ[R] N)
+    (surj : Function.Surjective f) [Module.Flat R N] :
+    f.ker ⊓ (I • (⊤ : Submodule R M)) = I • f.ker := by
+  refine le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
+  · rcases (Submodule.ext_iff.mp (I.subtype_rTensor_range M) x).mpr hx.2 with ⟨y, hy⟩
+    have inj : Function.Injective ((TensorProduct.lid R N).comp (I.subtype.rTensor N)) := by
+      simpa using Module.Flat.iff_rTensor_injective'.mp ‹_› I
+    have comm1 : ((TensorProduct.lid R N).comp (I.subtype.rTensor N)).comp (f.lTensor I) =
+      f.comp ((TensorProduct.lid R M).comp (I.subtype.rTensor M)) := by
+      ext
+      simp
+    have eq0 : f.lTensor I y = 0 := by
+      apply inj
+      rw [map_zero, ← LinearMap.comp_apply, comm1, LinearMap.comp_apply, hy, f.mem_ker.mp hx.1]
+    rcases ((lTensor_exact I (f.exact_subtype_ker_map) surj) y).mp eq0 with ⟨z, hz⟩
+    have comm2 : ((TensorProduct.lid R M).comp (I.subtype.rTensor M)).comp
+      (f.ker.subtype.lTensor I) = f.ker.subtype.comp
+      ((TensorProduct.lid R f.ker).comp (I.subtype.rTensor f.ker)) := by
+      ext
+      simp
+    apply (Submodule.mem_smul_top_iff I f.ker ⟨x, hx.1⟩).mp
+    rw [← Ideal.subtype_rTensor_range]
+    use z
+    apply f.ker.subtype_injective
+    rw [← LinearMap.comp_apply, ← comm2, LinearMap.comp_apply, hz, hy, Submodule.subtype_apply]
+  · induction hx using Submodule.smul_induction_on' with
+    | smul r hr m hm =>
+      simpa [LinearMap.mem_ker.mp hm] using Submodule.smul_mem_smul hr Submodule.mem_top
+    | add y ymem z zmem hy hz => exact add_mem hy hz
+
+end
+
+/-- For flat ring homomorphism `f : R →+* S`, `I` an ideal of `R` which is square zero,
+if `R ⧸ I →+* S ⧸ IS` is formally smooth, so do `f`. -/
+@[stacks 031L]
 lemma RingHom.FormallySmooth.of_quotient_of_flat {S : Type v} [CommRing S] (f : R →+* S)
     {I : Ideal R} (sq0 : I ^ 2 = ⊥) (flat : f.Flat)
     (smoothq : (Ideal.quotientMap (I.map f) f Ideal.le_comap_map).FormallySmooth) :
     f.FormallySmooth := by
   let _ := f.toAlgebra
+  let _ : Module.Flat R S := flat
   let IS := I.map f
   let _ := (Ideal.quotientMap IS f Ideal.le_comap_map).toAlgebra
   let P := (Algebra.Generators.self R S).toExtension
@@ -66,10 +119,15 @@ lemma RingHom.FormallySmooth.of_quotient_of_flat {S : Type v} [CommRing S] (f : 
   let J := RingHom.ker (algebraMap P.Ring S)
   let J' := RingHom.ker (algebraMap P'.Ring (S ⧸ IS))
   classical
-  have infeq : IP ⊓ J = IP * J := by
-    --this needs `S` being flat
-    sorry
   have surjP : Function.Surjective (algebraMap P.Ring S) := fun x ↦ ⟨P.σ x, P.algebraMap_σ x⟩
+  have infeq : IP ⊓ J = IP * J := by
+    refine le_antisymm (fun x hx ↦ ?_) Ideal.mul_le_inf
+    have : x ∈ I • (J.restrictScalars R) := by
+      change x ∈ I • (IsScalarTower.toAlgHom R P.Ring S).toLinearMap.ker
+      rw [← LinearMap.ker_inf_smul_top_eq_smul_of_flat I _ surjP]
+      simpa using ⟨hx.2, hx.1⟩
+    rw [← Ideal.smul_restrictScalars I J, Submodule.restrictScalars_mem] at this
+    exact this
   apply (Algebra.FormallySmooth.iff_split_injection surjP).mpr
   have surjP' : Function.Surjective (algebraMap P'.Ring (S ⧸ I.map f)) :=
     fun x ↦ ⟨P'.σ x, P'.algebraMap_σ x⟩
