@@ -640,7 +640,6 @@ section Conjugation
 
 variable [Fintype α] [DecidableEq α] {σ τ : Perm α}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : #σ.support = #τ.support) :
     IsConj σ τ := by
   refine

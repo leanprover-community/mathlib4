@@ -23,14 +23,14 @@ terms of a quantity that is a root of a particular cubic equation.
 ## Main statements
 
 - `cubic_eq_zero_iff`: gives the roots of the cubic equation
-where the discriminant `p = 3 * a * c - b^2` is nonzero.
+  where the discriminant `p = 3 * a * c - b^2` is nonzero.
 - `cubic_eq_zero_iff_of_p_eq_zero`: gives the roots of the cubic equation
-where the discriminant equals zero.
+  where the discriminant equals zero.
 - `quartic_eq_zero_iff`: gives the roots of the quartic equation
-where the quantity `b^3 - 4 * a * b * c + 8 * a^2 * d` is nonzero, in terms of a root `u`
-to a cubic resolvent.
+  where the quantity `b^3 - 4 * a * b * c + 8 * a^2 * d` is nonzero, in terms of a root `u`
+  to a cubic resolvent.
 - `quartic_eq_zero_iff_of_q_eq_zero`: gives the roots of the quartic equation
-where the quantity `b^3 - 4 * a * b * c + 8 * a^2 * d` equals zero.
+  where the quantity `b^3 - 4 * a * b * c + 8 * a^2 * d` equals zero.
 
 ## Proof outline
 

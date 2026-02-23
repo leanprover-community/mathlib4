@@ -267,7 +267,6 @@ theorem coe_algebraMap [CommSemiring R] :
     ⇑(algebraMap R⟦X⟧ R⸨X⸩) = HahnSeries.ofPowerSeries ℤ R :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The localization map from power series to Laurent series. -/
 @[simps (rhsMd := .all) +simpRhs]
 instance of_powerSeries_localization [CommRing R] :
@@ -1118,7 +1117,6 @@ lemma powerSeriesRingEquiv_coe_apply (f : K⟦X⟧) :
     powerSeriesRingEquiv K f = LaurentSeriesRingEquiv K (f : K⸨X⸩) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma LaurentSeriesRingEquiv_mem_valuationSubring (f : K⟦X⟧) :
     LaurentSeriesRingEquiv K f ∈ Valued.v.valuationSubring := by
   simp only [Valuation.mem_valuationSubring_iff]

@@ -710,6 +710,7 @@ lemma mpullbackWithin_mlieBracketWithin
       mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ :=
   mpullbackWithin_mlieBracketWithin' hV hW hu hu hf hx₀ hn hst h'x₀ Subset.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pullback commutes with the Lie bracket of vector fields on manifolds. -/
 lemma mpullback_mlieBracketWithin
     {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : Set M} {t : Set M'}
@@ -854,6 +855,7 @@ section Leibniz
 
 variable [IsManifold I (minSmoothness 𝕜 3) M] [CompleteSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lie bracket of vector fields in manifolds satisfies the Leibniz identity
 `[U, [V, W]] = [[U, V], W] + [V, [U, W]]` (also called Jacobi identity). -/
 theorem leibniz_identity_mlieBracketWithin_apply

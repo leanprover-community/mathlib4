@@ -100,8 +100,8 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
 
 private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatalan (n + 1) (n + 1) -
     gosperCatalan (n + 1) 0 = Nat.centralBinom (n + 1) / (n + 2) := by
-  simp only [gosperCatalan, tsub_self, Nat.centralBinom_zero, Nat.cast_one, Nat.cast_add,
-    Nat.cast_zero]
+  simp only [gosperCatalan, tsub_self, Nat.centralBinom_zero, Nat.cast_one, mul_one, Nat.cast_add,
+    Nat.sub_zero, one_mul, Nat.cast_zero, mul_zero, zero_sub, neg_add_rev]
   field
 
 theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n + 1) := by

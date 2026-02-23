@@ -288,6 +288,7 @@ theorem ContDiff.differentiable_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h 
   (contDiff_iff_iteratedDeriv.1 (h.of_le (ENat.add_one_natCast_le_withTop_of_lt hmn))).2 m
     (mod_cast (lt_add_one m))
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem ContDiff.differentiable_iteratedDeriv' (m : ℕ) (h : ContDiff 𝕜 (m + 1) f) :
     Differentiable 𝕜 (iteratedDeriv m f) :=

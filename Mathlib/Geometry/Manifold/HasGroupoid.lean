@@ -425,7 +425,6 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       have : F₂ ∈ G := G.mem_of_eqOnSource A (Setoid.symm this)
       exact this }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Restricting a chart to its source `s ⊆ M` yields a chart in the maximal atlas of `s`. -/
 theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
     {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M)

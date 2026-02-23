@@ -820,7 +820,6 @@ theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 
 
 theorem eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by aesop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between dependent functions with finite support `s : Finset ι` and functions
 `∀ i, {x : β i // x ≠ 0}`. -/
 @[simps]
@@ -945,7 +944,6 @@ theorem support_zipWith {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f
 end MapRangeAndZipWith
 
 theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase i) fun j => f j.1 := by
-  ext
   grind
 
 @[simp]

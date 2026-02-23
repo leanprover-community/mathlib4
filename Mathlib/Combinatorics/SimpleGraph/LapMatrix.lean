@@ -180,7 +180,6 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
   exact h' ▸ congrFun h0 i
 
-set_option backward.isDefEq.respectTransparency false in
 lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _

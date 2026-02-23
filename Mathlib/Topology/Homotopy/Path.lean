@@ -69,7 +69,6 @@ theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
   calc F (t, 1) = p₀ 1 := ContinuousMap.HomotopyRel.eq_fst _ _ (.inr rfl)
   _ = x₁ := p₀.target
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Evaluating a path homotopy at an intermediate point, giving us a `Path`.
 -/
 @[simps]

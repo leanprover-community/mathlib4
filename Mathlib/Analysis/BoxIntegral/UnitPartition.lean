@@ -417,7 +417,6 @@ theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀
 
 open Filter
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `s` be a bounded, measurable set of `ι → ℝ` whose frontier has zero volume and let `F`
 be a continuous function. Then the limit as `n → ∞` of `∑ F x / n ^ card ι`, where the sum is
 over the points in `s ∩ n⁻¹ • (ι → ℤ)`, tends to the integral of `F` over `s`. -/

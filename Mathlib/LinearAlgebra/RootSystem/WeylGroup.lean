@@ -192,7 +192,6 @@ lemma weylGroup_apply_root (g : P.weylGroup) (i : ι) :
     g • P.root i = P.root (P.weylGroupToPerm g i) :=
   Hom.root_weightMap_apply _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma InvariantForm.apply_weylGroup_smul {B : P.InvariantForm} (g : P.weylGroup) (x y : M) :
     B.form (g • x) (g • y) = B.form x y := by

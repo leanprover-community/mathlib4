@@ -445,7 +445,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     (inv f).appTop = inv f.appTop := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Copies a morphism with a different underlying map -/
 def copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
   base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
@@ -455,7 +454,6 @@ def copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶
     convert f.prop x using 4
     cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 lemma copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
     f.copyBase g h = f := by
   subst h

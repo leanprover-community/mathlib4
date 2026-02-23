@@ -527,6 +527,11 @@ theorem normalClosure_closure_eq_normalClosure {s : Set G} :
     normalClosure ↑(closure s) = normalClosure s :=
   le_antisymm (normalClosure_le_normal closure_le_normalClosure) (normalClosure_mono subset_closure)
 
+/-- The normal closure of an empty set is the trivial subgroup. -/
+@[simp]
+lemma normalClosure_empty : normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
+  rw [← normalClosure_closure_eq_normalClosure, closure_empty, normalClosure_eq_self]
+
 /-- The normal core of a subgroup `H` is the largest normal subgroup of `G` contained in `H`,
 as shown by `Subgroup.normalCore_eq_iSup`. -/
 def normalCore (H : Subgroup G) : Subgroup G where
