@@ -291,9 +291,12 @@ theorem add_singleton_eq (a : A) (r : R) : σ a + {r} = σ (a + ↑ₐ r) :=
 theorem vadd_eq (a : A) (r : R) : r +ᵥ σ a = σ (↑ₐ r + a) :=
   singleton_add.symm.trans <| singleton_add_eq a r
 
-theorem neg_eq (a : A) : -σ a = σ (-a) :=
+theorem _root_.resolventSet_neg (a : A) : resolventSet R (-a) = -resolventSet R a :=
   Set.ext fun x => by
-    simp only [mem_neg, mem_iff, map_neg, ← neg_add', IsUnit.neg_iff, sub_neg_eq_add]
+    simp only [mem_neg, mem_resolventSet_iff, map_neg, ← neg_add', IsUnit.neg_iff, sub_neg_eq_add]
+
+theorem neg_eq (a : A) : -σ a = σ (-a) := by
+  rw [spectrum, Set.compl_neg, spectrum, resolventSet_neg]
 
 theorem singleton_sub_eq (a : A) (r : R) : {r} - σ a = σ (↑ₐ r - a) := by
   rw [sub_eq_add_neg, neg_eq, singleton_add_eq, sub_eq_add_neg]

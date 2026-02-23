@@ -222,6 +222,7 @@ theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
   · rw [succ_le_iff_of_not_isMax fun ha => hb <| ha.mono h]
     apply lt_succ_of_le_of_not_isMax h hb
 
+@[to_dual]
 theorem succ_mono : Monotone (succ : α → α) := fun _ _ => succ_le_succ
 
 /-- See also `Order.succ_eq_of_covBy`. -/
@@ -421,6 +422,9 @@ section LinearOrder
 
 variable [LinearOrder α] [SuccOrder α] {a b : α}
 
+@[to_dual] lemma succ_max (a b : α) : succ (max a b) = max (succ a) (succ b) := succ_mono.map_max
+@[to_dual] lemma succ_min (a b : α) : succ (min a b) = min (succ a) (succ b) := succ_mono.map_min
+
 @[to_dual le_of_pred_lt]
 theorem le_of_lt_succ {a b : α} : a < succ b → a ≤ b := fun h ↦ by
   by_contra! nh
@@ -619,9 +623,6 @@ theorem pred_covBy_of_not_isMin (h : ¬IsMin a) : pred a ⋖ a :=
 @[deprecated pred_lt_of_le_of_not_isMin (since := "2025-12-04")]
 theorem pred_lt_of_not_isMin_of_le (ha : ¬IsMin a) : a ≤ b → pred a < b :=
   (pred_lt_of_not_isMin ha).trans_le
-
-@[to_dual existing]
-theorem pred_mono : Monotone (pred : α → α) := fun _ _ => pred_le_pred
 
 @[deprecated (since := "2025-12-04")]
 alias pred_le_pred_of_not_isMin_of_le := pred_mono

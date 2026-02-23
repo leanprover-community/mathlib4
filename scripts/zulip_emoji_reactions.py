@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import zulip
+import os
 import re
 import json
 
@@ -87,7 +88,8 @@ print(f"reviewers_response:{reviewers_response}")
 messages = (public_response['messages']) + (reviewers_response['messages'])
 
 hashPR = re.compile(f'#{PR_NUMBER}')
-urlPR = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/{PR_NUMBER}')
+GITHUB_REPO = os.environ.get('GITHUB_REPOSITORY', 'leanprover-community/mathlib4')
+urlPR = re.compile(f'https://github.com/{re.escape(GITHUB_REPO)}/pull/{PR_NUMBER}')
 
 print(f"Searching for: '{urlPR}'")
 
