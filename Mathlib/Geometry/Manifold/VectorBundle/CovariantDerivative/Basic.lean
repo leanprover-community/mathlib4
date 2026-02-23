@@ -843,6 +843,14 @@ lemma congr_X_at [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M] [Vec
     rw [hcov.addX]
     all_goals sorry
 
+lemma congr_σ_of_eqOn [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M] [VectorBundle ℝ F V]
+    {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
+    (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} {x : M} (hxu : s ∈ 𝓝 x)
+    (hσσ' : ∀ x ∈ s, σ x = σ' x) :
+    cov X σ x = cov X σ' x := by
+  sorry -- Note there is a commented out version of this lemma at the bottom
+
 -- TODO: prove that `cov X σ x` depends on σ only via σ(X) and the 1-jet of σ at x
 
 /-- The difference of two covariant derivatives, as a function `Γ(TM) × Γ(E) → Γ(E)`.
@@ -1159,12 +1167,40 @@ lemma Trivialization.comap_vert (v : TotalSpace F V) (hv : v.proj ∈ e.baseSet)
   simp [vert]
   sorry
 
+-- FIXME: is this really missing??
+lemma Trivialization.eq_of {x : M} {v v' : V x}
+   (hx : x ∈ e.baseSet) (hvv' : (e v).2 = (e v').2) :
+    v = v' := by
+  have := e.symm_proj_apply v hx
+  rw [hvv'] at this
+  grind [e.symm_proj_apply v' hx]
+
+lemma Trivialization.derivEquiv_mfderiv {σ : Π x : M, V x} (hσ : MDiffAt T%σ x)
+    (u : TangentSpace I x) (v : V x)  :
+    letI s := fun x ↦ (e (σ x)).2
+    e.derivEquiv I v ((mfderiv% T%σ x) u) = (u, mfderiv I 𝓘(ℝ, F) s x u) := by
+  sorry
 
 noncomputable
 def Trivialization.pushCovDer
     (cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)) :
     (Π x : M, TangentSpace I x) → (M → F) → (M → F) :=
   fun X σ x ↦ e (cov X (fun x' ↦ e.symm x' <| σ x') x) |>.2
+
+lemma Trivialization.pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
+    [T2Space M] [IsManifold I ∞ M]
+    [VectorBundle ℝ F V]
+    {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    (hcov : IsCovariantDerivativeOn F cov e.baseSet)
+    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) {x : M}
+    (hx : x ∈ e.baseSet := by assumption) :
+    (e.pushCovDer cov) X (fun x ↦ (e (σ x)).2) x = (e (cov X σ x)).2 := by
+  have : cov X (fun x' ↦ e.symm x' (e (T% σ x')).2) x = cov X σ x := by
+    apply hcov.congr_σ_of_eqOn
+    · exact e.open_baseSet.mem_nhds_iff.mpr hx
+    · exact fun y hy ↦ symm_apply_apply_mk e hy (σ y) --FIXME extract as lemma?
+  unfold pushCovDer
+  rw [this]
 
 variable {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     -- {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
@@ -1195,6 +1231,17 @@ def proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
   letI tproj := d_covDerOn.projection v.proj (t v).2
   letI Tvt := t.derivEquiv I v
   t.symmL ℝ v.proj ∘L tproj ∘L Tvt.toContinuousLinearMap
+
+lemma snd_triv_proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) (u : TangentSpace (I.prod
+  𝓘(ℝ, F)) v) :
+    letI t := trivializationAt F V v.proj
+    haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
+      (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
+    letI tproj := d_covDerOn.projection v.proj (t v).2
+    letI Tvt := t.derivEquiv I v
+    (t <| cov.proj v u).2 = tproj (Tvt u) := by
+  simp [CovariantDerivative.proj, (mem_baseSet_trivializationAt F V v.proj)]
+
 
 noncomputable def horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
@@ -1246,12 +1293,37 @@ lemma horiz_vert_direct_sum (cov : CovariantDerivative I F V) (v : TotalSpace F 
 variable [IsManifold I 1 M]
 variable {cov : CovariantDerivative I F V}
 
-lemma proj_mderiv {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x} (x : M)
+lemma proj_mderiv [ContMDiffVectorBundle 1 F V I]
+    {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x} (x : M)
     (hX : MDiffAt (T% X) x)
     (hσ : MDiffAt (T% σ) x) :
     cov X σ x = cov.proj (σ x)
       (mfderiv I (I.prod 𝓘(ℝ, F)) (T% σ) x (X x)) := by
-  sorry
+  let t := trivializationAt F V x
+  let s := fun x ↦ (t (σ x)).2
+  let Tσx := mfderiv% (T% σ) x
+  -- FIXME `mfderiv%` fails in next line
+  let Ttσx := mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) t (σ x)
+  change cov X σ x = (cov.proj (T% σ x)) ((mfderiv% (T% σ) x) (X x))
+  -- have der_eq : mfderiv% s x = ContinuousLinearMap.snd ℝ _ _ ∘L Ttσx ∘L Tσx := by
+  --   rw [show s = Prod.snd ∘ t ∘ (T% σ) from rfl]
+  --   have mdifft : MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) t (σ x) := sorry
+  --   have mdiffsnd : MDifferentiableAt (I.prod 𝓘(ℝ, F)) 𝓘(ℝ, F) Prod.snd (t <| σ x) :=
+  --     mdifferentiableAt_snd
+  --   rw [mfderiv_comp x mdiffsnd]
+  --   · rw [mfderiv_comp x mdifft hσ, mfderiv_snd]
+  --     rfl
+  --   · exact (mdifft.comp x hσ)
+  have hcov := t.pushCovDer_isCovariantDerivativeOn
+    (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
+  have hx := mem_baseSet_trivializationAt F V x
+  have hs : MDiffAt (T% s) x := by
+    rw [t.mdifferentiableAt_section_iff I σ hx] at hσ
+    exact (mdifferentiableAt_section I s).mpr hσ
+  apply t.eq_of hx
+  rw  [cov.snd_triv_proj (T% σ x),
+       ← t.pushCovDer_ofSect (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _) X σ,
+       hcov.cov_eq_proj X s hX hs, t.derivEquiv_mfderiv hσ]
 
 end CovariantDerivative
 end horiz
