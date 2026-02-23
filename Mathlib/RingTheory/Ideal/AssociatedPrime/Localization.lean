@@ -26,7 +26,7 @@ This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
 public section
 
 variable {R : Type*} [CommRing R] (S : Submonoid R) {R' : Type*} [CommRing R'] [Algebra R R']
-  [IsLocalization S R']
+  [hSR' : IsLocalization S R']
 
 variable {M M' : Type*} [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
   (f : M →ₗ[R] M') [IsLocalizedModule S f] [Module R' M'] [IsScalarTower R R' M']
@@ -54,11 +54,9 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
       IsLocalizedModule.mk'_eq_zero']
     refine ⟨fun h ↦ exists_comm.mp ⟨1, ?_⟩, fun ⟨n, t, ht⟩ ↦ ?_⟩
     · simp only [← mem_colon_singleton, one_smul, ← mem_bot R, ← hx, ← Ideal.mem_radical_iff]
-      exact IsLocalization.mk'_mem_iff.mp h
-    · have : IsLocalization.mk' R' r s =
-        IsLocalization.mk' (M := S) R' (t.1 * r) 1 * IsLocalization.mk' R' 1 (t * s) := by
-        rw [← IsLocalization.mk'_mul, mul_one, one_mul, ← sub_eq_zero, ← IsLocalization.mk'_sub,
-          Submonoid.coe_mul]
+      exact hSR'.mk'_mem_iff.mp h
+    · have : hSR'.mk' R' r s = hSR'.mk' R' (t.1 * r) 1 * hSR'.mk' R' 1 (t * s) := by
+        rw [← hSR'.mk'_mul, mul_one, one_mul, ← sub_eq_zero, ← hSR'.mk'_sub, Submonoid.coe_mul]
         simp [← mul_assoc, mul_comm r t.1, IsLocalization.mk'_zero]
       rw [this]
       apply Ideal.IsTwoSided.mul_mem_of_left
