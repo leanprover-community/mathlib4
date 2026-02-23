@@ -382,7 +382,7 @@ section
 variable {ι : Type*}
 
 /-- The topological space `Π i, Y i` can be split as a product by separating the indices in ι
-  depending on whether they satisfy a predicate p or not. -/
+depending on whether they satisfy a predicate p or not. -/
 @[simps!]
 def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, TopologicalSpace (Y i)]
     [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i where
@@ -397,7 +397,7 @@ def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, Topologica
 variable [DecidableEq ι] (i : ι)
 
 /-- A product of topological spaces can be split as the binary product of one of the spaces and
-  the product of all the remaining spaces. -/
+the product of all the remaining spaces. -/
 @[simps!]
 def piSplitAt (Y : ι → Type*) [∀ j, TopologicalSpace (Y j)] :
     (∀ j, Y j) ≃ₜ Y i × ∀ j : { j // j ≠ i }, Y j where
@@ -414,7 +414,7 @@ def piSplitAt (Y : ι → Type*) [∀ j, TopologicalSpace (Y j)] :
 variable (Y)
 
 /-- A product of copies of a topological space can be split as the binary product of one copy and
-  the product of all the remaining copies. -/
+the product of all the remaining copies. -/
 @[simps!]
 def funSplitAt : (ι → Y) ≃ₜ Y × ({ j // j ≠ i } → Y) :=
   piSplitAt i _
@@ -548,7 +548,7 @@ lemma isHomeomorph_iff_continuous_isClosedMap_bijective : IsHomeomorph f ↔
     ⟨hf, fun _ hu => isClosed_compl_iff.1 (image_compl_eq hf'' ▸ hf' _ hu.isClosed_compl), hf''⟩⟩
 
 /-- A map from a compact space to a T2 space is a homeomorphism iff it is continuous and
-  bijective. -/
+bijective. -/
 lemma isHomeomorph_iff_continuous_bijective [CompactSpace X] [T2Space Y] :
     IsHomeomorph f ↔ Continuous f ∧ Bijective f := by
   rw [isHomeomorph_iff_continuous_isClosedMap_bijective]

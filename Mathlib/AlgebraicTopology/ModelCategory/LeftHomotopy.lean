@@ -21,6 +21,7 @@ object in a model category, then `LeftHomotopyRel` is an equivalence
 relation on `X ⟶ Y`.
 
 ## References
+
 * [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
 
 -/

@@ -152,7 +152,7 @@ def isoOfHomotopyEquiv {C D : HomologicalComplex V c} (f : HomotopyEquiv C D) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If two complexes become isomorphic in the homotopy category,
-  then they were homotopy equivalent. -/
+then they were homotopy equivalent. -/
 def homotopyEquivOfIso {C D : HomologicalComplex V c}
     (i : (quotient V c).obj C ≅ (quotient V c).obj D) : HomotopyEquiv C D where
   hom := Quot.out i.hom
@@ -242,7 +242,7 @@ set_option backward.isDefEq.respectTransparency false in
 -- TODO develop lifting of natural transformations for general quotient categories so that
 -- `NatTrans.mapHomotopyCategory` become a particular case of it
 /-- A natural transformation induces a natural transformation between
-  the induced functors on the homotopy category. -/
+the induced functors on the homotopy category. -/
 @[simps]
 def NatTrans.mapHomotopyCategory {F G : V ⥤ W} [F.Additive] [G.Additive] (α : F ⟶ G)
     (c : ComplexShape ι) : F.mapHomotopyCategory c ⟶ G.mapHomotopyCategory c where

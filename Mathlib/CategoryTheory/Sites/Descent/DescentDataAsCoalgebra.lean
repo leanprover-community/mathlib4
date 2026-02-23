@@ -31,8 +31,9 @@ identifies to the category of coalgebras for the comonad attached
 to the adjunction `(F.map f.op.toLoc).adj`.
 
 ## TODO (@joelriou, @chrisflav)
+
 * Compare `DescentDataAsCoalgebra` with `DescentData` when suitable
-pullbacks exist and certain base change morphisms are isomorphims
+  pullbacks exist and certain base change morphisms are isomorphims
 
 -/
 

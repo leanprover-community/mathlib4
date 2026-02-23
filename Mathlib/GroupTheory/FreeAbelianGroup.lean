@@ -37,7 +37,7 @@ Here we use the following variables: `(α β : Type*) (A : Type*) [AddCommGroup 
   by the map `f : α → A`.
 
 * `map (f : α → β) : FreeAbelianGroup α →+ FreeAbelianGroup β` : functoriality
-    of `FreeAbelianGroup`.
+  of `FreeAbelianGroup`.
 
 * `instance [Monoid α] : Semigroup (FreeAbelianGroup α)`
 
@@ -359,7 +359,7 @@ universe w
 variable {β : Type v} {γ : Type w}
 
 /-- The additive group homomorphism `FreeAbelianGroup α →+ FreeAbelianGroup β` induced from a
-  map `α → β`. -/
+map `α → β`. -/
 def map (f : α → β) : FreeAbelianGroup α →+ FreeAbelianGroup β :=
   lift (of ∘ f)
 

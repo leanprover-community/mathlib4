@@ -14,6 +14,7 @@ public import Qq
 # Power function on `ℝ≥0` and `ℝ≥0∞`
 
 We construct the power functions `x ^ y` where
+
 * `x` is a nonnegative real number and `y` is a real number;
 * `x` is a number from `[0, +∞]` (a.k.a. `ℝ≥0∞`) and `y` is a real number.
 
@@ -1179,9 +1180,10 @@ theorem nnreal_rpow_isRat_eq_inv_nnreal_rpow (a : ℝ≥0) (b : ℝ) (n d : ℕ)
 open Lean
 
 /-- Given proofs
+
 - that `a` is a natural number `na`;
 - that `b` is a nonnegative rational number `nb / db`;
-returns a tuple of
+  returns a tuple of
 - a natural number `r` (result);
 - the same number, as an expression;
 - a proof that `a ^ b = r`.

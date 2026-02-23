@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Measure theory in the product of groups
+
 In this file we show properties about measure theory in products of measurable groups
 and properties of iterated integrals in measurable groups.
 
@@ -21,9 +22,11 @@ for two sets `s` and `t`, where `c` is a constant that does not depend on `μ`. 
 the characteristic functions of `s` and `t`.
 Assume that `μ` and `ν` are left-invariant measures. Then the map `(x, y) ↦ (y * x, x⁻¹)`
 preserves the measure `μ × ν`, which means that
+
 ```
   ∫ x, ∫ y, h x y ∂ν ∂μ = ∫ x, ∫ y, h (y * x) x⁻¹ ∂ν ∂μ
 ```
+
 If we apply this to `h x y := e x * f y⁻¹ / ν ((fun h ↦ h * y⁻¹) ⁻¹' s)`, we can rewrite the RHS to
 `μ(t)`, and the LHS to `c * μ(s)`, where `c = c(ν)` does not depend on `μ`.
 Applying this to `μ` and to `ν` gives `μ (t) / μ (s) = ν (t) / ν (s)`, which is the uniqueness up to
@@ -281,14 +284,14 @@ theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero (h2s : ν' s ≠ 0) (h3s
   rw [hν, Measure.coe_zero, Pi.zero_apply]
 
 /-- A technical lemma relating two different measures. This is basically [Halmos, §60 Th. A].
-  Note that if `f` is the characteristic function of a measurable set `t` this states that
-  `μ t = c * μ s` for a constant `c` that does not depend on `μ`.
+Note that if `f` is the characteristic function of a measurable set `t` this states that
+`μ t = c * μ s` for a constant `c` that does not depend on `μ`.
 
-  Note: There is a gap in the last step of the proof in [Halmos].
-  In the last line, the equality `g(x⁻¹)ν(sx⁻¹) = f(x)` holds if we can prove that
-  `0 < ν(sx⁻¹) < ∞`. The first inequality follows from §59, Th. D, but the second inequality is
-  not justified. We prove this inequality for almost all `x` in
-  `MeasureTheory.ae_measure_preimage_mul_right_lt_top_of_ne_zero`. -/
+Note: There is a gap in the last step of the proof in [Halmos].
+In the last line, the equality `g(x⁻¹)ν(sx⁻¹) = f(x)` holds if we can prove that
+`0 < ν(sx⁻¹) < ∞`. The first inequality follows from §59, Th. D, but the second inequality is
+not justified. We prove this inequality for almost all `x` in
+`MeasureTheory.ae_measure_preimage_mul_right_lt_top_of_ne_zero`. -/
 @[to_additive
 /-- A technical lemma relating two different measures. This is basically [Halmos, §60 Th. A]. Note
 that if `f` is the characteristic function of a measurable set `t` this states that `μ t = c * μ s`

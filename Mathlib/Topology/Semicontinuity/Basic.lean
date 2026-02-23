@@ -19,6 +19,7 @@ This file develops key properties of upper and lower semicontinuous functions.
 
 We have some equivalent definitions of lower- and upper-semicontinuity (under certain
 restrictions on the order on the codomain):
+
 * `lowerSemicontinuous_iff_isOpen_preimage` in a linear order;
 * `lowerSemicontinuous_iff_isClosed_preimage` in a linear order;
 * `lowerSemicontinuousAt_iff_le_liminf` in a complete linear order;
@@ -51,7 +52,6 @@ ones for lower semicontinuous functions using `OrderDual`.
 
 * <https://en.wikipedia.org/wiki/Closed_convex_function>
 * <https://en.wikipedia.org/wiki/Semi-continuity>
-
 
 + lower and upper semicontinuity correspond to `r := (f · > ·)` and `r := (f · < ·)`;
 + lower and upper hemicontinuity correspond to `r := (fun x s ↦ IsOpen s ∧ ((f x) ∩ s).Nonempty)`

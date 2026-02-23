@@ -619,7 +619,7 @@ theorem mk_equiv_eq_zero_iff_ne : #(α ≃ β) = 0 ↔ #α ≠ #β := by
   rw [mk_equiv_eq_zero_iff_lift_ne, lift_id, lift_id]
 
 /-- This lemma makes lemmas assuming `Infinite α` applicable to the situation where we have
-  `Infinite β` instead. -/
+`Infinite β` instead. -/
 theorem mk_equiv_comm : #(α ≃ β') = #(β' ≃ α) :=
   (ofBijective _ symm_bijective).cardinal_eq
 

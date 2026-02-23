@@ -14,13 +14,14 @@ public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 This file defines two related tactics: `compute_degree` and `monicity`.
 
 Using `compute_degree` when the goal is of one of the seven forms
-*  `natDegree f ≤ d` (or `<`),
-*  `degree f ≤ d` (or `<`),
-*  `natDegree f = d`,
-*  `degree f = d`,
-*  `coeff f d = r`, if `d` is the degree of `f`,
-tries to solve the goal.
-It may leave side-goals, in case it is not entirely successful.
+
+* `natDegree f ≤ d` (or `<`),
+* `degree f ≤ d` (or `<`),
+* `natDegree f = d`,
+* `degree f = d`,
+* `coeff f d = r`, if `d` is the degree of `f`,
+  tries to solve the goal.
+  It may leave side-goals, in case it is not entirely successful.
 
 Using `monicity` when the goal is of the form `Monic f` tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
@@ -32,7 +33,7 @@ See the doc-strings for more details.
 
 ## Future work
 
-* Currently, `compute_degree` does not deal correctly with some edge cases.  For instance,
+* Currently, `compute_degree` does not deal correctly with some edge cases. For instance,
   ```lean
   example [Semiring R] : natDegree (C 0 : R[X]) = 0 := by
     compute_degree
@@ -51,22 +52,26 @@ Assume that `f : R[X]` is a polynomial with coefficients in a semiring `R` and
 `d` is either in `ℕ` or in `WithBot ℕ`.
 
 If the goal has the form `natDegree f < d`, then we convert it to two separate goals:
+
 * `natDegree f ≤ ?_`, on which we apply the following steps;
 * `?_ < d`;
-where `?_` is a metavariable that `compute_degree` computes in its process.
-We proceed similarly for `degree f < d`.
+  where `?_` is a metavariable that `compute_degree` computes in its process.
+  We proceed similarly for `degree f < d`.
 
 If the goal has the form `natDegree f = d`, then we convert it to three separate goals:
+
 * `natDegree f ≤ d`;
 * `coeff f d = r`;
 * `r ≠ 0`.
 
 Similarly, an initial goal of the form `degree f = d` gives rise to goals of the form
+
 * `degree f ≤ d`;
 * `coeff f d = r`;
 * `r ≠ 0`.
 
 Next, we apply successively lemmas whose side-goals all have the shape
+
 * `natDegree f ≤ d`;
 * `degree f ≤ d`;
 * `coeff f d = r`;
@@ -75,6 +80,7 @@ plus possibly "numerical" identities and choices of elements in `ℕ`, `WithBot 
 
 Recursing into `f`, we break apart additions, multiplications, powers, subtractions,...
 The leaves of the process are
+
 * numerals, `C a`, `X` and `monomial a n`, to which we assign degree `0`, `1` and `a` respectively;
 * `fvar`s `f`, to which we tautologically assign degree `natDegree f`.
 -/
@@ -152,6 +158,7 @@ section congr_lemmas
 
 /-- The following two lemmas should be viewed as a hand-made "congr"-lemmas.
 They achieve the following goals.
+
 * They introduce *two* fresh metavariables replacing the given one `deg`,
   one for the `natDegree ≤` computation and one for the `coeff =` computation.
   This helps `compute_degree`, since it does not "pre-estimate" the degree,
@@ -212,6 +219,7 @@ open Lean Elab Tactic Meta Expr
 that `e` looks like `lhs ≤ rhs`, `lhs < rhs` or `lhs = rhs` and that `lhs` is one of
 `natDegree f, degree f, coeff f d`.
 It returns
+
 * the function being applied on the LHS (`natDegree`, `degree`, or `coeff`),
   or else `.anonymous` if it's none of these;
 * the name of the relation (`Eq`, `LE.le` or `LT.lt`), or else `.anonymous` if it's none of these;
@@ -226,6 +234,7 @@ This is all the data needed to figure out whether `compute_degree` can make prog
 and, if so, which lemma it should apply.
 
 Sample outputs:
+
 * `natDegree (f + g) ≤ d => (natDegree, LE.le, HAdd.hAdd, d.isMVar, none)` (similarly for `=`);
 * `degree (f * g) = d => (degree, Eq, HMul.hMul, d.isMVar, none)` (similarly for `≤`);
 * `coeff (1 : ℕ[X]) c = x => (coeff, Eq, one, x.isMVar, c.isMVar)` (no `≤` option!).
@@ -259,15 +268,17 @@ def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id
 /--
 `getCongrLemma (lhs_name, rel_name, Mvars?)` returns the name of a lemma that preprocesses
 one of the seven targets
-*  `natDegree f ≤ d`;
-*  `natDegree f < d`;
-*  `natDegree f = d`;
-*  `degree f ≤ d`;
-*  `degree f < d`;
-*  `degree f = d`.
-*  `coeff f d = r`.
+
+* `natDegree f ≤ d`;
+* `natDegree f < d`;
+* `natDegree f = d`;
+* `degree f ≤ d`;
+* `degree f < d`;
+* `degree f = d`.
+* `coeff f d = r`.
 
 The end goals are of the form
+
 * `natDegree f ≤ ?_`, `degree f ≤ ?_`, `coeff f ?_ = ?_`, or `?_ < d` with fresh metavariables;
 * `coeff f m ≠ s` with `m, s` not necessarily metavariables;
 * several equalities/inequalities between expressions and assignments for metavariables.
@@ -393,7 +404,7 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
   return (assignable.flatten ++ tried_rfl.flatten)
 
 /--
-`splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
+`splitApply mvs static` takes two lists of `MVarId`s. The first list, `mvs`,
 corresponds to goals that are potentially within the scope of `compute_degree`:
 namely, goals of the form
 `natDegree f ≤ d`, `degree f ≤ d`, `natDegree f = d`, `degree f = d`, `coeff f d = r`.
@@ -411,18 +422,20 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
   return (progress.flatten, static ++ curr_static)
 
 /-- `miscomputedDegree? deg false_goals` takes as input
-*  an `Expr`ession `deg`, representing the degree of a polynomial
+
+* an `Expr`ession `deg`, representing the degree of a polynomial
   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
-*  a list of `MVarId`s `false_goals`.
+* a list of `MVarId`s `false_goals`.
 
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
 if `norm_num`med.
 `miscomputedDegree?` extracts error information from goals of the form
-*  `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0`
+
+* `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0`
   --- reducing to `False` means that the coefficient that was supposed to vanish, does not;
-*  `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial`
+* `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial`
   --- reducing to `False` means that there is a term of degree that is apparently too large;
-*  `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree`
+* `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree`
   --- reducing to `False` means that there is a term of degree that is apparently too large.
 
 The cases `a ≠ b` and `a = b` are not a perfect match with the top coefficient:
@@ -445,11 +458,12 @@ def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
 
 /--
 `compute_degree` is a tactic to solve goals of the form
-*  `natDegree f = d`,
-*  `degree f = d`,
-*  `natDegree f ≤ d` (or `<`),
-*  `degree f ≤ d` (or `<`),
-*  `coeff f d = r`, if `d` is the degree of `f`.
+
+* `natDegree f = d`,
+* `degree f = d`,
+* `natDegree f ≤ d` (or `<`),
+* `degree f ≤ d` (or `<`),
+* `coeff f d = r`, if `d` is the degree of `f`.
 
 The tactic may leave goals of the form `d' = d`, `d' ≤ d`, `d' < d`, or `r ≠ 0`, where `d'` in `ℕ`
 or `WithBot ℕ` is the tactic's guess of the degree, and `r` is the coefficient's guess of the

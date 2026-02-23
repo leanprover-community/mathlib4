@@ -24,8 +24,9 @@ conditions at all, and `k` is a not-necessarily-associative semiring. In this ca
 yields a not-necessarily-unital, not-necessarily-associative algebra.
 
 ## Main Definitions
+
 - `SkewMonoidAlgebra k G`: the skew monoid algebra of `G` over `k` is the type of finite formal
-`k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
+  `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
 -/
 
@@ -296,7 +297,7 @@ section One
 variable [One G] [AddMonoidWithOne k]
 
 /-- The unit of the multiplication is `single 1 1`, i.e. the function that is `1` at `1` and
-  zero elsewhere. -/
+zero elsewhere. -/
 instance : One (SkewMonoidAlgebra k G) where
   one := single 1 1
 
@@ -635,8 +636,8 @@ section SMul
 variable [SMul G k] [NonUnitalNonAssocSemiring k]
 
 /-- The product of `f g : SkewMonoidAlgebra k G` is the finitely supported function whose value
-  at `a` is the sum of `f x * (x • g y)` over all pairs `x, y` such that `x * y = a`.
-  (Think of a skew group ring.) -/
+at `a` is the sum of `f x * (x • g y)` over all pairs `x, y` such that `x * y = a`.
+(Think of a skew group ring.) -/
 instance : Mul (SkewMonoidAlgebra k G) :=
   ⟨fun f g ↦ f.sum fun a₁ b₁ ↦ g.sum fun a₂ b₂ ↦ single (a₁ * a₂) (b₁ * (a₁ • b₂))⟩
 
@@ -834,7 +835,7 @@ def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
 
 attribute [local instance] comapMulAction
 /-- This is not an instance as it conflicts with `SkewMonoidAlgebra.distribMulAction`
-  when `G = kˣ`. -/
+when `G = kˣ`. -/
 def comapDistribMulActionSelf [AddCommMonoid k] :
     DistribMulAction G (SkewMonoidAlgebra k G) where
   smul_zero g := by
@@ -1076,8 +1077,8 @@ theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
   rw [map_sum]
 
 /-- If f : G → H is a multiplicative homomorphism between two monoids and
-  `∀ (a : G) (x : k), a • x = (f a) • x`, then `mapDomain f` is a ring homomorphism
-  between their skew monoid algebras. -/
+`∀ (a : G) (x : k), a • x = (f a) • x`, then `mapDomain f` is a ring homomorphism
+between their skew monoid algebras. -/
 def mapDomainRingHom [MulSemiringAction α β] [MulSemiringAction α₂ β]
     [MonoidHomClass F α α₂] {f : F} (hf : ∀ (a : α) (x : β), a • x = (f a) • x) :
     SkewMonoidAlgebra β α →+* SkewMonoidAlgebra β α₂ where
@@ -1185,7 +1186,7 @@ def lsingle {α : Type*} (a : α) [Module R M] : M →ₗ[R] (SkewMonoidAlgebra 
   map_smul' _ _ := (smul_single _ _ _).symm
 
 /-- Two `R`-linear maps from `SkewMonoidAlgebra M α` which agree on each `single x y`
-  agree everywhere. -/
+agree everywhere. -/
 theorem lhom_ext {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAlgebra M α →ₗ[R] N⦄
     (h : ∀ a b, φ (single a b) = ψ (single a b)) : φ = ψ :=
   LinearMap.toAddMonoidHom_injective <| addHom_ext h
@@ -1222,7 +1223,7 @@ variable [Monoid G] [CommSemiring k]
 variable {A : Type*} [Semiring A] [Algebra k A]
 
 /-- The instance `Algebra k (SkewMonoidAlgebra A G)` whenever we have `Algebra k A`.
-  In particular this provides the instance `Algebra k (SkewMonoidAlgebra k G)`. -/
+In particular this provides the instance `Algebra k (SkewMonoidAlgebra k G)`. -/
 instance [MulSemiringAction G A]
     [SMulCommClass G k A] : Algebra k (SkewMonoidAlgebra A G) where
   algebraMap := singleOneRingHom.comp (algebraMap k A)

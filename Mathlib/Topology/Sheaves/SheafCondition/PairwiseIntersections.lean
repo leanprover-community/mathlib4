@@ -18,6 +18,7 @@ We give an equivalent formulation of the sheaf condition.
 
 Given any indexed type `ι`, we define `overlap ι`,
 a category with objects corresponding to
+
 * individual open sets, `single i`, and
 * intersections of pairs of open sets, `pair i j`,
   with morphisms from `pair i j` to both `single i` and `single j`.
@@ -29,6 +30,7 @@ and in fact this is a limit cone.
 
 A presheaf `F : Presheaf C X` is a sheaf precisely if it preserves this limit.
 We express this in two equivalent ways, as
+
 * `isLimit (F.mapCone (cone U))`, or
 * `preservesLimit (diagram U) F`
 

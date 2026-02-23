@@ -26,6 +26,7 @@ the outer measure induced by `m`. The induced outer measure is equal to `m` on `
   defined on this measurable structure.
 
 ## Main results
+
 * `MeasureTheory.AddContent.inducedOuterMeasure_eq`: The outer measure induced by
   a sigma-subadditive content on a semiring is equal to the content on the sets of the semiring.
 * `MeasureTheory.AddContent.isCaratheodory_inducedOuterMeasure_of_mem`: all sets of the semiring are
@@ -169,7 +170,7 @@ noncomputable def measure [mα : MeasurableSpace α] (m : AddContent ℝ≥0∞ 
     fun s a ↦ isCaratheodory_inducedOuterMeasure hC m s (hC_gen s a)
 
 /-- The measure defined through a sigma-subadditive
-  content on a semiring coincides with the content on the semiring. -/
+content on a semiring coincides with the content on the semiring. -/
 theorem measure_eq [mα : MeasurableSpace α] (m : AddContent ℝ≥0∞ C) (hC : IsSetSemiring C)
     (hC_gen : mα = MeasurableSpace.generateFrom C) (m_sigma_subadd : m.IsSigmaSubadditive)
     (hs : s ∈ C) :

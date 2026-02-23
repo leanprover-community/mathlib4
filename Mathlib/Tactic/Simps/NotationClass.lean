@@ -23,18 +23,19 @@ public meta section
 
 /-- The `@[notation_class]` attribute specifies that this is a notation class,
 and this notation should be used instead of projections by `@[simps]`.
-  * This is only important if the projection is written differently using notation, e.g.
-    `+` uses `HAdd.hAdd`, not `Add.add` and `0` uses `OfNat.ofNat` not `Zero.zero`.
-    We also add it to non-heterogeneous notation classes, like `Neg`, but it doesn't do much for any
-    class that extends `Neg`.
-  * `@[notation_class* <projName> Simps.findCoercionArgs]` is used to configure the
-    `SetLike` and `DFunLike` coercions.
-  * The first name argument is the projection name we use as the key to search for this class
-    (default: name of first projection of the class).
-  * The second argument is the name of a declaration that has type
-    `findArgType` which is defined to be `Name → Name → Array Expr → MetaM (Array (Option Expr))`.
-    This declaration specifies how to generate the arguments of the notation class from the
-    arguments of classes that use the projection. -/
+
+* This is only important if the projection is written differently using notation, e.g.
+  `+` uses `HAdd.hAdd`, not `Add.add` and `0` uses `OfNat.ofNat` not `Zero.zero`.
+  We also add it to non-heterogeneous notation classes, like `Neg`, but it doesn't do much for any
+  class that extends `Neg`.
+* `@[notation_class* <projName> Simps.findCoercionArgs]` is used to configure the
+  `SetLike` and `DFunLike` coercions.
+* The first name argument is the projection name we use as the key to search for this class
+  (default: name of first projection of the class).
+* The second argument is the name of a declaration that has type
+  `findArgType` which is defined to be `Name → Name → Array Expr → MetaM (Array (Option Expr))`.
+  This declaration specifies how to generate the arguments of the notation class from the
+  arguments of classes that use the projection. -/
 syntax (name := notation_class) "notation_class" "*"? (ppSpace ident)? (ppSpace ident)? : attr
 
 open Lean Meta Elab Term

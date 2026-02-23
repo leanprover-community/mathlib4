@@ -991,7 +991,7 @@ theorem join_cons (a b : α) (s S) :
   dsimp [join]; rw [destruct_cons]
 
 /-- The `return` operator for the `Seq1` monad,
-  which produces a singleton sequence. -/
+which produces a singleton sequence. -/
 def ret (a : α) : Seq1 α :=
   (a, nil)
 
@@ -999,9 +999,9 @@ instance [Inhabited α] : Inhabited (Seq1 α) :=
   ⟨ret default⟩
 
 /-- The `bind` operator for the `Seq1` monad,
-  which maps `f` on each element of `s` and appends the results together.
-  (Not all of `s` may be evaluated, because the first few elements of `s`
-  may already produce an infinite result.) -/
+which maps `f` on each element of `s` and appends the results together.
+(Not all of `s` may be evaluated, because the first few elements of `s`
+may already produce an infinite result.) -/
 def bind (s : Seq1 α) (f : α → Seq1 β) : Seq1 β :=
   join (map f s)
 

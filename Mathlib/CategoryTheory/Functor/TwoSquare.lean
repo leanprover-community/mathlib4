@@ -14,6 +14,7 @@ public import Mathlib.Tactic.CategoryTheory.Slice
 
 Given four functors `T`, `L`, `R` and `B`, a 2-square `TwoSquare T L R B` consists of
 a natural transformation `w : T ⋙ R ⟶ L ⋙ B`:
+
 ```
      T
   C₁ ⥤ C₂

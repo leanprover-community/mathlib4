@@ -39,6 +39,7 @@ section AddCommMonoid
 variable [AddCommMonoid R]
 
 /-- The trace of a square matrix. For more bundled versions, see:
+
 * `Matrix.traceAddMonoidHom`
 * `Matrix.traceLinearMap`
 -/

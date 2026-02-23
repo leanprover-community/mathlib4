@@ -36,21 +36,29 @@ between the two types.
   nat subtraction).
 
 Let `c : Composition n` be a composition of `n`. Then
+
 * `c.blocks` is the list of blocks in `c`.
+
 * `c.length` is the number of blocks in the composition.
+
 * `c.blocksFun : Fin c.length → ℕ` is the realization of `c.blocks` as a function on
   `Fin c.length`. This is the main object when using compositions to understand the composition of
-    analytic functions.
+  analytic functions.
+
 * `c.sizeUpTo : ℕ → ℕ` is the sum of the size of the blocks up to `i`.;
+
 * `c.embedding i : Fin (c.blocksFun i) → Fin n` is the increasing embedding of the `i`-th block in
   `Fin n`;
+
 * `c.index j`, for `j : Fin n`, is the index of the block containing `j`.
 
 * `Composition.ones n` is the composition of `n` made of ones, i.e., `[1, ..., 1]`.
+
 * `Composition.single n (hn : 0 < n)` is the composition of `n` made of a single block of size `n`.
 
 Compositions can also be used to split lists. Let `l` be a list of length `n` and `c` a composition
 of `n`.
+
 * `l.splitWrtComposition c` is a list of lists, made of the slices of `l` corresponding to the
   blocks of `c`.
 * `join_splitWrtComposition` states that splitting a list and then joining it gives back the

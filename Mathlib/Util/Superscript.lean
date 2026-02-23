@@ -11,10 +11,12 @@ public import Mathlib.Init
 # A parser for superscripts and subscripts
 
 This is intended for use in local notations. Basic usage is:
+
 ```
 local syntax:arg term:max superscript(term) : term
 local macro_rules | `($a:term $b:superscript) => `($a ^ $b)
 ```
+
 where `superscript(term)` indicates that it will parse a superscript, and the `$b:superscript`
 antiquotation binds the `term` argument of the superscript. Given a notation like this,
 the expression `2⁶⁴` parses and expands to `2 ^ 64`.
@@ -231,14 +233,17 @@ end Superscript
 
 /--
 The parser `superscript(term)` parses a superscript. Basic usage is:
+
 ```
 local syntax:arg term:max superscript(term) : term
 local macro_rules | `($a:term $b:superscript) => `($a ^ $b)
 ```
+
 Given a notation like this, the expression `2⁶⁴` parses and expands to `2 ^ 64`.
 
 Note that because of Unicode limitations, not many characters can actually be typed inside the
 superscript, so this should not be used for complex expressions. Legal superscript characters:
+
 ```
 ⁰¹²³⁴⁵⁶⁷⁸⁹ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖ𐞥ʳˢᵗᵘᵛʷˣʸᶻᴬᴮᴰᴱᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾꟴᴿᵀᵁⱽᵂᵝᵞᵟᵋᶿᶥᶹᵠᵡ⁺⁻⁼⁽⁾
 ```
@@ -267,15 +272,18 @@ initialize register_parser_alias superscript
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
+
 ```
 local syntax:arg term:max subscript(term) : term
 local macro_rules | `($a:term $i:subscript) => `($a $i)
 ```
+
 Given a notation like this, the expression `(a)ᵢ` parses and expands to `a i`. (Either parentheses
 or a whitespace as in `a ᵢ` is required, because `aᵢ` is considered as an identifier.)
 
 Note that because of Unicode limitations, not many characters can actually be typed inside the
 subscript, so this should not be used for complex expressions. Legal subscript characters:
+
 ```
 ₀₁₂₃₄₅₆₇₈₉ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘꞯʀꜱᴛᴜᴠᴡʏᴢᵦᵧᵨᵩᵪ₊₋₌₍₎
 ```

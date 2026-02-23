@@ -46,13 +46,13 @@ variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 section Lindelof
 
 /-- A set `s` is Lindelöf if every nontrivial filter `f` with the countable intersection
-  property that contains `s`, has a clusterpoint in `s`. The filter-free definition is given by
-  `isLindelof_iff_countable_subcover`. -/
+property that contains `s`, has a clusterpoint in `s`. The filter-free definition is given by
+`isLindelof_iff_countable_subcover`. -/
 def IsLindelof (s : Set X) :=
   ∀ ⦃f⦄ [NeBot f] [CountableInterFilter f], f ≤ 𝓟 s → ∃ x ∈ s, ClusterPt x f
 
 /-- The complement to a Lindelöf set belongs to a filter `f` with the countable intersection
-  property if it belongs to each filter `𝓝 x ⊓ f`, `x ∈ s`. -/
+property if it belongs to each filter `𝓝 x ⊓ f`, `x ∈ s`. -/
 theorem IsLindelof.compl_mem_sets (hs : IsLindelof s) {f : Filter X} [CountableInterFilter f]
     (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) : sᶜ ∈ f := by
   contrapose! hf
@@ -60,7 +60,7 @@ theorem IsLindelof.compl_mem_sets (hs : IsLindelof s) {f : Filter X} [CountableI
   exact hs inf_le_right
 
 /-- The complement to a Lindelöf set belongs to a filter `f` with the countable intersection
-  property if each `x ∈ s` has a neighborhood `t` within `s` such that `tᶜ` belongs to `f`. -/
+property if each `x ∈ s` has a neighborhood `t` within `s` such that `tᶜ` belongs to `f`. -/
 theorem IsLindelof.compl_mem_sets_of_nhdsWithin (hs : IsLindelof s) {f : Filter X}
     [CountableInterFilter f] (hf : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, tᶜ ∈ f) : sᶜ ∈ f := by
   refine hs.compl_mem_sets fun x hx ↦ ?_
@@ -68,7 +68,7 @@ theorem IsLindelof.compl_mem_sets_of_nhdsWithin (hs : IsLindelof s) {f : Filter 
   exact hf x hx
 
 /-- If `p : Set X → Prop` is stable under restriction and union, and each point `x`
-  of a Lindelöf set `s` has a neighborhood `t` within `s` such that `p t`, then `p s` holds. -/
+of a Lindelöf set `s` has a neighborhood `t` within `s` such that `p t`, then `p s` holds. -/
 @[elab_as_elim]
 theorem IsLindelof.induction_on (hs : IsLindelof s) {p : Set X → Prop}
     (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s)
@@ -237,7 +237,7 @@ theorem IsLindelof.elim_countable_subfamily_closed {ι : Type v} (hs : IsLindelo
   exact disjoint_iff_inter_eq_empty.mp (Disjoint.symm husub)
 
 /-- To show that a Lindelöf set intersects the intersection of a family of closed sets,
-  it is sufficient to show that it intersects every countable subfamily. -/
+it is sufficient to show that it intersects every countable subfamily. -/
 theorem IsLindelof.inter_iInter_nonempty {ι : Type v} (hs : IsLindelof s) (t : ι → Set X)
     (htc : ∀ i, IsClosed (t i)) (hst : ∀ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i).Nonempty) :
     (s ∩ ⋂ i, t i).Nonempty := by
@@ -600,7 +600,7 @@ theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
   @range_diag X ▸ isLindelof_range (continuous_id.prodMk continuous_id)
 
 /-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is Lindelöf
-  if and only if `s` is compact. -/
+if and only if `s` is compact. -/
 theorem Topology.IsInducing.isLindelof_iff {f : X → Y} (hf : IsInducing f) :
     IsLindelof s ↔ IsLindelof (f '' s) := by
   refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot _ F_le => ?_⟩

@@ -45,6 +45,7 @@ This file is designed to have very few dependencies. In particular, it should no
 numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_mem'`.
 
 ## Tags
+
 submonoid, submonoids
 -/
 
@@ -96,7 +97,7 @@ class SubmonoidClass (S : Type*) (M : outParam Type*) [MulOneClass M] [SetLike S
 section
 
 /-- An additive submonoid of an additive monoid `M` is a subset containing 0 and
-  closed under addition. -/
+closed under addition. -/
 structure AddSubmonoid (M : Type*) [AddZeroClass M] extends AddSubsemigroup M where
   /-- An additive submonoid contains `0`. -/
   zero_mem' : (0 : M) ∈ carrier

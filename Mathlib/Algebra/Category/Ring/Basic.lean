@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Ring.PUnit
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
 
 We introduce the bundled categories:
+
 * `SemiRingCat`
 * `RingCat`
 * `CommSemiRingCat`

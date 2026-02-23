@@ -16,6 +16,7 @@ We provide various results concerning the minimal primes above an ideal that req
 of localizations.
 
 ## Main results
+
 - `Ideal.exists_minimalPrimes_comap_eq` If `p` is a minimal prime over `f ⁻¹ I`, then it is the
   preimage of some minimal prime over `I`.
 - `Ideal.minimalPrimes_eq_comap`: The minimal primes over `I` are precisely the preimages of

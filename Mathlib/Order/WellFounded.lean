@@ -264,6 +264,7 @@ section Induction
 
 /-- Let `r` be a relation on `α`, let `f : α → β` be a function, let `C : β → Prop`, and
 let `bot : α`. This induction principle shows that `C (f bot)` holds, given that
+
 * some `a` that is accessible by `r` satisfies `C (f a)`, and
 * for each `b` such that `f b ≠ f bot` and `C (f b)` holds, there is `c`
   satisfying `r c b` and `C (f c)`. -/
@@ -276,6 +277,7 @@ theorem Acc.induction_bot' {α β} {r : α → α → Prop} {a bot : α} (ha : A
 
 /-- Let `r` be a relation on `α`, let `C : α → Prop` and let `bot : α`.
 This induction principle shows that `C bot` holds, given that
+
 * some `a` that is accessible by `r` satisfies `C a`, and
 * for each `b ≠ bot` such that `C b` holds, there is `c` satisfying `r c b` and `C c`. -/
 theorem Acc.induction_bot {α} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : α → Prop}
@@ -285,6 +287,7 @@ theorem Acc.induction_bot {α} {r : α → α → Prop} {a bot : α} (ha : Acc r
 /-- Let `r` be a well-founded relation on `α`, let `f : α → β` be a function,
 let `C : β → Prop`, and let `bot : α`.
 This induction principle shows that `C (f bot)` holds, given that
+
 * some `a` satisfies `C (f a)`, and
 * for each `b` such that `f b ≠ f bot` and `C (f b)` holds, there is `c`
   satisfying `r c b` and `C (f c)`. -/
@@ -295,6 +298,7 @@ theorem WellFounded.induction_bot' {α β} {r : α → α → Prop} (hwf : WellF
 
 /-- Let `r` be a well-founded relation on `α`, let `C : α → Prop`, and let `bot : α`.
 This induction principle shows that `C bot` holds, given that
+
 * some `a` satisfies `C a`, and
 * for each `b` that satisfies `C b`, there is `c` satisfying `r c b` and `C c`.
 

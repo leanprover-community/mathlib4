@@ -65,12 +65,14 @@ This is an auxiliary definition used for constructing an instance of the non-uni
 functional calculus given an instance of the unital one on the unitization.
 
 This is the natural non-unital star homomorphism obtained from the chain
+
 ```lean
 calc
   C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] C(σₙ 𝕜 a, 𝕜) := ContinuousMapZero.toContinuousMapHom
   _             ≃⋆[𝕜] C(σ 𝕜 (↑a : A⁺¹), 𝕜) := Homeomorph.compStarAlgEquiv'
   _             →⋆ₐ[𝕜] A⁺¹ := cfcHom
 ```
+
 This range of this map is contained in the range of `(↑) : A → A⁺¹` (see `cfcₙAux_mem_range_inr`),
 and so we may restrict it to `A` to get the necessary homomorphism for the non-unital continuous
 functional calculus.

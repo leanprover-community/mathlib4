@@ -184,7 +184,7 @@ theorem map_destutter_ne {f : α → β} (h : Injective f) [DecidableEq α] [Dec
     (l.destutter (· ≠ ·)).map f = (l.map f).destutter (· ≠ ·) :=
   map_destutter fun _ _ _ _ ↦ h.ne_iff.symm
 
-/-- `destutter'` on a relation like ≠ or <, whose negation is transitive, has length monotone
+/-- `destutter'` on a relation like ≠ or \<, whose negation is transitive, has length monotone
 under a `¬R` changing of the first element. -/
 theorem length_destutter'_cotrans_ge [i : IsTrans α Rᶜ] :
     ∀ {a} {l : List α}, ¬R b a → (l.destutter' R b).length ≤ (l.destutter' R a).length

@@ -789,7 +789,7 @@ variable {module_M₃ : Module R M₃} {module_M₄ : Module R M₄}
 variable (e₁ : M ≃ₗ[R] M₂) (e₂ : M₃ ≃ₗ[R] M₄)
 
 /-- Equivalence given by a block lower diagonal matrix. `e₁` and `e₂` are diagonal square blocks,
-  and `f` is a rectangular block below the diagonal. -/
+and `f` is a rectangular block below the diagonal. -/
 protected def skewProd (f : M →ₗ[R] M₄) : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
   { ((e₁ : M →ₗ[R] M₂).comp (LinearMap.fst R M M₃)).prod
       ((e₂ : M₃ →ₗ[R] M₄).comp (LinearMap.snd R M M₃) +

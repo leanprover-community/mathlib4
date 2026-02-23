@@ -329,7 +329,7 @@ theorem isBasis_iff_cover {B : Set (Opens α)} :
     exact ⟨U, hUs Us, xU, le_sSup Us⟩
 
 /-- If `α` has a basis consisting of compact opens, then an open set in `α` is compact open iff
-  it is a finite union of some elements in the basis -/
+it is a finite union of some elements in the basis -/
 theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Opens α)
     (hb : IsBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i : Set α)) (U : Set α) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by

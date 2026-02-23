@@ -219,7 +219,7 @@ variable (hG : G.LocalInvariantProp G' P)
 include hG
 
 /-- `LiftPropWithinAt P f s x` is equivalent to a definition where we restrict the set we are
-  considering to the domain of the charts at `x` and `f x`. -/
+considering to the domain of the charts at `x` and `f x`. -/
 theorem liftPropWithinAt_iff {f : M → M'} :
     LiftPropWithinAt P f s x ↔
       ContinuousWithinAt f s x ∧
@@ -602,7 +602,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
       · simpa only [hex, hef ⟨hx, hex⟩, mfld_simps] using hfx }
 
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is an open partial homeomorph.
-  This gives us an `e` that is defined on a subset of `f.source`. -/
+This gives us an `e` that is defined on a subset of `f.source`. -/
 theorem _root_.OpenPartialHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureGroupoid H}
     [ClosedUnderRestriction G] (f : OpenPartialHomeomorph H H) {s : Set H} {x : H}
     (hx : x ∈ f.source ∪ sᶜ) :

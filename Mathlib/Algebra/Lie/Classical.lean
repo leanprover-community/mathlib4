@@ -15,22 +15,23 @@ public import Mathlib.LinearAlgebra.SymplecticGroup
 # Classical Lie algebras
 
 This file is the place to find definitions and basic properties of the classical Lie algebras:
-  * Aₗ = sl(l+1)
-  * Bₗ ≃ so(l+1, l) ≃ so(2l+1)
-  * Cₗ = sp(l)
-  * Dₗ ≃ so(l, l) ≃ so(2l)
+
+* Aₗ = sl(l+1)
+* Bₗ ≃ so(l+1, l) ≃ so(2l+1)
+* Cₗ = sp(l)
+* Dₗ ≃ so(l, l) ≃ so(2l)
 
 ## Main definitions
 
-  * `LieAlgebra.SpecialLinear.sl`
-  * `LieAlgebra.Symplectic.sp`
-  * `LieAlgebra.Orthogonal.so`
-  * `LieAlgebra.Orthogonal.so'`
-  * `LieAlgebra.Orthogonal.soIndefiniteEquiv`
-  * `LieAlgebra.Orthogonal.typeD`
-  * `LieAlgebra.Orthogonal.typeB`
-  * `LieAlgebra.Orthogonal.typeDEquivSo'`
-  * `LieAlgebra.Orthogonal.typeBEquivSo'`
+* `LieAlgebra.SpecialLinear.sl`
+* `LieAlgebra.Symplectic.sp`
+* `LieAlgebra.Orthogonal.so`
+* `LieAlgebra.Orthogonal.so'`
+* `LieAlgebra.Orthogonal.soIndefiniteEquiv`
+* `LieAlgebra.Orthogonal.typeD`
+* `LieAlgebra.Orthogonal.typeB`
+* `LieAlgebra.Orthogonal.typeDEquivSo'`
+* `LieAlgebra.Orthogonal.typeBEquivSo'`
 
 ## Implementation notes
 
@@ -240,8 +241,8 @@ theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
 
 It looks like this as a `2l x 2l` matrix of `l x l` blocks:
 
-   [ 0 1 ]
-   [ 1 0 ]
+[ 0 1 ]
+[ 1 0 ]
 -/
 def JD : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 1 1 0
@@ -256,8 +257,8 @@ diagonal matrix.
 
 It looks like this as a `2l x 2l` matrix of `l x l` blocks:
 
-   [ 1 -1 ]
-   [ 1  1 ]
+[ 1 -1 ]
+[ 1 1 ]
 -/
 def PD : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 1 (-1) 1 1
@@ -297,15 +298,15 @@ noncomputable def typeDEquivSo' [Fintype l] [Invertible (2 : R)] : typeD l R ≃
 
 It looks like this as a `(2l+1) x (2l+1)` matrix of blocks:
 
-   [ 2 0 0 ]
-   [ 0 0 1 ]
-   [ 0 1 0 ]
+[ 2 0 0 ]
+[ 0 0 1 ]
+[ 0 1 0 ]
 
 where sizes of the blocks are:
 
-   [`1 x 1` `1 x l` `1 x l`]
-   [`l x 1` `l x l` `l x l`]
-   [`l x 1` `l x l` `l x l`]
+[`1 x 1` `1 x l` `1 x l`]
+[`l x 1` `l x l` `l x l`]
+[`l x 1` `l x l` `l x l`]
 -/
 def JB :=
   Matrix.fromBlocks ((2 : R) • (1 : Matrix Unit Unit R)) 0 0 (JD l R)
@@ -320,15 +321,15 @@ almost-split-signature diagonal matrix.
 
 It looks like this as a `(2l+1) x (2l+1)` matrix of blocks:
 
-   [ 1 0  0 ]
-   [ 0 1 -1 ]
-   [ 0 1  1 ]
+[ 1 0 0 ]
+[ 0 1 -1 ]
+[ 0 1 1 ]
 
 where sizes of the blocks are:
 
-   [`1 x 1` `1 x l` `1 x l`]
-   [`l x 1` `l x l` `l x l`]
-   [`l x 1` `l x l` `l x l`]
+[`1 x 1` `1 x l` `1 x l`]
+[`l x 1` `l x l` `l x l`]
+[`l x 1` `l x l` `l x l`]
 -/
 def PB :=
   Matrix.fromBlocks (1 : Matrix Unit Unit R) 0 0 (PD l R)

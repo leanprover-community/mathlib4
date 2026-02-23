@@ -11,7 +11,6 @@ public import Mathlib.Topology.Sets.Opens
 /-!
 # Partial homeomorphisms: basic theory
 
-
 ## Main definitions
 
 * `OpenPartialHomeomorph.refl`: the identity open partial homeomorphism
@@ -91,7 +90,7 @@ theorem isOpen_inter_preimage_symm {s : Set X} (hs : IsOpen s) : IsOpen (e.targe
   e.symm.continuousOn.isOpen_inter_preimage e.open_target hs
 
 /-- An open partial homeomorphism is an open map on its source:
-  the image of an open subset of the source is open. -/
+the image of an open subset of the source is open. -/
 lemma isOpen_image_of_subset_source {s : Set X} (hs : IsOpen s) (hse : s ⊆ e.source) :
     IsOpen (e '' s) := by
   rw [(image_eq_target_inter_inv_preimage (e := e) hse)]

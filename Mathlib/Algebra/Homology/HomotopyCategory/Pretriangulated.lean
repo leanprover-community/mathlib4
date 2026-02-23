@@ -26,6 +26,7 @@ complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][
 [Brian Conrad's book *Grothendieck duality and base change*][conrad2000]).
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
 * https://stacks.math.columbia.edu/tag/014P

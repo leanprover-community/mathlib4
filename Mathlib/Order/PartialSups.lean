@@ -30,6 +30,7 @@ We show this construction gives a Galois insertion between functions `ι → α`
 ## Notes
 
 One might dispute whether this sequence should start at `f 0` or `⊥`. We choose the former because:
+
 * Starting at `⊥` requires... having a bottom element.
 * `fun f i ↦ (Finset.Iio i).sup f` is already effectively the sequence starting at `⊥`.
 * If we started at `⊥` we wouldn't have the Galois insertion. See `partialSups.gi`.

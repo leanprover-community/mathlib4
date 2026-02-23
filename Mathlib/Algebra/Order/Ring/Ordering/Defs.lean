@@ -18,6 +18,7 @@ addition and multiplication that contains all squares, but not `-1`.
 The support of a preordering `P` is the set of elements `x` such that both `x` and `-x` lie in `P`.
 
 An ordering `O` on `R` is a preordering such that
+
 1. `O` contains either `x` or `-x` for each `x` in `R` and
 2. the support of `O` is a prime ideal.
 
@@ -187,6 +188,7 @@ end support
 
 /--
 An ordering `O` on a ring `R` is a preordering such that
+
 1. `O` contains either `x` or `-x` for each `x` in `R` and
 2. the support of `O` is a prime ideal.
 -/

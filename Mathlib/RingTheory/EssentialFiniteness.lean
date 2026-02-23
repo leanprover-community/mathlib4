@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.TensorProduct.Basic
 # Essentially of finite type algebras
 
 ## Main results
+
 - `Algebra.EssFiniteType`: The class of essentially of finite type algebras. An `R`-algebra is
   essentially of finite type if it is the localization of an algebra of finite type.
 - `Algebra.EssFiniteType.algHom_ext`: The algebra homomorphisms out from an algebra essentially of

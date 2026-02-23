@@ -25,6 +25,7 @@ For `1 ≤ p`, `eLpNorm` defines a norm and `Lp` is a complete metric space
 
 Lipschitz functions vanishing at zero act by composition on `Lp`. We define this action, and prove
 that it is continuous. In particular,
+
 * `ContinuousLinearMap.compLp` defines the action on `Lp` of a continuous linear map.
 * `Lp.posPart` is the positive part of an `Lp` function.
 * `Lp.negPart` is the negative part of an `Lp` function.
@@ -44,6 +45,7 @@ To prove that two `Lp` elements are equal, it suffices to show that their coerci
 coincide almost everywhere (this is registered as an `ext` rule). This can often be done using
 `filter_upwards`. For instance, a proof from first principles that `f + (g + h) = (f + g) + h`
 could read (in the `Lp` namespace)
+
 ```
 example (f g h : Lp E p μ) : (f + g) + h = f + (g + h) := by
   ext1
@@ -51,6 +53,7 @@ example (f g h : Lp E p μ) : (f + g) + h = f + (g + h) := by
     with _ ha1 ha2 ha3 ha4
   simp only [ha1, ha2, ha3, ha4, add_assoc]
 ```
+
 The lemma `coeFn_add` states that the coercion of `f + g` coincides almost everywhere with the sum
 of the coercions of `f` and `g`. All such lemmas use `coeFn` in their name, to distinguish the
 function coercion from the coercion to almost everywhere defined functions.
@@ -407,7 +410,7 @@ theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] 
 
 variable (𝕜 E p μ)
 
-/-- The `𝕜`-submodule of elements of `α →ₘ[μ] E` whose `Lp` norm is finite.  This is `Lp E p μ`,
+/-- The `𝕜`-submodule of elements of `α →ₘ[μ] E` whose `Lp` norm is finite. This is `Lp E p μ`,
 with extra structure. -/
 def LpSubmodule : Submodule 𝕜 (α →ₘ[μ] E) :=
   { Lp E p μ with smul_mem' := fun c f hf => by simpa using const_smul_mem_Lp c ⟨f, hf⟩ }
@@ -767,6 +770,7 @@ def compLpₗ (L : E →SL[σ] F) : Lp E p μ →ₛₗ[σ] Lp F p μ where
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a continuous `𝕜`-linear map on
 `Lp E p μ`. See also the similar
+
 * `LinearMap.compLeft` for functions,
 * `ContinuousLinearMap.compLeftContinuous` for continuous functions,
 * `ContinuousLinearMap.compLeftContinuousBounded` for bounded continuous functions,

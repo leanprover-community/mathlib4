@@ -24,6 +24,7 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 (In fact, to prove that it is injective only requires that `J` has finitely many objects.)
 
 ## References
+
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
@@ -66,6 +67,7 @@ only that there are finitely many objects.
 variable [Finite J]
 
 /-- This follows the proof from
+
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 -/
 theorem colimitLimitToLimitColimit_injective :

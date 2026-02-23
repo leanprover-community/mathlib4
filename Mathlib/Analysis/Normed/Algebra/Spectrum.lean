@@ -20,7 +20,7 @@ public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 This file contains the basic theory for the resolvent and spectrum of a Banach algebra.
 Theorems specific to *complex* Banach algebras, such as *Gelfand's formula* can be found in
- `Mathlib/Analysis/Normed/Algebra/GelfandFormula.lean`.
+`Mathlib/Analysis/Normed/Algebra/GelfandFormula.lean`.
 
 ## Main definitions
 
@@ -48,7 +48,7 @@ open scoped ENNReal NNReal
 /-- The *spectral radius* is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the spectrum,
 coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this
 case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
-not for Banach algebras, see `spectrum.isBounded`, below).  In this case,
+not for Banach algebras, see `spectrum.isBounded`, below). In this case,
 `spectralRadius a = ∞`. -/
 noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
     (a : A) : ℝ≥0∞ :=

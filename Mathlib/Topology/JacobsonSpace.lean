@@ -14,6 +14,7 @@ public import Mathlib.Tactic.StacksAttribute
 # Jacobson spaces
 
 ## Main results
+
 - `JacobsonSpace`: The class of Jacobson spaces, i.e.
   spaces such that the set of closed points are dense in every closed subspace.
 - `jacobsonSpace_iff_locallyClosed`:
@@ -22,6 +23,7 @@ public import Mathlib.Tactic.StacksAttribute
   If `X` only has finitely many closed points, then the topology on `X` is discrete.
 
 ## References
+
 - https://stacks.math.columbia.edu/tag/005T
 
 -/

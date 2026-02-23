@@ -54,6 +54,7 @@ Processes `set_option ... in`s that wrap the input `stx`, then acts on the inner
 If `breakOnError` is `true` (the default), avoids running the linter when errors are present.
 
 This is typically used to start off linter code:
+
 ```
 def myLinter : Linter where
   run := whenLinterActivated linter.myLinter fun stx ↦ do

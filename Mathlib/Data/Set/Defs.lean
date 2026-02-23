@@ -87,6 +87,7 @@ namespace Mathlib.Meta
 /-- Set builder syntax. This can be elaborated to either a `Set` or a `Finset` depending on context.
 
 The elaborators for this syntax are located in:
+
 * `Data.Set.Defs` for the `Set` builder notation elaborator for syntax of the form `{x | p x}`,
   `{x : α | p x}`, `{binder x | p x}`.
 * `Data.Finset.Basic` for the `Finset` builder notation elaborator for syntax of the form
@@ -101,10 +102,13 @@ syntax (name := setBuilder) "{" extBinder " | " term "}" : term
 /-- Elaborate set builder notation for `Set`.
 
 * `{x | p x}` is elaborated as `Set.setOf fun x ↦ p x`
+
 * `{x : α | p x}` is elaborated as `Set.setOf fun x : α ↦ p x`
+
 * `{binder x | p x}`, where `x` is bound by the `binder` binder, is elaborated as
   `{x | binder x ∧ p x}`. The typical example is `{x ∈ s | p x}`, which is elaborated as
   `{x | x ∈ s ∧ p x}`. The possible binders are
+
   * `· ∈ s`, `· ∉ s`
   * `· ⊆ s`, `· ⊂ s`, `· ⊇ s`, `· ⊃ s`
   * `· ≤ a`, `· ≥ a`, `· < a`, `· > a`, `· ≠ a`
@@ -113,6 +117,7 @@ syntax (name := setBuilder) "{" extBinder " | " term "}" : term
   more info.
 
 See also
+
 * `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x ∈ s | p x}`.
 * `Data.Fintype.Basic` for the `Finset` builder notation elaborator partly overriding this one for
@@ -160,7 +165,7 @@ For example, `{ (m, n) : ℕ × ℕ | m * n = 12 }` denotes the set of all order
 natural numbers whose product is 12.
 
 Note that if the type ascription is left out and `p` can be interpreted as an extended binder,
-then the extended binder interpretation will be used.  For example, `{ n + 1 | n < 3 }` will
+then the extended binder interpretation will be used. For example, `{ n + 1 | n < 3 }` will
 be interpreted as `{ x : Nat | ∃ n < 3, n + 1 = x }` rather than using pattern matching.
 -/
 macro (name := macroPattSetBuilder) (priority := low - 1)

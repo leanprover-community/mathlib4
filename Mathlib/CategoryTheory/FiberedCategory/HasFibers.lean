@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.FiberedCategory.Fibered
 # Fibers of functors
 
 In this file we introduce a typeclass `HasFibers` for a functor `p : 𝒳 ⥤ 𝒮`, consisting of:
+
 - A collection of categories `Fib S` for every `S` in `𝒮` (the fiber categories)
 - Functors `ι : Fib S ⥤ 𝒳` such that `ι ⋙ p = const (Fib S) S`
 - The induced functor `Fib S ⥤ Fiber p S` is an equivalence.
@@ -34,6 +35,7 @@ is an element of `F(S)`. The fiber category `Fiber p S` is then equivalent to th
 categories `F(S)` and the functor `ι` sends `a : F(S)` to `(S, a)` in the fibered category.
 
 ## Main API
+
 The following API is developed so that the fibers from a `HasFibers` instance can be used
 analogously to the standard fibers.
 
@@ -195,12 +197,14 @@ variable {R S : 𝒮} {a : 𝒳} {b b' : Fib p R} (f : R ⟶ S) (ψ : (ι R).obj
     [IsCartesian p f ψ] (φ : (ι R).obj b ⟶ a) [IsHomLift p f φ]
 
 /-- Given a fibered category p, b' b in Fib R, and a pullback ψ : b ⟶ a in 𝒳, i.e.
+
 ```
 b'       b --ψ--> a
 |        |        |
 v        v        v
 R ====== R --f--> S
 ```
+
 Then the induced map τ : b' ⟶ b can be lifted to the fiber over R -/
 noncomputable def inducedMap : b ⟶ b' :=
   Fib.homMk (IsCartesian.map p f ψ φ)
@@ -216,6 +220,7 @@ section
 variable [IsFibered p] {R S : 𝒮} {a : 𝒳} {b : Fib p R}
 
 /-- Given `a : 𝒳`, `b : Fib p R`, and a diagram
+
 ```
   b --φ--> a
   -        -
@@ -223,7 +228,9 @@ variable [IsFibered p] {R S : 𝒮} {a : 𝒳} {b : Fib p R}
   v        v
   R --f--> S
 ```
+
 It can be factorized as
+
 ```
   b --τ--> b'--ψ--> a
   -        -        -
@@ -231,6 +238,7 @@ It can be factorized as
   v        v        v
   R ====== R --f--> S
 ```
+
 with `ψ` Cartesian over `f` and `τ` a map in `Fib p R`. -/
 lemma fiber_factorization (ha : p.obj a = S) {b : Fib p R} (f : R ⟶ S) (φ : (ι R).obj b ⟶ a)
     [IsHomLift p f φ] : ∃ (b' : Fib p R) (τ : b ⟶ b') (ψ : (ι R).obj b' ⟶ a),

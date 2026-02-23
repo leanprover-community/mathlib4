@@ -18,9 +18,9 @@ primary value stems from their utility when constructing the classical Lie algeb
 
 ## Main definitions
 
-  * `lieEquivMatrix'`
-  * `Matrix.lieConj`
-  * `Matrix.reindexLieEquiv`
+* `lieEquivMatrix'`
+* `Matrix.lieConj`
+* `Matrix.reindexLieEquiv`
 
 ## Tags
 

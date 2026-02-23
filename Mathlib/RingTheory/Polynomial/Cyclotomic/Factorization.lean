@@ -41,7 +41,7 @@ private lemma f_ne_zero : f ≠ 0 := fun h0 ↦ not_subsingleton K <|
 variable [hp : Fact p.Prime]
 
 /-- The degree of an irreducible monic factor of the `n`-th cyclotomic polynomial over a finite
-  field. This is a special case of `natDegree_of_dvd_cyclotomic_of_irreducible` below. -/
+field. This is a special case of `natDegree_of_dvd_cyclotomic_of_irreducible` below. -/
 private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ cyclotomic n K)
     (hPirr : Irreducible P) (hPmo : P.Monic) :
     P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f)) := by
@@ -82,8 +82,8 @@ private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ 
       pow_one]
 
 /-- Let `K` be a finite field of cardinality `p ^ f` and let `P` be an irreducible factor of the
-  `n`-th cyclotomic polynomial over `K`, where `p` and `n` are coprime. Then the degree of `P` is
-  the multiplicative order of `p ^ f` modulo `n`. -/
+`n`-th cyclotomic polynomial over `K`, where `p` and `n` are coprime. Then the degree of `P` is
+the multiplicative order of `p ^ f` modulo `n`. -/
 theorem natDegree_of_dvd_cyclotomic_of_irreducible (hP : P ∣ cyclotomic n K)
     (hPirr : Irreducible P) : P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f)) := by
   obtain ⟨A, hA⟩ := hP
@@ -100,8 +100,8 @@ theorem natDegree_of_dvd_cyclotomic_of_irreducible (hP : P ∣ cyclotomic n K)
 
 open UniqueFactorizationMonoid in
 /-- Let `K` be a finite field of cardinality `p ^ f` and let `P` be a factor of the `n`-th
-  cyclotomic polynomial over `K`, where `p` and `n` are coprime. If the degree of `P` is
-  the multiplicative order of `p ^ f` modulo `n` then `P` is irreducible. -/
+cyclotomic polynomial over `K`, where `p` and `n` are coprime. If the degree of `P` is
+the multiplicative order of `p ^ f` modulo `n` then `P` is irreducible. -/
 theorem irreducible_of_dvd_cyclotomic_of_natDegree (hP : P ∣ cyclotomic n K)
     (hPdeg : P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f))) : Irreducible P := by
   classical
@@ -117,8 +117,8 @@ theorem irreducible_of_dvd_cyclotomic_of_natDegree (hP : P ∣ cyclotomic n K)
 
 omit hK in
 /-- Let `P` be a factor of the `n`-th cyclotomic polynomial over `ZMod p`, where `p` does not divide
-  `n`. If the degree of `P` is the multiplicative order of `p` modulo `n` then `P` is
-  irreducible. -/
+`n`. If the degree of `P` is the multiplicative order of `p` modulo `n` then `P` is
+irreducible. -/
 theorem _root_.ZMod.irreducible_of_dvd_cyclotomic_of_natDegree {P : (ZMod p)[X]} (hpn : ¬p ∣ n)
     (hP : P ∣ cyclotomic n (ZMod p))
     (hPdeg : P.natDegree = orderOf (unitOfCoprime _ (hp.1.coprime_iff_not_dvd.mpr hpn))) :
@@ -137,8 +137,8 @@ theorem natDegree_of_mem_normalizedFactors_cyclotomic
     (irreducible_of_normalized_factor P hP)
 
 /-- Let `K` be a finite field of cardinality `p ^ f` and let `P` be an irreducible factor of the
-  `n`-th cyclotomic polynomial over `K`, where `p` and `n` are coprime. This result computes the
-  number of distinct irreducible factors of `cyclotomic n K`. -/
+`n`-th cyclotomic polynomial over `K`, where `p` and `n` are coprime. This result computes the
+number of distinct irreducible factors of `cyclotomic n K`. -/
 theorem normalizedFactors_cyclotomic_card : (normalizedFactors (cyclotomic n K)).toFinset.card =
     φ n / orderOf (unitOfCoprime _ (hn.pow_left f)) := by
   have h := prod_normalizedFactors (cyclotomic_ne_zero n K)

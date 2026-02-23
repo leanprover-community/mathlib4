@@ -11,25 +11,28 @@ public import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 /-!
 # Configurations of Points and lines
+
 This file introduces abstract configurations of points and lines, and proves some basic properties.
 
 ## Main definitions
+
 * `Configuration.Nondegenerate`: Excludes certain degenerate configurations,
   and imposes uniqueness of intersection points.
 * `Configuration.HasPoints`: A nondegenerate configuration in which
   every pair of lines has an intersection point.
-* `Configuration.HasLines`:  A nondegenerate configuration in which
+* `Configuration.HasLines`: A nondegenerate configuration in which
   every pair of points has a line through them.
 * `Configuration.lineCount`: The number of lines through a given point.
 * `Configuration.pointCount`: The number of lines through a given line.
 
 ## Main statements
+
 * `Configuration.HasLines.card_le`: `HasLines` implies `|P| ≤ |L|`.
 * `Configuration.HasPoints.card_le`: `HasPoints` implies `|L| ≤ |P|`.
 * `Configuration.HasLines.hasPoints`: `HasLines` and `|P| = |L|` implies `HasPoints`.
 * `Configuration.HasPoints.hasLines`: `HasPoints` and `|P| = |L|` implies `HasLines`.
-Together, these four statements say that any two of the following properties imply the third:
-(a) `HasLines`, (b) `HasPoints`, (c) `|P| = |L|`.
+  Together, these four statements say that any two of the following properties imply the third:
+  (a) `HasLines`, (b) `HasPoints`, (c) `|P| = |L|`.
 
 -/
 
@@ -60,11 +63,12 @@ instance : Membership (Dual L) (Dual P) :=
   ⟨Function.swap (Membership.mem : L → P → Prop)⟩
 
 /-- A configuration is nondegenerate if:
-  1) there does not exist a line that passes through all of the points,
-  2) there does not exist a point that is on all of the lines,
-  3) there is at most one line through any two points,
-  4) any two lines have at most one intersection point.
-  Conditions 3 and 4 are equivalent. -/
+
+1. there does not exist a line that passes through all of the points,
+2. there does not exist a point that is on all of the lines,
+3. there is at most one line through any two points,
+4. any two lines have at most one intersection point.
+   Conditions 3 and 4 are equivalent. -/
 class Nondegenerate : Prop where
   exists_point : ∀ l : L, ∃ p, p ∉ l
   exists_line : ∀ p, ∃ l : L, p ∉ l
@@ -116,7 +120,7 @@ variable {P L}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If a nondegenerate configuration has at least as many points as lines, then there exists
-  an injective function `f` from lines to points, such that `f l` does not lie on `l`. -/
+an injective function `f` from lines to points, such that `f l` does not lie on `l`. -/
 theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P] [Fintype L]
     (h : Fintype.card L ≤ Fintype.card P) : ∃ f : L → P, Function.Injective f ∧ ∀ l, f l ∉ l := by
   classical
@@ -280,7 +284,7 @@ theorem HasPoints.lineCount_eq_pointCount [HasPoints P L] [Fintype P] [Fintype L
   (@HasLines.lineCount_eq_pointCount (Dual L) (Dual P) _ _ _ _ hPL.symm l p hpl).symm
 
 /-- If a nondegenerate configuration has a unique line through any two points, and if `|P| = |L|`,
-  then there is a unique point on any two lines. -/
+then there is a unique point on any two lines. -/
 noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
     (h : Fintype.card P = Fintype.card L) : HasPoints P L :=
   let this : ∀ l₁ l₂ : L, l₁ ≠ l₂ → ∃ p : P, p ∈ l₁ ∧ p ∈ l₂ := fun l₁ l₂ hl => by
@@ -314,7 +318,7 @@ noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
     mkPoint_ax := fun {l₁ l₂} hl => Classical.choose_spec (this l₁ l₂ hl) }
 
 /-- If a nondegenerate configuration has a unique point on any two lines, and if `|P| = |L|`,
-  then there is a unique line through any two points. -/
+then there is a unique line through any two points. -/
 noncomputable def HasPoints.hasLines [HasPoints P L] [Fintype P] [Fintype L]
     (h : Fintype.card P = Fintype.card L) : HasLines P L :=
   let this := @HasLines.hasPoints (Dual L) (Dual P) _ _ _ _ h.symm
@@ -325,8 +329,8 @@ noncomputable def HasPoints.hasLines [HasPoints P L] [Fintype P] [Fintype L]
 variable (P L)
 
 /-- A projective plane is a nondegenerate configuration in which every pair of lines has
-  an intersection point, every pair of points has a line through them,
-  and which has three points in general position. -/
+an intersection point, every pair of points has a line through them,
+and which has three points in general position. -/
 class ProjectivePlane extends HasPoints P L, HasLines P L where
   exists_config :
     ∃ (p₁ p₂ p₃ : P) (l₁ l₂ l₃ : L),

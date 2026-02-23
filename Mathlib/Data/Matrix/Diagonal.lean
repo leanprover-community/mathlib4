@@ -42,6 +42,7 @@ variable [DecidableEq n]
 if `i ≠ j`.
 
 Note that bundled versions exist as:
+
 * `Matrix.diagonalAddMonoidHom`
 * `Matrix.diagonalLinearMap`
 * `Matrix.diagonalRingHom`
@@ -366,7 +367,7 @@ theorem transpose_eq_intCast [DecidableEq n] [AddGroupWithOne α]
 end Transpose
 
 /-- Given a `(m × m)` diagonal matrix defined by a map `d : m → α`, if the reindexing map `e` is
-  injective, then the resulting matrix is again diagonal. -/
+injective, then the resulting matrix is again diagonal. -/
 theorem submatrix_diagonal [Zero α] [DecidableEq m] [DecidableEq l] (d : m → α) (e : l → m)
     (he : Function.Injective e) : (diagonal d).submatrix e e = diagonal (d ∘ e) :=
   ext fun i j => by

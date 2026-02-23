@@ -63,8 +63,8 @@ end Functor
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A category being equivalent to `PUnit` is equivalent to it having a unique morphism between
-  any two objects. (In fact, such a category is also a groupoid;
-  see `CategoryTheory.Groupoid.ofHomUnique`) -/
+any two objects. (In fact, such a category is also a groupoid;
+see `CategoryTheory.Groupoid.ofHomUnique`) -/
 theorem equiv_punit_iff_unique :
     Nonempty (C ≌ Discrete PUnit.{w + 1}) ↔ Nonempty C ∧ ∀ x y : C, Nonempty <| Unique (x ⟶ y) := by
   constructor

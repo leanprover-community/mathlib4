@@ -35,7 +35,7 @@ section PartialOrderBot
 variable [PartialOrder α] [OrderBot α] {a b c d : α}
 
 /-- Two elements of a lattice are disjoint if their inf is the bottom element.
-  (This generalizes disjoint sets, viewed as members of the subset lattice.)
+(This generalizes disjoint sets, viewed as members of the subset lattice.)
 
 Note that we define this without reference to `⊓`, as this allows us to talk about orders where
 the infimum is not unique, or where implementing `Inf` would require additional `Decidable`

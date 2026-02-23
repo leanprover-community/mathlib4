@@ -328,6 +328,7 @@ open Algebra.TensorProduct MvPolynomial in
 /-- `LinearMap.polyCharpolyAux` is independent of the choice of basis of the target module.
 
 Proof strategy:
+
 1. Rewrite `polyCharpolyAux` as the (honest, ordinary) characteristic polynomial
    of the basechange of `φ` to the multivariate polynomial ring `MvPolynomial ι R`.
 2. Use that the characteristic polynomial of a linear map is independent of the choice of basis.

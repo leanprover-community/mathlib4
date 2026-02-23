@@ -14,6 +14,7 @@ This file defines notation for algebraic quotients, e.g. quotient groups `G ⧸ 
 quotient modules `M ⧸ N` and ideal quotients `R ⧸ I`.
 
 The actual quotient structures are defined in the following files:
+
 * Quotient Group: `Mathlib/GroupTheory/QuotientGroup/Defs.lean`
 * Quotient Module: `Mathlib/LinearAlgebra/Quotient/Defs.lean`
 * Quotient Ring: `Mathlib/RingTheory/Ideal/Quotient/Defs.lean`
@@ -48,7 +49,7 @@ such as groups, modules and rings.
 class HasQuotient (A : outParam <| Type u) (B : Type v) where
   /--
   `HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient of the type `A` by `b`.
-
+  
   This differs from `HasQuotient.quotient'` in that the `A` argument is explicit,
   which is necessary to make Lean show the notation in the goal state.
   -/

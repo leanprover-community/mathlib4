@@ -52,7 +52,7 @@ lemma Summable.tendstoUniformlyOn_tsum_nat_log_one_add {f : ℕ → α → ℂ} 
   exact (hu.hasSumUniformlyOn_log_one_add h).tendstoUniformlyOn_finsetRange
 
 /-- If `x ↦ ∑' i, log (f i x)` is uniformly convergent on `𝔖`, its sum has bounded-above real part
-on each set in `𝔖`, and the functions `f i x` have no zeroes, then  `∏' i, f i x` is uniformly
+on each set in `𝔖`, and the functions `f i x` have no zeroes, then `∏' i, f i x` is uniformly
 convergent on `𝔖`.
 
 Note that the non-vanishing assumption is really needed here: if this assumption is dropped then

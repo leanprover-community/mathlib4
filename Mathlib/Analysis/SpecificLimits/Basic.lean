@@ -17,7 +17,7 @@ public import Mathlib.Topology.Instances.Rat
 /-!
 # A collection of specific limit computations
 
-This file, by design, is independent of `NormedSpace` in the import hierarchy.  It contains
+This file, by design, is independent of `NormedSpace` in the import hierarchy. It contains
 important specific limit computations in metric spaces, in ordered rings/fields, and in specific
 instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
@@ -141,7 +141,7 @@ theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*}
     mem_of_superset (Ioi_mem_atTop 0) <| by simp
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
-  constant, then `f` tends to `∞`. -/
+constant, then `f` tends to `∞`. -/
 theorem Filter.Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     [TopologicalSpace K] [OrderTopology K]
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
@@ -150,7 +150,7 @@ theorem Filter.Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrd
   (hlim.pos_mul_atTop ha hg).congr' (EventuallyEq.div_mul_cancel_atTop hg)
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
-  constant, then `f` tends to `∞`. -/
+constant, then `f` tends to `∞`. -/
 theorem Filter.Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     [TopologicalSpace K] [OrderTopology K]
     [ContinuousInv K] {f g : α → K} {l : Filter α} (hf : Tendsto f l atTop) {a : K} (ha : 0 < a)
@@ -162,7 +162,7 @@ theorem Filter.Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrd
   (hlim'.pos_mul_atTop (inv_pos_of_pos ha) hf).congr' (.div_mul_cancel_atTop hf)
 
 /-- If when `x` tends to `∞`, `f x / g x` tends to a positive constant, then `f` tends to `∞` if
-  and only if `g` tends to `∞`. -/
+and only if `g` tends to `∞`. -/
 theorem Filter.Tendsto.num_atTop_iff_den_atTop {α K : Type*}
     [Field K] [LinearOrder K] [IsStrictOrderedRing K] [TopologicalSpace K]
     [OrderTopology K] [ContinuousInv K] {f g : α → K} {l : Filter α} {a : K} (ha : 0 < a)

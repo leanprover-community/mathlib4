@@ -1149,14 +1149,14 @@ theorem range_coe {s : Set α} : range ((↑) : s → α) = s := by
   simp [-image_univ, coe_image]
 
 /-- A variant of `range_coe`. Try to use `range_coe` if possible.
-  This version is useful when defining a new type that is defined as the subtype of something.
-  In that case, the coercion doesn't fire anymore. -/
+This version is useful when defining a new type that is defined as the subtype of something.
+In that case, the coercion doesn't fire anymore. -/
 theorem range_val {s : Set α} : range (Subtype.val : s → α) = s :=
   range_coe
 
 /-- We make this the simp lemma instead of `range_coe`. The reason is that if we write
-  for `s : Set α` the function `(↑) : s → α`, then the inferred implicit arguments of `(↑)` are
-  `↑α (fun x ↦ x ∈ s)`. -/
+for `s : Set α` the function `(↑) : s → α`, then the inferred implicit arguments of `(↑)` are
+`↑α (fun x ↦ x ∈ s)`. -/
 @[simp]
 theorem range_coe_subtype {p : α → Prop} : range ((↑) : Subtype p → α) = { x | p x } :=
   range_coe

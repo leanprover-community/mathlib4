@@ -33,8 +33,8 @@ namespace Multiset
 /-! ### Join -/
 
 /-- `join S`, where `S` is a multiset of multisets, is the lift of the list join
-  operation, that is, the union of all the sets.
-  For example, `join {{1, 2}, {1, 2}, {0, 1}} = {0, 1, 1, 1, 2, 2}`. -/
+operation, that is, the union of all the sets.
+For example, `join {{1, 2}, {1, 2}, {0, 1}} = {0, 1, 1, 1, 2, 2}`. -/
 def join : Multiset (Multiset α) → Multiset α :=
   sum
 
@@ -289,7 +289,7 @@ section Product
 variable (a : α) (b : β) (s : Multiset α) (t : Multiset β)
 
 /-- The multiplicity of `(a, b)` in `s ×ˢ t` is
-  the product of the multiplicity of `a` in `s` and `b` in `t`. -/
+the product of the multiplicity of `a` in `s` and `b` in `t`. -/
 def product (s : Multiset α) (t : Multiset β) : Multiset (α × β) :=
   s.bind fun a => t.map <| Prod.mk a
 
@@ -361,7 +361,7 @@ section Sigma
 variable {σ : α → Type*} (a : α) (s : Multiset α) (t : ∀ a, Multiset (σ a))
 
 /-- `Multiset.sigma s t` is the dependent version of `Multiset.product`. It is the sum of
-  `(a, b)` as `a` ranges over `s` and `b` ranges over `t a`. -/
+`(a, b)` as `a` ranges over `s` and `b` ranges over `t a`. -/
 protected def sigma (s : Multiset α) (t : ∀ a, Multiset (σ a)) : Multiset (Σ a, σ a) :=
   s.bind fun a => (t a).map <| Sigma.mk a
 

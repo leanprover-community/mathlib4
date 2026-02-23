@@ -36,13 +36,13 @@ In this file we show that, for certain choices of a commutative (semi)ring `A` a
 ## References
 
 * [P. Berthelot (1974), *Cohomologie cristalline des schémas de
-caractéristique $p$ > 0*][Berthelot-1974]
+  caractéristique $p$ > 0*][Berthelot-1974]
 
 * [P. Berthelot and A. Ogus (1978), *Notes on crystalline
-cohomology*][BerthelotOgus-1978]
+  cohomology*][BerthelotOgus-1978]
 
 * [N. Roby (1963), *Lois polynomes et lois formelles en théorie des
-modules*][Roby-1963]
+  modules*][Roby-1963]
 
 * [N. Roby (1965), *Les algèbres à puissances dividées*][Roby-1965]
 
@@ -171,7 +171,7 @@ theorem dpow_comp {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A)) (hnI : I ^
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `(n-1)!` is invertible in `A` and `I^n = 0`, then `I` admits a divided power structure.
-  Proposition 1.2.7 of [B74], part (ii). -/
+Proposition 1.2.7 of [B74], part (ii). -/
 noncomputable def dividedPowers {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A))
     (hnI : I ^ n = 0) : DividedPowers I where
   dpow            := dpow I
@@ -214,7 +214,7 @@ variable {A : Type*} [CommRing A] {p : ℕ} [Fact (Nat.Prime p)] (hp : IsNilpote
   {I : Ideal A} [DecidablePred (fun x ↦ x ∈ I)] (hIp : I ^ p = 0)
 
 /-- If `A` is a commutative ring of prime characteristic `p` and `I` is an ideal such that
-  `I^p = 0`, then `I` admits a divided power structure. -/
+`I^p = 0`, then `I` admits a divided power structure. -/
 noncomputable def dividedPowers : DividedPowers I :=
   OfInvertibleFactorial.dividedPowers (n := p)
     (IsUnit.natCast_factorial_of_isNilpotent hp (Nat.sub_one_lt (NeZero.ne' p).symm)) hIp
@@ -232,7 +232,7 @@ variable (A : Type*) [CommRing A] (p : ℕ) [CharP A p] [Fact (Nat.Prime p)]
   {I : Ideal A} [DecidablePred (fun x ↦ x ∈ I)] (hIp : I ^ p = 0)
 
 /-- If `A` is a commutative ring of prime characteristic `p` and `I` is an ideal such that
-  `I^p = 0`, then `I` admits a divided power structure. -/
+`I^p = 0`, then `I` admits a divided power structure. -/
 noncomputable def dividedPowers : DividedPowers I :=
   IsNilpotent.dividedPowers ((CharP.cast_eq_zero A p) ▸ IsNilpotent.zero) hIp
 
@@ -264,7 +264,7 @@ variable (I)
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `I` is an ideal in a `ℚ`-algebra `A`, then `I` admits a unique divided power structure,
-  given by `dpow n x = x ^ n / n!`. -/
+given by `dpow n x = x ^ n / n!`. -/
 noncomputable def dividedPowers : DividedPowers I where
   dpow           := dpow I
   dpow_null hx   := OfInvertibleFactorial.dpow_null hx
@@ -286,7 +286,7 @@ lemma dpow_apply {n : ℕ} {x : R} :
 set_option backward.isDefEq.respectTransparency false in
 omit [DecidablePred fun x ↦ x ∈ I] in
 /-- If `I` is an ideal in a `ℚ`-algebra `A`, then the divided power structure on `I` given by
-  `dpow n x = x ^ n / n!` is the only possible one. -/
+`dpow n x = x ^ n / n!` is the only possible one. -/
 theorem dpow_eq_inv_fact_smul (hI : DividedPowers I) {n : ℕ} {x : R} (hx : x ∈ I) :
     hI.dpow n x = (inverse (n.factorial : ℚ)) • x ^ n := by
   rw [inverse_eq_inv', ← factorial_mul_dpow_eq_pow hI hx, ← smul_eq_mul, ← smul_assoc]
@@ -303,7 +303,7 @@ theorem dpow_eq_inv_fact_smul (hI : DividedPowers I) {n : ℕ} {x : R} (hx : x �
 
 variable {I}
 
-/-- There are no other divided power structures on an ideal of a  `ℚ`-algebra. -/
+/-- There are no other divided power structures on an ideal of a `ℚ`-algebra. -/
 theorem dividedPowers_unique (hI : DividedPowers I) : hI = dividedPowers I :=
   hI.ext _ (fun n x hx ↦ by rw [dpow_apply, if_pos hx, eq_comm, inverse_mul_eq_iff_eq_mul _ _ _
       (IsUnit.natCast_factorial_of_algebra ℚ n), factorial_mul_dpow_eq_pow _ hx])

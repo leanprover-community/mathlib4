@@ -19,6 +19,7 @@ A CW complex is a topological space that is made by gluing closed disks of diffe
 together.
 
 ## Main definitions
+
 * `RelCWComplex C D`: the class of CW structures on a subspace `C` relative to a base set
   `D` of a topological space `X`.
 * `CWComplex C`: an abbreviation for `RelCWComplex C ∅`. The class of CW structures on a
@@ -29,11 +30,13 @@ together.
 * `skeleton C n`: the `n`-skeleton of the (relative) CW complex `C`.
 
 ## Main statements
+
 * `iUnion_openCell_eq_skeleton`: the skeletons can also be seen as a union of open cells.
 * `cellFrontier_subset_finite_openCell`: the edge of a cell is contained in a finite union of
   open cells of a lower dimension.
 
 ## Implementation notes
+
 * We use the historical definition of CW complexes, due to Whitehead: a CW complex is a collection
   of cells with attaching maps - all cells are subspaces of one ambient topological space.
   This way, we avoid having to work with a lot of different topological spaces.
@@ -67,6 +70,7 @@ together.
   one about `skeletonLT`.
 
 ## References
+
 * [A. Hatcher, *Algebraic Topology*][hatcher02]
 -/
 
@@ -549,7 +553,7 @@ section Subcomplex
 namespace RelCWComplex
 
 /-- A subcomplex is a closed subspace of a CW complex that is the union of open cells of the
-  CW complex. -/
+CW complex. -/
 structure Subcomplex (C : Set X) {D : Set X} [RelCWComplex C D] where
   /-- The underlying set of the subcomplex. -/
   carrier : Set X

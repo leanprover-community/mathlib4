@@ -37,6 +37,7 @@ which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
 
 ## References
+
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 -/
@@ -457,8 +458,8 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
   rwa [span_mul_span, Set.singleton_mul_singleton, span_singleton_le_iff_mem]
 
 /-- In a Noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
-  product of prime ideals; in a field, the whole ring is a non-zero ideal containing only 0 as
-  product or prime ideals ([samuel1967, § 3.3, Lemma 3]) -/
+product of prime ideals; in a field, the whole ring is a non-zero ideal containing only 0 as
+product or prime ideals ([samuel1967, § 3.3, Lemma 3]) -/
 theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {I : Ideal A}
     (h_nzI : I ≠ ⊥) :
     ∃ Z : Multiset (PrimeSpectrum A),

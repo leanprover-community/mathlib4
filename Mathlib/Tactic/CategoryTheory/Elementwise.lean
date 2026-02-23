@@ -171,6 +171,7 @@ creates a new lemma for a `ConcreteCategory` giving an equation with those morph
 to some value.
 
 Syntax examples:
+
 - `@[elementwise]`
 - `@[elementwise nosimp]` to not use `simp` on both sides of the generated lemma
 - `@[elementwise (attr := simp)]` to apply the `simp` attribute to both the generated lemma and
@@ -236,10 +237,12 @@ produces a proof of equation `∀ (x : X), f x = g x`, but with compositions ful
 right associated and identities removed.
 
 A typical example is using `elementwise_of%` to dynamically generate rewrite lemmas:
+
 ```lean
 example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
     g (f m) = h m := by rw [elementwise_of% w]
 ```
+
 In this case, `elementwise_of% w` generates the lemma `∀ (x : M), f (g x) = h x`.
 
 Like the `@[elementwise]` attribute, `elementwise_of%` inserts a `ConcreteCategory`

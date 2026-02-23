@@ -28,6 +28,7 @@ We provide `SpecialLinearGroup.toLinearEquiv`: the canonical map
 from `SpecialLinearGroup R V` to `V ≃ₗ[R] V`, as a monoid hom.
 
 When `V` is free and finite over `R`, we define
+
 * `SpecialLinearGroup.dualMap`
 * `SpecialLinearGroup.baseChange`
 

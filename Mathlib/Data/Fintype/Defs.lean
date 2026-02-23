@@ -15,7 +15,7 @@ This file defines a typeclass to state that a type is finite.
 
 ## Main declarations
 
-* `Fintype α`:  Typeclass saying that a type is finite. It takes as fields a `Finset` and a proof
+* `Fintype α`: Typeclass saying that a type is finite. It takes as fields a `Finset` and a proof
   that all terms of type `α` are in it.
 * `Finset.univ`: The finset of all elements of a fintype.
 
@@ -26,6 +26,7 @@ the equivalence with `Fin (Fintype.card α)`, and pigeonhole principles.
 ## Instances
 
 Instances for `Fintype` for
+
 * `{x // p x}` are in this file as `Fintype.subtype`
 * `Option α` are in `Data.Fintype.Option`
 * `α × β` are in `Data.Fintype.Prod`
@@ -50,9 +51,9 @@ universe u v
 variable {α β γ : Type*}
 
 /-- `Fintype α` means that `α` is finite, i.e. there are only
-  finitely many distinct elements of type `α`. The evidence of this
-  is a finset `elems` (a list up to permutation without duplicates),
-  together with a proof that everything of type `α` is in the list. -/
+finitely many distinct elements of type `α`. The evidence of this
+is a finset `elems` (a list up to permutation without duplicates),
+together with a proof that everything of type `α` is in the list. -/
 class Fintype (α : Type*) where
   /-- The `Finset` containing all elements of a `Fintype` -/
   elems : Finset α
@@ -88,7 +89,7 @@ namespace Finset
 variable [Fintype α] {s t : Finset α}
 
 /-- `univ` is the universal finite set of type `Finset α` implied from
-  the assumption `Fintype α`. -/
+the assumption `Fintype α`. -/
 def univ : Finset α :=
   @Fintype.elems α _
 
@@ -132,6 +133,7 @@ open Lean Elab Term Meta Batteries.ExtendedBinder Parser.Term PrettyPrinter.Dela
   `Finset ?α`.
 
 See also
+
 * `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
 * `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x ∈ s | p x}`.

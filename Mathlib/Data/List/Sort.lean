@@ -41,7 +41,7 @@ local infixl:50 " ≼ " => s
 section InsertionSort
 
 /-- `orderedInsert a l` inserts `a` into `l` at such that
-  `orderedInsert a l` is sorted if `l` is. -/
+`orderedInsert a l` is sorted if `l` is. -/
 def orderedInsert (a : α) : List α → List α
   | [] => [a]
   | b :: l => if a ≼ b then a :: b :: l else b :: orderedInsert a l
@@ -401,10 +401,7 @@ variable [Preorder α]
 These predicates are equivalent to `Monotone l.get`, but they are also equivalent to
 `IsChain (· < ·)` and `Pairwise (· < ·)`. API is provided to move between these forms.
 
-API has deliberately not been provided for decomposed lists to avoid unneeded API replication.
-The provided API should be used to move to and from `IsChain`,
-`Pairwise` or `Monotone` as needed.
---/
+## API has deliberately not been provided for decomposed lists to avoid unneeded API replication. The provided API should be used to move to and from `IsChain`, `Pairwise` or `Monotone` as needed.-/
 
 /-- `l.SortedLE` means that the list is monotonic. -/
 def SortedLE (l : List α) := Monotone l.get

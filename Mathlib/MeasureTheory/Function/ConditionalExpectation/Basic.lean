@@ -16,6 +16,7 @@ function `μ[f|hm]` which is integrable and verifies `∫ x in s, μ[f|hm] x ∂
 for all `m`-measurable sets `s`. It is unique as an element of `L¹`.
 
 The construction is done in four steps:
+
 * Define the conditional expectation of an `L²` function, as an element of `L²`. This is the
   orthogonal projection on the subspace of almost everywhere `m`-measurable functions.
 * Show that the conditional expectation of the indicator of a measurable set with finite measure
@@ -56,6 +57,7 @@ Uniqueness of the conditional expectation
 
 For a measure `μ` defined on a measurable space structure `m₀`, another measurable space structure
 `m` with `hm : m ≤ m₀` (a sub-σ-algebra) and a function `f`, we define the notation
+
 * `μ[f | m] = condExp m μ f`.
 
 ## TODO
@@ -92,6 +94,7 @@ variable (m) in
 /-- Conditional expectation of a function, with notation `μ[f | m]`.
 
 It is defined as 0 if any one of the following conditions is true:
+
 - `m` is not a sub-σ-algebra of `m₀`,
 - `μ` is not σ-finite with respect to `m`,
 - `f` is not integrable. -/
@@ -435,8 +438,8 @@ section NormedLatticeAddCommGroup
 variable [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
 
 /-- **Lebesgue dominated convergence theorem**: sufficient conditions under which almost
-  everywhere convergence of a sequence of functions implies the convergence of their image by
-  `condExpL1`. -/
+everywhere convergence of a sequence of functions implies the convergence of their image by
+`condExpL1`. -/
 theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)]
     {fs : ℕ → α → E} {f : α → E} (bound_fs : α → ℝ)
     (hfs_meas : ∀ n, AEStronglyMeasurable (fs n) μ) (h_int_bound_fs : Integrable bound_fs μ)

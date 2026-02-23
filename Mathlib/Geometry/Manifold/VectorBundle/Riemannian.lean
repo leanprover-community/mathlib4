@@ -27,6 +27,7 @@ automatically `[IsContMDiffRiemannianBundle IB n F E]`.
 
 The following code block is the standard way to say "Let `E` be a smooth vector bundle equipped with
 a `C^n` Riemannian structure over a `C^n` manifold `B`":
+
 ```
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]

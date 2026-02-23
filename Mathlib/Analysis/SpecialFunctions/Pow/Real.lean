@@ -1112,10 +1112,11 @@ theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
   rwa [pb.out, Real.rpow_intCast]
 
 /-- Given proofs
+
 - that `a` is a natural number `m`
 - that `b` is a nonnegative rational number `n / d`
 - that `r ^ d = m ^ n` (written as `r ^ d = k`, `m ^ n = l`, `k = l`)
-prove that `a ^ b = r`.
+  prove that `a ^ b = r`.
 -/
 theorem IsNat.rpow_isNNRat {a b : ℝ} {m n d r : ℕ} (ha : IsNat a m) (hb : IsNNRat b n d)
     (k : ℕ) (hr : r ^ d = k) (l : ℕ) (hm : m ^ n = l) (hkl : k = l) : IsNat (a ^ b) r := by
@@ -1141,9 +1142,10 @@ theorem rpow_isRat_eq_inv_rpow (a b : ℝ) (n d : ℕ) (hb : IsRat b (Int.negOfN
 
 open Lean in
 /-- Given proofs
+
 - that `a` is a natural number `na`;
 - that `b` is a nonnegative rational number `nb / db`;
-returns a tuple of
+  returns a tuple of
 - a natural number `r` (result);
 - the same number, as an expression;
 - a proof that `a ^ b = r`.
@@ -1167,7 +1169,7 @@ meta def proveIsNatRPowIsNNRat
 Works if `a`, `b`, and `a ^ b` are in fact rational numbers,
 except for the case `a < 0`, `b` isn't integer.
 
-TODO: simplify terms like  `(-a : ℝ) ^ (b / 3 : ℝ)` and `(-a : ℝ) ^ (b / 2 : ℝ)` too,
+TODO: simplify terms like `(-a : ℝ) ^ (b / 3 : ℝ)` and `(-a : ℝ) ^ (b / 2 : ℝ)` too,
 possibly after first considering changing the junk value. -/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
 meta def evalRPow : NormNumExt where eval {u αR} e := do

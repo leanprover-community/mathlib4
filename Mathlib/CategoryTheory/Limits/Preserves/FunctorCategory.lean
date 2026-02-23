@@ -20,7 +20,9 @@ public import Mathlib.CategoryTheory.Limits.Yoneda
 
   The idea of the proof is simply that products and colimits in the functor category are computed
   pointwise, so pointwise preservation implies general preservation.
+
 * Show that `F ⋙ -` preserves limits if the target category has limits.
+
 * Show that `F : C ⥤ D` preserves limits of a certain shape
   if `Lan F.op : Cᵒᵖ ⥤ Type*` preserves such limits.
 
@@ -55,8 +57,7 @@ Note this is (mathematically) a special case of the statement that
 but the story in Lean is a bit more complex, and this statement isn't directly a special case.
 That is, even with a formalised proof of the general statement, there would still need to be some
 work to convert to this version: namely, the natural isomorphism
-`(evaluation C D).obj k ⋙ prod.functor.obj (F.obj k) ≅
-  prod.functor.obj F ⋙ (evaluation C D).obj k`
+`(evaluation C D).obj k ⋙ prod.functor.obj (F.obj k) ≅   prod.functor.obj F ⋙ (evaluation C D).obj k`
 -/
 lemma FunctorCategory.prod_preservesColimits [HasBinaryProducts D] [HasColimits D]
     [∀ X : D, PreservesColimits (prod.functor.obj X)] (F : C ⥤ D) :

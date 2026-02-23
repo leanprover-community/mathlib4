@@ -55,6 +55,7 @@ instance : HAnd PosNum PosNum Num where hAnd := PosNum.land
 @[simp] lemma land_eq_and (p q : PosNum) : p.land q = p &&& q := rfl
 
 /-- Bitwise `fun a b ↦ a && !b` for `PosNum`. For example, `ldiff 5 9 = 4`:
+
 ```
  101
 1001
@@ -155,6 +156,7 @@ instance : AndOp Num where and := Num.land
 @[simp] lemma land_eq_and (p q : Num) : p.land q = p &&& q := rfl
 
 /-- Bitwise `fun a b ↦ a && !b` for `Num`. For example, `ldiff 5 9 = 4`:
+
 ```
  101
 1001
@@ -217,19 +219,23 @@ inductive NzsNum : Type
   deriving DecidableEq
 
 /-- Alternative representation of integers using a sign bit at the end.
-  The convention on sign here is to have the argument to `msb` denote
-  the sign of the MSB itself, with all higher bits set to the negation
-  of this sign. The result is interpreted in two's complement.
+The convention on sign here is to have the argument to `msb` denote
+the sign of the MSB itself, with all higher bits set to the negation
+of this sign. The result is interpreted in two's complement.
 
-     13  = ..0001101(base 2) = nz (bit1 (bit0 (bit1 (msb true))))
-     -13 = ..1110011(base 2) = nz (bit1 (bit1 (bit0 (msb false))))
+```
+ 13  = ..0001101(base 2) = nz (bit1 (bit0 (bit1 (msb true))))
+ -13 = ..1110011(base 2) = nz (bit1 (bit1 (bit0 (msb false))))
+```
 
-  As with `Num`, a special case must be added for zero, which has no msb,
-  but by two's complement symmetry there is a second special case for -1.
-  Here the `Bool` field indicates the sign of the number.
+As with `Num`, a special case must be added for zero, which has no msb,
+but by two's complement symmetry there is a second special case for -1.
+Here the `Bool` field indicates the sign of the number.
 
-     0  = ..0000000(base 2) = zero false
-     -1 = ..1111111(base 2) = zero true -/
+```
+ 0  = ..0000000(base 2) = zero false
+ -1 = ..1111111(base 2) = zero true
+``` -/
 inductive SNum : Type
   | zero : Bool → SNum
   | nz : NzsNum → SNum

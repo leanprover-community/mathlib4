@@ -89,12 +89,12 @@ theorem div_lt_self (ha : 0 < a) (hb : 1 < b) : a / b < a := by
   simpa only [div_one] using div_lt_div_of_pos_left ha zero_lt_one hb
 
 /-- For the single implications with fewer assumptions, see `one_div_le_one_div_of_le` and
-  `le_of_one_div_le_one_div` -/
+`le_of_one_div_le_one_div` -/
 theorem one_div_le_one_div (ha : 0 < a) (hb : 0 < b) : 1 / a ≤ 1 / b ↔ b ≤ a :=
   div_le_div_iff_of_pos_left zero_lt_one ha hb
 
 /-- For the single implications with fewer assumptions, see `one_div_lt_one_div_of_lt` and
-  `lt_of_one_div_lt_one_div` -/
+`lt_of_one_div_lt_one_div` -/
 theorem one_div_lt_one_div (ha : 0 < a) (hb : 0 < b) : 1 / a < 1 / b ↔ b < a :=
   div_lt_div_iff_of_pos_left zero_lt_one ha hb
 
@@ -106,6 +106,7 @@ theorem one_le_one_div (h1 : 0 < a) (h2 : a ≤ 1) : 1 ≤ 1 / a := by
 
 /-!
 ### Results about halving.
+
 The equalities also hold in semifields of characteristic `0`.
 -/
 
@@ -498,12 +499,12 @@ theorem lt_of_neg_of_one_div_lt_one_div (hb : b < 0) (h : 1 / a < 1 / b) : b < a
   simpa using one_div_lt_one_div_of_neg_of_lt (one_div b ▸ inv_lt_zero'.2 hb) h
 
 /-- For the single implications with fewer assumptions, see `one_div_lt_one_div_of_neg_of_lt` and
-  `lt_of_one_div_lt_one_div` -/
+`lt_of_one_div_lt_one_div` -/
 theorem one_div_le_one_div_of_neg (ha : a < 0) (hb : b < 0) : 1 / a ≤ 1 / b ↔ b ≤ a := by
   simpa [one_div] using inv_le_inv_of_neg ha hb
 
 /-- For the single implications with fewer assumptions, see `one_div_lt_one_div_of_lt` and
-  `lt_of_one_div_lt_one_div` -/
+`lt_of_one_div_lt_one_div` -/
 theorem one_div_lt_one_div_of_neg (ha : a < 0) (hb : b < 0) : 1 / a < 1 / b ↔ b < a := by
   simpa [one_div] using inv_lt_inv_of_neg ha hb
 

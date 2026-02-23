@@ -29,6 +29,7 @@ same as the topological closure.
 ## Results
 
 The main results are:
+
 * `AffineIsometry.image_intrinsicInterior`/`AffineIsometry.image_intrinsicFrontier`/
   `AffineIsometry.image_intrinsicClosure`: Intrinsic interiors/frontiers/closures commute with
   taking the image under an affine isometry.

@@ -33,8 +33,7 @@ The main definition of this file is `MeasureTheory.AECover`. It is a rather tech
 whose sole purpose is generalizing and factoring proofs. Given an index type `ι`, a countably
 generated filter `l` over `ι`, and an `ι`-indexed family `φ` of subsets of a measurable space `α`
 equipped with a measure `μ`, one should think of a hypothesis `hφ : MeasureTheory.AECover μ l φ` as
-a sufficient condition for being able to interpret `∫ x, f x ∂μ` (if it exists) as the limit of `∫ x
-in φ i, f x ∂μ` as `i` tends to `l`.
+a sufficient condition for being able to interpret `∫ x, f x ∂μ` (if it exists) as the limit of `∫ x in φ i, f x ∂μ` as `i` tends to `l`.
 
 When using this definition with a measure restricted to a set `s`, which happens fairly often, one
 should not try too hard to use a `MeasureTheory.AECover` of subsets of `s`, as it often makes proofs
@@ -90,8 +89,8 @@ variable {α ι : Type*} [MeasurableSpace α] (μ : Measure α) (l : Filter ι)
 
 /-- A sequence `φ` of subsets of `α` is a `MeasureTheory.AECover` w.r.t. a measure `μ` and a filter
 `l` if almost every point (w.r.t. `μ`) of `α` eventually belongs to `φ n` (w.r.t. `l`), and if
-each `φ n` is measurable.  This definition is a technical way to avoid duplicating a lot of
-proofs.  It should be thought of as a sufficient condition for being able to interpret
+each `φ n` is measurable. This definition is a technical way to avoid duplicating a lot of
+proofs. It should be thought of as a sufficient condition for being able to interpret
 `∫ x, f x ∂μ` (if it exists) as the limit of `∫ x in φ n, f x ∂μ` as `n` tends to `l`.
 See for example `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated`,
 `MeasureTheory.AECover.integrable_of_integral_norm_tendsto` and

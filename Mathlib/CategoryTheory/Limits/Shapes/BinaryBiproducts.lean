@@ -102,8 +102,8 @@ theorem BinaryBiconeMorphism.ext {P Q : C} {c c' : BinaryBicone P Q}
 namespace BinaryBicones
 
 /-- To give an isomorphism between cocones, it suffices to give an
-  isomorphism between their vertices which commutes with the cocone
-  maps. -/
+isomorphism between their vertices which commutes with the cocone
+maps. -/
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {P Q : C} {c c' : BinaryBicone P Q} (φ : c.pt ≅ c'.pt)
     (winl : c.inl ≫ φ.hom = c'.inl := by cat_disch)
@@ -984,10 +984,12 @@ def Indecomposable (X : C) : Prop :=
   ¬IsZero X ∧ ∀ Y Z, (X ≅ Y ⊞ Z) → IsZero Y ∨ IsZero Z
 
 /-- If
+
 ```
 (f 0)
 (0 g)
 ```
+
 is invertible, then `f` is invertible.
 -/
 theorem isIso_left_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z)
@@ -1005,10 +1007,12 @@ theorem isIso_left_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z)
         simp [t]⟩⟩⟩
 
 /-- If
+
 ```
 (f 0)
 (0 g)
 ```
+
 is invertible, then `g` is invertible.
 -/
 theorem isIso_right_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z)

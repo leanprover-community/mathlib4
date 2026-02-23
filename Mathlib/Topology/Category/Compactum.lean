@@ -17,10 +17,11 @@ public import Mathlib.Data.Set.Constructions
 # Compacta and Compact Hausdorff Spaces
 
 Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the following data:
+
 - A type `X : Type*`
 - A "structure" map `M X → X`.
-This data must also satisfy a distributivity and unit axiom, and algebras for `M` form a category
-in an evident way.
+  This data must also satisfy a distributivity and unit axiom, and algebras for `M` form a category
+  in an evident way.
 
 See the file `Mathlib/CategoryTheory/Monad/Algebra.lean` for a general version, as well as the
 following link.
@@ -32,6 +33,7 @@ and the category of algebras for the *ultrafilter monad*.
 ## Notation:
 
 Here are the main objects introduced in this file.
+
 - `Compactum` is the type of compacta, which we define as algebras for the ultrafilter monad.
 - `compactumToCompHaus` is the functor `Compactum ⥤ CompHaus`. Here `CompHaus` is the usual
   category of compact Hausdorff spaces.
@@ -43,6 +45,7 @@ sending an ultrafilter to its limit in `X`. The topology on `X` is then defined 
 characterization of open sets in terms of ultrafilters.
 
 Any `X : Compactum` is endowed with a coercion to `Type*`, as well as the following instances:
+
 - `TopologicalSpace X`.
 - `CompactSpace X`.
 - `T2Space X`.
@@ -87,7 +90,7 @@ def Compactum :=
 
 namespace Compactum
 
-/-- The forgetful functor to Type* -/
+/-- The forgetful functor to Type\* -/
 def forget : Compactum ⥤ Type* :=
   Monad.forget _
 

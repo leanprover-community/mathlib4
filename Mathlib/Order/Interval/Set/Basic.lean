@@ -30,10 +30,12 @@ statements requiring `LinearOrder` are in `Mathlib/Order/Interval/Set/LinearOrde
 A conscious decision was made not to list all possible inclusion relations.
 Monotonicity results and "self" results *are* included.
 Most use cases can suffice with a transitive combination of those, for example:
+
 ```
 theorem Ico_subset_Ici (h : a₂ ≤ a₁) : Ico a₁ b₁ ⊆ Ici a₂ :=
   (Ico_subset_Ico_left h).trans Ico_subset_Ici_self
 ```
+
 Logical equivalences, such as `Icc_subset_Ici_iff`, are however stated.
 -/
 

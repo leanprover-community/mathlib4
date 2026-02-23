@@ -16,6 +16,7 @@ public import Mathlib.CategoryTheory.Subobject.Comma
 # Adjoint functor theorem
 
 This file proves the (general) adjoint functor theorem, in the form:
+
 * If `G : D ⥤ C` preserves limits and `D` has limits, and satisfies the solution set condition,
   then it has a left adjoint: `isRightAdjoint_of_preservesLimits_of_solutionSetCondition`.
 
@@ -28,10 +29,12 @@ We define the *solution set condition* for the functor `G : D ⥤ C` to mean, fo
 factors through one of the `f_i`.
 
 This file also proves the special adjoint functor theorem, in the form:
+
 * If `G : D ⥤ C` preserves limits and `D` is complete, well-powered and has a small coseparating
   set, then `G` has a left adjoint: `isRightAdjoint_of_preservesLimits_of_isCoseparating`
 
 Finally, we prove the following corollaries of the special adjoint functor theorem:
+
 * If `C` is complete, well-powered and has a small coseparating set, then it is cocomplete:
   `hasColimits_of_hasLimits_of_isCoseparating`, `hasColimits_of_hasLimits_of_hasCoseparator`
 * If `C` is cocomplete, co-well-powered and has a small separating set, then it is complete:
@@ -129,7 +132,7 @@ end SpecialAdjointFunctorTheorem
 namespace Limits
 
 /-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
-    has a small coseparating set, then it is cocomplete. -/
+has a small coseparating set, then it is cocomplete. -/
 theorem hasColimits_of_hasLimits_of_isCoseparating [HasLimits C] [WellPowered.{v} C]
     {P : ObjectProperty C} [ObjectProperty.Small.{v} P] (hP : P.IsCoseparating) : HasColimits C :=
   { has_colimits_of_shape := fun _ _ =>
@@ -137,7 +140,7 @@ theorem hasColimits_of_hasLimits_of_isCoseparating [HasLimits C] [WellPowered.{v
         (isRightAdjoint_of_preservesLimits_of_isCoseparating hP _) }
 
 /-- A consequence of the special adjoint functor theorem: if `C` is cocomplete, well-copowered and
-    has a small separating set, then it is complete. -/
+has a small separating set, then it is complete. -/
 theorem hasLimits_of_hasColimits_of_isSeparating [HasColimits C] [WellPowered.{v} Cᵒᵖ]
     {P : ObjectProperty C} [ObjectProperty.Small.{v} P] (hP : P.IsSeparating) : HasLimits C :=
   { has_limits_of_shape := fun _ _ =>
@@ -145,13 +148,13 @@ theorem hasLimits_of_hasColimits_of_isSeparating [HasColimits C] [WellPowered.{v
         (isLeftAdjoint_of_preservesColimits_of_isSeparating hP _) }
 
 /-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
-    has a separator, then it is complete. -/
+has a separator, then it is complete. -/
 theorem hasLimits_of_hasColimits_of_hasSeparator [HasColimits C] [HasSeparator C]
     [WellPowered.{v} Cᵒᵖ] : HasLimits C :=
   hasLimits_of_hasColimits_of_isSeparating <| isSeparator_separator C
 
 /-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
-    has a coseparator, then it is cocomplete. -/
+has a coseparator, then it is cocomplete. -/
 theorem hasColimits_of_hasLimits_of_hasCoseparator [HasLimits C] [HasCoseparator C]
     [WellPowered.{v} C] : HasColimits C :=
   hasColimits_of_hasLimits_of_isCoseparating <| isCoseparator_coseparator C

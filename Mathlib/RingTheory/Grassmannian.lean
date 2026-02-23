@@ -38,6 +38,7 @@ quotients of `V*`, the dual of `V`. In symbols, this means that the first defini
 to `G(n - k, V; F)` and also to `G(k, V →ₗ[F] F; F)`, where `n` is the dimension of `V`.
 
 ## TODO
+
 - Define and recover the subspace-definition (i.e. the first definition above).
 - Define the functor `Module.Grassmannian.functor R M k` that sends an `R`-algebra `A` to the set
   `G(k, A ⊗[R] M; A)`.

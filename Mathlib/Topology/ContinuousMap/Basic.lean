@@ -458,6 +458,7 @@ noncomputable def lift : C(Y, Z) where
 
 /--
 The obvious triangle induced by `IsQuotientMap.lift` commutes:
+
 ```
      g
   X --→ Z

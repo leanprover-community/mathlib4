@@ -15,6 +15,7 @@ import Mathlib.Tactic.Attr.Register
 # `applicative` instances
 
 This file provides `Applicative` instances for concrete functors:
+
 * `id`
 * `Functor.comp`
 * `Functor.const`

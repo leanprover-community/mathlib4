@@ -29,6 +29,7 @@ sheaf condition. This result will be used to further connect to other sheaf cond
 like `pairwise_intersections` and `equalizer_products`.
 
 ## References
+
 * This is the definition Lurie uses in [Spectral Algebraic Geometry][LurieSAG].
 -/
 

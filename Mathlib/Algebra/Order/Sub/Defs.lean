@@ -39,7 +39,7 @@ TODO: maybe we should make a multiplicative version of this, so that we can repl
 lemmas about subtraction/division in `Ordered[Add]CommGroup` with these.
 
 TODO: generalize `Nat.le_of_le_of_sub_le_sub_right`, `Nat.sub_le_sub_right_iff`,
-  `Nat.mul_self_sub_mul_self_eq`
+`Nat.mul_self_sub_mul_self_eq`
 -/
 
 @[expose] public section

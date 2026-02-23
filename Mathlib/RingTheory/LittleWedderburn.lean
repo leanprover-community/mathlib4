@@ -21,6 +21,7 @@ This file proves Wedderburn's Little Theorem.
 ## Future work
 
 A couple simple generalisations are possible:
+
 * A finite ring is commutative iff all its nilpotents lie in the center.
   [Chintala, Vineeth, *Sorry, the Nilpotents Are in the Center*][chintala2020]
 * A ring is commutative if all its elements have finite order.

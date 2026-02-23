@@ -22,6 +22,7 @@ public import Mathlib.Topology.ContinuousMap.Ordered
 In a locally compact group, we prove that two left-invariant measures `μ'` and `μ` which are finite
 on compact sets coincide, up to a normalizing scalar that we denote with `haarScalarFactor μ' μ`,
 in the following sense:
+
 * `integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport`: they give the same value to the
   integral of continuous compactly supported functions, up to a scalar.
 * `measure_isMulInvariant_eq_smul_of_isCompact_closure`: they give the same value to sets with

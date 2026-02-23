@@ -54,9 +54,9 @@ namespace TopologicalSpace
 variable {X Y : Type*}
 
 /-- Given `f : X → Y` and a topology on `Y`,
-  the induced topology on `X` is the collection of sets
-  that are preimages of some open set in `Y`.
-  This is the coarsest topology that makes `f` continuous. -/
+the induced topology on `X` is the collection of sets
+that are preimages of some open set in `Y`.
+This is the coarsest topology that makes `f` continuous. -/
 def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
   IsOpen s := ∃ t, IsOpen t ∧ f ⁻¹' t = s
   isOpen_univ := ⟨univ, isOpen_univ, preimage_univ⟩
@@ -74,9 +74,9 @@ instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpa
   induced (↑) t
 
 /-- Given `f : X → Y` and a topology on `X`,
-  the coinduced topology on `Y` is defined such that
-  `s : Set Y` is open if the preimage of `s` is open.
-  This is the finest topology that makes `f` continuous. -/
+the coinduced topology on `Y` is defined such that
+`s : Set Y` is open if the preimage of `s` is open.
+This is the finest topology that makes `f` continuous. -/
 def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
   IsOpen s := IsOpen (f ⁻¹' s)
   isOpen_univ := t.isOpen_univ
@@ -109,7 +109,7 @@ structure IsInducing (f : X → Y) : Prop where
   eq_induced : tX = tY.induced f
 
 /-- A function between topological spaces is an embedding if it is injective,
-  and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
+and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
 @[fun_prop, mk_iff]
 structure IsEmbedding (f : X → Y) : Prop extends IsInducing f where
   /-- A topological embedding is injective. -/
@@ -128,7 +128,7 @@ structure IsClosedEmbedding (f : X → Y) : Prop extends IsEmbedding f where
   isClosed_range : IsClosed <| range f
 
 /-- A function between topological spaces is a quotient map if it is surjective,
-  and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/
+and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/
 @[fun_prop, mk_iff isQuotientMap_iff']
 structure IsQuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     (f : X → Y) : Prop where

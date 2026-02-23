@@ -26,6 +26,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -465,7 +466,7 @@ open IsLocalization
 variable {M}
 
 /-- Given a map `f : R →+* S` and an element `r : R`, such that `f r` is invertible,
-  we may construct a map `Rᵣ →+* S`. -/
+we may construct a map `Rᵣ →+* S`. -/
 noncomputable abbrev awayLift (f : R →+* P) (r : R) (hr : IsUnit (f r)) :
     Localization.Away r →+* P :=
   IsLocalization.Away.lift r hr

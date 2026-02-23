@@ -26,6 +26,7 @@ The first step, which is used when initializing the tree,
 is computed by `initializeLazyEntryWithEta`.
 
 To compute all the keys at once, we have
+
 * `encodeExprWithEta`, which computes all possible key sequences.
 * `encodeExpr`, which computes the canonical key sequence.
   This will be used for expressions that are looked up in a `RefinedDiscrTree` using `getMatch`.
@@ -297,7 +298,7 @@ where
       | some xs =>
         let rec /--
           This variation on `List.fold` ensures that the array `keys`
-          isn't copied unnecessarily. -/
+        isn't copied unnecessarily. -/
         fold xs todo :=
           match xs with
           | [] => todo

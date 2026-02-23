@@ -12,6 +12,7 @@ public import Lean.Elab.Tactic.Config
 
 /-!
 # The `applyWith` tactic
+
 The `applyWith` tactic is like `apply`, but allows passing a custom configuration to the underlying
 `apply` operation.
 -/
@@ -24,7 +25,7 @@ open Lean Parser Meta Elab Tactic Term
 /-- At least one configuration option for tactics.
 
 If a configuration elaborator is defined as `declare_config_elab elabMyConfig MyConfigStruct`,
-a `manyConfig` syntax item ```cfg : TSyntax ``manyConfig``` can be passed to it using
+a `manyConfig` syntax item ``` cfg : TSyntax ``manyConfig ``` can be passed to it using
 `elabMyConfig (optConfigOf cfg)`.
 
 `optConfig` allows zero or more options, `manyConfig` requires at least one option.

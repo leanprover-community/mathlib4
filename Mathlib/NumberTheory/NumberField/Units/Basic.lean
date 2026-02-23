@@ -29,6 +29,7 @@ field `K` and its torsion subgroup.
   places `w` of `K`.
 
 ## Tags
+
 number field, units
 -/
 
@@ -181,7 +182,7 @@ theorem torsionOrder_pos :
     0 < torsionOrder K := Nat.pos_of_neZero (torsionOrder K)
 
 /-- If `k` does not divide `torsionOrder` then there are no nontrivial roots of unity of
-  order dividing `k`. -/
+order dividing `k`. -/
 theorem rootsOfUnity_eq_one {k : ℕ+} (hc : Nat.Coprime k (torsionOrder K))
     {ζ : (𝓞 K)ˣ} : ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
   rw [mem_rootsOfUnity]

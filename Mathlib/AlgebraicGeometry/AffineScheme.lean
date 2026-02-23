@@ -1026,6 +1026,7 @@ lemma iSup_basicOpen_of_span_eq_top {X : Scheme} (U) (s : Set Γ(X, U))
       (Set.subset_iUnion₂ (s := fun x _ ↦ (X.basicOpen x : Set X)) i hi))
 
 /-- Let `P` be a predicate on the affine open sets of `X` satisfying
+
 1. If `P` holds on `U`, then `P` holds on the basic open set of every section on `U`.
 2. If `P` holds for a family of basic open sets covering `U`, then `P` holds for `U`.
 3. There exists an affine open cover of `X` each satisfying `P`.

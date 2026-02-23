@@ -246,6 +246,7 @@ is the supremum of the extended gauges of the components of `x`
 with respect to the corresponding balanced set.
 
 This version assumes the following technical condition:
+
 - either `I` is the universal set;
 - or one of `x i`, `i ∈ I`, is nonzero;
 - or `𝕜` is nontrivially normed.

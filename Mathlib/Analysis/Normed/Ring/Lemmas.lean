@@ -60,7 +60,7 @@ section SeminormedRing
 variable [SeminormedRing α]
 
 /-- Seminormed ring structure on the product of finitely many seminormed rings,
-  using the sup norm. -/
+using the sup norm. -/
 instance Pi.seminormedRing {R : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (R i)] :
     SeminormedRing (∀ i, R i) :=
   { Pi.nonUnitalSeminormedRing, Pi.ring with }

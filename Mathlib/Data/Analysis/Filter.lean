@@ -26,8 +26,8 @@ open Set Filter
 
 -- TODO write doc strings
 /-- A `CFilter α σ` is a realization of a filter (base) on `α`,
-  represented by a type `σ` together with operations for the top element and
-  the binary `inf` operation. -/
+represented by a type `σ` together with operations for the top element and
+the binary `inf` operation. -/
 structure CFilter (α σ : Type*) [PartialOrder α] where
   f : σ → α
   pt : σ
@@ -76,7 +76,7 @@ theorem ofEquiv_val (E : σ ≃ τ) (F : CFilter α σ) (a : τ) : F.ofEquiv E a
 end
 
 /-- The filter represented by a `CFilter` is the collection of supersets of
-  elements of the filter base. -/
+elements of the filter base. -/
 def toFilter (F : CFilter (Set α) σ) : Filter α where
   sets := { a | ∃ b, F b ⊆ a }
   univ_sets := ⟨F.pt, subset_univ _⟩

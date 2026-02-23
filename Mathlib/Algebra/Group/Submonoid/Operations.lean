@@ -635,13 +635,16 @@ the definitionally convenient range (the parameter `hs` in the example below).
 A good example is the case of a morphism of monoids. A convenient definition for
 `MonoidHom.mrange` would be `(⊤ : Submonoid M).map f`. However since this lacks the required
 definitional convenience, we first define `Submonoid.copy` as follows:
+
 ```lean
 protected def copy (S : Submonoid M) (s : Set M) (hs : s = S) : Submonoid M :=
   { carrier  := s,
     one_mem' := hs.symm ▸ S.one_mem',
     mul_mem' := hs.symm ▸ S.mul_mem' }
 ```
+
 and then finally define:
+
 ```lean
 def mrange (f : M →* N) : Submonoid N :=
   ((⊤ : Submonoid M).map f).copy (Set.range f) Set.image_univ.symm
@@ -989,8 +992,8 @@ variable {ι : Type*} {M : ι → Type*} [∀ i, MulOneClass (M i)]
 `s : Π i, Submonoid f i`, `pi I s` is the submonoid of dependent functions `f : Π i, f i` such that
 `f i` belongs to `Pi I s` whenever `i ∈ I`. -/
 @[to_additive /-- A version of `Set.pi` for `AddSubmonoid`s. Given an index set `I` and a family
-  of submodules `s : Π i, AddSubmonoid f i`, `pi I s` is the `AddSubmonoid` of dependent functions
-  `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/]
+of submodules `s : Π i, AddSubmonoid f i`, `pi I s` is the `AddSubmonoid` of dependent functions
+`f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/]
 def pi (I : Set ι) (S : ∀ i, Submonoid (M i)) : Submonoid (∀ i, M i) where
   carrier := I.pi fun i => (S i).carrier
   one_mem' i _ := (S i).one_mem

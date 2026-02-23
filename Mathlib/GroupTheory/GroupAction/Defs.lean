@@ -465,7 +465,7 @@ This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instea
 `MulAction.orbit`, to avoid mentioning `Quotient.out`. -/
 @[to_additive
   /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
-
+  
   This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
   `AddAction.orbit`, to avoid mentioning `Quotient.out`. -/]
 def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=

@@ -27,16 +27,23 @@ importing `Multiset.Defs`.
 * `Multiset`: the type of finite sets with duplicates allowed.
 
 * `Coe (List α) (Multiset α)`: turn a list into a multiset by forgetting the order.
+
 * `Multiset.pmap`: map a partial function defined on a superset of the multiset's elements.
+
 * `Multiset.attach`: add a proof of membership to the elements of the multiset.
+
 * `Multiset.card`: number of elements of a multiset (counted with repetition).
 
 * `Membership α (Multiset α)` instance: `x ∈ s` if `x` has multiplicity at least one in `s`.
+
 * `Subset (Multiset α)` instance: `s ⊆ t` if every `x ∈ s` also enjoys `x ∈ t`.
+
 * `PartialOrder (Multiset α)` instance: `s ≤ t` if all `x` have multiplicity in
   `s` less than their multiplicity in `t`.
+
 * `Multiset.Pairwise`: `Pairwise r s` holds iff there exists a list of elements
   of `s` such that `r` holds pairwise.
+
 * `Multiset.Nodup`: `Nodup s` holds if the multiplicity of any element is at most 1.
 
 ## Notation (defined later)
@@ -66,7 +73,7 @@ open List Subtype Nat Function
 variable {α : Type*} {β : Type v} {γ : Type*}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
-  is a type of finite sets with duplicates allowed. -/
+is a type of finite sets with duplicates allowed. -/
 def Multiset.{u} (α : Type u) : Type u :=
   Quotient (List.isSetoid α)
 
@@ -137,9 +144,9 @@ section Subset
 variable {s : Multiset α} {a : α}
 
 /-- `s ⊆ t` is the lift of the list subset relation. It means that any
-  element with nonzero multiplicity in `s` has nonzero multiplicity in `t`,
-  but it does not imply that the multiplicity of `a` in `s` is less or equal than in `t`;
-  see `s ≤ t` for this relation. -/
+element with nonzero multiplicity in `s` has nonzero multiplicity in `t`,
+but it does not imply that the multiplicity of `a` in `s` is less or equal than in `t`;
+see `s ≤ t` for this relation. -/
 protected def Subset (s t : Multiset α) : Prop :=
   ∀ ⦃a : α⦄, a ∈ s → a ∈ t
 
@@ -174,7 +181,7 @@ end Subset
 
 
 /-- `s ≤ t` means that `s` is a sublist of `t` (up to permutation).
-  Equivalently, `s ≤ t` means that `count a s ≤ count a t` for all `a`. -/
+Equivalently, `s ≤ t` means that `count a s ≤ count a t` for all `a`. -/
 protected def Le (s t : Multiset α) : Prop :=
   (Quotient.liftOn₂ s t (· <+~ ·)) fun _ _ _ _ p₁ p₂ =>
     propext (p₂.subperm_left.trans p₁.subperm_right)
@@ -218,7 +225,7 @@ end
 
 
 /-- The cardinality of a multiset is the sum of the multiplicities
-  of all its elements, or simply the length of the underlying list. -/
+of all its elements, or simply the length of the underlying list. -/
 def card : Multiset α → ℕ := Quot.lift length fun _l₁ _l₂ => Perm.length_eq
 
 @[simp]
@@ -251,7 +258,7 @@ theorem coe_reverse (l : List α) : (reverse l : Multiset α) = l :=
 /-! ### Map for partial functions -/
 
 /-- Lift of the list `pmap` operation. Map a partial function `f` over a multiset
-  `s` whose elements are all in the domain of `f`. -/
+`s` whose elements are all in the domain of `f`. -/
 nonrec def pmap {p : α → Prop} (f : ∀ a, p a → β) (s : Multiset α) : (∀ a ∈ s, p a) → Multiset β :=
   Quot.recOn s (fun l H => ↑(pmap f l H)) fun l₁ l₂ (pp : l₁ ~ l₂) =>
     funext fun H₂ : ∀ a ∈ l₂, p a =>
@@ -280,7 +287,7 @@ theorem card_pmap {p : α → Prop} (f : ∀ a, p a → β) (s H) : card (pmap f
   Quot.inductionOn s (fun _l _H => length_pmap) H
 
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
-  a multiset on `{x // x ∈ s}`. -/
+a multiset on `{x // x ∈ s}`. -/
 def attach (s : Multiset α) : Multiset { x // x ∈ s } :=
   pmap Subtype.mk s fun _a => id
 
@@ -347,7 +354,7 @@ theorem pairwise_coe_iff_pairwise {r : α → α → Prop} (hr : Symmetric r) {l
 section Nodup
 
 /-- `Nodup s` means that `s` has no duplicates, i.e. the multiplicity of
-  any element is at most 1. -/
+any element is at most 1. -/
 def Nodup (s : Multiset α) : Prop :=
   Quot.liftOn s List.Nodup fun _ _ p => propext p.nodup_iff
 

@@ -28,11 +28,13 @@ A term preceded by `←` gets moved to the left, while a term without `←` gets
 * Singleton input: `move_add [a]` and `move_add [← a]`
 
   If `⊢ b + a + c` is (a summand in) the goal, then
+
   * `move_add [← a]` changes the goal to `a + b + c` (effectively, `a` moved to the left).
   * `move_add [a]` changes the goal to `b + c + a` (effectively, `a` moved to the right);
 
   The tactic reorders *all* sub-expressions of the target at the same time.
   For instance, if `⊢ 0 < if b + a < b + a + c then a + b else b + a` is the goal, then
+
   * `move_add [a]` changes the goal to `0 < if b + a < b + c + a then b + a else b + a`
     (`a` moved to the right in three sums);
   * `move_add [← a]` changes the goal to `0 < if a + b < a + b + c then a + b else a + b`
@@ -69,6 +71,7 @@ A term preceded by `←` gets moved to the left, while a term without `←` gets
   Thus, if again the target contains `2 * 3 + 4 * (5 + 6) + 4 * 7 + 10 * 10`, then
   `move_add [_, ← _, 4 * _]`
   matches
+
   * the first input (`_`) with `2 * 3`;
   * the second input (`_`) with `4 * (5 + 6)`;
   * the third input (`4 * _`) with `4 * 7`.
@@ -138,6 +141,7 @@ This section produces the permutations of the variables for `move_add`.
 The user controls the final order by passing a list of terms to the tactic.
 Each term can be preceded by `←` or not.
 In the final ordering,
+
 * terms preceded by `←` appear first,
 * terms not preceded by `←` appear last,
 * all remaining terms remain in their current relative order.
@@ -163,6 +167,7 @@ from `L` by only keeping the first component (i.e. `L.map Prod.fst`) has no dupl
 The properties that we mention here assume that this is the case.
 
 Thus, `weight L` is a function `α → ℤ` with the following properties:
+
 * if `(a, true)  ∈ L`, then `weight L a` is strictly negative;
 * if `(a, false) ∈ L`, then `weight L a` is strictly positive;
 * if neither `(a, true)` nor `(a, false)` is in `L`, then `weight L a = 0`.
@@ -183,6 +188,7 @@ def weight (L : List (α × Bool)) (a : α) : ℤ :=
 following the requirements imposed by `instructions : List (α × Bool)`.
 
 These are the requirements:
+
 * elements of `toReorder` that appear with `true` in `instructions` appear at the
   *beginning* of the reordered list, in the order in which they appear in `instructions`;
 * similarly, elements of `toReorder` that appear with `false` in `instructions` appear at the
@@ -191,6 +197,7 @@ These are the requirements:
   with the order that they had in `toReorder`.
 
 For example,
+
 * `reorderUsing [0, 1, 2] [(0, false)] = [1, 2, 0]`,
 * `reorderUsing [0, 1, 2] [(1, true)] = [1, 0, 2]`,
 * `reorderUsing [0, 1, 2] [(1, true), (0, false)] = [1, 2, 0]`.
@@ -209,7 +216,7 @@ def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List
 
 end reorder
 
-/-- `prepareOp sum` takes an `Expr`ession as input.  It assumes that `sum` is a well-formed
+/-- `prepareOp sum` takes an `Expr`ession as input. It assumes that `sum` is a well-formed
 term representing a repeated application of a binary operation and that the summands are the
 last two arguments passed to the operation.
 It returns the expression consisting of the operation with all its arguments already applied,
@@ -230,6 +237,7 @@ Such an expression is the result of `prepareOp`.
 
 If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList prepOp left_assoc? exs`
 returns
+
 * `prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`, if `left_assoc?` is `false`, and
 * `prepOp e₁ (prepOp e₂ (... prepOp (prepOp eₙ₋₁  eₙ))`, if `left_assoc?` is `true`.
 -/
@@ -272,6 +280,7 @@ partial def getOps (sum : Expr) : MetaM (Array ((Array Expr) × Expr)) := do
   return rest.foldl Array.append first
 
 /-- `rankSums op tgt instructions` takes as input
+
 * the name `op` of a binary operation,
 * an `Expr`ession `tgt`,
 * a list `instructions` of pair `(expression, Boolean)`.
@@ -318,6 +327,7 @@ as well as the sublist of `L` of elements that were not matched, also in the ord
 appeared in `L`.
 
 Example:
+
 ```lean
 #eval do
   let L := [mkNatLit 0, (← mkFreshExprMVar (some (mkConst ``Nat))), mkNatLit 0] -- i.e. [0, _, 0]
@@ -355,7 +365,7 @@ def moveOperSimpCtx : MetaM Simp.Context := do
   let simpThms ← simpNames.foldlM (·.addConst ·) ({} : SimpTheorems)
   Simp.mkContext {} (simpTheorems := #[simpThms])
 
-/-- `reorderAndSimp mv op instr` takes as input an `MVarId`  `mv`, the name `op` of a binary
+/-- `reorderAndSimp mv op instr` takes as input an `MVarId` `mv`, the name `op` of a binary
 operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
 
 * It creates a version `permuted_mv` of `mv` with subexpressions representing `op`-sums reordered
@@ -380,11 +390,12 @@ def reorderAndSimp (mv : MVarId) (instr : List (Expr × Bool)) :
     | (none, _) => return permGoal
 
 /-- `unifyMovements` takes as input
+
 * an array of `Expr × Bool × Syntax`, as in the output of `parseArrows`,
 * the `Name` `op` of a binary operation,
 * an `Expr`ession `tgt`.
-It unifies each `Expr`ession appearing as a first factor of the array with the atoms
-for the operation `op` in the expression `tgt`, returning
+  It unifies each `Expr`ession appearing as a first factor of the array with the atoms
+  for the operation `op` in the expression `tgt`, returning
 * the lists of pairs of a matched subexpression with the corresponding `Bool`ean;
 * a pair of a list of error messages and the corresponding list of Syntax terms where the error
   should be thrown;
@@ -410,12 +421,13 @@ open Elab Parser Tactic
 /-- `parseArrows` parses an input of the form `[a, ← b, _ * (1 : ℤ)]`, consisting of a list of
 terms, each optionally preceded by the arrow `←`.
 It returns an array of triples consisting of
+
 * the `Expr`ession corresponding to the parsed term,
 * the `Bool`ean `true` if the arrow is present in front of the term,
 * the underlying `Syntax` of the given term.
 
 E.g. convert `[a, ← b, _ * (1 : ℤ)]` to
-``[(a, false, `(a)), (b, true, `(b)), (_ * 1, false, `(_ * 1))]``.
+`` [(a, false, `(a)), (b, true, `(b)), (_ * 1, false, `(_ * 1))] ``.
 -/
 def parseArrows : TSyntax `Lean.Parser.Tactic.rwRuleSeq → TermElabM (Array (Expr × Bool × Syntax))
   | `(rwRuleSeq| [$rs,*]) => do

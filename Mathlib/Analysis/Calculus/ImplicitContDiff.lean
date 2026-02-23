@@ -21,6 +21,7 @@ that `φ a = b`, and `f x (φ x) = f a b` holds for all `x` in a neighbourhood o
 `φ` is $C^n$ at `a`.
 
 ## TODO
+
 * Local uniqueness of the implicit function
 * Derivative of the implicit function
 

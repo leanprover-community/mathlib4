@@ -13,6 +13,7 @@ public import Mathlib.Probability.Distributions.Gamma
 Define the Exponential measure over the reals.
 
 ## Main definitions
+
 * `exponentialPDFReal`: the function `r x ↦ r * exp (-(r * x)` for `0 ≤ x`
   or `0` else, which is the probability density function of an exponential distribution with
   rate `r` (when `hr : 0 < r`).
@@ -21,6 +22,7 @@ Define the Exponential measure over the reals.
 * `expMeasure`: an exponential measure on `ℝ`, parametrized by its rate `r`.
 
 ## Main results
+
 * `cdf_expMeasure_eq`: Proof that the CDF of the exponential measure equals the
   known function given as `r x ↦ 1 - exp (- (r * x))` for `0 ≤ x` or `0` else.
 -/
@@ -176,7 +178,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
       exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The CDF of the exponential distribution equals ``1 - exp (-(r * x))`` -/
+/-- The CDF of the exponential distribution equals `1 - exp (-(r * x))` -/
 lemma cdf_expMeasure_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
     cdf (expMeasure r) x = if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
   rw [cdf_expMeasure_eq_lintegral hr, lintegral_exponentialPDF_eq_antiDeriv hr x,

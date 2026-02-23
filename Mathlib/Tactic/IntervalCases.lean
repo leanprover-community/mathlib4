@@ -13,6 +13,7 @@ public import Mathlib.Tactic.NormNum
 # Case bash on variables in finite intervals
 
 This file provides the tactic `interval_cases`. `interval_cases n` will:
+
 1. inspect hypotheses looking for lower and upper bounds of the form `a ≤ n` or `a < n` and `n < b`
    or `n ≤ b`, including the bound `0 ≤ n` for `n : ℕ` automatically.
 2. call `fin_cases` on the synthesised hypothesis `n ∈ Set.Ico a b`,
@@ -253,6 +254,7 @@ def intMethods : Methods where
 `intervalCases` proves goal `g` by splitting into cases for each integer between the given bounds.
 
 Parameters:
+
 * `g`: the goal, which can have any type `⊢ tgt` (it works in both proofs and programs)
 * `e`: the scrutinee, the expression we are proving is bounded between integers
 * `e'`: a version of `e` used for error messages. (This is used by the `interval_cases` frontend
@@ -268,6 +270,7 @@ Parameters:
   by the type itself, e.g. if we are working over `Nat` or `Fin n`).
 
 Returns an array of `IntervalCasesSubgoal`, one per subgoal. A subgoal has the following fields:
+
 * `rhs`: the numeral expression for this case
 * `value`: the integral value of `rhs`
 * `goal`: the subgoal of type `⊢ e = rhs → tgt`
@@ -329,11 +332,13 @@ and if bounds are found,
 splits into separate cases for each possible value of `n`.
 
 As an example, in
+
 ```
 example (n : ℕ) (w₁ : n ≥ 3) (w₂ : n < 5) : n = 3 ∨ n = 4 := by
   interval_cases n
   all_goals simp
 ```
+
 after `interval_cases n`, the goals are `3 = 3 ∨ 3 = 4` and `4 = 3 ∨ 4 = 4`.
 
 You can also explicitly specify a lower and upper bound to use,

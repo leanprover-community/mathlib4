@@ -28,6 +28,7 @@ any collection of dependent functions on a topological space
 satisfying a "local predicate".
 
 As an application, we check that continuity is a local predicate in this sense, and provide
+
 * `TopCat.sheafToTop`: continuous functions into a topological space form a sheaf
 
 A sheaf constructed in this way has a natural map `stalkToFiber` from the stalks
@@ -57,6 +58,7 @@ namespace TopCat
 
 /-- Given a topological space `X : TopCat` and a type family `T : X → Type`,
 a `P : PrelocalPredicate T` consists of:
+
 * a family of predicates `P.pred`, one for each `U : Opens X`, of the form `(Π x : U, T x) → Prop`
 * a proof that if `f : Π x : V, T x` satisfies the predicate on `V : Opens X`, then
   the restriction of `f` to any open subset `U` also satisfies the predicate.
@@ -84,6 +86,7 @@ instance inhabitedPrelocalPredicate (T) [TopologicalSpace T] :
 variable {X} in
 /-- Given a topological space `X : TopCat` and a type family `T : X → Type`,
 a `P : LocalPredicate T` consists of:
+
 * a family of predicates `P.pred`, one for each `U : Opens X`, of the form `(Π x : U, T x) → Prop`
 * a proof that if `f : Π x : V, T x` satisfies the predicate on `V : Opens X`, then
   the restriction of `f` to any open subset `U` also satisfies the predicate, and

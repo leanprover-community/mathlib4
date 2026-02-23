@@ -439,6 +439,7 @@ end IsDedekindDomain
 
 /-!
 ### Height one spectrum of a Dedekind domain
+
 If `R` is a Dedekind domain of Krull dimension 1, the maximal ideals of `R` are exactly its nonzero
 prime ideals.
 We define `HeightOneSpectrum` and provide lemmas to recover the facts that prime ideals of height
@@ -531,7 +532,7 @@ variable {R A}
 variable [IsDedekindDomain A] {I : Ideal R} {J : Ideal A}
 
 /-- The map from ideals of `R` dividing `I` to the ideals of `A` dividing `J` induced by
-  a homomorphism `f : R/I →+* A/J` -/
+a homomorphism `f : R/I →+* A/J` -/
 @[simps]
 def idealFactorsFunOfQuotHom {f : R ⧸ I →+* A ⧸ J} (hf : Function.Surjective f) :
     {p : Ideal R // p ∣ I} →o {p : Ideal A // p ∣ J} where
@@ -579,7 +580,7 @@ variable [IsDedekindDomain R] (f : R ⧸ I ≃+* A ⧸ J)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between ideals of `R` dividing `I` and the ideals of `A` dividing `J` induced by
-  an isomorphism `f : R/I ≅ A/J`. -/
+an isomorphism `f : R/I ≅ A/J`. -/
 def idealFactorsEquivOfQuotEquiv : { p : Ideal R | p ∣ I } ≃o { p : Ideal A | p ∣ J } := by
   have f_surj : Function.Surjective (f : R ⧸ I →+* A ⧸ J) := f.surjective
   have fsym_surj : Function.Surjective (f.symm : A ⧸ J →+* R ⧸ I) := f.symm.surjective
@@ -970,9 +971,9 @@ theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emulti
 variable [DecidableEq R] [DecidableEq (Ideal R)]
 
 /-- The bijection between the set of prime factors of the ideal `⟨r⟩` and the set of prime factors
-  of `r` preserves `count` of the corresponding multisets. See
-  `multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
-  stated in terms of multiplicity. -/
+of `r` preserves `count` of the corresponding multisets. See
+`multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
+stated in terms of multiplicity. -/
 theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) :
     Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) =
         Multiset.count (normalize X) (normalizedFactors r) := by

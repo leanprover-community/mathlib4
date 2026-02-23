@@ -239,13 +239,13 @@ theorem TendstoUniformly.comp (h : TendstoUniformly F f p) (g : γ → α) :
   simpa [principal_univ, comap_principal] using h.comp g
 
 /-- Composing on the left by a uniformly continuous function preserves
-  uniform convergence on a filter -/
+uniform convergence on a filter -/
 theorem UniformContinuous.comp_tendstoUniformlyOnFilter [UniformSpace γ] {g : β → γ}
     (hg : UniformContinuous g) (h : TendstoUniformlyOnFilter F f p p') :
     TendstoUniformlyOnFilter (fun i => g ∘ F i) (g ∘ f) p p' := fun _u hu => h _ (hg hu)
 
 /-- Composing on the left by a uniformly continuous function preserves
-  uniform convergence on a set -/
+uniform convergence on a set -/
 theorem UniformContinuous.comp_tendstoUniformlyOn [UniformSpace γ] {g : β → γ}
     (hg : UniformContinuous g) (h : TendstoUniformlyOn F f p s) :
     TendstoUniformlyOn (fun i => g ∘ F i) (g ∘ f) p s := fun _u hu => h _ (hg hu)
@@ -560,7 +560,7 @@ theorem UniformCauchySeqOn.cauchy_map [hp : NeBot p] (hf : UniformCauchySeqOn F 
   filter_upwards [hf u hu] with p hp using hp x hx
 
 /-- If a sequence of functions is uniformly Cauchy on a set, then the values at each point form
-a Cauchy sequence.  See `UniformCauchySeqOn.cauchy_map` for the non-`atTop` case. -/
+a Cauchy sequence. See `UniformCauchySeqOn.cauchy_map` for the non-`atTop` case. -/
 theorem UniformCauchySeqOn.cauchySeq [Nonempty ι] [SemilatticeSup ι]
     (hf : UniformCauchySeqOn F atTop s) (hx : x ∈ s) :
     CauchySeq fun i ↦ F i x :=

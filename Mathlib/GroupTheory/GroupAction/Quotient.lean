@@ -19,6 +19,7 @@ public import Mathlib.GroupTheory.Subgroup.Centralizer
 # Properties of group actions involving quotient groups
 
 This file proves properties of group actions which use the quotient group construction, notably
+
 * the orbit-stabilizer theorem `MulAction.card_orbit_mul_card_stabilizer_eq_card_group`
 * the class formula `MulAction.selfEquivSigmaOrbitsQuotientStabilizer'`
 * Burnside's lemma `MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group`,
@@ -49,14 +50,14 @@ variable (β) [Monoid β] [MulAction β α] (H : Subgroup α)
 /-- A typeclass for when a `MulAction β α` descends to the quotient `α ⧸ H`. -/
 class QuotientAction : Prop where
   /-- The action fulfils a normality condition on products that lie in `H`.
-    This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
+  This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
   inv_mul_mem : ∀ (b : β) {a a' : α}, a⁻¹ * a' ∈ H → (b • a)⁻¹ * b • a' ∈ H
 
 /-- A typeclass for when an `AddAction β α` descends to the quotient `α ⧸ H`. -/
 class _root_.AddAction.QuotientAction {α : Type u} (β : Type v) [AddGroup α] [AddMonoid β]
   [AddAction β α] (H : AddSubgroup α) : Prop where
   /-- The action fulfils a normality condition on summands that lie in `H`.
-    This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
+  This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
   inv_mul_mem : ∀ (b : β) {a a' : α}, -a + a' ∈ H → -(b +ᵥ a) + (b +ᵥ a') ∈ H
 
 attribute [to_additive] MulAction.QuotientAction
@@ -399,7 +400,7 @@ noncomputable def selfEquivOrbitsQuotientProd'
 `α`. -/
 @[to_additive selfEquivOrbitsQuotientProd
   /-- If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by
-`α` and `α`. -/]
+  `α` and `α`. -/]
 noncomputable def selfEquivOrbitsQuotientProd (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
     β ≃ Quotient (MulAction.orbitRel α β) × α :=
   MulAction.selfEquivOrbitsQuotientProd' Quotient.out_eq' h

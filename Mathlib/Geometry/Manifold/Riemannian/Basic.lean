@@ -29,6 +29,7 @@ may endow the manifold with an emetric space structure, see `EMetricSpace.ofRiem
 By definition, it then satisfies the predicate `IsRiemannianManifold I M`.
 
 The following code block is the standard way to say "Let `M` be a `C^∞` Riemannian manifold".
+
 ```
 open scoped Bundle
 variable
@@ -39,6 +40,7 @@ variable
   [IsContMDiffRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]
   [IsRiemannianManifold I M]
 ```
+
 To register a `C^n` manifold for a general `n`, one should replace `[IsManifold I ∞ M]` with
 `[IsManifold I n M] [IsManifold I 1 M]`, where the second one is needed to ensure that the
 tangent bundle is well behaved (not necessary when `n` is concrete like 2 or 3 as there are

@@ -357,12 +357,12 @@ theorem Quotient.map_surjective {sa : Setoid α} {sb : Setoid β} {f : α → β
   lift_surjective _ _ <| .comp Quot.mk_surjective hf
 
 /-- Choose an element of the equivalence class using the axiom of choice.
-  Sound but noncomputable. -/
+Sound but noncomputable. -/
 noncomputable def Quot.out {r : α → α → Prop} (q : Quot r) : α :=
   Classical.choose (Quot.exists_rep q)
 
 /-- Unwrap the VM representation of a quotient to obtain an element of the equivalence class.
-  Computable but unsound. -/
+Computable but unsound. -/
 unsafe def Quot.unquot {r : α → α → Prop} : Quot r → α :=
   cast lcProof
 
@@ -371,7 +371,7 @@ theorem Quot.out_eq {r : α → α → Prop} (q : Quot r) : Quot.mk r q.out = q 
   Classical.choose_spec (Quot.exists_rep q)
 
 /-- Choose an element of the equivalence class using the axiom of choice.
-  Sound but noncomputable. -/
+Sound but noncomputable. -/
 noncomputable def Quotient.out {s : Setoid α} : Quotient s → α :=
   Quot.out
 
@@ -459,10 +459,10 @@ def trueSetoid : Setoid α :=
   ⟨_, true_equivalence⟩
 
 /-- `Trunc α` is the quotient of `α` by the always-true relation. This
-  is related to the propositional truncation in HoTT, and is similar
-  in effect to `Nonempty α`, but unlike `Nonempty α`, `Trunc α` is data,
-  so the VM representation is the same as `α`, and so this can be used to
-  maintain computability. -/
+is related to the propositional truncation in HoTT, and is similar
+in effect to `Nonempty α`, but unlike `Nonempty α`, `Trunc α` is data,
+so the VM representation is the same as `α`, and so this can be used to
+maintain computability. -/
 def Trunc.{u} (α : Sort u) : Sort u :=
   @Quotient α trueSetoid
 

@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Morita.Basic
 # Morita Equivalence between `R` and `Mₙ(R)`
 
 ## Main definitions
+
 - `ModuleCat.toMatrixModCat`: The functor from `Mod-R` to `Mod-Mₙ(R)` induced by
   `LinearMap.mapMatrixModule` and `Matrix.Module.matrixModule`.
 - `MatrixModCat.toModuleCat`: The functor from `Mod-Mₙ(R)` to `Mod-R` induced by sending `M` to
@@ -21,6 +22,7 @@ public import Mathlib.RingTheory.Morita.Basic
 - `moritaEquivalentToMatrix`: `moritaEquivalentToMatrix` is a `MoritaEquivalence`.
 
 ## Main results
+
 - `IsMoritaEquivalent.matrix`: `R` and `Mₙ(R)` are Morita equivalent.
 
 -/
@@ -34,7 +36,7 @@ variable (R : Type u) (ι : Type v) [Ring R] [Fintype ι] [DecidableEq ι]
 open CategoryTheory Matrix.Module
 
 /-- The functor from `Mod-R` to `Mod-Mₙ(R)` induced by `LinearMap.mapModule` and
-  `Matrix.matrixModule`. -/
+`Matrix.matrixModule`. -/
 @[simps]
 def ModuleCat.toMatrixModCat : ModuleCat R ⥤ ModuleCat (Matrix ι ι R) where
   obj M := ModuleCat.of (Matrix ι ι R) (ι → M)
@@ -73,7 +75,7 @@ lemma mem_toModuleCatObj (i : ι) {x : M} :
 
 variable {R} in
 /-- An `R`-linear map between `Eᵢᵢ • M` and `Eᵢᵢ • N` induced by an `Mₙ(R)`-linear map
-  from `M` to `N`. -/
+from `M` to `N`. -/
 @[simps!]
 def fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N] (i : ι)
     [Module R N] [IsScalarTower R (Matrix ι ι R) N] [IsScalarTower R (Matrix ι ι R) M]
@@ -95,7 +97,7 @@ lemma MatrixModCat.isScalarTower_toModuleCat (M : ModuleCat (Matrix ι ι R)) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor from the category of modules over `Mₙ(R)` to the category of modules over `R`
-  induced by sending `M` to the image of `Eᵢᵢ • ·` where `Eᵢᵢ` is the elementary matrix. -/
+induced by sending `M` to the image of `Eᵢᵢ • ·` where `Eᵢᵢ` is the elementary matrix. -/
 @[simps]
 def MatrixModCat.toModuleCat (i : ι) : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R :=
   letI (M : ModuleCat (Matrix ι ι R)) := Module.compHom M (Matrix.scalar (α := R) ι)
@@ -181,7 +183,7 @@ def MatrixModCat.counitIso (i : ι) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
-  an equivalence of categories. -/
+an equivalence of categories. -/
 @[simps, stacks 074D "(1)"]
 def ModuleCat.matrixEquivalence (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι ι R) where
   functor := ModuleCat.toMatrixModCat R ι

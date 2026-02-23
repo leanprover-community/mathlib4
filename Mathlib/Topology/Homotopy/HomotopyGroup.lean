@@ -32,6 +32,7 @@ We provide a group instance using path composition and show commutativity when `
 * commutative group instance `CommGroup (π_(n+2) X x)`.
 
 TODO:
+
 * `Ω^M (Ω^N X) ≃ₜ Ω^(M⊕N) X`, and `Ω^M X ≃ₜ Ω^N X` when `M ≃ N`. Similarly for `π_`.
 * Path-induced homomorphisms. Show that `HomotopyGroup.pi1EquivFundamentalGroup`
   is a group isomorphism.
@@ -63,12 +64,12 @@ def boundary (N : Type*) : Set (I^N) :=
 variable {N : Type*} [DecidableEq N]
 
 /-- The forward direction of the homeomorphism
-  between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
+between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
 abbrev splitAt (i : N) : (I^N) ≃ₜ I × I^{ j // j ≠ i } :=
   funSplitAt I i
 
 /-- The backward direction of the homeomorphism
-  between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
+between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
 abbrev insertAt (i : N) : (I × I^{ j // j ≠ i }) ≃ₜ I^N :=
   (funSplitAt I i).symm
 
@@ -93,8 +94,8 @@ instance LoopSpace.inhabited : Inhabited (Path x x) :=
   ⟨Path.refl x⟩
 
 /-- The `n`-dimensional generalized loops based at `x` in a space `X` are
-  continuous functions `I^n → X` that sends the boundary to `x`.
-  We allow an arbitrary indexing type `N` in place of `Fin n` here. -/
+continuous functions `I^n → X` that sends the boundary to `x`.
+We allow an arbitrary indexing type `N` in place of `Fin n` here. -/
 def GenLoop : Set C(I^N, X) :=
   {p | ∀ y ∈ Cube.boundary N, p y = x}
 
@@ -124,7 +125,7 @@ instance instContinuousEval : ContinuousEval (Ω^ N X x) (I^N) X :=
 instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := inferInstance
 
 /-- Copy of a `GenLoop` with a new map from the unit cube equal to the old one.
-  Useful to fix definitional equalities. -/
+Useful to fix definitional equalities. -/
 def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
   ⟨⟨g, h.symm ▸ f.1.2⟩, by convert f.2⟩
 
@@ -227,8 +228,8 @@ theorem to_from (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : toLoop i (fr
   ext; rfl
 
 /-- The `n+1`-dimensional loops are in bijection with the loops in the space of
-  `n`-dimensional loops with base point `const`.
-  We allow an arbitrary indexing type `N` in place of `Fin n` here. -/
+`n`-dimensional loops with base point `const`.
+We allow an arbitrary indexing type `N` in place of `Fin n` here. -/
 @[simps]
 def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const where
   toFun := toLoop i
@@ -252,7 +253,7 @@ abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
     (toContinuousMap <| Cube.insertAt i).continuous_precomp⟩
 
 /-- A homotopy between `n+1`-dimensional loops `p` and `q` constant on the boundary
-  seen as a homotopy between two paths in the space of `n`-dimensional paths. -/
+seen as a homotopy between two paths in the space of `n`-dimensional paths. -/
 def homotopyTo (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 (Cube.boundary N)) :
     C(I × I, C(I^{ j // j ≠ i }, X)) :=
   ((⟨_, ContinuousMap.continuous_curry⟩ : C(_, _)).comp <|
@@ -287,7 +288,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
   rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
 
 /-- The converse to `GenLoop.homotopyTo`: a homotopy between two loops in the space of
-  `n`-dimensional loops can be seen as a homotopy between two `n+1`-dimensional paths. -/
+`n`-dimensional loops can be seen as a homotopy between two `n+1`-dimensional paths. -/
 @[simps!] def homotopyFrom (i : N) {p q : Ω^ N X x} (H : (toLoop i p).Homotopy (toLoop i q)) :
     C(I × I^N, X) :=
   (ContinuousMap.comp ⟨_, ContinuousMap.continuous_uncurry⟩
@@ -357,7 +358,7 @@ end LoopHomeo
 end GenLoop
 
 /-- The `n`th homotopy group at `x` defined as the quotient of `Ω^n x` by the
-  `GenLoop.Homotopic` relation. -/
+`GenLoop.Homotopic` relation. -/
 def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type _ :=
   Quotient (GenLoop.Homotopic.setoid N x)
 
@@ -369,7 +370,7 @@ variable [DecidableEq N]
 open GenLoop
 
 /-- Equivalence between the homotopy group of X and the fundamental group of
-  `Ω^{j // j ≠ i} x`. -/
+`Ω^{j // j ≠ i} x`. -/
 def homotopyGroupEquivFundamentalGroup (i : N) :
     HomotopyGroup N X x ≃ FundamentalGroup (Ω^ { j // j ≠ i } X x) const :=
   Quotient.congr (loopHomeo i).toEquiv fun _ _ ↦ ⟨homotopicTo i, homotopicFrom i⟩
@@ -388,7 +389,7 @@ def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
   continuous_invFun := ContinuousMap.const'.2.subtype_mk _
 
 /-- The homotopy "group" indexed by an empty type is in bijection with
-  the path components of `X`, aka the `ZerothHomotopy`. -/
+the path components of `X`, aka the `ZerothHomotopy`. -/
 def homotopyGroupEquivZerothHomotopyOfIsEmpty (N x) [IsEmpty N] :
     HomotopyGroup N X x ≃ ZerothHomotopy X :=
   Quotient.congr (genLoopHomeoOfIsEmpty N x).toEquiv
@@ -427,7 +428,7 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
   `FundamentalGroupoid.fundamentalGroupoidFunctor` applied to `genLoopHomeoOfIsEmpty`,
   with possibly worse defeq. -/
 /-- The homotopy group at `x` indexed by a singleton is in bijection with the fundamental group,
-  i.e. the loops based at `x` up to homotopy. -/
+i.e. the loops based at `x` up to homotopy. -/
 def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
     HomotopyGroup N X x ≃ FundamentalGroup X x :=
   Quotient.congr (genLoopEquivOfUnique N) fun a₁ a₂ ↦ by
@@ -457,8 +458,8 @@ instance group (N) [DecidableEq N] [Nonempty N] : Group (HomotopyGroup N X x) :=
   (homotopyGroupEquivFundamentalGroup <| Classical.arbitrary N).group
 
 /-- Group structure on `HomotopyGroup` obtained by pulling back path composition along the
-  `i`th direction. The group structures for two different `i j : N` distribute over each
-  other, and therefore are equal by the Eckmann-Hilton argument. -/
+`i`th direction. The group structures for two different `i j : N` distribute over each
+other, and therefore are equal by the Eckmann-Hilton argument. -/
 abbrev auxGroup (i : N) : Group (HomotopyGroup N X x) :=
   (homotopyGroupEquivFundamentalGroup i).group
 
@@ -508,7 +509,7 @@ theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} :
   rfl
 
 /-- Multiplication on `HomotopyGroup N X x` is commutative for nontrivial `N`.
-  In particular, multiplication on `π_(n+2)` is commutative. -/
+In particular, multiplication on `π_(n+2)` is commutative. -/
 instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
   let h := exists_ne (Classical.arbitrary N)
   @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1 (isUnital_auxGroup <| Classical.choose h) _

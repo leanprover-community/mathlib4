@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 
 /-!
 # HasPullback
+
 `HasPullback f g` and `pullback f g` provides API for `HasLimit` and `limit` in the case of
 pullbacks.
 
@@ -22,6 +23,7 @@ pullbacks.
 
 * `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
   object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
+
 ```
   pullback f g ---pullback.fst f g---> X
       |                                |
@@ -38,6 +40,7 @@ pullback.snd f g                       f
   abbreviation for `HasColimitsOfShape WalkingSpan C`
 * `pushout f g`: Given a `HasPushout f g` instance, this function returns the choice of a colimit
   object corresponding to the pushout of `f` and `g`. It fits into the following diagram:
+
 ```
       X --------------f--------------> Y
       |                                |
@@ -48,6 +51,7 @@ pullback.snd f g                       f
 ```
 
 ## Main results & API
+
 * The following API is available for using the universal property of `pullback f g`:
   `lift`, `lift_fst`, `lift_snd`, `lift'`, `hom_ext` (for uniqueness).
 
@@ -62,6 +66,7 @@ pullback.snd f g                       f
 (The dual results for pushouts are also available)
 
 ## References
+
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/

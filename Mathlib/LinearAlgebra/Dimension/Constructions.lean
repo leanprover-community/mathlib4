@@ -154,7 +154,7 @@ theorem rank_prod : Module.rank R (M × M') =
     using ((chooseBasis R M).prod (chooseBasis R M')).mk_eq_rank.symm
 
 /-- If `M` and `M'` are free (and lie in the same universe), the rank of `M × M'` is
-  `(Module.rank R M) + (Module.rank R M')`. -/
+`(Module.rank R M) + (Module.rank R M')`. -/
 theorem rank_prod' : Module.rank R (M × M₁) = Module.rank R M + Module.rank R M₁ := by simp
 
 /-- The `finrank` of `M × M'` is `(finrank R M) + (finrank R M')`. -/
@@ -227,13 +227,13 @@ theorem rank_matrix (m : Type v) (n : Type w) [Finite m] [Finite n] :
     ← lift_lift.{w, max u v}, lift_id]
 
 /-- If `m` and `n` are finite and lie in the same universe, the rank of `m × n` matrices is
-  `(#n * #m).lift`. -/
+`(#n * #m).lift`. -/
 theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = Cardinal.lift.{u} (#m * #n) := by
   rw [rank_matrix, lift_mul, lift_umax.{v, u}]
 
 /-- If `m` and `n` are finite and lie in the same universe as `R`, the rank of `m × n` matrices
-  is `# m * # n`. -/
+is `# m * # n`. -/
 theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = #m * #n := by simp
 
@@ -259,7 +259,7 @@ theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i 
     mk_toNat_eq_card, card_sigma]
 
 /-- If `m` and `n` are `Fintype`, the `finrank` of `m × n` matrices over a module `M` is
-  `(Fintype.card m) * (Fintype.card n) * finrank R M`. -/
+`(Fintype.card m) * (Fintype.card n) * finrank R M`. -/
 theorem finrank_matrix (m n : Type*) [Fintype m] [Fintype n] :
     finrank R (Matrix m n M) = card m * card n * finrank R M := by simp [finrank]
 
@@ -364,7 +364,7 @@ theorem rank_tensorProduct :
   rw [← bM.mk_eq_rank'', ← bN.mk_eq_rank'', ← (bM.tensorProduct bN).mk_eq_rank'', Cardinal.mk_prod]
 
 /-- If `M` and `M'` lie in the same universe, the `S`-rank of `M ⊗[R] M'` is
-  `(Module.rank S M) * (Module.rank R M')`. -/
+`(Module.rank S M) * (Module.rank R M')`. -/
 theorem rank_tensorProduct' :
     Module.rank R (M ⊗[S] M₁) = Module.rank R M * Module.rank S M₁ := by simp
 

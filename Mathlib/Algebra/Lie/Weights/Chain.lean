@@ -48,6 +48,7 @@ We provide basic definitions and results to support `α`-chain techniques in thi
 It should be possible to unify some of the definitions here such as `LieModule.chainBotCoeff`,
 `LieModule.chainTopCoeff` with corresponding definitions such as `RootPairing.chainBotCoeff`,
 `RootPairing.chainTopCoeff`. This is not quite trivial since:
+
 * The definitions here allow for chains in representations of Lie algebras.
 * The proof that the roots of a Lie algebra are a root system currently depends on these results.
   (This can be resolved by proving the root reflection formula using the approach outlined in
@@ -237,7 +238,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   -- The lines below illustrate the cost of treating `LieSubmodule` as both a
   -- `Submodule` and a `LieSubmodule` simultaneously.
   #adaptation_note /-- 2025-06-18 (https://github.com/leanprover/lean4/issues/8804).
-    The `erw` causes a kernel timeout if there is no `subst`. -/
+  The `erw` causes a kernel timeout if there is no `subst`. -/
   subst a b N
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
   simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]

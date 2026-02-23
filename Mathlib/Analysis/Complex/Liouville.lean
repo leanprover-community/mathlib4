@@ -37,7 +37,7 @@ local postfix:100 "̂" => UniformSpace.Completion
 
 namespace Complex
 
-/-- **Cauchy's estimate for derivatives**:  If `f` is complex differentiable on an open disc of
+/-- **Cauchy's estimate for derivatives**: If `f` is complex differentiable on an open disc of
 radius `R > 0`, is continuous on its closure, and its values on the boundary circle of this disc
 are bounded from above by `C`, then the norm of its `n`-th derivative at the center is at most
 `n.factorial * C / R ^ n`. -/

@@ -12,6 +12,7 @@ public import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
 # Geometrically Integral Schemes
 
 ## Main results
+
 - `AlgebraicGeometry.GeometricallyIntegral`:
   We say that morphism `f : X ⟶ Y` is geometrically integral if for all `Spec K ⟶ Y` with `K`
   a field, `X ×[Y] Spec K` is integral.

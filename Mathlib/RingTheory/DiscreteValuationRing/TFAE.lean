@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Ideal.Cotangent
 
 In `IsDiscreteValuationRing.TFAE`, we show that the following are equivalent for a
 Noetherian local domain that is not a field `(R, m, k)`:
+
 - `R` is a discrete valuation ring
 - `R` is a valuation ring
 - `R` is a Dedekind domain
@@ -155,7 +156,8 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R
 /--
 Let `(R, m, k)` be a Noetherian local domain (possibly a field).
 The following are equivalent:
-0. `R` is a PID
+0\. `R` is a PID
+
 1. `R` is a valuation ring
 2. `R` is a Dedekind domain
 3. `R` is integrally closed with at most one non-zero prime ideal
@@ -197,7 +199,8 @@ theorem tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain
 /--
 The following are equivalent for a
 Noetherian local domain that is not a field `(R, m, k)`:
-0. `R` is a discrete valuation ring
+0\. `R` is a discrete valuation ring
+
 1. `R` is a valuation ring
 2. `R` is a Dedekind domain
 3. `R` is integrally closed with a unique non-zero prime ideal

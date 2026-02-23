@@ -324,7 +324,7 @@ lemma lmarginalPartialTraj_mono (a b : ℕ) {f g : (Π n, X n) → ℝ≥0∞} (
   lintegral_mono fun _ ↦ hfg _
 
 /-- Integrating `f` against `partialTraj κ a b x` is the same as integrating only over the variables
-  from `x_{a+1}` to `x_b`. -/
+from `x_{a+1}` to `x_b`. -/
 lemma lmarginalPartialTraj_eq_lintegral_map [∀ n, IsSFiniteKernel (κ n)] {f : (Π n, X n) → ℝ≥0∞}
     (mf : Measurable f) (x₀ : Π n, X n) :
     lmarginalPartialTraj κ a b f x₀ =

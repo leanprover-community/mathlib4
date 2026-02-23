@@ -12,7 +12,7 @@ public import Mathlib.Tactic.Ring.Compare
 /-!
 # linear_combination Tactic
 
-In this file, the `linear_combination` tactic is created.  This tactic, which
+In this file, the `linear_combination` tactic is created. This tactic, which
 works over `CommRing`s, attempts to simplify the target by creating a linear combination
 of a list of equalities and subtracting it from the target. A `Syntax.Tactic`
 object can also be passed into the tactic, allowing the user to specify a
@@ -24,9 +24,9 @@ inequalities is also supported.
 ## Implementation Notes
 
 This tactic works by creating a weighted sum of the given equations with the
-given coefficients.  Then, it subtracts the right side of the weighted sum
+given coefficients. Then, it subtracts the right side of the weighted sum
 from the left side so that the right side equals 0, and it does the same with
-the target.  Afterwards, it sets the goal to be the equality between the
+the target. Afterwards, it sets the goal to be the equality between the
 left-hand side of the new goal and the left-hand side of the new weighted sum.
 Lastly, calls a normalization tactic on this target.
 
@@ -52,6 +52,7 @@ inductive Expanded
 /-- The handling in `linear_combination` of left- and right-multiplication and scalar-multiplication
 and of division all five proceed according to the same logic, specified here: given a proof `p` of
 an (in)equality and a constant `c`,
+
 * if `p` is a proof of an equation, multiply/divide through by `c`;
 * if `p` is a proof of a non-strict inequality, run `positivity` to find a proof that `c` is
   nonnegative, then multiply/divide through by `c`, invoking the nonnegativity of `c` where needed;
@@ -81,6 +82,7 @@ def rescale (lems : Ineq.WithStrictness → Name) (ty : Option Expr) (p c : Term
 /--
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
+
 * `.proof eq p` means that `p` is a syntax corresponding to a proof of an equation.
   For example, if `h : a = b` then `expandLinearCombo (2 * h)` returns `.proof (c_add_pf 2 h)`
   which is a proof of `2 * a = 2 * b`.
@@ -226,6 +228,7 @@ specified linear combination of (in)equality hypotheses, or other (in)equality p
 which by default is ring-normalization.
 
 Example usage:
+
 ```
 example {a b : ℚ} (h1 : a = 1) (h2 : b = 3) : (a + b) / 2 = 2 := by
   linear_combination (h1 + h2) / 2
@@ -265,7 +268,7 @@ The expressions can be arbitrary proof terms proving (in)equalities;
 most commonly they are hypothesis names `h1`, `h2`, ....
 
 The left and right sides of all the (in)equalities should have the same type `α`, and the
-coefficients should also have type `α`.  For full functionality `α` should be a commutative ring --
+coefficients should also have type `α`. For full functionality `α` should be a commutative ring --
 strictly speaking, a commutative semiring with "cancellative" addition (in the semiring case,
 negation and subtraction will be handled "formally" as if operating in the enveloping ring). If a
 nonstandard normalization is used (for example `abel` or `skip`), the tactic will work over types
@@ -275,6 +278,7 @@ call.
 
 The variant `linear_combination (norm := tac) e` specifies explicitly the "normalization tactic"
 `tac` to be run on the subgoal(s) after constructing the linear combination.
+
 * The default normalization tactic is `ring1` (for equalities) or `Mathlib.Tactic.Ring.prove{LE,LT}`
   (for inequalities). These are finishing tactics: they close the goal or fail.
 * When working in algebraic categories other than commutative rings -- for example fields, abelian
@@ -288,7 +292,7 @@ The variant `linear_combination (norm := tac) e` specifies explicitly the "norma
 The variant `linear_combination (exp := n) e` will take the goal to the `n`th power before
 subtracting the combination `e`. In other words, if the goal is `t1 = t2`,
 `linear_combination (exp := n) e` will change the goal to `(t1 - t2)^n = 0` before proceeding as
-above.  This variant is implemented only for linear combinations of equalities (i.e., not for
+above. This variant is implemented only for linear combinations of equalities (i.e., not for
 inequalities).
 -/
 syntax (name := linearCombination) "linear_combination"

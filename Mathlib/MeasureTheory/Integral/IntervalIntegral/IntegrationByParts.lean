@@ -13,6 +13,7 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 # Integration by parts and by substitution
 
 We derive additional integration techniques from FTC-2:
+
 * `intervalIntegral.integral_mul_deriv_eq_deriv_mul` - integration by parts
 * `intervalIntegral.integral_comp_mul_deriv''` - integration by substitution
 
@@ -68,7 +69,7 @@ theorem integral_deriv_mul_eq_sub_of_hasDerivAt (hu : ContinuousOn u [[a, b]])
 
 /-- The integral of the derivative of a product of two maps.
 Special case of `integral_deriv_mul_eq_sub_of_hasDeriv_right` where the functions have a
-  one-sided derivative at the endpoints. -/
+one-sided derivative at the endpoints. -/
 theorem integral_deriv_mul_eq_sub_of_hasDerivWithinAt
     (hu : ∀ x ∈ [[a, b]], HasDerivWithinAt u (u' x) [[a, b]] x)
     (hv : ∀ x ∈ [[a, b]], HasDerivWithinAt v (v' x) [[a, b]] x)
@@ -83,7 +84,7 @@ theorem integral_deriv_mul_eq_sub_of_hasDerivWithinAt
     hu' hv'
 
 /-- Special case of `integral_deriv_mul_eq_sub_of_hasDeriv_right` where the functions have a
-  derivative at the endpoints. -/
+derivative at the endpoints. -/
 theorem integral_deriv_mul_eq_sub
     (hu : ∀ x ∈ [[a, b]], HasDerivAt u (u' x) x) (hv : ∀ x ∈ [[a, b]], HasDerivAt v (v' x) x)
     (hu' : IntervalIntegrable u' volume a b) (hv' : IntervalIntegrable v' volume a b) :

@@ -160,9 +160,9 @@ theorem signVariations_C_mul (P : Polynomial R) (hx : η ≠ 0) :
   simp [hx2, sign_mul]
 
 /-- If P's coefficients start with signs `[+, -, ...]`, then multiplying by a binomial `X - η`
-  commutes with `eraseLead` in the number of sign changes. This is because the product of
-  `P` and `X - η` has the pattern `[+, -, ...]` as well, so then `P.eraseLead` starts with
-  `[-,...]`, and multiplying by `X - η` gives `[-, ...]` too. -/
+commutes with `eraseLead` in the number of sign changes. This is because the product of
+`P` and `X - η` has the pattern `[+, -, ...]` as well, so then `P.eraseLead` starts with
+`[-,...]`, and multiplying by `X - η` gives `[-, ...]` too. -/
 lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCoeff P)
     (hc : P.nextCoeff < 0) :
     ((X - C η) * P).eraseLead.signVariations = ((X - C η) * P.eraseLead).signVariations := by

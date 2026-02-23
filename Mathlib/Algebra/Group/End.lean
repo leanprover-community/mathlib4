@@ -16,6 +16,7 @@ public import Mathlib.Tactic.Common
 # Monoids of endomorphisms, groups of automorphisms
 
 This file defines
+
 * the endomorphism monoid structure on `Function.End α := α → α`
 * the endomorphism monoid structure on `Monoid.End M := M →* M` and `AddMonoid.End M := M →+ M`
 * the automorphism group structure on `Equiv.Perm α := α ≃ α`
@@ -371,7 +372,7 @@ section Subtype
 variable {p : α → Prop} {f : Perm α}
 
 /-- If the permutation `f` fixes the subtype `{x // p x}`, then this returns the permutation
-  on `{x // p x}` induced by `f`. -/
+on `{x // p x}` induced by `f`. -/
 def subtypePerm (f : Perm α) (h : ∀ x, p (f x) ↔ p x) : Perm { x // p x } where
   toFun := fun x => ⟨f x, (h _).2 x.2⟩
   invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.2⟩
@@ -445,7 +446,7 @@ theorem subtypePerm_zpow (f : Perm α) (n : ℤ) (hf) :
 variable [DecidablePred p] {a : α}
 
 /-- The inclusion map of permutations on a subtype of `α` into permutations of `α`,
-  fixing the other points. -/
+fixing the other points. -/
 def ofSubtype : Perm (Subtype p) →* Perm α where
   toFun f := extendDomain f (Equiv.refl (Subtype p))
   map_one' := Equiv.Perm.extendDomain_one _
@@ -548,7 +549,7 @@ theorem swap_apply_apply (f : Perm α) (x y : α) : swap (f x) (f y) = f * swap 
 
 /-- Left-multiplying a permutation with `swap i j` twice gives the original permutation.
 
-  This specialization of `swap_mul_self` is useful when using cosets of permutations.
+This specialization of `swap_mul_self` is useful when using cosets of permutations.
 -/
 @[simp]
 theorem swap_mul_self_mul (i j : α) (σ : Perm α) : Equiv.swap i j * (Equiv.swap i j * σ) = σ := by
@@ -556,7 +557,7 @@ theorem swap_mul_self_mul (i j : α) (σ : Perm α) : Equiv.swap i j * (Equiv.sw
 
 /-- Right-multiplying a permutation with `swap i j` twice gives the original permutation.
 
-  This specialization of `swap_mul_self` is useful when using cosets of permutations.
+This specialization of `swap_mul_self` is useful when using cosets of permutations.
 -/
 @[simp]
 theorem mul_swap_mul_self (i j : α) (σ : Perm α) : σ * Equiv.swap i j * Equiv.swap i j = σ := by

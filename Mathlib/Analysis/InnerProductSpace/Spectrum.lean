@@ -17,6 +17,7 @@ This file covers the spectral theory of self-adjoint operators on an inner produ
 
 The first part of the file covers general properties, true without any condition on boundedness or
 compactness of the operator or finite-dimensionality of the underlying space, notably:
+
 * `LinearMap.IsSymmetric.conj_eigenvalue_eq_self`: the eigenvalues are real
 * `LinearMap.IsSymmetric.orthogonalFamily_eigenspaces`: the eigenspaces are orthogonal
 * `LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces`: the restriction of the operator to
@@ -24,18 +25,19 @@ compactness of the operator or finite-dimensionality of the underlying space, no
 
 The second part of the file covers properties of self-adjoint operators in finite dimension.
 Letting `T` be a self-adjoint operator on a finite-dimensional inner product space `T`,
+
 * The definition `LinearMap.IsSymmetric.diagonalization` provides a linear isometry equivalence `E`
-  to the direct sum of the eigenspaces of `T`.  The theorem
+  to the direct sum of the eigenspaces of `T`. The theorem
   `LinearMap.IsSymmetric.diagonalization_apply_self_apply` states that, when `T` is transferred via
   this equivalence to an operator on the direct sum, it acts diagonally.
 * The definition `LinearMap.IsSymmetric.eigenvectorBasis` provides an orthonormal basis for `E`
   consisting of eigenvectors of `T`, with `LinearMap.IsSymmetric.eigenvalues` giving the
-  corresponding list of eigenvalues, as real numbers.  The definition
+  corresponding list of eigenvalues, as real numbers. The definition
   `LinearMap.IsSymmetric.eigenvectorBasis` gives the associated linear isometry equivalence
   from `E` to Euclidean space, and the theorem
   `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply` states that, when `T` is
   transferred via this equivalence to an operator on Euclidean space, it acts diagonally.
-* `LinearMap.IsSymmetric.eigenvalues` gives the eigenvalues in decreasing order.  This is
+* `LinearMap.IsSymmetric.eigenvalues` gives the eigenvalues in decreasing order. This is
   done for several reasons: (i) This agrees with the standard convention of listing singular
   values in decreasing order, with the operator norm as the first singular value
   (ii) For positive compact operators on an infinite-dimensional space, one can list the nonzero
@@ -198,7 +200,7 @@ section Version2
 variable {n : ℕ}
 
 set_option backward.privateInPublic true in
-/-- Unsorted eigenvalues and eigenvectors.  These private definitions should not be used directly.
+/-- Unsorted eigenvalues and eigenvectors. These private definitions should not be used directly.
 Instead use the functions eigenvalues and eigenvectorBasis defined below. -/
 private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (i : Fin n) : ℝ :=
@@ -275,7 +277,7 @@ theorem card_filter_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank �
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
-finite-dimensional inner product space `E`.  Eigenvectors are sorted in decreasing
+finite-dimensional inner product space `E`. Eigenvectors are sorted in decreasing
 order of their eigenvalues. -/
 noncomputable irreducible_def eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     OrthonormalBasis (Fin n) 𝕜 E :=

@@ -15,10 +15,11 @@ group of units `Rˣ` has a natural `C^n` manifold structure modelled on `R` give
 into `R`. Together with the smoothness of the multiplication and inverse of its elements, `Rˣ` forms
 a Lie group.
 
-An important special case of this construction is the general linear group.  For a normed space `V`
+An important special case of this construction is the general linear group. For a normed space `V`
 over a field `𝕜`, the `𝕜`-linear endomorphisms of `V` are a normed `𝕜`-algebra (see
 `ContinuousLinearMap.toNormedAlgebra`), so this construction provides a Lie group structure on
 its group of units, the general linear group GL(`𝕜`, `V`), as demonstrated by:
+
 ```
 example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : WithTop ℕ∞) :
     LieGroup 𝓘(𝕜, V →L[𝕜] V) n (V →L[𝕜] V)ˣ := inferInstance

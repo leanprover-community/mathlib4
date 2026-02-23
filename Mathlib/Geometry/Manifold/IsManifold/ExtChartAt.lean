@@ -34,8 +34,10 @@ in general, but we can still register them as `PartialEquiv`s.
 
 * `Manifold.locallyCompact_of_finiteDimensional`: a finite-dimensional manifold
   modelled on a locally compact field (such as ℝ, ℂ or the `p`-adic numbers) is locally compact
+
 * `LocallyCompactSpace.of_locallyCompact_manifold`: a locally compact manifold must be modelled
   on a locally compact space.
+
 * `FiniteDimensional.of_locallyCompact_manifold`: a locally compact manifold must be modelled
   on a finite-dimensional space
 

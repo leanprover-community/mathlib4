@@ -41,6 +41,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -121,7 +122,7 @@ instance : Top (Subgroup G) :=
 This is the group version of `Submonoid.topEquiv`. -/
 @[to_additive (attr := simps!)
       /-- The top additive subgroup is isomorphic to the additive group.
-
+      
       This is the additive group version of `AddSubmonoid.topEquiv`. -/]
 def topEquiv : (⊤ : Subgroup G) ≃* G :=
   Submonoid.topEquiv
@@ -371,7 +372,7 @@ only require showing `p` is preserved by multiplication by elements in `k`. -/
       /-- An induction principle for additive closure membership. If `p`
       holds for `0` and all elements of `k`, and is preserved under addition and inverses, then `p`
       holds for all elements of the additive closure of `k`.
-
+      
       See also `AddSubgroup.closure_induction_left` and `AddSubgroup.closure_induction_left` for
       versions that only require showing `p` is preserved by addition by elements in `k`. -/]
 theorem closure_induction {p : (g : G) → g ∈ closure k → Prop}

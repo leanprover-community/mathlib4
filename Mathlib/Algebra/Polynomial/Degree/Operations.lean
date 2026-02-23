@@ -13,9 +13,10 @@ public import Mathlib.Algebra.Polynomial.Degree.Defs
 # Lemmas for calculating the degree of univariate polynomials
 
 ## Main results
+
 - `degree_mul` : The degree of the product is the sum of degrees
 - `leadingCoeff_add_of_degree_eq` and `leadingCoeff_add_of_degree_lt` :
-    The leading coefficient of a sum is determined by the leading coefficients and degrees
+  The leading coefficient of a sum is determined by the leading coefficients and degrees
 -/
 
 @[expose] public section
@@ -684,7 +685,7 @@ lemma degree_mul : degree (p * q) = degree p + degree q :=
     else degree_mul' <| mul_ne_zero (mt leadingCoeff_eq_zero.1 hp0) (mt leadingCoeff_eq_zero.1 hq0)
 
 /-- `degree` as a monoid homomorphism between `R[X]` and `Multiplicative (WithBot ℕ)`.
-  This is useful to prove results about multiplication and degree. -/
+This is useful to prove results about multiplication and degree. -/
 def degreeMonoidHom [Nontrivial R] : R[X] →* Multiplicative (WithBot ℕ) where
   toFun := degree
   map_one' := degree_one
@@ -704,7 +705,7 @@ lemma leadingCoeff_mul (p q : R[X]) : leadingCoeff (p * q) = leadingCoeff p * le
       exact mul_ne_zero (mt leadingCoeff_eq_zero.1 hp) (mt leadingCoeff_eq_zero.1 hq)
 
 /-- `Polynomial.leadingCoeff` bundled as a `MonoidHom` when `R` has `NoZeroDivisors`, and thus
-  `leadingCoeff` is multiplicative -/
+`leadingCoeff` is multiplicative -/
 def leadingCoeffHom : R[X] →* R where
   toFun := leadingCoeff
   map_one' := by simp

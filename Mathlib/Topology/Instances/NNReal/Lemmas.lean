@@ -21,8 +21,7 @@ The basic lemmas for the natural topology on `ℝ≥0` .
 Various mathematically trivial lemmas are proved about the compatibility
 of limits and sums in `ℝ≥0` and `ℝ`. For example
 
-* `tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
-  Filter.Tendsto (fun a, (m a : ℝ)) f (𝓝 (x : ℝ)) ↔ Filter.Tendsto m f (𝓝 x)`
+* `tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} : Filter.Tendsto (fun a, (m a : ℝ)) f (𝓝 (x : ℝ)) ↔ Filter.Tendsto m f (𝓝 x)`
 
 says that the limit of a filter along a map to `ℝ≥0` is the same in `ℝ` and `ℝ≥0`, and
 

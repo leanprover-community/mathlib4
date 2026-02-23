@@ -18,6 +18,7 @@ consider multiple (semi)norms on a given ring.
 ## Main declarations
 
 For a ring `R`:
+
 * `RingSeminorm`: A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes
   nonnegative values, is subadditive and submultiplicative and such that `f (-x) = f x` for all
   `x ∈ R`.
@@ -38,6 +39,7 @@ absolute values; see `Mathlib/Algebra/Order/AbsoluteValue/Basic.lean` for the bu
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags
+
 ring_seminorm, ring_norm
 -/
 
@@ -49,14 +51,14 @@ open NNReal
 variable {R : Type*}
 
 /-- A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes nonnegative
-  values, is subadditive and submultiplicative and such that `f (-x) = f x` for all `x ∈ R`. -/
+values, is subadditive and submultiplicative and such that `f (-x) = f x` for all `x ∈ R`. -/
 structure RingSeminorm (R : Type*) [NonUnitalNonAssocRing R] extends AddGroupSeminorm R where
   /-- The property of a `RingSeminorm` that for all `x` and `y` in the ring, the norm of `x * y` is
   less than the norm of `x` times the norm of `y`. -/
   mul_le' : ∀ x y : R, toFun (x * y) ≤ toFun x * toFun y
 
 /-- A function `f : R → ℝ` is a norm on a (nonunital) ring if it is a seminorm and `f x = 0`
-  implies `x = 0`. -/
+implies `x = 0`. -/
 structure RingNorm (R : Type*) [NonUnitalNonAssocRing R] extends RingSeminorm R, AddGroupNorm R
 
 /-- A multiplicative seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero and
@@ -197,7 +199,7 @@ variable [Ring R] (p : RingSeminorm R)
 open Filter Nat Real
 
 /-- If `f` is a ring seminorm on `R` with `f 1 ≤ 1` and `s : ℕ → ℕ` is bounded by `n`, then
-  `f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))` is eventually bounded. -/
+`f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))` is eventually bounded. -/
 theorem isBoundedUnder (hp : p 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x : R} (ψ : ℕ → ℕ) :
     IsBoundedUnder LE.le atTop fun n : ℕ => p (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ)) := by
   have h_le : ∀ m : ℕ, p (x ^ s (ψ m)) ^ (1 / (ψ m : ℝ)) ≤ p x ^ ((s (ψ m) : ℝ) / (ψ m : ℝ)) := by
@@ -246,7 +248,7 @@ theorem ext {p q : RingNorm R} : (∀ x, p x = q x) → p = q :=
 variable (R)
 
 /-- The trivial norm on a ring `R` is the `RingNorm` taking value `0` at `0` and `1` at every
-  other element. -/
+other element. -/
 instance [DecidableEq R] : One (RingNorm R) :=
   ⟨{ (1 : RingSeminorm R), (1 : AddGroupNorm R) with }⟩
 

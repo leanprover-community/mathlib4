@@ -33,7 +33,7 @@ open Topology
 open scoped Pointwise
 
 /-- A topological additive group is nonarchimedean if every neighborhood of 0
-  contains an open subgroup. -/
+contains an open subgroup. -/
 class NonarchimedeanAddGroup (G : Type*) [AddGroup G] [TopologicalSpace G] : Prop
   extends IsTopologicalAddGroup G where
   is_nonarchimedean : ∀ U ∈ 𝓝 (0 : G), ∃ V : OpenAddSubgroup G, (V : Set G) ⊆ U
@@ -45,7 +45,7 @@ class NonarchimedeanGroup (G : Type*) [Group G] [TopologicalSpace G] : Prop
   is_nonarchimedean : ∀ U ∈ 𝓝 (1 : G), ∃ V : OpenSubgroup G, (V : Set G) ⊆ U
 
 /-- A topological ring is nonarchimedean if its underlying topological additive
-  group is nonarchimedean. -/
+group is nonarchimedean. -/
 class NonarchimedeanRing (R : Type*) [Ring R] [TopologicalSpace R] : Prop
   extends IsTopologicalRing R where
   is_nonarchimedean : ∀ U ∈ 𝓝 (0 : R), ∃ V : OpenAddSubgroup R, (V : Set R) ⊆ U
@@ -118,7 +118,7 @@ instance : NonarchimedeanRing (R × S) where
   is_nonarchimedean := NonarchimedeanAddGroup.is_nonarchimedean
 
 /-- Given an open subgroup `U` and an element `r` of a nonarchimedean ring, there is an open
-  subgroup `V` such that `r • V` is contained in `U`. -/
+subgroup `V` such that `r • V` is contained in `U`. -/
 theorem left_mul_subset (U : OpenAddSubgroup R) (r : R) :
     ∃ V : OpenAddSubgroup R, r • (V : Set R) ⊆ U :=
   ⟨U.comap (AddMonoidHom.mulLeft r) (continuous_mul_left r), (U : Set R).image_preimage_subset _⟩

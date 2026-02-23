@@ -24,9 +24,9 @@ This file gathers some results about non-local rings.
 - `not_isLocalRing_of_prod_of_nontrivial`: the product of two nontrivial (semi)rings is not
   local.
 - `not_isLocalRing_tfae`: the following conditions are equivalent for a commutative (semi)ring `R`:
-    * `R` is not local,
-    * the maximal spectrum of `R` is nontrivial,
-    * `R` has two distinct maximal ideals.
+  * `R` is not local,
+  * the maximal spectrum of `R` is nontrivial,
+  * `R` has two distinct maximal ideals.
 - `exists_surjective_of_not_isLocalRing`: there exists a surjective ring homomorphism from
   a non-local commutative ring onto a product of two fields.
 
@@ -63,6 +63,7 @@ theorem not_isLocalRing_of_prod_of_nontrivial (R₁ R₂ : Type*) [Semiring R₁
   not_isLocalRing_def ha hb (by simp)
 
 /-- The following conditions are equivalent for a commutative (semi)ring `R`:
+
 * `R` is not local,
 * the maximal spectrum of `R` is nontrivial,
 * `R` has two distinct maximal ideals.

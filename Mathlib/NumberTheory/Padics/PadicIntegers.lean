@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
 This file defines the `p`-adic integers `ℤ_[p]` as the subtype of `ℚ_[p]` with norm `≤ 1`.
 We show that `ℤ_[p]`
+
 * is complete,
 * is nonarchimedean,
 * is a normed ring,
@@ -170,6 +171,7 @@ def ofIntSeq (seq : ℕ → ℤ) (h : IsCauSeq (padicNorm p) fun n => seq n) : �
 /-! ### Instances
 
 We now show that `ℤ_[p]` is a
+
 * complete metric space
 * normed ring
 * integral domain

@@ -21,7 +21,7 @@ the derived series of a group.
 ## Main definitions
 
 * `derivedSeries G n` : the `n`th term in the derived series of `G`, defined by iterating
-    `general_commutator` starting with the top subgroup
+  `general_commutator` starting with the top subgroup
 * `IsSolvable G` : the group `G` is solvable
 -/
 
@@ -36,7 +36,7 @@ section derivedSeries
 variable (G)
 
 /-- The derived series of the group `G`, obtained by starting from the subgroup `⊤` and repeatedly
-  taking the commutator of the previous subgroup with itself for `n` times. -/
+taking the commutator of the previous subgroup with itself for `n` times. -/
 def derivedSeries : ℕ → Subgroup G
   | 0 => ⊤
   | n + 1 => ⁅derivedSeries n, derivedSeries n⁆
@@ -100,7 +100,7 @@ section Solvable
 variable (G)
 
 /-- A group `G` is solvable if its derived series is eventually trivial. We use this definition
-  because it's the most convenient one to work with. -/
+because it's the most convenient one to work with. -/
 @[mk_iff isSolvable_def]
 class IsSolvable : Prop where
   /-- A group `G` is solvable if its derived series is eventually trivial. -/

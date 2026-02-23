@@ -18,6 +18,7 @@ measurable sets `s` of `β`, `a ↦ κ a s` is measurable.
 ## Main definitions
 
 Classes of kernels:
+
 * `ProbabilityTheory.Kernel α β`: kernels from `α` to `β`.
 * `ProbabilityTheory.IsMarkovKernel κ`: a kernel from `α` to `β` is said to be a Markov kernel
   if for all `a : α`, `k a` is a probability measure.
@@ -54,12 +55,12 @@ namespace ProbabilityTheory
 iff `∀ s : Set β, MeasurableSet s → Measurable (fun a ↦ κ a s)`. -/
 structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
   /-- The underlying function of a kernel.
-
+  
   Do not use this function directly. Instead use the coercion coming from the `DFunLike`
   instance. -/
   toFun : α → Measure β
   /-- A kernel is a measurable map.
-
+  
   Do not use this lemma directly. Use `Kernel.measurable` instead. -/
   measurable' : Measurable toFun
 

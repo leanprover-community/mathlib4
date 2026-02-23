@@ -10,6 +10,7 @@ public meta import Mathlib.Tactic.Basic
 
 /-!
 # `choose` tactic
+
 Performs Skolemization, that is, given `h : ∀ a:α, ∃ b:β, p a b |- G` produces
 `f : α → β, hf: ∀ a, p a (f a) |- G`.
 
@@ -63,7 +64,7 @@ def ElimStatus.merge : ElimStatus → ElimStatus → ElimStatus
   | _, success => success
   | failure ts₁, failure ts₂ => failure (ts₁ ++ ts₂)
 
-/-- `mkFreshNameFrom orig base` returns `mkFreshUserName base` if ``orig = `_``
+/-- `mkFreshNameFrom orig base` returns `mkFreshUserName base` if `` orig = `_ ``
 and `orig` otherwise. -/
 def mkFreshNameFrom (orig base : Name) : CoreM Name :=
   if orig = `_ then mkFreshUserName base else pure orig
@@ -83,6 +84,7 @@ syntax chooseBinder := binderIdent <|> Batteries.ExtendedBinder.extBinderParenth
 
 open Batteries.ExtendedBinder in
 /-- Parse a `choose` argument from `chooseBinder` syntax. Accepts:
+
 - `x` - plain identifier
 - `_` - anonymous
 - `(x : T)` - identifier with type annotation
@@ -247,11 +249,13 @@ which will effectively cause `choose` to start with an `intro hyp`.
 
 Like `intro`, the `choose` tactic supports type annotations to specify the expected type
 of the introduced variables. This is useful for documentation and for catching mistakes early:
+
 ```
 example (h : ∃ n : ℕ, n > 0) : True := by
   choose (n : ℕ) (hn : n > 0) using h
   trivial
 ```
+
 If the provided type does not match the actual type, an error is raised.
 
 Examples:

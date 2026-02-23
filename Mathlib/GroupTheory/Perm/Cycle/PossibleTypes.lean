@@ -22,8 +22,8 @@ variable (α : Type*) [DecidableEq α] [Fintype α]
 section Ranges
 
 /-- For any `c : List ℕ` whose sum is at most `Fintype.card α`,
-  we can find `o : List (List α)` whose members have no duplicate,
-  whose lengths given by `c`, and which are pairwise disjoint -/
+we can find `o : List (List α)` whose members have no duplicate,
+whose lengths given by `c`, and which are pairwise disjoint -/
 theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     {c : List ℕ} (hc : c.sum ≤ Fintype.card α) :
     ∃ o : List (List α),
@@ -73,7 +73,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
 end Ranges
 
 /-- There are permutations with cycleType `m` if and only if
-  its sum is at most `Fintype.card α` and its members are at least 2. -/
+its sum is at most `Fintype.card α` and its members are at least 2. -/
 theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
     (∃ g : Equiv.Perm α, g.cycleType = m) ↔
       (m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) := by

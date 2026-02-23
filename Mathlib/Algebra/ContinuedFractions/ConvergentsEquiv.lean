@@ -29,17 +29,19 @@ $$
                                                        {b_3 + \dots}}}}
 $$
 One can compute the convergents of `c` in two ways:
+
 1. Directly evaluating the fraction described by `c` up to a given `n` (`convs'`)
 2. Using the recurrence (`convs`):
-  - `A₋₁ = 1,  A₀ = h,  Aₙ = bₙ₋₁ * Aₙ₋₁ + aₙ₋₁ * Aₙ₋₂`, and
-  - `B₋₁ = 0,  B₀ = 1,  Bₙ = bₙ₋₁ * Bₙ₋₁ + aₙ₋₁ * Bₙ₋₂`.
+
+- `A₋₁ = 1,  A₀ = h,  Aₙ = bₙ₋₁ * Aₙ₋₁ + aₙ₋₁ * Aₙ₋₂`, and
+- `B₋₁ = 0,  B₀ = 1,  Bₙ = bₙ₋₁ * Bₙ₋₁ + aₙ₋₁ * Bₙ₋₂`.
 
 To show the equivalence of the computations in the main theorem of this file
 `convs_eq_convs'`, we proceed by induction. The case `n = 0` is trivial.
 
 For `n + 1`, we first "squash" the `n + 1`th position of `c` into the `n`th position to obtain
 another continued fraction
-  `c' := [h; (a₀, b₀),..., (aₙ-₁, bₙ-₁), (aₙ, bₙ + aₙ₊₁ / bₙ₊₁), (aₙ₊₁, bₙ₊₁),...]`.
+`c' := [h; (a₀, b₀),..., (aₙ-₁, bₙ-₁), (aₙ, bₙ + aₙ₊₁ / bₙ₊₁), (aₙ₊₁, bₙ₊₁),...]`.
 This squashing process is formalised in section `Squash`. Note that directly evaluating `c` up to
 position `n + 1` is equal to evaluating `c'` up to `n`. This is shown in lemma
 `succ_nth_conv'_eq_squashGCF_nth_conv'`.
@@ -176,6 +178,7 @@ theorem succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq :
 
 
 /-- Given a gcf `g = [h; (a₀, b₀), (a₁, b₁), ...]`, we have
+
 - `squashGCF g 0 = [h + a₀ / b₀; (a₁, b₁), ...]`,
 - `squashGCF g (n + 1) = ⟨g.h, squashSeq g.s n⟩`
 -/

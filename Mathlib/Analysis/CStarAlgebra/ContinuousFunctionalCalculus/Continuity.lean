@@ -17,7 +17,7 @@ returns another element of the algebra `A`. This is the map `cfcHom`. The class
 `ContinuousFunctionalCalculus` declares that `cfcHom` is a continuous map from `C(spectrum R a, R)`
 to `A`. However, users generally interact with the continuous functional calculus through `cfc`,
 which operates on bare functions `f : R → R` instead and takes a junk value when `f` is not
-continuous on the spectrum of `a`.  In this file we provide some lemma concerning the continuity
+continuous on the spectrum of `a`. In this file we provide some lemma concerning the continuity
 of `cfc`, subject to natural hypotheses.
 
 However, the continuous functional calculus is *also* continuous in the variable `a`, but there
@@ -38,7 +38,6 @@ The continuity results in the function variable are valid for all scalar rings, 
 results in the variable `a` come in two flavors: those for `RCLike 𝕜` and those for `ℝ≥0`.
 
 ## Main results
-
 
 + `tendsto_cfc_fun`: If `F : X → R → R` tends to `f : R → R` uniformly on the spectrum of `a`, and
   all these functions are continuous on the spectrum, then `fun x ↦ cfc (F x) a` tends

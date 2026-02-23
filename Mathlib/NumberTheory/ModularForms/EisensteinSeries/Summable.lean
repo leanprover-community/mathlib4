@@ -64,7 +64,7 @@ lemma abs_norm_eq_max_natAbs_neg (n : ℕ) : ‖![1, -(n + 1 : ℤ)]‖ = n + 1 
 section bounding_functions
 
 /-- Auxiliary function used for bounding Eisenstein series, defined as
-  `z.im ^ 2 / (z.re ^ 2 + z.im ^ 2)`. -/
+`z.im ^ 2 / (z.re ^ 2 + z.im ^ 2)`. -/
 def r1 : ℝ := z.im ^ 2 / (z.re ^ 2 + z.im ^ 2)
 
 lemma r1_eq : r1 z = 1 / ((z.re / z.im) ^ 2 + 1) := by

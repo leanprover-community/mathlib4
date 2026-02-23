@@ -31,6 +31,7 @@ Historical note: mathlib used to define real numbers in an intermediate way, usi
 of uniform spaces but extending multiplication in an ad-hoc way.
 
 TODO:
+
 * Upgrade this isomorphism to a topological ring isomorphism.
 * Do the same comparison for p-adic numbers
 

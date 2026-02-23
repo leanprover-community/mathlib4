@@ -355,7 +355,7 @@ section cycleFactors
 
 open scoped List in
 /-- Given a list `l : List α` and a permutation `f : Perm α` whose nonfixed points are all in `l`,
-  recursively factors `f` into cycles. -/
+recursively factors `f` into cycles. -/
 def cycleFactorsAux [DecidableEq α] [Fintype α]
     (l : List α) (f : Perm α) (h : ∀ {x}, f x ≠ x → x ∈ l) :
     { pl : List (Perm α) // pl.prod = f ∧ (∀ g ∈ pl, IsCycle g) ∧ pl.Pairwise Disjoint } :=
@@ -464,7 +464,7 @@ def cycleFactors [Fintype α] [LinearOrder α] (f : Perm α) :
   cycleFactorsAux (sort (α := α) univ) f (fun {_ _} ↦ (mem_sort _).2 (mem_univ _))
 
 /-- Factors a permutation `f` into a list of disjoint cyclic permutations that multiply to `f`,
-  without a linear order. -/
+without a linear order. -/
 def truncCycleFactors [DecidableEq α] [Fintype α] (f : Perm α) :
     Trunc { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
   Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (cycleFactorsAux l f (h _)))

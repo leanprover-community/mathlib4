@@ -54,6 +54,7 @@ ways to move between tuples of length `n` and of length `n + 1` by adding/removi
 ### Adding in the middle
 
 For a **pivot** `p : Fin (n + 1)`,
+
 * `Fin.succAbove`: Send `i : Fin n` to
   * `i : Fin (n + 1)` if `i < p`,
   * `i + 1 : Fin (n + 1)` if `p ≤ i`.
@@ -1094,7 +1095,7 @@ private def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- `Fin.find p h` returns the smallest index `k : Fin n` where `p k` is satisfied,
-  given that it is satisfied for some `k`. -/
+given that it is satisfied for some `k`. -/
 protected def find {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) : Fin n :=
   (Fin.findX p h).1
 

@@ -30,7 +30,7 @@ namespace Mathlib.Tactic.Polyrith
 The `polyrith` tactic is no longer supported in Mathlib,
 because it relied on a defunct external service.
 
----
+______________________________________________________________________
 
 Attempts to prove polynomial equality goals through polynomial arithmetic
 on the hypotheses (and additional proof terms if the user specifies them).
@@ -44,6 +44,7 @@ is suggested to the user.
   `h1`, `h2`, `h3`, and proofs `t1`, `t2`, `t3`. It will ignore the rest of the local context.
 
 Notes:
+
 * This tactic only works with a working internet connection, since it calls Sage
   using the SageCell web API at <https://sagecell.sagemath.org/>.
   Many thanks to the Sage team and organization for allowing this use.

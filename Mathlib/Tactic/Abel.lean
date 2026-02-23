@@ -65,6 +65,7 @@ initialize registerTraceClass `abel.detail
 * `abel!`, `abel1!`, `abel_nf!` use a more aggressive reducibility setting to identify atoms.
 
 Examples:
+
 ```
 example [AddCommMonoid α] (a b : α) : a + (b + a) = a + a + b := by abel
 example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by abel
@@ -328,14 +329,15 @@ lemma subst_into_negg {α} [AddCommGroup α] (a ta t : α)
   simp [pra, prt]
 
 /-- Normalize a term `orig` of the form `smul e₁ e₂` or `smulg e₁ e₂`.
-  Normalized terms use `smul` for monoids and `smulg` for groups,
-  so there are actually four cases to handle:
-  * Using `smul` in a monoid just simplifies the pieces using `subst_into_smul`
-  * Using `smulg` in a group just simplifies the pieces using `subst_into_smulg`
-  * Using `smul a b` in a group requires converting `a` from a nat to an int and
-    then simplifying `smulg ↑a b` using `subst_into_smul_upcast`
-  * Using `smulg` in a monoid is impossible (or at least out of scope),
-    because you need a group argument to write a `smulg` term -/
+Normalized terms use `smul` for monoids and `smulg` for groups,
+so there are actually four cases to handle:
+
+* Using `smul` in a monoid just simplifies the pieces using `subst_into_smul`
+* Using `smulg` in a group just simplifies the pieces using `subst_into_smulg`
+* Using `smul a b` in a group requires converting `a` from a nat to an int and
+  then simplifying `smulg ↑a b` using `subst_into_smul_upcast`
+* Using `smulg` in a monoid is impossible (or at least out of scope),
+  because you need a group argument to write a `smulg` term -/
 def evalSMul' (eval : Expr → M (NormalExpr × Expr))
     (is_smulg : Bool) (orig e₁ e₂ : Expr) : M (NormalExpr × Expr) := do
   trace[abel] "Calling NormNum on {e₁}"
@@ -488,6 +490,7 @@ Evaluate an expression into its `abel` normal form.
 
 This is a variant of `Mathlib.Tactic.Abel.eval`, the main driver of the `abel` tactic.
 It differs in
+
 * outputting a `Simp.Result`, rather than a `NormalExpr × Expr`;
 * throwing an error if the expression `e` is an atom for the `abel` tactic.
 -/

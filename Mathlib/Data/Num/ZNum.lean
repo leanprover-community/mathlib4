@@ -365,6 +365,7 @@ theorem cast_inj [Ring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : ZNu
   rw [← cast_to_int m, ← cast_to_int n, Int.cast_inj (α := α), to_int_inj]
 
 /-- This tactic tries to turn an (in)equality about `ZNum`s to one about `Int`s by rewriting.
+
 ```lean
 example (n : ZNum) (m : ZNum) : n ≤ n + m * m := by
   transfer_rw
@@ -378,6 +379,7 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
 /--
 This tactic tries to prove (in)equalities about `ZNum`s by transferring them to the `Int` world and
 then trying to call `simp`.
+
 ```lean
 example (n : ZNum) (m : ZNum) : n ≤ n + m * m := by
   transfer

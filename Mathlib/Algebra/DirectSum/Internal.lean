@@ -37,6 +37,7 @@ mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
 `DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
 This file also provides some extra structure on `A 0`, namely:
+
 * `SetLike.GradeZero.subsemiring`, which leads to
   * `SetLike.GradeZero.instSemiring`
   * `SetLike.GradeZero.instCommSemiring`

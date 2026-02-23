@@ -305,7 +305,7 @@ theorem card_edgeFinset_completeEquipartiteGraph :
 variable [Fintype α]
 
 /-- Every `n`-colorable graph is contained in a `completeEquipartiteGraph` in `n` parts (as long
-  as the parts are at least as large as the largest color class). -/
+as the parts are at least as large as the largest color class). -/
 theorem isContained_completeEquipartiteGraph_of_colorable {n : ℕ} (C : G.Coloring (Fin n))
     (t : ℕ) (h : ∀ c, card (C.colorClass c) ≤ t) : G ⊑ completeEquipartiteGraph n t := by
   have (c : Fin n) : Nonempty (C.colorClass c ↪ Fin t) := by

@@ -46,7 +46,7 @@ Notation used here:
 * `f.range : Subring B` : the range of the ring homomorphism `f`.
 
 * `eqLocus f g : Subring R` : given ring homomorphisms `f g : R →+* S`,
-     the subring of `R` where `f x = g x`
+  the subring of `R` where `f x = g x`
 
 ## Implementation notes
 
@@ -57,6 +57,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a subring's underlying set.
 
 ## Tags
+
 subring, subrings
 -/
 
@@ -273,7 +274,7 @@ theorem map_range : f.range.map g = (g.comp f).range := by
 
 /-- The range of a ring homomorphism is a fintype, if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
-  presence of `Fintype S`. -/
+presence of `Fintype S`. -/
 instance fintypeRange [Fintype R] [DecidableEq S] (f : R →+* S) : Fintype (range f) :=
   Set.fintypeRange f
 
@@ -756,8 +757,8 @@ def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
     map_add' := fun _x _y => rfl }
 
 /-- The underlying set of a non-empty directed sSup of subrings is just a union of the subrings.
-  Note that this fails without the directedness assumption (the union of two subrings is
-  typically not a subring) -/
+Note that this fails without the directedness assumption (the union of two subrings is
+typically not a subring) -/
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS : Directed (· ≤ ·) S)
     {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
@@ -830,7 +831,7 @@ section eqLocus
 variable {S : Type v} [Semiring S]
 
 /-- The subring of elements `x : R` such that `f x = g x`, i.e.,
-  the equalizer of f and g as a subring of R -/
+the equalizer of f and g as a subring of R -/
 def eqLocus (f g : R →+* S) : Subring R :=
   { (f : R →* S).eqLocusM g, (f : R →+ S).eqLocus g with carrier := { x | f x = g x } }
 

@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
 # Abelian varieties
 
 ## Main results
+
 - `AlgebraicGeometry.isCommMonObj_of_isProper_of_geometricallyIntegral`:
   A proper geometrically integral group scheme over a field is commutative.
 

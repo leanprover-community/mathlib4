@@ -40,6 +40,7 @@ simplicial objects in any category.
   equivalence.
 
 ## References
+
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/

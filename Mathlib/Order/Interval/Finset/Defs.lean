@@ -30,6 +30,7 @@ locally finite orders, `α →₀ β` the finitely supported functions to a loca
 ## Main declarations
 
 In a `LocallyFiniteOrder`,
+
 * `Finset.Icc`: Closed-closed interval as a finset.
 * `Finset.Ico`: Closed-open interval as a finset.
 * `Finset.Ioc`: Open-closed interval as a finset.
@@ -37,16 +38,19 @@ In a `LocallyFiniteOrder`,
 * `Finset.uIcc`: Unordered closed interval as a finset.
 
 In a `LocallyFiniteOrderTop`,
+
 * `Finset.Ici`: Closed-infinite interval as a finset.
 * `Finset.Ioi`: Open-infinite interval as a finset.
 
 In a `LocallyFiniteOrderBot`,
+
 * `Finset.Iic`: Infinite-open interval as a finset.
 * `Finset.Iio`: Infinite-closed interval as a finset.
 
 ## Instances
 
 A `LocallyFiniteOrder` instance can be built
+
 * for a subtype of a locally finite order. See `Subtype.locallyFiniteOrder`.
 * for the product of two locally finite orders. See `Prod.locallyFiniteOrder`.
 * for any fintype (but not as an instance). See `Fintype.toLocallyFiniteOrder`.
@@ -55,13 +59,14 @@ A `LocallyFiniteOrder` instance can be built
   `OrderEmbedding.locallyFiniteOrder`.
 
 Instances for concrete types are proved in their respective files:
+
 * `ℕ` is in `Order.Interval.Finset.Nat`
 * `ℤ` is in `Data.Int.Interval`
 * `ℕ+` is in `Data.PNat.Interval`
 * `Fin n` is in `Order.Interval.Finset.Fin`
 * `Finset α` is in `Data.Finset.Interval`
 * `Σ i, α i` is in `Data.Sigma.Interval`
-Along, you will find lemmas about the cardinality of those finite intervals.
+  Along, you will find lemmas about the cardinality of those finite intervals.
 
 ## TODO
 
@@ -91,6 +96,7 @@ lemma exists_min_greater [LinearOrder α] [LocallyFiniteOrder α] {x ub : α} (h
     simp [*] at *
   · exact (Finset.min'_le _ _ (Finset.mem_Ioc.2 ⟨hx, le_rfl⟩)).trans hy
 ```
+
 Note that the converse is not true. Consider `{-2^z | z : ℤ} ∪ {2^z | z : ℤ}`. Any element has a
 successor (and actually a predecessor as well), so it is a `SuccOrder`, but it's not locally finite
 as `Icc (-1) 1` is infinite.
@@ -514,6 +520,7 @@ open Lean Elab Term Meta Batteries.ExtendedBinder
   is `Finset ?α`.
 
 See also
+
 * `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
 * `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x ∈ s | p x}`.
@@ -700,6 +707,7 @@ variable [LocallyFiniteOrder α] (a b : α)
 /-- Note we define `Icc (toDual a) (toDual b)` as `Icc α _ _ b a` (which has type `Finset α` not
 `Finset αᵒᵈ`!) instead of `(Icc b a).map toDual.toEmbedding` as this means the
 following is defeq:
+
 ```
 lemma this : (Icc (toDual (toDual a)) (toDual (toDual b)) :) = (Icc a b :) := rfl
 ```
@@ -758,6 +766,7 @@ variable [LocallyFiniteOrderTop α]
 
 /-- Note we define `Iic (toDual a)` as `Ici a` (which has type `Finset α` not `Finset αᵒᵈ`!)
 instead of `(Ici a).map toDual.toEmbedding` as this means the following is defeq:
+
 ```
 lemma this : (Iic (toDual (toDual a)) :) = (Iic a :) := rfl
 ```
@@ -791,6 +800,7 @@ variable [LocallyFiniteOrderBot α]
 
 /-- Note we define `Ici (toDual a)` as `Iic a` (which has type `Finset α` not `Finset αᵒᵈ`!)
 instead of `(Iic a).map toDual.toEmbedding` as this means the following is defeq:
+
 ```
 lemma this : (Ici (toDual (toDual a)) :) = (Ici a :) := rfl
 ```

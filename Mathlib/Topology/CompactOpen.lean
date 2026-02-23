@@ -28,7 +28,6 @@ topological spaces.
 * `Homeomorph.curry` combines the currying and uncurrying operations into a homeomorphism
   `C(X × Y, Z) ≃ₜ C(X, C(Y, Z))`. This homeomorphism exists if `X` and `Y` are locally compact.
 
-
 ## Tags
 
 compact-open, curry, function space

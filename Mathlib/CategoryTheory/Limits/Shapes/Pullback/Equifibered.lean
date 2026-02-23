@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
 # Equifibered natural transformation
 
 ## Main definition
+
 - `CategoryTheory.NatTrans.Equifibered`:
   A natural transformation `α : F ⟶ G` is equifibered if every commutative square of the following
   form is a pullback.
@@ -38,6 +39,7 @@ namespace NatTrans
 
 /-- A natural transformation is equifibered if every commutative square of the following form is
 a pullback.
+
 ```
 F(X) → F(Y)
  ↓      ↓
@@ -84,6 +86,7 @@ alias _root_.CategoryTheory.mapPair_equifibered := Equifibered.of_discrete
 
 /-- A natural transformation is co-equifibered if every commutative square of the following form is
 a pushout.
+
 ```
 F(X) → F(Y)
  ↓      ↓

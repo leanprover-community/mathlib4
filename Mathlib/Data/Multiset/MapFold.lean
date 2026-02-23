@@ -42,8 +42,8 @@ namespace Multiset
 
 
 /-- `map f s` is the lift of the list `map` operation. The multiplicity
-  of `b` in `map f s` is the number of `a ∈ s` (counting multiplicity)
-  such that `f a = b`. -/
+of `b` in `map f s` is the number of `a ∈ s` (counting multiplicity)
+such that `f a = b`. -/
 def map (f : α → β) (s : Multiset α) : Multiset β :=
   Quot.liftOn s (fun l : List α => (l.map f : Multiset β)) fun _l₁ _l₂ p => Quot.sound (p.map f)
 
@@ -220,8 +220,8 @@ theorem map_surjective_of_surjective {f : α → β} (hf : Function.Surjective f
 section foldl
 
 /-- `foldl f H b s` is the lift of the list operation `foldl f b l`,
-  which folds `f` over the multiset. It is well defined when `f` is right-commutative,
-  that is, `f (f b a₁) a₂ = f (f b a₂) a₁`. -/
+which folds `f` over the multiset. It is well defined when `f` is right-commutative,
+that is, `f (f b a₁) a₂ = f (f b a₂) a₁`. -/
 def foldl (f : β → α → β) [RightCommutative f] (b : β) (s : Multiset α) : β :=
   Quot.liftOn s (fun l => List.foldl f b l) fun _l₁ _l₂ p => p.foldl_eq b
 
@@ -244,8 +244,8 @@ end foldl
 section foldr
 
 /-- `foldr f H b s` is the lift of the list operation `foldr f b l`,
-  which folds `f` over the multiset. It is well defined when `f` is left-commutative,
-  that is, `f a₁ (f a₂ b) = f a₂ (f a₁ b)`. -/
+which folds `f` over the multiset. It is well defined when `f` is left-commutative,
+that is, `f a₁ (f a₂ b) = f a₂ (f a₁ b)`. -/
 def foldr (f : α → β → β) [LeftCommutative f] (b : β) (s : Multiset α) : β :=
   Quot.liftOn s (fun l => List.foldr f b l) fun _l₁ _l₂ p => p.foldr_eq b
 

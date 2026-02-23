@@ -26,6 +26,7 @@ and morphisms `π j : X ⟶ F j` and `ι j : F j ⟶ X` for each `j`,
 such that `ι j ≫ π j'` is the identity when `j = j'` and zero otherwise.
 
 ## Notation
+
 As `⊕` is already taken for the sum of types, we introduce the notation `X ⊞ Y` for
 a binary biproduct. We introduce `⨁ f` for the indexed biproduct.
 
@@ -56,6 +57,7 @@ variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
 
 open scoped Classical in
 /-- A `c : Bicone F` is:
+
 * an object `c.pt` and
 * morphisms `π j : pt ⟶ F j` and `ι j : F j ⟶ pt` for each `j`,
 * such that `ι j ≫ π j'` is the identity when `j = j'` and zero otherwise.
@@ -110,8 +112,8 @@ theorem BiconeMorphism.ext {c c' : Bicone F} (f g : c ⟶ c') (w : f.hom = g.hom
 namespace Bicones
 
 /-- To give an isomorphism between cocones, it suffices to give an
-  isomorphism between their vertices which commutes with the cocone
-  maps. -/
+isomorphism between their vertices which commutes with the cocone
+maps. -/
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
     (wι : ∀ j, c.ι j ≫ φ.hom = c'.ι j := by cat_disch)

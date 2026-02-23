@@ -199,8 +199,8 @@ Apply a function to an equality or inequality in either a local hypothesis or th
   `apply_fun f` will replace the goal with `f a ≤ f b`.
   If `f` is anything else (e.g. just a function, or an `Equiv`), `apply_fun` will fail.
 
-
 Typical usage is:
+
 ```lean
 open Function
 

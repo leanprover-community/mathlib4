@@ -18,8 +18,8 @@ algebra (e.g., a Cartan subalgebra of a semisimple Lie algebra) a character is j
 
 ## Main definitions
 
-  * `LieAlgebra.LieCharacter`
-  * `LieAlgebra.lieCharacterEquivLinearDual`
+* `LieAlgebra.LieCharacter`
+* `LieAlgebra.lieCharacterEquivLinearDual`
 
 ## Tags
 

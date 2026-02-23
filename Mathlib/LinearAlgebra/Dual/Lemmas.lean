@@ -118,7 +118,7 @@ variable [Finite ι]
 
 -- Not sure whether this is true for free modules over a commutative ring
 /-- A vector space over a field is isomorphic to its dual if and only if it is finite-dimensional:
-  a consequence of the Erdős-Kaplansky theorem. -/
+a consequence of the Erdős-Kaplansky theorem. -/
 theorem Basis.linearEquiv_dual_iff_finiteDimensional [Field K] [AddCommGroup V] [Module K V] :
     Nonempty (V ≃ₗ[K] Dual K V) ↔ FiniteDimensional K V := by
   refine ⟨fun ⟨e⟩ ↦ ?_, fun h ↦ ⟨(Module.Free.chooseBasis K V).toDualEquiv⟩⟩
@@ -474,7 +474,7 @@ theorem dualLift_injective : Function.Injective W.dualLift :=
   W.dualRestrict_leftInverse.injective
 
 /-- The quotient by the `dualAnnihilator` of a subspace is isomorphic to the
-  dual of that subspace. -/
+dual of that subspace. -/
 noncomputable def quotAnnihilatorEquiv (W : Subspace K V) :
     (Module.Dual K V ⧸ W.dualAnnihilator) ≃ₗ[K] Module.Dual K W :=
   (quotEquivOfEq _ _ W.dualRestrict_ker_eq_dualAnnihilator).symm.trans <|
@@ -990,8 +990,8 @@ theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)
 set_option backward.isDefEq.respectTransparency false in
 open OrderDual in
 /-- For any vector space, `dualAnnihilator` and `dualCoannihilator` gives an antitone order
-  isomorphism between the finite-codimensional subspaces in the vector space and the
-  finite-dimensional subspaces in its dual. -/
+isomorphism between the finite-codimensional subspaces in the vector space and the
+finite-dimensional subspaces in its dual. -/
 def orderIsoFiniteCodimDim :
     {W : Subspace K V // FiniteDimensional K (V ⧸ W)} ≃o
     {W : Subspace K (Dual K V) // FiniteDimensional K W}ᵒᵈ where
@@ -1004,8 +1004,8 @@ def orderIsoFiniteCodimDim :
 
 open OrderDual in
 /-- For any finite-dimensional vector space, `dualAnnihilator` and `dualCoannihilator` give
-  an antitone order isomorphism between the subspaces in the vector space and the subspaces
-  in its dual. -/
+an antitone order isomorphism between the subspaces in the vector space and the subspaces
+in its dual. -/
 def orderIsoFiniteDimensional [FiniteDimensional K V] :
     Subspace K V ≃o (Subspace K (Dual K V))ᵒᵈ where
   toFun W := toDual W.dualAnnihilator

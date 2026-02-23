@@ -44,6 +44,7 @@ This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
 * Rename `Set.PartiallyWellOrderedOn` to `Set.WellQuasiOrderedOn` and `Set.IsPWO` to `Set.IsWQO`.
 
 ## References
+
 * [Higman, *Ordering by Divisibility in Abstract Algebras*][Higman52]
 * [Nash-Williams, *On Well-Quasi-Ordering Finite Trees*][Nash-Williams63]
 -/
@@ -422,7 +423,7 @@ section IsPWO
 variable [Preorder α] [Preorder β] {s t : Set α}
 
 /-- A subset of a preorder is partially well-ordered when any infinite sequence contains
-  a monotone subsequence of length 2 (or equivalently, an infinite monotone subsequence). -/
+a monotone subsequence of length 2 (or equivalently, an infinite monotone subsequence). -/
 def IsPWO (s : Set α) : Prop :=
   PartiallyWellOrderedOn s (· ≤ ·)
 
@@ -765,8 +766,8 @@ theorem exists_notMem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : 
 -- TODO: move this material to the main file on WQOs.
 
 /-- In the context of partial well-orderings, a bad sequence is a nonincreasing sequence
-  whose range is contained in a particular set `s`. One exists if and only if `s` is not
-  partially well-ordered. -/
+whose range is contained in a particular set `s`. One exists if and only if `s` is not
+partially well-ordered. -/
 def IsBadSeq (r : α → α → Prop) (s : Set α) (f : ℕ → α) : Prop :=
   (∀ n, f n ∈ s) ∧ ∀ m n : ℕ, m < n → ¬r (f m) (f n)
 
@@ -776,12 +777,12 @@ theorem iff_forall_not_isBadSeq (r : α → α → Prop) (s : Set α) :
   exact forall_congr' fun f => by simp [IsBadSeq]
 
 /-- This indicates that every bad sequence `g` that agrees with `f` on the first `n`
-  terms has `rk (f n) ≤ rk (g n)`. -/
+terms has `rk (f n) ≤ rk (g n)`. -/
 def IsMinBadSeq (r : α → α → Prop) (rk : α → ℕ) (s : Set α) (n : ℕ) (f : ℕ → α) : Prop :=
   ∀ g : ℕ → α, (∀ m : ℕ, m < n → f m = g m) → rk (g n) < rk (f n) → ¬IsBadSeq r s g
 
 /-- Given a bad sequence `f`, this constructs a bad sequence that agrees with `f` on the first `n`
-  terms and is minimal at `n`.
+terms and is minimal at `n`.
 -/
 noncomputable def minBadSeqOfBadSeq (r : α → α → Prop) (rk : α → ℕ) (s : Set α) (n : ℕ) (f : ℕ → α)
     (hf : IsBadSeq r s f) :
@@ -826,9 +827,9 @@ theorem iff_not_exists_isMinBadSeq (rk : α → ℕ) {s : Set α} :
     exact ⟨f, hf1⟩
 
 /-- Higman's Lemma, which states that for any reflexive, transitive relation `r` which is
-  partially well-ordered on a set `s`, the relation `List.SublistForall₂ r` is partially
-  well-ordered on the set of lists of elements of `s`. That relation is defined so that
-  `List.SublistForall₂ r l₁ l₂` whenever `l₁` related pointwise by `r` to a sublist of `l₂`. -/
+partially well-ordered on a set `s`, the relation `List.SublistForall₂ r` is partially
+well-ordered on the set of lists of elements of `s`. That relation is defined so that
+`List.SublistForall₂ r l₁ l₂` whenever `l₁` related pointwise by `r` to a sublist of `l₂`. -/
 theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsPreorder α r]
     {s : Set α} (h : s.PartiallyWellOrderedOn r) :
     { l : List α | ∀ x, x ∈ l → x ∈ s }.PartiallyWellOrderedOn (List.SublistForall₂ r) := by

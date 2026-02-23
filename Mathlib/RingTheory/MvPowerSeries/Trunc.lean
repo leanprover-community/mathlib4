@@ -35,8 +35,7 @@ public import Mathlib.Algebra.MvPolynomial.Degrees
   to the multivariate polynomial that has the same coefficients as `φ`,
   for all `m ≤ n`, and `0` otherwise.
 
-  Here, `m` and `n`  have types `σ →₀ ℕ` so that `m ≤ n` means that `m s ≤ n s` for all `s : σ`.
-
+  Here, `m` and `n` have types `σ →₀ ℕ` so that `m ≤ n` means that `m s ≤ n s` for all `s : σ`.
 
 * `MvPowerSeries.coeff_mul_eq_coeff_trunc'_mul_trunc'` : compares the coefficients
   of a product with those of the product of truncations.

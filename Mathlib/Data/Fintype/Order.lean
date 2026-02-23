@@ -19,6 +19,7 @@ This file provides order instances on fintypes.
 ## Computable instances
 
 On a `Fintype`, we can construct
+
 * an `OrderBot` from `SemilatticeInf`.
 * an `OrderTop` from `SemilatticeSup`.
 * a `BoundedOrder` from `Lattice`.
@@ -31,6 +32,7 @@ Those instances are noncomputable because the definitions of `sSup` and `sInf` u
 and set membership is undecidable in general.
 
 On a `Fintype`, we can promote:
+
 * a `Lattice` to a `CompleteLattice`.
 * a `DistribLattice` to a `CompleteDistribLattice`.
 * a `LinearOrder` to a `CompleteLinearOrder`.
@@ -41,6 +43,7 @@ Those are marked as `def` to avoid typeclass loops.
 ## Concrete instances
 
 We provide a few instances for concrete types:
+
 * `Fin.completeLinearOrder`
 * `Bool.completeLinearOrder`
 * `Bool.completeBooleanAlgebra`

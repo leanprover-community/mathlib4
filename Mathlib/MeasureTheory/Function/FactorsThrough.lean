@@ -16,7 +16,7 @@ along `f`. Then `g` factors through `f`, which means that (if `Z` is nonempty)
 there exists `h : Y → Z` such that `g = h ∘ f`.
 
 If `Z` is completely metrizable, the factorization map `h` can be taken to be measurable.
-This is the content of the [Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob–Dynkin_lemma):
+This is the content of the [Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob%E2%80%93Dynkin_lemma):
 see `exists_eq_measurable_comp`.
 -/
 

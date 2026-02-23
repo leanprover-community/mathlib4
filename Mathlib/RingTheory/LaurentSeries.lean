@@ -42,7 +42,9 @@ type with a zero. They are denoted `R⸨X⸩`.
 ## Main Results
 
 * Basic properties of Hasse derivatives
+
 ### About the `X`-Adic valuation:
+
 * The (integral) valuation of a power series is the order of the first non-zero coefficient, see
   `LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero`.
 * The valuation of a Laurent series is the order of the first non-zero coefficient, see
@@ -96,7 +98,7 @@ noncomputable section
 
 /-- `LaurentSeries R` is the type of formal Laurent series with coefficients in `R`, denoted `R⸨X⸩`.
 
-  It is implemented as a `HahnSeries` with value group `ℤ`.
+It is implemented as a `HahnSeries` with value group `ℤ`.
 -/
 abbrev LaurentSeries (R : Type u) [Zero R] := R⟦ℤ⟧
 
@@ -206,8 +208,8 @@ theorem coeff_coe_powerSeries (x : R⟦X⟧) (n : ℕ) :
   rw [ofPowerSeries_apply_coeff]
 
 /-- This is a power series that can be multiplied by an integer power of `X` to give our
-  Laurent series. If the Laurent series is nonzero, `powerSeriesPart` has a nonzero
-  constant term. -/
+Laurent series. If the Laurent series is nonzero, `powerSeriesPart` has a nonzero
+constant term. -/
 def powerSeriesPart (x : R⸨X⸩) : R⟦X⟧ :=
   PowerSeries.mk fun n => x.coeff (x.order + n)
 

@@ -37,7 +37,7 @@ def mkHCongrWithArity' (f : Expr) (numArgs : Nat) : MetaM CongrTheorem := do
 where
   /--
   Process the congruence theorem by trying to pre-prove arguments using `prove`.
-
+  
   - `cthm` is the original `CongrTheorem`, modified only after visiting every argument.
   - `type` is type of the congruence theorem, after all the parameters so far have been applied.
   - `argKinds` is the list of `CongrArgKind`s, which this function recurses on.
@@ -204,6 +204,7 @@ If `forceHEq` is `true` then the conclusion of the generated theorem is a `HEq`.
 Otherwise it might be an `Eq` if the equality is homogeneous.
 
 This is the interpretation of the `CongrArgKind`s in the generated congruence theorem:
+
 * `.eq` corresponds to having three arguments `(x : α) (x' : α) (h : x = x')`.
   Note that `h` might have additional hypotheses.
 * `.heq` corresponds to having three arguments `(x : α) (x' : α') (h : x ≍ x')`

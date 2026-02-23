@@ -27,6 +27,7 @@ to projecting each finset down once in all available directions.
 ## Notation
 
 We define notation in scope `FinsetFamily`:
+
 * `∂ 𝒜`: Shadow of `𝒜`.
 * `∂⁺ 𝒜`: Upper shadow of `𝒜`.
 

@@ -17,18 +17,18 @@ enveloping algebra of `L`, together with its universal property.
 
 ## Main definitions
 
-  * `UniversalEnvelopingAlgebra`: the universal enveloping algebra, endowed with an
-    `R`-algebra structure.
-  * `UniversalEnvelopingAlgebra.ι`: the Lie algebra morphism from `L` to its universal
-    enveloping algebra.
-  * `UniversalEnvelopingAlgebra.lift`: given an associative algebra `A`, together with a Lie
-    algebra morphism `f : L →ₗ⁅R⁆ A`, `lift R L f : UniversalEnvelopingAlgebra R L →ₐ[R] A` is the
-    unique morphism of algebras through which `f` factors.
-  * `UniversalEnvelopingAlgebra.ι_comp_lift`: states that the lift of a morphism is indeed part
-    of a factorisation.
-  * `UniversalEnvelopingAlgebra.lift_unique`: states that lifts of morphisms are indeed unique.
-  * `UniversalEnvelopingAlgebra.hom_ext`: a restatement of `lift_unique` as an extensionality
-    lemma.
+* `UniversalEnvelopingAlgebra`: the universal enveloping algebra, endowed with an
+  `R`-algebra structure.
+* `UniversalEnvelopingAlgebra.ι`: the Lie algebra morphism from `L` to its universal
+  enveloping algebra.
+* `UniversalEnvelopingAlgebra.lift`: given an associative algebra `A`, together with a Lie
+  algebra morphism `f : L →ₗ⁅R⁆ A`, `lift R L f : UniversalEnvelopingAlgebra R L →ₐ[R] A` is the
+  unique morphism of algebras through which `f` factors.
+* `UniversalEnvelopingAlgebra.ι_comp_lift`: states that the lift of a morphism is indeed part
+  of a factorisation.
+* `UniversalEnvelopingAlgebra.lift_unique`: states that lifts of morphisms are indeed unique.
+* `UniversalEnvelopingAlgebra.hom_ext`: a restatement of `lift_unique` as an extensionality
+  lemma.
 
 ## Tags
 

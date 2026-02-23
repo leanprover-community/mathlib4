@@ -14,6 +14,7 @@ public import Mathlib.Analysis.Seminorm
 We define algebra norms and multiplicative algebra norms.
 
 ## Main Definitions
+
 * `AlgebraNorm` : an algebra norm on an `R`-algebra `S` is a ring norm on `S` compatible with
   the action of `R`.
 * `MulAlgebraNorm` : a multiplicative algebra norm on an `R`-algebra `S` is a multiplicative
@@ -122,7 +123,7 @@ def isScalarTower_restriction {A : Type*} [CommRing A] [Algebra R A] [Algebra A 
 end AlgebraNorm
 
 /-- A multiplicative algebra norm on an `R`-algebra norm `S` is a multiplicative ring norm on `S`
-  compatible with the action of `R`. -/
+compatible with the action of `R`. -/
 structure MulAlgebraNorm (R : Type*) [SeminormedCommRing R] (S : Type*) [Ring S] [Algebra R S]
   extends MulRingNorm S, Seminorm R S
 

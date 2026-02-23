@@ -25,7 +25,6 @@ An example of an SSYT of shape `μ = [4, 2, 1]` is:
 We represent a semistandard Young tableau as a function `ℕ → ℕ → ℕ`, which is required to be zero
 for all pairs `(i, j) ∉ μ` and to satisfy the row-weak and column-strict conditions on `μ`.
 
-
 ## Main definitions
 
 - `SemistandardYoungTableau (μ : YoungDiagram)`: semistandard Young tableaux of shape `μ`. There is

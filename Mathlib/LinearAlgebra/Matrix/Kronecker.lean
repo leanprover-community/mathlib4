@@ -26,9 +26,11 @@ This defines the [Kronecker product](https://en.wikipedia.org/wiki/Kronecker_pro
 ## Specializations
 
 * `Matrix.kronecker`: An alias of `kroneckerMap (*)`. Prefer using the notation.
+
 * `Matrix.kroneckerBilinear`: `Matrix.kronecker` is bilinear
 
 * `Matrix.kroneckerTMul`: An alias of `kroneckerMap (⊗ₜ)`. Prefer using the notation.
+
 * `Matrix.kroneckerTMulBilinear`: `Matrix.kroneckerTMul` is bilinear
 
 ## Notation

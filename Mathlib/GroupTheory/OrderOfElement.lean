@@ -35,6 +35,7 @@ This file defines the order of an element of a finite group. For a finite group 
 * `addOrderOf` is the additive analogue of `orderOf`.
 
 ## Tags
+
 order of an element
 -/
 
@@ -477,7 +478,7 @@ theorem isOfFinOrder_mul (h : Commute x y) (hx : IsOfFinOrder x) (hy : IsOfFinOr
     pos_of_dvd_of_pos h.orderOf_mul_dvd_mul_orderOf <| mul_pos hx.orderOf_pos hy.orderOf_pos
 
 /-- If each prime factor of `orderOf x` has higher multiplicity in `orderOf y`, and `x` commutes
-  with `y`, then `x * y` has the same order as `y`. -/
+with `y`, then `x * y` has the same order as `y`. -/
 @[to_additive addOrderOf_add_eq_right_of_forall_prime_mul_dvd
   /-- If each prime factor of
   `addOrderOf x` has higher multiplicity in `addOrderOf y`, and `x` commutes with `y`,
@@ -496,7 +497,7 @@ theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (h : Commute x y) (hy : IsO
   exacts [hdvd p hp h, (hp.coprime_iff_not_dvd.2 h).mul_dvd_of_dvd_of_dvd hpy hxy]
 
 /-- If each prime factor of `orderOf y` has higher multiplicity in `orderOf x`, and `x` commutes
-  with `y`, then `x * y` has the same order as `x`. -/
+with `y`, then `x * y` has the same order as `x`. -/
 @[to_additive addOrderOf_add_eq_left_of_forall_prime_mul_dvd
   /-- If each prime factor of
   `addOrderOf y` has higher multiplicity in `addOrderOf x`, and `x` commutes with `y`,
@@ -977,7 +978,7 @@ theorem mem_powers_iff_mem_range_orderOf [DecidableEq G] :
   Finset.mem_range_iff_mem_finset_range_of_mod_eq' (orderOf_pos x) <| pow_mod_orderOf _
 
 /-- The equivalence between `Submonoid.powers` of two elements `x, y` of the same order, mapping
-  `x ^ i` to `y ^ i`. -/
+`x ^ i` to `y ^ i`. -/
 @[to_additive
   /-- The equivalence between `Submonoid.multiples` of two elements `a, b` of the same additive
   order, mapping `i • a` to `i • b`. -/]
@@ -1088,7 +1089,7 @@ lemma mem_zpowers_iff_mem_range_orderOf [DecidableEq G] :
   (isOfFinOrder_of_finite _).mem_zpowers_iff_mem_range_orderOf
 
 /-- The equivalence between `Subgroup.zpowers` of two elements `x, y` of the same order, mapping
-  `x ^ i` to `y ^ i`. -/
+`x ^ i` to `y ^ i`. -/
 @[to_additive
   /-- The equivalence between `Subgroup.zmultiples` of two elements `a, b` of the same additive
   order, mapping `i • a` to `i • b`. -/]

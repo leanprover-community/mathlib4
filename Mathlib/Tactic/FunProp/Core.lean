@@ -26,8 +26,9 @@ namespace Meta.FunProp
 
 
 /-- Synthesize instance of type `type` and
-  1. assign it to `x` if `x` is meta variable
-  2. check it is equal to `x` -/
+
+1. assign it to `x` if `x` is meta variable
+2. check it is equal to `x` -/
 def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
   match (← trySynthInstance type) with
   | .some val =>
@@ -271,9 +272,10 @@ def applyPiRule (funPropDecl : FunPropDecl) (e : Expr)
 Try to prove `e = q(P (fun x ↦ let y := φ x; ψ x y)`.
 
 For example,
-  - `funPropDecl` is `FunPropDecl` for `Continuous`
-  - `e = q(Continuous fun x ↦ let y := φ x; ψ x y)`
-  - `f = q(fun x ↦ let y := φ x; ψ x y)`
+
+- `funPropDecl` is `FunPropDecl` for `Continuous`
+- `e = q(Continuous fun x ↦ let y := φ x; ψ x y)`
+- `f = q(fun x ↦ let y := φ x; ψ x y)`
 -/
 def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     (funProp : Expr → FunPropM (Option Result)) :
@@ -362,9 +364,10 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
 /-- Try to remove applied argument i.e. prove `P (fun x ↦ f x y)` from `P (fun x ↦ f x)`.
 
 For example
-  - `funPropDecl` is `FunPropDecl` for `Continuous`
-  - `e = q(Continuous fun x ↦ foo (bar x) y)`
-  - `fData` contains info on `fun x ↦ foo (bar x) y`
+
+- `funPropDecl` is `FunPropDecl` for `Continuous`
+- `e = q(Continuous fun x ↦ foo (bar x) y)`
+- `fData` contains info on `fun x ↦ foo (bar x) y`
   This tries to prove `Continuous fun x ↦ foo (bar x) y` from `Continuous fun x ↦ foo (bar x)`
 -/
 def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)

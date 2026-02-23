@@ -553,7 +553,7 @@ theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `x : L` is an integral element in a field extension `L` over `K`, then the degree of the
-  minimal polynomial of `x` over `K` divides `[L : K]`. -/
+minimal polynomial of `x` over `K` divides `[L : K]`. -/
 theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
     (minpoly K x).natDegree ∣ finrank K L := by
   rw [dvd_iff_exists_eq_mul_left, ← IntermediateField.adjoin.finrank hx]
@@ -685,7 +685,7 @@ theorem eq_of_root {x y : L} (hx : IsAlgebraic K x)
   ((eq_iff_aeval_minpoly_eq_zero hx.isIntegral).mpr h_ev).symm
 
 /-- The canonical `algEquiv` between `K⟮x⟯` and `K⟮y⟯`, sending `x` to `y`, where `x` and `y` have
-  the same minimal polynomial over `K`. -/
+the same minimal polynomial over `K`. -/
 noncomputable def algEquiv {x y : L} (hx : IsAlgebraic K x)
     (h_mp : minpoly K x = minpoly K y) : K⟮x⟯ ≃ₐ[K] K⟮y⟯ := by
   have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, (h_mp ▸ aeval _ _)⟩

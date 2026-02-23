@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
 # Multiplicative properties of Hahn series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. This module introduces
 multiplication and scalar multiplication on Hahn series. If `Γ` is an ordered cancellative
@@ -25,6 +26,7 @@ multiplication from `R⟦Γ⟧`. The scalar action of `R` on `R⟦Γ⟧` is comp
 with the action of `R⟦Γ⟧` on `HahnModule Γ' R V`.
 
 ## Main Definitions
+
 * `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
   of `R⟦Γ⟧` on `HahnModule Γ' R V` for an `R`-module `V`, where `Γ'` admits an ordered
   cancellative vector addition operation from `Γ`. The type alias allows us to avoid a potential
@@ -37,15 +39,19 @@ with the action of `R⟦Γ⟧` on `HahnModule Γ' R V`.
   series such that subtracting one yields a series with strictly positive `orderTop`.
 
 ## Main results
+
 * If `R` is a (commutative) (semi-)ring, then so is `R⟦Γ⟧`.
 * If `V` is an `R`-module, then `HahnModule Γ' R V` is a `R⟦Γ⟧`-module.
 
 ## TODO
+
 The following may be useful for composing vertex operators, but they seem to take time.
+
 * rightTensorMap: `HahnModule Γ' R U ⊗[R] V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
 * leftTensorMap: `U ⊗[R] HahnModule Γ' R V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
@@ -677,7 +683,7 @@ theorem orderTop_sub_pos [PartialOrder Γ] [Zero Γ] [AddCommGroup R] [One R] {g
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The group of invertible Hahn series close to 1, i.e., those series such that subtracting 1
-  yields a series with strictly positive `orderTop`. -/
+yields a series with strictly positive `orderTop`. -/
 def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
     [CommRing R] : Subgroup R⟦Γ⟧ˣ where
   carrier := { x : R⟦Γ⟧ˣ | 0 < (x.val - 1).orderTop}

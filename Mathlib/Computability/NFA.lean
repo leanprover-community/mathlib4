@@ -49,9 +49,9 @@ open Computability
 universe u v
 
 /-- An NFA is a set of states (`σ`), a transition function from state to state labelled by the
-  alphabet (`step`), a set of starting states (`start`) and a set of acceptance states (`accept`).
-  Note the transition function sends a state to a `Set` of states. These are the states that it
-  may be sent to. -/
+alphabet (`step`), a set of starting states (`start`) and a set of acceptance states (`accept`).
+Note the transition function sends a state to a `Set` of states. These are the states that it
+may be sent to. -/
 structure NFA (α : Type u) (σ : Type v) where
   /-- The NFA's transition function -/
   step : σ → α → Set σ
@@ -93,7 +93,7 @@ theorem stepSet_union {S T : Set σ} {a : α} :
 
 variable (M) in
 /-- `M.evalFrom S x` computes all possible paths through `M` with input `x` starting at an element
-  of `S`. -/
+of `S`. -/
 def evalFrom (S : Set σ) : List α → Set σ :=
   List.foldl M.stepSet S
 
@@ -239,7 +239,7 @@ private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
 
 variable (M) in
 /-- `M.eval x` computes all possible paths though `M` with input `x` starting at an element of
-  `M.start`. -/
+`M.start`. -/
 def eval : List α → Set σ :=
   M.evalFrom M.start
 
@@ -313,7 +313,7 @@ theorem accepts_iff_exists_path {x : List α} :
 
 variable (M) in
 /-- `M.toDFA` is a `DFA` constructed from an `NFA` `M` using the subset construction. The
-  states is the type of `Set`s of `M.state` and the step function is `M.stepSet`. -/
+states is the type of `Set`s of `M.state` and the step function is `M.stepSet`. -/
 def toDFA : DFA α (Set σ) where
   step := M.stepSet
   start := M.start
@@ -338,7 +338,7 @@ end NFA
 namespace DFA
 
 /-- `M.toNFA` is an `NFA` constructed from a `DFA` `M` by using the same start and accept
-  states and a transition function which sends `s` with input `a` to the singleton `M.step s a`. -/
+states and a transition function which sends `s` with input `a` to the singleton `M.step s a`. -/
 @[simps] def toNFA (M : DFA α σ) : NFA α σ where
   step s a := {M.step s a}
   start := {M.start}

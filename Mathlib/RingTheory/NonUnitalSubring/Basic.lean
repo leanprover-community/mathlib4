@@ -51,7 +51,7 @@ Notation used here:
 * `f.range : NonUnitalSubring B` : the range of the non-unital ring homomorphism `f`.
 
 * `eq_locus f g : NonUnitalSubring R` : given non-unital ring homomorphisms `f g : R →ₙ+* S`,
-     the non-unital subring of `R` where `f x = g x`
+  the non-unital subring of `R` where `f x = g x`
 
 ## Implementation notes
 
@@ -62,6 +62,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a non-unital subring's underlying set.
 
 ## Tags
+
 non-unital subring
 -/
 
@@ -239,7 +240,7 @@ theorem map_range : f.range.map g = (g.comp f).range := by
 
 /-- The range of a ring homomorphism is a fintype if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
-  presence of `Fintype S`. -/
+presence of `Fintype S`. -/
 instance fintypeRange [Fintype R] [DecidableEq S] (f : R →ₙ+* S) : Fintype (range f) :=
   Set.fintypeRange f
 
@@ -703,7 +704,7 @@ theorem range_eq_top_of_surjective (f : R →ₙ+* S) (hf : Function.Surjective 
   range_eq_top.2 hf
 
 /-- The `NonUnitalSubring` of elements `x : R` such that `f x = g x`, i.e.,
-  the equalizer of f and g as a `NonUnitalSubring` of R -/
+the equalizer of f and g as a `NonUnitalSubring` of R -/
 def eqLocus (f g : R →ₙ+* S) : NonUnitalSubring R :=
   { (f : R →ₙ* S).eqLocus g, (f : R →+ S).eqLocus g with carrier := {x | f x = g x} }
 

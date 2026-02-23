@@ -20,6 +20,7 @@ This file defines pointwise algebraic operations on finsets.
 ## Main declarations
 
 For finsets `s` and `t`:
+
 * `0` (`Finset.zero`): The singleton `{0}`.
 * `1` (`Finset.one`): The singleton `{1}`.
 * `-s` (`Finset.neg`): Negation, finset of all `-x` where `x ∈ s`.

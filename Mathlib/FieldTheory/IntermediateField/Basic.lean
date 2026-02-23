@@ -36,6 +36,7 @@ Intermediate fields are defined with a structure extending `Subfield` and `Subal
 A `Subalgebra` is closed under all operations except `⁻¹`,
 
 ## Tags
+
 intermediate field, field extension
 -/
 
@@ -437,7 +438,7 @@ instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalar
 end shortcut_instances
 
 /-- Given `f : L →ₐ[K] L'`, `S.comap f` is the intermediate field between `K` and `L`
-  such that `f x ∈ S ↔ x ∈ S.comap f`. -/
+such that `f x ∈ S ↔ x ∈ S.comap f`. -/
 def comap (f : L →ₐ[K] L') (S : IntermediateField K L') : IntermediateField K L where
   __ := S.toSubalgebra.comap f
   inv_mem' x hx := show f x⁻¹ ∈ S by rw [map_inv₀ f x]; exact S.inv_mem hx

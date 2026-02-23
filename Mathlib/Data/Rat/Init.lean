@@ -40,7 +40,7 @@ This should be considered as a notation typeclass. The sole purpose of this type
 extended by `DivisionSemiring`. -/
 class NNRatCast (K : Type*) where
   /-- The canonical homomorphism `ℚ≥0 → K`.
-
+  
   Do not use directly. Use the coercion instead. -/
   protected nnratCast : ℚ≥0 → K
 

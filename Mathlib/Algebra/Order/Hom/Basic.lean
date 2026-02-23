@@ -17,6 +17,7 @@ This file defines hom classes for common properties at the intersection of order
 ## Typeclasses
 
 Basic typeclasses
+
 * `NonnegHomClass`: Homs are nonnegative: `∀ f a, 0 ≤ f a`
 * `SubadditiveHomClass`: Homs are subadditive: `∀ f a b, f (a + b) ≤ f a + f b`
 * `SubmultiplicativeHomClass`: Homs are submultiplicative: `∀ f a b, f (a * b) ≤ f a * f b`
@@ -24,6 +25,7 @@ Basic typeclasses
 * `NonarchimedeanHomClass`: `∀ a b, f (a + b) ≤ max (f a) (f b)`
 
 Group norms
+
 * `AddGroupSeminormClass`: Homs are nonnegative, subadditive, even and preserve zero.
 * `GroupSeminormClass`: Homs are nonnegative, respect `f (a * b) ≤ f a + f b`, `f a⁻¹ = f a` and
   preserve zero.
@@ -31,6 +33,7 @@ Group norms
 * `GroupNormClass`: Homs are seminorms such that `f x = 0 → x = 1` for all `x`.
 
 Ring norms
+
 * `RingSeminormClass`: Homs are submultiplicative group norms.
 * `RingNormClass`: Homs are ring seminorms that are also additive group norms.
 * `MulRingSeminormClass`: Homs are ring seminorms that are multiplicative.
@@ -53,6 +56,7 @@ assert_not_exists Field
 
 library_note «out-param inheritance» /--
 Diamond inheritance cannot depend on `outParam`s in the following circumstances:
+
 * there are three classes `Top`, `Middle`, `Bottom`
 * all of these classes have a parameter `(α : outParam _)`
 * all of these classes have an instance parameter `[Root α]` that depends on this `outParam`
@@ -60,10 +64,11 @@ Diamond inheritance cannot depend on `outParam`s in the following circumstances:
 * the instance `Bottom.toMiddle` takes a `[Left α]` parameter
 * the instance `Middle.toTop` takes a `[Right α]` parameter
 * there is a `Leaf` class that inherits from both `Left` and `Right`.
-In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
-even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
+  In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
+  even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
 
 There are two workarounds:
+
 * You could replace the bundled inheritance implemented by the instance `Middle.toTop` with
   unbundled inheritance implemented by adding a `[Top α]` parameter to the `Middle` class. This is
   the preferred option since it is also more compatible with Lean 4, at the cost of being more work

@@ -23,10 +23,12 @@ which are lattices with only two elements, and related ideas.
 ## Main definitions
 
 ### Atoms and Coatoms
+
 * `IsAtom a` indicates that the only element below `a` is `⊥`.
 * `IsCoatom a` indicates that the only element above `a` is `⊤`.
 
 ### Atomic and Atomistic Lattices
+
 * `IsAtomic` indicates that every element other than `⊥` is above an atom.
 * `IsCoatomic` indicates that every element other than `⊤` is below a coatom.
 * `IsAtomistic` indicates that every element is the `sSup` of a set of atoms.
@@ -35,6 +37,7 @@ which are lattices with only two elements, and related ideas.
 * `IsStronglyCoatomic` indicates that for all `a < b`, there is some `x` with `a ≤ x ⋖ b`.
 
 ### Simple Lattices
+
 * `IsSimpleOrder` indicates that an order has only two unique elements, `⊥` and `⊤`.
 * `IsSimpleOrder.boundedOrder`
 * `IsSimpleOrder.distribLattice`
@@ -45,6 +48,7 @@ which are lattices with only two elements, and related ideas.
   * `IsSimpleOrder.completeBooleanAlgebra`
 
 ## Main results
+
 * `isAtom_dual_iff_isCoatom` and `isCoatom_dual_iff_isAtom` express the (definitional) duality
   of `IsAtom` and `IsCoatom`.
 * `isSimpleOrder_iff_isAtom_top` and `isSimpleOrder_iff_isCoatom_bot` express the
@@ -70,7 +74,7 @@ section Preorder
 variable [Preorder α] [OrderBot α] {a b x : α}
 
 /-- An atom of an `OrderBot` is an element with no other element between it and `⊥`,
-  which is not `⊥`. -/
+which is not `⊥`. -/
 def IsAtom (a : α) : Prop :=
   a ≠ ⊥ ∧ ∀ b, b < a → b = ⊥
 
@@ -151,7 +155,7 @@ section Preorder
 variable [Preorder α]
 
 /-- A coatom of an `OrderTop` is an element with no other element between it and `⊤`,
-  which is not `⊤`. -/
+which is not `⊤`. -/
 def IsCoatom [OrderTop α] (a : α) : Prop :=
   a ≠ ⊤ ∧ ∀ b, a < b → b = ⊤
 

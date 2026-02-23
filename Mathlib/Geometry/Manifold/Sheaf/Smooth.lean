@@ -16,9 +16,9 @@ public import Mathlib.Geometry.Manifold.Sheaf.Basic
 
 The sheaf of `𝕜`-smooth functions from a manifold `M` to a manifold `N` can be defined as a sheaf of
 types using the construction `StructureGroupoid.LocalInvariantProp.sheaf` from the file
-`Mathlib/Geometry/Manifold/Sheaf/Basic.lean`.  In this file we write that down (a one-liner), then
+`Mathlib/Geometry/Manifold/Sheaf/Basic.lean`. In this file we write that down (a one-liner), then
 do the work of upgrading this to a sheaf of [groups]/[abelian groups]/[rings]/[commutative rings]
-when `N` carries more algebraic structure.  For example, if `N` is `𝕜` then the sheaf of smooth
+when `N` carries more algebraic structure. For example, if `N` is `𝕜` then the sheaf of smooth
 functions from `M` to `𝕜` is a sheaf of commutative rings, the *structure sheaf* of `M`.
 
 ## Main definitions
@@ -52,10 +52,10 @@ Similarly, there are variants of `smoothSheafCommRing.forgetStalk` and `smoothSh
 for `GrpCat`, `CommGrpCat` and `RingCat` which can be added as needed.
 
 Currently there is a universe restriction: one can consider the sheaf of smooth functions from `M`
-to `N` only if `M` and `N` are in the same universe.  For example, since `ℂ` is in `Type`, we can
+to `N` only if `M` and `N` are in the same universe. For example, since `ℂ` is in `Type`, we can
 only consider the structure sheaf of complex manifolds in `Type`, which is unsatisfactory. The
 obstacle here is in the underlying category theory constructions, which are not sufficiently
-universe polymorphic.  A direct attempt to generalize the universes worked in Lean 3 but was
+universe polymorphic. A direct attempt to generalize the universes worked in Lean 3 but was
 reverted because it was hard to port to Lean 4, see
 https://github.com/leanprover-community/mathlib/pull/19230
 The current (Oct 2023) proposal to permit these generalizations is to use the new `UnivLE`
@@ -98,7 +98,7 @@ instance smoothSheaf.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
 
 open Manifold in
 /-- The object of `smoothSheaf IM I M N` for the open set `U` in `M` is
-`C^∞⟮IM, (unop U : Opens M); I, N⟯`, the `(IM, I)`-smooth functions from `U` to `N`.  This is not
+`C^∞⟮IM, (unop U : Opens M); I, N⟯`, the `(IM, I)`-smooth functions from `U` to `N`. This is not
 just a "moral" equality but a literal and definitional equality! -/
 lemma smoothSheaf.obj_eq (U : (Opens (TopCat.of M))ᵒᵖ) :
     (smoothSheaf IM I M N).presheaf.obj U = C^∞⟮IM, (unop U : Opens M); I, N⟯ := rfl
@@ -116,7 +116,7 @@ def smoothSheaf.evalHom (x : TopCat.of M) : (smoothSheaf IM I M N).presheaf.stal
 open CategoryTheory Limits
 
 /-- Given manifolds `M`, `N` and an open neighbourhood `U` of a point `x : M`, the evaluation-at-`x`
-map to `N` from smooth functions from  `U` to `N`. -/
+map to `N` from smooth functions from `U` to `N`. -/
 def smoothSheaf.evalAt (x : TopCat.of M) (U : OpenNhds x)
     (i : (smoothSheaf IM I M N).presheaf.obj (Opposite.op U.val)) : N :=
   i.1 ⟨x, U.2⟩
@@ -315,7 +315,7 @@ set_option backward.isDefEq.respectTransparency false in
   simp_rw [Functor.comp_obj, Functor.op_obj]
 
 /-- Given a smooth commutative ring `R` and a manifold `M`, and an open neighbourhood `U` of a point
-`x : M`, the evaluation-at-`x` map to `R` from smooth functions from  `U` to `R`. -/
+`x : M`, the evaluation-at-`x` map to `R` from smooth functions from `U` to `R`. -/
 def smoothSheafCommRing.evalAt (x : TopCat.of M) (U : OpenNhds x) :
     (smoothSheafCommRing IM I M R).presheaf.obj (Opposite.op U.1) ⟶ CommRingCat.of R :=
   CommRingCat.ofHom (ContMDiffMap.evalRingHom ⟨x, U.2⟩)

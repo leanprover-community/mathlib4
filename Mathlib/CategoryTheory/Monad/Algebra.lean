@@ -20,6 +20,7 @@ from and to the original category, as well as the adjoint pair of forgetful and
 cofree functors, respectively from and to the original category.
 
 ## References
+
 * [Riehl, *Category theory in context*, Section 5.2.4][riehl2017]
 -/
 
@@ -150,7 +151,7 @@ set_option backward.isDefEq.respectTransparency false in
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
 -- those are added too
 /-- The adjunction between the free and forgetful constructions for Eilenberg-Moore algebras for
-  a monad. cf Lemma 5.2.8 of [Riehl][riehl2017]. -/
+a monad. cf Lemma 5.2.8 of [Riehl][riehl2017]. -/
 @[simps! unit counit]
 def adj : T.free ⊣ T.forget :=
   Adjunction.mkOfHomEquiv

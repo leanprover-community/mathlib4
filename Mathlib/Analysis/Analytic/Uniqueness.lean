@@ -30,6 +30,7 @@ open scoped Topology ENNReal NNReal
 
 /-!
 ### Uniqueness of power series
+
 If a function `f : E → F` has two representations as power series at a point `x : E`, corresponding
 to formal multilinear series `p₁` and `p₂`, then these representations agree term-by-term. That is,
 for any `n : ℕ` and `y : E`, `p₁ n (fun i ↦ y) = p₂ n (fun i ↦ y)`. In the one-dimensional case,

@@ -131,6 +131,7 @@ namespace Finset
 /-- Simproc to compute `Finset.Icc a b` where `a` and `b` are numerals.
 
 **Warnings**:
+
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
   avoids a quadratic time performance hit. -/
@@ -151,6 +152,7 @@ simproc_decl Icc_ofNat_ofNat (Icc _ _) := .ofQ fun u α e ↦ do
 /-- Simproc to compute `Finset.Ico a b` where `a` and `b` are numerals.
 
 **Warnings**:
+
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
   avoids a quadratic time performance hit. -/
@@ -180,6 +182,7 @@ simproc_decl Ico_ofNat_ofNat (Ico _ _) := .ofQ fun u α e ↦ do
 /-- Simproc to compute `Finset.Ioc a b` where `a` and `b` are numerals.
 
 **Warnings**:
+
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
   avoids a quadratic time performance hit. -/
@@ -204,6 +207,7 @@ simproc_decl Ioc_ofNat_ofNat (Ioc _ _) := .ofQ fun u α e ↦ do
 /-- Simproc to compute `Finset.Ioo a b` where `a` and `b` are numerals.
 
 **Warnings**:
+
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
   avoids a quadratic time performance hit. -/
@@ -228,6 +232,7 @@ simproc_decl Ioo_ofNat_ofNat (Ioo _ _) := .ofQ fun u α e ↦ do
 /-- Simproc to compute `Finset.Iic b` where `b` is a numeral.
 
 **Warnings**:
+
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
   avoids a quadratic time performance hit. -/
@@ -242,6 +247,7 @@ simproc_decl Iic_ofNat (Iic _) := .ofQ fun u α e ↦ do
 /-- Simproc to compute `Finset.Iio b` where `b` is a numeral.
 
 **Warnings**:
+
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
   avoids a quadratic time performance hit. -/

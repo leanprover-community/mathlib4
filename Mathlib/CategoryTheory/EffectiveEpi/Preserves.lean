@@ -15,6 +15,7 @@ This file concerns functors which preserve and/or reflect effective epimorphisms
 epimorphic families.
 
 ## TODO
+
 - Find nice sufficient conditions in terms of preserving/reflecting (co)limits, to preserve/reflect
   effective epis, similar to `CategoryTheory.preserves_epi_of_preservesColimit`.
 -/

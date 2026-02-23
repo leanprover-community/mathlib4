@@ -79,7 +79,7 @@ def Germ (l : Filter α) (β : Type*) : Type _ :=
   Quotient (germSetoid l β)
 
 /-- Setoid used to define the filter product. This is a dependent version of
-  `Filter.germSetoid`. -/
+`Filter.germSetoid`. -/
 def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a) where
   r f g := ∀ᶠ a in l, f a = g a
   iseqv :=
@@ -87,7 +87,7 @@ def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a
       fun h1 h2 => h1.congr (h2.mono fun _ hx => hx ▸ Iff.rfl)⟩
 
 /-- The filter product `(a : α) → ε a` at a filter `l`. This is a dependent version of
-  `Filter.Germ`. -/
+`Filter.Germ`. -/
 def Product (l : Filter α) (ε : α → Type*) : Type _ :=
   Quotient (productSetoid l ε)
 

@@ -14,7 +14,7 @@ public import Mathlib.Analysis.Calculus.LocalExtr.Basic
 
 In this file we prove that the derivative of a differentiable function on an interval takes all
 intermediate values. The proof is based on the
-[Wikipedia](https://en.wikipedia.org/wiki/Darboux%27s_theorem_(analysis)) page about this theorem.
+[Wikipedia](<https://en.wikipedia.org/wiki/Darboux%27s_theorem_(analysis)>) page about this theorem.
 -/
 
 public section

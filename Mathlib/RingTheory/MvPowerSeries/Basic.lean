@@ -28,7 +28,7 @@ We provide the natural inclusion from multivariate polynomials to multivariate f
 - `MvPowerSeries.X`: the indeterminates
 
 - `MvPowerSeries.coeff`, `MvPowerSeries.constantCoeff`:
-the coefficients of a `MvPowerSeries`, its constant coefficient
+  the coefficients of a `MvPowerSeries`, its constant coefficient
 
 - `MvPowerSeries.monomial`: the monomials
 
@@ -39,27 +39,27 @@ the coefficients of a `MvPowerSeries`, its constant coefficient
 - `MvPowerSeries.coeff_pow` : computes the coefficients of powers of a `MvPowerSeries`
 
 - `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`: if the constant coefficient
-of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
+  of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
 
 - `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom`).
 
 - `MvPowerSeries.X_pow_dvd_iff`, `MvPowerSeries.X_dvd_iff`: equivalent
-conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
+  conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
 
 - `MvPolynomial.toMvPowerSeries`: the canonical coercion from `MvPolynomial` to `MvPowerSeries`
-
 
 ## Note
 
 This file sets up the (semi)ring structure on multivariate power series:
 additional results are in:
+
 * `Mathlib/RingTheory/MvPowerSeries/Inverse.lean` : invertibility,
   formal power series over a local ring form a local ring;
 * `Mathlib/RingTheory/MvPowerSeries/Trunc.lean`: truncation of power series.
 
 In `Mathlib/RingTheory/PowerSeries/Basic.lean`, formal power series in one variable
 will be obtained as a particular case, defined by
-  `PowerSeries R := MvPowerSeries Unit R`.
+`PowerSeries R := MvPowerSeries Unit R`.
 See that file for a specific description.
 
 ## Implementation notes
@@ -125,10 +125,10 @@ section Semiring
 variable [Semiring R]
 
 /-- The `n`th monomial as multivariate formal power series:
-  it is defined as the `R`-linear map from `R` to the semiring
-  of multivariate formal power series associating to each `a`
-  the map sending `n : σ →₀ ℕ` to the value `a`
-  and sending all other `x : σ →₀ ℕ` different from `n` to `0`. -/
+it is defined as the `R`-linear map from `R` to the semiring
+of multivariate formal power series associating to each `a`
+the map sending `n : σ →₀ ℕ` to the value `a`
+and sending all other `x : σ →₀ ℕ` different from `n` to `0`. -/
 def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
   letI := Classical.decEq σ
   LinearMap.single R (fun _ ↦ R) n
@@ -565,8 +565,8 @@ section toSubring
 variable [Ring R] (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
 
 /-- Given a multivariate formal power series `p` and a subring `T` that contains the
- coefficients of `p`, return the corresponding multivariate formal power series
- whose coefficients are in `T`. -/
+coefficients of `p`, return the corresponding multivariate formal power series
+whose coefficients are in `T`. -/
 def toSubring : MvPowerSeries σ T := fun n => ⟨p.coeff n, hp n⟩
 
 @[simp]

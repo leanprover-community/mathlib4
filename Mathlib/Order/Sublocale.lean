@@ -40,11 +40,11 @@ structure Sublocale (X : Type*) [Order.Frame X] where
   /-- The set corresponding to the sublocale. -/
   carrier : Set X
   /-- A sublocale is closed under all meets.
-
+  
   Do NOT use directly. Use `Sublocale.sInf_mem` instead. -/
   sInf_mem' : ∀ s ⊆ carrier, sInf s ∈ carrier
   /-- A sublocale is closed under heyting implication.
-
+  
   Do NOT use directly. Use `Sublocale.himp_mem` instead. -/
   himp_mem' : ∀ a b, b ∈ carrier → a ⇨ b ∈ carrier
 

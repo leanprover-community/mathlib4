@@ -73,7 +73,7 @@ add_aesop_rules safe tactic
 scoped notation "StronglyMeasurable[" m "]" => @MeasureTheory.StronglyMeasurable _ _ _ m
 
 /-- A function is `FinStronglyMeasurable` with respect to a measure if it is the limit of simple
-  functions with support with finite measure. -/
+functions with support with finite measure. -/
 def FinStronglyMeasurable [Zero β]
     {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ fs : ℕ → α →ₛ β, (∀ n, μ (support (fs n)) < ∞) ∧ ∀ x, Tendsto (fun n => fs n x) atTop (𝓝 (f x))
@@ -298,7 +298,7 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     exact hn₂ m ((le_max_right _ _).trans hm.le)
 
 /-- If the measure is sigma-finite, all strongly measurable functions are
-  `FinStronglyMeasurable`. -/
+`FinStronglyMeasurable`. -/
 @[aesop 5% apply (rule_sets := [Measurable])]
 protected theorem finStronglyMeasurable [TopologicalSpace β] [Zero β] {m0 : MeasurableSpace α}
     (hf : StronglyMeasurable f) (μ : Measure α) [SigmaFinite μ] : FinStronglyMeasurable f μ :=
@@ -760,8 +760,7 @@ protected theorem piecewise {m : MeasurableSpace α} [TopologicalSpace β] {s : 
 
 /-- this is slightly different from `StronglyMeasurable.piecewise`. It can be used to show
 `StronglyMeasurable (ite (x=0) 0 1)` by
-`exact StronglyMeasurable.ite (measurableSet_singleton 0) stronglyMeasurable_const
-stronglyMeasurable_const`, but replacing `StronglyMeasurable.ite` by
+`exact StronglyMeasurable.ite (measurableSet_singleton 0) stronglyMeasurable_const stronglyMeasurable_const`, but replacing `StronglyMeasurable.ite` by
 `StronglyMeasurable.piecewise` in that example proof does not work. -/
 protected theorem ite {_ : MeasurableSpace α} [TopologicalSpace β] {p : α → Prop}
     {_ : DecidablePred p} (hp : MeasurableSet { a : α | p a }) (hf : StronglyMeasurable f)
@@ -1181,7 +1180,7 @@ variable {G : Type*} [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace 
   [SecondCountableTopology G] {f : α → G}
 
 /-- In a space with second countable topology and a sigma-finite measure, `FinStronglyMeasurable`
-  and `Measurable` are equivalent. -/
+and `Measurable` are equivalent. -/
 theorem finStronglyMeasurable_iff_measurable {_m0 : MeasurableSpace α} (μ : Measure α)
     [SigmaFinite μ] : FinStronglyMeasurable f μ ↔ Measurable f :=
   ⟨fun h => h.measurable, fun h => (Measurable.stronglyMeasurable h).finStronglyMeasurable μ⟩

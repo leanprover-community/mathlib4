@@ -12,6 +12,7 @@ public import Mathlib.Data.Set.SMulAntidiagonal
 
 /-!
 # Scalar multiplication by finitely supported functions.
+
 Given sets `G` and `P`, with a left-cancellative vector-addition of `G` on `P`, we define an
 antidiagonal function that assigns, for any element `a` in `P`, finite subset `s` of `G`, and subset
 `t` in `P`, the `Set` of all pairs of an element in `s` and an element in `t` that vector-add to
@@ -19,6 +20,7 @@ antidiagonal function that assigns, for any element `a` in `P`, finite subset `s
 finitely supported `R`-valued functions on `G` on the space of `V`-valued functions on `P`.
 
 ## Definitions
+
 * Finsupp.vaddAntidiagonal : The finset of pairs that vector-add to a given element.
 
 -/

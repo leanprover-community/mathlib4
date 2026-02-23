@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.LocalProperties.Submodule
 # Being projective is a local property
 
 ## Main results
+
 - `LinearMap.split_surjective_of_localization_maximal`
   If `N` is finitely presented, then `f : M →ₗ[R] N`
   being split injective can be checked on stalks (of maximal ideals).
@@ -23,6 +24,7 @@ public import Mathlib.RingTheory.LocalProperties.Submodule
   then `M` being projective can be checked on stalks (of maximal ideals).
 
 ## TODO
+
 - Show that being projective is Zariski-local (very hard)
 
 -/

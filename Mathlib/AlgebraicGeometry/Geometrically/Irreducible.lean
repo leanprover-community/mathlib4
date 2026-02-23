@@ -12,6 +12,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 # Geometrically Irreducible Schemes
 
 ## Main results
+
 - `AlgebraicGeometry.GeometricallyIrreducible`:
   We say that morphism `f : X ⟶ Y` is geometrically irreducible if for all `Spec K ⟶ Y` with `K`
   a field, `X ×[Y] Spec K` is irrreducible.

@@ -19,6 +19,7 @@ We define the Lie bracket of two vector fields, denoted with
 in the model space (through `extChartAt I x`).
 
 The main results are the following:
+
 * `VectorField.mpullback_mlieBracket` states that the pullback of the Lie bracket
   is the Lie bracket of the pullbacks.
 * `VectorField.leibniz_identity_mlieBracket` is the Leibniz (or Jacobi)

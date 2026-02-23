@@ -37,6 +37,7 @@ def clearExcept (preserve : Array FVarId) (goal : MVarId) : MetaM MVarId := do
   goal.tryClearMany toClear
 
 /-- Clears all hypotheses it can, except those provided after a minus sign. Example:
+
 ```
   clear * - h₁ h₂
 ```

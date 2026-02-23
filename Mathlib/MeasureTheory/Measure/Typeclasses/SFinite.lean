@@ -116,8 +116,8 @@ def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
   spanning := eq_univ_of_subset (iUnion_mono fun _ => subset_toMeasurable _ _) h.out.some.spanning
 
 /-- A noncomputable way to get a monotone collection of sets that span `univ` and have finite
-  measure using `Classical.choose`. This definition satisfies monotonicity in addition to all other
-  properties in `SigmaFinite`. -/
+measure using `Classical.choose`. This definition satisfies monotonicity in addition to all other
+properties in `SigmaFinite`. -/
 def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
   accumulate μ.toFiniteSpanningSetsIn.set i
 
@@ -675,7 +675,7 @@ theorem _root_.MeasurableEquiv.sigmaFinite_map (f : α ≃ᵐ β) [SigmaFinite �
     SigmaFinite (μ.map f) := f.measurableEmbedding.sigmaFinite_map
 
 /-- Similar to `ae_of_forall_measure_lt_top_ae_restrict`, but where you additionally get the
-  hypothesis that another σ-finite measure has finite values on `s`. -/
+hypothesis that another σ-finite measure has finite values on `s`. -/
 theorem ae_of_forall_measure_lt_top_ae_restrict' {μ : Measure α} (ν : Measure α) [SigmaFinite μ]
     [SigmaFinite ν] (P : α → Prop)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ν s < ∞ → ∀ᵐ x ∂μ.restrict s, P x) : ∀ᵐ x ∂μ, P x := by
@@ -689,7 +689,7 @@ theorem ae_of_forall_measure_lt_top_ae_restrict' {μ : Measure α} (ν : Measure
   filter_upwards [ae_all_iff.2 this] with _ hx using hx _ (mem_spanningSetsIndex _ _)
 
 /-- To prove something for almost all `x` w.r.t. a σ-finite measure, it is sufficient to show that
-  this holds almost everywhere in sets where the measure has finite value. -/
+this holds almost everywhere in sets where the measure has finite value. -/
 theorem ae_of_forall_measure_lt_top_ae_restrict {μ : Measure α} [SigmaFinite μ] (P : α → Prop)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∀ᵐ x ∂μ.restrict s, P x) : ∀ᵐ x ∂μ, P x :=
   ae_of_forall_measure_lt_top_ae_restrict' μ P fun s hs h2s _ => h s hs h2s

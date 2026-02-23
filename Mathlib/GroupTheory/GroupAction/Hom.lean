@@ -28,6 +28,7 @@ public import Mathlib.Algebra.Ring.Action.Basic
   `M` acting on the ring `R` and `N` acting on the ring `S`.
 
 The above types have corresponding classes:
+
 * `MulActionHomClass F φ X Y` states that `F` is a type of bundled `X → Y` homs
   which are `φ`-equivariant;
   `AddActionHomClass F φ X Y` is its additive version.
@@ -40,11 +41,13 @@ The above types have corresponding classes:
 
 We introduce the following notation to code equivariant maps
 (the subscript index `ₑ` is for *equivariant*) :
+
 * `X →ₑ[φ] Y` is `MulActionHom φ X Y` and `AddActionHom φ X Y`
 * `A →ₑ+[φ] B` is `DistribMulActionHom φ A B`.
 * `R →ₑ+*[φ] S` is `MulSemiringActionHom φ R S`.
 
 When `M = N` and `φ = MonoidHom.id M`, we provide the backward compatible notation :
+
 * `X →[M] Y` is `MulActionHom (@id M) X Y` and `AddActionHom (@id M) X Y`
 * `A →+[M] B` is `DistribMulActionHom (MonoidHom.id M) A B`
 * `R →+*[M] S` is `MulSemiringActionHom (MonoidHom.id M) R S`
@@ -108,7 +111,7 @@ We use the same notation as for multiplicative actions, as conflicts are unlikel
 notation:25 (name := «AddActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => AddActionHom (@id M) X Y
 
 /-- `AddActionSemiHomClass F φ X Y` states that
-  `F` is a type of morphisms which are `φ`-equivariant.
+`F` is a type of morphisms which are `φ`-equivariant.
 
 You should extend this class when you extend `AddActionHom`. -/
 class AddActionSemiHomClass (F : Type*)
@@ -118,7 +121,7 @@ class AddActionSemiHomClass (F : Type*)
   map_vaddₛₗ : ∀ (f : F) (c : M) (x : X), f (c +ᵥ x) = (φ c) +ᵥ (f x)
 
 /-- `MulActionSemiHomClass F φ X Y` states that
-  `F` is a type of morphisms which are `φ`-equivariant.
+`F` is a type of morphisms which are `φ`-equivariant.
 
 You should extend this class when you extend `MulActionHom`. -/
 @[to_additive]
@@ -164,8 +167,8 @@ variable {φ X Y}
 variable {F : Type*} [FunLike F X Y]
 
 /-- Turn an element of a type `F` satisfying `MulActionSemiHomClass F φ X Y`
-  into an actual `MulActionHom`.
-  This is declared as the default coercion from `F` to `MulActionSemiHom φ X Y`. -/
+into an actual `MulActionHom`.
+This is declared as the default coercion from `F` to `MulActionSemiHom φ X Y`. -/
 @[to_additive (attr := coe)
   /-- Turn an element of a type `F` satisfying `AddActionSemiHomClass F φ X Y`
   into an actual `AddActionHom`.
@@ -176,7 +179,7 @@ def _root_.MulActionSemiHomClass.toMulActionHom [MulActionSemiHomClass F φ X Y]
   map_smul' := map_smulₛₗ f
 
 /-- Any type satisfying `MulActionSemiHomClass` can be cast into `MulActionHom` via
-  `MulActionHomSemiClass.toMulActionHom`. -/
+`MulActionHomSemiClass.toMulActionHom`. -/
 @[to_additive]
 instance [MulActionSemiHomClass F φ X Y] : CoeTC F (X →ₑ[φ] Y) :=
   ⟨MulActionSemiHomClass.toMulActionHom⟩
@@ -342,9 +345,9 @@ theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
   simpa using h₂.eq _
 
 /-- If actions of `M` and `N` on `α` commute,
-  then for `c : M`, `(c • · : α → α)` is an `N`-action homomorphism. -/
+then for `c : M`, `(c • · : α → α)` is an `N`-action homomorphism. -/
 @[to_additive (attr := simps) /-- If additive actions of `M` and `N` on `α` commute,
-  then for `c : M`, `(c • · : α → α)` is an `N`-additive action homomorphism. -/]
+then for `c : M`, `(c • · : α → α)` is an `N`-additive action homomorphism. -/]
 def _root_.SMulCommClass.toMulActionHom {M} (N α : Type*)
     [SMul M α] [SMul N α] [SMulCommClass M N α] (c : M) :
     α →[N] α where
@@ -575,8 +578,8 @@ notation:25 (name := «DistribMulActionHomIdLocal≺»)
 -- QUESTION/TODO : Impose that `φ` is a morphism of monoids?
 
 /-- `DistribMulActionSemiHomClass F φ A B` states that `F` is a type of morphisms
-  preserving the additive monoid structure and equivariant with respect to `φ`.
-    You should extend this class when you extend `DistribMulActionSemiHom`. -/
+preserving the additive monoid structure and equivariant with respect to `φ`.
+You should extend this class when you extend `DistribMulActionSemiHom`. -/
 class DistribMulActionSemiHomClass (F : Type*)
     {M N : outParam Type*} (φ : outParam (M → N))
     (A B : outParam Type*)
@@ -586,8 +589,8 @@ class DistribMulActionSemiHomClass (F : Type*)
     extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B
 
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
-  the additive monoid structure and equivariant with respect to the action of `M`.
-    It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B`
+the additive monoid structure and equivariant with respect to the action of `M`.
+It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B`
 You should extend this class when you extend `DistribMulActionHom`. -/
 abbrev DistribMulActionHomClass (F : Type*) (M : outParam Type*)
     (A B : outParam Type*) [Monoid M] [AddMonoid A] [AddMonoid B]
@@ -834,7 +837,7 @@ def _root_.MulSemiringActionHomClass.toMulSemiringActionHom
   { (f : R →+* S), (f : R →ₑ+[φ] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
-  `MulSemiringActionHomClass.toMulSemiringActionHom`. -/
+`MulSemiringActionHomClass.toMulSemiringActionHom`. -/
 instance [MulSemiringActionSemiHomClass F φ R S] :
     CoeTC F (R →ₑ+*[φ] S) :=
   ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩

@@ -85,7 +85,7 @@ variable {C}
 
 open CategoryTheory Limits Opposite IndexFunctor
 
-/-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
+/-- The functor from the poset of finsets of `ι` to `Profinite`, indexing the limit. -/
 noncomputable
 def indexFunctor (hC : IsCompact C) : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
   obj J := @Profinite.of (obj C (· ∈ (unop J))) _

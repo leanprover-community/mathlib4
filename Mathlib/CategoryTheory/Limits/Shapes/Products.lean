@@ -28,6 +28,7 @@ A coproduct is the dual concept.
 Each of these has a dual.
 
 ## Implementation notes
+
 As with the other special shapes in the limits library, all the definitions here are given as
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
@@ -108,7 +109,7 @@ lemma hasProduct_of_equiv_of_iso (f : α → C) (g : β → C)
   exact hasLimit_of_iso α.symm
 
 /-- Make a fan `f` into a limit fan by providing `lift`, `fac`, and `uniq` --
-  just a convenience lemma to avoid having to go through `Discrete` -/
+just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]
 def mkFanLimit {f : β → C} (t : Fan f) (lift : ∀ s : Fan f, s.pt ⟶ t.pt)
     (fac : ∀ (s : Fan f) (j : β), lift s ≫ t.proj j = s.proj j := by cat_disch)
@@ -140,7 +141,7 @@ lemma Fan.IsLimit.hom_ext {I : Type*} {F : I → C} {c : Fan F} (hc : IsLimit c)
   hc.hom_ext (fun ⟨i⟩ => h i)
 
 /-- Make a cofan `f` into a colimit cofan by providing `desc`, `fac`, and `uniq` --
-  just a convenience lemma to avoid having to go through `Discrete` -/
+just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]
 def mkCofanColimit {f : β → C} (s : Cofan f) (desc : ∀ t : Cofan f, s.pt ⟶ t.pt)
     (fac : ∀ (t : Cofan f) (j : β), s.inj j ≫ desc t = t.inj j := by cat_disch)

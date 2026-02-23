@@ -15,22 +15,29 @@ public meta section
 
 /-- Adds an alias of this declaration in a different namespace.
 Example:
+
 ```
 @[alias_in Foo.Bar] def A.B.C.d := ...
 ```
+
 behaves like
+
 ```
 alias A.Foo.Bar.d := A.B.C.d
 ```
+
 You can see the name of the alias by mousing over the name argument of `alias_in`.
 
 We replace the rightmost/innermost namespaces, but always leave the final part of the name intact.
 By default, `alias_in` assumes that we want to replace the same number of namespaces from the
 original name as given in the new namespace. You can override this by adding a number at the end
+
 ```
 @[alias_in Foo.Bar 3] def A.B.C.d := ...
 ```
+
 behaves like
+
 ```
 alias Foo.Bar.d := A.B.C.d
 ```

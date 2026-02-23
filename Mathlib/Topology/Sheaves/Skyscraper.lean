@@ -229,7 +229,7 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
           rw [if_neg]
           · exact terminalIsTerminal
           · #adaptation_note /-- 2024-03-24
-            Previously the universe annotation was not needed here. -/
+          Previously the universe annotation was not needed here. -/
             exact Set.notMem_empty PUnit.unit.{u + 1})))
 
 /--

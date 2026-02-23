@@ -57,15 +57,19 @@ fiber bundle from trivializations given as partial equivalences with minimum add
 
 Let `Z : FiberBundleCore ι B F`. Then we define
 
-* `Z.Fiber x`     : the fiber above `x`, homeomorphic to `F` (and defeq to `F` as a type).
-* `Z.TotalSpace`  : the total space of `Z`, defined as `Bundle.TotalSpace F Z.Fiber` with a custom
-                    topology.
-* `Z.proj`        : projection from `Z.TotalSpace` to `B`. It is continuous.
+* `Z.Fiber x` : the fiber above `x`, homeomorphic to `F` (and defeq to `F` as a type).
+
+* `Z.TotalSpace` : the total space of `Z`, defined as `Bundle.TotalSpace F Z.Fiber` with a custom
+  topology.
+
+* `Z.proj` : projection from `Z.TotalSpace` to `B`. It is continuous.
+
 * `Z.localTriv i` : for `i : ι`, bundle trivialization above the set `Z.baseSet i`, which is an
-                    open set in `B`.
+  open set in `B`.
 
 * `FiberPrebundle F E` : structure registering a cover of prebundle trivializations
   and requiring that the relative transition maps are open partial homeomorphisms.
+
 * `FiberPrebundle.totalSpaceTopology a` : natural topology of the total space, making
   the prebundle into a bundle.
 
@@ -128,6 +132,7 @@ For the practical implementation, it turns out to be more convenient to avoid co
 gluing and quotienting construction above, and to declare above each `x` that the fiber is `F`,
 but thinking that it corresponds to the `F` coming from the choice of one trivialization around `x`.
 This has several practical advantages:
+
 * without any work, one gets a topological space structure on the fiber. And if `F` has more
   structure it is inherited for free by the fiber.
 * In the case of the tangent bundle of manifolds, this implies that on vector spaces the derivative
@@ -162,6 +167,7 @@ Or for the pullback of a `FiberBundleCore`, the indexing type will be the same a
 for the initial bundle.
 
 ## Tags
+
 Fiber bundle, topological bundle, structure group
 -/
 
@@ -218,7 +224,7 @@ variable {E}
 
 /-- Given a type `E` equipped with a fiber bundle structure, this is a `Prop` typeclass
 for trivializations of `E`, expressing that a trivialization is in the designated atlas for the
-bundle.  This is needed because lemmas about the linearity of trivializations or the continuity (as
+bundle. This is needed because lemmas about the linearity of trivializations or the continuity (as
 functions to `F →L[R] F`, where `F` is the model fiber) of the transition functions are only
 expected to hold for trivializations in the designated atlas. -/
 @[mk_iff]
@@ -806,7 +812,7 @@ theorem inducing_totalSpaceMk_of_inducing_comp (b : B)
     (a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas b)).continuousOn)
   exact (a.continuous_totalSpaceMk b).codRestrict (a.mem_pretrivializationAt_source b)
 
-/-- Make a `FiberBundle` from a `FiberPrebundle`.  Concretely this means
+/-- Make a `FiberBundle` from a `FiberPrebundle`. Concretely this means
 that, given a `FiberPrebundle` structure for a sigma-type `E` -- which consists of a
 number of "pretrivializations" identifying parts of `E` with product spaces `U × F` -- one
 establishes that for the topology constructed on the sigma-type using

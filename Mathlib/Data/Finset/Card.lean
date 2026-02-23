@@ -727,8 +727,8 @@ theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
 
 /-- If a Finset in a Pi type is nontrivial (has at least two elements), then
-  its projection to some factor is nontrivial, and the fibers of the projection
-  are proper subsets. -/
+its projection to some factor is nontrivial, and the fibers of the projection
+are proper subsets. -/
 lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, DecidableEq (α i)]
     {s : Finset (∀ i, α i)} (h : 1 < #s) :
     ∃ i, 1 < #(s.image (· i)) ∧ ∀ ai, s.filter (· i = ai) ⊂ s := by

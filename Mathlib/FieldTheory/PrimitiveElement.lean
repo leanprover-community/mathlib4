@@ -210,7 +210,7 @@ variable [FiniteDimensional F E] [Algebra.IsSeparable F E]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- **Primitive element theorem**: a finite separable field extension `E` of `F` has a
-  primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`. -/
+primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`. -/
 @[stacks 030N "The moreover part"]
 theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
   rcases isEmpty_or_nonempty (Fintype F) with (F_inf | ⟨⟨F_finite⟩⟩)
@@ -337,8 +337,8 @@ theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebrai
   exact Finite.of_injective g hinj
 
 /-- **Steinitz theorem**: an algebraic extension `E` of `F` has a
-  primitive element (i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`)
-  if and only if there exist only finitely many intermediate fields between `E` and `F`. -/
+primitive element (i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`)
+if and only if there exist only finitely many intermediate fields between `E` and `F`. -/
 @[stacks 030N "Equivalence of (1) & (2)"]
 theorem exists_primitive_element_iff_finite_intermediateField :
     (Algebra.IsAlgebraic F E ∧ ∃ α : E, F⟮α⟯ = ⊤) ↔ Finite (IntermediateField F E) :=

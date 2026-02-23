@@ -363,6 +363,7 @@ theorem sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
 Then `SumEval C ho` is the map `u` in the diagram below. It is linearly independent if and only if
 `GoodProducts.eval C` is, see `linearIndependent_iff_sum`. The top row is the exact sequence given
 by `succ_exact` and `succ_mono`. The left square commutes by `GoodProducts.square_commutes`.
+
 ```
 0 --→ N --→ M --→  P
       ↑     ↑      ↑

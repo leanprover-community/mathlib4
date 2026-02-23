@@ -158,7 +158,7 @@ theorem tendsto_normSq_coprime_pair :
   exact tendsto_normSq_cocompact_atTop.comp (hf'.tendsto_cocompact.comp h₂)
 
 /-- Given `coprime_pair` `p=(c,d)`, the matrix `[[a,b],[*,*]]` is sent to `a*c+b*d`.
-  This is the linear map version of this operation.
+This is the linear map version of this operation.
 -/
 def lcRow0 (p : Fin 2 → ℤ) : Matrix (Fin 2) (Fin 2) ℝ →ₗ[ℝ] ℝ :=
   ((p 0 : ℝ) • LinearMap.proj (0 : Fin 2) +
@@ -229,8 +229,8 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   · rfl
 
 /-- This replaces `(g•z).re = a/c + *` in the standard theory with the following novel identity:
-  `g • z = (a c + b d) / (c^2 + d^2) + (d z - c) / ((c^2 + d^2) (c z + d))`
-  which does not need to be decomposed depending on whether `c = 0`. -/
+`g • z = (a c + b d) / (c^2 + d^2) + (d z - c) / ((c^2 + d^2) (c z + d))`
+which does not need to be decomposed depending on whether `c = 0`. -/
 theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg : g 1 = p) :
     ↑(g • z) =
       (lcRow0 p ↑(g : SL(2, ℝ)) : ℂ) / ((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) +
@@ -291,7 +291,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
   · exact normSq_denom_pos g z.im_ne_zero
 
 /-- Given `z : ℍ` and a bottom row `(c,d)`, among the `g : SL(2,ℤ)` with this bottom row, minimize
-  `|(g•z).re|`. -/
+`|(g•z).re|`. -/
 theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     ∃ g : SL(2, ℤ), g 1 = cd ∧ ∀ g' : SL(2, ℤ), g 1 = g' 1 →
       |(g • z).re| ≤ |(g' • z).re| := by

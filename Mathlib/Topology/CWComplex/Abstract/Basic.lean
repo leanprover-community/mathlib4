@@ -30,6 +30,7 @@ defining them via colimits and transfinite compositions.
 For a classical approach that defines CW complexes via explicit cells and attaching maps,
 see `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
 The two approaches are equivalent but serve different purposes:
+
 * This approach is more suitable for categorical arguments and generalizations
 * The classical approach is more convenient for concrete geometric arguments
 

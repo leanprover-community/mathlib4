@@ -21,7 +21,7 @@ public section
 section Finite
 
 /-- Given a partition of the ambient type, the cardinal of a finite set
-  is the `finsum` of the cardinalities of its traces on the parts of the partition -/
+is the `finsum` of the cardinalities of its traces on the parts of the partition -/
 theorem Setoid.IsPartition.ncard_eq_finsum {α : Type*} {P : Set (Set α)}
     (hP : Setoid.IsPartition P) (s : Set α) (hs : s.Finite := by toFinite_tac) :
     s.ncard = finsum fun t : P => (s ∩ t).ncard := by

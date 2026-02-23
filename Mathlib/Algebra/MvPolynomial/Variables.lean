@@ -16,7 +16,6 @@ This file establishes many results about the variable sets of a multivariate pol
 The *variable set* of a polynomial $P \in R[X]$ is a `Finset` containing each $x \in X$
 that appears in a monomial in $P$.
 
-
 ## Main declarations
 
 * `MvPolynomial.vars p` : the finset of variables occurring in `p`.
@@ -31,7 +30,7 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
 
 + `r : R`
 
@@ -270,8 +269,8 @@ theorem eval₂Hom_congr' {f₁ f₂ : R →+* S} {g₁ g₂ : σ → S} {p₁ p
   rw [h i this this]
 
 /-- If `f₁` and `f₂` are ring homs out of the polynomial ring and `p₁` and `p₂` are polynomials,
-  then `f₁ p₁ = f₂ p₂` if `p₁ = p₂` and `f₁` and `f₂` are equal on `R` and on the variables
-  of `p₁`. -/
+then `f₁ p₁ = f₂ p₂` if `p₁ = p₂` and `f₁` and `f₂` are equal on `R` and on the variables
+of `p₁`. -/
 theorem hom_congr_vars {f₁ f₂ : MvPolynomial σ R →+* S} {p₁ p₂ : MvPolynomial σ R}
     (hC : f₁.comp C = f₂.comp C) (hv : ∀ i, i ∈ p₁.vars → i ∈ p₂.vars → f₁ (X i) = f₂ (X i))
     (hp : p₁ = p₂) : f₁ p₁ = f₂ p₂ :=

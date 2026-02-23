@@ -19,13 +19,14 @@ functions of sets converge pointwise.
 For `A` a set, `(Asᵢ)` an indexed collection of sets, under mild conditions, the following are
 equivalent:
 
- (a) the indicator functions of `Asᵢ` tend to the indicator function of `A` pointwise;
+(a) the indicator functions of `Asᵢ` tend to the indicator function of `A` pointwise;
 
- (b) for every `x`, we eventually have that `x ∈ Asᵢ` holds iff `x ∈ A` holds;
+(b) for every `x`, we eventually have that `x ∈ Asᵢ` holds iff `x ∈ A` holds;
 
- (c) `Tendsto As _ <| Filter.pi (pure <| · ∈ A)`.
+(c) `Tendsto As _ <| Filter.pi (pure <| · ∈ A)`.
 
 The results stating these in the case when the indicators take values in a Fréchet space are:
+
 * `tendsto_indicator_const_iff_forall_eventually` is the equivalence (a) ↔ (b);
 * `tendsto_indicator_const_iff_tendsto_pi_pure` is the equivalence (a) ↔ (c).
 

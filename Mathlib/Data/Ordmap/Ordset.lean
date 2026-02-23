@@ -694,7 +694,7 @@ instance Empty.instDecidablePred : DecidablePred (@Empty α _) :=
   fun _ => decidable_of_iff' _ empty_iff
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
-  If an equivalent element is already in the set, this replaces it. -/
+If an equivalent element is already in the set, this replaces it. -/
 protected def insert [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
     Ordset α :=
   ⟨Ordnode.insert x s.1, insert.valid _ s.2⟩
@@ -703,7 +703,7 @@ instance instInsert [@Std.Total α (· ≤ ·)] [DecidableLE α] : Insert α (Or
   ⟨Ordset.insert⟩
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
-  If an equivalent element is already in the set, the set is returned as is. -/
+If an equivalent element is already in the set, the set is returned as is. -/
 nonrec def insert' [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
     Ordset α :=
   ⟨insert' x s.1, insert'.valid _ s.2⟩
@@ -713,12 +713,12 @@ section
 variable [DecidableLE α]
 
 /-- O(log n). Does the set contain the element `x`? That is,
-  is there an element that is equivalent to `x` in the order? -/
+is there an element that is equivalent to `x` in the order? -/
 def mem (x : α) (s : Ordset α) : Bool :=
   x ∈ s.val
 
 /-- O(log n). Retrieve an element in the set that is equivalent to `x` in the order,
-  if it exists. -/
+if it exists. -/
 def find (x : α) (s : Ordset α) : Option α :=
   Ordnode.find x s.val
 

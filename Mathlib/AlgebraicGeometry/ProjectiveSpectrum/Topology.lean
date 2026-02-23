@@ -18,6 +18,7 @@ are prime and do not contain the irrelevant ideal.
 It is naturally endowed with a topology: the Zariski topology.
 
 ## Notation
+
 - `A` is a commutative ring
 - `σ` is a class of additive submonoids of `A`
 - `𝒜 : ℕ → σ` is the grading of `A`;

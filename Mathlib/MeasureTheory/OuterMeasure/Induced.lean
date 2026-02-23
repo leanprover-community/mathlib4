@@ -45,7 +45,7 @@ variable {R α : Type*} {P : α → Prop}
 variable (m : ∀ s : α, P s → ℝ≥0∞)
 
 /-- We can trivially extend a function defined on a subclass of objects (with codomain `ℝ≥0∞`)
-  to all objects by defining it to be `∞` on the objects not in the class. -/
+to all objects by defining it to be `∞` on the objects not in the class. -/
 def extend (s : α) : ℝ≥0∞ :=
   ⨅ h : P s, m s h
 
@@ -156,7 +156,7 @@ end Unions
 variable (m)
 
 /-- Given an arbitrary function on a subset of sets, we can define the outer measure corresponding
-  to it (this is the unique maximal outer measure that is at most `m` on the domain of `m`). -/
+to it (this is the unique maximal outer measure that is at most `m` on the domain of `m`). -/
 def inducedOuterMeasure : OuterMeasure α :=
   OuterMeasure.ofFunction (extend m) (extend_empty P0 m0)
 
@@ -225,8 +225,8 @@ theorem inducedOuterMeasure_exists_set {s : Set α} (hs : inducedOuterMeasure m 
     ⟨t, h1t, h2t, le_trans (le_of_eq <| inducedOuterMeasure_eq' _ msU m_mono h1t) (le_of_lt h3t)⟩
 
 /-- To test whether `s` is Carathéodory-measurable we only need to check the sets `t` for which
-  `P t` holds. See `ofFunction_caratheodory` for another way to show the Carathéodory-measurability
-  of `s`.
+`P t` holds. See `ofFunction_caratheodory` for another way to show the Carathéodory-measurability
+of `s`.
 -/
 theorem inducedOuterMeasure_caratheodory (s : Set α) :
     MeasurableSet[(inducedOuterMeasure m P0 m0).caratheodory] s ↔
@@ -252,7 +252,7 @@ theorem inducedOuterMeasure_caratheodory (s : Set α) :
 end ExtendSet
 
 /-! If `P` is `MeasurableSet` for some measurable space, then we can remove some hypotheses of the
-  above lemmas. -/
+above lemmas. -/
 
 
 section MeasurableSpace
@@ -300,7 +300,7 @@ namespace OuterMeasure
 variable {α : Type*} [MeasurableSpace α] (m : OuterMeasure α)
 
 /-- Given an outer measure `m` we can forget its value on non-measurable sets, and then consider
-  `m.trim`, the unique maximal outer measure less than that function. -/
+`m.trim`, the unique maximal outer measure less than that function. -/
 def trim : OuterMeasure α :=
   inducedOuterMeasure (P := MeasurableSet) (fun s _ => m s) .empty m.empty
 

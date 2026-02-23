@@ -170,7 +170,7 @@ open Finset Multiset
 set_option backward.isDefEq.respectTransparency false in
 omit dec in
 /-- A finitely generated `p ^ ∞`-torsion module over a PID is isomorphic to a direct sum of some
-  `R ⧸ R ∙ (p ^ e i)` for some `e i`. -/
+`R ⧸ R ∙ (p ^ e i)` for some `e i`. -/
 theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoid.powers p))
     [h' : Module.Finite R M] :
     ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| M ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
@@ -233,7 +233,7 @@ end PTorsion
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A finitely generated torsion module over a PID is isomorphic to a direct sum of some
-  `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
+`R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
 theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTorsion R M) :
     ∃ (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
       Nonempty <| M ≃ₗ[R] ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
@@ -259,8 +259,8 @@ variable (R M)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated
-  module over a PID is isomorphic to the product of a free module and a direct sum of some
-  `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
+module over a PID is isomorphic to the product of a free module and a direct sum of some
+`R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
 theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
     ∃ (n : ℕ) (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
       Nonempty <| M ≃ₗ[R] (Fin n →₀ R) × ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by

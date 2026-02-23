@@ -18,10 +18,11 @@ between the localized categories. Assume moreover that `W₂` contains identitie
 Then, `Φ` is a right derivability structure
 (`LocalizerMorphism.IsRightDerivabilityStructure.mk'`) if it satisfies the
 two following conditions:
+
 * for any `X₂ : C₂`, the category `Φ.RightResolution X₂` of resolutions of `X₂` is connected
 * any arrow in `C₂` admits a resolution (i.e. `Φ.arrow.HasRightResolutions` holds, where
   `Φ.arrow` is the induced localizer morphism on categories of arrows in `C₁` and `C₂`)
-(The dual statement for left derivability structures is also obtained.)
+  (The dual statement for left derivability structures is also obtained.)
 
 This statement is essentially Lemme 6.5 in
 [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008].

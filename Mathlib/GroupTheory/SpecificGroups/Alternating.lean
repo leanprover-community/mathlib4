@@ -24,6 +24,7 @@ consisting of the even permutations.
 * `alternatingGroup α` is the alternating group on `α`, defined as a `Subgroup (Perm α)`.
 
 ## Main results
+
 * `alternatingGroup.index_eq_two` shows that the index of the alternating group is two.
 
 * `two_mul_card_alternatingGroup` shows that the alternating group is half as large as
@@ -50,10 +51,11 @@ consisting of the even permutations.
 * The alternating group is a characteristic subgroup of the permutation group.
 
 ## Tags
+
 alternating group permutation simple characteristic index
 
-
 ## TODO
+
 * Show that `alternatingGroup α` is simple if and only if `Fintype.card α ≠ 4`.
 
 -/
@@ -69,7 +71,7 @@ open Equiv Equiv.Perm Subgroup Fintype
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
 /-- The alternating group on a finite type, realized as a subgroup of `Equiv.Perm`.
-  For $A_n$, use `alternatingGroup (Fin n)`. -/
+For $A_n$, use `alternatingGroup (Fin n)`. -/
 def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 
@@ -234,7 +236,7 @@ theorem closure_cycleType_eq_2_2_eq_alternatingGroup (h5 : 5 ≤ Nat.card α) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
-  at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
+at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
 theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f : Perm α}
     (hf : IsThreeCycle f) :
     normalClosure ({⟨f, hf.mem_alternatingGroup⟩} : Set (alternatingGroup α)) = ⊤ :=
@@ -251,8 +253,8 @@ theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f :
       exact ⟨⟨f, hf.mem_alternatingGroup⟩, Set.mem_singleton _, isThreeCycle_isConj h5 hf h⟩)
 
 /-- Part of proving $A_5$ is simple. Shows that the square of any element of $A_5$ with a 3-cycle in
-  its cycle decomposition is a 3-cycle, so the normal closure of the original element must be
-  $A_5$. -/
+its cycle decomposition is a 3-cycle, so the normal closure of the original element must be
+$A_5$. -/
 theorem isThreeCycle_sq_of_three_mem_cycleType_five {g : Perm (Fin 5)} (h : 3 ∈ cycleType g) :
     IsThreeCycle (g * g) := by
   obtain ⟨c, g', rfl, hd, _, h3⟩ := mem_cycleType_iff.1 h
@@ -297,7 +299,7 @@ instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The normal closure of the 5-cycle `finRotate 5` within $A_5$ is the whole group. This will be
-  used to show that the normal closure of any 5-cycle within $A_5$ is the whole group. -/
+used to show that the normal closure of any 5-cycle within $A_5$ is the whole group. -/
 theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
     finRotate_bit1_mem_alternatingGroup (n := 2)⟩} : Set (alternatingGroup (Fin 5))) = ⊤ :=
   eq_top_iff.2
@@ -340,8 +342,8 @@ theorem normalClosure_swap_mul_swap_five :
   exact mul_mem (Subgroup.normalClosure_normal.conj_mem _ h g1) (inv_mem h)
 
 /-- Shows that any non-identity element of $A_5$ whose cycle decomposition consists only of swaps
-  is conjugate to $(04)(13)$. This is used to show that the normal closure of such a permutation
-  in $A_5$ is $A_5$. -/
+is conjugate to $(04)(13)$. This is used to show that the normal closure of such a permutation
+in $A_5$ is $A_5$. -/
 theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alternatingGroup (Fin 5))
     (h1 : g ≠ 1) (h2 : ∀ n, n ∈ cycleType (g : Perm (Fin 5)) → n = 2) :
     IsConj (swap 0 4 * swap 1 3) g := by
@@ -369,7 +371,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework
-  on its cycle type that its normal closure is all of $A_5$. -/
+on its cycle type that its normal closure is all of $A_5$. -/
 instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
   ⟨fun H => by
     intro Hn

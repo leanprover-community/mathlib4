@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Sites.Sieves
 
 We define what it means for a presheaf `P : Cᵒᵖ ⥤ Type v` to be a sheaf *for* a particular
 presieve `R` on `X`:
+
 * A *family of elements* `x` for `P` at `R` is an element `x_f` of `P Y` for every `f : Y ⟶ X` in
   `R`. See `FamilyOfElements`.
 * The family `x` is *compatible* if, for any `f₁ : Y₁ ⟶ X` and `f₂ : Y₂ ⟶ X` both in `R`,
@@ -21,20 +22,22 @@ presieve `R` on `X`:
 * An *amalgamation* `t` for the family is an element of `P X` such that for every `f : Y ⟶ X` in
   `R`, the restriction of `t` on `f` is `x_f`.
   See `FamilyOfElements.IsAmalgamation`.
-We then say `P` is *separated* for `R` if every compatible family has at most one amalgamation,
-and it is a *sheaf* for `R` if every compatible family has a unique amalgamation.
-See `IsSeparatedFor` and `IsSheafFor`.
+  We then say `P` is *separated* for `R` if every compatible family has at most one amalgamation,
+  and it is a *sheaf* for `R` if every compatible family has a unique amalgamation.
+  See `IsSeparatedFor` and `IsSheafFor`.
 
 In the special case where `R` is a sieve, the compatibility condition can be simplified:
+
 * The family `x` is *compatible* if, for any `f : Y ⟶ X` in `R` and `g : Z ⟶ Y`, the restriction of
   `x_f` along `g` agrees with `x_(g ≫ f)` (which is well defined since `g ≫ f` is in `R`).
-See `FamilyOfElements.SieveCompatible` and `compatible_iff_sieveCompatible`.
+  See `FamilyOfElements.SieveCompatible` and `compatible_iff_sieveCompatible`.
 
 In the special case where `C` has pullbacks, the compatibility condition can be simplified:
+
 * The family `x` is *compatible* if, for any `f : Y ⟶ X` and `g : Z ⟶ X` both in `R`,
   the restriction of `x_f` along `π₁ : pullback f g ⟶ Y` agrees with the restriction of `x_g`
   along `π₂ : pullback f g ⟶ Z`.
-See `FamilyOfElements.PullbackCompatible` and `pullbackCompatible_iff`.
+  See `FamilyOfElements.PullbackCompatible` and `pullbackCompatible_iff`.
 
 We also provide equivalent conditions to satisfy alternate definitions given in the literature.
 
@@ -44,6 +47,7 @@ We also provide equivalent conditions to satisfy alternate definitions given in 
 
 * Maclane-Moerdijk [MM92]: Using `compatible_iff_sieveCompatible`, the definitions of `IsSheaf`
   are equivalent. There are also alternate definitions given:
+
   - Yoneda condition: Defined in `yonedaSheafCondition` and equivalence in
     `isSheafFor_iff_yonedaSheafCondition`.
   - Matching family for presieves with pullback: `pullbackCompatible_iff`.
@@ -535,6 +539,7 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
 /--
 If `P` is a sheaf for the sieve `S` on `X`, a natural transformation from `S` (viewed as a functor)
 to `P` can be (uniquely) extended to all of `yoneda.obj X`.
+
 ```
       f
    S  →  P
@@ -549,6 +554,7 @@ noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor 
 /--
 Show that the extension of `f : S.functor ⟶ P` to all of `yoneda.obj X` is in fact an extension,
 i.e. that the triangle below commutes, provided `P` is a sheaf for `S`
+
 ```
       f
    S  →  P
@@ -997,6 +1003,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type*) (U : Sieve X)
       hU.valid_glue _ _ hf, ht hf _ hg]
 
 /-- Given two sieves `R` and `S`, to show that `P` is a sheaf for `S`, we can show:
+
 * `P` is a sheaf for `R`
 * `P` is a sheaf for the pullback of `S` along any arrow in `R`
 * `P` is separated for the pullback of `R` along any arrow in `S`.

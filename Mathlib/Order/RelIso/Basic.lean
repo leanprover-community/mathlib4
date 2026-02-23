@@ -285,7 +285,7 @@ protected def swap (f : r ↪r s) : swap r ↪r swap s :=
 theorem swap_apply (f : r ↪r s) (a : α) : f.swap a = f a := rfl
 
 /-- If `f` is injective, then it is a relation embedding from the
-  preimage relation of `s` to `s`. -/
+preimage relation of `s` to `s`. -/
 def preimage (f : α ↪ β) (s : β → β → Prop) : f ⁻¹'o s ↪r s :=
   ⟨f, Iff.rfl⟩
 
@@ -451,7 +451,7 @@ theorem ofMapRelIff_coe (f : α → β) [Std.Antisymm r] [Std.Refl s]
   rfl
 
 /-- It suffices to prove `f` is monotone between strict relations
-  to show it is a relation embedding. -/
+to show it is a relation embedding. -/
 def ofMonotone [Std.Trichotomous r] [Std.Asymm s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
   haveI := @Std.Asymm.irrefl β s _
@@ -605,7 +605,7 @@ protected def symm (f : r ≃r s) : s ≃r r :=
   ⟨f.toEquiv.symm, @fun a b => by erw [← f.map_rel_iff, f.1.apply_symm_apply, f.1.apply_symm_apply]⟩
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because `RelIso` defines custom coercions other than the ones given by `DFunLike`. -/
+because `RelIso` defines custom coercions other than the ones given by `DFunLike`. -/
 def Simps.apply (h : r ≃r s) : α → β :=
   h
 

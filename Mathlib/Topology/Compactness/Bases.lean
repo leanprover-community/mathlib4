@@ -51,7 +51,7 @@ lemma eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open (b : Set (Set X))
   simp [hU]
 
 /-- If `X` has a basis consisting of compact opens, then an open set in `X` is compact open iff
-  it is a finite union of some elements in the basis -/
+it is a finite union of some elements in the basis -/
 theorem isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Set X)
     (hb : IsTopologicalBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i)) (U : Set X) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by

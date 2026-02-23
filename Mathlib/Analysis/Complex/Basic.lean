@@ -24,15 +24,15 @@ This file registers `ℂ` as a normed field, expresses basic properties of the n
 on the real vector space structure of `ℂ`. Notably, it defines the following functions in the
 namespace `Complex`.
 
-|Name              |Type         |Description                                             |
+|Name |Type |Description |
 |------------------|-------------|--------------------------------------------------------|
 |`equivRealProdCLM`|ℂ ≃L[ℝ] ℝ × ℝ|The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ` |
-|`reCLM`           |ℂ →L[ℝ] ℝ    |Real part function as a `ContinuousLinearMap`           |
-|`imCLM`           |ℂ →L[ℝ] ℝ    |Imaginary part function as a `ContinuousLinearMap`      |
-|`ofRealCLM`       |ℝ →L[ℝ] ℂ    |Embedding of the reals as a `ContinuousLinearMap`       |
-|`ofRealLI`        |ℝ →ₗᵢ[ℝ] ℂ   |Embedding of the reals as a `LinearIsometry`            |
-|`conjCLE`         |ℂ ≃L[ℝ] ℂ    |Complex conjugation as a `ContinuousLinearEquiv`        |
-|`conjLIE`         |ℂ ≃ₗᵢ[ℝ] ℂ   |Complex conjugation as a `LinearIsometryEquiv`          |
+|`reCLM` |ℂ →L[ℝ] ℝ |Real part function as a `ContinuousLinearMap` |
+|`imCLM` |ℂ →L[ℝ] ℝ |Imaginary part function as a `ContinuousLinearMap` |
+|`ofRealCLM` |ℝ →L[ℝ] ℂ |Embedding of the reals as a `ContinuousLinearMap` |
+|`ofRealLI` |ℝ →ₗᵢ[ℝ] ℂ |Embedding of the reals as a `LinearIsometry` |
+|`conjCLE` |ℂ ≃L[ℝ] ℂ |Complex conjugation as a `ContinuousLinearEquiv` |
+|`conjLIE` |ℂ ≃ₗᵢ[ℝ] ℂ |Complex conjugation as a `LinearIsometryEquiv` |
 
 We also register the fact that `ℂ` is an `RCLike` field.
 

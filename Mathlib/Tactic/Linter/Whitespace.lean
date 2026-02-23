@@ -11,6 +11,7 @@ public import Mathlib.Tactic.Linter.Header  -- shake: keep
 # The `whitespace` linter
 
 The `whitespace` linter emits a warning if
+
 * either a command does not start at the beginning of a line;
 * or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
@@ -23,14 +24,18 @@ namespace Mathlib.Linter
 
 /--
 The `whitespace` linter emits a warning if
+
 * either a command does not start at the beginning of a line;
 * or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 
 In practice, this makes sure that the spacing in a typical declaration looks like
+
 ```lean
 example (a : Nat) {R : Type} [Add R] : <not linted part>
 ```
+
 as opposed to
+
 ```lean
 example (a: Nat) {R:Type}  [Add  R] : <not linted part>
 ```
@@ -93,7 +98,7 @@ structure FormatError where
   fmtPos : Nat
   /-- The kind of formatting error. For example: `extra space`, `remove line break` or
   `missing space`.
-
+  
   Strings starting with `Oh no` indicate an internal error.
   -/
   msg : String
@@ -109,7 +114,8 @@ instance : ToString FormatError where
       msg: {f.msg}, length: {f.length}\n"
 
 /--
-Produces a `FormatError` from the input data.  It expects
+Produces a `FormatError` from the input data. It expects
+
 * `ls` to be a "user-typed" string;
 * `ms` to be a "pretty-printed" string;
 * `msg` to be a custom error message, such as `extra space` or `remove line break`;

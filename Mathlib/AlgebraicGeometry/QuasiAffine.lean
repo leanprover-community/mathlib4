@@ -12,6 +12,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 # Quasi-affine schemes
 
 ## Main results
+
 - `IsQuasiAffine`:
   A scheme `X` is quasi-affine if it is quasi-compact and `X ⟶ Spec Γ(X, ⊤)` is an immersion.
   This actually implies that `X ⟶ Spec Γ(X, ⊤)` is an open immersion.
@@ -111,7 +112,7 @@ set_option backward.isDefEq.respectTransparency false in
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⟶ Y` is an affine morphism between quasi-affine schemes, then it is the pullback of
-  `Spec Γ(X, ⊤) ⟶ Spec Γ(Y, ⊤)` along the open immersion `Y ⟶ Spec Γ(Y, ⊤)`. -/
+`Spec Γ(X, ⊤) ⟶ Spec Γ(Y, ⊤)` along the open immersion `Y ⟶ Spec Γ(Y, ⊤)`. -/
 lemma isPullback_toSpecΓ_toSpecΓ (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffine] :
     IsPullback f X.toSpecΓ Y.toSpecΓ (Spec.map f.appTop) := by
   have := QuasiCompact.compactSpace_of_compactSpace f

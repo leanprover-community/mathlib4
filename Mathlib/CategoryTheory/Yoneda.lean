@@ -25,6 +25,7 @@ Yoneda lemma is also expressed as a natural isomorphism
 `yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C`.
 
 ## References
+
 * [Stacks: Opposite Categories and the Yoneda Lemma](https://stacks.math.columbia.edu/tag/001L)
 -/
 
@@ -116,6 +117,7 @@ instance yoneda_faithful : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Faithful :=
   fullyFaithful.faithful
 
 /-- Extensionality via Yoneda. The typical usage would be
+
 ```
 -- Goal is `X ≅ Y`
 apply Yoneda.ext
@@ -182,6 +184,7 @@ instance coyoneda_faithful : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Faithful :
   fullyFaithful.faithful
 
 /-- Extensionality via Coyoneda. The typical usage would be
+
 ```
 -- Goal is `X ≅ Y`
 apply Coyoneda.ext
@@ -534,7 +537,7 @@ noncomputable def reprx : F.obj (op F.reprX) :=
   F.representableBy.homEquiv (𝟙 _)
 
 /-- An isomorphism between a representable `F` and a functor of the
-form `C(-, F.reprX)`.  Note the components `F.reprW.app X`
+form `C(-, F.reprX)`. Note the components `F.reprW.app X`
 definitionally have type `(X.unop ⟶ F.reprX) ≅ F.obj X`.
 -/
 noncomputable def reprW (F : Cᵒᵖ ⥤ Type v₁) [F.IsRepresentable] :
@@ -684,8 +687,8 @@ lemma yonedaEquiv_naturality {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.o
   simp
 
 /-- Variant of `yonedaEquiv_naturality` with general `g`. This is technically strictly more general
-    than `yonedaEquiv_naturality`, but `yonedaEquiv_naturality` is sometimes preferable because it
-    can avoid the "motive is not type correct" error. -/
+than `yonedaEquiv_naturality`, but `yonedaEquiv_naturality` is sometimes preferable because it
+can avoid the "motive is not type correct" error. -/
 lemma yonedaEquiv_naturality' {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj (unop X) ⟶ F)
     (g : X ⟶ Y) : F.map g (yonedaEquiv f) = yonedaEquiv (yoneda.map g.unop ≫ f) :=
   yonedaEquiv_naturality _ _
@@ -715,8 +718,8 @@ lemma map_yonedaEquiv {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj X �
   rw [yonedaEquiv_naturality, yonedaEquiv_comp, yonedaEquiv_yoneda_map]
 
 /-- Variant of `map_yonedaEquiv` with general `g`. This is technically strictly more general
-    than `map_yonedaEquiv`, but `map_yonedaEquiv` is sometimes preferable because it
-    can avoid the "motive is not type correct" error. -/
+than `map_yonedaEquiv`, but `map_yonedaEquiv` is sometimes preferable because it
+can avoid the "motive is not type correct" error. -/
 lemma map_yonedaEquiv' {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj (unop X) ⟶ F)
     (g : X ⟶ Y) : F.map g (yonedaEquiv f) = f.app Y g.unop := by
   rw [yonedaEquiv_naturality', yonedaEquiv_comp, yonedaEquiv_yoneda_map]

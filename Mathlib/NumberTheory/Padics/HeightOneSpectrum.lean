@@ -21,6 +21,7 @@ to the `p`-adic norm using the completion of Cauchy sequences. This file constru
 respective rings of integers.
 
 Isomorphisms are provided in both directions, allowing traversal of the following diagram:
+
 ```
 HeightOneSpectrum R <----------->  Nat.Primes
           |                               |
@@ -34,6 +35,7 @@ v.adicCompletion ℚ  <--------------->   ℚ_[p]
 ```
 
 ## Main definitions
+
 - `Rat.HeightOneSpectrum.primesEquiv` : the equivalence between height-one prime ideals of
   `R` and prime numbers in `ℕ`.
 - `Rat.HeightOneSpectrum.padicEquiv v` : the continuous `ℚ`-algebra isomorphism
@@ -168,6 +170,7 @@ noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R)
   commutes' := by simp
 
 /-- The diagram
+
 ```
 v.adicCompletionIntegers ℚ  ----->  ℤ_[primesEquiv v]
       |                               |
@@ -175,11 +178,13 @@ v.adicCompletionIntegers ℚ  ----->  ℤ_[primesEquiv v]
       v                               v
 v.adicCompletion ℚ  ------------->  ℚ_[primesEquiv v]
 ```
+
 commutes. -/
 theorem adicCompletionIntegers.coe_padicIntEquiv_apply (v : HeightOneSpectrum R)
     (x : v.adicCompletionIntegers ℚ) : padicIntEquiv v x = adicCompletion.padicEquiv v x := rfl
 
 /-- The diagram
+
 ```
 v.adicCompletionIntegers ℚ  <-----  ℤ_[primesEquiv v]
       |                               |
@@ -187,6 +192,7 @@ v.adicCompletionIntegers ℚ  <-----  ℤ_[primesEquiv v]
       v                               v
 v.adicCompletion ℚ  <-------------  ℚ_[primesEquiv v]
 ```
+
 commutes. -/
 theorem adicCompletionIntegers.coe_padicIntEquiv_symm_apply (v : HeightOneSpectrum R)
     (x : ℤ_[primesEquiv v]) : (adicCompletionIntegers.padicIntEquiv v).symm x =
@@ -233,6 +239,7 @@ noncomputable def adicCompletionIntegersEquiv (p : Nat.Primes) :
     (adicCompletionIntegers.padicIntEquiv (primesEquiv.symm p)).symm
 
 /-- The diagram
+
 ```
 ℤ_[p]  -------->  (primesEquiv.symm p).adicCompletionIntegers ℚ
    |                          |
@@ -240,6 +247,7 @@ noncomputable def adicCompletionIntegersEquiv (p : Nat.Primes) :
    v                          v
 ℚ_[p]  -------->  (primesEquiv.symm p).adicCompletion ℚ
 ```
+
 commutes. -/
 theorem coe_adicCompletionIntegersEquiv_apply (p : Nat.Primes) (x : ℤ_[p]) :
     (adicCompletionIntegersEquiv R p x) = adicCompletionEquiv R p x := by
@@ -252,6 +260,7 @@ theorem coe_adicCompletionIntegersEquiv_apply (p : Nat.Primes) (x : ℤ_[p]) :
   exact cast_heq _ _
 
 /-- The diagram
+
 ```
 ℤ_[p]  <--------  (primesEquiv.symm p).adicCompletionIntegers ℚ
    |                          |
@@ -259,6 +268,7 @@ theorem coe_adicCompletionIntegersEquiv_apply (p : Nat.Primes) (x : ℤ_[p]) :
    v                          v
 ℚ_[p]  <--------  (primesEquiv.symm p).adicCompletion ℚ
 ```
+
 commutes. -/
 theorem coe_adicCompletionIntegersEquiv_symm_apply (p : Nat.Primes)
     (x : (primesEquiv.symm p).adicCompletionIntegers ℚ) :

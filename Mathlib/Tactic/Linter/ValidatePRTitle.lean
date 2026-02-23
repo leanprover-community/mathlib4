@@ -11,6 +11,7 @@ import Std.Internal.Parsec.String
 
 /-!
 # Checker for well-formed title and labels
+
 This script checks if a PR title matches
 [mathlib's commit conventions](https://leanprover-community.github.io/contribute/commit.html).
 Not all checks from the commit conventions are implemented: for instance, no effort is made to

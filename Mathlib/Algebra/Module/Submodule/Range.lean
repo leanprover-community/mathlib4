@@ -26,6 +26,7 @@ Note that this also means that dot notation (i.e. `f.range` for a linear map `f`
   (resp. linear) maps from `M` to `M₂` over the ring homomorphism `σ` (resp. over the ring `R`).
 
 ## Tags
+
 linear algebra, vector space, module, range
 -/
 
@@ -159,7 +160,7 @@ abbrev rangeRestrict [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M�
 
 /-- The range of a linear map is finite if the domain is finite.
 Note: this instance can form a diamond with `Subtype.fintype` in the
-  presence of `Fintype M₂`. -/
+presence of `Fintype M₂`. -/
 instance fintypeRange [Fintype M] [DecidableEq M₂] [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) :
     Fintype (range f) :=
   Set.fintypeRange f

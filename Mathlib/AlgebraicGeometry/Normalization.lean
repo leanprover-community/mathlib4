@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Smooth.IntegralClosure
 
 Given a qcqs morphism `f : X ⟶ Y`, we define the relative normalization `f.normalization`,
 along with the maps that `f` factor into:
+
 - `f.toNormalization : X ⟶ f.normalization`: a dominant morphism
 - `f.fromNormalization : f.normalization ⟶ Y`: an integral morphism
 

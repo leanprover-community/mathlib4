@@ -46,8 +46,8 @@ notation:50 M " ≃SL[" σ "] " M₂ => ContinuousLinearEquiv σ M M₂
 notation:50 M " ≃L[" R "] " M₂ => ContinuousLinearEquiv (RingHom.id R) M M₂
 
 /-- `ContinuousSemilinearEquivClass F σ M M₂` asserts `F` is a type of bundled continuous
-`σ`-semilinear equivs `M → M₂`.  See also `ContinuousLinearEquivClass F R M M₂` for the case
-where `σ` is the identity map on `R`.  A map `f` between an `R`-module and an `S`-module over a ring
+`σ`-semilinear equivs `M → M₂`. See also `ContinuousLinearEquivClass F R M M₂` for the case
+where `σ` is the identity map on `R`. A map `f` between an `R`-module and an `S`-module over a ring
 homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y`
 and `f (c • x) = (σ c) • f x`. -/
 class ContinuousSemilinearEquivClass (F : Type*) {R : outParam Type*} {S : outParam Type*}
@@ -311,7 +311,7 @@ theorem coe_symm_toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : ⇑e.toHomeomorp
   rfl
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+because it is a composition of multiple projections. -/
 def Simps.apply (h : M₁ ≃SL[σ₁₂] M₂) : M₁ → M₂ :=
   h
 
@@ -934,7 +934,7 @@ variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommGroup
 variable [IsTopologicalAddGroup M₄]
 
 /-- Equivalence given by a block lower diagonal matrix. `e` and `e'` are diagonal square blocks,
-  and `f` is a rectangular block below the diagonal. -/
+and `f` is a rectangular block below the diagonal. -/
 def skewProd (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) : (M × M₃) ≃L[R] M₂ × M₄ :=
   { e.toLinearEquiv.skewProd e'.toLinearEquiv ↑f with
     continuous_toFun :=
@@ -1038,7 +1038,7 @@ def IsInvertible (f : M →L[R] M₂) : Prop :=
 
 open Classical in
 /-- Introduce a function `inverse` from `M →L[R] M₂` to `M₂ →L[R] M`, which sends `f` to `f.symm` if
-`f` is a continuous linear equivalence and to `0` otherwise.  This definition is somewhat ad hoc,
+`f` is a continuous linear equivalence and to `0` otherwise. This definition is somewhat ad hoc,
 but one needs a fully (rather than partially) defined inverse function for some purposes, including
 for calculus. -/
 noncomputable def inverse : (M →L[R] M₂) → M₂ →L[R] M := fun f =>

@@ -15,6 +15,7 @@ public import Mathlib.Tactic.ApplyFun
 # Topology and uniform structure of uniform convergence
 
 This file endows `α → β` with the topologies / uniform structures of
+
 - uniform convergence on `α`
 - uniform convergence on a specified family `𝔖` of sets of `α`, also called `𝔖`-convergence
 
@@ -24,10 +25,11 @@ convergence, we introduce type aliases `UniformFun α β` (denoted `α →ᵤ β
 of uniform and `𝔖`-convergence respectively.
 
 Usual examples of the second construction include:
+
 - the topology of compact convergence, when `𝔖` is the set of compacts of `α`
 - the strong topology on the dual of a topological vector space (TVS) `E`, when `𝔖` is the set of
   Von Neumann bounded subsets of `E`
-- the weak-* topology on the dual of a TVS `E`, when `𝔖` is the set of singletons of `E`.
+- the weak-\* topology on the dual of a TVS `E`, when `𝔖` is the set of singletons of `E`.
 
 This file contains a lot of technical facts, so it is heavily commented, proofs included!
 

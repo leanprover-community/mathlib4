@@ -45,9 +45,9 @@ open Topology Filter Pointwise
 universe u
 
 /-- A `GroupFilterBasis` on a group is a `FilterBasis` satisfying some additional axioms.
-  Example : if `G` is a topological group then the neighbourhoods of the identity are a
-  `GroupFilterBasis`. Conversely given a `GroupFilterBasis` one can define a topology
-  compatible with the group structure on `G`. -/
+Example : if `G` is a topological group then the neighbourhoods of the identity are a
+`GroupFilterBasis`. Conversely given a `GroupFilterBasis` one can define a topology
+compatible with the group structure on `G`. -/
 class GroupFilterBasis (G : Type u) [Group G] extends FilterBasis G where
   one' : ∀ {U}, U ∈ sets → (1 : G) ∈ U
   mul' : ∀ {U}, U ∈ sets → ∃ V ∈ sets, V * V ⊆ U
@@ -55,9 +55,9 @@ class GroupFilterBasis (G : Type u) [Group G] extends FilterBasis G where
   conj' : ∀ x₀, ∀ {U}, U ∈ sets → ∃ V ∈ sets, V ⊆ (fun x ↦ x₀ * x * x₀⁻¹) ⁻¹' U
 
 /-- An `AddGroupFilterBasis` on an additive group is a `FilterBasis` satisfying some additional
-  axioms. Example : if `G` is a topological group then the neighbourhoods of the identity are an
-  `AddGroupFilterBasis`. Conversely given an `AddGroupFilterBasis` one can define a topology
-  compatible with the group structure on `G`. -/
+axioms. Example : if `G` is a topological group then the neighbourhoods of the identity are an
+`AddGroupFilterBasis`. Conversely given an `AddGroupFilterBasis` one can define a topology
+compatible with the group structure on `G`. -/
 class AddGroupFilterBasis (A : Type u) [AddGroup A] extends FilterBasis A where
   zero' : ∀ {U}, U ∈ sets → (0 : A) ∈ U
   add' : ∀ {U}, U ∈ sets → ∃ V ∈ sets, V + V ⊆ U
@@ -227,9 +227,9 @@ lemma t2Space_iff_sInter_subset [t : TopologicalSpace G] (F : GroupFilterBasis G
 end GroupFilterBasis
 
 /-- A `RingFilterBasis` on a ring is a `FilterBasis` satisfying some additional axioms.
-  Example : if `R` is a topological ring then the neighbourhoods of the identity are a
-  `RingFilterBasis`. Conversely given a `RingFilterBasis` on a ring `R`, one can define a
-  topology on `R` which is compatible with the ring structure. -/
+Example : if `R` is a topological ring then the neighbourhoods of the identity are a
+`RingFilterBasis`. Conversely given a `RingFilterBasis` on a ring `R`, one can define a
+topology on `R` which is compatible with the ring structure. -/
 class RingFilterBasis (R : Type u) [Ring R] extends AddGroupFilterBasis R where
   mul' : ∀ {U}, U ∈ sets → ∃ V ∈ sets, V * V ⊆ U
   mul_left' : ∀ (x₀ : R) {U}, U ∈ sets → ∃ V ∈ sets, V ⊆ (fun x ↦ x₀ * x) ⁻¹' U
@@ -286,9 +286,9 @@ instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilt
 end RingFilterBasis
 
 /-- A `ModuleFilterBasis` on a module is a `FilterBasis` satisfying some additional axioms.
-  Example : if `M` is a topological module then the neighbourhoods of zero are a
-  `ModuleFilterBasis`. Conversely given a `ModuleFilterBasis` one can define a topology
-  compatible with the module structure on `M`. -/
+Example : if `M` is a topological module then the neighbourhoods of zero are a
+`ModuleFilterBasis`. Conversely given a `ModuleFilterBasis` one can define a topology
+compatible with the module structure on `M`. -/
 structure ModuleFilterBasis (R M : Type*) [CommRing R] [TopologicalSpace R] [AddCommGroup M]
   [Module R M] extends AddGroupFilterBasis M where
   smul' : ∀ {U}, U ∈ sets → ∃ V ∈ 𝓝 (0 : R), ∃ W ∈ sets, V • W ⊆ U

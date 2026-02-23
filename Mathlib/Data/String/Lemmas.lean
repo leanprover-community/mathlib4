@@ -26,7 +26,7 @@ lemma length_eq_list_length (l : List Char) : (String.ofList l).length = l.lengt
   simp
 
 /-- The length of the String returned by `String.leftpad n a c` is equal
-  to the larger of `n` and `s.length` -/
+to the larger of `n` and `s.length` -/
 @[simp] lemma length_leftpad (n : ℕ) (c : Char) :
     ∀ (s : String), (leftpad n c s).length = max n s.length
   | s => by simp [leftpad, Nat.sub_add_eq_max]

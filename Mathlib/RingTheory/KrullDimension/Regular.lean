@@ -75,7 +75,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
 
 omit [IsNoetherianRing R] in
 /-- If `M` is a finite module over a commutative ring `R`, `x ∈ M` is not in any minimal prime of
-  `M`, then `dim M/xM + 1 ≤ dim M`. -/
+`M`, then `dim M/xM + 1 ≤ dim M`. -/
 theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) :
     supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by
@@ -135,7 +135,7 @@ lemma ringKrullDim_quotient_add_one_of_mem_nonZeroDivisors {r : R} (hr : r ∈ n
 variable [IsLocalRing R]
 
 /-- If `M` is a finite module over a Noetherian local ring `R`, then `dim M ≤ dim M/xM + 1`
-  for every `x` in the maximal ideal of the local ring `R`. -/
+for every `x` in the maximal ideal of the local ring `R`. -/
 @[stacks 0B52 "the second inequality"]
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 :=
@@ -191,7 +191,7 @@ lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_no
     (Module.Flat.isSMulRegular_of_nonZeroDivisors reg) hx
 
 /-- If `M` is a finite module over a Noetherian local ring `R`, `r₁, …, rₙ` is an
-  `M`-sequence, then `dim M/(r₁, …, rₙ)M + n = dim M`. -/
+`M`-sequence, then `dim M/(r₁, …, rₙ)M + n = dim M`. -/
 theorem supportDim_add_length_eq_supportDim_of_isRegular (rs : List R) (reg : IsRegular M rs) :
     supportDim R (M ⧸ ofList rs • (⊤ : Submodule R M)) + rs.length = supportDim R M := by
   induction rs generalizing M with

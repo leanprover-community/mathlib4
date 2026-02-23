@@ -15,6 +15,7 @@ public import Mathlib.Order.Filter.Defs
 A *filter* on a type `α` is a collection of sets of `α` which contains the whole `α`,
 is upwards-closed, and is stable under intersection. They are mostly used to
 abstract two related kinds of ideas:
+
 * *limits*, including finite or infinite limits of sequences, finite or infinite limits of functions
   at a point or at infinity, etc...
 * *things happening eventually*, including things happening for large enough `n : ℕ`, or near enough
@@ -33,6 +34,7 @@ We also prove `Filter` is a monadic functor, with a push-forward operation
 order on filters.
 
 The examples of filters appearing in the description of the two motivating ideas are:
+
 * `(Filter.atTop : Filter ℕ)` : made of sets of `ℕ` containing `{n | n ≥ N}` for some `N`
 * `𝓝 x` : made of neighborhoods of `x` in a topological space (defined in topology.basic)
 * `𝓤 X` : made of entourages of a uniform space (those space are generalizations of metric spaces
@@ -43,6 +45,7 @@ The examples of filters appearing in the description of the two motivating ideas
 The predicate "happening eventually" is `Filter.Eventually`, and "happening often" is
 `Filter.Frequently`, whose definitions are immediate after `Filter` is defined (but they come
 rather late in this file in order to immediately relate them to the lattice structure).
+
 ## Notation
 
 * `∀ᶠ x in f, p x` : `f.Eventually p`;
@@ -53,7 +56,7 @@ rather late in this file in order to immediately relate them to the lattice stru
 
 ## References
 
-*  [N. Bourbaki, *General Topology*][bourbaki1966]
+* [N. Bourbaki, *General Topology*][bourbaki1966]
 
 Important note: Bourbaki requires that a filter on `X` cannot contain all sets of `X`, which
 we do *not* require. This gives `Filter X` better formal properties, in particular a bottom element

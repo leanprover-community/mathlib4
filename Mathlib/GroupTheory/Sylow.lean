@@ -155,7 +155,7 @@ theorem subtype_injective {P Q : Sylow p G} {hP : P ≤ N} {hQ : Q ≤ N}
 end Sylow
 
 /-- A generalization of **Sylow's first theorem**.
-  Every `p`-subgroup is contained in a Sylow `p`-subgroup. -/
+Every `p`-subgroup is contained in a Sylow `p`-subgroup. -/
 theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : Sylow p G, P ≤ Q :=
   Exists.elim
     (zorn_le_nonempty₀ { Q : Subgroup G | IsPGroup p Q }
@@ -194,7 +194,7 @@ theorem exists_comap_subtype_eq {H : Subgroup G} (P : Sylow p H) :
   P.exists_comap_eq_of_injective Subtype.coe_injective
 
 /-- If the kernel of `f : H →* G` is a `p`-group,
-  then `Finite (Sylow p G)` implies `Finite (Sylow p H)`. -/
+then `Finite (Sylow p G)` implies `Finite (Sylow p H)`. -/
 theorem finite_of_ker_is_pGroup {H : Type*} [Group H] {f : H →* G}
     (hf : IsPGroup p f.ker) [Finite (Sylow p G)] : Finite (Sylow p H) :=
   let h_exists := fun P : Sylow p H => P.exists_comap_eq_of_ker_isPGroup hf
@@ -282,7 +282,7 @@ theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) 
   rw [P.sylow_mem_fixedPoints_iff, ← inf_eq_left, hP.inf_normalizer_sylow, inf_eq_left]
 
 /-- A generalization of **Sylow's second theorem**.
-  If the number of Sylow `p`-subgroups is finite, then all Sylow `p`-subgroups are conjugate. -/
+If the number of Sylow `p`-subgroups is finite, then all Sylow `p`-subgroups are conjugate. -/
 instance Sylow.isPretransitive_of_finite [hp : Fact p.Prime] [Finite (Sylow p G)] :
     IsPretransitive G (Sylow p G) :=
   ⟨fun P Q => by
@@ -311,7 +311,7 @@ instance Sylow.isPretransitive_of_finite [hp : Fact p.Prime] [Finite (Sylow p G)
 variable (p) (G)
 
 /-- A generalization of **Sylow's third theorem**.
-  If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`. -/
+If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`. -/
 theorem card_sylow_modEq_one [Fact p.Prime] [Finite (Sylow p G)] :
     Nat.card (Sylow p G) ≡ 1 [MOD p] := by
   refine Sylow.nonempty.elim fun P : Sylow p G => ?_
@@ -468,7 +468,7 @@ end mapSurjective
 
 set_option backward.isDefEq.respectTransparency false in
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
-  of `N`, then `N_G(P) ⊔ N = G`. -/
+of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
     [Finite (Sylow p N)] (P : Sylow p N) :
     (P.map N.subtype).normalizer ⊔ N = ⊤ := by
@@ -484,7 +484,7 @@ theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Norma
   rfl
 
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
-  of `N`, then `N_G(P) ⊔ N = G`. -/
+of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem normalizer_sup_eq_top' {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
     [Finite (Sylow p N)] (P : Sylow p G) (hP : P ≤ N) : P.normalizer ⊔ N = ⊤ := by
   rw [← normalizer_sup_eq_top (P.subtype hP), P.coe_subtype, subgroupOf_map_subtype,
@@ -542,7 +542,7 @@ def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] 
       rfl)
 
 /-- If `H` is a `p`-subgroup of `G`, then the index of `H` inside its normalizer is congruent
-  mod `p` to the index of `H`. -/
+mod `p` to the index of `H`. -/
 theorem card_quotient_normalizer_modEq_card_quotient [Finite G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime]
     {H : Subgroup G} (hH : Nat.card H = p ^ n) :
     Nat.card (normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H) ≡
@@ -551,7 +551,7 @@ theorem card_quotient_normalizer_modEq_card_quotient [Finite G] {p : ℕ} {n : �
   exact ((IsPGroup.of_card hH).card_modEq_card_fixedPoints _).symm
 
 /-- If `H` is a subgroup of `G` of cardinality `p ^ n`, then the cardinality of the
-  normalizer of `H` is congruent mod `p ^ (n + 1)` to the cardinality of `G`. -/
+normalizer of `H` is congruent mod `p ^ (n + 1)` to the cardinality of `G`. -/
 theorem card_normalizer_modEq_card [Finite G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime] {H : Subgroup G}
     (hH : Nat.card H = p ^ n) : Nat.card (normalizer H) ≡ Nat.card G [MOD p ^ (n + 1)] := by
   have : H.subgroupOf (normalizer H) ≃ H := (subgroupOfEquivOfLe le_normalizer).toEquiv
@@ -561,7 +561,7 @@ theorem card_normalizer_modEq_card [Finite G] {p : ℕ} {n : ℕ} [hp : Fact p.P
   exact (card_quotient_normalizer_modEq_card_quotient hH).mul_right' _
 
 /-- If `H` is a `p`-subgroup but not a Sylow `p`-subgroup, then `p` divides the
-  index of `H` inside its normalizer. -/
+index of `H` inside its normalizer. -/
 theorem prime_dvd_card_quotient_normalizer [Finite G] {p : ℕ} {n : ℕ} [Fact p.Prime]
     (hdvd : p ^ (n + 1) ∣ Nat.card G) {H : Subgroup G} (hH : Nat.card H = p ^ n) :
     p ∣ Nat.card (normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H) :=
@@ -577,15 +577,15 @@ theorem prime_dvd_card_quotient_normalizer [Finite G] {p : ℕ} {n : ℕ} [Fact 
   Nat.dvd_of_mod_eq_zero (by rwa [Nat.mod_eq_zero_of_dvd (dvd_mul_left _ _), eq_comm] at hm)
 
 /-- If `H` is a `p`-subgroup but not a Sylow `p`-subgroup of cardinality `p ^ n`,
-  then `p ^ (n + 1)` divides the cardinality of the normalizer of `H`. -/
+then `p ^ (n + 1)` divides the cardinality of the normalizer of `H`. -/
 theorem prime_pow_dvd_card_normalizer [Finite G] {p : ℕ} {n : ℕ} [_hp : Fact p.Prime]
     (hdvd : p ^ (n + 1) ∣ Nat.card G) {H : Subgroup G} (hH : Nat.card H = p ^ n) :
     p ^ (n + 1) ∣ Nat.card (normalizer H) :=
   Nat.modEq_zero_iff_dvd.1 ((card_normalizer_modEq_card hH).trans hdvd.modEq_zero_nat)
 
 /-- If `H` is a subgroup of `G` of cardinality `p ^ n`,
-  then `H` is contained in a subgroup of cardinality `p ^ (n + 1)`
-  if `p ^ (n + 1)` divides the cardinality of `G` -/
+then `H` is contained in a subgroup of cardinality `p ^ (n + 1)`
+if `p ^ (n + 1)` divides the cardinality of `G` -/
 theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime]
     (hdvd : p ^ (n + 1) ∣ Nat.card G) {H : Subgroup G} (hH : Nat.card H = p ^ n) :
     ∃ K : Subgroup G, Nat.card K = p ^ (n + 1) ∧ H ≤ K :=
@@ -623,8 +623,8 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
     simpa using hy⟩
 
 /-- If `H` is a subgroup of `G` of cardinality `p ^ n`,
-  then `H` is contained in a subgroup of cardinality `p ^ m`
-  if `n ≤ m` and `p ^ m` divides the cardinality of `G` -/
+then `H` is contained in a subgroup of cardinality `p ^ m`
+if `n ≤ m` and `p ^ m` divides the cardinality of `G` -/
 theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
     ∀ {n m : ℕ} [_hp : Fact p.Prime] (_hdvd : p ^ m ∣ Nat.card G) (H : Subgroup G)
       (_hH : Nat.card H = p ^ n) (_hnm : n ≤ m), ∃ K : Subgroup G, Nat.card K = p ^ m ∧ H ≤ K
@@ -642,7 +642,7 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
       fun hnm : n = m => ⟨H, by simp [hH, hnm]⟩
 
 /-- A generalisation of **Sylow's first theorem**. If `p ^ n` divides
-  the cardinality of `G`, then there is a subgroup of cardinality `p ^ n` -/
+the cardinality of `G`, then there is a subgroup of cardinality `p ^ n` -/
 theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Prime]
     (hdvd : p ^ n ∣ Nat.card G) : ∃ K : Subgroup G, Nat.card K = p ^ n :=
   let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥

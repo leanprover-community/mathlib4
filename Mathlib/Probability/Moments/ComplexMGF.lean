@@ -33,8 +33,10 @@ properties of the mgf from those of the characteristic function).
 * `hasDerivAt_complexMGF`: for all `z : ℂ` such that the real part `z.re` belongs to the interior
   of the interval of definition of the mgf, `complexMGF X μ` is differentiable at `z`
   with derivative `μ[X * exp (z * X)]`.
+
 * `differentiableOn_complexMGF`: `complexMGF X μ` is holomorphic on the vertical strip
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
+
 * `analyticOn_complexMGF`: `complexMGF X μ` is analytic on the vertical strip
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
 
@@ -189,7 +191,7 @@ theorem analyticOnNhd_complexMGF :
   differentiableOn_complexMGF.analyticOnNhd (isOpen_interior.preimage Complex.continuous_re)
 
 /-- `complexMGF X μ` is analytic on the vertical strip
-  `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
+`{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
 theorem analyticOn_complexMGF :
     AnalyticOn ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} :=
   analyticOnNhd_complexMGF.analyticOn

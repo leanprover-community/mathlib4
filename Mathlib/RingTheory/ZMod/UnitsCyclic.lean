@@ -15,9 +15,10 @@ public import Mathlib.FieldTheory.Finite.Basic
 
 `ZMod.isCyclic_units_iff` : `(ZMod n)ˣ` is cyclic iff
 one of the following mutually exclusive cases happens:
-  - `n = 0` (then `ZMod 0 ≃+* ℤ` and the group of units is cyclic of order 2);
-  - `n = 1`, `2` or `4`
-  - `n` is a power `p ^ e` of an odd prime number, or twice such a power
+
+- `n = 0` (then `ZMod 0 ≃+* ℤ` and the group of units is cyclic of order 2);
+- `n = 1`, `2` or `4`
+- `n` is a power `p ^ e` of an odd prime number, or twice such a power
   (with `1 ≤ e`).
 
 The individual cases are proved by `inferInstance` and are
@@ -44,8 +45,8 @@ The case of prime numbers is also an instance:
 * `ZMod.isCyclic_units_two_pow_iff` : `(ZMod (2 ^ n))ˣ` is cyclic iff `n ≤ 2`.
 
 The proofs mostly follow [Ireland and Rosen,
-  *A classical introduction to modern number theory*, chapter 4]
-  [IrelandRosen1990].
+*A classical introduction to modern number theory*, chapter 4]
+[IrelandRosen1990].
 
 -/
 

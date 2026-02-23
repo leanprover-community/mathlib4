@@ -140,6 +140,7 @@ lemma zsmul_mem {x} (n : ℤ) (hx : x ∈ I) : n • x ∈ I := _root_.zsmul_mem
 
 /--
 The "set-theoretic-way" of constructing a two-sided ideal by providing:
+
 - the underlying set `S`;
 - a proof that `0 ∈ S`;
 - a proof that `x + y ∈ S` if `x ∈ S` and `y ∈ S`;

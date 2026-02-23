@@ -19,8 +19,7 @@ respectively.
 
 ## Main statements
 
-* `lucas_theorem`: the binomial coefficient `n choose k` is congruent to the product of `n_i choose
-  k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
+* `lucas_theorem`: the binomial coefficient `n choose k` is congruent to the product of `n_i choose k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
 -/
 
 public section
@@ -70,8 +69,7 @@ theorem choose_modEq_choose_mod_mul_choose_div_nat :
   rw [← Int.natCast_modEq_iff]
   exact_mod_cast choose_modEq_choose_mod_mul_choose_div
 
-/-- For primes `p`, `choose n k` is congruent to the product of `choose (⌊n / p ^ i⌋ % p)
-(⌊k / p ^ i⌋ % p)` over i < a, multiplied by `choose (⌊n / p ^ a⌋) (⌊k / p ^ a⌋)`, modulo `p`. -/
+/-- For primes `p`, `choose n k` is congruent to the product of `choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over i < a, multiplied by `choose (⌊n / p ^ a⌋) (⌊k / p ^ a⌋)`, modulo `p`. -/
 theorem choose_modEq_choose_mul_prod_range_choose (a : ℕ) :
     choose n k ≡ choose (n / p ^ a) (k / p ^ a) *
       ∏ i ∈ range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] :=

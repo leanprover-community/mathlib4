@@ -38,8 +38,7 @@ properties of Hausdorff dimension.
   dimensions.
 * `dimH_iUnion`, `dimH_bUnion`, `dimH_sUnion`: the Hausdorff dimension of a countable union of sets
   is the supremum of their Hausdorff dimensions;
-* `dimH_empty`, `dimH_singleton`, `Set.Subsingleton.dimH_zero`, `Set.Countable.dimH_zero` : `dimH s
-  = 0` whenever `s` is countable;
+* `dimH_empty`, `dimH_singleton`, `Set.Subsingleton.dimH_zero`, `Set.Countable.dimH_zero` : `dimH s = 0` whenever `s` is countable;
 
 ### (Pre)images under (anti)lipschitz and Hölder continuous maps
 

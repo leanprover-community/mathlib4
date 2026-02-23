@@ -46,7 +46,6 @@ over `FreeGroup.Red.Step`.
 For the additive version we introduce the same relation under a different name so that we can
 distinguish the quotient types more easily.
 
-
 ## Tags
 
 free group, Newman's diamond lemma, Church-Rosser theorem
@@ -531,7 +530,7 @@ theorem mul_mk : mk L₁ * mk L₂ = mk (L₁ ++ L₂) :=
 
 /-- Transform a word representing a free group element into a word representing its inverse. -/
 @[to_additive /-- Transform a word representing a free group element into a word representing its
-  negative. -/]
+negative. -/]
 def invRev (w : List (α × Bool)) : List (α × Bool) :=
   (List.map (fun g : α × Bool => (g.1, not g.2)) w).reverse
 
@@ -619,7 +618,7 @@ theorem pow_mk (n : ℕ) : mk L ^ n = mk (List.flatten <| List.replicate n L) :=
 /-- `of` is the canonical injection from the type to the free group over that type by sending each
 element to the equivalence class of the letter that is the element. -/
 @[to_additive /-- `of` is the canonical injection from the type to the free group over that type
-  by sending each element to the equivalence class of the letter that is the element. -/]
+by sending each element to the equivalence class of the letter that is the element. -/]
 def of (x : α) : FreeGroup α :=
   mk [(x, true)]
 
@@ -634,7 +633,7 @@ protected lemma induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 
 
 See note [partially-applied ext lemmas]. -/
 @[to_additive (attr := ext) /-- Two homomorphisms out of a free additive group are equal if they are
-  equal on generators. See note [partially-applied ext lemmas]. -/]
+equal on generators. See note [partially-applied ext lemmas]. -/]
 lemma ext_hom {M : Type*} [Monoid M] (f g : FreeGroup α →* M) (h : ∀ a, f (of a) = g (of a)) :
     f = g := by
   ext x
@@ -662,7 +661,7 @@ variable {β : Type v} [Group β] (f : α → β) {x y : FreeGroup α}
 
 /-- Given `f : α → β` with `β` a group, the canonical map `List (α × Bool) → β` -/
 @[to_additive /-- Given `f : α → β` with `β` an additive group, the canonical map
-  `List (α × Bool) → β` -/]
+`List (α × Bool) → β` -/]
 def Lift.aux : List (α × Bool) → β := fun L =>
   List.prod <| L.map fun x => cond x.2 (f x.1) (f x.1)⁻¹
 
@@ -738,7 +737,7 @@ section Map
 variable {β : Type v} (f : α → β) {x y : FreeGroup α}
 
 /-- Any function from `α` to `β` extends uniquely to a group homomorphism from the free group over
-  `α` to the free group over `β`. -/
+`α` to the free group over `β`. -/
 @[to_additive /-- Any function from `α` to `β` extends uniquely to an additive group homomorphism
 from the additive free group over `α` to the additive free group over `β`. -/]
 def map : FreeGroup α →* FreeGroup β :=
@@ -820,7 +819,7 @@ variable [Group α] (x y : FreeGroup α)
 /-- If `α` is a group, then any function from `α` to `α` extends uniquely to a homomorphism from the
 free group over `α` to `α`. This is the multiplicative version of `FreeGroup.sum`. -/
 @[to_additive /-- If `α` is an additive group, then any function from `α` to `α` extends uniquely
-  to an additive homomorphism from the additive free group over `α` to `α`. -/]
+to an additive homomorphism from the additive free group over `α` to `α`. -/]
 def prod : FreeGroup α →* α :=
   lift id
 
@@ -881,7 +880,7 @@ end Sum
 
 /-- The bijection between the free group on the empty type, and a type with one element. -/
 @[to_additive /-- The bijection between the additive free group on the empty type, and a type with
-  one element. -/]
+one element. -/]
 def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   toFun _ := ()
   invFun _ := 1

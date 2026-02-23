@@ -193,7 +193,7 @@ theorem homeomorph_comp {x : X} (h : IsEvenlyCovered f x I) {Y} [TopologicalSpac
 end IsEvenlyCovered
 
 /-- A covering map is a continuous function `f : E → X` with discrete fibers such that each point
-  of `X` has an evenly covered neighborhood. -/
+of `X` has an evenly covered neighborhood. -/
 def IsCoveringMapOn :=
   ∀ x ∈ s, IsEvenlyCovered f x (f ⁻¹' {x})
 
@@ -283,7 +283,7 @@ theorem homeomorph_comp (hf : IsCoveringMapOn f s) {Y} [TopologicalSpace Y] (g :
 end IsCoveringMapOn
 
 /-- A covering map is a continuous function `f : E → X` with discrete fibers such that each point
-  of `X` has an evenly covered neighborhood. -/
+of `X` has an evenly covered neighborhood. -/
 def IsCoveringMap :=
   ∀ x, IsEvenlyCovered f x (f ⁻¹' {x})
 
@@ -430,9 +430,9 @@ open Function in
 `V` be an open subset of `X`. Suppose that there is a family `U` of disjoint subsets of `E`
 that covers `f⁻¹(V)` such that for every `i`,
 
- 1. `f` is injective on `Uᵢ`,
- 2. `V` is contained in the image `f(Uᵢ)`,
- 3. the open sets in `V` are determined by their preimages in `Uᵢ`.
+1. `f` is injective on `Uᵢ`,
+2. `V` is contained in the image `f(Uᵢ)`,
+3. the open sets in `V` are determined by their preimages in `Uᵢ`.
 
 Then `f` admits a `Trivialization` over the base set `V`. -/
 @[simps source target baseSet] noncomputable def IsOpen.trivializationDiscrete [Nonempty (X → E)]

@@ -23,6 +23,7 @@ Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extensi
   `‖ σ x ‖` over all `σ : L ≃ₐ[K] L` is a `K`-algebra norm on `L`.
 
 ## Main Results
+
 * `IsUltrametricDist.isPowMul_algNormOfAlgEquiv` : `algNormOfAlgEquiv` is power-multiplicative.
 * `IsUltrametricDist.isNonarchimedean_algNormOfAlgEquiv` : `algNormOfAlgEquiv` is nonarchimedean.
 * `IsUltrametricDist.algNormOfAlgEquiv_extends` : `algNormOfAlgEquiv` extends the norm on `K`.
@@ -31,6 +32,7 @@ Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extensi
 * `IsUltrametricDist.invariantExtension_extends` : `invariantExtension` extends the norm on `K`.
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags
@@ -100,7 +102,7 @@ section invariantExtension
 variable (K L)
 
 /-- The function `L → ℝ` sending `x : L` to the maximum of `algNormOfAlgEquiv hna σ` over
-  all `σ : L ≃ₐ[K] L` is an algebra norm on `L`. -/
+all `σ : L ≃ₐ[K] L` is an algebra norm on `L`. -/
 def invariantExtension : AlgebraNorm K L where
   toFun x := iSup fun σ : L ≃ₐ[K] L ↦ algNormOfAlgEquiv σ x
   map_zero' := by simp only [map_zero, ciSup_const]

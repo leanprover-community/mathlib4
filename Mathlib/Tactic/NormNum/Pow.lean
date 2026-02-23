@@ -276,10 +276,12 @@ theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : �
 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/4096
 the two
+
 ```
 have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
 h.check
 ```
+
 blocks below were not necessary: we just did it once outside the `match rb with` block.
 -/
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,

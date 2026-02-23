@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Polynomial.Nilpotent
 # Nilpotents and units in multivariate polynomial rings
 
 We prove that
+
 - `MvPolynomial.isNilpotent_iff`:
   A multivariate polynomial is nilpotent iff all its coefficients are.
 - `MvPolynomial.isUnit_iff`:

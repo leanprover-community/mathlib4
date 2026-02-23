@@ -14,10 +14,11 @@ public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 In this file we prove the Product Formula for number fields: for any non-zero element `x` of a
 number field `K`, we have `∏ |x|ᵥ=1` where the product runs over the equivalence classes of absolute
 values of `K`. The `|⬝|ᵥ` are normalized as follows:
+
 - for the infinite places, `|⬝|ᵥ` is the absolute value on `K` induced by the corresponding field
-embedding in `ℂ` and the usual absolute value on `ℂ`;
+  embedding in `ℂ` and the usual absolute value on `ℂ`;
 - for the finite places and a non-zero `x`, `|x|ᵥ` is equal to the norm of the corresponding maximal
-ideal of `𝓞 K` raised to the power of the `v`-adic valuation of `x`.
+  ideal of `𝓞 K` raised to the power of the `v`-adic valuation of `x`.
 
 ## Main Results
 
@@ -28,6 +29,7 @@ ideal of `𝓞 K` raised to the power of the `v`-adic valuation of `x`.
   `∏ |x|ᵥ=1`, where the product runs over the equivalence classes of absolute values of `K`.
 
 ## Tags
+
 number field, embeddings, places, infinite places, finite places, product formula
 -/
 

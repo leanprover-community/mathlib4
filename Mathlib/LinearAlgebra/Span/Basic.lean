@@ -25,7 +25,7 @@ import Mathlib.Algebra.Module.Torsion.Field
 
 ## Notation
 
-* We introduce the notation `R ∙ v` for the span of a singleton, `Submodule.span R {v}`.  This is
+* We introduce the notation `R ∙ v` for the span of a singleton, `Submodule.span R {v}`. This is
   `\span`, not the same as the scalar multiplication `•`/`\bub`.
 
 -/

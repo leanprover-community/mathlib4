@@ -151,7 +151,7 @@ variable [DecidableEq α] [DecidableEq α']
 /-! ### `dlookup` -/
 
 /-- `dlookup a l` is the first value in `l` corresponding to the key `a`,
-  or `none` if no such element exists. -/
+or `none` if no such element exists. -/
 def dlookup (a : α) : List (Sigma β) → Option (β a)
   | [] => none
   | ⟨a', b⟩ :: l => if h : a' = a then some (Eq.recOn h b) else dlookup a l

@@ -15,25 +15,28 @@ public import Mathlib.RingTheory.Norm.Basic
 # Kummer Extensions
 
 ## Main result
+
 - `isCyclic_tfae`:
-Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
-Then `L/K` is cyclic iff
-`L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
-`L = K[α]` for some `αⁿ ∈ K`.
+  Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
+  Then `L/K` is cyclic iff
+  `L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
+  `L = K[α]` for some `αⁿ ∈ K`.
 
 - `autEquivRootsOfUnity`:
-Given an instance `IsSplittingField K L (X ^ n - C a)`
-(perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
-then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
-`σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
+  Given an instance `IsSplittingField K L (X ^ n - C a)`
+  (perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
+  then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
+  `σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
 
 - `autEquivZmod`:
-Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
-then isomorphic to `Multiplicative (ZMod n)` whose inverse is given by
-`i ↦ (α ↦ ζⁱ • α)`.
+  Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
+  then isomorphic to `Multiplicative (ZMod n)` whose inverse is given by
+  `i ↦ (α ↦ ζⁱ • α)`.
 
 ## Other results
+
 Criteria for `X ^ n - C a` to be irreducible is given:
+
 - `X_pow_sub_C_irreducible_iff_of_prime_pow`:
   For `n = p ^ k` an odd prime power, `X ^ n - C a` is irreducible iff `a` is not a `p`-power.
 - `X_pow_sub_C_irreducible_iff_forall_prime_of_odd`:
@@ -150,6 +153,7 @@ end Irreducible
 
 /-!
 ### Galois Group of `K[n√a]`
+
 We first develop the theory for a specific `K[n√a] := AdjoinRoot (X ^ n - C a)`.
 The main result is the description of the Galois group: `autAdjoinRootXPowSubCEquiv`.
 -/

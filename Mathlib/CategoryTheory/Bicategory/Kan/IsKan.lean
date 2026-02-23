@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Bicategory.Extension
 The left Kan extension of a 1-morphism `g : a ⟶ c` along a 1-morphism `f : a ⟶ b` is the initial
 object in the category of left extensions `LeftExtension f g`. The universal property can be
 accessed by the following definition and lemmas:
+
 * `LeftExtension.IsKan.desc`: the family of 2-morphisms out of the left Kan extension.
 * `LeftExtension.IsKan.fac`: the unit of any left extension factors through the left Kan extension.
 * `LeftExtension.IsKan.hom_ext`: two 2-morphisms out of the left Kan extension are equal if their
@@ -34,6 +35,7 @@ abbreviation of `t : StructuredArrow g (precomp _ f)`) to be an abbreviation for
 in the namespace `StructuredArrow.IsUniversal`.
 
 ## References
+
 https://ncatlab.org/nlab/show/Kan+extension
 
 -/

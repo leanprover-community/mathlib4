@@ -92,10 +92,11 @@ theorem insert_union_distrib (a : α) (s t : Finset α) :
   simp only [insert_union, union_insert, insert_idem]
 
 /-- To prove a relation on pairs of `Finset X`, it suffices to show that it is
-  * symmetric,
-  * it holds when one of the `Finset`s is empty,
-  * it holds for pairs of singletons,
-  * if it holds for `[a, c]` and for `[b, c]`, then it holds for `[a ∪ b, c]`.
+
+* symmetric,
+* it holds when one of the `Finset`s is empty,
+* it holds for pairs of singletons,
+* if it holds for `[a, c]` and for `[b, c]`, then it holds for `[a ∪ b, c]`.
 -/
 theorem induction_on_union (P : Finset α → Finset α → Prop) (symm : ∀ {a b}, P a b → P b a)
     (empty_right : ∀ {a}, P a ∅) (singletons : ∀ {a b}, P {a} {b})

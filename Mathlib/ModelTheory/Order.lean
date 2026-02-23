@@ -557,7 +557,7 @@ open FirstOrder FirstOrder.Language
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A model-theoretic adaptation of the proof of `Order.iso_of_countable_dense`: two countable,
-  dense, nonempty linear orders without endpoints are order isomorphic. -/
+dense, nonempty linear orders without endpoints are order isomorphic. -/
 example (α β : Type w') [LinearOrder α] [LinearOrder β]
     [Countable α] [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α]
     [Nonempty α] [Countable β] [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] :

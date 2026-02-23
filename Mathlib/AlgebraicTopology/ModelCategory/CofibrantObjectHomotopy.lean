@@ -18,6 +18,7 @@ in `C`, and we define a cofibrant resolution functor
 `CofibrantObject.HoCat.resolution : C ⥤ CofibrantObject.HoCat C`.
 
 ## References
+
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 
 -/

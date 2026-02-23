@@ -52,7 +52,7 @@ other than `Mathlib/Data/Set/Lattice.lean`.
 
 * `IsClosedMap f`: a map is a *closed map*, if the image of any closed set is a closed set.
 
-** Notation
+\*\* Notation
 
 We introduce notation `IsOpen[t]`, `IsClosed[t]`, `closure[t]`, `Continuous[t₁, t₂]`
 that allow passing custom topologies to these predicates and functions without using `@`.
@@ -144,7 +144,7 @@ def Dense (s : Set X) : Prop :=
 def DenseRange {α : Type*} (f : α → X) := Dense (range f)
 
 /-- A function between topological spaces is continuous if the preimage
-  of every open set is open. Registered as a structure to make sure it is not unfolded by Lean. -/
+of every open set is open. Registered as a structure to make sure it is not unfolded by Lean. -/
 @[fun_prop]
 structure Continuous (f : X → Y) : Prop where
   /-- The preimage of an open set under a continuous function is an open set. Use `IsOpen.preimage`

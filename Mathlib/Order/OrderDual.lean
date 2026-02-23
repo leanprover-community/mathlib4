@@ -21,6 +21,7 @@ with notation `αᵒᵈ`.
 
 One should not abuse definitional equality between `α` and `αᵒᵈ`. Instead, explicit
 coercions should be inserted:
+
 * `OrderDual.toDual : α → αᵒᵈ` and `OrderDual.ofDual : αᵒᵈ → α`
 -/
 

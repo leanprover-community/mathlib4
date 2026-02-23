@@ -149,7 +149,7 @@ theorem definable_iff_isSemilinearSet {s : Set (α → ℕ)} :
   ⟨fun ⟨φ, hφ⟩ => hφ ▸ isSemilinearSet_formula_realize_semilinear φ, IsSemilinearSet.definable⟩
 
 /-- In the 1-dimensional case, a set is Presburger arithmetic definable in `ℕ` if and only if it
-  is ultimately periodic, i.e. periodic after some number `k`. -/
+is ultimately periodic, i.e. periodic after some number `k`. -/
 theorem definable₁_iff_ultimately_periodic {s : Set ℕ} :
     A.Definable₁ presburger s ↔ ∃ k, ∃ p > 0, ∀ x ≥ k, x ∈ s ↔ x + p ∈ s := by
   rw [Definable₁, definable_iff_isSemilinearSet,

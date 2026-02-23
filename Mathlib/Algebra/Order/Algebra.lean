@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Positivity.Core
 An ordered algebra is an ordered semiring, which is an algebra over an ordered commutative semiring,
 for which scalar multiplication is "compatible" with the two orders.
 
-The prototypical example is 2x2 matrices over the reals or complexes (or indeed any C^* algebra)
+The prototypical example is 2x2 matrices over the reals or complexes (or indeed any C^\* algebra)
 where the ordering the one determined by the positive cone of positive operators,
 i.e. `A ≤ B` iff `B - A = star R * R` for some `R`.
 (We don't yet have this example in mathlib.)

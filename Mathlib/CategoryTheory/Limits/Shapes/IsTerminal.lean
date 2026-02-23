@@ -20,6 +20,7 @@ The classes `HasTerminal` and `HasInitial` and the associated notations for term
 objects are defined in `Terminal.lean`.
 
 ## References
+
 * [Stacks: Initial and final objects](https://stacks.math.columbia.edu/tag/002B)
 -/
 
@@ -75,13 +76,13 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
     subsingleton
 
 /-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
-    (as an instance). -/
+(as an instance). -/
 def IsTerminal.ofUnique (Y : C) [h : ∀ X : C, Unique (X ⟶ Y)] : IsTerminal Y where
   lift s := (h s.pt).default
   fac := fun _ ⟨j⟩ => j.elim
 
 /-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
-    (as explicit arguments). -/
+(as explicit arguments). -/
 def IsTerminal.ofUniqueHom {Y : C} (h : ∀ X : C, X ⟶ Y) (uniq : ∀ (X : C) (m : X ⟶ Y), m = h X) :
     IsTerminal Y :=
   have : ∀ X : C, Unique (X ⟶ Y) := fun X ↦ ⟨⟨h X⟩, uniq X⟩
@@ -120,13 +121,13 @@ def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
     intro x; dsimp
 
 /-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
-    (as an instance). -/
+(as an instance). -/
 def IsInitial.ofUnique (X : C) [h : ∀ Y : C, Unique (X ⟶ Y)] : IsInitial X where
   desc s := (h s.pt).default
   fac := fun _ ⟨j⟩ => j.elim
 
 /-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
-    (as explicit arguments). -/
+(as explicit arguments). -/
 def IsInitial.ofUniqueHom {X : C} (h : ∀ Y : C, X ⟶ Y) (uniq : ∀ (Y : C) (m : X ⟶ Y), m = h Y) :
     IsInitial X :=
   have : ∀ Y : C, Unique (X ⟶ Y) := fun Y ↦ ⟨⟨h Y⟩, uniq Y⟩
@@ -218,7 +219,7 @@ section Univ
 variable (X : C) {F₁ : Discrete.{w} PEmpty ⥤ C} {F₂ : Discrete.{w'} PEmpty ⥤ C}
 
 /-- Being terminal is independent of the empty diagram, its universe, and the cone over it,
-    as long as the cone points are isomorphic. -/
+as long as the cone points are isomorphic. -/
 def isLimitChangeEmptyCone {c₁ : Cone F₁} (hl : IsLimit c₁) (c₂ : Cone F₂) (hi : c₁.pt ≅ c₂.pt) :
     IsLimit c₂ where
   lift c := hl.lift ⟨c.pt, by cat_disch, by simp⟩ ≫ hi.hom
@@ -229,7 +230,7 @@ def isLimitChangeEmptyCone {c₁ : Cone F₁} (hl : IsLimit c₁) (c₂ : Cone F
     · simp
 
 /-- Replacing an empty cone in `IsLimit` by another with the same cone point
-    is an equivalence. -/
+is an equivalence. -/
 def isLimitEmptyConeEquiv (c₁ : Cone F₁) (c₂ : Cone F₂) (h : c₁.pt ≅ c₂.pt) :
     IsLimit c₁ ≃ IsLimit c₂ where
   toFun hl := isLimitChangeEmptyCone C hl c₂ h
@@ -247,7 +248,7 @@ def isLimitEquivIsTerminalOfIsEmpty {J : Type*} [Category* J] [IsEmpty J] {F : J
     (isLimitEmptyConeEquiv _ _ _ (.refl _))
 
 /-- Being initial is independent of the empty diagram, its universe, and the cocone over it,
-    as long as the cocone points are isomorphic. -/
+as long as the cocone points are isomorphic. -/
 def isColimitChangeEmptyCocone {c₁ : Cocone F₁} (hl : IsColimit c₁) (c₂ : Cocone F₂)
     (hi : c₁.pt ≅ c₂.pt) : IsColimit c₂ where
   desc c := hi.inv ≫ hl.desc ⟨c.pt, by cat_disch, by simp⟩
@@ -258,7 +259,7 @@ def isColimitChangeEmptyCocone {c₁ : Cocone F₁} (hl : IsColimit c₁) (c₂ 
     · simp
 
 /-- Replacing an empty cocone in `IsColimit` by another with the same cocone point
-    is an equivalence. -/
+is an equivalence. -/
 def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c₁.pt ≅ c₂.pt) :
     IsColimit c₁ ≃ IsColimit c₂ where
   toFun hl := isColimitChangeEmptyCocone C hl c₂ h
@@ -303,7 +304,7 @@ def initialUnopOfTerminal {X : Cᵒᵖ} (t : IsTerminal X) : IsInitial X.unop wh
   uniq _ _ _ := Quiver.Hom.op_inj (t.hom_ext _ _)
 
 /-- A category is an `InitialMonoClass` if the canonical morphism of an initial object is a
-monomorphism.  In practice, this is most useful when given an arbitrary morphism out of the chosen
+monomorphism. In practice, this is most useful when given an arbitrary morphism out of the chosen
 initial object, see `initial.mono_from`.
 Given a terminal object, this is equivalent to the assumption that the unique morphism from initial
 to terminal is a monomorphism, which is the second of Freyd's axioms for an AT category.
@@ -312,7 +313,7 @@ TODO: This is a condition satisfied by categories with zero objects and morphism
 -/
 class InitialMonoClass (C : Type u₁) [Category.{v₁} C] : Prop where
   /-- The map from the (any as stated) initial object to any other object is a
-    monomorphism -/
+  monomorphism -/
   isInitial_mono_from : ∀ {I} (X : C) (hI : IsInitial I), Mono (hI.to X)
 
 theorem IsInitial.mono_from [InitialMonoClass C] {I} {X : C} (hI : IsInitial I) (f : I ⟶ X) :

@@ -53,7 +53,7 @@ universe u
 open Ideal IsLocalRing
 
 /-- An integral domain is a *discrete valuation ring* (DVR) if it's a local PID which
-  is not a field. -/
+is not a field. -/
 class IsDiscreteValuationRing (R : Type u) [CommRing R] [IsDomain R] : Prop
     extends IsPrincipalIdealRing R, IsLocalRing R where
   not_a_field' : maximalIdeal R ≠ ⊥
@@ -88,7 +88,7 @@ theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommSemiring R] [IsLoca
   exact fun hh => h2 (isUnit_of_dvd_one ⟨_, hh.symm⟩)
 
 /-- An element of a DVR is irreducible iff it is a uniformizer, that is, generates the
-  maximal ideal of `R`. -/
+maximal ideal of `R`. -/
 theorem irreducible_iff_uniformizer (ϖ : R) : Irreducible ϖ ↔ maximalIdeal R = Ideal.span {ϖ} :=
   ⟨fun hϖ => (eq_maximalIdeal (isMaximal_of_irreducible hϖ)).symm,
     fun h => irreducible_of_span_eq_maximalIdeal ϖ

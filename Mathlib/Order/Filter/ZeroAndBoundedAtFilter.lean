@@ -29,7 +29,7 @@ variable {𝕜 α β : Type*}
 open Topology
 
 /-- If `l` is a filter on `α`, then a function `f : α → β` is `ZeroAtFilter l`
-  if it tends to zero along `l`. -/
+if it tends to zero along `l`. -/
 def ZeroAtFilter [Zero β] [TopologicalSpace β] (l : Filter α) (f : α → β) : Prop :=
   Filter.Tendsto f l (𝓝 0)
 

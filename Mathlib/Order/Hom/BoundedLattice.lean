@@ -44,14 +44,14 @@ variable {F α β γ δ : Type*}
 /-- The type of finitary supremum-preserving homomorphisms from `α` to `β`. -/
 structure SupBotHom (α β : Type*) [Max α] [Max β] [Bot α] [Bot β] extends SupHom α β where
   /-- A `SupBotHom` preserves the bottom element.
-
+  
   Do not use this directly. Use `map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
 
 /-- The type of finitary infimum-preserving homomorphisms from `α` to `β`. -/
 structure InfTopHom (α β : Type*) [Min α] [Min β] [Top α] [Top β] extends InfHom α β where
   /-- An `InfTopHom` preserves the top element.
-
+  
   Do not use this directly. Use `map_top` instead. -/
   map_top' : toFun ⊤ = ⊤
 
@@ -59,11 +59,11 @@ structure InfTopHom (α β : Type*) [Min α] [Min β] [Top α] [Top β] extends 
 structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
   [BoundedOrder β] extends LatticeHom α β where
   /-- A `BoundedLatticeHom` preserves the top element.
-
+  
   Do not use this directly. Use `map_top` instead. -/
   map_top' : toFun ⊤ = ⊤
   /-- A `BoundedLatticeHom` preserves the bottom element.
-
+  
   Do not use this directly. Use `map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
 

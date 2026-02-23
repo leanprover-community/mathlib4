@@ -202,7 +202,7 @@ variable {K ι : Type*} [Field K] [IsAlgClosed K] [Finite ι]
 /-- A slight generalization of the **Ax-Grothendieck** theorem
 
 If `K` is an algebraically closed field, `ι` is a finite type, and `S` is a definable subset of
-`ι → K`, then any injective polynomial map `S → S`  is also surjective on `S`. -/
+`ι → K`, then any injective polynomial map `S → S` is also surjective on `S`. -/
 theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
     (S : Set (ι → K)) (hS : c.Definable Language.ring S)
     (ps : ι → MvPolynomial ι K) :
@@ -225,7 +225,7 @@ theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
 /-- The **Ax-Grothendieck** theorem
 
 If `K` is an algebraically closed field, and `S : Set (ι → K)` is the `zeroLocus` of an ideal
-of the multivariable polynomial ring, then any injective polynomial map `S → S`  is also
+of the multivariable polynomial ring, then any injective polynomial map `S → S` is also
 surjective on `S`. -/
 theorem ax_grothendieck_zeroLocus
     (I : Ideal (MvPolynomial ι K))

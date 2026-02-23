@@ -13,16 +13,16 @@ public meta import Mathlib.Algebra.Algebra.Defs
 
 /-! # A tactic for normalization over modules
 
-This file provides the two tactics `match_scalars` and `module`.  Given a goal which is an equality
+This file provides the two tactics `match_scalars` and `module`. Given a goal which is an equality
 in a type `M` (with `M` an `AddCommMonoid`), the `match_scalars` tactic parses the LHS and RHS of
 the goal as linear combinations of `M`-atoms over some semiring `R`, and reduces the goal to
-the respective equalities of the `R`-coefficients of each atom.  The `module` tactic does this and
+the respective equalities of the `R`-coefficients of each atom. The `module` tactic does this and
 then runs the `ring` tactic on each of these coefficient-wise equalities, failing if this does not
 resolve them.
 
 The scalar type `R` is not pre-determined: instead it starts as `ℕ` (when each atom is initially
 given a scalar `(1:ℕ)`) and gets bumped up into bigger semirings when such semirings are
-encountered.  However, to permit this, it is assumed that there is a "linear order" on all the
+encountered. However, to permit this, it is assumed that there is a "linear order" on all the
 semirings which appear in the expression: for any two semirings `R` and `S` which occur, we have
 either `Algebra R S` or `Algebra S R`.
 -/
@@ -39,12 +39,12 @@ namespace Mathlib.Tactic.Module
 /-! ### Theory of lists of pairs (scalar, vector)
 
 This section contains the lemmas which are orchestrated by the `match_scalars` and `module` tactics
-to prove goals in modules.  The basic object which these lemmas concern is `NF R M`, a type synonym
+to prove goals in modules. The basic object which these lemmas concern is `NF R M`, a type synonym
 for a list of ordered pairs in `R × M`, where typically `M` is an `R`-module.
 -/
 
 /-- Basic theoretical "normal form" object of the `match_scalars` and `module` tactics: a type
-synonym for a list of ordered pairs in `R × M`, where typically `M` is an `R`-module.  This is the
+synonym for a list of ordered pairs in `R × M`, where typically `M` is an `R`-module. This is the
 form to which the tactics reduce module expressions.
 
 (It is not a full "normal form" because the scalars, i.e. `R` components, are not themselves
@@ -226,9 +226,9 @@ for a list of ordered triples comprising expressions representing terms of two t
 (where typically `M` is an `R`-module), together with a natural number "index".
 
 The natural number represents the index of the `M` term in the `AtomM` monad: this is not enforced,
-but is sometimes assumed in operations.  Thus when items `((a₁, x₁), k)` and `((a₂, x₂), k)`
+but is sometimes assumed in operations. Thus when items `((a₁, x₁), k)` and `((a₂, x₂), k)`
 appear in two different `Module.qNF` objects (i.e. with the same `ℕ`-index `k`), it is expected that
-the expressions `x₁` and `x₂` are the same.  It is also expected that the items in a `Module.qNF`
+the expressions `x₁` and `x₂` are the same. It is also expected that the items in a `Module.qNF`
 list are in strictly increasing order by natural-number index.
 
 By forgetting the natural number indices, an expression representing a `Mathlib.Tactic.Module.NF`
@@ -349,7 +349,7 @@ variable {iM : Q(AddCommMonoid $M)}
   {u₂ : Level} {R₂ : Q(Type u₂)} (iR₂ : Q(Semiring $R₂)) (iRM₂ : Q(@Module $R₂ $M $iR₂ $iM))
 
 /-- Given an expression `M` representing a type which is an `AddCommMonoid` and a module over *two*
-semirings `R₁` and `R₂`, find the "bigger" of the two semirings.  That is, we assume that it will
+semirings `R₁` and `R₂`, find the "bigger" of the two semirings. That is, we assume that it will
 turn out to be the case that either (1) `R₁` is an `R₂`-algebra and the `R₂` scalar action on `M` is
 induced from `R₁`'s scalar action on `M`, or (2) vice versa; we return the semiring `R₁` in the
 first case and `R₂` in the second case.
@@ -477,7 +477,7 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
 given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), construct a list of new goals: that the `R`-coefficient of an `M`-atom which
 appears in only one list is zero, and that the `R`-coefficients of an `M`-atom which appears in both
-lists are equal.  Also construct (dependent on these new goals) a proof that the "linear
+lists are equal. Also construct (dependent on these new goals) a proof that the "linear
 combinations" represented by `l₁` and `l₂` are equal in `M`. -/
 partial def reduceCoefficientwise {R : Q(Type u)} {_ : Q(AddCommMonoid $M)} {_ : Q(Semiring $R)}
     (iRM : Q(Module $R $M)) (l₁ l₂ : qNF R M) :
@@ -595,27 +595,33 @@ RHS of the goal as linear combinations of `M`-atoms over some semiring `R`, and 
 the respective equalities of the `R`-coefficients of each atom.
 
 For example, this produces the goal `⊢ a * 1 + b * 1 = (b + a) * 1`:
+
 ```
 example [AddCommMonoid M] [Semiring R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (b + a) • x := by
   match_scalars
 ```
+
 This produces the two goals `⊢ a * (a * 1) + b * (b * 1) = 1` (from the `x` atom) and
 `⊢ a * -(b * 1) + b * (a * 1) = 0` (from the `y` atom):
+
 ```
 example [AddCommGroup M] [Ring R] [Module R M] (a b : R) (x : M) :
     a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
   match_scalars
 ```
+
 This produces the goal `⊢ -2 * (a * 1) = a * (-2 * 1)`:
+
 ```
 example [AddCommGroup M] [Ring R] [Module R M] (a : R) (x : M) :
     -(2:R) • a • x = a • (-2:ℤ) • x  := by
   match_scalars
 ```
+
 The scalar type for the goals produced by the `match_scalars` tactic is the largest scalar type
 encountered; for example, if `ℕ`, `ℚ` and a characteristic-zero field `K` all occur as scalars, then
-the goals produced are equalities in `K`.  A variant of `push_cast` is used internally in
+the goals produced are equalities in `K`. A variant of `push_cast` is used internally in
 `match_scalars` to interpret scalars from the other types in this largest type.
 
 If the set of scalar types encountered is not totally ordered (in the sense that for all rings `R`,
@@ -634,6 +640,7 @@ ring-normalization, use the tactic `match_scalars` instead, and then prove coeff
 by hand.)
 
 Example uses of the `module` tactic:
+
 ```
 example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (b + a) • x := by

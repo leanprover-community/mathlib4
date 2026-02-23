@@ -36,7 +36,7 @@ section Semiring
 variable [Semiring R] {p q : R[X]}
 
 /-- `divX p` returns a polynomial `q` such that `q * X + C (p.coeff 0) = p`.
-  It can be used in a semiring where the usual division algorithm is not possible -/
+It can be used in a semiring where the usual division algorithm is not possible -/
 def divX (p : R[X]) : R[X] :=
   ⟨AddMonoidAlgebra.divOf p.toFinsupp 1⟩
 
@@ -131,7 +131,7 @@ theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
         rw [degree_add_eq_left_of_degree_lt this]; exact degree_lt_degree_mul_X hXp0
     _ = degree p := congr_arg _ (divX_mul_X_add _)
 
-/-- An induction principle for polynomials, valued in Sort* instead of Prop. -/
+/-- An induction principle for polynomials, valued in Sort\* instead of Prop. -/
 @[elab_as_elim]
 noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
     (MC : ∀ p a, coeff p 0 = 0 → a ≠ 0 → M p → M (p + C a))
@@ -154,10 +154,11 @@ termination_by p.degree
 
 /-- A property holds for all polynomials of positive `degree` with coefficients in a semiring `R`
 if it holds for
+
 * `a * X`, with `a ∈ R`,
 * `p * X`, with `p ∈ R[X]`,
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
-with appropriate restrictions on each term.
+  with appropriate restrictions on each term.
 
 See `natDegree_ne_zero_induction_on` for a similar statement involving no explicit multiplication.
 -/
@@ -181,13 +182,14 @@ theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree 
 
 /-- A property holds for all polynomials of non-zero `natDegree` with coefficients in a
 semiring `R` if it holds for
+
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
 * `p + q`, with `p, q ∈ R[X]`,
 * monomials with nonzero coefficient and non-zero exponent,
-with appropriate restrictions on each term.
-Note that multiplication is "hidden" in the assumption on monomials, so there is no explicit
-multiplication in the statement.
-See `degree_pos_induction_on` for a similar statement involving more explicit multiplications.
+  with appropriate restrictions on each term.
+  Note that multiplication is "hidden" in the assumption on monomials, so there is no explicit
+  multiplication in the statement.
+  See `degree_pos_induction_on` for a similar statement involving more explicit multiplications.
 -/
 @[elab_as_elim]
 theorem natDegree_ne_zero_induction_on {M : R[X] → Prop} {f : R[X]} (f0 : f.natDegree ≠ 0)

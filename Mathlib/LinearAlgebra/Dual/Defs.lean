@@ -313,8 +313,8 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable {W : Submodule R M}
 
 /-- The `dualRestrict` of a submodule `W` of `M` is the linear map from the
-  dual of `M` to the dual of `W` such that the domain of each linear map is
-  restricted to `W`. -/
+dual of `M` to the dual of `W` such that the domain of each linear map is
+restricted to `W`. -/
 def dualRestrict (W : Submodule R M) : Module.Dual R M →ₗ[R] Module.Dual R W :=
   LinearMap.domRestrict' W
 
@@ -327,7 +327,7 @@ theorem dualRestrict_apply (W : Submodule R M) (φ : Module.Dual R M) (x : W) :
   rfl
 
 /-- The `dualAnnihilator` of a submodule `W` is the set of linear maps `φ` such
-  that `φ w = 0` for all `w ∈ W`. -/
+that `φ w = 0` for all `w ∈ W`. -/
 def dualAnnihilator {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
     (W : Submodule R M) : Submodule R <| Module.Dual R M :=
   LinearMap.ker W.dualRestrict

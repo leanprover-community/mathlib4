@@ -15,6 +15,7 @@ This typeclass is primarily for use by isomorphisms like `MonoidEquiv` and `Line
 ## Basic usage of `EquivLike`
 
 A typical type of isomorphisms should be declared as:
+
 ```
 structure MyIso (A B : Type*) [MyClass A] [MyClass B] extends Equiv A B where
   (map_op' : ∀ (x y : A), toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
@@ -114,6 +115,7 @@ end CoolerIso
 
 Then any declaration taking a specific type of morphisms as parameter can instead take the
 class you just defined:
+
 ```
 -- Compare with: lemma do_something (f : MyIso A B) : sorry := sorry
 lemma do_something {F : Type*} [EquivLike F A B] [MyIsoClass F A B] (f : F) : sorry := sorry

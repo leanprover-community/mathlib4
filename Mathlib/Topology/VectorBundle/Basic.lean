@@ -51,6 +51,7 @@ The implementation choices in the vector bundle definition are discussed in the 
 notes" section of `Mathlib/Topology/FiberBundle/Basic.lean`.
 
 ## Tags
+
 Vector bundle
 -/
 
@@ -240,7 +241,7 @@ theorem linearMapAt_symmₗ (e : Trivialization F (π F E)) [e.IsLinear R] {b : 
 variable (R) in
 open Classical in
 /-- A coordinate change function between two trivializations, as a continuous linear equivalence.
-  Defined to be the identity when `b` does not lie in the base set of both trivializations. -/
+Defined to be the identity when `b` does not lie in the base set of both trivializations. -/
 def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] (b : B) :
     F ≃L[R] F :=
   { toLinearEquiv := if hb : b ∈ e.baseSet ∩ e'.baseSet
@@ -368,7 +369,7 @@ theorem continuousOn_coordChange [VectorBundle R F E] (e e' : Trivialization F (
 namespace Trivialization
 
 /-- Forward map of `Trivialization.continuousLinearEquivAt` (only propositionally equal),
-  defined everywhere (`0` outside domain). -/
+defined everywhere (`0` outside domain). -/
 @[simps -fullyApplied apply]
 def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : E b →L[R] F :=
   { e.linearMapAt R b with
@@ -749,7 +750,7 @@ namespace VectorPrebundle
 variable {R E F}
 
 /-- A randomly chosen coordinate change on a `VectorPrebundle`, given by
-  the field `exists_coordChange`. -/
+the field `exists_coordChange`. -/
 def coordChange (a : VectorPrebundle R F E) {e e' : Pretrivialization F (π F E)}
     (he : e ∈ a.pretrivializationAtlas) (he' : e' ∈ a.pretrivializationAtlas) (b : B) : F →L[R] F :=
   Classical.choose (a.exists_coordChange e he e' he') b
@@ -828,7 +829,7 @@ theorem continuous_totalSpaceMk (b : B) :
 def toFiberBundle : @FiberBundle B F _ _ _ a.totalSpaceTopology _ :=
   a.toFiberPrebundle.toFiberBundle
 
-/-- Make a `VectorBundle` from a `VectorPrebundle`.  Concretely this means
+/-- Make a `VectorBundle` from a `VectorPrebundle`. Concretely this means
 that, given a `VectorPrebundle` structure for a sigma-type `E` -- which consists of a
 number of "pretrivializations" identifying parts of `E` with product spaces `U × F` -- one
 establishes that for the topology constructed on the sigma-type using

@@ -498,6 +498,7 @@ end Scheme
 The notation `Spec(R)` for `(R : Type*) [CommRing R]` to mean `Spec (CommRingCat.of R)` is
 enabled in the scope `SpecOfNotation`. Please do not use it within Mathlib, but it can be
 used in downstream projects if desired. To use this, do:
+
 ```lean
 import Mathlib.AlgebraicGeometry.Scheme
 

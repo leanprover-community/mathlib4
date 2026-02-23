@@ -55,7 +55,7 @@ namespace Theory
 variable {L : Language.{u, v}} (T : L.Theory) (α : Type w)
 
 /-- A complete type over a given theory in a certain type of variables is a maximally
-  consistent (with the theory) set of formulas in that type. -/
+consistent (with the theory) set of formulas in that type. -/
 structure CompleteType where
   /-- The underlying theory -/
   toTheory : L[[α]].Theory
@@ -214,7 +214,7 @@ end CompleteType
 variable (M)
 
 /-- A complete type `p` is realized in a particular structure when there is some
-  tuple `v` whose type is `p`. -/
+tuple `v` whose type is `p`. -/
 @[simp]
 def realizedTypes (α : Type w) : Set (T.CompleteType α) :=
   Set.range (T.typeOf : (α → M) → T.CompleteType α)

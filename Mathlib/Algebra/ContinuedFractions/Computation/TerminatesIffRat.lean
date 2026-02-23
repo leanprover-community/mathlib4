@@ -13,6 +13,7 @@ public import Mathlib.Data.Rat.Floor
 # Termination of Continued Fraction Computations (`GenContFract.of`)
 
 ## Summary
+
 We show that the continued fraction for a value `v`, as defined in
 `Mathlib/Algebra/ContinuedFractions/Basic.lean`, terminates if and only if `v` corresponds to a
 rational number, that is `↑v = q` for some `q : ℚ`.
@@ -139,9 +140,11 @@ Before we can show that the continued fraction of a rational number terminates, 
 some technical translation lemmas. More precisely, in this section, we show that, given a rational
 number `q : ℚ` and value `v : K` with `v = ↑q`, the continued fraction of `q` and `v` coincide.
 In particular, we show that
+
 ```lean
     (↑(GenContFract.of q : GenContFract ℚ) : GenContFract K) = GenContFract.of v
 ```
+
 in `GenContFract.coe_of_rat_eq`.
 
 To do this, we proceed bottom-up, showing the correspondence between the basic functions involved in

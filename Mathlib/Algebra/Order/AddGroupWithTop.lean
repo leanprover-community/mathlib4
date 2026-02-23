@@ -32,7 +32,7 @@ The solutions is to use a typeclass, and that is exactly what we do in this file
 variable {G α : Type*}
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
-  Instances should include number systems with an infinite element adjoined. -/
+Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommMonoidWithTop (α : Type*) extends
     AddCommMonoid α, LinearOrder α, IsOrderedAddMonoid α, OrderTop α where
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
@@ -40,7 +40,7 @@ class LinearOrderedAddCommMonoidWithTop (α : Type*) extends
   protected isAddLeftRegular_of_ne_top ⦃x : α⦄ : x ≠ ⊤ → IsAddLeftRegular x
 
 /-- A linearly ordered commutative group with an additively absorbing `⊤` element.
-  Instances should include number systems with an infinite element adjoined. -/
+Instances should include number systems with an infinite element adjoined. -/
 -- We do not extend `LinearOrderedAddCommMonoidWithTop` as that would bring in the unnecessary
 -- `isAddLeftRegular_of_ne_top` field.
 class LinearOrderedAddCommGroupWithTop (α : Type*)

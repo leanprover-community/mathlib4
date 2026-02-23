@@ -78,6 +78,7 @@ declare_config_elab elabPushConfig Config
 /--
 `pushNegBuiltin` is a simproc for pushing `¬` in a way that can't be done
 using the `@[push]` attribute.
+
 - `¬ (p ∧ q)` turns into `p → ¬ q` or `¬ p ∨ ¬ q`, depending on the `distrib` configuration.
 - `¬ ∀ a, p` turns into `∃ a, ¬ p`, where the binder name `a` is preserved.
 -/
@@ -231,6 +232,7 @@ To instead move a constant closer to the head of the expression, use the `pull` 
 * `push (disch := tac) c` uses the tactic `tac` to discharge any hypotheses for `@[push]` lemmas.
 
 Examples:
+
 * `push _ ∈ _` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
 * `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
 * `push ¬ _` is the same as `push_neg` or `push Not`, and it rewrites
@@ -286,6 +288,7 @@ with the `@[push]` attribute. `pull` works as both a tactic and a conv tactic.
 
 A lemma is considered a `pull` lemma if its reverse direction is a `push` lemma
 that actually moves the given constant away from the head. For example
+
 - `not_or : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q` is a `pull` lemma, but `not_not : ¬ ¬ p ↔ p` is not.
 - `log_mul : log (x * y) = log x + log y` is a `pull` lemma, but `log_abs : log |x| = log x` is not.
 - `Pi.mul_def : f * g = fun (i : ι) => f i * g i` and `Pi.one_def : 1 = fun (x : ι) => 1` are both
@@ -299,6 +302,7 @@ TODO: define a `@[pull]` attribute for tagging `pull` lemmas that are not `push`
 * `pull (disch := tac) c` uses the tactic `tac` to discharge any hypotheses for `@[push]` lemmas.
 
 Examples:
+
 * `pull _ ∈ _` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
 * `pull (disch := positivity) Real.log` rewrites `log a + 2 * log b` into `log (a * b ^ 2)`.
 * `pull fun _ ↦ _` rewrites `f ^ 2 + 5` into `fun x => f x ^ 2 + 5` where `f` is a function.

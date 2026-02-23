@@ -14,6 +14,7 @@ This file defines `liftNC`. For the definition of `MonoidAlgebra.lift`, see
 `Mathlib/Algebra/MonoidAlgebra/Basic.lean`.
 
 ## Main results
+
 * `MonoidAlgebra.liftNC`, `AddMonoidAlgebra.liftNC`: lift a homomorphism `f : k →+ R` and a
   function `g : G → R` to a homomorphism `k[G] →+ R`.
 -/
@@ -43,7 +44,7 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 /-- A non-commutative version of `MonoidAlgebra.lift`: given an additive homomorphism `f : k →+ R`
 and a homomorphism `g : G → R`, returns the additive homomorphism from
 `k[G]` such that `liftNC f g (single a b) = f b * g a`. If `f` is a ring homomorphism
-and the range of either `f` or `g` is in center of `R`, then the result is a ring homomorphism.  If
+and the range of either `f` or `g` is in center of `R`, then the result is a ring homomorphism. If
 `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra homomorphism called
 `MonoidAlgebra.lift`. -/
 def liftNC (f : k →+ R) (g : G → R) : k[G] →+ R :=
@@ -116,7 +117,7 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 `f : k →+ R` and a map `g : Multiplicative G → R`, returns the additive
 homomorphism from `k[G]` such that `liftNC f g (single a b) = f b * g a`. If `f`
 is a ring homomorphism and the range of either `f` or `g` is in center of `R`, then the result is a
-ring homomorphism.  If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra
+ring homomorphism. If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra
 homomorphism called `AddMonoidAlgebra.lift`. -/
 def liftNC (f : k →+ R) (g : Multiplicative G → R) : k[G] →+ R :=
   liftAddHom fun x : G => (AddMonoidHom.mulRight (g <| Multiplicative.ofAdd x)).comp f

@@ -345,7 +345,7 @@ protected theorem map {n f} {g : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec
   simpa [(Part.bind_some_eq_map _ _).symm] using hf.bind hg
 
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
-  vector-valued functions. -/
+vector-valued functions. -/
 def Vec {n m} (f : List.Vector ℕ n → List.Vector ℕ m) :=
   ∀ i, Partrec' fun v => (f v).get i
 

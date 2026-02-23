@@ -20,10 +20,12 @@ with a nonarchimedean power-multiplicative norm and `L/K` is a finite extension,
 at least one power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
 
 ## Main Definitions
+
 * `Basis.norm` : the function sending an element `x : L` to the maximum of the norms of its
   coefficients with respect to the `K`-basis `B` of `L`.
 
 ## Main Results
+
 * `norm_mul_le_const_mul_norm` : For any `K`-basis of `L`, `B.norm` is bounded with respect to
   multiplication. That is, `∃ (c : ℝ), c > 0` such that
   ` ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`.
@@ -33,6 +35,7 @@ at least one power-multiplicative `K`-algebra norm on `L` extending the norm on 
   [BGR, Lemma 3.2.1./3].
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags
@@ -98,7 +101,7 @@ theorem norm_isNonarchimedean (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
   · exact le_max_of_le_right (le_trans hy (norm_repr_le_norm B ixy))
 
 /-- For any `K`-basis of `L`, `B.norm` is bounded with respect to multiplication. That is,
-  `∃ (c : ℝ), c > 0` such that ` ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`. -/
+`∃ (c : ℝ), c > 0` such that ` ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`. -/
 theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
     ∃ (c : ℝ) (_ : 0 < c), ∀ x y : L, B.norm (x * y) ≤ c * B.norm x * B.norm y := by
@@ -150,7 +153,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For any `k : K`, `y : L`, we have
-  `B.norm ((algebra_map K L) k * y) = B.norm ((algebra_map K L) k) * B.norm y`. -/
+`B.norm ((algebra_map K L) k * y) = B.norm ((algebra_map K L) k) * B.norm y`. -/
 theorem norm_smul {ι : Type*} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i : ι}
     (hBi : B i = (1 : L)) (k : K) (y : L) :
     B.norm ((algebraMap K L) k * y) = B.norm ((algebraMap K L) k) * B.norm y := by

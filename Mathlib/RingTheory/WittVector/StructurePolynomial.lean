@@ -18,9 +18,11 @@ with polynomials variables indexed by an arbitrary type `idx`.
 
 Then there exists a unique family of polynomials `φ : ℕ → MvPolynomial (idx × ℕ) Φ`
 such that for all `n : ℕ` we have (`wittStructureInt_existsUnique`)
+
 ```
 bind₁ φ (wittPolynomial p ℤ n) = bind₁ (fun i ↦ (rename (prod.mk i) (wittPolynomial p ℤ n))) Φ
 ```
+
 In other words: evaluating the `n`-th Witt polynomial on the family `φ`
 is the same as evaluating `Φ` on the (appropriately renamed) `n`-th Witt polynomials.
 
@@ -53,6 +55,7 @@ Proving this claim is the essential core of this file, and culminates in
 of `wittStructureInt Φ n` from the integers to the rationals,
 one obtains `wittStructureRat Φ n`.
 Ultimately, the proof of `map_wittStructureInt` relies on
+
 ```
 dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
     (p : R) ∣ a - b → ∀ (k : ℕ), (p : R) ^ (k + 1) ∣ a ^ p ^ k - b ^ p ^ k
@@ -75,8 +78,8 @@ dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
   - `WittVector.wittAdd`
   - `WittVector.wittMul`
   - `WittVector.wittNeg`
-  (We also define `WittVector.wittSub`, and later we will prove that it describes subtraction,
-  which is defined as `fun a b ↦ a + -b`. See `WittVector.sub_coeff` for this proof.)
+    (We also define `WittVector.wittSub`, and later we will prove that it describes subtraction,
+    which is defined as `fun a b ↦ a + -b`. See `WittVector.sub_coeff` for this proof.)
 
 ## References
 
@@ -121,10 +124,12 @@ scoped[Witt] notation "W" => wittPolynomial p _
 set_option backward.isDefEq.respectTransparency false in
 /-- `wittStructureRat Φ` is a family of polynomials `ℕ → MvPolynomial (idx × ℕ) ℚ`
 that are uniquely characterised by the property that
+
 ```
 bind₁ (wittStructureRat p Φ) (wittPolynomial p ℚ n) =
 bind₁ (fun i ↦ (rename (prod.mk i) (wittPolynomial p ℚ n))) Φ
 ```
+
 In other words: evaluating the `n`-th Witt polynomial on the family `wittStructureRat Φ`
 is the same as evaluating `Φ` on the (appropriately renamed) `n`-th Witt polynomials.
 
@@ -192,10 +197,12 @@ theorem wittStructureRat_rec (Φ : MvPolynomial idx ℚ) (n : ℕ) :
 
 /-- `wittStructureInt Φ` is a family of polynomials `ℕ → MvPolynomial (idx × ℕ) ℤ`
 that are uniquely characterised by the property that
+
 ```
 bind₁ (wittStructureInt p Φ) (wittPolynomial p ℤ n) =
 bind₁ (fun i ↦ (rename (prod.mk i) (wittPolynomial p ℤ n))) Φ
 ```
+
 In other words: evaluating the `n`-th Witt polynomial on the family `wittStructureInt Φ`
 is the same as evaluating `Φ` on the (appropriately renamed) `n`-th Witt polynomials.
 

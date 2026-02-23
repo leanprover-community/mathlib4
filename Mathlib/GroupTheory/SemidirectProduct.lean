@@ -27,6 +27,7 @@ condition `∀ n g, fn (φ g n) = fg g * fn n * fg g⁻¹`
 This file introduces the global notation `N ⋊[φ] G` for `SemidirectProduct N G φ`
 
 ## Tags
+
 group, semidirect product
 -/
 
@@ -40,8 +41,8 @@ variable (N : Type*) (G : Type*) {H : Type*} [Group N] [Group G] [Group H]
 set_option genSizeOfSpec false in
 set_option genInjectivity false in
 /-- The semidirect product of groups `N` and `G`, given a map `φ` from `G` to the automorphism
-  group of `N`. It is the product of sets with the group operation
-  `⟨n₁, g₁⟩ * ⟨n₂, g₂⟩ = ⟨n₁ * φ g₁ n₂, g₁ * g₂⟩` -/
+group of `N`. It is the product of sets with the group operation
+`⟨n₁, g₁⟩ * ⟨n₂, g₂⟩ = ⟨n₁ * φ g₁ n₂, g₁ * g₂⟩` -/
 @[ext]
 structure SemidirectProduct (φ : G →* MulAut N) where
   /-- The element of N -/
@@ -183,7 +184,7 @@ def equivProd : N ⋊[φ] G ≃ N × G where
   invFun x := ⟨x.1, x.2⟩
 
 /-- The group isomorphism between a semidirect product with respect to the trivial map
-  and the product. -/
+and the product. -/
 @[simps (rhsMd := .default)]
 def mulEquivProd : N ⋊[1] G ≃* N × G :=
   { equivProd with map_mul' _ _ := rfl }
@@ -221,7 +222,7 @@ theorem lift_unique (F : N ⋊[φ] G →* H) :
     inl_left_mul_inr_right, forall_const]
 
 /-- Two maps out of the semidirect product are equal if they're equal after composition
-  with both `inl` and `inr` -/
+with both `inl` and `inr` -/
 theorem hom_ext {f g : N ⋊[φ] G →* H} (hl : f.comp inl = g.comp inl)
     (hr : f.comp inr = g.comp inr) : f = g := by
   rw [lift_unique f, lift_unique g]
@@ -250,7 +251,7 @@ variable {N₁ G₁ N₂ G₂ : Type*} [Group N₁] [Group G₁] [Group N₂] [G
   (h : ∀ g : G₁, fn.comp (φ₁ g).toMonoidHom = (φ₂ (fg g)).toMonoidHom.comp fn)
 
 /-- Define a map from `N₁ ⋊[φ₁] G₁` to `N₂ ⋊[φ₂] G₂` given maps `N₁ →* N₂` and `G₁ →* G₂` that
-  satisfy a commutativity condition `∀ n g, fn (φ₁ g n) = φ₂ (fg g) (fn n)`. -/
+satisfy a commutativity condition `∀ n g, fn (φ₁ g n) = φ₂ (fg g) (fn n)`. -/
 def map : N₁ ⋊[φ₁] G₁ →* N₂ ⋊[φ₂] G₂ where
   toFun x := ⟨fn x.1, fg x.2⟩
   map_one' := by simp
@@ -289,7 +290,7 @@ variable {N₁ G₁ N₂ G₂ : Type*} [Group N₁] [Group G₁] [Group N₂] [G
   (h : ∀ g : G₁, (φ₁ g).trans fn = fn.trans (φ₂ (fg g)))
 
 /-- Define an isomorphism from `N₁ ⋊[φ₁] G₁` to `N₂ ⋊[φ₂] G₂` given isomorphisms `N₁ ≃* N₂` and
-  `G₁ ≃* G₂` that satisfy a commutativity condition `∀ n g, fn (φ₁ g n) = φ₂ (fg g) (fn n)`. -/
+`G₁ ≃* G₂` that satisfy a commutativity condition `∀ n g, fn (φ₁ g n) = φ₂ (fg g) (fn n)`. -/
 @[simps]
 def congr : N₁ ⋊[φ₁] G₁ ≃* N₂ ⋊[φ₂] G₂ where
   toFun x := ⟨fn x.1, fg x.2⟩

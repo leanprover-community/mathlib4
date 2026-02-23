@@ -48,7 +48,7 @@ open Finset Function
 noncomputable section
 
 /-- If `Γ` is linearly ordered and `R` has zero, then `R⟦Γ⟧` consists of
-  formal series over `Γ` with coefficients in `R`, whose supports are well-founded. -/
+formal series over `Γ` with coefficients in `R`, whose supports are well-founded. -/
 @[ext]
 structure HahnSeries (Γ : Type*) (R : Type*) [PartialOrder Γ] [Zero R] where
   /-- The coefficient function of a Hahn Series. -/
@@ -82,7 +82,7 @@ theorem coeff_inj {x y : R⟦Γ⟧} : x.coeff = y.coeff ↔ x = y :=
   coeff_injective.eq_iff
 
 /-- The support of a Hahn series is just the set of indices whose coefficients are nonzero.
-  Notably, it is well-founded. -/
+Notably, it is well-founded. -/
 nonrec def support (x : R⟦Γ⟧) : Set Γ :=
   support x.coeff
 
@@ -373,7 +373,7 @@ variable [Zero Γ]
 
 open Classical in
 /-- The order of a nonzero Hahn series `x` is a minimal element of `Γ` where `x` has a
-  nonzero coefficient, the order of 0 is 0. -/
+nonzero coefficient, the order of 0 is 0. -/
 def order (x : R⟦Γ⟧) : Γ :=
   if h : x = 0 then 0 else x.isWF_support.min (support_nonempty_iff.2 h)
 

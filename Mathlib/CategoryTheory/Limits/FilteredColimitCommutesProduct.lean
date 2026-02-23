@@ -22,6 +22,7 @@ the morphism is an isomorphism as long as `α` is `w`-small and `I i` is `w`-sma
 all `i`.
 
 We show that
+
 * the category `Type u` satisfies the `u`-IPC property and
 * if `C` satisfies the `w`-IPC property, then `D ⥤ C` satisfies the `w`-IPC property.
 
@@ -29,6 +30,7 @@ These results will be used to show that if a category `C` has products indexed b
 does the category of Ind-objects of `C`.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], 3.1.10, 3.1.11, 3.1.12.
 -/
 

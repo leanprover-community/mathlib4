@@ -16,6 +16,7 @@ public import Mathlib.Algebra.Algebra.Operations
 Results about localizations of submodules and quotient modules are provided in this file.
 
 ## Main results
+
 - `Submodule.localized`:
   The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`.
   A direct consequence of this is that `Rₚ` is flat over `R`; see `IsLocalization.flat`.
@@ -25,6 +26,7 @@ Results about localizations of submodules and quotient modules are provided in t
   The localization map of a quotient module `M ⧸ M' →ₗ[R] LocalizedModule p M ⧸ M'.localized p`.
 
 ## TODO
+
 - Statements regarding the exactness of localization.
 
 -/

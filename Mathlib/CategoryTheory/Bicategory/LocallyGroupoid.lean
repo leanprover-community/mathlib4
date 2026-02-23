@@ -23,6 +23,7 @@ through the inclusion from `Pith B` to `B` (see
 `CategoryTheory.Bicategory.Pith.pseudofunctorToPith`).
 
 ## References
+
 - [Kerodon, section 1.2.2](https://kerodon.net/tag/02GD).
 
 -/

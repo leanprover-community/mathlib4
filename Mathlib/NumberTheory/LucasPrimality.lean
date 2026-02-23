@@ -18,6 +18,7 @@ and `a^d ≠ 1 (mod n)` for any divisor `d | n - 1`. This test is the basis of t
 certificate.
 
 ## TODO
+
 - Write a tactic that uses this theorem to generate Pratt primality certificates
 - Integrate Pratt primality certificates into the norm_num primality verifier
 

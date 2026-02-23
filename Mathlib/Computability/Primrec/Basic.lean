@@ -170,7 +170,7 @@ instance bool : Primcodable Bool :=
 end Primcodable
 
 /-- `Primrec f` means `f` is primitive recursive (after
-  encoding its input and output as natural numbers). -/
+encoding its input and output as natural numbers). -/
 def Primrec {α β} [Primcodable α] [Primcodable β] (f : α → β) : Prop :=
   Nat.Primrec fun n => encode ((@decode α _ n).map f)
 
@@ -322,21 +322,21 @@ theorem list_getElem?₁ : ∀ l : List α, Primrec (l[·]? : ℕ → Option α)
 end Primrec
 
 /-- `Primrec₂ f` means `f` is a binary primitive recursive function.
-  This is technically unnecessary since we can always curry all
-  the arguments together, but there are enough natural two-arg
-  functions that it is convenient to express this directly. -/
+This is technically unnecessary since we can always curry all
+the arguments together, but there are enough natural two-arg
+functions that it is convenient to express this directly. -/
 def Primrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β → σ) :=
   Primrec fun p : α × β => f p.1 p.2
 
 /-- `PrimrecPred p` means `p : α → Prop` is a
-  primitive recursive predicate, which is to say that
-  `decide ∘ p : α → Bool` is primitive recursive. -/
+primitive recursive predicate, which is to say that
+`decide ∘ p : α → Bool` is primitive recursive. -/
 def PrimrecPred {α} [Primcodable α] (p : α → Prop) :=
   ∃ (_ : DecidablePred p), Primrec fun a => decide (p a)
 
 /-- `PrimrecRel p` means `p : α → β → Prop` is a
-  primitive recursive relation, which is to say that
-  `decide ∘ p : α → β → Bool` is primitive recursive. -/
+primitive recursive relation, which is to say that
+`decide ∘ p : α → β → Bool` is primitive recursive. -/
 def PrimrecRel {α β} [Primcodable α] [Primcodable β] (s : α → β → Prop) :=
   PrimrecPred fun p : α × β => s p.1 p.2
 
@@ -701,7 +701,7 @@ theorem nat_findGreatest {f : α → ℕ} {p : α → ℕ → Prop} [DecidableRe
         induction f x <;> simp [Nat.findGreatest, *]
 
 /-- To show a function `f : α → ℕ` is primitive recursive, it is enough to show that the function
-  is bounded by a primitive recursive function and that its graph is primitive recursive -/
+is bounded by a primitive recursive function and that its graph is primitive recursive -/
 theorem of_graph {f : α → ℕ} (h₁ : PrimrecBounded f)
     (h₂ : PrimrecRel fun a b => f a = b) : Primrec f := by
   rcases h₁ with ⟨g, pg, hg : ∀ x, f x ≤ g x⟩

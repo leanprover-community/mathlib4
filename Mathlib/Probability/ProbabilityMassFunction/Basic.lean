@@ -42,7 +42,7 @@ variable {α : Type*}
 open NNReal ENNReal MeasureTheory
 
 /-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0∞` such
-  that the values have (infinite) sum `1`. -/
+that the values have (infinite) sum `1`. -/
 def PMF.{u} (α : Type u) : Type u :=
   { f : α → ℝ≥0∞ // HasSum f 1 }
 
@@ -133,7 +133,7 @@ section OuterMeasure
 open OuterMeasure
 
 /-- Construct an `OuterMeasure` from a `PMF`, by assigning measure to each set `s : Set α` equal
-  to the sum of `p x` for each `x ∈ α`. -/
+to the sum of `p x` for each `x ∈ α`. -/
 def toOuterMeasure (p : PMF α) : OuterMeasure α :=
   OuterMeasure.sum fun x : α => p x • dirac x
 
@@ -209,7 +209,7 @@ end OuterMeasure
 section Measure
 
 /-- Since every set is Carathéodory-measurable under `PMF.toOuterMeasure`,
-  we can further extend this `OuterMeasure` to a `Measure` on `α`. -/
+we can further extend this `OuterMeasure` to a `Measure` on `α`. -/
 def toMeasure [MeasurableSpace α] (p : PMF α) : Measure α :=
   p.toOuterMeasure.toMeasure (p.toOuterMeasure_caratheodory.symm ▸ le_top)
 

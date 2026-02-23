@@ -31,6 +31,7 @@ There is a danger of exponential explosion in the number of gadgets,
 especially once interactions between algebraic and order/topological/etc. structures are considered.
 
 In mathlib, we try to avoid this by only introducing new algebraic typeclasses either
+
 1. when there is "real mathematics" to be done with them, or
 2. when there is a meaningful gain in simplicity by factoring out a common substructure.
 
@@ -130,6 +131,7 @@ When `Z` adds only new proof fields to an existing structure `Y`,
 you should provide instances transferring
 `Z α` to `Z (SubY α)`, like `Submonoid.toCommMonoid`.
 Typically this is done using the `Function.Injective.Z` definition mentioned above.
+
 ```
 instance SubY.toZ [Z α] : Z (SubY α) :=
   coe_injective.Z coe ...
@@ -147,6 +149,7 @@ so for example we have `AddCommGrpCat` as a bundled `AddCommGroup`, and `TopComm
 (which bundles together `CommRing`, `TopologicalSpace`, and `IsTopologicalRing`).
 
 These bundled versions have many appealing features:
+
 * a uniform notation for morphisms `X ⟶ Y`
 * a uniform notation (and definition) for isomorphisms `X ≅ Y`
 * a uniform API for subobjects, via the partial order `Subobject X`
@@ -246,9 +249,11 @@ Therefore, if we create an instance that always applies, we set the priority of 
 library_note «instance argument order» /--
 When type class inference applies an instance, it attempts to solve the sub-goals from left to
 right (it used to be from right to left in lean 3). For example in
+
 ```
 instance {p : α → Sort*} [∀ x, IsEmpty (p x)] [Nonempty α] : IsEmpty (∀ x, p x)
 ```
+
 we make sure to write `[∀ x, IsEmpty (p x)]` on the left of `[Nonempty α]` to avoid an expensive
 search for `Nonempty α` when there is no instance for `∀ x, IsEmpty (p x)`.
 
@@ -256,9 +261,11 @@ This helps to speed up failing type class searches, for example those triggered 
 
 In some situations, we can't reorder type class assumptions because one depends on the other,
 for example in
+
 ```
 instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G)
 ```
+
 where the `Group G` instance appears in `IsKleinFour G`. Future work may be done to improve the
 type class synthesis order in this situation.
 -/

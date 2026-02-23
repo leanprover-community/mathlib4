@@ -14,8 +14,8 @@ In a simple graph, a *walk* is a finite sequence of adjacent vertices, and can b
 thought of equally well as a sequence of directed edges.
 
 **Warning:** graph theorists mean something different by "path" than
-do homotopy theorists.  A "walk" in graph theory is a "path" in
-homotopy theory.  Another warning: some graph theorists use "path" and
+do homotopy theorists. A "walk" in graph theory is a "path" in
+homotopy theory. Another warning: some graph theorists use "path" and
 "simple path" for "walk" and "path."
 
 Some definitions and theorems have inspiration from multigraph
@@ -33,6 +33,7 @@ counterparts in [Chou1994].
 * `SimpleGraph.Walk.edgeSet`: The set of edges of a walk visits
 
 ## Tags
+
 walks
 -/
 
@@ -43,10 +44,10 @@ namespace SimpleGraph
 universe u
 variable {V : Type u} (G : SimpleGraph V) {u v w : V}
 
-/-- A walk is a sequence of adjacent vertices.  For vertices `u v : V`,
+/-- A walk is a sequence of adjacent vertices. For vertices `u v : V`,
 the type `walk u v` consists of all walks starting at `u` and ending at `v`.
 
-We say that a walk *visits* the vertices it contains.  The set of vertices a
+We say that a walk *visits* the vertices it contains. The set of vertices a
 walk visits is `SimpleGraph.Walk.support`.
 
 See `SimpleGraph.Walk.nil'` and `SimpleGraph.Walk.cons'` for patterns that

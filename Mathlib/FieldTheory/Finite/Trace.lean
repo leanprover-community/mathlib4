@@ -23,6 +23,7 @@ We state several lemmas about the trace and norm maps for finite fields.
   `norm[L/K](x) = ∏ i < [L:K], x ^ ((#K) ^ i)`.
 
 ## Tags
+
 finite field, trace, norm
 -/
 

@@ -57,7 +57,7 @@ variable {m : ℕ} [NeZero m] (F : Type*) [Field F] [NumberField F]
 /--
 Let `m ∣ n`. Then, the following diagram commutes:
 Gal(ℚ(ζₙ)/ℚ) → (ℤ/nℤ)ˣ
-  ↓              ↓
+↓ ↓
 Gal(ℚ(ζₘ)/ℚ) → (ℤ/mℤ)ˣ
 where the horizontal maps are `galEquivZMod`, the left map is the restriction map and the right map
 is the natural map.

@@ -13,7 +13,7 @@ public import Mathlib.Tactic.SplitIfs
 # Cast of natural numbers
 
 This file defines the *canonical* homomorphism from the natural numbers into an
-`AddMonoid` with a one.  In additive monoids with one, there exists a unique
+`AddMonoid` with a one. In additive monoids with one, there exists a unique
 such homomorphism and we store it in the `natCast : ℕ → R` field.
 
 Preferentially, the homomorphism is written as the coercion `Nat.cast`.
@@ -35,7 +35,7 @@ protected def Nat.unaryCast [One R] [Zero R] [Add R] : ℕ → R
   | n + 1 => Nat.unaryCast n + 1
 
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
-instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
+instance is what makes things like `37 : R` type check. Note that `0` and `1` are not needed
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
 `Zero` and `One`, respectively. -/
 @[nolint unusedArguments]

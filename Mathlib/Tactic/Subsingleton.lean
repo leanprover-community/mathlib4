@@ -121,6 +121,7 @@ As a nicety, `subsingleton` first runs the `intros` tactic.
   all placeholders be solved for.
 
 Techniques the `subsingleton` tactic can apply:
+
 - proof irrelevance
 - heterogeneous proof irrelevance (via `proof_irrel_heq`)
 - using `Subsingleton` (via `Subsingleton.elim`)
@@ -130,9 +131,11 @@ Techniques the `subsingleton` tactic can apply:
 
 The tactic is careful not to accidentally specialize `Sort _` to `Prop`,
 avoiding the following surprising behavior of `apply Subsingleton.elim`:
+
 ```lean
 example (α : Sort _) (x y : α) : x = y := by apply Subsingleton.elim
 ```
+
 The reason this `example` goes through is that
 it applies the `∀ (p : Prop), Subsingleton p` instance,
 specializing the universe level metavariable in `Sort _` to `0`.

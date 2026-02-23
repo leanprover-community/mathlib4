@@ -19,12 +19,14 @@ framework, commutative diagrams are replaced by 2-morphisms. Depending on the or
 right here is a common one in the theory of Kan extensions.
 
 ## Implementation notes
+
 We define extensions and lifts as objects in certain comma categories (`StructuredArrow` for left,
 and `CostructuredArrow` for right). See the file `CategoryTheory.StructuredArrow` for properties
 about these categories. We introduce some intuitive aliases. For example, `LeftExtension.extension`
 is an alias for `Comma.right`.
 
 ## References
+
 * https://ncatlab.org/nlab/show/lifts+and+extensions
 * https://ncatlab.org/nlab/show/Kan+extension
 
@@ -41,6 +43,7 @@ universe w v u
 variable {B : Type u} [Bicategory.{w, v} B] {a b c : B}
 
 /-- Triangle diagrams for (left) extensions.
+
 ```
   b
   △ \
@@ -90,6 +93,7 @@ def ofCompId (t : LeftExtension f (g ≫ 𝟙 c)) : LeftExtension f g :=
   mk (extension t) ((ρ_ g).inv ≫ unit t)
 
 /-- Whisker a 1-morphism to an extension.
+
 ```
   b
   △ \
@@ -161,6 +165,7 @@ def whiskerOfCompIdIsoSelf (t : LeftExtension f g) : (t.whisker (𝟙 c)).ofComp
 end LeftExtension
 
 /-- Triangle diagrams for (left) lifts.
+
 ```
             b
           ◹ |
@@ -210,6 +215,7 @@ def ofIdComp (t : LeftLift f (𝟙 c ≫ g)) : LeftLift f g :=
   mk (lift t) ((λ_ _).inv ≫ unit t)
 
 /-- Whisker a 1-morphism to a lift.
+
 ```
                     b
                   ◹ |
@@ -283,6 +289,7 @@ def whiskerOfIdCompIsoSelf (t : LeftLift f g) : (t.whisker (𝟙 c)).ofIdComp �
 end LeftLift
 
 /-- Triangle diagrams for (right) extensions.
+
 ```
   b
   △ \
@@ -328,6 +335,7 @@ instance : Inhabited (RightExtension (𝟙 a) g) := ⟨alongId g⟩
 end RightExtension
 
 /-- Triangle diagrams for (right) lifts.
+
 ```
             b
           ◹ |

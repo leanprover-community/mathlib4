@@ -741,7 +741,7 @@ theorem Continuous.stronglyMeasurableAtFilter [TopologicalSpace α] [OpensMeasur
   hf.stronglyMeasurable.stronglyMeasurableAtFilter
 
 /-- If a function is continuous on a measurable set `s`, then it is measurable at the filter
-  `𝓝[s] x` for all `x`. -/
+`𝓝[s] x` for all `x`. -/
 theorem ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin {α β : Type*} [MeasurableSpace α]
     [TopologicalSpace α] [OpensMeasurableSpace α] [TopologicalSpace β] [PseudoMetrizableSpace β]
     [SecondCountableTopologyEither α β] {f : α → β} {s : Set α} {μ : Measure α}

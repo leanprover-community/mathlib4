@@ -13,12 +13,14 @@ public import Mathlib.FieldTheory.IsAlgClosed.Basic
 # Results about `minpoly R x / (X - C x)`
 
 ## Main definition
+
 - `minpolyDiv`: The polynomial `minpoly R x / (X - C x)`.
 
 We used the contents of this file to describe the dual basis of a powerbasis under the trace form.
 See `traceForm_dualBasis_powerBasis_eq`.
 
 ## Main results
+
 - `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` spans `R<x>`.
 -/
 

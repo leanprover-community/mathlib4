@@ -67,23 +67,23 @@ namespace Measure
 variable {G : Type*} [MeasurableSpace G]
 
 /-- A measure `μ` on a measurable additive group is left invariant
-  if the measure of left translations of a set are equal to the measure of the set itself. -/
+if the measure of left translations of a set are equal to the measure of the set itself. -/
 class IsAddLeftInvariant [Add G] (μ : Measure G) : Prop where
   map_add_left_eq_self : ∀ g : G, map (g + ·) μ = μ
 
 /-- A measure `μ` on a measurable group is left invariant
-  if the measure of left translations of a set are equal to the measure of the set itself. -/
+if the measure of left translations of a set are equal to the measure of the set itself. -/
 @[to_additive existing]
 class IsMulLeftInvariant [Mul G] (μ : Measure G) : Prop where
   map_mul_left_eq_self : ∀ g : G, map (g * ·) μ = μ
 
 /-- A measure `μ` on a measurable additive group is right invariant
-  if the measure of right translations of a set are equal to the measure of the set itself. -/
+if the measure of right translations of a set are equal to the measure of the set itself. -/
 class IsAddRightInvariant [Add G] (μ : Measure G) : Prop where
   map_add_right_eq_self : ∀ g : G, map (· + g) μ = μ
 
 /-- A measure `μ` on a measurable group is right invariant
-  if the measure of right translations of a set are equal to the measure of the set itself. -/
+if the measure of right translations of a set are equal to the measure of the set itself. -/
 @[to_additive existing]
 class IsMulRightInvariant [Mul G] (μ : Measure G) : Prop where
   map_mul_right_eq_self : ∀ g : G, map (· * g) μ = μ

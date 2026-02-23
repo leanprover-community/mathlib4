@@ -56,7 +56,7 @@ variable {ι : Type*} (s : Finset ι)
 variable {ι₂ : Type*} (s₂ : Finset ι₂)
 
 /-- A weighted sum of the results of subtracting a base point from the
-given points, as a linear map on the weights.  The main cases of
+given points, as a linear map on the weights. The main cases of
 interest are where the sum of the weights is 0, in which case the sum
 is independent of the choice of base point, and where the sum of the
 weights is 1, in which case the sum added to the base point is
@@ -227,13 +227,13 @@ theorem weightedVSubOfPoint_const_smul (w : ι → k) (p : ι → P) (b : P) (c 
   simp_rw [weightedVSubOfPoint_apply, smul_sum, Pi.smul_apply, smul_smul, smul_eq_mul]
 
 /-- A weighted sum of the results of subtracting a default base point
-from the given points, as a linear map on the weights.  This is
+from the given points, as a linear map on the weights. This is
 intended to be used when the sum of the weights is 0; that condition
 is specified as a hypothesis on those lemmas that require it. -/
 def weightedVSub (p : ι → P) : (ι → k) →ₗ[k] V :=
   s.weightedVSubOfPoint p (Classical.choice S.nonempty)
 
-/-- Applying `weightedVSub` with given weights.  This is for the case
+/-- Applying `weightedVSub` with given weights. This is for the case
 where a result involving a default base point is OK (for example, when
 that base point will cancel out later); a more typical use case for
 `weightedVSub` would involve selecting a preferred base point with
@@ -343,7 +343,7 @@ variable (k)
 
 /-- A weighted sum of the results of subtracting a default base point
 from the given points, added to that base point, as an affine map on
-the weights.  This is intended to be used when the sum of the weights
+the weights. This is intended to be used when the sum of the weights
 is 1, in which case it is an affine combination (barycenter) of the
 points with the given weights; that condition is specified as a
 hypothesis on those lemmas that require it. -/
@@ -361,7 +361,7 @@ theorem affineCombination_linear (p : ι → P) :
 
 variable {k}
 
-/-- Applying `affineCombination` with given weights.  This is for the
+/-- Applying `affineCombination` with given weights. This is for the
 case where a result involving a default base point is OK (for example,
 when that base point will cancel out later); a more typical use case
 for `affineCombination` would involve selecting a preferred base
@@ -515,7 +515,7 @@ theorem affineCombination_filter_of_ne (w : ι → k) (p : ι → P) {pred : ι 
     s.weightedVSubOfPoint_filter_of_ne _ _ _ h]
 
 /-- Suppose an indexed family of points is given, along with a subset
-of the index type.  A vector can be expressed as
+of the index type. A vector can be expressed as
 `weightedVSubOfPoint` using a `Finset` lying within that subset and
 with a given sum of weights if and only if it can be expressed as
 `weightedVSubOfPoint` with that sum of weights for the
@@ -541,7 +541,7 @@ theorem eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype {v : V}
 variable (k)
 
 /-- Suppose an indexed family of points is given, along with a subset
-of the index type.  A vector can be expressed as `weightedVSub` using
+of the index type. A vector can be expressed as `weightedVSub` using
 a `Finset` lying within that subset and with sum of weights 0 if and
 only if it can be expressed as `weightedVSub` with sum of weights 0
 for the corresponding indexed family whose index type is the subtype
@@ -556,7 +556,7 @@ theorem eq_weightedVSub_subset_iff_eq_weightedVSub_subtype {v : V} {s : Set ι} 
 variable (V)
 
 /-- Suppose an indexed family of points is given, along with a subset
-of the index type.  A point can be expressed as an
+of the index type. A point can be expressed as an
 `affineCombination` using a `Finset` lying within that subset and
 with sum of weights 1 if and only if it can be expressed an
 `affineCombination` with sum of weights 1 for the corresponding

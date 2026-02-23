@@ -15,10 +15,13 @@ public import Mathlib.CategoryTheory.Abelian.Refinements
 The snake lemma is a standard tool in homological algebra. The basic situation
 is when we have a diagram as follows in an abelian category `C`, with exact rows:
 
-    L₁.X₁ ⟶ L₁.X₂ ⟶ L₁.X₃ ⟶ 0
-      |       |       |
-      |v₁₂.τ₁ |v₁₂.τ₂ |v₁₂.τ₃
-      v       v       v
+```
+L₁.X₁ ⟶ L₁.X₂ ⟶ L₁.X₃ ⟶ 0
+  |       |       |
+  |v₁₂.τ₁ |v₁₂.τ₂ |v₁₂.τ₃
+  v       v       v
+```
+
 0 ⟶ L₂.X₁ ⟶ L₂.X₂ ⟶ L₂.X₃
 
 We shall think of this diagram as the datum of a morphism `v₁₂ : L₁ ⟶ L₂` in the

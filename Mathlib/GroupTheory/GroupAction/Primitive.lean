@@ -187,7 +187,7 @@ set_option backward.isDefEq.respectTransparency false in
 (pretransitivity is automatic) -/
 @[to_additive
   /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
-(pretransitivity is automatic) -/]
+  (pretransitivity is automatic) -/]
 theorem IsPreprimitive.mk' (Hnt : fixedPoints G X ≠ ⊤)
     (H : ∀ {B : Set X} (_ : IsBlock G B), IsTrivialBlock B) :
     IsPreprimitive G X := by
@@ -285,7 +285,7 @@ variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
 /-- In a preprimitive action, any normal subgroup that acts nontrivially is pretransitive
 (Wielandt, th. 7.1). -/
 @[to_additive /-- In a preprimitive additive action,
-  any normal subgroup that acts nontrivially is pretransitive (Wielandt, th. 7.1). -/]
+any normal subgroup that acts nontrivially is pretransitive (Wielandt, th. 7.1). -/]
 -- See note [lower instance priority]
 instance (priority := 100) IsPreprimitive.isQuasiPreprimitive [IsPreprimitive M α] :
     IsQuasiPreprimitive M α where

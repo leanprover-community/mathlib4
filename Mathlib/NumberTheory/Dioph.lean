@@ -74,9 +74,9 @@ section Polynomials
 variable {α β : Type*}
 
 /-- A predicate asserting that a function is a multivariate integer polynomial.
-  (We are being a bit lazy here by allowing many representations for multiplication,
-  rather than only allowing monomials and addition, but the definition is equivalent
-  and this is easier to use.) -/
+(We are being a bit lazy here by allowing many representations for multiplication,
+rather than only allowing monomials and addition, but the definition is equivalent
+and this is easier to use.) -/
 inductive IsPoly : ((α → ℕ) → ℤ) → Prop
   | proj : ∀ i, IsPoly fun x : α → ℕ => x i
   | const : ∀ n : ℤ, IsPoly fun _ : α → ℕ => n
@@ -204,9 +204,9 @@ theorem induction {C : Poly α → Prop} (H1 : ∀ i, C (proj i)) (H2 : ∀ n, C
   | mul _ _ ihf ihg => apply H4 _ _ ihf ihg
 
 /-- The sum of squares of a list of polynomials. This is relevant for
-  Diophantine equations, because it means that a list of equations
-  can be encoded as a single equation: `x = 0 ∧ y = 0 ∧ z = 0` is
-  equivalent to `x^2 + y^2 + z^2 = 0`. -/
+Diophantine equations, because it means that a list of equations
+can be encoded as a single equation: `x = 0 ∧ y = 0 ∧ z = 0` is
+equivalent to `x^2 + y^2 + z^2 = 0`. -/
 def sumsq : List (Poly α) → Poly α
   | [] => 0
   | p::ps => p * p + sumsq ps
@@ -241,7 +241,7 @@ end Polynomials
 
 
 /-- A set `S ⊆ ℕ^α` is Diophantine if there exists a polynomial on
-  `α ⊕ β` such that `v ∈ S` iff there exists `t : ℕ^β` with `p (v, t) = 0`. -/
+`α ⊕ β` such that `v ∈ S` iff there exists `t : ℕ^β` with `p (v, t) = 0`. -/
 def Dioph {α : Type u} (S : Set (α → ℕ)) : Prop :=
   ∃ (β : Type u) (p : Poly (α ⊕ β)), ∀ v, S v ↔ ∃ t, p (v ⊗ t) = 0
 

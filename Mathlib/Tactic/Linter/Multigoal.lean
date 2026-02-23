@@ -26,6 +26,7 @@ Typically, the focusing is achieved by the `cdot`: `·`, but, e.g., `focus` or `
 also serve a similar purpose.
 
 TODO:
+
 * Should the linter flag unnecessary scoping as well?
   For instance, should
   ```lean
@@ -57,6 +58,7 @@ namespace Style.multiGoal
 /-- The `SyntaxNodeKind`s in `exclusions` correspond to tactics that the linter allows,
 even though there are multiple active goals.
 Reasons for admitting a kind in `exclusions` include
+
 * the tactic focuses on one goal, e.g. `·`, `focus`, `on_goal i =>`, ...;
 * the tactic is reordering the goals, e.g. `swap`, `rotate_left`, ...;
 * the tactic is structuring a proof, e.g. `skip`, `<;>`, ...;
@@ -114,6 +116,7 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
 /-- The `SyntaxNodeKind`s in `ignoreBranch` correspond to tactics that disable the linter from
 their first application until the corresponding proof branch is closed.
 Reasons for ignoring these tactics include
+
 * the linter gets confused by the proof management, e.g. `conv`;
 * the tactics are *intended* to act on multiple goals, e.g. `repeat`, `any_goals`, `all_goals`, ...
 
@@ -135,6 +138,7 @@ abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofArray #[
 
 /-- `getManyGoals t` returns the syntax nodes of the `InfoTree` `t` corresponding to tactic calls
 which
+
 * leave at least one goal that was present before it ran
   (with the exception of tactics that leave the sole goal unchanged);
 * are not excluded through `exclusions` or `ignoreBranch`;

@@ -30,6 +30,7 @@ assuming `𝕜` is a dense topological field.
 ## TODO
 
 The next steps are:
+
 - Add `ConvexConeClass` that extends `SetLike` and replace the below instance
 - Define primal and dual cone programs and prove weak duality.
 - Prove regular and strong duality for cone programs using Farkas' lemma (see reference).

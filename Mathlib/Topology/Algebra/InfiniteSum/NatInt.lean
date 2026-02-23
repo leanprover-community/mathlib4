@@ -143,8 +143,8 @@ theorem tprod_iUnion_decode₂ (m : Set α → M) (m0 : m ∅ = 1) (s : β → S
 end Encodable
 
 /-! Some properties about measure-like functions. These could also be functions defined on complete
-  sublattices of sets, with the property that they are countably sub-additive.
-  `R` will probably be instantiated with `(≤)` in all applications.
+sublattices of sets, with the property that they are countably sub-additive.
+`R` will probably be instantiated with `(≤)` in all applications.
 -/
 section Countable
 

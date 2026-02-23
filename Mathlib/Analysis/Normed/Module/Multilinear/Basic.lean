@@ -22,12 +22,14 @@ We show that it is indeed a norm, and prove its basic properties.
 ## Main results
 
 Let `f` be a multilinear map in finitely many variables.
+
 * `exists_bound_of_continuous` asserts that, if `f` is continuous, then there exists `C > 0`
   with `‖f m‖ ≤ C * ∏ i, ‖m i‖` for all `m`.
 * `continuous_of_bound`, conversely, asserts that this bound implies continuity.
 * `mkContinuous` constructs the associated continuous multilinear map.
 
 Let `f` be a continuous multilinear map in finitely many variables.
+
 * `‖f‖` is its norm, i.e., the smallest number such that `‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖` for
   all `m`.
 * `le_opNorm f m` asserts the fundamental inequality `‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖`.
@@ -203,8 +205,7 @@ one can deduce a bound on `f m₁ - f m₂` using the multilinearity.
 Here, we give a precise but hard to use version.
 See `norm_image_sub_le_of_bound` for a less precise but more usable version.
 The bound reads
-`‖f m - f m'‖ ≤
-  C * ‖m 1 - m' 1‖ * max ‖m 2‖ ‖m' 2‖ * max ‖m 3‖ ‖m' 3‖ * ... * max ‖m n‖ ‖m' n‖ + ...`,
+`‖f m - f m'‖ ≤   C * ‖m 1 - m' 1‖ * max ‖m 2‖ ‖m' 2‖ * max ‖m 3‖ ‖m' 3‖ * ... * max ‖m n‖ ‖m' n‖ + ...`,
 where the other terms in the sum are the same products where `1` is replaced by any `i`. -/
 theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : MultilinearMap 𝕜 E G) {C : ℝ} (hC : 0 ≤ C)
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (m₁ m₂ : ∀ i, E i) :
@@ -655,8 +656,7 @@ end RestrictScalars
 
 /-- The difference `f m₁ - f m₂` is controlled in terms of `‖f‖` and `‖m₁ - m₂‖`, precise version.
 For a less precise but more usable version, see `norm_image_sub_le`. The bound reads
-`‖f m - f m'‖ ≤
-  ‖f‖ * ‖m 1 - m' 1‖ * max ‖m 2‖ ‖m' 2‖ * max ‖m 3‖ ‖m' 3‖ * ... * max ‖m n‖ ‖m' n‖ + ...`,
+`‖f m - f m'‖ ≤   ‖f‖ * ‖m 1 - m' 1‖ * max ‖m 2‖ ‖m' 2‖ * max ‖m 3‖ ‖m' 3‖ * ... * max ‖m n‖ ‖m' n‖ + ...`,
 where the other terms in the sum are the same products where `1` is replaced by any `i`. -/
 theorem norm_image_sub_le' [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E G) (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ ‖f‖ * ∑ i, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=

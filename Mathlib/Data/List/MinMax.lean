@@ -19,8 +19,8 @@ public import Mathlib.Order.WithBot
 The main definitions are `argmax`, `argmin`, `minimum` and `maximum` for lists.
 
 `argmax f l` returns `some a`, where `a` of `l` that maximises `f a`. If there are `a b` such that
-  `f a = f b`, it returns whichever of `a` or `b` comes first in the list.
-  `argmax f [] = none`
+`f a = f b`, it returns whichever of `a` or `b` comes first in the list.
+`argmax f [] = none`
 
 `minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`

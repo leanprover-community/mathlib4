@@ -74,7 +74,7 @@ theorem lintegral_enorm_neg {f : α → β} : ∫⁻ a, ‖(-f) a‖ₑ ∂μ = 
 
 
 /-- `HasFiniteIntegral f μ` means that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
-  `HasFiniteIntegral f` means `HasFiniteIntegral f volume`. -/
+`HasFiniteIntegral f` means `HasFiniteIntegral f volume`. -/
 @[fun_prop]
 def HasFiniteIntegral {_ : MeasurableSpace α} (f : α → ε)
     (μ : Measure α := by volume_tac) : Prop :=

@@ -13,9 +13,10 @@ public import Mathlib.Algebra.Lie.TraceForm
 # Lie algebras with non-degenerate Killing forms.
 
 In characteristic zero, the following three conditions are equivalent:
- 1. The solvable radical of a Lie algebra is trivial
- 2. A Lie algebra is a direct sum of its simple ideals
- 3. A Lie algebra has non-degenerate Killing form
+
+1. The solvable radical of a Lie algebra is trivial
+2. A Lie algebra is a direct sum of its simple ideals
+3. A Lie algebra has non-degenerate Killing form
 
 In positive characteristic, it is still true that 3 implies 2, and that 2 implies 1, but there are
 counterexamples to the remaining implications. Thus condition 3 is the strongest assumption.

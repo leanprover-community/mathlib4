@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.Yoneda
 `F : C ⥤ D` and `G : D ⥤ C`. `F` is the left adjoint and `G` is the right adjoint.
 
 We provide various useful constructors:
+
 * `mkOfHomEquiv`
 * `mk'`: construct an adjunction from the data of a hom set equivalence, unit and counit natural
   transformations together with proofs of the equalities `homEquiv_unit` and `homEquiv_counit`

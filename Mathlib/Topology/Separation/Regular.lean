@@ -308,9 +308,9 @@ end RegularSpace
 section LocallyCompactRegularSpace
 
 /-- In a (possibly non-Hausdorff) locally compact regular space, for every containment `K ⊆ U` of
-  a compact set `K` in an open set `U`, there is a compact closed neighborhood `L`
-  such that `K ⊆ L ⊆ U`: equivalently, there is a compact closed set `L` such
-  that `K ⊆ interior L` and `L ⊆ U`. -/
+a compact set `K` in an open set `U`, there is a compact closed neighborhood `L`
+such that `K ⊆ L ⊆ U`: equivalently, there is a compact closed set `L` such
+that `K ⊆ interior L` and `L ⊆ U`. -/
 theorem exists_compact_closed_between [LocallyCompactSpace X] [RegularSpace X]
     {K U : Set X} (hK : IsCompact K) (hU : IsOpen U) (h_KU : K ⊆ U) :
     ∃ L, IsCompact L ∧ IsClosed L ∧ K ⊆ interior L ∧ L ⊆ U :=
@@ -356,8 +356,8 @@ end LocallyCompactRegularSpace
 section T25
 
 /-- A T₂.₅ space, also known as a Urysohn space, is a topological space
-  where for every pair `x ≠ y`, there are two open sets, with the intersection of closures
-  empty, one containing `x` and the other `y` . -/
+where for every pair `x ≠ y`, there are two open sets, with the intersection of closures
+empty, one containing `x` and the other `y` . -/
 class T25Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- Given two distinct points in a T₂.₅ space, their filters of closed neighborhoods are
   disjoint. -/

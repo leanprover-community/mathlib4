@@ -79,7 +79,7 @@ def quotEquivPowQuotPowSucc (h : I.IsPrincipal) (h' : I ≠ ⊥) (n : ℕ) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For a principal ideal `I`, `R ⧸ I ≃ I ^ n ⧸ I ^ (n + 1)`. Supplied as a plain equiv to bypass
-typeclass synthesis issues on complex `Module` goals.  To convert into a form
+typeclass synthesis issues on complex `Module` goals. To convert into a form
 that uses the ideal of `R ⧸ I ^ (n + 1)`, compose with
 `Ideal.powQuotPowSuccEquivMapMkPowSuccPow`. -/
 noncomputable

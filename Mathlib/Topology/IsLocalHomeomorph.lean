@@ -16,6 +16,7 @@ This file defines local homeomorphisms.
 ## Main definitions
 
 For a function `f : X → Y ` between topological spaces, we say
+
 * `IsLocalHomeomorphOn f s` if `f` is a local homeomorphism around each point of `s`: for each
   `x : X`, the restriction of `f` to some open neighborhood `U` of `x` gives a homeomorphism
   between `U` and an open subset of `Y`.
@@ -25,6 +26,7 @@ Note that `IsLocalHomeomorph` is a global condition. This is in contrast to
 `OpenPartialHomeomorph`, which is a homeomorphism between specific open subsets.
 
 ## Main results
+
 * local homeomorphisms are locally injective open maps
 * more!
 
@@ -160,7 +162,7 @@ protected theorem comp (hg : IsLocalHomeomorphOn g t) (hf : IsLocalHomeomorphOn 
 end IsLocalHomeomorphOn
 
 /-- A function `f : X → Y` satisfies `IsLocalHomeomorph f` if each `x : x` is contained in
-  the source of some `e : OpenPartialHomeomorph X Y` with `f = e`. -/
+the source of some `e : OpenPartialHomeomorph X Y` with `f = e`. -/
 def IsLocalHomeomorph :=
   ∀ x : X, ∃ e : OpenPartialHomeomorph X Y, x ∈ e.source ∧ f = e
 

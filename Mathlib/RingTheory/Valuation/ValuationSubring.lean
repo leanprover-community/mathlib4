@@ -218,7 +218,7 @@ theorem valuation_lt_one_iff (a : A) : a ∈ IsLocalRing.maximalIdeal A ↔ A.va
   exact (A.valuation_le_one a).lt_iff_ne.symm
 
 /-- A subring `R` of `K` such that for all `x : K` either `x ∈ R` or `x⁻¹ ∈ R` is
-  a valuation subring of `K`. -/
+a valuation subring of `K`. -/
 def ofSubring (R : Subring K) (hR : ∀ x : K, x ∈ R ∨ x⁻¹ ∈ R) : ValuationSubring K :=
   { R with mem_or_inv_mem' := hR }
 

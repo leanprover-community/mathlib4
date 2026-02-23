@@ -23,6 +23,7 @@ open Lean.Parser.Tactic
 /--
 `by_cases! h : p` runs the `by_cases h : p` tactic, followed by
 `push_neg at h` in the second subgoal. For example,
+
 - `by_cases! h : a < b` creates one goal with hypothesis `h : a < b` and
   another with `h : b ≤ a`.
 - `by_cases! h : a ≠ b` creates one goal with hypothesis `h : a ≠ b` and

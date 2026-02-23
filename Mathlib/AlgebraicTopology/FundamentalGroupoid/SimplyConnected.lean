@@ -12,16 +12,18 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 
 /-!
 # Simply connected spaces
+
 This file defines simply connected spaces.
 A topological space is simply connected if its fundamental groupoid is equivalent to `Unit`.
 
 We also define the corresponding predicate for sets.
 
 ## Main theorems
-  - `simply_connected_iff_unique_homotopic` - A space is simply connected if and only if it is
-    nonempty and there is a unique path up to homotopy between any two points
 
-  - `SimplyConnectedSpace.ofContractible` - A contractible space is simply connected
+- `simply_connected_iff_unique_homotopic` - A space is simply connected if and only if it is
+  nonempty and there is a unique path up to homotopy between any two points
+
+- `SimplyConnectedSpace.ofContractible` - A contractible space is simply connected
 -/
 
 @[expose] public section
@@ -82,7 +84,7 @@ instance (priority := 100) ofContractible (Y : Type*) [TopologicalSpace Y] [Cont
 end SimplyConnectedSpace
 
 /-- A space is simply connected iff it is path connected, and there is at most one path
-  up to homotopy between any two points. -/
+up to homotopy between any two points. -/
 theorem simply_connected_iff_paths_homotopic :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ x y : Y, Subsingleton (Path.Homotopic.Quotient x y) :=
@@ -100,7 +102,7 @@ theorem simply_connected_iff_paths_homotopic' :
 set_option backward.isDefEq.respectTransparency false in
 open Path.Homotopic.Quotient in
 /-- A space is simply connected if and only if it is path-connected and every loop
-    at any basepoint is null-homotopic (i.e., homotopic to the constant loop). -/
+at any basepoint is null-homotopic (i.e., homotopic to the constant loop). -/
 theorem simply_connected_iff_loops_nullhomotopic :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ (x : Y) (γ : Path x x), Path.Homotopic γ (Path.refl x) := by

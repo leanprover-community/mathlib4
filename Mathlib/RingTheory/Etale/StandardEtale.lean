@@ -16,15 +16,23 @@ public import Mathlib.RingTheory.Ideal.IdempotentFG
 # Standard etale maps
 
 ## Main definitions
+
 - `StandardEtalePair`:
   A pair `f g : R[X]` such that `f` is monic and `f'` is invertible in `R[X][1/g]`.
+
 - `StandardEtalePair`: The standard etale algebra corresponding to a `StandardEtalePair`.
-- `StandardEtalePair.equivPolynomialQuotient`   : `P.Ring ≃ R[X][Y]/⟨f, Yg-1⟩`
-- `StandardEtalePair.equivAwayAdjoinRoot`       : `P.Ring ≃ (R[X]/f)[1/g]`
-- `StandardEtalePair.equivAwayQuotient`         : `P.Ring ≃ R[X][1/g]/f`
+
+- `StandardEtalePair.equivPolynomialQuotient` : `P.Ring ≃ R[X][Y]/⟨f, Yg-1⟩`
+
+- `StandardEtalePair.equivAwayAdjoinRoot` : `P.Ring ≃ (R[X]/f)[1/g]`
+
+- `StandardEtalePair.equivAwayQuotient` : `P.Ring ≃ R[X][1/g]/f`
+
 - `StandardEtalePair.equivMvPolynomialQuotient` : `P.Ring ≃ R[X, Y]/⟨f, Yg-1⟩`
+
 - `StandardEtalePair.homEquiv`:
   Maps out of `P.Ring` corresponds to `x` such that `f(x) = 0` and `g(x)` is invertible.
+
 - We also provide the instance that `P.Ring` is etale over `R`.
 
 - `Algebra.IsStandardEtale`: The class of standard etale algebras.
@@ -437,7 +445,7 @@ lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
   exact .of_equiv (e₁.trans e₂)
 
 /-- If `T` is an etale algebra, and a standard etale algebra surjects onto `T`, then
-  `T` is also standard etale. -/
+`T` is also standard etale. -/
 lemma IsStandardEtale.of_surjective
     [IsStandardEtale R S] [Algebra.Etale R T] (f : S →ₐ[R] T) (hf : Function.Surjective f) :
     IsStandardEtale R T := by

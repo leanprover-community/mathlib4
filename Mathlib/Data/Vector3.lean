@@ -224,7 +224,7 @@ theorem vectorAll_iff_forall : ∀ {n} (f : Vector3 α n → Prop), VectorAll n 
       ⟨fun al v => v.consElim al, fun al x v => al (x :: v)⟩
 
 /-- `VectorAllP p v` is equivalent to `∀ i, p (v i)`, but unfolds directly to a conjunction,
-  i.e. `VectorAllP p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
+i.e. `VectorAllP p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
 def VectorAllP (p : α → Prop) (v : Vector3 α n) : Prop :=
   Vector3.recOn v True fun a v IH =>
     @Vector3.recOn _ (fun _ => Prop) _ v (p a) fun _ _ _ => p a ∧ IH

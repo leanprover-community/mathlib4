@@ -18,7 +18,7 @@ which defines the weak topology given two vector spaces `E` and `F` over a commu
 such that for all `y : F` every map `fun x => B x y` is continuous.
 
 In this file, we consider two special cases.
-In the case that `F = E →L[𝕜] 𝕜` and `B` being the canonical pairing, we obtain the weak-* topology,
+In the case that `F = E →L[𝕜] 𝕜` and `B` being the canonical pairing, we obtain the weak-\* topology,
 `WeakDual 𝕜 E := (E →L[𝕜] 𝕜)`. Interchanging the arguments in the bilinear form yields the
 weak topology `WeakSpace 𝕜 E := E`.
 
@@ -29,7 +29,7 @@ with the respective topology instances on it.
 
 * `WeakDual 𝕜 E` is a type synonym for `Dual 𝕜 E` (when the latter is defined): both are equal to
   the type `E →L[𝕜] 𝕜` of continuous linear maps from a module `E` over `𝕜` to the ring `𝕜`.
-* The instance `WeakDual.instTopologicalSpace` is the weak-* topology on `WeakDual 𝕜 E`, i.e., the
+* The instance `WeakDual.instTopologicalSpace` is the weak-\* topology on `WeakDual 𝕜 E`, i.e., the
   coarsest topology making the evaluation maps at all `z : E` continuous.
 * `WeakSpace 𝕜 E` is a type synonym for `E` (when the latter is defined).
 * The instance `WeakSpace.instTopologicalSpace` is the weak topology on `E`, i.e., the

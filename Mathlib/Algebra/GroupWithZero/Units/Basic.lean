@@ -76,7 +76,7 @@ namespace Ring
 
 open Classical in
 /-- Introduce a function `inverse` on a monoid with zero `M₀`, which sends `x` to `x⁻¹` if `x` is
-invertible and to `0` otherwise.  This definition is somewhat ad hoc, but one needs a fully (rather
+invertible and to `0` otherwise. This definition is somewhat ad hoc, but one needs a fully (rather
 than partially) defined inverse function for some purposes, including for calculus.
 
 Note that while this is in the `Ring` namespace for brevity, it requires the weaker assumption
@@ -153,9 +153,9 @@ namespace Units
 variable [GroupWithZero G₀]
 
 /-- Embed a non-zero element of a `GroupWithZero` into the unit group.
-  By combining this function with the operations on units,
-  or the `/ₚ` operation, it is possible to write a division
-  as a partial function with three arguments. -/
+By combining this function with the operations on units,
+or the `/ₚ` operation, it is possible to write a division
+as a partial function with three arguments. -/
 def mk0 (a : G₀) (ha : a ≠ 0) : G₀ˣ :=
   ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩
 
@@ -457,7 +457,7 @@ variable {M : Type*} [Nontrivial M]
 
 open Classical in
 /-- Constructs a `GroupWithZero` structure on a `MonoidWithZero`
-  consisting only of units and 0. -/
+consisting only of units and 0. -/
 noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]
     (h : ∀ a : M, IsUnit a ∨ a = 0) : GroupWithZero M :=
   { hM with
@@ -468,7 +468,7 @@ noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]
       rw [dif_neg h0, Units.mul_inv_eq_iff_eq_mul, one_mul, IsUnit.unit_spec] }
 
 /-- Constructs a `CommGroupWithZero` structure on a `CommMonoidWithZero`
-  consisting only of units and 0. -/
+consisting only of units and 0. -/
 noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
     (h : ∀ a : M, IsUnit a ∨ a = 0) : CommGroupWithZero M :=
   { groupWithZeroOfIsUnitOrEqZero h, hM with }

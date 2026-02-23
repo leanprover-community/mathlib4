@@ -27,7 +27,7 @@ variable (C : Type*) {D E : Type*} [Category* C] [Category* D] [Category* E] {F 
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
-  `(whiskeringRight C _ _).obj F ⊣ (whiskeringRight C _ _).obj G`. -/
+`(whiskeringRight C _ _).obj F ⊣ (whiskeringRight C _ _).obj G`. -/
 @[simps! unit_app_app counit_app_app]
 protected def whiskerRight (adj : F ⊣ G) :
     (whiskeringRight C D E).obj F ⊣ (whiskeringRight C E D).obj G where
@@ -42,7 +42,7 @@ protected def whiskerRight (adj : F ⊣ G) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
-  `(whiskeringLeft _ _ C).obj G ⊣ (whiskeringLeft _ _ C).obj F`. -/
+`(whiskeringLeft _ _ C).obj G ⊣ (whiskeringLeft _ _ C).obj F`. -/
 @[simps! unit_app_app counit_app_app]
 protected def whiskerLeft (adj : F ⊣ G) :
     (whiskeringLeft E D C).obj G ⊣ (whiskeringLeft D E C).obj F where

@@ -9,6 +9,7 @@ public import Mathlib.Tactic.TypeStar
 
 /-!
 # Bracket Notation
+
 This file provides notation which can be used for the Lie bracket, for the commutator of two
 subgroups, and for other similar operations.
 
@@ -27,13 +28,14 @@ these are the Unicode "square with quill" brackets rather than the usual square 
 @[expose] public section
 
 /-- The `Bracket` class has three intended uses:
-  1. for certain binary operations on structures, like the product `⁅x, y⁆` of two elements
-    `x`, `y` in a Lie algebra or the commutator of two elements `x` and `y` in a group.
-  2. for certain actions of one structure on another, like the action `⁅x, m⁆` of an element `x`
-    of a Lie algebra on an element `m` in one of its modules (analogous to `SMul` in the
-    associative setting).
-  3. for binary operations on substructures, like the commutator `⁅H, K⁆` of two subgroups `H` and
-     `K` of a group. -/
+
+1. for certain binary operations on structures, like the product `⁅x, y⁆` of two elements
+   `x`, `y` in a Lie algebra or the commutator of two elements `x` and `y` in a group.
+2. for certain actions of one structure on another, like the action `⁅x, m⁆` of an element `x`
+   of a Lie algebra on an element `m` in one of its modules (analogous to `SMul` in the
+   associative setting).
+3. for binary operations on substructures, like the commutator `⁅H, K⁆` of two subgroups `H` and
+   `K` of a group. -/
 class Bracket (L M : Type*) where
   /-- `⁅x, y⁆` is the result of a bracket operation on elements `x` and `y`.
   It is supported by the `Bracket` typeclass. -/

@@ -22,8 +22,8 @@ is a statement and proof of the universal property of these quotients.
 
 ## Main definitions
 
-  * `LieSubmodule.Quotient.lieQuotientLieModule`
-  * `LieSubmodule.Quotient.lieQuotientLieAlgebra`
+* `LieSubmodule.Quotient.lieQuotientLieModule`
+* `LieSubmodule.Quotient.lieQuotientLieAlgebra`
 
 ## Tags
 

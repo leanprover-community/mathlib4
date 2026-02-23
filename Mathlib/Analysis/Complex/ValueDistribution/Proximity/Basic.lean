@@ -14,12 +14,12 @@ public import Mathlib.MeasureTheory.Integral.CircleAverage
 # The Proximity Function of Value Distribution Theory
 
 This file defines the "proximity function" attached to a meromorphic function defined on the complex
-plane.  Also known as the `Nevanlinna Proximity Function`, this is one of the three main functions
+plane. Also known as the `Nevanlinna Proximity Function`, this is one of the three main functions
 used in Value Distribution Theory.
 
 The proximity function is a logarithmically weighted measure quantifying how well a meromorphic
 function `f` approximates the constant function `a` on the circle of radius `R` in the complex
-plane.  The definition ensures that large values correspond to good approximation.
+plane. The definition ensures that large values correspond to good approximation.
 
 See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
 [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
@@ -44,7 +44,7 @@ The Proximity Function of Value Distribution Theory
 
 If `f : ℂ → E` is meromorphic and `a : WithTop E` is any value, the proximity function is a
 logarithmically weighted measure quantifying how well a meromorphic function `f` approximates the
-constant function `a` on the circle of radius `R` in the complex plane.  In the special case where
+constant function `a` on the circle of radius `R` in the complex plane. In the special case where
 `a = ⊤`, it quantifies how well `f` approximates infinity.
 -/
 noncomputable def proximity : ℝ → ℝ := by

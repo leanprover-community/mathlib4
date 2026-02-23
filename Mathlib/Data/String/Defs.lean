@@ -17,7 +17,7 @@ This file defines a bunch of functions for the `String` datatype.
 namespace String
 
 /-- Pad `s : String` with repeated occurrences of `c : Char` until it's of length `n`.
-  If `s` is initially larger than `n`, just return `s`. -/
+If `s` is initially larger than `n`, just return `s`. -/
 def leftpad (n : Nat) (c : Char := ' ') (s : String) : String :=
   ofList (List.leftpad n c s.toList)
 
@@ -29,7 +29,7 @@ def replicate (n : Nat) (c : Char) : String :=
 -- adding `List.rightpad` to Batteries and changing the definition of `rightpad` here to match
 -- or by changing the definition of `leftpad` above to match this
 /-- Pad `s : String` with repeated occurrences of `c : Char` on the right until it's of length `n`.
-  If `s` is initially larger than `n`, just return `s`. -/
+If `s` is initially larger than `n`, just return `s`. -/
 def rightpad (n : Nat) (c : Char := ' ') (s : String) : String :=
   s ++ String.replicate (n - s.length) c
 

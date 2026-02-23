@@ -39,8 +39,10 @@ If `β` is a `NormedField` :
 
 - Provided some non-vanishing hypothesis, this can be seen as `u ~[l] v ↔ Tendsto (u/v) l (𝓝 1)`
   (see `isEquivalent_iff_tendsto_one`)
+
 - For any constant `c`, `u ~[l] v` implies `Tendsto u l (𝓝 c) ↔ Tendsto v l (𝓝 c)`
   (see `IsEquivalent.tendsto_nhds_iff`)
+
 - `*` and `/` are compatible with `_ ~[l] _` (see `IsEquivalent.mul` and `IsEquivalent.div`)
 
 If `β` is a `NormedLinearOrderedField` :

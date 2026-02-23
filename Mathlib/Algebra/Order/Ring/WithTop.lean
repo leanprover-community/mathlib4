@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Order.Monoid.WithTop
 
 /-! # Structures involving `*` and `0` on `WithTop` and `WithBot`
+
 The main results of this section are `WithTop.instOrderedCommSemiring` and
 `WithBot.instOrderedCommSemiring`.
 -/

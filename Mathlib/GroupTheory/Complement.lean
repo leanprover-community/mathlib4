@@ -326,7 +326,7 @@ lemma exists_right_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
 
 namespace IsComplement
 
-/-- The equivalence `G ≃ S × T`, such that the inverse is  `(*) : S × T → G` -/
+/-- The equivalence `G ≃ S × T`, such that the inverse is `(*) : S × T → G` -/
 noncomputable def equiv {S T : Set G} (hST : IsComplement S T) : G ≃ S × T :=
   (Equiv.ofBijective (fun x : S × T => x.1.1 * x.2.1) hST).symm
 
@@ -491,9 +491,9 @@ theorem leftQuotientEquiv_apply {f : G ⧸ H → G} (hf : ∀ q, (f q : G ⧸ H)
   exact (leftQuotientEquiv (isComplement_range_left hf)).apply_eq_iff_eq_symm_apply.mpr (hf q).symm
 
 /-- A left transversal can be viewed as a function mapping each element of the group
-  to the chosen representative from that left coset. -/
+to the chosen representative from that left coset. -/
 @[to_additive /-- A left transversal can be viewed as a function mapping each element of the group
-  to the chosen representative from that left coset. -/]
+to the chosen representative from that left coset. -/]
 noncomputable def toLeftFun (hS : IsComplement S H) : G → S := leftQuotientEquiv hS ∘ Quotient.mk''
 
 @[to_additive]
@@ -535,9 +535,9 @@ theorem rightQuotientEquiv_apply {f : Quotient (QuotientGroup.rightRel H) → G}
   exact (rightQuotientEquiv (isComplement_range_right hf)).apply_eq_iff_eq_symm_apply.2 (hf q).symm
 
 /-- A right transversal can be viewed as a function mapping each element of the group
-  to the chosen representative from that right coset. -/
+to the chosen representative from that right coset. -/
 @[to_additive /-- A right transversal can be viewed as a function mapping each element of the group
-  to the chosen representative from that right coset. -/]
+to the chosen representative from that right coset. -/]
 noncomputable def toRightFun (hT : IsComplement H T) : G → T := rightQuotientEquiv hT ∘ .mk''
 
 @[to_additive]

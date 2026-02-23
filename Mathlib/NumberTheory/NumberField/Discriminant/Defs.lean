@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
 # Number field discriminant
+
 This file defines the discriminant of a number field.
 
 ## Main definitions
@@ -21,6 +22,7 @@ This file defines the discriminant of a number field.
 * `NumberField.discr`: the absolute discriminant of a number field.
 
 ## Tags
+
 number field, discriminant
 -/
 

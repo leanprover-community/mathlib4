@@ -396,8 +396,8 @@ theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f
     exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩
 
 /-- The embedding has closed range if the domain (and therefore the codomain) is a ring,
-  see `PrimeSpectrum.isClosedEmbedding_comap_of_surjective`.
-  On the other hand, `comap (Nat.castRingHom (ZMod 2))` does not have closed range. -/
+see `PrimeSpectrum.isClosedEmbedding_comap_of_surjective`.
+On the other hand, `comap (Nat.castRingHom (ZMod 2))` does not have closed range. -/
 theorem isEmbedding_comap_of_surjective (hf : Surjective f) : IsEmbedding (comap f) :=
   (isEmbedding_iff _).2 ⟨comap_isInducing_of_surjective _ _ hf, comap_injective_of_surjective f hf⟩
 
@@ -1036,7 +1036,7 @@ set_option backward.isDefEq.respectTransparency false in
 bijection with pairs of elements with product 0 and sum 1. (By definition, `(e₁, f₁) ≤ (e₂, f₂)`
 iff `e₁ * e₂ = e₁`.) Both elements in such pairs must be idempotents, but there may exists
 idempotents that do not form such pairs (does not have a "complement"). For example, in the
-semiring {0, 0.5, 1} with ⊔ as + and ⊓ as *, 0.5 has no complement. -/
+semiring {0, 0.5, 1} with ⊔ as + and ⊓ as \*, 0.5 has no complement. -/
 def mulZeroAddOneEquivClopens :
     {e : R × R // e.1 * e.2 = 0 ∧ e.1 + e.2 = 1} ≃o Clopens (PrimeSpectrum R) where
   toEquiv := .ofBijective

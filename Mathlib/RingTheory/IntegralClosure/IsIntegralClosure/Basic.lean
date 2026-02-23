@@ -63,7 +63,7 @@ theorem IsIntegral.inv_mem_adjoin (int : IsIntegral R x) : x⁻¹ ∈ adjoin R {
   rwa [← mul_left_cancel₀ h0 ((Subtype.ext_iff.mp h1).trans (mul_inv_cancel₀ h0).symm)]
 
 /-- The inverse of an integral element in a subalgebra of a division ring over a field
-  also lies in that subalgebra. -/
+also lies in that subalgebra. -/
 theorem IsIntegral.inv_mem (int : IsIntegral R x) (hx : x ∈ A) : x⁻¹ ∈ A :=
   adjoin_le (Set.singleton_subset_iff.mpr hx) int.inv_mem_adjoin
 
@@ -89,9 +89,9 @@ variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
 variable [Algebra R A] [Algebra R B] {f : R →+* S}
 
 /-- The [Kurosh problem](https://en.wikipedia.org/wiki/Kurosh_problem) asks to show that
-  this is still true when `A` is not necessarily commutative and `R` is a field, but it has
-  been solved in the negative. See https://arxiv.org/pdf/1706.02383.pdf for criteria for a
-  finitely generated algebraic (= integral) algebra over a field to be finite dimensional.
+this is still true when `A` is not necessarily commutative and `R` is a field, but it has
+been solved in the negative. See https://arxiv.org/pdf/1706.02383.pdf for criteria for a
+finitely generated algebraic (= integral) algebra over a field to be finite dimensional.
 
 This could be an `instance`, but we tend to go from `Module.Finite` to `IsIntegral`/`IsAlgebraic`,
 and making it an instance will cause the search to be complicated a lot.
@@ -545,7 +545,7 @@ nonrec theorem RingHom.IsIntegral.tower_bot (hg : Function.Injective g)
 
 variable (T) in
 /-- Let `T / S / R` be a tower of algebras, `T` is non-trivial and is a torsion free `S`-module,
-  then if `T` is an integral `R`-algebra, then `S` is an integral `R`-algebra. -/
+then if `T` is an integral `R`-algebra, then `S` is an integral `R`-algebra. -/
 theorem Algebra.IsIntegral.tower_bot [IsDomain S] [Algebra R S] [Algebra R T] [Algebra S T]
     [IsTorsionFree S T] [Nontrivial T] [IsScalarTower R S T]
     [h : Algebra.IsIntegral R T] : Algebra.IsIntegral R S where
@@ -570,7 +570,7 @@ theorem RingHom.IsIntegral.tower_top (h : (g.comp f).IsIntegral) : g.IsIntegral 
 
 variable (R) in
 /-- Let `T / S / R` be a tower of algebras, `T` is an integral `R`-algebra, then it is integral
-  as an `S`-algebra. -/
+as an `S`-algebra. -/
 theorem Algebra.IsIntegral.tower_top [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     [h : Algebra.IsIntegral R T] : Algebra.IsIntegral S T where
   isIntegral := by

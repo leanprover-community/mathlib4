@@ -19,6 +19,7 @@ subgroups.
 - `IsSimpleGroup G`, a class indicating that a group has exactly two normal subgroups.
 
 ## Tags
+
 subgroup, subgroups
 
 -/

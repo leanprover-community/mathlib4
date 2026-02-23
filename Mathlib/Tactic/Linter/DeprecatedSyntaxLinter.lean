@@ -105,6 +105,7 @@ public register_option linter.style.maxHeartbeats : Bool := {
 
 /-- If the input syntax is of the form `set_option <option> num in <string> cmd`,
 where `<option>` contains `maxHeartbeats`, then it returns
+
 * the `<option>`, as a name (typically, `maxHeartbeats` or `synthInstance.maxHeartbeats`);
 * the number `num` and
 * whatever is in `<string>`. Note that `<string>` can only consist of whitespace and comments.

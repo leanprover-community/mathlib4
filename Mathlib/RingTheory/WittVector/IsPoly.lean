@@ -21,9 +21,11 @@ We say that such a function `f` is a *polynomial function*.
 The power of satisfying this predicate comes from `WittVector.IsPoly.ext`.
 It shows that if `φ` and `ψ` witness that `f` and `g` are polynomial functions,
 then `f = g` not merely when `φ = ψ`, but in fact it suffices to prove
+
 ```
 ∀ n, bind₁ φ (wittPolynomial p _ n) = bind₁ ψ (wittPolynomial p _ n)
 ```
+
 (in other words, when evaluating the Witt polynomials on `φ` and `ψ`, we get the same values)
 which will then imply `φ = ψ` and hence `f = g`.
 
@@ -71,6 +73,7 @@ This no longer seems to be an issue, so that such instances can be defined direc
 
 Any lemma doing "ring equation rewriting" with polynomial functions should be tagged
 `@[ghost_simps]`, e.g.
+
 ```lean
 @[ghost_simps]
 lemma bind₁_frobenius_poly_wittPolynomial (n : ℕ) :
@@ -78,6 +81,7 @@ lemma bind₁_frobenius_poly_wittPolynomial (n : ℕ) :
 ```
 
 Proofs of identities between polynomial functions will often follow the pattern
+
 ```lean
   ghost_calc _
   <minor preprocessing>
@@ -391,10 +395,13 @@ macro_rules
 
 /-- `ghost_calc` is a tactic for proving identities between polynomial functions.
 Typically, when faced with a goal like
+
 ```lean
 ∀ (x y : 𝕎 R), verschiebung (x * frobenius y) = verschiebung x * y
 ```
+
 you can
+
 1. call `ghost_calc`
 2. do a small amount of manual work -- maybe nothing, maybe `rintro`, etc
 3. call `ghost_simp`

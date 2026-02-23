@@ -153,8 +153,8 @@ def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 
 /-- `ldiff a b` performs bitwise set difference. For each corresponding
-  pair of bits taken as Booleans, say `aᵢ` and `bᵢ`, it applies the
-  Boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
+pair of bits taken as Booleans, say `aᵢ` and `bᵢ`, it applies the
+Boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℕ → ℕ → ℕ :=
   bitwise fun a b => a && not b
 

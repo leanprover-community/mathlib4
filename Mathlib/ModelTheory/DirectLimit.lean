@@ -211,7 +211,7 @@ theorem relMap_equiv_unify {n : ℕ} (R : L.Relations n) (x : Fin n → Σˣ f) 
   relMap_unify_equiv G f R x (Classical.choose (Finite.bddAbove_range fun a => (x a).1)) i _ hi
 
 /-- The direct limit `setoid` respects the structure `sigmaStructure`, so quotienting by it
-  gives rise to a valid structure. -/
+gives rise to a valid structure. -/
 noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) where
   toStructure := sigmaStructure G f
   fun_equiv {n} {F} x y xy := by

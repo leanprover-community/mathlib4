@@ -100,6 +100,7 @@ Given the following diagram with `f` inducing, `p` surjective,
 `q` an open quotient map, and `g` injective. Suppose the image of `A` in `B` is stable
 under the equivalence mod `q`, then the coinduced topology on `C` (from `A`)
 coincides with the induced topology (from `D`).
+
 ```
 A -f→ B
 ∣     ∣

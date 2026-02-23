@@ -20,7 +20,7 @@ As with `NonUnitalRingHom`, the multiplications are not assumed to be associativ
 
 ## Main definitions
 
-  * `NonUnitalStarRingHom`
+* `NonUnitalStarRingHom`
 
 ## Implementation
 

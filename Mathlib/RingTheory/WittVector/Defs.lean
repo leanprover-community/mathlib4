@@ -51,7 +51,7 @@ The canonical example is `WittVector p (ZMod p)`,
 which is isomorphic to the `p`-adic integers `ℤ_[p]`. -/
 structure WittVector (p : ℕ) (R : Type*) where mk' ::
   /-- `x.coeff n` is the `n`th coefficient of the Witt vector `x`.
-
+  
   This concept does not have a standard name in the literature.
   -/
   coeff : ℕ → R

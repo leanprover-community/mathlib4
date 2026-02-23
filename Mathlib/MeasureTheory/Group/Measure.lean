@@ -224,7 +224,7 @@ theorem measurePreserving_div_right (μ : Measure G) [IsMulRightInvariant μ] (g
     MeasurePreserving (· / g) μ μ := by simp_rw [div_eq_mul_inv, measurePreserving_mul_right μ g⁻¹]
 
 /-- We shorten this from `measure_preimage_mul_left`, since left invariant is the preferred option
-  for measures in this formalization. -/
+for measures in this formalization. -/
 @[to_additive (attr := simp)
 /-- We shorten this from `measure_preimage_add_left`, since left invariant is the preferred option
 for measures in this formalization. -/]
@@ -730,8 +730,8 @@ section CommSemigroup
 variable [CommSemigroup G]
 
 /-- In an abelian group every left invariant measure is also right-invariant.
-  We don't declare the converse as an instance, since that would loop type-class inference, and
-  we use `IsMulLeftInvariant` as the default hypothesis in abelian groups. -/
+We don't declare the converse as an instance, since that would loop type-class inference, and
+we use `IsMulLeftInvariant` as the default hypothesis in abelian groups. -/
 @[to_additive IsAddLeftInvariant.isAddRightInvariant
 /-- In an abelian additive group every left invariant measure is also right-invariant. We don't
 declare the converse as an instance, since that would loop type-class inference, and we use

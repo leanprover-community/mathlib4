@@ -17,11 +17,11 @@ public import Mathlib.Order.DirectedInverseSystem
 ## Main results
 
 - `Field.Emb.cardinal_eq_two_pow_rank` : if `E/F` is an algebraic separable field extension
-of infinite degree, then `#(Field.Emb F E) = 2 ^ Module.rank F E`.
-This is in contrast to the case of finite degree, where `#(Field.Emb F E) = Module.rank F E`.
+  of infinite degree, then `#(Field.Emb F E) = 2 ^ Module.rank F E`.
+  This is in contrast to the case of finite degree, where `#(Field.Emb F E) = Module.rank F E`.
 
 - `Field.Emb.cardinal_eq_two_pow_sepDegree`: more generally, if `E/F` is an algebraic
-extension of infinite separable degree, then `#(Field.Emb F E) = 2 ^ Field.sepDegree F E`.
+  extension of infinite separable degree, then `#(Field.Emb F E) = 2 ^ Field.sepDegree F E`.
 
 ## Sketch of the proof
 

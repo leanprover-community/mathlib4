@@ -17,6 +17,7 @@ This file contains results on complete lattices that need more theory to develop
 ## Naming conventions
 
 In lemma names,
+
 * `sSup` is called `sSup`
 * `sInf` is called `sInf`
 * `⨆ i, s i` is called `iSup`

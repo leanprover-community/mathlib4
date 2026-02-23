@@ -65,7 +65,7 @@ section Eval₂
 variable (f : R →+* S₁) (g : σ → S₁)
 
 /-- Evaluate a polynomial `p` given a valuation `g` of all the variables
-  and a ring hom `f` from the scalar ring to the target -/
+and a ring hom `f` from the scalar ring to the target -/
 def eval₂ (p : MvPolynomial σ R) : S₁ :=
   p.sum fun s a => f a * s.prod fun n e => g n ^ e
 
@@ -703,7 +703,7 @@ variable {S A B : Type*} [CommSemiring S] [CommSemiring A] [CommSemiring B]
 variable [Algebra S R] [Algebra S A] [Algebra S B]
 
 /-- Version of `aeval` for defining algebra homs out of `MvPolynomial σ R` over a smaller base ring
-  than `R`. -/
+than `R`. -/
 def aevalTower (f : R →ₐ[S] A) (X : σ → A) : MvPolynomial σ R →ₐ[S] A :=
   { eval₂Hom (↑f) X with
     commutes' := fun r => by

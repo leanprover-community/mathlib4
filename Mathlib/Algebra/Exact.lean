@@ -17,13 +17,13 @@ public import Mathlib.LinearAlgebra.Quotient.Basic
 * For two maps `f : M → N` and `g : N → P`, with `One P`,
   `Function.MulExact f g` says that `Set.range f = Set.preimage g {1}`
 
-* For additive maps `f : M →+ N`  and `g : N →+ P`,
+* For additive maps `f : M →+ N` and `g : N →+ P`,
   `Exact f g` says that `range f = ker g`
 
-* For multiplicative maps `f : M →* N`  and `g : N →* P`,
+* For multiplicative maps `f : M →* N` and `g : N →* P`,
   `MulExact f g` says that `range f = ker g`
 
-* For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`,
+* For linear maps `f : M →ₗ[R] N` and `g : N →ₗ[R] P`,
   `Exact f g` says that `range f = ker g`
 
 ## TODO :
@@ -41,7 +41,7 @@ variable (f : M → N) (g : N → P) (g' : P → P')
 
 /-- The maps `f` and `g` form an exact pair: `g y = 1` iff `y` belongs to the image of `f`. -/
 @[to_additive Exact /-- The maps `f` and `g` form an exact pair:
-  `g y = 0` iff `y` belongs to the image of `f`. -/]
+`g y = 0` iff `y` belongs to the image of `f`. -/]
 def MulExact [One P] : Prop := ∀ y, g y = 1 ↔ y ∈ Set.range f
 
 variable {f g}

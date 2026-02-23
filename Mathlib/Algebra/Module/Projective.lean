@@ -208,7 +208,7 @@ variable {R₀ M N} [CommSemiring R₀] [Algebra R₀ R] [AddCommMonoid M] [Modu
 variable [IsScalarTower R₀ R M] [AddCommMonoid N] [Module R₀ N]
 
 /-- A variant of `Projective.iff_split` allowing for a more flexible selection of the universe
-  for the free module `M`. -/
+for the free module `M`. -/
 theorem Projective.iff_split' [Small.{w} R] [Small.{w} P] : Module.Projective R P ↔
     ∃ (M : Type w) (_ : AddCommMonoid M) (_ : Module R M) (_ : Module.Free R M)
       (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id := by
@@ -263,7 +263,7 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type v}
   exact ⟨e.toLinearMap ∘ₗ g, hg⟩
 
 /-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
-  which only requires quantifying over modules with an `AddCommGroup` instance. -/
+which only requires quantifying over modules with an `AddCommGroup` instance. -/
 theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type v} [AddCommGroup P]
     [Module R P] [Small.{v} R]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,

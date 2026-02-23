@@ -16,21 +16,28 @@ In this file, we define continuous affine equivalences, affine equivalences
 which are continuous with continuous inverse.
 
 ## Main definitions
+
 * `ContinuousAffineEquiv.refl k P`: the identity map as a `ContinuousAffineEquiv`;
+
 * `e.symm`: the inverse map of a `ContinuousAffineEquiv` as a `ContinuousAffineEquiv`;
+
 * `e.trans e'`: composition of two `ContinuousAffineEquiv`s; note that the order
   follows `mathlib`'s `CategoryTheory` convention (apply `e`, then `e'`),
   not the convention used in function composition and compositions of bundled morphisms.
 
 * `e.toHomeomorph`: the continuous affine equivalence `e` as a homeomorphism
+
 * `e.toContinuousAffineMap`: the continuous affine equivalence `e` as a continuous affine map
+
 * `ContinuousLinearEquiv.toContinuousAffineEquiv`: a continuous linear equivalence as a continuous
   affine equivalence
+
 * `ContinuousAffineEquiv.constVAdd`: `AffineEquiv.constVAdd` as a continuous affine equivalence
 
 ## TODO
+
 - equip `ContinuousAffineEquiv k P P` with a `Group` structure,
-with multiplication corresponding to composition in `AffineEquiv.group`.
+  with multiplication corresponding to composition in `AffineEquiv.group`.
 
 -/
 
@@ -98,8 +105,8 @@ theorem coe_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv = e :=
   rfl
 
 /-- See Note [custom simps projection].
-  We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections. -/
 def Simps.apply (e : P₁ ≃ᴬ[k] P₂) : P₁ → P₂ :=
   e
 
@@ -331,7 +338,7 @@ lemma _root_.ContinuousLinearEquiv.toContinuousAffineEquiv_toContinuousAffineMap
 
 variable (k P₁) in
 /-- The map `p ↦ v +ᵥ p` as a continuous affine automorphism of an affine space
-  on which addition is continuous. -/
+on which addition is continuous. -/
 def constVAdd [ContinuousConstVAdd V₁ P₁] (v : V₁) : P₁ ≃ᴬ[k] P₁ where
   toAffineEquiv := AffineEquiv.constVAdd k P₁ v
   continuous_toFun := continuous_const_vadd v

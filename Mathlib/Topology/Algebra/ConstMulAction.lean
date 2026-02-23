@@ -28,7 +28,7 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
   many `γ:Γ` move `K` to have nontrivial intersection with `L`.
 * `Homeomorph.smul`: scalar multiplication by an element of a group `Γ` acting on `T`
   is a homeomorphism of `T`.
-*`Homeomorph.smulOfNeZero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
+  \*`Homeomorph.smulOfNeZero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
   is a nonzero element of `G₀`, then scalar multiplication by `c` is a homeomorphism of `X`;
 * `Homeomorph.smul`: scalar multiplication by an element of a group `G` acting on `X`
   is a homeomorphism of `X`.
@@ -225,7 +225,7 @@ theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ 
   simp only [continuous_iff_continuousAt, continuousAt_const_smul_iff]
 
 /-- The homeomorphism given by scalar multiplication by a given element of a group `Γ` acting on
-  `T` is a homeomorphism from `T` to itself. -/
+`T` is a homeomorphism from `T` to itself. -/
 @[to_additive (attr := simps!)]
 def Homeomorph.smul (γ : G) : α ≃ₜ α where
   toEquiv := MulAction.toPerm γ
@@ -233,7 +233,7 @@ def Homeomorph.smul (γ : G) : α ≃ₜ α where
   continuous_invFun := continuous_const_smul γ⁻¹
 
 /-- The homeomorphism given by affine-addition by an element of an additive group `Γ` acting on
-  `T` is a homeomorphism from `T` to itself. -/
+`T` is a homeomorphism from `T` to itself. -/
 add_decl_doc Homeomorph.vadd
 
 @[to_additive]
@@ -557,7 +557,7 @@ instance (priority := 100) Finite.to_properlyDiscontinuousSMul [Finite Γ] :
   ProperlyDiscontinuousSMul.finite_stabilizer' Γ x
 
 /-- The quotient map by a group action is open, i.e. the quotient by a group action is an open
-  quotient. -/
+quotient. -/
 @[to_additive /-- The quotient map by a group action is open, i.e. the quotient by a group
 action is an open quotient. -/]
 theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :

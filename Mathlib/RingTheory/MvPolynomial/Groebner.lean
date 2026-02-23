@@ -24,10 +24,10 @@ Consider a family of polynomials `b : ι → MvPolynomial σ R` with invertible 
 * `MonomialOrder.div hb f` furnishes
   - a finitely supported family `g : ι →₀ MvPolynomial σ R`
   - and a “remainder” `r : MvPolynomial σ R`
-such that the three properties hold:
-  (1) One has `f = ∑ (g i) * (b i) + r`
-  (2) For every `i`, `m.degree ((g i) * (b i)` is less than or equal to that of `f`
-  (3) For every `i`, every monomial in the support of `r` is strictly smaller
+    such that the three properties hold:
+    (1) One has `f = ∑ (g i) * (b i) + r`
+    (2) For every `i`, `m.degree ((g i) * (b i)` is less than or equal to that of `f`
+    (3) For every `i`, every monomial in the support of `r` is strictly smaller
     than the leading term of `b i`,
 
 The proof is done by induction, using two standard constructions
@@ -40,7 +40,6 @@ The proof is done by induction, using two standard constructions
 * `MonomialOrder.div_set` is the variant of `MonomialOrder.div` for a set of polynomials.
 
 * `MonomialOrder.div_single` is the variant of `MonomialOrder.div` for a single polynomial.
-
 
 ## Reference : [Becker-Weispfenning1993]
 

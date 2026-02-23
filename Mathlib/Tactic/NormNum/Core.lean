@@ -32,6 +32,7 @@ subexpressions, for example `@[norm_num _ + _]` will match any addition.
 * `@[norm_num e1, e2, ...]` will match either `e1` or `e2` or ...
 
 Example:
+
 ```lean
 @[norm_num -_] def evalNeg : NormNumExt where eval {u α} e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← whnfR e | failure
@@ -162,7 +163,7 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
   (← derive e post).toSimpResult
 
 /-- Erases a name marked `norm_num` by adding it to the state's `erased` field and
-  removing it from the state's list of `Entry`s. -/
+removing it from the state's list of `Entry`s. -/
 def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
   { d with erased := d.erased.insert declName }
 
@@ -252,6 +253,7 @@ def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Contex
 open Elab Tactic in
 /--
 Elaborates a call to `norm_num only? [args]` or `norm_num1`.
+
 * `args`: the `(simpArgs)?` syntax for simp arguments
 * `loc`: the `(location)?` syntax for the optional location argument
 * `simpOnly`: true if `only` was used in `norm_num`
@@ -293,6 +295,7 @@ extending `norm_num`.
   further details).
 
 Examples:
+
 ```lean
 example : 43 ≤ 74 + (33 : ℤ) := by norm_num
 example : ¬ (7-2)/(2*3) ≥ (1:ℝ) + 2/(3^2) := by norm_num
@@ -318,6 +321,7 @@ extending `norm_num1`.
 * `norm_num1 at l` normalizes at location(s) `l`.
 
 Examples:
+
 ```lean
 example : 43 ≤ 74 + (33 : ℤ) := by norm_num1
 example : ¬ (7-2)/(2*3) ≥ (1:ℝ) + 2/(3^2) := by norm_num1

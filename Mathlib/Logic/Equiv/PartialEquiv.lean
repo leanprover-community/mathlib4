@@ -39,12 +39,14 @@ As for equivs, we register a coercion to functions and use it in our simp normal
 ## Implementation notes
 
 There are at least three possible implementations of partial equivalences:
+
 * equivs on subtypes
 * pairs of functions taking values in `Option α` and `Option β`, equal to none where the partial
   equivalence is not defined
 * pairs of functions defined everywhere, keeping the source and target as additional data
 
 Each of these implementations has pros and cons.
+
 * When dealing with subtypes, one still need to define additional API for composition and
   restriction of domains. Checking that one always belongs to the right subtype makes things very
   tedious, and leads quickly to DTT hell (as the subtype `u ∩ v` is not the "same" as `v ∩ u`, for
@@ -804,7 +806,7 @@ theorem prod_trans {η : Type*} {ε : Type*} (e : PartialEquiv α β) (f : Parti
 end Prod
 
 /-- Combine two `PartialEquiv`s using `Set.piecewise`. The source of the new `PartialEquiv` is
-`s.ite e.source e'.source = e.source ∩ s ∪ e'.source \ s`, and similarly for target.  The function
+`s.ite e.source e'.source = e.source ∩ s ∪ e'.source \ s`, and similarly for target. The function
 sends `e.source ∩ s` to `e.target ∩ t` using `e` and `e'.source \ s` to `e'.target \ t` using `e'`,
 and similarly for the inverse function. The definition assumes `e.isImage s t` and
 `e'.isImage s t`. -/

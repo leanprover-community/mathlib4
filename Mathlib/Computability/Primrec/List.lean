@@ -538,10 +538,10 @@ namespace Nat
 open List.Vector
 
 /-- An alternative inductive definition of `Primrec` which
-  does not use the pairing function on ℕ, and so has to
-  work with n-ary functions on ℕ instead of unary functions.
-  We prove that this is equivalent to the regular notion
-  in `to_prim` and `of_prim`. -/
+does not use the pairing function on ℕ, and so has to
+work with n-ary functions on ℕ instead of unary functions.
+We prove that this is equivalent to the regular notion
+in `to_prim` and `of_prim`. -/
 inductive Primrec' : ∀ {n}, (List.Vector ℕ n → ℕ) → Prop
   | zero : @Primrec' 0 fun _ => 0
   | succ : @Primrec' 1 fun v => succ v.head

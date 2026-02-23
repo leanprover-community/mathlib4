@@ -295,7 +295,7 @@ set_option backward.isDefEq.respectTransparency false in
 then `∫ᶜ x in Path.segment a b, ω x + ∫ᶜ x in Path.segment b c, ω x = ∫ᶜ x in Path.segment a c, ω x`
 for all `a b c ∈ s`.
 
-This is the key lemma used to establish that closed a `1`-form on  a convex set
+This is the key lemma used to establish that closed a `1`-form on a convex set
 has a primitive.
 -/
 theorem curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric (hs : Convex ℝ s)

@@ -281,7 +281,7 @@ theorem piLTProj_intro {l : Iio j} {f : piLT X j} (hl : l < i) :
     f l = piLTProj h f ⟨l, hl⟩ := rfl
 
 /-- The predicate that says a family of equivalences between `F j` and `piLT X j`
-  is a natural transformation. -/
+is a natural transformation. -/
 def IsNatEquiv {s : Set ι} (equiv : ∀ j : s, F j ≃ piLT X j) : Prop :=
   ∀ ⦃j k⦄ (hj : j ∈ s) (hk : k ∈ s) (h : k ≤ j) (x : F j),
     equiv ⟨k, hk⟩ (f h x) = piLTProj h (equiv ⟨j, hj⟩ x)

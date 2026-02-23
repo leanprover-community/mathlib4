@@ -19,7 +19,7 @@ Since it assumes that the ring is a cancellative `MonoidWithZero` it applies als
 for instance, to `ℕ`.
 
 The lemmas in Section `MulZeroClass` show that the `0` element is (left/right-)regular if and
-only if the `MulZeroClass` is trivial.  This is useful when figuring out stopping conditions for
+only if the `MulZeroClass` is trivial. This is useful when figuring out stopping conditions for
 regular sequences: if `0` is ever an element of a regular sequence, then we can extend the sequence
 by adding one further `0`.
 

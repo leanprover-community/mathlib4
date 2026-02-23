@@ -17,6 +17,7 @@ you're in for some trouble, and if there is another way to approach the problem 
 rely on this equality, it may be worth pursuing.
 
 You have two options:
+
 1. Use the equality `h` as one normally would in Lean (e.g. using `rw` and `subst`).
    This may immediately cause difficulties, because in category theory everything is dependently
    typed, and equations between objects quickly lead to nasty goals with `eq.rec`.
@@ -232,7 +233,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 namespace Functor
 
 /-- Proving equality between functors. This isn't an extensionality lemma,
-  because usually you don't really want to do this. -/
+because usually you don't really want to do this. -/
 theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     (h_map : ∀ X Y f,
       F.map f = eqToHom (h_obj X) ≫ G.map f ≫ eqToHom (h_obj Y).symm := by cat_disch) :

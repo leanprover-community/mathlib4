@@ -236,8 +236,8 @@ theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
 
 /-- `![a, b, ...] 1` is equal to `b`.
 
-  The simplifier needs a special lemma for length `≥ 2`, in addition to
-  `cons_val_succ`, because `1 : Fin 1 = 0 : Fin 1`.
+The simplifier needs a special lemma for length `≥ 2`, in addition to
+`cons_val_succ`, because `1 : Fin 1 = 0 : Fin 1`.
 -/
 @[simp]
 theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = u 0 :=
@@ -289,6 +289,7 @@ protected meta instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) 
   { toTypeExpr, toExpr v := PiFin.mkLiteralQ fun i => show Q($eα) from toExpr (v i) }
 
 /-! ### `bit0` and `bit1` indices
+
 The following definitions and `simp` lemmas are used to allow
 numeral-indexed element of a vector given with matrix notation to
 be extracted by `simp` in Lean 3 (even when the numeral is larger than the

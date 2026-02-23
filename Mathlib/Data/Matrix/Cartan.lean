@@ -20,6 +20,7 @@ This file defines Cartan matrices for simple Lie algebras, both the exceptional 
 ## Main definitions
 
 ### Exceptional types
+
 * `CartanMatrix.E₆` : The Cartan matrix of type E₆
 * `CartanMatrix.E₇` : The Cartan matrix of type E₇
 * `CartanMatrix.E₈` : The Cartan matrix of type E₈
@@ -27,6 +28,7 @@ This file defines Cartan matrices for simple Lie algebras, both the exceptional 
 * `CartanMatrix.G₂` : The Cartan matrix of type G₂
 
 ### Classical types
+
 * `CartanMatrix.A` : The Cartan matrix of type Aₙ₋₁ (corresponding to sl(n))
 * `CartanMatrix.B` : The Cartan matrix of type Bₙ (corresponding to so(2n+1))
 * `CartanMatrix.C` : The Cartan matrix of type Cₙ (corresponding to sp(2n))

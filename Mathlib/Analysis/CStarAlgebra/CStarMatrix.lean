@@ -21,9 +21,9 @@ it the operator norm, and this norm makes `CStarMatrix n n A` a C⋆-algebra.
 
 + `CStarMatrix m n A`: the type copy
 + `CStarMatrix.instNonUnitalCStarAlgebra`: square matrices with entries in a non-unital C⋆-algebra
-    form a non-unital C⋆-algebra
+  form a non-unital C⋆-algebra
 + `CStarMatrix.instCStarAlgebra`: square matrices with entries in a unital C⋆-algebra form a
-    unital C⋆-algebra
+  unital C⋆-algebra
 
 ## Implementation notes
 

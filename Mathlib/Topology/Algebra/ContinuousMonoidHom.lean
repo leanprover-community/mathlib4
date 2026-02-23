@@ -556,7 +556,7 @@ def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive /-- There is a unique additive monoid homomorphism between two additive monoids with
-  a unique element. -/]
+a unique element. -/]
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N]
     [TopologicalSpace M] [TopologicalSpace N] : Unique (M ≃ₜ* N) where
   default := ofUnique

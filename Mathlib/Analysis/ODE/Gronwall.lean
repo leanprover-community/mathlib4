@@ -12,8 +12,7 @@ public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 The main technical result of this file is the Grönwall-like inequality
 `norm_le_gronwallBound_of_norm_deriv_right_le`. It states that if `f : ℝ → E` satisfies `‖f a‖ ≤ δ`
-and `∀ x ∈ [a, b), ‖f' x‖ ≤ K * ‖f x‖ + ε`, then for all `x ∈ [a, b]` we have `‖f x‖ ≤ δ * exp (K *
-x) + (ε / K) * (exp (K * x) - 1)`.
+and `∀ x ∈ [a, b), ‖f' x‖ ≤ K * ‖f x‖ + ε`, then for all `x ∈ [a, b]` we have `‖f x‖ ≤ δ * exp (K * x) + (ε / K) * (exp (K * x) - 1)`.
 
 Then we use this inequality to prove some estimates on the possible rate of growth of the distance
 between two approximate or exact solutions of an ordinary differential equation.

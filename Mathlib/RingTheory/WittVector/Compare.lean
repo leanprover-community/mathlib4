@@ -80,6 +80,7 @@ theorem zmodEquivTrunc_apply {x : ZMod (p ^ n)} :
   rfl
 
 /-- The following diagram commutes:
+
 ```text
           ZMod (p^n) ----------------------------> ZMod (p^m)
             |                                        |
@@ -87,6 +88,7 @@ theorem zmodEquivTrunc_apply {x : ZMod (p ^ n)} :
             v                                        v
 TruncatedWittVector p n (ZMod p) ----> TruncatedWittVector p m (ZMod p)
 ```
+
 Here the vertical arrows are `TruncatedWittVector.zmodEquivTrunc`,
 the horizontal arrow at the top is `ZMod.castHom`,
 and the horizontal arrow at the bottom is `TruncatedWittVector.truncate`.
@@ -108,6 +110,7 @@ theorem commutes_symm' {m : ℕ} (hm : n ≤ m) (x : TruncatedWittVector p m (ZM
   simp
 
 /-- The following diagram commutes:
+
 ```text
 TruncatedWittVector p n (ZMod p) ----> TruncatedWittVector p m (ZMod p)
             |                                        |
@@ -115,6 +118,7 @@ TruncatedWittVector p n (ZMod p) ----> TruncatedWittVector p m (ZMod p)
             v                                        v
           ZMod (p^n) ----------------------------> ZMod (p^m)
 ```
+
 Here the vertical arrows are `(TruncatedWittVector.zmodEquivTrunc p _).symm`,
 the horizontal arrow at the top is `ZMod.castHom`,
 and the horizontal arrow at the bottom is `TruncatedWittVector.truncate`.

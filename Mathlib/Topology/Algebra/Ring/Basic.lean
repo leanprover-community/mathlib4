@@ -176,12 +176,12 @@ section
 variable {S : Type*} [TopologicalSpace R] [TopologicalSpace S]
 
 /-- The product topology on the Cartesian product of two topological semirings
-  makes the product into a topological semiring. -/
+makes the product into a topological semiring. -/
 instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [IsTopologicalSemiring R]
     [IsTopologicalSemiring S] : IsTopologicalSemiring (R × S) where
 
 /-- The product topology on the Cartesian product of two topological rings
-  makes the product into a topological ring. -/
+makes the product into a topological ring. -/
 instance [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [IsTopologicalRing R]
     [IsTopologicalRing S] : IsTopologicalRing (R × S) where
 
@@ -348,6 +348,7 @@ end IsTopologicalSemiring
 
 /-!
 ### Lattice of ring topologies
+
 We define a type class `RingTopology R` which endows a ring `R` with a topology such that all ring
 operations are continuous.
 
@@ -383,7 +384,7 @@ theorem ext {f g : RingTopology R} (h : f.IsOpen = g.IsOpen) : f = g :=
   toTopologicalSpace_injective <| TopologicalSpace.ext h
 
 /-- The ordering on ring topologies on the ring `R`.
-  `t ≤ s` if every set open in `s` is also open in `t` (`t` is finer than `s`). -/
+`t ≤ s` if every set open in `s` is also open in `t` (`t` is finer than `s`). -/
 instance : PartialOrder (RingTopology R) :=
   PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
 

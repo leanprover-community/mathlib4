@@ -12,14 +12,17 @@ public import Mathlib.NumberTheory.NumberField.EquivReindex
 /-!
 
 # House of an algebraic number
+
 This file defines the house of an algebraic number `α`, which is
 the largest of the modulus of its conjugates.
 
 ## References
+
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [Hua, L.-K., *Introduction to number theory*][hua1982house]
 
 ## Tags
+
 number field, algebraic number, house
 -/
 
@@ -126,7 +129,7 @@ variable [DecidableEq (K →+* ℂ)]
 
 set_option backward.privateInPublic true in
 /-- `c` is defined as the product of the maximum absolute
-  value of the entries of the inverse of the matrix `basisMatrix` and  `finrank ℚ K`. -/
+value of the entries of the inverse of the matrix `basisMatrix` and `finrank ℚ K`. -/
 private def c := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
 
 private theorem c_nonneg : 0 ≤ c K := by
@@ -155,11 +158,11 @@ theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
       simp [Embeddings.card, mul_assoc]
 
 /-- `newBasis K` defines a reindexed basis of the ring of integers of `K`,
-  adjusted by the inverse of the equivalence `equivReindex`. -/
+adjusted by the inverse of the equivalence `equivReindex`. -/
 private def newBasis := (RingOfIntegers.basis K).reindex (equivReindex K).symm
 
 /-- `supOfBasis K` calculates the supremum of the absolute values of
-  the elements in `newBasis K`. -/
+the elements in `newBasis K`. -/
 private def supOfBasis : ℝ := univ.sup' univ_nonempty
   fun r ↦ house (algebraMap (𝓞 K) K (newBasis K r))
 
@@ -172,7 +175,7 @@ private theorem supOfBasis_nonneg : 0 ≤ supOfBasis K := by
 variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
 
 /-- `a' K a` returns the integer coefficients of the basis vector in the
-  expansion of the product of an algebraic integer and a basis vectors. -/
+expansion of the product of an algebraic integer and a basis vectors. -/
 private def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r =>
   (newBasis K).repr (a k l * (newBasis K) r)
 
@@ -302,7 +305,7 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
       exacts [supOfBasis_nonneg _, le_max_right ..]
   · exact mul_nonneg (c₂_nonneg _) Apos
 
-/-- `c₁ K` is the product of `finrank ℚ K` and  `c₂ K` and depends on `K`. -/
+/-- `c₁ K` is the product of `finrank ℚ K` and `c₂ K` and depends on `K`. -/
 private def c₁ := finrank ℚ K * c₂ K
 
 include habs Apos hxbound hpq in

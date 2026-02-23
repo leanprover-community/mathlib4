@@ -10,12 +10,13 @@ public import Mathlib.Order.Directed
 
 /-!
 # Union lift
+
 This file defines `Set.iUnionLift` to glue together functions defined on each of a collection of
 sets to make a function on the Union of those sets.
 
 ## Main definitions
 
-* `Set.iUnionLift` -  Given a Union of sets `iUnion S`, define a function on any subset of the Union
+* `Set.iUnionLift` - Given a Union of sets `iUnion S`, define a function on any subset of the Union
   by defining it on each component, and proving that it agrees on the intersections.
 * `Set.liftCover` - Version of `Set.iUnionLift` for the special case that the sets cover the
   entire type.
@@ -29,9 +30,9 @@ There are also three lemmas about `iUnionLift` intended to aid with proving that
 homomorphism when defined on a Union of substructures. There is one lemma each to show that
 constants, unary functions, or binary functions are preserved. These lemmas are:
 
-*`Set.iUnionLift_const`
-*`Set.iUnionLift_unary`
-*`Set.iUnionLift_binary`
+\*`Set.iUnionLift_const`
+\*`Set.iUnionLift_unary`
+\*`Set.iUnionLift_binary`
 
 ## Tags
 
@@ -87,9 +88,9 @@ theorem preimage_iUnionLift (t : Set β) :
     rwa [iUnionLift_of_mem x hi]
 
 /-- `iUnionLift_const` is useful for proving that `iUnionLift` is a homomorphism
-  of algebraic structures when defined on the Union of algebraic subobjects.
-  For example, it could be used to prove that the lift of a collection
-  of group homomorphisms on a union of subgroups preserves `1`. -/
+of algebraic structures when defined on the Union of algebraic subobjects.
+For example, it could be used to prove that the lift of a collection
+of group homomorphisms on a union of subgroups preserves `1`. -/
 theorem iUnionLift_const (c : T) (ci : ∀ i, S i) (hci : ∀ i, (ci i : α) = c) (cβ : β)
     (h : ∀ i, f i (ci i) = cβ) : iUnionLift S f hf T hT c = cβ := by
   let ⟨i, hi⟩ := Set.mem_iUnion.1 (hT c.prop)
@@ -97,9 +98,9 @@ theorem iUnionLift_const (c : T) (ci : ∀ i, S i) (hci : ∀ i, (ci i : α) = c
   rw [iUnionLift_of_mem _ hi, ← this, h]
 
 /-- `iUnionLift_unary` is useful for proving that `iUnionLift` is a homomorphism
-  of algebraic structures when defined on the Union of algebraic subobjects.
-  For example, it could be used to prove that the lift of a collection
-  of linear_maps on a union of submodules preserves scalar multiplication. -/
+of algebraic structures when defined on the Union of algebraic subobjects.
+For example, it could be used to prove that the lift of a collection
+of linear_maps on a union of submodules preserves scalar multiplication. -/
 theorem iUnionLift_unary (u : T → T) (ui : ∀ i, S i → S i)
     (hui :
       ∀ (i) (x : S i),
@@ -116,9 +117,9 @@ theorem iUnionLift_unary (u : T → T) (ui : ∀ i, S i → S i)
   conv_lhs => rw [this, hui, iUnionLift_inclusion]
 
 /-- `iUnionLift_binary` is useful for proving that `iUnionLift` is a homomorphism
-  of algebraic structures when defined on the Union of algebraic subobjects.
-  For example, it could be used to prove that the lift of a collection
-  of group homomorphisms on a union of subgroups preserves `*`. -/
+of algebraic structures when defined on the Union of algebraic subobjects.
+For example, it could be used to prove that the lift of a collection
+of group homomorphisms on a union of subgroups preserves `*`. -/
 theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (opi : ∀ i, S i → S i → S i)
     (hopi :
       ∀ i x y,

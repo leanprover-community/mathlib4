@@ -490,9 +490,9 @@ namespace Tactic.Positivity
 
 open Tactic
 
-/-- Tactic solving goals of the form `0 ≤ x`, `0 < x` and `x ≠ 0`.  The tactic works recursively
+/-- Tactic solving goals of the form `0 ≤ x`, `0 < x` and `x ≠ 0`. The tactic works recursively
 according to the syntax of the expression `x`, if the atoms composing the expression all have
-numeric lower bounds which can be proved positive/nonnegative/nonzero by `norm_num`.  This tactic
+numeric lower bounds which can be proved positive/nonnegative/nonzero by `norm_num`. This tactic
 either closes the goal or fails.
 
 `positivity [t₁, …, tₙ]` first executes `have := t₁; …; have := tₙ` in the current goal,
@@ -500,6 +500,7 @@ then runs `positivity`. This is useful when `positivity` needs derived premises 
 for division/reciprocal, or `0 ≤ x` for real powers.
 
 Examples:
+
 ```
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
 

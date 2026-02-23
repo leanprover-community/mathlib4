@@ -16,6 +16,7 @@ This file defines the symmetric difference and bi-implication operators in (co-)
 ## Examples
 
 Some examples are
+
 * The symmetric difference of two sets is the set of elements that are in either but not both.
 * The symmetric difference on propositions is `Xor'`.
 * The symmetric difference on `Bool` is `Bool.xor`.

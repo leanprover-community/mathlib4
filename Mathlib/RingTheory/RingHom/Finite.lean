@@ -184,7 +184,7 @@ theorem multiple_mem_adjoin_of_mem_localization_adjoin [Algebra R' S] [Algebra R
   exact multiple_mem_span_of_mem_localization_span M R' _ _ hx
 
 /-- `S` is a finite `R`-algebra if there exists a set `{ r }` that
-  spans `R` such that `Sᵣ` is a finite `Rᵣ`-algebra. -/
+spans `R` such that `Sᵣ` is a finite `Rᵣ`-algebra. -/
 theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Finite := by
   classical
   rw [RingHom.ofLocalizationSpan_iff_finite]

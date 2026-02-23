@@ -52,19 +52,21 @@ instance : IsFilteredOrEmpty (filteredClosure f).FullSubcategory where
 
 namespace FilteredClosureSmall
 /-! Our goal for this section is to show that the size of the filtered closure of an `α`-indexed
-    family of objects in `C` only depends on the size of `α` and the morphism types of `C`, not on
-    the size of the objects of `C`. More precisely, if `α` lives in `Type w`, the objects of `C`
-    live in `Type u` and the morphisms of `C` live in `Type v`, then we want
-    `Small.{max v w} (FullSubcategory (filteredClosure f))`.
+family of objects in `C` only depends on the size of `α` and the morphism types of `C`, not on
+the size of the objects of `C`. More precisely, if `α` lives in `Type w`, the objects of `C`
+live in `Type u` and the morphisms of `C` live in `Type v`, then we want
+`Small.{max v w} (FullSubcategory (filteredClosure f))`.
 
-    The strategy is to define a type `AbstractFilteredClosure` which should be an inductive type
-    similar to `filteredClosure`, which lives in the correct universe and surjects onto the full
-    subcategory. The difficulty with this is that we need to define it at the same time as the map
-    `AbstractFilteredClosure → C`, as the coequalizer constructor depends on the actual morphisms
-    in `C`. This would require some kind of inductive-recursive definition, which Lean does not
-    allow. Our solution is to define a function `ℕ → Σ t : Type (max v w), t → C` by (strong)
-    induction and then take the union over all natural numbers, mimicking what one would do in a
-    set-theoretic setting. -/
+```
+The strategy is to define a type `AbstractFilteredClosure` which should be an inductive type
+similar to `filteredClosure`, which lives in the correct universe and surjects onto the full
+subcategory. The difficulty with this is that we need to define it at the same time as the map
+`AbstractFilteredClosure → C`, as the coequalizer constructor depends on the actual morphisms
+in `C`. This would require some kind of inductive-recursive definition, which Lean does not
+allow. Our solution is to define a function `ℕ → Σ t : Type (max v w), t → C` by (strong)
+induction and then take the union over all natural numbers, mimicking what one would do in a
+set-theoretic setting.
+``` -/
 
 /-- One step of the inductive procedure consists of adjoining all maxima and coequalizers of all
 objects and morphisms obtained so far. This is quite redundant, picking up many objects which we

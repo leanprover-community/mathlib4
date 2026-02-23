@@ -766,6 +766,7 @@ end Equivalence
 /-- The equivalence between arrows of the form `A ⟶ B` and `B.unop ⟶ A.unop`. Useful for building
 adjunctions.
 Note that this (definitionally) gives variants
+
 ```
 def opEquiv' (A : C) (B : Cᵒᵖ) : (Opposite.op A ⟶ B) ≃ (B.unop ⟶ A) :=
   opEquiv _ _
@@ -791,6 +792,7 @@ instance decidableEqOfUnop (A B : Cᵒᵖ) [DecidableEq (unop B ⟶ unop A)] : D
 /-- The equivalence between isomorphisms of the form `A ≅ B` and `B.unop ≅ A.unop`.
 
 Note this is definitionally the same as the other three variants:
+
 * `(Opposite.op A ≅ B) ≃ (B.unop ≅ A)`
 * `(A ≅ Opposite.op B) ≃ (B ≅ A.unop)`
 * `(Opposite.op A ≅ Opposite.op B) ≃ (B ≅ A)`

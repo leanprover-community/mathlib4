@@ -273,7 +273,7 @@ instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
     norm_mul_le x y := norm_mul_le x.down y.down }
 
 /-- Non-unital seminormed ring structure on the product of two non-unital seminormed rings,
-  using the sup norm. -/
+using the sup norm. -/
 instance Prod.nonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
     NonUnitalSeminormedRing (α × β) :=
   { seminormedAddCommGroup, instNonUnitalRing with
@@ -424,7 +424,7 @@ instance ULift.seminormedRing : SeminormedRing (ULift α) :=
   { ULift.nonUnitalSeminormedRing, ULift.ring with }
 
 /-- Seminormed ring structure on the product of two seminormed rings,
-  using the sup norm. -/
+using the sup norm. -/
 instance Prod.seminormedRing [SeminormedRing β] : SeminormedRing (α × β) :=
   { nonUnitalSeminormedRing, instRing with }
 
@@ -473,7 +473,7 @@ lemma nnnorm_commutator_units_sub_one_le (a b : αˣ) :
   simpa using norm_commutator_units_sub_one_le a b
 
 /-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
-  constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
+constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
 def RingHom.IsBounded {α : Type*} [SeminormedRing α] {β : Type*} [SeminormedRing β]
     (f : α →+* β) : Prop :=
   ∃ C : ℝ, 0 < C ∧ ∀ x : α, norm (f x) ≤ C * norm x
@@ -583,7 +583,7 @@ instance ULift.seminormedCommRing : SeminormedCommRing (ULift α) :=
   { ULift.nonUnitalSeminormedRing, ULift.commRing with }
 
 /-- Seminormed commutative ring structure on the product of two seminormed commutative rings,
-  using the sup norm. -/
+using the sup norm. -/
 instance Prod.seminormedCommRing [SeminormedCommRing β] : SeminormedCommRing (α × β) :=
   { Prod.nonUnitalSeminormedCommRing, instCommRing with }
 

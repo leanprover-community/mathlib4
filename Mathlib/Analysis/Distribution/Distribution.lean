@@ -39,6 +39,7 @@ The theory will be expanded in future PRs.
 ## Notation
 
 In the `Distributions` scope, we introduce the following notations:
+
 * `𝓓'^{n}(Ω, F)`: the space of `F`-valued distributions on the open set `Ω` with order at most
   `n : ℕ∞`.
 * `𝓓'(Ω, F)`: the space of `F`-valued distributions on the open set `Ω`, i.e `𝓓'^{⊤}(Ω, F)`.
@@ -67,6 +68,7 @@ definition we choose is studied in
 [L. Schwartz, *Théorie des distributions à valeurs vectorielles*][schwartz1957].
 
 Let us give two examples of how we plan to use this level of generality:
+
 * In the short term, this will allow us to define the *Fréchet derivative* of a distribution,
   as a continuous linear map `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, E →L[ℝ] F)`. Note that, even if `F = ℝ`,
   the derivative is naturally vector-valued.
@@ -100,6 +102,7 @@ This is not incompatible with the predicate approach: in fact, we think that suc
 should eventually become the primary interface for the order of a distribution. However, we believe
 that being able to talk about the space `𝓓'^{n}(Ω, F)` is also quite important, for the following
 reasons:
+
 * if `T : 𝓓'(Ω,F)` is a distribution whose order is at most `n`, it is natural to test it against
   a `C^n` test function (especially if `n = 0`). This means that we naturally want to consider its
   extension `T'` as an element of `𝓓'^{n}(Ω, F)`.

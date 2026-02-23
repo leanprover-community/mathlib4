@@ -75,7 +75,7 @@ theorem Periodic.div_const [DivisionSemiring α] (h : Periodic f c) (a : α) :
     Periodic (fun x => f (x / a)) (c * a) := by simpa only [div_eq_mul_inv] using h.mul_const_inv a
 
 /-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
-  `y ∈ Ico 0 c` such that `f x = f y`. -/
+`y ∈ Ico 0 c` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ico₀ [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
     [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (x) : ∃ y ∈ Ico 0 c, f x = f y :=
@@ -83,7 +83,7 @@ theorem Periodic.exists_mem_Ico₀ [AddCommGroup α] [LinearOrder α] [IsOrdered
   ⟨x - n • c, H, (h.sub_zsmul_eq n).symm⟩
 
 /-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
-  `y ∈ Ico a (a + c)` such that `f x = f y`. -/
+`y ∈ Ico a (a + c)` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ico [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
     [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (x a) : ∃ y ∈ Ico a (a + c), f x = f y :=
@@ -91,7 +91,7 @@ theorem Periodic.exists_mem_Ico [AddCommGroup α] [LinearOrder α] [IsOrderedAdd
   ⟨x + n • c, H, (h.zsmul n x).symm⟩
 
 /-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
-  `y ∈ Ioc a (a + c)` such that `f x = f y`. -/
+`y ∈ Ioc a (a + c)` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ioc [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
     [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (x a) : ∃ y ∈ Ioc a (a + c), f x = f y :=

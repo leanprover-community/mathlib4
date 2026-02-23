@@ -270,8 +270,8 @@ theorem TendstoInDistribution.prodMk_of_tendstoInMeasure_const
     simpa [tendstoInMeasure_iff_norm] using hY
 
 /-- **Slutsky's theorem** for a continuous function: if `X n` converges in distribution to `Z`,
- `Y n` converges in probability to a constant `c`, and `g` is a continuous function, then
- `g (X n, Y n)` converges in distribution to `g (Z, c)`. -/
+`Y n` converges in probability to a constant `c`, and `g` is a continuous function, then
+`g (X n, Y n)` converges in distribution to `g (Z, c)`. -/
 theorem TendstoInDistribution.continuous_comp_prodMk_of_tendstoInMeasure_const {E' F : Type*}
     {mE' : MeasurableSpace E'} [SeminormedAddCommGroup E'] [SecondCountableTopology E']
     [BorelSpace E']

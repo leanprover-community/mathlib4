@@ -21,6 +21,7 @@ goal or context already involves real numbers.
 In the example below, assumption `hn` is about natural numbers, `hk` is about integers
 and involves casting a natural number to `ℤ`, and the conclusion is about real numbers.
 The proof uses `rify` to lift both assumptions to `ℝ` before calling `linarith`.
+
 ```
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Rify
@@ -51,6 +52,7 @@ goal or context already involves real numbers.
 In the example below, assumption `hn` is about natural numbers, `hk` is about integers
 and involves casting a natural number to `ℤ`, and the conclusion is about real numbers.
 The proof uses `rify` to lift both assumptions to `ℝ` before calling `linarith`.
+
 ```
 example {n : ℕ} {k : ℤ} (hn : 8 ≤ n) (hk : 2 * k ≤ n + 2) :
     (0 : ℝ) < n - k - 1 := by
@@ -63,11 +65,13 @@ propositions, and the `push_cast` tactic to simplify the `ℝ`-valued expression
 
 `rify` can be given extra lemmas to use in simplification. This is especially useful in the
 presence of nat subtraction: passing `≤` arguments will allow `push_cast` to do more work.
+
 ```
 example (a b c : ℕ) (h : a - b < c) (hab : b ≤ a) : a < b + c := by
   rify [hab] at h ⊢
   linarith
 ```
+
 Note that `zify` or `qify` would work just as well in the above example (and `zify` is the natural
 choice since it is enough to get rid of the pathological `ℕ` subtraction). -/
 syntax (name := rify) "rify" (simpArgs)? (location)? : tactic

@@ -250,11 +250,11 @@ We will now prove the L¹ martingale convergence theorems.
 
 The L¹ martingale convergence theorem states that:
 (a) if `f` is a uniformly integrable (in the probability sense) submartingale strongly adapted to
-  the filtration `ℱ`, it converges in L¹ to an integrable function `g` which is measurable with
-  respect to `ℱ∞ := ⨆ n, ℱ n` and
+the filtration `ℱ`, it converges in L¹ to an integrable function `g` which is measurable with
+respect to `ℱ∞ := ⨆ n, ℱ n` and
 (b) if `f` is actually a martingale, `f n = 𝔼[g | ℱ n]` almost everywhere.
 (c) Finally, if `h` is integrable and measurable with respect to `ℱ∞`, `(𝔼[h | ℱ n])ₙ` is a
-  uniformly integrable martingale which converges to `h` almost everywhere and in L¹.
+uniformly integrable martingale which converges to `h` almost everywhere and in L¹.
 
 The proof is quite simple. (a) follows directly from the a.e. martingale convergence theorem
 and the Vitali convergence theorem as our definition of uniform integrability (in the probability

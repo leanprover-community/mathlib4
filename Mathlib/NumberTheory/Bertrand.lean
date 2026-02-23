@@ -154,6 +154,7 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
 
 /-- An upper bound on the central binomial coefficient used in the proof of Bertrand's postulate.
 The bound splits the prime factors of `centralBinom n` into those
+
 1. At most `sqrt (2 * n)`, which contribute at most `2 * n` for each such prime.
 2. Between `sqrt (2 * n)` and `2 * n / 3`, which contribute at most `4^(2 * n / 3)` in total.
 3. Between `2 * n / 3` and `n`, which do not exist.

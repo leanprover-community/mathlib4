@@ -37,23 +37,26 @@ measurable sets with finite measure, like `∀ s, MeasurableSet s → μ s < ∞
 The lemmas listed here don't show all hypotheses. Refer to the actual lemmas for details.
 
 Linearity:
+
 - `setToFun_zero_left : setToFun μ 0 hT f = 0`
 - `setToFun_add_left : setToFun μ (T + T') _ f = setToFun μ T hT f + setToFun μ T' hT' f`
 - `setToFun_smul_left : setToFun μ (fun s ↦ c • (T s)) (hT.smul c) f = c • setToFun μ T hT f`
 - `setToFun_zero : setToFun μ T hT (0 : α → E) = 0`
 - `setToFun_neg : setToFun μ T hT (-f) = - setToFun μ T hT f`
-If `f` and `g` are integrable:
+  If `f` and `g` are integrable:
 - `setToFun_add : setToFun μ T hT (f + g) = setToFun μ T hT f + setToFun μ T hT g`
 - `setToFun_sub : setToFun μ T hT (f - g) = setToFun μ T hT f - setToFun μ T hT g`
-If `T` satisfies `∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x`:
+  If `T` satisfies `∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x`:
 - `setToFun_smul : setToFun μ T hT (c • f) = c • setToFun μ T hT f`
 
 Other:
+
 - `setToFun_congr_ae (h : f =ᵐ[μ] g) : setToFun μ T hT f = setToFun μ T hT g`
 - `setToFun_measure_zero (h : μ = 0) : setToFun μ T hT f = 0`
 
 If the space is also an ordered additive group with an order closed topology and `T` is such that
 `0 ≤ T s x` for `0 ≤ x`, we also prove order-related properties:
+
 - `setToFun_mono_left (h : ∀ s x, T s x ≤ T' s x) : setToFun μ T hT f ≤ setToFun μ T' hT' f`
 - `setToFun_nonneg (hf : 0 ≤ᵐ[μ] f) : 0 ≤ setToFun μ T hT f`
 - `setToFun_mono (hfg : f ≤ᵐ[μ] g) : setToFun μ T hT f ≤ setToFun μ T hT g`
@@ -1024,11 +1027,11 @@ theorem norm_setToFun_le' (hT : DominatedFinMeasAdditive μ T C) (hf : Integrabl
   rw [setToFun_eq hT hf]; exact L1.norm_setToL1_le_mul_norm' hT _
 
 /-- Lebesgue dominated convergence theorem provides sufficient conditions under which almost
-  everywhere convergence of a sequence of functions implies the convergence of their image by
-  `setToFun`.
-  We could weaken the condition `bound_integrable` to require `HasFiniteIntegral bound μ` instead
-  (i.e. not requiring that `bound` is measurable), but in all applications proving integrability
-  is easier. -/
+everywhere convergence of a sequence of functions implies the convergence of their image by
+`setToFun`.
+We could weaken the condition `bound_integrable` to require `HasFiniteIntegral bound μ` instead
+(i.e. not requiring that `bound` is measurable), but in all applications proving integrability
+is easier. -/
 theorem tendsto_setToFun_of_dominated_convergence (hT : DominatedFinMeasAdditive μ T C)
     {fs : ℕ → α → E} {f : α → E} (bound : α → ℝ)
     (fs_measurable : ∀ n, AEStronglyMeasurable (fs n) μ) (bound_integrable : Integrable bound μ)

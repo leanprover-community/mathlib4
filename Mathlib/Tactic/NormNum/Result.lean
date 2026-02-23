@@ -554,9 +554,9 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
     return { expr := q(-($n' / $d')), proof? := q(IsRat.neg_to_eq $p $pn' $pd') }
 
 /-- Given `Mathlib.Meta.NormNum.Result.isBool p b`, this is the type of `p`.
-  Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,
-  then in the `true` branch `BoolResult p true` is reducibly equal to `Q($p)` and
-  in the `false` branch it is reducibly equal to `Q(¬ $p)`. -/
+Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,
+then in the `true` branch `BoolResult p true` is reducibly equal to `Q($p)` and
+in the `false` branch it is reducibly equal to `Q(¬ $p)`. -/
 abbrev BoolResult (p : Q(Prop)) (b : Bool) : Type :=
   Q(Bool.rec (¬ $p) ($p) $b)
 

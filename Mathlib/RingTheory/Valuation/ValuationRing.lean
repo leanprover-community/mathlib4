@@ -27,6 +27,7 @@ there is a natural valuation `Valuation A K` on `K` with values in `value_group 
 the image of `A` under `algebraMap A K` agrees with `(Valuation A K).integer`.
 
 We also provide the equivalence of the following notions for a domain `R` in `ValuationRing.TFAE`.
+
 1. `R` is a valuation ring.
 2. For each `x : FractionRing K`, either `x` or `x⁻¹` is in `R`.
 3. "divides" is a total relation on the elements of `R`.

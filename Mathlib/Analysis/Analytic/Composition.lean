@@ -16,8 +16,7 @@ In this file we prove that the composition of analytic functions is analytic.
 
 The argument is the following. Assume `g z = ∑' qₙ (z, ..., z)` and `f y = ∑' pₖ (y, ..., y)`. Then
 
-`g (f y) = ∑' qₙ (∑' pₖ (y, ..., y), ..., ∑' pₖ (y, ..., y))
-= ∑' qₙ (p_{i₁} (y, ..., y), ..., p_{iₙ} (y, ..., y))`.
+`g (f y) = ∑' qₙ (∑' pₖ (y, ..., y), ..., ∑' pₖ (y, ..., y)) = ∑' qₙ (p_{i₁} (y, ..., y), ..., p_{iₙ} (y, ..., y))`.
 
 For each `n` and `i₁, ..., iₙ`, define a `i₁ + ... + iₙ` multilinear function mapping
 `(y₀, ..., y_{i₁ + ... + iₙ - 1})` to
@@ -979,32 +978,40 @@ theorem CPolynomialOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
 
 In this paragraph, we prove the associativity of the composition of formal power series.
 By definition,
+
 ```
 (r.comp q).comp p n v
 = ∑_{i₁ + ... + iₖ = n} (r.comp q)ₖ (p_{i₁} (v₀, ..., v_{i₁ -1}), p_{i₂} (...), ..., p_{iₖ}(...))
 = ∑_{a : Composition n} (r.comp q) a.length (applyComposition p a v)
 ```
+
 decomposing `r.comp q` in the same way, we get
+
 ```
 (r.comp q).comp p n v
 = ∑_{a : Composition n} ∑_{b : Composition a.length}
   r b.length (applyComposition q b (applyComposition p a v))
 ```
+
 On the other hand,
+
 ```
 r.comp (q.comp p) n v = ∑_{c : Composition n} r c.length (applyComposition (q.comp p) c v)
 ```
+
 Here, `applyComposition (q.comp p) c v` is a vector of length `c.length`, whose `i`-th term is
 given by `(q.comp p) (c.blocksFun i) (v_l, v_{l+1}, ..., v_{m-1})` where `{l, ..., m-1}` is the
 `i`-th block in the composition `c`, of length `c.blocksFun i` by definition. To compute this term,
 we expand it as `∑_{dᵢ : Composition (c.blocksFun i)} q dᵢ.length (applyComposition p dᵢ v')`,
 where `v' = (v_l, v_{l+1}, ..., v_{m-1})`. Therefore, we get
+
 ```
 r.comp (q.comp p) n v =
 ∑_{c : Composition n} ∑_{d₀ : Composition (c.blocksFun 0),
   ..., d_{c.length - 1} : Composition (c.blocksFun (c.length - 1))}
   r c.length (fun i ↦ q dᵢ.length (applyComposition p dᵢ v'ᵢ))
 ```
+
 To show that these terms coincide, we need to explain how to reindex the sums to put them in
 bijection (and then the terms we are summing will correspond to each other). Suppose we have a
 composition `a` of `n`, and a composition `b` of `a.length`. Then `b` indicates how to group

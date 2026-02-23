@@ -45,6 +45,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -232,7 +233,7 @@ variable {H K : Subgroup G}
 variable (H)
 
 /-- A subgroup is characteristic if it is fixed by all automorphisms.
-  Several equivalent conditions are provided by lemmas of the form `Characteristic.iff...` -/
+Several equivalent conditions are provided by lemmas of the form `Characteristic.iff...` -/
 structure Characteristic : Prop where
   /-- `H` is fixed by all automorphisms -/
   fixed : ∀ ϕ : G ≃* G, H.comap ϕ.toMonoidHom = H
@@ -249,7 +250,7 @@ namespace AddSubgroup
 variable (H : AddSubgroup A)
 
 /-- An `AddSubgroup` is characteristic if it is fixed by all automorphisms.
-  Several equivalent conditions are provided by lemmas of the form `Characteristic.iff...` -/
+Several equivalent conditions are provided by lemmas of the form `Characteristic.iff...` -/
 structure Characteristic : Prop where
   /-- `H` is fixed by all automorphisms -/
   fixed : ∀ ϕ : A ≃+ A, H.comap ϕ.toAddMonoidHom = H
@@ -623,7 +624,7 @@ open MonoidHom
 variable {N : Type*} [Group N] (f : G →* N)
 
 /-- The preimage of the normalizer is equal to the normalizer of the preimage of a surjective
-  function. -/
+function. -/
 @[to_additive
       /-- The preimage of the normalizer is equal to the normalizer of the preimage of
       a surjective function. -/]
@@ -644,10 +645,10 @@ theorem map_equiv_normalizer_eq (H : Subgroup G) (f : G ≃* N) :
   simp
 
 /-- The image of the normalizer is equal to the normalizer of the image of a bijective
-  function. -/
+function. -/
 @[to_additive
       /-- The image of the normalizer is equal to the normalizer of the image of a bijective
-        function. -/]
+      function. -/]
 theorem map_normalizer_eq_of_bijective (H : Subgroup G) {f : G →* N} (hf : Function.Bijective f) :
     H.normalizer.map f = (H.map f).normalizer :=
   map_equiv_normalizer_eq H (MulEquiv.ofBijective f hf)
@@ -701,10 +702,12 @@ See `MonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
 -/
 @[to_additive
       /-- `liftOfRightInverse f f_inv hf g hg` is the unique additive group homomorphism `φ`
+      
       * such that `φ.comp f = g` (`AddMonoidHom.liftOfRightInverse_comp`),
       * where `f : G₁ →+ G₂` has a RightInverse `f_inv` (`hf`),
       * and `g : G₂ →+ G₃` satisfies `hg : f.ker ≤ g.ker`.
-      See `AddMonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
+        See `AddMonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
+      
       ```
          G₁.
          |  \

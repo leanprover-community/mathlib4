@@ -143,7 +143,7 @@ section BijectionInverse
 variable [Fintype α] [DecidableEq β] {f : α → β}
 
 /-- `bijInv f` is the unique inverse to a bijection `f`. This acts
-  as a computable alternative to `Function.invFun`. -/
+as a computable alternative to `Function.invFun`. -/
 def bijInv (f_bij : Bijective f) (b : β) : α :=
   Fintype.choose (fun a => f a = b) (f_bij.existsUnique b)
 

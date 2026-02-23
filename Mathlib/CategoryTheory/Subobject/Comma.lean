@@ -19,10 +19,12 @@ and `S : D` as a subtype of the subobjects of `A.right`. We deduce that `Structu
 well-powered if `C` is.
 
 ## Main declarations
+
 * `StructuredArrow.subobjectEquiv`: the order-equivalence between `Subobject A` and a subtype of
   `Subobject A.right`.
 
 ## Implementation notes
+
 Our computation requires that `C` has all limits and `T` preserves all limits. Furthermore, we
 require that the morphisms of `C` and `D` are in the same universe. It is possible that both of
 these requirements can be relaxed by refining the results about limits in comma categories.
@@ -49,7 +51,7 @@ namespace StructuredArrow
 variable {S : D} {T : C ⥤ D}
 
 /-- Every subobject of a structured arrow can be projected to a subobject of the underlying
-    object. -/
+object. -/
 def projectSubobject [HasFiniteLimits C] [PreservesFiniteLimits T] {A : StructuredArrow S T} :
     Subobject A → Subobject A.right := by
   refine Subobject.lift (fun P f hf => Subobject.mk f.right) ?_
@@ -72,8 +74,8 @@ theorem projectSubobject_factors [HasFiniteLimits C] [PreservesFiniteLimits T]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A subobject of the underlying object of a structured arrow can be lifted to a subobject of
-    the structured arrow, provided that there is a morphism making the subobject into a structured
-    arrow. -/
+the structured arrow, provided that there is a morphism making the subobject into a structured
+arrow. -/
 @[simp]
 def liftSubobject {A : StructuredArrow S T} (P : Subobject A.right) {q}
     (hq : q ≫ T.map P.arrow = A.hom) : Subobject A :=
@@ -81,7 +83,7 @@ def liftSubobject {A : StructuredArrow S T} (P : Subobject A.right) {q}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Projecting and then lifting a subobject recovers the original subobject, because there is at
-    most one morphism making the projected subobject into a structured arrow. -/
+most one morphism making the projected subobject into a structured arrow. -/
 theorem lift_projectSubobject [HasFiniteLimits C] [PreservesFiniteLimits T]
     {A : StructuredArrow S T} :
     ∀ (P : Subobject A) {q} (hq : q ≫ T.map (projectSubobject P).arrow = A.hom),
@@ -97,8 +99,8 @@ theorem lift_projectSubobject [HasFiniteLimits C] [PreservesFiniteLimits T]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `A : S → T.obj B` is a structured arrow for `S : D` and `T : C ⥤ D`, then we can explicitly
-    describe the subobjects of `A` as the subobjects `P` of `B` in `C` for which `A.hom` factors
-    through the image of `P` under `T`. -/
+describe the subobjects of `A` as the subobjects `P` of `B` in `C` for which `A.hom` factors
+through the image of `P` under `T`. -/
 def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : StructuredArrow S T) :
     Subobject A ≃o { P : Subobject A.right // ∃ q, q ≫ T.map P.arrow = A.hom } where
   toFun P := ⟨projectSubobject P, projectSubobject_factors P⟩
@@ -117,7 +119,7 @@ def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : Structured
       exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
 
 /-- If `C` is well-powered and complete and `T` preserves limits, then `StructuredArrow S T` is
-    well-powered. -/
+well-powered. -/
 instance wellPowered_structuredArrow [LocallySmall.{w} C]
     [WellPowered.{w} C] [HasFiniteLimits C] [PreservesFiniteLimits T] :
     WellPowered.{w} (StructuredArrow S T) where
@@ -130,7 +132,7 @@ namespace CostructuredArrow
 variable {S : C ⥤ D} {T : D}
 
 /-- Every quotient of a costructured arrow can be projected to a quotient of the underlying
-    object. -/
+object. -/
 def projectQuotient [HasFiniteColimits C] [PreservesFiniteColimits S] {A : CostructuredArrow S T} :
     Subobject (op A) → Subobject (op A.left) := by
   refine Subobject.lift (fun P f hf => Subobject.mk f.unop.left.op) ?_
@@ -158,8 +160,8 @@ theorem projectQuotient_factors [HasFiniteColimits C] [PreservesFiniteColimits S
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A quotient of the underlying object of a costructured arrow can be lifted to a quotient of
-    the costructured arrow, provided that there is a morphism making the quotient into a
-    costructured arrow. -/
+the costructured arrow, provided that there is a morphism making the quotient into a
+costructured arrow. -/
 @[simp]
 def liftQuotient {A : CostructuredArrow S T} (P : Subobject (op A.left)) {q}
     (hq : S.map P.arrow.unop ≫ q = A.hom) : Subobject (op A) :=
@@ -178,7 +180,7 @@ theorem unop_left_comp_underlyingIso_hom_unop {A : CostructuredArrow S T}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Projecting and then lifting a quotient recovers the original quotient, because there is at most
-    one morphism making the projected quotient into a costructured arrow. -/
+one morphism making the projected quotient into a costructured arrow. -/
 theorem lift_projectQuotient [HasFiniteColimits C] [PreservesFiniteColimits S]
     {A : CostructuredArrow S T} :
     ∀ (P : Subobject (op A)) {q} (hq : S.map (projectQuotient P).arrow.unop ≫ q = A.hom),
@@ -206,8 +208,8 @@ theorem unop_left_comp_ofMkLEMk_unop {A : CostructuredArrow S T} {P Q : (Costruc
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `A : S.obj B ⟶ T` is a costructured arrow for `S : C ⥤ D` and `T : D`, then we can
-    explicitly describe the quotients of `A` as the quotients `P` of `B` in `C` for which `A.hom`
-    factors through the image of `P` under `S`. -/
+explicitly describe the quotients of `A` as the quotients `P` of `B` in `C` for which `A.hom`
+factors through the image of `P` under `S`. -/
 def quotientEquiv [HasFiniteColimits C] [PreservesFiniteColimits S] (A : CostructuredArrow S T) :
     Subobject (op A) ≃o { P : Subobject (op A.left) // ∃ q, S.map P.arrow.unop ≫ q = A.hom } where
   toFun P := ⟨projectQuotient P, projectQuotient_factors P⟩
@@ -234,7 +236,7 @@ def quotientEquiv [HasFiniteColimits C] [PreservesFiniteColimits S] (A : Costruc
           using congr_arg CommaMorphism.left this
 
 /-- If `C` is well-copowered and cocomplete and `S` preserves colimits, then
-    `CostructuredArrow S T` is well-copowered. -/
+`CostructuredArrow S T` is well-copowered. -/
 instance well_copowered_costructuredArrow [LocallySmall.{w} C] [WellPowered.{w} Cᵒᵖ]
     [HasFiniteColimits C] [PreservesFiniteColimits S] :
     WellPowered.{w} (CostructuredArrow S T)ᵒᵖ where

@@ -18,6 +18,7 @@ public meta section
 namespace Lean.Elab.Command
 
 /-- Adds the name to the namespace, `_root_`-aware.
+
 ```
 resolveNamespace `A `B.b == `A.B.b
 resolveNamespace `A `_root_.B.c == `B.c

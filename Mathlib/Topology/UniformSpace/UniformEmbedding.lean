@@ -261,12 +261,12 @@ theorem isComplete_image_iff {m : α → β} {s : Set α} (hm : IsUniformInducin
     hm.cauchy_map_iff, exists_mem_image, map_le_iff_le_comap, hm.isInducing.nhds_eq_comap]
 
 /-- If `f : X → Y` is an `IsUniformInducing` map, the image `f '' s` of a set `s` is complete
-  if and only if `s` is complete. -/
+if and only if `s` is complete. -/
 theorem IsUniformInducing.isComplete_iff {f : α → β} {s : Set α} (hf : IsUniformInducing f) :
     IsComplete (f '' s) ↔ IsComplete s := isComplete_image_iff hf
 
 /-- If `f : X → Y` is an `IsUniformEmbedding`, the image `f '' s` of a set `s` is complete
-  if and only if `s` is complete. -/
+if and only if `s` is complete. -/
 theorem IsUniformEmbedding.isComplete_iff {f : α → β} {s : Set α} (hf : IsUniformEmbedding f) :
     IsComplete (f '' s) ↔ IsComplete s := hf.isUniformInducing.isComplete_iff
 

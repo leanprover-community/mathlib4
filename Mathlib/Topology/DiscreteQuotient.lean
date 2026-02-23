@@ -19,14 +19,15 @@ denoted `DiscreteQuotient X`. To avoid quantifying over types, we model such
 quotients as setoids whose equivalence classes are clopen.
 
 ## Definitions
+
 1. `DiscreteQuotient X` is the type of discrete quotients of `X`.
-  It is endowed with a coercion to `Type`, which is defined as the
-  quotient associated to the setoid in question, and each such quotient
-  is endowed with the discrete topology.
+   It is endowed with a coercion to `Type`, which is defined as the
+   quotient associated to the setoid in question, and each such quotient
+   is endowed with the discrete topology.
 2. Given `S : DiscreteQuotient X`, the projection `X → S` is denoted
-  `S.proj`.
+   `S.proj`.
 3. When `X` is compact and `S : DiscreteQuotient X`, the space `S` is
-  endowed with a `Fintype` instance.
+   endowed with a `Fintype` instance.
 
 ## Order structure
 
@@ -51,14 +52,15 @@ Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LEComap f A B` for
 The two main results proved in this file are:
 
 1. `DiscreteQuotient.eq_of_forall_proj_eq` which states that when `X` is compact, T₂, and totally
-  disconnected, any two elements of `X` are equal if their projections in `Q` agree for all
-  `Q : DiscreteQuotient X`.
+   disconnected, any two elements of `X` are equal if their projections in `Q` agree for all
+   `Q : DiscreteQuotient X`.
 
 2. `DiscreteQuotient.exists_of_compat` which states that when `X` is compact, then any
-  system of elements of `Q` as `Q : DiscreteQuotient X` varies, which is compatible with
-  respect to `DiscreteQuotient.ofLE`, must arise from some element of `X`.
+   system of elements of `Q` as `Q : DiscreteQuotient X` varies, which is compatible with
+   respect to `DiscreteQuotient.ofLE`, must arise from some element of `X`.
 
 ## Remarks
+
 The constructions in this file will be used to show that any profinite space is a limit
 of finite discrete spaces.
 -/

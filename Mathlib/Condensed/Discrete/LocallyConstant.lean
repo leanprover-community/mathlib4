@@ -42,7 +42,7 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
   Here it is important that we set everything up in such a way that the `Sᵢ` are literally subtypes
   of `S`.
 
-* `incl_of_counitAppApp`: given  `S`, `Y` and `f : LocallyConstant S Y(*)` like above, we have
+* `incl_of_counitAppApp`: given `S`, `Y` and `f : LocallyConstant S Y(*)` like above, we have
   `Y(ιᵢ)(ε_{S, Y}(f)) = gᵢ(yᵢ)` where `ε` denotes the counit and the other notation is like above.
 
 ## Main definitions
@@ -50,6 +50,7 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
 * `CompHausLike.LocallyConstant.functor`: the functor from the category of sets to the category of
   sheaves for the coherent topology on `CompHausLike P`, which takes a set `X` to
   `LocallyConstant - X`
+
   - `CondensedSet.LocallyConstant.functor` is the above functor in the case of condensed sets.
   - `LightCondSet.LocallyConstant.functor` is the above functor in the case of light condensed sets.
 

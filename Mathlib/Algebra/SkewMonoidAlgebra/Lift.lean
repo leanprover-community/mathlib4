@@ -39,7 +39,7 @@ variable [MulSemiringAction G k] [SMulCommClass G k k]
 variable (k G A)
 
 /-- Any monoid homomorphism `G →* A` can be lifted to an algebra homomorphism
-  `SkewMonoidAlgebra k G →ₐ[k] A`. -/
+`SkewMonoidAlgebra k G →ₐ[k] A`. -/
 def lift : (G →* A) ≃ (AlgHom k (SkewMonoidAlgebra k G) A) where
   invFun f := (f : SkewMonoidAlgebra k G →* A).comp (of k G)
   toFun F := by
@@ -81,7 +81,7 @@ theorem lift_unique' (F : AlgHom k (SkewMonoidAlgebra k G) A) :
   ((lift k G A).apply_symm_apply F).symm
 
 /-- Decomposition of a `k`-algebra homomorphism from `SkewMonoidAlgebra k G` by
-  its values on `F (single a 1)`. -/
+its values on `F (single a 1)`. -/
 theorem lift_unique (F : AlgHom k (SkewMonoidAlgebra k G) A)
     (f : SkewMonoidAlgebra k G) : F f = f.sum fun a b ↦ b • F (single a 1) := by
   conv_lhs =>
@@ -175,8 +175,8 @@ variable [Monoid G] [Monoid H] [Semiring A] [CommSemiring k] [Algebra k A] [MulS
   [MulSemiringAction H A] [SMulCommClass G k A] [SMulCommClass H k A]
 
 /-- If `e : G ≃* H` is a multiplicative equivalence between two monoids and
- ` ∀ (a : G) (x : A), a • x = (e a) • x`, then `SkewMonoidAlgebra.domCongr e` is an
-  algebra equivalence between their skew monoid algebras. -/
+` ∀ (a : G) (x : A), a • x = (e a) • x`, then `SkewMonoidAlgebra.domCongr e` is an
+algebra equivalence between their skew monoid algebras. -/
 def domCongrAlg {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
     SkewMonoidAlgebra A G ≃ₐ[k] SkewMonoidAlgebra A H :=
   AlgEquiv.ofLinearEquiv

@@ -68,8 +68,8 @@ theorem restrict_apply₀ (ht : NullMeasurableSet t (μ.restrict s)) : μ.restri
     coe_toOuterMeasure]
 
 /-- If `t` is a measurable set, then the measure of `t` with respect to the restriction of
-  the measure to `s` equals the outer measure of `t ∩ s`. An alternate version requiring that `s`
-  be measurable instead of `t` exists as `Measure.restrict_apply'`. -/
+the measure to `s` equals the outer measure of `t ∩ s`. An alternate version requiring that `s`
+be measurable instead of `t` exists as `Measure.restrict_apply'`. -/
 @[simp]
 theorem restrict_apply (ht : MeasurableSet t) : μ.restrict s t = μ (t ∩ s) :=
   restrict_apply₀ ht.nullMeasurableSet
@@ -415,7 +415,7 @@ theorem QuasiMeasurePreserving.restrict {ν : Measure β} {f : α → β}
 /-! ### Extensionality results -/
 
 /-- Two measures are equal if they have equal restrictions on a spanning collection of sets
-  (formulated using `Union`). -/
+(formulated using `Union`). -/
 theorem ext_iff_of_iUnion_eq_univ [Countable ι] {s : ι → Set α} (hs : ⋃ i, s i = univ) :
     μ = ν ↔ ∀ i, μ.restrict (s i) = ν.restrict (s i) := by
   rw [← restrict_iUnion_congr, hs, restrict_univ, restrict_univ]
@@ -423,7 +423,7 @@ theorem ext_iff_of_iUnion_eq_univ [Countable ι] {s : ι → Set α} (hs : ⋃ i
 alias ⟨_, ext_of_iUnion_eq_univ⟩ := ext_iff_of_iUnion_eq_univ
 
 /-- Two measures are equal if they have equal restrictions on a spanning collection of sets
-  (formulated using `biUnion`). -/
+(formulated using `biUnion`). -/
 theorem ext_iff_of_biUnion_eq_univ {S : Set ι} {s : ι → Set α} (hc : S.Countable)
     (hs : ⋃ i ∈ S, s i = univ) : μ = ν ↔ ∀ i ∈ S, μ.restrict (s i) = ν.restrict (s i) := by
   rw [← restrict_biUnion_congr hc, hs, restrict_univ, restrict_univ]
@@ -431,7 +431,7 @@ theorem ext_iff_of_biUnion_eq_univ {S : Set ι} {s : ι → Set α} (hc : S.Coun
 alias ⟨_, ext_of_biUnion_eq_univ⟩ := ext_iff_of_biUnion_eq_univ
 
 /-- Two measures are equal if they have equal restrictions on a spanning collection of sets
-  (formulated using `sUnion`). -/
+(formulated using `sUnion`). -/
 theorem ext_iff_of_sUnion_eq_univ {S : Set (Set α)} (hc : S.Countable) (hs : ⋃₀ S = univ) :
     μ = ν ↔ ∀ s ∈ S, μ.restrict s = ν.restrict s :=
   ext_iff_of_biUnion_eq_univ hc <| by rwa [← sUnion_eq_biUnion]
@@ -458,8 +458,8 @@ theorem ext_of_generateFrom_of_cover {S T : Set (Set α)} (h_gen : ‹_› = gen
     simp only [measure_iUnion hfd hfm, ihf]
 
 /-- Two measures are equal if they are equal on the π-system generating the σ-algebra,
-  and they are both finite on an increasing spanning sequence of sets in the π-system.
-  This lemma is formulated using `sUnion`. -/
+and they are both finite on an increasing spanning sequence of sets in the π-system.
+This lemma is formulated using `sUnion`. -/
 theorem ext_of_generateFrom_of_cover_subset {S T : Set (Set α)} (h_gen : ‹_› = generateFrom S)
     (h_inter : IsPiSystem S) (h_sub : T ⊆ S) (hc : T.Countable) (hU : ⋃₀ T = univ)
     (htop : ∀ s ∈ T, μ s ≠ ∞) (h_eq : ∀ s ∈ S, μ s = ν s) : μ = ν := by
@@ -469,9 +469,9 @@ theorem ext_of_generateFrom_of_cover_subset {S T : Set (Set α)} (h_gen : ‹_�
   · exact h_eq _ (h_inter _ hs _ (h_sub ht) H)
 
 /-- Two measures are equal if they are equal on the π-system generating the σ-algebra,
-  and they are both finite on an increasing spanning sequence of sets in the π-system.
-  This lemma is formulated using `iUnion`.
-  `FiniteSpanningSetsIn.ext` is a reformulation of this lemma. -/
+and they are both finite on an increasing spanning sequence of sets in the π-system.
+This lemma is formulated using `iUnion`.
+`FiniteSpanningSetsIn.ext` is a reformulation of this lemma. -/
 theorem ext_of_generateFrom_of_iUnion (C : Set (Set α)) (B : ℕ → Set α) (hA : ‹_› = generateFrom C)
     (hC : IsPiSystem C) (h1B : ⋃ i, B i = univ) (h2B : ∀ i, B i ∈ C) (hμB : ∀ i, μ (B i) ≠ ∞)
     (h_eq : ∀ s ∈ C, μ s = ν s) : μ = ν := by

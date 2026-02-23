@@ -258,7 +258,7 @@ alias range_specComap_of_surjective := range_comap_of_surjective
 variable {S}
 
 /-- Let `f : R →+* S` be a surjective ring homomorphism, then `Spec S` is order-isomorphic to `Z(I)`
-  where `I = ker f`. -/
+where `I = ker f`. -/
 noncomputable def Ideal.primeSpectrumOrderIsoZeroLocusOfSurj (hf : Surjective f) {I : Ideal R}
     (hI : RingHom.ker f = I) : PrimeSpectrum S ≃o (PrimeSpectrum.zeroLocus (R := R) I) where
   toFun p := ⟨p.comap f, hI.symm.trans_le (Ideal.ker_le_comap f)⟩

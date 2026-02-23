@@ -21,14 +21,17 @@ if it is real differentiable at that point and its differential is a conformal l
 * `Conformal`: maps that are conformal at every point
 
 ## Main results
+
 * The conformality of the composition of two conformal maps, the identity map
   and multiplications by nonzero constants
 * `conformalAt_iff_isConformalMap_fderiv`: an equivalent definition of the conformality of a map
 
 In `Analysis.Calculus.Conformal.InnerProduct`:
+
 * `conformalAt_iff`: an equivalent definition of the conformality of a map
 
 In `Geometry.Euclidean.Angle.Unoriented.Conformal`:
+
 * `ConformalAt.preserves_angle`: if a map is conformal at `x`, then its differential preserves
   all angles at `x`
 

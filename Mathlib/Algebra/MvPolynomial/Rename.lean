@@ -27,7 +27,7 @@ As in other polynomial files, we typically use the notation:
 + `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
 
 + `r : R` elements of the coefficient ring
 
@@ -134,8 +134,8 @@ variable {f : σ → τ} (hf : Function.Injective f)
 
 open Classical in
 /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
-  `MvPolynomial.killCompl hf` is the `AlgHom` from `R[τ]` to `R[σ]` that is left inverse to
-  `rename f : R[σ] → R[τ]` and sends the variables in the complement of the range of `f` to `0`. -/
+`MvPolynomial.killCompl hf` is the `AlgHom` from `R[τ]` to `R[σ]` that is left inverse to
+`rename f : R[σ] → R[τ]` and sends the variables in the complement of the range of `f` to `0`. -/
 def killCompl : MvPolynomial τ R →ₐ[R] MvPolynomial σ R :=
   aeval fun i => if h : i ∈ Set.range f then X <| (Equiv.ofInjective f hf).symm ⟨i, h⟩ else 0
 
@@ -258,9 +258,9 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `exists_finset_rename` for two polynomials at once: for any two polynomials `p₁`, `p₂` in a
-  polynomial semiring `R[σ]` of possibly infinitely many variables, `exists_finset_rename₂` yields
-  a finite subset `s` of `σ` such that both `p₁` and `p₂` are contained in the polynomial semiring
-  `R[s]` of finitely many variables. -/
+polynomial semiring `R[σ]` of possibly infinitely many variables, `exists_finset_rename₂` yields
+a finite subset `s` of `σ` such that both `p₁` and `p₂` are contained in the polynomial semiring
+`R[s]` of finitely many variables. -/
 theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
     ∃ (s : Finset σ) (q₁ q₂ : MvPolynomial s R), p₁ = rename (↑) q₁ ∧ p₂ = rename (↑) q₂ := by
   obtain ⟨s₁, q₁, rfl⟩ := exists_finset_rename p₁

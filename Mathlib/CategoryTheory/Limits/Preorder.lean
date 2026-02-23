@@ -12,6 +12,7 @@ public import Mathlib.Order.Bounds.Defs
 # (Co)limits in a preorder category
 
 We provide basic results about (co)limits in the associated category of a preordered type.
+
 - We show that a functor `F` has a (co)limit iff it has a greatest lower bound (least upper bound).
 - We show maximal (minimal) elements correspond to terminal (initial) objects.
 - We show that (co)products correspond to infima (suprema).

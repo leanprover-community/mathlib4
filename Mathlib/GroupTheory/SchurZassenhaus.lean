@@ -140,6 +140,7 @@ variable {G : Type u} [Group G] {N : Subgroup G} [Normal N]
 include h1 h3
 
 /-! We will arrive at a contradiction via the following steps:
+
 * step 0: `N` (the normal Hall subgroup) is nontrivial.
 * step 1: If `K` is a subgroup of `G` with `K ⊔ N = ⊤`, then `K = ⊤`.
 * step 2: `N` is a minimal normal subgroup, phrased in terms of subgroups of `G`.
@@ -271,8 +272,8 @@ private theorem exists_right_complement'_of_coprime_aux' [Finite G] (hG : Nat.ca
   exact not_exists_of_forall_not h3 (exists_right_complement'_of_coprime_aux hN)
 
 /-- **Schur-Zassenhaus** for normal subgroups:
-  If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a
-  subgroup `K` which is a (right) complement of `H`. -/
+If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a
+subgroup `K` which is a (right) complement of `H`. -/
 theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
     (hN : Nat.Coprime (Nat.card N) N.index) : ∃ H : Subgroup G, IsComplement' N H := by
   by_cases hN1 : Nat.card N = 0
@@ -291,8 +292,8 @@ theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
   exact exists_right_complement'_of_coprime_aux' rfl hN
 
 /-- **Schur-Zassenhaus** for normal subgroups:
-  If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a
-  subgroup `K` which is a (left) complement of `H`. -/
+If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a
+subgroup `K` which is a (left) complement of `H`. -/
 theorem exists_left_complement'_of_coprime {N : Subgroup G} [N.Normal]
     (hN : Nat.Coprime (Nat.card N) N.index) : ∃ H : Subgroup G, IsComplement' H N :=
   Exists.imp (fun _ => IsComplement'.symm) (exists_right_complement'_of_coprime hN)

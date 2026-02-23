@@ -14,10 +14,12 @@ public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 We show the irreducibility of root systems of simple Lie algebras.
 
 ## Main definitions
+
 * `LieAlgebra.IsKilling.invtSubmoduleToLieIdeal`: constructs a Lie ideal from an invariant
   submodule of the dual space
 
 ## Main results
+
 * `LieAlgebra.IsKilling.instIsIrreducible`: the root system of a simple Lie algebra is irreducible
 -/
 

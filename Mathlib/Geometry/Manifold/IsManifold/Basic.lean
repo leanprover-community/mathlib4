@@ -43,6 +43,7 @@ but add these assumptions later as needed. (Quite a few results still do not req
   a shortcut for `HasGroupoid M (contDiffGroupoid n I)`.
 
 We define a few constructions of smooth manifolds:
+
 * every empty type is a smooth manifold
 * `IsManifold.of_discreteTopology`: a discrete space is a smooth manifold
   (over the trivial model with corners on the trivial space)
@@ -50,23 +51,20 @@ We define a few constructions of smooth manifolds:
 * the disjoint union of two manifolds (over the same charted space)
 
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
-* `modelWithCornersSelf n :
-  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanSpace n)` for the model space used to
+
+* `modelWithCornersSelf n : ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanSpace n)` for the model space used to
   define `n`-dimensional real manifolds without boundary
   (with notation `𝓡 n` in the scope `Manifold`)
-* `modelWithCornersEuclideanHalfSpace n :
-  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
+* `modelWithCornersEuclideanHalfSpace n : ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
   `Manifold`)
-* `modelWithCornersEuclideanQuadrant n :
-  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
+* `modelWithCornersEuclideanQuadrant n : ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 With these definitions at hand, to invoke an `n`-dimensional `C^∞` real manifold without boundary,
 one could use
 
-  `variable {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
-   [IsManifold (𝓡 n) ∞ M]`.
+`variable {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]    [IsManifold (𝓡 n) ∞ M]`.
 
 However, this is not the recommended way: a theorem proved using this assumption would not apply
 for instance to the tangent space of such a manifold, which is modelled on
@@ -77,9 +75,7 @@ In the same way, it would not apply to product manifolds, modelled on
 The right invocation does not focus on one specific construction, but on all constructions sharing
 the right properties, like
 
-  `variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  {I : ModelWithCorners ℝ E E} [I.Boundaryless]
-  {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [IsManifold I ∞ M]`
+`variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]   {I : ModelWithCorners ℝ E E} [I.Boundaryless]   {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [IsManifold I ∞ M]`
 
 Here, `I.Boundaryless` is a typeclass property ensuring that there is no boundary (this is for
 instance the case for `modelWithCornersSelf`, or products of these). Note that one could consider

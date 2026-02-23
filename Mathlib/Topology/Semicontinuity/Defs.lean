@@ -31,12 +31,14 @@ functions.
 ## Main definitions and results
 
 We introduce 4 generic definitions related to semicontinuity:
+
 * `SemicontinuousWithinAt r s x`
 * `SemicontinuousAt r x`
 * `SemicontinuousOn r s`
 * `Semicontinuous r`
 
 We build a basic API using dot notation around these notions, and we prove that
+
 * constant functions are semicontinuous;
 * right composition with continuous functions preserves semicontinuity;
 

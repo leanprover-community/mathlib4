@@ -69,7 +69,7 @@ variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
 
 /-- If `ν` is a finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }` is
-  a measurable function. `measurable_measure_prodMk_left` is strictly more general. -/
+a measurable function. `measurable_measure_prodMk_left` is strictly more general. -/
 theorem measurable_measure_prodMk_left_finite [IsFiniteMeasure ν] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   induction s, hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
@@ -101,7 +101,7 @@ theorem measurable_measure_prodMk_left [SFinite ν] {s : Set (α × β)} (hs : M
   exact Measurable.ennreal_tsum (fun i ↦ measurable_measure_prodMk_left_finite hs)
 
 /-- If `μ` is an s-finite measure, and `s ⊆ α × β` is measurable, then `y ↦ μ { x | (x, y) ∈ s }` is
-  a measurable function. -/
+a measurable function. -/
 theorem measurable_measure_prodMk_right {μ : Measure α} [SFinite μ] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun y => μ ((fun x => (x, y)) ⁻¹' s) :=
   measurable_measure_prodMk_left (measurableSet_swap_iff.mpr hs)
@@ -119,7 +119,7 @@ theorem Measurable.map_prodMk_right {μ : Measure α} [SFinite μ] :
   exact measurable_measure_prodMk_right hs
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
-  Tonelli's theorem is measurable. -/
+Tonelli's theorem is measurable. -/
 @[fun_prop, measurability]
 theorem Measurable.lintegral_prod_right' [SFinite ν] :
     ∀ {f : α × β → ℝ≥0∞}, Measurable f → Measurable fun x => ∫⁻ y, f (x, y) ∂ν := by
@@ -140,23 +140,23 @@ theorem Measurable.lintegral_prod_right' [SFinite ν] :
     exact .iSup h3f
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
-  Tonelli's theorem is measurable.
-  This version has the argument `f` in curried form. -/
+Tonelli's theorem is measurable.
+This version has the argument `f` in curried form. -/
 @[fun_prop, measurability]
 theorem Measurable.lintegral_prod_right [SFinite ν] {f : α → β → ℝ≥0∞}
     (hf : Measurable (uncurry f)) : Measurable fun x => ∫⁻ y, f x y ∂ν :=
   hf.lintegral_prod_right'
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
-  the symmetric version of Tonelli's theorem is measurable. -/
+the symmetric version of Tonelli's theorem is measurable. -/
 @[fun_prop, measurability]
 theorem Measurable.lintegral_prod_left' [SFinite μ] {f : α × β → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun y => ∫⁻ x, f (x, y) ∂μ :=
   (measurable_swap_iff.mpr hf).lintegral_prod_right'
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
-  the symmetric version of Tonelli's theorem is measurable.
-  This version has the argument `f` in curried form. -/
+the symmetric version of Tonelli's theorem is measurable.
+This version has the argument `f` in curried form. -/
 @[fun_prop, measurability]
 theorem Measurable.lintegral_prod_left [SFinite μ] {f : α → β → ℝ≥0∞}
     (hf : Measurable (uncurry f)) : Measurable fun y => ∫⁻ x, f x y ∂μ :=
@@ -170,7 +170,7 @@ namespace MeasureTheory
 namespace Measure
 
 /-- The binary product of measures. They are defined for arbitrary measures, but we basically
-  prove all properties under the assumption that at least one of them is s-finite. -/
+prove all properties under the assumption that at least one of them is s-finite. -/
 protected irreducible_def prod (μ : Measure α) (ν : Measure β) : Measure (α × β) :=
   bind μ fun x : α => map (Prod.mk x) ν
 
@@ -405,7 +405,7 @@ theorem measure_prod_null {s : Set (α × β)} (hs : MeasurableSet s) :
   rw [prod_apply hs, lintegral_eq_zero_iff (measurable_measure_prodMk_left hs)]
 
 /-- Note: the converse is not true without assuming that `s` is measurable. For a counterexample,
-  see Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. -/
+see Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. -/
 theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0) :
     (fun x => ν (Prod.mk x ⁻¹' s)) =ᵐ[μ] 0 := by
   obtain ⟨t, hst, mt, ht⟩ := exists_measurable_superset_of_null h
@@ -425,8 +425,8 @@ theorem AbsolutelyContinuous.prod [SFinite ν'] (h1 : μ ≪ μ') (h2 : ν ≪ �
   exact (h2s.filter_mono h1.ae_le).mono fun _ h => h2 h
 
 /-- Note: the converse is not true. For a counterexample, see
-  Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. It is true if the set is
-  measurable, see `ae_prod_mem_iff_ae_ae_mem`. -/
+Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. It is true if the set is
+measurable, see `ae_prod_mem_iff_ae_ae_mem`. -/
 theorem ae_ae_of_ae_prod {p : α × β → Prop} (h : ∀ᵐ z ∂μ.prod ν, p z) :
     ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p (x, y) :=
   measure_ae_null_of_prod_null h
@@ -563,7 +563,7 @@ instance {α β} [MeasureSpace α] [SFinite (volume : Measure α)]
   prod.instSFinite
 
 /-- A measure on a product space equals the product measure if they are equal on rectangles
-  with as sides sets that generate the corresponding σ-algebras. -/
+with as sides sets that generate the corresponding σ-algebras. -/
 theorem prod_eq_generateFrom {μ : Measure α} {ν : Measure β} {C : Set (Set α)} {D : Set (Set β)}
     (hC : generateFrom C = ‹_›) (hD : generateFrom D = ‹_›) (h2C : IsPiSystem C)
     (h2D : IsPiSystem D) (h3C : μ.FiniteSpanningSetsIn C) (h3D : ν.FiniteSpanningSetsIn D)
@@ -999,7 +999,7 @@ theorem lintegral_prod_swap [SFinite μ] (f : α × β → ℝ≥0∞) :
   measurePreserving_swap.lintegral_comp_emb MeasurableEquiv.prodComm.measurableEmbedding f
 
 /-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued almost everywhere measurable functions on `α × β`,
-  the integral of `f` is equal to the iterated integral. -/
+the integral of `f` is equal to the iterated integral. -/
 theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.prod ν)) :
     ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
   rw [Measure.prod] at *

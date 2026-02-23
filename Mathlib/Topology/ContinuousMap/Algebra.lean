@@ -365,7 +365,7 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
 (for the compact-open topology), then the pointwise product converges to `g x` for all `x ∈ α`. -/
 @[to_additive
   /-- If an infinite sum of functions in `C(α, β)` converges to `g` (for the compact-open topology),
-then the pointwise sum converges to `g x` for all `x ∈ α`. -/]
+  then the pointwise sum converges to `g x` for all `x ∈ α`. -/]
 theorem hasProd_apply {γ : Type*} [CommMonoid β] [ContinuousMul β]
     {f : γ → C(α, β)} {g : C(α, β)} {L : SummationFilter γ} (hf : HasProd f g L) (x : α) :
     HasProd (fun i : γ => f i x) (g x) L := by
@@ -475,7 +475,7 @@ instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [
     [NonUnitalRing β] [IsTopologicalRing β] : IsTopologicalRing C(α, β) where
 
 /-- Composition on the left by a (continuous) homomorphism of topological semirings, as a
-`RingHom`.  Similar to `RingHom.compLeft`. -/
+`RingHom`. Similar to `RingHom.compLeft`. -/
 @[simps!]
 protected def _root_.RingHom.compLeftContinuous (α : Type*) {β : Type*} {γ : Type*}
     [TopologicalSpace α]

@@ -76,7 +76,7 @@ theorem IntervalIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} {a b : ℝ}
   filter_upwards [LocallyIntegrable.ae_hasDerivAt_integral hg, h₁, h₂] with x hx _ _ _
   intro c hc
   #adaptation_note /-- 2025-09-30 https://github.com/leanprover/lean4/issues/10622
-    `grind -order` calls used be `grind` -/
+  `grind -order` calls used be `grind` -/
   refine HasDerivWithinAt.hasDerivAt (s := Ioo a b) ?_ <|
     Ioo_mem_nhds (by grind -order) (by grind -order)
   rw [show f x = g x by grind -order]

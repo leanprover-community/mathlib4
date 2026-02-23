@@ -226,7 +226,7 @@ theorem LinearMap.exists_antilipschitzWith [FiniteDimensional 𝕜 E] (f : E →
 
 open Function in
 /-- A `LinearMap` on a finite-dimensional space over a complete field
-  is injective iff it is anti-Lipschitz. -/
+is injective iff it is anti-Lipschitz. -/
 theorem LinearMap.injective_iff_antilipschitz [FiniteDimensional 𝕜 E] (f : E →ₗ[𝕜] F) :
     Injective f ↔ ∃ K > 0, AntilipschitzWith K f := by
   constructor
@@ -247,7 +247,7 @@ theorem AffineMap.antilipschitzWith_of_finiteDimensional {PE PF : Type*} [Metric
 
 open Function in
 /-- The set of injective continuous linear maps `E → F` is open,
-  if `E` is finite-dimensional over a complete field. -/
+if `E` is finite-dimensional over a complete field. -/
 theorem ContinuousLinearMap.isOpen_injective [FiniteDimensional 𝕜 E] :
     IsOpen { L : E →L[𝕜] F | Injective L } := by
   rw [isOpen_iff_eventually]

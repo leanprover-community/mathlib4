@@ -102,8 +102,8 @@ instance perfectClosure.isAlgebraic : Algebra.IsAlgebraic F (perfectClosure F E)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `E / F` is separable, then the perfect closure of `F` in `E` is equal to `F`. Note that
-  the converse is not necessarily true (see https://math.stackexchange.com/a/3009197)
-  even when `E / F` is algebraic. -/
+the converse is not necessarily true (see https://math.stackexchange.com/a/3009197)
+even when `E / F` is algebraic. -/
 theorem perfectClosure.eq_bot_of_isSeparable [Algebra.IsSeparable F E] : perfectClosure F E = ⊥ :=
   haveI := Algebra.isSeparable_tower_bot_of_isSeparable F (perfectClosure F E) E
   eq_bot_of_isPurelyInseparable_of_isSeparable _

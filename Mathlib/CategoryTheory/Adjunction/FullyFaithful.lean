@@ -13,11 +13,13 @@ public import Mathlib.CategoryTheory.EpiMono
 # Adjoints of fully faithful functors
 
 A left adjoint is
+
 * faithful, if and only if the unit is a monomorphism
 * full, if and only if the unit is a split epimorphism
 * fully faithful, if and only if the unit is an isomorphism
 
 A right adjoint is
+
 * faithful, if and only if the counit is an epimorphism
 * full, if and only if the counit is a split monomorphism
 * fully faithful, if and only if the counit is an isomorphism

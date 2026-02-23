@@ -26,6 +26,7 @@ structures.
 ## References
 
 For the Flypitch project:
+
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
   [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
@@ -180,7 +181,7 @@ protected structure Injective : Prop where
   onRelation {n} : Function.Injective fun R : L.Relations n => onRelation ϕ R
 
 /-- Pulls an `L`-structure along a language map `ϕ : L →ᴸ L'`, and then expands it
-  to an `L'`-structure arbitrarily. -/
+to an `L'`-structure arbitrarily. -/
 noncomputable def defaultExpansion (ϕ : L →ᴸ L')
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => onFunction ϕ f)]
     [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n => onRelation ϕ r)]

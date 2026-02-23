@@ -22,6 +22,7 @@ Both have a version for the Lebesgue integral rather than Bochner.
 
 We prove several versions of the first moment method: An integrable function is below/above its
 average on a set of positive measure:
+
 * `measure_le_setLAverage_pos` for the Lebesgue integral
 * `measure_le_setAverage_pos` for the Bochner integral
 

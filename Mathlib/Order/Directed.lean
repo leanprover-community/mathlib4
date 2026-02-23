@@ -27,6 +27,7 @@ Define connected orders (the transitive symmetric closure of `≤` is everything
 (co)directed orders are connected.
 
 ## References
+
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
 -/
 
@@ -43,12 +44,12 @@ variable {α : Type u} {β : Type v} {ι : Sort w} (r r' s : α → α → Prop)
 local infixl:50 " ≼ " => r
 
 /-- A family of elements of α is directed (with respect to a relation `≼` on α)
-  if there is a member of the family `≼`-above any pair in the family. -/
+if there is a member of the family `≼`-above any pair in the family. -/
 def Directed (f : ι → α) :=
   ∀ x y, ∃ z, f x ≼ f z ∧ f y ≼ f z
 
 /-- A subset of α is directed if there is an element of the set `≼`-above any
-  pair of elements in the set. -/
+pair of elements in the set. -/
 def DirectedOn (s : Set α) :=
   ∀ x ∈ s, ∀ y ∈ s, ∃ z ∈ s, x ≼ z ∧ y ≼ z
 

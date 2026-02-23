@@ -102,6 +102,7 @@ to `M`, where `M` is a (commutative) monoid object in a (braided) monoidal categ
 **This `simp` set is incompatible with the standard simp set.**
 If you want to use it, make sure to add the following to your simp call to disable the problematic
 default simp lemmas:
+
 ```
 -MonoidalCategory.whiskerLeft_id, -MonoidalCategory.id_whiskerRight,
 -MonoidalCategory.tensor_comp, -MonoidalCategory.tensor_comp_assoc,
@@ -118,6 +119,7 @@ prescribed by the presence of unitors, associators and commutators in its expres
 
 This simp set is opiniated about its normal form, which is why it cannot be used concurrently with
 some of the simp lemmas in the standard simp set:
+
 * It eliminates all mentions of whiskers by rewriting them to tensored homs,
   which goes against `whiskerLeft_id` and `id_whiskerRight`:
   `X ◁ f = 𝟙 X ⊗ₘ f`, `f ▷ X = 𝟙 X ⊗ₘ f`.

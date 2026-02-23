@@ -25,6 +25,7 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   `ModuleCat R ⥤ ModuleCat R`.)
 
 ## Theorems
+
 * `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
 
 * We construct `exteriorPower.alternatingMapLinearEquiv` which

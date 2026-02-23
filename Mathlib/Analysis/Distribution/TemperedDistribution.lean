@@ -30,6 +30,7 @@ public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
+
 * `𝓢'(E, F)`: The space of tempered distributions `TemperedDistribution E F` scoped in
   `SchwartzMap`
 -/

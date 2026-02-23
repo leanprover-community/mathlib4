@@ -198,7 +198,7 @@ open Function Quotient Finset
 variable {ι : Type*}
 
 /-- The homomorphism from `R/(⋂ i, f i)` to `∏ i, (R / f i)` featured in the Chinese
-  Remainder Theorem. It is bijective if the ideals `f i` are coprime. -/
+Remainder Theorem. It is bijective if the ideals `f i` are coprime. -/
 def quotientInfToPiQuotient (I : ι → Ideal R) [∀ i, (I i).IsTwoSided] :
     (R ⧸ ⨅ i, I i) →+* ∀ i, R ⧸ I i :=
   Quotient.lift (⨅ i, I i) (Pi.ringHom fun i : ι ↦ Quotient.mk (I i))
@@ -874,7 +874,7 @@ theorem ker_quotLeftToQuotSup : RingHom.ker (quotLeftToQuotSup I J) =
     map_eq_iff_sup_ker_eq_of_surjective (Ideal.Quotient.mk I) Quotient.mk_surjective, ← sup_assoc]
 
 /-- The ring homomorphism `(R/I)/J' -> R/(I ⊔ J)` induced by `quotLeftToQuotSup` where `J'`
-  is the image of `J` in `R/I` -/
+is the image of `J` in `R/I` -/
 def quotQuotToQuotSup : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) →+* R ⧸ I ⊔ J :=
   Ideal.Quotient.lift (J.map (Ideal.Quotient.mk I)) (quotLeftToQuotSup I J)
     (ker_quotLeftToQuotSup I J).symm.le
@@ -937,7 +937,7 @@ theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivCom
 variable {I J}
 
 /-- **The Third Isomorphism theorem** for rings. See `quotQuotEquivQuotSup` for a version
-    that does not assume an inclusion of ideals. -/
+that does not assume an inclusion of ideals. -/
 def quotQuotEquivQuotOfLE (h : I ≤ J) : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+* R ⧸ J :=
   (quotQuotEquivQuotSup I J).trans (Ideal.quotEquivOfEq <| sup_eq_right.mpr h)
 
@@ -1002,7 +1002,7 @@ theorem coe_quotLeftToQuotSupₐ : ⇑(quotLeftToQuotSupₐ R I J) = quotLeftToQ
   rfl
 
 /-- The algebra homomorphism `(A / I) / J' -> A / (I ⊔ J)` induced by `quotQuotToQuotSup`,
-  where `J'` is the projection of `J` in `A / I`. -/
+where `J'` is the projection of `J` in `A / I`. -/
 def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) →ₐ[R] A ⧸ I ⊔ J :=
   AlgHom.mk (quotQuotToQuotSup I J) fun _ => rfl
 
@@ -1017,7 +1017,7 @@ theorem coe_quotQuotToQuotSupₐ : ⇑(quotQuotToQuotSupₐ R I J) = quotQuotToQ
   rfl
 
 /-- The composition of the algebra homomorphisms `A → (A / I)` and `(A / I) → (A / I) / J'`,
-  where `J'` is the projection `J` in `A / I`. -/
+where `J'` is the projection `J` in `A / I`. -/
 def quotQuotMkₐ : A →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
   AlgHom.mk (quotQuotMk I J) fun _ => rfl
 
@@ -1031,7 +1031,7 @@ theorem coe_quotQuotMkₐ : ⇑(quotQuotMkₐ R I J) = quotQuotMk I J :=
   rfl
 
 /-- The injective algebra homomorphism `A / (I ⊔ J) → (A / I) / J'` induced by `quotQuotMk`,
-  where `J'` is the projection `J` in `A / I`. -/
+where `J'` is the projection `J` in `A / I`. -/
 def liftSupQuotQuotMkₐ (I J : Ideal A) : A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
   AlgHom.mk (liftSupQuotQuotMk I J) fun _ => rfl
 
@@ -1070,7 +1070,7 @@ theorem coe_quotQuotEquivQuotSupₐ_symm :
   rfl
 
 /-- The natural algebra isomorphism `(A / I) / J' → (A / J) / I'`,
-  where `J'` (resp. `I'`) is the projection of `J` in `A / I` (resp. `I` in `A / J`). -/
+where `J'` (resp. `I'`) is the projection of `J` in `A / I` (resp. `I` in `A / J`). -/
 def quotQuotEquivCommₐ :
     ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] (A ⧸ J) ⧸ I.map (Quotient.mkₐ R J) :=
   AlgEquiv.ofRingEquiv (f := quotQuotEquivComm I J) fun _ => rfl
@@ -1097,7 +1097,7 @@ theorem quotQuotEquivComm_comp_quotQuotMkₐ :
 variable {I J}
 
 /-- The **third isomorphism theorem** for algebras. See `quotQuotEquivQuotSupₐ` for version
-    that does not assume an inclusion of ideals. -/
+that does not assume an inclusion of ideals. -/
 def quotQuotEquivQuotOfLEₐ (h : I ≤ J) : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] A ⧸ J :=
   AlgEquiv.ofRingEquiv (f := quotQuotEquivQuotOfLE h) fun _ => rfl
 

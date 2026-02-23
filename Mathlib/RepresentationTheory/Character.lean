@@ -25,6 +25,7 @@ Irreducible representations are implemented categorically, using the `CategoryTh
 defined in `Mathlib/CategoryTheory/Simple.lean`
 
 ## TODO
+
 * Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
   structure, `char_dual` and `char_linHom` should probably be stated
   in terms of `Vᘁ` and `ihom V W`.

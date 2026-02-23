@@ -91,7 +91,7 @@ def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAss
   { (f : α →+* β) with monotone' := OrderHomClass.monotone f }
 
 /-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via
-  `OrderRingHomClass.toOrderRingHom`. -/
+`OrderRingHomClass.toOrderRingHom`. -/
 instance [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
     [OrderHomClass F α β] [RingHomClass F α β] : CoeTC F (α →+*o β) :=
   ⟨OrderRingHomClass.toOrderRingHom⟩
@@ -111,7 +111,7 @@ def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β]
   { (f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f }
 
 /-- Any type satisfying `OrderRingIsoClass` can be cast into `OrderRingIso` via
-  `OrderRingIsoClass.toOrderRingIso`. -/
+`OrderRingIsoClass.toOrderRingIso`. -/
 instance [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [OrderIsoClass F α β]
     [RingEquivClass F α β] : CoeTC F (α ≃+*o β) :=
   ⟨OrderRingIsoClass.toOrderRingIso⟩

@@ -125,10 +125,13 @@ def funPropTac : Tactic
 /-- Command that printins all function properties attached to a function.
 
 For example
+
 ```
 #print_fun_prop_theorems HAdd.hAdd
 ```
+
 might print out
+
 ```
 Continuous
   continuous_add, args: [4,5], priority: 1000
@@ -143,6 +146,7 @@ Differentiable
 ```
 
 You can also see only theorems about a concrete function property
+
 ```
 #print_fun_prop_theorems HAdd.hAdd Continuous
 ```

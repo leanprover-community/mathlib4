@@ -242,7 +242,7 @@ def Partrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f 
   Partrec fun p : α × β => f p.1 p.2
 
 /-- Computable functions `α → σ` between `Primcodable` types:
-  a function is computable if and only if it is partially recursive (as a partial function) -/
+a function is computable if and only if it is partially recursive (as a partial function) -/
 def Computable {α σ} [Primcodable α] [Primcodable σ] (f : α → σ) :=
   Partrec (f : α →. σ)
 

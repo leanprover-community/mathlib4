@@ -18,6 +18,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 # Universal colimits and van Kampen colimits
 
 ## Main definitions
+
 - `CategoryTheory.IsUniversalColimit`: A (colimit) cocone over a diagram `F : J ⥤ C` is universal
   if it is stable under pullbacks.
 - `CategoryTheory.IsVanKampenColimit`: A (colimit) cocone over a diagram `F : J ⥤ C` is van
@@ -25,6 +26,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
   `c'` is colimiting iff `c'` is the pullback of `c`.
 
 ## References
+
 - https://ncatlab.org/nlab/show/van+Kampen+colimit
 - [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
 

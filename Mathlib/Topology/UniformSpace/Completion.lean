@@ -22,9 +22,9 @@ properties only if `f` is uniformly continuous.
 Beware that `(↑)` is not injective if `α` is not Hausdorff. But its image is always
 dense. The adjoint functor acting on morphisms is then constructed by the usual abstract nonsense.
 For every uniform spaces `α` and `β`, it turns `f : α → β` into a morphism
-  `Completion.map f : Completion α → Completion β`
+`Completion.map f : Completion α → Completion β`
 such that
-  `(↑) ∘ f = (Completion.map f) ∘ (↑)`
+`(↑) ∘ f = (Completion.map f) ∘ (↑)`
 provided `f` is uniformly continuous. This construction is compatible with composition.
 
 In this file we introduce the following concepts:
@@ -37,8 +37,8 @@ In this file we introduce the following concepts:
 ## References
 
 This formalization is mostly based on
-  N. Bourbaki: General Topology
-  I. M. James: Topologies and Uniformities
+N. Bourbaki: General Topology
+I. M. James: Topologies and Uniformities
 From a slightly different perspective in order to reuse material in `Topology.UniformSpace.Basic`.
 -/
 

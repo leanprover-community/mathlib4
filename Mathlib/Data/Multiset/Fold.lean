@@ -27,7 +27,7 @@ variable (op : α → α → α) [hc : Std.Commutative op] [ha : Std.Associative
 local notation a " * " b => op a b
 
 /-- `fold op b s` folds a commutative associative operation `op` over
-  the multiset `s`. -/
+the multiset `s`. -/
 def fold : α → Multiset α → α :=
   foldr op
 

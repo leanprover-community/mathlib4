@@ -33,6 +33,7 @@ in `lhs` and `rhs` are equal.
 If the placeholders have names, such as `?m`, then the new goals are given tags with those names.
 
 Examples:
+
 ```lean
 example {a b c d : ℕ} :
     Nat.pred a.succ * (d + (c + a.pred)) = Nat.pred b.succ * (b + (c + d.pred)) := by

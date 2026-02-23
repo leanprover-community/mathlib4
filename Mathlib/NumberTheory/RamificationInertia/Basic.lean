@@ -29,12 +29,13 @@ The main theorem `Ideal.sum_ramification_inertia` states that for all coprime `P
 ## Implementation notes
 
 Often the above theory is set up in the case where:
+
 * `R` is the ring of integers of a number field `K`,
 * `L` is a finite separable extension of `K`,
 * `S` is the integral closure of `R` in `L`,
 * `p` and `P` are maximal ideals,
 * `P` is an ideal lying over `p`
-We will try to relax the above hypotheses as much as possible.
+  We will try to relax the above hypotheses as much as possible.
 
 ## Notation
 
@@ -390,6 +391,7 @@ variable {K} in
 /-- If `b` mod `p` spans `S/p` as `R/p`-space, then `b` itself spans `Frac(S)` as `K`-space.
 
 Here,
+
 * `p` is an ideal of `R` such that `R / p` is nontrivial
 * `K` is a field that has an embedding of `R` (in particular we can take `K = Frac(R)`)
 * `L` is a field extension of `K`
@@ -492,6 +494,7 @@ and `V'` a module over `S`. If `b`, in the intersection `V''` of `V` and `V'`,
 is linear independent over `S` in `V'`, then it is linear independent over `R` in `V`.
 
 The statement we prove is actually slightly more general:
+
 * it suffices that the inclusion `algebraMap R S : R → S` is nontrivial
 * the function `f' : V'' → V'` doesn't need to be injective
 -/
@@ -1013,7 +1016,7 @@ theorem ramificationIdx_tower [IsDedekindDomain S] [IsDedekindDomain T] {f : R �
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 /-- Let `T / S / R` be a tower of algebras, `p, P, Q` be ideals in `R, S, T` respectively,
-  and `P` and `Q` are prime. If `P = Q ∩ S`, then `e (Q | p) = e (P | p) * e (Q | P)`. -/
+and `P` and `Q` are prime. If `P = Q ∩ S`, then `e (Q | p) = e (P | p) * e (Q | P)`. -/
 theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
     {p : Ideal R} {P : Ideal S} {Q : Ideal T} [hpm : P.IsPrime] [hqm : Q.IsPrime]
     (hg0 : map (algebraMap S T) P ≠ ⊥)
@@ -1024,8 +1027,8 @@ theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
   exact ramificationIdx_tower hg0 hfg hg
 
 /-- Let `T / S / R` be a tower of algebras, `p, P, I` be ideals in `R, S, T`, respectively,
-  and `p` and `P` are maximal. If `p = P ∩ S` and `P = I ∩ S`,
-  then `f (I | p) = f (P | p) * f (I | P)`. -/
+and `p` and `P` are maximal. If `p = P ∩ S` and `P = I ∩ S`,
+then `f (I | p) = f (P | p) * f (I | P)`. -/
 theorem inertiaDeg_algebra_tower (p : Ideal R) (P : Ideal S) (I : Ideal T) [p.IsMaximal]
     [P.IsMaximal] [P.LiesOver p] [I.LiesOver P] : inertiaDeg p I =
     inertiaDeg p P * inertiaDeg P I := by

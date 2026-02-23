@@ -236,7 +236,7 @@ lemma Periodic.not_injective {R X : Type*} [AddZeroClass R] {f : R → X} {c : R
 /-! ### Antiperiodicity -/
 
 /-- A function `f` is said to be `antiperiodic` with antiperiod `c` if for all `x`,
-  `f (x + c) = -f x`. -/
+`f (x + c) = -f x`. -/
 @[simp]
 def Antiperiodic [Add α] [Neg β] (f : α → β) (c : α) : Prop :=
   ∀ x : α, f (x + c) = -f x
@@ -255,7 +255,7 @@ protected theorem Antiperiodic.periodic [AddMonoid α] [InvolutiveNeg β]
     (h : Antiperiodic f c) : Periodic f (2 • c) := by simp [two_nsmul, ← add_assoc, h _]
 
 /-- If a function is `antiperiodic` with antiperiod `c`, then it is also `Periodic` with period
-  `2 * c`. -/
+`2 * c`. -/
 protected theorem Antiperiodic.periodic_two_mul [NonAssocSemiring α] [InvolutiveNeg β]
     (h : Antiperiodic f c) : Periodic f (2 * c) := nsmul_eq_mul 2 c ▸ h.periodic
 

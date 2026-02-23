@@ -25,7 +25,7 @@ The first main result is `Units.isOpen`: the group of units of a normed ring wit
 geometric series is an open subset of the ring.
 
 The function `Ring.inverse` (defined elsewhere), for a ring `R`, sends `a : R` to `a⁻¹` if `a` is a
-unit and `0` if not.  The other major results of this file (notably `NormedRing.inverse_add`,
+unit and `0` if not. The other major results of this file (notably `NormedRing.inverse_add`,
 `NormedRing.inverse_add_norm` and `NormedRing.inverse_add_norm_diff_nth_order`) cover the asymptotic
 properties of `Ring.inverse (x + t)` as `t → 0`.
 -/
@@ -124,8 +124,7 @@ theorem inverse_one_sub_nth_order (n : ℕ) :
 
 
 /-- The formula
-`Ring.inverse (x + t) =
-  (∑ i ∈ Finset.range n, (- x⁻¹ * t) ^ i) * x⁻¹ + (- x⁻¹ * t) ^ n * Ring.inverse (x + t)`
+`Ring.inverse (x + t) =   (∑ i ∈ Finset.range n, (- x⁻¹ * t) ^ i) * x⁻¹ + (- x⁻¹ * t) ^ n * Ring.inverse (x + t)`
 holds for `t` sufficiently small. -/
 theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
     ∀ᶠ t in 𝓝 0, inverse ((x : R) + t) =

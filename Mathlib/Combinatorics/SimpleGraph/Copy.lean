@@ -26,6 +26,7 @@ equivalent to saying that there is a graph embedding `G ↪ H`.
 ## Main declarations
 
 Containment:
+
 * `SimpleGraph.Copy G H` is the type of copies of `G` in `H`, implemented as the subtype of
   *injective* homomorphisms.
 * `SimpleGraph.IsContained G H`, `G ⊑ H` is the relation that `H` contains a copy of `G`, that
@@ -43,12 +44,14 @@ Containment:
   graph embeddings from `H` to `G`.
 
 Induced containment:
+
 * Induced copies of `G` inside `H` are already defined as `G ↪g H`.
 * `SimpleGraph.IsIndContained G H` : `G` is contained as an induced subgraph in `H`.
 
 ## Notation
 
 The following notation is declared in scope `SimpleGraph`:
+
 * `G ⊑ H` for `SimpleGraph.IsContained G H`.
 * `G ⊴ H` for `SimpleGraph.IsIndContained G H`.
 

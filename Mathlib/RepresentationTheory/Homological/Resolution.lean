@@ -54,10 +54,10 @@ computing group (co)homology.
 
 ## Main definitions
 
- * `groupCohomology.resolution.ofMulActionBasis`
- * `classifyingSpaceUniversalCover`
- * `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
- * `Rep.standardResolution`
+* `groupCohomology.resolution.ofMulActionBasis`
+* `classifyingSpaceUniversalCover`
+* `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
+* `Rep.standardResolution`
 
 -/
 

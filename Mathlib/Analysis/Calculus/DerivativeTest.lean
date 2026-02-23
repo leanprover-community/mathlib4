@@ -40,7 +40,6 @@ Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_s
 
 * `isLocalMin_of_deriv_deriv_pos`: The second-derivative test, minimum version.
 
-
 ## Tags
 
 derivative test, first-derivative test, second-derivative test, calculus

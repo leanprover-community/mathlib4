@@ -25,8 +25,8 @@ namespace Complex
 variable {a x z : ℂ}
 
 /-- `arg` returns values in the range (-π, π], such that for `x ≠ 0`,
-  `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
-  `arg 0` defaults to `0` -/
+`sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
+`arg 0` defaults to `0` -/
 noncomputable def arg (x : ℂ) : ℝ :=
   if 0 ≤ x.re then Real.arcsin (x.im / ‖x‖)
   else if 0 ≤ x.im then Real.arcsin ((-x).im / ‖x‖) + π else Real.arcsin ((-x).im / ‖x‖) - π

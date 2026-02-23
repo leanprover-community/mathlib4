@@ -30,6 +30,7 @@ Simplicial objects equipped with a splitting form a category
 `SimplicialObject.Split C`.
 
 ## References
+
 * [Stacks: Splitting simplicial objects] https://stacks.math.columbia.edu/tag/017O
 
 -/

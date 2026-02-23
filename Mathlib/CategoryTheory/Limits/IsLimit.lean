@@ -17,18 +17,22 @@ In this introduction we only describe the setup for limits;
 it is repeated, with slightly different names, for colimits.
 
 The main structures defined in this file is
+
 * `IsLimit c`, for `c : Cone F`, `F : J ⥤ C`, expressing that `c` is a limit cone,
 
 See also `CategoryTheory.Limits.HasLimits` which further builds:
+
 * `LimitCone F`, which consists of a choice of cone for `F` and the fact it is a limit cone, and
 * `HasLimit F`, asserting the mere existence of some limit cone for `F`.
 
 ## Implementation
+
 At present we simply say everything twice, in order to handle both limits and colimits.
 It would be highly desirable to have some automation support,
 e.g. a `@[dualize]` attribute that behaves similarly to `@[to_additive]`.
 
 ## References
+
 * [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 
 -/
@@ -196,7 +200,7 @@ theorem hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.pt) :
   h.uniq { pt := W, π := { app := fun b => m ≫ t.π.app b } } m fun _ => rfl
 
 /-- Two morphisms into a limit are equal if their compositions with
-  each cone morphism are equal. -/
+each cone morphism are equal. -/
 theorem hom_ext (h : IsLimit t) {W : C} {f f' : W ⟶ t.pt}
     (w : ∀ j, f ≫ t.π.app j = f' ≫ t.π.app j) :
     f = f' := by
@@ -331,6 +335,7 @@ def extendIsoEquiv {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- We can prove two cone points `(s : Cone F).pt` and `(t : Cone G).pt` are isomorphic if
+
 * both cones are limit cones
 * their indexing categories are equivalent via some `e : J ≌ K`,
 * the triangle of functors commutes up to a natural isomorphism: `e.functor ⋙ G ≅ F`.
@@ -362,7 +367,7 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
 end Equivalence
 
 /-- The universal property of a limit cone: a wap `W ⟶ t.pt` is the same as
-  a cone on `F` with cone point `W`. -/
+a cone on `F` with cone point `W`. -/
 @[simps apply]
 def homEquiv (h : IsLimit t) {W : C} : (W ⟶ t.pt) ≃ ((Functor.const J).obj W ⟶ F) where
   toFun f := (t.extend f).π
@@ -382,7 +387,7 @@ lemma homEquiv_symm_naturality (h : IsLimit t) {W W' : C}
   h.homEquiv.injective (by aesop)
 
 /-- The universal property of a limit cone: a map `W ⟶ X` is the same as
-  a cone on `F` with cone point `W`. -/
+a cone on `F` with cone point `W`. -/
 def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (const J).obj W ⟶ F :=
   Equiv.toIso (Equiv.ulift.trans h.homEquiv)
 
@@ -392,7 +397,7 @@ theorem homIso_hom (h : IsLimit t) {W : C} (f : ULift.{u₁} (W ⟶ t.pt)) :
   rfl
 
 /-- The limit of `F` represents the functor taking `W` to
-  the set of cones on `F` with cone point `W`. -/
+the set of cones on `F` with cone point `W`. -/
 def natIso (h : IsLimit t) : yoneda.obj t.pt ⋙ uliftFunctor.{u₁} ≅ F.cones :=
   NatIso.ofComponents fun W => IsLimit.homIso h (unop W)
 
@@ -409,8 +414,8 @@ def homIso' (h : IsLimit t) (W : C) :
           naturality := fun j j' f => by dsimp; rw [id_comp]; exact (p.2 f).symm } }
 
 /-- If G : C → D is a faithful functor which sends t to a limit cone,
-  then it suffices to check that the induced maps for the image of t
-  can be lifted to maps of C. -/
+then it suffices to check that the induced maps for the image of t
+can be lifted to maps of C. -/
 def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G.Faithful]
     (ht : IsLimit (mapCone G t)) (lift : ∀ s : Cone F, s.pt ⟶ t.pt)
     (h : ∀ s, G.map (lift s) = ht.lift (mapCone G s)) : IsLimit t :=
@@ -680,7 +685,7 @@ theorem hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
     m fun _ => rfl
 
 /-- Two morphisms out of a colimit are equal if their compositions with
-  each cocone morphism are equal. -/
+each cocone morphism are equal. -/
 theorem hom_ext (h : IsColimit t) {W : C} {f f' : t.pt ⟶ W}
     (w : ∀ j, t.ι.app j ≫ f = t.ι.app j ≫ f') : f = f' := by
   rw [h.hom_desc f, h.hom_desc f']; congr; exact funext w
@@ -824,6 +829,7 @@ def extendIsoEquiv {s : Cocone F} {X : C} (i : s.pt ⟶ X) [IsIso i] :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- We can prove two cocone points `(s : Cocone F).pt` and `(t : Cocone G).pt` are isomorphic if
+
 * both cocones are colimit cocones
 * their indexing categories are equivalent via some `e : J ≌ K`,
 * the triangle of functors commutes up to a natural isomorphism: `e.functor ⋙ G ≅ F`.
@@ -853,7 +859,7 @@ end Equivalence
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
-  a cocone on `F` with cone point `W`. -/
+a cocone on `F` with cone point `W`. -/
 def homEquiv (h : IsColimit t) {W : C} : (t.pt ⟶ W) ≃ (F ⟶ (const J).obj W) where
   toFun f := (t.extend f).ι
   invFun ι := h.desc
@@ -880,7 +886,7 @@ lemma homEquiv_symm_naturality (h : IsColimit t) {W W' : C}
   h.homEquiv.injective (by aesop)
 
 /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
-  a cocone on `F` with cone point `W`. -/
+a cocone on `F` with cone point `W`. -/
 def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅ F ⟶ (const J).obj W :=
   Equiv.toIso (Equiv.ulift.trans h.homEquiv)
 
@@ -890,7 +896,7 @@ theorem homIso_hom (h : IsColimit t) {W : C} (f : ULift (t.pt ⟶ W)) :
   rfl
 
 /-- The colimit of `F` represents the functor taking `W` to
-  the set of cocones on `F` with cone point `W`. -/
+the set of cocones on `F` with cone point `W`. -/
 def natIso (h : IsColimit t) : coyoneda.obj (op t.pt) ⋙ uliftFunctor.{u₁} ≅ F.cocones :=
   NatIso.ofComponents (IsColimit.homIso h)
 
@@ -908,8 +914,8 @@ def homIso' (h : IsColimit t) (W : C) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If G : C → D is a faithful functor which sends t to a colimit cocone,
-  then it suffices to check that the induced maps for the image of t
-  can be lifted to maps of C. -/
+then it suffices to check that the induced maps for the image of t
+can be lifted to maps of C. -/
 def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G.Faithful]
     (ht : IsColimit (mapCocone G t)) (desc : ∀ s : Cocone F, t.pt ⟶ s.pt)
     (h : ∀ s, G.map (desc s) = ht.desc (mapCocone G s)) : IsColimit t :=

@@ -19,27 +19,34 @@ so that `m` factors through the `m'` in any other such factorisation.
 ## Main definitions
 
 * A `MonoFactorisation` is a factorisation `f = e ≫ m`, where `m` is a monomorphism
+
 * `IsImage F` means that a given mono factorisation `F` has the universal property of the image.
+
 * `HasImage f` means that there is some image factorization for the morphism `f : X ⟶ Y`.
+
   * In this case, `image f` is some image object (selected with choice), `image.ι f : image f ⟶ Y`
     is the monomorphism `m` of the factorisation and `factorThruImage f : X ⟶ image f` is the
     morphism `e`.
+
 * `HasImages C` means that every morphism in `C` has an image.
+
 * Let `f : X ⟶ Y` and `g : P ⟶ Q` be morphisms in `C`, which we will represent as objects of the
   arrow category `Arrow C`. Then `sq : f ⟶ g` is a commutative square in `C`. If `f` and `g` have
   images, then `HasImageMap sq` represents the fact that there is a morphism
   `i : image f ⟶ image g` making the diagram
 
   X ----→ image f ----→ Y
-  |         |           |
-  |         |           |
-  ↓         ↓           ↓
+  | | |
+  | | |
+  ↓ ↓ ↓
   P ----→ image g ----→ Q
 
   commute, where the top row is the image factorisation of `f`, the bottom row is the image
   factorisation of `g`, and the outer rectangle is the commutative square `sq`.
+
 * If a category `HasImages`, then `HasImageMaps` means that every commutative square admits an
   image map.
+
 * If a category `HasImages`, then `HasStrongEpiImages` means that the morphism to the image is
   always a strong epimorphism.
 
@@ -49,6 +56,7 @@ so that `m` factors through the `m'` in any other such factorisation.
 * When `C` has strong epi images, then these images admit image maps.
 
 ## Future work
+
 * TODO: coimages, and abelian categories.
 * TODO: connect this with existing work in the group theory and ring theory libraries.
 
@@ -583,9 +591,9 @@ instance image.preComp_mono [HasImage g] [HasImage (f ≫ g)] : Mono (image.preC
   infer_instance
 
 /-- The two step comparison map
-  `image (f ≫ (g ≫ h)) ⟶ image (g ≫ h) ⟶ image h`
+`image (f ≫ (g ≫ h)) ⟶ image (g ≫ h) ⟶ image h`
 agrees with the one step comparison map
-  `image (f ≫ (g ≫ h)) ≅ image ((f ≫ g) ≫ h) ⟶ image h`.
+`image (f ≫ (g ≫ h)) ≅ image ((f ≫ g) ≫ h) ⟶ image h`.
 -/
 theorem image.preComp_comp {W : C} (h : Z ⟶ W) [HasImage (g ≫ h)] [HasImage (f ≫ g ≫ h)]
     [HasImage h] [HasImage ((f ≫ g) ≫ h)] :

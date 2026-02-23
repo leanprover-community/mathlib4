@@ -252,19 +252,21 @@ section IsRightContinuous
 
 open scoped Classical in
 /-- Given a filtration `𝓕`, its **right continuation** is the filtration `𝓕₊` defined as follows:
+
 - If `i` is isolated on the right, then `𝓕₊ i := 𝓕 i`;
 - Otherwise, `𝓕₊ i := ⨅ j > i, 𝓕 j`.
-It is sometimes simply defined as `𝓕₊ i := ⨅ j > i, 𝓕 j` when the index type is `ℝ`. In the
-general case this is not ideal however. If `i` is maximal for instance, then `𝓕₊ i = ⊤`, which
-is inconvenient because `𝓕₊` is not a `Filtration ι m` anymore. If the index type
-is discrete (such as `ℕ`), then we would have `𝓕 = 𝓕₊` (i.e. `𝓕` is right-continuous) only if
-`𝓕` is constant.
+  It is sometimes simply defined as `𝓕₊ i := ⨅ j > i, 𝓕 j` when the index type is `ℝ`. In the
+  general case this is not ideal however. If `i` is maximal for instance, then `𝓕₊ i = ⊤`, which
+  is inconvenient because `𝓕₊` is not a `Filtration ι m` anymore. If the index type
+  is discrete (such as `ℕ`), then we would have `𝓕 = 𝓕₊` (i.e. `𝓕` is right-continuous) only if
+  `𝓕` is constant.
 
 To avoid requiring a `TopologicalSpace` instance on `ι` in the definition, we endow `ι` with
 the order topology `Preorder.topology` inside the definition. Say you write a statement about
 `𝓕₊` which does not require a `TopologicalSpace` structure on `ι`,
 but you wish to use a statement which requires a topology (such as `rightCont_apply`).
 Then you can endow `ι` with the order topology by writing
+
 ```lean
   letI := Preorder.topology ι
   haveI : OrderTopology ι := ⟨rfl⟩

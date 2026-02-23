@@ -14,6 +14,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 # Scheme-theoretic fiber
 
 ## Main result
+
 - `AlgebraicGeometry.Scheme.Hom.fiber`: `f.fiber y` is the scheme-theoretic fiber of `f` at `y`.
 - `AlgebraicGeometry.Scheme.Hom.fiberHomeo`: `f.fiber y` is homeomorphic to `f ⁻¹' {y}`.
 - `AlgebraicGeometry.Scheme.Hom.finite_preimage`: Finite morphisms have finite fibers.

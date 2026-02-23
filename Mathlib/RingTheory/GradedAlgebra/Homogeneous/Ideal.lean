@@ -21,6 +21,7 @@ operations on them.
 ## Main definitions
 
 For any `I : Ideal A`:
+
 * `Ideal.IsHomogeneous 𝒜 I`: The property that an ideal is closed under `GradedRing.proj`.
 * `HomogeneousIdeal 𝒜`: The structure extending ideals which satisfy `Ideal.IsHomogeneous`.
 * `Ideal.homogeneousCore I 𝒜`: The largest homogeneous ideal smaller than `I`.
@@ -60,7 +61,7 @@ variable [DecidableEq ι] [AddMonoid ι] [GradedRing 𝒜]
 variable (I : Ideal A)
 
 /-- An `I : Ideal A` is homogeneous if for every `r ∈ I`, all homogeneous components
-  of `r` are in `I`. -/
+of `r` are in `I`. -/
 abbrev Ideal.IsHomogeneous : Prop := Submodule.IsHomogeneous I 𝒜
 
 theorem Ideal.IsHomogeneous.mem_iff {I} (hI : Ideal.IsHomogeneous 𝒜 I) {x} :

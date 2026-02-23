@@ -241,7 +241,7 @@ theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
 theorem lt_succ_self (a : ℕ+) : a < succPNat a := Nat.lt_add_one a
 
 /-- Subtraction a - b is defined in the obvious way when
-  a > b, and by a - b = 1 if a ≤ b.
+a > b, and by a - b = 1 if a ≤ b.
 -/
 instance instSub : Sub ℕ+ :=
   ⟨fun a b => toPNat' (a - b : ℕ)⟩

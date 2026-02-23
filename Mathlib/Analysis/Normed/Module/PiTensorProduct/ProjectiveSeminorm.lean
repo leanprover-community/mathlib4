@@ -30,6 +30,7 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
   `E = Π i, Eᵢ` and `x` is in `⨂[𝕜] i, Eᵢ`, then `‖f.lift x‖ ≤ projectiveSeminorm x * ‖f‖`.
 
 ## TODO
+
 * If the base field is `ℝ` or `ℂ` (or more generally if the injection of `Eᵢ` into its bidual is
   an isometry for every `i`), then we have `projectiveSeminorm ⨂ₜ[𝕜] i, mᵢ = Π i, ‖mᵢ‖`.
 

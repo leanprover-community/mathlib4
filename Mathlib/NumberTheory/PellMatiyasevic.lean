@@ -62,7 +62,7 @@ section
 variable {d : ℤ}
 
 /-- The property of being a solution to the Pell equation, expressed
-  as a property of elements of `ℤ√d`. -/
+as a property of elements of `ℤ√d`. -/
 def IsPell : ℤ√d → Prop
   | ⟨x, y⟩ => x * x - d * y * y = 1
 

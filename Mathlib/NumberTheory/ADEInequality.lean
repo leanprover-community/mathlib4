@@ -19,6 +19,7 @@ In this file we classify solutions to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`, for positive natural numbers `p`, `q`, and `r`.
 
 The solutions are exactly of the form.
+
 * `A' q r := {1,q,r}`
 * `D' r := {2,2,r}`
 * `E6 := {2,3,3}`, or `E7 := {2,3,4}`, or `E8 := {2,3,5}`

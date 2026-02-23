@@ -38,6 +38,7 @@ open Lean.Parser.Tactic
 /-- A tactic for simplifying identities in not-necessarily-commutative rings.
 
 An example:
+
 ```lean
 example {R : Type*} [Ring R] (a b c : R) : a * (b + c + c - b) = 2 * a * c := by
   noncomm_ring

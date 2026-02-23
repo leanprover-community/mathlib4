@@ -136,8 +136,8 @@ theorem norm_def (f : α →₁[μ] β) : ‖f‖ = (∫⁻ a, ‖f a‖ₑ ∂�
   simp [Lp.norm_def, eLpNorm, eLpNorm'_eq_lintegral_enorm]
 
 /-- Computing the norm of a difference between two L¹-functions. Note that this is not a
-  special case of `norm_def` since `(f - g) x` and `f x - g x` are not equal
-  (but only a.e.-equal). -/
+special case of `norm_def` since `(f - g) x` and `f x - g x` are not equal
+(but only a.e.-equal). -/
 theorem norm_sub_eq_lintegral (f g : α →₁[μ] β) : ‖f - g‖ = (∫⁻ x, ‖f x - g x‖ₑ ∂μ).toReal := by
   rw [norm_def]
   congr 1
@@ -150,8 +150,8 @@ theorem ofReal_norm_eq_lintegral (f : α →₁[μ] β) : ENNReal.ofReal ‖f‖
   exact ne_of_lt (hasFiniteIntegral_coeFn f)
 
 /-- Computing the norm of a difference between two L¹-functions. Note that this is not a
-  special case of `ofReal_norm_eq_lintegral` since `(f - g) x` and `f x - g x` are not equal
-  (but only a.e.-equal). -/
+special case of `ofReal_norm_eq_lintegral` since `(f - g) x` and `f x - g x` are not equal
+(but only a.e.-equal). -/
 theorem ofReal_norm_sub_eq_lintegral (f g : α →₁[μ] β) :
     ENNReal.ofReal ‖f - g‖ = ∫⁻ x, ‖f x - g x‖ₑ ∂μ := by
   simp_rw [ofReal_norm_eq_lintegral, ← edist_zero_right]

@@ -18,6 +18,7 @@ While `binop%` tries to solve for a single minimal type, `fbinop%` tries to solv
 the parameterized problem of solving for a single minimal "functor."
 
 The code is drawn from the Lean 4 core `binop%` elaborator. Two simplifications made were
+
 1. It is assumed that every `f` has a "homogeneous" instance
    (think `Set.prod : Set α → Set β → Set (α × β)`).
 2. It is assumed that there are no "non-homogeneous" default instances.

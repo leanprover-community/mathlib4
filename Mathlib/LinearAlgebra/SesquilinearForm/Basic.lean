@@ -123,7 +123,7 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
     · exact H
 
 /-- A set of orthogonal vectors `v` with respect to some sesquilinear map `B` is linearly
-  independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
+independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
 theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ[I₁'] V} {v : n → V₁}
     (hv₁ : B.IsOrthoᵢ v) (hv₂ : ∀ i, ¬B.IsOrtho (v i) (v i)) : LinearIndependent K₁ v := by
   classical
@@ -368,7 +368,7 @@ elements `x` which are orthogonal to all elements of `N`; i.e., for all `y` in `
 
 Note that for general (neither symmetric nor antisymmetric) bilinear maps this definition has a
 chirality; in addition to this "left" orthogonal complement one could define a "right" orthogonal
-complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
+complement for which, for all `y` in `N`, `B y x = 0`. This variant definition is not currently
 provided in mathlib. -/
 def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁ where
   carrier := { m | ∀ n ∈ N, B.IsOrtho n m }
@@ -433,7 +433,7 @@ theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x 
 
 -- todo: Generalize this to sesquilinear maps
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
-  is complement to its orthogonal complement. -/
+is complement to its orthogonal complement. -/
 theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
     IsCompl (K ∙ x) (Submodule.orthogonalBilin (N := K ∙ x) (B := B)) :=
   { disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot B x hx

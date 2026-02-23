@@ -33,6 +33,7 @@ private def error {Î± : Type _} (trace : Array Name) (m : MessageData) : MetaM Î
 
 /--
 Core algorithm for normalizing instances.
+
 * Ideally, the term is replaced with a synthesized instance.
 * If not, it is reduced to a constructor
   and each instance implicit field is given the same treatment.
@@ -109,10 +110,12 @@ private partial def makeFastInstance (provided : Expr) (trace : Array Name := #[
 constructor applications that leverage existing instances.
 
 For instance, when used as
+
 ```lean
 instance instSemiring : Semiring X := sorry
 instance instRing : Ring X := fast_instance% Function.Injective.ring ..
 ```
+
 this will define `instRing` as a nested constructor application that refers to `instSemiring`
 rather than applications of `Function.Injective.ring` or other non-canonical constructors.
 The advantage is then that `instRing.toSemiring` unifies almost immediately with `instSemiring`,

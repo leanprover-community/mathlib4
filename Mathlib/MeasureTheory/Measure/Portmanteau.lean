@@ -28,21 +28,22 @@ weak convergence of measures (probability measures or finite measures). Given me
 and μ on a topological space Ω, the conditions that will be proven equivalent (under quite
 general hypotheses) are:
 
-  (T) The measures μs tend to the measure μ weakly.
-  (C) For any closed set F, the limsup of the measures of F under μs is at most
-      the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
-  (O) For any open set G, the liminf of the measures of G under μs is at least
-      the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
-  (B) For any Borel set B whose boundary carries no mass under μ, i.e. μ(∂B) = 0,
-      the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B).
+(T) The measures μs tend to the measure μ weakly.
+(C) For any closed set F, the limsup of the measures of F under μs is at most
+the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
+(O) For any open set G, the liminf of the measures of G under μs is at least
+the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
+(B) For any Borel set B whose boundary carries no mass under μ, i.e. μ(∂B) = 0,
+the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B).
 
 The separate implications are:
+
 * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto` is the implication (T) → (C).
 * `MeasureTheory.limsup_measure_closed_le_iff_liminf_measure_open_ge` is the equivalence (C) ↔ (O).
 * `MeasureTheory.tendsto_measure_of_null_frontier` is the implication (O) → (B).
 * `MeasureTheory.limsup_measure_closed_le_of_forall_tendsto_measure` is the implication (B) → (C).
 * `MeasureTheory.tendsto_of_forall_isOpen_le_liminf` gives the implication (O) → (T) for
-    any sequence of Borel probability measures.
+  any sequence of Borel probability measures.
 * `MeasureTheory.tendsto_of_limsup_measure_closed_le` gives the implication (C) → (T).
 
 We also deduce a practical convergence criterion for probability measures, in
@@ -61,6 +62,7 @@ theorem, however, is most convenient for probability measures on pseudo-emetriza
 their Borel sigma algebras.
 
 Some specific considerations on the assumptions in the different implications:
+
 * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto`, i.e., implication (T) → (C),
   assumes that in the underlying topological space, indicator functions of closed sets have
   decreasing bounded continuous pointwise approximating sequences. The assumption is in the form
@@ -99,10 +101,10 @@ section LimsupClosedLEAndLELiminfOpen
 In this section we prove that for a sequence of Borel probability measures on a topological space
 and its candidate limit measure, the following two conditions are equivalent:
 
-  (C) For any closed set F, the limsup of the measures of F under μs is at most
-      the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F);
-  (O) For any open set G, the liminf of the measures of G under μs is at least
-      the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
+(C) For any closed set F, the limsup of the measures of F under μs is at most
+the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F);
+(O) For any open set G, the liminf of the measures of G under μs is at least
+the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
 
 Either of these will later be shown to be equivalent to the weak convergence of the sequence
 of measures.
@@ -191,15 +193,15 @@ section TendstoOfNullFrontier
 In this section we prove that for a sequence of Borel probability measures on a topological space
 and its candidate limit measure, either of the following equivalent conditions:
 
-  (C) For any closed set F, the limsup of the measures of F under μs is at most
-      the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F);
-  (O) For any open set G, the liminf of the measures of G under μs is at least
-      the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
+(C) For any closed set F, the limsup of the measures of F under μs is at most
+the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F);
+(O) For any open set G, the liminf of the measures of G under μs is at least
+the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
 
 implies that
 
-  (B) For any Borel set B whose boundary carries no mass under μ, i.e. μ(∂B) = 0,
-      the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B).
+(B) For any Borel set B whose boundary carries no mass under μ, i.e. μ(∂B) = 0,
+the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B).
 -/
 
 
@@ -255,19 +257,19 @@ section ConvergenceImpliesLimsupClosedLE
 In this section we prove, under the assumption that the underlying topological space `Ω` is
 pseudo-emetrizable, that
 
-  (T) The measures μs tend to the measure μ weakly
+(T) The measures μs tend to the measure μ weakly
 
 implies
 
-  (C) For any closed set F, the limsup of the measures of F under μs is at most
-      the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
+(C) For any closed set F, the limsup of the measures of F under μs is at most
+the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
 
 Combining with earlier proven implications, we get that (T) implies also both
 
-  (O) For any open set G, the liminf of the measures of G under μs is at least
-      the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G);
-  (B) For any Borel set B whose boundary carries no mass under μ, i.e. μ(∂B) = 0,
-      the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B).
+(O) For any open set G, the liminf of the measures of G under μs is at least
+the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G);
+(B) For any Borel set B whose boundary carries no mass under μ, i.e. μ(∂B) = 0,
+the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B).
 -/
 
 
@@ -370,22 +372,21 @@ section LimitBorelImpliesLimsupClosedLE
 
 /-! ### Portmanteau implication: limit condition for Borel sets implies limsup for closed sets
 
-
 In this section we prove, under the assumption that the underlying topological space `Ω` is
 pseudo-emetrizable, that
 
-  (B) For any Borel set B whose boundary carries no mass under μ, i.e. μ(∂B) = 0,
-      the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B)
+(B) For any Borel set B whose boundary carries no mass under μ, i.e. μ(∂B) = 0,
+the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B)
 
 implies
 
-  (C) For any closed set F, the limsup of the measures of F under μs is at most
-      the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
+(C) For any closed set F, the limsup of the measures of F under μs is at most
+the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
 
 Combining with earlier proven implications, we get that (B) implies also
 
-  (O) For any open set G, the liminf of the measures of G under μs is at least
-      the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
+(O) For any open set G, the liminf of the measures of G under μs is at least
+the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
 
 -/
 
@@ -480,15 +481,14 @@ section le_liminf_open_implies_convergence
 
 /-! ### Portmanteau implication: liminf condition for open sets implies weak convergence
 
-
 In this section we prove for a sequence (μsₙ)ₙ Borel probability measures that
 
-  (O) For any open set G, the liminf of the measures of G under μsₙ is at least
-      the measure of G under μ, i.e., μ(G) ≤ liminfₙ μsₙ(G).
+(O) For any open set G, the liminf of the measures of G under μsₙ is at least
+the measure of G under μ, i.e., μ(G) ≤ liminfₙ μsₙ(G).
 
 implies
 
-  (T) The measures μsₙ converge weakly to the measure μ.
+(T) The measures μsₙ converge weakly to the measure μ.
 
 -/
 

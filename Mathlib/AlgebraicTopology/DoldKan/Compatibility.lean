@@ -25,6 +25,7 @@ if the inverse functor of the equivalence was exactly the functor
 In this file, given four categories `A`, `A'`, `B`, `B'`, equivalences `eA : A ≅ A'`,
 `eB : B ≅ B'`, `e' : A' ≅ B'`, functors `F : A ⥤ B'`, `G : B ⥤ A` equipped with certain
 compatibilities, we construct successive equivalences:
+
 - `equivalence₀` from `A` to `B'`, which is the composition of `eA` and `e'`.
 - `equivalence₁` from `A` to `B'`, with the same inverse functor as `equivalence₀`,
   but whose functor is `F`.

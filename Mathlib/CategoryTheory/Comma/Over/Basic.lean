@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Category.Cat
 # Over and under categories
 
 Over (and under) categories are special cases of comma categories.
+
 * If `L` is the identity functor and `R` is a constant functor, then `Comma L R` is the "slice" or
   "over" category over the object `R` maps to.
 * Conversely, if `L` is a constant functor and `R` is the identity functor, then `Comma L R` is the
@@ -548,7 +549,7 @@ def Limits.Cone.overPost
 namespace CostructuredArrow
 
 /-- Reinterpreting an `F`-costructured arrow `F.obj d ⟶ X` as an arrow over `X` induces a functor
-    `CostructuredArrow F X ⥤ Over X`. -/
+`CostructuredArrow F X ⥤ Over X`. -/
 @[simps!]
 def toOver (F : D ⥤ T) (X : T) : CostructuredArrow F X ⥤ Over X :=
   CostructuredArrow.pre F (𝟭 T) X
@@ -607,7 +608,7 @@ def costructuredArrowToOverEquivalence (F : D ⥤ T) {X : T} (Y : Over X) :
 end CostructuredArrow
 
 /-- The under category has as objects arrows with domain `X` and as morphisms commutative
-    triangles. -/
+triangles. -/
 def Under (X : T) :=
   StructuredArrow X (𝟭 T)
 
@@ -650,7 +651,7 @@ def mk {X Y : T} (f : X ⟶ Y) : Under X :=
   StructuredArrow.mk f
 
 /-- To give a morphism in the under category, it suffices to give a morphism fitting in a
-    commutative triangle. -/
+commutative triangle. -/
 @[simps! right]
 def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := by cat_disch) : U ⟶ V :=
   StructuredArrow.homMk f w
@@ -1030,7 +1031,7 @@ namespace StructuredArrow
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- Reinterpreting an `F`-structured arrow `X ⟶ F.obj d` as an arrow under `X` induces a functor
-    `StructuredArrow X F ⥤ Under X`. -/
+`StructuredArrow X F ⥤ Under X`. -/
 @[simps!]
 def toUnder (X : T) (F : D ⥤ T) : StructuredArrow X F ⥤ Under X :=
   StructuredArrow.pre X F (𝟭 T)
@@ -1079,15 +1080,15 @@ lemma essImage.of_underPost {Y : Under (F.obj X)} :
 variable {S : Type u₂} [Category.{v₂} S]
 
 /-- Given `X : T`, to upgrade a functor `F : S ⥤ T` to a functor `S ⥤ Over X`, it suffices to
-    provide maps `F.obj Y ⟶ X` for all `Y` making the obvious triangles involving all `F.map g`
-    commute. -/
+provide maps `F.obj Y ⟶ X` for all `Y` making the obvious triangles involving all `F.map g`
+commute. -/
 @[simps! obj_left map_left]
 def toOver (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
     (h : ∀ {Y Z : S} (g : Y ⟶ Z), F.map g ≫ f Z = f Y) : S ⥤ Over X :=
   F.toCostructuredArrow (𝟭 _) X f h
 
 /-- Upgrading a functor `S ⥤ T` to a functor `S ⥤ Over X` and composing with the forgetful functor
-    `Over X ⥤ T` recovers the original functor. -/
+`Over X ⥤ T` recovers the original functor. -/
 def toOverCompForget (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
     (h : ∀ {Y Z : S} (g : Y ⟶ Z), F.map g ≫ f Z = f Y) : F.toOver X f h ⋙ Over.forget _ ≅ F :=
   Iso.refl _
@@ -1098,15 +1099,15 @@ lemma toOver_comp_forget (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
   rfl
 
 /-- Given `X : T`, to upgrade a functor `F : S ⥤ T` to a functor `S ⥤ Under X`, it suffices to
-    provide maps `X ⟶ F.obj Y` for all `Y` making the obvious triangles involving all `F.map g`
-    commute. -/
+provide maps `X ⟶ F.obj Y` for all `Y` making the obvious triangles involving all `F.map g`
+commute. -/
 @[simps! obj_right map_right]
 def toUnder (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
     (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : S ⥤ Under X :=
   F.toStructuredArrow X (𝟭 _) f h
 
 /-- Upgrading a functor `S ⥤ T` to a functor `S ⥤ Under X` and composing with the forgetful functor
-    `Under X ⥤ T` recovers the original functor. -/
+`Under X ⥤ T` recovers the original functor. -/
 def toUnderCompForget (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
     (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : F.toUnder X f h ⋙ Under.forget _ ≅ F :=
   Iso.refl _

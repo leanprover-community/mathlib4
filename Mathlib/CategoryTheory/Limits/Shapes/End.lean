@@ -18,6 +18,7 @@ We also introduce `coend F` as multicoequalizers of
 `(F.obj (op j)).obj j` for all `j : J`. In these cases, cocones are named cowedges.
 
 ## References
+
 * https://ncatlab.org/nlab/show/end
 
 -/
@@ -239,7 +240,7 @@ lemma end_.lift_π (j : J) : lift f hf ≫ π F j = f j := by
 
 variable {F' : Jᵒᵖ ⥤ J ⥤ C} [HasEnd F'] (f : F ⟶ F')
 
-/-- A natural transformation of functors F ⟶ F' induces a map end_ F ⟶ end_ F'. -/
+/-- A natural transformation of functors F ⟶ F' induces a map end\_ F ⟶ end\_ F'. -/
 noncomputable def end_.map : end_ F ⟶ end_ F' :=
   end_.lift (fun x ↦ end_.π _ _ ≫ (f.app (op x)).app x) (fun j j' φ ↦ by
     have e := (f.app (op j)).naturality φ

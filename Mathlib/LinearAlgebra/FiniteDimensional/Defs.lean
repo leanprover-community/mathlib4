@@ -50,6 +50,7 @@ For basic results that do not need the `FiniteDimensional` class, import
 `Mathlib/LinearAlgebra/Dimension/Finrank.lean`.
 
 Preservation of finite-dimensionality and formulas for the dimension are given for
+
 - submodules (`FiniteDimensional.finiteDimensional_submodule`)
 - linear equivs, in `LinearEquiv.finiteDimensional`
 
@@ -116,7 +117,7 @@ noncomputable def fintypeBasisIndex {ι : Type*} [FiniteDimensional K V] (b : Ba
   @Fintype.ofFinite _ (Module.Finite.finite_basis b)
 
 /-- If a vector space is `FiniteDimensional`, `Basis.ofVectorSpace` is indexed by
-  a finite type. -/
+a finite type. -/
 noncomputable instance [FiniteDimensional K V] : Fintype (Basis.ofVectorSpaceIndex K V) :=
   fintypeBasisIndex (Basis.ofVectorSpace K V)
 

@@ -21,6 +21,7 @@ A type alias `ConjAct G` is introduced for a group `G`. The group `ConjAct G` ac
 by conjugation. The group `ConjAct G` also acts on any normal subgroup of `G` by conjugation.
 
 As a generalization, this also allows:
+
 * `ConjAct Mˣ` to act on `M`, when `M` is a `Monoid`
 * `ConjAct G₀` to act on `G₀`, when `G₀` is a `GroupWithZero`
 
@@ -221,7 +222,7 @@ theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
   exact Iff.symm mul_inv_eq_iff_eq_mul
 
 /-- As normal subgroups are closed under conjugation, they inherit the conjugation action
-  of the underlying group. -/
+of the underlying group. -/
 instance Subgroup.conjAction {H : Subgroup G} [hH : H.Normal] : SMul (ConjAct G) H :=
   ⟨fun g h => ⟨g • (h : G), hH.conj_mem h.1 h.2 (ofConjAct g)⟩⟩
 

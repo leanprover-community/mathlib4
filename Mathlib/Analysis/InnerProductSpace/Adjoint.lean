@@ -107,7 +107,7 @@ theorem adjointAux_norm (A : E →L[𝕜] F) : ‖adjointAux A‖ = ‖A‖ := b
     exact toSesqForm_apply_norm_le
 
 /-- The adjoint of a bounded operator `A` from a Hilbert space `E` to another Hilbert space `F`,
-  denoted as `A†`. -/
+denoted as `A†`. -/
 def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
   LinearIsometryEquiv.ofSurjective { adjointAux with norm_map' := adjointAux_norm } fun A =>
     ⟨adjointAux A, adjointAux_adjointAux A⟩
@@ -447,7 +447,7 @@ variable [CompleteSpace E]
 variable {T : E →ₗ[𝕜] E}
 
 /-- The **Hellinger--Toeplitz theorem**: Construct a self-adjoint operator from an everywhere
-  defined symmetric operator. -/
+defined symmetric operator. -/
 def IsSymmetric.toSelfAdjoint (hT : IsSymmetric T) : selfAdjoint (E →L[𝕜] E) :=
   ⟨⟨T, hT.continuous⟩, ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric.mpr hT⟩
 

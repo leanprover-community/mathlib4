@@ -28,7 +28,7 @@ def elabPattern (patt : Term) (expectedType? : Option Expr) : TermElabM Expr := 
       instantiateMVars t
 
 /--
-Given a `namePrefix` (`` `u`` by default), returns the first name out of `namePrefix_1`,
+Given a `namePrefix` (``  `u `` by default), returns the first name out of `namePrefix_1`,
 `namePrefix_2`, ... which does not appear in `usedLevelNames`. Note `mkFreshLevelName` does not
 attempt to use `namePrefix` itself as a level name.
 -/

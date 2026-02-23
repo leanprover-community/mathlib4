@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Noetherian.Basic
 # Ring-theoretic supplement of Algebra.Polynomial.
 
 ## Main results
+
 * `MvPolynomial.isDomain`:
   If a ring is an integral domain, then so is its polynomial ring over finitely many variables.
 * `Polynomial.isNoetherianRing`:
@@ -188,7 +189,7 @@ def monicEquivDegreeLT [Nontrivial R] (n : ℕ) :
     · simp [mem_degreeLT.1 hp]
 
 /-- For every polynomial `p` in the span of a set `s : Set R[X]`, there exists a polynomial of
-  `p' ∈ s` with higher degree. See also `Polynomial.exists_degree_le_of_mem_span_of_finite`. -/
+`p' ∈ s` with higher degree. See also `Polynomial.exists_degree_le_of_mem_span_of_finite`. -/
 theorem exists_degree_le_of_mem_span {s : Set R[X]} {p : R[X]}
     (hs : s.Nonempty) (hp : p ∈ Submodule.span R s) :
     ∃ p' ∈ s, degree p ≤ degree p' := by

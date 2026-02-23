@@ -16,6 +16,7 @@ We define the class `PreservesZeroMorphisms` and show basic properties.
 ## Main results
 
 We provide the following results:
+
 * Left adjoints and right adjoints preserve zero morphisms;
 * full functors preserve zero morphisms;
 * if both categories involved have a zero object, then a functor preserves zero morphisms if and

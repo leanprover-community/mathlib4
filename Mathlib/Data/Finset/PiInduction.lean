@@ -24,6 +24,7 @@ finite type.
   `∀ y ∈ g i, y < x` and `∀ y ∈ g i, x < y` respectively in the induction step.
 
 ## Tags
+
 finite set, finite type, induction, function
 -/
 

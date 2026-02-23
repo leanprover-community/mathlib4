@@ -22,6 +22,7 @@ following T. Wedhorn's unpublished notes “Adic Spaces” ([wedhorn_adic]).
 The definition of a valuation we use here is Definition 1.22 of [wedhorn_adic].
 A valuation on a ring `R` is a monoid homomorphism `v` to a linearly ordered
 commutative monoid with zero, that in addition satisfies the following two axioms:
+
 * `v 0 = 0`
 * `∀ x y, v (x + y) ≤ max (v x) (v y)`
 
@@ -39,9 +40,12 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
 ## Main definitions
 
 * `Valuation R Γ₀`, the type of valuations on `R` with values in `Γ₀`
+
 * `Valuation.IsNontrivial` is the class of non-trivial valuations, namely those for which there
   is an element in the ring whose valuation is `≠ 0` and `≠ 1`.
+
 * `Valuation.IsEquiv`, the heterogeneous equivalence relation on valuations
+
 * `Valuation.supp`, the support of a valuation
 
 * `AddValuation R Γ₀`, the type of additive valuations on `R` with values in a
@@ -564,10 +568,10 @@ section IsTrivialOn
 variable [LinearOrderedCommMonoidWithZero Γ₀]
 
 /-- A valuation on an `A`-algebra `B` is trivial on constants if the nonzero elements of the
-  base ring `A` are mapped to `1`.
+base ring `A` are mapped to `1`.
 
-  This is true, for example, when `A` is a finite field.
-  See `Valuation.FiniteField.instIsTrivialOn`. -/
+This is true, for example, when `A` is a finite field.
+See `Valuation.FiniteField.instIsTrivialOn`. -/
 class IsTrivialOn {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B]
     (v : Valuation B Γ₀) where
   eq_one : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1
@@ -987,7 +991,7 @@ theorem comap_comp {S₁ : Type*} {S₂ : Type*} [Ring S₁] [Ring S₂] (f : S�
   Valuation.comap_comp v f g
 
 /-- A `≤`-preserving, `⊤`-preserving group homomorphism `Γ₀ → Γ'₀` induces a map
-  `AddValuation R Γ₀ → AddValuation R Γ'₀`.
+`AddValuation R Γ₀ → AddValuation R Γ'₀`.
 -/
 def map (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddValuation R Γ₀) :
     AddValuation R Γ'₀ :=
@@ -1002,7 +1006,7 @@ lemma map_apply (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v 
     v.map f ht hf r = f (v r) := rfl
 
 /-- Two additive valuations on `R` are defined to be equivalent if they induce the same
-  preorder on `R`. -/
+preorder on `R`. -/
 def IsEquiv (v₁ : AddValuation R Γ₀) (v₂ : AddValuation R Γ'₀) : Prop :=
   Valuation.IsEquiv v₁ v₂
 

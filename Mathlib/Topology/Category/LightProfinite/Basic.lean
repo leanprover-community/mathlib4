@@ -125,7 +125,7 @@ instance {J : Type v} [SmallCategory J] (F : J ⥤ LightProfinite.{max u v}) :
   exact Subtype.totallyDisconnectedSpace
 
 /-- An explicit limit cone for a functor `F : J ⥤ LightProfinite`, for a countable category `J`
-  defined in terms of `CompHaus.limitCone`, which is defined in terms of `TopCat.limitCone`. -/
+defined in terms of `CompHaus.limitCone`, which is defined in terms of `TopCat.limitCone`. -/
 def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
     (F : J ⥤ LightProfinite.{max u v}) :
     Limits.Cone F where

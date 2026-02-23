@@ -26,6 +26,7 @@ corresponding property `isDenseAt F` of objects of `D`.
   to the Yoneda embedding
 
 ## References
+
 * https://ncatlab.org/nlab/show/dense+functor
 
 -/

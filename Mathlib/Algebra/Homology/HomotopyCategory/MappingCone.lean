@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Linarith
 In this file, we study the homotopy cofiber `HomologicalComplex.homotopyCofiber`
 of a morphism `φ : F ⟶ G` of cochain complexes indexed by `ℤ`. In this case,
 we redefine it as `CochainComplex.mappingCone φ`. The API involves definitions
+
 - `mappingCone.inl φ : Cochain F (mappingCone φ) (-1)`,
 - `mappingCone.inr φ : G ⟶ mappingCone φ`,
 - `mappingCone.fst φ : Cocycle (mappingCone φ) F 1` and

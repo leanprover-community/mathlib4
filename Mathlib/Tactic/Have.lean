@@ -44,6 +44,7 @@ exact Nat
 ```
 
 From being interpreted as
+
 ```lean
 have h
   exact Nat

@@ -23,6 +23,7 @@ all of the other properties appearing in the definition of an abelian category a
 structure. This is the construction we carry out in this file.
 
 The proof proceeds in roughly five steps:
+
 1. Prove some results (for example that all equalizers exist) that would be trivial if we already
    had the preadditive structure but are a bit of work without it.
 2. Develop images and coimages to show that every monomorphism is the kernel of its cokernel.

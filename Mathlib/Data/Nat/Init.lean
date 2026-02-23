@@ -17,6 +17,7 @@ public import Mathlib.Tactic.TypeStar
 # Basic operations on the natural numbers
 
 This file contains:
+
 * some basic lemmas about natural numbers
 * extra recursors:
   * `leRecOn`, `le_induction`: recursion and induction principles starting at non-zero numbers
@@ -42,6 +43,7 @@ finsets, powers in groups, ...).
 Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated development.
 
 The relevant files are:
+
 * `Mathlib/Data/Nat/Basic.lean` for the continuation of the home-baked development on `ℕ`
 * `Mathlib/Data/Int/Init.lean` for the continuation of the home-baked development on `ℤ`
 * `Mathlib/Algebra/Group/Nat/Defs.lean` for the monoid instances on `ℕ`
@@ -135,6 +137,7 @@ there is a map from `C n` to each `C m`, `n ≤ m`.
 
 This is a version of `Nat.le.rec` that works for `Sort u`.
 Similarly to `Nat.le.rec`, it can be used as
+
 ```
 induction hle using Nat.leRec with
 | refl => sorry

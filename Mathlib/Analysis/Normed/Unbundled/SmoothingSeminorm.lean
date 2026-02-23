@@ -14,12 +14,14 @@ public import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # smoothingSeminorm
+
 In this file, we prove [BGR, Proposition 1.3.2/1][bosch-guntzer-remmert]: if `μ` is a
 nonarchimedean seminorm on a commutative ring `R`, then
 `iInf (fun (n : PNat), (μ(x ^ (n : ℕ))) ^ (1 / (n : ℝ)))` is a power-multiplicative nonarchimedean
 seminorm on `R`.
 
 ## Main Definitions
+
 * `smoothingSeminormSeq` : the `ℝ`-valued sequence sending `n` to `((f( (x ^ n)) ^ (1 / n : ℝ)`.
 * `smoothingFun` : the iInf of the sequence `n ↦ f(x ^ (n : ℕ))) ^ (1 / (n : ℝ)`.
 * `smoothingSeminorm` : if `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun`
@@ -35,6 +37,7 @@ seminorm on `R`.
   `smoothingFun μ` is power-multiplicative.
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags
@@ -58,7 +61,7 @@ section smoothingSeminorm
 abbrev smoothingSeminormSeq (x : R) : ℕ → ℝ := fun n => μ (x ^ n) ^ (1 / n : ℝ)
 
 /-- For any positive `ε`, there exists a positive natural number `m` such that
-  `μ (x ^ (m : ℕ)) ^ (1 / m : ℝ) < iInf (fun (n : PNat), (μ(x ^(n : ℕ)))^(1/(n : ℝ))) + ε/2`. -/
+`μ (x ^ (m : ℕ)) ^ (1 / m : ℝ) < iInf (fun (n : PNat), (μ(x ^(n : ℕ)))^(1/(n : ℝ))) + ε/2`. -/
 private theorem smoothingSeminormSeq_exists_pnat (x : R) {ε : ℝ} (hε : 0 < ε) :
     ∃ m : PNat, μ (x ^ (m : ℕ)) ^ (1 / m : ℝ) <
         (iInf fun n : PNat => μ (x ^ (n : ℕ)) ^ (1 / (n : ℝ))) + ε / 2 :=
@@ -238,7 +241,7 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
       _ ≤ L + ε := h3
 
 /-- If `μ 1 ≤ 1`, then `smoothingFun μ x` is the limit of `smoothingSeminormSeq μ x`
-  as `n` tends to infinity. -/
+as `n` tends to infinity. -/
 theorem tendsto_smoothingFun_of_map_one_le_one (hμ1 : μ 1 ≤ 1) (x : R) :
     Tendsto (smoothingSeminormSeq μ x) atTop (𝓝 (smoothingFun μ x)) := by
   by_cases hx : μ x = 0
@@ -556,7 +559,7 @@ theorem smoothingSeminorm_map_one_le_one (hμ1 : μ 1 ≤ 1)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun μ` is
-  power-multiplicative. -/
+power-multiplicative. -/
 theorem isPowMul_smoothingFun (hμ1 : μ 1 ≤ 1) : IsPowMul (smoothingFun μ) := by
   intro x m hm
   have hlim : Tendsto (fun n => smoothingSeminormSeq μ x (m * n)) atTop
@@ -604,13 +607,13 @@ theorem smoothingFun_apply_of_map_mul_eq_mul (hμ1 : μ 1 ≤ 1) {x : R}
       ← rpow_mul (apply_nonneg μ _), mul_one_div_cancel hn0, rpow_one]
 
 /-- If `μ 1 ≤ 1`, `μ` is nonarchimedean, and `∀ y : R, μ (x * y) = μ x * μ y`, then
-  `smoothingSeminorm μ x = μ x`. -/
+`smoothingSeminorm μ x = μ x`. -/
 theorem smoothingSeminorm_apply_of_map_mul_eq_mul (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) {x : R}
     (hx : ∀ y : R, μ (x * y) = μ x * μ y) : smoothingSeminorm μ hμ1 hna x = μ x :=
   smoothingFun_apply_of_map_mul_eq_mul μ hμ1 hx
 
 /-- If `μ 1 ≤ 1`, and `x` is multiplicative for `μ`, then it is multiplicative for
-  `smoothingFun`. -/
+`smoothingFun`. -/
 theorem smoothingFun_of_map_mul_eq_mul (hμ1 : μ 1 ≤ 1) {x : R} (hx : ∀ y : R, μ (x * y) = μ x * μ y)
     (y : R) : smoothingFun μ (x * y) = smoothingFun μ x * smoothingFun μ y := by
   have hlim : Tendsto (fun n => μ x * smoothingSeminormSeq μ y n) atTop
@@ -629,7 +632,7 @@ theorem smoothingFun_of_map_mul_eq_mul (hμ1 : μ 1 ≤ 1) {x : R} (hx : ∀ y :
     rpow_one]
 
 /-- If `μ 1 ≤ 1`, `μ` is nonarchimedean, and `x` is multiplicative for `μ`, then `x` is
-  multiplicative for `smoothingSeminorm`. -/
+multiplicative for `smoothingSeminorm`. -/
 theorem smoothingSeminorm_of_mul (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) {x : R}
     (hx : ∀ y : R, μ (x * y) = μ x * μ y) (y : R) :
     smoothingSeminorm μ hμ1 hna (x * y) =

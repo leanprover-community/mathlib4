@@ -74,6 +74,7 @@ instance : ToMessageData Parameter where
 /--
 Given a (full, resolvable) declaration name `foo` and an array of parameters
 `#[p₁, p₂, ..., pₙ]`, constructs the message:
+
 ```null
 `{foo}` does not use the following hypothes(is/es) in its type{ outside of proofs}:
   • {p₁}
@@ -81,6 +82,7 @@ Given a (full, resolvable) declaration name `foo` and an array of parameters
   ⋮
   • {pₙ}
 ```
+
 where the bracketed "outside of proofs" is only included if some parameter appears in a proof in
 the type.
 -/
@@ -116,8 +118,9 @@ structure InstanceOfConcern where
 /--
 Gets the indices `i` (in ascending order) of the binders of a nested `.forallE`,
 `(x₀ : A₀) → (x₁ : A₁) → ⋯ → X`, such that
+
 - the binder `[xᵢ : Aᵢ]` has `instImplicit` `binderInfo`
--  `p Aᵢ` is `true`
+- `p Aᵢ` is `true`
 - The rest of the type `(xᵢ₊₁ : Aᵢ₊₁) → ⋯ → X` does not depend on `xᵢ` outside of proofs.
 
 This is like `getForallUnusedInstanceBinderIdxsWhere`, but ignores dependence that arises from
@@ -133,11 +136,11 @@ where
   /-- Enter foralls recursively, creating a telescope for binders which are instances of concern
   and instantiating all other bvars with `sorry`. The only free variables therefore arise from
   instances of concern which we want to track the usage of.
-
+  
   By instantiating ordinary binders with `sorry`, `collectFVarsOutsideOfProofs` can use the
   computed field accessed by `hasFVar` (in constant time) to avoid traversing any subexpressions
   that do not contain a free variable for an instance of concern, which helps performance.
-
+  
   Used fvarIds (i.e., instances of concern) are recorded in the `StateRefT`'s `FVarIdSet`; the
   returned `Array InstanceOfConcern` records all instances of concern that have been introduced,
   used or not. -/
@@ -222,13 +225,16 @@ types and free variables of the unused parameters are available as
 and current infotree `t`, and run `log t thm unusedParams`.
 
 A simple pattern is therefore
+
 ```
 fun _ thm unusedParams => do
   logLint linter.fooLinter (← getRef) m!"\
     {thm.name.unusedInstancesMsg unusedParams}\n\n\
     <extra caption>"
 ```
+
 which logs
+
 ```null
 `{foo}` has the hypothes(is/es):
   • {p₁}
@@ -241,6 +247,7 @@ which (is/are) not used in the remainder of the type.
 
 Note: This linter can be disabled with `set_option {linter.fooLinter.name} false`
 ```
+
 pluralizing as appropriate.
 -/
 @[nolint unusedArguments] -- TODO: we plan to use `_cmd` in future
@@ -265,6 +272,7 @@ section Decidable
 /--
 Checks if `type` is an application of (or forall with return type which is an application of) a
 `Decidable*` constant. Specifically, checks if the constant is one of:
+
 - `Decidable`
 - `DecidablePred`
 - `DecidableRel`

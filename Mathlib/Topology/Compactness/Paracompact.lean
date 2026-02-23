@@ -197,6 +197,7 @@ the user should use a basis obtained by `Filter.HasBasis.restrict_subset` or a s
 the proof of `paracompact_of_locallyCompact_sigmaCompact` for an example.
 
 The formalization is based on two [ncatlab](https://ncatlab.org/) proofs:
+
 * [locally compact and sigma compact spaces are paracompact](https://ncatlab.org/nlab/show/locally+compact+and+sigma-compact+spaces+are+paracompact);
 * [open cover of smooth manifold admits locally finite refinement by closed balls](https://ncatlab.org/nlab/show/partition+of+unity#ExistenceOnSmoothManifolds).
 
@@ -264,6 +265,7 @@ the user should use a basis obtained by `Filter.HasBasis.restrict_subset` or a s
 the proof of `paracompact_of_locallyCompact_sigmaCompact` for an example.
 
 The formalization is based on two [ncatlab](https://ncatlab.org/) proofs:
+
 * [locally compact and sigma compact spaces are paracompact](https://ncatlab.org/nlab/show/locally+compact+and+sigma-compact+spaces+are+paracompact);
 * [open cover of smooth manifold admits locally finite refinement by closed balls](https://ncatlab.org/nlab/show/partition+of+unity#ExistenceOnSmoothManifolds).
 

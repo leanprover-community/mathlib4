@@ -14,9 +14,13 @@ public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Ideals in localizations of commutative rings
+
 ## Implementation notes
+
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
+
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -280,8 +284,8 @@ variable [Algebra R S] [IsLocalization M S]
 set_option backward.isDefEq.respectTransparency false in
 include M in
 /-- `quotientMap` applied to maximal ideals of a localization is `surjective`.
-  The quotient by a maximal ideal is a field, so inverses to elements already exist,
-  and the localization necessarily maps the equivalence class of the inverse in the localization -/
+The quotient by a maximal ideal is a field, so inverses to elements already exist,
+and the localization necessarily maps the equivalence class of the inverse in the localization -/
 theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPrime] {J : Ideal R}
     {H : J ≤ I.comap (algebraMap R S)} (hI : (I.comap (algebraMap R S)).IsMaximal) :
     Function.Surjective (Ideal.quotientMap I (algebraMap R S) H) := by

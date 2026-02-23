@@ -22,10 +22,10 @@ results for the Lie algebra of square matrices.
 
 ## Main definitions
 
-  * `skewAdjointLieSubalgebra`
-  * `skewAdjointLieSubalgebraEquiv`
-  * `skewAdjointMatricesLieSubalgebra`
-  * `skewAdjointMatricesLieSubalgebraEquiv`
+* `skewAdjointLieSubalgebra`
+* `skewAdjointLieSubalgebraEquiv`
+* `skewAdjointMatricesLieSubalgebra`
+* `skewAdjointMatricesLieSubalgebraEquiv`
 
 ## Tags
 

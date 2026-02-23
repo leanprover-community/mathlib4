@@ -48,7 +48,7 @@ attribute [local instance] Std.Refl.swap
 namespace Order
 
 /-- Cofinality of a reflexive order `≼`. This is the smallest cardinality
-  of a subset `S : Set α` such that `∀ a, ∃ b ∈ S, a ≼ b`. -/
+of a subset `S : Set α` such that `∀ a, ∃ b ∈ S, a ≼ b`. -/
 def cof (r : α → α → Prop) : Cardinal :=
   sInf { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = c }
 
@@ -433,7 +433,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
 -- TODO: move stuff about fundamental sequences to their own file.
 
 /-- A fundamental sequence for `a` is an increasing sequence of length `o = cof a` that converges at
-    `a`. We provide `o` explicitly in order to avoid type rewrites. -/
+`a`. We provide `o` explicitly in order to avoid type rewrites. -/
 def IsFundamentalSequence (a o : Ordinal.{u}) (f : ∀ b < o, Ordinal.{u}) : Prop :=
   o ≤ a.cof.ord ∧ (∀ {i j} (hi hj), i < j → f i hi < f j hj) ∧ blsub.{u, u} o f = a
 
@@ -711,7 +711,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) :
       simpa [singleton_eq_singleton_iff] using hab
 
 /-- If the union of s is unbounded and s is smaller than the cofinality,
-  then s has an unbounded member -/
+then s has an unbounded member -/
 theorem unbounded_of_unbounded_sUnion (r : α → α → Prop) [wo : IsWellOrder α r] {s : Set (Set α)}
     (h₁ : Unbounded r <| ⋃₀ s) (h₂ : #s < Order.cof (swap rᶜ)) : ∃ x ∈ s, Unbounded r x := by
   by_contra! h
@@ -722,7 +722,7 @@ theorem unbounded_of_unbounded_sUnion (r : α → α → Prop) [wo : IsWellOrder
   exact ⟨f ⟨c, hc⟩, mem_range_self _, fun hxz => hxy (Trans.trans (wo.wf.lt_sup _ hy) hxz)⟩
 
 /-- If the union of s is unbounded and s is smaller than the cofinality,
-  then s has an unbounded member -/
+then s has an unbounded member -/
 theorem unbounded_of_unbounded_iUnion {α β : Type u} (r : α → α → Prop) [wo : IsWellOrder α r]
     (s : β → Set α) (h₁ : Unbounded r <| ⋃ x, s x) (h₂ : #β < Order.cof (swap rᶜ)) :
     ∃ x : β, Unbounded r (s x) := by

@@ -243,7 +243,7 @@ theorem of_union_of_dvd (h : ∃ s ∈ S, s ≠ 0 ∧ n ∣ s) [H : IsCyclotomic
     exact ⟨m, ⟨Or.inr hm, hm'⟩⟩
 
 /-- If there exists a nonzero `s ∈ S` such that `n ∣ s`, then `IsCyclotomicExtension S A B`
-  if and only if `IsCyclotomicExtension (S ∪ {n}) A B`. -/
+if and only if `IsCyclotomicExtension (S ∪ {n}) A B`. -/
 theorem iff_union_of_dvd (h : ∃ s ∈ S, s ≠ 0 ∧ n ∣ s) :
     IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {n}) A B := by
   refine

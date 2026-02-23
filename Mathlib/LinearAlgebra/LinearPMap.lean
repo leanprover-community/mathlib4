@@ -23,6 +23,7 @@ We define a `SemilatticeInf` with `OrderBot` instance on this, and define three 
   partial linear map on the `sSup` of their domains that extends all these maps.
 
 Moreover, we define
+
 * `LinearPMap.graph` is the graph of the partial linear map viewed as a submodule of `E × F`.
 
 Partially defined maps are currently used in `Mathlib` to prove the Hahn-Banach theorem

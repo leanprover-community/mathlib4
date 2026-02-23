@@ -87,12 +87,15 @@ In addition, if `a : Matrix n n ℂ` is positive semidefinite, then the `ℂ`-sp
 contained in (the range of the coercion of) `ℝ≥0`. In this case, we get a continuous functional
 calculus with `R := ℝ≥0`. From this we can define `√a := cfc a NNReal.sqrt`, which is also
 positive semidefinite (because `cfc` preserves the predicate), and this is truly a square root since
+
 ```
 √a * √a = cfc NNReal.sqrt a * cfc NNReal.sqrt a =
   cfc (NNReal.sqrt ^ 2) a = cfc id a = a
 ```
+
 The composition property allows us to show that, in fact, this is the *unique* positive semidefinite
 square root of `a` because, if `b` is any positive semidefinite square root, then
+
 ```
 b = cfc id b = cfc (NNReal.sqrt ∘ (· ^ 2)) b =
   cfc NNReal.sqrt (cfc b (· ^ 2)) = cfc NNReal.sqrt a = √a

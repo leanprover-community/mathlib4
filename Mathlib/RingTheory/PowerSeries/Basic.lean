@@ -29,6 +29,7 @@ The file sets up the (semi)ring structure on univariate power series.
 We provide the natural inclusion from polynomials to formal power series.
 
 Additional results can be found in:
+
 * `Mathlib/RingTheory/PowerSeries/Trunc.lean`, truncation of power series;
 * `Mathlib/RingTheory/PowerSeries/Inverse.lean`, about inverses of power series,
   and the fact that power series over a local ring form a local ring;
@@ -38,7 +39,7 @@ Additional results can be found in:
 ## Implementation notes
 
 Because of its definition,
-  `PowerSeries R := MvPowerSeries Unit R`.
+`PowerSeries R := MvPowerSeries Unit R`.
 a lot of proofs and properties from the multivariate case
 can be ported to the single variable case.
 However, it means that formal power series are indexed by `Unit →₀ ℕ`,
@@ -571,8 +572,8 @@ section toSubring
 variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
 
 /-- Given a formal power series `p` and a subring `T` that contains the
- coefficients of `p`, return the corresponding formal power series
- whose coefficients are in `T`. -/
+coefficients of `p`, return the corresponding formal power series
+whose coefficients are in `T`. -/
 def toSubring : PowerSeries T := mk fun n => ⟨p.coeff n, hp n⟩
 
 @[simp]

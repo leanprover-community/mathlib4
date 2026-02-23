@@ -57,7 +57,7 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₀` to
-  `p.trans p.symm`. -/
+`p.trans p.symm`. -/
 def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.symm) where
   toFun x := p ⟨reflTransSymmAux x, reflTransSymmAux_mem_I x⟩
   continuous_toFun := by fun_prop
@@ -72,7 +72,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
   prop' t := by norm_num [reflTransSymmAux]
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
-  `p.symm.trans p`. -/
+`p.symm.trans p`. -/
 def reflSymmTrans (p : Path x₀ x₁) : Homotopy (Path.refl x₁) (p.symm.trans p) :=
   (reflTransSymm p.symm).cast rfl <| congr_arg _ (Path.symm_symm _)
 
@@ -246,8 +246,8 @@ structure FundamentalGroupoid (X : Type*) where
 namespace FundamentalGroupoid
 
 /-- The equivalence between `X` and the underlying type of its fundamental groupoid.
-  This is useful for transferring constructions (instances, etc.)
-  from `X` to `πₓ X`. -/
+This is useful for transferring constructions (instances, etc.)
+from `X` to `πₓ X`. -/
 @[simps]
 def equiv (X : Type*) : FundamentalGroupoid X ≃ X where
   toFun x := x.as

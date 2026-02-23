@@ -20,7 +20,7 @@ and prove some of their properties.
 ## Main Definitions
 
 - `IsAlgClosed k` is the typeclass saying `k` is an algebraically closed field, i.e. every
-polynomial in `k` splits.
+  polynomial in `k` splits.
 
 - `IsAlgClosure R K` is the typeclass saying `K` is an algebraic closure of `R`, where `R` is a
   commutative ring. This means that the map from `R` to `K` is injective, and `K` is
@@ -320,8 +320,8 @@ theorem eval_surjective {p : M[X]} (hp : p.natDegree ≠ 0) : Function.Surjectiv
     exact ⟨y, by simpa [eval_sub, sub_eq_zero] using hy⟩
 
 /-- If E/L/K is a tower of field extensions with E/L algebraic, and if M is an algebraically
-  closed extension of K, then any embedding of L/K into M/K extends to an embedding of E/K.
-  Known as the extension lemma in https://math.stackexchange.com/a/687914. -/
+closed extension of K, then any embedding of L/K into M/K extends to an embedding of E/K.
+Known as the extension lemma in https://math.stackexchange.com/a/687914. -/
 theorem surjective_restrictDomain_of_isAlgebraic {E : Type*}
     [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [Algebra.IsAlgebraic L E] :
     Function.Surjective fun φ : E →ₐ[K] M ↦ φ.restrictDomain L :=
@@ -354,7 +354,7 @@ private instance FractionRing.isAlgebraic :
     (Algebra.IsAlgebraic.isAlgebraic _)⟩
 
 /-- A (random) homomorphism from an algebraic extension of R into an algebraically
-  closed extension of R. -/
+closed extension of R. -/
 @[stacks 09GU, no_expose]
 noncomputable def lift : S →ₐ[R] M := by
   letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
@@ -429,12 +429,12 @@ variable [Algebra R S] [Algebra R L] [IsScalarTower R S L]
 variable [Algebra K J] [Algebra J L] [IsAlgClosure J L] [Algebra K L] [IsScalarTower K J L]
 
 /-- If `J` is an algebraic extension of `K` and `L` is an algebraic closure of `J`, then it is
-  also an algebraic closure of `K`. -/
+also an algebraic closure of `K`. -/
 theorem ofAlgebraic [Algebra.IsAlgebraic K J] : IsAlgClosure K L :=
   ⟨IsAlgClosure.isAlgClosed J, .trans K J L⟩
 
 /-- A (random) isomorphism between an algebraic closure of `R` and an algebraic closure of
-  an algebraic extension of `R` -/
+an algebraic extension of `R` -/
 noncomputable def equivOfAlgebraic' [IsDomain R] [IsDomain S] [IsTorsionFree R S]
     [Algebra.IsAlgebraic R L] : L ≃ₐ[R] M := by
   have : IsTorsionFree R L := .trans_faithfulSMul R S L
@@ -444,7 +444,7 @@ noncomputable def equivOfAlgebraic' [IsDomain R] [IsDomain S] [IsTorsionFree R S
   exact IsAlgClosure.equiv _ _ _
 
 /-- A (random) isomorphism between an algebraic closure of `K` and an algebraic closure
-  of an algebraic extension of `K` -/
+of an algebraic extension of `K` -/
 noncomputable def equivOfAlgebraic [Algebra.IsAlgebraic K J] : L ≃ₐ[K] M :=
   have := Algebra.IsAlgebraic.trans K J L
   equivOfAlgebraic' K J _ _
@@ -509,8 +509,8 @@ variable {F K : Type*} (A : Type*) [Field F] [Field K] [Field A] [Algebra F K] [
   [Algebra.IsAlgebraic F K]
 
 /-- Let `A` be an algebraically closed field and let `x ∈ K`, with `K/F` an algebraic extension
-  of fields. Then the images of `x` by the `F`-algebra morphisms from `K` to `A` are exactly
-  the roots in `A` of the minimal polynomial of `x` over `F`. -/
+of fields. Then the images of `x` by the `F`-algebra morphisms from `K` to `A` are exactly
+the roots in `A` of the minimal polynomial of `x` over `F`. -/
 theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly [IsAlgClosed A] (x : K) :
     (Set.range fun ψ : K →ₐ[F] A ↦ ψ x) = (minpoly F x).rootSet A :=
   range_eval_eq_rootSet_minpoly_of_splits A (fun _ ↦ IsAlgClosed.splits _) x

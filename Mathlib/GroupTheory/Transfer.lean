@@ -20,6 +20,7 @@ In this file we construct the transfer homomorphism.
 - `transferCenterPow`: The transfer homomorphism `G →* center G`.
 
 ## Main results
+
 - `transferCenterPow_apply`:
   The transfer homomorphism `G →* center G` is given by `g ↦ g ^ (center G).index`.
 - `ker_transferSylow_isComplement'`: Burnside's transfer (or normal `p`-complement) theorem:
@@ -83,8 +84,8 @@ variable (g : G)
 
 variable (H) in
 /-- The transfer transversal as a function. Given a `⟨g⟩`-orbit `q₀, g • q₀, ..., g ^ (m - 1) • q₀`
-  in `G ⧸ H`, an element `g ^ k • q₀` is mapped to `g ^ k • g₀` for a fixed choice of
-  representative `g₀` of `q₀`. -/
+in `G ⧸ H`, an element `g ^ k • q₀` is mapped to `g ^ k • g₀` for a fixed choice of
+representative `g₀` of `q₀`. -/
 noncomputable def transferFunction : G ⧸ H → G := fun q =>
   g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) * (quotientEquivSigmaZMod H g q).1.out.out
 
@@ -106,7 +107,7 @@ lemma mem_transferSet (q : G ⧸ H) : transferFunction H g q ∈ transferSet H g
 
 variable (H) in
 /-- The transfer transversal. Contains elements of the form `g ^ k • g₀` for fixed choices
-  of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
+of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
 def transferTransversal : H.LeftTransversal :=
   ⟨transferSet H g, isComplement_range_left (coe_transferFunction g)⟩
 

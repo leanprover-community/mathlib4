@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 # Instances for Dedekind domains
+
 This file contains various instances to work with localization of a ring extension.
 
 A very common situation in number theory is to have an extension of (say) Dedekind domains `R` and
@@ -22,6 +23,7 @@ tower extension `R ⊆ S ⊆ T` and thus we work with `Rₚ ⊆ Sₚ ⊆ Tₚ` w
 `Tₚ` is the localization of `T` at `P`. This file contains a collection of such instances.
 
 ## Implementation details
+
 In general one wants all the results below for any algebra satisfying `IsLocalization`, but those
 cannot be instances (since Lean has no way of guessing the submonoid). Having the instances in the
 special case of *the* localization at a prime ideal is useful in working with Dedekind domains.

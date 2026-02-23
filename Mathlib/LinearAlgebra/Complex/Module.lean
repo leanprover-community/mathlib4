@@ -15,6 +15,7 @@ public import Mathlib.LinearAlgebra.Matrix.ToLin
 # Complex number as a vector space over `ℝ`
 
 This file contains the following instances:
+
 * Any `•`-structure (`SMul`, `MulAction`, `DistribMulAction`, `Module`, `Algebra`) on
   `ℝ` imbues a corresponding structure on `ℂ`. This includes the statement that `ℂ` is an `ℝ`
   algebra.

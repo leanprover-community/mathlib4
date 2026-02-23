@@ -24,6 +24,7 @@ identify to `A`. The choice of a cleavage for this fibered category gives the in
 shift functors.)
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
@@ -624,6 +625,7 @@ end Functor
 
 /--
 Assume that we have a diagram of categories
+
 ```
 C₁ ⥤ D₁
 ‖     ‖
@@ -633,6 +635,7 @@ C₂ ⥤ D₂
 v     v
 C₃ ⥤ D₃
 ```
+
 with functors `F₁₂ : C₁ ⥤ C₂`, `F₂₃ : C₂ ⥤ C₃` and `F₁₃ : C₁ ⥤ C₃` on the first
 column that are related by a natural transformation `α : F₁₃ ⟶ F₁₂ ⋙ F₂₃`
 and similarly `β : G₁₂ ⋙ G₂₃ ⟶ G₁₃` on the second column. Assume that we have

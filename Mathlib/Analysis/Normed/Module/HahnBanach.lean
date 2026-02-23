@@ -16,6 +16,7 @@ In this file we prove the analytic Hahn-Banach theorem. For any continuous linea
 subspace, we can extend it to a function on the entire space without changing its norm.
 
 We prove
+
 * `Real.exists_extension_norm_eq`: Hahn-Banach theorem for continuous linear functions on normed
   spaces over `ℝ`.
 * `exists_extension_norm_eq`: Hahn-Banach theorem for continuous linear functions on normed spaces

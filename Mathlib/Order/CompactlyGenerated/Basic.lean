@@ -24,19 +24,23 @@ is well-founded. In this file we define three especially-useful characterisation
 proofs that they are indeed equivalent to well-foundedness.
 
 ## Main definitions
+
 * `CompleteLattice.IsSupClosedCompact`
 * `CompleteLattice.IsSupFiniteCompact`
 * `IsCompactElement`
 * `IsCompactlyGenerated`
 
 ## Main results
+
 The main result is that the following four conditions are equivalent for a complete lattice:
+
 * `well_founded (>)`
 * `CompleteLattice.IsSupClosedCompact`
 * `CompleteLattice.IsSupFiniteCompact`
 * `∀ k, IsCompactElement k`
 
 This is demonstrated by means of the following four lemmas:
+
 * `CompleteLattice.WellFounded.isSupFiniteCompact`
 * `CompleteLattice.IsSupFiniteCompact.isSupClosedCompact`
 * `CompleteLattice.IsSupClosedCompact.wellFounded`
@@ -46,6 +50,7 @@ We also show well-founded lattices are compactly generated
 (`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
 
 ## References
+
 - [G. Călugăreanu, *Lattice Concepts of Module Theory*][calugareanu]
 
 ## Tags

@@ -116,8 +116,8 @@ TODO: clean this once https://github.com/leanprover/lean4/issues/2115 is fixed
 -/
 
 /-- A not-necessarily-unital, not-necessarily-associative semiring. See `CommutatorRing` and the
-  documentation thereof in case you need a `NonUnitalNonAssocSemiring` instance on a Lie ring
-  or a Lie algebra. -/
+documentation thereof in case you need a `NonUnitalNonAssocSemiring` instance on a Lie ring
+or a Lie algebra. -/
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 
 /-- An associative but not-necessarily unital semiring. -/
@@ -302,11 +302,11 @@ variable [MulOneClass α] [HasDistribNeg α]
 theorem neg_eq_neg_one_mul (a : α) : -a = -1 * a := by simp
 
 /-- An element of a ring multiplied by the additive inverse of one is the element's additive
-  inverse. -/
+inverse. -/
 theorem mul_neg_one (a : α) : a * -1 = -a := by simp
 
 /-- The additive inverse of one multiplied by an element of a ring is the element's additive
-  inverse. -/
+inverse. -/
 theorem neg_one_mul (a : α) : -1 * a = -a := by simp
 
 end MulOneClass

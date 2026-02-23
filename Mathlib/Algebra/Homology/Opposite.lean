@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
 # Opposite categories of complexes
+
 Given a preadditive category `V`, the opposite of its category of chain complexes is equivalent to
 the category of cochain complexes of objects in `Vᵒᵖ`. We define this equivalence, and another
 analogous equivalence (for a general category of homological complexes with a general
@@ -22,10 +23,12 @@ We then show that when `V` is abelian, if `C` is a homological complex, then the
 `op(C)` is isomorphic to `op` of the homology of `C` (and the analogous result for `unop`).
 
 ## Implementation notes
+
 It is convenient to define both `op` and `opSymm`; this is because given a complex shape `c`,
 `c.symm.symm` is not defeq to `c`.
 
 ## Tags
+
 opposite, chain complex, cochain complex, homology, cohomology, homological complex
 -/
 

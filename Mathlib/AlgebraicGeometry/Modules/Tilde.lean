@@ -21,6 +21,7 @@ Given any commutative ring `R` and `R`-module `M`, we construct the sheaf `M^~` 
 such that `M^~(U)` is the set of dependent functions that are locally fractions.
 
 ## Main definitions
+
 * `AlgebraicGeometry.tilde` : `M^~` as a sheaf of `𝒪_{Spec R}`-modules.
 * `AlgebraicGeometry.tilde.adjunction` : `~` is left adjoint to taking global sections.
 

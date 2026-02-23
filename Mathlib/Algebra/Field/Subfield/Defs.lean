@@ -42,6 +42,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a subfield's underlying set.
 
 ## Tags
+
 subfield, subfields
 -/
 
@@ -128,8 +129,8 @@ instance (priority := 75) toField {K} [Field K] [SetLike S K] [SubfieldClass S K
 end SubfieldClass
 
 /-- `Subfield R` is the type of subfields of `R`. A subfield of `R` is a subset `s` that is a
-  multiplicative submonoid and an additive subgroup. Note in particular that it shares the
-  same 0 and 1 as R. -/
+multiplicative submonoid and an additive subgroup. Note in particular that it shares the
+same 0 and 1 as R. -/
 @[stacks 09FD "second part"]
 structure Subfield (K : Type u) [DivisionRing K] extends Subring K where
   /-- A subfield is closed under multiplicative inverses. -/

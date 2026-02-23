@@ -20,9 +20,9 @@ Note that elsewhere we have a construction of the free unital, associative algeb
 
 ## Main definitions
 
-  * `FreeNonUnitalNonAssocAlgebra`
-  * `FreeNonUnitalNonAssocAlgebra.lift`
-  * `FreeNonUnitalNonAssocAlgebra.of`
+* `FreeNonUnitalNonAssocAlgebra`
+* `FreeNonUnitalNonAssocAlgebra.lift`
+* `FreeNonUnitalNonAssocAlgebra.of`
 
 ## Implementation details
 

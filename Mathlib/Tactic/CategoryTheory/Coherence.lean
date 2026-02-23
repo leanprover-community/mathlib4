@@ -151,6 +151,7 @@ open Mathlib.Tactic.BicategoryCoherence
 /--
 `pure_coherence` uses the coherence theorem for monoidal categories to prove the goal.
 It can prove any equality made up only of associators, unitors, and identities.
+
 ```lean
 example {C : Type} [Category* C] [MonoidalCategory C] :
   (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by

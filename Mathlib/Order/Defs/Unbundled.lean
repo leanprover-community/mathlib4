@@ -293,7 +293,7 @@ structure RelUpperSet {α : Type*} [LE α] (P : α → Prop) where
   /-- The carrier of a `RelUpperSet`. -/
   carrier : Set α
   /-- The carrier of a `RelUpperSet` is an upper set relative to `P`.
-
+  
   Do NOT use directly. Please use `RelUpperSet.isRelUpperSet` instead. -/
   isRelUpperSet' : IsRelUpperSet carrier P
 
@@ -304,7 +304,7 @@ structure RelLowerSet {α : Type*} [LE α] (P : α → Prop) where
   /-- The carrier of a `RelLowerSet`. -/
   carrier : Set α
   /-- The carrier of a `RelLowerSet` is a lower set relative to `P`.
-
+  
   Do NOT use directly. Please use `RelLowerSet.isRelLowerSet` instead. -/
   isRelLowerSet' : IsRelLowerSet carrier P
 

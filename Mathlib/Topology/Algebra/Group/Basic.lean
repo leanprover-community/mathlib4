@@ -430,7 +430,7 @@ theorem IsTopologicalGroup.continuous_conj (g : G) : Continuous fun h : G => g *
 `inv` are continuous. -/
 @[to_additive (attr := continuity)
   /-- Conjugation acting on fixed element of the additive group is continuous when both
-    `add` and `neg` are continuous. -/]
+  `add` and `neg` are continuous. -/]
 theorem IsTopologicalGroup.continuous_conj' [ContinuousInv G] (h : G) :
     Continuous fun g : G => g * h * g⁻¹ :=
   (continuous_mul_right h).mul continuous_inv
@@ -728,9 +728,9 @@ def Subgroup.connectedComponentOfOne (G : Type*) [TopologicalSpace G] [Group G]
 See note [reducible non-instances]. -/
 @[to_additive
   /-- If a subgroup of an additive topological group is commutative, then so is its
-topological closure.
-
-See note [reducible non-instances]. -/]
+  topological closure.
+  
+  See note [reducible non-instances]. -/]
 abbrev Subgroup.commGroupTopologicalClosure [T2Space G] (s : Subgroup G)
     (hs : ∀ x y : s, x * y = y * x) : CommGroup s.topologicalClosure :=
   { s.topologicalClosure.toGroup, s.toSubmonoid.commMonoidTopologicalClosure hs with }
@@ -1098,7 +1098,7 @@ to show that the quotient group `G ⧸ S` is Hausdorff. -/
   /-- A subgroup `S` of an additive topological group `G` acts on `G` properly discontinuously
   on the right, if it is discrete in the sense that `S ∩ K` is finite for all compact `K`.
   (See also `DiscreteTopology`.)
-
+  
   If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousVAdd_of_t2Space`
   to show that the quotient group `G ⧸ S` is Hausdorff. -/]
 theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Subgroup G)
@@ -1125,7 +1125,7 @@ section
 variable [TopologicalSpace G] [MulOneClass G] [ContinuousMul G]
 
 /-- Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of `1`
-  such that `K * V ⊆ U`. -/
+such that `K * V ⊆ U`. -/
 @[to_additive
   /-- Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of
   `0` such that `K + V ⊆ U`. -/]
@@ -1151,7 +1151,7 @@ theorem compact_open_separated_mul_right {K U : Set G} (hK : IsCompact K) (hU : 
 open MulOpposite
 
 /-- Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of `1`
-  such that `V * K ⊆ U`. -/
+such that `V * K ⊆ U`. -/
 @[to_additive
   /-- Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of
   `0` such that `V + K ⊆ U`. -/]
@@ -1171,10 +1171,10 @@ section
 variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
 
 /-- A compact set is covered by finitely many left multiplicative translates of a set
-  with non-empty interior. -/
+with non-empty interior. -/
 @[to_additive
   /-- A compact set is covered by finitely many left additive translates of a set
-    with non-empty interior. -/]
+  with non-empty interior. -/]
 theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
     (hV : (interior V).Nonempty) : ∃ t : Finset G, K ⊆ ⋃ g ∈ t, (g * ·) ⁻¹' V := by
   obtain ⟨t, ht⟩ : ∃ t : Finset G, K ⊆ ⋃ x ∈ t, interior ((x * ·) ⁻¹' V) := by
@@ -1187,7 +1187,7 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
   exact ⟨t, Subset.trans ht <| iUnion₂_mono fun g _ => interior_subset⟩
 
 /-- Every weakly locally compact separable topological group is σ-compact.
-  Note: this is not true if we drop the topological group hypothesis. -/
+Note: this is not true if we drop the topological group hypothesis. -/
 @[to_additive SeparableWeaklyLocallyCompactAddGroup.sigmaCompactSpace
   /-- Every weakly locally compact separable topological additive group is σ-compact.
   Note: this is not true if we drop the topological group hypothesis. -/]

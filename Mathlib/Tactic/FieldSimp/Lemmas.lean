@@ -175,12 +175,12 @@ theorem lt_eq_cancel_lt {M : Type*} [MonoidWithZero M] [PartialOrder M] [PosMulS
 /-! ### Theory of lists of pairs (exponent, atom)
 
 This section contains the lemmas which are orchestrated by the `field_simp` tactic
-to prove goals in fields.  The basic object which these lemmas concern is `NF M`, a type synonym
+to prove goals in fields. The basic object which these lemmas concern is `NF M`, a type synonym
 for a list of ordered pairs in `ℤ × M`, where typically `M` is a field.
 -/
 
 /-- Basic theoretical "normal form" object of the `field_simp` tactic: a type
-synonym for a list of ordered pairs in `ℤ × M`, where typically `M` is a field.  This is the
+synonym for a list of ordered pairs in `ℤ × M`, where typically `M` is a field. This is the
 form to which the tactics reduce field expressions. -/
 def NF (M : Type*) := List (ℤ × M)
 

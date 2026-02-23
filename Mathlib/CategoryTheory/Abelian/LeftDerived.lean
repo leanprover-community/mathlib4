@@ -29,6 +29,7 @@ natural transformations between the original additive functors,
 and show how to compute the components.
 
 ## Main results
+
 * `Functor.isZero_leftDerived_obj_projective_succ`: projective objects have no higher
   left derived functor.
 * `NatTrans.leftDerived`: the natural transformation between left derived functors

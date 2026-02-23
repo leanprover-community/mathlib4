@@ -14,7 +14,6 @@ public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 This file defines a few notions of separations of sets in a metric space.
 
-
 The first notion (`Metric.IsSeparated`) is quantitative and describes a single set: a set `s` is
 `ε`-separated if the distance between any two distinct elements is strictly greater than `ε`
 

@@ -77,7 +77,7 @@ variable {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex ℝ P n)
 
 /-- The unnormalized weights of the vertices in an affine combination that gives an excenter with
 signs determined by the given set of indices (for the empty set, this is the incenter; for a
-singleton set, this is the excenter opposite a vertex).  An excenter with those signs exists if
+singleton set, this is the excenter opposite a vertex). An excenter with those signs exists if
 and only if the sum of these weights is nonzero (so the normalized weights sum to 1). -/
 def excenterWeightsUnnorm (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : ℝ :=
   (if i ∈ signs then -1 else 1) * (s.height i)⁻¹
@@ -133,7 +133,7 @@ lemma excenterExists_reindex {e : Fin (n + 1) ≃ Fin (m + 1)} {signs : Finset (
   simp [ExcenterExists]
 
 /-- The normalized weights of the vertices in an affine combination that gives an excenter with
-signs determined by the given set of indices.  An excenter with those signs exists if and only if
+signs determined by the given set of indices. An excenter with those signs exists if and only if
 the sum of these weights is 1. -/
 def excenterWeights (signs : Finset (Fin (n + 1))) : Fin (n + 1) → ℝ :=
   (∑ i, s.excenterWeightsUnnorm signs i)⁻¹ • s.excenterWeightsUnnorm signs
@@ -342,7 +342,7 @@ lemma excenterWeights_empty_lt_inv_two [n.AtLeastTwo] (i : Fin (n + 1)) :
   simp [excenterWeights, excenterWeightsUnnorm, div_eq_inv_mul]
 
 /-- The exsphere with signs determined by the given set of indices (for the empty set, this is
-the insphere; for a singleton set, this is the exsphere opposite a vertex).  This is only
+the insphere; for a singleton set, this is the exsphere opposite a vertex). This is only
 meaningful if `s.ExcenterExists`; otherwise, it is a sphere of radius zero at some arbitrary
 point. -/
 def exsphere (signs : Finset (Fin (n + 1))) : Sphere P where
@@ -365,7 +365,7 @@ def insphere : Sphere P :=
   simp
 
 /-- The excenter with signs determined by the given set of indices (for the empty set, this is
-the incenter; for a singleton set, this is the excenter opposite a vertex).  This is only
+the incenter; for a singleton set, this is the excenter opposite a vertex). This is only
 meaningful if `s.ExcenterExists signs`; otherwise, it is some arbitrary point. -/
 def excenter (signs : Finset (Fin (n + 1))) : P :=
   (s.exsphere signs).center

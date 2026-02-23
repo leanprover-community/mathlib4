@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 We gather miscellaneous results about units given by sums of powers of roots of unit, the so-called
 *cyclotomic units*.
 
-
 ## Main results
 
 * `IsPrimitiveRoot.associated_sub_one_pow_sub_one_of_coprime` : given an `n`-th primitive root of
@@ -42,8 +41,8 @@ variable [CommRing A] [IsDomain A] {R : Type*} [CommRing R] [Algebra R A]
 namespace IsPrimitiveRoot
 
 /-- Given an `n`-th primitive root of unity `ζ,` we have that `ζ - 1` and `ζ ^ j - 1` are associated
-  for all `j` coprime with `n`.
-  `pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum` gives an explicit formula for the unit. -/
+for all `j` coprime with `n`.
+`pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum` gives an explicit formula for the unit. -/
 theorem associated_sub_one_pow_sub_one_of_coprime (hζ : IsPrimitiveRoot ζ n) (hj : j.Coprime n) :
     Associated (ζ - 1) (ζ ^ j - 1) := by
   refine associated_of_dvd_dvd ⟨∑ i ∈ range j, ζ ^ i, (mul_geom_sum _ _).symm⟩ ?_
@@ -56,7 +55,7 @@ theorem associated_sub_one_pow_sub_one_of_coprime (hζ : IsPrimitiveRoot ζ n) (
       rw [mul_geom_sum, ← pow_mul, ← pow_mod_orderOf, ← hζ.eq_orderOf, hm, pow_one]
 
 /-- Given an `n`-th primitive root of unity `ζ`, we have that `ζ ^ j - 1` and `ζ ^ i - 1` are
-  associated for all `i` and `j` coprime with `n`. -/
+associated for all `i` and `j` coprime with `n`. -/
 theorem associated_pow_sub_one_pow_of_coprime (hζ : IsPrimitiveRoot ζ n)
     (hi : i.Coprime n) (hj : j.Coprime n) : Associated (ζ ^ j - 1) (ζ ^ i - 1) := by
   suffices ∀ {j}, j.Coprime n → Associated (ζ - 1) (ζ ^ j - 1) by
@@ -64,7 +63,7 @@ theorem associated_pow_sub_one_pow_of_coprime (hζ : IsPrimitiveRoot ζ n)
   exact hζ.associated_sub_one_pow_sub_one_of_coprime
 
 /-- Given an `n`-th primitive root of unity `ζ`, we have that `ζ - 1` is associated to any of its
-  conjugate. -/
+conjugate. -/
 theorem associated_sub_one_map_sub_one {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n)
     (σ : A ≃ₐ[R] A) : Associated (ζ - 1) (σ (ζ - 1)) := by
   rw [map_sub, map_one, ← hζ.autToPow_spec R σ]
@@ -72,7 +71,7 @@ theorem associated_sub_one_map_sub_one {n : ℕ} [NeZero n] (hζ : IsPrimitiveRo
   exact ZMod.val_coe_unit_coprime ((autToPow R hζ) σ)
 
 /-- Given an `n`-th primitive root of unity `ζ`, we have that two conjugates of `ζ - 1`
-  are associated. -/
+are associated. -/
 theorem associated_map_sub_one_map_sub_one {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n)
     (σ τ : A ≃ₐ[R] A) : Associated (σ (ζ - 1)) (τ (ζ - 1)) := by
   rw [map_sub, map_sub, map_one, map_one, ← hζ.autToPow_spec R σ, ← hζ.autToPow_spec R τ]
@@ -80,9 +79,9 @@ theorem associated_map_sub_one_map_sub_one {n : ℕ} [NeZero n] (hζ : IsPrimiti
   exact ZMod.val_coe_unit_coprime ((autToPow R hζ) _)
 
 /-- Given an `n`-th primitive root of unity `ζ`, where `2 ≤ n`, we have that `∑ i ∈ range j, ζ ^ i`
-  is a unit for all `j` coprime with `n`. This is the unit given by
-  `associated_pow_sub_one_pow_of_coprime` (see
-  `pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum`). -/
+is a unit for all `j` coprime with `n`. This is the unit given by
+`associated_pow_sub_one_pow_of_coprime` (see
+`pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum`). -/
 theorem geom_sum_isUnit (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ n) (hj : j.Coprime n) :
     IsUnit (∑ i ∈ range j, ζ ^ i) := by
   obtain ⟨u, hu⟩ := hζ.associated_pow_sub_one_pow_of_coprime hj (coprime_one_left n)
@@ -91,7 +90,7 @@ theorem geom_sum_isUnit (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ n) (hj : j.Copr
   grind [mul_neg_geom_sum]
 
 /-- Similar to `geom_sum_isUnit`, but instead of assuming `2 ≤ n` we assume that `j` is a unit in
-  `A`. -/
+`A`. -/
 theorem geom_sum_isUnit' (hζ : IsPrimitiveRoot ζ n) (hj : j.Coprime n) (hj_Unit : IsUnit (j : A)) :
     IsUnit (∑ i ∈ range j, ζ ^ i) := by
   match n with
@@ -106,9 +105,9 @@ theorem pow_sub_one_eq_geom_sum_mul_geom_sum_inv_mul_pow_sub_one (hζ : IsPrimit
   grind [IsUnit.mul_val_inv, pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum, IsUnit.unit_spec]
 
 /-- Given an `n`-th primitive root of unity `ζ`, where `2 ≤ n`, we have that `ζ - 1` and
-  `ζ ^ (i + j) - ζ ^ i` are associated for all and `j` coprime with `n` and all `i`. See
-  `pow_sub_one_eq_geom_sum_mul_geom_sum_inv_mul_pow_sub_one` for the explicit formula of the
-  unit. -/
+`ζ ^ (i + j) - ζ ^ i` are associated for all and `j` coprime with `n` and all `i`. See
+`pow_sub_one_eq_geom_sum_mul_geom_sum_inv_mul_pow_sub_one` for the explicit formula of the
+unit. -/
 theorem associated_pow_add_sub_sub_one (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ n) (i : ℕ)
     (hjn : j.Coprime n) : Associated (ζ - 1) (ζ ^ (i + j) - ζ ^ i) := by
   use (hζ.isUnit (by lia)).unit ^ i * (hζ.geom_sum_isUnit hn hjn).unit
@@ -117,7 +116,7 @@ theorem associated_pow_add_sub_sub_one (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ 
   grind [mul_geom_sum]
 
 /-- If `p` is prime and `ζ` is a `p`-th primitive root of unit, then `ζ - 1` and `η₁ - η₂` are
-  associated for all distincts `p`-th root of unit `η₁` and `η₂`. -/
+associated for all distincts `p`-th root of unit `η₁` and `η₂`. -/
 lemma ntRootsFinset_pairwise_associated_sub_one_sub_of_prime (hζ : IsPrimitiveRoot ζ p)
     (hp : p.Prime) :
     Set.Pairwise (nthRootsFinset p (1 : A)) (fun η₁ η₂ ↦ Associated (ζ - 1) (η₁ - η₂)) := by

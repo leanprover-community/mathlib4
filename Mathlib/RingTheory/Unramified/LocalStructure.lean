@@ -23,6 +23,7 @@ Geometrically, this says that unramified morphisms locally are closed subsets of
 As a corollary, we also obtain results about the local structure of etale and smooth algebras.
 
 ## Main definition and results
+
 - `HasStandardEtaleSurjectionOn`: The predicate
   "there exists a standard etale algebra `A` over `R` that surjects onto `S[1/f]`".
 - `Algebra.IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn`:

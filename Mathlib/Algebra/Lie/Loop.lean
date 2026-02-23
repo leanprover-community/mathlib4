@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Polynomial.Laurent
 
 /-!
 # Loop Lie algebras and their central extensions
+
 Given a Lie algebra `L`, the loop algebra is the Lie algebra of maps from a circle into `L`. This
 can mean many different things, e.g., continuous maps, smooth maps, polynomial maps. In this file,
 we consider the simplest case of polynomial maps, meaning we take a base change with the ring of
@@ -26,6 +27,7 @@ We implement the basic theory using `AddMonoidAlgebra` instead of `LaurentPolyno
 flexibility. The classical loop algebra is then written `loopAlgebra R ℤ L`.
 
 ## Main definitions
+
 * `LieAlgebra.loopAlgebra`: The tensor product of a Lie algebra with an `AddMonoidAlgebra`.
 * `LieAlgebra.loopAlgebra.toFinsupp`: A linear equivalence from the loop algebra to the space of
   finitely supported functions.
@@ -35,11 +37,13 @@ flexibility. The classical loop algebra is then written `loopAlgebra R ℤ L`.
   coefficients attached to a symmetric invariant bilinear form on the base Lie algebra.
 
 ## TODO
+
 * Evaluation representations
 * Construction of central extensions from invariant forms.
 * Positive energy representations induced from a fixed central character
 
 ## Tags
+
 lie ring, lie algebra, base change, Laurent polynomial
 -/
 
@@ -86,7 +90,7 @@ lemma toFinsupp_single_tmul (c : A) (z : L) :
   simp [← toFinsupp_symm_single]
 
 open Finsupp in
-/-- The residue pairing on the loop algebra.  When `A = ℤ` and the elements are viewed as Laurent
+/-- The residue pairing on the loop algebra. When `A = ℤ` and the elements are viewed as Laurent
 polynomials with coefficients in `L`, the pairing is interpreted as `(f, g) ↦ Res f dg`. -/
 @[simps]
 def residuePairing [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R R]

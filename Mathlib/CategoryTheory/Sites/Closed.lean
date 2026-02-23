@@ -36,7 +36,6 @@ that natural closure operators are in bijection with Grothendieck topologies.
   set of sieves on every object which commutes with pullback additionally induces a Grothendieck
   topology, giving a bijection with `CategoryTheory.GrothendieckTopology.closureOperator`.
 
-
 ## Tags
 
 closed sieve, closure, Grothendieck topology

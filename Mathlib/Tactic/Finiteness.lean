@@ -19,6 +19,7 @@ set.
 ## Syntax
 
 Standard `aesop` syntax applies. Namely one can write
+
 * `finiteness (add unfold [def1, def2])` to make `finiteness` unfold `def1`, `def2`
 * Note that `finiteness` disables `simp`, so `finiteness (add simp [lemma1, lemma2])` does not do
   anything more than a bare `finiteness`.

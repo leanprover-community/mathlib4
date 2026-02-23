@@ -24,6 +24,7 @@ both a strict version, where all vertices must be distinct, and a weak version, 
 vertices may be equal, would be useful; Ptolemy's theorem should then use the weak one).
 
 An API needs to be built around that concept, which would include:
+
 - strict cyclic implies weak cyclic,
 - weak cyclic and consecutive points distinct implies strict cyclic,
 - weak/strict cyclic implies weak/strict cyclic for any subsequence,
@@ -36,7 +37,7 @@ An API needs to be built around that concept, which would include:
 - a point P where the diagonals of a cyclic polygon cross exists (and is unique) with weak/strict
   betweenness depending on weak/strict cyclicity,
 - four points on a sphere with such a point P are cyclic in the appropriate order,
-and so on.
+  and so on.
 -/
 
 public section

@@ -22,7 +22,6 @@ This file defines quantifier complexity of first-order formulas, and constructs 
   when it consists of a series of quantifiers applied to a quantifier-free formula.
 - `FirstOrder.Language.BoundedFormula.toPrenex` constructs a prenex normal form of a given formula.
 
-
 ## Main Results
 
 - `FirstOrder.Language.BoundedFormula.realize_toPrenex` shows that the prenex normal form of a
@@ -115,7 +114,7 @@ theorem not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con
   · exact not_all_isQF _ con
 
 /-- Indicates that a bounded formula is in prenex normal form - that is, it consists of quantifiers
-  applied to a quantifier-free formula. -/
+applied to a quantifier-free formula. -/
 inductive IsPrenex : ∀ {n}, L.BoundedFormula α n → Prop
   | of_isQF {n} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsPrenex φ
   | all {n} {φ : L.BoundedFormula α (n + 1)} (h : IsPrenex φ) : IsPrenex φ.all
@@ -151,8 +150,8 @@ theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex
     fun _ ih => ih.castLE.ex
 
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
-  If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.toPrenexImpRight ψ`
-  is a prenex normal form for `φ.imp ψ`. -/
+If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.toPrenexImpRight ψ`
+is a prenex normal form for `φ.imp ψ`. -/
 def toPrenexImpRight : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
   | n, φ, BoundedFormula.ex ψ => ((φ.liftAt 1 n).toPrenexImpRight ψ).ex
   | n, φ, all ψ => ((φ.liftAt 1 n).toPrenexImpRight ψ).all
@@ -176,8 +175,8 @@ theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ
   | ex _ ih2 => exact (ih2 hφ.liftAt).ex
 
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
-  If `φ` and `ψ` are in prenex normal form, then `φ.toPrenexImp ψ`
-  is a prenex normal form for `φ.imp ψ`. -/
+If `φ` and `ψ` are in prenex normal form, then `φ.toPrenexImp ψ`
+is a prenex normal form for `φ.imp ψ`. -/
 def toPrenexImp : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
   | n, BoundedFormula.ex φ, ψ => (φ.toPrenexImp (ψ.liftAt 1 n)).all
   | n, all φ, ψ => (φ.toPrenexImp (ψ.liftAt 1 n)).ex
@@ -201,7 +200,7 @@ theorem isPrenex_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ)
   | ex _ ih2 => exact (ih2 hψ.liftAt).all
 
 /-- For any bounded formula `φ`, `φ.toPrenex` is a semantically-equivalent formula in prenex normal
-  form. -/
+form. -/
 def toPrenex : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n
   | _, falsum => ⊥
   | _, equal t₁ t₂ => t₁.bdEqual t₂

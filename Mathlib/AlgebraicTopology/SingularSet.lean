@@ -77,7 +77,7 @@ noncomputable def sSetTopAdj : SSet.toTop.{u} ⊣ TopCat.toSSet.{u} :=
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop)
 
 /-- The geometric realization of the representable simplicial sets agree
-  with the usual topological simplices. -/
+with the usual topological simplices. -/
 noncomputable def SSet.toTopSimplex :
     SSet.stdSimplex.{u} ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
   Presheaf.isExtensionAlongULiftYoneda _

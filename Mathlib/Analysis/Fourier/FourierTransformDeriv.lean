@@ -55,7 +55,7 @@ With these definitions, the statements read as follows, first in a general conte
 (arbitrary `L` and `μ`):
 
 * `VectorFourier.hasFDerivAt_fourierIntegral`: the Fourier integral of `f` is differentiable, with
-    derivative the Fourier integral of `fourierSMulRight L f`.
+  derivative the Fourier integral of `fourierSMulRight L f`.
 * `VectorFourier.differentiable_fourierIntegral`: the Fourier integral of `f` is differentiable.
 * `VectorFourier.fderiv_fourierIntegral`: formula for the derivative of the Fourier integral of `f`.
 * `VectorFourier.fourierIntegral_fderiv`: formula for the Fourier integral of the derivative of `f`.
@@ -734,7 +734,7 @@ theorem contDiff_fourier {N : ℕ∞}
 alias contDiff_fourierIntegral := contDiff_fourier
 
 /-- If `‖v‖^n * ‖f v‖` is integrable, then the `n`-th derivative of the Fourier transform of `f` is
-  the Fourier transform of `fun v ↦ (-2 * π * I) ^ n ⟪v, ⬝⟫^n f v`. -/
+the Fourier transform of `fun v ↦ (-2 * π * I) ^ n ⟪v, ⬝⟫^n f v`. -/
 theorem iteratedFDeriv_fourier {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖))
     (h'f : AEStronglyMeasurable f) {n : ℕ} (hn : n ≤ N) :

@@ -59,9 +59,11 @@ def mkDecideProofQ (p : Q(Prop)) : MetaM Q($p) := mkDecideProof p
 Usually `β` is `q(Multiset α)` or `q(Finset α)` or `q(Set α)`.
 
 As an example
+
 ```lean
 mkSetLiteralQ q(Finset ℝ) (List.range 4 |>.map fun n : ℕ ↦ q($n•π))
 ```
+
 produces the expression `{0 • π, 1 • π, 2 • π, 3 • π} : Finset ℝ`.
 -/
 def mkSetLiteralQ {u v : Level} {α : Q(Type u)} (β : Q(Type v))

@@ -118,15 +118,15 @@ inhabited instance to return a garbage value on the empty list, this is not poss
 Instead, we write the statement in terms of `L[0]?.getD 1`.
 -/
 @[to_additive /-- We'd like to state this as `L.headI + L.tail.sum = L.sum`, but because `L.headI`
-  relies on an inhabited instance to return a garbage value on the empty list, this is not possible.
-  Instead, we write the statement in terms of `L[0]?.getD 0`. -/]
+relies on an inhabited instance to return a garbage value on the empty list, this is not possible.
+Instead, we write the statement in terms of `L[0]?.getD 0`. -/]
 theorem getElem?_zero_mul_tail_prod (l : List M) : l[0]?.getD 1 * l.tail.prod = l.prod := by
   cases l <;> simp
 
 /-- Same as `get?_zero_mul_tail_prod`, but avoiding the `List.headI` garbage complication by
-  requiring the list to be nonempty. -/
+requiring the list to be nonempty. -/
 @[to_additive /-- Same as `get?_zero_add_tail_sum`, but avoiding the `List.headI` garbage
-  complication by requiring the list to be nonempty. -/]
+complication by requiring the list to be nonempty. -/]
 theorem headI_mul_tail_prod_of_ne_nil [Inhabited M] (l : List M) (h : l ≠ []) :
     l.headI * l.tail.prod = l.prod := by cases l <;> [contradiction; simp]
 

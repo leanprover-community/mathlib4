@@ -86,7 +86,7 @@ protected def symm : OpenPartialHomeomorph Y X where
   continuousOn_invFun := e.continuousOn_toFun
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+because it is a composition of multiple projections. -/
 def Simps.apply (e : OpenPartialHomeomorph X Y) : X → Y := e
 
 /-- See Note [custom simps projection] -/

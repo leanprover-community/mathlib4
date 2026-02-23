@@ -12,6 +12,7 @@ public meta import Lean.DocString
 # `extend_doc` command
 
 In a file where declaration `decl` is defined, writing
+
 ```lean
 extend_doc decl
   before "I will be added as a prefix to the docs of `decl`"

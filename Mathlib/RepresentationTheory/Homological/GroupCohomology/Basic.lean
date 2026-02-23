@@ -61,6 +61,7 @@ possible scalar action diamonds.
 * Profinite cohomology.
 
 Longer term:
+
 * The Hochschild-Serre spectral sequence (this is perhaps a good toy example for the theory of
   spectral sequences in general).
 -/

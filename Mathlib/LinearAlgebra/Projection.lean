@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Ring.Idempotent
 # Projection to a subspace
 
 In this file we define
+
 * `Submodule.linearProjOfIsCompl (p q : Submodule R E) (h : IsCompl p q)`:
   the projection of a module `E` to a submodule `p` along its complement `q`;
   it is the unique linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`.

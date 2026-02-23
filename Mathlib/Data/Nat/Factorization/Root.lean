@@ -48,6 +48,7 @@ is ordered by divisibility.
 
 To ensure that the adjunction (`Nat.pow_dvd_iff_dvd_floorRoot`) holds in as many cases as possible,
 we special-case the following values:
+
 * `floorRoot 0 a = 0`
 * `floorRoot n 0 = 0`
 -/
@@ -110,6 +111,7 @@ is ordered by divisibility.
 
 To ensure that the adjunction (`Nat.dvd_pow_iff_ceilRoot_dvd`) holds in as many cases as possible,
 we special-case the following values:
+
 * `ceilRoot 0 a = 0` (this one is not strictly necessary)
 * `ceilRoot n 0 = 0`
 -/

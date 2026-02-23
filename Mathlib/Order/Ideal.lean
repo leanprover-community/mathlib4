@@ -18,6 +18,7 @@ public import Mathlib.Order.UpperLower.Principal
 
 Throughout this file, `P` is at least a preorder, but some sections require more
 structure, such as a bottom element, a top element, or a join-semilattice structure.
+
 - `Order.Ideal P`: the type of nonempty, upward directed, and downward closed subsets of `P`.
   Dual to the notion of a filter on a preorder.
 - `Order.IsIdeal I`: a predicate for when a `Set P` is an ideal.
@@ -57,9 +58,10 @@ namespace Order
 variable {P : Type*}
 
 /-- An ideal on an order `P` is a subset of `P` that is
-  - nonempty
-  - upward directed (any pair of elements in the ideal has an upper bound in the ideal)
-  - downward closed (any element less than an element of the ideal is in the ideal). -/
+
+- nonempty
+- upward directed (any pair of elements in the ideal has an upper bound in the ideal)
+- downward closed (any element less than an element of the ideal is in the ideal). -/
 structure Ideal (P) [LE P] extends LowerSet P where
   /-- The ideal is nonempty. -/
   nonempty' : carrier.Nonempty
@@ -71,9 +73,10 @@ structure Ideal (P) [LE P] extends LowerSet P where
 initialize_simps_projections Ideal (+toLowerSet, -carrier)
 
 /-- A subset of a preorder `P` is an ideal if it is
-  - nonempty
-  - upward directed (any pair of elements in the ideal has an upper bound in the ideal)
-  - downward closed (any element less than an element of the ideal is in the ideal). -/
+
+- nonempty
+- upward directed (any pair of elements in the ideal has an upper bound in the ideal)
+- downward closed (any element less than an element of the ideal is in the ideal). -/
 @[mk_iff]
 structure IsIdeal {P} [LE P] (I : Set P) : Prop where
   /-- The ideal is downward closed. -/
@@ -469,8 +472,8 @@ end BooleanAlgebra
 end Ideal
 
 /-- For a preorder `P`, `Cofinal P` is the type of subsets of `P`
-  containing arbitrarily large elements. They are the dense sets in
-  the topology whose open sets are terminal segments. -/
+containing arbitrarily large elements. They are the dense sets in
+the topology whose open sets are terminal segments. -/
 structure Cofinal (P) [Preorder P] where
   /-- The carrier of a `Cofinal` is the underlying set. -/
   carrier : Set P
@@ -506,7 +509,7 @@ section IdealOfCofinals
 variable [Preorder P] (p : P) {ι : Type*} [Encodable ι] (𝒟 : ι → Cofinal P)
 
 /-- Given a starting point, and a countable family of cofinal sets,
-  this is an increasing sequence that intersects each cofinal set. -/
+this is an increasing sequence that intersects each cofinal set. -/
 noncomputable def sequenceOfCofinals : ℕ → P
   | 0 => p
   | n + 1 =>
@@ -529,11 +532,12 @@ theorem sequenceOfCofinals.encode_mem (i : ι) :
   apply Cofinal.above_mem
 
 /-- Given an element `p : P` and a family `𝒟` of cofinal subsets of a preorder `P`,
-  indexed by a countable type, `idealOfCofinals p 𝒟` is an ideal in `P` which
-  - contains `p`, according to `mem_idealOfCofinals p 𝒟`, and
-  - intersects every set in `𝒟`, according to `cofinal_meets_idealOfCofinals p 𝒟`.
+indexed by a countable type, `idealOfCofinals p 𝒟` is an ideal in `P` which
 
-  This proves the Rasiowa–Sikorski lemma. -/
+- contains `p`, according to `mem_idealOfCofinals p 𝒟`, and
+- intersects every set in `𝒟`, according to `cofinal_meets_idealOfCofinals p 𝒟`.
+
+This proves the Rasiowa–Sikorski lemma. -/
 def idealOfCofinals : Ideal P where
   carrier := { x : P | ∃ n, x ≤ sequenceOfCofinals p 𝒟 n }
   lower' := fun _ _ hxy ⟨n, hn⟩ ↦ ⟨n, le_trans hxy hn⟩

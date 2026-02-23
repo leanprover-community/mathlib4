@@ -27,6 +27,7 @@ appearing in the introduction of
 [Brian Conrad's book *Grothendieck duality and base change*][conrad2000].
 
 ## References
+
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
 
 -/

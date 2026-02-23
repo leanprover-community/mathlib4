@@ -567,7 +567,7 @@ open Subgroup
 variable [Group G] [Group G']
 
 /-- A group is commutative if the quotient by the center is cyclic.
-  Also see `commGroupOfCyclicCenterQuotient` for the `CommGroup` instance. -/
+Also see `commGroupOfCyclicCenterQuotient` for the `CommGroup` instance. -/
 @[to_additive
       /-- A group is commutative if the quotient by the center is cyclic.
       Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance. -/]

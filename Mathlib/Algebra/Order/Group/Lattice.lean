@@ -14,6 +14,7 @@ Lattice ordered groups were introduced by [Birkhoff][birkhoff1942]. They form th
 underpinnings of vector lattices, Banach lattices, AL-space, AM-space etc.
 
 A lattice ordered group is a type `α` satisfying:
+
 * `Lattice α`
 * `CommGroup α`
 * `MulLeftMono α`

@@ -28,12 +28,15 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
 ## Main definitions
 
 * `MeasureTheory.IsSetSemiring C`: property of being a semi-ring of sets.
+
 * `MeasureTheory.IsSetSemiring.disjointOfDiff hs ht`: for `s, t` in a semi-ring `C`
   (with `hC : IsSetSemiring C`) with `hs : s ∈ C`, `ht : t ∈ C`, this is a `Finset` of
   pairwise disjoint sets such that `s \ t = ⋃₀ hC.disjointOfDiff hs ht`.
+
 * `MeasureTheory.IsSetSemiring.disjointOfDiffUnion hs hI`: for `hs : s ∈ C` and a finset
   `I` of sets in `C` (with `hI : ↑I ⊆ C`), this is a `Finset` of pairwise disjoint sets such that
   `s \ ⋃₀ I = ⋃₀ hC.disjointOfDiffUnion hs hI`.
+
 * `MeasureTheory.IsSetSemiring.disjointOfUnion hJ`: for `hJ ⊆ C`, this is a
   `Finset` of pairwise disjoint sets such that `⋃₀ J = ⋃₀ hC.disjointOfUnion hJ`.
 

@@ -20,13 +20,18 @@ in the diagram are injective).
 ## Main definitions
 
 - `Monoid.PushoutI`: the pushout of a diagram of monoids indexed by a type `ι`
+
 - `Monoid.PushoutI.base`: the map from the amalgamating monoid to the pushout
+
 - `Monoid.PushoutI.of`: the map from each Monoid in the family to the pushout
+
 - `Monoid.PushoutI.lift`: the universal property used to define homomorphisms out of the pushout.
 
 - `Monoid.PushoutI.NormalWord`: a normal form for words in the pushout
+
 - `Monoid.PushoutI.of_injective`: if all the maps in the diagram are injective in a pushout of
   groups then so is `of`
+
 - `Monoid.PushoutI.Reduced.eq_empty_of_mem_range`: For any word `w` in the coproduct,
   if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
   `w` itself is not in the image of the base monoid.

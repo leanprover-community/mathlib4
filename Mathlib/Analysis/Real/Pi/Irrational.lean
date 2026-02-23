@@ -14,9 +14,10 @@ public import Mathlib.NumberTheory.Real.Irrational
 
 The main result of this file is `irrational_pi`.
 
-The proof is adapted from https://en.wikipedia.org/wiki/Proof_that_%CF%80_is_irrational#Cartwright's_proof.
+The proof is adapted from https://en.wikipedia.org/wiki/Proof_that\_%CF%80_is_irrational#Cartwright's_proof.
 
 The proof idea is as follows.
+
 * Define a sequence of integrals `I n θ = ∫ x in (-1)..1, (1 - x ^ 2) ^ n * cos (x * θ)`.
 * Give a recursion formula for `I (n + 2) θ * θ ^ 2` in terms of `I n θ` and `I (n + 1) θ`.
   Note we do not find it helpful to define `J` as in the above proof, and instead work directly
@@ -262,7 +263,7 @@ private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
 
 /--
 Auxiliary for the proof that `π` is irrational.
-For any real `a`, we have that `a ^ (2n+1) / n!` tends to `0` as `n → ∞`.  This is just a
+For any real `a`, we have that `a ^ (2n+1) / n!` tends to `0` as `n → ∞`. This is just a
 reformulation of tendsto_pow_div_factorial_atTop, which asserts the same for `a ^ n / n!`
 -/
 private lemma tendsto_pow_div_factorial_at_top_aux (a : ℝ) :

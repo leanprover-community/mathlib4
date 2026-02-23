@@ -34,7 +34,7 @@ over a characteristic zero field.
 
 ## Main definitions
 
-  * `IsNilpotent.exp`
+* `IsNilpotent.exp`
 
 ## Tags
 

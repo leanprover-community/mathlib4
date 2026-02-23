@@ -21,6 +21,7 @@ In this file we prove Grothendieck's reformulation of Zariski's main theorem, na
 `f` to the relative normalization `X'` of `Y` in `X` is an open immersion.
 
 We then have the following corollaries
+
 - `Scheme.Hom.isOpen_quasiFiniteAt` : If `f` is separated and of finite type, then the quasi-finite
   locus of `f` is open.
 - If `f` is itself quasi-finite, then the map `f.toNormalization : X ⟶ X'` is an open immersion.
@@ -198,6 +199,7 @@ Recall that any qcqs morphism `f : X ⟶ Y` factors through the relative normali
 Let `f : X ⟶ Y` be separated and of finite type.
 
 then there exists `U : f.normalization.Opens`, such that
+
 1. `f.toNormalization ∣_ U` is an isomorphism
 2. `f.toNormalization ⁻¹ᵁ U` is the quasi-finite locus of `f`
 -/

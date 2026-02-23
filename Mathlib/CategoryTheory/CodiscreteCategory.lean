@@ -88,7 +88,7 @@ def natIso {F G : C ⥤ Codiscrete A} : F ≅ G where
   inv := natTrans
 
 /-- Every functor `F` to a codiscrete category is naturally isomorphic {(actually, equal)} to
-  `Codiscrete.as ∘ F.obj`. -/
+`Codiscrete.as ∘ F.obj`. -/
 @[simps!]
 def natIsoFunctor {F : C ⥤ Codiscrete A} : F ≅ functor (Codiscrete.as ∘ F.obj) := Iso.refl _
 

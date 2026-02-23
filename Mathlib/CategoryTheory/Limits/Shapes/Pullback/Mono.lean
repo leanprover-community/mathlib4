@@ -14,6 +14,7 @@ This file provides some results about interactions between pullbacks and monomor
 the dual statements between pushouts and epimorphisms.
 
 ## Main results
+
 * Monomorphisms are stable under pullback. This is available using the `PullbackCone` API as
   `mono_fst_of_is_pullback_of_mono` and `mono_snd_of_is_pullback_of_mono`, and using the `pullback`
   API as `pullback.fst_of_mono` and `pullback.snd_of_mono`.
@@ -82,7 +83,7 @@ theorem mono_of_isLimitMkIdId (f : X ⟶ Y) (t : IsLimit (mk (𝟙 X) (𝟙 X) r
 set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `f` and `g` are two morphisms with a common codomain and `s` is a limit cone over the
 diagram formed by `f` and `g`. Suppose `f` and `g` both factor through a monomorphism `h` via
-`x` and `y`, respectively.  Then `s` is also a limit cone over the diagram formed by `x` and `y`. -/
+`x` and `y`, respectively. Then `s` is also a limit cone over the diagram formed by `x` and `y`. -/
 def isLimitOfFactors (f : X ⟶ Z) (g : Y ⟶ Z) (h : W ⟶ Z) [Mono h] (x : X ⟶ W) (y : Y ⟶ W)
     (hxh : x ≫ h = f) (hyh : y ≫ h = g) (s : PullbackCone f g) (hs : IsLimit s) :
     IsLimit

@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 # Building GCD out of unique factorization
 
 ## Main results
+
 * `UniqueFactorizationMonoid.toGCDMonoid`: choose a GCD monoid structure given unique factorization.
 -/
 
@@ -48,7 +49,7 @@ noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CommMonoid
       Associates.quot_out, mul_comm, sup_mul_inf, Associates.mk_mul_mk]
 
 /-- `toNormalizedGCDMonoid` constructs a GCD monoid out of a normalization on a
-  unique factorization domain. -/
+unique factorization domain. -/
 noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
     [CommMonoidWithZero α] [UniqueFactorizationMonoid α] [NormalizationMonoid α] :
     NormalizedGCDMonoid α :=

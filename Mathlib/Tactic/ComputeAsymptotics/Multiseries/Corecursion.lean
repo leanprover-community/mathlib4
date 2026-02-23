@@ -15,9 +15,11 @@ public import Mathlib.Tactic.ENatToNat
 # Non-primitive corecursion for sequences
 
 Primitive corecursive definition of the form
+
 ```
 def foo (x : X) := hd x :: foo (tlArg x)
 ```
+
 (where hd and tlArg are arbitrary functions) can be encoded via the corecursor `Seq.corec`.
 
 It is not enough, however, to define multiplication and `powser` operation for multiseries.
@@ -30,9 +32,11 @@ A function `f : Seq α → Seq α` is called *friendly* if for all `n : ℕ` the
 `f s` depends only on the `n`-prefix of its input `s`.
 
 In this file we develop a theory that justifies corecursive definitions of the form
+
 ```
 def foo (x : X) := hd x :: f (foo (tlArg x))
 ```
+
 where f is friendly.
 
 ## Main definitions
@@ -46,9 +50,11 @@ where f is friendly.
 ## Implementation details
 
 To prove that the definition of the form
+
 ```
 def foo (x : X) := hd x :: f (foo (tlArg x))
 ```
+
 is correct we prove that there exists a function satisfying this equation. For that we employ a
 Banach fixed point theorem. We treat `Seq α` as a metric space here with the metric
 `d(s, t) := 2 ^ (-n)` where `n` is the minimal index where `s` and `t` differ.

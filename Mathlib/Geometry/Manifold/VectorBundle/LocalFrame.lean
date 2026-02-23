@@ -42,6 +42,7 @@ trivialisation domain.
   each `x ∈ U`
 
 Suppose `{sᵢ}` is a local frame on `U`, and `hs : IsLocalFrameOn s U`.
+
 * `IsLocalFrameOn.toBasisAt hs`: for each `x ∈ U`, the vectors `sᵢ x` form a basis of `F`
 * `IsLocalFrameOn.coeff hs` describes the coefficient of sections of `V` w.r.t. `{sᵢ}`.
   `hs.coeff i` is a linear map from sections of `V` to functions `M → 𝕜`.
@@ -63,6 +64,7 @@ Suppose `{sᵢ}` is a local frame on `U`, and `hs : IsLocalFrameOn s U`.
 
 In the following lemmas, let `e` be a compatible local trivialisation of `V`, and `b` a basis of
 the model fiber `F`.
+
 * `Trivialization.basisAt e b`: for each `x ∈ e.baseSet`,
   return the basis of `V x` induced by `e` and `b`
 * `e.localFrame b`: the local frame on `V` induced by `e` and `b`.
@@ -72,6 +74,7 @@ the model fiber `F`.
 ## TODO
 
 Strengthen the proof of smoothness in terms of the local frame coefficients.
+
 * `IsLocalFrameOn.contMDiffOn_coeff hs`: if `t` is a `C^k` section, each coefficient
   `hs.coeff i t` is `C^k` on `U`
 * `IsLocalFrameOn.contMDiffAt_iff_coeff hs`: a section `t` is `C^k` at `x ∈ U`
@@ -86,6 +89,7 @@ Local frames use the junk value pattern: they are defined on all of `M`, but the
 only meaningful on the set on which they are a local frame.
 
 ## Tags
+
 vector bundle, local frame, smoothness
 
 -/
@@ -117,6 +121,7 @@ variable {ι : Type*} {s s' : ι → (x : M) → V x} {u u' : Set M} {x : M} {n 
 variable (I F n) in
 /--
 A family of sections `s i` of `V → M` is called a **C^k local frame** on a set `U ⊆ M` iff
+
 - the section values `s i x` form a basis for each `x ∈ U`,
 - each section `s i` is `C^k` on `U`.
 -/

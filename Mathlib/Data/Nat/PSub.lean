@@ -28,7 +28,7 @@ wrap the result in an `Option` type instead:
 namespace Nat
 
 /-- Partial predecessor operation. Returns `ppred n = some m`
-  if `n = m + 1`, otherwise `none`. -/
+if `n = m + 1`, otherwise `none`. -/
 def ppred : ℕ → Option ℕ
   | 0 => none
   | n + 1 => some n
@@ -40,7 +40,7 @@ theorem ppred_zero : ppred 0 = none := rfl
 theorem ppred_succ {n : ℕ} : ppred (succ n) = some n := rfl
 
 /-- Partial subtraction operation. Returns `psub m n = some k`
-  if `m = n + k`, otherwise `none`. -/
+if `m = n + k`, otherwise `none`. -/
 def psub (m : ℕ) : ℕ → Option ℕ
   | 0 => some m
   | n + 1 => psub m n >>= ppred

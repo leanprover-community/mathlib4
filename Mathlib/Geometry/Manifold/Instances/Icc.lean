@@ -24,6 +24,7 @@ We also define `1 : TangentSpace (𝓡∂ 1) z`, and relate it to `1` in the rea
 
 This file can be thoroughly rewritten once mathlib has a good theory of smooth immersions and
 embeddings. Once this is done,
+
 - the inclusion `Icc x y → ℝ` is a smooth embedding, and in particular smooth
 - deduce the dual result: a function `f : M → Icc x y` is smooth iff
   its composition with the inclusion into `ℝ` is smooth

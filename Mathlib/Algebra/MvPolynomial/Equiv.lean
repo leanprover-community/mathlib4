@@ -27,7 +27,7 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
 
 + `a : R`
 
@@ -574,7 +574,7 @@ theorem finSuccEquiv_X_succ {j : Fin n} : finSuccEquiv R n (X j.succ) = Polynomi
   simp [finSuccEquiv_apply]
 
 /-- The coefficient of `m` in the `i`-th coefficient of `finSuccEquiv R n f` equals the
-    coefficient of `Finsupp.cons i m` in `f`. -/
+coefficient of `Finsupp.cons i m` in `f`. -/
 theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (n + 1)) R) (i : ℕ) :
     coeff m (Polynomial.coeff (finSuccEquiv R n f) i) = coeff (m.cons i) f := by
   induction f using MvPolynomial.induction_on' generalizing i m with
@@ -745,9 +745,9 @@ and suppose that `σ ≃ Fin n`.
 Then one may view `φ` as a polynomial over `MvPolynomial (Fin n) R`, by
 
 1. renaming the variables via `Option σ ≃ Fin (n+1)`, and then singling out the `0`-th variable
-    via `MvPolynomial.finSuccEquiv`;
+   via `MvPolynomial.finSuccEquiv`;
 2. first viewing it as polynomial over `MvPolynomial σ R` via `MvPolynomial.optionEquivLeft`,
-    and then renaming the variables.
+   and then renaming the variables.
 
 This lemma shows that both constructions are the same. -/
 lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Option σ) R) :

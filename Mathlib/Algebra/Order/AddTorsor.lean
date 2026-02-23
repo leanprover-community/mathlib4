@@ -10,20 +10,23 @@ public import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Ordered scalar multiplication and vector addition
+
 This file defines ordered scalar multiplication and vector addition, and proves some properties.
 In the additive case, a motivating example is given by the additive action of `ℤ` on subsets of
-reals that are closed under integer translation.  The order compatibility allows for a treatment of
+reals that are closed under integer translation. The order compatibility allows for a treatment of
 the `R((z))`-module structure on `(z ^ s) V((z))` for an `R`-module `V`, using the formalism of Hahn
-series.  In the multiplicative case, a standard example is the action of non-negative rationals on
+series. In the multiplicative case, a standard example is the action of non-negative rationals on
 an ordered field.
 
 ## Implementation notes
+
 * Because these classes mix the algebra and order hierarchies, we write them as `Prop`-valued
   mixins.
-* Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
+* Despite the file name, Ordered AddTorsors are not defined as a separate class. To implement them,
   combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
 
 ## Definitions
+
 * IsOrderedSMul : inequalities are preserved by scalar multiplication.
 * IsOrderedVAdd : inequalities are preserved by translation.
 * IsCancelSMul : the scalar multiplication version of cancellative multiplication
@@ -32,6 +35,7 @@ an ordered field.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 
 ## Instances
+
 * OrderedCommMonoid.toIsOrderedSMul
 * OrderedAddCommMonoid.toIsOrderedVAdd
 * IsOrderedSMul.toCovariantClassLeft
@@ -44,6 +48,7 @@ an ordered field.
 * IsOrderedCancelVAdd.toContravariantClassLeft
 
 ## TODO
+
 * (lex) prod instances
 * Pi instances
 * WithTop (in a different file?)
@@ -96,7 +101,7 @@ class IsOrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop
   protected le_of_vadd_le_vadd_right : ∀ (a b : G) (c : P), a +ᵥ c ≤ b +ᵥ c → a ≤ b
 
 /-- An ordered cancellative scalar multiplication is an ordered scalar multiplication that is
-  cancellative. -/
+cancellative. -/
 @[to_additive]
 class IsOrderedCancelSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop
     extends IsOrderedSMul G P where

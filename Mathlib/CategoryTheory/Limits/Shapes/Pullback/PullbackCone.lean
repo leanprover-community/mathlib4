@@ -17,6 +17,7 @@ This file provides API for interacting with cones (resp. cocones) in the case of
 
 * `PullbackCone f g`: Given morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`, a term `t : PullbackCone f g`
   provides the data of a cone pictured as follows
+
   ```
   t.pt ---t.snd---> Y
     |               |
@@ -25,11 +26,13 @@ This file provides API for interacting with cones (resp. cocones) in the case of
     v               v
     X -----f------> Z
   ```
+
   The type `PullbackCone f g` is implemented as an abbreviation for `Cone (cospan f g)`, so general
   results about cones are also available for `PullbackCone f g`.
 
 * `PushoutCone f g`: Given morphisms `f : X ⟶ Y` and `g : X ⟶ Z`, a term `t : PushoutCone f g`
   provides the data of a cocone pictured as follows
+
   ```
     X -----f------> Y
     |               |
@@ -38,19 +41,23 @@ This file provides API for interacting with cones (resp. cocones) in the case of
     v               v
     Z ---t.inl---> t.pt
   ```
+
   Similar to `PullbackCone`, `PushoutCone f g` is implemented as an abbreviation for
   `Cocone (span f g)`, so general results about cocones are also available for `PushoutCone f g`.
 
 ## API
+
 We summarize the most important parts of the API for pullback cones here. The dual notions for
 pushout cones are also available in this file.
 
 Various ways of constructing pullback cones:
+
 * `PullbackCone.mk` constructs a term of `PullbackCone f g` given morphisms `fst` and `snd` such
   that `fst ≫ f = snd ≫ g`.
 * `PullbackCone.flip` is the `PullbackCone` obtained by flipping `fst` and `snd`.
 
 Interaction with `IsLimit`:
+
 * `PullbackCone.isLimitAux` and `PullbackCone.isLimitAux'` provide two convenient ways to show that
   a given `PullbackCone` is a limit cone.
 * `PullbackCone.isLimit.mk` provides a convenient way to show that a `PullbackCone` constructed
@@ -61,10 +68,12 @@ Interaction with `IsLimit`:
   of a limit `PullbackCone` are equal.
 
 Interaction with `CommSq`:
+
 * `CommSq.cone` and `CommSq.cocone` provide the implicit (non-limiting) pullback cone and pushout
   cocone associated with a commuting square
 
 ## References
+
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/
@@ -365,7 +374,7 @@ theorem condition (t : PushoutCocone f g) : f ≫ inl t = g ≫ inr t :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- To check whether a morphism is coequalized by the maps of a pushout cocone, it suffices to check
-  it for `inl t` and `inr t` -/
+it for `inl t` and `inr t` -/
 theorem coequalizer_ext (t : PushoutCocone f g) {W : C} {k l : t.pt ⟶ W}
     (h₀ : inl t ≫ k = inl t ≫ l) (h₁ : inr t ≫ k = inr t ≫ l) :
     ∀ j : WalkingSpan, t.ι.app j ≫ k = t.ι.app j ≫ l

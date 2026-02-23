@@ -269,7 +269,7 @@ theorem tan_arcsin (x : ℝ) : tan (arcsin x) = x / √(1 - x ^ 2) := by
   rw [sin_arcsin hx₁ hx₂]
 
 /-- Inverse of the `cos` function, returns values in the range `0 ≤ arccos x` and `arccos x ≤ π`.
-  It defaults to `π` on `(-∞, -1)` and to `0` to `(1, ∞)`. -/
+It defaults to `π` on `(-∞, -1)` and to `0` to `(1, ∞)`. -/
 @[pp_nodot]
 noncomputable def arccos (x : ℝ) : ℝ :=
   π / 2 - arcsin x

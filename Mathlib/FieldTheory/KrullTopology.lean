@@ -169,7 +169,7 @@ section KrullT2
 open scoped Topology Filter
 
 /-- Let `L/E/K` be a tower of fields with `E/K` finite. Then `Gal(L/E)` is an open subgroup of
-  `Gal(L/K)`. -/
+`Gal(L/K)`. -/
 theorem IntermediateField.fixingSubgroup_isOpen {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) [FiniteDimensional K E] :
     IsOpen (E.fixingSubgroup : Set Gal(L/K)) := by
@@ -179,7 +179,7 @@ theorem IntermediateField.fixingSubgroup_isOpen {K L : Type*} [Field K] [Field L
   exact Subgroup.isOpen_of_mem_nhds _ h_nhds
 
 /-- Given a tower of fields `L/E/K`, with `E/K` finite, the subgroup `Gal(L/E) ≤ Gal(L/K)` is
-  closed. -/
+closed. -/
 theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) [FiniteDimensional K E] :
     IsClosed (E.fixingSubgroup : Set Gal(L/K)) :=
@@ -242,7 +242,7 @@ instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L
   exact ⟨x, IntermediateField.mem_adjoin_simple_self K x, hx⟩
 
 /-- If `L/K` is an algebraic field extension, then the Krull topology on `Gal(L/K)` is
-  totally separated. -/
+totally separated. -/
 theorem krullTopology_isTotallySeparated {K L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsIntegral K L] : IsTotallySeparated (Set.univ : Set Gal(L/K)) :=
   (totallySeparatedSpace_iff _).mp inferInstance

@@ -16,6 +16,7 @@ description of the full process.
 
 The conditional expectation of an `L²` function is defined in
 `MeasureTheory.Function.ConditionalExpectation.CondexpL2`. In this file, we perform two steps.
+
 * Show that the conditional expectation of the indicator of a measurable set with finite measure
   is integrable and define a map `Set α → (E →L[ℝ] (α →₁[μ] E))` which to a set associates a linear
   map. That linear map sends `x ∈ E` to the conditional expectation of the indicator of the set

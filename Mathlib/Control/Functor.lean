@@ -21,7 +21,7 @@ This module provides additional lemmas, definitions, and instances for `Functor`
 * `Functor.AddConst α` is `Functor.Const α` but for when `α` has an additive structure.
 * `Functor.Comp F G` for functors `F` and `G` is the functor composition of `F` and `G`.
 * `Liftp` and `Liftr` respectively lift predicates and relations on a type `α`
-  to `F α`.  Terms of `F α` are considered to, in some sense, contain values of type `α`.
+  to `F α`. Terms of `F α` are considered to, in some sense, contain values of type `α`.
 
 ## Tags
 
@@ -253,14 +253,14 @@ theorem of_mem_supp {α : Type u} {x : F α} {p : α → Prop} (h : Liftp p x) :
   fun _ hy => hy h
 
 /-- If `f` is a functor, if `fb : f β` and `a : α`, then `mapConstRev fb a` is the result of
-  applying `f.map` to the constant function `β → α` sending everything to `a`, and then
-  evaluating at `fb`. In other words it's `const a <$> fb`. -/
+applying `f.map` to the constant function `β → α` sending everything to `a`, and then
+evaluating at `fb`. In other words it's `const a <$> fb`. -/
 abbrev mapConstRev {f : Type u → Type v} [Functor f] {α β : Type u} :
     f β → α → f α :=
   fun a b => Functor.mapConst b a
 /-- If `f` is a functor, if `fb : f β` and `a : α`, then `mapConstRev fb a` is the result of
-  applying `f.map` to the constant function `β → α` sending everything to `a`, and then
-  evaluating at `fb`. In other words it's `const a <$> fb`. -/
+applying `f.map` to the constant function `β → α` sending everything to `a`, and then
+evaluating at `fb`. In other words it's `const a <$> fb`. -/
 infix:100 " $> " => Functor.mapConstRev
 
 end Functor

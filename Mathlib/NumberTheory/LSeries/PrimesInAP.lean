@@ -18,6 +18,7 @@ and `a : ZMod q` is invertible, then there are infinitely many prime numbers `p`
 `(p : ZMod q) = a`.
 
 The main steps of the proof are as follows.
+
 1. Define `ArithmeticFunction.vonMangoldt.residueClass a` for `a : ZMod q`, which is
    a function `ℕ → ℝ` taking the value zero when `(n : ZMod q) ≠ a` and `Λ n` else
    (where `Λ` is the von Mangoldt function `ArithmeticFunction.vonMangoldt`; we have
@@ -58,6 +59,7 @@ The main steps of the proof are as follows.
 ## Main Result
 
 We give two versions of **Dirichlet's Theorem**:
+
 * `Nat.infinite_setOf_prime_and_eq_mod` states that the set of primes `p`
   such that `(p : ZMod q) = a` is infinite (when `a` is invertible in `ZMod q`).
 * `Nat.forall_exists_prime_gt_and_eq_mod` states that for any natural number `n`

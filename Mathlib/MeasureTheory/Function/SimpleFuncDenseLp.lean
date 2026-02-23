@@ -247,6 +247,7 @@ variable {μ : Measure α} {p : ℝ≥0∞}
 ### Properties of simple functions in `Lp` spaces
 
 A simple function `f : α →ₛ E` into a normed group `E` verifies, for a measure `μ`:
+
 - `MemLp f 0 μ` and `MemLp f ∞ μ`, since `f` is a.e.-measurable and bounded,
 - for `0 < p < ∞`,
   `MemLp f p μ ↔ Integrable f μ ↔ f.FinMeasSupp μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞`.
@@ -408,9 +409,9 @@ section Instances
 protected theorem eq' {f g : Lp.simpleFunc E p μ} : (f : α →ₘ[μ] E) = (g : α →ₘ[μ] E) → f = g :=
   Subtype.ext ∘ Subtype.ext
 
-/-! Implementation note:  If `Lp.simpleFunc E p μ` were defined as a `𝕜`-submodule of `Lp E p μ`,
+/-! Implementation note: If `Lp.simpleFunc E p μ` were defined as a `𝕜`-submodule of `Lp E p μ`,
 then the next few lemmas, putting a normed `𝕜`-group structure on `Lp.simpleFunc E p μ`, would be
-unnecessary.  But instead, `Lp.simpleFunc E p μ` is defined as an `AddSubgroup` of `Lp E p μ`,
+unnecessary. But instead, `Lp.simpleFunc E p μ` is defined as an `AddSubgroup` of `Lp E p μ`,
 which does not permit this (but has the advantage of working when `E` itself is a normed group,
 i.e. has no scalar action). -/
 
@@ -802,6 +803,7 @@ variable [MeasurableSpace α] [NormedAddCommGroup E] {f : α → E} {p : ℝ≥0
 
 /-- To prove something for an arbitrary `Lp` function in a second countable Borel normed group, it
 suffices to show that
+
 * the property holds for (multiples of) characteristic functions;
 * is closed under addition;
 * the set of functions in `Lp` for which the property holds is closed.
@@ -821,6 +823,7 @@ theorem Lp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : Lp 
 
 /-- To prove something for an arbitrary `MemLp` function in a second countable
 Borel normed group, it suffices to show that
+
 * the property holds for (multiples of) characteristic functions;
 * is closed under addition;
 * the set of functions in the `Lᵖ` space for which the property holds is closed.
@@ -925,6 +928,7 @@ protected theorem L1.SimpleFunc.integrable (f : α →₁ₛ[μ] E) :
 
 /-- To prove something for an arbitrary integrable function in a normed group,
 it suffices to show that
+
 * the property holds for (multiples of) characteristic functions;
 * is closed under addition;
 * the set of functions in the `L¹` space for which the property holds is closed.

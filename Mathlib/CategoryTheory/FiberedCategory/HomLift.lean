@@ -26,6 +26,7 @@ goal, this tactic is just short for `obtain ⟨⟩ := inferInstanceAs (p.IsHomLi
 it is used to make the code more readable.
 
 ## Implementation
+
 The class `IsHomLift` is defined as an inductive with the single constructor
 `.map (φ : a ⟶ b) : IsHomLift p (p.map φ) φ`, similar to how `Eq a b` has the single constructor
 `.rfl (a : α) : Eq a a`.
@@ -45,6 +46,7 @@ namespace CategoryTheory
 /-- Given a functor `p : 𝒳 ⥤ 𝒮`, an arrow `φ : a ⟶ b` in `𝒳` and an arrow `f : R ⟶ S` in `𝒮`,
 `p.IsHomLift f φ` expresses the fact that `φ` lifts `f` through `p`.
 This is often drawn as:
+
 ```
   a --φ--> b
   -        -

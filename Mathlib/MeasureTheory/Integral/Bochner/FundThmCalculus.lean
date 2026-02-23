@@ -64,7 +64,7 @@ theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
 /-- Fundamental theorem of calculus for set integrals, `nhdsWithin` version: if `μ` is a locally
 finite measure and `f` is an almost everywhere measurable function that is continuous at a point `a`
 within a measurable set `t`, then `∫ x in s i, f x ∂μ = μ (s i) • f a + o(μ (s i))` at a filter `li`
-provided that `s i` tends to `(𝓝[t] a).smallSets` along `li`.  Since `μ (s i)` is an `ℝ≥0∞`
+provided that `s i` tends to `(𝓝[t] a).smallSets` along `li`. Since `μ (s i)` is an `ℝ≥0∞`
 number, we use `μ.real (s i)` in the actual statement.
 
 Often there is a good formula for `μ.real (s i)`, so the formalization can take an optional
@@ -99,8 +99,7 @@ theorem ContinuousAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [Open
   (hx.mono_left inf_le_left).integral_sub_linear_isLittleO_ae hfm (μ.finiteAt_nhds x) hs m hsμ
 
 /-- Fundamental theorem of calculus for set integrals, `nhdsWithin` version: if `μ` is a locally
-finite measure, `f` is continuous on a measurable set `t`, and `a ∈ t`, then `∫ x in (s i), f x ∂μ =
-μ (s i) • f a + o(μ (s i))` at `li` provided that `s i` tends to `(𝓝[t] a).smallSets` along `li`.
+finite measure, `f` is continuous on a measurable set `t`, and `a ∈ t`, then `∫ x in (s i), f x ∂μ = μ (s i) • f a + o(μ (s i))` at `li` provided that `s i` tends to `(𝓝[t] a).smallSets` along `li`.
 Since `μ (s i)` is an `ℝ≥0∞` number, we use `μ.real (s i)` in the actual statement.
 
 Often there is a good formula for `μ.real (s i)`, so the formalization can take an optional

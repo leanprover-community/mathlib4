@@ -21,11 +21,13 @@ states that `e : ε` carries the data of a lower bound for `a.get`,
 in the form `bound_le : bound a e ≤ a.get`,
 along with a mechanism for asking for a better bound `improve e : Option ε`,
 satisfying
+
 ```
 match improve e with
 | none => bound e = a.get
 | some e' => bound e < bound e'
 ```
+
 i.e. it returns `none` if the current bound is already optimal,
 and otherwise a strictly better bound.
 
@@ -42,6 +44,7 @@ variable {α ε : Type*}
 
 /--
 Given `[EstimatorData a ε]`
+
 * a term `e : ε` can be interpreted via `bound a e : α` as a lower bound for `a`, and
 * we can ask for an improved lower bound via `improve a e : Option ε`.
 
@@ -55,6 +58,7 @@ class EstimatorData (a : Thunk α) (ε : Type*) where
 
 /--
 Given `[Estimator a ε]`
+
 * we have `bound a e ≤ a.get`, and
 * `improve a e` returns none iff `bound a e = a.get`,
   and otherwise it returns a strictly better bound.

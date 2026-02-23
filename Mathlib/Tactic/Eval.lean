@@ -26,11 +26,13 @@ namespace Mathlib.Meta
 `eval% x` evaluates the term `x : X` in the interpreter, and then injects the resulting expression.
 
 As an example:
+
 ```lean
 example : 2^10 = eval% 2^10 := by
   -- goal is `2^10 = 1024`
   sorry
 ```
+
 This only works if a `Lean.ToExpr X` instance is available.
 
 Tip: you can use `show_term eval% x` to see the value of `eval% x`.

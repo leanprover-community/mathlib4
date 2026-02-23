@@ -72,14 +72,14 @@ open DirectSum
 
 /-- An indexed family of mutually-orthogonal subspaces of an inner product space `E`.
 
-The simple way to express this concept would be as a condition on `V : ι → Submodule 𝕜 E`.  We
+The simple way to express this concept would be as a condition on `V : ι → Submodule 𝕜 E`. We
 instead implement it as a condition on a family of inner product spaces each equipped with an
 isometric embedding into `E`, thus making it a property of morphisms rather than subobjects.
 The connection to the subobject spelling is shown in `orthogonalFamily_iff_pairwise`.
 
 This definition is less lightweight, but allows for better definitional properties when the inner
 product space structure on each of the submodules is important -- for example, when considering
-their Hilbert sum (`PiLp V 2`).  For example, given an orthonormal set of vectors `v : ι → E`,
+their Hilbert sum (`PiLp V 2`). For example, given an orthonormal set of vectors `v : ι → E`,
 we have an associated orthogonal family of one-dimensional subspaces of `E`, which it is convenient
 to be able to discuss using `ι → 𝕜` rather than `Π i : ι, span 𝕜 (v i)`. -/
 def OrthogonalFamily (G : ι → Type*) [∀ i, SeminormedAddCommGroup (G i)]

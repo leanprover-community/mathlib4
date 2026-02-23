@@ -17,12 +17,14 @@ In `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Topology.lean`, we have given a
 `ProjectiveSpectrum 𝒜`; in this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
 
 ## Notation
+
 - `A` is a commutative ring;
 - `σ` is a class of additive subgroups of `A`;
 - `𝒜 : ℕ → σ` is the grading of `A`;
 - `U` is opposite object of some open subset of `ProjectiveSpectrum.top`.
 
 ## Main definitions and results
+
 We define the structure sheaf as the subsheaf of all dependent function
 `f : Π x : U, HomogeneousLocalization 𝒜 x` such that `f` is locally expressible as ratio of two
 elements of the *same grading*, i.e. `∀ y ∈ U, ∃ (V ⊆ U) (i : ℕ) (a b ∈ 𝒜 i), ∀ z ∈ V, f z = a / b`.
@@ -36,6 +38,7 @@ elements of the *same grading*, i.e. `∀ y ∈ U, ∃ (V ⊆ U) (i : ℕ) (a b 
   restriction map.
 
 Then we establish that `Proj 𝒜` is a `LocallyRingedSpace`:
+
 * `AlgebraicGeometry.Proj.stalkIso'`: for any `x : ProjectiveSpectrum 𝒜`, the stalk of
   `Proj.StructureSheaf` at `x` is isomorphic to `HomogeneousLocalization 𝒜 x`.
 * `AlgebraicGeometry.Proj.toLocallyRingedSpace`: `Proj` as a locally ringed space.

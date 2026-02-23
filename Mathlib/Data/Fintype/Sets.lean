@@ -310,6 +310,7 @@ open Batteries.ExtendedBinder Lean Meta
 /-- `finset% t` elaborates `t` as a `Finset`.
 If `t` is a `Set`, then inserts `Set.toFinset`.
 Does not make use of the expected type; useful for big operators over finsets.
+
 ```
 #check finset% Finset.range 2 -- Finset Nat
 #check finset% (Set.univ : Set Bool) -- Finset Bool

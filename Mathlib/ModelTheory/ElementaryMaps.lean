@@ -41,7 +41,7 @@ variable (L : Language) (M : Type*) (N : Type*) {P : Type*} {Q : Type*}
 variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
 
 /-- An elementary embedding of first-order structures is an embedding that commutes with the
-  realizations of formulas. -/
+realizations of formulas. -/
 structure ElementaryEmbedding where
   /-- The underlying embedding -/
   toFun : M → N
@@ -199,7 +199,7 @@ end ElementaryEmbedding
 variable (L) (M)
 
 /-- The elementary diagram of an `L`-structure is the set of all sentences with parameters it
-  satisfies. -/
+satisfies. -/
 abbrev elementaryDiagram : L[[M]].Theory :=
   L[[M]].completeTheory M
 

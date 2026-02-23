@@ -21,7 +21,7 @@ one of the following equivalent definitions (the definition is in terms of the f
 * `f` is `O(x ^ c)` for all integers `c` (`superpolynomialDecay_iff_isBigO`)
 
 These conditions are all equivalent to conditions in terms of polynomials, replacing `x ^ c` with
-  `p(x)` or `p(x)⁻¹` as appropriate, since asymptotically `p(x)` behaves like `X ^ p.natDegree`.
+`p(x)` or `p(x)⁻¹` as appropriate, since asymptotically `p(x)` behaves like `X ^ p.natDegree`.
 These further equivalences are not proven in mathlib but would be good future projects.
 
 The definition of superpolynomial decay for `f : α → β` is relative to a parameter `k : α → β`.
@@ -33,15 +33,15 @@ When the map `k` is given by `n ↦ ↑n : ℕ → ℝ` this defines negligible 
 https://en.wikipedia.org/wiki/Negligible_function
 
 When the map `k` is given by `(r₁,...,rₙ) ↦ r₁*...*rₙ : ℝⁿ → ℝ` this is equivalent
-  to the definition of rapidly decreasing functions given here:
+to the definition of rapidly decreasing functions given here:
 https://ncatlab.org/nlab/show/rapidly+decreasing+function
 
 ## Main statements
 
 * `SuperpolynomialDecay.polynomial_mul` says that if `f(x)` is negligible,
-    then so is `p(x) * f(x)` for any polynomial `p`.
+  then so is `p(x) * f(x)` for any polynomial `p`.
 * `superpolynomialDecay_iff_zpow_tendsto_zero` gives an equivalence between definitions in terms
-    of decaying faster than `k(x) ^ n` for all naturals `n` or `k(x) ^ c` for all integer `c`.
+  of decaying faster than `k(x) ^ n` for all naturals `n` or `k(x) ^ c` for all integer `c`.
 -/
 
 @[expose] public section
@@ -54,7 +54,7 @@ open Topology Polynomial
 open Filter
 
 /-- `f` has superpolynomial decay in parameter `k` along filter `l` if
-  `k ^ n * f` tends to zero at `l` for all naturals `n` -/
+`k ^ n * f` tends to zero at `l` for all naturals `n` -/
 def SuperpolynomialDecay {α β : Type*} [TopologicalSpace β] [CommSemiring β] (l : Filter α)
     (k : α → β) (f : α → β) :=
   ∀ n : ℕ, Tendsto (fun a : α => k a ^ n * f a) l (𝓝 0)

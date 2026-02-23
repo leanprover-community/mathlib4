@@ -44,6 +44,7 @@ variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ] [Pread
 
 /-- A preadditive category `C` with an additive shift, and a class of "distinguished triangles"
 relative to that shift is called pretriangulated if the following hold:
+
 * Any triangle that is isomorphic to a distinguished triangle is also distinguished.
 * Any triangle of the form `(X,X,0,id,0,0)` is distinguished.
 * For any morphism `f : X ⟶ Y` there exists a distinguished triangle of the form `(X,Y,Z,f,g,h)`.
@@ -113,10 +114,12 @@ theorem inv_rot_of_distTriang (T : Triangle C) (H : T ∈ distTriang C) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given any distinguished triangle
+
 ```
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
+
 the composition `f ≫ g = 0`. -/
 @[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ distTriang C) : T.mor₁ ≫ T.mor₂ = 0 := by
@@ -126,10 +129,12 @@ theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ distTriang C) : T.mor₁ �
   simpa only [contractibleTriangle_mor₂, zero_comp] using hc.left.symm
 
 /-- Given any distinguished triangle
+
 ```
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
+
 the composition `g ≫ h = 0`. -/
 @[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
@@ -138,10 +143,12 @@ theorem comp_distTriang_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given any distinguished triangle
+
 ```
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
+
 the composition `h ≫ f⟦1⟧ = 0`. -/
 @[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C) :

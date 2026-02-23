@@ -12,7 +12,9 @@ public import Mathlib.Tactic.TFAE
 # Matroid loops and coloops
 
 ## Loops
+
 A 'loop' of a matroid `M` is an element `e` satisfying one of the following equivalent conditions:
+
 * `e ∈ M.closure ∅`;
 * `{e}` is dependent in `M`;
 * `{e}` is a circuit of `M`;
@@ -28,12 +30,14 @@ as well as predicates `Matroid.IsLoop M : α → Prop` and `Matroid.IsNonloop M 
 and provides API for interacting with them.
 
 ## Coloops
+
 The dual notion of a loop is a 'coloop'. Geometrically, these can be thought of elements that are
 skew to the remainder of the matroid. Coloops in graphic matroids are 'bridge' edges of the graph,
 and coloops in linearly representable matroids are vectors not spanned by the other vectors
 in the matroid.
 Coloops also have many equivalent definitions in abstract matroid language;
 a coloop is an element of `M.E` if any of the following equivalent conditions holds :
+
 * `e` is a loop of `M✶`;
 * `{e}` is a cocircuit of `M`;
 * `e` is in no circuit of `M`;
@@ -42,7 +46,9 @@ a coloop is an element of `M.E` if any of the following equivalent conditions ho
 * `M.E \ {e}` is nonspanning.
 
 ## Main Declarations
+
 For `M` : Matroid `α`:
+
 * `M.loops` is the set `M.closure ∅`.
 * `M.IsLoop e` means that `e : α` is a loop of `M`, defined as the statement `e ∈ M.loops`.
 * `M.isLoop_tfae` gives a number of properties that are equivalent to `IsLoop`.
@@ -733,7 +739,7 @@ lemma restrict_isColoop_iff {R : Set α} (hRE : R ⊆ M.E) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If two matroids agree on loops and coloops, and have the same independent sets after
-  loops/coloops are removed, they are equal. -/
+loops/coloops are removed, they are equal. -/
 lemma ext_indep_disjoint_loops_coloops {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     (hl : M₁.loops = M₂.loops) (hc : M₁.coloops = M₂.coloops)
     (h : ∀ I, I ⊆ M₁.E → Disjoint I (M₁.loops ∪ M₁.coloops) → (M₁.Indep I ↔ M₂.Indep I)) :

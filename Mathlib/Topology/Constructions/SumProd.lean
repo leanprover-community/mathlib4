@@ -436,7 +436,7 @@ theorem prod_induced_induced {X Z} (f : X → Y) (g : Z → W) :
   rfl
 
 /-- Given a neighborhood `s` of `(x, x)`, then `(x, x)` has a square open neighborhood
-  that is a subset of `s`. -/
+that is a subset of `s`. -/
 theorem exists_nhds_square {s : Set (X × X)} {x : X} (hx : s ∈ 𝓝 (x, x)) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ×ˢ U ⊆ s := by
   simpa [nhds_prod_eq, (nhds_basis_opens x).prod_self.mem_iff, and_assoc, and_left_comm] using hx

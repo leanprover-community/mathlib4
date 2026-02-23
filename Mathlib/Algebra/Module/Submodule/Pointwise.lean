@@ -24,6 +24,7 @@ and the actions
 which matches the action of `Set.mulActionSet`.
 
 This file also provides:
+
 * `Submodule.pointwiseSetSMulSubmodule`: for `R`-module `M`, a `s : Set R` can act on
   `N : Submodule R M` by defining `s • N` to be the smallest submodule containing all `a • n`
   where `a ∈ s` and `n ∈ N`.
@@ -288,9 +289,11 @@ For subset `s ⊆ S` and submodule `N ≤ M`, we define `s • N` to be the smal
 all `r • n` where `r ∈ s` and `n ∈ N`.
 
 #### Results
+
 For arbitrary monoids `S` acting distributively on `M`, there is an induction principle for `s • N`:
 To prove `P` holds for all `s • N`, it is enough
 to prove:
+
 - for all `r ∈ s` and `n ∈ N`, `P (r • n)`;
 - for all `r` and `m ∈ s • N`, `P (r • n)`;
 - for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
@@ -300,16 +303,17 @@ To invoke this induction principle, use `induction x, hx using Submodule.set_smu
 `x : M` and `hx : x ∈ s • N`
 
 When we consider subset of `R` acting on `M`
+
 - `Submodule.pointwiseSetDistribMulAction` : the action described above is distributive.
 - `Submodule.mem_set_smul` : `x ∈ s • N` iff `x` can be written as `r₀ n₀ + ... + rₖ nₖ` where
   `rᵢ ∈ s` and `nᵢ ∈ N`.
 - `Submodule.coe_span_smul`: `s • N` is the same as `⟨s⟩ • N` where `⟨s⟩` is the ideal spanned
   by `s`.
 
-
 #### Notes
+
 - If we assume the addition on subsets of `R` is the `⊔` and subtraction `⊓` i.e. use `SetSemiring`,
-then this action actually gives a module structure on submodules of `M` over subsets of `R`.
+  then this action actually gives a module structure on submodules of `M` over subsets of `R`.
 - If we generalize so that `r • N` makes sense for all `r : S`, then `Submodule.singleton_set_smul`
   and `Submodule.singleton_set_smul` can be generalized as well.
 -/
@@ -391,6 +395,7 @@ variable {s N} in
 /--
 Induction principle for set acting on submodules. To prove `P` holds for all `s • N`, it is enough
 to prove:
+
 - for all `r ∈ s` and `n ∈ N`, `P (r • n)`;
 - for all `r` and `m ∈ s • N`, `P (r • n)`;
 - for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;

@@ -22,7 +22,7 @@ ideal `I` of `R`, where `R` is a commutative ring, as the direct limit of Ext mo
 
 Given a collection of ideals cofinal with the powers of `I`, consider the directed system of
 quotients of `R` by these ideals, and take the direct limit of the system induced on the `i`-th
-Ext into `M`.  One can, of course, take the collection to simply be the integral powers of `I`.
+Ext into `M`. One can, of course, take the collection to simply be the integral powers of `I`.
 
 ## References
 
@@ -41,9 +41,9 @@ local cohomology, local cohomology modules
 ## Future work
 
 * Prove that this definition is equivalent to:
-    * the right-derived functor definition
-    * the characterization as the limit of Koszul homology
-    * the characterization as the cohomology of a Cech-like complex
+  * the right-derived functor definition
+  * the characterization as the limit of Koszul homology
+  * the characterization as the cohomology of a Cech-like complex
 * Establish long exact sequence(s) in local cohomology
 -/
 
@@ -178,10 +178,11 @@ namespace localCohomology
 
 /-!
 Showing equivalence of different definitions of local cohomology.
-  * `localCohomology.isoSelfLERadical` gives the isomorphism
-      `localCohomology J i ≅ localCohomology.ofSelfLERadical J i`
-  * `localCohomology.isoOfSameRadical` gives the isomorphism
-      `localCohomology J i ≅ localCohomology K i` when `J.radical = K.radical`.
+
+* `localCohomology.isoSelfLERadical` gives the isomorphism
+  `localCohomology J i ≅ localCohomology.ofSelfLERadical J i`
+* `localCohomology.isoOfSameRadical` gives the isomorphism
+  `localCohomology J i ≅ localCohomology K i` when `J.radical = K.radical`.
 -/
 
 section LocalCohomologyEquiv

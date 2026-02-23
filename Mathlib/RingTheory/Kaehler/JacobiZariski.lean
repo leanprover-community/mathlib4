@@ -14,15 +14,18 @@ public import Mathlib.Algebra.Module.SnakeLemma
 # The Jacobi-Zariski exact sequence
 
 Given `R → S → T`, the Jacobi-Zariski exact sequence is
+
 ```
 H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R] → Ω[T/S] → 0
 ```
+
 The maps are
+
 - `Algebra.H1Cotangent.map`
 - `Algebra.H1Cotangent.δ`
 - `KaehlerDifferential.mapBaseChange`
 - `KaehlerDifferential.map`
-and the exactness lemmas are
+  and the exactness lemmas are
 - `Algebra.H1Cotangent.exact_map_δ`
 - `Algebra.H1Cotangent.exact_δ_mapBaseChange`
 - `KaehlerDifferential.exact_mapBaseChange_map`
@@ -313,6 +316,7 @@ The connecting homomorphism in the Jacobi-Zariski sequence for given presentatio
 Given representations `0 → I → R[X] → S → 0` and `0 → K → S[Y] → T → 0`,
 we may consider the induced representation `0 → J → R[X, Y] → T → 0`,
 and this map is obtained by applying snake lemma to the following diagram
+
 ```
     T ⊗[S] Ω[S/R]    →          Ω[T/R]        →   Ω[T/S]  → 0
         ↑                         ↑                 ↑
@@ -323,6 +327,7 @@ and this map is obtained by applying snake lemma to the following diagram
                              H¹(L_{T/R})      → H¹(L_{T/S})
 
 ```
+
 This is independent from the presentations chosen. See `H1Cotangent.δ_comp_equiv`.
 -/
 noncomputable

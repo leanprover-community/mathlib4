@@ -27,9 +27,10 @@ In a category with binary products, for any object `X` the functor
 - `Over.pullback f : Over Y ⥤ Over X` is the functor induced by a morphism `f : X ⟶ Y`.
 - `Over.mapPullbackAdj` is the adjunction `Over.map f ⊣ Over.pullback f`.
 - `star : C ⥤ Over X` is the functor induced by an object `X`.
-- `forgetAdjStar` is the adjunction  `forget X ⊣ star X`.
+- `forgetAdjStar` is the adjunction `forget X ⊣ star X`.
 
 ## TODO
+
 Show `star X` itself has a right adjoint provided `C` is Cartesian closed and has pullbacks.
 -/
 
@@ -87,6 +88,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The pullback along an epi that's preserved under pullbacks is faithful.
 
 This "preserved under pullbacks" condition is automatically satisfied in abelian categories:
+
 ```
 example [Abelian C] [Epi f] : (pullback f).Faithful := inferInstance
 ```
@@ -225,6 +227,7 @@ set_option linter.flexible false in -- simp followed by infer_instance
 /-- The pushout along a mono that's preserved under pushouts is faithful.
 
 This "preserved under pushouts" condition is automatically satisfied in abelian categories:
+
 ```
 example [Abelian C] [Mono f] : (pushout f).Faithful := inferInstance
 ```

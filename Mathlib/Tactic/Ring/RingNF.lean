@@ -78,6 +78,7 @@ Evaluates an expression `e` into a normalized representation as a polynomial.
 
 This is a variant of `Mathlib.Tactic.Ring.eval`, the main driver of the `ring` tactic.
 It differs in
+
 * operating on `Expr` (input) and `Simp.Result` (output), rather than typed `Qq` versions of these;
 * throwing an error if the expression `e` is an atom for the `ring` tactic.
 -/
@@ -206,6 +207,7 @@ suggested. See also `ring1`, which fails if the goal is not an equality.
 * `ring!` will use a more aggressive reducibility setting to determine equality of atoms.
 
 Examples:
+
 ```
 example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
 example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring

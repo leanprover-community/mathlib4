@@ -238,7 +238,7 @@ theorem meromorphicTrailingCoeffAt_factorizedRational_off_support {d : 𝕜 → 
 
 /--
 Variant of `meromorphicTrailingCoeffAt_factorizedRational`: Compute log of the norm of the trailing
-coefficient.  The convention that `log 0 = 0` gives a closed formula easier than the one in
+coefficient. The convention that `log 0 = 0` gives a closed formula easier than the one in
 `meromorphicTrailingCoeffAt_factorizedRational`.
 -/
 theorem log_norm_meromorphicTrailingCoeffAt {d : 𝕜 → ℤ} {x : 𝕜} (h : d.support.Finite) :

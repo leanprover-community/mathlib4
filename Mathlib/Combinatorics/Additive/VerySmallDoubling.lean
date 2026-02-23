@@ -16,6 +16,7 @@ public import Mathlib.Tactic.Qify
 # Sets with very small doubling
 
 For a finset `A` in a group, its *doubling* is `#(A * A) / #A`. This file characterises sets with
+
 * no doubling as the sets which are either empty or translates of a subgroup.
   For the converse, use the existing facts from the pointwise API: `∅ ^ 2 = ∅` (`Finset.empty_pow`),
   `(a • H) ^ 2 = a ^ 2 • H ^ 2 = a ^ 2 • H` (`smul_pow`, `coe_set_pow`).

@@ -43,14 +43,18 @@ variable {X Y : C} (f g : X ⟶ Y)
 
 /-- A split coequalizer diagram consists of morphisms
 
-      f   π
-    X ⇉ Y → Z
-      g
+```
+  f   π
+X ⇉ Y → Z
+  g
+```
 
 satisfying `f ≫ π = g ≫ π` together with morphisms
 
-      t   s
-    X ← Y ← Z
+```
+  t   s
+X ← Y ← Z
+```
 
 satisfying `s ≫ π = 𝟙 Z`, `t ≫ g = 𝟙 Y` and `t ≫ f = π ≫ s`.
 

@@ -28,7 +28,7 @@ then reduces to ASA.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Congruence_(geometry)
+* https://en.wikipedia.org/wiki/Congruence\_(geometry)
 
 -/
 

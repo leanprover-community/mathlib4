@@ -16,13 +16,14 @@ We bundle the adjunctions in a structure `Quadruple L F G R` and make the two tr
 and `Triple F G R` accessible as `Quadruple.leftTriple` and `Quadruple.rightTriple`.
 
 Currently the only two results are the following:
+
 * When `F` and `R` are fully faithful, the components of the induced natural transformation `G ⟶ L`
   are epimorphisms iff the components of the natural transformation `F ⟶ R` are monomorphisms.
 * When `L` and `G` are fully faithful, the components of the induced natural transformation `L ⟶ G`
   are epimorphisms iff the components of the natural transformation `R ⟶ F` are monomorphisms.
-This is in particular relevant for the adjoint quadruples `π₀ ⊣ disc ⊣ Γ ⊣ codisc` that appear in
-cohesive topoi, and can be found e.g. as proposition 2.7
-[here](https://ncatlab.org/nlab/show/cohesive+topos).
+  This is in particular relevant for the adjoint quadruples `π₀ ⊣ disc ⊣ Γ ⊣ codisc` that appear in
+  cohesive topoi, and can be found e.g. as proposition 2.7
+  [here](https://ncatlab.org/nlab/show/cohesive+topos).
 
 Note that by `Triple.fullyFaithfulEquiv`, in an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` `L` is fully
 faithful iff `G` is and `F` is fully faithful iff `R` is; these lemmas thus cover all cases in which

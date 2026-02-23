@@ -18,12 +18,14 @@ This file provides some notable isomorphisms regarding the even subalgebra, `Cli
 
 * `CliffordAlgebra.equivEven`: Every Clifford algebra is isomorphic as an algebra to the even
   subalgebra of a Clifford algebra with one more dimension.
+
   * `CliffordAlgebra.EquivEven.Q'`: The quadratic form used by this "one-up" algebra.
   * `CliffordAlgebra.toEven`: The simp-normal form of the forward direction of this isomorphism.
   * `CliffordAlgebra.ofEven`: The simp-normal form of the reverse direction of this isomorphism.
 
 * `CliffordAlgebra.evenEquivEvenNeg`: Every even subalgebra is isomorphic to the even subalgebra
   of the Clifford algebra with negated quadratic form.
+
   * `CliffordAlgebra.evenToNeg`: The simp-normal form of each direction of this isomorphism.
 
 ## Main results

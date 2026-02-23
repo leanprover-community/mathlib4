@@ -21,10 +21,13 @@ This file introduces the following properties of a map `f : X → Y` between top
 * `IsInducing f` means the topology on `X` is the one induced via `f` from the topology on `Y`.
   These behave like embeddings except they need not be injective. Instead, points of `X` which
   are identified by `f` are also inseparable in the topology on `X`.
+
 * `IsEmbedding f` means `f` is inducing and also injective. Equivalently, `f` identifies `X` with
   a subspace of `Y`.
+
 * `IsOpenEmbedding f` means `f` is an embedding with open image, so it identifies `X` with an
   open subspace of `Y`. Equivalently, `f` is an embedding and an open map.
+
 * `IsClosedEmbedding f` similarly means `f` is an embedding with closed image, so it identifies
   `X` with a closed subspace of `Y`. Equivalently, `f` is an embedding and a closed map.
 

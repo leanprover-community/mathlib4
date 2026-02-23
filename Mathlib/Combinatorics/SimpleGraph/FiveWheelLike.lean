@@ -14,13 +14,14 @@ public import Mathlib.Tactic.Linarith
 
 This file defines an `IsFiveWheelLike` structure in a graph, and describes properties of these
 structures as well as graphs which avoid this structure. These have two key uses:
+
 * We use them to prove that a maximally `Kᵣ₊₁`-free graph is `r`-colorable iff it is
   complete-multipartite: `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree`.
 * They play a key role in Brandt's proof of the Andrásfai-Erdős-Sós theorem, which is where they
   first appeared. We give this proof below, see `colorable_of_cliqueFree_lt_minDegree`.
 
 If `G` is maximally `Kᵣ₊₂`-free and `¬ G.Adj x y` (with `x ≠ y`) then there exists an `r`-set `s`
- such that `s ∪ {x}` and `s ∪ {y}` are both `r + 1`-cliques.
+such that `s ∪ {x}` and `s ∪ {y}` are both `r + 1`-cliques.
 
 If `¬ G.IsCompleteMultipartite` then it contains a `G.IsPathGraph3Compl v w₁ w₂` consisting of
 an edge `w₁w₂` and a vertex `v` such that `vw₁` and `vw₂` are non-edges.
@@ -28,7 +29,7 @@ an edge `w₁w₂` and a vertex `v` such that `vw₁` and `vw₂` are non-edges.
 Hence any maximally `Kᵣ₊₂`-free graph that is not complete-multipartite must contain distinct
 vertices `v, w₁, w₂`, together with `r`-sets `s` and `t`, such that `{v, w₁, w₂}` induces the
 single edge `w₁w₂`, `s ∪ t` is disjoint from `{v, w₁, w₂}`, and `s ∪ {v}`, `t ∪ {v}`, `s ∪ {w₁}` and
- `t ∪ {w₂}` are all `r + 1`-cliques.
+`t ∪ {w₂}` are all `r + 1`-cliques.
 
 This leads to the definition of an `IsFiveWheelLike` structure which can be found in any maximally
 `Kᵣ₊₂`-free graph that is not complete-multipartite (see
@@ -41,11 +42,13 @@ The first interesting cases of such structures are `W₁,₀` and `W₂,₁`: `W
 while `W₂,₁` is a 5-cycle with an extra central hub vertex adjacent to all other vertices
 (i.e. `W₂,₁` resembles a wheel with five spokes).
 
-                 `W₁,₀`       v                 `W₂,₁`      v
-                           /     \                       /  |  \
-                          s       t                     s ─ u ─ t
-                           \     /                       \ / \ /
-                           w₁ ─ w₂                       w₁ ─ w₂
+```
+             `W₁,₀`       v                 `W₂,₁`      v
+                       /     \                       /  |  \
+                      s       t                     s ─ u ─ t
+                       \     /                       \ / \ /
+                       w₁ ─ w₂                       w₁ ─ w₂
+```
 
 ## Main definitions
 
@@ -56,6 +59,7 @@ while `W₂,₁` is a 5-cycle with an extra central hub vertex adjacent to all o
 * `SimpleGraph.FiveWheelLikeFree`: predicate for `G` to have no `IsFiveWheelLike r k` subgraph.
 
 ## Implementation notes
+
 The definitions of `IsFiveWheelLike` and `IsFiveWheelLikeFree` in this file have `r` shifted by two
 compared to the definitions in Brandt **On the structure of graphs with bounded clique number**
 
@@ -273,8 +277,8 @@ include hw hcf
 
 /--
 If `G` is `Kᵣ₊₂`-free and contains a `Wᵣ,ₖ` together with a vertex `x` adjacent to all of its common
- clique vertices then there exist (not necessarily distinct) vertices `a, b, c, d`, one from each of
- the four `r + 1`-cliques of `Wᵣ,ₖ`, none of which are adjacent to `x`.
+clique vertices then there exist (not necessarily distinct) vertices `a, b, c, d`, one from each of
+the four `r + 1`-cliques of `Wᵣ,ₖ`, none of which are adjacent to `x`.
 -/
 private lemma exist_not_adj_of_adj_inter (hW : ∀ ⦃y⦄, y ∈ s ∩ t → G.Adj x y) :
     ∃ a b c d, a ∈ insert w₁ s ∧ ¬ G.Adj x a ∧ b ∈ insert w₂ t ∧ ¬ G.Adj x b ∧ c ∈ insert v s ∧

@@ -89,7 +89,7 @@ section Coind
 
 set_option backward.isDefEq.respectTransparency false in
 /--
-If `φ : G →* H` and  `A : Rep k G` then `coind φ A` is the coinduction of `A` along `φ`,
+If `φ : G →* H` and `A : Rep k G` then `coind φ A` is the coinduction of `A` along `φ`,
 defined by letting `H` act on the `G`-equivariant functions `H → A` by `(h • f) h₁ := f (h₁ * h)`.
 -/
 noncomputable abbrev coind : Rep k H := Rep.of (Representation.coind φ A.ρ)

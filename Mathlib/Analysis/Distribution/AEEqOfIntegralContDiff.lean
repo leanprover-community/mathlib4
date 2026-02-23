@@ -121,8 +121,8 @@ alias ae_eq_zero_of_integral_smooth_smul_eq_zero := ae_eq_zero_of_integral_contM
 instance (U : Opens M) : BorelSpace U := inferInstanceAs (BorelSpace (U : Set M))
 
 /-- If a function `f` locally integrable on an open subset `U` of a finite-dimensional real
-  manifold has zero integral when multiplied by any smooth function compactly supported
-  in `U`, then `f` vanishes almost everywhere in `U`. -/
+manifold has zero integral when multiplied by any smooth function compactly supported
+in `U`, then `f` vanishes almost everywhere in `U`. -/
 theorem IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero' {U : Set M} (hU : IsOpen U)
     (hSig : IsSigmaCompact U) (hf : LocallyIntegrableOn f U μ)
     (h : ∀ g : M → ℝ,
@@ -214,8 +214,8 @@ theorem ae_eq_of_integral_contDiff_smul_eq
     (fun g g_diff g_supp ↦ h g g_diff.contDiff g_supp)
 
 /-- If a function `f` locally integrable on an open subset `U` of a finite-dimensional real
-  vector space has zero integral when multiplied by any smooth function compactly supported
-  in `U`, then `f` vanishes almost everywhere in `U`. -/
+vector space has zero integral when multiplied by any smooth function compactly supported
+in `U`, then `f` vanishes almost everywhere in `U`. -/
 theorem IsOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero {U : Set E} (hU : IsOpen U)
     (hf : LocallyIntegrableOn f U μ)
     (h : ∀ (g : E → ℝ), ContDiff ℝ ∞ g → HasCompactSupport g → tsupport g ⊆ U →

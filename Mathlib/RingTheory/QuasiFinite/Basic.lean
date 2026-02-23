@@ -22,6 +22,7 @@ public import Mathlib.RingTheory.TensorProduct.Pi
 In this file, we define the notion of quasi-finite algebras and prove basic properties about them
 
 ## Main definition and results
+
 - `Algebra.QuasiFinite`: The class of quasi-finite algebras.
   We say that an `R`-algebra `S` is quasi-finite
   if `κ(p) ⊗[R] S` is finite-dimensional over `κ(p)` for all primes `p` of `R`.

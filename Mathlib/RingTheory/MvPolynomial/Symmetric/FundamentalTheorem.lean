@@ -130,7 +130,7 @@ variable [CommSemiring R] [Fintype σ] [Fintype τ]
 
 variable (σ R n) in
 /-- The `R`-algebra homomorphism from $R[x_1,\dots,x_n]$ to the symmetric subalgebra of
-  $R[\{x_i \mid i ∈ σ\}]$ sending $x_i$ to the $i$-th elementary symmetric polynomial. -/
+$R[\{x_i \mid i ∈ σ\}]$ sending $x_i$ to the $i$-th elementary symmetric polynomial. -/
 noncomputable def esymmAlgHom :
     MvPolynomial (Fin n) R →ₐ[R] symmetricSubalgebra σ R :=
   aeval (fun i ↦ ⟨esymm σ R (i + 1), esymm_isSymmetric σ R _⟩)

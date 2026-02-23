@@ -51,7 +51,7 @@ private def parallel.aux1 :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Parallel computation of an infinite stream of computations,
-  taking the first result -/
+taking the first result -/
 def parallel (S : WSeq (Computation α)) : Computation α :=
   corec parallel.aux1 ([], S)
 

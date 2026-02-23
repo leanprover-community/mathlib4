@@ -92,7 +92,7 @@ extending `Config` with some declaration meta-information.
 -/
 structure Pass extends Config where
   /-- The option corresponding to this pass, used to enable it.
-
+  
   Example: `linter.tacticAnalysis.grindReplacement`.
   -/
   opt : Option (Lean.Option Bool)
@@ -161,13 +161,16 @@ initialize registerBuiltinAttribute {
 
 We consider a sequence here to be a maximal interval of tactics joined by `;` or newlines.
 This function returns an array of sequences. For example, a proof of the form:
+
 ```
 by
   tac1
   · tac2; tac3
   · tac4; tac5
 ```
+
 would result in three sequences:
+
 * `#[tac1, (· tac2; tac3), (· tac4; tac5)]`
 * `#[tac2, tac3]`
 * `#[tac4, tac5]`
@@ -283,9 +286,9 @@ deriving BEq
 
 The overall design will have three user-supplied components:
 
-  * **trigger** on a piece of syntax (which could contain multiple tactic calls);
-  * **test** if a suggested change is indeed an improvement;
-  * **tell** the user where changes can be made.
+* **trigger** on a piece of syntax (which could contain multiple tactic calls);
+* **test** if a suggested change is indeed an improvement;
+* **tell** the user where changes can be made.
 -/
 structure ComplexConfig where
   /-- Type returned by the `.test` function. -/
@@ -294,10 +297,10 @@ structure ComplexConfig where
   ctx : Type
 
   /-- Determines which (sequences of) tactics to analyze.
-
+  
   `context` is `some ctx` whenever the previous trigger returned `continue ctx`,
   `none` at the start of a tactic sequence or after a `skip`/`accept`.
-
+  
   If the last returned value is `continue` at the end of the sequence, the framework inserts an
   extra `done` to run the `trigger` on.
   -/

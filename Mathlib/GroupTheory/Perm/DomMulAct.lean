@@ -49,7 +49,7 @@ lemma mem_stabilizer_iff {g : (Perm α)ᵈᵐᵃ} :
   simp only [MulAction.mem_stabilizer_iff]; rfl
 
 /-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) f`
-  to the product of the `Equiv.Perm {a // f a = i}`. -/
+to the product of the `Equiv.Perm {a // f a = i}`. -/
 def stabilizerEquiv_invFun (g : ∀ i, Perm {a // f a = i}) (a : α) : α := g (f a) ⟨a, rfl⟩
 
 lemma stabilizerEquiv_invFun_eq (g : ∀ i, Perm {a // f a = i}) {a : α} {i : ι} (h : f a = i) :
@@ -60,7 +60,7 @@ lemma comp_stabilizerEquiv_invFun (g : ∀ i, Perm {a // f a = i}) (a : α) :
   (g (f a) ⟨a, rfl⟩).prop
 
 /-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) p`
-  to the product of the `Equiv.Perm {a | f a = i}` (as an `Equiv.Perm α`). -/
+to the product of the `Equiv.Perm {a | f a = i}` (as an `Equiv.Perm α`). -/
 def stabilizerEquiv_invFun_aux (g : ∀ i, Perm {a // f a = i}) : Perm α where
   toFun := stabilizerEquiv_invFun g
   invFun := stabilizerEquiv_invFun (fun i ↦ (g i).symm)
@@ -73,7 +73,7 @@ def stabilizerEquiv_invFun_aux (g : ∀ i, Perm {a // f a = i}) : Perm α where
 
 variable (f) in
 /-- The `MulEquiv` from the `MulOpposite` of `MulAction.stabilizer (Perm α)ᵈᵐᵃ f`
-  to the product of the `Equiv.Perm {a // f a = i}` -/
+to the product of the `Equiv.Perm {a // f a = i}` -/
 def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ ≃* (∀ i, Perm {a // f a = i}) where
   toFun g i := Perm.subtypePerm (mk.symm g.unop) fun a ↦ by
     rw [← Function.comp_apply (f := f), mem_stabilizer_iff.mp g.unop.prop]
@@ -119,7 +119,7 @@ variable [DecidableEq α] [DecidableEq ι]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The cardinality of the type of permutations preserving a function
-  (without the finiteness assumption on target) -/
+(without the finiteness assumption on target) -/
 theorem stabilizer_card' :
     Fintype.card {g : Perm α // f ∘ g = f} =
       ∏ i ∈ Finset.univ.image f, (Fintype.card ({a // f a = i}))! := by

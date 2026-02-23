@@ -21,10 +21,10 @@ carries a natural concept of nilpotency. We define these here via the lower cent
 
 ## Main definitions
 
-  * `LieModule.lowerCentralSeries`
-  * `LieModule.IsNilpotent`
-  * `LieModule.maxNilpotentSubmodule`
-  * `LieAlgebra.maxNilpotentIdeal`
+* `LieModule.lowerCentralSeries`
+* `LieModule.IsNilpotent`
+* `LieModule.maxNilpotentSubmodule`
+* `LieAlgebra.maxNilpotentIdeal`
 
 ## Tags
 

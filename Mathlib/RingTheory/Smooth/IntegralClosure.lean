@@ -17,6 +17,7 @@ We define the map
 and show that it is bijective when `S` is `R`-smooth.
 
 ## Main results
+
 - `TensorProduct.toIntegralClosure_injective_of_flat`:
   If `S` is `R`-flat, then `TensorProduct.toIntegralClosure` is injective.
 - `TensorProduct.toIntegralClosure_mvPolynomial_bijective`:

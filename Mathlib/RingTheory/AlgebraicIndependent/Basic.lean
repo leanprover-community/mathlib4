@@ -23,6 +23,7 @@ This file contains basic results on algebraic independence of a family of elemen
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
 ## Tags
+
 transcendence basis, transcendence degree, transcendence
 
 -/

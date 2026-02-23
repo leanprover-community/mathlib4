@@ -79,7 +79,7 @@ theorem ultrafilter_isClosed_basic (s : Set α) : IsClosed { u : Ultrafilter α 
   exact Ultrafilter.compl_mem_iff_notMem.symm
 
 /-- Every ultrafilter `u` on `Ultrafilter α` converges to a unique
-  point of `Ultrafilter α`, namely `joinM u`. -/
+point of `Ultrafilter α`, namely `joinM u`. -/
 theorem ultrafilter_converges_iff {u : Ultrafilter (Ultrafilter α)} {x : Ultrafilter α} :
     ↑u ≤ 𝓝 x ↔ x = joinM u := by
   rw [eq_comm, ← Ultrafilter.coe_le_coe]
@@ -169,7 +169,7 @@ section Extension
 variable {γ : Type*} [TopologicalSpace γ]
 
 /-- The extension of a function `α → γ` to a function `Ultrafilter α → γ`.
-  When `γ` is a compact Hausdorff space it will be continuous. -/
+When `γ` is a compact Hausdorff space it will be continuous. -/
 def Ultrafilter.extend (f : α → γ) : Ultrafilter α → γ :=
   letI : TopologicalSpace α := ⊥
   isDenseInducing_pure.extend f
@@ -198,7 +198,7 @@ theorem continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.
   exact isDenseInducing_pure.continuous_extend h
 
 /-- The value of `Ultrafilter.extend f` on an ultrafilter `b` is the
-  unique limit of the ultrafilter `b.map f` in `γ`. -/
+unique limit of the ultrafilter `b.map f` in `γ`. -/
 theorem ultrafilter_extend_eq_iff {f : α → γ} {b : Ultrafilter α} {c : γ} :
     Ultrafilter.extend f b = c ↔ ↑(b.map f) ≤ 𝓝 c :=
   ⟨fun h ↦ by
@@ -280,7 +280,7 @@ lemma preStoneCechCompat {F G : Ultrafilter α} {x : α} (hF : ↑F ≤ 𝓝 x) 
        ultrafilter_extend_eq_iff, F.coe_map]
 
 /-- The extension of a continuous function from `α` to a compact
-  Hausdorff space `β` to the pre-Stone-Čech compactification of `α`. -/
+Hausdorff space `β` to the pre-Stone-Čech compactification of `α`. -/
 def preStoneCechExtend : PreStoneCech α → β :=
   Quot.lift (Ultrafilter.extend g) fun _ _ ⟨_, hF, hG⟩ ↦ preStoneCechCompat hg hF hG
 
@@ -344,7 +344,7 @@ theorem continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech 
   (T2Quotient.continuous_mk _).comp continuous_preStoneCechUnit
 
 /-- The image of `stoneCechUnit` is dense. (But `stoneCechUnit` need
-  not be an embedding, for example if the original space is not Hausdorff.) -/
+not be an embedding, for example if the original space is not Hausdorff.) -/
 theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech α) := by
   unfold stoneCechUnit T2Quotient.mk
   have : Function.Surjective (T2Quotient.mk : PreStoneCech α → StoneCech α) := by
@@ -365,8 +365,8 @@ theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → β} (h₁ : Continuous g
 variable [CompactSpace β]
 
 /-- The extension of a continuous function from `α` to a compact
-  Hausdorff space `β` to the Stone-Čech compactification of `α`.
-  This extension implements the universal property of this compactification. -/
+Hausdorff space `β` to the Stone-Čech compactification of `α`.
+This extension implements the universal property of this compactification. -/
 def stoneCechExtend : StoneCech α → β :=
   T2Quotient.lift (continuous_preStoneCechExtend hg)
 

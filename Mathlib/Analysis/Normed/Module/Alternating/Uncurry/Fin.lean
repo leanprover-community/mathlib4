@@ -17,6 +17,7 @@ this file defines a continuous alternating form `ContinuousAlternatingMap.altern
 in `n + 1` arguments.
 
 This function is given by
+
 ```
 ContinuousAlternatingMap.alternatizeUncurryFin f v =
   ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v)
@@ -115,6 +116,7 @@ and is alternating in the other `n` arguments,
 build a continuous alternating form in `n + 1` arguments.
 
 The function is given by
+
 ```
 alternatizeUncurryFin f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v)
 ```

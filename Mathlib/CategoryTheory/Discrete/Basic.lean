@@ -102,10 +102,12 @@ macro "discrete_cases" : tactic =>
 open Lean Elab Tactic in
 /--
 Use:
+
 ```
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 ```
+
 to locally give `cat_disch` the ability to call `cases` on
 `Discrete` and `(_ : Discrete _) ⟶ (_ : Discrete _)` hypotheses.
 -/
@@ -232,7 +234,7 @@ theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discret
     (i : Discrete I) : (Discrete.natIso f).app i = f i := by cat_disch
 
 /-- Every functor `F` from a discrete category is naturally isomorphic (actually, equal) to
-  `Discrete.functor (F.obj)`. -/
+`Discrete.functor (F.obj)`. -/
 @[simps!]
 def natIsoFunctor {I : Type u₁} {F : Discrete I ⥤ C} : F ≅ Discrete.functor (F.obj ∘ Discrete.mk) :=
   natIso fun _ => Iso.refl _

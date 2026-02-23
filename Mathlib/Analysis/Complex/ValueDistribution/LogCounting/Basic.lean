@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Complex.JensenFormula
 # The Logarithmic Counting Function of Value Distribution Theory
 
 For nontrivially normed fields `𝕜`, this file defines the logarithmic counting function of a
-meromorphic function defined on `𝕜`.  Also known as the `Nevanlinna counting function`, this is one
+meromorphic function defined on `𝕜`. Also known as the `Nevanlinna counting function`, this is one
 of the three main functions used in Value Distribution Theory.
 
 The logarithmic counting function of a meromorphic function `f` is a logarithmically weighted
@@ -82,13 +82,13 @@ lemma toClosedBall_support_subset_closedBall {E : Type*} [NormedAddCommGroup E] 
 
 /--
 Definition of the logarithmic counting function, as a group morphism mapping functions `D` with
-locally finite support to maps `ℝ → ℝ`.  Given `D`, the result map `logCounting D` takes `r : ℝ` to
+locally finite support to maps `ℝ → ℝ`. Given `D`, the result map `logCounting D` takes `r : ℝ` to
 a logarithmically weighted measure of values that `D` takes within the disk `∣z∣ ≤ r`.
 
 Implementation Note: In case where `z = 0`, the term `log (r * ‖z‖⁻¹)` evaluates to zero, which is
 typically different from `log r - log ‖z‖ = log r`. The summand `(D 0) * log r` compensates this,
 producing cleaner formulas when the logarithmic counting function is used in the main theorems of
-Value Distribution Theory.  We refer the reader to page 164 of [Lang: Introduction to Complex
+Value Distribution Theory. We refer the reader to page 164 of [Lang: Introduction to Complex
 Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) for more details, and
 to the lemma `countingFunction_finsum_eq_finsum_add` in
 `Mathlib/Analysis/Complex/JensenFormula.lean` for a formal statement.
@@ -225,7 +225,7 @@ The logarithmic counting function of a meromorphic function.
 
 If `f : 𝕜 → E` is meromorphic and `a : WithTop E` is any value, this is a logarithmically weighted
 measure of the number of times the function `f` takes a given value `a` within the disk `∣z∣ ≤ r`,
-taking multiplicities into account.  In the special case where `a = ⊤`, it counts the poles of `f`.
+taking multiplicities into account. In the special case where `a = ⊤`, it counts the poles of `f`.
 -/
 noncomputable def logCounting : ℝ → ℝ := by
   by_cases h : a = ⊤

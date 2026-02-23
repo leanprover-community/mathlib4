@@ -22,6 +22,7 @@ public import Mathlib.Algebra.GroupWithZero.Nat
 * ℤ is a `NormalizedGCDMonoid`
 
 ## Tags
+
 natural numbers, integers, normalization monoid, gcd monoid, greatest common divisor
 -/
 

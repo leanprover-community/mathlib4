@@ -45,6 +45,7 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 `AB5`.
 
 ## References
+
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 
 -/
@@ -449,7 +450,7 @@ instance preservesFiniteColimits_liftToFinset : PreservesFiniteColimits (liftToF
 variable (J : Type*)
 
 /--
-`HasExactLimitsOfShape (Finset (Discrete J))ᵒᵖ C` implies  `HasExactLimitsOfShape (Discrete J) C`
+`HasExactLimitsOfShape (Finset (Discrete J))ᵒᵖ C` implies `HasExactLimitsOfShape (Discrete J) C`
 -/
 lemma hasExactLimitsOfShape_discrete_of_hasExactLimitsOfShape_finset_discrete_op
     [HasLimitsOfShape (Discrete J) C] [HasLimitsOfShape (Finset (Discrete J))ᵒᵖ C]
@@ -467,7 +468,7 @@ lemma AB4Star.of_AB5Star [HasCofilteredLimitsOfSize.{w, w} C] [AB5StarOfSize.{w,
   ofShape _ := hasExactLimitsOfShape_discrete_of_hasExactLimitsOfShape_finset_discrete_op _ _
 
 /--
-A category with finite biproducts and finite limits has countable AB4* if sequential limits are
+A category with finite biproducts and finite limits has countable AB4\* if sequential limits are
 exact.
 -/
 lemma CountableAB4Star.of_countableAB5Star [HasLimitsOfShape ℕᵒᵖ C] [HasExactLimitsOfShape ℕᵒᵖ C]
@@ -500,7 +501,7 @@ lemma CountableAB4.of_hasExactColimitsOfShape_nat_and_finite [HasCountableCoprod
 
 /--
 Checking exactness of limits of shape `Discrete ℕ` and `Discrete J` for finite `J` is enough for
-countable AB4*.
+countable AB4\*.
 -/
 lemma CountableAB4Star.of_hasExactLimitsOfShape_nat_and_finite [HasCountableProducts C]
     [HasFiniteColimits C] [∀ (J : Type) [Finite J], HasExactLimitsOfShape (Discrete J) C]
@@ -540,7 +541,7 @@ lemma CountableAB4.of_hasExactColimitsOfShape_nat [HasFiniteLimits C] [HasCounta
   exact fun _ ↦ inferInstance
 
 /--
-Checking exact limits of shape `Discrete ℕ` is enough for countable AB4*, provided that the
+Checking exact limits of shape `Discrete ℕ` is enough for countable AB4\*, provided that the
 category has finite biproducts and finite colimits.
 -/
 lemma CountableAB4Star.of_hasExactLimitsOfShape_nat [HasFiniteColimits C]

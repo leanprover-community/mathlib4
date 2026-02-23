@@ -55,7 +55,6 @@ value of `j`.
   [MR399081]
 * [M. Nagata, *On Euclid algorithm*][MR541021]
 
-
 ## Tags
 
 Euclidean domain, transfinite Euclidean domain, Bézout's lemma
@@ -66,27 +65,27 @@ Euclidean domain, transfinite Euclidean domain, Bézout's lemma
 universe u
 
 /-- A `EuclideanDomain` is a non-trivial commutative ring with a division and a remainder,
-  satisfying `b * (a / b) + a % b = a`.
-  The definition of a Euclidean domain usually includes a valuation function `R → ℕ`.
-  This definition is slightly generalised to include a well-founded relation
-  `r` with the property that `r (a % b) b`, instead of a valuation. -/
+satisfying `b * (a / b) + a % b = a`.
+The definition of a Euclidean domain usually includes a valuation function `R → ℕ`.
+This definition is slightly generalised to include a well-founded relation
+`r` with the property that `r (a % b) b`, instead of a valuation. -/
 class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
   /-- A division function (denoted `/`) on `R`.
-    This satisfies the property `b * (a / b) + a % b = a`, where `%` denotes `remainder`. -/
+  This satisfies the property `b * (a / b) + a % b = a`, where `%` denotes `remainder`. -/
   protected quotient : R → R → R
   /-- Division by zero should always give zero by convention. -/
   protected quotient_zero : ∀ a, quotient a 0 = 0
   /-- A remainder function (denoted `%`) on `R`.
-    This satisfies the property `b * (a / b) + a % b = a`, where `/` denotes `quotient`. -/
+  This satisfies the property `b * (a / b) + a % b = a`, where `/` denotes `quotient`. -/
   protected remainder : R → R → R
   /-- The property that links the quotient and remainder functions.
-    This allows us to compute GCDs and LCMs. -/
+  This allows us to compute GCDs and LCMs. -/
   protected quotient_mul_add_remainder_eq : ∀ a b, b * quotient a b + remainder a b = a
   /-- A well-founded relation on `R`, satisfying `r (a % b) b`.
-    This ensures that the GCD algorithm always terminates. -/
+  This ensures that the GCD algorithm always terminates. -/
   protected r : R → R → Prop
   /-- The relation `r` must be well-founded.
-    This ensures that the GCD algorithm always terminates. -/
+  This ensures that the GCD algorithm always terminates. -/
   r_wellFounded : WellFounded r
   /-- The relation `r` satisfies `r (a % b) b`. -/
   protected remainder_lt : ∀ (a) {b}, b ≠ 0 → r (remainder a b) b
@@ -167,7 +166,7 @@ section GCD
 variable [DecidableEq R]
 
 /-- `gcd a b` is a (non-unique) element such that `gcd a b ∣ a` `gcd a b ∣ b`, and for
-  any element `c` such that `c ∣ a` and `c ∣ b`, then `c ∣ gcd a b` -/
+any element `c` such that `c ∣ a` and `c ∣ b`, then `c ∣ gcd a b` -/
 def gcd (a b : R) : R :=
   if a0 : a = 0 then b
   else
@@ -185,6 +184,7 @@ At each step we are computing a triple `(r, s, t)`, where `r` is the next value 
 algorithm, to compute the greatest common divisor of the input (say `x` and `y`), and `s` and `t`
 are the coefficients in front of `x` and `y` to obtain `r` (i.e. `r = s * x + t * y`).
 The function `xgcdAux` takes in two triples, and from these recursively computes the next triple:
+
 ```
 xgcdAux (r, s, t) (r', s', t') = xgcdAux (r' % r, s' - (r' / r) * s, t' - (r' / r) * t) (r, s, t)
 ```
@@ -210,7 +210,7 @@ theorem xgcdAux_rec {r s t r' s' t' : R} (h : r ≠ 0) :
   exact if_neg h
 
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
-  satisfying `gcd x y = x * a + y * b`. -/
+satisfying `gcd x y = x * a + y * b`. -/
 def xgcd (x y : R) : R × R :=
   (xgcdAux x 1 0 y 0 1).2
 
@@ -242,7 +242,7 @@ section LCM
 variable [DecidableEq R]
 
 /-- `lcm a b` is a (non-unique) element such that `a ∣ lcm a b` `b ∣ lcm a b`, and for
-  any element `c` such that `a ∣ c` and `b ∣ c`, then `lcm a b ∣ c` -/
+any element `c` such that `a ∣ c` and `b ∣ c`, then `lcm a b ∣ c` -/
 def lcm (x y : R) : R :=
   x * y / gcd x y
 

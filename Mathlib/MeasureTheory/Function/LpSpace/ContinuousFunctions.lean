@@ -14,7 +14,7 @@ public import Mathlib.Topology.ContinuousMap.Compact
 # Continuous functions in Lp space
 
 When `α` is a topological space equipped with a finite Borel measure, there is a bounded linear map
-from the normed space of bounded continuous functions (`α →ᵇ E`) to `Lp E p μ`.  We construct this
+from the normed space of bounded continuous functions (`α →ᵇ E`) to `Lp E p μ`. We construct this
 as `BoundedContinuousFunction.toLp`.
 
 -/
@@ -137,7 +137,7 @@ variable (𝕜 : Type*) (p μ) [Fact (1 ≤ p)]
   [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- The bounded linear map of considering a continuous function on a compact finite-measure
-space `α` as an element of `Lp`.  By definition, the norm on `C(α, E)` is the sup-norm, transferred
+space `α` as an element of `Lp`. By definition, the norm on `C(α, E)` is the sup-norm, transferred
 from the space `α →ᵇ E` of bounded continuous functions, so this construction is just a matter of
 transferring the structure from `BoundedContinuousFunction.toLp` along the isometry. -/
 noncomputable def toLp : C(α, E) →L[𝕜] Lp E p μ :=

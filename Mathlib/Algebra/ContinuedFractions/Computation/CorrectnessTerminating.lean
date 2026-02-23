@@ -55,6 +55,7 @@ open GenContFract (of)
 variable {K : Type*} [Field K] [LinearOrder K] {v : K} {n : ℕ}
 
 /-- Given two continuants `pconts` and `conts` and a value `fr`, this function returns
+
 - `conts.a / conts.b` if `fr = 0`
 - `exactConts.a / exactConts.b` where `exactConts = nextConts 1 fr⁻¹ pconts conts`
   otherwise.
@@ -92,11 +93,12 @@ The correctness might be seen more readily if one uses `convs'` to evaluate the 
 fraction. Here is an example to illustrate the idea:
 
 Let `(v : ℚ) := 3.4`. We have
+
 - `GenContFract.IntFractPair.stream v 0 = some ⟨3, 0.4⟩`, and
 - `GenContFract.IntFractPair.stream v 1 = some ⟨2, 0.5⟩`.
-Now `(GenContFract.of v).convs' 1 = 3 + 1/2`, and our fractional term at position `2` is `0.5`.
-We hence have `v = 3 + 1/(2 + 0.5) = 3 + 1/2.5 = 3.4`.
-This computation corresponds exactly to the one using the recurrence equation in `compExactValue`.
+  Now `(GenContFract.of v).convs' 1 = 3 + 1/2`, and our fractional term at position `2` is `0.5`.
+  We hence have `v = 3 + 1/(2 + 0.5) = 3 + 1/2.5 = 3.4`.
+  This computation corresponds exactly to the one using the recurrence equation in `compExactValue`.
 -/
 theorem compExactValue_correctness_of_stream_eq_some :
     ∀ {ifp_n : IntFractPair K}, IntFractPair.stream v n = some ifp_n →

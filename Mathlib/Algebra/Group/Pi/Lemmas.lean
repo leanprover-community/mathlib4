@@ -130,7 +130,7 @@ def MulHom.coeFn (α β : Type*) [Mul α] [CommSemigroup β] :
 /-- Semigroup homomorphism between the function spaces `I → α` and `I → β`, induced by a semigroup
 homomorphism `f` between `α` and `β`. -/
 @[to_additive (attr := simps) /-- Additive semigroup homomorphism between the function spaces
-  `I → α` and `I → β`, induced by an additive semigroup homomorphism `f` between `α` and `β` -/]
+`I → α` and `I → β`, induced by an additive semigroup homomorphism `f` between `α` and `β` -/]
 protected def MulHom.compLeft {α β : Type*} [Mul α] [Mul β] (f : α →ₙ* β) (I : Type*) :
     (I → α) →ₙ* I → β where
   toFun h := f ∘ h
@@ -203,7 +203,7 @@ This is the `OneHom` version of `Pi.mulSingle`. -/
 @[to_additive
   /-- The zero-preserving homomorphism including a single value into a dependent family of values,
   as functions supported at a point.
-
+  
   This is the `ZeroHom` version of `Pi.single`. -/]
 nonrec def OneHom.mulSingle [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f i) where
   toFun := mulSingle i
@@ -225,7 +225,7 @@ This is the `MonoidHom` version of `Pi.mulSingle`. -/
 @[to_additive
   /-- The additive monoid homomorphism including a single additive monoid into a dependent family
   of additive monoids, as functions supported at a point.
-
+  
   This is the `AddMonoidHom` version of `Pi.single`. -/]
 def MonoidHom.mulSingle [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f i :=
   { OneHom.mulSingle f i with map_mul' := mulSingle_op₂ (fun _ => (· * ·)) (fun _ => one_mul _) _ }
@@ -279,7 +279,7 @@ theorem Pi.mulSingle_zpow [∀ i, Group (f i)] (i : I) (x : f i) (n : ℤ) :
 For injections of commuting elements at the same index, see `Commute.map` -/
 @[to_additive
   /-- The injection into an additive pi group at different indices commutes.
-
+  
   For injections of commuting elements at the same index, see `AddCommute.map` -/]
 theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
     Pairwise fun i j => ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by

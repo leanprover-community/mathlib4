@@ -35,6 +35,7 @@ As instances related to Riemannian bundles are both costly and quite specific, t
 to the `Bundle` namespace.
 
 ## Keywords
+
 Vector bundle, Riemannian metric
 -/
 
@@ -402,6 +403,7 @@ instance defined on it, otherwise this will create a second non-defeq norm insta
 variable (E) in
 /-- Class used to create an inner product structure space on the fibers of a fiber bundle, without
 creating diamonds. Use as follows:
+
 * `instance : RiemannianBundle E := ⟨g⟩` where `g : RiemannianMetric E` registers the inner product
   space on the fibers;
 * `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where

@@ -15,11 +15,11 @@ as the least fixpoint of a polynomial functor.
 
 ## Main definitions
 
-* `W_mk`     - constructor
-* `W_dest`   - destructor
-* `W_rec`    - recursor: basis for defining functions by structural recursion on `P.W α`
+* `W_mk` - constructor
+* `W_dest` - destructor
+* `W_rec` - recursor: basis for defining functions by structural recursion on `P.W α`
 * `W_rec_eq` - defining equation for `W_rec`
-* `W_ind`    - induction principle for `P.W α`
+* `W_ind` - induction principle for `P.W α`
 
 ## Implementation notes
 
@@ -27,7 +27,7 @@ Three views of M-types:
 
 * `wp`: polynomial functor
 * `W`: data type inductively defined by a triple:
-     shape of the root, data in the root and children of the root
+  shape of the root, data in the root and children of the root
 * `W`: least fixed point of a polynomial functor
 
 Specifically, we define the polynomial functor `wp` as:
@@ -146,6 +146,7 @@ theorem wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Prop
 
 /-!
 Now think of W as defined inductively by the data ⟨a, f', f⟩ where
+
 - `a  : P.A` is the shape of the top node
 - `f' : P.drop.B a ⟹ α` is the contents of the top node
 - `f  : P.last.B a → P.last.W` are the subtrees

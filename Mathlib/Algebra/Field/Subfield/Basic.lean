@@ -48,7 +48,7 @@ Notation used here:
 * `f.fieldRange : Subfield L` : the range of the ring homomorphism `f`.
 
 * `eqLocusField f g : Subfield K` : given ring homomorphisms `f g : K →+* R`,
-     the subfield of `K` where `f x = g x`
+  the subfield of `K` where `f x = g x`
 
 ## Implementation notes
 
@@ -58,6 +58,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a subfield's underlying set.
 
 ## Tags
+
 subfield, subfields
 -/
 
@@ -404,8 +405,8 @@ theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
   (gc_map_comap f).u_top
 
 /-- The underlying set of a non-empty directed sSup of subfields is just a union of the subfields.
-  Note that this fails without the directedness assumption (the union of two subfields is
-  typically not a subfield) -/
+Note that this fails without the directedness assumption (the union of two subfields is
+typically not a subfield) -/
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S)
     {x : K} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   let s : Subfield K :=
@@ -519,7 +520,7 @@ namespace RingEquiv
 variable {s t : Subfield K}
 
 /-- Makes the identity isomorphism from a proof two subfields of a multiplicative
-    monoid are equal. -/
+monoid are equal. -/
 def subfieldCongr (h : s = t) : s ≃+* t :=
   { Equiv.setCongr <| SetLike.ext'_iff.1 h with
     map_mul' := fun _ _ => rfl

@@ -15,6 +15,7 @@ public import Mathlib.Tactic.Linter.DirectoryDependency
 # The "header" linter
 
 The "header" style linter checks that a file starts with
+
 ```
 /-
 Copyright ...
@@ -26,7 +27,9 @@ import statements*
 module doc-string*
 remaining file
 ```
+
 It emits a warning if
+
 * the copyright statement is malformed;
 * `Mathlib.Tactic` is imported;
 * any import in `Lake` is present;
@@ -35,6 +38,7 @@ It emits a warning if
 The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
 
 ## Implementation
+
 The strategy used by the linter is as follows.
 The linter computes the end position of the first module doc-string of the file,
 resorting to the end of the file, if there is no module doc-string.
@@ -61,6 +65,7 @@ namespace Mathlib.Linter
 /--
 `firstNonImport? stx` assumes that the input `Syntax` is of kind `Lean.Parser.Module.module`.
 It returns
+
 * `none`, if `stx` consists only of `import` statements,
 * the first non-`import` command in `stx`, otherwise.
 
@@ -108,8 +113,9 @@ It returns a syntax node of kind `Lean.Parser.Module.module`.
 The option of appending a final string to the text gives more control to avoid syntax errors,
 for instance in the presence of `#guard_msgs in` or `set_option ... in`.
 
-Note that this parsing will *not* be successful on every file.  However, if the linter is
+Note that this parsing will *not* be successful on every file. However, if the linter is
 parsing the file linearly, it will only need to parse
+
 * the imports (that are always parseable) and
 * the first non-import command that is supposed to be a module doc-string (so again always
   parseable).
@@ -166,16 +172,18 @@ def authorsLineChecks (line : String) (offset : String.Pos.Raw) : Array (Syntax 
 
 /-- The main function to validate the copyright string.
 The input is the copyright string, the output is an array of `Syntax × String` encoding:
+
 * the `Syntax` factors are atoms whose ranges are "best guesses" for where the changes should
   take place; the embedded string is the current text that the linter flagged;
 * the `String` factor is the linter message.
 
 The linter checks that
+
 * the first and last line of the copyright are a `("/-", "-/")` pair, each on its own line;
 * the first line is begins with `Copyright (c) 20` and ends with `. All rights reserved.`;
 * the second line is `Released under Apache 2.0 license as described in the file LICENSE.`;
 * the remainder of the string begins with `Authors: `, does not end with `.` and
-  contains no ` and ` nor a double space, except possibly after a line break.
+  contains no `and` nor a double space, except possibly after a line break.
 -/
 public def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.run do
   -- First, we merge lines ending in `,`: two spaces after the line-break are ok,
@@ -257,6 +265,7 @@ def isInMathlib (modName : Name) : IO Bool := do
   else return false
 
 /-- `inMathlibRef` is
+
 * `none` at initialization time;
 * `some true` if the `header` linter has already discovered that the current file
   is imported in `Mathlib.lean`;
@@ -267,6 +276,7 @@ initialize inMathlibRef : IO.Ref (Option Bool) ← IO.mkRef none
 
 /--
 The "header" style linter checks that a file starts with
+
 ```
 /-
 Copyright ...
@@ -278,7 +288,9 @@ import statements*
 module doc-string*
 remaining file
 ```
+
 It emits a warning if
+
 * the copyright statement is malformed;
 * `Mathlib.Tactic` is imported;
 * any import in `Lake` is present;

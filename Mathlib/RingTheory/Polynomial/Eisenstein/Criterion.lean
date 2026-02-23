@@ -12,14 +12,15 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 /-! # The Eisenstein criterion
 
 `Polynomial.generalizedEisenstein` :
-  Let `R` be an integral domain
-  and let `K` an `R`-algebra which is a field
-  Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
-  Let `f : R[X]` be a polynomial of strictly positive degree
-  satisfying the following properties:
-  * the image of `f` in `K[X]` is a power of `q`.
-  * the leading coefficient of `f` is not zero in `K`
-  * the polynomial `f` is primitive.
+Let `R` be an integral domain
+and let `K` an `R`-algebra which is a field
+Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
+Let `f : R[X]` be a polynomial of strictly positive degree
+satisfying the following properties:
+
+* the image of `f` in `K[X]` is a power of `q`.
+* the leading coefficient of `f` is not zero in `K`
+* the polynomial `f` is primitive.
   Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
   where `P` is the kernel of `algebraMap R K`.
   Then `f` is irreducible.

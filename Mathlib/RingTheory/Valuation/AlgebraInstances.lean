@@ -15,6 +15,7 @@ This file contains several `Algebra` and `IsScalarTower` instances related to ex
 of a field with a valuation, as well as their unit balls.
 
 ## Main definitions
+
 * `ValuationSubring.algebra` : Given an algebra between two field extensions `L` and `E` of a
   field `K` with a valuation, create an algebra between their two rings of integers.
 
@@ -55,7 +56,7 @@ variable (E : Type _) [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E
 instance : IsScalarTower v.valuationSubring L E := inferInstance
 
 /-- Given an algebra between two field extensions `L` and `E` of a field `K` with a valuation `v`,
-  create an algebra between their two rings of integers. -/
+create an algebra between their two rings of integers. -/
 -- TODO: fix the smul field
 instance algebra :
     Algebra (integralClosure v.valuationSubring L) (integralClosure v.valuationSubring E) :=
@@ -71,7 +72,7 @@ instance algebra :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A ring equivalence between the integral closure of the valuation subring of `K` in `L`
-  and a ring `R` satisfying `isIntegralClosure R v.valuationSubring L`. -/
+and a ring `R` satisfying `isIntegralClosure R v.valuationSubring L`. -/
 protected noncomputable def equiv (R : Type*) [CommRing R] [Algebra v.valuationSubring R]
     [Algebra R L] [IsScalarTower v.valuationSubring R L]
     [IsIntegralClosure R v.valuationSubring L] : integralClosure v.valuationSubring L ≃+* R :=

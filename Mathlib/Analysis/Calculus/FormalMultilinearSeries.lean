@@ -258,8 +258,8 @@ variable [Semiring 𝕜] {n : ℕ} [AddCommMonoid E] [Module 𝕜 E] [Topologica
   {p : FormalMultilinearSeries 𝕜 E F}
 
 /-- The index of the first non-zero coefficient in `p` (or `0` if all coefficients are zero). This
-  is the order of the isolated zero of an analytic function `f` at a point if `p` is the Taylor
-  series of `f` at that point. -/
+is the order of the isolated zero of an analytic function `f` at a point if `p` is the Taylor
+series of `f` at that point. -/
 noncomputable def order (p : FormalMultilinearSeries 𝕜 E F) : ℕ :=
   sInf { n | p n ≠ 0 }
 

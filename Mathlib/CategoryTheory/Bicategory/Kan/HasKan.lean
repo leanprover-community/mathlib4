@@ -71,6 +71,7 @@ def lan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : b ⟶ c :=
   (lanLeftExtension f g).extension
 
 /-- `f⁺ g` is the left Kan extension of `g` along `f`.
+
 ```
   b
   △ \
@@ -215,6 +216,7 @@ def lanLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : c ⟶ b :=
   (lanLiftLeftLift f g).lift
 
 /-- `f₊ g` is the left Kan lift of `g` along `f`.
+
 ```
             b
           ◹ |

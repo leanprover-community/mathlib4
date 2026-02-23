@@ -21,6 +21,7 @@ relations, and that the left and right homotopy relations coincide.
 For a 2-truncated quasicategory `A`, we define a category `HomotopyCategory₂ A` whose
 morphisms are given by (left) homotopy classes of edges. The construction of this category
 is different from `HomotopyCategory A` in `AlgebraicTopology.SimplicialSet.HomotopyCat`:
+
 * `HomotopyCategory₂ A` has morphisms given by homotopy classes of edges
 * `HomotopyCategory A` has morphisms given by equivalence classes of paths in the underlying
   reflexive quiver of `A`.
@@ -42,6 +43,7 @@ open Edge CompStruct
 
 /--
 A 2-truncated quasicategory is a 2-truncated simplicial set with the properties:
+
 * (2, 1)-filling: given two consecutive `Edge`s `e₀₁` and `e₁₂`, there exists a `CompStruct`
   with (0, 1)-edge `e₀₁` and (0, 2)-edge `e₁₂`.
 * (3, 1)-filling: given three `CompStruct`s `f₃`, `f₀` and `f₂` which form a (3, 1)-horn,
@@ -176,7 +178,7 @@ lemma Edge.CompStruct.comp_unique {f f' : Edge x y} {g g' : Edge y z} {h h' : Ed
   exact Quasicategory₂.fill31 s (compId g) s₂
 
 /--
-Given two consecutive edges `f`, `g`  in a 2-truncated quasicategory, nonconstructively choose
+Given two consecutive edges `f`, `g` in a 2-truncated quasicategory, nonconstructively choose
 an edge that is the diagonal of a 2-simplex with spine given by `f` and `g`. The `CompStruct`
 witnessing this property is given by `Edge.composeStruct`.
 -/

@@ -14,6 +14,7 @@ public meta import Lean.Meta.Tactic.Constructor
 
 The `fconstructor` and `econstructor` tactics are variants of the `constructor` tactic in Lean core,
 except that
+
 - `fconstructor` does not reorder goals
 - `econstructor` adds only non-dependent premises as new goals.
 -/

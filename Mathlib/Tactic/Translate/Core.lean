@@ -76,9 +76,11 @@ syntax relevantArgOption := &"relevant_arg" " := " hole <|> ident <|> num
 /--
 `(dont_translate := ...)` takes a list of type variables (separated by spaces) that should not be
 considered for translation. For example in
+
 ```
 lemma foo {α β : Type} [Group α] [Group β] (a : α) (b : β) : a * a⁻¹ = 1 ↔ b * b⁻¹ = 1
 ```
+
 we can choose to only translate `α` by writing `to_additive (dont_translate := β)`.
 -/
 syntax dontTranslateOption := &"dont_translate" " := " (ident <|> num)+
@@ -119,7 +121,7 @@ register_option linter.existingAttributeWarning : Bool := {
     doesn't have certain attributes" }
 
 /-- Linter used by translate attributes that checks if the given declaration name is
-    equal to the automatically generated name -/
+equal to the automatically generated name -/
 register_option linter.translateGenerateName : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the given declaration name is \
@@ -133,7 +135,7 @@ register_option linter.translateExisting : Bool := {
     that the translated declaration already exists" }
 
 /-- Linter used by translate attributes that checks if the given reorder is
-    equal to the automatically generated name -/
+equal to the automatically generated name -/
 register_option linter.translateReorder : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the given reorder is \
@@ -202,9 +204,9 @@ structure TranslateData : Type where
   such as `MonoidAlgebra` -> `AddMonoidAlgebra`, or for fixed types, such as `Fin n`/`ZMod n`.
   `do_translate` is for types without arguments, like `Unit` and `Empty`, where the structure on it
   can be translated.
-
+  
   Note: The name generation is not aware of `dont_translate`, so if some part of a lemma is not
-    translated thanks to this, you generally have to specify the translated name manually.
+  translated thanks to this, you generally have to specify the translated name manually.
   -/
   doTranslateAttr : NameMapExtension Bool
   /-- The `insert_cast`/`insert_cast_fun` attributes create an abstraction boundary for the tagged
@@ -336,6 +338,7 @@ def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
     mkLambdaFVars xs (mkAppN e xs)
 
 /-- Monad used by `applyReplacementFun`.
+
 - The reader stores the free variables on which nothing should be translated.
 - The state stores the free variables on which something has been translated.
 - The cache caches the results on subexpressions. -/
@@ -425,6 +428,7 @@ def List.swapFirstTwo {α : Type*} : List α → List α
 /--
 `applyReplacementFun e` replaces the expression `e` with its translation.
 It translates each identifier (inductive type, defined function etc) in an expression, unless
+
 * The identifier occurs in an application with `relevantArg` argument `arg`; and
 * `shouldTranslate arg` is false.
 
@@ -1095,6 +1099,7 @@ def elabArgStx (declName : Name) (argNames : Array Name) (args : Array Expr)
   return n
 
 /-- Elaboration of the configuration options for a translation attribute. It is assumed that
+
 - `stx[0]` is the attribute (e.g. `to_additive`)
 - `stx[1]` is the optional tracing `?`
 - `stx[2]` is the remaining `attrArgs`

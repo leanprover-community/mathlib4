@@ -81,7 +81,7 @@ def isColimitToOver {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsColimit 
   isColimitOfReflects (forget c.pt) <| IsColimit.equivIsoColimit c.mapCoconeToOver.symm hc
 
 /-- If `F` has a colimit, then the cocone `colimit.toOver F` with cocone point `𝟙 (colimit F)` is
-    also a colimit cocone. -/
+also a colimit cocone. -/
 def _root_.CategoryTheory.Limits.colimit.isColimitToOver (F : J ⥤ C) [HasColimit F] :
     IsColimit (colimit.toOver F) :=
   Over.isColimitToOver (colimit.isColimit F)
@@ -142,7 +142,7 @@ def isLimitToUnder {F : J ⥤ C} {c : Cone F} (hc : IsLimit c) : IsLimit c.toUnd
   isLimitOfReflects (forget c.pt) (IsLimit.equivIsoLimit c.mapConeToUnder.symm hc)
 
 /-- If `F` has a limit, then the cone `limit.toUnder F` with cone point `𝟙 (limit F)` is
-    also a limit cone. -/
+also a limit cone. -/
 def _root_.CategoryTheory.Limits.limit.isLimitToOver (F : J ⥤ C) [HasLimit F] :
     IsLimit (limit.toUnder F) :=
   Under.isLimitToUnder (limit.isLimit F)

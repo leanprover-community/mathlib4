@@ -18,10 +18,12 @@ public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
 /-!
 # Finite places of number fields
+
 This file defines finite places of a number field `K` as absolute values coming from an embedding
 into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 
 ## Main Definitions and Results
+
 * `NumberField.adicAbv`: a `v`-adic absolute value on `K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
 * `NumberField.FinitePlace.embedding`: the canonical embedding of a number field `K` to the
@@ -32,10 +34,11 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
   unfolded.
 * `NumberField.FinitePlace.mulSupport_finite`: the `v`-adic absolute value of a non-zero element of
   `K` is different from 1 for at most finitely many `v`.
-*  The valuation subrings of the field at the `v`-valuation and it's adic completion are
-   discrete valuation rings.
+* The valuation subrings of the field at the `v`-valuation and it's adic completion are
+  discrete valuation rings.
 
 ## Tags
+
 number field, places, finite places
 -/
 

@@ -173,7 +173,7 @@ theorem Ioo_disjoint_Ioo [DenselyOrdered α] :
   simp_rw [Set.disjoint_iff_inter_eq_empty, Ioo_inter_Ioo, Ioo_eq_empty_iff, not_lt]
 
 /-- If two half-open intervals are disjoint and the endpoint of one lies in the other,
-  then it must be equal to the endpoint of the other. -/
+then it must be equal to the endpoint of the other. -/
 theorem eq_of_Ico_disjoint {x₁ x₂ y₁ y₂ : α} (h : Disjoint (Ico x₁ x₂) (Ico y₁ y₂)) (hx : x₁ < x₂)
     (h2 : x₂ ∈ Ico y₁ y₂) : y₁ = x₂ := by
   rw [Ico_disjoint_Ico, min_eq_left (le_of_lt h2.2), le_max_iff] at h

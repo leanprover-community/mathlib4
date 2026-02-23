@@ -27,8 +27,8 @@ to choices of square roots of `d` in `R`.
 
 
 /-- The ring of integers adjoined with a square root of `d`.
-  These have the form `a + b √d` where `a b : ℤ`. The components
-  are called `re` and `im` by analogy to the negative `d` case. -/
+These have the form `a + b √d` where `a b : ℤ`. The components
+are called `re` and `im` by analogy to the negative `d` case. -/
 @[ext]
 structure Zsqrtd (d : ℤ) where
   /-- Component of the integer not multiplied by `√d` -/
@@ -444,7 +444,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
 
 open Int in
 /-- "Generalized" `nonneg`. `nonnegg c d x y` means `a √c + b √d ≥ 0`;
-  we are interested in the case `c = 1` but this is more symmetric -/
+we are interested in the case `c = 1` but this is more symmetric -/
 def Nonnegg (c d : ℕ) : ℤ → ℤ → Prop
   | (a : ℕ), (b : ℕ) => True
   | (a : ℕ), -[b+1] => SqLe (b + 1) c a d
@@ -779,8 +779,8 @@ theorem not_sqLe_succ (c d y) (h : 0 < c) : ¬SqLe (y + 1) c 0 d :=
   not_le_of_gt <| mul_pos (mul_pos h <| Nat.succ_pos _) <| Nat.succ_pos _
 
 /-- A nonsquare is a natural number that is not equal to the square of an
-  integer. This is implemented as a typeclass because it's a necessary condition
-  for much of the Pell equation theory. -/
+integer. This is implemented as a typeclass because it's a necessary condition
+for much of the Pell equation theory. -/
 class Nonsquare (x : ℕ) : Prop where
   ns (x) : ∀ n : ℕ, x ≠ n * n
 

@@ -11,6 +11,7 @@ public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Partial values of a type
+
 This file defines `Part α`, the partial values of a type.
 `o : Part α` carries a proposition `o.Dom`, its domain, along with a function `get : o.Dom → α`, its
 value. The rule is then that every partial value has a value but, to access it, you need to provide
@@ -21,23 +22,27 @@ translate back and forth between a partial value with a decidable domain and an 
 `Option α` and `Part α` are classically equivalent. In general, `Part α` is bigger than `Option α`.
 
 ## Main declarations
+
 `Option`-like declarations:
+
 * `Part.none`: The partial value whose domain is `False`.
 * `Part.some a`: The partial value whose domain is `True` and whose value is `a`.
 * `Part.ofOption`: Converts an `Option α` to a `Part α` by sending `none` to `none` and `some a` to
   `some a`.
 * `Part.toOption`: Converts a `Part α` with a decidable domain to an `Option α`.
 * `Part.equivOption`: Classical equivalence between `Part α` and `Option α`.
-Monadic structure:
+  Monadic structure:
 * `Part.bind`: `o.bind f` has value `(f (o.get _)).get _` (`f o` morally) and is defined when `o`
   and `f (o.get _)` are defined.
 * `Part.map`: Maps the value and keeps the same domain.
-Other:
+  Other:
 * `Part.restrict`: `Part.restrict p o` replaces the domain of `o : Part α` by `p : Prop` so long as
   `p → o.Dom`.
 * `Part.assert`: `assert p f` appends `p` to the domains of the values of a partial function.
 * `Part.unwrap`: Gets the value of a partial value regardless of its domain. Unsound.
+
 ## Notation
+
 For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a`. Formally, it means
 `o.Dom` and `o.get _ = a`.
 -/
@@ -49,8 +54,8 @@ assert_not_exists RelIso
 open Function
 
 /-- `Part α` is the type of "partial values" of type `α`. It
-  is similar to `Option α` except the domain condition can be an
-  arbitrary proposition, not necessarily decidable. -/
+is similar to `Option α` except the domain condition can be an
+arbitrary proposition, not necessarily decidable. -/
 structure Part.{u} (α : Type u) : Type u where
   /-- The domain of a partial value -/
   Dom : Prop
@@ -119,7 +124,7 @@ instance : Inhabited (Part α) :=
 theorem notMem_none (a : α) : a ∉ @none α := fun h => h.fst
 
 /-- The `some a` value in `Part` has a `True` domain and the
-  function returns `a`. -/
+function returns `a`. -/
 def some (a : α) : Part α :=
   ⟨True, fun _ => a⟩
 
@@ -370,12 +375,12 @@ theorem le_total_of_le_of_le {x y : Part α} (z : Part α) (hx : x ≤ z) (hy : 
   exact h₀
 
 /-- `assert p f` is a bind-like operation which appends an additional condition
-  `p` to the domain and uses `f` to produce the value. -/
+`p` to the domain and uses `f` to produce the value. -/
 def assert (p : Prop) (f : p → Part α) : Part α :=
   ⟨∃ h : p, (f h).Dom, fun ha => (f ha.fst).get ha.snd⟩
 
 /-- The bind operation has value `g (f.get)`, and is defined when all the
-  parts are defined. -/
+parts are defined. -/
 protected def bind (f : Part α) (g : α → Part β) : Part β :=
   assert (Dom f) fun b => g (f.get b)
 
@@ -546,7 +551,7 @@ theorem bind_le {α} (x : Part α) (f : α → Part β) (y : Part β) :
 --   { Part.monad with fail := fun _ _ => none }
 
 /-- `restrict p o h` replaces the domain of `o` with `p`, and is well defined when
-  `p` implies `o` is defined. -/
+`p` implies `o` is defined. -/
 def restrict (p : Prop) (o : Part α) (H : p → o.Dom) : Part α :=
   ⟨p, fun h => o.get (H h)⟩
 

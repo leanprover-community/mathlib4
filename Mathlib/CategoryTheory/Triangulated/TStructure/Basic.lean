@@ -29,7 +29,6 @@ use depending on the context.
 
 ## TODO
 
-
 * define functors `t.truncLE n : C ⥤ C`, `t.truncGE n : C ⥤ C` and the
   associated distinguished triangles
 * promote these truncations to a (functorial) spectral object
@@ -38,6 +37,7 @@ use depending on the context.
   that there are induced t-structures on these full subcategories
 
 ## References
+
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
 
 -/
