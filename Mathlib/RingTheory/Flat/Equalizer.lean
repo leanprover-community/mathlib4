@@ -299,6 +299,8 @@ lemma AlgHom.coe_tensorEqualizer (x : T ⊗[R] AlgHom.equalizer f g) :
       Algebra.TensorProduct.map (AlgHom.id S T) (AlgHom.equalizer f g).val x :=
   AlgHom.coe_tensorEqualizerAux S T f g x
 
+#adaptation_note /-- After nightly-2026-02-23 this requires *way* more heartbeats. -/
+set_option maxHeartbeats 800000 in -- see note above
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

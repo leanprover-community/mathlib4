@@ -505,6 +505,8 @@ instance forget₂Ring_preservesLimitsOfSize [UnivLE.{v, u}] :
 instance forget₂Ring_preservesLimits : PreservesLimits (forget₂ CommRingCat RingCat.{u}) :=
   CommRingCat.forget₂Ring_preservesLimitsOfSize.{u, u}
 
+#adaptation_note /-- After nightly-2026-02-23 this requires more heartbeats. -/
+set_option maxHeartbeats 400000 in -- see note above
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂CommSemiRingPreservesLimitsAux :

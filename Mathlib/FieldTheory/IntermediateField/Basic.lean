@@ -430,9 +430,15 @@ section shortcut_instances
 set_option backward.isDefEq.respectTransparency false
 
 variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
+
 instance : Algebra S T := T.algebra
+
+#adaptation_note /-- After nightly-2026-02-23 this requires *excessively* more heartbeats. -/
+set_option maxHeartbeats 1600000 in -- see note above
 instance : Module S T := Algebra.toModule
+
 instance : SMul S T := Algebra.toSMul
+
 instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
 
 end shortcut_instances
