@@ -150,12 +150,13 @@ theorem mul_adjp_add_detp : A * adjp 1 A + detp (-1) A • 1 = A * adjp (-1) A +
 
 variable {A B}
 
-theorem isAddUnit_mul (hAB : A * B = 1) (i j k : n) (hij : i ≠ j) : IsAddUnit (A i k * B k j) := by
+theorem isAddUnit_mul {d : n → R} (hAB : A * B = diagonal d) (i j k : n) (hij : i ≠ j) :
+    IsAddUnit (A i k * B k j) := by
   revert k
-  rw [← IsAddUnit.sum_univ_iff, ← mul_apply, hAB, one_apply_ne hij]
+  rw [← IsAddUnit.sum_univ_iff, ← mul_apply, hAB, diagonal_apply_ne _ hij]
   exact isAddUnit_zero
 
-theorem isAddUnit_detp_mul_detp (hAB : A * B = 1) :
+theorem isAddUnit_detp_mul_detp {d : n → R} (hAB : A * B = diagonal d) :
     IsAddUnit (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) := by
   suffices h : ∀ {s t}, s ≠ t → IsAddUnit (detp s A * detp t B) from
     (h (by decide)).add (h (by decide))
@@ -172,7 +173,7 @@ theorem isAddUnit_detp_mul_detp (hAB : A * B = 1) :
     ← mul_prod_erase univ _ (mem_univ k), ← smul_eq_mul]
   exact (isAddUnit_mul hAB k (τ (σ k)) (σ k) hk).smul_right _
 
-theorem isAddUnit_detp_smul_mul_adjp (hAB : A * B = 1) :
+theorem isAddUnit_detp_smul_mul_adjp {d : n → R} (hAB : A * B = diagonal d) :
     IsAddUnit (detp 1 A • (B * adjp (-1) B) + detp (-1) A • (B * adjp 1 B)) := by
   suffices h : ∀ {s t}, s ≠ t → IsAddUnit (detp s A • (B * adjp t B)) from
     (h (by decide)).add (h (by decide))
