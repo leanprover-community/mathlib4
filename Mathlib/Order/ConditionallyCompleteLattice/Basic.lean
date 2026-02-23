@@ -313,6 +313,10 @@ its supremum. -/
 theorem csInf_le_csSup (hb : BddBelow s) (ha : BddAbove s) (ne : s.Nonempty) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_csInf ne hb) (isLUB_csSup ne ha) ne
 
+theorem csInf_le_csSup_of_nonempty_inter (h : (s ∩ t).Nonempty) (hs : BddBelow s)
+    (ht : BddAbove t) : sInf s ≤ sSup t :=
+  isGLB_le_isLUB_of_nonempty_inter (isGLB_csInf h.left hs) (isLUB_csSup h.right ht) h
+
 /-- The `sSup` of a union of two sets is the max of the suprema of each subset, under the
 assumptions that all sets are bounded above and nonempty. -/
 theorem csSup_union (hs : BddAbove s) (sne : s.Nonempty) (ht : BddAbove t) (tne : t.Nonempty) :
@@ -589,6 +593,16 @@ theorem csSup_le_csSup' {s t : Set α} (h₁ : BddAbove t) (h₂ : s ⊆ t) : sS
   · rw [csSup_empty]
     exact bot_le
   · exact csSup_le_csSup h₁ h h₂
+
+theorem isGLB_csInf' (ne : s.Nonempty) : IsGLB s (sInf s) :=
+  isGLB_csInf ne <| OrderBot.bddBelow _
+
+theorem csInf_le_csSup' (ha : BddAbove s) (ne : s.Nonempty) : sInf s ≤ sSup s :=
+  isGLB_le_isLUB (isGLB_csInf' ne) (isLUB_csSup ne ha) ne
+
+theorem csInf_le_csSup_of_nonempty_inter' {t : Set α} (h : (s ∩ t).Nonempty) (ht : BddAbove t) :
+    sInf s ≤ sSup t :=
+  isGLB_le_isLUB_of_nonempty_inter (isGLB_csInf' h.left) (isLUB_csSup h.right ht) h
 
 end ConditionallyCompleteLinearOrderBot
 

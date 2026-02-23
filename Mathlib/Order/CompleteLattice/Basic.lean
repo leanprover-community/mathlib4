@@ -84,6 +84,9 @@ variable [CompleteLattice α] {s t : Set α} {b : α}
 theorem sInf_le_sSup (hs : s.Nonempty) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_sInf s) (isLUB_sSup s) hs
 
+theorem sInf_le_sSup_of_nonempty_inter (h : (s ∩ t).Nonempty) : sInf s ≤ sSup t :=
+  isGLB_le_isLUB_of_nonempty_inter (isGLB_sInf s) (isLUB_sSup t) h
+
 theorem sSup_union {s t : Set α} : sSup (s ∪ t) = sSup s ⊔ sSup t :=
   ((isLUB_sSup s).union (isLUB_sSup t)).sSup_eq
 
