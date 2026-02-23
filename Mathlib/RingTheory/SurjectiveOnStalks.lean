@@ -189,8 +189,9 @@ lemma SurjectiveOnStalks.baseChange
 lemma SurjectiveOnStalks.baseChange' [Algebra R T] [Algebra R S]
     (hf : (algebraMap R S).SurjectiveOnStalks) :
     (Algebra.TensorProduct.includeRight (R := R) (A := S) (B := T)).SurjectiveOnStalks := by
-  convert (surjectiveOnStalks_of_surjective (Algebra.TensorProduct.comm R T S).surjective).comp
-    (hf.baseChange (S := T))
+  convert (surjectiveOnStalks_of_surjective
+    (Algebra.TensorProduct.comm R T S).toRingHom.surjective).comp (hf.baseChange (S := T))
+  exact ⟨AlgEquiv.surjective _⟩
 
 -- Subsumed by `RingHom.SurjectiveOnStalks.tensorProductMap`.
 private lemma SurjectiveOnStalks.tensorProductMap_id

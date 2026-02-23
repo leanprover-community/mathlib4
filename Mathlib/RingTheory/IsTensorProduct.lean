@@ -670,8 +670,7 @@ variable (C : Type*) [CommRing C] [Algebra R C] [Algebra A C] [IsScalarTower R A
 /-- Algebra version of `IsPushout.cancelBaseChange`. -/
 noncomputable def IsPushout.cancelBaseChangeAlg : B ⊗[A] C ≃ₐ[S] S ⊗[R] C := by
   refine AlgEquiv.symm
-    (AlgEquiv.ofLinearEquiv (IsPushout.cancelBaseChange R S A B C).symm ?_ ?_)
-  · simp [TensorProduct.one_def]
+    (AlgEquiv.ofLinearEquiv (IsPushout.cancelBaseChange R S A B C).symm ?_)
   · apply LinearMap.map_mul_of_map_mul_tmul
     simp
 
