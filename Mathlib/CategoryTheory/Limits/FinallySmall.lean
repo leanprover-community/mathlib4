@@ -151,6 +151,11 @@ instance [LocallySmall.{w} J] [InitiallySmall.{w} J] (X : J) :
   exact initiallySmall_of_initial_of_initiallySmall
     (CostructuredArrow.toOver (fromInitialModel.{w} J) X)
 
+instance {J' : Type*} [Category* J'] [InitiallySmall.{w} J] [InitiallySmall.{w} J'] :
+    InitiallySmall.{w} (J × J') :=
+  initiallySmall_of_initial_of_essentiallySmall
+    ((fromInitialModel.{w} J).prod (fromInitialModel.{w} J'))
+
 end InitiallySmall
 
 instance {J : Type u} [Category.{v} J] [InitiallySmall.{w} J] : FinallySmall.{w} Jᵒᵖ where
