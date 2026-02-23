@@ -851,8 +851,11 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
   congr 1
   · have αd : ω ∣ α' :=
       dvd_add (dvd_mul_of_dvd_left (by simpa using opow_dvd_opow ω (one_le_iff_ne_zero.2 e0)) _) d
+    have α0: ¬IsMin α' := by
+      rw [isMin_iff_eq_bot]
+      exact α0.ne'
     rw [mul_add (ω0 ^ (k : Ordinal)), add_assoc, ← mul_assoc, ← opow_succ,
-      add_mul_of_isSuccLimit _ (isSuccLimit_iff_omega0_dvd.2 ⟨ne_of_gt α0, αd⟩), mul_assoc,
+      add_mul_of_isSuccLimit _ ⟨α0, isSuccPrelimit_iff_omega0_dvd.2 αd⟩, mul_assoc,
       @mul_omega0_dvd n (Nat.cast_pos'.2 n.pos) (nat_lt_omega0 _) _ αd]
     apply @add_absorp _ (repr a0 * succ ↑k)
     · refine principal_add_omega0_opow _ ?_ Rl
@@ -1006,14 +1009,14 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
     · exact ⟨rfl, inferInstance⟩
     · have := opow_pos (repr a') omega0_pos
       refine
-        ⟨isSuccLimit_mul this isSuccLimit_omega0, fun i =>
+        ⟨isSuccLimit_mul_right this isSuccLimit_omega0, fun i =>
           ⟨this, ?_, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega0'⟩
       rw [← mul_succ, ← natCast_succ]
       gcongr
       apply nat_lt_omega0
     · have := opow_pos (repr a') omega0_pos
       refine
-        ⟨isSuccLimit_add _ (isSuccLimit_mul this isSuccLimit_omega0), fun i => ⟨this, ?_, ?_⟩,
+        ⟨isSuccLimit_add _ (isSuccLimit_mul_right this isSuccLimit_omega0), fun i => ⟨this, ?_, ?_⟩,
           exists_lt_add exists_lt_mul_omega0'⟩
       · rw [← mul_succ, ← natCast_succ]
         gcongr
