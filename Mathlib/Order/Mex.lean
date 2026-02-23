@@ -11,7 +11,7 @@ public import Mathlib.Order.Interval.Set.Nat
 /-!
 # Mex lemmas
 
-The mex of a set is the smallest value in its complement.
+The mex (minimum excluded value) of a set is the smallest value in its complement.
 <https://en.wikipedia.org/wiki/Mex_(mathematics)>
 
 This file shows that the cardinality of the set is an upper-bound of its mex.
