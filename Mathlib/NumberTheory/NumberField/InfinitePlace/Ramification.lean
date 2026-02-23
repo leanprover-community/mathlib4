@@ -367,11 +367,8 @@ lemma nat_card_stabilizer_eq_one_or_two :
   rw [← SetLike.coe_sort_coe, ← mk_embedding w]
   by_cases! h : ∃ σ, ComplexEmbedding.IsConj (k := k) (embedding w) σ
   · obtain ⟨σ, hσ⟩ := h
-    simp only [hσ.coe_stabilizer_mk, Nat.card_eq_fintype_card, card_ofFinset,
-      Set.toFinset_singleton]
-    by_cases 1 = σ
-    · left; simp [*]
-    · right; simp [*]
+    rw [hσ.coe_stabilizer_mk]
+    simp
   · left
     trans Nat.card ({1} : Set Gal(K/k))
     · congr with x

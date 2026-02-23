@@ -179,13 +179,8 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
         rwa [disjoint_powers_iff_notMem y hI.right.isPrime.isRadical]
       have : J ≤ I.map (algebraMap R S) := map_comap (Submonoid.powers y) S J ▸ map_mono hI.left
       exact absurd (h.1.2 _ (lt_of_le_of_ne this hJ)) hI_p.1
-  · refine fun h => ⟨⟨fun hJ => h.1.ne_top (eq_top_iff.2 ?_), fun I hI => ?_⟩⟩
-    · rwa [eq_top_iff, ← (IsLocalization.orderEmbedding (powers y) S).le_iff_le] at hJ
-    · have := congr_arg (Ideal.map (algebraMap R S)) (h.1.1.2 _ ⟨comap_mono (le_of_lt hI), ?_⟩)
-      · rwa [map_comap (powers y) S I, Ideal.map_top] at this
-      refine fun hI' => hI.right ?_
-      rw [← map_comap (powers y) S I, ← map_comap (powers y) S J]
-      exact map_mono hI'
+  · simp only [Ideal.mem_comap, and_imp]
+    exact (fun _ _ ↦ IsMaximal.of_isLocalization_of_disjoint (powers y))
 
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
 correspond to maximal ideals in the original ring `R` that don't contain `y`.

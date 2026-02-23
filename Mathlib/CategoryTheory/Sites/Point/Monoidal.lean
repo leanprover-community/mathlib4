@@ -80,17 +80,18 @@ variable [LocallySmall.{w} C]
 
 instance (M : A) :
     PreservesColimitsOfShape Φ.fiber.Elementsᵒᵖ ((curriedTensor A).flip.obj M) :=
-  Final.preservesColimitsOfShape_of_final (FinallySmall.fromFilteredFinalModel.{w} _) _
+  Final.preservesColimitsOfShape_of_final (fromFilteredFinalModel.{w} _) _
 
 instance (M : A) :
     PreservesColimitsOfShape Φ.fiber.Elementsᵒᵖ ((curriedTensor A).obj M) :=
-  Final.preservesColimitsOfShape_of_final (FinallySmall.fromFilteredFinalModel.{w} _) _
+  Final.preservesColimitsOfShape_of_final (fromFilteredFinalModel.{w} _) _
 
-attribute [local instance] IsFiltered.isConnected in
+attribute [local instance] FinallySmallFiltered.isConnected in
 instance : IsIso (OplaxMonoidal.η (Φ.presheafFiber (A := A))) :=
   (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
     (isColimitConstCocone _ (𝟙_ A))).isIso_hom
 
+attribute [local instance] FinallySmallFiltered.isSifted in
 attribute [local simp] tensorHom_def toPresheafFiber OplaxMonoidal.δ presheafFiberDesc in
 instance (P₁ P₂ : Cᵒᵖ ⥤ A) :
     IsIso (OplaxMonoidal.δ Φ.presheafFiber P₁ P₂) := by
