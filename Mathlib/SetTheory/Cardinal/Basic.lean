@@ -273,7 +273,6 @@ theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   exact Nat.cast_lt.2 (Nat.lt_succ_self _)
 
 lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
-  rw [← Cardinal.nat_succ]
   norm_cast
 
 lemma natCast_add_one_le_iff {n : ℕ} {c : Cardinal} : n + 1 ≤ c ↔ n < c := by
