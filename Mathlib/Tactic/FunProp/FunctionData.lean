@@ -210,11 +210,17 @@ def FunctionData.peeloffArgDecomposition (fData : FunctionData) : MetaM (Option 
     let f' := Expr.lam `f (← inferType gBody') (.app (.bvar 0) (yₙ.expr)) default
     return (f',g')
 
+/-- The result of `FunctionData.decomposition`. -/
+inductive DecompositionResult
+  /-- The function can be decomposed in a non-trivial way. -/
+  | comp (f g : Expr)
+  /-- The function is in uncurried form. -/
+  | uncurried
+  /-- The decomposition failed for some other reason. -/
+  | failed
 
-/-- Decompose function `f = (← fData.toExpr)` into composition of two functions.
-
-Returns none if the decomposition would produce composition with identity function. -/
-def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option (Expr × Expr)) := do
+/-- Decompose function `f = (← fData.toExpr)` into composition of two functions. -/
+def FunctionData.decomposition (fData : FunctionData) : MetaM DecompositionResult := do
 
     let mut lctx := fData.lctx
     let insts := fData.insts
@@ -227,7 +233,8 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
     let mut args := fData.args
 
     if fn.containsFVar xId then
-      return ← fData.peeloffArgDecomposition
+      let .some (f, g) ← fData.peeloffArgDecomposition | return .failed
+      return .comp f g
 
     let mut yVals : Array Expr := #[]
     let mut yVars : Array Expr := #[]
@@ -239,7 +246,7 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
       let yId ← withLCtx lctx insts mkFreshFVarId
       let yType ← withLCtx lctx insts (inferType yVal')
       if yType.containsFVar fData.mainVar.fvarId! then
-        return none
+        return .failed
       lctx := lctx.mkLocalDecl yId (xName.appendAfter (toString argId)) yType
       let yVar := Expr.fvar yId
       yVars := yVars.push yVar
@@ -255,10 +262,12 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
 
     -- check if is non-triviality
     let f' ← fData.toExpr
-    if (← withReducibleAndInstances <| isDefEq f' f <||> isDefEq f' g) then
-      return none
+    if ← withReducibleAndInstances <| isDefEq f' f then
+      return .uncurried
+    if ← withReducibleAndInstances <| isDefEq f' g then
+      return .failed
 
-    return (f, g)
+    return .comp f g
 
 
 /-- Decompose function `fun x ↦ f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.

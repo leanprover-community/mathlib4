@@ -155,6 +155,10 @@ inductive TheoremForm where
 instance : ToString TheoremForm :=
   ⟨fun x => match x with | .uncurried => "simple" | .comp => "compositional"⟩
 
+def DecompositionResult.toTheoremForm : DecompositionResult → TheoremForm
+| .uncurried => .uncurried
+| _ => .comp
+
 /-- theorem about specific function (either declared constant or free variable) -/
 structure FunctionTheorem where
   /-- function property name -/
@@ -332,10 +336,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
     match fData.fn with
     | .const funName _ =>
 
-      -- todo: more robust detection of compositional and uncurried form!!!
-      -- I think this detects `Continuous fun x => x + c` as compositional ...
-      let dec ← fData.nontrivialDecomposition
-      let form : TheoremForm := if dec.isSome || funName == ``Prod.mk then .comp else .uncurried
+      let dec ← fData.decomposition
 
       return .function {
 -- funPropName funName fData.mainArgs fData.args.size thmForm
@@ -345,7 +346,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         mainArgs := fData.mainArgs
         appliedArgs := fData.args.size
         priority := prio
-        form := form
+        form := dec.toTheoremForm
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
