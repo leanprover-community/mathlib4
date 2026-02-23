@@ -295,6 +295,8 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
       (P''.over_def P)).comp_algebraMap, ← Polynomial.map_map, ← ha']
     simp
 
+set_option maxHeartbeats 220000 in
+-- needed after refactoring `AlgEquiv`
 set_option backward.isDefEq.respectTransparency false in
 lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
     {R S R' R'' : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
