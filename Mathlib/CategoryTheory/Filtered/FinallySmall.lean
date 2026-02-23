@@ -135,6 +135,17 @@ instance [FinallySmallFiltered.{w} C] :
     InitiallySmallCofiltered.{w} Cᵒᵖ :=
   initiallySmallCofiltered_of_initial (fromFilteredFinalModel.{w} C).op
 
+instance {C' : Type*} [Category* C'] [FinallySmallFiltered.{w} C] [FinallySmallFiltered.{w} C'] :
+    FinallySmallFiltered.{w} (C × C') :=
+  finallySmallFiltered_of_final
+    ((fromFilteredFinalModel.{w} C).prod (fromFilteredFinalModel.{w} C'))
+
+instance {C' : Type*} [Category* C']
+    [InitiallySmallCofiltered.{w} C] [InitiallySmallCofiltered.{w} C'] :
+    InitiallySmallCofiltered.{w} (C × C') :=
+  initiallySmallCofiltered_of_initial
+    ((fromCofilteredInitialModel.{w} C).prod (fromCofilteredInitialModel.{w} C'))
+
 namespace FinallySmall
 
 attribute [local instance] IsFiltered.nonempty
