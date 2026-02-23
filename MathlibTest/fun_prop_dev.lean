@@ -699,3 +699,20 @@ example (hX : ∀ i, Lin' (X i)) : Lin (fun ω i ↦ X i ω) := by
   -- failed in https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Weird.20behavior.20of.20fun_prop
 
 end MVarBug
+
+section DependentCompositionalForm
+
+-- These examples involving dependent types used to be incorrectly detected as uncurried forms
+
+@[fun_prop]
+theorem Con_subtype_mk {p : β → Prop} {f : α → β} (h : Con f) (hp : ∀ x, p (f x)) :
+  Con fun x => (⟨f x, hp x⟩ : Subtype p) := silentSorry
+
+example : Con fun x => (⟨x, trivial⟩ : {x : α // True}) := by fun_prop
+
+@[fun_prop]
+theorem Con_imp {p q : α → Prop} : Con (fun x => p x → q x) := silentSorry
+
+example {p : α → Prop} : Con (fun x => True → p x) := by fun_prop
+
+end DependentCompositionalForm
