@@ -696,7 +696,7 @@ instance instOrderTop [LE β] [OrderTop β] : OrderTop (α →ₛ β) where
   le_top _ _ := le_top
 
 @[to_additive]
-instance [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
+instance [CommMonoid β] [Preorder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (α →ₛ β) where
   mul_le_mul_left _ _ h _ _ := mul_le_mul_left (h _) _
 

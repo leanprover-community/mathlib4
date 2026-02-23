@@ -94,6 +94,10 @@ instance [IsCofiltered N] : (functor.{w} p).Initial := by
       (show fiberMk.{w} φ₁ = fiberMk.{w} φ₂ by simpa using hφ₁.trans hφ₂.symm)
     exact ⟨_, g, by cat_disch⟩
 
+instance [IsCofiltered N] [EssentiallySmall.{w} N] :
+    InitiallySmallCofiltered.{w} (fiber.{w} p).Elements :=
+  initiallySmallCofiltered_of_initial (functor.{w} p)
+
 instance [IsCofiltered N] : InitiallySmall.{w} (fiber.{w} p).Elements :=
   initiallySmall_of_initial_of_initiallySmall.{w} (functor.{w} p)
 
@@ -175,7 +179,7 @@ instance isCofiltered_elements_fiber_of_hasFiniteLimits [IsCofiltered N] [HasFin
 
 end ofCofiltered
 
-variable [IsCofiltered N] [IsCofiltered (ofCofiltered.fiber.{w} p).Elements]
+variable [IsCofiltered N] [EssentiallySmall.{w} N]
   (hp : ∀ ⦃X : C⦄ (R : Sieve X) (_ : R ∈ J X) ⦃U : N⦄ (f : p.obj U ⟶ X),
     ∃ (Y : C) (g : Y ⟶ X) (_ : R g) (V : N) (q : V ⟶ U) (a : p.obj V ⟶ Y),
       a ≫ g = p.map q ≫ f)
@@ -183,7 +187,7 @@ variable [IsCofiltered N] [IsCofiltered (ofCofiltered.fiber.{w} p).Elements]
 open ofCofiltered
 
 @[simps]
-noncomputable def ofCofiltered [IsCofiltered (ofCofiltered.fiber.{w} p).Elements] :
+noncomputable def ofCofiltered :
     Point.{w} J where
   fiber := ofCofiltered.fiber p
   jointly_surjective {X} R hR x := by

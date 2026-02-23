@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Filtered.FinallySmall
 public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
+public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.CategoryTheory.Sites.Point.Basic
@@ -26,7 +27,7 @@ universe w v u
 namespace CategoryTheory.GrothendieckTopology.Point
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-  [LocallySmall.{w} C] (Φ : Point.{w} J) {X : C} (x : Φ.fiber.obj X)
+  (Φ : Point.{w} J) {X : C} (x : Φ.fiber.obj X)
 
 set_option backward.isDefEq.respectTransparency false in
 open InitiallySmall in
@@ -35,11 +36,13 @@ this is the point of the site `(Over X, J.over X)` such that the fiber of
 an object of `Over X` corresponding to a morphism `f : Y ⟶ X` identifies
 to subtype of `Φ.fiber.obj Y` consisting of elemnts `y` such
 that `Φ.fiber.map f y = x`. -/
-def over : Point.{w} (J.over X) where
+@[simps -isSimp]
+def over [InitiallySmallCofiltered.{w}
+    (FunctorToTypes.fromOverFunctor Φ.fiber x).Elements] : Point.{w} (J.over X) where
   fiber := FunctorToTypes.fromOverFunctor Φ.fiber x
-  initiallySmall :=
-    initiallySmall_of_initial_of_initiallySmall
-      (FunctorToTypes.fromOverFunctorElementsEquivalence Φ.fiber x).inverse
+  --initiallySmall :=
+  --  initiallySmall_of_initial_of_initiallySmall
+  --    (FunctorToTypes.fromOverFunctorElementsEquivalence Φ.fiber x).inverse
   jointly_surjective := by
     rintro U R hR ⟨u, hu⟩
     obtain ⟨R, rfl⟩ := (Sieve.overEquiv _).symm.surjective R
@@ -48,5 +51,20 @@ def over : Point.{w} (J.over X) where
     refine ⟨Over.mk (f ≫ U.hom), Over.homMk f, hf, ⟨v, ?_⟩, rfl⟩
     rw [FunctorToTypes.mem_fromOverSubfunctor_iff] at hu ⊢
     simpa
+
+section
+
+variable [LocallySmall.{w} C] [IsCofiltered Φ.fiber.Elements]
+
+instance :
+    InitiallySmall.{w} (FunctorToTypes.fromOverFunctor Φ.fiber x).Elements :=
+  initiallySmall_of_initial_of_initiallySmall
+    (FunctorToTypes.fromOverFunctorElementsEquivalence Φ.fiber x).inverse
+
+instance : IsCofiltered (Φ.over x).fiber.Elements := by
+  dsimp [over_fiber]
+  infer_instance
+
+end
 
 end CategoryTheory.GrothendieckTopology.Point
