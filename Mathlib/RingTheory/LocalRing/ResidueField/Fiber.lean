@@ -128,6 +128,7 @@ noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
 @[deprecated (since := "2025-12-07")]
 alias PrimeSpectrum.preimageOrderIsoTensorResidueField := PrimeSpectrum.preimageOrderIsoFiber
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- The `OrderIso` between the set of primes lying over a prime ideal `p : Ideal R`,
 and the prime spectrum of `κ(p) ⊗[R] S`. -/
