@@ -390,6 +390,7 @@ def compareHyp (pα : Q(PartialOrder $α)) (e : Q($α)) (ldecl : LocalDecl) :
     | _, _ => pure .none
   | _ => pure .none
 
+/-- A variation on `assumption` when the hypothesis is `e ≠ 0` or `0 ≠ e`. -/
 def compareHypNonzero (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα .none e) := do
   have e' : Q(Prop) := ldecl.type
   let p : Q($e') := .fvar ldecl.fvarId
