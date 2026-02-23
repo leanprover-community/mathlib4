@@ -88,7 +88,7 @@ instance : HasColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
 instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
     HasExactColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
   hasExactColimitsOfShape_of_final _
-    (FinallySmall.fromFilteredFinalModel Φ.fiber.Elementsᵒᵖ)
+    (fromFilteredFinalModel Φ.fiber.Elementsᵒᵖ)
 
 /-- The fiber functor on categories of presheaves that is given by a point of a site. -/
 noncomputable def presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A :=
@@ -162,7 +162,7 @@ variable {P Q : Cᵒᵖ ⥤ A}
 variable [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
 
 instance : PreservesColimitsOfShape Φ.fiber.Elementsᵒᵖ (forget A) :=
-  Functor.Final.preservesColimitsOfShape_of_final (FinallySmall.fromFilteredFinalModel.{w} _) _
+  Functor.Final.preservesColimitsOfShape_of_final (fromFilteredFinalModel.{w} _) _
 
 lemma toPresheafFiber_jointly_surjective (p : ToType (Φ.presheafFiber.obj P)) :
     ∃ (X : C) (x : Φ.fiber.obj X) (z : ToType (P.obj (op X))),
@@ -298,7 +298,7 @@ noncomputable def presheafFiberCompIso :
     (Functor.whiskeringRight _ _ _).obj F ⋙ Φ.presheafFiber ≅
       Φ.presheafFiber ⋙ F :=
   haveI := Functor.Final.preservesColimitsOfShape_of_final
-    (FinallySmall.fromFilteredFinalModel.{w} (Φ.fiber.Elementsᵒᵖ)) F
+    (fromFilteredFinalModel.{w} (Φ.fiber.Elementsᵒᵖ)) F
   Functor.isoWhiskerLeft
     ((Functor.whiskeringLeft _ _ _).obj _) (preservesColimitNatIso F).symm
 
@@ -308,7 +308,7 @@ lemma toPresheafFiber_presheafFiberCompIso_hom_app
     Φ.toPresheafFiber X x (P ⋙ F) ≫ (Φ.presheafFiberCompIso F).hom.app P =
       F.map (Φ.toPresheafFiber X x P) := by
   haveI := Functor.Final.preservesColimitsOfShape_of_final
-    (FinallySmall.fromFilteredFinalModel.{w} (Φ.fiber.Elementsᵒᵖ)) F
+    (fromFilteredFinalModel.{w} (Φ.fiber.Elementsᵒᵖ)) F
   simp only [presheafFiberCompIso]
   exact ι_preservesColimitIso_inv F ((CategoryOfElements.π Φ.fiber).op ⋙ P) _
 
