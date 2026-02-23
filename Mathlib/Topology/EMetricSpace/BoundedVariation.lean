@@ -69,7 +69,7 @@ endpoints in `s`, then the function has finite variation on `s ∩ [a, b]`. -/
 def LocallyBoundedVariationOn (f : α → E) (s : Set α) :=
   ∀ a b, a ∈ s → b ∈ s → BoundedVariationOn f (s ∩ Icc a b)
 
-/-! ## Basic computations of variation -/
+/-! ### Basic computations of variation -/
 
 namespace eVariationOn
 
@@ -437,7 +437,7 @@ theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
     gcongr <;> (apply hI; rw [Finset.mem_range] at hi; lia)
   · simp
 
-/-! # Composition of bounded variation functions with monotone functions -/
+/-! ### Composition of bounded variation functions with monotone functions -/
 
 section Monotone
 
@@ -529,7 +529,7 @@ lemma _root_.BoundedVariationOn.ofDual {f : α → E} {s : Set α} (hf : Bounded
 
 end Monotone
 
-/-! # Left and right limits of bounded variation functions -/
+/-! ### Left and right limits of bounded variation functions -/
 
 /-- If a function is continuous on the left at a point `a`, then its variations on `Iio a` and
 on `Iic a` coincide. We give a version relative to a set `s`. -/
@@ -860,7 +860,7 @@ lemma _root_.BoundedVariationOn.continuousWithinAt_rightLim [TopologicalSpace α
     ContinuousWithinAt f.rightLim (Ici x) x :=
   BoundedVariationOn.continuousWithinAt_leftLim hf.ofDual
 
-/-! # Limits of bounded variation functions as `± ∞` -/
+/-! ### Limits of bounded variation functions as `± ∞` -/
 
 /-- If a function has bounded variation, then the variation on closed semi-infinite
 intervals tends to `0` at `+∞`. -/
@@ -909,7 +909,7 @@ theorem _root_.BoundedVariationOn.tendsto_atBot_limUnder [CompleteSpace E] [hE :
 
 end eVariationOn
 
-/-! ## Variation of monotone functions -/
+/-! ### Variation of monotone functions -/
 
 theorem MonotoneOn.eVariationOn_le {f : α → ℝ} {s : Set α} (hf : MonotoneOn f s) {a b : α}
     (as : a ∈ s) (bs : b ∈ s) : eVariationOn f (s ∩ Icc a b) ≤ ENNReal.ofReal (f b - f a) := by
@@ -1112,7 +1112,7 @@ theorem LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn {f : α → �
   · exact ⟨_, _, variationOnFromTo.monotoneOn h cs, variationOnFromTo.sub_self_monotoneOn h cs,
       (sub_sub_cancel _ _).symm⟩
 
-/-! ## Lipschitz functions and bounded variation -/
+/-! ### Lipschitz functions and bounded variation -/
 
 section LipschitzOnWith
 
