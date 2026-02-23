@@ -195,13 +195,6 @@ theorem comap_ne_bot_of_integral_mem [Nontrivial R] [IsDomain S] {x : S} (x_ne_z
     (x_mem : x ∈ I) (hx : IsIntegral R x) : I.comap (algebraMap R S) ≠ ⊥ :=
   comap_ne_bot_of_algebraic_mem x_ne_zero x_mem hx.isAlgebraic
 
-theorem eq_bot_of_comap_eq_bot' {R S F : Type*} [Ring R] [Semiring S] [FunLike F R S]
-    [RingHomClass F R S] {f : F} (hf : Function.Surjective f) {I : Ideal S} (h : I.comap f = ⊥) :
-    I = ⊥ := by
-  ext x
-  obtain ⟨y, hy⟩ := hf x
-  aesop (add norm [Submodule.eq_bot_iff])
-
 theorem eq_bot_of_comap_eq_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
     (hI : I.comap (algebraMap R S) = ⊥) : I = ⊥ := by
   refine eq_bot_iff.2 fun x hx => ?_
