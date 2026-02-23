@@ -19,51 +19,51 @@ import all Mathlib.Algebra.Group.End -- TODO: needed for `to_additive`
 
 Given a `MulAction` of `G` on `α` and `s : Set α`,
 
-* `SubMulAction.ofFixingSubgroup` is the action
+- `SubMulAction.ofFixingSubgroup` is the action
   of `FixingSubgroup G s` on the complement `sᶜ` of `s`.
 
 - We define equivariant maps that relate various of these `SubMulAction`s
-and permit to manipulate them in a relatively smooth way:
+  and permit to manipulate them in a relatively smooth way:
 
   * `SubMulAction.ofFixingSubgroup_equivariantMap`:
-  the identity map from `sᶜ` to `α`, as an equivariant map
-  relative to the injection of `FixingSubgroup G s` into `G`.
+    the identity map from `sᶜ` to `α`, as an equivariant map
+    relative to the injection of `FixingSubgroup G s` into `G`.
 
-  * `SubMulAction.fixingSubgroupInsertEquiv M a s` : the
-  multiplicative equivalence between `fixingSubgroup M (insert a s)`
-  and `fixingSubgroup (stabilizer M a) s`
+  * `SubMulAction.fixingSubgroupInsertEquiv M a s`: the
+    multiplicative equivalence between `fixingSubgroup M (insert a s)`
+    and `fixingSubgroup (stabilizer M a) s`
 
-  * `SubMulAction.ofFixingSubgroup_insert_map` : the equivariant
-  map between `SubMulAction.ofFixingSubgroup M (Set.insert a s)`
-  and `SubMulAction.ofFixingSubgroup (MulAction.stabilizer M a) s`.
+  * `SubMulAction.ofFixingSubgroup_insert_map`: the equivariant
+    map between `SubMulAction.ofFixingSubgroup M (Set.insert a s)`
+    and `SubMulAction.ofFixingSubgroup (MulAction.stabilizer M a) s`.
 
   * `SubMulAction.fixingSubgroupEquivFixingSubgroup`:
-  the multiplicative equivalence between `SubMulAction.ofFixingSubgroup M s`
-  and `SubMulAction.ofFixingSubgroup M t` induced by `g : M`
-  such that `g • t = s`.
+    the multiplicative equivalence between `SubMulAction.ofFixingSubgroup M s`
+    and `SubMulAction.ofFixingSubgroup M t` induced by `g : M`
+    such that `g • t = s`.
 
   * `SubMulAction.conjMap_ofFixingSubgroup`:
-  the equivariant map between `SubMulAction.ofFixingSubgroup M t`
-  and `SubMulAction.ofFixingSubgroup M s`
-  induced by `g : M` such that `g • t = s`.
+    the equivariant map between `SubMulAction.ofFixingSubgroup M t`
+    and `SubMulAction.ofFixingSubgroup M s`
+    induced by `g : M` such that `g • t = s`.
 
   * `SubMulAction.ofFixingSubgroup_of_inclusion`:
-  the identity from `SubMulAction.ofFixingSubgroup M s`
-  to `SubMulAction.ofFixingSubgroup M t`, when `t ⊆ s`,
-  as an equivariant map.
+    the identity from `SubMulAction.ofFixingSubgroup M s`
+    to `SubMulAction.ofFixingSubgroup M t`, when `t ⊆ s`,
+    as an equivariant map.
 
   * `SubMulAction.ofFixingSubgroup_of_singleton`:
-  the identity map from `SubMulAction.ofStabilizer M a`
-  to `SubMulAction.ofFixingSubgroup M {a}`.
+    the identity map from `SubMulAction.ofStabilizer M a`
+    to `SubMulAction.ofFixingSubgroup M {a}`.
 
   * `SubMulAction.ofFixingSubgroup_of_eq`:
-  the identity from `SubMulAction.ofFixingSubgroup M s`
-  to `SubMulAction.ofFixingSubgroup M t`, when `s = t`,
-  as an equivariant map.
+    the identity from `SubMulAction.ofFixingSubgroup M s`
+    to `SubMulAction.ofFixingSubgroup M t`, when `s = t`,
+    as an equivariant map.
 
   * `SubMulAction.ofFixingSubgroup.append`: appends
-  an enumeration of `ofFixingSubgroup M s` at the end
-  of an enumeration of `s`, as an equivariant map.
+    an enumeration of `ofFixingSubgroup M s` at the end
+    of an enumeration of `s`, as an equivariant map.
 
 -/
 
@@ -104,6 +104,7 @@ variable {M}
 theorem not_mem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
     ↑x ∉ s := x.prop
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_val_image {t : Set (ofFixingSubgroup M s)} :
     Disjoint s (Subtype.val '' t) := by
@@ -439,6 +440,7 @@ section Construction
 
 open Function.Embedding Fin.Embedding
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/
 @[to_additive
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/]
@@ -475,6 +477,7 @@ section TwoCriteria
 
 open MulAction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pretransitivity criterion. -/
 theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
     (hs : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s))
@@ -504,6 +507,7 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
       rw [mul_smul, mul_smul, smul_eq_iff_eq_inv_smul g]
       exact hk _ (Set.mem_smul_set_iff_inv_smul_mem.mp hy.2)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A primitivity criterion -/
 theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
     [Finite α]

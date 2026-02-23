@@ -48,6 +48,7 @@ def MeromorphicNFAt :=
   f =ᶠ[𝓝 x] 0 ∨
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ f =ᶠ[𝓝 x] (· - x) ^ n • g
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A meromorphic function has normal form at `x` iff it is either analytic
 there, or if it has a pole at `x` and takes the default value `0`. -/
 theorem meromorphicNFAt_iff_analyticAt_or :
@@ -557,8 +558,7 @@ of `U`.
 -/
 theorem toMeromorphicNFOn_eqOn_codiscrete (hf : MeromorphicOn f U) :
     f =ᶠ[Filter.codiscreteWithin U] toMeromorphicNFOn f U := by
-  have : U ∈ Filter.codiscreteWithin U := by
-    simp [mem_codiscreteWithin.2]
+  have : U ∈ Filter.codiscreteWithin U := by simp
   filter_upwards [hf.analyticAt_mem_codiscreteWithin, this] with a h₁a h₂a
   simp [toMeromorphicNFOn, hf, ← (toMeromorphicNFAt_eq_self.2 h₁a.meromorphicNFAt).symm]
 

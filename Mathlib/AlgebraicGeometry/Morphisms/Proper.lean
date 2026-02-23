@@ -151,6 +151,7 @@ theorem isField_of_universallyClosed (f : X ⟶ (Spec <| .of K))
   algebraize [F.hom]
   exact isField_of_isIntegral_of_isField' (Field.toIsField K)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is an integral scheme that is universally closed and of finite type over `Spec K`,
 then `Γ(X, ⊤)` is a finite field extension over `K`. -/
 theorem finite_appTop_of_universallyClosed (f : X ⟶ (Spec <| .of K))

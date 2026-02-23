@@ -125,7 +125,7 @@ theorem exists_maximal_isAcyclic_of_le_isAcyclic
     {H : SimpleGraph V} (hHG : H ≤ G) (hH : H.IsAcyclic) :
     ∃ H' : SimpleGraph V, H ≤ H' ∧ Maximal (fun H => H ≤ G ∧ H.IsAcyclic) H' := by
   refine zorn_le_nonempty₀ {H | H ≤ G ∧ H.IsAcyclic} (fun c hcs hc y hy ↦ ?_) _ ⟨hHG, hH⟩
-  refine ⟨sSup c, ⟨?_, ?_⟩, CompleteLattice.le_sSup c⟩
+  refine ⟨sSup c, ⟨?_, ?_⟩, fun _ ↦ le_sSup⟩
   · grind [sSup_le_iff]
   · exact isAcyclic_sSup_of_isAcyclic_directedOn c (by grind) hc.directedOn
 
@@ -348,6 +348,7 @@ lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
     (by simpa [deleteEdges, ← edgeSet_ssubset_edgeSet])
     <| h.prop.connected_delete_edge_of_not_isBridge hbr
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
   refine ⟨fun htree ↦ ⟨htree.isConnected, fun G' h' hle u v hadj ↦ ?_⟩, isTree_of_minimal_connected⟩
   have ⟨p, hp⟩ := h'.exists_isPath u v
@@ -356,6 +357,7 @@ lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
   simp only [edges_map, Hom.coe_ofLE, Sym2.map_id, List.map_id_fun, id_eq] at this
   simp [this, p.adj_of_mem_edges]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Adding an edge to an acyclic graph preserves acyclicity if the endpoints are not reachable.
 -/
@@ -409,6 +411,7 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   simp_rw [s, SetLike.coe, ConnectedComponent.supp_inj, ← ConnectedComponent.mem_supp_iff]
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
 theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hF : F ≤ G) (hF' : F.IsAcyclic) :
     Maximal (fun H => H ≤ G ∧ H.IsAcyclic) F ↔ F.Reachable = G.Reachable := by
@@ -496,6 +499,7 @@ lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
     Nat.card_eq_fintype_card, ← edgeFinset_card]
   exact Finset.card_mono <| by simpa
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isTree_iff_connected_and_card [Finite V] :
     G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V

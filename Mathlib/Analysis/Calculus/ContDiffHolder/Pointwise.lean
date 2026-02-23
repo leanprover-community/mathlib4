@@ -77,6 +77,7 @@ theorem differentiableAt (h : ContDiffPointwiseHolderAt k α f a) (hk : k ≠ 0)
     DifferentiableAt ℝ f a :=
   h.contDiffAt.differentiableAt <| mod_cast hk
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function is $C^{k+(0)}$ at a point if and only if it is $C^k$ at the point. -/
 @[simp]
 theorem zero_exponent_iff : ContDiffPointwiseHolderAt k 0 f a ↔ ContDiffAt ℝ k f a := by
@@ -103,6 +104,7 @@ theorem of_exponent_le (hf : ContDiffPointwiseHolderAt k α f a) (hle : β ≤ �
     · exact le_antisymm (le_trans (mod_cast hle) hα.le) β.2.1
     · exact tendsto_norm_sub_self_nhdsGE a
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_order_lt (hf : ContDiffPointwiseHolderAt k α f a) (hlt : l < k) :
     ContDiffPointwiseHolderAt l β f a :=
   hf.contDiffAt.contDiffPointwiseHolderAt (mod_cast hlt) _
@@ -149,6 +151,7 @@ theorem prodMk {g : E → G} (hf : ContDiffPointwiseHolderAt k α f a)
       simp only [ContinuousMultilinearMap.opNorm_prod, ← Prod.norm_mk]
       exact (hf.isBigO.prod_left hg.isBigO).norm_left
 
+set_option backward.isDefEq.respectTransparency false in
 variable (a) in
 /-- Composition of two $C^{k+(α)}$ functions is a $C^{k+(α)}$ function,
 provided that one of them is differentiable.
@@ -235,6 +238,7 @@ protected theorem id : ContDiffPointwiseHolderAt k α id a :=
 protected theorem const {b : F} : ContDiffPointwiseHolderAt k α (Function.const E b) a :=
   contDiffAt_const.contDiffPointwiseHolderAt (WithTop.coe_lt_top _) α
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The derivative of a $C^{k + (α)}$ function is a $C^{l + (α)}$ function, if `l < k`. -/
 protected theorem fderiv (hf : ContDiffPointwiseHolderAt k α f a) (hl : l < k) :
     ContDiffPointwiseHolderAt l α (fderiv ℝ f) a where

@@ -35,6 +35,7 @@ variable {R A M N O : Type*}
 namespace MonoidAlgebra
 variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Monoid M] [Monoid N] [Monoid O]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R A M) in
 @[to_additive (dont_translate := R A)]
 instance instBialgebra : Bialgebra R A[M] where
@@ -52,6 +53,7 @@ instance instBialgebra : Bialgebra R A[M] where
       LinearMap.compl₁₂_apply, LinearMap.coe_sum, Finset.sum_apply,
       Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)]
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalise to `A[M] →ₐc[R] A[N]` under `Bialgebra R A`
 variable (R) [AddMonoid M] [AddMonoid N] in
 /-- If `f : M → N` is a monoid hom, then `AddMonoidAlgebra.mapDomain f` is a bialgebra hom between
@@ -60,6 +62,7 @@ noncomputable def _root_.AddMonoidAlgebra.mapDomainBialgHom (f : M →+ N) :
     AddMonoidAlgebra R M →ₐc[R] AddMonoidAlgebra R N :=
   .ofAlgHom (AddMonoidAlgebra.mapDomainAlgHom R R f) (by ext; simp) (by ext; simp)
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalise to `A[M] →ₐc[R] A[N]` under `Bialgebra R A`
 variable (R) in
 /-- If `f : M → N` is a monoid hom, then `MonoidAlgebra.mapDomain f` is a bialgebra hom between
