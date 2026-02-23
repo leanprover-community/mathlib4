@@ -107,8 +107,6 @@ theorem ext {h h' : X ≃ₜ Y} (H : ∀ x, h x = h' x) : h = h' :=
 /-- Identity map as a homeomorphism. -/
 @[simps! -fullyApplied apply]
 protected def refl (X : Type*) [TopologicalSpace X] : X ≃ₜ X where
-  continuous_toFun := continuous_id
-  continuous_invFun := continuous_id
   toEquiv := Equiv.refl X
 
 /-- Composition of two homeomorphisms. -/
@@ -329,9 +327,7 @@ variable (X Y) in
 /-- If both `X` and `Y` have a unique element, then `X ≃ₜ Y`. -/
 @[simps!]
 def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
-  { Equiv.ofUnique X Y with
-    continuous_toFun := continuous_const
-    continuous_invFun := continuous_const }
+  { Equiv.ofUnique X Y with }
 
 @[simp]
 theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
