@@ -55,8 +55,6 @@ structure IsConservativeFamilyOfPoints : Prop where
 
 namespace IsConservativeFamilyOfPoints
 
-variable [LocallySmall.{w} C]
-
 section
 
 variable
@@ -125,7 +123,7 @@ lemma jointly_reflect_isLocallySurjective
 
 end
 
-lemma jointly_reflect_ofArrows_mem
+lemma jointly_reflect_ofArrows_mem [LocallySmall.{w} C]
     [HasSheafify J (Type w)] [J.WEqualsLocallyBijective (Type w)]
     (hP : P.IsConservativeFamilyOfPoints)
     {X : C} {ι : Type*} [Small.{w} ι] {U : ι → C} (f : ∀ i, U i ⟶ X) :
@@ -146,7 +144,7 @@ lemma jointly_reflect_ofArrows_mem
     rw [this, ← Sigma.ι_desc (fun i ↦ shrinkYoneda.{w}.map (f i)) i, Functor.map_comp]
     rfl
 
-lemma jointly_reflect_ofArrows_mem_of_small
+lemma jointly_reflect_ofArrows_mem_of_small [LocallySmall.{w} C]
     [HasSheafify J (Type w)] [J.WEqualsLocallyBijective (Type w)]
     (hP : P.IsConservativeFamilyOfPoints) [ObjectProperty.Small.{w} P]
     {X : C} {ι : Type*} {U : ι → C} (f : ∀ i, U i ⟶ X) :
@@ -164,7 +162,7 @@ lemma jointly_reflect_ofArrows_mem_of_small
     · rw [hP.jointly_reflect_ofArrows_mem]
       exact fun Φ x ↦ ⟨_, _, hy ⟨Φ, x⟩⟩
 
-private lemma mk'.isLocallySurjective
+private lemma mk'.isLocallySurjective [LocallySmall.{w} C]
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),
         S ∈ J X)
@@ -220,7 +218,7 @@ family of points if the following condition is satisfied:
 for any sieve `S : Sieve X`, if the family of maps `Φ.map.fiber.map f`
 for all morphisms `f` in the sieve `S` is jointly surjective for any `Φ` in `P`,
 then `S` is a covering sieve for `J`. SGA 4 IV 6.5 (a) -/
-lemma mk' [HasSheafify J (Type w)]
+lemma mk' [HasSheafify J (Type w)] [LocallySmall.{w} C]
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),
         S ∈ J X) :
