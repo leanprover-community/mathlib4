@@ -193,6 +193,7 @@ lemma equiv_apply [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M}
 section
 variable [W.IsCompatibleWithShift M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_shift' {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
     (f : SmallShiftedHom.{w} W X Y a) (n a' : M) (h : a + n = a') :
@@ -203,6 +204,7 @@ lemma equiv_shift' {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     L.commShiftIso_add' h, Functor.CommShift.isoAdd'_inv_app, Iso.inv_hom_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_shift {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
     (f : SmallShiftedHom.{w} W X Y a) (n a' : M) (h : a + n = a') :
@@ -213,6 +215,7 @@ lemma equiv_shift {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
   simp only [Functor.comp_obj, assoc, Iso.inv_hom_id_app, comp_id, Functor.map_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_comp [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Z] [HasSmallLocalizedShiftedHom.{w} W M X Z]
     [HasSmallLocalizedShiftedHom.{w} W M Z Z] {a b c : M}
@@ -226,12 +229,14 @@ lemma equiv_comp [HasSmallLocalizedShiftedHom.{w} W M X Y]
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equiv_mk [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M} (f : ShiftedHom X Y m) :
     equiv W L (.mk _ f) = f.map L :=
   ((L.commShiftIso m).app Y).homToEquiv.symm.injective
     ((Equiv.symm_apply_apply ..).trans (by simp [ShiftedHom.map, mk]))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
     (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) :
@@ -366,6 +371,7 @@ noncomputable def chgUniv {X Y : C} {m : M}
     SmallShiftedHom.{w} W X Y m ≃ SmallShiftedHom.{w''} W X Y m :=
   SmallHom.chgUniv
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_chgUniv (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M] {X Y : C} {m : M}
     [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w''} W M X Y]
@@ -405,6 +411,7 @@ noncomputable def smallShiftedHomMap {m : M} (f : SmallShiftedHom.{w} W₁ X₁ 
   have := hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀.{w''} W₂ M X₂ X₂
   Φ.smallHomMap' eX ((Φ.functor.commShiftIso m).app Y₁ ≪≫ (shiftFunctor _ _).mapIso eY) f
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_smallShiftedHomMap (G : D₁ ⥤ D₂) [G.CommShift M]
     (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G) [NatTrans.CommShift e.hom M]
     {m : M} (f : SmallShiftedHom.{w} W₁ X₁ Y₁ m) :
@@ -428,6 +435,7 @@ lemma equiv_smallShiftedHomMap (G : D₁ ⥤ D₂) [G.CommShift M]
 
 variable [W₁.IsCompatibleWithShift M] [W₂.IsCompatibleWithShift M]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma smallShiftedHomMap_mk {m : M} (f : ShiftedHom X₁ Y₁ m) :
     Φ.smallShiftedHomMap eX eY (.mk _ f) =
@@ -448,6 +456,7 @@ lemma smallShiftedHomMap_mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X₁ ⟶ Y₁)
       .mk₀ _ _ hm₀ (eX.inv ≫ Φ.functor.map f ≫ eY.hom) := by
   simp [SmallShiftedHom.mk₀]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smallShiftedHomMap_comp
     [HasSmallLocalizedShiftedHom.{w} W₁ M Y₁ Z₁] [HasSmallLocalizedShiftedHom.{w''} W₂ M Z₂ Z₂]
     [HasSmallLocalizedShiftedHom.{w''} W₂ M Y₂ Z₂] [HasSmallLocalizedShiftedHom.{w} W₁ M X₁ Z₁]

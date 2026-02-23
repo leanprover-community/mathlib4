@@ -298,6 +298,7 @@ with the product one. Therefore, we do not register it as an instance. Using thi
 pseudoemetric space instance, we will show that the uniform structure is equal (but not defeq) to
 the product one, and then register an instance in which we replace the uniform structure by the
 product one using this pseudoemetric space and `PseudoEMetricSpace.replaceUniformity`. -/
+@[instance_reducible]
 def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
   edist_self := PiLp.edist_self p
   edist_comm := PiLp.edist_comm p
@@ -787,6 +788,7 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_apply (e : ι ≃ ι') (v : PiL
     LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e v = Equiv.piCongrLeft' (fun _ : ι => E) e v :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
     (LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e).symm =
@@ -924,6 +926,7 @@ section Single
 variable (p)
 variable [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnnorm_toLp_single (i : ι) (b : β i) :
     ‖toLp p (Pi.single i b)‖₊ = ‖b‖₊ := by
@@ -1138,6 +1141,7 @@ lemma nnnorm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (
     @NNNorm.nnnorm _ (seminormedAddCommGroupToPi p α).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isBoundedSMulSeminormedAddCommGroupToPi
     [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [SeminormedRing R]
     [∀ i, Module R (α i)] [∀ i, IsBoundedSMul R (α i)] :

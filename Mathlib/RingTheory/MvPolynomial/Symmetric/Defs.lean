@@ -235,6 +235,7 @@ theorem esymmPart_indiscrete (n : ℕ) : esymmPart σ R (.indiscrete n) = esymm 
 theorem map_esymm (n : ℕ) (f : R →+* S) : map f (esymm σ R n) = esymm σ S n := by
   simp_rw [esymm, map_sum, map_prod, map_X]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rename_esymm (n : ℕ) (e : σ ≃ τ) : rename e (esymm σ R n) = esymm τ R n :=
   calc
     rename e (esymm σ R n) = ∑ x ∈ powersetCard n univ, ∏ i ∈ x, X (e i) := by
@@ -283,6 +284,7 @@ theorem support_esymm [DecidableEq σ] [Nontrivial R] (n : ℕ) : (esymm σ R n)
   rw [support_esymm']
   exact biUnion_singleton
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degrees_esymm [Nontrivial R] {n : ℕ} (hpos : 0 < n) (hn : n ≤ Fintype.card σ) :
     (esymm σ R n).degrees = (univ : Finset σ).val := by
   classical

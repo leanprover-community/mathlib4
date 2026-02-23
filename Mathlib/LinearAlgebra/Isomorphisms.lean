@@ -66,16 +66,19 @@ theorem quotKerEquivOfSurjective_symm_apply (hf : Function.Surjective f) (x : M)
     (f.quotKerEquivOfSurjective hf).symm (f x) = Submodule.Quotient.mk x := by
   simp [LinearEquiv.symm_apply_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Linear map from `p` to `p+p'/p'` where `p p'` are submodules of `R` -/
 abbrev subToSupQuotient (p p' : Submodule R M) :
     { x // x ∈ p } →ₗ[R] { x // x ∈ p ⊔ p' } ⧸ comap (Submodule.subtype (p ⊔ p')) p' :=
   (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.inclusion le_sup_left)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comap_leq_ker_subToSupQuotient (p p' : Submodule R M) :
     comap (Submodule.subtype p) (p ⊓ p') ≤ ker (subToSupQuotient p p') := by
   rw [LinearMap.ker_comp, Submodule.inclusion, comap_codRestrict, ker_mkQ, map_comap_subtype]
   exact comap_mono (inf_le_inf_right _ le_sup_left)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Canonical linear map from the quotient `p/(p ∩ p')` to `(p+p')/p'`, mapping `x + (p ∩ p')`
 to `x + p'`, where `p` and `p'` are submodules of an ambient module.
 
@@ -89,12 +92,14 @@ def quotientInfToSupQuotient (p p' : Submodule R M) :
       (↥(p ⊔ p')) ⧸ (comap (p ⊔ p').subtype p') :=
   (comap p.subtype (p ⊓ p')).liftQ (subToSupQuotient p p') (comap_leq_ker_subToSupQuotient p p')
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientInfEquivSupQuotient_injective (p p' : Submodule R M) :
     Function.Injective (quotientInfToSupQuotient p p') := by
   rw [← ker_eq_bot, quotientInfToSupQuotient, ker_liftQ_eq_bot]
   rw [ker_comp, ker_mkQ]
   exact fun ⟨x, hx1⟩ hx2 => ⟨hx1, hx2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
     Function.Surjective (quotientInfToSupQuotient p p') := by
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
@@ -102,6 +107,7 @@ theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
   use ⟨y, hy⟩; apply (Submodule.Quotient.eq _).2
   simp only [mem_comap, map_sub, coe_subtype, coe_inclusion, sub_add_cancel_left, neg_mem_iff, hz]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as a linear isomorphism.
 
@@ -120,12 +126,14 @@ theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
     ⇑(quotientInfToSupQuotient p p') = quotientInfEquivSupQuotient p p' :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
     let map := inclusion (le_sup_left : p ≤ p ⊔ p')
     quotientInfEquivSupQuotient p p' (Submodule.Quotient.mk x) =
       @Submodule.Quotient.mk R (p ⊔ p' : Submodule R M) _ _ _ (comap (p ⊔ p').subtype p') (map x) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : ↥(p ⊔ p'))
     (hx : (x : M) ∈ p) :
     (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) =
@@ -134,10 +142,12 @@ theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : 
     rw [quotientInfEquivSupQuotient_apply_mk, inclusion_apply]
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M} {x : ↥(p ⊔ p')} :
     (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) = 0 ↔ (x : M) ∈ p' :=
   (LinearEquiv.symm_apply_eq _).trans <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x : ↥(p ⊔ p')}
     (hx : (x : M) ∈ p') : (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x)
     = 0 :=

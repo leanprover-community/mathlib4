@@ -195,8 +195,6 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
 
 variable [Finite σ]
 
-open scoped BigOperators
-
 /-- The **Combinatorial Nullstellensatz**.
 
 If `f` vanishes at every point `x : σ → R` such that `x s ∈ S s` for all `s`,
@@ -243,6 +241,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     apply Finset.prod_eq_zero (hx i)
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Combinatorial Nullstellensatz**.
 
 Given a multi-index `t : σ →₀ ℕ` such that `t s < (S s).card` for all `s`,

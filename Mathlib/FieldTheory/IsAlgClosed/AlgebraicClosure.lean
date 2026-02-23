@@ -160,6 +160,7 @@ instance instField : Field (AlgebraicClosure k) where
   qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
     ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Monics.map_eq_prod {f : Monics k} :
     f.1.map (algebraMap k (AlgebraicClosure k)) =
       ∏ i, map (Ideal.Quotient.mk <| maxIdeal k) (X - C (MvPolynomial.X ⟨f, i⟩)) := by
@@ -169,6 +170,7 @@ theorem Monics.map_eq_prod {f : Monics k} :
     ← coeff_sub, ← Polynomial.map_sub, ← subProdXSubC, coeff_map, Ideal.Quotient.eq_zero_iff_mem]
   refine le_maxIdeal _ (Ideal.subset_span ⟨⟨f, _⟩, rfl⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
   ⟨fun z =>
     IsIntegral.isAlgebraic <| by
@@ -200,7 +202,7 @@ instance [CharZero k] : CharZero (AlgebraicClosure k) :=
 instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
   charP_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k))) p
 
-instance {L : Type*} [Field k] [Field L] [Algebra k L] [Algebra.IsAlgebraic k L] :
+instance {L : Type*} [Field L] [Algebra k L] [Algebra.IsAlgebraic k L] :
     IsAlgClosure k (AlgebraicClosure L) where
   isAlgebraic := .trans k L _
   isAlgClosed := inferInstance
@@ -211,6 +213,7 @@ namespace IntermediateField
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E : IntermediateField K L)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsAlgebraic K E] : IsAlgClosure K (AlgebraicClosure E) :=
   ⟨AlgebraicClosure.isAlgClosed E, Algebra.IsAlgebraic.trans K E (AlgebraicClosure E)⟩
 

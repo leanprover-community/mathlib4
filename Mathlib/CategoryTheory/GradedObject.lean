@@ -5,7 +5,6 @@ Authors: Kim Morrison, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Algebra.Group.Int.Defs
@@ -182,6 +181,7 @@ theorem eqToHom_apply {β : Type w} {X Y : β → C} (h : X = Y) (b : β) :
   subst h
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between β-graded objects and γ-graded objects,
 given an equivalence between β and γ.
 -/
@@ -272,22 +272,6 @@ instance : (total β C).Faithful where
     replace w : f i ≫ colimit.ι (Discrete.functor Y) ⟨i⟩ =
       g i ≫ colimit.ι (Discrete.functor Y) ⟨i⟩ := by simpa
     exact Mono.right_cancellation _ _ w
-
-end GradedObject
-
-namespace GradedObject
-
-noncomputable section
-
-variable (β : Type)
-variable (C : Type (u + 1)) [LargeCategory C] [HasForget C] [HasCoproducts.{0} C]
-  [HasZeroMorphisms C]
-
-instance : HasForget (GradedObject β C) where forget := total β C ⋙ forget C
-
-instance : HasForget₂ (GradedObject β C) C where forget₂ := total β C
-
-end
 
 end GradedObject
 

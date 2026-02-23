@@ -75,6 +75,7 @@ lemma betaPDF_of_pos_lt_one {α β x : ℝ} (hx_pos : 0 < x) (hx_lt : x < 1) :
     betaPDF α β x = ENNReal.ofReal ((1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1)) := by
   rw [betaPDF_eq, if_pos ⟨hx_pos, hx_lt⟩]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lintegral_betaPDF {α β : ℝ} :
     ∫⁻ x, betaPDF α β x =
       ∫⁻ (x : ℝ) in Ioo 0 1, ENNReal.ofReal (1 / beta α β * x ^ (α - 1) * (1 - x) ^ (β - 1)) := by
@@ -103,6 +104,7 @@ lemma measurable_betaPDFReal (α β : ℝ) : Measurable (betaPDFReal α β) :=
 lemma stronglyMeasurable_betaPDFReal (α β : ℝ) :
     StronglyMeasurable (betaPDFReal α β) := (measurable_betaPDFReal α β).stronglyMeasurable
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pdf of the beta distribution integrates to 1. -/
 @[simp]
 lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :

@@ -775,6 +775,7 @@ variable [CommRing R] [CommRing S] [Algebra R S] (x : S) (R)
 
 open Algebra Polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
 If `R` is an integrally closed domain and `x` is integral, this is an isomorphism,
 see `minpoly.equivAdjoin`. -/
@@ -784,18 +785,14 @@ def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S)
 
 variable {R x}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Minpoly.coe_toAdjoin :
     ⇑(Minpoly.toAdjoin R x) = liftAlgHom (minpoly R x) (Algebra.ofId R <| adjoin R {x})
       ⟨x, self_mem_adjoin_singleton R x⟩
       (by change aeval _ _ = _; simp [← Subalgebra.coe_eq_zero, aeval_subalgebra_coe]) := rfl
 
-@[deprecated (since := "2025-07-21")] alias Minpoly.toAdjoin_apply := Minpoly.coe_toAdjoin
-@[deprecated (since := "2025-07-21")] alias Minpoly.toAdjoin_apply' := Minpoly.coe_toAdjoin
-
 theorem Minpoly.coe_toAdjoin_mk_X : Minpoly.toAdjoin R x (mk (minpoly R x) X) = x := by simp
-
-@[deprecated (since := "2025-07-21")] alias Minpoly.toAdjoin.apply_X := Minpoly.coe_toAdjoin_mk_X
 
 variable (R x)
 
@@ -869,6 +866,7 @@ open Ideal DoubleQuot Polynomial
 
 variable [CommRing R] (I : Ideal R) (f : R[X])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `R[α]/(I[α]) ≅ R[α]/((I[x] ⊔ (f)) / (f))` for `α` a root of
 `f : R[X]` and `I : Ideal R`.
 
@@ -883,6 +881,7 @@ theorem quotMapOfEquivQuotMapCMapSpanMk_mk (x : AdjoinRoot f) :
     quotMapOfEquivQuotMapCMapSpanMk I f (Ideal.Quotient.mk (I.map (of f)) x) =
       Ideal.Quotient.mk (Ideal.map (Ideal.Quotient.mk (span {f})) (I.map (C : R →+* R[X]))) x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 --this lemma should have the simp tag but this causes a lint issue
 theorem quotMapOfEquivQuotMapCMapSpanMk_symm_mk (x : AdjoinRoot f) :
     (quotMapOfEquivQuotMapCMapSpanMk I f).symm
@@ -955,6 +954,7 @@ theorem quotAdjoinRootEquivQuotPolynomialQuot_mk_of (p : R[X]) :
       Ideal.Quotient.mk (span ({f.map (Ideal.Quotient.mk I)} : Set (R ⧸ I)[X]))
       (p.map (Ideal.Quotient.mk I)) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
     (quotAdjoinRootEquivQuotPolynomialQuot I f).symm
@@ -1061,6 +1061,7 @@ theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
   exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `p : R[X]` is monic, then there exists a finite free extension of `R` that splits `p`. -/
 lemma Polynomial.Monic.exists_splits_map.{u}
     {R : Type u} [CommRing R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :

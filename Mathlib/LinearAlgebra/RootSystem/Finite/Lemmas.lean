@@ -46,6 +46,7 @@ variable (P : RootPairing ι R M N) [Finite ι]
 local notation "Φ" => range P.root
 local notation "α" => P.root
 
+set_option backward.isDefEq.respectTransparency false in
 /-- SGA3 XXI Prop. 2.3.1 -/
 lemma coxeterWeightIn_le_four (S : Type*)
     [CommRing S] [LinearOrder S] [IsStrictOrderedRing S] [Algebra S R] [FaithfulSMul S R]
@@ -65,12 +66,8 @@ lemma coxeterWeightIn_le_four (S : Type*)
   rw [hsj'] at hsj
   have cs : 4 * lij ^ 2 ≤ 4 * (li * lj) := by
     rw [mul_le_mul_iff_right₀ four_pos]
-    refine (P.posRootForm S).posForm.apply_sq_le_of_symm ?_ (P.posRootForm S).isSymm_posForm ri rj
-    intro x
-    obtain ⟨s, hs, hs'⟩ := P.exists_ge_zero_eq_rootForm S x x.property
-    change _ = (P.posRootForm S).form x x at hs'
-    rw [(P.posRootForm S).algebraMap_apply_eq_form_iff] at hs'
-    rwa [← hs']
+    exact (P.posRootForm S).posForm.apply_sq_le_of_symm (zero_le_posForm _ _ ·)
+      (P.posRootForm S).isSymm_posForm ri rj
   have key : 4 • lij ^ 2 = P.coxeterWeightIn S i j • (li * lj) := by
     apply algebraMap_injective S R
     simpa [map_ofNat, lij, posRootForm, ri, rj, li, lj] using

@@ -90,6 +90,8 @@ lemma toSubmodule_injective : (toSubmodule : NonUnitalSubalgebra R A → Submodu
 lemma toSubmodule_inj {s t : NonUnitalSubalgebra R A} : s.toSubmodule = t.toSubmodule ↔ s = t :=
   toSubmodule_injective.eq_iff
 
+instance : PartialOrder (NonUnitalSubalgebra R A) := .ofSetLike (NonUnitalSubalgebra R A) A
+
 /-- The actual `NonUnitalSubalgebra` obtained from an element of a type satisfying
 `NonUnitalSubsemiringClass` and `SMulMemClass`. -/
 @[simps]
@@ -905,14 +907,14 @@ theorem mem_prod {S : NonUnitalSubalgebra R A} {S₁ : NonUnitalSubalgebra R B} 
     x ∈ prod S S₁ ↔ x.1 ∈ S ∧ x.2 ∈ S₁ :=
   Set.mem_prod
 
+theorem prod_mono {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSubalgebra R B} :
+    S ≤ T → S₁ ≤ T₁ → prod S S₁ ≤ prod T T₁ :=
+  Set.prod_mono
+
 variable [IsScalarTower R A A] [SMulCommClass R A A] [IsScalarTower R B B] [SMulCommClass R B B]
 
 @[simp]
 theorem prod_top : (prod ⊤ ⊤ : NonUnitalSubalgebra R (A × B)) = ⊤ := by ext; simp
-
-theorem prod_mono {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSubalgebra R B} :
-    S ≤ T → S₁ ≤ T₁ → prod S S₁ ≤ prod T T₁ :=
-  Set.prod_mono
 
 @[simp]
 theorem prod_inf_prod {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSubalgebra R B} :
@@ -920,16 +922,6 @@ theorem prod_inf_prod {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSuba
   SetLike.coe_injective Set.prod_inter_prod
 
 end Prod
-
-variable [IsScalarTower R A A] [SMulCommClass R A A]
-
-instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra R A)] :
-    Subsingleton (A →ₙₐ[R] B) :=
-  ⟨fun f g =>
-    NonUnitalAlgHom.ext fun a =>
-      have : a ∈ (⊥ : NonUnitalSubalgebra R A) :=
-        Subsingleton.elim (⊤ : NonUnitalSubalgebra R A) ⊥ ▸ mem_top
-      (mem_bot.mp this).symm ▸ (map_zero f).trans (map_zero g).symm⟩
 
 
 /-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
@@ -969,6 +961,16 @@ theorem coe_inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) (s : S) :
     (inclusion h s : A) = s :=
   rfl
 
+variable [IsScalarTower R A A] [SMulCommClass R A A]
+
+instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra R A)] :
+    Subsingleton (A →ₙₐ[R] B) :=
+  ⟨fun f g =>
+    NonUnitalAlgHom.ext fun a =>
+      have : a ∈ (⊥ : NonUnitalSubalgebra R A) :=
+        Subsingleton.elim (⊤ : NonUnitalSubalgebra R A) ⊥ ▸ mem_top
+      (mem_bot.mp this).symm ▸ (map_zero f).trans (map_zero g).symm⟩
+
 section SuprLift
 
 variable {ι : Sort*}
@@ -984,6 +986,7 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Define an algebra homomorphism on a directed supremum of non-unital subalgebras by defining
 it on each non-unital subalgebra, and proving that it agrees on the intersection of
 non-unital subalgebras. -/
@@ -1021,6 +1024,7 @@ variable [Nonempty ι] {K : ι → NonUnitalSubalgebra R A} {dir : Directed (· 
   {f : ∀ i, K i →ₙₐ[R] B} {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
   {T : NonUnitalSubalgebra R A} {hT : T = iSup K}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
@@ -1035,6 +1039,7 @@ theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
   ext
   simp only [NonUnitalAlgHom.comp_apply, iSupLift_inclusion]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
     iSupLift K dir f hf T hT ⟨x, hx⟩ = f i x := by
@@ -1042,6 +1047,7 @@ theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
   dsimp [iSupLift]
   apply Set.iUnionLift_mk
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iSupLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
     iSupLift K dir f hf T hT x = f i ⟨x, hx⟩ := by
   subst hT
@@ -1099,6 +1105,7 @@ end NonUnitalNonAssocSemiring
 variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
   [SMulCommClass R A A]
 
+set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, as the `npow` field isn't present in the non-unital case.
 example : center.instNonUnitalCommSemiring.toNonUnitalSemiring =
     NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) := by
