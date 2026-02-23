@@ -35,6 +35,10 @@ gives the correct characterization of the prime ideals of any minimal primary de
 non-Noetherian setting (see Theorem 4.5 in Atiyah-Macdonald). If the ring `R` is assumed to be
 Noetherian, then the radical can be dropped from the definition (see `isAssociatedPrime_iff`).
 
+See also [Stacks: Lemma 0566](https://stacks.math.columbia.edu/tag/0566) which states that a
+prime `p` is minimal among primes containing an annihilator an element of `M` if and only if
+`p R_p` is an associated prime of `M_p` (including the radical).
+
 ## TODO
 
 Generalize this to a non-commutative setting once there are annihilator for non-commutative rings.
