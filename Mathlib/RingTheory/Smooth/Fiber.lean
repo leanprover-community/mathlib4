@@ -247,6 +247,7 @@ lemma Smooth.of_formallySmooth_fiber [Algebra.FinitePresentation R S]
   refine ⟨smoothLocus_eq_univ_iff.mp (Set.eq_univ_iff_forall.mpr fun q ↦ ?_), ‹_›⟩
   exact .of_formallySmooth_fiber (q.asIdeal.under R) _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] FormallyEtale.of_formallyUnramified_of_field in
 @[stacks 08WD "(3) => (1)"]
 lemma Etale.of_formallyUnramified_of_flat {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
