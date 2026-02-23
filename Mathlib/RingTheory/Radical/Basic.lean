@@ -5,14 +5,9 @@ Authors: Jineon Baek, Seewoo Lee, Bhavik Mehta, Arend Mellendijk
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Squarefree.Basic
-public import Mathlib.Data.Nat.Prime.Int
-public import Mathlib.Data.Nat.PrimeFin
-public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
 # Radical of an element of a unique factorization normalization monoid
@@ -20,6 +15,8 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 This file defines the radical of an element `a` of a unique factorization normalization
 monoid as the product of normalized prime factors of `a` without duplication.
 This is different from the radical of an ideal.
+
+Lemmas relating to natural numbers and integers are in `Mathlib.RingTheory.Radical.NatInt`.
 
 ## Main declarations
 
@@ -41,20 +38,6 @@ This is different from the radical of an ideal.
 - `EuclideanDomain.divRadical_mul`: `divRadical` of a product is the product of `divRadical`s.
 - `IsCoprime.divRadical`: `divRadical` of coprime elements are coprime.
 
-### For natural numbers
-
-- `UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors`: The prime factors of a natural number
-  are the same as the prime factors defined in `Nat.primeFactors`.
-- `Nat.radical_eq_prod_primeFactors`: The radical is computable for natural numbers.
-- `Nat.radical_le_self_iff`: if `n ≠ 0`, `radical n ≤ n`.
-- `Nat.two_le_radical_iff`: `2 ≤ n.radical` iff `2 ≤ n`.
-
-### For integers
-
-- `UniqueFactorizationMonoid.primeFactors_eq_primeFactors_natAbs`: The prime factors of an integer
-  are the same as the prime factors of its absolute value.
-- `Int.radical_eq_prod_primeFactors`: The radical is computable for integers.
-
 ## TODO
 
 - Make a comparison with `Ideal.radical`. Especially, for principal ideal,
@@ -63,8 +46,6 @@ This is different from the radical of an ideal.
 
 @[expose] public section
 
-noncomputable section
-
 namespace UniqueFactorizationMonoid
 
 variable {M : Type*} [CommMonoidWithZero M] [NormalizationMonoid M]
@@ -72,7 +53,7 @@ variable {M : Type*} [CommMonoidWithZero M] [NormalizationMonoid M]
 
 open scoped Classical in
 /-- The finite set of prime factors of an element in a unique factorization monoid. -/
-def primeFactors (a : M) : Finset M :=
+noncomputable def primeFactors (a : M) : Finset M :=
   (normalizedFactors a).toFinset
 
 lemma mem_primeFactors : a ∈ primeFactors b ↔ a ∈ normalizedFactors b := by
@@ -156,11 +137,9 @@ theorem primeFactors_mul_eq_disjUnion (hc : IsRelPrime a b) :
   classical
   rw [Finset.disjUnion_eq_union, primeFactors_mul_eq_union ha hb]
 
-/--
-Radical of an element `a` in a unique factorization monoid is the product of
-the prime factors of `a`.
--/
-def radical (a : M) : M :=
+/-- The radical of an element `a` in a unique factorization monoid is the product of
+the prime factors of `a`. -/
+noncomputable def radical (a : M) : M :=
   (primeFactors a).prod id
 
 @[simp] theorem radical_zero : radical (0 : M) = 1 := by simp [radical]
@@ -378,7 +357,7 @@ variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactoriz
   {a b u x : E}
 
 /-- Division of an element by its radical in a Euclidean domain. -/
-def divRadical (a : E) : E := a / radical a
+noncomputable def divRadical (a : E) : E := a / radical a
 
 theorem radical_mul_divRadical : radical a * divRadical a = a := by
   rw [divRadical, ← EuclideanDomain.mul_div_assoc _ radical_dvd_self,
@@ -415,92 +394,3 @@ theorem _root_.IsCoprime.divRadical {a b : E} (h : IsCoprime a b) :
   exact h.of_mul_left_right.of_mul_right_right
 
 end EuclideanDomain
-
-section Nat
-
-lemma UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors :
-    primeFactors = Nat.primeFactors := by
-  ext n : 1
-  rw [primeFactors, Nat.factors_eq, Nat.primeFactors]
-  -- this convert is necessary because of the different DecidableEq instances
-  convert List.toFinset_coe _
-
-namespace Nat
-
-variable {n : ℕ}
-
-lemma radical_eq_prod_primeFactors : radical n = ∏ p ∈ n.primeFactors, p := by
-  simp [radical, primeFactors_eq_natPrimeFactors]
-
-lemma radical_pos (n) : 0 < radical n := pos_of_ne_zero radical_ne_zero
-
-@[simp] lemma one_lt_radical_iff : 1 < radical n ↔ 1 < n := by
-  have pp (p) (h : p ∈ n.primeFactors) : 1 ≤ p := pos_of_mem_primeFactors h
-  rw [radical_eq_prod_primeFactors, ← @nonempty_primeFactors n, Finset.one_lt_prod_iff_of_one_le pp]
-  exact ⟨fun ⟨p, h⟩ ↦ ⟨p, h.1⟩, fun ⟨p, h⟩ ↦ ⟨p, h, (mem_primeFactors.mp h).1.one_lt⟩⟩
-
-@[simp] lemma two_le_radical_iff : 2 ≤ radical n ↔ 2 ≤ n := one_lt_radical_iff
-
-@[simp] lemma radical_le_one_iff : radical n ≤ 1 ↔ n ≤ 1 := by
-  simpa only [not_lt] using one_lt_radical_iff.not
-
-@[simp] lemma radical_eq_one_iff : radical n = 1 ↔ n ≤ 1 := by
-  rw [← radical_le_one_iff]
-  grind [radical_pos n]
-
-@[simp] lemma radical_le_self_iff : radical n ≤ n ↔ n ≠ 0 :=
-  ⟨by aesop, fun h ↦ Nat.le_of_dvd (by lia) radical_dvd_self⟩
-
-end Nat
-
-end Nat
-
-section Int
-
-variable {z : ℤ}
-
-lemma UniqueFactorizationMonoid.primeFactors_eq_primeFactors_natAbs :
-    primeFactors z = z.natAbs.primeFactors.map Nat.castEmbedding := by
-  obtain rfl | hz := eq_or_ne z 0; · simp
-  ext p
-  rw [mem_primeFactors, mem_normalizedFactors_iff' hz, irreducible_iff_prime,
-    Int.nonneg_iff_normalize_eq_self, Finset.mem_map, Function.Embedding.coeFn_mk]
-  refine ⟨fun ⟨pp, nnp, dp⟩ ↦ ?_, fun h ↦ ?_⟩
-  · lift p to ℕ using nnp
-    rw [← Nat.prime_iff_prime_int] at pp
-    rw [Int.natCast_dvd] at dp
-    exact ⟨p, by simp_all, rfl⟩
-  · simp_rw [Nat.mem_primeFactors, Function.Embedding.toFun_eq_coe, Nat.castEmbedding_apply] at h
-    obtain ⟨n, ⟨pn, dn, -⟩, rfl⟩ := h
-    rw [Int.natCast_dvd, ← Nat.prime_iff_prime_int]
-    exact ⟨pn, by simp, dn⟩
-
-namespace Int
-
-lemma radical_eq_radical_natAbs : radical z = radical z.natAbs := by
-  rw [Nat.radical_eq_prod_primeFactors, radical]
-  simp [primeFactors_eq_primeFactors_natAbs]
-
-lemma radical_eq_prod_primeFactors : radical z = ∏ p ∈ z.natAbs.primeFactors, p := by
-  rw [radical_eq_radical_natAbs, Nat.radical_eq_prod_primeFactors]
-
-lemma radical_pos (z : ℤ) : 0 < radical z := by
-  rw [radical_eq_radical_natAbs, natCast_pos]
-  exact Nat.radical_pos _
-
-@[simp] lemma one_lt_radical_iff : 1 < radical z ↔ 1 < z.natAbs := by
-  rw [radical_eq_radical_natAbs, Nat.one_lt_cast]
-  exact Nat.one_lt_radical_iff
-
-@[simp] lemma two_le_radical_iff : 2 ≤ radical z ↔ 2 ≤ z.natAbs := one_lt_radical_iff
-
-@[simp] lemma radical_le_one_iff : radical z ≤ 1 ↔ z.natAbs ≤ 1 := by
-  simpa only [not_lt] using one_lt_radical_iff.not
-
-@[simp] lemma radical_eq_one_iff : radical z = 1 ↔ z.natAbs ≤ 1 := by
-  rw [← radical_le_one_iff]
-  grind [radical_pos z]
-
-end Int
-
-end Int

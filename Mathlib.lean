@@ -6450,7 +6450,8 @@ public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.QuasiFinite.Polynomial
 public import Mathlib.RingTheory.QuasiFinite.Weakly
 public import Mathlib.RingTheory.QuotSMulTop
-public import Mathlib.RingTheory.Radical
+public import Mathlib.RingTheory.Radical.Basic
+public import Mathlib.RingTheory.Radical.NatInt
 public import Mathlib.RingTheory.ReesAlgebra
 public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.Depth
