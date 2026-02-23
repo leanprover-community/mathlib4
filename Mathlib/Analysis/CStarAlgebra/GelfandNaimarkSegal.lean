@@ -188,6 +188,7 @@ private lemma gnsNonUnitalStarAlgHom_map_one : f.gnsNonUnitalStarAlgHom 1 = 1 :=
   | hp => apply isClosed_eq <;> fun_prop
   | ih b => simp [gnsNonUnitalStarAlgHom]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The unital ⋆-homomorphism/⋆-representation of `A` into the algebra of bounded operators on a Hilbert
 space that is constructed from a positive linear functional `f` on a unital C⋆-algebra.
