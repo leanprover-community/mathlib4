@@ -24,6 +24,8 @@ heavier imports.
 
 @[expose] public section
 
+noncomputable section
+
 /-- The class of non-unital (complex) C⋆-algebras. -/
 class NonUnitalCStarAlgebra (A : Type*) extends NonUnitalNormedRing A, StarRing A, CompleteSpace A,
     CStarRing A, NormedSpace ℂ A, IsScalarTower ℂ A A, SMulCommClass ℂ A A, StarModule ℂ A where

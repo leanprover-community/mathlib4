@@ -54,8 +54,6 @@ set_option backward.isDefEq.respectTransparency false
 variable [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)]
   [Algebra.FormallySmooth 𝓀[R] (𝓀[R] ⊗[R] S)]
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
-set_option backward.whnf.reducibleClassField false in
 attribute [local irreducible] KaehlerDifferential in
 attribute [local instance] TensorProduct.rightAlgebra in
 /--

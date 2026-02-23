@@ -171,7 +171,8 @@ def toExtension : Extension R S where
   algebraMap_σ := by simp
 
 /-- Transport generators along an algebra isomorphism. -/
-def ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
+noncomputable def ofAlgEquiv
+    (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     Generators R T ι where
   val := e ∘ P.val
   σ' := P.σ ∘ e.symm
