@@ -62,26 +62,26 @@ info:
 @AlgEquiv K L L
   (@Distrib.toAdd L
     (@NonUnitalNonAssocSemiring.toDistrib L
-      (@NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring L
-        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocCommSemiring L
+      (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring L
+        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing L
           (@NonUnitalCommRing.toNonUnitalNonAssocCommRing L
             (@CommRing.toNonUnitalCommRing L (@Field.toCommRing L inst✝¹)))))))
   (@Distrib.toAdd L
     (@NonUnitalNonAssocSemiring.toDistrib L
-      (@NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring L
-        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocCommSemiring L
+      (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring L
+        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing L
           (@NonUnitalCommRing.toNonUnitalNonAssocCommRing L
             (@CommRing.toNonUnitalCommRing L (@Field.toCommRing L inst✝¹)))))))
   (@Distrib.toMul L
     (@NonUnitalNonAssocSemiring.toDistrib L
-      (@NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring L
-        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocCommSemiring L
+      (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring L
+        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing L
           (@NonUnitalCommRing.toNonUnitalNonAssocCommRing L
             (@CommRing.toNonUnitalCommRing L (@Field.toCommRing L inst✝¹)))))))
   (@Distrib.toMul L
     (@NonUnitalNonAssocSemiring.toDistrib L
-      (@NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring L
-        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocCommSemiring L
+      (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring L
+        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing L
           (@NonUnitalCommRing.toNonUnitalNonAssocCommRing L
             (@CommRing.toNonUnitalCommRing L (@Field.toCommRing L inst✝¹)))))))
   (@Algebra.toSMul K L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
