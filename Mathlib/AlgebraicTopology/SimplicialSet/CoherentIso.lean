@@ -140,10 +140,12 @@ def equiv : (WalkingIso.{w} ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
     · rintro (_ | _) <;> rfl
     · rintro (_ | _) (_ | _) (_) <;>
     ( rw [heq_eq_eq]
-      unfold fromIso toIso
       dsimp
       try rw [← F.map_id]
       rfl )
+
+/- TODO: Extend the above to an equivalence of categories between
+the functor category `WalkingIso.{w} ⥤ C` and `Core C`. -/
 
 end
 
