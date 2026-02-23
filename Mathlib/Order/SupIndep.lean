@@ -418,8 +418,8 @@ lemma iSupIndep.injOn_iInf {β : ι → Type*} (t : (i : ι) → β i → α) (h
     InjOn (fun b : (i : ι) → β i ↦ ⨅ i, t i (b i)) {b | ⨅ i, t i (b i) ≠ ⊥} := by
   intro b₁ hb₁ b₂ hb₂ h_eq
   beta_reduce at h_eq
-  by_contra h_neq
-  obtain ⟨i, hi⟩ : ∃ i, b₁ i ≠ b₂ i := Function.ne_iff.mp h_neq
+  by_contra h_ne
+  obtain ⟨i, hi⟩ : ∃ i, b₁ i ≠ b₂ i := Function.ne_iff.mp h_ne
   have := calc
     ⨅ i, t i (b₁ i) ≤ t i (b₁ i) ⊓ t i (b₂ i) := le_inf (iInf_le ..) (h_eq ▸ iInf_le ..)
     _ = ⊥ := (ht i (b₁ i) |>.mono_right <| le_iSup₂_of_le (b₂ i) hi.symm le_rfl).eq_bot
