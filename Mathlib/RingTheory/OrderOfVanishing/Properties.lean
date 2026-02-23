@@ -287,7 +287,7 @@ lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
     Ring.ordFrac R f ≤ Ring.ordFrac R (a • f) := by
   by_cases j : f = 0
   · simp[j]
-  suffices (ordFrac R) f ≤ (ordFrac R) ((algebraMap S K) a • f) by simp_all only [ne_eq,
+  suffices ordFrac R f ≤ ordFrac R (algebraMap S K a • f) by simp_all only [ne_eq,
     algebraMap_smul]
   simp only [smul_eq_mul, map_mul]
   suffices (ordFrac R) ((algebraMap S K) a) ≥ 1 by exact le_mul_of_one_le_left' this
