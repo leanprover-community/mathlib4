@@ -135,6 +135,7 @@ lemma exists_nhd {X : Scheme.{u}} (f : X ⟶ S) [LocallyOfFinitePresentation f] 
   exact ⟨U, hx, P, ⟨asIso (toSpecΓ U) ≪≫ Scheme.Spec.mapIso U.1.topIso.op.symm ≪≫
     Scheme.Spec.mapIso e.toCommRingCatIso.op⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_subring
     {A : CommRingCat.{u}} (f : Spec (.of A) ⟶ S) [LocallyOfFinitePresentation f] :
     ∃ (n : ℕ) (P : Fin n → S.FinitelyPresentedOverAffineOpen)
@@ -165,12 +166,15 @@ lemma exists_subring
     obtain ⟨a, rfl⟩ := (ΓSpecIso A).commRingCatIsoToRingEquiv.surjective a
     simp only [AddSubgroup.mem_bot, EmbeddingLike.map_eq_zero_iff]
     refine (openCoverOfIsOpenCover _ (U ∘ α) (.mk (by aesop))).ext_elem _ _ (fun i ↦ ?_)
-    replace ha : (ΓSpecIso _).hom (((iso (α i)).inv ≫ (U (α i)).ι).appTop a) = 0 := by
-      simpa [← ha] using ConcreteCategory.congr_hom (ΓSpecIso_naturality
-        (Spec.preimage ((iso (α i)).inv ≫ (U (α i)).ι))) a
+    replace ha : ((iso (α i)).inv ≫ (U (α i)).ι).appTop a = 0 :=
+      (ΓSpecIso _).commRingCatIsoToRingEquiv.injective (by
+        simpa [← ha] using ConcreteCategory.congr_hom (ΓSpecIso_naturality
+          (Spec.preimage ((iso (α i)).inv ≫ (U (α i)).ι))) a)
+    replace ha : (U (α i)).ι.appTop a = 0 :=
+      (iso (α i)).inv.bijective_appTop_of_isIso.injective (by simpa using ha)
     apply (asIso (iso (α i)).inv.appTop ≪≫
       ΓSpecIso _).commRingCatIsoToRingEquiv.injective
-    simpa [-EmbeddingLike.map_eq_zero_iff] using ha
+    simpa [-EmbeddingLike.map_eq_zero_iff]
   /- The expected subring is given by the range of `φ`. -/
   exact ⟨n, P ∘ α, RingHom.range φ, ⟨RingEquiv.toCommRingCatIso
     (RingEquiv.ofBijective φ.rangeRestrict
@@ -263,7 +267,7 @@ instance : HasPullbacks S.AffineEtale :=
 variable (S) in
 /-- The topology on the small affine étale site is the topology induced by `Spec` from
 the small étale site. -/
-def topology : GrothendieckTopology S.AffineEtale :=
+noncomputable def topology : GrothendieckTopology S.AffineEtale :=
   (AffineEtale.Spec S).inducedTopology S.smallEtaleTopology
 
 instance : Functor.IsDenseSubsite (topology S) S.smallEtaleTopology (AffineEtale.Spec S) := by
@@ -291,9 +295,13 @@ variable {A : Type u'} [Category.{u} A]
 instance : HasSheafify (AffineEtale.topology S) A :=
     hasSheafifyEssentiallySmallSite.{u} _ _
 
+instance : ((AffineEtale.Spec S).sheafPushforwardContinuous A
+    (AffineEtale.topology S) S.smallEtaleTopology).IsEquivalence :=
+  Functor.isEquivalence_of_isOneHypercoverDense _ _ _ _
+
 instance : HasSheafify S.smallEtaleTopology A :=
-  (AffineEtale.Spec S).hasSheafify_of_isOneHypercoverDense
-    (AffineEtale.topology S) S.smallEtaleTopology A
+  Functor.IsDenseSubsite.hasSheafify_of_isEquivalence
+    (AffineEtale.topology S) S.smallEtaleTopology (AffineEtale.Spec S)
 
 example : HasSheafify (AffineEtale.topology S) (Type u) := by
   infer_instance
@@ -301,10 +309,10 @@ example : HasSheafify (AffineEtale.topology S) (Type u) := by
 example : HasSheafify S.smallEtaleTopology (Type u) := by
   infer_instance
 
-example : Abelian (Sheaf (AffineEtale.topology S) AddCommGrpCat.{u}) := by
+noncomputable example : Abelian (Sheaf (AffineEtale.topology S) AddCommGrpCat.{u}) := by
   infer_instance
 
-example : Abelian (Sheaf S.smallEtaleTopology AddCommGrpCat.{u}) := by
+noncomputable example : Abelian (Sheaf S.smallEtaleTopology AddCommGrpCat.{u}) := by
   infer_instance
 
 instance :
