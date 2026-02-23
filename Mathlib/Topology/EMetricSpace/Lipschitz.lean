@@ -130,7 +130,7 @@ end PseudoEMetricSpace
 
 namespace LipschitzWith
 
-open EMetric
+open Metric
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 variable {K : ℝ≥0} {f : α → β} {x y : α} {r : ℝ≥0∞} {s : Set α}
@@ -148,11 +148,17 @@ theorem edist_le_mul_of_le (h : LipschitzWith K f) (hr : edist x y ≤ r) :
 theorem edist_lt_mul_of_lt (h : LipschitzWith K f) (hK : K ≠ 0) (hr : edist x y < r) :
     edist (f x) (f y) < K * r := by grw [h x y]; gcongr; simp
 
-theorem mapsTo_emetric_closedBall (h : LipschitzWith K f) (x : α) (r : ℝ≥0∞) :
-    MapsTo f (closedBall x r) (closedBall (f x) (K * r)) := fun _y hy => h.edist_le_mul_of_le hy
+theorem mapsTo_closedEBall (h : LipschitzWith K f) (x : α) (r : ℝ≥0∞) :
+    MapsTo f (closedEBall x r) (closedEBall (f x) (K * r)) := fun _y hy => h.edist_le_mul_of_le hy
 
-theorem mapsTo_emetric_ball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ≥0∞) :
-    MapsTo f (ball x r) (ball (f x) (K * r)) := fun _y hy => h.edist_lt_mul_of_lt hK hy
+@[deprecated (since := "2026-01-24")]
+alias mapsTo_emetric_closedBall := mapsTo_closedEBall
+
+theorem mapsTo_eball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ≥0∞) :
+    MapsTo f (eball x r) (eball (f x) (K * r)) := fun _y hy => h.edist_lt_mul_of_lt hK hy
+
+@[deprecated (since := "2026-01-24")]
+alias mapsTo_emetric_ball := mapsTo_eball
 
 theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : edist x y ≠ ⊤) :
     edist (f x) (f y) < ⊤ :=
@@ -239,6 +245,7 @@ protected theorem prod_fst : LipschitzWith 1 (@Prod.fst α β) :=
 protected theorem prod_snd : LipschitzWith 1 (@Prod.snd α β) :=
   LipschitzWith.of_edist_le fun _ _ => le_max_right _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` are Lipschitz functions, so is the induced map `f × g` to the product type. -/
 protected theorem prodMk {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
     (hg : LipschitzWith Kg g) : LipschitzWith (max Kf Kg) fun x => (f x, g x) := by
@@ -246,9 +253,11 @@ protected theorem prodMk {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f
   rw [ENNReal.coe_mono.map_max, Prod.edist_eq, max_mul]
   exact max_le_max (hf x y) (hg x y)
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem prodMk_left (a : α) : LipschitzWith 1 (Prod.mk a : β → α × β) := by
   simpa only [max_eq_right zero_le_one] using (LipschitzWith.const a).prodMk LipschitzWith.id
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem prodMk_right (b : β) : LipschitzWith 1 fun a : α => (a, b) := by
   simpa only [max_eq_left zero_le_one] using LipschitzWith.id.prodMk (LipschitzWith.const b)
 
@@ -322,6 +331,7 @@ protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : Lipschi
     (hf : LipschitzOnWith K f s) (hmaps : MapsTo f s t) : LipschitzOnWith (Kg * K) (g ∘ f) s :=
   lipschitzOnWith_iff_restrict.mpr <| hg.to_restrict.comp (hf.mapsToRestrict hmaps)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` are Lipschitz on `s`, so is the induced map `f × g` to the product type. -/
 protected theorem prodMk {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith Kf f s)
     (hg : LipschitzOnWith Kg g s) : LipschitzOnWith (max Kf Kg) (fun x => (f x, g x)) s := by
@@ -428,16 +438,16 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [Pseudo
     (ha : ∀ a ∈ s', ContinuousOn (fun y => f (a, y)) t)
     (hb : ∀ b ∈ t, LipschitzOnWith K (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) := by
   rintro ⟨x, y⟩ ⟨hx : x ∈ s, hy : y ∈ t⟩
-  refine EMetric.nhds_basis_closed_eball.tendsto_right_iff.2 fun ε (ε0 : 0 < ε) => ?_
+  refine Metric.nhds_basis_closedEBall.tendsto_right_iff.2 fun ε (ε0 : 0 < ε) => ?_
   replace ε0 : 0 < ε / 2 := ENNReal.half_pos ε0.ne'
   obtain ⟨δ, δpos, hδ⟩ : ∃ δ : ℝ≥0, 0 < δ ∧ (δ : ℝ≥0∞) * ↑(3 * K) < ε / 2 :=
     ENNReal.exists_nnreal_pos_mul_lt ENNReal.coe_ne_top ε0.ne'
   rw [← ENNReal.coe_pos] at δpos
   rcases EMetric.mem_closure_iff.1 (hss' hx) δ δpos with ⟨x', hx', hxx'⟩
-  have A : s ∩ EMetric.ball x δ ∈ 𝓝[s] x :=
-    inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds _ δpos)
+  have A : s ∩ Metric.eball x δ ∈ 𝓝[s] x :=
+    inter_mem_nhdsWithin _ (Metric.eball_mem_nhds _ δpos)
   have B : t ∩ { b | edist (f (x', b)) (f (x', y)) ≤ ε / 2 } ∈ 𝓝[t] y :=
-    inter_mem self_mem_nhdsWithin (ha x' hx' y hy (EMetric.closedBall_mem_nhds (f (x', y)) ε0))
+    inter_mem self_mem_nhdsWithin (ha x' hx' y hy (Metric.closedEBall_mem_nhds (f (x', y)) ε0))
   filter_upwards [nhdsWithin_prod A B] with ⟨a, b⟩ ⟨⟨has, hax⟩, ⟨hbt, hby⟩⟩
   calc
     edist (f (a, b)) (f (x, y)) ≤ edist (f (a, b)) (f (x', b)) + edist (f (x', b)) (f (x', y)) +

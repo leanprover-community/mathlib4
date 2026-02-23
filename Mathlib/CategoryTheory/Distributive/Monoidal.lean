@@ -40,7 +40,7 @@ A distributive monoidal category is a monoidal category that is both left and ri
   in the functor categories is computed pointwise.
 
 - We show that any preadditive monoidal category with coproducts is distributive. This includes the
-examples of abelian groups, R-modules, and vector bundles.
+  examples of abelian groups, R-modules, and vector bundles.
 
 ## TODO
 
@@ -243,6 +243,7 @@ instance isMonoidalDistrib.of_symmetric_monoidal_closed [SymmetricCategory C] [M
     IsMonoidalDistrib C := by
   apply SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of distributivity isomorphism from the closed monoidal structure -/
 lemma MonoidalClosed.leftDistrib_inv [MonoidalClosed C] {X Y Z : C} :
     (leftDistrib X Y Z).inv =

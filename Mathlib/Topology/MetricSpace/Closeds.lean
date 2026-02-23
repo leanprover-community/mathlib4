@@ -34,6 +34,7 @@ namespace Metric
 
 variable {α : Type*} [PseudoEMetricSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0∞}
     (h : hausdorffEDist s t < δ) : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 < δ} := by
   rw [hausdorffEDist, max_lt_iff] at h
@@ -45,6 +46,7 @@ theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0
     simpa only [infEDist, iInf_lt_iff, exists_prop] using (le_iSup₂ x hx).trans_lt h
   exact ⟨this h.1, this h.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hausdorffEDist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0∞}
     (h : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 ≤ δ}) : hausdorffEDist s t ≤ δ := by
   rw [hausdorffEDist, max_le_iff]
@@ -206,13 +208,6 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
     ((tendsto_order.1 this).2 ε εpos).exists_forall_of_atTop
   exact ⟨N, fun n hn => lt_of_le_of_lt (main n) (hN n hn)⟩
 
-/-- In a compact space, the type of closed subsets is compact. -/
-instance instCompactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
-  ⟨by
-    have := Closeds.totallyBounded_subsets_of_totallyBounded (α := α) isCompact_univ.totallyBounded
-    simp_rw [subset_univ, setOf_true] at this
-    exact this.isCompact_of_isClosed isClosed_univ⟩
-
 theorem isometry_singleton : Isometry ({·} : α → Closeds α) :=
   fun _ _ => hausdorffEDist_singleton
 
@@ -346,7 +341,7 @@ instance instSecondCountableTopology [SecondCountableTopology α] :
       have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x => (Exy x).choose_spec
       -- cover `t` with finitely many balls. Their centers form a set `a`
       have : TotallyBounded (t : Set α) := t.isCompact.totallyBounded
-      obtain ⟨a : Set α, af : Set.Finite a, ta : (t : Set α) ⊆ ⋃ y ∈ a, EMetric.ball y (δ / 2)⟩ :=
+      obtain ⟨a : Set α, af : Set.Finite a, ta : (t : Set α) ⊆ ⋃ y ∈ a, Metric.eball y (δ / 2)⟩ :=
         EMetric.totallyBounded_iff.1 this (δ / 2) δpos'
       -- replace each center by a nearby approximation in `s`, giving a new set `b`
       let b := F '' a

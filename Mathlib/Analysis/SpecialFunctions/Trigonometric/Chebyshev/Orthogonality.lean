@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Polynomial.Chebyshev
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.RootsExtrema
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
@@ -49,6 +48,7 @@ noncomputable def measureT : Measure ℝ :=
   (volume.withDensity
     fun x ↦ ENNReal.ofNNReal ⟨√(1 - x ^ 2)⁻¹, by positivity⟩).restrict (Set.Ioc (-1) 1)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_measureT (f : ℝ → ℝ) :
     ∫ x, f x ∂measureT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := by
   rw [integral_of_le (by norm_num), measureT,
@@ -63,6 +63,7 @@ theorem intervalIntegrable_sqrt_one_sub_sq_inv :
   refine integrableOn_deriv_of_nonneg continuous_arccos.neg.continuousOn (fun x hx ↦ ?_) (by simp)
   simpa using (hasDerivAt_arccos (by aesop) (by aesop)).neg
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integrable_measureT {f : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc (-1) 1)) :
     Integrable f measureT := by
   replace hf : ContinuousOn f (Set.uIcc (-1) 1) := by rwa [Set.uIcc_of_lt (by norm_num)]
@@ -84,7 +85,7 @@ theorem integral_measureT_eq_integral_cos {f : ℝ → ℝ}
     rw [integral_symm, ← intervalIntegral.integral_neg]
     simp
   _ = ∫ θ in (arccos 1)..(arccos (-1)), f (cos θ) := by
-    rw [← integral_comp_mul_deriv''' (f' := fun x => -(1 / √ (1 - x ^ 2))) (by fun_prop)
+    rw [← integral_comp_mul_deriv''' (f' := fun x => -(1 / √(1 - x ^ 2))) (by fun_prop)
       (fun x hx ↦ (hasDerivAt_arccos (by aesop) (by aesop)).hasDerivWithinAt)]
     · simp_rw [Function.comp_apply]
       exact integral_congr <| fun x hx => by simp [cos_arccos (x := x) (by aesop) (by aesop)]

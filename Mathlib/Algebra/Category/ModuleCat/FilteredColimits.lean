@@ -155,6 +155,7 @@ def colimitCocone : Cocone F where
         hom_ext <| LinearMap.coe_injective
           ((Types.TypeMax.colimitCocone (F ⋙ forget (ModuleCat R))).ι.naturality f) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone `t` of `F`, the induced monoid linear map from the colimit to the cocone point.
 We already know that this is a morphism between additive groups. The only thing left to see is that
 it is a linear map, i.e. preserves scalar multiplication.
@@ -163,7 +164,7 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
   let h := (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _))
   let f : colimit F →+ t.pt := (h.desc ((forget₂ _ _).mapCocone t)).hom
   have hf {j : J} (x : F.obj j) : f (M.mk _ ⟨j, x⟩) = t.ι.app j x :=
-    congr_fun ((forget _).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
+    congr_fun ((forget AddCommGrpCat).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
   ofHom
     { f with
       map_smul' := fun r x => by
@@ -176,14 +177,15 @@ lemma ι_colimitDesc (t : Cocone F) (j : J) :
   (forget₂ _ AddCommGrpCat).map_injective
     ((AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _)).fac _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The proposed colimit cocone is a colimit in `ModuleCat R`. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
   fac t j := by simp
   uniq t _ h := by
     ext ⟨j, x⟩
-    exact (congr_fun ((forget _).congr_map (h j)) x).trans
-      (congr_fun ((forget _).congr_map (ι_colimitDesc F t j)) x).symm
+    exact (congr_fun ((forget (ModuleCat _)).congr_map (h j)) _).trans
+      (congr_fun ((forget (ModuleCat _)).congr_map (ι_colimitDesc F t j)) x).symm
 
 instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u}) where

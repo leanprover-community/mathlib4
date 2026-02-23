@@ -43,6 +43,7 @@ theorem measurable_to_countable' [MeasurableSpace α] [Countable α] [Measurable
     (h : ∀ x, MeasurableSet (f ⁻¹' {x})) : Measurable f :=
   measurable_to_countable fun y => h (f y)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞} :
     Measurable f ↔ ∀ n : ℕ, MeasurableSet (f ⁻¹' {↑n}) := by
   refine ⟨fun hf n ↦ hf <| measurableSet_singleton _, fun h ↦ measurable_to_countable' fun n ↦ ?_⟩
@@ -115,6 +116,7 @@ protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, Meas
     MeasurableSet (disjointed f n) :=
   disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
   refine measurable_to_nat fun x => ?_
@@ -343,6 +345,7 @@ lemma measurableAtom_eq_of_mem {x y : β} (hx : x ∈ measurableAtom y) :
   specialize hx sᶜ hys hs.compl
   exact hx hxs
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_measurableAtom_of_notMem {x y : β} (hx : x ∉ measurableAtom y) :
     Disjoint (measurableAtom x) (measurableAtom y) := by
   rw [Set.disjoint_iff_inter_eq_empty]
@@ -866,6 +869,7 @@ lemma Measurable.and (hp : Measurable p) (hq : Measurable q) : Measurable fun a 
 lemma Measurable.or (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∨ q a :=
   measurableSet_setOf.1 <| hp.setOf.union hq.setOf
 
+@[fun_prop]
 lemma Measurable.imp (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a → q a :=
   measurableSet_setOf.1 <| hp.setOf.himp hq.setOf
 
@@ -873,6 +877,7 @@ lemma Measurable.imp (hp : Measurable p) (hq : Measurable q) : Measurable fun a 
 lemma Measurable.iff (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ↔ q a :=
   measurableSet_setOf.1 <| by simp_rw [iff_iff_implies_and_implies]; exact hq.setOf.bihimp hp.setOf
 
+@[fun_prop]
 lemma Measurable.forall [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Measurable (p i)) :
     Measurable fun a ↦ ∀ i, p i a :=
   measurableSet_setOf.1 <| by rw [setOf_forall]; exact MeasurableSet.iInter fun i ↦ (hp i).setOf
@@ -902,6 +907,7 @@ variable [MeasurableSpace β] {g : β → Set α}
 random graphs. -/
 instance Set.instMeasurableSpace : MeasurableSpace (Set α) := by unfold Set; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) := by
   unfold Set; infer_instance
 

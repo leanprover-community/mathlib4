@@ -37,6 +37,7 @@ namespace Finpartition
 
 variable {α : Type*} [DecidableEq α] {s t : Finset α} {m n a b : ℕ} {P : Finpartition s}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a partition `P` of `s`, as well as a proof that `a * m + b * (m + 1) = #s`, we can
 find a new partition `Q` of `s` where each part has size `m` or `m + 1`, every part of `P` is the
 union of parts of `Q` plus at most `m` extra elements, there are `b` parts of size `m + 1` and

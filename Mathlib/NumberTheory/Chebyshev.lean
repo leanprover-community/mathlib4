@@ -152,6 +152,7 @@ We isolate the contributions of different prime powers to `ψ` and use this to s
 are close.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A sum over prime powers may be written as a double sum over exponents and then primes. -/
 theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x) :
     ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n
@@ -255,6 +256,7 @@ theorem psi_le {x : ℝ} (hx : 1 ≤ x) :
     · exact theta_le_log4_mul_x (by linarith)
   _ = _ := by ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Chebyshev's bound `ψ x ≤ c x` with an explicit constant.
 Note that `Chebyshev.psi_le` gives a sharper bound with a better main term. -/
 theorem psi_le_const_mul_self {x : ℝ} (hx : 0 ≤ x) :
@@ -299,6 +301,7 @@ theorem integrableOn_theta_div_id_mul_log_sq (x : ℝ) :
   have : x * log x ^ 2 ≠ 0 := mul_ne_zero this <| by simp; grind
   fun_prop (disch := assumption)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Expresses the prime counting function `π` in terms of `θ` by using Abel summation. -/
 theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     π ⌊x⌋₊ = θ x / log x + ∫ t in 2..x, θ t / (t * log t ^ 2) := by
@@ -396,6 +399,7 @@ theorem integral_one_div_log_sq_isBigO :
   conv => arg 2; ext; rw [← mul_one_div, mul_comm]
   apply IsBigO.const_mul_left sqrt_isLittleO.isBigO
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Bound on the integral in `Chebyshev.primeCounting_eq_theta_div_log_add_integral`. -/
 theorem integral_theta_div_log_sq_isBigO :
     (fun x ↦ ∫ t in 2..x, θ t / (t * log t ^ 2)) =O[atTop] (fun x ↦ x / log x ^ 2) := by

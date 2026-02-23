@@ -5,11 +5,11 @@ Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Logic.Embedding.Basic
 public import Mathlib.Data.Fintype.CardEmbedding
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+public import Mathlib.Analysis.Normed.Operator.Bilinear
 
 /-!
 # Operator norm on the space of continuous multilinear maps
@@ -145,6 +145,7 @@ lemma norm_map_coord_zero (f : MultilinearMap 𝕜 E G) (hf : Continuous f)
 
 variable [Fintype ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a multilinear map in finitely many variables on seminormed spaces
 sends vectors with a component of norm zero to vectors of norm zero
 and satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖` on a shell `ε i / ‖c i‖ < ‖m i‖ < ε i`
@@ -370,8 +371,7 @@ theorem isLeast_opNorm (f : ContinuousMultilinearMap 𝕜 E G) :
     IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} ‖f‖ := by
   refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
   simp only [Set.setOf_and, Set.setOf_forall]
-  exact isClosed_Ici.inter (isClosed_iInter fun m ↦
-    isClosed_le continuous_const (continuous_id.mul continuous_const))
+  exact isClosed_Ici.inter (isClosed_iInter fun m ↦ isClosed_le continuous_const (by fun_prop))
 
 theorem opNorm_nonneg (f : ContinuousMultilinearMap 𝕜 E G) : 0 ≤ ‖f‖ :=
   Real.sInf_nonneg fun _ ⟨hx, _⟩ => hx
@@ -449,6 +449,7 @@ so that it is definitionally equal to the one coming from the topologies on `E` 
 protected def seminorm : Seminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G) :=
   .ofSMulLE norm opNorm_zero opNorm_add_le fun c f ↦ f.opNorm_smul_le c
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private lemma uniformity_eq_seminorm :
     𝓤 (ContinuousMultilinearMap 𝕜 E G) = ⨅ r > 0, 𝓟 {f | ‖f.1 - f.2‖ < r} := by
@@ -533,6 +534,7 @@ theorem isLeast_opNNNorm (f : ContinuousMultilinearMap 𝕜 E G) :
     IsLeast {C : ℝ≥0 | ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊} ‖f‖₊ := by
   simpa only [← opNNNorm_le_iff] using isLeast_Ici
 
+set_option backward.isDefEq.respectTransparency false in
 theorem opNNNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   eq_of_forall_ge_iff fun _ ↦ by
@@ -774,6 +776,7 @@ theorem norm_mkPiAlgebraFin [NormOneClass A] :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖₊ = ‖f‖₊ * ‖z‖₊ := by
@@ -875,6 +878,7 @@ theorem mkContinuousLinear_norm_le (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G')
 
 variable [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a map `f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G)` and an estimate
 `H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `MultilinearMap`s in the type to
 `ContinuousMultilinearMap`s. -/
