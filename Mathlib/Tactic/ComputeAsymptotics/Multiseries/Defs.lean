@@ -928,7 +928,7 @@ section Approximates
 
 coinductive Approximates : {basis : Basis} → (ms : MultiseriesExpansion basis) → Prop
 | const (ms : MultiseriesExpansion []) : Approximates ms
-| nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ) (hf : f =ᶠ[atTop] 0) :
+| nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ} (hf : f =ᶠ[atTop] 0) :
   Approximates (mk (@Multiseries.nil basis_hd basis_tl) f)
 | cons {basis_hd f : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     {tl : Multiseries basis_hd basis_tl}
@@ -979,10 +979,9 @@ variable {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
 --   conv_lhs => unfold Approximates; rw [← OrderHom.isFixedPt_gfp]
 --   conv_rhs => arg 2; eta_expand; unfold Approximates; change OrderHom.gfp _
 
--- @[simp]
--- theorem Approximates.const {c : MultiseriesExpansion []} : Approximates c := by
---   rw [Approximates.step]
---   simp [T]
+-- TODO: this is just to tag `const` with `@[simp]`
+@[simp]
+theorem Approximates.const' {c : MultiseriesExpansion []} : Approximates c := Approximates.const _
 
 -- /-- `[]` approximates zero function. -/
 -- theorem Approximates.nil (h : f =ᶠ[atTop] 0) :
@@ -1003,8 +1002,6 @@ variable {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
 --   simp [T]
 --   grind
 
-#check Approximates.coinduct
-
 theorem Approximates.coind {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (motive : MultiseriesExpansion (basis_hd :: basis_tl) → Prop)
     (h_base : motive ms)
@@ -1015,22 +1012,31 @@ theorem Approximates.coind {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
         Majorized ms.toFun basis_hd exp ∧
         motive (mk (basis_hd := basis_hd) tl (ms.toFun - basis_hd ^ exp * coef.toFun)))) :
     ms.Approximates := by
-  have : motive ≤ T _ motive := by
-    intro ms h
-    simp [T]
-    grind
-  have := OrderHom.le_gfp _ this
-  unfold Approximates
-  aesop
-
-#check Approximates.casesOn
+  apply Approximates.coinduct fun {basis} ms =>
+    Approximates ms ∨ ∃ (h_basis : basis = basis_hd :: basis_tl), (motive (h_basis ▸ ms))
+  · rintro basis ms (h_ms | ⟨rfl, h_ms⟩)
+    · cases h_ms <;> grind
+    simp only [reduceCtorEq, List.cons.injEq, ↓existsAndEq, and_true, heq_eq_eq, ms_eq_mk_iff,
+      true_and, exists_eq_right_right', exists_and_left, false_or] at h_ms ⊢
+    specialize h_step _ h_ms
+    rcases h_step with h_step | ⟨exp, coef, tl, h_seq, h_coef, h_maj, h_tl⟩
+    · left
+      grind
+    · right
+      use basis_hd, ms.toFun, basis_tl, exp, coef
+      constructorm* _ ∧ _
+      · simpa
+      · assumption
+      use tl
+      simp
+      grind
+  · grind
 
 /-- If `[]` approximates `f`, then `f = 0` eventually. -/
 theorem Approximates_nil (h : @Approximates (basis_hd :: basis_tl) (mk .nil f)) :
     f =ᶠ[atTop] 0 := by
-  cases h
-  rw [Approximates.step] at h
-  simpa [Approximates.T] using h
+  generalize h_ms : (mk .nil f) = ms at h
+  cases h <;> simp at h_ms; grind
 
 @[simp]
 theorem Approximates_nil_iff {f : ℝ → ℝ} :
@@ -1047,8 +1053,8 @@ theorem Approximates_cons {exp : ℝ}
     coef.Approximates ∧
     Majorized f basis_hd exp ∧
     (mk (basis_hd := basis_hd) tl (f - basis_hd ^ exp * coef.toFun)).Approximates := by
-  rw [Approximates.step] at h
-  simpa [Approximates.T] using h
+  generalize h_ms : (mk (.cons exp coef tl) f) = ms at h
+  cases h <;> simp at h_ms; grind
 
 theorem replaceFun_Sorted {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     {f : ℝ → ℝ} (h_wo : ms.Sorted) :
