@@ -10,7 +10,7 @@ permissions: {}
 jobs:
   run-reusable:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    uses: leanprover-community/SpliceBot/.github/workflows/splice_wf_run.yaml@master
+    uses: leanprover-community/SpliceBot/.github/workflows/splice_wf_run.yaml@fdb442693d6f613b25d2599ad64fd87cf019b9ce # master
     with:
       source_workflow: ${{ github.event.workflow_run.name }}
       push_to_fork: leanprover-community/mathlib4_copy
