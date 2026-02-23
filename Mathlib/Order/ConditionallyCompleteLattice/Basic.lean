@@ -776,7 +776,7 @@ theorem csSup_image_le_csSup {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s)
     sSup (f '' s) ≤ f (sSup s) :=
   csSup_image_le hmono hne <| isLUB_csSup hne hbdd |>.left
 
-theorem csInf_image_le_csInf {s : Set α} (hne : s.Nonempty) (hbdd : BddBelow s) :
+theorem csInf_le_csInf_image {s : Set α} (hne : s.Nonempty) (hbdd : BddBelow s) :
     f (sInf s) ≤ sInf (f '' s) :=
   le_csInf_image hmono hne <| isGLB_csInf hne hbdd |>.left
 
