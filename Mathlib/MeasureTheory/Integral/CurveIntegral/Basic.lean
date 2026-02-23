@@ -136,11 +136,11 @@ theorem curveIntegral_of_not_completeSpace (h : ¬CompleteSpace F) (ω : E → E
 
 theorem curveIntegralFun_def [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) :
     curveIntegralFun ω γ t = ω (γ.extend t) (derivWithin γ.extend I t) := by
-  simp only [curveIntegralFun, NormedSpace.restrictScalars_eq]
+  simp +instances only [curveIntegralFun, NormedSpace.restrictScalars_eq]
 
 theorem curveIntegral_def [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (γ : Path a b) :
     curveIntegral ω γ = ∫ t in 0..1, curveIntegralFun ω γ t := by
-  simp only [curveIntegral, NormedSpace.restrictScalars_eq]
+  simp +instances only [curveIntegral, NormedSpace.restrictScalars_eq]
 
 theorem curveIntegral_eq_intervalIntegral_deriv [NormedSpace ℝ E] [NormedSpace ℝ F]
     (ω : E → E →L[𝕜] F) (γ : Path a b) :
@@ -215,6 +215,7 @@ theorem curveIntegral_symm (ω : E → E →L[𝕜] F) (γ : Path a b) :
     ∫ᶜ x in γ.symm, ω x = -∫ᶜ x in γ, ω x := by
   simp [curveIntegral, curveIntegralFun_symm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem curveIntegralFun_trans_of_lt_half (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c)
     (ht : t < 1 / 2) :
     curveIntegralFun ω (γab.trans γbc) t = (2 : ℕ) • curveIntegralFun ω γab (2 * t) := by
@@ -271,6 +272,7 @@ protected theorem CurveIntegrable.trans (h₁ : CurveIntegrable ω γab) (h₂ :
   (h₁.intervalIntegrable_curveIntegralFun_trans_left γbc).trans
     (h₂.intervalIntegrable_curveIntegralFun_trans_right γab)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem curveIntegral_trans (h₁ : CurveIntegrable ω γab) (h₂ : CurveIntegrable ω γbc) :
     ∫ᶜ x in γab.trans γbc, ω x = (∫ᶜ x in γab, ω x) + ∫ᶜ x in γbc, ω x := by
   let instF := NormedSpace.restrictScalars ℝ 𝕜 F
@@ -515,8 +517,8 @@ theorem HasFDerivWithinAt.curveIntegral_segment_source' (hs : Convex ℝ s)
     ≤ ∫ x in 0..1, ‖ω x - ω a‖ * ‖b - a‖
     ≤ ε * ‖b - a‖`
   -/
-  simp only [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, Path.segment_same,
-    curveIntegral_refl, sub_zero, Asymptotics.isLittleO_iff]
+  simp only [hasFDerivWithinAt_iff_isLittleO, Path.segment_same, curveIntegral_refl, sub_zero,
+    Asymptotics.isLittleO_iff]
   intro ε hε
   obtain ⟨δ, hδ₀, hδ⟩ : ∃ δ > 0,
       ball a δ ∩ s ⊆ {z | ContinuousWithinAt ω s z ∧ dist (ω z) (ω a) ≤ ε} := by

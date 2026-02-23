@@ -26,10 +26,10 @@ in the diagram are injective).
 
 - `Monoid.PushoutI.NormalWord`: a normal form for words in the pushout
 - `Monoid.PushoutI.of_injective`: if all the maps in the diagram are injective in a pushout of
-groups then so is `of`
+  groups then so is `of`
 - `Monoid.PushoutI.Reduced.eq_empty_of_mem_range`: For any word `w` in the coproduct,
-if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
-`w` itself is not in the image of the base monoid.
+  if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
+  `w` itself is not in the image of the base monoid.
 
 ## References
 
@@ -109,6 +109,7 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     simp only [DFunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
@@ -117,6 +118,7 @@ theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
   simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe,
     lift_apply_inl, CoprodI.lift_of]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
@@ -284,8 +286,8 @@ open Subgroup.IsComplement
 
 instance baseAction : MulAction H (NormalWord d) :=
   { smul := fun h w => { w with head := h * w.head },
-    one_smul := by simp [instHSMul]
-    mul_smul := by simp [instHSMul, mul_assoc] }
+    one_smul := by simp +instances [instHSMul]
+    mul_smul := by simp +instances [instHSMul, mul_assoc] }
 
 theorem base_smul_def' (h : H) (w : NormalWord d) :
     h • w = { w with head := h * w.head } := rfl
@@ -320,6 +322,7 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
       · simp
       · exact w.normalized _ _ (by assumption) }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
@@ -440,11 +443,11 @@ noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :
       { equivPair i w with
         head := g * (equivPair i w).head }
     one_smul := fun _ => by
-      dsimp [instHSMul]
+      dsimp +instances [instHSMul]
       rw [one_mul]
       exact (equivPair i).symm_apply_apply _
     mul_smul := fun _ _ _ => by
-      dsimp [instHSMul]
+      dsimp +instances [instHSMul]
       simp [mul_assoc, Equiv.apply_symm_apply] }
 
 theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :

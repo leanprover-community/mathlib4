@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Data.EReal.Inv

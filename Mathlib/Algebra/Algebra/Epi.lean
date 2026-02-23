@@ -76,6 +76,7 @@ section Ring
 
 variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isEpi_iff_surjective_algebraMap_of_finite [Module.Finite R A] :
     Algebra.IsEpi R A ↔ Surjective (algebraMap R A) := by
   refine ⟨fun h ↦ ?_, isEpi_of_surjective_algebraMap R A⟩

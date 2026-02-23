@@ -58,6 +58,7 @@ variable {M}
 theorem mem_supported {s : Set α} (p : α →₀ M) : p ∈ supported M R s ↔ ↑p.support ⊆ s :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_supported' {s : Set α} (p : α →₀ M) :
     p ∈ supported M R s ↔ ∀ x ∉ s, p x = 0 := by
   simp [mem_supported, Set.subset_def, not_imp_comm]
@@ -241,6 +242,7 @@ theorem lmapDomain_supported (f : α → α') (s : Set α) :
     refine (mapDomain_congr fun c hc => ?_).trans mapDomain_id
     exact Function.invFunOn_eq (by simpa using hl hc)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
     (H : ∀ a ∈ s, ∀ b ∈ s, f a = f b → a = b) :
     Disjoint (supported M R s) (ker (lmapDomain M R f)) := by
