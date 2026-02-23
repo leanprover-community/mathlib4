@@ -142,7 +142,7 @@ variable (R M) in
 /-- The trivial monoid algebra is the base ring. -/]
 def uniqueAlgEquiv [Unique M] : A[M] ≃ₐ[R] A where
   toRingEquiv := uniqueRingEquiv _
-  commutes' r := by simp [Unique.eq_default]
+  map_smul' _ _ := by simp
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R) in
@@ -151,10 +151,9 @@ variable (R) in
 /-- A product monoid algebra is a nested monoid algebra. -/]
 def curryAlgEquiv : A[M × N] ≃ₐ[R] A[N][M] where
   toRingEquiv := curryRingEquiv
-  commutes' r := by
+  map_smul' _ r := by
     ext
-    simp [MonoidAlgebra, algebraMap, Algebra.algebraMap, singleOneRingHom, curryRingEquiv,
-      EquivLike.toEquiv, singleAddHom, curryAddEquiv]
+    simp [MonoidAlgebra, curryRingEquiv, EquivLike.toEquiv, curryAddEquiv]
 
 @[to_additive (attr := simp)]
 lemma curryAlgEquiv_single (m : M) (n : N) (a : A) :
@@ -286,11 +285,8 @@ variable (R A) in
 @[to_additive (dont_translate := A)
 /-- If `e : M ≃+ N` is an additive equivalence between two additive monoids, then
 `AddMonoidAlgebra.domCongr e` is an algebra equivalence between their additive monoid algebras. -/]
-def domCongr (e : G ≃* H) : A[G] ≃ₐ[k] A[H] :=
-  AlgEquiv.ofLinearEquiv
-    (Finsupp.domLCongr e : (G →₀ A) ≃ₗ[k] (H →₀ A))
-    (fun f g => (equivMapDomain_eq_mapDomain _ _).trans <| (mapDomain_mul e f g).trans <|
-        congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
+def domCongr (e : M ≃* N) : A[M] ≃ₐ[R] A[N] :=
+  .ofCommutes (mapDomainRingEquiv A e) fun _ ↦ by ext; simp
 
 @[to_additive (attr := simp)]
 lemma domCongr_apply (e : M ≃* N) (x : A[M]) (n : N) : domCongr R A e x n = x (e.symm n) := by
@@ -591,14 +587,14 @@ variable [CommSemiring R] [Semiring A] [Algebra R A]
 variable (A M) in
 /-- The algebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative`. -/
-def AddMonoidAlgebra.toMultiplicativeAlgEquiv [Semiring k] [Algebra R k] [AddMonoid G] :
-    AddMonoidAlgebra k G ≃ₐ[R] MonoidAlgebra k (Multiplicative G) :=
-  .ofCommutes (AddMonoidAlgebra.toMultiplicative k G)
+def AddMonoidAlgebra.toMultiplicativeAlgEquiv [AddMonoid M] :
+    AddMonoidAlgebra A M ≃ₐ[R] MonoidAlgebra A (Multiplicative M) :=
+  .ofCommutes (AddMonoidAlgebra.toMultiplicative A M)
     fun r => by simp [AddMonoidAlgebra.toMultiplicative]
 
 variable (A M) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
-def MonoidAlgebra.toAdditiveAlgEquiv [Semiring k] [Algebra R k] [Monoid G] :
-    MonoidAlgebra k G ≃ₐ[R] AddMonoidAlgebra k (Additive G) :=
-  .ofCommutes (MonoidAlgebra.toAdditive k G) fun r => by simp [MonoidAlgebra.toAdditive]
+def MonoidAlgebra.toAdditiveAlgEquiv [Monoid M] :
+    MonoidAlgebra A M ≃ₐ[R] AddMonoidAlgebra A (Additive M) :=
+  .ofCommutes (MonoidAlgebra.toAdditive A M) fun r => by simp [MonoidAlgebra.toAdditive]

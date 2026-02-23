@@ -911,7 +911,7 @@ their endomorphisms. -/
 def conjContinuousAlgEquiv (e : G ≃L[𝕜] H) : (G →L[𝕜] G) ≃A[𝕜] (H →L[𝕜] H) :=
   { e.arrowCongr e with
     map_mul' _ _ := by ext; simp
-    commutes' _ := by ext; simp }
+    map_smul' _ _ := by ext; simp }
 
 @[simp] theorem conjContinuousAlgEquiv_apply_apply (e : G ≃L[𝕜] H) (f : G →L[𝕜] G) (x : H) :
     e.conjContinuousAlgEquiv f x = e (f (e.symm x)) := rfl

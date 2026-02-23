@@ -362,18 +362,19 @@ section
 
 omit [Algebra S A] [IsScalarTower R S A]
 
+attribute [-instance] leftHasSMul in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `S`-linear version of `Algebra.TensorProduct.comm` when `A ⊗[R] S`
 is viewed as an `S`-algebra via the right component. -/
-noncomputable def commRight : S ⊗[R] A ≃ₐ[S] A ⊗[R] S where
-  __ := Algebra.TensorProduct.comm R S A
-  commutes' _ := rfl
+noncomputable def commRight : S ⊗[R] A ≃ₐ[S] A ⊗[R] S :=
+  .ofCommutes (Algebra.TensorProduct.comm R S A) fun _ ↦ rfl
 
 variable {S A} in
 @[simp]
 lemma commRight_tmul (s : S) (a : A) : commRight R S A (s ⊗ₜ a) = a ⊗ₜ s := rfl
 
 variable {S A} in
+attribute [-instance] leftHasSMul in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
 lemma Algebra.TensorProduct.commRight_symm_tmul (s : S) (a : A) :
@@ -392,7 +393,7 @@ variable (T C D) in
 /-- The associator for tensor product of R-algebras, as an algebra isomorphism. -/
 protected def assoc : (A ⊗[S] C) ⊗[R] D ≃ₐ[T] A ⊗[S] (C ⊗[R] D) :=
   AlgEquiv.ofLinearEquiv
-    (AlgebraTensorModule.assoc R S S A C D)
+    (AlgebraTensorModule.assoc R S T A C D)
     ((LinearMap.map_mul_iff _).mpr <| by ext; simp)
 
 variable (T C D) in
@@ -550,17 +551,15 @@ def leftComm : A ⊗[R] (B ⊗[R] C) ≃ₐ[R] B ⊗[R] (A ⊗[R] C) :=
 
 @[simp]
 theorem leftComm_tmul (m : A) (n : B) (p : C) :
-    leftComm R A B C (m ⊗ₜ (n ⊗ₜ p)) = n ⊗ₜ (m ⊗ₜ p) :=
-  rfl
+    leftComm R A B C (m ⊗ₜ (n ⊗ₜ p)) = n ⊗ₜ (m ⊗ₜ p) := by simp [leftComm]
 
 @[simp]
 theorem leftComm_symm_tmul (m : A) (n : B) (p : C) :
-    (leftComm R A B C).symm (n ⊗ₜ (m ⊗ₜ p)) = m ⊗ₜ (n ⊗ₜ p) :=
-  rfl
+    (leftComm R A B C).symm (n ⊗ₜ (m ⊗ₜ p)) = m ⊗ₜ (n ⊗ₜ p) := by simp [leftComm]
 
 @[simp]
 theorem leftComm_toLinearEquiv : ↑(leftComm R A B C) = _root_.TensorProduct.leftComm R A B C :=
-  LinearEquiv.toLinearMap_injective (by ext; rfl)
+  LinearEquiv.toLinearMap_injective (by ext; simp)
 
 variable [CommSemiring T] [Algebra R T] [Algebra T A] [IsScalarTower R T A] [SMulCommClass S T A]
   [Algebra S T] [IsScalarTower S T A] [CommSemiring R'] [Algebra R R'] [Algebra R' T] [Algebra R' A]
