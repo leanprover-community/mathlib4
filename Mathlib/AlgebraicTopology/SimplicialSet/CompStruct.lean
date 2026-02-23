@@ -228,6 +228,14 @@ def compId (e : Edge x₀ x₁) : CompStruct e (.id x₁) e :=
 @[simp]
 lemma compId_simplex (e : Edge x₀ x₁) : (compId e).simplex = X.σ 1 e.edge := rfl
 
+/-- The identity edge on a point, composed with itself, gives the identity. -/
+def idCompId (x : X _⦋0⦌) : CompStruct (id x) (id x) (id x) :=
+  ofTruncated (.idCompId _)
+
+@[simp]
+lemma idCompId_simplex (x : X _⦋0⦌) : (idCompId x).simplex = X.σ 0 (X.σ 0 x) :=
+  Truncated.Edge.CompStruct.idCompId_simplex _
+
 /-- The image of a `Edge.CompStruct` by a morphism of simplicial sets. -/
 def map (h : CompStruct e₀₁ e₁₂ e₀₂) (f : X ⟶ Y) :
     CompStruct (e₀₁.map f) (e₁₂.map f) (e₀₂.map f) :=
@@ -271,30 +279,12 @@ structure InvStruct (hom : Edge x₀ x₁) where
 
 namespace InvStruct
 
-lemma id_comp_id_aux {l m n : ℕ}
-    {f : ⦋n⦌ ⟶ ⦋m⦌}
-    {g : ⦋m⦌ ⟶ ⦋l⦌}
-    {h : ⦋n⦌ ⟶ ⦋l⦌}
-    (x : X _⦋l⦌)
-    (e : f ≫ g = h) :
-    X.map f.op (X.map g.op x) = X.map h.op x := by
-  rw [← e, op_comp, X.map_comp]
-  rfl
-
-/-- The identity edge on a point, composed with itself, gives the identity. -/
-def idCompId (x : X _⦋0⦌) : CompStruct (id x) (id x) (id x) :=
-  .mk
-    (X.map (SimplexCategory.const ⦋2⦌ ⦋0⦌ 0).op x)
-    (by apply id_comp_id_aux; decide)
-    (by apply id_comp_id_aux; decide)
-    (by apply id_comp_id_aux; decide)
-
 /-- The identity edge has an inverse. -/
 @[simps]
 def invStructId (x : X _⦋0⦌) : InvStruct (id x) where
   inv := id x
-  homInvId := idCompId x
-  invHomId := idCompId x
+  homInvId := CompStruct.idCompId x
+  invHomId := CompStruct.idCompId x
 
 /-- The inverse has an inverse. -/
 @[simps]
