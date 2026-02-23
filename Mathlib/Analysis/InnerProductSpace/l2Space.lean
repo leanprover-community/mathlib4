@@ -399,6 +399,7 @@ instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
     ext
     exact congr_fun h i
 
+set_option backward.whnf.reducibleClassField false in
 @[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i := by

@@ -208,6 +208,7 @@ lemma μ_inv_natural_right (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) :
       (L').map (X ◁ g) ≫ (μ L W ε X Y₂).inv := by
   simp [Iso.eq_comp_inv]
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor_hom_app (Y : C) :
     (λ_ ((L').obj Y)).hom =
@@ -219,6 +220,7 @@ lemma leftUnitor_hom_app (Y : C) :
   change _ ≫ (μ L W ε _ _).hom ≫ _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [comp_id]
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor_hom_app (X : C) :
     (ρ_ ((L').obj X)).hom =
@@ -231,6 +233,7 @@ lemma rightUnitor_hom_app (X : C) :
   change _ ≫ (μ L W ε _ _).hom ≫ _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [comp_id]
 
+set_option backward.whnf.reducibleClassField false in
 lemma associator_hom_app (X₁ X₂ X₃ : C) :
     (α_ ((L').obj X₁) ((L').obj X₂) ((L').obj X₃)).hom =
       ((μ L W ε _ _).hom ⊗ₘ 𝟙 _) ≫ (μ L W ε _ _).hom ≫ (L').map (α_ X₁ X₂ X₃).hom ≫
@@ -240,20 +243,24 @@ lemma associator_hom_app (X₁ X₂ X₃ : C) :
   rw [Localization.associator_hom_app_app_app]
   rfl
 
+set_option backward.whnf.reducibleClassField false in
 lemma id_tensorHom (X : LocalizedMonoidal L W ε) {Y₁ Y₂ : LocalizedMonoidal L W ε} (f : Y₁ ⟶ Y₂) :
     𝟙 X ⊗ₘ f = X ◁ f := by
   simp +instances [monoidalCategoryStruct]
 
+set_option backward.whnf.reducibleClassField false in
 lemma tensorHom_id {X₁ X₂ : LocalizedMonoidal L W ε} (f : X₁ ⟶ X₂) (Y : LocalizedMonoidal L W ε) :
     f ⊗ₘ 𝟙 Y = f ▷ Y := by
   simp +instances [monoidalCategoryStruct]
 
+set_option backward.whnf.reducibleClassField false in
 @[reassoc]
 lemma tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : LocalizedMonoidal L W ε}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) = (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) := by
   simp +instances [monoidalCategoryStruct]
 
+set_option backward.whnf.reducibleClassField false in
 lemma id_tensorHom_id (X₁ X₂ : LocalizedMonoidal L W ε) : 𝟙 X₁ ⊗ₘ 𝟙 X₂ = 𝟙 (X₁ ⊗ X₂) := by
   simp +instances [monoidalCategoryStruct]
 
@@ -269,10 +276,12 @@ theorem whiskerRight_comp (Q : LocalizedMonoidal L W ε) {X Y Z : LocalizedMonoi
     (f ≫ g) ▷ Q = f ▷ Q ≫ g ▷ Q := by
   simp only [← tensorHom_id, ← tensor_comp, comp_id]
 
+set_option backward.whnf.reducibleClassField false in
 lemma whiskerLeft_id (X Y : LocalizedMonoidal L W ε) :
     X ◁ (𝟙 Y) = 𝟙 _ := by
   simp +instances [monoidalCategoryStruct]
 
+set_option backward.whnf.reducibleClassField false in
 lemma whiskerRight_id (X Y : LocalizedMonoidal L W ε) :
     (𝟙 X) ▷ Y = 𝟙 _ := by
   simp +instances [monoidalCategoryStruct]
@@ -282,6 +291,7 @@ lemma whisker_exchange {Q X Y Z : LocalizedMonoidal L W ε} (f : Q ⟶ X) (g : Y
     Q ◁ g ≫ f ▷ Z = f ▷ Y ≫ X ◁ g := by
   simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, id_comp, comp_id]
 
+set_option backward.whnf.reducibleClassField false in
 @[reassoc]
 lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
@@ -369,6 +379,7 @@ lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
     Iso.inv_hom_id, whiskerRight_id, ← whiskerLeft_comp,
     whiskerLeft_id]
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor_naturality {X Y : LocalizedMonoidal L W ε} (f : X ⟶ Y) :
     𝟙_ (LocalizedMonoidal L W ε) ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
@@ -436,6 +447,7 @@ lemma triangle (X Y : LocalizedMonoidal L W ε) :
   · exact triangle_aux₂ _ _ _ e₁ e₂
   · exact triangle_aux₃ _ _ _ e₁ e₂
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     MonoidalCategory (LocalizedMonoidal L W ε) where

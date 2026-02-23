@@ -1163,6 +1163,7 @@ lemma tensorHom_id {x x' : D} (f : x ⟶ x') (y : D) :
     f ⊗ₘ (𝟙 y) = f ▷ y :=
   rfl
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma ι_map_tensorHom_eq {d₁ d₁' d₂ d₂' : D} (f : d₁ ⟶ d₂) (f' : d₁' ⟶ d₂') :
     letI := mkMonoidalCategoryStruct C V D

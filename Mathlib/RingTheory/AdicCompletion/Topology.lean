@@ -26,6 +26,7 @@ section TopologicalSpace
 
 variable {R : Type*} [CommRing R] [TopologicalSpace R] {I : Ideal R} (hI : IsAdic I)
 
+set_option backward.whnf.reducibleClassField false in
 include hI in
 /-- `IsHausdorff I R` is equivalent to being Hausdorff in the adic topology. -/
 protected lemma IsAdic.isHausdorff_iff : IsHausdorff I R ↔ T2Space R := by

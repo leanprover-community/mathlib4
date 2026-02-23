@@ -71,6 +71,7 @@ theorem Iio_eq_ssubsets : Iio s = s.ssubsets := by ext; simp
 
 variable {s t}
 
+set_option backward.whnf.reducibleClassField false in
 theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image (s ∪ ·) := by
   unfold Finset.Icc instLocallyFiniteOrder LocallyFiniteOrder.ofIcc
   ext
@@ -85,6 +86,7 @@ theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image (
   · rintro ⟨v, hv, rfl⟩
     exact ⟨le_sup_left, sup_lt_of_lt_sdiff_left hv h⟩
 
+set_option backward.whnf.reducibleClassField false in
 /-- Cardinality of a non-empty `Icc` of finsets. -/
 theorem card_Icc_finset (h : s ⊆ t) : (Icc s t).card = 2 ^ (t.card - s.card) := by
   unfold Finset.Icc instLocallyFiniteOrder LocallyFiniteOrder.ofIcc

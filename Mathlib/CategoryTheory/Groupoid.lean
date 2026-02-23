@@ -80,6 +80,7 @@ theorem Groupoid.inv_eq_inv (f : X ⟶ Y) : Groupoid.inv f = CategoryTheory.inv 
 def Groupoid.invEquiv : (X ⟶ Y) ≃ (Y ⟶ X) :=
   ⟨Groupoid.inv, Groupoid.inv, fun f => by simp, fun f => by simp⟩
 
+set_option backward.whnf.reducibleClassField false in
 instance (priority := 100) groupoidHasInvolutiveReverse : Quiver.HasInvolutiveReverse C where
   reverse' f := Groupoid.inv f
   inv' f := by
