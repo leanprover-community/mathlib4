@@ -141,10 +141,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
     rw [← Monotone.measure_iInter]
     · congr with y : 1
       simp only [mem_Iic, mem_iInter, Subtype.forall]
-      refine ⟨fun h a ha ↦ h.trans ?_, fun h ↦ ?_⟩
-      · exact mod_cast ha.le
-      · refine le_of_forall_lt_rat_imp_le fun q hq ↦ h q ?_
-        exact mod_cast hq
+      exact le_iff_forall_lt_rat_imp_le
     · exact fun r r' hrr' ↦ Iic_subset_Iic.mpr <| mod_cast hrr'
     · exact fun _ ↦ nullMeasurableSet_Iic
     · obtain ⟨q, hq⟩ := exists_rat_gt x
@@ -298,11 +295,7 @@ lemma IsRatCondKernelCDFAux.tendsto_atBot_zero (hf : IsRatCondKernelCDFAux f κ 
     ∀ᵐ t ∂(ν a), Tendsto (f (a, t)) atBot (𝓝 0) := by
   suffices ∀ᵐ t ∂(ν a), Tendsto (fun q : ℚ ↦ f (a, t) (-q)) atTop (𝓝 0) by
     filter_upwards [this] with t ht
-    have h_eq_neg : f (a, t) = fun q : ℚ ↦ f (a, t) (- -q) := by
-      simp_rw [neg_neg]
-    rw [h_eq_neg]
-    convert ht.comp tendsto_neg_atBot_atTop
-    simp
+    exact tendsto_comp_neg_atTop_iff.mp ht
   suffices ∀ᵐ t ∂(ν a), Tendsto (fun (n : ℕ) ↦ f (a, t) (-n)) atTop (𝓝 0) by
     filter_upwards [this, hf.mono a] with t ht h_mono
     have h_anti : Antitone (fun q ↦ f (a, t) (-q)) := h_mono.comp_antitone monotone_id.neg
@@ -549,6 +542,7 @@ lemma setLIntegral_toKernel_prod [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     · exact fun i ↦
         ((Kernel.measurable_coe _ (hf_meas i)).comp measurable_prodMk_left).aemeasurable.restrict
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     (a : α) {s : Set (β × ℝ)} (hs : MeasurableSet s) :
@@ -604,14 +598,8 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
       simp only [preimage_iUnion, implies_true]
     simp_rw [h_eq]
     have h_disj : ∀ a, Pairwise (Disjoint on fun i ↦ Prod.mk a ⁻¹' f' i) := by
-      intro a i j hij
-      have h_disj := hf_disj hij
-      rw [Function.onFun, disjoint_iff_inter_eq_empty] at h_disj ⊢
-      ext1 x
-      simp only [mem_inter_iff, mem_empty_iff_false, iff_false]
-      intro h_mem_both
-      suffices (a, x) ∈ ∅ by rwa [mem_empty_iff_false] at this
-      rwa [← h_disj, mem_inter_iff]
+      intro _ _ _ hij
+      exact Disjoint.preimage _ (hf_disj hij)
     calc ∫⁻ b, hf.toKernel f (a, b) (⋃ i, Prod.mk b ⁻¹' f' i) ∂(ν a)
       = ∫⁻ b, ∑' i, hf.toKernel f (a, b) (Prod.mk b ⁻¹' f' i) ∂(ν a) := by
           congr with x : 1

@@ -350,19 +350,13 @@ lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Ioi_of_not_isMax⟩ := nonempty_Ioi
 
-@[simp]
+@[simp, gcongr]
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
   simp [← coe_subset]
 
-@[gcongr]
-alias ⟨_, _root_.GCongr.Finset.Ici_subset_Ici⟩ := Ici_subset_Ici
-
-@[simp]
+@[simp, gcongr]
 theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a := by
   simp [← coe_ssubset]
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Finset.Ici_ssubset_Ici⟩ := Ici_ssubset_Ici
 
 @[gcongr]
 theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := by
@@ -419,19 +413,13 @@ lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Iio_of_not_isMin⟩ := nonempty_Iio
 
-@[simp]
+@[simp, gcongr]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
   simp [← coe_subset]
 
-@[gcongr]
-alias ⟨_, _root_.GCongr.Finset.Iic_subset_Iic⟩ := Iic_subset_Iic
-
-@[simp]
+@[simp, gcongr]
 theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b := by
   simp [← coe_ssubset]
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Finset.Iic_ssubset_Iic⟩ := Iic_ssubset_Iic
 
 @[gcongr]
 theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
@@ -440,6 +428,10 @@ theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
 @[gcongr]
 theorem Iio_ssubset_Iio (h : a < b) : Iio a ⊂ Iio b := by
   simpa [← coe_ssubset] using Set.Iio_ssubset_Iio h
+
+theorem sup_Iic_of_monotone {β : Type*} [SemilatticeSup β] [OrderBot β] {f : α → β}
+    (hf : Monotone f) : (Iic a).sup f = f a :=
+  le_antisymm (Finset.sup_le_iff.mpr fun _ h ↦ hf (by simpa using h)) (le_sup (by simp))
 
 variable [LocallyFiniteOrder α]
 
@@ -464,6 +456,7 @@ theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
 theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_gt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence between `Finset.Iic a` and `Set.Iic a`. -/
 def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where
   toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
@@ -837,13 +830,14 @@ theorem Ico_subset_Ico_union_Ico {a b c : α} : Ico a c ⊆ Ico a b ∪ Ico b c 
   rw [← coe_subset, coe_union, coe_Ico, coe_Ico, coe_Ico]
   exact Set.Ico_subset_Ico_union_Ico
 
-theorem Ico_union_Ico' {a b c d : α} (hcb : c ≤ b) (had : a ≤ d) :
-    Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
-  rw [← coe_inj, coe_union, coe_Ico, coe_Ico, coe_Ico, Set.Ico_union_Ico' hcb had]
-
 theorem Ico_union_Ico {a b c d : α} (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
   rw [← coe_inj, coe_union, coe_Ico, coe_Ico, coe_Ico, Set.Ico_union_Ico h₁ h₂]
+
+/-- This is a special case of `Ico_union_Ico` -/
+theorem Ico_union_Ico' {a b c d : α} (hcb : c ≤ b) (had : a ≤ d) :
+    Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
+  rw [← coe_inj, coe_union, coe_Ico, coe_Ico, coe_Ico, Set.Ico_union_Ico' hcb had]
 
 theorem Ico_inter_Ico {a b c d : α} : Ico a b ∩ Ico c d = Ico (max a c) (min b d) := by
   rw [← coe_inj, coe_inter, coe_Ico, coe_Ico, coe_Ico, Set.Ico_inter_Ico]

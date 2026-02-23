@@ -260,6 +260,7 @@ theorem mul_adjugate_apply (A : Matrix n n α) (i j k) :
   rw [← smul_eq_mul, adjugate, of_apply, ← Pi.smul_apply, ← map_smul, ← Pi.single_smul',
     smul_eq_mul, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_adjugate (A : Matrix n n α) : A * adjugate A = A.det • (1 : Matrix n n α) := by
   ext i j
   rw [mul_apply, Pi.smul_apply, Pi.smul_apply, one_apply, smul_eq_mul, mul_boole]
