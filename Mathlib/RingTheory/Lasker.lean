@@ -18,8 +18,8 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 - `IsLasker.exists_isMinimalPrimaryDecomposition`: Any `N : Submodule R N` in an `R`-module `M`
   satisfying `IsLasker R M` can be decomposed into finitely many primary submodules `Nᵢ`, such
   that the decomposition is minimal: each `Nᵢ` is necessary, and the `√Ann(M/Nᵢ)` are distinct.
-- `IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff`: The first uniqueness theorem for
-  primary decomposition, Theorem 4.5 in Atiyah-Macdonald: In any minimal primary decomposition
+- `IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes`: The first uniqueness theorem
+  for primary decomposition, Theorem 4.5 in Atiyah-Macdonald: In any minimal primary decomposition
   `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly the associated primes of `I`.
 - `Submodule.isLasker`: Every Noetherian module is Lasker.
 
@@ -120,7 +120,7 @@ In any minimal primary decomposition `I = ⨅ i, q_i`, the ideals `radical (q_i.
 the associated primes of `I`. -/
 lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes [DecidableEq (Submodule R M)]
     {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t) :
-    (fun J : (Submodule R M) ↦ (J.colon Set.univ).radical) '' t = N.associatedPrimes := by
+    (fun J : Submodule R M ↦ (J.colon Set.univ).radical) '' t = N.associatedPrimes := by
   classical
   replace h x : radical (N.colon {x}) = (t.filter (x ∉ ·)).inf fun q ↦ radical (q.colon .univ) := by
     simp_rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply, map_finset_inf,

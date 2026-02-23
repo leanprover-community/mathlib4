@@ -68,7 +68,7 @@ protected theorem isAssociatedPrime_def :
     N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = (colon N {x}).radical :=
   .rfl
 
-protected theorem isAssociatedPrime_iff [h : IsNoetherianRing R] :
+protected theorem isAssociatedPrime_iff [IsNoetherianRing R] :
     N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = colon N {x} := by
   constructor
   · rintro ⟨hx, x, rfl⟩
@@ -90,7 +90,7 @@ variable {R : Type*} [CommSemiring R] (I J : Ideal R) (M : Type*) [AddCommMonoid
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the radical of the annihilator
 of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
-  I.IsPrime ∧ ∃ x : M, I = (colon ⊥ {x}).radical
+  (⊥: Submodule R M).IsAssociatedPrime I
 
 variable (R) in
 /-- The set of associated primes of a module. -/
@@ -100,6 +100,9 @@ def associatedPrimes : Set (Ideal R) :=
 variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] M')
 
 theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
+
+@[deprecated (since := "2025-11-24")]
+alias AssociatePrimes.mem_iff := AssociatedPrimes.mem_iff
 
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 
@@ -126,25 +129,23 @@ theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedP
 
 variable (R) in
 theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R] (x : M)
-    (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (colon ⊥ {x}).radical ≤ P := by
+    (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (⊥ : Submodule R M).colon {x} ≤ P := by
+  simp only [isAssociatedPrime_iff]
   obtain ⟨P, ⟨l, h₁, y, rfl⟩, h₃⟩ :=
     set_has_maximal_iff_noetherian.mpr H
-      { P | (colon ⊥ {x}).radical ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (colon ⊥ {y}).radical }
+      { P | (⊥ : Submodule R M).colon {x} ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (⊥ : Submodule R M).colon {y} }
       ⟨_, rfl.le, by simpa, x, rfl⟩
   refine ⟨_, ⟨⟨h₁, ?_⟩, y, rfl⟩, l⟩
-  rintro a b ⟨k, hk⟩
+  intro a b hab
   rw [or_iff_not_imp_left]
   intro ha
-  simp only [Ideal.mem_radical_iff, mem_colon_singleton, mem_bot] at ha hk
-  replace ha := forall_not_of_not_exists ha k
-  have H₁ : (colon ⊥ {y} : Ideal R).radical ≤ (colon ⊥ {a ^ k • y}).radical := by
-    apply Ideal.radical_mono
+  rw [mem_colon_singleton] at ha hab
+  have H₁ : (⊥ : Submodule R M).colon {y} ≤ (⊥ : Submodule R M).colon {a • y} := by
     intro c hc
     rw [mem_colon_singleton, mem_bot] at hc ⊢
     rw [smul_comm, hc, smul_zero]
-  rw [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, by simpa, _, rfl⟩)]
-  use k
-  rwa [mem_colon_singleton, smul_smul, ← mul_pow, mul_comm]
+  rwa [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, by simpa, _, rfl⟩),
+    mem_colon_singleton, smul_comm, smul_smul]
 
 namespace associatedPrimes
 
