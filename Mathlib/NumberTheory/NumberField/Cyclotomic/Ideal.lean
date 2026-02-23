@@ -72,6 +72,7 @@ theorem associated_norm_zeta_sub_one : Associated (Algebra.norm ℤ (hζ.toInteg
       rw [hζ.norm_toInteger_sub_one_of_eq_two_pow, h, Int.ofNat_two]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
   simpa using congr_arg absNorm <|
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ
@@ -94,6 +95,7 @@ theorem inertiaDeg_span_zeta_sub_one : inertiaDeg 𝒑 (span {hζ.toInteger - 1}
   rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, ← absNorm_eq_pow_inertiaDeg' _ hp.out,
     absNorm_span_zeta_sub_one]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] FractionRing.liftAlgebra in
 theorem map_eq_span_zeta_sub_one_pow :
     (map (algebraMap ℤ (𝓞 K)) 𝒑) = span {hζ.toInteger - 1} ^ Module.finrank ℚ K := by
@@ -113,6 +115,7 @@ theorem map_eq_span_zeta_sub_one_pow :
   rw [Finset.prod_const, Finset.card_univ, ← Fintype.card_congr (galRestrict ℤ ℚ K (𝓞 K)).toEquiv,
     ← Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ramificationIdx_span_zeta_sub_one :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 (span {hζ.toInteger - 1}) = p ^ k * (p - 1) := by
   have h := isPrime_span_zeta_sub_one p k hζ
@@ -123,6 +126,7 @@ theorem ramificationIdx_span_zeta_sub_one :
 
 variable (K)
 
+set_option backward.isDefEq.respectTransparency false in
 include hK in
 theorem ncard_primesOver_of_prime_pow :
     (primesOver 𝒑 (𝓞 K)).ncard = 1 := by
@@ -235,6 +239,7 @@ open NumberField.Ideal Polynomial
 
 variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
     inertiaDeg 𝒑 P = orderOf (p : ZMod m) := by
   replace hm : p.Coprime m := hp.out.coprime_iff_not_dvd.mpr hm
@@ -257,6 +262,7 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
 @[deprecated (since := "2025-12-10")]
 alias inertiaDeg_of_not_dvd := inertiaDeg_eq_of_not_dvd
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger
@@ -279,12 +285,14 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
 @[deprecated (since := "2025-12-10")]
 alias ramificationIdx_of_not_dvd := ramificationIdx_eq_of_not_dvd
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inertiaDegIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) := by
   have : IsGalois ℚ K := isGalois {m} ℚ K
   obtain ⟨⟨P, _, _⟩⟩ := 𝒑.nonempty_primesOver (S := 𝓞 K)
   rw [inertiaDegIn_eq_inertiaDeg 𝒑 P Gal(K/ℚ), inertiaDeg_eq_of_not_dvd p K P hm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ramificationIdxIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.ramificationIdxIn (𝓞 K) = 1 := by
   have : IsGalois ℚ K := isGalois {m} ℚ K
@@ -301,6 +309,7 @@ section general
 
 variable {m p k} [IsCyclotomicExtension {n} ℚ K]
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) ∧
