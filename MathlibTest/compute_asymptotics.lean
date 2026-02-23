@@ -5,6 +5,8 @@ private axiom test_sorry : ∀ {α}, α
 
 open Real Filter Topology Asymptotics
 
+set_option backward.isDefEq.respectTransparency false
+
 example :
     let f := fun (x : ℝ) ↦ x;
     Tendsto f atTop atTop := by
