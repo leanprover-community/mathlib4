@@ -15,7 +15,7 @@ Let `(C, J)` be a site with a conservative family of points.
 If `A` is a suitable monoidal category, we show that
 the class of morphisms `J.W : MorphismProperty (Cᵒᵖ ⥤ A)`
 is stable under tensor products, which allows to
-check assumptions of `Sheaf.monoidalCategory` in the
+check the assumptions of `Sheaf.monoidalCategory` in the
 file `Mathlib/CategoryTheory/Sites/Monoidal.lean`,
 i.e. this can be used in order to construct the monoidal
 category structure on `Sheaf J A`.
@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 open Limits GrothendieckTopology MonoidalCategory
 
-variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
+variable {C : Type u} [Category.{v} C]
   {J : GrothendieckTopology C}
   {P : ObjectProperty (Point.{w} J)} (hP : P.IsConservativeFamilyOfPoints)
   (A : Type u') [Category.{v'} A] [MonoidalCategory A] [HasColimitsOfSize.{w, w} A]
