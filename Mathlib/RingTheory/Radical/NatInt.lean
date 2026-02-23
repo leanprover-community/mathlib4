@@ -35,7 +35,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 open UniqueFactorizationMonoid
 
-section Nat
+/-! ### Lemmas about natural numbers -/
 
 lemma UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors :
     primeFactors = Nat.primeFactors := by
@@ -70,11 +70,12 @@ lemma radical_pos (n) : 0 < radical n := pos_of_ne_zero radical_ne_zero
 @[simp] lemma radical_le_self_iff : radical n ≤ n ↔ n ≠ 0 :=
   ⟨by aesop, fun h ↦ Nat.le_of_dvd (by lia) radical_dvd_self⟩
 
-end Nat
+@[simp] lemma self_lt_radical_iff : n < radical n ↔ n = 0 := by
+  simpa only [not_le, not_not] using radical_le_self_iff.not
 
 end Nat
 
-section Int
+/-! ### Lemmas about integers -/
 
 variable {z : ℤ}
 
@@ -96,19 +97,19 @@ lemma UniqueFactorizationMonoid.primeFactors_eq_primeFactors_natAbs :
 
 namespace Int
 
-lemma radical_eq_radical_natAbs : radical z = radical z.natAbs := by
+@[simp] lemma radical_natAbs_eq_radical : radical z.natAbs = radical z := by
   rw [Nat.radical_eq_prod_primeFactors, radical]
   simp [primeFactors_eq_primeFactors_natAbs]
 
 lemma radical_eq_prod_primeFactors : radical z = ∏ p ∈ z.natAbs.primeFactors, p := by
-  rw [radical_eq_radical_natAbs, Nat.radical_eq_prod_primeFactors]
+  rw [← radical_natAbs_eq_radical, Nat.radical_eq_prod_primeFactors]
 
 lemma radical_pos (z : ℤ) : 0 < radical z := by
-  rw [radical_eq_radical_natAbs, natCast_pos]
+  rw [← radical_natAbs_eq_radical, natCast_pos]
   exact Nat.radical_pos _
 
 @[simp] lemma one_lt_radical_iff : 1 < radical z ↔ 1 < z.natAbs := by
-  rw [radical_eq_radical_natAbs, Nat.one_lt_cast]
+  rw [← radical_natAbs_eq_radical, Nat.one_lt_cast]
   exact Nat.one_lt_radical_iff
 
 @[simp] lemma two_le_radical_iff : 2 ≤ radical z ↔ 2 ≤ z.natAbs := one_lt_radical_iff
@@ -119,7 +120,5 @@ lemma radical_pos (z : ℤ) : 0 < radical z := by
 @[simp] lemma radical_eq_one_iff : radical z = 1 ↔ z.natAbs ≤ 1 := by
   rw [← radical_le_one_iff]
   grind [radical_pos z]
-
-end Int
 
 end Int

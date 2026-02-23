@@ -44,7 +44,7 @@ Lemmas relating to natural numbers and integers are in `Mathlib.RingTheory.Radic
   `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 namespace UniqueFactorizationMonoid
 
@@ -53,7 +53,7 @@ variable {M : Type*} [CommMonoidWithZero M] [NormalizationMonoid M]
 
 open scoped Classical in
 /-- The finite set of prime factors of an element in a unique factorization monoid. -/
-noncomputable def primeFactors (a : M) : Finset M :=
+def primeFactors (a : M) : Finset M :=
   (normalizedFactors a).toFinset
 
 lemma mem_primeFactors : a ∈ primeFactors b ↔ a ∈ normalizedFactors b := by
@@ -139,7 +139,7 @@ theorem primeFactors_mul_eq_disjUnion (hc : IsRelPrime a b) :
 
 /-- The radical of an element `a` in a unique factorization monoid is the product of
 the prime factors of `a`. -/
-noncomputable def radical (a : M) : M :=
+def radical (a : M) : M :=
   (primeFactors a).prod id
 
 @[simp] theorem radical_zero : radical (0 : M) = 1 := by simp [radical]
@@ -357,7 +357,7 @@ variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactoriz
   {a b u x : E}
 
 /-- Division of an element by its radical in a Euclidean domain. -/
-noncomputable def divRadical (a : E) : E := a / radical a
+def divRadical (a : E) : E := a / radical a
 
 theorem radical_mul_divRadical : radical a * divRadical a = a := by
   rw [divRadical, ← EuclideanDomain.mul_div_assoc _ radical_dvd_self,
