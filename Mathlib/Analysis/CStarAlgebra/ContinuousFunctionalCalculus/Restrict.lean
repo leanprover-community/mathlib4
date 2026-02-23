@@ -191,7 +191,7 @@ open ContinuousFunctionalCalculus in
 characterized by: `q a` and the spectrum of `a` restricts to the scalar subring `R` via
 `f : C(S, R)`, then we can get a restricted functional calculus
 `ContinuousFunctionalCalculus R A p`. -/
-protected theorem cfc_isClosedEmbedding (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
+protected theorem closedEmbeddingCFC (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
     (h0 : p 0) (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) :
     ClosedEmbeddingContinuousFunctionalCalculus R A p where
   toContinuousFunctionalCalculus := SpectrumRestricts.cfc f halg.isClosedEmbedding h0 h
@@ -378,7 +378,8 @@ open NonUnitalContinuousFunctionalCalculus in
 characterized by: `q a` and the quasispectrum of `a` restricts to the scalar subring `R` via
 `f : C(S, R)`, then we can get a restricted functional calculus
 `NonUnitalContinuousFunctionalCalculus R A p`. -/
-protected theorem cfcₙ_isClosedEmbedding (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
+protected theorem nonUnitalClosedEmbeddingCFC (f : C(S, R))
+    (halg : IsUniformEmbedding (algebraMap R S))
     (h0 : p 0) (h : ∀ a, p a ↔ q a ∧ QuasispectrumRestricts a f) :
     NonUnitalClosedEmbeddingContinuousFunctionalCalculus R A p where
   toNonUnitalContinuousFunctionalCalculus :=
