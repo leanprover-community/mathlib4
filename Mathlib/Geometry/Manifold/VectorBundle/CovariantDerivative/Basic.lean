@@ -1156,18 +1156,59 @@ def Trivialization.derivEquiv (v : TotalSpace F V) :
       continuous_toFun := ContinuousLinearMap.continuous _
       continuous_invFun := ContinuousLinearMap.continuous _
 
+variable (I) in
+omit [MemTrivializationAtlas e] [IsManifold I 1 M] in
+lemma Trivialization.fst_comp_eventuallyEq
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
+    Prod.fst ∘ e =ᶠ[𝓝 v] TotalSpace.proj := by
+  have : TotalSpace.proj ⁻¹' e.baseSet ∈ 𝓝 v := by
+    apply FiberBundle.continuous_proj F V |>.continuousAt
+    exact e.open_baseSet.mem_nhds_iff.mpr hv
+  filter_upwards [this] with y hy
+  exact coe_fst' e hy
+
+-- TODO: decide whether we want this and move
+-- This delaborates `TotalSpace.mk x v` to `⟨x, v⟩`
+open Lean PrettyPrinter Delaborator SubExpr in
+@[app_delab TotalSpace.mk] meta def delabTotalSpace_mk : Delab := do
+  whenPPOption getPPNotation do
+  let #[_B, _F, _E, _b, _v] := (← getExpr).getAppArgs | failure
+  let bd : Term ← withNaryArg 3 <| delab
+  let vd : Term ← withNaryArg 4 <| delab
+  `(⟨$bd, $vd⟩)
+
+lemma Trivialization.mdifferentiableAt
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {x : M} (hx : x ∈ e.baseSet) (v : V x) :
+MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v := by
+  have : ⟨x, v⟩ ∈ e.source := (coe_mem_source e).mpr hx
+  have foo := e.contMDiffOn (IB := I) (n := 1) v this
+  have := foo.contMDiffAt (e.open_source.mem_nhds this)
+  exact this.mdifferentiableAt zero_ne_one.symm
+
 noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
   (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj v).ker
 
-lemma Trivialization.comap_vert (v : TotalSpace F V) (hv : v.proj ∈ e.baseSet) :
+lemma Trivialization.comap_vert
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     Bundle.vert v = Submodule.comap (e.derivEquiv I v).toLinearMap
       (Submodule.prod ⊥ ⊤) := by
   ext x
-  simp [vert]
-  sorry
+  have : Prod.fst ∘ e =ᶠ[𝓝 v] TotalSpace.proj := e.fst_comp_eventuallyEq I hv
+  unfold vert
+  rw [← this.mfderiv_eq]
+  have mdiffe : MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v :=
+    e.mdifferentiableAt hv _
+  rw [mfderiv_comp v mdifferentiableAt_fst mdiffe]
+  simp
+  rfl
 
 -- FIXME: is this really missing??
+omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)]
+  [(x : M) → TopologicalSpace (V x)] [FiberBundle F V] [MemTrivializationAtlas e] in
 lemma Trivialization.eq_of {x : M} {v v' : V x}
    (hx : x ∈ e.baseSet) (hvv' : (e v).2 = (e v').2) :
     v = v' := by
@@ -1175,11 +1216,38 @@ lemma Trivialization.eq_of {x : M} {v v' : V x}
   rw [hvv'] at this
   grind [e.symm_proj_apply v' hx]
 
-lemma Trivialization.derivEquiv_mfderiv {σ : Π x : M, V x} (hσ : MDiffAt T%σ x)
-    (u : TangentSpace I x) (v : V x)  :
+lemma Trivialization.derivEquiv_mfderiv
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {σ : Π x : M, V x} {x : M} (hσ : MDiffAt T%σ x)
+    (u : TangentSpace I x) (hx : x ∈ e.baseSet) :
     letI s := fun x ↦ (e (σ x)).2
-    e.derivEquiv I v ((mfderiv% T%σ x) u) = (u, mfderiv I 𝓘(ℝ, F) s x u) := by
-  sorry
+    e.derivEquiv I (σ x) ((mfderiv% T%σ x) u) = (u, mfderiv I 𝓘(ℝ, F) s x u) := by
+  have mdiffe : MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e (σ x) :=
+    e.mdifferentiableAt hx _
+  have : mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x =
+    (derivEquiv I e (σ x)).toContinuousLinearMap ∘L
+    (mfderiv% T%σ x) :=
+    mfderiv_comp x mdiffe hσ
+  have : mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x u =
+    e.derivEquiv I (σ x) ((mfderiv% T%σ x) u) := by
+    rw [this]
+    rfl
+  rw [← this]
+  let s := fun x ↦ (e (σ x)).2
+  change mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x u = (u, mfderiv I 𝓘(ℝ, F) s x u)
+  -- FIXME extract lemma
+  have : e ∘ T%σ =ᶠ[𝓝 x] fun x ↦ ⟨x, (e (σ x)).2⟩ := by
+    have : e.baseSet ∈ 𝓝 x := e.open_baseSet.mem_nhds_iff.mpr hx
+    filter_upwards [this] with y hy
+    ext
+    · exact coe_coe_fst e hy
+    · simp
+  rw [this.mfderiv_eq]
+  erw [mfderiv_prodMk, mfderiv_id]
+  · change (ContinuousLinearMap.id _ _).prod (mfderiv% s x) u = _
+    simp
+  · apply mdifferentiableAt_id
+  · exact (mdifferentiableAt_section_iff I e σ hx).mp hσ
 
 noncomputable
 def Trivialization.pushCovDer
@@ -1207,8 +1275,13 @@ variable {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, 
 
 lemma Trivialization.pushCovDer_isCovariantDerivativeOn
     (hcov : IsCovariantDerivativeOn F cov e.baseSet) :
-    IsCovariantDerivativeOn F (e.pushCovDer cov) e.baseSet :=
-  sorry
+    IsCovariantDerivativeOn F (e.pushCovDer cov) e.baseSet where
+      addX := sorry
+      smulX := sorry
+      addσ := sorry
+      leibniz := sorry
+      smul_const_σ := sorry
+
 end to_trivialization
 
 section horiz
@@ -1280,13 +1353,14 @@ lemma LinearEquiv.comap_isCompl {R R₂ M M₂ : Type*}
     · simp
     · simp
 
-lemma horiz_vert_direct_sum (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
+lemma horiz_vert_direct_sum [ContMDiffVectorBundle 1 F V I]
+    (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     IsCompl (cov.horiz v) (vert v) := by
   let t := trivializationAt F V v.proj
   let Tvt := t.derivEquiv I v
   have hcov := t.pushCovDer_isCovariantDerivativeOn
     (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
-  rw [t.comap_vert _ (mem_baseSet_trivializationAt F V v.proj), comap_trivializationAt_horiz]
+  rw [t.comap_vert (mem_baseSet_trivializationAt F V v.proj), comap_trivializationAt_horiz]
   apply LinearEquiv.comap_isCompl
   apply hcov.horiz_vert_direct_sum
 
@@ -1302,18 +1376,9 @@ lemma proj_mderiv [ContMDiffVectorBundle 1 F V I]
   let t := trivializationAt F V x
   let s := fun x ↦ (t (σ x)).2
   let Tσx := mfderiv% (T% σ) x
-  -- FIXME `mfderiv%` fails in next line
+  -- FIXME `mfderiv%` fails in next line (fixed on master?)
   let Ttσx := mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) t (σ x)
   change cov X σ x = (cov.proj (T% σ x)) ((mfderiv% (T% σ) x) (X x))
-  -- have der_eq : mfderiv% s x = ContinuousLinearMap.snd ℝ _ _ ∘L Ttσx ∘L Tσx := by
-  --   rw [show s = Prod.snd ∘ t ∘ (T% σ) from rfl]
-  --   have mdifft : MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) t (σ x) := sorry
-  --   have mdiffsnd : MDifferentiableAt (I.prod 𝓘(ℝ, F)) 𝓘(ℝ, F) Prod.snd (t <| σ x) :=
-  --     mdifferentiableAt_snd
-  --   rw [mfderiv_comp x mdiffsnd]
-  --   · rw [mfderiv_comp x mdifft hσ, mfderiv_snd]
-  --     rfl
-  --   · exact (mdifft.comp x hσ)
   have hcov := t.pushCovDer_isCovariantDerivativeOn
     (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
   have hx := mem_baseSet_trivializationAt F V x
@@ -1323,7 +1388,7 @@ lemma proj_mderiv [ContMDiffVectorBundle 1 F V I]
   apply t.eq_of hx
   rw  [cov.snd_triv_proj (T% σ x),
        ← t.pushCovDer_ofSect (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _) X σ,
-       hcov.cov_eq_proj X s hX hs, t.derivEquiv_mfderiv hσ]
+       hcov.cov_eq_proj X s hX hs, t.derivEquiv_mfderiv hσ _ hx]
 
 end CovariantDerivative
 end horiz
