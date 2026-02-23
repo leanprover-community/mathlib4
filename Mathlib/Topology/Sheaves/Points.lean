@@ -27,38 +27,50 @@ universe u
 
 namespace Opens
 
-open CategoryTheory GrothendieckTopology
+open CategoryTheory GrothendieckTopology TopologicalSpace
 
-variable (X : Type u) [TopologicalSpace X] (x : X)
+variable {X : Type u} [TopologicalSpace X] (x : X)
 
-variable {X} in
+def pointGrothendieckTopology.fiber : Opens X ⥤ Type u where
+  obj U := ULift.{u} (PLift (x ∈ U))
+  map f h := ⟨⟨leOfHom f h.down.down⟩⟩
+
+instance : IsCofiltered (pointGrothendieckTopology.fiber x).Elements where
+  nonempty := ⟨⊤, ⟨⟨by simp⟩⟩⟩
+  cone_objs := by
+    rintro ⟨U, ⟨⟨hU⟩⟩⟩ ⟨V, ⟨⟨hV⟩⟩⟩
+    exact ⟨⟨U ⊓ V, ⟨⟨⟨hU, hV⟩⟩⟩⟩, ⟨homOfLE (by simp), rfl⟩,
+      ⟨homOfLE (by simp), rfl⟩, ⟨⟩⟩
+  cone_maps _ _ _ _ := ⟨_, 𝟙 _, rfl⟩
+
+instance : InitiallySmall.{u} (pointGrothendieckTopology.fiber x).Elements :=
+  initiallySmall_of_essentiallySmall _
+
 /-- Given a topological space `X` and `x : X`, this is the point of the site
 `(Opens X, Opens.grothendieckTopology X)` corresponding to `x`. -/
 def pointGrothendieckTopology : Point.{u} (grothendieckTopology X) where
-  fiber.obj U := ULift.{u} (PLift (x ∈ U))
-  fiber.map f h := ⟨⟨leOfHom f h.down.down⟩⟩
-  isCofiltered :=
-    { nonempty := ⟨⊤, ⟨⟨by simp⟩⟩⟩
-      cone_objs := by
-        rintro ⟨U, ⟨⟨hU⟩⟩⟩ ⟨V, ⟨⟨hV⟩⟩⟩
-        exact ⟨⟨U ⊓ V, ⟨⟨⟨hU, hV⟩⟩⟩⟩, ⟨homOfLE (by simp), rfl⟩,
-          ⟨homOfLE (by simp), rfl⟩, ⟨⟩⟩
-      cone_maps _ _ _ _ := ⟨_, 𝟙 _, rfl⟩ }
-  initiallySmall := initiallySmall_of_essentiallySmall _
+  fiber := pointGrothendieckTopology.fiber x
   jointly_surjective := by
     rintro U R hR ⟨⟨hU⟩⟩
     obtain ⟨V, f, hf, hV⟩ := hR x hU
     exact ⟨_, _, hf, ⟨⟨hV⟩⟩, rfl⟩
 
+variable (X) in
 /-- When `X` is a topological space, this is the obvious conservative family of
 points on the site `(Opens X, Opens.grothendieckTopology X)`. -/
 def pointsGrothendieckTopology : ObjectProperty (Point.{u} (grothendieckTopology X)) :=
   ObjectProperty.ofObj pointGrothendieckTopology
+  deriving ObjectProperty.Small.{u}
 
+variable (X) in
 lemma isConservative_pointsGrothendieckTopology :
     (pointsGrothendieckTopology X).IsConservativeFamilyOfPoints :=
   .mk' (fun U S hS x hx ↦ by
     obtain ⟨V, f, hf, ⟨⟨hV⟩⟩, _⟩ := hS ⟨_, ⟨x⟩⟩ ⟨⟨hx⟩⟩
     exact ⟨V, f, hf, hV⟩)
+
+instance : HasEnoughPoints.{u} (grothendieckTopology X) where
+  exists_objectProperty :=
+    ⟨_, inferInstance, isConservative_pointsGrothendieckTopology X⟩
 
 end Opens
