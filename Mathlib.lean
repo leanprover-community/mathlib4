@@ -5747,6 +5747,7 @@ public import Mathlib.Order.Lattice.Congruence
 public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.LiminfLimsup
 public import Mathlib.Order.Max
+public import Mathlib.Order.Mex
 public import Mathlib.Order.MinMax
 public import Mathlib.Order.Minimal
 public import Mathlib.Order.ModularLattice
