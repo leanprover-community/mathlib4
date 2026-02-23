@@ -213,6 +213,7 @@ theorem padicValNat_self [Fact p.Prime] : padicValNat p p = 1 := by
   rw [padicValNat_def (@Fact.out p.Prime).ne_zero]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_le_padicValNat_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0) (div : p ∣ n) :
     1 ≤ padicValNat p n := by
   rwa [← WithTop.coe_le_coe, ENat.some_eq_coe, padicValNat_eq_emultiplicity hn,
@@ -464,24 +465,24 @@ theorem pow_succ_padicValNat_not_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0
   rw [padicValNat_dvd_iff_le hn, not_le]
   exact Nat.lt_succ_self _
 
-theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (neq : p ≠ q) :
+theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne : p ≠ q) :
     padicValNat p q = 0 :=
   @padicValNat.eq_zero_of_not_dvd p q <|
-    (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp neq
+    (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp ne
 
 theorem padicValNat_prime_prime_pow {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
-    (n : ℕ) (neq : p ≠ q) : padicValNat p (q ^ n) = 0 := by
-  rw [padicValNat.pow _ <| Nat.Prime.ne_zero hq.elim, padicValNat_primes neq, mul_zero]
+    (n : ℕ) (ne : p ≠ q) : padicValNat p (q ^ n) = 0 := by
+  rw [padicValNat.pow _ <| Nat.Prime.ne_zero hq.elim, padicValNat_primes ne, mul_zero]
 
 theorem padicValNat_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
-    (n m : ℕ) (neq : p ≠ q) : padicValNat p (p ^ n * q ^ m) = n := by
+    (n m : ℕ) (ne : p ≠ q) : padicValNat p (p ^ n * q ^ m) = n := by
   rw [padicValNat.mul (NeZero.ne' (p ^ n)).symm (NeZero.ne' (q ^ m)).symm,
-    padicValNat.prime_pow, padicValNat_prime_prime_pow m neq, add_zero]
+    padicValNat.prime_pow, padicValNat_prime_prime_pow m ne, add_zero]
 
 theorem padicValNat_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
-    (n m : ℕ) (neq : q ≠ p) : padicValNat q (p ^ n * q ^ m) = m := by
+    (n m : ℕ) (ne : q ≠ p) : padicValNat q (p ^ n * q ^ m) = m := by
   rw [mul_comm (p ^ n) (q ^ m)]
-  exact padicValNat_mul_pow_left m n neq
+  exact padicValNat_mul_pow_left m n ne
 
 /-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t. `p`. -/
 lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
@@ -613,7 +614,7 @@ theorem sub_one_mul_padicValNat_factorial_lt_of_ne_zero [hp : Fact p.Prime] {n :
   rw [sub_one_mul_padicValNat_factorial n]
   refine Nat.sub_lt_self ?_ (digit_sum_le p n)
   have hnil : p.digits n ≠ [] := Nat.digits_ne_nil_iff_ne_zero.mpr hn
-  exact Nat.sum_pos_iff_exists_pos.mpr
+  exact List.sum_pos_iff_exists_pos_nat.mpr
     ⟨_, List.getLast_mem hnil, Nat.pos_of_ne_zero (Nat.getLast_digit_ne_zero p hn)⟩
 
 theorem padicValNat_factorial_lt_of_ne_zero [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :

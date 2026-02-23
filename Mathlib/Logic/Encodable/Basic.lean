@@ -88,6 +88,7 @@ theorem surjective_decode_iget (α : Type*) [Encodable α] [Inhabited α] :
 
 /-- An encodable type has decidable equality. Not set as an instance because this is usually not the
 best way to infer decidability. -/
+@[instance_reducible]
 def decidableEqOfEncodable (α) [Encodable α] : DecidableEq α
   | _, _ => decidable_of_iff _ encode_inj
 
@@ -203,6 +204,7 @@ theorem encodek₂ [Encodable α] (a : α) : decode₂ α (encode a) = some a :=
   mem_decode₂.2 rfl
 
 /-- The encoding function has decidable range. -/
+@[instance_reducible]
 def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set.range (@encode α _)) :=
   fun x =>
   decidable_of_iff (Option.isSome (decode₂ α x))
@@ -486,13 +488,9 @@ private def good : Option α → Prop
   | none => False
 
 set_option backward.privateInPublic true in
-private def decidable_good : DecidablePred (good p) :=
+private local instance decidable_good : DecidablePred (good p) :=
   fun n => by
     cases n <;> unfold good <;> dsimp <;> infer_instance
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-attribute [local instance] decidable_good
 
 open Encodable
 

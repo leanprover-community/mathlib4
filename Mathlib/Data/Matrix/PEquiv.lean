@@ -133,7 +133,7 @@ theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [NonAssocSemi
     (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix * g.toMatrix := by
   ext i j
   rw [toMatrix_mul_apply]
-  dsimp [toMatrix, PEquiv.trans]
+  dsimp +instances [toMatrix, PEquiv.trans]
   cases f i <;> simp
 
 @[simp]

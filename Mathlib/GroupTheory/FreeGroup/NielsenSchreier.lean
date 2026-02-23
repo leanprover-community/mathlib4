@@ -85,7 +85,7 @@ attribute [nolint docBlame] IsFreeGroupoid.of IsFreeGroupoid.unique_lift
 
 namespace IsFreeGroupoid
 
-attribute [instance] quiverGenerators
+attribute [instance_reducible, instance] quiverGenerators
 
 /-- Two functors from a free groupoid to a group are equal when they agree on the generating
 quiver. -/
@@ -186,6 +186,7 @@ set_option backward.privateInPublic.warn false in
 def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
   treeHom T a ≫ p ≫ inv (treeHom T b)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Turning an edge in the spanning tree into a loop gives the identity loop. -/
@@ -198,6 +199,7 @@ theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetr
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inr e, H⟩), homOfPath]
     simp only [IsIso.inv_hom_id, Category.comp_id, Category.assoc, treeHom]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Since a hom gives a loop, any homomorphism from the vertex group at the root
@@ -216,6 +218,7 @@ def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
     rw [comp_as_mul, ← f.map_mul]
     simp only [IsIso.inv_hom_id_assoc, loopOfHom, End.mul_def, Category.assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 open scoped Classical in
@@ -272,6 +275,7 @@ private def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
     G → Symmetrify (Generators G) :=
   id
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If there exists a morphism `a → b` in a free groupoid, then there also exists a zigzag
@@ -307,6 +311,7 @@ instance endIsFreeOfConnectedFree
 
 end IsFreeGroupoid
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Nielsen-Schreier theorem: a subgroup of a free group is free. -/
 instance subgroupIsFreeOfIsFree {G : Type u} [Group G] [IsFreeGroup G] (H : Subgroup G) :
     IsFreeGroup H :=

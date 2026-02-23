@@ -80,6 +80,7 @@ end ExpChar
 
 section Homomorphism
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
   rw [p.as_sum, Finsupp.mapRange_finset_sum, map_sum (map f)]
@@ -115,6 +116,7 @@ lemma monomial_mem_restrictSupport {s : Set (σ →₀ ℕ)} {m} {r : R} :
   classical
   by_cases r = 0 <;> simp [mem_restrictSupport_iff, support_monomial, *]
 
+set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 lemma restrictSupport_add (s t : Set (σ →₀ ℕ)) :
     restrictSupport R (s + t) = restrictSupport R s * restrictSupport R t := by
@@ -127,6 +129,7 @@ lemma restrictSupport_add (s t : Set (σ →₀ ℕ)) :
       Submodule.span_le, Set.mul_subset_iff]
     simp +contextual [Set.add_mem_add]
 
+set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 @[simp] lemma restrictSupport_zero : restrictSupport R (0 : Set (σ →₀ ℕ)) = 1 := by
   classical
@@ -140,6 +143,7 @@ open Pointwise in
 lemma restrictSupport_univ : restrictSupport R (.univ : Set (σ →₀ ℕ)) = ⊤ := by
   ext; simp [mem_restrictSupport_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 lemma restrictSupport_nsmul (n : ℕ) (s : Set (σ →₀ ℕ)) :
     restrictSupport R (n • s) = restrictSupport R s ^ n := by
@@ -178,6 +182,7 @@ theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
   rw [totalDegree, Finset.sup_le_iff]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n := by
   rw [restrictDegree, restrictSupport, Finsupp.mem_supported]
