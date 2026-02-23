@@ -30,9 +30,14 @@ jobs:
           # Check that all `uses:` values in workflow and composite action YAML
           # files are pinned to a full commit SHA or Docker sha256 digest.
           #
+          # We use a custom script rather than zgosalvez/github-actions-ensure-sha-pinned-actions
+          # because that action's error output doesn't include file annotations (just a generic
+          # "at least one workflow contains an unpinned action" message — you have to expand
+          # collapsed log groups to find which file), and it stops at the first violation per job.
+          # This script reports all violations at once with ::error file=...:: annotations.
+          #
           # Uses yq (pre-installed on GitHub runners) to parse YAML properly,
-          # avoiding false positives from run: blocks, comments, or string values,
-          # and preventing bypasses like putting a SHA in a trailing comment.
+          # avoiding false positives from run: blocks, comments, or string values.
           failed=0
           while IFS= read -r -d '' f; do
             # Extract all uses values: jobs.*.uses (reusable workflows)
