@@ -254,7 +254,7 @@ lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet
   rintro e he
   induction e using Sym2.ind with | h a b =>
   rw [Subgraph.mem_edgeSet] at he
-  exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_pair_eq ..⟩
+  exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_mk ..⟩
 
 theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
@@ -602,6 +602,7 @@ def botIso : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
 theorem edgeSet_mono {H₁ H₂ : Subgraph G} (h : H₁ ≤ H₂) : H₁.edgeSet ≤ H₂.edgeSet :=
   Sym2.ind h.2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Disjoint.edgeSet {H₁ H₂ : Subgraph G} (h : Disjoint H₁ H₂) :
     Disjoint H₁.edgeSet H₂.edgeSet :=
   disjoint_iff_inf_le.mpr <| by simpa using edgeSet_mono h.le_bot
@@ -849,6 +850,7 @@ lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
 
 end Subgraph
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
     (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
@@ -1099,7 +1101,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
   · intro hs
     refine Sym2.ind ?_
     rintro ⟨v', hv'⟩ ⟨w', hw'⟩
-    simp only [Sym2.map_pair_eq, Sym2.eq]
+    simp only [Sym2.map_mk, Sym2.eq]
     contrapose!
     rintro (_ | _) <;> simpa only [Sym2.eq_swap]
   · intro h' hs
@@ -1244,6 +1246,7 @@ instance instDecidableRel_induce_adj (s : Set V) [∀ a, Decidable (a ∈ s)] [D
     DecidableRel (G'.induce s).Adj :=
   fun _ _ ↦ instDecidableAnd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between an induced subgraph and its corresponding simple graph. -/
 def coeInduceIso (s : Set V) (h : s ⊆ G'.verts) :
     (G'.induce s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∈ s} where
@@ -1315,6 +1318,7 @@ instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
     else
       .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between a subgraph with deleted vertices and its corresponding simple graph. -/
 def coeDeleteVertsIso (s : Set V) :
     (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∉ s} where

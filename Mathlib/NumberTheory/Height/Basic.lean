@@ -48,10 +48,6 @@ We define the following variants.
   It is invariant under scaling by nonzero elements of `K`.
 * `Finsupp.mulHeight x` and `Finsupp.logHeight x` for `x : α →₀ K`. This is the same
   as the height of `x` restricted to the support of `x`.
-* (TODO)
-  `Projectivization.mulHeight` and `Projectivization.logHeight` on
-  `Projectivization K (ι → K)` (with a `Fintype ι`). This is the height of a point
-  on projective space (with fixed basis).
 
 ## TODO
 
@@ -140,7 +136,7 @@ lemma mulHeight₁_pos (x : K) : 0 < mulHeight₁ x :=
 lemma mulHeight₁_ne_zero (x : K) : mulHeight₁ x ≠ 0 :=
   (mulHeight₁_pos x).ne'
 
-lemma zero_le_mulHeight₁ (x : K) : 0 ≤ mulHeight₁ x :=
+lemma mulHeight₁_nonneg (x : K) : 0 ≤ mulHeight₁ x :=
   (mulHeight₁_pos x).le
 
 /-- The logarithmic height of an element of `K`. -/
@@ -221,11 +217,11 @@ lemma mulHeight_eq {x : ι → K} (hx : x ≠ 0) :
       (archAbsVal.map fun v ↦ ⨆ i, v (x i)).prod * ∏ᶠ v : nonarchAbsVal, ⨆ i, v.val (x i) := by
   simp [mulHeight, hx]
 
-@[simp]
+@[to_fun (attr := simp)]
 lemma mulHeight_zero : mulHeight (0 : ι → K) = 1 := by
   simp [mulHeight]
 
-@[simp]
+@[to_fun (attr := simp)]
 lemma mulHeight_one : mulHeight (1 : ι → K) = 1 := by
   rcases isEmpty_or_nonempty ι with hι | hι
   · rw [show (1 : ι → K) = 0 from Subsingleton.elim ..]
@@ -253,6 +249,14 @@ lemma mulHeight_swap (x y : K) : mulHeight ![x, y] = mulHeight ![y, x] := by
 def logHeight (x : ι → K) : ℝ := log (mulHeight x)
 
 lemma logHeight_eq_log_mulHeight (x : ι → K) : logHeight x = log (mulHeight x) := rfl
+
+@[to_fun (attr := simp)]
+lemma logHeight_zero {ι : Type*} : logHeight (0 : ι → K) = 0 := by
+  simp [logHeight_eq_log_mulHeight]
+
+@[to_fun (attr := simp)]
+lemma logHeight_one {ι : Type*} : logHeight (1 : ι → K) = 0 := by
+  simp [logHeight_eq_log_mulHeight]
 
 variable {α : Type*}
 
@@ -325,10 +329,10 @@ lemma one_le_mulHeight (x : ι → K) : 1 ≤ mulHeight x := by
 lemma mulHeight_pos (x : ι → K) : 0 < mulHeight x :=
   zero_lt_one.trans_le <| one_le_mulHeight x
 
-lemma mulHeight.ne_zero (x : ι → K) : mulHeight x ≠ 0 :=
+lemma mulHeight_ne_zero (x : ι → K) : mulHeight x ≠ 0 :=
   (mulHeight_pos x).ne'
 
-lemma zero_le_logHeight (x : ι → K) : 0 ≤ logHeight x :=
+lemma logHeight_nonneg (x : ι → K) : 0 ≤ logHeight x :=
   log_nonneg <| one_le_mulHeight x
 
 end Height
@@ -363,7 +367,7 @@ meta def evalLogHeight : PositivityExt where eval {u α} _ _ e := do
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
       assertInstancesCommute
-      return .nonnegative q(zero_le_logHeight $a)
+      return .nonnegative q(logHeight_nonneg $a)
     | _ => throwError "index type in Height.logHeight not known to be finite"
   | _, _, _ => throwError "not Height.logHeight"
 
@@ -410,6 +414,7 @@ lemma logHeight₁_div_eq_logHeight (x y : K) :
     logHeight₁ (x / y) = logHeight ![x, y] := by
   rw [logHeight₁_eq_log_mulHeight₁, logHeight_eq_log_mulHeight, mulHeight₁_div_eq_mulHeight x y]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicative height of the coordinate-wise `n`th power of a tuple
 is the `n`th power of its multiplicative height. -/
 lemma mulHeight_pow (x : ι → K) (n : ℕ) :

@@ -34,6 +34,7 @@ The neutral element is not contained in one of the startsWith sets.
 theorem startsWith.ne_one {w : α × Bool} (g : FreeGroup α) (h : g ∈ FreeGroup.startsWith w) :
     g ≠ 1 := fun h1 ↦ by simp [h1, startsWith, FreeGroup.toWord_one] at h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma startsWith.disjoint_iff_ne {w w' : α × Bool} :
     Disjoint (startsWith w) (startsWith w') ↔ w ≠ w' := by

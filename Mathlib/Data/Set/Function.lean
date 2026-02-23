@@ -389,6 +389,7 @@ lemma InjOn.image_ssubset_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : 
     f '' s₁ ⊂ f '' s₂ ↔ s₁ ⊂ s₂ := by
   simp_rw [ssubset_def, h.image_subset_image_iff h₁ h₂, h.image_subset_image_iff h₂ h₁]
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: can this move to a better place?
 theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
     (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by

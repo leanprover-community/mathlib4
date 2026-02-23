@@ -163,6 +163,7 @@ def lapMatrix_ker_basis_aux (c : G.ConnectedComponent) :
   ⟨fun i ↦ if G.connectedComponentMk i = c then (1 : ℝ)  else 0,
     mem_ker_toLin'_lapMatrix_of_connectedComponent c⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linearIndependent_lapMatrix_ker_basis_aux :
     LinearIndependent ℝ (lapMatrix_ker_basis_aux G) := by
   rw [Fintype.linearIndependent_iff]
@@ -179,6 +180,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
   exact h' ▸ congrFun h0 i
 
+set_option backward.isDefEq.respectTransparency false in
 lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _

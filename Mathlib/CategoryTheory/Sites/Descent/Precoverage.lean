@@ -52,6 +52,7 @@ variable {J : GrothendieckTopology C} [F.IsPrestack J]
   {α : ι' → ι} {p' : ∀ j, X' j ⟶ X (α j)} (w : ∀ j, p' j ≫ f (α j) = f' j)
   (hf' : Sieve.ofArrows _ f' ∈ J S)
 
+set_option backward.isDefEq.respectTransparency false in
 include hf' in
 public lemma faithful_pullFunctor :
     (pullFunctor F (f := f) (p := 𝟙 _) (f' := f') (p' := p') (by cat_disch)).Faithful where
@@ -149,6 +150,7 @@ lemma mor_eq ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
   subst hq' ha'
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 include w φ in
 lemma mor_precomp ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
     (fac : a ≫ f' j = q ≫ f i) {Z' : C} (r : Z' ⟶ Z)
@@ -172,6 +174,7 @@ lemma mor_precomp ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ 
     (p' j).op.toLoc a.op.toLoc r.op.toLoc ((p' j).op.toLoc ≫ a.op.toLoc) a'.op.toLoc
       (((p' j).op.toLoc ≫ a.op.toLoc) ≫ r.op.toLoc) rfl (by grind) (by grind)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mor_unique ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i)
     ⦃j₁ : ι'⦄ (a₁ : Z ⟶ X' j₁) ⦃j₂ : ι'⦄ (a₂ : Z ⟶ X' j₂)
     (fac₁ : a₁ ≫ f' j₁ = q ≫ f i := by cat_disch)
@@ -211,6 +214,7 @@ lemma familyOfElements_eq {i : ι} {Z : Over (X i)} (g : Z ⟶ Over.mk (𝟙 (X 
       exact mem_sieve _ _ fac) = mor w φ _ _ fac :=
   mor_unique _ _ _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma compatible_familyOfElements (i : ι) :
     (familyOfElements w φ i).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac
@@ -239,6 +243,7 @@ noncomputable def hom (i : ι) : D₁.obj i ⟶ D₂.obj i :=
         (by simpa using sieve_mem _ hf' i)) _
           (compatible_familyOfElements w φ i))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_hom ⦃i : ι⦄ ⦃Y : C⦄ (q : Y ⟶ X i) ⦃j : ι'⦄
     (a : Y ⟶ X' j) (fac : a ≫ f' j = q ≫ f i := by cat_disch) :
     (F.map q.op.toLoc).toFunctor.map (hom w hf' φ i) = mor w φ q a fac := by
@@ -254,6 +259,7 @@ lemma map_hom ⦃i : ι⦄ ⦃Y : C⦄ (q : Y ⟶ X i) ⦃j : ι'⦄
     presheafHomObjHomEquiv, pullHom, mapComp'_id_comp_hom_app,
     mapComp'_id_comp_inv_app] using hs _ (mem_sieve _ _ fac)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma comm ⦃W : C⦄ (q : W ⟶ S) ⦃i₁ i₂ : ι⦄
     (f₁ : W ⟶ X i₁) (f₂ : W ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q := by cat_disch)

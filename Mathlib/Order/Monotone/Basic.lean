@@ -218,17 +218,13 @@ section WellFounded
 
 variable [Preorder α] [Preorder β] {f : α → β}
 
+@[to_dual]
 theorem StrictMono.wellFoundedLT [WellFoundedLT β] (hf : StrictMono f) : WellFoundedLT α :=
-  Subrelation.isWellFounded (InvImage (· < ·) f) @hf
+  Subrelation.isWellFounded (InvImage (· < ·) f) hf.imp
 
+@[to_dual]
 theorem StrictAnti.wellFoundedLT [WellFoundedGT β] (hf : StrictAnti f) : WellFoundedLT α :=
-  StrictMono.wellFoundedLT (β := βᵒᵈ) hf
-
-theorem StrictMono.wellFoundedGT [WellFoundedGT β] (hf : StrictMono f) : WellFoundedGT α :=
-  StrictMono.wellFoundedLT (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ h ↦ hf h)
-
-theorem StrictAnti.wellFoundedGT [WellFoundedLT β] (hf : StrictAnti f) : WellFoundedGT α :=
-  StrictMono.wellFoundedLT (α := αᵒᵈ) (fun _ _ h ↦ hf h)
+  Subrelation.isWellFounded (InvImage (· > ·) f) hf.imp
 
 end WellFounded
 
@@ -252,26 +248,17 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {f g : α → β} {a : α}
 
+@[to_dual]
 theorem StrictMono.isMax_of_apply (hf : StrictMono f) (ha : IsMax (f a)) : IsMax a :=
   of_not_not fun h ↦
     let ⟨_, hb⟩ := not_isMax_iff.1 h
     (hf hb).not_isMax ha
 
-@[to_dual existing]
-theorem StrictMono.isMin_of_apply (hf : StrictMono f) (ha : IsMin (f a)) : IsMin a :=
-  of_not_not fun h ↦
-    let ⟨_, hb⟩ := not_isMin_iff.1 h
-    (hf hb).not_isMin ha
-
+@[to_dual]
 theorem StrictAnti.isMax_of_apply (hf : StrictAnti f) (ha : IsMin (f a)) : IsMax a :=
   of_not_not fun h ↦
     let ⟨_, hb⟩ := not_isMax_iff.1 h
     (hf hb).not_isMin ha
-
-theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin a :=
-  of_not_not fun h ↦
-    let ⟨_, hb⟩ := not_isMin_iff.1 h
-    (hf hb).not_isMax ha
 
 lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n) := by
   rw [Nat.add_comm m, Nat.add_comm m]
@@ -346,11 +333,13 @@ variable [Preorder β] {f : α → β} {s : Set α}
 
 open Ordering
 
+@[to_dual self (reorder := a b, ha hb)]
 theorem StrictMonoOn.le_iff_le (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a ≤ f b ↔ a ≤ b :=
   ⟨fun h ↦ le_of_not_gt fun h' ↦ (hf hb ha h').not_ge h, fun h ↦
     h.lt_or_eq_dec.elim (fun h' ↦ (hf ha hb h').le) fun h' ↦ h' ▸ le_rfl⟩
 
+@[to_dual self (reorder := a b, ha hb)]
 theorem StrictAntiOn.le_iff_ge (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a ≤ f b ↔ b ≤ a :=
   hf.dual_right.le_iff_le hb ha
@@ -365,23 +354,29 @@ theorem StrictAntiOn.eq_iff_eq (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s)
     f a = f b ↔ b = a :=
   (hf.dual_right.eq_iff_eq ha hb).trans eq_comm
 
+@[to_dual self (reorder := a b, ha hb)]
 theorem StrictMonoOn.lt_iff_lt (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a < f b ↔ a < b := by
   rw [lt_iff_le_not_ge, lt_iff_le_not_ge, hf.le_iff_le ha hb, hf.le_iff_le hb ha]
 
+@[to_dual self (reorder := a b, ha hb)]
 theorem StrictAntiOn.lt_iff_gt (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a < f b ↔ b < a :=
   hf.dual_right.lt_iff_lt hb ha
 
+@[to_dual self]
 theorem StrictMono.le_iff_le (hf : StrictMono f) {a b : α} : f a ≤ f b ↔ a ≤ b :=
   (hf.strictMonoOn Set.univ).le_iff_le trivial trivial
 
+@[to_dual self]
 theorem StrictAnti.le_iff_ge (hf : StrictAnti f) {a b : α} : f a ≤ f b ↔ b ≤ a :=
   (hf.strictAntiOn Set.univ).le_iff_ge trivial trivial
 
+@[to_dual self]
 theorem StrictMono.lt_iff_lt (hf : StrictMono f) {a b : α} : f a < f b ↔ a < b :=
   (hf.strictMonoOn Set.univ).lt_iff_lt trivial trivial
 
+@[to_dual self]
 theorem StrictAnti.lt_iff_gt (hf : StrictAnti f) {a b : α} : f a < f b ↔ b < a :=
   (hf.strictAntiOn Set.univ).lt_iff_gt trivial trivial
 
@@ -415,21 +410,15 @@ lemma StrictMonoOn.injOn (hf : StrictMonoOn f s) : s.InjOn f := fun x hx y hy hx
 
 lemma StrictAntiOn.injOn (hf : StrictAntiOn f s) : s.InjOn f := hf.dual_left.injOn
 
+@[to_dual]
 theorem StrictMono.maximal_of_maximal_image (hf : StrictMono f) {a} (hmax : ∀ p, p ≤ f a) (x : α) :
     x ≤ a :=
   hf.le_iff_le.mp (hmax (f x))
 
-theorem StrictMono.minimal_of_minimal_image (hf : StrictMono f) {a} (hmin : ∀ p, f a ≤ p) (x : α) :
-    a ≤ x :=
-  hf.le_iff_le.mp (hmin (f x))
-
+@[to_dual]
 theorem StrictAnti.minimal_of_maximal_image (hf : StrictAnti f) {a} (hmax : ∀ p, p ≤ f a) (x : α) :
     a ≤ x :=
   hf.le_iff_ge.mp (hmax (f x))
-
-theorem StrictAnti.maximal_of_minimal_image (hf : StrictAnti f) {a} (hmin : ∀ p, f a ≤ p) (x : α) :
-    x ≤ a :=
-  hf.le_iff_ge.mp (hmin (f x))
 
 end Preorder
 

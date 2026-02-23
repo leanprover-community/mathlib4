@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
+public import Aesop
 public import Mathlib.Data.Set.Disjoint
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 

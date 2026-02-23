@@ -354,6 +354,7 @@ instance [NonUnitalCommRing β] [IsTopologicalRing β] :
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :
     IsScalarTower R C_c(α, β) C_c(α, β) where
@@ -362,6 +363,7 @@ instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     simp only [smul_eq_mul, coe_mul, coe_smul, Pi.mul_apply, Pi.smul_apply]
     rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [SMulCommClass R β β] :
     SMulCommClass R C_c(α, β) C_c(α, β) where
@@ -694,6 +696,7 @@ noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where
 lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
     f.nnrealPart x = Real.toNNReal (f x) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnrealPart_neg_eq_zero_of_nonneg {f : C_c(α, ℝ)} (hf : 0 ≤ f) : (-f).nnrealPart = 0 := by
   ext x
   simpa using hf x
@@ -707,6 +710,7 @@ lemma nnrealPart_smul_pos (f : C_c(α, ℝ)) {a : ℝ} (ha : 0 ≤ a) :
   · simp [ha, hfx, mul_nonneg]
   · simp [mul_nonpos_iff, ha, hfx]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnrealPart_smul_neg (f : C_c(α, ℝ)) {a : ℝ} (ha : a ≤ 0) :
     (a • f).nnrealPart = (-a).toNNReal • (-f).nnrealPart := by
   ext x
@@ -721,6 +725,7 @@ lemma nnrealPart_add_le_add_nnrealPart (f g : C_c(α, ℝ)) :
   intro x
   simpa using Real.toNNReal_add_le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ≥0)),
     (f + g).nnrealPart + h = f.nnrealPart + g.nnrealPart ∧
     (-f + -g).nnrealPart + h = (-f).nnrealPart + (-g).nnrealPart := by
@@ -745,10 +750,12 @@ noncomputable def toReal (f : C_c(α, ℝ≥0)) : C_c(α, ℝ) :=
 @[simp] lemma toReal_smul (r : ℝ≥0) (f : C_c(α, ℝ≥0)) : (r • f).toReal = r • f.toReal := by
   ext; simp [NNReal.smul_def]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma nnrealPart_sub_nnrealPart_neg (f : C_c(α, ℝ)) :
     (nnrealPart f).toReal - (nnrealPart (-f)).toReal = f := by ext x; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `toReal` defined as a `ℝ≥0`-linear map. -/
 noncomputable def toRealLinearMap : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, ℝ) where
   toFun := toReal
@@ -766,11 +773,13 @@ lemma toRealLinearMap_apply_apply (f : C_c(α, ℝ≥0)) (x : α) :
 @[simp]
 lemma nnrealPart_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (toReal f) = f := by ext x; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma nnrealPart_neg_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (-toReal f) = 0 := by ext x; simp
 
 section toNNRealLinear
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a positive linear functional `Λ : C_c(α, ℝ) → ℝ`, define a `ℝ≥0`-linear map. -/
 noncomputable def toNNRealLinear (Λ : C_c(α, ℝ) →ₚ[ℝ] ℝ) :
     C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0 where
@@ -782,6 +791,7 @@ noncomputable def toNNRealLinear (Λ : C_c(α, ℝ) →ₚ[ℝ] ℝ) :
 lemma toNNRealLinear_apply (Λ : C_c(α, ℝ) →ₚ[ℝ] ℝ) (f : C_c(α, ℝ≥0)) :
     toNNRealLinear Λ f = Λ (toReal f) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toNNRealLinear_inj (Λ₁ Λ₂ : C_c(α, ℝ) →ₚ[ℝ] ℝ) :
     toNNRealLinear Λ₁ = toNNRealLinear Λ₂ ↔ Λ₁ = Λ₂ := by
@@ -795,6 +805,7 @@ end toNNRealLinear
 
 section toRealPositiveLinear
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a positive linear functional `Λ : C_c(α, ℝ≥0) → ℝ≥0`, define a positive `ℝ`-linear map. -/
 noncomputable def toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : C_c(α, ℝ) →ₚ[ℝ] ℝ :=
   PositiveLinearMap.mk₀
@@ -818,6 +829,7 @@ noncomputable def toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] �
           ring }
     (fun g hg ↦ by simp [nnrealPart_neg_eq_zero_of_nonneg hg])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toRealPositiveLinear_apply {Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0} (f : C_c(α, ℝ)) :
     toRealPositiveLinear Λ f = Λ (nnrealPart f) - Λ (nnrealPart (-f)) := rfl
 

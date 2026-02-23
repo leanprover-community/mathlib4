@@ -449,8 +449,9 @@ theorem constantCoeff_map (f : R →+* S₁) (φ : MvPolynomial σ R) :
   coeff_map f φ 0
 
 theorem constantCoeff_comp_map (f : R →+* S₁) :
-    (constantCoeff : MvPolynomial σ S₁ →+* S₁).comp (MvPolynomial.map f) = f.comp constantCoeff :=
-  by ext <;> simp
+    (constantCoeff : MvPolynomial σ S₁ →+* S₁).comp (MvPolynomial.map f) =
+      f.comp constantCoeff := by
+  ext <;> simp
 
 theorem support_map_subset (p : MvPolynomial σ R) : (map f p).support ⊆ p.support := by
   simp only [Finset.subset_iff, mem_support_iff]
@@ -540,6 +541,7 @@ theorem mapAlgHom_coe_ringHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S�
       (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
   RingHom.mk_coe _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma range_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     (mapAlgHom f).range.toSubmodule = coeffsIn σ f.range.toSubmodule := by
   ext
@@ -815,6 +817,7 @@ Warning: This produces a diamond for
 `Algebra (MvPolynomial σ R) (MvPolynomial σ (MvPolynomial σ S))`. That's why it is not a
 global instance.
 -/
+@[instance_reducible]
 noncomputable def algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPolynomial σ S) :=
   (MvPolynomial.map (algebraMap R S)).toAlgebra
 
