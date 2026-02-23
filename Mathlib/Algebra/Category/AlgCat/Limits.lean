@@ -67,6 +67,8 @@ instance limitAlgebra :
     Algebra R (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).pt :=
   inferInstanceAs <| Algebra R (Shrink (sectionsSubalgebra F))
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget (AlgCat R)) j` as an `AlgHom`. -/
 def limitπAlgHom (j) :
@@ -152,6 +154,8 @@ lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (AlgCat.{w} R) :=
 instance hasLimits : HasLimits (AlgCat.{w} R) :=
   AlgCat.hasLimitsOfSize.{w, w, u}
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
+set_option backward.whnf.reducibleClassField false in
 /-- The forgetful functor from R-algebras to rings preserves all limits.
 -/
 instance forget₂Ring_preservesLimitsOfSize [UnivLE.{v, w}] :

@@ -424,8 +424,8 @@ instance limitCommRing :
     (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{u}))
   inferInstanceAs <| CommRing (Shrink _)
 
-#adaptation_note /-- After nightly-2026-02-23 this requires *way* more heartbeats. -/
-set_option maxHeartbeats 800000 in -- see note above
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
+set_option backward.whnf.reducibleClassField false in
 /-- We show that the forgetful functor `CommRingCat ⥤ RingCat` creates limits.
 
 All we need to do is notice that the limit point has a `CommRing` instance available,
