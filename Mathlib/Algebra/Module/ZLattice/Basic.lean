@@ -55,47 +55,59 @@ consistent with the `ZSpan` construction of `ℤ`-lattices.
 
 @[expose] public section
 
-
 noncomputable section
+
+open MeasureTheory MeasurableSet Module Submodule Bornology
+open scoped Pointwise
 
 namespace ZSpan
 
-open MeasureTheory MeasurableSet Module Submodule Bornology
+variable {R ι : Type*} [NormedRing R]
+variable {M : Type*} [AddCommGroup M] [Module R M]
+variable (b : Basis ι R M)
 
-variable {E ι : Type*}
+theorem span_top : span R (span ℤ (Set.range b) : Set M) = ⊤ := by simp [span_span_of_tower]
 
-section NormedLatticeField
-
-variable {K : Type*} [NormedField K]
-variable [NormedAddCommGroup E] [NormedSpace K E]
-variable (b : Basis ι K E)
-
-theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [span_span_of_tower]
-
-theorem map {F : Type*} [AddCommGroup F] [Module K F] (f : E ≃ₗ[K] F) :
-    Submodule.map (f.restrictScalars ℤ : E →ₗ[ℤ] F) (span ℤ (Set.range b)) =
+theorem map {N : Type*} [AddCommGroup N] [Module R N] (f : M ≃ₗ[R] N) :
+    map (f.restrictScalars ℤ : M →ₗ[ℤ] N) (span ℤ (Set.range b)) =
       span ℤ (Set.range (b.map f)) := by
   simp_rw [Submodule.map_span, LinearEquiv.coe_coe, LinearEquiv.restrictScalars_apply,
     Basis.coe_map, Set.range_comp]
 
-open scoped Pointwise in
-theorem smul {c : K} (hc : c ≠ 0) :
-    c • span ℤ (Set.range b) = span ℤ (Set.range (b.isUnitSMul (fun _ ↦ hc.isUnit))) := by
-  rw [smul_span, Set.smul_set_range]
-  congr!
-  rw [Basis.isUnitSMul_apply]
+/-! #### Fundamental domain -/
 
-variable [LinearOrder K]
+variable [LinearOrder R]
 
 /-- The fundamental domain of the ℤ-lattice spanned by `b`. See `ZSpan.isAddFundamentalDomain`
 for the proof that it is a fundamental domain. -/
-def fundamentalDomain : Set E := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
+def fundamentalDomain : Set M := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : R) 1}
 
 @[simp]
-theorem mem_fundamentalDomain {m : E} :
-    m ∈ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1 := Iff.rfl
+theorem mem_fundamentalDomain {m : M} :
+    m ∈ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (0 : R) 1 := Iff.rfl
 
-theorem map_fundamentalDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
+theorem mem_vadd_fundamentalDomain [AddLeftMono R] {m m' : M} :
+    m ∈ m' +ᵥ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (b.repr m' i) (b.repr m' i + 1) := by
+  simp_rw [Set.mem_vadd_set, mem_fundamentalDomain, b.ext_elem_iff,
+    ← forall_and, vadd_eq_add, map_add, Finsupp.coe_add, Pi.add_apply, Set.mem_Ico]
+  constructor <;> intro h
+  · grind
+  · use m - m'
+    simp only [map_sub, Finsupp.coe_sub, Pi.sub_apply, sub_nonneg, add_sub_cancel, and_true]
+    grind
+
+theorem mem_neg_fundamentalDomain [AddLeftMono R] {m : M} :
+    m ∈ -fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ioc (-1 : R) 0 := by
+  simp only [Set.mem_neg, mem_fundamentalDomain, map_neg,
+    Finsupp.coe_neg, Pi.neg_apply]
+  refine forall_congr' fun i ↦ by grind
+
+theorem mem_vadd_neg_fundamentalDomain [AddLeftMono R] {m m' : M} :
+    m ∈ m' +ᵥ -fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ioc (b.repr m' i - 1) (b.repr m' i) := by
+  simp only [Set.mem_vadd_set_neg, mem_vadd_fundamentalDomain]
+  exact forall_congr' fun i ↦ by grind
+
+theorem map_fundamentalDomain {N : Type*} [AddCommGroup N] [Module R N] (f : M ≃ₗ[R] N) :
     f '' (fundamentalDomain b) = fundamentalDomain (b.map f) := by
   ext x
   rw [mem_fundamentalDomain, Basis.map_repr, LinearEquiv.trans_apply, ← mem_fundamentalDomain,
@@ -108,10 +120,305 @@ theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
   ext
   simp [e.forall_congr_left]
 
-variable [IsStrictOrderedRing K]
+/-! #### Floor -/
+
+variable [FloorRing R] [IsStrictOrderedRing R] [Fintype ι]
+
+section floor
+
+/-- The map that sends a vector of `M` to the element of the ℤ-lattice spanned by `b` obtained
+by rounding down its coordinates on the basis `b`. -/
+def floor (m : M) : span ℤ (Set.range b) := ∑ i, ⌊b.repr m i⌋ • b.restrictScalars ℤ i
+
+@[simp]
+theorem repr_floor_apply (m : M) (i : ι) : b.repr (floor b m) i = ⌊b.repr m i⌋ := by
+  classical simp only [floor, ← Int.cast_smul_eq_zsmul R, b.repr.map_smul, Finsupp.single_apply,
+    Finset.sum_apply', Basis.repr_self, Finsupp.smul_single', mul_one, Finset.sum_ite_eq', coe_sum,
+    Finset.mem_univ, if_true, coe_smul_of_tower, Basis.restrictScalars_apply, map_sum]
+
+theorem floor_eq_iff (m ℓ : M) (hz : ℓ ∈ span ℤ (Set.range b)) :
+    floor b m = ℓ ↔ m ∈ ℓ +ᵥ fundamentalDomain b := by
+  simp_rw [b.ext_elem_iff, repr_floor_apply, mem_vadd_fundamentalDomain]
+  refine forall_congr' fun i ↦ ?_
+  obtain ⟨r, hr⟩ := (b.mem_span_iff_repr_mem ℤ _).mp hz i
+  rw [← hr, algebraMap_int_eq]
+  simp [Int.floor_eq_iff]
+
+alias ⟨_, floor_eq_on_vadd_fundamentalDomain⟩ := floor_eq_iff
+
+theorem floor_eq_zero_iff {m : M} :
+    floor b m = 0 ↔ m ∈ fundamentalDomain b := by
+  simpa using floor_eq_iff b m 0 (by simp)
+
+@[simp]
+theorem preimage_floor_singleton (ℓ : M) (hm : ℓ ∈ span ℤ (Set.range b)) :
+    (floor b : M → span ℤ (Set.range b)) ⁻¹' {⟨ℓ, hm⟩} = ℓ +ᵥ fundamentalDomain b := by
+  ext x
+  rw [Set.mem_preimage, ← floor_eq_iff _ _ _ hm]
+  simp [Subtype.ext_iff]
+
+theorem floor_eq_self_iff_mem (m : M) :
+    floor b m = m ↔ m ∈ span ℤ (Set.range b) := by
+  rw [Basis.mem_span_iff_repr_mem, b.ext_elem_iff]
+  refine forall_congr' fun i ↦ ?_
+  simp only [repr_floor_apply, algebraMap_int_eq, Int.coe_castRingHom, Set.mem_range]
+  constructor <;> intro h
+  · use ⌊b.repr m i⌋
+  · obtain ⟨z, hz⟩ := h
+    rw [← hz]
+    exact congr_arg (Int.cast : ℤ → R) z.floor_intCast
+
+theorem floor_zero : floor b 0 = (0 : M) :=
+  b.ext_elem fun i ↦ by simp [repr_floor_apply, Int.floor_zero]
+
+theorem floor_add_zSpanCast (m ℓ : M) (h : ℓ ∈ span ℤ (Set.range b)) :
+    floor b (m + ℓ) = floor b m + ℓ := by
+  refine b.ext_elem fun i ↦ ?_
+  obtain ⟨z, hz⟩ := (b.mem_span_iff_repr_mem ℤ _).mp h i
+  simp only [repr_floor_apply b, map_add, Finsupp.coe_add, Pi.add_apply, ← hz, algebraMap_int_eq,
+    eq_intCast, add_comm, Int.floor_intCast_add, Int.cast_add]
+
+theorem floor_coe_add (ℓ m : M) (h : ℓ ∈ span ℤ (Set.range b)) :
+    floor b (ℓ + m) = ℓ + floor b m := by
+  simpa [add_comm _ ℓ] using floor_add_zSpanCast b m ℓ h
+
+theorem floor_sub_coe (m ℓ : M) (h : ℓ ∈ span ℤ (Set.range b)) :
+    floor b (m - ℓ) = floor b m - ℓ := by
+  simpa [sub_eq_add_neg, add_comm] using floor_coe_add b (-ℓ) m (by simp [h])
+
+end floor
+
+/- #### Ceiling -/
+
+section ceil
+
+/-- The map that sends a vector of `M` to the element of the ℤ-lattice spanned by `b` obtained
+by rounding up its coordinates on the basis `b`. -/
+def ceil (m : M) : span ℤ (Set.range b) := ∑ i, ⌈b.repr m i⌉ • b.restrictScalars ℤ i
+
+@[simp]
+theorem repr_ceil_apply (m : M) (i : ι) : b.repr (ceil b m) i = ⌈b.repr m i⌉ := by
+  classical simp only [ceil, ← Int.cast_smul_eq_zsmul R, b.repr.map_smul, Finsupp.single_apply,
+    Finset.sum_apply', Basis.repr_self, Finsupp.smul_single', mul_one, Finset.sum_ite_eq', coe_sum,
+    Finset.mem_univ, if_true, coe_smul_of_tower, Basis.restrictScalars_apply, map_sum]
+
+theorem ceil_eq_iff (m ℓ : M) (hℓ : ℓ ∈ span ℤ (Set.range b)) :
+    ceil b m = ℓ ↔ m ∈ ℓ +ᵥ -fundamentalDomain b := by
+  simp_rw [b.ext_elem_iff, repr_ceil_apply, mem_vadd_neg_fundamentalDomain]
+  refine forall_congr' fun i ↦ ?_
+  obtain ⟨r, hr⟩ := (b.mem_span_iff_repr_mem ℤ _).mp hℓ i
+  rw [← hr, algebraMap_int_eq]
+  simp [Int.ceil_eq_iff]
+
+theorem ceil_eq_zero_iff {m : M} :
+    (ceil b m : M) = 0 ↔ m ∈ -fundamentalDomain b := by
+  simpa using ceil_eq_iff b m 0 (by simp)
+
+theorem ceil_eq_on_vadd_fundamentalDomain (m ℓ : M) (hz : ℓ ∈ span ℤ (Set.range b))
+    (hm : m ∈ ℓ +ᵥ -fundamentalDomain b) : ceil b m = ℓ :=
+  (ceil_eq_iff b _ _ hz).mpr hm
+
+@[simp]
+theorem preimage_ceil_singleton (ℓ : M) (hm : ℓ ∈ span ℤ (Set.range b)) :
+    (ceil b : M → span ℤ (Set.range b)) ⁻¹' {⟨ℓ, hm⟩} = ℓ +ᵥ -fundamentalDomain b := by
+  ext x
+  rw [Set.mem_preimage, ← ceil_eq_iff _ _ _ hm]
+  simp [Subtype.ext_iff]
+
+theorem ceil_eq_self_iff_mem (m : M) :
+    (ceil b m : M) = m ↔ m ∈ span ℤ (Set.range b) := by
+  rw [Basis.mem_span_iff_repr_mem, b.ext_elem_iff]
+  refine forall_congr' fun i ↦ ?_
+  simp only [repr_ceil_apply, algebraMap_int_eq, Int.coe_castRingHom, Set.mem_range]
+  constructor <;> intro h
+  · use ⌈b.repr m i⌉
+  · obtain ⟨z, hz⟩ := h
+    rw [← hz]
+    exact congr_arg (Int.cast : ℤ → R) z.ceil_intCast
+
+theorem ceil_zero : ceil b 0 = (0 : M) :=
+  b.ext_elem fun i ↦ by simp [repr_ceil_apply, Int.ceil_zero]
+
+theorem ceil_add_coe (m ℓ : M) (h : ℓ ∈ span ℤ (Set.range b)) :
+    ceil b (m + ℓ) = ceil b m + ℓ := by
+  refine b.ext_elem fun i ↦ ?_
+  obtain ⟨z, hz⟩ := (b.mem_span_iff_repr_mem ℤ _).mp h i
+  simp only [repr_ceil_apply b, map_add, Finsupp.coe_add, Pi.add_apply, ← hz, algebraMap_int_eq,
+    eq_intCast, add_comm, Int.ceil_intCast_add, Int.cast_add, add_comm]
+
+theorem ceil_coe_add (ℓ m : M) (h : ℓ ∈ span ℤ (Set.range b)) :
+    ceil b (ℓ + m) = ℓ + ceil b m := by
+  simpa [add_comm _ ℓ] using ceil_add_coe b m ℓ h
+
+theorem ceil_sub_coe (m ℓ : M) (h : ℓ ∈ span ℤ (Set.range b)) :
+    ceil b (m - ℓ) = ceil b m - ℓ := by
+  simpa [sub_eq_add_neg, add_comm] using ceil_coe_add b (-ℓ) m (by simp [h])
+
+end ceil
+
+section fract
+
+/- ## Fract -/
+
+/-- The map that sends a vector `E` to the `fundamentalDomain` of the lattice,
+see `ZSpan.fract_mem_fundamentalDomain`, and `fractRestrict` for the map with the codomain
+restricted to `fundamentalDomain`. -/
+def fract (m : M) : M := m - floor b m
+
+@[simp]
+theorem repr_fract_apply (m : M) (i : ι) : b.repr (fract b m) i = Int.fract (b.repr m i) := by
+  rw [fract, map_sub, Finsupp.coe_sub, Pi.sub_apply, repr_floor_apply, Int.fract]
+
+@[simp]
+theorem self_sub_floor (m : M) : m - floor b m = fract b m := rfl
+
+@[simp]
+theorem floor_add_fract (m : M) : (floor b m : M) + fract b m = m :=
+  add_sub_cancel _ _
+
+@[simp]
+theorem fract_add_floor (m : M) : fract b m + (floor b m : M) = m :=
+  sub_add_cancel _ _
+
+@[simp]
+theorem self_sub_fract (m : M) : m - fract b m = floor b m :=
+  sub_sub_cancel _ _
+
+@[simp]
+theorem fract_sub_self (m : M) : fract b m - m = -floor b m :=
+  sub_sub_cancel_left _ _
+
+theorem fract_add (m m' : M) : ∃ ℓ : span ℤ (Set.range b),
+    fract b (m + m') - fract b m - fract b m' = ℓ := by
+  refine ⟨⟨floor b m + floor b m' - floor b (m + m'), ?_⟩, by unfold fract; grind⟩
+  simp only [floor, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul,
+    Basis.restrictScalars_apply, ← Finset.sum_add_distrib, ← add_smul, map_add,
+    Finsupp.coe_add, Pi.add_apply, ← Finset.sum_sub_distrib, ← sub_smul]
+  refine (Basis.mem_span_iff_repr_mem _ _ _).2 fun i ↦ ?_
+  simp_rw [← Int.cast_smul_eq_zsmul R, b.repr_sum_self, Set.mem_range]
+  use (⌊(b.repr m) i⌋ + ⌊(b.repr m') i⌋ - ⌊(b.repr m) i + (b.repr m') i⌋)
+  rfl
+
+theorem fract_add_coe (m ℓ : M) (h : ℓ ∈ span ℤ (Set.range b)) :
+    fract b (m + ℓ) = fract b m := by
+  refine (b.ext_elem_iff).mpr fun i ↦ ?_
+  simp_rw [repr_fract_apply, Int.fract_eq_fract]
+  use (b.restrictScalars ℤ).repr ⟨ℓ, h⟩ i
+  rw [map_add, Finsupp.coe_add, Pi.add_apply, add_comm, add_tsub_cancel_right,
+    ← eq_intCast (algebraMap ℤ R) _, Basis.restrictScalars_repr_apply, coe_mk]
+
+theorem fract_coe_add (ℓ m : M) (h : ℓ ∈ span ℤ (Set.range b)) :
+    fract b (ℓ + m) = fract b m := by
+  rw [add_comm, fract_add_coe b m ℓ h]
+
+theorem fract_zero : fract b 0 = 0 := by simp [fract, floor_zero]
+
+theorem fract_zSpanCast (m : M) (hm : m ∈ span ℤ (Set.range b)) : fract b m = 0 := by
+  rw [fract, (floor_eq_self_iff_mem b m).mpr hm]
+  exact sub_self _
+
+theorem fract_floor (m : M) : fract b (floor b m) = 0 :=
+  fract_zSpanCast b (floor b m) (SetLike.coe_mem _)
+
+variable {b} in
+theorem fract_eq_self {m : M} : fract b m = m ↔ m ∈ fundamentalDomain b := by
+  classical simp only [b.ext_elem_iff, repr_fract_apply, Int.fract_eq_self,
+    mem_fundamentalDomain, Set.mem_Ico]
+
+theorem fract_fract (m : M) : fract b (fract b m) = fract b m :=
+  b.ext_elem fun _ ↦ by simp only [repr_fract_apply, Int.fract_fract]
+
+theorem fract_mem_fundamentalDomain (x : M) : fract b x ∈ fundamentalDomain b :=
+  fract_eq_self.mp <| fract_fract b _
+
+theorem floor_fract (m : M) : floor b (fract b m) = 0 := by
+  rw [floor_eq_zero_iff]; exact fract_mem_fundamentalDomain b m
+
+theorem fract_eq_iff {m m' : M} :
+    fract b m = m' ↔ m' ∈ fundamentalDomain b ∧ m - m' ∈ span ℤ (Set.range b) := by
+  simp only [mem_fundamentalDomain, Basis.mem_span_iff_repr_mem, b.ext_elem_iff,
+    ← forall_and, repr_fract_apply, Set.mem_Ico, algebraMap_int_eq, Int.coe_castRingHom, map_sub,
+    Finsupp.coe_sub, Pi.sub_apply, Set.mem_range]
+  refine forall_congr' fun i ↦ ?_
+  constructor <;> intro h
+  · exact ⟨⟨((Int.fract_eq_iff).1 h).1, ((Int.fract_eq_iff).1 h).2.1⟩, by
+      use ⌊b.repr m i⌋; rw [← h, Int.fract]; simp⟩
+  · obtain ⟨z, hz⟩ := h.2
+    exact (Int.fract_eq_iff).2 ⟨h.1.1, ⟨h.1.2, by use z; simp [hz]⟩⟩
+
+theorem fract_eq_fract {m m' : M} :
+    fract b m = fract b m' ↔ m - m' ∈ span ℤ (Set.range b) := by
+  simp only [Basis.mem_span_iff_repr_mem, b.ext_elem_iff, repr_fract_apply, algebraMap_int_eq,
+    Int.coe_castRingHom, Set.mem_range]
+  refine forall_congr' fun i ↦ ?_
+  rw [Int.fract_eq_fract]
+  constructor
+  all_goals
+    intro h
+    obtain ⟨z, hz⟩ := h
+    use z
+    simp [hz]
+
+alias ⟨_, fract_ext⟩ := fract_eq_fract
+
+theorem fract_eq_zero_iff (m : M) : fract b m = 0 ↔ m ∈ span ℤ (Set.range b) := by
+  simp [fract_eq_iff]
+
+theorem fract_ne_zero_iff (m : M) : fract b m ≠ 0 ↔ m ∉ span ℤ (Set.range b) :=
+  (fract_eq_zero_iff b m).not
+
+theorem fract_neg_eq_zero {m : M} : fract b (-m) = 0 ↔ fract b m = 0 := by
+  simp only [fract_eq_iff]
+  constructor <;>
+  all_goals intro h; exact ⟨h.1, by simpa using h.2⟩
+
+/-- The map `fract` with codomain restricted to `fundamentalDomain`. -/
+def fractRestrict (m : M) : fundamentalDomain b := ⟨fract b m, fract_mem_fundamentalDomain b m⟩
+
+theorem fractRestrict_surjective : (fractRestrict b).Surjective :=
+  fun x ↦ ⟨↑x, Subtype.ext <| fract_eq_self.mpr (Subtype.mem x)⟩
+
+@[simp]
+theorem fractRestrict_apply (m : M) : (fractRestrict b m : M) = fract b m := rfl
+
+end fract
+
+section Unique
+
+variable [Unique ι]
+
+@[simp]
+theorem coe_floor_self (r : R) : (floor (Basis.singleton ι R) r : R) = ⌊r⌋ :=
+  (Basis.singleton ι R).ext_elem fun _ ↦ by
+    rw [repr_floor_apply, Basis.singleton_repr, Basis.singleton_repr]
+
+@[simp]
+theorem coe_fract_self (r : R) : (fract (Basis.singleton ι R) r : R) = Int.fract r :=
+  (Basis.singleton ι R).ext_elem fun _ ↦ by
+    rw [repr_fract_apply, Basis.singleton_repr, Basis.singleton_repr]
+
+end Unique
+
+
+
+variable {E ι : Type*}
+
+section NormedLatticeField
+
+variable {K : Type*} [NormedField K]
+variable [NormedAddCommGroup E] [NormedSpace K E]
+variable (b : Basis ι K E)
+
+theorem smul {c : K} (hc : c ≠ 0) :
+    c • span ℤ (Set.range b) = span ℤ (Set.range (b.isUnitSMul (fun _ ↦ hc.isUnit))) := by
+  rw [smul_span, Set.smul_set_range]
+  congr!
+  rw [Basis.isUnitSMul_apply]
+
+variable [LinearOrder K] [IsStrictOrderedRing K]
 
 lemma fundamentalDomain_pi_basisFun [Fintype ι] :
-    fundamentalDomain (Pi.basisFun ℝ ι) = Set.pi Set.univ fun _ : ι ↦ Set.Ico (0 : ℝ) 1 := by
+    fundamentalDomain (Pi.basisFun ℝ ι) = Set.univ.pi fun _ : ι ↦ Set.Ico (0 : ℝ) 1 := by
   ext; simp
 
 variable [FloorRing K]
@@ -120,97 +427,6 @@ section Fintype
 
 variable [Fintype ι]
 
-/-- The map that sends a vector of `E` to the element of the ℤ-lattice spanned by `b` obtained
-by rounding down its coordinates on the basis `b`. -/
-def floor (m : E) : span ℤ (Set.range b) := ∑ i, ⌊b.repr m i⌋ • b.restrictScalars ℤ i
-
-/-- The map that sends a vector of `E` to the element of the ℤ-lattice spanned by `b` obtained
-by rounding up its coordinates on the basis `b`. -/
-def ceil (m : E) : span ℤ (Set.range b) := ∑ i, ⌈b.repr m i⌉ • b.restrictScalars ℤ i
-
-@[simp]
-theorem repr_floor_apply (m : E) (i : ι) : b.repr (floor b m) i = ⌊b.repr m i⌋ := by
-  classical simp only [floor, ← Int.cast_smul_eq_zsmul K, b.repr.map_smul, Finsupp.single_apply,
-    Finset.sum_apply', Basis.repr_self, Finsupp.smul_single', mul_one, Finset.sum_ite_eq', coe_sum,
-    Finset.mem_univ, if_true, coe_smul_of_tower, Basis.restrictScalars_apply, map_sum]
-
-@[simp]
-theorem repr_ceil_apply (m : E) (i : ι) : b.repr (ceil b m) i = ⌈b.repr m i⌉ := by
-  classical simp only [ceil, ← Int.cast_smul_eq_zsmul K, b.repr.map_smul, Finsupp.single_apply,
-    Finset.sum_apply', Basis.repr_self, Finsupp.smul_single', mul_one, Finset.sum_ite_eq', coe_sum,
-    Finset.mem_univ, if_true, coe_smul_of_tower, Basis.restrictScalars_apply, map_sum]
-
-@[simp]
-theorem floor_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (floor b m : E) = m := by
-  apply b.ext_elem
-  simp_rw [repr_floor_apply b]
-  intro i
-  obtain ⟨z, hz⟩ := (b.mem_span_iff_repr_mem ℤ _).mp h i
-  rw [← hz]
-  exact congr_arg (Int.cast : ℤ → K) (Int.floor_intCast z)
-
-@[simp]
-theorem ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b m : E) = m := by
-  apply b.ext_elem
-  simp_rw [repr_ceil_apply b]
-  intro i
-  obtain ⟨z, hz⟩ := (b.mem_span_iff_repr_mem ℤ _).mp h i
-  rw [← hz]
-  exact congr_arg (Int.cast : ℤ → K) (Int.ceil_intCast z)
-
-/-- The map that sends a vector `E` to the `fundamentalDomain` of the lattice,
-see `ZSpan.fract_mem_fundamentalDomain`, and `fractRestrict` for the map with the codomain
-restricted to `fundamentalDomain`. -/
-def fract (m : E) : E := m - floor b m
-
-theorem fract_apply (m : E) : fract b m = m - floor b m := rfl
-
-@[simp]
-theorem repr_fract_apply (m : E) (i : ι) : b.repr (fract b m) i = Int.fract (b.repr m i) := by
-  rw [fract, map_sub, Finsupp.coe_sub, Pi.sub_apply, repr_floor_apply, Int.fract]
-
-@[simp]
-theorem fract_fract (m : E) : fract b (fract b m) = fract b m :=
-  Basis.ext_elem b fun _ => by classical simp only [repr_fract_apply, Int.fract_fract]
-
-@[simp]
-theorem fract_zSpan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
-    fract b (v + m) = fract b m := by
-  classical
-  refine (Basis.ext_elem_iff b).mpr fun i => ?_
-  simp_rw [repr_fract_apply, Int.fract_eq_fract]
-  use (b.restrictScalars ℤ).repr ⟨v, h⟩ i
-  rw [map_add, Finsupp.coe_add, Pi.add_apply, add_tsub_cancel_right,
-    ← eq_intCast (algebraMap ℤ K) _, Basis.restrictScalars_repr_apply, coe_mk]
-
-@[simp]
-theorem fract_add_ZSpan (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
-    fract b (m + v) = fract b m := by rw [add_comm, fract_zSpan_add b m h]
-
-variable {b} in
-theorem fract_eq_self {x : E} : fract b x = x ↔ x ∈ fundamentalDomain b := by
-  classical simp only [Basis.ext_elem_iff b, repr_fract_apply, Int.fract_eq_self,
-    mem_fundamentalDomain, Set.mem_Ico]
-
-theorem fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b :=
-  fract_eq_self.mp (fract_fract b _)
-
-/-- The map `fract` with codomain restricted to `fundamentalDomain`. -/
-def fractRestrict (x : E) : fundamentalDomain b := ⟨fract b x, fract_mem_fundamentalDomain b x⟩
-
-theorem fractRestrict_surjective : Function.Surjective (fractRestrict b) :=
-  fun x => ⟨↑x, Subtype.ext (fract_eq_self.mpr (Subtype.mem x))⟩
-
-@[simp]
-theorem fractRestrict_apply (x : E) : (fractRestrict b x : E) = fract b x := rfl
-
-theorem fract_eq_fract (m n : E) : fract b m = fract b n ↔ -m + n ∈ span ℤ (Set.range b) := by
-  classical
-  rw [eq_comm, Basis.ext_elem_iff b]
-  simp_rw [repr_fract_apply, Int.fract_eq_fract, eq_comm, Basis.mem_span_iff_repr_mem,
-    sub_eq_neg_add, map_add, map_neg, Finsupp.coe_add, Finsupp.coe_neg, Pi.add_apply,
-    Pi.neg_apply, ← eq_intCast (algebraMap ℤ K) _, Set.mem_range]
-
 theorem norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b i‖ := by
   classical
   calc
@@ -218,7 +434,7 @@ theorem norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b
     _ = ‖∑ i, Int.fract (b.repr m i) • b i‖ := by simp_rw [repr_fract_apply]
     _ ≤ ∑ i, ‖Int.fract (b.repr m i) • b i‖ := norm_sum_le _ _
     _ = ∑ i, ‖Int.fract (b.repr m i)‖ * ‖b i‖ := by simp_rw [norm_smul]
-    _ ≤ ∑ i, ‖b i‖ := Finset.sum_le_sum fun i _ => ?_
+    _ ≤ ∑ i, ‖b i‖ := Finset.sum_le_sum fun i _ ↦ ?_
   suffices ‖Int.fract ((b.repr m) i)‖ ≤ 1 by
     convert mul_le_mul_of_nonneg_right this (norm_nonneg _ : 0 ≤ ‖b i‖)
     exact (one_mul _).symm
@@ -226,22 +442,6 @@ theorem norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b
   apply norm_le_norm_of_abs_le_abs
   rw [abs_one, Int.abs_fract]
   exact le_of_lt (Int.fract_lt_one _)
-
-section Unique
-
-variable [Unique ι]
-
-@[simp]
-theorem coe_floor_self (k : K) : (floor (Basis.singleton ι K) k : K) = ⌊k⌋ :=
-  Basis.ext_elem (Basis.singleton ι K) fun _ => by
-    rw [repr_floor_apply, Basis.singleton_repr, Basis.singleton_repr]
-
-@[simp]
-theorem coe_fract_self (k : K) : (fract (Basis.singleton ι K) k : K) = Int.fract k :=
-  Basis.ext_elem (Basis.singleton ι K) fun _ => by
-    rw [repr_fract_apply, Basis.singleton_repr, Basis.singleton_repr]
-
-end Unique
 
 end Fintype
 
@@ -254,14 +454,14 @@ theorem fundamentalDomain_isBounded [Finite ι] [HasSolidNorm K] :
 
 theorem vadd_mem_fundamentalDomain [Fintype ι] (y : span ℤ (Set.range b)) (x : E) :
     y +ᵥ x ∈ fundamentalDomain b ↔ y = -floor b x := by
-  rw [Subtype.ext_iff, ← add_right_inj x, NegMemClass.coe_neg, ← sub_eq_add_neg, ← fract_apply,
-    ← fract_zSpan_add b _ (Subtype.mem y), add_comm, ← vadd_eq_add, ← vadd_def, eq_comm, ←
-    fract_eq_self]
+  rw [Subtype.ext_iff, ← add_right_inj x, NegMemClass.coe_neg, ← sub_eq_add_neg, self_sub_floor,
+    ← fract_coe_add b _ _ (Subtype.mem y), add_comm, ← vadd_eq_add, ← vadd_def, eq_comm,
+    ← fract_eq_self]
 
 theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
     ∃! v : span ℤ (Set.range b), v +ᵥ x ∈ fundamentalDomain b := by
   cases nonempty_fintype ι
-  refine ⟨-floor b x, ?_, fun y h => ?_⟩
+  refine ⟨-floor b x, ?_, fun y h ↦ ?_⟩
   · exact (vadd_mem_fundamentalDomain b (-floor b x) x).mpr rfl
   · exact (vadd_mem_fundamentalDomain b y x).mp h
 
@@ -269,17 +469,20 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The map `ZSpan.fractRestrict` defines an equiv map between `E ⧸ span ℤ (Set.range b)`
 and `ZSpan.fundamentalDomain b`. -/
 def quotientEquiv [Fintype ι] :
-    E ⧸ span ℤ (Set.range b) ≃ (fundamentalDomain b) := by
-  refine Equiv.ofBijective ?_ ⟨fun x y => ?_, fun x => ?_⟩
-  · refine fun q => Quotient.liftOn q (fractRestrict b) (fun _ _ h => ?_)
-    rw [Subtype.mk.injEq, fractRestrict_apply, fractRestrict_apply, fract_eq_fract]
+    E ⧸ span ℤ (Set.range b) ≃ fundamentalDomain b := by
+  refine Equiv.ofBijective ?_ ⟨fun x y ↦ ?_, fun x ↦ ?_⟩
+  · refine fun q ↦ Quotient.liftOn q (fractRestrict b) (fun _ _ h ↦ ?_)
+    rw [Subtype.mk.injEq, fractRestrict_apply, fractRestrict_apply]
+    symm
+    rw [fract_eq_fract, ← neg_add_eq_sub]
     exact QuotientAddGroup.leftRel_apply.mp h
-  · refine Quotient.inductionOn₂ x y (fun _ _ hxy => ?_)
+  · refine Quotient.inductionOn₂ x y (fun _ _ hxy ↦ ?_)
     rw [Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))), fractRestrict,
       Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))), fractRestrict,
       Subtype.mk.injEq] at hxy
     apply Quotient.sound'
-    rwa [QuotientAddGroup.leftRel_apply, mem_toAddSubgroup, ← fract_eq_fract]
+    rw [QuotientAddGroup.leftRel_apply, mem_toAddSubgroup, neg_add_eq_sub]
+    exact (fract_eq_fract b).mp hxy.symm
   · obtain ⟨a, rfl⟩ := fractRestrict_surjective b x
     exact ⟨Quotient.mk'' a, rfl⟩
 
@@ -305,7 +508,7 @@ theorem discreteTopology_pi_basisFun [Finite ι] :
   ext x
   rw [Set.mem_preimage, mem_ball_zero_iff, pi_norm_lt_iff zero_lt_one, Set.mem_singleton_iff]
   simp_rw [← coe_eq_zero, funext_iff, Pi.zero_apply, Real.norm_eq_abs]
-  refine forall_congr' (fun i => ?_)
+  refine forall_congr' fun i ↦ ?_
   rsuffices ⟨y, hy⟩ : ∃ (y : ℤ), (y : ℝ) = (x : ι → ℝ) i
   · rw [← hy, ← Int.cast_abs, ← Int.cast_one, Int.cast_lt, Int.abs_lt_one_iff, Int.cast_eq_zero]
   exact ((Pi.basisFun ℝ ι).mem_span_iff_repr_mem ℤ x).mp (SetLike.coe_mem x) i
@@ -340,10 +543,10 @@ theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpac
     MeasurableSet (fundamentalDomain b) := by
   cases nonempty_fintype ι
   haveI : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
-  let D : Set (ι → ℝ) := Set.pi Set.univ fun _ : ι => Set.Ico (0 : ℝ) 1
+  let D : Set (ι → ℝ) := Set.univ.pi fun _ : ι ↦ Set.Ico (0 : ℝ) 1
   rw [(_ : fundamentalDomain b = b.equivFun.toLinearMap ⁻¹' D)]
   · refine measurableSet_preimage (LinearMap.continuous_of_finiteDimensional _).measurable ?_
-    exact MeasurableSet.pi Set.countable_univ fun _ _ => measurableSet_Ico
+    exact MeasurableSet.pi Set.countable_univ fun _ _ ↦ measurableSet_Ico
   · ext
     simp only [D, fundamentalDomain, Set.mem_Ico, Set.mem_setOf_eq, LinearEquiv.coe_coe,
       Set.mem_preimage, Basis.equivFun_apply, Set.mem_pi, Set.mem_univ, forall_true_left]
@@ -355,8 +558,8 @@ protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensM
     (μ : Measure E) :
     IsAddFundamentalDomain (span ℤ (Set.range b)) (fundamentalDomain b) μ := by
   cases nonempty_fintype ι
-  exact IsAddFundamentalDomain.mk' (nullMeasurableSet (fundamentalDomain_measurableSet b))
-    fun x => exist_unique_vadd_mem_fundamentalDomain b x
+  exact IsAddFundamentalDomain.mk' (nullMeasurableSet <| fundamentalDomain_measurableSet b)
+    fun x ↦ exist_unique_vadd_mem_fundamentalDomain b x
 
 /-- A version of `ZSpan.isAddFundamentalDomain` for `AddSubgroup`. -/
 protected theorem isAddFundamentalDomain' [Finite ι] [MeasurableSpace E] [OpensMeasurableSpace E]
@@ -499,7 +702,7 @@ instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup 
   let f := (span ℝ (L : Set E)).subtype
   let L₀ := L.comap (f.restrictScalars ℤ)
   have h_img : f '' L₀ = L := by
-    rw [← LinearMap.coe_restrictScalars ℤ f, ← Submodule.map_coe (f.restrictScalars ℤ),
+    rw [← f.coe_restrictScalars ℤ, ← Submodule.map_coe (f.restrictScalars ℤ),
       Submodule.map_comap_eq_self]
     exact fun x hx ↦ LinearMap.mem_range.mpr ⟨⟨x, Submodule.subset_span hx⟩, rfl⟩
   suffices Module.Finite ℤ L₀ by
@@ -586,27 +789,28 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     -- But that follows from the fact that there exist `n, m : ℕ`, `n ≠ m`
     -- such that `(n - m) • v ∈ span ℤ e` which is true since `n ↦ ZSpan.fract e (n • v)`
     -- takes value into the finite set `fundamentalDomain e ∩ L`
-    have h_mapsto : Set.MapsTo (fun n : ℤ => fract e (n • v)) Set.univ
+    have h_mapsto : Set.univ.MapsTo (fun n : ℤ ↦ fract e (n • v))
         (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
       rw [Set.mapsTo_inter, Set.mapsTo_univ_iff, Set.mapsTo_univ_iff]
-      refine ⟨fun _ ↦ mem_closedBall_zero_iff.mpr (norm_fract_le e _), fun _ => ?_⟩
+      refine ⟨fun _ ↦ mem_closedBall_zero_iff.mpr (norm_fract_le e _), fun _ ↦ ?_⟩
       · rw [← h_spanL]
         refine sub_mem ?_ ?_
         · exact zsmul_mem (subset_span (Set.diff_subset hv)) _
         · exact span_mono (by simp [e, ht_inc]) (coe_mem _)
-    have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
+    have h_finite : (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)).Finite := by
       change ((_ : Set E) ∩ L.toAddSubgroup).Finite
       have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)
       exact Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete
         Metric.isBounded_closedBall inferInstance
-    obtain ⟨n, -, m, -, h_neq, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
-      Set.infinite_univ h_mapsto h_finite
+    obtain ⟨n, _, m, _, h_neq, h_eq⟩ := Set.infinite_univ.exists_ne_map_eq_of_mapsTo
+      h_mapsto h_finite
     have h_nz : (-n + m : ℚ) ≠ 0 := by
       rwa [Ne, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.coe_int_inj, ← Ne]
     apply (smul_mem_iff _ h_nz).mp
     refine span_subset_span ℤ ℚ _ ?_
-    rwa [add_smul, neg_smul, SetLike.mem_coe, ← fract_eq_fract, Int.cast_smul_eq_zsmul ℚ,
-      Int.cast_smul_eq_zsmul ℚ]
+    rw [add_smul, neg_smul, SetLike.mem_coe, neg_add_eq_sub, ← fract_eq_fract,
+      Int.cast_smul_eq_zsmul ℚ, Int.cast_smul_eq_zsmul ℚ]
+    exact h_eq.symm
   · -- To prove that `finrank K E ≤ finrank ℤ L`, we use the fact `b` generates `E` over `K`
     -- and thus `finrank K E ≤ card b = finrank ℤ L`
     rw [← topEquiv.finrank_eq, ← h_spanE]
@@ -640,7 +844,7 @@ theorem ofZLatticeBasis_repr_apply (x : L) (i : ι) :
   suffices ((b.ofZLatticeBasis K L).repr.toLinearMap.restrictScalars ℤ) ∘ₗ L.subtype
       = Finsupp.mapRange.linearMap (Algebra.linearMap ℤ K) ∘ₗ b.repr.toLinearMap by
     exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
-  refine Basis.ext b fun i ↦ ?_
+  refine b.ext fun i ↦ ?_
   simp_rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, coe_subtype, ← b.ofZLatticeBasis_apply K, repr_self,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
