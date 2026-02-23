@@ -146,8 +146,8 @@ lemma lTensor {f : B →ₐ[R] D} (hf : f.Flat) :
     (Algebra.TensorProduct.lTensor (S := S) A f).Flat := by
   algebraize [f.toRingHom, (Algebra.TensorProduct.lTensor (S := A) A f).toRingHom]
   let e : A ⊗[R] D ≃ₐ[A ⊗[R] B] (A ⊗[R] B) ⊗[B] D :=
-    { __ := (Algebra.IsPushout.cancelBaseChangeAlg _ _ _ _ _).symm,
-      commutes' x := congr($(Algebra.IsPushout.cancelBaseChange_symm_comp_lTensor R B D A) x) }
+    .ofCommutes (Algebra.IsPushout.cancelBaseChangeAlg _ _ _ _ _).symm.toRingEquiv
+      fun x ↦ congr($(Algebra.IsPushout.cancelBaseChange_symm_comp_lTensor R B D A) x)
   exact .of_linearEquiv e.toLinearEquiv
 
 variable {A} in
