@@ -53,6 +53,7 @@ protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCo
     {a : α} : ConditionallyCompleteLinearOrder { x : α // a ≤ x } :=
   { @ordConnectedSubsetConditionallyCompleteLinearOrder α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩ _ with }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrderBot`.
 
 This instance uses data fields from `Subtype.linearOrder` to help type-class inference.

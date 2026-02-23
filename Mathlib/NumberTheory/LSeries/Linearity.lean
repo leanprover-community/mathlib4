@@ -15,7 +15,7 @@ We show that the `LSeries` of `f : ℕ → ℂ` is a linear function of `f` (ass
 of both L-series when adding two functions).
 -/
 
-@[expose] public section
+public section
 
 /-!
 ### Addition
@@ -128,6 +128,7 @@ lemma LSeriesSummable.smul_iff {f : ℕ → ℂ} {c s : ℂ} (hc : c ≠ 0) :
     LSeriesSummable (c • f) s ↔ LSeriesSummable f s :=
   ⟨of_smul hc, smul c⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma LSeries_smul (f : ℕ → ℂ) (c s : ℂ) : LSeries (c • f) s = c * LSeries f s := by
   simp [LSeries, term_smul_apply, tsum_mul_left]

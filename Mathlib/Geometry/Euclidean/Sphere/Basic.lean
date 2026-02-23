@@ -406,6 +406,7 @@ theorem eq_of_mem_sphere_of_mem_sphere_of_finrank_eq_two [FiniteDimensional ℝ 
   eq_of_dist_eq_of_dist_eq_of_finrank_eq_two hd ((Sphere.center_ne_iff_ne_of_mem hps₁ hps₂).2 hs) hp
     hp₁s₁ hp₂s₁ hps₁ hp₁s₂ hp₂s₂ hps₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a point on a sphere and a point not outside it, the inner product between the
 difference of those points and the radius vector is positive unless the points are equal. -/
 theorem inner_pos_or_eq_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
@@ -480,7 +481,7 @@ lemma isDiameter_iff_mem_and_mem_and_dist :
     rw [dist_comm, hr, two_mul]
 
 lemma isDiameter_iff_mem_and_mem_and_wbtw :
-    s.IsDiameter p₁ p₂ ↔ p₁ ∈ s ∧ p₂ ∈ s ∧ Wbtw ℝ p₁ s.center p₂:= by
+    s.IsDiameter p₁ p₂ ↔ p₁ ∈ s ∧ p₂ ∈ s ∧ Wbtw ℝ p₁ s.center p₂ := by
   refine ⟨fun h ↦ ⟨h.left_mem, h.right_mem, h.wbtw⟩, fun ⟨h₁, h₂, hr⟩ ↦ ?_⟩
   have hd := hr.dist_add_dist
   rw [mem_sphere.1 h₁, mem_sphere'.1 h₂, ← two_mul, eq_comm] at hd

@@ -28,9 +28,6 @@ are defined on `ONote` and `NONote`.
 
 @[expose] public section
 
--- TODO: fix all the violations in this file
-set_option linter.flexible false
-
 open Ordinal Order
 
 -- The generated theorem `ONote.zero.sizeOf_spec` is flagged by `simpNF`,
@@ -75,11 +72,14 @@ noncomputable def repr : ONote → Ordinal.{0}
 @[simp] theorem repr_zero : repr 0 = 0 := rfl
 attribute [simp] repr.eq_1 repr.eq_2
 
+set_option backward.privateInPublic true in
 /-- Print `ω^s*n`, omitting `s` if `e = 0` or `e = 1`, and omitting `n` if `n = 1` -/
 private def toString_aux (e : ONote) (n : ℕ) (s : String) : String :=
   if e = 0 then toString n
   else (if e = 1 then "ω" else "ω^(" ++ s ++ ")") ++ if n = 1 then "" else "*" ++ toString n
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Print an ordinal notation -/
 def toString : ONote → String
   | zero => "0"
@@ -790,6 +790,7 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
 
 section
 
+set_option linter.flexible false in -- simp used on two different goals
 theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω ∣ repr a')
     (e0 : repr a0 ≠ 0) (h : repr a' + m < (ω ^ repr a0)) (n : ℕ+) (k : ℕ) :
     let R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)
@@ -872,6 +873,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
 
 end
 
+set_option linter.flexible false in -- simp used on two different goals
 theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o₁ ^ repr o₂ := by
   rcases e₁ : split o₁ with ⟨a, m⟩
   obtain ⟨N₁, r₁⟩ := nf_repr_split e₁
@@ -1094,6 +1096,7 @@ theorem fastGrowing_limit (o) {f} (h : fundamentalSequence o = Sum.inr f) :
 theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
   fastGrowing_zero' _ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]

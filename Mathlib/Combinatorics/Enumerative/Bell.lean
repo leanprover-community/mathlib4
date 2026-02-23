@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández, Yu Shao, Be
 module
 
 public import Mathlib.Data.Nat.Choose.Multinomial
-public import Mathlib.Data.Nat.Choose.Mul
 
 /-! # Bell numbers for multisets
 
@@ -66,7 +65,7 @@ private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) :
             ∏ j ∈ Finset.range (c + 1), (j * x + x - 1).choose (x - 1) := by
         rw [factorial_succ, pow_succ]; ring
       _ = (x ! ^ c * c ! * ∏ j ∈ Finset.range c, (j * x + x - 1).choose (x - 1)) *
-            (c * x + x - 1).choose (x - 1) * x ! * (c + 1)  := by
+            (c * x + x - 1).choose (x - 1) * x ! * (c + 1) := by
         rw [Finset.prod_range_succ]; ring
       _ = (c + 1) * (c * x + x - 1).choose (x - 1) * (x * c)! * x ! := by
         rw [bell_mul_eq_lemma hx]; ring
@@ -74,6 +73,7 @@ private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) :
         rw [← Nat.choose_mul_add hx, mul_comm c x, Nat.add_choose_mul_factorial_mul_factorial]
         ring_nf
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bell_mul_eq (m : Multiset ℕ) :
     m.bell * (m.map (fun j ↦ j !)).prod * ∏ j ∈ (m.toFinset.erase 0), (m.count j)!
       = m.sum ! := by
@@ -104,6 +104,7 @@ theorem bell_mul_eq (m : Multiset ℕ) :
     rw [Finset.sum_multiset_count]
     simp only [smul_eq_mul, mul_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bell_eq (m : Multiset ℕ) :
     m.bell = m.sum ! / ((m.map (fun j ↦ j !)).prod *
       ∏ j ∈ (m.toFinset.erase 0), (m.count j)!) := by
@@ -133,7 +134,7 @@ theorem uniformBell_eq (m n : ℕ) : m.uniformBell n =
   unfold uniformBell bell
   rw [toFinset_replicate]
   split_ifs with hm
-  · simp  [hm]
+  · simp [hm]
   · by_cases hn : n = 0
     · simp [hn]
     · rw [show ({n} : Finset ℕ).erase 0 = {n} by simp [Ne.symm hn]]
@@ -146,7 +147,7 @@ theorem uniformBell_zero_right (m : ℕ) : uniformBell m 0 = 1 := by
   simp [uniformBell_eq]
 
 theorem uniformBell_succ_left (m n : ℕ) :
-    uniformBell (m+1) n = choose (m * n + n - 1) (n - 1) * uniformBell m n := by
+    uniformBell (m + 1) n = choose (m * n + n - 1) (n - 1) * uniformBell m n := by
   simp only [uniformBell_eq, Finset.prod_range_succ, mul_comm]
 
 theorem uniformBell_one_left (n : ℕ) : uniformBell 1 n = 1 := by
@@ -170,7 +171,7 @@ theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
   · simp
 
 theorem uniformBell_eq_div (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    uniformBell m n = (m * n) ! / (n ! ^ m * m !) := by
+    uniformBell m n = (m * n)! / (n ! ^ m * m !) := by
   rw [eq_comm]
   apply Nat.div_eq_of_eq_mul_left
   · exact Nat.mul_pos (Nat.pow_pos (Nat.factorial_pos n)) m.factorial_pos

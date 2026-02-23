@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Limits.Final
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 3.1.8(i)
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -33,13 +33,14 @@ variable {T : Type u₁} [SmallCategory T]
 
 attribute [local instance] Grothendieck.final_map
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The version of `final_of_final_costructuredArrowToOver` on small categories used to prove the
 full statement. -/
 private lemma final_of_final_costructuredArrowToOver_small (L : A ⥤ T) (R : B ⥤ T) [Final R]
     [∀ b : B, Final (CostructuredArrow.toOver L (R.obj b))] : Final L := by
   rw [final_iff_isIso_colimit_pre]
   intro G
-  have : ∀ (b : B), Final ((whiskerLeft R (preFunctor L (𝟭 T))).app b) := fun b =>
+  have : ∀ (b : B), Final ((whiskerLeft R (preFunctor L (𝟭 T))).app b).toFunctor := fun b =>
     inferInstanceAs (Final (CostructuredArrow.toOver L (R.obj b)))
   let i : colimit (L ⋙ G) ≅ colimit G :=
     calc colimit (L ⋙ G) ≅ colimit <| grothendieckProj L ⋙ L ⋙ G :=
@@ -67,6 +68,7 @@ end Small
 variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor `L : A ⥤ T` is final if there is a final functor `R : B ⥤ T` such that for all
 `b : B`, the canonical functor `CostructuredArrow L (R.obj b) ⥤ Over (R.obj b)` is final. -/
 theorem final_of_final_costructuredArrowToOver (L : A ⥤ T) (R : B ⥤ T) [Final R]

@@ -93,6 +93,7 @@ export Dist (dist)
 
 -- the uniform structure and the emetric space structure are embedded in the metric space structure
 -- to avoid instance diamond issues. See Note [forgetful inheritance].
+set_option backward.privateInPublic true in
 /-- This is an internal lemma used inside the default of `PseudoMetricSpace.edist`. -/
 private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
@@ -103,6 +104,8 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     _ = 2 * dist x y := by rw [two_mul, dist_comm]
   nonneg_of_mul_nonneg_right this two_pos
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A pseudometric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
 reflexivity `dist x x = 0`, commutativity `dist x y = dist y x`, and the triangle inequality
 `dist x z ≤ dist x y + dist y z`.
@@ -133,7 +136,7 @@ class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   cobounded_sets : (Bornology.cobounded α).sets =
     { s | ∃ C : ℝ, ∀ x ∈ sᶜ, ∀ y ∈ sᶜ, dist x y ≤ C } := by intros; rfl
 
-/-- Two pseudo metric space structures with the same distance function coincide. -/
+/-- Two pseudometric space structures with the same distance function coincide. -/
 @[ext]
 theorem PseudoMetricSpace.ext {α : Type*} {m m' : PseudoMetricSpace α}
     (h : m.toDist = m'.toDist) : m = m' := by
@@ -151,7 +154,8 @@ theorem PseudoMetricSpace.ext {α : Type*} {m m' : PseudoMetricSpace α}
 
 variable [PseudoMetricSpace α]
 
-attribute [instance] PseudoMetricSpace.toUniformSpace PseudoMetricSpace.toBornology
+attribute [instance_reducible, instance]
+  PseudoMetricSpace.toUniformSpace PseudoMetricSpace.toBornology
 
 -- see Note [lower instance priority]
 instance (priority := 200) PseudoMetricSpace.toEDist : EDist α :=
@@ -375,8 +379,7 @@ contains it.
 
 See also `exists_lt_subset_ball`. -/
 theorem exists_lt_mem_ball_of_mem_ball (h : x ∈ ball y ε) : ∃ ε' < ε, x ∈ ball y ε' := by
-  simp only [mem_ball] at h ⊢
-  exact ⟨(dist x y + ε) / 2, by linarith, by linarith⟩
+  simpa [mem_ball] using exists_between' h
 
 theorem ball_eq_ball (ε : ℝ) (x : α) :
     UniformSpace.ball x { p | dist p.2 p.1 < ε } = Metric.ball x ε :=
@@ -571,6 +574,7 @@ theorem ball_subset (h : dist x y ≤ ε₂ - ε₁) : ball x ε₁ ⊆ ball y �
   rw [← add_sub_cancel ε₁ ε₂]
   exact lt_of_le_of_lt (dist_triangle z x y) (add_lt_add_of_lt_of_le zx h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ball_half_subset (y) (h : y ∈ ball x (ε / 2)) : ball y (ε / 2) ⊆ ball x ε :=
   ball_subset <| by rw [sub_self_div_two]; exact le_of_lt h
 
@@ -701,6 +705,17 @@ theorem uniformity_basis_dist_le :
     (𝓤 α).HasBasis ((0 : ℝ) < ·) fun ε => { p : α × α | dist p.1 p.2 ≤ ε } :=
   Metric.mk_uniformity_basis_le (fun _ => id) fun ε ε₀ => ⟨ε, ε₀, le_refl ε⟩
 
+theorem uniformity_basis_dist_le_inv_nat_succ :
+    (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ 1 / (↑n + 1) } :=
+  Metric.mk_uniformity_basis_le (fun n _ => div_pos zero_lt_one <| Nat.cast_add_one_pos n)
+    fun _ε ε0 => (exists_nat_one_div_lt ε0).imp fun _n hn => ⟨trivial, hn.le⟩
+
+theorem uniformity_basis_dist_le_inv_nat_pos :
+    (𝓤 α).HasBasis (fun n : ℕ => 0 < n) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ 1 / ↑n } :=
+  Metric.mk_uniformity_basis_le (fun n hn => div_pos zero_lt_one <| Nat.cast_pos.2 hn) fun _ε ε0 =>
+    let ⟨n, hn⟩ := exists_nat_one_div_lt ε0
+    ⟨n + 1, n.succ_pos, by simpa using hn.le⟩
+
 theorem uniformity_basis_dist_le_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
     (𝓤 α).HasBasis (fun _ : ℕ => True) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ r ^ n } :=
   Metric.mk_uniformity_basis_le (fun _ _ => pow_pos h0 _) fun _ε ε0 =>
@@ -776,6 +791,14 @@ theorem nhds_basis_ball_inv_nat_succ :
 theorem nhds_basis_ball_inv_nat_pos :
     (𝓝 x).HasBasis (fun n => 0 < n) fun n : ℕ => ball x (1 / ↑n) :=
   nhds_basis_uniformity uniformity_basis_dist_inv_nat_pos
+
+theorem nhds_basis_closedBall_inv_nat_succ :
+    (𝓝 x).HasBasis (fun _ => True) fun n : ℕ => closedBall x (1 / (↑n + 1)) :=
+  nhds_basis_uniformity uniformity_basis_dist_le_inv_nat_succ
+
+theorem nhds_basis_closedBall_inv_nat_pos :
+    (𝓝 x).HasBasis (fun n => 0 < n) fun n : ℕ => closedBall x (1 / ↑n) :=
+  nhds_basis_uniformity uniformity_basis_dist_le_inv_nat_pos
 
 theorem nhds_basis_ball_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
     (𝓝 x).HasBasis (fun _ => True) fun n : ℕ => ball x (r ^ n) :=
@@ -937,36 +960,51 @@ instance (priority := 100) PseudoMetricSpace.toPseudoEMetricSpace : PseudoEMetri
     uniformity_edist := Metric.uniformity_edist }
 
 /-- In a pseudometric space, an open ball of infinite radius is the whole space -/
-theorem Metric.eball_top_eq_univ (x : α) : EMetric.ball x ∞ = Set.univ :=
+theorem Metric.eball_top_eq_univ (x : α) : eball x ∞ = Set.univ :=
   Set.eq_univ_iff_forall.mpr fun y => edist_lt_top y x
 
 /-- Balls defined using the distance or the edistance coincide -/
 @[simp]
-theorem Metric.emetric_ball {x : α} {ε : ℝ} : EMetric.ball x (ENNReal.ofReal ε) = ball x ε := by
+theorem Metric.eball_ofReal {x : α} {ε : ℝ} : eball x (.ofReal ε) = ball x ε := by
   ext y
-  simp only [EMetric.mem_ball, mem_ball, edist_dist]
+  simp only [mem_eball, mem_ball, edist_dist]
   exact ENNReal.ofReal_lt_ofReal_iff_of_nonneg dist_nonneg
+
+@[deprecated (since := "2026-01-24")]
+alias Metric.emetric_ball := Metric.eball_ofReal
 
 /-- Balls defined using the distance or the edistance coincide -/
 @[simp]
-theorem Metric.emetric_ball_nnreal {x : α} {ε : ℝ≥0} : EMetric.ball x ε = ball x ε := by
-  rw [← Metric.emetric_ball]
+theorem Metric.eball_coe {x : α} {ε : ℝ≥0} : eball x ε = ball x ε := by
+  rw [← eball_ofReal]
   simp
 
+@[deprecated (since := "2026-01-24")]
+alias Metric.emetric_ball_nnreal := Metric.eball_coe
+
 /-- Closed balls defined using the distance or the edistance coincide -/
-theorem Metric.emetric_closedBall {x : α} {ε : ℝ} (h : 0 ≤ ε) :
-    EMetric.closedBall x (ENNReal.ofReal ε) = closedBall x ε := by
+theorem Metric.closedEBall_ofReal {x : α} {ε : ℝ} (h : 0 ≤ ε) :
+    closedEBall x (.ofReal ε) = closedBall x ε := by
   ext y; simp [edist_le_ofReal h]
 
+@[deprecated (since := "2026-01-24")]
+alias Metric.emetric_closedBall := Metric.closedEBall_ofReal
+
 /-- Closed balls defined using the distance or the edistance coincide -/
 @[simp]
-theorem Metric.emetric_closedBall_nnreal {x : α} {ε : ℝ≥0} :
-    EMetric.closedBall x ε = closedBall x ε := by
-  rw [← Metric.emetric_closedBall ε.coe_nonneg, ENNReal.ofReal_coe_nnreal]
+theorem Metric.closedEBall_coe {x : α} {ε : ℝ≥0} :
+    closedEBall x ε = closedBall x ε := by
+  rw [← closedEBall_ofReal ε.coe_nonneg, ENNReal.ofReal_coe_nnreal]
+
+@[deprecated (since := "2026-01-24")]
+alias Metric.emetric_closedBall_nnreal := Metric.closedEBall_coe
 
 @[simp]
-theorem Metric.emetric_ball_top (x : α) : EMetric.ball x ⊤ = univ :=
+theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=
   eq_univ_of_forall fun _ => edist_lt_top _ _
+
+@[deprecated (since := "2026-01-24")]
+alias Metric.emetric_ball_top := Metric.eball_top
 
 /-- Build a new pseudometric space from an old one where the bundled uniform structure is provably
 (but typically non-definitionaly) equal to some given uniform structure.
@@ -990,7 +1028,7 @@ example {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
     (PseudoMetricSpace.replaceUniformity m H).toBornology = m.toBornology := by
   with_reducible_and_instances rfl
 
-/-- Build a new pseudo metric space from an old one where the bundled topological structure is
+/-- Build a new pseudometric space from an old one where the bundled topological structure is
 provably (but typically non-definitionaly) equal to some given topological structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
@@ -1083,10 +1121,16 @@ theorem Real.ball_eq_Ioo (x r : ℝ) : ball x r = Ioo (x - r) (x + r) :=
     rw [mem_ball, dist_comm, Real.dist_eq, abs_sub_lt_iff, mem_Ioo, ← sub_lt_iff_lt_add',
       sub_lt_comm]
 
+theorem Real.ball_zero_eq_Ioo (r : ℝ) : ball 0 r = Ioo (-r) r := by
+  simp [Real.ball_eq_Ioo]
+
 theorem Real.closedBall_eq_Icc {x r : ℝ} : closedBall x r = Icc (x - r) (x + r) := by
   ext y
   rw [mem_closedBall, dist_comm, Real.dist_eq, abs_sub_le_iff, mem_Icc, ← sub_le_iff_le_add',
     sub_le_comm]
+
+theorem Real.closedBall_zero_eq_Icc (r : ℝ) : closedBall 0 r = Icc (-r) r := by
+  simp [Real.closedBall_eq_Icc]
 
 theorem Real.Ioo_eq_ball (x y : ℝ) : Ioo x y = ball ((x + y) / 2) ((y - x) / 2) := by
   rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,

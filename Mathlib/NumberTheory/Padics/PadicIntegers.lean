@@ -114,6 +114,7 @@ theorem coe_one : ((1 : ℤ_[p]) : ℚ_[p]) = 1 := rfl
 @[simp, norm_cast]
 theorem coe_zero : ((0 : ℤ_[p]) : ℚ_[p]) = 0 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_eq_zero : (x : ℚ_[p]) = 0 ↔ x = 0 := by rw [← coe_zero, Subtype.coe_inj]
 
 lemma coe_ne_zero : (x : ℚ_[p]) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
@@ -138,11 +139,18 @@ lemma coe_sum {α : Type*} (s : Finset α) (f : α → ℤ_[p]) :
     (((∑ z ∈ s, f z) : ℤ_[p]) : ℚ_[p]) = ∑ z ∈ s, (f z : ℚ_[p]) := by
   simp [← Coe.ringHom_apply, map_sum PadicInt.Coe.ringHom f s]
 
+open Topology in
+lemma isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℤ_[p] → ℚ_[p]) := by
+  refine (?_ : IsOpen {y : ℚ_[p] | ‖y‖ ≤ 1}).isOpenEmbedding_subtypeVal
+  simpa only [Metric.closedBall, dist_eq_norm_sub, sub_zero] using
+    IsUltrametricDist.isOpen_closedBall (0 : ℚ_[p]) one_ne_zero
+
 /-- The inverse of a `p`-adic integer with norm equal to `1` is also a `p`-adic integer.
 Otherwise, the inverse is defined to be `0`. -/
 def inv : ℤ_[p] → ℤ_[p]
   | ⟨k, _⟩ => if h : ‖k‖ = 1 then ⟨k⁻¹, by simp [h]⟩ else 0
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CharZero ℤ_[p] where
   cast_injective m n h :=
     Nat.cast_injective (R := ℚ_[p]) (by rw [Subtype.ext_iff] at h; norm_cast at h)
@@ -409,6 +417,7 @@ theorem unitCoeff_spec {x : ℤ_[p]} (hx : x ≠ 0) :
   · simp
   · exact NeZero.ne _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_den {p : ℕ} [hp_prime : Fact p.Prime] (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     IsUnit (r.den : ℤ_[p]) := by
   rw [isUnit_iff]
@@ -494,8 +503,6 @@ theorem p_nonunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
   have : (p : ℝ)⁻¹ < 1 := inv_lt_one_of_one_lt₀ <| mod_cast hp.out.one_lt
   rwa [← norm_p, ← mem_nonunits] at this
 
-@[deprecated (since := "2025-07-27")] alias p_nonnunit := p_nonunit
-
 theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
   apply le_antisymm
   · intro x hx
@@ -522,6 +529,7 @@ theorem ideal_eq_span_pow_p {s : Ideal ℤ_[p]} (hs : s ≠ ⊥) :
 
 open CauSeq
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
   prec' x hx := by
     simp only [← Ideal.one_eq_top, smul_eq_mul, mul_one, SModEq.sub_mem, maximalIdeal_eq_span_p,
@@ -548,12 +556,13 @@ end Dvr
 section FractionRing
 
 instance algebra : Algebra ℤ_[p] ℚ_[p] :=
-  Algebra.ofSubring (subring p)
+  inferInstanceAs <| Algebra (subring p) _
 
 @[simp]
 theorem algebraMap_apply (x : ℤ_[p]) : algebraMap ℤ_[p] ℚ_[p] x = x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
   map_units := fun ⟨x, hx⟩ => by
     rwa [algebraMap_apply, isUnit_iff_ne_zero, PadicInt.coe_ne_zero, ←

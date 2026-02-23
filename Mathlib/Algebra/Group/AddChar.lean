@@ -10,7 +10,6 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Group.Units.Equiv
-public import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -181,7 +180,7 @@ lemma coe_toAddMonoidHomEquiv (ψ : AddChar A M) :
     toAddMonoidHomEquiv ψ a = Additive.ofMul (ψ a) := rfl
 
 @[simp] lemma toAddMonoidHomEquiv_symm_apply (ψ : A →+ Additive M) (a : A) :
-    toAddMonoidHomEquiv.symm ψ a = (ψ a).toMul  := rfl
+    toAddMonoidHomEquiv.symm ψ a = (ψ a).toMul := rfl
 
 /-- The trivial additive character (sending everything to `1`). -/
 instance instOne : One (AddChar A M) := toMonoidHomEquiv.one
@@ -275,6 +274,7 @@ instance instAddCommMonoid : AddCommMonoid (AddChar A M) := Additive.addCommMono
 lemma coe_prod (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i ∈ s, ψ i = ∏ i ∈ s, ⇑(ψ i) := by
   induction s using Finset.cons_induction <;> simp [*]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∑ i ∈ s, ψ i = ∏ i ∈ s, ⇑(ψ i) := by
   induction s using Finset.cons_induction <;> simp [*]
@@ -308,6 +308,7 @@ def toMonoidHomMulEquiv : AddChar A M ≃* (Multiplicative A →* M) :=
 def toAddMonoidAddEquiv : Additive (AddChar A M) ≃+ (A →+ Additive M) :=
   { toAddMonoidHomEquiv with map_add' := fun φ ψ ↦ by rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The double dual embedding. -/
 def doubleDualEmb : A →+ AddChar (AddChar A M) M where
   toFun a := { toFun := fun ψ ↦ ψ a
@@ -357,7 +358,7 @@ inversion operation for the definition (but see `AddChar.map_neg_eq_inv` below).
 instance instCommGroup : CommGroup (AddChar A M) :=
   { instCommMonoid with
     inv := fun ψ ↦ ψ.compAddMonoidHom negAddMonoidHom
-    inv_mul_cancel := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul]}
+    inv_mul_cancel := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul] }
 
 /-- The additive characters on a commutative additive group form a commutative group. -/
 instance : AddCommGroup (AddChar A M) := Additive.addCommGroup
@@ -412,6 +413,7 @@ lemma sub_apply' (ψ χ : AddChar A M) (a : A) : (ψ - χ) a = ψ a / χ a := by
 lemma map_sub_eq_div (ψ : AddChar A M) (a b : A) : ψ (a - b) = ψ a / ψ b :=
   ψ.toMonoidHom.map_div _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injective_iff {ψ : AddChar A M} : Injective ψ ↔ ∀ ⦃x⦄, ψ x = 1 → x = 0 :=
   ψ.toMonoidHom.ker_eq_bot_iff.symm.trans eq_bot_iff
 

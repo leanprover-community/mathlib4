@@ -126,6 +126,7 @@ section Ring
 variable [CommRing R] [AddCommGroup M] [Module R M]
 variable {R M}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isometry sending `(Q.prod <| -Q)` to `(QuadraticForm.dualProd R M)`.
 
 This is `σ` from Proposition 4.8, page 84 of
@@ -156,3 +157,40 @@ TODO: show that `QuadraticForm.toDualProd` is an `QuadraticForm.IsometryEquiv`
 end Ring
 
 end QuadraticForm
+
+/-- Vectors which subtend obtuse angles with each other and all lie in the same half-space are
+linearly independent.
+
+This is [serre1965](Ch. V, §9, Lemma 4). -/
+lemma LinearMap.BilinForm.linearIndependent_of_pairwise_le_zero {ι R M : Type*}
+    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup M] [Module R M]
+    (B : LinearMap.BilinForm R M) (hB : B.toQuadraticMap.PosDef)
+    (f : Module.Dual R M) (v : ι → M)
+    (hp : ∀ i, 0 < f (v i))
+    (hn : Pairwise fun i j ↦ B (v i) (v j) ≤ 0) :
+    LinearIndependent R v := by
+  refine linearIndependent_iff'.mpr fun s c hc ↦ ?_
+  set x := ∑ i ∈ s with 0 < c i, c i • v i with hx
+  set y := ∑ i ∈ s with 0 < -c i, (-c i) • v i with hy
+  replace hc : x = y := by
+    classical
+    simp_rw [hx, hy, neg_smul, Finset.sum_neg_distrib, ← add_eq_zero_iff_eq_neg]
+    rw [← hc, ← Finset.sum_union, Finset.sum_subset]
+    · grind only [= Finset.subset_iff, = Finset.mem_union, = Finset.mem_filter]
+    · simp +contextual [eq_comm (a := (0 : R))]
+    · grind only [Finset.disjoint_filter]
+  have hx₀ : x = 0 := by
+    suffices B x y ≤ 0 by simpa [hc, ← hB.le_zero_iff, B.toQuadraticMap_apply]
+    suffices 0 ≤ ∑ x ∈ s with c x < 0, ∑ i ∈ s with 0 < c i, c x * (c i * (B (v i)) (v x)) by
+      simpa [hx, hy, map_neg, Finset.mul_sum]
+    refine Finset.sum_nonneg fun i hi ↦ Finset.sum_nonneg fun j hj ↦ ?_
+    grind [Pairwise, mul_nonneg_iff, mul_nonpos_iff]
+  have H (c : ι → R) (h : ∑ i ∈ s with 0 < c i, c i • v i = 0) (i : ι) (hi : i ∈ s) : c i ≤ 0 := by
+    have : ∑ i ∈ s with 0 < c i, c i * f (v i) = 0 := by simpa using (congr(f $h))
+    rw [Finset.sum_eq_zero_iff_of_nonneg (by grind [mul_nonneg])] at this
+    by_contra! hi'
+    have : 0 < c i * f (v i) := mul_pos hi' (hp i)
+    grind
+  replace hx (i : ι) (hi : i ∈ s) : c i ≤ 0 := H _ (by grind) i hi
+  replace hy (i : ι) (hi : i ∈ s) : -c i ≤ 0 := H (-c ·) (by grind) i hi
+  grind

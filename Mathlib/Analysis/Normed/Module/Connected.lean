@@ -26,18 +26,20 @@ We show several results related to the (path)-connectedness of subsets of real v
 Statements with connectedness instead of path-connectedness are also given.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Subgroup.index Nat.divisors
 -- TODO assert_not_exists Cardinal
 
-open Convex Set Metric
+open Set Metric
+open scoped Convex ENNReal
 
 section TopologicalVectorSpace
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
   [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a real vector space of dimension `> 1`, the complement of any countable set is path
 connected. -/
 theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
@@ -135,43 +137,75 @@ section Ball
 
 namespace Metric
 
-theorem ball_contractible {x : E} {r : ℝ} (hr : 0 < r) :
+theorem contractibleSpace_ball {x : E} {r : ℝ} (hr : 0 < r) :
     ContractibleSpace (ball x r) :=
-  Convex.contractibleSpace (convex_ball _ _) (by simpa)
+  (convex_ball _ _).contractibleSpace (by simpa)
 
-theorem eball_contractible {x : E} {r : ENNReal} (hr : 0 < r) :
-    ContractibleSpace (EMetric.ball x r) := by
-  cases r with
-  | top =>
-    rw [eball_top_eq_univ, (Homeomorph.Set.univ E).contractibleSpace_iff]
-    exact RealTopologicalVectorSpace.contractibleSpace
-  | coe r =>
-    rw [emetric_ball_nnreal]
-    apply ball_contractible
-    simpa using hr
+@[deprecated (since := "2026-02-02")]
+alias ball_contractible := contractibleSpace_ball
+
+theorem contractibleSpace_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
+    ContractibleSpace (eball x r) :=
+  (convex_eball _ _).contractibleSpace ⟨x, by simpa⟩
+
+@[deprecated (since := "2026-02-02")]
+alias eball_contractible := contractibleSpace_eball
+
+theorem contractibleSpace_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) :
+    ContractibleSpace (closedBall x r) :=
+  (convex_closedBall _ _).contractibleSpace (by simpa)
+
+instance contractibleSpace_closedEBall {x : E} {r : ℝ≥0∞} :
+    ContractibleSpace (closedEBall x r) :=
+  (convex_closedEBall _ _).contractibleSpace ⟨x, by simp⟩
 
 theorem isPathConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
-    IsPathConnected (ball x r) := by
-  rw [isPathConnected_iff_pathConnectedSpace]
-  exact @ContractibleSpace.instPathConnectedSpace _ _ (ball_contractible hr)
+    IsPathConnected (ball x r) :=
+  convex_ball _ _ |>.isPathConnected <| by simpa
 
-theorem isPathConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
-    IsPathConnected (EMetric.ball x r) := by
-  rw [isPathConnected_iff_pathConnectedSpace]
-  exact @ContractibleSpace.instPathConnectedSpace _ _ (eball_contractible hr)
+theorem isPathConnected_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
+    IsPathConnected (eball x r) :=
+  convex_eball _ _ |>.isPathConnected ⟨x, by simpa⟩
+
+theorem isPathConnected_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) :
+    IsPathConnected (closedBall x r) :=
+  convex_closedBall _ _ |>.isPathConnected ⟨x, by simpa⟩
+
+theorem isPathConnected_closedEBall {x : E} {r : ℝ≥0∞} :
+    IsPathConnected (closedEBall x r) :=
+  isPathConnected_iff_pathConnectedSpace.mpr inferInstance
+
+theorem isPreconnected_ball {x : E} {r : ℝ} : IsPreconnected (ball x r) :=
+  (convex_ball _ _).isPreconnected
+
+theorem isPreconnected_eball {x : E} {r : ℝ≥0∞} : IsPreconnected (eball x r) :=
+  (convex_eball _ _).isPreconnected
+
+theorem isPreconnected_closedBall {x : E} {r : ℝ} : IsPreconnected (closedBall x r) :=
+  (convex_closedBall _ _).isPreconnected
+
+theorem isPreconnected_closedEBall {x : E} {r : ℝ≥0∞} : IsPreconnected (closedEBall x r) :=
+  (convex_closedEBall _ _).isPreconnected
 
 theorem isConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
     IsConnected (ball x r) :=
   (isPathConnected_ball hr).isConnected
 
-theorem isConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
-    IsConnected (EMetric.ball x r) :=
+theorem isConnected_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
+    IsConnected (eball x r) :=
   (isPathConnected_eball hr).isConnected
+
+theorem isConnected_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) : IsConnected (closedBall x r) :=
+  ⟨⟨x, by simpa⟩, isPreconnected_closedBall⟩
+
+theorem isConnected_closedEBall {x : E} {r : ℝ≥0∞} : IsConnected (closedEBall x r) :=
+  ⟨⟨x, mem_closedEBall_self⟩, isPreconnected_closedEBall⟩
 
 end Metric
 
 end Ball
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a real vector space of dimension `> 1`, any sphere of nonnegative radius is
 path connected. -/
 theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0 ≤ r) :
@@ -211,7 +245,7 @@ theorem isConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0
 /-- In a real vector space of dimension `> 1`, any sphere is preconnected. -/
 theorem isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
     IsPreconnected (sphere x r) := by
-  rcases le_or_gt 0 r with hr|hr
+  rcases le_or_gt 0 r with hr | hr
   · exact (isConnected_sphere h x hr).isPreconnected
   · simpa [hr] using isPreconnected_empty
 
@@ -222,6 +256,7 @@ section
 variable {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
   [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `E` be a linear subspace in a real vector space.
 If `E` has codimension at least two, its complement is path-connected. -/
 theorem isPathConnected_compl_of_one_lt_codim {E : Submodule ℝ F}

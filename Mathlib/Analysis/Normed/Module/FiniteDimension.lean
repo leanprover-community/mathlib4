@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Analysis.Normed.Operator.Compact
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Module.RieszLemma
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
@@ -18,6 +19,7 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 
 /-!
@@ -148,6 +150,14 @@ theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜
     ⇑f.toHomeomorphOfFiniteDimensional.symm = f.symm :=
   rfl
 
+/-- An affine map from a finite-dimensional space is automatically Lipschitz. -/
+theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :
+    ∃ K : ℝ≥0, LipschitzWith K f := by
+  let fL : E →L[𝕜] F := f.linear.toContinuousLinearMap
+  refine ⟨‖fL‖₊, LipschitzWith.of_dist_le_mul fun x y ↦ ?_⟩
+  rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', ← f.linearMap_vsub]
+  exact fL.le_opNorm _
+
 end Affine
 
 theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E => f.det := by
@@ -224,6 +234,16 @@ theorem LinearMap.injective_iff_antilipschitz [FiniteDimensional 𝕜 E] (f : E 
     exact f.exists_antilipschitzWith
   · rintro ⟨K, -, H⟩
     exact H.injective
+
+/-- An injective affine map from a finite-dimensional space is automatically anti-Lipschitz. -/
+theorem AffineMap.antilipschitzWith_of_finiteDimensional {PE PF : Type*} [MetricSpace PE]
+    [NormedAddTorsor E PE] [MetricSpace PF] [NormedAddTorsor F PF] [FiniteDimensional 𝕜 E]
+    {f : PE →ᵃ[𝕜] PF} (hf : Function.Injective f) :
+    ∃ K : ℝ≥0, AntilipschitzWith K f := by
+  obtain ⟨K, -, hK⟩ := f.linear.injective_iff_antilipschitz.mp (f.linear_injective_iff.mpr hf)
+  refine ⟨K, AntilipschitzWith.of_le_mul_dist fun x y ↦ ?_⟩
+  rw [dist_eq_norm_vsub E, dist_eq_norm_vsub F, ← f.linearMap_vsub]
+  exact ZeroHomClass.bound_of_antilipschitz f.linear hK (x -ᵥ y)
 
 open Function in
 /-- The set of injective continuous linear maps `E → F` is open,
@@ -390,17 +410,16 @@ with norm at most `R` which is at distance at least `1` of all these points. -/
 theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R)
     (h : ¬FiniteDimensional 𝕜 E) (s : Finset E) : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y ∈ s, 1 ≤ ‖y - x‖ := by
   let F := Submodule.span 𝕜 (s : Set E)
-  haveI : FiniteDimensional 𝕜 F :=
-    Module.finite_def.2
-      ((Submodule.fg_top _).2 (Submodule.fg_def.2 ⟨s, Finset.finite_toSet _, rfl⟩))
+  have hF : F.FG := ⟨s, rfl⟩
+  haveI : FiniteDimensional 𝕜 F := .of_fg hF
   have Fclosed : IsClosed (F : Set E) := Submodule.closed_of_finiteDimensional _
   have : ∃ x, x ∉ F := by
     contrapose! h
     have : (⊤ : Submodule 𝕜 E) = F := by
       ext x
       simp [h]
-    have : FiniteDimensional 𝕜 (⊤ : Submodule 𝕜 E) := by rwa [this]
-    exact Module.finite_def.2 ((Submodule.fg_top _).1 (Module.finite_def.1 this))
+    rw [← this] at hF
+    exact .of_fg_top hF
   obtain ⟨x, xR, hx⟩ : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y : E, y ∈ F → 1 ≤ ‖x - y‖ :=
     riesz_lemma_of_norm_lt hc hR Fclosed this
   have hx' : ∀ y : E, y ∈ F → 1 ≤ ‖y - x‖ := by
@@ -415,7 +434,7 @@ bounded by `R` and at distance at least `1`. For a version not assuming `c` and 
 theorem exists_seq_norm_le_one_le_norm_sub' {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R)
     (h : ¬FiniteDimensional 𝕜 E) :
     ∃ f : ℕ → E, (∀ n, ‖f n‖ ≤ R) ∧ Pairwise fun m n => 1 ≤ ‖f m - f n‖ := by
-  have : IsSymm E fun x y : E => 1 ≤ ‖x - y‖ := by
+  have : Std.Symm fun x y : E => 1 ≤ ‖x - y‖ := by
     constructor
     intro x y hxy
     rw [← norm_neg]
@@ -505,10 +524,10 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
     ProperSpace E := by
   rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  have hC : ∀ n, IsCompact (closedBall (0 : E) (‖c‖^n * r)) := fun n ↦ by
+  have hC : ∀ n, IsCompact (closedBall (0 : E) (‖c‖ ^ n * r)) := fun n ↦ by
     have : c ^ n ≠ 0 := pow_ne_zero _ <| fun h ↦ by simp [h, zero_le_one.not_gt] at hc
     simpa [_root_.smul_closedBall' this] using hr.smul (c ^ n)
-  have hTop : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
+  have hTop : Tendsto (fun n ↦ ‖c‖ ^ n * r) atTop atTop :=
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
   exact .of_seq_closedBall hTop (Eventually.of_forall hC)
 
@@ -521,6 +540,15 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
     have : IsClosedEmbedding L := isClosedEmbedding_smul_left hv
     apply IsClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
+
+variable {𝕜 E}
+
+theorem isCompactOperator_id_iff_finiteDimensional [LocallyCompactSpace 𝕜] :
+    IsCompactOperator (_root_.id : E → E) ↔ FiniteDimensional 𝕜 E :=
+  isCompactOperator_id_iff_locallyCompactSpace.trans
+    ⟨fun _ ↦ .of_locallyCompactSpace 𝕜, fun _ ↦ .of_finiteDimensional_of_complete 𝕜 E⟩
+
+alias ⟨IsCompactOperator.finiteDimensional, _⟩ := isCompactOperator_id_iff_finiteDimensional
 
 end Riesz
 
@@ -663,7 +691,7 @@ alias ⟨_, Summable.norm⟩ := summable_norm_iff
 theorem summable_of_sum_range_norm_le {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {c : ℝ} {f : ℕ → E} (h : ∀ n, ∑ i ∈ Finset.range n, ‖f i‖ ≤ c) :
     Summable f :=
-  summable_norm_iff.mp <| summable_of_sum_range_le (fun _ ↦ norm_nonneg _)  h
+  summable_norm_iff.mp <| summable_of_sum_range_le (fun _ ↦ norm_nonneg _) h
 
 theorem summable_of_isBigO' {ι E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ι → E} {g : ι → F}
@@ -736,6 +764,7 @@ theorem continuous_coe_repr : Continuous (fun m : M => ⇑(B.repr m)) :=
   have := Finite.of_basis B
   LinearMap.continuous_of_finiteDimensional B.equivFun.toLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 -- Note: this could be generalized if we had some typeclass to indicate "each of the projections
 -- into the basis is continuous".
 theorem continuous_toMatrix : Continuous fun (v : ι → M) => B.toMatrix v :=

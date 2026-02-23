@@ -52,18 +52,26 @@ theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / 
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
 
-@[deprecated (since := "2025-08-14")] alias mem_iff_one_sub_mem := Icc.mem_iff_one_sub_mem
-
+set_option backward.isDefEq.respectTransparency false in
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
+
+set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 := coe_eq_one.not
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] theorem coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] theorem coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_le_left {x y : I} : x * y ≤ x :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_le_right {x y : I} : x * y ≤ y :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 
@@ -76,10 +84,12 @@ def symm : I → I := fun t => ⟨1 - t, Icc.mem_iff_one_sub_mem.mp t.prop⟩
 @[inherit_doc]
 scoped notation "σ" => unitInterval.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem symm_zero : σ 0 = 1 :=
   Subtype.ext <| by simp [symm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem symm_one : σ 1 = 0 :=
   Subtype.ext <| by simp [symm]
@@ -132,10 +142,12 @@ theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.e
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma symm_eq_one {i : I} : σ i = 1 ↔ i = 0 := by
   rw [← symm_zero, symm_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma symm_eq_zero {i : I} : σ i = 0 ↔ i = 1 := by
   rw [← symm_one, symm_inj]
@@ -169,6 +181,7 @@ example : CompactSpace I := by infer_instance
 theorem nonneg (x : I) : 0 ≤ (x : ℝ) :=
   x.2.1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_minus_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.2.2
 
 theorem le_one (x : I) : (x : ℝ) ≤ 1 :=
@@ -179,18 +192,23 @@ theorem one_minus_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.2.1
 theorem add_pos {t : I} {x : ℝ} (hx : 0 < x) : 0 < (x + t : ℝ) :=
   add_pos_of_pos_of_nonneg hx <| nonneg _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- like `unitInterval.nonneg`, but with the inequality in `I`. -/
 theorem nonneg' {t : I} : 0 ≤ t :=
   t.2.1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- like `unitInterval.le_one`, but with the inequality in `I`. -/
 theorem le_one' {t : I} : t ≤ 1 :=
   t.2.2
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma pos_iff_ne_zero {x : I} : 0 < x ↔ x ≠ 0 := bot_lt_iff_ne_bot
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma lt_one_iff_ne_one {x : I} : x < 1 ↔ x ≠ 1 := lt_top_iff_ne_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_one_or_eq_zero_of_le_mul {i j : I} (h : i ≤ j * i) : i = 0 ∨ j = 1 := by
   contrapose! h
   rw [← unitInterval.lt_one_iff_ne_one, ← coe_lt_one, ← unitInterval.pos_iff_ne_zero,
@@ -198,6 +216,7 @@ lemma eq_one_or_eq_zero_of_le_mul {i j : I} (h : i ≤ j * i) : i = 0 ∨ j = 1 
   rw [← Subtype.coe_lt_coe, coe_mul]
   simpa using mul_lt_mul_of_pos_right h.right h.left
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)⟩⟩
 
 theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
@@ -224,25 +243,27 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
     (h : ∀ c ∈ t, f c ∈ unitInterval) :
     ∏ c ∈ t, f c ∈ unitInterval := _root_.prod_mem (S := unitInterval.submonoid) h
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LinearOrderedCommMonoidWithZero I where
   zero_mul i := zero_mul i
   mul_zero i := mul_zero i
-  zero_le_one := nonneg'
-  mul_le_mul_left i j h_ij k := by simp only [← Subtype.coe_le_coe, coe_mul]; gcongr; exact nonneg k
+  zero_le x := x.2.1
+  mul_lt_mul_of_pos_left i hi j k hjk := by
+    simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr; exact hi
 
-lemma subtype_Iic_eq_Icc (x : I) : Subtype.val⁻¹' (Iic ↑x) = Icc 0 x := by
+lemma subtype_Iic_eq_Icc (x : I) : Subtype.val ⁻¹' (Iic ↑x) = Icc 0 x := by
   rw [preimage_subtype_val_Iic]
   exact Icc_bot.symm
 
-lemma subtype_Iio_eq_Ico (x : I) : Subtype.val⁻¹' (Iio ↑x) = Ico 0 x := by
+lemma subtype_Iio_eq_Ico (x : I) : Subtype.val ⁻¹' (Iio ↑x) = Ico 0 x := by
   rw [preimage_subtype_val_Iio]
   exact Ico_bot.symm
 
-lemma subtype_Ici_eq_Icc (x : I) : Subtype.val⁻¹' (Ici ↑x) = Icc x 1 := by
+lemma subtype_Ici_eq_Icc (x : I) : Subtype.val ⁻¹' (Ici ↑x) = Icc x 1 := by
   rw [preimage_subtype_val_Ici]
   exact Icc_top.symm
 
-lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val⁻¹' (Ioi ↑x) = Ioc x 1 := by
+lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val ⁻¹' (Ioi ↑x) = Ioc x 1 := by
   rw [preimage_subtype_val_Ioi]
   exact Ioc_top.symm
 
@@ -290,10 +311,10 @@ lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
     (ht : t ∈ Icc (addNSMul h δ n) (addNSMul h δ (n + 1))) :
     (|t - addNSMul h δ n| : α) ≤ δ :=
   calc
-    (|t - addNSMul h δ n| : α) = t - addNSMul h δ n            := abs_eq_self.2 <| sub_nonneg.2 ht.1
+    (|t - addNSMul h δ n| : α) = t - addNSMul h δ n := abs_eq_self.2 <| sub_nonneg.2 ht.1
     _ ≤ projIcc a b h (a + (n + 1) • δ) - addNSMul h δ n := by apply sub_le_sub_right; exact ht.2
     _ ≤ (|projIcc a b h (a + (n + 1) • δ) - addNSMul h δ n| : α) := le_abs_self _
-    _ ≤ |a + (n + 1) • δ - (a + n • δ)|                          := abs_projIcc_sub_projIcc h
+    _ ≤ |a + (n + 1) • δ - (a + n • δ)| := abs_projIcc_sub_projIcc h
     _ ≤ δ := by
           rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul', add_sub_cancel_right]
           exact (abs_eq_self.mpr hδ).le
@@ -313,10 +334,12 @@ def convexCombo {a b : ℝ} (x y : Icc a b) (t : unitInterval) : Icc a b :=
 theorem coe_convexCombo {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
   (convexCombo x y t : ℝ) = (1 - t) * x + t * y := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem convexCombo_zero {a b : ℝ} (x y : Icc a b) : convexCombo x y 0 = x := by
   simp [convexCombo]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem convexCombo_one {a b : ℝ} (x y : Icc a b) : convexCombo x y 1 = y := by
   simp [convexCombo]
@@ -330,17 +353,15 @@ theorem convexCombo_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
 @[grind .]
 theorem le_convexCombo {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
     x ≤ convexCombo x y t := by
-  change (x : ℝ) ≤ _
-  change (x : ℝ) ≤ _ at h
-  simp [convexCombo]
+  rw [← Subtype.coe_le_coe] at h ⊢
+  simp
   nlinarith [t.2.1, t.2.2]
 
 @[grind .]
 theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
     convexCombo x y t ≤ y := by
-  change _ ≤ (y : ℝ)
-  change (x : ℝ) ≤ _ at h
-  simp [convexCombo]
+  rw [← Subtype.coe_le_coe] at h ⊢
+  simp
   nlinarith [t.2.1, t.2.2]
 
 /--
@@ -407,6 +428,7 @@ theorem convexCombo_assoc' {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
     ← convexCombo_symm z y]
   rw [convexCombo_assoc_coeff₁', convexCombo_assoc_coeff₂', unitInterval.symm_symm]
 
+set_option backward.privateInPublic true in
 private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     0 ≤ ((y - x) / (z - x) : ℝ) := by
   by_cases h : (z - x : ℝ) = 0
@@ -415,6 +437,7 @@ private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x �
     replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
     apply div_nonneg <;> grind
 
+set_option backward.privateInPublic true in
 private theorem eq_convexCombo.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     ((y - x) / (z - x) : ℝ) ≤ 1 := by
   by_cases h : (z - x : ℝ) = 0
@@ -423,6 +446,8 @@ private theorem eq_convexCombo.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤
     replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
     apply div_le_one_of_le₀ <;> grind
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /--
 A point between two points in a closed interval
 can be expressed as a convex combination of them.
@@ -453,7 +478,7 @@ lemma exists_monotone_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {
   have hδ := half_pos δ_pos
   refine ⟨addNSMul h (δ/2), addNSMul_zero h,
     monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n ↦ ?_⟩
-  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ/2) n) trivial
+  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ / 2) n) trivial
   exact ⟨i, fun t ht ↦ hsub ((abs_sub_addNSMul_le h hδ.le n ht).trans_lt <| half_lt_self δ_pos)⟩
 
 /-- Any open cover of the unit interval can be refined to a finite partition into subintervals. -/
@@ -473,7 +498,7 @@ lemma exists_monotone_Icc_subset_open_cover_unitInterval_prod_self {ι} {c : ι 
   have h : (0 : ℝ) ≤ 1 := zero_le_one
   refine ⟨addNSMul h (δ/2), addNSMul_zero h,
     monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n m ↦ ?_⟩
-  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ/2) n, addNSMul h (δ/2) m) trivial
+  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ / 2) n, addNSMul h (δ / 2) m) trivial
   exact ⟨i, fun t ht ↦ hsub (Metric.mem_ball.mpr <| (max_le (abs_sub_addNSMul_le h hδ.le n ht.1) <|
     abs_sub_addNSMul_le h hδ.le m ht.2).trans_lt <| half_lt_self δ_pos)⟩
 
@@ -541,7 +566,10 @@ open NNReal
 /-- The coercion from `I` to `ℝ≥0`. -/
 def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toNNReal_one : toNNReal 1 = 1 := rfl
 
 @[fun_prop] lemma toNNReal_continuous : Continuous toNNReal := by delta toNNReal; fun_prop

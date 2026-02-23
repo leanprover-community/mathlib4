@@ -22,7 +22,7 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, power
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -94,6 +94,7 @@ theorem derivWithin_zpow (hxs : UniqueDiffWithinAt 𝕜 s x) (h : x ≠ 0 ∨ 0 
     derivWithin (fun x => x ^ m) s x = (m : 𝕜) * x ^ (m - 1) :=
   (hasDerivWithinAt_zpow m x h s).derivWithin hxs
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
     (deriv^[k] fun x : 𝕜 => x ^ m) =

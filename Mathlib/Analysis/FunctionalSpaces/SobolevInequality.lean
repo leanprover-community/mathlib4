@@ -133,7 +133,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
           ring
     _ = ∫⋯∫⁻_s, (fun x ↦ ∫⁻ (t : A i),
             (f (update x i t) ^ (1 - (s.card : ℝ) * p)
-            * ∏ j ∈ insert i s, (∫⋯∫⁻_{j}, f ∂μ) (update x i t) ^ p)  ∂ (μ i)) ∂μ := by
+            * ∏ j ∈ insert i s, (∫⋯∫⁻_{j}, f ∂μ) (update x i t) ^ p) ∂(μ i)) ∂μ := by
           -- pull out the integral over `xᵢ`
           rw [lmarginal_insert' _ _ hi]
           · simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
@@ -151,7 +151,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
   let k : ℝ := s.card
   have hk' : 0 ≤ 1 - k * p := by linarith only [hp]
   calc ∫⁻ t, f (X t) ^ (1 - k * p)
-          * ∏ j ∈ insert i s, (∫⋯∫⁻_{j}, f ∂μ) (X t) ^ p ∂ (μ i)
+          * ∏ j ∈ insert i s, (∫⋯∫⁻_{j}, f ∂μ) (X t) ^ p ∂(μ i)
       = ∫⁻ t, (∫⋯∫⁻_{i}, f ∂μ) (X t) ^ p * (f (X t) ^ (1 - k * p)
           * ∏ j ∈ s, ((∫⋯∫⁻_{j}, f ∂μ) (X t) ^ p)) ∂(μ i) := by
               -- rewrite integrand so that `(∫⋯∫⁻_insert i s, f ∂μ) ^ p` comes first
@@ -192,7 +192,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
                 simp only [Finset.mem_singleton] at hj ⊢
                 exact fun h ↦ hi (h ▸ hj)
               rw [lmarginal_insert _ hf hi']
-    _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ (p + (1 - k * p)) *  ∏ j ∈ s, (∫⋯∫⁻_{i, j}, f ∂μ) x ^ p := by
+    _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ (p + (1 - k * p)) * ∏ j ∈ s, (∫⋯∫⁻_{i, j}, f ∂μ) x ^ p := by
               -- combine two `(∫⋯∫⁻_insert i s, f ∂μ) x` terms
               rw [ENNReal.rpow_add_of_nonneg]
               · ring
@@ -345,7 +345,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
   · exact Measure.restrict_le_self
   -- bound the derivative which appears
   calc ‖deriv (u ∘ update x i) y‖ₑ = ‖fderiv ℝ u (update x i y) (deriv (update x i) y)‖ₑ := by
-        rw [fderiv_comp_deriv _ (hu.differentiable le_rfl).differentiableAt
+        rw [fderiv_comp_deriv _ (hu.differentiable one_ne_zero).differentiableAt
           (hasDerivAt_update x i y).differentiableAt]
     _ ≤ ‖fderiv ℝ u (update x i y)‖ₑ * ‖deriv (update x i) y‖ₑ := ContinuousLinearMap.le_opENorm _ _
     _ ≤ ‖fderiv ℝ u (update x i y)‖ₑ := by simp [deriv_update, Pi.enorm_single]
@@ -367,6 +367,7 @@ irreducible_def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
   let c := addHaarScalarFactor μ ((volume : Measure (ι → ℝ)).map e.symm)
   exact (c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p) * (c ^ p)⁻¹
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
 with Haar measure. Then the Lebesgue integral of the pointwise expression
@@ -410,7 +411,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
     _ ≤ (∫⁻ y, ‖fderiv ℝ v y‖ₑ) ^ p := lintegral_pow_le_pow_lintegral_fderiv_aux hp hv h2v
     _ = (∫⁻ y, ‖(fderiv ℝ u (e.symm y)).comp (fderiv ℝ e.symm y)‖ₑ) ^ p := by
         congr! with y
-        apply fderiv_comp _ (hu.differentiable le_rfl _)
+        apply fderiv_comp _ (hu.differentiable one_ne_zero _)
         exact e.symm.differentiableAt
     _ ≤ (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖ₑ * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖ₑ) ^ p := by
         gcongr with y
@@ -459,6 +460,7 @@ def eLpNormLESNormFDerivOfEqInnerConst (p : ℝ) : ℝ≥0 :=
 
 variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 ≤ p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
@@ -550,7 +552,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
       rw [mul_assoc, ← lintegral_const_mul γ]
       · gcongr
         simp_rw [← mul_assoc]
-        exact enorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
+        exact enorm_fderiv_norm_rpow_le (hu.differentiable one_ne_zero) h1γ
       dsimp [enorm]
       fun_prop
     _ ≤ C * γ * ((∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) *
@@ -569,7 +571,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
       = (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / (p' : ℝ)) := eLpNorm_nnreal_eq_lintegral hp'0
     _ ≤ C * γ * (∫⁻ x, ‖fderiv ℝ u x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) := by
       rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
-    _ = eLpNormLESNormFDerivOfEqInnerConst μ p *  eLpNorm (fderiv ℝ u) (↑p) μ := by
+    _ = eLpNormLESNormFDerivOfEqInnerConst μ p * eLpNorm (fderiv ℝ u) (↑p) μ := by
       suffices (C : ℝ) * γ = eLpNormLESNormFDerivOfEqInnerConst μ p by
         rw [eLpNorm_nnreal_eq_lintegral h0p]
         congr
@@ -589,6 +591,7 @@ irreducible_def SNormLESNormFDerivOfEqConst [FiniteDimensional ℝ F] (p : ℝ) 
   let e : F ≃L[ℝ] F' := toEuclidean
   ‖(e.symm : F' →L[ℝ] F)‖₊ * eLpNormLESNormFDerivOfEqInnerConst μ p * ‖(e : F →L[ℝ] F')‖₊
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
@@ -617,7 +620,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
   have h4v : ∀ x, ‖fderiv ℝ v x‖ ≤ C₂ * ‖fderiv ℝ u x‖ := fun x ↦ calc
     ‖fderiv ℝ v x‖
       = ‖(fderiv ℝ e (u x)).comp (fderiv ℝ u x)‖ := by
-      rw [fderiv_comp x e.differentiableAt (hu.differentiable le_rfl x)]
+      rw [fderiv_comp x e.differentiableAt (hu.differentiable one_ne_zero x)]
     _ ≤ ‖fderiv ℝ e (u x)‖ * ‖fderiv ℝ u x‖ :=
       (fderiv ℝ e (u x)).opNorm_comp_le (fderiv ℝ u x)
     _ = C₂ * ‖fderiv ℝ u x‖ := by simp_rw [e.fderiv, C₂, coe_nnnorm]
@@ -645,6 +648,7 @@ irreducible_def eLpNormLESNormFDerivOfLeConst [FiniteDimensional ℝ F] (s : Set
   (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ) * SNormLESNormFDerivOfEqConst F μ p
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n` and `0 < q ≤ (p⁻¹ - (finrank ℝ E : ℝ)⁻¹)⁻¹`.

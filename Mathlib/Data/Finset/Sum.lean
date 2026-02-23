@@ -101,9 +101,6 @@ theorem disjSum_strictMono_right (s : Finset α) :
     StrictMono (s.disjSum : Finset β → Finset (α ⊕ β)) := fun _ _ =>
   disjSum_ssubset_disjSum_of_subset_of_ssubset Subset.rfl
 
-@[deprecated (since := "2025-06-11")]
-alias disj_sum_strictMono_right := disjSum_strictMono_right
-
 @[simp] lemma disjSum_inj {α β : Type*} {s₁ s₂ : Finset α} {t₁ t₂ : Finset β} :
     s₁.disjSum t₁ = s₂.disjSum t₂ ↔ s₁ = s₂ ∧ t₁ = t₂ := by
   simp [Finset.ext_iff]
@@ -228,6 +225,7 @@ lemma toRight_sdiff : (u \ v).toRight = u.toRight \ v.toRight := by ext x; simp
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Finsets on sum types are equivalent to pairs of finsets on each summand. -/
 @[simps apply_fst apply_snd]
 def sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃o Finset α × Finset β where

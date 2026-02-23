@@ -5,8 +5,9 @@ Authors: Jireh Loreaux
 -/
 module
 
-public meta import Mathlib.Tactic.Basic
-public meta import Aesop
+public import Aesop.Frontend
+public meta import Batteries.Util.LibraryNote
+public import Mathlib.Tactic.Basic
 
 /-!
 # SetLike Rule Set
@@ -21,7 +22,7 @@ public meta section
 declare_aesop_rule_sets [SetLike] (default := true)
 declare_aesop_rule_sets [SetLike!] (default := false)
 
-library_note2 «SetLike Aesop ruleset» /--
+library_note «SetLike Aesop ruleset» /--
 The Aesop tactic (`aesop`) can automatically prove obvious facts about membership in structures
 such as subgroups and subrings. Certain lemmas regarding membership in algebraic substructures
 are given the `aesop` attribute according to the following principles:
@@ -52,5 +53,5 @@ are given the `aesop` attribute according to the following principles:
   For example, `Subgroup.mem_closure_of_mem` covers a common use case of `SetLike.mem_of_subset`.
 
 Some examples of membership-related goals which Aesop with this ruleset is designed to close
-can be found in the file MathlibTest/set_like.lean.
+can be found in the file `MathlibTest/set_like.lean`.
 -/

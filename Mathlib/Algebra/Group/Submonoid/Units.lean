@@ -61,7 +61,7 @@ lemma Submonoid.units_mono : Monotone (Submonoid.units (M := M)) :=
 
 @[to_additive (attr := simp)]
 lemma Submonoid.ofUnits_units_le (S : Submonoid M) : S.units.ofUnits ≤ S :=
-  fun  _ ⟨_, hm, he⟩ => he ▸ hm.1
+  fun _ ⟨_, hm, he⟩ => he ▸ hm.1
 
 @[to_additive]
 lemma Subgroup.ofUnits_mono : Monotone (Subgroup.ofUnits (M := M)) :=
@@ -142,6 +142,7 @@ def unitsEquivUnitsType (S : Submonoid M) : S.units ≃* Sˣ where
   invFun := fun x => ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.1.2, x.2.2⟩⟩
   map_mul' := fun _ _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma units_top : (⊤ : Submonoid M).units = ⊤ := ofUnits_units_gc.u_top
 
@@ -162,6 +163,7 @@ lemma units_iInf₂ {ι : Sort*} {κ : ι → Sort*} (f : (i : ι) → κ i → 
     (⨅ (i : ι), ⨅ (j : κ i), f i j).units = ⨅ (i : ι), ⨅ (j : κ i), (f i j).units :=
   ofUnits_units_gc.u_iInf₂
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma units_bot : (⊥ : Submonoid M).units = ⊥ := ofUnits_units_gci.u_bot
 
@@ -259,6 +261,7 @@ noncomputable def ofUnitsEquivType (S : Subgroup Mˣ) : S.ofUnits ≃* S where
   invFun := fun x => ⟨x.1, ⟨x.1, x.2, rfl⟩⟩
   map_mul' := fun _ _ => Subtype.ext (Units.ext rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma ofUnits_bot : (⊥ : Subgroup Mˣ).ofUnits = ⊥ := ofUnits_units_gc.l_bot
 

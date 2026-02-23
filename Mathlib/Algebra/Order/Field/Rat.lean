@@ -23,6 +23,7 @@ See note [foundational algebra order theory].
 rat, rationals, field, ℚ, numerator, denominator, num, denom
 -/
 
-@[expose] public section
+public section
 
+set_option backward.isDefEq.respectTransparency false in
 deriving instance LinearOrderedCommGroupWithZero for NNRat

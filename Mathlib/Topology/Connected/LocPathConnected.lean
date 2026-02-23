@@ -88,7 +88,7 @@ protected theorem IsClosed.pathComponent (x : X) : IsClosed (pathComponent x) :=
   intro y hxy
   rcases (path_connected_basis y).ex_mem with ⟨V, hVy, hVc⟩
   filter_upwards [hVy] with z hz hxz
-  exact hxy <|  hxz.trans (hVc.joinedIn _ hz _ (mem_of_mem_nhds hVy)).joined
+  exact hxy <| hxz.trans (hVc.joinedIn _ hz _ (mem_of_mem_nhds hVy)).joined
 
 /-- In a locally path connected space, each path component is a clopen set. -/
 protected theorem IsClopen.pathComponent (x : X) : IsClopen (pathComponent x) :=
@@ -108,6 +108,35 @@ theorem pathConnectedSpace_iff_connectedSpace : PathConnectedSpace X ↔ Connect
 theorem pathComponent_eq_connectedComponent (x : X) : pathComponent x = connectedComponent x :=
   (pathComponent_subset_component x).antisymm <|
     (IsClopen.pathComponent x).connectedComponent_subset (mem_pathComponent_self _)
+
+theorem connectedComponent_eq_iff_joined (x y : X) :
+    connectedComponent x = connectedComponent y ↔ Joined x y := by
+  rw [← mem_pathComponent_iff, pathComponent_eq_connectedComponent, eq_comm]
+  exact connectedComponent_eq_iff_mem
+
+theorem connectedComponentSetoid_eq_pathSetoid : connectedComponentSetoid X = pathSetoid X :=
+  Setoid.ext connectedComponent_eq_iff_joined
+
+/-- In a locally path-connected space, connected components and path-connected components align -/
+def connectedComponentsEquivZerothHomotopy : ConnectedComponents X ≃ ZerothHomotopy X where
+  toFun := Quotient.map id (connectedComponent_eq_iff_joined · · |>.mp ·)
+  invFun := ZerothHomotopy.toConnectedComponents
+  left_inv := Quot.ind <| congrFun rfl
+  right_inv := Quot.ind <| congrFun rfl
+
+@[simp]
+lemma connectedComponentsEquivZerothHomotopy_apply (x : X) :
+    connectedComponentsEquivZerothHomotopy ⟦x⟧ = ⟦x⟧ :=
+  rfl
+
+@[simp]
+lemma coe_connectedComponentsEquivZerothHomotopy_symm :
+    ⇑connectedComponentsEquivZerothHomotopy.symm = ZerothHomotopy.toConnectedComponents (X := X) :=
+  rfl
+
+lemma connectedComponentsEquivZerothHomotopy_symm_apply (x : X) :
+    connectedComponentsEquivZerothHomotopy.symm ⟦x⟧ = ⟦x⟧ :=
+  rfl
 
 theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
@@ -235,6 +264,7 @@ instance AlexandrovDiscrete.locPathConnectedSpace [AlexandrovDiscrete X] :
   symm
   apply hy.joinedIn <;> rewrite [mem_nhdsKer_singleton] <;> [assumption; rfl]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a space is locally path-connected, the topology of its path components is discrete. -/
 instance : DiscreteTopology <| ZerothHomotopy X := by
   refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_

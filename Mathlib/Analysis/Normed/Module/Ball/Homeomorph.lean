@@ -5,10 +5,11 @@ Authors: Yury Kudryashov, Oliver Nash
 -/
 module
 
-public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Tactic.Module
 
 /-!
 # (Local) homeomorphism between a normed space and a ball
@@ -39,6 +40,7 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 noncomputable section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Local homeomorphism between a real (semi)normed space and the unit ball.
 See also `Homeomorph.unitBall`. -/
 @[simps -isSimp]

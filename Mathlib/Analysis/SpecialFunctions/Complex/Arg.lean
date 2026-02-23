@@ -75,15 +75,17 @@ theorem norm_eq_one_iff (z : ℂ) : ‖z‖ = 1 ↔ ∃ θ : ℝ, exp (θ * I) =
   refine ⟨fun hz => ⟨arg z, ?_⟩, ?_⟩
   · calc
       exp (arg z * I) = ‖z‖ * exp (arg z * I) := by rw [hz, ofReal_one, one_mul]
-      _ = z :=norm_mul_exp_arg_mul_I z
+      _ = z := norm_mul_exp_arg_mul_I z
   · rintro ⟨θ, rfl⟩
     exact Complex.norm_exp_ofReal_mul_I θ
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_exp_mul_I : (Set.range fun x : ℝ => exp (x * I)) = Metric.sphere 0 1 := by
   ext x
   simp only [mem_sphere_zero_iff_norm, norm_eq_one_iff, Set.mem_range]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem arg_mul_cos_add_sin_mul_I {r : ℝ} (hr : 0 < r) {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) :
     arg (r * (cos θ + sin θ * I)) = θ := by
   simp only [arg, norm_mul, norm_cos_add_sin_mul_I, Complex.norm_of_nonneg hr.le, mul_one]
@@ -110,16 +112,21 @@ theorem arg_mul_cos_add_sin_mul_I {r : ℝ} (hr : 0 < r) {θ : ℝ} (hθ : θ �
 theorem arg_cos_add_sin_mul_I {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) : arg (cos θ + sin θ * I) = θ := by
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I zero_lt_one hθ]
 
-lemma arg_exp_mul_I (θ : ℝ) :
-    arg (exp (θ * I)) = toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ := by
-  convert arg_cos_add_sin_mul_I (θ := toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ) _ using 2
-  · rw [← exp_mul_I, eq_sub_of_add_eq <| toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
-      ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
-  · convert toIocMod_mem_Ioc _ _ _
+theorem arg_exp (z : ℂ) : arg (exp z) = toIocMod Real.two_pi_pos (-π) z.im := by
+  convert arg_mul_cos_add_sin_mul_I (Real.exp_pos z.re)
+    (θ := toIocMod Real.two_pi_pos (-π) z.im) _ using 1
+  · rw [← exp_mul_I, ofReal_exp, toIocMod]
+    push_cast
+    rw [exp_mul_I_periodic.sub_zsmul_eq, ← exp_add, re_add_im]
+  · convert toIocMod_mem_Ioc ..
     ring
 
+lemma arg_exp_mul_I (θ : ℝ) :
+    arg (exp (θ * I)) = toIocMod Real.two_pi_pos (-π) θ := by
+  simp [arg_exp]
+
 @[simp]
-theorem arg_zero : arg 0 = 0 := by simp [arg, le_refl]
+theorem arg_zero : arg 0 = 0 := by simp [arg]
 
 theorem ext_norm_arg {x y : ℂ} (h₁ : ‖x‖ = ‖y‖) (h₂ : x.arg = y.arg) : x = y := by
   rw [← norm_mul_exp_arg_mul_I x, ← norm_mul_exp_arg_mul_I y, h₁, h₂]
@@ -127,6 +134,7 @@ theorem ext_norm_arg {x y : ℂ} (h₁ : ‖x‖ = ‖y‖) (h₂ : x.arg = y.ar
 theorem ext_norm_arg_iff {x y : ℂ} : x = y ↔ ‖x‖ = ‖y‖ ∧ arg x = arg y :=
   ⟨fun h => h ▸ ⟨rfl, rfl⟩, and_imp.2 ext_norm_arg⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
   have hπ : 0 < π := Real.pi_pos
   rcases eq_or_ne z 0 with (rfl | hz)
@@ -137,6 +145,10 @@ theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
   have := arg_mul_cos_add_sin_mul_I (norm_pos_iff.mpr hz) hN
   push_cast at this
   rwa [this]
+
+@[simp]
+theorem toIocMod_arg (z : ℂ) : toIocMod Real.two_pi_pos (-π) z.arg = z.arg := by
+  simpa [toIocMod_eq_self, two_mul] using z.arg_mem_Ioc
 
 @[simp]
 theorem range_arg : Set.range arg = Set.Ioc (-π) π :=
@@ -189,13 +201,13 @@ theorem arg_eq_arg_iff {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
   obtain rfl | hx := eq_or_ne x 0 <;> simp [*]
 
 @[simp]
-theorem arg_neg_one : arg (-1) = π := by simp [arg, le_refl, not_le.2 (zero_lt_one' ℝ)]
+theorem arg_neg_one : arg (-1) = π := by simp [arg]
 
 @[simp]
-theorem arg_I : arg I = π / 2 := by simp [arg, le_refl]
+theorem arg_I : arg I = π / 2 := by simp [arg]
 
 @[simp]
-theorem arg_neg_I : arg (-I) = -(π / 2) := by simp [arg, le_refl]
+theorem arg_neg_I : arg (-I) = -(π / 2) := by simp [arg]
 
 @[simp]
 theorem tan_arg (x : ℂ) : Real.tan (arg x) = x.im / x.re := by
@@ -257,6 +269,7 @@ theorem arg_eq_pi_div_two_iff {z : ℂ} : arg z = π / 2 ↔ z.re = 0 ∧ 0 < z.
     rintro ⟨rfl : x = 0, hy : 0 < y⟩
     rw [← arg_I, ← arg_real_mul I hy, ofReal_mul', I_re, I_im, mul_zero, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem arg_eq_neg_pi_div_two_iff {z : ℂ} : arg z = -(π / 2) ↔ z.re = 0 ∧ z.im < 0 := by
   by_cases h₀ : z = 0; · simp [h₀, Real.pi_ne_zero]
   constructor
@@ -291,6 +304,7 @@ theorem arg_of_im_neg {z : ℂ} (hz : z.im < 0) : arg z = -Real.arccos (z.re / �
   rw [← cos_arg h₀, ← Real.cos_neg, Real.arccos_cos, neg_neg]
   exacts [neg_nonneg.2 (arg_neg_iff.2 hz).le, neg_le.2 (neg_pi_lt_arg z).le]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem arg_conj (x : ℂ) : arg (conj x) = if arg x = π then π else -arg x := by
   simp_rw [arg_eq_pi_iff, arg, neg_im, conj_im, conj_re, norm_conj, neg_div, neg_neg,
     Real.arcsin_neg]
@@ -402,6 +416,7 @@ theorem arg_neg_eq_arg_add_pi_of_im_neg {x : ℂ} (hi : x.im < 0) : arg (-x) = a
   rw [arg_of_im_neg hi, arg_of_im_pos (show 0 < (-x).im from Left.neg_pos_iff.2 hi)]
   simp [neg_div, Real.arccos_neg, add_comm, ← sub_eq_add_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem arg_neg_eq_arg_sub_pi_iff {x : ℂ} :
     arg (-x) = arg x - π ↔ 0 < x.im ∨ x.im = 0 ∧ x.re < 0 := by
   rcases lt_trichotomy x.im 0 with (hi | hi | hi)
@@ -444,16 +459,13 @@ theorem arg_neg_coe_angle {x : ℂ} (hx : x ≠ 0) : (arg (-x) : Real.Angle) = a
 
 theorem arg_mul_cos_add_sin_mul_I_eq_toIocMod {r : ℝ} (hr : 0 < r) (θ : ℝ) :
     arg (r * (cos θ + sin θ * I)) = toIocMod Real.two_pi_pos (-π) θ := by
-  have hi : toIocMod Real.two_pi_pos (-π) θ ∈ Set.Ioc (-π) π := by
-    convert toIocMod_mem_Ioc _ _ θ
-    ring
-  convert arg_mul_cos_add_sin_mul_I hr hi using 3
-  simp [toIocMod, cos_sub_int_mul_two_pi, sin_sub_int_mul_two_pi]
+  rw [arg_real_mul _ hr, ← exp_mul_I, arg_exp_mul_I]
 
 theorem arg_cos_add_sin_mul_I_eq_toIocMod (θ : ℝ) :
     arg (cos θ + sin θ * I) = toIocMod Real.two_pi_pos (-π) θ := by
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I_eq_toIocMod zero_lt_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem arg_mul_cos_add_sin_mul_I_sub {r : ℝ} (hr : 0 < r) (θ : ℝ) :
     arg (r * (cos θ + sin θ * I)) - θ = 2 * π * ⌊(π - θ) / (2 * π)⌋ := by
   rw [arg_mul_cos_add_sin_mul_I_eq_toIocMod hr, toIocMod_sub_self, toIocDiv_eq_neg_floor,
@@ -467,9 +479,7 @@ theorem arg_cos_add_sin_mul_I_sub (θ : ℝ) :
 theorem arg_mul_cos_add_sin_mul_I_coe_angle {r : ℝ} (hr : 0 < r) (θ : Real.Angle) :
     (arg (r * (Real.Angle.cos θ + Real.Angle.sin θ * I)) : Real.Angle) = θ := by
   induction θ using Real.Angle.induction_on with | _ θ
-  rw [Real.Angle.cos_coe, Real.Angle.sin_coe, Real.Angle.angle_eq_iff_two_pi_dvd_sub]
-  use ⌊(π - θ) / (2 * π)⌋
-  exact mod_cast arg_mul_cos_add_sin_mul_I_sub hr θ
+  simp [arg_mul_cos_add_sin_mul_I_eq_toIocMod hr]
 
 theorem arg_cos_add_sin_mul_I_coe_angle (θ : Real.Angle) :
     (arg (Real.Angle.cos θ + Real.Angle.sin θ * I) : Real.Angle) = θ := by
@@ -533,6 +543,9 @@ lemma mem_slitPlane_iff_arg {z : ℂ} : z ∈ slitPlane ↔ z.arg ≠ π ∧ z �
 lemma slitPlane_arg_ne_pi {z : ℂ} (hz : z ∈ slitPlane) : z.arg ≠ Real.pi :=
   (mem_slitPlane_iff_arg.mp hz).1
 
+theorem exp_mem_slitPlane {z : ℂ} : exp z ∈ slitPlane ↔ toIocMod Real.two_pi_pos (-π) z.im ≠ π := by
+  simp [mem_slitPlane_iff_arg, arg_exp]
+
 end slitPlane
 
 section Continuity
@@ -592,8 +605,7 @@ theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
     rw [arg, if_neg hre.not_ge, if_neg him.not_ge]
   convert (Real.continuousAt_arcsin.comp_continuousWithinAt
     ((continuous_im.continuousAt.comp_continuousWithinAt continuousWithinAt_neg).div
-      continuous_norm.continuousWithinAt _)
-    ).sub_const π using 1
+      continuous_norm.continuousWithinAt _)).sub_const π using 1
   · simp [him]
   · lift z to ℝ using him
     simpa using hre.ne
@@ -620,6 +632,7 @@ theorem tendsto_arg_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z
   simpa only [arg_eq_pi_iff.2 ⟨hre, him⟩] using
     (continuousWithinAt_arg_of_re_neg_of_im_zero hre him).tendsto
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg : ℂ → Real.Angle) x := by
   by_cases hs : x ∈ slitPlane
   · exact Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg hs)

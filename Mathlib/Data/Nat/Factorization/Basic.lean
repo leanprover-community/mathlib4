@@ -13,7 +13,7 @@ public import Mathlib.Order.Interval.Finset.Nat
 # Basic lemmas on prime factorizations
 -/
 
-@[expose] public section
+public section
 
 open Finset List Finsupp
 
@@ -218,6 +218,32 @@ theorem factorization_ordCompl (n p : ℕ) :
   · rw [Finsupp.erase_ne hqp, factorization_div (ordProj_dvd n p)]
     simp [pp.factorization, hqp.symm]
 
+theorem ordProj_self_pow {p k : ℕ} (hp : Prime p) : ordProj[p] (p ^ k) = p ^ k := by
+  simp [hp]
+
+theorem ordCompl_self_pow {p k : ℕ} (hp : Prime p) : ordCompl[p] (p ^ k) = 1 := by
+  apply Nat.eq_of_factorization_eq
+  · exact pos_iff_ne_zero.mp (ordCompl_pos p (pow_ne_zero k hp.ne_zero))
+  · exact one_ne_zero
+  · simp [Prime.factorization_pow hp]
+
+theorem ordCompl_self_pow_mul (n k : ℕ) {p : ℕ} (hp : Prime p) :
+    ordCompl[p] (p ^ k * n) = ordCompl[p] n := by
+  rw [ordCompl_mul, ordCompl_self_pow hp, one_mul]
+
+theorem ordCompl_eq_self_iff_zero_or_not_dvd (n : ℕ) {p : ℕ} (hp : Prime p) :
+    ordCompl[p] n = n ↔ n = 0 ∨ ¬p ∣ n := by
+  constructor
+  · intro h
+    by_cases n_zero : n = 0
+    · simp [n_zero]
+    · right
+      rw [← h]
+      exact not_dvd_ordCompl hp n_zero
+  · rintro (n_eq_zero | not_dvd)
+    · simp [n_eq_zero]
+    · simp [Nat.factorization_eq_zero_of_not_dvd not_dvd]
+
 -- `ordCompl[p] n` is the largest divisor of `n` not divisible by `p`.
 theorem dvd_ordCompl_of_dvd_not_dvd {p d n : ℕ} (hdn : d ∣ n) (hpd : ¬p ∣ d) :
     d ∣ ordCompl[p] n := by
@@ -294,6 +320,7 @@ theorem ordCompl_dvd_ordCompl_iff_dvd (a b : ℕ) :
   rw [← Nat.dvd_one, ← Nat.mul_dvd_mul_iff_left hb0.bot_lt, mul_one]
   simpa [Prime.factorization_self pb, Prime.factorization pa, hab] using h b
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) :
     d ∣ n ↔ ∀ p k : ℕ, Prime p → p ^ k ∣ d → p ^ k ∣ n := by
   rcases eq_or_ne n 0 with (rfl | hn)
@@ -313,6 +340,7 @@ theorem prod_primeFactors_dvd (n : ℕ) : ∏ p ∈ n.primeFactors, p ∣ n := b
     simp
   · simpa [prod_primeFactorsList hn] using (n.primeFactorsList : Multiset ℕ).toFinset_prod_dvd_prod
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
     (gcd a b).factorization = a.factorization ⊓ b.factorization := by
   let dfac := a.factorization ⊓ b.factorization
@@ -384,6 +412,7 @@ theorem Ico_filter_pow_dvd_eq {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : 
   exact iff_of_true (lt_of_pow_dvd_right hn pp.two_le h1) <|
     (Nat.pow_le_pow_iff_right pp.one_lt).1 <| (le_of_dvd hn.bot_lt h1).trans hb
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Ico_pow_dvd_eq_Ico_of_lt {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : n < p ^ b) :
     {i ∈ Ico 1 n | p ^ i ∣ n} = {i ∈ Ico 1 b | p ^ i ∣ n} := by
   ext i
@@ -487,6 +516,7 @@ lemma card_multiples' (N n : ℕ) : #{k ∈ range N.succ | k ≠ 0 ∧ n ∣ k} 
     · simp [h, succ_div_of_dvd, ih]
     · simp [h, succ_div_of_not_dvd, ih]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
     {a b m n : ℕ} (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
     ∃ c, a = c ^ n ∧ b = c ^ m := by

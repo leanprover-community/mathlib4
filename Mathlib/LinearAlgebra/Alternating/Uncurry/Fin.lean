@@ -163,6 +163,7 @@ def alternatizeUncurryFinLM : (M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) →ₗ[R] M
 @[deprecated (since := "2025-09-30")]
 alias uncurryFinLM := alternatizeUncurryFinLM
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a bilinear map taking values in the space of alternating maps,
 then evaluation of the twice uncurried `f` on a tuple of vectors `v`
 can be represented as a sum of
@@ -190,10 +191,9 @@ theorem alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply
         (-1 : ℤ) ^ (i + j : ℕ) •
           (f (v i.castSucc) (v j.succ) (j.removeNth <| i.castSucc.removeNth v) -
             f (v j.succ) (v i.castSucc) (j.removeNth <| i.castSucc.removeNth v)) := by
-  simp? [alternatizeUncurryFin_apply, Finset.smul_sum, sum_sum_eq_sum_triangle_add] says
-    simp only [alternatizeUncurryFin_apply, Int.reduceNeg, LinearMap.coe_comp, comp_apply,
-      alternatizeUncurryFinLM_apply, Finset.smul_sum, sum_sum_eq_sum_triangle_add, coe_castSucc,
-      val_succ]
+  simp only [alternatizeUncurryFin_apply, Int.reduceNeg, LinearMap.coe_comp, comp_apply,
+    alternatizeUncurryFinLM_apply, Finset.smul_sum, sum_sum_eq_sum_triangle_add, val_castSucc,
+    val_succ]
   refine Fintype.sum_congr _ _ fun i ↦ Finset.sum_congr rfl fun j hj ↦ ?_
   rw [Finset.mem_Ici] at hj
   have H₁ : i.castSucc.removeNth v j = v j.succ := by

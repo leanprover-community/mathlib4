@@ -95,6 +95,7 @@ theorem ratLt_bddAbove (x : M) : BddAbove (ratLt x) := by
   intro h
   exact num_le_nat_mul_den h.le (by simpa using hn)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ratLt_nonempty (x : M) : (ratLt x).Nonempty := by
   obtain hneg | rfl | hxpos := lt_trichotomy x 0
   · obtain ⟨n, hn⟩ := Archimedean.arch (-x - x) zero_lt_one
@@ -170,7 +171,7 @@ theorem embedRealFun_zero : embedRealFun (0 : M) = 0 := by
     rw [mem_upperBounds]
     suffices (∀ (y : ℚ), y.num • (1 : M) < 0 → y ≤ x) → 0 ≤ x by simpa using this
     intro h
-    have h' (y : ℚ) (hy: y < 0) : y ≤ x := by
+    have h' (y : ℚ) (hy : y < 0) : y ≤ x := by
       exact h _ <| (smul_neg_iff_of_neg_left (by simpa using hy)).mpr zero_lt_one
     contrapose! h'
     obtain ⟨y, hxy, hy⟩ := exists_rat_btwn h'
@@ -201,7 +202,7 @@ def embedReal : M →+o ℝ where
   map_add' := embedRealFun_add
   monotone' := (embedRealFun_strictMono M).monotone
 
-theorem embedReal_apply (a : M) :  embedReal M a = embedRealFun a := by rfl
+theorem embedReal_apply (a : M) : embedReal M a = embedRealFun a := by rfl
 
 variable (M) in
 theorem embedReal_injective : Function.Injective (embedReal M) :=

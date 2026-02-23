@@ -80,12 +80,12 @@ instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
   L := presheafToSheaf J A
   adj := sheafificationAdjunction _ _
 
-instance [HasSheafify J A] :  PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
+instance [HasSheafify J A] : PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
   inferInstanceAs (PreservesFiniteLimits (presheafToSheaf _ _))
 
 end
 
-variable {D : Type*} [Category D] [HasWeakSheafify J D]
+variable {D : Type*} [Category* D] [HasWeakSheafify J D]
 
 /-- The sheafification of a presheaf `P`. -/
 noncomputable abbrev sheafify (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=
@@ -171,6 +171,7 @@ theorem sheafificationAdjunction_counit_app_val (P : Sheaf J D) :
   rw [Adjunction.homEquiv_counit]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
     toSheafify J P ≫ sheafifyLift J η hQ = η := by
@@ -182,6 +183,7 @@ theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presh
   rw [sheafificationAdjunction J D |>.right_triangle_components (Y := ⟨Q, hQ⟩)]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sheafifyLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
     (γ : sheafify J P ⟶ Q) : toSheafify J P ≫ γ = η → γ = sheafifyLift J η hQ := by
   intro h
@@ -235,6 +237,7 @@ instance (P : Sheaf J D) :
 instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
   NatIso.isIso_of_isIso_app _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma sheafifyLift_id_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
     sheafifyLift J (𝟙 P) hP ≫ toSheafify J P = 𝟙 (sheafify J P) := by

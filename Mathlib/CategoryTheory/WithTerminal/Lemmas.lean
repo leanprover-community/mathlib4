@@ -18,7 +18,7 @@ These lemmas and instances need more imports.
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace WithTerminal
 

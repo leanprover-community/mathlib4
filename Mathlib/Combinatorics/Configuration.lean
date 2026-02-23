@@ -114,6 +114,7 @@ theorem HasLines.existsUnique_line [HasLines P L] (p₁ p₂ : P) (hp : p₁ ≠
 
 variable {P L}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a nondegenerate configuration has at least as many points as lines, then there exists
   an injective function `f` from lines to points, such that `f l` does not lie on `l`. -/
 theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P] [Fintype L]
@@ -155,7 +156,7 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
       rw [hs₃]
       rw [Finset.eq_univ_iff_forall] at hs₃ ⊢
       exact fun p =>
-        Exists.elim (exists_line p)-- If `s = univ`, then show `s.bUnion t = univ`
+        Exists.elim (exists_line p) -- If `s = univ`, then show `s.bUnion t = univ`
         fun l hl => Finset.mem_biUnion.mpr ⟨l, Finset.mem_univ l, Set.mem_toFinset.mpr hl⟩
     · exact hs₂.trans (Nat.one_le_iff_ne_zero.mpr hs₃)
 
@@ -483,7 +484,7 @@ lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : 
     crossProduct a b = 0 ∨ crossProduct c d = 0 := by
   by_contra h
   simp_rw [not_or, ← ne_eq, crossProduct_ne_zero_iff_linearIndependent] at h
-  rw [← Matrix.of_row (![a,b]), ← Matrix.of_row (![c,d])] at h
+  rw [← Matrix.of_row (![a, b]), ← Matrix.of_row (![c, d])] at h
   let A : Matrix (Fin 2) (Fin 3) K := .of ![a, b]
   let B : Matrix (Fin 2) (Fin 3) K := .of ![c, d]
   have hAB : A * B.transpose = 0 := by

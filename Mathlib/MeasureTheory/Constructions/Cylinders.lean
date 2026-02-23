@@ -55,7 +55,7 @@ section squareCylinders
 /-- Given a finite set `s` of indices, a square cylinder is the product of a set `S` of
 `∀ i : s, α i` and of `univ` on the other indices. The set `S` is a product of sets `t i` such that
 for all `i : s`, `t i ∈ C i`.
-`squareCylinders` is the set of all such squareCylinders. -/
+`squareCylinders` is the set of all such square cylinders. -/
 def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
   {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = (s : Set ι).pi t}
 
@@ -232,6 +232,7 @@ theorem cylinder_eq_cylinder_union [DecidableEq ι] (I : Finset ι) (S : Set (�
       cylinder (I ∪ J) (Finset.restrict₂ Finset.subset_union_left ⁻¹' S) := by
   ext1 f; simp only [mem_cylinder, Finset.restrict_def, Finset.restrict₂_def, mem_preimage]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_cylinder_iff [Nonempty (∀ i, α i)] {s t : Finset ι} {S : Set (∀ i : s, α i)}
     {T : Set (∀ i : t, α i)} [DecidableEq ι] :
     Disjoint (cylinder s S) (cylinder t T) ↔

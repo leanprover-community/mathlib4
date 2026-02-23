@@ -57,6 +57,7 @@ lemma condition_sub_two_mul_int_iff {α : ℝ} (m : ℤ) : Condition (α - 2 * m
   rw [Int.floor_intCast]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma condition_toIcoMod_iff {α : ℝ} :
     Condition (toIcoMod (by simp : (0 : ℝ) < 2) 0 α) ↔ Condition α := by
   rw [toIcoMod, zsmul_eq_mul, mul_comm, condition_sub_two_mul_int_iff]
@@ -66,6 +67,7 @@ namespace Condition
 variable {α : ℝ} (hc : Condition α)
 include hc
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
   rcases h with ⟨h0, h2⟩
   refine ⟨?_, h2⟩
@@ -96,6 +98,7 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
     calc x * α < α⁻¹ * α := by gcongr; exact hx.2
       _ = 1 := by simp [h0.ne']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
     α ∈ Set.Ico ((2 * n - 1) / n : ℝ) 2 := by
   suffices ∑ i ∈ Finset.Icc 1 n, ⌊i * α⌋ = n ^ 2 ∧ α ∈ Set.Ico ((2 * n - 1) / n : ℝ) 2 from this.2
@@ -111,7 +114,7 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
          ⌊(k + 1 : ℕ) * α⌋ + ((k : ℕ) : ℤ) ^ 2 := by
       have hn11 : k + 1 ∉ Finset.Icc 1 k := by
         rw [Finset.mem_Icc]
-        omega
+        lia
       rw [← insert_Icc_right_eq_Icc_add_one (Nat.le_add_left 1 k), sum_insert hn11, hks]
     specialize hc (k + 1) k.succ_pos
     rw [hs] at hc ⊢
@@ -127,19 +130,19 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
       gcongr
     have hk' : ⌊(k + 1 : ℕ) * α⌋ = 2 * k + 1 := by
       by_contra
-      rw [show ⌊(k + 1 : ℕ) * α⌋ = 2 * k by omega] at hc
+      rw [show ⌊(k + 1 : ℕ) * α⌋ = 2 * k by lia] at hc
       have hc' : ((k + 1 : ℕ) : ℤ) ∣ ((k + 1 : ℕ) : ℤ) * ((k + 1 : ℕ) : ℤ) - 1 := by
         convert hc using 1
         push_cast
         ring
       rw [dvd_sub_right (dvd_mul_right _ _), ← isUnit_iff_dvd_one, Int.isUnit_iff] at hc'
-      omega
+      lia
     rw [hk']
     refine ⟨?_, ?_, h.2⟩
     · push_cast
       ring
     · rw [Int.floor_eq_iff] at hk'
-      rw [div_le_iff₀ (by norm_cast; omega), mul_comm α]
+      rw [div_le_iff₀ (by norm_cast; lia), mul_comm α]
       convert hk'.1
       push_cast
       ring
@@ -149,7 +152,7 @@ end Condition
 lemma not_condition_of_mem_Ioo {α : ℝ} (h : α ∈ Set.Ioo 0 2) : ¬Condition α := by
   intro hc
   let n : ℕ := ⌊(2 - α)⁻¹⌋₊ + 1
-  have hn : 0 < n := by omega
+  have hn : 0 < n := by lia
   have hna := (hc.mem_Ico_n_of_mem_Ioo h hn).1
   rcases h with ⟨-, h2⟩
   have hna' : 2 - (n : ℝ)⁻¹ ≤ α := by
@@ -173,10 +176,11 @@ lemma condition_iff_of_mem_Ico {α : ℝ} (h : α ∈ Set.Ico 0 2) : Condition �
 recall Imo2024Q1.Condition (α : ℝ) := (∀ n : ℕ, 0 < n → (n : ℤ) ∣ ∑ i ∈ Finset.Icc 1 n, ⌊i * α⌋)
 recall Imo2024Q1.solutionSet := {α : ℝ | ∃ m : ℤ, α = 2 * m}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem result (α : ℝ) : Condition α ↔ α ∈ solutionSet := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · rw [← condition_toIcoMod_iff, condition_iff_of_mem_Ico (toIcoMod_mem_Ico' _ _),
-        ← AddCommGroup.modEq_iff_toIcoMod_eq_left, AddCommGroup.ModEq] at h
+        ← AddCommGroup.modEq_iff_toIcoMod_eq_left, AddCommGroup.modEq_iff_zsmul'] at h
     simp_rw [sub_zero] at h
     rcases h with ⟨m, rfl⟩
     rw [zsmul_eq_mul, mul_comm]

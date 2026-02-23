@@ -107,6 +107,7 @@ instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
     rw [smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
+set_option backward.isDefEq.respectTransparency false in
 instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
     [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [IsFiniteMeasure μ] {r : R} : IsFiniteMeasure (r • μ) := by
   rw [← smul_one_smul ℝ≥0 r μ]
@@ -192,7 +193,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     intro x hx
     simp only [mem_iInter, mem_iUnion, exists_prop] at hx
     obtain ⟨j, _, x_in_Es_j⟩ := hx 0
-    obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j+1)
+    obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j + 1)
     have oops := (Es_disj (Nat.ne_of_lt k_gt_j)).ne_of_mem x_in_Es_j x_in_Es_k
     contradiction
   have key := tendsto_measure_iInter_atTop (μ := μ) (fun n ↦ by measurability)

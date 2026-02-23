@@ -26,7 +26,7 @@ As `L` is essentially surjective, we finally transport these abelian group struc
 to `X' ⟶ Y'` for all `X'` and `Y'` in `D`.
 
 Preadditive category instances are defined on the categories `W.Localization`
-(and `W.Localization'`) under the assumption the `W` has a left calculus of fractions.
+(and `W.Localization'`) under the assumption that `W` has a left calculus of fractions.
 (It would be easy to deduce from the results in this file that if `W` has a right calculus
 of fractions, then the localized category can also be equipped with
 a preadditive structure, but only one of these two constructions can be made an instance!)
@@ -39,7 +39,7 @@ namespace CategoryTheory
 
 open MorphismProperty Preadditive Limits Category
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] (L : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] (L : C ⥤ D)
   {W : MorphismProperty C} [L.IsLocalization W]
 
 namespace MorphismProperty
@@ -257,8 +257,6 @@ noncomputable def add (f₁ f₂ : X' ⟶ Y') : X' ⟶ Y' :=
 @[reassoc]
 lemma add_comp (f₁ f₂ : X' ⟶ Y') (g : Y' ⟶ Z') :
     add W eX eY f₁ f₂ ≫ g = add W eX eZ (f₁ ≫ g) (f₂ ≫ g) := by
-  obtain ⟨f₁, rfl⟩ := (homEquiv eX eY).symm.surjective f₁
-  obtain ⟨f₂, rfl⟩ := (homEquiv eX eY).symm.surjective f₂
   obtain ⟨g, rfl⟩ := (homEquiv eY eZ).symm.surjective g
   simp [add]
 
@@ -266,8 +264,6 @@ lemma add_comp (f₁ f₂ : X' ⟶ Y') (g : Y' ⟶ Z') :
 lemma comp_add (f : X' ⟶ Y') (g₁ g₂ : Y' ⟶ Z') :
     f ≫ add W eY eZ g₁ g₂ = add W eX eZ (f ≫ g₁) (f ≫ g₂) := by
   obtain ⟨f, rfl⟩ := (homEquiv eX eY).symm.surjective f
-  obtain ⟨g₁, rfl⟩ := (homEquiv eY eZ).symm.surjective g₁
-  obtain ⟨g₂, rfl⟩ := (homEquiv eY eZ).symm.surjective g₂
   simp [add]
 
 lemma add_eq_add {X'' Y'' : C} (eX' : L.obj X'' ≅ X') (eY' : L.obj Y'' ≅ Y')
@@ -320,8 +316,10 @@ lemma functor_additive :
   ⟨by apply Preadditive.map_add⟩
 
 attribute [irreducible] preadditive
+
+set_option backward.isDefEq.respectTransparency false in
 include W in
-lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive D] [L.Additive]
+lemma functor_additive_iff {E : Type*} [Category* E] [Preadditive E] [Preadditive D] [L.Additive]
     (G : D ⥤ E) :
     G.Additive ↔ (L ⋙ G).Additive := by
   constructor

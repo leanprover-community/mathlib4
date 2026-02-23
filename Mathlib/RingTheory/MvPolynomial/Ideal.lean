@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MonoidAlgebra.Ideal
 public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
+public import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Lemmas about ideals of `MvPolynomial`
@@ -18,9 +21,10 @@ Notably this contains results about monomial ideals.
 
 * `MvPolynomial.mem_ideal_span_monomial_image`
 * `MvPolynomial.mem_ideal_span_X_image`
+* `MvPolynomial.mem_pow_idealOfVars_iff`
 -/
 
-@[expose] public section
+public section
 
 
 variable {σ R : Type*}
@@ -53,6 +57,66 @@ theorem mem_ideal_span_X_image {x : MvPolynomial σ R} {s : Set σ} :
   rw [Set.image_image] at this
   refine this.trans ?_
   simp [Nat.one_le_iff_ne_zero]
+
+section idealOfVars
+
+open Finset Finsupp
+
+variable (σ R) in
+/-- The ideal spanned by all variables. -/
+def idealOfVars : Ideal (MvPolynomial σ R) := .span (.range X)
+
+lemma idealOfVars_eq_restrictSupportIdeal :
+    idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
+  apply le_antisymm
+  · simp [idealOfVars, Ideal.span_le, Set.range_subset_iff, restrictSupportIdeal, X]
+  · simp only [SetLike.le_def, restrictSupportIdeal, Submodule.mem_mk, Submodule.mem_toAddSubmonoid,
+      ← Submodule.restrictScalars_mem R (idealOfVars σ R)]
+    rw [← SetLike.le_def, restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff]
+    intro x hx
+    obtain ⟨i, hi⟩ : x.support.Nonempty := by aesop
+    obtain ⟨c, rfl⟩ := le_iff_exists_add'.mp (show single i 1 ≤ x by simp_all; lia)
+    simpa [monomial_add_single] using Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
+
+set_option backward.isDefEq.respectTransparency false in
+open Pointwise in
+theorem pow_idealOfVars (n : ℕ) :
+    idealOfVars σ R ^ n = restrictSupportIdeal _ _ ((isUpperSet_Ici n).preimage degree_mono) := by
+  rw [idealOfVars_eq_restrictSupportIdeal]
+  apply Submodule.restrictScalars_injective R
+  by_cases hn : n = 0
+  · simp [hn, Set.Ici_zero_eq_univ]
+  rw [Submodule.restrictScalars_pow hn]
+  simp [← restrictSupport_nsmul, ← degree_preimage_nsmul, hn, Set.Ici_nsmul_eq]
+
+/-- The `n`th power of `idealOfVars` is spanned by all monic monomials of total degree `n`. -/
+theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
+    .span ((monomial · 1) '' (degree ⁻¹' {n})) := by
+  rw [idealOfVars, Ideal.span, Submodule.span_pow, ← Set.image_univ,
+    image_pow_eq_finsuppProd_image]
+  simp [monomial_eq, Set.preimage, degree]
+
+set_option backward.isDefEq.respectTransparency false in
+theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
+    p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ degree x := by
+  rw [pow_idealOfVars]
+  simp [restrictSupportIdeal, mem_restrictSupport_iff, Set.subset_def]
+
+theorem mem_pow_idealOfVars_iff' (n : ℕ) (p : MvPolynomial σ R) :
+    p ∈ idealOfVars σ R ^ n ↔ ∀ x, degree x < n → p.coeff x = 0 := by
+  grind only [mem_pow_idealOfVars_iff, mem_support_iff]
+
+theorem monomial_mem_pow_idealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (h : r ≠ 0) :
+    monomial x r ∈ idealOfVars σ R ^ n ↔ n ≤ degree x := by
+  classical
+  grind only [mem_pow_idealOfVars_iff, mem_support_iff, coeff_monomial]
+
+theorem C_mem_pow_idealOfVars_iff (n r) : C r ∈ idealOfVars σ R ^ n ↔ r = 0 ∨ n = 0 := by
+  by_cases h : r = 0
+  · simp [h]
+  simpa [h] using monomial_mem_pow_idealOfVars_iff (σ := σ) n 0 h
+
+end idealOfVars
 
 end MvPolynomial
 
@@ -101,5 +165,15 @@ lemma span_leadingTerm_eq_span_monomial' {k : Type*} [Field k] {B : Set (MvPolyn
       span ((fun p ↦ MvPolynomial.monomial (m.degree p) 1) '' (B \ {0})) := by
   apply span_leadingTerm_eq_span_monomial₀
   simp [em']
+
+lemma sPolynomial_mem_sup_ideal {R : Type*} [CommRing R]
+    {I J : Ideal <| MvPolynomial σ R} {p q : MvPolynomial σ R}
+    (hp : p ∈ I) (hq : q ∈ J) : m.sPolynomial p q ∈ I ⊔ J :=
+  sub_mem (mul_mem_left _ _ (mem_sup_left hp)) (mul_mem_left _ _ (mem_sup_right hq))
+
+lemma sPolynomial_mem_ideal {R : Type*} [CommRing R]
+    {I : Ideal <| MvPolynomial σ R} {p q : MvPolynomial σ R}
+    (hp : p ∈ I) (hq : q ∈ I) : m.sPolynomial p q ∈ I :=
+  sub_mem (mul_mem_left I _ hp) (mul_mem_left I _ hq)
 
 end MonomialOrder

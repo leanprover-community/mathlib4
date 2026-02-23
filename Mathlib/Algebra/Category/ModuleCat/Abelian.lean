@@ -52,6 +52,7 @@ def normalMono (hf : Mono f) : NormalMono f where
               (LinearMap.quotKerEquivRange f.hom ≪≫ₗ
               LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the category of modules, every epimorphism is normal. -/
 def normalEpi (hf : Epi f) : NormalEpi f where
   W := of R (LinearMap.ker f.hom)
@@ -81,7 +82,7 @@ instance abelian : Abelian (ModuleCat.{v} R) where
 section ReflectsLimits
 
 /-- Add this instance to help Lean with universe levels. -/
-instance : HasLimitsOfSize.{v,v} (ModuleCat.{max v w} R) :=
+instance : HasLimitsOfSize.{v, v} (ModuleCat.{max v w} R) :=
   ModuleCat.hasLimitsOfSize.{v, v, max v w}
 
 /- We need to put this in this weird spot because we need to know that the category of modules

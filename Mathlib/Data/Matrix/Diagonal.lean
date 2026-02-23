@@ -80,6 +80,9 @@ theorem diagonal_zero [Zero α] : (diagonal fun _ => 0 : Matrix n n α) = 0 := b
   simp [diagonal]
 
 @[simp]
+theorem diagonal_zero' [Zero α] : (diagonal 0 : Matrix n n α) = 0 := diagonal_zero
+
+@[simp]
 theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal v := by
   ext i j
   by_cases h : i = j
@@ -172,6 +175,10 @@ protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
+
+theorem intCast_apply [AddGroupWithOne α] {i j} {d : ℤ} :
+    (d : Matrix n n α) i j = if i = j then d else 0 := by
+  rw [Int.cast_ite, Int.cast_zero, ← diagonal_intCast, diagonal_apply]
 
 theorem diagonal_unique [Unique m] [DecidableEq m] [Zero α] (d : m → α) :
     diagonal d = of fun _ _ => d default := by

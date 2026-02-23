@@ -5,7 +5,7 @@ Authors: Anne Baanen, Devon Tuma
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Factors
+public import Mathlib.Algebra.Polynomial.Splits
 
 /-!
 # Scaling the roots of a polynomial
@@ -51,10 +51,12 @@ theorem scaleRoots_ne_zero {p : R[X]} (hp : p ≠ 0) (s : R) : scaleRoots p s �
   rw [coeff_scaleRoots_natDegree] at this
   contradiction
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_scaleRoots_le (p : R[X]) (s : R) : (scaleRoots p s).support ≤ p.support := by
   intro
   simpa using left_ne_zero_of_mul
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_scaleRoots_eq (p : R[X]) {s : R} (hs : s ∈ nonZeroDivisors R) :
     (scaleRoots p s).support = p.support :=
   le_antisymm (support_scaleRoots_le p s)
@@ -100,6 +102,7 @@ lemma scaleRoots_C (r c : R) : (C c).scaleRoots r = C c := by
 lemma scaleRoots_one (p : R[X]) :
     p.scaleRoots 1 = p := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma scaleRoots_zero (p : R[X]) :
     p.scaleRoots 0 = p.leadingCoeff • X ^ p.natDegree := by
@@ -119,7 +122,7 @@ lemma one_scaleRoots (r : R) :
 @[simp]
 lemma X_add_C_scaleRoots (r s : R) : (X + C r).scaleRoots s = (X + C (r * s)) := by
   nontriviality R
-  ext (_|_|i) <;> simp
+  ext (_ | _ | i) <;> simp
 
 end Semiring
 
@@ -284,7 +287,7 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
   use s ^ natDegree (a * p) • s ^ (natDegree b + natDegree q - natDegree (b * q)) • b.scaleRoots r
   simp only [s, smul_mul_assoc, ← mul_scaleRoots, smul_smul, mul_assoc,
     ← mul_pow, IsUnit.val_inv_mul, one_pow, mul_one, ← smul_add, one_smul, e, natDegree_one,
-    one_scaleRoots, ← add_scaleRoots_of_natDegree_eq _ _ _ this, tsub_zero]
+    one_scaleRoots, ← add_scaleRoots_of_natDegree_eq _ _ _ this]
 
 alias _root_.IsCoprime.scaleRoots := isCoprime_scaleRoots
 
@@ -308,6 +311,8 @@ lemma Splits.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
   · rw [(monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).leadingCoeff]
     simpa
 
+@[deprecated (since := "2025-12-09")] alias Factors.scaleRoots := Splits.scaleRoots
+
 end CommSemiring
 
 section Ring
@@ -316,7 +321,7 @@ section Ring
 lemma X_sub_C_scaleRoots [Ring R] (r s : R) :
     (X - C r).scaleRoots s = (X - C (r * s)) := by
   nontriviality R
-  ext (_|_|i) <;> simp
+  ext (_ | _ | i) <;> simp
 
 end Ring
 

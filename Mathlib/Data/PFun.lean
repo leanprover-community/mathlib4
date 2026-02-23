@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 module
 
-public import Batteries.WF
 public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Data.Part
 public import Mathlib.Data.Rel
@@ -33,7 +32,7 @@ This file defines partial functions. Partial functions are like functions, excep
 * `PFun.restrict`: Restriction of a partial function to a smaller `Dom`.
 * `PFun.res`: Turns a function into a partial function with a prescribed domain.
 * `PFun.fix` : First return map of a partial function `f : α →. β ⊕ α`.
-* `PFun.fix_induction`: A recursion principle for `PFun.fix`.
+* `PFun.fixInduction`: A recursion principle for `PFun.fix`.
 
 ### Partial functions as relations
 
@@ -284,7 +283,7 @@ def fixInduction {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α} (h
   have h₂ := (Part.mem_assert_iff.1 h).snd
   generalize_proofs at h₂
   clear h
-  induction ‹Acc _ _› with | intro a ha IH => _
+  induction ‹Acc (Sum.inr · ∈ f ·) a› with | intro a ha IH => _
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 
@@ -497,7 +496,6 @@ theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage
 @[simp]
 theorem preimage_comp (f : β →. γ) (g : α →. β) (s : Set γ) :
     (f.comp g).preimage s = g.preimage (f.preimage s) := by
-  ext
   grind
 
 @[simp]

@@ -29,8 +29,8 @@ that the composition of this embedding with the measurable embedding from a stan
 * `Real.sigmoid` : the sigmoid function from `ℝ` to `ℝ`.
 * `Real.sigmoid_strictMono` : the sigmoid function is strictly monotone.
 * `Real.continuous_sigmoid` : the sigmoid function is continuous.
-* `Real.sigmoid_tendsto_nhds_1_atTop` : the sigmoid function tends to `1` at `+∞`.
-* `Real.sigmoid_tendsto_nhds_0_atBot` : the sigmoid function tends to `0` at `-∞`.
+* `Real.tendsto_sigmoid_atTop` : the sigmoid function tends to `1` at `+∞`.
+* `Real.tendsto_sigmoid_atBot` : the sigmoid function tends to `0` at `-∞`.
 * `Real.hasDerivAt_sigmoid` : the derivative of the sigmoid function.
 * `Real.analyticAt_sigmoid` : the sigmoid function is analytic at every point.
 
@@ -38,16 +38,16 @@ that the composition of this embedding with the measurable embedding from a stan
 * `unitInterval.sigmoid` : the sigmoid function from `ℝ` to `I`.
 * `unitInterval.sigmoid_strictMono` : the sigmoid function is strictly monotone.
 * `unitInterval.continuous_sigmoid` : the sigmoid function is continuous.
-* `unitInterval.sigmoid_tendsto_nhds_1_atTop` : the sigmoid function tends to `1` at `+∞`.
-* `unitInterval.sigmoid_tendsto_nhds_0_atBot` : the sigmoid function tends to `0` at `-∞`.
+* `unitInterval.tendsto_sigmoid_atTop` : the sigmoid function tends to `1` at `+∞`.
+* `unitInterval.tendsto_sigmoid_atBot` : the sigmoid function tends to `0` at `-∞`.
 
 ### Sigmoid as an `OrderEmbedding` from `ℝ` to `I`
 * `OrderEmbedding.sigmoid` : the sigmoid function as an `OrderEmbedding` from `ℝ` to `I`.
-* `OrderEmbedding.isEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a topological
+* `Topology.isEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a topological
   embedding.
-* `OrderEmbedding.measurableEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a
+* `measurableEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a
   measurable embedding.
-* `OrderEmbedding.measurableEmbedding_sigmoid_comp_embeddingReal` : the composition of the
+* `measurableEmbedding_sigmoid_comp_embeddingReal` : the composition of the
   sigmoid function from `ℝ` to `I` with the measurable embedding from a standard Borel
   space `α` to `ℝ` is a measurable embedding from `α` to `I`.
 
@@ -64,6 +64,7 @@ noncomputable def sigmoid (x : ℝ) := (1 + exp (-x))⁻¹
 
 lemma sigmoid_def (x : ℝ) : sigmoid x = (1 + exp (-x))⁻¹ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma sigmoid_zero : sigmoid 0 = 2⁻¹ := by norm_num [sigmoid]
 
@@ -114,17 +115,19 @@ lemma sigmoid_mul_rexp_neg (x : ℝ) : sigmoid x * exp (-x) = sigmoid (-x) := by
   rw [sigmoid_neg, sigmoid_def]
   field
 
+set_option backward.isDefEq.respectTransparency false in
 open Set in
 lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
   refine subset_antisymm ?_ fun x hx ↦ ?_
   · rintro - ⟨x, rfl⟩
-    simp only [mem_Ioo]
+    push _ ∈ _
     bound
   · replace hx : 0 < x⁻¹ - 1 := by rwa [sub_pos, one_lt_inv_iff₀]
     exact ⟨-(log (x⁻¹ - 1)), by simp [sigmoid_def, exp_log hx]⟩
 
 open Topology Filter
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
   simpa using Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
     by norm_num
@@ -187,6 +190,7 @@ open ContDiff in
 lemma ContDiff.sigmoid (hf : ContDiff ℝ ω f) : ContDiff ℝ ω (sigmoid ∘ f) :=
   contDiff_sigmoid.comp hf
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma differentiable_sigmoid : Differentiable ℝ sigmoid :=
    contDiff_sigmoid.of_le le_top |>.differentiable_one
@@ -204,7 +208,9 @@ lemma DifferentiableAt.sigmoid {x : E} (hf : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (sigmoid ∘ f) x := differentiableAt_sigmoid.comp x hf
 
 @[fun_prop]
-lemma continuous_sigmoid : Continuous sigmoid := by fun_prop
+lemma continuous_sigmoid : Continuous sigmoid := by
+  apply Differentiable.continuous (𝕜 := ℝ)  -- fun_prop can't choose `𝕜`
+  fun_prop
 
 omit [NormedSpace ℝ E] in
 @[fun_prop]

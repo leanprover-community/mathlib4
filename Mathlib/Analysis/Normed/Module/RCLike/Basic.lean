@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Analysis.Normed.Module.Span
 public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # Normed spaces over R or C
@@ -28,7 +30,7 @@ None.
 This file exists mainly to avoid importing `RCLike` in the main normed space theory files.
 -/
 
-@[expose] public section
+public section
 
 
 open Metric
@@ -50,6 +52,13 @@ theorem norm_smul_inv_norm' {r : ℝ} (r_nonneg : 0 ≤ r) {x : E} (hx : x ≠ 0
     ‖((r : 𝕜) * (‖x‖ : 𝕜)⁻¹) • x‖ = r := by
   have : ‖x‖ ≠ 0 := by simp [hx]
   simp [field, norm_smul, r_nonneg, rclike_simps]
+
+set_option backward.isDefEq.respectTransparency false in
+theorem ContinuousLinearEquiv.coord_norm' {x : E} (h : x ≠ 0) :
+    ‖(‖x‖ : 𝕜) • ContinuousLinearEquiv.coord 𝕜 x h‖ = 1 := by
+  simp only [norm_smul, RCLike.norm_coe_norm, coord_norm, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
+
+@[deprecated (since := "2026-02-01")] alias coord_norm' := ContinuousLinearEquiv.coord_norm'
 
 theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] 𝕜)
     (h : ∀ z ∈ sphere (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ := by

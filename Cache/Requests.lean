@@ -6,15 +6,11 @@ Authors: Arthur Paulino
 
 import Batteries.Data.String.Matcher
 import Cache.Hashing
+import Cache.Init
 
 namespace Cache.Requests
 
 open System (FilePath)
-
--- FRO cache may be flaky: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
-initialize useFROCache : Bool ← do
-  let froCache ← IO.getEnv "USE_FRO_CACHE"
-  return froCache == some "1" || froCache == some "true"
 
 /--
 Structure to hold repository information with priority ordering
@@ -28,10 +24,10 @@ structure RepoInfo where
 Helper function to extract repository name from a git remote URL
 -/
 def extractRepoFromUrl (url : String) : Option String := do
-  let url := url.stripSuffix ".git"
-  let pos ← url.revFind (· == '/')
-  let pos ← url.revFindAux (fun c => c == '/'  || c == ':') pos
-  return (String.Pos.Raw.extract url) (String.Pos.Raw.next url pos) url.rawEndPos
+  let url := url.dropSuffix ".git"
+  let pos ← url.revFind? (· == '/')
+  let pos ← (url.sliceTo pos).revFind? (fun c => c == '/' || c == ':')
+  return url.sliceFrom (String.Slice.Pos.ofSliceTo pos).next! |>.copy
 
 /-- Spot check if a URL is valid for a git remote -/
 def isRemoteURL (url : String) : Bool :=
@@ -50,14 +46,14 @@ def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorCo
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
   -- If `git remote get-url` fails then bail out with an error to help debug
-  let output := out.stdout.trim
+  let output := out.stdout.trimAscii
   unless out.exitCode == 0 do
     throw <| IO.userError s!"\
       Failed to run Git to determine Mathlib's repository from {remoteName} remote (exit code: {out.exitCode}).\n\
       {errorContext}\n\
-      Stdout:\n{output}\nStderr:\n{out.stderr.trim}\n"
+      Stdout:\n{output}\nStderr:\n{out.stderr.trimAscii}\n"
   -- Finally attempt to extract the repository from the remote URL returned by `git remote get-url`
-  repoFromURL output
+  repoFromURL output.copy
 where repoFromURL (url : String) : IO String := do
     if let some repo := extractRepoFromUrl url then
       return repo
@@ -79,17 +75,17 @@ def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
     throw <| IO.userError s!"\
       Failed to run Git to list remotes (exit code: {remotesInfo.exitCode}).\n\
       Ensure Git is installed.\n\
-      Stdout:\n{remotesInfo.stdout.trim}\nStderr:\n{remotesInfo.stderr.trim}\n"
+      Stdout:\n{remotesInfo.stdout.trimAscii}\nStderr:\n{remotesInfo.stderr.trimAscii}\n"
 
   let remoteLines := remotesInfo.stdout.splitToList (· == '\n')
   let mut mathlibRemote : Option String := none
   let mut originPointsToMathlib : Bool := false
 
   for line in remoteLines do
-    let parts := line.trim.splitToList (· == '\t')
+    let parts := line.trimAscii.copy.splitToList (· == '\t')
     if parts.length >= 2 then
       let remoteName := parts[0]!
-      let remoteUrl := parts[1]!.takeWhile (· != ' ') -- Remove (fetch) or (push) suffix
+      let remoteUrl := parts[1]!.takeWhile (· != ' ') |>.copy -- Remove (fetch) or (push) suffix
 
       -- Check if this remote points to leanprover-community/mathlib4
       let isMathlibRepo := remoteUrl.containsSubstr "leanprover-community/mathlib4"
@@ -128,11 +124,11 @@ def isDetachedAtNightlyTesting (mathlibDepPath : FilePath) : IO Bool := do
   let currentCommit ← IO.Process.output
     {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
   if currentCommit.exitCode == 0 then
-    let commitHash := currentCommit.stdout.trim
+    let commitHash := currentCommit.stdout.trimAscii.copy
     let tagInfo ← IO.Process.output
       {cmd := "git", args := #["name-rev", "--tags", commitHash], cwd := mathlibDepPath}
     if tagInfo.exitCode == 0 then
-      let parts := tagInfo.stdout.trim.splitOn " "
+      let parts := tagInfo.stdout.trimAscii.copy.splitOn " "
       -- git name-rev returns "commit_hash tags/tag_name" or just "commit_hash undefined" if no tag
       if parts.length >= 2 && parts[1]!.startsWith "tags/" then
         let tagName := parts[1]!.drop 5  -- Remove "tags/" prefix
@@ -159,17 +155,17 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
     {cmd := "git", args := #["rev-parse", "--abbrev-ref", "HEAD"], cwd := mathlibDepPath}
 
   if currentBranch.exitCode == 0 then
-    let branchName := currentBranch.stdout.trim.stripPrefix "heads/"
+    let branchName := currentBranch.stdout.trimAscii.dropPrefix "heads/"
     IO.println s!"Current branch: {branchName}"
 
     -- Check if we're in a detached HEAD state at a nightly-testing tag
-    let isDetachedAtNightlyTesting ← if branchName == "HEAD" then
+    let isDetachedAtNightlyTesting ← if branchName == "HEAD".toSlice then
       isDetachedAtNightlyTesting mathlibDepPath
     else
       pure false
 
     -- Check if we're on a branch that should use nightly-testing remote
-    let shouldUseNightlyTesting := branchName == "nightly-testing" ||
+    let shouldUseNightlyTesting := branchName == "nightly-testing".toSlice ||
                                   branchName.startsWith "lean-pr-testing-" ||
                                   branchName.startsWith "batteries-pr-testing-" ||
                                   branchName.startsWith "bump/" ||
@@ -177,7 +173,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
 
     if shouldUseNightlyTesting then
       let repo := "leanprover-community/mathlib4-nightly-testing"
-      let cacheService := if useFROCache then "Cloudflare" else "Azure"
+      let cacheService := if useCloudflareCache then "Cloudflare" else "Azure"
       IO.println s!"Using cache ({cacheService}) from nightly-testing remote: {repo}"
       return {repo := repo, useFirst := true}
 
@@ -229,30 +225,33 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
 
   -- Fall back to using the remote that the current branch is tracking
   let trackingRemote ← IO.Process.output
-    {cmd := "git", args := #["config", "--get", s!"branch.{currentBranch.stdout.trim}.remote"], cwd := mathlibDepPath}
+    {cmd := "git", args := #["config", "--get", s!"branch.{currentBranch.stdout.trimAscii}.remote"], cwd := mathlibDepPath}
 
   let remoteName := if trackingRemote.exitCode == 0 then
-    trackingRemote.stdout.trim
+    trackingRemote.stdout.trimAscii.copy
   else
     -- If no tracking remote is configured, fall back to origin
     "origin"
 
   let repo ← getRepoFromRemote mathlibDepPath remoteName
     s!"Ensure Git is installed and the '{remoteName}' remote points to its GitHub repository."
-  let cacheService := if useFROCache then "Cloudflare" else "Azure"
+  let cacheService := if useCloudflareCache then "Cloudflare" else "Azure"
   IO.println s!"Using cache ({cacheService}) from {remoteName}: {repo}"
   return {repo := repo, useFirst := false}
 
 /-- Public URL for mathlib cache -/
-def URL : String :=
-  if useFROCache then
-    "https://mathlib4.lean-cache.cloud"
-  else
-    "https://lakecache.blob.core.windows.net/mathlib4"
+initialize URL : String ← do
+  let url? ← IO.getEnv "MATHLIB_CACHE_GET_URL"
+  let defaultUrl :=
+    if useCloudflareCache then
+      "https://mathlib4.lean-cache.cloud"
+    else
+      "https://lakecache.blob.core.windows.net/mathlib4"
+  return url?.getD defaultUrl
 
 /-- Retrieves the azure token from the environment -/
 def getToken : IO String := do
-  let envVar := if useFROCache then "MATHLIB_CACHE_S3_TOKEN" else "MATHLIB_CACHE_SAS"
+  let envVar := if useCloudflareCache then "MATHLIB_CACHE_S3_TOKEN" else "MATHLIB_CACHE_SAS"
   let some token ← IO.getEnv envVar
     | throw <| IO.userError s!"environment variable {envVar} must be set to upload caches"
   return token
@@ -266,7 +265,7 @@ Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server
 The `f/` prefix means that it's a common file for caching.
 -/
 def mkFileURL (repo URL fileName : String) : String :=
-  let pre := if !useFROCache && repo == MATHLIBREPO then "" else s!"{repo}/"
+  let pre := if !useCloudflareCache && repo == MATHLIBREPO then "" else s!"{repo}/"
   s!"{URL}/f/{pre}{fileName}"
 
 section Get
@@ -329,15 +328,16 @@ def monitorCurl (args : Array String) (size : Nat)
   let s@{success, failed, done, speed, ..} ← IO.runCurlStreaming args init fun a line => do
     let mut {last, success, failed, done, speed} := a
     -- output errors other than 404 and remove corresponding partial downloads
-    let line := line.trim
+    let line := line.trimAscii
     if !line.isEmpty then
-      match Lean.Json.parse line with
+      match Lean.Json.parse line.copy with
       | .ok result =>
         match result.getObjValAs? Nat "http_code" with
-        | .ok 200 =>
+        | .ok 200
+        | .ok 201 =>
           if let .ok fn := result.getObjValAs? String "filename_effective" then
             if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
-              IO.FS.rename fn (fn.dropRight 5)
+              IO.FS.rename fn (fn.dropEnd 5).copy
           success := success + 1
         | .ok 404 => pure ()
         | code? =>
@@ -375,39 +375,38 @@ def monitorCurl (args : Array String) (size : Nat)
   return s
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
-Exit the process with exit code 1 if any files failed to download. -/
+Return the number of files which failed to download. -/
 def downloadFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool): IO Unit := do
+    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool): IO Nat := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
+  if hashMap.isEmpty then IO.println "No files to download"; return 0
   let size := hashMap.size
-  if size > 0 then
-    IO.FS.createDirAll IO.CACHEDIR
-    IO.println s!"Attempting to download {size} file(s) from {repo} cache"
-    let failed ← if parallel then
-      IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
-      let args := #["--request", "GET", "--parallel",
-          -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
-          "--silent",
-          "--retry", "5", -- there seem to be some intermittent failures
-          "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-      let {success, failed, done, ..} ←
-        monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
-      IO.FS.removeFile IO.CURLCFG
-      if warnOnMissing && success + failed < done then
-        IO.eprintln "Warning: some files were not found in the cache."
-        IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
-        IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
-        IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
-      pure failed
-    else
-      let r ← hashMap.foldM (init := []) fun acc _ hash => do
-        pure <| (← IO.asTask do downloadFile repo hash) :: acc
-      pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
-    if failed > 0 then
-      IO.println s!"{failed} download(s) failed"
-      IO.Process.exit 1
-  else IO.println "No files to download"
+  IO.FS.createDirAll IO.CACHEDIR
+  IO.println s!"Attempting to download {size} file(s) from {repo} cache"
+  let failed ← if parallel then
+    IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
+    let args := #["--request", "GET", "--parallel",
+        -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
+        "--silent",
+        "--retry", "5", -- there seem to be some intermittent failures
+        "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+    let {success, failed, done, ..} ←
+      monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
+    IO.FS.removeFile IO.CURLCFG
+    if warnOnMissing && success + failed < done then
+      IO.eprintln "Warning: some files were not found in the cache."
+      IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
+      IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
+      IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
+    pure failed
+  else
+    let r ← hashMap.foldM (init := []) fun acc _ hash => do
+      pure <| (← IO.asTask do downloadFile repo hash) :: acc
+    pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
+  if failed > 0 then
+    IO.println s!"{failed} download(s) failed"
+  return failed
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
@@ -415,10 +414,10 @@ def checkForToolchainMismatch : IO.CacheM Unit := do
   let mathlibToolchainFile := (← read).mathlibDepPath / "lean-toolchain"
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
   let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
-  if !(mathlibToolchain.trim = downstreamToolchain.trim) then
+  if !(mathlibToolchain.trimAscii == downstreamToolchain.trimAscii) then
     IO.println "Dependency Mathlib uses a different lean-toolchain"
-    IO.println s!"  Project uses {downstreamToolchain.trim}"
-    IO.println s!"  Mathlib uses {mathlibToolchain.trim}"
+    IO.println s!"  Project uses {downstreamToolchain.trimAscii}"
+    IO.println s!"  Mathlib uses {mathlibToolchain.trimAscii}"
     IO.println "\nThe cache will not work unless your project's toolchain matches Mathlib's toolchain"
     IO.println s!"This can be achieved by copying the contents of the file `{mathlibToolchainFile}`
 into the `lean-toolchain` file at the root directory of your project"
@@ -467,7 +466,7 @@ where
   printLakeOutput out := do
     unless out.stdout.isEmpty do
       IO.eprintln "lake stdout:"
-      IO.eprint out.stderr
+      IO.eprint out.stdout
     unless out.stderr.isEmpty do
       IO.eprintln "lake stderr:"
       IO.eprint out.stderr
@@ -475,14 +474,18 @@ where
 /-- Downloads missing files, and unpacks files. -/
 def getFiles
     (repo? : Option String) (hashMap : IO.ModuleHashMap)
-    (forceDownload forceUnpack parallel decompress : Bool)
+    (forceDownload forceUnpack parallel decompress skipProofWidgets : Bool)
     : IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do checkForToolchainMismatch
-  getProofWidgets (← read).proofWidgetsBuildDir
+  if skipProofWidgets then
+    IO.println "Skipping ProofWidgets release fetch"
+  else
+    getProofWidgets (← read).proofWidgetsBuildDir
 
   if let some repo := repo? then
-    downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
+    let failed ← downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
+    if failed > 0 then IO.Process.exit 1
   else
     let repoInfo ← getRemoteRepo (← read).mathlibDepPath
 
@@ -495,8 +498,15 @@ def getFiles
       else
         [MATHLIBREPO, repoInfo.repo]
 
+    let mut failed : Nat := 0
     for h : i in [0:repos.length] do
-      downloadFiles repos[i] hashMap forceDownload parallel (warnOnMissing := i = repos.length - 1)
+      failed := ← (downloadFiles repos[i] hashMap forceDownload parallel (warnOnMissing := i = repos.length - 1))
+      if failed > 10 then
+        IO.println s!"Too many downloads failed; stopping the downloading"
+        IO.Process.exit 1
+    if failed > 0 then
+      IO.println s!"Downloading {failed} files failed"
+      IO.Process.exit 1
 
   if decompress then
     IO.unpackCache hashMap forceUnpack
@@ -507,31 +517,34 @@ end Get
 
 section Put
 
-/-- FRO cache S3 URL -/
-def UPLOAD_URL : String :=
-  if useFROCache then
-    "https://a09a7664adc082e00f294ac190827820.r2.cloudflarestorage.com/mathlib4"
-  else
-    URL
+/-- Cloudflare cache S3 URL -/
+initialize UPLOAD_URL : String ← do
+  let url? ← IO.getEnv "MATHLIB_CACHE_PUT_URL"
+  let defaultUrl :=
+    if useCloudflareCache then
+      "https://a09a7664adc082e00f294ac190827820.r2.cloudflarestorage.com/mathlib4"
+    else
+      "https://lakecache.blob.core.windows.net/mathlib4"
+  return url?.getD defaultUrl
 
 /-- Formats the config file for `curl`, containing the list of files to be uploaded -/
-def mkPutConfigContent (repo : String) (fileNames : Array String) (token : String) : IO String := do
-  let token := if useFROCache then "" else s!"?{token}" -- the FRO cache doesn't pass the token here
-  let l ← fileNames.toList.mapM fun fileName : String => do
-    pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {mkFileURL repo UPLOAD_URL fileName}{token}"
+def mkPutConfigContent (repo : String) (files : Array FilePath) (token : String) : IO String := do
+  let token := if useCloudflareCache then "" else s!"?{token}" -- the Cloudflare cache doesn't pass the token here
+  let l ← files.toList.mapM fun file : FilePath => do
+    pure s!"-T {file.toString}\nurl = {mkFileURL repo UPLOAD_URL file.fileName.get!}{token}"
   return "\n".intercalate l
 
-/-- Calls `curl` to send a set of cached files to the server -/
-def putFiles
-  (repo : String) (fileNames : Array String)
+/-- Calls `curl` to send a set of files to the server -/
+def putFilesAbsolute
+  (repo : String) (files : Array FilePath) (tempConfigFilePath : FilePath)
   (overwrite : Bool) (token : String) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
   let _ := overwrite
-  let size := fileNames.size
+  let size := files.size
   if size > 0 then
-    IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent repo fileNames token)
+    IO.FS.writeFile tempConfigFilePath (← mkPutConfigContent repo files token)
     IO.println s!"Attempting to upload {size} file(s) to {repo} cache"
-    let args := if useFROCache then
+    let args := if useCloudflareCache then
       -- TODO: reimplement using HEAD requests?
       let _ := overwrite
       #["--aws-sigv4", "aws:amz:auto:s3", "--user", token]
@@ -542,19 +555,69 @@ def putFiles
     let args := args ++ #[
       "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
-      "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+      "--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
     discard <| monitorCurl args size "Uploaded" "speed_upload"
-    IO.FS.removeFile IO.CURLCFG
+    IO.FS.removeFile tempConfigFilePath
   else IO.println "No files to upload"
 
+/-- Calls `curl` to send a set of cached files to the server -/
+def putFiles
+  (repo : String) (fileNames : Array String)
+  (overwrite : Bool) (token : String) : IO Unit := do
+  -- TODO: reimplement using HEAD requests?
+  let files : Array FilePath := fileNames.map (fun (f : String) => (IO.CACHEDIR / f))
+  putFilesAbsolute repo files IO.CURLCFG overwrite token
 end Put
+
+section Stage
+
+def copyCmd : String := if System.Platform.isWindows then "COPY" else "cp"
+
+/-- Copies cached files to a directory, intended for 'staging' -/
+def stageFiles
+    (destinationPath : FilePath) (fileNames : Array String) : IO Unit := do
+  let size := fileNames.size
+  if size > 0 then
+    IO.FS.createDirAll destinationPath
+    let paths := fileNames.map (s!"{IO.CACHEDIR / ↑·}")
+    let args := paths.push destinationPath.toString
+    IO.println s!"Copying {size} file(s) to {destinationPath}"
+    discard <| IO.runCmd copyCmd args
+  else IO.println "No files to stage"
+
+/-- Copies staged files into the local cache directory. -/
+def unstageFiles (stagingDir : FilePath) (overwrite : Bool) : IO Unit := do
+  unless (← stagingDir.isDir) do
+    IO.println "--staging-dir must be a directory"
+    return
+  let files ← IO.getFilesWithExtension stagingDir "ltar"
+  let enumerationSize := files.size
+  IO.println s!"{enumerationSize} files found in staging directory"
+  let files ← if overwrite then pure files else
+    files.filterM fun file => do
+      let dest := IO.CACHEDIR / file.fileName.get!
+      return !(← dest.pathExists)
+  let size := files.size
+  if !overwrite then
+    IO.println s!"{enumerationSize -  size} files will be skipped because they exist in the cache"
+
+  if size > 0 then
+    IO.FS.createDirAll IO.CACHEDIR
+    let args := files.map (·.toString) ++ #[IO.CACHEDIR.toString]
+    IO.println s!"Placing {size} file(s) from {stagingDir} into {IO.CACHEDIR}"
+    discard <| IO.runCmd copyCmd args
+  else
+    IO.println "No files to unstage"
+
+end Stage
 
 section Commit
 
 def isGitStatusClean : IO Bool :=
   return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
 
-def getGitCommitHash : IO String := return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimRight
+def getGitCommitHash : IO String :=
+  return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
 
 /--
 Sends a commit file to the server, containing the hashes of the respective committed files.
@@ -566,7 +629,7 @@ def commit (hashMap : IO.ModuleHashMap) (overwrite : Bool) (token : String) : IO
   let path := IO.CACHEDIR / hash
   IO.FS.createDirAll IO.CACHEDIR
   IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
-  if useFROCache then
+  if useCloudflareCache then
     -- TODO: reimplement using HEAD requests?
     let _ := overwrite
     discard <| IO.runCurl #["-T", path.toString,
@@ -604,8 +667,8 @@ Retrieves metadata about hosted files: their names and the timestamps of last mo
 Example: `["f/39476538726384726.tar.gz", "Sat, 24 Dec 2022 17:33:01 GMT"]`
 -/
 def getFilesInfo (q : QueryType) : IO <| List (String × String) := do
-  if useFROCache then
-    throw <| .userError "FIXME: getFilesInfo is not adapted to FRO cache yet"
+  if useCloudflareCache then
+    throw <| .userError "FIXME: getFilesInfo is not adapted to Cloudflare cache yet"
   IO.println s!"Downloading info list of {q.desc}"
   let ret ← IO.runCurl #["-X", "GET", s!"{URL}?comp=list&restype=container{q.prefix}"]
   match ret.splitOn "<Name>" with

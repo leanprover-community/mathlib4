@@ -137,7 +137,7 @@ def polarSym2 (f : M → N) : Sym2 M → N :=
   Sym2.lift ⟨polar f, polar_comm _⟩
 
 @[simp]
-lemma polarSym2_sym2Mk (f : M → N) (xy : M × M) : polarSym2 f (.mk xy) = polar f xy.1 xy.2 := rfl
+lemma polarSym2_sym2Mk (f : M → N) (x y : M) : polarSym2 f s(x, y) = polar f x y := rfl
 
 end QuadraticMap
 
@@ -357,8 +357,8 @@ protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Fi
   | cons a s ha ih =>
     simp_rw [Finset.sum_cons, QuadraticMap.map_add, ih, add_assoc, Finset.sym2_cons,
       Finset.sum_filter, Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons,
-      Sym2.mkEmbedding_apply, Sym2.isDiag_iff_proj_eq, not_true, if_false, zero_add,
-      Sym2.map_pair_eq, polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum,
+      Sym2.mkEmbedding_apply, Sym2.mk_isDiag_iff, not_true, if_false, zero_add,
+      Sym2.map_mk, polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum,
       polarBilin_apply_apply]
     congr 2
     rw [add_comm]
@@ -372,7 +372,7 @@ protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι
   | cons a s ha ih =>
     simp_rw [Finset.sum_cons, QuadraticMap.map_add Q, ih, add_assoc, Finset.sym2_cons,
       Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons, Sym2.mkEmbedding_apply,
-      Sym2.map_pair_eq, polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum,
+      Sym2.map_mk, polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum,
       polarBilin_apply_apply, polar_self]
     abel_nf
 
@@ -849,10 +849,7 @@ section
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-instance : SMulCommClass R (Submonoid.center R) M where
-  smul_comm r r' m := by
-    simp_rw [Submonoid.smul_def, smul_smul, ((Set.mem_center_iff.1 r'.prop).1 _).eq]
-
+set_option backward.isDefEq.respectTransparency false in
 /-- If `2` is invertible in `R`, then it is also invertible in `End R M`. -/
 instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
   invOf := (⟨⅟2, Set.invOf_mem_center (Set.ofNat_mem_center _ _)⟩ : Submonoid.center R) •
@@ -903,6 +900,7 @@ theorem associated_apply (x y : M) :
     associatedHom S Q x y = ⅟(2 : Module.End R N) • (Q (x + y) - Q x - Q y) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Twice the associated bilinear map of `Q` is the same as the polar of `Q`. -/
 @[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
@@ -937,17 +935,20 @@ theorem associated_toQuadraticMap (B : BilinMap R M N) (x y : M) :
     Module.End.smul_def, map_sub]
   abel_nf
 
+set_option backward.isDefEq.respectTransparency false in
 theorem associated_left_inverse {B₁ : BilinMap R M N} (h : ∀ x y, B₁ x y = B₁ y x) :
     associatedHom S B₁.toQuadraticMap = B₁ :=
   LinearMap.ext₂ fun x y ↦ by
     rw [associated_toQuadraticMap, ← h x y, ← two_smul R, invOf_smul_eq_iff, two_smul, two_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of `QuadraticMap.associated_left_inverse` for general targets. -/
 lemma associated_left_inverse' {B₁ : BilinMap R M N} (hB₁ : B₁.flip = B₁) :
     associatedHom S B₁.toQuadraticMap = B₁ := by
   ext _ y
   rw [associated_toQuadraticMap, ← LinearMap.flip_apply _ y, hB₁, invOf_smul_eq_iff, two_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem associated_eq_self_apply (x : M) : associatedHom S Q x x = Q x := by
   rw [associated_apply, map_add_self, ← three_add_one_eq_four, ← two_add_one_eq_three, add_smul,
     add_smul, one_smul, add_sub_cancel_right, add_sub_cancel_right, two_smul, ← two_smul R,
@@ -1009,6 +1010,7 @@ theorem coe_associatedHom :
     ⇑(associatedHom S : QuadraticMap R M N →ₗ[S] BilinMap R M N) = associated :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 @[simp]
 theorem associated_linMulLin [Invertible (2 : R)] (f g : M →ₗ[R] R) :
@@ -1079,6 +1081,7 @@ theorem isOrtho_polarBilin {x y : M} : Q.polarBilin.IsOrtho x y ↔ IsOrtho Q x 
 theorem IsOrtho.polar_eq_zero {x y : M} (h : IsOrtho Q x y) : polar Q x y = 0 :=
   isOrtho_polarBilin.mpr h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem associated_isOrtho [Invertible (2 : R)] {x y : M} :
     Q.associated.IsOrtho x y ↔ Q.IsOrtho x y := by
@@ -1152,6 +1155,12 @@ theorem PosDef.anisotropic {Q : QuadraticMap R₂ M N} (hQ : Q.PosDef) : Q.Aniso
       have := hQ _ hx
       rw [hQx] at this
       exact this
+
+theorem PosDef.le_zero_iff {Q : QuadraticMap R₂ M N} (hQ : PosDef Q) {x : M} :
+    Q x ≤ 0 ↔ x = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  have : Q x = 0 := le_antisymm h (hQ.nonneg x)
+  rwa [← hQ.anisotropic]
 
 theorem posDef_of_nonneg {Q : QuadraticMap R₂ M N} (h : ∀ x, 0 ≤ Q x) (h0 : Q.Anisotropic) :
     PosDef Q :=
@@ -1279,6 +1288,7 @@ open Module
 variable {V : Type u} {K : Type v} [Field K] [AddCommGroup V] [Module K V]
 variable [FiniteDimensional K V]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a symmetric bilinear form `B` on some vector space `V` over a field `K`
 in which `2` is invertible, there exists an orthogonal basis with respect to `B`. -/
 theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinForm K V}
@@ -1288,7 +1298,6 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   induction d generalizing V with
   | zero => exact ⟨basisOfFinrankZero hd, fun _ _ _ => map_zero _⟩
   | succ d ih =>
-  haveI := finrank_pos_iff.1 (hd.symm ▸ Nat.succ_pos d : 0 < finrank K V)
   -- either the bilinear form is trivial or we can pick a non-null `x`
   obtain rfl | hB₁ := eq_or_ne B 0
   · let b := Module.finBasis K V
@@ -1297,8 +1306,8 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   obtain ⟨x, hx⟩ := exists_bilinForm_self_ne_zero hB₁ hB₂
   rw [← Submodule.finrank_add_eq_of_isCompl (isCompl_span_singleton_orthogonal hx).symm,
     finrank_span_singleton (ne_zero_of_map hx)] at hd
-  let B' :=  B.domRestrict₁₂ (Submodule.orthogonalBilin (K ∙ x) B )
-    (Submodule.orthogonalBilin (K ∙ x) B )
+  let B' := B.domRestrict₁₂ (Submodule.orthogonalBilin (K ∙ x) B)
+    (Submodule.orthogonalBilin (K ∙ x) B)
   obtain ⟨v', hv₁⟩ := ih (hB₂.domRestrict _ : B'.IsSymm) (Nat.succ.inj hd)
   -- concatenate `x` with the basis obtained by induction
   let b :=

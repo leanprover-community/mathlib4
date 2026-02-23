@@ -33,7 +33,7 @@ practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means
 state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
 @[pp_with_univ]
 def Class :=
-  Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, HasCompl, SDiff
+  Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
 
 instance : Insert ZFSet Class :=
   ⟨Set.insert⟩
@@ -78,8 +78,6 @@ theorem mem_def (A B : Class.{u}) : A ∈ B ↔ ∃ x : ZFSet, ↑x = A ∧ B x 
 
 @[simp]
 theorem notMem_empty (x : Class.{u}) : x ∉ (∅ : Class.{u}) := fun ⟨_, _, h⟩ => h
-
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem not_empty_hom (x : ZFSet.{u}) : ¬(∅ : Class.{u}) x :=
@@ -126,8 +124,6 @@ This is stated as `univ ∉ univ`, meaning that `univ` (the class of all sets) i
 belong to the class of all sets). -/
 theorem univ_notMem_univ : univ ∉ univ :=
   mem_irrefl _
-
-@[deprecated (since := "2025-05-23")] alias univ_not_mem_univ := univ_notMem_univ
 
 /-- Convert a conglomerate (a collection of classes) into a class -/
 def congToClass (x : Set Class.{u}) : Class.{u} :=
@@ -267,6 +263,7 @@ theorem sUnion_empty : ⋃₀ (∅ : Class.{u}) = (∅ : Class.{u}) := by
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sInter_empty : ⋂₀ (∅ : Class.{u}) = univ := by
   rw [sInter, classToCong_empty, Set.sInter_empty, univ]
@@ -348,6 +345,8 @@ theorem choice_mem (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) :
   rw [@map_fval _ (Classical.allZFSetDefinable _) x y yx, Class.coe_mem, Class.coe_apply]
   exact choice_mem_aux x h y yx
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.privateInPublic true in
 private lemma coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
     (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out) = s := by
   ext x
@@ -358,6 +357,8 @@ private lemma coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
     simp [h2]
   · simp [PSet.Equiv.refl]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `SetLike.coe` as an equivalence. -/
 @[simps apply_coe]
 noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
@@ -377,7 +378,5 @@ theorem isOrdinal_notMem_univ : IsOrdinal ∉ Class.univ.{u} := by
     rwa [Class.coe_mem, hx]
   refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;> rw [← Class.coe_apply, hx] at *
   exacts [hy.mem hz, hwx.mem_trans hyz hzw]
-
-@[deprecated (since := "2025-05-23")] alias isOrdinal_not_mem_univ := isOrdinal_notMem_univ
 
 end ZFSet

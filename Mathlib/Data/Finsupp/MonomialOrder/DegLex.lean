@@ -88,7 +88,7 @@ theorem degLex_def {r : α → α → Prop} {s : ℕ → ℕ → Prop} {a b : α
 namespace DegLex
 
 theorem wellFounded
-    {r : α → α → Prop} [IsTrichotomous α r] (hr : WellFounded (Function.swap r))
+    {r : α → α → Prop} [Std.Trichotomous r] (hr : WellFounded (Function.swap r))
     {s : ℕ → ℕ → Prop} (hs : WellFounded s) (hs0 : ∀ ⦃n⦄, ¬ s n 0) :
     WellFounded (Finsupp.DegLex r s) := by
   have wft := WellFounded.prod_lex hs (Finsupp.Lex.wellFounded' hs0 hs hr)
@@ -131,6 +131,7 @@ instance : LinearOrder (DegLex (α →₀ ℕ)) :=
     (fun (f : DegLex (α →₀ ℕ)) ↦ toLex ((ofDegLex f).degree, toLex (ofDegLex f)))
     (fun f g ↦ by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_iff {x y : DegLex (α →₀ ℕ)} :
     x ≤ y ↔ (ofDegLex x).degree < (ofDegLex y).degree ∨
       (ofDegLex x).degree = (ofDegLex y).degree ∧ toLex (ofDegLex x) ≤ toLex (ofDegLex y) := by
@@ -150,6 +151,7 @@ instance : IsOrderedCancelAddMonoid (DegLex (α →₀ ℕ)) where
     rw [le_iff] at h ⊢
     simpa [ofDegLex_add, map_add] using h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem single_strictAnti : StrictAnti (fun (a : α) ↦ toDegLex (single a 1)) := by
   intro _ _ h
   simp only [lt_iff, ofDegLex_toDegLex, degree_single, lt_self_iff_false, Lex.single_lt_iff, h,
@@ -197,6 +199,7 @@ open Finsupp
 
 variable {σ : Type*} [LinearOrder σ] [WellFoundedGT σ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The deg-lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
 noncomputable def degLex :
     MonomialOrder σ where
@@ -238,7 +241,7 @@ example : single (1 : Fin 2) 1 ≺[degLex] single 0 1 := by
   exact Nat.one_pos
 
 /-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
-example : (single 0 1 + single 1 1) ≺[degLex] single (0 : Fin 2) 2  := by
+example : (single 0 1 + single 1 1) ≺[degLex] single (0 : Fin 2) 2 := by
   rw [degLex_lt_iff, lt_iff, ofDegLex_toDegLex]
   simp only [Fin.isValue, map_add, degree_single, Nat.reduceAdd, ofDegLex_toDegLex,
     lt_self_iff_false, toLex_add, true_and, false_or]

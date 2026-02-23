@@ -56,6 +56,16 @@ noncomputable def inverse : MonCat.{u} ⥤ Mon (Type u) where
           mul_one := by ext ⟨_, _⟩; simp
           mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [_root_.mul_assoc] } }
   map f := .mk' f
+    (one_f := by
+      #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+      this argument was provided by the auto_param. -/
+      simp +instances only
+      cat_disch)
+    (mul_f := by
+      #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+      this argument was provided by the auto_param. -/
+      simp +instances only
+      cat_disch)
 
 end MonTypeEquivalenceMon
 
@@ -92,7 +102,7 @@ instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid
 -/
 noncomputable def functor : CommMon (Type u) ⥤ CommMonCat.{u} where
   obj A := CommMonCat.of A.X
-  map f := CommMonCat.ofHom (MonTypeEquivalenceMon.functor.map f).hom
+  map f := CommMonCat.ofHom (MonTypeEquivalenceMon.functor.map f.hom).hom
 
 /-- Converting a bundled commutative monoid to a commutative monoid object in `Type`.
 -/
@@ -103,7 +113,7 @@ noncomputable def inverse : CommMonCat.{u} ⥤ CommMon (Type u) where
         { mul_comm := by
             ext ⟨x : A, y : A⟩
             exact CommMonoid.mul_comm y x } }
-  map f := MonTypeEquivalenceMon.inverse.map ((forget₂ CommMonCat MonCat).map f)
+  map f := CommMon.homMk (MonTypeEquivalenceMon.inverse.map ((forget₂ CommMonCat MonCat).map f))
 
 end CommMonTypeEquivalenceCommMon
 

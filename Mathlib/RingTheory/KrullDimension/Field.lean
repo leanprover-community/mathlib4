@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.KrullDimension.Basic
 This file proves that the Krull dimension of a field is zero.
 -/
 
-@[expose] public section
+public section
 
 open Order
 

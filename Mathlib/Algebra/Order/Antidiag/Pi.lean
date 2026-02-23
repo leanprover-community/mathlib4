@@ -58,6 +58,7 @@ In this section, we define the antidiagonals in `Fin d → μ` by recursion on `
 computationally efficient, although probably not as efficient as `Finset.Nat.antidiagonalTuple`.
 -/
 
+set_option backward.proofsInPublic true in
 /-- `finAntidiagonal d n` is the type of `d`-tuples with sum `n`.
 
 TODO: deduplicate with the less general `Finset.Nat.antidiagonalTuple`. -/
@@ -108,6 +109,7 @@ choosing an identification `s ≃ Fin s.card` and proving that the end result do
 choice.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The finset of functions `ι → μ` with support contained in `s` and sum `n`. -/
 def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
   refine (Fintype.truncEquivFinOfCardEq <| Fintype.card_coe s).lift
@@ -124,6 +126,7 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
 
 variable {s : Finset ι} {n : μ} {f : ι → μ}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mem_piAntidiag : f ∈ piAntidiag s n ↔ s.sum f = n ∧ ∀ i, f i ≠ 0 → i ∈ s := by
   rw [piAntidiag]
   induction Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with | _ e
@@ -227,7 +230,7 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
       exact dvd_zero _
   refine ⟨fun i ↦ f i / n, ?_⟩
   simp [funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
-  aesop
+  grind
 
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag s m).map

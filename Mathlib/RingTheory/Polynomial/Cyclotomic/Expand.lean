@@ -27,7 +27,7 @@ We gather results relating cyclotomic polynomials and `expand`.
   `cyclotomic (p ^ k * m) R = (cyclotomic m R) ^ (p ^ k - p ^ (k - 1))`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Polynomial
@@ -57,14 +57,14 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
       have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne'
       rw [cyclotomic_eq_minpoly_rat hprim hpos]
       refine minpoly.dvd ℚ _ ?_
-      rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
+      rw [← eval_map_algebraMap, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
         @isRoot_cyclotomic_iff]
       convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
       rw [Nat.mul_div_cancel _ (Nat.Prime.pos hp)]
     · have hprim := Complex.isPrimitiveRoot_exp _ hnpos.ne.symm
       rw [cyclotomic_eq_minpoly_rat hprim hnpos]
       refine minpoly.dvd ℚ _ ?_
-      rw [aeval_def, ← eval_map, map_expand, expand_eval, ← IsRoot.def, ←
+      rw [← eval_map_algebraMap, map_expand, expand_eval, ← IsRoot.def, ←
         cyclotomic_eq_minpoly_rat hprim hnpos, map_cyclotomic, @isRoot_cyclotomic_iff]
       exact IsPrimitiveRoot.pow_of_prime hprim hp hdiv
   · rw [natDegree_expand, natDegree_cyclotomic,
@@ -98,7 +98,7 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
     have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne.symm
     rw [cyclotomic_eq_minpoly hprim hpos]
     refine minpoly.isIntegrallyClosed_dvd (hprim.isIntegral hpos) ?_
-    rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
+    rw [← eval_map_algebraMap, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
       @isRoot_cyclotomic_iff]
     convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
     rw [Nat.mul_div_cancel _ hp.pos]
@@ -162,7 +162,7 @@ theorem cyclotomic_mul_prime_pow_eq (R : Type*) {p m : ℕ} [Fact (Nat.Prime p)]
     have hdiv : p ∣ p ^ a.succ * m := ⟨p ^ a * m, by rw [← mul_assoc, pow_succ']⟩
     rw [pow_succ', mul_assoc, mul_comm, cyclotomic_mul_prime_dvd_eq_pow R hdiv,
       cyclotomic_mul_prime_pow_eq _ _ a.succ_pos, ← pow_mul]
-    · simp only [tsub_zero, Nat.succ_sub_succ_eq_sub]
+    · simp only [Nat.succ_sub_succ_eq_sub]
       rw [Nat.mul_sub_right_distrib, mul_comm, pow_succ]
     · assumption
 

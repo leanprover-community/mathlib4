@@ -20,7 +20,7 @@ We define:
 * `fst`       : the functor `⟨X, Y⟩ ↦ X`
 * `snd`       : the functor `⟨X, Y⟩ ↦ Y`
 * `swap`      : the functor `C × D ⥤ D × C` given by `⟨X, Y⟩ ↦ ⟨Y, X⟩`
-    (and the fact this is an equivalence)
+    (and the fact that this is an equivalence)
 
 We further define `evaluation : C ⥤ (C ⥤ D) ⥤ D` and `evaluationUncurried : C × (C ⥤ D) ⥤ D`,
 and products of functors and natural transformations, written `F.prod G` and `α.prod β`.
@@ -56,7 +56,7 @@ lemma hom_ext {X Y : C × D} {f g : X ⟶ Y} (h₁ : f.1 = g.1) (h₂ : f.2 = g.
   Prod.ext h₁ h₂
 
 /-- Construct a morphism in a product category by giving its constituent components.
-This constructor should be preferred over `Prod.mk`, because lean infers better the
+This constructor should be preferred over `Prod.mk`, because Lean infers better the
 source and target of the resulting morphism. -/
 abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
   ⟨f, g⟩
@@ -78,6 +78,9 @@ open Prod
 theorem prod_id (X : C) (Y : D) : 𝟙 (X, Y) = 𝟙 X ×ₘ 𝟙 Y :=
   rfl
 
+theorem prod_id' (X : C) (Y : D) : 𝟙 (X, Y) = (𝟙 X, 𝟙 Y) :=
+  rfl
+
 @[simp]
 theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
     f ≫ g = f.1 ≫ g.1 ×ₘ f.2 ≫ g.2 :=
@@ -95,8 +98,6 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 @[stacks 001K]
 instance prod' : Category.{max v₁ v₂} (C × D) where
 
--- TODO: is there a nice way to fix the non-terminal simp?
-set_option linter.flexible false in
 theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
   constructor
@@ -322,6 +323,7 @@ end NatIso
 
 namespace Equivalence
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Cartesian product of two equivalences of categories. -/
 @[simps]
 def prod (E₁ : A ≌ B) (E₂ : C ≌ D) : A × C ≌ B × D where

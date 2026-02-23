@@ -16,7 +16,7 @@ public import Mathlib.Topology.Algebra.UniformRing
 # Some results about the topology of ℂ
 -/
 
-@[expose] public section
+public section
 
 
 section ComplexSubfield
@@ -47,6 +47,7 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
   simp only [image_univ]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `K` a subfield of `ℂ` and let `ψ : K →+* ℂ` a ring homomorphism. Assume that `ψ` is uniform
 continuous, then `ψ` is either the inclusion map or the composition of the inclusion map with the
 complex conjugation. -/

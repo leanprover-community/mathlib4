@@ -27,7 +27,7 @@ fractional part operator.
 rounding, floor, ceil
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -39,11 +39,11 @@ open Lean.Meta Qq
 
 variable {α : Type*}
 
-private theorem int_floor_nonneg [Ring α] [LinearOrder α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
+theorem int_floor_nonneg [Ring α] [LinearOrder α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
     0 ≤ ⌊a⌋ :=
   Int.floor_nonneg.2 ha
 
-private theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α}
+theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α}
     (ha : 0 < a) :
     0 ≤ ⌊a⌋ :=
   int_floor_nonneg ha.le
@@ -63,7 +63,7 @@ meta def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure .none
   | _, _, _ => throwError "failed to match on Int.floor application"
 
-private theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} :
+theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} :
     0 < a → 0 < ⌈a⌉₊ :=
   Nat.ceil_pos.2
 
@@ -82,7 +82,7 @@ meta def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure .none
   | _, _, _ => throwError "failed to match on Nat.ceil application"
 
-private theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
+theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
   Int.ceil_pos.2
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
@@ -118,12 +118,12 @@ section floor
 theorem floor_le_iff : ⌊a⌋ ≤ z ↔ a < z + 1 := by rw [← lt_add_one_iff, floor_lt]; norm_cast
 theorem lt_floor_iff : z < ⌊a⌋ ↔ z + 1 ≤ a := by rw [← add_one_le_iff, le_floor]; norm_cast
 
-@[simp]
+@[deprecated floor_lt (since := "2025-12-26")]
 theorem floor_le_sub_one_iff : ⌊a⌋ ≤ z - 1 ↔ a < z := by rw [← floor_lt, le_sub_one_iff]
 
 @[simp]
 theorem floor_le_neg_one_iff : ⌊a⌋ ≤ -1 ↔ a < 0 := by
-  rw [← zero_sub (1 : ℤ), floor_le_sub_one_iff, cast_zero]
+  simpa using floor_le_iff (z := -1)
 
 theorem lt_succ_floor (a : R) : a < ⌊a⌋.succ :=
   floor_lt.1 <| Int.lt_succ_self _
@@ -252,6 +252,9 @@ theorem abs_sub_lt_one_of_floor_eq_floor {R : Type*}
 lemma floor_eq_self_iff_mem (a : R) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
   aesop
 
+theorem floor_lt_self_iff {a : R} : ⌊a⌋ < a ↔ a ∉ range Int.cast :=
+  (floor_le a).lt_iff_ne.trans <| (floor_eq_self_iff_mem _).not
+
 section LinearOrderedRing
 variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a b : R}
 
@@ -262,6 +265,16 @@ theorem mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : R) : ⌊a *
 
 theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋ / n = ⌊a⌋ := by
   simpa using mul_cast_floor_div_cancel_of_pos (n := n) (by positivity) a
+
+theorem mul_fract_eq_one_iff_exists_int {x : R} {k : R} (hk : 1 < k) :
+    k * fract x = 1 ↔ ∃ n : ℤ, k * x = k * n + 1 := by
+  rw [fract, mul_sub, sub_eq_iff_eq_add']
+  refine ⟨fun hx ↦ ⟨⌊x⌋, hx⟩, ?_⟩
+  rintro ⟨n, hn⟩
+  convert hn
+  have hk0 : 0 < (k : R) := zero_le_one.trans_lt hk
+  rw [floor_eq_iff, ← mul_le_mul_iff_right₀ hk0, ← mul_lt_mul_iff_right₀ hk0, hn]
+  simp [mul_add, hk]
 
 end LinearOrderedRing
 
@@ -282,7 +295,7 @@ variable {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k] [FloorRin
 theorem floor_div_cast_of_nonneg {n : ℤ} (hn : 0 ≤ n) (a : k) : ⌊a / n⌋ = ⌊a⌋ / n := by
   obtain rfl | hn := hn.eq_or_lt
   · simp
-  nth_rw 2 [<-div_mul_cancel₀ (a := a) (ne_of_gt (Int.cast_pos.mpr hn))]
+  nth_rw 2 [← div_mul_cancel₀ (a := a) (ne_of_gt (Int.cast_pos.mpr hn))]
   rw [mul_cast_floor_div_cancel_of_pos hn]
 
 theorem floor_div_natCast (a : k) (n : ℕ) : ⌊a / n⌋ = ⌊a⌋ / n := by
@@ -448,6 +461,12 @@ theorem fract_eq_self {a : R} : fract a = a ↔ 0 ≤ a ∧ a < 1 :=
 theorem fract_fract (a : R) : fract (fract a) = fract a :=
   fract_eq_self.2 ⟨fract_nonneg _, fract_lt_one _⟩
 
+theorem fract_eq_zero_iff {a : R} : fract a = 0 ↔ a ∈ range Int.cast := by
+  simp [fract_eq_iff, eq_comm]
+
+theorem fract_ne_zero_iff {a : R} : fract a ≠ 0 ↔ a ∉ range Int.cast :=
+  fract_eq_zero_iff.not
+
 theorem fract_neg {x : R} (hx : fract x ≠ 0) : fract (-x) = 1 - fract x := by
   rw [fract_eq_iff]
   constructor
@@ -500,6 +519,7 @@ theorem fract_div_mul_self_mem_Ico (a b : k) (ha : 0 < a) : fract (b / a) * a �
   ⟨(mul_nonneg_iff_of_pos_right ha).2 (fract_nonneg (b / a)),
     (mul_lt_iff_lt_one_left ha).2 (fract_lt_one (b / a))⟩
 
+set_option backward.isDefEq.respectTransparency false in
 omit [IsStrictOrderedRing k] in
 theorem fract_div_mul_self_add_zsmul_eq (a b : k) (ha : a ≠ 0) :
     fract (b / a) * a + ⌊b / a⌋ • a = b := by
@@ -526,6 +546,7 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
     norm_cast
     rw [← Nat.cast_add, Nat.mod_add_div m n]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     fract ((m : k) / n) = ↑(m % n) / n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
@@ -563,20 +584,20 @@ end fract
 
 section ceil
 
-@[simp]
+lemma le_ceil_iff : z ≤ ⌈a⌉ ↔ z - 1 < a := by rw [← sub_one_lt_iff, lt_ceil]; norm_cast
+lemma ceil_lt_iff : ⌈a⌉ < z ↔ a ≤ z - 1 := by rw [← le_sub_one_iff, ceil_le]; norm_cast
+
+@[deprecated lt_ceil (since := "2025-12-26")]
 theorem add_one_le_ceil_iff : z + 1 ≤ ⌈a⌉ ↔ (z : R) < a := by rw [← lt_ceil, add_one_le_iff]
 
 @[simp]
 theorem one_le_ceil_iff : 1 ≤ ⌈a⌉ ↔ 0 < a := by
-  rw [← zero_add (1 : ℤ), add_one_le_ceil_iff, cast_zero]
+  simpa using le_ceil_iff (z := 1)
 
 @[bound]
 theorem ceil_le_floor_add_one (a : R) : ⌈a⌉ ≤ ⌊a⌋ + 1 := by
   rw [ceil_le, Int.cast_add, Int.cast_one]
   exact (lt_floor_add_one a).le
-
-lemma le_ceil_iff : z ≤ ⌈a⌉ ↔ z - 1 < a := by rw [← sub_one_lt_iff, lt_ceil]; norm_cast
-lemma ceil_lt_iff : ⌈a⌉ < z ↔ a ≤ z - 1 := by rw [← le_sub_one_iff, ceil_le]; norm_cast
 
 theorem ceil_mono : Monotone (ceil : R → ℤ) :=
   gc_ceil_coe.monotone_l
@@ -624,17 +645,34 @@ theorem ceil_add_intCast (a : R) (z : ℤ) : ⌈a + z⌉ = ⌈a⌉ + z := by
   rw [← neg_inj, neg_add', ← floor_neg, ← floor_neg, neg_add', floor_sub_intCast]
 
 @[simp]
+theorem ceil_intCast_add (z : ℤ) (a : R) : ⌈z + a⌉ = z + ⌈a⌉ := by
+  rw [add_comm, ceil_add_intCast, add_comm]
+
+@[simp]
 theorem ceil_add_natCast (a : R) (n : ℕ) : ⌈a + n⌉ = ⌈a⌉ + n := by
   rw [← Int.cast_natCast, ceil_add_intCast]
+
+@[simp]
+theorem ceil_natCast_add (n : ℕ) (a : R) : ⌈n + a⌉ = n + ⌈a⌉ :=
+  mod_cast ceil_intCast_add n a
 
 @[simp]
 theorem ceil_add_one (a : R) : ⌈a + 1⌉ = ⌈a⌉ + 1 := by
   rw [← ceil_add_intCast a (1 : ℤ), cast_one]
 
 @[simp]
+theorem ceil_one_add (a : R) : ⌈1 + a⌉ = 1 + ⌈a⌉ :=
+  mod_cast ceil_natCast_add 1 a
+
+@[simp]
 theorem ceil_add_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
     ⌈a + ofNat(n)⌉ = ⌈a⌉ + ofNat(n) :=
   ceil_add_natCast a n
+
+@[simp]
+theorem ceil_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : R) :
+    ⌈ofNat(n) + a⌉ = ofNat(n) + ⌈a⌉ :=
+  ceil_natCast_add n a
 
 @[simp]
 theorem ceil_sub_intCast (a : R) (z : ℤ) : ⌈a - z⌉ = ⌈a⌉ - z :=
@@ -696,11 +734,8 @@ lemma ceil_eq_floor_add_one_iff_notMem (a : R) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉
   · have := ((floor_eq_self_iff_mem _).mpr ht).trans ((ceil_eq_self_iff_mem _).mpr ht).symm
     linarith [Int.cast_inj.mp this]
   · apply le_antisymm (Int.ceil_le_floor_add_one _)
-    rw [Int.add_one_le_ceil_iff]
+    rw [add_one_le_iff, lt_ceil]
     exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
-
-@[deprecated (since := "2025-05-23")]
-alias ceil_eq_floor_add_one_iff_not_mem := ceil_eq_floor_add_one_iff_notMem
 
 theorem fract_eq_zero_or_add_one_sub_ceil (a : R) : fract a = 0 ∨ fract a = a + 1 - (⌈a⌉ : R) := by
   rcases eq_or_ne (fract a) 0 with ha | ha
@@ -763,12 +798,15 @@ lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b ≤ a) : ⌈a⌉ �
     positivity
   · exact (ceil_lt_mul hb hba).le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma div_two_lt_floor (ha : 1 ≤ a) : a / 2 < ⌊a⌋ := by
   rw [div_eq_inv_mul]; refine mul_lt_floor ?_ ?_ ?_ <;> norm_num; assumption
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ceil_lt_two_mul (ha : 2⁻¹ < a) : ⌈a⌉ < 2 * a :=
   ceil_lt_mul one_lt_two (by norm_num at ha ⊢; exact ha)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ceil_le_two_mul (ha : 2⁻¹ ≤ a) : ⌈a⌉ ≤ 2 * a :=
   ceil_le_mul one_lt_two (by norm_num at ha ⊢; exact ha)
 

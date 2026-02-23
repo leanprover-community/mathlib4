@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Analysis.Normed.Group.Subgroup
 public import Mathlib.Analysis.Normed.Group.Submodule
 
@@ -382,7 +383,7 @@ lemma norm_natAbs (z : ℤ) :
 
 lemma nnnorm_natAbs (z : ℤ) :
     ‖(z.natAbs : α)‖₊ = ‖(z : α)‖₊ := by
-  simp [← NNReal.coe_inj, - Nat.cast_natAbs, norm_natAbs]
+  simp [← NNReal.coe_inj, -Nat.cast_natAbs, norm_natAbs]
 
 @[simp] lemma norm_intCast_abs (z : ℤ) :
     ‖((|z| : ℤ) : α)‖ = ‖(z : α)‖ := by
@@ -665,8 +666,6 @@ for a continuous semilinear map to be bounded and this is the main use for this 
 class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (σ : R₁ →+* R₂) : Prop where
   /-- The ring homomorphism is an isometry. -/
   norm_map : ∀ {x : R₁}, ‖σ x‖ = ‖x‖
-
-@[deprecated (since := "2025-08-03")] alias RingHomIsometric.is_iso := RingHomIsometric.norm_map
 
 attribute [simp] RingHomIsometric.norm_map
 

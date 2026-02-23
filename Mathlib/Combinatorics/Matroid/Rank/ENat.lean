@@ -46,7 +46,7 @@ which is why mathlib defines matroids using bases/independence. )
 It is natural to ask if equicardinality of bases holds if 'cardinality' refers to
 a term in `Cardinal` instead of `ℕ∞`, but the answer is that it doesn't.
 The cardinal-valued rank functions `Matroid.cRank` and `Matroid.cRk` are defined in
-`Mathlib/Data/Matroid/Rank/Cardinal.lean`, but have less desirable properties in general.
+`Mathlib/Combinatorics/Matroid/Rank/Cardinal.lean`, but have less desirable properties in general.
 See the module docstring of that file for a discussion.
 
 ## Implementation Details
@@ -139,9 +139,6 @@ lemma eRk_ground_union (M : Matroid α) (X : Set α) : M.eRk (M.E ∪ X) = M.eRa
 
 lemma eRk_insert_of_notMem_ground (X : Set α) (he : e ∉ M.E) : M.eRk (insert e X) = M.eRk X := by
   rw [← eRk_inter_ground, insert_inter_of_notMem he, eRk_inter_ground]
-
-@[deprecated (since := "2025-05-23")]
-alias eRk_insert_of_not_mem_ground := eRk_insert_of_notMem_ground
 
 lemma eRk_eq_eRank (hX : M.E ⊆ X) : M.eRk X = M.eRank := by
   rw [← eRk_inter_ground, inter_eq_self_of_subset_right hX, eRank_def]
@@ -236,7 +233,7 @@ lemma le_eRk_iff : n ≤ M.eRk X ↔ ∃ I, I ⊆ X ∧ M.Indep I ∧ I.encard =
   refine ⟨fun h ↦ ?_, fun ⟨I, hIX, hI, hIc⟩ ↦ ?_⟩
   · obtain ⟨J, hJ⟩ := M.exists_isBasis' X
     rw [← hJ.encard_eq_eRk] at h
-    obtain ⟨I, hIJ, rfl⟩ :=  exists_subset_encard_eq h
+    obtain ⟨I, hIJ, rfl⟩ := exists_subset_encard_eq h
     exact ⟨_, hIJ.trans hJ.subset, hJ.indep.subset hIJ, rfl⟩
   rw [← hIc, ← hI.eRk_eq_encard]
   exact M.eRk_mono hIX
@@ -261,15 +258,9 @@ lemma eRk_eq_zero_iff' : M.eRk X = 0 ↔ X ∩ M.E ⊆ M.loops := by
   refine ⟨fun h ↦ by simpa [h] using hI, fun h ↦ eq_empty_iff_forall_notMem.2 fun e heI ↦ ?_⟩
   exact (hI.indep.isNonloop_of_mem heI).not_isLoop (h (hI.subset heI))
 
-@[deprecated (since := "2025-05-14")]
-alias erk_eq_zero_iff' := eRk_eq_zero_iff'
-
 @[simp]
 lemma eRk_eq_zero_iff (hX : X ⊆ M.E := by aesop_mat) : M.eRk X = 0 ↔ X ⊆ M.loops := by
   rw [eRk_eq_zero_iff', inter_eq_self_of_subset_left hX]
-
-@[deprecated (since := "2025-05-14")]
-alias erk_eq_zero_iff := eRk_eq_zero_iff
 
 @[simp]
 lemma eRk_loops : M.eRk M.loops = 0 := by
@@ -636,6 +627,7 @@ lemma eRk_freeOn (hXY : X ⊆ Y) : (freeOn Y).eRk X = X.encard := by
 lemma IsBase.encard_compl_eq (hB : M.IsBase B) : (M.E \ B).encard = M✶.eRank :=
   (hB.compl_isBase_dual).encard_eq_eRank
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subtraction-free formula for the rank of a set in the dual matroid. -/
 lemma eRk_dual_add_eRank (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     M✶.eRk X + M.eRank = M.eRk (M.E \ X) + X.encard := by

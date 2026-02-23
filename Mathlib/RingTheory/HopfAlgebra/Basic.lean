@@ -96,16 +96,10 @@ lemma sum_antipode_mul_eq_algebraMap_counit (repr : Repr R a) :
       algebraMap R A (counit a) := by
   simpa [← repr.eq, map_sum] using congr($(mul_antipode_rTensor_comul (R := R)) a)
 
-@[deprecated (since := "2025-05-29")]
-alias sum_antipode_mul_eq := sum_antipode_mul_eq_algebraMap_counit
-
 lemma sum_mul_antipode_eq_algebraMap_counit (repr : Repr R a) :
     ∑ i ∈ repr.index, repr.left i * antipode R (repr.right i) =
       algebraMap R A (counit a) := by
   simpa [← repr.eq, map_sum] using congr($(mul_antipode_lTensor_comul (R := R)) a)
-
-@[deprecated (since := "2025-05-29")]
-alias sum_mul_antipode_eq := sum_mul_antipode_eq_algebraMap_counit
 
 lemma sum_antipode_mul_eq_smul (repr : Repr R a) :
     ∑ i ∈ repr.index, antipode R (repr.left i) * repr.right i =
@@ -135,6 +129,7 @@ variable (R : Type u) [CommSemiring R]
 
 open HopfAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every commutative (semi)ring is a Hopf algebra over itself -/
 instance toHopfAlgebra : HopfAlgebra R R where
   antipode := .id

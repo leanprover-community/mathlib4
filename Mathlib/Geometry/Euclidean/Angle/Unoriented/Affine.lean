@@ -72,47 +72,47 @@ theorem _root_.AffineSubspace.angle_coe {s : AffineSubspace ℝ P} (p₁ p₂ p�
     LinearMap.id_coe, id_eq]
   rcases h.lt_or_gt with hlt | hlt <;> simp [hlt, -neg_vsub_eq_vsub_rev]
 
-/-- Angles are translation invariant -/
+/-- Angles are translation invariant. -/
 @[simp]
 theorem angle_const_vadd (v : V) (p₁ p₂ p₃ : P) : ∠ (v +ᵥ p₁) (v +ᵥ p₂) (v +ᵥ p₃) = ∠ p₁ p₂ p₃ :=
   (AffineIsometryEquiv.constVAdd ℝ P v).toAffineIsometry.angle_map _ _ _
 
-/-- Angles are translation invariant -/
+/-- Angles are translation invariant. -/
 @[simp]
 theorem angle_vadd_const (v₁ v₂ v₃ : V) (p : P) : ∠ (v₁ +ᵥ p) (v₂ +ᵥ p) (v₃ +ᵥ p) = ∠ v₁ v₂ v₃ :=
   (AffineIsometryEquiv.vaddConst ℝ p).toAffineIsometry.angle_map _ _ _
 
-/-- Angles are translation invariant -/
+/-- Angles are translation invariant. -/
 @[simp]
 theorem angle_const_vsub (p p₁ p₂ p₃ : P) : ∠ (p -ᵥ p₁) (p -ᵥ p₂) (p -ᵥ p₃) = ∠ p₁ p₂ p₃ :=
   (AffineIsometryEquiv.constVSub ℝ p).toAffineIsometry.angle_map _ _ _
 
-/-- Angles are translation invariant -/
+/-- Angles are translation invariant. -/
 @[simp]
 theorem angle_vsub_const (p₁ p₂ p₃ p : P) : ∠ (p₁ -ᵥ p) (p₂ -ᵥ p) (p₃ -ᵥ p) = ∠ p₁ p₂ p₃ :=
   (AffineIsometryEquiv.vaddConst ℝ p).symm.toAffineIsometry.angle_map _ _ _
 
-/-- Angles in a vector space are translation invariant -/
+/-- Angles in a vector space are translation invariant. -/
 @[simp]
 theorem angle_add_const (v₁ v₂ v₃ : V) (v : V) : ∠ (v₁ + v) (v₂ + v) (v₃ + v) = ∠ v₁ v₂ v₃ :=
   angle_vadd_const _ _ _ _
 
-/-- Angles in a vector space are translation invariant -/
+/-- Angles in a vector space are translation invariant. -/
 @[simp]
 theorem angle_const_add (v : V) (v₁ v₂ v₃ : V) : ∠ (v + v₁) (v + v₂) (v + v₃) = ∠ v₁ v₂ v₃ :=
   angle_const_vadd _ _ _ _
 
-/-- Angles in a vector space are translation invariant -/
+/-- Angles in a vector space are translation invariant. -/
 @[simp]
 theorem angle_sub_const (v₁ v₂ v₃ : V) (v : V) : ∠ (v₁ - v) (v₂ - v) (v₃ - v) = ∠ v₁ v₂ v₃ := by
   simpa only [vsub_eq_sub] using angle_vsub_const v₁ v₂ v₃ v
 
-/-- Angles in a vector space are invariant to inversion -/
+/-- Angles in a vector space are invariant under inversion. -/
 @[simp]
 theorem angle_const_sub (v : V) (v₁ v₂ v₃ : V) : ∠ (v - v₁) (v - v₂) (v - v₃) = ∠ v₁ v₂ v₃ := by
   simpa only [vsub_eq_sub] using angle_const_vsub v v₁ v₂ v₃
 
-/-- Angles in a vector space are invariant to inversion -/
+/-- Angles in a vector space are invariant under inversion. -/
 @[simp]
 theorem angle_neg (v₁ v₂ v₃ : V) : ∠ (-v₁) (-v₂) (-v₃) = ∠ v₁ v₂ v₃ := by
   simpa only [zero_sub] using angle_const_sub 0 v₁ v₂ v₃
@@ -225,6 +225,7 @@ theorem dist_eq_abs_sub_dist_iff_angle_eq_zero {p₁ p₂ p₃ : P} (hp₁p₂ :
     norm_sub_eq_abs_sub_norm_iff_angle_eq_zero (fun he => hp₁p₂ (vsub_eq_zero_iff_eq.1 he))
       fun he => hp₃p₂ (vsub_eq_zero_iff_eq.1 he)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If M is the midpoint of the segment AB, then ∠AMB = π. -/
 theorem angle_midpoint_eq_pi (p₁ p₂ : P) (hp₁p₂ : p₁ ≠ p₂) : ∠ p₁ (midpoint ℝ p₁ p₂) p₂ = π := by
   simp only [angle, left_vsub_midpoint, invOf_eq_inv, right_vsub_midpoint, inv_pos, zero_lt_two,
@@ -372,6 +373,31 @@ theorem angle_eq_zero_iff_eq_and_ne_or_sbtw {p₁ p₂ p₃ : P} :
   by_cases hp₁p₃ : p₁ = p₃; · simp [hp₁p₃]
   by_cases hp₃p₂ : p₃ = p₂; · simp [hp₃p₂]
   simp [hp₁p₂, hp₁p₃, Ne.symm hp₁p₃, Sbtw, hp₃p₂]
+
+/-- An Unoriented angle is unchanged by replacing the third point by one strictly further away on
+the same ray. -/
+theorem _root_.Sbtw.angle_eq_right {p₂ p₃ p : P} (p₁ : P) (h : Sbtw ℝ p₂ p₃ p) :
+    ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p :=
+  angle_eq_angle_of_angle_eq_pi _ h.angle₁₂₃_eq_pi
+
+/-- An Unoriented angle is unchanged by replacing the first point by one strictly further away on
+the same ray. -/
+theorem _root_.Sbtw.angle_eq_left {p₁ p p₂ : P} (p₃ : P) (h : Sbtw ℝ p₂ p₁ p) :
+    ∠ p₁ p₂ p₃ = ∠ p p₂ p₃ := by
+  simpa only [angle_comm] using h.angle_eq_right p₃
+
+/-- An Unoriented angle is unchanged by replacing the third point by one weakly further away on the
+same ray. -/
+theorem _root_.Wbtw.angle_eq_right {p₂ p₃ p : P} (p₁ : P) (h : Wbtw ℝ p₂ p₃ p) (hp₃p₂ : p₃ ≠ p₂) :
+    ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p := by
+  by_cases hp₃p : p₃ = p; · simp [hp₃p]
+  exact Sbtw.angle_eq_right _ ⟨h, hp₃p₂, hp₃p⟩
+
+/-- An Unoriented angle is unchanged by replacing the first point by one weakly further away on the
+same ray. -/
+theorem _root_.Wbtw.angle_eq_left {p₁ p p₂ : P} (p₃ : P) (h : Wbtw ℝ p₂ p₁ p) (hp₁p₂ : p₁ ≠ p₂) :
+    ∠ p₁ p₂ p₃ = ∠ p p₂ p₃ := by
+  simpa only [angle_comm] using h.angle_eq_right p₃ hp₁p₂
 
 /-- Three points are collinear if and only if the first or third point equals the second or the
 angle between them is 0 or π. -/

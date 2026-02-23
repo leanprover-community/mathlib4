@@ -8,13 +8,14 @@ module
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 
-## Idempotents in rings
+# Idempotents in rings
 
-The predicate `IsIdempotentElem` is defined for general monoids in `Algebra/Ring/Idempotents.lean`.
+The predicate `IsIdempotentElem` is defined for general monoids in
+`Mathlib/Algebra/Group/Idempotent.lean`; ring-specific lemmas are in
+`Mathlib/Algebra/Ring/Idempotent.lean`.
 In this file we provide various results regarding idempotent elements in rings.
 
 ## Main definitions
@@ -77,9 +78,6 @@ lemma OrthogonalIdempotents.mul_sum_of_notMem (he : OrthogonalIdempotents e)
     {i : I} {s : Finset I} (h : i ∉ s) : e i * ∑ j ∈ s, e j = 0 := by
   classical
   simp [Finset.mul_sum, he.mul_eq, h]
-
-@[deprecated (since := "2025-05-23")]
-alias OrthogonalIdempotents.mul_sum_of_not_mem := OrthogonalIdempotents.mul_sum_of_notMem
 
 lemma OrthogonalIdempotents.map (he : OrthogonalIdempotents e) :
     OrthogonalIdempotents (f ∘ e) := by
@@ -332,6 +330,7 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker
   refine ⟨_, ((equiv (Fintype.equivFin I)).mpr h₁),
     by ext x; simpa using congr_fun h₂ (Fintype.equivFin I x)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute {e₁ e₂ : R}
     (he₁ : IsIdempotentElem e₁) (he₂ : IsIdempotentElem e₂) (H : IsNilpotent (e₁ - e₂))
     (H' : Commute e₁ e₂) :
@@ -421,6 +420,7 @@ lemma CompleteOrthogonalIdempotents.of_prod_one_sub
   __ := he
   complete := by rwa [he.prod_one_sub, sub_eq_zero, eq_comm] at he'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A family of complete orthogonal idempotents induces an isomorphism `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
 lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempotents e) :
     Function.Bijective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by

@@ -154,8 +154,8 @@ theorem one_left (b : ℕ) : J(1 | b) = 1 :=
 theorem mul_left (a₁ a₂ : ℤ) (b : ℕ) : J(a₁ * a₂ | b) = J(a₁ | b) * J(a₂ | b) := by
   simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul _ _ _]
   exact List.prod_map_mul (l := (primeFactorsList b).attach)
-    (f := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₁)
-    (g := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₂)
+    (f := fun x ↦ @legendreSym x { out := prime_of_mem_primeFactorsList x.2 } a₁)
+    (g := fun x ↦ @legendreSym x { out := prime_of_mem_primeFactorsList x.2 } a₂)
 
 /-- The symbol `J(a | b)` vanishes iff `a` and `b` are not coprime (assuming `b ≠ 0`). -/
 theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 ↔ a.gcd b ≠ 1 :=
@@ -195,6 +195,7 @@ theorem pow_left (a : ℤ) (e b : ℕ) : J(a ^ e | b) = J(a | b) ^ e :=
   Nat.recOn e (by rw [_root_.pow_zero, _root_.pow_zero, one_left]) fun _ ih => by
     rw [_root_.pow_succ, _root_.pow_succ, mul_left, ih]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We have that `J(a | b^e) = J(a | b)^e`. -/
 theorem pow_right (a : ℤ) (b e : ℕ) : J(a | b ^ e) = J(a | b) ^ e := by
   induction e with
@@ -357,6 +358,7 @@ def qrSign (m n : ℕ) : ℤ :=
 
 namespace qrSign
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We can express `qrSign m n` as a power of `-1` when `m` and `n` are odd. -/
 theorem neg_one_pow {m n : ℕ} (hm : Odd m) (hn : Odd n) :
     qrSign m n = (-1) ^ (m / 2 * (n / 2)) := by
@@ -420,6 +422,7 @@ theorem quadratic_reciprocity {a b : ℕ} (ha : Odd a) (hb : Odd b) :
     J(a | b) = (-1) ^ (a / 2 * (b / 2)) * J(b | a) := by
   rw [← qrSign.neg_one_pow ha hb, qrSign.symm ha hb, quadratic_reciprocity' ha hb]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Law of Quadratic Reciprocity for the Jacobi symbol: if `a` and `b` are natural numbers
 with `a % 4 = 1` and `b` odd, then `J(a | b) = J(b | a)`. -/
 theorem quadratic_reciprocity_one_mod_four {a b : ℕ} (ha : a % 4 = 1) (hb : Odd b) :
@@ -491,6 +494,7 @@ section FastJacobi
 We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -/
 
+set_option backward.privateInPublic true
 
 open NumberTheorySymbols jacobiSym
 
@@ -556,6 +560,8 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   else
     fastJacobiSymAux (a % b).natAbs b false (Int.natAbs_pos.mpr hab)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
   ext a b
   induction b using Nat.strongRecOn with | ind b IH =>
@@ -583,6 +589,8 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 @[inline, nolint unusedArguments]
 private def fastLegendreSym (p : ℕ) [Fact p.Prime] (a : ℤ) : ℤ := J(a | p)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastLegendreSym.eq : legendreSym = fastLegendreSym := by
   ext p _ a; rw [legendreSym.to_jacobiSym, fastLegendreSym]
 

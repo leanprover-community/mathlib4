@@ -115,7 +115,7 @@ theorem derivative_succ_aux (n ν : ℕ) :
   · simp only [← mul_assoc]
     apply congr (congr_arg (· * ·) (congr (congr_arg (· * ·) _) rfl)) rfl
     -- Now it's just about binomial coefficients
-    exact mod_cast congr_arg (fun m : ℕ => (m : R[X])) (Nat.succ_mul_choose_eq n ν).symm
+    exact mod_cast congr_arg (fun m : ℕ => (m : R[X])) (Nat.add_one_mul_choose_eq n ν).symm
   · rw [← tsub_add_eq_tsub_tsub, ← mul_assoc, ← mul_assoc]; congr 1
     rw [mul_comm, ← mul_assoc, ← mul_assoc]; congr 1
     norm_cast
@@ -170,12 +170,12 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
     | succ ν ih =>
       have h' : ν ≤ n - 1 := le_tsub_of_add_le_right h
       simp only [derivative_succ, ih (n - 1) h', iterate_derivative_succ_at_0_eq_zero,
-        Nat.succ_sub_succ_eq_sub, tsub_zero, sub_zero, iterate_derivative_sub,
+        Nat.succ_sub_succ_eq_sub, sub_zero, iterate_derivative_sub,
         iterate_derivative_natCast_mul, eval_one, eval_mul, eval_add, eval_sub, eval_X, eval_comp,
         eval_natCast, Function.comp_apply, Function.iterate_succ, ascPochhammer_succ_left]
       obtain rfl | h'' := ν.eq_zero_or_pos
       · simp
-      · have : n - 1 - (ν - 1) = n - ν := by omega
+      · have : n - 1 - (ν - 1) = n - ν := by lia
         rw [this, ascPochhammer_eval_succ]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
   · rw [tsub_eq_zero_iff_le.mpr (Nat.le_sub_one_of_lt h), eq_zero_of_lt R h]
@@ -281,6 +281,7 @@ open Polynomial
 
 open MvPolynomial hiding X
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_smul (n : ℕ) :
     (∑ ν ∈ Finset.range (n + 1), ν • bernsteinPolynomial R n ν) = n • X := by
   -- We calculate the `x`-derivative of `(x+y)^n`, evaluated at `y=(1-x)`,
@@ -348,7 +349,7 @@ theorem sum_mul_smul (n : ℕ) :
     -- Step inside the sum:
     refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, smul_eq_mul, nsmul_eq_mul,
-      Bool.cond_true, Bool.cond_false, add_zero, zero_add, mul_zero, smul_zero, mul_one,
+      Bool.cond_true, Bool.cond_false, add_zero, zero_add, mul_zero, mul_one,
       MvPolynomial.aeval_X,
       Derivation.leibniz_pow, Derivation.leibniz, Derivation.map_natCast, map_natCast, map_pow,
       map_mul]

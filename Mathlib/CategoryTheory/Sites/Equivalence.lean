@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
-public import Mathlib.CategoryTheory.Sites.Whiskering
+
 /-!
 # Equivalences of sheaf categories
 
@@ -52,6 +52,7 @@ variable (A : Type u₃) [Category.{v₃} A]
 
 namespace Equivalence
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
   is_cover U := by
     let e := (asEquivalence G).symm
@@ -63,6 +64,7 @@ instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
     replace := Sieve.downward_closed _ this (e.unit.app Y)
     simpa [g] using this
 
+set_option backward.isDefEq.respectTransparency false in
 instance : e.functor.IsDenseSubsite J (e.inverse.inducedTopology J) := by
   have : J = e.functor.inducedTopology (e.inverse.inducedTopology J) := by
     ext X S
@@ -76,6 +78,27 @@ lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
     K = e.inverse.inducedTopology J := by
   ext
   exact (e.inverse.functorPushforward_mem_iff K J).symm
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isDenseSubsite_functor_of_isCocontinuous
+    [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
+    e.functor.IsDenseSubsite J K where
+  functorPushforward_mem_iff {X S} := by
+    constructor
+    · intro H
+      refine J.superset_covering ?_ (e.functor.cover_lift J K H)
+      rw [(Sieve.fullyFaithfulFunctorGaloisCoinsertion e.functor X).u_l_eq S]
+    · intro H
+      refine K.superset_covering ?_
+        (e.inverse.cover_lift K J (J.pullback_stable (e.unitInv.app X) H))
+      exact fun Y f (H : S _) ↦ ⟨_, _, e.counitInv.app Y, H, by simp⟩
+
+lemma isDenseSubsite_inverse_of_isCocontinuous
+    [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
+    e.inverse.IsDenseSubsite K J :=
+  have : e.symm.functor.IsCocontinuous K J := inferInstanceAs (e.inverse.IsCocontinuous _ _)
+  have : e.symm.inverse.IsCocontinuous J K := inferInstanceAs (e.functor.IsCocontinuous _ _)
+  isDenseSubsite_functor_of_isCocontinuous _ _ e.symm
 
 variable [e.inverse.IsDenseSubsite K J]
 
@@ -111,6 +134,7 @@ def sheafCongr.counitIso : inverse J K e A ⋙ functor J K e A ≅ 𝟭 (Sheaf _
     Sheaf.hom_ext _ _ (isoWhiskerRight e.op.counitIso F.val).hom_inv_id,
     Sheaf.hom_ext _ _ (isoWhiskerRight e.op.counitIso F.val).inv_hom_id⟩ ) (by aesop)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of sheaf categories. -/
 @[simps]
 def sheafCongr : Sheaf J A ≌ Sheaf K A where
@@ -156,7 +180,7 @@ include K e in
 theorem hasSheafify : HasSheafify J A :=
   HasSheafify.mk' J A (transportSheafificationAdjunction J K e A)
 
-variable {A : Type*} [Category A] {B : Type*} [Category B] (F : A ⥤ B)
+variable {A : Type*} [Category* A] {B : Type*} [Category* B] (F : A ⥤ B)
   [K.HasSheafCompose F]
 
 include K e in
@@ -223,6 +247,7 @@ variable [Functor.IsContinuous.{v₃} G K J] [(G.sheafPushforwardContinuous A K 
 
 open Localization
 
+set_option backward.isDefEq.respectTransparency false in
 lemma W_inverseImage_whiskeringLeft :
     K.W.inverseImage ((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op) = J.W := by
   ext P Q f

@@ -14,10 +14,11 @@ If `A` is a domain, and a finite-dimensional algebra over a field `F`, with prim
 then there are no non-trivial `F`-subalgebras.
 -/
 
-@[expose] public section
+public section
 
 open Module Submodule
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDomain A]
     [Algebra F A] (hp : (finrank F A).Prime) : IsSimpleOrder (Subalgebra F A) :=
   { toNontrivial :=

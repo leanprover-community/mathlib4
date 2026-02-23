@@ -40,6 +40,7 @@ variable {K : Type*} [hK : NormedField K] [IsUltrametricDist K]
 
 namespace NormedField
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on a nonarchimedean normed field `K` defined as `nnnorm`. -/
 def valuation : Valuation K ℝ≥0 where
   toFun           := nnnorm
@@ -52,6 +53,7 @@ def valuation : Valuation K ℝ≥0 where
 theorem valuation_apply (x : K) : valuation x = ‖x‖₊ := rfl
 
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
+@[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
     inferInstanceAs (IsUniformAddGroup K) with
@@ -102,6 +104,7 @@ theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) <
 variable (L) (Γ₀)
 
 /-- The normed field structure determined by a rank one valuation. -/
+@[instance_reducible]
 def toNormedField : NormedField L :=
   { (inferInstance : Field L) with
     norm := norm
@@ -201,6 +204,7 @@ theorem one_le_norm_iff : 1 ≤ ‖x‖ ↔ 1 ≤ val.v x := by
 theorem one_lt_norm_iff : 1 < ‖x‖ ↔ 1 < val.v x := by
   simpa only [map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma setOf_mem_integer_eq_closedBall :
     { x : L | x ∈ Valued.v.integer } = Metric.closedBall 0 1 := by
   ext x
@@ -211,6 +215,7 @@ end toNormedField
 /--
 The nontrivially normed field structure determined by a rank one valuation.
 -/
+@[instance_reducible]
 def toNontriviallyNormedField : NontriviallyNormedField L := {
   val.toNormedField with
   non_trivial := by

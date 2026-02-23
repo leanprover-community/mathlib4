@@ -145,6 +145,7 @@ lemma chainBotCoeff_add_chainTopCoeff_le_two [P.IsNotG2] :
   have := IsNotG2.pairingIn_mem_zero_one_two (P := P) (P.chainTopIdx i j) i
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a reduced, crystallographic, irreducible root pairing other than `𝔤₂`, if the sum of two
 roots is a root, they cannot make an acute angle.
 
@@ -185,7 +186,7 @@ lemma chainBotCoeff_if_one_zero [P.IsNotG2] (h : P.root i + P.root j ∈ range P
   rcases eq_or_ne (P.chainBotCoeff i j) (P.chainTopCoeff i j) with aux₄ | aux₄ <;>
   simp_rw [P.pairingIn_eq_zero_iff (i := i) (j := j), ← P.chainBotCoeff_sub_chainTopCoeff aux₁,
     sub_eq_zero, Nat.cast_inj, aux₄, reduceIte] <;>
-  omega
+  lia
 
 lemma chainTopCoeff_if_one_zero [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
     P.chainTopCoeff i j = if P.pairingIn ℤ i j = 0 then 1 else 0 := by
@@ -370,6 +371,7 @@ variable (i : ι)
     P.pairingIn ℤ (shortAddLong P) i = P.pairingIn ℤ (short P) i + P.pairingIn ℤ (long P) i := by
   rw [pairingIn_eq_add_of_root_eq_add (shortAddLongRoot_eq P)]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pairingIn_shortAddLong_right :
     P.pairingIn ℤ i (shortAddLong P) =
       P.pairingIn ℤ i (short P) + 3 * P.pairingIn ℤ i (long P) := by
@@ -390,6 +392,7 @@ variable (i : ι)
   · rw [B.two_mul_apply_root_root, B.two_mul_apply_root_root]
   · rw [long_eq_three_mul_short, shortAddLongRoot_shortRoot]; ring
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pairingIn_twoShortAddLong_left :
     P.pairingIn ℤ (twoShortAddLong P) i =
       2 * P.pairingIn ℤ (short P) i + P.pairingIn ℤ (long P) i := by
@@ -398,6 +401,7 @@ variable (i : ι)
   · simp only [twoShortAddLongRoot_eq, one_smul, add_left_inj]
     norm_cast
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pairingIn_twoShortAddLong_right :
     P.pairingIn ℤ i (twoShortAddLong P) =
       2 * P.pairingIn ℤ i (short P) + 3 * P.pairingIn ℤ i (long P) := by
@@ -419,6 +423,7 @@ variable (i : ι)
   · rw [B.two_mul_apply_root_root, B.two_mul_apply_root_root, mul_assoc]
   · rw [long_eq_three_mul_short, twoShortAddLongRoot_shortRoot]; ring
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Finite ι] [IsDomain R] in
 @[simp] lemma pairingIn_threeShortAddLong_left :
     P.pairingIn ℤ (threeShortAddLong P) i =
@@ -458,6 +463,7 @@ omit [Finite ι] [IsDomain R] in
   · simp only [threeShortAddTwoLongRoot_eq]
     norm_cast
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pairingIn_threeShortAddTwoLong_right :
     P.pairingIn ℤ i (threeShortAddTwoLong P) =
       P.pairingIn ℤ i (short P) + 2 * P.pairingIn ℤ i (long P) := by
@@ -608,7 +614,7 @@ variable [P.IsG2] (b : P.Base) [Finite ι] [CharZero R] [IsDomain R]
   have _i : P.EmbeddedG2 := toEmbeddedG2 P
   have _i : Nonempty ι := IsG2.nonempty P
   rw [← Fintype.card_fin 2, ← Module.finrank_eq_card_basis (EmbeddedG2.basis P),
-    Module.finrank_eq_card_basis (b.toWeightBasis (P := P.toRootSystem)), Fintype.card_coe]
+    Module.finrank_eq_card_basis b.toWeightBasis, Fintype.card_coe]
 
 variable {b} in
 lemma span_eq_rootSpan_int {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) (h_ne : i ≠ j) :

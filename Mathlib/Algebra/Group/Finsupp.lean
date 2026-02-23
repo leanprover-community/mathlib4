@@ -57,6 +57,7 @@ lemma add_apply (g₁ g₂ : ι →₀ M) (a : ι) : (g₁ + g₂) a = g₁ a + 
 
 lemma support_add [DecidableEq ι] : (g₁ + g₂).support ⊆ g₁.support ∪ g₂.support := support_zipWith
 
+set_option backward.isDefEq.respectTransparency false in
 lemma support_add_eq [DecidableEq ι] (h : Disjoint g₁.support g₂.support) :
     (g₁ + g₂).support = g₁.support ∪ g₂.support :=
   le_antisymm support_zipWith fun a ha => by
@@ -75,15 +76,12 @@ noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
   __ := Finsupp.equivFunOnFinite
   map_add' _ _ := rfl
 
-/-- AddEquiv between (ι →₀ M) and M, when ι has a unique element -/
-noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
-    (ι →₀ M) ≃+ M where
-  __ := Equiv.finsuppUnique
+/-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
+is isomorphic to `M`. -/
+@[simps!]
+noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where
+  toEquiv := .finsuppUnique
   map_add' _ _ := rfl
-
-@[simp]
-lemma _root_.AddEquiv.finsuppUnique_apply {ι : Type*} [Unique ι] (v : ι →₀ M) :
-    AddEquiv.finsuppUnique v = Equiv.finsuppUnique v := rfl
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
@@ -156,8 +154,8 @@ lemma support_single_add_single [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M
     (H : f₁ ≠ f₂) (hg₁ : g₁ ≠ 0) (hg₂ : g₂ ≠ 0) :
     (single f₁ g₁ + single f₂ g₂).support = {f₁, f₂} := by
   rw [support_add_eq, support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂]
-  · simp [pair_comm f₂ f₁]
-  · simp [support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂, H.symm]
+  · simp
+  · simp [support_single_ne_zero, *]
 
 lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M} :
     (single f₁ g₁ + single f₂ g₂).support ⊆ {f₁, f₂} := by
@@ -165,9 +163,7 @@ lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g
   exact subset_trans Finsupp.support_single_subset (by simp)
 
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
-    AddEquiv.finsuppUnique.symm d = single () d := by
-  rw [Finsupp.unique_single (AddEquiv.finsuppUnique.symm d), Finsupp.unique_single_eq_iff]
-  simp [AddEquiv.finsuppUnique]
+    AddEquiv.finsuppUnique.symm d = single () d := by ext; simp [AddEquiv.finsuppUnique]
 
 theorem addCommute_iff_inter [DecidableEq ι] {f g : ι →₀ M} :
     AddCommute f g ↔ ∀ x ∈ f.support ∩ g.support, AddCommute (f x) (g x) where
@@ -454,8 +450,7 @@ lemma support_neg (f : ι →₀ G) : support (-f) = support f :=
   Finset.Subset.antisymm support_mapRange
     (calc
       support f = support (- -f) := congr_arg support (neg_neg _).symm
-      _ ⊆ support (-f) := support_mapRange
-      )
+      _ ⊆ support (-f) := support_mapRange)
 
 lemma support_sub [DecidableEq ι] {f g : ι →₀ G} : support (f - g) ⊆ support f ∪ support g := by
   rw [sub_eq_add_neg, ← support_neg g]

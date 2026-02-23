@@ -16,7 +16,7 @@ public import Mathlib.Data.Nat.Factorial.Basic
 We prove results about big operators over intervals.
 -/
 
-@[expose] public section
+public section
 
 open Nat
 
@@ -112,7 +112,7 @@ theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → 
   refine sum_nbij' (fun x ↦ ⟨x.2, x.1⟩) (fun x ↦ ⟨x.2, x.1⟩) ?_ ?_ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) <;>
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
-  omega
+  lia
 
 /-- The two ways of summing over `(i, j)` in the range `a ≤ i < j < b` are equal. -/
 theorem sum_Ico_Ico_comm' {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :
@@ -122,7 +122,7 @@ theorem sum_Ico_Ico_comm' {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ →
   refine sum_nbij' (fun x ↦ ⟨x.2, x.1⟩) (fun x ↦ ⟨x.2, x.1⟩) ?_ ?_ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) <;>
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
-  omega
+  lia
 
 @[to_additive]
 theorem prod_Ico_eq_prod_range (f : ℕ → M) (m n : ℕ) :
@@ -156,7 +156,7 @@ theorem prod_range_reflect (f : ℕ → M) (n : ℕ) :
     (∏ j ∈ range n, f (n - 1 - j)) = ∏ j ∈ range n, f j := by
   cases n
   · simp
-  · simp only [← Nat.Ico_zero_eq_range, Nat.succ_sub_succ_eq_sub, tsub_zero]
+  · simp only [← Nat.Ico_zero_eq_range, Nat.succ_sub_succ_eq_sub]
     rw [prod_Ico_reflect _ _ le_rfl]
     simp
 
@@ -173,6 +173,7 @@ theorem prod_Ico_id_eq_factorial : ∀ n : ℕ, (∏ x ∈ Ico 1 (n + 1), x) = n
 
 section GaussSum
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Gauss' summation formula -/
 theorem sum_range_id_mul_two (n : ℕ) : (∑ i ∈ range n, i) * 2 = n * (n - 1) :=
   calc

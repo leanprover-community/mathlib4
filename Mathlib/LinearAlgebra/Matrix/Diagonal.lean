@@ -19,7 +19,7 @@ diagonal matrix (`range`, `ker` and `rank`).
 matrix, diagonal, linear_map
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -52,6 +52,7 @@ section Semifield
 
 variable {m : Type*} [Fintype m] {K : Type u} [Semifield K]
 
+set_option backward.isDefEq.respectTransparency false in
 -- maybe try to relax the universe constraint
 theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
     ker (toLin' (diagonal w)) =

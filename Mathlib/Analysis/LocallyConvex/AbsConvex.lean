@@ -70,7 +70,7 @@ theorem AbsConvex.iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, AbsConvex �
 
 theorem AbsConvex.iInter₂ {ι : Sort*} {κ : ι → Sort*} {f : ∀ i, κ i → Set E}
     (h : ∀ i j, AbsConvex 𝕜 (f i j)) : AbsConvex 𝕜 (⋂ (i) (j), f i j) :=
-  AbsConvex.iInter fun _  => (AbsConvex.iInter fun _ => h _ _)
+  AbsConvex.iInter fun _ => (AbsConvex.iInter fun _ => h _ _)
 
 variable (𝕜)
 
@@ -263,6 +263,7 @@ section
 
 variable [AddCommGroup E] [Module ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
     balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
   intro a ha
@@ -272,7 +273,6 @@ lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
   have : 0 ≤ 1 - r := sub_nonneg.2 (le_of_abs_le hr)
   refine ⟨(1 + r)/2, (1 - r)/2, by positivity, by positivity, by ring, ?_⟩
   rw [smul_neg, ← sub_eq_add_neg, ← sub_smul]
-  apply congrFun (congrArg HSMul.hSMul _) y
   ring_nf
 
 @[simp]

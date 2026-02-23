@@ -163,8 +163,6 @@ noncomputable def finsetApprox : Finset R :=
 theorem finsetApprox.zero_notMem : (0 : R) ∉ finsetApprox bS adm :=
   Finset.notMem_erase _ _
 
-@[deprecated (since := "2025-05-23")] alias finsetApprox.zero_not_mem := finsetApprox.zero_notMem
-
 @[simp]
 theorem mem_finsetApprox {x : R} :
     x ∈ finsetApprox bS adm ↔ ∃ i j, i ≠ j ∧ distinctElems bS adm i - distinctElems bS adm j =
@@ -238,6 +236,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
       smul_eq_mul, mul_boole, Finset.sum_ite_eq', Finset.mem_univ, if_true]
   · exact mod_cast ε_le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
 theorem exists_mem_finset_approx' [Algebra.IsAlgebraic R S] (a : S) {b : S} (hb : b ≠ 0) :
     ∃ q : S,

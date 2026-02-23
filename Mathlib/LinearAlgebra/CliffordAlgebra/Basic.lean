@@ -101,6 +101,7 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing 
 def ι : M →ₗ[R] CliffordAlgebra Q :=
   (RingQuot.mkAlgHom R _).toLinearMap.comp (TensorAlgebra.ι R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- As well as being linear, `ι Q` squares to the quadratic form -/
 @[simp]
 theorem ι_sq_scalar (m : M) : ι Q m * ι Q m = algebraMap R _ (Q m) := by
@@ -117,6 +118,7 @@ theorem comp_ι_sq_scalar (g : CliffordAlgebra Q →ₐ[R] A) (m : M) :
     g (ι Q m) * g (ι Q m) = algebraMap _ _ (Q m) := by
   rw [← map_mul, ι_sq_scalar, AlgHom.commutes]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (Q) in
 /-- Given a linear map `f : M →ₗ[R] A` into an `R`-algebra `A`, which satisfies the condition:
 `cond : ∀ m : M, f m * f m = Q(m)`, this is the canonical lift of `f` to a morphism of `R`-algebras
@@ -172,6 +174,7 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q 
   rw [lift_symm_apply, lift_symm_apply]
   simp only [h]
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (related to the porting note)
 set_option linter.flexible false in
 -- This proof closely follows `TensorAlgebra.induction`
@@ -232,6 +235,7 @@ theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebr
     _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← map_sub, ← map_sub]
     _ = algebraMap R _ (QuadraticMap.polar Q a b) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible.
 
 To show a function squares to the quadratic form, it suffices to show that
@@ -283,6 +287,7 @@ theorem ι_mul_ι_mul_ι (a b : M) :
   rw [ι_mul_ι_comm, sub_mul, mul_assoc, ι_sq_scalar, ← Algebra.smul_def, ← Algebra.commutes, ←
     Algebra.smul_def, ← map_smul, ← map_smul, ← map_sub]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ι_range_map_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap _ _ (Q m)) :
     (LinearMap.range (ι Q)).map (lift Q ⟨f, cond⟩).toLinearMap = LinearMap.range f := by
@@ -317,6 +322,7 @@ variable (Q₁) in
 theorem map_id : map (QuadraticMap.Isometry.id Q₁) = AlgHom.id R (CliffordAlgebra Q₁) := by
   ext m; exact map_apply_ι _ m
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_comp_map (f : Q₂ →qᵢ Q₃) (g : Q₁ →qᵢ Q₂) :
     (map f).comp (map g) = map (f.comp g) := by
@@ -326,7 +332,7 @@ theorem map_comp_map (f : Q₂ →qᵢ Q₃) (g : Q₁ →qᵢ Q₂) :
 
 @[simp]
 theorem ι_range_map_map (f : Q₁ →qᵢ Q₂) :
-    (LinearMap.range (ι Q₁)).map (map f).toLinearMap = (LinearMap.range f).map (ι Q₂) :=
+    (LinearMap.range (ι Q₁)).map (map f).toLinearMap = f.range.map (ι Q₂) :=
   (ι_range_map_lift _ _).trans (LinearMap.range_comp _ _)
 
 open Function in
@@ -393,6 +399,7 @@ variable {Q}
 def toClifford : TensorAlgebra R M →ₐ[R] CliffordAlgebra Q :=
   TensorAlgebra.lift R (CliffordAlgebra.ι Q)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toClifford_ι (m : M) : toClifford (TensorAlgebra.ι R m) = CliffordAlgebra.ι Q m := by
   simp [toClifford]

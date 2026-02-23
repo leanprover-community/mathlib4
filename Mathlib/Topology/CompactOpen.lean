@@ -64,10 +64,19 @@ lemma eventually_mapsTo {f : C(X, Y)} (hK : IsCompact K) (hU : IsOpen U) (h : Ma
     ∀ᶠ g : C(X, Y) in 𝓝 f, MapsTo g K U :=
   (isOpen_setOf_mapsTo hK hU).mem_nhds h
 
+lemma isOpen_setOf_range_subset [CompactSpace X] (hU : IsOpen U) :
+    IsOpen {f : C(X, Y) | range f ⊆ U} := by
+  simp_rw [← mapsTo_univ_iff_range_subset]
+  exact isOpen_setOf_mapsTo isCompact_univ hU
+
+lemma eventually_range_subset [CompactSpace X] {f : C(X, Y)} (hU : IsOpen U) (h : range f ⊆ U) :
+    ∀ᶠ g : C(X, Y) in 𝓝 f, range g ⊆ U :=
+  (isOpen_setOf_range_subset hU).mem_nhds h
+
 lemma nhds_compactOpen (f : C(X, Y)) :
     𝓝 f = ⨅ (K : Set X) (_ : IsCompact K) (U : Set Y) (_ : IsOpen U) (_ : MapsTo f K U),
       𝓟 {g : C(X, Y) | MapsTo g K U} := by
-  simp_rw [compactOpen_eq, nhds_generateFrom, mem_setOf_eq, @and_comm (f ∈ _), iInf_and,
+  simp_rw +instances [compactOpen_eq, nhds_generateFrom, mem_setOf_eq, @and_comm (f ∈ _), iInf_and,
     ← image_prod, iInf_image, biInf_prod, mem_setOf_eq]
 
 lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)} :
@@ -391,7 +400,7 @@ theorem image_coev {y : Y} (s : Set X) : coev X Y y '' s = {y} ×ˢ s := by simp
 /-- The coevaluation map `Y → C(X, Y × X)` is continuous (always). -/
 theorem continuous_coev : Continuous (coev X Y) :=
   ((continuous_prodMk_const (X := Y) (Y := X) (Z := X)).comp
-    (.prodMk continuous_id (continuous_const (y := ContinuousMap.id _))):)
+    (.prodMk continuous_id (continuous_const (y := ContinuousMap.id _))) :)
 
 end Coev
 

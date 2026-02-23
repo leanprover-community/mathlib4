@@ -176,6 +176,7 @@ instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; infer_inst
 
 instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module ℝ (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
 end V
@@ -197,6 +198,7 @@ noncomputable def ε : ∀ {n : ℕ}, Q n → V n →ₗ[ℝ] ℝ
 
 variable {n : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   induction n with
@@ -284,15 +286,17 @@ is necessary since otherwise `n • v` refers to the multiplication defined
 using only the addition of `V`. -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
   induction n with
-  | zero =>  simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
+  | zero => simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
   | succ n IH =>
     cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc]; abel
 
 /-! We now compute the matrix of `f` in the `e` basis (`p` is the line index,
 `q` the column index). -/
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem f_matrix (p q : Q n) : |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
   induction n with
@@ -311,7 +315,7 @@ theorem f_matrix (p q : Q n) : |ε q (f n (e p))| = if p ∈ q.adjacent then 1 e
 
 /-- The linear operator $g_m$ corresponding to Knuth's matrix $B_m$. -/
 noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ :=
-  LinearMap.prod (f m + √ (m + 1) • LinearMap.id) LinearMap.id
+  LinearMap.prod (f m + √(m + 1) • LinearMap.id) LinearMap.id
 
 /-! In the following lemmas, `m` will denote a natural number. -/
 
@@ -321,18 +325,21 @@ variable {m : ℕ}
 /-! Again we unpack what are the values of `g`. -/
 
 
-theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
+set_option backward.isDefEq.respectTransparency false in
+theorem g_apply : ∀ v, g m v = (f m v + √(m + 1) • v, v) := by
   delta g; intro v; simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
   simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Pi.prod] at h
   exact h.right
 
-theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
+set_option backward.isDefEq.respectTransparency false in
+theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √(m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
-  have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
+  have : √(m + 1) * √(m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
   rw [f_succ_apply, g_apply]
   simp [this, f_squared, smul_add, add_smul, smul_smul]
   abel
@@ -404,10 +411,11 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   rw [Set.toFinset_card] at hH
   linarith
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
 theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
-    ∃ q, q ∈ H ∧ √ (m + 1) ≤ Card H ∩ q.adjacent := by
+    ∃ q, q ∈ H ∧ √(m + 1) ≤ Card H ∩ q.adjacent := by
   rcases exists_eigenvalue H hH with ⟨y, ⟨⟨y_mem_H, y_mem_g⟩, y_ne⟩⟩
   have coeffs_support : ((dualBases_e_ε m.succ).coeffs y).support ⊆ H.toFinset := by
     intro p p_in
@@ -420,7 +428,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     contrapose! y_ne
     exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
   refine ⟨q, (dualBases_e_ε _).mem_of_mem_span y_mem_H q (abs_pos.mp H_q_pos), ?_⟩
-  let s := √ (m + 1)
+  let s := √(m + 1)
   suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_iff_left₀ H_q_pos).mp ‹_›
   let coeffs := (dualBases_e_ε m.succ).coeffs
   calc

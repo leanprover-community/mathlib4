@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
+public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
@@ -19,6 +20,8 @@ The `Algebra.adjoin` operation and complete lattice structure can be found in
 -/
 
 @[expose] public section
+
+open Module
 
 universe u u' v w w'
 
@@ -42,6 +45,8 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Alg
 instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+instance : PartialOrder (Subalgebra R A) := .ofSetLike (Subalgebra R A) A
 
 initialize_simps_projections Subalgebra (carrier → coe, as_prefix coe)
 
@@ -330,10 +335,8 @@ theorem mk_algebraMap {S : Subalgebra R A} (r : R) (hr : algebraMap R A r ∈ S)
 
 end
 
-instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
-  ⟨fun {c} {x : S} h =>
-    have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
-    this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
+instance instIsTorsionFree [IsTorsionFree R A] : IsTorsionFree R S :=
+  S.toSubmodule.instIsTorsionFree
 
 protected theorem coe_add (x y : S) : (↑(x + y) : A) = ↑x + ↑y := rfl
 
@@ -463,7 +466,7 @@ instance (priority := 75) toAlgebra : Algebra R s where
     map_one' := Subtype.ext <| by simp
     map_mul' _ _ := Subtype.ext <| by simp
     map_zero' := Subtype.ext <| by simp
-    map_add' _ _ := Subtype.ext <| by simp}
+    map_add' _ _ := Subtype.ext <| by simp }
   commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
   smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
 
@@ -568,6 +571,9 @@ theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀
 This is the bundled version of `Set.rangeFactorization`. -/
 abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
+
+theorem val_comp_rangeRestrict :
+    (Subalgebra.val _).comp φ.rangeRestrict = φ := by simp
 
 theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.rangeRestrict) :=
   fun ⟨_y, hy⟩ =>
@@ -680,11 +686,17 @@ theorem inclusion_inclusion (hst : S ≤ T) (htu : T ≤ U) (x : S) :
   Subtype.ext rfl
 
 @[simp]
+theorem val_comp_inclusion (hst : S ≤ T) :
+    T.val.comp (inclusion hst) = S.val :=
+  rfl
+
+@[simp]
 theorem coe_inclusion (s : S) : (inclusion h s : A) = s :=
   rfl
 
 namespace inclusion
 
+set_option backward.isDefEq.respectTransparency false in
 scoped instance isScalarTower_left (X) [SMul X R] [SMul X A] [IsScalarTower X R A] :
     letI := (inclusion h).toModule; IsScalarTower X S T :=
   letI := (inclusion h).toModule
@@ -786,14 +798,19 @@ instance smulCommClass_right [SMul α β] [SMul A β] [SMulCommClass α A β] (S
   S.toSubsemiring.smulCommClass_right
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
-instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β]
-    (S : Subalgebra R A) : IsScalarTower S α β :=
+instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β] :
+    IsScalarTower S α β :=
   inferInstanceAs (IsScalarTower S.toSubsemiring α β)
 
-instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCommMonoid T]
-    [Algebra R S] [Module R T] [Module S T] [IsScalarTower R S T] (S' : Subalgebra R S) :
-    IsScalarTower R S' T :=
-  ⟨fun _x y _z => smul_assoc _ (y : S) _⟩
+instance (priority := low) isScalarTower_mid [SMul α R] [SMul α A]
+    [IsScalarTower α R A] [SMul A β] [SMul α β] [IsScalarTower α A β] :
+    IsScalarTower α S β :=
+  ⟨fun a b c ↦ smul_assoc a b.1 c⟩
+
+instance (priority := low) isScalarTower_right [SMul α R] [SMul α A] [IsScalarTower α R A]
+    [SMul β R] [SMul β A] [IsScalarTower β R A] [SMul α β] [IsScalarTower α β A] :
+    IsScalarTower α β S :=
+  ⟨fun a b c ↦ Subtype.ext (smul_assoc a b c.1)⟩
 
 instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)
@@ -841,12 +858,14 @@ lemma algebraMap_apply {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra 
     (S : Subalgebra R A) (x : S) : algebraMap S A x = x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem rangeS_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S : Subalgebra R A) : (algebraMap S A).rangeS = S.toSubsemiring := by
   rw [algebraMap_eq, Algebra.algebraMap_self, RingHom.id_comp, ← toSubsemiring_subtype,
     Subsemiring.rangeS_subtype]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
     (S : Subalgebra R A) : (algebraMap S A).range = S.toSubring := by
@@ -858,10 +877,9 @@ lemma setRange_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algeb
     (S : Subalgebra R A) : Set.range (algebraMap S A) = (S : Set A) :=
   SetLike.ext'_iff.mp S.rangeS_algebraMap
 
-instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
-  ⟨fun {c} x h =>
-    have : (c : A) = 0 ∨ x = 0 := eq_zero_or_eq_zero_of_mul_eq_zero h
-    this.imp_left (@Subtype.ext_iff _ _ c 0).mpr⟩
+instance instIsTorsionFree' [IsDomain A] (S : Subalgebra R A) : IsTorsionFree S A :=
+  .comap Subtype.val (fun r hr ↦ by simpa [isRegular_iff_ne_zero] using hr.ne_zero)
+    (by simp [smul_def])
 
 end Actions
 

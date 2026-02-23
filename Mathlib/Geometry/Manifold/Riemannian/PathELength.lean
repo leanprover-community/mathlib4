@@ -26,7 +26,7 @@ We show that this notion is invariant under reparameterization by a monotone map
 
 We define `riemannianEDist x y` as the infimum of the length of `C^1` paths between `x`
 and `y`. We prove, in `exists_lt_locally_constant_of_riemannianEDist_lt`, that it is also the
-infimum on such path that are moreover locally constant near their endpoints. Such paths can be
+infimum on such paths that are moreover locally constant near their endpoints. Such paths can be
 glued while retaining the `C^1` property. We deduce that `riemannianEDist` satisfies the triangle
 inequality, in `riemannianEDist_triangle`.
 
@@ -133,6 +133,7 @@ open MeasureTheory
 
 variable [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The length of a path in a manifold is invariant under a monotone reparametrization. -/
 lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : MonotoneOn f (Icc a b))
     (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f a) (f b))) :
@@ -166,6 +167,7 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
   have : 0 ≤ derivWithin f (Icc a b) t := hf.derivWithin_nonneg
   simp only [map_smul, enorm_smul, ← Real.enorm_of_nonneg this, f_im]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The length of a path in a manifold is invariant under an antitone reparametrization. -/
 lemma pathELength_comp_of_antitoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : AntitoneOn f (Icc a b))
     (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f b) (f a))) :
@@ -209,6 +211,7 @@ have an extended norm, defined as the infimum of the lengths of `C^1` paths betw
 noncomputable irreducible_def riemannianEDist (x y : M) : ℝ≥0∞ :=
   ⨅ (γ : Path x y) (_ : ContMDiff (𝓡∂ 1) I 1 γ), ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Riemannian edistance is bounded above by the length of any `C^1` path from `x` to `y`.
 Here, we express this using a path defined on the whole real line, considered on
 some interval `[a, b]`. -/
@@ -240,9 +243,10 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
     rfl
   rw [E, pathELength_comp_of_monotoneOn zero_le_one _ η.differentiableOn]
   · simp [η, ContinuousAffineMap.coe_lineMap_eq]
-  · simpa [η, ContinuousAffineMap.coe_lineMap_eq] using hγ.mdifferentiableOn le_rfl
+  · simpa [η, ContinuousAffineMap.coe_lineMap_eq] using hγ.mdifferentiableOn one_ne_zero
   · apply (AffineMap.lineMap_mono hab).monotoneOn
 
+set_option backward.isDefEq.respectTransparency false in
 omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
 /-- If some `r` is strictly larger than the Riemannian edistance between two points, there exists
 a path between these two points of length `< r`. Here, we get such a path on `[0, 1]`.
@@ -257,6 +261,7 @@ lemma exists_lt_of_riemannianEDist_lt (hr : riemannianEDist I x y < r) :
     contMDiffOn_comp_projIcc_iff.2 γ_smooth, ?_⟩
   rwa [← lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If some `r` is strictly larger than the Riemannian edistance between two points, there exists
 a path between these two points of length `< r`. Here, we get such a path on an arbitrary interval
 `[a, b]` with `a < b`, and moreover we ensure that the path is locally constant around `a` and `b`,
@@ -275,7 +280,7 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
   rcases exists_lt_of_riemannianEDist_lt hr with ⟨γ, hγx, hγy, γ_smooth, hγ⟩
   rcases exists_between hab with ⟨a', haa', ha'b⟩
   rcases exists_between ha'b with ⟨b', ha'b', hb'b⟩
-  let η (t : ℝ) : ℝ := Real.smoothTransition ((b' - a') ⁻¹ * (t - a'))
+  let η (t : ℝ) : ℝ := Real.smoothTransition ((b' - a')⁻¹ * (t - a'))
   have A (t) (ht : t < a') : η t = 0 := by
     simp only [η, Real.smoothTransition.zero_iff_nonpos]
     apply mul_nonpos_of_nonneg_of_nonpos
@@ -303,10 +308,10 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
       gcongr
       simpa only [inv_nonneg, sub_nonneg] using ha'b'.le
     · simp only [η]
-      apply (ContDiff.contDiffOn _).differentiableOn le_rfl
+      apply (ContDiff.contDiffOn _).differentiableOn one_ne_zero
       fun_prop
     · rw [A a haa', B b hb'b]
-      apply γ_smooth.mdifferentiableOn le_rfl
+      apply γ_smooth.mdifferentiableOn one_ne_zero
   · filter_upwards [Iio_mem_nhds haa'] with t ht using A' t ht
   · filter_upwards [Ioi_mem_nhds hb'b] with t ht using B' t ht
 
@@ -321,7 +326,7 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   apply le_of_forall_gt (fun r hr ↦ ?_)
   rcases exists_lt_locally_constant_of_riemannianEDist_lt hr zero_lt_one
     with ⟨γ, γ0, γ1, γ_smooth, hγ, -⟩
-  let η : ℝ → ℝ := fun t ↦ - t
+  let η : ℝ → ℝ := fun t ↦ -t
   have h_smooth : ContMDiff 𝓘(ℝ) I 1 (γ ∘ η) := by
     apply γ_smooth.comp ?_
     simp only [contMDiff_iff_contDiff]
@@ -331,12 +336,13 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   rw [← pathELength_comp_of_antitoneOn zero_le_one] at this; rotate_left
   · exact monotone_id.neg.antitoneOn _
   · exact differentiableOn_neg _
-  · exact h_smooth.contMDiffOn.mdifferentiableOn le_rfl
+  · exact h_smooth.contMDiffOn.mdifferentiableOn one_ne_zero
   apply this.trans_lt
   convert hγ
   ext t
   simp [η]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma riemannianEDist_triangle :
     riemannianEDist I x z ≤ riemannianEDist I x y + riemannianEDist I y z := by
   apply le_of_forall_gt (fun r hr ↦ ?_)

@@ -19,7 +19,7 @@ and `a : ZMod q` is invertible, then there are infinitely many prime numbers `p`
 
 The main steps of the proof are as follows.
 1. Define `ArithmeticFunction.vonMangoldt.residueClass a` for `a : ZMod q`, which is
-   a function `ℕ → ℝ` taking the value zero when `(n : ℤMod q) ≠ a` and `Λ n` else
+   a function `ℕ → ℝ` taking the value zero when `(n : ZMod q) ≠ a` and `Λ n` else
    (where `Λ` is the von Mangoldt function `ArithmeticFunction.vonMangoldt`; we have
    `Λ (p^k) = log p` for prime powers and `Λ n = 0` otherwise.)
 2. Show that this function can be written as a linear combination of functions
@@ -196,6 +196,7 @@ private lemma F''_le (p : Nat.Primes) (k : ℕ) : F'' (p, k) ≤ 2 * (p : ℝ)�
 
 open Nat.Primes
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma summable_F'' : Summable F'' := by
   have hp₀ (p : Nat.Primes) : 0 < (p : ℝ)⁻¹ := inv_pos_of_pos (Nat.cast_pos.mpr p.prop.pos)
   have hp₁ (p : Nat.Primes) : (p : ℝ)⁻¹ < 1 :=
@@ -276,6 +277,7 @@ lemma residueClass_eq (ha : IsUnit a) :
   simpa only [Pi.smul_apply, Finset.sum_apply, smul_eq_mul, ← mul_assoc]
     using residueClass_apply ha n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The L-series of the von Mangoldt function restricted to the residue class `a` mod `q`
 with `a` invertible in `ZMod q` is a linear combination of logarithmic derivatives of
 L-functions of the Dirichlet characters mod `q` (on `re s > 1`). -/
@@ -314,7 +316,6 @@ lemma continuousOn_LFunctionResidueClassAux' :
   simp only [LFunctionResidueClassAux, sub_eq_add_neg]
   refine continuousOn_const.mul <| ContinuousOn.add ?_ ?_
   · refine (continuousOn_neg_logDeriv_LFunctionTrivChar₁ q).mono fun s hs ↦ ?_
-    have := LFunction_ne_zero_of_one_le_re (1 : DirichletCharacter ℂ q) (s := s)
     simp only [ne_eq, Set.mem_setOf_eq] at hs
     tauto
   · simp only [← Finset.sum_neg_distrib, mul_div_assoc, ← mul_neg, ← neg_div]

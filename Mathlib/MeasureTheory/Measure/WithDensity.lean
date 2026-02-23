@@ -350,6 +350,27 @@ theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurab
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ :=
   aemeasurable_withDensity_ennreal_iff' <| hf.aemeasurable
 
+theorem dirac_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
+    (dirac a).withDensity f = f a • dirac a := by
+  ext s hs
+  classical
+  simp [withDensity_apply f hs, setLIntegral_dirac' hf hs, dirac_apply' _ hs,
+    Set.indicator]
+
+theorem dirac_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) (a : α) :
+    (dirac a).withDensity f = f a • dirac a := by
+  ext s hs
+  classical
+  simp [withDensity_apply f hs, setLIntegral_dirac, Set.indicator]
+
+theorem count_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) :
+    count.withDensity f = sum (fun a ↦ f a • dirac a) := by
+  simp [count, withDensity_sum, dirac_withDensity' hf _]
+
+theorem count_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
+    count.withDensity f = sum (fun a ↦ f a • dirac a) := by
+  simp [count, withDensity_sum, dirac_withDensity]
+
 open MeasureTheory.SimpleFunc
 
 /-- This is Exercise 1.2.1 from [tao2010]. It allows you to express integration of a measurable
@@ -552,7 +573,7 @@ lemma withDensity_absolutelyContinuous' {μ : Measure α} {f : α → ℝ≥0∞
   exact measure_mono_null hle <| nonpos_iff_eq_zero.1 <| le_trans (measure_union_le _ _)
     <| hμs.symm ▸ zero_add _ |>.symm ▸ hf_ne_zero.le
 
-theorem withDensity_ae_eq {β : Type} {f g : α → β} {d : α → ℝ≥0∞}
+theorem withDensity_ae_eq {β : Type*} {f g : α → β} {d : α → ℝ≥0∞}
     (hd : AEMeasurable d μ) (h_ae_nonneg : ∀ᵐ x ∂μ, d x ≠ 0) :
     f =ᵐ[μ.withDensity d] g ↔ f =ᵐ[μ] g :=
   Iff.intro
@@ -742,7 +763,7 @@ theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
     lintegral_congr (fun x ↦ by apply (lintegral_mul_left_eq_self _ x⁻¹).symm),
     lintegral_lintegral_swap]
   · simp only [Pi.mul_apply, mul_inv_cancel_left, mlconvolution_def]
-    conv in (∫⁻ _ , _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]
+    conv in (∫⁻ _, _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]
   all_goals first | fun_prop | dsimp; fun_prop
 
 @[to_additive]

@@ -65,7 +65,7 @@ is just multiplication with `-1`. -/
 theorem IsTopologicalSemiring.continuousNeg_of_mul [TopologicalSpace R] [NonAssocRing R]
     [ContinuousMul R] : ContinuousNeg R where
   continuous_neg := by
-    simpa using (continuous_const.mul continuous_id : Continuous fun x : R => -1 * x)
+    simpa using (continuous_const.fun_mul continuous_id : Continuous fun x : R => -1 * x)
 
 /-- If `R` is a ring which is a topological semiring, then it is automatically a topological
 ring. This exists so that one can place a topological ring structure on `R` without explicitly
@@ -387,6 +387,7 @@ theorem ext {f g : RingTopology R} (h : f.IsOpen = g.IsOpen) : f = g :=
 instance : PartialOrder (RingTopology R) :=
   PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
 
+set_option backward.privateInPublic true in
 private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=
   let _ := sInf (toTopologicalSpace '' S)
   { toContinuousAdd := continuousAdd_sInf <| forall_mem_image.2 fun t _ =>
@@ -396,6 +397,8 @@ private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=
     toContinuousNeg := continuousNeg_sInf <| forall_mem_image.2 fun t _ =>
       let _ := t.1; t.toContinuousNeg }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Ring topologies on `R` form a complete lattice, with `⊥` the discrete topology and `⊤` the
 indiscrete topology.
 

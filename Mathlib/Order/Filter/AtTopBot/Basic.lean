@@ -16,7 +16,7 @@ public import Mathlib.Tactic.Subsingleton
 In this file we prove many lemmas like “if `f → +∞`, then `f ± c → +∞`”.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -341,7 +341,7 @@ theorem map_val_Ioi_atTop [Preorder α] [IsDirectedOrder α] [NoMaxOrder α] (a 
 order. -/
 theorem atTop_Ioi_eq [Preorder α] [IsDirectedOrder α] (a : α) :
     atTop = comap ((↑) : Ioi a → α) atTop := by
-  rcases isEmpty_or_nonempty (Ioi a) with h|⟨⟨b, hb⟩⟩
+  rcases isEmpty_or_nonempty (Ioi a) with h | ⟨⟨b, hb⟩⟩
   · subsingleton
   · rw [← map_val_atTop_of_Ici_subset (Ici_subset_Ioi.2 hb), comap_map Subtype.coe_injective]
 
@@ -458,18 +458,6 @@ theorem not_bddAbove_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto f l atTop) :
 
 theorem not_bddBelow_of_tendsto_atBot [NoMinOrder β] (h : Tendsto f l atBot) :
     ¬BddBelow (range f) := not_bddAbove_of_tendsto_atTop (β := βᵒᵈ) h
-
-@[deprecated (since := "2025-04-28")]
-alias unbounded_of_tendsto_atTop := not_bddAbove_of_tendsto_atTop
-
-@[deprecated (since := "2025-04-28")]
-alias unbounded_of_tendsto_atBot := not_bddBelow_of_tendsto_atBot
-
-@[deprecated (since := "2025-04-28")]
-alias unbounded_of_tendsto_atTop' := not_bddAbove_of_tendsto_atTop
-
-@[deprecated (since := "2025-04-28")]
-alias unbounded_of_tendsto_atBot' := not_bddBelow_of_tendsto_atBot
 
 end NeBot
 

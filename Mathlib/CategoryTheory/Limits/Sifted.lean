@@ -65,14 +65,15 @@ namespace IsSifted
 
 variable {C}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Being sifted is preserved by equivalences of categories -/
 lemma isSifted_of_equiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D ≌ C) : IsSifted D :=
   letI : Final (diag D) := by
-    letI : D × D ≌ C × C:= Equivalence.prod e e
+    letI : D × D ≌ C × C := Equivalence.prod e e
     have sq : (e.inverse ⋙ diag D ⋙ this.functor ≅ diag C) :=
         NatIso.ofComponents (fun c ↦ by dsimp [this]
                                         exact Iso.prod (e.counitIso.app c) (e.counitIso.app c))
-    apply_rules [final_iff_comp_equivalence _ this.functor|>.mpr,
+    apply_rules [final_iff_comp_equivalence _ this.functor |>.mpr,
       final_iff_final_comp e.inverse _ |>.mpr, final_of_natIso sq.symm]
   letI : _root_.Nonempty D := ⟨e.inverse.obj (_root_.Nonempty.some IsSifted.nonempty)⟩
   ⟨⟩
@@ -96,11 +97,12 @@ instance [IsSifted C] : IsConnected C :=
           · simpa using Zag.of_inv X.hom.snd
         · rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A category with binary coproducts is sifted or empty. -/
 instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C := by
     constructor
     rintro ⟨c₁, c₂⟩
-    haveI : _root_.Nonempty <| StructuredArrow (c₁,c₂) (diag C) :=
+    haveI : _root_.Nonempty <| StructuredArrow (c₁, c₂) (diag C) :=
       ⟨.mk ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂))⟩
     apply isConnected_of_zigzag
     rintro ⟨_, c, f⟩ ⟨_, c', g⟩
@@ -144,6 +146,7 @@ open scoped MonoidalCategory.ExternalProduct
 
 variable (X Y : C ⥤ Type u)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Through the isomorphisms `PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` and
 `externalProductCompDiagIso`, the comparison map `colimit.pre (X ⊠ Y) (diag C)` identifies with the
 product comparison map for the colimit functor. -/
@@ -160,6 +163,7 @@ lemma factorization_prodComparison_colim :
 
 variable [IsSifted C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is sifted, the canonical product comparison map for the `colim` functor
 `(C ⥤ Type) ⥤ Type` is an isomorphism. -/
 instance : IsIso (CartesianMonoidalCategory.prodComparison colim X Y) := by
@@ -182,11 +186,11 @@ instance colim_preservesTerminal_of_isSifted :
     PreservesLimit (Functor.empty.{0} (C ⥤ Type u)) colim := by
   apply preservesTerminal_of_iso
   symm
-  apply (_ : ⊤_ (Type u) ≅ PUnit.{u +1}).trans
+  apply (_ : ⊤_ (Type u) ≅ PUnit.{u + 1}).trans
   · apply_rules [(Types.colimitConstPUnitIsoPUnit C).symm.trans, HasColimit.isoOfNatIso,
       IsTerminal.uniqueUpToIso _ terminalIsTerminal, evaluationJointlyReflectsLimits]
-    exact fun _ ↦ isLimitChangeEmptyCone _ Types.isTerminalPunit _ <| Iso.refl _
-  · exact Types.isTerminalEquivIsoPUnit (⊤_ (Type u))|>.toFun terminalIsTerminal
+    exact fun _ ↦ isLimitChangeEmptyCone _ Types.isTerminalPUnit _ <| Iso.refl _
+  · exact Types.isTerminalEquivIsoPUnit (⊤_ (Type u)) |>.toFun terminalIsTerminal
 
 instance colim_preservesLimitsOfShape_pempty_of_isSifted :
     PreservesLimitsOfShape (Discrete PEmpty.{1}) (colim : (C ⥤ _) ⥤ Type u) :=
@@ -194,7 +198,7 @@ instance colim_preservesLimitsOfShape_pempty_of_isSifted :
 
 /-- If `C` is sifted, the `colim` functor `(C ⥤ Type) ⥤ Type` preserves finite products. -/
 instance colim_preservesFiniteProducts_of_isSifted :
-    PreservesFiniteProducts (colim : (C ⥤ _) ⥤ Type u ) :=
+    PreservesFiniteProducts (colim : (C ⥤ _) ⥤ Type u) :=
   PreservesFiniteProducts.of_preserves_binary_and_terminal colim
 
 end
@@ -233,12 +237,12 @@ lemma nonempty_of_colim_preservesLimitsOfShapeFinZero
   constructor
   haveI : PreservesLimitsOfShape (Discrete PEmpty) (colim : (C ⥤ _) ⥤ Type u) :=
     preservesLimitsOfShape_of_equiv (Discrete.equivalence finZeroEquiv') _
-  apply HasColimit.isoOfNatIso (_: Types.constPUnitFunctor C ≅ (⊤_ (C ⥤ Type u)))|>.trans
+  apply HasColimit.isoOfNatIso (_ : Types.constPUnitFunctor C ≅ (⊤_ (C ⥤ Type u))) |>.trans
   · apply PreservesTerminal.iso colim |>.trans
     exact Types.terminalIso
   · apply_rules [IsTerminal.uniqueUpToIso _ terminalIsTerminal, evaluationJointlyReflectsLimits]
     intro _
-    exact isLimitChangeEmptyCone _ Types.isTerminalPunit _ <| Iso.refl _
+    exact isLimitChangeEmptyCone _ Types.isTerminalPUnit _ <| Iso.refl _
 
 /-- If the `colim` functor `(C ⥤ Type) ⥤ Type` preserves finite products, then `C` is sifted. -/
 theorem of_colim_preservesFiniteProducts

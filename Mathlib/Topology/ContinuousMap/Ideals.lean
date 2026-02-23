@@ -107,8 +107,6 @@ theorem mem_idealOfSet {s : Set X} {f : C(X, R)} :
 theorem notMem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
   simp_rw [mem_idealOfSet]; push_neg; rfl
 
-@[deprecated (since := "2025-05-23")] alias not_mem_idealOfSet := notMem_idealOfSet
-
 /-- Given an ideal `I` of `C(X, R)`, construct the set of points for which every function in the
 ideal vanishes on the complement. -/
 def setOfIdeal (I : Ideal C(X, R)) : Set X :=
@@ -117,8 +115,6 @@ def setOfIdeal (I : Ideal C(X, R)) : Set X :=
 theorem notMem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∉ setOfIdeal I ↔ ∀ ⦃f : C(X, R)⦄, f ∈ I → f x = 0 := by
   rw [← Set.mem_compl_iff, setOfIdeal, compl_compl, Set.mem_setOf]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_setOfIdeal := notMem_setOfIdeal
 
 theorem mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∈ setOfIdeal I ↔ ∃ f ∈ I, (f : C(X, R)) x ≠ 0 := by
@@ -169,6 +165,7 @@ open RCLike
 
 variable {X 𝕜 : Type*} [RCLike 𝕜] [TopologicalSpace X]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma used in the proof of `ContinuousMap.idealOfSet_ofIdeal_eq_closure` which may
 be useful on its own. -/
 theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c) :
@@ -290,7 +287,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   refine ⟨g * g', ?_, hg, hgc.mono hgc'⟩
   convert I.mul_mem_left ((algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
   ext
-  simp only [algebraMapCLM_coe, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
+  simp only [coe_algebraMapCLM, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
 
 theorem idealOfSet_ofIdeal_isClosed {I : Ideal C(X, 𝕜)} (hI : IsClosed (I : Set C(X, 𝕜))) :
     idealOfSet 𝕜 (setOfIdeal I) = I :=
@@ -339,6 +336,7 @@ def idealOpensGI :
           (isClosed_of_closure_subset <|
               (idealOfSet_ofIdeal_eq_closure I ▸ hI : I.closure ≤ I)).closure_eq)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem idealOfSet_isMaximal_iff (s : Opens X) :
     (idealOfSet 𝕜 (s : Set X)).IsMaximal ↔ IsCoatom s := by
   rw [Ideal.isMaximal_def]
@@ -351,6 +349,7 @@ theorem idealOf_compl_singleton_isMaximal (x : X) : (idealOfSet 𝕜 ({x}ᶜ : S
 
 variable {𝕜}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] :
     ∃ x : X, setOfIdeal I = {x}ᶜ := by
   have h : (idealOfSet 𝕜 (setOfIdeal I)).IsMaximal :=
@@ -408,6 +407,7 @@ end ContinuousMapEval
 
 variable [CompactSpace X] [T2Space X] [RCLike 𝕜]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
   refine ⟨fun x y hxy => ?_, fun φ => ?_⟩
   · contrapose! hxy

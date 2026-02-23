@@ -64,7 +64,9 @@ namespace RootPairing
 
 For reduced root pairings this definition is equivalent to the usual definition appearing in the
 informal literature but not for non-reduced root pairings it is more restrictive. See the module
-doc string for further remarks. -/
+doc string for further remarks.
+
+See also `RootPairing.Base.mk'`. -/
 structure Base (P : RootPairing ι R M N) where
   /-- The indices of the simple roots / coroots. -/
   support : Finset ι
@@ -95,6 +97,7 @@ lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
   root_mem_or_neg_mem := b.coroot_mem_or_neg_mem
   coroot_mem_or_neg_mem := b.root_mem_or_neg_mem
 
+set_option backward.isDefEq.respectTransparency false in
 include b in
 lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
     (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j) :
@@ -147,6 +150,7 @@ lemma span_coroot_support :
     span R (P.coroot '' b.support) = P.corootSpan R :=
   b.flip.span_root_support
 
+set_option backward.isDefEq.respectTransparency false in
 open Finsupp in
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
     [IsAddTorsionFree M] [IsAddTorsionFree N]
@@ -194,6 +198,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
   rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at this
   tauto
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
     (hf : ∑ j ∈ b.support, f j • P.root j ∈ range P.root) (hf₀ : f.support ⊆ b.support) :
     0 < f ∨ f < 0 := by
@@ -238,6 +243,7 @@ lemma not_nonpos_iff_pos_of_sum_mem_range_root (f : ι → ℤ)
       exact h (le_of_lt h')
   · contrapose! h; exact h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma not_nonneg_iff_neg_of_sum_mem_range_root (f : ι → ℤ)
     (hf : ∑ j ∈ b.support, f j • P.root j ∈ range P.root) (hf₀ : f.support ⊆ b.support) :
     (¬ 0 ≤ f) ↔ f < 0 := by
@@ -263,14 +269,10 @@ lemma sub_notMem_range_root
   · simpa [hij, f] using le_of_lt pos j
   · simpa [hij, f] using le_of_lt neg i
 
-@[deprecated (since := "2025-05-24")] alias sub_nmem_range_root := sub_notMem_range_root
-
 lemma sub_notMem_range_coroot
     {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.coroot i - P.coroot j ∉ range P.coroot :=
   b.flip.sub_notMem_range_root hi hj
-
-@[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
 
 lemma pairingIn_le_zero_of_ne [IsDomain R] [P.IsCrystallographic] [Finite ι]
     {i j} (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support) :
@@ -294,7 +296,7 @@ end RootPairing
 
 section RootSystem
 
-variable {P : RootSystem ι R M N} (b : P.Base)
+variable {P : RootPairing ι R M N} (b : P.Base) [P.IsRootSystem]
 
 /-- A base of a root system yields a basis of the root space. -/
 def toWeightBasis :
@@ -332,6 +334,8 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 
 include b
 
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma exists_root_eq_sum_nat_or_neg (i : ι) :
     ∃ f : ι → ℕ, f.support ⊆ b.support ∧
       (P.root i =   ∑ j ∈ b.support, f j • P.root j ∨
@@ -496,6 +500,7 @@ lemma IsPos.sub {i j k : ι}
   rw [isPos_iff', b.height_sub hk, height_one_of_mem_support hj]
   lia
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsPos.exists_mem_support_pos_pairingIn [P.IsCrystallographic] {i : ι} (h₀ : b.IsPos i) :
     ∃ j ∈ b.support, 0 < P.pairingIn ℤ j i := by
   by_contra! contra
@@ -535,7 +540,7 @@ lemma IsPos.add_zsmul {i j k : ι} {z : ℤ} (hij : i ≠ j)
     letI := P.indexNeg
     replace contra : i = -j := by rw [eq_comm, neg_eq_iff_eq_neg]; simpa using contra
     rw [contra, isPos_iff, height_reflectionPerm_self, height_one_of_mem_support hj] at hi
-    omega
+    lia
   induction z generalizing i k with
   | zero => simp_all
   | succ w hw =>
@@ -560,6 +565,7 @@ lemma IsPos.reflectionPerm {i j : ι} (hi : b.IsPos i) (hj : j ∈ b.support) (h
     rw [root_reflectionPerm, neg_smul, reflection_apply_root' ℤ, sub_eq_add_neg]
   exact hi.add_zsmul hij hj this
 
+set_option backward.isDefEq.respectTransparency false in
 omit [P.IsReduced] in
 lemma IsPos.induction_on_add
     {i : ι} (h₀ : b.IsPos i)
@@ -575,13 +581,14 @@ lemma IsPos.induction_on_add
     rw [P.zero_lt_pairingIn_iff'] at hj'
     rcases eq_or_ne i j with rfl | hij; · exact h₁ i hj
     obtain ⟨k, hk⟩ := P.root_sub_root_mem_of_pairingIn_pos hj' hij
-    have hkn : b.height k = n := by rw [b.height_sub hk, height_one_of_mem_support hj]; omega
-    have hkpos : b.IsPos k := by rw [isPos_iff']; omega
+    have hkn : b.height k = n := by rw [b.height_sub hk, height_one_of_mem_support hj]; lia
+    have hkpos : b.IsPos k := by rw [isPos_iff']; lia
     exact h₂ k j i (by rw [hk]; module) (ih hkpos hkn) hj
   | pred n ih =>
     rw [isPos_iff] at h₀
     lia
 
+set_option backward.isDefEq.respectTransparency false in
 omit [P.IsReduced] in
 /-- This lemma is included mostly for comparison with the informal literature. Usually
 `RootPairing.Base.IsPos.induction_on_add` will be more useful. -/
@@ -599,7 +606,7 @@ lemma exists_eq_sum_and_forall_sum_mem_of_isPos {i : ι} (hi : b.IsPos i) :
     · have : m = (⟨m, hm⟩ : Fin n).castSucc := rfl
       rw [this, Fin.sum_Iic_castSucc]
       simp only [Fin.snoc_castSucc, h₄]
-    · replace hm : m = n := by omega
+    · replace hm : m = n := by lia
       replace hm : Finset.Iic m = Finset.univ := by ext; simp [hm, Fin.le_def, Fin.is_le]
       simp [hm, Fin.sum_univ_castSucc, ← h₃, ← h₁]
 
@@ -615,6 +622,7 @@ lemma induction_add (i : ι) {p : ι → Prop}
   · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
     exact hi.induction_on_add h₁ h₂
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsPos.induction_on_reflect
     {i : ι} (h₀ : b.IsPos i)
     {p : ι → Prop}

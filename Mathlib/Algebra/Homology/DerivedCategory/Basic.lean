@@ -76,6 +76,7 @@ abbrev HasDerivedCategory := MorphismProperty.HasLocalization.{w}
 /-- The derived category obtained using the constructed localized category of cochain complexes
 with respect to quasi-isomorphisms. This should be used only while proving statements
 which do not involve the derived category. -/
+@[instance_reducible]
 def HasDerivedCategory.standard : HasDerivedCategory.{max u v} C :=
   MorphismProperty.HasLocalization.standard _
 
@@ -95,6 +96,7 @@ variable {C}
 /-- The localization functor `CochainComplex C ℤ ⥤ DerivedCategory C`. -/
 def Q : CochainComplex C ℤ ⥤ DerivedCategory C := HomologicalComplexUpToQuasiIso.Q
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (Q (C := C)).IsLocalization
     (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) := by
   dsimp only [Q, DerivedCategory]
@@ -115,6 +117,7 @@ variable (C)
 def quotientCompQhIso : HomotopyCategory.quotient C (ComplexShape.up ℤ) ⋙ Qh ≅ Q :=
   HomologicalComplexUpToQuasiIso.quotientCompQhIso C (ComplexShape.up ℤ)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Qh.IsLocalization (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)) := by
   dsimp [Qh, DerivedCategory]
   infer_instance
@@ -167,11 +170,11 @@ noncomputable instance : IsTriangulated (DerivedCategory C) :=
 instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow _ (HomotopyCategory.subcategoryAcyclic C).trW
 
-instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C := C))).Full :=
+instance {D : Type*} [Category* D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C := C))).Full :=
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Full
 
-instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C := C))).Faithful :=
+instance {D : Type*} [Category* D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C := C))).Faithful :=
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Faithful
 
@@ -241,6 +244,7 @@ lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
   erw [Category.id_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by
   ext X
@@ -254,5 +258,9 @@ noncomputable def singleFunctorIsoCompQ (n : ℤ) :
 lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     IsIso (Q.map φ) ↔ QuasiIso φ := by
   apply HomologicalComplexUpToQuasiIso.isIso_Q_map_iff_mem_quasiIso
+
+lemma Q_map_eq_of_homotopy {K L : CochainComplex C ℤ} {f g : K ⟶ L} (h : Homotopy f g) :
+    DerivedCategory.Q.map f = DerivedCategory.Q.map g :=
+  HomologicalComplexUpToQuasiIso.Q_map_eq_of_homotopy h
 
 end DerivedCategory

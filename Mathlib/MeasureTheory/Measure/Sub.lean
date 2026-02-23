@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 # Subtraction of measures
 
 In this file we define `μ - ν` to be the least measure `τ` such that `μ ≤ τ + ν`.
-It is the equivalent of `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
+It is equivalent to `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
 Compare with `ENNReal.instSub`.
 Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`, and
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and
@@ -27,7 +27,7 @@ namespace MeasureTheory
 namespace Measure
 
 /-- The measure `μ - ν` is defined to be the least measure `τ` such that `μ ≤ τ + ν`.
-It is the equivalent of `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
+It is equivalent to `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
 Compare with `ENNReal.instSub`.
 Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`, and
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and
@@ -35,7 +35,7 @@ Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`
 noncomputable instance instSub {α : Type*} [MeasurableSpace α] : Sub (Measure α) :=
   ⟨fun μ ν => sInf { τ | μ ≤ τ + ν }⟩
 
-variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
+variable {α : Type*} {m : MeasurableSpace α} {μ ν ξ : Measure α} {s : Set α}
 
 theorem sub_def : μ - ν = sInf { d | μ ≤ d + ν } := rfl
 
@@ -48,6 +48,7 @@ theorem sub_eq_zero_of_le (h : μ ≤ ν) : μ - ν = 0 :=
 theorem sub_le : μ - ν ≤ μ :=
   sub_le_of_le_add <| Measure.le_add_right le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sub_top : μ - ⊤ = 0 :=
   sub_eq_zero_of_le le_top
@@ -89,7 +90,7 @@ theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ �
     rw [MeasureTheory.Measure.sub_def]
     apply le_antisymm
     · apply sInf_le
-      simp [le_refl, add_comm, h_measure_sub_add]
+      simp [add_comm, h_measure_sub_add]
     apply le_sInf
     intro d h_d
     rw [← h_measure_sub_add, mem_setOf_eq, add_comm d] at h_d
@@ -107,6 +108,7 @@ protected lemma add_sub_cancel [IsFiniteMeasure ν] : μ + ν - ν = μ := by
   rw [sub_apply hs (Measure.le_add_left (le_refl _)), add_apply,
     ENNReal.add_sub_cancel_right (measure_ne_top ν s)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     (μ - ν).restrict s = μ.restrict s - ν.restrict s := by
   repeat rw [sub_def]
@@ -144,6 +146,16 @@ theorem sub_apply_eq_zero_of_restrict_le_restrict (h_le : μ.restrict s ≤ ν.r
 
 instance isFiniteMeasure_sub [IsFiniteMeasure μ] : IsFiniteMeasure (μ - ν) :=
   isFiniteMeasure_of_le μ sub_le
+
+/-- See `sub_le_iff_le_add` for the case where both measures are finite, which does not need the
+hypothesis `ν ≤ μ`. -/
+lemma sub_le_iff_le_add_of_le [IsFiniteMeasure ν] (h_le : ν ≤ μ) : μ - ν ≤ ξ ↔ μ ≤ ξ + ν := by
+  refine ⟨fun h ↦ ?_, Measure.sub_le_of_le_add⟩
+  rw [Measure.le_iff] at h ⊢
+  intro s hs
+  specialize h s hs
+  simp only [Measure.coe_add, Pi.add_apply]
+  rwa [Measure.sub_apply hs h_le, tsub_le_iff_right] at h
 
 end Measure
 

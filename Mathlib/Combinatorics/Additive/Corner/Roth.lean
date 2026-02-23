@@ -60,6 +60,7 @@ private lemma noAccidental (hs : IsCornerFree (A : Set (G × G))) :
     simp only [mk_mem_triangleIndices] at ha hb hc
     exact .inl <| hs ⟨hc.1, hb.1, ha.1, hb.2.symm.trans ha.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma farFromTriangleFree_graph [Fintype G] [DecidableEq G] (hε : ε * card G ^ 2 ≤ #A) :
     (graph <| triangleIndices A).FarFromTriangleFree (ε / 9) := by
   refine farFromTriangleFree _ ?_
@@ -80,6 +81,7 @@ Note that this depends on `SzemerediRegularity.bound`, which is a tower-type exp
 `cornersTheoremBound` is in practice absolutely tiny. -/
 noncomputable def cornersTheoremBound (ε : ℝ) : ℕ := ⌊(triangleRemovalBound (ε / 9) * 27)⁻¹⌋₊ + 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **corners theorem** for finite abelian groups.
 
 The maximum density of a corner-free set in `G × G` goes to zero as `|G|` tends to infinity. -/
@@ -118,7 +120,7 @@ theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) �
     rintro a b hab
     have := hAn hab
     simp at this
-    omega
+    lia
   rw [this] at hA
   have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
   have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn <| by
@@ -177,7 +179,7 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
     rintro a ha
     have := hAn ha
     simp at this
-    omega
+    lia
   rw [this] at hA
   have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
   have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn <| Set.image_subset_iff.2 <|
@@ -197,6 +199,7 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
 
 open Asymptotics Filter
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Roth's theorem** for `ℕ` as an asymptotic statement.
 
 The maximum density of a 3AP-free set in `{1, ..., n}` goes to zero as `n` tends to infinity. -/

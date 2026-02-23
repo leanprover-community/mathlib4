@@ -18,7 +18,7 @@ a proof that every natural number is the sum of four square numbers.
 The proof used is close to Lagrange's original proof.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Polynomial FiniteField Equiv
@@ -42,6 +42,7 @@ theorem Nat.euler_four_squares (a b c d x y z w : ℕ) :
 
 namespace Int
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2) :
     m = ((x - y) / 2) ^ 2 + ((x + y) / 2) ^ 2 :=
   have : Even (x ^ 2 + y ^ 2) := by simp [← h]
@@ -109,6 +110,7 @@ private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
   have : (∑ x, f (σ x) ^ 2) = ∑ x, f x ^ 2 := Equiv.sum_comp σ (f · ^ 2)
   simpa only [← hx, ← hy, Fin.sum_univ_four, add_assoc] using this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lagrange's **four squares theorem** for a prime number. Use `Nat.sum_four_squares` instead. -/
 protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = p := by

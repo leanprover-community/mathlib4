@@ -28,7 +28,7 @@ correlate in the uniform measure.
 * [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
 -/
 
-@[expose] public section
+public section
 
 
 open Finset

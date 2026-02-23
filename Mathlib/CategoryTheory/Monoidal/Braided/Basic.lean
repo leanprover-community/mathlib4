@@ -88,43 +88,35 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [BraidedCategory
 
 @[simp, reassoc]
 theorem braiding_tensor_left_hom (X Y Z : C) :
-    (β_ (X ⊗ Y) Z).hom  =
+    (β_ (X ⊗ Y) Z).hom =
       (α_ X Y Z).hom ≫ X ◁ (β_ Y Z).hom ≫ (α_ X Z Y).inv ≫
         (β_ X Z).hom ▷ Y ≫ (α_ Z X Y).hom := by
   apply (cancel_epi (α_ X Y Z).inv).1
   apply (cancel_mono (α_ Z X Y).inv).1
   simp [hexagon_reverse]
 
-@[deprecated (since := "2025-06-24")] alias braiding_tensor_left := braiding_tensor_left_hom
-
 @[simp, reassoc]
 theorem braiding_tensor_right_hom (X Y Z : C) :
-    (β_ X (Y ⊗ Z)).hom  =
+    (β_ X (Y ⊗ Z)).hom =
       (α_ X Y Z).inv ≫ (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
         Y ◁ (β_ X Z).hom ≫ (α_ Y Z X).inv := by
   apply (cancel_epi (α_ X Y Z).hom).1
   apply (cancel_mono (α_ Y Z X).hom).1
   simp [hexagon_forward]
 
-@[deprecated (since := "2025-06-24")] alias braiding_tensor_right := braiding_tensor_right_hom
-
 @[simp, reassoc]
 theorem braiding_tensor_left_inv (X Y Z : C) :
-    (β_ (X ⊗ Y) Z).inv  =
+    (β_ (X ⊗ Y) Z).inv =
       (α_ Z X Y).inv ≫ (β_ X Z).inv ▷ Y ≫ (α_ X Z Y).hom ≫
         X ◁ (β_ Y Z).inv ≫ (α_ X Y Z).inv :=
   eq_of_inv_eq_inv (by simp)
 
-@[deprecated (since := "2025-06-24")] alias braiding_inv_tensor_left := braiding_tensor_left_inv
-
 @[simp, reassoc]
 theorem braiding_tensor_right_inv (X Y Z : C) :
-    (β_ X (Y ⊗ Z)).inv  =
+    (β_ X (Y ⊗ Z)).inv =
       (α_ Y Z X).hom ≫ Y ◁ (β_ X Z).inv ≫ (α_ Y X Z).inv ≫
         (β_ X Y).inv ▷ Z ≫ (α_ X Y Z).hom :=
   eq_of_inv_eq_inv (by simp)
-
-@[deprecated (since := "2025-06-24")] alias braiding_inv_tensor_right := braiding_tensor_right_inv
 
 @[reassoc (attr := simp)]
 theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
@@ -215,7 +207,7 @@ end BraidedCategory
 Verifying the axioms for a braiding by checking that the candidate braiding is sent to a braiding
 by a faithful monoidal functor.
 -/
-def BraidedCategory.ofFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
+def BraidedCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [MonoidalCategory C]
     [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Faithful] [BraidedCategory D]
     (β : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X)
     (w : ∀ X Y, μ F _ _ ≫ F.map (β X Y).hom = (β_ _ _).hom ≫ μ F _ _ := by cat_disch) :
@@ -257,16 +249,11 @@ def BraidedCategory.ofFaithful {C D : Type*} [Category C] [Category D] [Monoidal
       ← comp_whiskerRight_assoc, w, comp_whiskerRight_assoc, reassoc_of% w,
       braiding_naturality_left_assoc, Functor.LaxMonoidal.associativity_inv, hexagon_reverse_assoc]
 
-@[deprecated (since := "2025-07-12")] alias braidedCategoryOfFaithful := BraidedCategory.ofFaithful
-
 /-- Pull back a braiding along a fully faithful monoidal functor. -/
-noncomputable def BraidedCategory.ofFullyFaithful {C D : Type*} [Category C] [Category D]
+noncomputable def BraidedCategory.ofFullyFaithful {C D : Type*} [Category* C] [Category* D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [BraidedCategory D] : BraidedCategory C :=
   .ofFaithful F fun X Y ↦ F.preimageIso ((μIso F _ _).symm ≪≫ β_ (F.obj X) (F.obj Y) ≪≫ μIso F _ _)
-
-@[deprecated (since := "2025-07-12")]
-alias braidedCategoryOfFullyFaithful := BraidedCategory.ofFullyFaithful
 
 section
 
@@ -449,20 +436,23 @@ def toLaxMonoidalFunctor (F : LaxBraidedFunctor C D) : LaxMonoidalFunctor C D wh
   toFunctor := F.toFunctor
 
 instance : Category (LaxBraidedFunctor C D) :=
-  InducedCategory.category (toLaxMonoidalFunctor)
+  inferInstanceAs (Category (InducedCategory _ toLaxMonoidalFunctor))
 
 @[simp]
-lemma id_hom (F : LaxBraidedFunctor C D) : LaxMonoidalFunctor.Hom.hom (𝟙 F) = 𝟙 _ := rfl
+lemma id_hom (F : LaxBraidedFunctor C D) :
+    LaxMonoidalFunctor.Hom.hom (InducedCategory.Hom.hom (𝟙 F)) = 𝟙 _ := rfl
 
 @[reassoc, simp]
 lemma comp_hom {F G H : LaxBraidedFunctor C D} (α : F ⟶ G) (β : G ⟶ H) :
     (α ≫ β).hom = α.hom ≫ β.hom := rfl
 
 @[ext]
-lemma hom_ext {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (h : α.hom = β.hom) : α = β :=
-  LaxMonoidalFunctor.hom_ext h
+lemma hom_ext {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (h : α.hom.hom = β.hom.hom) :
+    α = β :=
+  InducedCategory.hom_ext (LaxMonoidalFunctor.hom_ext h)
 
-/-- Constructor for morphisms in the category `LaxBraiededFunctor C D`. -/
+set_option backward.isDefEq.respectTransparency false in
+/-- Constructor for morphisms in the category `LaxBraidedFunctor C D`. -/
 @[simps]
 def homMk {F G : LaxBraidedFunctor C D} (f : F.toFunctor ⟶ G.toFunctor) [NatTrans.IsMonoidal f] :
     F ⟶ G := ⟨f, inferInstance⟩
@@ -494,19 +484,28 @@ variable {F G : LaxBraidedFunctor C D} (e : ∀ X, F.obj X ≅ G.obj X)
     (tensor : ∀ X Y, μ F.toFunctor X Y ≫ (e (X ⊗ Y)).hom =
       ((e X).hom ⊗ₘ (e Y).hom) ≫ μ G.toFunctor X Y := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for isomorphisms between lax braided functors. -/
 def isoOfComponents :
     F ≅ G :=
   fullyFaithfulForget.preimageIso
     (LaxMonoidalFunctor.isoOfComponents e naturality unit tensor)
 
+set_option backward.privateInPublic true in
 @[simp]
-lemma isoOfComponents_hom_hom_app (X : C) :
-    (isoOfComponents e naturality unit tensor).hom.hom.app X = (e X).hom := rfl
+lemma isoOfComponents_hom_hom_hom_app (X : C) :
+    (isoOfComponents e naturality unit tensor).hom.hom.hom.app X = (e X).hom := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
-lemma isoOfComponents_inv_hom_app (X : C) :
-    (isoOfComponents e naturality unit tensor).inv.hom.app X = (e X).inv := rfl
+lemma isoOfComponents_inv_hom_hom_app (X : C) :
+    (isoOfComponents e naturality unit tensor).inv.hom.hom.app X = (e X).inv := rfl
+
+@[deprecated (since := "2025-12-18")] alias isoOfComponents_hom_hom_app :=
+  isoOfComponents_hom_hom_hom_app
+
+@[deprecated (since := "2025-12-18")] alias isoOfComponents_inv_hom_app :=
+  isoOfComponents_inv_hom_hom_app
 
 end
 
@@ -529,18 +528,19 @@ lemma Functor.map_braiding (F : C ⥤ D) (X Y : C) [F.Braided] :
 /--
 A braided category with a faithful braided functor to a symmetric category is itself symmetric.
 -/
-def SymmetricCategory.ofFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
+def SymmetricCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [MonoidalCategory C]
     [MonoidalCategory D] [BraidedCategory C] [SymmetricCategory D] (F : C ⥤ D) [F.Braided]
     [F.Faithful] : SymmetricCategory C where
   symmetry X Y := F.map_injective (by simp)
 
 /-- Pull back a symmetric braiding along a fully faithful monoidal functor. -/
-noncomputable def SymmetricCategory.ofFullyFaithful {C D : Type*} [Category C] [Category D]
+noncomputable def SymmetricCategory.ofFullyFaithful {C D : Type*} [Category* C] [Category* D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [SymmetricCategory D] : SymmetricCategory C :=
   let h : BraidedCategory C := BraidedCategory.ofFullyFaithful F
   let _ : F.Braided := {
-    braided X Y := by simp [h, BraidedCategory.ofFullyFaithful, BraidedCategory.ofFaithful] }
+    braided X Y := by
+      simp +instances [h, BraidedCategory.ofFullyFaithful, BraidedCategory.ofFaithful] }
   .ofFaithful F
 
 @[deprecated (since := "2025-10-17")]
@@ -691,6 +691,7 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
         X₁ ◁ Y₁ ◁ (β_ X₂ Z₁).hom ▷ Y₂ ▷ Z₂ ⊗≫ 𝟙 _ := by monoidal
     _ = _ := by rw [← whisker_exchange]; monoidal
 
+set_option backward.isDefEq.respectTransparency false in
 instance tensorMonoidal : (tensor C).Monoidal :=
     Functor.CoreMonoidal.toMonoidal
       { εIso := (λ_ (𝟙_ C)).symm
@@ -776,6 +777,7 @@ end Tensor
 
 end MonoidalCategory
 
+set_option backward.isDefEq.respectTransparency false in
 instance : BraidedCategory Cᵒᵖ where
   braiding X Y := (β_ Y.unop X.unop).op
   braiding_naturality_right X {_ _} f := Quiver.Hom.unop_inj <| by simp
@@ -798,6 +800,7 @@ end OppositeLemmas
 
 namespace MonoidalOpposite
 
+set_option backward.isDefEq.respectTransparency false in
 instance instBraiding : BraidedCategory Cᴹᵒᵖ where
   braiding X Y := (β_ Y.unmop X.unmop).mop
   braiding_naturality_right X {_ _} f := Quiver.Hom.unmop_inj <| by simp
@@ -876,6 +879,6 @@ reversed braiding, upgraded to a braided functor. -/
 def SymmetricCategory.equivReverseBraiding (C : Type u₁) [Category.{v₁} C]
     [MonoidalCategory C] [SymmetricCategory C] :=
   @Functor.Braided.mk C _ _ _ C _ _ (reverseBraiding C) (𝟭 C) _ <| by
-    simp [reverseBraiding, braiding_swap_eq_inv_braiding]
+    simp +instances [reverseBraiding, braiding_swap_eq_inv_braiding]
 
 end CategoryTheory

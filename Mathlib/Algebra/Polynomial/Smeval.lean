@@ -83,6 +83,7 @@ variable (R)
 theorem smeval_zero : (0 : R[X]).smeval x = 0 := by
   simp only [smeval_eq_sum, sum_zero_index]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem smeval_one : (1 : R[X]).smeval x = 1 • x ^ 0 := by
   rw [← C_1, smeval_C]
@@ -134,10 +135,8 @@ theorem smeval.linearMap_apply : smeval.linearMap R x p = p.smeval x := rfl
 
 theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
     ⇑(leval r) = fun p => p.smeval r := by
-  rw [funext_iff]
-  intro
-  rw [leval_apply, smeval_def, eval_eq_sum]
-  rfl
+  ext
+  simpa using eval_eq_smeval _ _
 
 theorem leval_eq_smeval.linearMap {R : Type*} [Semiring R] (r : R) :
     leval r = smeval.linearMap R r := by
@@ -271,6 +270,7 @@ theorem smeval_mul : (p * q).smeval x = p.smeval x * q.smeval x := by
   | monomial n a =>
     simp only [smeval_monomial, smeval_monomial_mul, smul_mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smeval_pow : ∀ (n : ℕ), (p ^ n).smeval x = (p.smeval x) ^ n
   | 0 => by
     simp only [npow_zero, smeval_one, one_smul]

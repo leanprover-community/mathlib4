@@ -46,7 +46,7 @@ composition-product. However it is necessary to do all the proofs once again bec
 composition-product requires s-finiteness while the composition does not.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

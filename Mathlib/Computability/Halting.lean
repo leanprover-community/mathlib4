@@ -18,9 +18,6 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
--- TODO: fix all violations in this file
-set_option linter.flexible false
-
 @[expose] public section
 
 open List (Vector)
@@ -30,6 +27,7 @@ namespace Nat.Partrec
 
 open Computable Part
 
+set_option linter.flexible false in -- simp acts on two goals with different simp sets
 theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
     ∃ h, Nat.Partrec h ∧
       ∀ a, (∀ x ∈ h a, x ∈ f a ∨ x ∈ g a) ∧ ((h a).Dom ↔ (f a).Dom ∨ (g a).Dom) := by
@@ -307,7 +305,7 @@ open List.Vector Partrec Computable
 
 open Nat.Partrec'
 
-theorem to_part {n f} (pf : @Partrec' n f) : _root_.Partrec f := by
+theorem to_part {n f} (pf : @Partrec' n f) : Partrec f := by
   induction pf with
   | prim hf => exact hf.to_prim.to_comp
   | comp _ _ _ hf hg => exact (Partrec.vector_mOfFn hg).bind (hf.comp snd)
@@ -328,10 +326,13 @@ theorem of_prim {n} {f : List.Vector ℕ n → ℕ} (hf : Primrec f) : @Partrec'
 theorem head {n : ℕ} : @Partrec' n.succ (@head ℕ n) :=
   prim Nat.Primrec'.head
 
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @prim _ _ <| Nat.Primrec'.get i.succ).of_eq fun v => by
     simp; rw [← ofFn_get v.tail]; congr; funext i; simp
 
+set_option linter.flexible false in -- simp acts on two goals with different simp sets
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n fun v => (f v).bind fun a => g (a ::ᵥ v) :=
   (@comp n (n + 1) g (fun i => Fin.cases f (fun i v => some (v.get i)) i) hg fun i => by
@@ -390,7 +391,7 @@ theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 
 
 open Nat.Partrec.Code
 
-theorem of_part : ∀ {n f}, _root_.Partrec f → @Partrec' n f :=
+theorem of_part : ∀ {n f}, Partrec f → @Partrec' n f :=
   @(suffices ∀ f, Nat.Partrec f → @Partrec' 1 fun v => f v.head from fun {n f} hf => by
       let g := fun n₁ =>
         (Part.ofOption (decode (α := List.Vector ℕ n) n₁)).bind (fun a => Part.map encode (f a))
@@ -407,10 +408,10 @@ theorem of_part : ∀ {n f}, _root_.Partrec f → @Partrec' n f :=
               (Primrec.vector_head.pair (_root_.Primrec.const c)).pair <|
                 Primrec.vector_head.comp Primrec.vector_tail)
 
-theorem part_iff {n f} : @Partrec' n f ↔ _root_.Partrec f :=
+theorem part_iff {n f} : @Partrec' n f ↔ Partrec f :=
   ⟨to_part, of_part⟩
 
-theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 fun v => f v.head) ↔ _root_.Partrec f :=
+theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 fun v => f v.head) ↔ Partrec f :=
   part_iff.trans
     ⟨fun h =>
       (h.comp <| (Primrec.vector_ofFn fun _ => _root_.Primrec.id).to_comp).of_eq fun v => by

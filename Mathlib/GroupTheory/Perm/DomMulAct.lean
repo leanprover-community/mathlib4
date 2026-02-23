@@ -117,6 +117,7 @@ theorem stabilizer_ncard [Finite α] [Fintype ι] :
 
 variable [DecidableEq α] [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cardinality of the type of permutations preserving a function
   (without the finiteness assumption on target) -/
 theorem stabilizer_card' :
@@ -128,7 +129,7 @@ theorem stabilizer_card' :
     simp only [this, stabilizer_card]
     apply Finset.prod_bij (fun g _ => g.val)
     · exact fun g _ => Finset.coe_mem g
-    · exact fun g _ g' _ =>  SetCoe.ext
+    · exact fun g _ g' _ => SetCoe.ext
     · simp
     · intro i _
       apply congr_arg

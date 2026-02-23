@@ -90,6 +90,7 @@ open Presieve Presieve.FamilyOfElements Limits
 
 variable (P : Cᵒᵖ ⥤ A) {X : C} (S : Sieve X) (R : Presieve X) (E : Aᵒᵖ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a sieve `S` on `X : C`, a presheaf `P : Cᵒᵖ ⥤ A`, and an object `E` of `A`,
     the cones over the natural diagram `S.arrows.diagram.op ⋙ P` associated to `S` and `P`
     with cone point `E` are in 1-1 correspondence with sieve_compatible family of elements
@@ -99,17 +100,17 @@ def conesEquivSieveCompatibleFamily :
       { x : FamilyOfElements (P ⋙ coyoneda.obj E) (S : Presieve X) // x.SieveCompatible } where
   toFun π :=
     ⟨fun _ f h => π.app (op ⟨Over.mk f, h⟩), fun X Y f g hf => by
-      apply (id_comp _).symm.trans
-      dsimp
-      exact π.naturality (Quiver.Hom.op (Over.homMk _ (by rfl)))⟩
+      let φ : S.arrows.categoryMk (g ≫ f) (S.downward_closed hf g) ⟶
+        S.arrows.categoryMk f hf := ObjectProperty.homMk (Over.homMk _ (by rfl))
+      simpa using π.naturality φ.op⟩
   invFun x :=
     { app := fun f => x.1 f.unop.1.hom f.unop.2
       naturality := fun f f' g => by
-        refine Eq.trans ?_ (x.2 f.unop.1.hom g.unop.left f.unop.2)
-        dsimp
-        rw [id_comp]
+        have := x.2 f.unop.1.hom g.unop.hom.left f.unop.2
+        dsimp at this ⊢
+        rw [id_comp, ← this]
         convert rfl
-        rw [Over.w] }
+        simp only [Over.w] }
 
 variable {P S E}
 variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
@@ -553,6 +554,7 @@ variable (P : Cᵒᵖ ⥤ A) (P' : Cᵒᵖ ⥤ A')
 
 section MultiequalizerConditions
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `P` is a sheaf and `S` is a cover, the associated multifork is a limit. -/
 def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.multifork P) where
   lift := fun E : Multifork _ => hP.amalgamate S (fun _ => E.ι _)
@@ -572,6 +574,7 @@ def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.mul
     symm
     apply hP.amalgamate_map
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSheaf_iff_multifork :
     IsSheaf J P ↔ ∀ (X : C) (S : J.Cover X), Nonempty (IsLimit (S.multifork P)) := by
   refine ⟨fun hP X S => ⟨isLimitOfIsSheaf _ _ _ hP⟩, ?_⟩
@@ -601,6 +604,7 @@ def IsSheaf.isLimitMultifork
   rw [Presheaf.isSheaf_iff_multifork] at hP
   exact (hP X S).some
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSheaf_iff_multiequalizer [∀ (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)] :
     IsSheaf J P ↔ ∀ (X : C) (S : J.Cover X), IsIso (S.toMultiequalizer P) := by
   rw [isSheaf_iff_multifork]
@@ -655,6 +659,7 @@ def firstMap : firstObj R P ⟶ secondObj R P :=
 def secondMap : firstObj R P ⟶ secondObj R P :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
+set_option backward.isDefEq.respectTransparency false in
 theorem w : forkMap R P ≫ firstMap R P = forkMap R P ≫ secondMap R P := by
   apply limit.hom_ext
   rintro ⟨⟨Y, f, hf⟩, ⟨Z, g, hg⟩⟩
@@ -669,6 +674,7 @@ equivalent in `CategoryTheory.Presheaf.isSheaf_iff_isSheaf'`.
 def IsSheaf' (P : Cᵒᵖ ⥤ A) : Prop :=
   ∀ (U : C) (R : Presieve U) (_ : generate R ∈ J U), Nonempty (IsLimit (Fork.ofι _ (w R P)))
 
+set_option backward.isDefEq.respectTransparency false in
 -- Again I wonder whether `UnivLE` can somehow be used to allow `s` to take
 -- values in a more general universe.
 /-- (Implementation). An auxiliary lemma to convert between sheaf conditions. -/

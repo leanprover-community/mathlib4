@@ -17,7 +17,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 bounded bilinear maps.
 -/
 
-@[expose] public section
+public section
 
 
 open Asymptotics Topology
@@ -40,6 +40,7 @@ variable {b : E × F → G} {u : Set (E × F)}
 
 open NormedField
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: rewrite/golf using analytic functions?
 @[fun_prop]
 theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :

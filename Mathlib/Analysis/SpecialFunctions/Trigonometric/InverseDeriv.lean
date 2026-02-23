@@ -14,7 +14,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 Derivatives of `arcsin` and `arccos`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -54,6 +54,7 @@ theorem hasDerivAt_arcsin {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
     HasDerivAt arcsin (1 / √(1 - x ^ 2)) x :=
   (hasStrictDerivAt_arcsin h₁ h₂).hasDerivAt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffAt_arcsin {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) {n : WithTop ℕ∞} :
     ContDiffAt ℝ n arcsin x :=
   (deriv_arcsin_aux h₁ h₂).2.of_le le_top
@@ -79,7 +80,7 @@ theorem differentiableWithinAt_arcsin_Ici {x : ℝ} :
   have : sin ∘ arcsin =ᶠ[𝓝[≥] (-1 : ℝ)] id := by
     filter_upwards [Icc_mem_nhdsGE (neg_lt_self zero_lt_one)] with x using sin_arcsin'
   have := h.hasDerivWithinAt.sin.congr_of_eventuallyEq this.symm (by simp)
-  simpa using (uniqueDiffOn_Ici _ _ left_mem_Ici).eq_deriv _ this (hasDerivWithinAt_id _ _)
+  simpa using (uniqueDiffOn_Ici _ _ self_mem_Ici).eq_deriv _ this (hasDerivWithinAt_id _ _)
 
 theorem differentiableWithinAt_arcsin_Iic {x : ℝ} :
     DifferentiableWithinAt ℝ arcsin (Iic x) x ↔ x ≠ 1 := by
@@ -111,8 +112,7 @@ theorem contDiffOn_arcsin {n : WithTop ℕ∞} : ContDiffOn ℝ n arcsin {-1, 1}
 
 theorem contDiffAt_arcsin_iff {x : ℝ} {n : WithTop ℕ∞} :
     ContDiffAt ℝ n arcsin x ↔ n = 0 ∨ x ≠ -1 ∧ x ≠ 1 :=
-  ⟨fun h => or_iff_not_imp_left.2 fun hn => differentiableAt_arcsin.1 <| h.differentiableAt <|
-      ENat.one_le_iff_ne_zero_withTop.mpr hn,
+  ⟨fun h => or_iff_not_imp_left.2 fun hn => differentiableAt_arcsin.1 <| h.differentiableAt hn,
     fun h => h.elim (fun hn => hn.symm ▸ (contDiff_zero.2 continuous_arcsin).contDiffAt) fun hx =>
       contDiffAt_arcsin hx.1 hx.2⟩
 

@@ -335,7 +335,7 @@ variable {α ι : Type*} [Countable ι] [MeasurableSpace α] {μ : Measure α}
 
 theorem AECover.biUnion_Iic_aecover [Preorder ι] {φ : ι → Set α} (hφ : AECover μ atTop φ) :
     AECover μ atTop fun n : ι => ⋃ (k) (_h : k ∈ Iic n), φ k :=
-  hφ.superset (fun _ ↦ subset_biUnion_of_mem right_mem_Iic) fun _ ↦ .biUnion (to_countable _)
+  hφ.superset (fun _ ↦ subset_biUnion_of_mem self_mem_Iic) fun _ ↦ .biUnion (to_countable _)
     fun _ _ ↦ (hφ.2 _)
 
 theorem AECover.biInter_Ici_aecover [Preorder ι] {φ : ι → Set α}
@@ -368,8 +368,8 @@ theorem AECover.lintegral_tendsto_of_nat {φ : ℕ → Set α} (hφ : AECover μ
   have lim₂ := lintegral_tendsto_of_monotone_of_nat hφ.biUnion_Iic_aecover
     (fun i j hij => biUnion_subset_biUnion_left (Iic_subset_Iic.mpr hij)) hfm
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le lim₁ lim₂ (fun n ↦ ?_) fun n ↦ ?_
-  exacts [lintegral_mono_set (biInter_subset_of_mem left_mem_Ici),
-    lintegral_mono_set (subset_biUnion_of_mem right_mem_Iic)]
+  exacts [lintegral_mono_set (biInter_subset_of_mem self_mem_Ici),
+    lintegral_mono_set (subset_biUnion_of_mem self_mem_Iic)]
 
 theorem AECover.lintegral_tendsto_of_countably_generated [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) :
@@ -560,6 +560,7 @@ theorem integrableOn_Ioi_of_intervalIntegral_norm_tendsto (I a : ℝ)
   let ⟨I', hI'⟩ := h.isBoundedUnder_le
   integrableOn_Ioi_of_intervalIntegral_norm_bounded I' a hfi hb hI'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded {I a₀ b₀ : ℝ}
     (hfi : ∀ i, IntegrableOn f <| Ioc (a i) (b i)) (ha : Tendsto a l <| 𝓝 a₀)
     (hb : Tendsto b l <| 𝓝 b₀) (h : ∀ᶠ i in l, (∫ x in Ioc (a i) (b i), ‖f x‖) ≤ I) :
@@ -632,6 +633,7 @@ section IoiFTC
 variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a l : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the derivative of a function defined on the real line is integrable close to `+∞`, then
 the function has a limit at `+∞`. -/
 theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi [CompleteSpace E]
@@ -741,13 +743,13 @@ theorem integral_Ioi_of_hasDerivAt_of_tendsto' (hderiv : ∀ x ∈ Ici a, HasDer
     ∫ x in Ioi a, f' x = m - f a := by
   refine integral_Ioi_of_hasDerivAt_of_tendsto ?_ (fun x hx => hderiv x hx.out.le)
     f'int hf
-  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
+  exact (hderiv a self_mem_Ici).continuousAt.continuousWithinAt
 
 /-- A special case of `integral_Ioi_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
 compact support. -/
 theorem _root_.HasCompactSupport.integral_Ioi_deriv_eq (hf : ContDiff ℝ 1 f)
     (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Ioi b, deriv f x = - f b := by
-  have := fun x (_ : x ∈ Ioi b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
+  have := fun x (_ : x ∈ Ioi b) ↦ hf.differentiable one_ne_zero x |>.hasDerivAt
   rw [integral_Ioi_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, zero_sub]
   · refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
@@ -791,7 +793,7 @@ on `[a, +∞)`. -/
 theorem integrableOn_Ioi_deriv_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
     (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
   refine integrableOn_Ioi_deriv_of_nonneg ?_ (fun x hx => hderiv x hx.out.le) g'pos hg
-  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
+  exact (hderiv a self_mem_Ici).continuousAt.continuousWithinAt
 
 /-- When a function has a limit at infinity `l`, and its derivative is nonnegative, then the
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
@@ -827,7 +829,7 @@ on `[a, +∞)`. -/
 theorem integrableOn_Ioi_deriv_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
     (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
   refine integrableOn_Ioi_deriv_of_nonpos ?_ (fun x hx ↦ hderiv x hx.out.le) g'neg hg
-  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
+  exact (hderiv a self_mem_Ici).continuousAt.continuousWithinAt
 
 /-- When a function has a limit at infinity `l`, and its derivative is nonpositive, then the
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
@@ -863,7 +865,7 @@ theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic [CompleteSpace E]
   let g := f ∘ (fun x ↦ -x)
   have hdg : ∀ x ∈ Ioi (-a), HasDerivAt g (-f' (-x)) x := by
     intro x hx
-    have : -x ∈ Iic a := by simp only [mem_Iic, mem_Ioi, neg_le] at *; exact hx.le
+    have : -x ∈ Iic a := by grind
     simpa using HasDerivAt.scomp x (hderiv (-x) this) (hasDerivAt_neg' x)
   have L : Tendsto g atTop (𝓝 (limUnder atTop g)) := by
     apply tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi hdg
@@ -936,13 +938,13 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto'
     (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
   refine integral_Iic_of_hasDerivAt_of_tendsto ?_ (fun x hx => hderiv x hx.out.le)
     f'int hf
-  exact (hderiv a right_mem_Iic).continuousAt.continuousWithinAt
+  exact (hderiv a self_mem_Iic).continuousAt.continuousWithinAt
 
 /-- A special case of `integral_Iic_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
 compact support. -/
 theorem _root_.HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f)
     (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Iic b, deriv f x = f b := by
-  have := fun x (_ : x ∈ Iio b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
+  have := fun x (_ : x ∈ Iio b) ↦ hf.differentiable one_ne_zero x |>.hasDerivAt
   rw [integral_Iic_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, sub_zero]
   · refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
@@ -962,7 +964,7 @@ lemma _root_.HasCompactSupport.enorm_le_lintegral_Ici_deriv
     exact enorm_integral_le_lintegral_enorm _
   convert this with y
   · simp [f', I, Completion.enorm_coe]
-  · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
+  · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable one_ne_zero _)]
     simp only [ContinuousLinearMap.fderiv]
     simp [I]
 
@@ -1035,7 +1037,7 @@ theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
   have t2 := intervalIntegral_tendsto_integral_Ioi _ hg2 tendsto_id
   have : Ioi (f a) ⊆ f '' Ici a :=
     Ioi_subset_Ici_self.trans <|
-      IsPreconnected.intermediate_value_Ici isPreconnected_Ici left_mem_Ici
+      IsPreconnected.intermediate_value_Ici isPreconnected_Ici self_mem_Ici
         (le_principal_iff.mpr <| Ici_mem_atTop _) hf hft
   have t1 := (intervalIntegral_tendsto_integral_Ioi _ (hg1.mono_set this) tendsto_id).comp hft
   exact tendsto_nhds_unique (Tendsto.congr' (eventuallyEq_of_mem (Ioi_mem_atTop a) eq) t2) t1
@@ -1080,6 +1082,7 @@ theorem integral_comp_rpow_Ioi_of_pos {g : ℝ → E} {p : ℝ} (hp : 0 < p) :
   convert integral_comp_rpow_Ioi g hp.ne'
   rw [abs_of_nonneg hp.le]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
     (∫ x in Ioi a, g (b * x)) = b⁻¹ • ∫ x in Ioi (b * a), g x := by
   have : ∀ c : ℝ, MeasurableSet (Ioi c) := fun c => measurableSet_Ioi
@@ -1087,7 +1090,7 @@ theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 <
     ← abs_of_pos (inv_pos.mpr hb), ← Measure.integral_comp_mul_left]
   congr
   ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Ioi _ hb, mul_div_cancel_left₀ _ hb.ne',
+  rw [← indicator_comp_right, preimage_const_mul_Ioi₀ _ hb, mul_div_cancel_left₀ _ hb.ne',
     Function.comp_def]
 
 theorem integral_comp_mul_right_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
@@ -1136,13 +1139,14 @@ theorem integrableOn_Ioi_comp_rpow_iff' [NormedSpace ℝ E] (f : ℝ → E) {p :
   simpa only [← integrableOn_Ioi_comp_rpow_iff f hp, mul_smul] using
     (integrable_smul_iff (abs_pos.mpr hp).ne' _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integrableOn_Ioi_comp_mul_left_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :
     IntegrableOn (fun x => f (a * x)) (Ioi c) ↔ IntegrableOn f (Ioi <| a * c) := by
   rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet <| Ioi c)]
   rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet <| Ioi <| a * c)]
   convert integrable_comp_mul_left_iff ((Ioi (a * c)).indicator f) ha.ne' using 2
   ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Ioi _ ha, mul_comm a c,
+  rw [← indicator_comp_right, preimage_const_mul_Ioi₀ _ ha, mul_comm a c,
     mul_div_cancel_right₀ _ ha.ne', Function.comp_def]
 
 theorem integrableOn_Ioi_comp_mul_right_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :

@@ -88,6 +88,7 @@ theorem integralSum_biUnionTagged (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[
   refine (π.sum_biUnion_boxes _ _).trans <| sum_congr rfl fun J hJ => sum_congr rfl fun J' hJ' => ?_
   rw [π.tag_biUnionTagged hJ hJ']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integralSum_biUnion_partition (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F)
     (π : TaggedPrepartition I) (πi : ∀ J, Prepartition J) (hπi : ∀ J ∈ π, (πi J).IsPartition) :
     integralSum f vol (π.biUnionPrepartition πi) = integralSum f vol π := by
@@ -281,6 +282,7 @@ theorem integral_sub (hf : Integrable I l f vol) (hg : Integrable I l g vol) :
     integral I l (f - g) vol = integral I l f vol - integral I l g vol :=
   (hf.hasIntegral.sub hg.hasIntegral).integral_eq
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasIntegral_const (c : E) : HasIntegral I l (fun _ => c) vol (vol I c) :=
   tendsto_const_nhds.congr' <| (l.eventually_isPartition I).mono fun _π hπ => Eq.symm <|
     (vol.map ⟨⟨fun g : E →L[ℝ] F ↦ g c, rfl⟩, fun _ _ ↦ rfl⟩).sum_partition_boxes le_top hπ
@@ -623,6 +625,7 @@ open Prepartition EMetric ENNReal BoxAdditiveMap Finset Metric TaggedPrepartitio
 
 variable (l)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function that is bounded and a.e. continuous on a box `I` is integrable on `I`. -/
 theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : Box ι} {f : ℝⁿ → E}
     (hb : ∃ C : ℝ, ∀ x ∈ Box.Icc I, ‖f x‖ ≤ C) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ]
@@ -687,14 +690,14 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
       gcongr _ * ?_
       obtain ⟨x, xJ, xnU⟩ : ∃ x ∈ J, x ∉ U := Set.not_subset.1 (hJ.2 hJ.1)
       have hx : x ∈ Box.Icc I \ U := ⟨Box.coe_subset_Icc ((le_of_mem' _ J hJ.1) xJ), xnU⟩
-      have ineq : edist (f (t₁ J)) (f (t₂ J)) ≤ EMetric.diam (f '' (ball x r ∩ (Box.Icc I))) := by
-        apply edist_le_diam_of_mem <;>
+      have ineq : edist (f (t₁ J)) (f (t₂ J)) ≤ ediam (f '' (ball x r ∩ (Box.Icc I))) := by
+        apply edist_le_ediam_of_mem <;>
           refine Set.mem_image_of_mem f ⟨?_, tag_mem_Icc _ J⟩ <;>
           refine closedBall_subset_ball (div_two_lt_of_pos r0) <| mem_closedBall_comm.1 ?_
         · exact h₁.isSubordinate.infPrepartition π₂.toPrepartition J hJ.1 (Box.coe_subset_Icc xJ)
         · exact h₂.isSubordinate.infPrepartition π₁.toPrepartition J
             ((π₁.mem_infPrepartition_comm).1 hJ.1) (Box.coe_subset_Icc xJ)
-      rw [← emetric_ball] at ineq
+      rw [← Metric.eball_ofReal] at ineq
       simpa only [edist_le_ofReal (le_of_lt ε₁0), dist_eq_norm, hJ.1] using ineq.trans (hr x hx)
     refine (norm_sum_le _ _).trans <| (sum_le_sum this).trans ?_
     rw [← sum_mul]

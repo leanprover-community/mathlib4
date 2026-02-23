@@ -43,7 +43,8 @@ open CategoryTheory.Limits
 section
 
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
-@[deprecated CartesianMonoidalCategory.ofHasFiniteProducts (since := "2025-10-19")]
+@[instance_reducible,
+  deprecated CartesianMonoidalCategory.ofHasFiniteProducts (since := "2025-10-19")]
 def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C :=
   have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
   let +nondep : CartesianMonoidalCategory C := .ofHasFiniteProducts
@@ -97,31 +98,37 @@ theorem associator_inv (X Y Z : C) :
       prod.lift (prod.lift prod.fst (prod.snd ≫ prod.fst)) (prod.snd ≫ prod.snd) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_hom_fst (since := "2025-10-19")]
 theorem associator_hom_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ prod.fst = prod.fst ≫ prod.fst := by simp [associator_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_hom_snd_fst (since := "2025-10-19")]
 theorem associator_hom_snd_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ prod.snd ≫ prod.fst = prod.fst ≫ prod.snd := by simp [associator_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_hom_snd_snd (since := "2025-10-19")]
 theorem associator_hom_snd_snd (X Y Z : C) :
     (α_ X Y Z).hom ≫ prod.snd ≫ prod.snd = prod.snd := by simp [associator_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_inv_fst_fst (since := "2025-10-19")]
 theorem associator_inv_fst_fst (X Y Z : C) :
     (α_ X Y Z).inv ≫ prod.fst ≫ prod.fst = prod.fst := by simp [associator_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_inv_fst_snd (since := "2025-10-19")]
 theorem associator_inv_fst_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ prod.fst ≫ prod.snd = prod.snd ≫ prod.fst := by simp [associator_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_inv_snd (since := "2025-10-19")]
 theorem associator_inv_snd (X Y Z : C) :
@@ -149,7 +156,10 @@ end
 
 section
 
+#adaptation_note /-- prior to nightly-2026-02-05
+these four fields were provided by the auto_param -/
 /-- A category with an initial object and binary coproducts has a natural monoidal structure. -/
+@[instance_reducible]
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=
   letI : MonoidalCategoryStruct C := {
     tensorObj := fun X Y ↦ X ⨿ Y
@@ -158,13 +168,17 @@ def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : Monoi
     tensorHom := fun f g ↦ Limits.coprod.map f g
     tensorUnit := ⊥_ C
     associator := coprod.associator
-    leftUnitor := fun P ↦ coprod.leftUnitor P
-    rightUnitor := fun P ↦ coprod.rightUnitor P
+    leftUnitor := coprod.leftUnitor
+    rightUnitor := coprod.rightUnitor
   }
   .ofTensorHom
     (pentagon := coprod.pentagon)
     (triangle := coprod.triangle)
     (associator_naturality := @coprod.associator_naturality _ _ _)
+    (id_tensorHom_id := fun _ _ => coprod.map_id_id)
+    (tensorHom_comp_tensorHom := coprod.map_map)
+    (leftUnitor_naturality := coprod.leftUnitor_naturality)
+    (rightUnitor_naturality := coprod.rightUnitor_naturality)
 
 end
 
@@ -229,6 +243,7 @@ attribute [local instance] monoidalOfHasFiniteCoproducts
 
 open MonoidalCategory
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal structure coming from finite coproducts is symmetric.
 -/
 @[simps]
@@ -246,7 +261,7 @@ end
 namespace monoidalOfHasFiniteProducts
 
 variable {C}
-variable {D : Type*} [Category D] (F : C ⥤ D)
+variable {D : Type*} [Category* D] (F : C ⥤ D)
   [HasTerminal C] [HasBinaryProducts C]
   [HasTerminal D] [HasBinaryProducts D]
 

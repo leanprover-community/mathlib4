@@ -33,7 +33,7 @@ The proof and motivation are described in the paper
 p-adic, p adic, padic, p-adic integer
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -53,6 +53,7 @@ theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring
 
 open Filter Metric
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem comp_tendsto_lim {p : ℕ} [Fact p.Prime] {F : Polynomial ℤ_[p]}
     (ncs : CauSeq ℤ_[p] norm) : Tendsto (fun i => F.eval (ncs i)) atTop (𝓝 (F.eval ncs.lim)) :=
   Filter.Tendsto.comp (@Polynomial.continuousAt _ _ _ _ F _) ncs.tendsto_limit
@@ -359,6 +360,7 @@ private theorem T_pos : T > 0 := by
   rw [T_def]
   exact div_pos (norm_pos_iff.2 hnsol) (deriv_sq_norm_pos hnorm)
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem newton_seq_succ_dist_weak (n : ℕ) :
     ‖newton_seq (n + 2) - newton_seq (n + 1)‖ < ‖F.aeval a‖ / ‖F.derivative.aeval a‖ :=
   have : 2 ≤ 2 ^ (n + 1) := by
@@ -425,8 +427,7 @@ private theorem soln_unique (z : ℤ_[p]) (hev : F.aeval z = 0)
       (calc
         0 = F.aeval (soln + h) := by simp [h, hev]
         _ = F.derivative.aeval soln * h + q * h ^ 2 := by rw [hq, eval_soln, zero_add]
-        _ = (F.derivative.aeval soln + q * h) * h := by rw [sq, right_distrib, mul_assoc]
-        )
+        _ = (F.derivative.aeval soln + q * h) * h := by rw [sq, right_distrib, mul_assoc])
   have : h = 0 :=
     by_contra fun hne =>
       have : F.derivative.aeval soln + q * h = 0 :=
@@ -439,8 +440,7 @@ private theorem soln_unique (z : ℤ_[p]) (hev : F.aeval z = 0)
             rw [norm_mul]
             exact mul_le_mul_of_nonneg_right (PadicInt.norm_le_one _) (norm_nonneg _)
           _ = ‖z - soln‖ := by simp [h]
-          _ < ‖F.derivative.aeval soln‖ := by rw [soln_deriv_norm]; apply soln_dist
-          )
+          _ < ‖F.derivative.aeval soln‖ := by rw [soln_deriv_norm]; apply soln_dist)
   exact eq_of_sub_eq_zero (by rw [← this])
 
 end Hensel
@@ -458,8 +458,7 @@ private theorem a_soln_is_unique (ha : F.aeval a = 0) (z' : ℤ_[p]) (hz' : F.ae
       (calc
         0 = F.aeval (a + h) := show 0 = F.aeval (a + (z' - a)) by simp [hz']
         _ = F.derivative.aeval a * h + q * h ^ 2 := by rw [hq, ha, zero_add]
-        _ = (F.derivative.aeval a + q * h) * h := by rw [sq, right_distrib, mul_assoc]
-        )
+        _ = (F.derivative.aeval a + q * h) * h := by rw [sq, right_distrib, mul_assoc])
   have : h = 0 :=
     by_contra fun hne =>
       have : F.derivative.aeval a + q * h = 0 :=
@@ -469,8 +468,7 @@ private theorem a_soln_is_unique (ha : F.aeval a = 0) (z' : ℤ_[p]) (hz' : F.ae
         (calc
           ‖F.derivative.aeval a‖ = ‖q‖ * ‖h‖ := by simp [this]
           _ ≤ 1 * ‖h‖ := by gcongr; apply PadicInt.norm_le_one
-          _ < ‖F.derivative.aeval a‖ := by simpa
-          )
+          _ < ‖F.derivative.aeval a‖ := by simpa)
   exact eq_of_sub_eq_zero (by rw [← this])
 
 variable (hnorm : ‖F.aeval a‖ < ‖F.derivative.aeval a‖ ^ 2)

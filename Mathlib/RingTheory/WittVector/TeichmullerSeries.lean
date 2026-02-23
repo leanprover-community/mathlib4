@@ -29,7 +29,7 @@ then they are equal.
 Show that the Teichmuller series is unique.
 -/
 
-@[expose] public section
+public section
 
 open Ideal Quotient
 namespace WittVector

@@ -218,8 +218,8 @@ theorem re_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).re = r * z.re := by simp [of
 
 theorem im_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).im = r * z.im := by simp [ofReal]
 
-lemma re_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).re = z.re *  r := by simp [ofReal]
-lemma im_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).im = z.im *  r := by simp [ofReal]
+lemma re_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).re = z.re * r := by simp [ofReal]
+lemma im_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).im = z.im * r := by simp [ofReal]
 
 theorem ofReal_mul' (r : ℝ) (z : ℂ) : ↑r * z = ⟨r * z.re, r * z.im⟩ :=
   ext (re_ofReal_mul _ _) (im_ofReal_mul _ _)
@@ -291,7 +291,7 @@ namespace SMul
 -- instance made scoped to avoid situations like instance synthesis
 -- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
 /-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in
-`Mathlib/Data/Complex/Module.lean` to transfer instances from `ℝ` to `ℂ`, but is not
+`Mathlib/LinearAlgebra/Complex/Module.lean` to transfer instances from `ℝ` to `ℂ`, but is not
 needed outside, so we make it scoped. -/
 scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
   smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
@@ -314,6 +314,7 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 
 end SMul
 
+set_option backward.isDefEq.respectTransparency false in
 instance addCommGroup : AddCommGroup ℂ where
   nsmul := (· • ·)
   zsmul := (· • ·)
@@ -419,6 +420,8 @@ lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 @[simp] lemma im_qsmul (q : ℚ) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
 
 @[norm_cast] lemma ofReal_nsmul (n : ℕ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
+
+set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] lemma ofReal_zsmul (n : ℤ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
 
 /-! ### Complex conjugation -/

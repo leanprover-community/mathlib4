@@ -28,8 +28,9 @@ namespace CategoryTheory
 
 open Limits GrothendieckTopology Sieve
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Precoherent C] [HasFiniteCoproducts C] : Preregular C where
   exists_fac {X Y Z} f g _ := by
     have hp := Precoherent.pullback f PUnit (fun () ↦ Z) (fun () ↦ g)
@@ -40,6 +41,7 @@ instance [Precoherent C] [HasFiniteCoproducts C] : Preregular C where
     ext b
     simpa using hι b
 
+set_option backward.isDefEq.respectTransparency false in
 instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ h := by
     refine ⟨α, inferInstance, ?_⟩
@@ -57,6 +59,7 @@ instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
       rw [← Category.assoc, pullback.condition]
       simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The union of the extensive and regular coverages generates the coherent topology on `C`. -/
 theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive C] :
     ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck =
@@ -71,7 +74,7 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
         (fun ⟨α, x, X, π, ⟨h, _⟩⟩ ↦ ⟨α, x, X, π, ⟨h, inferInstance⟩⟩)
         (fun ⟨Z, f, ⟨h, _⟩⟩ ↦ ⟨Unit, inferInstance, fun _ ↦ Z, fun _ ↦ f, ⟨h, inferInstance⟩⟩)
     | top => apply Coverage.Saturate.top
-    | transitive Y T => apply Coverage.Saturate.transitive Y T<;> [assumption; assumption]
+    | transitive Y T => apply Coverage.Saturate.transitive Y T <;> [assumption; assumption]
   · induction h with
     | of Y T hT =>
       obtain ⟨I, _, X, f, rfl, hT⟩ := hT
@@ -95,6 +98,6 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
         convert IsIso.id _
         aesop
     | top => apply Coverage.Saturate.top
-    | transitive Y T => apply Coverage.Saturate.transitive Y T<;> [assumption; assumption]
+    | transitive Y T => apply Coverage.Saturate.transitive Y T <;> [assumption; assumption]
 
 end CategoryTheory

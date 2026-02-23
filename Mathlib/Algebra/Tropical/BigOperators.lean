@@ -33,7 +33,7 @@ directly transfer to minima over multisets or finsets.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S : Type*}
 
@@ -88,12 +88,14 @@ theorem Finset.trop_inf [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → R
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem trop_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finset S) (f : S → WithTop R) :
     trop (sInf (f '' s)) = ∑ i ∈ s, trop (f i) := by
   rcases s.eq_empty_or_nonempty with (rfl | h)
   · simp only [Set.image_empty, coe_empty, sum_empty, WithTop.sInf_empty, trop_top]
   rw [← inf'_eq_csInf_image _ h, inf'_eq_inf, s.trop_inf]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem trop_iInf [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → WithTop R) :
     trop (⨅ i : S, f i) = ∑ i : S, trop (f i) := by
   rw [iInf, ← Set.image_univ, ← coe_univ, trop_sInf_image]
@@ -109,16 +111,19 @@ theorem Finset.untrop_sum' [LinearOrder R] [OrderTop R] (s : Finset S) (f : S �
   convert Multiset.untrop_sum (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply, inf_def]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem untrop_sum_eq_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finset S)
     (f : S → Tropical (WithTop R)) : untrop (∑ i ∈ s, f i) = sInf (untrop ∘ f '' s) := by
   rcases s.eq_empty_or_nonempty with (rfl | h)
   · simp only [Set.image_empty, coe_empty, sum_empty, WithTop.sInf_empty, untrop_zero]
   · rw [← inf'_eq_csInf_image _ h, inf'_eq_inf, Finset.untrop_sum']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem untrop_sum [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → Tropical (WithTop R)) :
     untrop (∑ i : S, f i) = ⨅ i : S, untrop (f i) := by
   rw [iInf, ← Set.image_univ, ← coe_univ, untrop_sum_eq_sInf_image, Function.comp_def]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Note we cannot use `i ∈ s` instead of `i : s` here
 as it is simply not true on conditionally complete lattices! -/
 theorem Finset.untrop_sum [ConditionallyCompleteLinearOrder R] (s : Finset S)

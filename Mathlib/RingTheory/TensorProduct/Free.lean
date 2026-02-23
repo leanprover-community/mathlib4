@@ -48,7 +48,7 @@ variable (A) in
 /-- Given an `R`-algebra `A` and an `R`-basis of `M`, this is an `R`-linear isomorphism
 `A ⊗[R] M ≃ (ι →₀ A)` (which is in fact `A`-linear). -/
 noncomputable def basisAux : A ⊗[R] M ≃ₗ[R] ι →₀ A :=
-  _root_.TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique R A PUnit.{uι+1}).symm b.repr ≪≫ₗ
+  _root_.TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique R A PUnit.{uι + 1}).symm b.repr ≪≫ₗ
     (finsuppTensorFinsupp R R A R PUnit ι).trans
       (Finsupp.lcongr (Equiv.uniqueProd ι PUnit) (_root_.TensorProduct.rid R A))
 
@@ -63,7 +63,7 @@ theorem basisAux_map_smul (a : A) (x : A ⊗[R] M) : basisAux A b (a • x) = a 
     fun x y hx hy => by simp [hx, hy]
 
 variable (A) in
-/-- Given a `R`-algebra `A`, this is the `A`-basis of `A ⊗[R] M` induced by a `R`-basis of `M`. -/
+/-- Given an `R`-algebra `A`, this is the `A`-basis of `A ⊗[R] M` induced by an `R`-basis of `M`. -/
 noncomputable def basis : Basis ι A (A ⊗[R] M) where
   repr := { basisAux A b with map_smul' := basisAux_map_smul b }
 
@@ -72,6 +72,7 @@ theorem basis_repr_tmul (a : A) (m : M) :
     (basis A b).repr (a ⊗ₜ m) = a • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) :=
   basisAux_tmul b _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem basis_repr_symm_apply (a : A) (i : ι) :
     (basis A b).repr.symm (Finsupp.single i a) = a ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
   simp [basis, LinearEquiv.coe_symm_mk', Equiv.uniqueProd_symm_apply, basisAux]

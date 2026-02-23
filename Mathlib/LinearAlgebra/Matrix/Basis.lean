@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Basis.Submodule
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Bases and matrices
@@ -148,7 +149,7 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
 
 variable (R₂) in
 theorem restrictScalars_toMatrix [Fintype ι] [DecidableEq ι] {S : Type*} [CommRing S] [Nontrivial S]
-    [Algebra R₂ S] [Module S M₂] [IsScalarTower R₂ S M₂] [NoZeroSMulDivisors R₂ S]
+    [Algebra R₂ S] [Module S M₂] [IsScalarTower R₂ S M₂] [IsDomain R₂] [IsTorsionFree R₂ S]
     (b : Basis ι S M₂) (v : ι → span R₂ (Set.range b)) :
     (algebraMap R₂ S).mapMatrix ((b.restrictScalars R₂).toMatrix v) =
       b.toMatrix (fun i ↦ (v i : M₂)) := by

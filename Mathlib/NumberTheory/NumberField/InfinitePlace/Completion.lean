@@ -19,8 +19,8 @@ of instances is through the use of type synonyms. In this case, we use the type 
 of a semiring. In particular this type synonym depends on an absolute value, which provides a
 systematic way of assigning and inferring instances of the semiring that also depend on an absolute
 value. The completion of a field at multiple absolute values is defined in
-`Mathlib/Algebra/Ring/WithAbs.lean` as `AbsoluteValue.Completion`. The completion of a number
-field at an infinite place is then derived in this file, as `InfinitePlace` is a subtype of
+`Mathlib/Analysis/Normed/Field/WithAbs.lean` as `AbsoluteValue.Completion`. The completion of a
+number field at an infinite place is then derived in this file, as `InfinitePlace` is a subtype of
 `AbsoluteValue`.
 
 ## Main definitions
@@ -77,6 +77,7 @@ abbrev Completion := v.1.Completion
 
 namespace Completion
 
+set_option backward.isDefEq.respectTransparency false in
 instance : NormedField v.Completion :=
   letI := v.isometry_embedding.isUniformInducing.completableTopField
   UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v.1)
@@ -85,15 +86,18 @@ lemma norm_coe (x : WithAbs v.1) :
     ‖(x : v.Completion)‖ = v (WithAbs.equiv v.1 x) :=
   UniformSpace.Completion.norm_coe x
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Algebra K v.Completion :=
   inferInstanceAs <| Algebra (WithAbs v.1) v.1.Completion
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coercion from the rationals to its completion along an infinite place is `Rat.cast`. -/
 lemma WithAbs.ratCast_equiv (v : InfinitePlace ℚ) (x : WithAbs v.1) :
     Rat.cast (WithAbs.equiv _ x) = (x : v.Completion) :=
   (eq_ratCast (UniformSpace.Completion.coeRingHom.comp
     (WithAbs.equiv v.1).symm.toRingHom) x).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
     ‖(x : v.Completion)‖ = |x| := by
   rw [← (WithAbs.equiv v.1).apply_symm_apply x, WithAbs.ratCast_equiv,
@@ -104,17 +108,21 @@ lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
 instance locallyCompactSpace : LocallyCompactSpace (v.Completion) :=
   AbsoluteValue.Completion.locallyCompactSpace v.isometry_embedding
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The embedding associated to an infinite place extended to an embedding `v.Completion →+* ℂ`. -/
 def extensionEmbedding : v.Completion →+* ℂ := v.isometry_embedding.extensionHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The embedding `K →+* ℝ` associated to a real infinite place extended to `v.Completion →+* ℝ`. -/
 def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion →+* ℝ :=
   (v.isometry_embedding_of_isReal hv).extensionHom
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extensionEmbedding_coe (x : K) : extensionEmbedding v x = v.embedding x :=
   v.isometry_embedding.extensionHom_coe _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : K) :
     extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv x :=

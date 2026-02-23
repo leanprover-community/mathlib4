@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Ideal.IdempotentFG
 
 # Standard etale maps
 
-# Main definitions
+## Main definitions
 - `StandardEtalePair`:
   A pair `f g : R[X]` such that `f` is monic and `f'` is invertible in `R[X][1/g]`.
 - `StandardEtalePair`: The standard etale algebra corresponding to a `StandardEtalePair`.
@@ -80,6 +80,7 @@ def lift (x : S) (h : P.HasMap x) : P.Ring →ₐ[R] S :=
   Ideal.Quotient.liftₐ _ (aevalAeval x ↑(h.2.unit⁻¹))
     (Ideal.span_le (I := RingHom.ker _).mpr (by simp [Set.pair_subset_iff, h.1]))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma lift_X (x : S) (h : P.HasMap x) : P.lift x h P.X = x := by
   simp [lift, StandardEtalePair.Ring, StandardEtalePair.X]
@@ -95,6 +96,7 @@ lemma HasMap.isUnit_derivative_f {x : S} (h : P.HasMap x) :
     ⟨_, by simpa [h.1] using congr(aeval x $e.symm)⟩
   exact isUnit_of_dvd_unit this (.pow _ h.2)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma aeval_X_g_mul_mk_X : aeval P.X P.g * Ideal.Quotient.mk _ .X = 1 := by
   have : aeval (R := R) P.X = (Ideal.Quotient.mkₐ _ _).comp Polynomial.CAlgHom := by
     ext; simp [StandardEtalePair.Ring, StandardEtalePair.X]
@@ -103,6 +105,7 @@ lemma aeval_X_g_mul_mk_X : aeval P.X P.g * Ideal.Quotient.mk _ .X = 1 := by
   rw [← map_mul, ← map_one (Ideal.Quotient.mk _), ← sub_eq_zero, ← map_sub, mul_comm]
   exact Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.subset_span (Set.mem_insert_of_mem _ rfl))
 
+set_option backward.isDefEq.respectTransparency false in
 variable {P} in
 lemma hasMap_X : P.HasMap P.X :=
   have : aeval (R := R) P.X = (Ideal.Quotient.mkₐ _ _).comp Polynomial.CAlgHom := by
@@ -110,6 +113,7 @@ lemma hasMap_X : P.HasMap P.X :=
   ⟨this ▸ Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.subset_span (Set.mem_insert _ _)),
     IsUnit.of_mul_eq_one _ P.aeval_X_g_mul_mk_X⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable {P} in
 @[ext]
 lemma hom_ext {f g : P.Ring →ₐ[R] S} (H : f P.X = g P.X) : f = g := by
@@ -142,6 +146,7 @@ def homEquiv : (P.Ring →ₐ[R] S) ≃ { x : S // P.HasMap x } where
   left_inv f := P.hom_ext (by simp)
   right_inv x := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma existsUnique_hasMap_of_hasMap_quotient_of_sq_eq_bot
     (I : Ideal S) (hI : I ^ 2 = ⊥) (x : S) (hx : P.HasMap (Ideal.Quotient.mk I x)) :
     ∃! ε, ε ∈ I ∧ P.HasMap (x + ε) := by
@@ -202,10 +207,11 @@ def equivAwayAdjoinRoot :
   · rw [aeval_algebraMap_apply, AdjoinRoot.aeval_eq]
     exact IsLocalization.Away.algebraMap_isUnit ..
   · change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
-    simpa [Submonoid.powers_le,  IsUnit.mem_submonoid_iff] using P.hasMap_X.2
+    simpa [Submonoid.powers_le, IsUnit.mem_submonoid_iff] using P.hasMap_X.2
   · ext; simp [Algebra.algHom]
   · ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `R[X][Y]/⟨f, Yg-1⟩ ≃ R[X][1/g]/f` -/
 def equivAwayQuotient :
     P.Ring ≃ₐ[R] Localization.Away P.g ⧸ Ideal.span {algebraMap _ (Localization.Away P.g) P.f} := by
@@ -219,7 +225,7 @@ def equivAwayQuotient :
       aeval_X_left_apply]
     exact (IsLocalization.Away.algebraMap_isUnit ..).map _
   · change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
-    simpa [Submonoid.powers_le,  IsUnit.mem_submonoid_iff] using P.hasMap_X.2
+    simpa [Submonoid.powers_le, IsUnit.mem_submonoid_iff] using P.hasMap_X.2
   · change Ideal.span _ ≤ RingHom.ker _
     simpa [Ideal.span_le] using P.hasMap_X.1
   · apply Ideal.Quotient.algHom_ext
@@ -236,10 +242,25 @@ def equivMvPolynomialQuotient :
   Ideal.quotientEquivAlg _ _ (Bivariate.equivMvPolynomial R)
     (by simp only [Ideal.map_span, Set.image_insert_eq, Set.image_singleton]; rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equivMvPolynomialQuotient_symm_apply :
     P.equivMvPolynomialQuotient.symm (Ideal.Quotient.mk _ (.X 0)) = P.X := by
   simp [equivMvPolynomialQuotient, StandardEtalePair.Ring]; rfl
+
+/-- Mapping a standard etale pair under a ring homomorphism. -/
+@[simps] protected noncomputable def map (f : R →+* S) : StandardEtalePair S where
+  f := P.f.map f
+  monic_f := P.monic_f.map _
+  g := P.g.map f
+  cond := by
+    obtain ⟨p₁, p₂, n, e⟩ := P.cond
+    refine ⟨p₁.map f, p₂.map f, n, ?_⟩
+    simp [← Polynomial.map_mul, ← Polynomial.map_add, e]
+
+lemma HasMap.map_algebraMap [Algebra S T] [IsScalarTower R S T] {x : T} (H : P.HasMap x) :
+    (P.map (algebraMap R S)).HasMap x := by
+  simpa [HasMap]
 
 end StandardEtalePair
 
@@ -324,6 +345,38 @@ def StandardEtalePresentation.mapEquiv (e : S ≃ₐ[R] T) : StandardEtalePresen
   lift_bijective := (show P.lift (e P.x) (P.hasMap.map e.toAlgHom) = e.toAlgHom.comp
     (P.lift _ P.hasMap) from P.hom_ext (by simp)) ▸ e.bijective.comp P.lift_bijective
 
+lemma StandardEtalePresentation.hom_ext {f₁ f₂ : S →ₐ[R] T} (h : f₁ P.x = f₂ P.x) : f₁ = f₂ := by
+  have : f₁.comp P.equivRing.symm.toAlgHom = f₂.comp P.equivRing.symm.toAlgHom :=
+    P.P.hom_ext (by simpa)
+  ext x
+  obtain ⟨x, rfl⟩ := P.equivRing.symm.surjective x
+  exact congr($this x)
+
+open scoped TensorProduct
+
+/-- The base change of a standard etale algebra is standard etale. -/
+noncomputable
+def StandardEtalePresentation.baseChange :
+    StandardEtalePresentation T (T ⊗[R] S) where
+  __ := P.map (algebraMap R T)
+  x := 1 ⊗ₜ P.x
+  hasMap := (P.hasMap.map (Algebra.TensorProduct.includeRight (R := R) (A := T))).map_algebraMap
+  lift_bijective := by
+    algebraize [(algebraMap T (P.map (algebraMap R T)).Ring).comp (algebraMap R T)]
+    have H : P.HasMap (P.map (algebraMap R T)).X := by
+      simpa [StandardEtalePair.HasMap] using (P.map (algebraMap R T)).hasMap_X
+    let f : T ⊗[R] S →ₐ[T] (P.map (algebraMap R T)).Ring :=
+      Algebra.TensorProduct.lift (Algebra.ofId _ _) ((P.lift (P.map _).X H).comp P.equivRing)
+        fun _ _ ↦ .all _ _
+    let α : T ⊗[R] S ≃ₐ[T] (P.map (algebraMap R T)).Ring :=
+      .ofAlgHom f ((P.map (algebraMap R T)).lift (1 ⊗ₜ[R] P.x)
+        (P.hasMap.map (Algebra.TensorProduct.includeRight (R := R) (A := T))).map_algebraMap) (by
+        ext; simp [f]) (by
+        ext1
+        · ext
+        · apply P.hom_ext; simp [f])
+    exact α.symm.bijective
+
 namespace Algebra
 
 /-- The class of standard etale algebras,
@@ -350,6 +403,7 @@ instance : IsStandardEtale R R :=
       (by ext) (by ext; simp [this])
     exact e.bijective⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     {Sₛ : Type*} [CommRing Sₛ] [Algebra S Sₛ]
     [Algebra R Sₛ] [IsScalarTower R S Sₛ] (s : S) [IsLocalization.Away s Sₛ] :
@@ -385,8 +439,6 @@ lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
 /-- If `T` is an etale algebra, and a standard etale algebra surjects onto `T`, then
   `T` is also standard etale. -/
 lemma IsStandardEtale.of_surjective
-    (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T]
     [IsStandardEtale R S] [Algebra.Etale R T] (f : S →ₐ[R] T) (hf : Function.Surjective f) :
     IsStandardEtale R T := by
   letI := f.toAlgebra
@@ -396,5 +448,9 @@ lemma IsStandardEtale.of_surjective
       ((Algebra.FormallyEtale.iff_of_surjective hf).mp (.of_restrictScalars (R := R)))
   have := IsLocalization.away_of_isIdempotentElem he.one_sub (hfe.trans (by simp)) hf
   exact .of_isLocalizationAway (1 - e)
+
+instance [Algebra.IsStandardEtale R S] :
+    Algebra.IsStandardEtale T (T ⊗[R] S) :=
+  ⟨⟨Algebra.IsStandardEtale.nonempty_standardEtalePresentation.some.baseChange⟩⟩
 
 end Algebra

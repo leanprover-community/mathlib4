@@ -40,7 +40,7 @@ namespace Limits
 /-- An object `X` in a category is a *zero object* if for every object `Y`
 there is a unique morphism `to : X → Y` and a unique morphism `from : Y → X`.
 
-This is a characteristic predicate for `has_zero_object`. -/
+This is a characteristic predicate for `HasZeroObject`. -/
 structure IsZero (X : C) : Prop where
   /-- there are unique morphisms to the object -/
   unique_to : ∀ Y, Nonempty (Unique (X ⟶ Y))
@@ -181,6 +181,7 @@ variable [HasZeroObject C]
 /-- Construct a `Zero C` for a category with a zero object.
 This cannot be a global instance as it will trigger for every `Zero C` typeclass search.
 -/
+@[instance_reducible]
 protected def HasZeroObject.zero' : Zero C where zero := HasZeroObject.zero.choose
 
 scoped[ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.zero'
@@ -215,15 +216,25 @@ theorem IsZero.obj [HasZeroObject D] {F : C ⥤ D} (hF : IsZero F) (X : C) : IsZ
   let e : F ≅ G := hF.iso hG
   exact (isZero_zero _).of_iso (e.app X)
 
+lemma IsZero.of_full_of_faithful_of_isZero
+    (F : C ⥤ D) [F.Full] [F.Faithful] (X : C) (hX : IsZero (F.obj X)) :
+    IsZero X := by
+  have h : F.FullyFaithful := .ofFullyFaithful _
+  have (Y : C) := (hX.unique_to (F.obj Y)).some
+  have (Y : C) := (hX.unique_from (F.obj Y)).some
+  exact ⟨fun Y ↦ ⟨h.homEquiv.unique⟩, fun Y ↦ ⟨h.homEquiv.unique⟩⟩
+
 namespace HasZeroObject
 
 variable [HasZeroObject C]
 
 /-- There is a unique morphism from the zero object to any object `X`. -/
+@[instance_reducible]
 protected def uniqueTo (X : C) : Unique (0 ⟶ X) :=
   ((isZero_zero C).unique_to X).some
 
 /-- There is a unique morphism from any object `X` to the zero object. -/
+@[instance_reducible]
 protected def uniqueFrom (X : C) : Unique (X ⟶ 0) :=
   ((isZero_zero C).unique_from X).some
 

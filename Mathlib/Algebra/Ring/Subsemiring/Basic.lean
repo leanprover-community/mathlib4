@@ -211,6 +211,7 @@ instance : InfSet (Subsemiring R) :=
 theorem coe_sInf (S : Set (Subsemiring R)) : ((sInf S : Subsemiring R) : Set R) = ⋂ s ∈ S, ↑s :=
   rfl
 
+@[simp]
 theorem mem_sInf {S : Set (Subsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
@@ -218,7 +219,8 @@ theorem mem_sInf {S : Set (Subsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ 
 theorem coe_iInf {ι : Sort*} {S : ι → Subsemiring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subsemiring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subsemiring R} {x : R} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
@@ -248,6 +250,7 @@ instance : CompleteLattice (Subsemiring R) :=
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
@@ -272,7 +275,7 @@ abbrev center.commSemiring' : CommSemiring (center R) :=
 variable {R}
 
 /-- The center of isomorphic (not necessarily associative) semirings are isomorphic. -/
-@[simps!] def centerCongr [NonAssocSemiring S] (e : R ≃+* S) : center R ≃+* center S :=
+@[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
   NonUnitalSubsemiring.centerCongr e
 
 /-- The center of a (not necessarily associative) semiring
@@ -288,6 +291,7 @@ section Semiring
 instance center.commSemiring {R} [Semiring R] : CommSemiring (center R) :=
   { Submonoid.center.commMonoid, (center R).toSemiring with }
 
+set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the primed version
 example {R} [Semiring R] :
     center.commSemiring.toSemiring = Subsemiring.toSemiring (center R) := by
@@ -369,8 +373,6 @@ theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s 
 
 theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 /-- A subsemiring `S` includes `closure s` if and only if it includes `s`. -/
 @[simp]
@@ -555,6 +557,7 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
 theorem closure_eq (s : Subsemiring R) : closure (s : Set R) = s :=
   (Subsemiring.gi R).l_u_eq s
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem closure_empty : closure (∅ : Set R) = ⊥ :=
   (Subsemiring.gi R).gc.l_bot
@@ -572,6 +575,7 @@ theorem closure_iUnion {ι} (s : ι → Set R) : closure (⋃ i, s i) = ⨆ i, c
 theorem closure_sUnion (s : Set (Set R)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
   (Subsemiring.gi R).gc.l_sSup
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem closure_singleton_natCast (n : ℕ) : closure {(n : R)} = ⊥ :=
   bot_unique <| closure_le.2 <| Set.singleton_subset_iff.mpr <| natCast_mem _ _
@@ -617,10 +621,12 @@ theorem comap_iInf {ι : Sort*} (f : R →+* S) (s : ι → Subsemiring S) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_bot (f : R →+* S) : (⊥ : Subsemiring R).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_top (f : R →+* S) : (⊤ : Subsemiring S).comap f = ⊤ :=
   (gc_map_comap f).u_top
@@ -694,7 +700,7 @@ end Subsemiring
 
 namespace RingHom
 
-variable [NonAssocSemiring T] {s : Subsemiring R}
+variable {s : Subsemiring R}
 variable {σR σS : Type*}
 variable [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R] [SubsemiringClass σS S]
 
@@ -805,6 +811,7 @@ theorem range_fst : (fst R S).rangeS = ⊤ :=
 theorem range_snd : (snd R S).rangeS = ⊤ :=
   (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_bot_sup_bot_prod (s : Subsemiring R) (t : Subsemiring S) :
     s.prod ⊥ ⊔ prod ⊥ t = s.prod t :=
@@ -903,6 +910,14 @@ instance smulCommClass_right [SMul α β] [SMul R' β] [SMulCommClass α R' β] 
     SMulCommClass α S β :=
   inferInstance
 
+instance {R M : Type*} [Semiring R] [MulAction R M] :
+    SMulCommClass R (Subsemiring.center R) M :=
+  inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
+
+instance {R M : Type*} [Semiring R] [MulAction R M] :
+    SMulCommClass (Subsemiring.center R) R M :=
+  inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
+
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
 instance isScalarTower [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' α β]
     (S : Subsemiring R') :
@@ -1000,6 +1015,7 @@ theorem map_comap_eq_self
     {f : R →+* S} {t : Subsemiring S} (h : t ≤ f.rangeS) : (t.comap f).map f = t := by
   simpa only [inf_of_le_left h] using map_comap_eq f t
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_comap_eq_self_of_surjective
     {f : R →+* S} (hf : Function.Surjective f) (t : Subsemiring S) : (t.comap f).map f = t :=
   map_comap_eq_self <| by simp [hf]

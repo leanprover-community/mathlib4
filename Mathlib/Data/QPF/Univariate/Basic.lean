@@ -78,7 +78,6 @@ theorem id_map {α : Type _} (x : F α) : id <$> x = x := by
 theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) (x : F α) :
     (g ∘ f) <$> x = g <$> f <$> x := by
   rw [← abs_repr x]
-  obtain ⟨a, f⟩ := repr x
   rw [← abs_map, ← abs_map, ← abs_map]
   rfl
 
@@ -216,6 +215,7 @@ theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
   apply Wequiv.ind; exact ih
 
 /-- Define the fixed point as the quotient of trees under the equivalence relation `Wequiv`. -/
+@[instance_reducible]
 def Wsetoid : Setoid q.P.W :=
   ⟨Wequiv, @Wequiv.refl _ _, @Wequiv.symm _ _, @Wequiv.trans _ _⟩
 
@@ -352,6 +352,7 @@ instance [Inhabited q.P.A] : Inhabited (Cofix F) :=
 def Cofix.corec {α : Type _} (g : α → F α) (x : α) : Cofix F :=
   Quot.mk _ (corecF g x)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- destructor for type defined by `Cofix` -/
 def Cofix.dest : Cofix F → F (Cofix F) :=
   Quot.lift (fun x => Quot.mk Mcongr <$> abs (PFunctor.M.dest x))

@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.IsConnected
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 
@@ -20,6 +20,7 @@ universe v u
 
 namespace CategoryTheory.Limits
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `F` and `G` be two diagrams indexed by a connected `I`, and `X` and `Y` be two cones over
 `F` and `G` respectively, with maps `α : F ⟶ G` and `f : X ⟶ Y` that commutes with the cone maps.
@@ -27,7 +28,7 @@ Suppose `X = Y x[G i] F i` for all `i` and `Y = lim G`, then `X = lim F`.
 -/
 noncomputable
 def isLimitOfIsPullbackOfIsConnected
-    {I C : Type*} [Category I] [IsConnected I] [Category C] {F G : I ⥤ C}
+    {I C : Type*} [Category* I] [IsConnected I] [Category* C] {F G : I ⥤ C}
     (α : F ⟶ G) (cF : Cone F) (cG : Cone G)
     (f : (Cones.postcompose α).obj cF ⟶ cG)
     (hf : ∀ i, IsPullback (cF.π.app i) f.hom (α.app i) (cG.π.app i))
@@ -47,6 +48,7 @@ def isLimitOfIsPullbackOfIsConnected
   uniq s g hg := (hf (Classical.arbitrary _)).hom_ext (by simp [hg])
     (hcG.hom_ext <| by simp [reassoc_of% hg])
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `F` and `G` be two diagrams indexed by a connected `I`, and `X` and `Y` be two cocones over
 `F` and `G` respectively, with maps `α : F ⟶ G` and `f : X ⟶ Y` that commutes with the cocone maps.
@@ -54,7 +56,7 @@ Suppose `Y = X ⨿[F i] G i` for all `i` and `Y = colim G`, then `X = colim F`.
 -/
 noncomputable
 def isColimitOfIsPushoutOfIsConnected
-    {I C : Type*} [Category I] [IsConnected I] [Category C] {F G : I ⥤ C}
+    {I C : Type*} [Category* I] [IsConnected I] [Category* C] {F G : I ⥤ C}
     (α : F ⟶ G) (cF : Cocone F) (cG : Cocone G)
     (f : cF ⟶ (Cocones.precompose α).obj cG)
     (hf : ∀ i, IsPushout (cF.ι.app i) (α.app i) f.hom (cG.ι.app i))

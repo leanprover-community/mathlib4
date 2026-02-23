@@ -22,11 +22,164 @@ Similarly, the binary coproduct of two types `X` and `Y` identifies to
 
 @[expose] public section
 
-universe v u
+universe w v u
 
-open CategoryTheory Limits
+namespace CategoryTheory
 
-namespace CategoryTheory.Limits.Types
+namespace Limits
+
+variable {C : Type u} (F : C → Type v)
+
+/-- Given a functor `F : Discrete C ⥤ Type v`, this is a "cofan" for `F`,
+but we allow the point to be in `Type w` for an arbitrary universe `w`. -/
+abbrev CofanTypes := Functor.CoconeTypes.{w} (Discrete.functor F)
+
+variable {F}
+
+namespace CofanTypes
+
+/-- The injection map for a cofan of a functor to types. -/
+abbrev inj (c : CofanTypes.{w} F) (i : C) : F i → c.pt := c.ι ⟨i⟩
+
+variable (F) in
+/-- The cofan given by a sigma type. -/
+@[simps]
+def sigma : CofanTypes F where
+  pt := Σ (i : C), F i
+  ι := fun ⟨i⟩ x ↦ ⟨i, x⟩
+  ι_naturality := by
+    rintro ⟨i⟩ ⟨j⟩ f
+    obtain rfl : i = j := by simpa using Discrete.eq_of_hom f
+    rfl
+
+@[simp]
+lemma sigma_inj (i : C) (x : F i) :
+    (sigma F).inj i x = ⟨i, x⟩ := rfl
+
+lemma isColimit_mk (c : CofanTypes.{w} F)
+    (h₁ : ∀ (x : c.pt), ∃ (i : C) (y : F i), c.inj i y = x)
+    (h₂ : ∀ (i : C), Function.Injective (c.inj i))
+    (h₃ : ∀ (i j : C) (x : F i) (y : F j), c.inj i x = c.inj j y → i = j) :
+    Functor.CoconeTypes.IsColimit c where
+  bijective := by
+    constructor
+    · intro x y h
+      obtain ⟨⟨i⟩, x, rfl⟩ := (Discrete.functor F).ιColimitType_jointly_surjective x
+      obtain ⟨⟨j⟩, y, rfl⟩ := (Discrete.functor F).ιColimitType_jointly_surjective y
+      obtain rfl := h₃ _ _ _ _ h
+      obtain rfl := h₂ _ h
+      rfl
+    · intro x
+      obtain ⟨i, y, rfl⟩ := h₁ x
+      exact ⟨(Discrete.functor F).ιColimitType ⟨i⟩ y, rfl⟩
+
+set_option backward.isDefEq.respectTransparency false in
+variable (F) in
+lemma isColimit_sigma : Functor.CoconeTypes.IsColimit (sigma F) :=
+  isColimit_mk _ (by aesop)
+    (fun _ _ _ h ↦ by rw [Sigma.ext_iff] at h; simpa using h)
+    (fun _ _ _ _ h ↦ congr_arg Sigma.fst h)
+
+variable (F) in
+/-- Given a cofan of a functor to types, this is a canonical map
+from the Sigma type to the point of the cofan. -/
+@[simp]
+def fromSigma (c : CofanTypes.{w} F) (x : Σ (i : C), F i) : c.pt :=
+  c.inj x.1 x.2
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isColimit_iff_bijective_fromSigma (c : CofanTypes.{w} F) :
+    c.IsColimit ↔ Function.Bijective c.fromSigma := by
+  rw [(isColimit_sigma F).iff_bijective]
+  aesop
+
+section
+
+variable {c : CofanTypes.{w} F} (hc : Functor.CoconeTypes.IsColimit c)
+
+include hc
+
+lemma bijective_fromSigma_of_isColimit :
+    Function.Bijective c.fromSigma := by
+  rwa [← isColimit_iff_bijective_fromSigma]
+
+/-- The bijection from the sigma type to the point of a colimit cofan
+of a functor to types. -/
+noncomputable def equivOfIsColimit :
+    (Σ (i : C), F i) ≃ c.pt :=
+  Equiv.ofBijective _ (bijective_fromSigma_of_isColimit hc)
+
+@[simp]
+lemma equivOfIsColimit_apply (i : C) (x : F i) :
+    equivOfIsColimit hc ⟨i, x⟩ = c.inj i x := rfl
+
+@[simp]
+lemma equivOfIsColimit_symm_apply (i : C) (x : F i) :
+    (equivOfIsColimit hc).symm (c.inj i x) = ⟨i, x⟩ :=
+  (equivOfIsColimit hc).injective (by simp)
+
+lemma inj_jointly_surjective_of_isColimit (x : c.pt) :
+    ∃ (i : C) (y : F i), c.inj i y = x := by
+  obtain ⟨⟨i⟩, y, rfl⟩ := hc.ι_jointly_surjective x
+  exact ⟨i, y, rfl⟩
+
+lemma inj_injective_of_isColimit (i : C) :
+    Function.Injective (c.inj i) := by
+  intro y₁ y₂ h
+  simpa using (equivOfIsColimit hc).injective (a₁ := ⟨i, y₁⟩) (a₂ := ⟨i, y₂⟩) h
+
+lemma eq_of_inj_apply_eq_of_isColimit
+    {i₁ i₂ : C} (y₁ : F i₁) (y₂ : F i₂) (h : c.inj i₁ y₁ = c.inj i₂ y₂) :
+    i₁ = i₂ :=
+  congr_arg Sigma.fst ((equivOfIsColimit hc).injective (a₁ := ⟨i₁, y₁⟩) (a₂ := ⟨i₂, y₂⟩) h)
+
+end
+
+end CofanTypes
+
+namespace Cofan
+
+variable {C : Type u} {F : C → Type v} (c : Cofan F)
+
+/-- If `F : C → Type v`, then the data of a "type-theoretic" cofan of `F`
+with a point in `Type v` is the same as the data of a cocone (in a categorical sense). -/
+@[simps]
+def cofanTypes :
+    CofanTypes.{v} F where
+  pt := c.pt
+  ι := fun ⟨j⟩ ↦ c.inj j
+  ι_naturality := by
+    rintro ⟨i⟩ ⟨j⟩ f
+    obtain rfl : i = j := by simpa using Discrete.eq_of_hom f
+    rfl
+
+lemma isColimit_cofanTypes_iff :
+    c.cofanTypes.IsColimit ↔ Nonempty (IsColimit c) :=
+  Functor.CoconeTypes.isColimit_iff _
+
+lemma nonempty_isColimit_iff_bijective_fromSigma :
+    Nonempty (IsColimit c) ↔ Function.Bijective c.cofanTypes.fromSigma := by
+  rw [← isColimit_cofanTypes_iff, CofanTypes.isColimit_iff_bijective_fromSigma]
+
+variable {c}
+
+lemma inj_jointly_surjective_of_isColimit (hc : IsColimit c) (x : c.pt) :
+    ∃ (i : C) (y : F i), c.inj i y = x :=
+  CofanTypes.inj_jointly_surjective_of_isColimit
+    ((isColimit_cofanTypes_iff c).2 ⟨hc⟩) x
+
+lemma inj_injective_of_isColimit (hc : IsColimit c) (i : C) :
+    Function.Injective (c.inj i) :=
+  CofanTypes.inj_injective_of_isColimit ((isColimit_cofanTypes_iff c).2 ⟨hc⟩) i
+
+lemma eq_of_inj_apply_eq_of_isColimit (hc : IsColimit c)
+    {i₁ i₂ : C} (y₁ : F i₁) (y₂ : F i₂) (h : c.inj i₁ y₁ = c.inj i₂ y₂) :
+    i₁ = i₂ :=
+  CofanTypes.eq_of_inj_apply_eq_of_isColimit ((isColimit_cofanTypes_iff c).2 ⟨hc⟩) _ _ h
+
+end Cofan
+
+namespace Types
 
 /-- The category of types has `PEmpty` as an initial object. -/
 def initialColimitCocone : Limits.ColimitCocone (Functor.empty (Type u)) where
@@ -44,8 +197,10 @@ noncomputable def initialIso : ⊥_ Type u ≅ PEmpty :=
   colimit.isoColimitCocone initialColimitCocone.{u, 0}
 
 /-- The initial object in `Type u` is `PEmpty`. -/
-noncomputable def isInitialPunit : IsInitial (PEmpty : Type u) :=
+noncomputable def isInitialPEmpty : IsInitial (PEmpty : Type u) :=
   initialIsInitial.ofIso initialIso
+
+@[deprecated (since := "2026-02-08")] alias isInitialPunit := isInitialPEmpty
 
 /-- An object in `Type u` is initial if and only if it is empty. -/
 lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := by
@@ -53,7 +208,7 @@ lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := b
   · intro ⟨h⟩
     exact Function.isEmpty (IsInitial.to h PEmpty)
   · intro h
-    exact ⟨IsInitial.ofIso Types.isInitialPunit <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
+    exact ⟨IsInitial.ofIso Types.isInitialPEmpty <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
 
 
 /-- The sum type `X ⊕ Y` forms a cocone for the binary coproduct of `X` and `Y`. -/
@@ -104,6 +259,7 @@ theorem binaryCoproductIso_inr_comp_inv (X Y : Type u) :
 
 open Function (Injective)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
       Injective c.inl ∧ Injective c.inr ∧ IsCompl (Set.range c.inl) (Set.range c.inr) := by
@@ -150,6 +306,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
         dsimp
         split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any monomorphism in `Type` is a coproduct injection. -/
 noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
     IsColimit (BinaryCofan.mk f (Subtype.val : ↑(Set.range f)ᶜ → Y)) := by
@@ -166,7 +323,7 @@ def coproductColimitCocone {J : Type v} (F : J → Type max v u) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
     { pt := Σ j, F j
-      ι := Discrete.natTrans (fun ⟨j⟩ x => ⟨j, x⟩)}
+      ι := Discrete.natTrans (fun ⟨j⟩ x => ⟨j, x⟩) }
   isColimit :=
     { desc := fun s x => s.ι.app ⟨x.1⟩ x.2
       uniq := fun s m w => by

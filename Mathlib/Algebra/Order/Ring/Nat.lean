@@ -29,14 +29,15 @@ instance instIsStrictOrderedRing : IsStrictOrderedRing ℕ where
   mul_lt_mul_of_pos_left _a ha _b _c hbc := Nat.mul_lt_mul_of_pos_left hbc ha
   mul_lt_mul_of_pos_right _a ha _b _c hbc := Nat.mul_lt_mul_of_pos_right hbc ha
 
+set_option backward.isDefEq.respectTransparency false in
 instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ where
   bot := 0
   bot_le := zero_le
-  zero_le_one := zero_le_one
-  mul_le_mul_left _ _ h c := Nat.mul_le_mul_right c h
+  zero_le := zero_le
 
 /-! ### Miscellaneous lemmas -/
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isCompl_even_odd : IsCompl { n : ℕ | Even n } { n | Odd n } := by
   simp only [← Set.compl_setOf, isCompl_compl, ← not_even_iff_odd]
 

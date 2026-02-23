@@ -52,7 +52,7 @@ def mkMulHom (c : Con M) : MulHom M c.Quotient where
 def ker (f : F) : Con M where
   toSetoid := Setoid.ker f
   mul' h1 h2 := by
-    dsimp [Setoid.ker, onFun] at *
+    dsimp +instances [Setoid.ker, onFun] at *
     rw [map_mul, h1, h2, map_mul]
 
 @[to_additive (attr := norm_cast)]
@@ -99,6 +99,7 @@ theorem mapOfSurjective_eq_mapGen {c : Con M} {f : F} (h : ker f ≤ c) (hf : Su
     c.mapGen f = c.mapOfSurjective f h hf := by
   rw [← conGen_of_con (c.mapOfSurjective f h hf)]; rfl
 
+set_option backward.proofsInPublic true in
 /-- Given a congruence relation `c` on a type `M` with a multiplication, the order-preserving
 bijection between the set of congruence relations containing `c` and the congruence relations
 on the quotient of `M` by `c`. -/

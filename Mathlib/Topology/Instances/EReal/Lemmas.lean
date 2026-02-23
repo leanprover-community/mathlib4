@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Data.EReal.Inv
-public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.Semicontinuity.Basic
 
 /-!
 # Topological structure on `EReal`
@@ -100,6 +100,7 @@ theorem continuous_coe_ennreal_iff {f : α → ℝ≥0∞} :
 
 /-! ### Neighborhoods of infinity -/
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nhds_top : 𝓝 (⊤ : EReal) = ⨅ (a) (_ : a ≠ ⊤), 𝓟 (Ioi a) :=
   nhds_top_order.trans <| by simp only [lt_top_iff_ne_top]
 
@@ -137,6 +138,7 @@ theorem tendsto_nhds_bot_iff_real {α : Type*} {m : α → EReal} {f : Filter α
     Tendsto m f (𝓝 ⊥) ↔ ∀ x : ℝ, ∀ᶠ a in f, m a < x :=
   nhds_bot_basis.tendsto_right_iff.trans <| by simp only [true_implies, mem_Iio]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nhdsWithin_top : 𝓝[≠] (⊤ : EReal) = (atTop).map Real.toEReal := by
   apply (nhdsWithin_hasBasis nhds_top_basis_Ici _).ext (atTop_basis.map Real.toEReal)
   · simp only [EReal.image_coe_Ici, true_and]
@@ -150,6 +152,7 @@ lemma nhdsWithin_top : 𝓝[≠] (⊤ : EReal) = (atTop).map Real.toEReal := by
     refine fun x ↦ ⟨x, ⟨EReal.coe_lt_top x, fun x ⟨(h1 : _ ≤ x), h2⟩ ↦ ?_⟩⟩
     simp [h1, Ne.lt_top' fun a ↦ h2 a.symm]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nhdsWithin_bot : 𝓝[≠] (⊥ : EReal) = (atBot).map Real.toEReal := by
   apply (nhdsWithin_hasBasis nhds_bot_basis_Iic _).ext (atBot_basis.map Real.toEReal)
   · simp only [EReal.image_coe_Iic,
@@ -285,6 +288,7 @@ lemma limsup_add_bot_of_ne_top (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) 
   · rw [h]; exact .inl bot_ne_top
   · rw [h, bot_add]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma limsup_add_le_of_le {a b : EReal} (ha : limsup u f < a) (hb : limsup v f ≤ b) :
     limsup (u + v) f ≤ a + b := by
   rcases eq_top_or_lt_top b with rfl | h
@@ -295,11 +299,13 @@ lemma liminf_add_gt_of_gt {a b : EReal} (ha : a < liminf u f) (hb : b < liminf v
     a + b < liminf (u + v) f :=
   (add_lt_add ha hb).trans_le le_liminf_add
 
+set_option backward.isDefEq.respectTransparency false in
 lemma liminf_add_top_of_ne_bot (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) :
     liminf (u + v) f = ⊤ := by
   apply top_le_iff.1 (le_trans _ le_liminf_add)
   rw [h, top_add_of_ne_bot h']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_limsup_mul (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v) :
     limsup u f * liminf v f ≤ limsup (u * v) f := by
   rcases f.eq_or_neBot with rfl | _
@@ -480,6 +486,7 @@ private lemma continuousAt_mul_top_top :
   · simp
   · rw [Set.mem_Ioi, ← EReal.coe_one]; exact EReal.coe_lt_top 1
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
     ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (⊤, a) := by
   simp only [ContinuousAt, EReal.top_mul_coe_of_pos h, EReal.tendsto_nhds_top_iff_real]

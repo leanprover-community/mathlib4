@@ -38,6 +38,7 @@ variable [Monoid M] [Semiring R] [MulSemiringAction M R]
 /-- The action on an ideal corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseDistribMulAction : DistribMulAction M (Ideal R) where
   smul a := Ideal.map (MulSemiringAction.toRingHom _ _ a)
   one_smul I :=
@@ -54,6 +55,7 @@ open Pointwise
 /-- The action on an ideal corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseMulSemiringAction {R : Type*} [CommRing R] [MulSemiringAction M R] :
     MulSemiringAction M (Ideal R) where
   smul_one a := by simp only [Ideal.one_eq_top]; exact Ideal.map_top _
@@ -98,13 +100,10 @@ theorem pointwise_smul_toAddSubmonoid (a : M) (S : Ideal R)
 
 @[simp]
 theorem pointwise_smul_toAddSubgroup {R : Type*} [Ring R] [MulSemiringAction M R]
-    (a : M) (S : Ideal R) (ha : Function.Surjective fun r : R => a • r)  :
+    (a : M) (S : Ideal R) (ha : Function.Surjective fun r : R => a • r) :
     (a • S).toAddSubgroup = a • S.toAddSubgroup := by
   ext
   exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
-
-@[deprecated (since := "2025-07-08")]
-alias pointwise_smul_toAddSubGroup := pointwise_smul_toAddSubgroup
 
 end Monoid
 
@@ -151,10 +150,17 @@ theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
 
 theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
-    P.toAddSubgroup.inertia M ≤ MulAction.stabilizer M P := by
+    inertia M P ≤ MulAction.stabilizer M P := by
   refine fun σ hσ ↦ SetLike.ext fun x ↦ ?_
   rw [Ideal.mem_pointwise_smul_iff_inv_smul_mem,
     ← P.add_mem_iff_left (a := x) ((inv_mem hσ) x), add_sub_cancel]
+
+instance {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
+  ((inertia M P).subgroupOf (MulAction.stabilizer M P)).Normal := by
+  refine (Subgroup.normal_subgroupOf_iff (inertia_le_stabilizer P)).mpr fun g s hg hs x ↦ ?_
+  rw [Submodule.mem_toAddSubgroup, ← Ideal.smul_mem_pointwise_smul_iff (a := s⁻¹), smul_sub,
+    smul_smul, ← mul_assoc, inv_mul_cancel_left, mul_smul, Subgroup.inv_mem _ hs]
+  exact hg (s⁻¹ • x)
 
 /-! TODO: add `equivSMul` like we have for subgroup. -/
 

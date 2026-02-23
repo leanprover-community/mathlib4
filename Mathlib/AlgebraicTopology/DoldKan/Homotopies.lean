@@ -69,7 +69,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 variable {X : SimplicialObject C}
 
 /-- As we are using chain complexes indexed by `ℕ`, we shall need the relation
@@ -110,6 +110,7 @@ theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
         eqToHom (by congr) := by
   grind [hσ', hσ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
     (hσ' q n (n + 1) rfl : X _⦋n⦌ ⟶ X _⦋n + 1⦌) =
       (-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩ := by
@@ -123,6 +124,7 @@ def Hσ (q : ℕ) : K[X] ⟶ K[X] :=
 def homotopyHσToZero (q : ℕ) : Homotopy (Hσ q : K[X] ⟶ K[X]) 0 :=
   nullHomotopy' (hσ' q)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In degree `0`, the null homotopic map `Hσ` is zero. -/
 theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
   unfold Hσ
@@ -137,6 +139,7 @@ theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
       ← Fin.succ_zero_eq_one, δ_comp_σ_succ, δ_comp_σ_self' X (by rw [Fin.castSucc_zero'])]
   · rw [hσ'_eq_zero (Nat.succ_pos q) (c_mk 1 0 rfl), zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The maps `hσ' q n m hnm` are natural on the simplicial object -/
 theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op ⦋m⦌) := by
@@ -148,6 +151,7 @@ theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : Simplicia
   · rw [zero_comp, comp_zero]
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For each q, `Hσ q` is a natural transformation. -/
 def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app _ := Hσ q
@@ -158,8 +162,9 @@ def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapCo
     ext n m hnm
     simp only [alternatingFaceMapComplex_map_f, hσ'_naturality]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The maps `hσ' q n m hnm` are compatible with the application of additive functors. -/
-theorem map_hσ' {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_hσ' {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n m : ℕ) (hnm : c.Rel m n) :
     (hσ' q n m hnm : K[((whiskering _ _).obj G).obj X].X n ⟶ _) =
       G.map (hσ' q n m hnm : K[X].X n ⟶ _) := by
@@ -170,7 +175,7 @@ theorem map_hσ' {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Addit
     rfl
 
 /-- The null homotopic maps `Hσ` are compatible with the application of additive functors. -/
-theorem map_Hσ {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_Hσ {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     (Hσ q : K[((whiskering C D).obj G).obj X] ⟶ _).f n = G.map ((Hσ q : K[X] ⟶ _).f n) := by
   unfold Hσ

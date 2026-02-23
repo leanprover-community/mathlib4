@@ -32,6 +32,7 @@ section Embeddings
 
 variable (F : Type*) [Field F]
 
+set_option backward.isDefEq.respectTransparency false in
 open AdjoinRoot in
 /-- If `p` is the minimal polynomial of `a` over `F` then `F[a] ≃ₐ[F] F[x]/(p)` -/
 def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Algebra F R] (x : R) :
@@ -62,6 +63,7 @@ noncomputable def Algebra.adjoin.liftSingleton {S T : Type*}
 
 open Finset
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `K` and `L` are field extensions of `F` and we have `s : Finset K` such that
 the minimal polynomial of each `x ∈ s` splits in `L` then `Algebra.adjoin F s` embeds in `L`. -/
 theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] [Algebra F K]
@@ -84,7 +86,7 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
     letI := (f : Ks →+* L).toAlgebra
     have H5 : IsIntegral Ks a := H1.tower_top
     have H6 : ((minpoly Ks a).map (algebraMap Ks L)).Splits := by
-      refine Splits.splits_of_dvd H2 (map_ne_zero (minpoly.ne_zero H1)) ?_
+      refine Splits.of_dvd H2 (map_ne_zero (minpoly.ne_zero H1)) ?_
       rw [IsScalarTower.algebraMap_eq F Ks L, ← map_map, map_dvd_map']
       exact minpoly.dvd_map_of_isScalarTower F Ks a
     obtain ⟨y, hy⟩ := H6.exists_eval_eq_zero (by simp [(minpoly.degree_pos H5).ne'])
@@ -146,7 +148,7 @@ variable [Algebra K M] [IsScalarTower R K M] {x : M}
 theorem IsIntegral.minpoly_splits_tower_top' (int : IsIntegral R x) {f : K →+* L}
     (h : Splits ((minpoly R x).map (f.comp <| algebraMap R K))) :
     Splits ((minpoly K x).map f) :=
-  Splits.splits_of_dvd h (map_monic_ne_zero (minpoly.monic int))
+  Splits.of_dvd h (map_monic_ne_zero (minpoly.monic int))
     (by rw [← map_map, map_dvd_map']; exact minpoly.dvd_map_of_isScalarTower R K x)
 
 theorem IsIntegral.minpoly_splits_tower_top [Algebra K L] [Algebra R L] [IsScalarTower R K L]

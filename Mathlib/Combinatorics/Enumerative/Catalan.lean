@@ -5,13 +5,13 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.BigOperators.NatAntidiagonal
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.Choose.Central
-public import Mathlib.Tactic.Field
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.Positivity
-import Mathlib.Data.Tree.Basic
+
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Tactic.Field
 
 /-!
 # Catalan numbers
@@ -101,7 +101,7 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
 private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatalan (n + 1) (n + 1) -
     gosperCatalan (n + 1) 0 = Nat.centralBinom (n + 1) / (n + 2) := by
   simp only [gosperCatalan, tsub_self, Nat.centralBinom_zero, Nat.cast_one, Nat.cast_add,
-    Nat.cast_zero, tsub_zero]
+    Nat.cast_zero]
   field
 
 theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n + 1) := by
@@ -116,7 +116,7 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
                             (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
     · congr
       ext1 x
-      have m_le_d : x.val ≤ d := by omega
+      have m_le_d : x.val ≤ d := by lia
       have d_minus_x_le_d : (d - x.val) ≤ d := tsub_le_self
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast
@@ -174,6 +174,7 @@ theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
 theorem mem_treesOfNumNodesEq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=
   mem_treesOfNumNodesEq.mpr rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_treesOfNumNodesEq (n : ℕ) :
     ↑(treesOfNumNodesEq n) = { x : Tree Unit | x.numNodes = n } :=

@@ -22,7 +22,7 @@ of convergence, and some properties of the map sending a contracting map to its 
 * `ContractingWith K f` : a Lipschitz continuous self-map with `K < 1`;
 * `efixedPoint` : given a contracting map `f` on a complete emetric space and a point `x`
   such that `edist x (f x) ≠ ∞`, `efixedPoint f hf x hx` is the unique fixed point of `f`
-  in `EMetric.ball x ∞`;
+  in `Metric.eball x ∞`;
 * `fixedPoint` : the unique fixed point of a contracting map on a complete nonempty metric space.
 
 ## Tags
@@ -106,7 +106,7 @@ variable (f) in
 -- avoid `efixedPoint _` in pretty printer
 /-- Let `x` be a point of a complete emetric space. Suppose that `f` is a contracting map,
 and `edist x (f x) ≠ ∞`. Then `efixedPoint` is the unique fixed point of `f`
-in `EMetric.ball x ∞`. -/
+in `Metric.eball x ∞`. -/
 noncomputable def efixedPoint (hf : ContractingWith K f) (x : α) (hx : edist x (f x) ≠ ∞) : α :=
   Classical.choose <| hf.exists_fixedPoint x hx
 
@@ -138,7 +138,7 @@ theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx :
     efixedPoint f hf x hx = efixedPoint f hf y hy := by
   refine (hf.eq_or_edist_eq_top_of_fixedPoints ?_ ?_).elim id fun h' ↦ False.elim (ne_of_lt ?_ h')
     <;> try apply efixedPoint_isFixedPt
-  change edistLtTopSetoid _ _
+  change Metric.edistLtTopSetoid _ _
   trans x
   · apply Setoid.symm'
     exact hf.edist_efixedPoint_lt_top hx
@@ -165,7 +165,7 @@ variable (f) in
 -- avoid `efixedPoint _` in pretty printer
 /-- Let `s` be a complete forward-invariant set of a self-map `f`. If `f` contracts on `s`
 and `x ∈ s` satisfies `edist x (f x) ≠ ∞`, then `efixedPoint'` is the unique fixed point
-of the restriction of `f` to `s ∩ EMetric.ball x ∞`. -/
+of the restriction of `f` to `s ∩ Metric.eball x ∞`. -/
 noncomputable def efixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
     (hf : ContractingWith K <| hsf.restrict f s s) (x : α) (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
     α :=
@@ -219,7 +219,7 @@ theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} 
     efixedPoint' f hsc hsf hfs x hxs hx = efixedPoint' f htc htf hft y hyt hy := by
   refine (hf.eq_or_edist_eq_top_of_fixedPoints ?_ ?_).elim id fun h' ↦ False.elim (ne_of_lt ?_ h')
     <;> try apply efixedPoint_isFixedPt'
-  change edistLtTopSetoid _ _
+  change Metric.edistLtTopSetoid _ _
   trans x
   · apply Setoid.symm'
     apply edist_efixedPoint_lt_top'
@@ -285,14 +285,14 @@ theorem dist_fixedPoint_le (x) : dist x (fixedPoint f hf) ≤ dist x (f x) / (1 
 
 /-- A posteriori estimates on the convergence of iterates to the fixed point. -/
 theorem aposteriori_dist_iterate_fixedPoint_le (x n) :
-    dist (f^[n] x) (fixedPoint f hf) ≤ dist (f^[n] x) (f^[n+1] x) / (1 - K) := by
+    dist (f^[n] x) (fixedPoint f hf) ≤ dist (f^[n] x) (f^[n + 1] x) / (1 - K) := by
   rw [iterate_succ']
   apply hf.dist_fixedPoint_le
 
 theorem apriori_dist_iterate_fixedPoint_le (x n) :
     dist (f^[n] x) (fixedPoint f hf) ≤ dist x (f x) * (K : ℝ) ^ n / (1 - K) :=
   calc
-    _ ≤ dist (f^[n] x) (f^[n+1] x) / (1 - K) := hf.aposteriori_dist_iterate_fixedPoint_le x n
+    _ ≤ dist (f^[n] x) (f^[n + 1] x) / (1 - K) := hf.aposteriori_dist_iterate_fixedPoint_le x n
     _ ≤ _ := by
       gcongr; exacts [hf.one_sub_K_pos.le, hf.toLipschitzWith.dist_iterate_succ_le_geometric x n]
 
@@ -310,6 +310,7 @@ end
 
 variable [Nonempty α] [CompleteSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a map `f` has a contracting iterate `f^[n]`, then the fixed point of `f^[n]` is also a fixed
 point of `f`. -/
 theorem isFixedPt_fixedPoint_iterate {n : ℕ} (hf : ContractingWith K f^[n]) :

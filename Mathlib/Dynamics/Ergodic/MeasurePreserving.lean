@@ -189,6 +189,7 @@ protected theorem iterate (hf : MeasurePreserving f μ μ) :
   | 0 => .id μ
   | n + 1 => (MeasurePreserving.iterate hf n).comp hf
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
     (hf : MeasurePreserving f μ μ) (hs : NullMeasurableSet s μ) (n : ℕ) :
@@ -197,7 +198,7 @@ lemma measure_symmDiff_preimage_iterate_le
   | zero => simp
   | succ n ih =>
     simp only [add_smul, one_smul]
-    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)]
+    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n + 1] ⁻¹' s)]
     replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
       hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
     rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]

@@ -86,6 +86,7 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
     lia
   rw [factorization_eq_zero_of_not_prime _ hp, factorization_eq_zero_of_not_prime _ hp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
     Squarefree (n ^ k) ↔ Squarefree n ∧ k = 1 := by
   refine ⟨fun h => ?_, by rintro ⟨hn, rfl⟩; simpa⟩
@@ -158,7 +159,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
     have := ih p pp (dvd_trans ⟨_, rfl⟩ d)
     have := Nat.mul_le_mul this this
     exact not_le_of_gt h (le_trans this (le_of_dvd n0 d))
-  have k2 : 2 ≤ k := by omega
+  have k2 : 2 ≤ k := by lia
   have k0 : 0 < k := lt_of_lt_of_le (by decide) k2
   have IH : ∀ n', n' ∣ n → ¬k ∣ n' → MinSqFacProp n' (n'.minSqFacAux (k + 2)) := by
     intro n' nd' nk

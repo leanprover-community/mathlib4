@@ -91,6 +91,7 @@ instance (priority := 100) [OrderTopology α] [Countable α] :
     exact Countable.mono (fun s hs => by grind) ((countable_range f1).union (countable_range f2))
   · simp [OrderTopology.topology_eq_generate_intervals]
 
+set_option backward.isDefEq.respectTransparency false in
 instance [t : OrderTopology α] : OrderTopology αᵒᵈ :=
   ⟨by
     convert OrderTopology.topology_eq_generate_intervals (α := α) using 6
@@ -98,7 +99,7 @@ instance [t : OrderTopology α] : OrderTopology αᵒᵈ :=
 
 protected theorem OrderTopology.continuous_iff [OrderTopology α] [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ ∀ a, IsOpen (f ⁻¹' Ioi a) ∧ IsOpen (f ⁻¹' Iio a) := by
-  simp_rw [OrderTopology.topology_eq_generate_intervals, continuous_generateFrom_iff]
+  simp_rw +instances [OrderTopology.topology_eq_generate_intervals, continuous_generateFrom_iff]
   aesop
 
 theorem isOpen_iff_generate_intervals [t : OrderTopology α] {s : Set α} :
@@ -196,9 +197,9 @@ lemma isTopologicalBasis_biInter_Ioi_Iio_of_generateFrom (c : Set α)
   let kl := {s ∈ k | ∃ a ∈ c, s = Ioi a}
   let kr := {s ∈ k | ∃ a ∈ c, s = Iio a}
   have k_eq : k = kl ∪ kr := by
+    -- this `have` can be removed, but makes `grind` slower
     have : ∀ s ∈ k, ∃ a ∈ c, s = Ioi a ∨ s = Iio a := hk
     ext
-    simp only [mem_union, mem_setOf_eq, kl, kr]
     grind
   have : Finite kl := k_fin.subset (by simp [k_eq])
   have : Finite kr := k_fin.subset (by simp [k_eq])
@@ -361,6 +362,7 @@ theorem nhdsGE_basis_of_exists_gt [TopologicalSpace α] [LinearOrder α] [OrderT
         Ico_subset_Ico_right (min_le_right _ _)⟩)
       ha
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nhdsLE_basis_of_exists_lt [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
   convert nhdsGE_basis_of_exists_gt (α := αᵒᵈ) ha using 2
@@ -462,7 +464,7 @@ theorem exists_Icc_mem_subset_of_mem_nhdsGE {a : α} {s : Set α} (hs : s ∈ �
   rcases (em (IsMax a)).imp_right not_isMax_iff.mp with (ha | ha)
   · use a
     simpa [ha.Ici_eq] using hs
-  · rcases(nhdsGE_basis_of_exists_gt ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
+  · rcases (nhdsGE_basis_of_exists_gt ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
     rcases eq_empty_or_nonempty (Ioo a b) with (H | ⟨c, hac, hcb⟩)
     · have : Ico a b = Icc a a := by rw [← Icc_union_Ioo_eq_Ico le_rfl hab, H, union_empty]
       exact ⟨a, le_rfl, this ▸ ⟨Ico_mem_nhdsGE hab, hbs⟩⟩
@@ -636,6 +638,7 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
     exact isOpen_Ioo
   exact Subset.antisymm (Ioc_subset_Ioo_right (hy x hx.1).lt) fun u hu => ⟨hu.1, Hy _ _ hx.1 hu.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
 theorem countable_setOf_covBy_left [SecondCountableTopology α] :
@@ -747,37 +750,21 @@ theorem countable_image_gt_image_Iio [LinearOrder β] (f : β → α)
     [SecondCountableTopology α] : Set.Countable {x | ∃ z, z < f x ∧ ∀ y, y < x → f y ≤ z} :=
   countable_image_lt_image_Ioi (α := αᵒᵈ) (β := βᵒᵈ) f
 
-instance instIsCountablyGenerated_atTop [SecondCountableTopology α] :
+instance instIsCountablyGenerated_atTop [SeparableSpace α] :
     IsCountablyGenerated (atTop : Filter α) := by
-  by_cases h : ∃ (x : α), IsTop x
-  · rcases h with ⟨x, hx⟩
-    rw [atTop_eq_pure_of_isTop hx]
-    exact isCountablyGenerated_pure x
-  · rcases exists_countable_basis α with ⟨b, b_count, b_ne, hb⟩
-    have : Countable b := by exact Iff.mpr countable_coe_iff b_count
-    have A : ∀ (s : b), ∃ (x : α), x ∈ (s : Set α) := by
-      intro s
-      have : (s : Set α) ≠ ∅ := by
-        intro H
-        apply b_ne
-        convert s.2
-        exact H.symm
-      exact Iff.mp notMem_singleton_empty this
-    choose a ha using A
-    have : (atTop : Filter α) = (generate (Ici '' (range a))) := by
-      apply atTop_eq_generate_of_not_bddAbove
-      intro ⟨x, hx⟩
-      simp only [IsTop, not_exists, not_forall, not_le] at h
-      rcases h x with ⟨y, hy⟩
-      obtain ⟨s, sb, -, hs⟩ : ∃ s, s ∈ b ∧ y ∈ s ∧ s ⊆ Ioi x :=
-        hb.exists_subset_of_mem_open hy isOpen_Ioi
-      have I : a ⟨s, sb⟩ ≤ x := hx (mem_range_self _)
-      have J : x < a ⟨s, sb⟩ := hs (ha ⟨s, sb⟩)
-      exact lt_irrefl _ (I.trans_lt J)
+  obtain (h | ⟨x, hx⟩) := Set.eq_empty_or_nonempty {x : α | IsTop x}
+  · obtain ⟨s, s_count, hs⟩ := exists_countable_dense α
+    have : atTop = generate (Ici '' s) := by
+      refine atTop_eq_generate_of_not_bddAbove fun ⟨x, hx⟩ ↦ ?_
+      simp only [eq_empty_iff_forall_notMem, IsTop, mem_setOf_eq, not_forall, not_le] at h
+      obtain ⟨y, hy, hxy⟩ := hs.exists_mem_open isOpen_Ioi (h x)
+      exact (hx hy).not_gt hxy
     rw [this]
-    exact ⟨_, (countable_range _).image _, rfl⟩
+    exact ⟨_, s_count.image _, rfl⟩
+  · rw [atTop_eq_pure_of_isTop hx]
+    exact isCountablyGenerated_pure x
 
-instance instIsCountablyGenerated_atBot [SecondCountableTopology α] :
+instance instIsCountablyGenerated_atBot [SeparableSpace α] :
     IsCountablyGenerated (atBot : Filter α) :=
   @instIsCountablyGenerated_atTop αᵒᵈ _ _ _ _
 

@@ -125,6 +125,7 @@ theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m
 
 variable {N : Type*} [Monoid N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- See note [partially-applied ext lemmas]. -/
 @[ext 1100] -- This needs a higher `ext` priority
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
@@ -177,11 +178,12 @@ theorem of_leftInverse [DecidableEq ι] (i : ι) :
 theorem of_injective (i : ι) : Function.Injective (of : M i →* _) := by
   classical exact (of_leftInverse i).injective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mrange_eq_iSup {N} [Monoid N] (f : ∀ i, M i →* N) :
     MonoidHom.mrange (lift f) = ⨆ i, MonoidHom.mrange (f i) := by
   rw [lift, Equiv.coe_fn_mk, Con.lift_range, FreeMonoid.mrange_lift,
     range_sigma_eq_iUnion_range, Submonoid.closure_iUnion]
-  simp only [MonoidHom.mclosure_range]
+  simp +instances only [MonoidHom.mclosure_range]
 
 theorem lift_mrange_le {N} [Monoid N] (f : ∀ i, M i →* N) {s : Submonoid N} :
     MonoidHom.mrange (lift f) ≤ s ↔ ∀ i, MonoidHom.mrange (f i) ≤ s := by
@@ -208,10 +210,8 @@ theorem induction_left {motive : CoprodI M → Prop} (m : CoprodI M) (one : moti
 @[elab_as_elim]
 theorem induction_on {motive : CoprodI M → Prop} (m : CoprodI M) (one : motive 1)
     (of : ∀ (i) (m : M i), motive (of m))
-    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m := by
-  induction m using CoprodI.induction_left with
-  | one => exact one
-  | mul m x hx => exact mul _ _ (of _ _) hx
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m :=
+  induction_left m one fun {_} _ _ ↦ mul _ _ (of _ _)
 
 section Group
 
@@ -404,6 +404,7 @@ theorem consRecOn_cons {motive : Word M → Sort*} (i) (m : M i) (w : Word M) h1
 
 variable [DecidableEq ι] [∀ i, DecidableEq (M i)]
 
+set_option backward.privateInPublic true in
 -- This definition is computable but not very nice to look at. Thankfully we don't have to inspect
 -- it, since `rcons` is known to be injective.
 /-- Given `i : ι`, any reduced word can be decomposed into a pair `p` such that `w = rcons p`. -/
@@ -418,6 +419,8 @@ private def equivPairAux (i) (w : Word M) : { p : Pair M i // rcons p = w } :=
           property := by subst ij; simp [rcons, h2] }
       else ⟨⟨1, cons m w h1 h2, by simp [cons, fstIdx, Ne.symm ij]⟩, by simp [rcons]⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The equivalence between words and pairs. Given a word, it decomposes it as a pair by removing
 the first letter if it comes from `M i`. Given a pair, it prepends the head to the tail. -/
 def equivPair (i) : Word M ≃ Pair M i where
@@ -474,7 +477,7 @@ instance summandAction (i) : MulAction (M i) (Word M) where
     apply (equivPair i).symm_apply_eq.mpr
     simp [equivPair]
   mul_smul m m' w := by
-    dsimp [instHSMul]
+    dsimp +instances [instHSMul]
     simp [mul_assoc, ← equivPair_symm, Equiv.apply_symm_apply]
 
 instance : MulAction (CoprodI M) (Word M) :=
@@ -527,7 +530,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
             subst h
             rfl
           · simp only [fstIdx, Option.map_eq_some_iff, Sigma.exists,
-              exists_and_right, exists_eq_right, not_exists, ne_eq] at hm'
+              exists_and_right, exists_eq_right, not_exists] at hm'
             exact (hm'.1 (w.toList.head hnil).2 (by rw [List.head?_eq_some_head])).elim
       · revert h
         rw [fstIdx]
@@ -643,11 +646,7 @@ def last : ∀ {i j} (_w : NeWord M i j), M j
 
 @[simp]
 theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨i, w.head⟩ := by
-  rw [← Option.mem_def]
-  induction w
-  · rw [Option.mem_def]
-    rfl
-  · exact List.mem_head?_append_of_mem_head? (by assumption)
+  fun_induction toList with grind [head]
 
 @[simp]
 theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by
@@ -1054,8 +1053,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   use Inhabited.default
   simp only [H]
   rw [FreeGroup.freeGroupUnitEquivInt.cardinal_eq, Cardinal.mk_denumerable]
-  apply le_of_lt
-  exact nat_lt_aleph0 3
+  exact natCast_le_aleph0
 
 end PingPongLemma
 

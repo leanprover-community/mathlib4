@@ -64,7 +64,9 @@ def opOp : A ≃ₐ[R] Aᵐᵒᵖᵐᵒᵖ where
   __ := RingEquiv.opOp A
   map_smul' _ _ := rfl
 
-@[simp] theorem toRingEquiv_opOp : (opOp R A : A ≃+* Aᵐᵒᵖᵐᵒᵖ) = RingEquiv.opOp A := rfl
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about this being `@[simp]`. -/
+theorem toRingEquiv_opOp : (opOp R A : A ≃+* Aᵐᵒᵖᵐᵒᵖ) = RingEquiv.opOp A := rfl
 
 end AlgEquiv
 

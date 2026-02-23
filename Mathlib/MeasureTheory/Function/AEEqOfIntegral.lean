@@ -44,7 +44,7 @@ Generally useful lemmas which are not related to integrals:
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory TopologicalSpace NormedSpace Filter
@@ -67,7 +67,7 @@ theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace �
   refine hf'.mono fun x hx => ?_
   rw [Pi.zero_apply, ← @inner_self_eq_zero 𝕜]
   have h_closed : IsClosed {c : E | ⟪c, f x⟫_𝕜 = 0} :=
-    isClosed_eq (continuous_id.inner continuous_const) continuous_const
+    isClosed_eq (by fun_prop) (by fun_prop)
   exact @isClosed_property ℕ E _ s (fun c => ⟪c, f x⟫_𝕜 = 0) hs h_closed hx _
 
 local notation "⟪" x ", " y "⟫" => y x
@@ -115,8 +115,6 @@ theorem ae_eq_zero_of_forall_dual [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   ae_eq_zero_of_forall_dual_of_isSeparable 𝕜 (.of_separableSpace Set.univ) hf
     (Eventually.of_forall fun _ => Set.mem_univ _)
 
-variable {𝕜}
-
 end AeEqOfForall
 
 variable {α E : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}
@@ -149,6 +147,7 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg (hf : Integrable f μ)
       rw [← μ.restrict_toMeasurable mus.ne]
       exact hf_zero _ (measurableSet_toMeasurable ..) (by rwa [measure_toMeasurable])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ae_le_of_forall_setIntegral_le {f g : α → ℝ} (hf : Integrable f μ) (hg : Integrable g μ)
     (hf_le : ∀ s, MeasurableSet s → μ s < ∞ → (∫ x in s, f x ∂μ) ≤ ∫ x in s, g x ∂μ) :
     f ≤ᵐ[μ] g := by
@@ -204,6 +203,7 @@ theorem ae_nonneg_restrict_of_forall_setIntegral_nonneg {f : α → ℝ}
   refine hf_zero (s ∩ t) (hs.inter ht) ?_
   exact (measure_mono Set.inter_subset_right).trans_lt (lt_top_iff_ne_top.mpr hμt)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real {f : α → ℝ}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) {t : Set α}

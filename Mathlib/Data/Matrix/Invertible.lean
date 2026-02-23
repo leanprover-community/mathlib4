@@ -13,7 +13,7 @@ public import Mathlib.Tactic.Abel
 A few of the `Invertible` lemmas generalize to multiplication of rectangular matrices.
 
 For lemmas about the matrix inverse in terms of the determinant and adjugate, see `Matrix.inv`
-in `LinearAlgebra/Matrix/NonsingularInverse.lean`.
+in `Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean`.
 
 ## Main results
 
@@ -109,6 +109,7 @@ instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
   invOf_mul_self := by rw [← transpose_mul, mul_invOf_self, transpose_one]
   mul_invOf_self := by rw [← transpose_mul, invOf_mul_self, transpose_one]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
   letI := invertibleTranspose A
   convert (rfl : _ = ⅟(Aᵀ))
@@ -143,7 +144,7 @@ variable [Fintype m] [DecidableEq m] [Ring α]
     [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A * U)]
 
 -- No spaces around multiplication signs for better clarity
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 lemma add_mul_mul_invOf_mul_eq_one :
     (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) = 1 := by
   calc
@@ -163,7 +164,7 @@ lemma add_mul_mul_invOf_mul_eq_one :
       abel
 
 -- No spaces around multiplication signs for better clarity
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 /-- Like `add_mul_mul_invOf_mul_eq_one`, but with multiplication reversed. -/
 lemma add_mul_mul_invOf_mul_eq_one' :
     (⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A)*(A + U*C*V) = 1 := by
@@ -178,7 +179,6 @@ lemma add_mul_mul_invOf_mul_eq_one' :
       rw [sub_right_inj, Matrix.mul_add]
       simp_rw [Matrix.mul_assoc]
     _ = 1 + ⅟A*U*C*V - ⅟A*U*⅟(⅟C + V*⅟A*U)*(⅟C + V*⅟A*U)*C*V := by
-      congr 1
       simp only [Matrix.mul_add, Matrix.add_mul, ← Matrix.mul_assoc,
         Matrix.invOf_mul_cancel_right]
     _ = 1 := by
@@ -191,6 +191,7 @@ def invertibleAddMulMul : Invertible (A + U * C * V) where
   invOf_mul_self := add_mul_mul_invOf_mul_eq_one' _ _ _ _
   mul_invOf_self := add_mul_mul_invOf_mul_eq_one _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Woodbury Identity** (`⅟` version).
 
 See `Matrix.invOf_add_mul_mul'` for the Binomial Inverse Theorem. -/
@@ -234,6 +235,7 @@ def invertibleAddMulMul' : Invertible (A + U * C * V) where
   invOf_mul_self := add_mul_mul_mul_invOf_eq_one' A U C V
   mul_invOf_self := add_mul_mul_mul_invOf_eq_one A U C V
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Binomial Inverse Theorem** (`⅟` version).
 
 See `Matrix.invOf_add_mul_mul` for the Woodbury identity. -/

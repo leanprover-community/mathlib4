@@ -43,7 +43,7 @@ open TopCat TopCat.Presheaf CategoryTheory CategoryTheory.Limits
 
 universe x
 
-variable {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
+variable {C : Type*} [Category* C] {FC : C → C → Type*} {CC : C → Type*}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
 
 namespace TopCat
@@ -91,15 +91,13 @@ def objPairwiseOfFamily (sf : ∀ i, F.obj (op (U i))) :
   | ⟨Pairwise.single i⟩ => sf i
   | ⟨Pairwise.pair i j⟩ => F.map (infLELeft (U i) (U j)).op (sf i)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
-
 /-- Given a compatible family of sections over open sets, extend it to a
   section of the functor `(Pairwise.diagram U).op ⋙ F`. -/
 def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
     ((Pairwise.diagram U).op ⋙ F).sections := by
   refine ⟨objPairwiseOfFamily sf, ?_⟩
   let G := (Pairwise.diagram U).op ⋙ F
-  rintro (i|⟨i,j⟩) (i'|⟨i',j'⟩) (_ | _ | _ | _)
+  rintro (i | ⟨i, j⟩) (i' | ⟨i', j'⟩) (_ | _ | _ | _)
   · exact congr_fun (G.map_id <| op <| Pairwise.single i) _
   · rfl
   · exact (h i' i).symm
@@ -108,7 +106,7 @@ def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
 theorem isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
     ∀ i, (F.mapCone (Pairwise.cocone U).op).π.app i s = objPairwiseOfFamily sf i := by
   refine ⟨fun h ↦ ?_, fun h i ↦ h (op <| Pairwise.single i)⟩
-  rintro (i|⟨i,j⟩)
+  rintro (i | ⟨i, j⟩)
   · exact h i
   · rw [← (F.mapCone (Pairwise.cocone U).op).w (op <| Pairwise.Hom.left i j)]
     exact congr_arg _ (h i)
@@ -120,6 +118,7 @@ theorem IsSheaf.isSheafUniqueGluing_types (h : F.IsSheaf) (sf : ∀ i : ι, F.ob
 
 variable (F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For type-valued presheaves, the sheaf condition in terms of unique gluings is equivalent to the
 usual sheaf condition.
 -/
@@ -130,7 +129,7 @@ theorem isSheaf_iff_isSheafUniqueGluing_types : F.IsSheaf ↔ F.IsSheafUniqueGlu
   · exact h _ cpt.sectionPairwise.prop
   · specialize h (fun i ↦ s <| op <| Pairwise.single i) fun i j ↦
       (hs <| op <| Pairwise.Hom.left i j).trans (hs <| op <| Pairwise.Hom.right i j).symm
-    convert h; ext (i|⟨i,j⟩)
+    convert h; ext (i | ⟨i, j⟩)
     · rfl
     · exact (hs <| op <| Pairwise.Hom.left i j).symm
 
@@ -172,8 +171,8 @@ open Presheaf CategoryTheory
 
 section
 
-variable [HasLimitsOfSize.{x, x} C] [(HasForget.forget (C := C)).ReflectsIsomorphisms]
-variable [PreservesLimitsOfSize.{x, x} (HasForget.forget (C := C))]
+variable [HasLimitsOfSize.{x, x} C] [(CategoryTheory.forget C).ReflectsIsomorphisms]
+variable [PreservesLimitsOfSize.{x, x} (CategoryTheory.forget C)]
 variable {X : TopCat.{x}} (F : Sheaf C X) {ι : Type*} (U : ι → Opens X)
 
 /-- A more convenient way of obtaining a unique gluing of sections for a sheaf.
@@ -236,6 +235,7 @@ theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : 
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← F.1.map_comp]
   exact h i
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : U₂ ⟶ V) (hcover : V ≤ U₁ ⊔ U₂)
     (s t : ToType (F.1.obj (op V))) (h₁ : F.1.map i₁.op s = F.1.map i₁.op t)
     (h₂ : F.1.map i₂.op s = F.1.map i₂.op t) : s = t := by

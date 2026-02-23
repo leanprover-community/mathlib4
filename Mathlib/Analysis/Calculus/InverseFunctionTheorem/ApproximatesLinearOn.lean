@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
-public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
 /-!
 # Non-linear maps close to affine maps
@@ -217,7 +217,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
       dist (u n) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) /
         (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := fun n ↦ by
     induction n with
-    | zero => simp [hu, le_refl]
+    | zero => simp [hu]
     | succ n IH => ?_
     rw [usucc]
     have Ign : dist (g (u n)) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
@@ -233,7 +233,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
                   · exact IH.2
         _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
               (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
-          replace Jcf' : (1:ℝ) - f'symm.nnnorm * c ≠ 0 := by convert Jcf' using 1; ring
+          replace Jcf' : (1 : ℝ) - f'symm.nnnorm * c ≠ 0 := by convert Jcf' using 1; ring
           simp [field, pow_succ, -mul_eq_mul_left_iff]
           ring
     refine ⟨?_, Ign⟩
@@ -324,6 +324,7 @@ protected theorem injOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : InjOn f s :=
   injOn_iff_injective.2 <| hf.injective hc
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : Surjective f := by
   rcases hc with hE | hc

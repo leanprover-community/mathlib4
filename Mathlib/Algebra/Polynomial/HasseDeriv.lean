@@ -33,7 +33,7 @@ In the following, we write `D k` for the `k`-th Hasse derivative `hasse_deriv k`
   the "Leibniz rule" `D k (f * g) = ∑ ij ∈ antidiagonal k, D ij.1 f * D ij.2 g`
 
 For the identity principle, see `Polynomial.eq_zero_of_hasseDeriv_eq_zero`
-in `Data/Polynomial/Taylor.lean`.
+in `Mathlib/Algebra/Polynomial/Taylor.lean`.
 
 ## Reference
 
@@ -57,7 +57,7 @@ variable {R : Type*} [Semiring R] (k : ℕ) (f : R[X])
 /-- The `k`th Hasse derivative of a polynomial `∑ a_i X^i` is `∑ (i.choose k) a_i X^(i-k)`.
 It satisfies `k! * (hasse_deriv k f) = derivative^[k] f`. -/
 def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
-  lsum fun i => monomial (i - k) ∘ₗ DistribMulAction.toLinearMap R R (i.choose k)
+  lsum fun i => monomial (i - k) ∘ₗ DistribSMul.toLinearMap R R (i.choose k)
 
 theorem hasseDeriv_apply :
     hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) := by
@@ -80,7 +80,7 @@ theorem hasseDeriv_coeff (n : ℕ) :
     simp only [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 
 theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
-  simp only [hasseDeriv_apply, tsub_zero, Nat.choose_zero_right, Nat.cast_one, one_mul,
+  simp only [hasseDeriv_apply, Nat.choose_zero_right, Nat.cast_one, one_mul,
     sum_monomial_eq]
 
 @[simp]
@@ -125,6 +125,7 @@ theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
   rw [← monomial_one_one_eq_X, hasseDeriv_monomial, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero,
     zero_mul, monomial_zero_right]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
   induction k with
   | zero => rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
@@ -139,7 +140,7 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivativ
   simp only [← mul_assoc]
   norm_cast
   congr 2
-  rw [mul_comm (k+1) _, mul_assoc, mul_assoc]
+  rw [mul_comm (k + 1) _, mul_assoc, mul_assoc]
   congr 1
   have : n + k + 1 = n + (k + 1) := by apply add_assoc
   rw [← choose_symm_of_eq_add this, choose_succ_right_eq, mul_comm]
@@ -171,6 +172,7 @@ theorem hasseDeriv_comp (k l : ℕ) :
   simp only [add_tsub_cancel_left]
   field
 
+set_option backward.isDefEq.respectTransparency false in
 theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) ≤ natDegree p - n := by
   classical

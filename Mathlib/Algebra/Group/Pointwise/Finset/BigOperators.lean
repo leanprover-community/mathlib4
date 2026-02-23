@@ -26,7 +26,7 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

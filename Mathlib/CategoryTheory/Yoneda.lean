@@ -13,10 +13,16 @@ public import Mathlib.Logic.Function.ULift
 /-!
 # The Yoneda embedding
 
-The Yoneda embedding as a functor `yoneda : C ⥤ (Cᵒᵖ ⥤ Type v₁)`,
-along with an instance that it is `FullyFaithful`.
+Let `C : Type u₁` be a category (with `Category.{v₁} C`). We define
+the Yoneda embedding as a fully faithful functor `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`,
+In addition to `yoneda`, we also define `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁)`
+with the additional universe parameter `w`. When `C` is locally `w`-small,
+one may also use `shrinkYoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type w` from the file
+`Mathlib/CategoryTheory/ShrinkYoneda.lean`.
 
-Also the Yoneda lemma, `yonedaLemma : (yoneda_pairing C) ≅ (yoneda_evaluation C)`.
+The naturality of the bijection `yonedaEquiv` involved in the
+Yoneda lemma is also expressed as a natural isomorphism
+`yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C`.
 
 ## References
 * [Stacks: Opposite Categories and the Yoneda Lemma](https://stacks.math.columbia.edu/tag/001L)
@@ -44,9 +50,19 @@ def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
 
 /-- Variant of the Yoneda embedding which allows a raise in the universe level
 for the category of types. -/
-@[pp_with_univ, simps!]
+@[pp_with_univ, simps! obj_obj obj_map map_app]
 def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
   yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
+
+@[deprecated uliftYoneda_obj_map (since := "2026-02-13")]
+lemma uliftYoneda_obj_map_down (X : C) {Y Z : Cᵒᵖ} (f : Y ⟶ Z) (a : (uliftYoneda.{w}.obj X).obj Y) :
+    ((uliftYoneda.{w}.obj X).map f a).down = f.unop ≫ a.down :=
+  rfl
+
+@[deprecated uliftYoneda_map_app (since := "2026-02-13")]
+lemma uliftYoneda_map_app_down {X Y : C} (f : X ⟶ Y) (Z : Cᵒᵖ) (a : (uliftYoneda.{w}.obj X).obj Z) :
+    ((uliftYoneda.{w}.map f).app Z a).down = a.down ≫ f :=
+  rfl
 
 /-- If `C` is a category with `[Category.{max w v₁} C]`, this is the isomorphism
 `uliftYoneda.{w} (C := C) ≅ yoneda`. -/
@@ -127,7 +143,7 @@ namespace ULiftYoneda
 
 variable (C)
 
-/-- When `C` is category such that `Category.{v₁} C`, then
+/-- When `C` is a category such that `Category.{v₁} C`, then
 the functor `uliftYoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type max w v₁` is fully faithful. -/
 def fullyFaithful : (uliftYoneda.{w} (C := C)).FullyFaithful :=
   Yoneda.fullyFaithful.comp (fullyFaithfulULiftFunctor.whiskeringRight _)
@@ -180,8 +196,7 @@ def ext (X Y : C) (p : ∀ {Z : C}, (X ⟶ Z) → (Y ⟶ Z))
   fullyFaithful.preimageIso
     (NatIso.ofComponents (fun Z =>
       { hom := q
-        inv := p })
-    ) |>.unop
+        inv := p })) |>.unop
 
 /-- If `coyoneda.map f` is an isomorphism, so was `f`.
 -/
@@ -208,7 +223,7 @@ namespace ULiftCoyoneda
 
 variable (C)
 
-/-- When `C` is category such that `Category.{v₁} C`, then
+/-- When `C` is a category such that `Category.{v₁} C`, then
 the functor `uliftCoyoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type max w v₁` is fully faithful. -/
 def fullyFaithful : (uliftCoyoneda.{w} (C := C)).FullyFaithful :=
   Coyoneda.fullyFaithful.comp (fullyFaithfulULiftFunctor.whiskeringRight _)
@@ -236,6 +251,11 @@ lemma RepresentableBy.comp_homEquiv_symm {F : Cᵒᵖ ⥤ Type v} {Y : C}
     (e : F.RepresentableBy Y) {X X' : C} (x : F.obj (op X')) (f : X ⟶ X') :
     f ≫ e.homEquiv.symm x = e.homEquiv.symm (F.map f.op x) :=
   e.homEquiv.injective (by simp [homEquiv_comp])
+
+lemma RepresentableBy.homEquiv_unop_comp {F : Cᵒᵖ ⥤ Type*} {Y : C}
+    (h : F.RepresentableBy Y) {X : Cᵒᵖ} {X' : C} (f : Opposite.op X' ⟶ X) (g : X' ⟶ Y) :
+    h.homEquiv (f.unop ≫ g) = F.map f (h.homEquiv g) :=
+  h.homEquiv_comp _ _
 
 /-- If `F ≅ F'`, and `F` is representable, then `F'` is representable. -/
 def RepresentableBy.ofIso {F F' : Cᵒᵖ ⥤ Type v} {Y : C} (e : F.RepresentableBy Y) (e' : F ≅ F') :
@@ -325,6 +345,15 @@ def representableByEquiv {F : Cᵒᵖ ⥤ Type v₁} {Y : C} :
     { homEquiv := (e.app _).toEquiv
       homEquiv_comp := fun {X X'} f g ↦ congr_fun (e.hom.naturality f.op) g }
 
+/-- `yoneda.obj X` is represented by `X`. -/
+protected def RepresentableBy.yoneda (X : C) : (yoneda.obj X).RepresentableBy X :=
+  Functor.representableByEquiv.symm (Iso.refl _)
+
+@[simp]
+lemma RepresentableBy.coyoneda_homEquiv (X Y : C) :
+    (RepresentableBy.yoneda X).homEquiv = Equiv.refl (Y ⟶ X) :=
+  rfl
+
 /-- The isomorphism `yoneda.obj Y ≅ F` induced by `e : F.RepresentableBy Y`. -/
 def RepresentableBy.toIso {F : Cᵒᵖ ⥤ Type v₁} {Y : C} (e : F.RepresentableBy Y) :
     yoneda.obj Y ≅ F :=
@@ -340,6 +369,16 @@ def corepresentableByEquiv {F : C ⥤ Type v₁} {X : C} :
   invFun e :=
     { homEquiv := (e.app _).toEquiv
       homEquiv_comp := fun {X X'} f g ↦ congr_fun (e.hom.naturality f) g }
+
+/-- `coyoneda.obj X` is represented by `X`. -/
+protected def CorepresentableBy.coyoneda (X : Cᵒᵖ) :
+    (coyoneda.obj X).CorepresentableBy X.unop :=
+  Functor.corepresentableByEquiv.symm (Iso.refl _)
+
+@[simp]
+lemma CorepresentableBy.coyoneda_homEquiv (X : Cᵒᵖ) (Y : C) :
+    (CorepresentableBy.coyoneda X).homEquiv = Equiv.refl (X.unop ⟶ Y) :=
+  rfl
 
 /-- The isomorphism `coyoneda.obj (op X) ≅ F` induced by `e : F.CorepresentableBy X`. -/
 def CorepresentableBy.toIso {F : C ⥤ Type v₁} {X : C} (e : F.CorepresentableBy X) :
@@ -382,6 +421,7 @@ def CorepresentableBy.equivOfIsoObj {F : C ⥤ Type w} {X Y : C} (e : Y ≅ X) :
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Representing `F` composed with universe lifting is the same as representing `F`. -/
 @[simps]
 def representableByUliftFunctorEquiv {F : Cᵒᵖ ⥤ Type v} {X : C} :
@@ -393,6 +433,7 @@ def representableByUliftFunctorEquiv {F : Cᵒᵖ ⥤ Type v} {X : C} :
     { homEquiv {Y} := R.homEquiv.trans Equiv.ulift.symm
       homEquiv_comp f g := by simp [R.homEquiv_comp] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Corepresenting `F` composed with universe lifting is the same as corepresenting `F`. -/
 @[simps]
 def corepresentableByUliftFunctorEquiv {F : C ⥤ Type v} {X : C} :
@@ -504,6 +545,17 @@ theorem reprW_hom_app (F : Cᵒᵖ ⥤ Type v₁) [F.IsRepresentable]
     F.reprW.hom.app X f = F.map f.op F.reprx := by
   apply RepresentableBy.homEquiv_eq
 
+/-- If `F` is representable, it is, modulo universe lifting, isomorphic to
+`Hom(-, X)` for the representing object `X`. -/
+noncomputable def uliftYonedaReprXIso (F : Cᵒᵖ ⥤ Type (max v v₁)) [F.IsRepresentable] :
+    uliftYoneda.{v}.obj F.reprX ≅ F :=
+  (RepresentableBy.equivUliftYonedaIso F _) F.representableBy
+
+lemma uliftYonedaReprXIso_hom_app (F : Cᵒᵖ ⥤ Type (max v v₁)) [F.IsRepresentable]
+    (X : Cᵒᵖ) (f : ULift (unop X ⟶ F.reprX)) :
+    F.uliftYonedaReprXIso.hom.app X f = F.map f.down.op F.reprx :=
+  RepresentableBy.homEquiv_eq _ _
+
 end Representable
 
 section Corepresentable
@@ -542,6 +594,17 @@ theorem coreprW_hom_app (F : C ⥤ Type v₁) [F.IsCorepresentable] (X : C) (f :
     F.coreprW.hom.app X f = F.map f F.coreprx := by
   apply CorepresentableBy.homEquiv_eq
 
+/-- If `F` is corepresentable, it is, modulo universe lifting, isomorphic to
+`Hom(X, -)` for the corepresenting object `X`. -/
+noncomputable def uliftCoyonedaCoreprXIso (F : C ⥤ Type (max v v₁)) [F.IsCorepresentable] :
+    uliftCoyoneda.{v}.obj (op F.coreprX) ≅ F :=
+  (CorepresentableBy.equivUliftCoyonedaIso F _) F.corepresentableBy
+
+lemma uliftCoyonedaCoreprXIso_hom_app (F : C ⥤ Type (max v v₁)) [F.IsCorepresentable]
+    (X : C) (f : ULift (F.coreprX ⟶ X)) :
+    F.uliftCoyonedaCoreprXIso.hom.app X f = F.map f.down F.coreprx :=
+  CorepresentableBy.homEquiv_eq _ _
+
 end Corepresentable
 
 lemma isRepresentable_comp_uliftFunctor_iff {F : Cᵒᵖ ⥤ Type v} :
@@ -553,6 +616,12 @@ lemma isCorepresentable_comp_uliftFunctor_iff {F : C ⥤ Type v} :
     (F ⋙ uliftFunctor.{w}).IsCorepresentable ↔ F.IsCorepresentable where
   mp | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨corepresentableByUliftFunctorEquiv R⟩⟩
   mpr | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨corepresentableByUliftFunctorEquiv.symm R⟩⟩
+
+instance (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] : (F ⋙ uliftFunctor.{w}).IsRepresentable :=
+  isRepresentable_comp_uliftFunctor_iff.mpr ‹_›
+
+instance (F : C ⥤ Type v) [F.IsCorepresentable] : (F ⋙ uliftFunctor.{w}).IsCorepresentable :=
+  isCorepresentable_comp_uliftFunctor_iff.mpr ‹_›
 
 end Functor
 
@@ -696,6 +765,7 @@ theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶
     (yonedaPairing C).map α β = yoneda.map α.1.unop ≫ β ≫ α.2 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Yoneda lemma asserts that the Yoneda pairing
 `(X : Cᵒᵖ, F : Cᵒᵖ ⥤ Type) ↦ (yoneda.obj (unop X) ⟶ F)`
 is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`. -/
@@ -720,6 +790,7 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
     ext a b
     simp [yonedaEquiv, ← FunctorToTypes.naturality])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The curried version of the Yoneda lemma. -/
 def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
     yoneda.op ⋙ coyoneda ≅
@@ -784,11 +855,9 @@ def uliftYonedaEquiv {X : C} {F : Cᵒᵖ ⥤ Type (max w v₁)} :
     simp [uliftYoneda, ← FunctorToTypes.naturality]
   right_inv x := by simp
 
-@[deprecated (since := "2025-08-04")] alias yonedaCompUliftFunctorEquiv :=
-  uliftYonedaEquiv
-
 attribute [simp] uliftYonedaEquiv_symm_apply_app
 
+set_option backward.isDefEq.respectTransparency false in
 lemma uliftYonedaEquiv_naturality {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type max w v₁}
     (f : uliftYoneda.{w}.obj (unop X) ⟶ F) (g : X ⟶ Y) :
     F.map g (uliftYonedaEquiv.{w} f) = uliftYonedaEquiv.{w} (uliftYoneda.map g.unop ≫ f) := by
@@ -809,6 +878,7 @@ lemma uliftYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Cᵒᵖ ⥤ T
   rw [uliftYonedaEquiv_naturality]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma uliftYonedaEquiv_uliftYoneda_map {X Y : C} (f : X ⟶ Y) :
     DFunLike.coe (β := fun _ ↦ ULift.{w} (X ⟶ Y))
@@ -823,6 +893,7 @@ lemma hom_ext_uliftYoneda {P Q : Cᵒᵖ ⥤ Type max w v₁} {f g : P ⟶ Q}
   ext X x
   simpa [uliftYonedaEquiv] using congr_arg uliftYonedaEquiv.{w} (h _ (uliftYonedaEquiv.symm x))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A variant of the curried version of the Yoneda lemma with a raise in the universe level. -/
 def uliftYonedaOpCompCoyoneda {C : Type u₁} [Category.{v₁} C] :
     uliftYoneda.{w}.op ⋙ coyoneda ≅
@@ -923,6 +994,7 @@ theorem coyonedaPairing_map (P Q : C × (C ⥤ Type v₁)) (α : P ⟶ Q) (β : 
     (coyonedaPairing C).map α β = coyoneda.map α.1.op ≫ β ≫ α.2 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coyoneda lemma asserts that the Coyoneda pairing
 `(X : C, F : C ⥤ Type) ↦ (coyoneda.obj X ⟶ F)`
 is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`. -/
@@ -947,6 +1019,7 @@ def curriedCoyonedaLemma {C : Type u₁} [SmallCategory C] :
     ext a b
     simp [coyonedaEquiv, ← FunctorToTypes.naturality])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The curried version of the Coyoneda lemma. -/
 def largeCurriedCoyonedaLemma {C : Type u₁} [Category.{v₁} C] :
     coyoneda.rightOp ⋙ coyoneda ≅
@@ -1011,11 +1084,9 @@ def uliftCoyonedaEquiv {X : Cᵒᵖ} {F : C ⥤ Type (max w v₁)} :
     simp [uliftYoneda, ← FunctorToTypes.naturality]
   right_inv x := by simp
 
-@[deprecated (since := "2025-08-04")] alias coyonedaCompUliftFunctorEquiv :=
-  uliftCoyonedaEquiv
-
 attribute [simp] uliftCoyonedaEquiv_symm_apply_app
 
+set_option backward.isDefEq.respectTransparency false in
 lemma uliftCoyonedaEquiv_naturality {X Y : C} {F : C ⥤ Type max w v₁}
     (f : uliftCoyoneda.{w}.obj (op X) ⟶ F) (g : X ⟶ Y) :
     F.map g (uliftCoyonedaEquiv.{w} f) = uliftCoyonedaEquiv.{w} (uliftCoyoneda.map g.op ≫ f) := by
@@ -1036,6 +1107,7 @@ lemma uliftCoyonedaEquiv_symm_map {X Y : C} (f : X ⟶ Y) {F : C ⥤ Type max w 
   rw [uliftCoyonedaEquiv_naturality]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma uliftCoyonedaEquiv_uliftCoyoneda_map {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     DFunLike.coe (β := fun _ ↦ ULift.{w} (Y.unop ⟶ X.unop))
@@ -1051,6 +1123,7 @@ lemma hom_ext_uliftCoyoneda {P Q : C ⥤ Type max w v₁} {f g : P ⟶ Q}
   simpa [uliftCoyonedaEquiv]
     using congr_arg uliftCoyonedaEquiv.{w} (h _ (uliftCoyonedaEquiv.symm x))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A variant of the curried version of the Coyoneda lemma with a raise in the universe level. -/
 def uliftCoyonedaRightOpCompCoyoneda {C : Type u₁} [Category.{v₁} C] :
     uliftCoyoneda.{w}.rightOp ⋙ coyoneda ≅
@@ -1161,6 +1234,7 @@ def homNatIsoMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D}
   isoWhiskerLeft F.op (uliftYonedaIsoYoneda.symm.app _) ≪≫ hF.homNatIso _ ≪≫
     NatIso.ofComponents (fun _ => Equiv.toIso (Equiv.ulift.trans Equiv.ulift.symm))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 @[simps!]
 def compUliftYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}
@@ -1189,6 +1263,7 @@ def homNatIso' {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFa
     (fun Y => Equiv.toIso (Equiv.ulift.trans <| hF.homEquiv.symm.trans Equiv.ulift.symm))
     (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `FullyFaithful.homEquiv` as a natural isomorphism, using coyoneda. -/
 @[simps!]
 def compUliftCoyonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}

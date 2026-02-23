@@ -59,7 +59,7 @@ protected def map (f : V ↪ W) (G : SimpleGraph V) : SimpleGraph W where
   symm a b := by
     rintro ⟨v, w, h, _⟩
     aesop (add norm unfold Relation.Map) (add forward safe Adj.symm)
-  loopless a := by aesop (add norm unfold Relation.Map)
+  loopless := ⟨fun a ↦ by aesop (add norm unfold Relation.Map)⟩
 
 instance instDecidableMapAdj {f : V ↪ W} {a b} [Decidable (Relation.Map G.Adj f f a b)] :
     Decidable ((G.map f).Adj a b) := ‹Decidable (Relation.Map G.Adj f f a b)›
@@ -77,10 +77,10 @@ theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
   constructor
   · intro ⟨a, b, hadj, ha, hb⟩
     use s(a, b), hadj
-    rw [Embedding.sym2Map_apply, Sym2.map_pair_eq, ha, hb]
+    rw [Embedding.sym2Map_apply, Sym2.map_mk, ha, hb]
   · intro ⟨e, hadj, he⟩
     induction e
-    rw [Embedding.sym2Map_apply, Sym2.map_pair_eq, Sym2.eq_iff] at he
+    rw [Embedding.sym2Map_apply, Sym2.map_mk, Sym2.eq_iff] at he
     exact he.elim (fun ⟨h, h'⟩ ↦ ⟨_, _, hadj, h, h'⟩) (fun ⟨h', h⟩ ↦ ⟨_, _, hadj.symm, h, h'⟩)
 
 lemma map_adj_apply {G : SimpleGraph V} {f : V ↪ W} {a b : V} :
@@ -108,7 +108,7 @@ This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`). -
 protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
   Adj u v := G.Adj (f u) (f v)
   symm _ _ h := h.symm
-  loopless _ := G.loopless _
+  loopless := ⟨fun _ ↦ G.loopless.irrefl _⟩
 
 @[simp] lemma comap_adj {G : SimpleGraph W} {f : V → W} :
     (G.comap f).Adj u v ↔ G.Adj (f u) (f v) := Iff.rfl
@@ -158,6 +158,7 @@ theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph 
     rintro h _ _ ⟨u, v, ha, rfl, rfl⟩
     exact h ha⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_comap_le (f : V ↪ W) (G : SimpleGraph W) : (G.comap f).map f ≤ G := by
   rw [map_le_iff_le_comap]
 
@@ -208,6 +209,7 @@ lemma induce_adj {s : Set V} {u v : s} : (G.induce s).Adj u v ↔ G.Adj u v := .
 @[simp] lemma induce_top (s : Set V) : (completeGraph V).induce s = completeGraph s :=
   comap_top Subtype.val_injective
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma induce_singleton_eq_top (v : V) : G.induce {v} = ⊤ := by
   rw [eq_top_iff]; apply le_comap_of_subsingleton
 
@@ -257,6 +259,10 @@ abbrev Iso :=
 @[inherit_doc] infixl:50 " ↪g " => Embedding
 @[inherit_doc] infixl:50 " ≃g " => Iso
 
+/-- `HomClass F G H` asserts that `F` is a type of adjacency-preserving morphism. -/
+abbrev HomClass (F : Type*) (G : SimpleGraph V) (H : SimpleGraph W) [FunLike F V W] :=
+  RelHomClass F G.Adj H.Adj
+
 namespace Hom
 
 variable {G G'} {G₁ G₂ : SimpleGraph V} {H : SimpleGraph W} (f : G →g G')
@@ -266,6 +272,8 @@ protected abbrev id : G →g G :=
   RelHom.id _
 
 @[simp, norm_cast] lemma coe_id : ⇑(Hom.id : G →g G) = id := rfl
+
+instance [IsEmpty (V → W)] : IsEmpty (G →g H) := DFunLike.coe.isEmpty
 
 instance [Subsingleton (V → W)] : Subsingleton (G →g H) := DFunLike.coe_injective.subsingleton
 

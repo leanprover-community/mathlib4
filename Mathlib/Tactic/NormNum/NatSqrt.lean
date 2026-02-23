@@ -5,7 +5,8 @@ Authors: Mario Carneiro, Kyle Miller
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum
+public meta import Batteries.Data.Nat.Basic
+public import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extension for `Nat.sqrt`
 
@@ -20,6 +21,7 @@ namespace NormNum
 
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nat_sqrt_helper {x y r : ℕ} (hr : y * y + r = x) (hle : Nat.ble r (2 * y)) :
     Nat.sqrt x = y := by
   rw [← hr, ← pow_two]
@@ -47,7 +49,7 @@ def proveNatSqrt (ex : Q(ℕ)) : (ey : Q(ℕ)) × Q(Nat.sqrt $ex = $ey) :=
 @[norm_num Nat.sqrt _]
 def evalNatSqrt : NormNumExt where eval {_ _} e := do
   let .app _ (x : Q(ℕ)) ← Meta.whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex, p⟩ ← deriveNat x sℕ
   let ⟨ey, pf⟩ := proveNatSqrt ex
   let pf' : Q(IsNat (Nat.sqrt $x) $ey) := q(isNat_sqrt $p $pf)

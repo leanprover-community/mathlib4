@@ -17,15 +17,15 @@ preadditive categories).
 ## Main definitions
 
 - `IsIdempotentComplete C` expresses that `C` is idempotent complete, i.e.
-all idempotents in `C` split. Other characterisations of idempotent completeness are given
-by `isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent` and
-`isIdempotentComplete_iff_idempotents_have_kernels`.
+  all idempotents in `C` split. Other characterisations of idempotent completeness are given
+  by `isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent` and
+  `isIdempotentComplete_iff_idempotents_have_kernels`.
 - `isIdempotentComplete_of_abelian` expresses that abelian categories are
-idempotent complete.
+  idempotent complete.
 - `isIdempotentComplete_iff_ofEquivalence` expresses that if two categories `C` and `D`
-are equivalent, then `C` is idempotent complete iff `D` is.
+  are equivalent, then `C` is idempotent complete iff `D` is.
 - `isIdempotentComplete_iff_opposite` expresses that `Cᵒᵖ` is idempotent complete
-iff `C` is.
+  iff `C` is.
 
 ## References
 * [Stacks: Karoubian categories] https://stacks.math.columbia.edu/tag/09SF
@@ -47,7 +47,7 @@ open Opposite
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 /-- A category is idempotent complete iff all idempotent endomorphisms `p`
 split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
@@ -59,6 +59,7 @@ class IsIdempotentComplete : Prop where
 
 namespace Idempotents
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A category is idempotent complete iff for all idempotent endomorphisms,
 the equalizer of the identity and this idempotent exists. -/
 theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
@@ -112,7 +113,7 @@ theorem isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :
     apply Preadditive.hasEqualizer_of_hasKernel
 
 /-- An abelian category is idempotent complete. -/
-instance (priority := 100) isIdempotentComplete_of_abelian (D : Type*) [Category D] [Abelian D] :
+instance (priority := 100) isIdempotentComplete_of_abelian (D : Type*) [Category* D] [Abelian D] :
     IsIdempotentComplete D := by
   rw [isIdempotentComplete_iff_idempotents_have_kernels]
   intros
@@ -139,7 +140,8 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
     slice_rhs 2 3 => rw [hpp']
     simp
 
-theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
+set_option backward.isDefEq.respectTransparency false in
+theorem Equivalence.isIdempotentComplete {D : Type*} [Category* D] (ε : C ≌ D)
     (h : IsIdempotentComplete C) : IsIdempotentComplete D := by
   refine ⟨?_⟩
   intro X' p hp
@@ -158,7 +160,7 @@ theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
     rfl
 
 /-- If `C` and `D` are equivalent categories, that `C` is idempotent complete iff `D` is. -/
-theorem isIdempotentComplete_iff_of_equivalence {D : Type*} [Category D] (ε : C ≌ D) :
+theorem isIdempotentComplete_iff_of_equivalence {D : Type*} [Category* D] (ε : C ≌ D) :
     IsIdempotentComplete C ↔ IsIdempotentComplete D := by
   constructor
   · exact Equivalence.isIdempotentComplete ε

@@ -9,7 +9,6 @@ public import Batteries.Tactic.Alias
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.ToDual
 
@@ -41,12 +40,25 @@ section Preorder
 ### Definition of `Preorder` and lemmas about types with a `Preorder`
 -/
 
-/-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
+/--
+A preorder is a reflexive, transitive relation `≤`.
+In a preorder, `a < b` means `a ≤ b ∧ ¬b ≤ a`, and `<` is defined this way by default.
+You can override this definition to set a better def-eq.
+-/
 class Preorder (α : Type*) extends LE α, LT α where
   protected le_refl : ∀ a : α, a ≤ a
   protected le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   protected lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
+
+/-- A variant of `Preorder.mk` which allows `to_dual` to dualize a `Preorder` instance. -/
+@[to_dual existing mk]
+def Preorder.mk' [LE α] [LT α] (le_refl : ∀ a : α, a ≤ a)
+    (ge_trans : ∀ a b c : α, b ≤ a → c ≤ b → c ≤ a)
+    (lt_iff_le_not_ge : ∀ a b : α, b < a ↔ b ≤ a ∧ ¬a ≤ b) : Preorder α where
+  le_refl := le_refl
+  le_trans a b c h₁ h₂ := ge_trans c b a h₂ h₁
+  lt_iff_le_not_ge a b := lt_iff_le_not_ge b a
 
 instance [Preorder α] : Std.LawfulOrderLT α where
   lt_iff := Preorder.lt_iff_le_not_ge
@@ -55,12 +67,10 @@ instance [Preorder α] : Std.IsPreorder α where
   le_refl := Preorder.le_refl
   le_trans := Preorder.le_trans
 
-@[deprecated (since := "2025-05-11")] alias Preorder.lt_iff_le_not_le := Preorder.lt_iff_le_not_ge
-
 variable [Preorder α] {a b c : α}
 
 /-- The relation `≤` on a preorder is reflexive. -/
-@[refl, simp] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl
+@[refl] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl
 
 /-- A version of `le_refl` where the argument is implicit -/
 lemma le_rfl : a ≤ a := le_refl a
@@ -74,30 +84,18 @@ lemma ge_trans : b ≤ a → c ≤ b → c ≤ a := flip le_trans
 @[to_dual self]
 lemma lt_iff_le_not_ge : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_not_ge _ _
 
-@[deprecated (since := "2025-05-11")] alias lt_iff_le_not_le := lt_iff_le_not_ge
-
 @[to_dual self]
 lemma lt_of_le_not_ge (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_not_ge.2 ⟨hab, hba⟩
-
-@[deprecated (since := "2025-05-11")] alias lt_of_le_not_le := lt_of_le_not_ge
 
 @[to_dual ge_of_eq] lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]
 @[to_dual self] lemma le_of_lt (hab : a < b) : a ≤ b := (lt_iff_le_not_ge.1 hab).1
 @[to_dual self] lemma not_le_of_gt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_ge.1 hab).2
 @[to_dual self] lemma not_lt_of_ge (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_gt hab
 
-@[deprecated (since := "2025-05-11")] alias not_le_of_lt := not_le_of_gt
-@[deprecated (since := "2025-05-11")] alias not_lt_of_le := not_lt_of_ge
-
 @[to_dual self] alias LT.lt.not_ge := not_le_of_gt
 @[to_dual self] alias LE.le.not_gt := not_lt_of_ge
 
-@[deprecated (since := "2025-06-07")] alias LT.lt.not_le := LT.lt.not_ge
-@[deprecated (since := "2025-06-07")] alias LE.le.not_lt := LE.le.not_gt
-
-@[to_dual self] lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
-
-@[deprecated (since := "2025-06-07")] alias gt_irrefl := lt_irrefl
+lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
 
 @[to_dual lt_of_lt_of_le']
 lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
@@ -106,9 +104,6 @@ lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
 @[to_dual lt_of_le_of_lt']
 lemma lt_of_le_of_lt (hab : a ≤ b) (hbc : b < c) : a < c :=
   lt_of_le_not_ge (le_trans hab (le_of_lt hbc)) fun hca ↦ not_le_of_gt hbc (le_trans hca hab)
-
-@[deprecated (since := "2025-06-07")] alias gt_of_gt_of_ge := lt_of_lt_of_le'
-@[deprecated (since := "2025-06-07")] alias gt_of_ge_of_gt := lt_of_le_of_lt'
 
 @[to_dual gt_trans]
 lemma lt_trans : a < b → b < c → a < c := fun h₁ h₂ => lt_of_lt_of_le h₁ (le_of_lt h₂)
@@ -119,8 +114,6 @@ lemma ne_of_lt (h : a < b) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
 lemma lt_asymm (h : a < b) : ¬b < a := fun h1 : b < a => lt_irrefl a (lt_trans h h1)
 
 @[to_dual self] alias not_lt_of_gt := lt_asymm
-
-@[deprecated (since := "2025-05-11")] alias not_lt_of_lt := not_lt_of_gt
 
 @[to_dual le_of_lt_or_eq']
 lemma le_of_lt_or_eq (h : a < b ∨ a = b) : a ≤ b := h.elim le_of_lt le_of_eq
@@ -143,7 +136,6 @@ instance instTransGTGE : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'
 instance instTransGEGT : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
-@[to_dual decidableLT'OfDecidableLE' /-- `<` is decidable if `≤` is. -/]
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α :=
   fun _ _ => decidable_of_iff _ lt_iff_le_not_ge.symm
 
@@ -154,6 +146,8 @@ This means that `a ≤ b` and there is no element in between. This is denoted `a
 def WCovBy (a b : α) : Prop :=
   a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
+to_dual_insert_cast WCovBy := by grind
+
 @[inherit_doc]
 infixl:50 " ⩿ " => WCovBy
 
@@ -162,6 +156,8 @@ between. This is denoted `a ⋖ b`. -/
 @[to_dual self (reorder := 3 4)]
 def CovBy {α : Type*} [LT α] (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
+
+to_dual_insert_cast CovBy := by grind
 
 @[inherit_doc]
 infixl:50 " ⋖ " => CovBy
@@ -178,6 +174,12 @@ section PartialOrder
 class PartialOrder (α : Type*) extends Preorder α where
   protected le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
+/-- A variant of `PartialOrder.mk` which allows `to_dual` to dualize a `PartialOrder` instance. -/
+@[to_dual existing mk]
+def PartialOrder.mk' [Preorder α] (le_antisymm : ∀ a b : α, b ≤ a → a ≤ b → a = b) :
+    PartialOrder α where
+  le_antisymm a b h₁ h₂ := (le_antisymm b a h₁ h₂).symm
+
 instance [PartialOrder α] : Std.IsPartialOrder α where
   le_antisymm := PartialOrder.le_antisymm
 
@@ -191,8 +193,6 @@ lemma ge_antisymm : b ≤ a → a ≤ b → a = b := flip le_antisymm
 @[to_dual eq_of_ge_of_le]
 alias eq_of_le_of_ge := le_antisymm
 
-@[deprecated (since := "2025-06-07")] alias eq_of_le_of_le := eq_of_le_of_ge
-
 @[to_dual ge_antisymm_iff]
 lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun e => ⟨le_of_eq e, le_of_eq e.symm⟩, fun ⟨h1, h2⟩ => le_antisymm h1 h2⟩
@@ -202,7 +202,6 @@ lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_ge h₁ <| mt (le_antisymm h₁) h₂
 
 /-- Equality is decidable if `≤` is. -/
-@[to_dual decidableEqOfDecidableLE' /-- Equality is decidable if `≤` is. -/]
 def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
   | a, b =>
     if hab : a ≤ b then

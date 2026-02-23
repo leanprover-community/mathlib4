@@ -31,7 +31,7 @@ limit of `(f y - f x) / (y - x)` by a lower and upper approximation argument fro
 behavior of `μ [x, y]`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Function Metric MeasureTheory MeasureTheory.Measure IsUnifLocDoublingMeasure
@@ -67,7 +67,7 @@ theorem tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : 
 
 /-- A Stieltjes function is almost everywhere differentiable, with derivative equal to the
 Radon-Nikodym derivative of the associated Stieltjes measure with respect to Lebesgue. -/
-theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
+theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction ℝ) :
     ∀ᵐ x, HasDerivAt f (rnDeriv f.measure volume x).toReal x := by
   /- Denote by `μ` the Stieltjes measure associated to `f`.
     The general theorem `VitaliFamily.ae_tendsto_rnDeriv` ensures that `μ [x, y] / (y - x)` tends
@@ -235,6 +235,7 @@ theorem MonotoneOn.ae_differentiableWithinAt_of_mem {f : ℝ → ℝ} {s : Set �
   filter_upwards [self_mem_nhdsWithin, this] with y hy h'y
   exact gf ⟨hy, h'y.1.le, h'y.2.le⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A real function which is monotone on a set is differentiable Lebesgue-almost everywhere on
 this set. This version assumes that `s` is measurable and uses `volume.restrict s`.
 For a formulation without measurability assumption,

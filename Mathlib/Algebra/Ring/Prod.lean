@@ -331,6 +331,7 @@ def zeroRingProd : R ≃+* S × R where
 
 end RingEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of two nontrivial rings is not a domain -/
 theorem false_of_nontrivial_of_product_domain (R S : Type*) [Semiring R] [Semiring S]
     [IsDomain (R × S)] [Nontrivial R] [Nontrivial S] : False := by

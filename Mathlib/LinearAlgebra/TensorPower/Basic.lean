@@ -190,7 +190,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
   congr 1 with j
   rw [Fin.append_assoc]
   refine congr_arg (Fin.append a (Fin.append b c)) (Fin.ext ?_)
-  rw [Fin.coe_cast, Fin.coe_cast]
+  rw [Fin.val_cast, Fin.val_cast]
 
 -- for now we just use the default for the `gnpow` field as it's easier.
 instance gmonoid : GradedMonoid.GMonoid fun i => ⨂[R]^i M :=
@@ -225,6 +225,7 @@ theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
   rw [← smul_eq_mul, map_smul]
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
 
+set_option backward.isDefEq.respectTransparency false in
 instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
   { TensorPower.gmonoid with
     mul_zero := fun _ => map_zero _

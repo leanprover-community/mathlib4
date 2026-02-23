@@ -67,8 +67,8 @@ lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) :=
     _ = ↑(k % p) := by simp [this]
 
 lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a : R) = (b : R) ↔ a % p = b % p := by
-  wlog hle : a ≤ b
-  · simpa only [eq_comm] using (this _ _ (lt_of_not_ge hle).le)
+  wlog! hle : a ≤ b
+  · simpa only [eq_comm] using (this _ _ hle.le)
   obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le hle
   rw [Nat.cast_add, left_eq_add, CharP.cast_eq_zero_iff R p]
   constructor
@@ -88,6 +88,7 @@ lemma eq {p q : ℕ} (hp : CharP R p) (hq : CharP R q) : p = q :=
   Nat.dvd_antisymm ((cast_eq_zero_iff (self := hp) R p q).1 (@cast_eq_zero _ _ _ hq))
     ((cast_eq_zero_iff (self := hq) R q p).1 (@cast_eq_zero _ _ _ hp))
 
+set_option backward.isDefEq.respectTransparency false in
 instance ofCharZero [CharZero R] : CharP R 0 where
   cast_eq_zero_iff x := by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]
 
@@ -116,6 +117,7 @@ end AddGroupWithOne
 section NonAssocSemiring
 variable [NonAssocSemiring R]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma «exists» : ∃ p, CharP R p :=
   letI := Classical.decEq R
   by_cases

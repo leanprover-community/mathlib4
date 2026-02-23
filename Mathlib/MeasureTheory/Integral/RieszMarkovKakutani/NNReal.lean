@@ -15,7 +15,7 @@ T2 space `X` for `ℝ≥0`-linear functionals `Λ`.
 
 ## Implementation notes
 
-The proof depends on the version of the theorem for `ℝ`-linear functional Λ because in a standard
+The proof depends on the version of the theorem for `ℝ`-linear functional `Λ` because in a standard
 proof one has to prove the inequalities by `le_antisymm`, yet for `C_c(X, ℝ≥0)` there is no `Neg`.
 Here we prove the result by writing `ℝ≥0`-linear `Λ` in terms of `ℝ`-linear `toRealLinear Λ` and by
 reducing the statement to the `ℝ`-version of the theorem.
@@ -69,6 +69,7 @@ section integralLinearMap
 /-! We show that `NNRealRMK.rieszMeasure` is a bijection between linear functionals on `C_c(X, ℝ≥0)`
 and regular measures with inverse `NNRealRMK.integralLinearMap`. -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If two regular measures give the same integral for every function in `C_c(X, ℝ≥0)`, then they
 are equal. -/
 theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported_nnreal

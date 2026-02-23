@@ -42,8 +42,6 @@ theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| 
 theorem circleMap_notMem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [Complex.dist_eq, le_abs_self]
 
-@[deprecated (since := "2025-05-23")] alias circleMap_not_mem_ball := circleMap_notMem_ball
-
 theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R) (θ : ℝ) :
     circleMap c R θ ≠ w :=
   (ne_of_mem_of_not_mem hw (circleMap_notMem_ball _ _ _)).symm

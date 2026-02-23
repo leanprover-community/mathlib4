@@ -133,10 +133,6 @@ theorem exists_mem_and_iff {P : Set α → Prop} {Q : Set α → Prop} (hP : Ant
   · rintro ⟨u, huf, hPu, hQu⟩
     exact ⟨⟨u, huf, hPu⟩, u, huf, hQu⟩
 
-@[deprecated forall_swap (since := "2025-06-10")]
-theorem forall_in_swap {β : Type*} {p : Set α → β → Prop} :
-    (∀ a ∈ f, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ f, p a b := by tauto
-
 end Filter
 
 
@@ -355,10 +351,9 @@ theorem le_principal_iff {s : Set α} {f : Filter α} : f ≤ 𝓟 s ↔ s ∈ f
 theorem Iic_principal (s : Set α) : Iic (𝓟 s) = { l | s ∈ l } :=
   Set.ext fun _ => le_principal_iff
 
+@[gcongr]
 theorem principal_mono {s t : Set α} : 𝓟 s ≤ 𝓟 t ↔ s ⊆ t := by
   simp only [le_principal_iff, mem_principal]
-
-@[gcongr] alias ⟨_, _root_.GCongr.filter_principal_mono⟩ := principal_mono
 
 @[mono]
 theorem monotone_principal : Monotone (𝓟 : Set α → Filter α) := fun _ _ => principal_mono.2
@@ -392,19 +387,16 @@ theorem NeBot.nonempty_of_mem {f : Filter α} (hf : NeBot f) {s : Set α} (hs : 
 @[simp]
 theorem empty_notMem (f : Filter α) [NeBot f] : ∅ ∉ f := fun h => (nonempty_of_mem h).ne_empty rfl
 
-@[deprecated (since := "2025-05-23")] alias empty_not_mem := empty_notMem
-
 theorem nonempty_of_neBot (f : Filter α) [NeBot f] : Nonempty α :=
   Exists.nonempty <| nonempty_of_mem (univ_mem : univ ∈ f)
 
 theorem compl_notMem {f : Filter α} {s : Set α} [NeBot f] (h : s ∈ f) : sᶜ ∉ f := fun hsc =>
   (nonempty_of_mem (inter_mem h hsc)).ne_empty <| inter_compl_self s
 
-@[deprecated (since := "2025-05-23")] alias compl_not_mem := compl_notMem
-
 theorem filter_eq_bot_of_isEmpty [IsEmpty α] (f : Filter α) : f = ⊥ :=
   empty_mem_iff_bot.mp <| univ_mem' isEmptyElim
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma disjoint_iff {f g : Filter α} : Disjoint f g ↔ ∃ s ∈ f, ∃ t ∈ g, Disjoint s t := by
   simp only [disjoint_iff, ← empty_mem_iff_bot, mem_inf_iff, inf_eq_inter, bot_eq_empty,
     @eq_comm _ ∅]
@@ -416,6 +408,7 @@ theorem disjoint_of_disjoint_of_mem {f g : Filter α} {s t : Set α} (h : Disjoi
 theorem NeBot.not_disjoint (hf : f.NeBot) (hs : s ∈ f) (ht : t ∈ f) : ¬Disjoint s t := fun h =>
   not_disjoint_self_iff.2 hf <| Filter.disjoint_iff.2 ⟨s, hs, t, ht, h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inf_eq_bot_iff {f g : Filter α} : f ⊓ g = ⊥ ↔ ∃ U ∈ f, ∃ V ∈ g, U ∩ V = ∅ := by
   simp only [← disjoint_iff, Filter.disjoint_iff, Set.disjoint_iff_inter_eq_empty]
 
@@ -663,14 +656,10 @@ theorem Eventually.mp {p q : α → Prop} {f : Filter α} (hp : ∀ᶠ x in f, p
     (hq : ∀ᶠ x in f, p x → q x) : ∀ᶠ x in f, q x :=
   mp_mem hp hq
 
+@[gcongr]
 theorem Eventually.mono {p q : α → Prop} {f : Filter α} (hp : ∀ᶠ x in f, p x)
     (hq : ∀ x, p x → q x) : ∀ᶠ x in f, q x :=
   hp.mp (Eventually.of_forall hq)
-
-@[gcongr]
-theorem GCongr.eventually_mono {p q : α → Prop} {f : Filter α} (h : ∀ x, p x → q x) :
-    (∀ᶠ x in f, p x) → ∀ᶠ x in f, q x :=
-  (·.mono h)
 
 theorem forall_eventually_of_eventually_forall {f : Filter α} {p : α → β → Prop}
     (h : ∀ᶠ x in f, ∀ y, p x y) : ∀ y, ∀ᶠ x in f, p x y :=
@@ -769,14 +758,10 @@ theorem Frequently.filter_mono {p : α → Prop} {f g : Filter α} (h : ∃ᶠ x
     ∃ᶠ x in g, p x :=
   mt (fun h' => h'.filter_mono hle) h
 
+@[gcongr]
 theorem Frequently.mono {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, p x)
     (hpq : ∀ x, p x → q x) : ∃ᶠ x in f, q x :=
   h.mp (Eventually.of_forall hpq)
-
-@[gcongr]
-theorem GCongr.frequently_mono {p q : α → Prop} {f : Filter α} (h : ∀ x, p x → q x) :
-    (∃ᶠ x in f, p x) → ∃ᶠ x in f, q x :=
-  (·.mono h)
 
 theorem Frequently.and_eventually {p q : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x)
     (hq : ∀ᶠ x in f, q x) : ∃ᶠ x in f, p x ∧ q x := by
@@ -1003,6 +988,7 @@ theorem EventuallyEq.comp₂ {δ} {f f' : α → β} {g g' : α → γ} {l} (Hf 
     (Hg : g =ᶠ[l] g') : (fun x => h (f x) (g x)) =ᶠ[l] fun x => h (f' x) (g' x) :=
   (Hf.prodMk Hg).fun_comp (uncurry h)
 
+-- TODO: can't use `to_additive` and `to_fun` simultaneously?
 @[to_additive (attr := gcongr)]
 theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
     (h' : f' =ᶠ[l] g') : f * f' =ᶠ[l] g * g' :=
@@ -1021,6 +1007,7 @@ lemma EventuallyEq.mul_left [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ
 lemma EventuallyEq.mul_right [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ[l] f₂) :
     f₁ * f₃ =ᶠ[l] f₂ * f₃ := EventuallyEq.mul h (by rfl)
 
+-- TODO: can't use `to_additive` and `to_fun` simultaneously?
 @[to_additive (attr := gcongr, to_additive) const_smul]
 theorem EventuallyEq.pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) (c : γ) :
     f ^ c =ᶠ[l] g ^ c :=
@@ -1042,7 +1029,7 @@ theorem EventuallyEq.fun_inv [Inv β] {f g : α → β} {l : Filter α} (h : f =
 
 @[to_additive (attr := gcongr)]
 theorem EventuallyEq.div [Div β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
-    (h' : f' =ᶠ[l] g') :  f / f' =ᶠ[l] g / g' :=
+    (h' : f' =ᶠ[l] g') : f / f' =ᶠ[l] g / g' :=
   h.comp₂ (· / ·) h'
 
 @[to_additive]
@@ -1201,8 +1188,6 @@ theorem eventuallyLE_antisymm_iff [PartialOrder β] {l : Filter α} {f g : α �
 theorem EventuallyLE.ge_iff_eq' [PartialOrder β] {l : Filter α} {f g : α → β} (h : f ≤ᶠ[l] g) :
     g ≤ᶠ[l] f ↔ g =ᶠ[l] f :=
   ⟨fun h' => h'.antisymm h, EventuallyEq.le⟩
-
-@[deprecated (since := "2025-07-10")] alias EventuallyLE.le_iff_eq := EventuallyLE.ge_iff_eq'
 
 theorem Eventually.ne_of_lt [Preorder β] {l : Filter α} {f g : α → β} (h : ∀ᶠ x in l, f x < g x) :
     ∀ᶠ x in l, f x ≠ g x :=

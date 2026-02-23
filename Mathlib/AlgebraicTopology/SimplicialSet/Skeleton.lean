@@ -21,8 +21,8 @@ If `i : X ⟶ Y` is a monomorphism, we define
 
 ## TODO
 * show that `X.skeleton (n + 1)` is obtained from `X.skeleton n` by
-attaching `∂Δ[n] ⟶ Δ[n]` cells (this also holds
-for `skeletonOfMono i`) (@joelriou).
+  attaching `∂Δ[n] ⟶ Δ[n]` cells (this also holds
+  for `skeletonOfMono i`) (@joelriou).
 * show that `(SSet.sk n).obj X` is isomorphic to `X.skeleton (n + 1)`
 
 -/
@@ -56,6 +56,7 @@ lemma mem_skeleton {i : ℕ} (x : X _⦋i⦌) {n : ℕ} (hi : i < n := by lia) :
     (le_iSup _ ⟨j, lt_of_le_of_lt
       (SimplexCategory.len_le_of_epi f) hi⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma skeleton_obj_eq_top {d n : ℕ} (h : d < n) :
     (X.skeleton n).obj (op ⦋d⦌) = ⊤ := by
   rw [← top_le_iff]
@@ -71,7 +72,7 @@ lemma mem_skeleton_obj_iff_of_nonDegenerate
     x.1 ∈ (X.skeleton n).obj _ ↔ d < n := by
   refine ⟨fun h ↦ ?_, fun _ ↦ X.mem_skeleton _⟩
   obtain ⟨x, hx⟩ := x
-  simp only [skeleton, OrderHom.coe_mk, Subpresheaf.iSup_obj,
+  simp only [skeleton, OrderHom.coe_mk, Subfunctor.iSup_obj,
     Set.iUnion_coe_set, Set.mem_iUnion, exists_prop] at h
   obtain ⟨⟨i, hi⟩, y, hy, ⟨f⟩, rfl⟩ := h
   have := X.mono_of_nonDegenerate ⟨_, hx⟩ f y rfl
@@ -87,7 +88,7 @@ lemma iSup_skeleton :
   le_antisymm (by simp) (by
     rw [Subcomplex.le_iff_contains_nonDegenerate]
     intro n x _
-    simp only [Subpresheaf.iSup_obj, Set.mem_iUnion]
+    simp only [Subfunctor.iSup_obj, Set.mem_iUnion]
     exact ⟨n + 1, mem_skeleton _ _ (by lia)⟩)
 
 lemma skeleton_succ (n : ℕ) :
@@ -144,6 +145,7 @@ lemma mem_skeletonOfMono_obj_iff_of_nonDegenerate
       x.1 ∈ Set.range (i.app _) ∨ d < n := by
   simp [skeletonOfMono, mem_skeleton_obj_iff_of_nonDegenerate]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma skeletonOfMono_obj_eq_top {d n : ℕ} (h : d < n) :
     (skeletonOfMono i n).obj (op ⦋d⦌) = ⊤ := by
   rw [← top_le_iff, ← Y.skeleton_obj_eq_top h]

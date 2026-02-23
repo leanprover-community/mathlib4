@@ -80,7 +80,7 @@ theorem _root_.Multiset.periodic_prod [Add α] [CommMonoid β] (s : Multiset (α
 @[to_additive]
 theorem _root_.Finset.periodic_prod [Add α] [CommMonoid β] {ι : Type*} {f : ι → α → β}
     (s : Finset ι) (hs : ∀ i ∈ s, Periodic (f i) c) : Periodic (∏ i ∈ s, f i) c :=
-  s.prod_map_toList f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic] )
+  s.prod_map_toList f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic])
 
 @[to_additive]
 protected theorem Periodic.smul [Add α] [SMul γ β] (h : Periodic f c) (a : γ) :
@@ -125,6 +125,7 @@ theorem Periodic.sub_const [SubtractionCommMonoid α] (h : Periodic f c) (a : α
     Periodic (fun x => f (x - a)) c := by
   simpa only [sub_eq_add_neg] using h.add_const (-a)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Periodic.nsmul [AddMonoid α] (h : Periodic f c) (n : ℕ) : Periodic f (n • c) := by
   induction n <;> simp_all [add_nsmul, ← add_assoc]
 
@@ -345,6 +346,7 @@ theorem Antiperiodic.int_mul_sub_eq [NonAssocRing α] [NonAssocRing β] (h : Ant
     (n : ℤ) : f (n * c - x) = (n.negOnePow : ℤ) * f (-x) := by
   simpa only [zsmul_eq_mul] using h.zsmul_sub_eq n
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Antiperiodic.add_nsmul_eq [AddMonoid α] [SubtractionMonoid β] (h : Antiperiodic f c)
     (n : ℕ) : f (x + n • c) = (-1) ^ n • f x := by
   rcases Nat.even_or_odd' n with ⟨k, rfl | rfl⟩

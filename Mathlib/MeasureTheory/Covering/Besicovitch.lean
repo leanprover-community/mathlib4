@@ -148,7 +148,7 @@ meta def evalBesicovitchSatelliteConfigR : PositivityExt where eval {u α} _zα 
 end Mathlib.Meta.Positivity
 
 /-- A metric space has the Besicovitch covering property if there exist `N` and `τ > 1` such that
-there are no satellite configuration of parameter `τ` with `N+1` points. This is the condition that
+there are no satellite configurations of parameter `τ` with `N+1` points. This is the condition that
 guarantees that the measurable Besicovitch covering theorem holds. It is satisfied by
 finite-dimensional real vector spaces. -/
 class HasBesicovitchCovering (α : Type*) [MetricSpace α] : Prop where
@@ -301,6 +301,7 @@ theorem lastStep_nonempty :
   replace A : p.r (p.index y) ≤ 0 := by simpa [hxy] using A
   exact (lt_irrefl _ ((p.rpos (p.index y)).trans_le A)).elim
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every point is covered by chosen balls, before `p.lastStep`. -/
 theorem mem_iUnionUpTo_lastStep (x : β) : p.c x ∈ p.iUnionUpTo p.lastStep := by
   have A : ∀ z : β, p.c z ∈ p.iUnionUpTo p.lastStep ∨ p.τ * p.r z < p.R p.lastStep := by
@@ -654,6 +655,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
 
 variable [HasBesicovitchCovering α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **measurable Besicovitch covering theorem**. Assume that, for any `x` in a set `s`,
 one is given a set of admissible closed balls centered at `x`, with arbitrarily small radii.
 Then there exists a disjoint covering of almost all `s` by admissible closed balls centered at some

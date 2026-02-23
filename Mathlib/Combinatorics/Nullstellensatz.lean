@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.MvPolynomial.Groebner
@@ -51,7 +51,7 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
 
 -/
 
-@[expose] public section
+public section
 
 open Finsupp
 
@@ -116,7 +116,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         simp only [coeff_zero]
         set n := (embDomain Function.Embedding.some m).update none d with hn
         rw [eq_option_embedding_update_none_iff] at hn
-        rw [← hn.1, ← hn.2, optionEquivLeft_coeff_coeff]
+        rw [← hn.1, ← hn.2, optionEquivLeft_coeff_some_coeff_none]
         by_contra hm
         apply not_le.mpr hd
         rw [MvPolynomial.degreeOf_eq_sup]
@@ -133,7 +133,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       intro e he
       set n := (embDomain Function.Embedding.some e).update none m with hn
       rw [eq_option_embedding_update_none_iff] at hn
-      rw [hQ, ← hn.1, ← hn.2, optionEquivLeft_coeff_coeff, ← ne_eq,
+      rw [hQ, ← hn.1, ← hn.2, optionEquivLeft_coeff_some_coeff_none, ← ne_eq,
         ← MvPolynomial.mem_support_iff] at he
       convert Finset.le_sup he
       rw [← hn.2, some_apply]
@@ -195,8 +195,6 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
 
 variable [Finite σ]
 
-open scoped BigOperators
-
 /-- The **Combinatorial Nullstellensatz**.
 
 If `f` vanishes at every point `x : σ → R` such that `x s ∈ S s` for all `s`,
@@ -243,6 +241,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     apply Finset.prod_eq_zero (hx i)
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Combinatorial Nullstellensatz**.
 
 Given a multi-index `t : σ →₀ ℕ` such that `t s < (S s).card` for all `s`,

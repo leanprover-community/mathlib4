@@ -160,6 +160,15 @@ theorem mem_top (x : R) : x ∈ (⊤ : Subring R) :=
 theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
   rfl
 
+@[simp] lemma toSubsemiring_top : (⊤ : Subring R).toSubsemiring = ⊤ := rfl
+@[simp] lemma toAddSubgroup_top : (⊤ : Subring R).toAddSubgroup = ⊤ := rfl
+
+@[simp] lemma toSubsemiring_eq_top {S : Subring R} : S.toSubsemiring = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
+@[simp] lemma toAddSubgroup_eq_top {S : Subring R} : S.toAddSubgroup = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
 /-- The ring equiv between the top element of `Subring R` and `R`. -/
 @[simps!]
 def topEquiv : (⊤ : Subring R) ≃+* R :=
@@ -313,6 +322,7 @@ instance : InfSet (Subring R) :=
 theorem coe_sInf (S : Set (Subring R)) : ((sInf S : Subring R) : Set R) = ⋂ s ∈ S, ↑s :=
   rfl
 
+@[simp]
 theorem mem_sInf {S : Set (Subring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
@@ -320,7 +330,8 @@ theorem mem_sInf {S : Set (Subring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x
 theorem coe_iInf {ι : Sort*} {S : ι → Subring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
@@ -348,6 +359,7 @@ instance : CompleteLattice (Subring R) :=
     inf_le_right := fun _s _t _x => And.right
     le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_iff' (A : Subring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
@@ -480,8 +492,6 @@ theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s 
 
 theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 /-- A subring `t` includes `closure s` if and only if it includes `s`. -/
 @[simp]
@@ -623,6 +633,7 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
 theorem closure_eq (s : Subring R) : closure (s : Set R) = s :=
   (Subring.gi R).l_u_eq s
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem closure_empty : closure (∅ : Set R) = ⊥ :=
   (Subring.gi R).gc.l_bot
@@ -640,6 +651,7 @@ theorem closure_iUnion {ι} (s : ι → Set R) : closure (⋃ i, s i) = ⨆ i, c
 theorem closure_sUnion (s : Set (Set R)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
   (Subring.gi R).gc.l_sSup
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem closure_singleton_intCast (n : ℤ) : closure {(n : R)} = ⊥ :=
   bot_unique <| closure_le.2 <| Set.singleton_subset_iff.mpr <| intCast_mem _ _
@@ -693,10 +705,12 @@ theorem comap_iInf {ι : Sort*} (f : R →+* S) (s : ι → Subring S) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_bot (f : R →+* S) : (⊥ : Subring R).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_top (f : R →+* S) : (⊤ : Subring S).comap f = ⊤ :=
   (gc_map_comap f).u_top
@@ -879,6 +893,7 @@ theorem range_fst : (fst R S).rangeS = ⊤ :=
 theorem range_snd : (snd R S).rangeS = ⊤ :=
   (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_bot_sup_bot_prod (s : Subring R) (t : Subring S) : s.prod ⊥ ⊔ prod ⊥ t = s.prod t :=
   le_antisymm (sup_le (prod_mono_right s bot_le) (prod_mono_left t bot_le)) fun p hp =>
@@ -1075,6 +1090,16 @@ instance center.smulCommClass_left : SMulCommClass (center R) R R :=
 instance center.smulCommClass_right : SMulCommClass R (center R) R :=
   Subsemiring.center.smulCommClass_right
 
+/-- The center of a semiring acts commutatively on any `R`-module -/
+instance {M : Type*} [MulAction R M] :
+    SMulCommClass R (Subring.center R) M :=
+  inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
+
+/-- The center of a semiring acts commutatively on any `R`-module -/
+instance {M : Type*} [MulAction R M] :
+    SMulCommClass (Subring.center R) R M :=
+  inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
+
 end Subring
 
 end Actions
@@ -1088,10 +1113,12 @@ theorem map_comap_eq_self
     {f : R →+* S} {t : Subring S} (h : t ≤ f.range) : (t.comap f).map f = t := by
   simpa only [inf_of_le_left h] using Subring.map_comap_eq f t
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_comap_eq_self_of_surjective
     {f : R →+* S} (hf : Function.Surjective f) (t : Subring S) : (t.comap f).map f = t :=
   map_comap_eq_self <| by simp [hf]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comap_map_eq (f : R →+* S) (s : Subring R) :
     (s.map f).comap f = s ⊔ closure (f ⁻¹' {0}) := by
   apply le_antisymm
@@ -1106,6 +1133,7 @@ theorem comap_map_eq (f : R →+* S) (s : Subring R) :
     rw [sup_eq_left, closure_le]
     exact (Set.image_preimage_subset f {0}).trans (Set.singleton_subset_iff.2 (s.map f).zero_mem)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comap_map_eq_self {f : R →+* S} {s : Subring R}
     (h : f ⁻¹' {0} ⊆ s) : (s.map f).comap f = s := by
   convert comap_map_eq f s
@@ -1117,6 +1145,7 @@ theorem comap_map_eq_self_of_injective
 
 end Subring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by
   convert AddSubgroup.zsmul_mem G h k using 1

@@ -13,6 +13,11 @@ This file defines the Gauss norm for polynomials. Given a polynomial `p` in `R[X
 `v : R → ℝ` and a real number `c`, the Gauss norm is defined as the supremum of the set of all
 values of `v (p.coeff i) * c ^ i` for all `i` in the support of `p`.
 
+This is mostly useful when `v` is an absolute value on `R` and `c` is set to be `1`, in which case
+the Gauss norm corresponds to the maximum of the absolute values of the coefficients of `p`. When
+`R` is a subring of `ℂ` and `v` is the standard absolute value, this is sometimes called the
+"height" of `p`.
+
 In the file `Mathlib/RingTheory/PowerSeries/GaussNorm.lean`, the Gauss norm is defined for power
 series. This is a generalization of the Gauss norm defined in this file in case `v` is a
 non-negative function with `v 0 = 0` and `c ≥ 0`.
@@ -72,6 +77,7 @@ private lemma sup'_nonneg_of_ne_zero [NonnegHomClass F R ℝ] {p : R[X]} (h : p.
     true_and]
   positivity
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i) * c ^ i = x} := by
   let f : p.support → ℝ := fun i ↦ v (p.coeff i) * c ^ i.val
   have h_fin : (f '' ⊤ ∪ {0}).Finite := by
@@ -79,16 +85,10 @@ private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i
     apply Set.Finite.image f
     rw [Set.top_eq_univ, Set.finite_univ_iff, ← @Finset.coe_sort_coe]
     exact Finite.of_fintype p.support
-  apply Set.Finite.bddAbove <| Set.Finite.subset h_fin _
-  intro x hx
-  obtain ⟨i, hi⟩ := hx
-  rw [← hi]
-  by_cases hi : i ∈ p.support
-  · left
-    use ⟨i, hi⟩
-    simp [f]
-  · right
-    simp [Polynomial.notMem_support_iff.mp hi]
+  refine Set.Finite.bddAbove <| Set.Finite.subset h_fin fun _ ↦ ?_
+  simp only [Set.top_eq_univ, Set.image_univ, Set.union_singleton, Set.mem_insert_iff,
+    Set.mem_range, Subtype.exists, mem_support_iff]
+  grind
 
 @[simp]
 theorem gaussNorm_coe_powerSeries [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]

@@ -25,7 +25,7 @@ In abelian groups, the Plünnecke-Ruzsa inequality is the stronger statement tha
 implies small powers. See `Mathlib/Combinatorics/Additive/PluenneckeRuzsa.lean`.
 -/
 
-@[expose] public section
+public section
 
 open Fin MulOpposite
 open List hiding tail
@@ -34,6 +34,7 @@ open scoped Pointwise
 namespace Finset
 variable {G : Type*} [DecidableEq G] [Group G] {A : Finset G} {k K : ℝ} {m : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 private lemma inductive_claim_mul (hm : 3 ≤ m)
     (h : ∀ ε : Fin 3 → ℤ, (∀ i, |ε i| = 1) → #((finRange 3).map fun i ↦ A ^ ε i).prod ≤ k * #A)
@@ -67,6 +68,7 @@ private lemma inductive_claim_mul (hm : 3 ≤ m)
         · exact ih (Fin.cons 1 <| tail <| tail ε) <| Fin.cons (by simp) (by simp [hε, Fin.tail])
       _ = #A * (k ^ m * #A) := by rw [← pow_sub_one_mul hm₀]; ring
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 private lemma small_neg_pos_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A * A) ≤ K ^ 2 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty
@@ -99,6 +101,7 @@ private lemma small_pos_pos_neg_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A * A⁻�
   rw [← card_inv]
   simpa [mul_assoc] using small_pos_neg_neg_mul (A := A) (K := K) (by simpa)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 private lemma small_pos_neg_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * A) ≤ K ^ 3 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty
@@ -107,7 +110,7 @@ private lemma small_pos_neg_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * 
   calc
     (#A * #(A * A⁻¹ * A) : ℝ) ≤ #(A * (A * A⁻¹)) * #(A * A) := by
       norm_cast; simpa using ruzsa_triangle_inequality_invMul_mul_mul (A * A⁻¹) A A
-    _ = #(A  * A * A⁻¹) * #(A ^ 2) := by simp [pow_succ, mul_assoc]
+    _ = #(A * A * A⁻¹) * #(A ^ 2) := by simp [pow_succ, mul_assoc]
     _ ≤ (K ^ 2 * #A) * (K * #A) := by
       gcongr
       · exact small_pos_pos_neg_mul hA

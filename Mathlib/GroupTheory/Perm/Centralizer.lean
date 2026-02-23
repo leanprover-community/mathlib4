@@ -457,6 +457,7 @@ theorem range_toPermHom_eq_range_toPermHom' :
   ext τ
   rw [mem_range_toPermHom_iff, mem_range_toPermHom'_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nat_card_range_toPermHom :
     Nat.card (toPermHom g).range =
       ∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)! := by
@@ -536,6 +537,7 @@ theorem kerParam_injective (g : Perm α) : Function.Injective (kerParam g) := by
     rintro - ⟨a, rfl⟩ - ⟨-, ⟨b, rfl⟩, ⟨-⟩⟩
     exact (ofSubtype_support_disjoint a).mono_right (mem_cycleFactorsFinset_support_le b.2)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem kerParam_range_eq :
     (kerParam g).range = (toPermHom g).ker.map (Subgroup.subtype _) := by
   apply le_antisymm
@@ -576,6 +578,7 @@ theorem kerParam_range_le_centralizer :
   rw [kerParam_range_eq]
   exact map_subtype_le (toPermHom g).ker
 
+set_option backward.isDefEq.respectTransparency false in
 theorem kerParam_range_card (g : Equiv.Perm α) :
     Fintype.card (kerParam g).range = (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
   rw [Fintype.card_coeSort_range (kerParam_injective g)]
@@ -603,6 +606,7 @@ theorem sign_kerParam_apply_apply :
     Finset.univ_eq_attach, Finset.noncommProd_eq_prod]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cycleType_kerParam_apply_apply :
     cycleType (kerParam g ⟨k, v⟩) = cycleType k + ∑ c, (v c).val.cycleType := by
   let U := SetLike.coe (Finset.univ : Finset { x // x ∈ g.cycleFactorsFinset })
@@ -672,6 +676,7 @@ theorem card_of_cycleType_eq_zero_iff {m : Multiset ℕ} :
     ← exists_with_cycleType_iff, not_exists]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     #({g | g.cycleType = m} : Finset (Perm α)) *
       ((Fintype.card α - m.sum)! * m.prod * (∏ n ∈ m.toFinset, (m.count n)!)) =
@@ -708,7 +713,7 @@ variable {α} in
 /-- The number of cycles of given length -/
 lemma card_of_cycleType_singleton {n : ℕ} (hn' : 2 ≤ n) (hα : n ≤ card α) :
     #({g | g.cycleType = {n}} : Finset (Perm α)) = (n - 1)! * (choose (card α) n) := by
-  have hn₀ : n ≠ 0 := by omega
+  have hn₀ : n ≠ 0 := by lia
   have aux : n ! = (n - 1)! * n := by rw [mul_comm, mul_factorial_pred hn₀]
   rw [mul_comm, ← Nat.mul_left_inj hn₀, mul_assoc, ← aux, ← Nat.mul_left_inj (factorial_ne_zero _),
     Nat.choose_mul_factorial_mul_factorial hα, mul_assoc]

@@ -70,7 +70,7 @@ variable [LieRing.IsNilpotent L] (χ₁ χ₂ : L → R) (p q : ℤ)
 
 section
 
-variable [IsAddTorsionFree R] [NoZeroSMulDivisors R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
+variable [IsAddTorsionFree R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
 include hχ₁
 
 lemma eventually_genWeightSpace_smul_add_eq_bot :
@@ -173,6 +173,7 @@ section IsCartanSubalgebra
 
 variable [H.IsCartanSubalgebra] [IsNoetherian R L]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma trace_toEnd_genWeightSpaceChain_eq_zero
     (hp : genWeightSpace M (p • α + χ) = ⊥)
     (hq : genWeightSpace M (q • α + χ) = ⊥)
@@ -202,6 +203,7 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
   | add => simp_all
   | smul => simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
 `I = corootSpace α` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
 integral linear combination between `α` and any weight `χ` of a representation.
@@ -210,7 +212,7 @@ This is Proposition 4.4 from [carter2005] and is a key step in the proof that th
 semisimple Lie algebra form a root system. It shows that the restriction of `α` to `I` vanishes iff
 the restriction of every root to `I` vanishes (which cannot happen in a semisimple Lie algebra). -/
 lemma exists_forall_mem_corootSpace_smul_add_eq_zero
-    [IsDomain R] [IsPrincipalIdealRing R] [CharZero R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
+    [IsDomain R] [IsPrincipalIdealRing R] [CharZero R] [Module.IsTorsionFree R M] [IsNoetherian R M]
     (hα : α ≠ 0) (hχ : genWeightSpace M χ ≠ ⊥) :
     ∃ a b : ℤ, 0 < b ∧ ∀ x ∈ corootSpace α, (a • α + b • χ) x = 0 := by
   obtain ⟨p, hp₀, q, hq₀, hp, hq⟩ := exists₂_genWeightSpace_smul_add_eq_bot M α χ hα
@@ -253,7 +255,7 @@ section
 
 variable {M}
 variable [LieRing.IsNilpotent L]
-variable [IsAddTorsionFree R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
+variable [IsAddTorsionFree R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M]
 variable (α : L → R) (β : Weight R L M)
 
 /-- This is the largest `n : ℕ` such that `i • α + β` is a weight for all `0 ≤ i ≤ n`. -/
@@ -279,6 +281,7 @@ section
 variable (hα : α ≠ 0)
 include hα
 
+set_option backward.isDefEq.respectTransparency false in
 lemma chainTopCoeff_add_one :
     letI := Classical.propDecidable
     chainTopCoeff α β + 1 =
@@ -331,7 +334,7 @@ lemma genWeightSpace_zsmul_add_ne_bot {n : ℤ}
 
 lemma genWeightSpace_neg_zsmul_add_ne_bot {n : ℕ} (hn : n ≤ chainBotCoeff α β) :
     genWeightSpace M ((-n : ℤ) • α + β : L → R) ≠ ⊥ := by
-  apply genWeightSpace_zsmul_add_ne_bot α β <;> omega
+  apply genWeightSpace_zsmul_add_ne_bot α β <;> lia
 
 /-- The last weight in an `α`-chain through `β`. -/
 noncomputable

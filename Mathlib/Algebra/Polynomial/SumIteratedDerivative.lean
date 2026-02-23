@@ -75,7 +75,7 @@ theorem sumIDeriv_apply_of_lt {p : R[X]} {n : ℕ} (hn : p.natDegree < n) :
 theorem sumIDeriv_apply_of_le {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
     sumIDeriv p = ∑ i ∈ range (n + 1), derivative^[i] p := by
   dsimp [sumIDeriv]
-  exact Finsupp.sum_of_support_subset _ (by simp [Nat.lt_succ_iff, hn]) _ (by simp)
+  exact Finsupp.sum_of_support_subset _ (by simp [hn]) _ (by simp)
 
 @[simp]
 theorem sumIDeriv_C (a : R) : sumIDeriv (C a) = C a := by
@@ -132,6 +132,7 @@ theorem aeval_iterate_derivative_of_lt (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
     h, ← mul_smul_comm, mul_assoc, ← mul_sum, eval_mul, pow_one, eval_sub, eval_X, eval_C, sub_self,
     zero_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem aeval_iterate_derivative_self (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
     (hp : p.map (algebraMap R A) = (X - C r) ^ q * p') :
     aeval r (derivative^[q] p) = q ! • p'.eval r := by
@@ -153,6 +154,7 @@ theorem aeval_iterate_derivative_self (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem aeval_iterate_derivative_of_ge (p : R[X]) (q : ℕ) {k : ℕ} (hk : q ≤ k) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - k ∧
       ∀ r : A, aeval r (derivative^[k] p) = q ! • aeval r gp := by

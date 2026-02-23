@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {J : Type*} [Category J]
+variable {J : Type*} [Category* J]
 
 /--
 We say that a functor `F` to `Type*` is locally directed if for every `x ∈ F.obj k`, the
@@ -56,6 +56,7 @@ instance (F : Discrete J ⥤ Type*) : F.IsLocallyDirected := by
   simp only [Discrete.functor_map_id, types_id_apply, forall_eq']
   exact fun x ↦ ⟨⟨i⟩, 𝟙 _, 𝟙 _, x, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance (F : WidePushoutShape J ⥤ Type*) [∀ i, Mono (F.map (.init i))] :
     F.IsLocallyDirected := by
   constructor

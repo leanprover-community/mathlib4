@@ -128,6 +128,7 @@ lemma eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (hxy : dist x y = r * dist x z)
       mul_left_inj' hne] at H'
     rw [AffineMap.lineMap_apply, ← H', H, vsub_vadd]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_midpoint_of_dist_eq_half (hx : dist x y = dist x z / 2) (hy : dist y z = dist x z / 2) :
     y = midpoint ℝ x z := by
   apply eq_lineMap_of_dist_eq_mul_of_dist_eq_mul

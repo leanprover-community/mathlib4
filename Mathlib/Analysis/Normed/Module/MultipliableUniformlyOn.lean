@@ -17,7 +17,7 @@ We gather some results about the uniform convergence of infinite products, in pa
 the form `∏' i, (1 + f i x)` for a sequence `f` of complex-valued functions.
 -/
 
-@[expose] public section
+public section
 
 open Filter Function Complex Finset Topology
 
@@ -35,6 +35,7 @@ lemma TendstoUniformlyOn.comp_cexp {p : Filter ι} {g : α → ℂ}
   refine (UniformContinuousOn.cexp _).comp_tendstoUniformlyOn_eventually (by simpa) ?_ hf
   exact fun x hx ↦ (hv x hx).trans (lt_add_one v).le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Summable.hasSumUniformlyOn_log_one_add (hu : Summable u)
     (h : ∀ᶠ i in cofinite, ∀ x ∈ K, ‖f i x‖ ≤ u i) :
     HasSumUniformlyOn (fun i x ↦ log (1 + f i x)) (fun x ↦ ∑' i, log (1 + f i x)) K := by
@@ -82,6 +83,7 @@ namespace Summable
 variable {R : Type*} [NormedCommRing R] [NormOneClass R] [CompleteSpace R] [TopologicalSpace α]
   {f : ι → α → R}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a sequence of continuous functions `f i x` on an open compact `K` have norms eventually
 bounded by a summable function, then `∏' i, (1 + f i x)` is uniformly convergent on `K`. -/
 lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)

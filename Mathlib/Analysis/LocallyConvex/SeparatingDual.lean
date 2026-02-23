@@ -5,10 +5,11 @@ Authors: Sébastien Gouëzel, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # Spaces with separating dual
@@ -135,38 +136,65 @@ lemma exists_eq_one {x : V} (hx : x ≠ 0) :
 theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ f : StrongDual R V, f x = 1 ∧ f y ≠ 0 := by
   obtain ⟨u, ux⟩ : ∃ u : StrongDual R V, u x = 1 := exists_eq_one hx
-  rcases ne_or_eq (u y) 0 with uy|uy
+  rcases ne_or_eq (u y) 0 with uy | uy
   · exact ⟨u, ux, uy⟩
   obtain ⟨v, vy⟩ : ∃ v : StrongDual R V, v y = 1 := exists_eq_one hy
-  rcases ne_or_eq (v x) 0 with vx|vx
+  rcases ne_or_eq (v x) 0 with vx | vx
   · exact ⟨(v x)⁻¹ • v, inv_mul_cancel₀ vx, show (v x)⁻¹ * v y ≠ 0 by simp [vx, vy]⟩
   · exact ⟨u + v, by simp [ux, vx], by simp [uy, vy]⟩
 
-variable [IsTopologicalAddGroup V]
+variable [IsTopologicalAddGroup V] [ContinuousSMul R V]
+
+section algebra
+variable {S : Type*} [CommSemiring S] [Module S V] [SMulCommClass R S V] [Algebra S R]
+  [IsScalarTower S R V] [ContinuousConstSMul S V]
 
 /-- The center of continuous linear maps on a topological vector space
 with separating dual is trivial, in other words, it is a central algebra. -/
-instance _root_.Algebra.IsCentral.continuousLinearMap [ContinuousSMul R V] :
-    Algebra.IsCentral R (V →L[R] V) where
-  out T hT := by
-    have h' (f : StrongDual R V) (y v : V) : f (T v) • y = f v • T y := by
-      simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
+instance _root_.Algebra.IsCentral.instContinuousLinearMap [Algebra.IsCentral S R] :
+    Algebra.IsCentral S (V →L[R] V) where
+  out f hf := by
+    suffices ∃ α ∈ Subalgebra.center S R, f = α • .id R V from
+      have ⟨_, ⟨y, _⟩, _⟩ := Algebra.IsCentral.center_eq_bot S R ▸ this
+      ⟨y, by aesop⟩
     nontriviality V
     obtain ⟨x, hx⟩ := exists_ne (0 : V)
-    obtain ⟨f, hf⟩ := exists_eq_one (R := R) hx
-    exact ⟨f (T x), ContinuousLinearMap.ext fun _ => by simp [h', hf]⟩
+    obtain ⟨g, hg⟩ := exists_eq_one (R := R) hx
+    have (y : V) := by simpa [hg] using congr($(Subalgebra.mem_center_iff.mp hf (g.smulRight y)) x)
+    exact ⟨g (f x), by simp [this, ContinuousLinearMap.ext_iff]⟩
+
+set_option backward.isDefEq.respectTransparency false in
+open ContinuousLinearMap ContinuousLinearEquiv in
+theorem _root_.ContinuousLinearEquiv.conjContinuousAlgEquiv_ext_iff
+    {R V W : Type*} [NormedField R] [AddCommGroup V] [AddCommGroup W] [TopologicalSpace R]
+    [TopologicalSpace V] [TopologicalSpace W] [IsTopologicalRing R] [Module R V] [Module R W]
+    [SeparatingDual R V] [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
+    [ContinuousSMul R V] [ContinuousSMul R W] (f g : V ≃L[R] W) :
+    f.conjContinuousAlgEquiv = g.conjContinuousAlgEquiv ↔ ∃ α : Rˣ, f = α • g := by
+  conv_lhs => rw [eq_comm]
+  simp_rw [ContinuousAlgEquiv.ext_iff, funext_iff, conjContinuousAlgEquiv_apply,
+    ← eq_toContinuousLinearMap_symm_comp, ← ContinuousLinearMap.comp_assoc,
+    eq_comp_toContinuousLinearMap_symm, ContinuousLinearMap.comp_assoc,
+    ← ContinuousLinearMap.comp_assoc _ f.toContinuousLinearMap, comp_coe, ← mul_def,
+    ← Subalgebra.mem_center_iff (R := R), Algebra.IsCentral.center_eq_bot, ← comp_coe,
+    Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one, ContinuousLinearEquiv.ext_iff]
+  refine ⟨fun ⟨y, h⟩ ↦ ?_, fun ⟨y, h⟩ ↦ ⟨(y : R), by ext; simp [h]⟩⟩
+  if hy : y = 0 then exact ⟨1, funext fun x ↦ by simp [by simpa [hy] using congr($h x).symm]⟩
+  else exact ⟨.mk0 y hy, funext fun x ↦ by simp [by simpa [eq_symm_apply] using congr($h x)]⟩
+
+end algebra
 
 /-- In a topological vector space with separating dual, the group of continuous linear equivalences
 acts transitively on the set of nonzero vectors: given two nonzero vectors `x` and `y`, there
 exists `A : V ≃L[R] V` mapping `x` to `y`. -/
-theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
+theorem exists_continuousLinearEquiv_apply_eq
     {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ A : V ≃L[R] V, A x = y := by
   obtain ⟨G, Gx, Gy⟩ : ∃ G : StrongDual R V, G x = 1 ∧ G y ≠ 0 :=
     exists_eq_one_ne_zero_of_ne_zero_pair hx hy
   let A : V ≃L[R] V :=
   { toFun := fun z ↦ z + G z • (y - x)
-    invFun := fun z ↦ z + ((G y) ⁻¹ * G z) • (x - y)
+    invFun := fun z ↦ z + ((G y)⁻¹ * G z) • (x - y)
     map_add' := fun a b ↦ by simp [add_smul]; abel
     map_smul' := by simp [smul_smul]
     left_inv := fun z ↦ by
@@ -183,9 +211,8 @@ theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
       rw [mul_comm _ (G y), ← mul_assoc, mul_inv_cancel₀ Gy]
       simp only [smul_sub, one_mul, add_sub_cancel]
       abel
-    continuous_toFun := continuous_id.add (G.continuous.smul continuous_const)
-    continuous_invFun :=
-      continuous_id.add ((continuous_const.mul G.continuous).smul continuous_const) }
+    continuous_toFun := by fun_prop
+    continuous_invFun := by fun_prop }
   exact ⟨A, show x + G x • (y - x) = y by simp [Gx]⟩
 
 end Field

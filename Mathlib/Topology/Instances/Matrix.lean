@@ -144,9 +144,6 @@ protected theorem Continuous.dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [C
   dsimp only [dotProduct]
   fun_prop
 
-@[deprecated (since := "2025-05-09")]
-alias Continuous.matrix_dotProduct := Continuous.dotProduct
-
 /-- For square matrices the usual `continuous_mul` can be used. -/
 @[continuity, fun_prop]
 theorem Continuous.matrix_mul [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R]
@@ -266,7 +263,7 @@ lemma IsOpenEmbedding.matrix_map [Finite m] [Finite n] (hf : IsOpenEmbedding f) 
 
 end Topology
 
--- lemmas about functions in `Data/Matrix/Block.lean`
+-- lemmas about functions in `Mathlib/Data/Matrix/Block.lean`
 section BlockMatrices
 
 @[continuity, fun_prop]
@@ -485,6 +482,7 @@ topology. -/
 instance [DiscreteTopology R] : DiscreteTopology (SL n R) :=
   instDiscreteTopologySubtype
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The special linear group over a topological ring is a topological group. -/
 instance topologicalGroup : IsTopologicalGroup (SL n R) where
   continuous_inv := by simpa [continuous_induced_rng] using continuous_induced_dom.matrix_adjugate
@@ -525,6 +523,7 @@ variable {n : Type*} [Fintype n] [DecidableEq n]
   {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   [TopologicalSpace A] [TopologicalSpace B] [IsTopologicalRing B]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isInducing_mapGL (h : Topology.IsInducing (algebraMap A B)) :
     Topology.IsInducing (mapGL B : SL n A → GL n B) := by
   -- TODO: add `IsInducing.units_map` and deduce `IsInducing.generalLinearGroup_map`

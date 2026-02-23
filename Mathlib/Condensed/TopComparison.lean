@@ -19,7 +19,7 @@ nice properties, like preserving pullbacks and finite coproducts, then this Yone
 satisfies the sheaf condition for the regular and extensive topologies respectively.
 
 We apply this API to `CompHaus` and define the functor
-`topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u}`.
+`topCatToCondensedSet : TopCat.{u + 1} ⥤ CondensedSet.{u}`.
 
 -/
 
@@ -56,6 +56,7 @@ theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullbac
     TopCat.pullbackIsoProdSubtype_inv_snd_apply] at ha'
   simpa using ha'
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `G` preserves the relevant pullbacks and every effective epi in `C` is a quotient map (which is
 the case when `C` is `CompHaus` or `Profinite`), then `yonedaPresheaf` satisfies the equalizer
@@ -112,10 +113,10 @@ def TopCat.toSheafCompHausLike :
     have := CompHausLike.preregular hs
     rw [Presheaf.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
     refine ⟨inferInstance, ?_⟩
-    apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
+    apply +allowSynthFailures equalizerCondition_yonedaPresheaf
       (CompHausLike.compHausLikeToTop.{u} P) X
     intro Z B π he
-    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.hom.continuous
+    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.hom.hom.continuous
 
 /--
 `TopCat.toSheafCompHausLike` yields a functor from `TopCat.{max u w}` to
@@ -131,14 +132,14 @@ noncomputable def topCatToSheafCompHausLike :
 end
 
 /--
-Associate to a `(u+1)`-small topological space the corresponding condensed set, given by
+Associate to a `(u + 1)`-small topological space the corresponding condensed set, given by
 `yonedaPresheaf`.
 -/
 noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u + 1}) : CondensedSet.{u} :=
-  toSheafCompHausLike.{u+1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+  toSheafCompHausLike.{u + 1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /--
-`TopCat.toCondensedSet` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
+`TopCat.toCondensedSet` yields a functor from `TopCat.{u + 1}` to `CondensedSet.{u}`.
 -/
-noncomputable abbrev topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u} :=
-  topCatToSheafCompHausLike.{u+1} _ (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+noncomputable abbrev topCatToCondensedSet : TopCat.{u + 1} ⥤ CondensedSet.{u} :=
+  topCatToSheafCompHausLike.{u + 1} _ (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)

@@ -168,7 +168,7 @@ variable {f : M →ₗ[R] A} (h : IsSymmetricAlgebra f)
 
 section equiv
 
-/-- For `f : M →ₗ[R] A`, construst the algebra isomorphism `SymmetricAlgebra R M ≃ₐ[R] A`
+/-- For `f : M →ₗ[R] A`, construct the algebra isomorphism `SymmetricAlgebra R M ≃ₐ[R] A`
 from `IsSymmetricAlgebra f`. -/
 noncomputable def equiv : SymmetricAlgebra R M ≃ₐ[R] A :=
   .ofBijective (SymmetricAlgebra.lift f) h
@@ -240,9 +240,9 @@ theorem induction {motive : A → Prop}
   generalize h.equiv.invFun a = y
   change motive (SymmetricAlgebra.lift f y)
   induction y using SymmetricAlgebra.induction with
-    | algebraMap r => simpa using algebraMap r
-    | ι y => simpa using ι y
-    | mul _ _ hx hy => simpa using mul _ _ hx hy
-    | add _ _ hx hy => simpa using add _ _ hx hy
+  | algebraMap r => simpa using algebraMap r
+  | ι y => simpa using ι y
+  | mul _ _ hx hy => simpa using mul _ _ hx hy
+  | add _ _ hx hy => simpa using add _ _ hx hy
 
 end IsSymmetricAlgebra

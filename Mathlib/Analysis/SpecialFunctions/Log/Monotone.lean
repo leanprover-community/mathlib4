@@ -18,7 +18,7 @@ form `x ^ a`.
 logarithm, tonality
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Function
@@ -51,6 +51,7 @@ theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ => log x / x) { x | ex
     _ ≤ log x * (y / x - 1) := le_mul_of_one_le_left hyx hlogx
     _ = log x / x * y - log x := by ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
     AntitoneOn (fun x : ℝ => log x / x ^ a) { x | exp (1 / a) ≤ x } := by
   simp only [AntitoneOn, mem_setOf_eq]

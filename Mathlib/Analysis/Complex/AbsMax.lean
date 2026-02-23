@@ -80,7 +80,7 @@ are continuous on its closure. We prove the following theorems.
 maximum modulus principle, complex analysis
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap Bornology
@@ -107,6 +107,7 @@ The lemmas with names `*_auxₙ` are considered to be private and should not be 
 file.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     (hd : DiffContOnCl ℂ f (ball z (dist w z)))
     (hz : IsMaxOn (norm ∘ f) (closedBall z (dist w z)) z) : ‖f w‖ = ‖f z‖ := by
@@ -176,6 +177,7 @@ If we do not assume that the codomain is a strictly convex space, then we can on
 Finally, we generalize the theorem from a disk in `ℂ` to a closed ball in any normed space.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Maximum modulus principle** on a closed ball: if `f : E → F` is continuous on a closed ball,
 is complex differentiable on the corresponding open ball, and the norm `‖f w‖` takes its maximum
 value on the open ball at its center, then the norm `‖f w‖` is constant on the closed ball. -/

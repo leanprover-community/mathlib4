@@ -49,24 +49,27 @@ theorem fib_two_mul_add_one_eq_natFib_natAbs {n : ℤ} : fib (2 * n + 1) = (natA
 theorem fib_two_mul_add_one_pos {n : ℤ} : 0 < fib (2 * n + 1) := by
   grind [fib_two_mul_add_one_eq_natFib_natAbs, Nat.fib_pos]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fib_neg_natCast (n : ℕ) : fib (-n) = (-1) ^ (n + 1) * n.fib := by
   rcases n.even_or_odd with (hn | hn)
   · simp [fib, hn, pow_add]
   · simp [fib_of_odd, hn]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fib_neg (n : ℤ) : fib (-n) = if Even n then -fib n else fib n := by
   obtain ⟨n, _⟩ := n.eq_nat_or_neg
   aesop (add safe (by rw [fib_neg_natCast]))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_fib_neg (n : ℤ) : (fib (-n) : ℚ) = (-1) ^ (n + 1) * fib n := by
   aesop (add safe (by rw [fib_neg, neg_one_zpow_eq_ite]))
 
 theorem fib_add_two (n : ℤ) : fib (n + 2) = fib n + fib (n + 1) := by
   rcases n with (n | n)
   · dsimp
-    rw [show (n : ℤ) + 2 = (n + 2 : ℕ) by rfl, fib_natCast, Nat.fib_add_two]
-    rfl
-  · rw [show negSucc n = -((n + 1 : ℕ) : ℤ) by rfl, fib_neg_natCast]
+    rw [← Nat.cast_ofNat, ← Nat.cast_add, ← Nat.cast_add_one, fib_natCast, fib_natCast,
+      Nat.fib_add_two, Nat.cast_add]
+  · rw [negSucc_eq, ← Nat.cast_add_one, fib_neg_natCast]
     simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, reduceNeg, add_comm,
       add_assoc, reduceAdd, add_neg_cancel_comm_assoc, fib_neg_natCast]
     if hn0 : n = 0 then simp [hn0] else
@@ -137,6 +140,7 @@ theorem fib_add (m n : ℤ) : fib (m + n) = fib (m - 1) * fib n + fib m * fib (n
     · exact fib_add_natCast _ _
     · exact fib_neg_natCast_add_neg_natCast _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fib_two_mul (n : ℤ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
   rw [two_mul, fib_add]
   grind [fib_add_two]
@@ -154,6 +158,9 @@ theorem gcd_fib (m n : ℤ) : gcd (fib m) (fib n) = Nat.fib (gcd m n) := by
   obtain ⟨m, (rfl | rfl)⟩ := m.eq_nat_or_neg
     <;> obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
     <;> simp [fib_neg, Nat.fib_gcd, apply_ite, apply_ite_left]
+
+@[deprecated gcd_fib (since := "2025-12-09")]
+theorem fib_gcd (m n : ℤ) : fib (gcd m n) = gcd (fib m) (fib n) := by simpa using (gcd_fib m n).symm
 
 private theorem fib_natCast_dvd {m : ℕ} {n : ℤ} (h : (m : ℤ) ∣ n) : fib m ∣ fib n := by
   rwa [← gcd_eq_left_iff_dvd (by simp), gcd_fib, ← fib_natCast, (gcd_eq_left_iff_dvd (by simp)).mpr]

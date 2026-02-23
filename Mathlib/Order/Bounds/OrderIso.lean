@@ -12,7 +12,7 @@ public import Mathlib.Order.Hom.Set
 # Order isomorphisms and bounds.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -29,6 +29,7 @@ theorem upperBounds_image {s : Set α} : upperBounds (f '' s) = f '' upperBounds
 theorem lowerBounds_image {s : Set α} : lowerBounds (f '' s) = f '' lowerBounds s :=
   @upperBounds_image αᵒᵈ βᵒᵈ _ _ f.dual _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem isLUB_image {s : Set α} {x : β} : IsLUB (f '' s) x ↔ IsLUB s (f.symm x) :=
   ⟨fun h => IsLUB.of_image (by simp) ((f.apply_symm_apply x).symm ▸ h), fun h =>

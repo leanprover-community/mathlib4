@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Monic
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.Data.Nat.Lattice
 
@@ -455,7 +454,7 @@ theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
     · rw [coeff_divByMonic_X_sub_C_rec, ih, eq_comm, Icc_eq_cons_Ioc (Nat.succ_le_iff.mpr hn),
           sum_cons, Nat.sub_self, pow_zero, one_mul, mul_sum]
       congr 1; refine sum_congr ?_ fun i hi ↦ ?_
-      · ext; simp [Nat.succ_le_iff]
+      · ext; simp
       rw [← mul_assoc, ← pow_succ', eq_comm, i.sub_succ', Nat.sub_add_cancel]
       apply Nat.le_sub_of_add_le
       rw [add_comm]; exact (mem_Icc.mp hi).1
@@ -479,9 +478,9 @@ theorem not_isField : ¬IsField R[X] := by
 section multiplicity
 
 /-- An algorithm for deciding polynomial divisibility.
-The algorithm is "compute `p %ₘ q` and compare to `0`".
-See `Polynomial.modByMonic` for the algorithm that computes `%ₘ`.
+Prefer `Classical.dec`, as the algorithm relies on `%ₘ` and so is `noncomputable`.
 -/
+@[deprecated Classical.dec (since := "2026-02-07")]
 def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
   decidable_of_iff (p %ₘ q = 0) (modByMonic_eq_zero_iff_dvd hq)
 
@@ -493,28 +492,25 @@ theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (
 
 /- TODO: stripping out classical for decidability instance parameter might
 make for better ergonomics -/
-/-- The largest power of `X - C a` which divides `p`.
-This *could be* computable via the divisibility algorithm `Polynomial.decidableDvdMonic`,
-as shown by `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` which has a computable RHS. -/
+/-- The largest power of `X - C a` which divides `p`. -/
 def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
   letI := Classical.decEq R
   if h0 : p = 0 then 0
   else
-    let _ : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
-      have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
-      inferInstanceAs (Decidable ¬_)
+    let _ : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := Classical.decPred _
     Nat.find (finiteMultiplicity_X_sub_C a h0)
 
-theorem rootMultiplicity_eq_nat_find_of_nonzero [DecidableEq R] {p : R[X]} (p0 : p ≠ 0) {a : R} :
-    -- `decidableDvdMonic` can't be an instance, so we inline it here.
-    letI : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
-      have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
-      inferInstanceAs (Decidable ¬_)
+theorem rootMultiplicity_eq_natFind_of_ne_zero {p : R[X]} (p0 : p ≠ 0) {a : R}
+    [DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p] :
     rootMultiplicity a p = Nat.find (finiteMultiplicity_X_sub_C a p0) := by
   dsimp [rootMultiplicity]
-  cases Subsingleton.elim ‹DecidableEq R› (Classical.decEq R)
   rw [dif_neg p0]
+  congr
 
+@[deprecated (since := "2026-02-12")]
+alias rootMultiplicity_eq_nat_find_of_nonzero := rootMultiplicity_eq_natFind_of_ne_zero
+
+set_option backward.isDefEq.respectTransparency false in
 theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
     (p : R[X]) (a : R) :
     rootMultiplicity a p =
@@ -619,6 +615,9 @@ theorem sub_dvd_eval_sub (a b : R) (p : R[X]) : a - b ∣ p.eval a - p.eval b :=
       using (_root_.map_dvd (evalRingHom a)) this
   simp [dvd_iff_isRoot]
 
+lemma IsRoot.dvd_coeff_zero {p : R[X]} {x : R} (h : p.IsRoot x) : x ∣ p.coeff 0 := by
+  simpa [h.eq_zero, coeff_zero_eq_eval_zero] using sub_dvd_eval_sub 0 x p
+
 @[simp]
 theorem rootMultiplicity_eq_zero_iff {p : R[X]} {x : R} :
     rootMultiplicity x p = 0 ↔ IsRoot p x → p = 0 := by
@@ -678,7 +677,7 @@ lemma add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q + p
               (max_lt (degree_modByMonic_lt _ hq) (degree_modByMonic_lt _ hq))⟩).2
   · simp_rw [modByMonic_eq_of_not_monic _ hq]
 
-lemma neg_modByMonic (p q : R[X]) : (-p) %ₘ q = - (p %ₘ q) := by
+lemma neg_modByMonic (p q : R[X]) : (-p) %ₘ q = -(p %ₘ q) := by
   rw [eq_neg_iff_add_eq_zero, ← add_modByMonic, neg_add_cancel, zero_modByMonic]
 
 lemma sub_modByMonic (p₁ p₂ q : R[X]) : (p₁ - p₂) %ₘ q = p₁ %ₘ q - p₂ %ₘ q := by
@@ -714,7 +713,7 @@ lemma eval_divByMonic_eq_trailingCoeff_comp {p : R[X]} {t : R} :
 lemma le_rootMultiplicity_iff (p0 : p ≠ 0) {a : R} {n : ℕ} :
     n ≤ rootMultiplicity a p ↔ (X - C a) ^ n ∣ p := by
   classical
-  simp_rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_), Classical.not_not]
+  simp_rw [rootMultiplicity, dif_neg p0, Nat.le_find_iff, not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
   rcases n with - | n
   · rw [pow_zero]

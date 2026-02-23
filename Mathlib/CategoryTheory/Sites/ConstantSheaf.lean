@@ -37,9 +37,10 @@ namespace CategoryTheory
 
 open Limits Opposite Category Functor Sheaf Adjunction
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C)
-variable (D : Type*) [Category D]
+variable {C : Type*} [Category* C] (J : GrothendieckTopology C)
+variable (D : Type*) [Category* D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/
 @[simps! unit_app counit_app_app]
 noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
@@ -95,6 +96,7 @@ lemma isConstant_iff_mem_essImage {L : D ⥤ Sheaf J D} {T : C} (hT : IsTerminal
   rw [essImage_eq_of_natIso (adj.leftAdjointUniq (constantSheafAdj J D hT))]
   exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isConstant_of_isIso_counit_app (F : Sheaf J D) [HasTerminal C]
     [IsIso <| (constantSheafAdj J D terminalIsTerminal).counit.app F] : IsConstant J F where
   mem_essImage := ⟨_, ⟨asIso <| (constantSheafAdj J D terminalIsTerminal).counit.app F⟩⟩
@@ -105,6 +107,7 @@ instance [(constantSheaf J D).Faithful] [(constantSheaf J D).Full] (F : Sheaf J 
   rw [isIso_counit_app_iff_mem_essImage]
   exact F.mem_essImage_of_isConstant
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If the constant sheaf functor is fully faithful, then a sheaf is constant if and only if the
 counit of the constant sheaf adjunction applied to it is an isomorphism.
@@ -126,7 +129,7 @@ lemma isConstant_iff_isIso_counit_app' {L : D ⥤ Sheaf J D} {T : C} (hT : IsTer
 end Sheaf
 
 section Equivalence
-variable {C' : Type*} [Category C'] (K : GrothendieckTopology C') [HasWeakSheafify K D]
+variable {C' : Type*} [Category* C'] (K : GrothendieckTopology C') [HasWeakSheafify K D]
 variable (G : C ⥤ C') [∀ (X : (C')ᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) D]
   [G.IsDenseSubsite J K] {T : C} (hT : IsTerminal T) (hT' : IsTerminal (G.obj T))
 
@@ -172,7 +175,7 @@ end Equivalence
 
 section Forget
 
-variable {B : Type*} [Category B] (U : D ⥤ B) [HasWeakSheafify J B]
+variable {B : Type*} [Category* B] (U : D ⥤ B) [HasWeakSheafify J B]
   [J.PreservesSheafification U] [J.HasSheafCompose U] (F : Sheaf J D)
 
 /--
@@ -188,6 +191,7 @@ noncomputable def constantCommuteCompose :
 lemma constantCommuteCompose_hom_app_val (X : D) : ((constantCommuteCompose J U).hom.app X).val =
     (sheafifyComposeIso J U ((const Cᵒᵖ).obj X)).inv ≫ sheafifyMap J (constComp Cᵒᵖ X U).hom := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/
 lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
     ((constantCommuteCompose J U).hom.app (F.val.obj ⟨T⟩)) ≫
@@ -200,6 +204,7 @@ lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
   simp [NatTrans.comp_app] -- simp [NatTrans.comp_app] to unfold some definitions
   simp [← map_comp, ← NatTrans.comp_app] -- simp [← NatTrans.comp_app] to simplify some compositions
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isConstant_of_forget [constantSheaf J D |>.Faithful] [constantSheaf J D |>.Full]
     [constantSheaf J B |>.Faithful] [constantSheaf J B |>.Full]
     [(sheafCompose J U).ReflectsIsomorphisms] [((sheafCompose J U).obj F).IsConstant J]

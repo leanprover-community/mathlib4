@@ -72,6 +72,7 @@ theorem associated_norm_zeta_sub_one : Associated (Algebra.norm ℤ (hζ.toInteg
       rw [hζ.norm_toInteger_sub_one_of_eq_two_pow, h, Int.ofNat_two]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
   simpa using congr_arg absNorm <|
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ
@@ -94,6 +95,7 @@ theorem inertiaDeg_span_zeta_sub_one : inertiaDeg 𝒑 (span {hζ.toInteger - 1}
   rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, ← absNorm_eq_pow_inertiaDeg' _ hp.out,
     absNorm_span_zeta_sub_one]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] FractionRing.liftAlgebra in
 attribute [-instance] SubNegMonoid.toZSMul in
 theorem map_eq_span_zeta_sub_one_pow :
@@ -116,7 +118,6 @@ theorem map_eq_span_zeta_sub_one_pow :
 
 theorem ramificationIdx_span_zeta_sub_one :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 (span {hζ.toInteger - 1}) = p ^ k * (p - 1) := by
-  have := liesOver_span_zeta_sub_one p k hζ
   have h := isPrime_span_zeta_sub_one p k hζ
   rw [← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
     IsDedekindDomain.ramificationIdx_eq_multiplicity _ h, map_eq_span_zeta_sub_one_pow p k hζ,
@@ -125,6 +126,7 @@ theorem ramificationIdx_span_zeta_sub_one :
 
 variable (K)
 
+set_option backward.isDefEq.respectTransparency false in
 include hK in
 theorem ncard_primesOver_of_prime_pow :
     (primesOver 𝒑 (𝓞 K)).ncard = 1 := by
@@ -237,9 +239,10 @@ open NumberField.Ideal Polynomial
 
 variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
     inertiaDeg 𝒑 P = orderOf (p : ZMod m) := by
-  replace hm : p.Coprime m := not_not.mp <| (Nat.Prime.dvd_iff_not_coprime hp.out).not.mp hm
+  replace hm : p.Coprime m := hp.out.coprime_iff_not_dvd.mpr hm
   let ζ := (zeta_spec m ℚ K).toInteger
   have h₁ : ¬ p ∣ exponent ζ := by
     rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
@@ -254,8 +257,12 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
   · refine dvd_trans h₂.2.2 ?_
     rw [← map_cyclotomic_int, cyclotomic_eq_minpoly (zeta_spec m ℚ K) (NeZero.pos _),
       ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
-    rfl
+    simp [ζ]
 
+@[deprecated (since := "2025-12-10")]
+alias inertiaDeg_of_not_dvd := inertiaDeg_eq_of_not_dvd
+
+set_option backward.isDefEq.respectTransparency false in
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger
@@ -274,6 +281,9 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     · exact (zeta_spec m ℚ K).toInteger_isPrimitiveRoot.separable_minpoly_mod hm
   · rw [ENat.coe_one]
     exact Order.one_le_iff_pos.mpr <| emultiplicity_pos_of_dvd h₂.2.2
+
+@[deprecated (since := "2025-12-10")]
+alias ramificationIdx_of_not_dvd := ramificationIdx_eq_of_not_dvd
 
 theorem inertiaDegIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) := by
@@ -297,6 +307,7 @@ section general
 
 variable {m p k} [IsCyclotomicExtension {n} ℚ K]
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) ∧

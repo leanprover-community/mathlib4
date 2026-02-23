@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Regular.Basic
 Move to `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`?
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*} {a b : R}

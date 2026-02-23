@@ -217,6 +217,7 @@ theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Fi
   · intro _ _ h_not_in ih
     rw [Finset.sum_insert h_not_in, ih, slice_add, Finset.sum_insert h_not_in]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The original holor can be recovered from its slices by multiplying with unit vectors and
 summing up. -/
 @[simp]
@@ -273,6 +274,7 @@ theorem cprankMax_add [Mul α] [AddMonoid α] :
     · assumption
     · exact cprankMax_add hx₂ hy
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cprankMax_mul [NonUnitalNonAssocSemiring α] :
     ∀ (n : ℕ) (x : Holor α [d]) (y : Holor α ds), CPRankMax n y → CPRankMax n (x ⊗ y)
   | 0, x, _, CPRankMax.zero => by simp [mul_zero x, CPRankMax.zero]
@@ -292,10 +294,7 @@ theorem cprankMax_sum [NonUnitalNonAssocSemiring α] {β} {n : ℕ} (s : Finset 
       simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_notMem h_x_notin_s]
       rw [Nat.right_distrib]
       simp only [Nat.one_mul, Nat.add_comm]
-      have ih' : CPRankMax (Finset.card s * n) (∑ x ∈ s, f x) := by
-        apply ih
-        intro (x : β) (h_x_in_s : x ∈ s)
-        simp only [h_cprank, Finset.mem_insert_of_mem, h_x_in_s]
+      have ih' : CPRankMax (Finset.card s * n) (∑ x ∈ s, f x) := by grind
       exact cprankMax_add (h_cprank x (Finset.mem_insert_self x s)) ih')
 
 theorem cprankMax_upper_bound [Semiring α] : ∀ {ds}, ∀ x : Holor α ds, CPRankMax ds.prod x

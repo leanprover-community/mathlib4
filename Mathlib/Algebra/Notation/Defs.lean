@@ -8,7 +8,6 @@ module
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.ToAdditive
-public import Mathlib.Util.AssertExists
 
 /-!
 # Typeclasses for algebraic operations
@@ -70,6 +69,9 @@ attribute [ext] SMul VAdd
 
 @[inherit_doc] infixr:65 " +ᵥ " => HVAdd.hVAdd
 @[inherit_doc] infixl:65 " -ᵥ " => VSub.vsub
+
+recommended_spelling "vadd" for "+ᵥ" in [HVAdd.hVAdd, «term_+ᵥ_»]
+recommended_spelling "vsub" for "-ᵥ" in [VSub.vsub, «term_-ᵥ_»]
 
 attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
 attribute [to_additive (reorder := 1 2) SMul] Pow
@@ -168,7 +170,7 @@ end ite
 
 variable {α : Type u}
 
-instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α := ⟨0⟩
+@[to_additive]
 instance (priority := 20) One.instNonempty [One α] : Nonempty α := ⟨1⟩
 
 @[to_additive]

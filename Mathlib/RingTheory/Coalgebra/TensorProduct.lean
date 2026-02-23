@@ -86,6 +86,7 @@ scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂
           tmul_add, add_tmul, add_mul, mul_add, h₁, h₂]
       | tmul $var₁ $var₂ => ?_))
 
+set_option backward.privateInPublic true in
 private lemma coassoc :
     TensorProduct.assoc S (A ⊗[R] B) (A ⊗[R] B) (A ⊗[R] B) ∘ₗ
       (comul (R := S) (A := (A ⊗[R] B))).rTensor (A ⊗[R] B) ∘ₗ
@@ -118,6 +119,8 @@ private lemma coassoc :
     hopf_tensor_induction comul (R := R) y₂ with y₂₁ y₂₂
     rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable
 instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
   coassoc := coassoc (R := R)
@@ -193,6 +196,7 @@ theorem map_toLinearMap (f : M →ₗc[S] N) (g : P →ₗc[R] Q) :
 
 variable (R S M N P)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The associator for tensor products of R-coalgebras, as a coalgebra equivalence. -/
 protected noncomputable def assoc :
     (M ⊗[S] N) ⊗[R] P ≃ₗc[S] M ⊗[S] (N ⊗[R] P) :=
@@ -224,6 +228,7 @@ theorem assoc_toLinearEquiv :
 
 variable (R P)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The base ring is a left identity for the tensor product of coalgebras, up to
 coalgebra equivalence. -/
 protected noncomputable def lid : R ⊗[R] P ≃ₗc[R] P :=

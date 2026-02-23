@@ -91,6 +91,7 @@ noncomputable local instance : PseudoMetricSpace ℕ where
 @[simp]
 lemma dist_def {n m : ℕ} : dist n m = |2 ^ (-n : ℤ) - 2 ^ (-m : ℤ)| := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Int.eq_of_pow_sub_le {d : ℕ} {m n : ℤ} (hd1 : 1 < d)
     (h : |(d : ℝ) ^ (-m) - d ^ (-n)| < d ^ (-n - 1)) : m = n := by
   have hd0 : 0 < d := one_pos.trans hd1
@@ -143,7 +144,7 @@ theorem TopIsDiscrete : DiscreteTopology ℕ := by
 lemma idIsCauchy : CauchySeq (id : ℕ → ℕ) := by
   rw [Metric.cauchySeq_iff]
   refine fun ε ↦ Metric.cauchySeq_iff.mp
-    (@cauchySeq_of_le_geometric_two ℝ _ 1 (fun n ↦ 2 ^(-n : ℤ)) fun n ↦ le_of_eq ?_) ε
+    (@cauchySeq_of_le_geometric_two ℝ _ 1 (fun n ↦ 2 ^ (-n : ℤ)) fun n ↦ le_of_eq ?_) ε
   simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg, one_div]
   rw [Real.dist_eq, zpow_add' <| Or.intro_left _ two_ne_zero]
   calc
@@ -166,11 +167,11 @@ discrete. -/
 each `n`, the set `fundamentalEntourage n : Set (ℕ × ℕ)` consists of the `n+1` points
 `{(0,0),(1,1)...(n,n)}` on the diagonal; together with the half plane `{(x,y) | n ≤ x ∧ n ≤ y}`. -/
 def fundamentalEntourage (n : ℕ) : Set (ℕ × ℕ) :=
-  (⋃ i : Icc 0 n, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (n , n)
+  (⋃ i : Icc 0 n, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (n, n)
 
 @[simp]
 lemma fundamentalEntourage_ext (t : ℕ) (T : Set (ℕ × ℕ)) : fundamentalEntourage t = T ↔
-    T = (⋃ i : Icc 0 t, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (t , t) := by
+    T = (⋃ i : Icc 0 t, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (t, t) := by
   simpa only [fundamentalEntourage] using eq_comm
 
 lemma mem_range_fundamentalEntourage (S : Set (ℕ × ℕ)) :
@@ -235,7 +236,7 @@ def counterCoreUniformity : UniformSpace.Core ℕ := by
     simp only [fundamentalEntourage_ext, iUnion_singleton_eq_range] at hn
     simp only [hn, mem_union, mem_range, Prod.mk.injEq, and_self, Subtype.exists, mem_Icc, zero_le,
       true_and, exists_prop', nonempty_prop, exists_eq_right, mem_Ici, Prod.mk_le_mk]
-    omega
+    lia
   · refine ⟨S, hS, ?_⟩
     obtain ⟨n, hn⟩ := hS
     simp only [fundamentalEntourage_ext, iUnion_singleton_eq_range] at hn

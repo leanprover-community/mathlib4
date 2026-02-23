@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.Clopen
 
 /-!
 ## Ultrametric spaces
@@ -79,9 +80,9 @@ lemma ball_eq_of_mem {x y : X} {r : ℝ} (h : y ∈ ball x r) : ball x r = ball 
 
 lemma ball_subset_trichotomy :
     ball x r ⊆ ball y s ∨ ball y s ⊆ ball x r ∨ Disjoint (ball x r) (ball y s) := by
-  wlog hrs : r ≤ s generalizing x y r s
+  wlog! hrs : r ≤ s generalizing x y r s
   · rw [disjoint_comm, ← or_assoc, or_comm (b := _ ⊆ _), or_assoc]
-    exact this y x s r (lt_of_not_ge hrs).le
+    exact this y x s r hrs.le
   · refine Set.disjoint_or_nonempty_inter (ball x r) (ball y s) |>.symm.imp (fun h ↦ ?_) (Or.inr ·)
     obtain ⟨hxz, hyz⟩ := (Set.mem_inter_iff _ _ _).mp h.some_mem
     have hx := ball_subset_ball hrs (x := x)
@@ -106,9 +107,9 @@ lemma closedBall_eq_of_mem {x y : X} {r : ℝ} (h : y ∈ closedBall x r) :
 lemma closedBall_subset_trichotomy :
     closedBall x r ⊆ closedBall y s ∨ closedBall y s ⊆ closedBall x r ∨
     Disjoint (closedBall x r) (closedBall y s) := by
-  wlog hrs : r ≤ s generalizing x y r s
+  wlog! hrs : r ≤ s generalizing x y r s
   · rw [disjoint_comm, ← or_assoc, or_comm (b := _ ⊆ _), or_assoc]
-    exact this y x s r (lt_of_not_ge hrs).le
+    exact this y x s r hrs.le
   · refine Set.disjoint_or_nonempty_inter (closedBall x r) (closedBall y s) |>.symm.imp
       (fun h ↦ ?_) (Or.inr ·)
     obtain ⟨hxz, hyz⟩ := (Set.mem_inter_iff _ _ _).mp h.some_mem
@@ -121,7 +122,7 @@ lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
     simp [ball_eq_empty.mpr hr]
   | inr h =>
     rw [← isOpen_compl_iff, isOpen_iff]
-    simp only [Set.mem_compl_iff, gt_iff_lt]
+    push _ ∈ _
     intro y hy
     cases ball_eq_or_disjoint x y r with
     | inl hd =>
@@ -144,6 +145,7 @@ lemma closedBall_eq_or_disjoint :
   have h₂ := closedBall_eq_of_mem <| Set.inter_subset_right h.some_mem
   exact h₁.trans h₂.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isOpen_closedBall {r : ℝ} (hr : r ≠ 0) : IsOpen (closedBall x r) := by
   cases lt_or_gt_of_ne hr with
   | inl h =>

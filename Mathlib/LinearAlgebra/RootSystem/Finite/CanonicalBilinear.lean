@@ -162,14 +162,16 @@ theorem range_polarization_domRestrict_le_span_coroot :
   simp
 
 theorem corootSpan_dualAnnihilator_le_ker_rootForm :
-    (P.corootSpan R).dualAnnihilator.map P.toPerfPair.symm ≤ LinearMap.ker P.RootForm := by
+    (P.corootSpan R).dualAnnihilator.map (P.toPerfPair.symm : Dual R N →ₗ[R] M) ≤
+      P.RootForm.ker := by
   rw [P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot']
   intro x hx
   ext y
   simp_all [coroot', rootForm_apply_apply]
 
 theorem rootSpan_dualAnnihilator_le_ker_rootForm :
-    (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm ≤ LinearMap.ker P.CorootForm :=
+    (P.rootSpan R).dualAnnihilator.map (P.flip.toPerfPair.symm : Dual R M →ₗ[R] N) ≤
+      P.CorootForm.ker :=
   P.flip.corootSpan_dualAnnihilator_le_ker_rootForm
 
 end Fintype
@@ -263,6 +265,7 @@ lemma rootFormIn_self_smul_coroot (i : ι) :
   intro j hj
   rw [← P.algebraMap_pairingIn S, IsScalarTower.algebraMap_smul, ← mul_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma prod_rootFormIn_smul_coroot_mem_range_PolarizationIn (i : ι) :
     (∏ j : ι, P.RootFormIn S (P.rootSpanMem S j) (P.rootSpanMem S j)) • P.coroot i ∈
       LinearMap.range (P.PolarizationIn S) := by
@@ -389,7 +392,7 @@ lemma pairingIn_lt_zero_iff :
     P.pairingIn S i j < 0 ↔ P.pairingIn S j i < 0 := by
   simpa using P.zero_lt_pairingIn_iff' S (i := i) (j := P.reflectionPerm j j)
 
-lemma pairingIn_le_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+lemma pairingIn_le_zero_iff [NeZero (2 : R)] [IsDomain R] [Module.IsTorsionFree R M] :
     P.pairingIn S i j ≤ 0 ↔ P.pairingIn S j i ≤ 0 := by
   rcases eq_or_ne (P.pairingIn S i j) 0 with hij | hij <;>
   rcases eq_or_ne (P.pairingIn S j i) 0 with hji | hji

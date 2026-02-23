@@ -31,6 +31,7 @@ variable {R : Type*} [CommRing R]
 
 namespace Quaternion
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The dual quaternions can be equivalently represented as a quaternion with dual coefficients,
 or as a dual number with quaternion coefficients.
 
@@ -95,41 +96,49 @@ theorem imK_snd_dualNumberEquiv (q : Quaternion (DualNumber R)) :
     (dualNumberEquiv q).snd.imK = q.imK.snd :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_re_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).re.fst = d.fst.re :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_imI_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imI.fst = d.fst.imI :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_imJ_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imJ.fst = d.fst.imJ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_imK_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imK.fst = d.fst.imK :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_re_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).re.snd = d.snd.re :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_imI_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imI.snd = d.snd.imI :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_imJ_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imJ.snd = d.snd.imJ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_imK_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imK.snd = d.snd.imK :=

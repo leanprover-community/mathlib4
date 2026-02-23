@@ -10,6 +10,7 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.LinearAlgebra.Matrix.RowCol
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Algebra.BigOperators.Fin
+public meta import Mathlib.LinearAlgebra.Matrix.Defs
 
 /-!
 # Matrix and vector notation
@@ -200,6 +201,31 @@ theorem cons_dotProduct_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n →
     vecCons x v ⬝ᵥ vecCons y w = x * y + v ⬝ᵥ w := by simp
 
 end DotProduct
+
+section Diagonal
+variable [Zero α]
+
+theorem diagonal_fin_one (d : Fin 1 → α) : diagonal d = !![d 0] := by
+  simp [← Matrix.ext_iff]
+
+theorem diagonal_vec1 (a : α) : diagonal ![a] = !![a] :=
+  diagonal_fin_one ![a]
+
+theorem diagonal_fin_two (d : Fin 2 → α) : diagonal d = !![d 0, 0; 0, d 1] := by
+  simp [← Matrix.ext_iff]
+
+theorem diagonal_vec2 (a b : α) : diagonal ![a, b] = !![a, 0; 0, b] :=
+  diagonal_fin_two ![a, b]
+
+theorem diagonal_fin_three (d : Fin 3 → α) :
+    diagonal d = !![d 0, 0, 0; 0, d 1, 0; 0, 0, d 2] := by
+  simp [← Matrix.ext_iff, Fin.forall_fin_succ]
+
+theorem diagonal_vec3 (a b c : α) :
+    diagonal ![a, b, c] = !![a, 0, 0; 0, b, 0; 0, 0, c] :=
+  diagonal_fin_three ![a, b, c]
+
+end Diagonal
 
 section ColRow
 
@@ -452,6 +478,7 @@ theorem eta_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
     !![a₁₁, a₁₂;
        a₂₁, a₂₂] * !![b₁₁, b₁₂;
@@ -460,7 +487,8 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, Fin.sum_univ_succ]
 
-set_option linter.style.commandStart false in -- Preserve the formatting of the matrices.
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.style.whitespace false in -- Preserve the formatting of the matrices.
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
     (a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃ a₃₁ a₃₂ a₃₃ b₁₁ b₁₂ b₁₃ b₂₁ b₂₂ b₂₃ b₃₁ b₃₂ b₃₃ : α) :
     !![a₁₁, a₁₂, a₁₃;

@@ -50,11 +50,12 @@ def forget := LaxMonoidalFunctor.of (forget₂ (FDRep k G) (FGModuleCat k))
 
 @[simp] lemma forget_map (X Y : FDRep k G) (f : X ⟶ Y) : (forget k G).map f = f.hom := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Definition of `equivHom g : Aut (forget k G)` by its components. -/
 @[simps]
 def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
-  hom := ofHom (X.ρ g)
-  inv := ofHom (X.ρ g⁻¹)
+  hom := InducedCategory.homMk (ofHom (X.ρ g))
+  inv := InducedCategory.homMk (ofHom (X.ρ g⁻¹))
   hom_inv_id := by
     ext x
     simp
@@ -111,18 +112,17 @@ end definitions
 
 variable [Finite G]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equivHom_injective [Nontrivial k] : Function.Injective (equivHom k G) := by
   intro s t h
   classical
   apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
 
-@[deprecated (since := "2025-04-27")]
-alias equivHom_inj := equivHom_injective
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
 def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
-  hom := ofHom (LinearMap.mul' k (G → k))
+  hom := InducedCategory.homMk (ofHom (LinearMap.mul' k (G → k)))
   comm := by
     intro
     ext u
@@ -131,20 +131,20 @@ def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
 
 /-- The `rightFDRep` component of `η : Aut (forget k G)` preserves multiplication -/
 lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
-    let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom
+    let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom.hom
     α (f * g) = (α f) * (α g) := by
   have nat := η.hom.hom.naturality mulRepHom
   have tensor (X Y) : η.hom.hom.app (X ⊗ Y) = (η.hom.hom.app X ⊗ₘ η.hom.hom.app Y) :=
     η.hom.isMonoidal.tensor X Y
   rw [tensor] at nat
-  apply_fun (Hom.hom · (f ⊗ₜ[k] g)) at nat
-  exact nat
+  exact ConcreteCategory.congr_hom ((CategoryTheory.forget _).congr_map nat) (f ⊗ₜ[k] g)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `rightFDRep` component of `η : Aut (forget k G)` gives rise to
 an algebra morphism `(G → k) →ₐ[k] (G → k)`. -/
 def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → k) := by
-  let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom
-  let α_inv : (G → k) →ₗ[k] (G → k) := (η.inv.hom.app rightFDRep).hom
+  let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom.hom
+  let α_inv : (G → k) →ₗ[k] (G → k) := (η.inv.hom.app rightFDRep).hom.hom
   refine AlgHom.ofLinearMap α ?_ (map_mul_toRightFDRepComp η)
   suffices α (α_inv 1) = (1 : G → k) by
     have h := this
@@ -166,17 +166,19 @@ lemma sumSMulInv_single_id [Fintype G] [DecidableEq G] {X : FDRep k G} (v : X) :
     ∑ s : G, (single 1 1 : G → k) s • (X.ρ s⁻¹) v = v := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `v : X` and `G` a finite group, the representation morphism from the right
 regular representation `rightFDRep` to `X` sending `single 1 1` to `v`. -/
 @[simps]
 def ofRightFDRep [Fintype G] (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
-  hom := ofHom (sumSMulInv v)
+  hom := InducedCategory.homMk (ofHom (sumSMulInv v))
   comm t := by
     ext f
     let φ_term (X : FDRep k G) (f : G → k) v s := (f s) • (X.ρ s⁻¹ v)
     have := sum_map univ (mulRightEmbedding t⁻¹) (φ_term X (rightRegular t f) v)
     simpa [φ_term] using this
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toRightFDRepComp_injective {η₁ η₂ : Aut (forget k G)}
     (h : η₁.hom.hom.app rightFDRep = η₂.hom.hom.app rightFDRep) : η₁ = η₂ := by
   have := Fintype.ofFinite G
@@ -189,15 +191,16 @@ lemma toRightFDRepComp_injective {η₁ η₂ : Aut (forget k G)}
 
 /-- `leftRegular` as a morphism `rightFDRep k G ⟶ rightFDRep k G` in `FDRep k G`. -/
 def leftRegularFDRepHom (s : G) : End (rightFDRep : FDRep k G) where
-  hom := ofHom (leftRegular s)
+  hom := InducedCategory.homMk (ofHom (leftRegular s))
   comm _ := by
     ext f
     funext _
     apply congrArg f
     exact mul_assoc ..
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
-    ∃ (s : G), (η.hom.hom.app rightFDRep).hom = rightRegular s := by
+    ∃ (s : G), (η.hom.hom.app rightFDRep).hom.hom = rightRegular s := by
   classical
   obtain ⟨s, hs⟩ := ((evalAlgHom _ _ 1).comp (algHomOfRightFDRepComp η)).eq_piEvalAlgHom
   refine ⟨s, (basisFun k G).ext fun u ↦ ?_⟩
@@ -215,7 +218,7 @@ lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
 lemma equivHom_surjective [IsDomain k] : Function.Surjective (equivHom k G) := by
   intro η
   obtain ⟨s, h⟩ := toRightFDRepComp_in_rightRegular η
-  exact ⟨s, toRightFDRepComp_injective (hom_ext h.symm)⟩
+  exact ⟨s, toRightFDRepComp_injective (InducedCategory.hom_ext (hom_ext h.symm))⟩
 
 variable (k G) in
 /-- Tannaka duality for finite groups:

@@ -122,9 +122,7 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
   exact ((pi s t).nodup.map <| Multiset.Pi.cons_injective ha).dedup.symm
 
 theorem pi_singletons {β : Type*} (s : Finset α) (f : α → β) :
-    (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} := by
-  ext
-  grind
+    (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} := by grind
 
 theorem pi_const_singleton {β : Type*} (s : Finset α) (i : β) :
     (s.pi fun _ => ({i} : Finset β)) = {fun _ _ => i} :=
@@ -188,6 +186,7 @@ theorem restrict₂_comp_restrict₂ (hst : s ⊆ t) (htu : t ⊆ u) :
 lemma dependsOn_restrict (s : Finset ι) : DependsOn (s.restrict (π := π)) s :=
   (s : Set ι).dependsOn_restrict
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_preimage_univ [DecidablePred (· ∈ s)] (t : (i : s) → Set (π i)) :
     s.restrict ⁻¹' (Set.univ.pi t) =
       Set.pi s (fun i ↦ if h : i ∈ s then t ⟨i, h⟩ else Set.univ) := by
@@ -200,15 +199,11 @@ lemma restrict_preimage [DecidableEq ι] {I : Set ι}
       Set.pi (s.image Subtype.val) (fun i ↦ if h : i ∈ I then u ⟨i, h⟩ else .univ) := by
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict₂_preimage [DecidablePred (· ∈ s)] (hst : s ⊆ t) (u : (i : s) → Set (π i)) :
     (restrict₂ hst) ⁻¹' (Set.univ.pi u) =
       (@Set.univ t).pi (fun j ↦ if h : j.1 ∈ s then u ⟨j.1, h⟩ else Set.univ) := by
-  ext x
-  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, restrict₂, forall_const, Subtype.forall]
-  refine ⟨fun h i hi ↦ ?_, fun h i i_mem ↦ by simpa [i_mem] using h i (hst i_mem)⟩
-  split_ifs with i_mem
-  · exact h i i_mem
-  · exact Set.mem_univ _
+  grind [restrict₂]
 
 end Pi
 

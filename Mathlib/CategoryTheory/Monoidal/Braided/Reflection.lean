@@ -34,13 +34,14 @@ namespace CategoryTheory.Monoidal.Reflective
 
 open Category MonoidalCategory MonoidalClosed BraidedCategory Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 
 section
 variable {R : C ⥤ D} [R.Faithful] [R.Full] {L : D ⥤ C} (adj : L ⊣ R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The uncurried retraction of the unit in the proof of `4 → 1` in `isIso_tfae` below. -/
 private noncomputable def adjRetractionAux
     (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
@@ -55,6 +56,7 @@ private noncomputable def adjRetraction (c : C) (d : D)
     (L ⋙ R).obj ((ihom d).obj (R.obj c)) ⟶ ((ihom d).obj (R.obj c)) :=
   curry <| adjRetractionAux adj c d
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma adjRetraction_is_retraction (c : C) (d : D)
     [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
     adj.unit.app ((ihom d).obj (R.obj c)) ≫ adjRetraction adj c d = 𝟙 _ := by
@@ -72,6 +74,7 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
 
 attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Day's reflection theorem.
 
@@ -208,10 +211,11 @@ instance (d d' : D) : IsIso (L.map ((adj.unit.app d) ⊗ₘ (adj.unit.app d'))) 
 
 instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
   revert c d
-  rw [((isIso_tfae adj).out 0 3:)]
+  rw [((isIso_tfae adj).out 0 3 :)]
   intro d d'
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `monoidalClosed`. -/
 noncomputable def closed (c : C) : Closed c where
   rightAdj := R ⋙ (ihom (R.obj c)) ⋙ L

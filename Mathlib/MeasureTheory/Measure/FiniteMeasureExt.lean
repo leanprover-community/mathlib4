@@ -12,13 +12,13 @@ public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 /-!
 # Extensionality of finite measures
 
-The main Result is `ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable`:
+The main result is `ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable`:
 Let `A` be a StarSubalgebra of `C(E, 𝕜)` that separates points and whose elements are bounded. If
 the integrals of all elements of `A` with respect to two finite measures `P, P'` coincide, then the
-measures coincide. In other words: If a Subalgebra separates points, it separates finite measures.
+measures coincide. In other words: If a subalgebra separates points, it separates finite measures.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter Real RCLike BoundedContinuousFunction
 
@@ -69,6 +69,7 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_count
       (tendsto_integral_mulExpNegMulSq_comp f))
   exact eq_of_abs_sub_eq_zero (tendsto_nhds_unique lim2 lim1)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ext_of_forall_mem_subalgebra_integral_eq_of_polish [TopologicalSpace E] [PolishSpace E]
     [BorelSpace E] {P P' : Measure E} [IsFiniteMeasure P] [IsFiniteMeasure P']
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} (hA : (A.map (toContinuousMapStarₐ 𝕜)).SeparatesPoints)

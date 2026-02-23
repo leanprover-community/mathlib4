@@ -33,6 +33,7 @@ variable (k : Type*) [Field k]
 /-- We define the commutative ring `A` as `{f ∈ k(t)⟦Y⟧ | f(0) ∈ k}` for a field `k`. -/
 abbrev A : Subring (RatFunc k)⟦X⟧ := (RatFunc.C (K := k)).range.comap PowerSeries.constantCoeff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
   have h_unit : ∀ (x : (RatFunc k)⟦X⟧) (hx : x ∈ A k), IsUnit x → IsUnit (⟨x, hx⟩ : A k) := by
     intro x ⟨z, hz⟩ ⟨y, hxy⟩
@@ -67,6 +68,7 @@ theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
   · exact ⟨0, by simp [hy_const]⟩
   · simp only [Subring.coe_mul, SubmonoidClass.coe_pow, pow_succ, ← ha, mul_assoc, mul_comm x.val _]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
   apply le_antisymm (by simpa [ringKrullDim_A_eq_one k] using Polynomial.ringKrullDim_le (R := A k))
   let φ : (A k) →+* k := by
@@ -92,7 +94,7 @@ theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
   fin_cases i
   · let val0 : (A k)[X] := Polynomial.C Y * Polynomial.X - Polynomial.C tY
     have h1_val0 : val0 ∈ Q.asIdeal := by simp [val0, Q, f, Y, tY]
-    have h2_val0 : val0 ≠ 0 := support_nonempty.mp ⟨1, by simpa [val0, Y]⟩
+    have h2_val0 : val0 ≠ 0 := support_nonempty.mp ⟨1, by simp [val0, Y]⟩
     exact ⟨OrderBot.bot_le Q, fun h ↦ h2_val0 (by simpa using h h1_val0)⟩
   · let val1 : (A k)[X] := Polynomial.C Y
     have h1_val1 : val1 ∈ P1.asIdeal := by simpa [P1, val1, g]

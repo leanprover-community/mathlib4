@@ -20,7 +20,7 @@ public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 * `IsWeightedHomogeneous.sum_weight_X_mul_pderiv`: the weighted version of Euler's identity.
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 
@@ -53,6 +53,7 @@ protected lemma IsHomogeneous.pderiv {n : ℕ} {i : σ} (h : φ.IsHomogeneous n)
 
 variable [Fintype σ] {n : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- Euler's identity for weighted homogeneous polynomials. -/
 theorem IsWeightedHomogeneous.sum_weight_X_mul_pderiv {w : σ → ℕ}

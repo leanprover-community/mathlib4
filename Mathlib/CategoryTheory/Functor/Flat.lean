@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Filtered.Connected
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
@@ -23,7 +24,7 @@ over `X` is cofiltered for each `X`. This concept is also known as flat functors
 Remark C2.3.7, and this name is suggested by Mike Shulman in
 https://golem.ph.utexas.edu/category/2011/06/flat_functors_and_morphisms_of.html to avoid
 confusion with other notions of flatness (e.g. see the notion of flat type-valued
-functor in the file `Functor.TypeValuedFlat`).
+functor in the file `Mathlib/CategoryTheory/Functor/TypeValuedFlat.lean`).
 
 This definition is equivalent to left exact functors (functors that preserves finite limits) when
 `C` has all finite limits.
@@ -88,6 +89,7 @@ theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 
 theorem RepresentablyCoflat.id : RepresentablyCoflat (𝟭 C) := inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
@@ -191,9 +193,11 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
                 (s.toStructuredArrow ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
   simp [lift, ← Functor.map_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
@@ -287,6 +291,7 @@ section SmallCategory
 variable {C D : Type u₁} [SmallCategory C] [SmallCategory D] (E : Type u₂) [Category.{u₁} E]
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation)
 The evaluation of `F.lan` at `X` is the colimit over the costructured arrows over `X`.
 -/
@@ -310,7 +315,8 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
         ι_colimMap, Functor.whiskerLeft_app]
       rfl)
 
-variable [HasForget.{u₁} E] [HasLimits E] [HasColimits E]
+variable {FE : E → E → Type*} {CE : E → Type u₁} [∀ X Y, FunLike (FE X Y) (CE X) (CE Y)]
+    [ConcreteCategory E FE] [HasLimits E] [HasColimits E]
 variable [ReflectsLimits (forget E)] [PreservesFilteredColimits (forget E)]
 variable [PreservesLimits (forget E)]
 
@@ -357,5 +363,62 @@ lemma preservesFiniteLimits_iff_lan_preservesFiniteLimits (F : C ⥤ D) :
       (fun _ _ _ ↦ preservesLimit_of_lan_preservesLimit _ _)⟩
 
 end SmallCategory
+
+section
+
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E)
+
+attribute [local instance] IsCofiltered.isConnected IsFiltered.isConnected
+
+instance (X : E) [RepresentablyFlat F] : (StructuredArrow.pre X F G).Final :=
+  ⟨fun _ ↦ isConnected_of_equivalent (StructuredArrow.preEquivalence _ _).symm⟩
+
+instance (X : E) [RepresentablyCoflat F] : (CostructuredArrow.pre F G X).Initial :=
+  ⟨fun _ ↦ isConnected_of_equivalent (CostructuredArrow.preEquivalence _ _).symm⟩
+
+set_option backward.isDefEq.respectTransparency false in
+instance (X : E) [RepresentablyFlat F] [IsCofiltered (StructuredArrow X G)] :
+    IsCofiltered (StructuredArrow X (F ⋙ G)) := by
+  let T := StructuredArrow.pre X F G
+  obtain ⟨Y⟩ := IsCofiltered.nonempty (C := StructuredArrow X G)
+  obtain ⟨A⟩ := IsCofiltered.nonempty (C := StructuredArrow Y.right F)
+  have : Nonempty (StructuredArrow X (F ⋙ G)) := ⟨.mk (Y.hom ≫ G.map A.hom)⟩
+  suffices IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G)) by constructor
+  refine ⟨fun A B ↦ ?_, fun A B f g ↦ ?_⟩
+  · let U := IsCofiltered.min (T.obj A) (T.obj B)
+    let A' : StructuredArrow U.right F := .mk (IsCofiltered.minToLeft (T.obj A) (T.obj B)).right
+    let B' : StructuredArrow U.right F := .mk (IsCofiltered.minToRight (T.obj A) (T.obj B)).right
+    refine ⟨.mk <| U.hom ≫ G.map (IsCofiltered.min A' B').hom, ?_, ?_, trivial⟩
+    · refine StructuredArrow.homMk (IsCofiltered.minToLeft A' B').right ?_
+      simpa [← Functor.map_comp] using StructuredArrow.w _
+    · refine StructuredArrow.homMk (IsCofiltered.minToRight A' B').right ?_
+      simpa [← Functor.map_comp] using StructuredArrow.w _
+  · let U := IsCofiltered.eq (T.map f) (T.map g)
+    let A' : StructuredArrow _ F := .mk (IsCofiltered.eqHom (T.map f) (T.map g)).right
+    let B' : StructuredArrow _ F := .mk (IsCofiltered.eqHom (T.map f) (T.map g) ≫ T.map f).right
+    let f' : A' ⟶ B' := StructuredArrow.homMk f.right rfl
+    let g' : A' ⟶ B' := StructuredArrow.homMk g.right
+      congr($(IsCofiltered.eq_condition (T.map f) (T.map g)).right).symm
+    refine ⟨.mk <| U.hom ≫ G.map (IsCofiltered.eq f' g').hom, ?_, ?_⟩
+    · refine StructuredArrow.homMk (IsCofiltered.eqHom f' g').right ?_
+      simpa [← Functor.map_comp] using StructuredArrow.w _
+    · ext
+      exact congr($(IsCofiltered.eq_condition f' g').right)
+
+instance (X : E) [RepresentablyCoflat F] [h : IsFiltered (CostructuredArrow G X)] :
+    IsFiltered (CostructuredArrow (F ⋙ G) X) := by
+  rw [← isCofiltered_op_iff_isFiltered, IsCofiltered.iff_of_equivalence
+    (costructuredArrowOpEquivalence _ _)] at h ⊢
+  exact inferInstanceAs <| IsCofiltered (StructuredArrow (op X) (F.op ⋙ G.op))
+
+instance (G : D ⥤ Type*) [RepresentablyFlat F] [IsCofiltered G.Elements] :
+    IsCofiltered (F ⋙ G).Elements := by
+  suffices h : IsCofiltered (StructuredArrow PUnit (F ⋙ G)) from
+    .of_equivalence (CategoryOfElements.structuredArrowEquivalence _).symm
+  have : IsCofiltered (StructuredArrow PUnit G) :=
+    .of_equivalence (CategoryOfElements.structuredArrowEquivalence _)
+  infer_instance
+
+end
 
 end CategoryTheory

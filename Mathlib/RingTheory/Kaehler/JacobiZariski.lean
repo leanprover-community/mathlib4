@@ -53,6 +53,7 @@ attribute [local instance] SMulCommClass.of_commMonoid
 
 namespace Generators
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Cotangent.surjective_map_ofComp :
     Function.Surjective (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) := by
   intro x
@@ -63,12 +64,13 @@ lemma Cotangent.surjective_map_ofComp :
   obtain ⟨x, hx', rfl⟩ := this
   exact ⟨.mk ⟨x, hx'⟩, Extension.Cotangent.map_mk _ _⟩
 
-/-!
+set_option backward.isDefEq.respectTransparency false in
+open Extension.Cotangent in
+/--
 Given representations `0 → I → R[X] → S → 0` and `0 → K → S[Y] → T → 0`,
 we may consider the induced representation `0 → J → R[X, Y] → T → 0`, and the sequence
 `T ⊗[S] (I/I²) → J/J² → K/K²` is exact.
 -/
-open Extension.Cotangent in
 lemma Cotangent.exact :
     Function.Exact
       ((Extension.Cotangent.map (Q.toComp P).toExtensionHom).liftBaseChange T)
@@ -110,7 +112,7 @@ lemma Cotangent.exact :
     simp only [AlgHom.toRingHom_eq_coe, Ideal.mem_comap, RingHom.coe_coe,
       Submodule.mem_map, Submodule.mem_comap, Submodule.restrictScalars_mem, Submodule.coe_subtype,
       Subtype.exists, exists_and_right, exists_eq_right,
-      toExtension_Ring, toExtension_commRing, toExtension_algebra₂]
+      toExtension_Ring]
     refine ⟨?_, Submodule.subset_span ⟨Extension.Cotangent.mk ⟨w, hw⟩, ?_⟩⟩
     · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, Hom.algebraMap_toAlgHom]
       rw [aeval_val_eq_zero hw, map_zero]
@@ -243,6 +245,7 @@ lemma δAux_C (r) :
     δAux R Q (C r) = 1 ⊗ₜ D R S r := by
   rw [← monomial_zero', δAux_monomial, Finsupp.prod_zero_index]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {Q} {Q'} in
 lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
@@ -264,6 +267,7 @@ lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     rw [add_left_comm]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
@@ -295,6 +299,7 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
         toKaehler_cotangentSpaceBasis, add_left_inj, LinearMap.coe_inl]
       rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_comp_cotangentComplex_baseChange :
     (Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T ∘ₗ
       P.toExtension.cotangentComplex.baseChange T =
@@ -344,6 +349,7 @@ def δ :
     (Cotangent.surjective_map_ofComp Q P)
     (CotangentSpace.map_toComp_injective Q P)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exact_δ_map :
     Function.Exact (δ Q P) (mapBaseChange R S T) := by
   simp only [δ]
@@ -406,6 +412,7 @@ lemma exact_map_δ :
   · ext x; rfl
   · exact Subtype.val_injective
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_map (f : Hom Q' Q) (x) :
     δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = δ Q' P' x := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance

@@ -275,6 +275,7 @@ def instCommMonoid : CommMonoid (RatFunc K) where
   mul_one := by frac_tac
   npow := npowRec
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `RatFunc K` is an additive commutative group.
 
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
@@ -294,6 +295,7 @@ def instAddCommGroup : AddCommGroup (RatFunc K) where
   zsmul_succ' _ := by smul_tac
   zsmul_neg' _ := by smul_tac
 
+set_option backward.isDefEq.respectTransparency false in
 instance instCommRing : CommRing (RatFunc K) :=
   { instCommMonoid K, instAddCommGroup K with
     zero_mul := by frac_tac
@@ -311,6 +313,7 @@ open RatFunc
 variable {G₀ L R S F : Type*} [CommGroupWithZero G₀] [Field L] [CommRing R] [CommRing S]
 variable [FunLike F R[X] S[X]]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Lift a monoid homomorphism that maps polynomials `φ : R[X] →* S[X]`
 to a `RatFunc R →* RatFunc S`,
@@ -359,6 +362,7 @@ theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S
     Localization.mk_eq_mk_iff, Localization.r_iff_exists, mul_cancel_left_coe_nonZeroDivisors,
     exists_const, ← map_mul, hf.eq_iff] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lift a ring homomorphism that maps polynomials `φ : R[X] →+* S[X]`
 to a `RatFunc R →+* RatFunc S`,
 on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
@@ -384,6 +388,7 @@ theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X
     (mapRingHom φ hφ : RatFunc R → RatFunc S) = map φ hφ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalize to `FunLike` classes,
 /-- Lift a monoid with zero homomorphism `R[X] →*₀ G₀` to a `RatFunc R →*₀ G₀`
 on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
@@ -428,6 +433,7 @@ theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : R[X] →*₀ G₀) 
   · rwa [← map_mul, ← map_mul, hφ.eq_iff, mul_comm, mul_comm a'.fst] at this
   all_goals exact map_ne_zero_of_mem_nonZeroDivisors _ hφ (SetLike.coe_mem _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lift an injective ring homomorphism `R[X] →+* L` to a `RatFunc R →+* L`
 by mapping both the numerator and denominator and quotienting them. -/
 def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : RatFunc R →+* L :=
@@ -456,6 +462,13 @@ theorem liftRingHom_apply_ofFractionRing_mk (φ : R[X] →+* L) (hφ : R[X]⁰ �
     (d : R[X]⁰) : liftRingHom φ hφ (ofFractionRing (Localization.mk n d)) = φ n / φ d :=
   liftMonoidWithZeroHom_apply_ofFractionRing_mk _ hφ _ _
 
+@[simp]
+lemma liftRingHom_ofFractionRing_algebraMap
+    (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) (x : R[X]) :
+    RatFunc.liftRingHom φ hφ (ofFractionRing <| algebraMap R[X] _ x) = φ x := by
+  rw [← Localization.mk_one_eq_algebraMap, liftRingHom_apply_ofFractionRing_mk]
+  simp
+
 theorem liftRingHom_injective [Nontrivial R] (φ : R[X] →+* L) (hφ : Function.Injective φ)
     (hφ' : R[X]⁰ ≤ L⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
     Function.Injective (liftRingHom φ hφ') :=
@@ -465,6 +478,7 @@ end LiftHom
 
 variable (K)
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 09FK]
 instance instField [IsDomain K] : Field (RatFunc K) where
   inv_zero := by frac_tac
@@ -484,6 +498,7 @@ section IsDomain
 
 variable [IsDomain K]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) where
   algebraMap :=
   { toFun x := RatFunc.mk (algebraMap _ _ x) 1
@@ -551,6 +566,7 @@ theorem map_apply_div_ne_zero {R F : Type*} [CommRing R] [IsDomain R]
   simp only [← mk_eq_div, mk_eq_localization_mk _ hq, map_apply_ofFractionRing_mk,
     mk_eq_localization_mk _ hq']
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_apply_div {R F : Type*} [CommRing R] [IsDomain R]
     [FunLike F K[X] R[X]] [MonoidWithZeroHomClass F K[X] R[X]]
@@ -564,6 +580,7 @@ theorem map_apply_div {R F : Type*} [CommRing R] [IsDomain R]
     exact one_ne_zero
   exact map_apply_div_ne_zero _ _ _ _ hq
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftMonoidWithZeroHom_apply_div {L : Type*} [CommGroupWithZero L]
     (φ : MonoidWithZeroHom K[X] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
     liftMonoidWithZeroHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q := by
@@ -583,11 +600,20 @@ theorem liftRingHom_apply_div {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K
     (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q :=
   liftMonoidWithZeroHom_apply_div _ hφ _ _
 
-@[simp]
 theorem liftRingHom_apply_div' {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
     (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p) / liftRingHom φ hφ (algebraMap _ _ q) =
       φ p / φ q :=
   liftMonoidWithZeroHom_apply_div' _ hφ _ _
+
+@[simp]
+lemma liftRingHom_algebraMap {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
+    (x : K[X]) : liftRingHom φ hφ (algebraMap K[X] _ x) = φ x := by
+  simpa using liftRingHom_apply_div' φ hφ x 1
+
+@[simp]
+lemma liftRingHom_comp_algebraMap {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ) :
+    (liftRingHom φ hφ).comp (algebraMap K[X] _) = φ :=
+  RingHom.ext fun _ ↦ liftRingHom_algebraMap _ hφ _
 
 variable (K)
 
@@ -650,6 +676,7 @@ end LiftAlgHom
 
 variable (K)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `RatFunc K` is the field of fractions of the polynomials over `K`. -/
 instance : IsFractionRing K[X] (RatFunc K) where
   map_units y := by
@@ -666,6 +693,7 @@ instance : IsFractionRing K[X] (RatFunc K) where
 
 variable {K}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem algebraMap_ne_zero {x : K[X]} (hx : x ≠ 0) : algebraMap K[X] (RatFunc K) x ≠ 0 := by
   simpa
 
@@ -699,8 +727,9 @@ theorem ofFractionRing_mk' (x : K[X]) (y : K[X]⁰) :
   rw [IsFractionRing.mk'_eq_div, IsFractionRing.mk'_eq_div, ← mk_eq_div', ← mk_eq_div]
 
 theorem mk_eq_mk' (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
-    RatFunc.mk f g = IsLocalization.mk' (RatFunc K) f ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 hg⟩ :=
-  by simp only [mk_eq_div, IsFractionRing.mk'_eq_div]
+    RatFunc.mk f g = IsLocalization.mk' (RatFunc K) f
+      ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 hg⟩ := by
+  simp only [mk_eq_div, IsFractionRing.mk'_eq_div]
 
 @[simp]
 theorem ofFractionRing_eq :
@@ -718,6 +747,7 @@ theorem toFractionRing_eq :
       simp only [Localization.mk_eq_mk'_apply, ofFractionRing_mk', IsLocalization.algEquiv_apply,
         IsLocalization.map_mk', RingHom.id_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toFractionRingRingEquiv_symm_eq :
     (toFractionRingRingEquiv K).symm = (IsLocalization.algEquiv K[X]⁰ _ _).toRingEquiv := by
@@ -820,6 +850,7 @@ open GCDMonoid Polynomial
 
 variable [Field K]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- `RatFunc.numDenom` are numerator and denominator of a rational function over a field,
 normalized such that the denominator is monic. -/
@@ -877,9 +908,11 @@ private theorem num_div' (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
       Polynomial.C (q / gcd p q).leadingCoeff⁻¹ * (p / gcd p q) := by
   rw [num, numDenom_div _ hq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem num_zero : num (0 : RatFunc K) = 0 := by convert num_div' (0 : K[X]) one_ne_zero <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 @[simp]
 theorem num_div (p q : K[X]) :
@@ -889,9 +922,11 @@ theorem num_div (p q : K[X]) :
   · simp [hq]
   · exact num_div' p hq
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem num_one : num (1 : RatFunc K) = 1 := by convert num_div (1 : K[X]) 1 <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem num_algebraMap (p : K[X]) : num (algebraMap _ _ p) = p := by convert num_div p 1 <;> simp
 
@@ -930,14 +965,17 @@ theorem monic_denom (x : RatFunc K) : (denom x).Monic := by
 theorem denom_ne_zero (x : RatFunc K) : denom x ≠ 0 :=
   (monic_denom x).ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem denom_zero : denom (0 : RatFunc K) = 1 := by
   convert denom_div (0 : K[X]) one_ne_zero <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem denom_one : denom (1 : RatFunc K) = 1 := by
   convert denom_div (1 : K[X]) one_ne_zero <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem denom_algebraMap (p : K[X]) : denom (algebraMap _ (RatFunc K) p) = 1 := by
   convert denom_div p one_ne_zero <;> simp
@@ -951,6 +989,7 @@ theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q)
   · exact EuclideanDomain.div_dvd_of_dvd (gcd_dvd_right p q)
   · simpa only [Ne, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem num_div_denom (x : RatFunc K) : algebraMap _ _ (num x) / algebraMap _ _ (denom x) = x := by
   classical
@@ -974,6 +1013,7 @@ theorem isCoprime_num_denom (x : RatFunc K) : IsCoprime x.num x.denom := by
     ((leadingCoeff_ne_zero.2 <| right_div_gcd_ne_zero hq).isUnit.inv.map C) _ _).2
       (isCoprime_div_gcd_div_gcd hq)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem num_eq_zero_iff {x : RatFunc K} : num x = 0 ↔ x = 0 :=
   ⟨fun h => by rw [← num_div_denom x, h, map_zero, zero_div], fun h => h.symm ▸ num_zero⟩
@@ -981,6 +1021,7 @@ theorem num_eq_zero_iff {x : RatFunc K} : num x = 0 ↔ x = 0 :=
 theorem num_ne_zero {x : RatFunc K} (hx : x ≠ 0) : num x ≠ 0 :=
   mt num_eq_zero_iff.mp hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem num_mul_eq_mul_denom_iff {x : RatFunc K} {p q : K[X]} (hq : q ≠ 0) :
     x.num * q = p * x.denom ↔ x = algebraMap _ _ p / algebraMap _ _ q := by
   rw [← (algebraMap_injective K).eq_iff, eq_div_iff (algebraMap_ne_zero hq)]
@@ -989,6 +1030,7 @@ theorem num_mul_eq_mul_denom_iff {x : RatFunc K} {p q : K[X]} (hq : q ≠ 0) :
     mul_assoc, ← div_eq_mul_inv, div_eq_iff]
   exact algebraMap_ne_zero (denom_ne_zero x)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem num_denom_add (x y : RatFunc K) :
     (x + y).num * (x.denom * y.denom) = (x.num * y.denom + x.denom * y.num) * (x + y).denom :=
   (num_mul_eq_mul_denom_iff (mul_ne_zero (denom_ne_zero x) (denom_ne_zero y))).mpr <| by
@@ -997,15 +1039,18 @@ theorem num_denom_add (x y : RatFunc K) :
     · exact algebraMap_ne_zero (denom_ne_zero x)
     · exact algebraMap_ne_zero (denom_ne_zero y)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem num_denom_neg (x : RatFunc K) : (-x).num * x.denom = -x.num * (-x).denom := by
   rw [num_mul_eq_mul_denom_iff (denom_ne_zero x), map_neg, neg_div, num_div_denom]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem num_denom_mul (x y : RatFunc K) :
     (x * y).num * (x.denom * y.denom) = x.num * y.num * (x * y).denom :=
   (num_mul_eq_mul_denom_iff (mul_ne_zero (denom_ne_zero x) (denom_ne_zero y))).mpr <| by
     conv_lhs =>
       rw [← num_div_denom x, ← num_div_denom y, div_mul_div_comm, ← map_mul, ← map_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem num_dvd {x : RatFunc K} {p : K[X]} (hp : p ≠ 0) :
     num x ∣ p ↔ ∃ q : K[X], q ≠ 0 ∧ x = algebraMap _ _ p / algebraMap _ _ q := by
   constructor
@@ -1018,6 +1063,7 @@ theorem num_dvd {x : RatFunc K} {p : K[X]} (hp : p ≠ 0) :
   · rintro ⟨q, hq, rfl⟩
     exact num_div_dvd p hq
 
+set_option backward.isDefEq.respectTransparency false in
 theorem denom_dvd {x : RatFunc K} {q : K[X]} (hq : q ≠ 0) :
     denom x ∣ q ↔ ∃ p : K[X], x = algebraMap _ _ p / algebraMap _ _ q := by
   constructor
@@ -1029,6 +1075,7 @@ theorem denom_dvd {x : RatFunc K} {q : K[X]} (hq : q ≠ 0) :
   · rintro ⟨p, rfl⟩
     exact denom_div_dvd p q
 
+set_option backward.isDefEq.respectTransparency false in
 theorem num_mul_dvd (x y : RatFunc K) : num (x * y) ∣ num x * num y := by
   by_cases hx : x = 0
   · simp [hx]
@@ -1038,17 +1085,41 @@ theorem num_mul_dvd (x y : RatFunc K) : num (x * y) ∣ num x * num y := by
   refine ⟨x.denom * y.denom, mul_ne_zero (denom_ne_zero x) (denom_ne_zero y), ?_⟩
   rw [map_mul, map_mul, ← div_mul_div_comm, num_div_denom, num_div_denom]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem denom_mul_dvd (x y : RatFunc K) : denom (x * y) ∣ denom x * denom y := by
   rw [denom_dvd (mul_ne_zero (denom_ne_zero x) (denom_ne_zero y))]
   refine ⟨x.num * y.num, ?_⟩
   rw [map_mul, map_mul, ← div_mul_div_comm, num_div_denom, num_div_denom]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem denom_add_dvd (x y : RatFunc K) : denom (x + y) ∣ denom x * denom y := by
   rw [denom_dvd (mul_ne_zero (denom_ne_zero x) (denom_ne_zero y))]
   refine ⟨x.num * y.denom + x.denom * y.num, ?_⟩
   rw [map_mul, map_add, map_mul, map_mul, ← div_add_div, num_div_denom, num_div_denom]
   · exact algebraMap_ne_zero (denom_ne_zero x)
   · exact algebraMap_ne_zero (denom_ne_zero y)
+
+theorem num_inv_dvd {x : RatFunc K} (hx : x ≠ 0) : num x⁻¹ ∣ denom x := by
+  rw [num_dvd x.denom_ne_zero]
+  refine ⟨x.num, num_ne_zero hx, ?_⟩
+  nth_rw 1 [← x.num_div_denom]
+  rw [inv_div]
+
+theorem denom_inv_dvd {x : RatFunc K} (hx : x ≠ 0) : denom x⁻¹ ∣ num x := by
+  rw [denom_dvd (num_ne_zero hx)]
+  refine ⟨x.denom, ?_⟩
+  nth_rw 1 [← x.num_div_denom]
+  rw [inv_div]
+
+theorem associated_num_inv {x : RatFunc K} (hx : x ≠ 0) : Associated (num x⁻¹) (denom x) := by
+  apply associated_of_dvd_dvd (num_inv_dvd hx)
+  convert denom_inv_dvd (inv_ne_zero hx)
+  rw [inv_inv]
+
+theorem associated_denom_inv {x : RatFunc K} (hx : x ≠ 0) : Associated (denom x⁻¹) (num x) := by
+  apply Associated.symm
+  convert associated_num_inv (inv_ne_zero hx)
+  rw [inv_inv]
 
 theorem map_denom_ne_zero {L F : Type*} [Zero L] [FunLike F K[X] L] [ZeroHomClass F K[X] L]
     (φ : F) (hφ : Function.Injective φ) (f : RatFunc K) : φ f.denom ≠ 0 := fun H =>

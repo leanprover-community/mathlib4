@@ -28,7 +28,7 @@ bounds in binomial coefficients. These include:
 These results appear in the [Erdős proof of Bertrand's postulate](aigner1999proofs).
 -/
 
-@[expose] public section
+public section
 
 open Finset List Finsupp
 
@@ -70,7 +70,7 @@ theorem factorization_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   have h0 : 2 ≤ p := hp.two_le
   have h1 : 1 ≤ p * n + 1 := Nat.le_add_left _ _
   have h2 : p * n + 1 ≤ p * (n + 1) := by linarith
-  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by omega
+  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by lia
   have h4 m (hm : m ∈ Ico (p * n + 1) (p * (n + 1))) : m.factorization p = 0 := by
     apply factorization_eq_zero_of_not_dvd
     exact not_dvd_of_lt_of_lt_mul_succ (mem_Ico.mp hm).left (mem_Ico.mp hm).right
@@ -113,7 +113,7 @@ added in base `p`. The set is expressed by filtering `Ico 1 b` where `b` is any 
 than `log p (n + k)`. -/
 theorem factorization_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k) < b) :
     (choose (n + k) k).factorization p = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} := by
-  have h₁ : (choose (n + k) k).factorization p +  (k ! * n !).factorization p
+  have h₁ : (choose (n + k) k).factorization p + (k ! * n !).factorization p
     = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} + (k ! * n !).factorization p := by
     have h2 := (add_tsub_cancel_right n k) ▸ choose_mul_factorial_mul_factorial (le_add_left k n)
     rw [← Pi.add_apply, ← coe_add, ← factorization_mul (ne_of_gt <| choose_pos (le_add_left k n))
@@ -130,7 +130,7 @@ are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
 is any bound greater than `log p n`. -/
 theorem factorization_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
     (choose n k).factorization p = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
-  rw [←factorization_choose' hp ((Nat.sub_add_cancel hkn).symm ▸ hnb), Nat.sub_add_cancel hkn]
+  rw [← factorization_choose' hp ((Nat.sub_add_cancel hkn).symm ▸ hnb), Nat.sub_add_cancel hkn]
 
 /-- Modified version of `emultiplicity_le_emultiplicity_of_dvd_right`
 but for factorization. -/
@@ -149,7 +149,7 @@ theorem factorization_le_factorization_choose_add {p : ℕ} :
       (zero_ne_add_one k).symm]
     refine factorization_le_factorization_of_dvd_right ?_ (zero_ne_add_one n).symm
       (Nat.mul_ne_zero (ne_of_gt <| choose_pos hkn) (by positivity))
-    rw [← succ_mul_choose_eq]
+    rw [← add_one_mul_choose_eq]
     exact dvd_mul_right _ _
 
 variable {p n k : ℕ}
@@ -166,7 +166,7 @@ theorem factorization_choose_prime_pow_add_factorization (hp : p.Prime) (hkn : k
     have filter_le_Ico := (Ico 1 n.succ).card_filter_le
       fun x => p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
     rwa [card_Ico 1 n.succ] at filter_le_Ico
-  · nth_rewrite 1 [← factorization_pow_self (n:=n) hp]
+  · nth_rewrite 1 [← factorization_pow_self (n := n) hp]
     exact factorization_le_factorization_choose_add hkn hk0
 
 theorem factorization_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
@@ -203,6 +203,7 @@ theorem factorization_choose_le_one (p_large : n < p ^ 2) : (choose n k).factori
   rcases eq_or_ne n 0 with (rfl | hn0); · simp
   exact Nat.lt_succ_iff.1 (log_lt_of_lt_pow hn0 p_large)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk' : p ≤ n - k)
     (hn : n < 3 * p) : (choose n k).factorization p = 0 := by
   rcases em' p.Prime with hp | hp
@@ -231,6 +232,7 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
     rwa [mod_eq_of_lt (lt_of_le_of_lt hkn hn), mod_eq_of_lt (lt_of_le_of_lt tsub_le_self hn),
       add_tsub_cancel_of_le hkn]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Primes greater than about `2 * n / 3` and less than `n` do not appear in the factorization of
 `centralBinom n`. -/
 theorem factorization_centralBinom_of_two_mul_self_lt_three_mul (n_big : 2 < n) (p_le_n : p ≤ n)
@@ -246,6 +248,7 @@ theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factor
     rw [factorial_succ, factorization_mul n.succ_ne_zero n.factorial_ne_zero, Finsupp.coe_add,
       Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
   by_cases! hnk : n < k; · simp [choose_eq_zero_of_lt hnk]
   rw [choose_eq_factorial_div_factorial hnk,

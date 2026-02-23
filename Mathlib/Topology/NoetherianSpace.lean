@@ -51,6 +51,7 @@ namespace TopologicalSpace
 /-- Type class for Noetherian spaces. It is defined to be spaces whose open sets satisfies ACC. -/
 abbrev NoetherianSpace : Prop := WellFoundedGT (Opens α)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem noetherianSpace_iff_opens : NoetherianSpace α ↔ ∀ s : Opens α, IsCompact (s : Set α) := by
   rw [NoetherianSpace, CompleteLattice.wellFoundedGT_iff_isSupFiniteCompact,
     CompleteLattice.isSupFiniteCompact_iff_all_elements_compact]
@@ -136,6 +137,7 @@ theorem NoetherianSpace.iUnion {ι : Type*} (f : ι → Set α) [Finite ι]
   rw [← Set.inter_eq_left.mpr ht, Set.inter_iUnion]
   exact isCompact_iUnion fun i => hf i _ Set.inter_subset_right
 
+set_option backward.isDefEq.respectTransparency false in
 -- This is not an instance since it makes a loop with `t2_space_discrete`.
 theorem NoetherianSpace.discrete [NoetherianSpace α] [T2Space α] : DiscreteTopology α :=
   ⟨eq_bot_iff.mpr fun _ _ => isClosed_compl_iff.mp (NoetherianSpace.isCompact _).isClosed⟩
@@ -149,6 +151,7 @@ theorem NoetherianSpace.finite [NoetherianSpace α] [T2Space α] : Finite α :=
 instance (priority := 100) Finite.to_noetherianSpace [Finite α] : NoetherianSpace α :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/
 theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace α] (s : Closeds α) :
     ∃ S : Set (Closeds α), S.Finite ∧ (∀ t ∈ S, IsIrreducible (t : Set α)) ∧ s = sSup S := by
@@ -168,6 +171,7 @@ theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace �
       refine ⟨S₁ ∪ S₂, hSf₁.union hSf₂, Set.union_subset_iff.2 ⟨hS₁, hS₂⟩, ?_⟩
       rwa [sSup_union, ← h₁, ← h₂, ← inf_sup_left, left_eq_inf]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/
 theorem NoetherianSpace.exists_finite_set_isClosed_irreducible [NoetherianSpace α]
     {s : Set α} (hs : IsClosed s) : ∃ S : Set (Set α), S.Finite ∧
@@ -196,43 +200,22 @@ theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
   rwa [ht.antisymm (hs.2 (hSi _ htS) ht)]
 
 @[stacks 0052 "(3)"]
+theorem NoetherianSpace.exists_isOpen_nonempty_subset_irreducibleComponent [NoetherianSpace α]
+    (Z : Set α) (H : Z ∈ irreducibleComponents α) :
+    ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ⊆ Z := by
+  have hα : (irreducibleComponents α).Finite := finite_irreducibleComponents
+  have hZ := closure_sUnion_irreducibleComponents_diff_singleton hα Z H
+  refine ⟨(⋃₀ (irreducibleComponents α \ {Z}))ᶜ, ?_, ?_, subset_closure.trans hZ.le⟩
+  · rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
+    exact hα.diff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
+  · contrapose! hZ
+    rw [hZ, closure_empty, ← Set.nonempty_iff_empty_ne]
+    exact H.1.nonempty
+
+@[deprecated exists_isOpen_nonempty_subset_irreducibleComponent (since := "2025-12-11")]
 theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [NoetherianSpace α]
     (Z : Set α) (H : Z ∈ irreducibleComponents α) :
-    ∃ o : Set α, IsOpen o ∧ o ≠ ∅ ∧ o ≤ Z := by
-  classical
-  let ι : Set (Set α) := irreducibleComponents α \ {Z}
-  have hι : ι.Finite := NoetherianSpace.finite_irreducibleComponents.subset Set.diff_subset
-  have hι' : Finite ι := by rwa [Set.finite_coe_iff]
-  let U := Z \ ⋃ (x : ι), x
-  have hU0 : U ≠ ∅ := fun r ↦ by
-    obtain ⟨Z', hZ'⟩ := isIrreducible_iff_sUnion_isClosed.mp H.1 hι.toFinset
-      (fun z hz ↦ by
-        simp only [Set.Finite.mem_toFinset] at hz
-        exact isClosed_of_mem_irreducibleComponents _ hz.1)
-      (by
-        rw [Set.Finite.coe_toFinset, Set.sUnion_eq_iUnion]
-        rw [Set.diff_eq_empty] at r
-        exact r)
-    simp only [Set.Finite.mem_toFinset] at hZ'
-    exact hZ'.1.2 <| le_antisymm (H.2 hZ'.1.1.1 hZ'.2) hZ'.2
-  have hU1 : U = (⋃ (x : ι), x.1) ᶜ := by
-    rw [Set.compl_eq_univ_diff]
-    refine le_antisymm (Set.diff_subset_diff le_top subset_rfl) ?_
-    rw [← Set.compl_eq_univ_diff]
-    refine Set.compl_subset_iff_union.mpr (le_antisymm le_top ?_)
-    rw [Set.union_comm, ← Set.sUnion_eq_iUnion, ← Set.sUnion_insert]
-    rintro a -
-    by_cases h : a ∈ U
-    · exact ⟨U, Set.mem_insert _ _, h⟩
-    · rw [Set.mem_diff, Decidable.not_and_iff_not_or_not, not_not, Set.mem_iUnion] at h
-      rcases h with (h|⟨i, hi⟩)
-      · refine ⟨irreducibleComponent a, Or.inr ?_, mem_irreducibleComponent⟩
-        simp only [ι, Set.mem_diff, Set.mem_singleton_iff]
-        refine ⟨irreducibleComponent_mem_irreducibleComponents _, ?_⟩
-        rintro rfl
-        exact h mem_irreducibleComponent
-      · exact ⟨i, Or.inr i.2, hi⟩
-  refine ⟨U, hU1 ▸ isOpen_compl_iff.mpr ?_, hU0, sdiff_le⟩
-  exact isClosed_iUnion_of_finite fun i ↦ isClosed_of_mem_irreducibleComponents i.1 i.2.1
+    ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ≤ Z := by
+  simpa using exists_isOpen_nonempty_subset_irreducibleComponent Z H
 
 end TopologicalSpace

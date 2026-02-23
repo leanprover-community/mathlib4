@@ -53,6 +53,7 @@ lemma valMinAbs_nonneg_iff [NeZero n] (x : ZMod n) : 0 ≤ x.valMinAbs ↔ x.val
   · exact iff_of_true (Nat.cast_nonneg _) h
   · exact iff_of_false (sub_lt_zero.2 <| Int.ofNat_lt.2 x.val_lt).not_ge h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma valMinAbs_mul_two_eq_iff (a : ZMod n) : a.valMinAbs * 2 = n ↔ 2 * a.val = n := by
   rcases n with - | n
   · simp
@@ -73,9 +74,9 @@ lemma valMinAbs_mem_Ioc [NeZero n] (x : ZMod n) : x.valMinAbs * 2 ∈ Set.Ioc (-
     exacts [Nat.cast_nonneg _, zero_le_two]
   · refine ⟨?_, le_trans (mul_nonpos_of_nonpos_of_nonneg ?_ zero_le_two) <| Nat.cast_nonneg _⟩
     · linarith only [h]
-    · rw [sub_nonpos, Int.ofNat_le]
-      exact x.val_lt.le
+    · grind
 
+set_option backward.isDefEq.respectTransparency false in
 lemma valMinAbs_spec [NeZero n] (x : ZMod n) (y : ℤ) :
     x.valMinAbs = y ↔ x = y ∧ y * 2 ∈ Set.Ioc (-n : ℤ) n where
   mp := by rintro rfl; exact ⟨x.coe_valMinAbs.symm, x.valMinAbs_mem_Ioc⟩
@@ -96,9 +97,11 @@ lemma natAbs_valMinAbs_le [NeZero n] (x : ZMod n) : x.valMinAbs.natAbs ≤ n / 2
   · rw [← neg_le_neg_iff, ← neg_mul, ← h]
     exact x.valMinAbs_mem_Ioc.1.le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_neg_of_valMinAbs_eq_neg_valMinAbs (h : a.valMinAbs = -b.valMinAbs) : a = -b := by
   rcases eq_zero_or_neZero n with rfl | hn <;> simp_all [valMinAbs_spec]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma valMinAbs_zero : ∀ n, (0 : ZMod n).valMinAbs = 0
   | 0 => by simp only [valMinAbs_def_zero]
@@ -167,6 +170,7 @@ lemma valMinAbs_natAbs_eq_min [hpos : NeZero n] (a : ZMod n) :
   have := a.val_lt
   omega
 
+set_option backward.isDefEq.respectTransparency false in
 lemma valMinAbs_natCast_of_le_half (ha : a ≤ n / 2) : (a : ZMod n).valMinAbs = a := by
   cases n
   · simp

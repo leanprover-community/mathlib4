@@ -16,7 +16,7 @@ This file contains the results concerning the interaction of finset big operator
 numbers.
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Type*}
 
@@ -34,6 +34,7 @@ lemma odd_sum_iff_odd_card_odd {s : Finset ι} (f : ι → ℕ) :
     Odd (∑ i ∈ s, f i) ↔ Odd #{x ∈ s | Odd (f x)} := by
   simp only [← Nat.not_even_iff_odd, even_sum_iff_even_card_odd]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_preimage_eq_sum_card_image_eq {M : Type*} {f : ι → M} {s : Finset M}
     (hb : ∀ b ∈ s, Set.Finite {a | f a = b}) :
     Nat.card (f ⁻¹' s) = ∑ b ∈ s, Nat.card {a // f a = b} := by

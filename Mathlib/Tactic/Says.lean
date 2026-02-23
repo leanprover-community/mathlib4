@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
-public meta import Batteries.Linter.UnreachableTactic
 public meta import Qq.Match
 public meta import Mathlib.Lean.Elab.InfoTree
-public meta import Mathlib.Tactic.Basic
+public import Batteries.Linter.UnreachableTactic
+public import Mathlib.Tactic.Basic
+public meta import Mathlib.Util.ParseCommand
 
 /-!
 # The `says` tactic combinator.
@@ -48,19 +49,6 @@ register_option says.no_verify_in_CI : Bool :=
 
 open Parser Tactic
 
-/-- This is a slight modification of `Parser.runParserCategory`. -/
-def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
-    Except String (TSyntax ``tacticSeq) :=
-  let p := andthenFn whitespace Tactic.tacticSeq.fn
-  let ictx := mkInputContext input fileName
-  let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
-  if s.hasError then
-    Except.error (s.toErrorMsg ictx)
-  else if s.pos.atEnd input then
-    Except.ok ⟨s.stxStack.back⟩
-  else
-    Except.error ((s.mkError "end of input").toErrorMsg ictx)
-
 /--
 Run `evalTactic`, capturing a "Try this:" message and converting it back to syntax.
 -/
@@ -82,7 +70,7 @@ def evalTacticCapturingTryThis (tac : TSyntax `tactic) : TacticM (TSyntax ``tact
   | .tsyntax stx =>
     throwError m!"Tactic `{tac}` produced a 'Try this:' suggestion with a non-tactic syntax: {stx}"
   | .string s =>
-    match parseAsTacticSeq (← getEnv) s with
+    match Mathlib.GuardExceptions.parseAsTacticSeq (← getEnv) s with
     | .ok stx => return stx
     | .error err => throwError m!"Failed to parse 'Try this:' suggestion: {s}\n{err}"
 

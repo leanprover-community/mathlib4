@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.FinCategory.AsType
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback  -- shake: keep (`example`)
 public import Mathlib.Data.Fintype.Option
 
 /-!
@@ -31,7 +31,7 @@ namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
 
--- We can't just made this an `abbreviation`
+-- We can't just made this an `abbrev`
 -- because of https://github.com/leanprover-community/lean/issues/429
 /-- A category has all finite limits if every functor `J ⥤ C` with a `FinCategory J`
 instance and `J : Type` has a limit.
@@ -168,6 +168,7 @@ namespace WidePullbackShape
 instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
   inferInstanceAs <| Fintype (Option _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where
   elems := by
     obtain - | j' := j'
@@ -190,6 +191,7 @@ namespace WidePushoutShape
 instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) :=
   inferInstanceAs <| Fintype (Option _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
   elems := by
     obtain - | j := j
@@ -213,7 +215,7 @@ instance finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J)
 instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) where
   fintypeHom := WidePushoutShape.fintypeHom
 
--- We can't just made this an `abbreviation`
+-- We can't just made this an `abbrev`
 -- because of https://github.com/leanprover-community/lean/issues/429
 /-- A category `HasFiniteWidePullbacks` if it has all limits of shape `WidePullbackShape J` for
 finite `J`, i.e. if it has a wide pullback for every finite collection of morphisms with the same

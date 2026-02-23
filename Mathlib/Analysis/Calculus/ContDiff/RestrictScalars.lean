@@ -17,7 +17,7 @@ a subfield `𝕜 ⊆ 𝕜'`. The results are analogous to those found in
 `Mathlib.Analysis.Calculus.FDeriv.RestrictScalars`.
 -/
 
-@[expose] public section
+public section
 
 variable
   {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
@@ -38,6 +38,7 @@ lemma fderivWithin_restrictScalars_comp
   ext a b
   simp [h.restrictScalars_fderivWithin 𝕜 hs]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `f` is `n` times continuously differentiable at `x` within `s`, then the `n`th iterated Fréchet
 derivative within `s` with respect to `𝕜` equals scalar restriction of the `n`th iterated Fréchet

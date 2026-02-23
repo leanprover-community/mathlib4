@@ -225,6 +225,7 @@ variable (K L : Type*) [Field K] [Field L]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]
   [Algebra.IsInvariant A B G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A technical lemma for `fixed_of_fixed1`. -/
 private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
     ∃ a b : B, (∀ g : G, g • a = a) ∧ a ∉ Q ∧
@@ -281,6 +282,7 @@ private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
     · rw [smul_zero, sub_zero]
       exact hr' h⁻¹ hh
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A technical lemma for `fixed_of_fixed1`. -/
 private theorem fixed_of_fixed1_aux2 [DecidableEq (Ideal B)] (b₀ : B)
     (hx : ∀ g : G, g • Q = Q → algebraMap B (B ⧸ Q) (g • b₀) = algebraMap B (B ⧸ Q) b₀) :
@@ -308,8 +310,9 @@ private theorem fixed_of_fixed1_aux3 [NoZeroDivisors B] {b : B} {i j : ℕ} {p :
     zero_eq_mul, or_iff_left (pow_ne_zero j ha), pow_eq_zero_iff hi, sub_eq_zero] at hf
   exact hf.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
-private theorem fixed_of_fixed1 [NoZeroSMulDivisors (B ⧸ Q) L] (f : Gal(L/K)) (b : B ⧸ Q)
+private theorem fixed_of_fixed1 [Module.IsTorsionFree (B ⧸ Q) L] (f : Gal(L/K)) (b : B ⧸ Q)
     (hx : ∀ g : MulAction.stabilizer G Q, Ideal.Quotient.stabilizerHom Q P G g b = b) :
     f (algebraMap (B ⧸ Q) L b) = (algebraMap (B ⧸ Q) L b) := by
   classical
@@ -392,6 +395,19 @@ theorem Ideal.Quotient.stabilizerHom_surjective :
   exact key.of_comp_left (IsFractionRing.fieldEquivOfAlgEquivHom_injective (A ⧸ P) (B ⧸ Q)
     (FractionRing (A ⧸ P)) (FractionRing (B ⧸ Q)))
 
+/--
+The isomorphism between `stabilizer G Q ⧸ inertia G Q` and the Galois group of the residue fields
+extension `B ⧸ Q` over `A ⧸ P`.
+-/
+noncomputable def Ideal.Quotient.stabilizerQuotientInertiaEquiv :
+    MulAction.stabilizer G Q ⧸ (Q.inertia G).subgroupOf (MulAction.stabilizer G Q) ≃*
+      Gal((B ⧸ Q)/(A ⧸ P)) :=
+  QuotientGroup.liftEquiv (N := (Q.inertia G).subgroupOf (MulAction.stabilizer G Q))
+    (stabilizerHom_surjective G P Q) (ker_stabilizerHom Q P G).symm
+
+theorem Ideal.Quotient.stabilizerQuotientInertiaEquiv_mk (g : MulAction.stabilizer G Q) :
+    stabilizerQuotientInertiaEquiv G P Q g = stabilizerHom Q P G g := rfl
+
 end surjectivity
 
 section normal
@@ -471,6 +487,7 @@ lemma Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under
     refine .trans ?_ (σ.apply_symm_apply _)
     rw [← h₂, ← e, h₁]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Ideal.Quotient.field in
 include G in
 /--
@@ -491,7 +508,7 @@ lemma Ideal.Quotient.normal [P.IsMaximal] [Q.IsMaximal] :
     rw [Polynomial.aeval_def, ← Polynomial.eval_map, hp, MulSemiringAction.eval_charpoly]
   have := minpoly.dvd _ (algebraMap _ (B ⧸ Q) x) (p := p.map (algebraMap _ (A ⧸ P)))
     (by rw [Polynomial.aeval_map_algebraMap, Polynomial.aeval_algebraMap_apply, H, map_zero])
-  refine Polynomial.Splits.splits_of_dvd ?_ ?_ ((Polynomial.map_dvd_map' _).mpr this)
+  refine Polynomial.Splits.of_dvd ?_ ?_ ((Polynomial.map_dvd_map' _).mpr this)
   · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A B,
       ← Polynomial.map_map, hp, MulSemiringAction.charpoly_eq, Polynomial.map_prod]
     exact Polynomial.Splits.prod (fun _ _ ↦ (Polynomial.Splits.X_sub_C _).map _)

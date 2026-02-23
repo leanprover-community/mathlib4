@@ -22,7 +22,7 @@ semigroups.
 
 open scoped Manifold ContDiff
 
-library_note2 «Design choices about smooth algebraic structures» /--
+library_note «Design choices about smooth algebraic structures» /--
 1. All `C^n` algebraic structures on `G` are `Prop`-valued classes that extend
 `IsManifold I n G`. This way we save users from adding both
 `[IsManifold I n G]` and `[ContMDiffMul I n G]` to the assumptions. While many API
@@ -81,6 +81,7 @@ protected theorem ContMDiffMul.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
 instance {a : WithTop ℕ∞} [ContMDiffMul I ∞ G] [h : ENat.LEInfty a] : ContMDiffMul I a G :=
   ContMDiffMul.of_le h.out
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance {a : WithTop ℕ∞} [ContMDiffMul I ω G] : ContMDiffMul I a G :=
   ContMDiffMul.of_le le_top
@@ -159,21 +160,21 @@ variable [ContMDiffMul I 1 G]
 
 @[to_additive]
 theorem mdifferentiable_mul_left {a : G} : MDifferentiable I I (a * ·) :=
-  contMDiff_mul_left.mdifferentiable le_rfl
+  contMDiff_mul_left.mdifferentiable one_ne_zero
 
 @[to_additive]
 theorem mdifferentiableAt_mul_left {a b : G} :
     MDifferentiableAt I I (a * ·) b :=
-  contMDiffAt_mul_left.mdifferentiableAt le_rfl
+  contMDiffAt_mul_left.mdifferentiableAt one_ne_zero
 
 @[to_additive]
 theorem mdifferentiable_mul_right {a : G} : MDifferentiable I I (· * a) :=
-  contMDiff_mul_right.mdifferentiable le_rfl
+  contMDiff_mul_right.mdifferentiable one_ne_zero
 
 @[to_additive]
 theorem mdifferentiableAt_mul_right {a b : G} :
     MDifferentiableAt I I (· * a) b :=
-  contMDiffAt_mul_right.mdifferentiableAt le_rfl
+  contMDiffAt_mul_right.mdifferentiableAt one_ne_zero
 
 end
 

@@ -39,10 +39,10 @@ This definition is meant to be used for small values of `ε`, and in particular 
 of `ε` greater than or equal to `1`. The junk value is chosen to be positive, so that
 `0 < ε → 0 < triangleRemovalBound ε` regardless of whether `ε < 1` or not. -/
 noncomputable def triangleRemovalBound (ε : ℝ) : ℝ :=
-  min (2 * ⌈4/ε⌉₊^3)⁻¹ ((1 - min 1 ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊))^3)
+  min (2 * ⌈4 / ε⌉₊ ^ 3)⁻¹ ((1 - min 1 ε / 4) * (ε / (16 * bound (ε / 8) ⌈4 / ε⌉₊)) ^ 3)
 
 lemma triangleRemovalBound_pos (hε : 0 < ε) : 0 < triangleRemovalBound ε := by
-  have : 0 < 1 - min 1 ε/4 := by have := min_le_left 1 ε; linarith
+  have : 0 < 1 - min 1 ε / 4 := by have := min_le_left 1 ε; linarith
   unfold triangleRemovalBound
   positivity
 
@@ -57,9 +57,10 @@ lemma triangleRemovalBound_mul_cube_lt (hε : 0 < ε) :
     _ < 1 := by norm_num
 
 lemma triangleRemovalBound_le (hε₁ : ε ≤ 1) :
-    triangleRemovalBound ε ≤ (1 - ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊)) ^ 3 := by
+    triangleRemovalBound ε ≤ (1 - ε / 4) * (ε / (16 * bound (ε / 8) ⌈4 / ε⌉₊)) ^ 3 := by
   simp [triangleRemovalBound, hε₁]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma aux {n k : ℕ} (hk : 0 < k) (hn : k ≤ n) : n < 2 * k * (n / k) := by
   rw [mul_assoc, two_mul, ← add_lt_add_iff_right (n % k), add_right_comm, add_assoc,
     mod_add_div n k, add_comm, add_lt_add_iff_right]
@@ -95,7 +96,7 @@ private lemma triangle_removal_aux (hε : 0 < ε) (hε₁ : ε ≤ 1) (hP₁ : P
   have : 0 ≤ 1 - 2 * (ε / 8) := by
     have : ε / 4 ≤ 1 := ‹ε / 4 ≤ _›.trans (by exact mod_cast G.edgeDensity_le_one _ _); linarith
   calc
-    _ ≤ (1 - ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊))^3 * card α ^ 3 := by
+    _ ≤ (1 - ε / 4) * (ε / (16 * bound (ε / 8) ⌈4 / ε⌉₊)) ^ 3 * card α ^ 3 := by
       gcongr; exact triangleRemovalBound_le hε₁
     _ = (1 - 2 * (ε / 8)) * (ε / 8) ^ 3 * (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) *
           (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) * (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) := by
@@ -114,7 +115,7 @@ lemma regularityReduced_edges_card_aux [Nonempty α] (hε : 0 < ε) (hP : P.IsEq
   let C := (P.sparsePairs G (ε / 4)).biUnion fun (U, V) ↦ G.interedges U V
   calc
     _ = (#((univ ×ˢ univ).filter fun (x, y) ↦
-          G.Adj x y ∧ ¬(G.regularityReduced P (ε / 8) (ε /4)).Adj x y) : ℝ) := by
+          G.Adj x y ∧ ¬(G.regularityReduced P (ε / 8) (ε / 4)).Adj x y) : ℝ) := by
       rw [univ_product_univ, mul_sub, filter_and_not, cast_card_sdiff]
       · norm_cast
         rw [two_mul_card_edgeFinset, two_mul_card_edgeFinset]

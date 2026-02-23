@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-! # Properties of integration with respect to the Lebesgue measure -/
 
-@[expose] public section
+public section
 
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
@@ -48,7 +48,7 @@ section SummableNormIcc
 open ContinuousMap
 
 /- The following lemma is a minor variation on `integrable_of_summable_norm_restrict` in
-`Mathlib/MeasureTheory/Integral/SetIntegral.lean`, but it is placed here because it needs to know
+`Mathlib/MeasureTheory/Integral/Bochner/Set.lean`, but it is placed here because it needs to know
 that `Icc a b` has volume `b - a`. -/
 /-- If the sequence with `n`-th term the sup norm of `fun x ↦ f (x + n)` on the interval `Icc 0 1`,
 for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
@@ -79,6 +79,7 @@ of finite integrals, see `intervalIntegral.integral_comp_neg`.
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
@@ -94,6 +95,7 @@ theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace �
   rw [← neg_neg c, ← integral_comp_neg_Iic]
   simp only [neg_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_comp_abs {f : ℝ → ℝ} :
     ∫ x, f |x| = 2 * ∫ x in Ioi (0 : ℝ), f x := by
   have eq : ∫ (x : ℝ) in Ioi 0, f |x| = ∫ (x : ℝ) in Ioi 0, f x := by

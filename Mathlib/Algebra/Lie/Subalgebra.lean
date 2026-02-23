@@ -66,6 +66,8 @@ instance : SetLike (LieSubalgebra R L) L where
     congr
     exact SetLike.coe_injective' h
 
+instance : PartialOrder (LieSubalgebra R L) := .ofSetLike (LieSubalgebra R L) L
+
 instance : AddSubgroupClass (LieSubalgebra R L) L where
   add_mem := Submodule.add_mem _
   zero_mem L' := L'.zero_mem'
@@ -233,6 +235,7 @@ instance lieRingModule : LieRingModule L' M where
 
 variable [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie module `M` of
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
 instance lieModule [LieModule R L M] : LieModule R L' M where
@@ -521,10 +524,12 @@ theorem mem_inf (x : L) : x ∈ K ⊓ K' ↔ x ∈ K ∧ x ∈ K' := by
   rw [← mem_toSubmodule, ← mem_toSubmodule, ← mem_toSubmodule, inf_toSubmodule,
     Submodule.mem_inf]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_bot_iff : K = ⊥ ↔ ∀ x : L, x ∈ K → x = 0 := by
   rw [_root_.eq_bot_iff]
   exact Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebra R L)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [LieSubalgebra.mem_bot] at hx; subst hx
@@ -676,10 +681,12 @@ protected def gi : GaloisInsertion (lieSpan R L : Set L → LieSubalgebra R L) (
   le_l_u _ := subset_lieSpan
   choice_eq _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem span_empty : lieSpan R L (∅ : Set L) = ⊥ :=
   (LieSubalgebra.gi R L).gc.l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set L) = ⊤ :=
   eq_top_iff.2 <| SetLike.le_def.2 <| subset_lieSpan

@@ -27,13 +27,14 @@ universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
 variable {D : Type u₂} [Category.{v₂} D]
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 variable {F : D ⥤ E} {G : E ⥤ D}
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
 whose forgetful functor preserves the correct limits. -/
-abbrev sheafForget [HasForget D] [HasSheafCompose J (forget D)] :
-    Sheaf J D ⥤ Sheaf J (Type _) :=
+abbrev sheafForget {FD : D → D → Type*} {CD : D → Type*}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD]
+    [HasSheafCompose J (forget D)] : Sheaf J D ⥤ Sheaf J (Type _) :=
   sheafCompose J (forget D)
 
 namespace Sheaf
@@ -48,10 +49,11 @@ def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
   Adjunction.restrictFullyFaithful ((adj.whiskerRight Cᵒᵖ).comp (sheafificationAdjunction J D))
     (fullyFaithfulSheafToPresheaf J E) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma adjunction_unit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
     (X : Sheaf J E) : ((adjunction J adj).unit.app X).val =
-      (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.val ⋙ G)) F  := by
+      (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.val ⋙ G)) F := by
   change (sheafToPresheaf _ _).map ((adjunction J adj).unit.app X) = _
   simp only [Functor.id_obj, Functor.comp_obj, whiskeringRight_obj_obj, adjunction,
     Adjunction.map_restrictFullyFaithful_unit_app, Adjunction.comp_unit_app,
@@ -59,6 +61,7 @@ lemma adjunction_unit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj :
     Functor.comp_map, Functor.map_id, whiskerRight_id', Category.comp_id]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma adjunction_counit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
     (Y : Sheaf J D) : ((adjunction J adj).counit.app Y).val =
@@ -77,6 +80,7 @@ instance [HasWeakSheafify J D] [F.IsRightAdjoint] : (sheafCompose J F).IsRightAd
 instance [HasWeakSheafify J D] [G.IsLeftAdjoint] : (composeAndSheafify J G).IsLeftAdjoint :=
   (adjunction J (Adjunction.ofIsLeftAdjoint G)).isLeftAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
     J.PreservesSheafification G where
   le P Q f hf := by
@@ -100,10 +104,11 @@ instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
 
 section ForgetToType
 
-variable [HasWeakSheafify J D] [HasForget D] [HasSheafCompose J (forget D)]
+variable [HasWeakSheafify J D] {FD : D → D → Type*} {CD : D → Type (max u₁ v₁)}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD] [HasSheafCompose J (forget D)]
 
 example [(forget D).IsRightAdjoint] :
-    (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint := by infer_instance
+    (sheafForget.{_, _, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint := by infer_instance
 
 end ForgetToType
 

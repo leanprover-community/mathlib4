@@ -92,6 +92,7 @@ instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
 
 variable [Preorder α]
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma mul_right_strictMono [PosMulStrictMono α] (h₀ : 0 < a) (hinf : a ≠ ⊤) :
     StrictMono (a * ·) := by
   lift a to α using hinf
@@ -103,6 +104,7 @@ protected lemma mul_right_strictMono [PosMulStrictMono α] (h₀ : 0 < a) (hinf 
   simp only [coe_pos, coe_lt_coe, ← coe_mul, gt_iff_lt] at *
   exact mul_lt_mul_of_pos_left hbc h₀
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma mul_left_strictMono [MulPosStrictMono α] (h₀ : 0 < a) (hinf : a ≠ ⊤) :
     StrictMono (· * a) := by
   lift a to α using hinf
@@ -185,6 +187,7 @@ instance instMonoidWithZero : MonoidWithZero (WithTop α) where
 
 lemma pow_ne_top_iff : x ^ n ≠ ⊤ ↔ x ≠ ⊤ ∨ n = 0 := by simp [pow_eq_top_iff, or_iff_not_imp_left]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pow_lt_top_iff [Preorder α] : x ^ n < ⊤ ↔ x < ⊤ ∨ n = 0 := by
   simp_rw [WithTop.lt_top_iff_ne_top, pow_ne_top_iff]
 
@@ -199,6 +202,7 @@ instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Non
   __ := instMonoidWithZero
   mul_comm a b := by simp_rw [mul_def]; exact if_congr or_comm rfl (Option.map₂_comm mul_comm)
 
+set_option backward.isDefEq.respectTransparency false in
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] [PartialOrder α]
     [CanonicallyOrderedAdd α] : NonUnitalNonAssocSemiring (WithTop α) where
   toAddCommMonoid := WithTop.addCommMonoid
@@ -242,6 +246,7 @@ instance instCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrdere
   toSemiring := WithTop.instSemiring
   __ := WithTop.instCommMonoidWithZero
 
+set_option backward.isDefEq.respectTransparency false in
 instance instIsOrderedRing [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
     [NoZeroDivisors α] [Nontrivial α] : IsOrderedRing (WithTop α) :=
   CanonicallyOrderedAdd.toIsOrderedRing
@@ -254,12 +259,13 @@ protected def _root_.RingHom.withTopMap {R S : Type*}
     [NonAssocSemiring S] [PartialOrder S] [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
-  {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
+  { MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with }
 
 variable [CommSemiring α] [PartialOrder α] [OrderBot α]
   [CanonicallyOrderedAdd α] [PosMulStrictMono α]
   {a a₁ a₂ b₁ b₂ : WithTop α}
 
+set_option backward.isDefEq.respectTransparency false in
 @[gcongr]
 protected lemma mul_lt_mul (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ < a₂ * b₂ := by
   have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
