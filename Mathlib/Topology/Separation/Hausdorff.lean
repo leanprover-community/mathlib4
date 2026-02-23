@@ -393,10 +393,10 @@ instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
 instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ a, T2Space (X a)] :
     T2Space (Σ i, X i) := by
   constructor
-  rintro ⟨i, x⟩ ⟨j, y⟩ neq
+  rintro ⟨i, x⟩ ⟨j, y⟩ ne
   rcases eq_or_ne i j with (rfl | h)
-  · replace neq : x ≠ y := ne_of_apply_ne _ neq
-    exact separated_by_isOpenEmbedding .sigmaMk neq
+  · replace ne : x ≠ y := ne_of_apply_ne _ ne
+    exact separated_by_isOpenEmbedding .sigmaMk ne
   · let _ := (⊥ : TopologicalSpace ι); have : DiscreteTopology ι := ⟨rfl⟩
     exact separated_by_continuous (continuous_def.2 fun u _ => isOpen_sigma_fst_preimage u) h
 

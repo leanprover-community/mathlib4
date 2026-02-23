@@ -248,13 +248,7 @@ lemma subsingleton_of_ssubset_of_stabilizer_le
       toFun := Subtype.val
       map_smul' _ _ := rfl }
     exact hB.preimage f'
-  let φ : stabilizer M (s : Set α) → Perm (s : Set α) := MulAction.toPerm
-  let f : (s : Set α) →ₑ[φ] (s : Set α) := {
-    toFun := id
-    map_smul' _ _ := rfl }
-  have hf : Function.Bijective f := Function.bijective_id
-  rw [isPreprimitive_congr hG hf]
-  infer_instance
+  exact isPreprimitive_stabilizer_of_surjective _ hG
 
 @[deprecated (since := "2025-12-16")]
 alias _root_.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le :=

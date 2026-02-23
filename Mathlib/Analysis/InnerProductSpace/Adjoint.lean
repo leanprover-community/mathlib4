@@ -827,7 +827,7 @@ theorem conjStarAlgEquiv_unitaryLinearIsometryEquiv (u : unitary (H →L[𝕜] H
 
 set_option backward.isDefEq.respectTransparency false in
 theorem conjStarAlgAut_symm_unitaryLinearIsometryEquiv (u : H ≃ₗᵢ[𝕜] H) :
-    conjStarAlgAut 𝕜 _ (linearIsometryEquiv.symm u) = u.conjStarAlgEquiv := by
+    conjStarAlgAut 𝕜 (H →L[𝕜] H) (linearIsometryEquiv.symm u) = u.conjStarAlgEquiv := by
   simp [← conjStarAlgEquiv_unitaryLinearIsometryEquiv]
 
 end Unitary
