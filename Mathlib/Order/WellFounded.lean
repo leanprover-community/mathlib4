@@ -106,7 +106,7 @@ theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h 
   h' _ hx
 
 /-- The minimal element of a trichotomous well-founded order is unique -/
-theorem min_eq_of_forall_not_lt (wf : WellFounded r) [Std.Trichotomous r] {s : Set α} {m : α}
+theorem min_eq_of_forall_not_lt [Std.Trichotomous r] (wf : WellFounded r) {s : Set α} {m : α}
     (hms : m ∈ s) (hrm : ∀ x ∈ s, ¬r x m) : wf.min s ⟨m, hms⟩ = m :=
   Std.Trichotomous.trichotomous _ m (hrm _ <| wf.min_mem s _) (wf.not_lt_min s _ hms)
 
