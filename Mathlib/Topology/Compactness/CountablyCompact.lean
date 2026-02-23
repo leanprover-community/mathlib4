@@ -1,16 +1,15 @@
 /-
 Copyright (c) 2026 Michał Świętek. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michał Świętek
+Authors: Michał Świętek, Yongxi Lin
 -/
 module
 
-public import Mathlib.Topology.Maps.Basic
 public import Mathlib.Topology.Defs.Sequences
-public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 public import Mathlib.Topology.Separation.Basic
+public import Mathlib.Topology.Compactness.Lindelof
+
 import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Topology.Bases
 
 /-!
 # Countably compact sets
@@ -31,7 +30,7 @@ noncomputable section
 
 open Set Filter Topology
 
-variable {E : Type*} [TopologicalSpace E]
+variable {ι E F : Type*} [TopologicalSpace E] [TopologicalSpace F] {A B : Set E}
 
 /-- A set is countably compact if every sequence in the set has a cluster point in the set. -/
 def IsCountablyCompact (A : Set E) : Prop :=
@@ -51,14 +50,14 @@ theorem isCountablyCompact_singleton {x : E} : IsCountablyCompact ({x} : Set E) 
     (tendsto_const_nhds.congr fun n => (mem_singleton_iff.mp (hu n)).symm).mapClusterPt⟩
 
 /-- A closed subset of a countably compact set is countably compact. -/
-theorem IsCountablyCompact.of_isClosed_subset {A B : Set E} (hA : IsCountablyCompact A)
+theorem IsCountablyCompact.of_isClosed_subset (hA : IsCountablyCompact A)
     (hB : IsClosed B) (hBA : B ⊆ A) : IsCountablyCompact B := fun x hx =>
   let ⟨a, _, hac⟩ := hA x (fun n => hBA (hx n))
   ⟨a, hB.mem_of_mapClusterPt hac (Eventually.of_forall hx), hac⟩
 
 /-- A set is countably compact if and only if every countably generated filter with principal
 bounded by `𝓟 A` has a cluster point in `A`. -/
-theorem isCountablyCompact_iff_clusterPt_countably_generated_filter {A : Set E} :
+theorem isCountablyCompact_iff_clusterPt_countably_generated_filter :
     IsCountablyCompact A ↔
       ∀ (f : Filter E) [NeBot f] [Filter.IsCountablyGenerated f],
         f ≤ 𝓟 A → ∃ a ∈ A, ClusterPt a f := by
@@ -82,8 +81,8 @@ theorem mapClusterPt_atTop_iff_forall_mem_closure {ι : Type*} [Preorder ι] [Is
     simp only [(atTop_basis.map x).clusterPt_iff_forall_mem_closure, true_implies]
 
 /-- A countably compact set has a finite subcover for any countable open cover. -/
-theorem IsCountablyCompact.elim_finite_subcover {A : Set E} (hA : IsCountablyCompact A)
-    {ι : Type*} [Countable ι] {U : ι → Set E} (hUo : ∀ i, IsOpen (U i))
+theorem IsCountablyCompact.elim_finite_subcover (hA : IsCountablyCompact A)
+    [Countable ι] {U : ι → Set E} (hUo : ∀ i, IsOpen (U i))
     (hAU : A ⊆ ⋃ i, U i) : ∃ t : Finset ι, A ⊆ ⋃ i ∈ t, U i := by
   classical
   rcases isEmpty_or_nonempty ι with hι | hι
@@ -106,7 +105,7 @@ theorem IsCountablyCompact.elim_finite_subcover {A : Set E} (hA : IsCountablyCom
     exact hac.frequently ((hUo (e k)).mem_nhds hk) this
 
 /-- A set is countably compact if and only if every countable open cover has a finite subcover. -/
-theorem isCountablyCompact_iff_countable_open_cover {A : Set E} :
+theorem isCountablyCompact_iff_countable_open_cover :
     IsCountablyCompact A ↔
       ∀ (U : ℕ → Set E), (∀ i, IsOpen (U i)) → A ⊆ ⋃ i, U i →
         ∃ t : Finset ℕ, A ⊆ ⋃ i ∈ t, U i := by
@@ -129,27 +128,63 @@ theorem isCountablyCompact_iff_countable_open_cover {A : Set E} :
     have hxmV : x m ∈ V m := hVmono (Finset.le_sup hjt) hjV
     exact hxmV (subset_closure ⟨m, mem_Ici.mpr le_rfl, rfl⟩)
 
+theorem IsCountablyCompact.elim_finite_subcover_image (hA : IsCountablyCompact A)
+    {b : Set ι} (hb : b.Countable) {U : ι → Set E} (hUo : ∀ i ∈ b, IsOpen (U i))
+    (hAU : A ⊆ ⋃ i ∈ b, U i) : ∃ t ⊆ b, t.Finite ∧ A ⊆ ⋃ i ∈ t, U i := by
+  letI : Countable b := hb.to_subtype
+  let V : b → Set E := fun i => U i
+  have hV : ∀ (i : b), IsOpen (V i) := fun i => hUo i i.prop
+  have hAU' : A ⊆ ⋃ (i : b), V i := by simpa [V, iUnion_subtype] using hAU
+  obtain ⟨t, ht⟩ := hA.elim_finite_subcover hV hAU'
+  let t' : Set ι := (t : Set b).image (fun (i : b) => (i : ι))
+  have h1 : t' ⊆ b := by
+    intro x hx
+    rcases (mem_image _ _ _).mp hx with ⟨i, _, rfl⟩
+    exact i.prop
+  have h2 : t'.Finite := (Finset.finite_toSet t).image _
+  have h3 : A ⊆ ⋃ i ∈ t', U i := by
+    intro x hx
+    have h : x ∈ ⋃ (i : b) (_ : i ∈ t), V i := ht hx
+    simp only [mem_iUnion, exists_prop] at h
+    rcases h with ⟨i, hi_t, hxi⟩
+    have h₂ : (i : ι) ∈ t' := mem_image_of_mem (fun (j : b) => (j : ι)) hi_t
+    simpa [V] using mem_biUnion h₂ hxi
+  exact ⟨t', h1, h2, h3⟩
+
+theorem isCountablyCompact_iff_countable_open_cover' :
+    IsCountablyCompact A ↔
+      ∀ (U : ℕ → Set E), (∀ i, IsOpen (U i)) → A ⊆ ⋃ i, U i →
+        ∃ t : Set ℕ, t.Finite ∧ A ⊆ ⋃ i ∈ t, U i := by
+  rw [isCountablyCompact_iff_countable_open_cover]
+  constructor
+  · intro h U hUo hAU
+    obtain ⟨t, ht⟩ := h U hUo hAU
+    exact ⟨(t : Set ℕ), Finset.finite_toSet t, ht⟩
+  · intro h U hUo hAU
+    obtain ⟨t, htfin, ht⟩ := h U hUo hAU
+    exact ⟨htfin.toFinset, by simpa [htfin.coe_toFinset] using ht⟩
+
 /-- A compact set is countably compact. -/
-theorem IsCompact.IsCountablyCompact {A : Set E} (hA : IsCompact A) : IsCountablyCompact A :=
+theorem IsCompact.IsCountablyCompact (hA : IsCompact A) : IsCountablyCompact A :=
   fun _ h_mem => hA (le_principal_iff.2 (mem_map.2 (Eventually.of_forall h_mem)))
 
 /-- A sequentially compact set is countably compact. -/
-theorem IsSeqCompact.IsCountablyCompact {A : Set E} (hA : IsSeqCompact A) :
+theorem IsSeqCompact.IsCountablyCompact (hA : IsSeqCompact A) :
     IsCountablyCompact A := by
   intro x h_mem
   obtain ⟨a, ha_mem, φ, hφ_mono, hφ_tendsto⟩ := hA h_mem
   exact ⟨a, ha_mem, (hφ_tendsto.mapClusterPt).of_comp hφ_mono.tendsto_atTop⟩
 
 /-- In a first-countable space, a countably compact set is sequentially compact. -/
-theorem IsCountablyCompact.isSeqCompact [FirstCountableTopology E] {A : Set E}
+theorem IsCountablyCompact.isSeqCompact [FirstCountableTopology E]
     (hA : IsCountablyCompact A) : IsSeqCompact A := by
   intro x hx
   obtain ⟨a, haA, hac⟩ := hA x hx
   exact ⟨a, haA, TopologicalSpace.FirstCountableTopology.tendsto_subseq hac⟩
 
 /-- Every infinite subset of a countably compact set has an accumulation point in the set. -/
-theorem IsCountablyCompact.exists_accPt_of_infinite {A : Set E}
-    (hA : IsCountablyCompact A) {B : Set E} (hBA : B ⊆ A) (hB : B.Infinite) :
+theorem IsCountablyCompact.exists_accPt_of_infinite
+    (hA : IsCountablyCompact A) (hBA : B ⊆ A) (hB : B.Infinite) :
     ∃ a ∈ A, AccPt a (𝓟 B) := by
   let f := hB.natEmbedding B
   let x : ℕ → E := fun n => ↑(f n)
@@ -166,7 +201,7 @@ theorem IsCountablyCompact.exists_accPt_of_infinite {A : Set E}
 
 /-- In a T₁ space, a set is countably compact if and only if every infinite subset has an
 accumulation point in the set. -/
-theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E} :
+theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] :
     IsCountablyCompact A ↔ ∀ B ⊆ A, B.Infinite → ∃ a ∈ A, AccPt a (𝓟 B) := by
   constructor
   · exact fun hA B hBA hB => hA.exists_accPt_of_infinite hBA hB
@@ -203,17 +238,66 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
           (Filter.inter_mem hU (hF_closed.isOpen_compl.mem_nhds (mem_compl haF)))).exists
       exact hyFc ⟨⟨hyU, hyr⟩, hya⟩
 
-/-- In a second-countable space, a countably compact set is compact. -/
-theorem IsCountablyCompact.isCompact [SecondCountableTopology E] {A : Set E}
-    (hA : IsCountablyCompact A) : IsCompact A := by
+/-- A countably compact Linelöf set is compact. -/
+theorem IsLindelof.isCompact (hA : IsCountablyCompact A) (hl : IsLindelof A) :
+    IsCompact A := by
+  refine isCompact_of_finite_subcover fun {ι} U hUo hAU => ?_
+  by_cases! h : Nonempty ι
+  · obtain ⟨f, hf⟩ := hl.indexed_countable_subcover U hUo hAU
+    obtain ⟨t, ht⟩ := isCountablyCompact_iff_countable_open_cover.1 hA (U ∘ f)
+      (fun n => hUo (f n)) hf
+    classical
+    exact ⟨t.image f, by simp_all⟩
+  · exact ⟨∅, by simp_all⟩
+
+/-- In a Hereditarily Lindelöf space, a countably compact set is compact. -/
+theorem IsCountablyCompact.isCompact [HereditarilyLindelofSpace E]
+    (hA : IsCountablyCompact A) : IsCompact A :=
+  (HereditarilyLindelofSpace.isLindelof A).isCompact hA
+
+/-- The continuous image of a countably compact set is countably compact. -/
+theorem IsCountablyCompact.image (hA : IsCountablyCompact A)
+    {f : E → F} (hf : Continuous f) : IsCountablyCompact (f '' A) := by
+  intro x hx
+  choose y hy hy' using hx
+  obtain ⟨a, haA, hac⟩ := hA y hy
+  have : f ∘ y = x := by ext; simp [hy']
+  exact ⟨f a, mem_image_of_mem f haA, this ▸ hac.continuousAt_comp hf.continuousAt⟩
+
+theorem IsCountablyCompact.union (hA : IsCountablyCompact A) (hB : IsCountablyCompact B) :
+    IsCountablyCompact (A ∪ B) := by
+  rw [isCountablyCompact_iff_countable_open_cover'] at hA hB ⊢
+  intro U hUo hAU
+  obtain ⟨t₁, ht₁, hA_sub⟩ : ∃ (t₁ : Set ℕ), t₁.Finite ∧ A ⊆ ⋃ k ∈ t₁, U k :=
+    hA U hUo (subset_union_left.trans hAU)
+  obtain  ⟨t₂, ht₂, hB_sub⟩ : ∃ (t₂ : Set ℕ), t₂.Finite ∧ B ⊆ ⋃ k ∈ t₂, U k :=
+    hB U hUo (subset_union_right.trans hAU)
+  have h : (⋃ k ∈ t₁, U k) ∪ (⋃ k ∈ t₂, U k) = ⋃ k ∈ (t₁ ∪ t₂), U k := by ext; aesop
+  exact ⟨t₁ ∪ t₂, ht₁.union ht₂, h ▸ union_subset_union hA_sub hB_sub⟩
+
+theorem Finset.isCountablyCompact_biUnion (s : Finset ι) {f : ι → Set E}
+    (hf : ∀ i ∈ s, IsCountablyCompact (f i)) :
+    IsCountablyCompact (⋃ i ∈ s, f i) := by
   classical
-  apply isCompact_of_finite_subcover
-  intro ι U hUo hAU
-  obtain ⟨T, hTc, hTeq⟩ := TopologicalSpace.isOpen_iUnion_countable U hUo
-  haveI : Countable ↥T := hTc.to_subtype
-  have hAT : A ⊆ ⋃ i ∈ T, U i := by rw [hTeq]; exact hAU
-  rw [Set.biUnion_eq_iUnion] at hAT
-  obtain ⟨t, ht⟩ := hA.elim_finite_subcover (fun i => hUo _) hAT
-  exact ⟨t.image Subtype.val, by rwa [Finset.set_biUnion_finset_image]⟩
+  induction s using Finset.induction_on with
+  | empty => simpa using isCountablyCompact_empty
+  | @insert a s ha ih => simpa [Finset.biUnion_insert] using
+    (hf a (Finset.mem_insert_self a s)).union <| ih (fun i hi => hf i (Finset.mem_insert_of_mem hi))
+
+theorem Set.Finite.isCountablyCompact_biUnion {s : Set ι} {f : ι → Set E} (hs : s.Finite)
+    (hf : ∀ i ∈ s, IsCountablyCompact (f i)) : IsCountablyCompact (⋃ i ∈ s, f i) := by
+  let s' : Finset ι := hs.toFinset
+  have h1 : (⋃ i ∈ s, f i) = (⋃ i ∈ s', f i) := by simp [s']
+  exact h1 ▸ Finset.isCountablyCompact_biUnion s' (fun i hi => hf i ((hs.mem_toFinset).mp hi))
+
+theorem Set.Finite.isCountablyCompact_sUnion {S : Set (Set E)} (hf : S.Finite)
+    (hc : ∀ s ∈ S, IsCountablyCompact s) :
+    IsCountablyCompact (⋃₀ S) := by
+  rw [sUnion_eq_biUnion]; exact hf.isCountablyCompact_biUnion hc
+
+theorem isCountablyCompact_iUnion {ι : Sort*} {f : ι → Set E} [Finite ι]
+    (h : ∀ i, IsCountablyCompact (f i)) :
+    IsCountablyCompact (⋃ i, f i) :=
+  (finite_range f).isCountablyCompact_sUnion <| forall_mem_range.2 h
 
 end
