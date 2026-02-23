@@ -30,68 +30,6 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C]
-
-lemma Presieve.IsSheafFor.of_isSheafFor_pullback
-    (F : Cᵒᵖ ⥤ Type*) {X : C}
-    (S : Presieve X) (T : Sieve X) [S.HasPairwisePullbacks]
-    (hF : Presieve.IsSheafFor F S)
-    (hF' : ∀ {Y : C} (f : Y ⟶ X), Presieve.IsSeparatedFor F ((Sieve.generate S).pullback f).arrows)
-    (H' : ∀ {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ X) (hf : S f) (hg : S g),
-      haveI := HasPairwisePullbacks.has_pullbacks hf hg
-      ∃ (R : Presieve (pullback f g)), Presieve.IsSeparatedFor F R ∧
-        ∀ {W : C} (w : W ⟶ pullback f g),
-          R w → Presieve.IsSeparatedFor F (T.pullback (w ≫ pullback.fst f g ≫ f)).arrows)
-    (H : ∀ {Y : C} (f : Y ⟶ X), S f → Presieve.IsSheafFor F (T.pullback f).arrows) :
-    Presieve.IsSheafFor F T.arrows := by
-  intro t ht
-  have ⦃Y : C⦄ (f : Y ⟶ X) (hf : S f) := H f hf (t.pullback f) (ht.pullback f)
-  choose s hs huniq using this
-  have hr : FamilyOfElements.Compatible s := by
-    rw [pullbackCompatible_iff]
-    intro Y Z f g hf hg
-    haveI := HasPairwisePullbacks.has_pullbacks hf hg
-    obtain ⟨R, hR, h⟩ := H' f g hf hg
-    refine hR.ext fun W w hw ↦ (h w hw).ext fun U u hu ↦ ?_
-    simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-    dsimp only [FamilyOfElements.IsAmalgamation, FamilyOfElements.pullback] at hs
-    rw [hs f hf (u ≫ w ≫ pullback.fst f g) (by simpa),
-      hs g hg (u ≫ w ≫ pullback.snd f g) (by simpa [← pullback.condition])]
-    congr 1
-    simp [pullback.condition]
-  obtain ⟨t', ht', hunique⟩ := hF s hr
-  refine ⟨t', fun Y f hf ↦ (hF' f).ext fun Z g hg ↦ ?_, fun y hy ↦ ?_⟩
-  · rw [← FunctorToTypes.map_comp_apply, ← op_comp]
-    simp only [Sieve.pullback_apply, Sieve.generate_apply] at hg
-    obtain ⟨W, w, u, hu, heq⟩ := hg
-    simp only [← heq, op_comp, FunctorToTypes.map_comp_apply, ht' u hu]
-    have : t (g ≫ f) (by simp [hf]) = t (w ≫ u) (by simp [heq, hf]) := by
-      congr 1
-      rw [heq]
-    rw [← t.comp_of_compatible _ ht, this]
-    apply hs
-  · refine hunique _ fun Y f hf ↦ huniq _ _ _ fun Z g hg ↦ ?_
-    simp [Presieve.FamilyOfElements.pullback, ← hy _ hg]
-
-lemma Presieve.IsSheafFor.of_isSheafFor_pullback' (F : Cᵒᵖ ⥤ Type*) {X : C}
-    (S T : Presieve X) [S.HasPairwisePullbacks]
-    (hF : Presieve.IsSheafFor F S)
-    (hF' : ∀ {Y : C} (f : Y ⟶ X), Presieve.IsSeparatedFor F ((Sieve.generate S).pullback f).arrows)
-    (H' : ∀ {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ X) (hf : S f) (hg : S g),
-      haveI := HasPairwisePullbacks.has_pullbacks hf hg
-      ∃ (R : Presieve (pullback f g)), Presieve.IsSeparatedFor F R ∧
-        ∀ {W : C} (w : W ⟶ pullback f g),
-          R w → Presieve.IsSeparatedFor F
-            ((Sieve.generate T).pullback (w ≫ pullback.fst f g ≫ f)).arrows)
-    (H : ∀ {Y : C} (f : Y ⟶ X),
-      S f → Presieve.IsSheafFor F ((Sieve.generate T).pullback f).arrows) :
-    Presieve.IsSheafFor F T := by
-  rw [isSheafFor_iff_generate]
-  apply Presieve.IsSheafFor.of_isSheafFor_pullback F S _ _ hF'
-  · assumption
-  · assumption
-  · assumption
-
 variable {C : Type*} [Category C] {X : C}
 
 /--
@@ -158,8 +96,6 @@ open Scheme
 
 variable {P : MorphismProperty Scheme.{u}}
 
-attribute [grind .] Scheme.Hom.surjective
-
 -- This holds more generally if `𝒰.J` is `u`-small, but we don't need that for now.
 lemma Scheme.Cover.isSheafFor_sigma_iff {F : Scheme.{u}ᵒᵖ ⥤ Type w} [IsZariskiLocalAtSource P]
     (hF : Presieve.IsSheaf Scheme.zariskiTopology F)
@@ -177,7 +113,7 @@ lemma Scheme.Cover.isSheafFor_sigma_iff {F : Scheme.{u}ᵒᵖ ⥤ Type w} [IsZar
 variable (P : MorphismProperty Scheme.{u})
 
 lemma zariskiTopology_le_propqcTopology [P.IsMultiplicative] [IsZariskiLocalAtSource P] :
-    zariskiTopology ≤ propqcTopology P := by
+    zariskiTopology ≤ propQCTopology P := by
   apply Precoverage.toGrothendieck_mono
   rw [le_inf_iff]
   refine ⟨?_, ?_⟩
@@ -220,13 +156,22 @@ instance {S : Scheme.{u}} [IsAffine S] (𝒰 : S.AffineCover P) [Finite 𝒰.I�
   haveI : Finite 𝒰.cover.I₀ := ‹_›
   .of_finite
 
+@[simps!]
+noncomputable
+def Scheme.affineOneHypercover (X : Scheme.{u}) : zariskiTopology.OneHypercover X :=
+  .mk'
+    (X.affineCover.refineOneHypercover fun i j ↦
+      (pullback (X.affineCover.f i) (X.affineCover.f j)).affineCover.toPreZeroHypercover)
+    X.affineCover.mem_grothendieckTopology
+    fun i j ↦ by simpa using Cover.mem_grothendieckTopology _
+
 /-- A pre-sheaf is a sheaf for the `P`-qc topology if and only if it is a sheaf
 for the Zariski topology and satisfies the sheaf property for all single object coverings
 `{ f : Spec S ⟶ Spec R }` where `f` satisifies `P`. -/
 @[stacks 022H]
 nonrec lemma isSheaf_propqcTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒᵖ ⥤ Type*)
     [IsZariskiLocalAtSource P] :
-    Presieve.IsSheaf (propqcTopology P) F ↔
+    Presieve.IsSheaf (propQCTopology P) F ↔
       Presieve.IsSheaf Scheme.zariskiTopology F ∧
         ∀ {R S : CommRingCat.{u}} (f : R ⟶ S), P (Spec.map f) → Surjective (Spec.map f) →
           Presieve.IsSheafFor F (.singleton (Spec.map f)) := by
@@ -234,63 +179,41 @@ nonrec lemma isSheaf_propqcTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒ�
   · exact Presieve.isSheaf_of_le _ (zariskiTopology_le_propqcTopology P) hF
   · apply hF.isSheafFor
     rw [← Hom.presieve₀_cover _ hf]
-    exact Cover.mem_propqcTopology _
+    exact Cover.mem_propQCTopology _
   · rw [Precoverage.isSheaf_toGrothendieck_iff_of_isStableUnderBaseChange_of_small.{u}]
     intro T (𝒰 : Scheme.Cover _ _)
     wlog hT : ∃ (R : CommRingCat.{u}), T = Spec R generalizing T
     · let 𝒱 : T.OpenCover := T.affineCover
-      have h (j : T.affineCover.I₀) : Presieve.IsSheafFor F
-          (.ofArrows (𝒰.pullback₂ (𝒱.f j)).X (𝒰.pullback₂ (𝒱.f j)).f) :=
-        this _ ⟨_, rfl⟩
-      refine .of_isSheafFor_pullback' F (.ofArrows 𝒱.X 𝒱.f) _ ?_ ?_ ?_ ?_
-      · exact hzar.isSheafFor _ _ 𝒱.mem_grothendieckTopology
-      · intro Y f
-        refine (hzar.isSheafFor _ _ ?_).isSeparatedFor
-        rw [Sieve.generate_sieve, ← Sieve.pullbackArrows_comm,
-          ← PreZeroHypercover.presieve₀_pullback₁]
-        exact Scheme.Cover.mem_grothendieckTopology (𝒱.pullback₂ f)
-      · rintro - - - - ⟨i⟩ ⟨j⟩
-        use .ofArrows (pullback (𝒱.f i) (𝒱.f j)).affineCover.X
-          (pullback (𝒱.f i) (𝒱.f j)).affineCover.f
-        refine ⟨(hzar.isSheafFor _ _ <| Cover.mem_grothendieckTopology _).isSeparatedFor, ?_⟩
-        · rintro - - ⟨k⟩
-          rw [← Sieve.pullbackArrows_comm, ← Presieve.isSeparatedFor_iff_generate]
-          apply Presieve.IsSheafFor.isSeparatedFor
-          rw [← Presieve.ofArrows_pullback]
-          exact this (𝒰.pullback₂ _) ⟨_, rfl⟩
-      · rintro - - ⟨i⟩
+      refine T.affineOneHypercover.isSheafFor_of_pullback hzar ?_ ?_
+      · intro i
         rw [← Sieve.pullbackArrows_comm, ← Presieve.ofArrows_pullback,
           ← Presieve.isSheafFor_iff_generate]
         exact this (𝒰.pullback₂ (𝒱.f i)) ⟨_, rfl⟩
+      · intro i j k
+        rw [← Sieve.pullbackArrows_comm, ← Presieve.isSeparatedFor_iff_generate]
+        apply Presieve.IsSheafFor.isSeparatedFor
+        rw [← Presieve.ofArrows_pullback]
+        exact this (𝒰.pullback₂ _) ⟨_, rfl⟩
     obtain ⟨R, rfl⟩ := hT
     wlog h𝒰 : (∀ i, IsAffine (𝒰.X i)) ∧ Finite 𝒰.I₀ generalizing R 𝒰
     · obtain ⟨𝒱, f, hfin, ho⟩ := QuasiCompactCover.exists_hom 𝒰.forgetQc
       have H (V : Scheme.{u}) (f : V ⟶ Spec R) : Presieve.IsSheafFor F
           (.ofArrows (𝒱.cover.pullback₂ f).X (𝒱.cover.pullback₂ f).f) := by
         let 𝒰V := V.affineCover
-        refine .of_isSheafFor_pullback' F (.ofArrows 𝒰V.X 𝒰V.f) _ ?_ ?_ ?_ ?_
-        · exact hzar.isSheafFor _ _ 𝒰V.mem_grothendieckTopology
-        · intro Y f
-          refine (hzar.isSheafFor _ _ ?_).isSeparatedFor
-          rw [Sieve.generate_sieve, ← Sieve.pullbackArrows_comm,
-            ← PreZeroHypercover.presieve₀_pullback₁]
-          exact Scheme.Cover.mem_grothendieckTopology (𝒰V.pullback₂ f)
-        · rintro - - - - ⟨i⟩ ⟨j⟩
-          refine ⟨.ofArrows _ (pullback (𝒰V.f i) (𝒰V.f j)).affineCover.f, ?_, ?_⟩
-          · exact hzar.isSheafFor _ _ (Cover.mem_grothendieckTopology _) |>.isSeparatedFor
-          · rintro - - ⟨k⟩
-            rw [← Sieve.pullbackArrows_comm, ← Presieve.ofArrows_pullback,
-              ← Presieve.isSeparatedFor_iff_generate]
-            refine (this _ (.ofQuasiCompactCover ((𝒱.cover.pullback₂ f).pullback₂ _)
-                (qc := by dsimp; infer_instance))
-              ⟨fun l ↦ ?_, hfin⟩).isSeparatedFor
-            exact .of_isIso (pullbackLeftPullbackSndIso (𝒱.f l) f _).hom
-        · rintro - - ⟨i⟩
+        refine V.affineOneHypercover.isSheafFor_of_pullback hzar ?_ ?_
+        · intro i
           rw [← Sieve.pullbackArrows_comm, ← Presieve.ofArrows_pullback,
             ← Presieve.isSheafFor_iff_generate]
           let 𝒰' := (𝒱.cover.pullback₂ f).pullback₂ (𝒰V.f i)
           refine this _ (.ofQuasiCompactCover 𝒰' (qc := by dsimp [𝒰']; infer_instance))
             ⟨fun j ↦ .of_isIso (pullbackLeftPullbackSndIso (𝒱.f j) f (𝒰V.f i)).hom, hfin⟩
+        · intro i j k
+          rw [← Sieve.pullbackArrows_comm, ← Presieve.ofArrows_pullback,
+            ← Presieve.isSeparatedFor_iff_generate]
+          refine (this _ (.ofQuasiCompactCover ((𝒱.cover.pullback₂ f).pullback₂ _)
+              (qc := by dsimp; infer_instance))
+            ⟨fun l ↦ ?_, hfin⟩).isSeparatedFor
+          exact .of_isIso (pullbackLeftPullbackSndIso (𝒱.f l) f _).hom
       refine Scheme.Cover.Hom.isSheafFor f ?_ fun f ↦ (H _ f).isSeparatedFor
       exact this _ (.ofQuasiCompactCover 𝒱.cover)
         ⟨fun i ↦ inferInstanceAs <| IsAffine (Spec _), hfin⟩
