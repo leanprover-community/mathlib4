@@ -108,13 +108,13 @@ $$
 
 Furthermore,
 \begin{align}
-    (C \bullet f)_N & =
-      \sum_{n \le N} \sum_{k \le N} \mathbf{1}_{[\sigma_k, \tau_{k + 1})}(n)(f_{n + 1} - f_n)\\
-    & = \sum_{k \le N} \sum_{n \le N} \mathbf{1}_{[\sigma_k, \tau_{k + 1})}(n)(f_{n + 1} - f_n)\\
-    & = \sum_{k \le N} (f_{\sigma_k + 1} - f_{\sigma_k} + f_{\sigma_k + 2} - f_{\sigma_k + 1}
-      + \cdots + f_{\tau_{k + 1}} - f_{\tau_{k + 1} - 1})\\
-    & = \sum_{k \le N} (f_{\tau_{k + 1}} - f_{\sigma_k})
-      \ge \sum_{k < U_N(a, b)} (b - a) = (b - a) U_N(a, b)
+(C \bullet f)_N & =
+\sum_{n \le N} \sum\_{k \le N} \mathbf{1}_{[\sigma_k, \tau_{k + 1})}(n)(f\_{n + 1} - f_n)\\
+& = \sum\_{k \le N} \sum\_{n \le N} \mathbf{1}_{[\sigma_k, \tau_{k + 1})}(n)(f\_{n + 1} - f_n)\\
+& = \sum\_{k \le N} (f\_{\sigma_k + 1} - f\_{\sigma_k} + f\_{\sigma_k + 2} - f\_{\sigma_k + 1}
+\+ \cdots + f\_{\tau\_{k + 1}} - f\_{\tau\_{k + 1} - 1})\\
+& = \sum\_{k \le N} (f\_{\tau\_{k + 1}} - f\_{\sigma_k})
+\ge \sum\_{k < U_N(a, b)} (b - a) = (b - a) U_N(a, b)
 \end{align}
 where the inequality follows since for all $k < U_N(a, b)$,
 $f_{\tau_{k + 1}} - f_{\sigma_k} \ge b - a$ while for all $k > U_N(a, b)$,

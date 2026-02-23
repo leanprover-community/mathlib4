@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Basic
 # Support of a module
 
 ## Main results
+
 - `Module.support`: The support of an `R`-module as a subset of `Spec R`.
 - `Module.mem_support_iff_exists_annihilator`: `p ∈ Supp M ↔ ∃ m, Ann(m) ≤ p`.
 - `Module.support_eq_empty_iff`: `Supp M = ∅ ↔ M = 0`
@@ -28,6 +29,7 @@ Also see `Mathlib/RingTheory/Spectrum/Prime/Module.lean` for other results
 depending on the Zariski topology.
 
 ## TODO
+
 - Connect to associated primes once we have them in mathlib.
 - Given an `R`-algebra `f : R → A` and a finite `R`-module `M`,
   `Supp_A (A ⊗ M) = f♯ ⁻¹ Supp M` where `f♯ : Spec A → Spec R`. (stacks#0BUR)

@@ -23,6 +23,7 @@ We aim at a level of generality that allows to apply the theory to algebraic num
 and to function fields (and possibly beyond).
 
 The general set-up for heights is the following. Let `K` be a field.
+
 * We have a `Multiset` of archimedean absolute values on `K` (with values in `ℝ`).
 * We also have a `Set` of non-archimedean (i.e., `|x+y| ≤ max |x| |y|`) absolute values.
 * For a given `x ≠ 0` in `K`, `|x|ᵥ = 1` for all but finitely many (non-archimedean) `v`.
@@ -40,6 +41,7 @@ duplication (in the definitions and statements; the proofs are reduced to those 
 multiplicative height), which is justified, as both versions are frequently used.
 
 We define the following variants.
+
 * `Height.mulHeight₁ x` and `Height.logHeight₁ x` for `x : K`.
   This is the height of an element of `K`.
 * `Height.mulHeight x` and `Height.logHeight x` for `x : ι → K` with `ι` finite. This is the height
@@ -52,6 +54,7 @@ We define the following variants.
 ## TODO
 
 * Add `Height.AdmissibleAbsValues` instances for
+
   * Fields of rational functions in `n` variables and
   * Finite extensions of fields with `Height.AdmissibleAbsValues`.
 

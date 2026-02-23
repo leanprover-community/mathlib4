@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Localization.Away.Basic
 # Homogeneous Localization
 
 ## Notation
+
 - `ι` is a commutative monoid;
 - `A` is a commutative ring;
 - `σ` is a class of additive subgroups of `A`;
@@ -38,21 +39,29 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 * `HomogeneousLocalization.NumDenSameDeg.embedding`: for `x : Submonoid A` and any
   `c : NumDenSameDeg 𝒜 x`, or equivalent a numerator and a denominator of the same degree,
   we get an element `c.num / c.den` of `Aₓ`.
+
 * `HomogeneousLocalization`: `NumDenSameDeg 𝒜 x` quotiented by kernel of `embedding 𝒜 x`.
+
 * `HomogeneousLocalization.val`: if `f : HomogeneousLocalization 𝒜 x`, then `f.val` is an element
   of `Aₓ`. In another word, one can view `HomogeneousLocalization 𝒜 x` as a subring of `Aₓ`
   through `HomogeneousLocalization.val`.
+
 * `HomogeneousLocalization.num`: if `f : HomogeneousLocalization 𝒜 x`, then `f.num : A` is the
   numerator of `f`.
+
 * `HomogeneousLocalization.den`: if `f : HomogeneousLocalization 𝒜 x`, then `f.den : A` is the
   denominator of `f`.
+
 * `HomogeneousLocalization.deg`: if `f : HomogeneousLocalization 𝒜 x`, then `f.deg : ι` is the
   degree of `f` such that `f.num ∈ 𝒜 f.deg` and `f.den ∈ 𝒜 f.deg`
   (see `HomogeneousLocalization.num_mem_deg` and `HomogeneousLocalization.den_mem_deg`).
+
 * `HomogeneousLocalization.num_mem_deg`: if `f : HomogeneousLocalization 𝒜 x`, then
   `f.num_mem_deg` is a proof that `f.num ∈ 𝒜 f.deg`.
+
 * `HomogeneousLocalization.den_mem_deg`: if `f : HomogeneousLocalization 𝒜 x`, then
   `f.den_mem_deg` is a proof that `f.den ∈ 𝒜 f.deg`.
+
 * `HomogeneousLocalization.eq_num_div_den`: if `f : HomogeneousLocalization 𝒜 x`, then
   `f.val : Aₓ` is equal to `f.num / f.den`.
 
@@ -532,7 +541,7 @@ def den (f : HomogeneousLocalization 𝒜 x) : A :=
   (Quotient.out f).den
 
 /-- For an element in `HomogeneousLocalization x`, degree is the natural number `i` such that
-  `𝒜 i` contains both numerator and denominator. -/
+`𝒜 i` contains both numerator and denominator. -/
 def deg (f : HomogeneousLocalization 𝒜 x) : ι :=
   (Quotient.out f).deg
 

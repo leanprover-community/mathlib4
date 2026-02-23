@@ -19,7 +19,9 @@ Almost everywhere strongly measurable functions form the largest class of functi
 integrated using the Bochner integral.
 
 ## Main definitions
+
 * `AEStronglyMeasurable f μ`: `f` is almost everywhere equal to a `StronglyMeasurable` function.
+
 * `AEFinStronglyMeasurable f μ`: `f` is almost everywhere equal to a `FinStronglyMeasurable`
   function.
 
@@ -909,13 +911,13 @@ variable {G : Type*} [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace 
   [SecondCountableTopology G] {f : α → G}
 
 /-- In a space with second countable topology and a sigma-finite measure,
-  `AEFinStronglyMeasurable` and `AEMeasurable` are equivalent. -/
+`AEFinStronglyMeasurable` and `AEMeasurable` are equivalent. -/
 theorem aefinStronglyMeasurable_iff_aemeasurable {_m0 : MeasurableSpace α} (μ : Measure α)
     [SigmaFinite μ] : AEFinStronglyMeasurable f μ ↔ AEMeasurable f μ := by
   simp_rw [AEFinStronglyMeasurable, AEMeasurable, finStronglyMeasurable_iff_measurable]
 
 /-- In a space with second countable topology and a sigma-finite measure,
-  an `AEMeasurable` function is `AEFinStronglyMeasurable`. -/
+an `AEMeasurable` function is `AEFinStronglyMeasurable`. -/
 @[aesop 90% apply (rule_sets := [Measurable])]
 theorem aefinStronglyMeasurable_of_aemeasurable {_m0 : MeasurableSpace α} (μ : Measure α)
     [SigmaFinite μ] (hf : AEMeasurable f μ) : AEFinStronglyMeasurable f μ :=

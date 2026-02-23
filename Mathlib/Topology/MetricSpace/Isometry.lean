@@ -449,7 +449,7 @@ protected def symm (h : α ≃ᵢ β) : β ≃ᵢ α where
   toEquiv := h.toEquiv.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+because it is a composition of multiple projections. -/
 def Simps.apply (h : α ≃ᵢ β) : α → β := h
 
 /-- See Note [custom simps projection] -/

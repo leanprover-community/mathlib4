@@ -36,7 +36,7 @@ of a functor `F : A ⥤ C` and a functorial epimorphism
 `π.app X : ι.obj (F.obj X) ⟶ X` for all `X : A`. -/
 structure LeftResolution where
   /-- a functor which sends `X : A` to an object `F.obj X` with an epimorphism
-    `π.app X : ι.obj (F.obj X) ⟶ X` -/
+  `π.app X : ι.obj (F.obj X) ⟶ X` -/
   F : A ⥤ C
   /-- the natural epimorphism -/
   π : F ⋙ ι ⟶ 𝟭 A

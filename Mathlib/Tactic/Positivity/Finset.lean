@@ -62,9 +62,11 @@ attribute [local instance] monadLiftOptionMetaM in
 positive if each `f i` is and `s` is nonempty.
 
 TODO: The following example does not work
+
 ```
 example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.sum f := by positivity
 ```
+
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.sum _ _]

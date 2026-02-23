@@ -25,7 +25,7 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 
 @[expose] public section
 
-/-- The type of multisets of prime numbers.  Unique factorization
+/-- The type of multisets of prime numbers. Unique factorization
 gives an equivalence between this set and ℕ+, as we will formalize
 below. -/
 def PrimeMultiset :=
@@ -49,10 +49,10 @@ theorem card_ofPrime (p : Nat.Primes) : Multiset.card (ofPrime p) = 1 :=
 
 /-- We can forget the primality property and regard a multiset
 of primes as just a multiset of positive integers, or a multiset
-of natural numbers.  In the opposite direction, if we have a
+of natural numbers. In the opposite direction, if we have a
 multiset of positive integers or natural numbers, together with
 a proof that all the elements are prime, then we can regard it
-as a multiset of primes.  The next block of results records
+as a multiset of primes. The next block of results records
 obvious properties of these coercions.
 -/
 def toNatMultiset : PrimeMultiset → Multiset ℕ := fun v => v.map (↑)

@@ -17,6 +17,7 @@ See `MeasureTheory.MeasureSpace` for their properties and for extended documenta
 
 Given a measurable space `α`, a measure on `α` is a function that sends measurable sets to the
 extended nonnegative reals that satisfies the following conditions:
+
 1. `μ ∅ = 0`;
 2. `μ` is countably additive. This means that the measure of a countable union of pairwise disjoint
    sets is equal to the sum of the measures of the individual sets.
@@ -168,8 +169,8 @@ theorem measure_eq_iInf (s : Set α) : μ s = ⨅ (t) (_ : s ⊆ t) (_ : Measura
   rw [measure_eq_trim, OuterMeasure.trim_eq_iInf, μ.coe_toOuterMeasure]
 
 /-- A variant of `measure_eq_iInf` which has a single `iInf`. This is useful when applying a
-  lemma next that only works for non-empty infima, in which case you can use
-  `nonempty_measurable_superset`. -/
+lemma next that only works for non-empty infima, in which case you can use
+`nonempty_measurable_superset`. -/
 theorem measure_eq_iInf' (μ : Measure α) (s : Set α) :
     μ s = ⨅ t : { t // s ⊆ t ∧ MeasurableSet t }, μ t := by
   simp_rw [iInf_subtype, iInf_and, ← measure_eq_iInf]
@@ -293,10 +294,11 @@ section ae
 
 /-- Given a predicate on `β` and `Set α` where both `α` and `β` are measurable spaces, if the
 predicate holds for almost every `x : β` and
+
 - `∅ : Set α`
 - a family of sets generating the σ-algebra of `α`
-Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
-disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
+  Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
+  disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
 
 This is an AE version of `MeasurableSpace.induction_on_inter` where the condition is dependent
 on a measurable space `β`. -/
@@ -351,7 +353,7 @@ theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s := by
   · exact (exists_measurable_superset μ s).choose_spec.2.2
 
 /-- A measure space is a measurable space equipped with a
-  measure, referred to as `volume`. -/
+measure, referred to as `volume`. -/
 class MeasureSpace (α : Type*) extends MeasurableSpace α where
   volume : Measure α
 

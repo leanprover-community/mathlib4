@@ -26,7 +26,8 @@ We define `uliftFunctor`, from `Type u` to `Type (max u v)`, and show that it is
 (but not, of course, essentially surjective).
 
 We prove some basic facts about the category `Type`:
-*  epimorphisms are surjections and monomorphisms are injections,
+
+* epimorphisms are surjections and monomorphisms are injections,
 * `Iso` is both `Iso` and `Equiv` to `Equiv` (at least within a fixed universe),
 * every type level `IsLawfulFunctor` gives a categorical functor `Type ⥤ Type`
   (the corresponding fact about monads is in `Mathlib/CategoryTheory/Monad/Types.lean`).

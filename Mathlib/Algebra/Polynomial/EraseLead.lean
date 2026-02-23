@@ -313,7 +313,7 @@ lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZ
 end EraseLead
 
 /-- An induction lemma for polynomials. It takes a natural number `N` as a parameter, that is
-required to be at least as big as the `natDegree` of the polynomial.  This is useful to prove
+required to be at least as big as the `natDegree` of the polynomial. This is useful to prove
 results where you want to change each term in a polynomial to something else depending on the
 `natDegree` of the polynomial itself and not on the specific `natDegree` of each term. -/
 theorem induction_with_natDegree_le (motive : R[X] → Prop) (N : ℕ) (zero : motive 0)
@@ -345,10 +345,11 @@ theorem induction_with_natDegree_le (motive : R[X] → Prop) (N : ℕ) (zero : m
       exact Nat.succ_ne_zero _
 
 /-- Let `φ : R[x] → S[x]` be an additive map, `k : ℕ` a bound, and `fu : ℕ → ℕ` a
-"sufficiently monotone" map.  Assume also that
+"sufficiently monotone" map. Assume also that
+
 * `φ` maps to `0` all monomials of degree less than `k`,
 * `φ` maps each monomial `m` in `R[x]` to a polynomial `φ m` of degree `fu (deg m)`.
-Then, `φ` maps each polynomial `p` in `R[x]` to a polynomial of degree `fu (deg p)`. -/
+  Then, `φ` maps each polynomial `p` in `R[x]` to a polynomial of degree `fu (deg p)`. -/
 theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
     [FunLike F R[X] S[X]] [AddMonoidHomClass F R[X] S[X]] {φ : F}
     {p : R[X]} (k : ℕ) (fu : ℕ → ℕ) (fu0 : ∀ {n}, n ≤ k → fu n = 0)

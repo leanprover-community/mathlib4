@@ -411,8 +411,8 @@ theorem traceMatrix_of_basis_mulVec [Fintype ι] (b : Basis ι A B) (z : B) :
 variable (A)
 
 /-- `embeddingsMatrix A C b : Matrix κ (B →ₐ[A] C) C` is the matrix whose `(i, σ)` coefficient is
-  `σ (b i)`. It is mostly useful for fields when `Fintype.card κ = finrank A B` and `C` is
-  algebraically closed. -/
+`σ (b i)`. It is mostly useful for fields when `Fintype.card κ = finrank A B` and `C` is
+algebraically closed. -/
 def embeddingsMatrix (b : κ → B) : Matrix κ (B →ₐ[A] C) C :=
   of fun i (σ : B →ₐ[A] C) => σ (b i)
 
@@ -423,10 +423,10 @@ theorem embeddingsMatrix_apply (b : κ → B) (i) (σ : B →ₐ[A] C) :
   rfl
 
 /-- `embeddingsMatrixReindex A C b e : Matrix κ κ C` is the matrix whose `(i, j)` coefficient
-  is `σⱼ (b i)`, where `σⱼ : B →ₐ[A] C` is the embedding corresponding to `j : κ` given by a
-  bijection `e : κ ≃ (B →ₐ[A] C)`. It is mostly useful for fields and `C` is algebraically closed.
-  In this case, in presence of `h : Fintype.card κ = finrank A B`, one can take
-  `e := equivOfCardEq ((AlgHom.card A B C).trans h.symm)`. -/
+is `σⱼ (b i)`, where `σⱼ : B →ₐ[A] C` is the embedding corresponding to `j : κ` given by a
+bijection `e : κ ≃ (B →ₐ[A] C)`. It is mostly useful for fields and `C` is algebraically closed.
+In this case, in presence of `h : Fintype.card κ = finrank A B`, one can take
+`e := equivOfCardEq ((AlgHom.card A B C).trans h.symm)`. -/
 def embeddingsMatrixReindex (b : κ → B) (e : κ ≃ (B →ₐ[A] C)) :=
   reindex (Equiv.refl κ) e.symm (embeddingsMatrix A C b)
 

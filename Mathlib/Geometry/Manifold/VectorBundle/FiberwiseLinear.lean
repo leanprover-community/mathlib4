@@ -111,7 +111,7 @@ end FiberwiseLinear
 variable {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*}
   [TopologicalSpace HB] [ChartedSpace HB B] {IB : ModelWithCorners 𝕜 EB HB}
 
-/-- Let `e` be an open partial homeomorphism of `B × F`.  Suppose that at every point `p` in the
+/-- Let `e` be an open partial homeomorphism of `B × F`. Suppose that at every point `p` in the
 source of `e`, there is some neighbourhood `s` of `p` on which `e` is equal to a bi-`C^n` fiberwise
 linear open partial homeomorphism.
 Then the source of `e` is of the form `U ×ˢ univ`, for some set `U` in `B`, and, at any point `x` in
@@ -160,11 +160,11 @@ theorem ContMDiffFiberwiseLinear.locality_aux₁
 
 /-- Let `e` be an open partial homeomorphism of `B × F` whose source is `U ×ˢ univ`, for some set
 `U` in `B`, and which, at any point `x` in `U`, admits a neighbourhood `u` of `x` such that `e` is
-equal on `u ×ˢ univ` to some bi-`C^n` fiberwise linear open partial homeomorphism.  Then `e` itself
+equal on `u ×ˢ univ` to some bi-`C^n` fiberwise linear open partial homeomorphism. Then `e` itself
 is equal to some bi-`C^n` fiberwise linear open partial homeomorphism.
 
 This is the key mathematical point of the `locality` condition in the construction of the
-`StructureGroupoid` of bi-`C^n` fiberwise linear open partial homeomorphisms.  The proof is by
+`StructureGroupoid` of bi-`C^n` fiberwise linear open partial homeomorphisms. The proof is by
 gluing together the various bi-`C^n` fiberwise linear open partial homeomorphism which exist
 locally.
 

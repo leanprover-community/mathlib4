@@ -128,7 +128,7 @@ theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicity of `p` in `(p * (n + 1))!` is one more than the sum
-  of the multiplicities of `p` in `(p * n)!` and `n + 1`. -/
+of the multiplicities of `p` in `(p * n)!` and `n + 1`. -/
 theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
     emultiplicity p (p * (n + 1))! = emultiplicity p (p * n)! + emultiplicity p (n + 1) + 1 := by
   have hp' := hp.prime
@@ -175,7 +175,7 @@ theorem multiplicity_factorial_pow {n p : ℕ} (hp : p.Prime) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A prime power divides `n!` iff it is at most the sum of the quotients `n / p ^ i`.
-  This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
+This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
 theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log p n < b) :
     p ^ r ∣ n ! ↔ r ≤ ∑ i ∈ Ico 1 b, n / p ^ i := by
   rw [← WithTop.coe_le_coe, ENat.some_eq_coe, ← hp.emultiplicity_factorial hbn,
@@ -188,8 +188,8 @@ theorem emultiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
   exact Nat.geom_sum_Ico_le hp.two_le _ _
 
 /-- The multiplicity of `p` in `choose (n + k) k` is the number of carries when `k` and `n`
-  are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
-  is any bound greater than `log p (n + k)`. -/
+are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
+is any bound greater than `log p (n + k)`. -/
 theorem emultiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k) < b) :
     emultiplicity p (choose (n + k) k) = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} := by
   have h₁ :
@@ -207,8 +207,8 @@ theorem emultiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k
   exact Nat.finiteMultiplicity_iff.2 ⟨hp.ne_one, mul_pos (factorial_pos k) (factorial_pos n)⟩
 
 /-- The multiplicity of `p` in `choose n k` is the number of carries when `k` and `n - k`
-  are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
-  is any bound greater than `log p n`. -/
+are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
+is any bound greater than `log p n`. -/
 theorem emultiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
     emultiplicity p (choose n k) = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
   have := Nat.sub_add_cancel hkn

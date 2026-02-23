@@ -192,7 +192,7 @@ lemma chainLength_zero [Nontrivial L] : chainLength 0 β = 0 := by
   simp [← chainBotCoeff_add_chainTopCoeff]
 
 /-- If `β - qα ... β ... β + rα` is the `α`-chain through `β`, then
-  `β (coroot α) = q - r`. In particular, it is an integer. -/
+`β (coroot α) = q - r`. In particular, it is an integer. -/
 lemma apply_coroot_eq_cast :
     β (coroot α) = (chainBotCoeff α β - chainTopCoeff α β : ℤ) := by
   rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; lia

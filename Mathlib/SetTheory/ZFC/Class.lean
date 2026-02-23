@@ -269,7 +269,7 @@ theorem sInter_empty : ⋂₀ (∅ : Class.{u}) = univ := by
   rw [sInter, classToCong_empty, Set.sInter_empty, univ]
 
 /-- An induction principle for sets. If every subset of a class is a member, then the class is
-  universal. -/
+universal. -/
 theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = univ :=
   eq_univ_of_forall
     (by
@@ -290,8 +290,8 @@ theorem iota_val (A : Class) (x : ZFSet) (H : ∀ y, A y ↔ y = x) : iota A = �
       ⟨_, ⟨x, rfl, H⟩, yx⟩⟩
 
 /-- Unlike the other set constructors, the `iota` definite descriptor
-  is a set for any set input, but not constructively so, so there is no
-  associated `Class → Set` function. -/
+is a set for any set input, but not constructively so, so there is no
+associated `Class → Set` function. -/
 theorem iota_ex (A) : iota.{u} A ∈ univ.{u} :=
   mem_univ.2 <|
     Or.elim (Classical.em <| ∃ x, ∀ y, A y ↔ y = x) (fun ⟨x, h⟩ => ⟨x, Eq.symm <| iota_val A x h⟩)

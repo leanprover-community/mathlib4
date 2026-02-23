@@ -260,6 +260,7 @@ The `localFVars` hash map records which local variable the matcher should use fo
 expression match.
 
 If it succeeds generating a matcher, returns
+
 1. a list of keys that should be used for the `delab` attribute
    when defining the elaborator
 2. a `Term` that represents a `Matcher` for the given expression `e`. -/
@@ -509,10 +510,12 @@ def withHeadRefIfTagAppFns (d : Delab) : Delab := do
 `notation3` declares notation using Lean-3-style syntax.
 
 Examples:
+
 ```
 notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) => r
 notation3 "MyList[" (x", "* => foldr (a b => MyList.cons a b) MyList.nil) "]" => x
 ```
+
 By default notation is unable to mention any variables defined using `variable`, but
 `local notation3` is able to use such local variables.
 

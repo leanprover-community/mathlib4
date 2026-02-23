@@ -15,12 +15,14 @@ public import Mathlib.GroupTheory.Coset.Defs
 
 This file develops the basic theory of left and right cosets.
 
-When `G` is a group and `a : G`, `s : Set G`, with  `open scoped Pointwise` we can write:
+When `G` is a group and `a : G`, `s : Set G`, with `open scoped Pointwise` we can write:
+
 * the left coset of `s` by `a` as `a • s`
 * the right coset of `s` by `a` as `MulOpposite.op a • s` (or `op a • s` with `open MulOpposite`,
   or `s <• a` with `open scoped Pointwise RightActions`)
 
-If instead `G` is an additive group, we can write (with  `open scoped Pointwise` still)
+If instead `G` is an additive group, we can write (with `open scoped Pointwise` still)
+
 * the left coset of `s` by `a` as `a +ᵥ s`
 * the right coset of `s` by `a` as `AddOpposite.op a +ᵥ s` (or `op a +ᵥ s` with `open AddOpposite`,
   or `s <+ᵥ a` with `open scoped Pointwise RightActions`)
@@ -384,7 +386,7 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
 The constructive version is `quotientEquivProdOfLE'`. -/
 @[to_additive (attr := simps!) quotientEquivProdOfLE
   /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
-constructive version is `quotientEquivProdOfLE'`. -/]
+  constructive version is `quotientEquivProdOfLE'`. -/]
 noncomputable def quotientEquivProdOfLE (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t :=
   quotientEquivProdOfLE' h_le Quotient.out Quotient.out_eq'
 

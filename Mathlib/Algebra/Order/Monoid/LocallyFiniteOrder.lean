@@ -20,6 +20,7 @@ public import Mathlib.Order.Interval.Finset.Basic
 # Locally Finite Linearly Ordered Abelian Groups
 
 ## Main results
+
 - `LocallyFiniteOrder.orderAddMonoidEquiv`:
   Any nontrivial linearly ordered additive abelian group that is locally finite is
   isomorphic to `ℤ`.

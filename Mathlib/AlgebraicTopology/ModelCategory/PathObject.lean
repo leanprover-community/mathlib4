@@ -34,6 +34,7 @@ The existence of very good path objects in model categories is stated
 in the lemma `PathObject.exists_very_good`.
 
 ## References
+
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 * https://ncatlab.org/nlab/show/path+space+object
 

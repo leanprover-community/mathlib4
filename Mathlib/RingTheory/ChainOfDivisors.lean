@@ -20,6 +20,7 @@ of length `n + 1`, meaning that we can find a strictly increasing bijection betw
 and the set of factors of `a`.
 
 ## Main results
+
 - `DivisorChain.exists_chain_of_prime_pow` : existence of a chain for prime powers.
 - `DivisorChain.is_prime_pow_of_has_chain` : elements that have a chain are prime powers.
 - `multiplicity_prime_eq_multiplicity_image_by_factor_orderIso` : if there is a
@@ -29,8 +30,8 @@ and the set of factors of `a`.
   between the set of factors of `a : M` and `b : N` then for any prime `p ∣ a`,
   `multiplicity p a = multiplicity (d p) b`
 
-
 ## TODO
+
 - Create a structure for chains of divisors.
 - Simplify proof of `mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors` using
   `mem_normalizedFactors_factor_order_iso_of_mem_normalizedFactors` or vice versa.
@@ -341,7 +342,7 @@ end
 variable [Subsingleton Mˣ] [Subsingleton Nˣ]
 
 /-- The order isomorphism between the factors of `mk m` and the factors of `mk n` induced by a
-  bijection between the factors of `m` and the factors of `n` that preserves `∣`. -/
+bijection between the factors of `m` and the factors of `n` that preserves `∣`. -/
 @[simps]
 def mkFactorOrderIsoOfFactorDvdEquiv [IsCancelMulZero N]
     {m : M} {n : N} {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}

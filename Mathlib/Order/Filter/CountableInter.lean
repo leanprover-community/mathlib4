@@ -27,6 +27,7 @@ Note that there also exists a typeclass `CardinalInterFilter`, and thus an alter
 preferred spelling; it has the advantage of not requiring the user to import the theory of ordinals.
 
 ## Tags
+
 filter, countable
 -/
 

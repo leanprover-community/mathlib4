@@ -90,7 +90,7 @@ end AuxiliaryLemmata
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `(z, w)`-wedge-integral of `f`, is the integral of `f` over two sides of the rectangle
-  determined by `z` and `w`. -/
+determined by `z` and `w`. -/
 def wedgeIntegral (z w : ℂ) (f : ℂ → E) : E :=
   (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) + I • (∫ y : ℝ in z.im..w.im, f (w.re + y * I))
 
@@ -105,7 +105,7 @@ lemma wedgeIntegral_add_wedgeIntegral_eq (z w : ℂ) (f : ℂ → E) :
   abel
 
 /-- A function `f` `IsConservativeOn` in `U` if, for any rectangle contained in `U`
-  the integral of `f` over the rectangle is zero. -/
+the integral of `f` over the rectangle is zero. -/
 def IsConservativeOn (f : ℂ → E) (U : Set ℂ) : Prop :=
   ∀ z w, Rectangle z w ⊆ U → wedgeIntegral z w f = - wedgeIntegral w z f
 
@@ -215,7 +215,7 @@ private lemma hasDerivAt_wedgeIntegral_re_aux :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The vertical integral of `f` from `w.re + z.im * I` to `w` is equal to `(w - z).im * f z`
-  up to `o(w - z)`, as `w` tends to `z`. -/
+up to `o(w - z)`, as `w` tends to `z`. -/
 private lemma hasDerivAt_wedgeIntegral_im_aux :
     (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (w - z).im • f z) =o[𝓝 z] fun w ↦ w - z := by
   suffices (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z) =o[𝓝 z] fun w ↦ w - z by
@@ -268,7 +268,7 @@ theorem IsConservativeOn.hasDerivAt_wedgeIntegral (h : IsConservativeOn f (ball 
 end ContinuousOnBall
 
 /-- **Morera's theorem for a disk** On a disk, a continuous function whose integrals on rectangles
-  vanish, has primitives. -/
+vanish, has primitives. -/
 theorem IsConservativeOn.isExactOn_ball (hf' : ContinuousOn f (ball c r))
     (hf : IsConservativeOn f (ball c r)) :
     IsExactOn f (ball c r) :=

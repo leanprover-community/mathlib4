@@ -17,6 +17,7 @@ in `G` and `t` in `P`, the `Finset` of all pairs of an element in `s` and an ele
 scalar-multiply to `a`.
 
 ## Definitions
+
 * Finset.SMulAntidiagonal : Finset antidiagonal for PWO inputs.
 * Finset.VAddAntidiagonal : Finset antidiagonal for PWO inputs.
 

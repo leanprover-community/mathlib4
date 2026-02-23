@@ -55,7 +55,7 @@ theorem productive_congr {s t : WSeq α} (h : s ~ʷ t) : Productive s ↔ Produc
   simp only [productive_iff]; exact forall_congr' fun n => terminates_congr <| get?_congr h _
 
 /-- Given a productive weak sequence, we can collapse all the `think`s to
-  produce a sequence. -/
+produce a sequence. -/
 def toSeq (s : WSeq α) [Productive s] : Seq α :=
   ⟨fun n => (get? s n).get,
    fun {n} h => by

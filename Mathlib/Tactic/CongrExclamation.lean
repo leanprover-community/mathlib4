@@ -28,12 +28,14 @@ side by recursively applying congruence lemmas. For example, with `⊢ f as = g 
 two goals `⊢ f = g` and `⊢ as = bs`.
 
 Syntax:
+
 ```
 congr!
 congr! n
 congr! with x y z
 congr! n with x y z
 ```
+
 Here, `n` is a natural number and `x`, `y`, `z` are `rintro` patterns (like `h`, `rfl`, `⟨x, y⟩`,
 `_`, `-`, `(h | h)`, etc.).
 
@@ -72,16 +74,20 @@ For example, given `⊢ f (g (x + y)) = f (g (y + x))`,
 while `congr! 2` produces the intended `⊢ x + y = y + x`.
 
 The `congr!` tactic also takes a configuration option, for example
+
 ```lean
 congr! (transparency := .default) 2
 ```
+
 This overrides the default, which is to apply congruence lemmas at reducible transparency.
 
 The `congr!` tactic is aggressive with equating two sides of everything. There is a predefined
 configuration that uses a different strategy:
+
 ```lean
 congr! (config := .unfoldSameFun)
 ```
+
 This only allows congruences between functions applications of definitionally equal functions,
 and it applies congruence lemmas at default transparency (rather than just reducible).
 This is somewhat like `congr`.
@@ -580,6 +586,7 @@ that is trivial. If there are any patterns in the current `CongrMetaM` state the
 of `Lean.MVarId.intros` it does `Lean.Elab..Tactic.RCases.rintro`.
 
 Cleaning up includes:
+
 - deleting hypotheses of the form `x ≍ x`, `x = x`, and `x ↔ x`.
 - deleting Prop hypotheses that are already in the local context.
 - converting `x ≍ y` to `x = y` if possible.

@@ -20,6 +20,7 @@ and the subtype of morphisms `φ : K.restriction e ⟶ L` which satisfy a certai
 condition `e.HasLift φ`.
 
 ## TODO
+
 * obtain dual results for morphisms `L.extend e ⟶ K`.
 
 -/
@@ -100,7 +101,7 @@ end liftExtend
 
 variable (φ : K.restriction e ⟶ L) (hφ : e.HasLift φ)
 
-/-- The morphism  `K ⟶ L.extend e` given by a morphism `K.restriction e ⟶ L`
+/-- The morphism `K ⟶ L.extend e` given by a morphism `K.restriction e ⟶ L`
 which satisfy `e.HasLift φ`. -/
 noncomputable def liftExtend :
     K ⟶ L.extend e where

@@ -60,12 +60,14 @@ class IsCocartesian : Prop where
 attribute [instance] IsCocartesian.toIsHomLift
 /-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is strongly co-Cartesian if for
 all morphisms `φ' : a ⟶ b'` and all diagrams of the form
+
 ```
 a --φ--> b        b'
 |        |        |
 v        v        v
 R --f--> S --g--> S'
 ```
+
 such that `φ'` lifts `f ≫ g`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`. -/
 @[stacks 02XK]
 class IsStronglyCocartesian : Prop where
@@ -187,12 +189,14 @@ variable {S' : 𝒮} {b' : 𝒳} {g : S ⟶ S'} {f' : R ⟶ S'} (hf' : f' = f �
   [IsHomLift p f' φ']
 
 /-- Given a diagram
+
 ```
 a --φ--> b        b'
 |        |        |
 v        v        v
 R --f--> S --g--> S'
 ```
+
 such that `φ` is strongly co-Cartesian, and a morphism `φ' : a ⟶ b'`. Then `map` is the map
 `b ⟶ b'` lying over `g` obtained from the universal property of `φ`. -/
 noncomputable def map : b ⟶ b' :=
@@ -207,12 +211,14 @@ lemma fac : φ ≫ (map p f φ hf' φ') = φ' :=
 
 
 /-- Given a diagram
+
 ```
 a --φ--> b        b'
 |        |        |
 v        v        v
 R --f--> S --g--> S'
 ```
+
 such that `φ` is strongly co-Cartesian, and morphisms `φ' : a ⟶ b'`, `ψ : b ⟶ b'` such that
 `g ≫ ψ = φ'`. Then `ψ` is the map induced by the universal property. -/
 lemma map_uniq (ψ : b ⟶ b') [IsHomLift p g ψ] (hψ : φ ≫ ψ = φ') : ψ = map p f φ hf' φ' :=
@@ -221,12 +227,14 @@ lemma map_uniq (ψ : b ⟶ b') [IsHomLift p g ψ] (hψ : φ ≫ ψ = φ') : ψ =
 end
 
 /-- Given a diagram
+
 ```
 a --φ--> b        b'
 |        |        |
 v        v        v
 R --f--> S --g--> S'
 ```
+
 such that `φ` is strongly co-Cartesian, and morphisms `ψ ψ' : b ⟶ b'` such that
 `g ≫ ψ = φ' = g ≫ ψ'`. Then we have that `ψ = ψ'`. -/
 protected lemma ext (φ : a ⟶ b) [IsStronglyCocartesian p f φ] {S' : 𝒮} {b' : 𝒳} (g : S ⟶ S')
@@ -241,13 +249,16 @@ lemma map_self : map p f φ (comp_id f).symm φ = 𝟙 b := by
 
 /-- When its possible to compare the two, the composition of two `IsStronglyCocartesian.map` will
 also be given by a `IsStronglyCocartesian.map`. In other words, given diagrams
+
 ```
 a --φ--> b        b'         b''
 |        |        |          |
 v        v        v          v
 R --f--> S --g--> S' --g'--> S'
 ```
+
 and
+
 ```
 a --φ'--> b'
 |         |
@@ -255,13 +266,16 @@ v         v
 R --f'--> S'
 
 ```
+
 and
+
 ```
 a --φ''--> b''
 |          |
 v          v
 R --f''--> S''
 ```
+
 such that `φ` and `φ'` are strongly co-Cartesian morphisms, and such that `f' = f ≫ g` and
 `f'' = f' ≫ g'`. Then composing the induced map from `b ⟶ b'` with the induced map from
 `b' ⟶ b''` gives the induced map from `b ⟶ b''`. -/
@@ -281,12 +295,14 @@ section
 variable {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S} {g : S ⟶ T} {φ : a ⟶ b} {ψ : b ⟶ c}
 
 /-- Given two strongly co-Cartesian morphisms `φ`, `ψ` as follows
+
 ```
 a --φ--> b --ψ--> c
 |        |        |
 v        v        v
 R --f--> S --g--> T
 ```
+
 Then the composite `φ ≫ ψ` is also strongly co-Cartesian. -/
 instance comp [IsStronglyCocartesian p f φ] [IsStronglyCocartesian p g ψ] :
     IsStronglyCocartesian p (f ≫ g) (φ ≫ ψ) where
@@ -301,12 +317,14 @@ instance comp [IsStronglyCocartesian p f φ] [IsStronglyCocartesian p g ψ] :
       simp only [← hπ'₂, assoc]
 
 /-- Given two commutative squares
+
 ```
 a --φ--> b --ψ--> c
 |        |        |
 v        v        v
 R --f--> S --g--> T
 ```
+
 such that `φ ≫ ψ` and `φ` are strongly co-Cartesian, then so is `ψ`. -/
 protected lemma of_comp [IsStronglyCocartesian p f φ] [IsStronglyCocartesian p (f ≫ g) (φ ≫ ψ)]
     [IsHomLift p g ψ] : IsStronglyCocartesian p g ψ where

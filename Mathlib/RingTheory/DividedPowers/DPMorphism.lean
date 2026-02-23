@@ -40,13 +40,13 @@ cohomology.
 ## References
 
 * [P. Berthelot, *Cohomologie cristalline des schémas de
-caractéristique $p$ > 0*][Berthelot-1974]
+  caractéristique $p$ > 0*][Berthelot-1974]
 
 * [P. Berthelot and A. Ogus, *Notes on crystalline
-cohomology*][BerthelotOgus-1978]
+  cohomology*][BerthelotOgus-1978]
 
 * [N. Roby, *Lois polynomes et lois formelles en théorie des
-modules*][Roby-1963]
+  modules*][Roby-1963]
 
 * [N. Roby, *Les algèbres à puissances dividées*][Roby-1965]
 -/
@@ -58,7 +58,7 @@ open Ideal Set SetLike
 namespace DividedPowers
 
 /-- Given divided power structures on the `A`-ideal `I` and the `B`-ideal `J`, a ring morphism
-  `A → B` is a divided power morphism if it is compatible with these divided power structures. -/
+`A → B` is a divided power morphism if it is compatible with these divided power structures. -/
 structure IsDPMorphism {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Ideal B}
     (hI : DividedPowers I) (hJ : DividedPowers J) (f : A →+* B) : Prop where
   ideal_comp : I.map f ≤ J
@@ -126,7 +126,7 @@ lemma isDPMorphism (f : DPMorphism hI hJ) : IsDPMorphism hI hJ f.toRingHom :=
   ⟨f.ideal_comp, f.dpow_comp⟩
 
 /-- A constructor for `DPMorphism` from a ring homomorphism `f : A →+* B` satisfying
-  `IsDPMorphism hI hJ f`. -/
+`IsDPMorphism hI hJ f`. -/
 def mk' {f : A →+* B} (hf : IsDPMorphism hI hJ f) : DPMorphism hI hJ :=
   ⟨f, hf.1, hf.2⟩
 
@@ -134,8 +134,8 @@ variable (hI hJ)
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a ring homomorphism `A → B` and ideals `I ⊆ A` and `J ⊆ B` such that `I.map f ≤ J`,
-  this is the `A`-ideal on which `f (hI.dpow n x) = hJ.dpow n (f x)`.
-  See [N. Roby, *Les algèbres à puissances dividées* (Proposition 2)][Roby-1965]. -/
+this is the `A`-ideal on which `f (hI.dpow n x) = hJ.dpow n (f x)`.
+See [N. Roby, *Les algèbres à puissances dividées* (Proposition 2)][Roby-1965]. -/
 def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J) : Ideal A where
   carrier  := {x ∈ I | ∀ n : ℕ, f (hI.dpow n (x : A)) = hJ.dpow n (f (x : A))}
   add_mem' := fun hx hy ↦ by
@@ -159,8 +159,8 @@ def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J)
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The `DPMorphism` induced by a ring morphism, given that divided powers are compatible on a
-  generating set.
-  See [N. Roby, *Les algèbres à puissances dividées* (Proposition 3)][Roby-1965]. -/
+generating set.
+See [N. Roby, *Les algèbres à puissances dividées* (Proposition 3)][Roby-1965]. -/
 def fromGens {f : A →+* B} {S : Set A} (hS : I = span S) (hf : I.map f ≤ J)
     (h : ∀ {n : ℕ}, ∀ x ∈ S, f (hI.dpow n x) = hJ.dpow n (f x)) : DPMorphism hI hJ where
   toRingHom          := f
@@ -240,8 +240,8 @@ theorem dpow_comp_from_gens {S : Set A} (hS : I = span S) (hS' : ∀ s ∈ S, f 
   (IsDPMorphism.on_span hI hJ hS hS' hdp).2
 
 /-- If two divided power structures on the ideal `I` agree on a generating set, then they are
-  equal.
-  See [N. Roby, *Les algèbres à puissances dividées* (Corollary to Proposition 3)][Roby-1965]. -/
+equal.
+See [N. Roby, *Les algèbres à puissances dividées* (Corollary to Proposition 3)][Roby-1965]. -/
 theorem dpow_eq_from_gens {S : Set A} (hS : I = span S)
     (hdp : ∀ {n : ℕ}, ∀ a ∈ S, hI.dpow n a = hI'.dpow n a) : hI' = hI := by
   ext n a

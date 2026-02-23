@@ -955,7 +955,7 @@ section StrictMono
 variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
-  `r : ℝ≥0`, there exists `d : Γ₀ˣ` with `f d < r`. -/
+`r : ℝ≥0`, there exists `d : Γ₀ˣ` with `f d < r`. -/
 theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
     {r : ℝ≥0} (hr : 0 < r) : ∃ d : Γ₀ˣ, f d < r := by
   obtain ⟨g, hg1⟩ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mp h
@@ -974,7 +974,7 @@ theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*�
   rwa [Units.val_pow_eq_pow_val, map_pow]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
-  real `r`, there exists `d : Γ₀ˣ` with `f d < r`. -/
+real `r`, there exists `d : Γ₀ˣ` with `f d < r`. -/
 theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
     {r : ℝ} (hr : 0 < r) : ∃ d : Γ₀ˣ, (f d : ℝ) < r := by
   set s : NNReal := ⟨r, le_of_lt hr⟩

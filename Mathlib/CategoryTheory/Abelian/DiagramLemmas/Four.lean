@@ -23,6 +23,7 @@ A' --f'-> B' --g'-> C' --h'-> D' --i'-> E'
 ```
 
 We show:
+
 - the "mono" version of the four lemma: if `α` is an epimorphism and `β` and `δ` are monomorphisms,
   then `γ` is a monomorphism,
 - the "epi" version of the four lemma: if `β` and `δ` are epimorphisms and `ε` is a monomorphism,

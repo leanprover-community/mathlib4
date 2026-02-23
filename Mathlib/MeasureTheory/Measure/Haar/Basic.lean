@@ -54,6 +54,7 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
   Hausdorff group is a scalar multiple of the Haar measure.
 
 ## References
+
 * Paul Halmos (1950), Measure Theory, §53
 * Jonathan Gleason, Existence and Uniqueness of Haar Measure
   - Note: step 9, page 8 contains a mistake: the last defined `μ` does not extend the `μ` on compact
@@ -80,16 +81,16 @@ section Group
 variable {G : Type*} [Group G]
 
 /-! We put the internal functions in the construction of the Haar measure in a namespace,
-  so that the chosen names don't clash with other declarations.
-  We first define a couple of the functions before proving the properties (that require that `G`
-  is a topological group). -/
+so that the chosen names don't clash with other declarations.
+We first define a couple of the functions before proving the properties (that require that `G`
+is a topological group). -/
 
 
 namespace haar
 
 /-- The index or Haar covering number or ratio of `K` w.r.t. `V`, denoted `(K : V)`:
-  it is the smallest number of (left) translates of `V` that is necessary to cover `K`.
-  It is defined to be 0 if no finite number of translates cover `K`. -/
+it is the smallest number of (left) translates of `V` that is necessary to cover `K`.
+It is defined to be 0 if no finite number of translates cover `K`. -/
 @[to_additive addIndex /-- additive version of `MeasureTheory.Measure.haar.index` -/]
 noncomputable def index (K V : Set G) : ℕ :=
   sInf <| Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V }
@@ -100,10 +101,10 @@ theorem index_empty {V : Set G} : index ∅ V = 0 := by simp [index]
 variable [TopologicalSpace G]
 
 /-- `prehaar K₀ U K` is a weighted version of the index, defined as `(K : U)/(K₀ : U)`.
-  In the applications `K₀` is compact with non-empty interior, `U` is open containing `1`,
-  and `K` is any compact set.
-  The argument `K` is a (bundled) compact set, so that we can consider `prehaar K₀ U` as an
-  element of `haarProduct` (below). -/
+In the applications `K₀` is compact with non-empty interior, `U` is open containing `1`,
+and `K` is any compact set.
+The argument `K` is a (bundled) compact set, so that we can consider `prehaar K₀ U` as an
+element of `haarProduct` (below). -/
 @[to_additive /-- additive version of `MeasureTheory.Measure.haar.prehaar` -/]
 noncomputable def prehaar (K₀ U : Set G) (K : Compacts G) : ℝ :=
   (index (K : Set G) U : ℝ) / index K₀ U
@@ -117,7 +118,7 @@ theorem prehaar_nonneg (K₀ : PositiveCompacts G) {U : Set G} (K : Compacts G) 
     0 ≤ prehaar (K₀ : Set G) U K := by apply div_nonneg <;> norm_cast <;> apply zero_le
 
 /-- `haarProduct K₀` is the product of intervals `[0, (K : K₀)]`, for all compact sets `K`.
-  For all `U`, we can show that `prehaar K₀ U ∈ haarProduct K₀`. -/
+For all `U`, we can show that `prehaar K₀ U ∈ haarProduct K₀`. -/
 @[to_additive /-- additive version of `MeasureTheory.Measure.haar.haarProduct` -/]
 def haarProduct (K₀ : Set G) : Set (Compacts G → ℝ) :=
   pi univ fun K => Icc 0 <| index (K : Set G) K₀
@@ -128,10 +129,10 @@ theorem mem_prehaar_empty {K₀ : Set G} {f : Compacts G → ℝ} :
   simp only [haarProduct, Set.pi, forall_prop_of_true, mem_univ, mem_setOf_eq]
 
 /-- The closure of the collection of elements of the form `prehaar K₀ U`,
-  for `U` open neighbourhoods of `1`, contained in `V`. The closure is taken in the space
-  `compacts G → ℝ`, with the topology of pointwise convergence.
-  We show that the intersection of all these sets is nonempty, and the Haar measure
-  on compact sets is defined to be an element in the closure of this intersection. -/
+for `U` open neighbourhoods of `1`, contained in `V`. The closure is taken in the space
+`compacts G → ℝ`, with the topology of pointwise convergence.
+We show that the intersection of all these sets is nonempty, and the Haar measure
+on compact sets is defined to be an element in the closure of this intersection. -/
 @[to_additive /-- additive version of `MeasureTheory.Measure.haar.clPrehaar` -/]
 def clPrehaar (K₀ : Set G) (V : OpenNhdsOf (1 : G)) : Set (Compacts G → ℝ) :=
   closure <| prehaar K₀ '' { U : Set G | U ⊆ V.1 ∧ IsOpen U ∧ (1 : G) ∈ U }
@@ -144,10 +145,10 @@ variable [IsTopologicalGroup G]
 
 
 /-- If `K` is compact and `V` has nonempty interior, then the index `(K : V)` is well-defined,
-  there is a finite set `t` satisfying the desired properties. -/
+there is a finite set `t` satisfying the desired properties. -/
 @[to_additive addIndex_defined
 /-- If `K` is compact and `V` has nonempty interior, then the index `(K : V)` is well-defined,
-  there is a finite set `t` satisfying the desired properties. -/]
+there is a finite set `t` satisfying the desired properties. -/]
 theorem index_defined {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty) :
     ∃ n : ℕ, n ∈ Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V } := by
   rcases compact_covered_by_mul_left_translates hK hV with ⟨t, ht⟩; exact ⟨t.card, t, ht, rfl⟩
@@ -340,11 +341,11 @@ theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
 -/
 
 /-- This is the "limit" of `prehaar K₀ U K` as `U` becomes a smaller and smaller open
-  neighborhood of `(1 : G)`. More precisely, it is defined to be an arbitrary element
-  in the intersection of all the sets `clPrehaar K₀ V` in `haarProduct K₀`.
-  This is roughly equal to the Haar measure on compact sets,
-  but it can differ slightly. We do know that
-  `haarMeasure K₀ (interior K) ≤ chaar K₀ K ≤ haarMeasure K₀ K`. -/
+neighborhood of `(1 : G)`. More precisely, it is defined to be an arbitrary element
+in the intersection of all the sets `clPrehaar K₀ V` in `haarProduct K₀`.
+This is roughly equal to the Haar measure on compact sets,
+but it can differ slightly. We do know that
+`haarMeasure K₀ (interior K) ≤ chaar K₀ K ≤ haarMeasure K₀ K`. -/
 @[to_additive addCHaar /-- additive version of `MeasureTheory.Measure.haar.chaar` -/]
 noncomputable def chaar (K₀ : PositiveCompacts G) (K : Compacts G) : ℝ :=
   Classical.choose (nonempty_iInter_clPrehaar K₀) K
@@ -651,18 +652,18 @@ see the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 variable [SecondCountableTopology G]
 
 /-- **Uniqueness of left-invariant measures**: In a second-countable locally compact group, any
-  σ-finite left-invariant measure is a scalar multiple of the Haar measure.
-  This is slightly weaker than assuming that `μ` is a Haar measure (in particular we don't require
-  `μ ≠ 0`).
-  See also `isMulLeftInvariant_eq_smul_of_regular`
-  for a statement not assuming second-countability. -/
+σ-finite left-invariant measure is a scalar multiple of the Haar measure.
+This is slightly weaker than assuming that `μ` is a Haar measure (in particular we don't require
+`μ ≠ 0`).
+See also `isMulLeftInvariant_eq_smul_of_regular`
+for a statement not assuming second-countability. -/
 @[to_additive
 /-- **Uniqueness of left-invariant measures**: In a second-countable locally compact additive group,
-  any σ-finite left-invariant measure is a scalar multiple of the additive Haar measure.
-  This is slightly weaker than assuming that `μ` is an additive Haar measure (in particular we don't
-  require `μ ≠ 0`).
-  See also `isAddLeftInvariant_eq_smul_of_regular`
-  for a statement not assuming second-countability. -/]
+any σ-finite left-invariant measure is a scalar multiple of the additive Haar measure.
+This is slightly weaker than assuming that `μ` is an additive Haar measure (in particular we don't
+require `μ ≠ 0`).
+See also `isAddLeftInvariant_eq_smul_of_regular`
+for a statement not assuming second-countability. -/]
 theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant μ]
     (K₀ : PositiveCompacts G) : μ = μ K₀ • haarMeasure K₀ := by
   have A : Set.Nonempty (interior (closure (K₀ : Set G))) :=
@@ -684,10 +685,10 @@ example [LocallyCompactSpace G] (μ : Measure G) [IsHaarMeasure μ] (K₀ : Posi
   haarMeasure_unique μ K₀
 
 /-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is finite
-  on some compact set with non-empty interior. -/
+on some compact set with non-empty interior. -/
 @[to_additive
 /-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is
-  finite on some compact set with non-empty interior. -/]
+finite on some compact set with non-empty interior. -/]
 theorem regular_of_isMulLeftInvariant {μ : Measure G} [SigmaFinite μ] [IsMulLeftInvariant μ]
     {K : Set G} (hK : IsCompact K) (h2K : (interior K).Nonempty) (hμK : μ K ≠ ∞) : Regular μ := by
   rw [haarMeasure_unique μ ⟨⟨K, hK⟩, h2K⟩]; exact Regular.smul hμK

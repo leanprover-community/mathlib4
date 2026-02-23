@@ -13,7 +13,6 @@ public import Mathlib.Order.Synonym
 
 This file provides basic results about orderings and comparison in linear orders.
 
-
 ## Definitions
 
 * `CmpLE`: An `Ordering` from `≤`.

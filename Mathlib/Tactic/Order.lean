@@ -24,30 +24,35 @@ This module defines the `order` tactic, a decision procedure for the theories of
 ## Implementation Details
 
 Below, we describe the algorithm for each type of order. All algorithms begin with two steps:
+
 1. Negate the goal so that our goal now is to derive `False`.
 2. Collect the set of *facts*, i.e., atomic expressions in one of six forms: `x = y`, `x ≠ y`,
-`x ≤ y`, `¬(x ≤ y)`, `x < y`, and `¬(x < y)`. We then attempt to derive a contradiction from this
-set of facts.
+   `x ≤ y`, `¬(x ≤ y)`, `x < y`, and `¬(x < y)`. We then attempt to derive a contradiction from this
+   set of facts.
 
 ### Preorder
+
 3. **Preprocessing**.
-We replace some facts as follows:
+   We replace some facts as follows:
+
 * Replace `x < y` with two equivalent facts: `x ≤ y` and `¬(y ≤ x)`.
 * Replace `x = y` with `x ≤ y` and `y ≤ x`.
 * Remove `x ≠ y`.
-Note that the last two operations weaken the set of facts.
+  Note that the last two operations weaken the set of facts.
+
 4. **Building the `≤`-graph**.
-We construct a graph where vertices correspond to atoms, and an edge `(x, y)` exists if the fact
-`x ≤ y` is present in our set of facts. We call this graph a `≤`-graph.
+   We construct a graph where vertices correspond to atoms, and an edge `(x, y)` exists if the fact
+   `x ≤ y` is present in our set of facts. We call this graph a `≤`-graph.
 5. **Growing the `≤`-graph with `≮`-facts**.
-In preorders, `¬(x < y)` is equivalent to `(x ≤ y) → (y ≤ x)`. Thus, if `y` is reachable from `x`
-in the `≤`-graph, we can derive the new fact `y ≤ x`. At this step, we add such edges to the graph
-while possible.
+   In preorders, `¬(x < y)` is equivalent to `(x ≤ y) → (y ≤ x)`. Thus, if `y` is reachable from `x`
+   in the `≤`-graph, we can derive the new fact `y ≤ x`. At this step, we add such edges to the graph
+   while possible.
 6. **Finding contradictions using `≰`-facts**.
-For each fact `¬(x ≤ y)`, we check if `y` is reachable from `x` in the `≤`-graph. If so, we derive
-the desired contradiction.
+   For each fact `¬(x ≤ y)`, we check if `y` is reachable from `x` in the `≤`-graph. If so, we derive
+   the desired contradiction.
 
 #### Why is this a decision procedure?
+
 Technically, it is not, because it cannot prove `(x = y) → (y ≠ z) → (x ≠ z)`. Goals involving
 only `=` and `≠` can be handled by the `cc` tactic. Assume, then, that a set `T` of facts is
 contradictory, but there is no chain `x₁ = x₂ = ... = xₖ` in `T` along with the fact `x₁ ≠ xₖ`. Then
@@ -59,6 +64,7 @@ Consider a quotient `M'` of `M` by the equivalence relation `~`, where `a ~ b` h
 both `a` and `b` are values of some variables `x` and `y` from `T`, and there is
 a chain `x = ... = y` in `T`. Define the relation `R'` on `M'` as `α R' β` if and only if `a R b`
 in `M` for some `a ∈ α` and `b ∈ β`. Then `M'` is a model satisfying `T`:
+
 * For any fact `x = y` in `T`, we have `M'(x) = M'(y)` in `M'`.
 * For any fact `x ≠ y` in `T`, we have `M'(x) ≠ M'(y)`, since otherwise, there would exist
   a chain `x = ... = y` in `T`.
@@ -74,6 +80,7 @@ similarly to the `≤`-graph),
 with the relation `R` defined as `C₁ R C₂` iff `C₂` is reachable from `C₁` in the `≤`-graph. Each
 variable `x` is interpreted as its component `[x]`. This forms a preorder, and we verify that each
 fact in `T'` is satisfied:
+
 * `x = y` is satisfied because `x` and `y` must be in the same component in the `=`-graph.
 * `x ≤ y` is satisfied by the construction of the `≤`-graph.
 * `x ≠ y` is satisfied because otherwise, `x` and `y` would belong to the same component in
@@ -82,19 +89,23 @@ fact in `T'` is satisfied:
   which would have caused an edge `(y, x)` to be added at step 5, leading to a contradiction.
 
 ### Partial Order
+
 3. **Preprocessing**.
-We replace some facts as follows:
+   We replace some facts as follows:
+
 * Replace `x < y` with `x ≤ y` and `x ≠ y`.
 * Replace `x = y` with `x ≤ y` and `y ≤ x`.
 * Replace `¬(x ≤ y)` with `x ≠ y` and `¬(x < y)`.
+
 4. **Building the `≤`-graph**: Same as for preorders.
 5. **Growing the `≤`-graph with `≮`-facts**: Same as for preorders.
 6. **Finding contradictions using `≠`-facts**.
-We identify strongly connected components in the `≤`-graph using a standard algorithm. For each
-fact `x ≠ y`, we check whether `x` and `y` belong to the same component. If they do, then `x = y` is
-provable, contradicting `x ≠ y`.
+   We identify strongly connected components in the `≤`-graph using a standard algorithm. For each
+   fact `x ≠ y`, we check whether `x` and `y` belong to the same component. If they do, then `x = y` is
+   provable, contradicting `x ≠ y`.
 
 #### Why is this a decision procedure?
+
 Assume that a set `T` of facts is contradictory. We must show that the described algorithm can
 derive a contradiction. Let `T'` be the set of facts after preprocessing. By construction, `T'` is
 also contradictory (they are equisatisfiable). If, at step 6, no contradictory `≠`-facts were found,
@@ -102,6 +113,7 @@ we must show that a model satisfies `T'`. A suitable model consists of the stron
 components of the `≤`-graph, with the relation `R` defined as `C₁ R C₂` iff `C₂` is reachable
 from `C₁`. Each variable `x` is interpreted as its component `[x]`. This forms a partial order, and
 we verify that each fact in `T'` is satisfied:
+
 * `x ≤ y` is satisfied because it directly implies `[x] R [y]`.
 * `x ≠ y` is satisfied because otherwise, `x` and `y` would belong to the same component, leading to
   a contradiction at step 6.
@@ -109,12 +121,15 @@ we verify that each fact in `T'` is satisfied:
   would have merged them into the same component at step 5.
 
 ### Linear Order
+
 3. **Preprocessing**.
-We replace some facts as follows:
+   We replace some facts as follows:
+
 * Replace `x < y` with `x ≤ y` and `x ≠ y`.
 * Replace `x = y` with `x ≤ y` and `y ≤ x`.
 * Replace `¬(x ≤ y)` with `x ≠ y` and `y ≤ x`.
 * Replace `¬(x < y)` with `y ≤ x`.
+
 4. **Building the `≤`-graph**: Same as for preorders.
 5. **Finding contradictions using `≠`-facts**: Same as for partial orders.
 
@@ -122,6 +137,7 @@ Note that the algorithm for linear orders is simply the algorithm for partial or
 additional preprocessing step. It also skips the growing step because there is no `≮`-facts.
 
 #### Why is this a decision procedure?
+
 We need to slightly modify the proof for partial orders. In this case, `T` and `T'` are again
 equisatisfiable. Suppose the algorithm cannot find a contradiction, and construct the model of `T'`.
 The carrier of the model is once again the set of strongly connected components in the `≤`-graph,
@@ -132,16 +148,19 @@ linear order where `C₁ R C₂` whenever `C₂` is reachable from `C₁`. It is
 in `T'` are satisfied by the model.
 
 ### Lattice
+
 The algorithm for lattices is similar to that for partial orders, with two differences:
+
 1. During the preprocessing step, we add the facts `x ≤ x ⊔ y` and `y ≤ x ⊔ y` if `x ⊔ y` is present
-in the context, and similarly for `⊓`.
+   in the context, and similarly for `⊓`.
 2. In step 5, we expand the `≤`-graph using the following procedure: if a vertex `v` is reachable
-from both `x` and `y`, and `x ⊔ y` is present in the set of atoms, we add the edge `(x ⊔ y, v)`
-using `sup_le`, and similarly for `⊓`.
+   from both `x` and `y`, and `x ⊔ y` is present in the set of atoms, we add the edge `(x ⊔ y, v)`
+   using `sup_le`, and similarly for `⊓`.
 
 One can show that this algorithm also serves as a decision procedure for the theory of lattices.
 
 ### `⊤` and `⊥`
+
 For `⊤` and `⊥`, we add the edges `(x, ⊤)` and `(⊥, x)` for all vertices `x`, using `le_top`
 and `bot_le`, respectively.
 -/
@@ -184,10 +203,11 @@ def findContradictionWithNle (g : Graph)
   return none
 
 /-- Adds edges to the `≤`-graph using two types of facts:
+
 1. Each fact `¬ (x < y)` allows to add the edge `(x, y)` when `y` is reachable from `x` in the
-graph.
+   graph.
 2. Each fact `x ⊔ y = z` allows to add the edge `(z, s)` when `s` is reachable from both `x`
-and `y`.
+   and `y`.
 
 We repeat the process until no more edges can be added. -/
 def updateGraphWithNltInfSup (g : Graph)

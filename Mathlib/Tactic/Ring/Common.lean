@@ -17,6 +17,7 @@ where the exponents can also contain variables.
 Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
 
 More precisely, expressions of the following form are supported:
+
 - constants (non-negative integers)
 - variables
 - coefficients (any rational number, embedded into the (semi)ring)
@@ -37,6 +38,7 @@ together with a proof (at the base level) that the original value is equal to
 the normalised version.
 
 The outline of the file:
+
 - Define a mutual inductive family of types `ExSum`, `ExProd`, `ExBase`,
   which can represent expressions with `+`, `*`, `^` and rational numerals.
   The mutual induction ensures that associativity and distributivity are applied,
@@ -48,6 +50,7 @@ The outline of the file:
   Any expression not of the above formats is treated as an atom (the same as a variable).
 
 There are some details we glossed over which make the plan more complicated:
+
 - The order on atoms is not initially obvious.
   We construct a list containing them in order of initial appearance in the expression,
   then use the index into the list as a key to order on.
@@ -1251,6 +1254,7 @@ or otherwise if it is an atom or something simplifiable via `norm_num`.
 We use this in `ring_nf` to avoid rewriting atoms unnecessarily.
 
 Returns:
+
 * `none` if `eval` would process `e` as an algebraic ring expression
 * `some none` if `eval` would treat `e` as an atom.
 * `some (some r)` if `eval` would not process `e` as an algebraic ring expression,

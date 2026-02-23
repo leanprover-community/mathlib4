@@ -321,7 +321,7 @@ theorem convexBodySumFun_continuous :
   fun_prop
 
 /-- The convex body equal to the set of points `x : mixedSpace K` such that
-  `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`. -/
+`∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`. -/
 abbrev convexBodySum : Set (mixedSpace K) := { x | convexBodySumFun x ≤ B }
 
 set_option backward.isDefEq.respectTransparency false in

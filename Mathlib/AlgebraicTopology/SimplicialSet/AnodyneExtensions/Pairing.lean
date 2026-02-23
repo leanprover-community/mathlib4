@@ -28,6 +28,7 @@ and the unique face which is not in the image of the horn. The former shall be
 considered as of type (I) and the latter as type (II).
 
 We say that a pairing is *regular* (typeclass `Pairing.IsRegular`) when
+
 - it is proper (`Pairing.IsProper`), i.e. any type (II) simplex is uniquely
   a face of the corresponding type (I) simplex.
 - a certain ancestrality relation is well founded.
@@ -37,6 +38,7 @@ a strong anodyne extension (TODO @joelriou), and the converse is also true
 (if `A.ι` is a strong anodyne extension, then there is a regular pairing for `A` (TODO)).
 
 ## References
+
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/

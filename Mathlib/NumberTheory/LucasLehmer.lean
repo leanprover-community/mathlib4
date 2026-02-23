@@ -17,7 +17,6 @@ prove `lucasLehmerResidue p = 0 ↔ Prime (mersenne p)`.
 We construct a `norm_num` extension to calculate this residue to certify primality of Mersenne
 primes using `lucas_lehmer_sufficiency`.
 
-
 ## TODO
 
 - Speed up the calculations using `n ≡ (n % 2^p) + (n / 2^p) [MOD 2^p - 1]`.
@@ -751,9 +750,11 @@ be useful, so I'm leaving them here.)
 
 There's still low-hanging fruit available to do faster computations
 based on the formula
+
 ```
 n ≡ (n % 2^p) + (n / 2^p) [MOD 2^p - 1]
 ```
+
 and the fact that `% 2^p` and `/ 2^p` can be very efficient on the binary representation.
 Someone should do this, too!
 -/

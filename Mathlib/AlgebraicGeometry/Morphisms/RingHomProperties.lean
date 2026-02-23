@@ -18,6 +18,7 @@ of ring homs. For `P` a property of ring homs, we have two ways of defining a pr
 morphisms:
 
 Let `f : X ⟶ Y`,
+
 - `targetAffineLocally (affineAnd P)`: the preimage of an affine open `U = Spec A` is affine
   (`= Spec B`) and `A ⟶ B` satisfies `P`. (in `Mathlib/AlgebraicGeometry/Morphisms/AffineAnd.lean`)
 - `affineLocally P`: For each pair of affine open `U = Spec A ⊆ X` and `V = Spec B ⊆ f ⁻¹' U`,
@@ -38,20 +39,21 @@ We also provide the following interface:
 and for `f : Spec B ⟶ Spec A`, it is equivalent to the ring hom property `Q` on `Γ(f)`.
 
 For `HasRingHomProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
+
 - `AlgebraicGeometry.HasRingHomProperty.iff_appLE`:
-    `P f` if and only if `Q (f.appLE U V _)` for all affine `U : Opens Y` and `V : Opens X`.
+  `P f` if and only if `Q (f.appLE U V _)` for all affine `U : Opens Y` and `V : Opens X`.
 - `AlgebraicGeometry.HasRingHomProperty.iff_of_source_openCover`:
-    If `Y` is affine, `P f ↔ ∀ i, Q ((𝒰.map i ≫ f).appTop)` for an affine open cover `𝒰` of `X`.
+  If `Y` is affine, `P f ↔ ∀ i, Q ((𝒰.map i ≫ f).appTop)` for an affine open cover `𝒰` of `X`.
 - `AlgebraicGeometry.HasRingHomProperty.iff_of_isAffine`:
-    If `X` and `Y` are affine, then `P f ↔ Q (f.appTop)`.
+  If `X` and `Y` are affine, then `P f ↔ Q (f.appTop)`.
 - `AlgebraicGeometry.HasRingHomProperty.Spec_iff`:
-    `P (Spec.map φ) ↔ Q φ`
+  `P (Spec.map φ) ↔ Q φ`
 - `AlgebraicGeometry.HasRingHomProperty.iff_of_iSup_eq_top`:
-    If `Y` is affine, `P f ↔ ∀ i, Q (f.appLE ⊤ (U i) _)` for a family `U` of affine opens of `X`.
+  If `Y` is affine, `P f ↔ ∀ i, Q (f.appLE ⊤ (U i) _)` for a family `U` of affine opens of `X`.
 - `AlgebraicGeometry.HasRingHomProperty.of_isOpenImmersion`:
-    If `f` is an open immersion then `P f`.
+  If `f` is an open immersion then `P f`.
 - `AlgebraicGeometry.HasRingHomProperty.isStableUnderBaseChange`:
-    If `Q` is stable under base change, then so is `P`.
+  If `Q` is stable under base change, then so is `P`.
 
 We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`,
 `IsZariskiLocalAtTarget P`, `IsZariskiLocalAtSource P`.
@@ -251,9 +253,10 @@ end affineLocally
 `HasRingHomProperty P Q` is a type class asserting that `P` is local at the target and the source,
 and for `f : Spec B ⟶ Spec A`, it is equivalent to the ring hom property `Q`.
 To make the proofs easier, we state it instead as
+
 1. `Q` is local (See `RingHom.PropertyIsLocal`)
 2. `P f` if and only if `Q` holds for every `Γ(Y, U) ⟶ Γ(X, V)` for all affine `U`, `V`.
-See `HasRingHomProperty.iff_appLE`.
+   See `HasRingHomProperty.iff_appLE`.
 -/
 class HasRingHomProperty (P : MorphismProperty Scheme.{u})
     (Q : outParam (∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)) : Prop where

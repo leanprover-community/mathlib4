@@ -31,11 +31,11 @@ open Computability
 universe u v
 
 /-- An `εNFA` is a set of states (`σ`), a transition function from state to state labelled by the
-  alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`).
-  Note the transition function sends a state to a `Set` of states and can make ε-transitions by
-  inputting `none`.
-  Since this definition allows for Automata with infinite states, a `Fintype` instance must be
-  supplied for true `εNFA`'s. -/
+alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`).
+Note the transition function sends a state to a `Set` of states and can make ε-transitions by
+inputting `none`.
+Since this definition allows for Automata with infinite states, a `Fintype` instance must be
+supplied for true `εNFA`'s. -/
 structure εNFA (α : Type u) (σ : Type v) where
   /-- Transition function. The automaton is rendered non-deterministic by this transition function
   returning `Set σ` (rather than `σ`), and ε-transitions are made possible by taking `Option α`
@@ -289,7 +289,7 @@ end εNFA
 namespace NFA
 
 /-- `M.toεNFA` is an `εNFA` constructed from an `NFA` `M` by using the same start and accept
-  states and transition functions. -/
+states and transition functions. -/
 def toεNFA (M : NFA α σ) : εNFA α σ where
   step s a := a.casesOn' ∅ fun a ↦ M.step s a
   start := M.start

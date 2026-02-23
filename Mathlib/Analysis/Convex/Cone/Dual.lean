@@ -30,6 +30,7 @@ As a corollary, we prove that the double dual of a proper cone is itself.
 ## Main statements
 
 We prove the following theorems:
+
 * `ProperCone.hyperplane_separation`, `ProperCone.hyperplane_separation_point`: Farkas lemma.
 * `ProperCone.dual_dual_flip`, `ProperCone.dual_flip_dual`: The double dual of a proper cone.
 

@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Sites.Limits
 
 /-!
 # Category of sheaves is abelian
+
 Let `C, D` be categories and `J` be a Grothendieck topology on `C`, when `D` is abelian and
 sheafification is possible in `C`, `Sheaf J D` is abelian as well (`sheafIsAbelian`).
 

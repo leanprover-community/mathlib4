@@ -994,7 +994,7 @@ noncomputable def multicoforkEquivSigmaCofork :
 end MultispanIndex
 
 /-- For `I : MulticospanIndex J C`, we say that it has a multiequalizer if the associated
-  multicospan has a limit. -/
+multicospan has a limit. -/
 abbrev HasMultiequalizer {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C) :=
   HasLimit I.multicospan
 
@@ -1006,7 +1006,7 @@ abbrev multiequalizer {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
   limit I.multicospan
 
 /-- For `I : MultispanIndex J C`, we say that it has a multicoequalizer if
-  the associated multicospan has a limit. -/
+the associated multicospan has a limit. -/
 abbrev HasMulticoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C) :=
   HasColimit I.multispan
 

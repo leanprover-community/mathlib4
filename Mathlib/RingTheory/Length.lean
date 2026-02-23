@@ -16,6 +16,7 @@ public import Mathlib.LinearAlgebra.Dimension.Free
 # Length of modules
 
 ## Main results
+
 - `Module.length`: `Module.length R M` is the length of `M` as an `R`-module.
 - `Module.length_pos`: The length of a nontrivial module is positive
 - `Module.length_ne_top`: The length of an Artinian and Noetherian module is finite.

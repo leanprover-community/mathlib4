@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.RootsOfUnity.Basic
 # The Special Linear group $SL(n, R)$
 
 This file defines the elements of the Special Linear group `SpecialLinearGroup n R`, consisting
-of all square `R`-matrices with determinant `1` on the fintype `n` by `n`.  In addition, we define
+of all square `R`-matrices with determinant `1` on the fintype `n` by `n`. In addition, we define
 the group structure on `SpecialLinearGroup n R` and the embedding into the general linear group
 `GeneralLinearGroup R (n → R)`.
 
@@ -30,6 +30,7 @@ For `m : ℕ`, we introduce the notation `SL(m,R)` for the special linear group 
 `n = Fin m`, in the scope `MatrixGroups`.
 
 ## Implementation notes
+
 The inverse operation in the `SpecialLinearGroup` is defined to be the adjugate
 matrix, so that `SpecialLinearGroup n R` has a group structure for all `CommRing R`.
 

@@ -19,6 +19,7 @@ These should cover most of the results needed in this case.
 ## Main Definition
 
 `IsSubnormal H`: A subgroup `H` of a group `G` satisfies `IsSubnormal` if
+
 * either `H = ⊤`;
 * or there is a subgroup `K` of `G` containing `H` and such that `H` is normal in `K` and
   `K` satisfies `IsSubnormal`.
@@ -47,12 +48,14 @@ variable {G : Type*} [Group G] {H K : Subgroup G}
 namespace Subgroup
 
 /-- A subgroup `H` of a group `G` satisfies `IsSubnormal` if
+
 * either `H = ⊤`;
 * or there is a subgroup `K` of `G` containing `H` and such that `H` is normal in `K` and
   `K` satisfies `IsSubnormal`.
 
 Equivalently, `H.IsSubnormal` means that there is a chain of subgroups
 `H₀ ≤ H₁ ≤ ... ≤ Hₙ` such that
+
 * `H = H₀`,
 * `G = Hₙ`,
 * for each `i ∈ {0, ..., n - 1}`, `Hᵢ` is a normal subgroup of `Hᵢ₊₁`.
@@ -68,12 +71,14 @@ inductive IsSubnormal : Subgroup G → Prop where
     IsSubnormal H
 
 /-- An additive subgroup `H` of an additive group `G` satisfies `IsSubnormal` if
+
 * either `H = ⊤`;
 * or there is an additive subgroup `K` of `G` containing `H` and such that `H` is normal in `K` and
   `K` satisfies `IsSubnormal`.
 
 Equivalently, `H.IsSubnormal` means that there is a chain of additive subgroups
 `H₀ ≤ H₁ ≤ ... ≤ Hₙ` such that
+
 * `H = H₀`,
 * `G = Hₙ`,
 * for each `i ∈ {0, ..., n - 1}`, `Hᵢ` is a normal additive subgroup of `Hᵢ₊₁`.

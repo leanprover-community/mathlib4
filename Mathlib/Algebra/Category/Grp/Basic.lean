@@ -14,6 +14,7 @@ public import Mathlib.Data.Int.Cast.Lemmas
 # Category instances for Group, AddGroup, CommGroup, and AddCommGroup.
 
 We introduce the bundled categories:
+
 * `GrpCat`
 * `AddGrpCat`
 * `CommGrpCat`

@@ -31,6 +31,7 @@ public import Mathlib.RingTheory.SimpleRing.Basic
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/

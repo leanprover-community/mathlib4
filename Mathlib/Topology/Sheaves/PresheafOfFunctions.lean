@@ -10,6 +10,7 @@ public import Mathlib.Topology.Sheaves.Presheaf
 # Presheaves of functions
 
 We construct some simple examples of presheaves of functions on a topological space.
+
 * `presheafToTypes X T`, where `T : X → Type`,
   is the presheaf of dependently-typed (not-necessarily continuous) functions
 * `presheafToType X T`, where `T : Type`,

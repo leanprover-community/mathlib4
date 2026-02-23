@@ -40,28 +40,33 @@ If not, the `Name` of the corresponding algebra property can be provided as opti
 specified declaration should be one of the following:
 
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
-`RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
-`Algebra` property by giving the `RingHom` property as a term. Due to how this is performed, we also
-need to assume that the `Algebra` property can be constructed only from the homomorphism, so it
-cannot have any other explicit arguments.
+   `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
+   `Algebra` property by giving the `RingHom` property as a term. Due to how this is performed, we also
+   need to assume that the `Algebra` property can be constructed only from the homomorphism, so it
+   cannot have any other explicit arguments.
 2. A lemma (or constructor) proving the `Algebra` property from the `RingHom` property. In this case
-it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
-is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
+   it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
+   is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
 
 Here are three examples of properties tagged with the `algebraize` attribute:
+
 ```
 @[algebraize]
 def RingHom.FiniteType (f : A →+* B) : Prop :=
   @Algebra.FiniteType A B _ _ f.toAlgebra
 ```
+
 An example when the `Name` is provided (as the `Algebra` does not have the expected name):
+
 ```
 @[algebraize Module.Finite]
 def RingHom.Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
 ```
+
 An example with a constructor as parameter (as the two properties are not definitionally the same):
+
 ```
 @[algebraize Algebra.Flat.out]
 class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop where
@@ -103,11 +108,11 @@ will help the `algebraize` tactic access the corresponding `Algebra` property.
 There are two cases for what declaration corresponding to this `Name` can be.
 
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
-`RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
-`Algebra` property by giving the `RingHom` property as a term.
+   `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
+   `Algebra` property by giving the `RingHom` property as a term.
 2. A lemma (or constructor) proving the `Algebra` property from the `RingHom` property. In this case
-it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
-is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
+   it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
+   is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
 
 Finally, if no argument is provided to the `algebraize` attribute, it is assumed that the tagged
 declaration has name `RingHom.Property` and that the corresponding `Algebra` property has name
@@ -231,7 +236,7 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
 /-- Configuration for `algebraize`. -/
 structure Config where
   /-- If true (default), the tactic will search the local context for `RingHom` properties
-    that can be converted to `Algebra` properties. -/
+  that can be converted to `Algebra` properties. -/
   properties : Bool := true
 deriving Inhabited
 

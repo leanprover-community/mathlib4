@@ -153,7 +153,7 @@ private noncomputable def Alon.P (S : Finset R) (i : σ) : MvPolynomial σ R :=
   ∏ r ∈ S, (X i - C r)
 
 /-- The degree of `Alon.P S i` with respect to `X i` is the cardinality of `S`,
-  and `0` otherwise. -/
+and `0` otherwise. -/
 private theorem Alon.degree_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
     m.degree (Alon.P S i) = single i #S := by
   simp only [P]
@@ -169,7 +169,7 @@ private theorem Alon.monic_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R
   Monic.prod (fun r _ ↦ m.monic_X_sub_C i r)
 
 /-- The support of `Alon.P S i` is the set of exponents of the form `single i e`,
-  for `e ≤ S.card`. -/
+for `e ≤ S.card`. -/
 private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι →₀ ℕ)
     (hm : m ∈ (Alon.P S i).support) :
     ∃ e ≤ S.card, m = single i e := by

@@ -25,6 +25,7 @@ given (see `LipschitzOnWith.ae_differentiableWithinAt`).
 
 There are many proofs of Rademacher's theorem. We follow the one by Morrey, which is not the most
 elementary but maybe the most elegant once necessary prerequisites are set up.
+
 * Step 0: without loss of generality, one may assume that `f` is real-valued.
 * Step 1: Since a one-dimensional Lipschitz function has bounded variation, it is differentiable
   almost everywhere. With a Fubini argument, it follows that given any vector `v` then `f` is ae
@@ -391,13 +392,13 @@ theorem LipschitzWith.ae_differentiableAt {f : E → F} (h : LipschitzWith C f) 
   simpa [differentiableWithinAt_univ] using h.ae_differentiableWithinAt_of_mem
 
 /-- In a real finite-dimensional normed vector space,
-  the norm is almost everywhere differentiable. -/
+the norm is almost everywhere differentiable. -/
 theorem ae_differentiableAt_norm :
     ∀ᵐ x ∂μ, DifferentiableAt ℝ (‖·‖) x := lipschitzWith_one_norm.ae_differentiableAt
 
 omit [MeasurableSpace E] in
 /-- In a real finite-dimensional normed vector space,
-  the set of points where the norm is differentiable at is dense. -/
+the set of points where the norm is differentiable at is dense. -/
 theorem dense_differentiableAt_norm :
     Dense {x : E | DifferentiableAt ℝ (‖·‖) x} :=
   let _ : MeasurableSpace E := borel E

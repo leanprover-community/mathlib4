@@ -17,6 +17,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Units
 # Monotonicity of scalar multiplication by positive elements
 
 This file defines typeclasses to reason about monotonicity of the operations
+
 * `b ↦ a • b`, "left scalar multiplication"
 * `a ↦ a • b`, "right scalar multiplication"
 
@@ -29,18 +30,19 @@ purposes, and the system is set up so that they imply the correct granular typec
 If those are enough for you, you may stop reading here! Else, beware that what
 follows is a bit technical.
 
-
 In all that follows, `α` and `β` are orders which have a `0` and such that `α` acts on `β` by scalar
 multiplication. Note however that we do not use lawfulness of this action in most of the file. Hence
 `•` should be considered here as a mostly arbitrary function `α → β → β`.
 
 We use the following four typeclasses to reason about left scalar multiplication (`b ↦ a • b`):
+
 * `PosSMulMono`: If `a ≥ 0`, then `b₁ ≤ b₂` implies `a • b₁ ≤ a • b₂`.
 * `PosSMulStrictMono`: If `a > 0`, then `b₁ < b₂` implies `a • b₁ < a • b₂`.
 * `PosSMulReflectLT`: If `a ≥ 0`, then `a • b₁ < a • b₂` implies `b₁ < b₂`.
 * `PosSMulReflectLE`: If `a > 0`, then `a • b₁ ≤ a • b₂` implies `b₁ ≤ b₂`.
 
 We use the following four typeclasses to reason about right scalar multiplication (`a ↦ a • b`):
+
 * `SMulPosMono`: If `b ≥ 0`, then `a₁ ≤ a₂` implies `a₁ • b ≤ a₂ • b`.
 * `SMulPosStrictMono`: If `b > 0`, then `a₁ < a₂` implies `a₁ • b < a₂ • b`.
 * `SMulPosReflectLT`: If `b ≥ 0`, then `a₁ • b < a₂ • b` implies `a₁ < a₂`.
@@ -50,6 +52,7 @@ Furthermore, in a *module*, i.e. a group acted on by a ring, `PosSMulMono` and `
 equivalent (they are both the same as `∀ r ≥ 0, ∀ m ≥ 0, 0 ≤ r • m`),
 and similarly for `PosSMulStrictMono` and `SMulPosStrictMono`.
 To avoid dangerous instances going both, we have the extra two typeclasses:
+
 * `IsOrderedModule`: Conjunction of `PosSMulMono` and `SMulPosMono`
 * `IsStrictOrderedModule`: Conjunction of `PosSMulStrictMono` and `SMulPosStrictMono`.
 
@@ -64,6 +67,7 @@ available: `PosSMulMono.of_pos`, `PosSMulReflectLT.of_pos`, `SMulPosMono.of_pos`
 
 As `α` and `β` get more and more structure, those typeclasses end up being equivalent. The commonly
 used implications are:
+
 * When `α`, `β` are partial orders:
   * `PosSMulStrictMono → PosSMulMono`
   * `SMulPosStrictMono → SMulPosMono`
@@ -89,6 +93,7 @@ used implications are:
   * `SMulPosMono → SMulPosStrictMono` (not registered as instance)
 
 Further, the bundled non-granular typeclasses imply the granular ones like so:
+
 * `IsOrderedModule → PosSMulMono`
 * `IsOrderedModule → SMulPosMono`
 * `IsStrictOrderedModule → PosSMulStrictMono`
@@ -103,6 +108,7 @@ not covered by the current implications, please bring it up on Zulip!
 
 This file uses custom typeclasses instead of abbreviations of `CovariantClass`/`ContravariantClass`
 because:
+
 * They get displayed as classes in the docs. In particular, one can see their list of instances,
   instead of their instances being invariably dumped to the `CovariantClass`/`ContravariantClass`
   list.

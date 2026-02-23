@@ -31,25 +31,33 @@ hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n°
   is invariant by translation, so you'll often want to add `ContinuousConstVAdd M M` to get
   something meaningful. To express that the topology of a ring `R` is linear, use
   `[IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]`.
+
 * `IsLinearTopology.mk_of_hasBasis`: a convenient constructor for `IsLinearTopology`.
   See also `IsLinearTopology.mk_of_hasBasis'`.
+
 * The discrete topology on `M` is `R`-linear (declared as an `instance`).
+
 * `IsLinearTopology.hasBasis_subbimodule`: assume that `M` is an `(R, R')`-bimodule,
   and that its topology is both `R`-linear and `R'`-linear. Then there exists a basis of
   neighborhoods of 0 made of `(R, R')`-subbimodules. Note that this is not trivial, since the bases
   witnessing `R`-linearity and `R'`-linearity may have nothing to do with each other
+
 * `IsLinearTopology.tendsto_smul_zero`: assume that the topology on `M` is linear.
   For `m : ι → M` such that `m i` tends to 0, `r i • m i` still tends to 0 for any `r : ι → R`.
 
 * `IsLinearTopology.hasBasis_twoSidedIdeal`: if the ring `R` is linearly topologized,
   in the sense that we have both `IsLinearTopology R R` and `IsLinearTopology Rᵐᵒᵖ R`,
   then there exists a basis of neighborhoods of 0 consisting of two-sided ideals.
+
 * Conversely, to prove `IsLinearTopology R R` and `IsLinearTopology Rᵐᵒᵖ R`
   from a basis of two-sided ideals, use `IsLinearTopology.mk_of_hasBasis'` twice.
+
 * `IsLinearTopology.tendsto_mul_zero_of_left`: assume that the topology on `R` is (right-)linear.
   For `f, g : ι → R` such that `f i` tends to `0`, `f i * g i` still tends to `0`.
+
 * `IsLinearTopology.tendsto_mul_zero_of_right`: assume that the topology on `R` is (left-)linear.
   For `f, g : ι → R` such that `g i` tends to `0`, `f i * g i` still tends to `0`
+
 * If `R` is a commutative ring and its topology is left-linear, it is automatically
   right-linear (declared as a low-priority instance).
 

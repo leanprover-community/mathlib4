@@ -169,6 +169,7 @@ variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue 
 
 /--
 Suppose that
+
 - `v i` and `w` are absolute values on a field `R`.
 - `v i` is inequivalent to `v j` for all `j ≠ i` via the divergent point `a : R`.
 - `v i` is inequivalent to `w` via the divergent point `b : R`.
@@ -198,6 +199,7 @@ private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j 
 
 /--
 Suppose that
+
 - `v i` and `w` are absolute values on a field `R`.
 - `v i` is inequivalent to `v j` for all `j ≠ i` via the divergent point `a : R`.
 - `v i` is inequivalent to `w` via the divergent point `b : R`.

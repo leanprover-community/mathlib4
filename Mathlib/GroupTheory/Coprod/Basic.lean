@@ -336,7 +336,7 @@ variable (M N)
 
 See also `MulEquiv.coprodComm` for a `MulEquiv` version. -/
 @[to_additive /-- Map `AddMonoid.Coprod M N` to `AddMonoid.Coprod N M`
-  by applying `Sum.swap` to each element of the underlying list.
+by applying `Sum.swap` to each element of the underlying list.
 
 See also `AddEquiv.coprodComm` for an `AddEquiv` version. -/]
 def swap : M ∗ N →* N ∗ M :=

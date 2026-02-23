@@ -251,7 +251,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 namespace LinearMap
 
 /-- The **Hellinger--Toeplitz theorem**: if a symmetric operator is defined on a complete space,
-  then it is automatically continuous. -/
+then it is automatically continuous. -/
 theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) :
     Continuous T := by
   -- We prove it by using the closed graph theorem

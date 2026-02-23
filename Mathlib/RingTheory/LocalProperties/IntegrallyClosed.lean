@@ -54,8 +54,8 @@ theorem IsIntegrallyClosed.of_localization_submonoid [IsDomain R] {ι : Type*} (
     (fun i ↦ (hi i).of_equiv (IsLocalization.algEquiv (S i) (Localization (S i)) _).toRingEquiv) hs
 
 /-- An integral domain $R$ is integrally closed if there exists a set of prime ideals $S$ such that
-  $\bigcap_{\mathfrak{p} \in S} R_{\mathfrak{p}} = R$ and for every $\mathfrak{p} \in S$,
-  $R_{\mathfrak{p}}$ is integrally closed. -/
+$\bigcap_{\mathfrak{p} \in S} R_{\mathfrak{p}} = R$ and for every $\mathfrak{p} \in S$,
+$R_{\mathfrak{p}}$ is integrally closed. -/
 theorem IsIntegrallyClosed.of_localization [IsDomain R] (S : Set (PrimeSpectrum R))
     (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.1))
     (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.1.primeCompl
@@ -66,7 +66,7 @@ theorem IsIntegrallyClosed.of_localization [IsDomain R] (S : Set (PrimeSpectrum 
   simp only [← hs, Algebra.mem_iInf, Subtype.forall]
 
 /-- An integral domain `R` is integral closed if `Rₘ` is integral closed
-  for any maximal ideal `m` of `R`. -/
+for any maximal ideal `m` of `R`. -/
 theorem IsIntegrallyClosed.of_localization_maximal [IsDomain R]
     (h : ∀ p : Ideal R, p ≠ ⊥ → [p.IsMaximal] → IsIntegrallyClosed (Localization.AtPrime p)) :
     IsIntegrallyClosed R := by

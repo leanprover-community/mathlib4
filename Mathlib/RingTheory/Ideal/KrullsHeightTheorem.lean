@@ -102,8 +102,8 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     exact fun e ↦ h₂.not_ge (hp.2 ⟨h₁, e⟩ h₂.le)
 
 /-- **Krull's principal ideal theorem** (also known as **Krullscher Hauptidealsatz**) :
-  In a commutative Noetherian ring `R`, any prime ideal that is minimal over a principal ideal
-  has height at most 1. -/
+In a commutative Noetherian ring `R`, any prime ideal that is minimal over a principal ideal
+has height at most 1. -/
 lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
     (I : Ideal R) [I.IsPrincipal] (p : Ideal R) (hp : p ∈ I.minimalPrimes) : p.height ≤ 1 := by
   have := hp.1.1
@@ -165,8 +165,8 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
 
 open IsLocalRing in
 /-- **Krull's height theorem** (also known as **Krullscher Höhensatz**) :
-  In a commutative Noetherian ring `R`, any prime ideal that is minimal over an ideal generated
-  by `n` elements has height at most `n`. -/
+In a commutative Noetherian ring `R`, any prime ideal that is minimal over an ideal generated
+by `n` elements has height at most `n`. -/
 nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
     (I : Ideal R) (p : Ideal R) (hp : p ∈ I.minimalPrimes) :
     p.height ≤ I.spanRank.toENat := by

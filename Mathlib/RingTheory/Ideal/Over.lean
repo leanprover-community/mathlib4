@@ -42,11 +42,13 @@ variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
 variable {p : Ideal R} {P : Ideal S}
 
 /-- If there is an injective map `R/p → S/P` such that the following diagram commutes:
+
 ```
 R   → S
 ↓     ↓
 R/p → S/P
 ```
+
 then `P` lies over `p`.
 -/
 theorem comap_eq_of_scalar_tower_quotient [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
@@ -180,11 +182,13 @@ theorem LiesOver.tower_bot [hp : 𝔓.LiesOver p] [hP : 𝔓.LiesOver P] : P.Lie
 
 /--
 Consider the following commutative diagram of ring maps
+
 ```
 A → B
 ↓   ↓
 C → D
 ```
+
 and let `P` be an ideal of `B`. The image in `C` of the ideal of `A` under `P` is included
 in the ideal of `C` under the image of `P` in `D`.
 -/
@@ -198,11 +202,13 @@ theorem map_under_le_under_map {C D : Type*} [CommSemiring C] [Semiring D] [Alge
 
 /--
 Consider the following commutative diagram of ring maps
+
 ```
 A → B
 ↓   ↓
 C → D
 ```
+
 and let `P` be an ideal of `B`. Assume that the image in `C` of the ideal of `A` under `P`
 is maximal and that the image of `P` in `D` is not equal to `D`, then the image in `C` of the
 ideal of `A` under `P` is equal to the ideal of `C` under the image of `P` in `D`.
@@ -288,7 +294,7 @@ section algEquiv
 variable {P} {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
 
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
-  isomorphism between `B` and `C`, where `Q = σ P`. -/
+isomorphism between `B` and `C`, where `Q = σ P`. -/
 def algEquivOfEqMap (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) where
   __ := quotientEquiv P Q σ h
   commutes' := by
@@ -300,7 +306,7 @@ theorem algEquivOfEqMap_apply (h : Q = P.map σ) (x : B) : algEquivOfEqMap p σ 
   rfl
 
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
-  isomorphism between `B` and `C`, where `P = σ⁻¹ Q`. -/
+isomorphism between `B` and `C`, where `P = σ⁻¹ Q`. -/
 def algEquivOfEqComap (h : P = Q.comap σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
   algEquivOfEqMap p σ ((congrArg (map σ) h).trans (Q.map_comap_eq_self_of_equiv σ)).symm
 

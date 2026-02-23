@@ -31,6 +31,7 @@ be an `AddMonoidWithTop`.
   with `+` and `≤`.
 
 * `withTopAddEquiv : PartENat ≃+ ℕ∞`
+
 * `withTopOrderIso : PartENat ≃o ℕ∞`
 
 ## Implementation details

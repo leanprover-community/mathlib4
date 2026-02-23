@@ -8,7 +8,7 @@ module
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.RingTheory.DividedPowers.RatAlgebra
 
-/-! # Divided powers on ℤ_[p]
+/-! # Divided powers on ℤ\_[p]
 
 Given a divided power algebra `(B, J, δ)` and an injective ring morphism `f : A →+* B`, if `I` is
 an `A`-ideal such that `I.map f = J` and such that for all `n : ℕ`, `x ∈ I`, the preimage of
@@ -136,7 +136,7 @@ private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ide
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The family `ℕ → Ideal.span {(p : ℤ_[p])} → ℤ_[p]` given by `dpow n x = x ^ n / n!` is a
-  divided power structure on the `ℤ_[p]`-ideal `(p)`. -/
+divided power structure on the `ℤ_[p]`-ideal `(p)`. -/
 noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := by
   classical
   refine ofInjective (Ideal.span {(p : ℤ_[p])}) (⊤)

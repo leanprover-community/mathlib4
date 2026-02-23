@@ -13,6 +13,7 @@ public import Mathlib.Order.Filter.Extr
 # Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`
 
 ## TODO
+
 The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
 
@@ -32,17 +33,20 @@ namespace AddMonoidAlgebra
 
 Let `R` be a semiring and let `A` be a `SemilatticeSup`.
 For an element `f : R[A]`, this file defines
+
 * `AddMonoidAlgebra.supDegree`: the sup-degree taking values in `WithBot A`,
 * `AddMonoidAlgebra.infDegree`: the inf-degree taking values in `WithTop A`.
 
 If the grading type `A` is a linearly ordered additive monoid, then these two notions of degree
 coincide with the standard one:
+
 * the sup-degree is the maximum of the exponents of the monomials that appear with non-zero
   coefficient in `f`, or `⊥`, if `f = 0`;
 * the inf-degree is the minimum of the exponents of the monomials that appear with non-zero
   coefficient in `f`, or `⊤`, if `f = 0`.
 
 The main results are
+
 * `AddMonoidAlgebra.supDegree_mul_le`:
   the sup-degree of a product is at most the sum of the sup-degrees,
 * `AddMonoidAlgebra.le_infDegree_mul`:
@@ -57,10 +61,11 @@ The main results are
 The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
 Next, the general lemmas get specialized twice:
+
 * once for `supDegree` (essentially a simple application) and
 * once for `infDegree` (a simple application, via `OrderDual`).
 
-These final lemmas are the ones that likely get used the most.  The generic lemmas about
+These final lemmas are the ones that likely get used the most. The generic lemmas about
 `Finset.support.sup` may not be used directly much outside of this file.
 To see this in action, you can look at the triple
 `(sup_support_mul_le, maxDegree_mul_le, le_minDegree_mul)`.
@@ -198,6 +203,7 @@ end GeneralResultsAssumingSemilatticeSup
 
 
 /-! ### Shorthands for special cases
+
 Note that these definitions are reducible, in order to make it easier to apply the more generic
 lemmas above. -/
 
@@ -334,8 +340,8 @@ section LinearOrder
 variable [LinearOrder B] [OrderBot B] {p q : R[A]} (D : A → B)
 
 /-- If `D` is an injection into a linear order `B`, the leading coefficient of `f : R[A]` is the
-  nonzero coefficient of highest degree according to `D`, or 0 if `f = 0`. In general, it is defined
-  to be the coefficient at an inverse image of `supDegree f` (if such exists). -/
+nonzero coefficient of highest degree according to `D`, or 0 if `f = 0`. In general, it is defined
+to be the coefficient at an inverse image of `supDegree f` (if such exists). -/
 noncomputable def leadingCoeff [Nonempty A] (f : R[A]) : R :=
   f (D.invFun <| f.supDegree D)
 

@@ -22,9 +22,9 @@ Examples of mixed characteristic rings are `ℤ` or the `p`-adic integers/number
 This file provides the main theorem `split_by_characteristic` that splits any proposition `P` into
 the following three cases:
 
-1) Positive characteristic: `CharP R p` (where `p ≠ 0`)
-2) Equal characteristic zero: `Algebra ℚ R`
-3) Mixed characteristic: `MixedCharZero R p` (where `p` is prime)
+1. Positive characteristic: `CharP R p` (where `p ≠ 0`)
+2. Equal characteristic zero: `Algebra ℚ R`
+3. Mixed characteristic: `MixedCharZero R p` (where `p` is prime)
 
 ## Main definitions
 
@@ -139,9 +139,9 @@ end MixedCharZero
 A commutative ring `R` has "equal characteristic zero" if it satisfies one of the following
 equivalent properties:
 
-1) `R` is a `ℚ`-algebra.
-2) The quotient `R ⧸ I` has characteristic zero for any proper ideal `I ⊂ R`.
-3) `R` has characteristic zero and does not have mixed characteristic for any prime `p`.
+1. `R` is a `ℚ`-algebra.
+2. The quotient `R ⧸ I` has characteristic zero for any proper ideal `I ⊂ R`.
+3. `R` has characteristic zero and does not have mixed characteristic for any prime `p`.
 
 We show `(1) ↔ (2) ↔ (3)`, and most of the following is concerned with constructing
 an explicit algebra map `ℚ →+* R` (given by `x ↦ (x.num : R) /ₚ ↑x.pnatDen`)
@@ -319,6 +319,7 @@ example (n : ℕ) (h : n ≠ 0) : 0 < n :=
 
 /--
 Split any `Prop` over `R` into the three cases:
+
 - positive characteristic.
 - equal characteristic zero.
 - mixed characteristic `(0, p)`.
@@ -335,6 +336,7 @@ theorem split_by_characteristic (h_pos : ∀ p : ℕ, p ≠ 0 → CharP R p → 
 
 /--
 In an `IsDomain R`, split any `Prop` over `R` into the three cases:
+
 - *prime* characteristic.
 - equal characteristic zero.
 - mixed characteristic `(0, p)`.
@@ -348,6 +350,7 @@ theorem split_by_characteristic_domain [IsDomain R] (h_pos : ∀ p : ℕ, Nat.Pr
 
 /--
 In a local ring `R`, split any predicate over `R` into the three cases:
+
 - *prime power* characteristic.
 - equal characteristic zero.
 - mixed characteristic `(0, p)`.

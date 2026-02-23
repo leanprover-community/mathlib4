@@ -12,28 +12,33 @@ public import Mathlib.Algebra.NonAssoc.PreLie.Basic
 
 We define a Lie-admissible ring as a nonunital nonassociative ring such that the associator
 satisfies the identity
+
 ```
 associator x y z + associator z x y + associator y z x =
   associator y x z + associator z y x + associator x z y
 ```
 
 ## Main definitions:
-  * `LieAdmissibleRing`
-  * `LieAdmissibleAlgebra`
+
+* `LieAdmissibleRing`
+* `LieAdmissibleAlgebra`
 
 ## Main results
-  * `LieAdmissibleRing.instLieRing`: a Lie-admissible ring as a Lie ring
-  * `LeftPreLieRing.instLieAdmissibleRing`: a left pre-Lie ring as a Lie admissible ring
-  * `RightPreLieRing.instLieAdmissibleRing`: a right pre-Lie ring as a Lie admissible ring
-  * `LieAdmissibleAlgebra.instLieAlgebra`: a Lie-admissible algebra as a Lie algebra
-  * `LeftPreLieAlgebra.instLieAdmissibleAlgebra`: a left pre-Lie ring as a Lie admissible algebra
-  * `RightPreLieAlgebra.instLieAdmissibleAlgebra`: a right pre-Lie ring as a Lie admissible algebra
+
+* `LieAdmissibleRing.instLieRing`: a Lie-admissible ring as a Lie ring
+* `LeftPreLieRing.instLieAdmissibleRing`: a left pre-Lie ring as a Lie admissible ring
+* `RightPreLieRing.instLieAdmissibleRing`: a right pre-Lie ring as a Lie admissible ring
+* `LieAdmissibleAlgebra.instLieAlgebra`: a Lie-admissible algebra as a Lie algebra
+* `LeftPreLieAlgebra.instLieAdmissibleAlgebra`: a left pre-Lie ring as a Lie admissible algebra
+* `RightPreLieAlgebra.instLieAdmissibleAlgebra`: a right pre-Lie ring as a Lie admissible algebra
 
 ## Implementation Notes
+
 Algebras are implemented as extending `Module`, `IsScalarTower` and `SMulCommClass` following the
 documentation of `Algebra`.
 
 ## References
+
 [Munthe-Kaas, H.Z., Lundervold, A. **On Post-Lie Algebras, Lie–Butcher Series and Moving
 Frames.**][munthe-kaas_lundervold_2013]
 -/

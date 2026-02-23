@@ -144,12 +144,13 @@ The `Nat` state tracks which occurrence of the pattern we are about to see, 1-in
 (so the initial value is `1`).
 
 The cache stores results of `visit` together with
+
 - the `Nat` state before the cached call; and
 - the difference in the state resulting from the call.
-We store these because even if the cache hits,
-we must update the state as if the call had been made.
-Storing the difference suffices because the state increases monotonically.
-See also `canUseCache`. -/
+  We store these because even if the cache hits,
+  we must update the state as if the call had been made.
+  Storing the difference suffices because the state increases monotonically.
+  See also `canUseCache`. -/
 abbrev M := ReaderT Context <| MonadCacheT ExprStructEq (Expr × Nat × Nat) <|
   StateRefT Nat MetaM
 
@@ -243,6 +244,7 @@ def castFwd (e te p x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet 
 mutual
 
 /-- Given `e`, return `e'` where `e'` has had
+
 - the occurrences of `p` in `ctx.cfg.occs` replaced by `x`; and
 - subterms cast as appropriate in order to make `e'` type-correct.
 

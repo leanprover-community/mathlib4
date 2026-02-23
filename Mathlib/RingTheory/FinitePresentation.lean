@@ -179,7 +179,7 @@ theorem mvPolynomial_of_finitePresentation [FinitePresentation R A] (ι : Type v
 variable (R A B)
 
 /-- If `A` is an `R`-algebra and `S` is an `A`-algebra, both finitely presented, then `S` is
-  finitely presented as `R`-algebra. -/
+finitely presented as `R`-algebra. -/
 theorem trans [Algebra A B] [IsScalarTower R A B] [FinitePresentation R A]
     [FinitePresentation A B] : FinitePresentation R B := by
   have hfpB : FinitePresentation A B := inferInstance
@@ -464,6 +464,7 @@ under composition.
 
 Note that to state this conveniently for ring homs between rings of different universes, we carry
 around two predicates `P` and `Q`, which should be "the same" apart from universes:
+
 * `P`, for ring homs `(R : Type u) → (S : Type u)`.
 * `Q`, for ring homs `(R : Type u) → (S : Type v)`.
 -/

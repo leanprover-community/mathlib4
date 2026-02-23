@@ -273,6 +273,7 @@ The tactic `reduce_mod_char` looks for numeric expressions in characteristic `p`
 and reduces these to lie between `0` and `p`.
 
 For example:
+
 ```
 example : (5 : ZMod 4) = 1 := by reduce_mod_char
 example : (X ^ 2 - 3 * X + 4 : (ZMod 4)[X]) = X ^ 2 + X := by reduce_mod_char

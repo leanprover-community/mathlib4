@@ -37,7 +37,7 @@ universe u v
 namespace Nat
 
 /-- `Nat.card α` is the cardinality of `α` as a natural number.
-  If `α` is infinite, `Nat.card α = 0`. -/
+If `α` is infinite, `Nat.card α = 0`. -/
 protected def card (α : Type*) : ℕ :=
   toNat (mk α)
 
@@ -277,7 +277,7 @@ end Set
 namespace ENat
 
 /-- `ENat.card α` is the cardinality of `α` as an extended natural number.
-  If `α` is infinite, `ENat.card α = ⊤`. -/
+If `α` is infinite, `ENat.card α = ⊤`. -/
 def card (α : Type*) : ℕ∞ :=
   toENat (mk α)
 

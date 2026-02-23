@@ -90,6 +90,7 @@ end
 `a : X ⟶ X'`, `b : Y ⟶ Y'`, `c : Z ⟶ Z'` such that
 `a ≫ f' = f ≫ b`, `b ≫ g' = g ≫ c`, and `a⟦1⟧' ≫ h = h' ≫ c`.
 In other words, we have a commutative diagram:
+
 ```
      f      g      h
   X  ───> Y  ───> Z  ───> X⟦1⟧

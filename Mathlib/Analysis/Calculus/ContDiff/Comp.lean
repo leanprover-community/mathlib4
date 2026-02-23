@@ -168,7 +168,7 @@ theorem ContDiffWithinAt.comp_of_eq {s : Set E} {t : Set F} {g : F → G} {f : E
   subst hy; exact hg.comp x hf st
 
 /-- The composition of `C^n` functions at points in domains is `C^n`,
-  with a weaker condition on `s` and `t`. -/
+with a weaker condition on `s` and `t`. -/
 theorem ContDiffWithinAt.comp_of_mem_nhdsWithin_image
     {s : Set E} {t : Set F} {g : F → G} {f : E → F} (x : E)
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)
@@ -176,7 +176,7 @@ theorem ContDiffWithinAt.comp_of_mem_nhdsWithin_image
   (hg.mono_of_mem_nhdsWithin hs).comp x hf (subset_preimage_image f s)
 
 /-- The composition of `C^n` functions at points in domains is `C^n`,
-  with a weaker condition on `s` and `t`. -/
+with a weaker condition on `s` and `t`. -/
 theorem ContDiffWithinAt.comp_of_mem_nhdsWithin_image_of_eq
     {s : Set E} {t : Set F} {g : F → G} {f : E → F} {y : F} (x : E)
     (hg : ContDiffWithinAt 𝕜 n g t y) (hf : ContDiffWithinAt 𝕜 n f s x)
@@ -196,7 +196,7 @@ theorem ContDiffWithinAt.comp_inter_of_eq {s : Set E} {t : Set F} {g : F → G} 
   subst hy; exact hg.comp_inter x hf
 
 /-- The composition of `C^n` functions at points in domains is `C^n`,
-  with a weaker condition on `s` and `t`. -/
+with a weaker condition on `s` and `t`. -/
 theorem ContDiffWithinAt.comp_of_preimage_mem_nhdsWithin
     {s : Set E} {t : Set F} {g : F → G} {f : E → F} (x : E)
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)
@@ -204,7 +204,7 @@ theorem ContDiffWithinAt.comp_of_preimage_mem_nhdsWithin
   (hg.comp_inter x hf).mono_of_mem_nhdsWithin (inter_mem self_mem_nhdsWithin hs)
 
 /-- The composition of `C^n` functions at points in domains is `C^n`,
-  with a weaker condition on `s` and `t`. -/
+with a weaker condition on `s` and `t`. -/
 theorem ContDiffWithinAt.comp_of_preimage_mem_nhdsWithin_of_eq
     {s : Set E} {t : Set F} {g : F → G} {f : E → F} {y : F} (x : E)
     (hg : ContDiffWithinAt 𝕜 n g t y) (hf : ContDiffWithinAt 𝕜 n f s x)
@@ -545,12 +545,12 @@ section bundled
 taken within the same set. Version for partial derivatives / functions with parameters. If `f x` is
 a `C^n+1` family of functions and `g x` is a `C^n` family of points, then the derivative of `f x` at
 `g x` depends in a `C^n` way on `x`. We give a general version of this fact relative to sets which
-may not have unique derivatives, in the following form.  If `f : E × F → G` is `C^n+1` at
+may not have unique derivatives, in the following form. If `f : E × F → G` is `C^n+1` at
 `(x₀, g(x₀))` in `(s ∪ {x₀}) × t ⊆ E × F` and `g : E → F` is `C^n` at `x₀` within some set `s ⊆ E`,
 then there is a function `f' : E → F →L[𝕜] G` that is `C^n` at `x₀` within `s` such that for all `x`
 sufficiently close to `x₀` within `s ∪ {x₀}` the function `y ↦ f x y` has derivative `f' x` at `g x`
-within `t ⊆ F`.  For convenience, we return an explicit set of `x`'s where this holds that is a
-subset of `s ∪ {x₀}`.  We need one additional condition, namely that `t` is a neighborhood of
+within `t ⊆ F`. For convenience, we return an explicit set of `x`'s where this holds that is a
+subset of `s ∪ {x₀}`. We need one additional condition, namely that `t` is a neighborhood of
 `g(x₀)` within `g '' s`. -/
 theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F} {t : Set F} (hn : n ≠ ∞)
     {x₀ : E} (hf : ContDiffWithinAt 𝕜 (n + 1) (uncurry f) (insert x₀ s ×ˢ t) (x₀, g x₀))
@@ -585,6 +585,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The most general lemma stating that `x ↦ fderivWithin 𝕜 (f x) t (g x)` is `C^n`
 at a point within a set.
 To show that `x ↦ D_yf(x,y)g(x)` (taken within `t`) is `C^m` at `x₀` within `s`, we require that
+
 * `f` is `C^n` at `(x₀, g(x₀))` within `(s ∪ {x₀}) × t` for `n ≥ m+1`.
 * `g` is `C^m` at `x₀` within `s`;
 * Derivatives are unique at `g(x)` within `t` for `x` sufficiently close to `x₀` within `s ∪ {x₀}`;

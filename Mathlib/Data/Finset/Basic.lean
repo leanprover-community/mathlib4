@@ -400,14 +400,14 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
 -- on, e.g. `x ∈ s.filter (Eq b)`.
 /-- After filtering out everything that does not equal a given value, at most that value remains.
 
-  This is equivalent to `filter_eq'` with the equality the other way.
+This is equivalent to `filter_eq'` with the equality the other way.
 -/
 theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) :
     s.filter (Eq b) = ite (b ∈ s) {b} ∅ := by grind
 
 /-- After filtering out everything that does not equal a given value, at most that value remains.
 
-  This is equivalent to `filter_eq` with the equality the other way.
+This is equivalent to `filter_eq` with the equality the other way.
 -/
 theorem filter_eq' [DecidableEq β] (s : Finset β) (b : β) :
     (s.filter fun a => a = b) = ite (b ∈ s) {b} ∅ := by grind
@@ -602,7 +602,7 @@ theorem Finset.union_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
   simp [Equiv.symm_apply_eq]
 
 /-- The type of dependent functions on the disjoint union of finsets `s ∪ t` is equivalent to the
-  type of pairs of functions on `s` and on `t`. This is similar to `Equiv.sumPiEquivProdPi`. -/
+type of pairs of functions on `s` and on `t`. This is similar to `Equiv.sumPiEquivProdPi`. -/
 def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h : Disjoint s t) :
     ((∀ i : s, α i) × ∀ i : t, α i) ≃ ∀ i : (s ∪ t : Finset ι), α i :=
   let e := Equiv.Finset.union s t h

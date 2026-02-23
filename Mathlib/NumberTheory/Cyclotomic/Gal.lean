@@ -85,7 +85,7 @@ variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
 variable {K} (L)
 
 /-- The `MulEquiv` that takes an automorphism `f` to the element `k : (ZMod n)ˣ` such that
-  `f μ = μ ^ k` for any root of unity `μ`. A strengthening of `IsPrimitiveRoot.autToPow`. -/
+`f μ = μ ^ k` for any root of unity `μ`. A strengthening of `IsPrimitiveRoot.autToPow`. -/
 @[simps]
 noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃* (ZMod n)ˣ :=
   let hζ := zeta_spec n K L

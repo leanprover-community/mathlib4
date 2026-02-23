@@ -17,12 +17,13 @@ variables, relying on `Measure.infinitePi`.
 ## Implementation note
 
 There are several possible measurability assumptions:
+
 * The map `ω ↦ (Xᵢ(ω))ᵢ` is measurable.
 * For all `i`, the map `ω ↦ Xᵢ(ω)` is measurable.
 * The map `ω ↦ (Xᵢ(ω))ᵢ` is almost everywhere measurable.
 * For all `i`, the map `ω ↦ Xᵢ(ω)` is almost everywhere measurable.
-Although the first two options are equivalent, the last two are not if the index set is not
-countable.
+  Although the first two options are equivalent, the last two are not if the index set is not
+  countable.
 -/
 
 public section

@@ -31,9 +31,9 @@ including `AdjoinRoot f = R[X]/(f)` itself.
 
 The main definitions are in the `AdjoinRoot` namespace.
 
-*  `mk f : R[X] →+* AdjoinRoot f`, the natural ring homomorphism.
+* `mk f : R[X] →+* AdjoinRoot f`, the natural ring homomorphism.
 
-*  `of f : R →+* AdjoinRoot f`, the natural ring homomorphism.
+* `of f : R →+* AdjoinRoot f`, the natural ring homomorphism.
 
 * `root f : AdjoinRoot f`, the image of X in R[X]/(f).
 
@@ -891,7 +891,7 @@ theorem quotMapOfEquivQuotMapCMapSpanMk_symm_mk (x : AdjoinRoot f) :
   exact Ideal.quotEquivOfEq_mk _ _
 
 /-- The natural isomorphism `R[α]/((I[x] ⊔ (f)) / (f)) ≅ (R[x]/I[x])/((f) ⊔ I[x] / I[x])`
-  for `α` a root of `f : R[X]` and `I : Ideal R` -/
+for `α` a root of `f : R[X]` and `I : Ideal R` -/
 def quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk :
     AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span ({f} : Set R[X]))) ≃+*
       (R[X] ⧸ I.map (C : R →+* R[X])) ⧸
@@ -912,7 +912,7 @@ theorem quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk (p : R[X]) :
   rfl
 
 /-- The natural isomorphism `(R/I)[x]/(f mod I) ≅ (R[x]/I*R[x])/(f mod I[x])` where
-  `f : R[X]` and `I : Ideal R` -/
+`f : R[X]` and `I : Ideal R` -/
 def Polynomial.quotQuotEquivComm :
     (R ⧸ I)[X] ⧸ span ({f.map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) ≃+*
       (R[X] ⧸ (I.map C)) ⧸ span ({(Ideal.Quotient.mk (I.map C)) f} : Set (R[X] ⧸ (I.map C))) :=
@@ -939,7 +939,7 @@ theorem Polynomial.quotQuotEquivComm_symm_mk_mk (p : R[X]) :
     polynomialQuotientEquivQuotientPolynomial_symm_mk]
 
 /-- The natural isomorphism `R[α]/I[α] ≅ (R/I)[X]/(f mod I)` for `α` a root of `f : R[X]`
-  and `I : Ideal R`. -/
+and `I : Ideal R`. -/
 def quotAdjoinRootEquivQuotPolynomialQuot :
     AdjoinRoot f ⧸ I.map (of f) ≃+*
     (R ⧸ I)[X] ⧸ span ({f.map (Ideal.Quotient.mk I)} : Set (R ⧸ I)[X]) :=

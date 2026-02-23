@@ -46,7 +46,7 @@ needed.
 
 ## References
 
-- https://en.wikipedia.org/wiki/Dilation_(metric_space)
+- https://en.wikipedia.org/wiki/Dilation\_(metric_space)
 - [Marcel Berger, *Geometry*][berger1987]
 -/
 

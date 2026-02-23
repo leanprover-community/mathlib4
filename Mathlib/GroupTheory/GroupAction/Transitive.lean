@@ -15,13 +15,14 @@ of monoids `φ: M → N`,
 
 - `MulAction.IsPretransitive.of_surjective_map` shows that
   the action of `N` on `Y` is pretransitive
-  if that of `M` on `X`  is pretransitive.
+  if that of `M` on `X` is pretransitive.
 
 - `MulAction.isPretransitive_congr` shows that when
   `φ` is surjective, the action of `N` on `Y` is pretransitive
-  iff that of `M` on `X`  is pretransitive.
+  iff that of `M` on `X` is pretransitive.
 
 Given `MulAction G X` where `G` is a group,
+
 - `MulAction.isPretransitive_iff_base G a` shows that `IsPretransitive G X`
   iff every element is translated from `a`
 

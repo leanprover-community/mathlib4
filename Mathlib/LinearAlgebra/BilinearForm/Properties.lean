@@ -21,6 +21,7 @@ Given any term `B` of type `BilinForm`, due to a coercion, can use
 the notation `B x y` to refer to the function field, i.e. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
+
 - `M`, `M'`, ... are modules over the commutative semiring `R`,
 - `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
 - `V`, ... is a vector space over the field `K`.
@@ -214,7 +215,7 @@ lemma isPosSemidef_def [LE R] : B.IsPosSemidef ↔ B.IsSymm ∧ B.IsNonneg :=
   ⟨fun h ↦ ⟨h.isSymm, h.isNonneg⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
 
 /-- A bilinear form is positive semidefinite if and only if it is positive semidefinite
-  as a sesquilinear form. -/
+as a sesquilinear form. -/
 lemma isPosSemidef_iff [LE R] {B : BilinForm R M} : B.IsPosSemidef ↔ LinearMap.IsPosSemidef B :=
   isPosSemidef_def.trans <| (isSymm_iff.and isNonneg_iff).trans LinearMap.isPosSemidef_def.symm
 

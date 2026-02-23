@@ -285,6 +285,7 @@ lemma cons' {r : R} {rs : List R} (h1 : IsSMulRegular M r)
   (isWeaklyRegular_cons_iff' M r rs).mpr ⟨h1, h2⟩
 
 /-- Weakly regular sequences can be inductively characterized by:
+
 * The empty sequence is weakly regular on any module.
 * If `r` is regular on `M` and `rs` is a weakly regular sequence on `M⧸rM` then
   the sequence obtained from `rs` by prepending `r` is weakly regular on `M`.
@@ -414,6 +415,7 @@ lemma cons' {r : R} {rs : List R} (h1 : IsSMulRegular M r)
   (isRegular_cons_iff' M r rs).mpr ⟨h1, h2⟩
 
 /-- Regular sequences can be inductively characterized by:
+
 * The empty sequence is regular on any nonzero module.
 * If `r` is regular on `M` and `rs` is a regular sequence on `M⧸rM` then the
   sequence obtained from `rs` by prepending `r` is regular on `M`.

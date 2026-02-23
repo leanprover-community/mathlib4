@@ -16,8 +16,9 @@ public import Mathlib.Topology.Sheaves.Stalks
 # Sheaves of (commutative) rings.
 
 Results specific to sheaves of commutative rings including sheaves of continuous functions
-`TopCat.continuousFunctions` with natural operations of  `pullback` and `map` and
+`TopCat.continuousFunctions` with natural operations of `pullback` and `map` and
 sub, quotient, and localization operations on sheaves of rings with
+
 - `SubmonoidPresheaf` : A subpresheaf with a submonoid structure on each of the components.
 - `LocalizationPresheaf` : The localization of a presheaf of commrings at a `SubmonoidPresheaf`.
 - `TotalQuotientPresheaf` : The presheaf of total quotient rings.
@@ -25,6 +26,7 @@ sub, quotient, and localization operations on sheaves of rings with
 As more results accumulate, please consider splitting this file.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/0073
 -/
 
@@ -254,9 +256,11 @@ def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u}
 values in some topological commutative ring `T`.
 
 For example, we could construct the presheaf of continuous complex-valued functions of `X` as
+
 ```
 presheafToTopCommRing X (TopCommRingCat.of ℂ)
 ```
+
 (this requires `import Topology.Instances.Complex`).
 -/
 def presheafToTopCommRing (T : TopCommRingCat.{v}) : X.Presheaf CommRingCat.{v} :=

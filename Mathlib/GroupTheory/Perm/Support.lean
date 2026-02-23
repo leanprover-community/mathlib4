@@ -24,6 +24,7 @@ In the following, `f g : Equiv.Perm α`.
 * `Equiv.Perm.support`: the elements `x : α` that are not fixed by `f`.
 
 Assume `α` is a Fintype:
+
 * `Equiv.Perm.fixed_point_card_lt_of_ne_one f` says that `f` has
   strictly less than `Fintype.card α - 1` fixed points, unless `f = 1`.
   (Equivalently, `f.support` has at least 2 elements.)
@@ -337,7 +338,7 @@ theorem isInvariant_of_support_le {c : Perm α} {s : Finset α} (hcs : c.support
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A permutation c is the extension of a restriction of g to s
-  iff its support is contained in s and its restriction is that of g -/
+iff its support is contained in s and its restriction is that of g -/
 lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
     (hg : ∀ x, g x ∈ s ↔ x ∈ s) :
     ofSubtype (g.subtypePerm hg) = c ↔

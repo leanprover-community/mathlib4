@@ -13,7 +13,7 @@ public meta import Lean.Util.Path
 
 TODO:
 `getLeanLibs` contains a hard-coded choice of which dependencies should be built and which ones
-should not.  Could this be made more structural and robust, possibly with extra `Lake` support?
+should not. Could this be made more structural and robust, possibly with extra `Lake` support?
 
 -/
 
@@ -23,12 +23,15 @@ open Lean System.FilePath
 
 /-- `getAllFiles git ml` takes all `.lean` files in the directory `ml`
 (recursing into sub-directories) and returns the `Array` of `String`s
+
 ```
 #[file₁, ..., fileₙ]
 ```
+
 of all their file names. These are not sorted in general.
 
 The input `git` is a `Bool`ean flag:
+
 * `true` means that the command uses `git ls-files` to find the relevant files;
 * `false` means that the command recursively scans all dirs searching for `.lean` files.
 -/

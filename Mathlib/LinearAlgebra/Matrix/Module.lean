@@ -21,6 +21,7 @@ public import Mathlib.Data.Matrix.Basis
   it gives a functor from the category of `R`-modules to the category of `Matrix ι ι R`-modules.
 
 ## Tags
+
 matrix, module
 -/
 
@@ -32,7 +33,7 @@ variable {ι R M N P : Type*} [Ring R] [Fintype ι] [DecidableEq ι] [AddCommGro
 namespace Matrix.Module
 
 /-- `Mⁿ` is a `Mₙ(R)` module, note that this creates a diamond when `M` is `Matrix ι ι R` or when
-  `M` is `R`. -/
+`M` is `R`. -/
 scoped instance matrixModule : Module (Matrix ι ι R) (ι → M) where
   smul N v i := ∑ j : ι, N i j • v j
   one_smul v := funext fun i ↦ show ∑ _, _ = _ by simp [one_apply]
@@ -87,7 +88,7 @@ open Matrix.Module
 
 variable (ι) in
 /-- The induced linear map from `Mⁿ` to `Nⁿ` by a linear map `f : M → N`, this is the matrix linear
-  version of `LinearMap.compLeft`. -/
+version of `LinearMap.compLeft`. -/
 @[simps]
 def mapMatrixModule (f : M →ₗ[R] N) : (ι → M) →ₗ[Matrix ι ι R] (ι → N) where
   toFun := LinearMap.compLeft f ι

@@ -14,10 +14,11 @@ public import Mathlib.CategoryTheory.Products.Basic
 
 A monoidal category is a category equipped with a tensor product, unitors, and an associator.
 In the definition, we provide the tensor product as a pair of functions
+
 * `tensorObj : C → C → C`
 * `tensorHom : (X₁ ⟶ Y₁) → (X₂ ⟶ Y₂) → ((X₁ ⊗ X₂) ⟶ (Y₁ ⊗ Y₂))`
-and allow use of the overloaded notation `⊗` for both.
-The unitors and associator are provided componentwise.
+  and allow use of the overloaded notation `⊗` for both.
+  The unitors and associator are provided componentwise.
 
 The tensor product can be expressed as a functor via `tensor : C × C ⥤ C`.
 The unitors and associator are gathered together as natural
@@ -29,14 +30,15 @@ e.g. `(λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom` in `CategoryTheory.Monoidal.Coh
 ## Implementation notes
 
 In the definition of monoidal categories, we also provide the whiskering operators:
+
 * `whiskerLeft (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) : X ⊗ Y₁ ⟶ X ⊗ Y₂`, denoted by `X ◁ f`,
 * `whiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) : X₁ ⊗ Y ⟶ X₂ ⊗ Y`, denoted by `f ▷ Y`.
-These are products of an object and a morphism (the terminology "whiskering"
-is borrowed from 2-category theory). The tensor product of morphisms `tensorHom` can be defined
-in terms of the whiskerings. There are two possible such definitions, which are related by
-the exchange property of the whiskerings. These two definitions are accessed by `tensorHom_def`
-and `tensorHom_def'`. By default, `tensorHom` is defined so that `tensorHom_def` holds
-definitionally.
+  These are products of an object and a morphism (the terminology "whiskering"
+  is borrowed from 2-category theory). The tensor product of morphisms `tensorHom` can be defined
+  in terms of the whiskerings. There are two possible such definitions, which are related by
+  the exchange property of the whiskerings. These two definitions are accessed by `tensorHom_def`
+  and `tensorHom_def'`. By default, `tensorHom` is defined so that `tensorHom_def` holds
+  definitionally.
 
 If you want to provide `tensorHom` and define `whiskerLeft` and `whiskerRight` in terms of it,
 you can use the alternative constructor `CategoryTheory.MonoidalCategory.ofTensorHom`.
@@ -52,12 +54,13 @@ performed by the `coherence` tactic.
 
 The simp-normal form of morphisms is defined to be an expression that has the minimal number of
 parentheses. More precisely,
+
 1. it is a composition of morphisms like `f₁ ≫ f₂ ≫ f₃ ≫ f₄ ≫ f₅` such that each `fᵢ` is
-  either a structural morphism (morphisms made up only of identities, associators, unitors)
-  or a non-structural morphism, and
+   either a structural morphism (morphisms made up only of identities, associators, unitors)
+   or a non-structural morphism, and
 2. each non-structural morphism in the composition is of the form `X₁ ◁ X₂ ◁ X₃ ◁ f ▷ X₄ ▷ X₅`,
-  where each `Xᵢ` is an object that is not the identity or a tensor and `f` is a non-structural
-  morphism that is not the identity or a composite.
+   where each `Xᵢ` is an object that is not the identity or a tensor and `f` is a non-structural
+   morphism that is not the identity or a composite.
 
 Note that `X₁ ◁ X₂ ◁ X₃ ◁ f ▷ X₄ ▷ X₅` is actually `X₁ ◁ (X₂ ◁ (X₃ ◁ ((f ▷ X₄) ▷ X₅)))`.
 
@@ -65,6 +68,7 @@ Currently, the simp lemmas don't rewrite `𝟙 X ⊗ₘ f` and `f ⊗ₘ 𝟙 Y`
 respectively, since it requires a huge refactoring. We hope to add these simp lemmas soon.
 
 ## References
+
 * Tensor categories, Etingof, Gelaki, Nikshych, Ostrik,
   http://www-math.mit.edu/~etingof/egnobookfinal.pdf
 * <https://stacks.math.columbia.edu/tag/0FFK>.

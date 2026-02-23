@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 # Residue field of primes in polynomial algebras
 
 ## Main results
+
 - `Polynomial.residueFieldMapCAlgEquiv`: `κ(I[X]) ≃ₐ[κ(I)] κ(I)(X)`
 - `Polynomial.fiberEquivQuotient`: `κ(p) ⊗[R] (R[X] ⧸ I) = κ(p)[X] / I`
 

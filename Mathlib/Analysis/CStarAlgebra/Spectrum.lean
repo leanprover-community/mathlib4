@@ -43,6 +43,7 @@ we can still establish a form of spectral permanence.
 + `IsStarNormal.spectralRadius_eq_nnnorm`: The spectral radius of a normal element is equal to
   its norm.
 + `IsSelfAdjoint.mem_spectrum_eq_re`: Any element of the spectrum of a selfadjoint element is real.
+
 * `StarSubalgebra.coe_isUnit`: for `x : S` in a C⋆-Subalgebra `S` of `A`, then `↑x : A` is a Unit
   if and only if `x` is a unit.
 * `StarSubalgebra.spectrum_eq`: **spectral_permanence** for `x : S`, where `S` is a C⋆-Subalgebra

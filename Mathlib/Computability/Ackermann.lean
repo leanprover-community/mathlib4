@@ -36,13 +36,11 @@ are the following. Assuming `∀ n, f n < ack a n` and `∀ n, g n < ack b n`, w
 
 - `∀ n, pair (f n) (g n) < ack (max a b + 3) n`.
 - `∀ n, g (f n) < ack (max a b + 2) n`.
-- `∀ n, Nat.rec (f n.unpair.1) (fun (y IH : ℕ) => g (pair n.unpair.1 (pair y IH)))
-  n.unpair.2 < ack (max a b + 9) n`.
+- `∀ n, Nat.rec (f n.unpair.1) (fun (y IH : ℕ) => g (pair n.unpair.1 (pair y IH))) n.unpair.2 < ack (max a b + 9) n`.
 
 The last one is evidently the hardest. Using `unpair_add_le`, we reduce it to the more manageable
 
-- `∀ m n, rec (f m) (fun (y IH : ℕ) => g (pair m (pair y IH))) n <
-  ack (max a b + 9) (m + n)`.
+- `∀ m n, rec (f m) (fun (y IH : ℕ) => g (pair m (pair y IH))) n < ack (max a b + 9) (m + n)`.
 
 We then prove this by induction on `n`. Our proof crucially depends on `ack_pair_lt`, which is
 applied twice, giving us a constant of `4 + 4`. The rest of the proof consists of simpler bounds

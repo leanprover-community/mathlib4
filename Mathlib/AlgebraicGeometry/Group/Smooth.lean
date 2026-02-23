@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Monoidal.Grp_
 # Smoothness of group schemes
 
 ## Main results
+
 - `AlgebraicGeometry.smooth_of_grpObj_of_isAlgClosed`:
   If `G` is a group scheme over an algebraically closed field `k` that is reduced and locally
   of finite type, then `G` is smooth over `k`.

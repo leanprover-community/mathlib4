@@ -49,7 +49,7 @@ namespace Subgroup
 
 variable {G : Type*} [Group G]
 
-/-- `Finset.noncommProd` is “injective” in `f` if `f` maps into independent subgroups.  This
+/-- `Finset.noncommProd` is “injective” in `f` if `f` maps into independent subgroups. This
 generalizes (one direction of) `Subgroup.disjoint_iff_mul_eq_one`. -/
 @[to_additive /-- `Finset.noncommSum` is “injective” in `f` if `f` maps into independent subgroups.
 This generalizes (one direction of) `AddSubgroup.disjoint_iff_add_eq_zero`. -/]

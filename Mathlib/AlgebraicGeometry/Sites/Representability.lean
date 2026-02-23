@@ -20,8 +20,10 @@ In this file we prove that a sheaf of types `F` on `Sch` is representable if it 
 locally representable.
 
 ## Main result
+
 - `AlgebraicGeometry.Scheme.LocalRepresentability.isRepresentable`:
   Suppose
+
   * F is a `Type u`-valued sheaf on `Sch` with respect to the Zariski topology
   * X : ι → Sch is a family of schemes
   * f : Π i, yoneda.obj (X i) ⟶ F is a family of relatively representable open immersions
@@ -30,6 +32,7 @@ locally representable.
   Then `F` is representable.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/01JJ
 
 -/
@@ -175,6 +178,7 @@ noncomputable def yonedaIsoSheaf :
 
 /--
 Suppose
+
 * F is a `Type u`-valued sheaf on `Sch` with respect to the Zariski topology
 * X : ι → Sch is a family of schemes
 * f : Π i, yoneda.obj (X i) ⟶ F is a family of relatively representable open immersions
@@ -190,6 +194,7 @@ def representableBy : F.1.RepresentableBy (glueData hf).glued :=
 include hf in
 /--
 Suppose
+
 * F is a `Type u`-valued sheaf on `Sch` with respect to the Zariski topology
 * X : ι → Sch is a family of schemes
 * f : Π i, yoneda.obj (X i) ⟶ F is a family of relatively representable open immersions

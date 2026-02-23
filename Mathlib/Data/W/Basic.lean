@@ -47,12 +47,12 @@ namespace WType
 variable {α : Type*} {β : α → Type*}
 
 /-- The canonical map to the corresponding sigma type, returning the label of a node as an
-  element `a` of `α`, and the children of the node as a function `β a → WType β`. -/
+element `a` of `α`, and the children of the node as a function `β a → WType β`. -/
 def toSigma : WType β → Σ a : α, β a → WType β
   | ⟨a, f⟩ => ⟨a, f⟩
 
 /-- The canonical map from the sigma type into a `WType`. Given a node `a : α`, and
-  its children as a function `β a → WType β`, return the corresponding tree. -/
+its children as a function `β a → WType β`, return the corresponding tree. -/
 def ofSigma : (Σ a : α, β a → WType β) → WType β
   | ⟨a, f⟩ => WType.mk a f
 
@@ -66,7 +66,7 @@ theorem toSigma_ofSigma : ∀ s : Σ a : α, β a → WType β, toSigma (ofSigma
 
 variable (β) in
 /-- The canonical bijection with the sigma type, showing that `WType` is a fixed point of
-  the polynomial functor `X ↦ Σ a : α, β a → X`. -/
+the polynomial functor `X ↦ Σ a : α, β a → X`. -/
 @[simps]
 def equivSigma : WType β ≃ Σ a : α, β a → WType β where
   toFun := toSigma

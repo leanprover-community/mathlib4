@@ -83,7 +83,7 @@ protected lemma ContDiffWithinAt.derivWithin {x : 𝕜}
     (H.fderivWithin_right hs hmn hx) (fun _ _ ↦ trivial)
 
 /-- A function is `C^(n + 1)` if and only if it is differentiable,
-  and its derivative (formulated in terms of `deriv`) is `C^n`. -/
+and its derivative (formulated in terms of `deriv`) is `C^n`. -/
 theorem contDiff_succ_iff_deriv :
     ContDiff 𝕜 (n + 1) f ↔ Differentiable 𝕜 f ∧ (n = ω → AnalyticOn 𝕜 f univ) ∧
       ContDiff 𝕜 n (deriv f) := by

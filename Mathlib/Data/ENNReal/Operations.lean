@@ -259,7 +259,7 @@ protected theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d :=
 section Cancel
 
 /-- An element `a` is `AddLECancellable` if `a + b ≤ a + c` implies `b ≤ c` for all `b` and `c`.
-  This is true in `ℝ≥0∞` for all elements except `∞`. -/
+This is true in `ℝ≥0∞` for all elements except `∞`. -/
 @[simp]
 theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ :=
   WithTop.addLECancellable_iff_ne_top

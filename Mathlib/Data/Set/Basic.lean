@@ -30,11 +30,11 @@ Lean.
 
 Notation used here:
 
--  `f : α → β` is a function,
+- `f : α → β` is a function,
 
--  `s : Set α` and `s₁ s₂ : Set α` are subsets of `α`
+- `s : Set α` and `s₁ s₂ : Set α` are subsets of `α`
 
--  `t : Set β` is a subset of `β`.
+- `t : Set β` is a subset of `β`.
 
 Definitions in the file:
 
@@ -1060,7 +1060,7 @@ variable {α : Type*} {s t u : Set α}
 namespace Equiv
 
 /-- Given a predicate `p : α → Prop`, produces an equivalence between
-  `Set {a : α // p a}` and `{s : Set α // ∀ a ∈ s, p a}`. -/
+`Set {a : α // p a}` and `{s : Set α // ∀ a ∈ s, p a}`. -/
 protected def setSubtypeComm (p : α → Prop) :
     Set {a : α // p a} ≃ {s : Set α // ∀ a ∈ s, p a} where
   toFun s := ⟨{a | ∃ h : p a, s ⟨a, h⟩}, fun _ h ↦ h.1⟩

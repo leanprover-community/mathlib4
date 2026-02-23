@@ -266,7 +266,7 @@ theorem rel_filterMap : ((R ⇒ Option.Rel P) ⇒ Forall₂ R ⇒ Forall₂ P) f
       | _, _, Option.Rel.some h => Forall₂.cons h (rel_filterMap (@hfg) h₂)
 
 /-- Given a relation `R`, `sublist_forall₂ r l₁ l₂` indicates that there is a sublist of `l₂` such
-  that `forall₂ r l₁ l₂`. -/
+that `forall₂ r l₁ l₂`. -/
 inductive SublistForall₂ (R : α → β → Prop) : List α → List β → Prop
   | nil {l} : SublistForall₂ R [] l
   | cons {a₁ a₂ l₁ l₂} : R a₁ a₂ → SublistForall₂ R l₁ l₂ → SublistForall₂ R (a₁ :: l₁) (a₂ :: l₂)

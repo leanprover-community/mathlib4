@@ -37,6 +37,7 @@ Each of these has a dual.
   equalizer of `f` and `f`.
 
 ## Implementation notes
+
 As with the other special shapes in the limits library, all the definitions here are given as
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
@@ -972,6 +973,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 Given a fork `s` on morphisms `f, g : X ⟶ Y` and a pullback cone `c` on `s.ι : s.pt ⟶ X` and a
 morphism `h : Z ⟶ X`, the projection `c.snd : c.pt ⟶ Z` induces a fork on `h ≫ f` and `h ≫ g`.
+
 ```
 c.pt → Z
 |      |

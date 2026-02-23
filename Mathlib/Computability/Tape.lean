@@ -412,7 +412,7 @@ instance Tape.inhabited {Γ} [Inhabited Γ] : Inhabited (Tape Γ) :=
   ⟨by constructor <;> apply default⟩
 
 /-- A direction for the Turing machine `move` command, either
-  left or right. -/
+left or right. -/
 inductive Dir
   | left
   | right

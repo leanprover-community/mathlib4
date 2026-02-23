@@ -18,6 +18,7 @@ import Mathlib.Tactic.Attr.Register
 
 The `zify` tactic is used to shift propositions from `Nat` to `Int`.
 This is often useful since `Int` has well-behaved subtraction.
+
 ```
 example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify
@@ -41,6 +42,7 @@ open Lean.Elab.Tactic
 /--
 The `zify` tactic is used to shift propositions from `Nat` to `Int`.
 This is often useful since `Int` has well-behaved subtraction.
+
 ```
 example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify
@@ -50,13 +52,16 @@ example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   ⊢ ↑c < ↑a + 3 * ↑b
   -/
 ```
+
 `zify` can be given extra lemmas to use in simplification. This is especially useful in the
 presence of nat subtraction: passing `≤` arguments will allow `push_cast` to do more work.
+
 ```
 example (a b c : Nat) (h : a - b < c) (hab : b ≤ a) : false := by
   zify [hab] at h
   /- h : ↑a - ↑b < ↑c -/
 ```
+
 `zify` makes use of the `@[zify_simps]` attribute to move propositions,
 and the `push_cast` tactic to simplify the `Int`-valued expressions.
 `zify` is in some sense dual to the `lift` tactic.

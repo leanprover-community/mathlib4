@@ -13,24 +13,29 @@ public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 /-!
 # Number fields
+
 This file defines a number field and the ring of integers corresponding to it.
 
 ## Main definitions
+
 - `NumberField` defines a number field as a field which has characteristic zero and is finite
   dimensional over ℚ.
 - `RingOfIntegers` defines the ring of integers (or number ring) corresponding to a number field
   as the integral closure of ℤ in the number field.
 
 ## Implementation notes
+
 The definitions that involve a field of fractions choose a canonical field of fractions,
 but are independent of that choice.
 
 ## References
+
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
+
 number field, ring of integers
 -/
 
@@ -185,7 +190,7 @@ lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = 
   rfl
 
 /-- The ring homomorphism `(𝓞 K) →+* (𝓞 L)` given by restricting a ring homomorphism
-  `f : K →+* L` to `𝓞 K`. -/
+`f : K →+* L` to `𝓞 K`. -/
 def mapRingHom {K L : Type*} [Field K] [Field L] (f : K →+* L) : (𝓞 K) →+* (𝓞 L) where
   toFun k := ⟨f k.val, map_isIntegral_int f k.2⟩
   map_zero' := by ext; simp only [map_mk, map_zero]
@@ -198,7 +203,7 @@ theorem mapRingHom_apply {K L : Type*} [Field K] [Field L] (f : K →+* L) (x : 
     (mapRingHom f x : L) = f (x : K) := rfl
 
 /-- The ring isomorphism `(𝓞 K) ≃+* (𝓞 L)` given by restricting
-  a ring isomorphism `e : K ≃+* L` to `𝓞 K`. -/
+a ring isomorphism `e : K ≃+* L` to `𝓞 K`. -/
 def mapRingEquiv {K L : Type*} [Field K] [Field L] (e : K ≃+* L) : (𝓞 K) ≃+* (𝓞 L) :=
   RingEquiv.ofRingHom (mapRingHom e) (mapRingHom e.symm)
     (RingHom.ext fun x => ext (EquivLike.right_inv e x.1))
@@ -225,14 +230,14 @@ example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 namespace RingOfIntegers
 
 /-- The algebra homomorphism `(𝓞 K) →ₐ[𝓞 k] (𝓞 L)` given by restricting an algebra homomorphism
-  `f : K →ₐ[k] L` to `𝓞 K`. -/
+`f : K →ₐ[k] L` to `𝓞 K`. -/
 def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [FunLike F K L] [AlgHomClass F k K L] (f : F) : (𝓞 K) →ₐ[𝓞 k] (𝓞 L) where
   toRingHom := mapRingHom f
   commutes' x := SetCoe.ext (AlgHomClass.commutes ((f : K →ₐ[k] L).restrictScalars (𝓞 k)) x)
 
 /-- The isomorphism of algebras `(𝓞 K) ≃ₐ[𝓞 k] (𝓞 L)` given by restricting
-  an isomorphism of algebras `e : K ≃ₐ[k] L` to `𝓞 K`. -/
+an isomorphism of algebras `e : K ≃ₐ[k] L` to `𝓞 K`. -/
 def mapAlgEquiv {k K L E : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [EquivLike E K L] [AlgEquivClass E k K L] (e : E) : (𝓞 K) ≃ₐ[𝓞 k] (𝓞 L) :=
   AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (e : K ≃ₐ[k] L).symm)

@@ -88,8 +88,8 @@ theorem rootsOfUnity.integer_power_of_ringEquiv' (g : L ≃+* L) :
   simpa using rootsOfUnity.integer_power_of_ringEquiv n g
 
 /-- `modularCyclotomicCharacter_aux g n` is a non-canonical auxiliary integer `j`,
-  only well-defined modulo the number of `n`-th roots of unity in `L`, such that `g(ζ)=ζ^j`
-  for all `n`-th roots of unity `ζ` in `L`. -/
+only well-defined modulo the number of `n`-th roots of unity in `L`, such that `g(ζ)=ζ^j`
+for all `n`-th roots of unity `ζ` in `L`. -/
 noncomputable def modularCyclotomicCharacter.aux (g : L ≃+* L) (n : ℕ) [NeZero n] : ℤ :=
   (rootsOfUnity.integer_power_of_ringEquiv n g).choose
 
@@ -118,8 +118,8 @@ theorem modularCyclotomicCharacter.pow_dvd_aux_pow_sub_aux_pow
   rwa [mul_dvd_mul_iff_left (by simp [NeZero.ne p]), Nat.cast_pow] at H₂
 
 /-- If `g` is a ring automorphism of `L`, and `n : ℕ+`, then
-  `modularCyclotomicCharacter.toFun n g` is the `j : ZMod d` such that `g(ζ)=ζ^j` for all
-  `n`-th roots of unity. Here `d` is the number of `n`th roots of unity in `L`. -/
+`modularCyclotomicCharacter.toFun n g` is the `j : ZMod d` such that `g(ζ)=ζ^j` for all
+`n`-th roots of unity. Here `d` is the number of `n`th roots of unity in `L`. -/
 noncomputable def modularCyclotomicCharacter.toFun (n : ℕ) [NeZero n] (g : L ≃+* L) :
     ZMod (Fintype.card (rootsOfUnity n L)) :=
   modularCyclotomicCharacter.aux g n

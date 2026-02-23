@@ -26,6 +26,7 @@ public import Mathlib.RingTheory.TensorProduct.Maps
   asserting that is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 
 ## Main results
+
 - `TensorProduct.isBaseChange`: `S ⊗[R] M` is the base change of `M` along `R → S`.
 
 -/
@@ -424,8 +425,8 @@ lemma IsBaseChange.comp_iff {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
   ⟨fun hc ↦ IsBaseChange.of_comp hf hc, fun hh ↦ IsBaseChange.comp hf hh⟩
 
 /-- Let `R` be a commutative ring, `S` be an `R`-algebra, `M` be an `R`-module, `P` be an `S`
-  module, `N` be the base change of `M` to `S`, then `P ⊗[S] N` is isomorphic to `P ⊗[R] M`
-  as `S`-modules. -/
+module, `N` be the base change of `M` to `S`, then `P ⊗[S] N` is isomorphic to `P ⊗[R] M`
+as `S`-modules. -/
 noncomputable def IsBaseChange.tensorEquiv {f : M →ₗ[R] N} (hf : IsBaseChange S f) (P : Type*)
     [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P] : P ⊗[S] N ≃ₗ[S] P ⊗[R] M :=
   LinearEquiv.lTensor P hf.equiv.symm ≪≫ₗ AlgebraTensorModule.cancelBaseChange R S S P M
@@ -448,11 +449,13 @@ open IsScalarTower (toAlgHom algebraMap_apply)
 variable (R S R' S')
 
 /-- A type-class stating that the following diagram of scalar towers
+
 ```
 R  →  S
 ↓     ↓
 R' →  S'
 ```
+
 is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 -/
 @[mk_iff]
@@ -581,12 +584,15 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
 variable (R S R')
 /--
 Let the following be a commutative diagram of rings
+
 ```
   R  →  S  →  T
   ↓     ↓     ↓
   R' →  S' →  T'
 ```
+
 where the left-hand square is a pushout. Then the following are equivalent:
+
 - the big rectangle is a pushout.
 - the right-hand square is a pushout.
 

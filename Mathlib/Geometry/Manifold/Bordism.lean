@@ -79,6 +79,7 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
   `SingularManifold.map` painful to state (as that would require `ULift`ing `M`).
 
 ## TODO
+
 - define bordisms and prove basic constructions (e.g. reflexivity, symmetry, transitivity)
   and operations (e.g. disjoint union, sum with the empty set)
 - define the bordism relation and prove it is an equivalence relation

@@ -19,6 +19,7 @@ with respect to epimorphisms.
 ## Main results
 
 Besides the definition, we show that
+
 * the composition of two strong epimorphisms is a strong epimorphism,
 * if `f ≫ g` is a strong epimorphism, then so is `g`,
 * if `f` is both a strong epimorphism and a monomorphism, then it is an isomorphism

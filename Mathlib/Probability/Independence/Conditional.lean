@@ -27,6 +27,7 @@ We use this property as the definition of conditional independence.
 ## Main definitions
 
 We provide four definitions of conditional independence:
+
 * `iCondIndepSets`: conditional independence of a family of sets of sets `pi : ι → Set (Set Ω)`.
   This is meant to be used with π-systems.
 * `iCondIndep`: conditional independence of a family of measurable space structures
@@ -513,7 +514,8 @@ generating π-systems.
 section FromMeasurableSpacesToSetsOfSets
 
 /-! ### Conditional independence of σ-algebras implies conditional independence of
-  generating π-systems -/
+
+generating π-systems -/
 
 variable {m' : MeasurableSpace Ω}
   {mΩ : MeasurableSpace Ω} [StandardBorelSpace Ω]
@@ -535,7 +537,8 @@ end FromMeasurableSpacesToSetsOfSets
 section FromPiSystemsToMeasurableSpaces
 
 /-! ### Conditional independence of generating π-systems implies conditional independence of
-  σ-algebras -/
+
+σ-algebras -/
 
 variable {m' m₁ m₂ : MeasurableSpace Ω} {mΩ : MeasurableSpace Ω} [StandardBorelSpace Ω]
   {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]

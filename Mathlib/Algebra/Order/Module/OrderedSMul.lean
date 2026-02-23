@@ -22,6 +22,7 @@ In this file we define
   which is proven in `Mathlib/Analysis/Convex/Cone.lean`.
 
 ## Implementation notes
+
 * We choose to define `OrderedSMul` as a `Prop`-valued mixin, so that it can be
   used for actions, modules, and algebras
   (the axioms for an "ordered algebra" are exactly that the algebra is ordered as a module).

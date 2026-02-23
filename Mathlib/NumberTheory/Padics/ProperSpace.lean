@@ -27,7 +27,7 @@ and that `ℚ_[p]` is proper.
 ## References
 
 Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
-  Cham, Springer International Publishing
+Cham, Springer International Publishing
 -/
 
 @[expose] public section

@@ -162,7 +162,7 @@ variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 -- TODO: generalize to `Submodule S M` with `SMulCommClass R S M`.
 /-- The `a`-torsion submodule for `a` in `R`, containing all elements `x` of `M` such that
-  `a • x = 0`. -/
+`a • x = 0`. -/
 @[simps!]
 def torsionBy (a : R) : Submodule R M :=
   (DistribSMul.toLinearMap R M a).ker
@@ -186,7 +186,7 @@ def torsion' (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S 
   smul_mem' := fun a x ⟨b, h⟩ => ⟨b, by rw [smul_comm, h, smul_zero]⟩
 
 /-- The torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
-  non-zero-divisor `a` in `R`. -/
+non-zero-divisor `a` in `R`. -/
 abbrev torsion :=
   torsion' R M R⁰
 

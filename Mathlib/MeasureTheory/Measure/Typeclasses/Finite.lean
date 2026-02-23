@@ -271,10 +271,10 @@ theorem finiteAtBot {m0 : MeasurableSpace α} (μ : Measure α) : μ.FiniteAtFil
   ⟨∅, mem_bot, by simp only [measure_empty, zero_lt_top]⟩
 
 /-- `μ` has finite spanning sets in `C` if there is a countable sequence of sets in `C` that have
-  finite measures. This structure is a type, which is useful if we want to record extra properties
-  about the sets, such as that they are monotone.
-  `SigmaFinite` is defined in terms of this: `μ` is σ-finite if there exists a sequence of
-  finite spanning sets in the collection of all measurable sets. -/
+finite measures. This structure is a type, which is useful if we want to record extra properties
+about the sets, such as that they are monotone.
+`SigmaFinite` is defined in terms of this: `μ` is σ-finite if there exists a sequence of
+finite spanning sets in the collection of all measurable sets. -/
 structure FiniteSpanningSetsIn {m0 : MeasurableSpace α} (μ : Measure α) (C : Set (Set α)) where
   /-- The sequence of sets in `C` with finite measures -/
   protected set : ℕ → Set α
@@ -439,7 +439,7 @@ theorem ext_on_measurableSpace_of_generate_finite {α} (m₀ : MeasurableSpace �
     simp [measure_iUnion, hfd, h _ (hfm _), ihf]
 
 /-- Two finite measures are equal if they are equal on the π-system generating the σ-algebra
-  (and `univ`). -/
+(and `univ`). -/
 theorem ext_of_generate_finite (C : Set (Set α)) (hA : m0 = generateFrom C) (hC : IsPiSystem C)
     [IsFiniteMeasure μ] (hμν : ∀ s ∈ C, μ s = ν s) (h_univ : μ univ = ν univ) : μ = ν :=
   Measure.ext fun _s hs =>

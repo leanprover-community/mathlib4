@@ -280,10 +280,12 @@ variable (S) in
 The basis of `(g * X - 1) / (g * X - 1)²` given by the image of `g * X - 1`.
 
 This is def-eq to `(SubmersivePresentation.localizationAway T g).basisCotangent`, but
+
 ```
 (SubmersivePresentation.localizationAway T g).toExtension =
   (Generators.localizationAway T g).toExtension
 ```
+
 is not reducibly def-eq. Hence using the general `SubmersivePresentation.basisCotangent` leads
 to `erw` hell.
 -/

@@ -42,8 +42,8 @@ variable {Ω 𝕜 : Type*} [RCLike 𝕜] {mΩ : MeasurableSpace Ω} {μ : Measur
 namespace ProbabilityTheory
 
 /-- If a random variable `f` in `ℝ≥0∞` is independent of an event `T`, then if you restrict the
-  random variable to `T`, then `E[f * indicator T c 0]=E[f] * E[indicator T c 0]`. It is useful for
-  `lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace`. -/
+random variable to `T`, then `E[f * indicator T c 0]=E[f] * E[indicator T c 0]`. It is useful for
+`lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace`. -/
 theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : MeasurableSpace Ω}
     {μ : Measure Ω} (hMf : Mf ≤ mΩ) (c : ℝ≥0∞) {T : Set Ω} (h_meas_T : MeasurableSet T)
     (h_ind : IndepSets {s | MeasurableSet[Mf] s} {T} μ) (h_meas_f : Measurable[Mf] f) :
@@ -256,8 +256,8 @@ lemma IndepFun.integral_fun_mul_eq_mul_integral
   hXY.integral_mul_eq_mul_integral hX hY
 
 /-- Independence of functions `f` and `g` into arbitrary types is characterized by the relation
-  `E[(φ ∘ f) * (ψ ∘ g)] = E[φ ∘ f] * E[ψ ∘ g]` for all measurable `φ` and `ψ` with values in `ℝ`
-  satisfying appropriate integrability conditions. -/
+`E[(φ ∘ f) * (ψ ∘ g)] = E[φ ∘ f] * E[ψ ∘ g]` for all measurable `φ` and `ψ` with values in `ℝ`
+satisfying appropriate integrability conditions. -/
 theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type*} {mβ : MeasurableSpace β}
     {mβ' : MeasurableSpace β'} {f : Ω → β} {g : Ω → β'} {hfm : Measurable f} {hgm : Measurable g} :
     f ⟂ᵢ[μ] g ↔ ∀ {φ : β → ℝ} {ψ : β' → ℝ}, Measurable φ → Measurable ψ →

@@ -34,6 +34,7 @@ and instantiate `A` with these, while also reducing `A` if needed.
 It uses `forallMetaTelescopeReducing`.
 
 This function returns a triple `(mvs, bis, out)` where
+
 - `mvs` is an array containing the new metavariables.
 - `bis` is an array containing the binder infos for the `mvs`.
 - `out` is `e` but instantiated with the `mvs`.

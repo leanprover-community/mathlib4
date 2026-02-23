@@ -16,6 +16,7 @@ Most results in this file are proved for algebras of finite presentations.
 Some of them are true for arbitrary algebras but the proof is substantially harder.
 
 ## Main results
+
 - `Algebra.smoothLocus` : The set of primes that are smooth over the base.
 - `Algebra.basicOpen_subset_smoothLocus_iff` :
   `D(f)` is contained in the smooth locus if and only if `A_f` is smooth over `R`.

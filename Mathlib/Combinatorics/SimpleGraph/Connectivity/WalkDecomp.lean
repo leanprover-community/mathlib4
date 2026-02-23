@@ -10,7 +10,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 
 /-!
 # Decomposing walks
+
 ## Main definitions
+
 - `takeUntil`: The path obtained by taking edges of an existing path until a given vertex.
 - `dropUntil`: The path obtained by dropping edges of an existing path until a given vertex.
 - `rotate`: Rotate a loop walk such that it is centered at the given vertex.

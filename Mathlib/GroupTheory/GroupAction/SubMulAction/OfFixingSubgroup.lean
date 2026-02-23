@@ -255,10 +255,10 @@ theorem fixingSubgroup_smul_eq_fixingSubgroup_map_conj :
   (fixingSubgroup_map_conj_eq rfl).symm
 
 /-- The equivalence of `fixingSubgroup M t` with `fixingSubgroup M s`
-  when `s` is a translate of `t`. -/
+when `s` is a translate of `t`. -/
 @[to_additive
 /-- The equivalence of `fixingSubgroup M t` with `fixingSubgroup M s`
-  when `s` is a translate of `t`. -/]
+when `s` is a translate of `t`. -/]
 def fixingSubgroupEquivFixingSubgroup (hg : g • t = s) :
     fixingSubgroup M t ≃* fixingSubgroup M s :=
   ((MulAut.conj g).subgroupMap (fixingSubgroup M t)).trans
@@ -327,11 +327,11 @@ def fixingSubgroup_union_to_fixingSubgroup_of_fixingSubgroup :
 
 variable (M s t) in
 /-- The identity between the iterated `SubMulAction`
-  of the `fixingSubgroup` and the `SubMulAction` of the `fixingSubgroup`
-  of the union, as an equivariant map. -/
+of the `fixingSubgroup` and the `SubMulAction` of the `fixingSubgroup`
+of the union, as an equivariant map. -/
 @[to_additive /-- The identity between the iterated `SubAddAction`
-  of the `fixingAddSubgroup` and the `SubAddAction` of the `fixingAddSubgroup`
-  of the union, as an equivariant map. -/]
+of the `fixingAddSubgroup` and the `SubAddAction` of the `fixingAddSubgroup`
+of the union, as an equivariant map. -/]
 def map_ofFixingSubgroupUnion :
     let ψ : fixingSubgroup M (s ∪ t) →
       fixingSubgroup (fixingSubgroup M s) (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s)) :=

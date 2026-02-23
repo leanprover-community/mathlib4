@@ -27,17 +27,20 @@ This file defines a function field and the ring of integers corresponding to it.
   valuation at infinity.
 
 ## Implementation notes
+
 The definitions that involve a field of fractions choose a canonical field of fractions,
 but are independent of that choice. We also omit assumptions like `Finite Fq` or
 `IsScalarTower Fq[X] (FractionRing Fq[X]) F` in definitions,
 adding them back in lemmas when they are needed.
 
 ## References
+
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
+
 function field, ring of integers
 -/
 

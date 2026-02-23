@@ -9,6 +9,7 @@ public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-! ## Equivalence of manifold differentiability with the basic definition for functions between
+
 vector spaces
 
 The API in this file is mostly copied from `Mathlib/Geometry/Manifold/ContMDiff/NormedSpace.lean`,

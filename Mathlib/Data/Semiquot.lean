@@ -21,11 +21,11 @@ predicate `S`) but are not completely determined.
 
 
 /-- A member of `Semiquot α` is classically a nonempty `Set α`,
-  and in the VM is represented by an element of `α`; the relation
-  between these is that the VM element is required to be a member
-  of the set `s`. The specific element of `s` that the VM computes
-  is hidden by a quotient construction, allowing for the representation
-  of nondeterministic functions. -/
+and in the VM is represented by an element of `α`; the relation
+between these is that the VM element is required to be a member
+of the set `s`. The specific element of `s` that the VM computes
+is hidden by a quotient construction, allowing for the representation
+of nondeterministic functions. -/
 structure Semiquot (α : Type*) where mk' ::
   /-- Set containing some element of `α` -/
   s : Set α

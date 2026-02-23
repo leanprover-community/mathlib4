@@ -18,6 +18,7 @@ By definition, the type of `n`-simplices of `nerve C` is `ComposableArrows C n`,
 which is the category `Fin (n + 1) ⥤ C`.
 
 ## References
+
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/

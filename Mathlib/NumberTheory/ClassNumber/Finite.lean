@@ -15,10 +15,12 @@ public import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Class numbers of global fields
+
 In this file, we use the notion of "admissible absolute value" to prove
 finiteness of the class group for number fields and function fields.
 
 ## Main definitions
+
 - `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
   its integral closure has a finite class group
 -/

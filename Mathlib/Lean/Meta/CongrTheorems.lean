@@ -204,6 +204,7 @@ If `forceHEq` is `true` then the conclusion of the generated theorem is a `HEq`.
 Otherwise it might be an `Eq` if the equality is homogeneous.
 
 This is the interpretation of the `CongrArgKind`s in the generated congruence theorem:
+
 * `.eq` corresponds to having three arguments `(x : α) (x' : α) (h : x = x')`.
   Note that `h` might have additional hypotheses.
 * `.heq` corresponds to having three arguments `(x : α) (x' : α') (h : x ≍ x')`

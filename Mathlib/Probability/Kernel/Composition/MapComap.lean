@@ -16,6 +16,7 @@ particular cases.
 ## Main definitions
 
 Kernels built from other kernels:
+
 * `map (κ : Kernel α β) (f : β → γ) : Kernel α γ`
   `∫⁻ c, g c ∂(map κ f a) = ∫⁻ b, g (f b) ∂(κ a)`
 * `comap (κ : Kernel α β) (f : γ → α) (hf : Measurable f) : Kernel γ β`

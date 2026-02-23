@@ -24,7 +24,7 @@ Besides `OpenNhds`, the main constructions here are:
 * `inclusion (x : X)`: the obvious functor `OpenNhds x ⥤ Opens X`
 * `functorNhds`: An open map `f : X ⟶ Y` induces a functor `OpenNhds x ⥤ OpenNhds (f x)`
 * `adjunctionNhds`: An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and
-                    `OpenNhds (f x)`.
+  `OpenNhds (f x)`.
 -/
 
 @[expose] public section

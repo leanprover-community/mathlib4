@@ -28,7 +28,7 @@ open Pointwise
 variable {α β : Type*}
 
 /-- An alias for `Set α`, which has a semiring structure given by `∪` as "addition" and pointwise
-  multiplication `*` as "multiplication". -/
+multiplication `*` as "multiplication". -/
 def SetSemiring (α : Type*) : Type _ :=
   Set α
 deriving Inhabited, PartialOrder, OrderBot

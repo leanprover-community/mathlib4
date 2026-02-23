@@ -15,12 +15,14 @@ public import Batteries.Util.Cache
 # The `#find` command and tactic.
 
 The `#find` command finds definitions & lemmas using pattern matching on the type. For instance:
+
 ```lean
 #find _ + _ = _ + _
 #find ?n + _ = _ + ?n
 #find (_ : Nat) + _ = _ + _
 #find Nat → Nat
 ```
+
 Inside tactic proofs, there is a `#find` tactic with the same syntax,
 or the `find` tactic which looks for lemmas which are `apply`able against the current goal.
 
@@ -99,6 +101,7 @@ match any conjunction.
 which are `apply`able against the current goal.
 
 Examples:
+
 ```lean
 #find _ + _ = _ + _
 #find ?n + _ = _ + ?n
@@ -132,6 +135,7 @@ In other words, `find` lists definitions and theorems that are `apply`able again
 For a command or tactic that takes the type to search for as an argument, see `#find`.
 
 Example:
+
 ```lean
 example : True := by
   find
@@ -153,6 +157,7 @@ There is also the `find` tactic which looks for lemmas which are `apply`able aga
 goal.
 
 Examples:
+
 ```lean
 #find _ + _ = _ + _
 #find ?n + _ = _ + ?n

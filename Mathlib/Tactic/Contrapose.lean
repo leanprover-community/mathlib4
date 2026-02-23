@@ -45,8 +45,7 @@ lemma contrapose_iff₄ {p q : Prop} : (p ↔ q) → (¬ p ↔ ¬ q) := fun ⟨h
 
 /--
 `contrapose` transforms the main goal into its contrapositive. If the goal has the form `⊢ P → Q`,
-then `contrapose turns it into `⊢ ¬ Q → ¬ P`. If the goal has the form `⊢ P ↔ Q`, then `contrapose`
-turns it into `⊢ ¬ P ↔ ¬ Q`.
+then `contrapose turns it into `⊢ ¬ Q → ¬ P`. If the goal has the form `⊢ P ↔ Q`, then `contrapose`turns it into`⊢ ¬ P ↔ ¬ Q\`.
 
 * `contrapose h` on a goal of the form `h : P ⊢ Q` turns the goal into `h : ¬ Q ⊢ ¬ P`. This is
   equivalent to `revert h; contrapose; intro h`.
@@ -60,6 +59,7 @@ turns it into `⊢ ¬ P ↔ ¬ Q`.
   * `contrapose! +distrib` rewrites `¬ (p ∧ q)` into `¬ p ∨ ¬ q` instead of `p → ¬ q`.
 
 Examples:
+
 ```lean4
 variables (P Q R : Prop)
 

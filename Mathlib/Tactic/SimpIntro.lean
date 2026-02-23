@@ -18,6 +18,7 @@ open Lean Meta Elab Tactic
 
 /--
 Main loop of the `simp_intro` tactic.
+
 * `g`: the original goal
 * `ctx`: the simp context, which is extended with local variables as we enter the binders
 * `discharge?`: the discharger
@@ -61,10 +62,12 @@ open Parser.Tactic
 The `simp_intro` tactic is a combination of `simp` and `intro`: it will simplify the types of
 variables as it introduces them and uses the new variables to simplify later arguments
 and the goal.
+
 * `simp_intro x y z` introduces variables named `x y z`
 * `simp_intro x y z ..` introduces variables named `x y z` and then keeps introducing `_` binders
 * `simp_intro (config := cfg) (discharger := tac) x y .. only [h₁, h₂]`:
   `simp_intro` takes the same options as `simp` (see `simp`)
+
 ```
 example : x + 0 = y → x = z := by
   simp_intro h

@@ -21,6 +21,7 @@ but do not affect correctness nor global coherence of mathlib.
 Historically, some of these were ported from the `lint-style.py` Python script.
 
 This file defines the following linters:
+
 - the `setOption` linter checks for the presence of `set_option` commands activating
   options disallowed in mathlib: these are meant to be temporary, and not for polished code.
   It also checks for `maxHeartbeats` options being present which are not scoped to single commands.

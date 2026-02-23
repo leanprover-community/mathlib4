@@ -79,7 +79,7 @@ lemma Algebra.isIntegral_of_surjective (H : Function.Surjective (algebraMap R B)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
-  then all elements of `S` are integral over `R`. -/
+then all elements of `S` are integral over `R`. -/
 theorem IsIntegral.of_mem_of_fg (S : Subalgebra R B)
     (HS : S.toSubmodule.FG) (x : B) (hx : x ∈ S) : IsIntegral R x :=
   have : Module.Finite R S := .of_fg HS

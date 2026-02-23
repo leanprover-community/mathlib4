@@ -27,10 +27,12 @@ In this file we define `MonoidAlgebra R M := M →₀ R`, and `AddMonoidAlgebra 
 in the same way, and then define the convolution product on these.
 
 When the domain is additive, this is used to define polynomials:
+
 ```
 Polynomial R := AddMonoidAlgebra R ℕ
 MvPolynomial σ α := AddMonoidAlgebra R (σ →₀ ℕ)
 ```
+
 Note: `Polynomial R` is currently a wrapper around `AddMonoidAlgebra R ℕ` and not defeq to it.
 There is ongoing work to make it defeq.
 See https://github.com/leanprover-community/mathlib4/pull/25273
@@ -201,7 +203,7 @@ def singleAddHom (m : M) : R →+ R[M] where
 then they are equal.
 
 We formulate this using equality of `AddMonoidHom`s so that `ext` tactic can apply a type-specific
-extensionality lemma after this one.  E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
+extensionality lemma after this one. E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
 verify `f (single a 1) = g (single a 1)`.
 
 TODO: Rename to `addMonoidHom_ext'`. -/
@@ -209,7 +211,7 @@ TODO: Rename to `addMonoidHom_ext'`. -/
 /-- If two additive homomorphisms from `R[M]` are equal on each `single r m`, then they are equal.
 
 We formulate this using equality of `AddMonoidHom`s so that `ext` tactic can apply a type-specific
-extensionality lemma after this one.  E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
+extensionality lemma after this one. E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
 verify `f (single a 1) = g (single a 1)`.
 
 TODO: Rename to `addMonoidHom_ext'`. -/]

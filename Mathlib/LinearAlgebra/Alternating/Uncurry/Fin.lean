@@ -17,6 +17,7 @@ and is alternating form in the other `n` arguments,
 this file defines an alternating form `AlternatingMap.alternatizeUncurryFin f` in `n + 1` arguments.
 
 This function is given by
+
 ```
 AlternatingMap.alternatizeUncurryFin f v =
   ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v)
@@ -92,6 +93,7 @@ and is alternating in the other `n` arguments,
 build an alternating form in `n + 1` arguments.
 
 The function is given by
+
 ```
 alternatizeUncurryFin f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v)
 ```

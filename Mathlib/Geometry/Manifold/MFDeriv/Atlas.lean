@@ -13,11 +13,13 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
 In this file, we analyse the differentiability of charts, models with corners and extended charts.
 We show that
+
 * models with corners are differentiable
 * charts are differentiable on their source
 * `mdifferentiableOn_extChartAt`: `extChartAt` is differentiable on its source
 
 Suppose an open partial homeomorphism `e` is differentiable. This file shows
+
 * `OpenPartialHomeomorph.MDifferentiable.mfderiv`: its derivative is a continuous linear equivalence
 * `OpenPartialHomeomorph.MDifferentiable.mfderiv_bijective`: its derivative is bijective;
   there are also spellings with trivial kernel and full range
@@ -25,6 +27,7 @@ Suppose an open partial homeomorphism `e` is differentiable. This file shows
 In particular, (extended) charts have bijective differential.
 
 ## Tags
+
 charts, differentiable, bijective
 -/
 

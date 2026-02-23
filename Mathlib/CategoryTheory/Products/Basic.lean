@@ -15,12 +15,13 @@ public import Mathlib.Data.Prod.Basic
 We define the category instance on `C × D` when `C` and `D` are categories.
 
 We define:
+
 * `sectL C Z` : the functor `C ⥤ C × D` given by `X ↦ ⟨X, Z⟩`
 * `sectR Z D` : the functor `D ⥤ C × D` given by `Y ↦ ⟨Z, Y⟩`
-* `fst`       : the functor `⟨X, Y⟩ ↦ X`
-* `snd`       : the functor `⟨X, Y⟩ ↦ Y`
-* `swap`      : the functor `C × D ⥤ D × C` given by `⟨X, Y⟩ ↦ ⟨Y, X⟩`
-    (and the fact that this is an equivalence)
+* `fst` : the functor `⟨X, Y⟩ ↦ X`
+* `snd` : the functor `⟨X, Y⟩ ↦ Y`
+* `swap` : the functor `C × D ⥤ D × C` given by `⟨X, Y⟩ ↦ ⟨Y, X⟩`
+  (and the fact that this is an equivalence)
 
 We further define `evaluation : C ⥤ (C ⥤ D) ⥤ D` and `evaluationUncurried : C × (C ⥤ D) ⥤ D`,
 and products of functors and natural transformations, written `F.prod G` and `α.prod β`.

@@ -23,6 +23,7 @@ A divisibility sequence is a sequence `W : ℤ → R` satisfying `W(m) ∣ W(n)`
 that `m ∣ n`. An elliptic divisibility sequence is simply a divisibility sequence that is elliptic.
 
 Some examples of EDSs include
+
 * the identity sequence,
 * certain terms of Lucas sequences, and
 * division polynomials of elliptic curves.
@@ -353,6 +354,7 @@ lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
 
 /--
 Strong recursion principle for a normalised EDS: if we have
+
 * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
@@ -367,12 +369,13 @@ noncomputable def normEDSRec' {P : ℕ → Sort u}
     (by rintro (_ | _ | _) h; exacts [one, three, odd _ h])
 
 /-- Recursion principle for a normalised EDS: if we have
+
 * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   `P (m + 4)`, and `P (m + 5)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   and `P (m + 4)`,
-then we have `P n` for all `n : ℕ`. -/
+  then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def normEDSRec {P : ℕ → Sort u}
     (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
@@ -476,10 +479,11 @@ lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
     ring1
 
 /-- Strong recursion principle for the complement sequence for a normalised EDS: if we have
+
 * `P 0`, `P 1`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
-then we have `P n` for all `n : ℕ`. -/
+  then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
     (even : ∀ m : ℕ, (∀ k < 2 * (m + 1), P k) → P (2 * (m + 1)))
@@ -488,12 +492,13 @@ noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
     (by rintro (_ | _) h; exacts [one, odd _ h])
 
 /-- Recursion principle for the complement sequence for a normalised EDS: if we have
+
 * `P 0`, `P 1`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   `P (m + 4)`, and `P (m + 5)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   and `P (m + 4)`,
-then we have `P n` for all `n : ℕ`. -/
+  then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def complEDSRec {P : ℕ → Sort u} (zero : P 0) (one : P 1)
     (even : ∀ m : ℕ, P (m + 1) → P (2 * (m + 1)))

@@ -18,6 +18,7 @@ import all Init.Data.Int.Bitwise.Basic  -- for unfolding `Int.bitwise`
 Possibly only of archaeological significance.
 
 ## Recursors
+
 * `Int.bitCasesOn`: Parity disjunction. Something is true/defined on `ℤ` if it's true/defined for
   even and for odd values.
 -/
@@ -37,7 +38,7 @@ def bodd : ℤ → Bool
   | -[n+1] => not (n.bodd)
 
 /-- `bit b` appends the digit `b` to the binary representation of
-  its integer input. -/
+its integer input. -/
 def bit (b : Bool) : ℤ → ℤ :=
   cond b (2 * · + 1) (2 * ·)
 
@@ -46,7 +47,7 @@ def natBitwise (f : Bool → Bool → Bool) (m n : ℕ) : ℤ :=
   cond (f false false) -[Nat.bitwise (fun x y => not (f x y)) m n+1] (Nat.bitwise f m n)
 
 /-- `Int.bitwise` applies the function `f` to pairs of bits in the same position in
-  the binary representations of its inputs. -/
+the binary representations of its inputs. -/
 def bitwise (f : Bool → Bool → Bool) : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => natBitwise f m n
   | (m : ℕ), -[n+1] => natBitwise (fun x y => f x (not y)) m n
@@ -73,8 +74,8 @@ def land : ℤ → ℤ → ℤ
   | -[m+1], -[n+1] => -[m ||| n+1]
 
 /-- `ldiff a b` performs bitwise set difference. For each corresponding
-  pair of bits taken as Booleans, say `aᵢ` and `bᵢ`, it applies the
-  Boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
+pair of bits taken as Booleans, say `aᵢ` and `bᵢ`, it applies the
+Boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => Nat.ldiff m n
   | (m : ℕ), -[n+1] => m &&& n
@@ -89,7 +90,7 @@ protected def xor : ℤ → ℤ → ℤ
   | -[m+1], -[n+1] => (m ^^^ n)
 
 /-- `m <<< n` produces an integer whose binary representation
-  is obtained by left-shifting the binary representation of `m` by `n` places -/
+is obtained by left-shifting the binary representation of `m` by `n` places -/
 instance : ShiftLeft ℤ where
   shiftLeft
   | (m : ℕ), (n : ℕ) => Nat.shiftLeft' false m n
@@ -98,7 +99,7 @@ instance : ShiftLeft ℤ where
   | -[m+1], -[n+1] => -[m >>> (Nat.succ n)+1]
 
 /-- `m >>> n` produces an integer whose binary representation
-  is obtained by right-shifting the binary representation of `m` by `n` places -/
+is obtained by right-shifting the binary representation of `m` by `n` places -/
 instance : ShiftRight ℤ where
   shiftRight m n := m <<< (-n)
 
@@ -175,7 +176,7 @@ theorem bit_decomp (n : ℤ) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (add_comm _ _).trans <| bodd_add_div2 _
 
 /-- Defines a function from `ℤ` conditionally, if it is defined for odd and even integers separately
-  using `bit`. -/
+using `bit`. -/
 def bitCasesOn.{u} {C : ℤ → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n := by
   rw [← bit_decomp n]
   apply h

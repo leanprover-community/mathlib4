@@ -270,8 +270,8 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
 should not import modules with the second prefix (except if specifically allowed in
 `overrideAllowedImportDirs`).
 
-For example, ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
-``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs`
+For example, `` (`Mathlib.Algebra.Notation, `Mathlib.Algebra) `` is in `forbiddenImportDirs` and
+`` (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation) `` is in `overrideAllowedImportDirs`
 because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
 outside `Mathlib/Algebra/Notation.lean`.
 -/
@@ -585,8 +585,8 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
 prefix are allowed to import modules with the second prefix, even if disallowed in
 `forbiddenImportDirs`.
 
-For example, ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
-``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs`
+For example, `` (`Mathlib.Algebra.Notation, `Mathlib.Algebra) `` is in `forbiddenImportDirs` and
+`` (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation) `` is in `overrideAllowedImportDirs`
 because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
 outside `Mathlib/Algebra/Notation.lean`.
 -/

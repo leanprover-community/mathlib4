@@ -25,51 +25,53 @@ The main interfaces of the API are the typeclasses `IsLocalAtTarget`, `IsLocalAt
 ## `IsZariskiLocalAtTarget`
 
 - `AlgebraicGeometry.IsZariskiLocalAtTarget`: We say that `IsZariskiLocalAtTarget P` for
-`P : MorphismProperty Scheme` if
+  `P : MorphismProperty Scheme` if
+
 1. `P` respects isomorphisms.
 2. `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`.
 
 For a morphism property `P` local at the target and `f : X ⟶ Y`, we provide these API lemmas:
 
 - `AlgebraicGeometry.IsZariskiLocalAtTarget.of_isPullback`:
-    `P` is preserved under pullback along open immersions.
+  `P` is preserved under pullback along open immersions.
 - `AlgebraicGeometry.IsZariskiLocalAtTarget.restrict`:
-    `P f → P (f ∣_ U)` for an open `U` of `Y`.
+  `P f → P (f ∣_ U)` for an open `U` of `Y`.
 - `AlgebraicGeometry.IsZariskiLocalAtTarget.iff_of_iSup_eq_top`:
-    `P f ↔ ∀ i, P (f ∣_ U i)` for a family `U i` of open sets covering `Y`.
+  `P f ↔ ∀ i, P (f ∣_ U i)` for a family `U i` of open sets covering `Y`.
 - `AlgebraicGeometry.IsZariskiLocalAtTarget.iff_of_openCover`:
-    `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for `𝒰 : Y.openCover`.
+  `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for `𝒰 : Y.openCover`.
 
 ## `IsZariskiLocalAtSource`
 
 - `AlgebraicGeometry.IsZariskiLocalAtSource`: We say that `IsZariskiLocalAtSource P` for
-`P : MorphismProperty Scheme` if
+  `P : MorphismProperty Scheme` if
+
 1. `P` respects isomorphisms.
 2. `P` holds for `𝒰.map i ≫ f` for an open cover `𝒰` of `X` iff `P` holds for `f : X ⟶ Y`.
 
 For a morphism property `P` local at the source and `f : X ⟶ Y`, we provide these API lemmas:
 
 - `AlgebraicGeometry.IsZariskiLocalAtSource.comp`:
-    `P` is preserved under composition with open immersions at the source.
+  `P` is preserved under composition with open immersions at the source.
 - `AlgebraicGeometry.IsZariskiLocalAtSource.iff_of_iSup_eq_top`:
-    `P f ↔ ∀ i, P (U.ι ≫ f)` for a family `U i` of open sets covering `X`.
+  `P f ↔ ∀ i, P (U.ι ≫ f)` for a family `U i` of open sets covering `X`.
 - `AlgebraicGeometry.IsZariskiLocalAtSource.iff_of_openCover`:
-    `P f ↔ ∀ i, P (𝒰.map i ≫ f)` for `𝒰 : X.openCover`.
+  `P f ↔ ∀ i, P (𝒰.map i ≫ f)` for `𝒰 : X.openCover`.
 - `AlgebraicGeometry.IsZariskiLocalAtSource.of_isOpenImmersion`: If `P` contains identities then `P`
-    holds for open immersions.
+  holds for open immersions.
 
 ## `AffineTargetMorphismProperty`
 
 - `AlgebraicGeometry.AffineTargetMorphismProperty`:
-    The type of predicates on `f : X ⟶ Y` with `Y` affine.
+  The type of predicates on `f : X ⟶ Y` with `Y` affine.
 - `AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal`: We say that `P.IsLocal` if `P`
-    satisfies the assumptions of the affine communication lemma
-    (`AlgebraicGeometry.of_affine_open_cover`). That is,
-    1. `P` respects isomorphisms.
-    2. If `P` holds for `f : X ⟶ Y`, then `P` holds for `f ∣_ Y.basicOpen r` for any
-      global section `r`.
-    3. If `P` holds for `f ∣_ Y.basicOpen r` for all `r` in a spanning set of the global sections,
-      then `P` holds for `f`.
+  satisfies the assumptions of the affine communication lemma
+  (`AlgebraicGeometry.of_affine_open_cover`). That is,
+  1. `P` respects isomorphisms.
+  2. If `P` holds for `f : X ⟶ Y`, then `P` holds for `f ∣_ Y.basicOpen r` for any
+     global section `r`.
+  3. If `P` holds for `f ∣_ Y.basicOpen r` for all `r` in a spanning set of the global sections,
+     then `P` holds for `f`.
 
 ## `HasAffineProperty`
 
@@ -80,15 +82,15 @@ For a morphism property `P` local at the source and `f : X ⟶ Y`, we provide th
 For `HasAffineProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
 
 - `AlgebraicGeometry.HasAffineProperty.of_isPullback`:
-    `P` is preserved under pullback along open immersions from affine schemes.
+  `P` is preserved under pullback along open immersions from affine schemes.
 - `AlgebraicGeometry.HasAffineProperty.restrict`:
-    `P f → Q (f ∣_ U)` for affine `U` of `Y`.
+  `P f → Q (f ∣_ U)` for affine `U` of `Y`.
 - `AlgebraicGeometry.HasAffineProperty.iff_of_iSup_eq_top`:
-    `P f ↔ ∀ i, Q (f ∣_ U i)` for a family `U i` of affine open sets covering `Y`.
+  `P f ↔ ∀ i, Q (f ∣_ U i)` for a family `U i` of affine open sets covering `Y`.
 - `AlgebraicGeometry.HasAffineProperty.iff_of_openCover`:
-    `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for affine open covers `𝒰` of `Y`.
+  `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for affine open covers `𝒰` of `Y`.
 - `AlgebraicGeometry.HasAffineProperty.isStableUnderBaseChange`:
-    If `Q` is stable under affine base change, then `P` is stable under arbitrary base change.
+  If `Q` is stable under affine base change, then `P` is stable under arbitrary base change.
 
 ## Implementation details
 
@@ -116,6 +118,7 @@ namespace IsZariskiLocalAtTarget
 
 /--
 `P` is local at the target if
+
 1. `P` respects isomorphisms.
 2. If `P` holds for `f : X ⟶ Y`, then `P` holds for `f ∣_ U` for any `U`.
 3. If `P` holds for `f ∣_ U` for an open cover `U` of `Y`, then `P` holds for `f`.
@@ -225,6 +228,7 @@ namespace IsZariskiLocalAtSource
 
 /--
 `P` is local at the source if
+
 1. `P` respects isomorphisms.
 2. If `P` holds for `f : X ⟶ Y`, then `P` holds for `U.ι ≫ f` for any `U`.
 3. If `P` holds for `U.ι ≫ f` for an open cover `U` of `X`, then `P` holds for `f`.
@@ -397,11 +401,12 @@ instance respectsIso_of
   · intro _ _ _ _ _ _; apply MorphismProperty.RespectsIso.postcomp
 
 /-- We say that `P : AffineTargetMorphismProperty` is a local property if
+
 1. `P` respects isomorphisms.
 2. If `P` holds for `f : X ⟶ Y`, then `P` holds for `f ∣_ Y.basicOpen r` for any
-  global section `r`.
+   global section `r`.
 3. If `P` holds for `f ∣_ Y.basicOpen r` for all `r` in a spanning set of the global sections,
-  then `P` holds for `f`.
+   then `P` holds for `f`.
 -/
 class IsLocal (P : AffineTargetMorphismProperty) : Prop where
   /-- `P` as a morphism property respects isomorphisms -/
@@ -473,9 +478,10 @@ instance (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso] :
 `HasAffineProperty P Q` is a type class asserting that `P` is local at the target, and over affine
 schemes, it is equivalent to `Q : AffineTargetMorphismProperty`.
 To make the proofs easier, we state it instead as
+
 1. `Q` is local at the target
 2. `P f` if and only if `∀ U, Q (f ∣_ U)` ranging over all affine opens of `U`.
-See `HasAffineProperty.iff`.
+   See `HasAffineProperty.iff`.
 -/
 class HasAffineProperty (P : MorphismProperty Scheme)
     (Q : outParam AffineTargetMorphismProperty) : Prop where

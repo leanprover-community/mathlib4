@@ -79,6 +79,7 @@ theorem dist_normed_convolution_le {x₀ : G} {ε : ℝ} (hmg : AEStronglyMeasur
     φ.support_normed_eq.subset φ.nonneg_normed φ.integral_normed hmg hg
 
 /-- `(φ i ⋆ g i) (k i)` tends to `z₀` as `i` tends to some filter `l` if
+
 * `φ` is a sequence of normed bump functions
   such that `(φ i).rOut` tends to `0` as `i` tends to `l`;
 * `g i` is `μ`-a.e. strongly measurable as `i` tends to `l`;
@@ -94,7 +95,7 @@ nonrec theorem convolution_tendsto_right {ι} {φ : ι → ContDiffBump (0 : G)}
     hcg hk
 
 /-- Special case of `ContDiffBump.convolution_tendsto_right` where `g` is continuous,
-  and the limit is taken only in the first function. -/
+and the limit is taken only in the first function. -/
 theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι}
     (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0)) (hg : Continuous g) (x₀ : G) :
     Tendsto (fun i => ((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀) l (𝓝 (g x₀)) :=

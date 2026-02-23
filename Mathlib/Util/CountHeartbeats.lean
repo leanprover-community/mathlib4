@@ -13,10 +13,12 @@ public meta import Lean.Meta.Tactic.TryThis
 Defines a command wrapper that prints the number of heartbeats used in the enclosed command.
 
 For example
+
 ```
 #count_heartbeats in
 theorem foo : 42 = 6 * 7 := rfl
 ```
+
 will produce an info message containing a number around 51.
 If this number is above the current `maxHeartbeats`, we also print a `Try this:` suggestion.
 -/
@@ -203,10 +205,12 @@ def elabForHeartbeats (cmd : TSyntax `command) (revert : Bool := true) : Command
 standard deviation. The command `#count_heartbeats! n in cmd` runs it `n` times instead.
 
 Example usage:
+
 ```
 #count_heartbeats! in
 def f := 37
 ```
+
 displays the info message `Min: 7 Max: 8 StdDev: 14%`.
 -/
 elab "#count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do

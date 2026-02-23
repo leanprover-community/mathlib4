@@ -20,17 +20,18 @@ There are several non-equivalent notions of a generator of a category. Here, we 
 them:
 
 * We say that `P : ObjectProperty C` is a separating set if the functors `C(G, -)`
-    for `G` such that `P G` are collectively faithful, i.e., if
-    `h ≫ f = h ≫ g` for all `h` with domain satisfying `P` implies `f = g`.
+  for `G` such that `P G` are collectively faithful, i.e., if
+  `h ≫ f = h ≫ g` for all `h` with domain satisfying `P` implies `f = g`.
 * We say that `P : ObjectProperty C` is a detecting set if the functors `C(G, -)`
-    collectively reflect isomorphisms, i.e., if any `h` with domain satisfying `P`
-    uniquely factors through `f`, then `f` is an isomorphism.
+  collectively reflect isomorphisms, i.e., if any `h` with domain satisfying `P`
+  uniquely factors through `f`, then `f` is an isomorphism.
 
 There are, of course, also the dual notions of coseparating and codetecting sets.
 
 ## Main results
 
 We
+
 * define predicates `IsSeparating`, `IsCoseparating`, `IsDetecting` and `IsCodetecting` on
   `ObjectProperty C`;
 * show that equivalences of categories preserve these notions;
@@ -424,10 +425,12 @@ end ObjectProperty
 
 set_option backward.isDefEq.respectTransparency false in
 /-- An ingredient of the proof of the Special Adjoint Functor Theorem: a complete well-powered
-    category with a small coseparating set has an initial object.
+category with a small coseparating set has an initial object.
 
-    In fact, it follows from the Special Adjoint Functor Theorem that `C` is already cocomplete,
-    see `hasColimits_of_hasLimits_of_isCoseparating`. -/
+```
+In fact, it follows from the Special Adjoint Functor Theorem that `C` is already cocomplete,
+see `hasColimits_of_hasLimits_of_isCoseparating`.
+``` -/
 theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
     [HasLimitsOfSize.{w, w} C] {P : ObjectProperty C} [ObjectProperty.Small.{w} P]
     (hP : P.IsCoseparating) : HasInitial C := by
@@ -452,10 +455,12 @@ theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
       simp⟩
 
 /-- An ingredient of the proof of the Special Adjoint Functor Theorem: a cocomplete well-copowered
-    category with a small separating set has a terminal object.
+category with a small separating set has a terminal object.
 
-    In fact, it follows from the Special Adjoint Functor Theorem that `C` is already complete, see
-    `hasLimits_of_hasColimits_of_isSeparating`. -/
+```
+In fact, it follows from the Special Adjoint Functor Theorem that `C` is already complete, see
+`hasLimits_of_hasColimits_of_isSeparating`.
+``` -/
 theorem hasTerminal_of_isSeparating [LocallySmall.{w} Cᵒᵖ] [WellPowered.{w} Cᵒᵖ]
     [HasColimitsOfSize.{w, w} C] {P : ObjectProperty C} [ObjectProperty.Small.{w} P]
     (hP : P.IsSeparating) : HasTerminal C := by

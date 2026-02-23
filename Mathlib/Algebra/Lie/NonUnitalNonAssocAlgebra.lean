@@ -15,6 +15,7 @@ The definition of Lie algebras uses the `Bracket` typeclass for multiplication w
 separate `Mul` typeclass used for general algebras.
 
 It is useful to have a special typeclass for Lie algebras because:
+
 * it enables us to use the traditional notation `⁅x, y⁆` for the Lie multiplication,
 * associative algebras carry a natural Lie algebra structure via the ring commutator and so we
   need them to carry both `Mul` and `Bracket` simultaneously,
@@ -25,9 +26,9 @@ algebra and we provide some basic definitions for doing so here.
 
 ## Main definitions
 
-  * `CommutatorRing` turns a Lie ring into a `NonUnitalNonAssocRing` by turning its
-    `Bracket` (denoted `⁅ , ⁆`) into a `Mul` (denoted `*`).
-  * `LieHom.toNonUnitalAlgHom`
+* `CommutatorRing` turns a Lie ring into a `NonUnitalNonAssocRing` by turning its
+  `Bracket` (denoted `⁅ , ⁆`) into a `Mul` (denoted `*`).
+* `LieHom.toNonUnitalAlgHom`
 
 ## Tags
 

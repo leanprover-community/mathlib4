@@ -40,7 +40,7 @@ section
 variable [MulZeroClass β]
 
 /-- The product of `f g : α →₀ β` is the finitely supported function
-  whose value at `a` is `f a * g a`. -/
+whose value at `a` is `f a * g a`. -/
 instance : Mul (α →₀ β) :=
   ⟨zipWith (· * ·) (mul_zero 0)⟩
 

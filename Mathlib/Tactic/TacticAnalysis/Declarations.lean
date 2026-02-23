@@ -457,17 +457,20 @@ def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
 /-- Run a custom tactic at each proof step, configured via environment variables.
 
 Reads from environment variables:
+
 - `TRY_AT_EACH_STEP_TACTIC`: Tactic syntax to try (e.g., "grind +suggestions") - required
 - `TRY_AT_EACH_STEP_LABEL`: Human-readable label for output (optional, defaults to tactic)
 
 If `TRY_AT_EACH_STEP_TACTIC` is missing, this linter does nothing.
 
 To enable, add to the `mathlibOnlyLinters` array in `lakefile.lean`:
+
 ```lean
 ⟨`linter.tacticAnalysis.tryAtEachStepFromEnv, true⟩,
 ```
 
 Then run with the environment variable:
+
 ```bash
 TRY_AT_EACH_STEP_TACTIC="grind +suggestions" lake build Mathlib
 ```

@@ -33,6 +33,7 @@ Visually, `grade ℕ a` is the height of `a` in the Hasse diagram of `α`.
 ## How to grade your order
 
 Here are the translations between common references and our `GradeOrder`:
+
 * [Stanley][stanley2012] defines a graded order of rank `n` as an order where all maximal chains
   have "length" `n` (so the number of elements of a chain is `n + 1`). This corresponds to
   `GradeBoundedOrder (Fin (n + 1)) α`.

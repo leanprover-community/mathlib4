@@ -13,7 +13,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 /-! # Constructions of continuous linear maps between (semi-)normed spaces
 
 A fundamental fact about (semi-)linear maps between normed spaces over sensible fields is that
-continuity and boundedness are equivalent conditions.  That is, for normed spaces `E`, `F`, a
+continuity and boundedness are equivalent conditions. That is, for normed spaces `E`, `F`, a
 `LinearMap` `f : E →ₛₗ[σ] F` is the coercion of some `ContinuousLinearMap` `f' : E →SL[σ] F`, if
 and only if there exists a bound `C` such that for all `x`, `‖f x‖ ≤ C * ‖x‖`.
 
@@ -174,7 +174,7 @@ variable {σ : 𝕜 →+* 𝕜₂} (f : E →ₛₗ[σ] F)
 
 /-- A (semi-)linear map which is a homothety is a continuous linear map.
 Since the field `𝕜` need not have `ℝ` as a subfield, this theorem is not directly deducible from
-the corresponding theorem about isometries plus a theorem about scalar multiplication.  Likewise
+the corresponding theorem about isometries plus a theorem about scalar multiplication. Likewise
 for the other theorems about homotheties in this file.
 -/
 def ContinuousLinearMap.ofHomothety (f : E →ₛₗ[σ] F) (a : ℝ) (hf : ∀ x, ‖f x‖ = a * ‖x‖) :

@@ -18,10 +18,11 @@ We define `TopCat.Presheaf C X` simply as `(TopologicalSpace.Opens X)ᵒᵖ ⥤ 
 and inherit the category structure with natural transformations as morphisms.
 
 We define
+
 * Given `{X Y : TopCat.{w}}` and `f : X ⟶ Y`, we define
   `TopCat.Presheaf.pushforward C f : X.Presheaf C ⥤ Y.Presheaf C`,
   with notation `f _* ℱ` for `ℱ : X.Presheaf C`.
-and for `ℱ : X.Presheaf C` provide the natural isomorphisms
+  and for `ℱ : X.Presheaf C` provide the natural isomorphisms
 * `TopCat.Presheaf.Pushforward.id : (𝟙 X) _* ℱ ≅ ℱ`
 * `TopCat.Presheaf.Pushforward.comp : (f ≫ g) _* ℱ ≅ g _* (f _* ℱ)`
   along with their `@[simp]` lemmas.

@@ -12,6 +12,7 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 Define the beta distribution over the reals.
 
 ## Main definitions
+
 * `betaPDFReal`: the function `α β x ↦ (1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1)`
   for `0 < x ∧ x < 1` or `0` else, which is the probability density function of a beta distribution
   with shape parameters `α` and `β` (when `0 < α` and `0 < β`).

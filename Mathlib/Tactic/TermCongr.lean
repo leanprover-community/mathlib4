@@ -398,10 +398,11 @@ def CongrResult.defeq (res : CongrResult) : MetaM CongrResult := do
     return {res with pf? := none}
 
 /-- Tries to make a congruence between `lhs` and `rhs` automatically.
+
 1. If they are defeq, returns a trivial congruence.
 2. Tries using `Subsingleton.elim`.
 3. Tries `proof_irrel_heq` as another effort to avoid doing congruence on proofs.
-3. Otherwise throws an error.
+4. Otherwise throws an error.
 
 Note: `mkAppM` uses `withNewMCtxDepth`, which prevents typeclass inference
 from accidentally specializing `Sort _` to `Prop`, which could otherwise happen
@@ -598,6 +599,7 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
   let rec
     /--
     Argument processing loop
+
     - `i` is index into `lhsArgs`/`rhsArgs`.
     - `finfo` is the funinfo of `f` applied to the first `finfoIdx` arguments
     - `f` and `f'` are the current head functions, after the first `i` arguments have been applied.

@@ -23,6 +23,7 @@ convex if and only if its topology is induced by a family of seminorms.
 ## Main declarations
 
 For a module over a normed ring:
+
 * `Seminorm`: A function to the reals that is positive-semidefinite, absolutely homogeneous, and
   subadditive.
 * `normSeminorm 𝕜 E`: The norm on `E` as a seminorm.
@@ -479,12 +480,14 @@ section Classical
 
 open Classical in
 /-- We define the supremum of an arbitrary subset of `Seminorm 𝕜 E` as follows:
+
 * if `s` is `BddAbove` *as a set of functions `E → ℝ`* (that is, if `s` is pointwise bounded
   above), we take the pointwise supremum of all elements of `s`, and we prove that it is indeed a
   seminorm.
 * otherwise, we take the zero seminorm `⊥`.
 
 There are two things worth mentioning here:
+
 * First, it is not trivial at first that `s` being bounded above *by a function* implies
   being bounded above *as a seminorm*. We show this in `Seminorm.bddAbove_iff` by using
   that the `Sup s` as defined here is then a bounding seminorm for `s`. So it is important to make

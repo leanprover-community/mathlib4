@@ -25,6 +25,7 @@ bitwise properties. In the second half of this file, we show properties of the b
 `lor`, `land` and `xor`, which are defined in core.
 
 ## Main results
+
 * `eq_of_testBit_eq`: two natural numbers are equal if they have equal bits at every position.
 * `exists_most_significant_bit`: if `n ≠ 0`, then there is some position `i` that contains the most
   significant `1`-bit of `n`.
@@ -260,7 +261,7 @@ lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit i).toNat := by
   rw [mul_comm, land_comm, and_two_pow]
 
 /-- Proving associativity of bitwise operations in general essentially boils down to a huge case
-    distinction, so it is shorter to use this tactic instead of proving it in the general case. -/
+distinction, so it is shorter to use this tactic instead of proving it in the general case. -/
 macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction n using Nat.binaryRec generalizing m k with | zero => simp | bit b n hn => ?_
   induction m using Nat.binaryRec with | zero => simp | bit b' m hm => ?_

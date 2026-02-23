@@ -67,6 +67,7 @@ def IsFreeGroupoid.Generators (G) [Groupoid G] :=
 
 /--
 A groupoid `G` is free when we have the following data:
+
 - a quiver on `IsFreeGroupoid.Generators G` (a type synonym for `G`)
 - a function `of` taking a generating arrow to a morphism in `G`
 - such that a functor from `G` to any group `X` is uniquely determined

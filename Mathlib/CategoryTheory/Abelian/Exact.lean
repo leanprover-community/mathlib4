@@ -20,6 +20,7 @@ In an abelian category, we get several interesting results related to exactness 
 true in more general settings.
 
 ## Main results
+
 * A short complex `S` is exact iff `imageSubobject S.f = kernelSubobject S.g`.
 * If `(f, g)` is exact, then `image.ι f` has the universal property of the kernel of `g`.
 * `f` is a monomorphism iff `kernel.ι f = 0` iff `Exact 0 f`, and `f` is an epimorphism iff

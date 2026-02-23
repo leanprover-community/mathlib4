@@ -13,6 +13,7 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 Define the geometric measure over the natural numbers
 
 ## Main definitions
+
 * `geometricPMFReal`: the function `p n ↦ (1-p) ^ n * p`
   for `n ∈ ℕ`, which is the probability density function of a geometric distribution with
   success probability `p ∈ (0,1]`.

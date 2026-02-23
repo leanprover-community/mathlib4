@@ -15,6 +15,7 @@ public import Mathlib.Topology.Algebra.Module.Cardinality
 # Connectedness of subsets of vector spaces
 
 We show several results related to the (path)-connectedness of subsets of real vector spaces:
+
 * `Set.Countable.isPathConnected_compl_of_one_lt_rank` asserts that the complement of a countable
   set is path-connected in a space of dimension `> 1`.
 * `isPathConnected_compl_singleton_of_one_lt_rank` is the special case of the complement of a

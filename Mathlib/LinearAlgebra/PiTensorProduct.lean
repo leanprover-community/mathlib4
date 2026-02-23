@@ -99,7 +99,7 @@ end PiTensorProduct
 variable (R) (s)
 
 /-- `PiTensorProduct R s` with `R` a commutative semiring and `s : ι → Type*` is the tensor
-  product of all the `s i`'s. This is denoted by `⨂[R] i, s i`. -/
+product of all the `s i`'s. This is denoted by `⨂[R] i, s i`. -/
 def PiTensorProduct : Type _ :=
   (addConGen (PiTensorProduct.Eqv R s)).Quotient
 

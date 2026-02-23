@@ -12,7 +12,7 @@ public import Mathlib.Tactic.Abel
 /-!
 # Associator in a ring
 
-If `R` is a non-associative ring, then  `(x * y) * z - x * (y * z)` is called the `associator` of
+If `R` is a non-associative ring, then `(x * y) * z - x * (y * z)` is called the `associator` of
 ring elements `x y z : R`.
 
 The associator vanishes exactly when `R` is associative.

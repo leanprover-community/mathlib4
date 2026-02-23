@@ -20,6 +20,7 @@ with respect to the neighbourhood filter `𝓝 x`.
 
 * `Filter.Germ.value φ f`: value associated to the germ `φ` at a point `x`, w.r.t. the
   neighbourhood filter at `x`. This is the common value of all representatives of `φ` at `x`.
+
 * `Filter.Germ.valueOrderRingHom` and friends: the map `Germ (𝓝 x) E → E` is a
   monoid homomorphism, 𝕜-linear map, ring homomorphism, monotone ring homomorphism
 
@@ -30,6 +31,7 @@ with respect to the neighbourhood filter `𝓝 x`.
 
 * `Filter.Germ.sliceLeft, sliceRight`: map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y`
   to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at `y ∈ Y`.
+
 * `eq_of_germ_isConstant`: if each germ of `f : X → Y` is constant and `X` is pre-connected,
   `f` is constant.
 -/
@@ -125,7 +127,7 @@ end RestrictGermPredicate
 
 namespace Filter.Germ
 /-- Map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y` to the corresponding germ
-  of functions `X → Z` at `x ∈ X` -/
+of functions `X → Z` at `x ∈ X` -/
 def sliceLeft [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.1) Z :=
   P.compTendsto (Prod.mk · p.2) (Continuous.prodMk_left p.2).continuousAt
 
@@ -135,7 +137,7 @@ theorem sliceLeft_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
   rfl
 
 /-- Map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y` to the corresponding germ
-  of functions `Y → Z` at `y ∈ Y` -/
+of functions `Y → Z` at `y ∈ Y` -/
 def sliceRight [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.2) Z :=
   P.compTendsto (Prod.mk p.1) (Continuous.prodMk_right p.1).continuousAt
 

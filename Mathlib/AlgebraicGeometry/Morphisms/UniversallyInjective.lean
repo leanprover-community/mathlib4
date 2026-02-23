@@ -19,6 +19,7 @@ We show that being universally injective is local at the target, and is stable u
 compositions and base changes.
 
 ## TODO
+
 - https://stacks.math.columbia.edu/tag/01S4
   Show that this is equivalent to radicial morphisms
   (injective + purely inseparable residue field extensions)

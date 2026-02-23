@@ -118,7 +118,7 @@ section OrderedCommSemiring
 variable [CommSemiring R] [PartialOrder R] [IsOrderedRing R] {f g : ι → R} {s t : Finset ι}
 
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
-  sum of the products of `g` and `h`. This is the version for `OrderedCommSemiring`. -/
+sum of the products of `g` and `h`. This is the version for `OrderedCommSemiring`. -/
 lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h i ≤ f i)
     (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j) (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) (hg : ∀ i ∈ s, 0 ≤ g i)
     (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
@@ -176,7 +176,7 @@ variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
   CanonicallyOrderedAdd.multiset_prod_pos.trans Multiset.forall_mem_map_iff
 
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
-  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedAdd`.
+sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedAdd`.
 -/
 lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j)
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
@@ -281,9 +281,11 @@ attribute [local instance] monadLiftOptionMetaM in
 positive if each `f i` is.
 
 TODO: The following example does not work
+
 ```
 example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.prod f := by positivity
 ```
+
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.prod _ _]

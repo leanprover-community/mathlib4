@@ -19,11 +19,11 @@ _uniformly_. The formal statement appears as `hasFDerivAt_of_tendstoLocallyUnifo
 ## Main statements
 
 * `uniformCauchySeqOnFilter_of_fderiv`: If
-    1. `f : ℕ → E → G` is a sequence of functions which have derivatives
-       `f' : ℕ → E → (E →L[𝕜] G)` on a neighborhood of `x`,
-    2. the functions `f` converge at `x`, and
-    3. the derivatives `f'` form a Cauchy sequence uniformly on a neighborhood of `x`,
-  then the `f` form a Cauchy sequence _uniformly_ on a neighborhood of `x`
+  1. `f : ℕ → E → G` is a sequence of functions which have derivatives
+     `f' : ℕ → E → (E →L[𝕜] G)` on a neighborhood of `x`,
+  2. the functions `f` converge at `x`, and
+  3. the derivatives `f'` form a Cauchy sequence uniformly on a neighborhood of `x`,
+     then the `f` form a Cauchy sequence _uniformly_ on a neighborhood of `x`
 * `hasFDerivAt_of_tendstoUniformlyOnFilter` : Suppose (1), (2), and (3) above are true. Let
   `g` (resp. `g'`) be the limiting function of the `f` (resp. `g'`). Then `f'` is the derivative of
   `g` on a neighborhood of `x`
@@ -305,11 +305,12 @@ set_option backward.isDefEq.respectTransparency false in
 _uniformly_ to their limit at `x`.
 
 In words the assumptions mean the following:
-  * `hf'`: The `f'` converge "uniformly at" `x` to `g'`. This does not mean that the `f' n` even
-    converge away from `x`!
-  * `hf`: For all `(y, n)` with `y` sufficiently close to `x` and `n` sufficiently large, `f' n` is
-    the derivative of `f n`
-  * `hfg`: The `f n` converge pointwise to `g` on a neighborhood of `x` -/
+
+* `hf'`: The `f'` converge "uniformly at" `x` to `g'`. This does not mean that the `f' n` even
+  converge away from `x`!
+* `hf`: For all `(y, n)` with `y` sufficiently close to `x` and `n` sufficiently large, `f' n` is
+  the derivative of `f n`
+* `hfg`: The `f n` converge pointwise to `g` on a neighborhood of `x` -/
 theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)

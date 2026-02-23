@@ -38,7 +38,7 @@ variable (f : F)
 variable {I J : Ideal R} {K L : Ideal S}
 
 /-- `I.map f` is the span of the image of the ideal `I` under `f`, which may be bigger than
-  the image itself. -/
+the image itself. -/
 def map (I : Ideal R) : Ideal S :=
   span (f '' I)
 
@@ -306,7 +306,7 @@ theorem map_comap_of_surjective (I : Ideal S) : map f (comap f I) = I :=
     hfrs ▸ (mem_map_of_mem f <| show f r ∈ I from hfrs.symm ▸ hsi)
 
 /-- `map` and `comap` are adjoint, and the composition `map f ∘ comap f` is the
-  identity -/
+identity -/
 def giMapComap : GaloisInsertion (map f) (comap f) :=
   GaloisInsertion.monotoneIntro (gc_map_comap f).monotone_u (gc_map_comap f).monotone_l
     (fun _ => le_comap_map) (map_comap_of_surjective _ hf)
@@ -455,7 +455,7 @@ theorem map_of_equiv {I : Ideal R} (f : R ≃+* S) :
     RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, map_id]
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`,
-  then `comap f (comap f.symm I) = I`. -/
+then `comap f (comap f.symm I) = I`. -/
 @[simp]
 theorem comap_of_equiv {I : Ideal R} (f : R ≃+* S) :
     (I.comap (f.symm : S →+* R)).comap (f : R →+* S) = I := by

@@ -15,11 +15,12 @@ Just as there are natural transformations between functors, there are transforma
 between oplax functors. The equality in the naturality condition of a natural transformation gets
 replaced by a specified 2-morphism. Now, there are three possible types of transformations (between
 oplax functors):
+
 * oplax natural transformations;
 * lax natural transformations;
 * strong natural transformations.
-These differ in the direction (and invertibility) of the 2-morphisms involved in the naturality
-condition.
+  These differ in the direction (and invertibility) of the 2-morphisms involved in the naturality
+  condition.
 
 ## Main definitions
 
@@ -39,12 +40,14 @@ Using these, we define three (scoped) `CategoryStruct` instances on `B ⥤ᵒᵖ
 transformations respectively.
 
 We also provide API for going between oplax transformations and strong transformations:
+
 * `OplaxTrans.StrongCore η`: a structure on an oplax transformation between oplax functors that
   promotes it to a strong transformation.
 * `StrongTrans.mkOfOplax η η'`: given an oplax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
 
 ## References
+
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
 -/
@@ -308,6 +311,7 @@ end OplaxTrans
 that is "natural up to 2-isomorphisms".
 
 More precisely, it consists of the following:
+
 * a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
 * a 2-isomorphism `η.naturality f : F.map f ≫ app b ≅ app a ≫ G.map f` for each 1-morphism
   `f : a ⟶ b`.

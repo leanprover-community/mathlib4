@@ -163,7 +163,7 @@ section Map
 
 /-- `Polynomial.map` as an `AlgHom` for noncommutative algebras.
 
-  This is the algebra version of `Polynomial.mapRingHom`. -/
+This is the algebra version of `Polynomial.mapRingHom`. -/
 def mapAlgHom (f : A →ₐ[R] B) : Polynomial A →ₐ[R] Polynomial B where
   toRingHom := mapRingHom f.toRingHom
   commutes' := by simp
@@ -320,7 +320,7 @@ theorem coeff_zero_of_isScalarTower (p : A[X]) :
 end IsScalarTower
 
 /-- Two polynomials `p` and `q` such that `p(q(X))=X` and `q(p(X))=X`
-  induces an automorphism of the polynomial algebra. -/
+induces an automorphism of the polynomial algebra. -/
 @[simps!]
 def algEquivOfCompEqX (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) : R[X] ≃ₐ[R] R[X] := by
   refine AlgEquiv.ofAlgHom (aeval p) (aeval q) ?_ ?_ <;>
@@ -337,7 +337,7 @@ theorem algEquivOfCompEqX_symm (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p
     (algEquivOfCompEqX p q hpq hqp).symm = algEquivOfCompEqX q p hqp hpq := rfl
 
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(a * X + b)`,
-  with inverse `p(X) ↦ p(a⁻¹ * (X - b))`. -/
+with inverse `p(X) ↦ p(a⁻¹ * (X - b))`. -/
 @[simps!]
 def algEquivCMulXAddC {R : Type*} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (C a * X + C b) (C ⅟a * (X - C b))
@@ -351,7 +351,7 @@ theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible
   simp [mul_add, sub_eq_add_neg]
 
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
-  with inverse `p(X) ↦ p(X-t)`. -/
+with inverse `p(X) ↦ p(X-t)`. -/
 @[simps!]
 def algEquivAevalXAddC {R : Type*} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
@@ -518,7 +518,7 @@ section aevalTower
 variable [CommSemiring S] [Algebra S R] [Algebra S A'] [Algebra S B]
 
 /-- Version of `aeval` for defining algebra homs out of `R[X]` over a smaller base ring
-  than `R`. -/
+than `R`. -/
 def aevalTower (f : R →ₐ[S] A') (x : A') : R[X] →ₐ[S] A' :=
   eval₂AlgHom' f x fun _ => Commute.all _ _
 

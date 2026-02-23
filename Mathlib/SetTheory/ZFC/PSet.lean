@@ -32,9 +32,9 @@ quotient of pre-sets by extensional equality.
 universe u v
 
 /-- The type of pre-sets in universe `u`. A pre-set
-  is a family of pre-sets indexed by a type in `Type u`.
-  The ZFC universe is defined as a quotient of this
-  to ensure extensionality. -/
+is a family of pre-sets indexed by a type in `Type u`.
+The ZFC universe is defined as a quotient of this
+to ensure extensionality. -/
 @[pp_with_univ]
 inductive PSet : Type (u + 1)
   | mk (α : Type u) (A : α → PSet) : PSet

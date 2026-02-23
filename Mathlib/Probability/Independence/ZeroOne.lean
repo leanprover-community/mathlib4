@@ -99,6 +99,7 @@ variable {β : Type*} {p : Set ι → Prop} {f : Filter ι} {ns : β → Set ι}
 
 /-! We prove a version of Kolmogorov's 0-1 law for the σ-algebra `limsup s f` where `f` is a filter
 for which we can define the following two functions:
+
 * `p : Set ι → Prop` such that for a set `t`, `p t → tᶜ ∈ f`,
 * `ns : α → Set ι` a directed sequence of sets which all verify `p` and such that
   `⋃ a, ns a = Set.univ`.

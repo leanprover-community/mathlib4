@@ -27,7 +27,7 @@ convergents. We follow the naming conventions from Wikipedia and [wall2018analyt
 ## Implementation notes
 
 1. The most commonly used kind of continued fractions in the literature are regular continued
-fractions. We hence just call them `ContFract` in the library.
+   fractions. We hence just call them `ContFract` in the library.
 2. We use sequences from `Data.Seq` to encode potentially infinite sequences.
 
 ## References
@@ -274,6 +274,7 @@ variable {K : Type*} [DivisionRing K]
 
 /-!
 We start with the definition of the recurrence relation. Given a gcf `g`, for all `n ≥ 1`, we define
+
 - `A₋₁ = 1,  A₀ = h,  Aₙ = bₙ₋₁ * Aₙ₋₁ + aₙ₋₁ * Aₙ₋₂`, and
 - `B₋₁ = 0,  B₀ = 1,  Bₙ = bₙ₋₁ * Bₙ₋₁ + aₙ₋₁ * Bₙ₋₂`.
 

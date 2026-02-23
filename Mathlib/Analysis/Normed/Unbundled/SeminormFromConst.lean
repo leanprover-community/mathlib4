@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 /-!
 # SeminormFromConst
 
-
 In this file, we prove [BGR, Proposition 1.3.2/2][bosch-guntzer-remmert] : starting from a
 power-multiplicative seminorm on a commutative ring `R` and a nonzero `c : R`, we create a new
 power-multiplicative seminorm for which `c` is multiplicative.
@@ -21,8 +20,8 @@ power-multiplicative seminorm for which `c` is multiplicative.
   `(f (x * c^n))/((f c)^n)`.
 * `seminormFromConst` : the function `seminormFromConst'` as a `RingSeminorm` on `R`.
 
-
 ## Main Results
+
 * `seminormFromConst_isNonarchimedean` : the function `seminormFromConst' c f`
   is nonarchimedean when f is nonarchimedean.
 * `seminormFromConst_isPowMul` : the function `seminormFromConst' c f`
@@ -31,6 +30,7 @@ power-multiplicative seminorm for which `c` is multiplicative.
   equals the product `seminormFromConst' c f c * seminormFromConst' c f x`.
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags
@@ -112,7 +112,7 @@ def seminormFromConst' (c : R) (f : RingSeminorm R) (x : R) : ℝ :=
   iInf (seminormFromConst_seq c f x)
 
 /-- We prove that `seminormFromConst' c f x` is the limit of the sequence
-  `seminormFromConst_seq c f x` as `n` tends to infinity. -/
+`seminormFromConst_seq c f x` as `n` tends to infinity. -/
 theorem tendsto_seminormFromConst_seq_atTop (x : R) :
     Tendsto (seminormFromConst_seq c f x) atTop (𝓝 (seminormFromConst' c f x)) :=
   tendsto_atTop_ciInf (seminormFromConst_seq_antitone hf1 hc hpm x)
@@ -219,7 +219,7 @@ theorem seminormFromConst_apply_of_isMul {x : R} (hx : ∀ y : R, f (x * y) = f 
   tendsto_nhds_unique (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x) hlim
 
 /-- If `x : R` is multiplicative for `f`, then it is multiplicative for
-  `seminormFromConst' c f`. -/
+`seminormFromConst' c f`. -/
 theorem seminormFromConst_isMul_of_isMul {x : R} (hx : ∀ y : R, f (x * y) = f x * f y) (y : R) :
     seminormFromConst' c f (x * y) =
       seminormFromConst' c f x * seminormFromConst' c f y :=

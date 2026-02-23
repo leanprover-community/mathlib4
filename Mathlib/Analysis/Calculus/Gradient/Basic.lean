@@ -17,16 +17,17 @@ public import Mathlib.Analysis.Calculus.Deriv.Basic
 Let `f` be a function from a Hilbert Space `F` to `𝕜` (`𝕜` is `ℝ` or `ℂ`), `x` be a point in `F`
 and `f'` be a vector in F. Then
 
-  `HasGradientWithinAt f f' s x`
+`HasGradientWithinAt f f' s x`
 
 says that `f` has a gradient `f'` at `x`, where the domain of interest
 is restricted to `s`. We also have
 
-  `HasGradientAt f f' x := HasGradientWithinAt f f' x univ`
+`HasGradientAt f f' x := HasGradientWithinAt f f' x univ`
 
 ## Main results
 
 This file develops the following aspects of the theory of gradients:
+
 * definitions of gradients, both within a set and on the whole space.
 * translating between `HasGradientAtFilter` and `HasFDerivAtFilter`,
   `HasGradientWithinAt` and `HasFDerivWithinAt`, `HasGradientAt` and `HasFDerivAt`,
@@ -53,28 +54,28 @@ variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
 variable {f : F → 𝕜} {f' x y : F}
 
 /-- A function `f` has the gradient `f'` as derivative along the filter `L` if
-  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` when `x'` converges along the filter `L`. -/
+`f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` when `x'` converges along the filter `L`. -/
 def HasGradientAtFilter (f : F → 𝕜) (f' x : F) (L : Filter F) :=
   HasFDerivAtFilter f (toDual 𝕜 F f') (L ×ˢ pure x)
 
 /-- `f` has the gradient `f'` at the point `x` within the subset `s` if
-  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`. -/
+`f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`. -/
 def HasGradientWithinAt (f : F → 𝕜) (f' : F) (s : Set F) (x : F) :=
   HasGradientAtFilter f f' x (𝓝[s] x)
 
 /-- `f` has the gradient `f'` at the point `x` if
-  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x`. -/
+`f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x`. -/
 def HasGradientAt (f : F → 𝕜) (f' x : F) :=
   HasGradientAtFilter f f' x (𝓝 x)
 
-/-- Gradient of `f` at the point `x` within the set `s`, if it exists.  Zero otherwise.
+/-- Gradient of `f` at the point `x` within the set `s`, if it exists. Zero otherwise.
 
 If the derivative exists (i.e., `∃ f', HasGradientWithinAt f f' s x`), then
 `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`. -/
 def gradientWithin (f : F → 𝕜) (s : Set F) (x : F) : F :=
   (toDual 𝕜 F).symm (fderivWithin 𝕜 f s x)
 
-/-- Gradient of `f` at the point `x`, if it exists.  Zero otherwise.
+/-- Gradient of `f` at the point `x`, if it exists. Zero otherwise.
 Denoted as `∇` within the Gradient namespace.
 
 If the derivative exists (i.e., `∃ f', HasGradientAt f f' x`), then

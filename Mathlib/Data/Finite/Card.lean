@@ -95,20 +95,20 @@ theorem card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
   simp only [Nat.card_eq_fintype_card, Fintype.card_eq_zero_iff]
 
 /-- If `f` is injective, then `Nat.card α ≤ Nat.card β`. We must also assume
-  `Nat.card β = 0 → Nat.card α = 0` since `Nat.card` is defined to be `0` for infinite types. -/
+`Nat.card β = 0 → Nat.card α = 0` since `Nat.card` is defined to be `0` for infinite types. -/
 theorem card_le_of_injective' {f : α → β} (hf : Function.Injective f)
     (h : Nat.card β = 0 → Nat.card α = 0) : Nat.card α ≤ Nat.card β :=
   (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h (Nat.zero_le _)) fun h =>
     @Nat.card_le_card_of_injective α β (Nat.finite_of_card_ne_zero h) f hf
 
 /-- If `f` is an embedding, then `Nat.card α ≤ Nat.card β`. We must also assume
-  `Nat.card β = 0 → Nat.card α = 0` since `Nat.card` is defined to be `0` for infinite types. -/
+`Nat.card β = 0 → Nat.card α = 0` since `Nat.card` is defined to be `0` for infinite types. -/
 theorem card_le_of_embedding' (f : α ↪ β) (h : Nat.card β = 0 → Nat.card α = 0) :
     Nat.card α ≤ Nat.card β :=
   card_le_of_injective' f.2 h
 
 /-- If `f` is surjective, then `Nat.card β ≤ Nat.card α`. We must also assume
-  `Nat.card α = 0 → Nat.card β = 0` since `Nat.card` is defined to be `0` for infinite types. -/
+`Nat.card α = 0 → Nat.card β = 0` since `Nat.card` is defined to be `0` for infinite types. -/
 theorem card_le_of_surjective' {f : α → β} (hf : Function.Surjective f)
     (h : Nat.card α = 0 → Nat.card β = 0) : Nat.card β ≤ Nat.card α :=
   (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h (Nat.zero_le _)) fun h =>

@@ -46,9 +46,9 @@ variable {R X Y Z : C} (f : X ⟶ Y) (a b : R ⟶ X)
 
 /-- `IsKernelPair f a b` expresses that `(a, b)` is a kernel pair for `f`, i.e. `a ≫ f = b ≫ f`
 and the square
-  R → X
-  ↓   ↓
-  X → Y
+R → X
+↓ ↓
+X → Y
 is a pullback square.
 This is just an abbreviation for `IsPullback a b f f`.
 -/

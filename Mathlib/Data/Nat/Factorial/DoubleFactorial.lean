@@ -14,7 +14,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 # Double factorials
 
 This file defines the double factorial,
-  `n‼ := n * (n - 2) * (n - 4) * ...`.
+`n‼ := n * (n - 2) * (n - 4) * ...`.
 
 ## Main declarations
 

@@ -80,13 +80,13 @@ section
 variable [PseudoMetrizableSpace ε] {f : ℝ → ε} {a b : ℝ} {μ : Measure ℝ}
 
 /-- A function is interval integrable with respect to a given measure `μ` on `a..b` if and
-  only if it is integrable on `uIoc a b` with respect to `μ`. This is an equivalent
-  definition of `IntervalIntegrable`. -/
+only if it is integrable on `uIoc a b` with respect to `μ`. This is an equivalent
+definition of `IntervalIntegrable`. -/
 theorem intervalIntegrable_iff : IntervalIntegrable f μ a b ↔ IntegrableOn f (Ι a b) μ := by
   rw [uIoc_eq_union, integrableOn_union, IntervalIntegrable]
 
 /-- If a function is interval integrable with respect to a given measure `μ` on `a..b` then
-  it is integrable on `uIoc a b` with respect to `μ`. -/
+it is integrable on `uIoc a b` with respect to `μ`. -/
 theorem IntervalIntegrable.def' (h : IntervalIntegrable f μ a b) : IntegrableOn f (Ι a b) μ :=
   intervalIntegrable_iff.mp h
 
@@ -145,7 +145,7 @@ theorem intervalIntegrable_iff_integrableOn_Ioo_of_le [NoAtoms μ]
 
 omit [PseudoMetrizableSpace ε] in
 /-- If a function is integrable with respect to a given measure `μ` then it is interval integrable
-  with respect to `μ` on `uIcc a b`. -/
+with respect to `μ` on `uIcc a b`. -/
 theorem MeasureTheory.Integrable.intervalIntegrable (hf : Integrable f μ) :
     IntervalIntegrable f μ a b :=
   ⟨hf.integrableOn, hf.integrableOn⟩
@@ -173,6 +173,7 @@ end
 
 /-!
 ## Basic properties of interval integrability
+
 - interval integrability is symmetric, reflexive, transitive
 - monotonicity and strong measurability of the interval integral
 - if `f` is interval integrable, so are its absolute value and norm
@@ -844,6 +845,7 @@ end ContinuousLinearMap
 
 /-!
 ## Basic arithmetic
+
 Includes addition, scalar multiplication and affine transformations.
 -/
 section Comp

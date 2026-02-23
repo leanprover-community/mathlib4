@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 # Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMonoid`.
 
 We introduce the bundled categories:
+
 * `MonCat`
 * `AddMonCat`
 * `CommMonCat`
@@ -427,7 +428,7 @@ variable [Monoid X] [Monoid Y]
 /-- Build an isomorphism in the category `MonCat` from a `MulEquiv` between `Monoid`s. -/
 @[to_additive (attr := simps) AddEquiv.toAddMonCatIso
       /-- Build an isomorphism in the category `AddMonCat` from
-an `AddEquiv` between `AddMonoid`s. -/]
+      an `AddEquiv` between `AddMonoid`s. -/]
 def MulEquiv.toMonCatIso (e : X ≃* Y) : MonCat.of X ≅ MonCat.of Y where
   hom := MonCat.ofHom e.toMonoidHom
   inv := MonCat.ofHom e.symm.toMonoidHom
@@ -455,7 +456,7 @@ namespace CategoryTheory.Iso
 /-- Build a `MulEquiv` from an isomorphism in the category `MonCat`. -/
 @[to_additive addMonCatIsoToAddEquiv
       /-- Build an `AddEquiv` from an isomorphism in the category
-`AddMonCat`. -/]
+      `AddMonCat`. -/]
 def monCatIsoToMulEquiv {X Y : MonCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 

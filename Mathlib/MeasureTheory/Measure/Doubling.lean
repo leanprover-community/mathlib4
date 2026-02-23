@@ -18,10 +18,10 @@ This file records basic facts about uniformly locally doubling measures.
 
 ## Main definitions
 
-  * `IsUnifLocDoublingMeasure`: the definition of a uniformly locally doubling measure (as a
-    typeclass).
-  * `IsUnifLocDoublingMeasure.doublingConstant`: a function yielding the doubling constant `C`
-    appearing in the definition of a uniformly locally doubling measure.
+* `IsUnifLocDoublingMeasure`: the definition of a uniformly locally doubling measure (as a
+  typeclass).
+* `IsUnifLocDoublingMeasure.doublingConstant`: a function yielding the doubling constant `C`
+  appearing in the definition of a uniformly locally doubling measure.
 -/
 
 @[expose] public section

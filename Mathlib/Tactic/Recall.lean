@@ -22,10 +22,13 @@ The `recall` command redeclares a previous definition for illustrative purposes.
 This can be useful for files that give an expository account of some theory in Lean.
 
 The syntax of the command mirrors `def`, so all the usual bells and whistles work.
+
 ```
 recall List.cons_append (a : α) (as bs : List α) : (a :: as) ++ bs = a :: (as ++ bs) := rfl
 ```
+
 Also, one can leave out the body.
+
 ```
 recall Nat.add_comm (n m : Nat) : n + m = m + n
 ```
@@ -33,6 +36,7 @@ recall Nat.add_comm (n m : Nat) : n + m = m + n
 The command verifies that the new definition type-checks and that the type and value
 provided are definitionally equal to the original declaration. However, this does not
 capture some details (like binders), so the following works without error.
+
 ```
 recall Nat.add_comm {n m : Nat} : n + m = m + n
 ```

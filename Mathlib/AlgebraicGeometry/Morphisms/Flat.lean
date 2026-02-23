@@ -174,6 +174,7 @@ section sections
 ## Sections of fibered products
 
 Suppose we are given the following cartesian square:
+
 ```
 Y --g-→ X
 |       |
@@ -181,22 +182,24 @@ iY      iX
 ↓       |
 T --f-→ S
 ```
+
 Let `Uₛ` be an open of `S`, `Uₓ` and `Uₜ` be opens of `X` and `T` mapping into `Uₛ`.
 There is a canonical map `Γ(X, Uₓ) ⊗[Γ(S, Uₛ)] Γ(T, Uₜ) ⟶ Γ(X ×ₛ T, pr₁ ⁻¹ Uₓ ∩ pr₂ ⁻¹ Uₜ)`.
 
 We show that this map is
+
 1. `isIso_pushoutSection_of_isAffineOpen`:
-  bijective when `Uₛ`, `Uₜ`, and `Uₓ` are all affine.
+   bijective when `Uₛ`, `Uₜ`, and `Uₓ` are all affine.
 2. `mono_pushoutSection_of_isCompact_of_flat_right`:
-  injective when `Uₛ`, `Uₜ` are affine, `Uₓ` is compact, and `f` is flat.
+   injective when `Uₛ`, `Uₜ` are affine, `Uₓ` is compact, and `f` is flat.
 3. `isIso_pushoutSection_of_isQuasiSeparated_of_flat_right`:
-  bijective when `Uₛ`, `Uₜ` are affine, `Uₓ` is qcqs, and `f` is flat.
+   bijective when `Uₛ`, `Uₜ` are affine, `Uₓ` is qcqs, and `f` is flat.
 4. `mono_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat`:
-  injective when `Uₛ` is affine, `Uₜ` is compact, `Uₓ` is qcqs, `f` is flat,
-  and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
+   injective when `Uₛ` is affine, `Uₜ` is compact, `Uₓ` is qcqs, `f` is flat,
+   and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
 5. `isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat`:
-  bijective when `Uₛ` is affine, `Uₜ` and `Uₓ` are qcqs, `f` is flat,
-  and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
+   bijective when `Uₛ` is affine, `Uₜ` and `Uₓ` are qcqs, `f` is flat,
+   and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
 
 -/
 

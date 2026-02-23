@@ -34,16 +34,17 @@ universe v u₁ u₂
 variable (C : Type u₁) [Category.{v} C] {C' : Type u₂} [Category.{v} C']
 
 /-- A gluing datum consists of
-1. An index type `J`
-2. An object `U i` for each `i : J`.
-3. An object `V i j` for each `i j : J`.
-4. A monomorphism `f i j : V i j ⟶ U i` for each `i j : J`.
-5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
-such that
-6. `f i i` is an isomorphism.
-7. `t i i` is the identity.
-8. The pullback for `f i j` and `f i k` exists.
-9. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
+
+01. An index type `J`
+02. An object `U i` for each `i : J`.
+03. An object `V i j` for each `i j : J`.
+04. A monomorphism `f i j : V i j ⟶ U i` for each `i j : J`.
+05. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
+    such that
+06. `f i i` is an isomorphism.
+07. `t i i` is the identity.
+08. The pullback for `f i j` and `f i k` exists.
+09. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
     `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 10. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 -/

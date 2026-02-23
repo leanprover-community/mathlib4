@@ -54,7 +54,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 namespace LinearMap
 
 /-- A linear operator `T` on a Hilbert space is **positive** if it is symmetric and
-  `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
+`∀ x, 0 ≤ re ⟪T x, x⟫`. -/
 def IsPositive (T : E →ₗ[𝕜] E) : Prop :=
   IsSymmetric T ∧ ∀ x, 0 ≤ re ⟪T x, x⟫
 
@@ -256,7 +256,7 @@ end LinearMap
 namespace ContinuousLinearMap
 
 /-- A continuous linear endomorphism `T` of a Hilbert space is **positive** if it is symmetric
-  and `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
+and `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
 def IsPositive (T : E →L[𝕜] E) : Prop :=
   T.IsSymmetric ∧ ∀ x, 0 ≤ T.reApplyInnerSelf x
 
@@ -489,6 +489,7 @@ theorem IsPositive.of_isStarProjection [CompleteSpace E] {p : E →L[𝕜] E}
   hp.isIdempotentElem.isPositive_iff_isSelfAdjoint.mpr hp.isSelfAdjoint
 
 /-- For an idempotent operator `p`, TFAE:
+
 * `(range p)ᗮ = ker p`
 * `p` is normal
 * `p` is self-adjoint

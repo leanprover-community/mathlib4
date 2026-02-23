@@ -63,7 +63,7 @@ variable {α β : Type u}
 /-! ### Definition of cardinals -/
 
 /-- The equivalence relation on types given by equivalence (bijective correspondence) of types.
-  Quotienting by this equivalence relation gives the cardinal numbers.
+Quotienting by this equivalence relation gives the cardinal numbers.
 -/
 instance Cardinal.isEquivalent : Setoid (Type u) where
   r α β := Nonempty (α ≃ β)
@@ -73,8 +73,8 @@ instance Cardinal.isEquivalent : Setoid (Type u) where
     fun ⟨e₁⟩ ⟨e₂⟩ => ⟨e₁.trans e₂⟩⟩
 
 /-- `Cardinal.{u}` is the type of cardinal numbers in `Type u`,
-  defined as the quotient of `Type u` by existence of an equivalence
-  (a bijection with explicit inverse). -/
+defined as the quotient of `Type u` by existence of an equivalence
+(a bijection with explicit inverse). -/
 @[pp_with_univ]
 def Cardinal : Type (u + 1) :=
   Quotient Cardinal.isEquivalent
@@ -142,7 +142,7 @@ def map₂ (f : Type u → Type v → Type w) (hf : ∀ α β γ δ, α ≃ β �
 /-! ### Lifting cardinals to a higher universe -/
 
 /-- The universe lift operation on cardinals. You can specify the universes explicitly with
-  `lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
+`lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
 @[pp_with_univ]
 def lift (c : Cardinal.{v}) : Cardinal.{max v u} :=
   map ULift.{u, v} (fun _ _ e => Equiv.ulift.trans <| e.trans Equiv.ulift.symm) c
@@ -329,7 +329,7 @@ theorem lift_add (a b : Cardinal.{u}) : lift.{v} (a + b) = lift.{v} a + lift.{v}
 /-! ### Indexed cardinal `sum` -/
 
 /-- The indexed sum of cardinals is the cardinality of the
-  indexed disjoint union, i.e. sigma type. -/
+indexed disjoint union, i.e. sigma type. -/
 def sum {ι} (f : ι → Cardinal) : Cardinal :=
   mk (Σ i, (f i).out)
 
@@ -396,7 +396,7 @@ theorem sum_nat_eq_add_sum_succ (f : ℕ → Cardinal.{u}) :
 /-! ### Indexed cardinal `prod` -/
 
 /-- The indexed product of cardinals is the cardinality of the Pi type
-  (dependent product). -/
+(dependent product). -/
 def prod {ι : Type u} (f : ι → Cardinal) : Cardinal :=
   #(Π i, (f i).out)
 

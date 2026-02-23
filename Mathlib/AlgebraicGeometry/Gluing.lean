@@ -21,8 +21,8 @@ which is a special case where the conditions are easier to check.
 
 * `AlgebraicGeometry.Scheme.GlueData`: A structure containing the family of gluing data.
 * `AlgebraicGeometry.Scheme.GlueData.glued`: The glued scheme.
-    This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
-    can be used.
+  This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
+  can be used.
 * `AlgebraicGeometry.Scheme.GlueData.ι`: The immersion `ι i : U i ⟶ glued` for each `i : J`.
 * `AlgebraicGeometry.Scheme.GlueData.isoCarrier`: The isomorphism between the underlying space
   of the glued scheme and the gluing of the underlying topological spaces.
@@ -70,18 +70,19 @@ namespace AlgebraicGeometry
 namespace Scheme
 
 /-- A family of gluing data consists of
+
 1. An index type `J`
 2. A scheme `U i` for each `i : J`.
 3. A scheme `V i j` for each `i j : J`.
-  (Note that this is `J × J → Scheme` rather than `J → J → Scheme` to connect to the
-  limits library easier.)
+   (Note that this is `J × J → Scheme` rather than `J → J → Scheme` to connect to the
+   limits library easier.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
-such that
+   such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
 8. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-    `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+   `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 9. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 
 We can then glue the schemes `U i` together by identifying `V i j` with `V j i`, such
@@ -190,6 +191,7 @@ def vPullbackCone (i j : D.J) : PullbackCone (D.ι i) (D.ι j) :=
   PullbackCone.mk (D.f i j) (D.t i j ≫ D.f j i) (by simp)
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
+
 ```
 Vᵢⱼ ⟶ Uᵢ
  |      |
@@ -502,10 +504,11 @@ the set of elements containing `x` is directed (and hence the name).
 
 For such a diagram, we can glue them directly since the gluing conditions are always satisfied.
 The intended usage is to provide the following instances:
+
 - `∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)`
 - `(F ⋙ forget).IsLocallyDirected`
-and to directly use the `colimit` API.
-Also see `AlgebraicGeometry.Scheme.IsLocallyDirected.openCover` for the open cover of the `colimit`.
+  and to directly use the `colimit` API.
+  Also see `AlgebraicGeometry.Scheme.IsLocallyDirected.openCover` for the open cover of the `colimit`.
 
 -/
 section IsLocallyDirected

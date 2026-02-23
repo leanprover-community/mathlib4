@@ -11,18 +11,22 @@ public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
 # Eisenstein polynomials
+
 Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f : R[X]` is
 *Eisenstein at `𝓟`* if `f.leadingCoeff ∉ 𝓟`, `∀ n, n < f.natDegree → f.coeff n ∈ 𝓟` and
 `f.coeff 0 ∉ 𝓟 ^ 2`. In this file we gather miscellaneous results about Eisenstein polynomials.
 
 ## Main definitions
+
 * `Polynomial.IsEisensteinAt f 𝓟`: the property of being Eisenstein at `𝓟`.
 
 ## Main results
+
 * `Polynomial.IsEisensteinAt.irreducible`: if a primitive `f` satisfies `f.IsEisensteinAt 𝓟`,
   where `𝓟.IsPrime`, then `f` is irreducible.
 
 ## Implementation details
+
 We also define a notion `IsWeaklyEisensteinAt` requiring only that
 `∀ n < f.natDegree → f.coeff n ∈ 𝓟`. This makes certain results slightly more general and it is
 useful since it is sometimes better behaved (for example it is stable under `Polynomial.map`).

@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Ideal.Prod
 # Noetherian rings and modules
 
 The following are equivalent for a module M over a ring R:
+
 1. Every increasing chain of submodules M₁ ⊆ M₂ ⊆ M₃ ⊆ ⋯ eventually stabilises.
 2. Every submodule is finitely generated.
 
@@ -187,7 +188,7 @@ instance isNoetherian_iSup :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If the first and final modules in an exact sequence are Noetherian,
-  then the middle module is also Noetherian. -/
+then the middle module is also Noetherian. -/
 theorem isNoetherian_of_range_eq_ker [IsNoetherian R M] [IsNoetherian R P]
     (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : LinearMap.range f = LinearMap.ker g) :
     IsNoetherian R N :=

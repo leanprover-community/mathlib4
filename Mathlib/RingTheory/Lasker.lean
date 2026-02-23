@@ -38,7 +38,7 @@ open Ideal
 variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- An `R`-module `M` satisfies `IsLasker R M` when any `N : Submodule R M` can be
-  decomposed into finitely many primary submodules. -/
+decomposed into finitely many primary submodules. -/
 def IsLasker : Prop :=
   ∀ N : Submodule R M, ∃ s : Finset (Submodule R M), s.inf id = N ∧ ∀ ⦃J⦄, J ∈ s → J.IsPrimary
 
@@ -223,7 +223,7 @@ lemma _root_.InfIrred.isPrimary {N : Submodule R M} (h : InfIrred N) : N.IsPrima
 
 variable (R M) in
 /-- The Lasker--Noether theorem: every submodule in a Noetherian module admits a decomposition into
-  primary submodules. -/
+primary submodules. -/
 lemma isLasker : IsLasker R M := fun I ↦
   (exists_infIrred_decomposition I).imp fun _ h ↦ h.imp_right fun h' _ ht ↦ (h' ht).isPrimary
 

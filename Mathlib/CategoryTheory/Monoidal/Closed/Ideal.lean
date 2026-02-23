@@ -25,6 +25,7 @@ preserve the principle of equivalence.
 
 We additionally show that if `C` is Cartesian closed and `i : D ⥤ C` is a reflective functor, the
 following are equivalent.
+
 * The left adjoint to `i` preserves binary (equivalently, finite) products.
 * `i` is an exponential ideal.
 -/
@@ -234,6 +235,7 @@ variable [BraidedCategory C]
 
 /-- We construct a bijection between morphisms `L(A ⊗ B) ⟶ X` and morphisms `LA ⊗ LB ⟶ X`.
 This bijection has two key properties:
+
 * It is natural in `X`: See `bijection_natural`.
 * When `X = LA ⨯ LB`, then the backwards direction sends the identity morphism to the product
   comparison morphism: See `bijection_symm_apply_id`.

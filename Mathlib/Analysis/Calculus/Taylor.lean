@@ -121,7 +121,7 @@ theorem taylor_within_apply (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ x : �
     simp [Nat.factorial]
 
 /-- If `f` is `n` times continuous differentiable on a set `s`, then the Taylor polynomial
-  `taylorWithinEval f n s x₀ x` is continuous in `x₀`. -/
+`taylorWithinEval f n s x₀ x` is continuous in `x₀`. -/
 theorem continuousOn_taylorWithinEval {f : ℝ → E} {x : ℝ} {n : ℕ} {s : Set ℝ}
     (hs : UniqueDiffOn ℝ s) (hf : ContDiffOn ℝ n f s) :
     ContinuousOn (fun t => taylorWithinEval f n s t x) s := by

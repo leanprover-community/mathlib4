@@ -29,13 +29,13 @@ theorem Summable.const_smul (b : γ) (hf : Summable f L) : Summable (fun i ↦ b
   (hf.hasSum.const_smul _).summable
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Monoid`, but
-  requiring a summability hypothesis. -/
+requiring a summability hypothesis. -/
 protected theorem Summable.tsum_const_smul [T2Space α] [L.NeBot] (b : γ) (hf : Summable f L) :
     ∑'[L] i, b • f i = b • ∑'[L] i, f i :=
   (hf.hasSum.const_smul _).tsum_eq
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Group`, but
-  not requiring any summability hypothesis. -/
+not requiring any summability hypothesis. -/
 lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
     [T2Space α] (g : γ) :
     ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i :=
@@ -45,8 +45,8 @@ lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [Continu
       left_inv a := by simp, right_inv a := by simp })).symm
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a
-  `DivisionSemiring`; no summability hypothesis. This could be made to work for a
-  `[GroupWithZero γ]` if there was such a thing as `DistribMulActionWithZero`. -/
+`DivisionSemiring`; no summability hypothesis. This could be made to work for a
+`[GroupWithZero γ]` if there was such a thing as `DistribMulActionWithZero`. -/
 lemma tsum_const_smul'' {γ : Type*} [DivisionSemiring γ] [Module γ α] [ContinuousConstSMul γ α]
     [T2Space α] (g : γ) :
     ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i := by
@@ -182,10 +182,10 @@ variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Typ
   [DivisionRing R] [Module R M] [ContinuousConstSMul R M]
 
 /-- Given a group `α` acting on a type `β`, and a function `f : β → M`, we "automorphize" `f` to a
-  function `β ⧸ α → M` by summing over `α` orbits, `b ↦ ∑' (a : α), f(a • b)`. -/
+function `β ⧸ α → M` by summing over `α` orbits, `b ↦ ∑' (a : α), f(a • b)`. -/
 @[to_additive /-- Given an additive group `α` acting on a type `β`, and a function `f : β → M`,
-  we automorphize `f` to a function `β ⧸ α → M` by summing over `α` orbits,
-  `b ↦ ∑' (a : α), f(a • b)`. -/]
+we automorphize `f` to a function `β ⧸ α → M` by summing over `α` orbits,
+`b ↦ ∑' (a : α), f(a • b)`. -/]
 noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β → M) :
     Quotient (MulAction.orbitRel α β) → M := by
   refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
@@ -244,10 +244,10 @@ section
 variable {G : Type*} [Group G] {Γ : Subgroup G}
 
 /-- Given a subgroup `Γ` of a group `G`, and a function `f : G → M`, we "automorphize" `f` to a
-  function `G ⧸ Γ → M` by summing over `Γ` orbits, `g ↦ ∑' (γ : Γ), f(γ • g)`. -/
+function `G ⧸ Γ → M` by summing over `Γ` orbits, `g ↦ ∑' (γ : Γ), f(γ • g)`. -/
 @[to_additive /-- Given a subgroup `Γ` of an additive group `G`, and a function `f : G → M`, we
-  automorphize `f` to a function `G ⧸ Γ → M` by summing over `Γ` orbits,
-  `g ↦ ∑' (γ : Γ), f(γ • g)`. -/]
+automorphize `f` to a function `G ⧸ Γ → M` by summing over `Γ` orbits,
+`g ↦ ∑' (γ : Γ), f(γ • g)`. -/]
 noncomputable def QuotientGroup.automorphize (f : G → M) : G ⧸ Γ → M := MulAction.automorphize f
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the

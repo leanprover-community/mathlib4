@@ -17,6 +17,7 @@ public meta import Mathlib.Tactic.ToAdditive
 
 The `qify` tactic is used to shift propositions from `ℕ` or `ℤ` to `ℚ`.
 This is often useful since `ℚ` has well-behaved division.
+
 ```
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   qify
@@ -41,6 +42,7 @@ open Lean.Elab.Tactic
 /--
 The `qify` tactic is used to shift propositions from `ℕ` or `ℤ` to `ℚ`.
 This is often useful since `ℚ` has well-behaved division.
+
 ```
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   qify
@@ -51,13 +53,16 @@ example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   -/
   sorry
 ```
+
 `qify` can be given extra lemmas to use in simplification. This is especially useful in the
 presence of nat subtraction: passing `≤` arguments will allow `push_cast` to do more work.
+
 ```
 example (a b c : ℤ) (h : a / b = c) (hab : b ∣ a) (hb : b ≠ 0) : a = c * b := by
   qify [hab] at h hb ⊢
   exact (div_eq_iff hb).1 h
 ```
+
 `qify` makes use of the `@[zify_simps]` and `@[qify_simps]` attributes to move propositions,
 and the `push_cast` tactic to simplify the `ℚ`-valued expressions. -/
 syntax (name := qify) "qify" (simpArgs)? (location)? : tactic

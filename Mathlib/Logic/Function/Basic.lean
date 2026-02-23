@@ -33,7 +33,7 @@ section
 variable {α β γ : Sort*} {f : α → β}
 
 /-- Evaluate a function at an argument. Useful if you want to talk about the partially applied
-  `Function.eval x : (∀ x, β x) → β x`. -/
+`Function.eval x : (∀ x, β x) → β x`. -/
 @[reducible, simp] def eval {β : α → Sort*} (x : α) (f : ∀ x, β x) : β x := f x
 
 theorem eval_apply {β : α → Sort*} (x : α) (f : ∀ x, β x) : eval x f = f x :=
@@ -251,7 +251,7 @@ theorem cantor_injective {α : Type*} (f : Set α → α) : ¬Injective f
          RightInverse.surjective (fun U ↦ Set.ext fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
 
 /-- There is no surjection from `α : Type u` into `Type (max u v)`. This theorem
-  demonstrates why `Type : Type` would be inconsistent in Lean. -/
+demonstrates why `Type : Type` would be inconsistent in Lean. -/
 theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjective f := by
   intro hf
   let T : Type max u v := Sigma f
@@ -266,8 +266,8 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
   exact cantor_injective g hg
 
 /-- `g` is a partial inverse to `f` (an injective but not necessarily
-  surjective function) if `g y = some x` implies `f x = y`, and `g y = none`
-  implies that `y` is not in the range of `f`. -/
+surjective function) if `g y = some x` implies `f x = y`, and `g y = none`
+implies that `y` is not in the range of `f`. -/
 def IsPartialInv {α β} (f : α → β) (g : β → Option α) : Prop :=
   ∀ x y, g y = some x ↔ f x = y
 
@@ -341,7 +341,7 @@ theorem LeftInverse.eq_rightInverse {f : α → β} {g₁ g₂ : β → α} (h�
      _ = g₂ := by rw [← comp_assoc, h₁.comp_eq_id, id_comp]
 
 /-- We can use choice to construct explicitly a partial inverse for
-  a given injective function `f`. -/
+a given injective function `f`. -/
 noncomputable def partialInv {α β} (f : α → β) (b : β) : Option α :=
   open scoped Classical in
   if h : ∃ a, f a = b then some (Classical.choose h) else none
@@ -371,7 +371,7 @@ section InvFun
 variable {α β : Sort*} [Nonempty α] {f : α → β} {b : β}
 
 /-- The inverse of a function (which is a left inverse if `f` is injective
-  and a right inverse if `f` is surjective). -/
+and a right inverse if `f` is surjective). -/
 -- Explicit Sort so that `α` isn't inferred to be Prop via `exists_prop_decidable`
 noncomputable def invFun {α : Sort u} {β} [Nonempty α] (f : α → β) : β → α :=
   open scoped Classical in
@@ -420,7 +420,7 @@ section SurjInv
 variable {α : Sort u} {β : Sort v} {γ : Sort w} {f : α → β}
 
 /-- The inverse of a surjective function. (Unlike `invFun`, this does not require
-  `α` to be inhabited.) -/
+`α` to be inhabited.) -/
 noncomputable def surjInv {f : α → β} (h : Surjective f) (b : β) : α :=
   Classical.choose (h b)
 

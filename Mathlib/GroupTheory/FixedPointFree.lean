@@ -29,7 +29,7 @@ variable (φ : G → G)
 def FixedPointFree [One G] := ∀ g, φ g = g → g = 1
 
 /-- The commutator map `g ↦ g / φ g`. If `φ g = h * g * h⁻¹`, then `g / φ g` is exactly the
-  commutator `[g, h] = g * h * g⁻¹ * h⁻¹`. -/
+commutator `[g, h] = g * h * g⁻¹ * h⁻¹`. -/
 def commutatorMap [Div G] (g : G) := g / φ g
 
 @[simp] theorem commutatorMap_apply [Div G] (g : G) : commutatorMap φ g = g / φ g := rfl

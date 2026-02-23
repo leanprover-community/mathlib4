@@ -203,7 +203,7 @@ instance comp_preservesColimits [PreservesColimitsOfSize.{w', w} F]
 end
 
 /-- If F preserves one limit cone for the diagram K,
-  then it preserves any limit cone for K. -/
+then it preserves any limit cone for K. -/
 lemma preservesLimit_of_preserves_limit_cone {F : C ⥤ D} {t : Cone K} (h : IsLimit t)
     (hF : IsLimit (F.mapCone t)) : PreservesLimit K F where
   preserves h' := ⟨IsLimit.ofIsoLimit hF (Functor.mapIso _ (IsLimit.uniqueUpToIso h h'))⟩
@@ -262,7 +262,7 @@ lemma preservesSmallestLimits_of_preservesLimits (F : C ⥤ D) [PreservesLimitsO
   preservesLimitsOfSize_shrink F
 
 /-- If F preserves one colimit cocone for the diagram K,
-  then it preserves any colimit cocone for K. -/
+then it preserves any colimit cocone for K. -/
 lemma preservesColimit_of_preserves_colimit_cocone {F : C ⥤ D} {t : Cocone K} (h : IsColimit t)
     (hF : IsColimit (F.mapCocone t)) : PreservesColimit K F :=
   ⟨fun h' => ⟨IsColimit.ofIsoColimit hF (Functor.mapIso _ (IsColimit.uniqueUpToIso h h'))⟩⟩

@@ -17,12 +17,12 @@ public import Mathlib.Tactic.FinCases
 
 Definition of the integers mod n, and the field structure on the integers mod p.
 
-
 ## Definitions
 
 * `ZMod n`, which is for integers modulo a nat `n : ℕ`
 
 * `val a` is defined as a natural number:
+
   - for `a : ZMod 0` it is the absolute value of `a`
   - for `a : ZMod n` with `0 < n` it is the least natural number in the equivalence class
 
@@ -49,8 +49,9 @@ def finEquiv : ∀ (n : ℕ) [NeZero n], Fin n ≃+* ZMod n
 instance charZero : CharZero (ZMod 0) := inferInstanceAs (CharZero ℤ)
 
 /-- `val a` is a natural number defined as:
-  - for `a : ZMod 0` it is the absolute value of `a`
-  - for `a : ZMod n` with `0 < n` it is the least natural number in the equivalence class
+
+- for `a : ZMod 0` it is the absolute value of `a`
+- for `a : ZMod n` with `0 < n` it is the least natural number in the equivalence class
 
 See `ZMod.valMinAbs` for a variant that takes values in the integers.
 -/
@@ -122,7 +123,7 @@ example (n : ℕ) : Lean.Grind.IsCharP (ZMod n) n := inferInstance
 theorem addOrderOf_one (n : ℕ) : addOrderOf (1 : ZMod n) = n :=
   CharP.eq _ (CharP.addOrderOf_one _) (ZMod.charP n)
 
-/-- This lemma works in the case in which `ZMod n` is not infinite, i.e. `n ≠ 0`.  The version
+/-- This lemma works in the case in which `ZMod n` is not infinite, i.e. `n ≠ 0`. The version
 where `a ≠ 0` is `addOrderOf_coe'`. -/
 @[simp]
 theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
@@ -131,7 +132,7 @@ theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod
       Nat.pos_of_ne_zero n0, Nat.div_self]
   rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a.succ_ne_zero, ZMod.addOrderOf_one]
 
-/-- This lemma works in the case in which `a ≠ 0`.  The version where
+/-- This lemma works in the case in which `a ≠ 0`. The version where
 `ZMod n` is not infinite, i.e. `n ≠ 0`, is `addOrderOf_coe`. -/
 @[simp]
 theorem addOrderOf_coe' {a : ℕ} (n : ℕ) (a0 : a ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
@@ -878,7 +879,7 @@ def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.
   right_inv := fun ⟨_, _⟩ => by simp
 
 /-- The **Chinese remainder theorem**. For a pair of coprime natural numbers, `m` and `n`,
-  the rings `ZMod (m * n)` and `ZMod m × ZMod n` are isomorphic.
+the rings `ZMod (m * n)` and `ZMod m × ZMod n` are isomorphic.
 
 See `Ideal.quotientInfRingEquivPiQuotient` for the Chinese remainder theorem for ideals in any
 ring.

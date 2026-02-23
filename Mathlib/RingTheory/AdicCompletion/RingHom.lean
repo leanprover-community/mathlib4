@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.AdicCompletion.Algebra
 
 /-!
 # Lift of ring homomorphisms to adic completions
+
 Let `R`, `S` be rings, `I` be an ideal of `S`.
 In this file we prove that a compatible family of ring homomorphisms from a ring `R` to
 `S ⧸ I ^ n` can be lifted to a ring homomorphism `R →+* AdicCompletion I S`.
@@ -79,6 +80,7 @@ theorem mk_comp_liftRingHom (n : ℕ) :
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : R →ₗ[R] S ⧸ (I ^ n)`.
 If `F : R →+* S` makes the following diagram commute
+
 ```
   R
   | \
@@ -87,6 +89,7 @@ If `F : R →+* S` makes the following diagram commute
   v    v
   S --> S ⧸ (I ^ n)
 ```
+
 Then it is the map `IsAdicComplete.lift`.
 -/
 theorem eq_liftRingHom (F : R →+* S)

@@ -104,7 +104,7 @@ theorem zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
   rfl
 
 /-- The composition of `f : β₁ → β₂` and `g : Π₀ i, β₁ i` is
-  `mapRange f hf g : Π₀ i, β₂ i`, well defined when `f 0 = 0`.
+`mapRange f hf g : Π₀ i, β₂ i`, well defined when `f 0 = 0`.
 
 This preserves the structure on `f`, and exists in various bundled forms for when `f` is itself
 bundled:
@@ -166,7 +166,7 @@ section Piecewise
 variable (x y : Π₀ i, β i) (s : Set ι) [∀ i, Decidable (i ∈ s)]
 
 /-- `x.piecewise y s` is the finitely supported function equal to `x` on the set `s`,
-  and to `y` on its complement. -/
+and to `y` on its complement. -/
 def piecewise : Π₀ i, β i :=
   zipWith (fun i x y => if i ∈ s then x else y) (fun _ => ite_self 0) x y
 
@@ -335,7 +335,7 @@ theorem filter_sub [∀ i, AddGroup (β i)] (p : ι → Prop) [DecidablePred p] 
   (filterAddMonoidHom β p).map_sub f g
 
 /-- `subtypeDomain p f` is the restriction of the finitely supported function
-  `f` to the subtype `p`. -/
+`f` to the subtype `p`. -/
 def subtypeDomain [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] (x : Π₀ i, β i) :
     Π₀ i : Subtype p, β i :=
   ⟨fun i => x (i : ι),
@@ -428,7 +428,7 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (Π₀ i, β i) :=
   DFunLike.coe_injective.unique
 
 /-- Given `Fintype ι`, `equivFunOnFintype` is the `Equiv` between `Π₀ i, β i` and `Π i, β i`.
-  (All dependent functions on a finite type are finitely supported.) -/
+(All dependent functions on a finite type are finitely supported.) -/
 @[simps apply]
 def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i where
   toFun := (⇑)

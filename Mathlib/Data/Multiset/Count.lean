@@ -35,7 +35,7 @@ variable (p : α → Prop) [DecidablePred p]
 
 
 /-- `countP p s` counts the number of elements of `s` (with multiplicity) that
-  satisfy `p`. -/
+satisfy `p`. -/
 def countP (s : Multiset α) : ℕ :=
   Quot.liftOn s (List.countP p) fun _l₁ _l₂ => Perm.countP_eq (p ·)
 

@@ -25,6 +25,7 @@ A preordered type `J` is a `κ`-filtered category (i.e. `κ`-directed set)
 if any subset of `J` of cardinality `< κ` has an upper bound.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
@@ -277,9 +278,10 @@ lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
 
 variable (J κ) in
 /-- A category is `κ`-filtered iff
-1) any family of objects of cardinality `< κ` admits a map towards a common object, and
-2) any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
-`j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`. -/
+
+1. any family of objects of cardinality `< κ` admits a map towards a common object, and
+2. any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
+   `j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`. -/
 lemma isCardinalFiltered_iff :
     IsCardinalFiltered J κ ↔
       (∀ ⦃ι : Type w⦄ (j : ι → J) (_ : HasCardinalLT ι κ),

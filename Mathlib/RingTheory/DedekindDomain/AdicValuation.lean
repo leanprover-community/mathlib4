@@ -14,6 +14,7 @@ public import Mathlib.Topology.Algebra.Valued.WithVal
 
 /-!
 # Adic valuations on Dedekind domains
+
 Given a Dedekind domain `R` of Krull dimension 1 and a maximal ideal `v` of `R`, we define the
 `v`-adic valuation on `R` and its extension to the field of fractions `K` of `R`.
 We prove several properties of this valuation, including the existence of uniformizers.
@@ -22,6 +23,7 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
 `v.adicCompletion`, and its ring of integers, denoted `v.adicCompletionIntegers`.
 
 ## Main definitions
+
 - `IsDedekindDomain.HeightOneSpectrum.intValuation v` is the `v`-adic valuation on `R`.
 - `IsDedekindDomain.HeightOneSpectrum.valuation v` is the `v`-adic valuation on `K`.
 - `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
@@ -32,6 +34,7 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   `b` raised to negative `v`-adic valuation, for some `b` in `ℝ≥0`.
 
 ## Main results
+
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is
   bounded above by 1.
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_lt_one_iff_dvd` : The `v`-adic valuation of
@@ -49,14 +52,17 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   `v`-adic valuation `WithZero.exp (-1)`.
 
 ## Implementation notes
+
 We are only interested in Dedekind domains with Krull dimension 1.
 
 ## References
+
 * [G. J. Janusz, *Algebraic Number Fields*][janusz1996]
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
+
 dedekind domain, dedekind ring, adic valuation
 -/
 

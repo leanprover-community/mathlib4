@@ -300,10 +300,10 @@ theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof of `exists_of_sep` below.
-  Given a compatible family of local sections for `P⁺`, and representatives of said sections,
-  construct a compatible family of local sections of `P` over the combination of the covers
-  associated to the representatives.
-  The separatedness condition is used to prove compatibility among these local sections of `P`. -/
+Given a compatible family of local sections for `P⁺`, and representatives of said sections,
+construct a compatible family of local sections of `P` over the combination of the covers
+associated to the representatives.
+The separatedness condition is used to prove compatibility among these local sections of `P`. -/
 def meqOfSep (P : Cᵒᵖ ⥤ D)
     (hsep :
       ∀ (X : C) (S : J.Cover X) (x y : ToType (P.obj (op X))),

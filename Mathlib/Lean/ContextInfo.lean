@@ -27,6 +27,7 @@ variable {α}
 /-- Embeds a `CoreM` action in `CommandElabM` by supplying the information stored in `info`.
 
 Copy of `ContextInfo.runCoreM` that makes use of the `CommandElabM` context for:
+
 * logging messages produced by the `CoreM` action,
 * metavariable generation,
 * auxiliary declaration generation.
@@ -56,6 +57,7 @@ def runCoreMWithMessages (info : ContextInfo) (x : CoreM α) : CommandElabM α :
 /-- Embeds a `MetaM` action in `CommandElabM` by supplying the information stored in `info`.
 
 Copy of `ContextInfo.runMetaM` that makes use of the `CommandElabM` context for:
+
 * message logging (messages produced by the `CoreM` action are migrated back),
 * metavariable generation,
 * auxiliary declaration generation,

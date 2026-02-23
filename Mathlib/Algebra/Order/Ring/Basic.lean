@@ -90,7 +90,7 @@ end IsOrderedRing
 variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] {a b : R} {m n : ℕ}
 
 /-- A function `f : α → R` is nonarchimedean if it satisfies the ultrametric inequality
-  `f (a + b) ≤ max (f a) (f b)` for all `a b : α`. -/
+`f (a + b) ≤ max (f a) (f b)` for all `a b : α`. -/
 def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α, f (a + b) ≤ f a ⊔ f b
 
 /-!
@@ -98,6 +98,7 @@ def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α
 
 The slightly unusual typeclass assumptions `[LinearOrderedSemiring R] [ExistsAddOfLE R]` cover two
 more familiar settings:
+
 * `[LinearOrderedRing R]`, e.g. `ℤ`, `ℚ` or `ℝ`
 * `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), e.g. `ℕ`,
   `ℚ≥0` or `ℝ≥0`

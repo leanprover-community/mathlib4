@@ -55,7 +55,7 @@ theorem projective_of_free {ι : Type w} (b : Basis ι R M) : Projective M :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The category of modules has enough projectives, since every module is a quotient of a free
-  module. -/
+module. -/
 instance enoughProjectives [Small.{v} R] : EnoughProjectives (ModuleCat.{v} R) where
   presentation M :=
     let e : Basis M R (M →₀ Shrink.{v} R) := ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R)⟩

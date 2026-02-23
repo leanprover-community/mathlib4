@@ -23,20 +23,20 @@ All of these elaborators are scoped to the `Manifold` namespace.
 We provide compact notation for differentiability and continuous differentiability on manifolds,
 including inference of the model with corners.
 
-| Notation                 | Elaborates to                       |
+| Notation | Elaborates to |
 |--------------------------|-------------------------------------|
-| `MDiff f`                | `MDifferentiable I J f`             |
-| `MDiffAt f x`            | `MDifferentiableAt I J f x`         |
-| `MDiff[u] f`             | `MDifferentiableOn I J f u`         |
-| `MDiffAt[u] f x`         | `MDifferentiableWithinAt I J f u x` |
-| `CMDiff n f`             | `ContMDiff I J n f`                 |
-| `CMDiffAt n f x`         | `ContMDiffAt I J n f x`             |
-| `CMDiff[u] n f`          | `ContMDiffOn I J n f u`             |
-| `CMDiffAt[u] n f x`      | `ContMDiffWithinAt I J n f u x`     |
-| `mfderiv[u] f x`         | `mfderivWithin I J f u x`           |
-| `mfderiv% f x`           | `mfderiv I J f x`                   |
-| `HasMFDerivAt[s] f x f'` | `HasMFDerivWithinAt I J f s x f'`   |
-| `HasMFDerivAt% f x f'`   | `HasMFDerivAt I J f x f'`           |
+| `MDiff f` | `MDifferentiable I J f` |
+| `MDiffAt f x` | `MDifferentiableAt I J f x` |
+| `MDiff[u] f` | `MDifferentiableOn I J f u` |
+| `MDiffAt[u] f x` | `MDifferentiableWithinAt I J f u x` |
+| `CMDiff n f` | `ContMDiff I J n f` |
+| `CMDiffAt n f x` | `ContMDiffAt I J n f x` |
+| `CMDiff[u] n f` | `ContMDiffOn I J n f u` |
+| `CMDiffAt[u] n f x` | `ContMDiffWithinAt I J n f u x` |
+| `mfderiv[u] f x` | `mfderivWithin I J f u x` |
+| `mfderiv% f x` | `mfderiv I J f x` |
+| `HasMFDerivAt[s] f x f'` | `HasMFDerivWithinAt I J f s x f'` |
+| `HasMFDerivAt% f x f'` | `HasMFDerivAt I J f x f'` |
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
 The search for models with corners uses the local context and is (almost) only based on expression
@@ -55,6 +55,7 @@ trivial model with corners on a product `E × F` and the product of the trivial 
 Secondly, this file adds an elaborator `T%` to ease working with sections in a fibre bundle,
 which converts a section `s : Π x : M, V x` to a non-dependent function into the total space of the
 bundle.
+
 ```lean
 -- omitted: let `V` be a fibre bundle over `M`
 
@@ -69,7 +70,7 @@ variable {s : E → E'} in
 #check T% s -- `(fun a ↦ TotalSpace.mk' E' a (s a)) : E → TotalSpace E' (Trivial E E')`
 ```
 
----
+______________________________________________________________________
 
 These elaborators can be combined: `CMDiffAt[u] n (T% s) x`
 
@@ -125,6 +126,7 @@ private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : M
 Utility for sections in a fibre bundle: if an expression `e` is a section
 `s : Π x : M, V x` as a dependent function, convert it to a non-dependent function into the total
 space. This handles the cases of
+
 - sections of a trivial bundle
 - vector fields on a manifold (i.e., sections of the tangent bundle)
 - sections of an explicit fibre bundle
@@ -193,6 +195,7 @@ open Elab in
 /--
 Elaborator for sections in a fibre bundle: converts a section `s : Π x : M, V x` as a dependent
 function to a non-dependent function into the total space. This handles the cases of
+
 - sections of a trivial bundle
 - vector fields on a manifold (i.e., sections of the tangent bundle)
 - sections of an explicit fibre bundle
@@ -296,6 +299,7 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM FindModelRe
 set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
+
 - the model with corners on the total space of a vector bundle
 - the model with corners on the tangent space of a manifold
 - a model with corners on a manifold, or on its underlying model space

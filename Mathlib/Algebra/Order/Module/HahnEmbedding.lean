@@ -77,7 +77,7 @@ structure ArchimedeanStrata where
   /-- `stratum` and `FiniteArchimedeanClass.ball` are disjoint. -/
   disjoint_ball_stratum (c : FiniteArchimedeanClass M) : Disjoint (ball K c) (stratum c)
   /-- `stratum` and `FiniteArchimedeanClass.ball`
-    are codisjoint under `FiniteArchimedeanClass.closedBall`. -/
+  are codisjoint under `FiniteArchimedeanClass.closedBall`. -/
   ball_sup_stratum_eq (c : FiniteArchimedeanClass M) : ball K c ⊔ stratum c = closedBall K c
 
 namespace ArchimedeanStrata

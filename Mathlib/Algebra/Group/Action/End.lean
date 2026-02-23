@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Group.End
 # Interaction between actions and endomorphisms/automorphisms
 
 This file provides two things:
+
 * The tautological actions by endomorphisms/automorphisms on their base type.
 * An action by a monoid/group on a type is the same as a hom from the monoid/group to
   endomorphisms/automorphisms of the type.
@@ -39,6 +40,7 @@ namespace Function.End
 /-- The tautological action by `Function.End α` on `α`.
 
 This is generalized to bundled endomorphisms by:
+
 * `Equiv.Perm.applyMulAction`
 * `AddMonoid.End.applyDistribMulAction`
 * `AddMonoid.End.applyModule`

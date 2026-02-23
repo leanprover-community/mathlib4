@@ -25,8 +25,8 @@ that Lie groups here are not necessarily finite dimensional.
 * `ContMDiffInv₀`: typeclass for `C^n` manifolds with `0` and `Inv` such that inversion is `C^n`
   map at each non-zero point. This includes complete normed fields and (multiplicative) Lie groups.
 
-
 ## Main results
+
 * `ContMDiff.inv`, `ContMDiff.div` and variants: point-wise inversion and division of maps `M → G`
   is `C^n`.
 * `ContMDiff.inv₀` and variants: if `ContMDiffInv₀ I n N`, point-wise inversion of `C^n`
@@ -79,9 +79,9 @@ class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topolo
 /-!
   ### Smoothness of inversion, negation, division and subtraction
 
-  Let `f : M → G` be a `C^n` function into a Lie group, then `f` is point-wise
-  invertible with smooth inverse `f`. If `f` and `g` are two such functions, the quotient
-  `f / g` (i.e., the point-wise product of `f` and the point-wise inverse of `g`) is also `C^n`. -/
+Let `f : M → G` be a `C^n` function into a Lie group, then `f` is point-wise
+invertible with smooth inverse `f`. If `f` and `g` are two such functions, the quotient
+`f / g` (i.e., the point-wise product of `f` and the point-wise inverse of `g`) is also `C^n`. -/
 section PointwiseDivision
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}

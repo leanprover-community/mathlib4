@@ -16,6 +16,7 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 # Integration of specific interval integrals
 
 This file contains proofs of the integrals of various specific functions. This includes:
+
 * Integrals of simple functions, such as `id`, `pow`, `inv`, `exp`, `log`
 * Integrals of some trigonometric functions, such as `sin`, `cos`, `1 / (1 + x^2)`
 * The integral of `cos x ^ 2 - sin x ^ 2`
@@ -557,7 +558,7 @@ theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
       integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos hc
 
 /-- The integral of `sin x * cos x`, given in terms of sin².
-  See `integral_sin_mul_cos₂` below for the integral given in terms of cos². -/
+See `integral_sin_mul_cos₂` below for the integral given in terms of cos². -/
 @[simp]
 theorem integral_sin_mul_cos₁ : ∫ x in a..b, sin x * cos x = (sin b ^ 2 - sin a ^ 2) / 2 := by
   simpa using integral_sin_pow_mul_cos_pow_odd 1 0

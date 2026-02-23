@@ -23,6 +23,7 @@ two natural transformations `η : 𝟭 C ⟶ F ⋙ G` and `ε : G ⋙ F ⟶ 𝟭
 counit, such that the compositions `F ⟶ FGF ⟶ F` and `G ⟶ GFG ⟶ G` are the identity. Unfortunately,
 it is not the case that the natural isomorphisms `η` and `ε` in the definition of an equivalence
 automatically give an adjunction. However, it is true that
+
 * if one of the two compositions is the identity, then so is the other, and
 * given an equivalence of categories, it is always possible to refine `η` in such a way that the
   identities are satisfied.
@@ -251,7 +252,7 @@ theorem counit_app_functor (e : C ≌ D) (X : C) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The other triangle equality. The proof follows the following proof in Globular:
-  http://globular.science/1905.001 -/
+http://globular.science/1905.001 -/
 @[reassoc (attr := simp)]
 theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
     e.unit.app (e.inverse.obj Y) ≫ e.inverse.map (e.counit.app Y) = 𝟙 (e.inverse.obj Y) := by
@@ -346,8 +347,8 @@ theorem adjointify_η_ε (X : C) :
 end
 
 /-- Every equivalence of categories consisting of functors `F` and `G` such that `F ⋙ G` and
-    `G ⋙ F` are naturally isomorphic to identity functors can be transformed into a half-adjoint
-    equivalence without changing `F` or `G`. -/
+`G ⋙ F` are naturally isomorphic to identity functors can be transformed into a half-adjoint
+equivalence without changing `F` or `G`. -/
 protected def mk (F : C ⥤ D) (G : D ⥤ C) (η : 𝟭 C ≅ F ⋙ G) (ε : G ⋙ F ≅ 𝟭 D) : C ≌ D :=
   ⟨F, G, adjointifyη η ε, ε, adjointify_η_ε η ε⟩
 
@@ -523,13 +524,13 @@ section
 -- There's of course a monoid structure on `C ≌ C`,
 -- but let's not encourage using it.
 -- The power structure is nevertheless useful.
-/-- Natural number powers of an auto-equivalence.  Use `(^)` instead. -/
+/-- Natural number powers of an auto-equivalence. Use `(^)` instead. -/
 def powNat (e : C ≌ C) : ℕ → (C ≌ C)
   | 0 => Equivalence.refl
   | 1 => e
   | n + 2 => e.trans (powNat e (n + 1))
 
-/-- Powers of an auto-equivalence.  Use `(^)` instead. -/
+/-- Powers of an auto-equivalence. Use `(^)` instead. -/
 def pow (e : C ≌ C) : ℤ → (C ≌ C)
   | Int.ofNat n => e.powNat n
   | Int.negSucc n => e.symm.powNat (n + 1)
@@ -639,7 +640,7 @@ namespace IsEquivalence
 attribute [instance] faithful full essSurj
 
 /-- To see that a functor is an equivalence, it suffices to provide an inverse functor `G` such that
-    `F ⋙ G` and `G ⋙ F` are naturally isomorphic to identity functors. -/
+`F ⋙ G` and `G ⋙ F` are naturally isomorphic to identity functors. -/
 protected lemma mk' {F : C ⥤ D} (G : D ⥤ C) (η : 𝟭 C ≅ F ⋙ G) (ε : G ⋙ F ≅ 𝟭 D) :
     IsEquivalence F :=
   inferInstanceAs (IsEquivalence (Equivalence.mk F G η ε).functor)

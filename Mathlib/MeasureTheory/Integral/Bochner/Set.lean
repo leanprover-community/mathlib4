@@ -32,6 +32,7 @@ some set `s ∈ l`.
 ## Notation
 
 We provide the following notations for expressing the integral of a function on a set :
+
 * `∫ x in s, f x ∂μ` is `MeasureTheory.integral (μ.restrict s) f`
 * `∫ x in s, f x` is `∫ x in s, f x ∂volume`
 
@@ -1069,7 +1070,7 @@ variable {G 𝕜 : Type*} [TopologicalSpace X]
 open Metric ContinuousLinearMap
 
 /-- The parametric integral over a continuous function on a compact set is continuous,
-  under mild assumptions on the topologies involved. -/
+under mild assumptions on the topologies involved. -/
 theorem continuous_parametric_integral_of_continuous
     [FirstCountableTopology X] [LocallyCompactSpace X]
     [SecondCountableTopologyEither Y E] [IsLocallyFiniteMeasure μ]

@@ -19,12 +19,12 @@ In this file we define these concepts and provide some related definitions and r
 
 ## Main definitions
 
-  * `LieModule.IsTrivial`
-  * `IsLieAbelian`
-  * `commutative_ring_iff_abelian_lie_ring`
-  * `LieModule.ker`
-  * `LieModule.maxTrivSubmodule`
-  * `LieAlgebra.center`
+* `LieModule.IsTrivial`
+* `IsLieAbelian`
+* `commutative_ring_iff_abelian_lie_ring`
+* `LieModule.ker`
+* `LieModule.maxTrivSubmodule`
+* `LieAlgebra.center`
 
 ## Tags
 

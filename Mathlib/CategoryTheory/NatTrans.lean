@@ -23,6 +23,7 @@ See also `CategoryTheory.FunctorCat`, where we provide the category structure on
 functors and natural transformations.
 
 Introduces notations
+
 * `τ.app X` for the components of natural transformations,
 * `F ⟶ G` for the type of natural transformations between functors `F` and `G`
   (this and the next require `CategoryTheory.FunctorCat`),
@@ -104,6 +105,7 @@ attribute [grind =] vcomp_app
 end
 
 /-- The diagram
+
 ```
     F(f)      F(g)      F(h)
 F X ----> F Y ----> F U ----> F V
@@ -113,6 +115,7 @@ F X ----> F Y ----> F U ----> F V
 G X ----> G Y ----> G U ----> G V
     G(f)      G(g)      G(h)
 ```
+
 commutes.
 -/
 example {F G : C ⥤ D} (α : NatTrans F G) {X Y U V : C} (f : X ⟶ Y) (g : Y ⟶ U) (h : U ⟶ V) :

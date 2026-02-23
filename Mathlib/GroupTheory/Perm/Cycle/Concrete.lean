@@ -500,6 +500,7 @@ notation3 (prettyPrint := false) "c[" (l", "* => foldr (h t => List.cons h t) Li
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Represents a permutation as product of disjoint cycles:
+
 ```
 #eval (c[0, 1, 2, 3] : Perm (Fin 4))
 -- c[0, 1, 2, 3]

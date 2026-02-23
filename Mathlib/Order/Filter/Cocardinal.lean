@@ -15,8 +15,8 @@ public import Mathlib.SetTheory.Cardinal.Cofinality
 # The cocardinal filter
 
 In this file we define `Filter.cocardinal hc`: the filter of sets with cardinality less than
-  a regular cardinal `c` that satisfies `Cardinal.aleph0 < c`.
-  Such filters are `CardinalInterFilter` with cardinality `c`.
+a regular cardinal `c` that satisfies `Cardinal.aleph0 < c`.
+Such filters are `CardinalInterFilter` with cardinality `c`.
 
 -/
 

@@ -32,10 +32,12 @@ cyclic group, as well as the fact that every finite integral domain is a field
 
 1. `Fintype.card_units`: The unit group of a finite field has cardinality `q - 1`.
 2. `sum_pow_units`: The sum of `x^i`, where `x` ranges over the units of `K`, is
-  - `q-1` if `q-1 ∣ i`
-  - `0`   otherwise
+
+- `q-1` if `q-1 ∣ i`
+- `0` otherwise
+
 3. `FiniteField.card`: The cardinality `q` is a power of the characteristic of `K`.
-  See `FiniteField.card'` for a variant.
+   See `FiniteField.card'` for a variant.
 
 ## Notation
 
@@ -70,7 +72,7 @@ variable [CommRing R] [IsDomain R]
 open Polynomial
 
 /-- The cardinality of a field is at most `n` times the cardinality of the image of a degree `n`
-  polynomial -/
+polynomial -/
 theorem card_image_polynomial_eval [DecidableEq R] [Fintype R] {p : R[X]} (hp : 0 < p.degree) :
     Fintype.card R ≤ natDegree p * #(univ.image fun x => eval x p) :=
   Finset.card_le_mul_card_image _ _ (fun a _ =>
@@ -324,7 +326,7 @@ section frobenius
 variable (R) [CommRing R] [Algebra K R]
 
 /-- If `R` is an algebra over a finite field `K`, the Frobenius `K`-algebra endomorphism of `R` is
-  given by raising every element of `R` to its `#K`-th power. -/
+given by raising every element of `R` to its `#K`-th power. -/
 @[simps!] def frobeniusAlgHom : R →ₐ[K] R where
   __ := powMonoidHom q
   map_zero' := zero_pow Fintype.card_pos.ne'
@@ -340,7 +342,7 @@ variable (R) [CommRing R] [Algebra K R]
 theorem coe_frobeniusAlgHom : ⇑(frobeniusAlgHom K R) = (· ^ q) := rfl
 
 /-- If `R` is a perfect ring and an algebra over a finite field `K`, the Frobenius `K`-algebra
-  endomorphism of `R` is an automorphism. -/
+endomorphism of `R` is an automorphism. -/
 @[simps!] noncomputable def frobeniusAlgEquiv (p : ℕ) [ExpChar R p] [PerfectRing R p] : R ≃ₐ[K] R :=
   .ofBijective (frobeniusAlgHom K R) <| by
     obtain ⟨p', _, n, hp, card_eq⟩ := card' K
@@ -354,7 +356,7 @@ theorem coe_frobeniusAlgHom : ⇑(frobeniusAlgHom K R) = (· ^ q) := rfl
 variable (L : Type*) [Field L] [Algebra K L]
 
 /-- If `L/K` is an algebraic extension of a finite field, the Frobenius `K`-algebra endomorphism
-  of `L` is an automorphism. -/
+of `L` is an automorphism. -/
 @[simps!] noncomputable def frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] : Gal(L/K) :=
   (Algebra.IsAlgebraic.algEquivEquivAlgHom K L).symm (frobeniusAlgHom K L)
 
@@ -543,7 +545,7 @@ open scoped Nat
 open ZMod
 
 /-- The **Fermat-Euler totient theorem**. `Nat.ModEq.pow_totient` is an alternative statement
-  of the same theorem. -/
+of the same theorem. -/
 @[simp]
 theorem ZMod.pow_totient {n : ℕ} (x : (ZMod n)ˣ) : x ^ φ n = 1 := by
   cases n
@@ -551,7 +553,7 @@ theorem ZMod.pow_totient {n : ℕ} (x : (ZMod n)ˣ) : x ^ φ n = 1 := by
   · rw [← card_units_eq_totient, pow_card_eq_one]
 
 /-- The **Fermat-Euler totient theorem**. `ZMod.pow_totient` is an alternative statement
-  of the same theorem. -/
+of the same theorem. -/
 theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.Coprime x n) : x ^ φ n ≡ 1 [MOD n] := by
   rw [← ZMod.natCast_eq_natCast_iff]
   let x' : Units (ZMod n) := ZMod.unitOfCoprime _ h

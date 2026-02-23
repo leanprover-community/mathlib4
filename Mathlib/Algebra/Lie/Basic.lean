@@ -19,18 +19,19 @@ modules, morphisms and equivalences, as well as various lemmas to make these def
 
 ## Main definitions
 
-  * `LieRing`
-  * `LieAlgebra`
-  * `LieRingModule`
-  * `LieModule`
-  * `LieHom`
-  * `LieEquiv`
-  * `LieModuleHom`
-  * `LieModuleEquiv`
+* `LieRing`
+* `LieAlgebra`
+* `LieRingModule`
+* `LieModule`
+* `LieHom`
+* `LieEquiv`
+* `LieModuleHom`
+* `LieModuleEquiv`
 
 ## Notation
 
 Working over a fixed commutative ring `R`, we introduce the notations:
+
 * `L →ₗ⁅R⁆ L'` for a morphism of Lie algebras,
 * `L ≃ₗ⁅R⁆ L'` for an equivalence of Lie algebras,
 * `M →ₗ⁅R,L⁆ N` for a morphism of Lie algebra modules `M`, `N` over a Lie algebra `L`,
@@ -42,6 +43,7 @@ Lie algebras are defined as modules with a compatible Lie ring structure and thu
 are partially unbundled.
 
 ## References
+
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
 
 ## Tags

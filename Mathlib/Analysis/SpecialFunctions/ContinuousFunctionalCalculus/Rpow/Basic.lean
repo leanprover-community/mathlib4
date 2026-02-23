@@ -348,6 +348,7 @@ lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
 end pi
 
 /-- For an element `a` in a C⋆-algebra, TFAE:
+
 1. `0 ≤ a`
 2. `a = sqrt a * sqrt a`
 3. `a = b * b` for some nonnegative `b`
@@ -734,6 +735,7 @@ lemma _root_.IsStrictlyPositive.rpow {a : A} {y : ℝ} (ha : IsStrictlyPositive 
     IsStrictlyPositive (a ^ y) := by grind
 
 /-- For an element `a` in a C⋆-algebra, TFAE:
+
 1. `a` is strictly positive,
 2. `sqrt a` is strictly positive and `a = sqrt a * sqrt a`,
 3. `sqrt a` is invertible and `a = sqrt a * sqrt a`,

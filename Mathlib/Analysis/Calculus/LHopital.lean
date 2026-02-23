@@ -298,7 +298,7 @@ theorem lhopital_zero_nhdsLT (hff' : ∀ᶠ x in 𝓝[<] a, HasDerivAt f (f' x) 
     first | exact (hl hx).1.1 | exact (hl hx).1.2 | exact (hl hx).2
 
 /-- L'Hôpital's rule for approaching a real, `HasDerivAt` version. This
-  does not require anything about the situation at `a` -/
+does not require anything about the situation at `a` -/
 theorem lhopital_zero_nhdsNE (hff' : ∀ᶠ x in 𝓝[≠] a, HasDerivAt f (f' x) x)
     (hgg' : ∀ᶠ x in 𝓝[≠] a, HasDerivAt g (g' x) x) (hg' : ∀ᶠ x in 𝓝[≠] a, g' x ≠ 0)
     (hfa : Tendsto f (𝓝[≠] a) (𝓝 0)) (hga : Tendsto g (𝓝[≠] a) (𝓝 0))
@@ -309,7 +309,7 @@ theorem lhopital_zero_nhdsNE (hff' : ∀ᶠ x in 𝓝[≠] a, HasDerivAt f (f' x
     lhopital_zero_nhdsGT hff'.2 hgg'.2 hg'.2 hfa.2 hga.2 hdiv.2⟩
 
 /-- L'Hôpital's rule for approaching a real from within a convex set, `HasDerivWithinAt` version.
-  This does not require anything about the situation at `a` -/
+This does not require anything about the situation at `a` -/
 theorem _root_.HasDerivWithinAt.lhopital_zero_nhdsWithin_convex {s : Set ℝ} (hs : Convex ℝ s)
     (hff' : ∀ᶠ x in 𝓝[s \ {a}] a, HasDerivWithinAt f (f' x) (s \ {a}) x)
     (hgg' : ∀ᶠ x in 𝓝[s \ {a}] a, HasDerivWithinAt g (g' x) (s \ {a}) x)
@@ -434,7 +434,7 @@ theorem lhopital_zero_nhdsLT (hdf : ∀ᶠ x in 𝓝[<] a, DifferentiableAt ℝ 
   exact lhopital_zero_nhdsWithin_convex (convex_Iic a) hdf hg' hfa hga hdiv
 
 /-- **L'Hôpital's rule** for approaching a real, `deriv` version. This
-  does not require anything about the situation at `a` -/
+does not require anything about the situation at `a` -/
 theorem lhopital_zero_nhdsNE (hdf : ∀ᶠ x in 𝓝[≠] a, DifferentiableAt ℝ f x)
     (hg' : ∀ᶠ x in 𝓝[≠] a, deriv g x ≠ 0) (hfa : Tendsto f (𝓝[≠] a) (𝓝 0))
     (hga : Tendsto g (𝓝[≠] a) (𝓝 0))

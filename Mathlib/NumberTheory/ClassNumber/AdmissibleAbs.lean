@@ -11,6 +11,7 @@ public import Mathlib.Data.Real.Archimedean
 
 /-!
 # Admissible absolute value on the integers
+
 This file defines an admissible absolute value `AbsoluteValue.absIsAdmissible`
 which we use to show the class number of the ring of integers of a number field
 is finite.

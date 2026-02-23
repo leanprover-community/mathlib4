@@ -17,6 +17,7 @@ public import Mathlib.CategoryTheory.Adjunction.Parametrized
 Define (right) closed objects and (right) closed monoidal categories.
 
 ## TODO
+
 Some theorems about Cartesian closed categories
 should be generalised and moved to this file.
 -/
@@ -361,19 +362,19 @@ end OfEquiv
 section Enriched
 
 /-- The C-identity morphism
-  `𝟙_ C ⟶ hom(x, x)`
+`𝟙_ C ⟶ hom(x, x)`
 used to equip `C` with the structure of a `C`-category -/
 def id (x : C) [Closed x] : 𝟙_ C ⟶ (ihom x).obj x := curry (ρ_ x).hom
 
 /-- The *uncurried* composition morphism
-  `x ⊗ (hom(x, y) ⊗ hom(y, z)) ⟶ (x ⊗ hom(x, y)) ⊗ hom(y, z) ⟶ y ⊗ hom(y, z) ⟶ z`.
+`x ⊗ (hom(x, y) ⊗ hom(y, z)) ⟶ (x ⊗ hom(x, y)) ⊗ hom(y, z) ⟶ y ⊗ hom(y, z) ⟶ z`.
 The `C`-composition morphism will be defined as the adjoint transpose of this map. -/
 def compTranspose (x y z : C) [Closed x] [Closed y] : x ⊗ (ihom x).obj y ⊗ (ihom y).obj z ⟶ z :=
   (α_ x ((ihom x).obj y) ((ihom y).obj z)).inv ≫
     (ihom.ev x).app y ▷ ((ihom y).obj z) ≫ (ihom.ev y).app z
 
 /-- The `C`-composition morphism
-  `hom(x, y) ⊗ hom(y, z) ⟶ hom(x, z)`
+`hom(x, y) ⊗ hom(y, z) ⟶ hom(x, z)`
 used to equip `C` with the structure of a `C`-category -/
 def comp (x y z : C) [Closed x] [Closed y] : (ihom x).obj y ⊗ (ihom y).obj z ⟶ (ihom x).obj z :=
   curry (compTranspose x y z)
@@ -394,9 +395,10 @@ lemma comp_eq (x y z : C) [Closed x] [Closed y] : comp x y z = curry (compTransp
 
 /-!
 The proofs of associativity and unitality use the following outline:
-  1. Take adjoint transpose on each side of the equality (uncurry_injective)
-  2. Do whatever rewrites/simps are necessary to apply uncurry_curry
-  3. Conclude with simp
+
+1. Take adjoint transpose on each side of the equality (uncurry_injective)
+2. Do whatever rewrites/simps are necessary to apply uncurry_curry
+3. Conclude with simp
 -/
 
 set_option backward.isDefEq.respectTransparency false in

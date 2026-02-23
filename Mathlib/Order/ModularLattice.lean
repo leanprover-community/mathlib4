@@ -29,6 +29,7 @@ We define (semi)modularity typeclasses as Prop-valued mixins.
   covers `a ⊓ b`.
 * `IsLowerModularLattice`: Lower modular lattices. Lattices where `a` covers `a ⊓ b` if `a ⊔ b`
   covers `b`.
+
 - `IsModularLattice`: Modular lattices. Lattices where `a ≤ c → (a ⊔ b) ⊓ c = a ⊔ (b ⊓ c)`. We
   only require an inequality because the other direction holds in all lattices.
 
@@ -200,7 +201,7 @@ theorem strictMono_inf_prod_sup : StrictMono fun x ↦ (x ⊓ z, x ⊔ z) := fun
     fun ⟨inf_le, sup_le⟩ ↦ (sup_lt_sup_of_lt_of_inf_le_inf hxy inf_le).not_ge sup_le⟩
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
-  `N` and `M / N` are both Artinian, then `M` is Artinian. -/
+`N` and `M / N` are both Artinian, then `M` is Artinian. -/
 theorem wellFounded_lt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ]
     [h₁ : WellFoundedLT β] [h₂ : WellFoundedLT γ] (K : α)
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)
@@ -211,7 +212,7 @@ theorem wellFounded_lt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ
     exact strictMono_inf_prod_sup hAB
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
-  `N` and `M / N` are both Noetherian, then `M` is Noetherian. -/
+`N` and `M / N` are both Noetherian, then `M` is Noetherian. -/
 theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ]
     [WellFoundedGT β] [WellFoundedGT γ] (K : α)
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)

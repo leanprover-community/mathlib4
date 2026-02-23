@@ -33,9 +33,7 @@ section secondDerivativeAPI
 ## Supporting API
 
 The definition of the Laplacian of a function `f : E → F` involves the notion of the second
-derivative, which can be seen as a continuous multilinear map `ContinuousMultilinearMap 𝕜 (fun (i :
-Fin 2) ↦ E) F`, a bilinear map `E →ₗ[𝕜] E →ₗ[𝕜] F`, or a linear map on tensors `E ⊗[𝕜] E →ₗ[𝕜]
-F`. This section provides convenience API to convert between these notions.
+derivative, which can be seen as a continuous multilinear map `ContinuousMultilinearMap 𝕜 (fun (i : Fin 2) ↦ E) F`, a bilinear map `E →ₗ[𝕜] E →ₗ[𝕜] F`, or a linear map on tensors `E ⊗[𝕜] E →ₗ[𝕜] F`. This section provides convenience API to convert between these notions.
 -/
 
 variable
@@ -125,8 +123,7 @@ namespace InnerProductSpace
 
 variable (f s) in
 /--
-Laplacian for functions on real inner product spaces, with respect to a set `s`. Use `open
-InnerProductSpace` to access the notation `Δ[s]` for `InnerProductSpace.LaplacianWithin`.
+Laplacian for functions on real inner product spaces, with respect to a set `s`. Use `open InnerProductSpace` to access the notation `Δ[s]` for `InnerProductSpace.LaplacianWithin`.
 -/
 noncomputable def laplacianWithin : E → F :=
   fun x ↦ tensorIteratedFDerivWithinTwo ℝ f s x (InnerProductSpace.canonicalCovariantTensor E)

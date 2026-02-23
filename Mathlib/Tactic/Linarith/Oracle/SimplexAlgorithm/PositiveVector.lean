@@ -22,16 +22,16 @@ The function `findPositiveVector` solves this problem.
 ## Algorithm sketch
 
 1. We translate the problem stated above to some Linear Programming problem. See `stateLP` for
-  details. Let us denote the corresponding matrix `B`.
+   details. Let us denote the corresponding matrix `B`.
 
 2. We solve the equation `B x = 0` using Gauss Elimination, splitting the set of variables into
-  *free* variables, which can take any value,
-  and *basic* variables which are linearly expressed through the free one.
-  This gives us an initial tableau for the Simplex Algorithm.
-  See `Linarith.SimplexAlgorithm.Gauss.getTableau`.
+   *free* variables, which can take any value,
+   and *basic* variables which are linearly expressed through the free one.
+   This gives us an initial tableau for the Simplex Algorithm.
+   See `Linarith.SimplexAlgorithm.Gauss.getTableau`.
 
 3. We run the Simplex Algorithm until it finds a solution.
-  See the file `SimplexAlgorithm.lean`.
+   See the file `SimplexAlgorithm.lean`.
 
 -/
 
@@ -50,6 +50,7 @@ As an objective function (that we are trying to maximize) we use sum of coordina
 `strictIndexes`: it suffices to find the nonnegative vector that makes this function positive.
 
 We introduce two auxiliary variables and one constraint:
+
 * The variable `y` is interpreted as "homogenized" `1`. We need it because dealing with a
   homogenized problem is easier, but having some "unit" is necessary.
 * To bound the problem we add the constraint `x₁ + ... + xₘ + z = y` introducing new variable `z`.

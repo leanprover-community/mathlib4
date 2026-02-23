@@ -26,6 +26,7 @@ so we can think of it as a preorder. However as it is not skeletal, it is not ye
 `Subobject X` will be defined as the skeletalization of `MonoOver X`.
 
 We provide
+
 * `def pullback [HasPullbacks C] (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X`
 * `def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y`
 * `def «exists» [HasImages C] (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y`

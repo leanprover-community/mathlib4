@@ -10,7 +10,7 @@ public import Mathlib.Tactic.Ring
 /-!
 # linear_combination' Tactic
 
-In this file, the `linear_combination'` tactic is created.  This tactic, which
+In this file, the `linear_combination'` tactic is created. This tactic, which
 works over `CommRing`s, attempts to simplify the target by creating a linear combination
 of a list of equalities and subtracting it from the target. A `Syntax.Tactic`
 object can also be passed into the tactic, allowing the user to specify a
@@ -19,16 +19,16 @@ normalization tactic.
 ## Implementation Notes
 
 This tactic works by creating a weighted sum of the given equations with the
-given coefficients.  Then, it subtracts the right side of the weighted sum
+given coefficients. Then, it subtracts the right side of the weighted sum
 from the left side so that the right side equals 0, and it does the same with
-the target.  Afterwards, it sets the goal to be the equality between the
+the target. Afterwards, it sets the goal to be the equality between the
 left-hand side of the new goal and the left-hand side of the new weighted sum.
 Lastly, calls a normalization tactic on this target.
 
 This file contains the `linear_combination'` tactic (note the '): the original
 Lean 4 implementation of the "linear combination" idea, written at the time of
-the port from Lean 3.  Notably, its scope includes certain *nonlinear*
-operations.  The `linear_combination` tactic (in a separate file) is a variant
+the port from Lean 3. Notably, its scope includes certain *nonlinear*
+operations. The `linear_combination` tactic (in a separate file) is a variant
 implementation, but this version is provided for backward-compatibility.
 
 ## References
@@ -70,6 +70,7 @@ inductive Expanded
 /--
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
+
 * `.proof p` means that `p` is a syntax corresponding to a proof of an equation.
   For example, if `h : a = b` then `expandLinearCombo (2 * h)` returns `.proof (c_add_pf 2 h)`
   which is a proof of `2 * a = 2 * b`.
@@ -175,15 +176,16 @@ syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
 
 /--
 `linear_combination'` attempts to simplify the target by creating a linear combination
-  of a list of equalities and subtracting it from the target.
-  The tactic will create a linear
-  combination by adding the equalities together from left to right, so the order
-  of the input hypotheses does matter.  If the `norm` field of the
-  tactic is set to `skip`, then the tactic will simply set the user up to
-  prove their target using the linear combination instead of normalizing the subtraction.
+of a list of equalities and subtracting it from the target.
+The tactic will create a linear
+combination by adding the equalities together from left to right, so the order
+of the input hypotheses does matter. If the `norm` field of the
+tactic is set to `skip`, then the tactic will simply set the user up to
+prove their target using the linear combination instead of normalizing the subtraction.
 
 Note: There is also a similar tactic `linear_combination` (no prime); this version is
-provided for backward compatibility.  Compared to this tactic, `linear_combination`:
+provided for backward compatibility. Compared to this tactic, `linear_combination`:
+
 * drops the `←` syntax for reversing an equation, instead offering this operation using the `-`
   syntax
 * does not support multiplication of two hypotheses (`h1 * h2`), division by a hypothesis (`3 / h`),
@@ -191,8 +193,8 @@ provided for backward compatibility.  Compared to this tactic, `linear_combinati
 * produces noisy output when the user adds or subtracts a constant to a hypothesis (`h + 3`)
 
 Note: The left and right sides of all the equalities should have the same
-  type, and the coefficients should also have this type.  There must be
-  instances of `Mul` and `AddGroup` for this type.
+type, and the coefficients should also have this type. There must be
+instances of `Mul` and `AddGroup` for this type.
 
 * The input `e` in `linear_combination' e` is a linear combination of proofs of equalities,
   given as a sum/difference of coefficients multiplied by expressions.
@@ -221,6 +223,7 @@ Note: The left and right sides of all the equalities should have the same
     then `2 * (← h)` is a proof of `2 * b = 2 * a`.
 
 Example Usage:
+
 ```
 example (x y : ℤ) (h1 : x*y + 2*x = 1) (h2 : x = y) : x*y = -2*y + 1 := by
   linear_combination' 1*h1 - 2*h2

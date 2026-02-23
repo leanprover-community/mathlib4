@@ -102,7 +102,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 variable [FiniteDimensional K V] [FiniteDimensional K V₂]
 
 /-- Given isomorphic subspaces `p q` of vector spaces `V` and `V₁` respectively,
-  `p.quotient` is isomorphic to `q.quotient`. -/
+`p.quotient` is isomorphic to `q.quotient`. -/
 noncomputable def LinearEquiv.quotEquivOfEquiv {p : Subspace K V} {q : Subspace K V₂}
     (f₁ : p ≃ₗ[K] q) (f₂ : V ≃ₗ[K] V₂) : (V ⧸ p) ≃ₗ[K] V₂ ⧸ q :=
   LinearEquiv.ofFinrankEq _ _

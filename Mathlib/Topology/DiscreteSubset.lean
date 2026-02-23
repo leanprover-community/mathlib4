@@ -19,10 +19,10 @@ This file contains various additional properties of discrete subsets of topologi
 
 Given a topological space `X` together with a subset `s ⊆ X`, there are two distinct concepts of
 "discreteness" which may hold. These are:
-  (i) Every point of `s` is isolated (i.e., the subset topology induced on `s` is the discrete
-      topology).
- (ii) Every compact subset of `X` meets `s` only finitely often (i.e., the inclusion map `s → X`
-      tends to the cocompact filter along the cofinite filter on `s`).
+(i) Every point of `s` is isolated (i.e., the subset topology induced on `s` is the discrete
+topology).
+(ii) Every compact subset of `X` meets `s` only finitely often (i.e., the inclusion map `s → X`
+tends to the cocompact filter along the cofinite filter on `s`).
 
 When `s` is closed, the two conditions are equivalent provided `X` is locally compact and T1,
 see `IsClosed.tendsto_coe_cofinite_iff`.

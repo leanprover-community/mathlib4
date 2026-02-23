@@ -36,9 +36,9 @@ for a list of ordered triples comprising an expression representing a term of a 
 typically `M` is a field), together with an integer "power" and a natural number "index".
 
 The natural number represents the index of the `M` term in the `AtomM` monad: this is not enforced,
-but is sometimes assumed in operations.  Thus when items `((a₁, x₁), k)` and `((a₂, x₂), k)`
+but is sometimes assumed in operations. Thus when items `((a₁, x₁), k)` and `((a₂, x₂), k)`
 appear in two different `FieldSimp.qNF` objects (i.e. with the same `ℕ`-index `k`), it is expected
-that the expressions `x₁` and `x₂` are the same.  It is also expected that the items in a
+that the expressions `x₁` and `x₂` are the same. It is also expected that the items in a
 `FieldSimp.qNF` list are in strictly decreasing order by natural-number index.
 
 By forgetting the natural number indices, an expression representing a `Mathlib.Tactic.FieldSimp.NF`
@@ -528,7 +528,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
   | _ => pure ⟨x, ⟨.plus, q(rfl)⟩, ← baseCase x true⟩
 
 /-- Given `x` in a commutative group-with-zero, construct a new expression in the standard form
-*** / *** (all denominators at the end) which is equal to `x`. -/
+\*\*\* / \*\*\* (all denominators at the end) which is equal to `x`. -/
 def reduceExprQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     (iM : Q(CommGroupWithZero $M)) (x : Q($M)) : AtomM (Σ x' : Q($M), Q($x = $x')) := do
   let ⟨y, ⟨g, pf_sgn⟩, l, pf⟩ ← normalize disch iM x
@@ -589,7 +589,7 @@ def reduceLtQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
   return ⟨g₁.expr f₁', g₂.expr f₂', q(lt_eq_cancel_lt $pf_ef₁ $pf_ef₂ $pf₀)⟩
 
 /-- Given `x` in a commutative group-with-zero, construct a new expression in the standard form
-*** / *** (all denominators at the end) which is equal to `x`. -/
+\*\*\* / \*\*\* (all denominators at the end) which is equal to `x`. -/
 def reduceExpr (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (x : Expr) :
     AtomM Simp.Result := do
   -- for `field_simp` to work with the recursive infrastructure in `AtomM.recurse`, we need to fail
@@ -668,6 +668,7 @@ def parseDischarger (d : Option (TSyntax ``discharger)) (args : Option (TSyntax 
 The goal of `field_simp` is to bring expressions in (semi-)fields over a common denominator, i.e. to
 reduce them to expressions of the form `n / d` where neither `n` nor `d` contains any division
 symbol. For example, `x / (1 - y) / (1 + y / (1 - y))` is reduced to `x / (1 - y + y)`:
+
 ```
 example (x y z : ℚ) (hy : 1 - y ≠ 0) :
     ⌊x / (1 - y) / (1 + y / (1 - y))⌋ < 3 := by
@@ -678,6 +679,7 @@ example (x y z : ℚ) (hy : 1 - y ≠ 0) :
 The `field_simp` tactic will also clear denominators in field *(in)equalities*, by
 cross-multiplying. For example, `field_simp` will clear the `x` denominators in the following
 equation:
+
 ```
 example {K : Type*} [Field K] {x : K} (hx0 : x ≠ 0) :
     (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
@@ -712,6 +714,7 @@ The goal of the `field_simp` conv tactic is to bring an expression in a (semi-)f
 denominator, i.e. to reduce it to an expression of the form `n / d` where neither `n` nor `d`
 contains any division symbol. For example, `x / (1 - y) / (1 + y / (1 - y))` is reduced to
 `x / (1 - y + y)`:
+
 ```
 example (x y z : ℚ) (hy : 1 - y ≠ 0) :
     ⌊x / (1 - y) / (1 + y / (1 - y))⌋ < 3 := by
@@ -745,6 +748,7 @@ The goal of the simprocs grouped under the `field` attribute is to clear denomin
 (semi-)field (in)equalities, by bringing LHS and RHS each over a common denominator and then
 cross-multiplying. For example, the `field` simproc will clear the `x` denominators in the following
 equation:
+
 ```
 example {K : Type*} [Field K] {x : K} (hx0 : x ≠ 0) :
     (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by

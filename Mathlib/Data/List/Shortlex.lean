@@ -13,6 +13,7 @@ public import Mathlib.Tactic.NormNum
 # Shortlex ordering of lists.
 
 Given a relation `r` on `α`, the shortlex order on `List α` is defined by `L < M` iff
+
 * `L.length < M.length`
 * `L.length = M.length` and `L < M` under the lexicographic ordering over `r` on lists
 
@@ -23,6 +24,7 @@ We show that if `r` is well-founded, so too is the shortlex order over `r`
 ## See also
 
 Related files are:
+
 * `Mathlib/Data/List/Lex.lean`: Lexicographic order on `List α`.
 * `Mathlib/Data/DFinsupp/WellFounded.lean`: Well-foundedness of lexicographic orders on `DFinsupp`
   and `Pi`.
@@ -48,7 +50,7 @@ theorem Shortlex.of_length_lt {s t : List α} (h : s.length < t.length) : Shortl
   Prod.Lex.left _ _ h
 
 /-- If two lists `s` and `t` have the same length, `s` is smaller than `t` under the shortlex order
-over a relation `r`  when `s` is smaller than `t` under the lexicographic order over `r` -/
+over a relation `r` when `s` is smaller than `t` under the lexicographic order over `r` -/
 theorem Shortlex.of_lex {s t : List α} (len_eq : s.length = t.length) (h_lex : List.Lex r s t) :
     Shortlex r s t := by
   apply Prod.lex_def.mpr

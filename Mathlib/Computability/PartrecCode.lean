@@ -448,6 +448,7 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
 end
 
 /-- The interpretation of a `Nat.Partrec.Code` as a partial function.
+
 * `Nat.Partrec.Code.zero`: The constant zero function.
 * `Nat.Partrec.Code.succ`: The successor function.
 * `Nat.Partrec.Code.left`: Left unpairing of a pair of ℕ (encoded by `Nat.pair`)

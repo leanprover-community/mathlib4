@@ -28,6 +28,7 @@ that uses the resulting unified term.
 If `term` is not present, `change?` suggests the current goal itself. This is useful after tactics
 which transform the goal while maintaining definitional equality, such as `dsimp`; those preceding
 tactic calls can then be deleted.
+
 ```lean
 example : (fun x : Nat => x) 0 = 1 := by
   change? 0 = _  -- `Try this: change 0 = 1`

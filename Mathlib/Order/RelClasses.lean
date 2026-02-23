@@ -109,9 +109,9 @@ theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrd
 /-! ### Order connection -/
 
 /-- A connected order is one satisfying the condition `a < c → a < b ∨ b < c`.
-  This is recognizable as an intuitionistic substitute for `a ≤ b ∨ b ≤ a` on
-  the constructive reals, and is also known as negative transitivity,
-  since the contrapositive asserts transitivity of the relation `¬ a < b`. -/
+This is recognizable as an intuitionistic substitute for `a ≤ b ∨ b ≤ a` on
+the constructive reals, and is also known as negative transitivity,
+since the contrapositive asserts transitivity of the relation `¬ a < b`. -/
 class IsOrderConnected (α : Type u) (lt : α → α → Prop) : Prop where
   /-- A connected order is one satisfying the condition `a < c → a < b ∨ b < c`. -/
   conn : ∀ a b c, lt a c → lt a b ∨ lt b c

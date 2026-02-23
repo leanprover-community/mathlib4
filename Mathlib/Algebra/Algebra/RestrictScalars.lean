@@ -51,21 +51,27 @@ synonym `RestrictScalars` is essentially this equivalence.
 
 Warning: use this type synonym judiciously! Consider an example where we want to construct an
 `R`-linear map from `M` to `S`, given:
+
 ```lean
 variable (R S M : Type*)
 variable [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module S M]
 ```
+
 With the assumptions above we can't directly state our map as we have no `Module R M` structure, but
 `RestrictScalars` permits it to be written as:
+
 ```lean
 -- an `R`-module structure on `M` is provided by `RestrictScalars` which is compatible
 example : RestrictScalars R S M →ₗ[R] S := sorry
 ```
+
 However, it is usually better just to add this extra structure as an argument:
+
 ```lean
 -- an `R`-module structure on `M` and proof of its compatibility is provided by the user
 example [Module R M] [IsScalarTower R S M] : M →ₗ[R] S := sorry
 ```
+
 The advantage of the second approach is that it defers the duty of providing the missing typeclasses
 `[Module R M] [IsScalarTower R S M]`. If some concrete `M` naturally carries these (as is often
 the case) then we have avoided `RestrictScalars` entirely. If not, we can pass

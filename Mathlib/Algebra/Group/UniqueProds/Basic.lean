@@ -18,8 +18,8 @@ public import Mathlib.Data.DFinsupp.Defs
 
 A group `G` has *unique products* if for any two non-empty finite subsets `A, B ⊆ G`, there is an
 element `g ∈ A * B` that can be written uniquely as a product of an element of `A` and an element
-of `B`.  We call the formalization this property `UniqueProds`.  Since the condition requires no
-property of the group operation, we define it for a Type simply satisfying `Mul`.  We also
+of `B`. We call the formalization this property `UniqueProds`. Since the condition requires no
+property of the group operation, we define it for a Type simply satisfying `Mul`. We also
 introduce the analogous "additive" companion, `UniqueSums`, and link the two so that `to_additive`
 converts `UniqueProds` into `UniqueSums`.
 
@@ -30,6 +30,7 @@ However, the order is just a convenience and is not part of the `UniqueProds/Sum
 
 Here you can see several examples of Types that have `UniqueSums/Prods`
 (`inferInstance` uses `Covariant.to_uniqueProds_left` and `Covariant.to_uniqueSums_left`).
+
 ```lean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.PNat.Basic
@@ -58,12 +59,12 @@ assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule FreeMonoid I
 open Finset
 
 /-- Let `G` be a Type with multiplication, let `A B : Finset G` be finite subsets and
-let `a0 b0 : G` be two elements.  `UniqueMul A B a0 b0` asserts `a0 * b0` can be written in at
+let `a0 b0 : G` be two elements. `UniqueMul A B a0 b0` asserts `a0 * b0` can be written in at
 most one way as a product of an element of `A` and an element of `B`. -/
 @[to_additive
       /-- Let `G` be a Type with addition, let `A B : Finset G` be finite subsets and
-let `a0 b0 : G` be two elements.  `UniqueAdd A B a0 b0` asserts `a0 + b0` can be written in at
-most one way as a sum of an element from `A` and an element from `B`. -/]
+      let `a0 b0 : G` be two elements. `UniqueAdd A B a0 b0` asserts `a0 + b0` can be written in at
+      most one way as a sum of an element from `A` and an element from `B`. -/]
 def UniqueMul {G} [Mul G] (A B : Finset G) (a0 b0 : G) : Prop :=
   ∀ ⦃a b⦄, a ∈ A → b ∈ B → a * b = a0 * b0 → a = a0 ∧ b = b0
 
@@ -160,7 +161,7 @@ See `UniqueMul.mulHom_map_iff` for a version with swapped bundling. -/
 @[to_additive
       /-- `UniqueAdd` is preserved under additive maps that are injective.
 
-See `UniqueAdd.addHom_map_iff` for a version with swapped bundling. -/]
+      See `UniqueAdd.addHom_map_iff` for a version with swapped bundling. -/]
 theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Injective f) :
     UniqueMul (A.image f) (B.image f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 :=
   ⟨of_mulHom_image f fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·), fun h _ _ ↦ by
@@ -175,7 +176,7 @@ See `UniqueMul.mulHom_image_iff` for a version with swapped bundling. -/
 @[to_additive
       /-- `UniqueAdd` is preserved under embeddings that are additive.
 
-See `UniqueAdd.addHom_image_iff` for a version with swapped bundling. -/]
+      See `UniqueAdd.addHom_image_iff` for a version with swapped bundling. -/]
 theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
     UniqueMul (A.map f) (B.map f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
   classical simp_rw [← mulHom_image_iff ⟨f, mul⟩ f.2, Finset.map_eq_image]; rfl
@@ -216,7 +217,7 @@ theorem of_image_filter [DecidableEq H]
 
 end UniqueMul
 
-/-- Let `G` be a Type with addition.  `UniqueSums G` asserts that any two non-empty
+/-- Let `G` be a Type with addition. `UniqueSums G` asserts that any two non-empty
 finite subsets of `G` have the `UniqueAdd` property, with respect to some element of their
 sum `A + B`. -/
 class UniqueSums (G) [Add G] : Prop where
@@ -225,7 +226,7 @@ class UniqueSums (G) [Add G] : Prop where
   uniqueAdd_of_nonempty :
     ∀ {A B : Finset G}, A.Nonempty → B.Nonempty → ∃ a0 ∈ A, ∃ b0 ∈ B, UniqueAdd A B a0 b0
 
-/-- Let `G` be a Type with multiplication.  `UniqueProds G` asserts that any two non-empty
+/-- Let `G` be a Type with multiplication. `UniqueProds G` asserts that any two non-empty
 finite subsets of `G` have the `UniqueMul` property, with respect to some element of their
 product `A * B`. -/
 class UniqueProds (G) [Mul G] : Prop where
@@ -241,7 +242,7 @@ finite subsets of `G`, at least one of which is not a singleton, possesses at le
 of elements satisfying the `UniqueAdd` property. -/
 class TwoUniqueSums (G) [Add G] : Prop where
 /-- For `A B` two finite sets whose product has cardinality at least 2,
-  we can find at least two unique pairs. -/
+we can find at least two unique pairs. -/
   uniqueAdd_of_one_lt_card : ∀ {A B : Finset G}, 1 < #A * #B →
     ∃ p1 ∈ A ×ˢ B, ∃ p2 ∈ A ×ˢ B, p1 ≠ p2 ∧ UniqueAdd A B p1.1 p1.2 ∧ UniqueAdd A B p2.1 p2.2
 
@@ -250,7 +251,7 @@ finite subsets of `G`, at least one of which is not a singleton, possesses at le
 of elements satisfying the `UniqueMul` property. -/
 class TwoUniqueProds (G) [Mul G] : Prop where
 /-- For `A B` two finite sets whose product has cardinality at least 2,
-  we can find at least two unique pairs. -/
+we can find at least two unique pairs. -/
   uniqueMul_of_one_lt_card : ∀ {A B : Finset G}, 1 < #A * #B →
     ∃ p1 ∈ A ×ˢ B, ∃ p2 ∈ A ×ˢ B, p1 ≠ p2 ∧ UniqueMul A B p1.1 p1.2 ∧ UniqueMul A B p2.1 p2.2
 
@@ -356,10 +357,10 @@ open MulOpposite in
 /-! Two theorems in [Andrzej Strojnowski, *A note on u.p. groups*][Strojnowski1980] -/
 
 /-- `UniqueProds G` says that for any two nonempty `Finset`s `A` and `B` in `G`, `A × B`
-  contains a unique pair with the `UniqueMul` property. Strojnowski showed that if `G` is
-  a group, then we only need to check this when `A = B`.
-  Here we generalize the result to cancellative semigroups.
-  Non-cancellative counterexample: the AddMonoid {0,1} with 1+1=1. -/
+contains a unique pair with the `UniqueMul` property. Strojnowski showed that if `G` is
+a group, then we only need to check this when `A = B`.
+Here we generalize the result to cancellative semigroups.
+Non-cancellative counterexample: the AddMonoid {0,1} with 1+1=1. -/
 @[to_additive] theorem of_same {G} [Semigroup G] [IsCancelMul G]
     (h : ∀ {A : Finset G}, A.Nonempty → ∃ a1 ∈ A, ∃ a2 ∈ A, UniqueMul A A a1 a2) :
     UniqueProds G where
@@ -374,9 +375,9 @@ open MulOpposite in
     exact ⟨mul_left_cancel hu.1, mul_right_cancel hu.2⟩
 
 /-- If a group has `UniqueProds`, then it actually has `TwoUniqueProds`.
-  For an example of a semigroup `G` embeddable into a group that has `UniqueProds`
-  but not `TwoUniqueProds`, see Example 10.13 in
-  [J. Okniński, *Semigroup Algebras*][Okninski1991]. -/
+For an example of a semigroup `G` embeddable into a group that has `UniqueProds`
+but not `TwoUniqueProds`, see Example 10.13 in
+[J. Okniński, *Semigroup Algebras*][Okninski1991]. -/
 @[to_additive] theorem toTwoUniqueProds_of_group {G}
     [Group G] [UniqueProds G] : TwoUniqueProds G where
   uniqueMul_of_one_lt_card {A B} hc := by
@@ -570,7 +571,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
 
 -- see Note [lower instance priority]
 /-- This instance asserts that if `G` has a right-cancellative multiplication, a linear order, and
-  multiplication is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueProds`. -/
+multiplication is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
   /-- This instance asserts that if `G` has a right-cancellative addition, a linear order,
   and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`. -/]
@@ -604,7 +605,7 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
 open MulOpposite in
 -- see Note [lower instance priority]
 /-- This instance asserts that if `G` has a left-cancellative multiplication, a linear order, and
-  multiplication is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueProds`. -/
+multiplication is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
   /-- This instance asserts that if `G` has a left-cancellative addition, a linear order, and
   addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`. -/]

@@ -711,6 +711,7 @@ variable (R) in
 /--
 To show a property `motive` of modules holds for arbitrary finite products of modules, it suffices
 to show
+
 1. `motive` is stable under isomorphism.
 2. `motive` holds for the zero module.
 3. `motive` holds for `M × N` if it holds for both `M` and `N`.

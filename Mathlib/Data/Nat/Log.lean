@@ -16,6 +16,7 @@ public import Mathlib.Tactic.Monotonicity.Attr
 # Natural number logarithms
 
 This file defines two `ℕ`-valued analogs of the logarithm of `n` with base `b`:
+
 * `log b n`: Lower logarithm, or floor **log**. Greatest `k` such that `b^k ≤ n`.
 * `clog b n`: Upper logarithm, or **c**eil **log**. Least `k` such that `n ≤ b^k`.
 
@@ -32,6 +33,7 @@ The actual implementations use fuel recursion so that `(by decide : Nat.log 2 20
 Adapted from https://downloads.haskell.org/~ghc/9.0.1/docs/html/libraries/ghc-bignum-1.0/GHC-Num-BigNat.html#v:bigNatLogBase-35-
 
 Note a tail-recursive version of `Nat.log` is also possible:
+
 ```
 def logTR (b n : ℕ) : ℕ :=
   let rec go : ℕ → ℕ → ℕ | n, acc => if h : b ≤ n ∧ 1 < b then go (n / b) (acc + 1) else acc
@@ -40,7 +42,9 @@ def logTR (b n : ℕ) : ℕ :=
     decreasing_trivial
   go n 0
 ```
+
 but performs worse for large numbers than `Nat.log`:
+
 ```
 #eval Nat.logTR 2 (2 ^ 1000000)
 #eval Nat.log 2 (2 ^ 1000000)

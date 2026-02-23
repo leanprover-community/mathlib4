@@ -18,6 +18,7 @@ of the form: `β - q • α, ..., β - α, β, β + α, ..., β + p • α` for 
 length, `p + q` is at most 3.
 
 ## Main definitions / results:
+
 * `RootPairing.chainTopCoeff`: the natural number `p` in the chain
   `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
 * `RootPairing.chainTopCoeff`: the natural number `q` in the chain

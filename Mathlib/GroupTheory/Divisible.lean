@@ -83,6 +83,7 @@ variable (A α : Type*) [AddMonoid A] [SMul α A] [Zero α]
 /--
 An `AddMonoid A` is `α`-divisible iff `n • x = a` has a solution for all `n ≠ 0 ∈ α` and `a ∈ A`.
 Here we adopt a constructive approach where we ask an explicit `div : A → α → A` function such that
+
 * `div a 0 = 0` for all `a ∈ A`
 * `n • div a n = a` for all `n ≠ 0 ∈ α` and `a ∈ A`.
 -/
@@ -100,6 +101,7 @@ variable (A α : Type*) [Monoid A] [Pow A α] [Zero α]
 
 /-- A `Monoid A` is `α`-rootable iff `xⁿ = a` has a solution for all `n ≠ 0 ∈ α` and `a ∈ A`.
 Here we adopt a constructive approach where we ask an explicit `root : A → α → A` function such that
+
 * `root a 0 = 1` for all `a ∈ A`
 * `(root a n)ⁿ = a` for all `n ≠ 0 ∈ α` and `a ∈ A`.
 -/

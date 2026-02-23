@@ -13,6 +13,7 @@ public import Mathlib.Algebra.GroupWithZero.Associated
 # Evaluating a polynomial
 
 ## Main definitions
+
 * `Polynomial.eval₂`: evaluate `p : R[X]` in `S` given a ring hom `f : R →+* S` and `x : S`.
 * `Polynomial.eval`: evaluate `p : R[X]` given `x : R`.
 * `Polynomial.IsRoot`: `x : R` is a root of `p : R[X]`.
@@ -20,6 +21,7 @@ public import Mathlib.Algebra.GroupWithZero.Associated
 * `Polynomial.map`: apply `f : R →+* S` to the coefficients of `p : R[X]`.
 
 We also provide the following bundled versions:
+
 * `Polynomial.eval₂AddMonoidHom`, `Polynomial.eval₂RingHom`
 * `Polynomial.evalRingHom`
 * `Polynomial.compRingHom`
@@ -53,7 +55,7 @@ variable [Semiring S]
 variable (f : R →+* S) (x : S)
 
 /-- Evaluate a polynomial `p` given a ring hom `f` from the scalar ring
-  to the target and a value `x` for the variable in the target -/
+to the target and a value `x` for the variable in the target -/
 irreducible_def eval₂ (p : R[X]) : S :=
   p.sum fun e a => f a * x ^ e
 

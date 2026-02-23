@@ -17,6 +17,7 @@ a functor `stupidTruncFunctor : HomologicalComplex C c' ⥤ HomologicalComplex C
 which sends `K` to `K.stupidTrunc e` which is defined as `(K.restriction e).extend e`.
 
 ## TODO (@joelriou)
+
 * define the inclusion `e.stupidTruncFunctor C ⟶ 𝟭 _` when `[e.IsTruncGE]`;
 * define the projection `𝟭 _ ⟶ e.stupidTruncFunctor C` when `[e.IsTruncLE]`.
 

@@ -46,7 +46,7 @@ theorem image_upperBounds_subset_upperBounds_image (Hf : MonotoneOn f t) (Hst : 
   exact Hf.mem_upperBounds_image Hst ha.1 ha.2
 
 /-- The image under a monotone function on a set `t` of a subset which has an upper bound in `t`
-  is bounded above. -/
+is bounded above. -/
 @[to_dual /-- The image under a monotone function on a set `t` of a subset which has a lower bound
 in `t` is bounded below. -/]
 theorem map_bddAbove (Hf : MonotoneOn f t) (Hst : s ⊆ t) :

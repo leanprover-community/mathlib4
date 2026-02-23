@@ -52,7 +52,7 @@ open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 variable {α : Type u₁} {β : Type*}
 
 /-- A subset of a finite Cartesian product of a structure is definable over a set `A` when
-  membership in the set is given by a first-order formula with parameters from `A`. -/
+membership in the set is given by a first-order formula with parameters from `A`. -/
 def Definable (s : Set (α → M)) : Prop :=
   ∃ φ : L[[A]].Formula α, s = setOf φ.Realize
 
@@ -290,7 +290,7 @@ open Set
 variable (L : FirstOrder.Language.{u, v}) {M : Type w} [L.Structure M] (A : Set M) (α : Type u₁)
 
 /-- Definable sets are subsets of finite Cartesian products of a structure such that membership is
-  given by a first-order formula. -/
+given by a first-order formula. -/
 def DefinableSet :=
   { s : Set (α → M) // A.Definable L s }
 

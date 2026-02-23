@@ -26,6 +26,7 @@ This file defines the lexicographic relation for pairs of orders, partial orders
 ## See also
 
 Related files are:
+
 * `Data.Finset.CoLex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.

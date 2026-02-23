@@ -22,14 +22,14 @@ universe u
 variable {α : Type u}
 
 /-- An ordered additive monoid is `CanonicallyOrderedAdd`
-  if the ordering coincides with the subtractibility relation,
-  which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
-  This is satisfied by the natural numbers, for example, but not
-  the integers or other nontrivial `OrderedAddCommGroup`s.
+if the ordering coincides with the subtractibility relation,
+which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
+This is satisfied by the natural numbers, for example, but not
+the integers or other nontrivial `OrderedAddCommGroup`s.
 
-  We have `a ≤ b + a` and `a ≤ a + b` as separate fields. In the commutative case the second field
-  is redundant, but in the noncommutative case (satisfied most relevantly by the ordinals), this
-  extra field allows us to prove more things without the extra commutativity assumption. -/
+We have `a ≤ b + a` and `a ≤ a + b` as separate fields. In the commutative case the second field
+is redundant, but in the noncommutative case (satisfied most relevantly by the ordinals), this
+extra field allows us to prove more things without the extra commutativity assumption. -/
 class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] : Prop
     extends ExistsAddOfLE α where
   /-- For any `a` and `b`, `a ≤ a + b` -/
@@ -39,13 +39,13 @@ class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] : Prop
 attribute [instance 50] CanonicallyOrderedAdd.toExistsAddOfLE
 
 /-- An ordered monoid is `CanonicallyOrderedMul`
-  if the ordering coincides with the divisibility relation,
-  which is to say, `a ≤ b` iff there exists `c` with `b = a * c`.
-  Examples seem rare; it seems more likely that the `OrderDual`
-  of a naturally-occurring lattice satisfies this than the lattice
-  itself (for example, dual of the lattice of ideals of a PID or
-  Dedekind domain satisfy this; collections of all things ≤ 1 seem to
-  be more natural that collections of all things ≥ 1). -/
+if the ordering coincides with the divisibility relation,
+which is to say, `a ≤ b` iff there exists `c` with `b = a * c`.
+Examples seem rare; it seems more likely that the `OrderDual`
+of a naturally-occurring lattice satisfies this than the lattice
+itself (for example, dual of the lattice of ideals of a PID or
+Dedekind domain satisfy this; collections of all things ≤ 1 seem to
+be more natural that collections of all things ≥ 1). -/
 @[to_additive]
 class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] : Prop
     extends ExistsMulOfLE α where

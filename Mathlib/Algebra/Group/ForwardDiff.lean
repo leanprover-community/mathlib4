@@ -223,7 +223,7 @@ We prove formulae about the forward difference operator applied to polynomials:
   The `n`-th forward difference of the function `x ↦ x^n` is the constant function `n!`;
 * `fwdDiff_iter_sum_mul_pow_eq_zero` :
   The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
-    sums over `range n`).
+  sums over `range n`).
 -/
 
 variable {R : Type*} [CommRing R]

@@ -62,7 +62,7 @@ protected abbrev commMagma [CommMagma M₂] (f : M₁ → M₂) (hf : Injective 
   mul_comm x y := hf <| by rw [mul, mul, mul_comm]
 
 /-- A type endowed with `*` is a commutative semigroup, if it admits an injective map that
-preserves `*` to a commutative semigroup.  See note [reducible non-instances]. -/
+preserves `*` to a commutative semigroup. See note [reducible non-instances]. -/
 @[to_additive
 /-- A type endowed with `+` is an additive commutative semigroup,if it admits
 an injective map that preserves `+` to an additive commutative semigroup. -/]
@@ -97,7 +97,7 @@ protected theorem isCancelMul [Mul M₂] [IsCancelMul M₂] (f : M₁ → M₂) 
   __ := hf.isRightCancelMul f mul
 
 /-- A type endowed with `*` is a left cancel semigroup, if it admits an injective map that
-preserves `*` to a left cancel semigroup.  See note [reducible non-instances]. -/
+preserves `*` to a left cancel semigroup. See note [reducible non-instances]. -/
 @[to_additive /-- A type endowed with `+` is an additive left cancel semigroup, if it admits an
 injective map that preserves `+` to an additive left cancel semigroup. -/]
 protected abbrev leftCancelSemigroup [LeftCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
@@ -105,7 +105,7 @@ protected abbrev leftCancelSemigroup [LeftCancelSemigroup M₂] (f : M₁ → M�
   { hf.semigroup f mul, hf.isLeftCancelMul f mul with }
 
 /-- A type endowed with `*` is a right cancel semigroup, if it admits an injective map that
-preserves `*` to a right cancel semigroup.  See note [reducible non-instances]. -/
+preserves `*` to a right cancel semigroup. See note [reducible non-instances]. -/
 @[to_additive /-- A type endowed with `+` is an additive right
 cancel semigroup, if it admits an injective map that preserves `+` to an additive right cancel
 semigroup. -/]
@@ -116,7 +116,7 @@ protected abbrev rightCancelSemigroup [RightCancelSemigroup M₂] (f : M₁ → 
 variable [One M₁]
 
 /-- A type endowed with `1` and `*` is a `MulOneClass`, if it admits an injective map that
-preserves `1` and `*` to a `MulOneClass`.  See note [reducible non-instances]. -/
+preserves `1` and `*` to a `MulOneClass`. See note [reducible non-instances]. -/
 @[to_additive
 /-- A type endowed with `0` and `+` is an `AddZeroClass`, if it admits an
 injective map that preserves `0` and `+` to an `AddZeroClass`. -/]
@@ -129,7 +129,7 @@ protected abbrev mulOneClass [MulOneClass M₂] (f : M₁ → M₂) (hf : Inject
 variable [Pow M₁ ℕ]
 
 /-- A type endowed with `1` and `*` is a monoid, if it admits an injective map that preserves `1`
-and `*` to a monoid.  See note [reducible non-instances]. -/
+and `*` to a monoid. See note [reducible non-instances]. -/
 @[to_additive
 /-- A type endowed with `0` and `+` is an additive monoid, if it admits an
 injective map that preserves `0` and `+` to an additive monoid. See note
@@ -172,7 +172,7 @@ protected abbrev cancelMonoid [CancelMonoid M₂] (f : M₁ → M₂) (hf : Inje
   { hf.leftCancelMonoid f one mul npow, hf.rightCancelMonoid f one mul npow with }
 
 /-- A type endowed with `1` and `*` is a commutative monoid, if it admits an injective map that
-preserves `1` and `*` to a commutative monoid.  See note [reducible non-instances]. -/
+preserves `1` and `*` to a commutative monoid. See note [reducible non-instances]. -/
 @[to_additive
 /-- A type endowed with `0` and `+` is an additive commutative monoid, if it
 admits an injective map that preserves `0` and `+` to an additive commutative monoid. -/]
@@ -202,7 +202,7 @@ protected abbrev involutiveInv {M₁ : Type*} [Inv M₁] [InvolutiveInv M₂] (f
 variable [Inv M₁]
 
 /-- A type endowed with `1` and `⁻¹` is a `InvOneClass`, if it admits an injective map that
-preserves `1` and `⁻¹` to a `InvOneClass`.  See note [reducible non-instances]. -/
+preserves `1` and `⁻¹` to a `InvOneClass`. See note [reducible non-instances]. -/
 @[to_additive
 /-- A type endowed with `0` and unary `-` is an `NegZeroClass`, if it admits an
 injective map that preserves `0` and unary `-` to an `NegZeroClass`. -/]

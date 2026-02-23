@@ -17,19 +17,23 @@ In this file, we define the untilt function from the pretilt of a
 is not the untilt *functor*.
 
 ## Main definition
+
 * `PreTilt.untilt` : Given a `p`-adically complete ring `O`, this is the
   multiplicative map from `PreTilt O p` to `O` itself. Specifically, it is
   defined as the limit of `p^n`-th powers of arbitrary lifts in `O` of the
   `n`-th component from the perfection of `O/p`.
 
 ## Main theorem
+
 * `PreTilt.mk_untilt_eq_coeff_zero` : The composition of the mod `p` map
   with the untilt function equals taking the zeroth component of the perfection.
 
 ## Reference
+
 * [Berkeley Lectures on \( p \)-adic Geometry][MR4446467]
 
 ## Tags
+
 Perfectoid, Tilting equivalence, Untilt
 -/
 

@@ -73,7 +73,7 @@ namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 
 /-- An exact pairing is a pair of objects `X Y : C` which admit
-  a coevaluation and evaluation morphism which fulfill two triangle equalities. -/
+a coevaluation and evaluation morphism which fulfill two triangle equalities. -/
 class ExactPairing (X Y : C) where
   /-- Coevaluation of an exact pairing.
 

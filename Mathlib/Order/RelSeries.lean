@@ -145,7 +145,7 @@ end RelSeries
 namespace SetRel
 
 /-- A relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
-  maximum length. -/
+maximum length. -/
 @[mk_iff]
 class FiniteDimensional : Prop where
   /-- A relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
@@ -153,7 +153,7 @@ class FiniteDimensional : Prop where
   exists_longest_relSeries : ∃ x : RelSeries r, ∀ y : RelSeries r, y.length ≤ x.length
 
 /-- A relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
-  length. -/
+length. -/
 @[mk_iff]
 class InfiniteDimensional : Prop where
   /-- A relation `r` is said to be infinite dimensional iff there exists relation series of
@@ -637,7 +637,7 @@ lemma toList_snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) :
   simp [snoc]
 
 /--
-If a series ``a₀ -r→ a₁ -r→ ... -r→ aₙ``, then `a₀ -r→ a₁ -r→ ... -r→ aₙ₋₁` is
+If a series `a₀ -r→ a₁ -r→ ... -r→ aₙ`, then `a₀ -r→ a₁ -r→ ... -r→ aₙ₋₁` is
 another series -/
 @[simps]
 def eraseLast (p : RelSeries r) : RelSeries r where
@@ -1101,7 +1101,7 @@ lemma finiteDimensionalOrder_or_infiniteDimensionalOrder [Preorder α] [Nonempty
   SetRel.finiteDimensional_or_infiniteDimensional _
 
 /-- If `f : α → β` is a strictly monotonic function and `α` is an infinite-dimensional type then so
-  is `β`. -/
+is `β`. -/
 lemma infiniteDimensionalOrder_of_strictMono [Preorder α] [Preorder β]
     (f : α → β) (hf : StrictMono f) [InfiniteDimensionalOrder α] :
     InfiniteDimensionalOrder β :=

@@ -20,8 +20,8 @@ This file proves results on the localization of rings (monoids with zeros) over 
 * <https://ncatlab.org/nlab/show/Ore+localization>
 * [Zoran Škoda, *Noncommutative localization in noncommutative geometry*][skoda2006]
 
-
 ## Tags
+
 localization, Ore, non-commutative
 
 -/

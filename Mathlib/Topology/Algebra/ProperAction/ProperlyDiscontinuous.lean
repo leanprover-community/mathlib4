@@ -18,6 +18,7 @@ discontinuous if and only if it is proper. This is in particular true if `X` is 
 weakly locally compact.
 
 ## Main statement
+
 * `properlyDiscontinuousSMul_iff_properSMul`: If a discrete group acts on a T2 space `X` such that
   `X × X` is compactly generated, and if the action is continuous in the second variable,
   then the action is properly discontinuous if and only if it is proper.

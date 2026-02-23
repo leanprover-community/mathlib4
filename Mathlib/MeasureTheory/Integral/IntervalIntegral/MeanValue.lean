@@ -16,14 +16,14 @@ We prove versions of the first mean value theorem for interval integrals.
 ## Main results
 
 * `exists_eq_const_mul_intervalIntegral_of_ae_nonneg` (a.e. nonnegativity of `g` on `s`):
-    `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`.
+  `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`.
 * `exists_eq_const_mul_intervalIntegral_of_nonneg` (pointwise nonnegativity of `g` on `s`):
-    `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`.
+  `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`.
 
 ## References
 
 * [V. A. Zorich, *Mathematical Analysis I*][zorich2016],
-    Thm. 5 (First mean-value theorem for the integral).
+  Thm. 5 (First mean-value theorem for the integral).
 * <https://proofwiki.org/wiki/Mean_Value_Theorem_for_Integrals/Generalization>
 
 ## Tags

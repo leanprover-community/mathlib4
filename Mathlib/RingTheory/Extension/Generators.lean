@@ -18,18 +18,21 @@ public import Mathlib.RingTheory.Extension.Basic
 ## Main definition
 
 - `Algebra.Generators`: A family of generators of an `R`-algebra `S` consists of
+
   1. `vars`: The type of variables.
   2. `val : vars → S`: The assignment of each variable to a value.
   3. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
      write `R[X]` for `R[vars]`.
 
 - `Algebra.Generators.Hom`: Given a commuting square
+
   ```
   R --→ P = R[X] ---→ S
   |                   |
   ↓                   ↓
   R' -→ P' = R'[X'] → S
   ```
+
   A hom between `P` and `P'` is an assignment `X → P'` such that the arrows commute.
 
 - `Algebra.Generators.Cotangent`: The cotangent space w.r.t. `P = R[X] → S`, i.e. the
@@ -55,6 +58,7 @@ open TensorProduct MvPolynomial
 variable (R : Type u) (S : Type v) (ι : Type w) [CommRing R] [CommRing S] [Algebra R S]
 
 /-- A family of generators of an `R`-algebra `S` consists of
+
 1. `vars`: The type of variables.
 2. `val : vars → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[X] → S`. -/
@@ -153,7 +157,7 @@ def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S s := by
     Subtype.range_coe_subtype, Set.setOf_mem_eq]
 
 variable (R S) in
-/-- The `Generators` containing the whole algebra, which induces the canonical map  `R[S] → S`. -/
+/-- The `Generators` containing the whole algebra, which induces the canonical map `R[S] → S`. -/
 @[simps]
 noncomputable
 def self : Generators R S S where
@@ -349,8 +353,8 @@ variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
 
 /-- Given a commuting square
 R --→ P = R[X] ---→ S
-|                   |
-↓                   ↓
+| |
+↓ ↓
 R' -→ P' = R'[X'] → S
 A hom between `P` and `P'` is an assignment `I → P'` such that the arrows commute.
 Also see `Algebra.Generators.Hom.equivAlgHom`.

@@ -55,7 +55,7 @@ def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive /-- There is a unique additive monoid homomorphism between two additive monoids with
-  a unique element. -/]
+a unique element. -/]
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
   default := ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
@@ -78,7 +78,7 @@ end Mul
 where the equivalence between the targets is multiplicative.
 -/
 @[to_additive (attr := simps apply) /-- An additive analogue of `Equiv.arrowCongr`,
-  where the equivalence between the targets is additive. -/]
+where the equivalence between the targets is additive. -/]
 def arrowCongr {M N P Q : Type*} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
     (M → P) ≃* (N → Q) where
   toFun h n := g (h (f.symm n))

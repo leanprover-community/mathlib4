@@ -22,22 +22,29 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
 
 - `Module.FaithfullyFlat.iff_flat_and_proper_ideal`: an `R`-module `M` is faithfully flat iff it is
   flat and for all proper ideals `I` of `R`, `I • M ≠ M`.
+
 - `Module.FaithfullyFlat.iff_flat_and_rTensor_faithful`: an `R`-module `M` is faithfully flat iff it
   is flat and tensoring with `M` is faithful, i.e. `N ≠ 0` implies `N ⊗ M ≠ 0`.
+
 - `Module.FaithfullyFlat.iff_flat_and_lTensor_faithful`: an `R`-module `M` is faithfully flat iff it
   is flat and tensoring with `M` is faithful, i.e. `N ≠ 0` implies `M ⊗ N ≠ 0`.
+
 - `Module.FaithfullyFlat.iff_exact_iff_rTensor_exact`: an `R`-module `M` is faithfully flat iff
   tensoring with `M` preserves and reflects exact sequences, i.e. the sequence `N₁ → N₂ → N₃` is
   exact *iff* the sequence `N₁ ⊗ M → N₂ ⊗ M → N₃ ⊗ M` is exact.
+
 - `Module.FaithfullyFlat.iff_exact_iff_lTensor_exact`: an `R`-module `M` is faithfully flat iff
   tensoring with `M` preserves and reflects exact sequences, i.e. the sequence `N₁ → N₂ → N₃` is
   exact *iff* the sequence `M ⊗ N₁ → M ⊗ N₂ → M ⊗ N₃` is exact.
+
 - `Module.FaithfullyFlat.iff_zero_iff_lTensor_zero`: an `R`-module `M` is faithfully flat iff for
   all linear maps `f : N → N'`, `f = 0` iff `M ⊗ f = 0`.
+
 - `Module.FaithfullyFlat.iff_zero_iff_rTensor_zero`: an `R`-module `M` is faithfully flat iff for
   all linear maps `f : N → N'`, `f = 0` iff `f ⊗ M = 0`.
 
 - `Module.FaithfullyFlat.of_linearEquiv`: modules linearly equivalent to a flat modules are flat
+
 - `Module.FaithfullyFlat.trans`: if `S` is `R`-faithfully flat and `M` is `S`-faithfully flat, then
   `M` is `R`-faithfully flat.
 
@@ -246,15 +253,17 @@ In this section we prove that an `R`-module `M` is faithfully flat iff tensoring
 preserves and reflects exact sequences.
 
 Let `N₁ -l₁₂-> N₂ -l₂₃-> N₃` be two linear maps.
+
 - We first show that if `N₁ ⊗ M -> N₂ ⊗ M -> N₃ ⊗ M` is exact, then `N₁ -l₁₂-> N₂ -l₂₃-> N₃` is a
   complex, i.e. `range l₁₂ ≤ ker l₂₃`.
   This is `range_le_ker_of_exact_rTensor`.
 - Then in `rTensor_reflects_exact`, we show `ker l₂₃ = range l₁₂` by considering the cohomology
   `ker l₂₃ ⧸ range l₁₂`.
-This shows that when `M` is faithfully flat, `- ⊗ M` reflects exact sequences. For details, see
-comments in the proof. Since `M` is flat, `- ⊗ M` preserves exact sequences.
+  This shows that when `M` is faithfully flat, `- ⊗ M` reflects exact sequences. For details, see
+  comments in the proof. Since `M` is flat, `- ⊗ M` preserves exact sequences.
 
 On the other hand, if `- ⊗ M` preserves and reflects exact sequences, then `M` is faithfully flat.
+
 - `M` is flat because `- ⊗ M` preserves exact sequences.
 - We need to show that if `N ⊗ M = 0` then `N = 0`. Consider the sequence `N -0-> N -0-> 0`. After
   tensoring with `M`, we get `N ⊗ M -0-> N ⊗ M -0-> 0` which is exact because `N ⊗ M = 0`.

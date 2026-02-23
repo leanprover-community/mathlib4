@@ -235,7 +235,7 @@ theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
     Subtype.ext_iff.mp (h ⟨e, he⟩)
 
 /-- Given field extensions `E/F` and `K/F`, with `E/F` finite, there are finitely many `F`-algebra
-  homomorphisms `E →ₐ[K] K`. -/
+homomorphisms `E →ₐ[K] K`. -/
 noncomputable instance AlgHom.fintype : Fintype (E →ₐ[F] K) :=
   @Fintype.ofInjective _ _
     (Fintype.subtypeProd (finite_range (Module.finBasis F E)) fun e =>

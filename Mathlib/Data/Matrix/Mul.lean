@@ -19,6 +19,7 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 This file defines vector and matrix multiplication
 
 ## Main definitions
+
 * `dotProduct`: the dot product between two vectors
 * `Matrix.mul`: multiplication of two matrices
 * `Matrix.mulVec`: multiplication of a matrix with a vector
@@ -693,7 +694,7 @@ variable [NonUnitalNonAssocSemiring α]
 where `v` is seen as a column vector.
 Put another way, `M *ᵥ v` is the vector whose entries are those of `M * col v` (see `col_mulVec`).
 
-The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `dotProduct`,
+The notation has precedence 73, which comes immediately before `⬝ᵥ` for `dotProduct`,
 so that `A *ᵥ v ⬝ᵥ B *ᵥ w` is parsed as `(A *ᵥ v) ⬝ᵥ (B *ᵥ w)`.
 -/
 def mulVec [Fintype n] (M : Matrix m n α) (v : n → α) : m → α
@@ -707,7 +708,7 @@ scoped infixr:73 " *ᵥ " => Matrix.mulVec
 where `v` is seen as a row vector.
 Put another way, `v ᵥ* M` is the vector whose entries are those of `row v * M` (see `row_vecMul`).
 
-The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `dotProduct`,
+The notation has precedence 73, which comes immediately before `⬝ᵥ` for `dotProduct`,
 so that `v ᵥ* A ⬝ᵥ w ᵥ* B` is parsed as `(v ᵥ* A) ⬝ᵥ (w ᵥ* B)`.
 -/
 def vecMul [Fintype m] (v : m → α) (M : Matrix m n α) : n → α

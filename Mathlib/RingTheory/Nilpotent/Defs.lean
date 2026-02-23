@@ -19,9 +19,9 @@ and `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
 
 ## Main definitions
 
-  * `Commute.isNilpotent_mul_left`
-  * `Commute.isNilpotent_mul_right`
-  * `nilpotencyClass`
+* `Commute.isNilpotent_mul_left`
+* `Commute.isNilpotent_mul_right`
+* `nilpotencyClass`
 
 -/
 
@@ -135,7 +135,7 @@ instance (ι) (R : ι → Type*) [∀ i, Zero (R i)] [∀ i, Pow (R i) ℕ]
   eq_zero _ := fun ⟨n, hn⟩ ↦ funext fun i ↦ IsReduced.eq_zero _ ⟨n, congr_fun hn i⟩
 
 /-- An element `y` in a monoid is radical if for any element `x`, `y` divides `x` whenever it
-  divides a power of `x`. -/
+divides a power of `x`. -/
 def IsRadical [Dvd R] [Pow R ℕ] (y : R) : Prop :=
   ∀ (n : ℕ) (x), y ∣ x ^ n → y ∣ x
 

@@ -26,23 +26,26 @@ and `AbsolutelyContinuousOnInterval.disjWithin` and prove its equivalence with t
 definition in `absolutelyContinuousOnInterval_iff`.
 
 We use the filter version to prove that absolutely continuous functions are closed under
+
 * addition - `AbsolutelyContinuousOnInterval.add`;
 * negation - `AbsolutelyContinuousOnInterval.neg`;
 * subtraction - `AbsolutelyContinuousOnInterval.sub`;
 * scalar multiplication - `AbsolutelyContinuousOnInterval.const_smul`,
   `AbsolutelyContinuousOnInterval.const_mul`;
 * multiplication - `AbsolutelyContinuousOnInterval.smul`,
-`AbsolutelyContinuousOnInterval.mul`;
-and that absolutely continuous implies uniformly continuous in
-`AbsolutelyContinuousOnInterval.uniformContinuousOn`
+  `AbsolutelyContinuousOnInterval.mul`;
+  and that absolutely continuous implies uniformly continuous in
+  `AbsolutelyContinuousOnInterval.uniformContinuousOn`
 
 We use the `ε`-`δ` definition to prove that
+
 * Lipschitz continuous functions are absolutely continuous -
   `LipschitzOnWith.absolutelyContinuousOnInterval`;
 * absolutely continuous functions have bounded variation -
   `AbsolutelyContinuousOnInterval.boundedVariationOn`.
 
 We conclude that
+
 * absolutely continuous functions are a.e. differentiable -
   `AbsolutelyContinuousOnInterval.ae_differentiableAt`;
 * if `f` is integrable on `uIcc a b`, then for any `c` in `uIcc a b`, `fun x ↦ ∫ v in c..x, f v`
@@ -50,6 +53,7 @@ We conclude that
   `IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
 
 ## Tags
+
 absolutely continuous
 -/
 
@@ -66,12 +70,13 @@ namespace AbsolutelyContinuousOnInterval
 /-- The filter on the collection of all the finite sequences of `uIoc` intervals induced by the
 function that maps the finite sequence of the intervals to the total length of the intervals.
 Details:
+
 1. Technically the filter is on `ℕ × (ℕ → X × X)`. A finite sequence `uIoc (a i) (b i)`, `i < n`
-is represented by any `E : ℕ × (ℕ → X × X)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)` for
-`i < n`. Its total length is `∑ i ∈ Finset.range n, dist (a i) (b i)`.
+   is represented by any `E : ℕ × (ℕ → X × X)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)` for
+   `i < n`. Its total length is `∑ i ∈ Finset.range n, dist (a i) (b i)`.
 2. For a sequence `G : ℕ → ℕ × (ℕ → X × X)`, convergence of `G` along `totalLengthFilter` means that
-the total length of `G j`, i.e., `∑ i ∈ Finset.range (G j).1, dist ((G j).2 i).1 ((G j).2 i).2)`,
-tends to `0` as `j` tends to infinity.
+   the total length of `G j`, i.e., `∑ i ∈ Finset.range (G j).1, dist ((G j).2 i).1 ((G j).2 i).2)`,
+   tends to `0` as `j` tends to infinity.
 -/
 def totalLengthFilter : Filter (ℕ × (ℕ → X × X)) := Filter.comap
   (fun E ↦ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2) (𝓝 0)

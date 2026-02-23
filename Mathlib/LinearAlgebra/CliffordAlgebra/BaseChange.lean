@@ -180,7 +180,7 @@ theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
   AlgHom.congr_fun (ofBaseChange_comp_toBaseChange A Q :) x
 
 /-- Base-changing the vector space of a clifford algebra is isomorphic as an A-algebra to
-base-changing the clifford algebra itself; <|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|.
+base-changing the clifford algebra itself; \<|Cℓ(A ⊗\_R V, Q_A) ≅ A ⊗\_R Cℓ(V, Q)\<|.
 
 This is `CliffordAlgebra.toBaseChange` and `CliffordAlgebra.ofBaseChange` as an equivalence. -/
 @[simps!]

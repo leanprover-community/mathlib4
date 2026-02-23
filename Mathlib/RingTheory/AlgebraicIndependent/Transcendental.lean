@@ -19,6 +19,7 @@ This file relates algebraic independence and transcendence (or algebraicity) of 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
 ## Tags
+
 transcendence
 
 -/

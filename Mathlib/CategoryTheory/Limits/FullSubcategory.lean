@@ -33,28 +33,28 @@ namespace Limits
 variable {J : Type w} [Category.{w'} J] {C : Type u} [Category.{v} C] {P : ObjectProperty C}
 
 /-- If a `J`-shaped diagram in `FullSubcategory P` has a limit cone in `C` whose cone point lives
-    in the full subcategory, then this defines a limit in the full subcategory. -/
+in the full subcategory, then this defines a limit in the full subcategory. -/
 def createsLimitFullSubcategoryInclusion' (F : J ⥤ P.FullSubcategory)
     {c : Cone (F ⋙ P.ι)} (hc : IsLimit c) (h : P c.pt) :
     CreatesLimit F P.ι :=
   createsLimitOfFullyFaithfulOfIso' hc ⟨_, h⟩ (Iso.refl _)
 
 /-- If a `J`-shaped diagram in `FullSubcategory P` has a limit in `C` whose cone point lives in the
-    full subcategory, then this defines a limit in the full subcategory. -/
+full subcategory, then this defines a limit in the full subcategory. -/
 def createsLimitFullSubcategoryInclusion (F : J ⥤ P.FullSubcategory)
     [HasLimit (F ⋙ P.ι)] (h : P (limit (F ⋙ P.ι))) :
     CreatesLimit F P.ι :=
   createsLimitFullSubcategoryInclusion' F (limit.isLimit _) h
 
 /-- If a `J`-shaped diagram in `FullSubcategory P` has a colimit cocone in `C` whose cocone point
-    lives in the full subcategory, then this defines a colimit in the full subcategory. -/
+lives in the full subcategory, then this defines a colimit in the full subcategory. -/
 def createsColimitFullSubcategoryInclusion' (F : J ⥤ P.FullSubcategory)
     {c : Cocone (F ⋙ P.ι)} (hc : IsColimit c) (h : P c.pt) :
     CreatesColimit F P.ι :=
   createsColimitOfFullyFaithfulOfIso' hc ⟨_, h⟩ (Iso.refl _)
 
 /-- If a `J`-shaped diagram in `FullSubcategory P` has a colimit in `C` whose cocone point lives in
-    the full subcategory, then this defines a colimit in the full subcategory. -/
+the full subcategory, then this defines a colimit in the full subcategory. -/
 def createsColimitFullSubcategoryInclusion (F : J ⥤ P.FullSubcategory)
     [HasColimit (F ⋙ P.ι)]
     (h : P (colimit (F ⋙ P.ι))) :

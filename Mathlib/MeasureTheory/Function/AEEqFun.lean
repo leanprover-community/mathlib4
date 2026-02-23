@@ -51,18 +51,17 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
 
 ## Implementation notes
 
-* `f.cast`:      To find a representative of `f : α →ₘ β`, use the coercion `(f : α → β)`, which
-                 is implemented as `f.toFun`.
-                 For each operation `op` in `L⁰`, there is a lemma called `coe_fn_op`,
-                 characterizing, say, `(f op g : α → β)`.
-* `AEEqFun.mk`:  To construct an `L⁰` function `α →ₘ β` from an almost everywhere strongly
-                 measurable function `f : α → β`, use `ae_eq_fun.mk`
-* `comp`:        Use `comp g f` to get `[g ∘ f]` from `g : β → γ` and `[f] : α →ₘ γ` when `g` is
-                 continuous. Use `compMeasurable` if `g` is only measurable (this requires the
-                 target space to be second countable).
-* `comp₂`:       Use `comp₂ g f₁ f₂` to get `[fun a ↦ g (f₁ a) (f₂ a)]`.
-                 For example, `[f + g]` is `comp₂ (+)`
-
+* `f.cast`: To find a representative of `f : α →ₘ β`, use the coercion `(f : α → β)`, which
+  is implemented as `f.toFun`.
+  For each operation `op` in `L⁰`, there is a lemma called `coe_fn_op`,
+  characterizing, say, `(f op g : α → β)`.
+* `AEEqFun.mk`: To construct an `L⁰` function `α →ₘ β` from an almost everywhere strongly
+  measurable function `f : α → β`, use `ae_eq_fun.mk`
+* `comp`: Use `comp g f` to get `[g ∘ f]` from `g : β → γ` and `[f] : α →ₘ γ` when `g` is
+  continuous. Use `compMeasurable` if `g` is only measurable (this requires the
+  target space to be second countable).
+* `comp₂`: Use `comp₂ g f₁ f₂` to get `[fun a ↦ g (f₁ a) (f₂ a)]`.
+  For example, `[f + g]` is `comp₂ (+)`
 
 ## Tags
 

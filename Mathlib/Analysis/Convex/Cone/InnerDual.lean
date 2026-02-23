@@ -17,6 +17,7 @@ consisting of all points `y` such that `0 ≤ ⟪x, y⟫` for all `x ∈ s`.
 ## Main statements
 
 We prove the following theorems:
+
 * `ProperCone.innerDual_innerDual`: The double inner dual of a proper convex cone is itself.
 * `ProperCone.hyperplane_separation'`:
   This variant of the

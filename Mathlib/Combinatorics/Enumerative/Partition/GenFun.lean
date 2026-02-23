@@ -22,6 +22,7 @@ We give the definition `Nat.Partition.genFun` using the first equation, and prov
 equation in `Nat.Partition.hasProd_genFun` (with shifted indices).
 
 This generating function can be specialized to
+
 * When $f(i, c) = 1$, this is the generating function for partition function $p(n)$
   (TODO: prove this).
 * When $f(i, 1) = 1$ and $f(i, c) = 0$ for $c > 1$, this is the generating function for

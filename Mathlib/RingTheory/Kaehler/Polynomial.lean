@@ -111,7 +111,7 @@ lemma KaehlerDifferential.polynomial_D_apply (P : R[X]) :
   rw [← aeval_X_left_apply P, (D R R[X]).map_aeval, aeval_X_left_apply, aeval_X_left_apply]
 
 /-- The relative differential module of the univariate polynomial algebra `R[X]` is isomorphic to
-  `R[X]` as an `R[X]`-module. -/
+`R[X]` as an `R[X]`-module. -/
 def KaehlerDifferential.polynomialEquiv : Ω[R[X]⁄R] ≃ₗ[R[X]] R[X] where
   __ := derivative'.liftKaehlerDifferential
   invFun := (Algebra.lsmul R R _).toLinearMap.flip (D R R[X] X)

@@ -24,7 +24,6 @@ the action of `S = [[0, -1], [1, 0]]`.
 * **`G2_T_transform`**: `G2` is invariant under `T = [[1, 1], [0, 1]]`:
   `G₂|[2] T = G₂`
 
-
 * **`G2_S_transform`**: The transformation under `S` involves a correction term:
   `G₂(z) = z⁻² G₂(-1/z) - 2πi/z`
 
@@ -43,7 +42,7 @@ the action of `S = [[0, -1], [1, 0]]`.
 The proof of `G2_S_transform` is the heart of this file. The strategy is:
 
 1. **Write as absolutely convergent series**: Express `G2` as an absolutely convergent double sum
-  by adding and subtracting telescoping terms:
+   by adding and subtracting telescoping terms:
    `G₂(z) = 2ζ(2) + ∑' m n, 1/((mz+n)²(mz+n+1)) + δ(m,n)`
    where `δ` is a correction for boundary terms.
 
@@ -60,6 +59,7 @@ The proof of `G2_S_transform` is the heart of this file. The strategy is:
    any element using the cocycle property of `D₂`.
 
 ## References
+
 * P. Bruin and S. Dahmen, Modular Forms, https://www.few.vu.nl/~sdn249/modularforms16/notes.pdf
 
 -/

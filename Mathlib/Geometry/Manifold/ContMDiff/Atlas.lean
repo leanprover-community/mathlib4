@@ -194,7 +194,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : OpenPartialHomeomorp
   refine (H₁.congr H₂).mono ?_
   mfld_set_tac
 
-/-- Let `M` and `M'` be manifolds with the same model-with-corners, `I`.  Then `f : M → M'`
+/-- Let `M` and `M'` be manifolds with the same model-with-corners, `I`. Then `f : M → M'`
 is a local structomorphism for `I`, if and only if it is manifold-`C^n` on the domain of definition
 in both directions. -/
 theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M M') :

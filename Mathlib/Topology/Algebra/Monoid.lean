@@ -264,8 +264,8 @@ belongs to the closure of the range of the coercion from `M₁ →ₙ* M₂` (or
 homomorphisms that has a `MulHomClass` instance) to `M₁ → M₂`. -/
 @[to_additive (attr := simps -fullyApplied)
   /-- Construct a bundled additive semigroup homomorphism `M₁ →ₙ+ M₂` from a function `f`
-and a proof that it belongs to the closure of the range of the coercion from `M₁ →ₙ+ M₂` (or another
-type of bundled homomorphisms that has an `AddHomClass` instance) to `M₁ → M₂`. -/]
+  and a proof that it belongs to the closure of the range of the coercion from `M₁ →ₙ+ M₂` (or another
+  type of bundled homomorphisms that has an `AddHomClass` instance) to `M₁ → M₂`. -/]
 def mulHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →ₙ* M₂ where
   toFun := f
@@ -274,7 +274,7 @@ def mulHomOfMemClosureRangeCoe (f : M₁ → M₂)
 /-- Construct a bundled semigroup homomorphism from a pointwise limit of semigroup homomorphisms. -/
 @[to_additive (attr := simps! -fullyApplied)
   /-- Construct a bundled additive semigroup homomorphism from a pointwise limit of additive
-semigroup homomorphisms -/]
+  semigroup homomorphisms -/]
 def mulHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]
     (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →ₙ* M₂ :=
   mulHomOfMemClosureRangeCoe f <|
@@ -298,8 +298,8 @@ belongs to the closure of the range of the coercion from `M₁ →* M₂` (or an
 homomorphisms that has a `MonoidHomClass` instance) to `M₁ → M₂`. -/
 @[to_additive (attr := simps -fullyApplied)
   /-- Construct a bundled additive monoid homomorphism `M₁ →+ M₂` from a function `f`
-and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another
-type of bundled homomorphisms that has an `AddMonoidHomClass` instance) to `M₁ → M₂`. -/]
+  and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another
+  type of bundled homomorphisms that has an `AddMonoidHomClass` instance) to `M₁ → M₂`. -/]
 def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂ where
   toFun := f
@@ -309,7 +309,7 @@ def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
 /-- Construct a bundled monoid homomorphism from a pointwise limit of monoid homomorphisms. -/
 @[to_additive (attr := simps! -fullyApplied)
   /-- Construct a bundled additive monoid homomorphism from a pointwise limit of additive
-monoid homomorphisms -/]
+  monoid homomorphisms -/]
 def monoidHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]
     (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →* M₂ :=
   monoidHomOfMemClosureRangeCoe f <|
@@ -510,7 +510,7 @@ theorem exists_nhds_one_split {s : Set M} (hs : s ∈ 𝓝 (1 : M)) :
 /-- Given a neighborhood `U` of `1` there is an open neighborhood `V` of `1`
 such that `V * V ⊆ U`. -/
 @[to_additive /-- Given an open neighborhood `U` of `0` there is an open neighborhood `V` of `0`
-  such that `V + V ⊆ U`. -/]
+such that `V + V ⊆ U`. -/]
 theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
     ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ V * V ⊆ U := by
   simpa only [mul_subset_iff] using exists_open_nhds_one_split hU

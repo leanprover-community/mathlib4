@@ -34,6 +34,7 @@ structures.
 ## References
 
 For the Flypitch project:
+
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
   [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
@@ -53,7 +54,7 @@ namespace FirstOrder
 
 -- intended to be used with explicit universe parameters
 /-- A first-order language consists of a type of functions of every natural-number arity and a
-  type of relations of every natural-number arity. -/
+type of relations of every natural-number arity. -/
 @[nolint checkUnivs]
 structure Language where
   /-- For every arity, a `Type u` of functions of that arity -/
@@ -137,13 +138,13 @@ theorem card_sum :
     lift_lift, card_relations_sum, add_assoc,
     add_comm (Cardinal.sum fun i => (#(L'.Functions i)).lift)]
 
-/-- Passes a `DecidableEq` instance on a type of function symbols through the  `Language`
+/-- Passes a `DecidableEq` instance on a type of function symbols through the `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
 see the `example`s in `ModelTheory/Ring/Basic`. -/
 instance instDecidableEqFunctions {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (f n)] :
     DecidableEq ((⟨f, R⟩ : Language).Functions n) := inferInstance
 
-/-- Passes a `DecidableEq` instance on a type of relation symbols through the  `Language`
+/-- Passes a `DecidableEq` instance on a type of relation symbols through the `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
 see the `example`s in `ModelTheory/Ring/Basic`. -/
 instance instDecidableEqRelations {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (R n)] :
@@ -152,9 +153,9 @@ instance instDecidableEqRelations {f : ℕ → Type*} {R : ℕ → Type*} (n : �
 variable (L) (M : Type w)
 
 /-- A first-order structure on a type `M` consists of interpretations of all the symbols in a given
-  language. Each function of arity `n` is interpreted as a function sending tuples of length `n`
-  (modeled as `(Fin n → M)`) to `M`, and a relation of arity `n` is a function from tuples of length
-  `n` to `Prop`. -/
+language. Each function of arity `n` is interpreted as a function sending tuples of length `n`
+(modeled as `(Fin n → M)`) to `M`, and a relation of arity `n` is a function from tuples of length
+`n` to `Prop`. -/
 @[ext]
 class Structure where
   /-- Interpretation of the function symbols -/
@@ -177,8 +178,8 @@ def Inhabited.trivialStructure {α : Type*} [Inhabited α] : L.Structure α :=
 
 
 /-- A homomorphism between first-order structures is a function that commutes with the
-  interpretations of functions and maps tuples in one structure where a given relation is true to
-  tuples in the second structure where that relation is still true. -/
+interpretations of functions and maps tuples in one structure where a given relation is true to
+tuples in the second structure where that relation is still true. -/
 structure Hom where
   /-- The underlying function of a homomorphism of structures -/
   toFun : M → N
@@ -199,7 +200,7 @@ structure Hom where
 scoped[FirstOrder] notation:25 A " →[" L "] " B => FirstOrder.Language.Hom L A B
 
 /-- An embedding of first-order structures is an embedding that commutes with the
-  interpretations of functions and relations. -/
+interpretations of functions and relations. -/
 structure Embedding extends M ↪ N where
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
     -- Porting note: see porting note on `Hom.map_fun'`
@@ -212,7 +213,7 @@ structure Embedding extends M ↪ N where
 scoped[FirstOrder] notation:25 A " ↪[" L "] " B => FirstOrder.Language.Embedding L A B
 
 /-- An equivalence of first-order structures is an equivalence that commutes with the
-  interpretations of functions and relations. -/
+interpretations of functions and relations. -/
 structure Equiv extends M ≃ N where
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
     -- Porting note: see porting note on `Hom.map_fun'`
@@ -237,19 +238,19 @@ theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x
   congr rfl (funext finZeroElim)
 
 /-- Given a language with a nonempty type of constants, any structure will be nonempty. This cannot
-  be a global instance, because `L` becomes a metavariable. -/
+be a global instance, because `L` becomes a metavariable. -/
 theorem nonempty_of_nonempty_constants [h : Nonempty L.Constants] : Nonempty M :=
   h.map (↑)
 
 /-- `HomClass L F M N` states that `F` is a type of `L`-homomorphisms. You should extend this
-  typeclass when you extend `FirstOrder.Language.Hom`. -/
+typeclass when you extend `FirstOrder.Language.Hom`. -/
 class HomClass (L : outParam Language) (F : Type*) (M N : outParam Type*)
   [FunLike F M N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r x → RelMap r (φ ∘ x)
 
 /-- `StrongHomClass L F M N` states that `F` is a type of `L`-homomorphisms which preserve
-  relations in both directions. -/
+relations in both directions. -/
 class StrongHomClass (L : outParam Language) (F : Type*) (M N : outParam Type*)
   [FunLike F M N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)

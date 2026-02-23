@@ -65,6 +65,7 @@ variable (C : Type u) [Category.{v} C]
 /-- A monomorphism `truth : Ω₀ ⟶ Ω` is a subobject classifier if, for every monomorphism
 `m : U ⟶ X` in `C`, there is a unique map `χ : X ⟶ Ω` such that for some (necessarily unique)
 `χ₀ : U ⟶ Ω₀` the following square is a pullback square:
+
 ```
       U ---------m----------> X
       |                       |
@@ -73,6 +74,7 @@ variable (C : Type u) [Category.{v} C]
       v                       v
       Ω₀ ------truth--------> Ω
 ```
+
 An equivalent formulation replaces `Ω₀` with the terminal object.
 -/
 structure Classifier where
@@ -164,6 +166,7 @@ def χ : X ⟶ Ω C :=
   HasClassifier.exists_classifier.some.χ m
 
 /-- The diagram
+
 ```
       U ---------m----------> X
       |                       |
@@ -172,12 +175,14 @@ def χ : X ⟶ Ω C :=
       v                       v
       Ω₀ ------truth--------> Ω
 ```
+
 is a pullback square.
 -/
 lemma isPullback_χ : IsPullback m (Classifier.χ₀ _ U) (χ m) (truth C) :=
   Classifier.isPullback _ m
 
 /-- The diagram
+
 ```
       U ---------m----------> X
       |                       |
@@ -186,6 +191,7 @@ lemma isPullback_χ : IsPullback m (Classifier.χ₀ _ U) (χ m) (truth C) :=
       v                       v
       Ω₀ ------truth--------> Ω
 ```
+
 commutes.
 -/
 @[reassoc]
@@ -207,6 +213,7 @@ noncomputable def truthIsRegularMono : RegularMono (truth C) :=
 instance : IsRegularMono (truth C) := ⟨⟨truthIsRegularMono⟩⟩
 
 /-- The following diagram
+
 ```
       U ---------m----------> X
       |                       |
@@ -215,6 +222,7 @@ instance : IsRegularMono (truth C) := ⟨⟨truthIsRegularMono⟩⟩
       v                       v
       Ω₀ ------truth--------> Ω
 ```
+
 being a pullback for any monic `m` means that every monomorphism
 in `C` is the pullback of a regular monomorphism; since regularity
 is stable under base change, every monomorphism is regular.
@@ -227,14 +235,14 @@ instance isRegularMonoCategory : IsRegularMonoCategory C where
       (isPullback_χ m).w (isPullback_χ m).isLimit⟩⟩
 
 /-- If the source of a faithful functor has a subobject classifier, the functor reflects
-  isomorphisms. This holds for any balanced category.
+isomorphisms. This holds for any balanced category.
 -/
 instance reflectsIsomorphisms (D : Type u₀) [Category.{v₀} D] (F : C ⥤ D) [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
 
 /-- If the source of a faithful functor is the opposite category of one with a subobject classifier,
-  the same holds -- the functor reflects isomorphisms.
+the same holds -- the functor reflects isomorphisms.
 -/
 instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D] (F : Cᵒᵖ ⥤ D)
     [Functor.Faithful F] :
@@ -337,7 +345,7 @@ variable {U X : C} (m : U ⟶ X) [Mono m]
 def χ : X ⟶ Ω := h.homEquiv.symm (Subobject.mk m)
 
 /-- `h.iso m` is the isomorphism between `m` and the pullback of `Ω₀`
-    along the characteristic map of `m`. -/
+along the characteristic map of `m`. -/
 noncomputable def iso : MonoOver.mk m ≅
     Subobject.representative.obj ((Subobject.pullback (h.χ m)).obj h.Ω₀) :=
   (Subobject.representativeIso (.mk m)).symm ≪≫ Subobject.representative.mapIso
@@ -345,14 +353,16 @@ noncomputable def iso : MonoOver.mk m ≅
 
 /-- `h.π m` is the first projection in the following pullback square:
 
-    ```
-    U --h.π m--> (Ω₀ : C)
-    |                |
-    m             Ω₀.arrow
-    |                |
-    v                v
-    X -----h.χ m---> Ω
-    ```
+````
+```
+U --h.π m--> (Ω₀ : C)
+|                |
+m             Ω₀.arrow
+|                |
+v                v
+X -----h.χ m---> Ω
+```
+````
 -/
 noncomputable def π : U ⟶ Subobject.underlying.obj h.Ω₀ :=
   (h.iso m).hom.hom.left ≫ Subobject.pullbackπ (h.χ m) h.Ω₀

@@ -277,7 +277,7 @@ theorem exists_model_card_eq (h : ∃ M : ModelType.{u, v, max u v} T, Infinite 
 variable (T)
 
 /-- A theory models a (bounded) formula when any of its nonempty models realizes that formula on all
-  inputs. -/
+inputs. -/
 def ModelsBoundedFormula (φ : L.BoundedFormula α n) : Prop :=
   ∀ (M : ModelType.{u, v, max u v w} T) (v : α → M) (xs : Fin n → M), φ.Realize v xs
 
@@ -456,7 +456,7 @@ theorem models_elementarily_equivalent
 end IsComplete
 
 /-- A theory is maximal when it is satisfiable and contains each sentence or its negation.
-  Maximal theories are complete. -/
+Maximal theories are complete. -/
 def IsMaximal (T : L.Theory) : Prop :=
   T.IsSatisfiable ∧ ∀ φ : L.Sentence, φ ∈ T ∨ φ.not ∈ T
 

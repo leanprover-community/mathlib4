@@ -17,6 +17,7 @@ objects in a category `Square C`.
 
 The four objects in a commutative square are
 numbered as follows:
+
 ```
 X₁ --> X₂
 |      |

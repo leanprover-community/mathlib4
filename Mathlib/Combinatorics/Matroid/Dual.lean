@@ -44,7 +44,7 @@ section dual
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `M : Matroid α`, the `IndepMatroid α` whose independent sets are
-  the subsets of `M.E` that are disjoint from some base of `M` -/
+the subsets of `M.E` that are disjoint from some base of `M` -/
 @[simps] def dualIndepMatroid (M : Matroid α) : IndepMatroid α where
   E := M.E
   Indep I := I ⊆ M.E ∧ ∃ B, M.IsBase B ∧ Disjoint I B
@@ -110,7 +110,7 @@ set_option backward.isDefEq.respectTransparency false in
 def dual (M : Matroid α) : Matroid α := M.dualIndepMatroid.matroid
 
 /-- The `✶` symbol, which denotes matroid duality.
-  (This is distinct from the usual `*` symbol for multiplication, due to precedence issues.) -/
+(This is distinct from the usual `*` symbol for multiplication, due to precedence issues.) -/
 postfix:max "✶" => Matroid.dual
 
 theorem dual_indep_iff_exists' : (M✶.Indep I) ↔ I ⊆ M.E ∧ (∃ B, M.IsBase B ∧ Disjoint I B) :=
@@ -217,7 +217,7 @@ theorem Indep.ssubset_ground [h : RankPos M✶] (hI : M.Indep I) : I ⊂ M.E := 
   obtain ⟨B, hB⟩ := hI.exists_isBase_superset; exact hB.2.trans_ssubset hB.1.ssubset_ground
 
 /-- A coindependent set of `M` is an independent set of the dual of `M✶`. we give it a separate
-  definition to enable dot notation. Which spelling is better depends on context. -/
+definition to enable dot notation. Which spelling is better depends on context. -/
 abbrev Coindep (M : Matroid α) (I : Set α) : Prop := M✶.Indep I
 
 theorem coindep_def : M.Coindep X ↔ M✶.Indep X := Iff.rfl

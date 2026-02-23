@@ -669,7 +669,7 @@ theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) 
 
 /-- The inner product of a nonzero vector with a nonzero multiple of
 itself, divided by the product of their norms, has absolute value
-1. -/
+1\. -/
 theorem norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : E} {r : 𝕜} (hx : x ≠ 0)
     (hr : r ≠ 0) : ‖⟪x, r • x⟫‖ / (‖x‖ * ‖r • x‖) = 1 := by
   have hx' : ‖x‖ ≠ 0 := by simp [hx]
@@ -680,7 +680,7 @@ theorem norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : E} {r
 
 /-- The inner product of a nonzero vector with a nonzero multiple of
 itself, divided by the product of their norms, has absolute value
-1. -/
+1\. -/
 theorem abs_real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : F} {r : ℝ}
     (hx : x ≠ 0) (hr : r ≠ 0) : |⟪x, r • x⟫_ℝ| / (‖x‖ * ‖r • x‖) = 1 :=
   norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul hx hr
@@ -920,6 +920,7 @@ def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 /-- A general inner product space structure implies a real inner product structure.
 
 This is not registered as an instance since
+
 * `𝕜` does not appear in the return type `InnerProductSpace ℝ E`,
 * It is likely to create instance diamonds, as it builds upon the diamond-prone
   `NormedSpace.restrictScalars`.

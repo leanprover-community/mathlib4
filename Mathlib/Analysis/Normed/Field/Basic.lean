@@ -16,10 +16,12 @@ In this file we define normed fields, and (more generally) normed division rings
 some theorems about these definitions.
 
 Some useful results that relate the topology of the normed field to the discrete topology include:
+
 * `norm_eq_one_iff_ne_zero_of_discrete`
 
 Methods for constructing a normed field instance from a given real absolute value on a field are
 given in:
+
 * AbsoluteValue.toNormedField
 -/
 

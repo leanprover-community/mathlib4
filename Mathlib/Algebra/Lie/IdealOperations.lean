@@ -17,10 +17,10 @@ define solvability / nilpotency of a Lie algebra via the derived / lower-central
 
 ## Main definitions
 
-  * `LieSubmodule.hasBracket`
-  * `LieSubmodule.lieIdeal_oper_eq_linear_span`
-  * `LieIdeal.map_bracket_le`
-  * `LieIdeal.comap_bracket_le`
+* `LieSubmodule.hasBracket`
+* `LieSubmodule.lieIdeal_oper_eq_linear_span`
+* `LieIdeal.map_bracket_le`
+* `LieIdeal.comap_bracket_le`
 
 ## Notation
 

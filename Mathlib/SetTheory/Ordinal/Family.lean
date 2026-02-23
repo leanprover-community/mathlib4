@@ -150,7 +150,7 @@ theorem comp_familyOfBFamily {o} (f : ∀ a < o, α) (g : α → β) :
 /-! ### Supremum of a family of ordinals -/
 
 /-- The range of an indexed ordinal function, whose outputs live in a higher universe than the
-    inputs, is always bounded above. See `Ordinal.lsub` for an explicit bound. -/
+inputs, is always bounded above. See `Ordinal.lsub` for an explicit bound. -/
 theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) :=
   ⟨(iSup (succ ∘ card ∘ f)).ord, by
     rintro a ⟨i, rfl⟩
@@ -602,9 +602,11 @@ end lsub
 section blsub
 
 /-- The least strict upper bound of a family of ordinals indexed by the set of ordinals less than
-    some `o : Ordinal.{u}`.
+some `o : Ordinal.{u}`.
 
-    This is to `lsub` as `bsup` is to `sup`. -/
+```
+This is to `lsub` as `bsup` is to `sup`.
+``` -/
 def blsub (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
   bsup.{_, v} o fun a ha => succ (f a ha)
 

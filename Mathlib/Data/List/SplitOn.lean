@@ -85,7 +85,7 @@ theorem splitOnP_append_cons (xs as : List α) (sep : α) (hsep : p sep) :
     by_cases hPh : p hd <;> simp [*]
 
 /-- When a list of the form `[...xs, sep, ...as]` is split on `p`, the first element is `xs`,
-  assuming no element in `xs` satisfies `p` but `sep` does satisfy `p` -/
+assuming no element in `xs` satisfies `p` but `sep` does satisfy `p` -/
 theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep = true) (as : List α) :
     (xs ++ sep :: as).splitOnP p = xs :: as.splitOnP p := by
   rw [splitOnP_append_cons p xs as sep hsep, splitOnP_eq_single p xs h, singleton_append]

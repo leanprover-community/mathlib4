@@ -159,7 +159,7 @@ where
 
 open Lean.Parser.Tactic.Conv in
 /--
-Given a `path : Path` and `xs : TSepArray ``enterArg ","`, generate the `conv` syntax
+Given a `path : Path` and ``` xs : TSepArray ``enterArg "," ```, generate the `conv` syntax
 corresponding to `enter [xs,*]` followed by traversing `path`. If `loc` is `some fvar`,
 start with `conv at fvar =>`, otherwise if `loc` is `none` start with `conv =>`.
 We end every `conv` sequence with `skip`, and highlight `skip` upon insertion.

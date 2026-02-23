@@ -36,9 +36,9 @@ lemma Forall₂.prod_le_prod' [Preorder M] [MulRightMono M]
 `l₁.prod ≤ l₂.prod`. One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 1 ≤ a` instead
 of `∀ a ∈ l₂, 1 ≤ a` but this lemma is not yet in `mathlib`. -/
 @[to_additive sum_le_sum /-- If `l₁` is a sublist of `l₂` and all elements of `l₂` are nonnegative,
-  then `l₁.sum ≤ l₂.sum`.
-  One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 0 ≤ a` instead of `∀ a ∈ l₂, 0 ≤ a`
-  but this lemma is not yet in `mathlib`. -/]
+then `l₁.sum ≤ l₂.sum`.
+One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 0 ≤ a` instead of `∀ a ∈ l₂, 0 ≤ a`
+but this lemma is not yet in `mathlib`. -/]
 lemma Sublist.prod_le_prod' [Preorder M] [MulRightMono M]
     [MulLeftMono M] {l₁ l₂ : List M} (h : l₁ <+ l₂)
     (h₁ : ∀ a ∈ l₂, (1 : M) ≤ a) : l₁.prod ≤ l₂.prod := by

@@ -20,7 +20,6 @@ We construct a set-theoretic equivalence between
 TODO: Add the extension of this equivalence to a homeomorphism in the case `K = ℝ`,
 where `OnePoint ℝ` gets the topology of one-point compactification.
 
-
 ## Main definitions and results
 
 * `OnePoint.equivProjectivization` : the equivalence `OnePoint K ≃ ℙ K (K × K)`.

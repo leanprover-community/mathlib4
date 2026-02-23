@@ -16,10 +16,10 @@ as the greatest fixpoint of a polynomial functor.
 
 ## Main definitions
 
-* `M.mk`     - constructor
-* `M.dest`   - destructor
-* `M.corec`  - corecursor: useful for formulating infinite, productive computations
-* `M.bisim`  - bisimulation: proof technique to show the equality of infinite objects
+* `M.mk` - constructor
+* `M.dest` - destructor
+* `M.corec` - corecursor: useful for formulating infinite, productive computations
+* `M.bisim` - bisimulation: proof technique to show the equality of infinite objects
 
 ## Implementation notes
 

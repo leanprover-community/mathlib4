@@ -17,6 +17,7 @@ The subtype of `{l : List α // l.Nodup}` over a `[Fintype α]`
 admits a `Fintype` instance.
 
 ## Implementation details
+
 To construct the `Fintype` instance, a function lifting a `Multiset α`
 to the `Multiset (List α)` is provided.
 This function is applied to the `Finset.powerset` of `Finset.univ`.

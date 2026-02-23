@@ -63,7 +63,7 @@ open Set Topology Filter unitInterval
 variable {X : Type u} [TopologicalSpace X]
 
 /-- A space is completely regular if points can be separated from closed sets via
-  continuous functions to the unit interval. -/
+continuous functions to the unit interval. -/
 @[mk_iff]
 class CompletelyRegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   completely_regular : ∀ (x : X), ∀ K : Set X, IsClosed K → x ∉ K →

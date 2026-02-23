@@ -253,8 +253,8 @@ theorem sym_filterNe_mem {m : Sym α n} (a : α) (h : m ∈ s.sym n) :
     mem_erase.2 <| (Multiset.mem_filter.1 H).symm.imp Ne.symm <| mem_sym_iff.1 h b
 
 /-- If `a` does not belong to the finset `s`, then the `n`th symmetric power of `{a} ∪ s` is
-  in 1-1 correspondence with the disjoint union of the `n - i`th symmetric powers of `s`,
-  for `0 ≤ i ≤ n`. -/
+in 1-1 correspondence with the disjoint union of the `n - i`th symmetric powers of `s`,
+for `0 ≤ i ≤ n`. -/
 @[simps]
 def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σ i : Fin (n + 1), s.sym (n - i) where
   toFun m := ⟨_, (m.1.filterNe a).2, by convert sym_filterNe_mem a m.2; rw [erase_insert h]⟩

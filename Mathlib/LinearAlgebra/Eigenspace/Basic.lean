@@ -689,7 +689,7 @@ theorem independent_maxGenEigenspace [IsDomain R] [IsTorsionFree R M] (f : End R
     iSupIndep f.maxGenEigenspace := by
   apply independent_genEigenspace
 
-/-- The eigenspaces of a linear operator form an independent family of subspaces of `M`.  That is,
+/-- The eigenspaces of a linear operator form an independent family of subspaces of `M`. That is,
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_iSupIndep [IsDomain R] [IsTorsionFree R M] (f : End R M) :
     iSupIndep f.eigenspace :=

@@ -44,8 +44,8 @@ open List
 variable {α : Type u} {β : α → Type v}
 
 /-- `AList β` is a key-value map stored as a `List` (i.e. a linked list).
-  It is a wrapper around certain `List` functions with the added constraint
-  that the list have unique keys. -/
+It is a wrapper around certain `List` functions with the added constraint
+that the list have unique keys. -/
 structure AList (β : α → Type v) : Type max u v where
   /-- The underlying `List` of an `AList` -/
   entries : List (Sigma β)
@@ -184,7 +184,7 @@ section
 variable [DecidableEq α]
 
 /-- Replace a key with a given value in an association list.
-  If the key is not present it does nothing. -/
+If the key is not present it does nothing. -/
 def replace (a : α) (b : β a) (s : AList β) : AList β :=
   ⟨kreplace a b s.entries, (kreplace_nodupKeys a b).2 s.nodupKeys⟩
 
@@ -244,7 +244,7 @@ theorem erase_erase (a a' : α) (s : AList β) : (s.erase a).erase a' = (s.erase
 
 
 /-- Insert a key-value pair into an association list and erase any existing pair
-  with the same key. -/
+with the same key. -/
 def insert (a : α) (b : β a) (s : AList β) : AList β :=
   ⟨kinsert a b s.entries, kinsert_nodupKeys a b s.nodupKeys⟩
 

@@ -15,6 +15,7 @@ public import Mathlib.Order.Lattice
 # Characteristic of semirings
 
 ## Main definitions
+
 * `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
 * `ringChar`: the characteristic of a ring
 * `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
@@ -35,6 +36,7 @@ variable [AddMonoidWithOne R] (p : ℕ)
 /-- The generator of the kernel of the unique homomorphism ℕ → R for a semiring R.
 
 *Warning*: for a semiring `R`, `CharP R 0` and `CharZero R` need not coincide.
+
 * `CharP R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`;
 * `CharZero R` requires an injection `ℕ ↪ R`.
 

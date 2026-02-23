@@ -9,17 +9,20 @@ public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Root pairings made from bilinear forms
+
 A common construction of root systems is given by taking the set of all vectors in an integral
-lattice for which reflection yields an automorphism of the lattice.  In this file, we generalize
+lattice for which reflection yields an automorphism of the lattice. In this file, we generalize
 this construction, replacing the ring of integers with an arbitrary commutative ring and the
 integral lattice with an arbitrary reflexive module equipped with a bilinear form.
 
 ## Main definitions:
+
 * `LinearMap.IsReflective`: Length is a regular value of `R`, and reflection is definable.
 * `LinearMap.IsReflective.coroot`: The coroot corresponding to a reflective vector.
 * `RootPairing.of_Bilinear`: The root pairing whose roots are reflective vectors.
 
 ## TODO
+
 * properties
 -/
 

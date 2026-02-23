@@ -15,9 +15,11 @@ This file contains a definition of integration on `[[a, b]]` via the trapezoidal
 an error bound in terms of a bound on the second derivative of the integrand.
 
 ## Main results
+
 - `trapezoidal_error_le`: the convergence theorem for the trapezoidal rule.
 
 ## References
+
 We follow the proof on (Wikipedia)[https://en.wikipedia.org/wiki/Trapezoidal_rule] for the error
 bound.
 -/
@@ -27,7 +29,7 @@ bound.
 open MeasureTheory intervalIntegral Interval Finset HasDerivWithinAt Set
 
 /-- Integration of `f` from `a` to `b` using the trapezoidal rule with `N+1` total evaluations of
-`f`.  (Note the off-by-one problem here: `N` counts the number of trapezoids, not the number of
+`f`. (Note the off-by-one problem here: `N` counts the number of trapezoids, not the number of
 evaluations.) -/
 noncomputable def trapezoidal_integral (f : ℝ → ℝ) (N : ℕ) (a b : ℝ) : ℝ :=
   ((b - a) / N) * ((f a + f b) / 2 + ∑ k ∈ range (N - 1), f (a + (k + 1) * (b - a) / N))
@@ -95,7 +97,7 @@ theorem trapezoidal_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonz
       sum_range_succ, Nat.cast_add_one]
 
 /-- Since we have `sum_[]_adjacent_intervals` theorems for both exact and trapezoidal integration,
-it's natural to combine them into a similar formula for the error.  This theorem is in particular
+it's natural to combine them into a similar formula for the error. This theorem is in particular
 used in the proof of the general error bound. -/
 theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : 0 < N)
     (h_f_int : IntervalIntegrable f volume a (a + N * h)) :

@@ -16,6 +16,7 @@ In this file we define sequential closure, continuity, compactness etc.
 ## Main definitions
 
 ### Set operation
+
 * `seqClosure s`: sequential closure of a set, the set of limits of sequences of points of `s`;
 
 ### Predicates

@@ -23,6 +23,7 @@ We also define the Lie bracket of two vector fields as
 (together with the same notion within a set).
 
 In addition to comprehensive API on these two notions, the main results are the following:
+
 * `VectorField.pullback_lieBracket` states that the pullback of the Lie bracket
   is the Lie bracket of the pullbacks, when the second derivative is symmetric.
 * `VectorField.leibniz_identity_lieBracket` is the Leibniz

@@ -108,6 +108,7 @@ namespace Limits
 section
 
 /-- A `c : Cone F` is:
+
 * an object `c.pt` and
 * a natural transformation `c.π : c.pt ⟶ F` from the constant `c.pt` functor to `F`.
 
@@ -141,6 +142,7 @@ theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
   apply id_comp
 
 /-- A `c : Cocone F` is
+
 * an object `c.pt` and
 * a natural transformation `c.ι : F ⟶ c.pt` from `F` to the constant `c.pt` functor.
 
@@ -302,8 +304,8 @@ lemma ConeMorphism.map_w {c c' : Cone F} (f : c ⟶ c') (G : C ⥤ D) (j : J) :
 namespace Cones
 
 /-- To give an isomorphism between cones, it suffices to give an
-  isomorphism between their vertices which commutes with the cone
-  maps. -/
+isomorphism between their vertices which commutes with the cone
+maps. -/
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j := by cat_disch) : c ≅ c' where
@@ -530,8 +532,8 @@ lemma CoconeMorphism.map_w {c c' : Cocone F} (f : c ⟶ c') (G : C ⥤ D) (j : J
 namespace Cocones
 
 /-- To give an isomorphism between cocones, it suffices to give an
-  isomorphism between their vertices which commutes with the cocone
-  maps. -/
+isomorphism between their vertices which commutes with the cocone
+maps. -/
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Cocone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.ι.app j ≫ φ.hom = c'.ι.app j := by cat_disch) : c ≅ c' where

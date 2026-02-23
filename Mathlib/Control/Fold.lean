@@ -74,7 +74,9 @@ calc  foldl f x [y₀,y₁]
 ... = foldl f (f (f x y₀) y₁) [] : rfl
 ... = f (f x y₀) y₁              : rfl
 ```
+
 with
+
 ```
 f : α → β → α
 x : α
@@ -82,6 +84,7 @@ x : α
 ```
 
 We can view the above as a composition of functions:
+
 ```
 ... = f (f x y₀) y₁              : rfl
 ... = flip f y₁ (flip f y₀ x)    : rfl
@@ -89,6 +92,7 @@ We can view the above as a composition of functions:
 ```
 
 We can use traverse and const to construct this composition:
+
 ```
 calc   const.run (traverse (fun y ↦ const.mk' (flip f y)) [y₀,y₁]) x
      = const.run ((::) <$> const.mk' (flip f y₀) <*>
@@ -192,7 +196,7 @@ def foldr (f : α → β → β) (x : β) (xs : t α) : β :=
 /-- Conceptually, `toList` collects all the elements of a collection
 in a list. This idea is formalized by
 
-  `lemma toList_spec (x : t α) : toList x = foldMap FreeMonoid.mk x`.
+`lemma toList_spec (x : t α) : toList x = foldMap FreeMonoid.mk x`.
 
 The definition of `toList` is based on `foldl` and `List.cons` for
 speed. It is faster than using `foldMap FreeMonoid.mk` because, by

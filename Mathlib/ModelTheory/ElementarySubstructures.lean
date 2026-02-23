@@ -36,14 +36,14 @@ open Structure
 variable {L : Language} {M : Type*} [L.Structure M]
 
 /-- A substructure is elementary when every formula applied to a tuple in the substructure
-  agrees with its value in the overall structure. -/
+agrees with its value in the overall structure. -/
 def Substructure.IsElementary (S : L.Substructure M) : Prop :=
   ∀ ⦃n⦄ (φ : L.Formula (Fin n)) (x : Fin n → S), φ.Realize (((↑) : _ → M) ∘ x) ↔ φ.Realize x
 
 variable (L M)
 
 /-- An elementary substructure is one in which every formula applied to a tuple in the substructure
-  agrees with its value in the overall structure. -/
+agrees with its value in the overall structure. -/
 structure ElementarySubstructure where
   /-- The underlying substructure -/
   toSubstructure : L.Substructure M

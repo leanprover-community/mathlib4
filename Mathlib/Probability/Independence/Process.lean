@@ -68,7 +68,7 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
   filter_upwards [(h I).measure_inter_preimage_eq_mul _ _ h1 ht] with ω hω
   rw [this, hω]
 
-/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
+/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$ if
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
 $(X_{s_1}, ..., X_{s_p})$. -/
 lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
@@ -150,7 +150,7 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
     this.congr .rfl hY.ae_eq_mk.symm
   exact Kernel.IndepFun.process_indepFun hX hY.measurable_mk (fun I ↦ (h I).congr .rfl hY.ae_eq_mk)
 
-/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
+/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$ if
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
 $(X_{s_1}, ..., X_{s_p})$. -/
 lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}

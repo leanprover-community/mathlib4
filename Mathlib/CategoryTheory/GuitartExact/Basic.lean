@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Functor.TwoSquare
 
 Given four functors `T`, `L`, `R` and `B`, a 2-square `TwoSquare T L R B` consists of
 a natural transformation `w : T ⋙ R ⟶ L ⋙ B`:
+
 ```
      T
   C₁ ⥤ C₂
@@ -42,6 +43,7 @@ derived functors.
   and construct (pointwise) derived functors using this notion
 
 ## References
+
 * https://ncatlab.org/nlab/show/exact+square
 * [René Guitart, *Relations et carrés exacts*][Guitart1980]
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
@@ -216,7 +218,7 @@ It is equivalent to saying that for any `X₃ : C₃`, the induced functor
 `CostructuredArrow L X₃ ⥤ CostructuredArrow R (B.obj X₃)` is final (see `guitartExact_iff_final`)
 or equivalently that for any `X₂ : C₂`, the induced functor
 `StructuredArrow X₂ T ⥤ StructuredArrow (R.obj X₂) B` is initial (see `guitartExact_iff_initial`).
-See also  `guitartExact_iff_isConnected_rightwards`, `guitartExact_iff_isConnected_downwards`
+See also `guitartExact_iff_isConnected_rightwards`, `guitartExact_iff_isConnected_downwards`
 for characterizations in terms of the connectedness of auxiliary categories. -/
 class GuitartExact : Prop where
   isConnected_rightwards {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃) :

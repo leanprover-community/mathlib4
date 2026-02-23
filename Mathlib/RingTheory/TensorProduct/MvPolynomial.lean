@@ -21,6 +21,7 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
   `MvPolynomial σ S ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ (S ⊗[R] N)` characterized,
   for `p : MvPolynomial σ S`, `n : N` and `d : σ →₀ ℕ`, by
   `rTensor (p ⊗ₜ[R] n) d = (coeff d p) ⊗ₜ[R] n`
+
 * `MvPolynomial.scalarRTensor` gives the linear equivalence
   `MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N`
   such that `MvPolynomial.scalarRTensor (p ⊗ₜ[R] n) d = coeff d p • n`
@@ -28,11 +29,13 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
 
 * `MvPolynomial.rTensorAlgHom`, the algebra morphism from the tensor product
   of a polynomial algebra by an algebra to a polynomial algebra
+
 * `MvPolynomial.rTensorAlgEquiv`, `MvPolynomial.scalarRTensorAlgEquiv`,
   the tensor product of a polynomial algebra by an algebra
   is algebraically equivalent to a polynomial algebra
 
 ## TODO :
+
 * `MvPolynomial.rTensor` could be phrased in terms of `AddMonoidAlgebra`, and
   `MvPolynomial.rTensor` then has `smul` by the polynomial algebra.
 * `MvPolynomial.rTensorAlgHom` and `MvPolynomial.scalarRTensorAlgEquiv`
@@ -64,7 +67,7 @@ variable [DecidableEq σ]
 variable [AddCommMonoid N] [Module R N]
 
 /-- The tensor product of a polynomial ring by a module is
-  linearly equivalent to a Finsupp of a tensor product -/
+linearly equivalent to a Finsupp of a tensor product -/
 noncomputable def rTensor :
     MvPolynomial σ S ⊗[R] N ≃ₗ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) :=
   TensorProduct.finsuppLeft _ _ _ _ _
@@ -96,7 +99,7 @@ lemma rTensor_symm_apply_single (d : σ →₀ ℕ) (s : S) (n : N) :
   TensorProduct.finsuppLeft_symm_apply_single (R := R) d s n
 
 /-- The tensor product of the polynomial algebra by a module
-  is linearly equivalent to a Finsupp of that module -/
+is linearly equivalent to a Finsupp of that module -/
 noncomputable def scalarRTensor :
     MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N :=
   TensorProduct.finsuppScalarLeft _ _ _
@@ -129,7 +132,7 @@ variable [CommSemiring N] [Algebra R N]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The algebra morphism from a tensor product of a polynomial algebra
-  by an algebra to a polynomial algebra -/
+by an algebra to a polynomial algebra -/
 noncomputable def rTensorAlgHom :
     (MvPolynomial σ S) ⊗[R] N →ₐ[S] MvPolynomial σ (S ⊗[R] N) :=
   Algebra.TensorProduct.lift
@@ -179,7 +182,7 @@ lemma rTensorAlgHom_apply_eq (p : MvPolynomial σ S ⊗[R] N) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of a polynomial algebra by an algebra
-  is algebraically equivalent to a polynomial algebra -/
+is algebraically equivalent to a polynomial algebra -/
 noncomputable def rTensorAlgEquiv :
     (MvPolynomial σ S) ⊗[R] N ≃ₐ[S] MvPolynomial σ (S ⊗[R] N) := by
   apply AlgEquiv.ofLinearEquiv rTensor
@@ -202,8 +205,8 @@ lemma rTensorAlgEquiv_apply (x : (MvPolynomial σ S) ⊗[R] N) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of the polynomial algebra by an algebra
-  is algebraically equivalent to a polynomial algebra with
-  coefficients in that algebra -/
+is algebraically equivalent to a polynomial algebra with
+coefficients in that algebra -/
 noncomputable def scalarRTensorAlgEquiv :
     MvPolynomial σ R ⊗[R] N ≃ₐ[R] MvPolynomial σ N :=
   rTensorAlgEquiv.trans (mapAlgEquiv σ (Algebra.TensorProduct.lid R N))

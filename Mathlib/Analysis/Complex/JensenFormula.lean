@@ -12,7 +12,7 @@ public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 
 If a function `g : ℂ → ℂ` is analytic without zero on the closed ball with center `c` and radius
 `R`, then `log ‖g ·‖` is harmonic, and the mean value theorem of harmonic functions asserts that the
-circle average `circleAverage (log ‖g ·‖) c R` equals `log ‖g c‖`.  Note that `g c` equals
+circle average `circleAverage (log ‖g ·‖) c R` equals `log ‖g c‖`. Note that `g c` equals
 `meromorphicTrailingCoeffAt g c` and see `AnalyticOnNhd.circleAverage_log_norm_of_ne_zero` for the
 precise statement.
 
@@ -35,7 +35,7 @@ some of the terms that appear in the formula and its proof.
 
 /--
 Let `D : ℂ → ℤ` be a function with locally finite support within the closed ball with center `c` and
-radius `R`, such as the zero- and pole divisor of a meromorphic function.  Then, the circle average
+radius `R`, such as the zero- and pole divisor of a meromorphic function. Then, the circle average
 of the function `∑ᶠ u, (D u * log ‖· - u‖)` over the boundary of the ball equals
 `∑ᶠ u, D u * log R`.
 -/
@@ -70,7 +70,7 @@ lemma circleAverage_log_norm_factorizedRational {R : ℝ} {c : ℂ}
     aesop
 
 /--
-If  `g : ℂ → ℂ` is analytic without zero on the closed ball with center `c` and radius `R`, then the
+If `g : ℂ → ℂ` is analytic without zero on the closed ball with center `c` and radius `R`, then the
 circle average `circleAverage (log ‖g ·‖) c R` equals `log ‖g c‖`.
 -/
 @[simp]

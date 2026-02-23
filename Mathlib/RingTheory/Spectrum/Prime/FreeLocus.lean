@@ -23,6 +23,7 @@ public import Mathlib.RingTheory.Support
 ## Main definitions and results
 
 Let `M` be a finitely presented `R`-module.
+
 - `Module.freeLocus`: The set of points `x` in `Spec R` such that `Mₓ` is free over `Rₓ`.
 - `Module.freeLocus_eq_univ_iff`:
   The free locus is the whole `Spec R` if and only if `M` is projective.

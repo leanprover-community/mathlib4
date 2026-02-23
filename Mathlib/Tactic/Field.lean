@@ -26,19 +26,22 @@ open Lean Elab Tactic Lean.Parser.Tactic
 
 /--
 The `field` tactic proves equality goals in (semi-)fields. For example:
+
 ```
 example {x y : ℚ} (hx : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by
   field
 example {a b : ℝ} (ha : a ≠ 0) : a / (a * b) - 1 / b = 0 := by field
 ```
+
 The scope of the tactic is equality goals which are *universal*, in the sense that they are true in
 any field in which the appropriate denominators don't vanish. (That is, they are consequences purely
 of the field axioms.)
 
 Checking the nonvanishing of the necessary denominators is done using a variety of tricks -- in
 particular this part of the reasoning is non-universal, i.e. can be specific to the field at hand
-(order properties, explicit `≠ 0` hypotheses, `CharZero` if that is known, etc).  The user can also
+(order properties, explicit `≠ 0` hypotheses, `CharZero` if that is known, etc). The user can also
 provide additional terms to help with the nonzeroness proofs. For example:
+
 ```
 example {K : Type*} [Field K] (hK : ∀ x : K, x ^ 2 + 1 ≠ 0) (x : K) :
     1 / (x ^ 2 + 1) + x ^ 2 / (x ^ 2 + 1) = 1 := by
@@ -48,10 +51,12 @@ example {K : Type*} [Field K] (hK : ∀ x : K, x ^ 2 + 1 ≠ 0) (x : K) :
 The `field` tactic is built from the tactics `field_simp` (which clears the denominators) and `ring`
 (which proves equality goals universally true in commutative (semi-)rings). If `field` fails to
 prove your goal, you may still be able to prove your goal by running the `field_simp` and `ring_nf`
-normalizations in some order.  For example, this statement:
+normalizations in some order. For example, this statement:
+
 ```
 example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1
 ```
+
 is not proved by `field` but is proved by `ring_nf at *; field`. -/
 elab (name := field) "field" d:(ppSpace discharger)? args:(ppSpace simpArgs)? : tactic =>
     withMainContext do

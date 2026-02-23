@@ -75,7 +75,7 @@ theorem isTopologicalBasis_isClopen : IsTopologicalBasis { s : Set X | IsClopen 
   tauto
 
 /-- Every member of an open set in a compact Hausdorff totally disconnected space
-  is contained in a clopen set contained in the open set. -/
+is contained in a clopen set contained in the open set. -/
 theorem compact_exists_isClopen_in_isOpen {x : X} {U : Set X} (is_open : IsOpen U) (memU : x ∈ U) :
     ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
   isTopologicalBasis_isClopen.mem_nhds_iff.1 (is_open.mem_nhds memU)
@@ -117,7 +117,7 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
   use (↑) '' V, VisClopen', by simp [Vx], Subset.trans (by simp) sU
 
 /-- A locally compact Hausdorff space is totally disconnected
-  if and only if it is totally separated. -/
+if and only if it is totally separated. -/
 theorem loc_compact_t2_tot_disc_iff_tot_sep :
     TotallyDisconnectedSpace H ↔ TotallySeparatedSpace H := by
   constructor

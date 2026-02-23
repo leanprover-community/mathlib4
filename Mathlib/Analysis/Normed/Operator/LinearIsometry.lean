@@ -18,7 +18,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 
 In this file we define `LinearIsometry σ₁₂ E E₂` (notation: `E →ₛₗᵢ[σ₁₂] E₂`) to be a semilinear
 isometric embedding of `E` into `E₂` and `LinearIsometryEquiv` (notation: `E ≃ₛₗᵢ[σ₁₂] E₂`) to be
-a semilinear isometric equivalence between `E` and `E₂`.  The notation for the associated purely
+a semilinear isometric equivalence between `E` and `E₂`. The notation for the associated purely
 linear concepts is `E →ₗᵢ[R] E₂`, `E ≃ₗᵢ[R] E₂`, and `E →ₗᵢ⋆[R] E₂`, `E ≃ₗᵢ⋆[R] E₂` for
 the star-linear versions.
 
@@ -162,7 +162,7 @@ theorem coe_injective : @Injective (E →ₛₗᵢ[σ₁₂] E₂) (E → E₂) 
   simp
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+because it is a composition of multiple projections. -/
 def Simps.apply (σ₁₂ : R →+* R₂) (E E₂ : Type*) [SeminormedAddCommGroup E]
     [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] (h : E →ₛₗᵢ[σ₁₂] E₂) : E → E₂ :=
   h
@@ -701,7 +701,7 @@ theorem toHomeomorph_symm : e.symm.toHomeomorph = e.toHomeomorph.symm :=
 theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm := rfl
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+because it is a composition of multiple projections. -/
 def Simps.apply (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
     (E E₂ : Type*) [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E]
     [Module R₂ E₂] (h : E ≃ₛₗᵢ[σ₁₂] E₂) : E → E₂ :=

@@ -27,6 +27,7 @@ presentable object of `C`, see the file `Mathlib/CategoryTheory/Presentable/Basi
 
 Assuming `I` permits the small object argument, the two main results
 obtained in this file are:
+
 * the class `I.rlp.llp` of morphisms that have the left lifting property with
   respect to the maps that have the right lifting property with respect
   to `I` are exactly the retracts of transfinite compositions (indexed

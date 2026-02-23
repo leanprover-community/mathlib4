@@ -45,11 +45,11 @@ For the next statements, `s` is a measurable set and `f` is differentiable on `s
 * `measurable_image_of_fderivWithin`: the image `f '' s` is measurable.
 * `measurableEmbedding_of_fderivWithin`: the function `s.restrict f` is a measurable embedding.
 * `lintegral_abs_det_fderiv_eq_addHaar_image`: the image measure is given by
-    `μ (f '' s) = ∫⁻ x in s, |(f' x).det| ∂μ`.
+  `μ (f '' s) = ∫⁻ x in s, |(f' x).det| ∂μ`.
 * `lintegral_image_eq_lintegral_abs_det_fderiv_mul`: for `g : E → ℝ≥0∞`, one has
-    `∫⁻ x in f '' s, g x ∂μ = ∫⁻ x in s, ENNReal.ofReal |(f' x).det| * g (f x) ∂μ`.
+  `∫⁻ x in f '' s, g x ∂μ = ∫⁻ x in s, ENNReal.ofReal |(f' x).det| * g (f x) ∂μ`.
 * `integral_image_eq_integral_abs_det_fderiv_smul`: for `g : E → F`, one has
-    `∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ`.
+  `∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ`.
 * `integrableOn_image_iff_integrableOn_abs_det_fderiv_smul`: for `g : E → F`, the function `g` is
   integrable on `f '' s` if and only if `|(f' x).det| • g (f x)` is integrable on `s`.
 
@@ -88,9 +88,11 @@ is the almost everywhere limit of a sequence of measurable functions (which are 
 pieces of the good discretization), and is therefore almost everywhere measurable.
 
 ## Tags
+
 Change of variables in integrals
 
 ## References
+
 [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2]
 -/
 

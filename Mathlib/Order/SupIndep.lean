@@ -273,7 +273,7 @@ variable [CompleteLattice α]
 open Set Function
 
 /-- An independent set of elements in a complete lattice is one in which every element is disjoint
-  from the `Sup` of the rest. -/
+from the `Sup` of the rest. -/
 def sSupIndep (s : Set α) : Prop :=
   ∀ ⦃a⦄, a ∈ s → Disjoint a (sSup (s \ {a}))
 
@@ -317,14 +317,14 @@ theorem sSupIndep.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : y ⊆
   exact this
 
 /-- An independent indexed family of elements in a complete lattice is one in which every element
-  is disjoint from the `iSup` of the rest.
+is disjoint from the `iSup` of the rest.
 
-  Example: an indexed family of non-zero elements in a
-  vector space is linearly independent iff the indexed family of subspaces they generate is
-  independent in this sense.
+Example: an indexed family of non-zero elements in a
+vector space is linearly independent iff the indexed family of subspaces they generate is
+independent in this sense.
 
-  Example: an indexed family of submodules of a module is independent in this sense if
-  and only the natural map from the direct sum of the submodules to the module is injective. -/
+Example: an indexed family of submodules of a module is independent in this sense if
+and only the natural map from the direct sum of the submodules to the module is injective. -/
 def iSupIndep {ι : Sort*} {α : Type*} [CompleteLattice α] (t : ι → α) : Prop :=
   ∀ i : ι, Disjoint (t i) (⨆ (j) (_ : j ≠ i), t j)
 

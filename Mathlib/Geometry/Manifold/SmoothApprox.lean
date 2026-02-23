@@ -16,6 +16,7 @@ from a real σ-compact finite dimensional manifold `M` to a real normed space `F
 approximated uniformly by smooth functions.
 
 More precisely, we strengthen this result in three ways :
+
 * instead of a single number `ε > 0`, one may prescribe the precision of the approximation using
   an arbitrary continuous positive function `ε : M → ℝ`. This allows, for example, a control
   on the asymptotic behaviour of the approximation (e.g, choosing a precision `ε` which vanishes
@@ -44,6 +45,7 @@ More precisely, we strengthen this result in three ways :
 ## Implementation notes
 
 With minor work, we could strengthen the statements in the following ways:
+
 - the precision function `ε : M → ℝ` may be assumed `LowerSemicontinuous` instead of `Continuous`,
 - the condition `support g ⊆ support f`, which translates to `∀ x, f x = 0 → g x = 0`,
   may be strengthened to `∀ x, f x = h x → g x = h x` for some arbitrary smooth `h : M → F`.

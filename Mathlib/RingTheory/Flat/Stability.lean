@@ -19,12 +19,12 @@ We show that flatness is stable under composition and base change.
 ## Main theorems
 
 * `Module.Flat.comp`: if `S` is a flat `R`-algebra and `M` is a flat `S`-module,
-                      then `M` is a flat `R`-module
+  then `M` is a flat `R`-module
 * `Module.Flat.baseChange`: if `M` is a flat `R`-module and `S` is any `R`-algebra,
-                            then `S ⊗[R] M` is `S`-flat.
+  then `S ⊗[R] M` is `S`-flat.
 * `Module.Flat.of_isLocalizedModule`: if `M` is a flat `R`-module and `S` is a submonoid of `R`
-                                          then the localization of `M` at `S` is flat as a module
-                                          for the localization of `R` at `S`.
+  then the localization of `M` at `S` is flat as a module
+  for the localization of `R` at `S`.
 -/
 
 @[expose] public section

@@ -21,6 +21,7 @@ This file contains various basic results on localizations.
 We characterize the localization of a commutative ring `R` at a submonoid `M` up to
 isomorphism; that is, a commutative ring `S` is the localization of `R` at `M` iff we can find a
 ring homomorphism `f : R →+* S` satisfying 3 properties:
+
 1. For all `y ∈ M`, `f y` is a unit;
 2. For all `z : S`, there exists `(x, y) : R × M` such that `z * f y = f x`;
 3. For all `x, y : R` such that `f x = f y`, there exists `c ∈ M` such that `x * c = y * c`.
@@ -28,6 +29,7 @@ ring homomorphism `f : R →+* S` satisfying 3 properties:
 
 In the following, let `R, P` be commutative rings, `S, Q` be `R`- and `P`-algebras
 and `M, T` be submonoids of `R` and `P` respectively, e.g.:
+
 ```
 variable (R S P Q : Type*) [CommRing R] [CommRing S] [CommRing P] [CommRing Q]
 variable [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
@@ -66,6 +68,7 @@ is a field" is a `def` rather than an `instance`, so if you want to reason about
 fractions `K`, assume `[Field K]` instead of just `[CommRing K]`.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -540,6 +543,7 @@ theorem IsLocalization.algebraMap_mk' (x : R) (y : M) :
 variable (M)
 
 /-- If the square below commutes, the bottom map is uniquely specified:
+
 ```
 R  →  S
 ↓     ↓
@@ -555,6 +559,7 @@ theorem IsLocalization.algebraMap_eq_map_map_submonoid :
       rw [← IsScalarTower.algebraMap_apply R S Sₘ, ← IsScalarTower.algebraMap_apply R Rₘ Sₘ]
 
 /-- If the square below commutes, the bottom map is uniquely specified:
+
 ```
 R  →  S
 ↓     ↓

@@ -12,6 +12,7 @@ public import Mathlib.Control.Traversable.Lemmas
 # Bitraversable instances
 
 This file provides `Bitraversable` instances for concrete bifunctors:
+
 * `Prod`
 * `Sum`
 * `Functor.Const`

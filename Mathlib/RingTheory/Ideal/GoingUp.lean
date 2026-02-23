@@ -62,7 +62,7 @@ theorem exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem {r : S}
     · simp [hi]
     · simpa [hi] using mem
 
-/-- Let `P` be an ideal in `R[x]`.  The map
+/-- Let `P` be an ideal in `R[x]`. The map
 `R[x]/P → (R / (P ∩ R))[x] / (P / (P ∩ R))`
 is injective.
 -/
@@ -81,12 +81,14 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
   simpa only [coeff_map, coe_mapRingHom] using ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
 
 /-- The identity in this lemma asserts that the "obvious" square
+
 ```
     R    → (R / (P ∩ R))
     ↓          ↓
 R[x] / P → (R / (P ∩ R))[x] / (P / (P ∩ R))
 ```
-commutes.  It is used, for instance, in the proof of `quotient_mk_comp_C_is_integral_of_jacobson`,
+
+commutes. It is used, for instance, in the proof of `quotient_mk_comp_C_is_integral_of_jacobson`,
 in the file `Mathlib/RingTheory/Jacobson/Polynomial.lean`.
 -/
 theorem quotient_mk_maps_eq (P : Ideal R[X]) :
@@ -99,7 +101,7 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
   simp
 
 /-- This technical lemma asserts the existence of a polynomial `p` in an ideal `P ⊂ R[x]`
-that is non-zero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equivalent to
+that is non-zero in the quotient `R / (P ∩ R) [x]`. The assumptions are equivalent to
 `P ≠ 0` and `P ∩ R = (0)`.
 -/
 theorem exists_nonzero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀ x : R, C x ∈ P → x = 0) :
@@ -299,7 +301,7 @@ end
 
 /-- More general going-up theorem than `exists_ideal_over_prime_of_isIntegral_of_isDomain`.
 TODO: Version of going-up theorem with arbitrary length chains (by induction on this)?
-  Not sure how best to write an ascending chain in Lean -/
+Not sure how best to write an ascending chain in Lean -/
 theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
     [Algebra.IsIntegral R S] (P : Ideal R) [IsPrime P]
     (I : Ideal S) [IsPrime I] (hIP : I.comap (algebraMap R S) ≤ P) :
@@ -396,7 +398,7 @@ variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] [Algebra A B] [Algebr
 
 variable (A) in
 /-- If `B` is an integral `A`-algebra, `P` is a maximal ideal of `B`, then the pull back of
-  `P` is also a maximal ideal of `A`. -/
+`P` is also a maximal ideal of `A`. -/
 instance IsMaximal.under [P.IsMaximal] : (P.under A).IsMaximal :=
   isMaximal_comap_of_isIntegral_of_isMaximal P
 

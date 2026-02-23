@@ -16,8 +16,8 @@ public import Mathlib.Order.Hom.Basic
 Terms of type `Finset α` are one way of talking about finite subsets of `α` in Mathlib.
 Below, `Finset α` is defined as a structure with 2 fields:
 
-  1. `val` is a `Multiset α` of elements;
-  2. `nodup` is a proof that `val` has no duplicates.
+1. `val` is a `Multiset α` of elements;
+2. `nodup` is a proof that `val` has no duplicates.
 
 Finsets in Lean are constructive in that they have an underlying `List` that enumerates their
 elements. In particular, any function that uses the data of the underlying list cannot depend on its
@@ -26,8 +26,8 @@ worry about it explicitly.
 
 Finsets give a basic foundation for defining finite sums and products over types:
 
-  1. `∑ i ∈ (s : Finset α), f i`;
-  2. `∏ i ∈ (s : Finset α), f i`.
+1. `∑ i ∈ (s : Finset α), f i`;
+2. `∏ i ∈ (s : Finset α), f i`.
 
 Lean refers to these operations as big operators.
 More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`.
@@ -72,7 +72,7 @@ universe u
 variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
-  as a multiset (a list up to permutation) which has no duplicate elements. -/
+as a multiset (a list up to permutation) which has no duplicate elements. -/
 structure Finset (α : Type*) where
   /-- The underlying multiset -/
   val : Multiset α

@@ -12,21 +12,25 @@ public import Mathlib.Data.Finset.Pairwise
 /-!
 
 # Sums of collections of Finsupp, and their support
+
 This file provides results about the `Finsupp.support` of sums of collections of `Finsupp`,
 including sums of `List`, `Multiset`, and `Finset`.
 
 The support of the sum is a subset of the union of the supports:
+
 * `List.support_sum_subset`
 * `Multiset.support_sum_subset`
 * `Finset.support_sum_subset`
 
 The support of the sum of pairwise disjoint finsupps is equal to the union of the supports
+
 * `List.support_sum_eq`
 * `Multiset.support_sum_eq`
 * `Finset.support_sum_eq`
 
 Member in the support of the indexed union over a collection iff
 it is a member of the support of a member of the collection:
+
 * `List.mem_foldr_sup_support_iff`
 * `Multiset.mem_sup_map_support_iff`
 * `Finset.mem_sup_support_iff`

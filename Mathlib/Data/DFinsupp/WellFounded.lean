@@ -61,13 +61,13 @@ section Zero
 variable [∀ i, Zero (α i)] (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop)
 
 /-- This key lemma says that if a finitely supported dependent function `x₀` is obtained by merging
-  two such functions `x₁` and `x₂`, and if we evolve `x₀` down the `DFinsupp.Lex` relation one
-  step and get `x`, we can always evolve one of `x₁` and `x₂` down the `DFinsupp.Lex` relation
-  one step while keeping the other unchanged, and merge them back (possibly in a different way)
-  to get back `x`. In other words, the two parts evolve essentially independently under
-  `DFinsupp.Lex`. This is used to show that a function `x` is accessible if
-  `DFinsupp.single i (x i)` is accessible for each `i` in the (finite) support of `x`
-  (`DFinsupp.Lex.acc_of_single`). -/
+two such functions `x₁` and `x₂`, and if we evolve `x₀` down the `DFinsupp.Lex` relation one
+step and get `x`, we can always evolve one of `x₁` and `x₂` down the `DFinsupp.Lex` relation
+one step while keeping the other unchanged, and merge them back (possibly in a different way)
+to get back `x`. In other words, the two parts evolve essentially independently under
+`DFinsupp.Lex`. This is used to show that a function `x` is accessible if
+`DFinsupp.single i (x i)` is accessible for each `i` in the (finite) support of `x`
+(`DFinsupp.Lex.acc_of_single`). -/
 theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
     Fibration (InvImage (GameAdd (DFinsupp.Lex r s) (DFinsupp.Lex r s)) snd) (DFinsupp.Lex r s)
       fun x => piecewise x.2.1 x.2.2 x.1 := by

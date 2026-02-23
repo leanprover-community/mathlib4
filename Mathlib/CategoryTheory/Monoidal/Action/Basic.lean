@@ -22,11 +22,12 @@ We also define right actions, for these, the notation for the action of `c`
 on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 `- ⊙ᵣ (- ⊗ -) ≅ (- ⊙ᵣ -) ⊙ᵣ -` and `- ⊙ₗ 𝟙_ C ≅ -`.
 
-
 ## References
+
 * [Janelidze, G, and Kelly, G.M., *A note on actions of a monoidal category*][JanelidzeKelly2001]
 
 ## TODOs/Projects
+
 * Equivalence between actions of `C` on `D` and pseudofunctors from the
   classifying bicategory of `C` to `Cat`.
 * Left/Right Modules in `D` over a monoid object in `C`.
@@ -105,6 +106,7 @@ end MonoidalLeftAction
 
 open scoped MonoidalLeftAction in
 /-- A `MonoidalLeftAction C D` is the data of:
+
 - For every object `c : C` and `d : D`, an object `c ⊙ₗ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ₗ d : c ⊙ₗ d ⟶ c' ⊙ₗ d`.
@@ -114,9 +116,9 @@ open scoped MonoidalLeftAction in
   `f : (d : D) ⟶ d'`, a morphism `f ⊙ₗ f' : c ⊙ₗ d ⟶ c' ⊙ₗ d'`.
 - A structure isomorphism `αₗ c c' d : c ⊗ c' ⊙ₗ d ≅ c ⊙ₗ c' ⊙ₗ d`.
 - A structure isomorphism `λₗ d : (𝟙_ C) ⊙ₗ d ≅ d`.
-Furthermore, we require identities that turn `- ⊙ₗ -` into a bifunctor,
-ensure naturality of `αₗ` and `λₗ`, and ensure compatibilities with
-the associator and unitor isomorphisms in `C`. -/
+  Furthermore, we require identities that turn `- ⊙ₗ -` into a bifunctor,
+  ensure naturality of `αₗ` and `λₗ`, and ensure compatibilities with
+  the associator and unitor isomorphisms in `C`. -/
 class MonoidalLeftAction [MonoidalCategory C] extends
     MonoidalLeftActionStruct C D where
   actionHom_def {c c' : C} {d d' : D} (f : c ⟶ c') (g : d ⟶ d') :
@@ -417,6 +419,7 @@ end MonoidalRightAction
 
 open scoped MonoidalRightAction in
 /-- A `MonoidalRightAction C D` is the data of:
+
 - For every object `c : C` and `d : D`, an object `c ⊙ᵣ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ᵣ d : c ⊙ᵣ d ⟶ c' ⊙ᵣ d`.
@@ -426,9 +429,9 @@ open scoped MonoidalRightAction in
   `f : (d : D) ⟶ d'`, a morphism `f ⊙ᵣₘ f' : c ⊙ᵣ d ⟶ c' ⊙ᵣ d'`.
 - A structure isomorphism `αᵣ c c' d : c ⊗ c' ⊙ᵣ d ≅ c ⊙ᵣ c' ⊙ᵣ d`.
 - A structure isomorphism `ρᵣ d : (𝟙_ C) ⊙ᵣ d ≅ d`.
-Furthermore, we require identities that turn `- ⊙ᵣ -` into a bifunctor,
-ensure naturality of `αᵣ` and `ρᵣ`, and ensure compatibilities with
-the associator and unitor isomorphisms in `C`. -/
+  Furthermore, we require identities that turn `- ⊙ᵣ -` into a bifunctor,
+  ensure naturality of `αᵣ` and `ρᵣ`, and ensure compatibilities with
+  the associator and unitor isomorphisms in `C`. -/
 class MonoidalRightAction [MonoidalCategory C] extends
     MonoidalRightActionStruct C D where
   actionHom_def {c c' : C} {d d' : D} (f : d ⟶ d') (g : c ⟶ c') :

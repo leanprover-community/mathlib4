@@ -13,16 +13,20 @@ public import Mathlib.Algebra.Ring.Divisibility.Lemmas
 
 /-!
 # Fermat Last Theorem in the case `n = 3`
+
 The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 
 ## Main results
+
 * `fermatLastTheoremThree`: Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
   `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 
 ## Implementation details
+
 We follow the proof in <https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf>, page 43.
 
 The strategy is the following:
+
 * The so-called "Case 1", when `3 ∣ a * b * c` is completely elementary and is proved using
   congruences modulo `9`.
 * To prove case 2, we consider the generalized equation `a ^ 3 + b ^ 3 = u * c ^ 3`, where `a`, `b`,
@@ -720,7 +724,7 @@ private lemma formula3 :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Given `S : Solution`, we construct `S₁ : Solution'`, with smaller multiplicity of `λ` in
-  `c` (see `Solution'_descent_multiplicity_lt` below.). -/
+`c` (see `Solution'_descent_multiplicity_lt` below.). -/
 noncomputable def Solution'_descent : Solution' hζ where
   a := S.Y
   b := S.u₄ * S.Z
@@ -753,7 +757,7 @@ lemma Solution'_descent_multiplicity_lt :
   exact Nat.pred_lt <| by have := S.two_le_multiplicity; lia
 
 /-- Given any `S : Solution`, there is another `S₁ : Solution` such that
-  `S₁.multiplicity < S.multiplicity` -/
+`S₁.multiplicity < S.multiplicity` -/
 theorem exists_Solution_multiplicity_lt :
     ∃ S₁ : Solution hζ, S₁.multiplicity < S.multiplicity := by classical
   obtain ⟨S', hS'⟩ := exists_Solution_of_Solution' (Solution'_descent S)

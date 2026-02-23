@@ -16,12 +16,14 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 This file develops the basic theory of left and right cosets.
 
-When `G` is a group and `a : G`, `s : Set G`, with  `open scoped Pointwise` we can write:
+When `G` is a group and `a : G`, `s : Set G`, with `open scoped Pointwise` we can write:
+
 * the left coset of `s` by `a` as `a • s`
 * the right coset of `s` by `a` as `MulOpposite.op a • s` (or `op a • s` with `open MulOpposite`,
   or `s <• a` with `open scoped Pointwise RightActions`)
 
-If instead `G` is an additive group, we can write (with  `open scoped Pointwise` still)
+If instead `G` is an additive group, we can write (with `open scoped Pointwise` still)
+
 * the left coset of `s` by `a` as `a +ᵥ s`
 * the right coset of `s` by `a` as `AddOpposite.op a +ᵥ s` (or `op a +ᵥ s` with `open AddOpposite`,
   or `s <+ᵥ a` with `open scoped Pointwise RightActions`)
@@ -62,7 +64,7 @@ variable [Group α] (s : Subgroup α)
 of a subgroup. -/
 @[to_additive (attr := instance_reducible)
   /-- The equivalence relation corresponding to the partition of a group by left cosets
-of a subgroup. -/]
+  of a subgroup. -/]
 def leftRel : Setoid α :=
   MulAction.orbitRel s.op α
 

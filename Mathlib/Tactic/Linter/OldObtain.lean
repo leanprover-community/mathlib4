@@ -20,6 +20,7 @@ i.e. uses of the `obtain` tactic which do not immediately provide a proof.
 ## Example
 
 There are six different kinds of `obtain` uses. In one example, they look like this.
+
 ```
 theorem foo : True := by
   -- These cases are fine.
@@ -33,23 +34,25 @@ theorem foo : True := by
   obtain h : True
   · trivial
 ```
+
 We allow the first four (since an explicit proof is provided), but lint against the last two.
 
 ## Why is this bad?
 
 This is similar to removing all uses of `Tactic.Replace` and `Tactic.Have`
 from mathlib: in summary,
+
 - this version is a Lean3-ism, which can be unlearned now
 - the syntax `obtain foo : type := proof` is slightly shorter;
   particularly so when the first tactic of the proof is `exact`
 - when using the old syntax as `obtain foo : type; · proof`, there is an intermediate state with
-multiple goals right before the focusing dot. This can be confusing.
-(This gets amplified with the in-flight "multiple goal linter", which seems generally desired ---
-for many reasons, including teachability. Granted, the linter could be tweaked to not lint in this
-case... but by now, the "old" syntax is not clearly better.)
+  multiple goals right before the focusing dot. This can be confusing.
+  (This gets amplified with the in-flight "multiple goal linter", which seems generally desired ---
+  for many reasons, including teachability. Granted, the linter could be tweaked to not lint in this
+  case... but by now, the "old" syntax is not clearly better.)
 - the old syntax *could* be slightly nicer when deferring goals: however, this is rare.
-In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
-could also be used, as was in fact clearer. -/
+  In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
+  could also be used, as was in fact clearer. -/
 
 meta section
 

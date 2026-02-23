@@ -895,6 +895,7 @@ If `(M', f : M ⟶ M')` is a localized module then it satisfies the following un
 For every `R`-module `M''` which every `s : S`-scalar multiplication is invertible and for every
 `R`-linear map `g : M ⟶ M''`, there is a unique `R`-linear map `l : M' ⟶ M''` such that
 `l ∘ f = g`.
+
 ```
 M -----f----> M'
 |           /

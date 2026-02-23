@@ -40,7 +40,7 @@ theorem isIntegral_isStableUnderBaseChange : IsStableUnderBaseChange fun f => f.
 
 open Polynomial in
 /-- `S` is an integral `R`-algebra if there exists a set `{ r }` that
-  spans `R` such that each `Sᵣ` is an integral `Rᵣ`-algebra. -/
+spans `R` such that each `Sᵣ` is an integral `Rᵣ`-algebra. -/
 theorem isIntegral_ofLocalizationSpan :
     OfLocalizationSpan (RingHom.IsIntegral ·) := by
   introv R hs H r

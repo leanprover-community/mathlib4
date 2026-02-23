@@ -20,7 +20,6 @@ product topology). Note that `- : A → A` is also automatically continuous as i
 
 This topology was suggested by Will Sawin [here](https://mathoverflow.net/a/477763/1384).
 
-
 ## Mathematical details
 
 I (buzzard) don't know of any reference for this other than Sawin's mathoverflow answer,
@@ -72,10 +71,10 @@ This file develops the theory of the module topology.
 ## Main theorems
 
 * `IsTopologicalSemiring.toIsModuleTopology : IsModuleTopology R R`. The module
-    topology on `R` is `R`'s topology.
+  topology on `R` is `R`'s topology.
 * `IsModuleTopology.iso [IsModuleTopology R A] (e : A ≃L[R] B) : IsModuleTopology R B`. If `A` and
-    `B` are `R`-modules with topologies, if `e` is a topological isomorphism between them,
-    and if `A` has the module topology, then `B` has the module topology.
+  `B` are `R`-modules with topologies, if `e` is a topological isomorphism between them,
+  and if `A` has the module topology, then `B` has the module topology.
 * `IsModuleTopology.instProd` : If `M` and `N` are `R`-modules each equipped with the module
   topology, then the product topology on `M × N` is the module topology.
 * `IsModuleTopology.instPi` : Given a finite collection of `R`-modules each of which has
@@ -289,7 +288,7 @@ section MulOpposite
 variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-- The module topology coming from the action of the topological ring `Rᵐᵒᵖ` on `R`
-  (via `Semiring.toOppositeModule`, i.e. via `(op r) • m = m * r`) is `R`'s topology. -/
+(via `Semiring.toOppositeModule`, i.e. via `(op r) • m = m * r`) is `R`'s topology. -/
 instance _root_.IsTopologicalSemiring.toOppositeIsModuleTopology : IsModuleTopology Rᵐᵒᵖ R :=
   .iso (MulOpposite.opContinuousLinearEquiv Rᵐᵒᵖ).symm
 

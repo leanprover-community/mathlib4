@@ -17,11 +17,14 @@ Definitions and basic results about polynomials over GCD domains, particularly t
 and primitive polynomials.
 
 ## Main Definitions
+
 Let `p : R[X]`.
+
 - `p.content` is the `gcd` of the coefficients of `p`.
 - `p.IsPrimitive` indicates that `p.content = 1`.
 
 ## Main Results
+
 - `Polynomial.content_mul`: if `p q : R[X]`, then `(p * q).content = p.content * q.content`.
 - `Polynomial.NormalizedGcdMonoid`: the polynomial ring of a GCD domain is itself a GCD domain.
 
@@ -227,7 +230,7 @@ theorem IsPrimitive.content_eq_one {p : R[X]} (hp : p.IsPrimitive) : p.content =
 section PrimPart
 
 /-- The primitive part of a polynomial `p` is the primitive polynomial gained by dividing `p` by
-  `p.content`. If `p = 0`, then `p.primPart = 1`. -/
+`p.content`. If `p = 0`, then `p.primPart = 1`. -/
 noncomputable def primPart (p : R[X]) : R[X] :=
   letI := Classical.decEq R
   if p = 0 then 1 else Classical.choose (C_content_dvd p)

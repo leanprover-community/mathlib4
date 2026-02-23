@@ -51,10 +51,11 @@ section ConcreteCategory
 In other words, it has a fixed faithful functor `forget : C ⥤ Type`.
 
 Note that `ConcreteCategory` potentially depends on three independent universe levels,
+
 * the universe level `w` appearing in `forget : C ⥤ Type w`
 * the universe level `v` of the morphisms (i.e. we have a `Category.{v} C`)
 * the universe level `u` of the objects (i.e `C : Type u`)
-They are specified that order, to avoid unnecessary universe annotations.
+  They are specified that order, to avoid unnecessary universe annotations.
 -/
 class ConcreteCategory (C : Type u) [Category.{v} C]
     (FC : outParam <| C → C → Type*) {CC : outParam <| C → Type w}

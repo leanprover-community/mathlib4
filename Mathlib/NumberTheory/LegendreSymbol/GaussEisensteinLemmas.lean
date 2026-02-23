@@ -27,8 +27,8 @@ section GaussEisenstein
 namespace ZMod
 
 /-- The image of the map sending a nonzero natural number `x ≤ p / 2` to the absolute value
-  of the integer in `(-p/2, p/2]` that is congruent to `a * x mod p` is the set
-  of nonzero natural numbers `x` such that `x ≤ p / 2`. -/
+of the integer in `(-p/2, p/2]` that is congruent to `a * x mod p` is the set
+of nonzero natural numbers `x` such that `x ≤ p / 2`. -/
 theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a : ZMod p)
     (hap : a ≠ 0) : ((Ico 1 (p / 2).succ).1.map fun (x : ℕ) => (a * x).valMinAbs.natAbs) =
     (Ico 1 (p / 2).succ).1.map fun a => a := by
@@ -97,7 +97,7 @@ theorem gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] {a : ℤ} (hap : (a : ZMod
       simpa using gauss_lemma_aux₁ p hap
 
 /-- **Gauss' lemma**. The Legendre symbol can be computed by considering the number of naturals less
-  than `p/2` such that `(a * x) % p > p / 2`. -/
+than `p/2` such that `(a * x) % p > p / 2`. -/
 theorem gauss_lemma {p : ℕ} [h : Fact p.Prime] {a : ℤ} (hp : p ≠ 2) (ha0 : (a : ZMod p) ≠ 0) :
     legendreSym p a = (-1) ^ #{x ∈ Ico 1 (p / 2).succ | p / 2 < (a * x.cast : ZMod p).val} := by
   replace hp : Odd p := h.out.odd_of_ne_two hp
@@ -156,7 +156,7 @@ theorem div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :
         simp [le_div_iff_mul_le hb0]; tauto
 
 /-- The given sum is the number of integer points in the triangle formed by the diagonal of the
-  rectangle `(0, p/2) × (0, q/2)`. -/
+rectangle `(0, p/2) × (0, q/2)`. -/
 private theorem sum_Ico_eq_card_lt {p q : ℕ} :
     ∑ a ∈ Ico 1 (p / 2).succ, a * q / p =
       #{x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.2 * p ≤ x.1 * q} :=
@@ -172,8 +172,8 @@ private theorem sum_Ico_eq_card_lt {p q : ℕ} :
       _ = _ := by simp only [card_eq_sum_ones, sum_filter, sum_product]
 
 /-- Each of the sums in this lemma is the cardinality of the set of integer points in each of the
-  two triangles formed by the diagonal of the rectangle `(0, p/2) × (0, q/2)`. Adding them
-  gives the number of points in the rectangle. -/
+two triangles formed by the diagonal of the rectangle `(0, p/2) × (0, q/2)`. Adding them
+gives the number of points in the rectangle. -/
 theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 : (q : ZMod p) ≠ 0) :
     ∑ a ∈ Ico 1 (p / 2).succ, a * q / p + ∑ a ∈ Ico 1 (q / 2).succ, a * p / q =
     p / 2 * (q / 2) := by

@@ -14,6 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Finsupp
 # Rank of free modules
 
 ## Main result
+
 - `LinearEquiv.nonempty_equiv_iff_lift_rank_eq`:
   Two free modules are isomorphic iff they have the same dimension.
 - `Module.finBasis`:

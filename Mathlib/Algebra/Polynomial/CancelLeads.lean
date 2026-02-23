@@ -17,6 +17,7 @@ public import Mathlib.Tactic.ComputeDegree
   have the same leading term, and then subtracting.
 
 ## Main Results
+
 The degree of `cancelLeads` is less than that of the larger of the two polynomials being cancelled.
 Thus it is useful for induction or minimal-degree arguments.
 -/
@@ -37,7 +38,7 @@ section Ring
 variable [Ring R] (p q : R[X])
 
 /-- `cancelLeads p q` is formed by multiplying `p` and `q` by monomials so that they
-  have the same leading term, and then subtracting. -/
+have the same leading term, and then subtracting. -/
 def cancelLeads : R[X] :=
   C p.leadingCoeff * X ^ (p.natDegree - q.natDegree) * q -
     C q.leadingCoeff * X ^ (q.natDegree - p.natDegree) * p

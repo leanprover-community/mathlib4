@@ -26,7 +26,7 @@ open scoped MatrixGroups ComplexConjugate
 
 namespace UpperHalfPlane
 
-/-- The coercion first into an element of  `GL(2, ℝ)⁺`, then  `GL(2, ℝ)` and finally a 2 × 2
+/-- The coercion first into an element of `GL(2, ℝ)⁺`, then `GL(2, ℝ)` and finally a 2 × 2
 matrix.
 
 This notation is scoped in namespace `UpperHalfPlane`. -/
@@ -35,7 +35,7 @@ scoped notation:1024 "↑ₘ" A:1024 =>
 
 instance instCoeFun : CoeFun GL(2, ℝ)⁺ fun _ => Fin 2 → Fin 2 → ℝ where coe A := ↑ₘA
 
-/-- The coercion into an element of  `GL(2, R)` and finally a 2 × 2 matrix over `R`. This is
+/-- The coercion into an element of `GL(2, R)` and finally a 2 × 2 matrix over `R`. This is
 similar to `↑ₘ`, but without positivity requirements, and allows the user to specify the ring `R`,
 which can be useful to help Lean elaborate correctly.
 

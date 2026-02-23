@@ -49,7 +49,7 @@ Notation used here:
 * `f.range : Subring B` : the range of the ring homomorphism `f`.
 
 * `eqLocus f g : Subring R` : given ring homomorphisms `f g : R →+* S`,
-     the subring of `R` where `f x = g x`
+  the subring of `R` where `f x = g x`
 
 ## Implementation notes
 
@@ -60,6 +60,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a subring's underlying set.
 
 ## Tags
+
 subring, subrings
 -/
 
@@ -146,8 +147,8 @@ end SubringClass
 variable [Ring S] [Ring T]
 
 /-- `Subring R` is the type of subrings of `R`. A subring of `R` is a subset `s` that is a
-  multiplicative submonoid and an additive subgroup. Note in particular that it shares the
-  same 0 and 1 as R. -/
+multiplicative submonoid and an additive subgroup. Note in particular that it shares the
+same 0 and 1 as R. -/
 structure Subring (R : Type u) [Ring R] extends Subsemiring R, AddSubgroup R
 
 /-- Reinterpret a `Subring` as a `Subsemiring`. -/

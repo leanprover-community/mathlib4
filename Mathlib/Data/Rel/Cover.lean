@@ -17,6 +17,7 @@ A `U`-cover of a set `s` is a set `N` such that every element of `s` is `U`-clos
 `N`.
 
 The concept of uniform covers is used to define two further notions of covering:
+
 * Metric covers: `Metric.IsCover`, defined using the distance entourage.
 * Dynamical covers: `Dynamics.IsDynCoverOf`, defined using the dynamical entourage.
 

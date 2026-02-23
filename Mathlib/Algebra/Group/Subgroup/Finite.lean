@@ -17,6 +17,7 @@ public import Mathlib.Data.Set.Finite.Range
 This file provides some result on multiplicative and additive subgroups in the finite context.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -66,7 +67,7 @@ theorem multiset_noncommProd_mem (K : Subgroup G) (g : Multiset G) (comm) :
   K.toSubmonoid.multiset_noncommProd_mem g comm
 
 /-- Product of elements of a subgroup of a `CommGroup` indexed by a `Finset` is in the
-    subgroup. -/
+subgroup. -/
 @[to_additive /-- Sum of elements in an `AddSubgroup` of an `AddCommGroup` indexed by a `Finset`
 is in the `AddSubgroup`. -/]
 protected theorem prod_mem {G : Type*} [CommGroup G] (K : Subgroup G) {ι : Type*} {t : Finset ι}

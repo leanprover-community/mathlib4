@@ -26,7 +26,7 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
 
 * `ProbabilityTheory.variance_le_expectation_sq`: the inequality `Var[X] ≤ 𝔼[X^2]`.
 * `ProbabilityTheory.meas_ge_le_variance_div_sq`: Chebyshev's inequality, i.e.,
-      `ℙ {ω | c ≤ |X ω - 𝔼[X]|} ≤ ENNReal.ofReal (Var[X] / c ^ 2)`.
+  `ℙ {ω | c ≤ |X ω - 𝔼[X]|} ≤ ENNReal.ofReal (Var[X] / c ^ 2)`.
 * `ProbabilityTheory.meas_ge_le_evariance_div_sq`: Chebyshev's inequality formulated with
   `evariance` without requiring the random variables to be L².
 * `ProbabilityTheory.IndepFun.variance_add`: the variance of the sum of two independent

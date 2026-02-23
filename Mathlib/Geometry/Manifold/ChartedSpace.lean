@@ -26,6 +26,7 @@ situation where the model space is a (subset of a) vector space, and use the ter
 If the changes of charts satisfy some additional property (for instance if they are smooth), then
 `M` inherits additional structure (it makes sense to talk about smooth manifolds). There are
 therefore two different ingredients in a charted space:
+
 * the set of charts, which is data
 * the fact that changes of charts belong to some group (in fact groupoid), which is additional Prop.
 

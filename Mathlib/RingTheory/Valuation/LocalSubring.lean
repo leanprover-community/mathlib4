@@ -105,7 +105,7 @@ lemma LocalSubring.exists_valuationRing_of_isMax {R : LocalSubring K} (hR : IsMa
   exact ⟨.C H.unit⁻¹.1 * p, by simp [Polynomial.Monic], by simpa using .inr hpx⟩
 
 /-- A local subring is maximal with respect to the domination order
-  if and only if it is a valuation ring. -/
+if and only if it is a valuation ring. -/
 lemma LocalSubring.isMax_iff {A : LocalSubring K} :
     IsMax A ↔ ∃ B : ValuationSubring K, B.toLocalSubring = A :=
   ⟨exists_valuationRing_of_isMax, fun ⟨B, e⟩ ↦ e ▸ B.isMax_toLocalSubring⟩

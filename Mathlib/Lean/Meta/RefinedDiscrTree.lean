@@ -48,7 +48,7 @@ and includes many more features.
   `?m` is a metavariable, one of `x₁, .., xₙ` is `x`, and `f` is not a metavariable.
   For example, the pattern `Continuous fun y => Real.exp (f y)])` is indexed by
   both `@Continuous *0 ℝ *1 *2 (λ, Real.exp *3)`
-  and  `@Continuous *0 ℝ *1 *2 Real.exp`,
+  and `@Continuous *0 ℝ *1 *2 Real.exp`,
   so that it also comes up if you look up `Continuous Real.exp`.
 
 - How to deal with number literals is waiting for this issue to be resolved:
@@ -57,7 +57,6 @@ and includes many more features.
 - The key `Key.opaque` only matches with a `Key.star` key.
   Depending on the configuration, β-reduction and ζ-reduction may be disabled, so the resulting
   applied lambda expressions or let-expressions are indexed by `Key.opaque`.
-
 
 ## Lazy computation
 
@@ -68,7 +67,6 @@ and lazy entries, or returns `none` if the last key has been reached already.
 
 The `RefinedDiscrTree` then stores these `LazyEntries` at its leafs, and evaluates them
 only if the lookup algorithm reaches this leaf.
-
 
 ## Alternative optimizations
 
@@ -82,9 +80,9 @@ environment. For `fun_prop` this is not a serious problem since it doesn't have 
 different lemmas anyways.
 
 #### Future work:
+
 Make a version of `RefinedDiscrTree` that is optimal for tactics like `simp` and
 `fun_prop`. This would mean using a persistent data structure, and possibly a non-lazy structure.
-
 
 ## Matching vs Unification
 
@@ -95,6 +93,7 @@ type class search. Since the intended applications of the `RefinedDiscrTree` cur
 matching, the lookup algorithm is most optimized for matching.
 
 #### Future work:
+
 Improve the unification lookup.
 
 -/

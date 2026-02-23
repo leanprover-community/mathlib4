@@ -16,6 +16,7 @@ Common applications are logging monads where the monad logs messages as the
 computation progresses.
 
 ## References
+
 - https://hackage.haskell.org/package/mtl-2.2.1/docs/Control-Monad-Writer-Class.html
 - [Original Mark P Jones article introducing `Writer`](https://web.cecs.pdx.edu/~mpj/pubs/springschool.html)
 

@@ -34,6 +34,7 @@ Further, we use `Finset.Ioc` rather than a set intersection since the set is fin
 which reduces the proof obligations later that would arise with `Nat.card`.
 
 ## TODO
+
 * Give other calculations of the density, for example powers and their sumsets.
 * Define other densities like the lower and upper asymptotic density, and the natural density,
   and show how these relate to the Schnirelmann density.

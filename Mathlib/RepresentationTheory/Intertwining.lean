@@ -29,7 +29,7 @@ variable {A G V W U : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommM
   isIntertwining (g : G) (v : V) : f (ρ g v) = σ g (f v)
 
 /-- An intertwining map between two representations `ρ` and `σ` of the same monoid `G` is a map
-  between underlying modules which commutes with the `G`-actions. -/
+between underlying modules which commutes with the `G`-actions. -/
 @[ext] structure IntertwiningMap extends V →ₗ[A] W where
   /-- An underlying `A`-linear map of the underlying `A`-modules. -/
   isIntertwining' (g : G) (v : V) : toFun (ρ g v) = σ g (toFun v)
@@ -198,7 +198,7 @@ theorem isIntertwiningMap_of_mem_center (g : G) (hg : g ∈ Submonoid.center G) 
   rw [← Module.End.mul_apply, ← Module.End.mul_apply, ← ρ.map_mul, ← hg g', ρ.map_mul]
 
 /-- If `g` is a central element of a monoid `G`, then this is the action of `g`, considered as an
-  intertwining map from any representation of `G` to itself. -/
+intertwining map from any representation of `G` to itself. -/
 def centralMul (g : G) (hg : g ∈ Submonoid.center G) : IntertwiningMap ρ ρ where
   toLinearMap := ρ g
   isIntertwining' := (isIntertwiningMap_of_mem_center ρ g hg).isIntertwining

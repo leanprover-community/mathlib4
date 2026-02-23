@@ -26,9 +26,10 @@ We define polynomial sequences – sequences of polynomials `a₀, a₁, ...` su
 ## TODO
 
 Generalize linear independence to:
-  * `IsCancelAdd` semirings
-  * just require coefficients are regular
-  * arbitrary sets of polynomials which are pairwise different degree.
+
+* `IsCancelAdd` semirings
+* just require coefficients are regular
+* arbitrary sets of polynomials which are pairwise different degree.
 -/
 
 @[expose] public section

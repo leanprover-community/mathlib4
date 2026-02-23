@@ -50,7 +50,7 @@ def piOptionEquivProd {α} {β : Option α → Type*} :
 section subtypeCongr
 
 /-- Combines an `Equiv` between two subtypes with an `Equiv` between their complements to form a
-  permutation. -/
+permutation. -/
 def subtypeCongr {α} {p q : α → Prop} [DecidablePred p] [DecidablePred q]
     (e : { x // p x } ≃ { x // q x }) (f : { x // ¬p x } ≃ { x // ¬q x }) : Perm α :=
   (sumCompl p).symm.trans ((sumCongr e f).trans (sumCompl q))
@@ -627,7 +627,7 @@ theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
   unfold swapCore; split_ifs <;> grind
 
 /-- `swap a b` is the permutation that swaps `a` and `b` and
-  leaves other values as is. -/
+leaves other values as is. -/
 def swap (a b : α) : Perm α :=
   ⟨swapCore a b, swapCore a b, fun r => swapCore_swapCore r a b,
     fun r => swapCore_swapCore r a b⟩

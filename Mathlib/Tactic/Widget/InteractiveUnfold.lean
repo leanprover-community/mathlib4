@@ -26,15 +26,17 @@ It can be used on its own, but it can also be used as part of the library rewrit
 where these unfoldings are a subset of the suggestions.
 
 For example, if the goal contains `1+1`, then it will suggest rewriting this into one of
+
 - `Nat.add 1 1`
 - `2`
 
 Clicking on a suggestion pastes a rewrite into the editor, which will be of the form
+
 - `rw [show 1+1 = Nat.add 1 1 from rfl]`
 - `rw [show 1+1 = 2 from rfl]`
-It also takes into account the position of the selected expression if it appears in multiple places,
-and whether the rewrite is in the goal or a local hypothesis.
-The rewrite string is created using `mkRewrite`.
+  It also takes into account the position of the selected expression if it appears in multiple places,
+  and whether the rewrite is in the goal or a local hypothesis.
+  The rewrite string is created using `mkRewrite`.
 
 ## Reduction rules
 
@@ -221,6 +223,7 @@ def UnfoldComponent : Component SelectInsertParams :=
 
 
 /-- Replace the selected expression with a definitional unfolding.
+
 - After each unfolding, we apply `whnfCore` to simplify the expression.
 - Explicit natural number expressions are evaluated.
 - Unfolds of class projections of instances marked with `@[default_instance]` are not shown.

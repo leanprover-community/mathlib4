@@ -18,6 +18,7 @@ measurable sets `s` of `β`, `a ↦ κ a s` is measurable.
 ## Main definitions
 
 Classes of kernels:
+
 * `ProbabilityTheory.Kernel α β`: kernels from `α` to `β`.
 * `ProbabilityTheory.IsMarkovKernel κ`: a kernel from `α` to `β` is said to be a Markov kernel
   if for all `a : α`, `k a` is a probability measure.

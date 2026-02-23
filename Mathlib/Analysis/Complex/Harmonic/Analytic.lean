@@ -15,7 +15,7 @@ public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 
 If `f : ℂ → ℝ` is harmonic at `x`, we show that `∂f/∂1 - I • ∂f/∂I` is complex-analytic at `x`. If
 `f` is harmonic on an open ball, then it is the real part of a function `F : ℂ → ℂ` that is
-holomorphic on the ball.  This implies in particular that harmonic functions are real-analytic.
+holomorphic on the ball. This implies in particular that harmonic functions are real-analytic.
 -/
 
 public section

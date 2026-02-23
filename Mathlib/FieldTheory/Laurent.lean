@@ -20,7 +20,7 @@ public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 Implemented as the quotient of two Taylor expansions, over domains.
 An auxiliary definition is provided first to make the construction of the `AlgHom` easier,
-  which works on `CommRing` which are not necessarily domains.
+which works on `CommRing` which are not necessarily domains.
 -/
 
 @[expose] public section

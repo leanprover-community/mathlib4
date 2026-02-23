@@ -58,6 +58,7 @@ in the second.
 inner product space, Hilbert space, norm
 
 ## References
+
 * [Clément & Martin, *The Lax-Milgram Theorem. A detailed proof to be formalized in Coq*]
 * [Clément & Martin, *A Coq formal proof of the Lax–Milgram theorem*]
 

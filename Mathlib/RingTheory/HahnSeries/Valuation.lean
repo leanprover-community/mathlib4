@@ -10,18 +10,22 @@ public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Valuations on Hahn Series rings
+
 If `Γ` is a `LinearOrderedCancelAddCommMonoid` and `R` is a domain, then the domain `R⟦Γ⟧`
 admits an additive valuation given by `orderTop`.
 
 ## Main Definitions
+
 * `HahnSeries.addVal Γ R` defines an `AddValuation` on `R⟦Γ⟧` when `Γ` is linearly
   ordered.
 
 ## TODO
+
 * Multiplicative valuations
 * Add any API for Laurent series valuations that do not depend on `Γ = ℤ`.
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
@@ -39,7 +43,7 @@ variable [AddCancelCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
 variable (Γ R) in
 /-- The additive valuation on `R⟦Γ⟧` returning the smallest index at which
-  a Hahn Series has a nonzero coefficient, or `⊤` for the 0 series. -/
+a Hahn Series has a nonzero coefficient, or `⊤` for the 0 series. -/
 def addVal : AddValuation R⟦Γ⟧ (WithTop Γ) :=
   AddValuation.of orderTop orderTop_zero (orderTop_one) (fun _ _ => min_orderTop_le_orderTop_add)
   fun x y => by

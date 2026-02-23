@@ -624,8 +624,8 @@ theorem measurable_updateFinset_left [DecidableEq δ] {s : Finset δ} {x : Π i 
   measurable_updateFinset'.comp measurable_prodMk_right
 
 /-- The function `update f a : X a → Π a, X a` is always measurable.
-  This doesn't require `f` to be measurable.
-  This should not be confused with the statement that `update f a x` is measurable. -/
+This doesn't require `f` to be measurable.
+This should not be confused with the statement that `update f a x` is measurable. -/
 @[fun_prop]
 theorem measurable_update (f : ∀ a : δ, X a) {a : δ} [DecidableEq δ] : Measurable (update f a) :=
   measurable_update'.comp measurable_prodMk_left

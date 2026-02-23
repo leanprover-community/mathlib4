@@ -154,7 +154,7 @@ theorem card_orbit (a : α) [Finite (orbit G a)] : ∃ n : ℕ, Nat.card (orbit 
 variable (α) [Finite α]
 
 /-- If `G` is a `p`-group acting on a finite set `α`, then the number of fixed points
-  of the action is congruent mod `p` to the cardinality of `α` -/
+of the action is congruent mod `p` to the cardinality of `α` -/
 theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α) [MOD p] := by
   have := Fintype.ofFinite α
   have := Fintype.ofFinite (fixedPoints G α)
@@ -189,7 +189,7 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
         Finset.mem_univ _, ne_of_eq_of_ne Nat.cast_one one_ne_zero, rfl⟩
 
 /-- If a p-group acts on `α` and the cardinality of `α` is not a multiple
-  of `p` then the action has a fixed point. -/
+of `p` then the action has a fixed point. -/
 theorem nonempty_fixed_point_of_prime_not_dvd_card (α) [MulAction G α] (hpα : ¬p ∣ Nat.card α) :
     (fixedPoints G α).Nonempty :=
   have : Finite α := Nat.finite_of_card_ne_zero (fun h ↦ (h ▸ hpα) (dvd_zero p))
@@ -201,7 +201,7 @@ theorem nonempty_fixed_point_of_prime_not_dvd_card (α) [MulAction G α] (hpα :
       exact hG.card_modEq_card_fixedPoints α)
 
 /-- If a p-group acts on `α` and the cardinality of `α` is a multiple
-  of `p`, and the action has one fixed point, then it has another fixed point. -/
+of `p`, and the action has one fixed point, then it has another fixed point. -/
 theorem exists_fixed_point_of_prime_dvd_card_of_fixed_point (hpα : p ∣ Nat.card α) {a : α}
     (ha : a ∈ fixedPoints G α) : ∃ b, b ∈ fixedPoints G α ∧ a ≠ b := by
   have hpf : p ∣ Nat.card (fixedPoints G α) :=

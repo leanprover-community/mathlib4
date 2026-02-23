@@ -14,6 +14,7 @@ public import Mathlib.Topology.Maps.Proper.Basic
 # Properties of maps that are local at the target or at the source.
 
 We show that the following properties of continuous maps are local at the target :
+
 - `IsInducing`
 - `IsOpenMap`
 - `IsClosedMap`
@@ -23,6 +24,7 @@ We show that the following properties of continuous maps are local at the target
 - `GeneralizingMap`
 
 We show that the following properties of continuous maps are local at the source:
+
 - `IsOpenMap`
 - `GeneralizingMap`
 

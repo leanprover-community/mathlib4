@@ -51,6 +51,7 @@ larger space of test functions.
 ## Notation
 
 In the `Distributions` scope, we introduce the following notations:
+
 - `𝓓^{n}_{K}(E, F)`: the space of `n`-times continuously differentiable functions `E → F`
   which vanish outside of `K`.
 - `𝓓_{K}(E, F)`: the space of smooth (infinitely differentiable) functions `E → F`

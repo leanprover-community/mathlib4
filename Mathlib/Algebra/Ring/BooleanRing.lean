@@ -29,6 +29,7 @@ algebras.
 ## Implementation notes
 
 We provide two ways of turning a Boolean algebra/ring into a Boolean ring/algebra:
+
 * Instances on the same type accessible in locales `BooleanAlgebraOfBooleanRing` and
   `BooleanRingOfBooleanAlgebra`.
 * Type-synonyms `AsBoolAlg` and `AsBoolRing`.
@@ -208,6 +209,7 @@ theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = 
 /-- The Boolean algebra structure on a Boolean ring.
 
 The data is defined so that:
+
 * `a ⊔ b` unfolds to `a + b + a * b`
 * `a ⊓ b` unfolds to `a * b`
 * `a ≤ b` unfolds to `a + b + a * b = b`

@@ -11,6 +11,7 @@ public meta import Lean.Elab.SyntheticMVars
 
 /-!
 # The `type_check` tactic
+
 Define the `type_check` tactic: it type checks a given expression, and traces its type.
 -/
 

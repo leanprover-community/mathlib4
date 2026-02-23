@@ -39,9 +39,11 @@ implemented as `spanFinrank` and `spanRank`.
   to the rank of M.
 
 ## Tags
+
 submodule, generating subset, span rank
 
 ## Remark
+
 Note that the corresponding API - `Module.rank` is only defined for a module rather than a
 submodule, so there is some asymmetry here. Further refactoring might be needed if this difference
 creates a friction later on.
@@ -63,7 +65,7 @@ open Cardinal
 noncomputable def spanRank (p : Submodule R M) : Cardinal := ⨅ (s : {s : Set M // span R s = p}), #s
 
 /-- The minimum cardinality of a generating set of a submodule as a natural number. If no finite
-  generating set exists, the span rank is defined to be `0`. -/
+generating set exists, the span rank is defined to be `0`. -/
 noncomputable def spanFinrank (p : Submodule R M) : ℕ := (spanRank p).toNat
 
 instance (p : Submodule R M) : Nonempty {s : Set M // span R s = p} := ⟨⟨p, by simp⟩⟩
@@ -168,7 +170,7 @@ theorem exists_span_set_card_eq_spanRank (p : Submodule R M) :
   exact ⟨s.1, ⟨hs, s.2⟩⟩
 
 /-- Constructs a generating set with cardinality equal to the `spanFinrank` of the submodule when
-  the submodule is finitely generated. -/
+the submodule is finitely generated. -/
 theorem FG.exists_span_set_encard_eq_spanFinrank {p : Submodule R M} (h : p.FG) :
     ∃ s : Set M, s.encard = p.spanFinrank ∧ span R s = p := by
   obtain ⟨s, ⟨hs₁, hs₂⟩⟩ := exists_span_set_card_eq_spanRank p
@@ -178,7 +180,7 @@ theorem FG.exists_span_set_encard_eq_spanFinrank {p : Submodule R M} (h : p.FG) 
   simp
 
 /-- For a finitely generated submodule, its spanRank is less than or equal to a cardinal `a`
-  if and only if there is a generating subset with cardinality less than or equal to `a`. -/
+if and only if there is a generating subset with cardinality less than or equal to `a`. -/
 lemma FG.spanRank_le_iff_exists_span_set_card_le (p : Submodule R M) {a : Cardinal} :
     p.spanRank ≤ a ↔ ∃ s : Set M, #s ≤ a ∧ span R s = p := by
   constructor

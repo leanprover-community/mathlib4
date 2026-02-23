@@ -25,11 +25,11 @@ provided.
 
 * `TopCat.GlueData`: A structure containing the family of gluing data.
 * `CategoryTheory.GlueData.glued`: The glued topological space.
-    This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
-    can be used.
+  This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
+  can be used.
 * `CategoryTheory.GlueData.ι`: The immersion `ι i : U i ⟶ glued` for each `i : ι`.
 * `TopCat.GlueData.Rel`: A relation on `Σ i, D.U i` defined by `⟨i, x⟩ ~ ⟨j, y⟩` iff
-    `⟨i, x⟩ = ⟨j, y⟩` or `t i j x = y`. See `TopCat.GlueData.ι_eq_iff_rel`.
+  `⟨i, x⟩ = ⟨j, y⟩` or `t i j x = y`. See `TopCat.GlueData.ι_eq_iff_rel`.
 * `TopCat.GlueData.mk`: A constructor of `GlueData` whose conditions are stated in terms of
   elements rather than subobjects and pullbacks.
 * `TopCat.GlueData.ofOpenSubsets`: Given a family of open sets, we may glue them into a new
@@ -39,15 +39,15 @@ provided.
 ## Main results
 
 * `TopCat.GlueData.isOpen_iff`: A set in `glued` is open iff its preimage along each `ι i` is
-    open.
+  open.
 * `TopCat.GlueData.ι_jointly_surjective`: The `ι i`s are jointly surjective.
 * `TopCat.GlueData.rel_equiv`: `Rel` is an equivalence relation.
 * `TopCat.GlueData.ι_eq_iff_rel`: `ι i x = ι j y ↔ ⟨i, x⟩ ~ ⟨j, y⟩`.
 * `TopCat.GlueData.image_inter`: The intersection of the images of `U i` and `U j` in `glued` is
-    `V i j`.
+  `V i j`.
 * `TopCat.GlueData.preimage_range`: The preimage of the image of `U i` in `U j` is `V i j`.
 * `TopCat.GlueData.preimage_image_eq_image`: The preimage of the image of some `U ⊆ U i` is
-    given by XXX.
+  given by XXX.
 * `TopCat.GlueData.ι_isOpenEmbedding`: Each of the `ι i`s are open embeddings.
 
 -/
@@ -65,19 +65,20 @@ open CategoryTheory.Limits
 namespace TopCat
 
 /-- A family of gluing data consists of
+
 1. An index type `J`
 2. An object `U i` for each `i : J`.
 3. An object `V i j` for each `i j : J`.
-  (Note that this is `J × J → TopCat` rather than `J → J → TopCat` to connect to the
-  limits library easier.)
+   (Note that this is `J × J → TopCat` rather than `J → J → TopCat` to connect to the
+   limits library easier.)
 4. An open embedding `f i j : V i j ⟶ U i` for each `i j : ι`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
-such that
+   such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
 8. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-    `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
-    (This merely means that `V i j ∩ V i k ⊆ t i j ⁻¹' (V j i ∩ V j k)`.)
+   `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+   (This merely means that `V i j ∩ V i k ⊆ t i j ⁻¹' (V j i ∩ V j k)`.)
 9. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 
 We can then glue the topological spaces `U i` together by identifying `V i j` with `V j i`, such
@@ -266,15 +267,16 @@ theorem ι_isOpenEmbedding (i : D.J) : IsOpenEmbedding (𝖣.ι i) :=
     D.open_image_open i ⟨U, h⟩
 
 /-- A family of gluing data consists of
+
 1. An index type `J`
 2. A bundled topological space `U i` for each `i : J`.
 3. An open set `V i j ⊆ U i` for each `i j : J`.
 4. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
-such that
-6. `V i i = U i`.
-7. `t i i` is the identity.
-8. For each `x ∈ V i j ∩ V i k`, `t i j x ∈ V j k`.
-9. `t j k (t i j x) = t i k x`.
+   such that
+5. `V i i = U i`.
+6. `t i i` is the identity.
+7. For each `x ∈ V i j ∩ V i k`, `t i j x ∈ V j k`.
+8. `t j k (t i j x) = t i k x`.
 
 We can then glue the topological spaces `U i` together by identifying `V i j` with `V j i`.
 -/

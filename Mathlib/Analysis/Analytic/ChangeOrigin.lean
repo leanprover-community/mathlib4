@@ -58,8 +58,7 @@ Given a formal multilinear series `p` and a point `x` in its ball of convergence
 `p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense. Each term of `p.changeOrigin x`
 is itself an analytic function of `x` given by the series `p.changeOriginSeries`. Each term in
 `changeOriginSeries` is the sum of `changeOriginSeriesTerm`'s over all `s` of cardinality `l`.
-The definition is such that `p.changeOriginSeriesTerm k l s hs (fun _ ↦ x) (fun _ ↦ y) =
-p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
+The definition is such that `p.changeOriginSeriesTerm k l s hs (fun _ ↦ x) (fun _ ↦ y) = p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
 -/
 def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
     E [×l]→L[𝕜] E [×k]→L[𝕜] F :=

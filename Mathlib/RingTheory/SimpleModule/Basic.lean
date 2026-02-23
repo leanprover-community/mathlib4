@@ -23,6 +23,7 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 # Simple Modules
 
 ## Main Definitions
+
 * `IsSimpleModule` indicates that a module has no proper submodules
   (the only submodules are `⊥` and `⊤`).
 * `IsSemisimpleModule` indicates that every submodule has a complement, or equivalently,
@@ -30,6 +31,7 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 * A `DivisionRing` structure on the endomorphism ring of a simple module.
 
 ## Main Results
+
 * Schur's Lemma: `bijective_or_eq_zero` shows that a linear map between simple modules
   is either bijective or 0, leading to a `DivisionRing` structure on the endomorphism ring.
 * `isSimpleModule_iff_quot_maximal`:
@@ -47,6 +49,7 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 * `RingHom.isSemisimpleRing_of_surjective`: any quotient of a semisimple ring is semisimple.
 
 ## TODO
+
 * Artin-Wedderburn Theory (uniqueness)
 * Unify with the work on Schur's Lemma in a category theory context
 
@@ -62,7 +65,7 @@ variable {ι : Type*} (R S : Type*) [Ring R] [Ring S] (M : Type*) [AddCommGroup 
   IsSimpleOrder (Submodule R M)
 
 /-- A module is semisimple when every submodule has a complement, or equivalently, the module
-  is a direct sum of simple modules. -/
+is a direct sum of simple modules. -/
 @[mk_iff] class IsSemisimpleModule extends
   ComplementedLattice (Submodule R M)
 

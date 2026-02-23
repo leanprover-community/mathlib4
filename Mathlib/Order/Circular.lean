@@ -20,8 +20,8 @@ This file defines circular preorders, circular partial orders and circular order
   - cyclic: `btw a b c → btw b c a`
   - antisymmetric: `btw a b c → btw c b a → a = b ∨ b = c ∨ c = a`
   - total: `btw a b c ∨ btw c b a`
-  along with a strict betweenness relation `sbtw : α → α → α → Prop` which respects
-  `sbtw a b c ↔ btw a b c ∧ ¬ btw c b a`, analogously to how `<` and `≤` are related, and is
+    along with a strict betweenness relation `sbtw : α → α → α → Prop` which respects
+    `sbtw a b c ↔ btw a b c ∧ ¬ btw c b a`, analogously to how `<` and `≤` are related, and is
   - transitive: `sbtw a b c → sbtw b d c → sbtw a d c`.
 * A `CircularPartialOrder` drops totality.
 * A `CircularPreorder` further drops antisymmetry.
@@ -53,12 +53,13 @@ Some concrete circular orders one encounters in the wild are `ZMod n` for `0 < n
 
 There's an unsolved diamond on `OrderDual α` here. The instances `LE α → Btw αᵒᵈ` and
 `LT α → SBtw αᵒᵈ` can each be inferred in two ways:
+
 * `LE α` → `Btw α` → `Btw αᵒᵈ` vs
   `LE α` → `LE αᵒᵈ` → `Btw αᵒᵈ`
 * `LT α` → `SBtw α` → `SBtw αᵒᵈ` vs
   `LT α` → `LT αᵒᵈ` → `SBtw αᵒᵈ`
-The fields are propeq, but not defeq. It is temporarily fixed by turning the circularizing instances
-into definitions.
+  The fields are propeq, but not defeq. It is temporarily fixed by turning the circularizing instances
+  into definitions.
 
 ## TODO
 

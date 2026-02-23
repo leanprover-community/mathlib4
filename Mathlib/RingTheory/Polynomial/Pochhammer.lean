@@ -31,6 +31,7 @@ In an integral domain `S`, we show that `ascPochhammer S n` is zero iff
 ## TODO
 
 There is lots more in this direction:
+
 * q-factorials, q-binomials, q-Pochhammer.
 -/
 

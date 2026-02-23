@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
 Given a category `𝒮` and any pseudofunctor `F` from `𝒮` to `Cat`, we associate to it a category
 `∫ F`, defined as follows:
+
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
   category `F(S)`.
 * Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
@@ -22,6 +23,7 @@ Given a category `𝒮` and any pseudofunctor `F` from `𝒮` to `Cat`, we assoc
 
 The category `∫ F` is equipped with a projection functor `∫ F ⥤ 𝒮`,
 given by projecting to the first factors, i.e.
+
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
 
@@ -29,6 +31,7 @@ given by projecting to the first factors, i.e.
 
 Given a category `𝒮` and any pseudofunctor `F` from `𝒮ᵒᵖ` to `Cat`,
 we associate to it a category `∫ᶜ F`, defined as follows:
+
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
   category `F(S)`.
 * Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
@@ -36,6 +39,7 @@ we associate to it a category `∫ᶜ F`, defined as follows:
 
 The category `∫ᶜ F` is equipped with a functor `∫ᶜ F ⥤ 𝒮`,
 given by projecting to the first factors, i.e.
+
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
 
@@ -49,11 +53,12 @@ This is consistent with the convention for the Grothendieck construction on 1-fu
 ## Future work / TODO
 
 1. Once the bicategory of pseudofunctors has been defined, show that this construction forms a
-pseudofunctor from `LocallyDiscrete 𝒮 ⥤ᵖ Catᵒᵖ` to `Cat`.
+   pseudofunctor from `LocallyDiscrete 𝒮 ⥤ᵖ Catᵒᵖ` to `Cat`.
 2. Deduce the results in `CategoryTheory.Grothendieck` as a specialization of
    `Pseudofunctor.Grothendieck`.
 
 ## References
+
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
 Angelo Vistoli
 

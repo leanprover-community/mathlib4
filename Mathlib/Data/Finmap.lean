@@ -65,7 +65,7 @@ end Multiset
 /-! ### Finmap -/
 
 /-- `Finmap β` is the type of finite maps over a multiset. It is effectively
-  a quotient of `AList β` by permutation of the underlying list. -/
+a quotient of `AList β` by permutation of the underlying list. -/
 structure Finmap (β : α → Type v) : Type max u v where
   /-- The underlying `Multiset` of a `Finmap` -/
   entries : Multiset (Sigma β)
@@ -326,7 +326,7 @@ def keysLookupEquiv :
 /-! ### replace -/
 
 /-- Replace a key with a given value in a finite map.
-  If the key is not present it does nothing. -/
+If the key is not present it does nothing. -/
 def replace (a : α) (b : β a) (s : Finmap β) : Finmap β :=
   (liftOn s fun t => AList.toFinmap (AList.replace a b t))
     fun _ _ p => toFinmap_eq.2 <| perm_replace p
@@ -419,7 +419,7 @@ instance : SDiff (Finmap β) :=
 /-! ### insert -/
 
 /-- Insert a key-value pair into a finite map, replacing any existing pair with
-  the same key. -/
+the same key. -/
 def insert (a : α) (b : β a) (s : Finmap β) : Finmap β :=
   (liftOn s fun t => AList.toFinmap (AList.insert a b t)) fun _ _ p =>
     toFinmap_eq.2 <| perm_insert p

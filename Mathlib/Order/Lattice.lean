@@ -23,13 +23,17 @@ of `sup` over `inf`, on the left or on the right.
 ## Main declarations
 
 * `SemilatticeSup`: a type class for join semilattices
+
 * `SemilatticeSup.mk'`: an alternative constructor for `SemilatticeSup` via proofs that `⊔` is
   commutative, associative and idempotent.
+
 * `SemilatticeInf`: a type class for meet semilattices
+
 * `SemilatticeSup.mk'`: an alternative constructor for `SemilatticeInf` via proofs that `⊓` is
   commutative, associative and idempotent.
 
 * `Lattice`: a type class for lattices
+
 * `Lattice.mk'`: an alternative constructor for `Lattice` via proofs that `⊔` and `⊓` are
   commutative, associative and satisfy a pair of "absorption laws".
 
@@ -62,8 +66,8 @@ variable {α : Type u} {β : Type v}
 -/
 
 /-- A `SemilatticeSup` is a join-semilattice, that is, a partial order
-  with a join (a.k.a. lub / least upper bound, sup / supremum) operation
-  `⊔` which is the least element larger than both factors. -/
+with a join (a.k.a. lub / least upper bound, sup / supremum) operation
+`⊔` which is the least element larger than both factors. -/
 class SemilatticeSup (α : Type u) extends PartialOrder α where
   /-- The binary supremum, used to derive `Max α` -/
   sup : α → α → α
@@ -75,8 +79,8 @@ class SemilatticeSup (α : Type u) extends PartialOrder α where
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → sup a b ≤ c
 
 /-- A `SemilatticeInf` is a meet-semilattice, that is, a partial order
-  with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
-  `⊓` which is the greatest element smaller than both factors. -/
+with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
+`⊓` which is the greatest element smaller than both factors. -/
 @[to_dual]
 class SemilatticeInf (α : Type u) extends PartialOrder α where
   /-- The binary infimum, used to derive `Min α` -/

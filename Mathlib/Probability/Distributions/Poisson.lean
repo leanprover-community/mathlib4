@@ -14,6 +14,7 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 Define the Poisson measure over the natural numbers
 
 ## Main definitions
+
 * `poissonPMFReal`: the function `fun n ↦ exp (- λ) * λ ^ n / n!`
   for `n ∈ ℕ`, which is the probability density function of a Poisson distribution with
   rate `λ > 0`.

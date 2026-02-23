@@ -35,6 +35,7 @@ We define Stieltjes functions over any conditionally complete dense linear order
 to cover the cases of `ℝ≥0` and `[0, T]` in addition to the classical case of `ℝ`. This creates
 a few issues, mostly with the management of bottom and top elements. To handle these, we need
 two technical definitions:
+
 * `Iotop a b` is the interval `Ioo a b` if `b` is not top, and `Ioc a b` if `b` is top.
 * `botSet` is the empty set if there is no bot element, and `{x}` if `x` is bot.
 

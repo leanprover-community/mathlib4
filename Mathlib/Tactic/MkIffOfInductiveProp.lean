@@ -49,9 +49,11 @@ private def select (m n : Nat) (goal : MVarId) : MetaM MVarId :=
   | _, _             => failure
 
 /-- `compactRelation bs as_ps`: Produce a relation of the form:
+
 ```lean
 R := fun as ↦ ∃ bs, ⋀_i a_i = p_i[bs]
 ```
+
 This relation is user-visible, so we compact it by removing each `b_j` where a `p_i = b_j`, and
 hence `a_i = b_j`. We need to take care when there are `p_i` and `p_j` with `p_i = p_j = b_k`.
 -/
@@ -88,7 +90,7 @@ def mkExistsList (args : List Expr) (inner : Expr) : MetaM Expr :=
     inner
 
 /-- `mkOpList op empty [x1, x2, ...]` is defined as `op x1 (op x2 ...)`.
-  Returns `empty` if the list is empty. -/
+Returns `empty` if the list is empty. -/
 def mkOpList (op : Expr) (empty : Expr) : List Expr → Expr
   | []        => empty
   | [e]       => e
@@ -114,17 +116,21 @@ structure Shape : Type where
   if that variable has been kept after `compactRelation`.
 
   For example, `List.Chain.nil` has type
+
   ```lean
     ∀ {α : Type u_1} {R : α → α → Prop} {a : α}, List.Chain R a []`
   ```
+
   and the first two variables `α` and `R` are "params", while the `a : α` gets
   eliminated in a `compactRelation`, so `variablesKept = [false]`.
 
   `List.Chain.cons` has type
+
   ```lean
     ∀ {α : Type u_1} {R : α → α → Prop} {a b : α} {l : List α},
        R a b → List.Chain R b l → List.Chain R a (b :: l)
   ```
+
   and the `a : α` gets eliminated, so `variablesKept = [false,true,true,true,true]`.
   -/
   variablesKept : List Bool
@@ -240,6 +246,7 @@ result and continue with the tail of first list. Otherwise, wrap the first eleme
 list with `some` and continue with the tails of both lists. Return when either list is empty.
 
 Example:
+
 ```
 listBoolMerge [false, true, false, true] [0, 1, 2, 3, 4] = [none, (some 0), none, (some 1)]
 ```
@@ -338,6 +345,7 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
 /--
 Applying the `mk_iff` attribute to an inductively-defined proposition `mk_iff` makes an `iff` rule
 `r` with the shape `∀ ps is, i as ↔ ⋁_j, ∃ cs, is = cs`, where
+
 * `ps` are the type parameters,
 * `is` are the indices,
 * `j` ranges over all possible constructors,
@@ -349,6 +357,7 @@ In each case, we remove constructor parameters (i.e. `cs`) when the correspondin
 be just `c = i` for some index `i`.
 
 For example, if we try the following:
+
 ```lean
 @[mk_iff]
 structure Foo (m n : Nat) : Prop where
@@ -357,12 +366,14 @@ structure Foo (m n : Nat) : Prop where
 ```
 
 Then `#check foo_iff` returns:
+
 ```lean
 foo_iff : ∀ (m n : Nat), Foo m n ↔ m = n ∧ m + n = 2
 ```
 
 You can add an optional string after `mk_iff` to change the name of the generated lemma.
 For example, if we try the following:
+
 ```lean
 @[mk_iff bar]
 structure Foo (m n : Nat) : Prop where
@@ -371,6 +382,7 @@ structure Foo (m n : Nat) : Prop where
 ```
 
 Then `#check bar` returns:
+
 ```lean
 bar : ∀ (m n : ℕ), Foo m n ↔ m = n ∧ m + n = 2
 ```
@@ -382,6 +394,7 @@ syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
 /--
 `mk_iff_of_inductive_prop i r` makes an `iff` rule for the inductively-defined proposition `i`.
 The new rule `r` has the shape `∀ ps is, i as ↔ ⋁_j, ∃ cs, is = cs`, where
+
 * `ps` are the type parameters,
 * `is` are the indices,
 * `j` ranges over all possible constructors,

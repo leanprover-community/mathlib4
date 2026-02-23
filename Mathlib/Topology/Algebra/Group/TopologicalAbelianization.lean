@@ -20,10 +20,12 @@ This file defines the topological abelianization of a topological group.
   of `G` by the topological closure of its commutator subgroup..
 
 ## Main results
+
 - `instNormalCommutatorClosure` : the topological closure of the commutator of a topological group
   `G` is a normal subgroup.
 
 ## Tags
+
 group, topological abelianization
 
 -/
@@ -36,7 +38,7 @@ instance instNormalCommutatorClosure : (commutator G).topologicalClosure.Normal 
   Subgroup.is_normal_topologicalClosure (commutator G)
 
 /-- The topological abelianization of `absoluteGaloisGroup`, that is, the quotient of
-  `absoluteGaloisGroup` by the topological closure of its commutator subgroup. -/
+`absoluteGaloisGroup` by the topological closure of its commutator subgroup. -/
 abbrev TopologicalAbelianization := G ⧸ Subgroup.topologicalClosure (commutator G)
 
 local notation "G_ab" => TopologicalAbelianization

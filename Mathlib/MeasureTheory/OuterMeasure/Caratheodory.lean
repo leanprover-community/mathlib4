@@ -51,7 +51,7 @@ attribute [local simp] Set.inter_comm Set.inter_left_comm Set.inter_assoc
 variable {s s₁ s₂ : Set α}
 
 /-- A set `s` is Carathéodory-measurable for an outer measure `m` if for all sets `t` we have
-  `m t = m (t ∩ s) + m (t \ s)`. -/
+`m t = m (t ∩ s) + m (t \ s)`. -/
 def IsCaratheodory (s : Set α) : Prop :=
   ∀ t, m t = m (t ∩ s) + m (t \ s)
 
@@ -168,7 +168,7 @@ def caratheodoryDynkin : MeasurableSpace.DynkinSystem α where
   has_iUnion_nat _ hf hn := by apply isCaratheodory_iUnion m hf
 
 /-- Given an outer measure `μ`, the Carathéodory-measurable space is
-  defined such that `s` is measurable if `∀ t, μ t = μ (t ∩ s) + μ (t \ s)`. -/
+defined such that `s` is measurable if `∀ t, μ t = μ (t ∩ s) + μ (t \ s)`. -/
 protected def caratheodory : MeasurableSpace α := by
   apply MeasurableSpace.DynkinSystem.toMeasurableSpace (caratheodoryDynkin m)
   intro s₁ s₂

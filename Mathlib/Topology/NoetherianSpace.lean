@@ -12,6 +12,7 @@ public import Mathlib.Topology.Sets.Closeds
 # Noetherian space
 
 A Noetherian space is a topological space that satisfies any of the following equivalent conditions:
+
 - `WellFounded ((· > ·) : TopologicalSpace.Opens α → TopologicalSpace.Opens α → Prop)`
 - `WellFounded ((· < ·) : TopologicalSpace.Closeds α → TopologicalSpace.Closeds α → Prop)`
 - `∀ s : Set α, IsCompact s`

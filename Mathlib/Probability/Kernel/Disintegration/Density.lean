@@ -19,6 +19,7 @@ such that for all `a : α` and all measurable sets `s : Set β` and `A : Set γ`
 `∫ x in A, density κ ν a x s ∂(ν a) = (κ a).real (A ×ˢ s)`.
 
 There are two main applications of this construction.
+
 * Disintegration of kernels: for `κ : Kernel α (γ × β)`, we want to build a kernel
   `η : Kernel (α × γ) β` such that `κ = fst κ ⊗ₖ η`. For `β = ℝ`, we can use the density of `κ`
   with respect to `fst κ` for intervals to build a kernel cumulative distribution function for `η`.
@@ -44,10 +45,12 @@ There are two main applications of this construction.
 
 If we were interested only in a fixed `a : α`, then we could use the Radon-Nikodym derivative to
 build the density function `density κ ν`, as follows.
+
 ```
 def density' (κ : Kernel α (γ × β)) (ν : kernel a γ) (a : α) (x : γ) (s : Set β) : ℝ :=
   (((κ a).restrict (univ ×ˢ s)).fst.rnDeriv (ν a) x).toReal
 ```
+
 However, we can't turn those functions for each `a` into a measurable function of the pair `(a, x)`.
 
 In order to obtain measurability through countability, we use the fact that the measurable space `γ`

@@ -54,7 +54,7 @@ lemma eval_modulus_sub (x : ZMod n) : χ (n - x) = χ (-x) := by simp
 -/
 
 /-- A function that modifies the level of a Dirichlet character to some multiple
-  of its original level. -/
+of its original level. -/
 noncomputable def changeLevel {n m : ℕ} (hm : n ∣ m) :
     DirichletCharacter R n →* DirichletCharacter R m where
   toFun ψ := MulChar.ofUnitHom (ψ.toUnitHom.comp (ZMod.unitsMap hm))

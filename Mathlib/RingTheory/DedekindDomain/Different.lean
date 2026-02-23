@@ -14,22 +14,25 @@ public import Mathlib.RingTheory.Trace.Quotient
 # The different ideal
 
 ## Main definition
+
 - `Submodule.traceDual`: The dual `L`-sub `B`-module under the trace form.
 - `FractionalIdeal.dual`: The dual fractional ideal under the trace form.
 - `differentIdeal`: The different ideal of an extension of integral domains.
 
 ## Main results
+
 - `conductor_mul_differentIdeal`:
   If `L = K[x]`, with `x` integral over `A`, then `𝔣 * 𝔇 = (f'(x))`
-    with `f` being the minimal polynomial of `x`.
+  with `f` being the minimal polynomial of `x`.
 - `aeval_derivative_mem_differentIdeal`:
   If `L = K[x]`, with `x` integral over `A`, then `f'(x) ∈ 𝔇`
-    with `f` being the minimal polynomial of `x`.
+  with `f` being the minimal polynomial of `x`.
 - `not_dvd_differentIdeal_iff`: A prime does not divide the different ideal iff it is unramified
   (in the sense of `Algebra.IsUnramifiedAt`).
 - `differentIdeal_eq_differentIdeal_mul_differentIdeal`: Transitivity of the different ideal.
 
 ## TODO
+
 - Show properties of the different ideal
 -/
 
@@ -188,7 +191,7 @@ lemma Submodule.one_le_traceDual_one :
 variable [Algebra.IsSeparable K L]
 
 /-- If `b` is an `A`-integral basis of `L` with discriminant `b`, then `d • a * x` is integral over
-  `A` for all `a ∈ I` and `x ∈ Iᵛ`. -/
+`A` for all `a ∈ I` and `x ∈ Iᵛ`. -/
 lemma isIntegral_discr_mul_of_mem_traceDual
     (I : Submodule B L) {ι} [DecidableEq ι] [Fintype ι]
     {b : Basis ι K L} (hb : ∀ i, IsIntegral A (b i))

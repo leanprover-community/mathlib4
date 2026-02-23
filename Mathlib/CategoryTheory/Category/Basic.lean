@@ -20,11 +20,13 @@ Defines a category, as a type class parametrised by the type of objects.
 ## Notation
 
 Introduces notations in the `CategoryTheory` scope
+
 * `X ⟶ Y` for the morphism spaces (type as `\hom`),
 * `𝟙 X` for the identity morphism on `X` (type as `\b1`),
 * `f ≫ g` for composition in the 'arrows' convention (type as `\gg`).
 
 Users may like to add `g ⊚ f` for composition in the standard convention, using
+
 ```lean
 local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    -- type as \oo
 ```
@@ -43,11 +45,14 @@ specified explicitly, as `Category.{v} C`.
 
 Typically any concrete example will either be a `SmallCategory`, where `v = u`,
 which can be introduced as
+
 ```
 universe u
 variable {C : Type u} [SmallCategory C]
 ```
+
 or a `LargeCategory`, where `u = v+1`, which can be introduced as
+
 ```
 universe u
 variable {C : Type (u+1)} [LargeCategory C]
@@ -62,13 +67,17 @@ when we write `Category C`, while the universe parameter `v` for the morphisms
 cannot be automatically inferred, through the category theory library
 we introduce universe parameters with morphism levels listed first,
 as in
+
 ```
 universe v u
 ```
+
 or
+
 ```
 universe v₁ v₂ u₁ u₂
 ```
+
 when multiple independent universes are needed.
 
 This has the effect that we can simply write `Category.{v} C`
@@ -83,6 +92,7 @@ library_note «universe output parameters and typeclass caching»
 /--
 Many classes in Mathlib have universe parameters that do not appear in their
 input parameter types. For example:
+
 * `Category.{v} (C : Type u)` — the morphism universe `v` is not determined by `C`
 * `HasLimitsOfSize.{v₁, u₁} (C : Type u) [Category.{v} C]` — the shape universes `v₁, u₁`
   are not determined by `C`
@@ -104,6 +114,7 @@ errors or silent misresolution.
 
 The `@[univ_out_params]` attribute
 (from https://github.com/leanprover/lean4/pull/12423) overrides the default:
+
 * `@[univ_out_params]` — no universe parameters are output (all kept in cache key)
 * `@[univ_out_params v]` — only `v` is output
 
@@ -155,6 +166,7 @@ This gives a speedup because `simp` (called by `aesop`) can be very slow.
 https://github.com/leanprover-community/mathlib4/pull/25475 contains measurements from June 2025.
 
 Implementation notes:
+
 * `refine id ?_`:
   In some cases it is important that the type of the proof matches the expected type exactly.
   e.g. if the goal is `2 = 1 + 1`, the `rfl` tactic will give a proof of type `2 = 2`.

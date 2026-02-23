@@ -25,7 +25,7 @@ between `homotopyCofiber φ ⟶ K` and the tuples `(α, hα)` with
 `α : G ⟶ K` and `hα : Homotopy (φ ≫ α) 0`.
 
 We shall also study the cylinder of a homological complex `K`: this is the
-homotopy cofiber of the morphism  `biprod.lift (𝟙 K) (-𝟙 K) : K ⟶ K ⊞ K`.
+homotopy cofiber of the morphism `biprod.lift (𝟙 K) (-𝟙 K) : K ⟶ K ⊞ K`.
 Then, a morphism `K.cylinder ⟶ M` is determined by the data of two
 morphisms `φ₀ φ₁ : K ⟶ M` and a homotopy `h : Homotopy φ₀ φ₁`,
 see `cylinder.desc`. There is also a homotopy equivalence
@@ -379,7 +379,7 @@ variable [∀ i, HasBinaryBiproduct (K.X i) (K.X i)]
   [HasHomotopyCofiber (biprod.lift (𝟙 K) (-𝟙 K))]
 
 /-- The cylinder object of a homological complex `K` is the homotopy cofiber
-of the morphism  `biprod.lift (𝟙 K) (-𝟙 K) : K ⟶ K ⊞ K`. -/
+of the morphism `biprod.lift (𝟙 K) (-𝟙 K) : K ⟶ K ⊞ K`. -/
 noncomputable abbrev cylinder := homotopyCofiber (biprod.lift (𝟙 K) (-𝟙 K))
 
 namespace cylinder

@@ -180,7 +180,7 @@ section
 variable {B : Type*} [Ring B] [Algebra R B]
 
 /-- This is slightly more general than `IsAlgebraic.algebraMap` in that it
-  allows noncommutative intermediate rings `A`. -/
+allows noncommutative intermediate rings `A`. -/
 protected theorem IsAlgebraic.algHom (f : A →ₐ[R] B) {a : A}
     (h : IsAlgebraic R a) : IsAlgebraic R (f a) :=
   let ⟨p, hp, ha⟩ := h
@@ -403,7 +403,7 @@ variable [CommRing R] [CommRing S] [Ring A]
 variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 /-- If `x` is algebraic over `R`, then `x` is algebraic over `S` when `S` is an extension of `R`,
-  and the map from `R` to `S` is injective. -/
+and the map from `R` to `S` is injective. -/
 theorem IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S)) {x : A}
     (A_alg : IsAlgebraic R x) : IsAlgebraic S x :=
   let ⟨p, hp₁, hp₂⟩ := A_alg
@@ -412,7 +412,7 @@ theorem IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S)) {
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A special case of `IsAlgebraic.extendScalars`. This is extracted as a theorem
-  because in some cases `IsAlgebraic.extendScalars` will just runs out of memory. -/
+because in some cases `IsAlgebraic.extendScalars` will just runs out of memory. -/
 theorem IsAlgebraic.tower_top_of_subalgebra_le
     {A B : Subalgebra R S} (hle : A ≤ B) {x : S}
     (h : IsAlgebraic A x) : IsAlgebraic B x := by
@@ -421,20 +421,20 @@ theorem IsAlgebraic.tower_top_of_subalgebra_le
   exact h.extendScalars (Subalgebra.inclusion_injective hle)
 
 /-- If `x` is transcendental over `S`, then `x` is transcendental over `R` when `S` is an extension
-  of `R`, and the map from `R` to `S` is injective. -/
+of `R`, and the map from `R` to `S` is injective. -/
 theorem Transcendental.restrictScalars (hinj : Function.Injective (algebraMap R S)) {x : A}
     (h : Transcendental S x) : Transcendental R x := fun H ↦ h (H.extendScalars hinj)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A special case of `Transcendental.restrictScalars`. This is extracted as a theorem
-  because in some cases `Transcendental.restrictScalars` will just runs out of memory. -/
+because in some cases `Transcendental.restrictScalars` will just runs out of memory. -/
 theorem Transcendental.of_tower_top_of_subalgebra_le
     {A B : Subalgebra R S} (hle : A ≤ B) {x : S}
     (h : Transcendental B x) : Transcendental A x :=
   fun H ↦ h (H.tower_top_of_subalgebra_le hle)
 
 /-- If A is an algebraic algebra over R, then A is algebraic over S when S is an extension of R,
-  and the map from `R` to `S` is injective. -/
+and the map from `R` to `S` is injective. -/
 theorem Algebra.IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S))
     [Algebra.IsAlgebraic R A] : Algebra.IsAlgebraic S A :=
   ⟨fun _ ↦ (Algebra.IsAlgebraic.isAlgebraic _).extendScalars hinj⟩
@@ -461,7 +461,7 @@ theorem IsAlgebraic.tower_top {x : A} (A_alg : IsAlgebraic K x) :
 
 variable {L} (K) in
 /-- If `x` is transcendental over `L`, then `x` is transcendental over `K` when
-  `L` is an extension of `K` -/
+`L` is an extension of `K` -/
 theorem Transcendental.of_tower_top {x : A} (h : Transcendental L x) :
     Transcendental K x := fun H ↦ h (H.tower_top L)
 

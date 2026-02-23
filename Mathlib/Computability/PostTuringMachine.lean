@@ -114,7 +114,7 @@ variable (Γ : Type*)
 variable (Λ : Type*)
 
 /-- A Turing machine "statement" is just a command to either move
-  left or right, or write a symbol on the tape. -/
+left or right, or write a symbol on the tape. -/
 inductive Stmt
   | move : Dir → Stmt
   | write : Γ → Stmt
@@ -123,14 +123,14 @@ instance Stmt.inhabited [Inhabited Γ] : Inhabited (Stmt Γ) :=
   ⟨Stmt.write default⟩
 
 /-- A Post-Turing machine with symbol type `Γ` and label type `Λ`
-  is a function which, given the current state `q : Λ` and
-  the tape head `a : Γ`, either halts (returns `none`) or returns
-  a new state `q' : Λ` and a `Stmt` describing what to do,
-  either a move left or right, or a write command.
+is a function which, given the current state `q : Λ` and
+the tape head `a : Γ`, either halts (returns `none`) or returns
+a new state `q' : Λ` and a `Stmt` describing what to do,
+either a move left or right, or a write command.
 
-  Both `Λ` and `Γ` are required to be inhabited; the default value
-  for `Γ` is the "blank" tape value, and the default value of `Λ` is
-  the initial state. -/
+Both `Λ` and `Γ` are required to be inhabited; the default value
+for `Γ` is the "blank" tape value, and the default value of `Λ` is
+the initial state. -/
 @[nolint unusedArguments] -- this is a deliberate addition, see comment
 def Machine [Inhabited Λ] :=
   Λ → Γ → Option (Λ × (Stmt Γ))
@@ -139,10 +139,10 @@ instance Machine.inhabited [Inhabited Λ] : Inhabited (Machine Γ Λ) := by
   unfold Machine; infer_instance
 
 /-- The configuration state of a Turing machine during operation
-  consists of a label (machine state), and a tape.
-  The tape is represented in the form `(a, L, R)`, meaning the tape looks like `L.rev ++ [a] ++ R`
-  with the machine currently reading the `a`. The lists are
-  automatically extended with blanks as the machine moves around. -/
+consists of a label (machine state), and a tape.
+The tape is represented in the form `(a, L, R)`, meaning the tape looks like `L.rev ++ [a] ++ R`
+with the machine currently reading the `a`. The lists are
+automatically extended with blanks as the machine moves around. -/
 structure Cfg [Inhabited Γ] where
   /-- The current machine state. -/
   q : Λ
@@ -164,24 +164,24 @@ def step (M : Machine Γ Λ) : Cfg Γ Λ → Option (Cfg Γ Λ) :=
     | Stmt.write a => T.write a⟩
 
 /-- The statement `Reaches M s₁ s₂` means that `s₂` is obtained
-  starting from `s₁` after a finite number of steps. -/
+starting from `s₁` after a finite number of steps. -/
 def Reaches (M : Machine Γ Λ) : Cfg Γ Λ → Cfg Γ Λ → Prop := ReflTransGen fun a b ↦ b ∈ step M a
 
 /-- The initial configuration. -/
 def init (l : List Γ) : Cfg Γ Λ := ⟨default, Tape.mk₁ l⟩
 
 /-- Evaluate a Turing machine on initial input to a final state,
-  if it terminates. -/
+if it terminates. -/
 def eval (M : Machine Γ Λ) (l : List Γ) : Part (ListBlank Γ) :=
   (StateTransition.eval (step M) (init l)).map fun c ↦ c.Tape.right₀
 
 /-- The raw definition of a Turing machine does not require that
-  `Γ` and `Λ` are finite, and in practice we will be interested
-  in the infinite `Λ` case. We recover instead a notion of
-  "effectively finite" Turing machines, which only make use of a
-  finite subset of their states. We say that a set `S ⊆ Λ`
-  supports a Turing machine `M` if `S` is closed under the
-  transition function and contains the initial state. -/
+`Γ` and `Λ` are finite, and in practice we will be interested
+in the infinite `Λ` case. We recover instead a notion of
+"effectively finite" Turing machines, which only make use of a
+finite subset of their states. We say that a set `S ⊆ Λ`
+supports a Turing machine `M` if `S` is closed under the
+transition function and contains the initial state. -/
 def Supports (M : Machine Γ Λ) (S : Set Λ) :=
   default ∈ S ∧ ∀ {q a q' s}, (q', s) ∈ M q a → q ∈ S → q' ∈ S
 
@@ -300,17 +300,17 @@ variable (σ : Type*)
 
 -- Type of variable settings
 /-- The TM1 model is a simplification and extension of TM0
-  (Post-Turing model) in the direction of Wang B-machines. The machine's
-  internal state is extended with a (finite) store `σ` of variables
-  that may be accessed and updated at any time.
-  A machine is given by a `Λ` indexed set of procedures or functions.
-  Each function has a body which is a `Stmt`, which can either be a
-  `move` or `write` command, a `branch` (if statement based on the
-  current tape value), a `load` (set the variable value),
-  a `goto` (call another function), or `halt`. Note that here
-  most statements do not have labels; `goto` commands can only
-  go to a new function. All commands have access to the variable value
-  and current tape value. -/
+(Post-Turing model) in the direction of Wang B-machines. The machine's
+internal state is extended with a (finite) store `σ` of variables
+that may be accessed and updated at any time.
+A machine is given by a `Λ` indexed set of procedures or functions.
+Each function has a body which is a `Stmt`, which can either be a
+`move` or `write` command, a `branch` (if statement based on the
+current tape value), a `load` (set the variable value),
+a `goto` (call another function), or `halt`. Note that here
+most statements do not have labels; `goto` commands can only
+go to a new function. All commands have access to the variable value
+and current tape value. -/
 inductive Stmt
   | move : Dir → Stmt → Stmt
   | write : (Γ → σ → Γ) → Stmt → Stmt
@@ -324,7 +324,7 @@ open Stmt
 instance Stmt.inhabited : Inhabited (Stmt Γ Λ σ) := ⟨halt⟩
 
 /-- The configuration of a TM1 machine is given by the currently
-  evaluating statement, the variable store value, and the tape. -/
+evaluating statement, the variable store value, and the tape. -/
 structure Cfg [Inhabited Γ] where
   /-- The statement (if any) which is currently evaluated -/
   l : Option Λ
@@ -353,7 +353,7 @@ def step [Inhabited Γ] (M : Λ → Stmt Γ Λ σ) : Cfg Γ Λ σ → Option (Cf
   | ⟨some l, v, T⟩ => some (stepAux (M l) v T)
 
 /-- A set `S` of labels supports the statement `q` if all the `goto`
-  statements in `q` refer only to other functions in `S`. -/
+statements in `q` refer only to other functions in `S`. -/
 def SupportsStmt (S : Finset Λ) : Stmt Γ Λ σ → Prop
   | move _ q => SupportsStmt S q
   | write _ q => SupportsStmt S q
@@ -418,8 +418,8 @@ theorem stmts_trans {M : Λ → Stmt Γ Λ σ} {S : Finset Λ} {q₁ q₂ : Stmt
 variable [Inhabited Λ]
 
 /-- A set `S` of labels supports machine `M` if all the `goto`
-  statements in the functions in `S` refer only to other functions
-  in `S`. -/
+statements in the functions in `S` refer only to other functions
+in `S`. -/
 def Supports (M : Λ → Stmt Γ Λ σ) (S : Finset Λ) :=
   default ∈ S ∧ ∀ q ∈ S, SupportsStmt S (M q)
 

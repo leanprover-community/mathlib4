@@ -71,7 +71,7 @@ def FiniteGaloisIntermediateField.finGaloisGroup (L : FiniteGaloisIntermediateFi
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`
-  the restriction homomorphism from `Gal(L₁/k)` to `Gal(L₂/k)` -/
+the restriction homomorphism from `Gal(L₁/k)` to `Gal(L₂/k)` -/
 noncomputable def finGaloisGroupMap {L₁ L₂ : (FiniteGaloisIntermediateField k K)ᵒᵖ}
     (le : L₁ ⟶ L₂) : L₁.unop.finGaloisGroup ⟶ L₂.unop.finGaloisGroup :=
   haveI : Normal k L₂.unop := IsGalois.to_normal
@@ -328,8 +328,8 @@ lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLim
 variable (k K)
 
 /-- The `ContinuousMulEquiv` between `Gal(K/k)` and `lim Gal(L/k)` where `L` is a
-  `FiniteGaloisIntermediateField` ordered by inverse inclusion, obtained
-  from `InfiniteGalois.mulEquivToLimit` -/
+`FiniteGaloisIntermediateField` ordered by inverse inclusion, obtained
+from `InfiniteGalois.mulEquivToLimit` -/
 noncomputable def continuousMulEquivToLimit [IsGalois k K] :
     Gal(K/k) ≃ₜ* limit (asProfiniteGaloisGroupFunctor k K) where
   toMulEquiv := mulEquivToLimit k K
@@ -345,7 +345,7 @@ noncomputable def profiniteGalGrp [IsGalois k K] : ProfiniteGrp :=
   ProfiniteGrp.of Gal(K/k)
 
 /-- The categorical isomorphism between `profiniteGalGrp` and `lim Gal(L/k)` where `L` is a
-  `FiniteGaloisIntermediateField` ordered by inverse inclusion -/
+`FiniteGaloisIntermediateField` ordered by inverse inclusion -/
 noncomputable def profiniteGalGrpIsoLimit [IsGalois k K] :
     profiniteGalGrp k K ≅ limit (asProfiniteGaloisGroupFunctor k K) :=
   ContinuousMulEquiv.toProfiniteGrpIso (continuousMulEquivToLimit k K)

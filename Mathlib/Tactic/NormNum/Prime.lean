@@ -16,7 +16,6 @@ public meta import Mathlib.Tactic.NormNum.Result
 This file provides a `norm_num` extension to prove that natural numbers are prime and compute
 its minimal factor. Todo: compute the list of all factors.
 
-
 ## Implementation Notes
 
 For numbers larger than 25 bits, the primality proof produced by `norm_num` is an expression
@@ -39,7 +38,7 @@ theorem not_prime_mul_of_ble (a b n : ℕ) (h : a * b = n) (h₁ : a.ble 1 = fal
   not_prime_of_mul_eq h (ble_eq_false.mp h₁).ne' (ble_eq_false.mp h₂).ne'
 
 /-- Produce a proof that `n` is not prime from a factor `1 < d < n`. `en` should be the expression
-  that is the natural number literal `n`. -/
+that is the natural number literal `n`. -/
 def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run do
   let d' : ℕ := n / d
   let prf : Q($d * $d' = $en) := (q(Eq.refl $en) : Expr)

@@ -272,7 +272,7 @@ lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b := by
   simp [hbc]
 
 /-- If `n > 0` then `m` is not divisible by `n` iff it is between `n * k` and `n * (k + 1)`
-  for some `k`. -/
+for some `k`. -/
 lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) (hn : 0 < n) :
     (∃ k, n * k < m ∧ m < n * (k + 1)) ↔ ¬n ∣ m :=
   (not_dvd_iff_lt_mul_succ m hn).symm

@@ -12,18 +12,19 @@ public import Mathlib.Topology.Homotopy.Product
 
 /-!
 # Fundamental groupoid preserves products
+
 In this file, we give the following definitions/theorems:
 
-  - `FundamentalGroupoidFunctor.piIso` An isomorphism between Π i, (π Xᵢ) and π (Πi, Xᵢ), whose
-    inverse is precisely the product of the maps π (Π i, Xᵢ) → π (Xᵢ), each induced by
-    the projection in `Top` Π i, Xᵢ → Xᵢ.
+- `FundamentalGroupoidFunctor.piIso` An isomorphism between Π i, (π Xᵢ) and π (Πi, Xᵢ), whose
+  inverse is precisely the product of the maps π (Π i, Xᵢ) → π (Xᵢ), each induced by
+  the projection in `Top` Π i, Xᵢ → Xᵢ.
 
-  - `FundamentalGroupoidFunctor.prodIso` An isomorphism between πX × πY and π (X × Y), whose
-    inverse is precisely the product of the maps π (X × Y) → πX and π (X × Y) → Y, each induced by
-    the projections X × Y → X and X × Y → Y
+- `FundamentalGroupoidFunctor.prodIso` An isomorphism between πX × πY and π (X × Y), whose
+  inverse is precisely the product of the maps π (X × Y) → πX and π (X × Y) → Y, each induced by
+  the projections X × Y → X and X × Y → Y
 
-  - `FundamentalGroupoidFunctor.preservesProduct` A proof that the fundamental groupoid functor
-    preserves all products.
+- `FundamentalGroupoidFunctor.preservesProduct` A proof that the fundamental groupoid functor
+  preserves all products.
 -/
 
 @[expose] public section

@@ -122,6 +122,7 @@ def coreComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) :
     (F ⋙ G).core ≅ F.core ⋙ G.core := Iso.refl _
 
 /-- The natural isomorphism
+
 ```
                   F.core
             Core C ⥤ Core D
@@ -130,6 +131,7 @@ def coreComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) :
               C    ⥤    D
                     F
 ```
+
 thought of as pseudonaturality of `inclusion`,
 when viewing `Core` as a pseudofunctor.
 -/

@@ -179,12 +179,14 @@ instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
 set_option backward.isDefEq.respectTransparency false in
 /--
 Given any commuting diagram
+
 ```
 Z' --→ X
 |      |
 ↓      ↓
 Z  --→ Y
 ```
+
 With `X ⟶ Y` formally unramified and `Z' ⟶ Z` an infinitesimal thickening, there exists at most
 one arrow `Z ⟶ X` making the diagram commute.
 -/
@@ -227,12 +229,14 @@ protected lemma hom_ext {Z' Z : Scheme} (i : Z' ⟶ Z) (hi : IsNilpotent i.ker) 
 /--
 To show that `f : X ⟶ Y` is formally unramified,
 it suffices to check for that every following commuting diagram
+
 ```
 Spec R --→ X
   |        |
   ↓        ↓
 Spec S --→ Y
 ```
+
 with `S = R/I` for some `I² = 0`, there exists at most one arrow `Spec S ⟶ X` making
 the diagram commute.
 -/

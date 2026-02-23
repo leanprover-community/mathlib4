@@ -19,6 +19,7 @@ exists a continuous linear functional separating them, geometrically meaning tha
 a plane between them.
 
 We provide many variations to stricten the result under more assumptions on the convex sets:
+
 * `geometric_hahn_banach_open`: One set is open. Weak separation.
 * `geometric_hahn_banach_open_point`, `geometric_hahn_banach_point_open`: One set is open, the
   other is a singleton. Weak separation.

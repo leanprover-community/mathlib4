@@ -49,6 +49,7 @@ variable {C : Type u} [Category.{v} C] (P : MorphismProperty C)
 Let `P` be a property of morphisms. `P.ind` is satisfied for `f : X ⟶ Y`
 if there exists a family of natural maps `tᵢ : X ⟶ Yᵢ` and `sᵢ : Yᵢ ⟶ Y` indexed by `J`
 such that
+
 - `J` is filtered
 - `Y ≅ colim Yᵢ` via `{sᵢ}ᵢ`
 - `tᵢ` satisfies `P` for all `i`

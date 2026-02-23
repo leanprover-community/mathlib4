@@ -70,7 +70,7 @@ section removeNegations
 /--
 If `prf` is a proof of `¬ e`, where `e` is a comparison,
 `flipNegatedComparison prf e` flips the comparison in `e` and returns a proof.
-For example, if `prf : ¬ a < b`, ``flipNegatedComparison prf q(a < b)`` returns a proof of `a ≥ b`.
+For example, if `prf : ¬ a < b`, `flipNegatedComparison prf q(a < b)` returns a proof of `a ≥ b`.
 -/
 def flipNegatedComparison (prf : Expr) (e : Expr) : MetaM (Option Expr) :=
   match e.getAppFnArgs with

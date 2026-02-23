@@ -29,7 +29,7 @@ Since `Co(ntra)variantClass` takes as input the operation (typically `(+)` or `(
 relation (typically `(≤)` or `(<)`), these are the only two typeclasses that I have used.
 
 The general approach is to formulate the lemma that you are interested in and prove it, with the
-`Ordered[...]` typeclass of your liking.  After that, you convert the single typeclass,
+`Ordered[...]` typeclass of your liking. After that, you convert the single typeclass,
 say `[OrderedCancelMonoid M]`, into three typeclasses, e.g.
 `[CancelMonoid M] [PartialOrder M] [CovariantClass M M (Function.swap (*)) (≤)]`
 and have a go at seeing if the proof still works!
@@ -42,9 +42,11 @@ on top of order/algebraic assumptions.
 A formal remark is that normally `CovariantClass` uses the `(≤)`-relation, while
 `ContravariantClass` uses the `(<)`-relation. This need not be the case in general, but seems to be
 the most common usage. In the opposite direction, the implication
+
 ```lean
 [Semigroup α] [PartialOrder α] [ContravariantClass α α (*) (≤)] → LeftCancelSemigroup α
 ```
+
 holds -- note the `Co*ntra*` assumption on the `(≤)`-relation.
 
 ## Formalization notes
@@ -91,7 +93,7 @@ def Contravariant : Prop :=
 `CovariantClass` says that "the action `μ` preserves the relation `r`."
 
 More precisely, the `CovariantClass` is a class taking two Types `M N`, together with an "action"
-`μ : M → N → N` and a relation `r : N → N → Prop`.  Its unique field `elim` is the assertion that
+`μ : M → N → N` and a relation `r : N → N → Prop`. Its unique field `elim` is the assertion that
 for all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the pair
 `(n₁, n₂)`, then, the relation `r` also holds for the pair `(μ m n₁, μ m n₂)`,
 obtained from `(n₁, n₂)` by acting upon it by `m`.
@@ -108,7 +110,7 @@ class CovariantClass : Prop where
 relation `r`, then the initial pair satisfied the relation `r`."
 
 More precisely, the `ContravariantClass` is a class taking two Types `M N`, together with an
-"action" `μ : M → N → N` and a relation `r : N → N → Prop`.  Its unique field `elim` is the
+"action" `μ : M → N → N` and a relation `r : N → N → Prop`. Its unique field `elim` is the
 assertion that for all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the
 pair `(μ m n₁, μ m n₂)` obtained from `(n₁, n₂)` by acting upon it by `m`, then, the relation
 `r` also holds for the pair `(n₁, n₂)`.
@@ -396,7 +398,7 @@ theorem Monotone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Mo
   hf.comp (Covariant.monotone_of_const m)
 
 /-- Same as `Monotone.covariant_of_const`, but with the constant on the other side of
-the operator.  E.g., `∀ (m : ℕ), Monotone f → Monotone (fun n ↦ f (n + m))`. -/
+the operator. E.g., `∀ (m : ℕ), Monotone f → Monotone (fun n ↦ f (n + m))`. -/
 theorem Monotone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)]
     (hf : Monotone f) (m : N) : Monotone (f <| μ · m) :=
   Monotone.covariant_of_const (μ := swap μ) hf m

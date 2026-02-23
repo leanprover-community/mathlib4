@@ -16,6 +16,7 @@ public import Mathlib.Tactic.FieldSimp
 This file proves that the product of convex functions is convex, provided they monovary.
 
 As corollaries, we also prove that `x ↦ x ^ n` is convex
+
 * `Even.convexOn_pow`: for even `n : ℕ`.
 * `convexOn_pow`: over $[0, +∞)$ for `n : ℕ`.
 * `convexOn_zpow`: over $(0, +∞)$ For `n : ℤ`.

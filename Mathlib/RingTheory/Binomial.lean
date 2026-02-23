@@ -56,9 +56,10 @@ of cardinality `n`.
 ## TODO
 
 Further results in Elliot's paper:
+
 * A CommRing is binomial if and only if it admits a λ-ring structure with trivial Adams operations.
 * The free commutative binomial ring on a set `X` is the ring of integer-valued polynomials in the
-  variables `X`.  (also, noncommutative version?)
+  variables `X`. (also, noncommutative version?)
 * Given a commutative binomial ring `A` and an `A`-algebra `B` that is complete with respect to an
   ideal `I`, formal exponentiation induces an `A`-module structure on the multiplicative subgroup
   `1 + I`.
@@ -381,7 +382,7 @@ variable {R : Type*}
 section
 
 /-- The binomial coefficient `choose r n` generalizes the natural number `Nat.choose` function,
-  interpreted in terms of choosing without replacement. -/
+interpreted in terms of choosing without replacement. -/
 def choose [AddCommGroupWithOne R] [Pow R ℕ] [BinomialRing R] (r : R) (n : ℕ) : R :=
   multichoose (r - n + 1) n
 

@@ -18,6 +18,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 This file contains definitions and basic results about Cartan matrices of root pairings / systems.
 
 ## Main definitions:
+
 * `RootPairing.Base.cartanMatrix`: the Cartan matrix of a crystallographic root pairing, with
   respect to a base `b`.
 * `RootPairing.Base.cartanMatrix_nondegenerate`: the Cartan matrix is non-degenerate.

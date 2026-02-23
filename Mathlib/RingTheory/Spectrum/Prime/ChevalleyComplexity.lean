@@ -173,12 +173,13 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 The structure of the induction in the proof of Chevalley's theorem:
 Consider a property on a vector `e` of polynomials. Suppose that it holds for the following cases:
+
 1. The vector contains zeroes only.
 2. The vector contains a single monic polynomial (and zero otherwise).
 3. Suppose `eᵢ` has the lowest degree among all monic polynomials and `eⱼ` is some other polynomial.
-  If the property holds when `eⱼ` is replaced by `eⱼ % eᵢ`, then it holds for `e`.
+   If the property holds when `eⱼ` is replaced by `eⱼ % eᵢ`, then it holds for `e`.
 4. Suppose the property holds for both the localization at some leading coefficient of `eᵢ` and
-  the localization at the leading coefficient of `eᵢ`, then the property holds for `e`.
+   the localization at the leading coefficient of `eᵢ`, then the property holds for `e`.
 
 Then it holds for all vectors `e` over all rings.
 -/

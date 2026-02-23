@@ -27,6 +27,7 @@ orthogonal projection on the subspace of almost everywhere `m`-measurable functi
 
 Most of the results in this file are valid for a complete real normed space `F`.
 However, some lemmas also use `𝕜 : RCLike`:
+
 * `condExpL2` is defined only for an `InnerProductSpace` for now, and we use `𝕜` for its field.
 * results about scalar multiplication are stated not only for `ℝ` but also for `𝕜` if we happen to
   have `NormedSpace 𝕜 F`.

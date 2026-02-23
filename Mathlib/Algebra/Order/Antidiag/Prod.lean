@@ -19,7 +19,7 @@ is the finset of all pairs adding to `n`, as witnessed by `mem_antidiagonal`.
 When `A` is a canonically ordered additive monoid with locally finite order
 this typeclass can be instantiated with `Finset.antidiagonalOfLocallyFinite`.
 This applies in particular when `A` is `ℕ`, more generally or `σ →₀ ℕ`,
-or even `ι →₀ A`  under the additional assumption `OrderedSub A`
+or even `ι →₀ A` under the additional assumption `OrderedSub A`
 that make it a canonically ordered additive monoid.
 (In fact, we would just need an `AddMonoid` with a compatible order,
 finite `Iic`, such that if `a + b = n`, then `a, b ≤ n`,
@@ -176,7 +176,7 @@ end OrderedSub
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The disjoint union of antidiagonals `Σ (n : A), antidiagonal n` is equivalent to the product
-    `A × A`. This is such an equivalence, obtained by mapping `(n, (k, l))` to `(k, l)`. -/
+`A × A`. This is such an equivalence, obtained by mapping `(n, (k, l))` to `(k, l)`. -/
 @[simps]
 def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
     (Σ n : A, antidiagonal n) ≃ A × A where

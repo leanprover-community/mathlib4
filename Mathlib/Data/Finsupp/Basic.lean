@@ -261,8 +261,8 @@ section MapDomain
 variable [AddCommMonoid M] {v v₁ v₂ : α →₀ M}
 
 /-- Given `f : α → β` and `v : α →₀ M`, `mapDomain f v : β →₀ M`
-  is the finitely supported function whose value at `a : β` is the sum
-  of `v x` over all `x` such that `f x = a`. -/
+is the finitely supported function whose value at `a : β` is the sum
+of `v x` over all `x` such that `f x = a`. -/
 def mapDomain (f : α → β) (v : α →₀ M) : β →₀ M :=
   v.sum fun a => single (f a)
 

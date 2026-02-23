@@ -13,11 +13,12 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 This file develops the basic theory of proper maps between topological spaces. A map `f : X → Y`
 between two topological spaces is said to be **proper** if it is continuous and satisfies
 the following equivalent conditions:
+
 1. `f` is closed and has compact fibers.
 2. `f` is **universally closed**, in the sense that for any topological space `Z`, the map
-  `Prod.map f id : X × Z → Y × Z` is closed.
+   `Prod.map f id : X × Z → Y × Z` is closed.
 3. For any `ℱ : Filter X`, all cluster points of `map f ℱ` are images by `f` of some cluster point
-  of `ℱ`.
+   of `ℱ`.
 
 We take 3 as the definition in `IsProperMap`, and we show the equivalence with 1, 2, and some
 other variations.

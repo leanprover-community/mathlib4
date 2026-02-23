@@ -30,6 +30,7 @@ We define and prove basic results about the regulator of a number field `K`.
   index of `U` inside `V`.
 
 ## Tags
+
 number field, units, regulator
 -/
 

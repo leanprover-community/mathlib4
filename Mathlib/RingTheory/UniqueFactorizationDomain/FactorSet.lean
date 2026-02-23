@@ -12,10 +12,12 @@ public import Mathlib.Tactic.Ring
 # Set of factors
 
 ## Main definitions
+
 * `Associates.FactorSet`: multiset of factors of an element, unique up to propositional equality.
 * `Associates.factors`: determine the `FactorSet` for a given element.
 
 ## TODO
+
 * set up the complete lattice structure on `FactorSet`.
 
 -/
@@ -59,7 +61,7 @@ theorem FactorSet.sup_add_inf_eq_add [DecidableEq (Associates α)] :
       exact Multiset.union_add_inter _ _
 
 /-- Evaluates the product of a `FactorSet` to be the product of the corresponding multiset,
-  or `0` if there is none. -/
+or `0` if there is none. -/
 def FactorSet.prod : FactorSet α → Associates α
   | ⊤ => 0
   | WithTop.some s => (s.map (↑)).prod
@@ -187,7 +189,7 @@ theorem FactorSet.unique [Nontrivial α] {p q : FactorSet α} (h : p.prod = q.pr
         rwa [Subtype.coe_mk]
 
 /-- This returns the multiset of irreducible factors as a `FactorSet`,
-  a multiset of irreducible associates `WithTop`. -/
+a multiset of irreducible associates `WithTop`. -/
 noncomputable def factors' (a : α) : Multiset { a : Associates α // Irreducible a } :=
   (factors a).pmap (fun a ha => ⟨Associates.mk a, irreducible_mk.2 ha⟩) irreducible_of_factor
 
@@ -211,7 +213,7 @@ theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
       ((factors_prod ha).trans <| h.trans <| (factors_prod hb).symm)
 
 /-- This returns the multiset of irreducible factors of an associate as a `FactorSet`,
-  a multiset of irreducible associates `WithTop`. -/
+a multiset of irreducible associates `WithTop`. -/
 noncomputable def factors (a : Associates α) : FactorSet α := by
   classical refine if h : a = 0 then ⊤ else Quotient.hrecOn a (fun x _ => factors' x) ?_ h
   intro a b hab

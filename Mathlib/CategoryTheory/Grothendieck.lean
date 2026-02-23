@@ -65,6 +65,7 @@ variable (F : C ⥤ Cat.{v₂, u₂})
 /--
 The Grothendieck construction (often written as `∫ F` in mathematics) for a functor `F : C ⥤ Cat`
 gives a category whose
+
 * objects `X` consist of `X.base : C` and `X.fiber : F.obj base`
 * morphisms `f : X ⟶ Y` consist of
   `base : X.base ⟶ Y.base` and

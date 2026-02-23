@@ -11,6 +11,7 @@ public import Mathlib.Init
 # Basic Definitions for `RefinedDiscrTree`
 
 We define
+
 * `Key`, the discrimination tree key
 * `LazyEntry`, the partial, lazy computation of a sequence of `Key`s
 * `Trie`, a node of the discrimination tree, which is indexed with `Key`s
@@ -250,10 +251,11 @@ abbrev TrieIndex := Nat
 Discrimination tree trie. See `RefinedDiscrTree`.
 
 A `Trie` will normally have exactly one of the following
+
 - nonempty `values`
 - nonempty `stars`, `labelledStars` and/or `children`
 - nonempty `pending`
-But defining it as a structure that can have all at the same time turns out to be easier.
+  But defining it as a structure that can have all at the same time turns out to be easier.
 -/
 structure Trie (α : Type) where
   node ::
@@ -293,12 +295,14 @@ namespace RefinedDiscrTree
 variable {α : Type}
 
 /-- Format a `RefinedDiscrTree` as a flowchart.
+
 - Non-terminal nodes are of the form `{key} =>`, followed by all of the following nodes,
   indented with 2 more spaces.
 - Terminal nodes have either "entries", containing the return values,
   or "pending entries", for nodes that have not been evaluated/expanded.
 
 For example:
+
 ```
 Discrimination tree flowchart:
 ⟨HMul.hMul, 6⟩ =>

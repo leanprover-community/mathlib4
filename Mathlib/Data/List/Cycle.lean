@@ -112,6 +112,7 @@ element of `l`. This works from head to tail, (including a check for last elemen
 so it will match on first hit, ignoring later duplicates.
 
 For example:
+
 * `next [1, 2, 3] 2 _ = 3`
 * `next [1, 2, 3] 3 _ = 1`
 * `next [1, 2, 3, 2, 4] 2 _ = 3`

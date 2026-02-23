@@ -87,6 +87,7 @@ instance instIsTorsionFree [Module.IsTorsionFree R M] : Module.IsTorsionFree R p
 section AddAction
 
 /-! ### Additive actions by `Submodule`s
+
 These instances transfer the action by an element `m : M` of an `R`-module `M` written as `m +ᵥ a`
 onto the action by an element `s : S` of a submodule `S : Submodule R M` such that
 `s +ᵥ a = (s : M) +ᵥ a`.

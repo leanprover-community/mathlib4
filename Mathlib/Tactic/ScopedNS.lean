@@ -21,6 +21,7 @@ open Lean
 /--
 `scoped[NS]` is similar to the `scoped` modifier on attributes and notations,
 but it scopes the syntax in the specified namespace instead of the current namespace.
+
 ```
 scoped[Matrix] postfix:1024 "ᵀ" => Matrix.transpose
 -- declares `ᵀ` as a notation for matrix transposition

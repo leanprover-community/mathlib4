@@ -47,6 +47,7 @@ respectively.
 ## Notation
 
 Throughout this file, we use :
+
 - `ι`, `κ` for indexing types
 - `X`, `Y`, `Z` for topological spaces
 - `α`, `β`, `γ` for uniform spaces
@@ -55,6 +56,7 @@ Throughout this file, we use :
 
 We choose to express equicontinuity as a properties of indexed families of functions rather
 than sets of functions for the following reasons:
+
 - it is really easy to express equicontinuity of `H : Set (X → α)` using our setup: it is just
   equicontinuity of the family `(↑) : ↥H → (X → α)`. On the other hand, going the other way around
   would require working with the range of the family, which is always annoying because it

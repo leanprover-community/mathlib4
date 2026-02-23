@@ -13,13 +13,16 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
 # Lemmas about squarefreeness of natural numbers
+
 A number is squarefree when it is not divisible by any squares except the squares of units.
 
 ## Main Results
+
 - `Nat.squarefree_iff_nodup_primeFactorsList`: A positive natural number `x` is squarefree iff
   the list `factors x` has no duplicate factors.
 
 ## Tags
+
 squarefree, multiplicity
 
 -/
@@ -106,7 +109,7 @@ theorem squarefree_and_prime_pow_iff_prime {n : ℕ} : Squarefree n ∧ IsPrimeP
   rwa [h.2, pow_one]
 
 /-- Assuming that `n` has no factors less than `k`, returns the smallest prime `p` such that
-  `p^2 ∣ n`. -/
+`p^2 ∣ n`. -/
 def minSqFacAux : ℕ → ℕ → Option ℕ
   | n, k =>
     if h : n < k * k then none
@@ -122,7 +125,7 @@ def minSqFacAux : ℕ → ℕ → Option ℕ
 termination_by n k => sqrt n + 2 - k
 
 /-- Returns the smallest prime factor `p` of `n` such that `p^2 ∣ n`, or `none` if there is no
-  such `p` (that is, `n` is squarefree). See also `Nat.squarefree_iff_minSqFac`. -/
+such `p` (that is, `n` is squarefree). See also `Nat.squarefree_iff_minSqFac`. -/
 def minSqFac (n : ℕ) : Option ℕ :=
   if 2 ∣ n then
     let n' := n / 2
@@ -130,8 +133,9 @@ def minSqFac (n : ℕ) : Option ℕ :=
   else minSqFacAux n 3
 
 /-- The correctness property of the return value of `minSqFac`.
-  * If `none`, then `n` is squarefree;
-  * If `some d`, then `d` is a minimal square factor of `n` -/
+
+* If `none`, then `n` is squarefree;
+* If `some d`, then `d` is a minimal square factor of `n` -/
 def MinSqFacProp (n : ℕ) : Option ℕ → Prop
   | none => Squarefree n
   | some d => Prime d ∧ d * d ∣ n ∧ ∀ p, Prime p → p * p ∣ n → d ≤ p

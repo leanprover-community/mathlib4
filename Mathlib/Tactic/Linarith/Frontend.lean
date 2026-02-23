@@ -63,24 +63,24 @@ calls, and should be used sparingly. The default preprocessor set does not inclu
 There are two oracles that can be used in `linarith` so far.
 
 1. **Fourier-Motzkin elimination.**
-  This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
-  `n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
-  unsatisfiable iff the comparison `0 < 0` is in the resulting set.
-  While performing this elimination, we track the history of each derived comparison. This allows us
-  to represent any comparison at any step as a positive combination of comparisons from the original
-  set. In particular, if we derive `0 < 0`, we can find our desired list of coefficients
-  by counting how many copies of each original comparison appear in the history.
-  This oracle was historically implemented earlier, and is sometimes faster on small states, but it
-  has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and cannot handle
-  large problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
+   This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
+   `n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
+   unsatisfiable iff the comparison `0 < 0` is in the resulting set.
+   While performing this elimination, we track the history of each derived comparison. This allows us
+   to represent any comparison at any step as a positive combination of comparisons from the original
+   set. In particular, if we derive `0 < 0`, we can find our desired list of coefficients
+   by counting how many copies of each original comparison appear in the history.
+   This oracle was historically implemented earlier, and is sometimes faster on small states, but it
+   has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and cannot handle
+   large problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
 
 2. **Simplex Algorithm (default).**
-  This oracle reduces the search for an unsatisfiability certificate to some Linear Programming
-  problem. The problem is then solved by a standard Simplex Algorithm. We use
-  [Bland's pivot rule](https://en.wikipedia.org/wiki/Bland%27s_rule) to guarantee that the algorithm
-  terminates.
-  The default version of the algorithm operates with sparse matrices as it is usually faster. You
-  can invoke the dense version by `linarith (oracle := .simplexAlgorithmDense)`.
+   This oracle reduces the search for an unsatisfiability certificate to some Linear Programming
+   problem. The problem is then solved by a standard Simplex Algorithm. We use
+   [Bland's pivot rule](https://en.wikipedia.org/wiki/Bland%27s_rule) to guarantee that the algorithm
+   terminates.
+   The default version of the algorithm operates with sparse matrices as it is usually faster. You
+   can invoke the dense version by `linarith (oracle := .simplexAlgorithmDense)`.
 
 ## Implementation details
 
@@ -197,7 +197,7 @@ If `e` is a comparison `a R b` or the negation of a comparison `¬ a R b`, found
 `getContrLemma e` returns the name of a lemma that will change the goal to an
 implication, along with the type of `a` and `b`.
 
-For example, if `e` is `(a : ℕ) < b`, returns ``(`lt_of_not_ge, ℕ)``.
+For example, if `e` is `(a : ℕ) < b`, returns `` (`lt_of_not_ge, ℕ) ``.
 -/
 def getContrLemma (e : Expr) : MetaM (Name × Expr) := do
   match ← e.ineqOrNotIneq? with
@@ -422,6 +422,7 @@ this tactic is not complete for these theories and will not prove every true goa
 goals over arbitrary types that instantiate `CommRing`, `LinearOrder` and `IsStrictOrderedRing`.
 
 An example:
+
 ```lean
 example (x y z : ℚ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0)
         (h3 : 12*y - 4* z < 0) : False := by
@@ -438,15 +439,18 @@ Disequality hypotheses require case splitting and are not normally considered
 `h1`, `h2`, `h3`, and proofs `t1`, `t2`, `t3`. It will ignore the rest of the local context.
 
 `linarith!` will use a stronger reducibility setting to try to identify atoms. For example,
+
 ```lean
 example (x : ℚ) : id x ≥ x := by
   linarith
 ```
+
 will fail, because `linarith` will not identify `x` and `id x`. `linarith!` will.
 This can sometimes be expensive.
 
 `linarith (config := { .. })` takes a config object with five
 optional arguments:
+
 * `discharger` specifies a tactic to be used for reducing an algebraic equation in the
   proof stage. The default is `ring`. Other options include `simp` for basic
   problems.
@@ -477,7 +481,7 @@ syntax (name := linarith) "linarith" "!"? linarithArgsRest : tactic
 /--
 `linarith?` behaves like `linarith` but, on success, it prints a suggestion of
 the form `linarith only [...]` listing a minimized set of hypotheses used in the
-final proof.  Use `linarith?!` for the higher-reducibility variant and set the
+final proof. Use `linarith?!` for the higher-reducibility variant and set the
 `minimize` flag in the configuration to control whether greedy minimization is
 performed.
 -/

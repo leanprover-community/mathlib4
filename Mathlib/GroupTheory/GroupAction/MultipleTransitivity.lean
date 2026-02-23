@@ -42,7 +42,6 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
 * `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff_conj hg` shows the
   same result for `n`-transitivity.
 
-
 * `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff` : if the action of `G` on `α`
   is pretransitive, then it is `n.succ` pretransitive if and only if
   the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.

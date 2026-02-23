@@ -12,7 +12,6 @@ public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 # Construction of the inverse functor of the Dold-Kan equivalence
 
-
 In this file, we construct the functor `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`
 which shall be the inverse functor of the Dold-Kan equivalence in the case of abelian categories,
 and more generally pseudoabelian categories.

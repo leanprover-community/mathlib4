@@ -19,6 +19,7 @@ This file defines Følner sequences and filters for measurable spaces acted on b
 * `IsFoelner G μ l F` : Consider a group `G` acting on a measure space `X`.
   A sequence of sets `F : ι → Set X` is **Følner** with respect to the `G`-action, the measure `μ`,
   and a filter `l` on the indexing type `ι`, if:
+
   1. Eventually, as `i` tends to `l`, the set `F i` is measurable with finite non-zero measure,
   2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`.
 
@@ -72,10 +73,11 @@ variable {ι : Type*} {l : Filter ι} {u : Ultrafilter ι} {F : ι → Set X}
 variable (G : Type*) {X : Type*} [MeasurableSpace X] (μ : Measure X) [AddGroup G] [AddAction G X]
          {ι : Type*} (l : Filter ι) (F : ι → Set X) in
 /-- Consider an additive group `G` acting on a measure space `X`.
-  A sequence of sets `F : ι → Set X` is **Følner** with respect to the `G`-action,
-  the measure `μ`, and a filter `l` on the indexing type `ι`, if:
-  1. Each `s` in `l` is eventually measurable with finite non-zero measure,
-  2. For all `g : G`, `μ ((g +ᵥ F i) ∆ F i) / μ (F i)` tends to `0`. -/
+A sequence of sets `F : ι → Set X` is **Følner** with respect to the `G`-action,
+the measure `μ`, and a filter `l` on the indexing type `ι`, if:
+
+1. Each `s` in `l` is eventually measurable with finite non-zero measure,
+2. For all `g : G`, `μ ((g +ᵥ F i) ∆ F i) / μ (F i)` tends to `0`. -/
 @[mk_iff]
 structure IsAddFoelner : Prop where
   eventually_measurableSet : ∀ᶠ i in l, MeasurableSet (F i)
@@ -85,10 +87,11 @@ structure IsAddFoelner : Prop where
 
 variable (G μ l F) in
 /-- Consider a group `G` acting on a measure space `X`.
-  A sequence of sets `F : ι → Set X` is **Følner** with respect to the `G`-action,
-  the measure `μ`, and a filter `l` on the indexing type `ι`, if:
-  1. Each `s` in `l` is eventually measurable with finite non-zero measure,
-  2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`. -/
+A sequence of sets `F : ι → Set X` is **Følner** with respect to the `G`-action,
+the measure `μ`, and a filter `l` on the indexing type `ι`, if:
+
+1. Each `s` in `l` is eventually measurable with finite non-zero measure,
+2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`. -/
 @[mk_iff]
 structure IsFoelner : Prop where
   eventually_measurableSet : ∀ᶠ i in l, MeasurableSet (F i)
@@ -191,11 +194,11 @@ theorem mean_smul_eq_mean [SMulInvariantMeasure G X μ]
   simpa using hfoel.mean_smul_eq_mean_smul g 1 s
 
 /-- If there exists a non-trivial Følner filter with respect to some group `G` acting on a measure
-    space `X`, then there exists a `G`-invariant finitely additive probability measure on `X`. -/
+space `X`, then there exists a `G`-invariant finitely additive probability measure on `X`. -/
 @[to_additive
 /-- If there exists a non-trivial Følner filter with respect to some additive group
-    `G` acting on a measure space `X`, then there exists a `G`-invariant finitely additive
-    probability measure on `X`. -/]
+`G` acting on a measure space `X`, then there exists a `G`-invariant finitely additive
+probability measure on `X`. -/]
 theorem amenable [SMulInvariantMeasure G X μ] [NeBot l] (hfoel : IsFoelner G μ l F) :
     ∃ m : Set X → ℝ≥0∞, m .univ = 1 ∧
       (∀ s t, MeasurableSet t → Disjoint s t → m (s ∪ t) = m s + m t) ∧
@@ -210,12 +213,12 @@ end IsFoelner
 
 variable (G μ) in
 /-- The maximal Følner filter with respect to some group `G` acting on a
-    measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g • s) / μ s`
-    on measurable sets of finite non-zero measure. -/
+measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g • s) / μ s`
+on measurable sets of finite non-zero measure. -/
 @[to_additive maxAddFoelner
 /-- The maximal Følner filter with respect to some additive group `G` acting
-    on a measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g +ᵥ s) / μ s`
-    on measurable sets of finite non-zero measure. -/]
+on a measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g +ᵥ s) / μ s`
+on measurable sets of finite non-zero measure. -/]
 noncomputable def maxFoelner : Filter (Set X) :=
   𝓟 {s : Set X | MeasurableSet s ∧ μ s ≠ 0 ∧ μ s ≠ ∞} ⊓
   ⨅ (g : G), comap (fun s ↦ μ ((g • s) ∆ s) / μ s) (𝓝 0)

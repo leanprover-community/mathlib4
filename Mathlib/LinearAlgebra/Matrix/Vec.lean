@@ -17,6 +17,7 @@ formed by stacking the columns of A into a single large column vector.
 Since mathlib indices matrices by arbitrary types rather than `Fin n`,
 the result of `Matrix.vec` on `A : Matrix m n R` is indexed by `n × m`.
 The `Fin (n * m)` interpretation can be restored by composing with `finProdFinEquiv.symm`:
+
 ```lean
 -- ![1, 2, 3, 4]
 #eval vec !![1, 3; 2, 4] ∘ finProdFinEquiv.symm
@@ -28,7 +29,7 @@ If you want this function, you can write `Matrix.vec Aᵀ` instead.
 
 ### References
 
-* [Wikipedia](https://en.wikipedia.org/wiki/Vectorization_(mathematics))
+* [Wikipedia](<https://en.wikipedia.org/wiki/Vectorization_(mathematics)>)
 -/
 
 @[expose] public section

@@ -18,6 +18,7 @@ Weierstrass curves defined in
 ## Mathematical background
 
 Let `W` be a Weierstrass curve over a commutative ring `R`. By strong induction,
+
 * `preΨₙ` has leading coefficient `n / 2` and degree `(n² - 4) / 2` if `n` is even,
 * `preΨₙ` has leading coefficient `n` and degree `(n² - 1) / 2` if `n` is odd,
 * `ΨSqₙ` has leading coefficient `n²` and degree `n² - 1`, and

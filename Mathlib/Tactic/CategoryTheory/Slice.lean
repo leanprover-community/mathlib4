@@ -34,6 +34,7 @@ syntax (name := slice) "slice " num ppSpace num : conv
 
 /--
 `evalSlice`
+
 - rewrites the target expression using `Category.assoc`.
 - uses `congr` to split off the first `a-1` terms and rotates to `a`-th (last) term
 - counts the number `k` of rewrites as it uses `←Category.assoc` to bring the target to

@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 We provide another API for pullbacks and pushouts.
 
 `IsPullback fst snd f g` is the proposition that
+
 ```
   P --fst--> X
   |          |
@@ -23,6 +24,7 @@ We provide another API for pullbacks and pushouts.
   Y ---g---> Z
 
 ```
+
 is a pullback square.
 
 (And similarly for `IsPushout`.)
@@ -47,6 +49,7 @@ namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C]
 
 /-- The proposition that a square
+
 ```
   P --fst--> X
   |          |
@@ -56,6 +59,7 @@ variable {C : Type u₁} [Category.{v₁} C]
   Y ---g---> Z
 
 ```
+
 is a pullback square. (Also known as a fibered product or Cartesian square.)
 -/
 structure IsPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z) (g : Y ⟶ Z) : Prop
@@ -64,6 +68,7 @@ structure IsPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z)
   isLimit' : Nonempty (IsLimit (PullbackCone.mk _ _ w))
 
 /-- The proposition that a square
+
 ```
   Z ---f---> X
   |          |
@@ -73,6 +78,7 @@ structure IsPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z)
   Y --inr--> P
 
 ```
+
 is a pushout square. (Also known as a fiber coproduct or co-Cartesian square.)
 -/
 structure IsPushout {Z X Y P : C} (f : Z ⟶ X) (g : Z ⟶ Y) (inl : X ⟶ P) (inr : Y ⟶ P) : Prop

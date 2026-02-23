@@ -13,17 +13,17 @@ public import Mathlib.Topology.MetricSpace.PiNat
 /-!
 # Weak dual of normed space
 
-Let `E` be a normed space over a field `𝕜`. This file is concerned with properties of the weak-*
+Let `E` be a normed space over a field `𝕜`. This file is concerned with properties of the weak-\*
 topology on the dual of `E`. By the dual, we mean either of the type synonyms
 `StrongDual 𝕜 E` or `WeakDual 𝕜 E`, depending on whether it is viewed as equipped with its usual
-operator norm topology or the weak-* topology.
+operator norm topology or the weak-\* topology.
 
 It is shown that the canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous, and
-as a consequence the weak-* topology is coarser than the topology obtained from the operator norm
+as a consequence the weak-\* topology is coarser than the topology obtained from the operator norm
 (dual norm).
 
 In this file, we also establish the Banach-Alaoglu theorem about the compactness of closed balls
-in the dual of `E` (as well as sets of somewhat more general form) with respect to the weak-*
+in the dual of `E` (as well as sets of somewhat more general form) with respect to the weak-\*
 topology.
 
 ## Main definitions
@@ -38,8 +38,9 @@ The main definitions concern the canonical mapping `StrongDual 𝕜 E → WeakDu
 ## Main results
 
 The first main result concerns the comparison of the operator norm topology on `StrongDual 𝕜 E` and
-the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
-* `dual_norm_topology_le_weak_dual_topology`: The weak-* topology on the dual of a normed space is
+the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
+
+* `dual_norm_topology_le_weak_dual_topology`: The weak-\* topology on the dual of a normed space is
   coarser (not necessarily strictly) than the operator norm topology.
 * `WeakDual.isCompact_polar` (a version of the Banach-Alaoglu theorem): The polar set of a
   neighborhood of the origin in a normed space `E` over `𝕜` is compact in `WeakDual _ E`, if the
@@ -49,8 +50,9 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
   topology.
 
 ## TODO
-* Add that in finite dimensions, the weak-* topology and the dual norm topology coincide.
-* Add that in infinite dimensions, the weak-* topology is strictly coarser than the dual norm
+
+* Add that in finite dimensions, the weak-\* topology and the dual norm topology coincide.
+* Add that in infinite dimensions, the weak-\* topology is strictly coarser than the dual norm
   topology.
 * Add metrizability of the dual unit ball (more generally weak-star compact subsets) of
   `WeakDual 𝕜 E` under the assumption of separability of `E`.
@@ -59,7 +61,7 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 
 ## Implementation notes
 
-Weak-* topology is defined generally in the file `Mathlib/Topology/Algebra/Module/WeakDual.lean`.
+Weak-\* topology is defined generally in the file `Mathlib/Topology/Algebra/Module/WeakDual.lean`.
 
 When `M` is a vector space, the duals `StrongDual 𝕜 M` and `WeakDual 𝕜 M` are type synonyms with
 different topology instances.
@@ -68,13 +70,13 @@ For the proof of Banach-Alaoglu theorem, the weak dual of `E` is embedded in the
 functions `E → 𝕜` with the topology of pointwise convergence.
 
 The polar set `polar 𝕜 s` of a subset `s` of `E` is originally defined as a subset of the dual
-`StrongDual 𝕜 E`. We care about properties of these w.r.t. weak-* topology, and for this purpose
+`StrongDual 𝕜 E`. We care about properties of these w.r.t. weak-\* topology, and for this purpose
 give the definition `WeakDual.polar 𝕜 s` for the "same" subset viewed as a subset of `WeakDual 𝕜 E`
 (a type synonym of the dual but with a different topology instance).
 
 ## References
 
-* https://en.wikipedia.org/wiki/Weak_topology#Weak-*_topology
+* https://en.wikipedia.org/wiki/Weak_topology#Weak-\*\_topology
 * https://en.wikipedia.org/wiki/Banach%E2%80%93Alaoglu_theorem
 
 ## Tags
@@ -166,9 +168,9 @@ end WeakDual
 /-!
 ### Weak star topology on duals of normed spaces
 
-In this section, we prove properties about the weak-* topology on duals of normed spaces.
+In this section, we prove properties about the weak-\* topology on duals of normed spaces.
 We prove in particular that the canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous,
-i.e., that the weak-* topology is coarser (not necessarily strictly) than the topology given
+i.e., that the weak-\* topology is coarser (not necessarily strictly) than the topology given
 by the dual-norm (i.e. the operator-norm).
 -/
 
@@ -298,7 +300,7 @@ theorem isSeqCompact_polar {s : Set V} (s_nhd : s ∈ 𝓝 (0 : V)) :
     (NormedSpace.isBounded_polar_of_mem_nhds_zero 𝕜 s_nhd) (isClosed_polar _ _)
 
 /-- The **Sequential Banach-Alaoglu theorem**: closed balls of the dual of a separable
-normed space `V` are sequentially compact in the weak-* topology. -/
+normed space `V` are sequentially compact in the weak-\* topology. -/
 theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 V) (r : ℝ) :
     IsSeqCompact (toStrongDual ⁻¹' Metric.closedBall x' r) :=
   isSeqCompact_of_isBounded_of_isClosed 𝕜 V Metric.isBounded_closedBall

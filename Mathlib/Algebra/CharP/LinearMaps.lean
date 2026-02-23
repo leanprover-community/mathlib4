@@ -28,8 +28,8 @@ The characteristic of the ring of linear maps is determined by its base ring.
 ## Implementation Notes
 
 One can also deduce similar result via `charP_of_injective_ringHom` and
-  `R → (M →ₗ[R] M) : r ↦ (fun (x : M) ↦ r • x)`. But this will require stronger condition
-  compared to `Module.charP_end`.
+`R → (M →ₗ[R] M) : r ↦ (fun (x : M) ↦ r • x)`. But this will require stronger condition
+compared to `Module.charP_end`.
 
 -/
 
@@ -40,8 +40,8 @@ namespace Module
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- For a commutative semiring `R` and an `R`-module `M`, if `M` contains an
-  element `x` that is not torsion, then the characteristic of `R` is equal to the
-  characteristic of the `R`-linear endomorphisms of `M`. -/
+element `x` that is not torsion, then the characteristic of `R` is equal to the
+characteristic of the `R`-linear endomorphisms of `M`. -/
 theorem charP_end {p : ℕ} [hchar : CharP R p]
     (htorsion : ∃ x : M, Ideal.torsionOf R M x = ⊥) : CharP (M →ₗ[R] M) p where
   cast_eq_zero_iff n := by
@@ -55,7 +55,7 @@ end Module
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For a division ring `D` with center `k`, the ring of `k`-linear endomorphisms
-  of `D` has the same characteristic as `D` -/
+of `D` has the same characteristic as `D` -/
 instance {D : Type*} [DivisionRing D] {p : ℕ} [CharP D p] :
     CharP (D →ₗ[(Subring.center D)] D) p :=
   charP_of_injective_ringHom (Algebra.lmul (Subring.center D) D).toRingHom.injective p

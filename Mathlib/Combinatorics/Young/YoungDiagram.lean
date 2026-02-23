@@ -21,6 +21,7 @@ A Young diagram is a finite set of up-left justified boxes:
 □□□
 □
 ```
+
 This Young diagram corresponds to the [5, 3, 3, 1] partition of 12.
 
 We represent it as a lower set in `ℕ × ℕ` in the product partial order. We write `(i, j) ∈ μ`
@@ -241,10 +242,10 @@ section Rows
 /-! ### Rows and row lengths of Young diagrams.
 
 This section defines `μ.row` and `μ.rowLen`, with the following API:
-      1.  `(i, j) ∈ μ ↔ j < μ.rowLen i`
-      2.  `μ.row i = {i} ×ˢ (Finset.range (μ.rowLen i))`
-      3.  `μ.rowLen i = (μ.row i).card`
-      4.  `∀ {i1 i2}, i1 ≤ i2 → μ.rowLen i2 ≤ μ.rowLen i1`
+1\. `(i, j) ∈ μ ↔ j < μ.rowLen i`
+2\. `μ.row i = {i} ×ˢ (Finset.range (μ.rowLen i))`
+3\. `μ.rowLen i = (μ.row i).card`
+4\. `∀ {i1 i2}, i1 ≤ i2 → μ.rowLen i2 ≤ μ.rowLen i1`
 
 Note: #3 is not convenient for defining `μ.rowLen`; instead, `μ.rowLen` is defined
 as the smallest `j` such that `(i, j) ∉ μ`. -/
@@ -353,8 +354,9 @@ section RowLens
 /-! ### The list of row lengths of a Young diagram
 
 This section defines `μ.rowLens : List ℕ`, the list of row lengths of a Young diagram `μ`.
-  1. `YoungDiagram.rowLens_sorted` : It is weakly decreasing (`List.SortedGE`).
-  2. `YoungDiagram.rowLens_pos` : It is strictly positive.
+
+1. `YoungDiagram.rowLens_sorted` : It is weakly decreasing (`List.SortedGE`).
+2. `YoungDiagram.rowLens_pos` : It is strictly positive.
 
 -/
 
@@ -387,8 +389,8 @@ section EquivListRowLens
 
 This section defines the equivalence between Young diagrams `μ` and weakly decreasing lists `w`
 of positive natural numbers, corresponding to row lengths of the diagram:
-  `YoungDiagram.equivListRowLens :`
-  `YoungDiagram ≃ {w : List ℕ // w.SortedGE ∧ ∀ x ∈ w, 0 < x}`
+`YoungDiagram.equivListRowLens :`
+`YoungDiagram ≃ {w : List ℕ // w.SortedGE ∧ ∀ x ∈ w, 0 < x}`
 
 The two directions are `YoungDiagram.rowLens` (defined above) and `YoungDiagram.ofRowLens`.
 

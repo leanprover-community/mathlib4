@@ -330,8 +330,8 @@ theorem Set.Finite.isCompact_closure {s : Set X} (hs : s.Finite) : IsCompact (cl
 end R0Space
 
 /-- A T₁ space, also known as a Fréchet space, is a topological space
-  where every singleton set is closed. Equivalently, for every pair
-  `x ≠ y`, there is an open set containing `x` and not `y`. -/
+where every singleton set is closed. Equivalently, for every pair
+`x ≠ y`, there is an open set containing `x` and not `y`. -/
 class T1Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- A singleton in a T₁ space is a closed set. -/
   t1 : ∀ x, IsClosed ({x} : Set X)
@@ -839,6 +839,7 @@ theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} (hs : IsDiscrete s
 
 /-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
 such that
+
 1. `U` is a punctured neighborhood of `x` (i.e. `U ∪ {x}` is a neighbourhood of `x`),
 2. `U` is disjoint from `s`.
 -/

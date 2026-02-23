@@ -26,6 +26,7 @@ statements are equivalent to this one, including `ker (Finsupp.linearCombination
 some versions with explicitly written linear combinations.
 
 ## Main definitions
+
 All definitions are given for families of vectors, i.e. `v : ι → M` where `M` is the module or
 vector space and `ι : Type*` is an arbitrary indexing type.
 

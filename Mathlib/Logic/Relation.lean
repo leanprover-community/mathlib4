@@ -39,7 +39,7 @@ the bundled version, see `Rel`.
   rewrites.
 * `Relation.EqvGen`: Equivalence closure. `EqvGen r` relates everything `ReflTransGen r` relates,
   plus for all related pairs it relates them in the opposite order.
-* `Relation.Comp`:  Relation composition. We provide notation `∘r`. For `r : α → β → Prop` and
+* `Relation.Comp`: Relation composition. We provide notation `∘r`. For `r : α → β → Prop` and
   `s : β → γ → Prop`, `r ∘r s` relates `a : α` and `c : γ` iff there exists `b : β` that's related
   to both.
 * `Relation.Map`: Image of a relation under a pair of maps. For `r : α → β → Prop`, `f : α → γ`,
@@ -127,7 +127,7 @@ section Comp
 
 variable {r : α → β → Prop} {p : β → γ → Prop} {q : γ → δ → Prop}
 
-/-- The composition of two relations, yielding a new relation.  The result
+/-- The composition of two relations, yielding a new relation. The result
 relates a term of `α` and a term of `γ` if there is an intermediate
 term of `β` related to both.
 -/
@@ -182,15 +182,15 @@ section Fibration
 variable (rα : α → α → Prop) (rβ : β → β → Prop) (f : α → β)
 
 /-- A function `f : α → β` is a fibration between the relation `rα` and `rβ` if for all
-  `a : α` and `b : β`, whenever `b : β` and `f a` are related by `rβ`, `b` is the image
-  of some `a' : α` under `f`, and `a'` and `a` are related by `rα`. -/
+`a : α` and `b : β`, whenever `b : β` and `f a` are related by `rβ`, `b` is the image
+of some `a' : α` under `f`, and `a'` and `a` are related by `rα`. -/
 def Fibration :=
   ∀ ⦃a b⦄, rβ b (f a) → ∃ a', rα a' a ∧ f a' = b
 
 variable {rα rβ}
 
 /-- If `f : α → β` is a fibration between relations `rα` and `rβ`, and `a : α` is
-  accessible under `rα`, then `f a` is accessible under `rβ`. -/
+accessible under `rα`, then `f a` is accessible under `rβ`. -/
 theorem _root_.Acc.of_fibration (fib : Fibration rα rβ f) {a} (ha : Acc rα a) : Acc rβ (f a) := by
   induction ha with | intro a _ ih => ?_
   refine Acc.intro (f a) fun b hr ↦ ?_
@@ -209,7 +209,7 @@ section Map
 variable {r : α → β → Prop} {f : α → γ} {g : β → δ} {c : γ} {d : δ}
 
 /-- The map of a relation `r` through a pair of functions pushes the
-relation to the codomains of the functions.  The resulting relation is
+relation to the codomains of the functions. The resulting relation is
 defined by having pairs of terms related if they have preimages
 related by `r`.
 -/
@@ -310,7 +310,7 @@ inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | single {b} : r a b → ReflGen r a b
 
 /-- `SymmGen r`: symmetric closure of `r`. This is also the comparability relation, such
-  that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`). -/
+that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`). -/
 def SymmGen (r : α → α → Prop) (a b : α) : Prop :=
   r a b ∨ r b a
 
@@ -756,7 +756,7 @@ end EqvGen
 
 /-- The join of a relation on a single type is a new relation for which
 pairs of terms are related if there is a third term they are both
-related to.  For example, if `r` is a relation representing rewrites
+related to. For example, if `r` is a relation representing rewrites
 in a term rewriting system, then *confluence* is the property that if
 `a` rewrites to both `b` and `c`, then `join r` relates `b` and `c`
 (see `Relation.church_rosser`).

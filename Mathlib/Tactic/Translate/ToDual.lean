@@ -14,6 +14,7 @@ The `@[to_dual]` attribute is used to translate declarations to their dual equiv
 See the docstrings of `to_dual` and `to_additive` for more information.
 
 Known limitations:
+
 - Reordering arguments of arguments is not yet supported.
   This usually comes up in constructors of structures. e.g. `Pow.mk` or `OrderTop.mk`
 - When combining `to_additive` and `to_dual`, we need to make sure that all translations are added.
@@ -79,6 +80,7 @@ Use the `to_dual existing` syntax to use an existing dual declaration,
 instead of automatically generating it.
 
 Use the `(attr := ...)` syntax to apply attributes to both the original and the dual version:
+
 ```
 @[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
 ```
@@ -89,6 +91,7 @@ attribute will add a `to_dual none` tag to an `_assoc` theorem if the original t
 already tagged with `to_dual`. This also works with `to_dual (attr := reassoc)`.
 
 Some definitions are dual to something other than the dual of their value. Some examples:
+
 - `Ico a b := { x | a ≤ x ∧ x < b }` is dual to `Ioc b a := { x | b < x ∧ x ≤ a }`.
 - `Monotone f := ∀ ⦃a b⦄, a ≤ b → f a ≤ f b` is dual to itself.
 - `DecidableLE α := ∀ a b : α, Decidable (a ≤ b)` is dual to itself.

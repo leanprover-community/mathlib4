@@ -15,6 +15,7 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
 ## Main definitions
 
 * `MultilinearMap.dfinsupp_ext`
+
 * `MultilinearMap.dfinsuppFamily`, which satisfies
   `dfinsuppFamily f x p = f p (fun i => x i (p i))`.
 

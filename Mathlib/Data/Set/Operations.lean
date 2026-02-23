@@ -114,7 +114,7 @@ theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t :
 theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
 
 /-- The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`,
-  is the set of `x : α` such that `f x ∈ s`. -/
+is the set of `x : α` such that `f x ∈ s`. -/
 def preimage (f : α → β) (s : Set β) : Set α := {x | f x ∈ s}
 
 /-- `f ⁻¹' t` denotes the preimage of `t : Set β` under the function `f : α → β`. -/

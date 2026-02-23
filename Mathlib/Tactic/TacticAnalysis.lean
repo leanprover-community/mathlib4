@@ -161,13 +161,16 @@ initialize registerBuiltinAttribute {
 
 We consider a sequence here to be a maximal interval of tactics joined by `;` or newlines.
 This function returns an array of sequences. For example, a proof of the form:
+
 ```
 by
   tac1
   · tac2; tac3
   · tac4; tac5
 ```
+
 would result in three sequences:
+
 * `#[tac1, (· tac2; tac3), (· tac4; tac5)]`
 * `#[tac2, tac3]`
 * `#[tac4, tac5]`
@@ -283,9 +286,9 @@ deriving BEq
 
 The overall design will have three user-supplied components:
 
-  * **trigger** on a piece of syntax (which could contain multiple tactic calls);
-  * **test** if a suggested change is indeed an improvement;
-  * **tell** the user where changes can be made.
+* **trigger** on a piece of syntax (which could contain multiple tactic calls);
+* **test** if a suggested change is indeed an improvement;
+* **tell** the user where changes can be made.
 -/
 structure ComplexConfig where
   /-- Type returned by the `.test` function. -/

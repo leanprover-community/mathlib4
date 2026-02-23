@@ -333,68 +333,82 @@ Note: for the most part this note also applies to other properties
 (`Measurable`, `Differentiable`, `ContinuousOn`, ...).
 
 ### The traditional way
+
 As an example, let's look at addition `(+) : M → M → M`. We can state that this is continuous
 in different definitionally equal ways (omitting some typing information)
+
 * `Continuous (fun p ↦ p.1 + p.2)`;
 * `Continuous (Function.uncurry (+))`;
 * `Continuous ↿(+)`. (`↿` is notation for recursively uncurrying a function)
 
 However, lemmas with this conclusion are not nice to use in practice because
-1. They confuse the elaborator. The following example fails, because of limitations in the
-  elaboration process.
-  ```
-  variable {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
-  example : Continuous (fun x : M ↦ x + x) :=
-    continuous_add.comp _
 
-  -- This example used to fail, but would be accepted if you wrote is as
-  -- `continuous_add.comp (continuous_id.prodMk continuous_id :)`.
-  example : Continuous (fun x : M ↦ x + x) :=
-    continuous_add.comp (continuous_id.prodMk continuous_id)
-  ```
+1. They confuse the elaborator. The following example fails, because of limitations in the
+   elaboration process.
+
+```
+variable {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
+example : Continuous (fun x : M ↦ x + x) :=
+  continuous_add.comp _
+
+-- This example used to fail, but would be accepted if you wrote is as
+-- `continuous_add.comp (continuous_id.prodMk continuous_id :)`.
+example : Continuous (fun x : M ↦ x + x) :=
+  continuous_add.comp (continuous_id.prodMk continuous_id)
+```
 
 2. If the operation has more than 2 arguments, they are impractical to use, because in your
-  application the arguments in the domain might be in a different order or associated differently.
+   application the arguments in the domain might be in a different order or associated differently.
 
 ### The convenient way
 
 A much more convenient way to write continuity lemmas is like `Continuous.add`:
+
 ```
 Continuous.add {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
   Continuous (f + g)
 ```
+
 The conclusion can be `Continuous (fun x ↦ f x + g x)`, which is definitionally equal.
 This has the following advantages
+
 * It supports projection notation, so is shorter to write.
 * `Continuous.add _ _` is recognized correctly by the elaborator and gives useful new goals.
 * It works generally, since the domain is a variable.
   (Having a domain `Y × Z` would be less convenient in general.)
 
 As an example for a unary operation, we have `Continuous.neg`.
+
 ```
 Continuous.neg {f : X → G} (hf : Continuous f) : Continuous (-f)
 ```
+
 For unary functions, the elaborator is not confused when applying the traditional lemma
 (like `continuous_neg`), but it's still convenient to have the short version available (compare
 `hf.neg.neg.neg` with `continuous_neg.comp <| continuous_neg.comp <| continuous_neg.comp hf`).
 
 As a harder example, consider an operation of the following type:
+
 ```
 def strans {x : F} (γ γ' : Path x x) (t₀ : I) : Path x x
 ```
+
 The precise definition is not important, only its type.
 The correct continuity principle for this operation is something like this:
+
 ```
 {f : X → F} {γ γ' : ∀ x, Path (f x) (f x)} {t₀ s : X → I}
   (hγ : Continuous ↿γ) (hγ' : Continuous ↿γ')
   (ht : Continuous t₀) (hs : Continuous s) :
   Continuous (fun x ↦ strans (γ x) (γ' x) (t x) (s x))
 ```
+
 Note that *all* arguments of `strans` are indexed over `X`, even the basepoint `x`, and the last
 argument `s` that arises since `Path x x` has a coercion to `I → F`. The paths `γ` and `γ'` (which
 are unary functions from `I`) become binary functions in the continuity lemma.
 
 ### Summary
+
 * Make sure that your continuity lemmas are stated in the most general way, and in a convenient
   form. That means that:
   - The conclusion has a variable `X` as domain (not something like `Y × Z`);
@@ -415,11 +429,13 @@ still continuous. For example, consider the fractional part of a number, `Int.fr
 In this case, you want to add conditions to when a function involving `fract` is continuous, so you
 get something like this: (assumption `hf` could be weakened, but the important thing is the shape
 of the conclusion)
+
 ```
 lemma ContinuousOn.comp_fract {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {f : X → ℝ → Y} {g : X → ℝ} (hf : Continuous ↿f) (hg : Continuous g) (h : ∀ s, f s 0 = f s 1) :
     Continuous (fun x ↦ f x (fract (g x)))
 ```
+
 With `ContinuousAt` you can be even more precise about what to prove in case of discontinuities,
 see e.g. `ContinuousAt.comp_div_cases`.
 -/
@@ -443,6 +459,7 @@ The reason that this works better is because the type of `hg` doesn't mention `f
 Only after elaborating the two `ContinuousAt` arguments, Lean will try to unify `f x` with `y`,
 which is often easy after having chosen the correct functions for `f` and `g`.
 Here is an example that shows the difference:
+
 ```
 example [TopologicalSpace X] [TopologicalSpace Y] {x₀ : X} (f : X → X → Y)
     (hf : ContinuousAt (Function.uncurry f) (x₀, x₀)) :

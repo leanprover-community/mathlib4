@@ -22,6 +22,7 @@ to `q ^ degree p` (where `q ^ degree 0 = 0`) is an absolute value.
   to `q ^ degree p` (where `q ^ degree 0 = 0`)
 
 ## Main results
+
 * `Polynomial.cardPowDegree_isEuclidean`: `cardPowDegree` respects the
   Euclidean domain structure on the ring of polynomials
 

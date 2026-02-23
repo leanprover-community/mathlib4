@@ -17,7 +17,6 @@ public import Mathlib.Algebra.Module.Submodule.Basic
   an additive monoid `M` into a family of additive submonoids `ℳ`
 * `DirectSum.decompose ℳ`: The canonical equivalence provided by the above typeclass
 
-
 ## Main statements
 
 * `DirectSum.Decomposition.isInternal`: The link to `DirectSum.IsInternal`.
@@ -97,7 +96,7 @@ def decompose : M ≃ ⨁ i, ℳ i where
 
 omit [AddSubmonoidClass σ M] in
 /-- A substructure `p ⊆ M` is homogeneous if for every `m ∈ p`, all homogeneous components
-  of `m` are in `p`. -/
+of `m` are in `p`. -/
 def SetLike.IsHomogeneous {P : Type*} [SetLike P M] (p : P) : Prop :=
   ∀ (i : ι) ⦃m : M⦄, m ∈ p → (DirectSum.decompose ℳ m i : M) ∈ p
 

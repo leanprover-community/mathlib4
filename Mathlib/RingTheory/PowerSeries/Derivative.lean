@@ -184,7 +184,7 @@ theorem derivative_pow (A : Type*) [CommSemiring A] (g : A⟦X⟧) (n : ℕ) :
 variable (A : Type*) [CommRing A]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Chain rule for polynomials viewed as power series.  Use `derivative_subst` instead. -/
+/-- Chain rule for polynomials viewed as power series. Use `derivative_subst` instead. -/
 private theorem derivative_subst_coe (p : Polynomial A) {g : A⟦X⟧} (hg : HasSubst g) :
     d⁄dX A ((p : A⟦X⟧).subst g) = (d⁄dX A (p : A⟦X⟧)).subst g * d⁄dX A g := by
   simp [subst_coe hg, derivative_coe, Derivation.comp_aeval_eq (a := g) (derivative A) p,

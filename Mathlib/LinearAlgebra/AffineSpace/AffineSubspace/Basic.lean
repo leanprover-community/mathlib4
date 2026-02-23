@@ -323,7 +323,7 @@ theorem affineSpan_coe_preimage_eq_top (A : Set P) [Nonempty A] :
   · exact subset_affineSpan _ _ hy
   · exact AffineSubspace.smul_vsub_vadd_mem _ _
 
-/-- Suppose a set of vectors spans `V`.  Then a point `p`, together with those vectors added to `p`,
+/-- Suppose a set of vectors spans `V`. Then a point `p`, together with those vectors added to `p`,
 spans `P`. -/
 theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P)
     (h : Submodule.span k (Set.range ((↑) : s → V)) = ⊤) :

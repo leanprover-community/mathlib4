@@ -21,6 +21,7 @@ There is the "D"ependent version `DFunLike` and the non-dependent version `FunLi
 ## Basic usage of `DFunLike` and `FunLike`
 
 A typical type of morphisms should be declared as:
+
 ```
 structure MyHom (A B : Type*) [MyClass A] [MyClass B] where
   (toFun : A → B)
@@ -110,6 +111,7 @@ instance : CoolerHomClass (CoolerHom A B) A B where
 
 Then any declaration taking a specific type of morphisms as parameter can instead take the
 class you just defined:
+
 ```
 -- Compare with: lemma do_something (f : MyHom A B) : sorry := sorry
 lemma do_something {F : Type*} [FunLike F A B] [MyHomClass F A B] (f : F) : sorry :=

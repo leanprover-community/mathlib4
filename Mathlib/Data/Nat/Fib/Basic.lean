@@ -130,7 +130,7 @@ lemma le_fib_add_one : ∀ n, n ≤ fib n + 1
   | _n + 5 => (le_fib_self le_add_self).trans <| le_succ _
 
 /-- Subsequent Fibonacci numbers are coprime,
-  see https://proofwiki.org/wiki/Consecutive_Fibonacci_Numbers_are_Coprime -/
+see https://proofwiki.org/wiki/Consecutive_Fibonacci_Numbers_are_Coprime -/
 theorem fib_coprime_fib_succ (n : ℕ) : Nat.Coprime (fib n) (fib (n + 1)) := by
   induction n with
   | zero => simp
@@ -236,7 +236,7 @@ theorem gcd_fib_add_mul_self (m n : ℕ) : ∀ k, gcd (fib m) (fib (n + k * m)) 
     rw [← gcd_fib_add_mul_self m n k, add_mul, ← add_assoc, one_mul, gcd_fib_add_self _ _]
 
 /-- `fib n` is a strong divisibility sequence,
-  see https://proofwiki.org/wiki/GCD_of_Fibonacci_Numbers -/
+see https://proofwiki.org/wiki/GCD_of_Fibonacci_Numbers -/
 theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
   induction m, n using Nat.gcd.induction with
   | H0 => simp

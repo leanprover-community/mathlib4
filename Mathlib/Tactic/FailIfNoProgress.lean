@@ -21,6 +21,7 @@ in the context or the type of the goal is no longer definitionally equal to what
 reducible transparency.
 
 This means that, for example, `1 - 1` changing to `0` does not count as actual progress, since
+
 ```lean
 example : (1 - 1 = 0) := by with_reducible rfl
 ```

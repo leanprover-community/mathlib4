@@ -17,7 +17,7 @@ public import Mathlib.GroupTheory.SemidirectProduct
 From a multiplicative action M ↻ X, we can construct a functor from M to the category of
 types, mapping the single object of M to X and an element `m : M` to the map `X → X` given by
 multiplication by `m`.
-  This functor induces a category structure on X -- a special case of the category of elements.
+This functor induces a category structure on X -- a special case of the category of elements.
 A morphism `x ⟶ y` in this category is simply a scalar `m : M` such that `m • x = y`. In the case
 where M is a group, this category is a groupoid -- the *action groupoid*.
 -/
@@ -34,7 +34,7 @@ universe u
 variable (M : Type*) [Monoid M] (X : Type u) [MulAction M X]
 
 /-- A multiplicative action M ↻ X viewed as a functor mapping the single object of M to X
-  and an element `m : M` to the map `X → X` given by multiplication by `m`. -/
+and an element `m : M` to the map `X → X` given by multiplication by `m`. -/
 @[simps]
 def actionAsFunctor : SingleObj M ⥤ Type u where
   obj _ := X
@@ -55,7 +55,7 @@ instance : Category (ActionCategory M X) := by
 namespace ActionCategory
 
 /-- The projection from the action category to the monoid, mapping a morphism to its
-  label. -/
+label. -/
 def π : ActionCategory M X ⥤ SingleObj M :=
   CategoryOfElements.π _
 
@@ -70,7 +70,7 @@ theorem π_obj (p : ActionCategory M X) : (π M X).obj p = SingleObj.star M :=
 variable {M X}
 
 /-- The canonical map `ActionCategory M X → X`. It is given by `fun x => x.snd`, but
-  has a more explicit type. -/
+has a more explicit type. -/
 protected def back : ActionCategory M X → X := fun x => x.snd
 
 instance : CoeTC X (ActionCategory M X) :=
@@ -104,7 +104,7 @@ instance [Nonempty X] : Nonempty (ActionCategory M X) :=
 variable {X} (x : X)
 
 /-- The stabilizer of a point is isomorphic to the endomorphism monoid at the
-  corresponding point. In fact they are definitionally equivalent. -/
+corresponding point. In fact they are definitionally equivalent. -/
 def stabilizerIsoEnd : stabilizerSubmonoid M x ≃* @End (ActionCategory M X) _ x :=
   MulEquiv.refl _
 

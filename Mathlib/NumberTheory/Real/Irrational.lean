@@ -147,6 +147,7 @@ theorem irrational_sqrt_two : Irrational (√2) := by
 
 /--
 This can be used as
+
 ```lean
 unseal Nat.sqrt.iter in
 example : Irrational √24 := by decide

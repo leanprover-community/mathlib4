@@ -130,7 +130,7 @@ def MulHom.coeFn (α β : Type*) [Mul α] [CommSemigroup β] :
 /-- Semigroup homomorphism between the function spaces `I → α` and `I → β`, induced by a semigroup
 homomorphism `f` between `α` and `β`. -/
 @[to_additive (attr := simps) /-- Additive semigroup homomorphism between the function spaces
-  `I → α` and `I → β`, induced by an additive semigroup homomorphism `f` between `α` and `β` -/]
+`I → α` and `I → β`, induced by an additive semigroup homomorphism `f` between `α` and `β` -/]
 protected def MulHom.compLeft {α β : Type*} [Mul α] [Mul β] (f : α →ₙ* β) (I : Type*) :
     (I → α) →ₙ* I → β where
   toFun h := f ∘ h

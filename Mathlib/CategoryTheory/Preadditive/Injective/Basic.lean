@@ -305,8 +305,8 @@ def mapInjectivePresentation (adj : F ⊣ G) [F.PreservesMonomorphisms] (X : D)
     haveI : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits; infer_instance
 
 /-- Given an adjunction `F ⊣ G` such that `F` preserves monomorphisms and is faithful,
-  then any injective presentation of `F(X)` can be pulled back to an injective presentation of `X`.
-  This is similar to `mapInjectivePresentation`. -/
+then any injective presentation of `F(X)` can be pulled back to an injective presentation of `X`.
+This is similar to `mapInjectivePresentation`. -/
 def injectivePresentationOfMap (adj : F ⊣ G)
     [F.PreservesMonomorphisms] [F.ReflectsMonomorphisms] (X : C)
     (I : InjectivePresentation <| F.obj X) :

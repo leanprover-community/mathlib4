@@ -23,6 +23,7 @@ relation on `X ⟶ Y`.
 (This file dualizes the definitions in `Mathlib/AlgebraicTopology/ModelCategory/LeftHomotopy.lean`.)
 
 ## References
+
 * [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
 
 -/

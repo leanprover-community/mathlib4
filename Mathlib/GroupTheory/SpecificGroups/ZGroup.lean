@@ -183,7 +183,7 @@ variable {p : ℕ} [Fact p.Prime]
 namespace IsPGroup
 
 /-- If a group `K` acts on a cyclic `p`-group `G` of coprime order, then the map `K × G → G`
-  defined by `(k, g) ↦ k • g * g⁻¹` is either trivial or surjective. -/
+defined by `(k, g) ↦ k • g * g⁻¹` is either trivial or surjective. -/
 theorem smul_mul_inv_trivial_or_surjective [IsCyclic G] (hG : IsPGroup p G)
     {K : Type*} [Group K] [MulDistribMulAction K G] (hGK : (Nat.card G).Coprime (Nat.card K)) :
     (∀ g : G, ∀ k : K, k • g * g⁻¹ = 1) ∨ (∀ g : G, ∃ k : K, ∃ q : G, k • q * q⁻¹ = g) := by
@@ -211,7 +211,7 @@ theorem smul_mul_inv_trivial_or_surjective [IsCyclic G] (hG : IsPGroup p G)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If a cyclic `p`-subgroup `P` acts by conjugation on a subgroup `K` of coprime order, then
-  either `⁅K, P⁆ = ⊥` or `⁅K, P⁆ = P`. -/
+either `⁅K, P⁆ = ⊥` or `⁅K, P⁆ = P`. -/
 theorem commutator_eq_bot_or_commutator_eq_self {P K : Subgroup G} [IsCyclic P]
     (hP : IsPGroup p P) (hKP : K ≤ P.normalizer) (hPK : (Nat.card P).Coprime (Nat.card K)) :
     ⁅K, P⁆ = ⊥ ∨ ⁅K, P⁆ = P := by
@@ -233,7 +233,7 @@ variable [Finite G] (P : Sylow p G) [IsCyclic P]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If a normal cyclic Sylow `p`-subgroup `P` has a complement `K`, then either `⁅K, P⁆ = ⊥` or
-  `⁅K, P⁆ = P`. -/
+`⁅K, P⁆ = P`. -/
 theorem commutator_eq_bot_or_commutator_eq_self [P.Normal] {K : Subgroup G}
     (h : K.IsComplement' P) : ⁅K, P.1⁆ = ⊥ ∨ ⁅K, P.1⁆ = P :=
   P.2.commutator_eq_bot_or_commutator_eq_self (P.normalizer_eq_top ▸ le_top)
@@ -251,7 +251,7 @@ theorem le_center_or_le_commutator [P.Normal] : P ≤ Subgroup.center G ∨ P �
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A cyclic Sylow subgroup is either central in its normalizer or contained in the commutator
-  subgroup. -/
+subgroup. -/
 theorem normalizer_le_centralizer_or_le_commutator :
     P.normalizer ≤ Subgroup.centralizer P ∨ P ≤ commutator G := by
   let Q : Sylow p P.normalizer := P.subtype P.le_normalizer
@@ -270,7 +270,7 @@ theorem normalizer_le_centralizer_or_le_commutator :
 
 include P in
 /-- If `G` has a cyclic Sylow `p`-subgroup, then the cardinality and index of the commutator
-  subgroup of `G` cannot both be divisible by `p`. -/
+subgroup of `G` cannot both be divisible by `p`. -/
 theorem not_dvd_card_commutator_or_not_dvd_index_commutator :
     ¬ p ∣ Nat.card (commutator G) ∨ ¬ p ∣ (commutator G).index := by
   refine (normalizer_le_centralizer_or_le_commutator P).imp ?_ ?_ <;>
@@ -317,7 +317,7 @@ theorem isZGroup_of_coprime [Finite G] [IsZGroup G] [IsZGroup G'']
     rwa [← MonoidHom.ker_eq_bot_iff, P.ker_subgroupMap f', Subgroup.subgroupOf_eq_bot]
 
 /-- A finite group `G` is a Z-group if and only if `G` is isomorphic to a semidirect product of two
-  cyclic subgroups of coprime order. -/
+cyclic subgroups of coprime order. -/
 theorem isZGroup_iff_exists_mulEquiv [Finite G] :
     IsZGroup G ↔ ∃ (N H : Subgroup G) (φ : H →* MulAut N) (_ : G ≃* N ⋊[φ] H),
       IsCyclic H ∧ IsCyclic N ∧ (Nat.card N).Coprime (Nat.card H) := by

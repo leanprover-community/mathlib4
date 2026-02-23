@@ -49,8 +49,8 @@ noncomputable irreducible_def lintegral (μ : Measure α) (f : α → ℝ≥0∞
   ⨆ (g : α →ₛ ℝ≥0∞) (_ : ⇑g ≤ f), g.lintegral μ
 
 /-! In the notation for integrals, an expression like `∫⁻ x, g ‖x‖ ∂μ` will not be parsed correctly,
-  and needs parentheses. We do not set the binding power of `r` to `0`, because then
-  `∫⁻ x, f x = 0` will be parsed incorrectly. -/
+and needs parentheses. We do not set the binding power of `r` to `0`, because then
+`∫⁻ x, f x = 0` will be parsed incorrectly. -/
 
 @[inherit_doc MeasureTheory.lintegral]
 notation3 "∫⁻ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => lintegral μ r

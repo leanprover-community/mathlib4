@@ -50,13 +50,14 @@ variable (R : Type u) [Ring R] (Q : Type v) [AddCommGroup Q] [Module R Q]
 An `R`-module `Q` is injective if and only if every injective `R`-linear map descends to a linear
 map to `Q`, i.e. in the following diagram, if `f` is injective then there is an `R`-linear map
 `h : Y ⟶ Q` such that `g = h ∘ f`
-  ```
-  X --- f ---> Y
-  |
-  | g
-  v
-  Q
-  ```
+
+```
+X --- f ---> Y
+|
+| g
+v
+Q
+```
 -/
 @[mk_iff] class Module.Injective : Prop where
   out : ∀ ⦃X Y : Type v⦄ [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]

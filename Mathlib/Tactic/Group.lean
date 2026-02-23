@@ -78,6 +78,7 @@ is manipulated.
 (For additive commutative groups, use the `abel` tactic instead.)
 
 Example:
+
 ```lean
 example {G : Type} [Group G] (a b c d : G) (h : c = (a*b^2)*((b*b)⁻¹*a⁻¹)*d) : a*c*d⁻¹ = a := by
   group at h -- normalizes `h` which becomes `h : c = d`

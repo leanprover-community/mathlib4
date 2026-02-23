@@ -101,6 +101,7 @@ destructuring, and goal creation.
 * `tfae_have i → j := t ?a` creates a new goal for `?a`.
 
 Examples:
+
 ```lean4
 example (h : P → R) : TFAE [P, Q, R] := by
   tfae_have 1 → 3 := h
@@ -148,6 +149,7 @@ of hypotheses of the form `Pᵢ → Pⱼ` or `Pᵢ ↔ Pⱼ` have been introduce
 `tfae_have` can be used to conveniently introduce these hypotheses; see `tfae_have`.
 
 Example:
+
 ```lean4
 example : TFAE [P, Q, R] := by
   tfae_have 1 → 2 := sorry /- proof of P → Q -/

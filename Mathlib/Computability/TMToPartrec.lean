@@ -53,16 +53,20 @@ positions, or labels `Λ`, each of which executes a finite sequence of basic sta
 
 For this program we will need four stacks, each on an alphabet `Γ'` like so:
 
-    inductive Γ'  | consₗ | cons | bit0 | bit1
+```
+inductive Γ'  | consₗ | cons | bit0 | bit1
+```
 
 We represent a number as a bit sequence, lists of numbers by putting `cons` after each element, and
 lists of lists of natural numbers by putting `consₗ` after each list. For example:
 
-    0 ~> []
-    1 ~> [bit1]
-    6 ~> [bit0, bit1, bit1]
-    [1, 2] ~> [bit1, cons, bit0, bit1, cons]
-    [[], [1, 2]] ~> [consₗ, bit1, cons, bit0, bit1, cons, consₗ]
+```
+0 ~> []
+1 ~> [bit1]
+6 ~> [bit0, bit1, bit1]
+[1, 2] ~> [bit1, cons, bit0, bit1, cons]
+[[], [1, 2]] ~> [consₗ, bit1, cons, bit0, bit1, cons, consₗ]
+```
 
 The four stacks are `main`, `rev`, `aux`, `stack`. In normal mode, `main` contains the input to the
 current program (a `List ℕ`) and `stack` contains data (a `List (List ℕ)`) associated to the
@@ -120,6 +124,7 @@ prove that only finitely many labels are accessible.) The labels are:
 
 In addition to these basic states, we define some additional subroutines that are used in the
 above:
+
 * `push'`, `peek'`, `pop'` are special versions of the builtins that use the local store to supply
   inputs and outputs.
 * `unrev`: special case `move false rev main` to move everything from `rev` back to `main`. Used as
@@ -398,10 +403,12 @@ def trCont : Cont → Cont'
 /-- We use `PosNum` to define the translation of binary natural numbers. A natural number is
 represented as a little-endian list of `bit0` and `bit1` elements:
 
-    1 = [bit1]
-    2 = [bit0, bit1]
-    3 = [bit1, bit1]
-    4 = [bit0, bit0, bit1]
+```
+1 = [bit1]
+2 = [bit0, bit1]
+3 = [bit1, bit1]
+4 = [bit0, bit0, bit1]
+```
 
 In particular, this representation guarantees no trailing `bit0`'s at the end of the list. -/
 def trPosNum : PosNum → List Γ'
@@ -413,11 +420,13 @@ def trPosNum : PosNum → List Γ'
 translated using `trPosNum`, and `trNum 0 = []`. So there are never any trailing `bit0`'s in
 a translated `Num`.
 
-    0 = []
-    1 = [bit1]
-    2 = [bit0, bit1]
-    3 = [bit1, bit1]
-    4 = [bit0, bit0, bit1]
+```
+0 = []
+1 = [bit1]
+2 = [bit0, bit1]
+3 = [bit1, bit1]
+4 = [bit0, bit0, bit1]
+```
 -/
 def trNum : Num → List Γ'
   | Num.zero => []
@@ -438,10 +447,12 @@ theorem trNat_default : trNat default = [] :=
 /-- Lists are translated with a `cons` after each encoded number.
 For example:
 
-    [] = []
-    [0] = [cons]
-    [1] = [bit1, cons]
-    [6, 0] = [bit0, bit1, bit1, cons, cons]
+```
+[] = []
+[0] = [cons]
+[1] = [bit1, cons]
+[6, 0] = [bit0, bit1, bit1, cons, cons]
+```
 -/
 @[simp]
 def trList : List ℕ → List Γ'
@@ -451,11 +462,13 @@ def trList : List ℕ → List Γ'
 /-- Lists of lists are translated with a `consₗ` after each encoded list.
 For example:
 
-    [] = []
-    [[]] = [consₗ]
-    [[], []] = [consₗ, consₗ]
-    [[0]] = [cons, consₗ]
-    [[1, 2], [0]] = [bit1, cons, bit0, bit1, cons, consₗ, cons, consₗ]
+```
+[] = []
+[[]] = [consₗ]
+[[], []] = [consₗ, consₗ]
+[[0]] = [cons, consₗ]
+[[1, 2], [0]] = [bit1, cons, bit0, bit1, cons, consₗ, cons, consₗ]
+```
 -/
 @[simp]
 def trLList : List (List ℕ) → List Γ'

@@ -58,6 +58,7 @@ structure WLOGResult where
 `h : ¬ P` can be reduced to the case where `P` holds (typically by symmetry).
 
 In `reductionGoal`, there will be two additional assumptions:
+
 - `h : ¬ P`: the assumption that `P` does not hold
 - `H`: which is the statement that in the old context `P` suffices to prove the goal.
   If `H` is `none`, the name `this` is used.
@@ -139,6 +140,7 @@ def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `
 requires showing that the case `h : ¬ P` can be reduced to the case where `P` holds
 (typically by symmetry). The side goal will be at the top of the stack. In this side goal,
 there will be two additional assumptions:
+
 - `h : ¬ P`: the assumption that `P` does not hold
 - `this`: which is the statement that in the old context `P` suffices to prove the goal.
   By default, the entire context is reverted to produce `this`.

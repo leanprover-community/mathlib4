@@ -15,6 +15,7 @@ public import Mathlib.Tactic.Push.Attr
 In any preorder `α`, we define intervals
 (which on each side can be either infinite, open, or closed)
 using the following naming conventions:
+
 - `i`: infinite
 - `o`: open
 - `c`: closed

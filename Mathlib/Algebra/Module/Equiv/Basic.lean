@@ -431,7 +431,7 @@ variable [AddCommMonoid M] [Module R M]
 variable (V V₂ R M)
 
 /-- Linear equivalence between a curried and uncurried function.
-  Differs from `TensorProduct.curry`. -/
+Differs from `TensorProduct.curry`. -/
 protected def curry : (V × V₂ → M) ≃ₗ[R] V → V₂ → M :=
   { Equiv.curry _ _ _ with
     map_add' := fun _ _ ↦ rfl
@@ -577,6 +577,7 @@ section arrowCongr
 -- Difference from above: `R₁` and `R₂` are commutative
 /-!
 The modules for `arrowCongr` and its lemmas below are related via the semilinearities
+
 ```
 M₁  ←⎯⎯⎯σ₁₂⎯⎯⎯→ M₂  ←⎯⎯⎯σ₂₃⎯⎯⎯→ M₃
 ⏐               ⏐               ⏐
@@ -588,6 +589,7 @@ M₁' ←⎯⎯σ₁'₂'⎯⎯→ M₂' ←⎯⎯σ₂'₃'⎯⎯→ M₃
 ↓               ↓
 M₁''←⎯σ₁''₂''⎯→ M₂''
 ```
+
 where the horizontal direction corresponds to the `≃ₛₗ`s, and is needed for `arrowCongr_trans`,
 while the vertical direction corresponds to the `→ₛₗ`s, and is needed `arrowCongr_comp`.
 

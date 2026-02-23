@@ -26,6 +26,7 @@ purely order theoretically in Sperner theory.
 ## Constructions
 
 We provide many ways to build finpartitions:
+
 * `Finpartition.ofErase`: Builds a finpartition by erasing `⊥` for you.
 * `Finpartition.ofSubset`: Builds a finpartition from a subset of the parts of a previous
   finpartition.

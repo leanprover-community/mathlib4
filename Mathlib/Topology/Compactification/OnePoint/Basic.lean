@@ -638,7 +638,7 @@ end Homeomorph
 cannot be generalized from `T2Space` to `T1Space`.
 
 Let `α = OnePoint ℕ` be the one-point compactification of `ℕ`, and let `β` be the same space
-`OnePoint ℕ` with the cofinite topology.  Then `α` is compact, `β` is T1, and the identity map
+`OnePoint ℕ` with the cofinite topology. Then `α` is compact, `β` is T1, and the identity map
 `id : α → β` is a continuous equivalence that is not a homeomorphism.
 -/
 theorem Continuous.homeoOfEquivCompactToT2.t1_counterexample :

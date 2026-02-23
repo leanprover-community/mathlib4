@@ -17,6 +17,7 @@ expressions. In order to do this, the denominators need to be certified as nonze
 contains the discharger which carries out these checks.
 
 Currently the discharger tries four strategies:
+
 1. `assumption`
 2. `positivity`
 3. `norm_num`

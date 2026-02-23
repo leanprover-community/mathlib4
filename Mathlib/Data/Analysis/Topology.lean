@@ -32,8 +32,8 @@ open Filter hiding Realizer
 open Topology
 
 /-- A `Ctop α σ` is a realization of a topology (basis) on `α`,
-  represented by a type `σ` together with operations for the top element and
-  the intersection operation. -/
+represented by a type `σ` together with operations for the top element and
+the intersection operation. -/
 structure Ctop (α σ : Type*) where
   f : σ → Set α
   top : α → σ
@@ -99,7 +99,7 @@ theorem mem_nhds_toTopsp (F : Ctop α σ) {s : Set α} {a : α} :
 end Ctop
 
 /-- A `Ctop` realizer for the topological space `T` is a `Ctop`
-  which generates `T`. -/
+which generates `T`. -/
 structure Ctop.Realizer (α) [T : TopologicalSpace α] where
   σ : Type*
   F : Ctop α σ

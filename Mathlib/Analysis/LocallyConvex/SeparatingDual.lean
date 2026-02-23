@@ -105,8 +105,8 @@ variable [SeparatingDual R V]
 open Function
 
 /-- Given a finite-dimensional subspace `W` of a space `V` with separating dual, any
-  linear functional on `W` extends to a continuous linear functional on `V`.
-  This is stated more generally for an injective linear map from `W` to `V`. -/
+linear functional on `W` extends to a continuous linear functional on `V`.
+This is stated more generally for an injective linear map from `W` to `V`. -/
 theorem dualMap_surjective_iff {W} [AddCommGroup W] [Module R W] [FiniteDimensional R W]
     {f : W →ₗ[R] V} : Surjective (f.dualMap ∘ ContinuousLinearMap.toLinearMap) ↔ Injective f := by
   constructor <;> intro hf

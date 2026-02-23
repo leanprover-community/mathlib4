@@ -194,7 +194,7 @@ lemma summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
   grind [ofReal_one, iteratedDerivWithin_zero, Pi.smul_apply, smul_eq_mul]
 
 /-- This is a version of `EisensteinSeries.qExpansion_identity` for positive naturals,
-which shows that  `∑' n, 1 / (z + n) ^ (k + 1) = ((-2 π I) ^ (k + 1) / k !) * ∑' n : ℕ+, n ^ k q ^n`
+which shows that `∑' n, 1 / (z + n) ^ (k + 1) = ((-2 π I) ^ (k + 1) / k !) * ∑' n : ℕ+, n ^ k q ^n`
 where `q = cexp (2 π I z)`. -/
 theorem EisensteinSeries.qExpansion_identity_pnat {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
     ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) = ((-2 * π * I) ^ (k + 1) / k !) *

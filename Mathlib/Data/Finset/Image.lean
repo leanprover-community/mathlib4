@@ -507,11 +507,11 @@ end Image
 section FilterMap
 
 /-- `filterMap f s` is a combination filter/map operation on `s`.
-  The function `f : α → Option β` is applied to each element of `s`;
-  if `f a` is `some b` then `b` is included in the result, otherwise
-  `a` is excluded from the resulting finset.
+The function `f : α → Option β` is applied to each element of `s`;
+if `f a` is `some b` then `b` is included in the result, otherwise
+`a` is excluded from the resulting finset.
 
-  In notation, `filterMap f s` is the finset `{b : β | ∃ a ∈ s, f a = some b}`. -/
+In notation, `filterMap f s` is the finset `{b : β | ∃ a ∈ s, f a = some b}`. -/
 -- TODO: should there be `filterImage` too?
 def filterMap (f : α → Option β) (s : Finset α)
     (f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') : Finset β :=
@@ -686,7 +686,7 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
   rfl
 
 /-- Given a predicate `p : α → Prop`, produces an equivalence between
-  `Finset {a : α // p a}` and `{s : Finset α // ∀ a ∈ s, p a}`. -/
+`Finset {a : α // p a}` and `{s : Finset α // ∀ a ∈ s, p a}`. -/
 @[simps]
 protected def finsetSubtypeComm (p : α → Prop) :
     Finset {a : α // p a} ≃ {s : Finset α // ∀ a ∈ s, p a} where

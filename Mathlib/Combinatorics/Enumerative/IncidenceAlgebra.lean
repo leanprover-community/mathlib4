@@ -49,6 +49,7 @@ left and right inverses agree if they exist.
 ## TODOs
 
 Here are some additions to this file that could be made in the future:
+
 - Generalize the construction of `mu` to invert any element of the incidence algebra `f` which has
   `f x x` a unit for all `x`.
 - Give formulas for higher powers of zeta.

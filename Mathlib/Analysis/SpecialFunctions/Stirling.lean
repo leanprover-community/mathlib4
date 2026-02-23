@@ -26,6 +26,7 @@ We proceed in two parts.
 **Part 1**: We consider the sequence $a_n$ of fractions $\frac{n!}{\sqrt{2n}(\frac{n}{e})^n}$
 and prove that this sequence converges to a real, positive number $a$. For this the two main
 ingredients are
+
 - taking the logarithm of the sequence and
 - using the series expansion of $\log(1 + x)$.
 
@@ -46,6 +47,7 @@ namespace Stirling
 
 /-!
 ### Part 1
+
 https://proofwiki.org/wiki/Stirling%27s_Formula#Part_1
 -/
 
@@ -182,6 +184,7 @@ theorem stirlingSeq_has_pos_limit_a : ∃ a : ℝ, 0 < a ∧ Tendsto stirlingSeq
 
 /-!
 ### Part 2
+
 https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
 -/
 

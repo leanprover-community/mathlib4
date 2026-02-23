@@ -521,8 +521,8 @@ theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) 
 end circleIntegral
 
 /-- The power series that is equal to
-$\frac{1}{2πi}\sum_{n=0}^{\infty}
-  \oint_{|z-c|=R} \left(\frac{w-c}{z - c}\right)^n \frac{1}{z-c}f(z)\,dz$ at
+$\frac{1}{2πi}\sum\_{n=0}^{\infty}
+\oint\_{|z-c|=R} \left(\frac{w-c}{z - c}\right)^n \frac{1}{z-c}f(z),dz$ at
 `w - c`. The coefficients of this power series depend only on `f ∘ circleMap c R`, and the power
 series converges to `f w` if `f` is differentiable on the closed ball `Metric.closedBall c R` and
 `w` belongs to the corresponding open ball. For any circle integrable function `f`, this power

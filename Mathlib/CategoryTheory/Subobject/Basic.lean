@@ -27,6 +27,7 @@ There is a coercion from `Subobject X` back to the ambient category `C`
 `P.arrow : (P : C) ⟶ X` is the inclusion morphism.
 
 We provide
+
 * `def pullback [HasPullbacks C] (f : X ⟶ Y) : Subobject Y ⥤ Subobject X`
 * `def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y`
 * `def «exists_» [HasImages C] (f : X ⟶ Y) : Subobject X ⥤ Subobject Y`
@@ -613,19 +614,21 @@ lemma isPullback_aux (f : X ⟶ Y) (y : Subobject Y) :
         (by simp) (by simp) (by simp) (by simp)
 
 /-- For any morphism `f : X ⟶ Y` and subobject `y` of `Y`, `Subobject.pullbackπ f y` is the first
-    projection in the following pullback square:
+projection in the following pullback square:
 
-    ```
-    (Subobject.pullback f).obj y ----pullbackπ f y---> (y : C)
-             |                                            |
-    ((Subobject.pullback f).obj y).arrow               y.arrow
-             |                                            |
-             v                                            v
-             X ---------------------f-------------------> Y
-    ```
+````
+```
+(Subobject.pullback f).obj y ----pullbackπ f y---> (y : C)
+         |                                            |
+((Subobject.pullback f).obj y).arrow               y.arrow
+         |                                            |
+         v                                            v
+         X ---------------------f-------------------> Y
+```
 
-    For instance in the category of sets, `Subobject.pullbackπ f y` is the restriction of `f` to
-    elements of `X` that are in the preimage of `y ⊆ Y`.
+For instance in the category of sets, `Subobject.pullbackπ f y` is the restriction of `f` to
+elements of `X` that are in the preimage of `y ⊆ Y`.
+````
 -/
 noncomputable def pullbackπ (f : X ⟶ Y) (y : Subobject Y) :
     ((Subobject.pullback f).obj y : C) ⟶ (y : C) :=

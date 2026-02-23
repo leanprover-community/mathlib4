@@ -73,7 +73,7 @@ theorem IsCompact.compl_mem_sets_of_nhdsWithin (hs : IsCompact s) {f : Filter X}
   exact h₂ (h₁ hs)
 
 /-- If `p : Set X → Prop` is stable under restriction and union, and each point `x`
-  of a compact set `s` has a neighborhood `t` within `s` such that `p t`, then `p s` holds. -/
+of a compact set `s` has a neighborhood `t` within `s` such that `p t`, then `p s` holds. -/
 @[elab_as_elim]
 theorem IsCompact.induction_on (hs : IsCompact s) {p : Set X → Prop} (he : p ∅)
     (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s) (hunion : ∀ ⦃s t⦄, p s → p t → p (s ∪ t))
@@ -270,7 +270,7 @@ theorem IsCompact.elim_finite_subfamily_closed {ι : Type v} (hs : IsCompact s)
     (directed_of_isDirected_le fun _ _ h ↦ biInter_subset_biInter_left h)
 
 /-- To show that a compact set intersects the intersection of a family of closed sets,
-  it is sufficient to show that it intersects every finite subfamily. -/
+it is sufficient to show that it intersects every finite subfamily. -/
 theorem IsCompact.inter_iInter_nonempty {ι : Type v} (hs : IsCompact s) (t : ι → Set X)
     (htc : ∀ i, IsClosed (t i)) (hst : ∀ u : Finset ι, (s ∩ ⋂ i ∈ u, t i).Nonempty) :
     (s ∩ ⋂ i, t i).Nonempty := by
@@ -916,7 +916,7 @@ theorem exists_subset_nhds_of_compactSpace [CompactSpace X] [Nonempty ι]
   exists_subset_nhds_of_isCompact' hV (fun i => (hV_closed i).isCompact) hV_closed hU
 
 /-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is compact
-  if and only if `s` is compact. -/
+if and only if `s` is compact. -/
 theorem Topology.IsInducing.isCompact_iff {f : X → Y} (hf : IsInducing f) :
     IsCompact s ↔ IsCompact (f '' s) := by
   refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot F_le => ?_⟩

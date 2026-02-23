@@ -16,9 +16,11 @@ public import Mathlib.Topology.ContinuousMap.Polynomial
 # Bernstein approximations and Weierstrass' theorem
 
 We prove that the Bernstein approximations
+
 ```
 ∑ k : Fin (n+1), (n.choose k * x^k * (1-x)^(n-k)) • f (k/n : ℝ)
 ```
+
 for a continuous function `f : C([0,1], E)` taking values in a locally convex vector space
 converge uniformly to `f` as `n` tends to infinity.
 This statement directly applies to the cases when the codomain is a (semi)normed space
@@ -32,6 +34,7 @@ Bernoulli trial approach the underlying probability.
 
 The proof here does not directly rely on Bernoulli's theorem,
 but can also be given a probabilistic account.
+
 * Consider a weighted coin which with probability `x` produces heads,
   and with probability `1-x` produces tails.
 * The value of `bernstein n k x` is the probability that
@@ -174,9 +177,11 @@ open bernsteinApproximation
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Bernstein approximations
+
 ```
 ∑ k : Fin (n+1), f (k/n : ℝ) * n.choose k * x^k * (1-x)^(n-k)
 ```
+
 for a continuous function `f : C([0,1], ℝ)` converge uniformly to `f` as `n` tends to infinity.
 
 This is the proof given in [Richard Beals' *Analysis, an introduction*][beals-analysis], §7D,

@@ -17,6 +17,7 @@ public import Mathlib.Algebra.MvPolynomial.CommRing
 # Krull dimension and non-zero-divisors
 
 ## Main results
+
 - `ringKrullDim_quotient_succ_le_of_nonZeroDivisor`: If `r` is not a zero divisor, then
   `dim R/r + 1 ≤ dim R`.
 - `ringKrullDim_succ_le_ringKrullDim_polynomial`: `dim R + 1 ≤ dim R[X]`.

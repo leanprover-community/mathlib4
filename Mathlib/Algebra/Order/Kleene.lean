@@ -85,6 +85,7 @@ open Computability
 
 /-- A Kleene Algebra is an idempotent semiring with an additional unary operator `kstar` (for Kleene
 star) that satisfies the following properties:
+
 * `1 + a * a∗ ≤ a∗`
 * `1 + a∗ * a ≤ a∗`
 * If `a * c + b ≤ c`, then `a∗ * b ≤ c`

@@ -25,6 +25,7 @@ if the functor `Hom(X, _)` (i.e. `coyoneda.obj (op X)`) is `κ`-accessible.
 Similarly as for accessible functors, we define a type class `IsAccessible`.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/

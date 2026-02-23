@@ -16,15 +16,17 @@ public import Mathlib.RingTheory.Localization.Defs
 ## Main definition
 
 - `Algebra.Extension`: An extension of an `R`-algebra `S` is an `R` algebra `P` together with a
-surjection `P →ₐ[R] R`.
+  surjection `P →ₐ[R] R`.
 
 - `Algebra.Extension.Hom`: Given a commuting square
+
   ```
   R --→ P -→ S
   |          |
   ↓          ↓
   R' -→ P' → S
   ```
+
   A hom between `P` and `P'` is a ring homomorphism that makes the two squares commute.
 
 - `Algebra.Extension.Cotangent`:
@@ -175,12 +177,14 @@ variable [Algebra R R'] [Algebra R' R''] [Algebra R R'']
 variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
 
 /-- Given a commuting square
+
 ```
 R --→ P -→ S
 |          |
 ↓          ↓
 R' -→ P' → S
 ```
+
 A hom between `P` and `P'` is a ring homomorphism that makes the two squares commute.
 -/
 @[ext]

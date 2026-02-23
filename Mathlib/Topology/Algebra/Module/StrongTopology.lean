@@ -27,7 +27,7 @@ We then declare an instance for the case where `𝔖` is exactly the set of all 
 bounded convergence"), which coincides with the operator norm topology in the case of
 `NormedSpace`s.
 
-Other useful examples include the weak-* topology (when `𝔖` is the set of finite sets or the set
+Other useful examples include the weak-\* topology (when `𝔖` is the set of finite sets or the set
 of singletons) and the topology of compact convergence (when `𝔖` is the set of relatively compact
 sets).
 

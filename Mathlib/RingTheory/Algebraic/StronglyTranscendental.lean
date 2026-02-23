@@ -15,6 +15,7 @@ In this file, we provide basic properties for strongly transcendental elements i
 This is a relatively niche notion, but is useful for proving Zarkisi's main theorem.
 
 ## Reference
+
 - https://stacks.math.columbia.edu/tag/00PZ
 
 -/

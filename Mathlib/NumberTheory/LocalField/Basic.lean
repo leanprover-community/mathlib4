@@ -27,6 +27,7 @@ we say that it is a non-archimedean local field if the topology comes from the g
 and it is locally compact and non-discrete.
 
 This implies the following typeclasses via `inferInstance`
+
 - `IsValuativeTopology K`
 - `LocallyCompactSpace K`
 - `IsTopologicalDivisionRing K`
@@ -38,6 +39,7 @@ This implies the following typeclasses via `inferInstance`
 
 Assuming we have a compatible `UniformSpace K` instance
 (e.g. via `IsTopologicalAddGroup.toUniformSpace` and `isUniformAddGroup_of_addCommGroup`) then
+
 - `CompleteSpace K`
 - `CompleteSpace 𝒪[K]`
 -/

@@ -55,7 +55,7 @@ lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
   | n + 2, _, H => by rw [pow_succ, coe_set_pow n.succ_ne_zero, coe_mul_coe]
 
 /-! Some lemmas about pointwise multiplication and submonoids. Ideally we put these in
-  `GroupTheory.Submonoid.Basic`, but currently we cannot because that file is imported by this. -/
+`GroupTheory.Submonoid.Basic`, but currently we cannot because that file is imported by this. -/
 
 namespace Submonoid
 

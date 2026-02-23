@@ -21,6 +21,7 @@ any `Z : C`. This morphism belongs to `W.isLocal.isLocal` and
 is an isomorphism iff `Z` belongs to `W.isLocal` (see the lemma `isIso_toSucc_iff`).
 The morphism `toSucc W Z : Z ⟶ succ W Z` is defined as a composition
 of two morphisms that are roughly described as follows:
+
 * `toStep W Z : Z ⟶ step W Z`: for any morphism `f : X ⟶ Y` satisfying `W`
   and any morphism `X ⟶ Z`, we "attach" a morphism `Y ⟶ step W Z` (using
   coproducts and a pushout in essentially the same way as it is done in
@@ -47,6 +48,7 @@ under the assumption that `W : MorphismProperty C` is a `w`-small property
 of morphisms in a locally `κ`-presentable category `C` (with `κ : Cardinal.{w}`
 a regular cardinal) such that the domains and codomains of the morphisms
 satisfying `W` are `κ`-presentable:
+
 * `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
   of the inclusion `W.isLocal ⥤ C`;
 * `MorphismProperty.isLocallyPresentable_isLocal`: the full subcategory
@@ -57,6 +59,7 @@ in the book by Adámek and Rosický (note that according to the
 errata to this book, the implication (ii) → (i) is wrong when `κ = ℵ₀`).
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
@@ -183,12 +186,14 @@ variable [HasPushouts C]
 
 /-- The intermediate object in the definition of the morphism `toSucc W Z : Z ⟶ succ W Z`.
 It is the pushout of the following square:
+
 ```lean
 ∐ D₁.obj₁ ⟶ ∐ D₁.obj₂
    |           |
    v           v
    Z      ⟶   step W Z
 ```
+
 where the coproduct is taken over all the diagram consisting of a morphism `f : X ⟶ Y`
 satisfying `W` and a morphism `X ⟶ Z`. The top map is the coproduct of all of these `f`.
 -/
@@ -241,7 +246,7 @@ noncomputable def D₂.multispanIndex : MultispanIndex (multispanShape W Z) C wh
 variable [HasMulticoequalizer (D₂.multispanIndex W Z)]
 
 /-- The object `succ W Z` is the multicoequalizer of all pairs of morphisms
- `g₁ g₂ : Y ⟶ step W Z` with a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
+`g₁ g₂ : Y ⟶ step W Z` with a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 noncomputable abbrev succ := multicoequalizer (D₂.multispanIndex W Z)
 
 /-- The projection from `Z` to the multicoequalizer of all morphisms `g₁ g₂ : Y ⟶ step W Z` with

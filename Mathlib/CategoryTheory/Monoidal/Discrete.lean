@@ -89,7 +89,7 @@ variable {K : Type u} [Monoid K]
 -/
 @[to_additive Discrete.addMonoidalFunctorComp
       /-- The monoidal natural isomorphism corresponding to
-composing two additive morphisms. -/]
+      composing two additive morphisms. -/]
 def Discrete.monoidalFunctorComp (F : M →* N) (G : N →* K) :
     Discrete.monoidalFunctor F ⋙ Discrete.monoidalFunctor G ≅
       Discrete.monoidalFunctor (G.comp F) := Iso.refl _

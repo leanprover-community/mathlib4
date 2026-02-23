@@ -17,12 +17,13 @@ public import Batteries.Util.LibraryNote -- For `library_note` command.
 # Basic tactics and utilities for tactic writing
 
 This file defines some basic utilities for tactic writing, and also
+
 - a dummy `variables` macro (which warns that the Lean 4 name is `variable`)
 - the `introv` tactic, which allows the user to automatically introduce the variables of a theorem
-and explicitly name the non-dependent hypotheses,
+  and explicitly name the non-dependent hypotheses,
 - an `assumption` macro, calling the `assumption` tactic on all goals
 - the tactics `match_target` and `clear_aux_decl` (clearing all auxiliary declarations from the
-context).
+  context).
 -/
 
 public meta section
@@ -61,12 +62,15 @@ explicitly name the non-dependent hypotheses.
 Any dependent hypotheses are assigned their default names.
 
 Examples:
+
 ```
 example : ∀ a b : Nat, a = b → b = a := by
   introv h,
   exact h.symm
 ```
+
 The state after `introv h` is
+
 ```
 a b : ℕ,
 h : a = b
@@ -78,7 +82,9 @@ example : ∀ a b : Nat, a = b → ∀ c, b = c → a = c := by
   introv h₁ h₂,
   exact h₁.trans h₂
 ```
+
 The state after `introv h₁ h₂` is
+
 ```
 a b : ℕ,
 h₁ : a = b,

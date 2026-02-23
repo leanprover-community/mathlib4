@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 # Cartesian Categories as Copy-Discard Categories
 
 Every cartesian monoidal category is a copy-discard category where:
+
 - Copy is the diagonal map
 - Discard is the unique map to terminal
 

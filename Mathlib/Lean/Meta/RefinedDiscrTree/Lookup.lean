@@ -13,6 +13,7 @@ public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 This file defines the matching procedure for the `RefinedDiscrTree`.
 
 The main definitions are
+
 * The structure `MatchResult`, which contains the match results, ordered by matching score.
 * The (private) function `evalNode` which evaluates a node of the `RefinedDiscrTree`
 * The (private) function `getMatchLoop`, which is the main function that computes the matches.
@@ -266,6 +267,7 @@ private def matchTreeRootStar (root : Std.HashMap Key TrieIndex) : TreeM α (Mat
 
 /--
 Find values that match `e` in `d`.
+
 * If `unify == true` then metavariables in `e` can be assigned.
 * If `matchRootStar == true` then we allow metavariables at the root to unify.
   Set this to `false` to avoid getting excessively many results.

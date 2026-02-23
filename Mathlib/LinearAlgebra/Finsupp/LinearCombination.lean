@@ -16,6 +16,7 @@ public import Mathlib.LinearAlgebra.Finsupp.Supported
 
 * `Finsupp.linearCombination R (v : ι → M)`: sends `l : ι →₀ R` to the linear combination of
   `v i` with coefficients `l i`;
+
 * `Finsupp.linearCombinationOn`: a restricted version of `Finsupp.linearCombination` with domain
 
 * `Fintype.linearCombination R (v : ι → M)`: sends `l : ι → R` to the linear combination of
@@ -50,7 +51,7 @@ variable (R)
 variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α → M) {v' : α' → M'}
 
 /-- Interprets (l : α →₀ R) as a linear combination of the elements in the family (v : α → M) and
-    evaluates this linear combination. -/
+evaluates this linear combination. -/
 def linearCombination : (α →₀ R) →ₗ[R] M :=
   Finsupp.lsum ℕ fun i => LinearMap.id.smulRight (v i)
 
@@ -422,7 +423,7 @@ section
 variable (R)
 
 /-- Pick some representation of `x : span R w` as a linear combination in `w`,
-  ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose
+((Finsupp.mem_span_iff_linearCombination _ _ \_).mp x.2).choose
 -/
 irreducible_def Span.repr (w : Set M) (x : span R w) : w →₀ R :=
   ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose

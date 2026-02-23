@@ -121,7 +121,7 @@ theorem mul_coeff_one (p q : R[X]) :
   simp [sum_range_succ]
 
 /-- `constantCoeff p` returns the constant term of the polynomial `p`,
-  defined as `coeff p 0`. This is a ring homomorphism. -/
+defined as `coeff p 0`. This is a ring homomorphism. -/
 @[simps]
 def constantCoeff : R[X] →+* R where
   toFun p := coeff p 0

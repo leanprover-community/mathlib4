@@ -17,6 +17,7 @@ public import Mathlib.Order.BooleanAlgebra.Set
 # The integers form a linear ordered ring
 
 This file contains:
+
 * instances on `ℤ`. The stronger one is `Int.instLinearOrderedCommRing`.
 * basic lemmas about integers that involve order properties.
 
@@ -65,7 +66,7 @@ combination of `p` and `q`.
 
 TODO: show that if `p.gcd q = 1` and `0 ≤ n ≤ (p - 1) * (q - 1) - 1 = N`, then `n` is
 representable iff `N - n` is not. In particular `N` is not representable, solving the
-coin problem for two coins: https://en.wikipedia.org/wiki/Coin_problem#n_=_2. -/
+coin problem for two coins: https://en.wikipedia.org/wiki/Coin_problem#n\_=\_2. -/
 theorem Nat.exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le (p q n : ℕ) (dvd : p.gcd q ∣ n)
     (le : p.pred * q.pred ≤ n) : ∃ a b : ℕ, a * p + b * q = n := by
   obtain _ | p := p

@@ -121,6 +121,7 @@ variable [Fintype I]
 
 /--
 A family `{ eᵢ }` of idempotent elements is complete orthogonal if
+
 1. (orthogonal) `eᵢ * eⱼ = 0` for all `i ≠ j`.
 2. (complete) `∑ eᵢ = 1`
 -/

@@ -265,6 +265,7 @@ section NormedAlgebra
 
 See the implementation notes for `Algebra` for a discussion about non-unital algebras. Following
 the strategy there, a non-unital *normed* algebra can be written as:
+
 ```lean
 variable [NormedField 𝕜] [NonUnitalSeminormedRing 𝕜']
 variable [NormedSpace 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTower 𝕜 𝕜' 𝕜']
@@ -638,7 +639,7 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceAll {𝕜 E : Type*} [Norme
 
 /-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedSpace.Core`. Note that
 if this is used to define an instance on a type, it also provides a new distance measure from the
-norm.  it must therefore not be used on a type with a preexisting distance measure or topology.
+norm. it must therefore not be used on a type with a preexisting distance measure or topology.
 See note [reducible non-instances]. -/
 abbrev SeminormedAddCommGroup.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [AddCommGroup E]
     [Norm E] [Module 𝕜 E] (core : SeminormedSpace.Core 𝕜 E) : SeminormedAddCommGroup E :=

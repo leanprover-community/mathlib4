@@ -22,7 +22,7 @@ though it takes values in a less convenient type. It is probably the right choic
 one is concerned with the cardinalities of sets that may or may not be infinite.
 
 `Set.ncard` has a nicer codomain, but when using it, `Set.Finite` hypotheses are normally needed to
-make sure its values are meaningful.  More generally, `Set.ncard` is intended to be used over the
+make sure its values are meaningful. More generally, `Set.ncard` is intended to be used over the
 obvious alternative `Finset.card` when finiteness is 'propositional' rather than 'structural'.
 When working with sets that are finite by virtue of their definition, then `Finset.card` probably
 makes more sense. One setting where `Set.ncard` works nicely is in a type `α` with `[Finite α]`,
@@ -32,7 +32,7 @@ tactic so that finiteness goals are discharged automatically in `Set.ncard` theo
 ## Main Definitions
 
 * `Set.encard s` is the cardinality of the set `s` as an extended natural number, with value `⊤` if
-    `s` is infinite.
+  `s` is infinite.
 * `Set.ncard s` is the cardinality of the set `s` as a natural number, provided `s` is Finite.
   If `s` is Infinite, then `Set.ncard s = 0`.
 * `toFinite_tac` is a tactic that tries to synthesize a `Set.Finite s` argument with
@@ -330,7 +330,7 @@ theorem encard_eq_add_one_iff {k : ℕ∞} :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Every set is either empty, infinite, or can have its `encard` reduced by a removal. Intended
-  for well-founded induction on the value of `encard`. -/
+for well-founded induction on the value of `encard`. -/
 theorem eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt (s : Set α) :
     s = ∅ ∨ s.encard = ⊤ ∨ ∃ a ∈ s, (s \ {a}).encard < s.encard := by
   refine s.eq_empty_or_nonempty.elim Or.inl (Or.inr ∘ fun ⟨a,ha⟩ ↦
@@ -567,7 +567,7 @@ section ncard
 open Nat
 
 /-- A tactic (for use in default params) that applies `Set.toFinite` to synthesize a `Set.Finite`
-  term. -/
+term. -/
 syntax "toFinite_tac" : tactic
 
 macro_rules

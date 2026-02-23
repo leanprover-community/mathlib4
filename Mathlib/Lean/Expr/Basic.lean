@@ -53,7 +53,7 @@ with the value of `f n`. -/
   | num n' i => mkNum (mapPrefix f n') i
 
 /-- Build a name from components.
-For example, ``from_components [`foo, `bar]`` becomes ``` `foo.bar```.
+For example, `` from_components [`foo, `bar] `` becomes ``  `foo.bar ``.
 It is the inverse of `Name.components` on list of names that have single components. -/
 def fromComponents : List Name → Name := go .anonymous where
   /-- Auxiliary for `Name.fromComponents` -/
@@ -75,7 +75,7 @@ def lastComponentAsString : Name → String
 
 /-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`,
 i.e. `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
-Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
+Example: `` splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat) ``. -/
 def splitAt (nm : Name) (n : Nat) : Name × Name :=
   let (nm2, nm1) := nm.componentsRev.splitAt n
   (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
@@ -221,7 +221,7 @@ def isConstantApplication (e : Expr) :=
   e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
 where
   /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
-    `depth - 1`. -/
+  `depth - 1`. -/
   aux (depth : Nat) : Expr → Nat → Bool
     | .lam _ _ b _, n + 1  => aux depth b n
     | e, 0  => !e.hasLooseBVar (depth - 1)
@@ -252,8 +252,9 @@ Runs `cleanupAnnotations` on `type` and `forallE` bodies, and ignores metadata i
 /--
 Gets the indices `i` (in ascending order) of the binders of a nested `.forallE`,
 `(x₀ : A₀) → (x₁ : A₁) → ⋯ → X`, such that
+
 - the binder `[xᵢ : Aᵢ]` has `instImplicit` `binderInfo`
--  `p Aᵢ` is `true`
+- `p Aᵢ` is `true`
 - The rest of the type `(xᵢ₊₁ : Aᵢ₊₁) → ⋯ → X` does not depend on `xᵢ`. (It's in this sense that
   `xᵢ : Aᵢ` is "unused".)
 
@@ -323,6 +324,7 @@ section recognizers
 
 /--
 Return `some n` if `e` is one of the following
+
 - a nat literal (numeral)
 - `Nat.zero`
 - `Nat.succ x` where `isNumeral x`
@@ -513,9 +515,11 @@ partial def forallNot_of_notExists (ex hNotEx : Expr) : MetaM (Expr × Expr) := 
   go lvl A p hNotEx
 where
   /-- Given `(hNotEx : Not (@Exists.{lvl} A p))`,
-      return a `forall x, Not (p x)` and a proof for it.
+  return a `forall x, Not (p x)` and a proof for it.
 
-      This function handles nested existentials. -/
+  ```
+  This function handles nested existentials.
+  ``` -/
   go (lvl : Level) (A p hNotEx : Expr) : MetaM (Expr × Expr) := do
     let xn ← mkFreshUserName `x
     withLocalDeclD xn A fun x => do

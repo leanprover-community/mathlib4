@@ -288,6 +288,7 @@ lemma isPullback_of_isPushout (h : IsPushout t l r b) (ht : Function.Injective t
   grind
 
 /-- Consider a pushout square involving types `X₁`, `X₂`, `X₃` and `X₄`:
+
 ```
      t
  X₁  ⟶  X₂
@@ -298,6 +299,7 @@ l|     |r  \
    \ b'     v v
     \______> X₅
 ```
+
 Let `k : X₄ ⟶ X₅`, `r' : X₂ ⟶ X₅` and `b' : X₃ ⟶ X₅` be such
 that `r ≫ k = r'` and `b ≫ k = b'`. Assume that
 the outer square is a pullback, that `r'` is a monomorphism
@@ -330,6 +332,7 @@ lemma mono_of_isPushout_of_isPullback {k : X₄ ⟶ X₅} (h₁ : IsPushout t l 
 
 /-- Consider a diagram where the outer square involving types `X₁`, `X₂`, `X₃` and `X₅`
 is a pullback, where the two bottom and right triangles commute:
+
 ```
      t
  X₁  ⟶  X₂
@@ -340,6 +343,7 @@ l|     |r  \
    \ b'     v v
     \______> X₅
 ```
+
 Assume that `r'` and `k` are monomorphisms, that `r` and `b` are jointly surjective,
 and that `b'` is injective on the complement of the range of `l`, then
 the top-left square is a pushout. -/

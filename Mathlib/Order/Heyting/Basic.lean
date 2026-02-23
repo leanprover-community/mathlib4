@@ -955,6 +955,7 @@ theorem compl_iff_not (p : Prop) : pᶜ ↔ ¬p :=
 variable (α) in
 -- See note [reducible non-instances]
 /-- A bounded linear order is a bi-Heyting algebra by setting
+
 * `a ⇨ b = ⊤` if `a ≤ b` and `a ⇨ b = b` otherwise.
 * `a \ b = ⊥` if `a ≤ b` and `a \ b = a` otherwise. -/
 abbrev LinearOrder.toBiheytingAlgebra [LinearOrder α] [BoundedOrder α] : BiheytingAlgebra α :=

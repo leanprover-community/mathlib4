@@ -54,7 +54,7 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) w
     rfl
 
 /-- For any compact Hausdorff space `X`,
-  the natural map `Ultrafilter X → X` is a projective presentation. -/
+the natural map `Ultrafilter X → X` is a projective presentation. -/
 def projectivePresentation (X : CompHaus) : ProjectivePresentation X where
   p := of <| Ultrafilter X
   f := CompHausLike.ofHom _ ⟨_, continuous_ultrafilter_extend id⟩

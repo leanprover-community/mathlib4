@@ -16,14 +16,17 @@ to the extended reals `EReal`. The function takes values
 in the extended nonnegative reals `ℝ≥0∞`, with `exp ⊥ = 0` and `exp ⊤ = ⊤`.
 
 ## Main Definitions
+
 - `EReal.exp`: The extension of the real exponential to `EReal`.
 
 ## Main Results
+
 - `EReal.exp_strictMono`: `exp` is increasing;
 - `EReal.exp_neg`, `EReal.exp_add`: `exp` satisfies
   the identities `exp (-x) = (exp x)⁻¹` and `exp (x + y) = exp x * exp y`.
 
 ## Tags
+
 ENNReal, EReal, exponential
 -/
 

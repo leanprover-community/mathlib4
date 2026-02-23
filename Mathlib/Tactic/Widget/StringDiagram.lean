@@ -22,16 +22,20 @@ This file provides meta infrastructure for displaying string diagrams for morphi
 categories in the infoview. To enable the string diagram widget, you need to import this file and
 inserting `with_panel_widgets [Mathlib.Tactic.Widget.StringDiagram]` at the beginning of the
 proof. Alternatively, you can also write
+
 ```lean
 open Mathlib.Tactic.Widget
 show_panel_widgets [local StringDiagram]
 ```
+
 to enable the string diagram widget in the current section.
 
 We also have the `#string_diagram` command. For example,
+
 ```lean
 #string_diagram MonoidalCategory.whisker_exchange
 ```
+
 displays the string diagram for the exchange law of the left and right whiskerings.
 
 String diagrams are graphical representations of morphisms in monoidal categories, which are
@@ -431,6 +435,7 @@ open Command
 Display the string diagram for a given term.
 
 Example usage:
+
 ```
 /- String diagram for the equality theorem. -/
 #string_diagram MonoidalCategory.whisker_exchange

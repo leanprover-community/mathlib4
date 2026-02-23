@@ -38,6 +38,7 @@ For this reason, the imports of this file are carefully curated.
 Any modification involving a change in the imports of this file should be discussed beforehand.
 
 Here are some general guidelines:
+
 * no bucket imports (e.g. `Batteries`/`Lean`/etc);
 * every import needs to have a comment explaining why the import is there;
 * strong preference for avoiding files that themselves have imports beyond `Lean`, and
@@ -54,6 +55,7 @@ as early as possible.
 
 All linters imported here have no bulk imports;
 **Not** imported in this file are
+
 - the text-based linters in `Mathlib/Tactic/Linter/TextBased.lean`, as they can be imported later
 - the `haveLet` linter, as it is currently disabled by default due to crashes
 - the `ppRoundTrip` linter, which is currently disabled (as this is not mature enough)

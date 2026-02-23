@@ -878,6 +878,7 @@ pseudo-inverse (`Matrix`).
 
 `DivisionMonoid`/`SubtractionMonoid` is targeted at structures with stronger pseudo-inverses. It
 is an ad hoc collection of axioms that are mainly respected by three things:
+
 * Groups
 * Groups with zero
 * The pointwise monoids `Set α`, `Finset α`, `Filter α`
@@ -886,6 +887,7 @@ It acts as a middle ground for structures with an inversion operator that plays 
 multiplication, except for the fact that it might not be a true inverse (`a / a ≠ 1` in general).
 The axioms are pretty arbitrary (many other combinations are equivalent to it), but they are
 independent:
+
 * Without `DivisionMonoid.div_eq_mul_inv`, you can define `/` arbitrarily.
 * Without `DivisionMonoid.inv_inv`, you can consider `WithTop Unit` with `a⁻¹ = ⊤` for all `a`.
 * Without `DivisionMonoid.mul_inv_rev`, you can consider `WithTop α` with `a⁻¹ = a` for all `a`
@@ -898,7 +900,7 @@ respects everything except for the fact that `(0 * ∞)⁻¹ = 0⁻¹ = ∞` whi
 -/
 
 /-- In a class equipped with instances of both `Monoid` and `Inv`, this definition records what the
-default definition for `Div` would be: `a * b⁻¹`.  This is later provided as the default value for
+default definition for `Div` would be: `a * b⁻¹`. This is later provided as the default value for
 the `Div` instance in `DivInvMonoid`.
 
 We keep it as a separate definition rather than inlining it in `DivInvMonoid` so that the `Div`
@@ -939,7 +941,7 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   protected zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
 
 /-- In a class equipped with instances of both `AddMonoid` and `Neg`, this definition records what
-the default definition for `Sub` would be: `a + -b`.  This is later provided as the default value
+the default definition for `Sub` would be: `a + -b`. This is later provided as the default value
 for the `Sub` instance in `SubNegMonoid`.
 
 We keep it as a separate definition rather than inlining it in `SubNegMonoid` so that the `Sub`

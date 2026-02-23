@@ -105,7 +105,7 @@ section CommSemiring
 variable [CommSemiring R]
 
 /-- If `f = g = h` everywhere but at `i`, where `f i = g i + h i`, then the product of `f` over `s`
-  is the sum of the products of `g` and `h`. -/
+is the sum of the products of `g` and `h`. -/
 theorem prod_add_prod_eq {s : Finset ι} {i : ι} {f g h : ι → R} (hi : i ∈ s)
     (h1 : g i + h i = f i) (h2 : ∀ j ∈ s, j ≠ i → g j = f j) (h3 : ∀ j ∈ s, j ≠ i → h j = f j) :
     (∏ i ∈ s, g i) + ∏ i ∈ s, h i = ∏ i ∈ s, f i := by
@@ -117,7 +117,7 @@ section DecidableEq
 variable [DecidableEq ι]
 
 /-- The product over a sum can be written as a sum over the product of sets, `Finset.Pi`.
-  `Finset.prod_univ_sum` is an alternative statement when the product is over `univ`. -/
+`Finset.prod_univ_sum` is an alternative statement when the product is over `univ`. -/
 lemma prod_sum {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → R) :
     ∏ a ∈ s, ∑ b ∈ t a, f a b = ∑ p ∈ s.pi t, ∏ x ∈ s.attach, f x.1 (p x.1 x.2) := by
   classical

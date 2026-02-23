@@ -19,10 +19,12 @@ In this file, when `M` is `C^1`, we construct a vector bundle structure
 on `TangentBundle I M` using the `VectorBundleCore` construction indexed by the charts of `M`
 with fibers `E`. Given two charts `i, j : OpenPartialHomeomorph M H`, the coordinate change
 between `i` and `j` at a point `x : M` is the derivative of the composite
+
 ```
   I.symm   i.symm    j     I
 E -----> H -----> M --> H --> E
 ```
+
 within the set `range I ⊆ E` at `I (i x) : E`.
 This defines a vector bundle `TangentBundle` with fibers `TangentSpace`.
 
@@ -54,7 +56,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E :
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- Auxiliary lemma for tangent spaces: the derivative of a coordinate change between two charts is
-  `C^n` on its source. -/
+`C^n` on its source. -/
 theorem contDiffOn_fderiv_coord_change [IsManifold I (n + 1) M]
     (i j : atlas H M) :
     ContDiffOn 𝕜 n (fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I))
@@ -77,10 +79,12 @@ variable (I M) in
 Then `tangentBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
 It is indexed by the atlas of `M`, with fiber `E` and its change of coordinates from the chart `i`
 to the chart `j` at point `x : M` is the derivative of the composite
+
 ```
   I.symm   i.symm    j     I
 E -----> H -----> M --> H --> E
 ```
+
 within the set `range I ⊆ E` at `I (i x) : E`. -/
 @[simps indexAt coordChange]
 def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where

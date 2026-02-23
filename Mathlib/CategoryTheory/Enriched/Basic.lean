@@ -384,9 +384,11 @@ We now turn to natural transformations between `V`-functors.
 
 The most commonly encountered definition of an enriched natural transformation
 is a collection of morphisms
+
 ```
 (𝟙_ W) ⟶ (F.obj X ⟶[V] G.obj X)
 ```
+
 satisfying an appropriate analogue of the naturality square.
 (c.f. https://ncatlab.org/nlab/show/enriched+natural+transformation)
 
@@ -411,9 +413,11 @@ whether or not that object actually exists.
 This presheaf has components `(enrichedNatTransYoneda F G).obj A`
 what we call the `A`-graded enriched natural transformations,
 which are collections of morphisms
+
 ```
 A ⟶ (F.obj X ⟶[V] G.obj X)
 ```
+
 satisfying a similar analogue of the naturality square,
 this time incorporating a half-braiding on `A`.
 

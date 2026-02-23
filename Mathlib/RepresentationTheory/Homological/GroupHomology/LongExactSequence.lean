@@ -54,7 +54,7 @@ lemma map_chainsFunctor_shortExact :
 
 open HomologicalComplex.HomologySequence
 
-/-- The short complex  `Hᵢ(G, X₃) ⟶ Hⱼ(G, X₁) ⟶ Hⱼ(G, X₂)` associated to an exact sequence
+/-- The short complex `Hᵢ(G, X₃) ⟶ Hⱼ(G, X₁) ⟶ Hⱼ(G, X₂)` associated to an exact sequence
 of representations `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`. -/
 noncomputable abbrev mapShortComplex₁ {i j : ℕ} (hij : j + 1 = i) :=
   (snakeInput (map_chainsFunctor_shortExact hX) _ _ hij).L₂'

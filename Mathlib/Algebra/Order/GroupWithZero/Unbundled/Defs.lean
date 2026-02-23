@@ -16,12 +16,14 @@ This file defines eight typeclasses expressing monotonicity (strict monotonicity
 of multiplication on the left or right by nonnegative (positive) elements in a preorder.
 
 For left multiplication (`a ↦ b * a`) we define the following typeclasses:
+
 * `PosMulMono`: If `b ≥ 0`, then `a₁ ≤ a₂ → b * a₁ ≤ b * a₂`.
 * `PosMulStrictMono`: If `b > 0`, then `a₁ < a₂ → b * a₁ < b * a₂`.
 * `PosMulReflectLT`: If `b ≥ 0`, then `b * a₁ < b * a₂ → a₁ < a₂`.
 * `PosMulReflectLE`: If `b > 0`, then `b * a₁ ≤ b * a₂ → a₁ ≤ a₂`.
 
 For right multiplication (`a ↦ a * b`) we define the following typeclasses:
+
 * `MulPosMono`: If `b ≥ 0`, then `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
 * `MulPosStrictMono`: If `b > 0`, then `a₁ < a₂ → a₁ * b < a₂ * b`.
 * `MulPosReflectLT`: If `b ≥ 0`, then `a₁ * b < a₂ * b → a₁ < a₂`.
@@ -38,6 +40,7 @@ most purposes, and the system is set up so that they imply the correct granular 
 
 As the underlying type `α` gets more structured, some of the above typeclasses become equivalent.
 The commonly used implications are:
+
 * When `α` is a partial order (in `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Basic.lean`):
   * `PosMulStrictMono.toPosMulMono`
   * `MulPosStrictMono.toMulPosMono`
@@ -53,6 +56,7 @@ The commonly used implications are:
   * `posMulReflectLT_iff_mulPosReflectLT`
 
 Furthermore, the bundled non-granular typeclasses imply the granular ones like so:
+
 * `OrderedSemiring → PosMulMono`
 * `OrderedSemiring → MulPosMono`
 * `StrictOrderedSemiring → PosMulStrictMono`
@@ -65,6 +69,7 @@ by the current implications, please bring it up on Zulip!
 ## Notation
 
 The following is local notation in this file:
+
 * `α≥0`: `{x : α // 0 ≤ x}`
 * `α>0`: `{x : α // 0 < x}`
 

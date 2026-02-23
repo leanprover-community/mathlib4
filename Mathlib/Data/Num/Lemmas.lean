@@ -324,6 +324,7 @@ lemma toNat_injective : Function.Injective (castNum : Num → ℕ) :=
 theorem to_nat_inj {m n : Num} : (m : ℕ) = n ↔ m = n := toNat_injective.eq_iff
 
 /-- This tactic tries to turn an (in)equality about `Num`s to one about `Nat`s by rewriting.
+
 ```lean
 example (n : Num) (m : Num) : n ≤ n + m := by
   transfer_rw
@@ -337,6 +338,7 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
 /--
 This tactic tries to prove (in)equalities about `Num`s by transferring them to the `Nat` world and
 then trying to call `simp`.
+
 ```lean
 example (n : Num) (m : Num) : n ≤ n + m := by transfer
 ```
@@ -504,6 +506,7 @@ theorem natSize_to_nat (n) : natSize n = Nat.size n := by rw [← size_eq_natSiz
 theorem natSize_pos (n) : 0 < natSize n := by cases n <;> apply Nat.succ_pos
 
 /-- This tactic tries to turn an (in)equality about `PosNum`s to one about `Nat`s by rewriting.
+
 ```lean
 example (n : PosNum) (m : PosNum) : n ≤ n + m := by
   transfer_rw
@@ -517,6 +520,7 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
 /--
 This tactic tries to prove (in)equalities about `PosNum`s by transferring them to the `Nat` world
 and then trying to call `simp`.
+
 ```lean
 example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 ```

@@ -134,7 +134,7 @@ instance OneHom.instCommGroup [One M] [CommGroup N] : CommGroup (OneHom M N) :=
 
 /-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
 @[to_additive /-- If `G` is an additive commutative group, then `M →+ G` is an additive commutative
-      group too. -/]
+group too. -/]
 instance MonoidHom.instCommGroup [MulOneClass M] [CommGroup N] : CommGroup (M →* N) :=
   fast_instance%
     DFunLike.coe_injective.commGroup DFunLike.coe

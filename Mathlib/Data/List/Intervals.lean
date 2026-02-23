@@ -16,6 +16,7 @@ This file defines intervals of naturals. `List.Ico m n` is the list of integers 
 and strictly less than `n`.
 
 ## TODO
+
 - Define `Ioo` and `Icc`, state basic lemmas about them.
 - Also do the versions for integers?
 - One could generalise even further, defining 'locally finite partial orders', for which
@@ -192,6 +193,7 @@ theorem filter_le_of_bot {n m : ℕ} (hnm : n < m) : ((Ico n m).filter fun x => 
     simpa using Nat.lt_succ_iff.symm
 
 /-- For any natural numbers n, a, and b, one of the following holds:
+
 1. n < a
 2. n ≥ b
 3. n ∈ Ico a b

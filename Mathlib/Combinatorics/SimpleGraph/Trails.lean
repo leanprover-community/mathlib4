@@ -72,7 +72,7 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
     · grind
 
 /-- An *Eulerian trail* (also known as an "Eulerian path") is a walk
-`p` that visits every edge exactly once.  The lemma `SimpleGraph.Walk.IsEulerian.IsTrail` shows
+`p` that visits every edge exactly once. The lemma `SimpleGraph.Walk.IsEulerian.IsTrail` shows
 that these are trails.
 
 Combine with `p.IsCircuit` to get an Eulerian circuit (also known as an "Eulerian cycle"). -/

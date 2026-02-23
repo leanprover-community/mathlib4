@@ -40,6 +40,7 @@ where `Prod.mk x : X → X × X := (fun y ↦ (x, y))` is the partial evaluation
 constructor.
 
 The dictionary with metric spaces includes:
+
 * an upper bound for `dist x y` translates into `(x, y) ∈ V` for some `V ∈ 𝓤 X`
 * a ball `ball x r` roughly corresponds to `UniformSpace.ball x V := {y | (x, y) ∈ V}`
   for some `V ∈ 𝓤 X`, but the later is more general (it includes in
@@ -60,6 +61,7 @@ Note that this discussion does not depend on any axiom imposed on the uniformity
 it is simply captured by the definition of composition.
 
 The uniform space axioms ask the filter `𝓤 X` to satisfy the following:
+
 * every `V ∈ 𝓤 X` contains the diagonal `idRel = { p | p.1 = p.2 }`. This abstracts the fact
   that `dist x x ≤ r` for every non-negative radius `r` in the metric space case and also that
   `x - x` belongs to every neighborhood of zero in the topological group case.
@@ -303,7 +305,7 @@ lemma IsSymmetricRel.mem_filter_prod_comm {s : Set (α × α)} {f g : Filter α}
   rw [← hs.eq, ← mem_map, ← prod_comm, hs.eq]
 
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
-  for constructions of uniform spaces, when the topology is derived from the uniform space. -/
+for constructions of uniform spaces, when the topology is derived from the uniform space. -/
 structure UniformSpace.Core (α : Type u) where
   /-- The uniformity filter. Once `UniformSpace` is defined, `𝓤 α` (`_root_.uniformity`) becomes the
   normal form. -/
@@ -360,12 +362,12 @@ theorem UniformSpace.Core.nhds_toTopologicalSpace {α : Type u} (u : Core α) (x
 -- the topological structure is embedded in the uniform structure
 -- to avoid instance diamond issues. See Note [forgetful inheritance].
 /-- A uniform space is a generalization of the "uniform" topological aspects of a
-  metric space. It consists of a filter on `α × α` called the "uniformity", which
-  satisfies properties analogous to the reflexivity, symmetry, and triangle properties
-  of a metric.
+metric space. It consists of a filter on `α × α` called the "uniformity", which
+satisfies properties analogous to the reflexivity, symmetry, and triangle properties
+of a metric.
 
-  A metric space has a natural uniformity, and a uniform space has a natural topology.
-  A topological group also has a natural uniformity, even when it is not metrizable. -/
+A metric space has a natural uniformity, and a uniform space has a natural topology.
+A topological group also has a natural uniformity, even when it is not metrizable. -/
 class UniformSpace (α : Type u) extends TopologicalSpace α where
   /-- The uniformity filter. -/
   protected uniformity : Filter (α × α)
@@ -378,7 +380,7 @@ class UniformSpace (α : Type u) extends TopologicalSpace α where
   protected nhds_eq_comap_uniformity (x : α) : 𝓝 x = comap (Prod.mk x) uniformity
 
 /-- The uniformity is a filter on α × α (inferred from an ambient uniform space
-  structure on α). -/
+structure on α). -/
 def uniformity (α : Type u) [UniformSpace α] : Filter (α × α) :=
   @UniformSpace.uniformity α _
 

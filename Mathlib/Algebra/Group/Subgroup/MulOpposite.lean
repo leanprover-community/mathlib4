@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 # Mul-opposite subgroups
 
 ## Tags
+
 subgroup, subgroups
 
 -/

@@ -409,9 +409,9 @@ end NullMeasurable
 section IsComplete
 
 /-- A measure is complete if every null set is also measurable.
-  A null set is a subset of a measurable set with measure `0`.
-  Since every measure is defined as a special case of an outer measure, we can more simply state
-  that a set `s` is null if `μ s = 0`. -/
+A null set is a subset of a measurable set with measure `0`.
+Since every measure is defined as a special case of an outer measure, we can more simply state
+that a set `s` is null if `μ s = 0`. -/
 class Measure.IsComplete {_ : MeasurableSpace α} (μ : Measure α) : Prop where
   out' : ∀ s, μ s = 0 → MeasurableSet s
 

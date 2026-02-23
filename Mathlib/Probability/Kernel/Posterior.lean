@@ -30,9 +30,13 @@ and data can be recovered from the distribution of the data and the posterior.
 
 * `compProd_posterior_eq_map_swap`: the main property of the posterior,
   `(κ ∘ₘ μ) ⊗ₘ κ†μ = (μ ⊗ₘ κ).map Prod.swap`.
+
 * `ae_eq_posterior_of_compProd_eq`
+
 * `posterior_comp_self`: `κ†μ ∘ₘ κ ∘ₘ μ = μ`
+
 * `posterior_posterior`: `(κ†μ)†(κ ∘ₘ μ) =ᵐ[μ] κ`
+
 * `posterior_comp`: `(η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] κ†μ ∘ₖ η†(κ ∘ₘ μ)`
 
 * `posterior_eq_withDensity`: If `κ ω ≪ κ ∘ₘ μ` for `μ`-almost every `ω`,
@@ -87,6 +91,7 @@ lemma swap_compProd_posterior : Kernel.swap 𝓧 Ω ∘ₘ (κ ∘ₘ μ) ⊗ₘ
   rw [compProd_posterior_eq_swap_comp, Measure.comp_assoc, Kernel.swap_swap, Measure.id_comp]
 
 /-- The main property of the posterior, as equality of the following diagrams:
+
 ```
          -- id          -- κ
 μ -- κ -|        =  μ -|

@@ -64,6 +64,7 @@ section Ranges
 /--
 From `l : List ℕ`, construct `l.ranges : List (List ℕ)` such that `l.ranges.map List.length = l`
 and `l.ranges.join = range l.sum`
+
 * Example: `[1,2,3].ranges = [[0],[1,2],[3,4,5]]` -/
 def ranges : List ℕ → List (List ℕ)
   | [] => nil

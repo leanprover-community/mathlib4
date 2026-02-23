@@ -12,30 +12,38 @@ public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Jacobson Rings
+
 The following conditions are equivalent for a ring `R`:
+
 1. Every radical ideal `I` is equal to its Jacobson radical
 2. Every radical ideal `I` can be written as an intersection of maximal ideals
 3. Every prime ideal `I` is equal to its Jacobson radical
-Any ring satisfying any of these equivalent conditions is said to be Jacobson.
-Some particular examples of Jacobson rings are also proven.
-`isJacobsonRing_quotient` says that the quotient of a Jacobson ring is Jacobson.
-`isJacobsonRing_localization` says the localization of a Jacobson ring
-  to a single element is Jacobson.
-`isJacobsonRing_polynomial_iff_isJacobsonRing` says polynomials over a Jacobson ring
-  form a Jacobson ring.
+   Any ring satisfying any of these equivalent conditions is said to be Jacobson.
+   Some particular examples of Jacobson rings are also proven.
+   `isJacobsonRing_quotient` says that the quotient of a Jacobson ring is Jacobson.
+   `isJacobsonRing_localization` says the localization of a Jacobson ring
+   to a single element is Jacobson.
+   `isJacobsonRing_polynomial_iff_isJacobsonRing` says polynomials over a Jacobson ring
+   form a Jacobson ring.
+
 ## Main definitions
+
 Let `R` be a commutative ring. Jacobson rings are defined using the first of the above conditions
+
 * `IsJacobsonRing R` is the proposition that `R` is a Jacobson ring. It is a class,
   implemented as the predicate that for any ideal, `I.isRadical` implies `I.jacobson = I`.
 
 ## Main statements
+
 * `isJacobsonRing_iff_prime_eq` is the equivalence between conditions 1 and 3 above.
 * `isJacobsonRing_iff_sInf_maximal` is the equivalence between conditions 1 and 2 above.
 * `isJacobsonRing_of_surjective` says that if `R` is a Jacobson ring and
   `f : R →+* S` is surjective, then `S` is also a Jacobson ring
 * `MvPolynomial.isJacobsonRing` says that multi-variate polynomials
   over a Jacobson ring are Jacobson.
+
 ## Tags
+
 Jacobson, Jacobson Ring
 -/
 
@@ -265,9 +273,9 @@ variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `I` is a prime ideal of `R[X]` and `pX ∈ I` is a non-constant polynomial,
-  then the map `R →+* R[x]/I` descends to an integral map when localizing at `pX.leadingCoeff`.
-  In particular `X` is integral because it satisfies `pX`, and constants are trivially integral,
-  so integrality of the entire extension follows by closure under addition and multiplication. -/
+then the map `R →+* R[x]/I` descends to an integral map when localizing at `pX.leadingCoeff`.
+In particular `X` is integral because it satisfies `pX`, and constants are trivially integral,
+so integrality of the entire extension follows by closure under addition and multiplication. -/
 theorem isIntegral_isLocalization_polynomial_quotient
     (P : Ideal R[X]) (pX : R[X]) (hpX : pX ∈ P) [Algebra (R ⧸ P.comap (C : R →+* R[X])) Rₘ]
     [IsLocalization.Away (pX.map (Ideal.Quotient.mk (P.comap (C : R →+* R[X])))).leadingCoeff Rₘ]
@@ -317,7 +325,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
     apply Polynomial.mem_closure_X_union_C
 
 /-- If `f : R → S` descends to an integral map in the localization at `x`,
-  and `R` is a Jacobson ring, then the intersection of all maximal ideals in `S` is trivial -/
+and `R` is a Jacobson ring, then the intersection of all maximal ideals in `S` is trivial -/
 theorem jacobson_bot_of_integral_localization
     {R : Type*} [CommRing R] [IsDomain R] [IsJacobsonRing R]
     (Rₘ Sₘ : Type*) [CommRing Rₘ] [CommRing Sₘ] (φ : R →+* S) (hφ : Function.Injective ↑φ) (x : R)
@@ -364,7 +372,7 @@ theorem jacobson_bot_of_integral_localization
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Used to bootstrap the proof of `isJacobsonRing_polynomial_iff_isJacobsonRing`.
-  That theorem is more general and should be used instead of this one. -/
+That theorem is more general and should be used instead of this one. -/
 private theorem isJacobsonRing_polynomial_of_domain (R : Type*) [CommRing R] [IsDomain R]
     [hR : IsJacobsonRing R] (P : Ideal R[X]) [IsPrime P] (hP : ∀ x : R, C x ∈ P → x = 0) :
     P.jacobson = P := by
@@ -514,7 +522,7 @@ variable [IsJacobsonRing R]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `R` is a Jacobson ring, and `P` is a maximal ideal of `R[X]`,
-  then `R → R[X]/P` is an integral map. -/
+then `R → R[X]/P` is an integral map. -/
 theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
     ((Ideal.Quotient.mk P).comp C : R →+* R[X] ⧸ P).IsIntegral := by
   let P' : Ideal R := P.comap C
@@ -573,9 +581,9 @@ theorem isJacobsonRing_MvPolynomial_fin {R : Type u} [CommRing R] [H : IsJacobso
     (Polynomial.isJacobsonRing_polynomial_iff_isJacobsonRing.2 (isJacobsonRing_MvPolynomial_fin n))
 
 /-- General form of the Nullstellensatz for Jacobson rings, since in a Jacobson ring we have
-  `Inf {P maximal | P ≥ I} = Inf {P prime | P ≥ I} = I.radical`. Fields are always Jacobson,
-  and in that special case this is (most of) the classical Nullstellensatz,
-  since `I(V(I))` is the intersection of maximal ideals containing `I`, which is then `I.radical` -/
+`Inf {P maximal | P ≥ I} = Inf {P prime | P ≥ I} = I.radical`. Fields are always Jacobson,
+and in that special case this is (most of) the classical Nullstellensatz,
+since `I(V(I))` is the intersection of maximal ideals containing `I`, which is then `I.radical` -/
 instance isJacobsonRing {R : Type*} [CommRing R] {ι : Type*} [Finite ι] [IsJacobsonRing R] :
     IsJacobsonRing (MvPolynomial ι R) := by
   cases nonempty_fintype ι

@@ -18,6 +18,7 @@ Sublocales of a locale generalize the concept of subspaces in topology to the po
 A nucleus is an endomorphism of a frame which corresponds to a sublocale.
 
 ## References
+
 https://ncatlab.org/nlab/show/sublocale
 https://ncatlab.org/nlab/show/nucleus
 -/

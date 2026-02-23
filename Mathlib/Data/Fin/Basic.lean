@@ -19,7 +19,7 @@ This file expands on the development in the core library.
 ## Main definitions
 
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
-Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
+  Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 * `Fin.equivSubtype` : Equivalence between `Fin n` and `{ i // i < n }`.
 
 -/
@@ -168,6 +168,7 @@ theorem max_val {a : Fin n} : max (a : ℕ) n = n := by simp
 
 For example, the following definition is not accepted by the termination checker,
 unless we declare the `WellFoundedRelation` instance:
+
 ```lean
 def factorial {n : ℕ} : Fin n → ℕ
   | ⟨0, _⟩ := 1

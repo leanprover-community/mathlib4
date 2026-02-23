@@ -80,7 +80,7 @@ abbrev DistribMulAction.prodOfSMulCommClass [DistribMulAction M α] [DistribMulA
   smul_add mn a a' := by change mn.1 • mn.2 • _ = (_ : α); rw [smul_add, smul_add]; rfl
 
 /-- A `DistribMulAction` by a product monoid is equivalent to
-  commuting `DistribMulAction`s by the factors. -/
+commuting `DistribMulAction`s by the factors. -/
 def DistribMulAction.prodEquiv : DistribMulAction (M × N) α ≃
     Σ' (_ : DistribMulAction M α) (_ : DistribMulAction N α), SMulCommClass M N α where
   toFun _ :=

@@ -24,7 +24,7 @@ universe u v
 open Finset
 
 /-- `FinEnum α` means that `α` is finite and can be enumerated in some order,
-  i.e. `α` has an explicit bijection with `Fin n` for some n. -/
+i.e. `α` has an explicit bijection with `Fin n` for some n. -/
 class FinEnum (α : Sort*) where
   /-- `FinEnum.card` is the cardinality of the `FinEnum` -/
   card : ℕ

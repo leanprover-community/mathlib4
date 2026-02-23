@@ -13,14 +13,14 @@ public import Mathlib.Topology.VectorBundle.Constructions
 
 This file defines `C^n` vector bundles over a manifold.
 
-Let `E` be a topological vector bundle, with model fiber `F` and base space `B`.  We consider `E` as
+Let `E` be a topological vector bundle, with model fiber `F` and base space `B`. We consider `E` as
 carrying a charted space structure given by its trivializations -- these are charts to `B × F`.
 Then, by "composition", if `B` is itself a charted space over `H` (e.g. a smooth manifold), then `E`
 is also a charted space over `H × F`.
 
 Now, we define `ContMDiffVectorBundle` as the `Prop` of having `C^n` transition functions.
 Recall the structure groupoid `contMDiffFiberwiseLinear` on `B × F` consisting of `C^n`, fiberwise
-linear open partial homeomorphisms.  We show that our definition of "`C^n` vector bundle" implies
+linear open partial homeomorphisms. We show that our definition of "`C^n` vector bundle" implies
 `HasGroupoid` for this groupoid, and show (by a "composition" of `HasGroupoid` instances) that
 this means that a `C^n` vector bundle is a `C^n` manifold.
 
@@ -33,7 +33,7 @@ fields, etc.
 * `FiberBundle.chartedSpace`: A fiber bundle `E` over a base `B` with model fiber `F` is naturally
   a charted space modelled on `B × F`.
 
-* `FiberBundle.chartedSpace'`: Let `B` be a charted space modelled on `HB`.  Then a fiber bundle
+* `FiberBundle.chartedSpace'`: Let `B` be a charted space modelled on `HB`. Then a fiber bundle
   `E` over a base `B` with model fiber `F` is naturally a charted space modelled on `HB.prod F`.
 
 * `ContMDiffVectorBundle`: Mixin class stating that a (topological) `VectorBundle` is `C^n`, in the
@@ -101,7 +101,7 @@ gives the same instance.
 -/
 --attribute [local reducible] ModelProd
 
-/-- Let `B` be a charted space modelled on `HB`.  Then a fiber bundle `E` over a base `B` with model
+/-- Let `B` be a charted space modelled on `HB`. Then a fiber bundle `E` over a base `B` with model
 fiber `F` is naturally a charted space modelled on `HB.prod F`. -/
 instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F E) :=
   ChartedSpace.comp _ (B × F) _
@@ -652,8 +652,8 @@ variable (a : VectorPrebundle 𝕜 F E) [ha : a.IsContMDiff IB n] {e e' : Pretri
 
 variable (IB n) in
 /-- A randomly chosen coordinate change on a `VectorPrebundle` satisfying `IsContMDiff`, given by
-  the field `exists_coordChange`. Note that `a.contMDiffCoordChange` need not be the same as
-  `a.coordChange`. -/
+the field `exists_coordChange`. Note that `a.contMDiffCoordChange` need not be the same as
+`a.coordChange`. -/
 noncomputable def contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) (b : B) : F →L[𝕜] F :=
   Classical.choose (ha.exists_contMDiffCoordChange e he e' he') b

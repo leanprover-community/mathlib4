@@ -13,6 +13,7 @@ public import Mathlib.Topology.Compactness.LocallyFinite
 # Sigma-compactness in topological spaces
 
 ## Main definitions
+
 * `IsSigmaCompact`: a set that is the union of countably many compact sets.
 * `SigmaCompactSpace X`: `X` is a σ-compact topological space; i.e., is the union
   of a countable collection of compact subspaces.
@@ -105,7 +106,7 @@ lemma IsSigmaCompact.image {f : X → Y} (hf : Continuous f) {s : Set X} (hs : I
     IsSigmaCompact (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
 /-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is σ-compact
-  if and only `s` is σ-compact. -/
+if and only `s` is σ-compact. -/
 lemma Topology.IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
     (hf : IsInducing f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
   constructor
@@ -137,8 +138,8 @@ lemma Subtype.isSigmaCompact_iff {p : X → Prop} {s : Set { a // p a }} :
   IsEmbedding.subtypeVal.isSigmaCompact_iff
 
 /-- A σ-compact space is a space that is the union of a countable collection of compact subspaces.
-  Note that a locally compact separable T₂ space need not be σ-compact.
-  The sequence can be extracted using `compactCovering`. -/
+Note that a locally compact separable T₂ space need not be σ-compact.
+The sequence can be extracted using `compactCovering`. -/
 class SigmaCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a σ-compact space, `Set.univ` is a σ-compact set. -/
   isSigmaCompact_univ : IsSigmaCompact (univ : Set X)

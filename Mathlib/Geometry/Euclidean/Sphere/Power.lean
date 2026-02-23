@@ -213,7 +213,7 @@ theorem mul_dist_eq_neg_power_of_dist_center_le_radius {s : Sphere P} {p a b : P
     abs_of_nonpos <| (power_nonpos_iff_dist_center_le_radius hr).mpr hle]
 
 /-- **Tangent-Secant Theorem**. The square of the tangent length equals
-    the product of secant segment lengths. -/
+the product of secant segment lengths. -/
 theorem dist_sq_eq_mul_dist_of_tangent_and_secant {a b t p : P} {s : Sphere P}
     (ha : a ∈ s) (hb : b ∈ s)
     (hp : p ∈ line[ℝ, a, b])

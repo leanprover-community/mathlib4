@@ -20,6 +20,7 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 
 Let `R` be a commutative ring and `p : R[X]` be monic of degree `n` and let `n = m + k`.
 We construct the universal ring of the following functors on `R-Alg`:
+
 - `S ↦ "monic polynomials over S of degree n"`:
   Represented by `R[X₁,...,Xₙ]`. See `MvPolynomial.mapEquivMonic`.
 - `S ↦ "factorizations of p into (monic deg m) * (monic deg k) in S"`:

@@ -14,17 +14,20 @@ This file contains the construction of a simple graph on `α ⊕ β ⊕ γ` from
 `(a, b, c)` (with `a` in the first component, `b` in the second, `c` in the third).
 
 We call
+
 * `t : Finset (α × β × γ)` the set of *triangle indices* (its elements are not triangles within the
   graph but instead index them).
 * *explicit* a triangle of the constructed graph coming from a triangle index.
 * *accidental* a triangle of the constructed graph not coming from a triangle index.
 
 The two important properties of this construction are:
+
 * `SimpleGraph.TripartiteFromTriangles.ExplicitDisjoint`: Whether the explicit triangles are
   edge-disjoint.
 * `SimpleGraph.TripartiteFromTriangles.NoAccidental`: Whether all triangles are explicit.
 
 This construction shows up unrelatedly twice in the theory of Roth numbers:
+
 * The lower bound of the Ruzsa-Szemerédi problem: From a set `s` in a finite abelian group `G` of
   odd order, we construct a tripartite graph on `G ⊕ G ⊕ G`. The triangle indices are
   `(x, x + a, x + 2 * a)` for `x` any element and `a ∈ s`. The explicit triangles are always

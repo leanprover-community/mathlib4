@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 # The bicategory of oplax functors between two bicategories
 
 Given bicategories `B` and `C`, we give a bicategory structure on `B ⥤ᵒᵖᴸ C` whose
+
 * objects are oplax functors,
 * 1-morphisms are oplax natural transformations, and
 * 2-morphisms are modifications.

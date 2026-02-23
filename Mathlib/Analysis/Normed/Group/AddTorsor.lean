@@ -15,7 +15,7 @@ public import Mathlib.Topology.MetricSpace.IsometricSMul
 # Torsors of additive normed group actions.
 
 This file defines torsors of additive normed group actions, with a
-metric space structure.  The motivating case is Euclidean affine
+metric space structure. The motivating case is Euclidean affine
 spaces.
 -/
 

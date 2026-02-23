@@ -33,11 +33,12 @@ the latter were to have the Day convolution monoidal structure. The definition
 assumptions on `V`) a `LawfulDayConvolutionMonoidalCategoryStruct C V D` to
 a monoidal structure.
 
-
 ## References
+
 - [nLab page: Day convolution](https://ncatlab.org/nlab/show/Day+convolution)
 
 ## TODOs (@robin-carlier)
+
 - Type alias for `C ⥤ V` with a `LawfulDayConvolutionMonoidalCategoryStruct`.
 - Characterization of lax monoidal functors out of a Day convolution monoidal category.
 - Case `V = Type u` and its universal property.

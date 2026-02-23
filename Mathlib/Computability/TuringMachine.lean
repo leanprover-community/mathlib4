@@ -119,11 +119,11 @@ variable (σ : Type*)
 
 -- Type of variable settings
 /-- The TM2 model removes the tape entirely from the TM1 model,
-  replacing it with an arbitrary (finite) collection of stacks.
-  The operation `push` puts an element on one of the stacks,
-  and `pop` removes an element from a stack (and modifies the
-  internal state based on the result). `peek` modifies the
-  internal state but does not remove an element. -/
+replacing it with an arbitrary (finite) collection of stacks.
+The operation `push` puts an element on one of the stacks,
+and `pop` removes an element from a stack (and modifies the
+internal state based on the result). `peek` modifies the
+internal state but does not remove an element. -/
 inductive Stmt
   | push : ∀ k, (σ → Γ k) → Stmt → Stmt
   | peek : ∀ k, (σ → Option (Γ k) → σ) → Stmt → Stmt

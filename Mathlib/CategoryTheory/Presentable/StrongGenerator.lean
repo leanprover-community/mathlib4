@@ -22,6 +22,7 @@ In particular, if a category is locally `κ`-presentable, it is also
 locally `κ'`-presentable for any regular cardinal `κ'` such that `κ ≤ κ'`.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/

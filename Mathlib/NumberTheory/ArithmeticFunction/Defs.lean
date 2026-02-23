@@ -43,8 +43,8 @@ open Nat
 variable (R : Type*)
 
 /-- An arithmetic function is a function from `ℕ` that maps 0 to 0. In the literature, they are
-  often instead defined as functions from `ℕ+`. Multiplication on `ArithmeticFunctions` is by
-  Dirichlet convolution. -/
+often instead defined as functions from `ℕ+`. Multiplication on `ArithmeticFunctions` is by
+Dirichlet convolution. -/
 def ArithmeticFunction [Zero R] :=
   ZeroHom ℕ R
 
@@ -215,7 +215,7 @@ section SMul
 variable {M : Type*} [Zero R] [AddCommMonoid M] [SMul R M]
 
 /-- The Dirichlet convolution of two arithmetic functions `f` and `g` is another arithmetic function
-  such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
+such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
 instance : SMul (ArithmeticFunction R) (ArithmeticFunction M) :=
   ⟨fun f g => ⟨fun n => ∑ x ∈ divisorsAntidiagonal n, f x.fst • g x.snd, by simp⟩⟩
 
@@ -227,7 +227,7 @@ theorem smul_apply {f : ArithmeticFunction R} {g : ArithmeticFunction M} {n : �
 end SMul
 
 /-- The Dirichlet convolution of two arithmetic functions `f` and `g` is another arithmetic function
-  such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
+such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
 instance [Semiring R] : Mul (ArithmeticFunction R) :=
   ⟨(· • ·)⟩
 

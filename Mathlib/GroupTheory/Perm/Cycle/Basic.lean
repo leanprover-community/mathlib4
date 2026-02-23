@@ -29,6 +29,7 @@ In the following, `f : Equiv.Perm β`.
 ## Notes
 
 `Equiv.Perm.IsCycle` and `Equiv.Perm.IsCycleOn` are different in three ways:
+
 * `IsCycle` is about the entire type while `IsCycleOn` is restricted to a set.
 * `IsCycle` forbids the identity while `IsCycleOn` allows it (if `s` is a subsingleton).
 * `IsCycleOn` forbids fixed points on `s` (if `s` is nontrivial), while `IsCycle` allows them.
@@ -927,6 +928,7 @@ theorem product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
     exact hmn.symm (h.eq_of_lt_of_lt hn hm)
 
 /-- We can partition the square `s ×ˢ s` into shifted diagonals as such:
+
 ```
 01234
 40123
@@ -1036,7 +1038,7 @@ theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A permutation `g` commutes with a cycle `c` if and only if
-  `c.support` is invariant under `g`, and `g` acts on it as a power of `c`. -/
+`c.support` is invariant under `g`, and `g` acts on it as a power of `c`. -/
 theorem IsCycle.commute_iff {g c : Perm α} (hc : c.IsCycle) :
     Commute g c ↔
       ∃ hc' : ∀ x : α, g x ∈ c.support ↔ x ∈ c.support,

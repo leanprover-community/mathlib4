@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Lie.Cochain
 
 /-!
 # Extensions of Lie algebras
+
 This file defines extensions of Lie algebras, given by short exact sequences of Lie algebra
 homomorphisms. They are implemented in two ways: `IsExtension` is a `Prop`-valued class taking two
 homomorphisms as parameters, and `Extension` is a structure that includes the middle Lie algebra.
@@ -18,6 +19,7 @@ Because our sign convention for differentials is opposite that of Chevalley-Eile
 change of signs in the "action" part of the Lie bracket.
 
 ## Main definitions
+
 * `LieAlgebra.IsExtension`: A `Prop`-valued class characterizing an extension of Lie algebras.
 * `LieAlgebra.Extension`: A bundled structure giving an extension of Lie algebras.
 * `LieAlgebra.IsExtension.extension`: A function that builds the bundled structure from the class.
@@ -31,10 +33,12 @@ change of signs in the "action" part of the Lie bracket.
   of an extension.
 
 ## TODO
+
 * `IsCentral` - central extensions
 * `Equiv` - equivalence of extensions
 
 ## References
+
 * [Chevalley, Eilenberg, *Cohomology Theory of Lie Groups and Lie
   Algebras*](chevalley_eilenberg_1948)
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
@@ -70,7 +74,7 @@ def IsExtension.kerEquivRange (i : N →ₗ⁅R⁆ L) (p : L →ₗ⁅R⁆ M) [I
   .ofEq (R := R) (M := L) p.ker i.range <| by simp [exact (i := i) (p := p)]
 
 variable (R N M) in
-/-- The type of all Lie extensions of `M` by `N`.  That is, short exact sequences of `R`-Lie algebra
+/-- The type of all Lie extensions of `M` by `N`. That is, short exact sequences of `R`-Lie algebra
 homomorphisms `0 → N → L → M → 0` where `R`, `M`, and `N` are fixed. -/
 structure Extension where
   /-- The middle object in the sequence. -/

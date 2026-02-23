@@ -12,6 +12,7 @@ public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 # Differentiability of specific functions
 
 In this file, we establish differentiability results for
+
 - continuous linear maps and continuous linear equivalences
 - the identity
 - constant functions
@@ -613,8 +614,8 @@ theorem tangentMap_prod_right {p : TangentBundle I' M'} {x₀ : M} :
   rfl
 
 /-- The total derivative of a function in two variables is the sum of the partial derivatives.
-  Note that to state this (without casts) we need to be able to see through the definition of
-  `TangentSpace`. -/
+Note that to state this (without casts) we need to be able to see through the definition of
+`TangentSpace`. -/
 theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
     (hf : MDifferentiableAt (I.prod I') I'' f p) :
     mfderiv (I.prod I') I'' f p =
@@ -631,8 +632,8 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
   exact ContinuousLinearMap.coprod_inl_inr
 
 /-- The total derivative of a function in two variables is the sum of the partial derivatives.
-  Note that to state this (without casts) we need to be able to see through the definition of
-  `TangentSpace`. Version in terms of the one-variable derivatives. -/
+Note that to state this (without casts) we need to be able to see through the definition of
+`TangentSpace`. Version in terms of the one-variable derivatives. -/
 theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
     (hf : MDifferentiableAt (I.prod I') I'' f p) :
     mfderiv (I.prod I') I'' f p =
@@ -656,8 +657,8 @@ theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
     · exact mdifferentiableAt_snd
 
 /-- The total derivative of a function in two variables is the sum of the partial derivatives.
-  Note that to state this (without casts) we need to be able to see through the definition of
-  `TangentSpace`. Version in terms of the one-variable derivatives. -/
+Note that to state this (without casts) we need to be able to see through the definition of
+`TangentSpace`. Version in terms of the one-variable derivatives. -/
 theorem mfderiv_prod_eq_add_apply {f : M × M' → M''} {p : M × M'} {v : TangentSpace (I.prod I') p}
     (hf : MDifferentiableAt (I.prod I') I'' f p) :
     mfderiv (I.prod I') I'' f p v =

@@ -587,7 +587,7 @@ protected lemma Topology.IsClosedEmbedding.inclusion (hst : s ⊆ t) (hs : IsClo
   toIsEmbedding := .inclusion _
   isClosed_range := by rwa [range_inclusion]
 
-/-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
+/-- Let `s, t ⊆ X` be two subsets of a topological space `X`. If `t ⊆ s` and the topology induced
 by `X` on `s` is discrete, then also the topology induces on `t` is discrete.
 
 (Compare `IsDiscrete.mono` which is the same thing stated without using subtypes.) -/
@@ -595,7 +595,7 @@ theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X
     (_ : DiscreteTopology s) (ts : t ⊆ s) : DiscreteTopology t :=
   (IsEmbedding.inclusion ts).discreteTopology
 
-/-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and `s` is discrete,
+/-- Let `s, t ⊆ X` be two subsets of a topological space `X`. If `t ⊆ s` and `s` is discrete,
 then `t` is discrete.
 
 (Compare `DiscreteTopology.of_subset` which is the same thing stated in terms of subtypes.) -/

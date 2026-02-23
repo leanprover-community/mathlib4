@@ -291,7 +291,7 @@ theorem surjective_restrictDomain_of_isSeparable {E : Type*}
 variable [Algebra.IsSeparable K L] {L}
 
 /-- A (random) homomorphism from a separable extension L of K into a separably
-  closed extension M of K. -/
+closed extension M of K. -/
 noncomputable irreducible_def lift : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
     (fun x _ ↦ ⟨Algebra.IsSeparable.isIntegral K x,

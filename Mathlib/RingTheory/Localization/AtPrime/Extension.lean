@@ -141,11 +141,13 @@ variable [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ]
 The following diagram where the vertical maps are the algebra maps and the horizontal maps are
 `Localization.AtPrime.equivQuotMaximalIdeal.symm` and
 `Localization.AtPrime.equivQuotientMapOfIsMaximal.symm` commutes:
+
 ```
 Rₚ ⧸ 𝓂 ──▶ R ⧸ p
   │         │
 Sₚ ⧸ 𝒫 ──▶ S ⧸ P
 ```
+
 Here, `𝓂` denotes the maximal ideal of `Rₚ` and `𝒫` the image of `P` in `Sₚ`.
 Note that result is stated in that direction since this is the formulation needed for the proof
 of `Localization.AtPrime.inertiaDeg_map_eq_inertiaDeg`.

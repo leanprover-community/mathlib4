@@ -21,6 +21,7 @@ Gluing two metric spaces along a common subset. Formally, we are given
   v
   Y
 ```
+
 where `hΦ : Isometry Φ` and `hΨ : Isometry Ψ`.
 We want to complete the square by a space `GlueSpacescan hΦ hΨ` and two isometries
 `toGlueL hΦ hΨ` and `toGlueR hΦ hΨ` that make the square commute.
@@ -38,10 +39,12 @@ basepoints.
 (We also register the same metric space structure on a general disjoint union `Σ i, E i`).
 
 We also define the inductive limit of metric spaces. Given
+
 ```
      f 0        f 1        f 2        f 3
 X 0 -----> X 1 -----> X 2 -----> X 3 -----> ...
 ```
+
 where the `X n` are metric spaces and `f n` isometric embeddings, we define the inductive
 limit of the `X n`, also known as the increasing union of the `X n` in this context, if we
 identify `X n` and `X (n+1)` through `f n`. This is a metric space in which all `X n` embed

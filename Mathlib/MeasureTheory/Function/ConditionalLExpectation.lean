@@ -31,6 +31,7 @@ expectation `P⁻[X|mΩ]` of `X` is the `mΩ`-measurable function such that for 
 ## Notation
 
 For a measure `P : Measure[mΩ₀] Ω`, and another `mΩ : MeasurableSpace Ω`, we define the notation
+
 * `P⁻[X|mΩ] = condLExp mΩ P X`
 
 ## Design decisions

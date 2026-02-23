@@ -19,6 +19,7 @@ This file contains the definition and lemmas about `MvPolynomial.supported`.
   This subalgebra is isomorphic to `MvPolynomial s R`.
 
 ## Tags
+
 variables, polynomial, vars
 -/
 

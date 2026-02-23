@@ -380,7 +380,7 @@ theorem mkOfClosure_sets {s : Set (Set α)} {hs : { t | MeasurableSet[generateFr
   copy_eq _
 
 /-- We get a Galois insertion between `σ`-algebras on `α` and `Set (Set α)` by using `generate_from`
-  on one side and the collection of measurable sets on the other side. -/
+on one side and the collection of measurable sets on the other side. -/
 def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m => { t | MeasurableSet[m] t } where
   gc _ := generateFrom_le_iff
   le_l_u _ _ := measurableSet_generateFrom
@@ -484,7 +484,7 @@ end CompleteLattice
 end MeasurableSpace
 
 /-- A function `f` between measurable spaces is measurable if the preimage of every
-  measurable set is measurable. -/
+measurable set is measurable. -/
 @[fun_prop]
 def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop :=
   ∀ ⦃t : Set β⦄, MeasurableSet t → MeasurableSet (f ⁻¹' t)

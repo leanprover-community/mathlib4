@@ -57,7 +57,7 @@ noncomputable instance {α : Type*} [Fintype α] [DecidableEq α] (i j : α) :
   fun _ _ => inferInstanceAs (Decidable (_ ∨ _))
 
 /-- Given a list `l : List α` and a permutation `f : Perm α` such that the nonfixed points of `f`
-  are in `l`, recursively factors `f` as a product of transpositions. -/
+are in `l`, recursively factors `f` as a product of transpositions. -/
 def swapFactorsAux :
     ∀ (l : List α) (f : Perm α),
       (∀ {x}, f x ≠ x → x ∈ l) → { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g }
@@ -89,7 +89,7 @@ def swapFactors [Fintype α] [LinearOrder α] (f : Perm α) :
   swapFactorsAux ((@univ α _).sort) f fun {_ _} => (mem_sort _).2 (mem_univ _)
 
 /-- This computably represents the fact that any permutation can be represented as the product of
-  a list of transpositions. -/
+a list of transpositions. -/
 def truncSwapFactors [Fintype α] (f : Perm α) :
     Trunc { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
   Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (swapFactorsAux l f (h _)))
@@ -170,7 +170,7 @@ theorem mem_finPairsLT {n : ℕ} {a : Σ _ : Fin n, Fin n} : a ∈ finPairsLT n 
     mem_sigma]
 
 /-- `signAux σ` is the sign of a permutation on `Fin n`, defined as the parity of the number of
-  pairs `(x₁, x₂)` such that `x₂ < x₁` but `σ x₁ ≤ σ x₂` -/
+pairs `(x₁, x₂)` such that `x₂ < x₁` but `σ x₁ ≤ σ x₂` -/
 def signAux {n : ℕ} (a : Perm (Fin n)) : ℤˣ :=
   ∏ x ∈ finPairsLT n, if a x.1 ≤ a x.2 then -1 else 1
 
@@ -282,7 +282,7 @@ theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (_hxy : x ≠ y), signAux (sw
       (isConj_swap hxy (by exact of_decide_eq_true rfl))
 
 /-- When the list `l : List α` contains all nonfixed points of the permutation `f : Perm α`,
-  `signAux2 l f` recursively calculates the sign of `f`. -/
+`signAux2 l f` recursively calculates the sign of `f`. -/
 def signAux2 : List α → Perm α → ℤˣ
   | [], _ => 1
   | x::l, f => if x = f x then signAux2 l f else -signAux2 l (swap x (f x) * f)
@@ -315,7 +315,7 @@ theorem signAux_eq_signAux2 {n : ℕ} :
       simp only [neg_neg, one_mul, neg_mul]
 
 /-- When the multiset `s : Multiset α` contains all nonfixed points of the permutation `f : Perm α`,
-  `signAux2 f _` recursively calculates the sign of `f`. -/
+`signAux2 f _` recursively calculates the sign of `f`. -/
 def signAux3 [Finite α] (f : Perm α) {s : Multiset α} : (∀ x, x ∈ s) → ℤˣ :=
   Quotient.hrecOn s (fun l _ => signAux2 l f) fun l₁ l₂ h ↦ by
     rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩

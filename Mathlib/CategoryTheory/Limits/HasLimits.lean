@@ -18,6 +18,7 @@ In `CategoryTheory.Limits.IsLimit` we defined `IsLimit c`,
 the data showing that a cone `c` is a limit cone.
 
 The two main structures defined in this file are:
+
 * `LimitCone F`, which consists of a choice of cone for `F` and the fact it is a limit cone, and
 * `HasLimit F`, asserting the mere existence of some limit cone for `F`.
 
@@ -28,6 +29,7 @@ as otherwise we would have non-defeq problems from incompatible instances).
 While `HasLimit` only asserts the existence of a limit cone,
 we happily use the axiom of choice in mathlib,
 so there are convenience functions all depending on `HasLimit F`:
+
 * `limit F : C`, producing some limit object (of course all such are isomorphic)
 * `limit.π F j : limit F ⟶ F.obj j`, the morphisms out of the limit,
 * `limit.lift F c : c.pt ⟶ limit F`, the universal morphism from any other `c : Cone F`, etc.
@@ -48,11 +50,13 @@ At this point, however, this is far from uniformly achieved in mathlib ---
 often statements are only written in terms of `HasLimit`.
 
 ## Implementation
+
 At present we simply say everything twice, in order to handle both limits and colimits.
 It would be highly desirable to have some automation support,
 e.g. a `@[dualize]` attribute that behaves similarly to `@[to_additive]`.
 
 ## References
+
 * [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 
 -/
@@ -390,6 +394,7 @@ variable {E F}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- -
+
 If we have particular limit cones available for `E ⋙ F` and for `F`,
 we obtain a formula for `limit.pre F E`.
 -/
@@ -623,7 +628,7 @@ end Limit
 section Colimit
 
 /-- `ColimitCocone F` contains a cocone over `F` together with the information that it is a
-    colimit. -/
+colimit. -/
 structure ColimitCocone (F : J ⥤ C) where
   /-- The cocone itself -/
   cocone : Cocone F
@@ -957,6 +962,7 @@ variable {E F}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- -
+
 If we have particular colimit cocones available for `E ⋙ F` and for `F`,
 we obtain a formula for `colimit.pre F E`.
 -/

@@ -28,6 +28,7 @@ We prove :
 * If `R` is a field, and `∀ r, r ^ 2 ≠ a + b * r`, then `QuadraticAlgebra R a b` is a field.
 
 ## Warning
+
 If you are working over `ℚ`, note the existence of the diamond explained in
 `Mathlib.Algebra.QuadraticAlgebra.Defs`.
 

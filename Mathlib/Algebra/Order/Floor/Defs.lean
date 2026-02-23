@@ -19,12 +19,17 @@ We also provide `positivity` extensions to handle floor and ceil.
 ## Main definitions
 
 * `FloorSemiring`: An ordered semiring with natural-valued floor and ceil.
+
 * `Nat.floor a`: Greatest natural `n` such that `n ≤ a`. Equal to `0` if `a < 0`.
+
 * `Nat.ceil a`: Least natural `n` such that `a ≤ n`.
 
 * `FloorRing`: A linearly ordered ring with integer-valued floor and ceil.
+
 * `Int.floor a`: Greatest integer `z` such that `z ≤ a`.
+
 * `Int.ceil a`: Least integer `z` such that `a ≤ z`.
+
 * `Int.fract a`: Fractional part of `a`, defined as `a - floor a`.
 
 ## Notation

@@ -15,6 +15,7 @@ public import Mathlib.Tactic.NoncommRing
 # Convex sets
 
 In a 𝕜-vector space, we define the following property:
+
 * `Convex 𝕜 s`: A set `s` is convex if for any two points `x y ∈ s` it includes `segment 𝕜 x y`.
 
 We provide various equivalent versions, and prove that some specific sets are convex.
@@ -170,7 +171,7 @@ theorem convex_segment [IsOrderedRing 𝕜] (x y : E) : Convex 𝕜 [x -[𝕜] y
   · match_scalars <;> noncomm_ring
 
 /-- See `Convex.semilinear_image` for a version for semilinar maps, but requiring that `𝕜` be a
-  linear order, instead of just a partial order. -/
+linear order, instead of just a partial order. -/
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
   exact ⟨a • x + b • y, hs hx hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
@@ -575,6 +576,7 @@ end LinearOrderedField
 
 /-!
 #### Convex sets in an ordered space
+
 Relates `Convex` and `OrdConnected`.
 -/
 

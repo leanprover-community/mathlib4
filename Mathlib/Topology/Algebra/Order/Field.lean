@@ -238,7 +238,7 @@ theorem Filter.Tendsto.inv_tendsto_nhdsLT_zero (h : Tendsto f l (𝓝[<] 0)) : T
   tendsto_inv_nhdsLT_zero.comp h
 
 /-- If `g` tends to zero and there exists a constant `C : 𝕜` such that eventually `|f x| ≤ C`,
-  then the product `f * g` tends to zero. -/
+then the product `f * g` tends to zero. -/
 theorem bdd_le_mul_tendsto_zero' {f g : α → 𝕜} (C : 𝕜) (hf : ∀ᶠ x in l, |f x| ≤ C)
     (hg : Tendsto g l (𝓝 0)) : Tendsto (fun x ↦ f x * g x) l (𝓝 0) := by
   rw [tendsto_zero_iff_abs_tendsto_zero]
@@ -252,7 +252,7 @@ theorem bdd_le_mul_tendsto_zero' {f g : α → 𝕜} (C : 𝕜) (hf : ∀ᶠ x i
     exact mul_le_mul_of_nonneg_right (hx.trans (le_abs_self C)) (abs_nonneg _)
 
 /-- If `g` tends to zero and there exist constants `b B : 𝕜` such that eventually `b ≤ f x| ≤ B`,
-  then the product `f * g` tends to zero. -/
+then the product `f * g` tends to zero. -/
 theorem bdd_le_mul_tendsto_zero {f g : α → 𝕜} {b B : 𝕜} (hb : ∀ᶠ x in l, b ≤ f x)
     (hB : ∀ᶠ x in l, f x ≤ B) (hg : Tendsto g l (𝓝 0)) :
     Tendsto (fun x ↦ f x * g x) l (𝓝 0) := by
@@ -264,7 +264,7 @@ theorem bdd_le_mul_tendsto_zero {f g : α → 𝕜} {b B : 𝕜} (hb : ∀ᶠ x 
   exact fun x hbx hBx ↦ abs_le.mpr ⟨hbC.trans hbx, hBx.trans hBC⟩
 
 /-- If `g` tends to `atTop` and there exist constants `b B : 𝕜` such that eventually
-  `b ≤ f x| ≤ B`, then the quotient `f / g` tends to zero. -/
+`b ≤ f x| ≤ B`, then the quotient `f / g` tends to zero. -/
 theorem tendsto_bdd_div_atTop_nhds_zero {f g : α → 𝕜} {b B : 𝕜}
     (hb : ∀ᶠ x in l, b ≤ f x) (hB : ∀ᶠ x in l, f x ≤ B) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x / g x) l (𝓝 0) := by

@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 # The Characteristic Function of Value Distribution Theory
 
 This file defines the "characteristic function" attached to a meromorphic function defined on the
-complex plane.  Also known as "Nevanlinna Height", this is one of the three main functions used in
+complex plane. Also known as "Nevanlinna Height", this is one of the three main functions used in
 Value Distribution Theory.
 
 The characteristic function plays a role analogous to the height function in number theory: both

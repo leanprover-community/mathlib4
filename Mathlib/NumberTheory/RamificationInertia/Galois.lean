@@ -12,10 +12,10 @@ public import Mathlib.NumberTheory.RamificationInertia.Basic
 # Ramification theory in Galois extensions of Dedekind domains
 
 In this file, we discuss the ramification theory in Galois extensions of Dedekind domains, which is
-  also called Hilbert's Ramification Theory.
+also called Hilbert's Ramification Theory.
 
 Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ring of `A`,
-  `L` is the fraction ring of `K`, `L / K` is a Galois extension.
+`L` is the fraction ring of `K`, `L / K` is a Galois extension.
 
 ## Main definitions
 
@@ -54,8 +54,8 @@ namespace Ideal
 
 open scoped Classical in
 /-- If `L / K` is a Galois extension, it can be seen from the theorem
-  `Ideal.ramificationIdx_eq_of_isGaloisGroup` that all `Ideal.ramificationIdx` over a fixed
-  maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`. -/
+`Ideal.ramificationIdx_eq_of_isGaloisGroup` that all `Ideal.ramificationIdx` over a fixed
+maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`. -/
 noncomputable def ramificationIdxIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
   if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then p.ramificationIdx (algebraMap A B) h.choose
@@ -63,8 +63,8 @@ noncomputable def ramificationIdxIn {A : Type*} [CommRing A] (p : Ideal A)
 
 open scoped Classical in
 /-- If `L / K` is a Galois extension, it can be seen from
-  the theorem `Ideal.inertiaDeg_eq_of_isGaloisGroup` that all `Ideal.inertiaDeg` over a fixed
-  maximal ideal `p` of `A` are the same, which we define as `Ideal.inertiaDegIn`. -/
+the theorem `Ideal.inertiaDeg_eq_of_isGaloisGroup` that all `Ideal.inertiaDeg` over a fixed
+maximal ideal `p` of `A` are the same, which we define as `Ideal.inertiaDegIn`. -/
 noncomputable def inertiaDegIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
   if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then p.inertiaDeg h.choose else 0
@@ -122,8 +122,8 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A) (P 
 
 include p in
 /-- If `p` is a maximal ideal of `A`, `P` and `Q` are prime ideals
-  lying over `p`, then there exists `σ ∈ Aut (B / A)` such that `σ P = Q`. In other words,
-  the Galois group `Gal(L / K)` acts transitively on the set of all prime ideals lying over `p`. -/
+lying over `p`, then there exists `σ ∈ Aut (B / A)` such that `σ P = Q`. In other words,
+the Galois group `Gal(L / K)` acts transitively on the set of all prime ideals lying over `p`. -/
 theorem exists_smul_eq_of_isGaloisGroup : ∃ σ : G, σ • P = Q := by
   rcases IsInvariant.exists_smul_of_under_eq A B G P Q <|
     (over_def P p).symm.trans (over_def Q p) with ⟨σ, hs⟩

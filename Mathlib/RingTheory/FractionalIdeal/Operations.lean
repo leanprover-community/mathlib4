@@ -16,20 +16,22 @@ public import Mathlib.Tactic.Field
 # More operations on fractional ideals
 
 ## Main definitions
+
 * `map` is the pushforward of a fractional ideal along an algebra morphism
 
 Let `K` be the localization of `R` at `R⁰ = R \ {0}` (i.e. the field of fractions).
+
 * `FractionalIdeal R⁰ K` is the type of fractional ideals in the field of fractions
 * `Div (FractionalIdeal R⁰ K)` instance:
   the ideal quotient `I / J` (typically written $I : J$, but a `:` operator cannot be defined)
 
 ## Main statement
 
-  * `isNoetherian` states that every fractional ideal of a Noetherian integral domain is Noetherian
+* `isNoetherian` states that every fractional ideal of a Noetherian integral domain is Noetherian
 
 ## References
 
-  * https://en.wikipedia.org/wiki/Fractional_ideal
+* https://en.wikipedia.org/wiki/Fractional_ideal
 
 ## Tags
 

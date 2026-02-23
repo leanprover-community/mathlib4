@@ -1042,7 +1042,7 @@ theorem mem_negAt_plusPart_of_mem (hx₁ : x ∈ A) (hx₂ : ∀ w, x.1 w ≠ 0)
   · rfl
 
 include hA in
-/-- Assume that `A`  is symmetric at real places then, the union of the images of `plusPart`
+/-- Assume that `A` is symmetric at real places then, the union of the images of `plusPart`
 by `negAt` and of the set of elements of `A` that are zero at at least one real place
 is equal to `A`. -/
 theorem iUnion_negAt_plusPart_union :

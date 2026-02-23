@@ -109,7 +109,7 @@ noncomputable instance Forget₂.createsLimit :
 /-- A choice of limit cone for a functor into `GrpCat`.
 (Generally, you'll just want to use `limit F`.) -/
 @[to_additive /-- A choice of limit cone for a functor into `GrpCat`.
-  (Generally, you'll just want to use `limit F`.) -/]
+(Generally, you'll just want to use `limit F`.) -/]
 noncomputable def limitCone : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ GrpCat.{u} MonCat.{u}))
 

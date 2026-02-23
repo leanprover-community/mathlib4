@@ -14,15 +14,19 @@ In a category with zero morphisms, the kernel of a morphism `f : X ⟶ Y` is
 the equalizer of `f` and `0 : X ⟶ Y`. (Similarly the cokernel is the coequalizer.)
 
 The basic definitions are
+
 * `kernel : (X ⟶ Y) → C`
 
 * `kernel.ι : kernel f ⟶ X`
+
 * `kernel.condition : kernel.ι f ≫ f = 0` and
+
 * `kernel.lift (k : W ⟶ X) (h : k ≫ f = 0) : W ⟶ kernel f` (as well as the dual versions)
 
 ## Main statements
 
 Besides the definition and lifts, we prove
+
 * `kernel.ιZeroIsIso`: a kernel map of a zero morphism is an isomorphism
 * `kernel.eq_zero_of_epi_kernel`: if `kernel.ι f` is an epimorphism, then `f = 0`
 * `kernel.ofMono`: the kernel of a monomorphism is the zero object
@@ -35,9 +39,11 @@ Besides the definition and lifts, we prove
 and the corresponding dual statements.
 
 ## Future work
+
 * TODO: connect this with existing work in the group theory and ring theory libraries.
 
 ## Implementation notes
+
 As with the other special shapes in the limits library, all the definitions here are given as
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
@@ -333,6 +339,7 @@ instance {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q : Y ⟶ Y
     by cat_disch, by cat_disch⟩
 
 /-- Given a commutative diagram
+
 ```
     X --f--> Y --g--> Z
     |        |        |
@@ -340,8 +347,10 @@ instance {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q : Y ⟶ Y
     v        v        v
     X' -f'-> Y' -g'-> Z'
 ```
+
 with horizontal arrows composing to zero,
 then we obtain a commutative square
+
 ```
    X ---> kernel g
    |         |
@@ -860,6 +869,7 @@ lemma cokernel.map_id {X Y : C} (f : X ⟶ Y) [HasCokernel f] (q : X ⟶ X)
   cat_disch
 
 /-- Given a commutative diagram
+
 ```
     X --f--> Y --g--> Z
     |        |        |
@@ -867,8 +877,10 @@ lemma cokernel.map_id {X Y : C} (f : X ⟶ Y) [HasCokernel f] (q : X ⟶ X)
     v        v        v
     X' -f'-> Y' -g'-> Z'
 ```
+
 with horizontal arrows composing to zero,
 then we obtain a commutative square
+
 ```
    cokernel f ---> Z
    |               |

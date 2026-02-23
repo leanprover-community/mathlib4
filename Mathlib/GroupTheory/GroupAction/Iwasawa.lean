@@ -60,8 +60,8 @@ namespace IwasawaStructure
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Iwasawa criterion : If a quasiprimitive action of a group G on X
-  has an Iwasawa structure, then any normal subgroup that acts nontrivially
-  contains the group of commutators. -/
+has an Iwasawa structure, then any normal subgroup that acts nontrivially
+contains the group of commutators. -/
 theorem commutator_le (IwaS : IwasawaStructure M α) [IsQuasiPreprimitive M α]
     (N : Subgroup M) [nN : N.Normal] (hNX : MulAction.fixedPoints N α ≠ .univ) :
     commutator M ≤ N := by

@@ -20,6 +20,7 @@ public import Mathlib.Tactic.Ring
 We characterize the localization of a commutative ring `R` at a submonoid `M` up to
 isomorphism; that is, a commutative ring `S` is the localization of `R` at `M` iff we can find a
 ring homomorphism `f : R →+* S` satisfying 3 properties:
+
 1. For all `y ∈ M`, `f y` is a unit;
 2. For all `z : S`, there exists `(x, y) : R × M` such that `z * f y = f x`;
 3. For all `x, y : R` such that `f x = f y`, there exists `c ∈ M` such that `x * c = y * c`.
@@ -27,6 +28,7 @@ ring homomorphism `f : R →+* S` satisfying 3 properties:
 
 In the following, let `R, P` be commutative rings, `S, Q` be `R`- and `P`-algebras
 and `M, T` be submonoids of `R` and `P` respectively, e.g.:
+
 ```
 variable (R S P Q : Type*) [CommRing R] [CommRing S] [CommRing P] [CommRing Q]
 variable [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
@@ -80,6 +82,7 @@ is a field" is a `def` rather than an `instance`, so if you want to reason about
 fractions `K`, assume `[Field K]` instead of just `[CommRing K]`.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -816,7 +819,7 @@ theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b 
   ring
 
 /-- For any given denominator `b : M`, the map `a ↦ a / b` is an `AddMonoidHom` from `R` to
-  `Localization M`. -/
+`Localization M`. -/
 @[simps]
 def mkAddMonoidHom (b : M) : R →+ Localization M where
   toFun a := mk a b

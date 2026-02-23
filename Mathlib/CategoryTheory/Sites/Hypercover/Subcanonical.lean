@@ -89,19 +89,23 @@ instance : (isomorphisms C).IsLocalAtTarget J := by
 set_option backward.isDefEq.respectTransparency false in
 /--
 To show that
+
 ```
 P ---> X
 |      |
 v      v
 Y ---> Z
 ```
+
 is a pullback square, it suffices to check that
+
 ```
 P ×[X] Uᵢ ---> Uᵢ
    |           |
    v           v
    Y --------> Z
 ```
+
 is a pullback square for all `Uᵢ` in a cover of `X` for some subcanonical topology.
 -/
 lemma isPullback_of_forall_isPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z)

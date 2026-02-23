@@ -132,7 +132,7 @@ theorem discr_not_zero_of_basis [Algebra.IsSeparable K L] (b : Basis ι K L) :
   exact traceForm_nondegenerate _ _
 
 /-- If `b` is a basis of a finite separable field extension `L/K`,
-  then `Algebra.discr K b` is a unit. -/
+then `Algebra.discr K b` is a unit. -/
 theorem discr_isUnit_of_basis [Algebra.IsSeparable K L] (b : Basis ι K L) : IsUnit (discr K b) :=
   IsUnit.mk0 _ (discr_not_zero_of_basis _ _)
 

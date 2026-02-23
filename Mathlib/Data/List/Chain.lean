@@ -407,7 +407,7 @@ theorem isChain_reverse {l : List α} : l.reverse.IsChain R ↔ l.IsChain (fun a
 @[deprecated (since := "2025-09-24")] alias chain'_reverse := isChain_reverse
 
 /-- If `l₁ l₂` and `l₃` are lists and `l₁ ++ l₂` and `l₂ ++ l₃` both satisfy
-  `IsChain R`, then so does `l₁ ++ l₂ ++ l₃` provided `l₂ ≠ []` -/
+`IsChain R`, then so does `l₁ ++ l₂ ++ l₃` provided `l₂ ≠ []` -/
 theorem IsChain.append_overlap {l₁ l₂ l₃ : List α} (h₁ : IsChain R (l₁ ++ l₂))
     (h₂ : IsChain R (l₂ ++ l₃)) (hn : l₂ ≠ []) : IsChain R (l₁ ++ l₂ ++ l₃) :=
   h₁.append h₂.right_of_append <| by
@@ -624,7 +624,7 @@ end List
 
 
 /-! In this section, we consider the type of `r`-decreasing chains (`List.IsChain (flip r)`)
-  equipped with lexicographic order `List.Lex r`. -/
+equipped with lexicographic order `List.Lex r`. -/
 
 variable {α : Type*} (r : α → α → Prop)
 
@@ -637,7 +637,7 @@ abbrev List.lex_chains (l m : List.chains r) : Prop := List.Lex r l.val m.val
 variable {r}
 
 /-- If an `r`-decreasing chain `l` is empty or its head is accessible by `r`, then
-  `l` is accessible by the lexicographic order `List.Lex r`. -/
+`l` is accessible by the lexicographic order `List.Lex r`. -/
 theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r a) :
     Acc (List.lex_chains r) l := by
   obtain ⟨_ | ⟨a, l⟩, hl⟩ := l

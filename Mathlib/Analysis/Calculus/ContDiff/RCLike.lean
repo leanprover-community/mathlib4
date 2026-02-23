@@ -24,8 +24,9 @@ section Real
 
 /-!
 ### Results over `ℝ` or `ℂ`
-  The results in this section rely on the Mean Value Theorem, and therefore hold only over `ℝ` (and
-  its extension fields such as `ℂ`).
+
+The results in this section rely on the Mean Value Theorem, and therefore hold only over `ℝ` (and
+its extension fields such as `ℂ`).
 -/
 
 variable {n : WithTop ℕ∞} {𝕂 : Type*} [RCLike 𝕂] {E' : Type*} [NormedAddCommGroup E']

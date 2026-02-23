@@ -61,6 +61,7 @@ The arguments `in` are the same as those as the in `pattern`.
 In fact, `conv in pat => cs` is a macro for `conv => pattern pat; cs`.
 
 The syntax also supports the `occs` clause. Example:
+
 ```lean
 conv in (occs := *) x + y => rw [add_comm]
 ```
@@ -128,6 +129,7 @@ The command `#whnf e` evaluates `e` to Weak Head Normal Form, which means that t
 of the expression is reduced to a primitive - a lambda or forall, or an axiom or inductive type.
 It is similar to `#reduce e`, but it does not reduce the expression completely,
 only until the first constructor is exposed. For example:
+
 ```
 open Nat List
 set_option pp.notation false
@@ -136,6 +138,7 @@ set_option pp.notation false
 #reduce [1, 2, 3].map succ
 -- cons 2 (cons 3 (cons 4 nil))
 ```
+
 The head of this expression is the `List.cons` constructor,
 so we can see from this much that the list is not empty,
 but the subterms `Nat.succ 1` and `List.map Nat.succ (List.cons 2 (List.cons 3 List.nil))` are

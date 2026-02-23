@@ -213,7 +213,7 @@ noncomputable section
 variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
 /-- `aevalAeval x y` is the `R`-algebra evaluation morphism sending a two-variable polynomial
-  `p : R[X][Y]` to `p(x,y)`. -/
+`p : R[X][Y]` to `p(x,y)`. -/
 abbrev aevalAeval (x y : A) : R[X][Y] →ₐ[R] A :=
   ((aeval x).restrictScalars R).comp
     (letI := Polynomial.algebra; (aeval (R := R[X]) (C y)).restrictScalars R)

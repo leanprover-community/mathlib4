@@ -19,10 +19,10 @@ in `α`
 
 ## Main definitions
 
-* `FreeCommRing α`   : the free commutative ring on a type α
+* `FreeCommRing α` : the free commutative ring on a type α
 * `lift (f : α → R)` : the ring hom `FreeCommRing α →+* R` induced by functoriality from `f`.
-* `map (f : α → β)`  : the ring hom `FreeCommRing α →*+ FreeCommRing β` induced by
-                           functoriality from f.
+* `map (f : α → β)` : the ring hom `FreeCommRing α →*+ FreeCommRing β` induced by
+  functoriality from f.
 
 ## Main results
 
@@ -30,11 +30,13 @@ in `α`
 In this file we have:
 
 * `of : α → FreeCommRing α`
+
 * `lift (f : α → R) : FreeCommRing α →+* R`
+
 * `map (f : α → β) : FreeCommRing α →+* FreeCommRing β`
 
 * `freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ` :
-    `FreeCommRing α` is isomorphic to a polynomial ring.
+  `FreeCommRing α` is isomorphic to a polynomial ring.
 
 ## Implementation notes
 
@@ -222,7 +224,7 @@ theorem isSupported_int {i : ℤ} {s : Set α} : IsSupported (↑i) s :=
 end IsSupported
 
 /-- The restriction map from `FreeCommRing α` to `FreeCommRing s` where `s : Set α`, defined
-  by sending all variables not in `s` to zero. -/
+by sending all variables not in `s` to zero. -/
 def restriction (s : Set α) [DecidablePred (· ∈ s)] : FreeCommRing α →+* FreeCommRing s :=
   lift (fun a => if H : a ∈ s then of ⟨a, H⟩ else 0)
 

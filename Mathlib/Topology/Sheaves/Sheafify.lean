@@ -22,6 +22,7 @@ We construct a morphism `toSheafify` from a presheaf to (the underlying presheaf
 its sheafification, given by sending a section to its collection of germs.
 
 ## Future work
+
 Show that the map induced on stalks by `toSheafify` is the inverse of `stalkToFiber`.
 
 Show sheafification is a functor from presheaves to sheaves,

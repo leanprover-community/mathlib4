@@ -23,7 +23,7 @@ Note that we use "location" and "scale" to refer to these parameters in theorem 
   and scale parameter `γ` (when `γ ≠ 0`).
 * `cauchyPDF`: `ℝ≥0∞`-valued pdf, `cauchyPDF μ v x = ENNReal.ofReal (cauchyPDFReal μ v x)`.
 * `cauchyMeasure`: a Cauchy measure on `ℝ`, parametrized by a location parameter `x₀ : ℝ` and a
-  scale parameter `γ : ℝ≥0`.  If `γ = 0`, this is `dirac x₀`, otherwise it is defined as the
+  scale parameter `γ : ℝ≥0`. If `γ = 0`, this is `dirac x₀`, otherwise it is defined as the
   measure with density `cauchyPDF x₀ γ` with respect to the Lebesgue measure.
 
 -/

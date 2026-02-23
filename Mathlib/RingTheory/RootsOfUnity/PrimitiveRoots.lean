@@ -701,7 +701,7 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence of coprime powers of primitive roots. If a * b ≡ 1 (mod n), then x ↦ x ^ a and
-    x ↦ x ^ b restricts to a bijection on the n-th primitive roots. -/
+x ↦ x ^ b restricts to a bijection on the n-th primitive roots. -/
 @[simps]
 def primitiveRootsPowEquiv {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
     primitiveRoots n R ≃ primitiveRoots n R where
@@ -721,7 +721,7 @@ def primitiveRootsPowEquiv {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
     pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
 
 /-- Equivalence of coprime powers of primitive roots. Every `n`-th primitive root is taken to the
-    `a`-th power given that `n` and `a` are coprime. -/
+`a`-th power given that `n` and `a` are coprime. -/
 @[simps! apply_coe]
 def primitiveRootsPowEquivOfCoprime {a n : ℕ} (h : a.Coprime n) [NeZero n] :
     primitiveRoots n R ≃ primitiveRoots n R :=

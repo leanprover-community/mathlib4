@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Sites.Spaces
 
 Given two open subsets `U` and `V` of a topological space `T`,
 we construct the associated Mayer-Vietoris square:
+
 ```
 U ⊓ V --->   U
   |          |

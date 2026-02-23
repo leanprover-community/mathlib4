@@ -38,12 +38,13 @@ namespace Mathlib.Linter
 
 /--
 `ImportState` is the structure keeping track of the data that the `minImports` linter uses.
+
 * `transClosure` is the import graph of the current file.
 * `minImports` is the `NameSet` of minimal imports to build the file up to the current command.
 * `importSize` is the number of transitive imports to build the file up to the current command.
 -/
 structure ImportState where
-  /-- The transitive closure of the import graph of the current file.  The value is `none` only at
+  /-- The transitive closure of the import graph of the current file. The value is `none` only at
   initialization time, as the linter immediately sets it to its value for the current file. -/
   transClosure : Option (NameMap NameSet) := none
   /-- The minimal imports needed to build the file up to the current command. -/

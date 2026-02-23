@@ -66,6 +66,7 @@ instance instCompl : Compl (Booleanisation α) where
 variable [GeneralizedBooleanAlgebra α] {a b : α}
 
 /-- The order on `Booleanisation α` is as follows: For `a b : α`,
+
 * `a ≤ b` iff `a ≤ b` in `α`
 * `a ≤ bᶜ` iff `a` and `b` are disjoint in `α`
 * `aᶜ ≤ bᶜ` iff `b ≤ a` in `α`
@@ -76,6 +77,7 @@ protected inductive LE : Booleanisation α → Booleanisation α → Prop
   | protected sep {a b} : Disjoint a b → Booleanisation.LE (lift a) (comp b)
 
 /-- The order on `Booleanisation α` is as follows: For `a b : α`,
+
 * `a < b` iff `a < b` in `α`
 * `a < bᶜ` iff `a` and `b` are disjoint in `α`
 * `aᶜ < bᶜ` iff `b < a` in `α`
@@ -94,6 +96,7 @@ instance instLT : LT (Booleanisation α) where
   lt := Booleanisation.LT
 
 /-- The supremum on `Booleanisation α` is as follows: For `a b : α`,
+
 * `a ⊔ b` is `a ⊔ b`
 * `a ⊔ bᶜ` is `(b \ a)ᶜ`
 * `aᶜ ⊔ b` is `(a \ b)ᶜ`
@@ -106,6 +109,7 @@ instance instSup : Max (Booleanisation α) where
     | comp a, comp b => comp (a ⊓ b)
 
 /-- The infimum on `Booleanisation α` is as follows: For `a b : α`,
+
 * `a ⊓ b` is `a ⊓ b`
 * `a ⊓ bᶜ` is `a \ b`
 * `aᶜ ⊓ b` is `b \ a`
@@ -126,6 +130,7 @@ instance instTop : Top (Booleanisation α) where
   top := comp ⊥
 
 /-- The difference operator on `Booleanisation α` is as follows: For `a b : α`,
+
 * `a \ b` is `a \ b`
 * `a \ bᶜ` is `a ⊓ b`
 * `aᶜ \ b` is `(a ⊔ b)ᶜ`

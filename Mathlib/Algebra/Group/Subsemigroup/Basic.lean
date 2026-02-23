@@ -22,7 +22,7 @@ definition in the `AddSubsemigroup` namespace.
 
 * `Subsemigroup.copy` : copy of a subsemigroup with `carrier` replaced by a set that is equal but
   possibly not definitionally equal to the carrier of the original `Subsemigroup`.
-* `Subsemigroup.closure` :  semigroup closure of a set, i.e.,
+* `Subsemigroup.closure` : semigroup closure of a set, i.e.,
   the least subsemigroup that includes the set.
 * `Subsemigroup.gi` : `closure : Set M → Subsemigroup M` and coercion `coe : Subsemigroup M → Set M`
   form a `GaloisInsertion`;
@@ -39,6 +39,7 @@ This file is designed to have very few dependencies. In particular, it should no
 numbers.
 
 ## Tags
+
 subsemigroup, subsemigroups
 -/
 
@@ -145,8 +146,8 @@ variable (S)
 /-- An induction principle for closure membership. If `p` holds for all elements of `s`, and
 is preserved under multiplication, then `p` holds for all elements of the closure of `s`. -/
 @[to_additive (attr := elab_as_elim) /-- An induction principle for additive closure membership. If
-  `p` holds for all elements of `s`, and is preserved under addition, then `p` holds for all
-  elements of the additive closure of `s`. -/]
+`p` holds for all elements of `s`, and is preserved under addition, then `p` holds for all
+elements of the additive closure of `s`. -/]
 theorem closure_induction {p : (x : M) → x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
@@ -158,7 +159,7 @@ theorem closure_induction {p : (x : M) → x ∈ closure s → Prop}
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim) /-- An induction principle for additive closure membership for
-  predicates with two arguments. -/]
+predicates with two arguments. -/]
 theorem closure_induction₂ {p : (x y : M) → x ∈ closure s → y ∈ closure s → Prop}
     (mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
     (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
@@ -174,9 +175,9 @@ theorem closure_induction₂ {p : (x y : M) → x ∈ closure s → y ∈ closur
 some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`,
 and verify that `p x` and `p y` imply `p (x * y)`. -/
 @[to_additive (attr := elab_as_elim) /-- If `s` is a dense set in an additive monoid `M`,
-  `AddSubsemigroup.closure s = ⊤`, then in order to prove that some predicate `p` holds
-  for all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify that `p x` and `p y` imply
-  `p (x + y)`. -/]
+`AddSubsemigroup.closure s = ⊤`, then in order to prove that some predicate `p` holds
+for all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify that `p x` and `p y` imply
+`p (x + y)`. -/]
 theorem dense_induction {p : M → Prop} (s : Set M) (closure : closure s = ⊤)
     (mem : ∀ x ∈ s, p x) (mul : ∀ x y, p x → p y → p (x * y)) (x : M) :
     p x := by
@@ -251,7 +252,7 @@ open Subsemigroup
 
 /-- If two mul homomorphisms are equal on a set, then they are equal on its subsemigroup closure. -/
 @[to_additive /-- If two add homomorphisms are equal on a set,
-  then they are equal on its additive subsemigroup closure. -/]
+then they are equal on its additive subsemigroup closure. -/]
 theorem eqOn_closure {f g : M →ₙ* N} {s : Set M} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure s) :=
   show closure s ≤ f.eqLocus g from closure_le.2 h
@@ -284,7 +285,7 @@ def ofDense {M N} [Semigroup M] [Semigroup N] {s : Set M} (f : M → N) (hs : cl
       (fun y₁ y₂ h₁ h₂ x => by simp only [← mul_assoc, h₁, h₂]) y x
 
 /-- Let `s` be a subset of an additive semigroup `M` such that the closure of `s` is the whole
-semigroup.  Then `AddHom.ofDense` defines an additive homomorphism from `M` asking for a proof
+semigroup. Then `AddHom.ofDense` defines an additive homomorphism from `M` asking for a proof
 of `f (x + y) = f x + f y` only for `y ∈ s`. -/
 add_decl_doc AddHom.ofDense
 

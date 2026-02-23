@@ -49,13 +49,17 @@ pattern when creating type synonyms.
 
 Important Note: if `α` is some synonym of a type `β` (at default transparency), and `f : α ≃ β` is
 some bilipschitz equivalence, then instead of writing:
+
 ```
 instance : UniformSpace α := inferInstanceAs (UniformSpace β)
 ```
+
 Users should instead write something like:
+
 ```
 instance : UniformSpace α := (inferInstance : UniformSpace β).comap f
 ```
+
 in order to avoid abuse of the definitional equality `α := β`. -/
 lemma uniformity_eq_of_bilipschitz (hf₁ : AntilipschitzWith K₁ f) (hf₂ : LipschitzWith K₂ f) :
     𝓤[(inferInstance : UniformSpace β).comap f] = 𝓤 α :=
@@ -86,13 +90,17 @@ pattern when creating type synonyms.
 
 Important Note: if `α` is some synonym of a type `β` (at default transparency), and `f : α ≃ β` is
 some bilipschitz equivalence, then instead of writing:
+
 ```
 instance : Bornology α := inferInstanceAs (Bornology β)
 ```
+
 Users should instead write something like:
+
 ```
 instance : Bornology α := Bornology.induced (f : α → β)
 ```
+
 in order to avoid abuse of the definitional equality `α := β`. -/
 lemma isBounded_iff_of_bilipschitz (hf₁ : AntilipschitzWith K₁ f) (hf₂ : LipschitzWith K₂ f)
     (s : Set α) : @IsBounded _ (induced f) s ↔ Bornology.IsBounded s :=

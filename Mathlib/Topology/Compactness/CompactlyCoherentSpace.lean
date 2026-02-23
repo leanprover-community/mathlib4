@@ -16,15 +16,18 @@ This is a weaker version of `CompactlyGeneratedSpace`. These notions agree on Ha
 are both referred to as compactly generated spaces in the literature.
 
 ## Main definitions
+
 * `CompactlyCoherentSpace`: A compactly coherent space is a topological space in which a set `A` is
   open iff for every compact set `B`, the intersection `A ∩ B` is open in `B`.
 
 ## Main results
+
 * `CompactlyCoherentSpace.of_weaklyLocallyCompactSpace`: every weakly locally compact space is a
   compactly coherent space.
 * `CompactlyCoherentSpace.of_sequentialSpace`: every sequential space is a compactly coherent space.
 
 ## References
+
 * [J. Munkres, *Topology*][Munkres2000]
 * <https://en.wikipedia.org/wiki/Compactly_generated_space>
 -/

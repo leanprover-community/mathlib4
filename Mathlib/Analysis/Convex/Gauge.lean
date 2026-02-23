@@ -24,6 +24,7 @@ induces the equivalence of seminorms and locally convex topological vector space
 ## Main declarations
 
 For a real vector space,
+
 * `gauge`: Aka Minkowski functional. `gauge s x` is the least (actually, an infimum) `r` such
   that `x ∈ r • s`.
 * `gaugeSeminorm`: The Minkowski functional as a seminorm, when `s` is symmetric, convex and

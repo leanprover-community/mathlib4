@@ -19,11 +19,12 @@ This file provides a definition of the Čech nerve associated to an arrow, provi
 the base category has the correct wide pullbacks.
 
 Several variants are provided, given `f : Arrow C`:
+
 1. `f.cechNerve` is the Čech nerve, considered as a simplicial object in `C`.
 2. `f.augmentedCechNerve` is the augmented Čech nerve, considered as an
-  augmented simplicial object in `C`.
+   augmented simplicial object in `C`.
 3. `SimplicialObject.cechNerve` and `SimplicialObject.augmentedCechNerve` are
-  functorial versions of 1 resp. 2.
+   functorial versions of 1 resp. 2.
 
 We end the file with a description of the Čech nerve of an arrow `X ⟶ ⊤_ C` to a terminal
 object, when `C` has finite products. We call this `cechNerveTerminalFrom`. When `C` is

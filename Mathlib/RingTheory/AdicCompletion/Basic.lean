@@ -735,6 +735,7 @@ theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
 If `F : M →ₗ[R] N` makes the following diagram commute
+
 ```
   N
   | \
@@ -743,6 +744,7 @@ If `F : M →ₗ[R] N` makes the following diagram commute
   v    v
   M --> M ⧸ (I ^ n • ⊤)
 ```
+
 Then it is the map `IsAdicComplete.lift`.
 -/
 theorem eq_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}

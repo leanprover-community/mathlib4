@@ -41,6 +41,7 @@ formulate the martingale convergence theorem.
   and converges in measure.
 
 ## Tags
+
 uniformly integrable, uniformly absolutely continuous integral, Vitali convergence theorem
 -/
 

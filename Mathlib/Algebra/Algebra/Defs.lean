@@ -35,6 +35,7 @@ See the implementation notes for remarks about non-associative and non-unital al
 
 Given a commutative (semi)ring `R`, there are two ways to define an `R`-algebra structure on a
 (possibly noncommutative) (semi)ring `A`:
+
 * By endowing `A` with a morphism of rings `R →+* A` denoted `algebraMap R A` which lands in the
   center of `A`.
 * By requiring `A` be an `R`-module such that the action associates and commutes with multiplication
@@ -45,6 +46,7 @@ requiring that this scalar action `r • x` must agree with left multiplication 
 structure morphism `algebraMap R A r * x`.
 
 As a result, there are two ways to talk about an `R`-algebra `A` when `A` is a semiring:
+
 1. ```lean
    variable [CommSemiring R] [Semiring A]
    variable [Algebra R A]
@@ -57,6 +59,7 @@ As a result, there are two ways to talk about an `R`-algebra `A` when `A` is a s
 The first approach implies the second via typeclass search; so any lemma stated with the second set
 of arguments will automatically apply to the first set. Typeclass search does not know that the
 second approach implies the first, but this can be shown with:
+
 ```lean
 example {R A : Type*} [CommSemiring R] [Semiring A]
   [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] : Algebra R A :=
@@ -69,6 +72,7 @@ convenient.
 
 The advantage of the second approach is that `CommSemiring R`, `Semiring A`, and `Module R A` can
 all be relaxed independently; for instance, this allows us to:
+
 * Replace `Semiring A` with `NonUnitalNonAssocSemiring A` in order to describe non-unital and/or
   non-associative algebras.
 * Replace `CommSemiring R` and `Module R A` with `CommGroup R'` and `DistribMulAction R' A`,

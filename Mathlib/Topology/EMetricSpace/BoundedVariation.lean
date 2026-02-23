@@ -23,15 +23,20 @@ almost everywhere.
 ## Main definitions and results
 
 * `eVariationOn f s` is the total variation of the function `f` on the set `s`, in `ℝ≥0∞`.
+
 * `BoundedVariationOn f s` registers that the variation of `f` on `s` is finite.
+
 * `LocallyBoundedVariationOn f s` registers that `f` has finite variation on any compact
   subinterval of `s`.
+
 * `variationOnFromTo f s a b` is the signed variation of `f` on `s ∩ Icc a b`, converted to `ℝ`.
 
 * `eVariationOn.Icc_add_Icc` states that the variation of `f` on `[a, c]` is the sum of its
   variations on `[a, b]` and `[b, c]`.
+
 * `LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn` proves that a function
   with locally bounded variation is the difference of two monotone functions.
+
 * `LipschitzWith.locallyBoundedVariationOn` shows that a Lipschitz function has locally
   bounded variation.
 

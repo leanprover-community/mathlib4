@@ -23,12 +23,14 @@ of norm less than `1`.
 ## Main declarations
 
 For a module over a normed ring:
+
 * `Absorbs`: A set `s` absorbs a set `t` if all large scalings of `s` contain `t`.
 * `Absorbent`: A set `s` is absorbent if every point eventually belongs to all large scalings of
   `s`.
 * `Balanced`: A set `s` is balanced if `a • s ⊆ s` for all `a` of norm less than `1`.
 
 ## Main Results
+
 * `Absorbent.submodule_eq_top` shows that when the base field is nontrivially normed, an absorbent
   submodule is actually the whole space. As an application, we show in
   `Absorbent.subset_image_iff_surjective` that a linear function is surjective if and only if its

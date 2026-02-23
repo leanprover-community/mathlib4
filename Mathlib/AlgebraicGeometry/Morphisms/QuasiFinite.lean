@@ -24,6 +24,7 @@ Note that this does not require `f` to be quasi-compact nor locally of finite ty
 We prove that this is stable under composition and base change, and is right cancellative.
 
 ## Main results
+
 - `AlgebraicGeometry.LocallyQuasiFinite` : The class of locally quasi-finite morphisms.
 - `AlgebraicGeometry.Scheme.Hom.isDiscrete_preimage_singleton`:
   Locally quasi-finite morphisms have discrete fibers.

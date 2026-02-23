@@ -18,16 +18,16 @@ import Mathlib.Analysis.Asymptotics.Lemmas
 Let `E` and `F` be normed spaces, `f : E → F`, and `f' : E →L[𝕜] F` a
 continuous 𝕜-linear map, where `𝕜` is a non-discrete normed field. Then
 
-  `HasFDerivWithinAt f f' s x`
+`HasFDerivWithinAt f f' s x`
 
 says that `f` has derivative `f'` at `x`, where the domain of interest
 is restricted to `s`. We also have
 
-  `HasFDerivAt f f' x := HasFDerivWithinAt f f' x univ`
+`HasFDerivAt f f' x := HasFDerivWithinAt f f' x univ`
 
 Finally,
 
-  `HasStrictFDerivAt f f' x`
+`HasStrictFDerivAt f f' x`
 
 means that `f : E → F` has derivative `f' : E →L[𝕜] F` in the sense of strict differentiability,
 i.e., `f y - f z - f'(y - z) = o(y - z)` as `y, z → x`. This notion is used in the inverse
@@ -42,6 +42,7 @@ relatively straightforward properties of the derivative.
 
 Deeper properties are defined in other files in the folder `Analysis/Calculus/FDeriv/`, which
 contain the usual formulas (and existence assertions) for the derivative of
+
 * constants (`Const.lean`)
 * bounded linear maps (`Linear.lean`)
 * bounded bilinear maps (`Bilinear.lean`)
@@ -72,10 +73,12 @@ something the simplifier can easily do). This means that one can write
 `example (x : ℝ) : Differentiable ℝ (fun x ↦ sin (exp (3 + x^2)) - 5 * cos x) := by simp`.
 If there are divisions, one needs to supply to the simplifier proofs that the denominators do
 not vanish, as in
+
 ```lean
 example (x : ℝ) (h : 1 + sin x ≠ 0) : DifferentiableAt ℝ (fun x ↦ exp x / (1 + sin x)) x := by
   simp [h]
 ```
+
 Of course, these examples only work once `exp`, `cos` and `sin` have been shown to be
 differentiable, in `Mathlib/Analysis/SpecialFunctions/Trigonometric/Deriv.lean`.
 

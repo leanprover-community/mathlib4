@@ -65,7 +65,7 @@ def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
 @[to_additive /-- Like `Add.toVAdd`, but adds on the right.
 
-  See also `AddMonoid.toOppositeAddAction`. -/]
+See also `AddMonoid.toOppositeAddAction`. -/]
 instance (priority := 910) Mul.toSMulMulOpposite (α : Type*) [Mul α] : SMul αᵐᵒᵖ α where
   smul a b := b * a.unop
 
@@ -81,8 +81,8 @@ lemma MulOpposite.smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b
 /-- Type class for actions by additive semigroups, with notation `g +ᵥ p`.
 
 The `AddSemigroupAction G P` typeclass says that the additive semigroup `G` acts additively on a
-type `P`.  More precisely this means that the action satisfies the axiom
-`(g₁ + g₂) +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)`.  A mathematician might simply say that the additive semigroup
+type `P`. More precisely this means that the action satisfies the axiom
+`(g₁ + g₂) +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)`. A mathematician might simply say that the additive semigroup
 `G` acts on `P`.
 
 For example, if `A` is an additive semigroup and `X` is a type, if a mathematician says
@@ -98,7 +98,7 @@ More precisely this means that the action satisfies the axiom `(g₁ * g₂) •
 A mathematician might simply say that the semigroup `G` acts on `P`.
 
 For example, if `G` is a semigroup and `X` is a type, if a mathematician says
-say "let `G` act on the set `X`" they will probably mean  `[SemigroupAction G X]`. -/
+say "let `G` act on the set `X`" they will probably mean `[SemigroupAction G X]`. -/
 @[to_additive (attr := ext)]
 class SemigroupAction (α β : Type*) [Semigroup α] extends SMul α β where
   /-- Associativity of `•` and `*` -/
@@ -128,7 +128,7 @@ More precisely this means that the action satisfies the two axioms `1 • p = p`
 acts on `P`.
 
 For example, if `G` is a group and `X` is a type, if a mathematician says
-say "let `G` act on the set `X`" they will probably mean  `[AddAction G X]`.
+say "let `G` act on the set `X`" they will probably mean `[AddAction G X]`.
 -/
 @[to_additive (attr := ext)]
 class MulAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where

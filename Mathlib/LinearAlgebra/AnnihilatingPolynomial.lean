@@ -30,6 +30,7 @@ as defined in `FieldTheory.Minpoly`.
 
 Given an `R`-module `M` (`[AddCommGroup M] [Module R M]`)
 there are some common specializations which may be more familiar.
+
 * Example 1: `A = M →ₗ[R] M`, the endomorphism algebra of an `R`-module M.
 * Example 2: `A = n × n` matrices with entries in `R`.
 -/

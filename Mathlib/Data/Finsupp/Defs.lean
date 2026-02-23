@@ -84,7 +84,7 @@ open Finset Function
 variable {α β ι M N O G H : Type*}
 
 /-- `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
-  `f x = 0` for all but finitely many `x`. -/
+`f x = 0` for all but finitely many `x`. -/
 structure Finsupp (α : Type*) (M : Type*) [Zero M] where
   /-- The support of a finitely supported function (aka `Finsupp`). -/
   support : Finset α
@@ -195,7 +195,7 @@ theorem support_subset_iff {s : Set α} {f : α →₀ M} :
   grind
 
 /-- Given `Finite α`, `equivFunOnFinite` is the `Equiv` between `α →₀ β` and `α → β`.
-  (All functions on a finite type are finitely supported.) -/
+(All functions on a finite type are finitely supported.) -/
 @[simps]
 def equivFunOnFinite [Finite α] : (α →₀ M) ≃ (α → M) where
   toFun := (⇑)

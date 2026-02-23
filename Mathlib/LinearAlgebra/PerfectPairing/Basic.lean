@@ -13,10 +13,11 @@ public import Mathlib.LinearAlgebra.Dual.Lemmas
 This file defines perfect pairings of modules.
 
 A perfect pairing of two (left) modules may be defined either as:
+
 1. A bilinear map `M × N → R` such that the induced maps `M → Dual R N` and `N → Dual R M` are both
-  bijective. It follows from this that both `M` and `N` are reflexive modules.
+   bijective. It follows from this that both `M` and `N` are reflexive modules.
 2. A linear equivalence `N ≃ Dual R M` for which `M` is reflexive. (It then follows that `N` is
-  reflexive.)
+   reflexive.)
 
 In this file we provide a definition `IsPerfPair` corresponding to 1 above, together with logic
 to connect 1 and 2.

@@ -32,12 +32,14 @@ For the differential map, instead of a finite sum we use the inductive definitio
 See `ContinuousCohomology.MultiInd.d`.
 
 ## Main definition
+
 - `ContinuousCohomology.homogeneousCochains`:
   The functor taking an `R`-linear `G`-representation to the complex of homogeneous cochains.
 - `continuousCohomology`:
   The functor taking an `R`-linear `G`-representation to its `n`-th continuous cohomology.
 
 ## TODO
+
 - Show that it coincides with `groupCohomology` for discrete groups.
 - Give the usual description of cochains in terms of `n`-ary functions for locally compact groups.
 - Show that short exact sequences induce long exact sequences in certain scenarios.

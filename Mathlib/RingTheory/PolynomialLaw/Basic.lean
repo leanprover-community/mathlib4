@@ -55,7 +55,7 @@ only assumes `R` is a commutative semiring.
 ## References
 
 * [Roby, Norbert. 1963. «Lois polynomes et lois formelles en théorie des modules».
-Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
+  Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
 
 -/
 
@@ -240,7 +240,7 @@ theorem one_tmul_ground_apply' {S : Type u} [CommSemiring S] [Algebra R S] (x : 
   · rw [rTensor_tmul, toLinearMap_apply, map_one]
 
 /-- The map ground assigning a function `M → N` to a polynomial map `f : M →ₚₗ[R] N` as a
-  linear map. -/
+linear map. -/
 def lground : (M →ₚₗ[R] N) →ₗ[R] (M → N) where
   toFun := ground
   map_add' x y := by ext m; simp [ground]
@@ -296,7 +296,7 @@ section Lift
 open LinearMap
 
 -- The universe of `PolynomialLaw.lifts` is computed by the compiler
-/-- The type of lifts of  `S ⊗[R] M` to a polynomial ring. -/
+/-- The type of lifts of `S ⊗[R] M` to a polynomial ring. -/
 def lifts : Type _ := Σ (s : Finset S), (MvPolynomial (Fin s.card) R) ⊗[R] M
 
 
@@ -372,7 +372,7 @@ theorem toFun'_eq_of_diagram
   simp
 
 /-- Compare the values of `PolynomialLaw.toFun'` in a square diagram,
-  when one of the maps is a subalgebra inclusion. -/
+when one of the maps is a subalgebra inclusion. -/
 theorem toFun'_eq_of_inclusion {ψ : B →ₐ[R] S} (h : φ.range ≤ ψ.range)
     (hpq : ((Subalgebra.inclusion h).comp
       φ.rangeRestrict).toLinearMap.rTensor M p = ψ.rangeRestrict.toLinearMap.rTensor M q) :

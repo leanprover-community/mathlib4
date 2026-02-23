@@ -24,9 +24,9 @@ open scoped SetRel
 variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 
 /-- A filter `f` is Cauchy if for every entourage `r`, there exists an
-  `s ∈ f` such that `s × s ⊆ r`. This is a generalization of Cauchy
-  sequences, because if `a : ℕ → α` then the filter of sets containing
-  cofinitely many of the `a n` is Cauchy iff `a` is a Cauchy sequence. -/
+`s ∈ f` such that `s × s ⊆ r`. This is a generalization of Cauchy
+sequences, because if `a : ℕ → α` then the filter of sets containing
+cofinitely many of the `a n` is Cauchy iff `a` is a Cauchy sequence. -/
 def Cauchy (f : Filter α) :=
   NeBot f ∧ f ×ˢ f ≤ 𝓤 α
 
@@ -356,7 +356,7 @@ theorem isComplete_iUnion_separated {ι : Sort*} {s : ι → Set α} (hs : ∀ i
   exact ⟨x, mem_iUnion.2 ⟨i, hxs⟩, hlx⟩
 
 /-- A complete space is defined here using uniformities. A uniform space
-  is complete if every Cauchy filter converges. -/
+is complete if every Cauchy filter converges. -/
 class CompleteSpace (α : Type u) [UniformSpace α] : Prop where
   /-- In a complete uniform space, every Cauchy filter converges. -/
   complete : ∀ {f : Filter α}, Cauchy f → ∃ x, f ≤ 𝓝 x
@@ -473,7 +473,7 @@ theorem eq_pure_cauchyConst {f : Filter α} (hf : Cauchy f) : f = pure (cauchyCo
 end DiscreteUniformity
 
 /-- A set `s` is totally bounded if for every entourage `d` there is a finite
-  set of points `t` such that every element of `s` is `d`-near to some element of `t`. -/
+set of points `t` such that every element of `s` is `d`-near to some element of `t`. -/
 def TotallyBounded (s : Set α) : Prop :=
   ∀ d ∈ 𝓤 α, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, { x | (x, y) ∈ d }
 

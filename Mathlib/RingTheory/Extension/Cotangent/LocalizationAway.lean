@@ -18,9 +18,11 @@ element, where `S` is generated over `R` by `P : R[X] → S` with kernel `I` and
 Denote by `J` the kernel of the composition `R[X,Y] → T`.
 
 This file proves `J/J² ≃ₗ[T] T ⊗[S] (I/I²) × K/K²`. For this we establish the exact sequence:
+
 ```
 0 → T ⊗[S] (I/I²) → J/J² → K/K² → 0
 ```
+
 and use that `K/K²` is free, so the sequence splits. The first part of the file
 shows the exactness on the left and the rest of the file deduces the exact sequence
 and the splitting from the Jacobi Zariski sequence.

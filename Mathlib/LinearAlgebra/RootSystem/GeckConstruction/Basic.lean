@@ -18,6 +18,7 @@ This file contains an implementation of Geck's construction of a semisimple Lie 
 reduced crystallographic root system. It follows [Geck](Geck2017) quite closely.
 
 ## Main definitions:
+
 * `RootPairing.GeckConstruction.lieAlgebra`: the Geck construction of the Lie algebra associated to
   a root system with distinguished base.
 * `RootPairing.GeckConstruction.cartanSubalgebra`: a distinguished subalgebra corresponding to a
@@ -28,11 +29,13 @@ reduced crystallographic root system. It follows [Geck](Geck2017) quite closely.
 ## Alternative approaches
 
 There are at least three ways to construct a Lie algebra from a root system:
+
 1. As a quotient of a free Lie algebra, using the Serre relations
 2. Directly defining the Lie bracket on $H ⊕ K^∣Φ|$
 3. The Geck construction
 
 We comment on these as follows:
+
 1. This construction takes just a matrix as input. It yields a semisimple Lie algebra iff the
    matrix is a Cartan matrix but it is quite a lot of work to prove this. On the other hand, it also
    allows construction of Kac-Moody Lie algebras. It has been implemented as `Matrix.ToLieAlgebra`

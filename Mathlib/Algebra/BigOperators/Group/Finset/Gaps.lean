@@ -13,9 +13,10 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 This file proves that given a function `g` on `[a, b]`, `g b - g a` can be split according to a
 given finite collection of pairwise disjoint closed subintervals of `[a, b]`. It is the sum of two
 terms:
+
 - the sum of `g y - g x` for `[x, y]` in the collection,
 - the sum of `g y - g x` for `[x, y]` in the complement (modulo endpoints) of the union of the
-collection in `[a, b]`.
+  collection in `[a, b]`.
 
 We use `Finset.intervalGapsWithin` to encode the complement.
 

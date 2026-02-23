@@ -34,8 +34,7 @@ orbit-stabilizer theorem
 (`MulAction.card_orbit_mul_card_stabilizer_eq_card_group`) to reduce
 the computation to the computation of the centralizer of `g`, the
 subgroup of `Equiv.Perm α` consisting of all permutations which
-commute with `g`. It is accessed here as `MulAction.stabilizer
-(ConjAct (Equiv.Perm α)) g` and `Subgroup.centralizer_eq_comap_stabilizer`.
+commute with `g`. It is accessed here as `MulAction.stabilizer (ConjAct (Equiv.Perm α)) g` and `Subgroup.centralizer_eq_comap_stabilizer`.
 
 We compute this subgroup as follows.
 
@@ -67,13 +66,14 @@ This is shown by constructing a right inverse
 * `Equiv.Perm.OnCycleFactors.mem_ker_toPermHom_iff` proves that
   `k : Subgroup.centralizer {g}` belongs to the kernel of
   `Equiv.Perm.OnCycleFactors.toPermHom g` if and only if it commutes with
-  each cycle of `g`.  This is equivalent to the conjunction of two properties:
+  each cycle of `g`. This is equivalent to the conjunction of two properties:
+
   * `k` preserves the set of fixed points of `g`;
   * on each cycle `c`, `k` acts as a power of that cycle.
 
 This allows to give a description of the kernel of
 `Equiv.Perm.OnCycleFactors.toPermHom g` as the product of a
-symmetric group and of a product of cyclic groups.  This analysis
+symmetric group and of a product of cyclic groups. This analysis
 starts with the morphism `Equiv.Perm.OnCycleFactors.kerParam`, its
 injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
 `Equiv.Perm.OnCycleFactors.kerParam_range_eq`, and its cardinality
@@ -127,7 +127,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
   simp only [Finset.coe_smul_finset]
 
 /-- The action by conjugation of `Subgroup.centralizer {g}`
-  on the cycles of a given permutation -/
+on the cycles of a given permutation -/
 def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
     MulAction (centralizer {g}) g.cycleFactorsFinset where
   smul k c := ⟨ConjAct.toConjAct (k : Perm α) • c.val,
@@ -147,7 +147,7 @@ scoped instance : MulAction (centralizer {g}) (g.cycleFactorsFinset) :=
   (Subgroup.Centralizer.cycleFactorsFinset_mulAction g)
 
 /-- The canonical morphism from `Subgroup.centralizer {g}`
-  to the group of permutations of `g.cycleFactorsFinset` -/
+to the group of permutations of `g.cycleFactorsFinset` -/
 def toPermHom := MulAction.toPermHom (centralizer {g}) g.cycleFactorsFinset
 
 theorem centralizer_smul_def (k : centralizer {g}) (c : g.cycleFactorsFinset) :
@@ -191,7 +191,7 @@ theorem mem_range_toPermHom'_iff {τ : Perm g.cycleFactorsFinset} :
 variable (k : centralizer {g})
 
 /-- `k : Subgroup.centralizer {g}` belongs to the kernel of `toPermHom g`
-  iff it commutes with each cycle of `g` -/
+iff it commutes with each cycle of `g` -/
 theorem mem_ker_toPermHom_iff :
     k ∈ (toPermHom g).ker ↔ ∀ c ∈ g.cycleFactorsFinset, Commute (k : Perm α) c := by
   simp only [toPermHom, MonoidHom.mem_ker, DFunLike.ext_iff, Subtype.forall]
@@ -345,8 +345,8 @@ theorem ofPermHomFun_one (x : α) : (ofPermHomFun a 1) x = x := by
   · rw [ofPermHomFun_apply_of_cycleOf_mem a _ hc hm, OneMemClass.coe_one, coe_one, id_eq, hm]
 
 /-- Given `a : g.Basis` and a permutation of `g.cycleFactorsFinset` that
-  preserve the lengths of the cycles, a permutation of `α` that
-  moves the `Basis` and commutes with `g` -/
+preserve the lengths of the cycles, a permutation of `α` that
+moves the `Basis` and commutes with `g` -/
 noncomputable def ofPermHom : range_toPermHom' g →* Perm α where
   toFun τ := {
     toFun := ofPermHomFun a τ

@@ -25,7 +25,7 @@ open Set
 
 variable {α β γ : Type*}
 
-/-- If  is Scott continuous on a product space if it is Scott continuous and monotone in each
+/-- If is Scott continuous on a product space if it is Scott continuous and monotone in each
 variable -/
 lemma ScottContinuousOn.fromProd [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} {D : Set (Set (α × β))}

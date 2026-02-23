@@ -38,13 +38,13 @@ variable (homeo : IsLocalHomeomorph p)
 include homeo
 
 /-- If `p : E → X` is a local homeomorphism, and if `g : I × A → E` is a lift of `f : C(I × A, X)`
-  continuous on `{0} × A ∪ I × {a}` for some `a : A`, then there exists a neighborhood `N ∈ 𝓝 a`
-  and `g' : I × A → E` continuous on `I × N` that agrees with `g` on `{0} × A ∪ I × {a}`.
-  The proof follows [hatcher02], Proof of Theorem 1.7, p.30.
+continuous on `{0} × A ∪ I × {a}` for some `a : A`, then there exists a neighborhood `N ∈ 𝓝 a`
+and `g' : I × A → E` continuous on `I × N` that agrees with `g` on `{0} × A ∪ I × {a}`.
+The proof follows [hatcher02], Proof of Theorem 1.7, p.30.
 
-  Possible TODO: replace `I` by an arbitrary space assuming `A` is locally connected
-  and `p` is a separated map, which guarantees uniqueness and therefore well-definedness
-  on the intersections. -/
+Possible TODO: replace `I` by an arbitrary space assuming `A` is locally connected
+and `p` is a separated map, which guarantees uniqueness and therefore well-definedness
+on the intersections. -/
 theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ g = f)
     (cont_0 : Continuous (g ⟨0, ·⟩)) (a : A) (cont_a : Continuous (g ⟨·, a⟩)) :
     ∃ N ∈ 𝓝 a, ∃ g' : I × A → E, ContinuousOn g' (Set.univ ×ˢ N) ∧ p ∘ g' = f ∧
@@ -134,21 +134,21 @@ theorem continuous_lift (f : C(I × A, X)) {g : I × A → E} (g_lifts : p ∘ g
   ext t; apply congr_fun (g_lifts.trans g'_lifts.symm)
 
 /-- The abstract monodromy theorem: if `γ₀` and `γ₁` are two paths in a topological space `X`,
-  `γ` is a homotopy between them relative to the endpoints, and the path at each time step of
-  the homotopy, `γ (t, ·)`, lifts to a continuous path `Γ t` through a separated local
-  homeomorphism `p : E → X`, starting from some point in `E` independent of `t`. Then the
-  endpoints of these lifts are also independent of `t`.
+`γ` is a homotopy between them relative to the endpoints, and the path at each time step of
+the homotopy, `γ (t, ·)`, lifts to a continuous path `Γ t` through a separated local
+homeomorphism `p : E → X`, starting from some point in `E` independent of `t`. Then the
+endpoints of these lifts are also independent of `t`.
 
-  This can be applied to continuation of analytic functions as follows: for a sheaf of analytic
-  functions on an analytic manifold `X`, we may consider its étale space `E` (whose points are
-  analytic germs) with the natural projection `p : E → X`, which is a local homeomorphism and a
-  separated map (because two analytic functions agreeing on a nonempty open set agree on the
-  whole connected component). An analytic continuation of a germ along a path `γ (t, ·) : C(I, X)`
-  corresponds to a continuous lift of `γ (t, ·)` to `E` starting from that germ. If `γ` is a
-  homotopy and the germ admits continuation along every path `γ (t, ·)`, then the result of the
-  continuations are independent of `t`. In particular, if `X` is simply connected and an analytic
-  germ at `p : X` admits a continuation along every path in `X` from `p` to `q : X`, then the
-  continuation to `q` is independent of the path chosen. -/
+This can be applied to continuation of analytic functions as follows: for a sheaf of analytic
+functions on an analytic manifold `X`, we may consider its étale space `E` (whose points are
+analytic germs) with the natural projection `p : E → X`, which is a local homeomorphism and a
+separated map (because two analytic functions agreeing on a nonempty open set agree on the
+whole connected component). An analytic continuation of a germ along a path `γ (t, ·) : C(I, X)`
+corresponds to a continuous lift of `γ (t, ·)` to `E` starting from that germ. If `γ` is a
+homotopy and the germ admits continuation along every path `γ (t, ·)`, then the result of the
+continuations are independent of `t`. In particular, if `X` is simply connected and an analytic
+germ at `p : X` admits a continuation along every path in `X` from `p` to `q : X`, then the
+continuation to `q` is independent of the path chosen. -/
 theorem monodromy_theorem {γ₀ γ₁ : C(I, X)} (γ : γ₀.HomotopyRel γ₁ {0,1}) (Γ : I → C(I, E))
     (Γ_lifts : ∀ t s, p (Γ t s) = γ (t, s)) (Γ_0 : ∀ t, Γ t 0 = Γ 0 0) (t : I) :
     Γ t 1 = Γ 0 1 := by
@@ -162,10 +162,10 @@ theorem monodromy_theorem {γ₀ γ₁ : C(I, X)} (γ : γ₀.HomotopyRel γ₁ 
 omit sep
 open PathConnectedSpace (somePath) in
 /-- A map `f` from a path-connected, locally path-connected space `A` to another space `X` lifts
-  uniquely through a local homeomorphism `p : E → X` if for every path `γ` in `A`, the composed
-  path `f ∘ γ` in `X` lifts to `E` with endpoint only dependent on the endpoint of `γ` and
-  independent of the path chosen. In this theorem, we require that a specific point `a₀ : A` is
-  lifted to a specific point `e₀ : E` over `a₀`. -/
+uniquely through a local homeomorphism `p : E → X` if for every path `γ` in `A`, the composed
+path `f ∘ γ` in `X` lifts to `E` with endpoint only dependent on the endpoint of `γ` and
+independent of the path chosen. In this theorem, we require that a specific point `a₀ : A` is
+lifted to a specific point `e₀ : E` over `a₀`. -/
 theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocPathConnectedSpace A]
     (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀)
     (ex : ∀ γ : C(I, A), γ 0 = a₀ → ∃ Γ : C(I, E), Γ 0 = e₀ ∧ p ∘ Γ = f.comp γ)
@@ -291,9 +291,9 @@ section homotopy_lifting
 variable (H : C(I × A, X)) (f : C(A, E)) (H_0 : ∀ a, H (0, a) = p (f a))
 
 /-- The existence of `liftHomotopy` satisfying `liftHomotopy_lifts` and `liftHomotopy_zero` is
-  the homotopy lifting property for covering maps.
-  In other words, a covering map is a Hurewicz fibration.
-  Proposition 1.30 of [hatcher02]. -/
+the homotopy lifting property for covering maps.
+In other words, a covering map is a Hurewicz fibration.
+Proposition 1.30 of [hatcher02]. -/
 @[simps] noncomputable def liftHomotopy : C(I × A, E) where
   toFun ta := cov.liftPath (H.comp <| (ContinuousMap.id I).prodMk <| .const I ta.2)
     (f ta.2) (H_0 ta.2) ta.1
@@ -347,15 +347,15 @@ noncomputable def liftHomotopyRel [PreconnectedSpace A]
     prop' := rel }
 
 /-- Two continuous maps from a preconnected space to the total space of a covering map
-  are homotopic relative to a set `S` if and only if their compositions with the covering map
-  are homotopic relative to `S`, assuming that they agree at a point in `S`. -/
+are homotopic relative to a set `S` if and only if their compositions with the covering map
+are homotopic relative to `S`, assuming that they agree at a point in `S`. -/
 theorem homotopicRel_iff_comp [PreconnectedSpace A] {f₀ f₁ : C(A, E)} {S : Set A}
     (he : ∃ a ∈ S, f₀ a = f₁ a) : f₀.HomotopicRel f₁ S ↔
       (ContinuousMap.comp ⟨p, cov.continuous⟩ f₀).HomotopicRel (.comp ⟨p, cov.continuous⟩ f₁) S :=
   ⟨fun ⟨F⟩ ↦ ⟨F.compContinuousMap _⟩, fun ⟨F⟩ ↦ ⟨cov.liftHomotopyRel F he rfl rfl⟩⟩
 
 /-- Lifting two paths that are homotopic relative to {0,1}
-  starting from the same point also ends up in the same point. -/
+starting from the same point also ends up in the same point. -/
 theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
     (h : γ₀.HomotopicRel γ₁ {0,1}) (e : E) (h₀ : γ₀ 0 = p e) (h₁ : γ₁ 0 = p e) :
     cov.liftPath γ₀ e h₀ 1 = cov.liftPath γ₁ e h₁ 1 := by
@@ -365,8 +365,8 @@ theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
   rw [← this.eq_fst 0 (.inr rfl), ← this.eq_snd 0 (.inr rfl)]
 
 /-- The monodromy of a covering map `p : E → X`, which sends a lift of the starting point of a
-  path in `X` to the endpoint of the lifted path in `E`. It only depends on the homotopy class
-  of the path. -/
+path in `X` to the endpoint of the lifted path in `E`. It only depends on the homotopy class
+of the path. -/
 noncomputable def monodromy {x y : X} (γ : Path.Homotopic.Quotient x y) :
     p ⁻¹' {x} → p ⁻¹' {y} :=
   fun e ↦ γ.lift (fun γ : Path x y ↦ ⟨cov.liftPath γ e (γ.source.trans e.2.symm) 1,
@@ -402,7 +402,7 @@ theorem monodromy_bijective {x y : X} (γ : Path.Homotopic.Quotient x y) :
   (isIso_iff_bijective _).mp (cov.monodromyFunctor.map_isIso _)
 
 /-- A covering map induces an injection on all Hom-sets of the fundamental groupoid,
-  in particular on the fundamental group. The first part of Proposition 1.31 of [hatcher02]. -/
+in particular on the fundamental group. The first part of Proposition 1.31 of [hatcher02]. -/
 lemma injective_path_homotopic_map (e₀ e₁ : E) :
     Function.Injective fun γ : Path.Homotopic.Quotient e₀ e₁ ↦ γ.map ⟨p, cov.continuous⟩ := by
   refine Quotient.ind₂ fun γ₀ γ₁ ↦ ?_
@@ -416,8 +416,8 @@ lemma injective_path_homotopic_map (e₀ e₁ : E) :
 alias injective_path_homotopic_mapFn := injective_path_homotopic_map
 
 /-- A continuous map `f` from a simply-connected, locally path-connected space `A` to another
-  space `X` lifts uniquely through a covering map `p : E → X`, after specifying any lift
-  `e₀ : E` of any point `a₀ : A`. -/
+space `X` lifts uniquely through a covering map `p : E → X`, after specifying any lift
+`e₀ : E` of any point `a₀ : A`. -/
 theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocPathConnectedSpace A]
     (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
@@ -433,9 +433,9 @@ theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocPathConnec
 
 open FundamentalGroup Path.Homotopic.Quotient in
 /-- A continuous map `f` from a path connected, locally path-connected space `A` to another
-  space `X` lifts uniquely through a covering map `p : E → X` (such that `f a₀` is lifted to `e₀`)
-  if `f⁎ π₁(A, a₀) ⊆ p⁎ π₁(E, e₀)`. Proposition 1.33 of [hatcher02], known as
-  the lifting criterion. -/
+space `X` lifts uniquely through a covering map `p : E → X` (such that `f a₀` is lifted to `e₀`)
+if `f⁎ π₁(A, a₀) ⊆ p⁎ π₁(E, e₀)`. Proposition 1.33 of [hatcher02], known as
+the lifting criterion. -/
 theorem existsUnique_continuousMap_lifts_of_range_le
     [PathConnectedSpace A] [LocPathConnectedSpace A]
     {f : C(A, X)} {a₀ : A} {e₀ : E} (he : p e₀ = f a₀)

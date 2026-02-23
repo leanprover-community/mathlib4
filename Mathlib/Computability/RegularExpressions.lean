@@ -37,6 +37,7 @@ set_option genSizeOfSpec false in
 set_option genInjectivity false in
 /-- This is the definition of regular expressions. The names used here is to mirror the definition
 of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
+
 * `0` (`zero`) matches nothing
 * `1` (`epsilon`) matches only the empty string
 * `char a` matches only the string 'a'
@@ -141,7 +142,7 @@ section DecidableEq
 variable [DecidableEq α]
 
 /-- `P.deriv a` matches `x` if `P` matches `a :: x`, the Brzozowski derivative of `P` with respect
-  to `a` -/
+to `a` -/
 def deriv : RegularExpression α → α → RegularExpression α
   | 0, _ => 0
   | 1, _ => 0
@@ -175,7 +176,7 @@ theorem deriv_star (P : RegularExpression α) (a : α) : deriv P.star a = deriv 
   rfl
 
 /-- `P.rmatch x` is true if and only if `P` matches `x`. This is a computable definition equivalent
-  to `matches'`. -/
+to `matches'`. -/
 def rmatch : RegularExpression α → List α → Bool
   | P, [] => matchEpsilon P
   | P, a :: as => rmatch (P.deriv a) as

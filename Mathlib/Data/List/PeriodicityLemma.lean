@@ -35,7 +35,7 @@ namespace List
 `HasPeriod w p`, means that the list `w` has the period `p`,
 which can be seen in two equivalent ways:
 · The list `w` starts again after the prefix of length `p`. That is, `w` overlaps with itself
-  with offset `p`.
+with offset `p`.
 · The element of `w` at index `i` is the same as the element at index `i + p`, for all `i`
 The definition is given in terms of the self-overlap.
 -/

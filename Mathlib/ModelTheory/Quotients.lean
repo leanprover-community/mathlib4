@@ -35,7 +35,7 @@ open FirstOrder
 open Structure
 
 /-- A prestructure is a first-order structure with a `Setoid` equivalence relation on it,
-  such that quotienting by that equivalence relation is still a structure. -/
+such that quotienting by that equivalence relation is still a structure. -/
 class Prestructure (s : Setoid M) where
   /-- The underlying first-order structure -/
   toStructure : L.Structure M

@@ -14,21 +14,21 @@ public import Mathlib.Topology.Algebra.Module.WeakDual
 ## Main definitions
 
 * `PointwiseConvergenceCLM`: Type synonym of `E →SL[σ] F` equipped with the uniform convergence
-topology on finite sets.
+  topology on finite sets.
 * `PointwiseConvergenceCLM.evalCLM`: The evaluation map `(f : E →SLₚₜ[σ] F) ↦ f a` for fixed `a : E`
-as a continuous linear map.
+  as a continuous linear map.
 * `ContinuousLinearMap.toPointwiseConvergenceCLM`: The canonical map from `E →SL[σ] F` to
-`E →SLₚₜ[σ] F` as a continuous linear map. This is the statement that bounded convergence is
-stronger than pointwise convergence.
+  `E →SLₚₜ[σ] F` as a continuous linear map. This is the statement that bounded convergence is
+  stronger than pointwise convergence.
 * `PointwiseConvergenceCLM.equivWeakDual`: The continuous equivalence between `E →Lₚₜ[𝕜] 𝕜` and
-`WeakDual 𝕜 E`.
+  `WeakDual 𝕜 E`.
 
 ## Main statements
 
 * `PointwiseConvergenceCLM.tendsto_iff_forall_tendsto`: In the topology of pointwise convergence,
-`a` converges to `a₀` iff for every `x : E` the map `a · x` converges to `a₀ x`.
+  `a` converges to `a₀` iff for every `x : E` the map `a · x` converges to `a₀ x`.
 * `PointwiseConvergenceCLM.continuous_of_continuous_eval`: A map to `g : α → E →SLₚₜ[σ] F` is
-continuous if for every `x : E` the evaluation `g · x` is continuous.
+  continuous if for every `x : E` the evaluation `g · x` is continuous.
 
 ## Notation
 
@@ -56,7 +56,7 @@ variable (σ E F) in
 sometimes also called the *strong operator topology*. We avoid this terminology since so many other
 things share similar names, and using "pointwise convergence" in the name is more informative.
 
-This topology is also known as the weak*-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜` -/
+This topology is also known as the weak\*-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜` -/
 abbrev PointwiseConvergenceCLM := UniformConvergenceCLM σ F {s : Set E | Finite s}
 
 @[inherit_doc]
@@ -157,7 +157,7 @@ def _root_.ContinuousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁
     (fun _ ↦ Set.Finite.isVonNBounded)
 
 variable (𝕜 E) in
-/-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-* topology. -/
+/-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-\* topology. -/
 @[simps!]
 def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
   __ := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)

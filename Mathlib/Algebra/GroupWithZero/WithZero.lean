@@ -26,6 +26,7 @@ formalise as `ℤᵐ⁰ := WithZero (Multiplicative ℤ)`. It is important to be
 ## Notation
 
 In scope `WithZero`:
+
 * `Mᵐ⁰` for `WithZero (Multiplicative M)`
 
 ## Main definitions
@@ -143,7 +144,7 @@ end lift
 variable [MulOneClass β] [MulOneClass γ]
 
 /-- The `MonoidWithZero` homomorphism `WithZero α →* WithZero β` induced by a monoid homomorphism
-  `f : α →* β`. -/
+`f : α →* β`. -/
 def map' (f : α →* β) : WithZero α →*₀ WithZero β := lift' (coeMonoidHom.comp f)
 
 lemma map'_zero (f : α →* β) : map' f 0 = 0 := rfl

@@ -24,7 +24,7 @@ lift, tactic
 public meta section
 
 /-- A class specifying that you can lift elements from `α` to `β` assuming `cond` is true.
-  Used by the tactic `lift`. -/
+Used by the tactic `lift`. -/
 class CanLift (α β : Sort*) (coe : outParam <| β → α) (cond : outParam <| α → Prop) : Prop where
   /-- An element of `α` that satisfies `cond` belongs to the range of `coe`. -/
   prf : ∀ x : α, cond x → ∃ y : β, coe y = x
@@ -74,6 +74,7 @@ namespace Mathlib.Tactic
 open Lean Parser Elab Tactic Meta
 
 /-- Lift an expression to another type.
+
 * Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id id?)?)?`.
 * If `n : ℤ` and `hn : n ≥ 0` then the tactic `lift n to ℕ using hn` creates a new
   constant of type `ℕ`, also named `n` and replaces all occurrences of the old variable `(n : ℤ)`

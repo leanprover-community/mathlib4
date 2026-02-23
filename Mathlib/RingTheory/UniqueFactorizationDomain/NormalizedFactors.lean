@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 # Unique factorization and normalization
 
 ## Main definitions
+
 * `UniqueFactorizationMonoid.normalizedFactors`: choose a multiset of prime factors that are unique
   by normalizing them.
 * `UniqueFactorizationMonoid.normalizationMonoid`: choose a way of normalizing the elements of a UFM

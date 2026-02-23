@@ -14,6 +14,7 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
 ## Main definitions
 
 * `MultilinearMap.pi_ext`, a multilinear version of `LinearMap.pi_ext`
+
 * `MultilinearMap.piFamily`, which satisfies `piFamily f x p = f p (fun i => x i (p i))`.
 
   This is useful because all the intermediate results are bundled:

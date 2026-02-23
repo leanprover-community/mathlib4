@@ -26,11 +26,13 @@ direction is trivial.
 ### Central Simple Algebras
 
 To define central simple algebras, we could do the following:
+
 ```lean
 class Algebra.IsCentralSimple (K : Type u) [Field K] (D : Type v) [Ring D] [Algebra K D] where
   [is_central : IsCentral K D]
   [is_simple : IsSimpleRing D]
 ```
+
 but an instance of `[Algebra.IsCentralSimple K D]` would not imply `[IsSimpleRing D]` because of
 synthesization orders (`K` cannot be inferred). Thus, to obtain a central simple `K`-algebra `D`,
 one should use `Algebra.IsCentral K D` and `IsSimpleRing D` separately.
@@ -43,15 +45,18 @@ to our definition, if `K` is not a field.
 The theory of central simple algebras really is a theory over fields.
 
 Thus to declare a central simple algebra, one should use the following:
+
 ```lean
 variable (k D : Type*) [Field k] [Ring D] [Algebra k D]
 variable [Algebra.IsCentral k D] [IsSimpleRing D]
 variable [FiniteDimensional k D]
 ```
+
 where `FiniteDimensional k D` is almost always assumed in most references, but some results do not
 need this assumption.
 
 ## Tags
+
 central algebra, center, simple ring, central simple algebra
 
 -/

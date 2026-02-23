@@ -73,7 +73,7 @@ theorem sum_centroidWeights_eq_one_of_card_eq_add_one [CharZero k] {n : ℕ} (h 
     ∑ i ∈ s, s.centroidWeights k i = 1 :=
   s.sum_centroidWeights_eq_one_of_card_ne_zero k (h.symm ▸ Nat.succ_ne_zero n)
 
-/-- The centroid of some points.  Although defined for any `s`, this
+/-- The centroid of some points. Although defined for any `s`, this
 is intended to be used in the case where the number of points,
 converted to `k`, is not zero. -/
 def centroid (p : ι → P) : P :=
@@ -125,7 +125,7 @@ theorem centroid_map (e : ι₂ ↪ ι) (p : ι → P) :
 
 /-- `centroidWeights` gives the weights for the centroid as a
 constant function, which is suitable when summing over the points
-whose centroid is being taken.  This function gives the weights in a
+whose centroid is being taken. This function gives the weights in a
 form suitable for summing over a larger set of points, as an indicator
 function that is zero outside the set whose centroid is being taken.
 In the case of a `Fintype`, the sum may be over `univ`. -/
@@ -170,7 +170,7 @@ theorem centroid_eq_affineCombination_fintype [Fintype ι] (p : ι → P) :
   affineCombination_indicator_subset _ _ (subset_univ _)
 
 /-- An indexed family of points that is injective on the given
-`Finset` has the same centroid as the image of that `Finset`.  This is
+`Finset` has the same centroid as the image of that `Finset`. This is
 stated in terms of a set equal to the image to provide control of
 definitional equality for the index type used for the centroid of the
 image. -/

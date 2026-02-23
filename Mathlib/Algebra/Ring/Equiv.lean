@@ -21,7 +21,7 @@ an isomorphism of `Semiring`s, `Ring`s, `DivisionRing`s, or `Field`s.
 
 ## Notation
 
-* ``infixl ` ≃+* `:25 := RingEquiv``
+* `` infixl ` ≃+* `:25 := RingEquiv ``
 
 The extended equiv have coercions to functions, and the coercion is the canonical notation when
 treating the isomorphism as maps.
