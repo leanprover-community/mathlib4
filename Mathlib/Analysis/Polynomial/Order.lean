@@ -11,9 +11,23 @@ public import Mathlib.Topology.Algebra.Polynomial
 /-!
 # Eventual sign of polynomials
 
+This file proves that a polynomial has a fixed sign beyond its largest or smallest root.
+
 ## Main statements
 
-This file proves that a polynomial has a fixed sign beyond its largest root.
+* `zero_lt_eval_of_roots_lt_of_leadingCoeff_nonneg`:
+  If `x` is larger than all roots of `P` and the leading coefficient of `P` is nonnegative
+  then `P (x)` is positive.
+* `zero_le_eval_of_roots_le_of_leadingCoeff_nonneg`:
+  If we only assume that `x` is at least as large as all roots, then `P (x)` is nonnegative.
+* `eval_lt_zero_of_roots_lt_of_leadingCoeff_nonpos`,
+  `eval_le_zero_of_roots_le_of_leadingCoeff_nonpos`:
+  Versions of the above when the leading coefficient of `P` is nonpositive.
+* `zero_lt_negOnePow_mul_eval_of_lt_roots_of_leadingCoeff_nonneg`,
+  `zero_le_negOnePow_mul_eval_of_le_roots_of_leadingCoeff_nonneg`,
+  `negOnePow_mul_eval_lt_zero_of_lt_roots_of_leadingCoeff_nonpos`,
+  `negOnePow_mul_eval_le_zero_of_le_roots_of_leadingCoeff_nonpos`:
+  Analogous results for `x` which is smaller than (or at least as small as) all roots.
 
 ## TODO
 
