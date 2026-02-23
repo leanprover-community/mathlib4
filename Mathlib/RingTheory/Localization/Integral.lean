@@ -37,29 +37,31 @@ open Polynomial
 variable [IsLocalization M S]
 
 attribute [local instance] Polynomial.algebra Polynomial.isLocalization in
-theorem exists_integer_polynomial_multiple (p : S[X]) :
-    ∃ b ∈ M, IsInteger R[X] (b • p) := by
+theorem exists_integer_polynomial_multiple (p : S[X]) : ∃ b ∈ M, IsInteger R[X] (b • p) := by
   obtain ⟨⟨_, b, hb, rfl⟩, h⟩ := (exists_integer_multiple (Submonoid.map C M) p)
-  use ⟨b, hb⟩
+  use b, hb
   rw [Subtype.coe_mk, C_eq_algebraMap, algebraMap_smul] at h
   exact h
 
 theorem exists_integer_polynomial_multiple_and_support_subset (p : S[X]) :
-    ∃ (b : M) (q : R[X]), q.map (algebraMap R S) = (b : R) • p ∧ q.support ⊆ p.support := by
-  obtain ⟨b, hq⟩ := exists_integer_polynomial_multiple M p
+    ∃ b ∈ M, ∃ (q : R[X]), q.map (algebraMap R S) = b • p ∧ q.support ⊆ p.support := by
+  obtain ⟨b, hb, hq⟩ := exists_integer_polynomial_multiple M p
   obtain ⟨q', h₁, h₂⟩ := exists_support_eq_of_mem_lifts (f := (algebraMap R S)) hq
-  exact ⟨b, q', h₁, h₂ ▸ support_smul b p⟩
+  exact ⟨b, hb, q', h₁, h₂ ▸ support_smul b p⟩
 
 /-- `integerNormalization p` normalizes `p` to have integer coefficients
 by clearing the denominators -/
 noncomputable def integerNormalization (p : S[X]) : R[X] :=
-  (exists_integer_polynomial_multiple_and_support_subset M p).choose_spec.choose
+  (exists_integer_polynomial_multiple_and_support_subset M p).choose_spec.2.choose
 
 theorem integerNormalization_spec (p : S[X]) :
-    ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p ∧
-      (integerNormalization M p).support ⊆ p.support :=
-  ⟨(exists_integer_polynomial_multiple_and_support_subset M p).choose,
-  (exists_integer_polynomial_multiple_and_support_subset M p).choose_spec.choose_spec⟩
+    ∃ b ∈ M, (integerNormalization M p).map (algebraMap R S) = b • p :=
+  let e := exists_integer_polynomial_multiple_and_support_subset M p
+  ⟨e.choose, e.choose_spec.1, e.choose_spec.2.choose_spec.1⟩
+
+theorem integerNormalization_support (p : S[X]) :
+    (integerNormalization M p).support ⊆ p.support :=
+  (exists_integer_polynomial_multiple_and_support_subset M p).choose_spec.2.choose_spec.2
 
 /-- `coeffIntegerNormalization p` gives the coefficients of the polynomial
 `integerNormalization p` -/
@@ -68,14 +70,14 @@ noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
   (integerNormalization M p).coeff i
 
 set_option linter.deprecated false in
-@[deprecated integerNormalization_spec (since := "2026-02-05")]
+@[deprecated integerNormalization_support (since := "2026-02-05")]
 theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
-    coeffIntegerNormalization M p i = 0 := by
-  obtain ⟨b, _, hb⟩ := integerNormalization_spec M p
-  exact notMem_support_iff.mp <| Finset.not_mem_subset hb <| notMem_support_iff.mpr h
+    coeffIntegerNormalization M p i = 0 :=
+  notMem_support_iff.mp <| Finset.not_mem_subset (integerNormalization_support M p) <|
+    notMem_support_iff.mpr h
 
 set_option linter.deprecated false in
-@[deprecated integerNormalization_spec (since := "2026-02-05")]
+@[deprecated integerNormalization_support (since := "2026-02-05")]
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h
@@ -91,16 +93,16 @@ theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
 @[deprecated integerNormalization_spec (since := "2026-02-05")]
 theorem integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p := by
-  obtain ⟨b, hb, _⟩ := integerNormalization_spec M p
-  exact ⟨b, hb⟩
+  obtain ⟨b, hb₁, hb₂⟩ := integerNormalization_spec M p
+  exact ⟨⟨b, hb₁⟩, hb₂⟩
 
 variable {R' : Type*} [CommRing R']
 
 theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'}
     (hx : eval₂ g x p = 0) : eval₂ (g.comp (algebraMap R S)) x (integerNormalization M p) = 0 :=
-  let ⟨b, hb, _⟩ := integerNormalization_spec M p
+  let ⟨b, hb₁, hb₂⟩ := integerNormalization_spec M p
   _root_.trans (eval₂_map (algebraMap R S) g x).symm
-    (by rw [hb, ← IsScalarTower.algebraMap_smul S (b : R) p, eval₂_smul, hx, mul_zero])
+    (by rw [hb₂, ← IsScalarTower.algebraMap_smul S b p, eval₂_smul, hx, mul_zero])
 
 theorem integerNormalization_aeval_eq_zero [Algebra R R'] [Algebra S R'] [IsScalarTower R S R']
     (p : S[X]) {x : R'} (hx : aeval x p = 0) : aeval x (integerNormalization M p) = 0 := by
@@ -119,10 +121,10 @@ variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
     integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 := by
-  let ⟨_, hb, _⟩ := integerNormalization_spec (nonZeroDivisors A) p
+  let ⟨b, hb₁, hb₂⟩ := integerNormalization_spec (nonZeroDivisors A) p
   rw [← _root_.map_eq_zero_iff (mapRingHom _)
-    (map_injective _ (FaithfulSMul.algebraMap_injective A K)), coe_mapRingHom, hb]
-  simp
+    (map_injective _ (FaithfulSMul.algebraMap_injective A K)), coe_mapRingHom, hb₂]
+  exact smul_eq_zero_iff_right (nonZeroDivisors.ne_zero hb₁)
 
 variable (A K C)
 
