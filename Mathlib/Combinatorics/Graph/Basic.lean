@@ -240,7 +240,8 @@ lemma Inc.eq_or_eq_or_eq (hx : G.Inc e x) (hy : G.Inc e y) (hz : G.Inc e z) :
   obtain rfl := hz.eq_of_isLink_of_ne_left hx' hxz.symm
   exact hyz rfl
 
-lemma inc_inj {G₁ G₂ : Graph α β} : G₁.Inc e = G₂.Inc f ↔ G₁.IsLink e = G₂.IsLink f := by
+lemma inc_eq_inc_iff_isLink_eq_isLink {G₁ G₂ : Graph α β} :
+    G₁.Inc e = G₂.Inc f ↔ G₁.IsLink e = G₂.IsLink f := by
   constructor <;> rintro h
   · ext x y
     rw [isLink_iff_inc, isLink_iff_inc, h]
@@ -360,24 +361,26 @@ lemma ext_inc {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂)) (h : ∀ e x, G
 for `vertexSet`, `edgeSet`, and `IsLink`. This is mainly useful for improving
 definitional equalities while keeping the same underlying graph. -/
 @[simps]
-def copy (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop} (hV : V(G) = V)
-    (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) : Graph α β where
-  vertexSet := V
-  edgeSet := E
+def copy (G : Graph α β) {vertexSet : Set α} {edgeSet : Set β} {IsLink : β → α → α → Prop}
+    (hvertexSet : V(G) = vertexSet) (hedgeSet : E(G) = edgeSet)
+    (hIsLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) : Graph α β where
+  vertexSet := vertexSet
+  edgeSet := edgeSet
   IsLink := IsLink
   isLink_symm e he x y := by
-    simp_rw [← h_isLink]
-    apply G.isLink_symm (hE ▸ he)
+    simp_rw [← hIsLink]
+    apply G.isLink_symm (hedgeSet ▸ he)
   eq_or_eq_of_isLink_of_isLink := by
-    simp_rw [← h_isLink]
+    simp_rw [← hIsLink]
     exact G.eq_or_eq_of_isLink_of_isLink
   edge_mem_iff_exists_isLink := by
-    simp_rw [← h_isLink, ← hE]
+    simp_rw [← hIsLink, ← hedgeSet]
     exact G.edge_mem_iff_exists_isLink
   left_mem_of_isLink := by
-    simp_rw [← h_isLink, ← hV]
+    simp_rw [← hIsLink, ← hvertexSet]
     exact G.left_mem_of_isLink
 
+@[simp]
 lemma copy_eq (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop}
     (hV : V(G) = V) (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) :
     G.copy hV hE h_isLink = G := by
