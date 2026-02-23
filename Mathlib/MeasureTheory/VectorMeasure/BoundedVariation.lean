@@ -132,9 +132,7 @@ lemma vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
     hf.vectorMeasure {a} = f.rightLim a - f.leftLim a := by
   by_cases ha : IsBot a
   · have h : ∃ x, IsBot x := ⟨a, ha⟩
-    have heqa : h.choose = a := by
-      have := h.choose_spec
-      apply subsingleton_isBot _ h.choose_spec ha
+    have heqa : h.choose = a := subsingleton_isBot _ h.choose_spec ha
     have A : hf.exists_vectorMeasure_le_measureAux.choose {a} = 0 := by
       rw [← botSet_eq_singleton_of_isBot ha]
       exact hf.exists_vectorMeasure_le_measureAux.choose_spec.2.1
