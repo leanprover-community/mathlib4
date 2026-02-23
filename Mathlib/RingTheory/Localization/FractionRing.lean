@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Algebra.Ring.CompTypeclasses
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
 
@@ -426,18 +427,13 @@ end ringEquivOfRingEquiv
 
 section semilinearEquivOfRingEquiv
 
-instance _root_.RingHomInvPair.ofRingEquiv {R S : Type*} [CommSemiring R] [CommSemiring S]
-    (f : R ≃+* S) : RingHomInvPair f.toRingHom f.symm.toRingHom where
-  comp_eq := by simp
-  comp_eq₂ := by simp_all
-
 variable {A B : Type*} (K L : Type*) [CommRing A] [CommRing B] [CommRing K] [CommRing L]
     [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L] (f : A ≃+* B)
 
 /-- Given rings `A, B` and localization maps to their fraction rings
 `f : A →+* K, g : B →+* L`, an isomorphism `h : A ≃+* B` induces a semilinear equivalence
 fraction rings `K ≃ₛₗ[f.toRingHom] L`. -/
-noncomputable def semilinearEquivOfRingEquiv : K ≃ₛₗ[f.toRingHom] L :=
+noncomputable def semilinearEquivOfRingEquiv : K ≃ₛₗ[(f : A →+* B)] L :=
 { ringEquivOfRingEquiv f with
   map_smul' r x := by simp [Algebra.smul_def] }
 
