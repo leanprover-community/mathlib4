@@ -448,7 +448,7 @@ lemma radical_pos (n) : 0 < radical n := pos_of_ne_zero radical_ne_zero
 @[simp] lemma radical_eq_one_iff : radical n = 1 ↔ n ≤ 1 := by
   grind [radical_le_one_iff, radical_pos]
 
-@[simp] theorem radical_le_self_iff : radical n ≤ n ↔ n ≠ 0 :=
+@[simp] lemma radical_le_self_iff : radical n ≤ n ↔ n ≠ 0 :=
   ⟨by aesop, fun h ↦ Nat.le_of_dvd (by lia) radical_dvd_self⟩
 
 end Nat
