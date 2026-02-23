@@ -50,7 +50,7 @@ initialize
 /-- See `Config.castMode`. -/
 inductive CastMode where
   /-- Only insert casts on proofs.
-  
+
   In this mode, it is *not* permitted to cast subterms of proofs that are not themselves proofs. -/
   -- TODO: should we relax this restriction and switch `castMode` when visiting a proof?
   | proofs
@@ -86,7 +86,7 @@ structure Config where
   /-- The cast mode specifies when `rewrite!` is permitted to insert casts
   in order to correct subterms that become type-incorrect
   as a result of rewriting.
-  
+
   For example, given `P : Nat → Prop`, `f : (n : Nat) → P n → Nat` and `h : P n₀`,
   rewriting `f n₀ h` by `eq : n₀ = n₁` produces `f n₁ h`,
   where `h` does not typecheck at `P n₁`.
@@ -110,7 +110,7 @@ structure Context where
   Together with each binder, we store its type abstracted over `x` and `h`,
   and with all occurrences of previous entries in `Δ`
   casted along the abstracting equation.
-  
+
   E.g., if the local context is `a : T, b : U`,
   we store `(a, Ma)` where `Ma := fun (x' : α) (h' : x = x') => T[x'/x, h'/h]`
   and `(b, fun (x' : α) (h' : x = x') => U[x'/x, h'/h, (Eq.rec (motive := Ma) a h)/a])`

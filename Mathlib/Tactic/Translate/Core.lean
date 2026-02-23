@@ -204,7 +204,7 @@ structure TranslateData : Type where
   such as `MonoidAlgebra` -> `AddMonoidAlgebra`, or for fixed types, such as `Fin n`/`ZMod n`.
   `do_translate` is for types without arguments, like `Unit` and `Empty`, where the structure on it
   can be translated.
-  
+
   Note: The name generation is not aware of `dont_translate`, so if some part of a lemma is not
   translated thanks to this, you generally have to specify the translated name manually.
   -/

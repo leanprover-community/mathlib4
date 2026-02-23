@@ -25,7 +25,7 @@ structure GuessNameData where
   /--
   Dictionary used by `guessName` to autogenerate names.
   This only transforms single name components, unlike `abbreviationDict`.
-  
+
   Note: `guessName` capitalizes the output according to the capitalization of the input.
   In order for this to work, the input should always start with a lower case letter, and the output
   should always start with an upper case letter.

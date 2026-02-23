@@ -273,7 +273,7 @@ structure CongrResult where
   If such a proof is impossible, the generator can throw an error.
   The inferred type of the generated proof needs only be defeq to `Eq lhs rhs` or `HEq lhs rhs`.
   This function can assign metavariables when constructing the proof.
-  
+
   If `pf? = none`, then `lhs` and `rhs` are defeq, and the proof is by reflexivity. -/
   (pf? : Option (CongrType → MetaM Expr))
 
@@ -599,7 +599,7 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
   let rec
     /--
     Argument processing loop
-    
+
     - `i` is index into `lhsArgs`/`rhsArgs`.
     - `finfo` is the funinfo of `f` applied to the first `finfoIdx` arguments
     - `f` and `f'` are the current head functions, after the first `i` arguments have been applied.

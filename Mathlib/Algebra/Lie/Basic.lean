@@ -74,7 +74,7 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
 @[ext] class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
   /-- A Lie algebra bracket is compatible with scalar multiplication in its second argument.
-  
+
   The compatibility in the first argument is not a class property, but follows since every
   Lie algebra has a natural Lie module action on itself, see `LieModule`. -/
   protected lie_smul : ∀ (t : R) (x y : L), ⁅x, t • y⁆ = t • ⁅x, y⁆

@@ -160,7 +160,7 @@ theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G
 See `UniqueMul.mulHom_map_iff` for a version with swapped bundling. -/
 @[to_additive
       /-- `UniqueAdd` is preserved under additive maps that are injective.
-      
+
       See `UniqueAdd.addHom_map_iff` for a version with swapped bundling. -/]
 theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Injective f) :
     UniqueMul (A.image f) (B.image f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 :=
@@ -175,7 +175,7 @@ theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Inject
 See `UniqueMul.mulHom_image_iff` for a version with swapped bundling. -/
 @[to_additive
       /-- `UniqueAdd` is preserved under embeddings that are additive.
-      
+
       See `UniqueAdd.addHom_image_iff` for a version with swapped bundling. -/]
 theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
     UniqueMul (A.map f) (B.map f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by

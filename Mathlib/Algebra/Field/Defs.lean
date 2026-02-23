@@ -88,18 +88,18 @@ If the division semiring has positive characteristic `p`, our division by zero c
 class DivisionSemiring (K : Type*) extends Semiring K, GroupWithZero K, NNRatCast K where
   protected nnratCast := NNRat.castRec
   /-- However `NNRat.cast` is defined, it must be propositionally equal to `a / b`.
-  
+
   Do not use this lemma directly. Use `NNRat.cast_def` instead. -/
   protected nnratCast_def (q : ℚ≥0) : (NNRat.cast q : K) = q.num / q.den := by intros; rfl
   /-- Scalar multiplication by a nonnegative rational number.
-  
+
   Unless there is a risk of a `Module ℚ≥0 _` instance diamond, write `nnqsmul := _`. This will set
   `nnqsmul` to `(NNRat.cast · * ·)` thanks to unification in the default proof of `nnqsmul_def`.
-  
+
   Do not use directly. Instead use the `•` notation. -/
   protected nnqsmul : ℚ≥0 → K → K
   /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
-  
+
   Do not use this lemma directly. Use `NNRat.smul_def` instead. -/
   protected nnqsmul_def (q : ℚ≥0) (a : K) : nnqsmul q a = NNRat.cast q * a := by intros; rfl
 
@@ -121,34 +121,34 @@ class DivisionRing (K : Type*)
   protected inv_zero : (0 : K)⁻¹ = 0
   protected nnratCast := NNRat.castRec
   /-- However `NNRat.cast` is defined, it must be equal to `a / b`.
-  
+
   Do not use this lemma directly. Use `NNRat.cast_def` instead. -/
   protected nnratCast_def (q : ℚ≥0) : (NNRat.cast q : K) = q.num / q.den := by intros; rfl
   /-- Scalar multiplication by a nonnegative rational number.
-  
+
   Unless there is a risk of a `Module ℚ≥0 _` instance diamond, write `nnqsmul := _`. This will set
   `nnqsmul` to `(NNRat.cast · * ·)` thanks to unification in the default proof of `nnqsmul_def`.
-  
+
   Do not use directly. Instead use the `•` notation. -/
   protected nnqsmul : ℚ≥0 → K → K
   /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
-  
+
   Do not use this lemma directly. Use `NNRat.smul_def` instead. -/
   protected nnqsmul_def (q : ℚ≥0) (a : K) : nnqsmul q a = NNRat.cast q * a := by intros; rfl
   protected ratCast := Rat.castRec
   /-- However `Rat.cast q` is defined, it must be propositionally equal to `q.num / q.den`.
-  
+
   Do not use this lemma directly. Use `Rat.cast_def` instead. -/
   protected ratCast_def (q : ℚ) : (Rat.cast q : K) = q.num / q.den := by intros; rfl
   /-- Scalar multiplication by a rational number.
-  
+
   Unless there is a risk of a `Module ℚ _` instance diamond, write `qsmul := _`. This will set
   `qsmul` to `(Rat.cast · * ·)` thanks to unification in the default proof of `qsmul_def`.
-  
+
   Do not use directly. Instead use the `•` notation. -/
   protected qsmul : ℚ → K → K
   /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
-  
+
   Do not use this lemma directly. Use `Rat.cast_def` instead. -/
   protected qsmul_def (a : ℚ) (x : K) : qsmul a x = Rat.cast a * x := by intros; rfl
 

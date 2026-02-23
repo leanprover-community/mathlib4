@@ -110,11 +110,11 @@ mutual
 meta inductive ExBase : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
   /--
   An atomic expression `e` with id `id`.
-  
+
   Atomic expressions are those which `ring` cannot parse any further.
   For instance, `a + (a % b)` has `a` and `(a % b)` as atoms.
   The `ring1` tactic does not normalize the subexpressions in atoms, but `ring_nf` does.
-  
+
   Atoms in fact represent equivalence classes of expressions, modulo definitional equality.
   The field `index : ℕ` should be a unique number for each class,
   while `value : expr` contains a representative of this class.

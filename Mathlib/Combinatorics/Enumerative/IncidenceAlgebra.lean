@@ -79,7 +79,7 @@ variable {F 𝕜 𝕝 𝕞 α β : Type*}
 /-- The `𝕜`-incidence algebra over `α`. -/
 structure IncidenceAlgebra (𝕜 α : Type*) [Zero 𝕜] [LE α] where
   /-- The underlying function of an element of the incidence algebra.
-  
+
   Do not use this function directly. Instead use the coercion coming from the `FunLike`
   instance. -/
   toFun : α → α → 𝕜

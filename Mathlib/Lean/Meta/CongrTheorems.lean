@@ -37,7 +37,7 @@ def mkHCongrWithArity' (f : Expr) (numArgs : Nat) : MetaM CongrTheorem := do
 where
   /--
   Process the congruence theorem by trying to pre-prove arguments using `prove`.
-  
+
   - `cthm` is the original `CongrTheorem`, modified only after visiting every argument.
   - `type` is type of the congruence theorem, after all the parameters so far have been applied.
   - `argKinds` is the list of `CongrArgKind`s, which this function recurses on.

@@ -205,7 +205,7 @@ inductive Proof
   -/
   | curry (ak : AndKind) (p : Proof) : Proof
   /-- This is a partial application of curry.
-  
+
   * `ak = .and`: `(p: A ∧ B → C) (q : A) ⊢ B → C`
   * `ak = .iff`: `(p: (A ↔ B) → C) (q: A → B) ⊢ (B → A) → C`
   * `ak = .eq`: `(p: (A ↔ B) → C) (q: A → B) ⊢ (B → A) → C`
@@ -231,7 +231,7 @@ inductive Proof
   -/
   | em (classical : Bool) (p : Name) : Proof
   /-- The variable `x` here names the variable that will be used in the elaborated proof.
-  
+
   * `(p: ((x:A) → B) → C) ⊢ B → C`
   -/
   | impImpSimp (x : Name) (p : Proof) : Proof

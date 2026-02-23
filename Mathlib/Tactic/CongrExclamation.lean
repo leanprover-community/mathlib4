@@ -124,14 +124,14 @@ structure Congr!.Config where
   /-- For passes that synthesize a congruence lemma using one side of the equality,
   we run the pass both for the left-hand side and the right-hand side. If `preferLHS` is `true`
   then we start with the left-hand side.
-  
+
   This can be used to control which side's definitions are expanded when applying the
   congruence lemma (if `preferLHS = true` then the RHS can be expanded). -/
   preferLHS : Bool := true
   /-- Allow both sides to be partial applications.
   When false, given an equality `f a b = g x y z` this means we never consider
   proving `f a = g x y`.
-  
+
   In this case, we might still consider `f = g x` if a pass generates a congruence lemma using the
   left-hand side. Use `sameFun := true` to ensure both sides are applications
   of the same function (making it be similar to the `congr` tactic). -/
@@ -144,21 +144,21 @@ structure Congr!.Config where
   For example, with `f a b c = g w x y z`, setting `maxArgs := some 2` means it will only consider
   either `f a b = g w x y` and `c = z` or `f a = g w x`, `b = y`, and `c = z`. Setting
   `maxArgs := none` (the default) means no limit.
-  
+
   When the functions are dependent, `maxArgs` can prevent congruence from working at all.
   In `Fintype.card α = Fintype.card β`, one needs to have `maxArgs` at `2` or higher since
   there is a `Fintype` instance argument that depends on the first.
-  
+
   When there aren't such dependency issues, setting `maxArgs := some 1` causes `congr!` to
   do congruence on a single argument at a time. This can be used in conjunction with the
   iteration limit to control exactly how many arguments are to be processed by congruence. -/
   maxArgs : Option Nat := none
   /-- For type arguments that are implicit or have forward dependencies, whether or not `congr!`
   should generate equalities even if the types do not look plausibly equal.
-  
+
   We have a heuristic in the main congruence generator that types
   `α` and `β` are *plausibly equal* according to the following algorithm:
-  
+
   - If the types are both propositions, they are plausibly equal (`Iff`s are plausible).
   - If the types are from different universes, they are not plausibly equal.
   - Suppose in whnf we have `α = f a₁ ... aₘ` and `β = g b₁ ... bₘ`. If `f` is not definitionally
@@ -166,11 +166,11 @@ structure Congr!.Config where
   - If there is some `i` such that `aᵢ` and `bᵢ` are not plausibly equal, then `α` and `β` are
     not plausibly equal.
   - Otherwise, `α` and `β` are plausibly equal.
-  
+
   The purpose of this is to prevent considering equalities like `ℕ = ℤ` while allowing equalities
   such as `Fin n = Fin m` or `Subtype p = Subtype q` (so long as these are subtypes of the
   same type).
-  
+
   The way this is implemented is that when the congruence generator is comparing arguments when
   looking at an equality of function applications, it marks a function parameter as "fixed" if the
   provided arguments are types that are not plausibly equal. The effect of this is that congruence

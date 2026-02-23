@@ -516,7 +516,7 @@ partial def forallNot_of_notExists (ex hNotEx : Expr) : MetaM (Expr × Expr) := 
 where
   /-- Given `(hNotEx : Not (@Exists.{lvl} A p))`,
   return a `forall x, Not (p x)` and a proof for it.
-  
+
   ```
   This function handles nested existentials.
   ``` -/

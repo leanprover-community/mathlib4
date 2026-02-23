@@ -729,7 +729,7 @@ See note [reducible non-instances]. -/
 @[to_additive
   /-- If a subgroup of an additive topological group is commutative, then so is its
   topological closure.
-  
+
   See note [reducible non-instances]. -/]
 abbrev Subgroup.commGroupTopologicalClosure [T2Space G] (s : Subgroup G)
     (hs : ∀ x y : s, x * y = y * x) : CommGroup s.topologicalClosure :=
@@ -1098,7 +1098,7 @@ to show that the quotient group `G ⧸ S` is Hausdorff. -/
   /-- A subgroup `S` of an additive topological group `G` acts on `G` properly discontinuously
   on the right, if it is discrete in the sense that `S ∩ K` is finite for all compact `K`.
   (See also `DiscreteTopology`.)
-  
+
   If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousVAdd_of_t2Space`
   to show that the quotient group `G ⧸ S` is Hausdorff. -/]
 theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Subgroup G)

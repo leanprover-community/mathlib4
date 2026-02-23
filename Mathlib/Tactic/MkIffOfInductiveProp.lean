@@ -114,23 +114,23 @@ structure Shape : Type where
   /-- For each forall-bound variable in the type of the constructor, minus
   the "params" that apply to the entire inductive type, this list contains `true`
   if that variable has been kept after `compactRelation`.
-  
+
   For example, `List.Chain.nil` has type
-  
+
   ```lean
     ∀ {α : Type u_1} {R : α → α → Prop} {a : α}, List.Chain R a []`
   ```
-  
+
   and the first two variables `α` and `R` are "params", while the `a : α` gets
   eliminated in a `compactRelation`, so `variablesKept = [false]`.
-  
+
   `List.Chain.cons` has type
-  
+
   ```lean
     ∀ {α : Type u_1} {R : α → α → Prop} {a b : α} {l : List α},
        R a b → List.Chain R b l → List.Chain R a (b :: l)
   ```
-  
+
   and the `a : α` gets eliminated, so `variablesKept = [false,true,true,true,true]`.
   -/
   variablesKept : List Bool

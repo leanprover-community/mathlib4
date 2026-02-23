@@ -180,7 +180,7 @@ structure GCongrLemma where
   /-- The name of the lemma. -/
   declName : Name
   /-- `mainSubgoals` are the subgoals on which `gcongr` will be recursively called. They store
-  
+
   - the index of the hypothesis
   - the number of parameters in the hypothesis
   - whether it is contravariant (i.e. switches the order of the two arguments) -/

@@ -36,7 +36,7 @@ map doesn't always have a continuous linear right inverse, but it always has a n
 in this sense, by Banach's open mapping theorem. -/
 structure NonlinearRightInverse where
   /-- The underlying function.
-  
+
   Do NOT use directly. Use the coercion instead. -/
   toFun : F → E
   /-- The bound `C` so that `‖inverse x‖ ≤ C * ‖x‖` for all `x`. -/

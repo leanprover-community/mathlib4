@@ -119,12 +119,12 @@ class CircularPreorder (α : Type*) extends Btw α, SBtw α where
   btw_cyclic_left {a b c : α} : btw a b c → btw b c a
   sbtw := fun a b c => btw a b c ∧ ¬btw c b a
   /-- Strict betweenness is given by betweenness in one direction and non-betweenness in the other.
-  
+
   I.e., if `b` is between `a` and `c` but not between `c` and `a`, then we say `b` is strictly
   between `a` and `c`. -/
   sbtw_iff_btw_not_btw {a b c : α} : sbtw a b c ↔ btw a b c ∧ ¬btw c b a := by intros; rfl
   /-- For any fixed `c`, `fun a b ↦ sbtw a b c` is a transitive relation.
-  
+
   I.e., given `a` `b` `d` `c` in that "order", if we have `b` strictly between `a` and `c`, and `d`
   strictly between `b` and `c`, then `d` is strictly between `a` and `c`. -/
   sbtw_trans_left {a b c d : α} : sbtw a b c → sbtw b d c → sbtw a d c

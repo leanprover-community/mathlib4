@@ -702,12 +702,12 @@ See `MonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
 -/
 @[to_additive
       /-- `liftOfRightInverse f f_inv hf g hg` is the unique additive group homomorphism `φ`
-      
+
       * such that `φ.comp f = g` (`AddMonoidHom.liftOfRightInverse_comp`),
       * where `f : G₁ →+ G₂` has a RightInverse `f_inv` (`hf`),
       * and `g : G₂ →+ G₃` satisfies `hg : f.ker ≤ g.ker`.
         See `AddMonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
-      
+
       ```
          G₁.
          |  \

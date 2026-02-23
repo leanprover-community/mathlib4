@@ -36,7 +36,7 @@ inductive LambdaTheoremArgs
   /-- Apply theorem e.g. `Continuous fun (f : (x : X) → Y x ↦ f x)` -/
   | apply
   /-- Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x ↦ f (g x)`
-  
+
   The numbers `fArgId` and `gArgId` store the argument index for `f` and `g` in the composition
   theorem. -/
   | comp (fArgId gArgId : Nat)

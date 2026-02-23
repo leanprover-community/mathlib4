@@ -111,7 +111,7 @@ variable (R : Type*) [LinearOrder R] [TopologicalSpace R]
 /-- Bundled monotone right-continuous real functions, used to construct Stieltjes measures. -/
 structure StieltjesFunction where
   /-- The underlying function `R → ℝ`.
-  
+
   Do NOT use directly. Use the coercion instead. -/
   toFun : R → ℝ
   mono' : Monotone toFun

@@ -65,7 +65,7 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
   are the following: the first factors through `A` and is multiplication on `A` followed
   by `counit`. The second factors through `R ⊗[R] R`, and is `counit ⊗ counit` followed by
   multiplication on `R`.
-  
+
   See `Bialgebra.mk'` for a constructor for bialgebras which uses
   the more familiar but mathematically equivalent `counit (a * b) = counit a * counit b`. -/
   mul_compr₂_counit : (LinearMap.mul R A).compr₂ counit = (LinearMap.mul R R).compl₁₂ counit counit
@@ -77,7 +77,7 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
   are equal. The corresponding equal linear maps `A ⊗[R] A →ₗ[R] A ⊗[R] A`
   are firstly multiplication followed by `comul`, and secondly `comul ⊗ comul` followed
   by multiplication on `A ⊗[R] A`.
-  
+
   See `Bialgebra.mk'` for a constructor for bialgebras which uses the more familiar
   but mathematically equivalent `comul (a * b) = comul a * comul b`. -/
   mul_compr₂_comul :

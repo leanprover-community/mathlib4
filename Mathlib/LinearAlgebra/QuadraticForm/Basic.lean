@@ -149,7 +149,7 @@ For a more familiar constructor when `R` is a ring, see `QuadraticMap.ofPolar`. 
 structure QuadraticMap (R : Type u) (M : Type v) (N : Type w) [CommSemiring R] [AddCommMonoid M]
     [Module R M] [AddCommMonoid N] [Module R N] where
   /-- The underlying function.
-  
+
   Do NOT use directly. Use the coercion instead. -/
   toFun : M → N
   toFun_smul : ∀ (a : R) (x : M), toFun (a • x) = (a * a) • toFun x

@@ -94,7 +94,7 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
   counitIso : inverse ⋙ functor ≅ 𝟭 D
   /-- The triangle law for the forwards direction of an equivalence: the unit and counit compose
   to the identity when whiskered along the forwards direction.
-  
+
   We state this as a family of equalities among morphisms instead of an equality of natural
   transformations to avoid abusing defeq or inserting natural transformations like `F ⟶ F𝟭`. -/
   functor_unitIso_comp :

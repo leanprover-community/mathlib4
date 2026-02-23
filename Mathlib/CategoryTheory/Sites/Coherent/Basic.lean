@@ -95,7 +95,7 @@ class Preregular : Prop where
   For `X`, `Y`, `Z`, `f`, `g` like in the diagram, where `g` is an effective epi, there exists
   an object `W`, an effective epi `h : W ⟶ X` and a morphism `i : W ⟶ Z` making the diagram
   commute.
-  
+
   ```
   W --i-→ Z
   |       |

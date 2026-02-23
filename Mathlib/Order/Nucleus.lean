@@ -34,11 +34,11 @@ variable {X : Type*}
 In a frame, nuclei correspond to sublocales. See `nucleusIsoSublocale`. -/
 structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
   /-- A nucleus is idempotent.
-  
+
   Do not use this directly. Instead use `NucleusClass.idempotent`. -/
   idempotent' (x : X) : toFun (toFun x) ≤ toFun x
   /-- A nucleus is increasing.
-  
+
   Do not use this directly. Instead use `NucleusClass.le_apply`. -/
   le_apply' (x : X) : x ≤ toFun x
 

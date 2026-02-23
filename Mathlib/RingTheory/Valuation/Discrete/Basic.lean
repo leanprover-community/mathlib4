@@ -136,11 +136,11 @@ instance : v.IsNontrivial := by
     aesop
   #adaptation_note
   /-- Until nightly-2026-01-07, this was:
-  
+
   ```
   aesop (add safe forward [generator_lt_one, generator_zpowers_eq_valueGroup])
   ```
-  
+
   This proof works as of 2026-01-30, but is about 4 times slower than the proof below.
   -/
   simp_all only [ne_eq]

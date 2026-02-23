@@ -101,7 +101,7 @@ patterns in the discrimination tree.
 structure MatchResult (α : Type) where
   /--
   The elements in the match result.
-  
+
   The `Nat` in the tree map represents the `score` of the results.
   The elements are arrays of arrays, where each sub-array corresponds to one discr tree pattern.
   -/

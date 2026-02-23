@@ -66,7 +66,7 @@ such that `b^k ≤ n`, so if `b^k = n`, it returns exactly `k`. -/
 def log (b n : ℕ) : ℕ :=
   if b ≤ 1 then 0 else (go b n).2 where
   /-- An auxiliary definition for `Nat.log`.
-  
+
   For `b > 1`, `n ≠ 0`, `n < b ^ fuel`, `Nat.log.go n b fuel = (n / b ^ b.log n, b.log n)`. -/
   go : ℕ → ℕ → ℕ × ℕ
   | _, 0 => (n, 0)
@@ -348,7 +348,7 @@ lemma log_pow_left (b k n : ℕ) : log (b ^ k) n = log b n / k := by
 def clog (b n : ℕ) : ℕ :=
   if 1 < b ∧ 1 < n then (go b n).2 + 1 else 0 where
   /-- An auxiliary definition for `Nat.clog`.
-  
+
   For `n > 1`, `b > 1`, `n ≤ b ^ fuel`, returns `(b ^ clog b n / n, clog b n - 1)`.
   -/
   go : ℕ → ℕ → ℕ × ℕ

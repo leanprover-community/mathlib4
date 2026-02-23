@@ -253,7 +253,7 @@ Equivalently, `(fun g ↦ MonoidHom.comp g f)` as a `MonoidHom`. -/
 @[to_additive (attr := simps!)
       /-- The expression `fun g m ↦ g (f m)` as an `AddMonoidHom`.
       Equivalently, `(fun g ↦ AddMonoidHom.comp g f)` as an `AddMonoidHom`.
-      
+
       This also exists in a `LinearMap` version, `LinearMap.lcomp`. -/]
 def compHom' [MulOneClass M] [MulOneClass N] [CommMonoid P] (f : M →* N) : (N →* P) →* M →* P :=
   flip <| eval.comp f
@@ -264,9 +264,9 @@ Note that unlike `MonoidHom.comp_hom'` this requires commutativity of `N`. -/
 @[to_additive (attr := simps)
       /-- Composition of additive monoid morphisms (`AddMonoidHom.comp`) as an additive
       monoid morphism.
-      
+
       Note that unlike `AddMonoidHom.comp_hom'` this requires commutativity of `N`.
-      
+
       This also exists in a `LinearMap` version, `LinearMap.llcomp`. -/]
 def compHom [MulOneClass M] [CommMonoid N] [CommMonoid P] :
     (N →* P) →* (M →* N) →* M →* P where
@@ -293,9 +293,9 @@ def flipHom {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} :
 Note that the expression `fun q n ↦ f (g q) n` is simply `MonoidHom.comp`. -/
 @[to_additive
       /-- The expression `fun m q ↦ f m (g q)` as an `AddMonoidHom`.
-      
+
       Note that the expression `fun q n ↦ f (g q) n` is simply `AddMonoidHom.comp`.
-      
+
       This also exists as a `LinearMap` version, `LinearMap.compl₂` -/]
 def compl₂ [MulOneClass M] [MulOneClass N] [CommMonoid P] [MulOneClass Q] (f : M →* N →* P)
     (g : Q →* N) : M →* Q →* P :=
@@ -309,7 +309,7 @@ theorem compl₂_apply [MulOneClass M] [MulOneClass N] [CommMonoid P] [MulOneCla
 /-- The expression `fun m n ↦ g (f m n)` as a `MonoidHom`. -/
 @[to_additive
       /-- The expression `fun m n ↦ g (f m n)` as an `AddMonoidHom`.
-      
+
       This also exists as a `LinearMap` version, `LinearMap.compr₂` -/]
 def compr₂ [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q] (f : M →* N →* P)
     (g : P →* Q) : M →* N →* Q :=

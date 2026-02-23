@@ -196,7 +196,7 @@ This is the `MulEquiv` version of `Equiv.piCongrRight`, and the dependent versio
 @[to_additive (attr := simps apply)
   /-- A family of additive equivalences `Π j, (Ms j ≃+ Ns j)`
   generates an additive equivalence between `Π j, Ms j` and `Π j, Ns j`.
-  
+
   This is the `AddEquiv` version of `Equiv.piCongrRight`, and the dependent version of
   `AddEquiv.arrowCongr`. -/]
 def piCongrRight {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]

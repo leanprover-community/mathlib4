@@ -71,7 +71,7 @@ variable (E F) in
 any power of `‖x‖`. -/
 structure SchwartzMap where
   /-- The underlying function.
-  
+
   Do NOT use directly. Use the coercion instead. -/
   toFun : E → F
   smooth' : ContDiff ℝ ∞ toFun

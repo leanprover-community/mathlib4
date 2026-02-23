@@ -49,7 +49,7 @@ such as groups, modules and rings.
 class HasQuotient (A : outParam <| Type u) (B : Type v) where
   /--
   `HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient of the type `A` by `b`.
-  
+
   This differs from `HasQuotient.quotient'` in that the `A` argument is explicit,
   which is necessary to make Lean show the notation in the goal state.
   -/

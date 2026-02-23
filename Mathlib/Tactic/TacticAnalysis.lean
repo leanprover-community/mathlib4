@@ -92,7 +92,7 @@ extending `Config` with some declaration meta-information.
 -/
 structure Pass extends Config where
   /-- The option corresponding to this pass, used to enable it.
-  
+
   Example: `linter.tacticAnalysis.grindReplacement`.
   -/
   opt : Option (Lean.Option Bool)
@@ -297,10 +297,10 @@ structure ComplexConfig where
   ctx : Type
 
   /-- Determines which (sequences of) tactics to analyze.
-  
+
   `context` is `some ctx` whenever the previous trigger returned `continue ctx`,
   `none` at the start of a tactic sequence or after a `skip`/`accept`.
-  
+
   If the last returned value is `continue` at the end of the sequence, the framework inserts an
   extra `done` to run the `trigger` on.
   -/

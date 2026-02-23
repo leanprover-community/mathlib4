@@ -76,11 +76,11 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 a coevaluation and evaluation morphism which fulfill two triangle equalities. -/
 class ExactPairing (X Y : C) where
   /-- Coevaluation of an exact pairing.
-  
+
   Do not use directly. Use `ExactPairing.coevaluation` instead. -/
   coevaluation' : 𝟙_ C ⟶ X ⊗ Y
   /-- Evaluation of an exact pairing.
-  
+
   Do not use directly. Use `ExactPairing.evaluation` instead. -/
   evaluation' : Y ⊗ X ⟶ 𝟙_ C
   coevaluation_evaluation' :

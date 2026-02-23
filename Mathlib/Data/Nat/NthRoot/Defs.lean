@@ -27,15 +27,15 @@ def Nat.nthRoot : Nat → Nat → Nat
     go n a a a
     where
       /-- Auxiliary definition for `Nat.nthRoot`.
-      
+
       Given natural numbers `n`, `a`, `fuel`, `guess`
       such that `⌊(a : ℝ) ^ (1 / (n + 2) : ℝ)⌋₊ ≤ guess ≤ fuel`,
       returns `⌊(a : ℝ) ^ (1 / (n + 2) : ℝ)⌋₊`.
-      
+
       The auxiliary number `guess` is the current approximation in Newton's method,
       tracked in the arguments so that the definition uses a tail recursion
       which is unfolded into a loop by the compiler.
-      
+
       The auxiliary number `fuel` is an upper estimate on the number of steps in Newton's method.
       Any number `fuel ≥ guess` is guaranteed to work, but smaller numbers may work as well.
       If `fuel` is too small, then `Nat.nthRoot.go` returns the result of the `fuel`th step

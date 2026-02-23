@@ -33,13 +33,13 @@ open Lean Meta Elab Term Tactic MetavarContext.MkBinding Parser.Tactic
 structure WLOGResult where
   /-- The `reductionGoal` requires showing that the case `h : ¬ P` can be reduced to the case where
   `P` holds. It has two additional assumptions in its context:
-  
+
   * `h : ¬ P`: the assumption that `P` does not hold
   * `H`: the statement that in the original context `P` suffices to prove the goal.
   -/
   reductionGoal : MVarId
   /-- The pair `(HFVarId, negHypFVarId)` of `FVarIds` for `reductionGoal`:
-  
+
   * `HFVarId`: `H`, the statement that in the original context `P` suffices to prove the goal.
   * `negHypFVarId`: `h : ¬ P`, the assumption that `P` does not hold
   -/
