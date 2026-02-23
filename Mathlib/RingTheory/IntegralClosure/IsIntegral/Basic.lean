@@ -175,8 +175,7 @@ theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing
       ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, ← h, mul_assoc]; rfl⟩
     exact IsIntegral.tower_top ha
   · have h' : (algebraMap T S) = (algebraMap R S).comp φ.symm.toRingHom := by
-      simp only [← h, RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm,
-        RingHomCompTriple.comp_eq]
+      simp only [← h, RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, RingHomCompTriple.comp_eq]
     letI : Algebra T R := φ.symm.toRingHom.toAlgebra
     letI : IsScalarTower T R S :=
       ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, h', mul_assoc]; rfl⟩

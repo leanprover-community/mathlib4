@@ -332,7 +332,7 @@ lemma RingHom.LocalizationAwayPreserves.respectsIso
     have : (IsLocalization.Away.map R T f 1).comp e.symm.toRingHom = f :=
       IsLocalization.map_comp ..
     conv_lhs => rw [← this, RingHom.comp_assoc]
-    simp only [RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, RingHomCompTriple.comp_eq]
+    simp only [RingEquiv.toRingHom_eq_coe, RingHomCompTriple.comp_eq]
 
 lemma RingHom.StableUnderCompositionWithLocalizationAway.respectsIso
     (hP : StableUnderCompositionWithLocalizationAway P) :
