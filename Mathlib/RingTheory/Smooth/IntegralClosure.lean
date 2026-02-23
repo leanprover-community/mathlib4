@@ -136,11 +136,11 @@ lemma TensorProduct.toIntegralClosure_mvPolynomial_bijective {σ : Type*} :
   let e₀ : MvPolynomial σ R ⊗[R] B ≃ₐ[R] MvPolynomial σ B :=
     MvPolynomial.scalarRTensorAlgEquiv
   let e : MvPolynomial σ R ⊗[R] B ≃ₐ[MvPolynomial σ R] MvPolynomial σ B :=
-    { toRingEquiv := e₀.toRingEquiv, commutes' r := by
-        change e₀.toRingHom.comp (algebraMap _ _) r = _
-        congr 1
-        ext <;> simp [e₀, MvPolynomial.scalarRTensorAlgEquiv, MvPolynomial.coeff_map,
-          ← Algebra.algebraMap_eq_smul_one, apply_ite (algebraMap _ _), MvPolynomial.coeff_X'] }
+    .ofCommutes e₀.toRingEquiv fun r ↦ by
+      change e₀.toRingHom.comp (algebraMap _ _) r = _
+      congr 1
+      ext <;> simp [e₀, MvPolynomial.scalarRTensorAlgEquiv, MvPolynomial.coeff_map,
+        ← Algebra.algebraMap_eq_smul_one, apply_ite (algebraMap _ _), MvPolynomial.coeff_X']
   have := MvPolynomial.isIntegral_iff_isIntegral_coeff.mp (hx.map e)
   obtain ⟨y, hy⟩ : e x ∈ RingHom.range (MvPolynomial.map (integralClosure R B).val.toRingHom) := by
     refine MvPolynomial.mem_range_map_iff_coeffs_subset.mpr ?_
@@ -292,7 +292,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
     let e := 𝓟.equivRing.trans 𝓟.equivAwayAdjoinRoot
     algebraize [(e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R (AdjoinRoot 𝓟.f) _)).toRingHom]
     have := IsLocalization.isLocalization_of_algEquiv (R := AdjoinRoot 𝓟.f) (.powers (.mk _ 𝓟.g))
-      { toRingEquiv := e.symm.toRingEquiv, commutes' := by simp [RingHom.algebraMap_toAlgebra] }
+      (.ofCommutes e.symm.toRingEquiv <| fun _ ↦ by simp [RingHom.algebraMap_toAlgebra]; rfl)
     obtain ⟨⟨_, m, rfl⟩, hm⟩ := IsIntegral.exists_multiple_integral_of_isLocalization
       (R := AdjoinRoot 𝓟.f) (.powers (.mk _ 𝓟.g)) _ hx
     replace hm := fun k : ℕ ↦ (isIntegral_algebraMap (x := AdjoinRoot.mk 𝓟.f 𝓟.g ^ k)).mul hm
