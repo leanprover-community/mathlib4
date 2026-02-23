@@ -31,6 +31,8 @@ open CategoryTheory GrothendieckTopology TopologicalSpace
 
 variable {X : Type u} [TopologicalSpace X] (x : X)
 
+/-- Given a topological space `X` and `x : X`, this is the functor `Opens X ⥤ Type u`
+which sends `V` to a singleton when `x : X` and to the empty type otherwise. -/
 def pointGrothendieckTopology.fiber : Opens X ⥤ Type u where
   obj U := ULift.{u} (PLift (x ∈ U))
   map f h := ⟨⟨leOfHom f h.down.down⟩⟩
