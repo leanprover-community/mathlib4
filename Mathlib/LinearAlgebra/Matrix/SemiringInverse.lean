@@ -32,16 +32,20 @@ namespace Matrix
 def detp : R := ∑ σ ∈ ofSign s, ∏ k, A k (σ k)
 
 @[simp]
-lemma detp_one_one : detp 1 (1 : Matrix n n R) = 1 := by
+lemma detp_one_diagonal (d : n → R) : detp 1 (diagonal d) = ∏ i, d i := by
   rw [detp, sum_eq_single_of_mem 1]
-  · simp [one_apply]
+  · simp
   · simp [ofSign]
   · rintro σ - hσ1
     obtain ⟨i, hi⟩ := not_forall.mp (mt Perm.ext_iff.mpr hσ1)
-    exact prod_eq_zero (mem_univ i) (one_apply_ne' hi)
+    exact prod_eq_zero (mem_univ i) (diagonal_apply_ne' _ hi)
 
 @[simp]
-lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
+lemma detp_one_one : detp 1 (1 : Matrix n n R) = 1 := by
+  rw [← diagonal_one, detp_one_diagonal, prod_const_one]
+
+@[simp]
+lemma detp_neg_one_diagonal (d : n → R) : detp (-1) (diagonal d) = 0 := by
   rw [detp, sum_eq_zero]
   intro σ hσ
   have hσ1 : σ ≠ 1 := by
@@ -49,7 +53,11 @@ lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
     rw [hσ, mem_ofSign, sign_one]
     decide
   obtain ⟨i, hi⟩ := not_forall.mp (mt Perm.ext_iff.mpr hσ1)
-  exact prod_eq_zero (mem_univ i) (one_apply_ne' hi)
+  exact prod_eq_zero (mem_univ i) (diagonal_apply_ne' _ hi)
+
+@[simp]
+lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
+  rw [← diagonal_one, detp_neg_one_diagonal]
 
 /-- The adjugate matrix, but only the terms of a given sign. -/
 def adjp : Matrix n n R :=
