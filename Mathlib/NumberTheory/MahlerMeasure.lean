@@ -177,6 +177,7 @@ lemma norm_root_le_one_of_mahlerMeasure_eq_one : ‖z‖ ≤ 1 := by
   _   ≤ 1 := by grind [prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff,
         norm_leadingCoeff_eq_one_of_mahlerMeasure_eq_one]
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 include hz₀ hz h in
 /-- If an integer polynomial has Mahler measure equal to 1, then all its complex nonzero roots are
