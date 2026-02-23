@@ -34,18 +34,19 @@ variable {R : Type*} [CommRing R]
 /--
 We define an auxiliary sequence
 
-$$ a_{k, n} = x^{(k+1)n} \prod_{i=0}^{n} 1 - x^{k + i + 1} $$
+$$ a_{k, n} = x^{(k+1)n} \prod_{i=0}^{n} (1 - x^{k + i + 1}) $$
 
 We will also use its sum
 
 $$ A_k = \sum_{n=0}^{\infty} a_{k, n} $$ -/
-public abbrev powMulProdOneSubPow (k n : ℕ) (x : R) : R :=
+@[expose]
+public def powMulProdOneSubPow (k n : ℕ) (x : R) : R :=
   x ^ ((k + 1) * n) * ∏ i ∈ Finset.range (n + 1), (1 - x ^ (k + i + 1))
 
 /-- And a second auxiliary sequence
 
-$$ b_{k, n} = x^{(k+1)n} (x^{2k + n + 3} - 1) \prod_{i=0}^{n-1} 1 - x^{k + i + 2} $$ -/
-abbrev aux (k n : ℕ) (x : R) : R :=
+$$ b_{k, n} = x^{(k+1)n} (x^{2k + n + 3} - 1) \prod_{i=0}^{n-1} (1 - x^{k + i + 2}) $$ -/
+def aux (k n : ℕ) (x : R) : R :=
   x ^ ((k + 1) * n) * (x ^ (2 * k + n + 3) - 1) * ∏ i ∈ Finset.range n, (1 - x ^ (k + i + 2))
 
 /-- `powMulProdOneSubPow` and `aux` have relation
@@ -85,7 +86,7 @@ theorem tsum_powMulProdOneSubPow (k : ℕ) {x : R} (hx : IsTopologicallyNilpoten
 
 /-- The Euler function is related to $A_0$ by
 
-$$ \prod_{n = 0}^{\infty} 1 - x^{n + 1} = 1 - x - x^2 A_0 $$ -/
+$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = 1 - x - x^2 A_0 $$ -/
 theorem tprod_one_sub_pow_eq_powMulProdOneSubPow_zero {x : R}
     (hsum : ∀ k, Summable (powMulProdOneSubPow k · x))
     (h : ∀ k, Multipliable fun n ↦ 1 - x ^ (n + k + 1)) :
@@ -108,7 +109,7 @@ theorem tprod_one_sub_pow_eq_powMulProdOneSubPow_zero {x : R}
 
 /-- Applying the recurrence formula repeatedly, we get
 
-$$ \prod_{n = 0}^{\infty} 1 - x^{n + 1} =
+$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) =
 \left(\sum_{k=0}^{j} (-1)^k \left(x^{k(3k+1)/2} - x^{(k+1)(3k+2)/2}\right) \right) +
 (-1)^{j+1}x^{(j+1)(3j+4)/2}A_j $$ -/
 theorem tprod_one_sub_pow_eq_powMulProdOneSubPow (j : ℕ) {x : R} (hx : IsTopologicallyNilpotent x)
@@ -137,7 +138,7 @@ theorem tprod_one_sub_pow_eq_powMulProdOneSubPow (j : ℕ) {x : R} (hx : IsTopol
 
 /-- Pentagonal number theorem, assuming appropriate multipliability and summability.
 
-$$ \prod_{n = 0}^{\infty} 1 - x^{n + 1} =
+$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) =
 \sum_{k=0}^{\infty} (-1)^k \left(x^{k(3k+1)/2} - x^{(k+1)(3k+2)/2}\right) $$ -/
 public theorem tprod_one_sub_pow {x : R} (hx : IsTopologicallyNilpotent x)
     (hsum : ∀ k, Summable (powMulProdOneSubPow k · x))

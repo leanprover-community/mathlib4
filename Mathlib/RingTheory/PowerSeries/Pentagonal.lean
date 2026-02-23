@@ -15,7 +15,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Pentagonal
 
 This file proves the pentagonal number theorem for power series:
 
-$$ \prod_{n = 0}^{\infty} 1 - x^{n + 1} = \sum_{k=-\infty}^{\infty} (-1)^k x^{a_k} $$
+$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = \sum_{k=-\infty}^{\infty} (-1)^k x^{a_k} $$
 
 where $a_k = k(3k - 1)/2$ are the pentagonal numbers.
 
@@ -97,7 +97,7 @@ theorem summable_pow_pentagonal_sub : Summable fun (k : ℕ) ↦
 
 /-- **Pentagonal number theorem** for power series, summing over natural numbers:
 
-$$ \prod_{n = 0}^{\infty} 1 - x^{n + 1} =
+$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) =
 \sum_{k=0}^{\infty} (-1)^k \left(x^{k(3k+1)/2} - x^{(k+1)(3k+2)/2}\right) $$ -/
 theorem tprod_one_sub_X_pow_eq_tsum_nat [IsTopologicalRing R] [T2Space R] :
     ∏' n, (1 - X ^ (n + 1) : R⟦X⟧) =
@@ -137,7 +137,7 @@ exponent $a_{-k}$ where $a_k = k(3k - 1)/2$ are the generalized pentagonal numbe
 Note that $a_{-k} = (-k)(3(-k) - 1)/2 = k(3k + 1)/2$, which explains the exponent in the
 following formula:
 
-$$ \prod_{n = 0}^{\infty} 1 - x^{n + 1} = \sum_{k=-\infty}^{\infty} (-1)^k x^{k(3k + 1)/2} $$ -/
+$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = \sum_{k=-\infty}^{\infty} (-1)^k x^{k(3k + 1)/2} $$ -/
 theorem tprod_one_sub_X_pow' [IsTopologicalRing R] [T2Space R] :
     ∏' n, (1 - X ^ (n + 1)) = ∑' k, (Int.negOnePow k : R⟦X⟧) * X ^ (k * (3 * k + 1) / 2).toNat := by
   rw [← tsum_nat_add_neg_add_one (summable_pow_pentagonal' R), tprod_one_sub_X_pow_eq_tsum_nat]
@@ -158,7 +158,7 @@ theorem summable_pow_pentagonal [IsTopologicalRing R] :
 /-- **Pentagonal number theorem** for power series, summing over integers written using the
 exponent $a_k$ where $a_k = k(3k - 1)/2$ are the generalized pentagonal numbers:
 
-$$ \prod_{n = 0}^{\infty} 1 - x^{n + 1} = \sum_{k=-\infty}^{\infty} (-1)^k x^{k(3k - 1)/2} $$ -/
+$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = \sum_{k=-\infty}^{\infty} (-1)^k x^{k(3k - 1)/2} $$ -/
 theorem tprod_one_sub_X_pow [IsTopologicalRing R] [T2Space R] :
     ∏' n, (1 - X ^ (n + 1)) = ∑' k, (Int.negOnePow k : R⟦X⟧) * X ^ (k * (3 * k - 1) / 2).toNat := by
   rw [tprod_one_sub_X_pow', ← neg_injective.tsum_eq (by simp)]
