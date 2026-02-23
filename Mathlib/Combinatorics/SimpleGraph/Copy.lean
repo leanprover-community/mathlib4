@@ -299,22 +299,22 @@ theorem isContained_iff_exists_iso_subgraph :
 alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ :=
   isContained_iff_exists_iso_subgraph
 
-variable (v : V) [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj] in
-theorem degree_le_of_copy (fcopy : Copy G H) :
-    G.degree v ≤ H.degree (fcopy v) := by
+theorem Copy.degree_le (f : Copy G H) (v : V) [Fintype <| G.neighborSet v]
+    [Fintype <| H.neighborSet (f v)] : G.degree v ≤ H.degree (f v) := by
   repeat rw [← card_neighborSet_eq_degree]
-  have h1 := Copy.mapNeighborSet fcopy v
-  exact (Fintype.card_le_of_injective h1.toFun h1.inj')
+  have h1 := Copy.mapNeighborSet f v
+  exact Fintype.card_le_of_injective h1.toFun h1.inj'
 
-variable (v : V) [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj] in
-theorem max_degree_le_of_contained
+theorem IsContained.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj]
+[DecidableRel H.Adj]
     (hcont : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
   obtain ⟨copy⟩ := hcont
-  by_cases! IsEmpty V
+  cases isEmpty_or_nonempty V
   · simp
-  · obtain ⟨v, h⟩ := exists_maximal_degree_vertex (V := V) G
+  · have ⟨v, h⟩ := exists_maximal_degree_vertex G
     have : H.degree (copy v) ≤ H.maxDegree := (@degree_le_maxDegree W H) _
-    grind [degree_le_of_copy]
+    have : G.degree v ≤ H.degree (copy v) := by simp_all only [Copy.degree_le]
+    grind
 
 end IsContained
 
