@@ -76,7 +76,7 @@ theorem npow_mul_comm (m n : ℕ) (x : M) :
 
 theorem npow_mul (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ m) ^ n := by
   induction n with
-  | zero => rw [npow_zero, Nat.mul_zero, npow_zero]
+  | zero => rw [npow_zero, npow_zero]
   | succ n ih => rw [mul_add, npow_add, ih, mul_one, npow_add, npow_one]
 
 theorem npow_mul' (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ n) ^ m := by

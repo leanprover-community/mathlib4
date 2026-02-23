@@ -117,6 +117,10 @@ scoped notation "E(" G ")" => Graph.edgeSet G
 lemma IsLink.edge_mem (h : G.IsLink e x y) : e ∈ E(G) :=
   (edge_mem_iff_exists_isLink ..).2 ⟨x, y, h⟩
 
+@[simp]
+lemma not_isLink_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.IsLink e x y :=
+  mt IsLink.edge_mem he
+
 protected lemma IsLink.symm (h : G.IsLink e x y) : G.IsLink e y x :=
   G.isLink_symm h.edge_mem h
 
@@ -185,6 +189,10 @@ def Inc (G : Graph α β) (e : β) (x : α) : Prop := ∃ y, G.IsLink e x y
 lemma Inc.edge_mem (h : G.Inc e x) : e ∈ E(G) :=
   h.choose_spec.edge_mem
 
+@[simp]
+lemma not_inc_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.Inc e x :=
+  mt Inc.edge_mem he
+
 -- Cannot be @[simp] because `e` cannot be inferred by `simp`.
 lemma Inc.vertex_mem (h : G.Inc e x) : x ∈ V(G) :=
   h.choose_spec.left_mem
@@ -236,11 +244,8 @@ lemma Inc.eq_or_eq_or_eq (hx : G.Inc e x) (hy : G.Inc e y) (hz : G.Inc e z) :
   obtain rfl := hz.eq_of_isLink_of_ne_left hx' hxz.symm
   exact hyz rfl
 
-@[simp]
-lemma not_inc_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.Inc e x :=
-  mt Inc.edge_mem he
-
-lemma inc_inj {G₁ G₂ : Graph α β} : G₁.Inc e = G₂.Inc f ↔ G₁.IsLink e = G₂.IsLink f := by
+lemma inc_eq_inc_iff_isLink_eq_isLink {G₁ G₂ : Graph α β} :
+    G₁.Inc e = G₂.Inc f ↔ G₁.IsLink e = G₂.IsLink f := by
   constructor <;> rintro h
   · ext x y
     rw [isLink_iff_inc, isLink_iff_inc, h]
@@ -360,24 +365,26 @@ lemma ext_inc {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂)) (h : ∀ e x, G
 for `vertexSet`, `edgeSet`, and `IsLink`. This is mainly useful for improving
 definitional equalities while keeping the same underlying graph. -/
 @[simps]
-def copy (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop} (hV : V(G) = V)
-    (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) : Graph α β where
-  vertexSet := V
-  edgeSet := E
+def copy (G : Graph α β) {vertexSet : Set α} {edgeSet : Set β} {IsLink : β → α → α → Prop}
+    (hvertexSet : V(G) = vertexSet) (hedgeSet : E(G) = edgeSet)
+    (hIsLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) : Graph α β where
+  vertexSet := vertexSet
+  edgeSet := edgeSet
   IsLink := IsLink
   isLink_symm e he x y := by
-    simp_rw [← h_isLink]
-    apply G.isLink_symm (hE ▸ he)
+    simp_rw [← hIsLink]
+    apply G.isLink_symm (hedgeSet ▸ he)
   eq_or_eq_of_isLink_of_isLink := by
-    simp_rw [← h_isLink]
+    simp_rw [← hIsLink]
     exact G.eq_or_eq_of_isLink_of_isLink
   edge_mem_iff_exists_isLink := by
-    simp_rw [← h_isLink, ← hE]
+    simp_rw [← hIsLink, ← hedgeSet]
     exact G.edge_mem_iff_exists_isLink
   left_mem_of_isLink := by
-    simp_rw [← h_isLink, ← hV]
+    simp_rw [← hIsLink, ← hvertexSet]
     exact G.left_mem_of_isLink
 
+@[simp]
 lemma copy_eq (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop}
     (hV : V(G) = V) (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) :
     G.copy hV hE h_isLink = G := by
@@ -412,33 +419,36 @@ We define two graphs to be `Compatible` if for each edge belonging to their shar
 the incidence relation (i.e., which pairs of vertices it links) is the same in both graphs.
 -/
 
-/-- Two graphs are `Compatible` if the edges in their intersection agree on their ends -/
-def Compatible (G H : Graph α β) : Prop := EqOn G.IsLink H.IsLink (E(G) ∩ E(H))
+/-- Two graphs are compatible if their shared edges have the same ends in both graphs. -/
+def Compatible (G H : Graph α β) : Prop :=
+  ∀ ⦃e⦄, e ∈ E(G) → e ∈ E(H) → ∀ x y, G.IsLink e x y ↔ H.IsLink e x y
 
-lemma Compatible.isLink_eq (heG : e ∈ E(G)) (heH : e ∈ E(H)) (h : G.Compatible H) :
-    G.IsLink e = H.IsLink e :=
-  h ⟨heG, heH⟩
+lemma Compatible.isLink_congr (heG : e ∈ E(G)) (heH : e ∈ E(H)) (h : G.Compatible H) {x y : α} :
+    G.IsLink e x y ↔ H.IsLink e x y :=
+  h heG heH x y
+
+lemma Compatible.refl (G : Graph α β) : G.Compatible G :=
+  fun _ _ _ _ _ => .rfl
 
 @[simp]
-lemma Compatible.refl (G : Graph α β) : G.Compatible G :=
-  eqOn_refl ..
+lemma Compatible.rfl {G : Graph α β} : G.Compatible G := .refl _
 
 instance : Std.Refl (Compatible : Graph α β → Graph α β → Prop) where
-  refl G := Compatible.refl G
+  refl _ := .rfl
 
 @[symm]
-lemma Compatible.symm (h : G.Compatible H) : H.Compatible G := by
-  rwa [Compatible, inter_comm, eqOn_comm]
+lemma Compatible.symm (h : G.Compatible H) : H.Compatible G :=
+  fun _ heH heG x y => (h heG heH x y).symm
 
 instance : Std.Symm (Compatible : Graph α β → Graph α β → Prop) where
   symm _ _ := Compatible.symm
 
 lemma IsLink.of_compatible (hGH : G.Compatible H) (heH : e ∈ E(H)) (h : G.IsLink e x y) :
-    H.IsLink e x y := by
-  rwa [← hGH ⟨h.edge_mem, heH⟩]
+    H.IsLink e x y :=
+  (hGH h.edge_mem heH x y).mp h
 
-lemma Compatible.of_disjoint_edgeSet (h : Disjoint E(G) E(H)) : Compatible G H := by
-  simp [Compatible, h.inter_eq]
+lemma Compatible.of_disjoint_edgeSet (h : Disjoint E(G) E(H)) : Compatible G H :=
+  fun _ heG heH _ _ ↦ h.notMem_of_mem_left heG heH |>.elim
 
 lemma Inc.of_compatible (hGH : G.Compatible H) (heH : e ∈ E(H)) (h : G.Inc e x) : H.Inc e x := by
   obtain ⟨y, hy⟩ := h

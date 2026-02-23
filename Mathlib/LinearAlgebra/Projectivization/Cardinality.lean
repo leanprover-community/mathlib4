@@ -32,6 +32,7 @@ variable (k V : Type*) [DivisionRing k] [AddCommGroup V] [Module k V]
 def equivQuotientOrbitRel : ℙ k V ≃ Quotient (MulAction.orbitRel kˣ { v : V // v ≠ 0 }) :=
   Quotient.congr (Equiv.refl _) (fun x y ↦ (Units.orbitRel_nonZero_iff k V x y).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The non-zero elements of `V` are equivalent to the product of `ℙ k V` with the units of `k`. -/
 noncomputable def nonZeroEquivProjectivizationProdUnits : { v : V // v ≠ 0 } ≃ ℙ k V × kˣ :=
   let e := MulAction.selfEquivOrbitsQuotientProd <| fun b ↦ by
@@ -101,6 +102,7 @@ lemma card'' [Finite k] : Nat.card (ℙ k V) = (Nat.card V - 1) / (Nat.card k - 
   rw [card k, Nat.mul_div_cancel]
   lia
 
+set_option backward.isDefEq.respectTransparency false in
 lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
     Nat.card (ℙ k V) = ∑ i ∈ Finset.range n, Nat.card k ^ i := by
   wlog hf : Finite V

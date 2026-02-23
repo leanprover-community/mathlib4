@@ -365,6 +365,14 @@ theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap = LinearMap.id :=
   LinearMap.ext e.symm_apply_apply
 
 @[simp]
+lemma comp_symm_assoc (f : M₃ →ₛₗ[σ₃₂] M₂) [RingHomCompTriple σ₃₁ σ₁₂ σ₃₂] :
+    e₁₂.toLinearMap ∘ₛₗ e₁₂.symm.toLinearMap ∘ₛₗ f = f := by ext; simp
+
+@[simp]
+lemma symm_comp_assoc (f : M₃ →ₛₗ[σ₃₁] M₁) [RingHomCompTriple σ₃₁ σ₁₂ σ₃₂] :
+    e₁₂.symm.toLinearMap ∘ₛₗ e₁₂.toLinearMap ∘ₛₗ f = f := by ext; simp
+
+@[simp]
 theorem trans_symm : (e₁₂.trans e₂₃ : M₁ ≃ₛₗ[σ₁₃] M₃).symm = e₂₃.symm.trans e₁₂.symm :=
   rfl
 
@@ -597,4 +605,38 @@ theorem coe_ofInvolutive {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomIn
 
 end AddCommMonoid
 
+section smul
+variable {S R V W G : Type*} [Semiring R] [Semiring S]
+  [AddCommMonoid V] [Module R V] [Module S V]
+  [AddCommMonoid W] [Module R W] [Module S W]
+  [AddCommMonoid G] [Module R G] [Module S G]
+  [SMulCommClass R S W] [SMul S R] [IsScalarTower S R V] [IsScalarTower S R W]
+
+/-- Left scalar multiplication of a unit and a linear equivalence, as a linear equivalence. -/
+instance : SMul Sˣ (V ≃ₗ[R] W) where smul α e :=
+  { __ := (α : S) • e.toLinearMap
+    invFun x := (↑α⁻¹ : S) • e.symm x
+    left_inv _ := by simp [LinearMapClass.map_smul_of_tower e.symm, smul_smul]
+    right_inv _ := by simp [smul_smul] }
+
+@[simp] theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
+
+theorem symm_smul_apply (e : V ≃ₗ[R] W) (α : Sˣ) (x : W) :
+    (α • e).symm x = (↑α⁻¹ : S) • e.symm x := rfl
+
+@[simp] theorem symm_smul [SMulCommClass R S V] (e : V ≃ₗ[R] W) (α : Sˣ) :
+    (α • e).symm = α⁻¹ • e.symm := rfl
+
+@[simp] theorem toLinearMap_smul (e : V ≃ₗ[R] W) (α : Sˣ) :
+    (α • e).toLinearMap = (α : S) • e.toLinearMap := rfl
+
+theorem smul_trans [SMulCommClass R S V] [IsScalarTower S R G]
+    (α : Sˣ) (e : G ≃ₗ[R] V) (f : V ≃ₗ[R] W) :
+    (α • e).trans f = α • (e.trans f) := by ext; simp [LinearMapClass.map_smul_of_tower f]
+
+theorem trans_smul [IsScalarTower S R G]
+    (α : Sˣ) (e : G ≃ₗ[R] V) (f : V ≃ₗ[R] W) :
+    e.trans (α • f) = α • (e.trans f) := by ext; simp
+
+end smul
 end LinearEquiv

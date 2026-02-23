@@ -11,7 +11,6 @@ public import Mathlib.Data.Fintype.Lattice
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Ideal.Basic
-public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 public import Mathlib.Tactic.Order
 
@@ -827,6 +826,7 @@ theorem IsRadical.radical_le_iff (hJ : J.IsRadical) : I.radical ≤ J ↔ I ≤ 
 theorem radical_le_radical_iff : radical I ≤ radical J ↔ I ≤ radical J :=
   (radical_isRadical J).radical_le_iff
 
+@[simp]
 theorem radical_eq_top : radical I = ⊤ ↔ I = ⊤ :=
   ⟨fun h =>
     (eq_top_iff_one _).2 <|
@@ -979,7 +979,7 @@ theorem IsPrime.multiset_prod_map_le {s : Multiset ι} (f : ι → Ideal R) {P :
 
 theorem IsPrime.multiset_prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) (s : Multiset R) :
     s.prod ∈ I ↔ ∃ p ∈ s, p ∈ I := by
-  simpa [span_singleton_le_iff_mem] using (hI.multiset_prod_map_le (span {·}))
+  simpa using (hI.multiset_prod_map_le (span {·}))
 
 theorem IsPrime.pow_le_iff {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (hn : n ≠ 0) :
     I ^ n ≤ P ↔ I ≤ P := by

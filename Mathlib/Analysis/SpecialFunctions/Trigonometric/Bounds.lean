@@ -38,6 +38,7 @@ open Set
 namespace Real
 variable {x : ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For 0 < x, we have sin x < x. -/
 theorem sin_lt (h : 0 < x) : sin x < x := by
   rcases lt_or_ge 1 x with h' | h'
@@ -115,6 +116,7 @@ lemma sin_sq_le_sq : sin x ^ 2 ≤ x ^ 2 := by
 lemma abs_sin_lt_abs (hx : x ≠ 0) : |sin x| < |x| := sq_lt_sq.1 (sin_sq_lt_sq hx)
 lemma abs_sin_le_abs : |sin x| ≤ |x| := sq_le_sq.1 sin_sq_le_sq
 
+set_option backward.isDefEq.respectTransparency false in
 lemma one_sub_sq_div_two_lt_cos (hx : x ≠ 0) : 1 - x ^ 2 / 2 < cos x := by
   have := (sin_sq_lt_sq (by positivity)).trans_eq' (sin_sq_eq_half_sub (x / 2))
   ring_nf at this
@@ -125,6 +127,7 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
   case inl => simp
   case inr => exact (one_sub_sq_div_two_lt_cos hx).le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Half of **Jordan's inequality** for `cos`. -/
 lemma one_sub_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 2 / π * x ≤ cos x := by
   simpa [sin_pi_div_two_sub, mul_sub, div_mul_div_comm, mul_comm π, pi_pos.ne']
@@ -134,6 +137,7 @@ lemma one_sub_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 2 / π * x 
 lemma one_add_mul_le_cos (hx₀ : -(π / 2) ≤ x) (hx : x ≤ 0) : 1 + 2 / π * x ≤ cos x := by
   simpa using one_sub_mul_le_cos (x := -x) (by linarith) (by linarith)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
   wlog hx₀ : 0 ≤ x
   case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
@@ -143,6 +147,7 @@ lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   ring_nf at this ⊢
   linarith
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
 
 This is also true for x > 1, but it's nontrivial for x just above 1. This inequality is not
@@ -164,6 +169,7 @@ theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
     deriv (fun y : ℝ => tan y - y) x = 1 / cos x ^ 2 - 1 :=
   HasDerivAt.deriv <| by simpa using (hasDerivAt_tan h).add (hasDerivAt_id x).neg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For all `0 < x < π/2` we have `x < tan x`.
 
 This is proved by checking that the function `tan x - x` vanishes
@@ -245,6 +251,7 @@ theorem abs_sin_sub_sin_le (x y : ℝ) : |sin x - sin y| ≤ |x - y| := by
 theorem abs_cos_sub_cos_le (x y : ℝ) : |cos x - cos y| ≤ |x - y| := by
   simpa [edist_dist] using lipschitzWith_cos x y
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ ≤ ‖x‖ := by
   rw [Complex.norm_exp_I_mul_ofReal_sub_one]
   calc

@@ -107,6 +107,7 @@ lemma PrespectralSpace.isBasis_opens [PrespectralSpace X] :
   ext s
   exact ⟨fun ⟨V, hV, heq⟩ ↦ heq ▸ ⟨V.2, hV⟩, fun h ↦ ⟨⟨s, h.1⟩, h.2, rfl⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a prespectral space, the lattice of opens is determined by its lattice of compact opens. -/
 def PrespectralSpace.opensEquiv [PrespectralSpace X] :
     Opens X ≃o Order.Ideal (CompactOpens X) where
@@ -119,7 +120,7 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
       exact fun _ ↦ id
     · intro x hxU
       obtain ⟨V, ⟨h₁, h₂⟩, hxV, hVU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.2
-      simp only [Opens.mem_iSup, SetLike.mem_coe]
+      simp only [Opens.mem_iSup]
       exact ⟨⟨⟨_, h₂⟩, h₁⟩, hVU, hxV⟩
   right_inv I := by
     ext U

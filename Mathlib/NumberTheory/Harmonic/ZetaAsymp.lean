@@ -144,6 +144,7 @@ section s_gt_one
 ## Evaluation of the sum for `1 < s`
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
     term n s = 1 / (s - 1) * (1 / n ^ (s - 1) - 1 / (n + 1) ^ (s - 1))
     - n / s * (1 / n ^ s - 1 / (n + 1) ^ s) := by

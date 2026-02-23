@@ -38,6 +38,7 @@ namespace Basis
 
 section Fin
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `b` be a basis for a submodule `N` of `M`. If `y : M` is linear independent of `N`
 and `y` and `N` together span the whole of `M`, then there is a basis for `M`
 whose basis vectors are given by `Fin.cons y b`. -/
@@ -63,6 +64,7 @@ theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R
   unfold mkFinCons
   exact coe_mk (v := Fin.cons y (N.subtype ∘ b)) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `b` be a basis for a submodule `N ≤ O`. If `y ∈ O` is linear independent of `N`
 and `y` and `N` together span the whole of `O`, then there is a basis for `O`
 whose basis vectors are given by `Fin.cons y b`. -/
@@ -73,6 +75,7 @@ noncomputable def mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y 
     (fun c x hc hx => hli c x (Submodule.mem_comap.mp hc) (congr_arg ((↑) : O → M) hx))
     fun z => hsp z z.2
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O) (b : Basis (Fin n) R N)
     (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)

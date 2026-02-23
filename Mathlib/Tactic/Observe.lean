@@ -22,14 +22,16 @@ namespace Mathlib.Tactic.LibrarySearch
 
 open Lean Meta Elab Tactic Meta.Tactic.TryThis LibrarySearch
 
-/-- `observe hp : p` asserts the proposition `p`, and tries to prove it using `exact?`.
+/-- `observe hp : p` asserts the proposition `p` as a hypothesis named `hp`, and tries to prove it
+using `exact?`.
 If no proof is found, the tactic fails.
 In other words, this tactic is equivalent to `have hp : p := by exact?`.
 
-If `hp` is omitted, then the placeholder `this` is used.
-
-The variant `observe? hp : p` will emit a trace message of the form `have hp : p := proof_term`.
-This may be particularly useful to speed up proofs. -/
+* `observe : p` uses the name `this` for the new hypothesis.
+* `observe? hp : p` will emit a trace message of the form `have hp : p := proof_term`.
+  This may be particularly useful to speed up proofs.
+-/
+-- TODO: the syntax `observe hp : p using e1, e2, ...` exists but does not appear to do anything.
 syntax (name := observe) "observe" "?"? (ppSpace ident)? " : " term
   (" using " (colGt term),+)? : tactic
 

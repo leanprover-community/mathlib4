@@ -88,10 +88,9 @@ def _root_.Homeomorph.preimageImageRestrict (α : ι → Type*) [∀ i, Topologi
   left_inv x := by ext; simp
   right_inv p := by ext <;> simp
   continuous_toFun := by
-    refine Continuous.prodMk ?_ ?_
-    · exact ((Pi.continuous_restrict _).comp continuous_subtype_val).subtype_mk _
-    · rw [continuous_pi_iff]
-      exact fun _ ↦ (continuous_apply _).comp continuous_subtype_val
+    refine (Continuous.subtype_mk (by fun_prop) _).prodMk ?_
+    rw [continuous_pi_iff]
+    exact fun _ ↦ (continuous_apply _).comp continuous_subtype_val
   continuous_invFun := continuous_reorderRestrictProd.subtype_mk _
 
 /-- The image by `preimageImageRestrict α S s` of `s` seen as a set of
@@ -132,6 +131,7 @@ theorem IsCompact.isClosed_image_restrict (S : Set ι)
   rw [Homeomorph.isClosed_image]
   exact hs_closed.preimage continuous_subtype_val
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isClosedMap_restrict_of_compactSpace [∀ i, CompactSpace (α i)] :
     IsClosedMap (S.restrict : (Π i, α i) → _) := fun s hs ↦ by
   classical
@@ -139,6 +139,7 @@ lemma isClosedMap_restrict_of_compactSpace [∀ i, CompactSpace (α i)] :
   rw [this, image_comp]
   exact isClosedMap_fst_of_compactSpace _ <| (Homeomorph.isClosed_image _).mpr hs
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsClosed.isClosed_image_eval (i : ι)
     (hs_compact : IsCompact s) (hs_closed : IsClosed s) :
     IsClosed ((fun x ↦ x i) '' s) := by

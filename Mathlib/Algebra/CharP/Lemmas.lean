@@ -124,6 +124,7 @@ lemma add_pow_expChar_of_commute (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p
   · let ⟨r, hr⟩ := h.exists_add_pow_prime_eq hprime
     simp [hr]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma add_pow_expChar_pow_of_commute (h : Commute x y) :
     (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n := by
   obtain _ | hprime := hR
@@ -310,7 +311,7 @@ end CharP
 /-
 Preliminary definitions and results for the Frobenius map.
 Necessary here for simple results about sums of `p`-powers that are used in files forbidding
-to import algebra-related definitions (see `Mathlib/Algebra/CharP/Two.lean`).
+to import algebra-related definitions.
 -/
 section Frobenius
 

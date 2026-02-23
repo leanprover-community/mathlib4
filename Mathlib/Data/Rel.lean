@@ -466,6 +466,9 @@ lemma prod_subset_comm [R.IsSymm] : s₁ ×ˢ s₂ ⊆ R ↔ s₂ ×ˢ s₁ ⊆ 
   rw [← R.inv_eq_self, SetRel.inv, ← Set.image_subset_iff, Set.image_swap_prod, ← SetRel.inv,
     R.inv_eq_self]
 
+lemma preimage_eq_image [R.IsSymm] : R.preimage s = R.image s := by
+  rw [← preimage_inv, inv_eq_self]
+
 variable (R) in
 /-- The maximal symmetric relation contained in a given relation. -/
 def symmetrize : SetRel α α := R ∩ R.inv

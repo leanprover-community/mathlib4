@@ -73,6 +73,7 @@ info: Try these:
 #guard_msgs in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 info: Try these:
   [apply] 🎉 ring
@@ -184,7 +185,7 @@ info: Try these:
   Remaining subgoals:
   ⊢ False
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example : 2 ≤ 1 := by hint

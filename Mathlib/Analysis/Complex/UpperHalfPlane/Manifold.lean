@@ -92,6 +92,7 @@ lemma contMDiff_inv_denom (g : GL (Fin 2) ℝ) :
     ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ : ℍ ↦ (denom g τ)⁻¹) := by
   simpa using contMDiff_denom_zpow g (-1)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Each element of `GL(2, ℝ)⁺` defines a map of `C ^ n` manifolds `ℍ → ℍ`. -/
 lemma contMDiff_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
     ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ : ℍ ↦ g • τ) := fun τ ↦ by
@@ -124,9 +125,8 @@ lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) �
   rw [UpperHalfPlane.mdifferentiable_iff] at hf
   have := hf.analyticOnNhd isOpen_upperHalfPlaneSet
   ext w
-  convert this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.property
-  · rw [Function.comp_apply, ofComplex_apply_of_im_pos w.property]
-    rfl
+  convert this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
+  · rw [Function.comp_apply, ofComplex_apply]
   · exact (Complex.isConnected_of_upperHalfPlane subset_rfl (by grind)).isPreconnected
   · contrapose! hτ
     rw [eventually_nhdsWithin_iff, ← isOpenEmbedding_coe.map_nhds_eq, eventually_map] at hτ

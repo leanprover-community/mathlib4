@@ -14,7 +14,9 @@ We introduce these relations:
 
 * `IsBigOWith c l f g` : "f is big O of g along l with constant c";
 * `f =O[l] g` : "f is big O of g along l";
-* `f =o[l] g` : "f is little o of g along l".
+* `f =Θ[l] g` : "f is big O of g along l and vice versa";
+* `f =o[l] g` : "f is little o of g along l";
+* `f ~[l] g` : `f` and `g` are equivalent, i.e., `f - g =o[l] g`.
 
 Here `l` is any filter on the domain of `f` and `g`, which are assumed to be the same. The codomains
 of `f` and `g` do not need to be the same; all that is needed is that there is a norm associated
@@ -161,6 +163,21 @@ theorem IsBigO.of_norm_eventuallyLE {g : α → ℝ} (h : (‖f ·‖) ≤ᶠ[l]
 theorem IsBigO.of_norm_le {g : α → ℝ} (h : ∀ x, ‖f x‖ ≤ g x) : f =O[l] g :=
   .of_norm_eventuallyLE <| .of_forall h
 
+/-- We say that `f` is `Θ(g)` along a filter `l` (notation: `f =Θ[l] g`) if `f =O[l] g` and
+`g =O[l] f`. -/
+def IsTheta (l : Filter α) (f : α → E) (g : α → F) : Prop :=
+  IsBigO l f g ∧ IsBigO l g f
+
+@[inherit_doc]
+notation:100 f " =Θ[" l "] " g:100 => IsTheta l f g
+
+theorem IsBigO.antisymm (h₁ : f =O[l] g) (h₂ : g =O[l] f) : f =Θ[l] g :=
+  ⟨h₁, h₂⟩
+
+lemma IsTheta.isBigO (h : f =Θ[l] g) : f =O[l] g := h.1
+
+lemma IsTheta.isBigO_symm (h : f =Θ[l] g) : g =O[l] f := h.2
+
 /-- The Landau notation `f =o[l] g` where `f` and `g` are two functions on a type `α` and `l` is
 a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by an arbitrarily small constant
 multiple of `‖g‖`. In other words, `‖f‖ / ‖g‖` tends to `0` along `l`, modulo division by zero
@@ -191,6 +208,14 @@ theorem IsLittleO.def' (h : f =o[l] g) (hc : 0 < c) : IsBigOWith c l f g :=
 
 theorem IsLittleO.eventuallyLE (h : f =o[l] g) : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖ := by
   simpa using h.def zero_lt_one
+
+/-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
+  (denoted as `u ~[l] v` in the `Asymptotics` namespace)
+  when `u x - v x = o(v x)` as `x` converges along `l`. -/
+def IsEquivalent (l : Filter α) (u v : α → E') :=
+  (u - v) =o[l] v
+
+@[inherit_doc] scoped notation:50 u " ~[" l:50 "] " v:50 => Asymptotics.IsEquivalent l u v
 
 end Defs
 
