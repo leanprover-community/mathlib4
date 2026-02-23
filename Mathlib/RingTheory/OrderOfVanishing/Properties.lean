@@ -174,7 +174,7 @@ variable [IsDomain R] [IsDiscreteValuationRing R]
 /--
 In a discrete valuation ring, the order of vanishing of an irreducible element is `1`.
 -/
-theorem ord_irreducible (ϖ : R) (hϖ : Irreducible ϖ) : ord R ϖ = 1 := by
+theorem ord_of_irreducible (ϖ : R) (hϖ : Irreducible ϖ) : ord R ϖ = 1 := by
   rw [Ring.ord, Module.length_eq_one_iff]
   have : (Ideal.span {ϖ}).IsMaximal :=
     PrincipalIdealRing.isMaximal_of_irreducible hϖ
