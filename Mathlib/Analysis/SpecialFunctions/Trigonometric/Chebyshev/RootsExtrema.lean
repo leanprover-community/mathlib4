@@ -205,7 +205,6 @@ theorem rootMultiplicity_U_real {n k : ℕ} (hk : k < n) :
   rw [← count_roots, roots_U_real, Multiset.count_eq_one_of_mem (by simp)]
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isLocalMax_T_real {n k : ℕ} (hn : n ≠ 0) (hk₀ : 0 < k) (hk₁ : k < n) (hk₂ : Even k) :
     IsLocalMax (T ℝ n).eval (cos (k * π / n)) := by
   have zero_lt : 0 < k * π / n := by positivity
@@ -222,7 +221,6 @@ theorem isLocalMax_T_real {n k : ℕ} (hn : n ≠ 0) (hk₀ : 0 < k) (hk₁ : k 
   · rw [← cos_zero]
     exact cos_lt_cos_of_nonneg_of_le_pi (le_refl 0) (le_of_lt lt_pi) zero_lt
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isLocalMin_T_real {n k : ℕ} (hn : n ≠ 0) (hk₁ : k < n) (hk₂ : Odd k) :
     IsLocalMin (T ℝ n).eval (cos (k * π / n)) := by
   have k_pos : 0 < k := hk₂.pos

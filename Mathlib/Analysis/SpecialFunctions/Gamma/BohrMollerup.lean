@@ -328,7 +328,6 @@ section StrictMono
 
 theorem Gamma_two : Gamma 2 = 1 := by simp [Nat.factorial_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   -- This can also be proved using the closed-form evaluation of `Gamma (1 / 2)` in
   -- `Mathlib/Analysis/SpecialFunctions/Gaussian/GaussianIntegral.lean`, but we give a
@@ -351,12 +350,10 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
       exp_log] <;>
     norm_num
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Gamma_strictAntiOn_Ioc : StrictAntiOn Gamma (Ioc 0 1) :=
   convexOn_Gamma.strictAntiOn (by simp) (by norm_num) <|
     Gamma_one.symm ▸ Gamma_three_div_two_lt_one
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
   convert
     convexOn_Gamma.strictMonoOn (by simp : (0 : ℝ) < 3 / 2)

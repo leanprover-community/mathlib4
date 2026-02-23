@@ -175,7 +175,6 @@ def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
 theorem derivative_apply (f : LaurentSeries V) : derivative R f = hasseDeriv R 1 f := by
   exact rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem derivative_iterate (k : ℕ) (f : LaurentSeries V) :
     (derivative R)^[k] f = k.factorial • (hasseDeriv R k f) := by
   ext n

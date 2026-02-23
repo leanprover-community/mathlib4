@@ -41,7 +41,6 @@ lemma starConvex_slitPlane {z : ℂ} (hz : 0 < z) : StarConvex ℝ z slitPlane :
 lemma starConvex_ofReal_slitPlane {x : ℝ} (hx : 0 < x) : StarConvex ℝ ↑x slitPlane :=
   starConvex_slitPlane <| zero_lt_real.2 hx
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The slit plane is star-shaped at `1`. -/
 lemma starConvex_one_slitPlane : StarConvex ℝ 1 slitPlane := starConvex_slitPlane one_pos
 

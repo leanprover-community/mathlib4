@@ -411,7 +411,6 @@ lemma iteratedDeriv_fun_mul {f g : 𝕜 → 𝔸} (hf : ContDiffAt 𝕜 n f x) (
       n.choose i * iteratedDeriv i f x * iteratedDeriv (n - i) g x :=
   iteratedDeriv_mul hf hg
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iteratedDeriv_fun_pow_zero {n m : ℕ} :
     iteratedDeriv n (· ^ m) (0 : 𝕜) = if n = m then m.factorial else 0 := by
   obtain h | h | h := lt_trichotomy n m <;>

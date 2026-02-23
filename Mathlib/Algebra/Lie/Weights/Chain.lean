@@ -281,7 +281,6 @@ section
 variable (hα : α ≠ 0)
 include hα
 
-set_option backward.isDefEq.respectTransparency false in
 lemma chainTopCoeff_add_one :
     letI := Classical.propDecidable
     chainTopCoeff α β + 1 =

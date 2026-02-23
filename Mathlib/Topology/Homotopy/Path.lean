@@ -185,7 +185,6 @@ theorem hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Suppose `p` is a path, then we have a homotopy from `p` to `p.reparam f` by the convexity of `I`.
 -/

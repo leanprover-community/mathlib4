@@ -58,7 +58,6 @@ namespace IsCyclotomicExtension
 variable {p : ℕ} {k : ℕ} {K : Type u} {L : Type v} {ζ : L} [Field K] [Field L]
 variable [Algebra K L]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ (k + 1)} K L`, then the discriminant of
 `hζ.powerBasis K` is `(-1) ^ ((p ^ (k + 1).totient) / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1))`
 if `Irreducible (cyclotomic (p ^ (k + 1)) K))`, and `p ^ (k + 1) ≠ 2`. -/

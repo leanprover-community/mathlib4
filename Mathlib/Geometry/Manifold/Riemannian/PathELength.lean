@@ -211,7 +211,6 @@ have an extended norm, defined as the infimum of the lengths of `C^1` paths betw
 noncomputable irreducible_def riemannianEDist (x y : M) : ℝ≥0∞ :=
   ⨅ (γ : Path x y) (_ : ContMDiff (𝓡∂ 1) I 1 γ), ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Riemannian edistance is bounded above by the length of any `C^1` path from `x` to `y`.
 Here, we express this using a path defined on the whole real line, considered on
 some interval `[a, b]`. -/
@@ -246,7 +245,6 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
   · simpa [η, ContinuousAffineMap.coe_lineMap_eq] using hγ.mdifferentiableOn one_ne_zero
   · apply (AffineMap.lineMap_mono hab).monotoneOn
 
-set_option backward.isDefEq.respectTransparency false in
 omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
 /-- If some `r` is strictly larger than the Riemannian edistance between two points, there exists
 a path between these two points of length `< r`. Here, we get such a path on `[0, 1]`.

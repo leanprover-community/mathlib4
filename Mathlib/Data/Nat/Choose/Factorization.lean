@@ -203,7 +203,6 @@ theorem factorization_choose_le_one (p_large : n < p ^ 2) : (choose n k).factori
   rcases eq_or_ne n 0 with (rfl | hn0); · simp
   exact Nat.lt_succ_iff.1 (log_lt_of_lt_pow hn0 p_large)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk' : p ≤ n - k)
     (hn : n < 3 * p) : (choose n k).factorization p = 0 := by
   rcases em' p.Prime with hp | hp
@@ -232,7 +231,6 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
     rwa [mod_eq_of_lt (lt_of_le_of_lt hkn hn), mod_eq_of_lt (lt_of_le_of_lt tsub_le_self hn),
       add_tsub_cancel_of_le hkn]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Primes greater than about `2 * n / 3` and less than `n` do not appear in the factorization of
 `centralBinom n`. -/
 theorem factorization_centralBinom_of_two_mul_self_lt_three_mul (n_big : 2 < n) (p_le_n : p ≤ n)
@@ -248,7 +246,6 @@ theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factor
     rw [factorial_succ, factorization_mul n.succ_ne_zero n.factorial_ne_zero, Finsupp.coe_add,
       Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
   by_cases! hnk : n < k; · simp [choose_eq_zero_of_lt hnk]
   rw [choose_eq_factorial_div_factorial hnk,

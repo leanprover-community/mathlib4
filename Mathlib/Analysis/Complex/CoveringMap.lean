@@ -26,7 +26,6 @@ open Topology
 
 namespace Complex
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAddQuotientCoveringMap_exp :
     IsAddQuotientCoveringMap (fun z : ℂ ↦ (⟨_, z.exp_ne_zero⟩ : {z : ℂ // z ≠ 0}))
       (AddSubgroup.zmultiples (2 * Real.pi * I)) := by

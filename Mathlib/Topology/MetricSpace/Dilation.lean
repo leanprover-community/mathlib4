@@ -462,7 +462,6 @@ theorem diam_image (s : Set α) : diam ((f : α → β) '' s) = ratio f * diam s
 theorem diam_range : diam (range (f : α → β)) = ratio f * diam (univ : Set α) := by
   rw [← image_univ, diam_image]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
 theorem mapsTo_ball (x : α) (r' : ℝ) :
     MapsTo (f : α → β) (Metric.ball x r') (Metric.ball (f x) (ratio f * r')) :=

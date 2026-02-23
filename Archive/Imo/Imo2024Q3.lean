@@ -502,7 +502,6 @@ lemma small_apply_N' : Small a (a (N' a N)) := by
       simpa [hi] using hc.small_or_big_of_N'aux_lt (Nat.lt_add_one (N'aux a N))
     exact hc.apply_add_one_small_of_apply_big_of_N'aux_le hb (by lia)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma small_apply_N'_add_iff_even {n : ℕ} : Small a (a (N' a N + n)) ↔ Even n := by
   induction n with
   | zero => simpa using hc.small_apply_N'

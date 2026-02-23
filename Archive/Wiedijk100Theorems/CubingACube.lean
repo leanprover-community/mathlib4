@@ -271,7 +271,6 @@ theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
   rw [← add_le_add_iff_left ((cs i).b j.succ)]
   apply le_trans (t_le_t hi j); gcongr; apply b_le_b hi
 
-set_option backward.isDefEq.respectTransparency false in
 /-- There are at least two cubes in a valley -/
 theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   rcases v.1 c.b_mem_bottom with ⟨_, ⟨i, rfl⟩, hi⟩

@@ -223,7 +223,6 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   rw [sub_zero] at feq
   exact ⟨x, feq, x_ineq⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Banach open mapping theorem: a surjective bounded linear map between Banach spaces is
 open. -/
 protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by

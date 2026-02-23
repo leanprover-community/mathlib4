@@ -49,7 +49,6 @@ variable (p : 𝕜) [T0Space (AddCircle p)]
   (with import `Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete`)
 and `𝕜 := ℝ` satisfies both. -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAddQuotientCoveringMap_zsmul {n : ℤ} (hn : IsUnit (n : 𝕜)) :
     IsAddQuotientCoveringMap (n • · : AddCircle p → _)
       (zsmulAddGroupHom (α := AddCircle p) n).ker := by

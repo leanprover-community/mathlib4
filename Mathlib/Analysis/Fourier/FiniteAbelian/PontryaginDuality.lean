@@ -60,7 +60,6 @@ variable {n}
 @[simp] lemma zmod_add : ∀ x y : ZMod n, zmod n (x + y) = zmod n x * zmod n y := by
   simp [DFunLike.ext_iff, zmod, add_mul, map_add_eq_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma zmod_injective : Injective (zmod n) := by
   simp_rw [Injective, ZMod.intCast_surjective.forall]
   rintro x y h

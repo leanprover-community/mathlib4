@@ -364,7 +364,6 @@ theorem chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton
   cases Subsingleton.elim v w
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.chromaticNumber := by
   rw [hc.chromaticNumber_eq_sInf, Nat.cast_pos]
   apply le_csInf (colorable_set_nonempty_of_colorable hc)

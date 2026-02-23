@@ -33,7 +33,6 @@ lemma integrable {E : Type*} [NormedAddCommGroup E] (f : C_c(X, E))
 
 variable [T2Space X] [LocallyCompactSpace X] (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Integral as a positive linear functional on `C_c(X, ℝ)`. -/
 @[simps!]
 noncomputable def integralPositiveLinearMap (μ : Measure X)

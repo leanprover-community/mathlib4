@@ -386,7 +386,6 @@ theorem coe_add' (f g : M₁ →SL[σ₁₂] M₂) : ⇑(f + g) = f + g :=
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
     ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
     intros
@@ -841,7 +840,6 @@ theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
 instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
   zsmul := (· • ·)

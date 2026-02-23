@@ -225,7 +225,6 @@ theorem circleAverage_mono {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℝ} (hf₁ 
   apply intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos) hf₁ hf₂
   exact fun x _ ↦ by simp [h (circleMap c R x)]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `f x` is smaller than `a` on for every point of the circle, then the circle average of `f` is
 smaller than `a`.
@@ -238,7 +237,6 @@ theorem circleAverage_mono_on_of_le_circle {f : ℂ → ℝ} {a : ℝ} (hf : Cir
   exact intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos) hf
     intervalIntegrable_const (fun θ _ ↦ h₂f (circleMap c R θ) (circleMap_mem_sphere' c R θ))
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Analogue of `intervalIntegral.abs_integral_le_integral_abs`: The absolute value of a circle average
 is less than or equal to the circle average of the absolute value of the function.
@@ -249,7 +247,6 @@ theorem abs_circleAverage_le_circleAverage_abs {f : ℂ → ℝ} :
     abs_of_pos (inv_pos.2 two_pi_pos), mul_le_mul_iff_of_pos_left (inv_pos.2 two_pi_pos)]
   exact intervalIntegral.abs_integral_le_integral_abs (le_of_lt two_pi_pos)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The circle average of a nonnegative function is nonnegative.
 -/

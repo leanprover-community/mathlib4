@@ -66,7 +66,6 @@ lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin :=
     open scoped Fin.CommRing in
     simp only [natCast_eq_ofNat, toFin_ofNat, Fin.ofNat_eq_cast, nsmul_eq_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin :=
   toFin_mul _ _ |>.trans <| by
     open scoped Fin.CommRing in

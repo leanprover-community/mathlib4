@@ -25,7 +25,6 @@ variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
 open Filter Set Metric
 open scoped Pointwise Set.Notation Topology
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural homeomorphism between nonzero elements of a normed space `E`
 and `Metric.sphere (0 : E) r × Set.Ioi (0 : ℝ)`, `0 < r`.
 

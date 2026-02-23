@@ -125,7 +125,6 @@ theorem Periodic.sub_const [SubtractionCommMonoid α] (h : Periodic f c) (a : α
     Periodic (fun x => f (x - a)) c := by
   simpa only [sub_eq_add_neg] using h.add_const (-a)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Periodic.nsmul [AddMonoid α] (h : Periodic f c) (n : ℕ) : Periodic f (n • c) := by
   induction n <;> simp_all [add_nsmul, ← add_assoc]
 
@@ -346,7 +345,6 @@ theorem Antiperiodic.int_mul_sub_eq [NonAssocRing α] [NonAssocRing β] (h : Ant
     (n : ℤ) : f (n * c - x) = (n.negOnePow : ℤ) * f (-x) := by
   simpa only [zsmul_eq_mul] using h.zsmul_sub_eq n
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Antiperiodic.add_nsmul_eq [AddMonoid α] [SubtractionMonoid β] (h : Antiperiodic f c)
     (n : ℕ) : f (x + n • c) = (-1) ^ n • f x := by
   rcases Nat.even_or_odd' n with ⟨k, rfl | rfl⟩

@@ -241,7 +241,6 @@ def semilength : ℕ := p.toList.count U
 lemma semilength_eq_count_D : p.semilength = p.toList.count D := by
   rw [← count_U_eq_count_D]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma two_mul_semilength_eq_length : 2 * p.semilength = p.toList.length := by
   nth_rw 1 [two_mul, semilength, p.count_U_eq_count_D, semilength]
@@ -260,7 +259,6 @@ def firstReturn : ℕ :=
 
 @[simp] lemma firstReturn_zero : firstReturn 0 = 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 include h in
 lemma firstReturn_pos : 0 < p.firstReturn := by
   rw [← not_le, Nat.le_zero, firstReturn, findIdx_eq, getElem_range]

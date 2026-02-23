@@ -202,6 +202,7 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     ∃ t ∉ Q, (∀ Q' ∈ (Q.under R).primesOver S, Q' ≠ Q → t ∈ Q') ∧
       adjoin (Ideal.under R Q).ResidueField {algebraMap _ Q.ResidueField t} = ⊤ := by
   let p := Q.under R
+  have : p.IsPrime := Ideal.IsPrime.under R Q
   classical
   have : IsArtinianRing (p.Fiber S) := .of_finite p.ResidueField _
   let α := PrimeSpectrum.primesOverOrderIsoFiber R S p

@@ -430,7 +430,6 @@ theorem reflection_apply_of_mem (s : AffineSubspace 𝕜 P) [Nonempty s]
     vsub_sub_vsub_cancel_left, s.direction.reflection_eq_self_iff]
   exact s.vsub_mem_direction (SetLike.coe_mem _) hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem reflection_apply' (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
     reflection s p = (↑(orthogonalProjection s p) -ᵥ p) +ᵥ (orthogonalProjection s p : P) := by

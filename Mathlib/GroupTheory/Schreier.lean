@@ -170,7 +170,6 @@ theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
 
 variable (G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `G` has `n` commutators `[g₁, g₂]`, then `|G'| ∣ [G : Z(G)] ^ ([G : Z(G)] * n + 1)`,
 where `G'` denotes the commutator of `G`. -/
 theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
@@ -223,7 +222,6 @@ theorem card_commutator_le_of_finite_commutatorSet [Finite (commutatorSet G)] :
   refine (Nat.le_of_dvd ?_ h2).trans (Nat.pow_le_pow_left h1 _)
   exact pow_pos (Nat.pos_of_ne_zero FiniteIndex.index_ne_zero) _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A theorem of Schur: A group with finitely many commutators has finite commutator subgroup. -/
 instance [Finite (commutatorSet G)] : Finite (_root_.commutator G) := by
   have h2 := card_commutator_dvd_index_center_pow (closureCommutatorRepresentatives G)

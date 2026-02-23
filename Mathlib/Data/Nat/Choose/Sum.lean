@@ -95,7 +95,6 @@ theorem sum_range_choose (n : ℕ) : (∑ m ∈ range (n + 1), n.choose m) = 2 ^
   have := (add_pow 1 1 n).symm
   simpa [one_add_one_eq_two] using this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_range_choose_halfway (m : ℕ) : (∑ i ∈ range (m + 1), (2 * m + 1).choose i) = 4 ^ m :=
   have : (∑ i ∈ range (m + 1), (2 * m + 1).choose (2 * m + 1 - i)) =
       ∑ i ∈ range (m + 1), (2 * m + 1).choose i :=
@@ -151,7 +150,6 @@ lemma sum_range_add_choose (n k : ℕ) :
   convert (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
   rw [map_add_right_Ico, zero_add, add_right_comm, Ico_add_one_right_eq_Icc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Summing `i * (n.choose i)` for `i ∈ [0, n]` gives `n * 2 ^ (n - 1)`. -/
 theorem sum_range_mul_choose (n : ℕ) :
     ∑ i ∈ Finset.range (n + 1), i * (n.choose i) = n * 2 ^ (n - 1) := by

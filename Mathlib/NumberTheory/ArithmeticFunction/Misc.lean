@@ -180,7 +180,6 @@ theorem sigma_zero_apply (n : ℕ) : σ 0 n = #n.divisors := by simp [sigma_appl
 theorem sigma_zero_apply_prime_pow {p i : ℕ} (hp : p.Prime) : σ 0 (p ^ i) = i + 1 := by
   simp [sigma_apply_prime_pow hp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sigma_one (k : ℕ) : σ k 1 = 1 := by
   simp only [sigma_apply, divisors_one, sum_singleton, one_pow]

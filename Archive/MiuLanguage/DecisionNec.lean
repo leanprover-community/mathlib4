@@ -59,7 +59,6 @@ theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
     · right; simp [h2, mul_mod, h1]
     · left; simp only [h2, mul_mod, h1, mod_mod]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `count_equiv_one_or_two_mod3_of_derivable` shows any derivable string must have a `count I` that
 is 1 or 2 modulo 3.
 -/

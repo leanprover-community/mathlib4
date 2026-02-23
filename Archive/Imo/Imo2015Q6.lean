@@ -175,7 +175,6 @@ lemma sum_pool_le : ∑ x ∈ pool a t, x ≤ ∑ i ∈ range (b - 1), (2014 - i
 
 end Sums
 
-set_option backward.isDefEq.respectTransparency false in
 theorem result (ha : Condition a) :
     ∃ b > 0, ∃ N, ∀ m ≥ N, ∀ n > m, |∑ j ∈ Ico m n, (a j - b)| ≤ 1007 ^ 2 := by
   obtain ⟨b, N, hbN⟩ := exists_max_card_pool ha

@@ -103,13 +103,11 @@ theorem cantorFunction_le (h1 : 0 ≤ c) (h2 : c < 1) (h3 : ∀ n, f n → g n) 
   · simp [h, cantorFunctionAux_nonneg h1]
   replace h3 : g n = true := h3 n h; simp [h, h3]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cantorFunction_succ (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
     cantorFunction c f = cond (f 0) 1 0 + c * cantorFunction c fun n => f (n + 1) := by
   rw [cantorFunction, (summable_cantor_function f h1 h2).tsum_eq_zero_add]
   rw [cantorFunctionAux_succ, tsum_mul_left, cantorFunctionAux, pow_zero, cantorFunction]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `cantorFunction c` is strictly increasing with if `0 < c < 1/2`, if we endow `ℕ → Bool` with a
 lexicographic order. The lexicographic order doesn't exist for these infinitary products, so we
 explicitly write out what it means. -/

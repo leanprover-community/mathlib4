@@ -281,7 +281,6 @@ open Polynomial
 
 open MvPolynomial hiding X
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_smul (n : ℕ) :
     (∑ ν ∈ Finset.range (n + 1), ν • bernsteinPolynomial R n ν) = n • X := by
   -- We calculate the `x`-derivative of `(x+y)^n`, evaluated at `y=(1-x)`,
@@ -310,7 +309,7 @@ theorem sum_smul (n : ℕ) :
     -- Step inside the sum:
     refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, smul_eq_mul, nsmul_eq_mul,
-      Bool.cond_true, Bool.cond_false, add_zero, mul_one, mul_zero, smul_zero, MvPolynomial.aeval_X,
+      Bool.cond_true, Bool.cond_false, add_zero, mul_one, mul_zero, MvPolynomial.aeval_X,
       MvPolynomial.pderiv_mul, Derivation.leibniz_pow, Derivation.map_natCast, map_natCast, map_pow,
       map_mul]
   · rw [(pderiv true).leibniz_pow, (pderiv true).map_add, pderiv_true_x, pderiv_true_y]

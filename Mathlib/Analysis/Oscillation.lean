@@ -103,7 +103,6 @@ namespace IsCompact
 variable [PseudoEMetricSpace E] {K : Set E}
 variable {f : E → F} {D : Set E} {ε : ENNReal}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `oscillationWithin f D x < ε` at every `x` in a compact set `K`, then there exists `δ > 0`
 such that the oscillation of `f` on `ball x δ ∩ D` is less than `ε` for every `x` in `K`. -/
 theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscillationWithin f D x < ε) :

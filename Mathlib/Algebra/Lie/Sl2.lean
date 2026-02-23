@@ -57,11 +57,9 @@ lemma symm (ht : IsSl2Triple h e f) : IsSl2Triple (-h) f e where
 @[simp] lemma symm_iff : IsSl2Triple (-h) f e ↔ IsSl2Triple h e f :=
   ⟨fun t ↦ neg_neg h ▸ t.symm, symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lie_h_e_smul (t : IsSl2Triple h e f) : ⁅h, e⁆ = (2 : R) • e := by
   simp [t.lie_h_e_nsmul, two_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lie_lie_smul_f (t : IsSl2Triple h e f) : ⁅h, f⁆ = -((2 : R) • f) := by
   simp [t.lie_h_f_nsmul, two_smul]
 

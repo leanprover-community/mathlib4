@@ -28,7 +28,6 @@ variable {𝕜 𝕜' E : Type*} [NormedField 𝕜] [NormedField 𝕜'] [Seminorm
 
 section ClosedBall
 
-set_option backward.isDefEq.respectTransparency false in
 instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
   smul c x :=
     ⟨(c : 𝕜) • ↑x,

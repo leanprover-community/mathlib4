@@ -53,7 +53,6 @@ private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
   · lia
   · assumption
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem not_power_nat_pow {n p q : ℕ}
     (h_coprime : p.Coprime q)
     (hq : 0 < q)
@@ -156,7 +155,6 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
   apply Nat.Coprime.symm
   simpa [hx'] using (show x'.natAbs.Coprime y from Rat.reduced q)
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem not_power_rat_of_num {a b d : ℕ}
     (h_coprime : a.Coprime b) (ha : ∀ x, a ≠ x ^ d) (q : ℚ) :
     (a / b : ℚ) ≠ q ^ d := by

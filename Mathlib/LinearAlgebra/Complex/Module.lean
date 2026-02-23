@@ -277,7 +277,6 @@ section lift
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
 See `Complex.lift` for this as an equiv. -/

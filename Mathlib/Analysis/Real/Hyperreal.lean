@@ -143,10 +143,12 @@ def coeRingHom : ℝ →+*o ℝ* where
   map_mul' _ _ := rfl
   monotone' _ _ := coe_le_coe.2
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem archimedeanClassMk_coe_nonneg (x : ℝ) : 0 ≤ mk (x : ℝ*) :=
   mk_map_nonneg_of_archimedean coeRingHom x
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem archimdeanClassMk_coe {x : ℝ} (hx : x ≠ 0) : mk (x : ℝ*) = 0 :=
   mk_map_of_archimedean' coeRingHom hx
@@ -189,10 +191,12 @@ theorem omega_pos : 0 < ω :=
 theorem omega_ne_zero : ω ≠ 0 :=
   omega_pos.ne'
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem abs_omega : |ω| = ω :=
   abs_of_pos omega_pos
 
+set_option backward.isDefEq.respectTransparency false in
 theorem archimedeanClassMk_omega_neg : mk ω < 0 :=
   fun n ↦ by simpa using coe_lt_omega n
 
@@ -218,7 +222,6 @@ theorem inv_omega : ω⁻¹ = ε :=
 theorem inv_epsilon : ε⁻¹ = ω :=
   @inv_inv _ _ ω
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem epsilon_pos : 0 < ε :=
   inv_pos_of_pos omega_pos
@@ -259,6 +262,7 @@ theorem tendsto_iff_forall {x : ℝ*} {r : ℝ} :
   · obtain ⟨u, hu, hu'⟩ := exists_between ht
     exact (H.2 _ hu).trans_lt (coe_lt_coe.2 hu')
 
+set_option backward.isDefEq.respectTransparency false in
 theorem archimedeanClassMk_nonneg_of_tendsto {x : ℝ*} {r : ℝ} (hx : x.Tendsto (𝓝 r)) :
     0 ≤ mk x := by
   rw [tendsto_iff_forall] at hx
@@ -270,6 +274,7 @@ theorem stdPart_of_tendsto {x : ℝ*} {r : ℝ} (hx : x.Tendsto (𝓝 r)) : stdP
   rw [tendsto_iff_forall] at hx
   exact stdPart_eq coeRingHom hx.1 hx.2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem archimedeanClassMk_pos_of_tendsto {x : ℝ*} (hx : x.Tendsto (𝓝 0)) : 0 < mk x := by
   apply (archimedeanClassMk_nonneg_of_tendsto hx).lt_of_ne'
   rw [← stdPart_eq_zero, stdPart_of_tendsto hx]
@@ -292,6 +297,7 @@ theorem lt_of_tendsto_zero_of_pos {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 
     ∀ {r : ℝ}, 0 < r → ofSeq f < (r : ℝ*) := fun hr ↦
   ofSeq_lt_ofSeq.2 <| (hf.eventually <| gt_mem_nhds hr).filter_mono Nat.hyperfilter_le_atTop
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated archimedeanClassMk_pos_of_tendsto (since := "2026-01-05")]
 theorem neg_lt_of_tendsto_zero_of_pos {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
@@ -315,16 +321,19 @@ theorem lt_of_tendsto_atBot {x : ℝ*} (r : ℝ) (hx : x.Tendsto atBot) : x < r 
   rw [tendsto_ofSeq] at hx
   exact ofSeq_lt_ofSeq.2 <| hx.eventually_mem (Iio_mem_atBot r)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem archimedeanClassMk_neg_of_tendsto_atTop {x : ℝ*} (hx : x.Tendsto atTop) : mk x < 0 := by
   have : 0 < x := lt_of_tendsto_atTop 0 hx
   intro n
   simpa [abs_of_pos this] using lt_of_tendsto_atTop n hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem archimedeanClassMk_neg_of_tendsto_atBot {x : ℝ*} (hx : x.Tendsto atBot) : mk x < 0 := by
   have : x < 0 := lt_of_tendsto_atBot 0 hx
   intro n
   simpa [abs_of_neg this, lt_neg] using lt_of_tendsto_atBot (-n) hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_atTop_iff {x : ℝ*} : x.Tendsto atTop ↔ 0 < x ∧ mk x < 0 where
   mp h := ⟨lt_of_tendsto_atTop 0 h, archimedeanClassMk_neg_of_tendsto_atTop h⟩
   mpr h := by
@@ -333,6 +342,7 @@ theorem tendsto_atTop_iff {x : ℝ*} : x.Tendsto atTop ↔ 0 < x ∧ mk x < 0 wh
     exact fun r ↦ ofSeq_le_ofSeq.1 <|
       (lt_of_mk_lt_mk_of_nonneg (h.2.trans_le <| archimedeanClassMk_coe_nonneg r) h.1.le).le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_atBot_iff {x : ℝ*} : x.Tendsto atBot ↔ x < 0 ∧ mk x < 0 where
   mp h := ⟨lt_of_tendsto_atBot 0 h, archimedeanClassMk_neg_of_tendsto_atBot h⟩
   mpr h := by
@@ -475,6 +485,7 @@ theorem isSt_trans_real {r s t : ℝ} : IsSt r s → IsSt s t → IsSt r t := by
 theorem isSt_inj_real {r₁ r₂ s : ℝ} (h1 : IsSt r₁ s) (h2 : IsSt r₂ s) : r₁ = r₂ :=
   Eq.trans (eq_of_isSt_real h1) (eq_of_isSt_real h2).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSt_iff_abs_sub_lt_delta {x : ℝ*} {r : ℝ} : IsSt x r ↔ ∀ δ : ℝ, 0 < δ → |x - ↑r| < δ := by
   simp only [abs_sub_lt_iff, sub_lt_iff_lt_add, IsSt, and_comm, add_comm]
 
@@ -531,9 +542,11 @@ theorem InfiniteNeg.not_infinitePos {x : ℝ*} : InfiniteNeg x → ¬InfinitePos
 theorem InfinitePos.not_infiniteNeg {x : ℝ*} (hp : InfinitePos x) : ¬InfiniteNeg x := fun hn ↦
   hn.not_infinitePos hp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem InfinitePos.neg {x : ℝ*} : InfinitePos x → InfiniteNeg (-x) := fun hp r =>
   neg_lt.mp (hp (-r))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem InfiniteNeg.neg {x : ℝ*} : InfiniteNeg x → InfinitePos (-x) := fun hp r =>
   lt_neg.mp (hp (-r))
 
@@ -575,9 +588,11 @@ theorem infinitePos_iff_infinite_of_pos {x : ℝ*} (hp : 0 < x) : InfinitePos x 
 theorem infiniteNeg_iff_infinite_of_neg {x : ℝ*} (hn : x < 0) : InfiniteNeg x ↔ Infinite x :=
   .symm <| or_iff_right fun h ↦ h.pos.not_gt hn
 
+set_option backward.isDefEq.respectTransparency false in
 theorem infinitePos_abs_iff_infinite_abs {x : ℝ*} : InfinitePos |x| ↔ Infinite |x| :=
   infinitePos_iff_infinite_of_nonneg (abs_nonneg _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem infinite_abs_iff {x : ℝ*} : Infinite |x| ↔ Infinite x := by
   cases le_total 0 x <;> simp [*, abs_of_nonneg, abs_of_nonpos, infinite_neg]
 
@@ -588,6 +603,7 @@ theorem infinite_iff_abs_lt_abs {x : ℝ*} : Infinite x ↔ ∀ r : ℝ, (|r| : 
   infinitePos_abs_iff_infinite.symm.trans ⟨fun hI r => coe_abs r ▸ hI |r|, fun hR r =>
     (le_abs_self _).trans_lt (hR r)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem infinitePos_add_not_infiniteNeg {x y : ℝ*} :
     InfinitePos x → ¬InfiniteNeg y → InfinitePos (x + y) := by
   intro hip hnin r
@@ -707,6 +723,7 @@ theorem lt_neg_of_pos_of_infinitesimal {x : ℝ*} : Infinitesimal x → ∀ r : 
 theorem gt_of_neg_of_infinitesimal {x : ℝ*} (hi : Infinitesimal x) (r : ℝ) (hr : r < 0) : ↑r < x :=
   neg_neg r ▸ (infinitesimal_def.1 hi (-r) (neg_pos.2 hr)).1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem abs_lt_real_iff_infinitesimal {x : ℝ*} : Infinitesimal x ↔ ∀ r : ℝ, r ≠ 0 → |x| < |↑r| :=
   ⟨fun hi r hr ↦ abs_lt.mpr (coe_abs r ▸ infinitesimal_def.mp hi |r| (abs_pos.2 hr)), fun hR ↦
     infinitesimal_def.mpr fun r hr => abs_lt.mp <| (abs_of_pos <| coe_pos.2 hr) ▸ hR r <| hr.ne'⟩
@@ -747,7 +764,6 @@ theorem IsSt.infinitesimal_sub {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : Infinites
 theorem infinitesimal_sub_st {x : ℝ*} (hx : ¬Infinite x) : Infinitesimal (x - ↑(st x)) :=
   (isSt_st' hx).infinitesimal_sub
 
-set_option backward.isDefEq.respectTransparency false in
 theorem infinitePos_iff_infinitesimal_inv_pos {x : ℝ*} :
     InfinitePos x ↔ Infinitesimal x⁻¹ ∧ 0 < x⁻¹ :=
   ⟨fun hip =>
@@ -761,6 +777,7 @@ theorem infinitePos_iff_infinitesimal_inv_pos {x : ℝ*} :
         ((inv_lt_inv₀ (inv_pos.mp hp) (coe_lt_coe.2 (abs_pos.2 h))).mp
           ((infinitesimal_def.mp hi) |r|⁻¹ (inv_pos.2 (abs_pos.2 h))).2)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem infiniteNeg_iff_infinitesimal_inv_neg {x : ℝ*} :
     InfiniteNeg x ↔ Infinitesimal x⁻¹ ∧ x⁻¹ < 0 := by
   rw [← infinitePos_neg, infinitePos_iff_infinitesimal_inv_pos, inv_neg, neg_pos, infinitesimal_neg]
@@ -769,7 +786,6 @@ theorem infinitesimal_inv_of_infinite {x : ℝ*} : Infinite x → Infinitesimal 
   Or.casesOn hi (fun hip => (infinitePos_iff_infinitesimal_inv_pos.mp hip).1) fun hin =>
     (infiniteNeg_iff_infinitesimal_inv_neg.mp hin).1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem infinite_of_infinitesimal_inv {x : ℝ*} (h0 : x ≠ 0) (hi : Infinitesimal x⁻¹) :
     Infinite x := by
   rcases lt_or_gt_of_ne h0 with hn | hp
@@ -794,7 +810,6 @@ theorem infinitesimal_iff_infinite_inv {x : ℝ*} (h : x ≠ 0) : Infinitesimal 
 ### `Hyperreal.st` stuff that requires infinitesimal machinery
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsSt.inv {x : ℝ*} {r : ℝ} (hi : ¬Infinitesimal x) (hr : IsSt x r) : IsSt x⁻¹ r⁻¹ :=
   hr.map <| continuousAt_inv₀ <| by rintro rfl; exact hi hr
 
@@ -817,6 +832,7 @@ theorem infinitePos_omega : InfinitePos ω :=
 theorem infinite_omega : Infinite ω :=
   (infinite_iff_infinitesimal_inv omega_ne_zero).mpr infinitesimal_epsilon
 
+set_option backward.isDefEq.respectTransparency false in
 theorem infinitePos_mul_of_infinitePos_not_infinitesimal_pos {x y : ℝ*} :
     InfinitePos x → ¬Infinitesimal y → 0 < y → InfinitePos (x * y) := fun hx hy₁ hy₂ r => by
   have hy₁' := not_forall.mp (mt infinitesimal_def.2 hy₁)
@@ -830,6 +846,7 @@ theorem infinitePos_mul_of_not_infinitesimal_pos_infinitePos {x y : ℝ*} :
     ¬Infinitesimal x → 0 < x → InfinitePos y → InfinitePos (x * y) := fun hx hp hy =>
   mul_comm y x ▸ infinitePos_mul_of_infinitePos_not_infinitesimal_pos hy hx hp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem infinitePos_mul_of_infiniteNeg_not_infinitesimal_neg {x y : ℝ*} :
     InfiniteNeg x → ¬Infinitesimal y → y < 0 → InfinitePos (x * y) := by
   rw [← infinitePos_neg, ← neg_pos, ← neg_mul_neg, ← infinitesimal_neg]
@@ -839,6 +856,7 @@ theorem infinitePos_mul_of_not_infinitesimal_neg_infiniteNeg {x y : ℝ*} :
     ¬Infinitesimal x → x < 0 → InfiniteNeg y → InfinitePos (x * y) := fun hx hp hy =>
   mul_comm y x ▸ infinitePos_mul_of_infiniteNeg_not_infinitesimal_neg hy hx hp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem infiniteNeg_mul_of_infinitePos_not_infinitesimal_neg {x y : ℝ*} :
     InfinitePos x → ¬Infinitesimal y → y < 0 → InfiniteNeg (x * y) := by
   rw [← infinitePos_neg, ← neg_pos, neg_mul_eq_mul_neg, ← infinitesimal_neg]

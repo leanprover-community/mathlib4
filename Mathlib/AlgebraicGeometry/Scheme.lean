@@ -865,7 +865,6 @@ end ZeroLocus
 
 end Scheme
 
-set_option backward.isDefEq.respectTransparency false in
 theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
     (Spec R).basicOpen ((Scheme.ΓSpecIso R).inv f) = PrimeSpectrum.basicOpen f := by
   ext x

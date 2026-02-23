@@ -357,7 +357,6 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
     ← map_cyclotomic_int, _root_.map_intCast, ← Int.cast_one, eval_intCast_map, eq_intCast,
     Int.cast_id]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `IsPrimePow n`, `n ≠ 2` and `Irreducible (cyclotomic n K)` (in particular for
 `K = ℚ`), then the norm of `ζ - 1` is `n.minFac`. -/
 theorem sub_one_norm_isPrimePow (hn : IsPrimePow n) [IsCyclotomicExtension {n} K L]
@@ -474,7 +473,6 @@ theorem norm_sub_one_of_prime_ne_two' [hpri : Fact p.Prime]
   haveI : IsCyclotomicExtension {p ^ (0 + 1)} K L := by simp [hcyc]
   simpa using norm_sub_one_of_prime_ne_two hζ hirr h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `Irreducible (cyclotomic (2 ^ (k + 1)) K)` (in particular for `K = ℚ`), then the norm of
 `ζ ^ (2 ^ k) - 1` is `(-2) ^ (2 ^ k)`. -/
 theorem norm_pow_sub_one_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1)))
@@ -493,7 +491,6 @@ theorem norm_pow_sub_one_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1)))
     succ_sub_succ_eq_sub, tsub_zero]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `Irreducible (cyclotomic (2 ^ k) K)` (in particular for `K = ℚ`) and `k` is at least `2`,
 then the norm of `ζ - 1` is `2`. -/
 theorem norm_sub_one_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ k)) (hk : 2 ≤ k)

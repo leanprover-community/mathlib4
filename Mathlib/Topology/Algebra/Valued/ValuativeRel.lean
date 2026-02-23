@@ -176,7 +176,6 @@ lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsOpen {x | v x = r} :=
   isClopen_sphere hr |>.isOpen
 
-set_option backward.isDefEq.respectTransparency false in
 open WithZeroTopology in
 lemma continuous_valuation : Continuous v := by
   simp only [continuous_iff_continuousAt, ContinuousAt]

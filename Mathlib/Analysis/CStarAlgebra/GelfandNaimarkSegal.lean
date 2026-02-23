@@ -131,6 +131,7 @@ lemma leftMulMapPreGNS_mul_eq_comp (a b : A) :
     f.leftMulMapPreGNS (a * b) = f.leftMulMapPreGNS a ∘L f.leftMulMapPreGNS b := by
   ext c; simp [mul_assoc]
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The non-unital ⋆-homomorphism/⋆-representation of `A` into the algebra of bounded operators on
@@ -171,6 +172,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma gnsNonUnitalStarAlgHom_apply {a : A} :
     f.gnsNonUnitalStarAlgHom a = (f.leftMulMapPreGNS a).completion := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma gnsNonUnitalStarAlgHom_apply_coe {a : A} {b : f.PreGNS} :
     f.gnsNonUnitalStarAlgHom a b = f.leftMulMapPreGNS a b := by

@@ -138,7 +138,6 @@ private lemma lie_e_f_same_aux (k : ι) (hki : k ≠ i) (hki' : k ≠ P.reflecti
     exact ⟨P.chainBotCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₁ x <| by simp [hx],
            P.chainTopCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₂ x <| by simp [hx]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lemma 3.4 from [Geck](Geck2017). -/
 lemma lie_e_f_same :
     ⁅e i, f i⁆ = h i := by

@@ -109,7 +109,6 @@ theorem four_pow_le_two_mul_self_mul_centralBinom :
       _ ≤ 2 * (n + 4) * centralBinom (n + 4) := by
         rw [mul_assoc]; refine Nat.le_mul_of_pos_left _ zero_lt_two
 
-set_option backward.isDefEq.respectTransparency false in
 theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
   use (n + 1 + n).choose n
   rw [centralBinom_eq_two_mul_choose, two_mul, ← add_assoc,
@@ -119,7 +118,6 @@ theorem two_dvd_centralBinom_of_one_le {n : ℕ} (h : 0 < n) : 2 ∣ centralBino
   rw [← Nat.succ_pred_eq_of_pos h]
   exact two_dvd_centralBinom_succ n.pred
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A crucial lemma to ensure that Catalan numbers can be defined via their explicit formula
   `catalan n = n.centralBinom / (n + 1)`. -/
 theorem succ_dvd_centralBinom (n : ℕ) : n + 1 ∣ n.centralBinom := by

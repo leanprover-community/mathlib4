@@ -107,7 +107,6 @@ theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
     rw [imp_iff_right hex]
     exact ⟨hex, ⟨p, ⟨hpfilter.2.2, hpe1⟩, hpfilter.2.1⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The number of `e < x` for which `e + 1` has a prime factor `p > k` is bounded by `x` times the sum
 of reciprocals of primes in `(k, x]`.
@@ -191,7 +190,6 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : #(M x k) ≤ 2 ^ k * Nat.sqrt x :
     _ = #M₁ * #M₂ := card_product M₁ M₂
     _ ≤ 2 ^ k * x.sqrt := mul_le_mul' card_le_two_pow h2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Real.tendsto_sum_one_div_prime_atTop :
     Tendsto (fun n => ∑ p ∈ range n with p.Prime, 1 / (p : ℝ))
       atTop atTop := by

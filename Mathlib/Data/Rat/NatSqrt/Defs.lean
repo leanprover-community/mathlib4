@@ -33,7 +33,6 @@ theorem ratSqrt_sq_le (x : ℕ) {prec : ℕ} (h : 0 < prec) : (ratSqrt x prec) ^
   norm_cast
   exact sqrt_le' (x * prec ^ 2)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lt_ratSqrt_add_inv_prec_sq (x : ℕ) {prec : ℕ} (h : 0 < prec) :
     x < (ratSqrt x prec + 1 / prec) ^ 2 := by
   unfold ratSqrt

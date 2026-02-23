@@ -128,7 +128,6 @@ def fourier (n : ℤ) : C(AddCircle T, ℂ) where
 theorem fourier_apply {n : ℤ} {x : AddCircle T} : fourier n x = toCircle (n • x :) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 -- simp normal form is `fourier_coe_apply'`
 theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
     fourier n (x : AddCircle T) = Complex.exp (2 * π * Complex.I * n * x / T) := by
@@ -338,7 +337,6 @@ theorem fourierCoeff.sum {ι : Type*} (s : Finset ι) (f : ι → AddCircle T �
         fourierCoeff.add hf₁ (integrable_finset_sum' s hf₂), iha hf₂]
 
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
     fourierCoeff (c • f :) n = c • fourierCoeff f n := by
   simp_rw [fourierCoeff, Pi.smul_apply, ← smul_assoc, smul_eq_mul, mul_comm, ← smul_eq_mul,

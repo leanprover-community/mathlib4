@@ -442,6 +442,7 @@ section PowerBasis
 
 variable {L : Type*} [Field L] [Algebra K L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The elements `1, x, ..., x ^ (d - 1)` form a basis for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def powerBasisAux {x : L} (hx : IsIntegral K x) :
