@@ -73,7 +73,6 @@ theorem irrational_nrt_of_notint_nrt {x : ℝ} (n : ℕ) (m : ℤ) (hxr : x ^ n 
   refine hv ⟨N, ?_⟩
   rw [mk_eq_divInt, Int.ofNat_one, divInt_one, cast_intCast]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `x^n = m` is an integer and `n` does not divide the `multiplicity p m`, then `x`
 is irrational. -/
 theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (hm : m ≠ 0) (p : ℕ)

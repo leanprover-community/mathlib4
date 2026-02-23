@@ -72,7 +72,6 @@ lemma pow_dvd_untiltAux_sub_untiltAux (x : PreTilt O p) {m n : ℕ} (h : m ≤ n
         (coeff_iterate_frobenius' x (Nat.sub_le n' m)).symm
       _ = _ := by simp [iterate_frobenius]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pow_dvd_one_untiltAux_sub_one (m : ℕ) :
     (p : O) ^ m ∣ (1 : PreTilt O p).untiltAux m - 1 := by
   cases m with

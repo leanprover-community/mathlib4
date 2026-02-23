@@ -323,7 +323,6 @@ lemma traceForm_eq_of_le_idealizer :
   rw [N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 include h hy in
 /-- Note that this result is slightly stronger than it might look at first glance: we only assume
 that `N` is trivial over `I` rather than all of `L`. This means that it applies in the important

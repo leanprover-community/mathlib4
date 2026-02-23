@@ -1145,7 +1145,6 @@ theorem comap_map_eq_self_of_injective
 
 end Subring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by
   convert AddSubgroup.zsmul_mem G h k using 1

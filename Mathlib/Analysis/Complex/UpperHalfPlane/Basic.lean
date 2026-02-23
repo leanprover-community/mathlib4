@@ -174,7 +174,6 @@ lemma ne_natCast (z : ℍ) (n : ℕ) : (z : ℂ) ≠ n := mod_cast ne_intCast z 
 
 section PosRealAction
 
-set_option backward.isDefEq.respectTransparency false in
 instance posRealAction : MulAction {x : ℝ // 0 < x} ℍ where
   smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.im_pos
   one_smul _ := UpperHalfPlane.ext <| one_smul _ _
@@ -203,6 +202,7 @@ end PosRealAction
 
 section RealAddAction
 
+set_option backward.whnf.reducibleClassField false in
 instance : AddAction ℝ ℍ where
   vadd x z := mk (x + z) <| by simpa using z.im_pos
   zero_vadd _ := by simp [HVAdd.hVAdd]

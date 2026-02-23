@@ -201,7 +201,6 @@ lemma tendsto_atTop_r (i : α) : Tendsto (r i) atTop atTop := by
 lemma tendsto_atTop_r_real (i : α) : Tendsto (fun n => (r i n : ℝ)) atTop atTop :=
   Tendsto.comp tendsto_natCast_atTop_atTop (R.tendsto_atTop_r i)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_eventually_r_le_const_mul :
     ∃ c ∈ Set.Ioo (0 : ℝ) 1, ∀ᶠ (n : ℕ) in atTop, ∀ i, r i n ≤ c * n := by
   let c := b (max_bi b) + (1 - b (max_bi b)) / 2

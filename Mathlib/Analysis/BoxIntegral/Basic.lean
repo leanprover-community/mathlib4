@@ -625,7 +625,6 @@ open Prepartition EMetric ENNReal BoxAdditiveMap Finset Metric TaggedPrepartitio
 
 variable (l)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function that is bounded and a.e. continuous on a box `I` is integrable on `I`. -/
 theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : Box ι} {f : ℝⁿ → E}
     (hb : ∃ C : ℝ, ∀ x ∈ Box.Icc I, ‖f x‖ ≤ C) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ]

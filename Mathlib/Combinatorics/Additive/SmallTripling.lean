@@ -34,7 +34,6 @@ open scoped Pointwise
 namespace Finset
 variable {G : Type*} [DecidableEq G] [Group G] {A : Finset G} {k K : ℝ} {m : ℕ}
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 private lemma inductive_claim_mul (hm : 3 ≤ m)
     (h : ∀ ε : Fin 3 → ℤ, (∀ i, |ε i| = 1) → #((finRange 3).map fun i ↦ A ^ ε i).prod ≤ k * #A)
@@ -68,7 +67,6 @@ private lemma inductive_claim_mul (hm : 3 ≤ m)
         · exact ih (Fin.cons 1 <| tail <| tail ε) <| Fin.cons (by simp) (by simp [hε, Fin.tail])
       _ = #A * (k ^ m * #A) := by rw [← pow_sub_one_mul hm₀]; ring
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 private lemma small_neg_pos_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A * A) ≤ K ^ 2 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty
@@ -101,7 +99,6 @@ private lemma small_pos_pos_neg_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A * A⁻�
   rw [← card_inv]
   simpa [mul_assoc] using small_pos_neg_neg_mul (A := A) (K := K) (by simpa)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 private lemma small_pos_neg_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * A) ≤ K ^ 3 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty

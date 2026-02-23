@@ -70,7 +70,6 @@ def objD (n : ℕ) : X _⦋n + 1⦌ ⟶ X _⦋n⦌ :=
 ## The chain complex relation `d ≫ d`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- we start by expanding d ≫ d as a double sum
   dsimp

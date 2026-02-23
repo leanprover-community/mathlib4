@@ -884,6 +884,7 @@ instance uniqueNormalizationMonoidOfUniqueUnits : Unique (NormalizationMonoid α
   default := .ofUniqueUnits
   uniq := fun ⟨u, _, _, _⟩ => by congr; simp [eq_iff_true_of_subsingleton]
 
+set_option backward.whnf.reducibleClassField false in
 instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
   ⟨fun g₁ g₂ => by
     have hgcd : g₁.gcd = g₂.gcd := by

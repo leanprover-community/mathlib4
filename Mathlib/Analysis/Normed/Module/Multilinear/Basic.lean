@@ -145,7 +145,6 @@ lemma norm_map_coord_zero (f : MultilinearMap 𝕜 E G) (hf : Continuous f)
 
 variable [Fintype ι]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a multilinear map in finitely many variables on seminormed spaces
 sends vectors with a component of norm zero to vectors of norm zero
 and satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖` on a shell `ε i / ‖c i‖ < ‖m i‖ < ε i`
@@ -878,7 +877,6 @@ theorem mkContinuousLinear_norm_le (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G')
 
 variable [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a map `f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G)` and an estimate
 `H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `MultilinearMap`s in the type to
 `ContinuousMultilinearMap`s. -/

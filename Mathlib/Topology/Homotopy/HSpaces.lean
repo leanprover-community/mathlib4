@@ -156,11 +156,9 @@ theorem continuous_qRight : Continuous qRight :=
   continuous_projIcc.comp <|
     Continuous.div (by fun_prop) (by fun_prop) fun _ ↦ (add_pos zero_lt_one).ne'
 
-set_option backward.isDefEq.respectTransparency false in
 theorem qRight_zero_left (θ : I) : qRight (0, θ) = 0 :=
   Set.projIcc_of_le_left _ <| by simp only [coe_zero, mul_zero, zero_div, le_refl]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
   Set.projIcc_of_right_le _ <|
     (le_div_iff₀ <| add_pos zero_lt_one).2 <| by
@@ -169,7 +167,6 @@ theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
       simp only [add_le_add_iff_right]
       exact le_one _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem qRight_zero_right (t : I) :
     (qRight (t, 0) : ℝ) = if (t : ℝ) ≤ 1 / 2 then (2 : ℝ) * t else 1 := by
   simp only [qRight, coe_zero, add_zero, div_one]
@@ -181,7 +178,6 @@ theorem qRight_zero_right (t : I) :
     · linarith
     · exact zero_lt_one
 
-set_option backward.isDefEq.respectTransparency false in
 theorem qRight_one_right (t : I) : qRight (t, 1) = t :=
   Eq.trans (by rw [qRight]; norm_num) <| Set.projIcc_val zero_le_one _
 

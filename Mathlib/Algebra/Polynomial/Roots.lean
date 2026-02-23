@@ -244,7 +244,6 @@ theorem roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
   rcases s with ⟨m, hm⟩
   simpa [Multiset.prod_eq_zero_iff, Multiset.bind_map] using roots_multiset_prod (m.map f)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
   induction n with

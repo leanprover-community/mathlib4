@@ -184,7 +184,6 @@ theorem approx_nonneg (c : CU P) (n : ℕ) (x : X) : 0 ≤ c.approx n x := by
     simp only [approx, midpoint_eq_smul_add]
     refine mul_nonneg (inv_nonneg.2 zero_le_two) (add_nonneg ?_ ?_) <;> apply ihn
 
-set_option backward.isDefEq.respectTransparency false in
 theorem approx_le_one (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
   induction n generalizing c with
   | zero => exact indicator_apply_le' (fun _ => le_rfl) fun _ => zero_le_one

@@ -343,11 +343,13 @@ section Neg
 
 variable [Fact (Even (Fintype.card n))]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Formal operation of negation on special linear group on even cardinality `n` given by negating
 each element. -/
-instance instNeg : Neg (SpecialLinearGroup n R) :=
+instance instNeg [Fact (Even (Fintype.card n))] : Neg (SpecialLinearGroup n R) :=
   ⟨fun g => ⟨-g, by
-    simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
+    simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe]
+      using det_smul (↑ₘg) (-1)⟩⟩
 
 @[simp]
 theorem coe_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(g : Matrix n n R) :=
@@ -508,7 +510,6 @@ theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 := by
 theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : (T⁻¹ * g) 1 = g 1 := by
   simpa using T_pow_mul_apply_one (-1) g
 
-set_option backward.isDefEq.respectTransparency false in
 lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
   simp only [S, Int.reduceNeg, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
     vecMul_cons, head_cons, zero_smul, tail_cons, neg_smul, one_smul, neg_cons, neg_zero, neg_empty,

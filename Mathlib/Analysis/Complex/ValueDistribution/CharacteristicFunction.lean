@@ -214,7 +214,6 @@ theorem characteristic_mul_top_eventuallyLE {f₁ f₂ : ℂ → ℂ}
 @[deprecated (since := "2025-12-11")]
 alias characteristic_top_mul_eventually_le := characteristic_mul_top_eventuallyLE
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 For natural numbers `n`, the characteristic function for the zeros of `f ^ n` equals `n` times the
 characteristic counting function for the zeros of `f`.
@@ -224,7 +223,6 @@ theorem characteristic_pow_zero {f : ℂ → ℂ} {n : ℕ} (hf : Meromorphic f)
     characteristic (f ^ n) 0 = n • characteristic f 0 := by
   simp_all [characteristic]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 For natural numbers `n`, the characteristic function for the poles of `f ^ n` equals `n` times the
 characteristic function for the poles of `f`.

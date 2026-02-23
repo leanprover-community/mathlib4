@@ -49,7 +49,6 @@ namespace Miu
 
 open MiuAtom List Nat
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We start by showing that an `Miustr` `M::w` can be derived, where `w` consists only of `I`s and
 where `count I w` is a power of 2.
 -/

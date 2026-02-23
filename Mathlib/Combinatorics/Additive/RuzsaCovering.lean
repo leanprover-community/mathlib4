@@ -27,7 +27,6 @@ variable {G : Type*} [Group G] {K : ℝ}
 namespace Finset
 variable [DecidableEq G] {A B : Finset G}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Ruzsa's covering lemma**. -/
 @[to_additive /-- **Ruzsa's covering lemma** -/]
 theorem ruzsa_covering_mul (hB : B.Nonempty) (hK : #(A * B) ≤ K * #B) :

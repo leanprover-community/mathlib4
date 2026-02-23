@@ -173,6 +173,7 @@ instance : NatCast (RingQuot r) :=
 @[no_expose] instance : Mul (RingQuot r) :=
   ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨Quot.map₂ (· * ·) Rel.mul_right Rel.mul_left a b⟩⟩
 
+set_option backward.whnf.reducibleClassField false in
 @[no_expose] instance : NatPow (RingQuot r) :=
   ⟨fun ⟨a⟩ n ↦ ⟨Quot.lift (fun a ↦ Quot.mk (RingQuot.Rel r) (a ^ n))
     (fun a b (h : Rel r a b) ↦ by
@@ -280,6 +281,7 @@ instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r)
     rintro n ⟨⟨⟩⟩
     simp only [pow_quot, mul_quot, pow_succ]
 
+set_option backward.whnf.reducibleClassField false in
 instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   natCast_zero := by simp +instances [instNatCast, natCast, ← zero_quot]
   natCast_succ := by simp +instances [instNatCast, natCast, ← one_quot, add_quot]
@@ -295,7 +297,6 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
 def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) where
   neg_add_cancel := by
     rintro ⟨⟨⟩⟩

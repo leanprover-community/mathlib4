@@ -186,7 +186,6 @@ theorem inner_rightAngleRotationAux₁_right (x y : E) :
   rw [real_inner_comm]
   simp [o.areaForm_swap y x]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `Orientation.rightAngleRotation`, rotation by 90 degrees in an
 oriented real inner product space of dimension 2. -/
 def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=

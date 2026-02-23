@@ -32,10 +32,8 @@ example {x : ℤ} (hx : x ≥ 12) : x * x ^ 2 ≥ 12 * x ^ 2 := by gcongr
 example {x y : ℤ} (hx : x ≥ 12) : y + x * x ≥ y + 12 * x := by gcongr
 example {x y : ℤ} (hx : x ≥ 12) : y + x * x ≥ y + 12 * x := by rel [hx]
 
-set_option backward.isDefEq.respectTransparency false in
 example {x : ℤ} (hx : x > 12) : x * x ^ 2 > 12 * x ^ 2 := by gcongr
 
-set_option backward.isDefEq.respectTransparency false in
 example {x y : ℤ} (hx : x > 12) : y + x * x > y + 12 * x := by gcongr
 
 -- not solved by `nlinarith` because of the cube

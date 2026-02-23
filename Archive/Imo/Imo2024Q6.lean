@@ -207,14 +207,12 @@ lemma aquaesulian_fExample : Aquaesulian fExample := by
     exact .inr (apply_fExample_add_apply_of_fract_le h.le)
   · exact .inl (apply_fExample_add_apply_of_fract_le h)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fract_fExample (x : ℚ) :
     Int.fract (fExample x) = if Int.fract x = 0 then 0 else 1 - Int.fract x := by
   by_cases h : Int.fract x = 0
   · simp [fExample, h]
   · simp [fExample, h, sub_eq_add_neg, Int.fract_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma floor_fExample (x : ℚ) :
     ⌊fExample x⌋ = if Int.fract x = 0 then x else ⌊x⌋ - 1 := by
   by_cases h : Int.fract x = 0

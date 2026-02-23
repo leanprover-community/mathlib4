@@ -93,7 +93,6 @@ theorem volume_eq_smul_haarAddCircle :
     (volume : Measure (AddCircle T)) = ENNReal.ofReal T • (@haarAddCircle T _) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma integral_haarAddCircle {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : AddCircle T → E} : ∫ t, f t ∂haarAddCircle = T⁻¹ • ∫ t, f t := by
   rw [volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
@@ -129,7 +128,6 @@ def fourier (n : ℤ) : C(AddCircle T, ℂ) where
 theorem fourier_apply {n : ℤ} {x : AddCircle T} : fourier n x = toCircle (n • x :) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 -- simp normal form is `fourier_coe_apply'`
 theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
     fourier n (x : AddCircle T) = Complex.exp (2 * π * Complex.I * n * x / T) := by
@@ -302,7 +300,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 def fourierCoeff (f : AddCircle T → E) (n : ℤ) : E :=
   ∫ t : AddCircle T, fourier (-n) t • f t ∂haarAddCircle
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier coefficients of a function on `AddCircle T` can be computed as an integral
 over `[a, a + T]`, for any real `a`. -/
 theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : ℝ) :
@@ -340,7 +337,6 @@ theorem fourierCoeff.sum {ι : Type*} (s : Finset ι) (f : ι → AddCircle T �
         fourierCoeff.add hf₁ (integrable_finset_sum' s hf₂), iha hf₂]
 
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
     fourierCoeff (c • f :) n = c • fourierCoeff f n := by
   simp_rw [fourierCoeff, Pi.smul_apply, ← smul_assoc, smul_eq_mul, mul_comm, ← smul_eq_mul,

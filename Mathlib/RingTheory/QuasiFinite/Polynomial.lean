@@ -62,6 +62,7 @@ lemma map_under_lt_comap_of_quasiFiniteAt
     (P.under R).map C < P.comap (f : R[X] →+* S) :=
   map_under_lt_comap_of_weaklyQuasiFiniteAt f P
 
+set_option backward.isDefEq.respectTransparency false in
 lemma not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt
     (f : R[X] →ₐ[R] S) (hf : Function.Surjective f)
     (P : Ideal S) [P.IsPrime] [Algebra.WeaklyQuasiFiniteAt R P] :

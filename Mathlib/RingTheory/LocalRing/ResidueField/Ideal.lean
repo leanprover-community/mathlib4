@@ -138,6 +138,7 @@ lemma Ideal.algebraMap_residueField_surjective (I : Ideal R) [I.IsMaximal] :
   rw [IsScalarTower.algebraMap_eq R (R ⧸ I) _]
   exact I.bijective_algebraMap_quotient_residueField.surjective.comp Ideal.Quotient.mk_surjective
 
+set_option backward.isDefEq.respectTransparency false in
 instance (I : Ideal R) [I.IsMaximal] : Module.Finite R I.ResidueField :=
   .of_surjective (Algebra.linearMap _ _) I.algebraMap_residueField_surjective
 

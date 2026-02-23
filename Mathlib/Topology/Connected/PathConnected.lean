@@ -549,7 +549,6 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=
   Quotient.mk'_surjective.pathConnectedSpace continuous_coinduced_rng
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `IsTopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where

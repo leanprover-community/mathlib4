@@ -193,6 +193,8 @@ lemma isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalization
       IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway s
     zero_add n ▸ IsStandardSmoothOfRelativeDimension.comp this hf
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- Every standard smooth homomorphism `R → S` factors into `R -> R[X₁,...,Xₙ] → S`

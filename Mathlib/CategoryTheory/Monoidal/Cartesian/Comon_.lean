@@ -28,6 +28,7 @@ variable (C : Type u) [Category.{v} C] [CartesianMonoidalCategory C]
 
 attribute [local simp] leftUnitor_hom rightUnitor_hom
 
+set_option backward.whnf.reducibleClassField false in
 /--
 The functor from a Cartesian monoidal category to comonoids in that category,
 equipping every object with the diagonal map as a comultiplication.

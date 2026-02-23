@@ -330,7 +330,6 @@ def pullFunctorIdIso :
     rw [pullFunctorObjHom_eq_assoc _ _ _ _ _ q f₁ f₂ rfl]
     simp [mapComp'_id_comp_inv_app_assoc, mapComp'_id_comp_hom_app, ← Functor.map_comp]))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The composition of two functors `pullFunctor` is isomorphic to `pullFunctor` applied
 to the compositions. -/
 @[simps!]

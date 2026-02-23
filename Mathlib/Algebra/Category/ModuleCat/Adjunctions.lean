@@ -110,7 +110,6 @@ variable [CommRing R]
 
 namespace FreeMonoidal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u))`.
 (This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
@@ -129,7 +128,6 @@ def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
 @[simp]
 lemma εIso_hom_one : (εIso R).hom 1 = freeMk PUnit.unit := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma εIso_inv_freeMk (x : PUnit) : (εIso R).inv (freeMk x) = 1 := by
   dsimp [εIso, freeMk]
@@ -254,6 +252,7 @@ namespace Free
 
 section
 
+set_option backward.whnf.reducibleClassField false in
 instance : Preadditive (Free R C) where
   homGroup _ _ := Finsupp.instAddCommGroup
   add_comp X Y Z f f' g := by
@@ -265,6 +264,7 @@ instance : Preadditive (Free R C) where
     congr; ext r h
     rw [Finsupp.sum_add_index'] <;> · simp [mul_add]
 
+set_option backward.whnf.reducibleClassField false in
 instance : Linear R (Free R C) where
   homModule _ _ := Finsupp.module _ R
   smul_comp X Y Z r f g := by
@@ -276,6 +276,7 @@ instance : Linear R (Free R C) where
     congr; ext h s
     rw [Finsupp.sum_smul_index] <;> simp [mul_left_comm]
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem single_comp_single {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (r s : R) :
     (single f r ≫ single g s : Free.of R X ⟶ Free.of R Z) = single (f ≫ g) (r * s) := by
@@ -302,6 +303,7 @@ variable {C} {D : Type u} [Category.{v} D] [Preadditive D] [Linear R D]
 
 open Preadditive Linear
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- A functor to an `R`-linear category lifts to a functor from its `R`-linear completion.
 -/

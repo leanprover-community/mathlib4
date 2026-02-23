@@ -70,7 +70,6 @@ def eval [Add M] [Zero M] [SMul R M] (l : NF R M) : M := (l.map (fun (⟨r, x⟩
     (p ::ᵣ l).eval = p.1 • p.2 + l.eval := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem atom_eq_eval [AddMonoid M] (x : M) : x = NF.eval [(1, x)] := by simp [eval]
 
 variable (M) in
@@ -139,6 +138,7 @@ theorem sub_eq_eval {R₁ R₂ S₁ S₂ : Type*} [AddCommGroup M] [Ring R] [Mod
 instance [Neg R] : Neg (NF R M) where
   neg l := l.map fun (a, x) ↦ (-a, x)
 
+set_option backward.whnf.reducibleClassField false in
 theorem eval_neg [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) : (-l).eval = - l.eval := by
   simp +instances only [NF.eval, List.map_map, List.sum_neg, NF.instNeg]
   congr

@@ -142,7 +142,6 @@ lemma add_apply (f g : E₁ →ₚ[R] E₂) (x : E₁) :
     (f + g) x = f x + g x := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : SMul ℕ (E₁ →ₚ[R] E₂) where
   smul n f := .mk (n • f.toLinearMap) fun x y h ↦ by
     induction n with

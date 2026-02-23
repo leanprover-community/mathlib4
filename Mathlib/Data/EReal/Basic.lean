@@ -45,6 +45,7 @@ instance : CompleteLinearOrder EReal :=
 instance : LinearOrder EReal :=
   inferInstanceAs (LinearOrder (WithBot (WithTop ℝ)))
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsOrderedAddMonoid EReal :=
   inferInstanceAs (IsOrderedAddMonoid (WithBot (WithTop ℝ)))
 

@@ -145,7 +145,6 @@ lemma rpowIntegrand₀₁_monotoneOn (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) :
     simp only [rpowIntegrand₀₁, mem_Ici] at hx h ⊢
     gcongr
 
-set_option backward.isDefEq.respectTransparency false in
 lemma continuousOn_rpowIntegrand₀₁_uncurry (hp : p ∈ Ioo 0 1) (s : Set ℝ) (hs : s ⊆ Ici 0) :
     ContinuousOn (rpowIntegrand₀₁ p).uncurry (Ioi 0 ×ˢ s) := by
   let g : ℝ × ℝ → ℝ := fun q => q.1 ^ (p - 1) * q.2 / (q.1 + q.2)
@@ -265,7 +264,6 @@ lemma integrableOn_rpowIntegrand₀₁_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     IntegrableOn (rpowIntegrand₀₁ p · x) (Ici 0) :=
   integrableOn_rpowIntegrand₀₁_Ioi hp hx |>.congr_set_ae Ioi_ae_eq_Ici.symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma integral_rpowIntegrand₀₁_eq_rpow_mul_const (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     (∫ t in Ioi 0, rpowIntegrand₀₁ p t x) = x ^ p * (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1) := by
   -- We use the change of variables formula with `f t = x * t`. Here `g = rpowIntegrand₀₁ p · x`.
@@ -331,7 +329,6 @@ lemma rpow_eq_const_mul_integral (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     rw [integral_rpowIntegrand₀₁_eq_rpow_mul_const hp hx, mul_comm, mul_assoc, mul_inv_cancel₀
       this, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The integral representation of the function `x ↦ x ^ p` (where `p ∈ (0, 1)`) . -/
 lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
     ∃ μ : Measure ℝ, ∀ x ∈ Ici 0,

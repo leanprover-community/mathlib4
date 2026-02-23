@@ -152,7 +152,6 @@ We isolate the contributions of different prime powers to `ψ` and use this to s
 are close.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A sum over prime powers may be written as a double sum over exponents and then primes. -/
 theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x) :
     ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n

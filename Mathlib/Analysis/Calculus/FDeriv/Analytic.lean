@@ -507,7 +507,6 @@ protected theorem HasFiniteFPowerSeriesOnBall.fderiv
   rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_enorm_sub, Metric.mem_eball] using hz
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a function has a finite power series on a ball, then so does its derivative.
 This is a variant of `HasFiniteFPowerSeriesOnBall.fderiv` where the degree of `f` is `< n`
 and not `< n + 1`. -/
@@ -822,7 +821,6 @@ theorem iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
 
 open ContinuousLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] {p : FormalMultilinearSeries 𝕜 E F}
     {f : E → F}, HasFPowerSeriesOnBall f p x r →
@@ -836,7 +834,6 @@ private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCom
 variable [CompleteSpace F]
 include h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The iterated derivative of an analytic function, on vectors `(y, ..., y)`, is given by `n!`
 times the `n`-th term in the power series. For a more general result giving the full iterated
 derivative as a sum over the permutations of `Fin n`, see

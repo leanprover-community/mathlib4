@@ -127,7 +127,6 @@ lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
 
 open Topology Filter
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
   simpa using Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
     by norm_num

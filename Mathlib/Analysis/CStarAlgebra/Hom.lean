@@ -19,6 +19,7 @@ Here we collect properties of C⋆-algebra homomorphisms.
 
 public section
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 open CStarAlgebra in
 lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*} [CStarAlgebra A] [CStarAlgebra B]

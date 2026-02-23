@@ -111,7 +111,6 @@ theorem subtype_comp_rangeRestrict (f : G →* N) : f.range.subtype.comp f.range
 theorem rangeRestrict_surjective (f : G →* N) : Function.Surjective f.rangeRestrict :=
   fun ⟨_, g, rfl⟩ => ⟨g, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma rangeRestrict_injective_iff {f : G →* N} : Injective f.rangeRestrict ↔ Injective f := by
   convert Set.injective_codRestrict _

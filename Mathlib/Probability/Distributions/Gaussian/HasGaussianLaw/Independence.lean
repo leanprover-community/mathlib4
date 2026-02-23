@@ -233,6 +233,7 @@ end InnerProductSpace
 
 section Real
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- If $((X_{i,j})_{j \in \kappa_i})_{i \in \iota}$ are jointly Gaussian, then they are independent
 if for all $i_1 \ne i_2 \in \iota$ and for all $j_1 \in \kappa_{i_1}, j_2 \in \kappa_{i_2}$,
@@ -280,6 +281,7 @@ variable {E F : Type*}
     [NormedAddCommGroup F] [MeasurableSpace F]
     [CompleteSpace F] [BorelSpace F] [SecondCountableTopology F]
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- Independent Gaussian random variables are jointly Gaussian. -/
 lemma IndepFun.hasGaussianLaw [NormedSpace ℝ E] [NormedSpace ℝ F] {X : Ω → E} {Y : Ω → F}
@@ -338,6 +340,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_inner [InnerProductSpace ℝ E] [Inn
   hXY.indepFun_of_covariance_strongDual fun L₁ L₂ ↦ by
     simpa using h ((toDual ℝ E).symm L₁) ((toDual ℝ F).symm L₂)
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- If $((X_i)_{i \in \iota}, (Y_j)_{j \in \kappa})$ is Gaussian, then $(X_i)_{i \in \iota}$ and
 $(Y_j)_{j \in \kappa}$ are independent if for all $i \in \iota, j \in \kappa$,

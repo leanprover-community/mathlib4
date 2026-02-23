@@ -93,7 +93,6 @@ theorem count_true_le_count_false_add_one (hl : IsChain (· ≠ ·) l) :
     count true l ≤ count false l + 1 :=
   hl.count_not_le_count_add_one false
 
-set_option backward.isDefEq.respectTransparency false in
 theorem two_mul_count_bool_of_even (hl : IsChain (· ≠ ·) l) (h2 : Even (length l)) (b : Bool) :
     2 * count b l = length l := by
   rw [← count_not_add_count l b, hl.count_not_eq_count h2, two_mul]

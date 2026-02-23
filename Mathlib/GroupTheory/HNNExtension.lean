@@ -254,6 +254,7 @@ def ofGroup (g : G) : NormalWord d :=
 
 instance : Inhabited (NormalWord d) := ⟨empty⟩
 
+set_option backward.whnf.reducibleClassField false in
 instance : MulAction G (NormalWord d) :=
   { smul := fun g w => { w with head := g * w.head }
     one_smul := by simp +instances [instHSMul]
@@ -418,7 +419,6 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
   · simp only [unitsSMul, dif_neg h]
     simpa [Cancels] using h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     unitsSMul φ (-u) (unitsSMul φ u w) = w := by
   rw [unitsSMul]
@@ -501,14 +501,17 @@ theorem prod_group_smul (g : G) (w : NormalWord d) :
     (g • w).prod φ = of g * (w.prod φ) := by
   simp [ReducedWord.prod, mul_assoc]
 
+set_option backward.whnf.reducibleClassField false in
 theorem of_smul_eq_smul (g : G) (w : NormalWord d) :
     (of g : HNNExtension G A B φ) • w = g • w := by
   simp +instances [instHSMul, SMul.smul, MulAction.toEndHom]
 
+set_option backward.whnf.reducibleClassField false in
 theorem t_smul_eq_unitsSMul (w : NormalWord d) :
     (t : HNNExtension G A B φ) • w = unitsSMul φ 1 w := by
   simp +instances [instHSMul, SMul.smul, MulAction.toEndHom]
 
+set_option backward.whnf.reducibleClassField false in
 theorem t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (t ^ (u : ℤ) : HNNExtension G A B φ) • w = unitsSMul φ u w := by
   rcases Int.units_eq_one_or u with (rfl | rfl) <;>
@@ -567,7 +570,6 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
     rw [← mul_right_inj x, ← ih]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (acting on two goals, with different simp sets)
 set_option linter.flexible false in
 @[simp]

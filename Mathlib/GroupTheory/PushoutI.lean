@@ -284,6 +284,7 @@ theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
 
 open Subgroup.IsComplement
 
+set_option backward.whnf.reducibleClassField false in
 instance baseAction : MulAction H (NormalWord d) :=
   { smul := fun h w => { w with head := h * w.head },
     one_smul := by simp +instances [instHSMul]
@@ -438,6 +439,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
     left_inv := leftInv
     right_inv := fun _ => rcons_injective (leftInv _) }
 
+set_option backward.whnf.reducibleClassField false in
 noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :=
   { smul := fun g w => (equivPair i).symm
       { equivPair i w with

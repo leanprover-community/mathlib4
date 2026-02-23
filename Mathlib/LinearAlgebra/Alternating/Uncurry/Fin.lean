@@ -163,7 +163,6 @@ def alternatizeUncurryFinLM : (M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) →ₗ[R] M
 @[deprecated (since := "2025-09-30")]
 alias uncurryFinLM := alternatizeUncurryFinLM
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a bilinear map taking values in the space of alternating maps,
 then evaluation of the twice uncurried `f` on a tuple of vectors `v`
 can be represented as a sum of

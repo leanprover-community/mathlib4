@@ -24,6 +24,7 @@ universe u
 
 variable {α : Type u}
 
+set_option backward.whnf.reducibleClassField false in
 /-- A function to create a provable equal copy of a top order
 with possibly different definitional equalities. -/
 def OrderTop.copy {h : LE α} {h' : LE α} (c : @OrderTop α h')
@@ -31,6 +32,7 @@ def OrderTop.copy {h : LE α} {h' : LE α} (c : @OrderTop α h')
     (le_eq : ∀ x y : α, (@LE.le α h) x y ↔ x ≤ y) : @OrderTop α h :=
   @OrderTop.mk α h { top := top } fun _ ↦ by simp [eq_top, le_eq]
 
+set_option backward.whnf.reducibleClassField false in
 /-- A function to create a provable equal copy of a bottom order
 with possibly different definitional equalities. -/
 def OrderBot.copy {h : LE α} {h' : LE α} (c : @OrderBot α h')
@@ -38,6 +40,7 @@ def OrderBot.copy {h : LE α} {h' : LE α} (c : @OrderBot α h')
     (le_eq : ∀ x y : α, (@LE.le α h) x y ↔ x ≤ y) : @OrderBot α h :=
   @OrderBot.mk α h { bot := bot } fun _ ↦ by simp [eq_bot, le_eq]
 
+set_option backward.whnf.reducibleClassField false in
 /-- A function to create a provable equal copy of a bounded order
 with possibly different definitional equalities. -/
 def BoundedOrder.copy {h : LE α} {h' : LE α} (c : @BoundedOrder α h')

@@ -94,7 +94,6 @@ lemma sum_modEq_zero_of_odd (hn : Odd n) : ∑ a, S c a ≡ 0 [ZMOD n !] := by
     Nat.mul_factorial_pred hn.pos.ne', Nat.cast_mul, ← mul_assoc, ← mul_rotate]
   exact (Int.dvd_mul_left ..).modEq_zero_int
 
-set_option backward.isDefEq.respectTransparency false in
 theorem result (hn : Odd n ∧ 1 < n) : ∃ a b, a ≠ b ∧ (n ! : ℤ) ∣ S c a - S c b := by
   by_contra h
   have key := (sum_range_modEq_sum_of_contra h).trans (sum_modEq_zero_of_odd hn.1)

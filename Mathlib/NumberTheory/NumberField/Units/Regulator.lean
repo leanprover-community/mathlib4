@@ -178,7 +178,6 @@ theorem regOfFamily_eq_det' (u : Fin (rank K) → (𝓞 K)ˣ) :
   · rw [regOfFamily_eq_zero hu, det_eq_zero_of_not_linearIndependent_rows, abs_zero]
     rwa [IsMaxRank, ← linearIndependent_equiv (equivFinRank K).symm] at hu
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 Let `u : Fin (rank K) → (𝓞 K)ˣ` be a family of units and let `w₁` and `w₂` be two infinite
