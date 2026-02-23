@@ -203,17 +203,17 @@ lemma coeff_apply_of_mem (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (t : Π 
   simp [coeff, hx]
 
 lemma coeff_sum_eq [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M, V x) (hx : x ∈ u) :
-    t x = ∑ i, ((LinearMap.piApply (hs.coeff i)) t x) • (s i x) := by
-  simpa [LinearMap.piApply, coeff, hx] using (Basis.sum_repr (hs.toBasisAt hx) (t x)).symm
+    t x = ∑ i, (hs.coeff i x (t x)) • (s i x) := by
+  simpa [coeff, hx] using (Basis.sum_repr (hs.toBasisAt hx) (t x)).symm
 
 lemma eq_of_coeff_eq [Finite ι] (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u)
     {t t' : Π x : M, V x}
-    (h : ∀ i, (LinearMap.piApply (hs.coeff i)) t x = (LinearMap.piApply (hs.coeff i)) t' x) :
+    (h : ∀ i, hs.coeff i x (t x) = (LinearMap.piApply (hs.coeff i)) t' x) :
     t x = t' x := by
   letI : Fintype ι := Fintype.ofFinite ι
   calc
-    t x = ∑ i, ((LinearMap.piApply (hs.coeff i)) t x) • (s i x) := hs.coeff_sum_eq t hx
-    _ = ∑ i, ((LinearMap.piApply (hs.coeff i)) t' x) • (s i x) := by simp [h]
+    t x = ∑ i, hs.coeff i x (t x) • (s i x) := hs.coeff_sum_eq t hx
+    _ = ∑ i, hs.coeff i x (t' x) • (s i x) := by simp [h]
     _ = t' x := (hs.coeff_sum_eq t' hx).symm
 
 /-- A local frame locally spans the space of sections for `V`: for each local frame `s i` on an open
@@ -221,15 +221,15 @@ set `u` around `x`, we have
 `t = ∑ i, (LinearMap.piApply (hs.coeff i) t) • (s i x)` near `x`. -/
 lemma eventually_eq_sum_coeff_smul [Fintype ι]
     (hs : IsLocalFrameOn I F n s u) (t : Π x : M, V x) (hu'' : u ∈ 𝓝 x) :
-    ∀ᶠ x' in 𝓝 x, t x' = ∑ i, ((LinearMap.piApply (hs.coeff i)) t x') • (s i x') :=
+    ∀ᶠ x' in 𝓝 x, t x' = ∑ i, hs.coeff i x' (t x') • (s i x') :=
   eventually_of_mem hu'' fun _ hx ↦ hs.coeff_sum_eq _ hx
 
 variable {t t' : Π x : M, V x}
 
 /-- The coefficients of `t` in a local frame at `x` only depend on `t` at `x`. -/
 lemma coeff_congr (hs : IsLocalFrameOn I F n s u) (htt' : t x = t' x) (i : ι) :
-    (LinearMap.piApply (hs.coeff i)) t x = (LinearMap.piApply (hs.coeff i)) t' x := by
-  by_cases hxe : x ∈ u <;> simp [LinearMap.piApply, coeff, hxe, htt']
+    hs.coeff i x (t x) = hs.coeff i x (t' x) := by
+  by_cases hxe : x ∈ u <;> simp [coeff, hxe, htt']
 
 /-- If `s` and `s'` are local frames which are equal at `x`,
 a section `t` has equal frame coefficients in them. -/
