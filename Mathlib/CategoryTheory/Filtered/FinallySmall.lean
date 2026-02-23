@@ -70,6 +70,16 @@ instance : (fromFilteredFinalModel.{w} C).Final :=
 instance : FinallySmall.{w} C :=
   finallySmall_of_final_of_essentiallySmall (fromFilteredFinalModel.{w} C)
 
+lemma FinallySmallFiltered.isConnected : IsConnected C := by
+  rw [isConnected_iff_final_of_unique ((Functor.const C).obj (.mk Unit.unit)),
+    final_iff_final_comp (fromFilteredFinalModel.{w} C),
+    ← isConnected_iff_final_of_unique]
+  exact IsFiltered.isConnected _
+
+attribute [local instance] IsFiltered.isSifted in
+lemma FinallySmallFiltered.isSifted : IsSifted C :=
+  IsSifted.of_final_functor_from_sifted (fromFilteredFinalModel.{w} C)
+
 @[deprecated (since := "2026-02-21")]
 alias FinallySmall.FilteredFinalModel := FilteredFinalModel
 @[deprecated (since := "2026-02-21")]
@@ -103,6 +113,12 @@ instance : (fromCofilteredInitialModel.{w} C).Initial :=
 
 instance : InitiallySmall.{w} C :=
   initiallySmall_of_initial_of_essentiallySmall (fromCofilteredInitialModel.{w} C)
+
+lemma InitiallySmallCofiltered.isConnected : IsConnected C := by
+  rw [isConnected_iff_initial_of_unique ((Functor.const C).obj (.mk Unit.unit)),
+    initial_iff_initial_comp (fromCofilteredInitialModel.{w} C),
+    ← isConnected_iff_initial_of_unique]
+  exact IsCofiltered.isConnected _
 
 @[deprecated (since := "2026-02-21")]
 alias InitiallySmall.CofilteredInitialModel := CofilteredInitialModel
