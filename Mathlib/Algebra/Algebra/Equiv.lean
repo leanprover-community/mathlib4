@@ -955,7 +955,7 @@ variable (R) in
 endomorphisms. -/
 @[simps!] def conjAlgEquiv (e : M₁ ≃ₗ[S] M₂) : Module.End S M₁ ≃ₐ[R] Module.End S M₂ where
   __ := e.conjRingEquiv
-  commutes' _ := by ext; change e.restrictScalars R _ = _; simp
+  map_smul' _ _ := by ext; change e.restrictScalars R _ = _; simp
 
 @[deprecated (since := "2025-12-06")] alias algConj := conjAlgEquiv
 
