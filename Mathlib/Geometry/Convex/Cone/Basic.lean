@@ -172,6 +172,7 @@ variable (C₁ C₂) in
 
 @[simp, norm_cast] lemma coe_top : ↑(⊤ : ConvexCone R M) = (univ : Set M) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] lemma disjoint_coe : Disjoint (C₁ : Set M) C₂ ↔ Disjoint C₁ C₂ := by
   simp [disjoint_iff, ← coe_inf]
 
@@ -322,6 +323,7 @@ def toPreorder (C : ConvexCone R G) (h₁ : C.Pointed) : Preorder G where
   le_trans x y z xy zy := by simpa using add_mem zy xy
 
 /-- A pointed and salient cone defines a partial order. -/
+@[instance_reducible]
 def toPartialOrder (C : ConvexCone R G) (h₁ : C.Pointed) (h₂ : C.Salient) : PartialOrder G :=
   { toPreorder C h₁ with
     le_antisymm := by
@@ -536,6 +538,7 @@ lemma mem_hull_of_convex (hs : Convex 𝕜 s) : x ∈ hull 𝕜 s ↔ ∃ r : �
 lemma coe_hull_of_convex (hs : Convex 𝕜 s) : hull 𝕜 s = {x | ∃ r : 𝕜, 0 < r ∧ x ∈ r • s} := by
   ext; exact mem_hull_of_convex hs
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_hull_left_of_convex (hs : Convex 𝕜 s) : Disjoint (hull 𝕜 s) C ↔ Disjoint s C where
   mp := by rw [← disjoint_coe]; exact .mono_left subset_hull
   mpr := by

@@ -79,6 +79,7 @@ end Equiv.Perm
 
 namespace alternatingGroup
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     Function.Surjective (toPerm : stabilizer (alternatingGroup α) s → Perm s) := by
   classical
@@ -170,6 +171,7 @@ theorem exists_mem_stabilizer_smul_eq (hα : 4 ≤ Nat.card α) {t : Set α} :
     · simp only [Subgroup.smul_def, Perm.smul_def, Perm.coe_mul]
       grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
     (G : Subgroup (alternatingGroup α)) [hG' : IsPreprimitive G α] {s : Set α}
     (hG : stabilizer (alternatingGroup α) s ≤ G) :
@@ -209,6 +211,7 @@ end MulAction.IsBlock
 
 namespace alternatingGroup
 
+set_option backward.isDefEq.respectTransparency false in
 /- Note : The proof of this statement is close to that
 of `Equiv.Perm.isCoatom_stabilizer_of_ncard_lt_ncard_compl`,
 and while it would not be absolutely impossible to abstract both proofs,
@@ -274,6 +277,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (Nat.sub_le _ _)
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isCoatom_stabilizer_singleton (h3 : 3 ≤ Nat.card α)
     {s : Set α} (h : s.Nonempty) (h1 : s.Subsingleton) :
     IsCoatom (stabilizer (alternatingGroup α) s) := by
@@ -286,6 +290,7 @@ theorem isCoatom_stabilizer_singleton (h3 : 3 ≤ Nat.card α)
     alternatingGroup.isPreprimitive_of_three_le_card α h3
   apply IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `MulAction.stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`,
 provided `s ≠ ∅`, `sᶜ ≠ ∅` and `Nat.card α ≠ 2 * s.ncard`.
 

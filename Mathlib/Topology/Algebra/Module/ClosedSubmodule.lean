@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -301,6 +301,76 @@ instance : CompleteSemilatticeSup (ClosedSubmodule R N) where
 instance : Lattice (ClosedSubmodule R N) where
 
 instance [T1Space N] : CompleteLattice (ClosedSubmodule R N) where
+
+end ClosedSubmodule
+
+namespace ClosedSubmodule
+
+variable (f : M ≃L[R] N)
+
+/-- A continuous equivalence `f` between modules `M` and `N` on `R` induces an equivalence between
+closed submodules in `M` and those in `N` through `map f`.
+The definition does not use `ClosedSubmodule.map` because that has additional `ContinuousAdd` and
+`ContinuousConstSMul` type-class assumptions. -/
+def mapEquiv : ClosedSubmodule R M ≃ ClosedSubmodule R N where
+  toFun s := ⟨s.toSubmodule.map f.toLinearMap, by simpa using s.isClosed⟩
+  invFun t := ⟨t.toSubmodule.map f.symm.toLinearMap, by simpa using t.isClosed⟩
+  left_inv := by intro _; ext _; simp
+  right_inv := by intro _; ext _; simp
+
+variable (s : ClosedSubmodule R M)
+
+@[simp]
+lemma mapEquiv_apply : (s.mapEquiv f).toSubmodule = s.toSubmodule.map f.toLinearMap := rfl
+
+@[simp]
+lemma mapEquiv_symm : mapEquiv f.symm = (mapEquiv f).symm := rfl
+
+@[simp]
+lemma mem_mapEquiv_iff (x : N) : x ∈ (s.mapEquiv f) ↔ f.symm x ∈ s :=
+  Submodule.mem_map_equiv (e := f.toLinearEquiv) s.toSubmodule
+
+lemma mem_mapEquiv_iff' (x : M) : f x ∈ (s.mapEquiv f) ↔ x ∈ s := by
+  simp
+
+@[simp]
+lemma mapEquiv_bot_eq_bot [T1Space M] [T1Space N] : ((⊥ : ClosedSubmodule R M).mapEquiv f) = ⊥ := by
+  ext x; simp
+
+@[simp]
+lemma mapEquiv_top_eq_top : ((⊤ : ClosedSubmodule R M).mapEquiv f) = ⊤ := by
+  ext x; simp
+
+@[simp]
+lemma mapEquiv_inf_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
+    (s ⊓ t).mapEquiv f = s.mapEquiv f ⊓ t.mapEquiv f := by
+  ext x
+  simp only [Submodule.carrier_eq_coe, coe_toSubmodule, SetLike.mem_coe, toSubmodule_inf,
+    Submodule.coe_inf, Set.mem_inter_iff, mem_mapEquiv_iff, mem_inf]
+
+variable [ContinuousAdd N] [ContinuousConstSMul R N] [ContinuousAdd M] [ContinuousConstSMul R M]
+
+@[simp]
+lemma closure_map_eq_mapEquiv_closure (s : Submodule R M) :
+    (s.map f.toLinearMap).closure = s.closure.mapEquiv f := by
+  ext x
+  simp only [Submodule.carrier_eq_coe, coe_toSubmodule, Submodule.coe_closure, Submodule.map_coe,
+    LinearEquiv.coe_coe, ContinuousLinearEquiv.coe_toLinearEquiv, mapEquiv_apply, Set.mem_image]
+  rw [← ContinuousLinearEquiv.image_closure]
+  simp
+
+@[simp]
+lemma mapEquiv_sup_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
+    (s ⊔ t).mapEquiv f = s.mapEquiv f ⊔ t.mapEquiv f := by
+  ext x
+  simp only [mapEquiv_apply, toSubmodule_sup, Submodule.carrier_eq_coe, Submodule.map_coe,
+    LinearEquiv.coe_coe, ContinuousLinearEquiv.coe_toLinearEquiv, coe_toSubmodule,
+    Submodule.coe_closure, Set.mem_image]
+  have : f = f.toLinearEquiv.toLinearMap := by
+    exact LinearMap.ext (congrFun rfl)
+  rw [← this, ← Submodule.coe_closure, ← Submodule.map_sup,  Submodule.map_coe]
+  simp only [Submodule.coe_closure, ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_coe,
+    ← ContinuousLinearEquiv.image_closure, Set.mem_image]
 
 end ClosedSubmodule
 

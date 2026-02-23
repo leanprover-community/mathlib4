@@ -247,6 +247,7 @@ alias span_int_eq_addSubgroup_closure := span_int_eq_addSubgroupClosure
 theorem span_int_eq {M : Type*} [AddCommGroup M] (s : AddSubgroup M) :
     (span ℤ (s : Set M)).toAddSubgroup = s := by rw [span_int_eq_addSubgroupClosure, s.closure_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Disjoint.of_span (hst : Disjoint (span R s) (span R t)) :
     Disjoint (s \ {0}) t := by
   rw [disjoint_iff_forall_ne]
@@ -314,6 +315,7 @@ theorem span_iUnion₂ {ι} {κ : ι → Sort*} (s : ∀ i, κ i → Set M) :
 theorem span_biUnion (s : Set (Submodule R M)) : span R (⋃ S ∈ s, S) = sSup s := by
   simpa using (Submodule.gi R M).l_sSup_u_image s
 
+set_option backward.isDefEq.respectTransparency false in
 theorem span_attach_biUnion [DecidableEq M] {α : Type*} (s : Finset α) (f : s → Finset M) :
     span R (s.attach.biUnion f : Set M) = ⨆ x, span R (f x) := by simp [span_iUnion]
 

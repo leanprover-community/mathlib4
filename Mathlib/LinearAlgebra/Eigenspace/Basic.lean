@@ -602,6 +602,7 @@ lemma isNilpotent_restrict_maxGenEigenspace_sub_algebraMap [IsNoetherian R M] (f
     _ (isNilpotent_restrict_genEigenspace_nat f μ (maxUnifEigenspaceIndex f μ))
   rw [maxGenEigenspace_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_genEigenspace [IsDomain R] [IsTorsionFree R M]
     (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) (k l : ℕ∞) :
     Disjoint (f.genEigenspace μ₁ k) (f.genEigenspace μ₂ l) := by
@@ -713,6 +714,7 @@ theorem eigenvectors_linearIndependent [IsDomain R] [IsTorsionFree R M]
     (h_eigenvec : ∀ μ : μs, f.HasEigenvector μ (xs μ)) : LinearIndependent R xs :=
   f.eigenvectors_linearIndependent' (fun μ : μs ↦ μ) Subtype.coe_injective _ h_eigenvec
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
 of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/
 theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (μ : R)
@@ -734,12 +736,14 @@ theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (�
     erw [pow_succ, pow_succ, LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
       LinearMap.comp_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : ℕ∞} {μ : R}
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
     p ⊓ f.genEigenspace μ k =
       (genEigenspace (LinearMap.restrict f hfp) μ k).map p.subtype := by
   rw [f.genEigenspace_restrict _ _ _ hfp, Submodule.map_comap_eq, Submodule.range_subtype]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo
     {p : Submodule R M} (f g : End R M) (hf : MapsTo f p p) (hg : MapsTo g p p) {μ₁ μ₂ : R}
     (h : MapsTo f (g.maxGenEigenspace μ₁) (g.maxGenEigenspace μ₂)) :
@@ -752,6 +756,7 @@ lemma mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo
     Submodule.mk_eq_zero, ← mem_maxGenEigenspace] at hx ⊢
   exact h hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `p` is an invariant submodule of an endomorphism `f`, then the `μ`-eigenspace of the
 restriction of `f` to `p` is a submodule of the `μ`-eigenspace of `f`. -/
 theorem eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp : ∀ x ∈ p, f x ∈ p)
@@ -779,6 +784,7 @@ theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End
     Submodule.map_inf_eq_map_inf_comap, top_inf_eq, h, genEigenspace_nat]
   apply Submodule.map_comap_le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If an invariant subspace `p` of an endomorphism `f` is disjoint from the `μ`-eigenspace of `f`,
 then the restriction of `f` to `p` has trivial `μ`-eigenspace. -/
 theorem eigenspace_restrict_eq_bot {f : End R M} {p : Submodule R M} (hfp : ∀ x ∈ p, f x ∈ p)

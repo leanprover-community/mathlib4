@@ -379,6 +379,7 @@ noncomputable def sheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G.op
     ext1
     apply (presheafIso i).inv_hom_id
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The constructed `sheafHom α` is equal to `α` when restricted onto `C`. -/
 theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     whiskerLeft G.op (sheafHom α) = α := by
