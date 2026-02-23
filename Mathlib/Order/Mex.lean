@@ -42,16 +42,8 @@ theorem coe_sInf_compl_le_encard (s : Set ℕ) : sInf sᶜ ≤ s.encard := by
   · rw [hinf.encard_eq]
     exact le_top
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sInf_coe_compl_le_card (s : Finset ℕ) : sInf sᶜ ≤ s.card := by
-  rw [← csSup_Iic (a := s.card), ← Finset.coe_Iic]
-  refine csInf_le_csSup_of_nonempty_inter' ?_ <| Finset.bddAbove _
-  rw [← not_disjoint_iff_nonempty_inter, disjoint_compl_left_iff_subset.not]
-  intro h
-  norm_cast at h
-  apply Finset.card_le_card at h
-  rw [Nat.card_Iic] at h
-  lia
+  grw [sInf_compl_le_ncard <| Finset.finite_toSet s, ncard_coe_finset s]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem csInf_coe_compl_le_coe_card' {α : Type*} [ConditionallyCompleteLinearOrderBot α]
