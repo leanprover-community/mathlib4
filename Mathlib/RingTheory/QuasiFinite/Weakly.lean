@@ -137,7 +137,8 @@ lemma finite_locoalization {K : Type*} [Field K] [Algebra K S] [WeaklyQuasiFinit
   have H : Algebra.WeaklyQuasiFiniteAt K q := ‹_›
   rw [Algebra.weaklyQuasiFiniteAt_iff, ← Ideal.over_def q ⊥, Ideal.map_bot] at H
   have : QuasiFinite K (Localization.AtPrime q) := .of_surjective_algHom
-    (AlgEquiv.quotientBot K _).toAlgHom (AlgEquiv.quotientBot K _).surjective
+    (AlgEquiv.quotientBot K (Localization.AtPrime q)).toAlgHom
+      (AlgEquiv.quotientBot K (Localization.AtPrime q)).surjective
   exact .of_quasiFinite
 
 /-- Use `Algebra.QuasiFiniteAt.eq_of_le_of_under_eq` instead for `Algebra.QuasiFiniteAt R p`. -/
