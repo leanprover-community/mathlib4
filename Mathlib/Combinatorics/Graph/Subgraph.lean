@@ -158,15 +158,13 @@ lemma vertexSet_ssubset_or_edgeSet_ssubset_of_lt (hGH : G < H) : V(G) ⊂ V(H) �
 
 /-- Two subgraphs of the same graph are compatible. -/
 lemma compatible_of_le_le {H₁ H₂ : Graph α β} (hH₁G : H₁ ≤ G) (hH₂G : H₂ ≤ G) : H₁.Compatible H₂ :=
-  ((isLink_eqOn_of_le hH₁G).mono inter_subset_left).trans <|
-    (isLink_eqOn_of_le hH₂G).symm.mono inter_subset_right
+  fun _ he₁ he₂ _ _ ↦ isLink_iff_of_le hH₁G he₁ |>.trans <| (isLink_iff_of_le hH₂G he₂).symm
 
 lemma compatible_of_le (hHG : H ≤ G) : H.Compatible G := compatible_of_le_le hHG le_rfl
 
 lemma Compatible.anti_left {G₀ : Graph α β} (hG₀G : G₀ ≤ G) (h : Compatible G H) :
     Compatible G₀ H :=
-  ((isLink_eqOn_of_le hG₀G).mono inter_subset_left).trans
-    (h.mono (inter_subset_inter_left _ (edgeSet_mono hG₀G)))
+  fun _ he₁ he₂ _ _ ↦ isLink_iff_of_le hG₀G he₁ |>.trans <| h (edgeSet_mono hG₀G he₁) he₂ ..
 
 lemma Compatible.anti_right {H₀ : Graph α β} (hH₀H : H₀ ≤ H) (h : Compatible G H) :
     Compatible G H₀ :=

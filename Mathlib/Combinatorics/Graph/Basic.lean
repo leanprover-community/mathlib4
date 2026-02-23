@@ -174,10 +174,6 @@ lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
     G.IsLink e x' y' ↔ s(x, y) = s(x', y') := by
   rw [h.isLink_iff, Sym2.eq_iff]
 
-@[simp]
-lemma not_isLink_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.IsLink e x y :=
-  mt IsLink.edge_mem he
-
 /-! ### Edge-vertex incidence -/
 
 /-- The unary incidence predicate of `G`. `G.Inc e x` means that the vertex `x`
