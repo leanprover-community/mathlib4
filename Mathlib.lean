@@ -3629,6 +3629,7 @@ public import Mathlib.Data.Finset.Lattice.Pi
 public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finset.Mex
 public import Mathlib.Data.Finset.MulAntidiagonal
 public import Mathlib.Data.Finset.NAry
 public import Mathlib.Data.Finset.NatAntidiagonal
@@ -5747,7 +5748,6 @@ public import Mathlib.Order.Lattice.Congruence
 public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.LiminfLimsup
 public import Mathlib.Order.Max
-public import Mathlib.Order.Mex
 public import Mathlib.Order.MinMax
 public import Mathlib.Order.Minimal
 public import Mathlib.Order.ModularLattice
