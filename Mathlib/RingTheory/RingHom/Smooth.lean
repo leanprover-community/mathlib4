@@ -138,6 +138,8 @@ lemma propertyIsLocal : PropertyIsLocal Smooth where
     (stableUnderComposition.stableUnderCompositionWithLocalizationAway
       holdsForLocalizationAway).right
 
+end RingHom.Smooth
+
 section
 
 universe v w
@@ -178,5 +180,3 @@ lemma RingHom.FormallySmooth.of_ringEquiv_comp {T : Type w} [CommRing T] (e : S 
   exact Algebra.FormallySmooth.of_equiv e'
 
 end
-
-end RingHom.Smooth
