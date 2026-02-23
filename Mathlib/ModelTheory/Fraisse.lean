@@ -240,7 +240,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
   choose P hPK hP hFP using fun (N : K) (n : ℕ) => jep N N.2 (F (n + 1)).out (hF' _)
   let G : ℕ → K := @Nat.rec (fun _ => K) ⟨(F 0).out, hF' 0⟩ fun n N => ⟨P N n, hPK N n⟩
   let f : ∀ (i j : ℕ), i ≤ j → (G i).val ↪[L] (G j).val :=
-    DirectedSystem.natLERec (fun n => (hP _ n).some)
+    DirectedSystem.natLERec fun n => (hP _ n).some
   refine ⟨Bundled.of (@DirectLimit L _ _ (fun n ↦ (G n).val) _ f _ _), ?_, ?_⟩
   · exact DirectLimit.cg _ (fun n => (fg _ (G n).2).cg)
   · refine (age_directLimit (fun n ↦ (G n).val) f).trans
