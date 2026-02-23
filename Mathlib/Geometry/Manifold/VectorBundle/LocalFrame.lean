@@ -245,8 +245,7 @@ lemma coeff_eq_of_eq (hs : IsLocalFrameOn I F n s u) (hs' : IsLocalFrameOn I F n
 frame at `x` agree. -/
 lemma eq_iff_coeff [VectorBundle 𝕜 F V] [FiniteDimensional 𝕜 F]
     (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) :
-    t x = t' x ↔
-      ∀ i, (hs.coeff i x) (t x) = (hs.coeff i x) (t' x) := by
+    t x = t' x ↔ ∀ i, (hs.coeff i x) (t x) = (hs.coeff i x) (t' x) := by
   letI := fintypeOfFiniteDimensional hs hx
   exact ⟨fun h i ↦ hs.coeff_congr h i, fun h ↦ hs.eq_of_coeff_eq hx h⟩
 
@@ -416,29 +415,26 @@ lemma localFrame_coeff_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M
 variable {s s' : Π x : M, V x}
 
 lemma eq_sum_localFrame_coeff_smul [Fintype ι] (hx : x' ∈ e.baseSet) :
-    s x' = (∑ i, ((LinearMap.piApply (e.localFrame_coeff I b i)) s x') • e.localFrame b i x') := by
-  simp only [localFrame_coeff]
-  exact (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_sum_eq s hx
+    s x' = (∑ i, (e.localFrame_coeff I b i x') (s x') • e.localFrame b i x') :=
+  (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_sum_eq s hx
 
 variable (e b) in
 /-- A local frame locally spans the space of sections for `V`: for each local trivialisation `e`
   of `V` around `x`, we have
   `s = ∑ i, (LinearMap.piApply (b.localFrame_coeff e i) s) • b.localFrame e i` -/
 lemma eventually_eq_localFrame_sum_coeff_smul [Fintype ι] (hxe : x ∈ e.baseSet) :
-    ∀ᶠ x' in 𝓝 x,
-      s x' = ∑ i, ((LinearMap.piApply (e.localFrame_coeff I b i)) s x') • e.localFrame b i x' :=
+    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (e.localFrame_coeff I b i x') (s x') • e.localFrame b i x' :=
   eventually_nhds_iff.mpr ⟨e.baseSet, fun _ ↦ e.eq_sum_localFrame_coeff_smul, e.open_baseSet, hxe⟩
 
 variable (e b) in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
 lemma localFrame_coeff_congr {i : ι} (hss' : s x = s' x) :
-    (LinearMap.piApply (e.localFrame_coeff I b i)) s x =
-      (LinearMap.piApply (e.localFrame_coeff I b i)) s' x := by
-  simpa [localFrame_coeff] using (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
+    (e.localFrame_coeff I b i x) (s x) = (e.localFrame_coeff I b i x) (s' x) := by
+  simpa using (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
 
 variable (e b) in -- TODO: do we need this lemma still?
 lemma localFrame_coeff_apply_zero_at (hs : s x = 0) (i : ι) :
-    (LinearMap.piApply (e.localFrame_coeff I b i)) s x = 0 := by simp [hs]
+    (e.localFrame_coeff I b i x) (s x) = 0 := by simp [hs]
 
 variable {n}
 
@@ -447,8 +443,7 @@ variable (e) in
 Then the coefficient of `s` w.r.t. the local frame induced by `b` and `e`
 equals the cofficient of "`s x` read in the trivialisation `e`" for `b i`. -/
 lemma localFrame_coeff_eq_coeff (hxe : x ∈ e.baseSet) {i : ι} :
-    (LinearMap.piApply (e.localFrame_coeff I b i)) s x =
-      b.repr (e ((T% s) x)).2 i := by
+    (e.localFrame_coeff I b i x) (s x) = b.repr (e ((T% s) x)).2 i := by
   simp [e.localFrame_coeff_apply_of_mem_baseSet b hxe, basisAt]
 
 end Trivialization
