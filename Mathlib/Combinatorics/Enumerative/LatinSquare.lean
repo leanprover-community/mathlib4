@@ -32,7 +32,8 @@ Description of Latin Squares
 * [DONE] Add theorem that a k-1 × n Latin rectangle can be extended to a k × n Latin rectangle.
 * [DONE] Corollary, any k x n Latin rectangle can be extneded to a Latin square.
 * [DONE] Add that a n x n Latin rectangle is a Latin square.
-  This will lead to a computable definition of Latin square.
+* TODO Add docstrings as required by mathlib
+* TODO Prove latin_rectangle_equiv_relation is equivalence relation
 * Add Ryser's theorem using partial Latin squares.
 * Add Evan's Conjeture.
 * Add isomorphism to quasigroups.
@@ -113,6 +114,9 @@ class LatinSquare (n : Type u) (α : Type v) [Fintype n] [Fintype α] [Decidable
 
   m_le_n := by rfl
 
+example : LatinRectangle (Fin 5) (Fin 5) (Fin 5) := LatinRectangle.mk (fun x y ↦ ((x + y) : Fin 5)) 
+  (by decide) (by decide) (by decide)
+
 @[coe]
 abbrev to_matrix : (LatinRectangle m n α) → (Matrix m n α)
  | A => A.M
@@ -177,7 +181,17 @@ def group_to_cayley_table (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
       exact Group.mulRight_bijective (G := G)
    }
 
-def latin_rectangle_isomorphism
+
+-- For example, addGroup_to_cayley_table (ZMod.finEquiv 5).toEquiv
+
+instance nonempty {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
+  addGroup_to_cayley_table (ZMod n)
+
+-- #check Matrix.transpose (addGroup_to_cayley_table (ZMod 5) : Matrix (ZMod 5) (ZMod 5) (ZMod 5))
+
+section Equivalence
+
+def induced_latin_rectangle
   (f : m ≃ m')
   (g : n ≃ n')
   (h : α ≃ β)
@@ -230,13 +244,6 @@ def latin_rectangle_isomorphism
     omega
   }
 
-def latin_square_isomorphism
-  (f : n ≃ n')
-  (g : n ≃ n')
-  (h : α ≃ β)
-  (A : LatinSquare n α) :
-  LatinSquare n' β := latin_rectangle_isomorphism f g h (A : LatinRectangle n n α)
-
 structure LREquiv (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) where
   (f : m ≃ m')
   (g : n ≃ n')
@@ -244,45 +251,19 @@ structure LREquiv (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) whe
   (map_rel : ∀ (r : m) (c : n),
     A'.M (f r) (g c) = h (A.M r c))
 
-def LRIsomorphic (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) :=
+def latin_rectangle_equiv_relation (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) :=
   Nonempty (LREquiv A A')
 
-infixl:25 " ≃◻ " => LRIsomorphic
+infixl:25 " ≃ " => latin_rectangle_equiv_relation
 
-lemma LR_equiv_iso
+lemma induced_latin_rectangle_is_equiv
   (f : m ≃ m')
   (g : n ≃ n')
   (h : α ≃ β)
-  (A : LatinRectangle m n α) : A ≃◻ (latin_rectangle_isomorphism f g h A) :=
-    ⟨ f, g, h, by simp [latin_rectangle_isomorphism] ⟩
+  (A : LatinRectangle m n α) : A ≃ (induced_latin_rectangle f g h A) :=
+    ⟨ f, g, h, by simp [induced_latin_rectangle] ⟩
 
--- For example, addGroup_to_cayley_table (ZMod.finEquiv 5).toEquiv
-
-instance nonempty {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
-  addGroup_to_cayley_table (ZMod n)
-
--- #check Matrix.transpose (addGroup_to_cayley_table (ZMod 5) : Matrix (ZMod 5) (ZMod 5) (ZMod 5))
-
-section Isotopy
-
-structure LatinSquareIsotopy
-  (L₁ : LatinSquare n α)
-  (L₂ : LatinSquare n' β)
-  where
-    symbol_map : α ≃ β
-    reindex_row : n' ≃ n
-    reindex_col : n' ≃ n
-    intertwine : ∀ i, ∀ j, symbol_map (L₁.M (reindex_row i) (reindex_col j)) = L₂.M i j
-
-def reflLatinSquareIsotopy
-  (L : LatinSquare n α) : LatinSquareIsotopy L L := {
-    symbol_map := Equiv.refl α,
-    reindex_row := Equiv.refl n,
-    reindex_col := Equiv.refl n,
-    intertwine := by simp
-  }
-
-end Isotopy
+end Equivalence
 
 section Completion
 
@@ -824,7 +805,7 @@ lemma subrect_transitive {m'' : Type*} [Fintype m'']
 lemma subrect_refl
   {n : Type u} [Fintype n]
   {A : LatinRectangle m n α}
-  {A' : LatinRectangle m' n α} (h : A ≃◻ A') :
+  {A' : LatinRectangle m' n α} (h : A ≃ A') :
   is_subrect A A' := by
     obtain ⟨f,g,h,hrfl⟩ := h
     simp only [is_subrect]
@@ -832,7 +813,7 @@ lemma subrect_refl
     use g
     use h
     exact hrfl
-
+    
 theorem latin_rectangle_extends_to_latin_square
     {n : Type u} [Fintype n]
     {k : Type u} [Fintype k] [Nonempty k]
@@ -844,9 +825,9 @@ theorem latin_rectangle_extends_to_latin_square
       | h a ih =>
         by_cases h_full : Fintype.card k = Fintype.card n
         · let f : k ≃ n := Fintype.equivOfCardEq h_full
-          let A' := latin_rectangle_isomorphism f (Equiv.refl n) (Equiv.refl α) A
-          have h_sim : A ≃◻ A' := by
-            simp [LR_equiv_iso f (Equiv.refl n) (Equiv.refl α) A,A']
+          let A' := induced_latin_rectangle f (Equiv.refl n) (Equiv.refl α) A
+          have h_sim : A ≃ A' := by
+            simp [induced_latin_rectangle_is_equiv f (Equiv.refl n) (Equiv.refl α) A,A']
           use A'
           exact subrect_refl h_sim
         · set k' := Option k with hk'
