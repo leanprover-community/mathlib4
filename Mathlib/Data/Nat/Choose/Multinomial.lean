@@ -183,7 +183,7 @@ variable {α : Type*}
 /-- Alternative definition of multinomial based on `Multiset` delegating to the
   finsupp definition
 -/
-def multinomial [DecidableEq α] (m : Multiset α) : ℕ :=
+noncomputable def multinomial [DecidableEq α] (m : Multiset α) : ℕ :=
   m.toFinsupp.multinomial
 
 theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :

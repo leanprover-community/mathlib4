@@ -433,8 +433,6 @@ variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
 
 instance : Algebra S T := T.algebra
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
-set_option backward.whnf.reducibleClassField false in
 instance : Module S T := Algebra.toModule
 
 instance : SMul S T := Algebra.toSMul

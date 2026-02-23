@@ -50,7 +50,7 @@ open scoped Topology
 open Set SetLike Filter
 
 /-- The underlying family for the basis of ideals in a multivariate power series ring. -/
-def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R × (σ →₀ ℕ)) :
+noncomputable def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R × (σ →₀ ℕ)) :
     TwoSidedIdeal (MvPowerSeries σ R) :=
   TwoSidedIdeal.mk' {f | ∀ e ≤ Jd.2, coeff e f ∈ Jd.1}
     (by simp [coeff_zero])
