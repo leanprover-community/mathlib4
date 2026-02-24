@@ -60,6 +60,7 @@ section orbits
 
 variable {G : Type*} [Group G] {X : Type*} [MulAction G X]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem orbit.eq_or_disjoint (a b : X) :
     orbit G a = orbit G b ∨ Disjoint (orbit G a) (orbit G b) := by
@@ -172,6 +173,7 @@ def IsBlock (B : Set X) := ∀ ⦃g₁ g₂ : G⦄, g₁ • B ≠ g₂ • B �
 
 variable {G} {s : Set G} {g g₁ g₂ : G}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma isBlock_iff_smul_eq_smul_of_nonempty :
     IsBlock G B ↔ ∀ ⦃g₁ g₂ : G⦄, (g₁ • B ∩ g₂ • B).Nonempty → g₁ • B = g₂ • B := by
@@ -186,6 +188,7 @@ lemma isBlock_iff_smul_eq_smul_or_disjoint :
     IsBlock G B ↔ ∀ g₁ g₂ : G, g₁ • B = g₂ • B ∨ Disjoint (g₁ • B) (g₂ • B) :=
   forall₂_congr fun _ _ ↦ or_iff_not_imp_left.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma IsBlock.smul_eq_smul_of_subset (hB : IsBlock G B) (hg : g₁ • B ⊆ g₂ • B) :
     g₁ • B = g₂ • B := by
@@ -222,6 +225,7 @@ lemma IsFixedBlock.isBlock (hfB : IsFixedBlock G B) : IsBlock G B := by simp [Is
 @[to_additive (attr := simp) /-- The empty set is a block. -/]
 lemma IsBlock.empty : IsBlock G (∅ : Set X) := by simp [IsBlock]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A singleton is a block. -/
 @[to_additive /-- A singleton is a block. -/]
 lemma IsBlock.singleton : IsBlock G ({a} : Set X) := by simp [IsBlock]
@@ -262,6 +266,7 @@ lemma isBlock_iff_disjoint_smul_of_ne :
   simp only [disjoint_smul_set_right, ne_eq, ← inv_smul_eq_iff, smul_smul] at h ⊢
   exact hB h
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma isBlock_iff_smul_eq_of_nonempty :
     IsBlock G B ↔ ∀ ⦃g : G⦄, (g • B ∩ B).Nonempty → g • B = B := by
@@ -498,6 +503,7 @@ Annoyingly, it seems like the following two lemmas cannot be unified.
 section Left
 variable [MulAction G H] [IsScalarTower G H H]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- See `MulAction.isBlock_subgroup'` for a version that works for the right action of a group on
 itself. -/
 @[to_additive /-- See `AddAction.isBlock_subgroup'` for a version that works for the right action
@@ -515,6 +521,7 @@ variable [MulAction G H] [IsScalarTower G Hᵐᵒᵖ H]
 
 open MulOpposite
 
+set_option backward.isDefEq.respectTransparency false in
 /-- See `MulAction.isBlock_subgroup` for a version that works for the left action of a group on
 itself. -/
 @[to_additive /-- See `AddAction.isBlock_subgroup` for a version that works for the left action

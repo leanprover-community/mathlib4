@@ -99,6 +99,7 @@ equivalence between the space and the Euclidean space of the same dimension. -/
 noncomputable def OrthonormalBasis.measurableEquiv (b : OrthonormalBasis ι ℝ F) :
     F ≃ᵐ EuclideanSpace ℝ ι := b.repr.toHomeomorph.toMeasurableEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The measurable equivalence defined by an orthonormal basis is volume preserving. -/
 theorem OrthonormalBasis.measurePreserving_measurableEquiv (b : OrthonormalBasis ι ℝ F) :
     MeasurePreserving b.measurableEquiv volume volume := by
@@ -158,6 +159,7 @@ theorem PiLp.volume_preserving_ofLp : MeasurePreserving (@ofLp 2 (ι → ℝ)) :
 theorem PiLp.volume_preserving_toLp : MeasurePreserving (@toLp 2 (ι → ℝ)) :=
   (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
   rw [← (PiLp.volume_preserving_toLp ι).map_eq, volume_pi_eq_dirac 0,

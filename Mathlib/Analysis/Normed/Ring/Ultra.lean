@@ -56,6 +56,8 @@ lemma nnnorm_add_one_le_max_nnnorm_one (x : R) :
   norm_add_one_le_max_norm_one _
 
 variable (R)
+
+set_option backward.isDefEq.respectTransparency false in
 lemma nnnorm_natCast_le_one (n : ℕ) :
     ‖(n : R)‖₊ ≤ 1 := by
   induction n with
