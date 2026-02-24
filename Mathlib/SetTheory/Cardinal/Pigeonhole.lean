@@ -77,30 +77,29 @@ theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (h : #α < 
 
 /-- A function whose domain's cardinality is infinite and strictly greater than its codomain's
 has an infinite fiber. -/
-theorem exists_infinite_fiber {β α : Type u} (f : β → α) (h : #α < #β) [hβ : Infinite β] :
+theorem exists_infinite_fiber {β α : Type u} (f : β → α) (h : #α < #β) [Infinite β] :
     ∃ a : α, Infinite (f ⁻¹' {a}) := by
-  simp_rw [Cardinal.infinite_iff] at hβ ⊢
+  simp_rw [Cardinal.infinite_iff]
   rcases lt_or_ge #α ℵ₀ with hα | hα
-  · exact infinite_pigeonhole_card f ℵ₀ hβ le_rfl (by rwa [isRegular_aleph0.cof_eq])
-  · obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f h hβ
+  · exact infinite_pigeonhole_card f ℵ₀ (aleph0_le_mk β) le_rfl (by rwa [isRegular_aleph0.cof_eq])
+  · obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f h (aleph0_le_mk β)
     exact ⟨a, hα.trans ha.le⟩
 
 /-- A weaker version of `exists_infinite_fiber` that requires codomain to be infinite. -/
-theorem exists_infinite_fiber' {β α : Type u} (f : β → α) (h : #α < #β) [hα : Infinite α] :
-    ∃ a : α, Infinite (f ⁻¹' {a}) :=
-  exists_infinite_fiber f h (hβ := by
-    rw [Cardinal.infinite_iff] at hα ⊢
-    exact hα.trans h.le)
+theorem exists_infinite_fiber' {β α : Type u} (f : β → α) (h : #α < #β) [Infinite α] :
+    ∃ a : α, Infinite (f ⁻¹' {a}) := by
+  suffices Infinite β from exists_infinite_fiber f h
+  exact aleph0_le_mk_iff.1 <| (aleph0_le_mk α).trans h.le
 
 /-- A function whose domain's cardinality is uncountable and strictly greater than its codomain's
 has an uncountable fiber. -/
-theorem exists_uncountable_fiber {β α : Type u} (f : β → α) (h : #α < #β) [hβ : Uncountable β] :
+theorem exists_uncountable_fiber {β α : Type u} (f : β → α) (h : #α < #β) [Uncountable β] :
     ∃ a : α, Uncountable (f ⁻¹' {a}) := by
-  simp_rw [← Cardinal.aleph0_lt_mk_iff, ← Order.succ_le_iff, succ_aleph0] at hβ ⊢
+  simp_rw [← Cardinal.aleph1_le_mk_iff]
   rcases lt_or_ge #α ℵ₀ with hα | hα
-  · exact infinite_pigeonhole_card f ℵ₁ hβ aleph0_lt_aleph_one.le
+  · exact infinite_pigeonhole_card f ℵ₁ (aleph1_le_mk β) aleph0_lt_aleph_one.le
       (by rw [isRegular_aleph_one.cof_eq]; exact hα.trans aleph0_lt_aleph_one)
-  · obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f h (hβ.trans' aleph0_lt_aleph_one.le)
+  · obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f h (aleph0_le_mk β)
     rw [← Order.succ_le_succ_iff, succ_aleph0] at hα
     exact ⟨a, hα.trans (succ_le_of_lt ha)⟩
 
