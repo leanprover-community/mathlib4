@@ -78,7 +78,6 @@ variable [DecidableEq ι] [Fintype ι] [Semiring R]
 variable [∀ i k, AddCommMonoid (M i k)] [∀ p, AddCommMonoid (N p)]
 variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a family of indices `κ` and a multilinear map `f p` for each way `p` to select one index from
 each family, `dfinsuppFamily f` maps a family of finitely-supported functions (one for each domain

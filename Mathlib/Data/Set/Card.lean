@@ -330,7 +330,6 @@ theorem encard_eq_add_one_iff {k : ℕ∞} :
   rintro ⟨a, t, h, rfl, rfl⟩
   rw [encard_insert_of_notMem h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every set is either empty, infinite, or can have its `encard` reduced by a removal. Intended
   for well-founded induction on the value of `encard`. -/
 theorem eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt (s : Set α) :

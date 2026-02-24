@@ -74,6 +74,7 @@ theorem IsSemilinearSet.definable [Finite α] (hs : IsSemilinearSet s) :
 
 namespace FirstOrder.Language.presburger
 
+set_option backward.isDefEq.respectTransparency false in
 lemma term_realize_eq_add_dotProduct [Fintype α] (t : presburger[[A]].Term α) :
     ∃ (k : ℕ) (u : α → ℕ), ∀ (v : α → ℕ), t.realize v = k + u ⬝ᵥ v := by
   classical

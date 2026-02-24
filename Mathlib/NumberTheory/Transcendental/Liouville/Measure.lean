@@ -73,7 +73,6 @@ theorem setOf_liouvilleWith_subset_aux :
   · rw [add_le_add_iff_left]
     exact mul_le_of_le_one_left hb0.le hx01.2.le
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The set of numbers satisfying the Liouville condition with some exponent `p > 2` has Lebesgue
 measure zero. -/
 @[simp]

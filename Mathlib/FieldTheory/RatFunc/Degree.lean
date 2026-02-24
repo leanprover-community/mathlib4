@@ -55,13 +55,11 @@ theorem intDegree_one : intDegree (1 : RatFunc K) = 0 := by
 theorem intDegree_C (k : K) : intDegree (C k) = 0 := by
   rw [intDegree, num_C, natDegree_C, denom_C, natDegree_one, sub_self]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem intDegree_X : intDegree (X : RatFunc K) = 1 := by
   rw [intDegree, num_X, Polynomial.natDegree_X, denom_X, Polynomial.natDegree_one,
     Int.ofNat_one, Int.ofNat_zero, sub_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem intDegree_polynomial {p : K[X]} :
     intDegree (algebraMap K[X] (RatFunc K) p) = natDegree p := by

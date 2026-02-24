@@ -128,7 +128,6 @@ lemma IsUltrametricDist.norm_fwdDiff_iter_apply_le [TopologicalSpace M] [Compact
   refine norm_sum_le_of_forall_le_of_nonneg (norm_nonneg f) fun i _ ↦ ?_
   exact (norm_zsmul_le _ _).trans (f.norm_coe_le_norm _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- First step in Bojanić's proof of Mahler's theorem (equation (10) of [bojanic74]): rewrite
 `Δ^[n + R] f 0` in a shape that makes it easy to bound `p`-adically. -/
 private lemma bojanic_mahler_step1 [AddCommMonoidWithOne M] [AddCommGroup G] (f : M → G)
@@ -271,6 +270,7 @@ lemma norm_mahlerTerm : ‖(mahlerTerm a n : C(ℤ_[p], E))‖ = ‖a‖ := by
     refine le_trans ?_ <| (mahlerTerm a n).norm_coe_le_norm n
     simp [mahlerTerm_apply, mahler_natCast_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mahlerTerm_one : (mahlerTerm 1 n : C(ℤ_[p], ℤ_[p])) = mahler n := by
   ext; simp [mahlerTerm_apply]
@@ -312,7 +312,6 @@ lemma mahlerSeries_apply_nat (ha : Tendsto a atTop (𝓝 0)) {m n : ℕ} (hmn : 
   simp only [mahlerSeries_apply ha, mahler_natCast_eq, Nat.cast_smul_eq_nsmul, add_zero,
     ← aux.sum_add_tsum_nat_add' (f := fun i ↦ m.choose i • a i), h_van, zero_smul, tsum_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The coefficients of a Mahler series can be recovered from the sum by taking forward differences at
 `0`.
