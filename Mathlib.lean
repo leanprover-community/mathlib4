@@ -4775,6 +4775,7 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Card
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
