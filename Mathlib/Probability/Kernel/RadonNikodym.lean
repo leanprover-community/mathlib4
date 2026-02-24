@@ -273,6 +273,7 @@ lemma measurable_singularPart_fun_right (κ η : Kernel α γ) (a : α) :
     - ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a b) * rnDeriv κ η a b) ∘ (fun b ↦ (a, b)))
   exact (measurable_singularPart_fun κ η).comp measurable_prodMk_left
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFiniteKernel κ]
     [IsSFiniteKernel η] (a : α) :

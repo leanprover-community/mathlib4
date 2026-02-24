@@ -449,8 +449,9 @@ theorem constantCoeff_map (f : R →+* S₁) (φ : MvPolynomial σ R) :
   coeff_map f φ 0
 
 theorem constantCoeff_comp_map (f : R →+* S₁) :
-    (constantCoeff : MvPolynomial σ S₁ →+* S₁).comp (MvPolynomial.map f) = f.comp constantCoeff :=
-  by ext <;> simp
+    (constantCoeff : MvPolynomial σ S₁ →+* S₁).comp (MvPolynomial.map f) =
+      f.comp constantCoeff := by
+  ext <;> simp
 
 theorem support_map_subset (p : MvPolynomial σ R) : (map f p).support ⊆ p.support := by
   simp only [Finset.subset_iff, mem_support_iff]

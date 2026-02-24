@@ -301,7 +301,6 @@ theorem lastStep_nonempty :
   replace A : p.r (p.index y) ≤ 0 := by simpa [hxy] using A
   exact (lt_irrefl _ ((p.rpos (p.index y)).trans_le A)).elim
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every point is covered by chosen balls, before `p.lastStep`. -/
 theorem mem_iUnionUpTo_lastStep (x : β) : p.c x ∈ p.iUnionUpTo p.lastStep := by
   have A : ∀ z : β, p.c z ∈ p.iUnionUpTo p.lastStep ∨ p.τ * p.r z < p.R p.lastStep := by
