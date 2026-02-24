@@ -142,7 +142,6 @@ theorem pdf_toReal_ae_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
 
 variable {X : Ω → ℝ} {s : Set ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
     Integrable fun x : ℝ => x * (pdf X ℙ volume x).toReal := by
   by_cases hnt : volume s = 0 ∨ volume s = ∞
@@ -165,7 +164,6 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
   exact ENNReal.mul_ne_top (setLIntegral_lt_top_of_isCompact hnt.2 hcs continuous_nnnorm).ne
     (ENNReal.inv_lt_top.2 (pos_iff_ne_zero.mpr hnt.1)).ne
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A real uniform random variable `X` with support `s` has expectation
 `(λ s)⁻¹ * ∫ x in s, x ∂λ` where `λ` is the Lebesgue measure. -/
 theorem integral_eq (huX : IsUniform X s ℙ) :

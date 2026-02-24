@@ -180,6 +180,7 @@ lemma topology_eq [IsScottHausdorff α D] : ‹_› = scottHausdorff α D := top
 
 variable {α D}
 
+set_option backward.whnf.reducibleClassField false in
 lemma isOpen_iff [IsScottHausdorff α D] :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
       a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by

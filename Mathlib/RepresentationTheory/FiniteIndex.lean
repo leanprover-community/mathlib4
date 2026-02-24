@@ -46,7 +46,6 @@ noncomputable def indToCoindAux (g : G) : A →ₗ[k] (G → A) :=
 
 variable {A}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma indToCoindAux_self (g : G) (a : A) :
     indToCoindAux A g a g = a := by
@@ -58,7 +57,6 @@ lemma indToCoindAux_of_not_rel (g g₁ : G) (a : A) (h : ¬(QuotientGroup.rightR
     indToCoindAux A g a g₁ = 0 := by
   simp [indToCoindAux, dif_neg h]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma indToCoindAux_mul_snd (g g₁ : G) (a : A) (s : S) :
     indToCoindAux A g a (s * g₁) = A.ρ s (indToCoindAux A g a g₁) := by
@@ -69,7 +67,6 @@ lemma indToCoindAux_mul_snd (g g₁ : G) (a : A) (s : S) :
   · rw [indToCoindAux_of_not_rel _ _ _ h, indToCoindAux_of_not_rel, map_zero]
     exact mt (fun ⟨s₁, hs₁⟩ => ⟨s⁻¹ * s₁, by simp_all [S.1.smul_def, mul_assoc]⟩) h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma indToCoindAux_mul_fst (g₁ g₂ : G) (a : A) (s : S) :
      indToCoindAux A (s * g₁) (A.ρ s a) g₂ = indToCoindAux A g₁ a g₂ := by
@@ -82,7 +79,6 @@ lemma indToCoindAux_mul_fst (g₁ g₂ : G) (a : A) (s : S) :
   · rw [indToCoindAux_of_not_rel (h := h), indToCoindAux_of_not_rel]
     exact mt (fun ⟨s₁, hs₁⟩ => ⟨s₁ * s, by simp_all [S.1.smul_def, mul_assoc]⟩) h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma indToCoindAux_snd_mul_inv (g₁ g₂ g₃ : G) (a : A) :
     indToCoindAux A g₁ a (g₂ * g₃⁻¹) = indToCoindAux A (g₁ * g₃) a g₂ := by
@@ -116,7 +112,6 @@ variable [S.FiniteIndex]
 
 attribute [local instance] Subgroup.fintypeQuotientOfFiniteIndex
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
 `S`, and `A` a `k`-linear `S`-representation. This is the `k`-linear map
@@ -132,7 +127,6 @@ noncomputable def coindToInd : coind S.subtype A →ₗ[k] ind S.subtype A where
   map_smul' _ _ := by simpa [Finset.smul_sum] using Finset.sum_congr rfl fun z _ =>
     Quotient.inductionOn z fun _ => by simp
 
-set_option backward.isDefEq.respectTransparency false in
 omit [DecidableRel (QuotientGroup.rightRel S)] in
 lemma coindToInd_of_support_subset_orbit (g : G) (f : coind S.subtype A)
     (hx : f.1.support ⊆ MulAction.orbit S g) :

@@ -893,7 +893,7 @@ instance : SuccOrder Ordinal.{u} :=
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
-@[simp]
+-- TODO: deprecate this in favor of `Order.succ_eq_add_one`
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
   rfl
 

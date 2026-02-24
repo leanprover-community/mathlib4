@@ -798,7 +798,7 @@ theorem prod_biUnion_of_pairwise_eq_one [DecidableEq ι] {s : Finset κ} {t : κ
     ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
   classical
   let t' k := (t k).filter (fun i ↦ f i ≠ 1)
-  have : s.biUnion t' = (s.biUnion t).filter (fun i ↦ f i ≠ 1) := by ext; grind
+  have : s.biUnion t' = (s.biUnion t).filter (fun i ↦ f i ≠ 1) := by grind
   rw [← prod_filter_ne_one, ← this, prod_biUnion]
   swap
   · intro i hi j hj hij a hai haj k hk
