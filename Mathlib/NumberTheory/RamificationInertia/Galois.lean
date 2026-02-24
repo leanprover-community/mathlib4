@@ -214,7 +214,7 @@ variable {p} in
 omit hp in
 include G GAC GBC in
 theorem ramificationIdxIn_mul_ramificationIdxIn [IsDomain A] [IsTorsionFree A B]
-    [IsTorsionFree A C] [IsDedekindDomain B] [IsDedekindDomain C] [P.LiesOver p] :
+    [IsDedekindDomain B] [IsDedekindDomain C] [P.LiesOver p] :
     p.ramificationIdxIn B * P.ramificationIdxIn C = p.ramificationIdxIn C := by
   obtain ⟨⟨Q, _, hQ⟩⟩ := P.nonempty_primesOver (S := C)
   have : Q.LiesOver p := LiesOver.trans Q P p
