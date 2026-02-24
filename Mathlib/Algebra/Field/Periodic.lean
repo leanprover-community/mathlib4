@@ -121,19 +121,16 @@ theorem Periodic.image_uIcc [AddCommGroup α] [LinearOrder α] [IsOrderedAddMono
 
 /-! ### Antiperiodicity -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Antiperiodic.add_nat_mul_eq [NonAssocSemiring α] [Ring β] (h : Antiperiodic f c) (n : ℕ) :
     f (x + n * c) = (-1) ^ n * f x := by
   simpa only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, Int.cast_neg,
     Int.cast_one] using h.add_nsmul_eq n
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Antiperiodic.sub_nat_mul_eq [NonAssocRing α] [Ring β] (h : Antiperiodic f c) (n : ℕ) :
     f (x - n * c) = (-1) ^ n * f x := by
   simpa only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, Int.cast_neg,
     Int.cast_one] using h.sub_nsmul_eq n
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Antiperiodic.nat_mul_sub_eq [NonAssocRing α] [Ring β] (h : Antiperiodic f c) (n : ℕ) :
     f (n * c - x) = (-1) ^ n * f (-x) := by
   simpa only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, Int.cast_neg,
