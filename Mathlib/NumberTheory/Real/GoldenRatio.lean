@@ -230,11 +230,7 @@ theorem coe_fib_eq' :
   rw [fibRec.sol_eq_of_eq_init]
   · intro i hi
     norm_cast at hi
-    fin_cases hi
-    · simp
-    · simp only [goldenRatio, goldenConj]
-      ring_nf
-      rw [mul_inv_cancel₀]; norm_num
+    fin_cases hi <;> simp
   · exact fib_isSol_fibRec
   · suffices LinearRecurrence.IsSolution fibRec
         ((fun n ↦ (√5)⁻¹ * φ ^ n) - (fun n ↦ (√5)⁻¹ * ψ ^ n)) by

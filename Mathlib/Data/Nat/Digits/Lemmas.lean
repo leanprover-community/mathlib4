@@ -81,10 +81,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   · cases m
     · cases hm rfl
     · simp
-  · cases m
-    · cases hm rfl
-    simp only [zero_add, digits_one, List.getLast_replicate_succ]
-    exact Nat.one_ne_zero
+  · simp
   revert hm
   induction m using Nat.strongRecOn with | ind n IH => ?_
   intro hn
