@@ -77,15 +77,15 @@ namespace Triangle
 open Simplex
 
 variable [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
-variable (t : Triangle ℝ P)
+variable (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
+include h₁₂ h₁₃ h₂₃
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
 variable {t} in
 /-- A point `p` is equidistant to two sides of a triangle if and only if the oriented angles at
 their common vertex are equal modulo `π`. -/
-lemma dist_orthogonalProjectionSpan_faceOpposite_eq_iff_two_zsmul_oangle_eq {p : P}
-    {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+lemma dist_orthogonalProjectionSpan_faceOpposite_eq_iff_two_zsmul_oangle_eq {p : P} :
     dist p ((t.faceOpposite i₃).orthogonalProjectionSpan p) =
       dist p ((t.faceOpposite i₂).orthogonalProjectionSpan p) ↔
         (2 : ℤ) • ∡ (t.points i₂) (t.points i₁) p = (2 : ℤ) • ∡ p (t.points i₁) (t.points i₃) := by
@@ -102,16 +102,14 @@ lemma dist_orthogonalProjectionSpan_faceOpposite_eq_iff_two_zsmul_oangle_eq {p :
     (by grind : ({i₂}ᶜ : Set (Fin 3)) = {i₁, i₃}), Set.image_insert_eq, Set.image_singleton]
 
 /-- An excenter of a triangle bisects the angle at a vertex modulo `π`. -/
-lemma two_zsmul_oangle_excenter_eq (signs : Finset (Fin 3)) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
-    (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+lemma two_zsmul_oangle_excenter_eq (signs : Finset (Fin 3)) :
     (2 : ℤ) • ∡ (t.points i₂) (t.points i₁) (t.excenter signs) =
       (2 : ℤ) • ∡ (t.excenter signs) (t.points i₁) (t.points i₃) := by
   rw [← dist_orthogonalProjectionSpan_faceOpposite_eq_iff_two_zsmul_oangle_eq h₁₂ h₁₃ h₂₃,
     ← touchpoint, ← touchpoint, (t.excenterExists signs).dist_excenter_eq_dist_excenter]
 
 /-- The incenter of a triangle bisects the angle at a vertex. -/
-lemma oangle_incenter_eq {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
-    (h₂₃ : i₂ ≠ i₃) :
+lemma oangle_incenter_eq :
     ∡ (t.points i₂) (t.points i₁) t.incenter = ∡ t.incenter (t.points i₁) (t.points i₃) := by
   rw [← (t.sbtw_touchpoint_empty h₁₃ h₁₂ h₂₃.symm).oangle_eq_left,
     ← (t.sbtw_touchpoint_empty h₁₂ h₁₃ h₂₃).oangle_eq_right]
@@ -125,8 +123,7 @@ lemma oangle_incenter_eq {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h�
     grind
 
 /-- The excenter of a triangle opposite a vertex bisects the angle at that vertex. -/
-lemma oangle_excenter_singleton_eq {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
-    (h₂₃ : i₂ ≠ i₃) :
+lemma oangle_excenter_singleton_eq :
     ∡ (t.points i₂) (t.points i₁) (t.excenter {i₁}) =
       ∡ (t.excenter {i₁}) (t.points i₁) (t.points i₃) := by
   rw [(t.touchpoint_singleton_sbtw h₁₃ h₁₂ h₂₃.symm).symm.oangle_eq_left,
@@ -142,8 +139,7 @@ lemma oangle_excenter_singleton_eq {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ 
 
 /-- The excenter of a triangle opposite a vertex bisects the exterior angle at another vertex
 (that is, the interior angles between vertices and the excenter differ by `π`). -/
-lemma oangle_excenter_singleton_eq_add_pi {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
-    (h₂₃ : i₂ ≠ i₃) :
+lemma oangle_excenter_singleton_eq_add_pi :
     ∡ (t.points i₁) (t.points i₂) (t.excenter {i₁}) =
       ∡ (t.excenter {i₁}) (t.points i₂) (t.points i₃) + π := by
   rw [(t.touchpoint_singleton_sbtw h₁₃ h₁₂ h₂₃.symm).symm.oangle_eq_add_pi_left
@@ -160,8 +156,7 @@ lemma oangle_excenter_singleton_eq_add_pi {i₁ i₂ i₃ : Fin 3} (h₁₂ : i�
 
 variable {t} in
 /-- A point lying on angle bisectors from two vertices is an excenter. -/
-lemma eq_excenter_of_two_zsmul_oangle_eq {p : P} {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
-    (h₂₃ : i₂ ≠ i₃)
+lemma eq_excenter_of_two_zsmul_oangle_eq {p : P}
     (h₁ : (2 : ℤ) • ∡ (t.points i₂) (t.points i₁) p = (2 : ℤ) • ∡ p (t.points i₁) (t.points i₃))
     (h₂ : (2 : ℤ) • ∡ (t.points i₃) (t.points i₂) p = (2 : ℤ) • ∡ p (t.points i₂) (t.points i₁)) :
     ∃ signs : Finset (Fin 3), p = t.excenter signs := by
@@ -175,7 +170,7 @@ lemma eq_excenter_of_two_zsmul_oangle_eq {p : P} {i₁ i₂ i₃ : Fin 3} (h₁�
   have hr : ∃ r : ℝ, ∀ i, dist p ((t.faceOpposite i).orthogonalProjectionSpan p) = r := by
     refine ⟨dist p ((faceOpposite t i₃).orthogonalProjectionSpan p), ?_⟩
     intro i
-    have h : i = i₁ ∨ i = i₂ ∨ i = i₃ := by clear h₁ h₂; decide +revert
+    have h : i = i₁ ∨ i = i₂ ∨ i = i₃ := by clear! p t; decide +revert
     rcases h with rfl | rfl | rfl <;> grind
   obtain ⟨signs, -, hp⟩ :=
     (t.exists_forall_dist_eq_iff_exists_excenterExists_and_eq_excenter hp).1 hr
@@ -185,7 +180,6 @@ variable {t} in
 /-- An excenter lying on the internal angle bisector from a vertex is either the incenter or the
 excenter opposite that vertex. -/
 lemma eq_incenter_or_eq_excenter_singleton_of_oangle_eq {signs : Finset (Fin 3)}
-    {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
     (h : ∡ (t.points i₂) (t.points i₁) (t.excenter signs) =
       ∡ (t.excenter signs) (t.points i₁) (t.points i₃)) :
     t.excenter signs = t.incenter ∨ t.excenter signs = t.excenter {i₁} := by
@@ -203,7 +197,6 @@ variable {t} in
 /-- An excenter lying on the external angle bisector from a vertex is the excenter opposite
 another vertex. -/
 lemma eq_excenter_singleton_of_oangle_eq_add_pi {signs : Finset (Fin 3)}
-    {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
     (h : ∡ (t.points i₂) (t.points i₁) (t.excenter signs) =
       ∡ (t.excenter signs) (t.points i₁) (t.points i₃) + π) :
     t.excenter signs = t.excenter {i₂} ∨ t.excenter signs = t.excenter {i₃} := by
@@ -218,8 +211,8 @@ lemma eq_excenter_singleton_of_oangle_eq_add_pi {signs : Finset (Fin 3)}
 
 variable {t} in
 /-- A point lying on two internal angle bisectors is the incenter. -/
-lemma eq_incenter_of_oangle_eq {p : P} {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
-    (h₂₃ : i₂ ≠ i₃) (h₁ : ∡ (t.points i₂) (t.points i₁) p = ∡ p (t.points i₁) (t.points i₃))
+lemma eq_incenter_of_oangle_eq {p : P}
+    (h₁ : ∡ (t.points i₂) (t.points i₁) p = ∡ p (t.points i₁) (t.points i₃))
     (h₂ : ∡ (t.points i₃) (t.points i₂) p = ∡ p (t.points i₂) (t.points i₁)) :
     p = t.incenter := by
   obtain ⟨signs, rfl⟩ := t.eq_excenter_of_two_zsmul_oangle_eq h₁₂ h₁₃ h₂₃ (by rw [h₁]) (by rw [h₂])
@@ -236,8 +229,7 @@ lemma eq_incenter_of_oangle_eq {p : P} {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ 
 variable {t} in
 /-- A point lying on the internal angle bisector from vertex `i₁` and the external angle bisector
 from another vertex is the excenter opposite vertex `i₁`. -/
-lemma eq_excenter_singleton_of_oangle_eq_of_oangle_eq_add_pi {p : P} {i₁ i₂ i₃ : Fin 3}
-    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
+lemma eq_excenter_singleton_of_oangle_eq_of_oangle_eq_add_pi {p : P}
     (h₁ : ∡ (t.points i₂) (t.points i₁) p = ∡ p (t.points i₁) (t.points i₃))
     (h₂ : ∡ (t.points i₃) (t.points i₂) p = ∡ p (t.points i₂) (t.points i₁) + π) :
     p = t.excenter {i₁} := by
@@ -255,8 +247,7 @@ lemma eq_excenter_singleton_of_oangle_eq_of_oangle_eq_add_pi {p : P} {i₁ i₂ 
 
 variable {t} in
 /-- A point lying on two external angle bisectors is the excenter opposite the third vertex. -/
-lemma eq_excenter_singleton_of_oangle_eq_add_pi_of_oangle_eq_add_pi {p : P} {i₁ i₂ i₃ : Fin 3}
-    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
+lemma eq_excenter_singleton_of_oangle_eq_add_pi_of_oangle_eq_add_pi {p : P}
     (h₁ : ∡ (t.points i₂) (t.points i₁) p = ∡ p (t.points i₁) (t.points i₃) + π)
     (h₂ : ∡ (t.points i₃) (t.points i₂) p = ∡ p (t.points i₂) (t.points i₁) + π) :
     p = t.excenter {i₃} := by
