@@ -40,7 +40,7 @@ A distributive monoidal category is a monoidal category that is both left and ri
   in the functor categories is computed pointwise.
 
 - We show that any preadditive monoidal category with coproducts is distributive. This includes the
-examples of abelian groups, R-modules, and vector bundles.
+  examples of abelian groups, R-modules, and vector bundles.
 
 ## TODO
 
