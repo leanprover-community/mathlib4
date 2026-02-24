@@ -170,7 +170,6 @@ instance : (SheafOfModules.forget.{v} R ⋙ restrictScalars α).Full :=
 instance : (SheafOfModules.forget.{v} R ⋙ restrictScalars α).Faithful :=
   (sheafificationAdjunction.{v} α).fullyFaithfulROfIsIsoCounit.faithful
 
-
 end
 
 section
