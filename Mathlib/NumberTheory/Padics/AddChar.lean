@@ -55,7 +55,6 @@ lemma AddChar.tendsto_eval_one_sub_pow {κ : AddChar ℤ_[p] R} (hκ : Continuou
 namespace PadicInt
 variable [CompleteSpace R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The unique continuous additive character of `ℤ_[p]` mapping `1` to `1 + r`. -/
 noncomputable def addChar_of_value_at_one (r : R) (hr : Tendsto (r ^ ·) atTop (𝓝 0)) :
     AddChar ℤ_[p] R where
@@ -86,7 +85,6 @@ lemma coe_addChar_of_value_at_one {r : R} (hr : Tendsto (r ^ ·) atTop (𝓝 0))
     (addChar_of_value_at_one r hr : ℤ_[p] → R) = mahlerSeries (r ^ ·) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma addChar_of_value_at_one_def {r : R} (hr : Tendsto (r ^ ·) atTop (𝓝 0)) :
     addChar_of_value_at_one r hr (1 : ℤ_[p]) = 1 + r := by

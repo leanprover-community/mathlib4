@@ -797,6 +797,7 @@ theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
 
 variable (R A)
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
 noncomputable instance moduleSet : Module (SetSemiring A) (Submodule R A) where

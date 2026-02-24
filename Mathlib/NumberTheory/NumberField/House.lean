@@ -133,6 +133,7 @@ private theorem c_nonneg : 0 ≤ c K := by
   rw [c]
   positivity
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -336,7 +337,6 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     · exact asiegel_remark K a habs Apos
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 include hpq h0p cardα cardβ ha habs in

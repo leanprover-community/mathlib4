@@ -3062,6 +3062,7 @@ public import Mathlib.CategoryTheory.Products.Bifunctor
 public import Mathlib.CategoryTheory.Products.Unitor
 public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Quotient.Linear
+public import Mathlib.CategoryTheory.Quotient.LocallySmall
 public import Mathlib.CategoryTheory.Quotient.Preadditive
 public import Mathlib.CategoryTheory.RegularCategory.Basic
 public import Mathlib.CategoryTheory.RepresentedBy
@@ -3240,6 +3241,7 @@ public import Mathlib.CategoryTheory.Triangulated.Rotate
 public import Mathlib.CategoryTheory.Triangulated.SpectralObject
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Heart
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 public import Mathlib.CategoryTheory.Triangulated.TriangleShift
 public import Mathlib.CategoryTheory.Triangulated.Triangulated
@@ -4773,6 +4775,7 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Card
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
@@ -6804,6 +6807,7 @@ public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Frontend
 public import Mathlib.Tactic.Linarith.Lemmas
+public import Mathlib.Tactic.Linarith.NNRealPreprocessor
 public import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
@@ -7565,6 +7569,7 @@ public import Mathlib.Topology.ShrinkingLemma
 public import Mathlib.Topology.Sober
 public import Mathlib.Topology.Specialization
 public import Mathlib.Topology.Spectral.Basic
+public import Mathlib.Topology.Spectral.ConstructibleTopology
 public import Mathlib.Topology.Spectral.Hom
 public import Mathlib.Topology.Spectral.Prespectral
 public import Mathlib.Topology.Subpath

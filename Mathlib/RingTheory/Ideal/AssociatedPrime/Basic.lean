@@ -35,6 +35,10 @@ gives the correct characterization of the prime ideals of any minimal primary de
 non-Noetherian setting (see Theorem 4.5 in Atiyah-Macdonald). If the ring `R` is assumed to be
 Noetherian, then the radical can be dropped from the definition (see `isAssociatedPrime_iff`).
 
+See also [Stacks: Lemma 0566](https://stacks.math.columbia.edu/tag/0566) which states that a
+prime `p` is minimal among primes containing an annihilator an element of `M` if and only if
+`p R_p` is an associated prime of `M_p` (including the radical).
+
 ## TODO
 
 Generalize this to a non-commutative setting once there are annihilator for non-commutative rings.
@@ -68,7 +72,11 @@ protected theorem isAssociatedPrime_def :
     N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = (colon N {x}).radical :=
   .rfl
 
+<<<<<<< HEAD
 protected theorem isAssociatedPrime_iff [h : IsNoetherianRing R] :
+=======
+protected theorem isAssociatedPrime_iff [IsNoetherianRing R] :
+>>>>>>> master
     N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = colon N {x} := by
   constructor
   · rintro ⟨hx, x, rfl⟩
@@ -90,7 +98,11 @@ variable {R : Type*} [CommSemiring R] (I J : Ideal R) (M : Type*) [AddCommMonoid
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the radical of the annihilator
 of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
+<<<<<<< HEAD
   I.IsPrime ∧ ∃ x : M, I = (colon ⊥ {x}).radical
+=======
+  (⊥: Submodule R M).IsAssociatedPrime I
+>>>>>>> master
 
 variable (R) in
 /-- The set of associated primes of a module. -/
@@ -100,6 +112,12 @@ def associatedPrimes : Set (Ideal R) :=
 variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] M')
 
 theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
+<<<<<<< HEAD
+=======
+
+@[deprecated (since := "2025-11-24")]
+alias AssociatePrimes.mem_iff := AssociatedPrimes.mem_iff
+>>>>>>> master
 
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 
@@ -126,7 +144,12 @@ theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedP
 
 variable (R) in
 theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R] (x : M)
+<<<<<<< HEAD
     (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (colon ⊥ {x}).radical ≤ P := by
+=======
+    (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (⊥ : Submodule R M).colon {x} ≤ P := by
+  simp only [isAssociatedPrime_iff]
+>>>>>>> master
   obtain ⟨P, ⟨l, h₁, y, rfl⟩, h₃⟩ :=
     set_has_maximal_iff_noetherian.mpr H
       { P | (colon ⊥ {x}).radical ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (colon ⊥ {y}).radical }
@@ -226,7 +249,10 @@ theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
   · intro r ⟨x, h, h'⟩
     obtain ⟨P, hP, hx⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x h
     rw [isAssociatedPrime_iff] at hP
+<<<<<<< HEAD
     rw [hP.1.radical_le_iff] at hx
+=======
+>>>>>>> master
     exact Set.mem_biUnion hP (hx (by rwa [mem_colon_singleton]))
 
 theorem biUnion_associatedPrimes_eq_compl_nonZeroDivisors [IsNoetherianRing R] :

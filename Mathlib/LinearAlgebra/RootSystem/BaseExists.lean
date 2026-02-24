@@ -266,9 +266,7 @@ private lemma baseOf_root_eq_baseOf_coroot_aux
     exact ⟨q, -1, by simp [Rat.cast_smul_eq_qsmul, hq'], by simp⟩
   rcases IsReduced.eq_or_eq_neg i j hij with hij | hij
   · simpa using hij
-  · obtain ⟨rfl⟩ : q = -1 := smul_left_injective ℚ (P.ne_zero j) <| by
-      simp_rw [neg_smul, ← neg_eq_iff_eq_neg, ← smul_neg, ← hij, one_smul, hq']
-    grind
+  · grind
 
 lemma baseOf_root_eq_baseOf_coroot
     (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0)
@@ -278,7 +276,6 @@ lemma baseOf_root_eq_baseOf_coroot
   subset_antisymm (P.baseOf_root_eq_baseOf_coroot_aux f g hf hfg)
     (P.flip.baseOf_root_eq_baseOf_coroot_aux g f hg (by aesop))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is really just an auxiliary result en route to `RootPairing.Base.mk'`. -/
 lemma coroot_mem_or_neg_mem_closure_of_root (s : Set ι)
     (hli : LinearIndepOn R P.root s)

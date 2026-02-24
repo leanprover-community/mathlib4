@@ -201,7 +201,6 @@ lemma tendsto_logDeriv_euler_cot_sub (hx : x ∈ ℂ_ℤ) :
   simp_rw [← logDeriv_sin_div_eq_cot hx, ← logDeriv_prod_sineTerm_eq_sum_cotTerm hx]
   simpa using tendsto_logDeriv_euler_sin_div hx
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cotTerm_identity (hz : x ∈ ℂ_ℤ) (n : ℕ) :
     cotTerm x n = 2 * x * (1 / ((x + (n + 1)) * (x - (n + 1)))) := by
   simp only [cotTerm]
@@ -353,7 +352,6 @@ private lemma aux_summable_sub {k : ℕ} (hk : 1 ≤ k) (x : ℂ) :
 
 variable {z : ℂ}
 
-set_option backward.isDefEq.respectTransparency false in
 -- We have this auxiliary ugly version on the lhs so the rhs looks nicer.
 private lemma aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z ∈ ℍₒ) :
     (-1) ^ k * (k !) * z ^ (-1 - k : ℤ) +
