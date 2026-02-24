@@ -266,9 +266,7 @@ private lemma baseOf_root_eq_baseOf_coroot_aux
     exact ⟨q, -1, by simp [Rat.cast_smul_eq_qsmul, hq'], by simp⟩
   rcases IsReduced.eq_or_eq_neg i j hij with hij | hij
   · simpa using hij
-  · obtain ⟨rfl⟩ : q = -1 := smul_left_injective ℚ (P.ne_zero j) <| by
-      simp_rw [neg_smul, ← neg_eq_iff_eq_neg, ← smul_neg, ← hij, one_smul, hq']
-    grind
+  · grind
 
 lemma baseOf_root_eq_baseOf_coroot
     (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0)
