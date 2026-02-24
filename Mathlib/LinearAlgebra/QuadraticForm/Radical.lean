@@ -118,7 +118,7 @@ section InvertibleTwo
 
 variable [Invertible (2 : R)]
 
-/-- If 2 is invertible in the coefficient ring, the radical of a quadratic map is the kernel of its
+/-- If `2` is invertible in the coefficient ring, the radical of a quadratic map is the kernel of its
 polar bilinear map. -/
 lemma radical_eq_ker_polarBilin : Q.radical = Q.polarBilin.ker := by
   ext m
@@ -130,7 +130,7 @@ lemma radical_eq_ker_polarBilin : Q.radical = Q.polarBilin.ker := by
   rwa [← two_smul R, QuadraticMap.map_smul, sub_sub, ← two_smul R, mul_smul, ← smul_sub,
     (isUnit_of_invertible 2).smul_eq_zero, two_smul, add_sub_cancel_right] at h
 
-/-- If 2 is invertible in the coefficient ring, the radical of a quadratic map is the kernel of its
+/-- If `2` is invertible in the coefficient ring, the radical of a quadratic map is the kernel of its
 associated bilinear map. -/
 lemma radical_eq_ker_associated : Q.radical = (QuadraticMap.associated Q).ker := by
   rw [radical_eq_ker_polarBilin]
@@ -146,7 +146,7 @@ lemma nondegenerate_iff_radical_eq_bot :
   nontriviality R
   simp only [rank_subsingleton', zero_le]
 
-/-- In characteristic `≠ 2`, a quadratic map is nondegenerate iff its associated bilinear map
+/-- In characteristic different from `2`, a quadratic map is nondegenerate iff its associated bilinear map
 is nondegenerate. -/
 lemma nondegenerate_associated_iff :
     (QuadraticMap.associated Q).Nondegenerate ↔ Q.Nondegenerate := by
