@@ -3156,6 +3156,7 @@ public import Mathlib.CategoryTheory.Sites.Plus
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.CategoryTheory.Sites.Point.Category
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
+public import Mathlib.CategoryTheory.Sites.Point.Map
 public import Mathlib.CategoryTheory.Sites.Point.OfIsCofiltered
 public import Mathlib.CategoryTheory.Sites.Point.Over
 public import Mathlib.CategoryTheory.Sites.Precoverage
