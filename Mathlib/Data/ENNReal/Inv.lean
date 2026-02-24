@@ -183,6 +183,14 @@ protected theorem mul_comm_div : a / b * c = a * (c / b) := by
 protected theorem mul_div_right_comm : a * b / c = a / c * b := by
   simp only [div_eq_mul_inv, mul_right_comm]
 
+/-- Division decomposition: `a / c = a / b * (b / c)` when `b` is finite and nonzero. -/
+protected theorem ENNReal.div_eq_div_mul_div {a b c : ℝ≥0∞}
+    (hb0 : b ≠ 0) (hbt : b ≠ ⊤) :
+    a / c = a / b * (b / c) := by
+  simp only [div_eq_mul_inv, mul_assoc]
+  congr 1
+  rw [← mul_assoc, ENNReal.inv_mul_cancel hb0 hbt, one_mul]
+
 instance : InvolutiveInv ℝ≥0∞ where
   inv_inv a := by
     by_cases a = 0 <;> cases a <;> simp_all [-coe_inv, (coe_inv _).symm]
@@ -956,3 +964,7 @@ theorem ofReal_div_of_pos {x y : ℝ} (hy : 0 < y) :
 
 end Inv
 end ENNReal
+
+Claude is active in this tab group
+Open chat
+Dismiss
