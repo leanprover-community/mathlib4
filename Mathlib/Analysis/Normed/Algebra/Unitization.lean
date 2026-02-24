@@ -222,6 +222,9 @@ instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (Unitization 𝕜 A) :=
   uniformEquivProd.completeSpace_iff.2 .prod
 
+instance instT2Space : T2Space (Unitization 𝕜 A) :=
+  Unitization.uniformEquivProd.symm.toHomeomorph.t2Space
+
 /-- Pull back the metric structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology and the uniformity so
 that they coincide with `𝕜 × A`. -/
@@ -273,5 +276,25 @@ correct ones. -/
 example : (instNormedRing (𝕜 := 𝕜) (A := A)).toMetricSpace = instMetricSpace := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toBornology = instBornology := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toUniformSpace = instUniformSpace := rfl
+
+section
+
+variable {𝕜 A : Type*} [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
+
+protected theorem uniformContinuous_fst : UniformContinuous (fst : Unitization 𝕜 A → 𝕜) :=
+  uniformContinuous_fst.comp Unitization.uniformEquivProd.uniformContinuous
+
+protected theorem uniformContinuous_snd : UniformContinuous (snd : Unitization 𝕜 A → A) :=
+  uniformContinuous_snd.comp Unitization.uniformEquivProd.uniformContinuous
+
+@[fun_prop]
+protected theorem continuous_fst : Continuous (fst : Unitization 𝕜 A → 𝕜) :=
+  Unitization.uniformContinuous_fst.continuous
+
+@[fun_prop]
+protected theorem continuous_snd : Continuous (snd : Unitization 𝕜 A → A) :=
+  Unitization.uniformContinuous_snd.continuous
+
+end
 
 end Unitization
