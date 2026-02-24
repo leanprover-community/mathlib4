@@ -1,19 +1,16 @@
 /-
-Copyright (c) 2025 Runtian Zhou. All rights reserved.
+Copyright (c) 2026 Runtian Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Runtian Zhou
 -/
 module
 
-public import Mathlib.Combinatorics.Quiver.Basic
-public import Mathlib.Combinatorics.Quiver.SingleObj
-public import Mathlib.Combinatorics.Quiver.Covering
-public import Mathlib.Combinatorics.Quiver.Symmetric
 public import Mathlib.Combinatorics.Quiver.ConnectedComponent
+public import Mathlib.Combinatorics.Quiver.Covering
+public import Mathlib.Combinatorics.Quiver.SingleObj
+public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Basic
-public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.Tactic.Group
 
 /-!
@@ -172,11 +169,11 @@ lemma schreierGraph_action_commute (φ : SchreierGraph V ι ⥤q SchreierGraph V
   let e : v ⟶ ι s • v := ⟨s, rfl⟩
   -- φ.map e is an edge from φ.obj v, and its label is preserved
   have h := (φ.map e).property
-  -- This says: ι (φ.map e).val • φ.obj v = φ.obj (ι s • v)
-  -- We need to show (φ.map e).val = s
+  -- This says: `ι (φ.map e).val • φ.obj v = φ.obj (ι s • v)`
+  -- We need to show `(φ.map e).val = s`
   have label_eq : (φ.map e).val = s := by
-    -- φm says φ ⋙q labelling = labelling
-    -- So (φ ⋙q labelling).map e = labelling.map e
+    -- `φm` says `φ ⋙q labelling = labelling`
+    -- So `(φ ⋙q labelling).map e = labelling.map e`
     have : (φ ⋙q schreierGraphLabelling V ι).map e = (schreierGraphLabelling V ι).map e := by
       rw [φm]
     simp only [Prefunctor.comp_map, schreierGraphLabelling_map] at this
@@ -273,7 +270,7 @@ theorem evalWord_mem_closure {M : Type*} [Group M] {S : Type*} (ι : S → M) (w
   | cons hd tl ih =>
     obtain ⟨s, b⟩ := hd
     cases b
-    · -- b = false: (ι s)⁻¹ * evalWord ι tl
+    · -- `b = false`: `(ι s)⁻¹ * evalWord ι tl`
       simp only [evalWord_cons_false]
       apply Subgroup.mul_mem
       · apply Subgroup.inv_mem
@@ -313,8 +310,8 @@ def pathFromWord (x : SchreierGraph V ι) :
       simp only [evalWord_nil, one_smul]
       exact Path.nil
   | (s, true) :: rest => by
-      -- Build path for the rest first: x --> evalWord ι rest • x
-      -- Then add edge: evalWord ι rest • x --s--> ι s • (evalWord ι rest • x)
+      -- Build path for the rest first: `x --> evalWord ι rest • x`
+      -- Then add edge: `evalWord ι rest • x --s--> ι s • (evalWord ι rest • x)`
       have rest_path : @Path (Symmetrify (SchreierGraph V ι)) _ x (evalWord ι rest • x) :=
         pathFromWord x rest
       -- Now add the edge for s
@@ -322,25 +319,25 @@ def pathFromWord (x : SchreierGraph V ι) :
       have sym_edge : @Quiver.Hom (Symmetrify (SchreierGraph V ι)) _
           (evalWord ι rest • x) (ι s • (evalWord ι rest • x)) :=
         Sum.inl edge
-      -- Cast: ι s • (evalWord ι rest • x) = (ι s * evalWord ι rest) • x
-      --     = evalWord ι ((s, true) :: rest) • x
+      -- Cast: `ι s • (evalWord ι rest • x) = (ι s * evalWord ι rest) • x`
+      --     `= evalWord ι ((s, true) :: rest) • x`
       have endpoint_eq : ι s • (evalWord ι rest • x) = evalWord ι ((s, true) :: rest) • x := by
         rw [evalWord_cons_true, mul_smul]
       exact (rest_path.cons sym_edge).cast rfl endpoint_eq
   | (s, false) :: rest => by
-      -- Build path for the rest first: x --> evalWord ι rest • x
-      -- Then add edge: evalWord ι rest • x --(-s)--> (ι s)⁻¹ • (evalWord ι rest • x)
+      -- Build path for the rest first: `x --> evalWord ι rest • x`
+      -- Then add edge: `evalWord ι rest • x --(-s)--> (ι s)⁻¹ • (evalWord ι rest • x)`
       have rest_path : @Path (Symmetrify (SchreierGraph V ι)) _ x (evalWord ι rest • x) :=
         pathFromWord x rest
       -- Now add the backward edge for s
-      -- Need: (ι s) • ((ι s)⁻¹ • (evalWord ι rest • x)) = evalWord ι rest • x
+      -- Need: `(ι s) • ((ι s)⁻¹ • (evalWord ι rest • x)) = evalWord ι rest • x`
       have forward_edge : ((ι s)⁻¹ • (evalWord ι rest • x)) ⟶ (evalWord ι rest • x) :=
         ⟨s, by simp [← mul_smul]⟩
       have sym_edge : @Quiver.Hom (Symmetrify (SchreierGraph V ι)) _
           (evalWord ι rest • x) ((ι s)⁻¹ • (evalWord ι rest • x)) :=
         Sum.inr forward_edge
-      -- Cast: (ι s)⁻¹ • (evalWord ι rest • x) = ((ι s)⁻¹ * evalWord ι rest) • x
-      --     = evalWord ι ((s, false) :: rest) • x
+      -- Cast: `(ι s)⁻¹ • (evalWord ι rest • x) = ((ι s)⁻¹ * evalWord ι rest) • x`
+      --     `= evalWord ι ((s, false) :: rest) • x`
       have endpoint_eq : (ι s)⁻¹ • (evalWord ι rest • x) = evalWord ι ((s, false) :: rest) • x := by
         rw [evalWord_cons_false, mul_smul]
       exact (rest_path.cons sym_edge).cast rfl endpoint_eq
@@ -360,17 +357,17 @@ theorem schreierGraph_path_of_mem_closure (g : M) (hg : g ∈ Subgroup.closure (
     simp only [evalWord_singleton_true] at path
     exact ⟨path⟩
   | mul g₁ g₂ _ _ ih₁ ih₂ =>
-    -- (g₁ * g₂) • y = g₁ • (g₂ • y)
-    -- We compose: y → g₂ • y → g₁ • (g₂ • y)
+    -- `(g₁ * g₂) • y = g₁ • (g₂ • y)`
+    -- We compose: `y → g₂ • y → g₁ • (g₂ • y)`
     obtain ⟨p₂⟩ := ih₂ y
     obtain ⟨p₁⟩ := ih₁ (g₂ • y)
     have eq : g₁ • (g₂ • y) = (g₁ * g₂) • y := (mul_smul g₁ g₂ y).symm
     exact ⟨(p₂.comp p₁).cast rfl eq⟩
   | inv g _ ih =>
-    -- We need path from y to g⁻¹ • y
-    -- ih gives us: for any z, path from z to g • z
-    -- In particular, path from (g⁻¹ • y) to g • (g⁻¹ • y) = y
-    -- Reverse this path to get: y → g⁻¹ • y
+    -- We need path from `y` to `g⁻¹ • y`
+    -- `ih` gives us: for any `z`, path from `z` to `g • z`
+    -- In particular, path from `g⁻¹ • y` to `g • (g⁻¹ • y) = y`
+    -- Reverse this path to get: `y → g⁻¹ • y`
     obtain ⟨p⟩ := ih (g⁻¹ • y)
     have eq : g • (g⁻¹ • y) = y := smul_inv_smul g y
     have p' : Path (Symmetrify.of.obj (g⁻¹ • y)) (Symmetrify.of.obj y) := p.cast rfl eq
@@ -390,12 +387,12 @@ theorem schreierGraph_reachable_forward (x : SchreierGraph V ι)
     obtain ⟨g, hg_mem, hg_smul⟩ := ih
     match e with
     | Sum.inl ⟨s, hs⟩ =>
-      -- Forward edge: hs says ι s • z = y (where z = g • x is intermediate vertex)
+      -- Forward edge: `hs` says `ι s • z = y` (where `z = g • x` is intermediate vertex)
       refine ⟨ι s * g, ?_, ?_⟩
       · exact Subgroup.mul_mem _ (Subgroup.subset_closure (Set.mem_range_self s)) hg_mem
       · rw [mul_smul, hg_smul, hs]
     | Sum.inr ⟨s, hs⟩ =>
-      -- Backward edge: hs says ι s • y = z (intermediate vertex = g • x)
+      -- Backward edge: `hs` says `ι s • y = z` (intermediate vertex `= g • x`)
       refine ⟨(ι s)⁻¹ * g, ?_, ?_⟩
       · exact Subgroup.mul_mem _ (Subgroup.inv_mem _ (Subgroup.subset_closure
           (Set.mem_range_self s))) hg_mem
@@ -408,7 +405,7 @@ them. -/
 theorem schreierGraph_reachable_iff (x y : SchreierGraph V ι) :
     Nonempty (Path (Symmetrify.of.obj x) (Symmetrify.of.obj y)) ↔
     ∃ g ∈ Subgroup.closure (Set.range ι), g • x = y := by
-  -- Symmetrify.of.obj is just id
+  -- `Symmetrify.of.obj` is just `id`
   simp only [Symmetrify.of_obj, id]
   constructor
   · intro ⟨p⟩
@@ -469,16 +466,16 @@ lemma cayleyGraph_symmetrify_neighbor_subset (g : CayleyGraph ι) :
   intro h hedge
   -- An edge in the symmetrified graph is either a forward or backward edge
   obtain ⟨e | e⟩ := hedge
-  · -- Forward edge: h = ι s • g for some s
+  · -- Forward edge: `h = ι s • g` for some `s`
     left
     obtain ⟨s, hs⟩ := e
     exact ⟨ι s, Set.mem_range_self s, hs⟩
-  · -- Backward edge: g = ι s • h for some s, so h = (ι s)⁻¹ • g
+  · -- Backward edge: `g = ι s • h` for some `s`, so `h = (ι s)⁻¹ • g`
     right
     obtain ⟨s, hs⟩ := e
     use ι s, Set.mem_range_self s
-    -- From hs : ι s • h = Symmetrify.of.obj g = g, we get h = (ι s)⁻¹ • g
-    -- Note: Symmetrify.of.obj is the identity function
+    -- From `hs : ι s • h = Symmetrify.of.obj g = g`, we get `h = (ι s)⁻¹ • g`
+    -- Note: `Symmetrify.of.obj` is the identity function
     have hs' : ι s • h = g := hs
     change (ι s)⁻¹ • g = h
     calc (ι s)⁻¹ • g = (ι s)⁻¹ • (ι s • h) := by rw [← hs']
@@ -489,18 +486,18 @@ generators generate the entire group. -/
 theorem cayley_preconnected (hgen : Subgroup.closure (Set.range ι) = ⊤) (x y : CayleyGraph ι) :
     Nonempty (Path (Symmetrify.of.obj x) (Symmetrify.of.obj y)) := by
   rw [schreierGraph_reachable_iff]
-  -- We need to find g ∈ closure(range ι) such that g • x = y
-  -- Since closure(range ι) = ⊤, any g works
-  -- Use the isomorphism M ⧸ ⊥ ≃* M to compute the required g
+  -- We need to find `g ∈ closure(range ι)` such that `g • x = y`
+  -- Since `closure(range ι) = ⊤`, any `g` works
+  -- Use the isomorphism `M ⧸ ⊥ ≃* M` to compute the required `g`
   let φ := QuotientGroup.quotientBot (G := M)
   use φ y * (φ x)⁻¹
   constructor
-  · -- g ∈ closure(range ι) = ⊤
+  · -- `g ∈ closure(range ι) = ⊤`
     rw [hgen]
     exact Subgroup.mem_top _
-  · -- g • x = y
-    -- The action on M ⧸ ⊥ is left multiplication
-    -- We need: (φ y * (φ x)⁻¹) • x = y
+  · -- `g • x = y`
+    -- The action on `M ⧸ ⊥` is left multiplication
+    -- We need: `(φ y * (φ x)⁻¹) • x = y`
     have h : ∀ (g : M) (q : M ⧸ (⊥ : Subgroup M)), g • q = φ.symm (g * φ q) := fun g q ↦ by
       induction q using QuotientGroup.induction_on with
       | H m =>
@@ -518,7 +515,7 @@ instance cayleyGraph_nonempty [Nonempty M] : Nonempty (CayleyGraph ι) := by
 in a Schreier graph is finite. This is because arrows are indexed by elements of S. -/
 instance schreierGraph_fintype_arrow [Fintype S] [DecidableEq V] (x y : SchreierGraph V ι) :
     Fintype (x ⟶ y) :=
-  -- Arrows from x to y are { s : S // ι s • x = y }, a subtype of the finite type S
+  -- Arrows from `x` to `y` are `{ s : S // ι s • x = y }`, a subtype of the finite type `S`
   Subtype.fintype _
 
 /-- When S is finite, the star (set of all outgoing arrows) from any vertex in a Schreier graph
@@ -527,7 +524,7 @@ at each vertex. -/
 noncomputable instance schreierGraph_fintype_star [Fintype S] (x : SchreierGraph V ι) :
     Fintype (Σ y, x ⟶ y) := by
   classical
-  -- The star is equivalent to S: each s gives an arrow to ι s • x
+  -- The star is equivalent to `S`: each `s` gives an arrow to `ι s • x`
   let f : S → Σ y, x ⟶ y := fun s ↦ ⟨ι s • x, s, rfl⟩
   have hf : Function.Surjective f := fun ⟨y, ⟨s, hs⟩⟩ ↦ ⟨s, by subst hs; rfl⟩
   exact Fintype.ofSurjective f hf
@@ -649,8 +646,8 @@ def quotientRightMul (g : M) : M ⧸ N → M ⧸ N :=
     (fun x y (h : QuotientGroup.leftRel N x y) ↦ by
       rw [QuotientGroup.eq]
       rw [QuotientGroup.leftRel_eq] at h
-      -- h : x⁻¹ * y ∈ N
-      -- Goal: (x * g⁻¹)⁻¹ * (y * g⁻¹) ∈ N
+      -- `h : x⁻¹ * y ∈ N`
+      -- Goal: `(x * g⁻¹)⁻¹ * (y * g⁻¹) ∈ N`
       convert ‹N.Normal›.conj_mem _ h g using 1
       group)
 
@@ -671,18 +668,18 @@ def schreierCosetGraph_asAutom (g : M) : SchreierCosetGraph ι N ⥤q SchreierCo
   obj := fun x ↦ (equivSchreierGraph (M ⧸ N) ι) (quotientRightMul N g
       ((equivSchreierGraph (M ⧸ N) ι).symm x))
   map := fun {x y} ⟨s, hs⟩ ↦ ⟨s, by
-    -- Need: ι s • (x * g⁻¹) = y * g⁻¹  (in quotient notation)
-    -- We have: ι s • x = y (in the Schreier graph)
-    -- Since equivSchreierGraph is Equiv.refl, everything unfolds to quotient operations
+    -- Need: `ι s • (x * g⁻¹) = y * g⁻¹` (in quotient notation)
+    -- We have: `ι s • x = y` (in the Schreier graph)
+    -- Since `equivSchreierGraph` is `Equiv.refl`, everything unfolds to quotient operations
     simp only [equivSchreierGraph_apply, equivSchreierGraph_symm_apply] at hs ⊢
     induction x using QuotientGroup.induction_on with
     | H m =>
       simp only [quotientRightMul_mk]
-      -- hs : ι s • (↑m : M ⧸ N) = y, which means y = ↑(ι s * m)
+      -- `hs : ι s • (↑m : M ⧸ N) = y`, which means `y = ↑(ι s * m)`
       rw [MulAction.Quotient.smul_coe] at hs
       subst hs
       simp only [quotientRightMul_mk]
-      -- Now need: ι s • ↑(m * g⁻¹) = ↑(ι s * m * g⁻¹)
+      -- Now need: `ι s • ↑(m * g⁻¹) = ↑(ι s * m * g⁻¹)`
       rw [MulAction.Quotient.smul_coe]
       congr 1
       simp only [smul_eq_mul, mul_assoc]⟩
@@ -758,7 +755,7 @@ def schreierCosetGraph_asAutom_coveringIso (g : M) :
   commute_left := schreierCosetGraph_asAutom_labelling ι N g
   commute_right := schreierCosetGraph_asAutom_labelling ι N g⁻¹
 
-/-- For Cayley graphs (where N = ⊥), right multiplication is an automorphism.
+/-- For Cayley graphs (where `N = ⊥`), right multiplication is an automorphism.
 This is the vertex-transitivity property of Cayley graphs. -/
 def cayleyGraph_asAutom_coveringIso (g : M) :
     cayleyGraphLabelling ι ≃qc cayleyGraphLabelling ι :=

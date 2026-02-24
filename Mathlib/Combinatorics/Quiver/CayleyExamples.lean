@@ -1,20 +1,20 @@
 /-
-Copyright (c) 2025 Runtian Zhou. All rights reserved.
+Copyright (c) 2026 Runtian Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Runtian Zhou
 -/
 module
 
 public import Mathlib.Combinatorics.Quiver.Schreier
-public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.Data.ZMod.Basic
+public import Mathlib.GroupTheory.Perm.Sign
 
 /-!
 # Cayley Graph Examples
 
 This file provides concrete examples of Cayley graphs for common groups,
-demonstrating the Cayley graph infrastructure defined in `Schreier.lean`.
+demonstrating the infrastructure defined in
+`Mathlib.Combinatorics.Quiver.Schreier`.
 
 ## Main definitions
 

@@ -3326,6 +3326,7 @@ public import Mathlib.Combinatorics.Pigeonhole
 public import Mathlib.Combinatorics.Quiver.Arborescence
 public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Combinatorics.Quiver.Cast
+public import Mathlib.Combinatorics.Quiver.CayleyExamples
 public import Mathlib.Combinatorics.Quiver.ConnectedComponent
 public import Mathlib.Combinatorics.Quiver.Covering
 public import Mathlib.Combinatorics.Quiver.Path
@@ -3336,7 +3337,6 @@ public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Combinatorics.Quiver.Push
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Combinatorics.Quiver.Schreier
-public import Mathlib.Combinatorics.Quiver.SchreierExamples
 public import Mathlib.Combinatorics.Quiver.SingleObj
 public import Mathlib.Combinatorics.Quiver.Subquiver
 public import Mathlib.Combinatorics.Quiver.Symmetric
