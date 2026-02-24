@@ -133,11 +133,11 @@ private lemma isSheaf_skyscraperPresheaf_aux
     obtain ⟨z, q₁, q₂, fac⟩ := IsCofiltered.cospan α₁ α₂
     rw [Subtype.ext_iff] at fac
     exact ⟨z.1, q₁.1, q₂.1, z.2, fac, by simp, by simp⟩
-  let φ₁ : (Presieve.categoryMk _ _ (R.downward_closed hf₁ p₁)) ⟶
-        (Presieve.categoryMk _ _ hf₁) :=
+  let φ₁ : Presieve.categoryMk _ _ (R.downward_closed hf₁ p₁) ⟶
+      Presieve.categoryMk _ _ hf₁ :=
     ObjectProperty.homMk (Over.homMk p₁)
-  let φ₂ : (Presieve.categoryMk _ _ (R.downward_closed hf₁ p₁)) ⟶
-        (Presieve.categoryMk _ _ hf₂) :=
+  let φ₂ : Presieve.categoryMk _ _ (R.downward_closed hf₁ p₁) ⟶
+      Presieve.categoryMk _ _ hf₂ :=
     ObjectProperty.homMk (Over.homMk p₂)
   simpa [hz₁, hz₂, φ₁, φ₂] using
     (Cone.w s φ₂.op =≫ Pi.π _ z).trans (Cone.w s φ₁.op =≫ Pi.π _ z).symm
