@@ -209,6 +209,7 @@ abbrev quotSMulTop_isLocalizedModule_map (x : R) (M : Type*) [AddCommGroup M] [M
         algebra_compatible_smul Rₚ x (r' • f m)]
         using Submodule.smul_mem_pointwise_smul (r' • f m) ((algebraMap R Rₚ) x) ⊤ hm))
 
+set_option backward.isDefEq.respectTransparency false in
 variable (Rₚ) in
 omit [IsLocalRing R] [IsNoetherianRing R] [Small.{v, u} R] in
 lemma isLocalizedModule_quotSMulTop_isLocalizedModule_map (x : R)
@@ -276,6 +277,7 @@ lemma isLocalization_at_prime_prime_depth_le_depth [IsLocalRing Rₚ] [Module.Fi
   rcases List.mem_map.mp hr with ⟨r, hr, eq⟩
   simpa only [← eq, IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p] using mem r hr
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Small.{v', u'} Rₚ] in
 lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
     [Module.Finite R M] [M.IsCohenMacaulay] [ntr : Nontrivial Mₚ] :
@@ -530,6 +532,7 @@ lemma IsCohenMacaulayLocalRing.of_isLocalRing_of_isCohenMacaulayRing [IsLocalRin
 
 open Ideal
 
+set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 lemma quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R]
     [IsNoetherianRing R] (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
@@ -546,6 +549,7 @@ lemma quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
   simp [isCohenMacaulayLocalRing_def, this, ← depth_quotient_regular_succ_eq_depth x reg mem,
     WithBot.add_one_cancel]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quotient_span_regular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R] [IsNoetherianRing R]
     (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     IsCohenMacaulayLocalRing R ↔ IsCohenMacaulayLocalRing (R ⧸ Ideal.span {x}) := by

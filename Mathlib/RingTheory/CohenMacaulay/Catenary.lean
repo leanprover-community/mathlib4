@@ -370,6 +370,7 @@ lemma ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) :
     intro p hp
     exact ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective hp.1.2)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLocalRing R]
     (I : Ideal R) (netop : I ≠ ⊤) : I.height + ringKrullDim (R ⧸ I) = ringKrullDim R := by
   have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr netop

@@ -33,6 +33,7 @@ lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R
   apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
   exact IsLocalRing.maximalIdeal_le_jacobson _ mem
 
+set_option backward.isDefEq.respectTransparency false in
 theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
     [Module.Finite R M] [Nfin : Module.Finite R N] [Nontrivial M] [Nntr : Nontrivial N]
     [Small.{v} R] : moduleDepth N M ≥ IsLocalRing.depth M -
