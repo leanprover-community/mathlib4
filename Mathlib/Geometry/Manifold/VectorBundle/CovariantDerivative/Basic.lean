@@ -27,6 +27,44 @@ open Bundle Filter Module Topology Set
 
 open scoped Bundle Manifold ContDiff
 
+@[expose] public section mfderiv
+
+open Function
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+lemma injective_mfderiv_of_eventually_leftInverse
+    {f : M → M'} (x : M) {g : M' → M}
+    (hg : MDifferentiableAt I' I g (f x)) (hf : MDifferentiableAt I I' f x)
+    (hfg : g ∘ f =ᶠ[𝓝 x] id) : Injective (mfderiv I I' f x) := by
+  have := mfderiv_comp x hg hf
+  rw [hfg.mfderiv_eq] at this
+  have : LeftInverse (mfderiv I' I g (f x)) (mfderiv I I' f x) := by
+    intro u
+    simpa using congr($this u).symm
+  exact LeftInverse.injective this
+
+lemma surjective_mfderiv_of_eventually_rightInverse
+    {f : M → M'} {x : M} {y : M'} (hxy : y = f x) {g : M' → M}
+    (hg : MDifferentiableAt I' I g y) (hf : MDifferentiableAt I I' f x)
+    (hfg : g ∘ f =ᶠ[𝓝 x] id) : Surjective (mfderiv I' I g y) := by
+  rw [hxy] at hg
+  have := mfderiv_comp x hg hf
+  rw [hfg.mfderiv_eq] at this
+  have : RightInverse (mfderiv I I' f x) (mfderiv I' I g (f x)) := by
+    intro u
+    simpa using congr($this u).symm
+  rw [← hxy] at this
+  exact RightInverse.surjective this
+
+end mfderiv
+
 @[expose] public section delaborators
 
 -- TODO: decide whether we want this and move
@@ -50,14 +88,10 @@ open Lean PrettyPrinter Delaborator SubExpr
     if let .lam _ _ b _ := f then
       if b.isAppOf ``Bundle.TotalSpace.mk' then
         let s := b.getAppArgs[4]!.getAppFn
-        let ss ← PrettyPrinter.delab s
-        return ← `(MDiffAt (T% $ss) $pt)
-        -- if let .const name _ := s then
-        --   let i := mkIdent name
-        --   return ← `(MDiffAt (T% $i) $pt)
-        -- else
-        --   failure
-    failure
+        if s matches .fvar .. then
+          let ss ← PrettyPrinter.delab s
+          return ← `(MDiffAt (T% $ss) $pt)
+    throwError "nope"
   catch _ =>
     let x : Term ← withNaryArg 20 <| delab
     return ← `(MDiffAt $x $pt)
@@ -320,7 +354,7 @@ lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M
     ContMDiff I (I.prod 𝓘(ℝ, F)) ∞ (T% (extend I F σ₀)) := by
   letI t := trivializationAt F V x
   letI ht := t.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)
-  have hx : x ∈ t.baseSet := by exact FiberBundle.mem_baseSet_trivializationAt' x
+  have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
   let ψ := Classical.choose <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
   let hψ :=
     Classical.choose_spec <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
@@ -1199,45 +1233,42 @@ end projection_trivial_bundle
 
 end IsCovariantDerivativeOn
 
-section from_trivialization
-
-variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e]
-
-noncomputable
-def Trivialization.covDeriv (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x)
-    (x : M) : V x := e.symm x (mfderiv I 𝓘(ℝ, F) (fun x' ↦ (e (σ x')).2) x (X x))
-
--- The following is probably not on the critical path
-lemma Trivialization.covDeriv_isCovariantDerivativeOn [IsManifold I 1 M] :
-    IsCovariantDerivativeOn (I := I) F e.covDeriv e.baseSet where
-  addX {_X _X' _σ _x} hX hX' hσ hx := by sorry
-  smulX {_X _σ} c' x hX hσ hx := by sorry
-  addσ {_X _σ _σ' _x} hX hσ hσ' hx := by sorry
-  smul_const_σ {_X _σ _x} a hX hσ hx := by sorry
-  leibniz {X σ f x} hX hσ hf hx := by sorry
-
-end from_trivialization
-
 section to_trivialization
 
 variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e] [IsManifold I 1 M]
 
--- Note: The definition below (ab)uses definitional
--- equality of `TangentSpace (I.prod 𝓘(ℝ, F)) (↑t v)`
--- which is $T_{t(v)} (M × F)$ and `TM v.proj × F`
--- which is $T_{π(v)} M × F$.
-variable (I) in
-noncomputable
-def Trivialization.derivEquiv (v : TotalSpace F V) :
-    TangentSpace (I.prod 𝓘(ℝ, F)) v ≃L[ℝ] TangentSpace I v.proj × F where
-      toFun := mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v
-      map_add' := by simp
-      map_smul' := by simp
-      invFun := mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e.invFun (e v)
-      left_inv := sorry
-      right_inv := sorry
-      continuous_toFun := ContinuousLinearMap.continuous _
-      continuous_invFun := ContinuousLinearMap.continuous _
+omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)] [MemTrivializationAtlas e]
+  [(x : M) → AddCommGroup (V x)]
+  [(x : M) → TopologicalSpace (V x)] [FiberBundle F V] in
+lemma Trivialization.baseSet_mem_nhds {x : M} (hx : x ∈ e.baseSet) : e.baseSet ∈ 𝓝 x :=
+  e.open_baseSet.mem_nhds_iff.mpr hx
+
+omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)] [MemTrivializationAtlas e]
+  [(x : M) → AddCommGroup (V x)] in
+lemma Trivialization.preimage_baseSet_mem_nhds {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
+    TotalSpace.proj ⁻¹' e.baseSet ∈ 𝓝 v :=
+  FiberBundle.continuous_proj F V |>.continuousAt <| e.baseSet_mem_nhds  hv
+
+omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)] [MemTrivializationAtlas e]
+  [(x : M) → AddCommGroup (V x)] [(x : M) → TopologicalSpace (V x)] in
+lemma Trivialization.baseSet_prod_univ_mem_nhds {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
+    e.baseSet ×ˢ univ ∈ 𝓝 (e v) := by
+  rw [← mk_proj_snd' e hv]
+  exact prod_mem_nhds (e.baseSet_mem_nhds hv) univ_mem
+
+omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)] [(x : M) → TopologicalSpace (V x)]
+    [FiberBundle F V] [MemTrivializationAtlas e] [(x : M) → AddCommGroup (V x)] in
+lemma Trivialization.comp_invFun_eventuallyEq
+    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) : e ∘ e.invFun =ᶠ[𝓝 (e v)] id := by
+  filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with p hp using
+    apply_symm_apply e <| (mem_target e).2 hp.1
+
+omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)] [MemTrivializationAtlas e]
+  [(x : M) → AddCommGroup (V x)] in
+lemma Trivialization.invFun_comp_eventuallyEq
+    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) : e.invFun ∘ e =ᶠ[𝓝 v] id := by
+  filter_upwards [e.preimage_baseSet_mem_nhds hv] with w hw using
+    symm_apply_apply e <| (mem_source e).mpr hw
 
 variable (I) in
 omit [MemTrivializationAtlas e] [IsManifold I 1 M] in
@@ -1245,11 +1276,7 @@ lemma Trivialization.fst_comp_eventuallyEq
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     Prod.fst ∘ e =ᶠ[𝓝 v] TotalSpace.proj := by
-  have : TotalSpace.proj ⁻¹' e.baseSet ∈ 𝓝 v := by
-    apply FiberBundle.continuous_proj F V |>.continuousAt
-    exact e.open_baseSet.mem_nhds_iff.mpr hv
-  filter_upwards [this] with y hy
-  exact coe_fst' e hy
+  filter_upwards [preimage_baseSet_mem_nhds e hv] with y hy using coe_fst' e hy
 
 omit [IsManifold I 1 M] in
 lemma Trivialization.mdifferentiableAt
@@ -1262,6 +1289,62 @@ MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v := by
   exact this.mdifferentiableAt zero_ne_one.symm
 
 omit [IsManifold I 1 M] in
+lemma Trivialization.mdifferentiableAt_invFun
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {x : M} (hx : x ∈ e.baseSet) (f : F) :
+    MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e.invFun (x, f) := by
+  have : ⟨x, f⟩ ∈ e.target := (mk_mem_target e).mpr hx
+  have foo := e.contMDiffOn_symm (IB := I) (n := 1) _ this
+  have := foo.contMDiffAt (e.open_target.mem_nhds this)
+  exact this.mdifferentiableAt zero_ne_one.symm
+
+-- Note: The definition below (ab)uses definitional
+-- equality of `TangentSpace (I.prod 𝓘(ℝ, F)) (↑t v)`
+-- which is $T_{t(v)} (M × F)$ and `TM v.proj × F`
+-- which is $T_{π(v)} M × F$.
+variable (I) in
+noncomputable
+def Trivialization.deriv (v : TotalSpace F V) :
+    TangentSpace (I.prod 𝓘(ℝ, F)) v →L[ℝ] TangentSpace I v.proj × F :=
+  mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v
+
+omit [IsManifold I 1 M] in
+lemma Trivialization.bijective_deriv
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
+    Function.Bijective (e.deriv I v) := by
+  have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
+  rw [mk_proj_snd' e hv] at D₁
+  have D₂ : MDifferentiableAt _ _ e v := e.mdifferentiableAt (I := I) hv v.2
+  constructor
+  · apply injective_mfderiv_of_eventually_leftInverse v D₁ D₂
+    apply e.invFun_comp_eventuallyEq hv
+  · have : v = e.invFun (e v) :=
+      (Eventually.self_of_nhds <| e.invFun_comp_eventuallyEq hv).symm
+    apply surjective_mfderiv_of_eventually_rightInverse this D₂ D₁
+      (e.comp_invFun_eventuallyEq hv)
+
+omit [NormedSpace ℝ F]
+     [(x : M) → Module ℝ (V x)] [(x : M) → TopologicalSpace (V x)]
+     [FiberBundle F V] [MemTrivializationAtlas e] in
+lemma Trivialization.symm_apply_apply_mk_eventuallyEq
+    {x : M} (hx : x ∈ e.baseSet) (σ : Π x, V x) :
+    (T% fun x' ↦ e.symm x' (e (T% σ x')).2) =ᶠ[𝓝 x] T% σ := by
+  filter_upwards [e.baseSet_mem_nhds hx] with y hy
+  simp [symm_apply_apply_mk e hy (σ y)]
+
+omit [NormedSpace ℝ F] [(x : M) → AddCommGroup (V x)]
+     [(x : M) → Module ℝ (V x)] [(x : M) → TopologicalSpace (V x)]
+     [FiberBundle F V] [MemTrivializationAtlas e] in
+lemma Trivialization.apply_section_eventuallyEq
+    {x : M} (hx : x ∈ e.baseSet) (σ : Π x, V x) :
+    e ∘ T%σ =ᶠ[𝓝 x] fun x ↦ ⟨x, (e (σ x)).2⟩ := by
+  filter_upwards [e.baseSet_mem_nhds hx] with y hy
+  ext
+  · exact coe_coe_fst e hy
+  · simp
+
+omit [IsManifold I 1 M] in
 noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
   (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj v).ker
@@ -1270,7 +1353,7 @@ omit [IsManifold I 1 M] in
 lemma Trivialization.comap_vert
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
-    Bundle.vert v = Submodule.comap (e.derivEquiv I v).toLinearMap
+    Bundle.vert v = Submodule.comap (e.deriv I v).toLinearMap
       (Submodule.prod ⊥ ⊤) := by
   ext x
   have : Prod.fst ∘ e =ᶠ[𝓝 v] TotalSpace.proj := e.fst_comp_eventuallyEq I hv
@@ -1293,33 +1376,25 @@ lemma Trivialization.eq_of {x : M} {v v' : V x}
   grind [e.symm_proj_apply v' hx]
 
 omit [IsManifold I 1 M] in
-lemma Trivialization.derivEquiv_mfderiv
+lemma Trivialization.mfderiv_comp_section
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {σ : Π x : M, V x} {x : M} (hσ : MDiffAt T%σ x)
     (u : TangentSpace I x) (hx : x ∈ e.baseSet) :
     letI s := fun x ↦ (e (σ x)).2
-    e.derivEquiv I (σ x) ((mfderiv% T%σ x) u) = (u, mfderiv I 𝓘(ℝ, F) s x u) := by
+    (e.deriv I (σ x)).toLinearMap ((mfderiv% T%σ x) u) = (u, mfderiv I 𝓘(ℝ, F) s x u) := by
   have mdiffe : MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e (σ x) :=
     e.mdifferentiableAt hx _
   have : mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x =
-    (derivEquiv I e (σ x)).toContinuousLinearMap ∘L
-    (mfderiv% T%σ x) :=
+    (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) :=
     mfderiv_comp x mdiffe hσ
   have : mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x u =
-    e.derivEquiv I (σ x) ((mfderiv% T%σ x) u) := by
+    e.deriv I (σ x) ((mfderiv% T%σ x) u) := by
     rw [this]
     rfl
-  rw [← this]
+  erw [← this]
   let s := fun x ↦ (e (σ x)).2
-  change mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x u = (u, mfderiv I 𝓘(ℝ, F) s x u)
-  -- FIXME extract lemma
-  have : e ∘ T%σ =ᶠ[𝓝 x] fun x ↦ ⟨x, (e (σ x)).2⟩ := by
-    have : e.baseSet ∈ 𝓝 x := e.open_baseSet.mem_nhds_iff.mpr hx
-    filter_upwards [this] with y hy
-    ext
-    · exact coe_coe_fst e hy
-    · simp
-  rw [this.mfderiv_eq]
+  change mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x u = (u, mfderiv% s x u)
+  rw [(e.apply_section_eventuallyEq hx _).mfderiv_eq]
   erw [mfderiv_prodMk, mfderiv_id]
   · change (ContinuousLinearMap.id _ _).prod (mfderiv% s x) u = _
     simp
@@ -1332,9 +1407,10 @@ def Trivialization.pushCovDer
     (Π x : M, TangentSpace I x) → (M → F) → (M → F) :=
   fun X σ x ↦ e (cov X (fun x' ↦ e.symm x' <| σ x') x) |>.2
 
+omit [MemTrivializationAtlas e] in
 lemma Trivialization.pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
     [T2Space M] [IsManifold I ∞ M]
-    [VectorBundle ℝ F V]
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     (hcov : IsCovariantDerivativeOn F cov e.baseSet)
     {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x} {x : M}
@@ -1342,10 +1418,10 @@ lemma Trivialization.pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensio
     (hx : x ∈ e.baseSet := by assumption) :
     (e.pushCovDer cov) X (fun x ↦ (e (σ x)).2) x = (e (cov X σ x)).2 := by
   have : cov X (fun x' ↦ e.symm x' (e (T% σ x')).2) x = cov X σ x := by
-    apply hcov.congr_σ_of_eqOn hX _ hσ
-    · exact e.open_baseSet.mem_nhds_iff.mpr hx
+    apply hcov.congr_σ_of_eqOn hX _ hσ (e.baseSet_mem_nhds hx)
     · exact fun y hy ↦ symm_apply_apply_mk e hy (σ y) --FIXME extract as lemma?
-    · sorry
+    · rw [(e.symm_apply_apply_mk_eventuallyEq hx σ).mdifferentiableAt_iff]
+      exact hσ
   unfold pushCovDer
   rw [this]
 
@@ -1381,8 +1457,8 @@ def proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
   haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
     (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
   letI tproj := d_covDerOn.projection v.proj (t v).2
-  letI Tvt := t.derivEquiv I v
-  t.symmL ℝ v.proj ∘L tproj ∘L Tvt.toContinuousLinearMap
+  letI Tvt := t.deriv I v
+  t.symmL ℝ v.proj ∘L tproj ∘L Tvt
 
 lemma snd_triv_proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) (u : TangentSpace (I.prod
   𝓘(ℝ, F)) v) :
@@ -1390,7 +1466,7 @@ lemma snd_triv_proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) (u : 
     haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
       (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
     letI tproj := d_covDerOn.projection v.proj (t v).2
-    letI Tvt := t.derivEquiv I v
+    letI Tvt := t.deriv I v
     (t <| cov.proj v u).2 = tproj (Tvt u) := by
   simp [CovariantDerivative.proj, (mem_baseSet_trivializationAt F V v.proj)]
 
@@ -1403,11 +1479,11 @@ lemma comap_trivializationAt_horiz (cov : CovariantDerivative I F V) (v : TotalS
     letI t := trivializationAt F V v.proj
     haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
       (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
-    horiz cov v = Submodule.comap (t.derivEquiv I v).toLinearMap
+    horiz cov v = Submodule.comap (t.deriv I v).toLinearMap
       (d_covDerOn.horiz v.proj (t v).2) := by
   -- FIXME: needing all those lets and the change is awful
   let t := trivializationAt F V v.proj
-  let Tvt := t.derivEquiv I v
+  let Tvt := t.deriv I v
   have hcov := t.pushCovDer_isCovariantDerivativeOn
     (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
   let tproj := hcov.projection v.proj (t v).2
@@ -1415,6 +1491,25 @@ lemma comap_trivializationAt_horiz (cov : CovariantDerivative I F V) (v : TotalS
   ext u
   change t'.symm (tproj (Tvt u)) = 0 ↔ tproj (Tvt u) = 0
   simp
+
+lemma LinearMap.comap_isCompl {R R₂ M M₂ : Type*}
+    [Semiring R] [AddCommMonoid M] [Module R M] [Semiring R₂]
+    {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+    [AddCommMonoid M₂] [Module R₂ M₂]
+    {f : M →ₛₗ[σ₁₂] M₂} (hf : Function.Bijective f)
+    {p q : Submodule R₂ M₂} (h : IsCompl p q) :
+    IsCompl (Submodule.comap f p) (Submodule.comap f q) := by
+  rw [isCompl_iff, disjoint_iff, codisjoint_iff] at *
+  constructor
+  · rw [← Submodule.comap_inf, h.1]
+    simp [LinearMap.ker_eq_bot_of_injective hf.1]
+  · rw [← Submodule.comap_sup_of_injective, h.2]
+    · exact Submodule.comap_top f
+    · exact hf.1
+    · intro x hx
+      exact hf.2 x
+    · intro x hx
+      exact hf.2 x
 
 lemma LinearEquiv.comap_isCompl {R R₂ M M₂ : Type*}
   [Semiring R] [AddCommMonoid M] [Module R M] [Semiring R₂]
@@ -1436,12 +1531,14 @@ lemma horiz_vert_direct_sum [ContMDiffVectorBundle 1 F V I]
     (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     IsCompl (cov.horiz v) (vert v) := by
   let t := trivializationAt F V v.proj
-  let Tvt := t.derivEquiv I v
+  let Tvt := t.deriv I v
   have hcov := t.pushCovDer_isCovariantDerivativeOn
     (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
   rw [t.comap_vert (mem_baseSet_trivializationAt F V v.proj), comap_trivializationAt_horiz]
-  apply LinearEquiv.comap_isCompl
-  apply hcov.horiz_vert_direct_sum
+  apply LinearMap.comap_isCompl
+  · apply t.bijective_deriv
+    exact FiberBundle.mem_baseSet_trivializationAt' v.proj
+  · apply hcov.horiz_vert_direct_sum
 
 variable [IsManifold I 1 M]
 variable {cov : CovariantDerivative I F V}
@@ -1465,9 +1562,9 @@ lemma proj_mderiv [ContMDiffVectorBundle 1 F V I]
     rw [t.mdifferentiableAt_section_iff I σ hx] at hσ
     exact (mdifferentiableAt_section I s).mpr hσ
   apply t.eq_of hx
-  rw  [cov.snd_triv_proj (T% σ x),
+  erw  [cov.snd_triv_proj (T% σ x),
        ← t.pushCovDer_ofSect (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _) hX hσ,
-       hcov.cov_eq_proj X s hX hs, t.derivEquiv_mfderiv hσ _ hx]
+       hcov.cov_eq_proj X s hX hs, t.mfderiv_comp_section hσ _ hx]
 
 end CovariantDerivative
 end horiz
