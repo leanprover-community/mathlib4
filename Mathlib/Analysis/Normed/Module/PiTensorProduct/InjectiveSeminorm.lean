@@ -429,7 +429,7 @@ theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
   simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply]
   refine le_trans (injectiveSeminorm_tprod_le (fun i ↦ (f i) (m i))) ?_
   rw [← Finset.prod_mul_distrib]
-  exact Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ ContinuousLinearMap.le_opNorm _ _)
+  exact Finset.prod_le_prod₀ (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ ContinuousLinearMap.le_opNorm _ _)
 
 variable (𝕜 E E')
 

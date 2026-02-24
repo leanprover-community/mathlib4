@@ -119,12 +119,14 @@ or equal to the corresponding summand `g i` of another finite sum, then
 add_decl_doc sum_le_sum
 
 @[to_additive sum_nonneg]
-theorem one_le_prod' [MulLeftMono N] (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
+theorem one_le_prod [MulLeftMono N] (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   le_trans (by rw [prod_const_one]) (prod_le_prod h)
 
 @[to_additive Finset.sum_nonneg']
-theorem one_le_prod'' [MulLeftMono N] (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
-  Finset.one_le_prod' fun i _ ↦ h i
+theorem one_le_prod' [MulLeftMono N] (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
+  Finset.one_le_prod fun i _ ↦ h i
+
+@[deprecated (since := "2026-01-18")] alias one_le_prod'' := one_le_prod'
 
 @[to_additive]
 theorem prod_le_one [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 :=
