@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.RatFunc.Degree
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-!
 # Function fields
@@ -245,7 +246,7 @@ namespace FqtInfty
 with the uniform space structure coming from the valuation at infinity. -/
 attribute [-instance] RatFunc.valuedRatFunc
 
-/- Locally add add the uniform space structure coming from the valuation at infinity. This instance
+/- Locally add the uniform space structure coming from the valuation at infinity. This instance
 is scoped in the `FqtInfty` namescape in case it is needed in the future. -/
 scoped instance : UniformSpace (RatFunc Fq) := (inftyValuedFqt Fq).toUniformSpace
 
