@@ -9,25 +9,22 @@ public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
-# Exactness properties of the difference map for tensor products
+# Exactness properties of the difference map on tensor products
 
 For an `R`-algebra `S`, we collect some properties of the `R`-linear map `S →ₗ[R] S ⊗[R] S` given
-by `s ↦ (s ⊗ₜ 1) - (1 ⊗ₜ s)`.
+by `s ↦ s ⊗ₜ 1 - 1 ⊗ₜ s`.
 
 ## Main definitions
 
 * `includeLeftSubRight`: The `R`-linear map sending `s : S` to `s ⊗ₜ 1 - 1 ⊗ₜ s`.
-* `ExactIncludeLeftSubRight`: Exactness of the sequence `R → S → S ⊗[R] S` with the right map given
-  by `includeLeftSubRight`
-* `toEqLocusOfInclusion`: The ring map from `R` to the equalizer locus in `S` of the two maps
-  `s ↦ s ⊗ₜ (1 : S)` and `s ↦ (1 : S) ⊗ₜ s`.
+* `IsEffective`: Exactness of the sequence `R → S → S ⊗[R] S` where the first map is
+  `Algebra.linearMap R S` and the second map is `includeLeftSubRight`. When `R` and `S` are
+  commutative rings, this is equivalent to the inclusion `im (algebraMap : R → S) → S` being an
+  effective monomorphism in `CommRingCat`.
 
 ## Main results
 
-* `exactIncludeLeftSubRight_of_faithfullyFlat`: `ExactIncludeLeftSubRight R S` is true for any
-  faithfully flat `R`-algebras `S`.
-* `toEqLocusOfInclusion_surjective`: /-- If `ExactIncludeLeftSubRight R S` is true, then
-  `toEqLocusOfInclusion R S` is surjective. -/
+* `IsEffective.of_faithfullyFlat`: `IsEffective R S` is true for any faithfully flat `R`-algebra `S`
 
 -/
 
@@ -35,19 +32,17 @@ by `s ↦ (s ⊗ₜ 1) - (1 ⊗ₜ s)`.
 
 open scoped TensorProduct
 
-universe uR uS uT
-
 namespace Algebra
 
-variable {R : Type uR} [CommSemiring R]
-variable {S : Type uS} [Ring S] [Algebra R S]
+variable {R : Type*} [CommSemiring R]
+variable {S : Type*} [Ring S] [Algebra R S]
 
 namespace TensorProduct
 
 section IncludeLeftSubRight
 
 variable (R S) in
-/-- The `R`-linear map `S →ₗ[R] S ⊗[R] S` sending `s : S` to `(s ⊗ₜ 1) - (1 ⊗ₜ s)`. -/
+/-- The `R`-linear map `S →ₗ[R] S ⊗[R] S` sending `s : S` to `s ⊗ₜ 1 - 1 ⊗ₜ s`. -/
 def includeLeftSubRight : S →ₗ[R] S ⊗[R] S :=
   includeLeft.toLinearMap - includeRight.toLinearMap
 
@@ -67,13 +62,20 @@ lemma includeLeftSubRight_algebraMap_zero (r : R) :
   includeLeftSubRight_zero_of_mem_range (Set.mem_range.mp (exists_apply_eq_apply _ _))
 
 /-- `includeLeftSubRight` is compatible with `distribBaseChange` and `lTensor`. -/
-lemma includeLeftSubRight_distribBaseChange (T : Type uT) [CommRing T] [Algebra R T] :
-    (includeLeftSubRight T (T ⊗[R] S)).restrictScalars R =
+lemma distribBaseChange_comp_includeLeftSubRight (T : Type*) [CommRing T] [Algebra R T] :
     ((TensorProduct.AlgebraTensorModule.distribBaseChange R T S S).restrictScalars R).toLinearMap ∘ₗ
-      ((includeLeftSubRight R S).lTensor T) := by
-  simp only [includeLeftSubRight, LinearMap.lTensor_sub, LinearMap.comp_sub,
-    distribBaseChange_includeLeft_lTensor, distribBaseChange_includeRight_lTensor]
-  rfl
+      (includeLeftSubRight R S).lTensor T =
+    (includeLeftSubRight T (T ⊗[R] S)).restrictScalars R := by
+  ext x y
+  simp [TensorProduct.tmul_sub, TensorProduct.one_def, tmul_one_tmul_one_tmul]
+
+@[simp]
+lemma distribBaseChange_includeLeftSubRight_apply (T : Type*) [CommRing T] [Algebra R T]
+    (x : T ⊗[R] S) :
+    TensorProduct.AlgebraTensorModule.distribBaseChange R T S S
+      ((includeLeftSubRight R S).lTensor T x) =
+    includeLeftSubRight T (T ⊗[R] S) x :=
+  congr($(distribBaseChange_comp_includeLeftSubRight _) x)
 
 end IncludeLeftSubRight
 
@@ -87,11 +89,11 @@ When `R` and `S` are commutative rings, this is true if and only if the inclusio
 def IsEffective : Prop :=
   Function.Exact (Algebra.linearMap R S) (TensorProduct.includeLeftSubRight R S)
 
-section IsEffective
+namespace IsEffective
 
 /-- If `IsEffective R S` is true, then the equalizer of `s ↦ s ⊗ₜ 1 : S →+* S ⊗[R] S` and
 `s ↦ 1 ⊗ₜ s : S →+* S ⊗[R] S` is the image of `algebraMap R S : R →+* S`. -/
-lemma eqLocus_includeLeft_includeRight_of_isEffective (h : IsEffective R S) :
+lemma eqLocus_includeLeft_includeRight (h : IsEffective R S) :
     TensorProduct.includeLeftRingHom.eqLocus TensorProduct.includeRight.toRingHom (S := S ⊗[R] S) =
       Set.range (algebraMap R S) := by
   ext s
@@ -101,7 +103,7 @@ lemma eqLocus_includeLeft_includeRight_of_isEffective (h : IsEffective R S) :
 
 /-- `IsEffective` is true for any `R`-algebra `S` having an `R`-algebra section of
 `Algebra.ofId _ _ : R →ₐ[R] S`. -/
-lemma isEffective_of_section (g : S →ₐ[R] R) : IsEffective R S := by
+lemma of_section (g : S →ₐ[R] R) : IsEffective R S := by
   intro s
   refine ⟨?_, TensorProduct.includeLeftSubRight_zero_of_mem_range⟩
   intro hs
@@ -116,12 +118,12 @@ lemma isEffective_of_section (g : S →ₐ[R] R) : IsEffective R S := by
 
 section FaithfullyFlat
 
-variable (R : Type uR) [CommRing R]
-variable (S : Type uS)
-variable (T : Type uT) [CommRing T] [Algebra R T]
+variable (R : Type*) [CommRing R]
+variable (S : Type*)
+variable (T : Type*) [CommRing T] [Algebra R T]
 
 /-- `IsEffective` descends along faithfully flat algebras. -/
-lemma isEffective_of_isEffective_tensorProduct_of_faithfullyFlat
+lemma of_isEffective_tensorProduct_of_faithfullyFlat
     [Ring S] [Algebra R S] [Module.FaithfullyFlat R T] (h : IsEffective T (T ⊗[R] S)) :
     IsEffective R S := by
   refine Module.FaithfullyFlat.lTensor_reflects_exact _ _ _ _ <|
@@ -134,16 +136,13 @@ lemma isEffective_of_isEffective_tensorProduct_of_faithfullyFlat
       ((TensorProduct.AlgebraTensorModule.distribBaseChange R T S S).injective)|>.mpr ‹_›
   · ext
     simp [← Algebra.TensorProduct.linearMap_comp_rid]
-  · change ((TensorProduct.includeLeftSubRight _ _).restrictScalars R).toAddMonoidHom.comp _ = _
-    ext
-    simp only [TensorProduct.includeLeftSubRight_distribBaseChange]
-    rfl
+  · ext
+    simp
 
 /-- `IsEffective R S` is true for any faithfully flat `R`-algebras `S`. -/
-lemma isEffective_of_faithfullyFlat [CommRing S] [Algebra R S] [Module.FaithfullyFlat R S] :
+lemma of_faithfullyFlat [CommRing S] [Algebra R S] [Module.FaithfullyFlat R S] :
     IsEffective R S :=
-  isEffective_of_isEffective_tensorProduct_of_faithfullyFlat _ _ _
-    (isEffective_of_section (TensorProduct.lmul'' R))
+  of_isEffective_tensorProduct_of_faithfullyFlat _ _ _ (of_section (TensorProduct.lmul'' R))
 
 end FaithfullyFlat
 
