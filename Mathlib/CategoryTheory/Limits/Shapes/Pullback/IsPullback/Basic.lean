@@ -315,6 +315,7 @@ Z --id--> Z
 lemma id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 In a category, given a morphism `f : A ⟶ B` and an object `X`,
 this is the obvious pullback diagram:
@@ -340,6 +341,7 @@ lemma of_prod_fst_with_id {A B : C} (f : A ⟶ B) (X : C) [HasBinaryProduct A X]
       · simpa using h₁
       · simp [← h₂])⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_isLimit_binaryFan_of_isTerminal
     {X Y : C} {c : BinaryFan X Y} (hc : IsLimit c)
     {T : C} (hT : IsTerminal T) :
@@ -629,6 +631,7 @@ Z --id--> Z
 lemma id_horiz (f : X ⟶ Z) : IsPushout (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 In a category, given a morphism `f : A ⟶ B` and an object `X`,
 this is the obvious pushout diagram:
@@ -655,6 +658,7 @@ lemma of_coprod_inl_with_id {A B : C} (f : A ⟶ B) (X : C) [HasBinaryCoproduct 
       · simpa using h₂
       · simp [← h₁])⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_isColimit_binaryCofan_of_isInitial
     {X Y : C} {c : BinaryCofan X Y} (hc : IsColimit c)
     {I : C} (hI : IsInitial I) :
@@ -706,6 +710,7 @@ section Functor
 variable {D : Type u₂} [Category.{v₂} D]
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Functor.map_isPullback [PreservesLimit (cospan h i) F] (s : IsPullback f g h i) :
     IsPullback (F.map f) (F.map g) (F.map h) (F.map i) := by
   refine
@@ -716,6 +721,7 @@ theorem Functor.map_isPullback [PreservesLimit (cospan h i) F] (s : IsPullback f
   · simp
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Functor.map_isPushout [PreservesColimit (span f g) F] (s : IsPushout f g h i) :
     IsPushout (F.map f) (F.map g) (F.map h) (F.map i) := by
   refine

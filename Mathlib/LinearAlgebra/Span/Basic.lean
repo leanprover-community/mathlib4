@@ -211,6 +211,7 @@ theorem span_span_of_tower :
 theorem span_eq_top_of_span_eq_top (s : Set M) (hs : span R s = ⊤) : span S s = ⊤ :=
   le_top.antisymm (hs.ge.trans (span_le_restrictScalars R S s))
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R S} in
 lemma span_range_inclusion_eq_top (p : Submodule R M) (q : Submodule S M)
     (h₁ : p ≤ q.restrictScalars R) (h₂ : q ≤ span S p) :
@@ -576,6 +577,7 @@ lemma biSup_comap_eq_top_of_surjective {ι : Type*} (s : Set ι) (hs : s.Nonempt
   rw [iSup_subtype'] at hp ⊢
   rw [← comap_map_eq, map_iSup_comap_of_surjective hf, hp, comap_top]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma biSup_comap_eq_top_of_range_eq_biSup
     {R R₂ : Type*} [Semiring R] [Ring R₂] {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
     [Module R M] [Module R₂ M₂] {ι : Type*} (s : Set ι) (hs : s.Nonempty)

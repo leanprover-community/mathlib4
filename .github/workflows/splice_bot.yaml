@@ -1,0 +1,15 @@
+name: splice-bot
+
+on:
+  pull_request_review_comment:
+    types: [created]
+
+permissions: {}
+
+jobs:
+  call-splice-bot:
+    if: ${{ contains(github.event.comment.body, 'splice-bot') }}
+    uses: leanprover-community/SpliceBot/.github/workflows/splice.yaml@master
+    with:
+      # Optional override; omit to use the reusable workflow's default "master"
+      base_ref: master

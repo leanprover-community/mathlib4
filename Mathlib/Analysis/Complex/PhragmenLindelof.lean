@@ -561,6 +561,7 @@ theorem eqOn_quadrant_III (hdf : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
   sub_eq_zero.1 <| eq_zero_on_quadrant_III (hdf.sub hdg) (isBigO_sub_exp_rpow hBf hBg)
     (fun x hx => sub_eq_zero.2 <| hre x hx) (fun x hx => sub_eq_zero.2 <| him x hx) hz
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Phragmen-Lindelöf principle** in the fourth quadrant. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open fourth quadrant and is continuous on its closure;
@@ -631,6 +632,7 @@ theorem eqOn_quadrant_IV (hdf : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Phragmen-Lindelöf principle** in the right half-plane. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open right half-plane and is continuous on its closure;

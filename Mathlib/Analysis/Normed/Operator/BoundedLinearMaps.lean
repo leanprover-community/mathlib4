@@ -107,10 +107,10 @@ def toContinuousLinearMap (f : E → F) (hf : IsBoundedLinearMap 𝕜 f) : E →
       AddMonoidHomClass.continuous_of_bound (toLinearMap f hf) C hC }
 
 theorem zero : IsBoundedLinearMap 𝕜 fun _ : E => (0 : F) :=
-  (0 : E →ₗ[𝕜] F).isLinear.with_bound 0 <| by simp [le_refl]
+  (0 : E →ₗ[𝕜] F).isLinear.with_bound 0 <| by simp
 
 theorem id : IsBoundedLinearMap 𝕜 fun x : E => x :=
-  LinearMap.id.isLinear.with_bound 1 <| by simp [le_refl]
+  LinearMap.id.isLinear.with_bound 1 <| by simp
 
 theorem fst : IsBoundedLinearMap 𝕜 fun x : E × F => x.1 := by
   refine (LinearMap.fst 𝕜 E F).isLinear.with_bound 1 fun x => ?_

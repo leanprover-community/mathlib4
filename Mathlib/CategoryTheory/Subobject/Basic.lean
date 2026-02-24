@@ -460,11 +460,13 @@ namespace MonoOver
 
 variable {P Q : MonoOver X} (f : P ⟶ Q)
 
+set_option backward.isDefEq.respectTransparency false in
 include f in
 lemma subobjectMk_le_mk_of_hom :
     Subobject.mk P.obj.hom ≤ Subobject.mk Q.obj.hom :=
   Subobject.mk_le_mk_of_comm f.hom.left (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_hom_left_iff_subobjectMk_eq :
     IsIso f.hom.left ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom :=
   ⟨fun _ ↦ Subobject.mk_eq_mk_of_comm _ _ (asIso f.hom.left) (by simp),
@@ -586,6 +588,7 @@ theorem pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
   ((equivMonoOver Y).inverse.mapIso
     (MonoOver.pullbackObjIsoOfIsPullback _ _ _ _ h)).to_eq
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
     (pullback f).obj x = mk (pullback.snd x.arrow f) := by
   obtain ⟨Z, i, _, rfl⟩ := mk_surjective x
@@ -693,6 +696,7 @@ theorem pullback_map_self [HasPullbacks C] (f : X ⟶ Y) [Mono f] (g : Subobject
   revert g
   exact Quotient.ind (fun g' => Quotient.sound ⟨(MonoOver.pullbackMapSelf f).app _⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_pullback [HasPullbacks C] {X Y Z W : C} {f : X ⟶ Y} {g : X ⟶ Z} {h : Y ⟶ W} {k : Z ⟶ W}
     [Mono h] [Mono g] (comm : f ≫ h = g ≫ k) (t : IsLimit (PullbackCone.mk f g comm))
     (p : Subobject Y) : (map g).obj ((pullback f).obj p) = (pullback k).obj ((map h).obj p) := by

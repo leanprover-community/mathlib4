@@ -50,6 +50,7 @@ noncomputable def extEquivCohomologyClass :
     ((by rw [HomologicalComplex.mem_quasiIso_iff]; infer_instance))).trans
       CochainComplex.HomComplex.CohomologyClass.equivOfIsKProjective.{w}.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
     (x : Cocycle R.cochainComplex ((singleFunctor C 0).obj Y) n) :
     (R.extEquivCohomologyClass.symm (.mk x)).hom =
@@ -182,6 +183,7 @@ lemma extMk_zero {n : ℕ} (m : ℕ) (hm : n + 1 = m) :
     R.extMk (0 : R.complex.X n ⟶ Y) m hm (by simp) = 0 := by
   simp [extMk]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma extMk_hom
     [HasDerivedCategory C] {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
     (hf : R.complex.d m n ≫ f = 0) :
@@ -220,6 +222,7 @@ lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :
   rw [← cancel_epi (R.cochainComplexXIso (-m) m rfl).hom]
   simpa [R.cochainComplex_d _ _ _ _ rfl rfl] using hf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma extMk_comp_mk₀ {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
     (hf : R.complex.d m n ≫ f = 0) {Y' : C} (g : Y ⟶ Y') :
     (R.extMk f m hm hf).comp (Ext.mk₀ g) (add_zero _) =
@@ -240,6 +243,7 @@ lemma extMk_comp_mk₀ {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1
     ShiftedHom.mk₀_comp_mk₀, ShiftedHom.mk₀_comp_mk₀, ← NatTrans.naturality]
   dsimp
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R} in
 lemma mk₀_comp_extMk {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
     (hf : R.complex.d m n ≫ f = 0)

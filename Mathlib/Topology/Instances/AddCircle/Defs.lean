@@ -268,11 +268,7 @@ theorem card_torsion_le_of_isSMulRegular_int (n : ℤ) (h0 : n ≠ 0) (hn : IsSM
     {x : AddCircle p | n • x = 0}.encard ≤ n.natAbs := by
   convert card_torsion_le_of_isSMulRegular p _
     (Int.natAbs_ne_zero.mpr h0) (IsSMulRegular.natAbs_iff.mpr hn) using 1
-  conv_lhs => rw [← n.sign_mul_natAbs]
-  obtain h | h | h := n.sign_trichotomy
-  · simp [h]
-  · exact (h0 <| by simpa using h).elim
-  · simp [h]
+  simp
 
 theorem finite_torsion_of_isSMulRegular_int (n : ℤ) (hn : IsSMulRegular 𝕜 n) :
     {x : AddCircle p | n • x = 0}.Finite := by
@@ -516,6 +512,7 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
     (equivIco p 0 <| QuotientAddGroup.mk x : 𝕜) = Int.fract (x / p) * p :=
   toIcoMod_eq_fract_mul _ x
 
+set_option backward.isDefEq.respectTransparency false in
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by simp
@@ -574,6 +571,7 @@ theorem addOrderOf_coe_rat {q : ℚ} : addOrderOf (↑(↑q * p) : AddCircle p) 
   rw [← q.num_divInt_den, Rat.cast_divInt_of_ne_zero _ this, Int.cast_natCast, Rat.num_divInt_den,
     addOrderOf_div_of_gcd_eq_one' q.pos q.reduced]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem nsmul_eq_zero_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     n • u = 0 ↔ ∃ m < n, ↑(↑m / ↑n * p) = u := by
   refine ⟨QuotientAddGroup.induction_on u fun k hk ↦ ?_, ?_⟩
@@ -620,11 +618,6 @@ lemma not_isOfFinAddOrder_iff_forall_rat_ne_div {a : 𝕜} :
 lemma isOfFinAddOrder_iff_exists_rat_eq_div {a : 𝕜} :
     IsOfFinAddOrder (a : AddCircle p) ↔ ∃ q : ℚ, (q : 𝕜) = a / p := by
   simpa using not_isOfFinAddOrder_iff_forall_rat_ne_div.not_right
-
-@[deprecated not_isOfFinAddOrder_iff_forall_rat_ne_div (since := "2025-08-13")]
-theorem addOrderOf_coe_eq_zero_iff_forall_rat_ne_div {a : 𝕜} :
-    addOrderOf (a : AddCircle p) = 0 ↔ ∀ q : ℚ, (q : 𝕜) ≠ a / p := by
-  simp [not_isOfFinAddOrder_iff_forall_rat_ne_div]
 
 variable (p)
 
@@ -727,6 +720,7 @@ theorem equivIccQuot_comp_mk_eq_toIocMod :
     exact Quot.sound EndpointIdent.mk
   · simp_rw [(not_modEq_iff_toIcoMod_eq_toIocMod hp.out).1 h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural map from `[a, a + p] ⊂ 𝕜` with endpoints identified to `𝕜 / ℤ • p`, as a
 homeomorphism of topological spaces. -/
 def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot (EndpointIdent p a) where

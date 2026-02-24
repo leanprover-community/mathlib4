@@ -42,6 +42,7 @@ open Function
 
 assert_not_exists Field
 
+set_option backward.isDefEq.respectTransparency false in
 deriving instance Zero, CommSemiring, Nontrivial,
   LinearOrder, Bot, Sub,
   LinearOrderedAddCommMonoidWithTop,
@@ -62,6 +63,7 @@ variable {a b c m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
+set_option backward.isDefEq.respectTransparency false in
 instance : SuccAddOrder ℕ∞ where
   succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
 
@@ -246,6 +248,7 @@ theorem toNat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + 
   lift n to ℕ using hn
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
   lift n to ℕ using hn
   induction m
@@ -388,9 +391,11 @@ lemma add_right_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Inj
   simp_rw [add_comm n _]
   exact add_left_injective_of_ne_top hn
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_right_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (a * ·) :=
   WithTop.mul_right_strictMono (pos_iff_ne_zero.2 ha) h_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_left_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (· * a) :=
   WithTop.mul_left_strictMono (pos_iff_ne_zero.2 ha) h_top
 
@@ -436,6 +441,7 @@ instance : Unique ℕ∞ˣ where
 
 section withTop_enat
 
+set_option backward.isDefEq.respectTransparency false in
 lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
   match n with
   | ⊤ => exact le_top
@@ -454,13 +460,16 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 
+set_option backward.isDefEq.respectTransparency false in
 lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} : 1 ≤ n ↔ n ≠ 0 :=
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
     fun h ↦ add_one_natCast_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma natCast_le_of_coe_top_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n ≤ N :=
   le_trans (mod_cast le_top) hN
 
+set_option backward.isDefEq.respectTransparency false in
 lemma natCast_lt_of_coe_top_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n < N :=
   lt_of_lt_of_le (mod_cast lt_add_one n) (natCast_le_of_coe_top_le_withTop hN (n + 1))
 
@@ -502,6 +511,7 @@ theorem monotone_map_iff {f : ℕ → α} [Preorder α] : Monotone (ENat.map f) 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma map_natCast_nonneg : 0 ≤ n.map (Nat.cast : ℕ → α) := by cases n <;> simp
 
 variable [CharZero α]

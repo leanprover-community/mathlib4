@@ -130,6 +130,7 @@ lemma map₂_rightUnitor_hom {a b : B} (f : a ⟶ b) :
   rw [← PrelaxFunctor.map₂Iso_hom, ← assoc, ← Iso.comp_inv_eq, ← Iso.eq_inv_comp]
   simp only [Functor.mapIso_inv, PrelaxFunctor.mapFunctor_map, map₂_rightUnitor]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity lax functor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᴸ B where
@@ -161,6 +162,7 @@ lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶
     F.mapComp' f g _ rfl = F.mapComp f g := by
   simp [mapComp']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of lax functors. -/
 @[simps]
 def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : B ⥤ᴸ C) (G : C ⥤ᴸ D) :

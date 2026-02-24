@@ -175,6 +175,7 @@ abbrev inl' (x y : SimplexCategory) : x ⟶ tensorObjOf x y := WithInitial.down 
 `SimplexCategory`. -/
 abbrev inr' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down <| inr (.of x) (.of y)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
     (inl' x y).toOrderHom i = (i.castAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
   dsimp [inl', inl, MonoidalCategoryStruct.rightUnitor, MonoidalCategoryStruct.whiskerLeft,
@@ -182,6 +183,7 @@ lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
   ext
   simp [OrderEmbedding.toOrderHom]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inr'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
     (inr' x y).toOrderHom i = (i.natAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
   dsimp [inr', inr, MonoidalCategoryStruct.leftUnitor, MonoidalCategoryStruct.whiskerRight,
@@ -189,6 +191,7 @@ lemma inr'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
   ext
   simp [OrderEmbedding.toOrderHom]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We can characterize morphisms out of a tensor product via their precomposition with `inl` and
 `inr`. -/
 @[ext]
@@ -222,6 +225,7 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
   | .star, .star, .of z, f, g => rfl
   | .star, .star, .star, f, g => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : inl x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₁ ≫ inl y₁ y₂ :=
@@ -247,6 +251,7 @@ lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
   | _, _, .star, _, f₁, f₂ => by cat_disch
   | .star, _, _, _, _, _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : inr x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₂ ≫ inr y₁ y₂ :=
@@ -273,6 +278,7 @@ lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
   | .star, _, _, _, f₁, f₂ => by cat_disch
   | _, _, .star, _, _, _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_comp_associator (x y z : AugmentedSimplexCategory) :
     inr _ _ ≫ (α_ x y z).hom = inr _ _ ≫ inr _ _ :=
@@ -294,6 +300,7 @@ lemma inr_comp_associator (x y z : AugmentedSimplexCategory) :
   | _, .star, _ => by cat_disch
   | _, _, .star => by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_comp_inl_comp_associator (x y z : AugmentedSimplexCategory) :
     inl _ _ ≫ inl _ _ ≫ (α_ x y z).hom = inl _ _ :=
@@ -312,6 +319,7 @@ lemma inl_comp_inl_comp_associator (x y z : AugmentedSimplexCategory) :
   | _, .star, _ => by cat_disch
   | _, _, .star => by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_comp_inl_comp_associator (x y z : AugmentedSimplexCategory) :
     inr _ _ ≫ inl _ _ ≫ (α_ x y z).hom = inl _ _ ≫ inr _ _ :=

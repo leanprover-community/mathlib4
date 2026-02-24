@@ -323,6 +323,7 @@ theorem mem_toZFSet_iff {o : Ordinal} {x : ZFSet} : x ∈ o.toZFSet ↔ ∃ a < 
 theorem rank_toZFSet (o : Ordinal) : o.toZFSet.rank = o :=
   rank_toPSet o
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coe_toZFSet {o : Ordinal} : o.toZFSet = toZFSet '' Iio o := by
   ext

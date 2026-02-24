@@ -73,7 +73,6 @@ export ConcreteCategory (id_apply comp_apply)
 
 variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
-variable [ConcreteCategory C FC]
 
 /-- `ToType X` converts the object `X` of the concrete category `C` to a type.
 
@@ -88,6 +87,8 @@ This is an `abbrev` so that instances (e.g. `RingHomClass`) do not need to be re
 -/
 @[nolint unusedArguments] -- Need the instance to trigger unification that finds `FC`.
 abbrev ToHom [ConcreteCategory C FC] := FC
+
+variable [ConcreteCategory C FC]
 
 namespace ConcreteCategory
 

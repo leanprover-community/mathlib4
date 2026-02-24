@@ -264,6 +264,27 @@ theorem pathComponent_subset_component (x : X) : pathComponent x ⊆ connectedCo
   fun y h =>
   (isConnected_range h.somePath.continuous).subset_connectedComponent ⟨0, by simp⟩ ⟨1, by simp⟩
 
+/-- Every connected component is a union of path connected components -/
+theorem biUnion_connectedComponent_pathComponent_eq (x : X) :
+    (⋃ y ∈ connectedComponent x, pathComponent y) = connectedComponent x := by
+  simp only [Set.ext_iff, mem_iUnion₂]
+  exact fun z ↦ ⟨fun ⟨y, hy, hz⟩ ↦ connectedComponent_eq hy ▸ pathComponent_subset_component _ hz,
+    (⟨z, ·, mem_pathComponent_self z⟩)⟩
+
+/-- The canonical map which sends a path component of `X` (as a term of `ZerothHomotopy X`) to the
+connected component containing it (as a term of `ConnectedComponents X`). -/
+def ZerothHomotopy.toConnectedComponents : ZerothHomotopy X → ConnectedComponents X :=
+  Quotient.map id fun x _ h ↦ connectedComponent_eq <| pathComponent_subset_component x h
+
+@[simp]
+theorem ZerothHomotopy.toConnectedComponents_apply (x : X) : toConnectedComponents ⟦x⟧ = ⟦x⟧ :=
+  rfl
+
+/-- There are at least as many path connected components as there are connected components -/
+theorem ZerothHomotopy.toConnectedComponents_surjective :
+    toConnectedComponents (X := X) |>.Surjective :=
+  Quotient.map_surjective _ surjective_id
+
 /-- The path component of `x` in `F` is the set of points that can be joined to `x` in `F`. -/
 def pathComponentIn (F : Set X) (x : X) :=
   { y | JoinedIn F x y }
@@ -435,6 +456,7 @@ theorem IsPathConnected.preimage_coe {U W : Set X} (hW : IsPathConnected W) (hWU
     IsPathConnected (((↑) : U → X) ⁻¹' W) := by
   rwa [IsInducing.subtypeVal.isPathConnected_iff, Subtype.image_preimage_val, inter_eq_right.2 hWU]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsPathConnected.exists_path_through_family {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
     ∃ γ : Path (p 0) (p (last n)), range γ ⊆ s ∧ ∀ i, p i ∈ range γ := by
@@ -527,6 +549,7 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=
   Quotient.mk'_surjective.pathConnectedSpace continuous_coinduced_rng
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `IsTopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
