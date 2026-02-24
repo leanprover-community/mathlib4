@@ -122,7 +122,7 @@ lemma Metric.diam_sphere_eq (x : E) {r : ℝ} (hr : 0 ≤ r) : diam (sphere x r)
   obtain ⟨y, hy⟩ := exists_ne (0 : E)
   calc
     2 * r = dist (x + r • ‖y‖⁻¹ • y) (x - r • ‖y‖⁻¹ • y) := by
-      simp [dist_eq_norm, ← two_nsmul, ← smul_assoc, norm_smul, abs_of_nonneg hr, hy]
+      simp [dist_eq_norm, ← two_nsmul, ← smul_assoc, norm_smul, abs_of_nonneg hr, hy, mul_assoc]
     _ ≤ diam (sphere x r) := by
       apply dist_le_diam_of_mem isBounded_sphere <;> simp [norm_smul, hy, abs_of_nonneg hr]
 
@@ -759,7 +759,6 @@ end Core
 variable {G H : Type*} [SeminormedAddCommGroup G] [SeminormedAddCommGroup H] [NormedSpace ℝ H]
   {s : Set G}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A group homomorphism from a normed group to a real normed space,
 bounded on a neighborhood of `0`, must be continuous. -/
 lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 𝓝 (0 : G))

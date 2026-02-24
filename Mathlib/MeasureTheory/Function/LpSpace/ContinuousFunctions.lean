@@ -30,7 +30,7 @@ variable {α E : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measu
 variable (E p μ) in
 /-- An additive subgroup of `Lp E p μ`, consisting of the equivalence classes which contain a
 bounded continuous representative. -/
-def MeasureTheory.Lp.boundedContinuousFunction : AddSubgroup (Lp E p μ) :=
+noncomputable def MeasureTheory.Lp.boundedContinuousFunction : AddSubgroup (Lp E p μ) :=
   AddSubgroup.addSubgroupOf
     ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddMonoidHom α E)).range (Lp E p μ)
 

@@ -796,7 +796,6 @@ theorem MonoidalClosed.linearHomEquiv_hom (f : A ⊗ B ⟶ C) :
       ModuleCat.ofHom (TensorProduct.curry f.hom.hom).flip :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquivComm A B C f).hom =

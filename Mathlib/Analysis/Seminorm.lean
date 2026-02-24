@@ -80,7 +80,6 @@ def Seminorm.of [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E �
   smul' := smul
   neg' x := by rw [← neg_one_smul 𝕜, smul, norm_neg, ← smul, one_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternative constructor for a `Seminorm` over a normed field `𝕜` that only assumes `f 0 = 0`
 and an inequality for the scalar multiplication. -/
 def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ) (map_zero : f 0 = 0)
@@ -337,7 +336,6 @@ theorem coe_bot : ⇑(⊥ : Seminorm 𝕜 E) = 0 :=
 theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
   simp_rw [le_def]
@@ -365,7 +363,6 @@ theorem zero_or_exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) (s : Fin
   · left; rfl
   · right; exact exists_apply_eq_finset_sup p hs x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finset_sup_smul (p : ι → Seminorm 𝕜 E) (s : Finset ι) (C : ℝ≥0) :
     s.sup (C • p) = C • s.sup p := by
   ext x
@@ -411,7 +408,6 @@ variable [SeminormedRing 𝕜] [SeminormedCommRing 𝕜₂]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 variable [AddCommGroup E] [AddCommGroup E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comp_smul (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) :
     p.comp (c • f) = ‖c‖₊ • p.comp f :=
   ext fun _ => by
@@ -661,14 +657,12 @@ theorem ball_zero' (x : E) (hr : 0 < r) : ball (0 : Seminorm 𝕜 E) x r = Set.u
 theorem closedBall_zero' (x : E) (hr : 0 < r) : closedBall (0 : Seminorm 𝕜 E) x r = Set.univ :=
   eq_univ_of_subset (ball_subset_closedBall _ _ _) (ball_zero' x hr)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ) (x : E) :
     (c • p).ball x r = p.ball x (r / c) := by
   ext
   rw [mem_ball, mem_ball, smul_apply, NNReal.smul_def, smul_eq_mul, mul_comm,
     lt_div_iff₀ (NNReal.coe_pos.mpr hc)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closedBall_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ) (x : E) :
     (c • p).closedBall x r = p.closedBall x (r / c) := by
   ext
@@ -840,7 +834,6 @@ theorem closedBall_eq_emptyset (p : Seminorm 𝕜 E) {x : E} {r : ℝ} (hr : r <
   rw [Seminorm.mem_closedBall, Set.mem_empty_iff_false, iff_false, not_le]
   exact hr.trans_le (apply_nonneg _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closedBall_smul_ball (p : Seminorm 𝕜 E) {r₁ : ℝ} (hr₁ : r₁ ≠ 0) (r₂ : ℝ) :
     Metric.closedBall (0 : 𝕜) r₁ • p.ball 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
   simp only [smul_subset_iff, mem_ball_zero, mem_closedBall_zero_iff, map_smul_eq_mul]
@@ -906,7 +899,6 @@ theorem closedBall_iSup {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove
     have := Seminorm.bddAbove_range_iff.mp hp (x - e)
     simp only [mem_closedBall, mem_iInter, Seminorm.iSup_apply hp, ciSup_le_iff this]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     p.ball 0 (‖k‖ * r) ⊆ k • p.ball 0 r := by
   rcases eq_or_ne k 0 with (rfl | hk)
@@ -1245,7 +1237,6 @@ lemma rescale_to_shell (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) {ε :
     ∃ d : 𝕜, d ≠ 0 ∧ p (d • x) < ε ∧ (ε / ‖c‖ ≤ p (d • x)) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x) :=
 let ⟨_, hn⟩ := p.rescale_to_shell_zpow hc εpos hx; ⟨_, hn⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `p` and `q` be two seminorms on a vector space over a `NontriviallyNormedField`.
 If we have `q x ≤ C * p x` on some shell of the form `{x | ε/‖c‖ ≤ p x < ε}` (where `ε > 0`
 and `‖c‖ > 1`), then we also have `q x ≤ C * p x` for all `x` such that `p x ≠ 0`. -/
@@ -1257,7 +1248,6 @@ lemma bound_of_shell
   simpa only [map_smul_eq_mul, mul_left_comm C, mul_le_mul_iff_right₀ (norm_pos_iff.2 hδ)]
     using hf (δ • x) leδx δxle
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A version of `Seminorm.bound_of_shell` expressed using pointwise scalar multiplication of
 seminorms. -/
 lemma bound_of_shell_smul
@@ -1266,7 +1256,6 @@ lemma bound_of_shell_smul
     q x ≤ (C • p) x :=
   Seminorm.bound_of_shell p q ε_pos hc hf hx
 
-set_option backward.isDefEq.respectTransparency false in
 lemma bound_of_shell_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι)
     (q : Seminorm 𝕜 E) {ε : ℝ} {C : ℝ≥0} (ε_pos : 0 < ε) {c : 𝕜} (hc : 1 < ‖c‖)
     (hf : ∀ x, (∀ i ∈ s, p i x < ε) → ∀ j ∈ s, ε / ‖c‖ ≤ p j x → q x ≤ (C • p j) x)

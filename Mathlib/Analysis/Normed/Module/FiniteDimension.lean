@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Analysis.Normed.Operator.Compact
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Module.RieszLemma
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
@@ -159,6 +160,7 @@ theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :
 
 end Affine
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E => f.det := by
   change Continuous fun f : E →L[𝕜] E => LinearMap.det (f : E →ₗ[𝕜] E)
   -- TODO: this could be easier with `det_cases`
@@ -539,6 +541,15 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
     have : IsClosedEmbedding L := isClosedEmbedding_smul_left hv
     apply IsClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
+
+variable {𝕜 E}
+
+theorem isCompactOperator_id_iff_finiteDimensional [LocallyCompactSpace 𝕜] :
+    IsCompactOperator (_root_.id : E → E) ↔ FiniteDimensional 𝕜 E :=
+  isCompactOperator_id_iff_locallyCompactSpace.trans
+    ⟨fun _ ↦ .of_locallyCompactSpace 𝕜, fun _ ↦ .of_finiteDimensional_of_complete 𝕜 E⟩
+
+alias ⟨IsCompactOperator.finiteDimensional, _⟩ := isCompactOperator_id_iff_finiteDimensional
 
 end Riesz
 

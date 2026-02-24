@@ -152,6 +152,7 @@ section
 def id (I : C) [ChosenPullbacksAlong (𝟙 I)] : ExponentiableMorphism (𝟙 I) :=
   ⟨𝟭 _, ofNatIsoLeft (F := 𝟭 _) Adjunction.id (pullbackId I).symm⟩
 
+set_option backward.whnf.reducibleClassField false in
 theorem id_pushforward (I : C) [ChosenPullbacksAlong (𝟙 I)] :
     (id I).pushforward = 𝟭 (Over I) := by
   dsimp +instances only [id]
@@ -185,6 +186,7 @@ def comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     ofNatIsoLeft (pullbackPushforwardAdj g |>.comp <| pullbackPushforwardAdj f)
     (pullbackComp f g).symm⟩
 
+set_option backward.whnf.reducibleClassField false in
 theorem comp_pushforward {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
     [ExponentiableMorphism f] [ExponentiableMorphism g] :

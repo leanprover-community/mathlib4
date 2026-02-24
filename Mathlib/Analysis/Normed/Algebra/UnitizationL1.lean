@@ -101,6 +101,7 @@ instance {R : Type*} [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A] [I
 lemma unitization_algebraMap (r : 𝕜) :
     ofLp (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A)) r) = algebraMap 𝕜 (Unitization 𝕜 A) r := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `equiv` bundled as an algebra isomorphism with `Unitization 𝕜 A`. -/
 @[simps!]
 def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A]

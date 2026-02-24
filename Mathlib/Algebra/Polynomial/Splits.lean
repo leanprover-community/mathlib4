@@ -86,8 +86,8 @@ protected theorem Splits.map {f : R[X]} (hf : Splits f) {S : Type*} [Semiring S]
   induction hf using Submonoid.closure_induction <;> aesop
 
 theorem splits_of_natDegree_eq_zero {f : R[X]} (hf : natDegree f = 0) :
-    Splits f :=
-  (natDegree_eq_zero.mp hf).choose_spec ▸ by aesop
+    Splits f := by
+  rw [← (natDegree_eq_zero.mp hf).choose_spec]; aesop
 
 theorem splits_of_degree_le_zero {f : R[X]} (hf : degree f ≤ 0) :
     Splits f :=
@@ -266,7 +266,7 @@ theorem Splits.exists_eval_eq_zero (hf : Splits f) (hf0 : degree f ≠ 0) :
   · rw [hm, Multiset.map_zero, Multiset.prod_zero, mul_one, degree_C hf₀] at hf0
     contradiction
   obtain ⟨m, rfl⟩ := Multiset.exists_cons_of_mem ha
-  exact ⟨a, hm ▸ by simp⟩
+  exact ⟨a, by rw [hm]; simp⟩
 
 /-- Pick a root of a polynomial that splits. -/
 noncomputable def rootOfSplits (hf : f.Splits) (hfd : f.degree ≠ 0) : R :=
