@@ -17,7 +17,7 @@ public import Mathlib.CategoryTheory.Sites.Point.Basic
 
 @[expose] public section
 
-universe w v' v u' u
+universe w v'' v' v u'' u' u
 
 namespace CategoryTheory
 
@@ -130,25 +130,32 @@ noncomputable def ofIsCofiltered :
     obtain ⟨Y, g, hg, V, q, a, ha⟩ := hp R hR f
     exact ⟨Y, g, hg, fiberMk a, by simp [ha]⟩
 
-variable {A : Type u'} [Category.{v'} A] [HasColimitsOfSize.{w, w} A]
-  (P : Cᵒᵖ ⥤ A)
+variable {A : Type u''} [Category.{v''} A] [HasColimitsOfSize.{w, w} A]
 
-noncomputable def toPresheafFiberOfCofiltered (U : N) :
+noncomputable def toPresheafFiberOfIsCofiltered (U : N) (P : Cᵒᵖ ⥤ A) :
     P.obj (op (p.obj U)) ⟶ (ofIsCofiltered p hp).presheafFiber.obj P :=
   (ofIsCofiltered p hp).toPresheafFiber _ (fiberMk (𝟙 _)) P
 
 @[reassoc (attr := simp)]
-lemma toPresheafFiberOfCofiltered_w {V U : N} (f : V ⟶ U) :
-    P.map (p.map f).op ≫ toPresheafFiberOfCofiltered p hp P V =
-      toPresheafFiberOfCofiltered p hp P U := by
-  simp [toPresheafFiberOfCofiltered]
+lemma toPresheafFiberOfIsCofiltered_w {V U : N} (f : V ⟶ U) (P : Cᵒᵖ ⥤ A) :
+    P.map (p.map f).op ≫ toPresheafFiberOfIsCofiltered p hp V P =
+      toPresheafFiberOfIsCofiltered p hp U P := by
+  simp [toPresheafFiberOfIsCofiltered]
 
-noncomputable def presheafFiberOfCofilteredCocone : Cocone (p.op ⋙ P) where
+@[reassoc (attr := simp)]
+lemma toPresheafFiberOfIsCofiltered_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (U : N) :
+    toPresheafFiberOfIsCofiltered p hp U P ≫
+        (ofIsCofiltered p hp).presheafFiber.map g =
+    g.app (op (p.obj U)) ≫ toPresheafFiberOfIsCofiltered p hp U Q := by
+  simp [toPresheafFiberOfIsCofiltered]
+
+noncomputable def presheafFiberOfIsCofilteredCocone (P : Cᵒᵖ ⥤ A) :
+    Cocone (p.op ⋙ P) where
   pt := (ofIsCofiltered p hp).presheafFiber.obj P
-  ι.app U := toPresheafFiberOfCofiltered _ _ _ _
+  ι.app U := toPresheafFiberOfIsCofiltered _ _ _ _
 
-noncomputable def isColimitPresheafFiberOfCofilteredCocone :
-    IsColimit (presheafFiberOfCofilteredCocone p hp P) :=
+noncomputable def isColimitPresheafFiberOfIsCofilteredCocone (P : Cᵒᵖ ⥤ A) :
+    IsColimit (presheafFiberOfIsCofilteredCocone p hp P) :=
   (Functor.Final.isColimitWhiskerEquiv (functor.{w} p).op _).2
     ((ofIsCofiltered p hp).isColimitPresheafFiberCocone P)
 
@@ -156,17 +163,77 @@ end
 
 section
 
-variable {D : Type u'} [Category.{v'} D] [LocallySmall.{w} D]
+variable {D : Type u'} [Category.{v'} D]
   {J : GrothendieckTopology C} (Φ : Point.{w} J) (F : C ⥤ D)
-  (K : GrothendieckTopology D)
+  (K : GrothendieckTopology D) [F.IsCocontinuous J K]
 
-noncomputable def map [F.IsCocontinuous J K] : Point.{w} K :=
-  Point.ofIsCofiltered.{w} (CategoryOfElements.π Φ.fiber ⋙ F) (by
-    intro Y R hR ⟨U, u⟩ f
-    dsimp at f ⊢
-    obtain ⟨V, g, hg, v, rfl⟩ :=
-      Φ.jointly_surjective _ (F.cover_lift J K (K.pullback_stable f hR)) u
-    exact ⟨_, F.map g ≫ f, hg, Φ.fiber.elementsMk _ v, ⟨g, rfl⟩, 𝟙 _, by simp⟩)
+lemma map_aux ⦃X : D⦄ (R : Sieve X) (hR : R ∈ K X)
+    ⦃u : Φ.fiber.Elements⦄ (f : (CategoryOfElements.π Φ.fiber ⋙ F).obj u ⟶ X) :
+    ∃ (Y : D) (g : Y ⟶ X) (_ : R.arrows g) (v : Φ.fiber.Elements)
+      (q : v ⟶ u) (a : F.obj v.fst ⟶ Y), a ≫ g = F.map q.1 ≫ f := by
+  obtain ⟨U, u⟩ := u
+  dsimp at f ⊢
+  obtain ⟨V, g, hg, v, rfl⟩ :=
+    Φ.jointly_surjective _ (F.cover_lift J K (K.pullback_stable f hR)) u
+  exact ⟨_, F.map g ≫ f, hg, Φ.fiber.elementsMk _ v, ⟨g, rfl⟩, 𝟙 _, by simp⟩
+
+variable [LocallySmall.{w} D]
+
+noncomputable def map : Point.{w} K :=
+  Point.ofIsCofiltered.{w} (CategoryOfElements.π Φ.fiber ⋙ F) (Φ.map_aux F K)
+
+variable {A : Type u''} [Category.{v''} A] [HasColimitsOfSize.{w, w} A]
+
+noncomputable def toPresheafFiberMap (P : Dᵒᵖ ⥤ A) (X : C) (x : Φ.fiber.obj X) :
+    P.obj (op (F.obj X)) ⟶ (Φ.map F K).presheafFiber.obj P :=
+  toPresheafFiberOfIsCofiltered _ (Φ.map_aux F K) (Φ.fiber.elementsMk X x) P
+
+@[reassoc (attr := simp)]
+lemma toPresheafFiberMap_w {X Y : C} (f : X ⟶ Y)
+    (x : Φ.fiber.obj X) (P : Dᵒᵖ ⥤ A) :
+    P.map (F.map f).op ≫ Φ.toPresheafFiberMap F K P X x =
+      Φ.toPresheafFiberMap F K P Y (Φ.fiber.map f x) :=
+  toPresheafFiberOfIsCofiltered_w _ (Φ.map_aux F K)
+    (V := ⟨X, x⟩) (U := ⟨Y, Φ.fiber.map f x⟩) ⟨f, rfl⟩ P
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma toPresheafFiberMap_naturality {P Q : Dᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x : Φ.fiber.obj X) :
+    Φ.toPresheafFiberMap F K P X x ≫ (Φ.map F K).presheafFiber.map g =
+      g.app _ ≫ Φ.toPresheafFiberMap F K Q X x :=
+  toPresheafFiberOfIsCofiltered_naturality _ _ _ _
+
+noncomputable def presheafFiberMapCocone (P : Dᵒᵖ ⥤ A) :
+    Cocone ((CategoryOfElements.π Φ.fiber).op ⋙ F.op ⋙ P) where
+  pt := (Φ.map F K).presheafFiber.obj P
+  ι.app x := Φ.toPresheafFiberMap F K P x.unop.1 x.unop.2
+
+noncomputable def isColimitPresheafFiberMapCocone (P : Dᵒᵖ ⥤ A) :
+    IsColimit (Φ.presheafFiberMapCocone F K P) :=
+  (isColimitPresheafFiberOfIsCofilteredCocone.{w} _ (Φ.map_aux F K) P)
+
+@[ext]
+lemma presheafFiberMap_hom_ext {P : Dᵒᵖ ⥤ A} {T : A}
+    {f g : (Φ.map F K).presheafFiber.obj P ⟶ T}
+    (h : ∀ (X : C) (x : Φ.fiber.obj X),
+      Φ.toPresheafFiberMap F K P X x ≫ f = Φ.toPresheafFiberMap F K P X x ≫ g) :
+    f = g :=
+  (Φ.isColimitPresheafFiberMapCocone F K P).hom_ext (fun _ ↦ h _ _)
+
+noncomputable def presheafFiberMapObjIso (P : Dᵒᵖ ⥤ A) :
+    (Φ.map F K).presheafFiber.obj P ≅ Φ.presheafFiber.obj (F.op ⋙ P) :=
+  IsColimit.coconePointUniqueUpToIso (Φ.isColimitPresheafFiberMapCocone F K P)
+    (Φ.isColimitPresheafFiberCocone (F.op ⋙ P))
+
+@[reassoc (attr := simp)]
+lemma toPresheafFiberMap_presheafFiberMapObjIso_hom (P : Dᵒᵖ ⥤ A) (X : C) (x : Φ.fiber.obj X) :
+    Φ.toPresheafFiberMap F K P X x ≫ (Φ.presheafFiberMapObjIso F K P).hom =
+      Φ.toPresheafFiber X x (F.op ⋙ P) :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom
+    (Φ.isColimitPresheafFiberMapCocone F K P) _ ⟨X, x⟩
+
+noncomputable def presheafFiberMapIso : (Φ.map F K).presheafFiber (A := A) ≅
+    (Functor.whiskeringLeft _ _ _).obj F.op ⋙ (Φ.presheafFiber (A := A)) :=
+  NatIso.ofComponents (Φ.presheafFiberMapObjIso F K)
 
 end
 
