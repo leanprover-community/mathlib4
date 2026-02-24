@@ -1124,4 +1124,3 @@ theorem IndepFun.map_mul_eq_map_mconv_map
 end Monoid
 
 end ProbabilityTheory
-
