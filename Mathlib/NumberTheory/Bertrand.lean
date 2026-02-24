@@ -186,7 +186,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
       refine (pow_right_mono₀ (Finset.mem_filter.1 h1).2.one_lt.le ?_).trans (pow_one p).le
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp <| not_le.1 h2)
-    refine Finset.prod_le_prod_of_subset_of_one_le' (Finset.filter_subset _ _) ?_
+    refine Finset.prod_le_prod_of_subset_of_one_le (Finset.filter_subset _ _) ?_
     exact fun p hp _ => (Finset.mem_filter.1 hp).2.one_lt.le
 
 namespace Nat
