@@ -26,10 +26,25 @@ lemma prod_nonneg {s : Multiset R} (h : ∀ a ∈ s, 0 ≤ a) : 0 ≤ s.prod := 
   simp only [quot_mk_to_coe, mem_coe, prod_coe] at *
   apply List.prod_nonneg h
 
-lemma one_le_prod {s : Multiset R} (h : ∀ a ∈ s, 1 ≤ a) : 1 ≤ s.prod := by
+lemma one_le_prod_of_one_le₀ {s : Multiset R} (h : ∀ a ∈ s, 1 ≤ a) : 1 ≤ s.prod := by
   cases s using Quotient.ind
   simp only [quot_mk_to_coe, mem_coe, prod_coe] at *
   apply List.one_le_prod h
+
+@[deprecated (since := "2026-01-18")] alias one_le_prod := one_le_prod_of_one_le₀
+
+lemma prod_le_prod_of_rel_le₀ {s t : Multiset R} (h0 : ∀ x ∈ s, 0 ≤ x)
+    (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
+  induction h with
+  | zero => rfl
+  | @cons a b s t hab _ ih =>
+    rw [prod_cons, prod_cons]
+    have hs : ∀ x ∈ s, 0 ≤ x := fun x hx => h0 x (mem_cons_of_mem hx)
+    have hb : 0 ≤ b := (h0 _ (mem_cons_self _ _)).trans hab
+    calc a * s.prod = s.prod * a := mul_comm ..
+      _ ≤ s.prod * b := mul_le_mul_of_nonneg_left hab (prod_nonneg hs)
+      _ = b * s.prod := mul_comm ..
+      _ ≤ b * t.prod := mul_le_mul_of_nonneg_left (ih hs) hb
 
 theorem prod_map_le_prod_map₀ {ι : Type*} {s : Multiset ι} (f : ι → R) (g : ι → R)
     (h0 : ∀ i ∈ s, 0 ≤ f i) (h : ∀ i ∈ s, f i ≤ g i) :
@@ -37,6 +52,19 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : Multiset ι} (f : ι → R) (g
   cases s using Quotient.ind
   simp only [quot_mk_to_coe, mem_coe, map_coe, prod_coe] at *
   apply List.prod_map_le_prod_map₀ f g h0 h
+
+lemma prod_map_le_prod₀ {s : Multiset R} (f : R → R) (h0 : ∀ x ∈ s, 0 ≤ f x)
+    (h : ∀ x ∈ s, f x ≤ x) : (s.map f).prod ≤ s.prod := by
+  simpa using prod_map_le_prod_map₀ f id h0 h
+
+lemma prod_le_prod_map₀ {s : Multiset R} (f : R → R) (h0 : ∀ x ∈ s, 0 ≤ x)
+    (h : ∀ x ∈ s, x ≤ f x) : s.prod ≤ (s.map f).prod := by
+  simpa using prod_map_le_prod_map₀ id f h0 h
+
+lemma pow_card_le_prod₀ {s : Multiset R} {a : R} (h0 : 0 ≤ a) (h : ∀ x ∈ s, a ≤ x) :
+    a ^ card s ≤ s.prod := by
+  rw [← Multiset.prod_replicate, ← Multiset.map_const]
+  exact prod_map_le_prod₀ _ (fun _ _ => h0) h
 
 theorem prod_map_le_pow_card₀ {ι : Type*} {f : ι → R} {r : R} {t : Multiset ι}
     (hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x ∈ t, f x ≤ r) :
@@ -62,7 +90,7 @@ lemma prod_map_nonneg {s : Multiset α} {f : α → R} (h : ∀ a ∈ s, 0 ≤ f
 
 lemma one_le_prod_map {s : Multiset α} {f : α → R} (h : ∀ a ∈ s, 1 ≤ f a) :
     1 ≤ (s.map f).prod := by
-  refine one_le_prod fun r hr ↦ ?_
+  refine one_le_prod_of_one_le₀ fun r hr ↦ ?_
   obtain ⟨a, ha, rfl⟩ := mem_map.mp hr
   exact h a ha
 
