@@ -108,6 +108,7 @@ theorem Subgroup.cyclic_of_isolated_one {H : Subgroup G} {a : G} (h₀ : 1 < a)
   · exact ⟨1, closure_singleton_one.symm⟩
   · exact (exists_isLeast_one_lt hbot h₀ hd).imp fun _ => cyclic_of_min
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every subgroup of `ℤ` is cyclic. -/
 theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closure {a} :=
   have : Ioo (0 : ℤ) 1 = ∅ := eq_empty_of_forall_notMem fun _ hm =>

@@ -8,7 +8,7 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
-import Mathlib.Algebra.Module.Torsion.Field
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Affine spaces
@@ -90,12 +90,14 @@ theorem coe_vadd (s : AffineSubspace k P) [Nonempty s] (a : s.direction) (b : s)
     ↑(a +ᵥ b) = (a : V) +ᵥ (b : P) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Embedding of an affine subspace to the ambient space, as an affine map. -/
 protected def subtype (s : AffineSubspace k P) [Nonempty s] : s →ᵃ[k] P where
   toFun := (↑)
   linear := s.direction.subtype
   map_vadd' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem subtype_linear (s : AffineSubspace k P) [Nonempty s] :
     s.subtype.linear = s.direction.subtype := rfl
@@ -150,6 +152,7 @@ theorem preimage_coe_affineSpan_singleton (x : P) :
 
 variable (P)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The top affine subspace is linearly equivalent to the affine space.
 This is the affine version of `Submodule.topEquiv`. -/
 @[simps! linear apply symm_apply_coe]
@@ -309,6 +312,7 @@ theorem vectorSpan_range_eq_span_range_vsub_right_ne (p : ι → P) (i₀ : ι) 
 
 variable {k}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A set, considered as a subset of its spanned affine subspace, spans the whole subspace. -/
 @[simp]
 theorem affineSpan_coe_preimage_eq_top (A : Set P) [Nonempty A] :
@@ -508,10 +512,15 @@ section
 
 variable (f : P₁ →ᵃ[k] P₂)
 
+/-- The affine version of `LinearMap.map_span`. -/
 @[simp]
-theorem AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
+theorem AffineMap.map_vectorSpan {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   simp [vectorSpan_def, f.image_vsub_image]
+
+-- this name was backwards
+@[deprecated (since := "2026-01-20")]
+alias AffineMap.vectorSpan_image_eq_submodule_map := AffineMap.map_vectorSpan
 
 namespace AffineSubspace
 
@@ -564,7 +573,7 @@ theorem map_map (s : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) (g : P₂ 
 @[simp]
 theorem map_direction (s : AffineSubspace k P₁) :
     (s.map f).direction = s.direction.map f.linear := by
-  simp [direction_eq_vectorSpan, AffineMap.vectorSpan_image_eq_submodule_map]
+  simp [direction_eq_vectorSpan, AffineMap.map_vectorSpan]
 
 theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s) := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)
@@ -600,6 +609,7 @@ lemma map_mk' (p : P₁) (direction : Submodule k V₁) :
 section inclusion
 variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Affine map from a smaller to a larger subspace of the same space.
 
 This is the affine version of `Submodule.inclusion`. -/
@@ -616,6 +626,7 @@ def inclusion (h : S₁ ≤ S₂) :
 theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inclusion_rfl : inclusion (le_refl S₁) = AffineMap.id k S₁ := rfl
 
@@ -671,6 +682,7 @@ theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorso
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Affine equivalence between two equal affine subspace.
 
 This is the affine version of `LinearEquiv.ofEq`. -/
@@ -684,11 +696,13 @@ def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
 theorem coe_ofEq_apply (h : S₁ = S₂) (x : S₁) : (ofEq S₁ S₂ h x : P₁) = x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofEq_symm (h : S₁ = S₂) : (ofEq S₁ S₂ h).symm = ofEq S₂ S₁ h.symm := by
   ext
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofEq_rfl : ofEq S₁ S₁ rfl = AffineEquiv.refl k S₁ := rfl
 

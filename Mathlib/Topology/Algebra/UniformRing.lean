@@ -83,48 +83,31 @@ instance : ContinuousMul (Completion α) where
 instance ring : Ring (Completion α) :=
   { AddMonoidWithOne.unary, (inferInstanceAs (AddCommGroup (Completion α))),
       (inferInstanceAs (Mul (Completion α))), (inferInstanceAs (One (Completion α))) with
-    zero_mul := fun a =>
-      Completion.induction_on a
-        (isClosed_eq (continuous_const.mul continuous_id) continuous_const)
+    zero_mul a :=
+      Completion.induction_on a (isClosed_eq (by fun_prop) continuous_const)
         fun a => by rw [← coe_zero, ← coe_mul, zero_mul]
-    mul_zero := fun a =>
+    mul_zero a :=
+      Completion.induction_on a (isClosed_eq (by fun_prop) continuous_const)
+        fun a ↦ by rw [← coe_zero, ← coe_mul, mul_zero]
+    one_mul a :=
       Completion.induction_on a
-        (isClosed_eq (continuous_id.mul continuous_const) continuous_const)
-        fun a => by rw [← coe_zero, ← coe_mul, mul_zero]
-    one_mul := fun a =>
+        (isClosed_eq (by fun_prop) continuous_id)
+        fun a => by rw [← coe_one, ← coe_mul, one_mul]
+    mul_one a :=
       Completion.induction_on a
-        (isClosed_eq (continuous_const.mul continuous_id) continuous_id) fun a => by
-        rw [← coe_one, ← coe_mul, one_mul]
-    mul_one := fun a =>
-      Completion.induction_on a
-        (isClosed_eq (continuous_id.mul continuous_const) continuous_id) fun a => by
-        rw [← coe_one, ← coe_mul, mul_one]
-    mul_assoc := fun a b c =>
+        (isClosed_eq (by fun_prop) continuous_id)
+        fun a => by rw [← coe_one, ← coe_mul, mul_one]
+    mul_assoc a b c :=
       Completion.induction_on₃ a b c
-        (isClosed_eq
-          ((continuous_fst.mul (continuous_fst.comp continuous_snd)).mul
-            (continuous_snd.comp continuous_snd))
-          (continuous_fst.mul
-            ((continuous_fst.comp continuous_snd).mul
-              (continuous_snd.comp continuous_snd))))
-                fun a b c => by rw [← coe_mul, ← coe_mul, ← coe_mul, ← coe_mul, mul_assoc]
-    left_distrib := fun a b c =>
+        (isClosed_eq (by fun_prop) (by fun_prop))
+        fun a b c => by rw [← coe_mul, ← coe_mul, ← coe_mul, ← coe_mul, mul_assoc]
+    left_distrib a b c :=
       Completion.induction_on₃ a b c
-        (isClosed_eq
-          (continuous_fst.mul
-            (Continuous.add (continuous_fst.comp continuous_snd)
-              (continuous_snd.comp continuous_snd)))
-          (Continuous.add (continuous_fst.mul (continuous_fst.comp continuous_snd))
-            (continuous_fst.mul (continuous_snd.comp continuous_snd))))
+        (isClosed_eq (by fun_prop) (by fun_prop))
         fun a b c => by rw [← coe_add, ← coe_mul, ← coe_mul, ← coe_mul, ← coe_add, mul_add]
-    right_distrib := fun a b c =>
+    right_distrib a b c :=
       Completion.induction_on₃ a b c
-        (isClosed_eq
-          ((Continuous.add continuous_fst (continuous_fst.comp continuous_snd)).mul
-            (continuous_snd.comp continuous_snd))
-          (Continuous.add (continuous_fst.mul (continuous_snd.comp continuous_snd))
-            ((continuous_fst.comp continuous_snd).mul
-              (continuous_snd.comp continuous_snd))))
+        (isClosed_eq (by fun_prop) (by fun_prop))
         fun a b c => by rw [← coe_add, ← coe_mul, ← coe_mul, ← coe_mul, ← coe_add, add_mul] }
 
 /-- The map from a uniform ring to its completion, as a ring homomorphism. -/
@@ -148,21 +131,15 @@ def extensionHom [CompleteSpace β] [T0Space β] : Completion α →+* β :=
   have hf : UniformContinuous f := uniformContinuous_addMonoidHom_of_continuous hf'
   { toFun := Completion.extension f
     map_zero' := by simp_rw [← coe_zero, extension_coe hf, f.map_zero]
-    map_add' := fun a b =>
+    map_add' a b :=
       Completion.induction_on₂ a b
-        (isClosed_eq (continuous_extension.comp continuous_add)
-          ((continuous_extension.comp continuous_fst).add
-            (continuous_extension.comp continuous_snd)))
-        fun a b => by
-        simp_rw [← coe_add, extension_coe hf, f.map_add]
+        (isClosed_eq (by fun_prop) (by fun_prop))
+        fun a b => by simp_rw [← coe_add, extension_coe hf, f.map_add]
     map_one' := by rw [← coe_one, extension_coe hf, f.map_one]
-    map_mul' := fun a b =>
+    map_mul' a b :=
       Completion.induction_on₂ a b
-        (isClosed_eq (continuous_extension.comp continuous_mul)
-          ((continuous_extension.comp continuous_fst).mul
-            (continuous_extension.comp continuous_snd)))
-        fun a b => by
-        simp_rw [← coe_mul, extension_coe hf, f.map_mul] }
+        (isClosed_eq (by fun_prop) (by fun_prop))
+        fun a b => by simp_rw [← coe_mul, extension_coe hf, f.map_mul] }
 
 theorem extensionHom_coe [CompleteSpace β] [T0Space β] (a : α) :
     Completion.extensionHom f hf a = f a := by
@@ -237,9 +214,9 @@ variable (R : Type*) [CommRing R] [UniformSpace R] [IsUniformAddGroup R] [IsTopo
 
 instance commRing : CommRing (Completion R) :=
   { Completion.ring with
-    mul_comm := fun a b =>
+    mul_comm a b :=
       Completion.induction_on₂ a b
-        (isClosed_eq (continuous_fst.mul continuous_snd) (continuous_snd.mul continuous_fst))
+        (isClosed_eq (by fun_prop) (by fun_prop))
         fun a b => by rw [← coe_mul, ← coe_mul, mul_comm] }
 
 /-- A shortcut instance for the common case -/
@@ -313,15 +290,13 @@ noncomputable def IsDenseInducing.extendRingHom {i : α →+* β} {f : α →+* 
   map_add' := by
     have h := (uniformContinuous_uniformly_extend ue dr hf).continuous
     refine fun x y => DenseRange.induction_on₂ dr ?_ (fun a b => ?_) x y
-    · exact isClosed_eq (Continuous.comp h continuous_add)
-        ((h.comp continuous_fst).add (h.comp continuous_snd))
+    · exact isClosed_eq (by fun_prop) (by fun_prop)
     · simp_rw [← i.map_add, IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous _,
         ← f.map_add]
   map_mul' := by
     have h := (uniformContinuous_uniformly_extend ue dr hf).continuous
     refine fun x y => DenseRange.induction_on₂ dr ?_ (fun a b => ?_) x y
-    · exact isClosed_eq (Continuous.comp h continuous_mul)
-        ((h.comp continuous_fst).mul (h.comp continuous_snd))
+    · exact isClosed_eq (by fun_prop) (by fun_prop)
     · simp_rw [← i.map_mul, IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous _,
         ← f.map_mul]
 

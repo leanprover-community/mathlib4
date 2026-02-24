@@ -52,6 +52,20 @@ lemma prod_le_pow_card₀ (s : Multiset R) (n : R) (hf0 : ∀ (x : R), x ∈ s �
   convert prod_map_le_pow_card₀ (f := @id R) hf0 hf
   simp
 
+variable {α : Type*}
+
+lemma prod_map_nonneg {s : Multiset α} {f : α → R} (h : ∀ a ∈ s, 0 ≤ f a) :
+    0 ≤ (s.map f).prod := by
+  refine prod_nonneg fun r hr ↦ ?_
+  obtain ⟨a, ha, rfl⟩ := mem_map.mp hr
+  exact h a ha
+
+lemma one_le_prod_map {s : Multiset α} {f : α → R} (h : ∀ a ∈ s, 1 ≤ f a) :
+    1 ≤ (s.map f).prod := by
+  refine one_le_prod fun r hr ↦ ?_
+  obtain ⟨a, ha, rfl⟩ := mem_map.mp hr
+  exact h a ha
+
 omit [PosMulMono R]
 variable [PosMulStrictMono R] [NeZero (1 : R)]
 

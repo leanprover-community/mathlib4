@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.EuclideanDomain.Defs
 public import Mathlib.Algebra.Ring.Divisibility.Basic
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.Ring.Basic
 
@@ -211,13 +210,11 @@ theorem gcd_eq_gcd_ab (a b : R) : (gcd a b : R) = a * gcdA a b + b * gcdB a b :=
   rwa [xgcdAux_val, xgcd_val] at this
 
 -- see Note [lower instance priority]
-instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : NoZeroDivisors R :=
-  haveI := Classical.decEq R
-  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} h =>
-      or_iff_not_and_not.2 fun h0 => h0.1 <| by rw [← mul_div_cancel_right₀ a h0.2, h, zero_div] }
-
--- see Note [lower instance priority]
 instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : IsDomain R :=
+  haveI := Classical.decEq R
+  have : NoZeroDivisors R :=
+  { eq_zero_or_eq_zero_of_mul_eq_zero {a b} h :=
+      or_iff_not_and_not.2 fun h0 ↦ h0.1 <| by rw [← mul_div_cancel_right₀ a h0.2, h, zero_div] }
   { e, NoZeroDivisors.to_isDomain R with }
 
 theorem div_pow {R : Type*} [EuclideanDomain R] {a b : R} {n : ℕ} (hab : b ∣ a) :

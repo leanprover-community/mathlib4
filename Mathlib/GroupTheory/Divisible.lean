@@ -190,6 +190,7 @@ noncomputable def divisibleByIntOfSMulTopEqTop
 
 end AddCommGroup
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) divisibleByIntOfCharZero {𝕜} [DivisionRing 𝕜] [CharZero 𝕜] :
     DivisibleBy 𝕜 ℤ where
   div q n := q / n

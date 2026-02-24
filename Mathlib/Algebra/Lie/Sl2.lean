@@ -57,9 +57,11 @@ lemma symm (ht : IsSl2Triple h e f) : IsSl2Triple (-h) f e where
 @[simp] lemma symm_iff : IsSl2Triple (-h) f e ↔ IsSl2Triple h e f :=
   ⟨fun t ↦ neg_neg h ▸ t.symm, symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lie_h_e_smul (t : IsSl2Triple h e f) : ⁅h, e⁆ = (2 : R) • e := by
   simp [t.lie_h_e_nsmul, two_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lie_lie_smul_f (t : IsSl2Triple h e f) : ⁅h, f⁆ = -((2 : R) • f) := by
   simp [t.lie_h_f_nsmul, two_smul]
 
@@ -113,7 +115,7 @@ def toLieSubalgebra (t : IsSl2Triple h e f) :
       | add u v hu hv hu' hv' => simpa only [lie_add] using add_mem hu' hv'
       | smul t u hv hv' => simpa only [lie_smul] using smul_mem _ t hv'
       | mem v hv =>
-        simp only [mem_insert_iff, mem_singleton_iff] at hu hv
+        push _ ∈ _ at hu hv
         rcases hu with rfl | rfl | rfl <;>
         rcases hv with rfl | rfl | rfl <;> (try simp only [lie_self, zero_mem])
         · rw [t.lie_e_f]

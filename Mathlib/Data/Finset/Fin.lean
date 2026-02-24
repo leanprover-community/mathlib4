@@ -38,6 +38,7 @@ theorem mem_attachFin {s : Finset ℕ} (h : ∀ m ∈ s, m < n) {a : Fin n} :
     hb₂ ▸ hb₁,
     fun h ↦ Multiset.mem_pmap.2 ⟨a, h, Fin.eta _ _⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coe_attachFin {s : Finset ℕ} (h : ∀ m ∈ s, m < n) :
     (attachFin s h : Set (Fin n)) = Fin.val ⁻¹' s := by

@@ -149,12 +149,14 @@ theorem ext {φ ψ : MvPowerSeries σ R} (h : ∀ n : σ →₀ ℕ, coeff n φ 
 if and only if all their coefficients are equal. -/
 add_decl_doc MvPowerSeries.ext_iff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     monomial n = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
   convert rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff m (monomial n a) = if m = n then a else 0 := by
   dsimp only [coeff, MvPowerSeries]
@@ -226,6 +228,7 @@ protected theorem zero_mul : (0 : MvPowerSeries σ R) * φ = 0 :=
 protected theorem mul_zero : φ * 0 = 0 :=
   ext fun n => by classical simp [coeff_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial_mul (a : R) :
     coeff m (monomial n a * φ) = if n ≤ m then a * coeff (m - n) φ else 0 := by
   classical
@@ -237,6 +240,7 @@ theorem coeff_monomial_mul (a : R) :
     Finset.sum_ite_index]
   simp only [Finset.sum_singleton, coeff_monomial_same, Finset.sum_empty]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_mul_monomial (a : R) :
     coeff m (φ * monomial n a) = if n ≤ m then coeff (m - n) φ * a else 0 := by
   classical

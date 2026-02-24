@@ -9,6 +9,7 @@ public import Mathlib.Data.Matrix.Basis
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.Tactic.Field
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Transvections
@@ -446,6 +447,7 @@ theorem mul_listTransvecRow_last_col (i : Fin r ⊕ Unit) :
   rw [← List.take_length (l := listTransvecRow M), A]
   simpa using mul_listTransvecRow_last_col_take M i le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying by all the matrices in `listTransvecRow M` kills all the coefficients in the
 last row but the last one. -/
 theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : Fin r) :

@@ -56,7 +56,7 @@ theorem summable_ofDigitsTerm {b : ℕ} {digits : ℕ → Fin b} :
     Summable (ofDigitsTerm digits) := by
   refine Summable.of_nonneg_of_le (fun _ ↦ ofDigitsTerm_nonneg) (fun _ ↦ ofDigitsTerm_le) ?_
   obtain rfl | hb := (Nat.one_le_of_lt (b_pos digits)).eq_or_lt
-  · simpa using summable_zero
+  · simp
   simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
   refine Summable.mul_left _ (summable_geometric_of_lt_one (by positivity) ?_)
   simp [inv_lt_one_iff₀, hb]
@@ -124,6 +124,7 @@ theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hx : x ∈ Set.Ic
     rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by lia),
       Fin.val_ofNat, Nat.div_add_mod]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b]
     (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
     x - (b⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i := by
@@ -135,6 +136,7 @@ theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b]
     mul_sub, inv_pow, mul_inv_cancel₀ (by positivity)]
   linarith
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_ofDigitsTerm_digits_le {x : ℝ} {b : ℕ} [NeZero b]
     (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
     ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i ≤ x := by

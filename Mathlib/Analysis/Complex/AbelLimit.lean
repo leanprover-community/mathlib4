@@ -66,11 +66,12 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
     (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) ?_
   simp only [eventually_iff, mem_nhdsWithin]
   refine ⟨Set.Ioo 0 2, isOpen_Ioo, by simp, fun x hx ↦ ?_⟩
-  simp only [Set.mem_inter_iff, Set.mem_Ioo, Set.mem_Iio] at hx
+  push _ ∈ _ at hx
   simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_real,
     norm_of_nonneg hx.1.1.le, norm_of_nonneg <| (sub_pos.mpr hx.2).le]
   exact ⟨hx.2, lt_mul_left (sub_pos.mpr hx.2) hM⟩
 
+set_option backward.isDefEq.respectTransparency false in
 -- An ugly technical lemma
 private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
     ∃ M ε, 0 < M ∧ 0 < ε ∧ ∀ x y, 0 < x → x < ε → |y| < s * x →
@@ -156,6 +157,7 @@ lemma abel_aux (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) {
     apply Tendsto.add (Tendsto.div_const (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hz) (z - 1))
     simp only [zero_div, zero_add, tendsto_const_nhds_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function
 is continuous at 1 when approaching 1 within a fixed Stolz set. -/
 theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
