@@ -43,6 +43,7 @@ variable
 
 section definition
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform on a real inner product space, as a continuous linear map on the
 Schwartz space.
 
@@ -162,6 +163,7 @@ variable {𝕜' : Type*} [NormedField 𝕜']
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜') in
 theorem fourier_evalCLM_eq (f : 𝓢(V, F →L[ℝ] G)) (m : F) :
     𝓕 (SchwartzMap.evalCLM 𝕜' V G m f) = SchwartzMap.evalCLM 𝕜' V G m (𝓕 f) := by
@@ -171,6 +173,8 @@ theorem fourier_evalCLM_eq (f : 𝓢(V, F →L[ℝ] G)) (m : F) :
 end eval
 
 section deriv
+
+set_option backward.isDefEq.respectTransparency false
 
 /-- The derivative of the Fourier transform is given by the Fourier transform of the multiplication
 with `-(2 * π * Complex.I) • innerSL ℝ`. -/
@@ -249,11 +253,13 @@ theorem integral_bilin_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[
 @[deprecated (since := "2025-11-16")]
 alias integral_bilin_fourierIntegral_eq := integral_bilin_fourier_eq
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform satisfies `∫ 𝓕 f • g = ∫ f • 𝓕 g`, i.e., it is self-adjoint. -/
 theorem integral_fourier_smul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, F)) :
     ∫ ξ, 𝓕 f ξ • g ξ = ∫ x, f x • 𝓕 g x :=
   integral_bilin_fourier_eq f g (.lsmul ℂ ℂ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint. -/
 theorem integral_fourier_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
     ∫ ξ, 𝓕 f ξ * g ξ = ∫ x, f x * 𝓕 g x :=
@@ -268,11 +274,13 @@ theorem integral_bilin_fourierInv_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E �
   · exact (FourierTransform.fourier_fourierInv_eq g).symm
   · exact (FourierTransform.fourier_fourierInv_eq f).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f • g = ∫ f • 𝓕⁻ g`, i.e., it is self-adjoint. -/
 theorem integral_fourierInv_smul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, F)) :
     ∫ ξ, 𝓕⁻ f ξ • g ξ = ∫ x, f x • 𝓕⁻ g x :=
   integral_bilin_fourierInv_eq f g (.lsmul ℂ ℂ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f * g = ∫ f * 𝓕⁻ g`, i.e., it is self-adjoint. -/
 theorem integral_fourierInv_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
     ∫ ξ, 𝓕⁻ f ξ * g ξ = ∫ x, f x * 𝓕⁻ g x :=
@@ -304,12 +312,14 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
     ∫ ξ, ⟪𝓕 f ξ, 𝓕 g ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
   integral_sesq_fourier_fourier f g (innerSL ℂ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
     ∫ ξ, ‖𝓕 f ξ‖ ^ 2 = ∫ x, ‖f x‖ ^ 2 := by
   apply Complex.ofRealLI.injective
   simpa [← LinearIsometry.integral_comp_comm, inner_self_eq_norm_sq_to_K] using
     integral_inner_fourier_fourier f f
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inner_fourier_toL2_eq (f g : 𝓢(V, H)) :
     ⟪(𝓕 f).toLp 2, (𝓕 g).toLp 2⟫ = ⟪f.toLp 2, g.toLp 2⟫ := by simp
 

@@ -112,6 +112,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
   exact (h6.ball_subset_image_closedBall hr (fun z hz => hfx hz) (not_eventually.mp h)).trans
     (by gcongr; exact inf_le_right)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The *open mapping theorem* for holomorphic functions, local version: is a function `g : E → ℂ`
 is analytic at a point `z₀`, then either it is constant in a neighborhood of `z₀`, or it maps every
 neighborhood of `z₀` to a neighborhood of `z₀`. For the particular case of a holomorphic function on

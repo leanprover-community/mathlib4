@@ -88,6 +88,7 @@ lemma of_hom {𝒱 : PreZeroHypercover.{w'} S} (f : 𝒱.Hom 𝒰) [QuasiCompact
     (fun _ ↦ Scheme.Hom.continuous _) (fun i ↦ funext <| by simp [← Scheme.Hom.comp_apply])
     (fun _ ↦ Scheme.Hom.continuous _) U.2 (hU.isCompactOpenCovered 𝒱)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝒰) in
 @[stacks 022D "(3)"]
 instance [QuasiCompactCover 𝒰] {T : Scheme.{u}} (f : T ⟶ S) :
@@ -166,6 +167,7 @@ instance {𝒱 : PreZeroHypercover S} [QuasiCompactCover 𝒰] : QuasiCompactCov
 instance {𝒱 : PreZeroHypercover S} [QuasiCompactCover 𝒱] : QuasiCompactCover (𝒰.sum 𝒱) :=
   .of_hom (PreZeroHypercover.sumInr _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_hom {S : Scheme.{u}} (𝒰 : S.Cover (Scheme.precoverage P))
     [P.RespectsLeft @IsOpenImmersion] [CompactSpace S] [QuasiCompactCover 𝒰.toPreZeroHypercover] :
     ∃ (𝒱 : Scheme.AffineCover.{w} P S) (f : 𝒱.cover ⟶ 𝒰),

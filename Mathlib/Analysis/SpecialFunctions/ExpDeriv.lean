@@ -84,6 +84,7 @@ namespace Complex
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The complex exponential is everywhere differentiable, with the derivative `exp x`. -/
 theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x := by
   rw [hasDerivAt_iff_isLittleO_nhds_zero]

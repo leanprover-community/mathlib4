@@ -275,6 +275,7 @@ theorem val_replicate : (replicate n a).val = Multiset.replicate n a := by
 theorem mem_replicate : b ∈ replicate n a ↔ n ≠ 0 ∧ b = a :=
   Multiset.mem_replicate
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a := by
   rw [Subtype.ext_iff, val_replicate, Multiset.eq_replicate]
   exact and_iff_right s.2
@@ -391,6 +392,7 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n where
   left_inv x := by rw [map_map, Equiv.symm_comp_self, map_id]
   right_inv x := by rw [map_map, Equiv.self_comp_symm, map_id]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
 an element of the symmetric power on `{x // x ∈ s}`. -/
 def attach (s : Sym α n) : Sym { x // x ∈ s } n :=

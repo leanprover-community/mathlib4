@@ -582,6 +582,7 @@ theorem localTriv_apply {i : ι} (p : Z.TotalSpace) :
     (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The standard local trivializations of a vector bundle constructed from core are linear. -/
 instance localTriv.isLinear (i : ι) : (Z.localTriv i).IsLinear R where
   linear x _ :=
@@ -897,6 +898,7 @@ theorem inCoordinates_eq {x₀ x : B} {y₀ y : B'} {ϕ : E x →SL[σ] E' y}
   simp_rw [inCoordinates, ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe,
     Trivialization.coe_continuousLinearEquivAt_eq, Trivialization.symm_continuousLinearEquivAt_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Rewrite `ContinuousLinearMap.inCoordinates` in a `VectorBundleCore`. -/
 protected theorem _root_.VectorBundleCore.inCoordinates_eq {ι ι'} (Z : VectorBundleCore 𝕜₁ B F ι)
     (Z' : VectorBundleCore 𝕜₂ B' F' ι') {x₀ x : B} {y₀ y : B'} (ϕ : F →SL[σ] F')

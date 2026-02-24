@@ -60,6 +60,7 @@ variable {n}
 @[simp] lemma zmod_add : ∀ x y : ZMod n, zmod n (x + y) = zmod n x * zmod n y := by
   simp [DFunLike.ext_iff, zmod, add_mul, map_add_eq_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma zmod_injective : Injective (zmod n) := by
   simp_rw [Injective, ZMod.intCast_surjective.forall]
   rintro x y h
@@ -85,6 +86,7 @@ private lemma mkZModAux_injective {ι : Type*} [DecidableEq ι] {n : ι → ℕ}
     Injective (mkZModAux n) :=
   AddChar.directSum_injective.comp fun f g h ↦ by simpa [funext_iff] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The circle-valued characters of a finite abelian group are the same as its complex-valued
 characters. -/
 def circleEquivComplex [Finite α] : AddChar α Circle ≃+ AddChar α ℂ where
@@ -150,6 +152,7 @@ lemma exists_apply_ne_zero : (∃ ψ : AddChar α ℂ, ψ a ≠ 1) ↔ a ≠ 0 :
 lemma forall_apply_eq_zero : (∀ ψ : AddChar α ℂ, ψ a = 1) ↔ a = 0 := by
   simpa using exists_apply_ne_zero.not
 
+set_option backward.isDefEq.respectTransparency false in
 lemma doubleDualEmb_injective : Injective (doubleDualEmb : α → AddChar (AddChar α ℂ) ℂ) :=
   doubleDualEmb.ker_eq_bot_iff.1 <| eq_bot_iff.2 fun a ha ↦
     forall_apply_eq_zero.1 fun ψ ↦ by simpa using DFunLike.congr_fun ha (Additive.ofMul ψ)

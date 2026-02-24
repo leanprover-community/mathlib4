@@ -172,6 +172,7 @@ lemma dimension_ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [CommRing T]
     (e : S ≃ₐ[R] T) : (P.ofAlgEquiv e).dimension = P.dimension :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `algebraMap R S` is bijective, the empty generators are a presentation with no relations. -/
 noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
     Presentation R S PEmpty.{w + 1} PEmpty.{t + 1} where
@@ -244,6 +245,7 @@ section BaseChange
 
 variable (T) [CommRing T] [Algebra R T] (P : Presentation R S ι σ)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private lemma span_range_relation_eq_ker_baseChange :
     Ideal.span (Set.range fun i ↦ (MvPolynomial.map (algebraMap R T)) (P.relation i)) =
@@ -402,6 +404,7 @@ private lemma aux_eq_comp : Q.aux P =
   ext i : 1
   cases i <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma aux_ker :
     RingHom.ker (Q.aux P) = Ideal.map (rename Sum.inr) (RingHom.ker (aeval P.val)) := by
   rw [aux_eq_comp, ← AlgHom.comap_ker, MvPolynomial.ker_mapAlgHom]

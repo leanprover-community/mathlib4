@@ -205,6 +205,15 @@ private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.
   @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
 
+private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
+    {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.unsortedEigenvalues hn i = μ := by
+  let (eq := hx) x : Eigenvalues T := ⟨μ, hμ⟩
+  obtain ⟨i, hi⟩ := hT.direct_sum_isInternal.exists_subordinateOrthonormalBasisIndex_eq hn
+    hT.orthogonalFamily_eigenspaces' (hasEigenvalue_iff.mp x.prop)
+  use i
+  rw [unsortedEigenvalues, hi, hx, Eigenvalues.val_mk, ← RCLike.conj_eq_iff_re,
+    hT.conj_eigenvalue_eq_self hμ]
+
 private theorem card_filter_unsortedEigenvalues_eq (hT : T.IsSymmetric)
     (hn : Module.finrank 𝕜 E = n) {μ : 𝕜} (hμ : HasEigenvalue T μ) :
     Finset.card {i | hT.unsortedEigenvalues hn i = μ} = Module.finrank 𝕜 (eigenspace T μ) := by
@@ -249,6 +258,12 @@ finite-dimensional inner product space `E`, sorted in decreasing order -/
 noncomputable irreducible_def eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     Fin n → ℝ :=
   (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
+
+theorem exists_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) {μ : 𝕜}
+    (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.eigenvalues hn i = μ := by
+  obtain ⟨i, hi⟩ := hT.exists_unsortedEigenvalues_eq hn hμ
+  use ((Tuple.sort (hT.unsortedEigenvalues hn)).symm i).revPerm
+  simp [eigenvalues_def, hi]
 
 theorem card_filter_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) {μ : 𝕜}
     (hμ : HasEigenvalue T μ) :
@@ -324,6 +339,7 @@ theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] 
     (h : T v = μ • v) : ⟪v, T v⟫ = μ * (‖v‖ : 𝕜) ^ 2 := by
   simp only [h, inner_smul_right, inner_self_eq_norm_sq_to_K]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
     (hnn : ∀ x : E, 0 ≤ RCLike.re ⟪x, T x⟫) : 0 ≤ μ := by
   obtain ⟨v, hv₁, hv₂⟩ := hμ.exists_hasEigenvector
@@ -333,6 +349,7 @@ theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : Has
     mod_cast congr_arg RCLike.re (inner_product_apply_eigenvector hv₁)
   exact (mul_nonneg_iff_of_pos_right hpos).mp (this ▸ hnn v)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
     (hnn : ∀ x : E, 0 < RCLike.re ⟪x, T x⟫) : 0 < μ := by
   obtain ⟨v, hv₁, hv₂⟩ := hμ.exists_hasEigenvector

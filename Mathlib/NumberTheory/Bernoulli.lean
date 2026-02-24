@@ -75,6 +75,7 @@ theorem bernoulli'_def (n : ℕ) :
     bernoulli' n = 1 - ∑ k ∈ range n, n.choose k / (n - k + 1) * bernoulli' k := by
   rw [bernoulli'_def', ← Fin.sum_univ_eq_sum_range]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli'_spec (n : ℕ) :
     (∑ k ∈ range n.succ, (n.choose (n - k) : ℚ) / (n - k + 1) * bernoulli' k) = 1 := by
   rw [sum_range_succ_comm, bernoulli'_def n, tsub_self, choose_zero_right, sub_self, zero_add,
@@ -140,6 +141,7 @@ theorem sum_bernoulli' (n : ℕ) : (∑ k ∈ range n, (n.choose k : ℚ) * bern
 def bernoulli'PowerSeries :=
   mk fun n => algebraMap ℚ A (bernoulli' n / n !)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli'PowerSeries_mul_exp_sub_one :
     bernoulli'PowerSeries A * (exp A - 1) = X * exp A := by
   ext n
@@ -158,6 +160,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
   have := factorial_mul_factorial_dvd_factorial_add i j
   simp [field, add_choose, *]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Odd Bernoulli numbers (greater than 1) are zero. -/
 theorem bernoulli'_eq_zero_of_odd {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoulli' n = 0 := by
   let B := mk fun n => bernoulli' n / (n ! : ℚ)
@@ -182,6 +185,7 @@ alias bernoulli'_odd_eq_zero := bernoulli'_eq_zero_of_odd
 def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli'_eq_bernoulli (n : ℕ) : bernoulli' n = (-1) ^ n * bernoulli n := by
   simp [bernoulli, ← mul_assoc, ← sq, ← pow_mul, mul_comm n 2]
 
@@ -191,6 +195,7 @@ theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 @[simp]
 theorem bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num [bernoulli]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bernoulli_two : bernoulli 2 = 6⁻¹ := by
   simp [bernoulli]
@@ -224,8 +229,8 @@ theorem sum_bernoulli (n : ℕ) :
   · congr
     funext x
     rw [bernoulli_eq_bernoulli'_of_ne_one (succ_ne_zero x ∘ succ.inj)]
-  · simp only [one_div, mul_one, bernoulli'_zero, choose_zero_right,
-      zero_add, choose_one_right, cast_succ, bernoulli'_one, one_div]
+  · simp only [mul_one, bernoulli'_zero, choose_zero_right,
+      zero_add, choose_one_right, cast_succ, bernoulli'_one]
     ring
 
 theorem bernoulli_spec' (n : ℕ) :
@@ -253,6 +258,7 @@ theorem bernoulli_spec' (n : ℕ) :
 def bernoulliPowerSeries :=
   mk fun n => algebraMap ℚ A (bernoulli n / n !)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A - 1) = X := by
   ext n
   -- constant coefficient is a special case
@@ -273,6 +279,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
 
 section Faulhaber
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Faulhaber's theorem** relating the **sum of p-th powers** to the Bernoulli numbers:
 $$\sum_{k=0}^{n-1} k^p = \sum_{i=0}^p B_i\binom{p+1}{i}\frac{n^{p+1-i}}{p+1}.$$
 See https://proofwiki.org/wiki/Faulhaber%27s_Formula and [orosi2018faulhaber] for
@@ -338,6 +345,7 @@ theorem sum_range_pow (n p : ℕ) :
   refine sum_congr rfl fun x _ => ?_
   simp [field, factorial]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Alternate form of **Faulhaber's theorem**, relating the sum of p-th powers to the Bernoulli
 numbers:
 $$\sum_{k=1}^{n} k^p = \sum_{i=0}^p (-1)^iB_i\binom{p+1}{i}\frac{n^{p+1-i}}{p+1}.$$

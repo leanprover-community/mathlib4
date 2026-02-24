@@ -47,7 +47,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped NNReal
 
-open Module.End Metric
+open Module.End Metric RCLike
 
 namespace ContinuousLinearMap
 
@@ -95,6 +95,15 @@ theorem iInf_rayleigh_eq_iInf_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
     simp only [← @sInf_image' _ _ _ _ (rayleighQuotient T),
       T.image_rayleigh_eq_image_rayleigh_sphere hr]
 
+theorem rayleighQuotient_le_norm (x : E) : |T.rayleighQuotient x| ≤ ‖T‖ := by
+  grw [rayleighQuotient, reApplyInnerSelf_apply, abs_div, abs_sq, abs_re_le_norm,
+    norm_inner_le_norm, le_opNorm, mul_assoc, ← sq, mul_div_assoc]
+  exact mul_le_of_le_one_right T.opNorm_nonneg (div_self_le_one (‖x‖ ^ 2))
+
+-- TODO: Prove `⨆ x, |T.rayleighQuotient x| = ‖T‖` when `T` is symmetric.
+theorem bddAbove_rayleighQuotient : BddAbove (Set.range fun x ↦ |T.rayleighQuotient x|) :=
+  ⟨‖T‖, fun _ ⟨y, h⟩ ↦ h ▸ T.rayleighQuotient_le_norm y⟩
+
 end ContinuousLinearMap
 
 namespace IsSelfAdjoint
@@ -103,6 +112,7 @@ section Real
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F →L[ℝ] F}
     (hT : (T : F →ₗ[ℝ] F).IsSymmetric) (x₀ : F) :
     HasStrictFDerivAt T.reApplyInnerSelf (2 • (innerSL ℝ (T x₀))) x₀ := by
@@ -114,6 +124,7 @@ theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F �
 
 variable [CompleteSpace F] {T : F →L[ℝ] F}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : F) ‖x₀‖) x₀) :
     ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • x₀ + b • T x₀ = 0 := by

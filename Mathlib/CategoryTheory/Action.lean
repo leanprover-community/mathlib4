@@ -189,6 +189,7 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
       · exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
       rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `G` acting on `X`, a group homomorphism `φ : G →* (X → H) ⋊ G` can be uncurried to
 a functor from the action groupoid to `H`, provided that `φ g = (_, g)` for all `g`. -/
 @[simps]

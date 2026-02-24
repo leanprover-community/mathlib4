@@ -49,6 +49,7 @@ lemma quotientFunc_smul {h} (hh : h ∈ ℋ) (q : 𝒬) :
 
 variable (ℋ) [𝒢.IsFiniteRelIndex ℋ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The trace of a slash-invariant form, as a slash-invariant form. -/
 @[simps! -fullyApplied]
 protected def trace : SlashInvariantForm ℋ k where
@@ -58,6 +59,7 @@ protected def trace : SlashInvariantForm ℋ k where
     simpa [SlashAction.sum_slash, quotientFunc_smul f hh]
       using Equiv.sum_comp (MulAction.toPerm (_ : ℋ)) _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The norm of a slash-invariant form, as a slash-invariant form. -/
 @[simps! -fullyApplied]
 protected def norm [ℋ.HasDetPlusMinusOne] : SlashInvariantForm ℋ (k * Nat.card 𝒬) where
@@ -76,6 +78,7 @@ section ModularForm
 
 variable (ℋ) [𝒢.IsFiniteRelIndex ℋ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The trace of a modular form, as a modular form. -/
 @[simps! -fullyApplied]
 protected def ModularForm.trace [ModularFormClass F 𝒢 k] : ModularForm ℋ k where
@@ -88,6 +91,7 @@ protected def ModularForm.trace [ModularFormClass F 𝒢 k] : ModularForm ℋ k 
     refine .sum (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f _).bdd_at_cusps' ?_ γ rfl)
     simpa using h.of_isFiniteRelIndex_conj hr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The trace of a cusp form, as a cusp form. -/
 @[simps! -fullyApplied]
 protected def CuspForm.trace [CuspFormClass F 𝒢 k] : CuspForm ℋ k where
@@ -118,6 +122,7 @@ protected def ModularForm.norm [ℋ.HasDetPlusMinusOne] [ModularFormClass F 𝒢
     refine .finsetProd (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f _).bdd_at_cusps' ?_ γ rfl)
     simpa using h.of_isFiniteRelIndex_conj hr
 
+set_option backward.isDefEq.respectTransparency false in
 variable {f} in
 lemma ModularForm.norm_ne_zero [ℋ.HasDetPlusMinusOne] [ModularFormClass F 𝒢 k]
     (hf : (f : ℍ → ℂ) ≠ 0) : ModularForm.norm ℋ f ≠ 0 := by

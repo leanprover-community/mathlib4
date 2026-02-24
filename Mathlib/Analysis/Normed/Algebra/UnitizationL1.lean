@@ -35,6 +35,7 @@ namespace WithLp
 
 open Unitization
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural map between `Unitization 𝕜 A` and `𝕜 × A`, transferred to their `WithLp 1`
 synonyms. -/
 noncomputable def unitization_addEquiv_prod : WithLp 1 (Unitization 𝕜 A) ≃+ WithLp 1 (𝕜 × A) :=
@@ -78,6 +79,7 @@ lemma unitization_norm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖ = ‖
 lemma unitization_nnnorm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖₊ = ‖x‖₊ := by
   simp [unitization_nnnorm_def]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma unitization_isometry_inr : Isometry fun x : A ↦ toLp 1 (x : Unitization 𝕜 A) :=
   AddMonoidHomClass.isometry_of_norm
     ((WithLp.linearEquiv 1 𝕜 (Unitization 𝕜 A)).symm.comp <| Unitization.inrHom 𝕜 A)

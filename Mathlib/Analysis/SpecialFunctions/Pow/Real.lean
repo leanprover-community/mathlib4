@@ -288,6 +288,7 @@ theorem ofReal_cpow_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℂ) :
     log, norm_neg, arg_ofReal_of_neg hlt, ← ofReal_neg, arg_ofReal_of_nonneg (neg_nonneg.2 hx),
     ofReal_zero, zero_mul, add_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cpow_ofReal (x : ℂ) (y : ℝ) :
     x ^ (y : ℂ) = ↑(‖x‖ ^ y) * (Real.cos (arg x * y) + Real.sin (arg x * y) * I) := by
   rcases eq_or_ne x 0 with rfl | hx
@@ -309,6 +310,7 @@ theorem norm_cpow_of_ne_zero {z : ℂ} (hz : z ≠ 0) (w : ℂ) :
   rw [cpow_def_of_ne_zero hz, norm_exp, mul_re, log_re, log_im, Real.exp_sub,
     Real.rpow_def_of_pos (norm_pos_iff.mpr hz)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
     ‖z ^ w‖ = ‖z‖ ^ w.re / Real.exp (arg z * im w) := by
   rcases ne_or_eq z 0 with (hz | rfl) <;> [exact norm_cpow_of_ne_zero hz w; rw [norm_zero]]
@@ -317,6 +319,7 @@ theorem norm_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
   · rw [Real.zero_rpow hw, zero_div, zero_cpow, norm_zero]
     exact ne_of_apply_ne re hw
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_cpow_le (z w : ℂ) : ‖z ^ w‖ ≤ ‖z‖ ^ w.re / Real.exp (arg z * im w) := by
   by_cases! h : z = 0 → w.re = 0 → w = 0
   · exact (norm_cpow_of_imp h).le
@@ -526,6 +529,7 @@ in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[gcongr, bound]
 theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z := by
   rw [le_iff_eq_or_lt] at hx; rcases hx with hx | hx
@@ -601,6 +605,7 @@ theorem rpow_inv_le_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) :
     x ^ z⁻¹ ≤ y ↔ y ^ z ≤ x := by
   rw [← rpow_le_rpow_iff_of_neg hy _ hz, rpow_inv_rpow _ hz.ne] <;> positivity
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rpow_lt_rpow_of_exponent_lt (hx : 1 < x) (hyz : y < z) : x ^ y < x ^ z := by
   repeat' rw [rpow_def_of_pos (lt_trans zero_lt_one hx)]
   rw [exp_lt_exp]; exact mul_lt_mul_of_pos_left hyz (log_pos hx)
@@ -624,6 +629,7 @@ theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
     AntitoneOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
   fun _ ha _ _ hab => rpow_le_rpow_of_nonpos ha hab hr
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem rpow_le_rpow_left_iff (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
   have x_pos : 0 < x := lt_trans zero_lt_one hx
@@ -700,6 +706,7 @@ theorem rpow_lt_one_iff' {x y : ℝ} (hx : 0 ≤ x) (hy : 0 < y) :
     x ^ y < 1 ↔ x < 1 := by
   rw [← Real.rpow_lt_rpow_iff hx zero_le_one hy, Real.one_rpow]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_lt_rpow_iff_of_pos (hx : 0 < x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ x < 1 ∧ y < 0 := by
   rw [rpow_def_of_pos hx, one_lt_exp_iff, mul_pos_iff, log_pos_iff hx.le, log_neg_iff hx]
 
@@ -960,6 +967,7 @@ lemma norm_natCast_cpow_le_norm_natCast_cpow_iff {n : ℕ} (hn : 1 < n) {w z : �
   simp_rw [norm_natCast_cpow_of_pos (Nat.zero_lt_of_lt hn),
     Real.rpow_le_rpow_left_iff (Nat.one_lt_cast.mpr hn)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : ‖log n‖ ≤ n ^ ε / ε := by
   rcases n.eq_zero_or_pos with rfl | h
   · rw [Nat.cast_zero, Nat.cast_zero, log_zero, norm_zero, Real.zero_rpow hε.ne', zero_div]

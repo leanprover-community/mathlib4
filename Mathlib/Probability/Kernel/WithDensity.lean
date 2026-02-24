@@ -193,6 +193,7 @@ theorem isFiniteKernel_withDensity_of_bounded (κ : Kernel α β) [IsFiniteKerne
   · rw [withDensity_of_not_measurable _ hf]
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `IsSFiniteKernel.withDensity`.
 If a kernel `κ` is finite, then `withDensity κ f` is s-finite. -/
 theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFiniteKernel κ]
