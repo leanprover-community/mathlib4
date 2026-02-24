@@ -2910,6 +2910,7 @@ public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
 public import Mathlib.CategoryTheory.Monoidal.Limits
 public import Mathlib.CategoryTheory.Monoidal.Limits.Basic
 public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
+public import Mathlib.CategoryTheory.Monoidal.Limits.Shapes.Pullback
 public import Mathlib.CategoryTheory.Monoidal.Linear
 public import Mathlib.CategoryTheory.Monoidal.Mod_
 public import Mathlib.CategoryTheory.Monoidal.Mon_
