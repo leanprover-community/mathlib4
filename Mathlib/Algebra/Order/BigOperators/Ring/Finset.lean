@@ -28,10 +28,10 @@ variable {ι R S : Type*}
 namespace Finset
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneClass R]
+variable [CommMonoidWithZero R]
 
 section PosMulMono
-variable [PosMulMono R] {f g : ι → R} {s t : Finset ι}
+variable [Preorder R] [ZeroLEOneClass R] [PosMulMono R] {f g : ι → R} {s t : Finset ι}
 
 lemma prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i ∈ s, f i :=
   prod_induction f (fun i ↦ 0 ≤ i) (fun _ _ ha hb ↦ mul_nonneg ha hb) zero_le_one h0
@@ -76,7 +76,8 @@ lemma le_prod_max_one {M : Type*} [CommMonoidWithZero M] [LinearOrder M] [ZeroLE
 end PosMulMono
 
 section PosMulStrictMono
-variable [PosMulStrictMono R] [Nontrivial R] {f g : ι → R} {s t : Finset ι}
+variable [PartialOrder R] [ZeroLEOneClass R] [PosMulStrictMono R] [Nontrivial R]
+  {f g : ι → R} {s t : Finset ι}
 
 lemma prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i ∈ s, f i :=
   prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0
