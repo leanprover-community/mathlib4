@@ -363,6 +363,7 @@ theorem cardDistinctFactors_mul {m n : ℕ} (h : m.Coprime n) : ω (m * n) = ω 
   simp [cardDistinctFactors_apply, perm_primeFactorsList_mul_of_coprime h |>.dedup |>.length_eq,
     coprime_primeFactorsList_disjoint h |>.dedup_append]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function in
 theorem cardDistinctFactors_prod {ι : Type*} {s : Finset ι} {f : ι → ℕ}
     (h : (s : Set ι).Pairwise (Coprime on f)) : ω (∏ i ∈ s, f i) = ∑ i ∈ s, ω (f i) := by

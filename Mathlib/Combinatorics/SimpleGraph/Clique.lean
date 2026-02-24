@@ -554,6 +554,7 @@ theorem CliqueFreeOn.anti (hGH : G ≤ H) (hH : H.CliqueFreeOn s n) : G.CliqueFr
 theorem cliqueFreeOn_empty : G.CliqueFreeOn ∅ n ↔ n ≠ 0 := by
   simp [CliqueFreeOn, Set.subset_empty_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cliqueFreeOn_singleton : G.CliqueFreeOn {a} n ↔ 1 < n := by
   obtain _ | _ | n := n <;>
@@ -753,6 +754,7 @@ theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n :=
 
 protected alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_cliqueFinset_le : #(G.cliqueFinset n) ≤ (card α).choose n := by
   rw [← card_univ, ← card_powersetCard]
   refine card_mono fun s => ?_
@@ -864,6 +866,7 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
     Decidable (G.IsNIndepSet n s) :=
   decidable_of_iff' _ (G.isNIndepSet_iff n s)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The embedding of an `n`-independent set of an induced subgraph of the subgraph `G` is an
 `n`-independent set in `G` and vice versa. -/
 theorem isNIndepSet_induce {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ} :

@@ -13,9 +13,9 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 Let `G` be a group acting on a type `α`.
 
 * `MulAction.IsMultiplyPreprimitive` :
-The action is said to be `n`-primitive if, for every subset `s :
-Set α` with `n` elements, the actions f `stabilizer G s` on the
-complement of `s` is primitive.
+  The action is said to be `n`-primitive if, for every subset `s :
+  Set α` with `n` elements, the actions f `stabilizer G s` on the
+  complement of `s` is primitive.
 
 * `MulAction.is_zero_preprimitive` : any action is 0-primitive
 
@@ -30,9 +30,9 @@ complement of `s` is primitive.
   ofFixingSubgroup.isMultiplyPreprimitive
 
 * `MulAction.ofFixingSubgroup.isMultiplyPreprimitive`:
-If an action is `s.ncard + m`-primitive, then
-the action of `FixingSubgroup G s` on the complement of `s`
-is `m`-primitive.
+  If an action is `s.ncard + m`-primitive, then
+  the action of `FixingSubgroup G s` on the complement of `s`
+  is `m`-primitive.
 
 -/
 

@@ -25,6 +25,7 @@ namespace Algebra.FormallyUnramified
 variable {R : Type*} {I : Type*} [Finite I] (f : I → Type*)
 variable [CommRing R] [∀ i, CommRing (f i)] [∀ i, Algebra R (f i)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pi_iff :
     FormallyUnramified R (∀ i, f i) ↔ ∀ i, FormallyUnramified R (f i) := by
   classical

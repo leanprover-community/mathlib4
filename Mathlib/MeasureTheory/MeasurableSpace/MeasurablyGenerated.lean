@@ -48,7 +48,7 @@ namespace MeasureTheory
 
 theorem measurableSet_generateFrom_singleton_iff {s t : Set α} :
     MeasurableSet[MeasurableSpace.generateFrom {s}] t ↔ t = ∅ ∨ t = s ∨ t = sᶜ ∨ t = univ := by
-  simp_rw [MeasurableSpace.generateFrom_singleton]
+  simp_rw +instances [MeasurableSpace.generateFrom_singleton]
   unfold MeasurableSet MeasurableSpace.MeasurableSet' MeasurableSpace.comap
   simp_rw [MeasurableSpace.measurableSet_top, true_and]
   constructor
