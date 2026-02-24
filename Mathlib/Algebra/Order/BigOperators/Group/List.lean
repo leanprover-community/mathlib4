@@ -117,8 +117,7 @@ lemma exists_le_of_prod_le' [LinearOrder M] [MulLeftStrictMono M]
 @[to_additive sum_nonneg]
 lemma one_le_prod_of_one_le [Preorder M] [MulLeftMono M] {l : List M}
     (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) : 1 ≤ l.prod := by
-  -- We don't use `pow_card_le_prod` to avoid assumption
-  -- [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
+  -- We don't use `pow_card_le_prod` to avoid assumption `[MulRightMono M]`
   induction l with
   | nil => rfl
   | cons hd tl ih =>
