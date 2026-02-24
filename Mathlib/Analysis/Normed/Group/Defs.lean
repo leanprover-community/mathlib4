@@ -111,22 +111,23 @@ class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
 /-- An e-seminormed monoid is an additive monoid endowed with a continuous enorm.
 Note that we do not ask for the enorm to be positive definite:
 non-trivial elements may have enorm zero. -/
-class ESeminormedAddMonoid (E : Type*) [TopologicalSpace E]
-    extends ContinuousENorm E, AddMonoid E where
+class ESeminormedAddMonoid (E : Type*) [TopologicalSpace E] [AddMonoid E]
+    extends ContinuousENorm E where
   enorm_zero : ‖(0 : E)‖ₑ = 0
   protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
 /-- An enormed monoid is an additive monoid endowed with a continuous enorm,
 which is positive definite: in other words, this is an `ESeminormedAddMonoid` with a positive
 definiteness condition added. -/
-class ENormedAddMonoid (E : Type*) [TopologicalSpace E]
+class ENormedAddMonoid (E : Type*) [TopologicalSpace E] [AddMonoid E]
     extends ESeminormedAddMonoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
 
 /-- An e-seminormed monoid is a monoid endowed with a continuous enorm.
 Note that we only ask for the enorm to be a semi-norm: non-trivial elements may have enorm zero. -/
 @[to_additive]
-class ESeminormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
+class ESeminormedMonoid (E : Type*) [TopologicalSpace E] [Monoid E]
+    extends ContinuousENorm E where
   enorm_zero : ‖(1 : E)‖ₑ = 0
   enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
@@ -134,7 +135,8 @@ class ESeminormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm
 which is positive definite: in other words, this is an `ESeminormedMonoid` with a positive
 definiteness condition added. -/
 @[to_additive]
-class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ESeminormedMonoid E where
+class ENormedMonoid (E : Type*) [TopologicalSpace E] [Monoid E]
+    extends ESeminormedMonoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
 
 /-- An e-seminormed commutative monoid is an additive commutative monoid endowed with a continuous
@@ -143,8 +145,8 @@ enorm.
 We don't have `ESeminormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
 the topology coming from `edist`. -/
-class ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E]
-  extends ESeminormedAddMonoid E, AddCommMonoid E where
+class ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E] [AddCommMonoid E]
+  extends ESeminormedAddMonoid E where
 
 /-- An enormed commutative monoid is an additive commutative monoid
 endowed with a continuous enorm which is positive definite.
@@ -152,18 +154,18 @@ endowed with a continuous enorm which is positive definite.
 We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
 the topology coming from `edist`. -/
-class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
+class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E] [AddCommMonoid E]
   extends ESeminormedAddCommMonoid E, ENormedAddMonoid E where
 
 /-- An e-seminormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
 @[to_additive]
-class ESeminormedCommMonoid (E : Type*) [TopologicalSpace E]
-  extends ESeminormedMonoid E, CommMonoid E where
+class ESeminormedCommMonoid (E : Type*) [TopologicalSpace E] [CommMonoid E]
+  extends ESeminormedMonoid E where
 
 /-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm
 which is positive definite. -/
 @[to_additive]
-class ENormedCommMonoid (E : Type*) [TopologicalSpace E]
+class ENormedCommMonoid (E : Type*) [TopologicalSpace E] [CommMonoid E]
   extends ESeminormedCommMonoid E, ENormedMonoid E where
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖`
