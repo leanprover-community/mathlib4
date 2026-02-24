@@ -710,22 +710,21 @@ theorem IndepFun.of_self {Ω A B : Type*} [MeasurableSpace Ω]
     intro s hs
     have h_eq : μ (Y ⁻¹' s) = μ (Y ⁻¹' s) * μ (Y ⁻¹' s) := by
       simpa using hY s s hs hs
-    rcases eq_or_ne (μ (Y ⁻¹' s)) 0 with h | h
-    · exact Or.inl h
-    · right
-      rwa [← ENNReal.toReal_eq_toReal (measure_ne_top μ _)
-        (ENNReal.mul_ne_top (measure_ne_top μ _) (measure_ne_top μ _)),
-        ENNReal.toReal_mul, ← sq, sq_eq_self_iff_of_nonneg (by positivity),
-        ENNReal.toReal_eq_one_iff] at h_eq
+    by_cases h : μ (Y ⁻¹' s) = 0 <;> simp +decide [h] at h_eq ⊢
+    rw [← ENNReal.toReal_eq_toReal] at * <;> norm_num at *
+    · exact mul_left_cancel₀ h <| by linarith
+    · exact ENNReal.mul_ne_top (measure_ne_top _ _) (measure_ne_top _ _)
   intro s t hs ht
-  rcases hY_const t ht with h | h
-  · simp [measure_mono_null Set.inter_subset_right h]
-  · rw [h, mul_one]
-    congr 1
-    exact le_antisymm (measure_mono Set.inter_subset_left)
-      (by rwa [← measure_compl_eq_one_iff_eq_one ht] at h
-          exact measure_le_of_compl_le_of_le (measure_mono Set.inter_subset_left)
-            (by simp [measure_mono_null (Set.diff_subset) (by rwa [measure_compl_eq_zero_iff_eq_one ht])]))
+  cases hY_const t ht <;>
+    simp_all +decide [Set.inter_comm, measure_inter_add_diff]
+  · exact measure_mono_null (fun x => by aesop) ‹μ (Y ⁻¹' t) = 0›
+  · have hY_compl : μ (Y ⁻¹' tᶜ) = 0 := by
+      have := hY t tᶜ ht ht.compl
+      simp_all +decide [Set.preimage]
+      simp_all +decide [Set.inter_comm, Set.inter_def]
+    rw [measure_congr, ae_eq_set]
+    exact ⟨by rw [show (X ⁻¹' s ∩ Y ⁻¹' t) \ X ⁻¹' s = ∅ by ext; aesop]; simp +decide,
+      by exact measure_mono_null (fun x => by aesop) hY_compl⟩
 
 theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsFiniteMeasure μ] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
@@ -1126,6 +1125,3 @@ end Monoid
 
 end ProbabilityTheory
 
-Claude is active in this tab group
-Open chat
-Dismiss
