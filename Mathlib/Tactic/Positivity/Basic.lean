@@ -163,8 +163,8 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
   | .positive pa, .positive pb =>
-    let _a ← synthInstanceQ q(AddLeftStrictMono $α)
-    pure (.positive q(add_pos $pa $pb))
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.positive q(add_pos' $pa $pb))
   | .positive pa, .nonnegative pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
     pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))

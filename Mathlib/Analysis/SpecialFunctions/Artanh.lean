@@ -52,6 +52,7 @@ variable {x y : ℝ}
 def artanh (x : ℝ) :=
   log √((1 + x) / (1 - x))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem artanh_eq_half_log {x : ℝ} (hx : x ∈ Icc (-1) 1) :
     artanh x = 1 / 2 * log ((1 + x) / (1 - x)) := by
   rw [artanh, log_sqrt <| div_nonneg (by grind) (by grind), one_div_mul_eq_div]

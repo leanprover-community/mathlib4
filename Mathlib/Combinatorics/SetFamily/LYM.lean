@@ -129,8 +129,7 @@ def falling : Finset (Finset α) :=
 variable {𝒜 k} {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ #s = k := by
-  simp_rw [falling, mem_sup, mem_powersetCard]
-  aesop
+  grind [falling, mem_sup]
 
 variable (𝒜 k)
 
@@ -171,6 +170,7 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     rintro rfl
     exact notMem_erase _ _ (hst ha)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A bound on any top part of the sum in LYM in terms of the size of `falling k 𝒜`. -/
 theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
@@ -179,9 +179,9 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
       (falling (Fintype.card α - k) 𝒜).card / (Fintype.card α).choose (Fintype.card α - k) := by
   induction k with
   | zero =>
-    simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
-      zero_add, range_one, sum_singleton, tsub_zero,
-      choose_self, cast_one, div_one, cast_le]
+    simp only [cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
+      zero_add, range_one, sum_singleton,
+      choose_self, cast_one, div_one, cast_le, tsub_zero]
     exact card_le_card (slice_subset_falling _ _)
   | succ k ih =>
     rw [sum_range_succ, ← slice_union_shadow_falling_succ,

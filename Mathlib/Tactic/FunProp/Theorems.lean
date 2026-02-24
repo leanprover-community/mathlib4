@@ -29,32 +29,32 @@ namespace Meta.FunProp
 /-- Tag for one of the 5 basic lambda theorems, that also hold extra data for composition theorem
 -/
 inductive LambdaTheoremArgs
-  /-- Identity theorem e.g. `Continuous fun x => x` -/
+  /-- Identity theorem e.g. `Continuous fun x ↦ x` -/
   | id
-  /-- Constant theorem e.g. `Continuous fun x => y` -/
+  /-- Constant theorem e.g. `Continuous fun x ↦ y` -/
   | const
-  /-- Apply theorem e.g. `Continuous fun (f : (x : X) → Y x => f x)` -/
+  /-- Apply theorem e.g. `Continuous fun (f : (x : X) → Y x ↦ f x)` -/
   | apply
-  /-- Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x => f (g x)`
+  /-- Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x ↦ f (g x)`
 
   The numbers `fArgId` and `gArgId` store the argument index for `f` and `g` in the composition
   theorem. -/
   | comp (fArgId gArgId : Nat)
-  /-- Pi theorem e.g. `∀ y, Continuous (f · y) → Continuous fun x y => f x y` -/
+  /-- Pi theorem e.g. `∀ y, Continuous (f · y) → Continuous fun x y ↦ f x y` -/
   | pi
   deriving Inhabited, BEq, Repr, Hashable
 
 /-- Tag for one of the 5 basic lambda theorems -/
 inductive LambdaTheoremType
-  /-- Identity theorem e.g. `Continuous fun x => x` -/
+  /-- Identity theorem e.g. `Continuous fun x ↦ x` -/
   | id
-  /-- Constant theorem e.g. `Continuous fun x => y` -/
+  /-- Constant theorem e.g. `Continuous fun x ↦ y` -/
   | const
-  /-- Apply theorem e.g. `Continuous fun (f : (x : X) → Y x => f x)` -/
+  /-- Apply theorem e.g. `Continuous fun (f : (x : X) → Y x ↦ f x)` -/
   | apply
-  /-- Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x => f (g x)` -/
+  /-- Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x ↦ f (g x)` -/
   | comp
-  /-- Pi theorem e.g. `∀ y, Continuous (f · y) → Continuous fun x y => f x y` -/
+  /-- Pi theorem e.g. `∀ y, Continuous (f · y) → Continuous fun x y ↦ f x y` -/
   | pi
   deriving Inhabited, BEq, Repr, Hashable
 
@@ -139,12 +139,12 @@ def getLambdaTheorems (funPropName : Name) (type : LambdaTheoremType) :
 
 uncurried
 ```
-theorem Continuous_add : Continuous (fun x => x.1 + x.2)
+theorem Continuous_add : Continuous (fun x ↦ x.1 + x.2)
 ```
 
 compositional
 ```
-theorem Continuous_add (hf : Continuous f) (hg : Continuous g) : Continuous (fun x => (f x) + (g x))
+theorem Continuous_add (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ (f x) + (g x))
 ```
 -/
 inductive TheoremForm where
@@ -284,20 +284,20 @@ def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
 Examples:
 - lam
 ```
-  theorem Continuous_id : Continuous fun x => x
-  theorem Continuous_comp (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f (g x)
+  theorem Continuous_id : Continuous fun x ↦ x
+  theorem Continuous_comp (hf : Continuous f) (hg : Continuous g) : Continuous fun x ↦ f (g x)
 ```
 - function
 ```
-  theorem Continuous_add : Continuous (fun x => x.1 + x.2)
+  theorem Continuous_add : Continuous (fun x ↦ x.1 + x.2)
   theorem Continuous_add (hf : Continuous f) (hg : Continuous g) :
-      Continuous (fun x => (f x) + (g x))
+      Continuous (fun x ↦ (f x) + (g x))
 ```
 - mor - the head of function body has to be `DFunLike.coe`
 ```
   theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
       (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
-      ContDiff 𝕜 n fun x => (f x) (g x)
+      ContDiff 𝕜 n fun x ↦ (f x) (g x)
   theorem clm_linear {f : E →L[𝕜] F} : IsLinearMap 𝕜 f
 ```
 - transition - the conclusion has to be in the form `P f` where `f` is a free variable

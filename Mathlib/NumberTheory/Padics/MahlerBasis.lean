@@ -51,6 +51,7 @@ variable {p : ℕ} [hp : Fact p.Prime]
 
 namespace PadicInt
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Bound for norms of ascending Pochhammer symbols. -/
 lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
     ‖(ascPochhammer ℤ_[p] k).eval x‖ ≤ ‖(k.factorial : ℤ_[p])‖ := by
@@ -73,6 +74,7 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
 instance : IsAddTorsionFree ℤ_[p] where
   nsmul_right_injective _ := smul_right_injective ℤ_[p]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
@@ -83,6 +85,7 @@ noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
     PadicInt.coe_natCast, mul_div_cancel₀ _ (mod_cast k.factorial_ne_zero), Subtype.coe_inj,
     Polynomial.eval_eq_smeval, Polynomial.ascPochhammer_smeval_cast]
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma continuous_multichoose (k : ℕ) : Continuous (fun x : ℤ_[p] ↦ Ring.multichoose x k) := by
   simp only [Ring.multichoose, BinomialRing.multichoose, continuous_induced_rng]
@@ -194,6 +197,7 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
       apply hst
       rw [Nat.cast_pow, add_sub_cancel_left, norm_pow, norm_p, inv_pow, zpow_neg, zpow_natCast]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Explicit bound for the decay rate of the Mahler coefficients of a continuous function on `ℤ_[p]`.
 This will be used to prove Mahler's theorem.
@@ -217,6 +221,7 @@ lemma fwdDiff_iter_le_of_forall_le {f : C(ℤ_[p], E)} {s t : ℕ}
     · exact div_le_div_of_nonneg_left (norm_nonneg _)
         (mod_cast pow_pos hp.out.pos _) (mod_cast pow_le_pow_right₀ hp.out.one_le hk)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Key lemma for Mahler's theorem: for `f` a continuous function on `ℤ_[p]`, the sequence
 `n ↦ Δ^[n] f 0` tends to 0. See `PadicInt.fwdDiff_iter_le_of_forall_le` for an explicit
 estimate of the decay rate. -/
@@ -265,6 +270,7 @@ lemma norm_mahlerTerm : ‖(mahlerTerm a n : C(ℤ_[p], E))‖ = ‖a‖ := by
     refine le_trans ?_ <| (mahlerTerm a n).norm_coe_le_norm n
     simp [mahlerTerm_apply, mahler_natCast_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mahlerTerm_one : (mahlerTerm 1 n : C(ℤ_[p], ℤ_[p])) = mahler n := by
   ext; simp [mahlerTerm_apply]
@@ -280,6 +286,7 @@ noncomputable def mahlerSeries (a : ℕ → E) : C(ℤ_[p], E) := ∑' n, mahler
 
 variable [IsUltrametricDist E] [CompleteSpace E] {a : ℕ → E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A Mahler series whose coefficients tend to 0 is convergent. -/
 lemma hasSum_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) :
     HasSum (fun n ↦ mahlerTerm (a n) n) (mahlerSeries a : C(ℤ_[p], E)) := by

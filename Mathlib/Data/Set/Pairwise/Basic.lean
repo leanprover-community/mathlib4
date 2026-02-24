@@ -132,8 +132,7 @@ theorem pairwise_eq_iff_exists_eq [Nonempty ι] (s : Set α) (f : α → ι) :
 theorem pairwise_union :
     (s ∪ t).Pairwise r ↔
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
-  simp only [Set.Pairwise, mem_union, or_imp, forall_and]
-  aesop
+  grind [Set.Pairwise]
 
 theorem pairwise_union_of_symmetric (hr : Symmetric r) :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b :=
@@ -378,6 +377,7 @@ theorem pairwiseDisjoint_image_left_iff {f : α → β → γ} {s : Set α} {t :
     rintro _ ⟨⟨a, ha, hab⟩, b, hb, rfl⟩
     exact h (congr_arg Prod.snd <| ht (mk_mem_prod ha hx) (mk_mem_prod hb hy) hab)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_ne_mem_inter_of_not_pairwiseDisjoint
     {f : ι → Set α} (h : ¬ s.PairwiseDisjoint f) :
     ∃ i ∈ s, ∃ j ∈ s, i ≠ j ∧ ∃ x : α, x ∈ f i ∩ f j := by
@@ -396,6 +396,11 @@ lemma exists_lt_mem_inter_of_not_pairwiseDisjoint [LinearOrder ι]
   rcases lt_or_lt_iff_ne.mpr hne with h_lt | h_lt
   · exact ⟨i, hi, j, hj, h_lt, x, hx₁, hx₂⟩
   · exact ⟨j, hj, i, hi, h_lt, x, hx₂, hx₁⟩
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp] lemma pairwiseDisjoint_singleton_iff_injOn {f : ι → α} :
+    s.PairwiseDisjoint (fun i ↦ ({f i} : Set α)) ↔ s.InjOn f := by
+  simp [PairwiseDisjoint, InjOn, Set.Pairwise, not_imp_not]
 
 end Set
 
@@ -420,3 +425,11 @@ lemma subsingleton_setOf_mem_iff_pairwise_disjoint {f : ι → Set α} :
     (∀ a, {i | a ∈ f i}.Subsingleton) ↔ Pairwise (Disjoint on f) :=
   ⟨fun h _ _ hij ↦ disjoint_left.2 fun a hi hj ↦ hij (h a hi hj),
    fun h _ _ hx _ hy ↦ by_contra fun hne ↦ disjoint_left.1 (h hne) hx hy⟩
+
+/-- Simp normal form of `pairwise_ne_iff_injective`. -/
+@[simp] lemma pairwise_not_eq_iff_injective {f : ι → α} :
+    Pairwise (fun i j ↦ ¬ f i = f j) ↔ f.Injective := by
+  simp [Pairwise, Function.Injective, not_imp_not]
+
+lemma pairwise_ne_iff_injective {f : ι → α} : Pairwise (fun i j ↦ f i ≠ f j) ↔ f.Injective := by
+  simp

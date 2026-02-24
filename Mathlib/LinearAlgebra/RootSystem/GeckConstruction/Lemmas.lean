@@ -57,7 +57,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   have hki : P.pairingIn ℤ i k ≤ -2 := by
     suffices P.pairingIn ℤ l k = 2 + P.pairingIn ℤ i k - P.pairingIn ℤ j k by linarith
     apply algebraMap_injective ℤ R
-    simp only [algebraMap_pairingIn, map_sub, map_add, map_ofNat]
+    simp only [algebraMap_pairingIn, map_sub, map_add]
     simpa using (P.coroot' k : M →ₗ[R] R).congr_arg hl
   replace hki : P.pairingIn ℤ k i = -1 := by
     replace hk' : α i ≠ - α k := by
@@ -129,7 +129,7 @@ include hi hj hij h₁ h₂ h₃
 
 lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   rw [← P.not_isG2_iff_isNotG2]
   intro contra
   obtain ⟨n, h₃⟩ := h₃
@@ -198,6 +198,7 @@ lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
   simp only [mem_insert_iff, mem_singleton_iff] at h₀ h₁ h₂ h₃ hA
   rcases hA with hA | hA | hA | hA | hA <;> rw [hA] at h₀ h₁ h₂ h₃ <;> lia
 
+set_option backward.isDefEq.respectTransparency false in
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
     (hki : P.pairingIn ℤ k i = 0) :
@@ -211,7 +212,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   /- Setup some typeclasses and name the 6th root `n`. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
   letI := P.indexNeg
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   obtain ⟨n, hn⟩ := h₃
   /- Establish basic relationships about roots and their sums / differences. -/
   have hnk_ne : n ≠ k := by rintro rfl; simp [sub_eq_zero, hij, add_sub_assoc] at hn
@@ -260,6 +261,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   simp only [P.chainBotCoeff_if_one_zero, hik_mem, him_mem, hjl_mem, hjk_mem]
   simp [key₁, key₂, key₃, key₄]
 
+set_option backward.isDefEq.respectTransparency false in
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
 open RootPositiveForm in
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
@@ -273,7 +275,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
   letI := P.indexNeg
   /- Setup some typeclasses. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   /- Establish basic relationships about roots and their sums / differences. -/
   have hkj_ne : k ≠ j ∧ P.root k ≠ -P.root j := (IsReduced.linearIndependent_iff _).mp <|
     P.linearIndependent_of_sub_mem_range_root <| h₂ ▸ mem_range_self m

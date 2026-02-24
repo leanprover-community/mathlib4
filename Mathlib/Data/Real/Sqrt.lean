@@ -125,13 +125,13 @@ theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) := by unfold sqrt; fu
 @[simp]
 lemma map_sqrt_atTop : map (√·) atTop = atTop := by
   unfold sqrt
-  change map (NNReal.toReal ∘ NNReal.sqrt ∘ Real.toNNReal) atTop = atTop
+  simp_rw [← Function.comp_def]
   simp [← map_map]
 
 @[simp]
 lemma comap_sqrt_atTop : comap (√·) atTop = atTop := by
   unfold sqrt
-  change comap (NNReal.toReal ∘ NNReal.sqrt ∘ Real.toNNReal) atTop = atTop
+  simp_rw [← Function.comp_def]
   simp [← comap_comap]
 
 lemma tendsto_sqrt_atTop : Tendsto (√·) atTop atTop := map_sqrt_atTop.le
@@ -425,6 +425,11 @@ theorem sqrt_one_add_le (h : -1 ≤ x) : √(1 + x) ≤ 1 + x / 2 := by
   calc 1 + x
     _ ≤ 1 + x + (x / 2) ^ 2 := le_add_of_nonneg_right <| sq_nonneg _
     _ = _ := by ring
+
+theorem sqrt_prod {ι : Type*} (s : Finset ι) {x : ι → ℝ} (hx : ∀ i ∈ s, 0 ≤ x i) :
+    √(∏ i ∈ s, x i) = ∏ i ∈ s, √(x i) := by
+  convert congr_arg NNReal.toReal <| map_prod NNReal.sqrtHom (Real.toNNReal ∘ x) s <;>
+    simp +contextual [-map_prod, NNReal.sqrtHom, hx]
 
 end Real
 

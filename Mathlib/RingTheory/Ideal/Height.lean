@@ -6,8 +6,9 @@ Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 module
 
 public import Mathlib.Algebra.Module.SpanRank
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # The Height of an Ideal
@@ -74,6 +75,7 @@ lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [I.IsPrime] :
   rw [← I.height_eq_primeHeight]
   exact Ideal.height_lt_top ‹I.IsPrime›.ne_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.exists_ltSeries_length_eq_height (p : Ideal R) [p.IsPrime] [p.FiniteHeight] :
     ∃ (l : LTSeries (PrimeSpectrum R)),
       RelSeries.last l = ⟨p, inferInstance⟩ ∧ l.length = p.height := by
@@ -271,6 +273,7 @@ private lemma RingEquiv.height_comap_of_isPrime {S : Type*} [CommRing S] (e : R 
   have := p.map_comap_of_equiv e.symm
   congr
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma RingEquiv.height_comap {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal S) :
     (I.comap e).height = I.height := by
@@ -346,7 +349,7 @@ lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R 
   let P := p.map (algebraMap R S)
   have : P.IsPrime := isPrime_of_isPrime_disjoint M S p ‹_› h
   have := isLocalization_isLocalization_atPrime_isLocalization (M := M) (Localization.AtPrime P) P
-  simp_rw [P, comap_map_of_isPrime_disjoint M S p _ h] at this
+  simp_rw [P, comap_map_of_isPrime_disjoint M S _ h] at this
   have := ringKrullDim_eq_of_ringEquiv (IsLocalization.algEquiv p.primeCompl
     (Localization.AtPrime P) (Localization.AtPrime p)).toRingEquiv
   rw [AtPrime.ringKrullDim_eq_height P, AtPrime.ringKrullDim_eq_height p] at this

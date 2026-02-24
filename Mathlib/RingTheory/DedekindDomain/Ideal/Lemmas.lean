@@ -43,6 +43,7 @@ dedekind domain, dedekind ring
 
 variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
 
+open Module
 open scoped nonZeroDivisors Polynomial
 
 section Inverse
@@ -89,7 +90,8 @@ theorem Ideal.prime_of_isPrime {P : Ideal A} (hP : P ≠ ⊥) (h : IsPrime P) : 
   simpa only [Ideal.dvd_iff_le] using h.mul_le.mp (Ideal.le_of_dvd hIJ)
 
 theorem Ideal.prime_of_mem_primesOver {R : Type*} [CommRing R] [Algebra R A] {p : Ideal R}
-    [NoZeroSMulDivisors R A] (hp : p ≠ ⊥) {P : Ideal A} (hP : P ∈ primesOver p A) : Prime P :=
+    [IsDomain R] [IsTorsionFree R A] (hp : p ≠ ⊥) {P : Ideal A} (hP : P ∈ primesOver p A) :
+    Prime P :=
   prime_of_isPrime (ne_bot_of_mem_primesOver hp hP) hP.1
 
 /-- In a Dedekind domain, the (nonzero) prime elements of the monoid with zero `Ideal A`
@@ -130,7 +132,7 @@ nonrec theorem Ideal.mem_normalizedFactors_iff {p I : Ideal A} (hI : I ≠ ⊥) 
 variable (A) in
 open UniqueFactorizationMonoid in
 theorem Ideal.mem_primesOver_iff_mem_normalizedFactors {p : Ideal R} [h : p.IsMaximal]
-    [Algebra R A] [NoZeroSMulDivisors R A] (hp : p ≠ ⊥) {P : Ideal A} :
+    [Algebra R A] [IsDomain R] [IsTorsionFree R A] (hp : p ≠ ⊥) {P : Ideal A} :
     P ∈ p.primesOver A ↔ P ∈ normalizedFactors (Ideal.map (algebraMap R A) p) := by
   rw [primesOver, Set.mem_setOf_eq, mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hp),
     liesOver_iff, under_def, and_congr_right_iff, map_le_iff_le_comap]
@@ -274,6 +276,7 @@ and the lcm is their infimum, and use this to instantiate `NormalizedGCDMonoid (
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
   letI := UniqueFactorizationMonoid.toNormalizedGCDMonoid (Ideal A)
@@ -574,6 +577,7 @@ theorem idealFactorsFunOfQuotHom_comp {f : R ⧸ I →+* A ⧸ J} {g : A ⧸ J �
 
 variable [IsDedekindDomain R] (f : R ⧸ I ≃+* A ⧸ J)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between ideals of `R` dividing `I` and the ideals of `A` dividing `J` induced by
   an isomorphism `f : R/I ≅ A/J`. -/
 def idealFactorsEquivOfQuotEquiv : { p : Ideal R | p ∣ I } ≃o { p : Ideal A | p ∣ J } := by
@@ -616,6 +620,7 @@ theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFact
   rw [Subtype.coe_mk, Subtype.coe_mk]
   apply idealFactorsEquivOfQuotEquiv_is_dvd_iso f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between the sets of normalized factors of I and J induced by a ring
 isomorphism `f : R/I ≅ A/J`. -/
 def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
@@ -1000,8 +1005,9 @@ noncomputable abbrev primesOverFinset {A : Type*} [CommRing A] (p : Ideal A) (B 
   (factors (p.map (algebraMap A B))).toFinset
 
 variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMaximal]
-  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
+  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [IsDomain A] [IsTorsionFree A B]
 
+set_option backward.isDefEq.respectTransparency false in
 include hpb in
 theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
   ext
@@ -1015,6 +1021,7 @@ variable {R} (A) in
 theorem IsLocalRing.primesOverFinset_eq [IsLocalRing A] [IsDedekindDomain A]
     [Algebra R A] [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
     primesOverFinset p A = {IsLocalRing.maximalIdeal A} := by
+  have : IsDomain R := .of_faithfulSMul R A
   rw [← Finset.coe_eq_singleton, coe_primesOverFinset hp0, IsLocalRing.primesOver_eq A hp0]
 
 namespace IsDedekindDomain.HeightOneSpectrum

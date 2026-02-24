@@ -285,6 +285,7 @@ theorem list_prod_ofFn_of_eq_dProd (n : ℕ) (fι : Fin n → ι) (fA : ∀ a, A
     (List.ofFn fun a => of A (fι a) (fA a)).prod = of A _ ((List.finRange n).dProd fι fA) := by
   rw [List.ofFn_eq_map, ofList_dProd]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_eq_dfinsuppSum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a'
       = a.sum fun _ ai => a'.sum fun _ aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by
@@ -354,7 +355,7 @@ instance ring : Ring (⨁ i, A i) :=
     toIntCast.intCast := fun z => of A 0 <| (GRing.intCast z)
     intCast_ofNat := fun _ => congrArg (of A 0) <| GRing.intCast_ofNat _
     intCast_negSucc := fun _ =>
-      (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _}
+      (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _ }
 
 end Ring
 

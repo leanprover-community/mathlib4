@@ -6,7 +6,7 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Algebra.Star.Module
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 /-!
 # The star structure on tensor products

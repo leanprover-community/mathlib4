@@ -23,7 +23,7 @@ universe v₁ u₁
 namespace CategoryTheory.Paths
 
 section
-variable (V : Type u₁) [Quiver.{v₁ + 1} V]
+variable (V : Type u₁) [Quiver.{v₁} V]
 
 /-- A reformulation of `CategoryTheory.Paths.induction` in terms of `MorphismProperty`. -/
 lemma morphismProperty_eq_top
@@ -54,7 +54,7 @@ lemma morphismProperty_eq_top_of_isMultiplicative (P : MorphismProperty (Paths V
 end
 section
 
-variable {C : Type*} [Category* C] {V : Type u₁} [Quiver.{v₁ + 1} V]
+variable {C : Type*} [Category* C] {V : Type u₁} [Quiver.{v₁} V]
 
 /-- A natural transformation between `F G : Paths V ⥤ C` is defined by its components and
 its unary naturality squares. -/

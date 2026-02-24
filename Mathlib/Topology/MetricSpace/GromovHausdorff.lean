@@ -136,6 +136,7 @@ theorem GHSpace.toGHSpace_rep (p : GHSpace) : toGHSpace p.Rep = p := by
   rw [← eq_toGHSpace]
   exact Quot.out_eq p
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two nonempty compact spaces have the same image in `GHSpace` if and only if they are
 isometric. -/
 theorem toGHSpace_eq_toGHSpace_iff_isometryEquiv {X : Type u} [MetricSpace X] [CompactSpace X]
@@ -757,7 +758,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       use ∅, 0, bot_le, this.some
       exact fun hp' => (hp hp').elim
     · rcases hcov _ (Set.not_notMem.1 hp) n with ⟨s, ⟨scard, scover⟩⟩
-      rcases Cardinal.lt_aleph0.1 (lt_of_le_of_lt scard (Cardinal.nat_lt_aleph0 _)) with ⟨N, hN⟩
+      rcases Cardinal.lt_aleph0.1 (scard.trans_lt Cardinal.natCast_lt_aleph0) with ⟨N, hN⟩
       rw [hN, Nat.cast_le] at scard
       have : #s = #(Fin N) := by rw [hN, Cardinal.mk_fin]
       obtain ⟨E⟩ := Quotient.exact this
@@ -929,6 +930,7 @@ def auxGluing (n : ℕ) : AuxGluingStruct (X n) :=
         toGlueR Y.isom (isometry_optimalGHInjl (X n) (X (n + 1))) ∘ optimalGHInjr (X n) (X (n + 1))
       isom := (toGlueR_isometry _ _).comp (isometry_optimalGHInjr (X n) (X (n + 1))) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Gromov-Hausdorff space is complete. -/
 instance : CompleteSpace GHSpace := by
   set d := fun n : ℕ ↦ ((1 : ℝ) / 2) ^ n

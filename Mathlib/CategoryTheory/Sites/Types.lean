@@ -119,7 +119,7 @@ noncomputable def evalEquiv (S : Type uᵒᵖ ⥤ Type u)
     (hs : Presheaf.IsSheaf typesGrothendieckTopology S)
     (α : Type u) : S.obj (op α) ≃ (α → S.obj (op PUnit)) where
   toFun := eval S α
-  invFun := typesGlue S ((isSheaf_iff_isSheaf_of_type _ _ ).1 hs) α
+  invFun := typesGlue S ((isSheaf_iff_isSheaf_of_type _ _).1 hs) α
   left_inv := typesGlue_eval
   right_inv := eval_typesGlue
 
@@ -149,6 +149,7 @@ theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology (Type u)) (f : S�
     eval S₂.1 α (f.val.app (op α) s) x = f.val.app (op PUnit) (eval S₁.1 α s x) :=
   (congr_fun (f.val.naturality (↾fun _ : PUnit => x).op) s).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `yoneda'` induces an equivalence of categories between `Type u` and
 `Sheaf typesGrothendieckTopology (Type u)`. -/
 @[simps!]
