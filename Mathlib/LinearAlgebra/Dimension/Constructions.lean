@@ -499,7 +499,7 @@ lemma Pi.dim_spanSubset [Finite ι] [Nontrivial R] {s : Set ι} :
     Module.finrank R (Pi.spanSubset R s) = s.ncard := by
   classical
   have := Fintype.ofFinite ι
-  rw [Pi.spanSubset, finrank_span_set_eq_card <| (Pi.basisFun R ι).linearIndepOn.id_image,
+  rw [Pi.spanSubset, finrank_span_set_eq_card <| (Pi.basisFun R ι).linearIndepOn _ |>.id_image,
     Set.toFinset_card, Fintype.card_eq_nat_card, Nat.card_coe_set_eq]
   exact Set.ncard_image_of_injective s <| (Pi.basisFun R ι).injective
 

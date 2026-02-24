@@ -14,7 +14,7 @@ public import Mathlib.LinearAlgebra.Quotient.Bilinear
 
 We define the radical of a quadratic form. This is a standard construction if 2 is invertible
 in the coefficient ring, but is more fiddly otherwise. We follow the account in
-Chapter II, §7 of [elman-karpenko-merkurjev-2008][].
+Chapter II, §7 of [Elman-Karpenko-Merkurjev][elman-karpenko-merkurjev-2008].
 -/
 
 open Finset QuadraticMap
@@ -31,7 +31,7 @@ variable {R M M' P : Type*} [AddCommGroup M] [AddCommGroup M'] [AddCommGroup P]
 This is the largest submodule `N` such that `Q` lifts to a quadratic form on `M ⧸ N`; see
 `Submodule.le_radical_iff` for this characterization.
 
-See also Elman-Karpenko-Merkurjev, Chapter II, §7. -/
+See also [Elman-Karpenko-Merkurjev][elman-karpenko-merkurjev-2008], Chapter II, §7. -/
 def radical : Submodule R M where
   carrier := {x : M | Q x = 0 ∧ QuadraticMap.polarBilin Q x = 0}
   zero_mem' := by simp
@@ -53,10 +53,8 @@ lemma mem_radical_iff' {m : M} :
 /-- The radical of a quadratic form is preserved by isometry equivalences. -/
 @[simp] lemma IsometryEquiv.map_radical {Q' : QuadraticMap R M' P}
     (e : IsometryEquiv Q Q') : Q.radical.map e.toLinearMap = Q'.radical := by
-  ext x
-  simp only [Submodule.mem_map_equiv, coe_symm_toLinearEquiv, coe_toLinearEquiv,
-    QuadraticMap.mem_radical_iff', ← e.map_app, e.apply_symm_apply, map_add,
-    e.toEquiv.forall_congr_left, LinearEquiv.coe_symm_toEquiv]
+  ext
+  simp [mem_radical_iff', ← e.map_app, -map_app, e.toEquiv.forall_congr_left]
 
 /-- The rank of the radical of a quadratic map is invariant under equivalences. -/
 lemma Equivalent.rank_radical_eq {Q' : QuadraticMap R M' P} (h : Equivalent Q Q') :
@@ -88,8 +86,10 @@ lemma lift_mk {N : Submodule R M} (hN : N ≤ Q.radical) (m : M) :
     Q.lift N hN (Submodule.Quotient.mk m) = Q m :=
   rfl
 
-/-- Universal property of the radical of a quadratic form: `Q.radical` is the largest subspace
-`N` such that `Q` factors through a quadratic form on `M ⧸ N`. -/
+/--
+Universal property of the radical of a quadratic form:
+`Q.radical` is the largest subspace `N` such that
+`Q` factors through a quadratic form on `M ⧸ N`. -/
 lemma le_radical_iff {N : Submodule R M} :
     N ≤ Q.radical ↔ ∃ Q' : QuadraticMap R (M ⧸ N) P, Q'.comp N.mkQ = Q := by
   constructor
@@ -106,9 +106,11 @@ lemma radical_le_ker_polarBilin : Q.radical ≤ Q.polarBilin.ker := by
   simp +contextual [mem_radical_iff', LinearMap.ext_iff, QuadraticMap.polar]
 
 /--
-A quadratic map is said to be **nondegenerate** if its radical is 0, and the radical of
-its associated polar form has rank ≤ 1. (The second condition is automatic if 2 is invertible in
-`R`, but not in general.) See Elman-Karpenko-Merkurjev, Chapter II, §7.
+A quadratic map is said to be **nondegenerate** if its radical is 0,
+and the radical of its associated polar form has rank ≤ 1.
+(The second condition is automatic if 2 is invertible in `R`, but not in general.)
+
+See [Elman-Karpenko-Merkurjev][elman-karpenko-merkurjev-2008], Chapter II, §7.
 -/
 structure Nondegenerate : Prop where
   radical_eq_bot : Q.radical = ⊥
@@ -118,8 +120,9 @@ section InvertibleTwo
 
 variable [Invertible (2 : R)]
 
-/-- If `2` is invertible in the coefficient ring, the radical of a quadratic map is the kernel of its
-polar bilinear map. -/
+/--
+If `2` is invertible in the coefficient ring,
+the radical of a quadratic map is the kernel of its polar bilinear map. -/
 lemma radical_eq_ker_polarBilin : Q.radical = Q.polarBilin.ker := by
   ext m
   simp only [mem_radical_iff', LinearMap.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
@@ -130,15 +133,19 @@ lemma radical_eq_ker_polarBilin : Q.radical = Q.polarBilin.ker := by
   rwa [← two_smul R, QuadraticMap.map_smul, sub_sub, ← two_smul R, mul_smul, ← smul_sub,
     (isUnit_of_invertible 2).smul_eq_zero, two_smul, add_sub_cancel_right] at h
 
-/-- If `2` is invertible in the coefficient ring, the radical of a quadratic map is the kernel of its
-associated bilinear map. -/
+/-- If `2` is invertible in the coefficient ring,
+the radical of a quadratic map is the kernel of its associated bilinear map. -/
 lemma radical_eq_ker_associated : Q.radical = (QuadraticMap.associated Q).ker := by
   rw [radical_eq_ker_polarBilin]
   ext m
   simp [LinearMap.ext_iff, QuadraticMap.polar, -smul_eq_mul, invOf_smul_eq_iff]
 
-/-- In characteristic `≠ 2`, a quadratic map is nondegenerate iff its radical is 0. (Use
-`QuadraticMap.Nondegenerate.radical_eq_bot` for the one-way implication in all characteristics.) -/
+/--
+If `2` is invertible in the coefficient ring,
+a quadratic map is nondegenerate iff its radical is 0.
+(Use `QuadraticMap.Nondegenerate.radical_eq_bot`
+for the one-way implication in all characteristics.)
+-/
 lemma nondegenerate_iff_radical_eq_bot :
     Q.Nondegenerate ↔ Q.radical = ⊥ := by
   refine ⟨Nondegenerate.radical_eq_bot, fun h ↦ ⟨h, ?_⟩⟩
@@ -146,16 +153,18 @@ lemma nondegenerate_iff_radical_eq_bot :
   nontriviality R
   simp only [rank_subsingleton', zero_le]
 
-/-- In characteristic different from `2`, a quadratic map is nondegenerate iff its associated bilinear map
-is nondegenerate. -/
+/-- If `2` is invertible in the coefficient ring,
+a quadratic map is nondegenerate
+iff its associated bilinear map is nondegenerate. -/
 lemma nondegenerate_associated_iff :
     (QuadraticMap.associated Q).Nondegenerate ↔ Q.Nondegenerate := by
   rw [nondegenerate_iff_radical_eq_bot, radical_eq_ker_associated,
     LinearMap.IsRefl.nondegenerate_iff_separatingLeft, LinearMap.separatingLeft_iff_ker_eq_bot]
   exact fun x y ↦ (congr_arg (· x y) (associated_flip R Q)).trans
 
-/-- In characteristic `≠ 2`, a quadratic map is nondegenerate iff its polar bilinear map
-is nondegenerate. -/
+/-- If `2` is invertible in the coefficient ring,
+a quadratic map is nondegenerate
+iff its polar bilinear map is nondegenerate. -/
 lemma nondegenerate_polar_iff :
     (QuadraticMap.polarBilin Q).Nondegenerate ↔ Q.Nondegenerate := by
   rw [nondegenerate_iff_radical_eq_bot, radical_eq_ker_polarBilin,
@@ -169,8 +178,8 @@ end QuadraticMap
 namespace QuadraticForm
 variable {𝕜 ι : Type*} [Field 𝕜] [NeZero (2 : 𝕜)] [Fintype ι] {w : ι → 𝕜}
 
-/-- Over a field of characteristic `≠ 2`, the radical of a weighted-sum-of-squares quadratic form
-is the number of zero weights. -/
+/-- Over a field of characteristic different from `2`,
+the radical of a weighted-sum-of-squares quadratic form is the number of zero weights. -/
 lemma radical_weightedSumSquares :
     radical (weightedSumSquares 𝕜 w) = Pi.spanSubset 𝕜 {i | w i = 0} := by
   classical
