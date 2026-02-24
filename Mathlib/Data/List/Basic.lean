@@ -865,6 +865,7 @@ section FoldlEqFoldr
 -- foldl and foldr coincide when f is commutative and associative
 variable {f : α → α → α}
 
+@[deprecated "Deprecated without replacement." (since := "2026-02-24")]
 theorem foldl1_eq_foldr1 [hassoc : Std.Associative f] :
     ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
   | _, _, nil => rfl
@@ -872,6 +873,7 @@ theorem foldl1_eq_foldr1 [hassoc : Std.Associative f] :
     simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l]
     rw [hassoc.assoc]
 
+@[deprecated "Deprecated without replacement." (since := "2026-02-24")]
 theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Associative f] :
     ∀ a b l, foldl f a (b :: l) = f b (foldl f a l)
   | a, b, nil => hcomm.comm a b
@@ -880,42 +882,7 @@ theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Asso
     have : RightCommutative f := inferInstance
     rw [← foldl_eq_of_comm_of_assoc .., this.right_comm, foldl_cons]
 
-theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
-    ∀ a l, foldl f a l = foldr f a l
-  | _, nil => rfl
-  | a, b :: l => by
-    simp only [foldr_cons, foldl_eq_of_comm_of_assoc]
-    rw [foldl_eq_foldr a l]
-
 end FoldlEqFoldr
-
-section FoldlEqFoldr'
-
-variable {f : α → β → α}
-variable (hf : ∀ a b c, f (f a b) c = f (f a c) b)
-
-include hf
-
-theorem foldl_eq_of_comm' : ∀ a b l, foldl f a (b :: l) = f (foldl f a l) b
-  | _, _, [] => rfl
-  | a, b, c :: l => by rw [foldl, foldl, foldl, ← foldl_eq_of_comm' .., foldl, hf]
-
-theorem foldl_eq_foldr' : ∀ a l, foldl f a l = foldr (flip f) a l
-  | _, [] => rfl
-  | a, b :: l => by rw [foldl_eq_of_comm' hf, foldr, foldl_eq_foldr' ..]; rfl
-
-end FoldlEqFoldr'
-
-section FoldlEqFoldr'
-
-variable {f : α → β → β}
-
-theorem foldr_eq_of_comm' (hf : ∀ a b c, f a (f b c) = f b (f a c)) :
-    ∀ a b l, foldr f a (b :: l) = foldr f (f b a) l
-  | _, _, [] => rfl
-  | a, b, c :: l => by rw [foldr, foldr, foldr, hf, ← foldr_eq_of_comm' hf ..]; rfl
-
-end FoldlEqFoldr'
 
 section
 
