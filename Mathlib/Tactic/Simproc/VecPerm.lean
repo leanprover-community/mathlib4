@@ -77,7 +77,7 @@ def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
         let idxQ := mkNatLitQ idx
         let idxQNew ← mkFin idxQ n
         let outIdxQ := q(($perm $idxQNew : Nat))
-        let outIdxExpr := (← Lean.Meta.Simp.simp outIdxQ).expr
+        let outIdxExpr ← Lean.Meta.Simp.dsimp outIdxQ
         let some outIdx ← Lean.Meta.getNatValue? outIdxExpr | return none
         out := out ++ [outIdx]
       return out
