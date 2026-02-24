@@ -28,8 +28,7 @@ lemma prod_nonneg {s : List R} (h : ∀ a ∈ s, 0 ≤ a) : 0 ≤ s.prod := by
     simp only [mem_cons, forall_eq_or_imp] at h
     exact mul_nonneg h.1 (hind h.2)
 
-
-lemma one_le_prod {s : List R} (h : ∀ a ∈ s, 1 ≤ a) : 1 ≤ s.prod := by
+lemma one_le_prod₀ {s : List R} (h : ∀ a ∈ s, 1 ≤ a) : 1 ≤ s.prod := by
   induction s with
   | nil => simp
   | cons head tail hind =>
