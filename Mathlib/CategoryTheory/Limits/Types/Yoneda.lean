@@ -73,7 +73,7 @@ end
 variable {J : Type v} [SmallCategory J] {C : Type u} [Category.{v} C]
 
 macro (name := aesop_concrete_cat) "aesop_concrete_cat" : tactic => do
-  `(tactic| (intros; ext; simp; simp [← CategoryTheory.comp_apply]; aesop_cat))
+  `(tactic| (intros; ext; simp; simp [← CategoryTheory.comp_apply]; cat_disch))
 
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`. -/
 @[simps]
