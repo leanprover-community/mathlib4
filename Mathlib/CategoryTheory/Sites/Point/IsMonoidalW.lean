@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 open Limits GrothendieckTopology MonoidalCategory
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
   {J : GrothendieckTopology C}
   {P : ObjectProperty (Point.{w} J)} (hP : P.IsConservativeFamilyOfPoints)
   (A : Type u') [Category.{v'} A] [MonoidalCategory A] [HasColimitsOfSize.{w, w} A]
