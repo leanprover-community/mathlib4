@@ -191,7 +191,7 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
 
 end Octahedron
 
-/-- An octahedron₁ is a type of datum whose existence follows from
+/-- An octahedron' is a type of datum whose existence follows from
 the octahedron axiom (TR 4). It is a rotated version of an octahedron.
 The input is given by the following diagram:
 ```
@@ -207,7 +207,7 @@ The input is given by the following diagram:
            Z₂₃      Z₁₂⟦1⟧
 ```
 where `u₁₂ ≫ u₂₃ = u₁₃` and `(v₁₂,u₁₂,w₁₂), (v₁₃,u₁₃,w₁₃)` and `(v₂₃,u₂₃,w₂₃)`
-are distinguished triangles.. An `Octahedron₁` for this data consists of
+are distinguished triangles.. An `Octahedron'` for this data consists of
 maps `m₁ : Z₁₂ ⟶ Z₁₃` and `m₃ : Z₁₃ ⟶ Z₂₃` such that `(m₁, m₃, v₂₃ ≫ w₁₂)` is
 a distinguished triangle and the completed diagram commutes:
 ```
