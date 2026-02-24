@@ -622,7 +622,24 @@ theorem lintegral_infinitePi_of_piFinset [DecidableEq ι] {s : Finset ι}
   · exact mf.comp (measurable_updateFinset.mono le_rfl (piFinset.le s))
 
 end Integral
+section Set
+
+variable {ι : Type*} (μ : ι → Measure Prop)
+
+noncomputable def independent_set_measure : Measure (Set ι) :=
+  (infinitePi μ).comap (fun s i ↦ i ∈ s)
+
+theorem independent_set_measure_eq_map :
+    independent_set_measure μ = (infinitePi μ).map (fun p ↦ {i | p i}) :=
+  MeasurableEquiv.setOf.comap_symm
+
+instance [∀ i, IsProbabilityMeasure (μ i)] : IsProbabilityMeasure (independent_set_measure μ) := by
+  rw [independent_set_measure_eq_map, isProbabilityMeasure_map_iff (by fun_prop)]
+  infer_instance
+
+end Set
 
 end InfinitePi
+
 
 end MeasureTheory

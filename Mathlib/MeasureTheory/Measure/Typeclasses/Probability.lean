@@ -113,6 +113,11 @@ instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν
     IsProbabilityMeasure (toNNReal p • μ + toNNReal (σ p) • ν) where
   measure_univ := by simp [← add_smul]
 
+open unitInterval in
+instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {p : I} :
+    IsProbabilityMeasure (ENNReal.ofReal p • μ + ENNReal.ofReal (σ p) • ν) where
+  measure_univ := by simp
+
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
 @[simp] lemma probReal_univ : μ.real univ = 1 := by simp [Measure.real]
