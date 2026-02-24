@@ -1,9 +1,9 @@
 /-
-Copyright (c) 2026 Christopher J. R. Lloyd and George H. Seelinger. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christopher J. R. Lloyd, George H. Seelinger
--/
-import Mathlib.Algebra.BigOperators.Fin
+  Copyright (c) 2026 Christopher J. R. Lloyd and George H. Seelinger. All rights reserved.
+  Released under Apache 2.0 license as described in the file LICENSE.
+  Authors: Christopher J. R. Lloyd, George H. Seelinger
+  -/
+  import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Defs
@@ -43,14 +43,14 @@ square; this theorem is formalized as
 
 ## Main definitions
 
-- `LatinRectangle`: 
+- `LatinRectangle`:
 - `LatinSquare`:
 - `LREquiv`:
 
 ## Main results
 
 - `group_to_cayley_table`: every finite group `G` yields a `LatinSquare G G`.
-- `latin_rectangle_extends_one_row`: a (non-square) `LatinRectangle` extends to a `LatinRectangle` 
+- `latin_rectangle_extends_one_row`: a (non-square) `LatinRectangle` extends to a `LatinRectangle`
    with one more row. This is an application of Hall's Marriage Theorem, `hallMatchingsOn.nonempty`.
 - `latin_rectangle_extends_to_latin_square`:  a `LatinRectangle` extends to a `LatinSquare`.
 
@@ -144,7 +144,7 @@ class LatinSquare (n : Type*) (α : Type*) [Fintype n] [Fintype α] [DecidableEq
 
   m_le_n := by rfl
 
-example : LatinRectangle (Fin 5) (Fin 5) (Fin 5) := LatinRectangle.mk (fun x y ↦ ((x + y) : Fin 5)) 
+example : LatinRectangle (Fin 5) (Fin 5) (Fin 5) := LatinRectangle.mk (fun x y ↦ ((x + y) : Fin 5))
   (by decide) (by decide) (by decide)
 
 @[coe]
@@ -214,14 +214,13 @@ def group_to_cayley_table (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
 
 -- For example, addGroup_to_cayley_table (ZMod.finEquiv 5).toEquiv
 
-instance nonempty {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
-  addGroup_to_cayley_table (ZMod n)
 
 -- #check Matrix.transpose (addGroup_to_cayley_table (ZMod 5) : Matrix (ZMod 5) (ZMod 5) (ZMod 5))
 
 section Equivalence
 
-def induced_latin_rectangle
+/-- Given relabeling maps for the rows, columns, and symbols, produce the relabeled Latin rectangle.-/
+def relabel_latin_rectangle
   (f : m ≃ m')
   (g : n ≃ n')
   (h : α ≃ β)
@@ -275,12 +274,18 @@ def induced_latin_rectangle
   }
 
 structure LREquiv (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) where
+  /-- A row relabeling. -/
   (f : m ≃ m')
+  /-- A column relabeling. -/
   (g : n ≃ n')
+  /-- A symbol relabeling. -/
   (h : α ≃ β)
+  /-- Relabelings preserve structure. -/
   (map_rel : ∀ (r : m) (c : n),
     A'.M (f r) (g c) = h (A.M r c))
 
+/-- Two Latin rectangles are equivalent if one can be obtained from the other by some combination
+    of relabeling the row indices, column indices, and symbols. -/
 def latin_rectangle_equiv_relation (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) :=
   Nonempty (LREquiv A A')
 
@@ -290,10 +295,29 @@ lemma induced_latin_rectangle_is_equiv
   (f : m ≃ m')
   (g : n ≃ n')
   (h : α ≃ β)
-  (A : LatinRectangle m n α) : A ≃ (induced_latin_rectangle f g h A) :=
-    ⟨ f, g, h, by simp [induced_latin_rectangle] ⟩
+  (A : LatinRectangle m n α) : A ≃ (relabel_latin_rectangle f g h A) :=
+    ⟨ f, g, h, by simp [relabel_latin_rectangle] ⟩
 
 end Equivalence
+
+section Nonvacuous
+
+instance Zn_nonempty {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
+  addGroup_to_cayley_table (ZMod n)
+
+noncomputable instance n_nonempty
+  (nezero_n : NeZero (Fintype.card n))
+  (h : Fintype.card n = Fintype.card α) :
+  LatinSquare n α := by
+  haveI := Fin.addCommGroup (Fintype.card n)
+  let a := addGroup_to_cayley_table (Fin (Fintype.card n))
+  have f :=  Fintype.equivFin n
+  have h' := Fintype.equivFinOfCardEq h.symm
+  have h'' := Fintype.equivFin α
+  have b := relabel_latin_rectangle f.symm f.symm h'.symm a
+  exact (b : LatinSquare n α)
+
+end Nonvacuous
 
 section Completion
 
@@ -310,6 +334,9 @@ def symbols_not_in
   let D := Finset.image (col A j) Finset.univ
   Finset.univ \ D
 
+/-- Given a finite collection of finite subsets $B_1, \ldots, B_k$ and, for every
+$x \in \bigcup_i B_i$, let $C_x$ be the set of indices of the $B_i$'s that contain $x$.
+Then, $\sum_i |B_i| = \sum_x |C_x|$. -/
 lemma count_by_group_or_element_indicator
   {α : Type*} [DecidableEq α]
   {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -587,6 +614,7 @@ lemma unique_missed_element
       simp only [Finset.mem_univ, true_and] at hx2
       exact hx2 hy
 
+/-- A non-square `LatinRectangle k n α` can be extended by one row to a new Latin rectangle.-/
 theorem latin_rectangle_extends_one_row
     {n : Type*} [Fintype n]
     {k : Type*} [Fintype k] [Nonempty k]
@@ -842,7 +870,10 @@ lemma subrect_refl
     use g
     use h
     exact hrfl
-    
+
+/-- A Latin rectangle `LatinRectangle m n α` extends to a Latin square `LatinSquare n α`.
+    In other words, there always exists a Latin square that contains a given Latin rectangle
+    as a substructure. -/
 theorem latin_rectangle_extends_to_latin_square
     {n : Type*} [Fintype n]
     {k : Type*} [Fintype k] [Nonempty k]
@@ -854,7 +885,7 @@ theorem latin_rectangle_extends_to_latin_square
       | h a ih =>
         by_cases h_full : Fintype.card k = Fintype.card n
         · let f : k ≃ n := Fintype.equivOfCardEq h_full
-          let A' := induced_latin_rectangle f (Equiv.refl n) (Equiv.refl α) A
+          let A' := relabel_latin_rectangle f (Equiv.refl n) (Equiv.refl α) A
           have h_sim : A ≃ A' := by
             simp [induced_latin_rectangle_is_equiv f (Equiv.refl n) (Equiv.refl α) A,A']
           use A'
