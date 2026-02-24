@@ -30,6 +30,7 @@ open MeasureTheory Set Filter Function IsUnifLocDoublingMeasure
 
 open scoped Topology
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The (global) interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is
 locally integrable, then for almost every `x`, for any `c : ℝ`, the derivative of
 `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`. -/

@@ -144,6 +144,7 @@ theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a
   simpa [inv_mul_cancel_left₀ ha, inv_mul_cancel_left₀ hc.ne']
     using mul_lt_mul_of_le_of_lt_of_nonneg_of_pos hh h zero_le' (inv_pos.2 hc)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) where
   top_add' := by simp
   neg_top := by ext; simp [bot_eq_zero'']
@@ -487,7 +488,7 @@ theorem exists_ne_zero_and_lt_and_lt [NoMinOrder α] (hx : x ≠ 0) (hy : y ≠ 
 
 end LinearOrder
 
-instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance isOrderedMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     IsOrderedMonoid (WithZero α) where
   mul_le_mul_left _ _ := mul_le_mul_left
 

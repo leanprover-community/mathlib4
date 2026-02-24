@@ -243,6 +243,7 @@ theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] 
   rw [← Finset.prod_subtype]
   simp_rw [Set.mem_toFinset]; intro; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p] [CommMonoid β]
     (f : ∀ a, p a → β) (g : ∀ a, ¬p a → β) :
     (∏ a, dite (p a) (f a) (g a)) =

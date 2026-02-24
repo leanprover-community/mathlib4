@@ -153,6 +153,7 @@ theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
     inclusion j ⋙ decomposedTo J = ConnectedComponents.ι j :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (decomposedTo J).Full where
   map_surjective := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f

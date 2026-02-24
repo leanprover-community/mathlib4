@@ -556,6 +556,7 @@ noncomputable def trStmts (S : Finset Λ) : Finset (Λ' M) :=
 
 attribute [local simp] TM1.stmts₁_self
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
     TM0.Supports (tr M) ↑(trStmts M S) := by
   classical

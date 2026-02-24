@@ -40,6 +40,7 @@ namespace MulAction
 
 variable (α)
 
+set_option backward.whnf.reducibleClassField false in
 /-- A multiplicative action of `M` on `α` and a monoid homomorphism `N → M` induce
 a multiplicative action of `N` on `α`.
 
