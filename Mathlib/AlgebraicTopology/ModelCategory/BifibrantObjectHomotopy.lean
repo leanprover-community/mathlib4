@@ -494,13 +494,13 @@ def ιFibrantObjectLocalizerMorphism :
 
 open Functor
 
-instance : (ιCofibrantObjectLocalizerMorphism C).IsLocalizedEquivalence := by
-  have : CatCommSq (ιCofibrantObjectLocalizerMorphism C).functor toHoCat
+instance : (ιCofibrantObjectLocalizerMorphism C).IsLocalizedEquivalence :=
+  let : CatCommSq (ιCofibrantObjectLocalizerMorphism C).functor toHoCat
       (CofibrantObject.toHoCat ⋙ CofibrantObject.HoCat.bifibrantResolution) (𝟭 _) :=
     ⟨(associator _ _ _).symm ≪≫
       isoWhiskerRight toHoCatCompιCofibrantObject.symm _ ≪≫
       associator _ _ _ ≪≫ isoWhiskerLeft _ (asIso CofibrantObject.HoCat.adj.counit)⟩
-  exact LocalizerMorphism.IsLocalizedEquivalence.mk'
+  LocalizerMorphism.IsLocalizedEquivalence.mk'
     (ιCofibrantObjectLocalizerMorphism C) BifibrantObject.toHoCat
     (CofibrantObject.toHoCat ⋙ CofibrantObject.HoCat.bifibrantResolution) (𝟭 _)
 
@@ -518,12 +518,12 @@ instance {D : Type*} [Category* D] (L : C ⥤ D)
     (ι ⋙ L).IsLocalization (weakEquivalences (BifibrantObject C)) :=
   inferInstanceAs (((localizerMorphism C).functor ⋙ L).IsLocalization _)
 
-instance : (ιFibrantObjectLocalizerMorphism C).IsLocalizedEquivalence := by
+instance : (ιFibrantObjectLocalizerMorphism C).IsLocalizedEquivalence :=
   let L := FibrantObject.ι ⋙ (weakEquivalences C).Q
   have : ((ιFibrantObjectLocalizerMorphism C).functor ⋙ L).IsLocalization
     (weakEquivalences _) :=
     inferInstanceAs ((ι ⋙ (weakEquivalences C).Q).IsLocalization (weakEquivalences _))
-  exact LocalizerMorphism.IsLocalizedEquivalence.of_isLocalization_of_isLocalization _ L
+  LocalizerMorphism.IsLocalizedEquivalence.of_isLocalization_of_isLocalization _ L
 
 instance {D : Type*} [Category D] (L : FibrantObject C ⥤ D)
     [L.IsLocalization (weakEquivalences _)] :
