@@ -35,6 +35,17 @@ structure TopCat where
   carrier : Type u
   [str : TopologicalSpace carrier]
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `TopCat.of X` being printed as `{ carrier := X, str := ... }` by
+`delabStructureInstance`. -/
+@[app_delab TopCat.of]
+meta def TopCat.delabOf : Delab := delabApp
+
+end Notation
+
 attribute [instance] TopCat.str
 
 initialize_simps_projections TopCat (-str)
