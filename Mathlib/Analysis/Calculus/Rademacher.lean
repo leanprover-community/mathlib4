@@ -201,6 +201,7 @@ theorem integral_lineDeriv_mul_eq
     · exact h'g.mul_left
   · exact (hf.continuous.mul hg.continuous).integrable_of_hasCompactSupport h'g.mul_left
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The line derivative of a Lipschitz function is almost everywhere linear with respect to fixed
 coefficients. -/
 theorem ae_lineDeriv_sum_eq

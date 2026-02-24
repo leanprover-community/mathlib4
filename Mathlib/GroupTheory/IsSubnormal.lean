@@ -90,6 +90,7 @@ inductive _root_.AddSubgroup.IsSubnormal {G : Type*} [AddGroup G] : AddSubgroup 
 
 attribute [simp] Subgroup.IsSubnormal.top
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A normal subgroup is subnormal. -/
 @[to_additive /-- A normal additive subgroup is subnormal. -/]
 lemma Normal.isSubnormal (hn : H.Normal) : IsSubnormal H :=
@@ -101,6 +102,7 @@ namespace IsSubnormal
 @[to_additive (attr := simp) /-- The trivial additive subgroup is subnormal. -/]
 lemma bot : IsSubnormal (⊥ : Subgroup G) := normal_bot.isSubnormal
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subnormal subgroup of a simple group is normal. -/
 @[to_additive /-- A subnormal additive subgroup of a simple additive group is normal. -/]
 lemma normal_of_isSimpleGroup (hG : IsSimpleGroup G) (hN : H.IsSubnormal) :
@@ -119,6 +121,7 @@ lemma eq_bot_or_top_of_isSimpleGroup (hG : IsSimpleGroup G) (hN : IsSubnormal H)
     H = ⊥ ∨ H = ⊤ :=
   (hN.normal_of_isSimpleGroup hG).eq_bot_or_eq_top
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma iff_eq_top_or_exists :
     IsSubnormal H ↔ H = ⊤ ∨ ∃ K, H < K ∧ IsSubnormal K ∧ (H.subgroupOf K).Normal where
@@ -139,6 +142,7 @@ lemma iff_eq_top_or_exists :
     · exact top
     · exact step _ _ HK.le Ksn h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A proper subnormal subgroup is contained in a proper normal subgroup. -/
 @[to_additive /-- A proper subnormal additive subgroup is contained in a proper normal additive
 subgroup. -/]
@@ -162,6 +166,7 @@ lemma lt_normal (hN : H.IsSubnormal) : H = ⊤ ∨ ∃ K, K.Normal ∧ H ≤ K �
   · simp
   · grind only [iff_eq_top_or_exists, exists_normal_and_le_and_lt_top_of_ne]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A characterisation of satisfying `IsSubnormal` in terms of chains of subgroups, each normal in
 the following one.
@@ -187,7 +192,8 @@ lemma isSubnormal_iff : H.IsSubnormal ↔
       · grind
       · refine monotone_nat_of_le_succ ?_
         grind only [monotone_iff_forall_lt]
-      · grind
+      · simp +instances only
+        grind
   mpr := by
     rintro ⟨n, hyps⟩
     revert H
