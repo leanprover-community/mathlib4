@@ -63,8 +63,7 @@ noncomputable def skyscraperPresheafHomEquiv :
 
 @[reassoc (attr := simp)]
 lemma toPresheafFiber_skyscraperPresheafHomEquiv_symm
-    (g : P ⟶ Φ.skyscraperPresheaf M)
-    (X : C) (x : Φ.fiber.obj X) :
+    (g : P ⟶ Φ.skyscraperPresheaf M) (X : C) (x : Φ.fiber.obj X) :
     Φ.toPresheafFiber X x P ≫ Φ.skyscraperPresheafHomEquiv.symm g =
       g.app (op X) ≫ Pi.π _ x := by
   simp [skyscraperPresheafHomEquiv_symm_apply]
