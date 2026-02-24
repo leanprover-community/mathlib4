@@ -159,12 +159,12 @@ theorem adjMatrix_apply (v w : V) [Zero α] [One α] :
   rfl
 
 @[simp]
-theorem bot_adjMatrix_eq [Zero α] [One α] :
+theorem adjMatrix_bot_eq [Zero α] [One α] :
     (⊥ : SimpleGraph V).adjMatrix α = 0 := by
   ext; simp
 
 @[simp]
-theorem top_adjMatrix_eq [DecidableEq V] [Ring α] :
+theorem adjMatrix_top_eq [DecidableEq V] [Ring α] :
     (⊤ : SimpleGraph V).adjMatrix α = (Matrix.of fun _ _ ↦ 1) - 1 := by
   ext i j
   cases eq_or_ne i j <;> simp [‹_›]
