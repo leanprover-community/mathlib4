@@ -166,6 +166,10 @@ variable {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {a r L : ℝ≥0}
 
 instance : CoeFun (FunSpace t₀ x₀ r L) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
 
+@[ext]
+lemma ext {α β : FunSpace t₀ x₀ r L} (h : ∀ t, α t = β t) : α = β := by
+  cases α; cases β; simp only [mk.injEq]; ext t; exact h t
+
 /-- `FunSpace t₀ x₀ r L` contains the constant map at `x₀`. -/
 instance : Inhabited (FunSpace t₀ x₀ r L) :=
   ⟨fun _ ↦ x₀, (LipschitzWith.const _).weaken (zero_le _), mem_closedBall_self r.2⟩
@@ -179,6 +183,10 @@ def toContinuousMap : FunSpace t₀ x₀ r L ↪ C(Icc tmin tmax, E) :=
 @[simp]
 lemma toContinuousMap_apply_eq_apply (α : FunSpace t₀ x₀ r L) (t : Icc tmin tmax) :
     α.toContinuousMap t = α t := rfl
+
+/-- When the radius is zero, a curve in `FunSpace` evaluated at `t₀` equals `x₀`. -/
+lemma apply_of_zero (α : FunSpace t₀ x₀ 0 L) : α t₀ = x₀ := by
+  simpa using α.mem_closedBall₀
 
 /-- The metric between two curves `α` and `β` is the supremum of the metric between `α t` and `β t`
 over all `t` in the domain. This is finite when the domain is compact, such as a closed
@@ -299,6 +307,17 @@ lemma next_apply (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedB
 
 lemma next_apply₀ (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
     (α : FunSpace t₀ x₀ r L) : next hf hx α t₀ = x := by simp
+
+/-- `α` is a fixed point of `next` if and only if it satisfies the integral equation
+`α t = x + ∫_{t₀}^t f τ (α τ) dτ` for all `t`. -/
+lemma isFixedPt_next_iff (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
+    {α : FunSpace t₀ x₀ r L} :
+    IsFixedPt (next hf hx) α ↔ ∀ t, α t = picard f t₀ x α.compProj t := by
+  constructor
+  · exact fun hα t ↦ congrArg (· t) hα |>.symm
+  · intro h
+    ext t
+    rw [h, next_apply]
 
 /-- A key step in the inductive case of `dist_iterate_next_apply_le` -/
 lemma dist_comp_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
@@ -601,6 +620,62 @@ variable {E : Type*} [NormedAddCommGroup E]
 lemma continuousOn_uncurry (hf : IsPicardLindelof f t₀ x₀ a r L K) :
     ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ (closedBall x₀ a)) :=
   continuousOn_prod_of_continuousOn_lipschitzOnWith' _ K hf.lipschitzOnWith hf.continuousOn
+
+/-- Shrink the Picard-Lindelöf parameters to a smaller ball and time interval. The new radius `a'`
+and initial deviation `r'` can be chosen freely as long as `a' ≤ a` and the time constraint
+`L * max (tmax' - t₀') (t₀' - tmin') ≤ a' - r'` is satisfied. -/
+lemma shrink {f : ℝ → E → E} {tmin tmax tmin' tmax' : ℝ} {t₀ : Icc tmin tmax}
+    {x₀ : E} {a r L K : ℝ≥0} (hf : IsPicardLindelof f t₀ x₀ a r L K)
+    (t₀' : Icc tmin' tmax') (htmin : tmin ≤ tmin') (htmax : tmax' ≤ tmax)
+    {a' r' : ℝ≥0} (ha : a' ≤ a)
+    (htime : L * max (tmax' - t₀') (t₀' - tmin') ≤ a' - r') :
+    IsPicardLindelof f t₀' x₀ a' r' L K where
+  lipschitzOnWith t ht := (hf.lipschitzOnWith t ⟨htmin.trans ht.1, ht.2.trans htmax⟩).mono
+    (closedBall_subset_closedBall ha)
+  continuousOn x hx := (hf.continuousOn x (closedBall_subset_closedBall ha hx)).mono
+    fun _ ht ↦ ⟨htmin.trans ht.1, ht.2.trans htmax⟩
+  norm_le t ht x hx := hf.norm_le t ⟨htmin.trans ht.1, ht.2.trans htmax⟩ x
+    (closedBall_subset_closedBall ha hx)
+  mul_max_le := htime
+
+/-- `IsPicardLindelof` is preserved when shrinking the time interval. -/
+lemma shrink_time {f : ℝ → E → E} {tmin tmax tmin' tmax' : ℝ} {t₀ : Icc tmin tmax}
+    {x₀ : E} {a r L K : ℝ≥0} (hf : IsPicardLindelof f t₀ x₀ a r L K) (t₀' : Icc tmin' tmax')
+    (ht₀ : t₀.1 = t₀'.1) (htmin : tmin ≤ tmin') (htmax : tmax' ≤ tmax) :
+    IsPicardLindelof f t₀' x₀ a r L K := by
+  apply hf.shrink t₀' htmin htmax le_rfl
+  calc L * max (tmax' - t₀') (t₀' - tmin')
+    _ ≤ L * max (tmax - t₀) (t₀ - tmin) := by gcongr <;> linarith
+    _ ≤ a - r := hf.mul_max_le
+
+/-- `IsPicardLindelof` is preserved when enlarging the Lipschitz constant `K`. -/
+lemma weaken_lipschitz (hf : IsPicardLindelof f t₀ x₀ a r L K) {K' : ℝ≥0} (hK : K ≤ K') :
+    IsPicardLindelof f t₀ x₀ a r L K' where
+  lipschitzOnWith t ht := (hf.lipschitzOnWith t ht).weaken hK
+  continuousOn := hf.continuousOn
+  norm_le := hf.norm_le
+  mul_max_le := hf.mul_max_le
+
+/-- Given `IsPicardLindelof` on a symmetric interval `[t₀ - ε, t₀ + ε]`, if we shrink the radius
+from `a` to `a'` with `a' ≤ a`, and choose any `r' < a'`, then there exists `ε' > 0` such that
+`IsPicardLindelof` holds on `[t₀ - ε', t₀ + ε']` with the new parameters. -/
+lemma exists_shrink_radius {f : ℝ → E → E} {t₀ ε : ℝ} (hε : 0 < ε) {x₀ : E} {a r L K : ℝ≥0}
+    (hf : IsPicardLindelof f (tmin := t₀ - ε) (tmax := t₀ + ε)
+      ⟨t₀, by simp [le_of_lt hε]⟩ x₀ a r L K)
+    {a' r' : ℝ≥0} (ha : a' ≤ a) (hr : r' < a') :
+    ∃ (ε' : ℝ) (hε' : 0 < ε'), IsPicardLindelof f (tmin := t₀ - ε') (tmax := t₀ + ε')
+      ⟨t₀, by simp [le_of_lt hε']⟩ x₀ a' r' L K := by
+  have ha'r' : (0 : ℝ) < a' - r' := by simp only [sub_pos, NNReal.coe_lt_coe, hr]
+  let ε' := min ε ((a' - r') / (L + 1))
+  have hε'pos : 0 < ε' := lt_min hε (by positivity)
+  have hε'_le : ε' ≤ ε := min_le_left _ _
+  refine ⟨ε', hε'pos, hf.shrink ⟨t₀, by simp [le_of_lt hε'pos]⟩ (by linarith) (by linarith) ha ?_⟩
+  simp only [add_sub_cancel_left, sub_sub_cancel, max_self]
+  calc (L : ℝ) * ε'
+    _ ≤ L * ((a' - r') / (L + 1)) := by gcongr; exact min_le_right _ _
+    _ = L / (L + 1) * (a' - r') := by ring
+    _ ≤ 1 * (a' - r') := by gcongr; rw [div_le_one (by positivity : (0 : ℝ) < L + 1)]; linarith
+    _ = a' - r' := one_mul _
 
 /-- The special case where the vector field is independent of time -/
 lemma of_time_independent
