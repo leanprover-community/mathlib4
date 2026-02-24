@@ -153,7 +153,7 @@ variable [∀ i, Group (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
   zpow_succ' n := DirectLimit.induction _ fun i x ↦ by
     simp_rw [map_def, mul_def]; congr; apply DivInvMonoid.zpow_succ'
   zpow_neg' n := DirectLimit.induction _ fun i x ↦ by
-    simp_rw [map_def]; congr; apply DivInvMonoid.zpow_neg'
+    simp_rw +instances [map_def]; congr; apply DivInvMonoid.zpow_neg'
   inv_mul_cancel := DirectLimit.induction _ fun i _ ↦ by
     simp_rw [map_def, mul_def, inv_mul_cancel, one_def i]
 
