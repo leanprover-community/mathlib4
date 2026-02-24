@@ -716,15 +716,15 @@ theorem IndepFun.of_self {Ω A B : Type*} [MeasurableSpace Ω]
     · exact ENNReal.mul_ne_top (measure_ne_top _ _) (measure_ne_top _ _)
   intro s t hs ht
   cases hY_const t ht <;>
-    simp_all +decide [Set.inter_comm, measure_inter_add_diff]
+    simp_all +decide
   · exact measure_mono_null (fun x => by aesop) ‹μ (Y ⁻¹' t) = 0›
   · have hY_compl : μ (Y ⁻¹' tᶜ) = 0 := by
       have := hY t tᶜ ht ht.compl
       simp_all +decide [Set.preimage]
-      simp_all +decide [Set.inter_comm, Set.inter_def]
-    rw [measure_congr, ae_eq_set]
-    exact ⟨by rw [show (X ⁻¹' s ∩ Y ⁻¹' t) \ X ⁻¹' s = ∅ by ext; aesop]; simp +decide,
-      by exact measure_mono_null (fun x => by aesop) hY_compl⟩
+      simp_all +decide [Set.inter_def]
+    exact measure_congr (ae_eq_set.mpr ⟨
+      by rw [show (X ⁻¹' s ∩ Y ⁻¹' t) \ X ⁻¹' s = ∅ by ext; aesop]; simp,
+      measure_mono_null (fun x => by aesop) hY_compl⟩)
 
 theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsFiniteMeasure μ] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
