@@ -96,6 +96,31 @@ lemma integralModel_Δ_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
   conv_rhs => rw [← baseChange_integralModel_eq R W]
   simp [integralModel]
 
+lemma integralModel_a₁_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₁ = W.a₁ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_a₂_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₂ = W.a₂ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_a₃_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₃ = W.a₃ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_a₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₄ = W.a₄ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_a₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₆ = W.a₆ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
 variable [IsDomain R] [ValuationRing R] [IsFractionRing R K]
 
 open ValuationRing
@@ -234,6 +259,27 @@ lemma isGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [IsMinim
     not_iff_not.mpr <| valuation_lt_one_iff_mem _ _
   refine ((integralModel_Δ_eq R W ▸ isGoodReduction_iff _ _).trans ?_).trans h
   simpa using (valuation_le_one _ _).ge_iff_eq.symm
+
+/-- A minimal Weierstrass equation has multiplicative reduction if and only if
+the valuation of its discriminant is less than 1 and the valuation of `a₄` equals 1. -/
+@[mk_iff]
+class IsMultiplicativeReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop where
+  badReduction : valuation K (maximalIdeal R) W.Δ < 1
+  multiplicativeReduction : valuation K (maximalIdeal R) W.a₄ = 1
+
+/-- A minimal Weierstrass equation has additive reduction if and only if
+the valuation of its discriminant is less than 1 and the valuation of `a₄` is less than 1. -/
+@[mk_iff]
+class IsAdditiveReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop where
+  badReduction : valuation K (maximalIdeal R) W.Δ < 1
+  additiveReduction : valuation K (maximalIdeal R) W.a₄ < 1
+
+theorem isGoodReduction_or_isMultiplicativeReduction_or_isAdditiveReduction
+    {W : WeierstrassCurve K} [IsMinimal R W] :
+    W.IsGoodReduction R ∨ W.IsMultiplicativeReduction R ∨ W.IsAdditiveReduction R := by
+  rw [isGoodReduction_iff, isMultiplicativeReduction_iff, isAdditiveReduction_iff,
+    ← integralModel_Δ_eq R W, ← integralModel_a₄_eq R W]
+  grind [valuation_le_one]
 
 end Reduction
 
