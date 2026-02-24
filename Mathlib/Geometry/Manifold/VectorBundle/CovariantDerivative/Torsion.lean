@@ -147,15 +147,15 @@ variable {cov : CovariantDerivative I E (TangentSpace I : M → Type _)}
 variable {U : Set M} (hf : IsCovariantDerivativeOn E f U)
 
 -- TODO: prove applied versions of these, for IsCovariantDerivativeOn --- using tensoriality, later!
-variable (f X) in
+variable (f) in
 @[simp]
-lemma torsion_zero : torsion cov 0 X = 0 := by
-  ext x
-  simp [torsion]
+lemma torsion_zero (hX : MDiff T% X) : torsion cov 0 X = 0 := by
+  simp [torsion, cov.zeroX hX, cov.zeroσ hX]
 
-variable (X) in
+
 @[simp]
-lemma torsion_zero' : torsion cov X 0 = 0 := by rw [torsion_antisymm, torsion_zero]; simp
+lemma torsion_zero' (hX : MDiff T% X) : torsion cov X 0 = 0 := by
+  rw [torsion_antisymm, torsion_zero hX]; simp
 
 variable (Y) in
 lemma torsion_add_left [CompleteSpace E]
