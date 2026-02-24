@@ -117,8 +117,8 @@ def cod : Set β := {b | ∃ a, a ~[R] b}
 @[gcongr] lemma dom_mono (h : R₁ ≤ R₂) : R₁.dom ⊆ R₂.dom := fun _a ⟨b, hab⟩ ↦ ⟨b, h hab⟩
 @[gcongr] lemma cod_mono (h : R₁ ≤ R₂) : R₁.cod ⊆ R₂.cod := fun _b ⟨a, hab⟩ ↦ ⟨a, h hab⟩
 
-@[simp] lemma dom_empty : (∅ : SetRel α β).dom = ∅ := by aesop
-@[simp] lemma cod_empty : (∅ : SetRel α β).cod = ∅ := by aesop
+@[simp] lemma dom_empty : (∅ : SetRel α β).dom = ∅ := by ext; simp
+@[simp] lemma cod_empty : (∅ : SetRel α β).cod = ∅ := by ext; simp
 
 @[simp] lemma dom_eq_empty_iff : R.dom = ∅ ↔ R = (∅ : SetRel α β) :=
   ⟨fun h ↦ Set.eq_empty_iff_forall_notMem.mpr <| by simp_all [Set.eq_empty_iff_forall_notMem],
@@ -128,8 +128,8 @@ def cod : Set β := {b | ∃ a, a ~[R] b}
   ⟨fun h ↦ Set.eq_empty_iff_forall_notMem.mpr <| by simp_all [Set.eq_empty_iff_forall_notMem],
    (· ▸ cod_empty)⟩
 
-@[simp] lemma dom_univ [Nonempty β] : dom (.univ : SetRel α β) = .univ := by aesop
-@[simp] lemma cod_univ [Nonempty α] : cod (.univ : SetRel α β) = .univ := by aesop
+@[simp] lemma dom_univ [Nonempty β] : dom (.univ : SetRel α β) = .univ := by ext; simp
+@[simp] lemma cod_univ [Nonempty α] : cod (.univ : SetRel α β) = .univ := by ext; simp
 
 @[simp] lemma cod_inv : R.inv.cod = R.dom := rfl
 @[simp] lemma dom_inv : R.inv.dom = R.cod := rfl
@@ -156,21 +156,22 @@ lemma prodMk_mem_comp (hab : a ~[R] b) (hbc : b ~[S] c) : a ~[R ○ S] c := ⟨b
 lemma comp_assoc (R : SetRel α β) (S : SetRel β γ) (t : SetRel γ δ) :
     (R ○ S) ○ t = R ○ (S ○ t) := by aesop
 
-@[simp] lemma comp_id (R : SetRel α β) : R ○ .id = R := by aesop
-@[simp] lemma id_comp (R : SetRel α β) : .id ○ R = R := by aesop
+@[simp] lemma comp_id (R : SetRel α β) : R ○ .id = R := by ext ⟨_, _⟩; simp
+@[simp] lemma id_comp (R : SetRel α β) : .id ○ R = R := by ext ⟨_, _⟩; simp
 
-@[simp] lemma inv_comp (R : SetRel α β) (S : SetRel β γ) : (R ○ S).inv = S.inv ○ R.inv := by aesop
+@[simp] lemma inv_comp (R : SetRel α β) (S : SetRel β γ) : (R ○ S).inv = S.inv ○ R.inv := by
+  ext
+  exact ⟨ fun ⟨b, hab, hbc⟩ ↦ ⟨b, hbc, hab⟩ ,
+          fun ⟨b, hbc, hab⟩ ↦ ⟨b, hab, hbc⟩ ⟩
 
-@[simp] lemma comp_empty (R : SetRel α β) : R ○ (∅ : SetRel β γ) = ∅ := by aesop
-@[simp] lemma empty_comp (S : SetRel β γ) : (∅ : SetRel α β) ○ S = ∅ := by aesop
+@[simp] lemma comp_empty (R : SetRel α β) : R ○ (∅ : SetRel β γ) = ∅ := by ext ⟨_, _⟩; simp
+@[simp] lemma empty_comp (S : SetRel β γ) : (∅ : SetRel α β) ○ S = ∅ := by ext ⟨_, _⟩; simp
 
 @[simp] lemma comp_univ (R : SetRel α β) :
-    R ○ (.univ : SetRel β γ) = {(a, _c) : α × γ | a ∈ R.dom} := by
-  aesop
+    R ○ (.univ : SetRel β γ) = {(a, _c) : α × γ | a ∈ R.dom} := by ext ⟨_, _⟩; simp
 
 @[simp] lemma univ_comp (S : SetRel β γ) :
-    (.univ : SetRel α β) ○ S = {(_b, c) : α × γ | c ∈ S.cod} := by
-  aesop
+    (.univ : SetRel α β) ○ S = {(_b, c) : α × γ | c ∈ S.cod} := by ext ⟨_, _⟩; simp
 
 lemma comp_iUnion (R : SetRel α β) (S : ι → SetRel β γ) : R ○ ⋃ i, S i = ⋃ i, R ○ S i := by aesop
 lemma iUnion_comp (R : ι → SetRel α β) (S : SetRel β γ) : (⋃ i, R i) ○ S = ⋃ i, R i ○ S := by aesop
@@ -238,11 +239,11 @@ variable (R s) in
 lemma image_mono : Monotone R.image := fun _ _ ↦ image_subset_image
 lemma preimage_mono : Monotone R.preimage := fun _ _ ↦ preimage_subset_preimage
 
-@[simp] lemma image_empty_right : image R ∅ = ∅ := by aesop
-@[simp] lemma preimage_empty_right : preimage R ∅ = ∅ := by aesop
+@[simp] lemma image_empty_right : image R ∅ = ∅ := by ext; simp
+@[simp] lemma preimage_empty_right : preimage R ∅ = ∅ := by ext; simp
 
-@[simp] lemma image_univ_right : image R .univ = R.cod := by aesop
-@[simp] lemma preimage_univ_right : preimage R .univ = R.dom := by aesop
+@[simp] lemma image_univ_right : image R .univ = R.cod := by ext; simp
+@[simp] lemma preimage_univ_right : preimage R .univ = R.dom := by ext; simp
 
 variable (R) in
 lemma image_inter_subset : image R (s₁ ∩ s₂) ⊆ image R s₁ ∩ image R s₂ := image_mono.map_inf_le ..
@@ -252,28 +253,59 @@ lemma preimage_inter_subset : preimage R (t₁ ∩ t₂) ⊆ preimage R t₁ ∩
   preimage_mono.map_inf_le ..
 
 variable (R s₁ s₂) in
-lemma image_union : image R (s₁ ∪ s₂) = image R s₁ ∪ image R s₂ := by aesop
+lemma image_union : image R (s₁ ∪ s₂) = image R s₁ ∪ image R s₂ := by
+  ext
+  exact ⟨ fun ⟨a, h, hab⟩ ↦ h.elim
+      (fun ha ↦ Or.inl ⟨a, ha, hab⟩)
+      (fun ha ↦ Or.inr ⟨a, ha, hab⟩) ,
+    fun h ↦ h.elim
+      (fun ⟨a, ha, hab⟩ ↦ ⟨a, Or.inl ha, hab⟩)
+      (fun ⟨a, ha, hab⟩ ↦ ⟨a, Or.inr ha, hab⟩) ⟩
 
 variable (R) in
-lemma image_iUnion (s : ι → Set α) : image R (⋃ i, s i) = ⋃ i, image R (s i) := by aesop
+lemma image_iUnion (s : ι → Set α) : image R (⋃ i, s i) = ⋃ i, image R (s i) := by
+  ext
+  simp only [mem_image, Set.mem_iUnion]
+  exact ⟨ fun ⟨a, ⟨i, h⟩, hab⟩ ↦ ⟨i, a, h, hab⟩ ,
+          fun ⟨i, a, h, hab⟩ ↦ ⟨a, ⟨i, h⟩, hab⟩ ⟩
 
 variable (R) in
-lemma image_sUnion (S : Set (Set α)) : image R (⋃₀ S) = ⋃ s ∈ S, image R s := by aesop
+lemma image_sUnion (S : Set (Set α)) : image R (⋃₀ S) = ⋃ s ∈ S, image R s := by
+  ext
+  simp only [mem_image, Set.mem_sUnion, Set.mem_iUnion, exists_prop]
+  exact ⟨ fun ⟨a, ⟨s, hs, ha⟩, hab⟩ ↦ ⟨s, hs, a, ha, hab⟩ ,
+          fun ⟨s, hs, a, ha, hab⟩ ↦ ⟨a, ⟨s, hs, ha⟩, hab⟩ ⟩
 
 variable (R t₁ t₂) in
-lemma preimage_union : preimage R (t₁ ∪ t₂) = preimage R t₁ ∪ preimage R t₂ := by aesop
+lemma preimage_union : preimage R (t₁ ∪ t₂) = preimage R t₁ ∪ preimage R t₂ := by
+  ext
+  exact ⟨ fun ⟨b, h, hab⟩ ↦ h.elim
+      (fun hb ↦ Or.inl ⟨b, hb, hab⟩)
+      (fun hb ↦ Or.inr ⟨b, hb, hab⟩) ,
+    fun h ↦ h.elim
+      (fun ⟨b, hb, hab⟩ ↦ ⟨b, Or.inl hb, hab⟩)
+      (fun ⟨b, hb, hab⟩ ↦ ⟨b, Or.inr hb, hab⟩) ⟩
+
 
 variable (R) in
-lemma preimage_iUnion (t : ι → Set β) : preimage R (⋃ i, t i) = ⋃ i, preimage R (t i) := by aesop
+lemma preimage_iUnion (t : ι → Set β) : preimage R (⋃ i, t i) = ⋃ i, preimage R (t i) := by
+  ext
+  simp only [mem_preimage, Set.mem_iUnion]
+  exact ⟨ fun ⟨b, ⟨i, h⟩, hab⟩ ↦ ⟨i, b, h, hab⟩,
+          fun ⟨i, b, h, hab⟩ ↦ ⟨b, ⟨i, h⟩, hab⟩ ⟩
 
 variable (R) in
-lemma preimage_sUnion (T : Set (Set β)) : preimage R (⋃₀ T) = ⋃ t ∈ T, preimage R t := by aesop
+lemma preimage_sUnion (T : Set (Set β)) : preimage R (⋃₀ T) = ⋃ t ∈ T, preimage R t := by
+  ext
+  simp only [mem_preimage, Set.mem_sUnion, Set.mem_iUnion, exists_prop]
+  exact ⟨ fun ⟨b, ⟨s, hs, hb⟩, hab⟩ ↦ ⟨s, hs, b, hb, hab⟩,
+          fun ⟨s, hs, b, hb, hab⟩ ↦ ⟨b, ⟨s, hs, hb⟩, hab⟩ ⟩
 
 variable (s) in
-@[simp] lemma image_id : image .id s = s := by aesop
+@[simp] lemma image_id : image .id s = s := by ext; simp
 
 variable (s) in
-@[simp] lemma preimage_id : preimage .id s = s := by aesop
+@[simp] lemma preimage_id : preimage .id s = s := by ext; simp
 
 variable (R S s) in
 lemma image_comp : image (R ○ S) s = image S (image R s) := by aesop
@@ -282,33 +314,59 @@ variable (R S u) in
 lemma preimage_comp : preimage (R ○ S) u = preimage R (preimage S u) := by aesop
 
 variable (s) in
-@[simp] lemma image_empty_left : image (∅ : SetRel α β) s = ∅ := by aesop
+@[simp] lemma image_empty_left : image (∅ : SetRel α β) s = ∅ := by ext; simp
 
 variable (t) in
-@[simp] lemma preimage_empty_left : preimage (∅ : SetRel α β) t = ∅ := by aesop
+@[simp] lemma preimage_empty_left : preimage (∅ : SetRel α β) t = ∅ := by ext; simp
 
-@[simp] lemma image_univ_left (hs : s.Nonempty) : image (.univ : SetRel α β) s = .univ := by aesop
+@[simp] lemma image_univ_left (hs : s.Nonempty) : image (.univ : SetRel α β) s = .univ := by
+  ext
+  simpa
+
 @[simp] lemma preimage_univ_left (ht : t.Nonempty) : preimage (.univ : SetRel α β) t = .univ := by
-  aesop
+  ext
+  simpa
 
-lemma image_eq_cod_of_dom_subset (h : R.dom ⊆ s) : R.image s = R.cod := by aesop
-lemma preimage_eq_dom_of_cod_subset (h : R.cod ⊆ t) : R.preimage t = R.dom := by aesop
+
+lemma image_eq_cod_of_dom_subset (h : R.dom ⊆ s) : R.image s = R.cod := by
+  ext b
+  refine ⟨fun ⟨a, ⟨ha, hab⟩⟩ ↦ ⟨a, hab⟩, ?_⟩
+  intro ⟨a, hab⟩
+  refine ⟨a, ⟨?_, hab⟩⟩
+  apply h
+  rw [mem_dom]
+  exact ⟨b, hab⟩
+
+lemma preimage_eq_dom_of_cod_subset (h : R.cod ⊆ t) : R.preimage t = R.dom := by
+  ext a
+  refine ⟨fun ⟨b, ⟨_, hab⟩⟩ ↦ ⟨b, hab⟩, ?_⟩
+  intro ⟨b, hab⟩
+  refine ⟨b, ⟨?_ , hab⟩⟩
+  apply h
+  rw [mem_cod]
+  exact ⟨a, hab⟩
 
 variable (R s) in
-@[simp] lemma image_inter_dom : image R (s ∩ R.dom) = image R s := by aesop
+@[simp] lemma image_inter_dom : image R (s ∩ R.dom) = image R s := by
+  ext b
+  exact ⟨ fun ⟨a, ⟨ha, _⟩, hab⟩ ↦ ⟨a, ha, hab⟩,
+          fun ⟨a, ha, hab⟩ ↦ ⟨a, ⟨ha, b, hab⟩, hab⟩ ⟩
 
 variable (R t) in
-@[simp] lemma preimage_inter_cod : preimage R (t ∩ R.cod) = preimage R t := by aesop
+@[simp] lemma preimage_inter_cod : preimage R (t ∩ R.cod) = preimage R t := by
+  ext a
+  exact ⟨ fun ⟨b, ⟨hb, _⟩, hab⟩ ↦ ⟨b, hb, hab⟩,
+          fun ⟨b, hb, hab⟩ ↦ ⟨b, ⟨hb, a, hab⟩, hab⟩ ⟩
 
-lemma inter_dom_subset_preimage_image : s ∩ R.dom ⊆ R.preimage (image R s) := by
-  aesop (add simp [Set.subset_def])
+lemma inter_dom_subset_preimage_image : s ∩ R.dom ⊆ R.preimage (image R s) :=
+  fun a ⟨ha, b, hab⟩ ↦ ⟨b, ⟨a, ha, hab⟩, hab⟩
 
-lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) := by
-  aesop (add simp [Set.subset_def])
+lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) :=
+  fun b ⟨hb, a, hab⟩ ↦ ⟨a, ⟨b, hb, hab⟩, hab⟩
 
-lemma image_eq_biUnion : R.image s = ⋃ x ∈ s, {y | x ~[R] y} := by aesop
+lemma image_eq_biUnion : R.image s = ⋃ x ∈ s, {y | x ~[R] y} := by simp [Set.ext_iff]
 
-lemma preimage_eq_biUnion : R.preimage t = ⋃ y ∈ t, {x | x ~[R] y} := by aesop
+lemma preimage_eq_biUnion : R.preimage t = ⋃ y ∈ t, {x | x ~[R] y} := by simp [Set.ext_iff]
 
 variable (R t) in
 /-- Core of a set `S : Set β` w.R.t `R : SetRel α β` is the set of `x : α` that are related *only*
@@ -323,19 +381,26 @@ lemma core_subset_core (ht : t₁ ⊆ t₂) : R.core t₁ ⊆ R.core t₂ := fun
 lemma core_mono : Monotone R.core := fun _ _ ↦ core_subset_core
 
 variable (R t₁ t₂) in
-lemma core_inter : R.core (t₁ ∩ t₂) = R.core t₁ ∩ R.core t₂ := by aesop
+lemma core_inter : R.core (t₁ ∩ t₂) = R.core t₁ ∩ R.core t₂ := by
+  ext x
+  apply Iff.intro <;> simp_all
 
 lemma core_union_subset : R.core t₁ ∪ R.core t₂ ⊆ R.core (t₁ ∪ t₂) := core_mono.le_map_sup ..
 
-@[simp] lemma core_univ : R.core Set.univ = Set.univ := by aesop
+@[simp] lemma core_univ : R.core Set.univ = Set.univ := by simp [Set.ext_iff]
 
 variable (t) in
-@[simp] lemma core_id : core .id t = t := by aesop
+@[simp] lemma core_id : core .id t = t := by simp [Set.ext_iff]
 
 variable (R S u) in
-lemma core_comp : core (R ○ S) u = core R (core S u) := by aesop
+lemma core_comp : core (R ○ S) u = core R (core S u) := by
+  ext a
+  simp only [mem_core, mem_comp, forall_exists_index, and_imp]
+  exact ⟨ fun h b hab c ↦ @h c b hab, fun h c b hab ↦ @h b hab c ⟩
 
-lemma image_subset_iff : image R s ⊆ t ↔ s ⊆ core R t := by aesop (add simp [Set.subset_def])
+lemma image_subset_iff : image R s ⊆ t ↔ s ⊆ core R t := by
+  simp only [Set.subset_def, mem_image, forall_exists_index, and_imp, mem_core]
+  exact ⟨ fun h a ha b ↦ h b a ha, fun h b a ha ↦ @h a ha b ⟩
 
 lemma image_core_gc : GaloisConnection R.image R.core := fun _ _ ↦ image_subset_iff
 
@@ -507,7 +572,10 @@ lemma isTrans_iff_comp_subset_self : R.IsTrans ↔ R ○ R ⊆ R where
 
 instance isTrans_empty : (∅ : SetRel α α).IsTrans where trans _ _ _ := by simp
 instance isTrans_univ : SetRel.IsTrans (Set.univ : SetRel α α) where trans _ _ _ := by simp
-instance isTrans_singleton (x : α × α) : SetRel.IsTrans {x} where trans _ _ _ := by aesop
+instance isTrans_singleton (x : α × α) : SetRel.IsTrans {x} where trans _ _ _ := by {
+  simp only [Set.mem_singleton_iff]
+  intro h
+  simp [← h] }
 
 instance isTrans_inter [R₁.IsTrans] [R₂.IsTrans] : (R₁ ∩ R₂).IsTrans where
   trans _a _b _c hab hbc := ⟨R₁.trans hab.1 hbc.1, R₂.trans hab.2 hbc.2⟩
@@ -560,13 +628,17 @@ def graph (f : α → β) : SetRel α β := {(a, b) | f a = b}
 @[simp] lemma mem_graph : a ~[f.graph] b ↔ f a = b := .rfl
 
 theorem graph_injective : Injective (graph : (α → β) → SetRel α β) := by
-  aesop (add simp [Injective, Set.ext_iff])
+  rw [Injective]
+  intro _ _
+  simpa [Set.ext_iff] using funext
 
 @[simp] lemma graph_inj {f g : α → β} : f.graph = g.graph ↔ f = g := graph_injective.eq_iff
 
-@[simp] lemma graph_id : graph (id : α → α) = .id := by aesop
+@[simp] lemma graph_id : graph (id : α → α) = .id := by rfl
 
-theorem graph_comp (f : β → γ) (g : α → β) : graph (f ∘ g) = graph g ○ graph f := by aesop
+theorem graph_comp (f : β → γ) (g : α → β) : graph (f ∘ g) = graph g ○ graph f := by
+  ext ⟨_, _⟩
+  simp
 
 /-- The higher-arity graph of a function. Describes α-argument functions from β to β. -/
 def tupleGraph (f : (α → β) → β) : Set (Option α → β) :=
@@ -575,7 +647,9 @@ def tupleGraph (f : (α → β) → β) : Set (Option α → β) :=
 end Function
 
 theorem Equiv.graph_inv (f : α ≃ β) : (f.symm : β → α).graph = SetRel.inv (f : α → β).graph := by
-  aesop
+  ext ⟨_, _⟩
+  simp only [Function.mem_graph, SetRel.mem_inv]
+  apply Iff.intro <;> (intro h; simp [← h])
 
 lemma SetRel.exists_graph_eq_iff (R : SetRel α β) :
     (∃! f, Function.graph f = R) ↔ ∀ a, ∃! b, a ~[R] b := by

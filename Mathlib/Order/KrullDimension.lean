@@ -469,12 +469,12 @@ lemma coheight_ne_zero {x : α} : coheight x ≠ 0 ↔ ¬ IsMax x := coheight_eq
 @[simp] lemma coheight_top (α : Type*) [Preorder α] [OrderTop α] : coheight (⊤ : α) = 0 := by simp
 
 lemma height_pos_of_bot_lt {x : α} [OrderBot α] (h : ⊥ < x) : 0 < height x := by
-  rw [height_pos]
-  grind [not_isMin_iff]
+  rw [height_pos, not_isMin_iff]
+  exact ⟨⊥, h⟩
 
 lemma coheight_pos_of_lt_top {x : α} [OrderTop α] (h : x < ⊤) : 0 < coheight x := by
-  rw [coheight_pos]
-  grind [not_isMax_iff]
+  rw [coheight_pos, not_isMax_iff]
+  exact ⟨⊤, h⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :

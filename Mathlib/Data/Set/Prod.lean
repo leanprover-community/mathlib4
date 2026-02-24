@@ -183,31 +183,41 @@ theorem mk_preimage_prod (f : γ → α) (g : γ → β) :
   rfl
 
 @[simp]
-theorem mk_preimage_prod_left (hb : b ∈ t) : (fun a => (a, b)) ⁻¹' s ×ˢ t = s := by grind
+theorem mk_preimage_prod_left (hb : b ∈ t) : (fun a => (a, b)) ⁻¹' s ×ˢ t = s := by ext; simp_all
 
 @[simp]
-theorem mk_preimage_prod_right (ha : a ∈ s) : Prod.mk a ⁻¹' s ×ˢ t = t := by grind
+theorem mk_preimage_prod_right (ha : a ∈ s) : Prod.mk a ⁻¹' s ×ˢ t = t := by ext; simp_all
 
 @[simp]
-theorem mk_preimage_prod_left_eq_empty (hb : b ∉ t) : (fun a => (a, b)) ⁻¹' s ×ˢ t = ∅ := by grind
+theorem mk_preimage_prod_left_eq_empty (hb : b ∉ t) : (fun a => (a, b)) ⁻¹' s ×ˢ t = ∅ := by
+  ext
+  simp_all
 
 @[simp]
-theorem mk_preimage_prod_right_eq_empty (ha : a ∉ s) : Prod.mk a ⁻¹' s ×ˢ t = ∅ := by grind
+theorem mk_preimage_prod_right_eq_empty (ha : a ∉ s) : Prod.mk a ⁻¹' s ×ˢ t = ∅ := by
+  ext
+  simp_all
 
 theorem mk_preimage_prod_left_eq_if [DecidablePred (· ∈ t)] :
-    (fun a => (a, b)) ⁻¹' s ×ˢ t = if b ∈ t then s else ∅ := by grind
+    (fun a => (a, b)) ⁻¹' s ×ˢ t = if b ∈ t then s else ∅ := by split <;> simp_all
 
 theorem mk_preimage_prod_right_eq_if [DecidablePred (· ∈ s)] :
-    Prod.mk a ⁻¹' s ×ˢ t = if a ∈ s then t else ∅ := by grind
+    Prod.mk a ⁻¹' s ×ˢ t = if a ∈ s then t else ∅ := by split <;> simp_all
 
 theorem mk_preimage_prod_left_fn_eq_if [DecidablePred (· ∈ t)] (f : γ → α) :
-    (fun a => (f a, b)) ⁻¹' s ×ˢ t = if b ∈ t then f ⁻¹' s else ∅ := by grind
+    (fun a => (f a, b)) ⁻¹' s ×ˢ t = if b ∈ t then f ⁻¹' s else ∅ := by
+  ext
+  split <;> simp_all
 
 theorem mk_preimage_prod_right_fn_eq_if [DecidablePred (· ∈ s)] (g : δ → β) :
-    (fun b => (a, g b)) ⁻¹' s ×ˢ t = if a ∈ s then g ⁻¹' t else ∅ := by grind
+    (fun b => (a, g b)) ⁻¹' s ×ˢ t = if a ∈ s then g ⁻¹' t else ∅ := by
+  ext
+  split <;> simp_all
 
 @[simp]
-theorem preimage_swap_prod (s : Set α) (t : Set β) : Prod.swap ⁻¹' s ×ˢ t = t ×ˢ s := by grind
+theorem preimage_swap_prod (s : Set α) (t : Set β) : Prod.swap ⁻¹' s ×ˢ t = t ×ˢ s := by
+  ext ⟨_, _⟩
+  simp [And.comm]
 
 @[simp]
 theorem image_swap_prod (s : Set α) (t : Set β) : Prod.swap '' s ×ˢ t = t ×ˢ s := by
@@ -291,7 +301,9 @@ theorem snd_image_prod {s : Set α} (hs : s.Nonempty) (t : Set β) : Prod.snd ''
     ⟨(x, y), ⟨x_in, y_in⟩, rfl⟩
 
 theorem subset_fst_image_prod_snd_image {s : Set (α × β)} :
-    s ⊆ (Prod.fst '' s) ×ˢ (Prod.snd '' s) := fun ⟨p₁, p₂⟩ _ => by aesop
+    s ⊆ (Prod.fst '' s) ×ˢ (Prod.snd '' s) := fun ⟨p₁, p₂⟩ h => by
+  simp only [mem_prod, mem_image, Prod.exists, exists_and_right, exists_eq_right]
+  refine ⟨⟨_, h⟩, ⟨_, h⟩⟩
 
 lemma mapsTo_snd_prod {s : Set α} {t : Set β} : MapsTo Prod.snd (s ×ˢ t) t :=
   fun _ hx ↦ (mem_prod.1 hx).2
@@ -880,10 +892,12 @@ theorem subset_pi_eval_image (s : Set ι) (u : Set (∀ i, α i)) : u ⊆ pi s f
   fun f hf _ _ => ⟨f, hf, rfl⟩
 
 theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α i)) :
-    (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by grind
+    (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by
+  grind -- TODO
 
 lemma uncurry_preimage_prod_pi {κ α : Type*} (s : Set ι) (t : Set κ) (u : ι × κ → Set α) :
-    Function.uncurry ⁻¹' (s ×ˢ t).pi u = s.pi (fun i ↦ t.pi fun j ↦ u ⟨i, j⟩) := by grind
+    Function.uncurry ⁻¹' (s ×ˢ t).pi u = s.pi (fun i ↦ t.pi fun j ↦ u ⟨i, j⟩) := by
+  grind -- TODO
 
 end Pi
 
@@ -927,7 +941,9 @@ variable {α β γ δ : Type*} {s : Set α} {f : α → β}
 section graphOn
 variable {x : α × β}
 
-@[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := by aesop (add simp graphOn)
+@[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := by
+  obtain ⟨fst, snd⟩ := x
+  simp [graphOn]
 
 @[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
 @[simp] lemma graphOn_eq_empty : graphOn f s = ∅ ↔ s = ∅ := image_eq_empty
@@ -954,7 +970,7 @@ lemma image_fst_graphOn (f : α → β) (s : Set α) : Prod.fst '' graphOn f s =
 
 @[simp] lemma image_snd_graphOn (f : α → β) : Prod.snd '' s.graphOn f = f '' s := by ext x; simp
 
-lemma fst_injOn_graph : (s.graphOn f).InjOn Prod.fst := by aesop (add simp InjOn)
+lemma fst_injOn_graph : (s.graphOn f).InjOn Prod.fst := by simp_all [InjOn]
 
 lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
     s.graphOn (g ∘ f) = (fun x ↦ (x.1, g x.2)) '' s.graphOn f := by
@@ -971,7 +987,10 @@ lemma graphOn_prod_graphOn (s : Set α) (t : Set β) (f : α → γ) (g : β →
 
 lemma graphOn_prod_prodMap (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
     (s ×ˢ t).graphOn (Prod.map f g) = Equiv.prodProdProdComm .. ⁻¹' s.graphOn f ×ˢ t.graphOn g := by
-  aesop
+  ext ⟨⟨a, b⟩, ⟨c, d⟩⟩
+  simp only [mem_graphOn, mem_prod, Prod.map_apply, Prod.mk.injEq, mem_preimage,
+    Equiv.prodProdProdComm_apply]
+  apply Iff.intro <;> simp_all
 
 end graphOn
 
@@ -1006,7 +1025,7 @@ lemma exists_equiv_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjecti
     by simp [hf]
   have he₁₂ h i : e₁ h = i ↔ e₂ i = h := by
     rw [Set.ext_iff] at he₁ he₂
-    aesop (add simp [Prod.swap_eq_iff_eq_swap])
+    simp_all [Prod.swap_eq_iff_eq_swap]
   exact ⟨
   { toFun := e₁
     invFun := e₂

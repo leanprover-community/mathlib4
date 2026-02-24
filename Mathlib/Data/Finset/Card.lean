@@ -682,12 +682,14 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
 theorem card_le_one : #s ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
   · simp
-  refine (Nat.succ_le_of_lt (card_pos.2 ⟨x, hx⟩)).ge_iff_eq'.trans (card_eq_one.trans ⟨?_, ?_⟩)
-  · grind
-  · exact fun h => ⟨x, by grind⟩
+  refine (Nat.succ_le_of_lt (card_pos.2 ⟨x, hx⟩)).ge_iff_eq'.trans (card_eq_one.trans ?_)
+  simp only [eq_singleton_iff_unique_mem]
+  exact ⟨fun ⟨_, _, h⟩ a ha b hb ↦ (h a ha).trans (h b hb).symm,
+         fun h ↦ ⟨x, hx, fun a ha ↦ h a ha x hx⟩⟩
 
 theorem card_le_one_iff : #s ≤ 1 ↔ ∀ {a b}, a ∈ s → b ∈ s → a = b := by
-  grind [card_le_one]
+  rw [card_le_one]
+  exact ⟨ fun h a b ha ↦ h a ha b, fun h _ ha _ ↦ h ha⟩
 
 theorem card_le_one_iff_subsingleton_coe : #s ≤ 1 ↔ Subsingleton (s : Type _) :=
   card_le_one.trans (s : Set α).subsingleton_coe.symm
