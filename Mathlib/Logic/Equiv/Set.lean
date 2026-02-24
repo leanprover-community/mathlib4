@@ -260,13 +260,12 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
 lemma Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
     StrictMono (setCongr h) := fun _ _ ↦ id
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
 protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :
     (insert a s : Set α) ≃ s ⊕ PUnit.{u + 1} :=
   calc
     (insert a s : Set α) ≃ ↥(s ∪ {a}) := Equiv.setCongr (by simp)
-    _ ≃ s ⊕ ({a} : Set α) := Equiv.Set.union <| by simpa
+    _ ≃ s ⊕ ({a} : Set α) := Equiv.Set.union <| disjoint_singleton_right.mpr H
     _ ≃ s ⊕ PUnit.{u + 1} := sumCongr (Equiv.refl _) (Equiv.Set.singleton _)
 
 @[simp]

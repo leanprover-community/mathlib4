@@ -84,14 +84,10 @@ theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.mul_add, Nat.mul_one])
       _ ≤ _ := Nat.mul_le_mul_left _ i.prop⟩) := by simp_rw [m.mul_comm, ofFn_mul, Fin.cast_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
-  | [] => by rw [ofFn_zero]
-  | a :: l => by
-    rw [ofFn_succ]
-    congr
-    exact ofFn_get l
+theorem ofFn_get : ∀ l : List α, ofFn l.get = l
+  | [] => rfl
+  | a :: l => by simp
 
 @[simp]
 theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :

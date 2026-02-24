@@ -39,12 +39,11 @@ theorem mem_powerset {s t : Finset α} : s ∈ powerset t ↔ s ⊆ t := by
   simp [powerset, mem_mk, mem_pmap, mk.injEq, exists_prop, exists_eq_right,
     ← val_le_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_powerset (s : Finset α) :
     (s.powerset : Set (Finset α)) = ((↑) : Finset α → Set α) ⁻¹' (s : Set α).powerset := by
   ext
-  simp
+  exact mem_powerset
 
 theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s := by simp
 
