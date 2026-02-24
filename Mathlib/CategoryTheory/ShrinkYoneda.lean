@@ -168,5 +168,4 @@ noncomputable def uliftYonedaIsoShrinkYoneda :
       ext
       exact (shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm _ _).symm)
 
-
 end CategoryTheory
