@@ -122,7 +122,7 @@ add_decl_doc sum_le_sum
 theorem one_le_prod [MulLeftMono N] (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   le_trans (by rw [prod_const_one]) (prod_le_prod h)
 
-@[to_additive Finset.sum_nonneg']
+@[to_additive sum_nonneg']
 theorem one_le_prod' [MulLeftMono N] (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   Finset.one_le_prod fun i _ ↦ h i
 
