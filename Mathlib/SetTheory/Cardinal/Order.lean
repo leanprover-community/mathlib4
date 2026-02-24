@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Order.InitialSeg
@@ -309,13 +308,6 @@ instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
     inductionOn₂ a b fun α β => by
       simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id
 
-instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.commSemiring,
-    Cardinal.linearOrder with
-    bot_le _ := bot_le
-    mul_le_mul_left _ _ := mul_le_mul_left
-    zero_le_one := zero_le _ }
-
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring with }
@@ -559,7 +551,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
   refine (not_and_or.mp hc).elim (fun e ↦ ⟨hι.some, ?_⟩)
     (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f c · h)
   cases not_not.mp e
-  rw [← le_zero_iff] at h ⊢
+  rw [← nonpos_iff_eq_zero] at h ⊢
   exact (le_ciSup hf _).trans h
 
 /-! ### Indexed cardinal `prod` -/

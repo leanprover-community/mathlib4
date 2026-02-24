@@ -78,6 +78,10 @@ theorem linearEquivFunOnFinite_symm_single [DecidableEq α] (x : α) (m : M) :
 theorem linearEquivFunOnFinite_symm_coe (f : α →₀ M) : (linearEquivFunOnFinite R M α).symm f = f :=
   (linearEquivFunOnFinite R M α).symm_apply_apply f
 
+@[simp]
+theorem linearEquivFunOnFinite_symm_apply (f : α → M) : (linearEquivFunOnFinite R M α).symm f = f :=
+  rfl
+
 end LinearEquivFunOnFinite
 
 /-- Interpret `Finsupp.single a` as a linear map. -/
@@ -271,7 +275,7 @@ end Equiv
 
 section Prod
 
-variable {α β R M : Type*} [DecidableEq α] [Semiring R] [AddCommMonoid M] [Module R M]
+variable {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (R) in
 /-- The linear equivalence between `α × β →₀ M` and `α →₀ β →₀ M`.
@@ -362,5 +366,14 @@ See (15) in F4 of §28 on p.131 of [Lorenz2008]. -/
     change f (Finsupp.lsingle (R := R) (M := M) i ∘ₗ Finsupp.lapply j • x) i = _
     rw [map_smul]
     simp
+
+variable (R M ι)
+
+theorem ringHomEndFinsupp_surjective :
+    Function.Surjective (ringHomEndFinsupp (R := R) (M := M) ι) := by
+  intro f
+  obtain _ | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι
+  · exact ⟨0, Subsingleton.elim ..⟩
+  · exact ⟨_, (ringEquivEndFinsupp i).right_inv f⟩
 
 end Module.End

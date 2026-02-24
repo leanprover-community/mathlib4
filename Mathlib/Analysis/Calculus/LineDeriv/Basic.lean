@@ -451,8 +451,6 @@ theorem norm_lineDeriv_le_of_lipschitz {f : E → F} {x₀ : E}
     {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖lineDeriv 𝕜 f x₀ v‖ ≤ C * ‖v‖ :=
   norm_lineDeriv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOnWith_univ.2 hlip)
 
-variable {𝕜}
-
 end NormedSpace
 
 section Zero

@@ -33,6 +33,7 @@ section
 
 attribute [local instance] preservesFiniteLimits_op
 
+set_option backward.isDefEq.respectTransparency false in
 theorem preadditiveCoyonedaObj_map_surjective {G : C} [Projective G] (hG : IsSeparator G) {X : C}
     (p : G ⟶ X) [Epi p] {Y : C} :
     Function.Surjective ((preadditiveCoyonedaObj G).map : (X ⟶ Y) → _) := by

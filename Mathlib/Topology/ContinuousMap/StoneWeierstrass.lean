@@ -13,6 +13,7 @@ public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.ContinuousMap.Lattice
 public import Mathlib.Topology.ContinuousMap.Weierstrass
+public import Mathlib.Algebra.Order.Module.Basic
 
 /-!
 # The Stone-Weierstrass theorem
@@ -70,6 +71,7 @@ def attachBound (f : C(X, ℝ)) : C(X, Set.Icc (-‖f‖) ‖f‖) where
 theorem attachBound_apply_coe (f : C(X, ℝ)) (x : X) : ((attachBound f) x : ℝ) = f x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : ℝ[X]) :
     (g.toContinuousMapOn (Set.Icc (-‖f‖) ‖f‖)).comp (f : C(X, ℝ)).attachBound =
       Polynomial.aeval f g := by
@@ -90,6 +92,7 @@ theorem polynomial_comp_attachBound_mem (A : Subalgebra ℝ C(X, ℝ)) (f : A) (
   rw [polynomial_comp_attachBound]
   apply SetLike.coe_mem
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
     (p : C(Set.Icc (-‖f‖) ‖f‖, ℝ)) : p.comp (attachBound (f : C(X, ℝ))) ∈ A.topologicalClosure := by
   -- `p` itself is in the closure of polynomials, by the Weierstrass theorem,
@@ -111,6 +114,7 @@ theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
     Polynomial.toContinuousMapOnAlgHom_apply]
   apply polynomial_comp_attachBound_mem
 
+set_option backward.isDefEq.respectTransparency false in
 theorem abs_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A) :
     |(f : C(X, ℝ))| ∈ A.topologicalClosure := by
   let f' := attachBound (f : C(X, ℝ))
@@ -118,6 +122,7 @@ theorem abs_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A) :
   change abs.comp f' ∈ A.topologicalClosure
   apply comp_attachBound_mem_closure
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inf_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
     (f : C(X, ℝ)) ⊓ (g : C(X, ℝ)) ∈ A.topologicalClosure := by
   rw [inf_eq_half_smul_add_sub_abs_sub' ℝ]
@@ -130,6 +135,7 @@ theorem inf_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
       _
   exact mod_cast abs_mem_subalgebra_closure A _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inf_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (A : Set C(X, ℝ)))
     (f g : A) : (f : C(X, ℝ)) ⊓ (g : C(X, ℝ)) ∈ A := by
   convert inf_mem_subalgebra_closure A f g
@@ -138,6 +144,7 @@ theorem inf_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
   rw [Subalgebra.topologicalClosure_coe, closure_eq_iff_isClosed]
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sup_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
     (f : C(X, ℝ)) ⊔ (g : C(X, ℝ)) ∈ A.topologicalClosure := by
   rw [sup_eq_half_smul_add_add_abs_sub' ℝ]
@@ -161,6 +168,7 @@ theorem sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
 
 open scoped Topology
 
+set_option backward.isDefEq.respectTransparency false in
 -- Here's the fun part of Stone-Weierstrass!
 theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     (inf_mem : ∀ᵉ (f ∈ L) (g ∈ L), f ⊓ g ∈ L)
@@ -259,6 +267,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     rintro x -
     apply lt_h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Stone-Weierstrass Approximation Theorem**,
 that a subalgebra `A` of `C(X, ℝ)`, where `X` is a compact topological space,
 is dense if it separates points.
@@ -279,6 +288,7 @@ theorem subalgebra_topologicalClosure_eq_top_of_separatesPoints (A : Subalgebra 
         (Subalgebra.separatesPoints_monotone A.le_topologicalClosure w))
   simp [L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An alternative statement of the Stone-Weierstrass theorem.
 
 If `A` is a subalgebra of `C(X, ℝ)` which separates points (and `X` is compact),
@@ -289,6 +299,7 @@ theorem continuousMap_mem_subalgebra_closure_of_separatesPoints (A : Subalgebra 
   rw [subalgebra_topologicalClosure_eq_top_of_separatesPoints A w]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An alternative statement of the Stone-Weierstrass theorem,
 for those who like their epsilons.
 
@@ -394,6 +405,7 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
 
 variable [CompactSpace X]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Stone-Weierstrass approximation theorem, `RCLike` version, that a star subalgebra `A` of
 `C(X, 𝕜)`, where `X` is a compact topological space and `RCLike 𝕜`, is dense if it separates
 points. -/
@@ -452,6 +464,7 @@ theorem polynomialFunctions.topologicalClosure (s : Set ℝ)
   ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints _
     (polynomialFunctions_separatesPoints s)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The star subalgebra generated by polynomials functions is dense in `C(s, 𝕜)` when `s` is
 compact and `𝕜` is either `ℝ` or `ℂ`. -/
 theorem polynomialFunctions.starClosure_topologicalClosure {𝕜 : Type*} [RCLike 𝕜] (s : Set 𝕜)
@@ -459,6 +472,7 @@ theorem polynomialFunctions.starClosure_topologicalClosure {𝕜 : Type*} [RCLik
   ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints _
     (Subalgebra.separatesPoints_monotone le_sup_left (polynomialFunctions_separatesPoints s))
 
+set_option backward.isDefEq.respectTransparency false in
 open StarAlgebra in
 lemma ContinuousMap.elemental_id_eq_top {𝕜 : Type*} [RCLike 𝕜] (s : Set 𝕜) [CompactSpace s] :
     elemental 𝕜 (ContinuousMap.restrict s (.id 𝕜)) = ⊤ := by
@@ -479,7 +493,7 @@ theorem ContinuousMap.induction_on {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜}
   rw [polynomialFunctions.starClosure_eq_adjoin_X] at hf
   induction hf using Algebra.adjoin_induction with
   | mem f hf =>
-    simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_star] at hf
+    push _ ∈ _ at hf
     rw [star_eq_iff_star_eq, eq_comm (b := f)] at hf
     obtain (rfl | rfl) := hf
     all_goals simpa only [toContinuousMapOnAlgHom_apply, toContinuousMapOn_X_eq_restrict_id]
@@ -487,6 +501,7 @@ theorem ContinuousMap.induction_on {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜}
   | add _ _ _ _ hf hg => exact add _ _ hf hg
   | mul _ _ _ _ hf hg => exact mul _ _ hf hg
 
+set_option backward.isDefEq.respectTransparency false in
 open Topology in
 @[elab_as_elim]
 theorem ContinuousMap.induction_on_of_compact {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜} [CompactSpace s]
@@ -513,6 +528,7 @@ theorem ContinuousMap.algHom_ext_map_X {A : Type*} [Semiring A]
   exact Subalgebra.topologicalClosure_minimal
     (polynomialFunctions.le_equalizer s φ ψ h) (isClosed_eq hφ hψ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Continuous star algebra homomorphisms from `C(s, 𝕜)` into a star `𝕜`-algebra `A` which agree
 at `X : 𝕜[X]` (interpreted as a continuous map) are, in fact, equal. -/
 @[ext (iff := false)]
@@ -640,6 +656,7 @@ lemma ContinuousMapZero.adjoin_id_dense (s : Set 𝕜) [Fact (0 ∈ s)]
     ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
   exact map_zero f
 
+set_option backward.isDefEq.respectTransparency false in
 open NonUnitalStarAlgebra in
 lemma ContinuousMapZero.elemental_eq_top {𝕜 : Type*} [RCLike 𝕜] (s : Set 𝕜) [Fact (0 ∈ s)]
     [CompactSpace s] : elemental 𝕜 (ContinuousMapZero.id s) = ⊤ :=
@@ -656,8 +673,8 @@ lemma ContinuousMapZero.induction_on {s : Set 𝕜} [Fact (0 ∈ s)]
   refine closure (fun f hf => ?_) f
   induction hf using NonUnitalAlgebra.adjoin_induction with
   | mem f hf =>
-    simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_star] at hf
-    rw [star_eq_iff_star_eq, eq_comm (b := f)] at hf
+    push _ ∈ _ at hf
+    rw [star_eq_iff_star_eq] at hf
     obtain (rfl | rfl) := hf
     all_goals assumption
   | zero => exact zero

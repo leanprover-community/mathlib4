@@ -153,7 +153,7 @@ that are both cofibrant and fibrant.
 `BifibrantObject`. Otherwise, the typeclasses `IsCofibrant` and
 `IsFibrant` are preferred.) -/
 def bifibrantObjects : ObjectProperty C :=
-    cofibrantObjects C ⊓ fibrantObjects C
+  cofibrantObjects C ⊓ fibrantObjects C
 
 variable (C) in
 lemma bifibrantObjects_le_cofibrantObject :
@@ -214,6 +214,18 @@ instance (X : BifibrantObject C) : IsCofibrant X.obj := X.property.1
 instance (X : BifibrantObject C) : IsFibrant X.obj := X.property.2
 instance (X : BifibrantObject C) : IsCofibrant (BifibrantObject.ι.obj X) := X.property.1
 instance (X : BifibrantObject C) : IsFibrant (BifibrantObject.ι.obj X) := X.property.2
+
+/-- The inclusion `BifibrantObject C ⥤ CofibrantObject C`. -/
+abbrev ιCofibrantObject : BifibrantObject C ⥤ CofibrantObject C :=
+  ObjectProperty.ιOfLE (bifibrantObjects_le_cofibrantObject C)
+
+/-- The inclusion functor `BifibrantObject C ⥤ FibrantObject C`. -/
+abbrev ιFibrantObject : BifibrantObject C ⥤ FibrantObject C :=
+  ObjectProperty.ιOfLE (bifibrantObjects_le_fibrantObject C)
+
+instance (X : BifibrantObject C) : IsCofibrant (ιFibrantObject.obj X).obj := X.property.1
+
+instance (X : BifibrantObject C) : IsFibrant (ιCofibrantObject.obj X).obj := X.property.2
 
 end BifibrantObject
 

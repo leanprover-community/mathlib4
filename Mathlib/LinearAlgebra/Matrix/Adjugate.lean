@@ -6,8 +6,10 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Polynomial
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Cramer's rule and adjugate matrices
@@ -17,7 +19,7 @@ It is calculated with Cramer's rule, which we introduce first.
 The vectors returned by Cramer's rule are given by the linear map `cramer`,
 which sends a matrix `A` and vector `b` to the vector consisting of the
 determinant of replacing the `i`th column of `A` with `b` at index `i`
-(written as `(A.update_column i b).det`).
+(written as `(A.updateCol i b).det`).
 Using Cramer's rule, we can compute for each matrix `A` the matrix `adjugate A`.
 The entries of the adjugate are the minors of `A`.
 Instead of defining a minor by deleting row `i` and column `j` of `A`, we
@@ -222,6 +224,9 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
     intro h'
     exact h ((symm_apply_eq σ).mp h')
 
+theorem IsSymm.adjugate {A : Matrix n n α} (hA : A.IsSymm) : A.adjugate.IsSymm := by
+  rw [IsSymm, Matrix.adjugate_transpose, hA.eq]
+
 @[simp]
 theorem adjugate_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m α) :
     adjugate (A.submatrix e e) = (adjugate A).submatrix e e := by
@@ -255,6 +260,7 @@ theorem mul_adjugate_apply (A : Matrix n n α) (i j k) :
   rw [← smul_eq_mul, adjugate, of_apply, ← Pi.smul_apply, ← map_smul, ← Pi.single_smul',
     smul_eq_mul, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_adjugate (A : Matrix n n α) : A * adjugate A = A.det • (1 : Matrix n n α) := by
   ext i j
   rw [mul_apply, Pi.smul_apply, Pi.smul_apply, one_apply, smul_eq_mul, mul_boole]

@@ -39,27 +39,27 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
 @[to_additive nsmul_right_inj]
 lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
 
-@[to_additive IsAddTorsionFree.nsmul_eq_zero_iff_right]
-lemma IsMulTorsionFree.pow_eq_one_iff_left (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
+@[to_additive nsmul_eq_zero_iff_right]
+lemma pow_eq_one_iff_left (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
   rw [← pow_left_inj (a := a) hn, one_pow]
 
 -- We want to use `IsAddTorsion.nsmul_eq_zero_iff` earlier than `smul_eq_zero`.
 @[to_additive (attr := simp high)]
-lemma IsMulTorsionFree.pow_eq_one_iff : a ^ n = 1 ↔ a = 1 ∨ n = 0 := by
+lemma pow_eq_one_iff : a ^ n = 1 ↔ a = 1 ∨ n = 0 := by
   obtain rfl | hn := eq_or_ne n 0 <;> simp [pow_eq_one_iff_left, *]
 
-@[to_additive IsAddTorsionFree.nsmul_eq_zero_iff_left]
-lemma IsMulTorsionFree.pow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by simp [*]
+@[to_additive nsmul_eq_zero_iff_left]
+lemma pow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by simp [*]
 
 @[deprecated (since := "2025-10-19")]
-alias IsAddTorsionFree.nsmul_eq_zero_iff' := IsAddTorsionFree.nsmul_eq_zero_iff_left
+alias IsAddTorsionFree.nsmul_eq_zero_iff' := nsmul_eq_zero_iff_left
 
 @[deprecated (since := "2025-10-19")]
-alias IsMulTorsionFree.pow_eq_one_iff' := IsMulTorsionFree.pow_eq_one_iff_right
+alias IsMulTorsionFree.pow_eq_one_iff' := pow_eq_one_iff_right
 
 /-- See `sq_eq_one_iff` for a version that holds in rings. -/
 @[to_additive two_nsmul_eq_zero]
-lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := IsMulTorsionFree.pow_eq_one_iff_left (by lia)
+lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := pow_eq_one_iff_left (by lia)
 
 end Monoid
 

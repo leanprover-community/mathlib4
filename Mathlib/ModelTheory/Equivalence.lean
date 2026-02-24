@@ -49,7 +49,7 @@ namespace Imp
 @[refl]
 protected theorem refl (φ : L.BoundedFormula α n) : φ ⟹[T] φ := fun _ _ _ => id
 
-instance : IsRefl (L.BoundedFormula α n) T.Imp := ⟨Imp.refl⟩
+instance : @Std.Refl (L.BoundedFormula α n) T.Imp := ⟨Imp.refl⟩
 
 @[trans]
 protected theorem trans {φ ψ θ : L.BoundedFormula α n} (h1 : φ ⟹[T] ψ) (h2 : ψ ⟹[T] θ) :
@@ -136,7 +136,7 @@ protected theorem mpr {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
 protected theorem refl (φ : L.BoundedFormula α n) : φ ⇔[T] φ :=
   fun M v xs => by rw [BoundedFormula.realize_iff]
 
-instance : IsRefl (L.BoundedFormula α n) T.Iff :=
+instance : @Std.Refl (L.BoundedFormula α n) T.Iff :=
   ⟨Iff.refl⟩
 
 @[symm]

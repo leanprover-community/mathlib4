@@ -82,6 +82,7 @@ theorem subst_proof₁ (x y z s : ℝ) (hxyz : x + y + z = 0) :
   · convert this y z x _ h using 2 <;> linarith
   · convert this z x y _ h using 2 <;> linarith
 
+set_option backward.isDefEq.respectTransparency false in
 theorem proof₁ {a b c : ℝ} :
     |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
       9 * sqrt 2 / 32 * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2 :=
@@ -95,7 +96,7 @@ theorem proof₂ (M : ℝ)
       |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
         M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) :
     9 * sqrt 2 / 32 ≤ M := by
-  set α := sqrt (2:ℝ)
+  set α := sqrt (2 : ℝ)
   have hα : α ^ 2 = 2 := sq_sqrt (by simp)
   let a := 2 - 3 * α
   let c := 2 + 3 * α

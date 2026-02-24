@@ -173,6 +173,7 @@ instance : NatCast (RingQuot r) :=
 @[no_expose] instance : Mul (RingQuot r) :=
   ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨Quot.map₂ (· * ·) Rel.mul_right Rel.mul_left a b⟩⟩
 
+set_option backward.whnf.reducibleClassField false in
 @[no_expose] instance : NatPow (RingQuot r) :=
   ⟨fun ⟨a⟩ n ↦ ⟨Quot.lift (fun a ↦ Quot.mk (RingQuot.Rel r) (a ^ n))
     (fun a b (h : Rel r a b) ↦ by
@@ -181,7 +182,7 @@ instance : NatCast (RingQuot r) :=
       induction n with
       | zero => rw [pow_zero, pow_zero]
       | succ n ih =>
-        simpa [pow_succ, (· * ·), instMul, Quot.map₂_mk, mk.injEq] using
+        simpa +instances [pow_succ, (· * ·), instMul, Quot.map₂_mk, mk.injEq] using
           congr_arg₂ (fun x y ↦ (⟨x⟩ : RingQuot r) * ⟨y⟩) ih (Quot.sound h))
     a⟩⟩
 
@@ -280,61 +281,50 @@ instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r)
     rintro n ⟨⟨⟩⟩
     simp only [pow_quot, mul_quot, pow_succ]
 
+set_option backward.whnf.reducibleClassField false in
 instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
-  natCast_zero := by simp [instNatCast, natCast, ← zero_quot]
-  natCast_succ := by simp [instNatCast, natCast, ← one_quot, add_quot]
+  natCast_zero := by simp +instances [instNatCast, natCast, ← zero_quot]
+  natCast_succ := by simp +instances [instNatCast, natCast, ← one_quot, add_quot]
   left_distrib := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp only [mul_quot, add_quot, left_distrib]
   right_distrib := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp only [mul_quot, add_quot, right_distrib]
-  nsmul := (· • ·)
-  nsmul_zero := by
-    rintro ⟨⟨⟩⟩
-    simp only [zero_smul]
-  nsmul_succ := by
-    rintro n ⟨⟨⟩⟩
-    simp only [smul_quot, nsmul_eq_mul, Nat.cast_add, Nat.cast_one, add_mul, one_mul,
-               add_comm, add_quot]
-  __ := instAddCommMonoid r
-  __ := instMonoidWithZero r
 
 -- Has to be exposed, otherwise we get diamonds in ℤ-algebras.
 /-- The `intCast` function for `RingQuot`. -/
 def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 
-instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
-  { RingQuot.instSemiring r with
-    neg_add_cancel := by
-      rintro ⟨⟨⟩⟩
-      simp [neg_quot, add_quot, ← zero_quot]
-    sub_eq_add_neg := by
-      rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-      simp [neg_quot, sub_quot, add_quot, sub_eq_add_neg]
-    zsmul := (· • ·)
-    zsmul_zero' := by
-      rintro ⟨⟨⟩⟩
-      simp [smul_quot, ← zero_quot]
-    zsmul_succ' := by
-      rintro n ⟨⟨⟩⟩
-      simp [smul_quot, add_quot, add_mul, add_comm]
-    zsmul_neg' := by
-      rintro n ⟨⟨⟩⟩
-      simp [smul_quot, neg_quot, add_mul]
-    intCast := intCast r
-    intCast_ofNat := fun n => congrArg RingQuot.mk <| by
-      exact congrArg (Quot.mk _) (Int.cast_natCast _)
-    intCast_negSucc := fun n => congrArg RingQuot.mk <| by
-      exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
+instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) where
+  neg_add_cancel := by
+    rintro ⟨⟨⟩⟩
+    simp [neg_quot, add_quot, ← zero_quot]
+  sub_eq_add_neg := by
+    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
+    simp [neg_quot, sub_quot, add_quot, sub_eq_add_neg]
+  zsmul := (· • ·)
+  zsmul_zero' := by
+    rintro ⟨⟨⟩⟩
+    simp [smul_quot, ← zero_quot]
+  zsmul_succ' := by
+    rintro n ⟨⟨⟩⟩
+    simp [smul_quot, add_quot, add_mul, add_comm]
+  zsmul_neg' := by
+    rintro n ⟨⟨⟩⟩
+    simp [smul_quot, neg_quot, add_mul]
+  intCast := intCast r
+  intCast_ofNat := fun n => congrArg RingQuot.mk <| by
+    exact congrArg (Quot.mk _) (Int.cast_natCast _)
+  intCast_negSucc := fun n => congrArg RingQuot.mk <| by
+    exact congrArg (Quot.mk _) (Int.cast_negSucc n)
 
 instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
-    CommSemiring (RingQuot r) :=
-  { RingQuot.instSemiring r with
-    mul_comm := by
-      rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-      simp [mul_quot, mul_comm] }
+    CommSemiring (RingQuot r) where
+  mul_comm := by
+    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
+    simp [mul_quot, mul_comm]
 
 instance {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
   { RingQuot.instCommSemiring r, RingQuot.instRing r with }

@@ -71,9 +71,6 @@ variable [AddCommMonoid N] [Module R N]
 
 namespace FiniteType
 
-@[deprecated inferInstance (since := "2025-07-12")]
-theorem self : FiniteType R R := inferInstance
-
 theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
     FiniteType S A := by
   obtain ⟨s, hS⟩ := hA.out
@@ -107,19 +104,12 @@ instance [FiniteType R S] : FiniteType R S[X] := by
   rw [Finset.coe_singleton]
   exact Polynomial.adjoin_X
 
-@[deprecated inferInstance (since := "2025-07-12")]
-protected theorem polynomial : FiniteType R R[X] := inferInstance
-
 instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (MvPolynomial ι S) := by
   classical
   cases nonempty_fintype ι
   refine .trans ‹_› ⟨Finset.univ.image MvPolynomial.X, ?_⟩
   rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
   exact MvPolynomial.adjoin_range_X
-
-@[deprecated inferInstance (since := "2025-07-12")]
-protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolynomial ι R) :=
-  inferInstance
 
 instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (FreeAlgebra S ι) := by
   classical
@@ -128,10 +118,7 @@ instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (FreeAlgebra S
   rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
   exact FreeAlgebra.adjoin_range_ι ..
 
-@[deprecated inferInstance (since := "2025-07-12")]
-protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) :=
-  inferInstance
-
+set_option backward.isDefEq.respectTransparency false in
 /-- An algebra is finitely generated if and only if it is a quotient
 of a free algebra whose variables are indexed by a finset. -/
 theorem iff_quotient_freeAlgebra :
@@ -145,6 +132,7 @@ theorem iff_quotient_freeAlgebra :
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A commutative algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a finset. -/
 theorem iff_quotient_mvPolynomial :
@@ -161,6 +149,7 @@ theorem iff_quotient_mvPolynomial :
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a fintype. -/
 theorem iff_quotient_freeAlgebra' : FiniteType R A ↔
@@ -200,6 +189,7 @@ theorem iff_quotient_mvPolynomial'' :
 instance prod [hA : FiniteType R A] [hB : FiniteType R B] : FiniteType R (A × B) :=
   ⟨by rw [← Subalgebra.prod_top]; exact hA.1.prod hB.1⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [h : Algebra.FiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
   obtain ⟨s, hs⟩ := h.1
@@ -246,6 +236,7 @@ end Finite
 
 namespace FiniteType
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: should infer_instance be marked as normalising?
 set_option linter.flexible false in
 variable (A) in
@@ -328,9 +319,6 @@ theorem of_comp_finiteType {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp 
 end FiniteType
 
 end AlgHom
-
-@[deprecated (since := "2025-08-12")] alias algebraMap_finiteType_iff_algebra_finiteType :=
-  RingHom.finiteType_algebraMap
 
 section MonoidAlgebra
 
@@ -629,6 +617,7 @@ end MonoidAlgebra
 
 section Orzech
 
+set_option backward.isDefEq.respectTransparency false in
 open Submodule Module Module.Finite in
 /-- Any commutative ring `R` satisfies the `OrzechProperty`, that is, for any finitely generated
 `R`-module `M`, any surjective homomorphism `f : N →ₗ[R] M` from a submodule `N` of `M` to `M`

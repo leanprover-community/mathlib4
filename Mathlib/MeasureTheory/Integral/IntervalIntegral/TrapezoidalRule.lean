@@ -72,6 +72,7 @@ theorem trapezoidal_integral_one (f : ℝ → ℝ) (a b : ℝ) :
     trapezoidal_integral f 1 a b = (b - a) / 2 * (f a + f b) := by
   simp [trapezoidal_integral, mul_comm_div]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A basic trapezoidal equivalent to `IntervalIntegral.sum_integral_adjacent_intervals`. More
 general theorems are certainly possible, but many of them can be derived from repeated applications
 of this one. -/
@@ -113,6 +114,7 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
         ⟨mul_le_mul_of_nonpos_right hk h_neg, mul_nonpos_of_nonneg_of_nonpos k.cast_nonneg h_neg⟩
     · exact Set.mem_uIcc_of_le (le_add_of_nonneg_right (by positivity)) (by grw [hk])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The most basic case possible: two ordered points, with N = 1. This lemma is used in the proof of
 the general error bound later on. -/
 private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
@@ -176,6 +178,7 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     (ContinuousOn.intervalIntegrable_of_Icc a_lt_b.le fun x hx ↦ (h_ddg x hx).continuousWithinAt)
   exact (bound_g b ⟨a_lt_b.le, le_rfl⟩).trans_eq (by ring_nf)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The hard part of the trapezoidal rule error bound: proving it in the case of a non-empty closed
 interval with ordered endpoints. This lemma is used in the proof of the general error bound later
 on. -/
@@ -250,6 +253,7 @@ theorem trapezoidal_error_le {f : ℝ → ℝ} {a b : ℝ}
     rw [abs_of_neg (sub_neg.mpr h_gt), neg_sub, trapezoidal_error_symm f N_nonzero a b, abs_neg]
     exact trapezoidal_error_le_of_lt h_gt h_df h_ddf h_ddf_integrable.symm fpp_bound N_nonzero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The error bound for trapezoidal integration in the slightly weaker, but very common, case where
 `f` is `C^2`. -/
 theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContDiffOn ℝ 2 f [[a, b]])
@@ -257,11 +261,11 @@ theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContD
     (N_nonzero : 0 < N) : |trapezoidal_error f N a b| ≤ |b - a| ^ 3 * ζ / (12 * N ^ 2) := by
   -- This use of rcases slightly duplicates effort from the proof of trapezoidal_error_le, but doing
   -- it any other way that I can think of would be worse.
-  rcases eq_or_ne a b with h_eq | h_neq
+  rcases eq_or_ne a b with h_eq | h_ne
   · simp [h_eq]
   -- Once we have a ≠ b, all the necessary assumptions on f follow pretty quickly from its being
   -- C^2.
-  have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_neq)
+  have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_ne)
   have h_df : DifferentiableOn ℝ f [[a, b]] := ContDiffOn.differentiableOn h_f_c2 two_ne_zero
   have h_ddf : DifferentiableOn ℝ (derivWithin f [[a, b]]) [[a, b]] := by
     rw [← iteratedDerivWithin_one]

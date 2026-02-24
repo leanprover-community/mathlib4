@@ -311,7 +311,8 @@ theorem right_comm (x : A) (r : R) (y : A) :
     x * algebraMap R A r * y = x * y * algebraMap R A r := by
   rw [mul_assoc, commutes, ← mul_assoc]
 
-instance _root_.IsScalarTower.right : IsScalarTower R A A :=
+/-- This has high priority because it is almost always the right instance when it applies. -/
+instance (priority := high) _root_.IsScalarTower.right : IsScalarTower R A A :=
   ⟨fun x y z => by rw [smul_eq_mul, smul_eq_mul, smul_def, smul_def, mul_assoc]⟩
 
 @[simp]
@@ -392,7 +393,7 @@ instance (priority := 1100) id : Algebra R R where
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].
   toSMul := instSMulOfMul
-  __ := ({RingHom.id R with toFun x := x}).toAlgebra
+  __ := ({ RingHom.id R with toFun x := x }).toAlgebra
 
 @[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl
 
@@ -402,14 +403,6 @@ variable {R A}
 lemma algebraMap_self_apply (x : R) : algebraMap R R x = x := rfl
 
 namespace id
-
-@[deprecated algebraMap_self (since := "2025-07-17")]
-theorem map_eq_id : algebraMap R R = RingHom.id _ :=
-  rfl
-
-@[deprecated algebraMap_self_apply (since := "2025-07-17")]
-theorem map_eq_self (x : R) : algebraMap R R x = x :=
-  rfl
 
 @[deprecated _root_.smul_eq_mul (since := "2025-12-02")]
 theorem smul_eq_mul (x y : R) : x • y = x * y :=

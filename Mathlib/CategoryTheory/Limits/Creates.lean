@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 # Creating (co)limits
 
 We say that `F` creates limits of `K` if, given any limit cone `c` for `K ⋙ F`
-(i.e. below) we can lift it to a cone "above", and further that `F` reflects
+(i.e. below), we can lift it to a cone "above", and further that `F` reflects
 limits for `K`.
 -/
 
@@ -82,7 +82,11 @@ class CreatesLimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
 
 -- This should be used with explicit universe variables.
 /-- `F` creates limits if it creates limits of shape `J` for any `J`. -/
-@[nolint checkUnivs, pp_with_univ]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the shape universes in
+-- `CreatesLimitsOfSize` and `CreatesColimitsOfSize` would default to universe output parameters.
+-- See Note [universe output parameters and typeclass caching].
+@[univ_out_params, nolint checkUnivs, pp_with_univ]
 class CreatesLimitsOfSize (F : C ⥤ D) where
   CreatesLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesLimitsOfShape J F := by
     infer_instance
@@ -111,7 +115,7 @@ class CreatesColimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
 
 -- This should be used with explicit universe variables.
 /-- `F` creates colimits if it creates colimits of shape `J` for any small `J`. -/
-@[nolint checkUnivs, pp_with_univ]
+@[univ_out_params, nolint checkUnivs, pp_with_univ]
 class CreatesColimitsOfSize (F : C ⥤ D) where
   CreatesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesColimitsOfShape J F := by
     infer_instance
@@ -121,7 +125,8 @@ abbrev CreatesColimits (F : C ⥤ D) :=
   CreatesColimitsOfSize.{v₂, v₂} F
 
 -- see Note [lower instance priority]
-attribute [instance 100] CreatesLimitsOfShape.CreatesLimit CreatesLimitsOfSize.CreatesLimitsOfShape
+attribute [instance_reducible, instance 100]
+  CreatesLimitsOfShape.CreatesLimit CreatesLimitsOfSize.CreatesLimitsOfShape
   CreatesColimitsOfShape.CreatesColimit CreatesColimitsOfSize.CreatesColimitsOfShape
 
 -- see Note [lower instance priority]
@@ -136,6 +141,7 @@ def liftedLimitMapsToOriginal {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c 
     (t : IsLimit c) : F.mapCone (liftLimit t) ≅ c :=
   (CreatesLimit.lifts c t).validLift
 
+set_option backward.isDefEq.respectTransparency false in
 lemma liftedLimitMapsToOriginal_inv_map_π
     {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (j : J) :
       (liftedLimitMapsToOriginal t).inv.hom ≫ F.map ((liftLimit t).π.app j) = c.π.app j := by
@@ -143,6 +149,7 @@ lemma liftedLimitMapsToOriginal_inv_map_π
     from (by simp), ← Category.assoc, ← Cone.category_comp_hom]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma liftedLimitMapsToOriginal_hom_π
     {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (j : J) :
       (liftedLimitMapsToOriginal t).hom.hom ≫ c.π.app j = F.map ((liftLimit t).π.app j) := by
@@ -305,6 +312,7 @@ def createsLimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
     CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfLift' (limit.isLimit _) c i
 
+set_option backward.isDefEq.respectTransparency false in
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
 -- so the constructed limits may not be ideal, definitionally.

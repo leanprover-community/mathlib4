@@ -59,6 +59,7 @@ instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
   forget₂.obj X := .of X
   forget₂.map f := BddLat.ofHom (CompleteLatticeHom.toBoundedLatticeHom f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an isomorphism of complete lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : CompleteLat.{u}} (e : α ≃o β) : α ≅ β where

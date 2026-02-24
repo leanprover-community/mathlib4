@@ -6,6 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Independence.Kernel.Indep
+public import Mathlib.MeasureTheory.MeasurableSpace.Pi
+public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 /-!
 # Independence of random variables with respect to a kernel and a measure
@@ -161,6 +164,7 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
 
 alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {f g : Π i, Ω → β i} (hf : iIndepFun f κ μ)
     (h : ∀ i, ∀ᵐ a ∂μ, f i =ᵐ[κ a] g i) :
@@ -322,6 +326,7 @@ section iIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
 two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
 tuple `(f i)_i` for `i ∈ T`. -/

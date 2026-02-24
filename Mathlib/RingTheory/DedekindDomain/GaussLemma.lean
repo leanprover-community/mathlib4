@@ -23,13 +23,14 @@ namespace Polynomial
 open IsDedekindDomain HeightOneSpectrum
 
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] (v : HeightOneSpectrum R) {b : NNReal}
-(hb : 1 < b) (p : R[X])
+  (hb : 1 < b) (p : R[X])
 
 theorem gaussNorm_intAdicAbv_le_one : p.gaussNorm (v.intAdicAbv hb) 1 ≤ 1 := by
   by_cases hp0 : p = 0
   · simp [hp0]
   simp [gaussNorm, hp0, intAdicAbv_le_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a polynomial `p` in `R[X]`, the `v`-adic Gauss norm of `p` is smaller than 1 if and only
 if the content ideal of `p` is contained in the prime ideal corresponding to `v`. -/
 theorem gaussNorm_lt_one_iff_contentIdeal_le :
@@ -60,7 +61,7 @@ theorem contentIdeal_eq_top_iff_forall_gaussNorm_eq_one (hR : ¬IsField R) :
   simp [← not_iff_not, gaussNorm_lt_one_iff_contentIdeal_le, ideal_ne_top_iff_exists hR]
 
 variable {R : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] (hR : ¬IsField R)
-{b : NNReal} (hb : 1 < b) (p : R[X])
+  {b : NNReal} (hb : 1 < b) (p : R[X])
 
 include hR in
 /-- In case `R` is PID, given a polynomial `p` in `R[X]`, `p` is primitive if and only if the

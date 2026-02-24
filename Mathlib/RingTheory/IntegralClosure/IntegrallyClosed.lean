@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Localization.Integral
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Integrally closed rings
@@ -126,10 +127,12 @@ theorem isIntegrallyClosed_iff :
   simp [isIntegrallyClosed_iff_isIntegrallyClosedIn K, isIntegrallyClosedIn_iff,
         IsFractionRing.injective R K]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIntegrallyClosedIn (integralClosure R A) A :=
   isIntegrallyClosedIn_iff.mpr
     ⟨FaithfulSMul.algebraMap_injective _ _, fun h ↦ ⟨⟨_, isIntegral_trans _ h⟩, rfl⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIntegrallyClosedIn (integralClosure R A).toSubring A :=
   inferInstanceAs (IsIntegrallyClosedIn (integralClosure R A) A)
 
@@ -182,6 +185,7 @@ theorem exists_algebraMap_eq_of_isIntegral_pow [IsIntegrallyClosedIn R A]
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R A y = x :=
   isIntegral_iff.mp <| hx.of_pow hn
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_algebraMap_eq_of_pow_mem_subalgebra {A : Type*} [CommRing A] [Algebra R A]
     {S : Subalgebra R A} [IsIntegrallyClosedIn S A] {x : A} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S A y = x :=
@@ -204,8 +208,8 @@ theorem integralClosure_eq_bot_iff (hRA : Function.Injective (algebraMap R A)) :
 variable (R)
 
 @[simp]
-theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [NoZeroSMulDivisors R A] [Nontrivial A] :
-    integralClosure R A = ⊥ :=
+theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [IsDomain R] [Module.IsTorsionFree R A]
+    [Nontrivial A] : integralClosure R A = ⊥ :=
   (integralClosure_eq_bot_iff A (FaithfulSMul.algebraMap_injective _ _)).mpr ‹_›
 
 variable {A} {B : Type*} [CommRing B]
@@ -252,6 +256,7 @@ theorem exists_algebraMap_eq_of_isIntegral_pow [IsIntegrallyClosed R] {x : K} {n
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R K y = x :=
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_isIntegral_pow hn hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Algebra R K]
     {S : Subalgebra R K} [IsIntegrallyClosed S] [IsFractionRing S K] {x : K} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S K y = x :=
@@ -346,7 +351,7 @@ theorem _root_.Associated.pow_iff [IsDomain R] [IsIntegrallyClosed R] {n : ℕ} 
 variable (R)
 
 /-- This is almost a duplicate of `IsIntegrallyClosedIn.integralClosure_eq_bot`,
-except the `NoZeroSMulDivisors` hypothesis isn't inferred automatically from `IsFractionRing`. -/
+except the `Module.IsTorsionFree` hypothesis isn't inferred automatically from `IsFractionRing`. -/
 @[simp]
 theorem integralClosure_eq_bot [IsIntegrallyClosed R] : integralClosure R K = ⊥ :=
   (integralClosure_eq_bot_iff K).mpr ‹_›
@@ -362,6 +367,7 @@ variable (K : Type*) [Field K] [Algebra R K]
 variable [IsFractionRing R K]
 variable {L : Type*} [Field L] [Algebra K L] [Algebra R L] [IsScalarTower R K L]
 
+set_option backward.isDefEq.respectTransparency false in
 -- Can't be an instance because you need to supply `K`.
 theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L] :
     IsIntegrallyClosed (integralClosure R L) :=
