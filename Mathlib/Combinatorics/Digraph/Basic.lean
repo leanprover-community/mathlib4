@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Kyle Miller, Jack Cheverton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller, Jack Cheverton, Jeremy Tan
+Authors: Kyle Miller, Jack Cheverton, Jeremy Tan, Shreyas Srinivas
 -/
 module
 
