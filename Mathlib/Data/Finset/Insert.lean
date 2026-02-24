@@ -111,7 +111,9 @@ theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
 
 @[simp, norm_cast]
-theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by grind
+theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by
+  ext
+  simp
 
 @[simp, norm_cast]
 theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by grind
@@ -139,7 +141,7 @@ theorem singleton_iff_unique_mem (s : Finset α) : (∃ a, s = {a}) ↔ ∃! a, 
   simp only [eq_singleton_iff_unique_mem, ExistsUnique]
 
 theorem singleton_subset_set_iff {s : Set α} {a : α} : ↑({a} : Finset α) ⊆ s ↔ a ∈ s := by
-  grind
+  simp
 
 @[simp, grind =]
 theorem singleton_subset_iff {s : Finset α} {a : α} : {a} ⊆ s ↔ a ∈ s :=
