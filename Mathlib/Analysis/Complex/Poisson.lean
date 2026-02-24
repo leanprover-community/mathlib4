@@ -33,22 +33,22 @@ various versions of the Poisson Formula.
 /--
 The Herglotz-Riesz kernel of integration.
 -/
-noncomputable def herglotzRiesz (c w z : ℂ) : ℂ :=
+noncomputable def herglotzRieszKernel (c w z : ℂ) : ℂ :=
   ((z - c) + (w - c)) / ((z - c) - (w - c))
 
-lemma herglotzRiesz_def (c w z : ℂ) :
-    herglotzRiesz c w z = ((z - c) + (w - c)) / ((z - c) - (w - c)) := by rfl
+lemma herglotzRieszKernel_def (c w z : ℂ) :
+    herglotzRieszKernel c w z = ((z - c) + (w - c)) / ((z - c) - (w - c)) := by rfl
 
 /--
 The Poisson kernel of integration.
 -/
-noncomputable def poisson (c w z : ℂ) : ℝ :=
+noncomputable def poissonKernel (c w z : ℂ) : ℝ :=
   (‖z - c‖ ^ 2 - ‖w - c‖ ^ 2) / ‖(z - c) - (w - c)‖ ^ 2
 
-lemma poisson_def (c w z : ℂ) :
-    poisson c w z = (‖z - c‖ ^ 2 - ‖w - c‖ ^ 2) / ‖(z - c) - (w - c)‖ ^ 2 := by rfl
+lemma poissonKernel_def (c w z : ℂ) :
+    poissonKernel c w z = (‖z - c‖ ^ 2 - ‖w - c‖ ^ 2) / ‖(z - c) - (w - c)‖ ^ 2 := by rfl
 
-private lemma poisson_eq_re_herglotz_riesz_aux {a b : ℂ} :
+private lemma poissonKernel_eq_re_herglotzRieszKernel_aux {a b : ℂ} :
     ((a + b) / (a - b)).re = (‖a‖ ^ 2 - ‖b‖ ^ 2) / ‖a - b‖ ^ 2 := by
   rw [div_re, normSq_eq_norm_sq (a - b), ← add_div, add_re, sub_re, add_im, sub_im]
   calc ((a.re + b.re) * (a.re - b.re) + (a.im + b.im) * (a.im - b.im)) / ‖a - b‖ ^ 2
@@ -61,12 +61,13 @@ private lemma poisson_eq_re_herglotz_riesz_aux {a b : ℂ} :
 Companion theorem to the Poisson Integral Formula: The real part of the Herglotz–Riesz kernel and
 the Poisson kernel agree on the path of integration.
 -/
-lemma poisson_eq_re_herglotz_riesz {c w : ℂ} :
-    poisson c w = Complex.re ∘ herglotzRiesz c w := by
+lemma poissonKernel_eq_re_herglotzRieszKernel {c w : ℂ} :
+    poissonKernel c w = Complex.re ∘ herglotzRieszKernel c w := by
   ext z
-  rw [Function.comp_apply, poisson, herglotzRiesz, poisson_eq_re_herglotz_riesz_aux]
+  rw [Function.comp_apply, poissonKernel, herglotzRieszKernel,
+    poissonKernel_eq_re_herglotzRieszKernel_aux]
 
-private lemma re_herglotz_riesz_le_aux (φ θ r R : ℝ) (h₁ : 0 < r) (h₂ : r < R) :
+private lemma re_herglotzRieszKernel_le_aux (φ θ r R : ℝ) (h₁ : 0 < r) (h₂ : r < R) :
     ((R * exp (θ * I) + r * exp (φ * I)) / (R * exp (θ * I) - r * exp (φ * I))).re
       ≤ (R + r) / (R - r) := by
   rw [div_eq_mul_inv]
@@ -75,7 +76,7 @@ private lemma re_herglotz_riesz_le_aux (φ θ r R : ℝ) (h₁ : 0 < r) (h₂ : 
   have h_subst : (R^2 - r^2) / (R^2 + r^2 - 2 * R * r * Real.cos (θ - φ)) ≤ (R + r) / (R - r) := by
     rw [div_le_div_iff₀] <;> nlinarith [mul_pos h₁ (sub_pos.mpr h₂)]
   convert h_subst using 1
-  rw [← div_eq_mul_inv, poisson_eq_re_herglotz_riesz_aux]
+  rw [← div_eq_mul_inv, poissonKernel_eq_re_herglotzRieszKernel_aux]
   suffices (R * R * normSq (cexp (θ * I)) + r * r * normSq (cexp (φ * I)) -
       2 * (R * Real.cos θ * (r * Real.cos φ) + R * Real.sin θ * (r * Real.sin φ))) =
       (R ^ 2 + r ^ 2 - 2 * R * r * Real.cos (θ - φ)) by
@@ -87,19 +88,19 @@ private lemma re_herglotz_riesz_le_aux (φ θ r R : ℝ) (h₁ : 0 < r) (h₂ : 
 Companion theorem to the Poisson Integral Formula: Upper estimate for the real part of the
 Herglotz-Riesz kernel.
 -/
-theorem re_herglotz_riesz_le {c z : ℂ} (hz : z ∈ sphere c R) (hw : w ∈ ball c R) :
+theorem re_herglotzRieszKernel_le {c z : ℂ} (hz : z ∈ sphere c R) (hw : w ∈ ball c R) :
     ((z - c + (w - c)) / ((z - c) - (w - c))).re ≤ (R + ‖w - c‖) / (R - ‖w - c‖) := by
   obtain ⟨η₀, rfl, η₂⟩ : 0 < R ∧ R = ‖z - c‖ ∧ z - c ≠ 0 := by
     grind [ball_eq_empty, mem_sphere, dist_eq_norm, norm_pos_iff]
   by_cases h₁w : ‖w - c‖ = 0
   · aesop
-  simpa using re_herglotz_riesz_le_aux (w - c).arg (z - c).arg ‖w - c‖ ‖z - c‖ (by simpa using h₁w)
-    (by simpa)
+  simpa using re_herglotzRieszKernel_le_aux (w - c).arg (z - c).arg ‖w - c‖ ‖z - c‖
+    (by simpa using h₁w) (by simpa)
 
-private lemma le_re_herglotz_riesz_aux (θ φ r R : ℝ) (h₁ : 0 < r) (h₂ : r < R) :
+private lemma le_re_herglotzRieszKernel_aux (θ φ r R : ℝ) (h₁ : 0 < r) (h₂ : r < R) :
     (R - r) / (R + r)
       ≤ ((R * exp (θ * I) + r * exp (φ * I)) / (R * exp (θ * I) - r * exp (φ * I))).re := by
-  rw [poisson_eq_re_herglotz_riesz_aux]
+  rw [poissonKernel_eq_re_herglotzRieszKernel_aux]
   simp only [Complex.norm_mul, norm_real, norm_eq_abs, norm_exp_ofReal_mul_I, mul_one, sq_abs,
     sq_sub_sq]
   field_simp [sub_pos.mpr h₂]
@@ -120,14 +121,14 @@ private lemma le_re_herglotz_riesz_aux (θ φ r R : ℝ) (h₁ : 0 < r) (h₂ : 
 Companion theorem to the Poisson Integral Formula: Lower estimate for the real part of the
 Herglotz-Riesz kernel.
 -/
-theorem le_re_herglotz_riesz {c z : ℂ} (hz : z ∈ sphere c R) (hw : w ∈ ball c R) :
+theorem le_re_herglotzRieszKernel {c z : ℂ} (hz : z ∈ sphere c R) (hw : w ∈ ball c R) :
     (R - ‖w - c‖) / (R + ‖w - c‖) ≤ ((z - c + (w - c)) / ((z - c) - (w - c))).re := by
   obtain ⟨η₀, rfl, η₂⟩ : 0 < R ∧ R = ‖z - c‖ ∧ z - c ≠ 0 := by
     grind [ball_eq_empty, mem_sphere, dist_eq_norm, norm_pos_iff]
   by_cases h₁w : ‖w - c‖ = 0
   · aesop
-  simpa using le_re_herglotz_riesz_aux (z - c).arg (w - c).arg ‖w - c‖ ‖z - c‖ (by simpa using h₁w)
-    (by simpa)
+  simpa using le_re_herglotzRieszKernel_aux (z - c).arg (w - c).arg ‖w - c‖ ‖z - c‖
+    (by simpa using h₁w) (by simpa)
 
 -- Trigonometric identity used in the computation of
 -- `DiffContOnCl.circleAverage_re_smul_on_ball_zero`.
@@ -207,42 +208,42 @@ private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
 **Poisson integral formula** for ℂ-differentiable functions on arbitrary disks in the complex plane,
 formulated with the real part of the Herglotz–Riesz kernel of integration.
 -/
-theorem DiffContOnCl.circleAverage_re_herglotzRiesz_smul [CompleteSpace E] {c : ℂ}
+theorem DiffContOnCl.circleAverage_re_herglotzRieszKernel_smul [CompleteSpace E] {c : ℂ}
     (hf : DiffContOnCl ℂ f (ball c R)) (hw : w ∈ ball c R) :
-    Real.circleAverage ((re ∘ herglotzRiesz c w) • f) c R = f w := by
+    Real.circleAverage ((re ∘ herglotzRieszKernel c w) • f) c R = f w := by
   rcases le_or_gt R 0 with hR | hR
   · simp_all [(ball_eq_empty).2 hR]
   have h₁g : DiffContOnCl ℂ (fun z ↦ f (z + c)) (ball 0 R) :=
     hf.comp (DifferentiableOn.diffContOnCl <| by fun_prop) (by intro; aesop)
   have h₂g : w - c ∈ ball 0 R := by simpa using hw
-  simpa [← circleAverage_map_add_const, herglotzRiesz_def]
+  simpa [← circleAverage_map_add_const, herglotzRieszKernel_def]
     using circleAverage_re_smul_on_ball_zero h₁g h₂g
 
 /--
 **Poisson integral formula** for ℂ-differentiable functions on arbitrary disks in the complex plane,
 formulated with the real part of the Herglotz–Riesz kernel of integration expanded.
 -/
-theorem DiffContOnCl.circleAverage_re_herglotzRiesz_smul' [CompleteSpace E] {c : ℂ}
+theorem DiffContOnCl.circleAverage_re_herglotzRieszKernel_smul' [CompleteSpace E] {c : ℂ}
     (hf : DiffContOnCl ℂ f (ball c R)) (hw : w ∈ ball c R) :
     Real.circleAverage (fun z ↦ ((z - c + (w - c)) / ((z - c) - (w - c))).re • f z) c R = f w :=
-  hf.circleAverage_re_herglotzRiesz_smul hw
+  hf.circleAverage_re_herglotzRieszKernel_smul hw
 
 /--
 **Poisson integral formula** for ℂ-differentiable functions on arbitrary disks in the complex plane,
 formulated with the Poisson kernel of integration.
 -/
-theorem DiffContOnCl.circleAverage_poisson_smul [CompleteSpace E] {c : ℂ}
+theorem DiffContOnCl.circleAverage_poissonKernel_smul [CompleteSpace E] {c : ℂ}
     (hf : DiffContOnCl ℂ f (ball c R)) (hw : w ∈ ball c R) :
-    Real.circleAverage (poisson c w • f) c R = f w := by
-  simp_rw [poisson_eq_re_herglotz_riesz]
-  apply hf.circleAverage_re_herglotzRiesz_smul hw
+    Real.circleAverage (poissonKernel c w • f) c R = f w := by
+  simp_rw [poissonKernel_eq_re_herglotzRieszKernel]
+  apply hf.circleAverage_re_herglotzRieszKernel_smul hw
 
 /--
 **Poisson integral formula** for ℂ-differentiable functions on arbitrary disks in the complex plane,
 formulated with the Poisson kernel of integration expanded.
 -/
-theorem DiffContOnCl.circleAverage_poisson_smul' [CompleteSpace E] {c : ℂ}
+theorem DiffContOnCl.circleAverage_poissonKernel_smul' [CompleteSpace E] {c : ℂ}
     (hf : DiffContOnCl ℂ f (ball c R)) (hw : w ∈ ball c R) :
     Real.circleAverage (fun z ↦ ((‖z - c‖ ^ 2 - ‖w - c‖ ^ 2) / ‖(z - c) - (w - c)‖ ^ 2) • f z) c R
       = f w := by
-  apply hf.circleAverage_poisson_smul hw
+  apply hf.circleAverage_poissonKernel_smul hw
