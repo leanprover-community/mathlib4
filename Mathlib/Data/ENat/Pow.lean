@@ -68,6 +68,7 @@ lemma epow_zero : x ^ (0 : ℕ∞) = 1 := by
 lemma epow_one : x ^ (1 : ℕ∞) = x := by
   rw [← coe_one, epow_natCast, pow_one]
 
+set_option backward.whnf.reducibleClassField false in
 lemma epow_top (h : 1 < x) : x ^ (⊤ : ℕ∞) = ⊤ := by
   simp +instances only [instHPow, instPow, (zero_le_one.trans_lt h).ne.symm, ↓reduceIte, h.ne.symm]
 

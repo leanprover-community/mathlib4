@@ -313,6 +313,7 @@ theorem cons_zero_eq_div_of_eq_div [CommGroupWithZero M] (e : M) {t t_n t_d : NF
 instance : Inv (NF M) where
   inv l := l.map fun (a, x) ↦ (-a, x)
 
+set_option backward.whnf.reducibleClassField false in
 theorem eval_inv [CommGroupWithZero M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
   simp +instances only [NF.eval, List.map_map, NF.instInv, List.prod_inv]
   congr! 2

@@ -64,7 +64,7 @@ open Finset Finsupp
 
 variable (σ R) in
 /-- The ideal spanned by all variables. -/
-def idealOfVars : Ideal (MvPolynomial σ R) := .span (.range X)
+noncomputable def idealOfVars : Ideal (MvPolynomial σ R) := .span (.range X)
 
 lemma idealOfVars_eq_restrictSupportIdeal :
     idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
@@ -78,7 +78,6 @@ lemma idealOfVars_eq_restrictSupportIdeal :
     obtain ⟨c, rfl⟩ := le_iff_exists_add'.mp (show single i 1 ≤ x by simp_all; lia)
     simpa [monomial_add_single] using Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
 
-set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 theorem pow_idealOfVars (n : ℕ) :
     idealOfVars σ R ^ n = restrictSupportIdeal _ _ ((isUpperSet_Ici n).preimage degree_mono) := by

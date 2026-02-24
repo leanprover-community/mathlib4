@@ -211,7 +211,6 @@ section
 
 variable {X : C} (data : OneHypercoverDenseData.{w} F J₀ J X)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) (p₂ : W ⟶ F.obj (data.X i₂))
     (w : p₁ ≫ data.f i₁ = p₂ ≫ data.f i₂) : data.toPreOneHypercover.sieve₁ p₁ p₂ ∈ J W := by
   have := IsDenseSubsite.isCoverDense J₀ J F
