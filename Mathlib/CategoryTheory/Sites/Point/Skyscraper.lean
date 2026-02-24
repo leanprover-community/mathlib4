@@ -169,7 +169,7 @@ noncomputable def skyscraperSheafFunctor : A ⥤ Sheaf J A where
   map f := ⟨Φ.skyscraperPresheafFunctor.map f⟩
 
 /-- Given a point `Φ` on a site `(C, J)`, and an object `M` of a category `A`,
-this is the skyscraper esheaf with value `M`: it sends `X : C` to the
+this is the skyscraper sheaf with value `M`: it sends `X : C` to the
 product of copies of `M` indexed by `Φ.fiber.obj X`. -/
 noncomputable abbrev skyscraperSheaf (M : A) :
     Sheaf J A :=
