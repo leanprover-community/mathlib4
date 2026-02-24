@@ -561,7 +561,7 @@ alias one_lt_finprod' := one_lt_finprod
 /-- Monotonicity of `finprod`. See `finprod_le_finprod` for a variant where
 `M` is a `CommMonoidWithZero`. -/
 @[to_additive /-- Monotonicity of `finsum.` -/]
-lemma finprod_le_finprod' [PartialOrder M] [MulLeftMono M] (hf : f.mulSupport.Finite)
+lemma finprod_le_finprod [PartialOrder M] [MulLeftMono M] (hf : f.mulSupport.Finite)
     (hg : g.mulSupport.Finite) (h : f ≤ g) :
     ∏ᶠ a, f a ≤ ∏ᶠ a, g a := by
   have : Fintype ↑(f.mulSupport ∪ g.mulSupport) := (hf.union hg).fintype
@@ -570,9 +570,11 @@ lemma finprod_le_finprod' [PartialOrder M] [MulLeftMono M] (hf : f.mulSupport.Fi
     finprod_eq_finset_prod_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
   exact Finset.prod_le_prod' fun i _ ↦ h i
 
+@[deprecated (since := "2026-01-18")] alias finprod_le_finprod' := finprod_le_finprod
+
 /-- Monotonicity of `finprod`. See `finprod_le_finprod'` for a variant where
 `M` is an ordered `CommMonoid`. -/
-lemma finprod_le_finprod {M : Type*} [CommMonoidWithZero M] [PartialOrder M] [ZeroLEOneClass M]
+lemma finprod_le_finprod₀ {M : Type*} [CommMonoidWithZero M] [PartialOrder M] [ZeroLEOneClass M]
     [PosMulMono M] {f g : α → M} (hf : f.mulSupport.Finite) (hf₀ : ∀ a, 0 ≤ f a)
     (hg : g.mulSupport.Finite) (h : f ≤ g) :
     ∏ᶠ a, f a ≤ ∏ᶠ a, g a := by

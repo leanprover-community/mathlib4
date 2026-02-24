@@ -540,7 +540,7 @@ lemma mulHeight₁_sum_le {α : Type*} {s : Finset α} (hs : s.Nonempty) (x : α
   · exact finprod_nonneg fun _ ↦ by positivity
   · exact prod_map_nonneg fun _ h ↦ by positivity
   · exact prod_map_le_prod_map₀ _ _ (fun _ _ ↦ by positivity) fun _ _ ↦ max_abv_sum_one_le _ hs x
-  · refine finprod_le_finprod (mulSupport_max_nonarchAbsVal_finite _) (fun _ ↦ by grind) ?_ ?_
+  · refine finprod_le_finprod₀ (mulSupport_max_nonarchAbsVal_finite _) (fun _ ↦ by grind) ?_ ?_
     · exact (s.finite_toSet.biUnion fun _ _ ↦ mulSupport_max_nonarchAbsVal_finite _).subset <|
         s.mulSupport_prod fun i (v : nonarchAbsVal) ↦ max (v.val (x i)) 1
     · exact fun v ↦ max_abv_sum_one_le_of_isNonarchimedean (isNonarchimedean _ v.prop) _ x
