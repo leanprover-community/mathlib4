@@ -42,8 +42,13 @@ variable {X : Type*}
  A symmetric function `K: X×X→ℝ` that is positive semi-definite.
 -/
 structure Kernel X where
+  /-- The kernel function `K : X → X → ℝ`. -/
   kernel : X → X → ℝ
+  /-- Symmetry: `K(x₁,x₂) = K(x₂,x₁)` for all `x₁,x₂∈X`. -/
   symmetric : ∀ x y : X, kernel x y = kernel y x
+  /-- Positive semi-definite: ∑_{x₁∈ support(c)}∑_{x₂∈ support(c)} c(x₁)*c(x₂)*K(x₁,x₂)≥0.
+   Atypical but equivalent and more convenient way of writing it. Typical way is part of theorem
+  `posSemiDefₙ`. -/
   posSemiDef : ∀ (c : X →₀ ℝ), ∑ x ∈ c.support, ∑ y ∈ c.support, c x * c y * kernel x y ≥ 0
 
 namespace Kernel
@@ -268,6 +273,7 @@ theorem one_ne_zero [Nonempty X] : (1 : Kernel X) ≠ (0 : Kernel X) := by
   rw [Kernel.ext_iff] at h
   simp at h
 
+/-- Addition of two kernels `K₁` and `K₂` yields the kernel `(x,y) ↦ K₁(x,y)+K₂(x,y)`. -/
 def addKernel (k₁ k₂ : Kernel X) : Kernel X := {
   kernel := fun x y => k₁.kernel x y + k₂.kernel x y
   symmetric := by intro x y; simp_rw [k₁.symmetric, k₂.symmetric]
@@ -1024,7 +1030,7 @@ theorem finsetSumKernel_apply {α : Type*} (s : Finset α) (K : α → Kernel X)
 
 /-- Any power series $x↦∑_{n=1}^∞ f_n x^n$ with nonnegative coefficients yields the kernel
   $(x₁,x₂)↦∑_{n=1}^∞ f_n K(x₁,x₂)^n`. -/
-noncomputable def posPowerSeriesKernel [DecidableEq X] (p : PowerSeries ℝ) (hp₁ : ∀ n, 0 ≤ PowerSeries.coeff n p) (hp₂ : ∀ x : ℝ, Summable (fun n => PowerSeries.coeff n p * x ^ n)) (k : Kernel X) : Kernel X :=
+noncomputable def posPowerSeriesKernel (p : PowerSeries ℝ) (hp₁ : ∀ n, 0 ≤ PowerSeries.coeff n p) (hp₂ : ∀ x : ℝ, Summable (fun n => PowerSeries.coeff n p * x ^ n)) (k : Kernel X) : Kernel X :=
   let Kseq : ℕ → Kernel X := fun N => finsetSumKernel (Finset.range N) (fun n => smulPosKernel (PowerSeries.coeff n p) (hp₁ n) (natPowKernel k n))
   let Klim (x y : X) : ℝ := ∑' n, (PowerSeries.coeff n p) * (k.kernel x y) ^ n
   pointwiseLimitKernel Kseq Klim (by
@@ -1036,13 +1042,13 @@ noncomputable def posPowerSeriesKernel [DecidableEq X] (p : PowerSeries ℝ) (hp
   )
 
 @[simp]
-theorem posPowerSeriesKernel_apply [DecidableEq X] (p : PowerSeries ℝ) (hp₁ : ∀ n, 0 ≤ PowerSeries.coeff n p)
+theorem posPowerSeriesKernel_apply (p : PowerSeries ℝ) (hp₁ : ∀ n, 0 ≤ PowerSeries.coeff n p)
   (hp₂ : ∀ x : ℝ, Summable (fun n => PowerSeries.coeff n p * x ^ n)) (k : Kernel X) (x y : X) :
   (posPowerSeriesKernel p hp₁ hp₂ k).kernel x y = ∑' n, (PowerSeries.coeff n p) * (k.kernel x y) ^ n := rfl
 
 /-- The exponent of a kernel is again a kernel. Follows `exp` having a power series with nonnegative
   coefficients. -/
-noncomputable def expKernel [DecidableEq X] (k : Kernel X) : Kernel X :=
+noncomputable def expKernel (k : Kernel X) : Kernel X :=
   posPowerSeriesKernel (PowerSeries.exp ℝ)
     (fun n => by
       rw [PowerSeries.coeff_exp]
@@ -1069,7 +1075,7 @@ noncomputable def expKernel [DecidableEq X] (k : Kernel X) : Kernel X :=
 /-- Definition of the univariate Gaussian kernel `(x₁,x₂)↦exp(-γ*‖x₁-x₂‖^2)`. Proven using the
   decomposition `exp(-γ*‖x-y ‖^2)=exp(-γ‖x‖^2) exp(2γ⟪x,y⟫) exp(-γ‖y‖^2)`, where `exp(2γ⟪x,y⟫)`
   is shown to be a kernel using a pointwise limit. -/
-noncomputable def gaussianKernel [DecidableEq X] [NormedAddCommGroup X] [InnerProductSpace ℝ X] [CompleteSpace X] (γ : ℝ) (hγ : γ > 0) : Kernel X :=
+noncomputable def gaussianKernel [NormedAddCommGroup X] [InnerProductSpace ℝ X] (γ : ℝ) (hγ : γ > 0) : Kernel X :=
   let φ : X→X := fun x => x
   let ψ : X→ ℝ := fun x => exp (-γ * ‖x‖^2)
   let Kseq : ℕ → Kernel X := fun N =>
@@ -1120,15 +1126,18 @@ noncomputable def gaussianKernel [DecidableEq X] [NormedAddCommGroup X] [InnerPr
           from rfl]
       apply Finset.sum_congr rfl
       intro n hn
-      simp_all only [Finset.mem_range, ↓reduceIte, natPowKernel_apply, featureKernel_apply]
+      simp_all only [Finset.mem_range, ↓reduceIte, natPowKernel_apply]
       unfold φ
+      rw [show (featureKernel fun x ↦ x).kernel x y = inner ℝ ((fun x ↦ x) x) ((fun x ↦ x) y) from
+          rfl]
+      simp only
       ring
     let hExp_tendsto := HasSum.tendsto_sum_nat hExp_sum
     simp_all
   ))
 
 @[simp]
-theorem gaussianKernel_apply [DecidableEq X] [NormedAddCommGroup X] [InnerProductSpace ℝ X] [CompleteSpace X] (γ : ℝ) (hγ : γ > 0) (x y : X) :
+theorem gaussianKernel_apply [NormedAddCommGroup X] [InnerProductSpace ℝ X] (γ : ℝ) (hγ : γ > 0) (x y : X) :
     (gaussianKernel γ hγ).kernel x y = exp (-γ * ‖x-y‖^2 ) := by
   rw [show (gaussianKernel γ hγ).kernel = fun x y ↦ rexp (2 * γ * inner ℝ x y) * (featureKernel fun x ↦ rexp (-γ * ‖x‖ ^ 2)).kernel x y from rfl]
   simp only [neg_mul, featureKernel_apply, RCLike.inner_apply, ringHom_apply]
