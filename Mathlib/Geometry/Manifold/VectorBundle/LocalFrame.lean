@@ -202,7 +202,7 @@ lemma coeff_apply_of_mem (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (t : Π 
   simp [coeff, hx]
 
 lemma coeff_sum_eq [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M, V x) (hx : x ∈ u) :
-    t x = ∑ i, (hs.coeff i x (t x)) • (s i x) := by
+    t x = ∑ i, hs.coeff i x (t x) • (s i x) := by
   simpa [coeff, hx] using (Basis.sum_repr (hs.toBasisAt hx) (t x)).symm
 
 lemma eq_of_coeff_eq [Finite ι] (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u)
@@ -216,8 +216,7 @@ lemma eq_of_coeff_eq [Finite ι] (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u)
     _ = t' x := (hs.coeff_sum_eq t' hx).symm
 
 /-- A local frame locally spans the space of sections for `V`: for each local frame `s i` on an open
-set `u` around `x`, we have
-`t = ∑ i, (hs.coeff i x (t x)) • (s i x)` near `x`. -/
+set `u` around `x`, we have `t = ∑ i, hs.coeff i x (t x) • (s i x)` near `x`. -/
 lemma eventually_eq_sum_coeff_smul [Fintype ι]
     (hs : IsLocalFrameOn I F n s u) (t : Π x : M, V x) (hu'' : u ∈ 𝓝 x) :
     ∀ᶠ x' in 𝓝 x, t x' = ∑ i, hs.coeff i x' (t x') • (s i x') :=
@@ -296,7 +295,7 @@ lemma mdifferentiableOn_of_coeff [FiniteDimensional 𝕜 F]
   have := fintypeOfFiniteDimensional hs hx
   have this (i) : MDiff[u] (T% ((LinearMap.piApply (hs.coeff i)) t • s i)) :=
     (h i).smul_section ((hs.contMDiffOn i).mdifferentiableOn one_ne_zero)
-  have almost : MDiff[u] (T% (fun x ↦ ∑ i, ((LinearMap.piApply (hs.coeff i)) t) x • s i x)) :=
+  have almost : MDiff[u] (T% (fun x ↦ ∑ i, hs.coeff i x (t x) • s i x)) :=
     .sum_section (fun i _ hx ↦ this i _ hx)
   apply almost.congr
   intro y hy
@@ -308,7 +307,7 @@ lemma mdifferentiableAt_of_coeff [FiniteDimensional 𝕜 F]
     (h : ∀ i, MDiffAt ((LinearMap.piApply (hs.coeff i)) t) x) (hu : u ∈ 𝓝 x) :
     MDiffAt (T% t) x := by
   have := fintypeOfFiniteDimensional hs (mem_of_mem_nhds hu)
-  have almost : MDiffAt (T% (fun x ↦ ∑ i, ((LinearMap.piApply (hs.coeff i)) t) x • s i x)) x :=
+  have almost : MDiffAt (T% (fun x ↦ ∑ i, hs.coeff i x (t x) • s i x)) x :=
     .sum_section (fun i ↦ (h i).smul_section <|
       ((hs.contMDiffOn i).mdifferentiableOn one_ne_zero).mdifferentiableAt hu)
   exact almost.congr_of_eventuallyEq <| (hs.eventually_eq_sum_coeff_smul t hu).mono (by simp)
