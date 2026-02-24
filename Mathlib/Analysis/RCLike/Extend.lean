@@ -119,7 +119,7 @@ lemma re_extendRCLike_apply (g : StrongDual ℝ F) (x : F) :
     re ((extendRCLike g) x : 𝕜) = g x := by
   simp [extendRCLike_apply]
 
-@[deprecated (since := "2026-01-28")] alias _root_.RCLike.re_extendTo𝕜ₗ := re_extendRCLike_apply
+@[deprecated (since := "2026-02-24")] alias _root_.RCLike.re_extendTo𝕜ₗ := re_extendRCLike_apply
 
 @[simp]
 lemma im_extendRCLike_apply (g : StrongDual ℝ F) (x : F) :
@@ -140,7 +140,7 @@ noncomputable def extendRCLikeₗ : StrongDual ℝ F ≃ₗ[ℝ] StrongDual 𝕜
   map_add' := by intros; ext; simp [extendRCLike_apply]; ring
   map_smul' := by intros; ext; simp [extendRCLike_apply, real_smul_eq_coe_mul]; ring
 
-@[deprecated (since := "2026-01-28")] alias _root_.RCLike.extendTo𝕜ₗ := extendRCLikeₗ
+@[deprecated (since := "2026-02-24")] alias _root_.RCLike.extendTo𝕜ₗ := extendRCLikeₗ
 
 end StrongDual
 
@@ -148,12 +148,12 @@ namespace LinearMap
 
 open Module.Dual
 
-@[deprecated (since := "2026-01-28")] alias extendTo𝕜' := extendRCLike
-@[deprecated (since := "2026-01-28")] alias extendTo𝕜'_apply := extendRCLike_apply
-@[deprecated (since := "2026-01-28")] alias extendTo𝕜'_apply_re := re_extendRCLike_apply
-@[deprecated (since := "2026-01-28")] alias norm_extendTo𝕜'_apply_sq := norm_extendRCLike_apply_sq
-@[deprecated (since := "2026-01-28")] alias extendTo𝕜 := extendRCLike
-@[deprecated (since := "2026-01-28")] alias extendTo𝕜_apply := extendRCLike_apply
+@[deprecated (since := "2026-02-24")] alias extendTo𝕜' := extendRCLike
+@[deprecated (since := "2026-02-24")] alias extendTo𝕜'_apply := extendRCLike_apply
+@[deprecated (since := "2026-02-24")] alias extendTo𝕜'_apply_re := re_extendRCLike_apply
+@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜'_apply_sq := norm_extendRCLike_apply_sq
+@[deprecated (since := "2026-02-24")] alias extendTo𝕜 := extendRCLike
+@[deprecated (since := "2026-02-24")] alias extendTo𝕜_apply := extendRCLike_apply
 
 end LinearMap
 
@@ -161,9 +161,9 @@ namespace ContinuousLinearMap
 
 open StrongDual
 
-@[deprecated (since := "2026-01-28")] alias extendTo𝕜' := extendRCLike
-@[deprecated (since := "2026-01-28")] alias extendTo𝕜'_apply := extendRCLike_apply
-@[deprecated (since := "2026-01-28")] alias extendTo𝕜 := extendRCLike
-@[deprecated (since := "2026-01-28")] alias extendTo𝕜_apply := extendRCLike_apply
+@[deprecated (since := "2026-02-24")] alias extendTo𝕜' := extendRCLike
+@[deprecated (since := "2026-02-24")] alias extendTo𝕜'_apply := extendRCLike_apply
+@[deprecated (since := "2026-02-24")] alias extendTo𝕜 := extendRCLike
+@[deprecated (since := "2026-02-24")] alias extendTo𝕜_apply := extendRCLike_apply
 
 end ContinuousLinearMap
