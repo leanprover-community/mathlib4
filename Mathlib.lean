@@ -3755,6 +3755,7 @@ public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Data.Int.WithZero
 public import Mathlib.Data.List.AList
 public import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.BirdWadler
 public import Mathlib.Data.List.Chain
 public import Mathlib.Data.List.ChainOfFn
 public import Mathlib.Data.List.Count
