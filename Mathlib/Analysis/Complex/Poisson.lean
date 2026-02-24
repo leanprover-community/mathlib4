@@ -251,7 +251,7 @@ theorem DiffContOnCl.circleAverage_re_herglotzRiesz_smul [CompleteSpace E] {c : 
     Real.circleAverage ((re ∘ HerglotzRiesz c w) • f) c R = f w := by
   rcases le_or_gt R 0 with hR | hR
   · simp_all [(ball_eq_empty).2 hR]
-    hf.comp (DifferentiableOn.diffContOnCl <| by fun_prop) (by intro; aesop) 
+    hf.comp (DifferentiableOn.diffContOnCl <| by fun_prop) (by intro; aesop)
   have h₂g : w - c ∈ ball 0 R := by simpa using hw
   simpa [← circleAverage_map_add_const (c := c), HerglotzRiesz_def]
     using circleAverage_re_smul_on_ball_zero h₁g h₂g
