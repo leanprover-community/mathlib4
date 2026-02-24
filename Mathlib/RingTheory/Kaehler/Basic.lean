@@ -469,6 +469,7 @@ the relations:
 1. `dx + dy = d(x + y)`
 2. `x dy + y dx = d(x * y)`
 3. `dr = 0` for `r ∈ R`
+
 where `db` is the unit in the copy of `S` with index `b`.
 
 This is the kernel of the surjection
