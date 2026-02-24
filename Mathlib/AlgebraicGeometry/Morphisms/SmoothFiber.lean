@@ -33,8 +33,6 @@ smooth. -/
 lemma Smooth.of_smooth_fiberToSpecResidueField [LocallyOfFinitePresentation f] [Flat f]
     (h : ∀ y, Smooth (f.fiberToSpecResidueField y)) :
     Smooth f := by
-  -- Prevents `wlog` going into an infinite typeclass search loop
-  change id _
   wlog h : ∃ R, Y = Spec R
   · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @Smooth) Y.affineCover]
     intro i
