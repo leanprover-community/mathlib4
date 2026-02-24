@@ -183,13 +183,24 @@ lemma Reachable.of_subsingleton {G : SimpleGraph V} [Subsingleton V] {u v : V} :
     G.Reachable u v := by
   rw [Subsingleton.allEq u v]
 
-lemma not_reachable_of_left_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet u)]
-    (huv : u ≠ v) (hu : G.degree u = 0) : ¬G.Reachable u v := by
+lemma not_reachable_of_left_neighborSet_eq_empty {G : SimpleGraph V} {u v : V}
+    (huv : u ≠ v) (hu : G.neighborSet u = ∅) : ¬G.Reachable u v := by
   rintro ⟨_ | @⟨u, x, v, hadj, w'⟩⟩
   · contradiction
-  · have : 0 < G.degree u := (G.degree_pos_iff_exists_adj u).mpr ⟨x, hadj⟩
+  · have : x ∈ G.neighborSet u := hadj
     rw [hu] at this
-    contradiction
+    exact this
+
+lemma not_reachable_of_right_neighborSet_eq_empty {G : SimpleGraph V} {u v : V}
+    (huv : u ≠ v) (hv : G.neighborSet v = ∅) : ¬G.Reachable u v := by
+  rw [reachable_comm]
+  exact not_reachable_of_left_neighborSet_eq_empty huv.symm hv
+
+lemma not_reachable_of_left_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet u)]
+    (huv : u ≠ v) (hu : G.degree u = 0) : ¬G.Reachable u v := by
+  unfold degree neighborFinset at hu
+  rw [Finset.card_eq_zero, Set.toFinset_eq_empty] at hu
+  exact not_reachable_of_left_neighborSet_eq_empty huv hu
 
 lemma not_reachable_of_right_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet v)]
     (huv : u ≠ v) (hu : G.degree v = 0) : ¬G.Reachable u v := by
