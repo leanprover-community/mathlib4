@@ -358,6 +358,7 @@ theorem convexBodySum_convex : Convex ℝ (convexBodySum K B) := by
 theorem convexBodySum_isBounded : Bornology.IsBounded (convexBodySum K B) := by
   classical
   refine Metric.isBounded_iff.mpr ⟨B + B, fun x hx y hy => ?_⟩
+  simp_rw [dist_eq_norm]
   refine le_trans (norm_sub_le x y) (add_le_add ?_ ?_)
   · exact le_trans (norm_le_convexBodySumFun x) hx
   · exact le_trans (norm_le_convexBodySumFun y) hy
