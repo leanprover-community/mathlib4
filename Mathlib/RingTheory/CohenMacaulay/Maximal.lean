@@ -92,6 +92,7 @@ local instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M] (x 
     map_smul' r m := rfl }
   exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
 
+set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 lemma free_of_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*) [AddCommGroup M]
     [Module R M] [Module.Finite R M] {x : R} (mem : x ∈ maximalIdeal R) (reg : IsSMulRegular M x)
@@ -143,12 +144,12 @@ lemma free_of_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*) 
     simpa [hz] using Submodule.smul_mem_pointwise_smul z x _ this
   exact Module.Free.of_equiv (LinearEquiv.ofBijective g ⟨injg, surjg⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] [M.IsMaximalCohenMacaulay] : Module.Free R M := by
   rcases exist_nat_eq R with ⟨n, hn⟩
   induction n generalizing R M
-  · have : IsField R := isField_of_isRegularLocalRing_of_dimension_zero hn
-    let _ : Field R := this.toField
+  · let _ : Field R := (isField_of_isRegularLocalRing_of_dimension_zero hn).toField
     exact Module.Free.of_divisionRing R M
   · rename_i n ih _ _ _ _ _
     by_cases ntr : Nontrivial M
