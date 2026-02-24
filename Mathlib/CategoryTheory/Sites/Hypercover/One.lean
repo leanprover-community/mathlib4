@@ -453,27 +453,28 @@ section
 
 variable {X : C} {E : PreOneHypercover X} {F : Cᵒᵖ ⥤ Type*}
 
-/-- A presheaf `F` of types is separated for a pre-`1`-hypercover if `F` is separated for both
-the `0` and the `1`-components. -/
-structure IsSeparatedFor {X : C} (E : PreOneHypercover X) (F : Cᵒᵖ ⥤ Type*) : Prop where
+/-- A presheaf `F` of types is (strongly) separated for a pre-`1`-hypercover if `F` is separated for
+both the `0` and the `1`-components. -/
+structure IsStronglySeparatedFor {X : C} (E : PreOneHypercover X) (F : Cᵒᵖ ⥤ Type*) : Prop where
   isSeparatedFor_presieve₀ : E.presieve₀.IsSeparatedFor F
   isSeparatedFor_sieve₁ ⦃i j : E.I₀⦄ ⦃W : C⦄ (p₁ : W ⟶ E.X i) (p₂ : W ⟶ E.X j)
     (h : p₁ ≫ E.f i = p₂ ≫ E.f j) :
     (E.sieve₁ p₁ p₂).arrows.IsSeparatedFor F
 
-/-- A presheaf `F` of types is a sheaf for a pre-`1`-hypercover if `F` is a sheaf for both
-the `0` and the `1`-components. -/
-structure IsSheafFor {X : C} (E : PreOneHypercover X) (F : Cᵒᵖ ⥤ Type*) : Prop where
+/-- A presheaf `F` of types is (strongly) a sheaf for a pre-`1`-hypercover if `F` is a sheaf for
+both the `0` and the `1`-components. -/
+structure IsStronglySheafFor {X : C} (E : PreOneHypercover X) (F : Cᵒᵖ ⥤ Type*) : Prop where
   isSheafFor_presieve₀ : E.presieve₀.IsSheafFor F
   isSheafFor_sieve₁ ⦃i j : E.I₀⦄ ⦃W : C⦄ (p₁ : W ⟶ E.X i) (p₂ : W ⟶ E.X j)
     (h : p₁ ≫ E.f i = p₂ ≫ E.f j) :
     (E.sieve₁ p₁ p₂).arrows.IsSheafFor F
 
-lemma IsSheafFor.isSeparatedFor (h : E.IsSheafFor F) : E.IsSeparatedFor F where
+lemma IsStronglySheafFor.isSeparatedFor (h : E.IsStronglySheafFor F) :
+    E.IsStronglySeparatedFor F where
   isSeparatedFor_presieve₀ := h.isSheafFor_presieve₀.isSeparatedFor
   isSeparatedFor_sieve₁ _ _ _ p₁ p₂ w := (h.isSheafFor_sieve₁ p₁ p₂ w).isSeparatedFor
 
-lemma IsSeparatedFor.isSheafFor_sieve_of_pullback (h₁ : E.IsSeparatedFor F)
+lemma IsStronglySeparatedFor.isSheafFor_sieve_of_pullback (h₁ : E.IsStronglySeparatedFor F)
     (h₂ : Presieve.IsSheafFor F E.presieve₀)
     (h₃ : ∀ ⦃Y : C⦄ (f : Y ⟶ X), Presieve.IsSeparatedFor F (E.sieve₀.pullback f).arrows)
     {S : Sieve X}
@@ -516,7 +517,7 @@ check that `F` is a sheaf for `R` it suffices to check:
 - `F` is a sheaf for the pullbacks of `R` along the maps from the `0`-components.
 - `F` is separated for the pullbacks of `R` along the maps from the `1`-components.
 -/
-lemma IsSeparatedFor.isSheafFor_of_pullback (h₁ : E.IsSeparatedFor F)
+lemma IsStronglySeparatedFor.isSheafFor_of_pullback (h₁ : E.IsStronglySeparatedFor F)
     (h₂ : Presieve.IsSheafFor F E.presieve₀)
     (h₃ : ∀ ⦃Y : C⦄ (f : Y ⟶ X), Presieve.IsSeparatedFor F (E.sieve₀.pullback f).arrows)
     {R : Presieve X}
@@ -708,13 +709,13 @@ section
 
 variable {J : GrothendieckTopology C} {X : C} {E : J.OneHypercover X} {F : Cᵒᵖ ⥤ Type*}
 
-lemma isSeparatedFor (hf : Presieve.IsSeparated J F) : E.IsSeparatedFor F where
+lemma isSeparatedFor (hf : Presieve.IsSeparated J F) : E.IsStronglySeparatedFor F where
   isSeparatedFor_presieve₀ := by
     rw [Presieve.isSeparatedFor_iff_generate]
     exact hf _ E.mem₀
   isSeparatedFor_sieve₁ i j W p₁ p₂ h := hf _ (E.mem₁ _ _ _ _ h)
 
-lemma isSheafFor (hf : Presieve.IsSheaf J F) : E.IsSheafFor F where
+lemma isSheafFor (hf : Presieve.IsSheaf J F) : E.IsStronglySheafFor F where
   isSheafFor_presieve₀ := by
     rw [Presieve.isSheafFor_iff_generate]
     exact hf _ E.mem₀
