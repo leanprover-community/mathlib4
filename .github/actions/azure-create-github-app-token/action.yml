@@ -1,0 +1,74 @@
+name: Azure Create GitHub App Token
+description: Mint a GitHub App installation token by signing the app JWT with an Azure Key Vault key.
+
+inputs:
+  app-id:
+    description: GitHub App ID.
+    required: true
+  key-vault-name:
+    description: Azure Key Vault name containing the signing key.
+    required: true
+  key-name:
+    description: Azure Key Vault key name used to sign the JWT.
+    required: true
+  key-version:
+    description: Optional Azure Key Vault key version.
+    required: false
+    default: ""
+  azure-client-id:
+    description: Azure user-assigned managed identity client ID.
+    required: true
+  azure-tenant-id:
+    description: Azure tenant ID.
+    required: true
+  azure-subscription-id:
+    description: Azure subscription ID.
+    required: true
+  owner:
+    description: Optional GitHub organization/user owner to resolve installation from.
+    required: false
+    default: ""
+  repositories:
+    description: Optional comma or newline separated repository names for token scoping.
+    required: false
+    default: ""
+  github-api-url:
+    description: GitHub API base URL.
+    required: false
+    default: https://api.github.com
+  jwt-expiration-seconds:
+    description: JWT lifetime in seconds (must be <= 600).
+    required: false
+    default: "540"
+
+outputs:
+  token:
+    description: GitHub App installation access token.
+    value: ${{ steps.mint.outputs.token }}
+  installation-id:
+    description: GitHub App installation ID.
+    value: ${{ steps.mint.outputs.installation-id }}
+
+runs:
+  using: composite
+  steps:
+    - name: Login to Azure
+      uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
+      with:
+        client-id: ${{ inputs.azure-client-id }}
+        tenant-id: ${{ inputs.azure-tenant-id }}
+        subscription-id: ${{ inputs.azure-subscription-id }}
+
+    - name: Mint installation token
+      id: mint
+      shell: bash
+      env:
+        INPUT_APP_ID: ${{ inputs.app-id }}
+        INPUT_KEY_VAULT_NAME: ${{ inputs.key-vault-name }}
+        INPUT_KEY_NAME: ${{ inputs.key-name }}
+        INPUT_KEY_VERSION: ${{ inputs.key-version }}
+        INPUT_OWNER: ${{ inputs.owner }}
+        INPUT_REPOSITORIES: ${{ inputs.repositories }}
+        INPUT_GITHUB_API_URL: ${{ inputs.github-api-url }}
+        INPUT_JWT_EXPIRATION_SECONDS: ${{ inputs.jwt-expiration-seconds }}
+      run: python3 "${GITHUB_ACTION_PATH}/mint_token.py"

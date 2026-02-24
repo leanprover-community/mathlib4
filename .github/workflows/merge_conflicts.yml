@@ -9,17 +9,29 @@ jobs:
   main:
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    permissions:
+      id-token: write
+      contents: read
     steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+
       - name: Generate app token
         id: app-token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        uses: ./.github/actions/azure-create-github-app-token
         with:
           app-id: ${{ secrets.MATHLIB_MERGE_CONFLICTS_APP_ID }}
-          private-key: ${{ secrets.MATHLIB_MERGE_CONFLICTS_PRIVATE_KEY }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-merge-conflicts-app-pk
+          azure-client-id: ${{ vars.LABEL_BOTS_AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
+          azure-subscription-id: ${{ secrets.MATHLIB_CI_SUBSCRIPTION_ID }}
+
       - name: check if prs are dirty
         uses: eps1lon/actions-label-merge-conflict@1df065ebe6e3310545d4f4c4e862e43bdca146f0 # v3.0.3
         with:
           dirtyLabel: "merge-conflict"
           commentOnDirty: "This pull request has conflicts, please merge `master` and resolve them."
-          # The create-github-app-token README states that this token is masked and will not be logged accidentally.
           repoToken: ${{ steps.app-token.outputs.token }}
