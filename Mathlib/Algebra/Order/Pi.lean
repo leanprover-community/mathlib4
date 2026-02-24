@@ -30,7 +30,7 @@ namespace Pi
       /-- The product of a family of ordered additive commutative monoids is
 an ordered additive commutative monoid. -/]
 instance isOrderedMonoid {ι : Type*} {Z : ι → Type*} [∀ i, CommMonoid (Z i)]
-    [∀ i, PartialOrder (Z i)] [∀ i, IsOrderedMonoid (Z i)] :
+    [∀ i, Preorder (Z i)] [∀ i, IsOrderedMonoid (Z i)] :
     IsOrderedMonoid (∀ i, Z i) where
   mul_le_mul_left _ _ w _ := fun i => mul_le_mul_left (w i) _
 
@@ -53,7 +53,7 @@ instance {ι : Type*} {Z : ι → Type*} [∀ i, Monoid (Z i)] [∀ i, PartialOr
   le_self_mul _ _ := fun _ => le_self_mul
 
 @[to_additive]
-instance isOrderedCancelMonoid [∀ i, CommMonoid <| f i] [∀ i, PartialOrder <| f i]
+instance isOrderedCancelMonoid [∀ i, CommMonoid <| f i] [∀ i, Preorder <| f i]
     [∀ i, IsOrderedCancelMonoid <| f i] :
     IsOrderedCancelMonoid (∀ i : I, f i) where
   le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)

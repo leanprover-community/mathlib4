@@ -77,7 +77,7 @@ instance IsUltraUniformity.pi {ι : Type*} {X : ι → Type*} [U : Π i, Uniform
     [h : ∀ i, IsUltraUniformity (X i)] :
     IsUltraUniformity (Π i, X i) := by
   suffices @IsUltraUniformity _ (⨅ i, UniformSpace.comap (Function.eval i) (U i)) by
-    simpa [Pi.uniformSpace_eq _] using this
+    simpa +instances [Pi.uniformSpace_eq _] using this
   exact .iInf fun i ↦ .comap (h i) (Function.eval i)
 
 set_option linter.flexible false in -- simp followed by infer_instance

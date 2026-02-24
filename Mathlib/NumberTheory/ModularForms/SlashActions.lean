@@ -119,6 +119,7 @@ private theorem add_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
   ext1 τ
   simp [privateSlash, add_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private theorem slash_one (k : ℤ) (f : ℍ → ℂ) : f ∣[k] 1 = f :=
   funext <| by simp [privateSlash, σ, denom]
@@ -158,10 +159,12 @@ instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) :=
 theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL (Fin 2) ℝ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem SL_slash_def (γ : SL(2, ℤ)) :
     f ∣[k] γ = fun τ ↦ f (γ • τ) * denom γ τ ^ (-k) := by
   simp [SL_slash, slash_def, σ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem SL_slash_apply (γ : SL(2, ℤ)) (τ : ℍ) :
     (f ∣[k] γ) τ = f (γ • τ) * denom γ τ ^ (-k) := by
   simp [SL_slash, slash_def, σ]
@@ -211,12 +214,14 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
   rw [h1]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A := by
   simp [SL_slash, mul_slash]
 
 open Finset
 
+set_option backward.isDefEq.respectTransparency false in
 lemma prod_slash_sum_weights {ι : Type*} {k : ι → ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ}
     {s : Finset ι} :
     (∏ i ∈ s, f i) ∣[∑ i ∈ s, k i] g = |g.det.val| ^ (#s - 1 : ℤ) • (∏ i ∈ s, f i ∣[k i] g) := by

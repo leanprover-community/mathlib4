@@ -51,7 +51,7 @@ lemma isCompactOpenCovered_of_isCompact [QuasiCompactCover 𝒰]
     {U : S.Opens} (hU : IsCompact (U : Set S)) :
     IsCompactOpenCovered (𝒰.f ·) (U : Set S) := by
   obtain ⟨Us, hUs, hUf, hUc⟩ := S.isBasis_affineOpens.exists_finite_of_isCompact hU
-  refine .of_biUnion_eq_of_finite (SetLike.coe '' Us) (by aesop) (hUf.image _) ?_
+  refine .of_biUnion_eq_of_finite (SetLike.coe '' Us) (by simp_all) (hUf.image _) ?_
   simpa using fun t ht ↦ IsAffineOpen.isCompactOpenCovered 𝒰 (hUs ht)
 
 variable {𝒰 : PreZeroHypercover.{v} S} {K : Precoverage Scheme.{u}}
@@ -88,6 +88,7 @@ lemma of_hom {𝒱 : PreZeroHypercover.{w'} S} (f : 𝒱.Hom 𝒰) [QuasiCompact
     (fun _ ↦ Scheme.Hom.continuous _) (fun i ↦ funext <| by simp [← Scheme.Hom.comp_apply])
     (fun _ ↦ Scheme.Hom.continuous _) U.2 (hU.isCompactOpenCovered 𝒱)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝒰) in
 @[stacks 022D "(3)"]
 instance [QuasiCompactCover 𝒰] {T : Scheme.{u}} (f : T ⟶ S) :
@@ -166,6 +167,7 @@ instance {𝒱 : PreZeroHypercover S} [QuasiCompactCover 𝒰] : QuasiCompactCov
 instance {𝒱 : PreZeroHypercover S} [QuasiCompactCover 𝒱] : QuasiCompactCover (𝒰.sum 𝒱) :=
   .of_hom (PreZeroHypercover.sumInr _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_hom {S : Scheme.{u}} (𝒰 : S.Cover (Scheme.precoverage P))
     [P.RespectsLeft @IsOpenImmersion] [CompactSpace S] [QuasiCompactCover 𝒰.toPreZeroHypercover] :
     ∃ (𝒱 : Scheme.AffineCover.{w} P S) (f : 𝒱.cover ⟶ 𝒰),

@@ -88,11 +88,6 @@ Here `ι = ChooseBasisIndex R M`. -/
 noncomputable def chooseBasis : Basis (ChooseBasisIndex R M) R M :=
   ((Module.free_iff_set R M).mp ‹_›).choose_spec.some
 
-/-- The isomorphism `M ≃ₗ[R] (ChooseBasisIndex R M →₀ R)`. -/
-@[deprecated Module.Free.chooseBasis (since := "2025-08-01")]
-noncomputable def repr : M ≃ₗ[R] ChooseBasisIndex R M →₀ R :=
-  (chooseBasis R M).repr
-
 /-- The universal property of free modules: giving a function `(ChooseBasisIndex R M) → N`, for `N`
 an `R`-module, is the same as giving an `R`-linear map `M →ₗ[R] N`.
 

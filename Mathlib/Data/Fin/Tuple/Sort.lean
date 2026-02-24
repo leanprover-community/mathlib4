@@ -46,6 +46,7 @@ def graph (f : Fin n → α) : Finset (α ×ₗ Fin n) :=
 -/
 def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
@@ -55,6 +56,7 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
     rw [Prod.ext_iff]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `graphEquiv₁ f` is the natural equivalence between `Fin n` and `graph f`,
 mapping `i` to `(f i, i)`. -/
 def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
@@ -206,6 +208,7 @@ theorem sort_perm (σ : Equiv.Perm (Fin n)) :
 
 end Tuple
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Equiv.Perm.monotone_iff {n : ℕ} (σ : Perm (Fin n)) :
     Monotone σ ↔ σ = 1 := by
   rw [← Tuple.sort_eq_refl_iff_monotone, Tuple.sort_perm, ← inv_eq_one, one_def]

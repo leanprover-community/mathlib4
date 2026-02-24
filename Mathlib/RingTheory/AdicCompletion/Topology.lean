@@ -26,11 +26,12 @@ section TopologicalSpace
 
 variable {R : Type*} [CommRing R] [TopologicalSpace R] {I : Ideal R} (hI : IsAdic I)
 
+set_option backward.whnf.reducibleClassField false in
 include hI in
 /-- `IsHausdorff I R` is equivalent to being Hausdorff in the adic topology. -/
 protected lemma IsAdic.isHausdorff_iff : IsHausdorff I R ↔ T2Space R := by
   rw [I.ringFilterBasis.t2Space_iff_sInter_subset hI.symm, isHausdorff_iff]
-  simp [SModEq.zero, Ideal.ringFilterBasis, RingSubgroupsBasis.toRingFilterBasis]
+  simp +instances [SModEq.zero, Ideal.ringFilterBasis, RingSubgroupsBasis.toRingFilterBasis]
 
 end TopologicalSpace
 
