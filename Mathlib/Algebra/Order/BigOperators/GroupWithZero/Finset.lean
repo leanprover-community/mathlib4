@@ -260,7 +260,38 @@ lemma prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f
   exact ⟨i, hi, hfg i hi⟩
 
 end PosMulStrictMono
-
 end CommMonoidWithZero
-
 end Finset
+
+namespace Fintype
+variable [Fintype α]
+
+section CommMonoidWithZero
+variable [CommMonoidWithZero M]
+
+section Preorder
+variable [Preorder M] [ZeroLEOneClass M] [PosMulMono M] {f g : α → M}
+
+theorem prod_le_prod₀ (h0 : 0 ≤ f) (hfg : f ≤ g) : ∏ i, f i ≤ ∏ i, g i :=
+  Finset.prod_le_prod₀ (fun x _ ↦ h0 x) fun x _ ↦ hfg x
+
+lemma one_le_prod₀ (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod₀ fun _ _ ↦ hf _
+
+lemma prod_le_one₀ (h0 : 0 ≤ f) (hf : f ≤ 1) : ∏ i, f i ≤ 1 :=
+  Finset.prod_le_one₀ (fun _ _ ↦ h0 _) fun _ _ ↦ hf _
+
+end Preorder
+
+section PartialOrder
+variable [PartialOrder M] [ZeroLEOneClass M] [PosMulMono M] {f : α → M}
+
+lemma prod_eq_one_iff_of_one_le₀ (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
+  (Finset.prod_eq_one_iff_of_one_le₀ fun i _ ↦ hf i).trans <| by simp [funext_iff]
+
+lemma prod_eq_one_iff_of_le_one₀ (h0 : 0 ≤ f) (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 :=
+  (Finset.prod_eq_one_iff_of_le_one₀ (fun i _ ↦ h0 i) fun i _ ↦ hf i).trans <| by
+    simp [funext_iff]
+
+end PartialOrder
+end CommMonoidWithZero
+end Fintype
