@@ -964,4 +964,3 @@ theorem ofReal_div_of_pos {x y : ℝ} (hy : 0 < y) :
 
 end Inv
 end ENNReal
-
