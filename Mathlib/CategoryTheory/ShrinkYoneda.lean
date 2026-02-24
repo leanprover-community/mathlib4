@@ -58,7 +58,7 @@ instance (X : C) : FunctorToTypes.Small.{w} (yoneda.obj X) :=
   fun _ ↦ by dsimp; infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The Yoneda embedding `C ⥤ Cᵒᵖ ⥤ Type w` for a locally `w`-small category `C`. -/
+/-- The Yoneda embedding `C ⥤ Cᵒᵖ ⥤ TypeCat.{w}` for a locally `w`-small category `C`. -/
 @[simps -isSimp obj map, pp_with_univ]
 noncomputable def shrinkYoneda :
     C ⥤ Cᵒᵖ ⥤ TypeCat.{w} where
@@ -86,7 +86,7 @@ noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ TypeCat.{w}} :
   right_inv x := by simp
 
 set_option backward.isDefEq.respectTransparency false in
-lemma map_shrinkYonedaEquiv {X Y : C} {P : Cᵒᵖ ⥤ Type w} (f : shrinkYoneda.obj X ⟶ P)
+lemma map_shrinkYonedaEquiv {X Y : C} {P : Cᵒᵖ ⥤ TypeCat.{w}} (f : shrinkYoneda.obj X ⟶ P)
     (g : Y ⟶ X) : P.map g.op (shrinkYonedaEquiv f) =
       f.app (op Y) (shrinkYonedaObjObjEquiv.symm g) := by
   simp [shrinkYonedaObjObjEquiv, shrinkYonedaEquiv, shrinkYoneda,
@@ -104,7 +104,7 @@ lemma shrinkYonedaEquiv_comp {X : C} {P Q : Cᵒᵖ ⥤ TypeCat.{w}} (α : shrin
   simp [shrinkYonedaEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma shrinkYonedaEquiv_naturality {X Y : C} {P : Cᵒᵖ ⥤ Type w}
+lemma shrinkYonedaEquiv_naturality {X Y : C} {P : Cᵒᵖ ⥤ TypeCat.{w}}
     (f : shrinkYoneda.obj X ⟶ P) (g : Y ⟶ X) :
     P.map g.op (shrinkYonedaEquiv f) = shrinkYonedaEquiv (shrinkYoneda.map g ≫ f) := by
   simpa [shrinkYonedaEquiv, shrinkYoneda]

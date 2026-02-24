@@ -887,7 +887,7 @@ def uliftYonedaEquiv {X : C} {F : Cᵒᵖ ⥤ TypeCat.{max w v₁}} :
 attribute [simp] uliftYonedaEquiv_symm_apply_app
 
 set_option backward.isDefEq.respectTransparency false in
-lemma uliftYonedaEquiv_naturality {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type max w v₁}
+lemma uliftYonedaEquiv_naturality {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ TypeCat.{max w v₁}}
     (f : uliftYoneda.{w}.obj (unop X) ⟶ F) (g : X ⟶ Y) :
     F.map g (uliftYonedaEquiv.{w} f) = uliftYonedaEquiv.{w} (uliftYoneda.map g.unop ≫ f) := by
   simp [uliftYonedaEquiv, uliftYoneda, ← f.naturality_apply g (ULift.up (𝟙 _))]
@@ -1116,7 +1116,7 @@ def uliftCoyonedaEquiv {X : Cᵒᵖ} {F : C ⥤ TypeCat.{max w v₁}} :
 attribute [simp] uliftCoyonedaEquiv_symm_apply_app
 
 set_option backward.isDefEq.respectTransparency false in
-lemma uliftCoyonedaEquiv_naturality {X Y : C} {F : C ⥤ Type max w v₁}
+lemma uliftCoyonedaEquiv_naturality {X Y : C} {F : C ⥤ TypeCat.{max w v₁}}
     (f : uliftCoyoneda.{w}.obj (op X) ⟶ F) (g : X ⟶ Y) :
     F.map g (uliftCoyonedaEquiv.{w} f) = uliftCoyonedaEquiv.{w} (uliftCoyoneda.map g.op ≫ f) := by
   simp only [uliftCoyonedaEquiv, flip_obj_obj, uliftYoneda_obj_obj, yoneda_obj_obj, Equiv.coe_fn_mk,

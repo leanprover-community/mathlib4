@@ -340,7 +340,7 @@ lemma IsColimit.precompose (hc : c.IsColimit) {G : J ⥤ TypeCat.{w₀'}} (e : �
   (hc.isColimitCore.precompose e naturality).isColimit
 
 set_option backward.isDefEq.respectTransparency false in
-lemma isColimit_precompose_iff {G : J ⥤ Type w₀'} (e : ∀ j, G.obj j ≃ F.obj j)
+lemma isColimit_precompose_iff {G : J ⥤ TypeCat.{w₀'}} (e : ∀ j, G.obj j ≃ F.obj j)
     (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ G.map f = F.map f ∘ e j) :
     (c.precompose _ naturality).IsColimit ↔ c.IsColimit :=
   ⟨fun hc ↦ (hc.precompose (fun j ↦ (e j).symm)

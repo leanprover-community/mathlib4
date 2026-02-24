@@ -23,6 +23,8 @@ are `Fin n` for `n : ℕ`. We prove that the obvious inclusion functor
 We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat.isSkeleton`.
 -/
 
+universe u
+
 @[expose] public section
 
 open CategoryTheory
@@ -32,7 +34,7 @@ structure FintypeCat where
   /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
   of ::
   /-- The underlying type. -/
-  carrier : TypeCat
+  carrier : TypeCat.{u}
   [str : Fintype carrier]
 
 attribute [instance] FintypeCat.str
@@ -148,8 +150,6 @@ instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
 
 instance (X : FintypeCat) : Finite (Aut X) :=
   inferInstanceAs <| Finite (X ≅ X)
-
-universe u
 
 /--
 The "standard" skeleton for `FintypeCat`. This is the full subcategory of `FintypeCat`
@@ -302,7 +302,7 @@ end FintypeCat
 
 namespace FunctorToFintypeCat
 
-universe u v w
+universe v w
 
 variable {C : Type u} [Category.{v} C] (F G : C ⥤ FintypeCat.{w}) {X Y : C}
 
