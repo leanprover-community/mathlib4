@@ -239,20 +239,21 @@ theorem inftyValuedFqt.def {x : RatFunc Fq} :
     (inftyValuedFqt Fq).v x = inftyValuationDef Fq x :=
   rfl
 
+namespace FqtInfty
+
+/- We temporarily disable the existing valued instance coming from the ideal `X` to avoid diamonds
+with the uniform space structure coming from the valuation at infinity. -/
+attribute [-instance] RatFunc.valuedRatFunc
+
+/- Locally add add the uniform space structure coming from the valuation at infinity. This instance
+is scoped in the `FqtInfty` namescape in case it is needed in the future. -/
+scoped instance : UniformSpace (RatFunc Fq) := (inftyValuedFqt Fq).toUniformSpace
+
 /-- The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the valuation at infinity. -/
-def FqtInfty :=
-  @UniformSpace.Completion (RatFunc Fq) <| (inftyValuedFqt Fq).toUniformSpace
+def _root_.FunctionField.FqtInfty := UniformSpace.Completion (RatFunc Fq)
+deriving Field, Algebra (RatFunc Fq), Coe (RatFunc Fq), Inhabited
 
-instance : Field (FqtInfty Fq) :=
-  letI := inftyValuedFqt Fq
-  UniformSpace.Completion.instField
-
-instance : Inhabited (FqtInfty Fq) :=
-  ⟨(0 : FqtInfty Fq)⟩
-
-instance : Coe (RatFunc Fq) (FqtInfty Fq) :=
-  inferInstanceAs (Coe (RatFunc Fq)
-    (@UniformSpace.Completion (RatFunc Fq) <| (inftyValuedFqt Fq).toUniformSpace))
+end FqtInfty
 
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
 instance valuedFqtInfty : Valued (FqtInfty Fq) ℤᵐ⁰ := (inftyValuedFqt Fq).valuedCompletion
