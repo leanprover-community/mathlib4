@@ -83,10 +83,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       have : N - 1 < N := Nat.pred_lt Npos.ne'
       simpa only [not_lt] using Nat.find_min exN this
     have IcN : (c N : ℝ) ≤ (1 + ε) * c (N - 1) := by
-      have A : a ≤ N - 1 := by
-        apply @Nat.le_of_add_le_add_right a 1 (N - 1)
-        rw [Nat.sub_add_cancel Npos]
-        exact aN
+      have A : a ≤ N - 1 := (Nat.le_sub_one_iff_lt Npos).mpr aN
       have B : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
       have := (ha _ A).1
       rwa [B] at this
@@ -133,10 +130,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         exact mem_range.2 h
       exact lt_irrefl _ ((cNM.trans hn).trans_lt ncN)
     have Npos : 0 < N := lt_of_lt_of_le Nat.succ_pos' aN
-    have aN' : a ≤ N - 1 := by
-      apply @Nat.le_of_add_le_add_right a 1 (N - 1)
-      rw [Nat.sub_add_cancel Npos]
-      exact aN
+    have aN' : a ≤ N - 1 := (Nat.le_sub_one_iff_lt Npos).mpr aN
     have cNn : c (N - 1) ≤ n := by
       have : N - 1 < N := Nat.pred_lt Npos.ne'
       simpa only [not_lt] using Nat.find_min exN this

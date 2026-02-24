@@ -179,7 +179,7 @@ variable [Fact (Module.finrank ℝ E = 3)] in
 /--
 error: Could not find a model with corners for `↑(Metric.sphere 0 1)`.
 ---
-trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Metric.sphere 0 1)
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Metric.sphere 0 1)`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not a `Bundle.TotalSpace`.
