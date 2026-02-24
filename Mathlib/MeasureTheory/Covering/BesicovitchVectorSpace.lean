@@ -103,7 +103,6 @@ section
 
 variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 /-- Any `1`-separated set in the ball of radius `2` has cardinality at most `5 ^ dim`. This is
 useful to show that the supremum in the definition of `Besicovitch.multiplicity E` is

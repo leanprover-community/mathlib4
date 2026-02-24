@@ -184,7 +184,6 @@ instance [∀ n, IsProbabilityMeasure (μ n)] (I : Finset ℕ) :
   rw [inducedFamily]
   exact Measure.isProbabilityMeasure_map (measurable_restrict₂ _).aemeasurable
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of measures `μ : (n : ℕ) → Measure (Π i : Iic n, X i)`, the induced family
 equals `μ` over the intervals `Iic n`. -/
 theorem inducedFamily_Iic (n : ℕ) : inducedFamily μ (Iic n) = μ n := by

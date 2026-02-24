@@ -278,7 +278,6 @@ lemma baseOf_root_eq_baseOf_coroot
   subset_antisymm (P.baseOf_root_eq_baseOf_coroot_aux f g hf hfg)
     (P.flip.baseOf_root_eq_baseOf_coroot_aux g f hg (by aesop))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is really just an auxiliary result en route to `RootPairing.Base.mk'`. -/
 lemma coroot_mem_or_neg_mem_closure_of_root (s : Set ι)
     (hli : LinearIndepOn R P.root s)

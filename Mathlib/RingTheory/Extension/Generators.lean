@@ -237,6 +237,7 @@ def extendScalars (P : Generators R T ι) : Generators S T ι where
   σ' x := map (algebraMap R S) (P.σ x)
   aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `P` is a family of generators of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural family of generators of `T ⊗[R] S` over `T`. -/
 @[simps! val]

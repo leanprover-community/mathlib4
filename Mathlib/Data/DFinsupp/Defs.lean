@@ -820,7 +820,6 @@ theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 
 
 theorem eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by aesop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between dependent functions with finite support `s : Finset ι` and functions
 `∀ i, {x : β i // x ≠ 0}`. -/
 @[simps]

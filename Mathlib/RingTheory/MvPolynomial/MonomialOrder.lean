@@ -519,7 +519,6 @@ theorem degree_mul [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (
   obtain ⟨hf, hg⟩ := h
   rw [leadingCoeff, degree_mul hf hg, ← coeff_mul_of_degree_add]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Monomial degree of powers -/
 theorem degree_pow_le {f : MvPolynomial σ R} (n : ℕ) :
     m.degree (f ^ n) ≼[m] n • (m.degree f) := by
@@ -531,7 +530,6 @@ theorem degree_pow_le {f : MvPolynomial σ R} (n : ℕ) :
       simp only [map_add, add_le_add_iff_right]
       exact hrec
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_pow_nsmul_degree (f : MvPolynomial σ R) (n : ℕ) :
     (f ^ n).coeff (n • m.degree f) = m.leadingCoeff f ^ n := by
   induction n with
@@ -993,6 +991,7 @@ lemma sPolynomial_leadingTerm_mul' [NoZeroDivisors R] (p₁ p₂ q₁ q₂ : MvP
   · (obtain rfl | rfl | rfl | rfl := H) <;> simp
   simp [H, leadingTerm, sPolynomial_monomial_mul, degree_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
     {B : Finset ι} {g : ι → MvPolynomial σ R}
     (hd : ∀ b ∈ B,
@@ -1007,7 +1006,8 @@ lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
     by_cases hb0 : g b = 0
     · simp_all
     simp? [Finset.sum_insert hb, hb0] at hfd hd says
-      simp only [Finset.sum_insert hb, Finset.mem_insert, forall_eq_or_imp, hb0, or_false] at hfd hd
+      simp only [Finset.sum_insert hb, Finset.mem_insert, forall_eq_or_imp, hb0, or_false]
+        at hfd hd
     obtain ⟨⟨rfl, isunit_gb⟩, hd⟩ := hd
     use fun b₁ b₂ ↦ if b₂ = b then ↑isunit_gb.unit⁻¹ else 0
     simp? [Finset.sum_insert hb, hb] says
