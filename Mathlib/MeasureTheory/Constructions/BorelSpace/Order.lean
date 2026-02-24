@@ -454,6 +454,7 @@ theorem ext_of_Ico_finite {α : Type*} [TopologicalSpace α] {m : MeasurableSpac
   rintro - ⟨a, b, hlt, rfl⟩
   exact h hlt
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two finite measures on a Borel space are equal if they agree on all open-closed intervals.  If
 `α` is a conditionally complete linear order with no top element,
 `MeasureTheory.Measure.ext_of_Ioc` is an extensionality lemma with weaker assumptions on `μ` and
@@ -531,6 +532,7 @@ theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     finiteness
   · finiteness
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two finite measures on a Borel space are equal if they agree on all left-closed right-infinite
 intervals. -/
 theorem ext_of_Ici {α : Type*} [TopologicalSpace α] {_ : MeasurableSpace α}

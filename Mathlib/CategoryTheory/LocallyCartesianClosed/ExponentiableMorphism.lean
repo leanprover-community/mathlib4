@@ -134,10 +134,12 @@ theorem pushforward_curry_uncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforw
     pushforwardCurry (pushforwardUncurry v) = v :=
   pullbackPushforwardAdj f |>.homEquiv A X |>.right_inv v
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ChosenPullbacksAlong (Over.mk f).hom := by
   dsimp only [Over.mk_hom]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance OverMkHom : ExponentiableMorphism (Over.mk f).hom := by
   dsimp only [Over.mk_hom]
   infer_instance
@@ -150,9 +152,10 @@ section
 def id (I : C) [ChosenPullbacksAlong (𝟙 I)] : ExponentiableMorphism (𝟙 I) :=
   ⟨𝟭 _, ofNatIsoLeft (F := 𝟭 _) Adjunction.id (pullbackId I).symm⟩
 
+set_option backward.whnf.reducibleClassField false in
 theorem id_pushforward (I : C) [ChosenPullbacksAlong (𝟙 I)] :
     (id I).pushforward = 𝟭 (Over I) := by
-  dsimp only [id]
+  dsimp +instances only [id]
 
 /-- Any pushforward of the identity morphism is naturally isomorphic to the identity functor. -/
 def pushforwardId (I : C) [ChosenPullbacksAlong (𝟙 I)] [ExponentiableMorphism (𝟙 I)] :
@@ -183,11 +186,12 @@ def comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     ofNatIsoLeft (pullbackPushforwardAdj g |>.comp <| pullbackPushforwardAdj f)
     (pullbackComp f g).symm⟩
 
+set_option backward.whnf.reducibleClassField false in
 theorem comp_pushforward {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
     [ExponentiableMorphism f] [ExponentiableMorphism g] :
     (comp f g).pushforward = pushforward f ⋙ pushforward g := by
-  dsimp only [comp]
+  dsimp +instances only [comp]
 
 /-- The natural isomorphism between pushforward of the composition and the composition of
 pushforward functors. -/

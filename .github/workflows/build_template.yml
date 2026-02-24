@@ -37,6 +37,7 @@ jobs:
       build-outcome: ${{ steps.build.outcome }}
       archive-outcome: ${{ steps.archive.outcome }}
       counterexamples-outcome: ${{ steps.counterexamples.outcome }}
+      cache-staging-has-files: ${{ steps.cache_staging_check.outputs.has_files }}
       get-cache-outcome: ${{ steps.get.outcome }}
       lint-outcome: ${{ steps.lint.outcome }}
       mk_all-outcome: ${{ steps.mk_all.outcome }}
@@ -242,6 +243,31 @@ jobs:
             echo "✅ All inputRevs in lake-manifest.json are valid"
           fi
 
+      - name: validate ProofWidgets source repository
+        # Only enforce this on the main mathlib4 repository, not on nightly-testing
+        if: github.repository == 'leanprover-community/mathlib4'
+        shell: bash
+        run: |
+          cd pr-branch
+
+          expected_url='https://github.com/leanprover-community/ProofWidgets4'
+          proofwidgets_count=$(jq '[.packages[] | select(.name == "proofwidgets")] | length' lake-manifest.json)
+          if [ "$proofwidgets_count" -ne 1 ]; then
+            echo "❌ Error: expected exactly one proofwidgets entry in lake-manifest.json, found $proofwidgets_count"
+            exit 1
+          fi
+
+          proofwidgets_url=$(jq -r '.packages[] | select(.name == "proofwidgets") | .url' lake-manifest.json)
+          normalized_url="${proofwidgets_url%.git}"
+          if [ "$normalized_url" != "$expected_url" ]; then
+            echo "❌ Error: invalid ProofWidgets source URL in lake-manifest.json"
+            echo "  expected: $expected_url"
+            echo "  found:    $proofwidgets_url"
+            exit 1
+          fi
+
+          echo "✅ ProofWidgets source URL is trusted: $proofwidgets_url"
+
       - name: verify ProofWidgets lean-toolchain matches on versioned releases
         # Only enforce this on the main mathlib4 repository, not on nightly-testing
         if: github.repository == 'leanprover-community/mathlib4'
@@ -297,7 +323,7 @@ jobs:
 
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
           echo "Attempting to fetch olean for Mathlib/Init.lean from cache..."
-          ../tools-branch/.lake/build/bin/cache get Mathlib/Init.lean
+          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get Mathlib/Init.lean
 
       - name: get cache (2/3 - test Mathlib.Init cache)
         id: get_cache_part2_test
@@ -317,14 +343,22 @@ jobs:
           if [[ "${{ steps.get_cache_part2_test.outcome }}" == "success" ]]; then
             echo "Fetching all remaining cache..."
 
-            ../tools-branch/.lake/build/bin/cache get
+            ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get
 
             # Run again with --repo, to ensure we actually get the oleans.
-            ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+            ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} --skip-proofwidgets get
           else
             echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
           fi
+
+      - name: fetch ProofWidgets release
+        # We need network access for ProofWidgets frontend assets.
+        # Run inside landrun so PR-controlled code remains sandboxed.
+        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake build proofwidgets:release
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
@@ -367,31 +401,6 @@ jobs:
           cd pr-branch
           du .lake/build/lib/lean/Mathlib || echo "This code should be unreachable"
 
-      # The cache secrets are available here, so we must not run any untrusted code.
-      - name: Upload cache to Azure
-        # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
-        # but not if any earlier step failed or was cancelled.
-        # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
-        if: ${{ always() && steps.get.outcome == 'success' }}
-        shell: bash
-        run: |
-          cd pr-branch
-
-          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
-          export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
-
-          # Use the trusted cache tool from tools-branch
-          # TODO: this is not doing anything currently, and needs to be integrated with put-unpacked
-          # ../tools-branch/.lake/build/bin/cache commit || true
-          # run this in CI if it gets an incorrect lake hash for existing cache files somehow
-          # ../tools-branch/.lake/build/bin/cache put!
-          # do not try to upload files just downloaded
-
-          echo "Uploading cache to Azure..."
-          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
-        env:
-          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
-
       # Note: we should not be including `Archive` and `Counterexamples` in the cache.
       # We do this for now for the sake of not rebuilding them in every CI run
       # even when they are not touched.
@@ -404,8 +413,8 @@ jobs:
         shell: bash
         run: |
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache get Archive.lean
-          ../tools-branch/.lake/build/bin/cache get Counterexamples.lean
+          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get Archive.lean
+          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get Counterexamples.lean
 
       - name: build archive
         id: archive
@@ -423,6 +432,53 @@ jobs:
           ../tools-branch/scripts/lake-build-with-retry.sh Counterexamples
           # results of build at pr-branch/.lake/build_summary_Counterexamples.json
 
+      - name: prepare staging directory
+        if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
+        shell: bash
+        run: |
+          # Clean the staging directory first, though it should be empty at this point, to be safe
+          rm -rf cache-staging
+          mkdir -p cache-staging
+
+      - name: stage Mathlib cache files
+        if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
+
+      - name: stage Archive cache files
+        if: ${{ steps.archive.outcome == 'success' }}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Archive.lean
+
+      - name: stage Counterexamples cache files
+        if: ${{ steps.counterexamples.outcome == 'success' }}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Counterexamples.lean
+
+      - name: check cache staging contents
+        id: cache_staging_check
+        if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
+        shell: bash
+        run: |
+          if find cache-staging -type f -name '*.ltar' -print -quit | grep -q .; then
+            echo "has_files=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_files=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: upload cache staging artifact
+        if: ${{ always() && steps.cache_staging_check.outputs.has_files == 'true' }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: cache-staging
+          path: cache-staging/
+
       - name: Check if building Archive or Counterexamples failed
         if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
         run: |
@@ -433,21 +489,6 @@ jobs:
             echo "❌ The \"build counterexamples\" step above failed; please check its logs."
           fi
           exit 1
-
-      # The cache secrets are available here, so we must not run any untrusted code.
-      - name: Upload Archive and Counterexamples cache to Azure
-        shell: bash
-        run: |
-          cd pr-branch
-
-          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
-          export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
-
-          echo "Uploading Archive and Counterexamples cache to Azure..."
-          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
-          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
-        env:
-          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: Check {Mathlib, Tactic, Counterexamples, Archive}.lean
         if: ${{ always() && steps.mk_all.outcome != 'skipped' }}
@@ -595,9 +636,60 @@ jobs:
           tools-branch/scripts/lean-pr-testing-comments.sh lean
           tools-branch/scripts/lean-pr-testing-comments.sh batteries
 
+  upload_cache:
+    name: Upload to cache
+    needs: [build]
+    runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
+    # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
+    # but not if any earlier step failed or was cancelled.
+    # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
+    if: ${{ always() && needs.build.outputs.cache-staging-has-files == 'true' }}
+    steps:
+      - name: Checkout tools branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
+          fetch-depth: 1
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
+        with:
+          auto-config: false # Don't run `lake build`, `lake test`, or `lake lint` automatically.
+          use-github-cache: false
+          use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
+          reinstall-transient-toolchain: true
+
+      - name: build cache executable
+        run: |
+          lake build cache
+          CACHE_BIN="$(pwd)/.lake/build/bin/cache"
+          if [ ! -x "$CACHE_BIN" ]; then
+            echo "cache binary not found: $CACHE_BIN"
+            exit 1
+          fi
+          echo "CACHE_BIN=$CACHE_BIN" >> "$GITHUB_ENV"
+
+      - name: Download cache staging artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: cache-staging
+          path: cache-staging
+
+      - name: Upload staged cache to Azure
+        shell: bash
+        run: |
+          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
+          export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
+
+          echo "Uploading cache to Azure..."
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 lake env "$CACHE_BIN" put-staged --staging-dir="cache-staging" --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }}
+        env:
+          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
+
   post_steps:
     name: Post-Build Step
-    needs: [build]
+    needs: [build, upload_cache]
+    if: ${{ always() && needs.build.result == 'success' && (needs.upload_cache.result == 'success' || needs.upload_cache.result == 'skipped') }}
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
 
@@ -674,6 +766,7 @@ jobs:
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `daily.yml`.
+
   style_lint:
     name: Lint style
     runs-on: ubuntu-latest
@@ -686,7 +779,8 @@ jobs:
 
   final:
     name: Post-CI job
-    if: ${{ inputs.run_post_ci }}
+    # ensure that this runs iff direct dependencies succeeded even if transitive dependencies  were skipped
+    if: ${{ always() && inputs.run_post_ci && needs.style_lint.result == 'success' && needs.build.result == 'success' && needs.post_steps.result == 'success' }}
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:

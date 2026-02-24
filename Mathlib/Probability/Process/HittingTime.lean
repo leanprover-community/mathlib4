@@ -138,6 +138,7 @@ theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω)
 
 @[deprecated (since := "2025-10-25")] alias notMem_of_lt_hitting := notMem_of_lt_hittingBtwn
 
+set_option backward.isDefEq.respectTransparency false in
 theorem notMem_of_lt_hittingAfter {k : ι} (hk₁ : k < hittingAfter u s n ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
   refine fun h ↦ not_le.2 hk₁ ?_
@@ -178,6 +179,7 @@ theorem le_hittingBtwn {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hittingBtwn u 
 
 @[deprecated (since := "2025-10-25")] alias le_hitting := le_hittingBtwn
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_hittingAfter (ω : Ω) : n ≤ hittingAfter u s n ω := by
   simp only [hittingAfter]
   split_ifs with h
@@ -243,6 +245,7 @@ theorem hittingBtwn_le_of_mem {m : ι} (hin : n ≤ i) (him : i ≤ m) (his : u 
 
 @[deprecated (since := "2025-10-25")] alias hitting_le_of_mem := hittingBtwn_le_of_mem
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hittingAfter_le_of_mem (hin : n ≤ i) (his : u i ω ∈ s) :
     hittingAfter u s n ω ≤ i := by
   have h_exists : ∃ k, n ≤ k ∧ u k ω ∈ s := ⟨i, hin, his⟩
@@ -267,6 +270,7 @@ theorem hittingBtwn_le_iff_of_exists [WellFoundedLT ι] {m : ι}
 @[deprecated (since := "2025-10-25")] alias hitting_le_iff_of_exists :=
   hittingBtwn_le_iff_of_exists
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hittingAfter_le_iff [WellFoundedLT ι] :
     hittingAfter u s n ω ≤ i ↔ ∃ j ∈ Set.Icc n i, u j ω ∈ s := by
   constructor <;> intro h'
@@ -304,6 +308,7 @@ theorem hittingBtwn_lt_iff [WellFoundedLT ι] {m : ι} (i : ι) (hi : i ≤ m) :
 
 @[deprecated (since := "2025-10-25")] alias hitting_lt_iff := hittingBtwn_lt_iff
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hittingAfter_lt_iff [WellFoundedLT ι] :
     hittingAfter u s n ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
@@ -345,6 +350,7 @@ lemma hittingBtwn_anti (u : ι → Ω → β) (n m : ι) : Antitone (hittingBtwn
     exact absurd ⟨t, ht.1, hEF ht.2⟩ hF
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `hittingAfter` is nonincreasing with respect to the set. -/
 lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter u · n) := by
   intro E F hEF ω
@@ -395,6 +401,7 @@ lemma hittingBtwn_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) :
     exact absurd ⟨t, ⟨hnn'.trans ht.1.1, ht.1.2⟩, ht.2⟩ h_n
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `hittingAfter` is monotone with respect to the minimal time. -/
 lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingAfter u s) := by
   intro n m hnm ω
@@ -419,6 +426,7 @@ lemma hittingAfter_apply_mono (u : ι → Ω → β) (s : Set β) (ω : Ω) :
 
 end Inequalities
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A discrete hitting time is a stopping time. -/
 theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β} {s : Set β}
@@ -462,6 +470,7 @@ theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [Well
 
 @[deprecated (since := "2025-10-25")] alias stoppedValue_hitting_mem := stoppedValue_hittingBtwn_mem
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The hitting time of a discrete process with the starting time indexed by a stopping time
 is a stopping time. -/
 theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
