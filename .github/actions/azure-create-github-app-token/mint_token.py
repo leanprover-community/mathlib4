@@ -96,10 +96,10 @@ def run_az_key_sign(vault_name: str, key_name: str, key_version: str, digest_b64
             f"stderr: {proc.stderr.strip()}"
         )
 
-    signature = sign_result.get("result") or sign_result.get("value")
+    signature = sign_result.get("result") or sign_result.get("value") or sign_result.get("signature")
     if not isinstance(signature, str) or not signature.strip():
         fail(
-            "Azure Key Vault sign response did not include a signature in 'result' or 'value'.\n"
+            "Azure Key Vault sign response did not include a signature in 'result', 'value', or 'signature'.\n"
             f"stdout: {proc.stdout.strip()}"
         )
     return signature.strip()
