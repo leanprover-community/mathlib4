@@ -697,8 +697,7 @@ lemma concat_dropLast (p : G.Walk u v) (hp : G.Adj p.penultimate v) :
 
 theorem support_dropLast_concat {p : G.Walk u v} (hp : ¬p.Nil) :
     p.dropLast.support.concat v = p.support := by
-  nth_rw 3 [← p.concat_dropLast <| adj_penultimate hp]
-  rw [support_concat]
+  rw [← support_concat _ <| adj_penultimate hp, concat_dropLast]
 
 @[simp]
 theorem support_dropLast {p : G.Walk u v} (hp : ¬p.Nil) :
