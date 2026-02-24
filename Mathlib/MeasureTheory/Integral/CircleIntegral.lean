@@ -344,7 +344,6 @@ def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
 /-- `∮ z in C(c, R), f z` is the circle integral $\oint_{|z-c|=R} f(z)\,dz$. -/
 notation3 "∮ "(...)" in ""C("c", "R")"", "r:60:(scoped f => circleIntegral f c R) => r
 
-set_option backward.isDefEq.respectTransparency false in
 theorem circleIntegral_def_Icc (f : ℂ → E) (c : ℂ) (R : ℝ) :
     (∮ z in C(c, R), f z) = ∫ θ in Icc 0 (2 * π),
     deriv (circleMap c R) θ • f (circleMap c R θ) := by
@@ -538,7 +537,6 @@ theorem cauchyPowerSeries_apply (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) (w
     div_eq_mul_inv, mul_pow, mul_smul, circleIntegral.integral_smul]
   rw [← smul_comm (w ^ n)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_cauchyPowerSeries_le (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) :
     ‖cauchyPowerSeries f c R n‖ ≤
       ((2 * π)⁻¹ * ∫ θ : ℝ in 0..2 * π, ‖f (circleMap c R θ)‖) * |R|⁻¹ ^ n :=
@@ -575,7 +573,6 @@ theorem le_radius_cauchyPowerSeries (f : ℂ → E) (c : ℂ) (R : ℝ≥0) :
     have : (R : ℝ) ^ n ≠ 0 := by norm_cast at hR ⊢
     rw [inv_mul_cancel_right₀ this]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any circle integrable function `f`, the power series `cauchyPowerSeries f c R` multiplied
 by `2πI` converges to the integral `∮ z in C(c, R), (z - w)⁻¹ • f z` on the open disc
 `Metric.ball c R`. -/

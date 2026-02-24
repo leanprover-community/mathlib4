@@ -570,7 +570,6 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
     rw [lie_smul, lie_smul, smul_lie, this]
     simp [← smul_assoc, f, hh, mul_comm _ (2 * (α h)⁻¹)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
     {h e f : L} (ht : IsSl2Triple h e f) (heα : e ∈ rootSpace H α) (hfα : f ∈ rootSpace H (-α)) :
     h = coroot α := by
@@ -626,7 +625,6 @@ noncomputable def sl2SubalgebraOfRoot {α : Weight K H L} (hα : α.IsNonZero) :
   choose h e f t ht using exists_isSl2Triple_of_weight_isNonZero hα
   exact t.toLieSubalgebra K
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_sl2SubalgebraOfRoot_iff {α : Weight K H L} (hα : α.IsNonZero) {h e f : L}
     (t : IsSl2Triple h e f) (hte : e ∈ rootSpace H α) (htf : f ∈ rootSpace H (-α)) {x : L} :
     x ∈ sl2SubalgebraOfRoot hα ↔ ∃ c₁ c₂ c₃ : K, x = c₁ • e + c₂ • f + c₃ • ⁅e, f⁆ := by
@@ -679,7 +677,6 @@ This represents the image of the coroot space under the inclusion `H ↪ L`. -/
 noncomputable abbrev corootSubmodule (α : Weight K H L) : LieSubmodule K H L :=
   LieSubmodule.map H.toLieSubmodule.incl (corootSpace α)
 
-set_option backward.isDefEq.respectTransparency false in
 open Submodule in
 lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
     sl2SubmoduleOfRoot hα = genWeightSpace L α ⊔ genWeightSpace L (-α) ⊔ corootSubmodule α := by
@@ -720,7 +717,6 @@ lemma sl2SubmoduleOfRoot_ne_bot (α : Weight K H L) (hα : α.IsNonZero) :
 /-- The collection of roots as a `Finset`. -/
 noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrict_killingForm_eq_sum :
     (killingForm K L).restrict H = ∑ α ∈ H.root, (α : H →ₗ[K] K).smulRight (α : H →ₗ[K] K) := by
   rw [restrict_killingForm, traceForm_eq_sum_finrank_nsmul' K H L]

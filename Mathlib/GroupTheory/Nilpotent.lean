@@ -617,7 +617,6 @@ theorem nilpotencyClass_zero_iff_subsingleton [IsNilpotent G] :
   rw [Group.nilpotencyClass, Nat.find_eq_zero, upperCentralSeries_zero,
     subsingleton_iff_bot_eq_top, Subgroup.subsingleton_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Quotienting the `center G` reduces the nilpotency class by 1 -/
 theorem nilpotencyClass_quotient_center [hH : IsNilpotent G] :
     Group.nilpotencyClass (G ⧸ center G) = Group.nilpotencyClass G - 1 := by

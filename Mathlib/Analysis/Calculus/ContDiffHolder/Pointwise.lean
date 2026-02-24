@@ -77,7 +77,6 @@ theorem differentiableAt (h : ContDiffPointwiseHolderAt k α f a) (hk : k ≠ 0)
     DifferentiableAt ℝ f a :=
   h.contDiffAt.differentiableAt <| mod_cast hk
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function is $C^{k+(0)}$ at a point if and only if it is $C^k$ at the point. -/
 @[simp]
 theorem zero_exponent_iff : ContDiffPointwiseHolderAt k 0 f a ↔ ContDiffAt ℝ k f a := by

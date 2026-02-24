@@ -239,7 +239,6 @@ open Real
 
 variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
 
-set_option backward.isDefEq.respectTransparency false in
 open Nat in
 /-- The norm of any root of `p` is bounded by the spectral value of `p`. See
 [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis* (Proposition 3.1.2/1(1))]
