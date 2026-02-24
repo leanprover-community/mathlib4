@@ -46,11 +46,13 @@ universe u v
 
 variable {A : Type u} [CommRing A] {M : Type v} [AddCommGroup M] [Module A M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A `Prop` asserting that two submodules `N₁, N₂` satisfy `N₁ ≤ N₂` and
 `N₂ / N₁` is isomorphic to `A / p` for some prime ideal `p` of `A`. -/
 def Submodule.IsQuotientEquivQuotientPrime (N₁ N₂ : Submodule A M) :=
   N₁ ≤ N₂ ∧ ∃ (p : PrimeSpectrum A), Nonempty ((↥N₂ ⧸ N₁.submoduleOf N₂) ≃ₗ[A] A ⧸ p.1)
 
+set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
     N₁.IsQuotientEquivQuotientPrime N₂ ↔
@@ -84,6 +86,7 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
 
 variable (A M) [IsNoetherianRing A] [Module.Finite A M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `A` is a Noetherian ring and `M` is a finitely generated `A`-module, then there exists
 a chain of submodules `0 = M₀ ≤ M₁ ≤ M₂ ≤ ... ≤ Mₙ = M` of `M`, such that for each `0 ≤ i < n`,
 `Mᵢ₊₁ / Mᵢ` is isomorphic to `A / pᵢ` for some prime ideal `pᵢ` of `A`. -/
@@ -100,6 +103,7 @@ theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
   have := Submodule.isQuotientEquivQuotientPrime_iff.mpr ⟨x, hp, rfl⟩
   refine ⟨_, by simpa [hs₂], s.snoc _ (hs₂ ▸ this), by simpa, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a property on finitely generated modules over a Noetherian ring satisfies that:
 
 - it holds for zero module (it's formalized as it holds for any module which is subsingleton),
@@ -197,6 +201,7 @@ theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
     simpa only [smul_eq_mul, mul_comm x, SetLike.le_def, Submodule.mem_colon_singleton] using hP,
       fun h : x = 0 ↦ prime.ne_top <| by simp [h]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.nonempty_inter_nonZeroDivisors_of_faithfulSMul {I : Ideal A} [FaithfulSMul A I] :
     ((I : Set A) ∩ nonZeroDivisors A).Nonempty := by
   by_contra!

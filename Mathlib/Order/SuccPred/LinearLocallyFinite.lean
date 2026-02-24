@@ -66,6 +66,7 @@ namespace LinearOrder
 
 variable [SuccOrder ι] [PredOrder ι]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) isPredArchimedean_of_isSuccArchimedean [IsSuccArchimedean ι] :
     IsPredArchimedean ι where
   exists_pred_iterate_of_le {i j} hij := by

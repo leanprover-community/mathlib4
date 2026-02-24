@@ -178,6 +178,7 @@ lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finse
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
   simp [Function.comp_def, filter_map, f.injective.eq_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
     s.attach.filter p =
       (s.filter fun x => ∃ h, p ⟨x, h⟩).attach.map
@@ -466,10 +467,12 @@ theorem mem_range_iff_mem_finset_range_of_mod_eq [DecidableEq α] {f : ℤ → �
     fun ⟨i, hi, ha⟩ =>
     ⟨i, by rw [Int.emod_eq_of_lt (Int.natCast_nonneg _) (Int.ofNat_lt_ofNat_of_lt hi), ha]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem attach_image_val [DecidableEq α] {s : Finset α} : s.attach.image Subtype.val = s :=
   eq_of_veq <| by rw [image_val, attach_val, Multiset.attach_map_val, dedup_eq_self]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma attach_cons (a : α) (s : Finset α) (ha) :
     attach (cons a s ha) =

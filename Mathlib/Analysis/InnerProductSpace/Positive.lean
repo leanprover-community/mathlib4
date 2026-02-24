@@ -236,6 +236,7 @@ theorem IsSymmetricProjection.isPositive {p : E →ₗ[𝕜] E} (hp : p.IsSymmet
 @[deprecated (since := "2025-08-19")]
 alias IsPositive.of_isStarProjection := IsSymmetricProjection.isPositive
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ range p ≤ range q := by
   refine ⟨fun ⟨h1, h2⟩ a ha ↦ ?_, fun hpq ↦ (hp.sub_of_range_le_range hq hpq).isPositive⟩
@@ -406,6 +407,7 @@ theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] 
     U.starProjection_isSymmetric _, ← U.starProjection_isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPositive) (U : Submodule 𝕜 E)
     [U.HasOrthogonalProjection] : (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
   simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
@@ -542,10 +544,10 @@ theorem ContinuousLinearMap.isPositive_iff_eq_sum_rankOne [FiniteDimensional �
     ((hT.isSymmetric.eigenvalues rfl i).sqrt : 𝕜) • hT.isSymmetric.eigenvectorBasis rfl i
   refine ⟨Module.finrank 𝕜 E, a, ext fun _ ↦ ?_⟩
   simp_rw [sum_apply, rankOne_apply, a, inner_smul_left, smul_smul, mul_assoc, conj_ofReal,
-    mul_comm (⟪_, _⟫_𝕜), ← mul_assoc, ← ofReal_mul, ← Real.sqrt_mul
-      (hT.toLinearMap.nonneg_eigenvalues rfl _), Real.sqrt_mul_self
-      (hT.toLinearMap.nonneg_eigenvalues rfl _), mul_comm _ (⟪_, _⟫_𝕜), ← smul_eq_mul, smul_assoc,
-    ← hT.isSymmetric.apply_eigenvectorBasis, ← map_smul, ← map_sum,
+    mul_comm (⟪_, _⟫_𝕜), ← mul_assoc, ← ofReal_mul,
+    ← Real.sqrt_mul (hT.toLinearMap.nonneg_eigenvalues rfl _),
+    Real.sqrt_mul_self (hT.toLinearMap.nonneg_eigenvalues rfl _), mul_comm _ (⟪_, _⟫_𝕜),
+    ← smul_eq_mul, smul_assoc, ← hT.isSymmetric.apply_eigenvectorBasis, ← map_smul, ← map_sum,
     ← OrthonormalBasis.repr_apply_apply, OrthonormalBasis.sum_repr, coe_coe]
 
 open scoped ComplexOrder in

@@ -206,6 +206,11 @@ def toModuleAut : S →* M ≃ₗ[R] M where
 
 end DistribMulAction
 
+theorem LinearEquiv.smul_refl [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
+    [SMulCommClass R S M] [SMul S R] [IsScalarTower S R M] (α : Sˣ) :
+    letI := SMulCommClass.symm R Sˣ M
+    α • refl R M = DistribMulAction.toLinearEquiv R M α := rfl
+
 namespace AddEquiv
 
 section AddCommMonoid
@@ -543,6 +548,7 @@ See `LinearEquiv.conj` for the linear version of this isomorphism. -/
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism with respect to an action on the domains. -/
 @[simps] def domMulActCongrRight [Semiring S] [Module S M₁]

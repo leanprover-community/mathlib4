@@ -218,6 +218,7 @@ theorem inv_omega : ω⁻¹ = ε :=
 theorem inv_epsilon : ε⁻¹ = ω :=
   @inv_inv _ _ ω
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem epsilon_pos : 0 < ε :=
   inv_pos_of_pos omega_pos
@@ -230,6 +231,7 @@ theorem epsilon_ne_zero : ε ≠ 0 :=
 theorem epsilon_mul_omega : ε * ω = 1 :=
   @inv_mul_cancel₀ _ _ ω omega_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem archimedeanClassMk_epsilon_pos : 0 < mk ε := by
   simpa [← inv_omega] using archimedeanClassMk_omega_neg
 
@@ -745,6 +747,7 @@ theorem IsSt.infinitesimal_sub {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : Infinites
 theorem infinitesimal_sub_st {x : ℝ*} (hx : ¬Infinite x) : Infinitesimal (x - ↑(st x)) :=
   (isSt_st' hx).infinitesimal_sub
 
+set_option backward.isDefEq.respectTransparency false in
 theorem infinitePos_iff_infinitesimal_inv_pos {x : ℝ*} :
     InfinitePos x ↔ Infinitesimal x⁻¹ ∧ 0 < x⁻¹ :=
   ⟨fun hip =>
@@ -766,6 +769,7 @@ theorem infinitesimal_inv_of_infinite {x : ℝ*} : Infinite x → Infinitesimal 
   Or.casesOn hi (fun hip => (infinitePos_iff_infinitesimal_inv_pos.mp hip).1) fun hin =>
     (infiniteNeg_iff_infinitesimal_inv_neg.mp hin).1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem infinite_of_infinitesimal_inv {x : ℝ*} (h0 : x ≠ 0) (hi : Infinitesimal x⁻¹) :
     Infinite x := by
   rcases lt_or_gt_of_ne h0 with hn | hp
@@ -790,6 +794,7 @@ theorem infinitesimal_iff_infinite_inv {x : ℝ*} (h : x ≠ 0) : Infinitesimal 
 ### `Hyperreal.st` stuff that requires infinitesimal machinery
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsSt.inv {x : ℝ*} {r : ℝ} (hi : ¬Infinitesimal x) (hr : IsSt x r) : IsSt x⁻¹ r⁻¹ :=
   hr.map <| continuousAt_inv₀ <| by rintro rfl; exact hi hr
 

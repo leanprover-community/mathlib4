@@ -78,6 +78,7 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 ### Facts about `circleMap`
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The range of `circleMap c R` is the circle with center `c` and radius `|R|`. -/
 @[simp]
 theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |R| :=
@@ -94,6 +95,7 @@ theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |
 theorem image_circleMap_Ioc (c : ℂ) (R : ℝ) : circleMap c R '' Ioc 0 (2 * π) = sphere c |R| := by
   rw [← range_circleMap, ← (periodic_circleMap c R).image_Ioc Real.two_pi_pos 0, zero_add]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
     HasDerivAt (circleMap c R) (circleMap 0 R θ * I) θ := by
   simpa only [mul_assoc, one_mul, ofRealCLM_apply, circleMap, ofReal_one, zero_add]
@@ -102,6 +104,7 @@ theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
 theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circleMap c R) := fun θ =>
   (hasDerivAt_circleMap c R θ).differentiableAt
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The circleMap is real analytic. -/
 theorem analyticOnNhd_circleMap (c : ℂ) (R : ℝ) :
     AnalyticOnNhd ℝ (circleMap c R) Set.univ := by
@@ -139,6 +142,7 @@ theorem lipschitzWith_circleMap (c : ℂ) (R : ℝ) : LipschitzWith (Real.nnabs 
   lipschitzWith_of_nnnorm_deriv_le (differentiable_circleMap _ _) fun θ =>
     NNReal.coe_le_coe.1 <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuous_circleMap_inv {R : ℝ} {z w : ℂ} (hw : w ∈ ball z R) :
     Continuous fun θ => (circleMap z R θ - w)⁻¹ := by
   have : ∀ θ, circleMap z R θ - w ≠ 0 := by
@@ -289,6 +293,7 @@ theorem ContinuousOn.circleIntegrable {f : ℂ → E} {c : ℂ} {R : ℝ} (hR : 
     (hf : ContinuousOn f (sphere c R)) : CircleIntegrable f c R :=
   ContinuousOn.circleIntegrable' <| (abs_of_nonneg hR).symm ▸ hf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `fun z ↦ (z - w) ^ n`, `n : ℤ`, is circle integrable on the circle with center `c`
 and radius `|R|` if and only if `R = 0` or `0 ≤ n`, or `w` does not belong to this circle. -/
 @[simp]
@@ -339,6 +344,7 @@ def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
 /-- `∮ z in C(c, R), f z` is the circle integral $\oint_{|z-c|=R} f(z)\,dz$. -/
 notation3 "∮ "(...)" in ""C("c", "R")"", "r:60:(scoped f => circleIntegral f c R) => r
 
+set_option backward.isDefEq.respectTransparency false in
 theorem circleIntegral_def_Icc (f : ℂ → E) (c : ℂ) (R : ℝ) :
     (∮ z in C(c, R), f z) = ∫ θ in Icc 0 (2 * π),
     deriv (circleMap c R) θ • f (circleMap c R θ) := by
@@ -419,6 +425,7 @@ theorem norm_two_pi_i_inv_smul_integral_le_of_norm_le_const {f : ℂ → E} {c :
   rw [norm_smul, this, ← div_eq_inv_mul, div_le_iff₀ Real.two_pi_pos, mul_comm (R * C), ← mul_assoc]
   exact norm_integral_le_of_norm_le_const hR hf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is continuous on the circle `|z - c| = R`, `R > 0`, the `‖f z‖` is less than or equal to
 `C : ℝ` on this circle, and this norm is strictly less than `C` at some point `z` of the circle,
 then `‖∮ z in C(c, R), f z‖ < 2 * π * R * C`. -/
@@ -446,6 +453,7 @@ theorem integral_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [SMulCom
     (f : ℂ → E) (c : ℂ) (R : ℝ) : (∮ z in C(c, R), a • f z) = a • ∮ z in C(c, R), f z := by
   simp only [circleIntegral, ← smul_comm a (_ : ℂ) (_ : E), intervalIntegral.integral_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem integral_smul_const [CompleteSpace E] (f : ℂ → ℂ) (a : E) (c : ℂ) (R : ℝ) :
     (∮ z in C(c, R), f z • a) = (∮ z in C(c, R), f z) • a := by
@@ -456,11 +464,13 @@ theorem integral_const_mul (a : ℂ) (f : ℂ → ℂ) (c : ℂ) (R : ℝ) :
     (∮ z in C(c, R), a * f z) = a * ∮ z in C(c, R), f z :=
   integral_smul a f c R
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem integral_sub_center_inv (c : ℂ) {R : ℝ} (hR : R ≠ 0) :
     (∮ z in C(c, R), (z - c)⁻¹) = 2 * π * I := by
   simp [circleIntegral, ← div_eq_mul_inv, mul_div_cancel_left₀ _ (circleMap_ne_center hR)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f' : ℂ → E` is a derivative of a complex differentiable function on the circle
 `Metric.sphere c |R|`, then `∮ z in C(c, R), f' z = 0`. -/
 theorem integral_eq_zero_of_hasDerivWithinAt' [CompleteSpace E] {f f' : ℂ → E} {c : ℂ} {R : ℝ}
@@ -528,6 +538,7 @@ theorem cauchyPowerSeries_apply (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) (w
     div_eq_mul_inv, mul_pow, mul_smul, circleIntegral.integral_smul]
   rw [← smul_comm (w ^ n)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_cauchyPowerSeries_le (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) :
     ‖cauchyPowerSeries f c R n‖ ≤
       ((2 * π)⁻¹ * ∫ θ : ℝ in 0..2 * π, ‖f (circleMap c R θ)‖) * |R|⁻¹ ^ n :=
@@ -564,6 +575,7 @@ theorem le_radius_cauchyPowerSeries (f : ℂ → E) (c : ℂ) (R : ℝ≥0) :
     have : (R : ℝ) ^ n ≠ 0 := by norm_cast at hR ⊢
     rw [inv_mul_cancel_right₀ this]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any circle integrable function `f`, the power series `cauchyPowerSeries f c R` multiplied
 by `2πI` converges to the integral `∮ z in C(c, R), (z - w)⁻¹ • f z` on the open disc
 `Metric.ball c R`. -/

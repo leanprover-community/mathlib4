@@ -80,6 +80,7 @@ theorem exponent_eq_sInf : exponent θ = sInf {d : ℕ | 0 < d ∧ (d : 𝓞 K) 
 
 variable [NumberField K] {θ : 𝓞 K} {p : ℕ} [Fact p.Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `p` doesn't divide the exponent of `θ`, then `(ℤ / pℤ)[X] / (minpoly θ) ≃+* 𝓞 K / p(𝓞 K)`.
 -/
@@ -91,6 +92,7 @@ def ZModXQuotSpanEquivQuotSpan (hp : ¬ p ∣ exponent θ) :
       ((quotMapEquivQuotQuotMap (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral).symm.trans
         (quotientEquivAlgOfEq ℤ (by simp [map_span])).toRingEquiv))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ[X]) :
     (ZModXQuotSpanEquivQuotSpan hp)
       (Ideal.Quotient.mk (span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)})
@@ -143,6 +145,7 @@ variable {θ : 𝓞 K} {p : ℕ} [Fact (Nat.Prime p)]
 
 attribute [local instance] Int.ideal_span_isMaximal_of_prime Ideal.Quotient.field
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 open scoped Classical in
 private def primesOverSpanEquivMonicFactorsModAux (A : ℤ[X]) :
@@ -183,6 +186,7 @@ theorem primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ
           rw [← primesOverSpanEquivMonicFactorsModAux_symm_apply]
           exact ((primesOverSpanEquivMonicFactorsModAux _).symm ⟨Q, hQ⟩).coe_prop⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
 `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is spanned by `p` and `Q(θ)`.
@@ -226,6 +230,7 @@ theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ p ∣
   obtain ⟨S, rfl⟩ := (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p)))) Q
   rw [inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The ramification index of the ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
 `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is equal to the multiplicity of `Q mod p` in

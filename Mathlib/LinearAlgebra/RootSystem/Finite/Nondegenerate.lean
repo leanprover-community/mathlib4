@@ -169,6 +169,7 @@ lemma finrank_corootSpan_eq [P.IsAnisotropic] :
     finrank S (P.corootSpan S) = finrank S (P.rootSpan S) :=
   le_antisymm (P.finrank_corootSpan_le S) (P.flip.finrank_corootSpan_le S)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma polarizationIn_Injective [P.IsAnisotropic] :
     Function.Injective (P.PolarizationIn S) := by
   have : IsReflexive R M := .of_isPerfPair P.toLinearMap

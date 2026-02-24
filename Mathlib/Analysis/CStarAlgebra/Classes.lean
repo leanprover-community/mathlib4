@@ -58,6 +58,7 @@ instance StarSubalgebra.commCStarAlgebra {S A : Type*} [CommCStarAlgebra A]
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
   mul_comm _ _ := Subtype.ext <| mul_comm _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance NonUnitalStarSubalgebra.nonUnitalCStarAlgebra {S A : Type*}
     [NonUnitalCStarAlgebra A] [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S ℂ A]
     [StarMemClass S A] (s : S) [h_closed : IsClosed (s : Set A)] : NonUnitalCStarAlgebra s where
