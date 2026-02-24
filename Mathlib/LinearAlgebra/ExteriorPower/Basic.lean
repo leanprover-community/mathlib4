@@ -312,6 +312,7 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem subtype_comp_map_eq (f : M →ₗ[R] N) :
     (Submodule.subtype _) ∘ₗ (map n f) =
     (ExteriorAlgebra.map f).toLinearMap ∘ₗ (Submodule.subtype _) :=
