@@ -250,6 +250,10 @@ instance : Field (FqtInfty Fq) :=
 instance : Inhabited (FqtInfty Fq) :=
   ⟨(0 : FqtInfty Fq)⟩
 
+instance : CoeTC (RatFunc Fq) (FqtInfty Fq) :=
+  inferInstanceAs (CoeTC (RatFunc Fq)
+    (@UniformSpace.Completion (RatFunc Fq) <| (inftyValuedFqt Fq).toUniformSpace))
+
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
 instance valuedFqtInfty : Valued (FqtInfty Fq) ℤᵐ⁰ := (inftyValuedFqt Fq).valuedCompletion
 
