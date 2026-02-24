@@ -14,7 +14,7 @@ public import Mathlib.LinearAlgebra.Quotient.Bilinear
 
 We define the radical of a quadratic form. This is a standard construction if 2 is invertible
 in the coefficient ring, but is more fiddly otherwise. We follow the account in
-Chapter II, §7 of [Elman-Karpenko-Merkurjev][elman-karpenko-merkurjev-2008].
+Chapter II, §7 of [elman-karpenko-merkurjev-2008].
 -/
 
 open Finset QuadraticMap
@@ -31,7 +31,7 @@ variable {R M M' P : Type*} [AddCommGroup M] [AddCommGroup M'] [AddCommGroup P]
 This is the largest submodule `N` such that `Q` lifts to a quadratic form on `M ⧸ N`; see
 `Submodule.le_radical_iff` for this characterization.
 
-See also [Elman-Karpenko-Merkurjev][elman-karpenko-merkurjev-2008], Chapter II, §7. -/
+See also [elman-karpenko-merkurjev-2008], Chapter II, §7. -/
 def radical : Submodule R M where
   carrier := {x : M | Q x = 0 ∧ QuadraticMap.polarBilin Q x = 0}
   zero_mem' := by simp
@@ -110,7 +110,7 @@ A quadratic map is said to be **nondegenerate** if its radical is 0,
 and the radical of its associated polar form has rank ≤ 1.
 (The second condition is automatic if 2 is invertible in `R`, but not in general.)
 
-See [Elman-Karpenko-Merkurjev][elman-karpenko-merkurjev-2008], Chapter II, §7.
+See [elman-karpenko-merkurjev-2008], Chapter II, §7.
 -/
 structure Nondegenerate : Prop where
   radical_eq_bot : Q.radical = ⊥
