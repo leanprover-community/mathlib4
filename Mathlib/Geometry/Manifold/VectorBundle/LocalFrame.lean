@@ -539,16 +539,12 @@ lemma mdifferentiableAt_localFrame_coeff
   have h₁ : MDiffAt (fun x ↦ (e ((T% s) x)).2) x := by
     simpa using (e.mdifferentiableAt_section_iff I s hxe).1 hs
   -- step 3: `b.repr` is a linear map, so the composition is smooth
-  let bas := fun v ↦ b.repr v i
   let basl : F →ₗ[𝕜] 𝕜 :=
-    { toFun := bas
-      map_add' m m' := by simp [bas]
-      map_smul' m x := by simp [bas] }
-  let basL : F →L[𝕜] 𝕜 :=
-    { toLinearMap := basl
-      cont := basl.continuous_of_finiteDimensional }
-  have hbas : MDifferentiableAt 𝓘(𝕜, F) 𝓘(𝕜) basL (e ((T% s) x)).2 :=
-    mdifferentiableAt_iff_differentiableAt.mpr (basL.differentiable _)
+    { toFun v := b.repr v i
+      map_add' m m' := by simp
+      map_smul' m x := by simp }
+  have hbas : MDifferentiableAt 𝓘(𝕜, F) 𝓘(𝕜) basl.toContinuousLinearMap (e ((T% s) x)).2 :=
+    mdifferentiableAt_iff_differentiableAt.mpr <| by fun_prop
   exact hbas.comp x h₁
 
 /-- If `s` is differentiable on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_coeff e i`
