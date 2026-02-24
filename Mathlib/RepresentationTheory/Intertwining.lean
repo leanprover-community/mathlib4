@@ -95,6 +95,8 @@ instance : Module A (IntertwiningMap ρ σ) :=
   fast_instance%
   Function.Injective.module A (coeFnAddMonoidHom ρ σ) DFunLike.coe_injective (coe_smul ρ σ)
 
+instance : AddCommGroup (IntertwiningMap ρ σ) := Module.addCommMonoidToAddCommGroup A
+
 set_option backward.isDefEq.respectTransparency false in
 /-- An intertwining map is the same thing as a linear map over the group ring. -/
 def equivLinearMapAsModule :
@@ -218,6 +220,13 @@ add_decl_doc Equiv.toLinearEquiv
 /-- The intertwining map underlying an equivalence of representations. -/
 add_decl_doc Equiv.toIntertwiningMap
 
+variable {ρ σ} in
+/-- A bijective intertwining map is an equivalence of representations. -/
+noncomputable def IntertwiningMap.ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f)
+    : Equiv ρ σ where
+  isIntertwining' := f.isIntertwining'
+  toLinearEquiv :=  LinearEquiv.ofBijective f.toLinearMap hf
+
 namespace Equiv
 
 variable {ρ σ} (φ : Equiv ρ σ)
@@ -234,6 +243,17 @@ instance : EquivLike (Equiv ρ σ) V W where
 @[simp] lemma coe_toLinearMap : ⇑φ.toLinearMap = ⇑φ := rfl
 
 @[simp] lemma coe_invFun : φ.invFun = EquivLike.inv φ := rfl
+
+@[simp]
+theorem coe_ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f) :
+    ⇑(f.ofBijective hf) = ⇑f := rfl
+
+/-- An inverse to an equivalence of representations. -/
+def symm : Equiv σ ρ where
+  toLinearEquiv := φ.toLinearEquiv.symm
+  isIntertwining' g w := by
+    apply φ.toEquiv.injective
+    simp [φ.isIntertwining]
 
 @[simp]
 theorem toLinearEquiv_toLinearMap :
