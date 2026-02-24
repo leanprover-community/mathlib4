@@ -191,15 +191,6 @@ theorem iSup_adj {f : ι → Digraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).
 @[simp]
 theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) := by simp [iInf]
 
-instance : PartialOrder (Digraph V) where
-  __ := PartialOrder.lift _ adj_injective
-  le G H := ∀ ⦃a b⦄, G.Adj a b → H.Adj a b
-
-instance distribLattice : DistribLattice (Digraph V) :=
-  adj_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
-
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V) where
-/-- For digraphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance distribLattice : DistribLattice (Digraph V) where
     le := fun G H ↦ (G.verts ⊆ H.verts) ∧ (∀ ⦃v w⦄, G.Adj v w → H.Adj v w)
     le_refl := by
@@ -269,7 +260,10 @@ instance distribLattice : DistribLattice (Digraph V) where
       · intro v w hGH gGI
         tauto
 
-
+instance : PartialOrder (Digraph V) where
+  le_antisymm := by
+    intro G H ⟨HsubG_verts, HsubG_edges⟩ ⟨GsubH_verts, GsubH_edges⟩
+    ext <;> grind
 section SpanningSubgraphs
 
 /-!
