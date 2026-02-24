@@ -89,7 +89,7 @@ theorem exists_infinite_fiber {β α : Type u} (f : β → α) (h : #α < #β) [
 theorem exists_infinite_fiber' {β α : Type u} (f : β → α) (h : #α < #β) [Infinite α] :
     ∃ a : α, Infinite (f ⁻¹' {a}) := by
   suffices Infinite β from exists_infinite_fiber f h
-  exact infinite_of_cardinalMk_le h.le
+  exact .of_cardinalMk_le h.le
 
 /-- A function whose domain's cardinality is uncountable and strictly greater than its codomain's
 has an uncountable fiber. -/
