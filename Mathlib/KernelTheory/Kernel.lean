@@ -5,7 +5,6 @@ Authors: Tjeerd Jan Heeringa
 -/
 module
 
-
 public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Analysis.Normed.Operator.Compact
@@ -19,7 +18,6 @@ public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Order.Group.Lattice
 public import Mathlib.RingTheory.PowerSeries.Exp
 
-set_option linter.style.longLine false
 /-!
 # Reproducing kernels
 
@@ -31,7 +29,12 @@ kernels from other kernels.
 
 Kernels
 
+## TODO
+
+* Change from real-valued to complex-valued / vector-valuad kernels.
+* Mercer's theorem
 -/
+
 @[expose] public section
 
 open Real
