@@ -55,7 +55,7 @@ namespace Graph
 partial order on graphs. -/
 instance : PartialOrder (Graph α β) where
   le H G := V(H) ⊆ V(G) ∧ ∀ ⦃e x y⦄, H.IsLink e x y → G.IsLink e x y
-  le_refl _ := ⟨rfl.subset, by simp⟩
+  le_refl _ := by simp
   le_trans _ _ _ h₁ h₂ := ⟨h₁.1.trans h₂.1, fun _ _ _ h ↦ h₂.2 (h₁.2 h)⟩
   le_antisymm G H h₁ h₂ := Graph.ext (h₁.1.antisymm h₂.1)
     fun e x y ↦ ⟨fun a ↦ h₁.2 a, fun a ↦ h₂.2 a⟩
