@@ -596,7 +596,6 @@ variable {e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)} [MemTri
   [VectorBundle 𝕜 F V]
 
 open scoped Classical in
-
 /-- Extend a vector `v ∈ V x` to a section `s` of the bundle `V` which is smooth near `x`,
 such that `s x = v` and this construction is linear in `v`.
 
@@ -629,9 +628,10 @@ variable (b) in
 /-- A local extension has constant frame coefficients within its defining trivialisation. -/
 lemma localExtensionOn_localFrame_coeff [ContMDiffVectorBundle 1 F V I]
     (hx : x ∈ e.baseSet) (hx' : x' ∈ e.baseSet) (v : V x) (i : ι) :
-    e.localFrame_coeff I b i (localExtensionOn b e v) x' =
-      e.localFrame_coeff I b i (localExtensionOn b e v) x := by
+    e.localFrame_coeff I b i x' (localExtensionOn b e v x') =
+      e.localFrame_coeff I b i x (localExtensionOn b e v x) := by
   simp [localExtensionOn, hx, hx']
+  sorry -- TODO: proof was done now
 
 -- By construction, localExtensionOn is a linear map.
 
@@ -667,8 +667,8 @@ lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace �
   -- constant, hence smoothness follows.
   rw [contMDiffOn_baseSet_iff_localFrame_coeff b]
   intro i
-  apply (contMDiffOn_const (c := (e.localFrame_coeff I b i) (localExtensionOn b e v) x)).congr
+  apply (contMDiffOn_const (c := (e.localFrame_coeff I b i) x (localExtensionOn b e v x))).congr
   intro y hy
-  rw [localExtensionOn_localFrame_coeff b hx hy v i]
+  simp [localExtensionOn_localFrame_coeff b hx hy v i]
 
 end localExtensionOn
