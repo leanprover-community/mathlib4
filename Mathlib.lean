@@ -3155,6 +3155,7 @@ public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.CategoryTheory.Sites.Plus
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.CategoryTheory.Sites.Point.Category
+public import Mathlib.CategoryTheory.Sites.Point.Comap
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
 public import Mathlib.CategoryTheory.Sites.Point.Over
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
