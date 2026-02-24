@@ -342,6 +342,7 @@ section CorrespTheorem
 -- All these theorems are primed because `QuotientGroup.mk'` is.
 set_option linter.docPrime false
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem le_comap_mk' (N : Subgroup G) [N.Normal] (H : Subgroup (G ⧸ N)) :
     N ≤ Subgroup.comap (QuotientGroup.mk' N) H := by
@@ -352,6 +353,7 @@ theorem comap_map_mk' (N H : Subgroup G) [N.Normal] :
     Subgroup.comap (mk' N) (Subgroup.map (mk' N) H) = N ⊔ H := by
   simp [Subgroup.comap_map_eq, sup_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **correspondence theorem**, or lattice theorem,
 or fourth isomorphism theorem for multiplicative groups -/
 @[to_additive /-- The **correspondence theorem**, or lattice theorem,
@@ -372,6 +374,7 @@ section trivial
 theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the quotient by a subgroup gives a singleton then the subgroup is the whole group. -/
 @[to_additive /-- If the quotient by an additive subgroup gives a singleton then the additive
 subgroup is the whole additive group. -/]

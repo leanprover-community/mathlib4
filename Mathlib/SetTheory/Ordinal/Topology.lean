@@ -87,7 +87,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
         · refine (if_pos hx).symm.trans_le (le_bsup _ _ <| (hlub.1 hx).trans_lt (lt_succ _))
   tfae_have 5 → 6 := by
     rintro ⟨o, h₀, f, hfs, rfl⟩
-    exact ⟨_, toType_nonempty_iff_ne_zero.2 h₀, familyOfBFamily o f, fun _ => hfs _ _, rfl⟩
+    exact ⟨_, nonempty_toType_iff.2 h₀, familyOfBFamily o f, fun _ => hfs _ _, rfl⟩
   tfae_have 6 → 1 := by
     rintro ⟨ι, hne, f, hfs, rfl⟩
     exact closure_mono (range_subset_iff.2 hfs) <| csSup_mem_closure (range_nonempty f)
@@ -132,7 +132,7 @@ theorem isClosed_iff_bsup :
       ∀ {o : Ordinal}, o ≠ 0 → ∀ f : ∀ a < o, Ordinal,
         (∀ i hi, f i hi ∈ s) → bsup.{u, u} o f ∈ s := by
   rw [isClosed_iff_iSup]
-  refine ⟨fun H o ho f hf => H (toType_nonempty_iff_ne_zero.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
+  refine ⟨fun H o ho f hf => H (nonempty_toType_iff.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
   · exact fun i => hf _ _
   · rw [← bsup_eq_iSup]
     apply H (type_ne_zero_iff_nonempty.2 hι)

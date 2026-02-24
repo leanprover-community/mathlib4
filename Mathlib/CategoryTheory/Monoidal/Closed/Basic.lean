@@ -45,7 +45,7 @@ class Closed {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] (X : C) wher
 class MonoidalClosed (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
   closed (X : C) : Closed X := by infer_instance
 
-attribute [instance 100] MonoidalClosed.closed
+attribute [instance_reducible, instance 100] MonoidalClosed.closed
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 
@@ -98,6 +98,7 @@ theorem ihom_adjunction_counit : (ihom.adjunction A).counit = ev A :=
 theorem ihom_adjunction_unit : (ihom.adjunction A).unit = coev A :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in -- Needed in DayConvolution/Closed.lean
 @[reassoc (attr := simp)]
 theorem ev_naturality {X Y : C} (f : X ⟶ Y) :
     A ◁ (ihom A).map f ≫ (ev A).app Y = (ev A).app X ≫ f :=
@@ -198,15 +199,18 @@ variable (A X)
 theorem uncurry_id_eq_ev : uncurry (𝟙 (A ⟶[C] X)) = (ihom.ev A).app X := by
   simp [uncurry_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   rw [curry_eq, (ihom A).map_id (A ⊗ _)]
   apply comp_id
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma whiskerLeft_curry_ihom_ev_app (g : A ⊗ Y ⟶ X) :
     A ◁ curry g ≫ (ihom.ev A).app X = g := by
   simp [curry_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem uncurry_ihom_map (g : Y ⟶ Y') :
     uncurry ((ihom A).map g) = (ihom.ev A).app Y ≫ g := by
   apply curry_injective
@@ -236,11 +240,13 @@ theorem id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
     B ◁ (pre f).app X ≫ (ihom.ev B).app X = f ▷ (A ⟶[C] X) ≫ (ihom.ev A).app X :=
   conjugateEquiv_counit _ _ ((tensoringLeft C).map f) X
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem uncurry_pre (f : B ⟶ A) (X : C) :
     MonoidalClosed.uncurry ((pre f).app X) = f ▷ _ ≫ (ihom.ev A).app X := by
   simp [uncurry_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma curry_pre_app (f : B ⟶ A) {X Y : C} (g : A ⊗ Y ⟶ X) :
     curry g ≫ (pre f).app X = curry (f ▷ _ ≫ g) := uncurry_injective (by
@@ -279,6 +285,7 @@ def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The parametrized adjunction between `curriedTensor C : C ⥤ C ⥤ C`
 and `internalHom : Cᵒᵖ ⥤ C ⥤ C` -/
 @[simps!]
@@ -392,6 +399,7 @@ The proofs of associativity and unitality use the following outline:
   3. Conclude with simp
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Left unitality of the enriched structure -/
 @[reassoc (attr := simp)]
 lemma id_comp (x y : C) [Closed x] :
@@ -402,6 +410,7 @@ lemma id_comp (x y : C) [Closed x] :
       uncurry_curry, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc,
       uncurry_id_eq_ev _ _]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Right unitality of the enriched structure -/
 @[reassoc (attr := simp)]
 lemma comp_id (x y : C) [Closed x] [Closed y] :
@@ -414,6 +423,7 @@ lemma comp_id (x y : C) [Closed x] [Closed y] :
   rw [← uncurry_natural_left]
   simp [id_eq, uncurry_id_eq_ev]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Associativity of the enriched structure -/
 @[reassoc]
 lemma assoc (w x y z : C) [Closed w] [Closed x] [Closed y] :
@@ -473,12 +483,14 @@ lemma curry'_id (X : C) [Closed X] : curry' (𝟙 X) = id X := by
   rw [Category.comp_id]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma whiskerLeft_curry'_ihom_ev_app {X Y : C} [Closed X] (f : X ⟶ Y) :
     X ◁ curry' f ≫ (ihom.ev X).app Y = (ρ_ _).hom ≫ f := by
   dsimp [curry']
   simp only [whiskerLeft_curry_ihom_ev_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma curry'_whiskerRight_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) :
     curry' f ▷ _ ≫ comp X Y Z = (λ_ _).hom ≫ (pre f).app Z := by
@@ -489,6 +501,7 @@ lemma curry'_whiskerRight_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) :
     whiskerLeft_curry'_ihom_ev_app, comp_whiskerRight_assoc, triangle_assoc_comp_right_assoc,
     whiskerLeft_inv_hom_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma whiskerLeft_curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : Y ⟶ Z) :
     _ ◁ curry' f ≫ comp X Y Z = (ρ_ _).hom ≫ (ihom X).map f := by

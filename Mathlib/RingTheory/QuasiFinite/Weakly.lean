@@ -50,6 +50,7 @@ See `Algebra.QuasiFiniteAt.of_weaklyQuasiFiniteAt`. -/
 abbrev Algebra.WeaklyQuasiFiniteAt :=
   Algebra.QuasiFiniteAt R (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S))))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Algebra.weaklyQuasiFiniteAt_iff :
     Algebra.WeaklyQuasiFiniteAt R q ↔
       Algebra.QuasiFinite R (Localization.AtPrime q ⧸
@@ -117,6 +118,7 @@ instance comap_algEquiv (p : Ideal S) [p.IsPrime]
   .of_surjectiveOnStalks p _ f.symm.toAlgHom
     (RingHom.surjectiveOnStalks_of_surjective f.symm.surjective) (by ext; simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- By `infer_instance` for `Algebra.QuasiFiniteAt R p`. -/
 lemma finite_residueField
     [p.IsPrime] [q.LiesOver p] [WeaklyQuasiFiniteAt R q] :
@@ -221,6 +223,7 @@ lemma of_restrictScalars [Algebra S T] [IsScalarTower R S T]
   refine .trans ?_ (Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective _).symm
   simp [← RingHom.ker_eq_comap_bot, Ideal.map_comap_le]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Use `Algebra.QuasiFinite.of_quasiFiniteAt_residueField` instead
 for `Algebra.QuasiFiniteAt R q`. -/
 lemma of_quasiFiniteAt_residueField [p.IsPrime] [q.LiesOver p]

@@ -52,6 +52,7 @@ def Cover.toPresieveOverProp {X : Q.Over ⊤ S} (𝒰 : Cover.{u} (precoverage P
     (h : ∀ j, Q (𝒰.X j ↘ S)) : Presieve X :=
   Presieve.ofArrows (fun i ↦ (𝒰.X i).asOverProp S (h i)) (fun i ↦ (𝒰.f i).asOverProp S)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Cover.overEquiv_generate_toPresieveOver_eq_ofArrows {X : Over S}
     (𝒰 : Cover.{u} (precoverage P) X.left)
     [𝒰.Over S] : Sieve.overEquiv X (Sieve.generate 𝒰.toPresieveOver) =
@@ -78,6 +79,7 @@ variable [P.IsMultiplicative] [P.RespectsIso]
 
 variable (P Q S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology on `Over S` induced by `P` where coverings are given by `P`-covers
 of `S`-schemes. -/
 def overPretopology : Pretopology (Over S) where
@@ -171,6 +173,7 @@ abbrev smallGrothendieckTopology : GrothendieckTopology (P.Over ⊤ S) :=
 
 variable [Q.IsStableUnderBaseChange] [Q.HasOfPostcompProperty Q]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology defined on the subcategory of `S`-schemes satisfying `Q` where coverings
 are given by `P`-coverings in `S`-schemes satisfying `Q`.
 The most common case is `P = Q`. In this case, this is simply surjective families
@@ -199,6 +202,7 @@ def smallPretopology : Pretopology (Q.Over ⊤ S) where
       (fun Y f H j ↦ ((V f H).f j).asOverProp S)
     apply hV
 
+set_option backward.isDefEq.respectTransparency false in
 variable (S) {P Q} in
 lemma smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology (hPQ : P ≤ Q) :
     S.smallGrothendieckTopologyOfLE hPQ = (S.smallPretopology P Q).toGrothendieck := by
