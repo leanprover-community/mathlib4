@@ -178,8 +178,8 @@ theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
   exact algebraMap_equivQuotMaximalIdeal_symm_apply p Rₚ Sₚ P x
 
 theorem ramificationIdx_map_eq_ramificationIdx [IsDomain R] [IsTorsionFree R S] [IsTorsionFree R Rₚ]
-    [IsTorsionFree R Sₚ] [IsTorsionFree S Sₚ] [IsTorsionFree Rₚ Sₚ]
-    [IsDedekindDomain S] [IsDedekindDomain Rₚ] [IsDedekindDomain Sₚ] (hp : p ≠ ⊥) [P.IsPrime] :
+    [IsTorsionFree S Sₚ] [IsTorsionFree Rₚ Sₚ] [IsDedekindDomain S] [IsDedekindDomain Rₚ]
+    [IsDedekindDomain Sₚ] (hp : p ≠ ⊥) [P.IsPrime] :
     (maximalIdeal Rₚ).ramificationIdx (algebraMap Rₚ Sₚ) (P.map (algebraMap S Sₚ)) =
       p.ramificationIdx (algebraMap R S) P := by
   have h₁ : maximalIdeal Rₚ ≠ ⊥ := by
@@ -253,8 +253,8 @@ theorem primesOverEquivPrimesOver_inertiagDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) 
   exact inertiaDeg_map_eq_inertiaDeg p _ _ _
 
 theorem primesOverEquivPrimesOver_ramificationIdx_eq (hp : p ≠ ⊥) [NoZeroSMulDivisors R Rₚ]
-    [NoZeroSMulDivisors R Sₚ] [NoZeroSMulDivisors S Sₚ] [NoZeroSMulDivisors Rₚ Sₚ]
-    [IsDedekindDomain Rₚ] [IsDedekindDomain Sₚ] (P : p.primesOver S) :
+    [NoZeroSMulDivisors S Sₚ] [NoZeroSMulDivisors Rₚ Sₚ] [IsDedekindDomain Rₚ] [IsDedekindDomain Sₚ]
+    (P : p.primesOver S) :
     (maximalIdeal Rₚ).ramificationIdx (algebraMap Rₚ Sₚ)
       (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ) =
         p.ramificationIdx (algebraMap R S) P.val :=
