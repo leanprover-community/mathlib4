@@ -119,7 +119,7 @@ instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) wher
     simp only [mem_map, mem_univ, true_and, Subtype.exists, Bool.not_eq_true]
     refine ⟨fun v w ↦ Adj v w, ⟨?_, ?_⟩, ?_⟩
     · simp [hs.iff]
-    · simpa [hi]
+    · simp [hi.irrefl]
     · ext
       simp
 
@@ -245,7 +245,7 @@ instance : Compl (SimpleGraph V) where
   compl G :=
     { Adj v w := v ≠ w ∧ ¬G.Adj v w
       symm v w h := ⟨h.left.symm, by tauto⟩
-      loopless v h := (h.left rfl).elim }
+      loopless := ⟨fun v h ↦ (h.left rfl).elim⟩ }
 
 @[simp]
 theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ ¬G.Adj v w :=
@@ -271,7 +271,7 @@ instance infSet : InfSet (SimpleGraph V) where
   sInf s :=
     { Adj a b := (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
       symm _ _ := And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
-      loopless _ h := ⟨h.right rfl⟩ }
+      loopless := ⟨fun _ h ↦ h.right rfl⟩ }
 
 @[simp]
 theorem sSup_adj {s : Set (SimpleGraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
