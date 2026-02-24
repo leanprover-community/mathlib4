@@ -41,8 +41,7 @@ theorem mem_attachFin {s : Finset ℕ} (h : ∀ m ∈ s, m < n) {a : Fin n} :
 @[simp]
 lemma coe_attachFin {s : Finset ℕ} (h : ∀ m ∈ s, m < n) :
     (attachFin s h : Set (Fin n)) = Fin.val ⁻¹' s := by
-  ext; simp only [SetLike.mem_coe, Set.mem_preimage]
-  exact mem_attachFin ..
+  ext; exact mem_attachFin ..
 
 @[simp]
 theorem card_attachFin (s : Finset ℕ) (h : ∀ m ∈ s, m < n) :
