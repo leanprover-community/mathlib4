@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.Data.Fin.Tuple.Sort
 
 /-!
 # Definition of Koszul cocomplex
@@ -42,6 +43,7 @@ section
 
 variable (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {M} in
 noncomputable def koszulCocomplex (x : M) : CochainComplex (ModuleCat.{max u v} R) ℕ :=
   CochainComplex.of
@@ -70,6 +72,7 @@ variable {M} {N : Type v} [AddCommGroup N] [Module R N]
 
 section functoriality
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def map (f : M →ₗ[R] N) {x : M} {y : N} (h : f x = y) :
     koszulCocomplex R x ⟶ koszulCocomplex R y :=
   CochainComplex.ofHom _ _ _ _ _ _
@@ -99,6 +102,7 @@ lemma map_id (x y : M) (h : x = y) :
   subst h
   exact map_id_refl R x
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_comp {P : Type v} [AddCommGroup P] [Module R P]
     (f : M →ₗ[R] N) (g : N →ₗ[R] P) {x : M} {y : N} {z : P} (hxy : f x = y) (hyz : g y = z) :
     koszulCocomplex.map R f hxy ≫ koszulCocomplex.map R g hyz =
@@ -132,6 +136,7 @@ noncomputable def topXLinearEquivOfBasisOfList (l : List R) :
   rw [this]
   exact topXLinearEquivOfBasis R l.get (Pi.basisFun R (Fin l.length))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma X_isZero_of_card_generators_le (x : M) {ι : Type*} [Finite ι] (g : ι → M)
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     IsZero ((koszulCocomplex R x).X i) := by
@@ -159,11 +164,11 @@ section regular
 
 open RingTheory.Sequence
 
-lemma koszulCocomplex.exactAt_of_lt_length_of_isRegular (rs : List R) (reg : IsRegular R rs)
+lemma exactAt_of_lt_length_of_isRegular (rs : List R) (reg : IsRegular R rs)
     (i : ℕ) (lt : i < rs.length) : (koszulCocomplex.ofList R rs).ExactAt i := by
   sorry
 
-theorem koszulCocomplex.exactAt_of_ne_length_of_isRegular (rs : List R) (reg : IsRegular R rs)
+theorem exactAt_of_ne_length_of_isRegular (rs : List R) (reg : IsRegular R rs)
     (i : ℕ) (lt : i ≠ rs.length) : (koszulCocomplex.ofList R rs).ExactAt i := by
   sorry
 
@@ -204,12 +209,12 @@ variable (S : Type (max u v)) [CommRing S] (f : R →+* S)
 instance (T : Type v) [CommRing T] (g : R →+* T) :
     (ModuleCat.extendScalars.{u, v, u} g).Additive where
   map_add {X Y a b} := by
-    simp only [ModuleCat.extendScalars, ModuleCat.ExtendScalars.map', Algebra.algebraMap_self,
+    simp only [ModuleCat.extendScalars, ModuleCat.ExtendScalars.map',
       ModuleCat.hom_add, LinearMap.baseChange_add]
     rfl
 
 open TensorProduct in
-def baseChange_iso (l : List R) (l' : List S) (eqmap : l.map f = l') :
+noncomputable def baseChange_iso (l : List R) (l' : List S) (eqmap : l.map f = l') :
     ofList S l' ≅ ((ModuleCat.extendScalars f).mapHomologicalComplex _).obj (ofList R l) := by
   refine HomologicalComplex.Hom.isoOfComponents
     (fun i ↦ LinearEquiv.toModuleIso ?_) (fun i j ↦ ?_)

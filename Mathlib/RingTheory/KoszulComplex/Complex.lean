@@ -27,6 +27,7 @@ open CategoryTheory Category MonoidalCategory Limits Module ExteriorAlgebra
 
 variable {R : Type u} [CommRing R] {M : Type v} [AddCommGroup M] [Module R M] (φ : M →ₗ[R] R)
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def koszulComplex_aux (n : ℕ) : ⋀[R]^(n + 1) M →ₗ[R] ⋀[R]^n M :=
   exteriorPower.alternatingMapLinearEquiv {
     toFun x := ∑ i : Fin (n + 1),
@@ -83,8 +84,7 @@ noncomputable def koszulComplex_aux (n : ℕ) : ⋀[R]^(n + 1) M →ₗ[R] ⋀[R
           have hupdate (z : M) : k.removeNth (Function.update m k z) = k.removeNth m := by
             ext i
             simp [Fin.removeNth, Function.update, Fin.succAbove_ne]
-          simp [term, hremove, LinearMap.map_smul, smul_smul, mul_comm, mul_left_comm, mul_assoc,
-            hupdate (c • x), hupdate x]
+          simp [term, hremove, smul_smul, mul_left_comm, hupdate (c • x), hupdate x]
         · rcases Fin.exists_succAbove_eq (x := p) (y := k) (by
             simpa [ne_comm] using hk') with ⟨j, rfl⟩
           have hupdate (z : M) :
@@ -96,7 +96,7 @@ noncomputable def koszulComplex_aux (n : ℕ) : ⋀[R]^(n + 1) M →ₗ[R] ⋀[R
             · have hne : k.succAbove i ≠ k.succAbove j := by
                 exact fun h => hi (Fin.succAbove_right_inj.mp h)
               simp [Fin.removeNth, Function.update, hi, hne]
-          simp [term, hremove, smul_smul, mul_comm, mul_left_comm, mul_assoc, hupdate (c • x),
+          simp [term, hremove, smul_smul, mul_comm, hupdate (c • x),
             hupdate x]
       have hcalc' :
           ∑ k, term (Function.update m p (c • x)) k =
@@ -273,6 +273,7 @@ lemma koszulComplex_aux_comp_eq_zero (n : ℕ) :
   -- simpa [term, Finset.smul_sum] using hmain
   sorry
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def koszulComplex : ChainComplex (ModuleCat R) ℕ :=
   ChainComplex.of
     (ModuleCat.of R M).exteriorPower
@@ -304,6 +305,7 @@ section specialX
 noncomputable def XZeroLinearEquivRing : (koszulComplex φ).X 0 ≃ₗ[R] R :=
   exteriorPower.zeroEquiv R M
 
+set_option backward.isDefEq.respectTransparency false in
 lemma X_isZero_of_card_generators_le {ι : Type*} [Finite ι] (g : ι → M)
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     IsZero ((koszulComplex φ).X i) := by
@@ -373,12 +375,12 @@ variable (S : Type (max u v)) [CommRing S] (f : R →+* S)
 instance (T : Type v) [CommRing T] (g : R →+* T) :
     (ModuleCat.extendScalars.{u, v, u} g).Additive where
   map_add {X Y a b} := by
-    simp only [ModuleCat.extendScalars, ModuleCat.ExtendScalars.map', Algebra.algebraMap_self,
+    simp only [ModuleCat.extendScalars, ModuleCat.ExtendScalars.map',
       ModuleCat.hom_add, LinearMap.baseChange_add]
     rfl
 
 open TensorProduct in
-def baseChange_iso (l : List R) (l' : List S) (eqmap : l.map f = l') :
+noncomputable def baseChange_iso (l : List R) (l' : List S) (eqmap : l.map f = l') :
     ofList l' ≅ ((ModuleCat.extendScalars f).mapHomologicalComplex _).obj (ofList l) := by
   refine HomologicalComplex.Hom.isoOfComponents
     (fun i ↦ LinearEquiv.toModuleIso ?_) (fun i j ↦ ?_)
