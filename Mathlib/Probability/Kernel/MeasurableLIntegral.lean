@@ -140,7 +140,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
       (fun a => ∫⁻ b, g₁ (a, b) + g₂ (a, b) ∂κ a) =
         (fun a => ∫⁻ b, g₁ (a, b) ∂κ a) + fun a => ∫⁻ b, g₂ (a, b) ∂κ a := by
       ext1 a
-      rw [Pi.add_apply, lintegral_add_left (g₁.measurable.comp' measurable_prodMk_left)]
+      rw [Pi.add_apply, lintegral_add_left (by fun_prop)]
     rw [h_add]
     exact Measurable.add hm₁ hm₂
 

@@ -31,9 +31,6 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-@[deprecated (since := "2025-07-11")] alias NoetherianObject := IsNoetherianObject
-@[deprecated (since := "2025-07-11")] alias ArtinianObject := IsArtinianObject
-
 variable (C : Type*) [Category* C]
 
 /-- A category is Noetherian if it is essentially small and all objects are Noetherian. -/
@@ -47,7 +44,5 @@ class Artinian : Prop extends EssentiallySmall C where
   isArtinianObject : ∀ X : C, IsArtinianObject X
 
 attribute [instance] Artinian.isArtinianObject
-
-open Subobject
 
 end CategoryTheory

@@ -6,12 +6,11 @@ Authors: Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Interval.Set.Disjoint
 
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
@@ -51,12 +50,9 @@ theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i,
         (eq_of_le_of_forall_lt_imp_le_of_dense (abs_nonneg _)) fun _ε ε0 =>
           mk_near_of_forall_near <| (h _ ε0).imp fun _i h j ij => le_of_lt (h j ij)⟩
 
+@[deprecated _root_.exists_floor (since := "2026-01-29")]
 theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ, (z : ℝ) ≤ x → z ≤ ub :=
-  Int.exists_greatest_of_bdd
-    (let ⟨n, hn⟩ := exists_int_gt x
-    ⟨n, fun _ h' => Int.cast_le.1 <| le_trans h' <| le_of_lt hn⟩)
-    (let ⟨n, hn⟩ := exists_int_lt x
-    ⟨n, le_of_lt hn⟩)
+  ⟨⌊x⌋, Int.floor_le x, fun _ ↦ Int.le_floor.mpr⟩
 
 theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x := by
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩

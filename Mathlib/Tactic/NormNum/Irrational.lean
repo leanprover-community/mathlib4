@@ -5,10 +5,11 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public meta import Mathlib.NumberTheory.Real.Irrational
-public meta import Mathlib.Tactic.NormNum.GCD
-public meta import Mathlib.Tactic.Rify
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Qify
+public import Mathlib.Tactic.Rify
 
 /-! # `norm_num` extension for `Irrational`
 
@@ -37,6 +38,7 @@ open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 section lemmas
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
 set_option linter.flexible false in
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
@@ -220,6 +222,7 @@ private theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
     Irrational (x ^ y) :=
   irrational_rpow_rat_rat_of_num hx_isNat.to_isNNRat hy_isNNRat (by simp) hy_coprime hn1 hn2
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     (hx_isNNRat : IsNNRat x num den)
     (hx_coprime : Nat.Coprime num den)
@@ -231,6 +234,7 @@ private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     hn1 hn2
   exact ⟨Invertible.mk (1/2) (by simp) (by simp), by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
     (hx_isNNRat : IsNNRat x num den)
     (hx_coprime : Nat.Coprime num den)

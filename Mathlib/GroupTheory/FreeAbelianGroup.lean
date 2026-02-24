@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.Control.Basic
 
 /-!
 # Free abelian groups
@@ -131,20 +132,14 @@ theorem lift_apply_of (x : α) : lift f (of x) = f x := by
      (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x)
   exact (FreeGroup.lift_apply_of (β := Multiplicative β)).symm
 
-@[deprecated (since := "2025-07-23")] protected alias lift.of := lift_apply_of
-
 theorem lift_unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :
     g x = lift f x :=
   DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _
-
-@[deprecated (since := "2025-07-23")] protected alias lift.unique := lift_unique
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem lift_ext (g h : FreeAbelianGroup α →+ β) (H : ∀ x, g (of x) = h (of x)) : g = h :=
   lift.symm.injective <| funext H
-
-@[deprecated (since := "2025-07-23")] protected alias lift.ext := lift_ext
 
 theorem lift_comp_apply {α β γ} [AddCommGroup β] [AddCommGroup γ]
     (a : FreeAbelianGroup α) (f : α → β) (g : β →+ γ) : lift (g ∘ f) a = g (lift f a) := by
@@ -153,11 +148,6 @@ theorem lift_comp_apply {α β γ} [AddCommGroup β] [AddCommGroup γ]
   intro a
   change g ((lift f) (of a)) = g (f a)
   simp only [lift_apply_of]
-
-@[deprecated lift_comp_apply (since := "2025-07-23")]
-theorem lift.map_hom {α β γ} [AddCommGroup β] [AddCommGroup γ] (a : FreeAbelianGroup α) (f : α → β)
-    (g : β →+ γ) : g (lift f a) = lift (g ∘ f) a :=
-  (lift_comp_apply a f g).symm
 
 end lift
 
@@ -209,8 +199,6 @@ theorem lift_add_apply [AddCommGroup G] (f g : α → G) (a : FreeAbelianGroup �
   · intro x y hx hy
     simp only [(lift _).map_add, hx, hy, add_add_add_comm]
 
-@[deprecated (since := "2025-07-13")] alias lift.add' := lift_add_apply
-
 @[simp] lemma lift_add [AddCommGroup G] (f g : α → G) : lift (f + g) = lift f + lift g :=
   AddMonoidHom.ext <| lift_add_apply _ _
 
@@ -229,8 +217,6 @@ def liftAddGroupHom {α} (β) [AddCommGroup β] (a : FreeAbelianGroup α) : (α 
 
 lemma lift_neg_apply [AddCommGroup G] (f : α → G) (a : FreeAbelianGroup α) :
     lift (-f) a = -lift f a := congr($(lift_neg f) a)
-
-@[deprecated (since := "2025-07-13")] alias lift_neg' := lift_neg
 
 section Monad
 

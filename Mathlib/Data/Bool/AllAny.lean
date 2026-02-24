@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Batteries.Tactic.Alias
 public import Mathlib.Tactic.TypeStar
 
 /-!

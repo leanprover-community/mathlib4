@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Order.Interval.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
 # Interval arithmetic
@@ -224,14 +223,14 @@ end Pow
 namespace NonemptyInterval
 
 @[to_additive]
-instance commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     CommMonoid (NonemptyInterval α) :=
   NonemptyInterval.toProd_injective.commMonoid _ toProd_one toProd_mul toProd_pow
 
 end NonemptyInterval
 
 @[to_additive]
-instance Interval.mulOneClass [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance Interval.mulOneClass [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     MulOneClass (Interval α) where
   one_mul s :=
     (WithBot.map₂_coe_left _ _ _).trans <| by
@@ -241,7 +240,7 @@ instance Interval.mulOneClass [CommMonoid α] [PartialOrder α] [IsOrderedMonoid
       simp_rw [mul_one, ← Function.id_def, WithBot.map_id, id]
 
 @[to_additive]
-instance Interval.commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance Interval.commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     CommMonoid (Interval α) :=
   { Interval.mulOneClass with
     mul_comm := fun _ _ => Option.map₂_comm mul_comm
@@ -250,7 +249,7 @@ instance Interval.commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid 
 namespace NonemptyInterval
 
 @[to_additive]
-theorem coe_pow_interval [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
+theorem coe_pow_interval [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
     (s : NonemptyInterval α) (n : ℕ) :
     ↑(s ^ n) = (s : Interval α) ^ n :=
   map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
@@ -262,7 +261,7 @@ end NonemptyInterval
 
 namespace Interval
 
-variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] (s : Interval α) {n : ℕ}
+variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α] (s : Interval α) {n : ℕ}
 
 @[to_additive]
 theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
@@ -642,6 +641,7 @@ theorem length_neg : ∀ s : Interval α, (-s).length = s.length
   | ⊥ => rfl
   | (s : NonemptyInterval α) => s.length_neg
 
+set_option backward.isDefEq.respectTransparency false in
 theorem length_add_le : ∀ s t : Interval α, (s + t).length ≤ s.length + t.length
   | ⊥, _ => by simp
   | _, ⊥ => by simp

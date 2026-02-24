@@ -9,6 +9,8 @@ public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
+import Mathlib.Algebra.Module.Torsion.Field
+
 /-!
 # Sesquilinear maps
 
@@ -168,19 +170,21 @@ theorem domRestrict (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl
   simp_rw [domRestrict₁₂_apply]
   exact H _ _
 end
+
 @[simp]
 theorem flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
-  ⟨fun h x y H ↦ h y x ((B.flip_apply _ _).trans H), fun h x y ↦ h y x⟩
+  forall_comm
+
+lemma ker_flip (H : B.IsRefl) : B.flip.ker = B.ker := by
+  ext x
+  simp [LinearMap.ext_iff, H.eq_iff]
 
 theorem ker_flip_eq_bot (H : B.IsRefl) (h : LinearMap.ker B = ⊥) : LinearMap.ker B.flip = ⊥ := by
-  refine ker_eq_bot'.mpr fun _ hx ↦ ker_eq_bot'.mp h _ ?_
-  ext
-  exact H _ _ (LinearMap.congr_fun hx _)
+  rwa [H.ker_flip]
 
 theorem ker_eq_bot_iff_ker_flip_eq_bot (H : B.IsRefl) :
     LinearMap.ker B = ⊥ ↔ LinearMap.ker B.flip = ⊥ := by
-  refine ⟨ker_flip_eq_bot H, fun h ↦ ?_⟩
-  exact (congr_arg _ B.flip_flip.symm).trans (ker_flip_eq_bot (flip_isRefl_iff.mpr H) h)
+  rwa [ker_flip]
 
 end IsRefl
 
@@ -674,6 +678,16 @@ variable {M₁ M₂ I₁ I₂}
 theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
     (h : B.SeparatingLeft) : B ≠ 0 := fun h0 ↦ not_separatingLeft_zero M₁ M₂ I₁ I₂ <| h0 ▸ h
 
+/-- A bilinear map is called right-separating if
+the only element that is right-orthogonal to every other element is `0`; i.e.,
+for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`. -/
+def SeparatingRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
+  ∀ y : M₂, (∀ x : M₁, B x y = 0) → y = 0
+
+/-- A bilinear map is called non-degenerate if it is left-separating and right-separating. -/
+def Nondegenerate (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
+  SeparatingLeft B ∧ SeparatingRight B
+
 section Linear
 
 variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'] [AddCommMonoid Mₗ₂']
@@ -691,6 +705,14 @@ theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
     LinearEquiv.map_eq_zero_iff] at hx
   exact hx
 
+theorem SeparatingRight.congr (h : B.SeparatingRight) :
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingRight :=
+  SeparatingLeft.congr (B := B.flip) e₂ e₁ h
+
+theorem Nondegenerate.congr (h : B.Nondegenerate) :
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).Nondegenerate :=
+  ⟨h.1.congr e₁ e₂, h.2.congr e₁ e₂⟩
+
 @[simp]
 theorem separatingLeft_congr_iff :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
@@ -700,17 +722,18 @@ theorem separatingLeft_congr_iff :
     simp,
    SeparatingLeft.congr e₁ e₂⟩
 
+@[simp]
+theorem separatingRight_congr_iff : (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M))
+      B).SeparatingRight ↔ B.SeparatingRight :=
+  separatingLeft_congr_iff (B := B.flip) e₂ e₁
+
+@[simp]
+theorem nondegenerate_congr_iff :
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).Nondegenerate ↔ B.Nondegenerate :=
+  ⟨fun h ↦ ⟨separatingLeft_congr_iff e₁ e₂ |>.mp h.1, separatingRight_congr_iff e₁ e₂ |>.mp h.2⟩,
+    .congr e₁ e₂⟩
+
 end Linear
-
-/-- A bilinear map is called right-separating if
-the only element that is right-orthogonal to every other element is `0`; i.e.,
-for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`. -/
-def SeparatingRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
-  ∀ y : M₂, (∀ x : M₁, B x y = 0) → y = 0
-
-/-- A bilinear map is called non-degenerate if it is left-separating and right-separating. -/
-def Nondegenerate (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
-  SeparatingLeft B ∧ SeparatingRight B
 
 @[simp]
 theorem flip_separatingRight {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
@@ -779,6 +802,7 @@ lemma disjoint_ker_of_nondegenerate_restrict {B : M →ₗ[R] M →ₗ[R] M₁} 
   rw [mem_ker] at hx'
   simp [x', hx']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsSymm)
     {W : Submodule R M} (hW : IsCompl W (LinearMap.ker B)) :
     (B.domRestrict₁₂ W W).Nondegenerate := by
@@ -796,6 +820,7 @@ lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] 
     exact hx' u hu
   simpa [hW.inf_eq_bot] using hx'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of a reflexive bilinear map `B` onto a submodule `W` is
 nondegenerate if `W` has trivial intersection with its orthogonal complement,
 that is `Disjoint W (W.orthogonalBilin B)`. -/
@@ -811,10 +836,17 @@ theorem nondegenerate_restrict_of_disjoint_orthogonal {B : M →ₗ[R] M →ₗ[
   rw [hB.ortho_comm]
   exact b₁
 
+end CommRing
+
+section IsOrthoᵢ
+
+variable {R M M₁ : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₁]
+    [Module R M] [Module R M₁] {I I' : R →+* R} {B : M →ₛₗ[I] M →ₛₗ[I'] M₁}
+
 /-- An orthogonal basis with respect to a left-separating bilinear map has no self-orthogonal
 elements. -/
 theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
-    {B : M →ₛₗ[I] M →ₛₗ[I'] M₁} {v : Basis n R M} (h : B.IsOrthoᵢ v) (hB : B.SeparatingLeft)
+    {v : Basis n R M} (h : B.IsOrthoᵢ v) (hB : B.SeparatingLeft)
     (i : n) : ¬B.IsOrtho (v i) (v i) := by
   intro ho
   refine v.ne_zero i (hB (v i) fun m ↦ ?_)
@@ -831,17 +863,18 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
 /-- An orthogonal basis with respect to a right-separating bilinear map has no self-orthogonal
 elements. -/
 theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingRight [Nontrivial R]
-    {B : M →ₛₗ[I] M →ₛₗ[I'] M₁} {v : Basis n R M} (h : B.IsOrthoᵢ v) (hB : B.SeparatingRight)
+    {v : Basis n R M} (h : B.IsOrthoᵢ v) (hB : B.SeparatingRight)
     (i : n) : ¬B.IsOrtho (v i) (v i) := by
   rw [isOrthoᵢ_flip] at h
   rw [isOrtho_flip]
   exact h.not_isOrtho_basis_self_of_separatingLeft (flip_separatingLeft.mpr hB) i
 
+variable [IsDomain R] [IsTorsionFree R M₁]
+
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is left-separating if
 the basis has no elements which are self-orthogonal. -/
-theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors R M₁]
-    {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M) (hO : B.IsOrthoᵢ v)
-    (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingLeft := by
+theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
+    (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingLeft := by
   intro m hB
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
   rw [LinearEquiv.map_eq_zero_iff]
@@ -861,9 +894,8 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors 
 
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is right-separating
 if the basis has no elements which are self-orthogonal. -/
-theorem IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self [NoZeroSMulDivisors R M₁]
-    {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M) (hO : B.IsOrthoᵢ v)
-    (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingRight := by
+lemma IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
+    (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingRight := by
   rw [isOrthoᵢ_flip] at hO
   rw [← flip_separatingLeft]
   refine IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self v hO fun i ↦ ?_
@@ -872,13 +904,12 @@ theorem IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self [NoZeroSMulDivisor
 
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is nondegenerate
 if the basis has no elements which are self-orthogonal. -/
-theorem IsOrthoᵢ.nondegenerate_of_not_isOrtho_basis_self [NoZeroSMulDivisors R M₁]
-    {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M) (hO : B.IsOrthoᵢ v)
-    (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.Nondegenerate :=
+theorem IsOrthoᵢ.nondegenerate_of_not_isOrtho_basis_self {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
+    (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.Nondegenerate :=
   ⟨IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self v hO h,
     IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self v hO h⟩
 
-end CommRing
+end IsOrthoᵢ
 
 end Nondegenerate
 
@@ -936,45 +967,6 @@ lemma not_linearIndependent_of_apply_mul_apply_eq (hp : ∀ x, x ≠ 0 → 0 < B
     rw [sub_eq_add_neg, ← neg_smul, add_comm] at h
     exact (Ne.symm (ne_of_lt (hp x hx))) (LinearIndependent.eq_zero_of_pair hL h).2
 
-/-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite forms. -/
-lemma apply_mul_apply_lt_iff_linearIndependent [NoZeroSMulDivisors R M]
-    (hp : ∀ x, x ≠ 0 → 0 < B x x) (x y : M) :
-    (B x y) * (B y x) < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
-  have hle : ∀ z, 0 ≤ B z z := by
-    intro z
-    by_cases hz : z = 0
-    · simp [hz]
-    exact le_of_lt (hp z hz)
-  constructor
-  · contrapose!
-    intro h
-    rw [LinearIndependent.pair_iff] at h
-    push_neg at h
-    obtain ⟨r, s, hl, h0⟩ := h
-    by_cases hr : r = 0; · simp_all
-    by_cases hs : s = 0; · simp_all
-    suffices
-        (B (r • x) (r • x)) * (B (s • y) (s • y)) = (B (r • x) (s • y)) * (B (s • y) (r • x)) by
-      simp only [map_smul, smul_apply, smul_eq_mul] at this
-      rw [show r * (r * (B x) x) * (s * (s * (B y) y)) = (r * r * s * s) * ((B x) x * (B y) y) by
-        ring, show s * (r * (B x) y) * (r * (s * (B y) x)) = (r * r * s * s) * ((B x) y * (B y) x)
-        by ring] at this
-      have hrs : r * r * s * s ≠ 0 := by simp [hr, hs]
-      exact le_of_eq <| mul_right_injective₀ hrs this
-    simp [show s • y = - r • x by rwa [neg_smul, ← add_eq_zero_iff_eq_neg']]
-  · contrapose!
-    intro h
-    refine not_linearIndependent_of_apply_mul_apply_eq B hp x y (le_antisymm
-      (apply_mul_apply_le_of_forall_zero_le B hle x y) h)
-
-/-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite symmetric
-forms. -/
-lemma apply_sq_lt_iff_linearIndependent_of_symm [NoZeroSMulDivisors R M]
-    (hp : ∀ x, x ≠ 0 → 0 < B x x) (hB : B.IsSymm) (x y : M) :
-    (B x y) ^ 2 < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
-  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB.eq, RingHom.id_apply]]
-  exact apply_mul_apply_lt_iff_linearIndependent B hp x y
-
 lemma apply_apply_same_eq_zero_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) {x : M} :
     B x x = 0 ↔ x ∈ LinearMap.ker B := by
   rw [LinearMap.mem_ker]
@@ -998,6 +990,7 @@ lemma nondegenerate_iff' (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
   contrapose!
   exact exists_congr fun x ↦ ⟨by aesop, fun ⟨h₀, h⟩ ↦ Or.inl ⟨le_antisymm h (hs x), h₀⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm)
     {W : Submodule R M} :
     (B.domRestrict₁₂ W W).Nondegenerate ↔ Disjoint W (LinearMap.ker B) := by
@@ -1010,6 +1003,41 @@ lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.
   rw [B.apply_apply_same_eq_zero_iff hs hB] at h
   have key : x ∈ W ⊓ LinearMap.ker B := ⟨hx, h⟩
   simpa [hW.eq_bot] using key
+
+variable [IsDomain R] [IsTorsionFree R M]
+
+/-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite forms. -/
+lemma apply_mul_apply_lt_iff_linearIndependent (hp : ∀ x, x ≠ 0 → 0 < B x x) (x y : M) :
+    B x y * B y x < B x x * B y y ↔ LinearIndependent R ![x, y] := by
+  have hle z : 0 ≤ B z z := by obtain rfl | hz := eq_or_ne z 0 <;> simp [le_of_lt, *]
+  constructor
+  · contrapose!
+    intro h
+    rw [LinearIndependent.pair_iff] at h
+    push_neg at h
+    obtain ⟨r, s, hl, h0⟩ := h
+    by_cases hr : r = 0; · simp_all
+    by_cases hs : s = 0; · simp_all
+    suffices
+        (B (r • x) (r • x)) * (B (s • y) (s • y)) = (B (r • x) (s • y)) * (B (s • y) (r • x)) by
+      simp only [map_smul, smul_apply, smul_eq_mul] at this
+      rw [show r * (r * (B x) x) * (s * (s * (B y) y)) = (r * r * s * s) * ((B x) x * (B y) y) by
+        ring, show s * (r * (B x) y) * (r * (s * (B y) x)) = (r * r * s * s) * ((B x) y * (B y) x)
+        by ring] at this
+      have hrs : r * r * s * s ≠ 0 := by simp [hr, hs]
+      exact le_of_eq <| mul_right_injective₀ hrs this
+    simp [show s • y = - r • x by rwa [neg_smul, ← add_eq_zero_iff_eq_neg']]
+  · contrapose!
+    intro h
+    exact not_linearIndependent_of_apply_mul_apply_eq B hp x y (le_antisymm
+      (apply_mul_apply_le_of_forall_zero_le B hle x y) h)
+
+/-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite symmetric
+forms. -/
+lemma apply_sq_lt_iff_linearIndependent_of_symm (hp : ∀ x, x ≠ 0 → 0 < B x x) (hB : B.IsSymm)
+    (x y : M) : B x y ^ 2 < B x x * B y y ↔ LinearIndependent R ![x, y] := by
+  rw [show B x y ^ 2 = B x y * B y x by rw [sq, ← hB.eq, RingHom.id_apply]]
+  exact apply_mul_apply_lt_iff_linearIndependent B hp x y
 
 end BilinForm
 

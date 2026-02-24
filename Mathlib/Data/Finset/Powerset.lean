@@ -39,6 +39,7 @@ theorem mem_powerset {s t : Finset α} : s ∈ powerset t ↔ s ⊆ t := by
   simp [powerset, mem_mk, mem_pmap, mk.injEq, exists_prop, exists_eq_right,
     ← val_le_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_powerset (s : Finset α) :
     (s.powerset : Set (Finset α)) = ((↑) : Finset α → Set α) ⁻¹' (s : Set α).powerset := by
@@ -72,6 +73,19 @@ theorem powerset_empty : (∅ : Finset α).powerset = {∅} :=
 @[simp]
 theorem powerset_eq_singleton_empty : s.powerset = {∅} ↔ s = ∅ := by
   rw [← powerset_empty, powerset_inj]
+
+theorem image_injOn_powerset_of_injOn {β : Type*} [DecidableEq β] {f : α → β} (H : Set.InjOn f s) :
+    Set.InjOn (α := Finset α) (·.image f) s.powerset := by
+  have {z a} (_ : z ⊆ s) (_ : a ∈ s) : a ∈ z ↔ f a ∈ z.image f := by grind [H.eq_iff]
+  exact fun _ _ _ _ _ => by grind
+
+theorem image_surjOn_powerset {β : Type*} [DecidableEq β] {f : α → β} :
+    Set.SurjOn (α := Finset α) (·.image f) s.powerset (s.image f).powerset :=
+  fun t ht => ⟨{ x ∈ s | f x ∈ t}, by grind⟩
+
+theorem powerset_image {β : Type*} [DecidableEq β] {f : α → β} :
+    (s.image f).powerset = s.powerset.image (·.image f) :=
+  ext fun a => ⟨fun _ => mem_image.mpr ⟨{ x ∈ s | f x ∈ a}, by grind⟩, by grind⟩
 
 /-- **Number of Subsets of a Set** -/
 @[simp]
@@ -192,6 +206,7 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 lemma powersetCard_empty_subsingleton (n : ℕ) :
     (powersetCard n (∅ : Finset α) : Set <| Finset α).Subsingleton := by
   simp [Set.Subsingleton, subset_empty]

@@ -202,7 +202,7 @@ theorem log_nonneg (hx : 1 ≤ x) : 0 ≤ log x :=
 
 theorem log_nonpos_iff (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · simp [le_refl, zero_le_one]
+  · simp [zero_le_one]
   rw [← not_lt, log_pos_iff hx.le, not_lt]
 
 @[bound]

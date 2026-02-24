@@ -14,6 +14,8 @@ public import Mathlib.Logic.Nontrivial.Defs
 public import Batteries.Tactic.Init
 public import Mathlib.Order.Defs.Unbundled
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # Miscellaneous function constructions and lemmas
 -/
@@ -78,6 +80,12 @@ protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surj
 
 theorem not_injective_iff : ¬ Injective f ↔ ∃ a b, f a = f b ∧ a ≠ b := by
   simp only [Injective, not_forall, exists_prop]
+
+@[simp] lemma not_injective_const {α β : Type*} [Nontrivial α] {b : β} :
+    ¬ Injective (fun _ : α ↦ b) := by
+  rw [not_injective_iff]
+  obtain ⟨a₁, a₂, h⟩ := exists_pair_ne α
+  exact ⟨a₁, a₂, rfl, h⟩
 
 /-- If the co-domain `β` of an injective function `f : α → β` has decidable equality, then
 the domain `α` also has decidable equality. -/

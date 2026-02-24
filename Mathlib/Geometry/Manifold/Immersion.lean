@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
-public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 
@@ -88,7 +87,7 @@ This shortens the overall argument, as the definition of submersions has the sam
 
 ## References
 
-* [Juan Margalef-Roig and Enrique Outerelo Dominguez, *Differential topology*][roigdomingues2012]
+* [Juan Margalef-Roig and Enrique Outerelo Dominguez, *Differential topology*][roigdomingues1992]
 
 -/
 
@@ -280,7 +279,7 @@ between the targets of the local charts: using mathlib's formalisation conventio
 is *slightly* weaker than `source_subset_preimage_source`: the latter implies that
 `h.codChart.extend J ∘ f` maps `h.domChart.source` to
 `(h.codChart.extend J).target = (h.codChart.extend I) '' h.codChart.source`,
-but that does *not* imply `f` maps `h.domChart.source` to `h.codChartSource`;
+but that does *not* imply `f` maps `h.domChart.source` to `h.codChart.source`;
 a priori `f` could map some point `f ∘ h.domChart.extend I x ∉ h.codChart.source` into the target.
 Note that this difference only occurs because of our design using junk values;
 this is not a mathematically meaningful difference.
@@ -336,6 +335,7 @@ instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.sm
   unfold smallComplement
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement := by
   haveI := hf.small
   unfold smallComplement
@@ -370,6 +370,7 @@ lemma _root_.IsOpen.isImmersionAtOfComplement :
   simp_rw [IsImmersionAtOfComplement_def]
   exact .liftSourceTargetPropertyAt
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
@@ -409,6 +410,8 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
     apply OpenPartialHomeomorph.right_inv
     simp_all
   · exact I.right_inv (by simp_all)
+
+@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
 end IsImmersionAtOfComplement
 
@@ -522,7 +525,7 @@ between the targets of the local charts: using mathlib's formalisation conventio
 is *slightly* weaker than `source_subset_preimage_source`: the latter implies that
 `h.codChart.extend J ∘ f` maps `h.domChart.source` to
 `(h.codChart.extend J).target = (h.codChart.extend I) '' h.codChart.source`,
-but that does *not* imply `f` maps `h.domChart.source` to `h.codChartSource`;
+but that does *not* imply `f` maps `h.domChart.source` to `h.codChart.source`;
 a priori `f` could map some point `f ∘ h.domChart.extend I x ∉ h.codChart.source` into the target.
 Note that this difference only occurs because of our design using junk values;
 this is not a mathematically meaningful difference.
@@ -580,6 +583,8 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) 
   rw [IsImmersionAt_def]
   use PUnit, by infer_instance, by infer_instance
   apply Manifold.IsImmersionAtOfComplement.of_opens
+
+@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
 end IsImmersionAt
 
@@ -674,6 +679,8 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersionOfComplement PUnit I I n (Subtype.val : s → M) :=
   fun y ↦ IsImmersionAtOfComplement.of_opens s y
 
+@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
+
 end IsImmersionOfComplement
 
 namespace IsImmersion
@@ -730,6 +737,8 @@ protected lemma id [IsManifold I n M] : IsImmersion I I n (@id M) :=
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) :=
   ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.of_opens s⟩
+
+@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
 end IsImmersion
 

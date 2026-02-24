@@ -95,9 +95,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Submonoid M} : (↑(⨅ i, S i) : Set 
 @[to_additive /-- The `AddSubmonoid`s of an `AddMonoid` form a complete lattice. -/]
 instance : CompleteLattice (Submonoid M) :=
   { (completeLatticeOfInf (Submonoid M)) fun _ =>
-      IsGLB.of_image (f := (SetLike.coe : Submonoid M → Set M))
-        (@fun S T => show (S : Set M) ≤ T ↔ S ≤ T from SetLike.coe_subset_coe)
-        isGLB_biInf with
+      .of_image SetLike.coe_subset_coe isGLB_biInf with
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥
@@ -229,7 +227,7 @@ lemma closure_eq_one_union (s : Set M) :
     | mem x hx => exact Or.inr <| Subsemigroup.subset_closure hx
     | one => exact Or.inl <| by simp
     | mul x hx y hy hx hy =>
-      simp only [singleton_union, mem_insert_iff, SetLike.mem_coe] at hx hy
+      push _ ∈ _ at hx hy
       obtain ⟨(rfl | hx), (rfl | hy)⟩ := And.intro hx hy
       all_goals simp_all
       exact Or.inr <| mul_mem hx hy

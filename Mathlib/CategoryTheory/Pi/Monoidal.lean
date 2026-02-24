@@ -44,7 +44,7 @@ instance monoidalCategoryStruct : MonoidalCategoryStruct (∀ i, C i) where
 
 @[simp]
 theorem associator_hom_apply {X Y Z : ∀ i, C i} {i : I} :
-  (α_ X Y Z).hom i = (α_ (X i) (Y i) (Z i)).hom := rfl
+    (α_ X Y Z).hom i = (α_ (X i) (Y i) (Z i)).hom := rfl
 
 @[simp]
 theorem associator_inv_apply {X Y Z : ∀ i, C i} {i : I} :
@@ -140,17 +140,20 @@ def ihom (X : ∀ i, C i) : (∀ i, C i) ⥤ (∀ i, C i) where
   obj Y := fun i ↦ (X i ⟶[C i] Y i)
   map {Y Z} f := fun i ↦ (CategoryTheory.ihom (X i)).map (f i)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unit for the adjunction `tensorLeft X ⊣ ihom X`. -/
 @[simps]
 def closedUnit (X : ∀ i, C i) : 𝟭 (∀ i, C i) ⟶ tensorLeft X ⋙ ihom X where
   app Y := fun i ↦ (ihom.coev (X i)).app (Y i)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit for the adjunction `tensorLeft X ⊣ ihom X`. -/
 @[simps]
 def closedCounit (X : ∀ i, C i) : ihom X ⋙ tensorLeft X ⟶ 𝟭 (∀ i, C i) where
   app Y := fun i ↦ (ihom.ev (X i)).app (Y i)
 
-/-- equipps the product of a family of closed monoidal categories with
+set_option backward.isDefEq.respectTransparency false in
+/-- Equips the product of a family of closed monoidal categories with
 a pointwise closed monoidal structure. -/
 @[simps]
 instance monoidalClosed : MonoidalClosed (∀ i, C i) where

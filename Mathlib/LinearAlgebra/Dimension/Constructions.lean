@@ -48,6 +48,7 @@ section Quotient
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
 variable [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LinearIndependent.sumElim_of_quotient
     {M' : Submodule R M} {ι₁ ι₂} {f : ι₁ → M'} (hf : LinearIndependent R f) (g : ι₂ → M)
     (hg : LinearIndependent R (Submodule.Quotient.mk (p := M') ∘ g)) :
@@ -433,7 +434,7 @@ theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) 
   simpa using rank_span_le (s : Set M)
 
 theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
-  (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
+  (rank_span_finset_le s).trans_lt natCast_lt_aleph0
 
 open Submodule Module
 
@@ -532,9 +533,10 @@ end Semiring
 
 section Ring
 
-variable {F E : Type*} [CommRing F] [Ring E] [Algebra F E]
-variable [StrongRankCondition F] [NoZeroSMulDivisors F E] [Nontrivial E]
+variable {F E : Type*} [CommRing F] [IsDomain F] [Ring E] [Algebra F E]
+variable [StrongRankCondition F] [IsTorsionFree F E] [Nontrivial E]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
   (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
@@ -542,6 +544,7 @@ theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
     have := Module.nontrivial F E
     exact .singleton one_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=
   finrank_eq_of_rank_eq (by simp)

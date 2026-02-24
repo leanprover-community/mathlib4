@@ -104,10 +104,12 @@ lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
   simpa only [← add_assoc] using h (δ + x) B (ENNReal.lt_add_right δ_top x_pos.ne.symm)
     (by simp only [add_lt_top, Ne.lt_top δ_top, x_lt_top, and_self]) B_mble
 
+set_option backward.isDefEq.respectTransparency false in
 lemma levyProkhorovEDist_le_max_measure_univ (μ ν : Measure Ω) :
     levyProkhorovEDist μ ν ≤ max (μ univ) (ν univ) := by
   refine sInf_le fun B _ ↦ ⟨?_, ?_⟩ <;> apply le_add_left <;> simp [measure_mono]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma levyProkhorovEDist_lt_top (μ ν : Measure Ω) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     levyProkhorovEDist μ ν < ∞ :=
   (levyProkhorovEDist_le_max_measure_univ μ ν).trans_lt <| by simp [measure_lt_top]
@@ -248,7 +250,7 @@ lemma levyProkhorovDist_le_of_forall_le
   intro ε B ε_gt ε_lt_top B_mble
   have ε_gt' : δ < ε.toReal := by
     refine (ofReal_lt_ofReal_iff ?_).mp ?_
-    · exact ENNReal.toReal_pos (ne_zero_of_lt ε_gt) ε_lt_top.ne
+    · exact ENNReal.toReal_pos ε_gt.bot_lt.ne' ε_lt_top.ne
     · simpa [ofReal_toReal_eq_iff.mpr ε_lt_top.ne] using ε_gt
   convert h ε.toReal B ε_gt' B_mble
   exact (ENNReal.ofReal_toReal ε_lt_top.ne).symm

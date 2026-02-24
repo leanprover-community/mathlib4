@@ -199,7 +199,7 @@ issue: 1 = 0 does not hold
 /--
 info: Unable to find a counter-example
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example (q : ℕ) : q = 0 ∨ q ≥ 2 ∨

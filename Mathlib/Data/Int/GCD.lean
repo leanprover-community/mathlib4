@@ -11,7 +11,6 @@ public import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Basic
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Data.Int.Basic
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Nat.Defs
 
@@ -262,6 +261,7 @@ end Int
 section Monoid
 variable {M : Type*} [Monoid M] {a : M} {m n : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp) gcd_nsmul_eq_zero]
 lemma pow_gcd_eq_one : a ^ m.gcd n = 1 ↔ a ^ m = 1 ∧ a ^ n = 1 where
   mp hmn := by

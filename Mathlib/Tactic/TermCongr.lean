@@ -8,7 +8,7 @@ module
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Lean.Meta.CongrTheorems
 public meta import Mathlib.Logic.Basic
-public meta import Mathlib.Tactic.CongrExclamation
+public import Mathlib.Tactic.Basic
 
 /-! # `congr(...)` congruence quotations
 

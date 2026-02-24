@@ -46,10 +46,11 @@ def noncommFoldr (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise fun x y => ∀ b, f x (f y b) = f y (f x b)) (b : β) : β :=
   letI : LeftCommutative (α := { x // x ∈ s }) (f ∘ Subtype.val) :=
     ⟨fun ⟨_, hx⟩ ⟨_, hy⟩ =>
-      haveI : IsRefl α fun x y => ∀ b, f x (f y b) = f y (f x b) := ⟨fun _ _ => rfl⟩
+      haveI : Std.Refl fun x y => ∀ b, f x (f y b) = f y (f x b) := ⟨fun _ _ => rfl⟩
       comm.of_refl hx hy⟩
   s.attach.foldr (f ∘ Subtype.val) b
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem noncommFoldr_coe (l : List α) (comm) (b : β) :
     noncommFoldr f (l : Multiset α) comm b = l.foldr f b := by
@@ -253,7 +254,6 @@ lemma noncommProd_induction (s : Finset α) (f : α → β) (comm)
   obtain (⟨a, ha : a ∈ s, rfl : f a = b⟩) := by simpa using hb
   exact base a ha
 
-set_option backward.proofsInPublic true in
 @[to_additive (attr := congr)]
 theorem noncommProd_congr {s₁ s₂ : Finset α} {f g : α → β} (h₁ : s₁ = s₂)
     (h₂ : ∀ x ∈ s₂, f x = g x) (comm) :
@@ -356,6 +356,7 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
   | empty => simp
   | cons a s ha IH => simp [IH]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The non-commutative version of `Finset.prod_union` -/
 @[to_additive /-- The non-commutative version of `Finset.sum_union` -/]
 theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Disjoint s t)

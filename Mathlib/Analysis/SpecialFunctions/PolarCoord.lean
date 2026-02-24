@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Function.Jacobian
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 /-!
 # Polar coordinates
@@ -201,6 +202,7 @@ theorem measurableEquivRealProd_symm_polarCoord_symm_apply (p : ℝ × ℝ) :
 theorem norm_polarCoord_symm (p : ℝ × ℝ) :
     ‖Complex.polarCoord.symm p‖ = |p.1| := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :
     (∫ p in polarCoord.target, p.1 • f (Complex.polarCoord.symm p)) = ∫ p, f p := by
@@ -208,6 +210,7 @@ protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup 
     measurableEquivRealProd.symm.measurableEmbedding, ← integral_comp_polarCoord_symm]
   simp_rw [measurableEquivRealProd_symm_polarCoord_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem lintegral_comp_polarCoord_symm (f : ℂ → ℝ≥0∞) :
     (∫⁻ p in polarCoord.target, ENNReal.ofReal p.1 • f (Complex.polarCoord.symm p)) =
       ∫⁻ p, f p := by
@@ -271,6 +274,7 @@ theorem integral_comp_pi_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Nor
   refine setIntegral_congr_fun measurableSet_pi_polarCoord_target fun x hx ↦ ?_
   simp_rw [det_fderivPiPolarCoordSymm, Finset.abs_prod, abs_fst_of_mem_pi_polarCoord_target hx]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem Complex.integral_comp_pi_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : (ι → ℂ) → E) :
     (∫ p in (Set.univ.pi fun _ : ι ↦ Complex.polarCoord.target),
@@ -291,6 +295,7 @@ theorem lintegral_comp_pi_polarCoord_symm (f : (ι → ℝ × ℝ) → ℝ≥0�
   simp_rw [det_fderivPiPolarCoordSymm, Finset.abs_prod, ENNReal.ofReal_prod_of_nonneg (fun _ _ ↦
     abs_nonneg _), abs_fst_of_mem_pi_polarCoord_target hx]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem Complex.lintegral_comp_pi_polarCoord_symm (f : (ι → ℂ) → ℝ≥0∞) :
     ∫⁻ p in (Set.univ.pi fun _ : ι ↦ Complex.polarCoord.target),
       (∏ i, .ofReal (p i).1) * f (fun i ↦ Complex.polarCoord.symm (p i)) = ∫⁻ p, f p := by
