@@ -67,6 +67,7 @@ instance : SemilatticeSup {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
       (IsIdempotentElem.of_mul_add b.2.1 b.2.2).1.eq, ← mul_add, a.2.2, mul_one]
   sup_le a b c hac hbc := by simp_rw [(· ≤ ·), add_mul, mul_assoc]; rw [hac, hbc]
 
+set_option backward.whnf.reducibleClassField false in
 instance : BooleanAlgebra {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
   inf a b := (aᶜ ⊔ bᶜ)ᶜ
   inf_le_left a b := by simp_rw [(· ≤ ·), (· ⊔ ·), (·ᶜ), SemilatticeSup.sup,
@@ -75,13 +76,14 @@ instance : BooleanAlgebra {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
     mul_assoc, (IsIdempotentElem.of_mul_add b.2.1 b.2.2).1.eq]
   le_inf a b c hab hac := by
     simp_rw [(· ≤ ·), (· ⊔ ·), (·ᶜ), SemilatticeSup.sup, ← mul_assoc]; rw [hab, hac]
-  le_sup_inf a b c := Eq.le <| mul_eq_zero_add_eq_one_ext_right <| by simp_rw [(· ⊔ ·), (· ⊓ ·),
-    (·ᶜ), SemilatticeSup.sup, add_mul, mul_add, mul_mul_mul_comm _ b.1.1,
-    (IsIdempotentElem.of_mul_add a.2.1 a.2.2).2.eq, ← mul_assoc, a.2.1, zero_mul, zero_add]
+  le_sup_inf a b c := Eq.le <| mul_eq_zero_add_eq_one_ext_right <| by
+    simp_rw +instances [(· ⊔ ·), (· ⊓ ·), (·ᶜ), SemilatticeSup.sup, add_mul, mul_add,
+      mul_mul_mul_comm _ b.1.1, (IsIdempotentElem.of_mul_add a.2.1 a.2.2).2.eq, ← mul_assoc, a.2.1,
+      zero_mul, zero_add]
   top := ⟨(1, 0), mul_zero _, add_zero _⟩
   bot := ⟨(0, 1), zero_mul _, zero_add _⟩
   inf_compl_le_bot a := Eq.le <| mul_eq_zero_add_eq_one_ext_right <| by
-    simp_rw [(· ⊔ ·), (· ⊓ ·), (·ᶜ), SemilatticeSup.sup,
+    simp_rw +instances [(· ⊔ ·), (· ⊓ ·), (·ᶜ), SemilatticeSup.sup,
       (IsIdempotentElem.of_mul_add a.2.1 a.2.2).1.eq, add_comm, a.2.2]
   top_le_sup_compl a := Eq.le <| mul_eq_zero_add_eq_one_ext_left <| by simp_rw [(· ⊔ ·), (·ᶜ),
     SemilatticeSup.sup, (IsIdempotentElem.of_mul_add a.2.1 a.2.2).2.eq, a.2.2]

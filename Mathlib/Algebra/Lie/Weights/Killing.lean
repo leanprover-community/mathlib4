@@ -98,6 +98,7 @@ variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
 section
 variable [IsTriangularizable K H L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `α` and `β`, the corresponding root spaces are orthogonal with respect to the Killing
 form, provided `α + β ≠ 0`. -/
 lemma killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero {α β : H → K} {x y : L}
@@ -540,6 +541,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
         root_apply_coroot hβ]
     · simp [root_apply_coroot hα]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNonZero) :
     ∃ h e f : L, IsSl2Triple h e f ∧ e ∈ rootSpace H α ∧ f ∈ rootSpace H (-α) := by
   obtain ⟨e, heα : e ∈ rootSpace H α, he₀ : e ≠ 0⟩ := α.exists_ne_zero

@@ -341,12 +341,20 @@ theorem Quot.mk_surjective {r : α → α → Prop} : Function.Surjective (Quot.
 /-- `Quotient.mk` is a surjective function. -/
 theorem Quotient.mk_surjective {s : Setoid α} :
     Function.Surjective (Quotient.mk s) :=
-  Quot.exists_rep
+  Quot.mk_surjective
 
 /-- `Quotient.mk'` is a surjective function. -/
 theorem Quotient.mk'_surjective [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
-  Quot.exists_rep
+  Quot.mk_surjective
+
+theorem Quot.map_surjective {ra : α → α → Prop} {rb : β → β → Prop} {f : α → β}
+    (h : ∀ ⦃a b : α⦄, ra a b → rb (f a) (f b)) (hf : f.Surjective) : Quot.map f h |>.Surjective :=
+  surjective_lift _ |>.mpr <| .comp Quot.mk_surjective hf
+
+theorem Quotient.map_surjective {sa : Setoid α} {sb : Setoid β} {f : α → β}
+    (h : ∀ ⦃a b : α⦄, a ≈ b → f a ≈ f b) (hf : f.Surjective) : Quotient.map f h |>.Surjective :=
+  lift_surjective _ _ <| .comp Quot.mk_surjective hf
 
 /-- Choose an element of the equivalence class using the axiom of choice.
   Sound but noncomputable. -/
@@ -769,13 +777,5 @@ end Quotient
 
 @[simp]
 lemma Equivalence.quot_mk_eq_iff {α : Type*} {r : α → α → Prop} (h : Equivalence r) (x y : α) :
-    Quot.mk r x = Quot.mk r y ↔ r x y := by
-  constructor
-  · rw [Quot.eq]
-    intro hxy
-    induction hxy with
-    | rel _ _ H => exact H
-    | refl _ => exact h.refl _
-    | symm _ _ _ H => exact h.symm H
-    | trans _ _ _ _ _ h₁₂ h₂₃ => exact h.trans h₁₂ h₂₃
-  · exact Quot.sound
+    Quot.mk r x = Quot.mk r y ↔ r x y :=
+  Quotient.eq (r := ⟨r, h⟩)

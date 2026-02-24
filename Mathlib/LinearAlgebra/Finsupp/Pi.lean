@@ -14,9 +14,9 @@ public import Mathlib.Algebra.Order.Group.Nat
 
 * `Finsupp.linearEquivFunOnFinite`: `α →₀ β` and `a → β` are equivalent if `α` is finite
 * `FunOnFinite.map`: the map `(X → M) → (Y → M)` induced by a map `f : X ⟶ Y` when
-`X` and `Y` are finite.
+  `X` and `Y` are finite.
 * `FunOnFinite.linearMmap`: the linear map `(X → M) →ₗ[R] (Y → M)` induced
-by a map `f : X ⟶ Y` when `X` and `Y` are finite.
+  by a map `f : X ⟶ Y` when `X` and `Y` are finite.
 
 ## Tags
 

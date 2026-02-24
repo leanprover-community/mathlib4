@@ -20,7 +20,7 @@ notably several versions of Prokhorov theorem on tight sets of probability measu
 ## Main statements
 
 * `instCompactSpaceProbabilityMeasure` proves that the space of probability measures on a compact
-space is itself compact
+  space is itself compact
 * `isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le`: Given a sequence of compact
   sets `Kₙ` and a sequence `uₙ` tending to zero, the probability measures giving mass at most `uₙ`
   to the complement of `Kₙ` form a compact set.
