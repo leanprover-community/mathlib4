@@ -52,10 +52,10 @@ instance (priority := 100) isSymmOp_of_isCommutative (α : Sort u) (op : α → 
 theorem IsSymmOp.flip_eq (op : α → α → β) [IsSymmOp op] : flip op = op :=
   funext fun a ↦ funext fun b ↦ (IsSymmOp.symm_op a b).symm
 
-instance {f : α → β → β} [h : LeftCommutative f] : RightCommutative (flip f) :=
+instance {f : α → β → β} [h : LeftCommutative f] : RightCommutative (fun x y ↦ f y x) :=
   ⟨fun _ _ _ ↦ (h.left_comm _ _ _).symm⟩
 
-instance {f : β → α → β} [h : RightCommutative f] : LeftCommutative (flip f) :=
+instance {f : β → α → β} [h : RightCommutative f] : LeftCommutative (fun x y ↦ f y x) :=
   ⟨fun _ _ _ ↦ (h.right_comm _ _ _).symm⟩
 
 instance {f : α → α → α} [hc : Std.Commutative f] [ha : Std.Associative f] : LeftCommutative f :=
