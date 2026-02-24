@@ -57,12 +57,12 @@ example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 /--
 info: Try these:
   [apply] 🎉 exact Std.not_gt_of_lt h
-  [apply] intro
-  Remaining subgoals:
-  ⊢ False
   [apply] norm_num
   Remaining subgoals:
   ⊢ a ≤ b
+  [apply] intro
+  Remaining subgoals:
+  ⊢ False
   [apply] group
   Remaining subgoals:
   ⊢ ¬b < a
@@ -73,10 +73,9 @@ info: Try these:
 #guard_msgs in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 info: Try these:
-  [apply] 🎉 ring
+  [apply] 🎉 norm_num
   [apply] noncomm_ring
   Remaining subgoals:
   ⊢ 1369 • 1 - 1225 • 1 = 72 • 2
@@ -87,6 +86,9 @@ example : 37^2 - 35^2 = 72 * 2 := by hint
 /--
 info: Try these:
   [apply] 🎉 decide
+  [apply] norm_num
+  Remaining subgoals:
+  ⊢ Nat.Prime 37
   [apply] ring_nf
   Remaining subgoals:
   ⊢ Nat.Prime 37
@@ -97,12 +99,12 @@ example : Nat.Prime 37 := by hint
 /--
 info: Try these:
   [apply] 🎉 grind
-  [apply] ring_nf
-  Remaining subgoals:
-  ⊢ ∃ x, P x ∧ 0 ≤ x
   [apply] norm_num
   Remaining subgoals:
   ⊢ ∃ x, P x
+  [apply] ring_nf
+  Remaining subgoals:
+  ⊢ ∃ x, P x ∧ 0 ≤ x
   [apply] group
   Remaining subgoals:
   ⊢ ∃ x, P x ∧ 0 ≤ x
@@ -149,7 +151,7 @@ end multiline_hint
 section finiteness
 /--
 info: Try these:
-  [apply] 🎉 finiteness
+  [apply] 🎉 norm_num
 -/
 #guard_msgs in
 open ENNReal in
@@ -172,12 +174,12 @@ info: Try these:
   [apply] aesop
   Remaining subgoals:
   ⊢ False
-  [apply] ring_nf
-  Remaining subgoals:
-  ⊢ 2 ≤ 1
   [apply] norm_num
   Remaining subgoals:
   ⊢ False
+  [apply] ring_nf
+  Remaining subgoals:
+  ⊢ 2 ≤ 1
   [apply] group
   Remaining subgoals:
   ⊢ 2 ≤ 1
@@ -194,6 +196,9 @@ section compute_degree
 /--
 info: Try these:
   [apply] 🎉 compute_degree
+  [apply] norm_num
+  Remaining subgoals:
+  ⊢ (X + 1).natDegree ≤ 1
 -/
 #guard_msgs in
 open Polynomial in
@@ -210,10 +215,10 @@ this test no longer reports `field_simp` amongst the successful tactics.
 /--
 info: Try these:
   [apply] 🎉 exact Units.divp_add_divp_same a b u₁
-  [apply] ring_nf
+  [apply] norm_num
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
-  [apply] norm_num
+  [apply] ring_nf
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
   [apply] abel_nf

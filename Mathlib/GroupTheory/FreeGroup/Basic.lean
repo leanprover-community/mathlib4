@@ -245,12 +245,12 @@ theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄
       | tail hLL' h ih =>
         obtain @⟨s, e, a, b⟩ := h
         rcases List.append_eq_append_iff.1 eq with (⟨s', rfl, rfl⟩ | ⟨e', rfl, rfl⟩)
-        · have : L₁ ++ (s' ++ (a, b) :: (a, not b) :: e) = L₁ ++ s' ++ (a, b) :: (a, not b) :: e :=
-            by simp
+        · have : L₁ ++ (s' ++ (a, b) :: (a, not b) :: e) =
+            L₁ ++ s' ++ (a, b) :: (a, not b) :: e := by simp
           rcases ih this with ⟨w₁, w₂, rfl, h₁, h₂⟩
           exact ⟨w₁, w₂, rfl, h₁, h₂.tail Step.not⟩
-        · have : s ++ (a, b) :: (a, not b) :: e' ++ L₂ = s ++ (a, b) :: (a, not b) :: (e' ++ L₂) :=
-            by simp
+        · have : s ++ (a, b) :: (a, not b) :: e' ++ L₂ =
+            s ++ (a, b) :: (a, not b) :: (e' ++ L₂) := by simp
           rcases ih this with ⟨w₁, w₂, rfl, h₁, h₂⟩
           exact ⟨w₁, w₂, rfl, h₁.tail Step.not, h₂⟩)
     fun ⟨_, _, Eq, h₃, h₄⟩ => Eq.symm ▸ append_append h₃ h₄
@@ -954,6 +954,7 @@ theorem mul_bind (f : α → FreeGroup β) (x y : FreeGroup α) : x * y >>= f = 
 theorem inv_bind (f : α → FreeGroup β) (x : FreeGroup α) : x⁻¹ >>= f = (x >>= f)⁻¹ :=
   (lift f).map_inv _
 
+set_option backward.whnf.reducibleClassField false in
 @[to_additive]
 instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
   (id_map := fun x =>

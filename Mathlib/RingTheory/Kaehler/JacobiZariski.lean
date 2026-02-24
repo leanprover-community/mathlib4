@@ -207,6 +207,7 @@ lemma CotangentSpace.exact :
 
 namespace H1Cotangent
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /--
 Given `0 → I → S[Y] → T → 0`, this is an auxiliary map from `S[Y]` to `T ⊗[S] Ω[S⁄R]` whose

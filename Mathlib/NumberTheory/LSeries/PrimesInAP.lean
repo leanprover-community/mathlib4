@@ -196,7 +196,6 @@ private lemma F''_le (p : Nat.Primes) (k : ℕ) : F'' (p, k) ≤ 2 * (p : ℝ)�
 
 open Nat.Primes
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma summable_F'' : Summable F'' := by
   have hp₀ (p : Nat.Primes) : 0 < (p : ℝ)⁻¹ := inv_pos_of_pos (Nat.cast_pos.mpr p.prop.pos)
   have hp₁ (p : Nat.Primes) : (p : ℝ)⁻¹ < 1 :=
@@ -277,7 +276,6 @@ lemma residueClass_eq (ha : IsUnit a) :
   simpa only [Pi.smul_apply, Finset.sum_apply, smul_eq_mul, ← mul_assoc]
     using residueClass_apply ha n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The L-series of the von Mangoldt function restricted to the residue class `a` mod `q`
 with `a` invertible in `ZMod q` is a linear combination of logarithmic derivatives of
 L-functions of the Dirichlet characters mod `q` (on `re s > 1`). -/

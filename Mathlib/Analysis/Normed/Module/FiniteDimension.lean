@@ -160,6 +160,7 @@ theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :
 
 end Affine
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E => f.det := by
   change Continuous fun f : E →L[𝕜] E => LinearMap.det (f : E →ₗ[𝕜] E)
   -- TODO: this could be easier with `det_cases`
@@ -390,7 +391,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     rwa [this] at hC
   choose n hn using this
   set Φ := fun φ : E →L[𝕜] F => v.constrL <| u ∘ n φ
-  change ∀ z, dist z (Φ z) ≤ ε / 2 at hn
+  simp_rw [← dist_eq_norm] at hn
   use n
   intro x y hxy
   calc

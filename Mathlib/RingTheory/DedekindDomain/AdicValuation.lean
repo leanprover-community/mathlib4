@@ -208,7 +208,6 @@ theorem intValuation_le_one (x : R) : v.intValuation x ≤ 1 := by
   · rw [v.intValuation_if_neg hx, ← exp_zero, exp_le_exp, Right.neg_nonpos_iff]
     exact Int.natCast_nonneg _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
 theorem intValuation_lt_one_iff_dvd (r : R) :
     v.intValuation r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
@@ -266,6 +265,10 @@ theorem intValuation_exists_uniformizer :
   rw [← pow_one (Associates.mk v.asIdeal), Associates.prime_pow_dvd_iff_le hπ hv] at mem
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at notMem
   exact Nat.eq_of_le_of_lt_succ mem notMem
+
+instance : v.intValuation.IsNontrivial :=
+  have ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
+  ⟨π, by aesop⟩
 
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤᵐ⁰)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
