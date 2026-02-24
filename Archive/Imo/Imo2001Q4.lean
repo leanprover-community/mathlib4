@@ -35,6 +35,7 @@ variable {n : ℕ} {c : Fin n → ℤ}
 rather than `Icc 1 n`, and as such contains `+ 1` to compensate. -/
 def S (c : Fin n → ℤ) (a : Perm (Fin n)) : ℤ := ∑ i, c i * (a i + 1)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assuming the opposite of what is to be proved, the sum of `S` over all permutations is
 congruent to the sum of all residues modulo `n!`, i.e. `n! * (n! - 1) / 2`. -/
 lemma sum_range_modEq_sum_of_contra (hS : ¬∃ a b, a ≠ b ∧ (n ! : ℤ) ∣ S c a - S c b) :

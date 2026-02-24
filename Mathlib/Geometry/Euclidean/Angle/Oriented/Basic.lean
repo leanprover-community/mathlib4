@@ -72,6 +72,7 @@ theorem oangle_zero_left (x : V) : o.oangle 0 x = 0 := by simp [oangle]
 @[simp]
 theorem oangle_zero_right (x : V) : o.oangle x 0 = 0 := by simp [oangle]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the two vectors passed to `oangle` are the same, the result is 0. -/
 @[simp]
 theorem oangle_self (x : V) : o.oangle x x = 0 := by
@@ -247,6 +248,7 @@ negated, results in 0. -/
 theorem oangle_add_oangle_rev_neg_right (x y : V) : o.oangle x (-y) + o.oangle y (-x) = 0 := by
   rw [o.oangle_rev (-x), oangle_neg_left_eq_neg_right, add_neg_cancel]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying the first vector passed to `oangle` by a positive real does not change the
 angle. -/
 @[simp]
@@ -519,11 +521,13 @@ theorem oangle_map (x y : V') (f : V ≃ₗᵢ[ℝ] V') :
     (Orientation.map (Fin 2) f.toLinearEquiv o).oangle x y = o.oangle (f.symm x) (f.symm y) := by
   simp [oangle, o.kahler_map]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem _root_.Complex.oangle (w z : ℂ) :
     Complex.orientation.oangle w z = Complex.arg (conj w * z) := by
   simp [oangle, mul_comm z]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The oriented angle on an oriented real inner product space of dimension 2 can be evaluated in
 terms of a complex-number representation of the space. -/
 theorem oangle_map_complex (f : V ≃ₗᵢ[ℝ] ℂ)
@@ -923,6 +927,7 @@ theorem oangle_sign_smul_add_smul_left (x y : V) (r₁ r₂ : ℝ) :
   simp_rw [o.oangle_rev y, Real.Angle.sign_neg, add_comm (r₁ • x), oangle_sign_smul_add_smul_right,
     mul_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sign of the angle between two linear combinations of two vectors is the sign of the
 determinant of the factors in those combinations multiplied by the sign of the angle between the
 two vectors. -/

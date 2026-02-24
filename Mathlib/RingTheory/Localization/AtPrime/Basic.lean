@@ -65,8 +65,6 @@ theorem AtPrime.nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
     have htz : (t : R) = 0 := by simpa using ht.symm
     exact t.2 (htz.symm ▸ P.zero_mem : ↑t ∈ P)
 
-@[deprecated (since := "2025-07-31")] alias AtPrime.Nontrivial := IsLocalization.AtPrime.nontrivial
-
 theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   letI := AtPrime.nontrivial S P -- Can't be a local instance because we can't figure out `P`.
   IsLocalRing.of_nonunits_add
@@ -454,6 +452,7 @@ variable (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime
 
 open IsLocalRing
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`, where `Rₚ` satisfies
 `IsLocalization.AtPrime Rₚ p`. In particular, localization preserves the residue field. -/
 noncomputable
@@ -486,6 +485,7 @@ theorem equivQuotMaximalIdeal_apply_mk (x : R) :
     equivQuotMaximalIdeal p Rₚ (Ideal.Quotient.mk _ x) =
       (Ideal.Quotient.mk _ (algebraMap R Rₚ x)) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem equivQuotMaximalIdeal_symm_apply_mk (x : R) (s : p.primeCompl) :
     (equivQuotMaximalIdeal p Rₚ).symm (Ideal.Quotient.mk _ (IsLocalization.mk' Rₚ x s)) =
@@ -509,6 +509,7 @@ variable [IsScalarTower R S Sₚ]
 local notation "pS" => Ideal.map (algebraMap R S) p
 local notation "pSₚ" => Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma comap_map_eq_map :
     (Ideal.map (algebraMap R Sₚ) p).comap (algebraMap S Sₚ) = pS := by
   rw [IsScalarTower.algebraMap_eq R S Sₚ, ← Ideal.map_map, eq_comm]
@@ -538,11 +539,9 @@ lemma comap_map_eq_map :
   apply Ideal.mul_mem_right
   exact Ideal.mem_map_of_mem _ hγ
 
-@[deprecated (since := "2025-07-31")] alias
-  _root_.comap_map_eq_map_of_isLocalization_algebraMapSubmonoid := comap_map_eq_map
-
 variable [IsScalarTower R Rₚ Sₚ]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (S Sₚ) in
 /--
 The isomorphism `S ⧸ pS ≃+* Sₚ ⧸ p·Sₚ`, where `Sₚ` is the localization of `S` at the (image) of
@@ -582,9 +581,6 @@ noncomputable def equivQuotientMapMaximalIdeal [p.IsMaximal] :
     rw [mul_comm, mul_sub, IsLocalization.mul_mk'_eq_mk'_of_mul,
       IsLocalization.mk'_mul_cancel_left, ← map_mul, ← e, ← Algebra.smul_def, smul_smul,
       hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right]
-
-@[deprecated (since := "2025-07-31")] alias
-    _root_.quotMapEquivQuotMapMaximalIdealOfIsLocalization := equivQuotientMapMaximalIdeal
 
 end isomorphisms
 

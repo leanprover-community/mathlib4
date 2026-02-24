@@ -911,7 +911,7 @@ variable (R M) in
 def _root_.Fin.consEquivL : (M 0 × Π i, M (Fin.succ i)) ≃L[R] (Π i, M i) where
   __ := Fin.consLinearEquiv R M
   continuous_toFun := continuous_id.fst.finCons continuous_id.snd
-  continuous_invFun := .prodMk (continuous_apply 0) (by continuity)
+  continuous_invFun := .prodMk (continuous_apply 0) (by fun_prop)
 
 /-- `Fin.cons` in the codomain of continuous linear maps. -/
 abbrev _root_.ContinuousLinearMap.finCons
@@ -992,6 +992,7 @@ theorem map_neg (e : M ≃SL[σ₁₂] M₂) (x : M) : e (-x) = -e x :=
 
 variable [Module R M₂] [IsTopologicalAddGroup M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pair of continuous linear maps such that `f₁ ∘ f₂ = id` generates a continuous
 linear equivalence `e` between `M` and `M₂ × f₁.ker` such that `(e x).2 = x` for `x ∈ f₁.ker`,
 `(e x).1 = f₁ x`, and `(e (f₂ y)).2 = 0`. The map is given by `e x = (f₁ x, x - f₂ (f₁ x))`. -/
@@ -1355,6 +1356,7 @@ variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] 
 
 open ContinuousLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `p` is a closed complemented submodule,
 then there exists a submodule `q` and a continuous linear equivalence `M ≃L[R] (p × q)` such that
 `e (x : p) = (x, 0)`, `e (y : q) = (0, y)`, and `e.symm x = x.1 + x.2`.
