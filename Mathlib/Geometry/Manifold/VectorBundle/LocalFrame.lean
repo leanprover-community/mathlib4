@@ -411,7 +411,7 @@ lemma localFrame_coeff_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M
 variable {s s' : Π x : M, V x}
 
 lemma eq_sum_localFrame_coeff_smul [Fintype ι] (hx : x' ∈ e.baseSet) :
-    s x' = (∑ i, (e.localFrame_coeff I b i x') (s x') • e.localFrame b i x') :=
+    s x' = ∑ i, e.localFrame_coeff I b i x' (s x') • e.localFrame b i x' :=
   (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_sum_eq s hx
 
 variable (e b) in
@@ -419,18 +419,14 @@ variable (e b) in
   of `V` around `x`, we have
   `s = ∑ i, (LinearMap.piApply (b.localFrame_coeff e i) s) • b.localFrame e i` -/
 lemma eventually_eq_localFrame_sum_coeff_smul [Fintype ι] (hxe : x ∈ e.baseSet) :
-    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (e.localFrame_coeff I b i x') (s x') • e.localFrame b i x' :=
+    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, e.localFrame_coeff I b i x' (s x') • e.localFrame b i x' :=
   eventually_nhds_iff.mpr ⟨e.baseSet, fun _ ↦ e.eq_sum_localFrame_coeff_smul, e.open_baseSet, hxe⟩
 
 variable (e b) in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
 lemma localFrame_coeff_congr {i : ι} (hss' : s x = s' x) :
-    (e.localFrame_coeff I b i x) (s x) = (e.localFrame_coeff I b i x) (s' x) := by
+    e.localFrame_coeff I b i x (s x) = e.localFrame_coeff I b i x (s' x) := by
   simpa using (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
-
-variable (e b) in -- TODO: do we need this lemma still?
-lemma localFrame_coeff_apply_zero_at (hs : s x = 0) (i : ι) :
-    (e.localFrame_coeff I b i x) (s x) = 0 := by simp [hs]
 
 variable {n}
 
@@ -439,7 +435,7 @@ variable (e) in
 Then the coefficient of `s` w.r.t. the local frame induced by `b` and `e`
 equals the cofficient of "`s x` read in the trivialisation `e`" for `b i`. -/
 lemma localFrame_coeff_eq_coeff (hxe : x ∈ e.baseSet) {i : ι} :
-    (e.localFrame_coeff I b i x) (s x) = b.repr (e ((T% s) x)).2 i := by
+    e.localFrame_coeff I b i x (s x) = b.repr (e ((T% s) x)).2 i := by
   simp [e.localFrame_coeff_apply_of_mem_baseSet b hxe, basisAt]
 
 end Trivialization
@@ -454,7 +450,7 @@ proven in `OrthonormalFrame.lean`).
 variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
   {e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)} [MemTrivializationAtlas e]
   {ι : Type*} (b : Basis ι 𝕜 F) {s : Π x : M, V x} {t : Set M} {k : WithTop ℕ∞} {x x' : M}
-variable [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] [ContMDiffVectorBundle k F V I]
+  [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] [ContMDiffVectorBundle k F V I]
 
 /-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_coeff e i` in the local frame
 near `x` induced by `e` and `b` -/
