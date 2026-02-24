@@ -329,7 +329,6 @@ def KaehlerDifferential.linearMapEquivDerivation : (Ω[S⁄R] →ₗ[S] M) ≃�
       Derivation.liftKaehlerDifferential_unique _ _ (Derivation.liftKaehlerDifferential_comp _)
     right_inv := Derivation.liftKaehlerDifferential_comp }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The quotient ring of `S ⊗ S ⧸ J ^ 2` by `Ω[S⁄R]` is isomorphic to `S`. -/
 def KaehlerDifferential.quotientCotangentIdealRingEquiv :
     (S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) ⧸ (KaehlerDifferential.ideal R S).cotangentIdeal ≃+*
@@ -469,6 +468,7 @@ the relations:
 1. `dx + dy = d(x + y)`
 2. `x dy + y dx = d(x * y)`
 3. `dr = 0` for `r ∈ R`
+
 where `db` is the unit in the copy of `S` with index `b`.
 
 This is the kernel of the surjection

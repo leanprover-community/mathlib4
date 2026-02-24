@@ -151,7 +151,6 @@ theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[
     rw [letI := t₂ s; Seminorm.continuous_iff one_pos, nhds_iInf, iInf_subtype]
   rw [Filter.mem_iInf_finite]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
     ∃ s : Finset ι, ∃ c : ℝ≥0, φ.toSeminorm ≤

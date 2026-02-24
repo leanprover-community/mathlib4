@@ -277,7 +277,6 @@ section lift
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
 See `Complex.lift` for this as an equiv. -/
@@ -388,12 +387,10 @@ scoped[ComplexStarModule] notation "ℑ" => imaginaryPart
 
 open ComplexStarModule
 
-set_option backward.isDefEq.respectTransparency false in
 theorem realPart_apply_coe (a : A) : (ℜ a : A) = (2 : ℝ)⁻¹ • (a + star a) := by
   unfold realPart
   simp only [selfAdjointPart_apply_coe, invOf_eq_inv]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem imaginaryPart_apply_coe (a : A) : (ℑ a : A) = -I • (2 : ℝ)⁻¹ • (a - star a) := by
   unfold imaginaryPart
   simp only [LinearMap.coe_comp, Function.comp_apply, skewAdjoint.negISMul_apply_coe,
@@ -424,7 +421,6 @@ theorem imaginaryPart_smul (z : ℂ) (a : A) : ℑ (z • a) = z.re • ℑ a + 
   have := by congrm (ℑ ($((re_add_im z).symm) • a))
   simpa [-re_add_im, add_smul, ← smul_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma skewAdjointPart_eq_I_smul_imaginaryPart (x : A) :
     (skewAdjointPart ℝ x : A) = I • (imaginaryPart x : A) := by
   simp [imaginaryPart_apply_coe, smul_smul]
@@ -509,7 +505,6 @@ lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
 lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
   ext1; simp [imaginaryPart_apply_coe, conj_ofReal]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
   (ℜ z : ℂ) = (↑(ℜ (↑z.re + ↑z.im * I))) := by congrm (ℜ $((re_add_im z).symm))

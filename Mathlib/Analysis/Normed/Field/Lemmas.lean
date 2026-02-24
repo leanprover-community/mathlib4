@@ -74,7 +74,6 @@ theorem tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
     Tendsto (· * a) (cobounded α) (cobounded α) :=
   (map_mul_right_cobounded ha).le
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
   rw [← comap_norm_atTop, ← Filter.comap_inv, ← comap_norm_nhdsGT_zero, ← inv_atTop₀,
@@ -173,7 +172,6 @@ theorem TendstoLocallyUniformly.inv₀ {X ι : Type*} [TopologicalSpace X]
     TendstoLocallyUniformly F⁻¹ f⁻¹ l :=
   hF.inv₀_of_disjoint fun x ↦ disjoint_nhds_nhds.2 (hf₀ x) |>.mono_left (hf.tendsto x)
 
-set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousInv₀ α where
   continuousAt_inv₀ x hx := by

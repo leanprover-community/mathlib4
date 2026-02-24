@@ -49,10 +49,11 @@ variable [CommRing P] [Algebra R P] [Algebra P S] [IsScalarTower R P S]
 
 section IsLocalRing
 
+set_option backward.isDefEq.respectTransparency false
+
 variable [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)]
   [Algebra.FormallySmooth 𝓀[R] (𝓀[R] ⊗[R] S)]
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local irreducible] KaehlerDifferential in
 attribute [local instance] TensorProduct.rightAlgebra in
 /--
@@ -237,12 +238,14 @@ lemma IsSmoothAt.of_formallySmooth_fiber
     (R := Rp) (S := Sq) (P := Sp) (algebraMapSubmonoid _ q.primeCompl)
   exact .comp R Rp Sq
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Smooth.of_formallySmooth_fiber [Algebra.FinitePresentation R S]
     (H : ∀ (I : Ideal R) [I.IsPrime], FormallySmooth I.ResidueField (I.Fiber S)) :
     Algebra.Smooth R S := by
   refine ⟨smoothLocus_eq_univ_iff.mp (Set.eq_univ_iff_forall.mpr fun q ↦ ?_), ‹_›⟩
   exact .of_formallySmooth_fiber (q.asIdeal.under R) _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] FormallyEtale.of_formallyUnramified_of_field in
 @[stacks 08WD "(3) => (1)"]
 lemma Etale.of_formallyUnramified_of_flat {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]

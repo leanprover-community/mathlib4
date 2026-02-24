@@ -115,7 +115,6 @@ theorem vonMangoldt_sum {n : ℕ} : ∑ i ∈ n.divisors, Λ i = Real.log n := b
 -- access notation `ζ` and `μ`
 open scoped zeta Moebius
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem vonMangoldt_mul_zeta : Λ * ζ = log := by
   ext n; rw [coe_mul_zeta_apply, vonMangoldt_sum]; rfl
@@ -133,7 +132,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem moebius_mul_log_eq_vonMangoldt : (μ : ArithmeticFunction ℝ) * log = Λ := by
   rw [mul_comm]; simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_moebius_mul_log_eq {n : ℕ} : (∑ d ∈ n.divisors, (μ d : ℝ) * log d) = -Λ n := by
   simp only [← log_mul_moebius_eq_vonMangoldt, mul_comm log, mul_apply, log_apply, intCoe_apply, ←
     Finset.sum_neg_distrib, neg_mul_eq_mul_neg]

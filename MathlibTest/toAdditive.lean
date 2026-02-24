@@ -650,7 +650,7 @@ noncomputable def mulMarkedNoncomputable : Nat := 0
 
 noncomputable section
 
-/- Compilation should succeed despite `noncomputable` -/
+/- Compilation should succeed despite `noncomputable section` -/
 
 @[to_additive]
 def mulComputableTest' : Nat := 0
@@ -670,22 +670,14 @@ noncomputable def mulMarkedNoncomputable' : Nat := 0
 /-- info: `addMarkedNoncomputable'` is marked noncomputable -/
 #guard_msgs in #computability addMarkedNoncomputable'
 
-/-
-Compilation should fail silently.
-
-If `mulNoExec` ever becomes marked noncomputable (meaning Lean's handling of
-`noncomputable section` has changed), then the check for executable code in
-`Mathlib.Tactic.ToAdditive.Frontend` should be replaced with a simple `isNoncomputable` check and
-mark `addNoExec` `noncomputable` as well (plus a check for whether the original declaration is an
-axiom, if `to_additive` ever handles axioms).
--/
+/- Both should be marked noncomputable -/
 
 @[to_additive]
 def mulNoExec {G} (n : Nonempty G) : G := Classical.choice n
 
-/-- info: `mulNoExec` has no executable code -/
+/-- info: `mulNoExec` is marked noncomputable -/
 #guard_msgs in #computability mulNoExec
-/-- info: `addNoExec` has no executable code -/
+/-- info: `addNoExec` is marked noncomputable -/
 #guard_msgs in #computability addNoExec
 
 end
