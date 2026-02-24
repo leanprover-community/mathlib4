@@ -301,11 +301,11 @@ private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux [Fact (fin
   have C_mem : C ∈ t.circumsphere := t.mem_circumsphere i₃
   have X_mem : X ∈ t.circumsphere := (t.circumsphere.secondInter_mem _).2 A_mem
   have two_zsmul_IAC_eq_two_zsmul_BAI : (2 : ℤ) • ∡ I A C = (2 : ℤ) • ∡ B A I :=
-    (t.two_zsmul_oangle_excenter_eq signs h₁₂ h₁₃ h₂₃).symm
+    (t.two_zsmul_oangle_excenter_eq h₁₂ h₁₃ h₂₃ signs).symm
   have two_zsmul_CBI_eq_two_zsmul_IBA : (2 : ℤ) • ∡ C B I = (2 : ℤ) • ∡ I B A :=
-    t.two_zsmul_oangle_excenter_eq signs h₂₃ h₁₂.symm h₁₃.symm
+    t.two_zsmul_oangle_excenter_eq h₂₃ h₁₂.symm h₁₃.symm signs
   have two_zsmul_ICB_eq_two_zsmul_ACI : (2 : ℤ) • ∡ I C B = (2 : ℤ) • ∡ A C I :=
-    (t.two_zsmul_oangle_excenter_eq signs h₁₃.symm h₂₃.symm h₁₂).symm
+    (t.two_zsmul_oangle_excenter_eq h₁₃.symm h₂₃.symm h₁₂ signs).symm
   have collinear_AIX : Collinear ℝ {A, I, X} := t.circumsphere.secondInter_collinear _ _
   have ha : AffineIndependent ℝ ![I, X, B] := by
     rw [affineIndependent_iff_not_collinear_set]
