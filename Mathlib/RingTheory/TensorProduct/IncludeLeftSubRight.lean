@@ -12,11 +12,11 @@ public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 # Exactness properties of the difference map for tensor products
 
 For an `R`-algebra `S`, we collect some properties of the `R`-linear map `S →ₗ[R] S ⊗[R] S` given
-by `s ↦ (s ⊗ₜ[R] 1) - (1 ⊗ₜ[R] s)`.
+by `s ↦ (s ⊗ₜ 1) - (1 ⊗ₜ s)`.
 
 ## Main definitions
 
-* `includeLeftSubRight`: The `R`-linear map sending `s : S` to `s ⊗ₜ[R] 1 - 1 ⊗ₜ[R] s`.
+* `includeLeftSubRight`: The `R`-linear map sending `s : S` to `s ⊗ₜ 1 - 1 ⊗ₜ s`.
 * `ExactIncludeLeftSubRight`: Exactness of the sequence `R → S → S ⊗[R] S` with the right map given
   by `includeLeftSubRight`
 * `toEqLocusOfInclusion`: The ring map from `R` to the equalizer locus in `S` of the two maps
@@ -47,7 +47,7 @@ namespace TensorProduct
 section IncludeLeftSubRight
 
 variable (R S) in
-/-- The `R`-linear map `S →ₗ[R] S ⊗[R] S` sending `s : S` to `(s ⊗ₜ[R] 1) - (1 ⊗ₜ[R] s)`. -/
+/-- The `R`-linear map `S →ₗ[R] S ⊗[R] S` sending `s : S` to `(s ⊗ₜ 1) - (1 ⊗ₜ s)`. -/
 def includeLeftSubRight : S →ₗ[R] S ⊗[R] S :=
   includeLeft.toLinearMap - includeRight.toLinearMap
 
@@ -121,8 +121,9 @@ variable (S : Type uS)
 variable (T : Type uT) [CommRing T] [Algebra R T]
 
 /-- `IsEffective` descends along faithfully flat algebras. -/
-lemma isEffective_of_desc_faithfullyFlat [Ring S] [Algebra R S] [Module.FaithfullyFlat R T]
-    (h : IsEffective T (T ⊗[R] S)) : IsEffective R S := by
+lemma isEffective_of_isEffective_tensorProduct_of_faithfullyFlat
+    [Ring S] [Algebra R S] [Module.FaithfullyFlat R T] (h : IsEffective T (T ⊗[R] S)) :
+    IsEffective R S := by
   refine Module.FaithfullyFlat.lTensor_reflects_exact _ _ _ _ <|
     AddMonoidHom.exact_iff_of_surjective_of_bijective_of_injective
       ((Algebra.linearMap R S).lTensor T) ((TensorProduct.includeLeftSubRight R S).lTensor T)
@@ -132,7 +133,7 @@ lemma isEffective_of_desc_faithfullyFlat [Ring S] [Algebra R S] [Module.Faithful
       (TensorProduct.rid R R T).surjective Function.bijective_id
       ((TensorProduct.AlgebraTensorModule.distribBaseChange R T S S).injective)|>.mpr ‹_›
   · ext
-    simp [← Algebra.TensorProduct.rid_lTensor]
+    simp [← Algebra.TensorProduct.linearMap_comp_rid]
   · change ((TensorProduct.includeLeftSubRight _ _).restrictScalars R).toAddMonoidHom.comp _ = _
     ext
     simp only [TensorProduct.includeLeftSubRight_distribBaseChange]
@@ -141,7 +142,8 @@ lemma isEffective_of_desc_faithfullyFlat [Ring S] [Algebra R S] [Module.Faithful
 /-- `IsEffective R S` is true for any faithfully flat `R`-algebras `S`. -/
 lemma isEffective_of_faithfullyFlat [CommRing S] [Algebra R S] [Module.FaithfullyFlat R S] :
     IsEffective R S :=
-  isEffective_of_desc_faithfullyFlat _ _ _ (isEffective_of_section (TensorProduct.lmul'' R))
+  isEffective_of_isEffective_tensorProduct_of_faithfullyFlat _ _ _
+    (isEffective_of_section (TensorProduct.lmul'' R))
 
 end FaithfullyFlat
 
