@@ -111,7 +111,7 @@ lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
 lemma linearIndependent_pair_of_ne {i j : b.support} (hij : i ≠ j) :
     LinearIndependent R ![P.root i, P.root j] := by
   have : ({(j : ι), (i : ι)} : Set ι) ⊆ b.support := by simp [pair_subset_iff]
-  rw [← linearIndepOn_id_range_iff (by aesop)]
+  rw [← linearIndepOn_id_range_iff (by simp_all)]
   simpa [image_pair] using LinearIndepOn.id_image <| b.linearIndepOn_root.mono this
 
 lemma root_mem_span_int (i : ι) :
