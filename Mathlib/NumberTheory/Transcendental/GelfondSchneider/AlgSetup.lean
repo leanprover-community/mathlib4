@@ -7,6 +7,7 @@ Authors: Michail Karatarakis
 module
 
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAlg
+public import Mathlib.Tactic
 
 /-!
 # Gelfond-Schneider Theorem: Matrix Coefficient Bounds and Siegel's Lemma
@@ -129,32 +130,32 @@ lemma abs_q_pow_mul_house_le_c₃_pow : |↑q| ^ (h7.n q - 1) * ((1 + house h7.�
        _ ≤ √(2 * ↑(h7.m)) ^ ((h7.n q)) * ((1 + house h7.β') ^ ((h7.n q)) * (house h7.α' ^
                  (h7.m * 2 * h7.m)) ^ (h7.n q) * (house h7.γ' ^ (h7.m * 2 * h7.m)) ^ (h7.n q)) *
                  (sqrt (h7.n q )) ^ (((h7.n q) : ℝ)-1) := ?_
-  · apply mul_le_mul (by simpa using (h7.q_eq_n_etc q h2mq)) (by rfl) (by positivity)
+  · apply mul_le_mul (by simpa using (h7.q_eq_n_etc q h2mq)) (by rfl) (by dsimp [house];positivity)
       (by positivity)
   · have hsqrt : (sqrt (h7.n q) ^ (h7.n q - 1)) = (sqrt (h7.n q) ^ ((h7.n q : ℝ) - 1)) := by
       simpa [(Nat.cast_sub (h7.one_le_n q hq0 h2mq))] using
         (rpow_natCast (x := sqrt (h7.n q)) (n := h7.n q - 1)).symm
     refine le_of_eq ?_; simp [hsqrt]; ac_rfl
   · simp only [mul_assoc]
-    apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
+    apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by positivity)
     · refine Bound.pow_le_pow_right_of_le_one_or_one_le (Or.inl ⟨?_, by simp⟩)
       have hm1 : (1 : ℝ) ≤ (h7.m : ℝ) := by exact_mod_cast h7.one_le_m
       have : (1 : ℝ) ≤ (2 : ℝ) * (h7.m : ℝ) := by nlinarith
       simpa [Nat.cast_mul, Nat.cast_ofNat] using (one_le_sqrt).2 this
-    · apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
-      · refine Bound.pow_le_pow_right_of_le_one_or_one_le (Or.inl (by simp))
-      · apply mul_le_mul (by simp [pow_mul]) (by simp [pow_mul]) (by positivity)
+    · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
+      · refine Bound.pow_le_pow_right_of_le_one_or_one_le (Or.inl (by dsimp [house];simp))
+      · apply mul_le_mul (by simp [pow_mul]) (by simp [pow_mul]) (by dsimp [house];positivity)
                 (pow_nonneg (pow_nonneg (house_nonneg _) _) _)
   · nth_rw 2 [← mul_assoc]
     rw [mul_comm  ((1 + house h7.β') ^ (h7.n q)) (((sqrt ((2*h7.m)))) ^ (h7.n q))]
     simp only [mul_assoc]
-    apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
+    apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by positivity)
     · refine pow_le_pow_left₀ (sqrt_nonneg _) (by rfl) (h7.n q)
-    · apply mul_le_mul (by rfl) ?_ (by positivity) (by positivity)
+    · apply mul_le_mul (by rfl) ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
       · simp only [← mul_assoc]
         apply mul_le_mul ?_ (by rfl) (by positivity) (by positivity)
         · rw [← mul_pow]
-          refine pow_le_pow_left₀ (by positivity) ?_ (h7.n q)
+          refine pow_le_pow_left₀ (by dsimp [house];positivity) ?_ (h7.n q)
           · have : ((h7.m * 2) * h7.m) = (2 * h7.m ^ 2) := by grind
             rw [this]; clear this
             calc _ ≤ house h7.α' ^ (2 * h7.m ^ 2) * house h7.γ' ^ (2 * h7.m ^ 2) := ?_
@@ -277,14 +278,14 @@ lemma house_matrixA_le : house ((algebraMap (𝓞 h7.K) h7.K) ((h7.A q) u t)) �
       apply mul_le_mul (by grind [mul_assoc, house_mul_le]) (by rfl) (house_nonneg _)
         (mul_nonneg (house_nonneg _) (house_nonneg _))
   · simp only [mul_assoc]
-    apply mul_le_mul (by rfl) ?_ (by positivity) (by positivity)
+    apply mul_le_mul (by rfl) ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
     · simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, ← mul_pow]
-      apply mul_le_mul (house_pow_le _ _) ?_ (by positivity) (by positivity)
+      apply mul_le_mul (house_pow_le _ _) ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
       · apply mul_le_mul (house_pow_le _ _) (house_pow_le _ _) (house_nonneg _)
           (pow_nonneg (house_nonneg _) _)
-  · apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
-    · apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
-      · apply mul_le_mul (by rfl) ?_ (by positivity) (house_nonneg _)
+  · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
+    · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
+      · apply mul_le_mul (by rfl) ?_ (by dsimp [house];positivity) (house_nonneg _)
         · refine Bound.pow_le_pow_right_of_le_one_or_one_le
             (Or.inl ⟨one_le_house_of_isIntegral (isInt_β_bound_low _ _ _) (fun H ↦ ?_), ?_⟩)
           · simp only [zsmul_eq_mul, mul_eq_zero, Int.cast_eq_zero] at H
@@ -303,9 +304,9 @@ lemma house_matrixA_le : house ((algebraMap (𝓞 h7.K) h7.K) ((h7.A q) u t)) �
       · rw [mul_comm h7.m q]
         apply (mul_le_mul (((finProdFinEquiv.symm.toFun t).2).isLt)
           (((finProdFinEquiv.symm.toFun u).1).isLt) (zero_le _) (zero_le _))
-  · apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
-    · apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
-      · apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
+  · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
+    · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
+      · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by simp; positivity)
         · rw [← house_intCast (K := h7.K)]; simp
         · refine pow_le_pow_left₀ (house_nonneg _) ?_ (h7.n q - 1)
           · rw [← mul_assoc]; apply h7.house_add_mul_le q t
@@ -339,15 +340,15 @@ lemma house_matrixA_le : house ((algebraMap (𝓞 h7.K) h7.K) ((h7.A q) u t)) �
          ((house h7.γ') ^ (h7.m * (2 * (h7.m * h7.n q))))
     simp only [mul_assoc, zsmul_eq_mul] at *
     rw [← this, abs_pow, abs_pow, ← pow_add, ← pow_add]
-    apply mul_le_mul (by simp) ?_ (by positivity) (by positivity)
-    · apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
+    apply mul_le_mul (by simp) ?_ (by dsimp [house];positivity) (by simp)
+    · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by simp)
       · rw [← pow_add, ← pow_add, Eq.symm (Nat.two_mul (h7.m * (2 * (h7.m * h7.n q))))]
         simp only [Int.cast_pow, Int.cast_abs, le_refl]
       · rw [mul_pow]; simp only [mul_assoc]; simp only [Nat.abs_cast, le_refl]
   · simp only [← pow_add, ← pow_add, Int.cast_abs, Int.cast_pow, Nat.abs_cast, abs_pow,
       ← pow_add, ← pow_add, ← pow_add, ← pow_add]
   · rw [abs_pow, abs_pow, abs_pow]; simp
-  · apply mul_le_mul ?_ (by rfl) (by positivity) (?_)
+  · apply mul_le_mul ?_ (by rfl) (by dsimp [house];positivity) (?_)
     · rw [← pow_add, ← pow_add, ← pow_add, Int.cast_abs, c₂, Int.cast_pow, Int.cast_abs, ← pow_mul]
       refine pow_le_pow_right₀ (mod_cast h7.one_le_abs_c₁) ?_
       · simp only [add_mul, add_mul, one_mul, mul_assoc,
@@ -359,7 +360,8 @@ lemma house_matrixA_le : house ((algebraMap (𝓞 h7.K) h7.K) ((h7.A q) u t)) �
         · grind
     · apply pow_nonneg; exact mod_cast (le_trans Int.one_nonneg (h7.one_le_c₂))
   · simp_rw [h7.c₃_pow q, mul_assoc]
-    apply mul_le_mul (by rfl) (h7.abs_q_pow_mul_house_le_c₃_pow q hq0 h2mq) (by positivity) ?_
+    apply mul_le_mul (by rfl) (h7.abs_q_pow_mul_house_le_c₃_pow q hq0 h2mq)
+       (by dsimp [house];positivity) ?_
     · apply pow_nonneg; norm_cast; apply le_trans Int.one_nonneg (h7.one_le_c₂)
   · rw [le_iff_eq_or_lt]; left;
     have : sqrt (h7.n q) ^ ((h7.n q : ℝ) - 1) = (h7.n q : ℝ) ^ (((h7.n q : ℝ) - 1) / 2) := by
