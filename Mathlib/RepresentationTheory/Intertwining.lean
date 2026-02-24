@@ -257,9 +257,8 @@ variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V] [Ad
     (ρ : Representation k G V) (σ : Representation k G W)
 
 /-- dualTensorHom as an equivalence of representations. -/
-noncomputable def dualTensorHom_equivalence : Equiv (tprod ρ.dual σ) (linHom ρ σ) where
-  toLinearEquiv := dualTensorHomEquivOfBasis (R := k) (M := V) (N := W)
-      (b := Module.Free.chooseBasis k V)
+@[simps!] noncomputable def dualTensorHom : Equiv (tprod ρ.dual σ) (linHom ρ σ) where
+  toLinearEquiv := dualTensorHomEquiv (R := k) (M := V) (N := W)
   isIntertwining' g v := by
     simpa [tprod_apply] using
       (congrArg (fun f => f v)
