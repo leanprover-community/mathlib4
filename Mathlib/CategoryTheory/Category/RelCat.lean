@@ -83,6 +83,7 @@ instance graphFunctor_faithful : graphFunctor.Faithful where
 instance graphFunctor_essSurj : graphFunctor.EssSurj :=
     graphFunctor.essSurj_of_surj Function.surjective_id
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A relation is an isomorphism in `RelCat` iff it is the image of an isomorphism in
 `Type u`. -/
 theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :

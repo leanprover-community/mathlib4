@@ -139,7 +139,7 @@ theorem isSuccLimit_opow_left {a b : Ordinal} (l : IsSuccLimit a) (hb : b ≠ 0)
   rcases zero_or_succ_or_isSuccLimit b with (e | ⟨b, rfl⟩ | l')
   · exact absurd e hb
   · rw [opow_succ]
-    exact isSuccLimit_mul (opow_pos _ l.bot_lt) l
+    exact isSuccLimit_mul_right (opow_pos _ l.bot_lt) l
   · exact isSuccLimit_opow (one_lt_of_isSuccLimit l) l'
 
 theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : a ^ b ≤ a ^ c := by
@@ -500,18 +500,18 @@ theorem lt_omega0_opow_succ {a b : Ordinal} : a < ω ^ succ b ↔ ∃ n : ℕ, a
 /-! ### Interaction with `Nat.cast` -/
 
 @[simp, norm_cast]
-theorem natCast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^ (n : Ordinal)
+theorem natCast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^ n
   | 0 => by simp
-  | n + 1 => by
-    rw [pow_succ, natCast_mul, natCast_opow m n, Nat.cast_succ, add_one_eq_succ, opow_succ]
+  | n + 1 => by simp [pow_succ, natCast_pow m n]
+
+@[deprecated natCast_pow (since := "2026-01-31")]
+theorem natCast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^ (n : Ordinal) := by
+  simp
 
 theorem iSup_pow_natCast {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ ω := by
-  simp_rw [← opow_natCast]
   rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl
-  · exact apply_omega0_of_isNormal (isNormal_opow ho₁)
-  · rw [one_opow]
-    refine le_antisymm (Ordinal.iSup_le fun n => by rw [one_opow]) ?_
-    exact_mod_cast Ordinal.le_iSup _ 0
+  · simpa using apply_omega0_of_isNormal (isNormal_opow ho₁)
+  · simp
 
 @[deprecated (since := "2025-12-25")]
 alias iSup_pow := iSup_pow_natCast
