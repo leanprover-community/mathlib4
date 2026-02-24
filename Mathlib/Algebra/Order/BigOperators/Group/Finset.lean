@@ -105,9 +105,11 @@ variable {f g : ι → N} {s t : Finset ι}
 /-- In an ordered commutative monoid, if each factor `f i` of one finite product is less than or
 equal to the corresponding factor `g i` of another finite product, then
 `∏ i ∈ s, f i ≤ ∏ i ∈ s, g i`. -/
-@[to_additive (attr := gcongr) sum_le_sum]
-theorem prod_le_prod' [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ g i) : ∏ i ∈ s, f i ≤ ∏ i ∈ s, g i :=
+@[to_additive (attr := gcongr)]
+theorem prod_le_prod [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ g i) : ∏ i ∈ s, f i ≤ ∏ i ∈ s, g i :=
   Multiset.prod_map_le_prod_map f g h
+
+@[deprecated (since := "2026-01-18")] alias prod_le_prod' := prod_le_prod
 
 attribute [bound] sum_le_sum
 
@@ -124,9 +126,11 @@ theorem one_le_prod' [MulLeftMono N] (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i 
 theorem one_le_prod'' [MulLeftMono N] (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   Finset.one_le_prod' fun i _ ↦ h i
 
-@[to_additive sum_nonpos]
-theorem prod_le_one' [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 :=
+@[to_additive]
+theorem prod_le_one [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 :=
   (prod_le_prod' h).trans_eq (by rw [prod_const_one])
+
+@[deprecated (since := "2026-01-18")] alias prod_le_one' := prod_le_one
 
 @[to_additive (attr := gcongr) sum_le_sum_of_subset_of_nonneg]
 theorem prod_le_prod_of_subset_of_one_le' [MulLeftMono N] (h : s ⊆ t)
@@ -441,7 +445,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
       exact disjoint_filter.2 fun _ _ h n_h ↦ n_h h
     _ ≤ ∏ x ∈ t, f x :=
       mul_le_of_le_one_of_le
-        (prod_le_one' <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
+        (prod_le_one <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
         (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp])
 
 @[to_additive sum_pos_iff]
@@ -618,7 +622,7 @@ theorem prod_mono' : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
 @[to_additive sum_nonneg]
 lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' fun _ _ ↦ hf _
 
-@[to_additive] lemma prod_le_one (hf : f ≤ 1) : ∏ i, f i ≤ 1 := Finset.prod_le_one' fun _ _ ↦ hf _
+@[to_additive] lemma prod_le_one (hf : f ≤ 1) : ∏ i, f i ≤ 1 := Finset.prod_le_one fun _ _ ↦ hf _
 
 @[to_additive]
 lemma prod_eq_one_iff_of_one_le {ι M : Type*} [Fintype ι] [CommMonoid M] [PartialOrder M]
