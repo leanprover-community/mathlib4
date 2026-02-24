@@ -82,10 +82,8 @@ def iso : zero ≅ one where
   hom := ()
   inv := ()
 
-@[simp]
 lemma eq_iso_hom (f : zero ⟶ one) : f = iso.hom := rfl
 
-@[simp]
 lemma eq_iso_inv (f : one ⟶ zero) : f = iso.inv := rfl
 
 /-- Functors out of `WalkingIso` define isomorphisms in the target category. -/
