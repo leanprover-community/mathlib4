@@ -152,13 +152,11 @@ lemma image_radical_eq_associated_primes [DecidableEq (Submodule R M)]
 @[deprecated (since := "2026-01-19")]
 alias mem_image_radical_colon_iff := image_radical_eq_associated_primes
 
-lemma mem_associatedPrimes [DecidableEq (Submodule R M)]
-    {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t)
+lemma mem_associatedPrimes [DecidableEq (Submodule R M)] {N : Submodule R M}
+    {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t)
     {q : Submodule R M} (hq : q ∈ t) : (q.colon Set.univ).radical ∈ N.associatedPrimes := by
   rw [← ht.image_radical_eq_associated_primes]
   exact Set.mem_image_of_mem _ hq
-
-instance {N : Submodule R M} (q : N.associatedPrimes) : q.1.IsPrime := q.2.1
 
 open LocalizedModule in
 lemma comap_localized₀_eq_ite
@@ -186,7 +184,7 @@ lemma comap_localized₀_eq_ite
     exact this p hp
   · replace hq : ¬ ((q.colon Set.univ) : Set R) ⊆ ⋃ r ∈ s₀, r := by
       contrapose! hp
-      obtain ⟨r, hrs, h⟩ := (subset_union_prime p p inferInstance).mp hp
+      obtain ⟨r, hrs, h⟩ := (subset_union_prime p p fun i _ _ _ ↦ i.2.1).mp hp
       rw [← r.2.1.radical_le_iff, hq] at h
       apply hs₀ h hrs
     obtain ⟨y, hy1, hy2⟩ := Set.not_subset_iff_exists_mem_notMem.mp hq

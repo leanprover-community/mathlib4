@@ -82,6 +82,10 @@ protected theorem isAssociatedPrime_iff [IsNoetherianRing R] :
   · rintro ⟨hx, x, rfl⟩
     exact ⟨hx, x, hx.radical.symm⟩
 
+protected theorem IsAssociatedPrime.isPrime (h : N.IsAssociatedPrime I) : I.IsPrime := h.1
+
+instance (I : N.associatedPrimes) : I.1.IsPrime := I.2.1
+
 protected theorem AssociatePrimes.mem_iff : I ∈ N.associatedPrimes ↔ N.IsAssociatedPrime I :=
   .rfl
 
@@ -109,6 +113,8 @@ theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPr
 alias AssociatePrimes.mem_iff := AssociatedPrimes.mem_iff
 
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
+
+instance (I : associatedPrimes R M) : I.1.IsPrime := I.2.1
 
 theorem isAssociatedPrime_iff [IsNoetherianRing R] :
     IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ x : M, I = colon ⊥ {x} :=
