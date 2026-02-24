@@ -120,10 +120,9 @@ lemma foldl_flip_eq_foldr [LeftCommutative f] : l.foldl (flip f) b = l.foldr f b
   rw [foldl_flip_eq_foldf, foldf_eq_foldr]
 
 lemma foldr_flip_eq_foldl [RightCommutative v] : l.foldr (flip v) b = l.foldl v b := by
-  have : flip (flip v) = v := rfl
-  rw [← this, foldl_flip_eq_foldf, this]
   unfold flip
-  exact foldf_eq_foldr.symm
+  rw [← foldf_eq_foldr, ← foldf_flip_eq_foldl]
+  rfl
 
 /-- Third Bird–Wadler duality theorem. -/
 theorem foldf_reverse_eq_foldr : l.reverse.foldf f b = l.foldr f b := by
