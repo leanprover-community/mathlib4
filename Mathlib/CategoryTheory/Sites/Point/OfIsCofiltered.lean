@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.CategoryTheory.ShrinkYoneda
+public import Mathlib.CategoryTheory.Sites.CoverLifting
+public import Mathlib.CategoryTheory.Sites.Point.Basic
 
 /-!
 # ...
@@ -22,16 +23,20 @@ namespace CategoryTheory
 
 open Limits Opposite
 
-variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
-  {N : Type u'} [Category.{v'} N] (p : N ⥤ C) [EssentiallySmall.{w} N]
-  {J : GrothendieckTopology C}
-
 namespace GrothendieckTopology.Point
 
-namespace ofCofiltered
+variable {C : Type u} [Category.{v} C]
+
+section
+
+variable [LocallySmall.{w} C] {N : Type u'} [Category.{v'} N]
+  (p : N ⥤ C) [InitiallySmall.{w} N]
+  {J : GrothendieckTopology C}
+
+namespace ofIsCofiltered
 
 local instance : HasColimitsOfShape Nᵒᵖ (Type w) :=
-  hasColimitsOfShape_of_equivalence (equivSmallModel.{w} Nᵒᵖ).symm
+  hasColimitsOfShape_of_finallySmall _ _
 
 noncomputable def fiber : C ⥤ Type w :=
   shrinkYoneda.{w} ⋙ (Functor.whiskeringLeft _ _ (Type w)).obj p.op ⋙ colim
@@ -99,62 +104,27 @@ instance [IsCofiltered N] : (functor.{w} p).Initial := by
       (show fiberMk.{w} φ₁ = fiberMk.{w} φ₂ by simpa using hφ₁.trans hφ₂.symm)
     exact ⟨_, g, by cat_disch⟩
 
-instance [IsCofiltered N] [EssentiallySmall.{w} N] :
-    InitiallySmallCofiltered.{w} (fiber.{w} p).Elements :=
-  initiallySmallCofiltered_of_initial (functor.{w} p)
-
-instance [IsCofiltered N] [EssentiallySmall.{w} N] :
+instance [IsCofiltered N] [InitiallySmall.{w} N] :
     InitiallySmall.{w} (fiber.{w} p).Elements :=
-  initiallySmall_of_initial_of_essentiallySmall.{w} (functor.{w} p)
+  initiallySmall_of_initial_of_initiallySmall (functor.{w} p)
 
-attribute [local instance] IsCofiltered.nonempty in
-lemma isCofiltered_elements_fiber [IsCofiltered N]
-    (h₁ : ∀ ⦃X₁ X₂ : C⦄ ⦃U : N⦄ (f₁ : p.obj U ⟶ X₁) (f₂ : p.obj U ⟶ X₂),
-      ∃ (Y : C) (V : N) (f : p.obj V ⟶ Y) (g₁ : Y ⟶ X₁) (g₂ : Y ⟶ X₂) (q : V ⟶ U),
-        f ≫ g₁ = p.map q ≫ f₁ ∧ f ≫ g₂ = p.map q ≫ f₂)
-    (h₂ : ∀ ⦃X₁ X₂ : C⦄ (φ₁ φ₂ : X₁ ⟶ X₂) ⦃U : N⦄ (f : p.obj U ⟶ X₁),
-      f ≫ φ₁ = f ≫ φ₂ → ∃ (Z : C) (g : Z ⟶ X₁) (V : N) (q : p.obj V ⟶ Z) (r : V ⟶ U),
-        g ≫ φ₁ = g ≫ φ₂ ∧ q ≫ g = p.map r ≫ f) :
-    IsCofiltered (fiber.{w} p).Elements where
-  nonempty := ⟨Functor.elementsMk _ (p.obj (Classical.arbitrary N)) (fiberMk (𝟙 _))⟩
-  cone_objs := by
-    rintro ⟨X₁, x₁⟩ ⟨X₂, x₂⟩
-    obtain ⟨U₁, f₁, rfl⟩ := fiberMk_jointly_surjective x₁
-    obtain ⟨U₂, f₂, rfl⟩ := fiberMk_jointly_surjective x₂
-    obtain ⟨Y, V, f, g₁, g₂, q, h₁, h₂⟩ :=
-      h₁ (p.map (IsCofiltered.minToLeft U₁ U₂) ≫ f₁)
-        (p.map (IsCofiltered.minToRight U₁ U₂) ≫ f₂)
-    exact ⟨Functor.elementsMk _ Y (fiberMk f), ⟨g₁, by simp [h₁]⟩, ⟨g₂, by simp [h₂]⟩, ⟨⟩⟩
-  cone_maps := by
-    rintro ⟨X₁, x₁⟩ ⟨X₂, x₂⟩ ⟨φ₁, hφ₁⟩ ⟨φ₂, hφ₂⟩
-    obtain ⟨U₁, f₁, rfl⟩ := fiberMk_jointly_surjective x₁
-    obtain ⟨U₂, f₂, rfl⟩ := fiberMk_jointly_surjective x₂
-    dsimp at φ₁ φ₂
-    simp only [fiber_map_fiberMk] at hφ₁ hφ₂
-    obtain ⟨V, b, hb⟩ := exists_of_fiberMk_eq_fiberMk (hφ₁.trans hφ₂.symm)
-    obtain ⟨Z, g, W, q, r, hg, hr⟩ := h₂ φ₁ φ₂ (p.map b ≫ f₁) (by simpa)
-    exact ⟨Functor.elementsMk _ Z (fiberMk q), ⟨g, by simp [hr]⟩, by ext; simpa⟩
+instance [IsCofiltered N] :
+    IsCofiltered (ofIsCofiltered.fiber p).Elements :=
+  IsCofiltered.of_initial (functor.{w} p)
 
-instance isCofiltered_elements_fiber_of_hasFiniteLimits [IsCofiltered N] [HasFiniteLimits C] :
-    IsCofiltered (fiber.{w} p).Elements :=
-  isCofiltered_elements_fiber p
-    (fun X₁ X₂ U f₁ f₂ ↦ ⟨X₁ ⨯ X₂, U, prod.lift f₁ f₂, prod.fst, prod.snd, 𝟙 _, by simp⟩)
-    (fun X₁ X₂ φ₁ φ₂ U f hf ↦ ⟨_, equalizer.ι φ₁ φ₂, U, equalizer.lift _ hf, 𝟙 _, by
-        simpa using equalizer.condition φ₁ φ₂, by simp⟩)
-
-end ofCofiltered
+end ofIsCofiltered
 
 variable [IsCofiltered N]
   (hp : ∀ ⦃X : C⦄ (R : Sieve X) (_ : R ∈ J X) ⦃U : N⦄ (f : p.obj U ⟶ X),
     ∃ (Y : C) (g : Y ⟶ X) (_ : R g) (V : N) (q : V ⟶ U) (a : p.obj V ⟶ Y),
       a ≫ g = p.map q ≫ f)
 
-open ofCofiltered
+open ofIsCofiltered
 
 @[simps]
-noncomputable def ofCofiltered :
+noncomputable def ofIsCofiltered :
     Point.{w} J where
-  fiber := ofCofiltered.fiber p
+  fiber := ofIsCofiltered.fiber p
   jointly_surjective {X} R hR x := by
     obtain ⟨U, f, rfl⟩ := fiberMk_jointly_surjective x
     obtain ⟨Y, g, hg, V, q, a, ha⟩ := hp R hR f
@@ -164,8 +134,8 @@ variable {A : Type u'} [Category.{v'} A] [HasColimitsOfSize.{w, w} A]
   (P : Cᵒᵖ ⥤ A)
 
 noncomputable def toPresheafFiberOfCofiltered (U : N) :
-    P.obj (op (p.obj U)) ⟶ (ofCofiltered p hp).presheafFiber.obj P :=
-  (ofCofiltered p hp).toPresheafFiber _ (fiberMk (𝟙 _)) P
+    P.obj (op (p.obj U)) ⟶ (ofIsCofiltered p hp).presheafFiber.obj P :=
+  (ofIsCofiltered p hp).toPresheafFiber _ (fiberMk (𝟙 _)) P
 
 @[reassoc (attr := simp)]
 lemma toPresheafFiberOfCofiltered_w {V U : N} (f : V ⟶ U) :
@@ -174,13 +144,31 @@ lemma toPresheafFiberOfCofiltered_w {V U : N} (f : V ⟶ U) :
   simp [toPresheafFiberOfCofiltered]
 
 noncomputable def presheafFiberOfCofilteredCocone : Cocone (p.op ⋙ P) where
-  pt := (ofCofiltered p hp).presheafFiber.obj P
+  pt := (ofIsCofiltered p hp).presheafFiber.obj P
   ι.app U := toPresheafFiberOfCofiltered _ _ _ _
 
 noncomputable def isColimitPresheafFiberOfCofilteredCocone :
     IsColimit (presheafFiberOfCofilteredCocone p hp P) :=
   (Functor.Final.isColimitWhiskerEquiv (functor.{w} p).op _).2
-    ((ofCofiltered p hp).isColimitPresheafFiberCocone P)
+    ((ofIsCofiltered p hp).isColimitPresheafFiberCocone P)
+
+end
+
+section
+
+variable {D : Type u'} [Category.{v'} D] [LocallySmall.{w} D]
+  {J : GrothendieckTopology C} (Φ : Point.{w} J) (F : C ⥤ D)
+  (K : GrothendieckTopology D)
+
+noncomputable def map [F.IsCocontinuous J K] : Point.{w} K :=
+  Point.ofIsCofiltered.{w} (CategoryOfElements.π Φ.fiber ⋙ F) (by
+    intro Y R hR ⟨U, u⟩ f
+    dsimp at f ⊢
+    obtain ⟨V, g, hg, v, rfl⟩ :=
+      Φ.jointly_surjective _ (F.cover_lift J K (K.pullback_stable f hR)) u
+    exact ⟨_, F.map g ≫ f, hg, Φ.fiber.elementsMk _ v, ⟨g, rfl⟩, 𝟙 _, by simp⟩)
+
+end
 
 end GrothendieckTopology.Point
 
