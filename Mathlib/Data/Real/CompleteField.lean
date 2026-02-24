@@ -5,23 +5,28 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.Order.CompleteField
+public import Mathlib.Algebra.Order.Archimedean.Hom
 public import Mathlib.Data.Real.Sqrt
 
 /-!
 # The reals are a conditionally complete linearly ordered field
+
+TODO: rename this file
 -/
 
 @[expose] public section
 
-/-- The reals are a conditionally complete linearly ordered field. -/
-noncomputable instance : ConditionallyCompleteLinearOrderedField ℝ := { }
+theorem ringHom_monotone {R S : Type*} [Ring R] [PartialOrder R] [IsOrderedAddMonoid R]
+    [Ring S] [LinearOrder S] [IsOrderedAddMonoid S] [PosMulMono S]
+    (hR : ∀ r : R, 0 ≤ r → IsSquare r) (f : R →+* S) : Monotone f :=
+  (monotone_iff_map_nonneg f).2 fun r h => by
+    obtain ⟨s, rfl⟩ := hR r h; rw [map_mul]; apply mul_self_nonneg
 
 /-- There exists no nontrivial ring homomorphism `ℝ →+* ℝ`. -/
 instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
   default := RingHom.id ℝ
   uniq f := congr_arg OrderRingHom.toRingHom (@Subsingleton.elim (ℝ →+*o ℝ) _
-      ⟨f, ringHom_monotone (fun r hr => ⟨√r, sq_sqrt hr⟩) f⟩ default)
+      ⟨f, ringHom_monotone (fun _ ↦ Real.isSquare_iff.mpr) f⟩ default)
 
 @[simp]
 theorem Real.ringHom_apply {F : Type*} [FunLike F ℝ ℝ] [RingHomClass F ℝ ℝ] (f : F) (r : ℝ) :
