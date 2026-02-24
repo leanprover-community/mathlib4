@@ -80,7 +80,7 @@ lemma skyscraperPresheafHomEquiv_naturality_left_symm
 lemma skyscraperPresheafHomEquiv_app_π
     (f : Φ.presheafFiber.obj P ⟶ M) (X : C) (x : Φ.fiber.obj X) :
     letI a : P.obj (op X) ⟶ ∏ᶜ (fun (_ : Φ.fiber.obj X) ↦ M) :=
-        (Φ.skyscraperPresheafHomEquiv f).app (op X)
+      (Φ.skyscraperPresheafHomEquiv f).app (op X)
     a ≫ Pi.π _ x =
       Φ.toPresheafFiber X x P ≫ f := by
   simp [skyscraperPresheafHomEquiv_apply_app]
