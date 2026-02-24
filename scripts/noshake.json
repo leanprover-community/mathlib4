@@ -71,7 +71,6 @@
   "Mathlib.Tactic.Bound.Attribute",
   "Mathlib.Tactic.ByCases",
   "Mathlib.Tactic.ByContra",
-  "Mathlib.Tactic.CC",
   "Mathlib.Tactic.CancelDenoms",
   "Mathlib.Tactic.CasesM",
   "Mathlib.Tactic.CategoryTheory.Coherence",
@@ -338,9 +337,6 @@
   "Mathlib.Tactic.CategoryTheory.BicategoryCoherence":
   ["Mathlib.CategoryTheory.Bicategory.Coherence",
    "Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
-  "Mathlib.Tactic.CC.MkProof": ["Mathlib.Tactic.CC.Lemmas"],
-  "Mathlib.Tactic.CC.Datatypes":
-  ["Mathlib.Lean.Meta.CongrTheorems", "Mathlib.Lean.Meta.Datatypes"],
   "Mathlib.Tactic.ByContra": ["Batteries.Tactic.Init"],
   "Mathlib.Tactic.ByCases": ["Batteries.Tactic.PermuteGoals"],
   "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],

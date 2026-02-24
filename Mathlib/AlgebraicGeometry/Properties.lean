@@ -98,8 +98,8 @@ instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := 
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
     dsimp; infer_instance
-  exact isReduced_of_injective (StructureSheaf.stalkIso R x).hom.hom
-    (StructureSheaf.stalkIso R x).commRingCatIsoToRingEquiv.injective
+  exact isReduced_of_injective (Spec.stalkIso R x).hom.hom
+    (Spec.stalkIso R x).commRingCatIsoToRingEquiv.injective
 
 theorem affine_isReduced_iff (R : CommRingCat) :
     IsReduced (Spec R) ↔ _root_.IsReduced R := by

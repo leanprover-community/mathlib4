@@ -826,6 +826,34 @@ lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
   · simp only [Set.mem_inter_iff, hx, and_false, iff_false]
     exact fun H ↦ hx (Set.image_subset_range _ _ H)
 
+/-- If
+```
+  P --fst--> X
+  |          |
+ snd         f
+  |          |
+  v          v
+  Y ---g---> Z
+
+```
+is a pullback square and `g` is an open immersion, then the stalk map induced by `snd` at `p`
+is isomorphic to the stalk map of `f` at `fst p`.
+-/
+noncomputable def stalkMapIsoOfIsPullback {P X Y Z : Scheme.{u}}
+    {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g)
+    [IsOpenImmersion g] (p : P) (x : X := fst p) (hx : fst p = x := by cat_disch) :
+    Arrow.mk (f.stalkMap x) ≅ Arrow.mk (snd.stalkMap p) :=
+  haveI : IsOpenImmersion fst := MorphismProperty.of_isPullback h.flip ‹_›
+  Arrow.isoMk' _ _
+    (TopCat.Presheaf.stalkCongr _ (.of_eq <| by rw [← hx, ← Scheme.Hom.comp_apply, h.w]; simp) ≪≫
+      asIso (g.stalkMap (snd p)))
+    (TopCat.Presheaf.stalkCongr _ (.of_eq <| by rw [hx]) ≪≫
+      asIso (fst.stalkMap p))
+    (by
+      subst hx
+      simp [← Scheme.Hom.stalkMap_comp, ← Scheme.Hom.stalkMap_comp,
+        Scheme.Hom.stalkMap_congr_hom _ _ h.w])
+
 end Scheme
 
 end AlgebraicGeometry

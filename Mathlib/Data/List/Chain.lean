@@ -274,10 +274,6 @@ protected theorem IsChain.rel_cons [Trans R R R] (hl : (a :: l).IsChain R) (hb :
 @[deprecated (since := "2025-09-19")]
 alias Chain.rel := IsChain.rel_cons
 
-theorem IsChain.of_cons {x} : ∀ {l : List α}, IsChain R (x :: l) → IsChain R l
-  | [] => fun _ => IsChain.nil
-  | _ :: _ => fun | .cons_cons _ h => h
-
 theorem IsChain.tail {l : List α} (h : IsChain R l) : IsChain R l.tail := by
   grind +splitIndPred
 
@@ -375,7 +371,7 @@ theorem IsChain.take (h : IsChain R l) (n : ℕ) : IsChain R (take n l) :=
 
 theorem IsChain.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : IsChain R (x :: l)) :
     IsChain R (y :: l) :=
-  IsChain.cons_of_imp_of_cons @h hl
+  IsChain.cons_of_imp @h hl
 
 @[deprecated (since := "2025-09-24")] alias Chain'.getElem := IsChain.getElem
 

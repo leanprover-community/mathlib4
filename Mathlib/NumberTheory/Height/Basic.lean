@@ -50,6 +50,15 @@ We define the following variants.
   `Projectivization K (ι → K)` (with a `Fintype ι`). This is the height of a point
   on projective space (with fixed basis).
 
+## TODO
+
+* Add `Height.AdmissibleAbsValues` instances for
+  * Fields of rational functions in `n` variables and
+  * Finite extensions of fields with `Height.AdmissibleAbsValues`.
+
+* Prove upper and lower bounds on the height of the image of a tuple under a tuple
+  of homogeneous polynomial maps of the same degree.
+
 ## Tags
 
 Height, absolute value

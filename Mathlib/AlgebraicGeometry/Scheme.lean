@@ -108,6 +108,40 @@ scoped[AlgebraicGeometry] notation3 "Γ(" X ", " U ")" =>
 instance {X Y : Scheme.{u}} : CoeFun (X ⟶ Y) (fun _ ↦ X → Y) where
   coe f := f.base
 
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Pretty printer for coercing morphisms between schemes to functions. -/
+@[app_delab DFunLike.coe]
+meta def delabCoeFunNotation : Delab := whenPPOption getPPNotation do
+  guard <| (← getExpr).isAppOfArity ``DFunLike.coe 5
+  withNaryArg 4 do
+  guard <| (← getExpr).isAppOfArity ``CategoryTheory.ConcreteCategory.hom 9
+  withNaryArg 8 do
+  guard <| (← getExpr).isAppOfArity ``PresheafedSpace.Hom.base 5
+  withNaryArg 4 do
+  guard <| (← getExpr).isAppOfArity ``LocallyRingedSpace.Hom.toHom 3
+  withNaryArg 2 do
+  guard <| (← getExpr).isAppOfArity ``Scheme.Hom.toLRSHom' 3
+  withNaryArg 2 do
+  `(⇑$(← delab))
+
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Pretty printer for applying morphisms of schemes to set-theoretic points. -/
+@[app_delab DFunLike.coe]
+meta def delabCoeFunAppNotation : Delab := whenPPOption getPPNotation do
+  guard <| (← getExpr).isAppOfArity ``DFunLike.coe 6
+  let func ← do
+    withNaryArg 4 do
+    guard <| (← getExpr).isAppOfArity ``CategoryTheory.ConcreteCategory.hom 9
+    withNaryArg 8 do
+    guard <| (← getExpr).isAppOfArity ``PresheafedSpace.Hom.base 5
+    withNaryArg 4 do
+    guard <| (← getExpr).isAppOfArity ``LocallyRingedSpace.Hom.toHom 3
+    withNaryArg 2 do
+    guard <| (← getExpr).isAppOfArity ``Scheme.Hom.toLRSHom' 3
+    withNaryArg 2 do
+    delab
+  `($func $(← withNaryArg 5 do delab))
+
 instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
@@ -233,6 +267,7 @@ lemma iSup_preimage_eq_top {ι} {U : ι → Opens Y} (hU : iSup U = ⊤) :
 
 @[deprecated (since := "2025-10-07")] alias preimage_iSup_eq_top := iSup_preimage_eq_top
 
+@[gcongr]
 lemma preimage_mono {U U' : Y.Opens} (hUU' : U ≤ U') :
     f ⁻¹ᵁ U ≤ f ⁻¹ᵁ U' :=
   fun _ ha ↦ hUU' ha
@@ -589,9 +624,7 @@ The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as a natura
 This is almost never needed in practical use cases. Use `ΓSpecIso` instead.
 -/
 def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
-  Iso.symm <| NatIso.ofComponents.{u, u, u + 1, u + 1}
-    (fun R => asIso (StructureSheaf.toOpen R ⊤))
-    (fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f)
+  LocallyRingedSpace.SpecΓIdentity
 
 variable (R : CommRingCat.{u})
 
@@ -613,10 +646,10 @@ lemma ΓSpecIso_inv_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ (Spec.map f).appTop := SpecΓIdentity.inv.naturality f
 
 -- This is not marked simp to respect the abstraction
-lemma ΓSpecIso_inv : (ΓSpecIso R).inv = StructureSheaf.toOpen R ⊤ := rfl
+lemma ΓSpecIso_inv : (ΓSpecIso R).inv = CommRingCat.ofHom (algebraMap _ _) := rfl
 
 lemma toOpen_eq (U) :
-    StructureSheaf.toOpen R U =
+    CommRingCat.ofHom (algebraMap R <| (Spec.structureSheaf R).presheaf.obj (.op U)) =
     (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl
 
 instance {K} [Field K] : Unique <| Spec <| .of K :=
@@ -703,8 +736,8 @@ lemma basicOpen_add_le :
     X.basicOpen (f + g) ≤ X.basicOpen f ⊔ X.basicOpen g := by
   intro x hx
   have hxU : x ∈ U := X.basicOpen_le _ hx
-  simp only [SetLike.mem_coe, Scheme.mem_basicOpen _ _ _ hxU, map_add, Opens.coe_sup,
-    Set.mem_union] at hx ⊢
+  simp_rw [← SetLike.mem_coe, Opens.coe_sup, Set.mem_union, SetLike.mem_coe] -- TODO : Opens.mem_sup
+  simp only [Scheme.mem_basicOpen _ _ _ hxU, map_add] at hx ⊢
   exact IsLocalRing.isUnit_or_isUnit_of_isUnit_add hx
 
 theorem basicOpen_of_isUnit {f : Γ(X, U)} (hf : IsUnit f) : X.basicOpen f = U :=
@@ -770,6 +803,18 @@ lemma zeroLocus_span {U : X.Opens} (s : Set Γ(X, U)) :
   · exact fun a b _ _ ha hb H ↦ (X.basicOpen_add_le a b H).elim ha hb
   · simp +contextual
 
+open scoped Pointwise in
+lemma zeroLocus_setMul {U : X.Opens} (s t : Set Γ(X, U)) :
+    X.zeroLocus (s * t) = X.zeroLocus s ∪ X.zeroLocus t := by
+  simp only [← Set.image2_mul, zeroLocus_def, Set.biInter_image2]
+  simp [Set.compl_inter, ← Set.union_iInter₂, ← Set.iInter₂_union]
+
+open scoped Pointwise in
+lemma zeroLocus_mul {U : X.Opens} (I J : Ideal Γ(X, U)) :
+    X.zeroLocus (U := U) ↑(I * J) = X.zeroLocus (U := U) I ∪ X.zeroLocus (U := U) J := by
+  rw [← X.zeroLocus_setMul, ← X.zeroLocus_span (U := U) (↑I * ↑J), ← Ideal.span_mul_span]
+  simp
+
 lemma zeroLocus_map {U V : X.Opens} (i : U ≤ V) (s : Set Γ(X, V)) :
     X.zeroLocus ((X.presheaf.map (homOfLE i).op).hom '' s) = X.zeroLocus s ∪ Uᶜ := by
   ext x
@@ -820,9 +865,9 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
     (Spec R).basicOpen ((Scheme.ΓSpecIso R).inv f) = PrimeSpectrum.basicOpen f := by
   ext x
   simp only [SetLike.mem_coe, Scheme.mem_basicOpen_top]
-  suffices IsUnit (StructureSheaf.toStalk R x f) ↔ f ∉ PrimeSpectrum.asIdeal x by exact this
-  rw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x).hom,
-    StructureSheaf.stalkToFiberRingHom_toStalk]
+  suffices IsUnit (algebraMap _ ((structurePresheafInCommRingCat ↑R).stalk x) f) ↔
+    f ∉ PrimeSpectrum.asIdeal x by exact this
+  rw [← isUnit_map_iff (StructureSheaf.stalkIso R x).symm, AlgEquiv.commutes]
   exact IsLocalization.AtPrime.isUnit_to_map_iff _ (PrimeSpectrum.asIdeal x) f
 
 @[simp]

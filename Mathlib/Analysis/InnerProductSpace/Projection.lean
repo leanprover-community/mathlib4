@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Extensions and lifts in bicategories

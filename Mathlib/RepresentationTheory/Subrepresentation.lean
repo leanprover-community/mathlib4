@@ -43,6 +43,8 @@ instance : SetLike (Subrepresentation ρ) W where
   coe ρ' := ρ'.toSubmodule
   coe_injective' := SetLike.coe_injective.comp toSubmodule_injective
 
+instance : PartialOrder (Subrepresentation ρ) := .ofSetLike (Subrepresentation ρ) W
+
 /-- A subrepresentation is a representation. -/
 def toRepresentation (ρ' : Subrepresentation ρ) : Representation A G ρ'.toSubmodule where
   toFun g := (ρ g).restrict (ρ'.apply_mem_toSubmodule g)
@@ -83,9 +85,9 @@ instance : Lattice (Subrepresentation ρ) :=
 
 instance : BoundedOrder (Subrepresentation ρ) where
   top := ⟨⊤, by simp⟩
-  le_top _ _ := by simp
+  le_top _ := le_top (α := Submodule A W)
   bot := ⟨⊥, by simp⟩
-  bot_le _ _ := by simp +contextual
+  bot_le _ := bot_le (α := Submodule A W)
 
 /-- A subrepresentation of `ρ` can be thought of as an `A[G]` submodule of `ρ.asModule`.
 -/

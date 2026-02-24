@@ -185,13 +185,13 @@ theorem exists_real_pos_lt_infEDist_of_notMem_closure {x : α} {E : Set α} (h :
   exact ⟨ε, ⟨ENNReal.ofReal_pos.mp ε_pos, ε_lt⟩⟩
 
 theorem disjoint_closedEBall_of_lt_infEDist {r : ℝ≥0∞} (h : r < infEDist x s) :
-    Disjoint (EMetric.closedBall x r) s := by
+    Disjoint (Metric.closedEBall x r) s := by
   rw [disjoint_left]
   intro y hy h'y
   apply lt_irrefl (infEDist x s)
   calc
     infEDist x s ≤ edist x y := infEDist_le_edist_of_mem h'y
-    _ ≤ r := by rwa [EMetric.mem_closedBall, edist_comm] at hy
+    _ ≤ r := by rwa [Metric.mem_closedEBall, edist_comm] at hy
     _ < infEDist x s := h
 
 /-- The infimum edistance is invariant under isometries -/

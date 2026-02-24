@@ -491,7 +491,7 @@ open Finset
 /-- `homogeneousComponent n φ` is the part of `φ` that is homogeneous of degree `n`.
 See `sum_homogeneousComponent` for the statement that `φ` is equal to the sum
 of all its homogeneous components. -/
-def homogeneousComponent [CommSemiring R] (n : ℕ) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
+def homogeneousComponent (n : ℕ) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
   weightedHomogeneousComponent 1 n
 
 section HomogeneousComponent

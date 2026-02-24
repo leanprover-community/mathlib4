@@ -108,10 +108,10 @@ jobs:
         echo "from_date=$from_date" >> "$GITHUB_OUTPUT"
         echo "to_date=$to_date" >> "$GITHUB_OUTPUT"
 
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
     - name: Configure Lean
-      uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
+      uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
       with:
         auto-config: false
         use-github-cache: false
@@ -204,13 +204,21 @@ jobs:
           deprecation workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           from creating a new PR.
 
+    - name: Generate app token
+      id: app-token
+      if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.find-pr.outputs.pr_found != 'true' }}
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      with:
+        app-id: ${{ secrets.MATHLIB_NOLINTS_APP_ID }}
+        private-key: ${{ secrets.MATHLIB_NOLINTS_PRIVATE_KEY }}
+
+    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
     - name: Create Pull Request
       id: pr
       if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.find-pr.outputs.pr_found != 'true' }}
-      uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8.0.0
+      uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
       with:
-        token: "${{ secrets.UPDATE_NOLINTS_TOKEN }}"
-        author: "leanprover-community-mathlib4-bot <leanprover-community-mathlib4-bot@users.noreply.github.com>"
+        token: ${{ steps.app-token.outputs.token }}
         commit-message: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
         branch: ${{ env.BRANCH_NAME }}
         base: master

@@ -181,6 +181,10 @@ noncomputable def Over.mapPullbackAdj (f : X ⟶ Y) [P.HasPullbacksAlong f]
             · simp
             · simpa using h.w.symm } }
 
+instance (f : X ⟶ Y) [P.HasPullbacksAlong f] [P.IsStableUnderBaseChangeAlong f] (hPf : P f) :
+    (MorphismProperty.Over.map ⊤ hPf).IsLeftAdjoint :=
+  (Over.mapPullbackAdj P ⊤ f hPf trivial).isLeftAdjoint
+
 end Adjunction
 
 end CategoryTheory.MorphismProperty

@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.GroupTheory.MonoidLocalization.Basic
+public import Mathlib.GroupTheory.MonoidLocalization.Maps
 public import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!

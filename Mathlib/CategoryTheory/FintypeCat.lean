@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Skeletal
 public import Mathlib.Data.Finite.Prod

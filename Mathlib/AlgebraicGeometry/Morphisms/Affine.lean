@@ -263,4 +263,13 @@ lemma IsAffineOpen.isCompact_pullback_inf {X Y Z : Scheme.{u}} {f : X ⟶ Z} {g 
   convert isCompact_range p.continuous
   simp [p, Scheme.Pullback.range_map]
 
+lemma isIso_morphismRestrict_iff_isIso_app [IsAffineHom f] {U : Y.Opens} (hU : IsAffineOpen U) :
+    IsIso (f ∣_ U) ↔ IsIso (f.app U) := by
+  have : IsAffine U := hU
+  refine (HasAffineProperty.iff_of_isAffine (P := .isomorphisms _)).trans <|
+    (and_iff_right (hU.preimage f)).trans ?_
+  rw [Scheme.Hom.app_eq_appLE]
+  simp only [morphismRestrict_app', TopologicalSpace.Opens.map_top]
+  congr! <;> simp [Scheme.Opens.toScheme_presheaf_obj]
+
 end AlgebraicGeometry

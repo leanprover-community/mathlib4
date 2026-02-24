@@ -254,9 +254,13 @@ def mapₗ [Semiring R] [Semiring S] {σ : R →+* S} [AddCommMonoid A] [AddComm
   map_add' M N := by ext; simp
   map_smul' r M := by ext; simp
 
+section decidable
+
+variable [DecidableEq n]
+
 section zero_one
 
-variable [Zero A] [One A] [DecidableEq n]
+variable [Zero A] [One A]
 
 instance instOne : One (CStarMatrix n n A) := inferInstanceAs <| One (Matrix n n A)
 
@@ -268,6 +272,8 @@ theorem one_apply_eq (i) : (1 : CStarMatrix n n A) i i = 1 := Matrix.one_apply_e
 @[simp] theorem one_apply_ne {i j} : i ≠ j → (1 : CStarMatrix n n A) i j = 0 := Matrix.one_apply_ne
 
 theorem one_apply_ne' {i j} : j ≠ i → (1 : CStarMatrix n n A) i j = 0 := Matrix.one_apply_ne'
+
+end zero_one
 
 instance instAddMonoidWithOne [AddMonoidWithOne A] : AddMonoidWithOne (CStarMatrix n n A) where
 
@@ -294,7 +300,7 @@ instance {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] :
 
 instance [Fintype n] [Mul A] [AddCommMonoid A] : Mul (CStarMatrix n n A) where mul M N := M * N
 
-end zero_one
+end decidable
 
 theorem mul_apply {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] {M : CStarMatrix l m A}
     {N : CStarMatrix m n A} {i k} : (M * N) i k = ∑ j, M i j * N j k := rfl
@@ -796,7 +802,7 @@ noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A)
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r
 
 /-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
-noncomputable instance instCStarAlgebra [DecidableEq n] : CStarAlgebra (CStarMatrix n n A) where
+noncomputable instance instCStarAlgebra : CStarAlgebra (CStarMatrix n n A) where
 
 end Unital
 

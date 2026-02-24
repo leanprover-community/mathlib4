@@ -65,9 +65,7 @@ lemma agmSequences_succ' :
     agmSequences x y (n + 1) =
     (sqrt ((agmSequences x y n).1 * (agmSequences x y n).2),
       ((agmSequences x y n).1 + (agmSequences x y n).2) / 2) := by
-  nth_rw 1 [agmSequences]
-  rw [iterate_succ', comp_apply]
-  rfl
+  rw [agmSequences, agmSequences, iterate_succ', comp_apply]
 
 lemma agmSequences_comm : agmSequences x y = agmSequences y x := by
   funext n

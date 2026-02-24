@@ -291,7 +291,7 @@ variable [hT : Fact (0 < T)]
 
 section fourierCoeff
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `AddCircle T → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `AddCircle T` of `fourier (-n) t • f t`. -/
@@ -308,6 +308,32 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
   rw [fourierCoeff, AddCircle.intervalIntegral_preimage T a (fun z => _ • _),
     volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
     ← smul_assoc, smul_eq_mul, one_div_mul_cancel hT.out.ne', one_smul]
+
+theorem MeasureTheory.Integrable.fourier_smul {f : AddCircle T → E}
+    (hf : Integrable f haarAddCircle) (n : ℤ) :
+    Integrable (fun t ↦ fourier n t • f t) haarAddCircle := by
+  apply hf.bdd_smul 1
+  · exact (map_continuous (fourier n)).aestronglyMeasurable
+  · apply ae_of_all; intro t
+    rw [fourier_apply, Circle.norm_coe]
+
+theorem fourierCoeff.add {f g : AddCircle T → E} (hf : Integrable f haarAddCircle)
+    (hg : Integrable g haarAddCircle) :
+    fourierCoeff (f + g) = fourierCoeff f + fourierCoeff g := by
+  ext x
+  simpa [fourierCoeff, -fourier_apply] using integral_add (hf.fourier_smul _) (hg.fourier_smul _)
+
+theorem fourierCoeff.sum {ι : Type*} (s : Finset ι) (f : ι → AddCircle T → E)
+    (hf : ∀ i ∈ s, Integrable (f i) haarAddCircle) :
+    fourierCoeff (∑ i ∈ s, f i) = ∑ i ∈ s, fourierCoeff (f i) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => ext; simp [fourierCoeff]
+  | insert a s ha iha =>
+      obtain ⟨hf₁, hf₂⟩ := by simpa using hf
+      rw [s.sum_insert ha, s.sum_insert ha,
+        fourierCoeff.add hf₁ (integrable_finset_sum' s hf₂), iha hf₂]
+
 
 theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
     fourierCoeff (c • f :) n = c • fourierCoeff f n := by
@@ -484,6 +510,19 @@ theorem has_pointwise_sum_fourier_series_of_summable (h : Summable (fourierCoeff
 end Convergence
 
 end ScopeHT
+
+section computations
+
+theorem fourierCoeff_fourier {T : ℝ} [hT : Fact (0 < T)] (n : ℤ) :
+    fourierCoeff (T := T) (fourier n) = Pi.single n 1 := by
+  ext m
+  rw [← fourierCoeff_congr_ae (coeFn_fourierLp 2 n), ← fourierBasis_repr,
+    HilbertBasis.repr_apply_apply, coe_fourierBasis]
+  obtain (rfl | hmn) := eq_or_ne m n
+  · rw [inner_self_eq_norm_sq_to_K, (orthonormal_fourier (hT := hT)).1 m]; simp
+  · rw [(orthonormal_fourier (hT := hT)).2 hmn]; simp [hmn]
+
+end computations
 
 section deriv
 
