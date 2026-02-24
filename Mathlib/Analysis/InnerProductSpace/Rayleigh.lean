@@ -5,12 +5,10 @@ Authors: Heather Macbeth, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.Calculus.LagrangeMultipliers
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # The Rayleigh quotient
@@ -38,7 +36,6 @@ A slightly more elaborate corollary is that if `E` is complete and `T` is a comp
 -/
 
 public section
-
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -113,19 +110,13 @@ theorem norm_eq_iSup_rayleighQuotient (hT : T.IsSymmetric) :
     · rwa [rayleighQuotient, abs_div, abs_sq, reApplyInnerSelf, div_le_iff₀ hx] at hM
     · simp_all
   refine le_antisymm ?_ (ciSup_le T.rayleighQuotient_le_norm)
-  refine opNorm_le_of_unit_norm nonneg fun x hx ↦ ?_
-  have key x y (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : |re ⟪T x, y⟫_𝕜| ≤ M := by
-    transitivity M * (‖x + y‖ ^ 2 + ‖x - y‖ ^ 2) / 4
-    · have key := congrArg re (add_conj ⟪T x, y⟫_𝕜)
-      rw [map_add, conj_inner_symm, ← coe_coe, ← hT, coe_coe, re_mul_ofReal, ofNat_re] at key
-      grind [inner_add_left, inner_add_right, inner_sub_left, inner_sub_right]
-    · rw [parallelogram_law_with_norm 𝕜 x y, hx, hy]
-      grind
-  by_cases hTx : ‖T x‖ = 0
-  · rwa [hTx]
-  specialize key x (((‖T x‖⁻¹ : ℝ) : 𝕜) • T x) hx (by simp [norm_smul, hTx])
-  rwa [inner_smul_right, re_ofReal_mul, ← norm_sq_eq_re_inner,
-    inv_mul_eq_div, sq, mul_self_div_self, abs_norm] at key
+  refine opNorm_le_of_re_inner_le nonneg fun x y hx hy ↦ ?_
+  transitivity M * (‖x + y‖ ^ 2 + ‖x - y‖ ^ 2) / 4
+  · have key := congrArg re (add_conj ⟪T x, y⟫_𝕜)
+    rw [map_add, conj_inner_symm, ← coe_coe, ← hT, coe_coe, re_mul_ofReal, ofNat_re] at key
+    grind [inner_add_left, inner_add_right, inner_sub_left, inner_sub_right]
+  · rw [parallelogram_law_with_norm 𝕜 x y, hx, hy]
+    grind
 
 end ContinuousLinearMap
 
