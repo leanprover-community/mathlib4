@@ -41,6 +41,7 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Hahn decomposition theorem** -/
 theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ∃ s, MeasurableSet s ∧ (∀ t, MeasurableSet t → t ⊆ s → ν t ≤ μ t) ∧

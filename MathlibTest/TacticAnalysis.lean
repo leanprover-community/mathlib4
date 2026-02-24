@@ -1,6 +1,7 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
 import Mathlib.Tactic.AdaptationNote
 import Lean.LibrarySuggestions
+import Mathlib.Algebra.BigOperators.Associated
 
 section terminalReplacement
 
@@ -22,15 +23,14 @@ def foo : Mathlib.TacticAnalysis.Config :=
     (reportSuccess := true) (reportFailure := true)
 
 /--
-warning: `simp only` left unsolved goals where `simp` succeeded.
+warning: `simp only` failed where `simp` succeeded.
 Original tactic:
   simp
-Replacement tactic:
-  simp only
-Unsolved goals:
-  [⊢ (List.map (fun x => x + 1) [1, 2, 3]).sum = 9 ]
+Counterexample:
+  import Mathlib.Algebra.GroupWithZero.Nat
 -/
-#guard_msgs in
+-- The counterexample name contains a number that varies between runs, so we can't fully test this.
+#guard_msgs (substring := true) in
 set_option linter.tacticAnalysis.dummy true in
 example : List.sum ([1,2,3].map fun x ↦ x + 1) = 9 := by
   simp
@@ -60,13 +60,13 @@ example : x = z := by
 
 -- Definitions using `where` clauses did not get picked up by the framework,
 -- since apparently their syntax bounds do not match the original.
-structure Fact (p : Prop) : Prop where
+structure Fact' (p : Prop) : Prop where
   out : p
 /--
 warning: Try this: rw [xy, yz]
 -/
 #guard_msgs in
-example : Fact (x = z) where
+example : Fact' (x = z) where
   out := by
     rw [xy]
     rw [yz]
@@ -154,6 +154,20 @@ example : 0 = 0 := by
 
 set_option linter.unusedTactic true
 
+-- This is a false positive. Before `convert_to`, there is an mvar for the `DecidableEq` instance
+-- used with `Finset.instInsert` that is not properly handled
+
+/-- warning: 'convert_to Associated (∏ i ∈ insert j s, f i) (∏ i ∈ insert j s, g i); grind' can be replaced with 'grind' -/
+#guard_msgs in
+theorem Associated.prod' {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) (f : ι → M)
+    (g : ι → M) (h : ∀ i, i ∈ s → Associated (f i) (g i)) : Associated (∏ i ∈ s, f i) (∏ i ∈ s, g i) := by
+  induction s using Finset.induction with
+  | empty => grind [Associated.prod]
+  | insert j s hjs IH =>
+    classical
+    convert_to Associated (∏ i ∈ insert j s, f i) (∏ i ∈ insert j s, g i)
+    grind [Associated.mul_mul]
+
 end mergeWithGrind
 
 section replaceWithGrind
@@ -192,7 +206,7 @@ example {α : Type u} (f : α → Type max u v) : 1 = 1 := by
 -- Ensure the effects of `classical` are picked up. Otherwise we get an error like:
 -- failed to synthesize
 --   Decidable b
-theorem forall_imp_iff_exists_imp {α : Type} {p : α → Prop} {b : Prop} [ha : Nonempty α] :
+theorem forall_imp_iff_exists_imp' {α : Type} {p : α → Prop} {b : Prop} [ha : Nonempty α] :
     (∀ x, p x) → b ↔ ∃ x, p x → b := by
   classical
   let ⟨a⟩ := ha
@@ -298,10 +312,9 @@ example : P 37 := by
   trivial
 
 set_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions true in
--- FIXME: why is the dagger here?
 /--
 info: Try this:
-  [apply] simp_all +suggestions✝ only [p]
+  [apply] simp_all only [p]
 ---
 info: `trivial` can be replaced with `simp_all? +suggestions✝`
 -/
@@ -423,3 +436,22 @@ set_option linter.tacticAnalysis.unknownTacticTest true in
 example : 1 + 1 = 2 := by rfl
 
 end unknownTactic
+
+section verifyGrindSuggestions
+
+-- Test that verifyGrind doesn't crash and doesn't report false positives
+-- When grind? succeeds and its suggestion works, no warning should be produced
+-- (Info messages from grind? are suppressed; only failures produce warnings)
+
+#guard_msgs in
+set_option linter.tacticAnalysis.verifyGrind true in
+example : 1 + 1 = 2 := by
+  rfl
+
+-- Test with grind? +suggestions
+#guard_msgs in
+set_option linter.tacticAnalysis.verifyGrindSuggestions true in
+example : 1 + 1 = 2 := by
+  rfl
+
+end verifyGrindSuggestions

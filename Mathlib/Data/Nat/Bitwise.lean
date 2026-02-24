@@ -65,6 +65,7 @@ lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else
 lemma bitwise_zero : bitwise f 0 0 = 0 := by
   simp only [bitwise_zero_right, ite_self]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
     bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f (n / 2) (m / 2)) := by
   conv_lhs => unfold bitwise
@@ -82,6 +83,7 @@ theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n →
     rw [bodd_bit, div2_bit]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
@@ -127,29 +129,9 @@ theorem testBit_land : ∀ m n k, testBit (m &&& n) k = (testBit m k && testBit 
 theorem testBit_ldiff : ∀ m n k, testBit (ldiff m n) k = (testBit m k && not (testBit n k)) :=
   testBit_bitwise rfl
 
-attribute [simp] testBit_xor
-
 end
 
-@[simp]
-theorem bit_false : bit false = (2 * ·) :=
-  rfl
-
-@[simp]
-theorem bit_true : bit true = (2 * · + 1) :=
-  rfl
-
-@[simp]
-theorem bit_false_apply (n) : bit false n = (2 * n) :=
-  rfl
-
-@[simp]
-theorem bit_true_apply (n) : bit true n = (2 * n + 1) :=
-  rfl
-
-theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
-  simp
-
+set_option backward.isDefEq.respectTransparency false in
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
 with assumptions that neither `bit a m` nor `bit b n` are `0`
 (albeit, phrased as the implications `m = 0 → a = true` and `n = 0 → b = true`) -/
@@ -355,7 +337,8 @@ theorem xor_one_of_even {n : ℕ} (h : Even n) : n ^^^ 1 = n + 1 := by
   cases n with
   | zero => rfl
   | succ n =>
-    simp [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two, div_two_mul_two_of_even h]
+    simp +instances [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two,
+      div_two_mul_two_of_even h]
 
 @[simp]
 theorem xor_one_of_odd {n : ℕ} (h : Odd n) : n ^^^ 1 = n - 1 := by
@@ -363,7 +346,7 @@ theorem xor_one_of_odd {n : ℕ} (h : Odd n) : n ^^^ 1 = n - 1 := by
   | zero =>
     exact not_odd_zero h |>.elim
   | succ n =>
-    simp only [HXor.hXor, instXorOp, xor, bitwise, reduceDiv, bitwise_zero_right]
+    simp +instances only [HXor.hXor, instXorOp, xor, bitwise, reduceDiv, bitwise_zero_right]
     grind
 
 /-- The xor of the numbers from 0 to n can be easily calculated using `n mod 4`. -/
@@ -388,9 +371,6 @@ theorem xor_range (n : ℕ) : (List.range (n + 1)).foldl (· ^^^ ·) 0 =
       apply Nat.xor_self
     | 3 =>
       apply zero_xor
-
-@[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
-  cases b <;> simp <;> lia
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
   simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]

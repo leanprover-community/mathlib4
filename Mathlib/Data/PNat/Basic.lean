@@ -21,6 +21,7 @@ that `Data.PNat.Defs` can have very few imports.
 
 @[expose] public section
 
+set_option backward.isDefEq.respectTransparency false in
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
   Add, Mul, Distrib for PNat
 

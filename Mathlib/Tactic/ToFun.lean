@@ -43,8 +43,9 @@ initialize registerBuiltinAttribute {
   | `(attr| to_fun $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_fun` can only be used as a global attribute"
-    addRelatedDecl src "fun_" "" ref optAttr (docstringPrefix? := s!"Eta-expanded form of `{src}`")
-      (hoverInfo := true) fun value levels => do
+    addRelatedDecl src (src.appendBefore "fun_") ref optAttr
+      (docstringPrefix? := s!"Eta-expanded form of `{src}`") (hoverInfo := true)
+      fun value levels => do
       let type ← inferType value
       let r ← Push.pullCore .lambda type none
       if r.expr == type then

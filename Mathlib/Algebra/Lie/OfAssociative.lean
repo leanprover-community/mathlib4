@@ -283,6 +283,7 @@ lemma LieAlgebra.ad_lie (x y z : L) :
     (ad R L x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, ad R L x z⁆ :=
   toEnd_lie _ x y z
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 lemma LieModule.toEnd_pow_lie (x y : L) (z : M) (n : ℕ) :
     ((φ x) ^ n) ⁅y, z⁆ =
@@ -386,6 +387,7 @@ variable {R : Type u} {M₁ : Type v} {M₂ : Type w}
 variable [CommRing R] [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 variable (e : M₁ ≃ₗ[R] M₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear equivalence of two modules induces a Lie algebra equivalence of their endomorphisms. -/
 def lieConj : Module.End R M₁ ≃ₗ⁅R⁆ Module.End R M₂ :=
   { e.conj with

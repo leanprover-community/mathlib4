@@ -40,6 +40,7 @@ variable {𝕜 E F : Type*}
 variable [LocallyCompactSpace E]
 variable (L μ ν)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
 additive Haar measure. The proportionality factor will be infinite if the linear map has a
 nontrivial kernel. -/
@@ -105,6 +106,7 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
   simp only [I, h₀, Measure.map_smul, J, smul_smul, h₁]
   rw [mul_assoc, mul_comm _ c₁, ← mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
 additive Haar measure, with a positive (but maybe infinite) factor. -/
 theorem LinearMap.exists_map_addHaar_eq_smul_addHaar (h : Function.Surjective L) :
@@ -123,7 +125,7 @@ lemma ae_comp_linearMap_mem_iff (h : Function.Surjective L) {s : Set F} (hs : Me
   apply (ae_map_iff this hs).symm.trans
   rcases L.exists_map_addHaar_eq_smul_addHaar μ ν h with ⟨c, c_pos, hc⟩
   rw [hc]
-  exact ae_smul_measure_iff c_pos.ne'
+  exact ae_ennreal_smul_measure_iff c_pos.ne'
 
 /-- Given a linear map `L : E → F`, a property holds almost everywhere in `F` if and only if,
 almost everywhere in `F`, it holds almost everywhere along the subspace spanned by the

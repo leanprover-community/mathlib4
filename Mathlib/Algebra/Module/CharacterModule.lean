@@ -51,6 +51,7 @@ instance : FunLike (CharacterModule A) A (AddCircle (1 : ℚ)) where
   coe c := c.toFun
   coe_injective' _ _ _ := by simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
   map_add _ _ _ := by rw [AddMonoidHom.map_add]
   map_smulₛₗ _ _ _ := by rw [AddMonoidHom.map_zsmul, RingHom.id_apply]
@@ -64,6 +65,7 @@ section module
 
 variable [Module R A] [Module R A'] [Module R B]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module R (CharacterModule A) :=
   Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
 
@@ -98,6 +100,7 @@ lemma dual_injective_of_surjective (f : A →ₗ[R] B) (hf : Function.Surjective
   change (dual f) φ _ = (dual f) ψ _
   rw [eq]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective f) :
     Function.Surjective (dual f) :=
   (Module.Baer.of_divisible _).extension_property_addMonoidHom _ hf
@@ -230,6 +233,7 @@ theorem _root_.rTensor_injective_iff_lcomp_surjective {f : A →ₗ[R] A'} :
     Function.Injective (f.rTensor B) ↔ Function.Surjective (f.lcomp R <| CharacterModule B) := by
   simp [← dual_rTensor_conj_homEquiv, dual_surjective_iff_injective]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma surjective_of_dual_injective (f : A →ₗ[R] A') (hf : Function.Injective (dual f)) :
     Function.Surjective f := by
   rw [← LinearMap.range_eq_top, ← Submodule.unique_quotient_iff_eq_top]

@@ -603,11 +603,13 @@ theorem closure_range_inl_union_inr :
     Subgroup.closure (range (inl : G →* G ∗ H) ∪ range inr) = ⊤ :=
   Subgroup.closure_eq_top_of_mclosure_eq_top mclosure_range_inl_union_inr
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)] theorem range_inl_sup_range_inr :
     MonoidHom.range (inl : G →* G ∗ H) ⊔ MonoidHom.range inr = ⊤ := by
   rw [← closure_range_inl_union_inr, Subgroup.closure_union, ← MonoidHom.coe_range,
     ← MonoidHom.coe_range, Subgroup.closure_eq, Subgroup.closure_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem codisjoint_range_inl_range_inr :
     Codisjoint (MonoidHom.range (inl : G →* G ∗ H)) (MonoidHom.range inr) :=
@@ -618,6 +620,7 @@ theorem codisjoint_range_inl_range_inr :
 
 variable {K : Type*} [Group K]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive] theorem range_eq (f : G ∗ H →* K) :
     MonoidHom.range f = MonoidHom.range (f.comp inl) ⊔ MonoidHom.range (f.comp inr) := by
   rw [MonoidHom.range_eq_map, ← range_inl_sup_range_inr, Subgroup.map_sup, MonoidHom.map_range,
@@ -662,6 +665,7 @@ end MulOneClass
 
 variable (M N P : Type*) [Monoid M] [Monoid N] [Monoid P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A multiplicative equivalence between `(M ∗ N) ∗ P` and `M ∗ (N ∗ P)`. -/
 @[to_additive /-- An additive equivalence between `AddMonoid.Coprod (AddMonoid.Coprod M N) P` and
 `AddMonoid.Coprod M (AddMonoid.Coprod N P)`. -/]

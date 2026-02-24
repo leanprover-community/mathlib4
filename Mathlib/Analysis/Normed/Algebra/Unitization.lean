@@ -124,6 +124,7 @@ noncomputable abbrev normedRingAux : NormedRing (Unitization 𝕜 A) :=
 
 attribute [local instance] Unitization.normedRingAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This uses the wrong `NormedRing` instance (i.e.,
 `Unitization.normedRingAux`), so we only use it as a local instance to build the real one. -/
@@ -149,6 +150,7 @@ theorem nnnorm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖₊ = ‖x.fst‖₊ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖₊ :=
   NNReal.eq <| norm_eq_sup x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lipschitzWith_addEquiv :
     LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
   rw [← Real.toNNReal_ofNat]
@@ -167,6 +169,7 @@ theorem lipschitzWith_addEquiv :
           norm_le_add_norm_add (mul 𝕜 A x.snd) (algebraMap 𝕜 _ x.fst)
       _ ≤ _ := add_le_add le_sup_right le_sup_left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem antilipschitzWith_addEquiv :
     AntilipschitzWith 2 (addEquiv 𝕜 A) := by
   refine AddMonoidHomClass.antilipschitz_of_bound (addEquiv 𝕜 A) fun x => ?_
@@ -221,6 +224,9 @@ instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (Unitization 𝕜 A) :=
   uniformEquivProd.completeSpace_iff.2 .prod
 
+instance instT2Space : T2Space (Unitization 𝕜 A) :=
+  Unitization.uniformEquivProd.symm.toHomeomorph.t2Space
+
 /-- Pull back the metric structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology and the uniformity so
 that they coincide with `𝕜 × A`. -/
@@ -235,6 +241,7 @@ noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A) where
   norm_mul_le := normedRingAux.norm_mul_le
   norm := normedRingAux.norm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
@@ -271,5 +278,25 @@ correct ones. -/
 example : (instNormedRing (𝕜 := 𝕜) (A := A)).toMetricSpace = instMetricSpace := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toBornology = instBornology := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toUniformSpace = instUniformSpace := rfl
+
+section
+
+variable {𝕜 A : Type*} [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
+
+protected theorem uniformContinuous_fst : UniformContinuous (fst : Unitization 𝕜 A → 𝕜) :=
+  uniformContinuous_fst.comp Unitization.uniformEquivProd.uniformContinuous
+
+protected theorem uniformContinuous_snd : UniformContinuous (snd : Unitization 𝕜 A → A) :=
+  uniformContinuous_snd.comp Unitization.uniformEquivProd.uniformContinuous
+
+@[fun_prop]
+protected theorem continuous_fst : Continuous (fst : Unitization 𝕜 A → 𝕜) :=
+  Unitization.uniformContinuous_fst.continuous
+
+@[fun_prop]
+protected theorem continuous_snd : Continuous (snd : Unitization 𝕜 A → A) :=
+  Unitization.uniformContinuous_snd.continuous
+
+end
 
 end Unitization

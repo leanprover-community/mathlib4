@@ -21,6 +21,7 @@ Direct translation of the solution found in https://www.imo-official.org/problem
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f x)) : ∀ x ≤ 0, f x = 0 := by
   -- reparameterize
   have hxt : ∀ x t, f t ≤ t * f x - x * f x + f (f x) := fun x t =>

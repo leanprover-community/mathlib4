@@ -114,6 +114,7 @@ theorem roots_of_cyclotomic (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] :
     (cyclotomic' n R).roots = (primitiveRoots n R).val := by
   rw [cyclotomic']; exact roots_prod_X_sub_C (primitiveRoots n R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If there is a primitive `n`th root of unity in `K`, then `X ^ n - 1 = ∏ (X - μ)`, where `μ`
 varies over the `n`-th roots of unity. -/
 theorem X_pow_sub_one_eq_prod {ζ : R} {n : ℕ} (hpos : 0 < n) (h : IsPrimitiveRoot ζ n) :
@@ -327,6 +328,7 @@ lemma natDegree_cyclotomic_le {R : Type*} [Ring R] {n : ℕ} :
   nontriviality R
   rw [natDegree_cyclotomic]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The degree of `cyclotomic n R` is positive. -/
 theorem degree_cyclotomic_pos (n : ℕ) (R : Type*) (hpos : 0 < n) [Ring R] [Nontrivial R] :
     0 < (cyclotomic n R).degree := by
@@ -419,6 +421,7 @@ open ArithmeticFunction
 -- access notation `μ`
 open scoped ArithmeticFunction.Moebius
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `cyclotomic n R` can be expressed as a product in a fraction field of `R[X]`
   using Möbius inversion. -/
 theorem cyclotomic_eq_prod_X_pow_sub_one_pow_moebius {n : ℕ} (R : Type*) [CommRing R]

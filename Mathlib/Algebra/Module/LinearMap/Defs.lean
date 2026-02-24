@@ -735,8 +735,8 @@ variable [Semiring R] [Semiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R₂ M₂]
 variable {σ₁₂ : R →+* R₂}
-variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
-variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
+variable [DistribSMul S M₂] [SMulCommClass R₂ S M₂]
+variable [DistribSMul T M₂] [SMulCommClass R₂ T M₂]
 
 instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun a f ↦
@@ -759,7 +759,7 @@ instance [SMulCommClass S T M₂] : SMulCommClass S T (M →ₛₗ[σ₁₂] M�
 instance [SMul S T] [IsScalarTower S T M₂] : IsScalarTower S T (M →ₛₗ[σ₁₂] M₂) where
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc _ _ _
 
-instance [DistribMulAction Sᵐᵒᵖ M₂] [SMulCommClass R₂ Sᵐᵒᵖ M₂] [IsCentralScalar S M₂] :
+instance [DistribSMul Sᵐᵒᵖ M₂] [SMulCommClass R₂ Sᵐᵒᵖ M₂] [IsCentralScalar S M₂] :
     IsCentralScalar S (M →ₛₗ[σ₁₂] M₂) where
   op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
 
@@ -1007,7 +1007,7 @@ variable (R) [SMulCommClass R A A]
 
 Note that this only assumes `SMulCommClass R A A`, so that it also works for `R := Aᵐᵒᵖ`.
 
-When `A` is unital and associative, this is the same as `DistribMulAction.toLinearMap R A a` -/
+When `A` is unital and associative, this is the same as `DistribSMul.toLinearMap R A a` -/
 def mulLeft (a : A) : A →ₗ[R] A where
   __ := AddMonoidHom.mulLeft a
   map_smul' _ := mul_smul_comm _ _
@@ -1034,7 +1034,7 @@ variable (R) [IsScalarTower R A A]
 Note that this only assumes `IsScalarTower R A A`, so that it also works for `R := A`.
 
 When `A` is unital and associative, this is the same as
-`DistribMulAction.toLinearMap R A (MulOpposite.op b)`. -/
+`DistribSMul.toLinearMap R A (MulOpposite.op b)`. -/
 def mulRight (b : A) : A →ₗ[R] A where
   __ := AddMonoidHom.mulRight b
   map_smul' _ _ := smul_mul_assoc _ _ _
