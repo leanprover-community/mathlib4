@@ -63,7 +63,7 @@ def ofTensorProductBil : AdicCompletion I R →ₗ[AdicCompletion I R] M →ₗ[
     apply LinearMap.ext
     intro y
     ext n
-    simp
+    simp [mul_smul (r.val n)]
 
 @[simp]
 private lemma ofTensorProductBil_apply_apply (r : AdicCompletion I R) (x : M) :

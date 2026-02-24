@@ -70,6 +70,9 @@ protected theorem pred_iterate (a : ℕ) : ∀ n, pred^[n] a = a - n
     rw [Function.iterate_succ', sub_succ]
     exact congr_arg _ (Nat.pred_iterate a n)
 
+/-- A special case of `Order.covBy_iff_add_one_eq` for use by simp. -/
+@[simp] lemma covBy_iff_add_one_eq : m ⋖ n ↔ m + 1 = n := Order.covBy_iff_add_one_eq
+
 lemma le_succ_iff_eq_or_le : m ≤ n.succ ↔ m = n.succ ∨ m ≤ n := Order.le_succ_iff_eq_or_le
 
 instance : IsSuccArchimedean ℕ :=
@@ -84,11 +87,13 @@ lemma forall_ne_zero_iff (P : ℕ → Prop) :
 
 end Nat
 
-@[simp, norm_cast]
-theorem Fin.coe_covBy_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b :=
-  and_congr_right' ⟨fun h _c hc => h hc, fun h c ha hb => @h ⟨c, hb.trans b.prop⟩ ha hb⟩
+@[simp] theorem Fin.covBy_iff {n : ℕ} {a b : Fin n} : a ⋖ b ↔ (a : ℕ) ⋖ b :=
+  and_congr_right' ⟨fun h c ha hb ↦ @h ⟨c, hb.trans b.prop⟩ ha hb, fun h _c hc ↦ h hc⟩
 
-alias ⟨_, CovBy.coe_fin⟩ := Fin.coe_covBy_iff
+@[deprecated Fin.covBy_iff "use Fin.covBy_iff.symm instead" (since := "2026-02-13")]
+theorem Fin.coe_covBy_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b := Fin.covBy_iff.symm
+
+alias ⟨CovBy.coe_fin, _⟩ := Fin.covBy_iff
 
 @[simp]
 theorem withBotSucc_zero : WithBot.succ 0 = 1 := rfl
