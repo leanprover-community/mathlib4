@@ -65,10 +65,6 @@ instance : MorphismProperty.IsMultiplicative @WeaklyEtale := by
   rw [weaklyEtale_eq_flat_inf_diagonal_flat]
   infer_instance
 
-instance : MorphismProperty.IsStableUnderComposition @WeaklyEtale := by
-  rw [weaklyEtale_eq_flat_inf_diagonal_flat]
-  infer_instance
-
 instance [WeaklyEtale f] [WeaklyEtale g] : WeaklyEtale (f ≫ g) :=
   MorphismProperty.comp_mem _ f g inferInstance inferInstance
 
