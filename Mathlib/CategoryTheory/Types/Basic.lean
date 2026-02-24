@@ -146,7 +146,7 @@ initialize_simps_projections Hom (hom' → hom)
 
 @[simp]
 lemma hom_as_apply {X Y : TypeCat.{u}} (f : X ⟶ Y) (x : X) : (ConcreteCategory.hom f).as x =
-    ConcreteCategory.hom f x := by
+    ConcreteCategory.hom f x :=
   rfl
 
 example (X : Type u) : CategoryTheory.ToType (of X) = X := by with_reducible rfl

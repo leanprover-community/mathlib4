@@ -30,7 +30,7 @@ variable {J C : Type*} [Category* J] [Category* C]
 
 /-- Sections of `F ⋙ coyoneda.obj (op X)` identify to natural
 transformations `(const J).obj X ⟶ F`. -/
-@[simps!]
+@[deprecated "No replacement" (since := "2026-02-24")]
 def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
     (F ⋙ coyoneda.obj (op X)).sections ≃ ((const J).obj X ⟶ F) where
   toFun s :=
@@ -43,7 +43,7 @@ def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
 
 /-- Sections of `F.op ⋙ yoneda.obj X` identify to natural
 transformations `F ⟶ (const J).obj X`. -/
-@[simps]
+@[deprecated "No replacement" (since := "2026-02-24")]
 def opCompYonedaSectionsEquiv (F : J ⥤ C) (X : C) :
     (F.op ⋙ yoneda.obj X).sections ≃ (F ⟶ (const J).obj X) where
   toFun s :=
@@ -56,7 +56,7 @@ def opCompYonedaSectionsEquiv (F : J ⥤ C) (X : C) :
 
 /-- Sections of `F ⋙ yoneda.obj X` identify to natural
 transformations `(const J).obj X ⟶ F`. -/
-@[simps]
+@[deprecated "No replacement" (since := "2026-02-24")]
 def compYonedaSectionsEquiv (F : J ⥤ Cᵒᵖ) (X : C) :
     (F ⋙ yoneda.obj X).sections ≃ ((const J).obj (op X) ⟶ F) where
   toFun s :=
@@ -72,33 +72,22 @@ end
 
 variable {J : Type v} [SmallCategory J] {C : Type u} [Category.{v} C]
 
+macro (name := aesop_concrete_cat) "aesop_concrete_cat" : tactic => do
+  `(tactic| (intros; ext; simp; simp [← CategoryTheory.comp_apply]; aesop_cat))
+
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`. -/
-@[simps! inv]
+@[simps]
 noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
-    limit (F ⋙ coyoneda.obj (op X)) ≅ TypeCat.of ((const J).obj X ⟶ F) :=
-  ((Types.limitEquivSections _).trans (compCoyonedaSectionsEquiv F X)).toIso
-
-@[simp]
-lemma limitCompCoyonedaIsoCone_hom_app (F : J ⥤ C) (X : C)
-    (a : ToType (limit (F ⋙ coyoneda.obj (op X)))) (j : J) :
-    ((limitCompCoyonedaIsoCone F X).hom a : _ ⟶ _).app j =
-      limit.π (F.comp (coyoneda.obj (Opposite.op X))) j a :=
-  rfl
-
-/-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
-    naturally in `X`. -/
-@[simps! inv_app hom]
-noncomputable def coyonedaCompLimIsoCones (F : J ⥤ C) :
-    coyoneda ⋙ (whiskeringLeft _ _ _).obj F ⋙ lim ≅ F.cones := by
-  refine NatIso.ofComponents (fun X => limitCompCoyonedaIsoCone F X.unop) ?_
-  intros
-  ext
-  dsimp
-  ext
-  simp only [const_obj_obj, TypeCat.hom_as_apply, comp_apply, ConcreteCategory.hom_ofHom,
-    TypeCat.Fun.as_apply, NatTrans.comp_app, const_map_app]
-  rw [limitCompCoyonedaIsoCone_hom_app, limMap_π_apply] -- Why doesn't simp find these?
-  rfl
+    limit (F ⋙ coyoneda.obj (op X)) ≅ TypeCat.of ((const J).obj X ⟶ F) where
+  hom := TypeCat.ofHom ⟨fun a ↦ {
+    app j := limit.π (F ⋙ coyoneda.obj (op X)) j a
+    naturality _ _ _ := by simpa using (limit.w_apply _ _ _).symm }⟩
+  inv := TypeCat.ofHom ⟨fun t ↦ limit.lift _ (Types.coneOfSection (s := t.app) <| by
+    simp [Functor.sections, ← t.naturality]) ⟨⟩⟩
+  hom_inv_id := by
+    aesop_concrete_cat
+  inv_hom_id := by
+    aesop_concrete_cat
 
 variable (J) (C) in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
@@ -106,43 +95,24 @@ variable (J) (C) in
 @[simps!]
 noncomputable def whiskeringLimYonedaIsoCones : whiskeringLeft _ _ _ ⋙
     (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj coyoneda ≅ cones J C := by
-  refine NatIso.ofComponents coyonedaCompLimIsoCones ?_
-  intros
-  dsimp
-  ext
-  dsimp
-  ext
-  simp only [const_obj_obj, TypeCat.hom_as_apply, comp_apply, ConcreteCategory.hom_ofHom,
-    TypeCat.Fun.as_apply, NatTrans.comp_app]
-  rw [limitCompCoyonedaIsoCone_hom_app, limMap_π_apply] -- Why doesn't simp find these?
-  rfl
+  refine NatIso.ofComponents (fun F ↦ NatIso.ofComponents
+    (fun X => limitCompCoyonedaIsoCone F X.unop) ?_) ?_
+  · aesop_concrete_cat
+  · aesop_concrete_cat
 
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`. -/
-@[simps! inv]
+@[simps]
 noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
-    limit (F.op ⋙ yoneda.obj X) ≅ TypeCat.of (F ⟶ (const J).obj X) :=
-  ((Types.limitEquivSections _).trans (opCompYonedaSectionsEquiv F X)).toIso
-
-@[simp]
-lemma limitCompYonedaIsoCocone_hom_app (F : J ⥤ C) (X : C)
-    (a : (limit (F.op ⋙ yoneda.obj X) :)) (j : J) :
-    ((limitCompYonedaIsoCocone F X).hom a).app j = limit.π (F.op ⋙ yoneda.obj X) (op j) a :=
-  rfl
-
-/-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
-    naturally in `X`. -/
-@[simps! inv_app hom]
-noncomputable def yonedaCompLimIsoCocones (F : J ⥤ C) :
-    yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙ lim ≅ F.cocones := by
-  refine NatIso.ofComponents (limitCompYonedaIsoCocone F) ?_
-  intros
-  ext
-  dsimp
-  ext
-  simp only [const_obj_obj, TypeCat.hom_as_apply, comp_apply, ConcreteCategory.hom_ofHom,
-    TypeCat.Fun.as_apply, NatTrans.comp_app, const_map_app]
-  rw [limitCompYonedaIsoCocone_hom_app, limMap_π_apply]
-  rfl
+    limit (F.op ⋙ yoneda.obj X) ≅ TypeCat.of (F ⟶ (const J).obj X) where
+  hom := TypeCat.ofHom ⟨fun a ↦ {
+    app j := limit.π (F.op ⋙ yoneda.obj X) ⟨j⟩ a
+    naturality _ _ f := by simpa using (limit.w_apply _ f.op a) }⟩
+  inv := TypeCat.ofHom ⟨fun t ↦ limit.lift _ (Types.coneOfSection (s := fun j ↦ t.app j.unop) <| by
+    simp [Functor.sections]) ⟨⟩⟩
+  hom_inv_id := by
+    aesop_concrete_cat
+  inv_hom_id := by
+    aesop_concrete_cat
 
 variable (J) (C) in
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
@@ -150,14 +120,8 @@ variable (J) (C) in
 @[simps!]
 noncomputable def opHomCompWhiskeringLimYonedaIsoCocones : opHom _ _ ⋙ whiskeringLeft _ _ _ ⋙
       (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj yoneda ≅ cocones J C := by
-  refine NatIso.ofComponents (fun F => yonedaCompLimIsoCocones F.unop) ?_
-  intros
-  ext
-  dsimp
-  ext
-  simp only [const_obj_obj, TypeCat.hom_as_apply, comp_apply, ConcreteCategory.hom_ofHom,
-    TypeCat.Fun.as_apply, NatTrans.comp_app]
-  rw [limitCompYonedaIsoCocone_hom_app, limMap_π_apply]
-  rfl
+  refine NatIso.ofComponents (fun F => NatIso.ofComponents (limitCompYonedaIsoCocone F.unop) ?_) ?_
+  · aesop_concrete_cat
+  · aesop_concrete_cat
 
 end CategoryTheory.Limits
