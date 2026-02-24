@@ -280,7 +280,8 @@ lemma house_matrixA_le : house ((algebraMap (𝓞 h7.K) h7.K) ((h7.A q) u t)) �
   · simp only [mul_assoc]
     apply mul_le_mul (by rfl) ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
     · simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, ← mul_pow]
-      apply mul_le_mul (house_pow_le _ _) ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
+      apply mul_le_mul (house_pow_le _ _) ?_ (by dsimp [house];positivity)
+        (by dsimp [house];positivity)
       · apply mul_le_mul (house_pow_le _ _) (house_pow_le _ _) (house_nonneg _)
           (pow_nonneg (house_nonneg _) _)
   · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
@@ -306,7 +307,8 @@ lemma house_matrixA_le : house ((algebraMap (𝓞 h7.K) h7.K) ((h7.A q) u t)) �
           (((finProdFinEquiv.symm.toFun u).1).isLt) (zero_le _) (zero_le _))
   · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
     · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
-      · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by simp; positivity)
+      · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity)
+          (by simp only [abs_mul, abs_pow, Int.cast_mul, Int.cast_pow, Int.cast_abs]; positivity)
         · rw [← house_intCast (K := h7.K)]; simp
         · refine pow_le_pow_left₀ (house_nonneg _) ?_ (h7.n q - 1)
           · rw [← mul_assoc]; apply h7.house_add_mul_le q t
