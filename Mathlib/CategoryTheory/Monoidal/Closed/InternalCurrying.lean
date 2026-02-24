@@ -30,7 +30,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 /-- The currying operation taking a morphism `(z ⊗ y) ⟶ x` to a morphism `y ⟶ C(z, x)`,
   constructed as a morphism in `C` between internal homs. -/
 -- TODO: Prove naturality of this morphism (requires the appropriate instances of `[Closed _]` for
--- objects in `Cᵒᵖ`).
+-- objects in `C`).
 def ihomCurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
     (ihom (x ⊗ y)).obj z ⟶ (ihom y).obj ((ihom x).obj z) :=
   curry (curry ((α_ x y _).inv ≫ (ihom.ev _).app z))
@@ -46,7 +46,7 @@ lemma uncurry_uncurry_ihomCurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗
 /-- The uncurrying operation taking a morphism `y ⟶ C(x, z)` to a morphism `(x ⊗ y) ⟶ z`,
   constructed as a morphism in `C` between internal homs. -/
 -- TODO: Prove naturality of this morphism (requires the appropriate instances of `[Closed _]` for
--- objects in `Cᵒᵖ`).
+-- objects in `C`).
 def ihomUncurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
     (ihom y).obj ((ihom x).obj z) ⟶ (ihom (x ⊗ y)).obj z :=
   curry ((α_ x y _).hom ≫ x ◁ (ihom.ev y).app ((ihom x).obj z) ≫ (ihom.ev x).app z)
