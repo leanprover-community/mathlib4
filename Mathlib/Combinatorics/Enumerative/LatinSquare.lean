@@ -3,7 +3,7 @@
   Released under Apache 2.0 license as described in the file LICENSE.
   Authors: Christopher J. R. Lloyd, George H. Seelinger
   -/
-  import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Defs
