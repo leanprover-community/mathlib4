@@ -95,7 +95,7 @@ theorem re_herglotzRieszKernel_le {c z : ℂ} (hz : z ∈ sphere c R) (hw : w �
   by_cases h₁w : ‖w - c‖ = 0
   · aesop
   simpa using re_herglotzRieszKernel_le_aux (w - c).arg (z - c).arg ‖w - c‖ ‖z - c‖
-    (by simpa using h₁w) (by simpa)
+    (by simpa using h₁w) (mem_ball_iff_norm.1 hw)
 
 private lemma le_re_herglotzRieszKernel_aux (θ φ r R : ℝ) (h₁ : 0 < r) (h₂ : r < R) :
     (R - r) / (R + r)
@@ -128,7 +128,7 @@ theorem le_re_herglotzRieszKernel {c z : ℂ} (hz : z ∈ sphere c R) (hw : w �
   by_cases h₁w : ‖w - c‖ = 0
   · aesop
   simpa using le_re_herglotzRieszKernel_aux (z - c).arg (w - c).arg ‖w - c‖ ‖z - c‖
-    (by simpa using h₁w) (by simpa)
+    (by simpa using h₁w) (mem_ball_iff_norm.1 hw)
 
 -- Trigonometric identity used in the computation of
 -- `DiffContOnCl.circleAverage_re_smul_on_ball_zero`.
@@ -215,7 +215,7 @@ theorem DiffContOnCl.circleAverage_re_herglotzRieszKernel_smul [CompleteSpace E]
   · simp_all [(ball_eq_empty).2 hR]
   have h₁g : DiffContOnCl ℂ (fun z ↦ f (z + c)) (ball 0 R) :=
     hf.comp (DifferentiableOn.diffContOnCl <| by fun_prop) (by intro; aesop)
-  have h₂g : w - c ∈ ball 0 R := by simpa using hw
+  have h₂g : w - c ∈ ball 0 R := by simpa using mem_ball_iff_norm.1 hw
   simpa [← circleAverage_map_add_const, herglotzRieszKernel_def]
     using circleAverage_re_smul_on_ball_zero h₁g h₂g
 
