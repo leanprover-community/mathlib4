@@ -126,6 +126,47 @@ theorem pow_card_le_prod₀ (s : Finset α) (f : α → M) (n : M)
     n ^ #s ≤ s.prod f :=
   (prod_const n).symm.trans_le (prod_le_prod₀ (fun _ _ ↦ hn) h)
 
+theorem prod_fiberwise_le_prod_of_one_le_prod_fiber₀ {β : Type*} [DecidableEq β]
+    {t : Finset β} {g : α → β}
+    (h0 : ∀ x ∈ s, 0 ≤ f x)
+    (h : ∀ y ∉ t, (1 : M) ≤ ∏ x ∈ s with g x = y, f x) :
+    (∏ y ∈ t, ∏ x ∈ s with g x = y, f x) ≤ ∏ x ∈ s, f x :=
+  calc
+    (∏ y ∈ t, ∏ x ∈ s with g x = y, f x) ≤
+        ∏ y ∈ t ∪ s.image g, ∏ x ∈ s with g x = y, f x :=
+      prod_le_prod_of_subset_of_one_le₀ subset_union_left
+        (fun _ _ ↦ prod_nonneg fun x hx ↦ h0 x (mem_of_mem_filter x hx))
+        fun _ _ hy ↦ h _ hy
+    _ = ∏ x ∈ s, f x :=
+      prod_fiberwise_of_maps_to
+        (fun _ hx ↦ mem_union.2 <| Or.inr <| mem_image_of_mem _ hx) _
+
+theorem prod_le_prod_fiberwise_of_prod_fiber_le_one₀ {β : Type*} [DecidableEq β]
+    {t : Finset β} {g : α → β}
+    (h0 : ∀ x ∈ s, 0 ≤ f x)
+    (h : ∀ y ∉ t, ∏ x ∈ s with g x = y, f x ≤ 1) :
+    ∏ x ∈ s, f x ≤ ∏ y ∈ t, ∏ x ∈ s with g x = y, f x :=
+  calc
+    ∏ x ∈ s, f x
+      = ∏ y ∈ t ∪ s.image g, ∏ x ∈ s with g x = y, f x :=
+        (prod_fiberwise_of_maps_to
+          (fun _ hx ↦ mem_union.2 <| Or.inr <| mem_image_of_mem _ hx) _).symm
+    _ ≤ ∏ y ∈ t, ∏ x ∈ s with g x = y, f x :=
+        prod_le_prod_of_subset_of_le_one₀ subset_union_left
+          (fun _ _ ↦ prod_nonneg fun x hx ↦ h0 x (mem_of_mem_filter x hx))
+          fun _ _ hy ↦ h _ hy
+
+lemma prod_image_le_of_one_le₀ {β : Type*} [DecidableEq β]
+    {g : α → β} {f : β → M} (hf : ∀ u ∈ s.image g, 1 ≤ f u) :
+    ∏ u ∈ s.image g, f u ≤ ∏ u ∈ s, f (g u) := by
+  rw [prod_comp f g]
+  refine prod_le_prod₀
+    (fun a hag ↦ zero_le_one.trans (hf a hag)) fun a hag ↦ ?_
+  obtain ⟨i, hi, hig⟩ := Finset.mem_image.mp hag
+  apply le_self_pow₀ (hf a hag)
+  rw [← Nat.pos_iff_ne_zero, card_pos]
+  exact ⟨i, mem_filter.mpr ⟨hi, hig⟩⟩
+
 lemma le_prod_max_one {N : Type*} [CommMonoidWithZero N] [LinearOrder N] [ZeroLEOneClass N]
     [PosMulMono N] {i : α} (hi : i ∈ s) (f : α → N) :
     f i ≤ ∏ i ∈ s, max (f i) 1 := by

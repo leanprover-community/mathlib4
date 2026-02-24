@@ -252,7 +252,7 @@ theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Fi
 variable {ι' : Type*} [DecidableEq ι']
 
 @[to_additive sum_fiberwise_le_sum_of_sum_fiber_nonneg]
-theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' [MulLeftMono N] {t : Finset ι'} {g : ι → ι'}
+theorem prod_fiberwise_le_prod_of_one_le_prod_fiber [MulLeftMono N] {t : Finset ι'} {g : ι → ι'}
     {f : ι → N} (h : ∀ y ∉ t, (1 : N) ≤ ∏ x ∈ s with g x = y, f x) :
     (∏ y ∈ t, ∏ x ∈ s with g x = y, f x) ≤ ∏ x ∈ s, f x :=
   calc
@@ -262,11 +262,19 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' [MulLeftMono N] {t : Finset
     _ = ∏ x ∈ s, f x :=
       prod_fiberwise_of_maps_to (fun _ hx ↦ mem_union.2 <| Or.inr <| mem_image_of_mem _ hx) _
 
-@[to_additive sum_le_sum_fiberwise_of_sum_fiber_nonpos]
-theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' [MulLeftMono N] {t : Finset ι'} {g : ι → ι'}
+@[deprecated (since := "2026-01-18")]
+alias prod_fiberwise_le_prod_of_one_le_prod_fiber' :=
+  prod_fiberwise_le_prod_of_one_le_prod_fiber
+
+@[to_additive]
+theorem prod_le_prod_fiberwise_of_prod_fiber_le_one [MulLeftMono N] {t : Finset ι'} {g : ι → ι'}
     {f : ι → N} (h : ∀ y ∉ t, ∏ x ∈ s with g x = y, f x ≤ 1) :
     ∏ x ∈ s, f x ≤ ∏ y ∈ t, ∏ x ∈ s with g x = y, f x :=
-  prod_fiberwise_le_prod_of_one_le_prod_fiber' (N := Nᵒᵈ) h
+  prod_fiberwise_le_prod_of_one_le_prod_fiber (N := Nᵒᵈ) h
+
+@[deprecated (since := "2026-01-18")]
+alias prod_le_prod_fiberwise_of_prod_fiber_le_one' :=
+  prod_le_prod_fiberwise_of_prod_fiber_le_one
 
 @[to_additive]
 lemma prod_image_le_of_one_le [MulLeftMono N]
