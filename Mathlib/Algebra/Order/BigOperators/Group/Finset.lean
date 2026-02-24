@@ -120,7 +120,7 @@ add_decl_doc sum_le_sum
 
 @[to_additive sum_nonneg]
 theorem one_le_prod' [MulLeftMono N] (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
-  le_trans (by rw [prod_const_one]) (prod_le_prod' h)
+  le_trans (by rw [prod_const_one]) (prod_le_prod h)
 
 @[to_additive Finset.sum_nonneg']
 theorem one_le_prod'' [MulLeftMono N] (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
@@ -128,7 +128,7 @@ theorem one_le_prod'' [MulLeftMono N] (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i 
 
 @[to_additive]
 theorem prod_le_one [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 :=
-  (prod_le_prod' h).trans_eq (by rw [prod_const_one])
+  (prod_le_prod h).trans_eq (by rw [prod_const_one])
 
 @[deprecated (since := "2026-01-18")] alias prod_le_one' := prod_le_one
 
@@ -254,7 +254,7 @@ lemma prod_image_le_of_one_le [MulLeftMono N]
     {g : ι → ι'} {f : ι' → N} (hf : ∀ u ∈ s.image g, 1 ≤ f u) :
     ∏ u ∈ s.image g, f u ≤ ∏ u ∈ s, f (g u) := by
   rw [prod_comp f g]
-  refine prod_le_prod' fun a hag ↦ ?_
+  refine prod_le_prod fun a hag ↦ ?_
   obtain ⟨i, hi, hig⟩ := Finset.mem_image.mp hag
   apply le_self_pow (hf a hag)
   rw [← Nat.pos_iff_ne_zero, card_pos]
@@ -535,7 +535,7 @@ theorem prod_eq_prod_iff_of_le {ι M : Type*} [CommMonoid M] [PartialOrder M]
     rw [Finset.prod_insert ha, Finset.prod_insert ha, Finset.forall_mem_insert, ← ih]
     exact
       mul_eq_mul_iff_eq_and_eq (H a (s.mem_insert_self a))
-        (Finset.prod_le_prod' fun i ↦ H i ∘ Finset.mem_insert_of_mem)
+        (Finset.prod_le_prod fun i ↦ H i ∘ Finset.mem_insert_of_mem)
 
 @[to_additive] lemma prod_sdiff_le_prod_sdiff [DecidableEq ι] :
     ∏ i ∈ s \ t, f i ≤ ∏ i ∈ t \ s, f i ↔ ∏ i ∈ s, f i ≤ ∏ i ∈ t, f i := by
@@ -560,7 +560,7 @@ variable [CommMonoid M] [LinearOrder M] {f g : ι → M} {s t : Finset ι}
 theorem exists_lt_of_prod_lt' [MulLeftMono M] (Hlt : ∏ i ∈ s, f i < ∏ i ∈ s, g i) :
     ∃ i ∈ s, f i < g i := by
   contrapose! Hlt with Hle
-  exact prod_le_prod' Hle
+  exact prod_le_prod Hle
 
 variable [IsOrderedCancelMonoid M]
 
@@ -617,7 +617,7 @@ variable [Fintype ι] [CommMonoid M] [Preorder M] [MulLeftMono M] {f : ι → M}
 
 @[to_additive (attr := mono) sum_mono]
 theorem prod_mono' : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
-  Finset.prod_le_prod' fun x _ ↦ hfg x
+  Finset.prod_le_prod fun x _ ↦ hfg x
 
 @[to_additive sum_nonneg]
 lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' fun _ _ ↦ hf _
