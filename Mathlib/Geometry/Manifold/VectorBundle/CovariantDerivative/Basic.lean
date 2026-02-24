@@ -1237,6 +1237,26 @@ section to_trivialization
 
 variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e] [IsManifold I 1 M]
 
+lemma Trivialization.map_add
+    [VectorBundle ℝ F V]
+    {x : M} (hx : x ∈ e.baseSet) (v v' : V x) :
+    (e ⟨x, v + v'⟩).2 = (e ⟨x, v⟩).2 + (e ⟨x, v'⟩).2 :=
+  e.linear ℝ hx |>.map_add v v'
+
+lemma Trivialization.symm_map_add [VectorBundle ℝ F V] {x : M} (f f' : F) :
+    e.symm x (f + f') = e.symm x f + e.symm x f' :=
+  (symmL ℝ e x).map_add f f'
+
+lemma Trivialization.symm_map_smul [VectorBundle ℝ F V] {x : M} (a : ℝ) (f : F) :
+    e.symm x (a • f) = a • e.symm x f :=
+  (symmL ℝ e x).map_smul a f
+
+lemma Trivialization.map_smul
+    [VectorBundle ℝ F V]
+    {x : M} (hx : x ∈ e.baseSet) (a : ℝ) (v : V x) :
+    (e ⟨x, a • v⟩).2 = a • (e ⟨x, v⟩).2 :=
+  e.linear ℝ hx |>.map_smul a v
+
 omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)] [MemTrivializationAtlas e]
   [(x : M) → AddCommGroup (V x)]
   [(x : M) → TopologicalSpace (V x)] [FiberBundle F V] in
@@ -1344,6 +1364,24 @@ lemma Trivialization.apply_section_eventuallyEq
   · exact coe_coe_fst e hy
   · simp
 
+omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)]
+[(x : M) → TopologicalSpace (V x)] [FiberBundle F V] [MemTrivializationAtlas e] in
+@[simp]
+lemma Trivialization.apply_symm_eventuallyEq {x : M} (hx : x ∈ e.baseSet) (s : M → F) :
+  (fun x ↦ (e ⟨x, e.symm x (s x)⟩).2) =ᶠ[𝓝 x] s := by
+    filter_upwards [e.baseSet_mem_nhds hx] with y hy
+    rw [e.apply_mk_symm hy]
+
+omit [IsManifold I 1 M] in
+lemma Trivialization.mdifferentiableAt_section_of_function
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {x : M} (hx : x ∈ e.baseSet) {s : M → F}
+    (hs : MDiffAt s x) :
+    MDiffAt ((fun x' ↦ (⟨x', e.symm x' (s x')⟩ : TotalSpace F V))) x := by
+  rw [e.mdifferentiableAt_section_iff (IB := I) _ hx]
+  have := e.apply_symm_eventuallyEq hx s
+  exact hs.congr_of_eventuallyEq this
+
 omit [IsManifold I 1 M] in
 noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
@@ -1425,17 +1463,70 @@ lemma Trivialization.pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensio
   unfold pushCovDer
   rw [this]
 
+omit [IsManifold I 1 M] in
+@[simp]
+lemma mdifferentiableAt_section_trivial_iff {s : M → F} {x : M} :
+    MDiffAt (T% s) x ↔ MDiffAt s x := by
+  rw [mdifferentiableAt_section I]
+  simp
+
 variable {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     -- {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
 
 lemma Trivialization.pushCovDer_isCovariantDerivativeOn
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     (hcov : IsCovariantDerivativeOn F cov e.baseSet) :
     IsCovariantDerivativeOn F (e.pushCovDer cov) e.baseSet where
-      addX := sorry
-      smulX := sorry
-      addσ := sorry
-      leibniz := sorry
-      smul_const_σ := sorry
+  addX {X X' σ x} hX hX' hσ hx := by
+    set s := (fun x' ↦ e.symm x' (σ x'))
+    have hs : MDiffAt (T% s) x :=
+      e.mdifferentiableAt_section_of_function hx <| mdifferentiableAt_section_trivial_iff.1 hσ
+    unfold Trivialization.pushCovDer
+    rw [hcov.addX hX hX' hs, e.map_add hx]
+  smulX {X σ g x} hX hσ hg hx := by
+    set s := (fun x' ↦ e.symm x' (σ x'))
+    have hs : MDiffAt (T% s) x :=
+      e.mdifferentiableAt_section_of_function hx <| mdifferentiableAt_section_trivial_iff.1 hσ
+    unfold Trivialization.pushCovDer
+    rw [hcov.smulX hX hs hg, e.map_smul hx]
+  smul_const_σ {X σ x} a hX hσ hx := by
+    set s := (fun x' ↦ e.symm x' (σ x'))
+    have hs : MDiffAt (T% s) x :=
+      e.mdifferentiableAt_section_of_function hx <| mdifferentiableAt_section_trivial_iff.1 hσ
+    unfold Trivialization.pushCovDer
+    rw [← e.map_smul hx, ← hcov.smul_const_σ a hX hs hx]
+    congr
+    ext y
+    simp [e.symm_map_smul, s]
+  addσ {X σ σ' x} hX hσ hσ' hx := by
+    set s := (fun x' ↦ e.symm x' (σ x'))
+    have hs : MDiffAt (T% s) x :=
+      e.mdifferentiableAt_section_of_function hx <| mdifferentiableAt_section_trivial_iff.1 hσ
+    set s' := (fun x' ↦ e.symm x' (σ' x'))
+    have hs' : MDiffAt (T% s') x :=
+      e.mdifferentiableAt_section_of_function hx <| mdifferentiableAt_section_trivial_iff.1
+      hσ'
+    unfold Trivialization.pushCovDer
+    rw [← e.map_add hx]
+    congr
+    rw [← hcov.addσ hX hs hs' hx]
+    congr
+    ext y
+    simp [e.symm_map_add, s, s']
+  leibniz {X σ g x} hX hσ hg hx := by
+    set s := (fun x' ↦ e.symm x' (σ x'))
+    have hs : MDiffAt (T% s) x :=
+      e.mdifferentiableAt_section_of_function hx <| mdifferentiableAt_section_trivial_iff.1 hσ
+    unfold Trivialization.pushCovDer
+    have : (fun x' ↦ e.symm x' ((g • σ) x')) = g • s := by
+      ext y
+      simp [s, e.symm_map_smul]
+    rw [this, hcov.leibniz hX hs hg hx]
+    suffices g x • (e ⟨x, cov X s x⟩).2 + (bar (g x)) ((mfderiv% g x) (X x)) • (e ⟨x, s x⟩).2 =
+      g x • (e ⟨x, cov X (fun x' ↦ e.symm x' (σ x')) x⟩).2 +
+      (bar (g x)) ((mfderiv% g x) (X x)) • σ x by simpa [e.map_add hx, e.map_smul hx]
+    congr
+    rw [e.apply_mk_symm hx]
 
 end to_trivialization
 
@@ -1444,7 +1535,7 @@ namespace CovariantDerivative
 
 variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
     [T2Space M] [IsManifold I ∞ M]
-    [VectorBundle ℝ F V]
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
 
 local notation "TM" => TangentSpace I
 
@@ -1527,6 +1618,7 @@ lemma LinearEquiv.comap_isCompl {R R₂ M M₂ : Type*}
     · simp
     · simp
 
+omit [ContMDiffVectorBundle 1 F V I] in
 lemma horiz_vert_direct_sum [ContMDiffVectorBundle 1 F V I]
     (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     IsCompl (cov.horiz v) (vert v) := by
@@ -1543,6 +1635,7 @@ lemma horiz_vert_direct_sum [ContMDiffVectorBundle 1 F V I]
 variable [IsManifold I 1 M]
 variable {cov : CovariantDerivative I F V}
 
+omit [ContMDiffVectorBundle 1 F V I] in
 lemma proj_mderiv [ContMDiffVectorBundle 1 F V I]
     {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x} (x : M)
     (hX : MDiffAt (T% X) x)
