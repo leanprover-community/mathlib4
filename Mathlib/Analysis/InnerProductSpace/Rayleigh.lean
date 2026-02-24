@@ -104,7 +104,7 @@ theorem norm_eq_iSup_rayleighQuotient (hT : T.IsSymmetric) :
     ‖T‖ = ⨆ x, |T.rayleighQuotient x| := by
   set M := ⨆ x, |T.rayleighQuotient x|
   have nonneg : 0 ≤ M := le_ciSup_of_le T.bddAbove_rayleighQuotient 0 (abs_nonneg _)
-  have hM x : |re ⟪T x, x⟫_𝕜| ≤ M * ‖x‖ ^ 2 := by
+  have hM x : |re ⟪T x, x⟫| ≤ M * ‖x‖ ^ 2 := by
     have hM : |T.rayleighQuotient x| ≤ M := le_ciSup T.bddAbove_rayleighQuotient x
     by_cases hx : 0 < ‖x‖ ^ 2
     · rwa [rayleighQuotient, abs_div, abs_sq, reApplyInnerSelf, div_le_iff₀ hx] at hM
@@ -112,7 +112,7 @@ theorem norm_eq_iSup_rayleighQuotient (hT : T.IsSymmetric) :
   refine le_antisymm ?_ (ciSup_le T.rayleighQuotient_le_norm)
   refine opNorm_le_of_re_inner_le nonneg fun x y hx hy ↦ ?_
   transitivity M * (‖x + y‖ ^ 2 + ‖x - y‖ ^ 2) / 4
-  · have key := congrArg re (add_conj ⟪T x, y⟫_𝕜)
+  · have key := congrArg re (add_conj ⟪T x, y⟫)
     rw [map_add, conj_inner_symm, ← coe_coe, ← hT, coe_coe, re_mul_ofReal, ofNat_re] at key
     grind [inner_add_left, inner_add_right, inner_sub_left, inner_sub_right]
   · rw [parallelogram_law_with_norm 𝕜 x y, hx, hy]
