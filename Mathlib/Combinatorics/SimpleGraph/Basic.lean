@@ -271,7 +271,7 @@ instance infSet : InfSet (SimpleGraph V) where
   sInf s :=
     { Adj a b := (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
       symm _ _ := And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
-      loopless := ⟨fun _ h ↦ h.right rfl⟩ }
+      loopless := ⟨fun _ h => h.2 rfl⟩ }
 
 @[simp]
 theorem sSup_adj {s : Set (SimpleGraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
