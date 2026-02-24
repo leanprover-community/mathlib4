@@ -245,7 +245,7 @@ instance : Compl (SimpleGraph V) where
   compl G :=
     { Adj v w := v ≠ w ∧ ¬G.Adj v w
       symm v w h := ⟨h.left.symm, by tauto⟩
-      loopless := ⟨fun v h ↦ (h.left rfl).elim⟩ }
+      loopless := ⟨fun _ ⟨hne, _⟩ => (hne rfl).elim⟩ }
 
 @[simp]
 theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ ¬G.Adj v w :=
