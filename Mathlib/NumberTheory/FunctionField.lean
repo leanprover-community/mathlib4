@@ -248,6 +248,7 @@ attribute [-instance] RatFunc.valuedRatFunc
 
 /- Locally add the uniform space structure coming from the valuation at infinity. This instance
 is scoped in the `FqtInfty` namescape in case it is needed in the future. -/
+/-- The uniform space structure on `RatFunc Fq` coming from the valuation at infinity. -/
 scoped instance : UniformSpace (RatFunc Fq) := (inftyValuedFqt Fq).toUniformSpace
 
 /-- The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the valuation at infinity. -/
