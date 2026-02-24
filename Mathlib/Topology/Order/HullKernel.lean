@@ -110,6 +110,7 @@ lemma preimage_upperClosure_compl_finset (hT : ∀ p ∈ T, InfPrime p) (F : Fin
 
 variable [TopologicalSpace α] [IsLower α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 The relative-open sets of the form `(hull T a)ᶜ` for `a` in `α` form a basis for the relative
 Lower topology.

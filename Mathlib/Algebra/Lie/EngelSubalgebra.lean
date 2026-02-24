@@ -71,6 +71,7 @@ lemma self_mem_engel (x : L) : x ∈ engel R x := by
   simp only [mem_engel_iff]
   exact ⟨1, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma engel_zero : engel R (0 : L) = ⊤ := by
   rw [eq_top_iff]
@@ -98,6 +99,7 @@ lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
 
 variable {R}
 
+set_option backward.isDefEq.respectTransparency false in
 open Filter in
 /-- A Lie-subalgebra of an Artinian Lie algebra is self-normalizing
 if it contains an Engel subalgebra.

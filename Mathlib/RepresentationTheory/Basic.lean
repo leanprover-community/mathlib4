@@ -254,6 +254,7 @@ lemma single_smul (t : k) (g : G) (v : ρ.asModule) :
   rw [← LinearMap.smul_apply, ← asAlgebraHom_single, ← asModuleEquiv_map_smul]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower k k[G] ρ.asModule where
   smul_assoc t x v := by
     revert t
@@ -481,6 +482,7 @@ noncomputable instance :
     HMul k[G] (ofMulAction k G G).asModule k[G] :=
   inferInstanceAs <| HMul k[G] k[G] k[G]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofMulAction_self_smul_eq_mul (x : k[G]) (y : (ofMulAction k G G).asModule) :
     x • y = (x * y : k[G]) := by
   induction x using MonoidAlgebra.induction_on with
@@ -722,6 +724,7 @@ lemma free_single_single (g h : G) (i : α) (r : k) :
 
 variable (k G) (α : Type*)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free `k[G]`-module on a type `α` is isomorphic to the representation `free k G α`. -/
 noncomputable def finsuppLEquivFreeAsModule : (α →₀ k[G]) ≃ₗ[k[G]] (free k G α).asModule :=
   { AddEquiv.refl _ with

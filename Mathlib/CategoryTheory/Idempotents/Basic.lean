@@ -59,6 +59,7 @@ class IsIdempotentComplete : Prop where
 
 namespace Idempotents
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A category is idempotent complete iff for all idempotent endomorphisms,
 the equalizer of the identity and this idempotent exists. -/
 theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
@@ -139,6 +140,7 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
     slice_rhs 2 3 => rw [hpp']
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Equivalence.isIdempotentComplete {D : Type*} [Category* D] (ε : C ≌ D)
     (h : IsIdempotentComplete C) : IsIdempotentComplete D := by
   refine ⟨?_⟩

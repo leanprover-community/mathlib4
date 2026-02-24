@@ -174,6 +174,7 @@ noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n 
     (taylorLinearEquiv r n).symm = taylorLinearEquiv (-r) n :=
   LinearEquiv.ext <| fun _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem det_taylorLinearEquiv_toLinearMap :
     (taylorLinearEquiv r n).toLinearMap.det = 1 := by
   nontriviality R
@@ -188,6 +189,7 @@ noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n 
     change (taylor r (degreeLT.basis R n j)).coeff i = 0
     rw [degreeLT.basis_val, coeff_eq_zero_of_degree_lt (by simpa [-taylor_X_pow, -taylor_pow])]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem det_taylorLinearEquiv :
     (taylorLinearEquiv r n).det = 1 :=
   Units.ext <| by rw [LinearEquiv.coe_det, det_taylorLinearEquiv_toLinearMap, Units.val_one]

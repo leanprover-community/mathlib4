@@ -123,6 +123,7 @@ lemma LocallyFiniteOrder.orderAddMonoidHom_strictMono :
   intro g H
   simpa [addMonoidHom, H.le]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma LocallyFiniteOrder.orderAddMonoidHom_bijective [Nontrivial G] :
     Function.Bijective (orderAddMonoidHom G) := by
   refine ⟨orderAddMonoidHom_strictMono.injective, ?_⟩

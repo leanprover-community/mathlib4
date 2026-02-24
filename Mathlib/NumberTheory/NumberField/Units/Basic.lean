@@ -42,6 +42,7 @@ open NumberField Units
 
 section Rat
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
   simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
     RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
@@ -55,6 +56,7 @@ section IsUnit
 
 variable {K}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
@@ -229,6 +231,7 @@ section odd
 
 variable {K}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem torsion_eq_one_or_neg_one_of_odd_finrank
     (h : Odd (Module.finrank ℚ K)) (x : torsion K) : (x : (𝓞 K)ˣ) = 1 ∨ (x : (𝓞 K)ˣ) = -1 := by
   by_cases! hc : 2 < orderOf (x : (𝓞 K)ˣ)

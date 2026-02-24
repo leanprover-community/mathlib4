@@ -139,6 +139,7 @@ variable (x : PGame.{u})
 theorem neg_birthday_le : -x.birthday.toPGame ≤ x := by
   simpa only [birthday_neg, ← neg_le_iff] using le_birthday (-x)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.birthday
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
@@ -278,6 +279,7 @@ theorem birthday_sub_le (x y : Game) : (x - y).birthday ≤ x.birthday ♯ y.bir
 /- The bound `(x * y).birthday ≤ x.birthday ⨳ y.birthday` is currently an open problem. See
   https://mathoverflow.net/a/476829/147705. -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Games with bounded birthday are a small set. -/
 theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birthday x < o} := by
   induction o using Ordinal.induction with | h o IH =>

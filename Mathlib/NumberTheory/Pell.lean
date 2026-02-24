@@ -210,6 +210,7 @@ theorem d_pos_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : 0 < d := by
   rw [a.prop_y, sub_pos]
   exact one_lt_pow₀ ha two_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a solution has `x > 1`, then `d` is not a square. -/
 theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare d := by
   have hp := a.prop
@@ -217,6 +218,7 @@ theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare 
   simp_rw [← sq, ← mul_pow, sq_sub_sq, Int.mul_eq_one_iff_eq_one_or_neg_one] at hp
   lia
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A solution with `x = 1` is trivial. -/
 theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) : a = 1 := by
   have prop := a.prop_y
@@ -293,6 +295,7 @@ theorem sign_y_zpow_eq_sign_of_x_pos_of_y_pos {a : Solution₁ d} (hax : 0 < a.x
   · rw [zpow_negSucc]
     exact Int.sign_eq_neg_one_of_neg (neg_neg_of_pos (y_pow_succ_pos hax hay n))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `a` is any solution, then one of `a`, `a⁻¹`, `-a`, `-a⁻¹` has
 positive `x` and nonnegative `y`. -/
 theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
@@ -383,6 +386,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     refine div_ne_zero_iff.mpr ⟨?_, hm₀⟩
     exact mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `d` is a positive integer, then there is a nontrivial solution
 to the Pell equation `x^2 - d*y^2 = 1` if and only if `d` is not a square. -/
 theorem exists_iff_not_isSquare (h₀ : 0 < d) :
@@ -402,6 +406,7 @@ theorem exists_nontrivial_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   refine ⟨mk x y prop, fun H => ?_, fun H => ?_⟩ <;> apply_fun Solution₁.y at H <;>
     simp [hy] at H
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `d` is a positive integer that is not a square, then there exists a solution
 to the Pell equation `x^2 - d*y^2 = 1` with `x > 1` and `y > 0`. -/
 theorem exists_pos_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
@@ -526,6 +531,7 @@ theorem x_le_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ 
     a₁.x ≤ a.x :=
   h.2.2 hax
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `y`-coordinate of a fundamental solution is a lower bound for the `y`-coordinate
 of any positive solution. -/
 theorem y_le_y {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
@@ -565,6 +571,7 @@ theorem mul_inv_x_pos {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solut
     _ = (a.x ^ 2 - 1) * a₁.x := by rw [← a.prop_y]; ring
     _ < a.x * (a.x * a₁.x) := by linarith [h.1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If we multiply a positive solution with the inverse of a fundamental solution,
 the `x`-coordinate decreases. -/
 theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)

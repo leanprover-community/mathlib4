@@ -137,6 +137,7 @@ def toLax : B ⥤ᴸ C where
 instance hasCoeToLax : Coe (B ⥤ᵖ C) (B ⥤ᴸ C) :=
   ⟨toLax⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity pseudofunctor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᵖ B where
@@ -147,6 +148,7 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᵖ B where
 instance : Inhabited (B ⥤ᵖ B) :=
   ⟨id B⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of pseudofunctors. -/
 @[simps]
 def comp (F : B ⥤ᵖ C) (G : C ⥤ᵖ D) : B ⥤ᵖ D where

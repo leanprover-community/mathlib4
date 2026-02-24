@@ -22,15 +22,14 @@ def foo : Mathlib.TacticAnalysis.Config :=
     (reportSuccess := true) (reportFailure := true)
 
 /--
-warning: `simp only` left unsolved goals where `simp` succeeded.
+warning: `simp only` failed where `simp` succeeded.
 Original tactic:
   simp
-Replacement tactic:
-  simp only
-Unsolved goals:
-  [⊢ (List.map (fun x => x + 1) [1, 2, 3]).sum = 9 ]
+Counterexample:
+  import Init.Data.List.Basic
 -/
-#guard_msgs in
+-- The counterexample name contains a number that varies between runs, so we can't fully test this.
+#guard_msgs (substring := true) in
 set_option linter.tacticAnalysis.dummy true in
 example : List.sum ([1,2,3].map fun x ↦ x + 1) = 9 := by
   simp
@@ -422,3 +421,22 @@ set_option linter.tacticAnalysis.unknownTacticTest true in
 example : 1 + 1 = 2 := by rfl
 
 end unknownTactic
+
+section verifyGrindSuggestions
+
+-- Test that verifyGrind doesn't crash and doesn't report false positives
+-- When grind? succeeds and its suggestion works, no warning should be produced
+-- (Info messages from grind? are suppressed; only failures produce warnings)
+
+#guard_msgs in
+set_option linter.tacticAnalysis.verifyGrind true in
+example : 1 + 1 = 2 := by
+  rfl
+
+-- Test with grind? +suggestions
+#guard_msgs in
+set_option linter.tacticAnalysis.verifyGrindSuggestions true in
+example : 1 + 1 = 2 := by
+  rfl
+
+end verifyGrindSuggestions

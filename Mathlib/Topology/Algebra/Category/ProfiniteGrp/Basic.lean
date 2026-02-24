@@ -227,13 +227,19 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
   letI : IsTopologicalGroup G := {}
   of G
 
+/-- A morphism of `FiniteGrp` induces a morphism of the associated profinite groups. -/
+@[to_additive /-- A morphism of `FiniteAddGrp` induces a morphism of the associated profinite
+additive groups. -/]
+def ofFiniteGrpHom {G H : FiniteGrp.{u}} (f : G ⟶ H) : ofFiniteGrp G ⟶ ofFiniteGrp H :=
+  ConcreteCategory.ofHom ⟨f.hom.hom, by continuity⟩
+
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : HasForget₂ FiniteGrp ProfiniteGrp where
   forget₂ :=
   { obj := ofFiniteGrp
-    map f := ⟨f.hom.hom, by continuity⟩ }
+    map := ofFiniteGrpHom }
 
 @[to_additive]
 instance : HasForget₂ ProfiniteGrp GrpCat where

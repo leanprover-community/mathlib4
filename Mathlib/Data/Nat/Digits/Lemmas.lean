@@ -384,6 +384,7 @@ theorem bijOn_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (digitsAppend b l) {n | n < b ^ l} {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=
   (bijOn_ofDigits hb l).symm (setInvOn_digitsAppend_ofDigits hb l).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_digits_ofDigits_eq_sum {b : ℕ} (hb : 1 < b) {l : ℕ} {L : List ℕ}
     (hL : L ∈ {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b}) :
     (b.digits (ofDigits b L)).sum = L.sum := by

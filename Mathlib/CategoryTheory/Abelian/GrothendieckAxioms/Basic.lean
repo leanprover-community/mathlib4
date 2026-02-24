@@ -555,6 +555,7 @@ variable [Abelian C] (J : Type u') [Category.{v'} J]
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
   preservesBinaryBiproducts_of_preservesBinaryProducts
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `colim` of shape `J` into an abelian category `C` preserves monomorphisms, then `C` has exact
 colimits of shape `J`.
@@ -566,6 +567,7 @@ lemma hasExactColimitsOfShape_of_preservesMono [HasColimitsOfShape J C]
     · exact preservesHomology_of_preservesMonos_and_cokernels _
     · exact additive_of_preservesBinaryBiproducts _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `lim` of shape `J` into an abelian category `C` preserves epimorphisms, then `C` has exact
 limits of shape `J`.

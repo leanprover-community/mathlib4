@@ -534,40 +534,54 @@ This is an abbreviation for `veblen 1`. -/
 abbrev epsilon := veblen 1
 
 @[inherit_doc] scoped notation "ε_ " => epsilon
+recommended_spelling "epsilon" for "ε_ " in [epsilon, «termε_»]
 
 /-- `ε₀` is the first fixed point of `ω ^ ⬝`, i.e. the supremum of `ω`, `ω ^ ω`, `ω ^ ω ^ ω`, … -/
 scoped notation "ε₀" => ε_ 0
+recommended_spelling "epsilon_zero" for "ε₀" in [«termε₀»]
 
 theorem epsilon_eq_deriv (o : Ordinal) : ε_ o = deriv (fun a ↦ ω ^ a) o := by
   rw [epsilon, ← succ_zero, veblen_succ, veblen_zero]
 
-theorem epsilon0_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
+theorem epsilon_zero_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
   rw [epsilon_eq_deriv, deriv_zero_right]
+
+@[deprecated (since := "2026-02-02")]
+alias epsilon0_eq_nfp := epsilon_zero_eq_nfp
 
 theorem epsilon_succ_eq_nfp (o : Ordinal) : ε_ (succ o) = nfp (fun a ↦ ω ^ a) (succ (ε_ o)) := by
   rw [epsilon_eq_deriv, epsilon_eq_deriv, deriv_succ]
 
-theorem epsilon0_le_of_omega0_opow_le (h : ω ^ o ≤ o) : ε₀ ≤ o := by
-  rw [epsilon0_eq_nfp]
+theorem epsilon_zero_le_of_omega0_opow_le (h : ω ^ o ≤ o) : ε₀ ≤ o := by
+  rw [epsilon_zero_eq_nfp]
   exact nfp_le_fp (fun _ _ ↦ (opow_le_opow_iff_right one_lt_omega0).2) (zero_le o) h
+
+@[deprecated (since := "2026-02-02")]
+alias epsilon0_le_of_omega0_opow_le := epsilon_zero_le_of_omega0_opow_le
 
 @[simp]
 theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
   rw [epsilon_eq_deriv, deriv_fp (isNormal_opow one_lt_omega0)]
 
 /-- `ε₀` is the limit of `0`, `ω ^ 0`, `ω ^ ω ^ 0`, … -/
-theorem lt_epsilon0 : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
-  rw [epsilon0_eq_nfp, lt_nfp_iff]
+theorem lt_epsilon_zero : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
+  rw [epsilon_zero_eq_nfp, lt_nfp_iff]
+
+@[deprecated (since := "2026-02-02")]
+alias lt_epsilon0 := lt_epsilon_zero
 
 /-- `ω ^ ω ^ … ^ 0 < ε₀` -/
-theorem iterate_omega0_opow_lt_epsilon0 (n : ℕ) : (fun a ↦ ω ^ a)^[n] 0 < ε₀ := by
-  rw [epsilon0_eq_nfp]
+theorem iterate_omega0_opow_lt_epsilon_zero (n : ℕ) : (fun a ↦ ω ^ a)^[n] 0 < ε₀ := by
+  rw [epsilon_zero_eq_nfp]
   apply iterate_lt_nfp (isNormal_opow one_lt_omega0).strictMono
   simp
 
+@[deprecated (since := "2026-02-02")]
+alias iterate_omega0_opow_lt_epsilon0 := iterate_omega0_opow_lt_epsilon_zero
+
 theorem omega0_lt_epsilon (o : Ordinal) : ω < ε_ o := by
   apply lt_of_lt_of_le _ <| (veblen_right_strictMono _).monotone (zero_le o)
-  simpa using iterate_omega0_opow_lt_epsilon0 2
+  simpa using iterate_omega0_opow_lt_epsilon_zero 2
 
 theorem natCast_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
   (nat_lt_omega0 n).trans <| omega0_lt_epsilon o
@@ -589,12 +603,13 @@ Of particular importance is `Γ₀ = gamma 0`, the Feferman-Schütte ordinal. -/
 def gamma : Ordinal → Ordinal :=
   deriv (veblen · 0)
 
-@[inherit_doc]
-scoped notation "Γ_ " => gamma
+@[inherit_doc] scoped notation "Γ_ " => gamma
+recommended_spelling "gamma" for "Γ_ " in [gamma, «termΓ_»]
 
 /-- The Feferman-Schütte ordinal `Γ₀` is the smallest fixed point of `veblen · 0`, i.e. the supremum
 of `veblen ε₀ 0`, `veblen (veblen ε₀ 0) 0`, etc. -/
 scoped notation "Γ₀" => Γ_ 0
+recommended_spelling "gamma_zero" for "Γ₀" in [«termΓ₀»]
 
 theorem isNormal_gamma : IsNormal gamma :=
   isNormal_deriv _
@@ -624,32 +639,47 @@ theorem gamma_inj : Γ_ a = Γ_ b ↔ a = b :=
 theorem veblen_gamma_zero (o : Ordinal) : veblen (Γ_ o) 0 = Γ_ o :=
   deriv_fp isNormal_veblen_zero o
 
-theorem gamma0_eq_nfp : Γ₀ = nfp (veblen · 0) 0 :=
+theorem gamma_zero_eq_nfp : Γ₀ = nfp (veblen · 0) 0 :=
   deriv_zero_right _
+
+@[deprecated (since := "2026-02-02")]
+alias gamma0_eq_nfp := gamma_zero_eq_nfp
 
 theorem gamma_succ_eq_nfp (o : Ordinal) : Γ_ (succ o) = nfp (veblen · 0) (succ (Γ_ o)) :=
   deriv_succ _ _
 
-theorem gamma0_le_of_veblen_le (h : veblen o 0 ≤ o) : Γ₀ ≤ o := by
-  rw [gamma0_eq_nfp]
+theorem gamma_zero_le_of_veblen_le (h : veblen o 0 ≤ o) : Γ₀ ≤ o := by
+  rw [gamma_zero_eq_nfp]
   exact nfp_le_fp (veblen_left_monotone 0) (zero_le o) h
 
+@[deprecated (since := "2026-02-02")]
+alias gamma0_le_of_veblen_le := gamma_zero_le_of_veblen_le
+
 /-- `Γ₀` is the limit of `0`, `veblen 0 0`, `veblen (veblen 0 0) 0`, … -/
-theorem lt_gamma0 : o < Γ₀ ↔ ∃ n : ℕ, o < (fun a ↦ veblen a 0)^[n] 0 := by
-  rw [gamma0_eq_nfp, lt_nfp_iff]
+theorem lt_gamma_zero : o < Γ₀ ↔ ∃ n : ℕ, o < (fun a ↦ veblen a 0)^[n] 0 := by
+  rw [gamma_zero_eq_nfp, lt_nfp_iff]
+
+@[deprecated (since := "2026-02-02")]
+alias lt_gamma0 := lt_gamma_zero
 
 /-- `veblen (veblen … (veblen 0 0) … 0) 0 < Γ₀` -/
-theorem iterate_veblen_lt_gamma0 (n : ℕ) : (fun a ↦ veblen a 0)^[n] 0 < Γ₀ := by
-  rw [gamma0_eq_nfp]
+theorem iterate_veblen_lt_gamma_zero (n : ℕ) : (fun a ↦ veblen a 0)^[n] 0 < Γ₀ := by
+  rw [gamma_zero_eq_nfp]
   apply iterate_lt_nfp veblen_zero_strictMono
   simp
 
-theorem epsilon0_lt_gamma (o : Ordinal) : ε₀ < Γ_ o := by
-  apply lt_of_lt_of_le _ <| (gamma_le_gamma.2 (zero_le _))
-  simpa using iterate_veblen_lt_gamma0 2
+@[deprecated (since := "2026-02-02")]
+alias iterate_veblen_lt_gamma0 := iterate_veblen_lt_gamma_zero
+
+theorem epsilon_zero_lt_gamma (o : Ordinal) : ε₀ < Γ_ o := by
+  apply (gamma_le_gamma.2 (zero_le _)).trans_lt'
+  simpa using iterate_veblen_lt_gamma_zero 2
+
+@[deprecated (since := "2026-02-02")]
+alias epsilon0_lt_gamma := epsilon_zero_lt_gamma
 
 theorem omega0_lt_gamma (o : Ordinal) : ω < Γ_ o :=
-  (omega0_lt_epsilon 0).trans (epsilon0_lt_gamma o)
+  (omega0_lt_epsilon 0).trans (epsilon_zero_lt_gamma o)
 
 theorem natCast_lt_gamma (n : ℕ) : n < Γ_ o :=
   (nat_lt_omega0 n).trans (omega0_lt_gamma o)

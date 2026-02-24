@@ -128,6 +128,7 @@ variable (B) in
 def id : StrictPseudofunctor B B where
   __ := StrictlyUnitaryPseudofunctor.id B
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictPseudofunctor`. -/
 @[simps!]
 def comp (F : StrictPseudofunctor B C)
