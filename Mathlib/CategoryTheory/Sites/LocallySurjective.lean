@@ -465,10 +465,11 @@ lemma ofArrows_mem_iff_isLocallySurjective_sigmaDesc_uliftYoneda_map
     {S : C} {ι : Type*} [Small.{max w v} ι] {X : ι → C} (f : ∀ i, X i ⟶ S) :
     Sieve.ofArrows _ f ∈ J S ↔
       Presheaf.IsLocallySurjective J (Sigma.desc (fun i ↦ uliftYoneda.{w}.map (f i))) := by
-  have : (Sigma.desc fun i ↦ uliftYoneda.{w}.map (f i)) ≫
-      uliftYonedaIsoShrinkYoneda.hom.app _ =
-    (Sigma.mapIso (fun i ↦ uliftYonedaIsoShrinkYoneda.app _)).hom ≫
-      (Sigma.desc fun i ↦ shrinkYoneda.{max w v}.map (f i)) := by cat_disch
+  have :
+      (Sigma.desc fun i ↦ uliftYoneda.{w}.map (f i)) ≫
+        uliftYonedaIsoShrinkYoneda.hom.app _ =
+      (Sigma.mapIso (fun i ↦ uliftYonedaIsoShrinkYoneda.app _)).hom ≫
+        (Sigma.desc fun i ↦ shrinkYoneda.{max w v}.map (f i)) := by cat_disch
   rw [ofArrows_mem_iff_isLocallySurjective_sigmaDesc_shrinkYoneda_map.{max w v} J f,
     ← Presheaf.isLocallySurjective_comp_iff J _ (uliftYonedaIsoShrinkYoneda.hom.app _),
     this, Presheaf.comp_isLocallySurjective_iff]
