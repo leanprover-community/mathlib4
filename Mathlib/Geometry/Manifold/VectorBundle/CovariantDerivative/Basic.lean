@@ -27,6 +27,43 @@ open Bundle Filter Module Topology Set
 
 open scoped Bundle Manifold ContDiff
 
+@[expose] public section delaborators
+
+-- TODO: decide whether we want this and move
+-- This delaborates `TotalSpace.mk x v` to `⟨x, v⟩`
+open Lean PrettyPrinter Delaborator SubExpr
+
+@[app_delab TotalSpace.mk] meta def delabTotalSpace_mk : Delab := do
+  whenPPOption getPPNotation do
+  let #[_B, _F, _E, _b, _v] := (← getExpr).getAppArgs | failure
+  let bd : Term ← withNaryArg 3 <| delab
+  let vd : Term ← withNaryArg 4 <| delab
+  `(⟨$bd, $vd⟩)
+
+@[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
+  whenPPOption getPPNotation do
+  let args := (← getExpr).getAppArgs
+  if args.size < 22 then failure
+  let pt : Term ← withNaryArg 21 <| delab
+  let f := args[20]!
+  try
+    if let .lam _ _ b _ := f then
+      if b.isAppOf ``Bundle.TotalSpace.mk' then
+        let s := b.getAppArgs[4]!.getAppFn
+        let ss ← PrettyPrinter.delab s
+        return ← `(MDiffAt (T% $ss) $pt)
+        -- if let .const name _ := s then
+        --   let i := mkIdent name
+        --   return ← `(MDiffAt (T% $i) $pt)
+        -- else
+        --   failure
+    failure
+  catch _ =>
+    let x : Term ← withNaryArg 20 <| delab
+    return ← `(MDiffAt $x $pt)
+
+end delaborators
+
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 @[expose] public section -- TODO: think if we want to expose all definitions!
@@ -188,6 +225,7 @@ lemma mfderiv_const_smul (s : M → F) {x : M} (a : 𝕜) (v : TangentSpace I x)
     simp
     rfl
 
+set_option linter.flexible false in -- FIXME
 lemma mfderiv_smul [IsManifold I 1 M] {f : M → F} {s : M → 𝕜} {x : M} (hf : MDiffAt f x)
     (hs : MDiffAt s x) (v : TangentSpace I x) :
     letI dsxv : 𝕜 := mfderiv I 𝓘(𝕜, 𝕜) s x v
@@ -833,25 +871,68 @@ namespace IsCovariantDerivativeOn
 lemma congr_X_at [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M] [VectorBundle ℝ F V]
     {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     {u : Set M} (hcov : IsCovariantDerivativeOn F cov u)
-    (X X' : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M} (hx : x ∈ u) (hXX' : X x = X' x) :
+    {X X' : Π x : M, TangentSpace I x}
+    {σ : Π x : M, V x} {x : M}
+    (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x)
+    (hσ : MDiffAt (T% σ) x)
+    (hx : x ∈ u) (hXX' : X x = X' x) :
     cov X σ x = cov X' σ x := by
-  apply tensoriality_criterion' (E := E) (I := I) E (TangentSpace I) F V hXX'
-  · intro f X
-    rw [hcov.smulX]
-    repeat sorry -- TODO: need to assume X, σ, f are C^k at x
-  · intro X X'
-    rw [hcov.addX]
-    all_goals sorry
+  refine tensoriality_criterion I E (TangentSpace I) (φ := fun X ↦ cov X σ)  F V hX hX' hXX' ?_ ?_
+  · intro f X hf hX
+    exact hcov.smulX hX hσ hf hx
+  · intro X X' hX hX'
+    exact hcov.addX hX hX' hσ hx
+
+lemma congr_σ_smoothBumpFunction [T2Space M] [IsManifold I ∞ M]
+    [FiniteDimensional ℝ E]
+    {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    {u : Set M} (hcov : IsCovariantDerivativeOn F cov u)
+    (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x}
+    (hX : MDiffAt (T% X) x)
+    (hσ : MDiffAt (T% σ) x)
+    (f : SmoothBumpFunction I x)
+    (hx : x ∈ u) :
+    cov X ((f : M → ℝ) • σ) x = cov X σ x := by
+  have hf : MDiffAt f x := f.contMDiffAt.mdifferentiableAt (by simp)
+  have := hcov.leibniz hX hσ hf hx
+  rw [hcov.leibniz hX hσ _ hx]
+  swap; · apply f.contMDiff.mdifferentiable (by norm_num)
+  calc _
+    _ = cov X σ x + 0 := ?_
+    _ = cov X σ x := by rw [add_zero]
+  suffices mfderiv% (1 : M → ℝ) x (X x) = 0 ∨ σ x = 0 by
+    simpa [f.eq_one, f.eventuallyEq_one.mfderiv_eq]
+  rw [show mfderiv I 𝓘(ℝ, ℝ) 1 x = 0 by apply mfderiv_const]
+  left
+  rfl
 
 lemma congr_σ_of_eqOn [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M] [VectorBundle ℝ F V]
     {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
-    (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} {x : M} (hxu : s ∈ 𝓝 x)
+    {X : Π x : M, TangentSpace I x} {σ σ' : Π x : M, V x}
+    (hX : MDiffAt (T% X) x)
+    (hσ : MDiffAt (T% σ) x)
+    (hσ' : MDiffAt (T% σ') x)
+    (hxs : s ∈ 𝓝 x)
     (hσσ' : ∀ x ∈ s, σ x = σ' x) :
     cov X σ x = cov X σ' x := by
-  sorry -- Note there is a commented out version of this lemma at the bottom
+  -- Choose a smooth bump function ψ with support around `x` contained in `s`
+  obtain ⟨ψ, _, hψ⟩ := (SmoothBumpFunction.nhds_basis_support (I := I) hxs).mem_iff.1 hxs
+  -- Observe that `ψ • σ = ψ • σ'` as dependent functions.
+  have (x : M) : ((ψ : M → ℝ) • σ) x = ((ψ : M → ℝ) • σ') x := by
+    by_cases h : x ∈ s
+    · simp [hσσ' x h]
+    · simp [Function.notMem_support.mp fun a ↦ h (hψ a)]
+  -- Then, it's a chain of (dependent) equalities.
+  calc cov X σ x
+    _ = cov X ((ψ : M → ℝ) • σ) x := by
+          rw [hcov.congr_σ_smoothBumpFunction X hX hσ ψ (mem_of_mem_nhds hxs)]
+    _ = cov X ((ψ : M → ℝ) • σ') x := by rw [funext this]
+    _ = cov X σ' x := by
+          rw [hcov.congr_σ_smoothBumpFunction X hX hσ' ψ (mem_of_mem_nhds hxs)]
 
 -- TODO: prove that `cov X σ x` depends on σ only via σ(X) and the 1-jet of σ at x
+-- this should be easy using the projection formula below.
 
 /-- The difference of two covariant derivatives, as a function `Γ(TM) × Γ(E) → Γ(E)`.
 Future lemmas will upgrade this to a map `TM ⊕ E → E`. -/
@@ -891,11 +972,13 @@ lemma differenceAux_smul_eq'
     {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     {u : Set M} (hcov : IsCovariantDerivativeOn F cov u)
     (hcov' : IsCovariantDerivativeOn F cov' u)
-    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ)
-    {x : M} (hx : x ∈ u := by trivial) :
+    {X : Π x : M, TangentSpace I x}
+    (hX : MDiffAt (T% X) x)
+    {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x)
+    {f : M → ℝ} (hf : MDiffAt f x)
+    (hx : x ∈ u := by trivial) :
     differenceAux cov cov' (f • X) σ x = f x • differenceAux cov cov' X σ x := by
-  sorry -- TODO: need to assume X, σ and f are differentiable!
-  -- simp only [differenceAux, Pi.apply, hcov.smulX, hcov'.smulX, smul_sub]
+  simp [differenceAux, hcov.smulX hX hσ hf, hcov'.smulX hX hσ hf, smul_sub]
 
 /-- The value of `differenceAux cov cov' X σ` at `x₀` depends only on `X x₀` and `σ x₀`. -/
 lemma differenceAux_tensorial
@@ -917,7 +1000,7 @@ lemma differenceAux_tensorial
     -- TODO: is there a version of `tensoriality_criterion` which does not require `hX`?
     apply tensoriality_criterion (E := E) (I := I) E (TangentSpace I) F V hX hX' hXX'
     · intro f X hf hX
-      exact hcov.differenceAux_smul_eq' hcov' ..
+      exact hcov.differenceAux_smul_eq' hcov' hX hσ hf
     · intro X X' hX hX'
       unfold φ differenceAux
       simp only [Pi.sub_apply, hcov.addX hX hX' hσ, hcov'.addX hX hX' hσ]
@@ -1168,16 +1251,7 @@ lemma Trivialization.fst_comp_eventuallyEq
   filter_upwards [this] with y hy
   exact coe_fst' e hy
 
--- TODO: decide whether we want this and move
--- This delaborates `TotalSpace.mk x v` to `⟨x, v⟩`
-open Lean PrettyPrinter Delaborator SubExpr in
-@[app_delab TotalSpace.mk] meta def delabTotalSpace_mk : Delab := do
-  whenPPOption getPPNotation do
-  let #[_B, _F, _E, _b, _v] := (← getExpr).getAppArgs | failure
-  let bd : Term ← withNaryArg 3 <| delab
-  let vd : Term ← withNaryArg 4 <| delab
-  `(⟨$bd, $vd⟩)
-
+omit [IsManifold I 1 M] in
 lemma Trivialization.mdifferentiableAt
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {x : M} (hx : x ∈ e.baseSet) (v : V x) :
@@ -1187,10 +1261,12 @@ MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v := by
   have := foo.contMDiffAt (e.open_source.mem_nhds this)
   exact this.mdifferentiableAt zero_ne_one.symm
 
+omit [IsManifold I 1 M] in
 noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
   (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj v).ker
 
+omit [IsManifold I 1 M] in
 lemma Trivialization.comap_vert
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
@@ -1216,6 +1292,7 @@ lemma Trivialization.eq_of {x : M} {v v' : V x}
   rw [hvv'] at this
   grind [e.symm_proj_apply v' hx]
 
+omit [IsManifold I 1 M] in
 lemma Trivialization.derivEquiv_mfderiv
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {σ : Π x : M, V x} {x : M} (hσ : MDiffAt T%σ x)
@@ -1260,13 +1337,15 @@ lemma Trivialization.pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensio
     [VectorBundle ℝ F V]
     {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     (hcov : IsCovariantDerivativeOn F cov e.baseSet)
-    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) {x : M}
+    {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x} {x : M}
+    (hX : MDiffAt T%X x) (hσ : MDiffAt T%σ x)
     (hx : x ∈ e.baseSet := by assumption) :
     (e.pushCovDer cov) X (fun x ↦ (e (σ x)).2) x = (e (cov X σ x)).2 := by
   have : cov X (fun x' ↦ e.symm x' (e (T% σ x')).2) x = cov X σ x := by
-    apply hcov.congr_σ_of_eqOn
+    apply hcov.congr_σ_of_eqOn hX _ hσ
     · exact e.open_baseSet.mem_nhds_iff.mpr hx
     · exact fun y hy ↦ symm_apply_apply_mk e hy (σ y) --FIXME extract as lemma?
+    · sorry
   unfold pushCovDer
   rw [this]
 
@@ -1387,7 +1466,7 @@ lemma proj_mderiv [ContMDiffVectorBundle 1 F V I]
     exact (mdifferentiableAt_section I s).mpr hσ
   apply t.eq_of hx
   rw  [cov.snd_triv_proj (T% σ x),
-       ← t.pushCovDer_ofSect (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _) X σ,
+       ← t.pushCovDer_ofSect (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _) hX hσ,
        hcov.cov_eq_proj X s hX hs, t.derivEquiv_mfderiv hσ _ hx]
 
 end CovariantDerivative
@@ -1395,93 +1474,6 @@ end horiz
 
 end real
 
-
-/- the following lemmas are subsubmed by tensoriality_criterion
-  XXX should they be extracted as separate lemmas (stated twice)?
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
-  [VectorBundle ℝ F V] in
-/-- If `X` and `X'` agree in a neighbourhood of `p`, then `∇_X σ` and `∇_X' σ` agree at `p`. -/
-lemma congr_X_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M]
-    {X X' : Π x : M, TangentSpace I x} {σ : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
-    (hσσ' : ∀ x ∈ s, X x = X' x) :
-    cov X σ x = cov X' σ x := by
-  -- Choose a smooth bump function ψ with support around `x` contained in `s`
-  obtain ⟨ψ, _, hψ⟩ := (SmoothBumpFunction.nhds_basis_support (I := I) hs).mem_iff.1 hs
-  -- Observe that `ψ • X = ψ • X'` as dependent functions.
-  have (x : M) : ((ψ : M → ℝ) • X) x = ((ψ : M → ℝ) • X') x := by
-    by_cases h : x ∈ s
-    · simp [hσσ' x h]
-    · simp [notMem_support.mp fun a ↦ h (hψ a)]
-  -- Then, it's a chain of (dependent) equalities.
-  calc cov X σ x
-    _ = cov ((ψ : M → ℝ) • X) σ x := by simp [cov.smulX]
-    _ = cov ((ψ : M → ℝ) • X') σ x := by rw [funext this]
-    _ = cov X' σ x := by simp [cov.smulX]
-
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
-  [VectorBundle ℝ F V] in
-lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
-    (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M}
-    (hX : X x = 0) : cov X σ x = 0 := by
-  -- Consider the local frame {Xⁱ} on TangentSpace I x induced by chartAt H x.
-  -- To do so, choose a basis of TangentSpace I x = E.
-  let n : ℕ := Module.finrank ℝ E
-  let b : Basis (Fin n) ℝ E := Module.finBasis ℝ E
-  let e := trivializationAt E (TangentSpace I) x
-  let Xi (i : Fin n) := b.localFrame e i
-  -- Write X in coordinates: X = ∑ i, a i • Xi i near `x`.
-  let a := fun i ↦ b.localFrame_coeff e i X
-  have : x ∈ e.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
-  have aux : ∀ᶠ (x' : M) in 𝓝 x, X x' = ∑ i, a i x' • Xi i x' := b.localFrame_eventually_eq_sum_coeff_smul this X
-  have (i : Fin n) : a i x = 0 := b.localFrame_coeff_apply_zero_at hX i
-  calc cov X σ x
-    _ = cov (∑ i, a i • Xi i) σ x := cov.congr_X_of_eventuallyEq aux (by simp)
-    _ = ∑ i, cov (a i • Xi i) σ x := by rw [cov.sum_X]; simp
-    _ = ∑ i, a i x • cov (Xi i) σ x := by
-      congr; ext i; simp [cov.smulX (Xi i) σ (a i)]
-    _ = 0 := by simp [this] -/
-
-/- TODO: are these lemmas still useful after the general tensoriality lemma?
-are they worth extracting separately?
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
-  [VectorBundle ℝ F V] in
-lemma congr_σ_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
-    (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x}
-    (hσ : MDiffAt (T% σ) x)
-    (f : SmoothBumpFunction I x) :
-    cov X ((f : M → ℝ) • σ) x = cov X σ x := by
-  rw [cov.leibniz _ _ _ _ hσ]
-  swap; · apply f.contMDiff.mdifferentiable (by norm_num)
-  calc _
-    _ = cov X σ x + 0 := ?_
-    _ = cov X σ x := by rw [add_zero]
-  simp [f.eq_one, f.eventuallyEq_one.mfderiv_eq]
-  rw [show mfderiv I 𝓘(ℝ, ℝ) 1 x = 0 by apply mfderiv_const]
-  left
-  rfl
-
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
-  [VectorBundle ℝ F V] in
-lemma congr_σ_of_eventuallyEq
-    (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
-    (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
-    (hσ : MDiffAt (T% σ) x)
-    (hσσ' : ∀ x ∈ s, σ x = σ' x) :
-    cov X σ x = cov X σ' x := by
-  -- Choose a smooth bump function ψ with support around `x` contained in `s`
-  obtain ⟨ψ, _, hψ⟩ := (SmoothBumpFunction.nhds_basis_support (I := I) hs).mem_iff.1 hs
-  -- Observe that `ψ • σ = ψ • σ'` as dependent functions.
-  have (x : M) : ((ψ : M → ℝ) • σ) x = ((ψ : M → ℝ) • σ') x := by
-    by_cases h : x ∈ s
-    · simp [hσσ' x h]
-    · simp [notMem_support.mp fun a ↦ h (hψ a)]
-  -- Then, it's a chain of (dependent) equalities.
-  calc cov X σ x
-    _ = cov X ((ψ : M → ℝ) • σ) x := by rw [cov.congr_σ_smoothBumpFunction _ hσ]
-    _ = cov X ((ψ : M → ℝ) • σ') x := sorry -- use simp [funext hσ] and (by simp [this])
-    _ = cov X σ' x := by
-      simp [cov.congr_σ_smoothBumpFunction, mdifferentiableAt_dependent_congr hs hσ hσσ']
--/
 
 -- variable (E E') in
 -- /-- The trivial connection on a trivial bundle, given by the directional derivative -/
