@@ -199,7 +199,7 @@ lemma coeff_apply_of_notMem (hs : IsLocalFrameOn I F n s u) (hx : x ∉ u) (i : 
 
 @[simp]
 lemma coeff_apply_of_mem (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (t : Π x : M, V x) (i : ι) :
-    (hs.coeff i x) (t x) = (hs.toBasisAt hx).repr (t x) i := by
+    hs.coeff i x (t x) = (hs.toBasisAt hx).repr (t x) i := by
   simp [coeff, hx]
 
 lemma coeff_sum_eq [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M, V x) (hx : x ∈ u) :
@@ -208,9 +208,9 @@ lemma coeff_sum_eq [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M, V
 
 lemma eq_of_coeff_eq [Finite ι] (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u)
     {t t' : Π x : M, V x}
-    (h : ∀ i, hs.coeff i x (t x) = (LinearMap.piApply (hs.coeff i)) t' x) :
+    (h : ∀ i, hs.coeff i x (t x) = hs.coeff i x (t' x)) :
     t x = t' x := by
-  letI : Fintype ι := Fintype.ofFinite ι
+  let : Fintype ι := Fintype.ofFinite ι
   calc
     t x = ∑ i, hs.coeff i x (t x) • (s i x) := hs.coeff_sum_eq t hx
     _ = ∑ i, hs.coeff i x (t' x) • (s i x) := by simp [h]
@@ -218,7 +218,7 @@ lemma eq_of_coeff_eq [Finite ι] (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u)
 
 /-- A local frame locally spans the space of sections for `V`: for each local frame `s i` on an open
 set `u` around `x`, we have
-`t = ∑ i, (LinearMap.piApply (hs.coeff i) t) • (s i x)` near `x`. -/
+`t = ∑ i, (hs.coeff i x (t x)) • (s i x)` near `x`. -/
 lemma eventually_eq_sum_coeff_smul [Fintype ι]
     (hs : IsLocalFrameOn I F n s u) (t : Π x : M, V x) (hu'' : u ∈ 𝓝 x) :
     ∀ᶠ x' in 𝓝 x, t x' = ∑ i, hs.coeff i x' (t x') • (s i x') :=
@@ -235,7 +235,7 @@ lemma coeff_congr (hs : IsLocalFrameOn I F n s u) (htt' : t x = t' x) (i : ι) :
 a section `t` has equal frame coefficients in them. -/
 lemma coeff_eq_of_eq (hs : IsLocalFrameOn I F n s u) (hs' : IsLocalFrameOn I F n s' u)
     (hss' : ∀ i, s i x = s' i x) {t : Π x : M, V x} (i : ι) :
-    (hs.coeff i x) (t x) = (hs'.coeff i x) (t x) := by
+    hs.coeff i x (t x) = hs'.coeff i x (t x) := by
   by_cases hxe : x ∈ u
   · simp [coeff, hxe]
     simp_all only [toBasisAt]
@@ -245,13 +245,9 @@ lemma coeff_eq_of_eq (hs : IsLocalFrameOn I F n s u) (hs' : IsLocalFrameOn I F n
 frame at `x` agree. -/
 lemma eq_iff_coeff [VectorBundle 𝕜 F V] [FiniteDimensional 𝕜 F]
     (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) :
-    t x = t' x ↔ ∀ i, (hs.coeff i x) (t x) = (hs.coeff i x) (t' x) := by
-  letI := fintypeOfFiniteDimensional hs hx
+    t x = t' x ↔ ∀ i, hs.coeff i x (t x) = hs.coeff i x (t' x) := by
+  let := fintypeOfFiniteDimensional hs hx
   exact ⟨fun h i ↦ hs.coeff_congr h i, fun h ↦ hs.eq_of_coeff_eq hx h⟩
-
--- TODO: do we still need this lemma?
-lemma coeff_apply_zero_at (hs : IsLocalFrameOn I F n s u) (ht : t x = 0) (i : ι) :
-    (hs.coeff i x) (t x) = 0 := by simp [ht]
 
 variable (hs : IsLocalFrameOn I F n s u) [VectorBundle 𝕜 F V]
 
