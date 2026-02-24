@@ -287,7 +287,6 @@ theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ)
     p.mahlerMeasure ≤ √(p.natDegree + 1) * p.supNorm := by
   -- Proof strategy: Apply Jensen's inequality to the definition of the Mahler measure, then to the
   -- square function, and finally apply Parseval's inequality to the polynomial
-
   -- Instances necessary for Jensen's inequality
   haveI : IsFiniteMeasure (volume.restrict (uIoc 0 (2 * π))) := by
     rw [uIoc_of_le (by positivity)]; infer_instance
