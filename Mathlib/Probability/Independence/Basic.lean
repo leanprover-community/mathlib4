@@ -698,6 +698,35 @@ theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' 
   · intro h s t hs ht
     rw [(h₀ hs ht).1, (h₀ hs ht).2, h, Measure.prod_prod]
 
+/-- If `Y` is independent of itself under a probability measure, then `X` and `Y`
+are independent. Self-independence implies `Y` is a.e. constant. -/
+theorem IndepFun.of_self {Ω A B : Type*} [MeasurableSpace Ω]
+    [MeasurableSpace A] [MeasurableSpace B] {μ : Measure Ω}
+    [IsProbabilityMeasure μ] {X : Ω → A} {Y : Ω → B}
+    (hY : IndepFun Y Y μ) : IndepFun X Y μ := by
+  rw [indepFun_iff_measure_inter_preimage_eq_mul] at *
+  have hY_const : ∀ s : Set B, MeasurableSet s →
+      μ (Y ⁻¹' s) = 0 ∨ μ (Y ⁻¹' s) = 1 := by
+    intro s hs
+    have h_eq : μ (Y ⁻¹' s) = μ (Y ⁻¹' s) * μ (Y ⁻¹' s) := by
+      simpa using hY s s hs hs
+    rcases eq_or_ne (μ (Y ⁻¹' s)) 0 with h | h
+    · exact Or.inl h
+    · right
+      rwa [← ENNReal.toReal_eq_toReal (measure_ne_top μ _)
+        (ENNReal.mul_ne_top (measure_ne_top μ _) (measure_ne_top μ _)),
+        ENNReal.toReal_mul, ← sq, sq_eq_self_iff_of_nonneg (by positivity),
+        ENNReal.toReal_eq_one_iff] at h_eq
+  intro s t hs ht
+  rcases hY_const t ht with h | h
+  · simp [measure_mono_null Set.inter_subset_right h]
+  · rw [h, mul_one]
+    congr 1
+    exact le_antisymm (measure_mono Set.inter_subset_left)
+      (by rwa [← measure_compl_eq_one_iff_eq_one ht] at h
+          exact measure_le_of_compl_le_of_le (measure_mono Set.inter_subset_left)
+            (by simp [measure_mono_null (Set.diff_subset) (by rwa [measure_compl_eq_zero_iff_eq_one ht])]))
+
 theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsFiniteMeasure μ] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     f ⟂ᵢ[μ] g ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
@@ -1096,3 +1125,7 @@ theorem IndepFun.map_mul_eq_map_mconv_map
 end Monoid
 
 end ProbabilityTheory
+
+Claude is active in this tab group
+Open chat
+Dismiss
