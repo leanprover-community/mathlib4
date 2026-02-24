@@ -92,9 +92,10 @@ theorem quotientMk_of (i x) : Ideal.Quotient.mk _ (.of ⟨i, x⟩) = of G f i x 
 @[simp] theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x :=
   Ideal.Quotient.eq.2 <| subset_span <| Or.inl ⟨i, j, hij, x, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every element of the direct limit corresponds to some element in
 some component of the directed system. -/
-theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f) :
+theorem exists_of [Nonempty ι] [IsDirectedOrder ι] (z : DirectLimit G f) :
     ∃ i x, of G f i x = z := by
   obtain ⟨z, rfl⟩ := Ideal.Quotient.mk_surjective z
   refine z.induction_on ⟨Classical.arbitrary ι, -1, by simp⟩ (fun ⟨i, x⟩ ↦ ⟨i, x, rfl⟩) ?_ ?_ <;>
@@ -108,7 +109,7 @@ open Polynomial
 
 variable {f' : ∀ i j, i ≤ j → G i →+* G j}
 
-nonrec theorem Polynomial.exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)]
+nonrec theorem Polynomial.exists_of [Nonempty ι] [IsDirectedOrder ι]
     (q : Polynomial (DirectLimit G fun i j h ↦ f' i j h)) :
     ∃ i p, Polynomial.map (of G (fun i j h ↦ f' i j h) i) p = q :=
   Polynomial.induction_on q
@@ -127,7 +128,7 @@ nonrec theorem Polynomial.exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)]
 end
 
 @[elab_as_elim]
-theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : DirectLimit G f → Prop}
+theorem induction_on [Nonempty ι] [IsDirectedOrder ι] {C : DirectLimit G f → Prop}
     (z : DirectLimit G f) (ih : ∀ i x, C (of G f i x)) : C z :=
   let ⟨i, x, hx⟩ := exists_of z
   hx ▸ ih i x
@@ -171,16 +172,12 @@ theorem lift_comp_of (F : DirectLimit G f →+* P) :
     lift G f _ (fun i ↦ F.comp <| of G f i) (fun i j hij x ↦ by simp) = F := by
   ext; simp
 
-@[deprecated lift_comp_of (since := "2025-08-11")]
-theorem lift_unique (F : DirectLimit G f →+* P) (x) :
-    F x = lift G f P (fun i ↦ F.comp <| of G f i) (fun i j hij x ↦ by simp) x := by
-  rw [lift_comp_of]
-
 @[simp]
 theorem lift_of' : lift G f _ (of G f) (fun i j hij x ↦ by simp) = .id _ := by
   ext; simp
 
-lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
+set_option backward.isDefEq.respectTransparency false in
+lemma lift_injective [Nonempty ι] [IsDirectedOrder ι]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective (lift G f P g Hg) := by
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
@@ -191,7 +188,7 @@ lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
 section OfZeroExact
 
 variable (f' : ∀ i j, i ≤ j → G i →+* G j)
-variable [DirectedSystem G fun i j h ↦ f' i j h] [IsDirected ι (· ≤ ·)]
+variable [DirectedSystem G fun i j h ↦ f' i j h] [IsDirectedOrder ι]
 variable (G f)
 
 open _root_.DirectLimit in
@@ -223,12 +220,12 @@ variable (f' : ∀ i j, i ≤ j → G i →+* G j)
 
 /-- If the maps in the directed system are injective, then the canonical maps
 from the components to the direct limits are injective. -/
-theorem of_injective [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h ↦ f' i j h]
+theorem of_injective [IsDirectedOrder ι] [DirectedSystem G fun i j h ↦ f' i j h]
     (hf : ∀ i j hij, Function.Injective (f' i j hij)) (i) :
     Function.Injective (of G (fun i j h ↦ f' i j h) i) :=
   have := Nonempty.intro i
   ((ringEquiv _ _).comp_injective _).mp
-    fun _ _ eq ↦  DirectLimit.mk_injective f' hf _ (by simpa only [← ringEquiv_of])
+    fun _ _ eq ↦ DirectLimit.mk_injective f' hf _ (by simpa only [← ringEquiv_of])
 
 section functorial
 
@@ -310,7 +307,7 @@ end Ring
 
 namespace Field
 
-variable [Nonempty ι] [IsDirected ι (· ≤ ·)] [∀ i, Field (G i)]
+variable [Nonempty ι] [IsDirectedOrder ι] [∀ i, Field (G i)]
 variable (f : ∀ i j, i ≤ j → G i → G j)
 variable (f' : ∀ i j, i ≤ j → G i →+* G j)
 
@@ -326,6 +323,7 @@ instance nontrivial [DirectedSystem G (f' · · ·)] :
           rw [(f' i j hij).map_one] at hf
           exact one_ne_zero hf⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_inv {p : Ring.DirectLimit G f} : p ≠ 0 → ∃ y, p * y = 1 :=
   Ring.DirectLimit.induction_on p fun i x H ↦
     ⟨Ring.DirectLimit.of G f i x⁻¹, by

@@ -8,7 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
 /-!
@@ -17,7 +17,7 @@ public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 If `R` is a commutative ring and `V` is an `R`-module,
 we define `SpecialLinearGroup R V` as the subtype of
 linear equivalences `V ≃ₗ[R] V` with determinant 1.
-When `V` doesn't have a finite basis, the determinant is defined by 1
+When `V` doesn't have a finite basis, the determinant is defined to be 1
 and the definition gives `V ≃ₗ[R] V`.
 The interest of this definition is that `SpecialLinearGroup R V`
 has a group structure. (Starting from linear maps wouldn't have worked.)
@@ -31,7 +31,7 @@ When `V` is free and finite over `R`, we define
 * `SpecialLinearGroup.dualMap`
 * `SpecialLinearGroup.baseChange`
 
-We define `Matrix.SpecialLinearGroup.toLin'_equiv`: the mul equivalence
+We define `Matrix.SpecialLinearGroup.toLin'_equiv`: the multiplicative equivalence
 from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R (n → R)`
 and its variant
 `Matrix.SpecialLinearGroup.toLin_equiv`,
@@ -57,6 +57,7 @@ theorem det_eq_one (u : SpecialLinearGroup R V) :
     LinearMap.det (u : V →ₗ[R] V) = 1 := by
   simp [← LinearEquiv.coe_det, u.prop]
 
+/-- The coercion from `SpecialLinearGroup R V` to the function type `V → V` -/
 instance : CoeFun (SpecialLinearGroup R V) (fun _ ↦ V → V) where
   coe u x := u.val x
 
@@ -69,6 +70,7 @@ theorem ext (u v : SpecialLinearGroup R V) : (∀ x, u x = v x) → u = v :=
 
 section rankOne
 
+/-- If a free module has `Module.finrank` equal to `1`, then its special linear group is trivial. -/
 theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R V = 1) :
     Subsingleton (SpecialLinearGroup R V) where
   allEq u v := by
@@ -106,6 +108,7 @@ instance : One (SpecialLinearGroup R V) :=
 instance : Pow (SpecialLinearGroup R V) ℕ where
   pow x n := ⟨x ^ n, by simp [x.prop]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Pow (SpecialLinearGroup R V) ℤ where
   pow x n := ⟨x ^ n, by simp [x.prop]⟩
 
@@ -132,11 +135,11 @@ theorem coe_mk (A : V ≃ₗ[R] V) (h : A.det = 1) : ↑(⟨A, h⟩ : SpecialLin
   rfl
 
 @[simp]
-theorem coe_mul : (A * B : SpecialLinearGroup R V) = (A * B  : V ≃ₗ[R] V) :=
+theorem coe_mul : (A * B : SpecialLinearGroup R V) = (A * B : V ≃ₗ[R] V) :=
   rfl
 
 @[simp]
-theorem coe_div : (A / B : SpecialLinearGroup R V) = (A / B  : V ≃ₗ[R] V) :=
+theorem coe_div : (A / B : SpecialLinearGroup R V) = (A / B : V ≃ₗ[R] V) :=
   rfl
 
 @[simp]
@@ -167,6 +170,7 @@ theorem coe_dualMap
 
 end CoeLemmas
 
+/-- The special linear group of a module is a group. -/
 instance : Group (SpecialLinearGroup R V) := fast_instance%
   Function.Injective.group _ Subtype.coe_injective coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
@@ -176,18 +180,21 @@ def toLinearEquiv : SpecialLinearGroup R V →* V ≃ₗ[R] V where
   map_one' := coe_one
   map_mul' := coe_mul
 
-theorem toLinearEquiv_apply (A : SpecialLinearGroup R V) (v : V) :
+@[simp] lemma toLinearEquiv_apply (A : SpecialLinearGroup R V) (v : V) :
     A.toLinearEquiv v = A v :=
   rfl
 
+@[simp]
 theorem toLinearEquiv_to_linearMap (A : SpecialLinearGroup R V) :
     (SpecialLinearGroup.toLinearEquiv A) = (A : V →ₗ[R] V) :=
   rfl
 
+@[simp]
 theorem toLinearEquiv_symm_apply (A : SpecialLinearGroup R V) (v : V) :
     A.toLinearEquiv.symm v = A⁻¹ v :=
   rfl
 
+@[simp]
 theorem toLinearEquiv_symm_to_linearMap (A : SpecialLinearGroup R V) :
     A.toLinearEquiv.symm = ((A⁻¹ : SpecialLinearGroup R V) : V →ₗ[R] V) :=
   rfl
@@ -208,7 +215,7 @@ lemma coe_toGeneralLinearGroup_apply (u : SpecialLinearGroup R V) :
     u.toGeneralLinearGroup.val = u.toLinearEquiv := rfl
 
 lemma toGeneralLinearGroup_injective :
-    Function.Injective ⇑(toGeneralLinearGroup (R := R) (V := V)) :=  by
+    Function.Injective ⇑(toGeneralLinearGroup (R := R) (V := V)) := by
   simp [toGeneralLinearGroup, toLinearEquiv_injective]
 
 lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} :
@@ -373,7 +380,7 @@ theorem mem_center_iff_spec {g : SpecialLinearGroup R V}
 /- TODO : delete this auxiliary definition
 and put it in the definition of `centerEquivRootsOfUnity.
 How can one access to the definition of one already defined term in a structure
-while one is still definining it? -/
+while one is still defining it? -/
 /-- The inverse map for the equivalence `SpecialLinearGroup.centerEquivRootsOfUnity`. -/
 noncomputable def centerEquivRootsOfUnity_invFun
     (r : rootsOfUnity (max (Module.finrank R V) 1) R) :
@@ -398,6 +405,7 @@ noncomputable def centerEquivRootsOfUnity_invFun
       rw [mem_rootsOfUnity', max_eq_left hV] at hr
       simpa [← Subtype.val_inj, ← Units.val_inj]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- The isomorphism between the roots of unity and the center of the special linear group. -/
 noncomputable def centerEquivRootsOfUnity :
@@ -460,14 +468,13 @@ noncomputable def centerEquivRootsOfUnity :
     set Hg := (mem_center_iff.mp g.prop)
     set Hh := (mem_center_iff.mp h.prop)
     set Hgh := (mem_center_iff.mp (g * h).prop)
-    simp only [← Subtype.val_inj, ← Units.val_inj, IsUnit.unit_spec,
-      Units.val_mul]
+    simp only [← Subtype.val_inj, ← Units.val_inj, IsUnit.unit_spec, Units.val_mul]
     change Hgh.choose = Hg.choose * Hh.choose
     suffices (Hgh.choose • LinearMap.id : V →ₗ[R] V)
       = (Hg.choose • LinearMap.id) * (Hh.choose • LinearMap.id) by
       apply FaithfulSMul.eq_of_smul_eq_smul (α := V)
       intro x
-      simp  [mul_smul,
+      simp [mul_smul,
         ← mem_center_iff_spec (g * h).prop, ← mem_center_iff_spec h.prop,
         ← mem_center_iff_spec g.prop]
     simp [← Hgh.choose_spec.2, ← Hh.choose_spec.2, ← Hg.choose_spec.2]
@@ -516,7 +523,6 @@ open Subgroup Matrix Matrix.SpecialLinearGroup
 
 variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type*} [CommRing R]
 
--- variable [Nontrivial R]
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module.Free R V] [Module.Finite R V]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R V)
 

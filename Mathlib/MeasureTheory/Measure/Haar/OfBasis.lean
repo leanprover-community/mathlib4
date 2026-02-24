@@ -114,11 +114,11 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
       exact ⟨fun _j => hy.1, fun _j => hy.2⟩
   rcases orthonormalBasis_one_dim (b.reindex e) with (H | H)
   · left
-    simp_rw [parallelepiped, H, A, Algebra.id.smul_eq_mul, mul_one]
+    simp_rw [parallelepiped, H, A, smul_eq_mul, mul_one]
     simp only [F, Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton,
       ← image_comp, Function.comp_apply, image_id']
   · right
-    simp_rw [H, parallelepiped, Algebra.id.smul_eq_mul, A]
+    simp_rw [H, parallelepiped, smul_eq_mul, A]
     simp only [F, Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
       Finset.sum_singleton, ← image_comp, Function.comp, image_neg_eq_neg, neg_Icc, neg_zero]
 
@@ -186,8 +186,8 @@ namespace Module.Basis
 def parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
   carrier := _root_.parallelepiped b
   isCompact' := IsCompact.image isCompact_Icc
-      (continuous_finset_sum Finset.univ fun (i : ι) (_H : i ∈ Finset.univ) =>
-        (continuous_apply i).smul continuous_const)
+      (continuous_finset_sum Finset.univ
+        fun (i : ι) (_H : i ∈ Finset.univ) ↦ by fun_prop)
   interior_nonempty' := by
     suffices H : Set.Nonempty (interior (b.equivFunL.symm.toHomeomorph '' Icc 0 1)) by
       dsimp only [_root_.parallelepiped]

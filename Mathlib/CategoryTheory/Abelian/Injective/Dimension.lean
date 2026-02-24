@@ -22,7 +22,7 @@ if all `Ext Y X i` vanish when `n ≤ i`. This defines a type class
 `HasInjectiveDimensionLE`.)
 
 We also define the Injective dimension in `WithBot ℕ∞` as `injectiveDimension`,
-`injectiveDimension X = ⊥` iff `X` is zero and acts in common sense in the non-negative values.
+`injectiveDimension X = ⊥` iff `X` is zero and behaves as expected on non-negative values.
 
 -/
 
@@ -113,15 +113,15 @@ lemma hasInjectiveDimensionLT_of_ge (m : ℕ) (h : n ≤ m)
   letI := HasExt.standard C
   rw [hasInjectiveDimensionLT_iff]
   intro i hi Y e
-  exact e.eq_zero_of_hasInjectiveDimensionLT n (by cutsat)
+  exact e.eq_zero_of_hasInjectiveDimensionLT n (by lia)
 
 instance [HasInjectiveDimensionLT X n] (k : ℕ) :
     HasInjectiveDimensionLT X (n + k) :=
-  hasInjectiveDimensionLT_of_ge X n (n + k) (by cutsat)
+  hasInjectiveDimensionLT_of_ge X n (n + k) (by lia)
 
 instance [HasInjectiveDimensionLT X n] (k : ℕ) :
     HasInjectiveDimensionLT X (k + n) :=
-  hasInjectiveDimensionLT_of_ge X n (k + n) (by cutsat)
+  hasInjectiveDimensionLT_of_ge X n (k + n) (by lia)
 
 instance [HasInjectiveDimensionLT X n] :
     HasInjectiveDimensionLT X n.succ :=
@@ -196,7 +196,7 @@ lemma hasInjectiveDimensionLT_X₁ (h₁ : HasInjectiveDimensionLT S.X₃ n)
   · simp at hi
   · obtain ⟨x₁, rfl⟩ := Ext.covariant_sequence_exact₁ _ hS x₃
       (Ext.eq_zero_of_hasInjectiveDimensionLT _ (n + 1) hi) rfl
-    rw [x₁.eq_zero_of_hasInjectiveDimensionLT n (by cutsat), Ext.zero_comp]
+    rw [x₁.eq_zero_of_hasInjectiveDimensionLT n (by lia), Ext.zero_comp]
 
 lemma hasInjectiveDimensionLT_X₃ (h₂ : HasInjectiveDimensionLT S.X₂ n)
     (h₃ : HasInjectiveDimensionLT S.X₁ (n + 1)) :
@@ -205,8 +205,8 @@ lemma hasInjectiveDimensionLT_X₃ (h₂ : HasInjectiveDimensionLT S.X₂ n)
   rw [hasInjectiveDimensionLT_iff]
   intro i hi Y x₁
   obtain ⟨x₂, rfl⟩ := Ext.covariant_sequence_exact₃ _ hS x₁ (add_comm _ _)
-    (Ext.eq_zero_of_hasInjectiveDimensionLT _ (n + 1) (by cutsat))
-  rw [x₂.eq_zero_of_hasInjectiveDimensionLT n (by cutsat), Ext.zero_comp]
+    (Ext.eq_zero_of_hasInjectiveDimensionLT _ (n + 1) (by lia))
+  rw [x₂.eq_zero_of_hasInjectiveDimensionLT n (by lia), Ext.zero_comp]
 
 lemma hasInjectiveDimensionLT_X₃_iff (n : ℕ) (h₂ : Injective S.X₂) :
     HasInjectiveDimensionLT S.X₃ (n + 1) ↔ HasInjectiveDimensionLT S.X₁ (n + 2) :=
@@ -251,6 +251,7 @@ lemma Retract.injectiveDimension_le {X Y : C} (h : Retract X Y) :
     have := hn i hi
     exact h.hasInjectiveDimensionLT i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_lt_iff {X : C} {n : ℕ} :
     injectiveDimension X < n ↔ HasInjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩

@@ -159,6 +159,7 @@ section PPrime
 
 variable [hp : NeZero p]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars = range (n + 1) := by
   have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) ((p : R) ^ i)).vars = {i} := by
     intro i
@@ -245,8 +246,8 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H
   · rw [mem_range]
-    cutsat
-  · cutsat
+    lia
+  · lia
 
 theorem xInTermsOfW_vars_subset (n : ℕ) : (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) :=
   (xInTermsOfW_vars_aux p n).2

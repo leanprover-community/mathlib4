@@ -7,13 +7,14 @@ module
 
 public meta import Lean.Meta.AppBuilder
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
 /-!
 # Normalization of 2-morphisms in bicategories
 
 This file provides a function that normalizes 2-morphisms in bicategories. The function also
 used to normalize morphisms in monoidal categories. This is used in the string diagram widget given
-in `Mathlib/Tactic/StringDiagram.lean`, as well as `monoidal` and `bicategory` tactics.
+in `Mathlib/Tactic/Widget/StringDiagram.lean`, as well as `monoidal` and `bicategory` tactics.
 
 We say that the 2-morphism `η` in a bicategory is in normal form if
 1. `η` is of the form `α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₘ ≫ ηₘ ≫ αₘ₊₁` where each `αᵢ` is a
@@ -369,7 +370,7 @@ def evalComp : NormalExpr → NormalExpr → CoherenceM ρ Eval.Result
 
 open MkEvalWhiskerLeft
 
-variable [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)]
+variable [MonadMor₁ (CoherenceM ρ)]
 
 /-- Evaluate the expression `f ◁ η` into a normalized form. -/
 def evalWhiskerLeft : Mor₁ → NormalExpr → CoherenceM ρ Eval.Result

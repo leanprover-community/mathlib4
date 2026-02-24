@@ -22,7 +22,7 @@ if all `Ext X Y i` vanish when `n ≤ i`. This defines a type class
 `HasProjectiveDimensionLE`.)
 
 We also define the projective dimension in `WithBot ℕ∞` as `projectiveDimension`,
-`projectiveDimension X = ⊥` iff `X` is zero and acts in common sense in the non-negative values.
+`projectiveDimension X = ⊥` iff `X` is zero and behaves as expected on non-negative values.
 
 -/
 
@@ -113,15 +113,15 @@ lemma hasProjectiveDimensionLT_of_ge (m : ℕ) (h : n ≤ m)
   letI := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y e
-  exact e.eq_zero_of_hasProjectiveDimensionLT n (by cutsat)
+  exact e.eq_zero_of_hasProjectiveDimensionLT n (by lia)
 
 instance [HasProjectiveDimensionLT X n] (k : ℕ) :
     HasProjectiveDimensionLT X (n + k) :=
-  hasProjectiveDimensionLT_of_ge X n (n + k) (by cutsat)
+  hasProjectiveDimensionLT_of_ge X n (n + k) (by lia)
 
 instance [HasProjectiveDimensionLT X n] (k : ℕ) :
     HasProjectiveDimensionLT X (k + n) :=
-  hasProjectiveDimensionLT_of_ge X n (k + n) (by cutsat)
+  hasProjectiveDimensionLT_of_ge X n (k + n) (by lia)
 
 instance [HasProjectiveDimensionLT X n] :
     HasProjectiveDimensionLT X n.succ :=
@@ -199,7 +199,7 @@ lemma hasProjectiveDimensionLT_X₃ (h₁ : HasProjectiveDimensionLT S.X₁ n)
   · simp at hi
   · obtain ⟨x₁, rfl⟩ := Ext.contravariant_sequence_exact₃ hS _ x₃
       (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) hi) (add_comm _ _)
-    rw [x₁.eq_zero_of_hasProjectiveDimensionLT n (by cutsat), Ext.comp_zero]
+    rw [x₁.eq_zero_of_hasProjectiveDimensionLT n (by lia), Ext.comp_zero]
 
 lemma hasProjectiveDimensionLT_X₁ (h₂ : HasProjectiveDimensionLT S.X₂ n)
     (h₃ : HasProjectiveDimensionLT S.X₃ (n + 1)) :
@@ -208,8 +208,8 @@ lemma hasProjectiveDimensionLT_X₁ (h₂ : HasProjectiveDimensionLT S.X₂ n)
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y x₁
   obtain ⟨x₂, rfl⟩ := Ext.contravariant_sequence_exact₁ hS _ x₁ (add_comm _ _)
-    (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) (by cutsat))
-  rw [x₂.eq_zero_of_hasProjectiveDimensionLT n (by cutsat), Ext.comp_zero]
+    (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) (by lia))
+  rw [x₂.eq_zero_of_hasProjectiveDimensionLT n (by lia), Ext.comp_zero]
 
 lemma hasProjectiveDimensionLT_X₃_iff (n : ℕ) (h₂ : Projective S.X₂) :
     HasProjectiveDimensionLT S.X₃ (n + 2) ↔ HasProjectiveDimensionLT S.X₁ (n + 1) :=
@@ -254,6 +254,7 @@ lemma Retract.projectiveDimension_le {X Y : C} (h : Retract X Y) :
     have := hn i hi
     exact h.hasProjectiveDimensionLT i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
     projectiveDimension X < n ↔ HasProjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩

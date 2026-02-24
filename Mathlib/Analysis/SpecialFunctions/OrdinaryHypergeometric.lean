@@ -27,7 +27,7 @@ that `-n < a` for the `n`-th term, and similarly for `b` and `c`.
 - `ordinaryHypergeometricSeries` is the `FormalMultilinearSeries` given above for some `(a b c : 𝕂)`
 - `ordinaryHypergeometric` is the sum of the series for some `(x : 𝔸)`
 - `ordinaryHypergeometricSeries_eq_zero_of_nonpos_int` shows that the `n`-th term of the series is
-zero if any of the parameters are sufficiently large non-positive integers
+  zero if any of the parameters are sufficiently large non-positive integers
 
 ## `[RCLike 𝕂]`
 
@@ -35,9 +35,9 @@ If we have `[RCLike 𝕂]`, then we show that the latter result is an iff, and h
 radius of convergence of the series is unity if the series is infinite, or `⊤` otherwise.
 
 - `ordinaryHypergeometricSeries_eq_zero_iff` is iff variant of
-`ordinaryHypergeometricSeries_eq_zero_of_nonpos_int`
+  `ordinaryHypergeometricSeries_eq_zero_of_nonpos_int`
 - `ordinaryHypergeometricSeries_radius_eq_one` proves that the radius of convergence of the
-`ordinaryHypergeometricSeries` is unity under non-trivial parameters
+  `ordinaryHypergeometricSeries` is unity under non-trivial parameters
 
 ## Notation
 
@@ -86,24 +86,24 @@ notation "₂F₁" => ordinaryHypergeometric
 theorem ordinaryHypergeometricSeries_apply_eq (x : 𝔸) (n : ℕ) :
     (ordinaryHypergeometricSeries 𝔸 a b c n fun _ => x) =
       ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
-        ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n := by
+        ((ascPochhammer 𝕂 n).eval c)⁻¹) • x ^ n := by
   rw [ordinaryHypergeometricSeries, ofScalars_apply_eq]
 
 /-- This naming follows the convention of `NormedSpace.expSeries_apply_eq'`. -/
 theorem ordinaryHypergeometricSeries_apply_eq' (x : 𝔸) :
     (fun n => ordinaryHypergeometricSeries 𝔸 a b c n fun _ => x) =
       fun n => ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
-        ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n := by
+        ((ascPochhammer 𝕂 n).eval c)⁻¹) • x ^ n := by
   rw [ordinaryHypergeometricSeries, ofScalars_apply_eq']
 
 theorem ordinaryHypergeometric_sum_eq (x : 𝔸) : (ordinaryHypergeometricSeries 𝔸 a b c).sum x =
     ∑' n : ℕ, ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
-      ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n :=
+      ((ascPochhammer 𝕂 n).eval c)⁻¹) • x ^ n :=
   tsum_congr fun n => ordinaryHypergeometricSeries_apply_eq a b c x n
 
 theorem ordinaryHypergeometric_eq_tsum : ₂F₁ a b c =
     fun (x : 𝔸) => ∑' n : ℕ, ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a *
-      (ascPochhammer 𝕂 n).eval b * ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n :=
+      (ascPochhammer 𝕂 n).eval b * ((ascPochhammer 𝕂 n).eval c)⁻¹) • x ^ n :=
   funext (ordinaryHypergeometric_sum_eq a b c)
 
 theorem ordinaryHypergeometricSeries_apply_zero (n : ℕ) :
@@ -145,7 +145,7 @@ variable {𝕂 : Type*} (𝔸 : Type*) [RCLike 𝕂] [NormedDivisionRing 𝔸] [
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₁ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 (-(k : 𝕂)) b c).radius = ⊤ := by
   refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
-  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat (-(k : 𝕂)) b c (by aesop) (by cutsat)
+  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat (-(k : 𝕂)) b c (by aesop) (by lia)
 
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 a (-(k : 𝕂)) c).radius = ⊤ := by
@@ -155,7 +155,7 @@ theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {k : ℕ} :
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₃ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 a b (-(k : 𝕂))).radius = ⊤ := by
   refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
-  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b (-(k : 𝕂)) (by aesop) (by cutsat)
+  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b (-(k : 𝕂)) (by aesop) (by lia)
 
 /-- An iff variation on `ordinaryHypergeometricSeries_eq_zero_of_nonpos_int` for `[RCLike 𝕂]`. -/
 lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :

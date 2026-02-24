@@ -51,7 +51,7 @@ section Preorder
 variable [Preorder M] {f g : ι →₀ M} {i : ι} {a b : M}
 
 instance preorder : Preorder (ι →₀ M) where
-  le_refl  _ _ := le_rfl
+  le_refl _ _ := le_rfl
   le_trans _ _ _ hfg hgh i := (hfg i).trans (hgh i)
 
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
@@ -102,6 +102,7 @@ instance lattice : Lattice (ι →₀ M) where
 
 variable [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
   coe_injective <| compl_injective <| by ext; simp [inf_eq_and_sup_eq_iff]
 

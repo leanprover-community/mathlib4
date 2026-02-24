@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Topology.Constructions.SumProd
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 # Topological monoids - definitions
@@ -66,24 +67,24 @@ lemma Filter.tendsto_of_div_tendsto_one {α E : Type*} [CommGroup E] [Topologica
 
 variable {X : Type*} [TopologicalSpace X] {f g : X → M} {s : Set X} {x : X}
 
-@[to_additive (attr := continuity, fun_prop)]
+@[to_fun (attr := to_additive (attr := continuity, fun_prop))]
 theorem Continuous.mul (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun x => f x * g x :=
+    Continuous (f * g) :=
   continuous_mul.comp₂ hf hg
 
-@[to_additive]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousWithinAt.mul (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun x => f x * g x) s x :=
+    ContinuousWithinAt (f * g) s x :=
   Filter.Tendsto.mul hf hg
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousAt.mul (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (fun x => f x * g x) x :=
+    ContinuousAt (f * g) x :=
   Filter.Tendsto.mul hf hg
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousOn.mul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun x => f x * g x) s := fun x hx ↦
+    ContinuousOn (f * g) s := fun x hx ↦
   (hf x hx).mul (hg x hx)
 
 end ContinuousMul

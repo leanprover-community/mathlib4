@@ -150,12 +150,15 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
   refine ⟨d, hdu, fun hds ↦ not_lt_iff_le_imp_ge.2 (hbmax hds hdt had) ?_, had⟩
   exact hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
 
+set_option backward.privateInPublic true in
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
-  by_contra! hat
+  by_contra hat
   have ⟨_b, hb₁, hb₂, _⟩ := trans_aux hst hts has hat
   exact hb₂ hb₁
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instPartialOrder : PartialOrder (Colex (Finset α)) where
   le_refl _ _ ha ha' := (ha' ha).elim
   le_antisymm _ _ hst hts := (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
@@ -246,6 +249,7 @@ lemma singleton_le_singleton : (toColex ({a} : Finset α)) ≤ toColex {b} ↔ a
 lemma singleton_lt_singleton : (toColex ({a} : Finset α)) < toColex {b} ↔ a < b := by
   simp [toColex_lt_singleton]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_iff_sdiff_subset_lowerClosure {s t : Colex (Finset α)} :
     s ≤ t ↔ (↑(ofColex s) : Set α) \ ↑(ofColex t) ⊆
       lowerClosure (↑(ofColex t) \ ↑(ofColex s) : Set α) := by
@@ -336,6 +340,7 @@ instance instLinearOrder : LinearOrder (Colex (Finset α)) where
 
 open scoped symmDiff
 
+set_option backward.privateInPublic true in
 private lemma max_mem_aux {s t : Colex (Finset α)} (hst : s ≠ t) :
     (ofColex s ∆ ofColex t).Nonempty := by
   simpa
@@ -363,6 +368,8 @@ lemma toColex_le_toColex_iff_max'_mem :
     refine ⟨_, h hst, ?_, le_max' _ _ <| mem_symmDiff.2 <| Or.inl ⟨has, hat⟩⟩
     simpa [mem_symmDiff, h hst] using max'_mem _ <| symmDiff_nonempty.2 hst
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma le_iff_max'_mem {s t : Colex (Finset α)} :
     s ≤ t ↔ ∀ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t :=
   toColex_le_toColex_iff_max'_mem
@@ -371,6 +378,8 @@ lemma toColex_lt_toColex_iff_max'_mem :
     toColex s < toColex t ↔ ∃ hst : s ≠ t, (s ∆ t).max' (symmDiff_nonempty.2 hst) ∈ t := by
   rw [lt_iff_le_and_ne, toColex_le_toColex_iff_max'_mem]; aesop
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma lt_iff_max'_mem {s t : Colex (Finset α)} :
     s < t ↔ ∃ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t := by
   rw [lt_iff_le_and_ne, le_iff_max'_mem]; aesop
@@ -480,7 +489,7 @@ def IsInitSeg (𝒜 : Finset (Finset α)) (r : ℕ) : Prop :=
 -/
 lemma IsInitSeg.total (h₁ : IsInitSeg 𝒜₁ r) (h₂ : IsInitSeg 𝒜₂ r) : 𝒜₁ ⊆ 𝒜₂ ∨ 𝒜₂ ⊆ 𝒜₁ := by
   classical
-  simp_rw [← sdiff_eq_empty_iff_subset, ← not_nonempty_iff_eq_empty]
+  simp_rw [← sdiff_eq_empty_iff_subset]
   by_contra! h
   have ⟨⟨s, hs⟩, t, ht⟩ := h
   rw [mem_sdiff] at hs ht
@@ -546,7 +555,7 @@ lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k ∈
   rw [lt_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
   rw [← sum_sdiff_lt_sum_sdiff]
-  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by cutsat) <|
+  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by lia) <|
     mem_sdiff.2 ⟨hat, has⟩
 
 /-- For finsets of naturals, the colexicographic order is equivalent to the order induced by the
@@ -581,7 +590,7 @@ theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i �
 /-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i ∈ s, 2^i` to `s`. -/
 @[simps] def equivBitIndices : ℕ ≃ Finset ℕ where
   toFun n := n.bitIndices.toFinset
-  invFun s := ∑ i ∈ s, 2^i
+  invFun s := ∑ i ∈ s, 2 ^ i
   left_inv := twoPowSum_toFinset_bitIndices
   right_inv := toFinset_bitIndices_twoPowSum
 

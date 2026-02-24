@@ -5,15 +5,21 @@ Authors: Tomas Skrivan
 -/
 module
 
-public meta import Mathlib.Tactic.FunProp.Attr
-public meta import Mathlib.Tactic.FunProp.Core
 public meta import Mathlib.Tactic.FunProp.Decl
-public meta import Mathlib.Tactic.FunProp.Elab
 public meta import Mathlib.Tactic.FunProp.FunctionData
 public meta import Mathlib.Tactic.FunProp.Mor
 public meta import Mathlib.Tactic.FunProp.Theorems
 public meta import Mathlib.Tactic.FunProp.ToBatteries
 public meta import Mathlib.Tactic.FunProp.Types
+public import Mathlib.Tactic.FunProp.Attr
+public import Mathlib.Tactic.FunProp.Core
+public import Mathlib.Tactic.FunProp.Decl
+public import Mathlib.Tactic.FunProp.Elab
+public import Mathlib.Tactic.FunProp.FunctionData
+public import Mathlib.Tactic.FunProp.Mor
+public import Mathlib.Tactic.FunProp.Theorems
+public import Mathlib.Tactic.FunProp.ToBatteries
+public import Mathlib.Tactic.FunProp.Types
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...
@@ -21,7 +27,7 @@ public meta import Mathlib.Tactic.FunProp.Types
 **Basic use:**
 Using the `fun_prop` tactic should be as simple as:
 ```lean
-example : Continuous (fun x : ℝ => x * sin x) := by fun_prop
+example : Continuous (fun x : ℝ ↦ x * sin x) := by fun_prop
 ```
 Mathlib sets up `fun_prop` for many different properties like `Continuous`, `Measurable`,
 `Differentiable`, `ContDiff`, etc., so `fun_prop` should work for such goals. The basic idea behind
@@ -29,23 +35,23 @@ Mathlib sets up `fun_prop` for many different properties like `Continuous`, `Mea
 checks if every single elementary function is, e.g., `Continuous`.
 
 For `ContinuousAt/On/Within` variants, one has to specify a tactic to solve potential side goals
-with `disch:=<tactic>`. For example:
+with `disch := <tactic>`. For example:
 ```lean
-example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ => 1/x) y := by fun_prop (disch:=assumption)
+example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ ↦ 1/x) y := by fun_prop (disch := assumption)
 ```
 
 **Basic debugging:**
 The most common issue is that a function is missing the appropriate theorem. For example:
 ```lean
 import Mathlib.Analysis.Complex.Trigonometric
-example : Continuous (fun x : ℝ => x * Real.sin x) := by fun_prop
+example : Continuous (fun x : ℝ ↦ x * Real.sin x) := by fun_prop
 ```
 Fails with the error:
 ```lean
-`fun_prop` was unable to prove `Continuous fun x => x * x.sin`
+`fun_prop` was unable to prove `Continuous fun x ↦ x * x.sin`
 
 Issues:
-  No theorems found for `Real.sin` in order to prove `Continuous fun x => x.sin`
+  No theorems found for `Real.sin` in order to prove `Continuous fun x ↦ x.sin`
 ```
 This can be easily fixed by importing `Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean`
 where the theorem `Real.continuous_sin` is marked with the `fun_prop` attribute.
@@ -74,46 +80,46 @@ attribute [fun_prop] Continuous
 theorems:
 ```lean
 @[fun_prop]
-theorem continuous_id : Continuous (fun x => x) := ...
+theorem continuous_id : Continuous (fun x ↦ x) := ...
 
 @[fun_prop]
-theorem continuous_const (y : Y) : Continuous (fun x => y) := ...
+theorem continuous_const (y : Y) : Continuous (fun x ↦ y) := ...
 
 @[fun_prop]
 theorem continuous_comp (f : Y → Z) (g : X → Y) (hf : Continuous f) (hg : Continuous g) :
-  Continuous (fun x => f (g x)) := ...
+  Continuous (fun x ↦ f (g x)) := ...
 ```
-The constant theorem is not absolutely necessary as, for example, `IsLinearMap ℝ (fun x => y)` does
+The constant theorem is not absolutely necessary as, for example, `IsLinearMap ℝ (fun x ↦ y)` does
 not hold, but we almost certainly want to mark it if it is available.
 
 You should also provide theorems for `Prod.mk`, `Prod.fst`, and `Prod.snd`:
 ```lean
 @[fun_prop]
-theorem continuous_fst (f : X → Y × Z) (hf : Continuous f) : Continuous (fun x => (f x).fst) := ...
+theorem continuous_fst (f : X → Y × Z) (hf : Continuous f) : Continuous (fun x ↦ (f x).fst) := ...
 @[fun_prop]
-theorem continuous_snd (f : X → Y × Z) (hf : Continuous f) : Continuous (fun x => (f x).snd) := ...
+theorem continuous_snd (f : X → Y × Z) (hf : Continuous f) : Continuous (fun x ↦ (f x).snd) := ...
 @[fun_prop]
 theorem continuous_prod_mk (f : X → Y) (g : X → Z) (hf : Continuous f) (hg : Continuous g) :
-    Continuous (fun x => Prod.mk (f x) (g x)) := ...
+    Continuous (fun x ↦ Prod.mk (f x) (g x)) := ...
 ```
 
 3. Mark function theorems. They can be stated simply as:
 ```lean
 @[fun_prop]
-theorem continuous_neg : Continuous (fun x => - x) := ...
+theorem continuous_neg : Continuous (fun x ↦ - x) := ...
 
 @[fun_prop]
-theorem continuous_add : Continuous (fun x : X × X => x.1 + x.2) := ...
+theorem continuous_add : Continuous (fun x : X × X ↦ x.1 + x.2) := ...
 ```
 where functions of multiple arguments have to be appropriately uncurried. Alternatively, they can
 be stated in compositional form as:
 ```lean
 @[fun_prop]
-theorem continuous_neg (f : X → Y) (hf : Continuous f) : Continuous (fun x => - f x) := ...
+theorem continuous_neg (f : X → Y) (hf : Continuous f) : Continuous (fun x ↦ - f x) := ...
 
 @[fun_prop]
 theorem continuous_add (f g : X → Y) (hf : Continuous f) (hg : Continuous g) :
-  Continuous (fun x => f x + g x) := ...
+  Continuous (fun x ↦ f x + g x) := ...
 ```
 It is enough to provide function theorems in either form. It is mainly a matter of convenience.
 
@@ -126,7 +132,7 @@ You can do this by turning on the `Meta.Tactic.fun_prop.attr` option. For exampl
 set_option trace.Meta.Tactic.fun_prop.attr true
 @[fun_prop]
 theorem continuous_add (f g : X → Y) (hf : Continuous f) (hg : Continuous g) :
-  Continuous (fun x => @HAdd.hAdd X Y Y _ (f x) (g x)) := ...
+  Continuous (fun x ↦ @HAdd.hAdd X Y Y _ (f x) (g x)) := ...
 ```
 displays:
 ```lean
@@ -157,39 +163,39 @@ There are four types of theorems that are used a bit differently.
     - Identity Theorem
     ```lean
     @[fun_prop]
-    theorem continuous_id : Continuous (fun (x : X) => x) := ..
+    theorem continuous_id : Continuous (fun (x : X) ↦ x) := ..
     ```
 
     - Constant Theorem
     ```lean
     @[fun_prop]
-    theorem continuous_const (y : Y) : Continuous (fun (x : X) => y) := ..
+    theorem continuous_const (y : Y) : Continuous (fun (x : X) ↦ y) := ..
     ```
 
     - Composition Theorem
     ```lean
     @[fun_prop]
     theorem continuous_comp (f : Y → Z) (g : X → Y) (hf : Continuous f) (hg : Continuous g) :
-      Continuous (fun (x : X) => f (g x)) := ..
+      Continuous (fun (x : X) ↦ f (g x)) := ..
     ```
 
     - Apply Theorem
       It can be either non-dependent version
     ```lean
     @[fun_prop]
-    theorem continuous_apply (a : α) : Continuous (fun f : (α → X) => f a) := ..
+    theorem continuous_apply (a : α) : Continuous (fun f : (α → X) ↦ f a) := ..
     ```
       or dependent version
     ```lean
     @[fun_prop]
-    theorem continuous_apply (a : α) : Continuous (fun f : ((a' : α) → E a') => f a) := ..
+    theorem continuous_apply (a : α) : Continuous (fun f : ((a' : α) → E a') ↦ f a) := ..
     ```
 
     - Pi Theorem
     ```lean
     @[fun_prop]
     theorem continuous_pi (f : X → α → Y) (hf : ∀ a, Continuous (f x a)) :
-       Continuous (fun x a => f x a) := ..
+       Continuous (fun x a ↦ f x a) := ..
     ```
 
     Not all of these theorems have to be provided, but at least the identity and composition
@@ -202,13 +208,13 @@ There are four types of theorems that are used a bit differently.
     ```lean
     @[fun_prop]
     theorem continuous_fst (f : X → Y × Z) (hf : Continuous f) :
-        Continuous (fun x => (f x).fst) := ...
+        Continuous (fun x ↦ (f x).fst) := ...
     @[fun_prop]
     theorem continuous_snd (f : X → Y × Z) (hf : Continuous f) :
-        Continuous (fun x => (f x).snd) := ...
+        Continuous (fun x ↦ (f x).snd) := ...
     @[fun_prop]
     theorem continuous_prod_mk (f : X → Y) (g : X → Z) (hf : Continuous f) (hg : Continuous g) :
-        Continuous (fun x => (f x, g x)) := ...
+        Continuous (fun x ↦ (f x, g x)) := ...
     ```
 
 - Function Theorems:
@@ -218,12 +224,12 @@ There are four types of theorems that are used a bit differently.
     The function theorem for `Neg.neg` and `Continuous` can be stated as:
     ```lean
     @[fun_prop]
-    theorem continuous_neg : Continuous (fun x => - x) := ...
+    theorem continuous_neg : Continuous (fun x ↦ - x) := ...
     ```
     or as:
     ```lean
     @[fun_prop]
-    theorem continuous_neg (f : X → Y) (hf : Continuous f) : Continuous (fun x => - f x) := ...
+    theorem continuous_neg (f : X → Y) (hf : Continuous f) : Continuous (fun x ↦ - f x) := ...
     ```
     The first form is called *uncurried form* and the second form is called *compositional form*.
     You can provide either form; it is mainly a matter of convenience. You can check if the form of
@@ -242,13 +248,13 @@ There are four types of theorems that are used a bit differently.
     arguments, we have to uncurry the function:
     ```lean
     @[fun_prop]
-    theorem continuous_add : Continuous (fun (x : X × X) => x.1 + x.2) := ...
+    theorem continuous_add : Continuous (fun (x : X × X) ↦ x.1 + x.2) := ...
     ```
     and the *compositional form* of this theorem is:
     ```lean
     @[fun_prop]
     theorem continuous_add (f g : X → Y) (hf : Continuous f) (hg : Continuous g) :
-        Continuous (fun x => f x + g x) := ...
+        Continuous (fun x ↦ f x + g x) := ...
     ```
 
     When dealing with functions with multiple arguments, you need to state, e.g., continuity only
@@ -262,7 +268,7 @@ There are four types of theorems that are used a bit differently.
     continuous linear function is indeed continuous:
     ```lean
     @[fun_prop]
-    theorem continuous_clm_eval (f : X →L[𝕜] Y) : Continuous 𝕜 (fun x => f x) := ...
+    theorem continuous_clm_eval (f : X →L[𝕜] Y) : Continuous 𝕜 (fun x ↦ f x) := ...
     ```
     In this case, the head of the function body `f x` is `DFunLike.coe`. This function is
     treated differently and its theorems are tracked separately.
@@ -272,10 +278,10 @@ There are four types of theorems that are used a bit differently.
     ```lean
     @[fun_prop]
     theorem continuous_clm_apply (f : X → Y →L[𝕜] Z) (hf : Continuous f) (y : Y) :
-       Continuous 𝕜 (fun x => f x y) := ...
+       Continuous 𝕜 (fun x ↦ f x y) := ...
     ```
     Note that without notation and coercion, the function looks like
-    `fun x => DFunLike.coe (f x) y`.
+    `fun x ↦ DFunLike.coe (f x) y`.
 
     In fact, not only `DFunLike.coe` but any function coercion is treated this way. Such function
     coercion has to be registered with `Lean.Meta.registerCoercion` with coercion type `.coeFun`.
@@ -285,7 +291,7 @@ There are four types of theorems that are used a bit differently.
     structure MyFunLike (α β : Type) where
       toFun : α → β
 
-    instance {α β} : CoeFun (MyFunLike α β) (fun _ => α → β) := ⟨MyFunLike.toFun⟩
+    instance {α β} : CoeFun (MyFunLike α β) (fun _ ↦ α → β) := ⟨MyFunLike.toFun⟩
 
     #eval Lean.Elab.Command.liftTermElabM do
       Lean.Meta.registerCoercion ``MyFunLike.toFun
@@ -312,12 +318,12 @@ There are four types of theorems that are used a bit differently.
     if you have a theorem:
     ```lean
     @[fun_prop]
-    theorem differentiable_neg : Differentiable ℝ (fun x => -x) := ...
+    theorem differentiable_neg : Differentiable ℝ (fun x ↦ -x) := ...
     ```
     you should also state the continuous theorem:
     ```lean
     @[fun_prop]
-    theorem continuous_neg : Continuous ℝ (fun x => -x) := ...
+    theorem continuous_neg : Continuous ℝ (fun x ↦ -x) := ...
     ```
     even though `fun_prop` can already prove `continuous_neg` from `differentiable_continuous` and
     `differentiable_neg`. Doing this will have a considerable impact on `fun_prop` speed.
@@ -332,7 +338,7 @@ There are four types of theorems that are used a bit differently.
     Transition theorems do not have to be between two completely different properties. They can be
     between the same property differing by a parameter. Consider this example:
     ```lean
-    example (f : X → Y) (hf : ContDiff ℝ ∞ f) : ContDiff ℝ 2 (fun x => f x + f x) := by
+    example (f : X → Y) (hf : ContDiff ℝ ∞ f) : ContDiff ℝ 2 (fun x ↦ f x + f x) := by
       fun_prop (disch := aesop)
     ```
     which is first reduced to `ContDiff ℝ 2 f` using lambda theorems and then the transition

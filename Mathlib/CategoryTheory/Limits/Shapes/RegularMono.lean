@@ -6,9 +6,9 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Definitions and basic properties of regular monomorphisms and epimorphisms.
@@ -16,9 +16,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
 A regular monomorphism is a morphism that is the equalizer of some parallel pair.
 
 In this file, we give the following definitions.
-* `RegularMono f`, which is a class carrying the data that exhibits `f` as a regular monomorphism.
-  That is, it carries a fork and data specifying `f` a the equalizer of that fork.
-* `IsRegularMono f`, which is a proposition stating that `f` is a regular monomorphism. In
+* `RegularMono f`, which is a structure carrying the data that exhibits `f` as a regular
+  monomorphism. That is, it carries a fork and data specifying `f` as the equalizer of that fork.
+* `IsRegularMono f`, which is a `Prop`-valued class stating that `f` is a regular monomorphism. In
   particular, this doesn't carry any data.
 and constructions
 * `IsSplitMono f → RegularMono f` and
@@ -76,9 +76,9 @@ def RegularMono.ofIso (e : X ≅ Y) : RegularMono e.hom where
   Z := Y
   left := 𝟙 Y
   right := 𝟙 Y
-  isLimit := Fork.IsLimit.mk _ (fun s ↦ s.ι ≫ e.inv) (by simp) fun s m w ↦ by
-    simp [← w]
+  isLimit := Fork.IsLimit.mk _ (fun s ↦ s.ι ≫ e.inv) (by simp) fun s m w ↦ by simp [← w]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Regular monomorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk g) (h : RegularMono f) :
@@ -93,7 +93,8 @@ def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (Arrow.rightFunc.mapIso e) (Iso.refl _) (Arrow.leftFunc.mapIso e)
 
 /-- `IsRegularMono f` is the assertion that `f` is a regular monomorphism. -/
-abbrev IsRegularMono {X Y : C} (f : X ⟶ Y) : Prop := Nonempty (RegularMono f)
+class IsRegularMono {X Y : C} (f : X ⟶ Y) : Prop where
+  regularMono : Nonempty (RegularMono f)
 
 variable (C) in
 /-- The `MorphismProperty C` satisfied by regular monomorphisms in `C`. -/
@@ -106,19 +107,73 @@ theorem MorphismProperty.regularMono_iff (f : X ⟶ Y) :
 
 instance MorphismProperty.regularMono.containsIdentities :
     (MorphismProperty.regularMono C).ContainsIdentities where
-  id_mem _ := ⟨RegularMono.ofIso <| Iso.refl _⟩
+  id_mem _ := ⟨⟨RegularMono.ofIso <| Iso.refl _⟩⟩
 
 instance MorphismProperty.regularMono.respectsIso :
     (MorphismProperty.regularMono C).RespectsIso :=
-  RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.ofArrowIso e (h := h.some)⟩)
+  RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨⟨.ofArrowIso e (h := h.regularMono.some)⟩⟩)
 
-lemma isRegularMono_of_regularMono {f : X ⟶ Y} (h : RegularMono f) : IsRegularMono f := ⟨h⟩
+lemma isRegularMono_of_regularMono {f : X ⟶ Y} (h : RegularMono f) : IsRegularMono f := ⟨⟨h⟩⟩
 
 /-- Given `IsRegularMono f`, a choice of data for `RegularMono f`. -/
-def regularMonoOfIsRegularMono (f : X ⟶ Y) [h : IsRegularMono f] :
-    RegularMono f :=
-  h.some
+def IsRegularMono.getStruct (f : X ⟶ Y) [IsRegularMono f] : RegularMono f :=
+  IsRegularMono.regularMono.some
 
+@[deprecated (since := "2025-12-01")] noncomputable alias regularMonoOfIsRegularMono :=
+  IsRegularMono.getStruct
+
+section IsRegularMono
+
+/-!
+
+Given a regular monomorphism `f : X ⟶ Y` (i.e. a morphism satisfying the predicate `IsRegularMono`),
+this section gives an equalizer diagram
+```
+     X
+    f|
+     v
+     Y
+left| |right
+    v v
+     Z
+```
+The names `Z`, `left`, and `right` all being in the `IsRegularMono` namespace.
+-/
+
+variable {X Y : C} (f : X ⟶ Y) [IsRegularMono f]
+
+/-- The target of the equalizer diagram for `f`. -/
+def IsRegularMono.Z : C := (IsRegularMono.getStruct f).Z
+
+/-- The "left" map `Y ⟶ Z`. -/
+def IsRegularMono.left : Y ⟶ Z f := (IsRegularMono.getStruct f).left
+
+/-- The "right" map `Y ⟶ Z`. -/
+def IsRegularMono.right : Y ⟶ Z f := (IsRegularMono.getStruct f).right
+
+/-- The equalizer condition. -/
+lemma IsRegularMono.w : f ≫ left f = f ≫ right f := (IsRegularMono.getStruct f).w
+
+/-- The fork is in fact an equalizer. -/
+def IsRegularMono.isLimit : IsLimit <| Fork.ofι _ (w f) := (IsRegularMono.getStruct f).isLimit
+
+/-- Lift a morphism `k : W ⟶ Y`, equalized by the two morphisms `left` and `right`, along `f`. -/
+def IsRegularMono.lift {W : C} (f : X ⟶ Y) [IsRegularMono f] (k : W ⟶ Y)
+    (h : k ≫ left f = k ≫ right f) : W ⟶ X :=
+  Fork.IsLimit.lift (isLimit f) k h
+
+@[reassoc (attr := simp)]
+lemma IsRegularMono.fac {W : C} (f : X ⟶ Y) [IsRegularMono f] (k : W ⟶ Y)
+    (h : k ≫ left f = k ≫ right f) : lift f k h ≫ f = k :=
+  Fork.IsLimit.lift_ι (isLimit f)
+
+lemma IsRegularMono.uniq {W : C} (f : X ⟶ Y) [IsRegularMono f] (k : W ⟶ Y)
+    (h : k ≫ left f = k ≫ right f) (m : W ⟶ X) (hm : m ≫ f = k) : m = lift f k h :=
+  Fork.IsLimit.existsUnique (isLimit f) k h |>.unique hm <| by simp
+
+end IsRegularMono
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The chosen equalizer of a parallel pair is a regular monomorphism. -/
 def RegularMono.equalizer (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
     RegularMono (equalizer.ι g h) where
@@ -154,6 +209,7 @@ def RegularMono.lift' {W : C} {f : X ⟶ Y} (hf : RegularMono f) (k : W ⟶ Y)
     { l : W ⟶ X // l ≫ f = k } :=
   Fork.IsLimit.lift' hf.isLimit _ h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The second leg of a pullback cone is a regular monomorphism if the right component is too.
 
 See also `Pullback.sndOfMono` for the basic monomorphism version, and
@@ -209,7 +265,7 @@ lemma RegularMono.strongMono {f : X ⟶ Y} (h : RegularMono f) : StrongMono f :=
       simp only [Category.assoc, ht, sq.w])
 
 instance (priority := 100) (f : X ⟶ Y) [IsRegularMono f] : StrongMono f :=
-  RegularMono.strongMono <| regularMonoOfIsRegularMono f
+  IsRegularMono.getStruct f |>.strongMono
 
 /-- A regular monomorphism is an isomorphism if it is an epimorphism. -/
 theorem isIso_of_regularMono_of_epi (f : X ⟶ Y) (h : RegularMono f) [Epi f] : IsIso f :=
@@ -230,7 +286,8 @@ end
 /-- In a category in which every monomorphism is regular, we can express every monomorphism as
 an equalizer. This is not an instance because it would create an instance loop. -/
 def regularMonoOfMono [IsRegularMonoCategory C] (f : X ⟶ Y) [Mono f] : RegularMono f :=
-  regularMonoOfIsRegularMono f (h := IsRegularMonoCategory.regularMonoOfMono f)
+  have := IsRegularMonoCategory.regularMonoOfMono f
+  IsRegularMono.getStruct f
 
 instance (priority := 100) regularMonoCategoryOfSplitMonoCategory [SplitMonoCategory C] :
     IsRegularMonoCategory C where
@@ -268,6 +325,7 @@ def RegularEpi.ofIso (e : X ≅ Y) : RegularEpi e.hom where
   isColimit := Cofork.IsColimit.mk _ (fun s ↦ e.inv ≫ s.π) (by simp) fun s m w ↦ by
     simp [← w]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Regular epimorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularEpi.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk g) (h : RegularEpi f) :
@@ -282,7 +340,8 @@ def RegularEpi.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (Iso.refl _) (Arrow.leftFunc.mapIso e) (Arrow.rightFunc.mapIso e)
 
 /-- `IsRegularEpi f` is the assertion that `f` is a regular epimorphism. -/
-abbrev IsRegularEpi {X Y : C} (f : X ⟶ Y) : Prop := Nonempty (RegularEpi f)
+class IsRegularEpi {X Y : C} (f : X ⟶ Y) : Prop where
+  regularEpi : Nonempty (RegularEpi f)
 
 variable (C) in
 /-- The `MorphismProperty C` satisfied by regular epimorphisms in `C`. -/
@@ -295,19 +354,75 @@ theorem MorphismProperty.regularEpi_iff (f : X ⟶ Y) :
 
 instance MorphismProperty.regularEpi.containsIdentities :
     (MorphismProperty.regularEpi C).ContainsIdentities where
-  id_mem _ := ⟨RegularEpi.ofIso <| Iso.refl _⟩
+  id_mem _ := ⟨⟨RegularEpi.ofIso <| Iso.refl _⟩⟩
 
 instance MorphismProperty.regularEpi.respectsIso :
     (MorphismProperty.regularEpi C).RespectsIso :=
-  RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.ofArrowIso e (h := h.some)⟩)
+  RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨⟨.ofArrowIso e (h := h.regularEpi.some)⟩⟩)
 
-lemma isRegularEpi_of_regularEpi {f : X ⟶ Y} (h : RegularEpi f) : IsRegularEpi f := ⟨h⟩
+lemma isRegularEpi_of_regularEpi {f : X ⟶ Y} (h : RegularEpi f) : IsRegularEpi f := ⟨⟨h⟩⟩
 
 /-- Given `IsRegularEpi f`, a choice of data for `RegularEpi f`. -/
-def regularEpiOfIsRegularEpi (f : X ⟶ Y) [h : IsRegularEpi f] :
-    RegularEpi f :=
-  h.some
+def IsRegularEpi.getStruct (f : X ⟶ Y) [h : IsRegularEpi f] : RegularEpi f :=
+  h.regularEpi.some
 
+@[deprecated (since := "2025-12-01")] noncomputable alias regularEpiOfIsRegularEpi :=
+  IsRegularEpi.getStruct
+
+section IsRegularEpi
+
+/-!
+
+Given a regular epimorphism `f : X ⟶ Y` (i.e. a morphism satisfying the predicate `IsRegularEpi`),
+this section gives a coequalizer diagram
+```
+     W
+left| |right
+    v v
+     X
+    f|
+     v
+     Y
+```
+The names `W`, `left`, and `right` all being in the `IsRegularEpi` namespace.
+-/
+
+variable {X Y : C} (f : X ⟶ Y) [IsRegularEpi f]
+
+/-- The source of the coequalizer diagram for `f`. -/
+def IsRegularEpi.W : C := (IsRegularEpi.getStruct f).W
+
+/-- The "left" map `W ⟶ X`. -/
+def IsRegularEpi.left : W f ⟶ X := (IsRegularEpi.getStruct f).left
+
+/-- The "right" map `W ⟶ X`. -/
+def IsRegularEpi.right : W f ⟶ X := (IsRegularEpi.getStruct f).right
+
+/-- The coequalizer condition. -/
+lemma IsRegularEpi.w : left f ≫ f = right f ≫ f := (IsRegularEpi.getStruct f).w
+
+/-- The cofork is in fact a coequalizer. -/
+def IsRegularEpi.isColimit : IsColimit <| Cofork.ofπ _ (w f) := (IsRegularEpi.getStruct f).isColimit
+
+/--
+Descend a morphism `k : X ⟶ Z`, coequalized by the two morphisms `left` and `right`, along `f`.
+-/
+def IsRegularEpi.desc {Z : C} (f : X ⟶ Y) [IsRegularEpi f] (k : X ⟶ Z)
+    (h : left f ≫ k = right f ≫ k) : Y ⟶ Z :=
+  Cofork.IsColimit.desc (isColimit f) k h
+
+@[reassoc (attr := simp)]
+lemma IsRegularEpi.fac {Z : C} (f : X ⟶ Y) [IsRegularEpi f] (k : X ⟶ Z)
+    (h : left f ≫ k = right f ≫ k) : f ≫ desc f k h = k :=
+  Cofork.IsColimit.π_desc (isColimit f)
+
+lemma IsRegularEpi.uniq {Z : C} (f : X ⟶ Y) [IsRegularEpi f] (k : X ⟶ Z)
+    (h : left f ≫ k = right f ≫ k) (m : Y ⟶ Z) (hm : f ≫ m = k) : m = desc f k h :=
+  Cofork.IsColimit.existsUnique (isColimit f) k h |>.unique hm <| by simp
+
+end IsRegularEpi
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The chosen coequalizer of a parallel pair is a regular epimorphism. -/
 def coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
     RegularEpi (coequalizer.π g h) where
@@ -320,8 +435,12 @@ def coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
       apply coequalizer.hom_ext
       simp [← w]
 
+instance (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
+    IsRegularEpi (coequalizer.π g h) :=
+  ⟨⟨coequalizerRegular g h⟩⟩
+
 /-- A morphism which is a coequalizer for its kernel pair is a regular epi. -/
-noncomputable def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
+def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
     (hc : IsColimit (Cofork.ofπ f pullback.condition)) : RegularEpi f where
   W := pullback f f
   left := pullback.fst f f
@@ -341,7 +460,7 @@ lemma RegularEpi.effectiveEpi {B X : C} {f : X ⟶ B} (h : RegularEpi f) : Effec
   ⟨⟨effectiveEpiStructOfRegularEpi h⟩⟩
 
 instance (priority := 100) {B X : C} {f : X ⟶ B} [h : IsRegularEpi f] : EffectiveEpi f :=
-  (regularEpiOfIsRegularEpi f).effectiveEpi
+  IsRegularEpi.getStruct f |>.effectiveEpi
 
 /-- A morphism which is a coequalizer for its kernel pair is an effective epi. -/
 theorem effectiveEpi_of_kernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
@@ -350,6 +469,7 @@ theorem effectiveEpi_of_kernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
 
 @[deprecated (since := "2025-11-20")] alias effectiveEpiOfKernelPair := effectiveEpi_of_kernelPair
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a kernel pair of an effective epimorphism `f : X ⟶ B`, the induced cofork is a coequalizer.
 -/
@@ -372,7 +492,7 @@ def isColimitCoforkOfEffectiveEpi {B X : C} (f : X ⟶ B) [EffectiveEpi f]
   uniq _ _ h := EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one)
 
 /-- An effective epi which has a kernel pair is a regular epi. -/
-noncomputable def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
+def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : RegularEpi f where
   W := pullback f f
   left := pullback.fst f f
@@ -380,9 +500,27 @@ noncomputable def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback 
   w := pullback.condition
   isColimit := isColimitCoforkOfEffectiveEpi f _ (pullback.isLimit _ _)
 
-noncomputable instance isRegularEpi_of_EffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
+instance isRegularEpi_of_EffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : IsRegularEpi f :=
   isRegularEpi_of_regularEpi <| regularEpiOfEffectiveEpi f
+
+lemma isRegularEpi_iff_effectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f] :
+    IsRegularEpi f ↔ EffectiveEpi f :=
+  ⟨fun ⟨_⟩ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Let `p : Y ⟶ X` be an effective epimorphism, `p₁ : Z ⟶ Y` and `p₂ : Z ⟶ Y` two
+morphisms which make `Z` the pullback of two copies of `Y` over `X`.
+Then, `Y ⟶ X` is the coequalizer of `p₁` and `p₂`. -/
+noncomputable def EffectiveEpiStruct.isColimitCoforkOfIsPullback
+    {X Y Z : C} {p : Y ⟶ X} (hp : EffectiveEpiStruct p) {p₁ p₂ : Z ⟶ Y}
+    (sq : IsPullback p₁ p₂ p p) :
+    IsColimit (Cofork.ofπ p sq.w) :=
+  Cofork.IsColimit.mk _ (fun s ↦ hp.desc s.π (fun {T} g₁ g₂ h ↦ by
+      obtain ⟨l, rfl, rfl⟩ := sq.exists_lift g₁ g₂ h
+      simp [s.condition]))
+    (fun s ↦ hp.fac _ _)
+    (fun s m hm ↦ hp.uniq _ _ _ hm)
 
 /-- Every split epimorphism is a regular epimorphism. -/
 def RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where
@@ -401,6 +539,7 @@ def RegularEpi.desc' {W : C} {f : X ⟶ Y} (hf : RegularEpi f) (k : X ⟶ W)
     { l : Y ⟶ W // f ≫ l = k } :=
   Cofork.IsColimit.desc' hf.isColimit _ h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The second leg of a pushout cocone is a regular epimorphism if the right component is too.
 
 See also `Pushout.sndOfEpi` for the basic epimorphism version, and
@@ -441,7 +580,7 @@ def regularOfIsPushoutFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h 
     RegularEpi k :=
   regularOfIsPushoutSndOfRegular hf comm.symm (PushoutCocone.flipIsColimit t)
 
-@[deprecated "No replacement" (since := "2025-11-20")] -- ?
+@[deprecated "No replacement" (since := "2025-11-20")]
 lemma strongEpi_of_regularEpi (f : X ⟶ Y) (h : RegularEpi f) : StrongEpi f :=
   have := isRegularEpi_of_regularEpi h
   inferInstance
@@ -465,7 +604,8 @@ end
 /-- In a category in which every epimorphism is regular, we can express every epimorphism as
 a coequalizer. This is not an instance because it would create an instance loop. -/
 def regularEpiOfEpi [IsRegularEpiCategory C] (f : X ⟶ Y) [Epi f] : RegularEpi f :=
-  regularEpiOfIsRegularEpi f (h := IsRegularEpiCategory.regularEpiOfEpi f)
+  have := IsRegularEpiCategory.regularEpiOfEpi f
+  IsRegularEpi.getStruct f
 
 instance (priority := 100) regularEpiCategoryOfSplitEpiCategory [SplitEpiCategory C] :
     IsRegularEpiCategory C where

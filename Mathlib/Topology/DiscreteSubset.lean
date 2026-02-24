@@ -44,7 +44,7 @@ This is the filter of all open codiscrete sets within S. We also define `Filter.
 
 open Set Filter Function Topology
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y} {s : Set X}
 
 theorem discreteTopology_subtype_iff {S : Set Y} :
     DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
@@ -54,6 +54,12 @@ theorem isDiscrete_iff_nhdsNE {S : Set Y} :
     IsDiscrete S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
   rw [isDiscrete_iff_discreteTopology, discreteTopology_subtype_iff]
 
+/-- If a subset of a topological space has no accumulation points,
+then it carries the discrete topology. -/
+lemma discreteTopology_of_noAccPts {X : Type*} [TopologicalSpace X] {E : Set X}
+    (h : ∀ x ∈ E, ¬ AccPt x (𝓟 E)) : DiscreteTopology E := by
+  simpa [discreteTopology_subtype_iff, AccPt] using h
+
 lemma discreteTopology_subtype_iff' {S : Set Y} :
     DiscreteTopology S ↔ ∀ y ∈ S, ∃ U : Set Y, IsOpen U ∧ U ∩ S = {y} := by
   simp [discreteTopology_iff_isOpen_singleton, isOpen_induced_iff, Set.ext_iff]
@@ -62,6 +68,78 @@ lemma discreteTopology_subtype_iff' {S : Set Y} :
 theorem isDiscrete_iff_forall_exists_isOpen {S : Set Y} :
     IsDiscrete S ↔ ∀ y ∈ S, ∃ U, IsOpen U ∧ U ∩ S = {y} := by
   rw [isDiscrete_iff_discreteTopology, discreteTopology_subtype_iff']
+
+lemma Set.Subsingleton.isDiscrete (hs : s.Subsingleton) : IsDiscrete s :=
+  have : Subsingleton s := (Set.subsingleton_coe s).mpr hs
+  ⟨inferInstance⟩
+
+lemma isDiscrete_iff_nhdsWithin : IsDiscrete s ↔ ∀ x ∈ s, 𝓝[s] x = pure x := by
+  simp [isDiscrete_iff_discreteTopology, discreteTopology_iff_isOpen_singleton,
+    isOpen_singleton_iff_nhds_eq_pure, nhds_induced,
+    ← (Filter.map_injective Subtype.val_injective).eq_iff,
+    Filter.map_comap, nhdsWithin]
+
+protected alias ⟨IsDiscrete.nhdsWithin, _⟩ := isDiscrete_iff_nhdsWithin
+
+lemma IsDiscrete.of_nhdsWithin (H : ∀ x ∈ s, 𝓝[s] x ≤ pure x) : IsDiscrete s :=
+  isDiscrete_iff_nhdsWithin.mpr fun x hx ↦ (H x hx).antisymm (pure_le_nhdsWithin hx)
+
+lemma isDiscrete_univ_iff : IsDiscrete (Set.univ : Set X) ↔ DiscreteTopology X := by
+  simp [isDiscrete_iff_nhdsWithin, discreteTopology_iff_isOpen_singleton,
+    isOpen_singleton_iff_nhds_eq_pure]
+
+lemma IsDiscrete.univ [DiscreteTopology X] : IsDiscrete (Set.univ : Set X) := by
+  rwa [isDiscrete_univ_iff]
+
+lemma IsDiscrete.image_of_isOpenMap (hs : IsDiscrete s) (hf : IsOpenMap f)
+    (hf' : Function.Injective f) : IsDiscrete (f '' s) := by
+  refine .of_nhdsWithin ?_
+  rintro _ ⟨x, hx, rfl⟩
+  rw [← map_pure, ← hs.nhdsWithin x hx, nhdsWithin, nhdsWithin, map_inf hf', map_principal]
+  grw [hf.nhds_le x]
+
+lemma IsDiscrete.image_of_isOpenMap_of_isOpen (hs : IsDiscrete s) (hf : IsOpenMap f)
+    (hs' : IsOpen s) : IsDiscrete (f '' s) := by
+  refine .of_nhdsWithin ?_
+  rintro _ ⟨x, hx, rfl⟩
+  rw [(hf _ hs').nhdsWithin_eq ⟨x, hx, rfl⟩, ← map_pure, ← hs.nhdsWithin x hx, hs'.nhdsWithin_eq hx]
+  exact hf.nhds_le x
+
+lemma IsOpenMap.isDiscrete_range [DiscreteTopology X] (hf : IsOpenMap f) :
+    IsDiscrete (Set.range f) := by
+  simpa using IsDiscrete.univ.image_of_isOpenMap_of_isOpen hf isOpen_univ
+
+lemma IsDiscrete.image (hs : IsDiscrete s) (hf : IsEmbedding f) : IsDiscrete (f '' s) := by
+  refine .of_nhdsWithin ?_
+  rintro _ ⟨x, hx, rfl⟩
+  rw [← map_pure, ← hs.nhdsWithin x hx, hf.map_nhdsWithin_eq]
+
+lemma IsEmbedding.isDiscrete_range [DiscreteTopology X] (hf : IsEmbedding f) :
+    IsDiscrete (Set.range f) := by
+  simpa using IsDiscrete.univ.image hf
+
+lemma IsDiscrete.preimage {s : Set Y} (hs : IsDiscrete s)
+    (hf : ContinuousOn f (f ⁻¹' s)) (hf' : Function.Injective f) :
+    IsDiscrete (f ⁻¹' s) := by
+  refine .of_nhdsWithin fun x hx ↦ ?_
+  rw [← map_le_map_iff hf', map_pure, ← hs.nhdsWithin _ hx, ← Tendsto]
+  exact (hf.continuousWithinAt hx).tendsto_nhdsWithin (Set.mapsTo_preimage _ _)
+
+/-- If `f` is continuous with discrete fibers, then the preimage of discrete sets are discrete. -/
+lemma IsDiscrete.preimage' {s : Set Y} (hs : IsDiscrete s)
+    (hf : ContinuousOn f (f ⁻¹' s))
+    (H : ∀ x, IsDiscrete (f ⁻¹' {x})) : IsDiscrete (f ⁻¹' s) := by
+  refine .of_nhdsWithin fun x hx ↦ ?_
+  have h := ((H (f x)).nhdsWithin _ rfl).le
+  grw [nhdsWithin, ← comap_pure, ← hs.nhdsWithin _ hx, ← (hf.continuousWithinAt hx
+    |>.tendsto_nhdsWithin fun _ ↦ by exact id).le_comap, inf_eq_right.mpr nhdsWithin_le_nhds] at h
+  exact h
+
+lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
+    {a b : X} (hab : a ⤳ b) (ha : a ∈ s) (hb : b ∈ s) : a = b := by
+  letI := hs.1
+  simpa only [← Topology.IsInducing.subtypeVal.specializes_iff, hab, Subtype.mk.injEq,
+    true_iff] using specializes_iff_eq (X := s) (x := ⟨a, ha⟩) (y := ⟨b, hb⟩)
 
 section cofinite_cocompact
 
@@ -78,7 +156,7 @@ lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocal
   refine discreteTopology_iff_isOpen_singleton.mpr (fun x ↦ ?_)
   obtain ⟨K : Set Y, hK : IsCompact K, hK' : K ∈ 𝓝 (f x)⟩ := exists_compact_mem_nhds (f x)
   obtain ⟨U : Set Y, hU₁ : U ⊆ K, hU₂ : IsOpen U, hU₃ : f x ∈ U⟩ := mem_nhds_iff.mp hK'
-  have hU₄ : Set.Finite (f⁻¹' U) :=
+  have hU₄ : Set.Finite (f ⁻¹' U) :=
     Finite.subset (tendsto_cofinite_cocompact_iff.mp hf K hK) (preimage_mono hU₁)
   exact isOpen_singleton_of_finite_mem_nhds _ ((hU₂.preimage hf').mem_nhds hU₃) hU₄
 
@@ -142,6 +220,7 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any set is codiscrete within itself. -/
 @[simp]
 theorem Filter.self_mem_codiscreteWithin (U : Set X) :
@@ -205,9 +284,6 @@ theorem nhdsNE_of_nhdsNE_sdiff_finite {X : Type*} [TopologicalSpace X] [T1Space 
     exact s.toFinite.diff.isClosed.union (isClosed_compl_iff.2 ht)
   · tauto_set
 
-@[deprecated (since := "2025-05-22")]
-alias nhdNE_of_nhdNE_sdiff_finite := nhdsNE_of_nhdsNE_sdiff_finite
-
 /-- In a T1Space, a set `s` is codiscreteWithin `U` iff it has locally finite complement within `U`.
 More precisely: `s` is codiscreteWithin `U` iff every point `z ∈ U` has a punctured neighborhood
 intersect `U \ s` in only finitely many points. -/
@@ -262,7 +338,9 @@ lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
     obtain ⟨u, hu1, hu2, hu3⟩ := ht1
     refine ⟨u, hu1, hu2, fun v hv ↦ ?_⟩
     simpa using fun hv2 ↦ ⟨hv2, ht2 <| hu3 <| by simpa [hv2]⟩
-  · suffices Tendsto (↑) (𝓝[≠] (⟨x, hx⟩ : S)) (𝓝[≠] x) by convert tendsto_def.mp this _; ext; simp
+  · suffices Tendsto (↑) (𝓝[≠] (⟨x, hx⟩ : S)) (𝓝[≠] x) by
+      have aux : Subtype.val ⁻¹' (S \ Subtype.val '' U)ᶜ = U := by ext; simp
+      simpa [aux] using tendsto_def.mp this ((S \ Subtype.val '' U)ᶜ)
     exact tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       continuous_subtype_val.continuousWithinAt <| eventually_mem_nhdsWithin.mono (by simp)
 

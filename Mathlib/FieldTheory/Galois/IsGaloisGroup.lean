@@ -38,6 +38,8 @@ extensions of rings `B/A` seems to outweigh these terminological issues.
 
 @[expose] public section
 
+open Module
+
 section CommRing
 
 variable (G A B : Type*) [Group G] [CommSemiring A] [Semiring B] [Algebra A B]
@@ -52,6 +54,16 @@ class IsGaloisGroup where
   faithful : FaithfulSMul G B
   commutes : SMulCommClass G A B
   isInvariant : Algebra.IsInvariant A B G
+
+variable {G A B} in
+theorem IsGaloisGroup.of_mulEquiv [hG : IsGaloisGroup G A B] {H : Type*} [Group H]
+    [MulSemiringAction H B] (e : H ≃* G) (he : ∀ h (x : B), (e h) • x = h • x) :
+    IsGaloisGroup H A B where
+  faithful := ⟨fun h ↦ e.injective <| hG.faithful.eq_of_smul_eq_smul <| by simpa only [he]⟩
+  commutes := ⟨fun x a b ↦ by simpa [he] using hG.commutes.smul_comm (e x) a b⟩
+  isInvariant := ⟨fun b h ↦
+    have he' : ∀ (g : G) (x : B), e.symm g • x = g • x := fun g x ↦ by simp [← he]
+    hG.isInvariant.isInvariant b (fun g ↦ by simpa [he'] using h (e.symm g))⟩
 
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
@@ -124,10 +136,10 @@ Assume that `IsGaloisGroup G A B` with `A` and `B` domains, then `G` has a `MulS
 on `FractionRing B`. This cannot be an instance since Lean cannot figure out `A`.
 -/
 noncomputable def FractionRing.mulSemiringAction_of_isGaloisGroup [IsDomain A] [IsDomain B]
-    [NoZeroSMulDivisors A B] [IsGaloisGroup G A B] : MulSemiringAction G (FractionRing B) :=
-    MulSemiringAction.compHom (FractionRing B)
-      ((IsFractionRing.fieldEquivOfAlgEquivHom (FractionRing A) (FractionRing B)).comp
-        (MulSemiringAction.toAlgAut G A B))
+    [IsTorsionFree A B] [IsGaloisGroup G A B] : MulSemiringAction G (FractionRing B) :=
+  MulSemiringAction.compHom (FractionRing B)
+    ((IsFractionRing.fieldEquivOfAlgEquivHom (FractionRing A) (FractionRing B)).comp
+      (MulSemiringAction.toAlgAut G A B))
 
 attribute [local instance] FractionRing.liftAlgebra in
 /--
@@ -135,7 +147,7 @@ If `G` is finite and `IsGaloisGroup G A B` with `A` and `B` domains, then `G` is
 a Galois group for `FractionRing A / FractionRing B` for the action defined by
 `FractionRing.mulSemiringAction_of_isGaloisGroup`.
 -/
-theorem IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [NoZeroSMulDivisors A B] [Finite G]
+theorem IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [IsTorsionFree A B] [Finite G]
     [IsGaloisGroup G A B] :
     letI := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
     IsGaloisGroup G (FractionRing A) (FractionRing B) := by
@@ -197,6 +209,9 @@ theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L 
 theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K L :=
   FiniteDimensional.of_finrank_pos (card_eq_finrank G K L ▸ Nat.card_pos)
 
+protected theorem finite [FiniteDimensional K L] [IsGaloisGroup G K L] : Finite G :=
+  Nat.finite_of_card_ne_zero (card_eq_finrank G K L ▸ Module.finrank_pos.ne')
+
 /-- If `G` is a finite Galois group for `L/K`, then `G` is isomorphic to `Gal(L/K)`. -/
 @[simps!] noncomputable def mulEquivAlgEquiv [IsGaloisGroup G K L] [Finite G] : G ≃* Gal(L/K) :=
   MulEquiv.ofBijective (MulSemiringAction.toAlgAut G K L) (by
@@ -232,6 +247,7 @@ instance subgroup [hGKL : IsGaloisGroup G K L] :
   commutes := inferInstanceAs <| SMulCommClass H (FixedPoints.subfield H L) L
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finrank_fixedPoints_eq_card_subgroup [IsGaloisGroup G K L] :
     Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L = Nat.card H :=
@@ -239,16 +255,13 @@ theorem finrank_fixedPoints_eq_card_subgroup [IsGaloisGroup G K L] :
 
 variable {G K L} in
 theorem of_mulEquiv_algEquiv [IsGalois K L] (e : G ≃* Gal(L/K)) (he : ∀ g x, e g x = g • x) :
-    IsGaloisGroup G K L where
-  faithful := ⟨fun {g₁ g₂} h ↦ e.injective <| AlgEquiv.ext <| by simpa [he]⟩
-  commutes := ⟨by simp [← he]⟩
-  isInvariant := ⟨fun y hy ↦ (InfiniteGalois.mem_bot_iff_fixed y).mpr <|
-    e.surjective.forall.mpr <| by simpa [he]⟩
+    IsGaloisGroup G K L := .of_mulEquiv e he
 
 instance fixedPoints [Finite G] [FaithfulSMul G L] :
     IsGaloisGroup G (FixedPoints.subfield G L) L :=
   of_mulEquiv_algEquiv (FixedPoints.toAlgAutMulEquiv _ _) fun _ _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
     IsGaloisGroup (fixingSubgroup G (F : Set L)) F L :=
   let e := ((mulEquivAlgEquiv G K L).subgroupMap (fixingSubgroup G (F : Set L))).trans <|
@@ -257,6 +270,7 @@ instance intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
   have := hGKL.isGalois
   .of_mulEquiv_algEquiv e fun _ _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
     Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=

@@ -608,7 +608,7 @@ def append (c₁ : Composition m) (c₂ : Composition n) : Composition (m + n) w
 def reverse (c : Composition n) : Composition n where
   blocks := c.blocks.reverse
   blocks_pos hi := c.blocks_pos (mem_reverse.mp hi)
-  blocks_sum := by simp [List.sum_reverse]
+  blocks_sum := by simp
 
 @[simp]
 lemma reverse_reverse (c : Composition n) : c.reverse.reverse = c :=
@@ -812,7 +812,7 @@ considering the restriction of the subset to `{1, ..., n-1}` and shifting to the
 def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)) where
   toFun c :=
     { i : Fin (n - 1) |
-        (⟨1 + (i : ℕ), by omega⟩ : Fin n.succ) ∈ c.boundaries }.toFinset
+        (⟨1 + (i : ℕ), by lia⟩ : Fin n.succ) ∈ c.boundaries }.toFinset
   invFun s :=
     { boundaries :=
         { i : Fin n.succ |
@@ -839,7 +839,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
   right_inv := by
     intro s
     ext i
-    have : (i : ℕ) + 1 ≠ n := by cutsat
+    have : (i : ℕ) + 1 ≠ n := by lia
     simp_rw [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
       Finset.mem_filter_univ, reduceCtorEq, this, false_or, add_left_inj, ← Fin.ext_iff,
       exists_eq_right']

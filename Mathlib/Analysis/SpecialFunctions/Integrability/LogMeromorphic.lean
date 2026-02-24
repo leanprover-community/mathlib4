@@ -21,7 +21,7 @@ that logarithms of trigonometric functions are interval integrable. In the compl
 functions are circle integrable over every circle in the complex plane.
 -/
 
-@[expose] public section
+public section
 
 open Filter Interval MeasureTheory MeromorphicOn Metric Real
 
@@ -117,6 +117,7 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
   {c : ℂ} {R : ℝ} {f : ℂ → E}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `f` is complex meromorphic on a circle in the complex plane, then `log ‖f ·‖` is circle
 integrable over that circle.

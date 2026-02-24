@@ -21,7 +21,7 @@ This file provides results about maps between tensor products of `R`-algebras.
   * `Algebra.TensorProduct.lid : R ⊗[R] A ≃ₐ[R] A`
   * `Algebra.TensorProduct.rid : A ⊗[R] R ≃ₐ[S] A` (usually used with `S = R` or `S = A`)
   * `Algebra.TensorProduct.comm : A ⊗[R] B ≃ₐ[R] B ⊗[R] A`
-  * `Algebra.TensorProduct.assoc : ((A ⊗[R] B) ⊗[R] C) ≃ₐ[R] (A ⊗[R] (B ⊗[R] C))`
+  * `Algebra.TensorProduct.assoc : ((A ⊗[S] C) ⊗[R] D) ≃ₐ[T] (A ⊗[S] (C ⊗[R] D))`
 - `Algebra.TensorProduct.liftEquiv`: a universal property for the tensor product of algebras.
 
 ## References
@@ -268,38 +268,21 @@ variable {A} in
 theorem rid_symm_apply (a : A) : (TensorProduct.rid R S A).symm a = a ⊗ₜ 1 := rfl
 
 variable (T) in
-lemma rid_lTensor : (Algebra.linearMap S (S ⊗[R] B)).restrictScalars R ∘ₗ
+lemma linearMap_comp_rid : (Algebra.linearMap S (S ⊗[R] B)).restrictScalars R ∘ₗ
     (TensorProduct.rid R R S).toLinearMap = (Algebra.linearMap R B).lTensor S := by
   ext; simp
 
 section DistribBaseChange
 
-variable (R A B C : Type*)
-variable [CommSemiring R]
-variable [CommSemiring A] [Algebra R A]
-variable [Semiring B] [Algebra R B]
-variable [Semiring C] [Algebra R C]
-
-lemma distribBaseChange_includeLeft_lTensor_tmul (a : A) (b : B) :
-    (AlgebraTensorModule.distribBaseChange R A B C)
-      ((includeLeft (R := R) (A := B) (B := C)).toLinearMap.lTensor A (a ⊗ₜ[R] b)) =
-    (includeLeft (R := A) (S := R) (A := A ⊗[R] B) (B := A ⊗[R] C)) (a ⊗ₜ[R] b) := by
-  simp [one_def]
+variable (R A B C : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A] [Semiring B]
+  [Algebra R B] [Semiring C] [Algebra R C]
 
 /-- A relation between `distribBaseChange`, `includeLeft` and `lTensor`. -/
 lemma distribBaseChange_includeLeft_lTensor :
     ((AlgebraTensorModule.distribBaseChange R A B C).restrictScalars R) ∘ₗ
-      ((includeLeft (R := R) (A := B) (B := C)).toLinearMap.lTensor A) =
-    (includeLeft (R := A) (S := R) (A := A ⊗[R] B) (B := A ⊗[R] C)).toLinearMap := by
+      ((includeLeft (R := R) (B := C)).toLinearMap.lTensor A) =
+    (includeLeft (R := A) (A := A ⊗[R] B) (B := A ⊗[R] C)).toLinearMap := by
   ext; simp [one_def]
-
-lemma distribBaseChange_includeRight_lTensor_tmul (a : A) (c : C) :
-    (AlgebraTensorModule.distribBaseChange R A B C)
-      ((includeRight (R := R) (A := B) (B := C)).toLinearMap.lTensor A (a ⊗ₜ c)) =
-    (includeRight (R := A) (A := A ⊗[R] B) (B := A ⊗[R] C)) (a ⊗ₜ c) := by
-  simp only [includeRight_apply, LinearMap.lTensor_tmul, AlgHom.toLinearMap_apply,
-    TensorProduct.AlgebraTensorModule.distribBaseChange_tmul, includeRight_apply, one_def]
-  rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', smul_tmul, smul_tmul']
 
 /-- A relation between `distribBaseChange`, `includeRight` and `lTensor`. -/
 lemma distribBaseChange_includeRight_lTensor :
@@ -310,7 +293,10 @@ lemma distribBaseChange_includeRight_lTensor :
   intro x
   induction x using TensorProduct.induction_on with
   | zero => simp only [map_zero]
-  | tmul _ _ => exact distribBaseChange_includeRight_lTensor_tmul _ _ _ _ _ _
+  | tmul x y =>
+      trans x • 1 ⊗ₜ[A] (1 ⊗ₜ[R] y)
+      · simp [Algebra.smul_def]
+      · simp [← tmul_smul, smul_tmul' (M := A)]
   | add _ _ hx hy =>
     simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
       LinearEquiv.restrictScalars_apply] at hx hy
@@ -363,6 +349,7 @@ def lidOfCompatibleSMul : S ⊗[R] A ≃ₐ[S] A :=
 
 theorem lidOfCompatibleSMul_tmul (s a) : lidOfCompatibleSMul R S A (s ⊗ₜ[R] a) = s • a := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R M N : Type*} [CommSemiring R] [AddCommGroup M] [AddCommGroup N]
     [Module R M] [Module R N] [Module ℚ M] [Module ℚ N] : CompatibleSMul R ℚ M N where
   smul_tmul q m n := by
@@ -415,43 +402,55 @@ lemma comm_comp_includeRight :
 theorem adjoin_tmul_eq_top : adjoin R { t : A ⊗[R] B | ∃ a b, a ⊗ₜ[R] b = t } = ⊤ :=
   top_le_iff.mp <| (top_le_iff.mpr <| span_tmul_eq_top R A B).trans (span_le_adjoin R _)
 
+section
+
+omit [Algebra S A] [IsScalarTower R S A]
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/-- `S`-linear version of `Algebra.TensorProduct.comm` when `A ⊗[R] S`
+is viewed as an `S`-algebra via the right component. -/
+noncomputable def commRight : S ⊗[R] A ≃ₐ[S] A ⊗[R] S where
+  __ := Algebra.TensorProduct.comm R S A
+  commutes' _ := rfl
+
+variable {S A} in
+@[simp]
+lemma commRight_tmul (s : S) (a : A) : commRight R S A (s ⊗ₜ a) = a ⊗ₜ s := rfl
+
+variable {S A} in
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+@[simp]
+lemma Algebra.TensorProduct.commRight_symm_tmul (s : S) (a : A) :
+    (commRight R S A).symm (a ⊗ₜ[R] s) = s ⊗ₜ a := rfl
+
+end
+
 end
 
 section
 
-variable {R A}
+variable [CommSemiring T] [Algebra R T] [Algebra S T]
+    [Algebra T A] [IsScalarTower R T A] [IsScalarTower S T A]
 
-unseal mul in
-theorem assoc_aux_1 (a₁ a₂ : A) (b₁ b₂ : B) (c₁ c₂ : C) :
-    (TensorProduct.assoc R A B C) ((a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) ⊗ₜ[R] (c₁ * c₂)) =
-      (TensorProduct.assoc R A B C) (a₁ ⊗ₜ[R] b₁ ⊗ₜ[R] c₁) *
-        (TensorProduct.assoc R A B C) (a₂ ⊗ₜ[R] b₂ ⊗ₜ[R] c₂) :=
-  rfl
-
-theorem assoc_aux_2 : (TensorProduct.assoc R A B C) (1 ⊗ₜ[R] 1 ⊗ₜ[R] 1) = 1 :=
-  rfl
-
-variable (R A C D)
-
+variable (T C D) in
 /-- The associator for tensor product of R-algebras, as an algebra isomorphism. -/
-protected def assoc : A ⊗[S] C ⊗[R] D ≃ₐ[S] A ⊗[S] (C ⊗[R] D) :=
+protected def assoc : (A ⊗[S] C) ⊗[R] D ≃ₐ[T] A ⊗[S] (C ⊗[R] D) :=
   AlgEquiv.ofLinearEquiv
-    (AlgebraTensorModule.assoc R S S A C D)
+    (AlgebraTensorModule.assoc R S T A C D)
     (by simp [Algebra.TensorProduct.one_def])
     ((LinearMap.map_mul_iff _).mpr <| by ext; simp)
 
+variable (T C D) in
 @[simp] theorem assoc_toLinearEquiv :
-    (TensorProduct.assoc R S A C D).toLinearEquiv = AlgebraTensorModule.assoc R S S A C D := rfl
-
-variable {A C D}
+    (TensorProduct.assoc R S T A C D).toLinearEquiv = AlgebraTensorModule.assoc R S T A C D := rfl
 
 @[simp]
 theorem assoc_tmul (a : A) (b : C) (c : D) :
-    TensorProduct.assoc R S A C D ((a ⊗ₜ b) ⊗ₜ c) = a ⊗ₜ (b ⊗ₜ c) := rfl
+    TensorProduct.assoc R S T A C D ((a ⊗ₜ b) ⊗ₜ c) = a ⊗ₜ (b ⊗ₜ c) := rfl
 
 @[simp]
 theorem assoc_symm_tmul (a : A) (b : C) (c : D) :
-    (TensorProduct.assoc R S A C D).symm (a ⊗ₜ (b ⊗ₜ c)) = (a ⊗ₜ b) ⊗ₜ c := rfl
+    (TensorProduct.assoc R S T A C D).symm (a ⊗ₜ (b ⊗ₜ c)) = (a ⊗ₜ b) ⊗ₜ c := rfl
 
 end
 
@@ -592,8 +591,8 @@ variable (R A B C) in
 
 This is the algebra version of `TensorProduct.leftComm`. -/
 def leftComm : A ⊗[R] (B ⊗[R] C) ≃ₐ[R] B ⊗[R] (A ⊗[R] C) :=
-  (Algebra.TensorProduct.assoc R R A B C).symm.trans <|
-    (congr (Algebra.TensorProduct.comm R A B) .refl).trans <| TensorProduct.assoc R R B A C
+  (Algebra.TensorProduct.assoc R R R A B C).symm.trans <|
+    (congr (Algebra.TensorProduct.comm R A B) .refl).trans <| TensorProduct.assoc R R R B A C
 
 @[simp]
 theorem leftComm_tmul (m : A) (n : B) (p : C) :

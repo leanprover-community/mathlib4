@@ -7,9 +7,8 @@ module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.RingTheory.Artinian.Ring
-public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.RingTheory.Unramified.Finite
+public import Mathlib.RingTheory.Unramified.Locus
 
 /-!
 # Unramified algebras over fields
@@ -31,7 +30,7 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 -/
 
-@[expose] public section
+public section
 
 open Algebra Module Polynomial
 open scoped TensorProduct
@@ -59,6 +58,7 @@ theorem of_isSeparable [Algebra.IsSeparable K L] : FormallyUnramified K L := by
 variable [FormallyUnramified K A] [EssFiniteType K A]
 variable [FormallyUnramified K L] [EssFiniteType K L]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bijective_of_isAlgClosed_of_isLocalRing
     [IsAlgClosed K] [IsLocalRing A] :
     Function.Bijective (algebraMap K A) := by
@@ -120,6 +120,7 @@ theorem isField_of_isAlgClosed_of_isLocalRing
   exact hx ((isUnit_iff_ne_zero.mpr
     (fun e ↦ hx' ((algebraMap K A).congr_arg e))).map (algebraMap K A))
 
+set_option backward.isDefEq.respectTransparency false in
 include K in
 theorem isReduced_of_field :
     IsReduced A := by
@@ -152,6 +153,7 @@ theorem isReduced_of_field :
     (A := Localization.AtPrime M)).toField
   exact hy.eq_zero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_eq_top_of_isPurelyInseparable
     [IsPurelyInseparable K L] : (algebraMap K L).range = ⊤ := by
   classical
@@ -198,6 +200,7 @@ theorem range_eq_top_of_isPurelyInseparable
     rw [map_mul, ← Algebra.smul_def, algebraMap_eq_smul_one, eq_neg_iff_add_eq_zero.mpr e,
       smul_neg, neg_smul, neg_neg, smul_smul, this.val_inv_mul, one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSeparable : Algebra.IsSeparable K L := by
   have := finite_of_free (R := K) (S := L)
   rw [← separableClosure.eq_top_iff]
@@ -213,3 +216,34 @@ theorem iff_isSeparable (L : Type u) [Field L] [Algebra K L] [EssFiniteType K L]
   ⟨fun _ ↦ isSeparable K L, fun _ ↦ of_isSeparable K L⟩
 
 end Algebra.FormallyUnramified
+
+set_option backward.isDefEq.respectTransparency false in
+variable {K A} in
+/-- If `A = K[X]/⟨p⟩` is unramified at some prime `Q`, then the minpoly of `X` in `κ(Q)`
+only divides `p` once. -/
+theorem Algebra.IsUnramifiedAt.not_minpoly_sq_dvd
+    (Q : Ideal A) [Q.IsPrime] [Algebra.IsUnramifiedAt K Q] (x : A) (p : K[X])
+    (hp₁ : Ideal.span {p} = RingHom.ker (aeval x).toRingHom)
+    (hp₂ : Function.Surjective (aeval (R := K) x)) :
+    ¬ minpoly K (algebraMap A Q.ResidueField x) ^ 2 ∣ p := by
+  have : Algebra.FiniteType K A := .of_surjective _ hp₂
+  have := Algebra.FormallyUnramified.finite_of_free K (Localization.AtPrime Q)
+  have : IsField (Localization.AtPrime Q) :=
+    have := IsArtinianRing.of_finite K (Localization.AtPrime Q)
+    have := Algebra.FormallyUnramified.isReduced_of_field K (Localization.AtPrime Q)
+    IsArtinianRing.isField_of_isReduced_of_isLocalRing _
+  letI := this.toField
+  set q := minpoly K (algebraMap A Q.ResidueField x)
+  have : algebraMap A (Localization.AtPrime Q) (aeval x q) = 0 := by
+    apply (algebraMap (Localization.AtPrime Q) Q.ResidueField).injective
+    rw [← IsScalarTower.algebraMap_apply, ← aeval_algebraMap_apply, minpoly.aeval, map_zero]
+  obtain ⟨⟨m, hm⟩, hm'⟩ := (IsLocalization.map_eq_zero_iff Q.primeCompl _ _).mp this
+  obtain ⟨m, rfl⟩ := hp₂ m
+  simp_rw [← map_mul, ← AlgHom.coe_toRingHom, ← AlgHom.toRingHom_eq_coe, ← RingHom.mem_ker,
+    ← hp₁, Ideal.mem_span_singleton] at hm'
+  rw [pow_two]
+  rintro H
+  have := (mul_dvd_mul_iff_right (minpoly.ne_zero (Algebra.IsIntegral.isIntegral _))).mp
+    (H.trans hm')
+  rw [minpoly.dvd_iff, aeval_algebraMap_apply, Q.algebraMap_residueField_eq_zero] at this
+  exact hm this

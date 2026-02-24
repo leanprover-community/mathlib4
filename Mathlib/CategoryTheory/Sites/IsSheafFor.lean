@@ -6,7 +6,6 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Sites.Sieves
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 
 /-!
 # The sheaf condition for a presieve
@@ -650,10 +649,13 @@ theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (Presie
 
 [Elephant] C2.1.5(ii)
 -/
-theorem isSheafFor_top_sieve (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P ((⊤ : Sieve X) : Presieve X) := by
-  rw [← generate_of_singleton_isSplitEpi (𝟙 X)]
+theorem isSheafFor_top (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (⊤ : Presieve X) := by
+  rw [← arrows_top, ← generate_of_singleton_isSplitEpi (𝟙 X)]
   rw [← isSheafFor_iff_generate]
   apply isSheafFor_singleton_iso
+
+@[deprecated (since := "2026-01-22")]
+alias isSheafFor_top_sieve := isSheafFor_top
 
 /-- If `P₁ : Cᵒᵖ ⥤ Type w` and `P₂  : Cᵒᵖ ⥤ Type w` are two naturally equivalent
 presheaves, and `P₁` is a sheaf for a presieve `R`, then `P₂` is also a sheaf for `R`. -/
@@ -690,6 +692,10 @@ theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSheafFor
     IsSheafFor P' R :=
   isSheafFor_of_nat_equiv (fun X ↦ (i.app (op X)).toEquiv)
     (fun _ _ f x ↦ congr_fun (i.hom.naturality f.op) x) hP
+
+theorem isSheafFor_iff_of_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') :
+    IsSheafFor P R ↔ IsSheafFor P' R :=
+  ⟨isSheafFor_iso i, isSheafFor_iso i.symm⟩
 
 /-- The property of being separated for some presieve is preserved under isomorphisms. -/
 theorem isSeparatedFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSeparatedFor P R) :
@@ -795,6 +801,103 @@ theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
       (fun i j Z gi gj ↦ hx gi gj (ofArrows.mk _) (ofArrows.mk _))
     exact ⟨t, fun Y f ⟨i⟩ ↦ hA i, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
 
+/-- If `P` is a presheaf of types and `π : (i : I) → X i ⟶ B` is a family
+of morphisms, this is the map from `P.obj (op B)` to the subtype of compatible
+families in `P.obj (op (X i))`. -/
+@[simps]
+def Arrows.toCompatible (s : P.obj (op B)) :
+    Subtype (Arrows.Compatible P π) where
+  val i := P.map (π i).op s
+  property i j Z gi gj h := by
+    simp [← FunctorToTypes.map_comp_apply, ← op_comp, h]
+
+theorem isSheafFor_ofArrows_iff_bijective_toCompabible :
+    IsSheafFor P (ofArrows X π) ↔
+      Function.Bijective (Arrows.toCompatible P π) := by
+  rw [isSheafFor_arrows_iff]
+  refine ⟨fun h ↦ ⟨fun x₁ x₂ hx ↦
+      (h _ (Arrows.toCompatible P π x₁).property).unique (fun _ ↦ rfl)
+        (congr_fun (congr_arg Subtype.val hx.symm)),
+      fun ⟨y, hy⟩ ↦ ?_⟩, fun h x hx ↦ ?_⟩
+  · obtain ⟨x, hx, _⟩ := h y hy
+    exact ⟨x, by ext; apply hx⟩
+  · obtain ⟨y, hy⟩ := h.2 ⟨x, hx⟩
+    rw [Subtype.ext_iff] at hy
+    dsimp at hy
+    subst hy
+    exact ⟨y, fun _ ↦ rfl, fun y' hy' ↦ h.1 (by ext; apply hy')⟩
+
+@[simp]
+lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
+    {Y : C} (f : Y ⟶ X) [IsIso f] :
+    IsSheafFor P (Sieve.pullback f R).arrows ↔ IsSheafFor P R.arrows := by
+  obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
+  have := Sieve.pullback_ofArrows_of_iso _ g (asIso f)
+  dsimp at this
+  let e : Subtype (Arrows.Compatible P g) ≃
+    Subtype (Arrows.Compatible P (fun i ↦ g i ≫ inv f)) :=
+    { toFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ W g₁ g₂ h ↦ by
+        simp only [← cancel_mono f, assoc, IsIso.inv_hom_id, comp_id] at h
+        exact s.property _ _ _ _ _ h⟩
+      invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ W g₁ g₂ h ↦ by
+        replace h := h =≫ inv f
+        simp only [Category.assoc] at h
+        exact s.property _ _ _ _ _ h⟩ }
+  simp only [this, ← isSheafFor_iff_generate,
+    isSheafFor_ofArrows_iff_bijective_toCompabible, ← e.bijective.of_comp_iff',
+    ← Function.Bijective.of_comp_iff _ (P.mapIso (asIso f).symm.op).toEquiv.bijective]
+  convert Iff.rfl using 2
+  ext
+  simp [e, FunctorToTypes.map_comp_apply]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isSheafFor_over_map_op_comp_ofArrows_iff
+    {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
+    {X : Over B} {Y : I → Over B} (f : ∀ i, Y i ⟶ X) :
+    IsSheafFor ((Over.map p).op ⋙ P) (Presieve.ofArrows _ f) ↔
+      IsSheafFor P (Presieve.ofArrows _ (fun i ↦ (Over.map p).map (f i))) := by
+  let e : Subtype (Arrows.Compatible ((Over.map p).op ⋙ P) f) ≃
+      Subtype (Arrows.Compatible P (fun i ↦ (Over.map p).map (f i))) :=
+    { toFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦ by
+        replace h := (Over.forget _).congr_map h
+        dsimp at h
+        have := s.property i₁ i₂ (Over.mk (g₁.left ≫ (f i₁).left ≫ X.hom))
+          (Over.homMk g₁.left) (Over.homMk g₂.left (by
+            have := Over.w (f i₂)
+            dsimp at this ⊢
+            rw [reassoc_of% h, this])) (by cat_disch)
+        let φ : Z ⟶ (Over.map p).obj (Over.mk (g₁.left ≫ (f i₁).left ≫ X.hom)) :=
+          Over.homMk (𝟙 _) (by simpa using Over.w g₁)
+        replace this := congr_arg (P.map φ.op) this
+        dsimp at this
+        simp only [← FunctorToTypes.map_comp_apply, ← op_comp] at this
+        convert this <;> cat_disch⟩
+      invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦
+        s.property i₁ i₂ _ ((Over.map p).map g₁) ((Over.map p).map g₂)
+          (by simp only [← Functor.map_comp, h])⟩ }
+  simp only [isSheafFor_ofArrows_iff_bijective_toCompabible,
+    ← e.bijective.of_comp_iff']
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isSheafFor_over_map_op_comp_iff
+    {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
+    {X : Over B} (R : Sieve X) {X' : Over B'}
+    (e : (Over.map p).obj X ≅ X') :
+    IsSheafFor ((Over.map p).op ⋙ P) R.arrows ↔
+      IsSheafFor P (Sieve.pullback e.inv (Sieve.functorPushforward (Over.map p) R)).arrows := by
+  obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
+  rw [← isSheafFor_iff_generate, isSheafFor_pullback_iff,
+    isSheafFor_over_map_op_comp_ofArrows_iff, isSheafFor_iff_generate]
+  convert Iff.rfl
+  refine le_antisymm ?_ ?_
+  · rintro W _ ⟨T, _, a, ⟨_, b, _, ⟨i⟩, rfl⟩, rfl⟩
+    refine ⟨(Over.map p).obj (Z i), Over.homMk (a.left ≫ b.left) ?_, _, ⟨i⟩, ?_⟩
+    · simpa [(Over.w_assoc b)] using Over.w a
+    · cat_disch
+  · rintro W _ ⟨_, a, _, ⟨i⟩, rfl⟩
+    exact ⟨_, _, _, Sieve.ofArrows_mk _ _ i, rfl⟩
+
 variable [(ofArrows X π).HasPairwisePullbacks]
 
 /--
@@ -836,6 +939,98 @@ lemma isSheafFor_singleton {X Y : C} {f : X ⟶ Y} :
   rw [IsSheafFor, Equiv.forall_congr_left (Presieve.FamilyOfElements.singletonEquiv P f)]
   simp_rw [FamilyOfElements.compatible_singleton_iff,
     FamilyOfElements.isAmalgamation_singleton_iff, FamilyOfElements.singletonEquiv_symm_apply_self]
+
+/--
+To show `P` is a sheaf for the binding of `U` with `B`, it suffices to show that `P` is a sheaf for
+`U`, that `P` is a sheaf for each sieve in `B`, and that it is separated for any pullback of any
+sieve in `B`.
+
+This is mostly an auxiliary lemma to show `Presieve.isSheafFor_trans`.
+Adapted from [Elephant], Lemma C2.1.7(i) with suggestions as mentioned in
+https://math.stackexchange.com/a/358709/
+-/
+theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type*) (U : Sieve X)
+    (B : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, U f → Sieve Y)
+    (hU : Presieve.IsSheafFor P (U : Presieve X))
+    (hB : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), Presieve.IsSheafFor P (B hf : Presieve Y))
+    (hB' : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (h : U f) ⦃Z⦄ (g : Z ⟶ Y),
+      Presieve.IsSeparatedFor P (((B h).pullback g) : Presieve Z)) :
+    Presieve.IsSheafFor P (Sieve.bind (U : Presieve X) B : Presieve X) := by
+  intro s hs
+  let y : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), Presieve.FamilyOfElements P (B hf : Presieve Y) :=
+    fun Y f hf Z g hg => s _ (Presieve.bind_comp _ _ hg)
+  have hy : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), (y hf).Compatible := by
+    intro Y f H Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
+    apply hs
+    apply reassoc_of% comm
+  let t : Presieve.FamilyOfElements P (U : Presieve X) :=
+    fun Y f hf => (hB hf).amalgamate (y hf) (hy hf)
+  have ht : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), (y hf).IsAmalgamation (t f hf) := fun Y f hf =>
+    (hB hf).isAmalgamation _
+  have hT : t.Compatible := by
+    rw [Presieve.compatible_iff_sieveCompatible]
+    intro Z W f h hf
+    apply (hB (U.downward_closed hf h)).isSeparatedFor.ext
+    intro Y l hl
+    apply (hB' hf (l ≫ h)).ext
+    intro M m hm
+    have : Sieve.bind U B (m ≫ l ≫ h ≫ f) := by simpa using (bind_comp f hf hm : Sieve.bind U B _)
+    trans s (m ≫ l ≫ h ≫ f) this
+    · have := ht (U.downward_closed hf h) _ ((B _).downward_closed hl m)
+      rw [op_comp, FunctorToTypes.map_comp_apply] at this
+      grind
+    · have h : s _ _ = _ := (ht hf _ hm).symm
+      -- Porting note: this was done by `simp only [assoc] at`
+      conv_lhs at h => congr; rw [assoc, assoc]
+      rw [h]
+      simp only [op_comp, assoc, FunctorToTypes.map_comp_apply]
+  refine ⟨hU.amalgamate t hT, ?_, ?_⟩
+  · rintro Z _ ⟨Y, f, g, hg, hf, rfl⟩
+    rw [op_comp, FunctorToTypes.map_comp_apply, Presieve.IsSheafFor.valid_glue _ _ _ hg]
+    apply ht hg _ hf
+  · intro y hy
+    apply hU.isSeparatedFor.ext
+    intro Y f hf
+    apply (hB hf).isSeparatedFor.ext
+    intro Z g hg
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp, hy _ (Presieve.bind_comp _ _ hg),
+      hU.valid_glue _ _ hf, ht hf _ hg]
+
+/-- Given two sieves `R` and `S`, to show that `P` is a sheaf for `S`, we can show:
+* `P` is a sheaf for `R`
+* `P` is a sheaf for the pullback of `S` along any arrow in `R`
+* `P` is separated for the pullback of `R` along any arrow in `S`.
+
+This is mostly an auxiliary lemma to construct `Sheaf.finestTopology`.
+Adapted from [Elephant], Lemma C2.1.7(ii) with suggestions as mentioned in
+https://math.stackexchange.com/a/358709
+-/
+theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type*) (R S : Sieve X)
+    (hR : Presieve.IsSheafFor P (R : Presieve X))
+    (hR' : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (_ : S f), Presieve.IsSeparatedFor P (R.pullback f : Presieve Y))
+    (hS : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (_ : R f), Presieve.IsSheafFor P (S.pullback f : Presieve Y)) :
+    Presieve.IsSheafFor P (S : Presieve X) := by
+  have : (Sieve.bind R fun Y f _ => S.pullback f : Presieve X) ≤ S := by
+    rintro Z f ⟨W, f, g, hg, hf : S _, rfl⟩
+    apply hf
+  apply Presieve.isSheafFor_subsieve_aux P this
+  · apply isSheafFor_bind _ _ _ hR hS
+    intro Y f hf Z g
+    rw [← pullback_comp]
+    apply (hS (R.downward_closed hf _)).isSeparatedFor
+  · intro Y f hf
+    have : Sieve.pullback f (Sieve.bind R fun T (k : T ⟶ X) (_ : R k) => pullback k S) =
+        R.pullback f := by
+      ext Z g
+      constructor
+      · rintro ⟨W, k, l, hl, _, comm⟩
+        rw [pullback_apply, ← comm]
+        simp [hl]
+      · intro a
+        refine ⟨Z, 𝟙 Z, _, a, ?_⟩
+        simp [hf]
+    rw [this]
+    apply hR' hf
 
 end Presieve
 

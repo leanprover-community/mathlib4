@@ -381,6 +381,7 @@ instance instSub : Sub Cₛ^n⟮I; F, V⟯ :=
 theorem coe_sub (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s - t) = s - t :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance instZero : Zero Cₛ^n⟮I; F, V⟯ :=
   ⟨⟨fun _ => 0, (contMDiff_zeroSection 𝕜 V).of_le le_top⟩⟩
 
@@ -443,13 +444,13 @@ instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
 
 end
 
-protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : 1 ≤ n) :
+protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : n ≠ 0) :
     MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff.mdifferentiable hn
 
 protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) :
     MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
-  s.contMDiff.mdifferentiable (mod_cast le_top)
+  s.contMDiff.mdifferentiable (by simp)
 
 protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x => TotalSpace.mk' F x (s x : V x)) x :=

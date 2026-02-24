@@ -25,7 +25,7 @@ We provide various useful constructors:
 * `adjunctionOfEquivLeft` / `adjunctionOfEquivRight` witness that these constructions
   give adjunctions.
 
-There are also typeclasses `IsLeftAdjoint` / `IsRightAdjoint`, which asserts the
+There are also typeclasses `IsLeftAdjoint` / `IsRightAdjoint`, which assert the
 existence of an adjoint functor. Given `[F.IsLeftAdjoint]`, a chosen right
 adjoint can be obtained as `F.rightAdjoint`.
 
@@ -39,8 +39,11 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
 
 * Adjoint lifting theorems are in the directory `Lifting`.
 * The file `AdjointFunctorTheorems` proves the adjoint functor theorems.
+* The file `Additive` develops adjunctions between additive functors.
 * The file `Comma` shows that for a functor `G : D ⥤ C` the data of an initial object in each
   `StructuredArrow` category on `G` is equivalent to a left adjoint to `G`, as well as the dual.
+* The file `CompositionIso` derives compatibilities for compositions of left adjoints from the
+  corresponding data on right adjoints.
 * The file `Evaluation` shows that products and coproducts are adjoint to evaluation of functors.
 * The file `FullyFaithful` characterizes when adjoints are full or faithful in terms of the unit
   and counit.
@@ -57,11 +60,14 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
   `R₁ R₂ : D ⥤ C`, it provides equivalences `(L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂)` and `(L₂ ≅ L₁) ≃ (R₁ ≅ R₂)`.
 * The file `Opposites` contains constructions to relate adjunctions of functors to adjunctions of
   their opposites.
+* The file `Parametrized` defines adjunctions with a parameter.
+* The file `PartialAdjoint` studies the domain of definition of partial adjoints (left/right).
 * The file `Reflective` defines reflective functors, i.e. fully faithful right adjoints. Note that
   many facts about reflective functors are proved in the earlier file `FullyFaithful`.
 * The file `Restrict` defines the restriction of an adjunction along fully faithful functors.
 * The file `Triple` proves that in an adjoint triple, the left adjoint is fully faithful if and
   only if the right adjoint is.
+* The file `Quadruple` bundles adjoint quadruples and compares induced natural transformations.
 * The file `Unique` proves uniqueness of adjoints.
 * The file `Whiskering` proves that functors `F : D ⥤ E` and `G : E ⥤ D` with an adjunction
   `F ⊣ G`, induce adjunctions between the functor categories `C ⥤ D` and `C ⥤ E`,
@@ -149,6 +155,7 @@ namespace Adjunction
 
 attribute [reassoc (attr := simp)] left_triangle_components right_triangle_components
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The hom set equivalence associated to an adjunction. -/
 @[simps -isSimp]
 def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
@@ -178,6 +185,7 @@ attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
 namespace Adjunction
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext]
 lemma ext {F : C ⥤ D} {G : D ⥤ C} {adj adj' : F ⊣ G}
     (h : adj.unit = adj'.unit) : adj = adj' := by
@@ -253,10 +261,12 @@ theorem homEquiv_naturality_right_square_iff (f : X' ⟶ X) (g : X ⟶ G.obj Y')
       using homEquiv_naturality_left_square adj _ _ _ _ w,
     homEquiv_naturality_right_square adj f g h k⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem left_triangle : whiskerRight adj.unit F ≫ whiskerLeft F adj.counit = 𝟙 _ := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 𝟙 _ := by
   ext; simp
@@ -271,10 +281,12 @@ theorem unit_naturality {X Y : C} (f : X ⟶ Y) :
     adj.unit.app X ≫ G.map (F.map f) = f ≫ adj.unit.app Y :=
   (adj.unit.naturality f).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma unit_comp_map_eq_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     adj.unit.app A ≫ G.map f = g ↔ f = F.map g ≫ adj.counit.app B :=
   ⟨fun h => by simp [← h], fun h => by simp [h]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_unit_comp_map_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     g = adj.unit.app A ≫ G.map f ↔ F.map g ≫ adj.counit.app B = f :=
   ⟨fun h => by simp [h], fun h => by simp [← h]⟩
@@ -287,6 +299,7 @@ theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B
     g = adj.homEquiv A B f ↔ (adj.homEquiv A B).symm g = f :=
   eq_unit_comp_map_iff adj f g
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `adj : F ⊣ G`, and `X : C`, then `F.obj X` corepresents `Y ↦ (X ⟶ G.obj Y)`. -/
 @[simps]
 def corepresentableBy (X : C) :
@@ -294,6 +307,7 @@ def corepresentableBy (X : C) :
   homEquiv := adj.homEquiv _ _
   homEquiv_comp := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `adj : F ⊣ G`, and `Y : D`, then `G.obj Y` represents `X ↦ (F.obj X ⟶ Y)`. -/
 @[simps]
 def representableBy (Y : D) :
@@ -364,7 +378,7 @@ This structure won't typically be used anywhere else.
 structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   /-- The unit of an adjunction between `F` and `G` -/
   unit : 𝟭 C ⟶ F.comp G
-  /-- The counit of an adjunction between `F` and `G`s -/
+  /-- The counit of an adjunction between `F` and `G` -/
   counit : G.comp F ⟶ 𝟭 D
   /-- Equality of the composition of the unit, associator, and counit with the identity
   `F ⟶ (F G) F ⟶ F (G F) ⟶ F = NatTrans.id F` -/
@@ -389,6 +403,7 @@ variable {F : C ⥤ D} {G : D ⥤ C}
 
 attribute [local simp] CoreHomEquivUnitCounit.homEquiv_unit CoreHomEquivUnitCounit.homEquiv_counit
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Construct an adjunction from the data of a `CoreHomEquivUnitCounit`, i.e. a hom set
 equivalence, unit and counit natural transformations together with proofs of the equalities
@@ -405,6 +420,7 @@ def mk' (adj : CoreHomEquivUnitCounit F G) : F ⊣ G where
     rw [← adj.homEquiv_unit, ← (adj.homEquiv _ _).eq_symm_apply, adj.homEquiv_counit]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk'_homEquiv (adj : CoreHomEquivUnitCounit F G) : (mk' adj).homEquiv = adj.homEquiv := by
   ext
   rw [homEquiv_unit, adj.homEquiv_unit, mk'_unit]
@@ -487,6 +503,7 @@ def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) 
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y => (adj.homEquiv X Y).trans (equivHomsetRightOfNatIso iso) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `G ⋙ yoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -518,14 +535,15 @@ section
 variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
   (adj₁ : F ⊣ G) (adj₂ : H ⊣ I)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of adjunctions. -/
 @[simps! -isSimp unit counit, stacks 0DV0]
 def comp : F ⋙ H ⊣ I ⋙ G :=
   mk' {
     homEquiv := fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
     unit := adj₁.unit ≫ whiskerRight (F.rightUnitor.inv ≫ whiskerLeft F adj₂.unit ≫
-      (associator _ _ _ ).inv) G ≫ (associator _ _ _).hom
-    counit := (associator _ _ _ ).inv ≫ whiskerRight ((associator _ _ _ ).hom ≫
+      (associator _ _ _).inv) G ≫ (associator _ _ _).hom
+    counit := (associator _ _ _).inv ≫ whiskerRight ((associator _ _ _).hom ≫
       whiskerLeft _ adj₁.counit ≫ I.rightUnitor.hom) _ ≫ adj₂.counit }
 
 @[simp, reassoc]
@@ -571,8 +589,9 @@ def leftAdjointOfEquiv (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.ma
 
 variable (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Show that the functor given by `leftAdjointOfEquiv` is indeed left adjoint to `G`. Dual
-to `adjunctionOfRightEquiv`. -/
+to `adjunctionOfEquivRight`. -/
 @[simps!]
 def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
   mkOfHomEquiv
@@ -597,7 +616,7 @@ private theorem he'' (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y 
 
 /-- Construct a right adjoint functor to `F`, given the functor's value on objects `G_obj` and
 a bijection `e` between `F.obj X ⟶ Y` and `X ⟶ G_obj Y` satisfying a naturality law
-`he : ∀ X Y Y' g h, e X' Y (F.map f ≫ g) = f ≫ e X Y g`.
+`he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g`.
 Dual to `leftAdjointOfEquiv`. -/
 @[simps!]
 def rightAdjointOfEquiv (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g) : D ⥤ C where
@@ -610,8 +629,9 @@ def rightAdjointOfEquiv (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X
       rw [← assoc, he'' e he, comp_id, Equiv.symm_apply_apply]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Show that the functor given by `rightAdjointOfEquiv` is indeed right adjoint to `F`. Dual
-to `adjunctionOfEquivRight`. -/
+to `adjunctionOfEquivLeft`. -/
 @[simps!]
 def adjunctionOfEquivRight (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g) :
     F ⊣ (rightAdjointOfEquiv e he) :=
@@ -625,6 +645,7 @@ def adjunctionOfEquivRight (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ 
 
 end ConstructRight
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If the unit and counit of a given adjunction are (pointwise) isomorphisms, then we can upgrade the
 adjunction to an equivalence.
@@ -654,6 +675,7 @@ namespace Equivalence
 
 variable (e : C ≌ D)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`.) -/
 @[simps]
@@ -675,7 +697,7 @@ lemma isRightAdjoint_functor : e.functor.IsRightAdjoint :=
 
 lemma refl_toAdjunction : (refl (C := C)).toAdjunction = Adjunction.id := rfl
 
-lemma trans_toAdjunction {E : Type*} [Category E] (e' : D ≌ E) :
+lemma trans_toAdjunction {E : Type*} [Category* E] (e' : D ≌ E) :
     (e.trans e').toAdjunction = e.toAdjunction.comp e'.toAdjunction := rfl
 
 end Equivalence

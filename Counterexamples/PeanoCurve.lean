@@ -8,7 +8,7 @@ import Mathlib.Topology.MetricSpace.HausdorffAlexandroff
 
 /-!
 # Peano curve
-This file proves the existsence of a Peano curve -- continuous sujrective map from the interval
+This file proves the existsence of a Peano curve -- continuous surjective map from the interval
 `[0, 1]` onto the square `[0, 1] × [0, 1]`.
 -/
 

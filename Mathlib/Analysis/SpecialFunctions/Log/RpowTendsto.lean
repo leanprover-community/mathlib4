@@ -15,13 +15,13 @@ This file shows that the logarithm can be expressed as a limit of powers, namely
 
 ## Main declarations
 
-* `tendstoUniformlyOn_rpow_sub_one_log`: `p⁻¹ * (x ^ p - 1)` tends uniformly to `log x` on
-  compact subsets of `Ioi 0` as `p` tends to zero
+* `Real.tendstoLocallyUniformlyOn_rpow_sub_one_log`: `p⁻¹ * (x ^ p - 1)` tends uniformly to
+  `log x` on compact subsets of `Ioi 0` as `p` tends to zero
 * `tendsto_rpow_sub_one_log`: `p⁻¹ * (x ^ p - 1)`: the analogous statement for pointwise
   convergence.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Real Filter

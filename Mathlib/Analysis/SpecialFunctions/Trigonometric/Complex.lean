@@ -19,7 +19,7 @@ as they are most easily proved by appealing to the corresponding fact for comple
 functions, or require additional imports which are not available in that file.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -30,6 +30,7 @@ open Set Filter
 
 open scoped Real
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1) * π / 2 := by
   have h : (exp (θ * I) + exp (-θ * I)) / 2 = 0 ↔ exp (2 * θ * I) = -1 := by
     rw [@div_eq_iff _ _ (exp (θ * I) + exp (-θ * I)) 2 0 two_ne_zero, zero_mul,
@@ -81,8 +82,7 @@ See also `Complex.tan_eq_zero_iff` for a version that takes into account junk va
 theorem tan_eq_zero_iff' {θ : ℂ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, k * π = θ := by
   simp only [tan, hθ, div_eq_zero_iff, sin_eq_zero_iff]; simp [eq_comm]
 
--- Non-terminal simp, used to be field_simp
-set_option linter.flexible false in
+set_option linter.flexible false in -- Non-terminal simp, used to be field_simp
 theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
   calc
     cos x = cos y ↔ cos x - cos y = 0 := sub_eq_zero.symm
@@ -276,11 +276,35 @@ theorem sin_eq_sin_iff {x y : ℝ} :
 theorem cos_eq_neg_one_iff {x : ℝ} : cos x = -1 ↔ ∃ k : ℤ, π + k * (2 * π) = x :=
   mod_cast @Complex.cos_eq_neg_one_iff x
 
+lemma abs_cos_eq_one_iff {x : ℝ} :
+    |cos x| = 1 ↔ ∃ k : ℤ, k * π = x := by
+  rw [← abs_one, abs_eq_abs, cos_eq_one_iff, cos_eq_neg_one_iff]
+  constructor
+  · rintro (⟨n, h⟩ | ⟨n, h⟩)
+    · exact ⟨2 * n, by grind⟩
+    · exact ⟨1 + n * 2, by grind⟩
+  · rintro (⟨n, h⟩)
+    obtain (⟨n, rfl⟩ | ⟨n, rfl⟩) := n.even_or_odd
+    · exact .inl ⟨n, by grind⟩
+    · exact .inr ⟨n, by grind⟩
+
 theorem sin_eq_one_iff {x : ℝ} : sin x = 1 ↔ ∃ k : ℤ, π / 2 + k * (2 * π) = x :=
   mod_cast @Complex.sin_eq_one_iff x
 
 theorem sin_eq_neg_one_iff {x : ℝ} : sin x = -1 ↔ ∃ k : ℤ, -(π / 2) + k * (2 * π) = x :=
   mod_cast @Complex.sin_eq_neg_one_iff x
+
+lemma abs_sin_eq_one_iff {x : ℝ} :
+    |sin x| = 1 ↔ ∃ k : ℤ, π / 2 + k * π = x := by
+  rw [← abs_one, abs_eq_abs, sin_eq_one_iff, sin_eq_neg_one_iff]
+  constructor
+  · rintro (⟨n, h⟩ | ⟨n, h⟩)
+    · exact ⟨2 * n, by grind⟩
+    · exact ⟨-1 + n * 2, by grind⟩
+  · rintro (⟨n, h⟩)
+    obtain (⟨n, rfl⟩ | ⟨n, rfl⟩) := n.even_or_odd
+    · exact .inl ⟨n, by grind⟩
+    · exact .inr ⟨n + 1, by grind⟩
 
 theorem tan_eq_zero_iff {θ : ℝ} : tan θ = 0 ↔ ∃ k : ℤ, k * π / 2 = θ :=
   mod_cast @Complex.tan_eq_zero_iff θ

@@ -139,12 +139,13 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
   simp [inv_apply, Perm.inv_def,
     ofBijective_symm_apply_apply, Function.Embedding.equivOfFiniteSelfEmbedding]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
     (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : AnalyticOn 𝕜 f s)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
-    {n : ℕ} (v : Fin n → E) (h's : s ⊆ EMetric.ball x r) :
+    {n : ℕ} (v : Fin n → E) (h's : s ⊆ Metric.eball x r) :
     iteratedFDerivWithin 𝕜 n f s x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
-  have I : insert x s ∩ EMetric.ball x r = s := by
+  have I : insert x s ∩ Metric.eball x r = s := by
     rw [Set.insert_eq_of_mem hx]
     exact Set.inter_eq_left.2 h's
   have fcont : ContDiffOn 𝕜 (↑n) f s := by
@@ -164,7 +165,7 @@ private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
       · intro i hi h'i
         simp [q, h'i.symm]
     · intro m hm
-      have : n ≠ m := by omega
+      have : n ≠ m := by lia
       simp [q, this]
   have B : HasFPowerSeriesWithinOnBall g q s x r :=
     A.toHasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall
@@ -194,14 +195,14 @@ theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (v : Fin n → E) :
     iteratedFDerivWithin 𝕜 n f s x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
   have : iteratedFDerivWithin 𝕜 n f s x
-      = iteratedFDerivWithin 𝕜 n f (s ∩ EMetric.ball x r) x :=
-    (iteratedFDerivWithin_inter_open EMetric.isOpen_ball (EMetric.mem_ball_self h.r_pos)).symm
+      = iteratedFDerivWithin 𝕜 n f (s ∩ Metric.eball x r) x :=
+    (iteratedFDerivWithin_inter_open Metric.isOpen_eball (Metric.mem_eball_self h.r_pos)).symm
   rw [this]
   apply HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
   · exact h.mono inter_subset_left
   · exact h'.mono inter_subset_left
-  · exact hs.inter EMetric.isOpen_ball
-  · exact ⟨hx, EMetric.mem_ball_self h.r_pos⟩
+  · exact hs.inter Metric.isOpen_eball
+  · exact ⟨hx, Metric.mem_eball_self h.r_pos⟩
   · exact inter_subset_right
 
 /-- If a function has a power series in a ball, then its `n`-th iterated derivative is given by
@@ -221,15 +222,15 @@ theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_completeSpace
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (v : Fin n → E) :
     iteratedFDerivWithin 𝕜 n f s x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
   have : iteratedFDerivWithin 𝕜 n f s x
-      = iteratedFDerivWithin 𝕜 n f (s ∩ EMetric.ball x r) x :=
-    (iteratedFDerivWithin_inter_open EMetric.isOpen_ball (EMetric.mem_ball_self h.r_pos)).symm
+      = iteratedFDerivWithin 𝕜 n f (s ∩ Metric.eball x r) x :=
+    (iteratedFDerivWithin_inter_open Metric.isOpen_eball (Metric.mem_eball_self h.r_pos)).symm
   rw [this]
   apply HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
   · exact h.mono inter_subset_left
   · apply h.analyticOn.mono
     rw [insert_eq_of_mem hx]
-  · exact hs.inter EMetric.isOpen_ball
-  · exact ⟨hx, EMetric.mem_ball_self h.r_pos⟩
+  · exact hs.inter Metric.isOpen_eball
+  · exact ⟨hx, Metric.mem_eball_self h.r_pos⟩
   · exact inter_subset_right
 
 /-- If a function has a power series in a ball, then its `n`-th iterated derivative is given by

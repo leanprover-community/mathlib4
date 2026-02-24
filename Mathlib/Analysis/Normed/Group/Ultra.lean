@@ -86,10 +86,7 @@ lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [SeminormedAddGr
 
 lemma isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
     IsNonarchimedean (‖·‖₊ : R → ℝ) := by
-  intro x y
-  convert dist_triangle_max 0 x (x + y) using 1
-  · simp
-  · congr <;> simp [SeminormedAddGroup.dist_eq]
+  simpa using isNonarchimedean_norm
 
 lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] :
     IsUltrametricDist R ↔ IsNonarchimedean (‖·‖₊ : R → ℝ) :=
@@ -132,6 +129,7 @@ lemma nnnorm_div_eq_max_of_nnnorm_div_ne_nnnorm_div (x y z : S) (h : ‖x / y‖
   simpa only [← NNReal.coe_inj, NNReal.coe_max] using
     norm_div_eq_max_of_norm_div_ne_norm_div _ _ _ (NNReal.coe_injective.ne h)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma nnnorm_pow_le (x : S) (n : ℕ) :
     ‖x ^ n‖₊ ≤ ‖x‖₊ := by
@@ -220,6 +218,7 @@ lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.None
       · exact ⟨_, IH.choose_spec.left, (norm_mul_le_max _ _).trans <|
           ((max_eq_right h).le.trans IH.choose_spec.right)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Nonarchimedean norm of a product is less than or equal to the largest norm of a term in the
 product. -/
 @[to_additive /-- Nonarchimedean norm of a sum is less than or equal to the largest norm of a term
@@ -271,7 +270,7 @@ Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can alw
 theorem exists_norm_finset_prod_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) (f : ι → M) :
     ∃ i ∈ t, ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ :=
   match t.exists_mem_eq_sup' ht (‖f ·‖) with
-  |⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
+  | ⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
 
 /--
 Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`, belonging to `t`

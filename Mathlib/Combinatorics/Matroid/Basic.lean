@@ -319,6 +319,8 @@ end exchange
 
 section aesop
 
+set_option backward.privateInPublic true
+
 /-- The `aesop_mat` tactic attempts to prove a set is contained in the ground set of a matroid.
   It uses a `[Matroid]` ruleset, and is allowed to fail. -/
 macro (name := aesop_mat) "aesop_mat" c:Aesop.tactic_clause* : tactic =>
@@ -451,10 +453,10 @@ theorem IsBase.rankInfinite_of_infinite (hB : M.IsBase B) (h : B.Infinite) : Ran
   ⟨⟨B, hB, h⟩⟩
 
 theorem not_rankFinite (M : Matroid α) [RankInfinite M] : ¬ RankFinite M := by
-  intro h; obtain ⟨B,hB⟩ := M.exists_isBase; exact hB.infinite hB.finite
+  intro h; obtain ⟨B, hB⟩ := M.exists_isBase; exact hB.infinite hB.finite
 
 theorem not_rankInfinite (M : Matroid α) [RankFinite M] : ¬ RankInfinite M := by
-  intro h; obtain ⟨B,hB⟩ := M.exists_isBase; exact hB.infinite hB.finite
+  intro h; obtain ⟨B, hB⟩ := M.exists_isBase; exact hB.infinite hB.finite
 
 theorem rankFinite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
   let ⟨B, hB⟩ := M.exists_isBase
@@ -665,7 +667,7 @@ theorem Indep.exists_insert_of_not_isBase (hI : M.Indep I) (hI' : ¬M.IsBase I) 
   obtain ⟨x, hxB', hx⟩ := exists_of_ssubset (hIB'.ssubset_of_ne (by (rintro rfl; exact hI' hB')))
   by_cases hxB : x ∈ B
   · exact ⟨x, ⟨hxB, hx⟩, hB'.indep.subset (insert_subset hxB' hIB')⟩
-  obtain ⟨e,he, hBase⟩ := hB'.exchange hB ⟨hxB',hxB⟩
+  obtain ⟨e, he, hBase⟩ := hB'.exchange hB ⟨hxB', hxB⟩
   exact ⟨e, ⟨he.1, notMem_subset hIB' he.2⟩,
     indep_iff.2 ⟨_, hBase, insert_subset_insert (subset_diff_singleton hIB' hx)⟩⟩
 
@@ -682,7 +684,7 @@ theorem Indep.exists_insert_of_not_maximal (M : Matroid α) ⦃I B : Set α⦄ (
 
 theorem Indep.isBase_of_forall_insert (hB : M.Indep B)
     (hBmax : ∀ e ∈ M.E \ B, ¬ M.Indep (insert e B)) : M.IsBase B := by
-  refine by_contra fun hnb ↦ ?_
+  by_contra hnb
   obtain ⟨B', hB'⟩ := M.exists_isBase
   obtain ⟨e, he, h⟩ := hB.exists_insert_of_not_isBase hnb hB'
   exact hBmax e ⟨hB'.subset_ground he.1, he.2⟩ h
@@ -1042,7 +1044,7 @@ theorem IsBasis.insert_isBasis_insert (hI : M.IsBasis I X) (h : M.Indep (insert 
 theorem IsBase.isBase_of_isBasis_superset (hB : M.IsBase B) (hBX : B ⊆ X) (hIX : M.IsBasis I X) :
     M.IsBase I := by
   by_contra h
-  obtain ⟨e,heBI,he⟩ := hIX.indep.exists_insert_of_not_isBase h hB
+  obtain ⟨e, heBI, he⟩ := hIX.indep.exists_insert_of_not_isBase h hB
   exact heBI.2 (hIX.mem_of_insert_indep (hBX heBI.1) he)
 
 theorem Indep.exists_isBase_subset_union_isBase (hI : M.Indep I) (hB : M.IsBase B) :
@@ -1065,6 +1067,7 @@ theorem IsBase.isBasis_of_subset (hX : X ⊆ M.E := by aesop_mat) (hB : M.IsBase
   rw [isBasis_iff, and_iff_right hB.indep, and_iff_right hBX]
   exact fun J hJ hBJ _ ↦ hB.eq_of_subset_indep hJ hBJ
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_isBasis_disjoint_isBasis_of_subset (M : Matroid α) {X Y : Set α} (hXY : X ⊆ Y)
     (hY : Y ⊆ M.E := by aesop_mat) : ∃ I J, M.IsBasis I X ∧ M.IsBasis (I ∪ J) Y ∧ Disjoint X J := by
   obtain ⟨I, I', hI, hI', hII'⟩ := M.exists_isBasis_subset_isBasis hXY
@@ -1092,7 +1095,7 @@ theorem finite_setOf_matroid {E : Set α} (hE : E.Finite) : {M : Matroid α | M.
 
 /-- For finite `E`, finitely many matroids have ground set `E`. -/
 theorem finite_setOf_matroid' {E : Set α} (hE : E.Finite) : {M : Matroid α | M.E = E}.Finite :=
-  (finite_setOf_matroid hE).subset (fun M ↦ by rintro rfl; exact rfl.subset)
+  (finite_setOf_matroid hE).subset (fun M ↦ by rintro rfl; exact subset_refl M.E)
 
 end Finite
 

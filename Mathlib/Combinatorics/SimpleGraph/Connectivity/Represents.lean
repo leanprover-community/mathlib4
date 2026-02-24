@@ -35,6 +35,7 @@ namespace Represents
 
 variable {C : Set G.ConnectedComponent} {s : Set V} {c : G.ConnectedComponent}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma image_out (C : Set G.ConnectedComponent) :
     Represents (Quot.out '' C) C :=
   Set.BijOn.mk (by rintro c ⟨x, ⟨hx, rfl⟩⟩; simp_all [connectedComponentMk]) (by
@@ -52,6 +53,7 @@ lemma exists_inter_eq_singleton (hrep : Represents s C) (h : c ∈ C) : ∃ x, s
   obtain ⟨a, ha⟩ := existsUnique_rep hrep h
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_supp_of_notMem (hrep : Represents s C) (h : c ∉ C) : Disjoint s c.supp := by
   rw [Set.disjoint_left]
   intro a ha hc
@@ -59,14 +61,12 @@ lemma disjoint_supp_of_notMem (hrep : Represents s C) (h : c ∉ C) : Disjoint s
   subst hc
   exact h (hrep.1 ha)
 
-@[deprecated (since := "2025-05-23")] alias disjoint_supp_of_not_mem := disjoint_supp_of_notMem
-
 lemma ncard_inter (hrep : Represents s C) (h : c ∈ C) : (s ∩ c.supp).ncard = 1 := by
   rw [Set.ncard_eq_one]
   exact exists_inter_eq_singleton hrep h
 
 lemma ncard_eq (hrep : Represents s C) : s.ncard = C.ncard :=
-  hrep.image_eq ▸ (Set.ncard_image_of_injOn hrep.injOn).symm
+  hrep.image_eq ▸ hrep.injOn.ncard_image.symm
 
 lemma ncard_sdiff_of_mem (hrep : Represents s C) (h : c ∈ C) :
     (c.supp \ s).ncard = c.supp.ncard - 1 := by
@@ -78,8 +78,6 @@ lemma ncard_sdiff_of_notMem (hrep : Represents s C) (h : c ∉ C) :
     (c.supp \ s).ncard = c.supp.ncard := by
   rw [(disjoint_supp_of_notMem hrep h).sdiff_eq_right]
 
-@[deprecated (since := "2025-05-23")] alias ncard_sdiff_of_not_mem := ncard_sdiff_of_notMem
-
 end ConnectedComponent.Represents
 
 lemma ConnectedComponent.even_ncard_supp_sdiff_rep {s : Set V} (K : G.ConnectedComponent)
@@ -89,7 +87,7 @@ lemma ConnectedComponent.even_ncard_supp_sdiff_rep {s : Set V} (K : G.ConnectedC
   · simpa [hrep.ncard_sdiff_of_notMem
       (by simpa [Set.ncard_image_of_injective, ← Nat.not_odd_iff_even] using h)] using h
   · have : K.supp.ncard ≠ 0 := Nat.ne_of_odd_add (Nat.not_even_iff_odd.mp h)
-    rw [hrep.ncard_sdiff_of_mem (Nat.not_even_iff_odd.mp h), Nat.even_sub (by cutsat)]
+    rw [hrep.ncard_sdiff_of_mem (Nat.not_even_iff_odd.mp h), Nat.even_sub (by lia)]
     simpa [Nat.even_sub] using Nat.not_even_iff_odd.mp h
 
 end SimpleGraph

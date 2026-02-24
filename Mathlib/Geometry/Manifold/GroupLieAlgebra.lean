@@ -62,12 +62,14 @@ point `g`, it is given by the image of `v` under left-addition by `g`. -/]
 noncomputable def mulInvariantVectorField (v : GroupLieAlgebra I G) (g : G) : TangentSpace I g :=
   mfderiv I I (g * ·) (1 : G) v
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma mulInvariantVectorField_add (v w : GroupLieAlgebra I G) :
     mulInvariantVectorField (v + w) = mulInvariantVectorField v + mulInvariantVectorField w := by
   ext g
   simp [mulInvariantVectorField]
 
+set_option backward.isDefEq.respectTransparency false in
 /- `to_additive` fails on the next lemma, as it tries to additivize `smul` while it shouldn't.
 Therefore, we state and prove by hand the additive version. -/
 lemma addInvariantVectorField_smul {G : Type*} [TopologicalSpace G] [ChartedSpace H G] [AddGroup G]
@@ -76,6 +78,7 @@ lemma addInvariantVectorField_smul {G : Type*} [TopologicalSpace G] [ChartedSpac
   ext g
   simp [addInvariantVectorField]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mulInvariantVectorField_smul (c : 𝕜) (v : GroupLieAlgebra I G) :
     mulInvariantVectorField (c • v) = c • mulInvariantVectorField v := by
   ext g
@@ -96,10 +99,11 @@ lemma GroupLieAlgebra.bracket_def (v w : GroupLieAlgebra I G) :
 
 variable [LieGroup I (minSmoothness 𝕜 3) G]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma inverse_mfderiv_mul_left {g h : G} :
     (mfderiv I I (fun b ↦ g * b) h).inverse = mfderiv I I (fun b ↦ g⁻¹ * b) (g * h) := by
-  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by simp) le_minSmoothness
+  have M : minSmoothness 𝕜 3 ≠ 0 := lt_of_lt_of_le (by simp) le_minSmoothness |>.ne'
   have A : mfderiv I I ((fun x ↦ g⁻¹ * x) ∘ (fun x ↦ g * x)) h =
       ContinuousLinearMap.id _ _ := by
     have : (fun x ↦ g⁻¹ * x) ∘ (fun x ↦ g * x) = id := by ext x; simp
@@ -114,11 +118,12 @@ lemma inverse_mfderiv_mul_left {g h : G} :
     (contMDiff_mul_left.contMDiffAt.mdifferentiableAt M), inv_mul_cancel_left g h] at A'
   exact ContinuousLinearMap.inverse_eq A' A
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Invariant vector fields are invariant under pullbacks. -/
 @[to_additive /-- Invariant vector fields are invariant under pullbacks. -/]
 lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
     mpullback I I (g * ·) (mulInvariantVectorField v) = mulInvariantVectorField v := by
-  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by simp) le_minSmoothness
+  have M : minSmoothness 𝕜 3 ≠ 0 := lt_of_lt_of_le (by simp) le_minSmoothness |>.ne'
   ext h
   simp only [mpullback, inverse_mfderiv_mul_left, mulInvariantVectorField]
   have D : (fun x ↦ h * x) = (fun b ↦ g⁻¹ * b) ∘ (fun x ↦ g * h * x) := by
@@ -129,14 +134,16 @@ lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
   · exact contMDiff_mul_left.contMDiffAt.mdifferentiableAt M
   · exact contMDiff_mul_left.contMDiffAt.mdifferentiableAt M
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace I g) :
-    mulInvariantVectorField (V 1) g = mpullback I I (g ⁻¹ * ·) V g := by
+    mulInvariantVectorField (V 1) g = mpullback I I (g⁻¹ * ·) V g := by
   have A : 1 = g⁻¹ * g := by simp
   simp only [mulInvariantVectorField, mpullback, inverse_mfderiv_mul_left]
   congr
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     ContMDiff I I.tangent (minSmoothness 𝕜 2)
@@ -152,7 +159,7 @@ theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
   There is a small abuse of notation in the above argument, where we have identified `T (M × M)`
   and `TM × TM`. In the formal proof, we need to introduce this identification, called `F₂` below,
   which is also already known to be smooth. -/
-  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by simp) le_minSmoothness
+  have M : minSmoothness 𝕜 3 ≠ 0 := lt_of_lt_of_le (by simp) le_minSmoothness |>.ne'
   have A : minSmoothness 𝕜 2 + 1 = minSmoothness 𝕜 3 := by
     rw [← minSmoothness_add]
     norm_num
@@ -178,7 +185,7 @@ theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
   · simp [F₁, F₂, F₃, fg, fv]
   · simp only [comp_apply, tangentMap, F₃, F₂, F₁, fg, fv]
     rw [mfderiv_prod_eq_add_apply ((contMDiff_mul I (minSmoothness 𝕜 3)).mdifferentiableAt M)]
-    simp [mulInvariantVectorField]
+    simp +instances [mulInvariantVectorField]
 
 @[to_additive]
 theorem contMDiffAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G} :
@@ -186,23 +193,27 @@ theorem contMDiffAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G} :
       (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) g :=
   (contMDiff_mulInvariantVectorField v).contMDiffAt
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mdifferentiable_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     MDifferentiable I I.tangent
       (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) :=
-  (contMDiff_mulInvariantVectorField v).mdifferentiable (le_trans (by simp) le_minSmoothness)
+  (contMDiff_mulInvariantVectorField v).mdifferentiable
+    (lt_of_lt_of_le (by simp) le_minSmoothness).ne'
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mdifferentiableAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G} :
     MDifferentiableAt I I.tangent
       (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) g :=
   (contMDiffAt_mulInvariantVectorField v).mdifferentiableAt
-    (le_trans (by simp) le_minSmoothness)
+    (lt_of_lt_of_le (by simp) le_minSmoothness).ne'
 
 open VectorField
 
 variable [CompleteSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The invariant vector field associated to the value at the identity of the Lie bracket of
 two invariant vector fields, is everywhere the Lie bracket of the invariant vector fields. -/
 @[to_additive /-- The invariant vector field associated to the value at zero of the Lie

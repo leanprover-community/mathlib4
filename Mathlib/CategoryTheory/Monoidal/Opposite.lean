@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Monoidal opposites
@@ -189,7 +190,7 @@ section OppositeLemmas
 @[simp] lemma op_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
     (X ◁ f).op = op X ◁ f.op := rfl
 @[simp] lemma unop_whiskerLeft (X : Cᵒᵖ) {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
-    (X ◁ f).unop =  unop X ◁ f.unop := rfl
+    (X ◁ f).unop = unop X ◁ f.unop := rfl
 
 @[simp] lemma op_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
     (f ▷ Z).op = f.op ▷ op Z := rfl
@@ -314,6 +315,7 @@ end MonoidalOppositeLemmas
 
 variable (C)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The (identity) equivalence between `C` and its monoidal opposite. -/
 @[simps] def MonoidalOpposite.mopEquiv : C ≌ Cᴹᵒᵖ where
   functor   := mopFunctor C
@@ -340,6 +342,7 @@ instance MonoidalOpposite.mopMopEquivalenceFunctorMonoidal :
   μ_δ X Y := Category.comp_id _
   δ_μ X Y := Category.comp_id _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 instance MonoidalOpposite.mopMopEquivalenceInverseMonoidal :
     (MonoidalOpposite.mopMopEquivalence C).inverse.Monoidal where
@@ -427,15 +430,6 @@ instance monoidalUnopUnop : (unopUnop C).Monoidal where
 
 instance : (opOpEquivalence C).functor.Monoidal := monoidalUnopUnop
 instance : (opOpEquivalence C).inverse.Monoidal := monoidalOpOp
-
-@[deprecated (since := "2025-06-08")] alias opOp_ε := monoidalOpOp_ε
-@[deprecated (since := "2025-06-08")] alias opOp_η := monoidalOpOp_η
-@[deprecated (since := "2025-06-08")] alias unopUnop_ε := monoidalUnopUnop_ε
-@[deprecated (since := "2025-06-08")] alias unopUnop_η := monoidalUnopUnop_η
-@[deprecated (since := "2025-06-08")] alias opOp_μ := monoidalOpOp_μ
-@[deprecated (since := "2025-06-08")] alias opOp_δ := monoidalOpOp_δ
-@[deprecated (since := "2025-06-08")] alias unopUnop_μ := monoidalUnopUnop_μ
-@[deprecated (since := "2025-06-08")] alias unopUnop_δ := monoidalUnopUnop_δ
 
 instance : (opOpEquivalence C).IsMonoidal where
   leftAdjoint_ε := by simp [opOpEquivalence]

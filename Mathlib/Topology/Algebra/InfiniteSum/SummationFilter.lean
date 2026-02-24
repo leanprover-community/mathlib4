@@ -140,7 +140,7 @@ instance (L : SummationFilter β) [HasSupport L] (f : β ↪ γ) : HasSupport (L
     simp [this]
 
 /-- Pullback of a summation filter along an embedding. -/
-@[simps] def comap (L : SummationFilter β) (f : γ ↪ β) : SummationFilter γ where
+@[simps] noncomputable def comap (L : SummationFilter β) (f : γ ↪ β) : SummationFilter γ where
   filter := L.filter.map (fun s ↦ s.preimage f f.injective.injOn)
 
 @[simp] lemma support_comap (L : SummationFilter β) (f : γ ↪ β) :
@@ -222,7 +222,7 @@ instance : (conditional β).LeAtTop := ⟨support_eq_univ_iff.mp <| by
     using fun x ↦ prod_mem_prod (eventually_le_atBot x) (eventually_ge_atTop x)⟩
 
 set_option linter.flexible false in -- simp followed by infer_instance
-instance [Nonempty β] [IsDirected β (· ≤ ·)] [IsDirected β (· ≥ ·)] : (conditional β).NeBot :=
+instance [Nonempty β] [IsDirectedOrder β] [IsCodirectedOrder β] : (conditional β).NeBot :=
   ⟨by simp; infer_instance⟩
 
 instance [IsCountablyGenerated (atTop : Filter β)] [IsCountablyGenerated (atBot : Filter β)] :
@@ -252,8 +252,8 @@ lemma conditional_filter_eq_map_range : (conditional ℕ).filter = atTop.map Fin
       rw [← Tendsto] <;>
       simp only [tendsto_atTop', mem_map, mem_atTop_sets, mem_preimage] <;>
       rintro s ⟨a, ha⟩
-  · exact ⟨a + 1, fun b hb ↦ ha (b + 1) (by omega)⟩
-  · exact ⟨a + 1, fun b hb ↦ by convert ha (b - 1) (by omega); omega⟩
+  · exact ⟨a + 1, fun b hb ↦ ha (b + 1) (by lia)⟩
+  · exact ⟨a + 1, fun b hb ↦ by convert ha (b - 1) (by lia); lia⟩
 
 end conditionalTop
 

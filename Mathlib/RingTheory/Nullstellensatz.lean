@@ -63,7 +63,7 @@ def vanishingIdeal (V : Set (σ → K)) : Ideal (MvPolynomial σ k) where
   zero_mem' _ _ := map_zero _
   add_mem' {p q} hp hq x hx := by simp only [hq x hx, hp x hx, add_zero, map_add]
   smul_mem' p q hq x hx := by
-    simp only [hq x hx, Algebra.id.smul_eq_mul, mul_zero, map_mul]
+    simp only [hq x hx, smul_eq_mul, mul_zero, map_mul]
 
 @[simp]
 theorem mem_vanishingIdeal_iff {V : Set (σ → K)} {p : MvPolynomial σ k} :
@@ -147,6 +147,7 @@ theorem pointToPoint_zeroLocus_le (I : Ideal (MvPolynomial σ K)) :
 
 variable [IsAlgClosed K] [Finite σ]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (K) in
 theorem eq_vanishingIdeal_singleton_of_isMaximal {I : Ideal (MvPolynomial σ k)} (hI : I.IsMaximal) :
     ∃ x : σ → K, I = vanishingIdeal k {x} := by
@@ -166,6 +167,7 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton {I : Ideal (MvPolynomial σ K)
   ⟨eq_vanishingIdeal_singleton_of_isMaximal K,
     fun ⟨_, hx⟩ => hx ▸ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Main statement of the Nullstellensatz -/
 @[simp]
 theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :

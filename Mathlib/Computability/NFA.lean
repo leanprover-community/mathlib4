@@ -138,7 +138,7 @@ theorem evalFrom_iUnion {ι : Sort*} (s : ι → Set σ) (x : List α) :
     M.evalFrom (⋃ i, s i) x = ⋃ i, M.evalFrom (s i) x := by
   induction x generalizing s with
   | nil => simp
-  | cons a x ih => simp [stepSet, Set.iUnion_comm (ι:=σ) (ι':=ι), ih]
+  | cons a x ih => simp [stepSet, Set.iUnion_comm (ι := σ) (ι' := ι), ih]
 
 variable (M) in
 theorem evalFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) (x : List α) :
@@ -182,6 +182,7 @@ theorem cons_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
     a :: x ∈ M.acceptsFrom S ↔ x ∈ M.acceptsFrom (M.stepSet S a) := by
   simp [mem_acceptsFrom]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem cons_preimage_acceptsFrom {S : Set σ} {a : α} :
     (a :: ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.stepSet S a) := by
@@ -193,9 +194,10 @@ theorem append_mem_acceptsFrom {S : Set σ} {x y : List α} :
     x ++ y ∈ M.acceptsFrom S ↔ y ∈ M.acceptsFrom (M.evalFrom S x) := by
   simp [mem_acceptsFrom]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
-    (x ++ ·) ⁻¹'  M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
+    (x ++ ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
   ext y; simp [append_mem_acceptsFrom M]
 
 variable (M) in
@@ -210,6 +212,7 @@ theorem acceptsFrom_union {S T : Set σ} :
     · right; tauto
   · rintro (⟨s, hs, h⟩ | ⟨s, hs, h⟩) <;> exists s <;> tauto
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 @[simp]
 theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :
@@ -292,8 +295,8 @@ theorem mem_evalFrom_iff_nonempty_path {s t : σ} {x : List α} :
       have h : s = t := by simp at h; tauto
       ⟨h ▸ Path.nil s⟩
     | a :: x =>
-      have h : ∃ s' ∈ M.step s a, t ∈ M.evalFrom {s'} x :=
-        by rw [evalFrom_cons, mem_evalFrom_iff_exists, stepSet_singleton] at h; exact h
+      have h : ∃ s' ∈ M.step s a, t ∈ M.evalFrom {s'} x := by
+        rw [evalFrom_cons, mem_evalFrom_iff_exists, stepSet_singleton] at h; exact h
       let ⟨s', h₁, h₂⟩ := h
       let ⟨p'⟩ := mem_evalFrom_iff_nonempty_path.1 h₂
       ⟨Path.cons s' _ _ _ _ h₁ p'⟩
@@ -349,7 +352,7 @@ theorem toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : List α) :
   | nil => tauto
   | cons a s ih =>
     rw [List.foldl, List.foldl,
-      show M.toNFA.stepSet {start} a = {M.step start a} by simp [NFA.stepSet] ]
+      show M.toNFA.stepSet {start} a = {M.step start a} by simp [NFA.stepSet]]
     tauto
 
 @[simp]
@@ -379,6 +382,7 @@ variable (M) in
 theorem reverse_reverse : M.reverse.reverse = M := by
   simp [reverse]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_stepSet_reverse {a : α} {S S' : Set σ} :
     Disjoint S (M.reverse.stepSet S' a) ↔ Disjoint S' (M.stepSet S a) := by
   rw [← not_iff_not]
@@ -401,6 +405,7 @@ theorem disjoint_evalFrom_reverse_iff {x : List α} {S S' : Set σ} :
     Disjoint S (M.reverse.evalFrom S' x) ↔ Disjoint S' (M.evalFrom S x.reverse) :=
   ⟨disjoint_evalFrom_reverse, fun h ↦ List.reverse_reverse x ▸ disjoint_evalFrom_reverse h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_accepts_reverse {x : List α} : x ∈ M.reverse.accepts ↔ x.reverse ∈ M.accepts := by
   simp [mem_accepts, ← Set.not_disjoint_iff, disjoint_evalFrom_reverse_iff]

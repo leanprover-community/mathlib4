@@ -47,6 +47,17 @@ lemma Etale.eq_formallyUnramified_and_smooth :
   ext
   rw [etale_iff_formallyUnramified_and_smooth]
 
+lemma Etale.formallyUnramified (hf : f.Etale) : f.FormallyUnramified := by
+  rw [etale_iff_formallyUnramified_and_smooth] at hf
+  exact hf.1
+
+lemma Etale.of_bijective {f : R →+* S} (hf : Function.Bijective f) : f.Etale := by
+  rw [etale_iff_formallyUnramified_and_smooth]
+  exact ⟨.of_surjective hf.2, .of_bijective hf⟩
+
+lemma Etale.containsIdentities : ContainsIdentities Etale :=
+  fun _ _ ↦ .of_bijective Function.bijective_id
+
 lemma Etale.isStableUnderBaseChange : IsStableUnderBaseChange Etale := by
   rw [eq_formallyUnramified_and_smooth]
   exact FormallyUnramified.isStableUnderBaseChange.and Smooth.isStableUnderBaseChange

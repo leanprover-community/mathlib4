@@ -5,7 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Topology.Instances.Int
 
 /-! # ℤ as a normed group -/

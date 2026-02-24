@@ -11,22 +11,22 @@ public import Mathlib.RingTheory.Perfectoid.FontaineTheta
 
 /-!
 
-# The de Rham Period Ring \(\mathbb{B}_dR^+\) and \(\mathbb{B}_dR\)
+# The de Rham Period Ring $\mathbb{B}_{dR}^+$ and $\mathbb{B}_{dR}$
 
-In this file, we define the de Rham period ring \(\mathbb{B}_dR^+\) and
-the de Rham ring \(\mathbb{B}_dR\). We define a generalized version of
+In this file, we define the de Rham period ring $\mathbb{B}_{dR}^+$ and
+the de Rham ring $\mathbb{B}_{dR}$. We define a generalized version of
 these period rings following Scholze. When `R` is the ring of integers
 of `ℂₚ` (`PadicComplexInt`), they coincide with the classical de Rham period rings.
 
 ## Main definitions
 
-* `BDeRhamPlus` : The period ring \(\mathbb{B}_dR^+\).
-* `BDeRham` : The period ring \(\mathbb{B}_dR\).
+* `BDeRhamPlus` : The period ring $\mathbb{B}_{dR}^+$.
+* `BDeRham` : The period ring $\mathbb{B}_{dR}$.
 
 ## TODO
 
-1. Extend the θ map to \(\mathbb{B}_dR^+\)
-2. Show that \(\mathbb{B}_dR^+\) is a discrete valuation ring.
+1. Extend the θ map to $\mathbb{B}_{dR}^+$
+2. Show that $\mathbb{B}_{dR}^+$ is a discrete valuation ring.
 3. Show that ker θ is principal when the base ring is integral perfectoid.
 
 Currently, the period ring `BDeRhamPlus` takes the ring of integers `R` as the input.
@@ -67,9 +67,9 @@ def fontaineThetaInvertP :
       (by simpa using IsLocalization.Away.algebraMap_isUnit (p : R))
 
 /--
-The de Rham period ring \(\mathbb{B}_dR^+\) for general perfectoid ring.
+The de Rham period ring $\mathbb{B}_{dR}^+$ for general perfectoid ring.
 It is the completion of `𝕎 R♭` inverting `p` with respect to the kernel of
-the Fontaine's θ map. When \(R = \mathcal{O}_{\mathbb{C}_p}\), it coincides
+the Fontaine's θ map. When $R = \mathcal{O}_{\mathbb{C}_p}$, it coincides
 with the classical de Rham period ring. Note that if `p = 0` in `R`,
 then this
 definition is the zero ring.
@@ -80,11 +80,11 @@ def BDeRhamPlus : Type u :=
 instance : CommRing (BDeRhamPlus R p) := AdicCompletion.instCommRing _
 
 /--
-The de Rham period ring \(\mathbb{B}_dR\) for general perfectoid ring.
-It is defined as \(\mathbb{B}_dR^+\) inverting the generators of the ideal `ker θ`.
+The de Rham period ring $\mathbb{B}_{dR}$ for general perfectoid ring.
+It is defined as $\mathbb{B}_{dR}^+$ inverting the generators of the ideal `ker θ`.
 Mathematically, this is equivalent to inverting *a* generator of the ideal `ker θ`
 after we show that it is principal.
-When \(R = \mathcal{O}_{\mathbb{C}_p}\), it coincides
+When $R = \mathcal{O}_{\mathbb{C}_p}$, it coincides
 with the classical de Rham period ring.
 Note that if `p = 0` in `R`, then this definition is the zero ring.
 -/

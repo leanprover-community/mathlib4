@@ -21,7 +21,7 @@ In particular, this file contains the standard form of the Cauchy-Schwarz inequa
 some of its immediate consequences.
 -/
 
-@[expose] public section
+public section
 
 variable {ι R S : Type*}
 
@@ -56,6 +56,17 @@ lemma prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) : 
   convert ← prod_le_prod h0 h1
   exact Finset.prod_const_one
 
+lemma le_prod_max_one {M : Type*} [CommMonoidWithZero M] [LinearOrder M] [ZeroLEOneClass M]
+    [PosMulMono M] {i : ι} (hi : i ∈ s) (f : ι → M) :
+    f i ≤ ∏ i ∈ s, max (f i) 1 := by
+  classical
+  rcases lt_or_ge (f i) 0 with hf | hf
+  · exact (hf.trans_le <| prod_nonneg fun _ _ ↦ le_sup_of_le_right zero_le_one).le
+  have : f i = ∏ j ∈ s, if i = j then f i else 1 := by
+    rw [prod_eq_single_of_mem i hi fun _ _ _ ↦ by grind]
+    simp
+  exact this ▸ prod_le_prod (fun _ _ ↦ by grind [zero_le_one]) fun _ _ ↦ by grind
+
 end PosMulMono
 
 section PosMulStrictMono
@@ -85,6 +96,7 @@ lemma prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f
   exact ⟨i, hi, hfg i hi⟩
 
 end PosMulStrictMono
+
 end CommMonoidWithZero
 
 section OrderedSemiring
@@ -262,7 +274,7 @@ end AbsoluteValue
 namespace Mathlib.Meta.Positivity
 open Qq Lean Meta Finset
 
-private alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
+alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `positivity` extension which proves that `∏ i ∈ s, f i` is nonnegative if `f` is, and

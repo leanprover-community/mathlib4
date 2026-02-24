@@ -28,7 +28,7 @@ namespace Idempotents
 
 namespace KaroubiKaroubi
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 @[reassoc (attr := simp)]
 lemma idem_f (P : Karoubi (Karoubi C)) : P.p.f ≫ P.p.f = P.p.f := by
@@ -56,7 +56,7 @@ attribute [local simp] p_comm_f in
 @[simps]
 def counitIso : inverse C ⋙ toKaroubi (Karoubi C) ≅ 𝟭 (Karoubi (Karoubi C)) where
   hom := { app := fun P => { f := { f := P.p.1 } } }
-  inv := { app := fun P => { f := { f := P.p.1 }  } }
+  inv := { app := fun P => { f := { f := P.p.1 } } }
 
 /-- The equivalence `Karoubi C ≌ Karoubi (Karoubi C)` -/
 @[simps]

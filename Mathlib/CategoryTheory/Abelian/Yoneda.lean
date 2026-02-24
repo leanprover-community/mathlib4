@@ -19,7 +19,7 @@ In this file we give a sufficient criterion for a restriction of the functor
 is a projective separator such that every object in the relevant subcategory is a quotient of `G`.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Opposite Limits
 
@@ -33,6 +33,7 @@ section
 
 attribute [local instance] preservesFiniteLimits_op
 
+set_option backward.isDefEq.respectTransparency false in
 theorem preadditiveCoyonedaObj_map_surjective {G : C} [Projective G] (hG : IsSeparator G) {X : C}
     (p : G ⟶ X) [Epi p] {Y : C} :
     Function.Surjective ((preadditiveCoyonedaObj G).map : (X ⟶ Y) → _) := by

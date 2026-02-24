@@ -196,6 +196,7 @@ theorem continuous_map_sInf {α : Type*} [TopologicalSpace α]
     {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) : Continuous (Setoid.map_sInf h) :=
   continuous_coinduced_rng
 
+set_option backward.isDefEq.respectTransparency false in
 instance {p : X → Prop} [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (Subtype p) :=
   ⟨bot_unique fun s _ => ⟨(↑) '' s, isOpen_discrete _, preimage_image_eq _ Subtype.val_injective⟩⟩
 
@@ -484,6 +485,7 @@ theorem denseRange_inclusion_iff {s t : Set X} (hst : s ⊆ t) :
 theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
   rw [IsInducing.subtypeVal.map_nhds_eq, Subtype.range_val]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_nhds_subtype_coe_eq_nhds {x : X} (hx : p x) (h : ∀ᶠ x in 𝓝 x, p x) :
     map ((↑) : Subtype p → X) (𝓝 ⟨x, hx⟩) = 𝓝 x :=
   map_nhds_induced_of_mem <| by rw [Subtype.range_val]; exact h
@@ -637,6 +639,21 @@ open scoped Set.Notation
 
 lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
+
+/-- If `s` is dense in `X` and `u` is open and dense in `s`, then `u = v ∩ s` for some `v` that is
+open and dense in `X`. -/
+lemma exists_open_dense_of_open_dense_subtype (hs : Dense s) {u : Set s} (huo : IsOpen u)
+    (hud : Dense u) :
+    ∃ v : Set X, IsOpen v ∧ Dense v ∧ Subtype.val ⁻¹' v = u := by
+  choose v hv1 hv2 using huo
+  refine ⟨v, hv1, ?_, hv2⟩
+  rw [dense_iff_inter_open] at *
+  intro t ht ht'
+  subst hv2
+  refine nonempty_of_nonempty_preimage (f := (Subtype.val : s → X)) (hud (Subtype.val ⁻¹' t) ?_ ?_)
+  · exact IsOpen.preimage_val ht
+  · obtain ⟨x, hx⟩ := hs t ht ht'
+    simpa using ⟨⟨x, hx.2⟩, hx.1⟩
 
 lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
@@ -1084,9 +1101,10 @@ theorem pi_eq_generateFrom :
         { g | ∃ (s : ∀ a, Set (A a)) (i : Finset ι), (∀ a ∈ i, IsOpen (s a)) ∧ g = pi (↑i) s } :=
   calc Pi.topologicalSpace
   _ = @Pi.topologicalSpace ι A fun _ => generateFrom { s | IsOpen s } := by
-    simp only [generateFrom_setOf_isOpen]
+    simp +instances only [generateFrom_setOf_isOpen]
   _ = _ := pi_generateFrom_eq
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pi_generateFrom_eq_finite {X : ι → Type*} {g : ∀ a, Set (Set (X a))} [Finite ι]
     (hg : ∀ a, ⋃₀ g a = univ) :
     (@Pi.topologicalSpace ι X fun a => generateFrom (g a)) =
@@ -1266,6 +1284,7 @@ end Sigma
 
 section ULift
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ULift.isOpen_iff [TopologicalSpace X] {s : Set (ULift.{v} X)} :
     IsOpen s ↔ IsOpen (ULift.up ⁻¹' s) := by
   rw [ULift.topologicalSpace, ← Equiv.ulift_apply, ← Equiv.ulift.coinduced_symm, ← isOpen_coinduced]

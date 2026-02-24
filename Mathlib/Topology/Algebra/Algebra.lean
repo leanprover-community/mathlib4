@@ -47,7 +47,7 @@ variable [TopologicalSpace R] [TopologicalSpace A]
 @[continuity, fun_prop]
 theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) := by
   rw [algebraMap_eq_smul_one']
-  exact continuous_id.smul continuous_const
+  fun_prop
 
 theorem continuous_algebraMap_iff_smul [ContinuousMul A] :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
@@ -73,11 +73,18 @@ def algebraMapCLM : R →L[R] A :=
     toFun := algebraMap R A
     cont := continuous_algebraMap R A }
 
-theorem algebraMapCLM_coe : ⇑(algebraMapCLM R A) = algebraMap R A :=
+theorem coe_algebraMapCLM : ⇑(algebraMapCLM R A) = algebraMap R A :=
   rfl
 
-theorem algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
+theorem toLinearMap_algebraMapCLM : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
+
+@[deprecated (since := "2025-12-05")] alias algebraMapCLM_toLinearMap := toLinearMap_algebraMapCLM
+@[deprecated (since := "2025-12-05")] alias algebraMapCLM_coe := coe_algebraMapCLM
+
+lemma ContinuousLinearMap.toSpanSingleton_one_eq_algebraMapCLM :
+    toSpanSingleton R (M₁ := A) 1 = algebraMapCLM R A := by
+  ext; simp
 
 end
 
@@ -123,23 +130,24 @@ variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R 
 
 instance : FunLike (A →A[R] B) A B where
   coe f := f.toAlgHom
-  coe_injective'  f g h  := by
+  coe_injective' f g h := by
     cases f; cases g
     simp only [mk.injEq]
     exact AlgHom.ext (congrFun h)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance : AlgHomClass (A →A[R] B) R A B where
-  map_mul f x y    := map_mul f.toAlgHom x y
-  map_one f        := map_one f.toAlgHom
-  map_add f        := map_add f.toAlgHom
-  map_zero f       := map_zero f.toAlgHom
-  commutes f r     := f.toAlgHom.commutes r
+  map_mul f x y := map_mul f.toAlgHom x y
+  map_one f     := map_one f.toAlgHom
+  map_add f     := map_add f.toAlgHom
+  map_zero f    := map_zero f.toAlgHom
+  commutes f r  := f.toAlgHom.commutes r
 
 @[simp]
 theorem toAlgHom_eq_coe (f : A →A[R] B) : f.toAlgHom = f := rfl
 
 @[simp, norm_cast]
-theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g :=   by
+theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g := by
   cases f; cases g; simp only [mk.injEq]; exact Eq.congr_right rfl
 
 @[simp]
@@ -226,6 +234,11 @@ theorem ext_on [T2Space B] {s : Set A} (hs : Dense (Algebra.adjoin R s : Set A))
     {f g : A →A[R] B} (h : Set.EqOn f g s) : f = g :=
   ext fun x => eqOn_closure_adjoin h (hs x)
 
+/-- Interpret a `ContinuousAlgHom` as a `ContinuousLinearMap`. -/
+def toContinuousLinearMap (e : A →A[R] B) : A →L[R] B where toLinearMap := e.toAlgHom.toLinearMap
+
+@[simp] theorem coe_toContinuousLinearMap (e : A →A[R] B) : ⇑e.toContinuousLinearMap = e := rfl
+
 variable [IsTopologicalSemiring A]
 
 /-- The topological closure of a subalgebra -/
@@ -287,14 +300,14 @@ theorem one_def : (1 : A →A[R] A) = ContinuousAlgHom.id R A := rfl
 theorem id_apply (x : A) : ContinuousAlgHom.id R A x = x := rfl
 
 @[simp, norm_cast]
-theorem coe_id : ((ContinuousAlgHom.id R A) : A →ₐ[R] A) = AlgHom.id R A:= rfl
+theorem coe_id : ((ContinuousAlgHom.id R A) : A →ₐ[R] A) = AlgHom.id R A := rfl
 
 @[simp, norm_cast]
-theorem coe_id' : ⇑(ContinuousAlgHom.id R A ) = _root_.id := rfl
+theorem coe_id' : ⇑(ContinuousAlgHom.id R A) = _root_.id := rfl
 
 @[simp, norm_cast]
 theorem coe_eq_id {f : A →A[R] A} :
-    (f : A →ₐ[R] A) = AlgHom.id R A ↔ f = ContinuousAlgHom.id R A:= by
+    (f : A →ₐ[R] A) = AlgHom.id R A ↔ f = ContinuousAlgHom.id R A := by
   rw [← coe_id, coe_inj]
 
 @[simp]
@@ -351,6 +364,7 @@ instance : Monoid (A →A[R] A) where
 theorem coe_pow (f : A →A[R] A) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- coercion from `ContinuousAlgHom` to `AlgHom` as a `RingHom`. -/
 @[simps]
 def toAlgHomMonoidHom : (A →A[R] A) →* A →ₐ[R] A where
@@ -392,6 +406,7 @@ instance {D : Type*} [UniformSpace D] [CompleteSpace D]
 
 variable (R A B)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `Prod.fst` as a `ContinuousAlgHom`. -/
 def fst : A × B →A[R] A where
   cont     := continuous_fst
@@ -451,11 +466,12 @@ theorem coe_prodMap' {D : Type*} [Semiring D] [TopologicalSpace D] [Algebra R D]
     (f₂ : C →A[R] D) : ⇑(f₁.prodMap f₂) = Prod.map f₁ f₂ :=
   rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `ContinuousAlgHom.prod` as an `Equiv`. -/
 @[simps apply]
 def prodEquiv : (A →A[R] B) × (A →A[R] C) ≃ (A →A[R] B × C) where
-  toFun f     := f.1.prod f.2
-  invFun f    := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
+  toFun f  := f.1.prod f.2
+  invFun f := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
 
 end prod
 
@@ -465,6 +481,7 @@ variable {R A}
 variable [TopologicalSpace A]
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Restrict codomain of a continuous algebra morphism. -/
 def codRestrict (f : A →A[R] B) (p : Subalgebra R B) (h : ∀ x, f x ∈ p) : A →A[R] p where
   cont     := f.continuous.subtype_mk _
@@ -483,11 +500,11 @@ theorem coe_codRestrict_apply (f : A →A[R] B) (p : Subalgebra R B) (h : ∀ x,
 /-- Restrict the codomain of a continuous algebra homomorphism `f` to `f.range`. -/
 @[reducible]
 def rangeRestrict (f : A →A[R] B) :=
-  f.codRestrict (@AlgHom.range R A B  _ _ _ _ _ f) (@AlgHom.mem_range_self R A B  _ _ _ _ _ f)
+  f.codRestrict (@AlgHom.range R A B _ _ _ _ _ f) (@AlgHom.mem_range_self R A B _ _ _ _ _ f)
 
 @[simp]
 theorem coe_rangeRestrict (f : A →A[R] B) :
-    (f.rangeRestrict : A →ₐ[R] (@AlgHom.range R A B  _ _ _ _ _ f)) =
+    (f.rangeRestrict : A →ₐ[R] (@AlgHom.range R A B _ _ _ _ _ f)) =
       (f : A →ₐ[R] B).rangeRestrict :=
   rfl
 

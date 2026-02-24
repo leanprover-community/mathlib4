@@ -22,19 +22,19 @@ is an isomorphism iff `Z` belongs to `W.isLocal` (see the lemma `isIso_toSucc_if
 The morphism `toSucc W Z : Z ⟶ succ W Z` is defined as a composition
 of two morphisms that are roughly described as follows:
 * `toStep W Z : Z ⟶ step W Z`: for any morphism `f : X ⟶ Y` satisfying `W`
-and any morphism `X ⟶ Z`, we "attach" a morphism `Y ⟶ step W Z` (using
-coproducts and a pushout in essentially the same way as it is done in
-the file `Mathlib/CategoryTheory/SmallObject/Construction.lean` for the small object
-argument);
+  and any morphism `X ⟶ Z`, we "attach" a morphism `Y ⟶ step W Z` (using
+  coproducts and a pushout in essentially the same way as it is done in
+  the file `Mathlib/CategoryTheory/SmallObject/Construction.lean` for the small object
+  argument);
 * `fromStep W Z : step W Z ⟶ succ W Z`: this morphism coequalizes all pairs
-of morphisms `g₁ g₂ : Y ⟶ step W Z` such that there is a `f : X ⟶ Y`
-satisfying `W` such that `f ≫ g₁ = f ≫ g₂`.
+  of morphisms `g₁ g₂ : Y ⟶ step W Z` such that there is a `f : X ⟶ Y`
+  satisfying `W` such that `f ≫ g₁ = f ≫ g₂`.
 
 The morphism `toSucc W Z : Z ⟶ succ W Z` is a variant of the (wrong) definition
 p. 32 in the book by Adámek and Rosický. In this book, a slightly different object
-as `succ W Z` is defined directly as a colimit of an intricate diagram, but
+than `succ W Z` is defined directly as a colimit of an intricate diagram, but
 contrary to what is stated on p. 33, it does not satisfy `isIso_toSucc_iff`.
-The author of this file was unable to not understand the attempt of the authors
+The author of this file was unable to understand the attempt of the authors
 to fix this mistake in the errata to this book. This led to the definition
 in two steps outlined above.
 
@@ -46,11 +46,11 @@ a transfinite iteration to this `SuccStruct`, we obtain the following results
 under the assumption that `W : MorphismProperty C` is a `w`-small property
 of morphisms in a locally `κ`-presentable category `C` (with `κ : Cardinal.{w}`
 a regular cardinal) such that the domains and codomains of the morphisms
-satisfying `W` are `κ`-presentable :
+satisfying `W` are `κ`-presentable:
 * `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
-of the inclusion `W.isLocal ⥤ C`;
+  of the inclusion `W.isLocal ⥤ C`;
 * `MorphismProperty.isLocallyPresentable_isLocal`: the full subcategory
-`W.isLocal` is locally presentable.
+  `W.isLocal` is locally presentable.
 
 This is essentially the implication (i) → (ii) in Theorem 1.39 (and the corollary 1.40)
 in the book by Adámek and Rosický (note that according to the
@@ -71,6 +71,7 @@ open Limits Localization Opposite
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
     (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
@@ -165,6 +166,7 @@ noncomputable abbrev D₁.ιRight {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ 
     Y ⟶ ∐ (obj₂ (W := W) (Z := Z)) :=
   Sigma.ι (obj₂ (W := W) (Z := Z)) ⟨⟨Arrow.mk f, hf⟩, g⟩
 
+set_option backward.isDefEq.respectTransparency false in -- Needed below
 variable {W Z} in
 @[reassoc]
 lemma D₁.ι_comp_t (d : D₁ W Z) :
@@ -265,12 +267,14 @@ lemma toSucc_injectivity {X Y : C} (f : X ⟶ Y) (hf : W f)
   simpa using D₂.condition f hf (g₁ := g₁ ≫ toStep W Z) (g₂ := g₂ ≫ toStep W Z)
     (by simp [reassoc_of% hg])
 
+set_option backward.isDefEq.respectTransparency false in
 variable {W Z} in
 lemma toSucc_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
     ∃ (g' : Y ⟶ succ W Z), f ≫ g' = g ≫ toSucc W Z :=
   ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z, by
     simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_isLocal_toSucc :
     W.isLocal.isLocal (toSucc W Z) := by
   refine fun T hT ↦ ⟨fun φ₁ φ₂ h ↦ ?_, fun g ↦ ?_⟩
@@ -288,6 +292,7 @@ lemma isLocal_isLocal_toSucc :
 @[deprecated (since := "2025-11-20")] alias leftBousfieldW_isLocal_toSucc :=
   isLocal_isLocal_toSucc
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_toSucc_iff :
     IsIso (toSucc W Z) ↔ W.isLocal Z := by
   refine ⟨fun _ X Y f hf ↦ ?_, fun hZ ↦ ?_⟩
@@ -328,29 +333,29 @@ noncomputable def succStruct (Z₀ : C) : SuccStruct C where
   succ Z := succ W Z
   toSucc Z := toSucc W Z
 
-variable (κ : Cardinal.{w}) [OrderBot κ.ord.toType]
-  [HasIterationOfShape κ.ord.toType C]
+variable (κ : Cardinal.{w}) [OrderBot κ.ord.ToType]
+  [HasIterationOfShape κ.ord.ToType C]
 
-/-- The transfinite iteration of `succStruct W Z` to the power `κ.ord.toType`. -/
-noncomputable def reflectionObj : C := (succStruct W Z).iteration κ.ord.toType
+/-- The transfinite iteration of `succStruct W Z` to the power `κ.ord.ToType`. -/
+noncomputable def reflectionObj : C := (succStruct W Z).iteration κ.ord.ToType
 
 /-- The map which shall exhibit `reflectionObj W Z κ` as the image of `Z` by
 the left adjoint of the inclusion of `W.isLocal`, see `corepresentableBy`. -/
 noncomputable def reflection : Z ⟶ reflectionObj W Z κ :=
-  (succStruct W Z).ιIteration κ.ord.toType
+  (succStruct W Z).ιIteration κ.ord.ToType
 
 /-- The morphism `reflection W Z κ : Z ⟶ reflectionObj W Z κ` is a transfinite
 compositions of morphisms in `LeftBousfield.W W.isLocal`. -/
 noncomputable def transfiniteCompositionOfShapeReflection :
-    W.isLocal.isLocal.TransfiniteCompositionOfShape κ.ord.toType
+    W.isLocal.isLocal.TransfiniteCompositionOfShape κ.ord.ToType
       (reflection W Z κ) :=
-  ((succStruct W Z).transfiniteCompositionOfShapeιIteration κ.ord.toType).ofLE (by
+  ((succStruct W Z).transfiniteCompositionOfShapeιIteration κ.ord.ToType).ofLE (by
     rintro Z₀ _ _ ⟨_⟩
     exact isLocal_isLocal_toSucc W Z₀)
 
-/-- The functor `κ.ord.toType ⥤ C` that is the diagram of the
+/-- The functor `κ.ord.ToType ⥤ C` that is the diagram of the
 transfinite composition `transfiniteCompositionOfShapeReflection`. -/
-noncomputable abbrev iteration : κ.ord.toType ⥤ C :=
+noncomputable abbrev iteration : κ.ord.ToType ⥤ C :=
   (transfiniteCompositionOfShapeReflection W Z κ).F
 
 section
@@ -359,27 +364,27 @@ variable [Fact κ.IsRegular]
 
 /-- `(iteration W Z κ).obj (Order.succ j)` identifies to the image of
 `(iteration W Z κ).obj j` by `succ`. -/
-noncomputable def iterationObjSuccIso (j : κ.ord.toType) :
+noncomputable def iterationObjSuccIso (j : κ.ord.ToType) :
   (iteration W Z κ).obj (Order.succ j) ≅ succ W ((iteration W Z κ).obj j) :=
     (succStruct W Z).iterationFunctorObjSuccIso j (by
       have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
       exact not_isMax j)
 
 @[reassoc]
-lemma iteration_map_succ (j : κ.ord.toType) :
+lemma iteration_map_succ (j : κ.ord.ToType) :
     (iteration W Z κ).map (homOfLE (Order.le_succ j)) =
       toSucc W _ ≫ (iterationObjSuccIso W Z κ j).inv :=
   (succStruct W Z).iterationFunctor_map_succ _ _
 
 variable {κ W Z} in
-lemma iteration_map_succ_injectivity {X Y : C} (f : X ⟶ Y) (hf : W f) {j : κ.ord.toType}
+lemma iteration_map_succ_injectivity {X Y : C} (f : X ⟶ Y) (hf : W f) {j : κ.ord.ToType}
     (g₁ g₂ : Y ⟶ (iteration W Z κ).obj j) (hg : f ≫ g₁ = f ≫ g₂) :
     g₁ ≫ (iteration W Z κ).map (homOfLE (Order.le_succ j)) =
       g₂ ≫ (iteration W Z κ).map (homOfLE (Order.le_succ j)) := by
   simp [iteration_map_succ, reassoc_of% (toSucc_injectivity f hf _ _ hg)]
 
 variable {κ W Z} in
-lemma iteration_map_succ_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) {j : κ.ord.toType}
+lemma iteration_map_succ_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) {j : κ.ord.ToType}
     (g : X ⟶ (iteration W Z κ).obj j) :
     ∃ (g' : Y ⟶ (iteration W Z κ).obj (Order.succ j)),
       f ≫ g' = g ≫ (iteration W Z κ).map (homOfLE (Order.le_succ j)) := by
@@ -391,7 +396,7 @@ end
 
 lemma isLocal_isLocal_reflection :
      W.isLocal.isLocal (reflection W Z κ) :=
-  W.isLocal.isLocal.transfiniteCompositionsOfShape_le κ.ord.toType _
+  W.isLocal.isLocal.transfiniteCompositionsOfShape_le κ.ord.ToType _
     ⟨transfiniteCompositionOfShapeReflection W Z κ⟩
 
 variable {W} {κ} [Fact κ.IsRegular]
@@ -399,6 +404,7 @@ variable {W} {κ} [Fact κ.IsRegular]
 
 include hW
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_reflectionObj :
     W.isLocal (reflectionObj W Z κ) := by
   let H := transfiniteCompositionOfShapeReflection W Z κ
@@ -406,7 +412,7 @@ lemma isLocal_reflectionObj :
   obtain ⟨_, _⟩ := hW f hf
   refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
   · obtain ⟨j, g₁, g₂, rfl, rfl⟩ :
-      ∃ (j : κ.ord.toType) (g₁' g₂' : Y ⟶ H.F.obj j), g₁' ≫ H.incl.app j = g₁ ∧
+      ∃ (j : κ.ord.ToType) (g₁' g₂' : Y ⟶ H.F.obj j), g₁' ≫ H.incl.app j = g₁ ∧
         g₂' ≫ H.incl.app j = g₂ := by
       obtain ⟨j₁, g₁, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ H.isColimit g₁
       obtain ⟨j₂, g₂, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ H.isColimit g₂
@@ -426,12 +432,15 @@ lemma isLocal_reflectionObj :
     obtain ⟨g', hg'⟩ := iteration_map_succ_surjectivity f hf g
     exact ⟨g' ≫ H.incl.app (Order.succ j), by simp [reassoc_of% hg']⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `reflection W Z κ : Z ⟶ reflectionObj W Z κ` exhibits `reflectionObj W Z κ`
 as the image of `Z` by the left adjoint of the inclusion `W.isLocal.ι`. -/
 noncomputable def corepresentableBy :
   (W.isLocal.ι ⋙ coyoneda.obj (op Z)).CorepresentableBy
     ⟨_, isLocal_reflectionObj Z hW⟩ where
-  homEquiv {A} := Equiv.ofBijective _ (isLocal_isLocal_reflection W Z κ _ A.2)
+  homEquiv {A} :=
+    (ObjectProperty.fullyFaithfulι _).homEquiv.trans
+      (Equiv.ofBijective _ (isLocal_isLocal_reflection W Z κ _ A.2))
 
 variable (W κ)
 
@@ -452,7 +461,7 @@ lemma isRightAdjoint_ι_isLocal
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ)
     [HasColimitsOfSize.{w, w} C] :
     W.isLocal.ι.IsRightAdjoint := by
-  let : OrderBot κ.ord.toType :=
+  let : OrderBot κ.ord.ToType :=
     Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
   have := D₁.hasCoproductsOfShape.{w} W
   have := D₂.hasColimitsOfShape.{w} W

@@ -87,6 +87,7 @@ end proper_ideal
 
 section faithful
 
+set_option backward.isDefEq.respectTransparency false in
 instance rTensor_nontrivial
     [fl : FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
     Nontrivial (N ⊗[R] M) := by
@@ -186,6 +187,7 @@ lemma of_linearEquiv {N : Type*} [AddCommGroup N] [Module R N] [FaithfullyFlat R
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A direct sum of faithfully flat `R`-modules is faithfully flat. -/
 instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)]
     [∀ i, Module R (M i)] [∀ i, FaithfullyFlat R (M i)] : FaithfullyFlat R (⨁ i, M i) := by
@@ -196,8 +198,9 @@ instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddComm
   obtain ⟨x, y, hxy⟩ := Nontrivial.exists_pair_ne (α := M i ⊗[R] N)
   haveI : Nontrivial (⨁ (i : ι), M i ⊗[R] N) :=
     ⟨DirectSum.of _ i x, DirectSum.of _ i y, fun h ↦ hxy (DirectSum.of_injective i h)⟩
-  apply (TensorProduct.directSumLeft R M N).toEquiv.nontrivial
+  apply (TensorProduct.directSumLeft R R M N).toEquiv.nontrivial
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) [Nonempty ι] : FaithfullyFlat R (ι →₀ R) := by
   classical exact of_linearEquiv _ _ (finsuppLEquivDirectSum R R ι)
@@ -265,6 +268,7 @@ variable {N2 : Type*} [AddCommGroup N2] [Module R N2]
 variable {N3 : Type*} [AddCommGroup N3] [Module R N3]
 variable (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `M` is faithfully flat, then exactness of `N₁ ⊗ M -> N₂ ⊗ M -> N₃ ⊗ M` implies that the
 composition `N₁ -> N₂ -> N₃` is `0`.
@@ -295,7 +299,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     rw [← TensorProduct.span_tmul_eq_top, Submodule.mem_span_set] at mem
     obtain ⟨c, hc, rfl⟩ := mem
     choose b a hy using hc
-    let r :  ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha =>
+    let r : ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha =>
       Submodule.mem_span_singleton.1 (b ha).2 |>.choose
     have hr : ∀ ⦃i : E ⊗[R] M⦄ (hi : i ∈ c.support), b hi =
         r hi • ⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩ := fun a ha =>
@@ -313,6 +317,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
   -- but `E ⊗ M = 0` implies `E = 0` because `M` is faithfully flat and this is a contradiction.
   exact not_subsingleton_iff_nontrivial.2 inferInstance <| fl.rTensor_reflects_triviality R M E
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     (ex : Function.Exact (l12.rTensor M) (l23.rTensor M)) :
     Function.Exact l12 l23 := LinearMap.exact_iff.2 <| by
@@ -394,6 +399,11 @@ lemma lTensor_surjective_iff_surjective [Module.FaithfullyFlat R M] :
   conv_rhs => rw [← lTensor_exact_iff_exact R M]
   simp
 
+@[simp]
+lemma lTensor_bijective_iff_bijective [Module.FaithfullyFlat R M] :
+    Function.Bijective (f.lTensor M) ↔ Function.Bijective f := by
+  simp [Function.Bijective]
+
 end
 
 end arbitrary_universe
@@ -473,7 +483,7 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
 then `1 ⊗ₜ[R] m = 0` if and only if `m = 0`. -/
 @[simp]
 theorem one_tmul_eq_zero_iff {A : Type*} [Ring A] [Algebra R A] [FaithfullyFlat R A] (m : M) :
-    (1:A) ⊗ₜ[R] m = 0 ↔ m = 0 := by
+    (1 : A) ⊗ₜ[R] m = 0 ↔ m = 0 := by
   constructor; swap
   · rintro rfl; rw [tmul_zero]
   intro h

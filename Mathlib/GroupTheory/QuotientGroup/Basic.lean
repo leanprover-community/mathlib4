@@ -270,10 +270,8 @@ noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
     H ⧸ N.subgroupOf H ≃* (H ⊔ N : Subgroup G) ⧸ N.subgroupOf (H ⊔ N) :=
   letI := Subgroup.normal_subgroupOf_of_le_normalizer hLE
   letI := Subgroup.normal_subgroupOf_sup_of_le_normalizer hLE
-  let
-    φ :-- φ is the natural homomorphism H →* (HN)/N.
-      H →*
-      _ ⧸ N.subgroupOf (H ⊔ N) :=
+  -- φ is the natural homomorphism H →* (HN)/N.
+  let φ : H →* _ ⧸ N.subgroupOf (H ⊔ N) :=
     (mk' <| N.subgroupOf (H ⊔ N)).comp (inclusion le_sup_left)
   have φ_surjective : Surjective φ := fun x =>
     x.inductionOn' <| by
@@ -281,12 +279,10 @@ noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
       rw [← SetLike.mem_coe] at hy
       rw [coe_mul_of_left_le_normalizer_right H N hLE] at hy
       rcases hy with ⟨h, hh, n, hn, rfl⟩
+      simp only [SetLike.mem_coe] at hn
       use ⟨h, hh⟩
       refine Quotient.eq.mpr ?_
-      change leftRel _ _ _
-      rw [leftRel_apply]
-      change h⁻¹ * (h * n) ∈ N
-      rwa [← mul_assoc, inv_mul_cancel, one_mul]
+      simp [leftRel_apply, inclusion, mem_subgroupOf, hn]
   (quotientMulEquivOfEq (by simp [φ, ← comap_ker])).trans
     (quotientKerEquivOfSurjective φ φ_surjective)
 
@@ -346,6 +342,7 @@ section CorrespTheorem
 -- All these theorems are primed because `QuotientGroup.mk'` is.
 set_option linter.docPrime false
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem le_comap_mk' (N : Subgroup G) [N.Normal] (H : Subgroup (G ⧸ N)) :
     N ≤ Subgroup.comap (QuotientGroup.mk' N) H := by
@@ -356,6 +353,7 @@ theorem comap_map_mk' (N H : Subgroup G) [N.Normal] :
     Subgroup.comap (mk' N) (Subgroup.map (mk' N) H) = N ⊔ H := by
   simp [Subgroup.comap_map_eq, sup_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **correspondence theorem**, or lattice theorem,
 or fourth isomorphism theorem for multiplicative groups -/
 @[to_additive /-- The **correspondence theorem**, or lattice theorem,
@@ -376,6 +374,7 @@ section trivial
 theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the quotient by a subgroup gives a singleton then the subgroup is the whole group. -/
 @[to_additive /-- If the quotient by an additive subgroup gives a singleton then the additive
 subgroup is the whole additive group. -/]
@@ -393,6 +392,42 @@ theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G
   ext x
   simp only [mk'_apply, Subgroup.mem_comap, Subgroup.mem_center_iff, forall_mk, ← mk_mul,
     eq_iff_div_mem, mk_div]
+
+open Subgroup in
+@[to_additive]
+theorem _root_.Subgroup.Characteristic.comap_quotient_mk {H : Subgroup G} [hH : H.Characteristic]
+    {K : Subgroup (G ⧸ H)} (hK : K.Characteristic) :
+    Characteristic (K.comap (mk' H)) :=
+  characteristic_iff_comap_eq.mpr fun φ ↦ congr_arg (comap (mk' H))
+    (characteristic_iff_comap_eq.mp hK (congr H H φ (characteristic_iff_map_eq.mp hH φ)))
+
+/--
+The `MulEquiv` between the kernel of the restriction map to a normal subgroup `H` of homomorphisms
+of type `G →* A` and the group of homomorphisms `G ⧸ H →* A`.
+-/
+@[to_additive
+/--
+The `AddEquiv` between the kernel of the restriction map to a normal subgroup `H` of homomorphisms
+of type `G →+ A` and the group of homomorphisms `G ⧸ H →+ A`.
+-/]
+def _root_.MonoidHom.restrictHomKerEquiv (A : Type*) [CommGroup A] (H : Subgroup G) [H.Normal] :
+    (MonoidHom.restrictHom H A).ker ≃* (G ⧸ H →* A) where
+  toFun := fun ⟨f, hf⟩ ↦ QuotientGroup.lift _ f
+    (by simpa [mem_ker, restrictHom_apply, restrict_eq_one_iff] using hf)
+  invFun f := ⟨f.comp (QuotientGroup.mk' H), restrict_eq_one_iff.mpr <| le_comap_mk' H f.ker⟩
+  map_mul' _ _ := by ext; simp
+  left_inv _ := by simp
+  right_inv _ := by ext; simp
+
+@[simp]
+theorem _root_.MonoidHom.restrictHomKerEquiv_apply_coe (A : Type*) [CommGroup A] (H : Subgroup G)
+    [H.Normal] (f : (MonoidHom.restrictHom H A).ker) (g : G) :
+    restrictHomKerEquiv A H f g = f.val g := rfl
+
+@[simp]
+theorem _root_.MonoidHom.restrictHomKerEquiv_symm_coe_apply (A : Type*) [CommGroup A]
+    (H : Subgroup G) [H.Normal] (f : G ⧸ H →* A) (g : G) :
+    ((restrictHomKerEquiv A H).symm f).val g = f g := rfl
 
 end QuotientGroup
 

@@ -78,7 +78,7 @@ def NormalMono.regularMono (f : X ⟶ Y) [I : NormalMono f] : RegularMono f :=
     right := 0
     w := by simpa using I.w }
 
-instance (priority := 100) (f : X ⟶ Y) [I : NormalMono f] : IsRegularMono f := ⟨I.regularMono⟩
+instance (priority := 100) (f : X ⟶ Y) [I : NormalMono f] : IsRegularMono f := ⟨⟨I.regularMono⟩⟩
 
 /-- If `f` is a normal mono, then any map `k : W ⟶ Y` such that `k ≫ normal_mono.g = 0` induces
 a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
@@ -114,6 +114,22 @@ def normalOfIsPullbackFstOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
     [NormalMono k] (comm : f ≫ h = g ≫ k) (t : IsLimit (PullbackCone.mk _ _ comm)) :
     NormalMono f :=
   normalOfIsPullbackSndOfNormal comm.symm (PullbackCone.flipIsLimit t)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Transport a `NormalMono` structure via an isomorphism of arrows. -/
+def NormalMono.ofArrowIso {X Y : C} {f : X ⟶ Y}
+    (hf : NormalMono f) {X' Y' : C} {f' : X' ⟶ Y'} (e : Arrow.mk f ≅ Arrow.mk f') :
+    NormalMono f' where
+  Z := hf.Z
+  g := e.inv.right ≫ hf.g
+  w := by
+    have := Arrow.w e.inv
+    dsimp at this
+    rw [← reassoc_of% this, hf.w, comp_zero]
+  isLimit := by
+    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hf.isLimit
+    · exact parallelPair.ext (Arrow.rightFunc.mapIso e) (Iso.refl _)
+    · exact Fork.ext (Arrow.leftFunc.mapIso e)
 
 section
 
@@ -176,7 +192,7 @@ def NormalEpi.regularEpi (f : X ⟶ Y) [I : NormalEpi f] : RegularEpi f :=
     right := 0
     w := by simpa using I.w }
 
-instance (priority := 100) (f : X ⟶ Y) [I : NormalEpi f] : IsRegularEpi f := ⟨I.regularEpi⟩
+instance (priority := 100) (f : X ⟶ Y) [I : NormalEpi f] : IsRegularEpi f := ⟨⟨I.regularEpi⟩⟩
 
 /-- If `f` is a normal epi, then every morphism `k : X ⟶ W` satisfying `NormalEpi.g ≫ k = 0`
 induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
@@ -195,7 +211,7 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
   W := gn.W
   g := gn.g ≫ f
   w := by
-    have reassoc' {W : C} (h' : R ⟶ W) :  gn.g ≫ g ≫ h' = 0 ≫ h' := by
+    have reassoc' {W : C} (h' : R ⟶ W) : gn.g ≫ g ≫ h' = 0 ≫ h' := by
       rw [← Category.assoc, eq_whisker gn.w]
     rw [Category.assoc, comm, reassoc', zero_comp]
   isColimit := by
@@ -218,6 +234,23 @@ end
 open Opposite
 
 variable [HasZeroMorphisms C]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Transport a `NormalEpi` structure via an isomorphism of arrows. -/
+def NormalEpi.ofArrowIso {X Y : C} {f : X ⟶ Y}
+    (hf : NormalEpi f) {X' Y' : C} {f' : X' ⟶ Y'} (e : Arrow.mk f ≅ Arrow.mk f') :
+    NormalEpi f' where
+  W := hf.W
+  g := hf.g ≫ e.hom.left
+  w := by
+    have := Arrow.w e.hom
+    dsimp at this
+    rw [Category.assoc, this, reassoc_of% hf.w, zero_comp]
+  isColimit := by
+    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hf.isColimit
+    · exact parallelPair.ext (Iso.refl _) (Arrow.leftFunc.mapIso e)
+    · exact Cofork.ext (Arrow.rightFunc.mapIso e) (by simp [Cofork.π])
+
 
 /-- A normal mono becomes a normal epi in the opposite category. -/
 def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.unop) : NormalEpi f where

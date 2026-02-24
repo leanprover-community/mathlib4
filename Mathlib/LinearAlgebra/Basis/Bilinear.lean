@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 # Lemmas about bilinear maps with a basis over each argument
 -/
 
-@[expose] public section
+public section
 
 open Module
 

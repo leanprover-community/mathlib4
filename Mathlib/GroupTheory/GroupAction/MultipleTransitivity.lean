@@ -43,7 +43,7 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
   same result for `n`-transitivity.
 
 
-* `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff` : is the action of `G` on `α`
+* `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff` : if the action of `G` on `α`
   is pretransitive, then it is `n.succ` pretransitive if and only if
   the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.
 
@@ -113,7 +113,7 @@ end Functoriality
 
 namespace MulAction
 
-open scoped BigOperators Pointwise Cardinal
+open scoped Pointwise Cardinal
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
@@ -361,9 +361,9 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
   refine ⟨fun hn ↦ ⟨fun x y ↦ ?_⟩, fun hn ↦ ⟨fun x y ↦ ?_⟩⟩
   · obtain ⟨g, hgxy⟩ := exists_smul_eq G (ofStabilizer.snoc x) (ofStabilizer.snoc y)
     have hg : g ∈ stabilizer G a := by
-      rw [mem_stabilizer_iff]
       rw [DFunLike.ext_iff] at hgxy
-      convert hgxy (last n) <;> simp [smul_apply, ofStabilizer.snoc_last]
+      convert hgxy (last n)
+      simp [ofStabilizer.snoc_last]
     use ⟨g, hg⟩
     ext i
     simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
@@ -583,19 +583,9 @@ theorem isMultiplyPretransitive (n : ℕ) :
       · obtain ⟨i, rfl⟩ := hb
         use x i
         simp only [ψ, x.injective.extend_apply]
-      · rw [← Set.mem_compl_iff] at hb
-        use φ.invFun ⟨b, hb⟩
-        simp only [ψ]
-        rw [Function.extend_apply' _ _ _ ?_]
-        · simp only [φ']
-          set a : α := (φ.invFun ⟨b, hb⟩ : α)
-          have ha : a ∈ (range x)ᶜ := Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
-          rw [← Subtype.coe_mk a ha]
-          simp [a]
-        · rintro ⟨i, hi⟩
-          apply Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
-          rw [← hi]
-          exact mem_range_self i
+      · use φ.invFun ⟨b, hb⟩
+        simp only [invFun_as_coe]
+        grind [Function.extend_apply', Function.extend_val_apply]
   use Equiv.ofBijective ψ this
   ext i
   simp [ψ, x.injective.extend_apply]
@@ -604,6 +594,7 @@ theorem isMultiplyPretransitive (n : ℕ) :
 instance : IsPreprimitive (Perm α) α :=
   isPreprimitive_of_is_two_pretransitive (isMultiplyPretransitive _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 -- This is optimal, `AlternatingGroup α` is `Nat.card α - 2`-pretransitive.
 /-- A subgroup of `Perm α` is `⊤` if(f) it is `(Nat.card α - 1)`-pretransitive. -/
 theorem eq_top_of_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm α)}
@@ -649,11 +640,11 @@ alias eq_top_if_isMultiplyPretransitive := eq_top_of_isMultiplyPretransitive
 
 end Equiv.Perm
 
-namespace AlternatingGroup
+namespace alternatingGroup
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
-/-- The `alternatingGroup` on α is (card α - 2)-pretransitive. -/
+/-- The `alternatingGroup` on `α` is `(Nat.card α - 2)`-pretransitive. -/
 theorem isMultiplyPretransitive :
     IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α - 2) := by
   rcases lt_or_ge (Nat.card α) 2 with h2 | h2
@@ -677,6 +668,7 @@ theorem isMultiplyPretransitive :
     rw [← Finset.notMem_compl, hs, Finset.mem_insert, Finset.mem_singleton, not_or] at h
     simp [Equiv.swap_apply_of_ne_of_ne h.1 h.2, ← hg]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subgroup of `Equiv.Perm α` which is (card α - 2)-pretransitive
 contains `alternatingGroup α`. -/
 theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
@@ -686,7 +678,7 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
   rcases Nat.lt_or_ge (Nat.card α) 2 with hα1 | hα
   · -- Nat.card α  < 2
     rw [Nat.card_eq_fintype_card] at hα1
-    rw [alternatingGroup.eq_bot_of_card_le_two hα1.le]
+    rw [eq_bot_of_card_le_two hα1.le]
     exact bot_le
   -- 2 ≤ Nat.card α
   apply Equiv.Perm.alternatingGroup_le_of_index_le_two
@@ -741,5 +733,18 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
     IsPreprimitive (alternatingGroup α) α :=
   letI := isPretransitive_of_three_le_card α h
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
+
+end alternatingGroup
+
+namespace AlternatingGroup
+
+@[deprecated (since := "2025-12-16")]
+alias isMultiplyPretransitive := alternatingGroup.isMultiplyPretransitive
+@[deprecated (since := "2025-12-16")]
+alias isPretransitive_of_three_le_card := alternatingGroup.isPretransitive_of_three_le_card
+@[deprecated (since := "2025-12-16")]
+alias isTrivialBlock_of_isBlock := alternatingGroup.isTrivialBlock_of_isBlock
+@[deprecated (since := "2025-12-16")]
+alias isPreprimitive_of_three_le_card := alternatingGroup.isPreprimitive_of_three_le_card
 
 end AlternatingGroup

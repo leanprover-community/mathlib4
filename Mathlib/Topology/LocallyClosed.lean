@@ -27,7 +27,7 @@ public import Mathlib.Tactic.TFAE
 
 -/
 
-@[expose] public section
+public section
 
 open Set Topology
 open scoped Set.Notation

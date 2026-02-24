@@ -17,7 +17,7 @@ This file contains the results concerning the interaction of finset big operator
 zero.
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -45,6 +45,7 @@ lemma support_prod_subset (s : Finset ι) (f : ι → κ → M₀) :
     support (fun x ↦ ∏ i ∈ s, f i x) ⊆ ⋂ i ∈ s, support (f i) :=
   fun _ hx ↦ Set.mem_iInter₂.2 fun _ hi H ↦ hx <| prod_eq_zero hi H
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma _root_.Set.indicator_pi_one_apply (s : Finset ι) (t : ∀ i, Set (α i)) (f : ∀ i, α i) :
     ((s : Set ι).pi t).indicator 1 f = ∏ i ∈ s, (t i).indicator (M := M₀) 1 (f i) := by
   classical simp [Set.indicator, prod_boole]

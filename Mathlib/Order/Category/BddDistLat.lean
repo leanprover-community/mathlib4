@@ -48,6 +48,7 @@ abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat where
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `BddDistLat R`. -/
 @[ext]
 structure Hom (X Y : BddDistLat.{u}) where
@@ -55,11 +56,15 @@ structure Hom (X Y : BddDistLat.{u}) where
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category BddDistLat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨BoundedLatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BddDistLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -93,7 +98,7 @@ lemma coe_comp {X Y Z : BddDistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X �
 
 @[simp]
 lemma forget_map {X Y : BddDistLat} (f : X ⟶ Y) :
-    (forget BddDistLat).map f = f := rfl
+    (forget BddDistLat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : BddDistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -174,6 +179,7 @@ theorem forget_bddLat_lat_eq_forget_distLat_lat :
       forget₂ BddDistLat DistLat ⋙ forget₂ DistLat Lat :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between bounded distributive lattices from an order isomorphism
 between them. -/
 @[simps]

@@ -6,7 +6,6 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.RingTheory.Jacobson.Radical
-public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
@@ -23,11 +22,11 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 variable (R R₂ M M₂ : Type*) [Ring R] [Ring R₂]
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂] (f : F)
 
 theorem IsSimpleModule.jacobson_eq_bot [IsSimpleModule R M] : Module.jacobson R M = ⊥ :=
   le_bot_iff.mp <| sInf_le isCoatom_bot
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsSemisimpleModule.jacobson_eq_bot [IsSemisimpleModule R M] :
     Module.jacobson R M = ⊥ :=
   have ⟨s, e, simple⟩ := isSemisimpleModule_iff_exists_linearEquiv_dfinsupp.mp ‹_›
@@ -38,7 +37,7 @@ theorem IsSemisimpleModule.jacobson_eq_bot [IsSemisimpleModule R M] :
 theorem IsSemisimpleRing.jacobson_eq_bot [IsSemisimpleRing R] : Ring.jacobson R = ⊥ :=
   IsSemisimpleModule.jacobson_eq_bot R R
 
-theorem IsSemisimpleModule.jacobson_le_ker [IsSemisimpleModule R₂ M₂] :
+theorem IsSemisimpleModule.jacobson_le_ker [IsSemisimpleModule R₂ M₂] (f : M →ₛₗ[τ₁₂] M₂) :
     Module.jacobson R M ≤ LinearMap.ker f :=
   (Module.le_comap_jacobson f).trans <| by simp_rw [jacobson_eq_bot, LinearMap.ker, le_rfl]
 

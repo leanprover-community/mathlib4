@@ -10,6 +10,8 @@ public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.Tactic.Bound
+import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-!
 # Turán density
@@ -42,17 +44,18 @@ lemma antitoneOn_extremalNumber_div_choose_two (H : SimpleGraph W) :
   intro n hn
   conv_lhs =>
     enter [1, 1]
-    rw [← Fintype.card_fin (n+1)]
+    rw [← Fintype.card_fin (n + 1)]
   rw [div_le_iff₀ (mod_cast Nat.choose_pos (by linarith)),
     extremalNumber_le_iff_of_nonneg H (by positivity)]
   intro G _ h
   rw [mul_comm, ← mul_div_assoc, le_div_iff₀' (mod_cast Nat.choose_pos hn), Nat.cast_choose_two,
     Nat.cast_choose_two, Nat.cast_add_one, add_sub_cancel_right (n : ℝ) 1,
-    mul_comm _ (n-1 : ℝ), ← mul_div (n-1 : ℝ), mul_comm _ (n/2 : ℝ), mul_assoc, mul_comm (n-1 : ℝ),
-    ← mul_div (n+1 : ℝ), mul_comm _ (n/2 : ℝ), mul_assoc, mul_le_mul_iff_right₀ (by positivity),
-    ← Nat.cast_pred (by positivity), ←Nat.cast_mul, ←Nat.cast_add_one, ←Nat.cast_mul, Nat.cast_le]
+    mul_comm _ (n - 1 : ℝ), ← mul_div (n - 1 : ℝ), mul_comm _ (n / 2 : ℝ), mul_assoc,
+    mul_comm (n - 1 : ℝ), ← mul_div (n + 1 : ℝ), mul_comm _ (n / 2 : ℝ), mul_assoc,
+    mul_le_mul_iff_right₀ (by positivity), ← Nat.cast_pred (by positivity), ← Nat.cast_mul,
+    ← Nat.cast_add_one, ← Nat.cast_mul, Nat.cast_le]
   conv_rhs =>
-    rw [← Fintype.card_fin (n+1), ← card_univ]
+    rw [← Fintype.card_fin (n + 1), ← card_univ]
   -- double counting `(v, e) ↦ v ∉ e`
   apply card_nsmul_le_card_nsmul' (r := fun v e ↦ v ∉ e)
   -- counting `e`
@@ -93,7 +96,7 @@ approaches `∞`. -/
 theorem isEquivalent_extremalNumber (h : turanDensity H ≠ 0) :
     (fun n ↦ (extremalNumber n H : ℝ)) ~[atTop] (fun n ↦ (turanDensity H * n.choose 2 : ℝ)) := by
   have hπ := tendsto_turanDensity H
-  apply Tendsto.const_mul (1/turanDensity H : ℝ) at hπ
+  apply Tendsto.const_mul (1 / turanDensity H : ℝ) at hπ
   simp_rw [one_div_mul_cancel h, div_mul_div_comm, one_mul] at hπ
   have hz : ∀ᶠ (x : ℕ) in atTop, turanDensity H * x.choose 2 ≠ 0 := by
     rw [eventually_atTop]

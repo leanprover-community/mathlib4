@@ -29,8 +29,9 @@ considered as of type (I) and the latter as type (II).
 
 We say that a pairing is *regular* (typeclass `Pairing.IsRegular`) when
 - it is proper (`Pairing.IsProper`), i.e. any type (II) simplex is uniquely
-a face of the corresponding type (I) simplex.
+  a face of the corresponding type (I) simplex.
 - a certain ancestrality relation is well founded.
+
 When these conditions are satisfied, the inclusion `A.ι : A ⟶ X` is
 a strong anodyne extension (TODO @joelriou), and the converse is also true
 (if `A.ι` is a strong anodyne extension, then there is a regular pairing for `A` (TODO)).
@@ -77,6 +78,11 @@ class IsProper where
 lemma isUniquelyCodimOneFace [P.IsProper] (x : P.II) :
     S.IsUniquelyCodimOneFace x.1.toS (P.p x).1.toS :=
   IsProper.isUniquelyCodimOneFace x
+
+@[simp]
+lemma dim_p [P.IsProper] (x : P.II) :
+    (P.p x).1.dim = x.1.dim + 1 :=
+  (P.isUniquelyCodimOneFace x).dim_eq
 
 /-- The condition that a pairing only involves inner horns. -/
 class IsInner [P.IsProper] : Prop where

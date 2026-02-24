@@ -20,7 +20,7 @@ We show that
 Suppose an open partial homeomorphism `e` is differentiable. This file shows
 * `OpenPartialHomeomorph.MDifferentiable.mfderiv`: its derivative is a continuous linear equivalence
 * `OpenPartialHomeomorph.MDifferentiable.mfderiv_bijective`: its derivative is bijective;
-  there are also spelling with trivial kernel and full range
+  there are also spellings with trivial kernel and full range
 
 In particular, (extended) charts have bijective differential.
 
@@ -104,7 +104,7 @@ theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.sour
     ContDiffOn 𝕜 1 (I ∘ (chartAt H x).symm.trans e ∘ I.symm)
       (I.symm ⁻¹' ((chartAt H x).symm.trans e).source ∩ range I) :=
     this.1
-  have B := A.differentiableOn le_rfl (I ((chartAt H x : M → H) x)) mem
+  have B := A.differentiableOn one_ne_zero (I ((chartAt H x : M → H) x)) mem
   simp only [mfld_simps] at B
   rw [inter_comm, differentiableWithinAt_inter] at B
   · simpa only [mfld_simps]
@@ -125,7 +125,7 @@ theorem mdifferentiableAt_atlas_symm (h : e ∈ atlas H M) {x : H} (hx : x ∈ e
     ContDiffOn 𝕜 1 (I ∘ e.symm.trans (chartAt H (e.symm x)) ∘ I.symm)
       (I.symm ⁻¹' (e.symm.trans (chartAt H (e.symm x))).source ∩ range I) :=
     this.1
-  have B := A.differentiableOn le_rfl (I x) mem
+  have B := A.differentiableOn one_ne_zero (I x) mem
   simp only [mfld_simps] at B
   rw [inter_comm, differentiableWithinAt_inter] at B
   · simpa only [mfld_simps]
@@ -203,10 +203,10 @@ theorem mfderiv_injective {x : M} (hx : x ∈ e.source) : Function.Injective (mf
 theorem mfderiv_surjective {x : M} (hx : x ∈ e.source) : Function.Surjective (mfderiv I I' e x) :=
   (he.mfderiv hx).surjective
 
-theorem ker_mfderiv_eq_bot {x : M} (hx : x ∈ e.source) : LinearMap.ker (mfderiv I I' e x) = ⊥ :=
+theorem ker_mfderiv_eq_bot {x : M} (hx : x ∈ e.source) : (mfderiv I I' e x).ker = ⊥ :=
   (he.mfderiv hx).toLinearEquiv.ker
 
-theorem range_mfderiv_eq_top {x : M} (hx : x ∈ e.source) : LinearMap.range (mfderiv I I' e x) = ⊤ :=
+theorem range_mfderiv_eq_top {x : M} (hx : x ∈ e.source) : (mfderiv I I' e x).range = ⊤ :=
   (he.mfderiv hx).toLinearEquiv.range
 
 theorem range_mfderiv_eq_univ {x : M} (hx : x ∈ e.source) : range (mfderiv I I' e x) = univ :=
@@ -329,6 +329,7 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
     simp only [Function.comp_def, PartialEquiv.left_inv (extChartAt I x) hz, id_eq]
   · simp only [Function.comp_def, PartialEquiv.right_inv (extChartAt I x) hy, id_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the derivative of the inverse of `extChartAt` with the derivative of
 `extChartAt` gives the identity.
 Version where the basepoint belongs to `(extChartAt I x).source`. -/
@@ -355,6 +356,7 @@ lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).sourc
   have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
   rwa [this] at Z
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The trivialization of the tangent bundle at a point is the manifold derivative of the
 extended chart.
 Use with care as this abuses the defeq `TangentSpace 𝓘(𝕜, E) y = E` for `y : E`. -/
@@ -367,6 +369,7 @@ theorem TangentBundle.continuousLinearMapAt_trivializationAt
     ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.toFun_eq_coe] at this
   simp [hx, mfderiv, this]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse trivialization of the tangent bundle at a point is the manifold derivative of the
 inverse of the extended chart.
 Use with care as this abuses the defeq `TangentSpace 𝓘(𝕜, E) y = E` for `y : E`. -/

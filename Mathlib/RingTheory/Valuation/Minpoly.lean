@@ -24,7 +24,7 @@ Let `K` be a field with a valuation `v` and let `L` be a field extension of `K`.
   is helpful for defining the valuation on `L` inducing `v`.
 -/
 
-@[expose] public section
+public section
 
 open Module minpoly Polynomial
 

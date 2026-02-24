@@ -5,8 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Algebra.Group.Nat.Defs
-public meta import Mathlib.Tactic.ByContra
+public import Mathlib.Algebra.Group.Nat.Defs
+public meta import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Tactic.Push
 
 /-!
 # `lrat_proof` command
@@ -556,7 +557,7 @@ but not the reification theorem. Returns:
   * `proof`: A proof of `ctx.proof []`
 -/
 def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr × Expr) := do
-  let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs ⟨_, cnf.startValidPos⟩
+  let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs ⟨_, cnf.startPos⟩
     | throwError "parse CNF failed"
   if arr.isEmpty then throwError "empty CNF"
   let ctx' := buildConj arr 0 arr.size
@@ -570,7 +571,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
     safety      := DefinitionSafety.safe
   }
   let ctx := mkConst ctxName
-  let Parsec.ParseResult.success _ steps := Parser.parseLRAT ⟨_, lrat.startValidPos⟩
+  let Parsec.ParseResult.success _ steps := Parser.parseLRAT ⟨_, lrat.startPos⟩
     | throwError "parse LRAT failed"
   let proof ← buildProof arr ctx ctx' steps
   let declName ← mkAuxDeclName (name ++ `proof)
@@ -626,7 +627,7 @@ elab "lrat_proof " n:(ident <|> "example")
     let lrat ← unsafe evalTerm String (mkConst ``String) lrat
     let go := do
       fromLRAT cnf lrat name
-      addConstInfo n name
+      addTermInfo' n (← mkConstWithLevelParams name) (isBinder := true) |>.run'
     if n.1.isIdent then go else withoutModifyingEnv go
 
 lrat_proof example

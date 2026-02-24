@@ -8,6 +8,8 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+
 /-!
 # Affine spaces
 
@@ -88,12 +90,14 @@ theorem coe_vadd (s : AffineSubspace k P) [Nonempty s] (a : s.direction) (b : s)
     ↑(a +ᵥ b) = (a : V) +ᵥ (b : P) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Embedding of an affine subspace to the ambient space, as an affine map. -/
 protected def subtype (s : AffineSubspace k P) [Nonempty s] : s →ᵃ[k] P where
   toFun := (↑)
   linear := s.direction.subtype
   map_vadd' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem subtype_linear (s : AffineSubspace k P) [Nonempty s] :
     s.subtype.linear = s.direction.subtype := rfl
@@ -148,6 +152,7 @@ theorem preimage_coe_affineSpan_singleton (x : P) :
 
 variable (P)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The top affine subspace is linearly equivalent to the affine space.
 This is the affine version of `Submodule.topEquiv`. -/
 @[simps! linear apply symm_apply_coe]
@@ -307,6 +312,7 @@ theorem vectorSpan_range_eq_span_range_vsub_right_ne (p : ι → P) (i₀ : ι) 
 
 variable {k}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A set, considered as a subset of its spanned affine subspace, spans the whole subspace. -/
 @[simp]
 theorem affineSpan_coe_preimage_eq_top (A : Set P) [Nonempty A] :
@@ -394,6 +400,21 @@ theorem vadd_right_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
     v +ᵥ p₂ ∈ line[k, p₁, p₂] ↔ ∃ r : k, r • (p₁ -ᵥ p₂) = v := by
   rw [vadd_mem_iff_mem_direction _ (right_mem_affineSpan_pair _ _ _), direction_affineSpan,
     mem_vectorSpan_pair]
+
+lemma mem_affineSpan_pair_iff_exists_lineMap_eq {p p₁ p₂ : P} :
+    p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₁ p₂ r = p := by
+  constructor
+  · intro h
+    rw [← vsub_vadd p p₁, vadd_left_mem_affineSpan_pair] at h
+    obtain ⟨r, hr⟩ := h
+    refine ⟨r, ?_⟩
+    rw [← vsub_vadd p p₁, ← hr, AffineMap.lineMap_apply]
+  · rintro ⟨r, rfl⟩
+    exact AffineMap.lineMap_mem_affineSpan_pair _ _ _
+
+lemma mem_affineSpan_pair_iff_exists_lineMap_rev_eq {p p₁ p₂ : P} :
+    p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₂ p₁ r = p := by
+  rw [Set.pair_comm, mem_affineSpan_pair_iff_exists_lineMap_eq]
 
 end AffineSpace'
 
@@ -491,10 +512,15 @@ section
 
 variable (f : P₁ →ᵃ[k] P₂)
 
+/-- The affine version of `LinearMap.map_span`. -/
 @[simp]
-theorem AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
+theorem AffineMap.map_vectorSpan {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   simp [vectorSpan_def, f.image_vsub_image]
+
+-- this name was backwards
+@[deprecated (since := "2026-01-20")]
+alias AffineMap.vectorSpan_image_eq_submodule_map := AffineMap.map_vectorSpan
 
 namespace AffineSubspace
 
@@ -547,7 +573,7 @@ theorem map_map (s : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) (g : P₂ 
 @[simp]
 theorem map_direction (s : AffineSubspace k P₁) :
     (s.map f).direction = s.direction.map f.linear := by
-  simp [direction_eq_vectorSpan, AffineMap.vectorSpan_image_eq_submodule_map]
+  simp [direction_eq_vectorSpan, AffineMap.map_vectorSpan]
 
 theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s) := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)
@@ -583,6 +609,7 @@ lemma map_mk' (p : P₁) (direction : Submodule k V₁) :
 section inclusion
 variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Affine map from a smaller to a larger subspace of the same space.
 
 This is the affine version of `Submodule.inclusion`. -/
@@ -599,6 +626,7 @@ def inclusion (h : S₁ ≤ S₂) :
 theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inclusion_rfl : inclusion (le_refl S₁) = AffineMap.id k S₁ := rfl
 
@@ -654,6 +682,7 @@ theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorso
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Affine equivalence between two equal affine subspace.
 
 This is the affine version of `LinearEquiv.ofEq`. -/
@@ -667,11 +696,13 @@ def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
 theorem coe_ofEq_apply (h : S₁ = S₂) (x : S₁) : (ofEq S₁ S₂ h x : P₁) = x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofEq_symm (h : S₁ = S₂) : (ofEq S₁ S₂ h).symm = ofEq S₂ S₁ h.symm := by
   ext
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofEq_rfl : ofEq S₁ S₁ rfl = AffineEquiv.refl k S₁ := rfl
 
@@ -869,12 +900,14 @@ theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
   simp [affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty, ←
     not_nonempty_iff_eq_empty]
 
-lemma affineSpan_pair_parallel_iff_exists_unit_smul' [NoZeroSMulDivisors k V] {p₁ q₁ p₂ q₂ : P} :
+lemma affineSpan_pair_parallel_iff_exists_unit_smul' [IsDomain k] [Module.IsTorsionFree k V]
+    {p₁ q₁ p₂ q₂ : P} :
     line[k, p₁, q₁] ∥ line[k, p₂, q₂] ↔ ∃ z : kˣ, z • (q₁ -ᵥ p₁) = q₂ -ᵥ p₂ := by
   rw [AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq, vectorSpan_pair_rev,
     vectorSpan_pair_rev, Submodule.span_singleton_eq_span_singleton]
 
-lemma affineSpan_pair_parallel_iff_exists_unit_smul [NoZeroSMulDivisors k V] {p₁ q₁ p₂ q₂ : P} :
+lemma affineSpan_pair_parallel_iff_exists_unit_smul [IsDomain k] [Module.IsTorsionFree k V]
+    {p₁ q₁ p₂ q₂ : P} :
     line[k, p₁, q₁] ∥ line[k, p₂, q₂] ↔ ∃ z : kˣ, z • (q₂ -ᵥ p₂) = q₁ -ᵥ p₁ := by
   rw [affineSpan_pair_parallel_iff_exists_unit_smul']
   exact ⟨fun ⟨z, hz⟩ ↦ ⟨z⁻¹, by simp [← hz]⟩, fun ⟨z, hz⟩ ↦ ⟨z⁻¹, by simp [← hz]⟩⟩
@@ -883,6 +916,10 @@ lemma direction_affineSpan_pair_le_iff_exists_smul {p₁ q₁ p₂ q₂ : P} :
     line[k, p₁, q₁].direction ≤ line[k, p₂, q₂].direction ↔ ∃ z : k, z • (q₂ -ᵥ p₂) = q₁ -ᵥ p₁ := by
   rw [direction_affineSpan, direction_affineSpan, vectorSpan_pair_rev, vectorSpan_pair_rev,
     Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
+
+theorem affineSpan_pair_comm {p₁ p₂ : P} :
+    line[k, p₁, p₂] = line[k, p₂, p₁] := by
+  rw [Set.pair_comm]
 
 end AffineSubspace
 

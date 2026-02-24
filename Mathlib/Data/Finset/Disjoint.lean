@@ -30,9 +30,7 @@ assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice Monoid
 
 open Multiset Subtype Function
 
-universe u
-
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {ι α β γ : Type*}
 
 namespace Finset
 
@@ -53,16 +51,10 @@ theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
 
 alias ⟨_root_.Disjoint.notMem_of_mem_left_finset, _⟩ := disjoint_left
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_left_finset := Disjoint.notMem_of_mem_left_finset
-
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by
   rw [_root_.disjoint_comm, disjoint_left]
 
 alias ⟨_root_.Disjoint.notMem_of_mem_right_finset, _⟩ := disjoint_right
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_right_finset := Disjoint.notMem_of_mem_right_finset
 
 theorem disjoint_iff_ne : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp only [disjoint_left, imp_not_comm, forall_eq']
@@ -92,7 +84,9 @@ theorem disjoint_empty_left (s : Finset α) : Disjoint ∅ s :=
 theorem disjoint_empty_right (s : Finset α) : Disjoint s ∅ :=
   disjoint_bot_right
 
-@[simp]
+-- Higher priority than `disjoint_singleton_right` to make sure `Disjoint {a} {b}`
+-- simplifies to `a ≠ b`.
+@[simp default + 1]
 theorem disjoint_singleton_left : Disjoint (singleton a) s ↔ a ∉ s := by
   simp only [disjoint_left, mem_singleton, forall_eq]
 
@@ -107,6 +101,7 @@ theorem disjoint_singleton : Disjoint ({a} : Finset α) {b} ↔ a ≠ b := by
 theorem disjoint_self_iff_empty (s : Finset α) : Disjoint s s ↔ s = ∅ :=
   disjoint_self
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem disjoint_coe : Disjoint (s : Set α) t ↔ Disjoint s t := by
   simp only [Finset.disjoint_left, Set.disjoint_left, mem_coe]
@@ -115,6 +110,10 @@ theorem disjoint_coe : Disjoint (s : Set α) t ↔ Disjoint s t := by
 theorem pairwiseDisjoint_coe {ι : Type*} {s : Set ι} {f : ι → Finset α} :
     s.PairwiseDisjoint (fun i => f i : ι → Set α) ↔ s.PairwiseDisjoint f :=
   forall₅_congr fun _ _ _ _ _ => disjoint_coe
+
+@[simp] lemma pairwiseDisjoint_singleton_iff_injOn {s : Set ι} {f : ι → α} :
+    s.PairwiseDisjoint (fun i ↦ ({f i} : Finset α)) ↔ s.InjOn f := by
+  simp [Set.PairwiseDisjoint, Set.Pairwise, not_imp_not, Set.InjOn]
 
 variable [DecidableEq α]
 
@@ -137,6 +136,7 @@ def disjUnion (s t : Finset α) (h : Disjoint s t) : Finset α :=
 theorem mem_disjUnion {α s t h a} : a ∈ @disjUnion α s t h ↔ a ∈ s ∨ a ∈ t := by
   rcases s with ⟨⟨s⟩⟩; rcases t with ⟨⟨t⟩⟩; apply List.mem_append
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_disjUnion {s t : Finset α} (h : Disjoint s t) :
     (disjUnion s t h : Set α) = (s : Set α) ∪ t :=

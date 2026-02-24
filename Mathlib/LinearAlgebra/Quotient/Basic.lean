@@ -81,13 +81,10 @@ variable {p}
 instance [Subsingleton M] : Subsingleton (M ⧸ p) := by simpa using Subsingleton.elim ..
 
 @[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
-theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
-  obtain ⟨x, _, notMem_s⟩ := SetLike.exists_of_lt h
-  refine ⟨⟨mk x, 0, ?_⟩⟩
-  simpa using notMem_s
+theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := Quotient.nontrivial_iff.mpr h.ne
 
 @[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
-theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) := Quotient.nontrivial_iff.2 h
+theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) := Quotient.nontrivial_iff.mpr h
 
 end Quotient
 
@@ -162,6 +159,7 @@ theorem liftQSpanSingleton_apply (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f
 theorem range_mkQ : range p.mkQ = ⊤ :=
   eq_top_iff'.2 <| by rintro ⟨x⟩; exact ⟨x, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ker_mkQ : ker p.mkQ = p := by ext; simp
 
@@ -194,6 +192,7 @@ theorem mapQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) :
 theorem mapQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) {h} : (mapQ p q f h).comp p.mkQ = q.mkQ.comp f := by
   ext x; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapQ_zero (h : p ≤ q.comap (0 : M →ₛₗ[τ₁₂] M₂) := (by simp)) :
     p.mapQ q (0 : M →ₛₗ[τ₁₂] M₂) h = 0 := by
@@ -328,7 +327,7 @@ theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂]
 and `f : M ≃ₗ N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`. -/
 @[simps]
 def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
-    (Q : Submodule R N) (f : M ≃ₗ[R] N) (hf : P.map f = Q) : (M ⧸ P) ≃ₗ[R] N ⧸ Q :=
+    (Q : Submodule R N) (f : M ≃ₗ[R] N) (hf : P.map (f : M →ₗ[R] N) = Q) : (M ⧸ P) ≃ₗ[R] N ⧸ Q :=
   { P.mapQ Q (f : M →ₗ[R] N) fun _ hx => hf ▸ Submodule.mem_map_of_mem hx with
     toFun := P.mapQ Q (f : M →ₗ[R] N) fun _ hx => hf ▸ Submodule.mem_map_of_mem hx
     invFun :=
@@ -342,7 +341,7 @@ def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (P : Submodule R M) (Q : Submodule R N) (f : M ≃ₗ[R] N)
-    (hf : P.map f = Q) :
+    (hf : P.map (f : M →ₗ[R] N) = Q) :
     (Quotient.equiv P Q f hf).symm =
       Quotient.equiv Q P f.symm ((Submodule.map_symm_eq_iff f).mpr hf) :=
   rfl
@@ -350,7 +349,8 @@ theorem Quotient.equiv_symm {R M N : Type*} [Ring R] [AddCommGroup M] [Module R 
 @[simp]
 theorem Quotient.equiv_trans {N O : Type*} [AddCommGroup N] [Module R N] [AddCommGroup O]
     [Module R O] (P : Submodule R M) (Q : Submodule R N) (S : Submodule R O) (e : M ≃ₗ[R] N)
-    (f : N ≃ₗ[R] O) (he : P.map e = Q) (hf : Q.map f = S) (hef : P.map (e.trans f) = S) :
+    (f : N ≃ₗ[R] O) (he : P.map (e : M →ₗ[R] N) = Q) (hf : Q.map (f : N →ₗ[R] O) = S)
+    (hef : P.map (e.trans f : M →ₗ[R] O) = S) :
     Quotient.equiv P S (e.trans f) hef =
       (Quotient.equiv P Q e he).trans (Quotient.equiv Q S f hf) := by
   ext
@@ -374,6 +374,7 @@ variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃] [RingHomSurjective τ₁₂]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : (range f).mkQ.comp f = 0 :=
   LinearMap.ext fun x => by simp
 

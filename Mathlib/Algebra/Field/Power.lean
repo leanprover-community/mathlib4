@@ -16,7 +16,7 @@ so it contains some lemmas about powers of elements which need imports
 beyond those needed for the basic definition.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}
@@ -31,6 +31,7 @@ theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
   simp_rw [zpow_add' (.inr (.inl hn)), zpow_one, zpow_mul, zpow_two, neg_mul_neg,
     neg_mul_eq_mul_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Odd.neg_one_zpow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_zpow, one_zpow]
 
 end DivisionRing

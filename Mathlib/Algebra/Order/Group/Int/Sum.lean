@@ -18,7 +18,7 @@ a sharper upper bound than `#s * c`, because the elements are distinct.
 This file provides these sharp bounds, both in the upper-bounded and analogous lower-bounded cases.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Finset
@@ -33,7 +33,7 @@ lemma sum_le_sum_Ioc {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, x ≤ c) :
       gcongr
       refine sum_le_card_nsmul _ _ _ fun x mx ↦ ?_
       rw [mem_sdiff, mem_Ioc, not_and'] at mx
-      have := mx.2 (hs _ mx.1); omega
+      have := mx.2 (hs _ mx.1); grind
     _ = ∑ x ∈ r ∩ s, x + #(r \ s) • (c - #s) := by
       rw [inter_comm, card_sdiff_comm]
       rw [Int.card_Ioc, sub_sub_cancel, Int.toNat_natCast]
@@ -48,11 +48,11 @@ lemma sum_le_sum_range {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, x ≤ c) :
     ∑ x ∈ s, x ≤ ∑ n ∈ range #s, (c - n) := by
   convert sum_le_sum_Ioc hs
   refine sum_nbij (c - ·) ?_ ?_ ?_ (fun _ _ ↦ rfl)
-  · intro x mx; rw [mem_Ioc]; dsimp only; rw [mem_range] at mx; cutsat
-  · intro x mx y my (h : c - x = c - y); cutsat
+  · intro x mx; rw [mem_Ioc]; dsimp only; rw [mem_range] at mx; lia
+  · intro x mx y my (h : c - x = c - y); lia
   · intro x mx; simp_rw [coe_range, Set.mem_image, Set.mem_Iio]
     rw [mem_coe, mem_Ioc] at mx
-    use (c - x).toNat; cutsat
+    use (c - x).toNat; grind
 
 /-- Sharp lower bound for the sum of a finset of integers that is bounded below, `Ico` version. -/
 lemma sum_Ico_le_sum {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, c ≤ x) :
@@ -68,17 +68,17 @@ lemma sum_Ico_le_sum {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, c ≤ x) :
     _ ≤ _ := by
       grw [← sum_inter_add_sum_diff s r, card_nsmul_le_sum _ _ _ fun x mx ↦ ?_]
       rw [mem_sdiff, mem_Ico, not_and] at mx
-      have := mx.2 (hs _ mx.1); omega
+      have := mx.2 (hs _ mx.1); grind
 
 /-- Sharp lower bound for the sum of a finset of integers that is bounded below, `range` version. -/
 lemma sum_range_le_sum {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, c ≤ x) :
     ∑ n ∈ range #s, (c + n) ≤ ∑ x ∈ s, x := by
   convert sum_Ico_le_sum hs
   refine sum_nbij (c + ·) ?_ ?_ ?_ (fun _ _ ↦ rfl)
-  · intro x mx; rw [mem_Ico]; dsimp only; rw [mem_range] at mx; cutsat
-  · intro x mx y my (h : c + x = c + y); cutsat
+  · intro x mx; rw [mem_Ico]; dsimp only; rw [mem_range] at mx; lia
+  · intro x mx y my (h : c + x = c + y); lia
   · intro x mx; simp_rw [coe_range, Set.mem_image, Set.mem_Iio]
     rw [mem_coe, mem_Ico] at mx
-    use (x - c).toNat; omega
+    use (x - c).toNat; grind
 
 end Finset

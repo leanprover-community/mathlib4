@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.Ab
-public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
-public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
+public import Mathlib.Algebra.Category.Grp.Abelian
 
 /-!
 # Cohomology of the hom complex
@@ -22,6 +21,8 @@ when the category is `R`-linear. This also complements the API
 around `HomComplex` which is centered on terms in types
 `Cochain` or `Cocycle` which are suitable for computations.
 
+We also show that `HomComplex.CohomologyClass K L n` identifies to
+the type of morphisms between `K` and `L⟦n⟧` in the homotopy category.
 -/
 
 @[expose] public section
@@ -46,11 +47,23 @@ def coboundaries : AddSubgroup (Cocycle K L n) where
   zero_mem' := ⟨n - 1, by simp, 0, by simp⟩
   add_mem' := by
     rintro α₁ α₂ ⟨m, hm, β₁, hβ₁⟩ ⟨m', hm', β₂, hβ₂⟩
-    obtain rfl : m = m' := by cutsat
+    obtain rfl : m = m' := by lia
     exact ⟨m, hm, β₁ + β₂, by aesop⟩
   neg_mem' := by
     rintro α ⟨m, hm, β, hβ⟩
     exact ⟨m, hm, -β, by aesop⟩
+
+variable {K L n} in
+lemma mem_coboundaries_iff (α : Cocycle K L n) (m : ℤ) (hm : m + 1 = n) :
+    α ∈ coboundaries K L n ↔ ∃ (β : Cochain K L m), δ m n β = α := by
+  simp only [coboundaries, exists_prop, AddSubgroup.mem_mk, AddSubmonoid.mem_mk,
+    AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
+  constructor
+  · rintro ⟨m', hm', β, hβ⟩
+    obtain rfl : m = m' := by lia
+    exact ⟨β, hβ⟩
+  · rintro ⟨β, hβ⟩
+    exact ⟨m, hm, β, hβ⟩
 
 /-- The type of cohomology classes of degree `n` in the complex of morphisms
 from `K` to `L`. -/
@@ -85,7 +98,7 @@ lemma mk_sub (x y : Cocycle K L n) :
 
 @[simp]
 lemma mk_neg (x : Cocycle K L n) :
-    mk (-x) = - mk x := rfl
+    mk (-x) = -mk x := rfl
 
 lemma mk_eq_zero_iff (x : Cocycle K L n) :
     mk x = 0 ↔ x ∈ coboundaries K L n :=
@@ -115,8 +128,58 @@ lemma descAddMonoidHom_cohomologyClass (x : Cocycle K L n) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
+/-- The additive map which sends a cohomology class to the corresponding morphism
+in the homotopy category. -/
+def toHom :
+    CohomologyClass K L n →+
+      ((HomotopyCategory.quotient C _).obj K ⟶ (HomotopyCategory.quotient C _).obj (L⟦n⟧)) :=
+  descAddMonoidHom ((Functor.mapAddHom _).comp Cocycle.equivHomShift.symm.toAddMonoidHom) (by
+    rintro ⟨x, _⟩ ⟨m, hm, β, rfl⟩
+    simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
+      AddEquiv.toAddMonoidHom_eq_coe, Function.comp_apply, Cocycle.equivHomShift_symm_apply,
+      Functor.mapAddHom_apply, HomotopyCategory.quotient_map_eq_zero_iff]
+    exact ⟨(Cochain.equivHomotopy _ _).symm ⟨n.negOnePow • β.rightShift _ _ (by lia),
+      by simp [Cochain.δ_rightShift _ _ _ _ _ _ (zero_add n), smul_smul]⟩⟩)
+
+lemma toHom_mk (x : Cocycle K L n) :
+    toHom (mk x) = (HomotopyCategory.quotient C _).map (Cocycle.equivHomShift.symm x) := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+lemma toHom_mk_eq_zero_iff (x : Cocycle K L n) :
+    toHom (mk x) = 0 ↔ x ∈ coboundaries K L n := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp only [coboundaries, exists_prop, AddSubgroup.mem_mk, AddSubmonoid.mem_mk,
+      AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
+    rw [toHom_mk, HomotopyCategory.quotient_map_eq_zero_iff] at h
+    obtain ⟨γ, h⟩ := Cochain.equivHomotopy _ _ h.some
+    simp only [Cochain.ofHom_zero, add_zero, Cocycle.equivHomShift_symm_apply,
+      Cocycle.cochain_ofHom_homOf_eq_coe, Cocycle.rightShift_coe] at h
+    exact ⟨n - 1, by simp, n.negOnePow • γ.rightUnshift _ (by lia),
+      by simp [Cochain.δ_rightUnshift _ _ _ _ _ (zero_add n), smul_smul, ← h]⟩
+  · rw [← mk_eq_zero_iff] at h
+    rw [h, map_zero]
+
+variable (K L n) in
+lemma toHom_bijective : Function.Bijective (toHom : CohomologyClass K L n → _) := by
+  refine ⟨fun x y h ↦ ?_, fun f ↦ ?_⟩
+  · obtain ⟨x, rfl⟩ := x.mk_surjective
+    obtain ⟨y, rfl⟩ := y.mk_surjective
+    rw [← sub_eq_zero, ← mk_sub, mk_eq_zero_iff, ← toHom_mk_eq_zero_iff,
+      mk_sub, map_sub, h, sub_self]
+  · obtain ⟨f, rfl⟩ := Functor.map_surjective _ f
+    exact ⟨mk (Cocycle.equivHomShift f), by simp [toHom_mk]⟩
+
+/-- Cohomology classes identify to morphisms in the homotopy category. -/
+@[simps! apply]
+noncomputable def homAddEquiv :
+    CohomologyClass K L n ≃+
+      ((HomotopyCategory.quotient C _).obj K ⟶ (HomotopyCategory.quotient C _).obj (L⟦n⟧)) :=
+  AddEquiv.ofBijective toHom (toHom_bijective _ _ _)
+
 end CohomologyClass
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/
 @[simps]
@@ -138,7 +201,7 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
       (fun s ↦ AddCommGrpCat.ofHom (CohomologyClass.descAddMonoidHom s.π.hom
         (by
           rintro ⟨_, _⟩ ⟨q, hq, y, rfl⟩
-          obtain rfl : n = q := by cutsat
+          obtain rfl : n = q := by lia
           simpa only [zero_comp] using ConcreteCategory.congr_hom s.condition y)))
       (fun s ↦ rfl)
       (fun s l hl ↦ by

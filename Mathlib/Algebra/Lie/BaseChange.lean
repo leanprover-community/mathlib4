@@ -38,6 +38,7 @@ namespace ExtendScalars
 variable [CommRing R] [CommRing A] [Algebra R A] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
+set_option backward.privateInPublic true in
 /-- The Lie bracket on the extension of a Lie algebra `L` over `R` by an algebra `A` over `R`. -/
 private def bracket' : A ⊗[R] L →ₗ[A] A ⊗[R] M →ₗ[A] A ⊗[R] M :=
   TensorProduct.curry <|
@@ -49,6 +50,8 @@ private def bracket' : A ⊗[R] L →ₗ[A] A ⊗[R] M →ₗ[A] A ⊗[R] M :=
 private theorem bracket'_tmul (s t : A) (x : L) (m : M) :
     bracket' R A L M (s ⊗ₜ[R] x) (t ⊗ₜ[R] m) = (s * t) ⊗ₜ ⁅x, m⁆ := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Bracket (A ⊗[R] L) (A ⊗[R] M) where bracket x m := bracket' R A L M x m
 
 private theorem bracket_def (x : A ⊗[R] L) (m : A ⊗[R] M) : ⁅x, m⁆ = bracket' R A L M x m :=
@@ -57,6 +60,7 @@ private theorem bracket_def (x : A ⊗[R] L) (m : A ⊗[R] M) : ⁅x, m⁆ = bra
 @[simp]
 theorem bracket_tmul (s t : A) (x : L) (y : M) : ⁅s ⊗ₜ[R] x, t ⊗ₜ[R] y⁆ = (s * t) ⊗ₜ ⁅x, y⁆ := rfl
 
+set_option backward.privateInPublic true in
 private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
   simp only [bracket_def]
   refine x.induction_on ?_ ?_ ?_
@@ -79,6 +83,7 @@ private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
     · intro y₁ y₂ hy₁ hy₂
       simp only [add_add_add_comm, hy₁, hy₂, add_zero, LinearMap.add_apply, map_add]
 
+set_option backward.privateInPublic true in
 private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆ := by
   simp only [bracket_def]
@@ -96,14 +101,20 @@ private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     · grind [LinearMap.add_apply]
   · grind [LinearMap.add_apply]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instLieRing : LieRing (A ⊗[R] L) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, map_add]
   lie_add x y z := by simp only [bracket_def, map_add]
   lie_self := bracket_lie_self R A L
   leibniz_lie := bracket_leibniz_lie R A L L
 
+instance instBaseLieAlgebra : LieAlgebra R (A ⊗[R] L) where lie_smul := by simp [bracket_def]
+
 instance instLieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := map_smul _ _ _
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, map_add]
   lie_add x y z := by simp only [bracket_def, map_add]
@@ -112,6 +123,26 @@ instance instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
 instance instLieModule : LieModule A (A ⊗[R] L) (A ⊗[R] M) where
   smul_lie t x m := by simp only [bracket_def, map_smul, LinearMap.smul_apply]
   lie_smul _ _ _ := map_smul _ _ _
+
+/-- The Lie algebra homomorphism induced by an algebra map. -/
+def map {R A B L L' : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+    [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L'] (f : A →ₐ[R] B) (g : L →ₗ⁅R⁆ L') :
+    A ⊗[R] L →ₗ⁅R⁆ B ⊗[R] L' :=
+  { TensorProduct.map f.toLinearMap g with
+    map_lie' {x y} := by
+      simp only [bracket_def, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
+      refine x.induction_on (by simp) ?_ ?_
+      · intro _ _
+        refine y.induction_on (by simp) (fun _ _ ↦ by simp) (fun _ _ h1 h2 ↦ by simp [h1, h2])
+      · intro _ _
+        refine y.induction_on (by simp) (fun _ _ h ↦ by simp [h]) (by simp_all) }
+
+@[simp]
+lemma map_apply_tmul {R A B L L' : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing B]
+    [Algebra R B] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L'] {f : A →ₐ[R] B}
+    {g : L →ₗ⁅R⁆ L'} (a : A) (x : L) :
+    map f g (a ⊗ₜ x) = (f a) ⊗ₜ (g x) :=
+  rfl
 
 end ExtendScalars
 
@@ -126,6 +157,7 @@ instance : LieRing (RestrictScalars R A L) :=
 
 variable [CommRing A] [LieAlgebra A L]
 
+set_option backward.isDefEq.respectTransparency false in
 instance lieAlgebra [CommRing R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
   lie_smul t x y := (lie_smul (algebraMap R A t) (RestrictScalars.addEquiv R A L x)
     (RestrictScalars.addEquiv R A L y) :)
@@ -151,6 +183,7 @@ variable (N : LieSubmodule R L M)
 
 open LieModule
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R L M} in
 /-- If `A` is an `R`-algebra, any Lie submodule of a Lie module `M` with coefficients in `R` may be
 pushed forward to a Lie submodule of `A ⊗ M` with coefficients in `A`.

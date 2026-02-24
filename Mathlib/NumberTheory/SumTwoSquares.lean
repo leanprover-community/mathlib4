@@ -172,7 +172,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n 
     (hc : IsCoprime x y) : IsSquare (-1 : ZMod n.natAbs) := by
   obtain ⟨u, v, huv⟩ : IsCoprime x n := by
     have hc2 : IsCoprime (x ^ 2) (y ^ 2) := hc.pow
-    rw [show y ^ 2 = n + -1 * x ^ 2 by cutsat] at hc2
+    rw [show y ^ 2 = n + -1 * x ^ 2 by lia] at hc2
     exact (IsCoprime.pow_left_iff zero_lt_two).mp hc2.of_add_mul_right_right
   have H : u * y * (u * y) - -1 = n * (-v ^ 2 * n + u ^ 2 + 2 * v) := by
     linear_combination -u ^ 2 * h + (n * v - u * x - 1) * huv
@@ -188,6 +188,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_coprime {n x y : ℕ} (h : n = 
   zify at h
   exact ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime h hc.isCoprime
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A natural number `n` is a sum of two squares if and only if `n = a^2 * b` with natural
 numbers `a` and `b` such that `-1` is a square modulo `b`. -/
 theorem Nat.eq_sq_add_sq_iff_eq_sq_mul {n : ℕ} :
@@ -225,7 +226,7 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
   -- now `0 < n`
   refine eq_sq_add_sq_iff_eq_sq_mul.trans ⟨fun ⟨a, b, h₁, h₂⟩ q hq h ↦ ?_, fun H ↦ ?_⟩
   · have : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
-    have : q ∣ b → q ∈ b.primeFactors := by grind [mem_primeFactors]
+    have : q ∣ b → q ∈ b.primeFactors := by grind
     grind (splits := 10) [padicValNat.mul, padicValNat.pow,
       padicValNat.eq_zero_of_not_dvd, mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one]
   · obtain ⟨b, a, hb₀, ha₀, hab, hb⟩ := sq_mul_squarefree_of_pos hn₀

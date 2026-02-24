@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.LinearAlgebra.SModEq.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -70,6 +71,31 @@ theorem IsHausdorff.eq_iff_smodEq [IsHausdorff I M] {x y : M} :
   rw [← sub_eq_zero]
   apply IsHausdorff.haus' (I := I) (x - y)
   simpa [SModEq.sub_mem] using h
+
+theorem IsHausdorff.map_algebraMap_iff [CommRing S] [Algebra R S] :
+    IsHausdorff (I.map (algebraMap R S)) S ↔ IsHausdorff I S := by
+  simp only [isHausdorff_iff, smul_eq_mul, Ideal.mul_top, Ideal.smul_top_eq_map]
+  congr!
+  simp only [← Ideal.map_pow]
+  rfl
+
+theorem IsHausdorff.of_map [CommRing S] [Module S M] {J : Ideal S} [Algebra R S]
+    [IsScalarTower R S M] (hIJ : I.map (algebraMap R S) ≤ J) [IsHausdorff J M] :
+    IsHausdorff I M := by
+  refine ⟨fun x h ↦ IsHausdorff.haus ‹_› x fun n ↦ ?_⟩
+  apply SModEq.of_toAddSubgroup_le
+      (U := (I ^ n • ⊤ : Submodule R M)) (V := (J ^ n • ⊤ : Submodule S M))
+  · rw [← AddSubgroup.toAddSubmonoid_le]
+    simp only [Submodule.toAddSubgroup_toAddSubmonoid, Submodule.smul_toAddSubmonoid,
+      Submodule.top_toAddSubmonoid]
+    rw [AddSubmonoid.smul_le]
+    intro r hr m hm
+    rw [← algebraMap_smul S r m]
+    apply AddSubmonoid.smul_mem_smul ?_ hm
+    have := Ideal.mem_map_of_mem (algebraMap R S) hr
+    simp only [Ideal.map_pow] at this
+    exact Ideal.pow_right_mono hIJ n this
+  · exact h n
 
 variable (I) in
 theorem IsHausdorff.funext {M : Type*} [IsHausdorff I N] {f g : M → N}
@@ -235,6 +261,7 @@ end IsPrecomplete
 
 namespace AdicCompletion
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `AdicCompletion` is the submodule of compatible families in
 `∀ n : ℕ, M ⧸ (I ^ n • ⊤)`. -/
 def submodule : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
@@ -374,6 +401,7 @@ variable {I M}
 
 variable (I M)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsHausdorff I (AdicCompletion I M) where
   haus' x h := ext fun n ↦ by
     refine smul_induction_on (SModEq.zero.1 <| h n) (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
@@ -517,10 +545,10 @@ theorem mk_zero_of (f : AdicCauchySequence I M)
     AdicCompletion.mk I M f = 0 := by
   obtain ⟨k, h⟩ := h
   ext n
-  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by cutsat)
+  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by lia)
   rw [mk_apply_coe, Submodule.mkQ_apply, val_zero,
-    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by cutsat)]
-  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by cutsat))) hl
+    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by lia)]
+  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by lia))) hl
 
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by
@@ -572,6 +600,7 @@ section Bijective
 
 variable {I}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_injective_iff : Function.Injective (of I M) ↔ IsHausdorff I M := by
   constructor
   · refine fun h ↦ ⟨fun x hx ↦ h ?_⟩
@@ -694,7 +723,7 @@ theorem mk_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 
 /--
 The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
-projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
+projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n`.
 -/
 @[simp]
 theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
@@ -705,7 +734,7 @@ theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 /--
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
-If `F : M →ₗ[R] N` makes the following diagram commutes
+If `F : M →ₗ[R] N` makes the following diagram commute
 ```
   N
   | \
@@ -824,7 +853,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   let f : ℕ → R := fun n => ∑ i ∈ range n, (x * y) ^ i
   have hf : ∀ m n, m ≤ n → f m ≡ f n [SMOD I ^ m • (⊤ : Submodule R R)] := by
     intro m n h
-    simp only [f, Algebra.id.smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]
+    simp only [f, smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]
     rw [← add_tsub_cancel_of_le h, Finset.sum_range_add, ← sub_sub, sub_self, zero_sub,
       @neg_mem_iff]
     apply Submodule.sum_mem
@@ -838,7 +867,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   apply IsHausdorff.haus (toIsHausdorff : IsHausdorff I R)
   intro n
   specialize hL n
-  rw [SModEq.sub_mem, Algebra.id.smul_eq_mul, Ideal.mul_top] at hL ⊢
+  rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top] at hL ⊢
   rw [sub_zero]
   suffices (1 - x * y) * f n - 1 ∈ I ^ n by
     convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1

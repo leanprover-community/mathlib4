@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-!
 # Representation of reals in positional system
@@ -55,7 +56,7 @@ theorem summable_ofDigitsTerm {b : ℕ} {digits : ℕ → Fin b} :
     Summable (ofDigitsTerm digits) := by
   refine Summable.of_nonneg_of_le (fun _ ↦ ofDigitsTerm_nonneg) (fun _ ↦ ofDigitsTerm_le) ?_
   obtain rfl | hb := (Nat.one_le_of_lt (b_pos digits)).eq_or_lt
-  · simpa using summable_zero
+  · simp
   simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
   refine Summable.mul_left _ (summable_geometric_of_lt_one (by positivity) ?_)
   simp [inv_lt_one_iff₀, hb]
@@ -120,7 +121,7 @@ theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hx : x ∈ Set.Ic
       mul_left_comm, mul_inv_cancel₀ (by positivity), mul_one, mul_comm x, pow_succ', mul_assoc]
     set y := (b : ℝ) ^ n * x
     norm_cast
-    rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by cutsat),
+    rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by lia),
       Fin.val_ofNat, Nat.div_add_mod]
 
 theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b]
@@ -204,7 +205,7 @@ theorem continuous_ofDigits {b : ℕ} : Continuous (@ofDigits b) := by
     refine continuous_tsum (u := fun i ↦ (b : ℝ)⁻¹ ^ i) ?_ ?_ fun n x ↦ ?_
     · simp only [ofDigitsTerm]
       fun_prop
-    · exact summable_geometric_of_lt_one (by positivity) ((inv_lt_one_of_one_lt₀ hb))
+    · exact summable_geometric_of_lt_one (by positivity) (inv_lt_one_of_one_lt₀ hb)
     · simp only [norm_eq_abs, abs_of_nonneg ofDigitsTerm_nonneg, inv_pow]
       apply ofDigitsTerm_le.trans
       calc

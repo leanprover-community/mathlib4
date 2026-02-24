@@ -67,7 +67,7 @@ on the set of all solutions to the Pell equation `x^2 - d*y^2 = 1`.
 The type of such solutions is `Pell.Solution₁ d`. It corresponds to a pair of integers `x` and `y`
 and a proof that `(x, y)` is indeed a solution.
 
-The multiplication is given by `(x, y) * (x', y') = (x*y' + d*y*y', x*y' + y*x')`.
+The multiplication is given by `(x, y) * (x', y') = (x*x' + d*y*y', x*y' + y*x')`.
 This is obtained by mapping `(x, y)` to `x + y*√d` and multiplying the results.
 In fact, we define `Pell.Solution₁ d` to be `↥(unitary (ℤ√d))` and transport
 the "commutative group with distributive negation" structure from `↥(unitary (ℤ√d))`.
@@ -210,12 +210,13 @@ theorem d_pos_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : 0 < d := by
   rw [a.prop_y, sub_pos]
   exact one_lt_pow₀ ha two_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a solution has `x > 1`, then `d` is not a square. -/
 theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare d := by
   have hp := a.prop
   rintro ⟨b, rfl⟩
   simp_rw [← sq, ← mul_pow, sq_sub_sq, Int.mul_eq_one_iff_eq_one_or_neg_one] at hp
-  cutsat
+  lia
 
 /-- A solution with `x = 1` is trivial. -/
 theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) : a = 1 := by
@@ -293,6 +294,7 @@ theorem sign_y_zpow_eq_sign_of_x_pos_of_y_pos {a : Solution₁ d} (hax : 0 < a.x
   · rw [zpow_negSucc]
     exact Int.sign_eq_neg_one_of_neg (neg_neg_of_pos (y_pow_succ_pos hax hay n))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `a` is any solution, then one of `a`, `a⁻¹`, `-a`, `-a⁻¹` has
 positive `x` and nonnegative `y`. -/
 theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
@@ -383,6 +385,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     refine div_ne_zero_iff.mpr ⟨?_, hm₀⟩
     exact mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `d` is a positive integer, then there is a nontrivial solution
 to the Pell equation `x^2 - d*y^2 = 1` if and only if `d` is not a square. -/
 theorem exists_iff_not_isSquare (h₀ : 0 < d) :
@@ -497,7 +500,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
   · let m : ℤ := -n - 1
     have hm : n = -m - 1 := by simp only [m, neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
     rw [hm, sub_add_cancel, ← neg_add', zpow_neg, zpow_neg, y_inv, y_inv, neg_lt_neg_iff]
-    exact H _ (by cutsat)
+    exact H _ (by lia)
 
 /-- If `a` is a fundamental solution, then `(a^m).y < (a^n).y` if and only if `m < n`. -/
 theorem zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :

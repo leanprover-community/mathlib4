@@ -14,7 +14,7 @@ public import Mathlib.Analysis.Normed.Operator.Basic
 This file shows that `ContinuousLinearMap.extendTo𝕜` preserves the norm of the functional.
 -/
 
-@[expose] public section
+public section
 
 open RCLike
 open scoped ComplexConjugate
@@ -52,6 +52,7 @@ theorem norm_extendTo𝕜' (fr : StrongDual ℝ F) : ‖(fr.extendTo𝕜' : Stro
 
 end ScalarTower
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_extendTo𝕜 (fr : StrongDual ℝ (RestrictScalars ℝ 𝕜 F)) :
     ‖fr.extendTo𝕜‖ = ‖fr‖ :=

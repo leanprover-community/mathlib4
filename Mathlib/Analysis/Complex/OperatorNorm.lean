@@ -17,7 +17,7 @@ The continuous linear maps `Complex.reCLM` (real part), `Complex.imCLM` (imagina
 the operator norm and (for `Complex.conjCLE`) the determinant.
 -/
 
-@[expose] public section
+public section
 
 open ContinuousLinearMap
 

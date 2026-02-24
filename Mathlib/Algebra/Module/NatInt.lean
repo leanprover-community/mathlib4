@@ -37,17 +37,34 @@ universe u v
 
 variable {R S M M₂ : Type*}
 
+instance [AddMonoid M] : MulAction ℕ M where
+  one_smul := one_nsmul
+  mul_smul _ _ _ := mul_nsmul' ..
+
+instance [AddMonoid M] : SMulWithZero ℕ M where
+  smul_zero := nsmul_zero
+  zero_smul := zero_nsmul
+
+instance [SubtractionMonoid M] : MulAction ℤ M where
+  one_smul := one_zsmul
+  mul_smul _ _ _ := mul_zsmul ..
+
+instance [SubtractionMonoid M] : SMulWithZero ℤ M where
+  smul_zero := zsmul_zero
+  zero_smul := zero_zsmul
+
 section AddCommMonoid
 
 variable [AddCommMonoid M]
 
 instance AddCommMonoid.toNatModule : Module ℕ M where
-  one_smul := one_nsmul
-  mul_smul m n a := mul_nsmul' a m n
   smul_add n a b := nsmul_add a b n
   smul_zero := nsmul_zero
   zero_smul := zero_nsmul
   add_smul r s x := add_nsmul x r s
+
+theorem DistribSMul.toAddMonoidHom_eq_nsmulAddMonoidHom :
+    toAddMonoidHom M = nsmulAddMonoidHom := rfl
 
 end AddCommMonoid
 
@@ -62,6 +79,9 @@ instance AddCommGroup.toIntModule : Module ℤ M where
   smul_zero := zsmul_zero
   zero_smul := zero_zsmul
   add_smul r s x := add_zsmul x r s
+
+theorem DistribSMul.toAddMonoidHom_eq_zsmulAddGroupHom :
+    toAddMonoidHom M = zsmulAddGroupHom := rfl
 
 end AddCommGroup
 
@@ -185,3 +205,11 @@ instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCo
     cases n with
     | ofNat => simp [mul_smul, Nat.cast_smul_eq_nsmul]
     | negSucc => simp [mul_smul, add_smul, Nat.cast_smul_eq_nsmul]
+
+variable (M) in
+/-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
+zero as well. Usually `M` is an `R`-algebra. -/
+lemma CharZero.of_module [Semiring R] [AddCommMonoidWithOne M] [CharZero M] [Module R M] :
+    CharZero R := by
+  refine ⟨fun m n h => @Nat.cast_injective M _ _ _ _ ?_⟩
+  rw [← nsmul_one, ← nsmul_one, ← Nat.cast_smul_eq_nsmul R, ← Nat.cast_smul_eq_nsmul R, h]

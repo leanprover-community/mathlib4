@@ -79,15 +79,9 @@ attribute [to_dual existing] LinearOrder.toMax
 
 variable [LinearOrder α] {a b c : α}
 
-attribute [instance 900] LinearOrder.toDecidableLT
-attribute [instance 900] LinearOrder.toDecidableLE
-attribute [instance 900] LinearOrder.toDecidableEq
-
-@[to_dual existing toDecidableLT, inherit_doc toDecidableLT]
-def LinearOrder.toDecidableLT' : DecidableLT' α := fun a b => toDecidableLT b a
-
-@[to_dual existing toDecidableLE, inherit_doc toDecidableLE]
-def LinearOrder.toDecidableLE' : DecidableLE' α := fun a b => toDecidableLE b a
+attribute [instance_reducible, instance 900] LinearOrder.toDecidableLT
+attribute [instance_reducible, instance 900] LinearOrder.toDecidableLE
+attribute [instance_reducible, instance 900] LinearOrder.toDecidableEq
 
 instance : Std.IsLinearOrder α where
   le_total := LinearOrder.le_total
@@ -96,8 +90,6 @@ instance : Std.IsLinearOrder α where
 
 @[to_dual self] lemma le_of_not_ge : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
 @[to_dual self] lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
-
-@[deprecated (since := "2025-05-11")] alias le_of_not_le := le_of_not_ge
 
 @[to_dual gt_trichotomy]
 lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a := by grind
@@ -109,16 +101,10 @@ lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
   | Or.inr (Or.inl HEq) => HEq ▸ le_refl a
   | Or.inr (Or.inr hgt) => absurd hgt h
 
-@[deprecated (since := "2025-05-11")] alias le_of_not_lt := le_of_not_gt
-
 @[to_dual self] lemma lt_or_ge (a b : α) : a < b ∨ b ≤ a :=
   if hba : b ≤ a then Or.inr hba else Or.inl <| lt_of_not_ge hba
 
-@[deprecated (since := "2025-05-11")] alias lt_or_le := lt_or_ge
-
 @[to_dual self] lemma le_or_gt (a b : α) : a ≤ b ∨ b < a := (lt_or_ge b a).symm
-
-@[deprecated (since := "2025-05-11")] alias le_or_lt := le_or_gt
 
 @[to_dual gt_or_lt_of_ne]
 lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ b < a := by grind
@@ -134,8 +120,6 @@ lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ b < a := ⟨lt_or_gt_of_ne, (Or.el
 @[to_dual eq_or_lt_of_not_gt]
 lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
-
-@[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_gt_of_not_lt
 
 @[to_dual self]
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
@@ -245,5 +229,28 @@ instance : Std.LawfulBCmp (compare (α := α)) where
   isLE_iff_le := by simp [← Ordering.ne_gt_iff_isLE, compare_le_iff_le]
 
 end Ord
+
+/-- The category of linear orders.
+
+This will get reused to define `OrderType`. -/
+structure LinOrd where
+  /-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
+  of ::
+  /-- The underlying linearly ordered type. -/
+  (carrier : Type*)
+  [str : LinearOrder carrier]
+
+attribute [instance] LinOrd.str
+
+initialize_simps_projections LinOrd (carrier → coe, -str)
+
+namespace LinOrd
+
+instance : CoeSort LinOrd (Type _) :=
+  ⟨LinOrd.carrier⟩
+
+attribute [coe] LinOrd.carrier
+
+end LinOrd
 
 end LinearOrder

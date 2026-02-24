@@ -12,8 +12,8 @@ public import Mathlib.LinearAlgebra.Quotient.Basic
 /-!
 # Goursat's lemma for submodules
 
-Let `M, N` be modules over a ring `R`. If `L` is a submodule of `M × N` which projects fully on
-to both factors, then there exist submodules `M' ≤ M` and `N' ≤ N` such that `M' × N' ≤ L` and the
+Let `M, N` be modules over a ring `R`. If `L` is a submodule of `M × N` which projects fully onto
+both factors, then there exist submodules `M' ≤ M` and `N' ≤ N` such that `M' × N' ≤ L` and the
 image of `L` in `(M ⧸ M') × (N ⧸ N')` is the graph of an isomorphism `M ⧸ M' ≃ₗ[R] N ⧸ N'`.
 Equivalently, `L` is equal to the preimage in `M × N` of the graph of this isomorphism
 `M ⧸ M' ≃ₗ[R] N ⧸ N'`.
@@ -63,6 +63,7 @@ lemma goursatFst_prod_goursatSnd_le : L.goursatFst.prod L.goursatSnd ≤ L := by
   simpa only [← toAddSubgroup_le, goursatFst_toAddSubgroup, goursatSnd_toAddSubgroup]
     using L.toAddSubgroup.goursatFst_prod_goursatSnd_le
 
+set_option backward.isDefEq.respectTransparency false in
 include hL₁ hL₂ in
 /-- **Goursat's lemma** for a submodule of a product with surjective projections.
 
@@ -94,6 +95,7 @@ lemma goursat_surjective : ∃ e : (M ⧸ L.goursatFst) ≃ₗ[R] N ⧸ L.goursa
   rw [mem_toAddSubgroup, mem_graph_iff, Eq.comm]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Goursat's lemma** for an arbitrary submodule of a product.
 
 If `L` is a submodule of `M × N`, then there exist submodules `M'' ≤ M' ≤ M` and `N'' ≤ N' ≤ N` such

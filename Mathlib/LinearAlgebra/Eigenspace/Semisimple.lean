@@ -21,7 +21,7 @@ endomorphisms.
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 
@@ -29,6 +29,7 @@ namespace Module.End
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {f g : End R M}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil
     {μ : R} {k : ℕ∞} {m : M} (hm : m ∈ f.genEigenspace μ k)
     (hfg : Commute f g) (hss : g.IsFinitelySemisimple) (hnil : IsNilpotent (f - g)) :

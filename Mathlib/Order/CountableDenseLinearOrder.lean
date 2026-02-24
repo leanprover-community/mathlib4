@@ -51,7 +51,7 @@ theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
         (exists_between (lo_lt_hi _ (Finset.max'_mem _ nlo) _ (Finset.min'_mem _ nhi))) fun m hm ↦
         ⟨m, fun x hx ↦ lt_of_le_of_lt (Finset.le_max' lo x hx) hm.1, fun y hy ↦
           lt_of_lt_of_le hm.2 (Finset.min'_le hi y hy)⟩
-    else-- upper set is empty, use `NoMaxOrder`
+    else -- upper set is empty, use `NoMaxOrder`
         Exists.elim
         (exists_gt (Finset.max' lo nlo)) fun m hm ↦
         ⟨m, fun x hx ↦ lt_of_le_of_lt (Finset.le_max' lo x hx) hm, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
@@ -65,6 +65,7 @@ theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
           nonem.elim
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β]
     [nonem : Nonempty β] (S : Finset α) (f : S ↪o β) (a : α) :
     ∃ (g : (insert a S : Finset α) ↪o β),

@@ -6,6 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.EReal.Basic
+public import Batteries.Util.ProofWanted
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers
@@ -97,9 +98,6 @@ theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
 if and only if `x` is not `⊥`. -/
 theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by rw [add_comm, top_add_iff_ne_bot]
 
-@[deprecated (since := "2025-08-14")] alias add_pos_of_nonneg_of_pos :=
-  Right.add_pos_of_nonneg_of_pos
-
 protected theorem add_pos_of_pos_of_nonneg {a b : EReal} (ha : 0 < a) (hb : 0 ≤ b) : 0 < a + b :=
   add_comm a b ▸ Right.add_pos_of_nonneg_of_pos hb ha
 
@@ -129,6 +127,7 @@ lemma toENNReal_add_le {x y : EReal} : (x + y).toENNReal ≤ x.toENNReal + y.toE
   induction x <;> induction y <;> try {· simp}
   exact ENNReal.ofReal_add_le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
   | _, ⊤, _ => le_top
   | ⊥, _, _ => bot_le
@@ -151,6 +150,7 @@ theorem add_lt_add {x y z t : EReal} (h1 : x < y) (h2 : z < t) : x + z < y + t :
     calc (x : EReal) + z < x + t := add_lt_add_left_coe h2 _
     _ ≤ y + t := by gcongr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem add_lt_add_of_lt_of_le' {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hbot : t ≠ ⊥)
     (htop : t = ⊤ → z = ⊤ → x = ⊥) : x + z < y + t := by
   rcases h'.eq_or_lt with (rfl | hlt)
@@ -188,20 +188,9 @@ lemma add_ne_top_iff_ne_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤
 lemma add_ne_top_iff_ne_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
     x + y ≠ ⊤ ↔ y ≠ ⊤ := add_comm x y ▸ add_ne_top_iff_ne_top_left hx hx'
 
-@[deprecated (since := "2025-08-14")] alias add_ne_top_iff_of_ne_bot := add_ne_top_iff_ne_top₂
-
 lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ := by
   induction x <;> simp [EReal.add_ne_top_iff_ne_top₂, hy, hy']
-
-/-- We do not have a notion of `LinearOrderedAddCommMonoidWithBot` but we can at least make
-the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
-instance : LinearOrderedAddCommMonoidWithTop ERealᵒᵈ where
-  le_top := by simp
-  top_add' := by
-    rw [OrderDual.forall]
-    intro x
-    rw [← OrderDual.toDual_bot, ← toDual_add, bot_add, OrderDual.toDual_bot]
 
 /-! ### Negation -/
 
@@ -383,16 +372,20 @@ lemma sub_self {x : EReal} (h_top : x ≠ ⊤) (h_bot : x ≠ ⊥) : x - x = 0 :
 lemma sub_self_le_zero {x : EReal} : x - x ≤ 0 := by
   cases x <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sub_nonneg {x y : EReal} (h_top : x ≠ ⊤ ∨ y ≠ ⊤) (h_bot : x ≠ ⊥ ∨ y ≠ ⊥) :
     0 ≤ x - y ↔ y ≤ x := by
   cases x <;> cases y <;> simp_all [← EReal.coe_sub]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sub_nonpos {x y : EReal} : x - y ≤ 0 ↔ x ≤ y := by
   cases x <;> cases y <;> simp [← EReal.coe_sub]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sub_pos {x y : EReal} : 0 < x - y ↔ y < x := by
   cases x <;> cases y <;> simp [← EReal.coe_sub]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sub_neg {x y : EReal} (h_top : x ≠ ⊤ ∨ y ≠ ⊤) (h_bot : x ≠ ⊥ ∨ y ≠ ⊥) :
     x - y < 0 ↔ x < y := by
   cases x <;> cases y <;> simp_all [← EReal.coe_sub]
@@ -449,6 +442,7 @@ lemma sub_add_cancel_right {a : EReal} {b : Real} : b - (a + b) = -a := by
 lemma sub_add_cancel_left {a : EReal} {b : Real} : b - (b + a) = -a := by
   rw [add_comm, sub_add_cancel_right]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_sub_iff_add_le {a b c : EReal} (hb : b ≠ ⊥ ∨ c ≠ ⊥) (ht : b ≠ ⊤ ∨ c ≠ ⊤) :
     a ≤ c - b ↔ a + b ≤ c := by
   induction b with
@@ -503,11 +497,13 @@ lemma sub_lt_of_lt_add' {a b c : EReal} (h : a < b + c) : a - b < c :=
 
 /-! ### Addition and order -/
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_of_forall_lt_iff_le {x y : EReal} : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
   refine ⟨fun h ↦ WithBot.le_of_forall_lt_iff_le.1 ?_, fun h _ x_z ↦ h.trans x_z.le⟩
   rw [WithTop.forall]
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ge_of_forall_gt_iff_ge {x y : EReal} : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
   refine ⟨fun h ↦ WithBot.ge_of_forall_gt_iff_ge.1 ?_, fun h _ x_z ↦ x_z.le.trans h⟩
   rw [WithTop.forall]
@@ -643,6 +639,7 @@ instance : NoZeroDivisors EReal where
     · rcases lt_or_gt_of_ne h.2 with (h | h)
         <;> simp [EReal.top_mul_of_pos, EReal.top_mul_of_neg, h]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_pos_iff {a b : EReal} : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
   induction a, b using EReal.induction₂_symm with
   | symm h => simp [EReal.mul_comm, h, and_comm]
@@ -729,6 +726,7 @@ lemma mul_nonpos_iff {a b : EReal} : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a �
   nth_rw 1 [← neg_zero]
   rw [EReal.le_neg, ← mul_neg, mul_nonneg_iff, EReal.neg_le, EReal.le_neg, neg_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_eq_top (a b : EReal) :
     a * b = ⊤ ↔ (a = ⊥ ∧ b < 0) ∨ (a < 0 ∧ b = ⊥) ∨ (a = ⊤ ∧ 0 < b) ∨ (0 < a ∧ b = ⊤) := by
   induction a, b using EReal.induction₂_symm with
@@ -751,7 +749,7 @@ lemma mul_ne_top (a b : EReal) :
   rw [ne_eq, mul_eq_top]
   -- push the negation while keeping the disjunctions, that is converting `¬(p ∧ q)` into `¬p ∨ ¬q`
   -- rather than `p → ¬q`, since we already have disjunctions in the rhs
-  set_option push_neg.use_distrib true in push_neg
+  push_neg +distrib
   rfl
 
 lemma mul_eq_bot (a b : EReal) :
@@ -763,7 +761,7 @@ lemma mul_eq_bot (a b : EReal) :
 lemma mul_ne_bot (a b : EReal) :
     a * b ≠ ⊥ ↔ (a ≠ ⊥ ∨ b ≤ 0) ∧ (a ≤ 0 ∨ b ≠ ⊥) ∧ (a ≠ ⊤ ∨ 0 ≤ b) ∧ (0 ≤ a ∨ b ≠ ⊤) := by
   rw [ne_eq, mul_eq_bot]
-  set_option push_neg.use_distrib true in push_neg
+  push_neg +distrib
   rfl
 
 /-- `EReal.toENNReal` is multiplicative. For the version with the nonnegativity

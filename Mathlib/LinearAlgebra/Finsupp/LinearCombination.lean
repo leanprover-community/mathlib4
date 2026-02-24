@@ -136,6 +136,11 @@ theorem range_linearCombination : LinearMap.range (linearCombination R v) = span
     use single i 1
     simp [hi]
 
+theorem _root_.span_range_eq_top_iff_surjective_finsuppLinearCombination :
+    Submodule.span R (Set.range v) = ⊤ ↔
+      Function.Surjective (Finsupp.linearCombination R v) := by
+  rw [← LinearMap.range_eq_top, range_linearCombination]
+
 theorem lmapDomain_linearCombination (f : α → α') (g : M →ₗ[R] M') (h : ∀ i, g (v i) = v' (f i)) :
     (linearCombination R v').comp (lmapDomain R R f) = g.comp (linearCombination R v) := by
   ext l
@@ -215,10 +220,9 @@ theorem linearCombination_linearCombination {α β : Type*} (A : α → M) (B : 
   | add f₁ f₂ h₁ h₂ => simp [sum_add_index, h₁, h₂, add_smul]
   | single => simp [sum_single_index, sum_smul_index, smul_sum, mul_smul]
 
-theorem linearCombination_smul [DecidableEq α] [Module R S] [Module S M] [IsScalarTower R S M]
-    {w : α' → S} :
+theorem linearCombination_smul [Module R S] [Module S M] [IsScalarTower R S M] {w : α' → S} :
     linearCombination R (fun i : α × α' ↦ w i.2 • v i.1) = (linearCombination S v).restrictScalars R
-      ∘ₗ mapRange.linearMap (linearCombination R w) ∘ₗ (finsuppProdLEquiv R).toLinearMap := by
+      ∘ₗ mapRange.linearMap (linearCombination R w) ∘ₗ (curryLinearEquiv R).toLinearMap := by
   ext; simp
 
 @[simp]
@@ -340,6 +344,11 @@ theorem Fintype.range_linearCombination :
   rw [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearMap.range_comp,
       LinearEquiv.range, Submodule.map_top, Finsupp.range_linearCombination]
 
+theorem span_range_eq_top_iff_surjective_fintypeLinearCombination :
+    Submodule.span R (Set.range v) = ⊤ ↔
+      Function.Surjective (Fintype.linearCombination R v) := by
+  rw [← LinearMap.range_eq_top, Fintype.range_linearCombination]
+
 /-- `Fintype.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
 in `f`. This variant of `Finsupp.linearCombination` is defined on fintype indexed vectors.
 
@@ -440,6 +449,7 @@ lemma Submodule.mem_span_iff_exists_finset_subset {s : Set M} {x : M} :
   mpr := by
     rintro ⟨n, t, hts, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span <| hts hx
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
     x ∈ span R s ↔ ∃ f : M → R, f.support ⊆ s ∧ ∑ a ∈ s, f a • a = x where
   mp := by

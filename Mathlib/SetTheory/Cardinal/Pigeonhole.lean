@@ -18,7 +18,7 @@ This file proves variants of the infinite pigeonhole principle.
 Generalize universes of results.
 -/
 
-@[expose] public section
+public section
 
 open Order Ordinal Set
 

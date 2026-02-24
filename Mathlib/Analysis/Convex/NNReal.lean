@@ -6,7 +6,9 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Module.Field
+public import Mathlib.Data.NNReal.Defs
 
 /-!
 # Specific lemmas about convexity over `ℝ≥0`
@@ -15,7 +17,7 @@ This file collects some specific results about convexity over the ring `ℝ≥0`
 Expand as needed.
 -/
 
-@[expose] public section
+public section
 
 open Set
 open scoped NNReal
@@ -34,6 +36,7 @@ protected lemma segment_eq_uIcc {x y : ℝ≥0} :
     segment ℝ≥0 x y = uIcc x y :=
   Nonneg.segment_eq_uIcc
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma convex_iff {M : Type*} [AddCommMonoid M] [Module ℝ M] {s : Set M} :
     Convex ℝ≥0 s ↔ Convex ℝ s := by
   refine ⟨fun H ↦ ?_, Convex.lift ℝ≥0⟩
