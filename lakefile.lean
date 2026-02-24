@@ -6,7 +6,7 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require batteries from git "https://github.com/riccardobrasca/batteries" @ "v1.1.0"
+require batteries from git "https://github.com/riccardobrasca/batteries" @ "v4.29.0-rc2-less-choice"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.89" -- ProofWidgets should always be pinned to a specific version
