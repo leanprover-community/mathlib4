@@ -186,6 +186,7 @@ theorem degrees_map_of_injective [CommSemiring S] (p : MvPolynomial σ R) {f : R
     (hf : Injective f) : (map f p).degrees = p.degrees := by
   simp only [degrees, MvPolynomial.support_map_of_injective _ hf]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degrees_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f) :
     degrees (rename f p) = (degrees p).map f := by
   classical
@@ -209,6 +210,7 @@ def degreeOf (n : σ) (p : MvPolynomial σ R) : ℕ :=
 theorem degreeOf_def [DecidableEq σ] (n : σ) (p : MvPolynomial σ R) :
     p.degreeOf n = p.degrees.count n := by rw [degreeOf]; convert rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degreeOf_eq_sup (n : σ) (f : MvPolynomial σ R) :
     degreeOf n f = f.support.sup fun m => m n := by
   classical
@@ -257,6 +259,7 @@ lemma degreeOf_monomial_eq (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
     (monomial s a).degreeOf i = s i := by
   classical rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Note that `degreeOf_prod_eq` proves equality with `NoZeroDivisors R` and nonzero polynomials.
 -/
@@ -287,15 +290,17 @@ theorem degreeOf_pow_le (i : σ) (p : MvPolynomial σ R) (n : ℕ) :
     degreeOf i (p ^ n) ≤ n * degreeOf i p := by
   simpa using degreeOf_prod_le i (Finset.range n) (fun _ => p)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degreeOf_mul_X_of_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
     degreeOf i (f * X j) = degreeOf i f := by
   classical
   simp only [degreeOf_eq_sup i, support_mul_X, Finset.sup_map]
   congr
   ext
-  simp only [Finsupp.single, add_eq_left, addRightEmbedding_apply, coe_mk,
+  simp only [Finsupp.single, addRightEmbedding_apply, coe_mk,
     Pi.add_apply, comp_apply, Finsupp.coe_add, Pi.single_eq_of_ne h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degreeOf_mul_X_self (j : σ) (f : MvPolynomial σ R) :
     degreeOf j (f * X j) ≤ degreeOf j f + 1 := by
   classical
@@ -330,6 +335,7 @@ theorem degreeOf_mul_C_le (p : MvPolynomial σ R) (i : σ) (c : R) :
   convert Multiset.count_le_of_le i degrees_mul_le
   simp only [degrees_C, add_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degreeOf_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f)
     (i : σ) : degreeOf (f i) (rename f p) = degreeOf i p := by
   classical
@@ -561,6 +567,7 @@ lemma degreesLE_add : degreesLE R σ (s + t) = degreesLE R σ s * degreesLE R σ
     (Nat.eq_zero_of_le_zero (x.totalDegree_le_degrees_card.trans (by simp [hx])))
   exact ⟨x.coeff 0, by simp [Algebra.smul_def, ← this]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (s) in
 lemma degreesLE_nsmul : ∀ n, degreesLE R σ (n • s) = degreesLE R σ s ^ n
   | 0 => by simp

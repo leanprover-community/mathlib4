@@ -1027,6 +1027,7 @@ variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrdere
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]
 variable [NonnegSpectrumClass R A]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cfcHom_le_iff {a : A} (ha : p a) {f g : C(spectrum R a, R)} :
     cfcHom ha f ≤ cfcHom ha g ↔ f ≤ g := by
   rw [← sub_nonneg, ← map_sub, cfcHom_nonneg_iff, sub_nonneg]

@@ -345,6 +345,7 @@ section ContinuousSMul
 
 variable [TopologicalSpace E] [ContinuousSMul ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 open Filter in
 theorem interior_subset_gauge_lt_one (s : Set E) : interior s ⊆ { x | gauge s x < 1 } := by
   intro x hx

@@ -46,6 +46,7 @@ noncomputable def indToCoindAux (g : G) : A →ₗ[k] (G → A) :=
 
 variable {A}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma indToCoindAux_self (g : G) (a : A) :
     indToCoindAux A g a g = a := by
@@ -57,6 +58,7 @@ lemma indToCoindAux_of_not_rel (g g₁ : G) (a : A) (h : ¬(QuotientGroup.rightR
     indToCoindAux A g a g₁ = 0 := by
   simp [indToCoindAux, dif_neg h]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma indToCoindAux_mul_snd (g g₁ : G) (a : A) (s : S) :
     indToCoindAux A g a (s * g₁) = A.ρ s (indToCoindAux A g a g₁) := by
@@ -67,6 +69,7 @@ lemma indToCoindAux_mul_snd (g g₁ : G) (a : A) (s : S) :
   · rw [indToCoindAux_of_not_rel _ _ _ h, indToCoindAux_of_not_rel, map_zero]
     exact mt (fun ⟨s₁, hs₁⟩ => ⟨s⁻¹ * s₁, by simp_all [S.1.smul_def, mul_assoc]⟩) h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma indToCoindAux_mul_fst (g₁ g₂ : G) (a : A) (s : S) :
      indToCoindAux A (s * g₁) (A.ρ s a) g₂ = indToCoindAux A g₁ a g₂ := by
@@ -79,6 +82,7 @@ lemma indToCoindAux_mul_fst (g₁ g₂ : G) (a : A) (s : S) :
   · rw [indToCoindAux_of_not_rel (h := h), indToCoindAux_of_not_rel]
     exact mt (fun ⟨s₁, hs₁⟩ => ⟨s₁ * s, by simp_all [S.1.smul_def, mul_assoc]⟩) h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma indToCoindAux_snd_mul_inv (g₁ g₂ g₃ : G) (a : A) :
     indToCoindAux A g₁ a (g₂ * g₃⁻¹) = indToCoindAux A (g₁ * g₃) a g₂ := by
@@ -92,12 +96,14 @@ lemma indToCoindAux_fst_mul_inv (g₁ g₂ g₃ : G) (a : A) :
     indToCoindAux A (g₁ * g₂⁻¹) a g₃ = indToCoindAux A g₁ a (g₃ * g₂) := by
   simpa using (indToCoindAux_snd_mul_inv g₁ g₃ g₂⁻¹ a).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma indToCoindAux_comm {A B : Rep k S} (f : A ⟶ B) (g₁ g₂ : G) (a : A) :
     indToCoindAux B g₁ (f.hom a) g₂ = f.hom (indToCoindAux A g₁ a g₂) := by
   rcases em ((QuotientGroup.rightRel S).r g₂ g₁) with ⟨s, rfl⟩ | h
   · simp [S.1.smul_def, hom_comm_apply]
   · simp [indToCoindAux_of_not_rel (h := h)]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- Let `S ≤ G` be a subgroup and `A` a `k`-linear `S`-representation. This is the `k`-linear map
 `Ind_S^G(A) →ₗ[k] Coind_S^G(A)` sending `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`. -/
@@ -110,6 +116,7 @@ variable [S.FiniteIndex]
 
 attribute [local instance] Subgroup.fintypeQuotientOfFiniteIndex
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
 `S`, and `A` a `k`-linear `S`-representation. This is the `k`-linear map
@@ -125,6 +132,7 @@ noncomputable def coindToInd : coind S.subtype A →ₗ[k] ind S.subtype A where
   map_smul' _ _ := by simpa [Finset.smul_sum] using Finset.sum_congr rfl fun z _ =>
     Quotient.inductionOn z fun _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 omit [DecidableRel (QuotientGroup.rightRel S)] in
 lemma coindToInd_of_support_subset_orbit (g : G) (f : coind S.subtype A)
     (hx : f.1.support ⊆ MulAction.orbit S g) :
@@ -142,6 +150,7 @@ lemma coindToInd_of_support_subset_orbit (g : G) (f : coind S.subtype A)
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
 `S`, and `A` a `k`-linear `S`-representation. This is an isomorphism `Ind_S^G(A) ≅ Coind_S^G(A)`.
 The forward map sends `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`, and the inverse sends `f : G → A` to
@@ -176,6 +185,7 @@ noncomputable def indCoindIso : ind S.subtype A ≅ coind S.subtype A :=
 
 variable (k S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a finite index subgroup `S ≤ G`, this is a natural isomorphism between the `Ind_S^G` and
 `Coind_G^S` functors `Rep k S ⥤ Rep k G`. -/
 @[simps! hom_app inv_app]
@@ -234,6 +244,7 @@ theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
     (coindFunctor k S.subtype).IsLeftAdjoint :=
   open scoped Classical in (coindResAdjunction k S).isLeftAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coindResAdjunction_counit_app (B : Rep k G) :
     (coindResAdjunction k S).counit.app B = (indCoindIso <| (Action.res _ S.subtype).obj B).inv ≫
@@ -241,6 +252,7 @@ lemma coindResAdjunction_counit_app (B : Rep k G) :
   simp [coindResAdjunction, Adjunction.ofNatIsoLeft, Adjunction.equivHomsetLeftOfNatIso,
     indResAdjunction]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coindResAdjunction_unit_app :
     (coindResAdjunction k S).unit.app A = (indResAdjunction k S.subtype).unit.app A ≫

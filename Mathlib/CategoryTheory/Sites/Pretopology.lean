@@ -176,6 +176,7 @@ alias Pretopology.mem_ofGrothendieck := GrothendieckTopology.mem_toPretopology
 
 namespace Pretopology
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The trivial pretopology, in which the coverings are exactly singleton isomorphisms. This topology is
 also known as the indiscrete, coarse, or chaotic topology. -/
@@ -218,9 +219,14 @@ instance orderBot : OrderBot (Pretopology C) where
     rintro ⟨Y, f, hf, rfl⟩
     exact K.has_isos f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The trivial pretopology induces the trivial Grothendieck topology. -/
 theorem toGrothendieck_bot : toGrothendieck (C := C) ⊥ = ⊥ :=
   (gi C).gc.l_bot
+
+@[gcongr]
+lemma toGrothendieck_mono {J K : Pretopology C} (h : J ≤ K) : J.toGrothendieck ≤ K.toGrothendieck :=
+  fun _ _ ⟨R, hR, hle⟩ ↦ ⟨R, h _ hR, hle⟩
 
 instance : InfSet (Pretopology C) where
   sInf T := {

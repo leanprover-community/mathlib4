@@ -279,6 +279,15 @@ lemma IsLittleO.add_isTheta {f₁ f₂ : α → E'} {g : α → F}
     (ho : f₁ =o[l] g) (hΘ : f₂ =Θ[l] g) : (f₁ + f₂) =Θ[l] g :=
   add_comm f₁ f₂ ▸ hΘ.add_isLittleO ho
 
+theorem isTheta_of_div_tendsto_nhds_ne_zero {c : 𝕜} {f g : α → 𝕜}
+    (h : Tendsto (fun x ↦ g x / f x) l (𝓝 c)) (hc : c ≠ 0) :
+    f =Θ[l] g := by
+  refine ⟨isBigO_of_div_tendsto_nhds_of_ne_zero h hc,
+    isBigO_of_div_tendsto_nhds_of_ne_zero ?_ (inv_ne_zero hc)⟩
+  convert h.inv₀ hc using 1
+  ext
+  simp
+
 section
 
 variable {f : α × β → E} {g : α × β → F} {l' : Filter β}
