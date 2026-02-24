@@ -150,7 +150,6 @@ lemma IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff [DecidableEq (Su
 end Submodule
 
 lemma Ideal.IsMinimalPrimaryDecomposition.minimalPrimes_subset_image_radical
-    [DecidableEq (Ideal R)]
     {I : Ideal R} {t : Finset (Ideal R)} (ht : I.IsMinimalPrimaryDecomposition t) :
     I.minimalPrimes ⊆ radical '' t := by
   intro p hp
