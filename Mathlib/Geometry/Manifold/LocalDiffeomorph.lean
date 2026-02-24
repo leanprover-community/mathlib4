@@ -370,6 +370,7 @@ variable {f : M → N} {s : Set M} {x : M}
 
 variable {I I' J n}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≠ 0`, the differential `df_x`
 is a linear equivalence. -/
 noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv

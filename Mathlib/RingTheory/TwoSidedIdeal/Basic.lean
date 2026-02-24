@@ -167,6 +167,7 @@ def mk' (carrier : Set R)
         rw [show a + c - (b + d) = (a - b) + (c - d) by abel]
         exact add_mem h1 h2 }
 
+set_option backward.whnf.reducibleClassField false in
 @[simp]
 lemma mem_mk' (carrier : Set R) (zero_mem add_mem neg_mem mul_mem_left mul_mem_right) (x : R) :
     x ∈ mk' carrier zero_mem add_mem neg_mem mul_mem_left mul_mem_right ↔ x ∈ carrier := by

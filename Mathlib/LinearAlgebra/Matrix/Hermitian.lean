@@ -211,8 +211,6 @@ lemma IsHermitian.commute_iff [Fintype n] {A B : Matrix n n α}
     (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian :=
   hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
 
-@[deprecated (since := "2025-08-13")] alias commute_iff := IsHermitian.commute_iff
-
 end NonUnitalSemiring
 
 section Semiring

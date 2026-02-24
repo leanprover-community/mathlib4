@@ -17,6 +17,7 @@ public section
 
 open TensorProduct
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `I` is a finitely generated nilpotent ideal of an `R`-algebra `S`, and `T = S / I` is
 `R`-finite, then `S` is also `R`-finite. -/
 lemma Module.finite_of_surjective_of_ker_le_nilradical
