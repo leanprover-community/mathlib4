@@ -91,9 +91,7 @@ lemma exists_of_trans_eq_trans {i j k : 𝒰.I₀} (fi : i ⟶ k) (fj : j ⟶ k)
   have : 𝒰.f i xi = 𝒰.f j xj := by
     rw [← 𝒰.trans_map fi, ← 𝒰.trans_map fj, Hom.comp_base, Hom.comp_base,
       ConcreteCategory.comp_apply, h, ConcreteCategory.comp_apply]
-  obtain ⟨z, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback xi xj this
-  obtain ⟨l, gi, gj, y, rfl⟩ := 𝒰.exists_lift_trans_eq z
-  refine ⟨l, gi, gj, y, ?_, ?_⟩ <;> simp [← Scheme.Hom.comp_apply]
+  exact exists_of_f_eq_f _ _ _ this
 
 lemma property_trans {i j : 𝒰.I₀} (hij : i ⟶ j) : P (𝒰.trans hij) :=
   LocallyDirected.property_trans hij

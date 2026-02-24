@@ -686,9 +686,7 @@ theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
   · exact isGLB_sInf' hs
   · exfalso
     apply hs
-    use ⊥
-    intro _ _
-    exact bot_le
+    exact OrderBot.bddBelow _
 
 noncomputable instance : CompleteLinearOrder (WithTop α) where
   __ := linearOrder

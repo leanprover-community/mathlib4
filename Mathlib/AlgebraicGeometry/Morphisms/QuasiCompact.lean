@@ -207,11 +207,7 @@ lemma compactSpace_iff_exists :
     CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f := by
   refine ⟨fun h ↦ ?_, fun ⟨R, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩⟩
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  refine ⟨Γ(∐ 𝒰.X, ⊤), (∐ 𝒰.X).isoSpec.inv ≫ Sigma.desc 𝒰.f, ?_⟩
-  refine Function.Surjective.comp (g := Sigma.desc 𝒰.f)
-    (fun x ↦ ?_) (∐ 𝒰.X).isoSpec.inv.surjective
-  obtain ⟨y, hy⟩ := 𝒰.covers x
-  exact ⟨Sigma.ι 𝒰.X (𝒰.idx x) y, by rw [← Scheme.Hom.comp_apply, Sigma.ι_desc, hy]⟩
+  exact ⟨Γ(∐ 𝒰.X, ⊤), (∐ 𝒰.X).isoSpec.inv ≫ Sigma.desc 𝒰.f, Surjective.surj⟩
 
 lemma isCompact_iff_exists {U : X.Opens} :
     IsCompact (U : Set X) ↔ ∃ R, ∃ f : Spec R ⟶ X, Set.range f = U := by

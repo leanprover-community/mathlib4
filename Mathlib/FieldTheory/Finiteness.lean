@@ -101,11 +101,7 @@ theorem _root_.Module.natCard_eq_pow_finrank [Module.Finite K V] :
 /-- A module over a division ring is Noetherian if and only if it is finitely generated. -/
 theorem iff_fg : IsNoetherian K V ↔ Module.Finite K V := by
   constructor
-  · intro h
-    exact
-      ⟨⟨finsetBasisIndex K V, by
-          convert (finsetBasis K V).span_eq
-          simp⟩⟩
+  · exact fun _ ↦ IsNoetherian.finite K V
   · rintro ⟨s, hs⟩
     rw [IsNoetherian.iff_rank_lt_aleph0, ← rank_top, ← hs]
     exact lt_of_le_of_lt (rank_span_le _) s.finite_toSet.lt_aleph0

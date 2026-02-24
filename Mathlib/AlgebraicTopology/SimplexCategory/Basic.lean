@@ -809,19 +809,11 @@ theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ �
 theorem eq_id_of_mono {x : SimplexCategory} (i : x ⟶ x) [Mono i] : i = 𝟙 _ := by
   suffices IsIso i by
     apply eq_id_of_isIso
-  apply isIso_of_bijective
-  dsimp
-  rw [Fintype.bijective_iff_injective_and_card i.toOrderHom, ← mono_iff_injective,
-    eq_self_iff_true, and_true]
-  infer_instance
+  exact (isIso_iff_of_mono i).mpr rfl
 
 theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ := by
   suffices IsIso i from eq_id_of_isIso _
-  apply isIso_of_bijective
-  dsimp
-  rw [Fintype.bijective_iff_surjective_and_card i.toOrderHom, ← epi_iff_surjective,
-    eq_self_iff_true, and_true]
-  infer_instance
+  exact (isIso_iff_of_epi i).mpr rfl
 
 theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by
   obtain ⟨i, θ', h⟩ := eq_σ_comp_of_not_injective θ (by

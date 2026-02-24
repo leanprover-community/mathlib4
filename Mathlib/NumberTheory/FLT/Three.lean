@@ -175,8 +175,7 @@ lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen
   · rwa [← Ideal.norm_dvd_iff (hζ.prime_norm_toInteger_sub_one_of_prime_ne_two' (by decide)),
       hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)] at hdvd
   · exact dvd_trans hζ.toInteger_sub_one_dvd_prime' ⟨x, by simp [hx]⟩
-  · rw [show a = algebraMap _ (𝓞 K) a by simp, show b = algebraMap _ (𝓞 K) b by simp]
-    exact hcoprime.map _
+  · exact IsCoprime.intCast hcoprime
   · simp only [Units.val_one, one_mul]
     exact_mod_cast h
 
@@ -283,12 +282,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides `S'.c`. -/
 lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   have hm := S'.multiplicity_lambda_c_finite
-  suffices 2 ≤ multiplicity (hζ.toInteger - 1) S'.c by
-    obtain ⟨x, hx⟩ := pow_multiplicity_dvd (hζ.toInteger - 1) S'.c
-    refine ⟨λ ^ (multiplicity (hζ.toInteger - 1) S'.c - 2) * x, ?_⟩
-    rw [← mul_assoc, ← pow_add]
-    convert hx using 3
-    simp [this]
+  suffices 2 ≤ multiplicity (hζ.toInteger - 1) S'.c from
+    (FiniteMultiplicity.pow_dvd_iff_le_multiplicity hm).mpr this
   have := lambda_pow_four_dvd_c_cube S'
   rw [pow_dvd_iff_le_emultiplicity, emultiplicity_pow hζ.zeta_sub_one_prime',
     hm.emultiplicity_eq_multiplicity] at this
