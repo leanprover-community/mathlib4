@@ -24,6 +24,7 @@ class GithubHttpError(Exception):
     def __init__(self, method: str, url: str, status: int, detail: str) -> None:
         super().__init__(f"GitHub API {method} {url} failed: HTTP {status}\n{detail}")
         self.status = status
+        self.detail = detail
 
 
 def fail(message: str) -> None:
@@ -58,7 +59,7 @@ def parse_repositories(raw: str) -> list[str]:
 
 
 def run_az_key_sign(vault_name: str, key_name: str, key_version: str, digest_b64: str) -> str:
-    """Sign a SHA-256 digest with a Key Vault key and return base64 signature."""
+    """Sign a SHA-256 digest with a Key Vault key and return encoded signature."""
 
     cmd = [
         "az",
@@ -73,10 +74,8 @@ def run_az_key_sign(vault_name: str, key_name: str, key_version: str, digest_b64
         "RS256",
         "--digest",
         digest_b64,
-        "--query",
-        "result",
         "-o",
-        "tsv",
+        "json",
     ]
     if key_version:
         cmd.extend(["--version", key_version])
@@ -88,7 +87,22 @@ def run_az_key_sign(vault_name: str, key_name: str, key_version: str, digest_b64
             f"stdout: {proc.stdout.strip()}\n"
             f"stderr: {proc.stderr.strip()}"
         )
-    return proc.stdout.strip()
+    try:
+        sign_result = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        fail(
+            "Azure Key Vault sign response was not valid JSON.\n"
+            f"stdout: {proc.stdout.strip()}\n"
+            f"stderr: {proc.stderr.strip()}"
+        )
+
+    signature = sign_result.get("result") or sign_result.get("value")
+    if not isinstance(signature, str) or not signature.strip():
+        fail(
+            "Azure Key Vault sign response did not include a signature in 'result' or 'value'.\n"
+            f"stdout: {proc.stdout.strip()}"
+        )
+    return signature.strip()
 
 
 def github_request(api_url: str, method: str, path: str, jwt: str, body: dict | None = None) -> dict:
@@ -144,6 +158,23 @@ def write_output(name: str, value: str) -> None:
         file.write(f"{name}={value}\n")
 
 
+def fail_with_jwt_decode_guidance(err: GithubHttpError, app_id: str, vault_name: str, key_name: str, key_version: str) -> None:
+    """Provide actionable hints when GitHub rejects the app JWT."""
+
+    if err.status == 401 and "could not be decoded" in err.detail.lower():
+        version_text = key_version if key_version else "<latest>"
+        fail(
+            f"{err}\n\n"
+            "GitHub rejected the app JWT. Common causes:\n"
+            "1) app-id does not match the GitHub App that owns this key.\n"
+            "2) Key Vault key/version is not the GitHub App private key currently registered in GitHub.\n"
+            "3) The selected key version is wrong (or omitted and latest is not the expected version).\n"
+            "4) The Key Vault key is not RSA or does not represent the imported GitHub App PEM key.\n\n"
+            f"Current inputs: app-id={app_id}, vault={vault_name}, key={key_name}, key-version={version_text}"
+        )
+    fail(str(err))
+
+
 def main() -> None:
     """Read inputs, mint token, and publish action outputs."""
 
@@ -181,13 +212,16 @@ def main() -> None:
 
     digest_b64 = base64.b64encode(hashlib.sha256(signing_input).digest()).decode("ascii")
     signature_from_az = run_az_key_sign(vault_name, key_name, key_version, digest_b64)
-    signature_b64url = b64url_encode(b64url_decode(signature_from_az))
+    signature_bytes = b64url_decode(signature_from_az)
+    if not signature_bytes:
+        fail("Azure Key Vault returned an empty signature.")
+    signature_b64url = b64url_encode(signature_bytes)
 
     app_jwt = f"{encoded_header}.{encoded_payload}.{signature_b64url}"
     try:
         installation_id = resolve_installation_id(api_url, app_jwt, owner)
     except GithubHttpError as err:
-        fail(str(err))
+        fail_with_jwt_decode_guidance(err, app_id, vault_name, key_name, key_version)
 
     token_payload: dict = {}
     repositories = parse_repositories(repositories_raw)
@@ -203,7 +237,7 @@ def main() -> None:
             token_payload,
         )
     except GithubHttpError as err:
-        fail(str(err))
+        fail_with_jwt_decode_guidance(err, app_id, vault_name, key_name, key_version)
     token = token_response.get("token")
     if not token:
         fail("GitHub API response did not include a token.")
