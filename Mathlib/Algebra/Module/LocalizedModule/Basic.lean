@@ -120,7 +120,7 @@ theorem induction_on₂ {β : LocalizedModule S M → LocalizedModule S M → Pr
 -/
 def liftOn {α : Type*} (x : LocalizedModule S M) (f : M × S → α)
     (wd : ∀ (p p' : M × S), p ≈ p' → f p = f p') : α :=
-  Quotient.liftOn x f (by simpa only [r.setoid, ← oreEqv_eq_r S M] using wd)
+  Quotient.liftOn x f (by simpa +instances only [r.setoid, ← oreEqv_eq_r S M] using wd)
 
 theorem liftOn_mk {α : Type*} {f : M × S → α} (wd : ∀ (p p' : M × S), p ≈ p' → f p = f p')
     (m : M) (s : S) : liftOn (mk m s) f wd = f ⟨m, s⟩ := by convert Quotient.liftOn_mk f wd ⟨m, s⟩
@@ -130,7 +130,7 @@ theorem liftOn_mk {α : Type*} {f : M × S → α} (wd : ∀ (p p' : M × S), p 
 -/
 def liftOn₂ {α : Type*} (x y : LocalizedModule S M) (f : M × S → M × S → α)
     (wd : ∀ (p q p' q' : M × S), p ≈ p' → q ≈ q' → f p q = f p' q') : α :=
-  Quotient.liftOn₂ x y f (by simpa only [r.setoid, ← oreEqv_eq_r S M] using wd)
+  Quotient.liftOn₂ x y f (by simpa +instances only [r.setoid, ← oreEqv_eq_r S M] using wd)
 
 theorem liftOn₂_mk {α : Type*} (f : M × S → M × S → α)
     (wd : ∀ (p q p' q' : M × S), p ≈ p' → q ≈ q' → f p q = f p' q') (m m' : M)
@@ -186,6 +186,7 @@ instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid
       use 1
       simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm] }
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma example_oreLocalizationInstMonoid_eq_localizedModuleInstMonoid :
     OreLocalization.instMonoid = LocalizedModule.instMonoid (A := R) (S := S) := by
   with_reducible_and_instances rfl
@@ -252,6 +253,7 @@ instance (priority := 900) {A : Type*} [CommRing A] [Algebra R A] {S : Submonoid
   { __ := inferInstanceAs (Ring (LocalizedModule S A))
     __ := inferInstanceAs (CommSemiring (LocalizedModule S A)) }
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma example_oreLocalizationInstCommRing_eq_localizedModuleInstCommRing
     {R : Type*} [CommRing R] {S : Submonoid R} :
     OreLocalization.instCommRing = (LocalizedModule.instCommRing : CommRing R[S⁻¹]) := by
@@ -453,6 +455,7 @@ noncomputable instance (priority := 900) algebra' {A : Type*} [Semiring A] [Alge
       Function.comp_apply]
     rw [mk_mul_mk, smul'_mk, Algebra.smul_def, one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma example_oreLocalizationInstAlgebra_eq_localizedModuleAlgebra' :
     OreLocalization.instAlgebra = (algebra' : Algebra R (LocalizedModule S R)) := by
   with_reducible_and_instances rfl

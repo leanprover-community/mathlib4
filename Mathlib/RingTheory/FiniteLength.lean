@@ -25,6 +25,7 @@ Finite length, Composition series
 
 variable (R : Type*) [Ring R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A module of finite length is either trivial or a simple extension of a module known
 to be of finite length. -/
 inductive IsFiniteLength : ∀ (M : Type*) [AddCommGroup M] [Module R M], Prop
@@ -36,6 +37,7 @@ attribute [nontriviality] IsFiniteLength.of_subsingleton
 
 variable {R} {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LinearEquiv.isFiniteLength (e : M ≃ₗ[R] N)
     (h : IsFiniteLength R M) : IsFiniteLength R N := by
   induction h generalizing N with
@@ -52,6 +54,7 @@ theorem exists_compositionSeries_of_isNoetherian_isArtinian [IsNoetherian R M] [
   obtain ⟨f, f0, n, hn⟩ := exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (Submodule R M)
   exact ⟨⟨n, fun i ↦ f i, fun i ↦ hn.2 i i.2⟩, f0.eq_bot, hn.1.eq_top⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isFiniteLength_of_exists_compositionSeries
     (h : ∃ s : CompositionSeries (Submodule R M), s.head = ⊥ ∧ s.last = ⊤) :
     IsFiniteLength R M :=
@@ -85,6 +88,7 @@ theorem isFiniteLength_iff_exists_compositionSeries :
     exists_compositionSeries_of_isNoetherian_isArtinian R M,
     isFiniteLength_of_exists_compositionSeries⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped IsSimpleOrder in
 theorem IsSemisimpleModule.finite_tfae [IsSemisimpleModule R M] :
     List.TFAE [Module.Finite R M, IsNoetherian R M, IsArtinian R M, IsFiniteLength R M,

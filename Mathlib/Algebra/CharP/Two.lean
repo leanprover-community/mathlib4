@@ -132,7 +132,7 @@ theorem sum_mul_self (s : Finset ι) (f : ι → R) :
 
 end CommSemiring
 
-namespace CommRing
+section CommRing
 
 variable [CommRing R] [CharP R 2] [NoZeroDivisors R]
 
@@ -145,6 +145,12 @@ theorem sq_inj {x y : R} : x ^ 2 = y ^ 2 ↔ x = y :=
   sq_injective.eq_iff
 
 end CommRing
+
+@[deprecated (since := "2026-02-05")]
+alias CommRing.sq_injective := sq_injective
+
+@[deprecated (since := "2026-02-05")]
+alias CommRing.sq_inj := sq_inj
 
 end CharTwo
 

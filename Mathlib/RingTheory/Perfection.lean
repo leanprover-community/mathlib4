@@ -424,6 +424,7 @@ theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0) :
   exact fun hprx =>
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
     preVal K v O p (x * y) = preVal K v O p x * preVal K v O p y := by
   have hx0 : x ≠ 0 := mt (by rintro rfl; rw [zero_mul]) hxy0
@@ -433,6 +434,7 @@ theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
   rw [← map_mul (Ideal.Quotient.mk (Ideal.span {↑p})) r s] at hxy0 ⊢
   rw [preVal_mk hv hx0, preVal_mk hv hy0, preVal_mk hv hxy0, map_mul, v.map_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem preVal_add (x y : ModP O p) :
     preVal K v O p (x + y) ≤ max (preVal K v O p x) (preVal K v O p y) := by
   by_cases hx0 : x = 0
@@ -519,11 +521,13 @@ def coeff (n : ℕ) : PreTilt O p →+* ModP O p := Perfection.coeff (ModP O p) 
 theorem coeff_def (n : ℕ) (x : PreTilt O p) : coeff n x = Perfection.coeff _ _ n x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_frobenius (n : ℕ) (x : PreTilt O p) :
     (coeff (n + 1) (frobenius _ p x)) = coeff n x := by
   simp [PreTilt, coeff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_iterate_frobenius (m n : ℕ) (x : PreTilt O p) :
     (coeff (m + n) ((frobenius _ p)^[n] x)) = coeff m x := by
@@ -538,11 +542,13 @@ theorem coeff_iterate_frobenius' (x : PreTilt O p) {m n : ℕ} (hmn : m ≤ n) :
 theorem coeff_pow_p (x : PreTilt O p) (n : ℕ) : coeff (n + 1) x ^ p = coeff n x :=
   Perfection.coeff_pow_p x n
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_frobeniusEquiv_symm (n : ℕ) (x : PreTilt O p) :
     (coeff n (((frobeniusEquiv _ p).symm) x)) = coeff (n + 1) x := by
   simp [PreTilt, coeff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_iterate_frobeniusEquiv_symm (m n : ℕ) (x : PreTilt O p) :
     (coeff m (((frobeniusEquiv _ p).symm^[n]) x)) = coeff (m + n) x := by
@@ -592,6 +598,7 @@ theorem valAux_eq {f : PreTilt O p} {n : ℕ} (hfn : coeff n f ≠ 0) :
   rw [ih (coeff_nat_find_add_ne_zero k), ← add_assoc, ← hx, ← coeff_pow_p, ← hx, ← map_pow,
     ModP.preVal_mk hv h1, ModP.preVal_mk hv h2, map_pow, v.map_pow, ← pow_mul, pow_succ']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem valAux_one : valAux K v O p 1 = 1 :=
   (valAux_eq (hv := hv) <| show coeff 0 1 ≠ 0 from one_ne_zero).trans <| by
     rw [pow_zero, pow_one, map_one, ← (Ideal.Quotient.mk _).map_one, ModP.preVal_mk hv,
@@ -618,6 +625,7 @@ theorem valAux_mul (f g : PreTilt O p) :
       valAux_eq hv (coeff_add_ne_zero hn 1), valAux_eq hv hfg]
   rw [map_mul] at hfg ⊢; rw [ModP.preVal_mul hv hfg, mul_pow]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem valAux_add (f g : PreTilt O p) :
     valAux K v O p (f + g) ≤ max (valAux K v O p f) (valAux K v O p g) := by
   by_cases hf : f = 0

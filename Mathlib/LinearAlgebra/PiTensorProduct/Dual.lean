@@ -28,7 +28,7 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 
 namespace PiTensorProduct
 
-open PiTensorProduct BigOperators LinearMap Module TensorProduct
+open PiTensorProduct LinearMap Module TensorProduct
 
 variable {ι : Type*}
 

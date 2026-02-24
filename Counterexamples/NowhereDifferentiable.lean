@@ -24,7 +24,7 @@ which is the original bound given by Karl Weierstrass. There is a better bound $
 ## References
 
 * [Weierstrass, Karl, *Über continuirliche Functionen eines reellen Arguments, die für keinen Werth
-des letzeren einen bestimmten Differentialquotienten besitzen*][weierstrass1895]
+  des letzeren einen bestimmten Differentialquotienten besitzen*][weierstrass1895]
 * [G. H. Hardy, *Weierstrass's Non-Differentiable Function*][hardyweierstrass]
 
 -/
@@ -77,8 +77,8 @@ theorem uniformContinuous_weierstrass {a : ℝ} (ha : a ∈ Set.Ioo 0 1) (b : �
 To show that Weierstrass function $f(x)$ is not differentiable at any $x$, we choose a sequence
 $\{x_m\}$ such that, as $m\to\infty$
  - $\{x_m\}$ converges to $x$
- - The slope $(f(x_m) - f(x)) / (x_m - x)$ grows unbounded
-which means the derivative $f'(x)$ cannot exist.
+ - The slope $(f(x_m) - f(x)) / (x_m - x)$ grows unbounded,
+   which means the derivative $f'(x)$ cannot exist.
 -/
 
 /-- The approximating sequence `seq` is defined as $x_m = \lfloor b^m x + 3/2 \rfloor / b^m$ -/
@@ -146,6 +146,7 @@ theorem weierstrass_partial {a : ℝ} (ha : 0 < a) {b : ℕ} (hab : 1 < a * b) (
   refine div_le_div_of_nonneg_right ?_ (sub_nonneg.mpr hab.le)
   simp [sub_one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The remainder has lower bound in absolute value $|B| \ge |x_m - x| 2 (ab)^m / 3$ -/
 theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x : ℝ} {m : ℕ}
     (hsum : Summable fun n ↦
@@ -247,6 +248,7 @@ theorem weierstrass_slope {a : ℝ} (ha : a ∈ Set.Ioo 0 1) {b : ℕ} (hb : Odd
   rw [sub_mul (2 / 3), mul_sub |seq b x m - x|]
   exact sub_le_sub (weierstrass_remainder ha.1 hb hsum_shift) (weierstrass_partial ha.1 hab x m)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem not_differentiableAt_weierstrass
     {a : ℝ} (ha : a ∈ Set.Ioo 0 1) {b : ℕ} (hb : Odd b) (hab : 3 / 2 * π + 1 < a * b) (x : ℝ) :
     ¬ DifferentiableAt ℝ (weierstrass a b) x := by

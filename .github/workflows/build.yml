@@ -10,6 +10,8 @@ on:
       # ignore staging and trying branches used by bors, these are handled by bors.yml
       - 'staging'
       - 'trying'
+      # ignore branches meant for experiments
+      - 'ci-dev/**'
   merge_group:
 
 concurrency:
