@@ -134,6 +134,7 @@ instance : MorphismProperty.Respects @LocallyQuasiFinite @IsOpenImmersion :=
   (RingHom.QuasiFinite.stableUnderComposition.stableUnderCompositionWithLocalizationAway
     RingHom.QuasiFinite.holdsForLocalizationAway).1
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec lemma IsLocallyArtinian.of_locallyQuasiFinite [LocallyQuasiFinite f]
     [IsLocallyArtinian Y] : IsLocallyArtinian X := by
   change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
@@ -151,6 +152,7 @@ nonrec lemma IsLocallyArtinian.of_locallyQuasiFinite [LocallyQuasiFinite f]
   have : Module.Finite R S := .of_quasiFinite
   exact .of_finite R S
 
+set_option backward.isDefEq.respectTransparency false in
 instance [LocallyQuasiFinite f] (y : Y) : IsLocallyArtinian (f.fiber y) :=
   .of_locallyQuasiFinite (pullback.snd _ _)
 
@@ -200,10 +202,12 @@ nonrec lemma IsFinite.of_locallyQuasiFinite (f : X ⟶ Y) [LocallyQuasiFinite f]
   algebraize [φ.hom]
   exact .of_quasiFinite
 
+set_option backward.isDefEq.respectTransparency false in
 instance (f : X ⟶ Y) [LocallyQuasiFinite f] [QuasiCompact f] (x : Y) :
     IsFinite (f.fiberToSpecResidueField x) :=
   .of_locallyQuasiFinite (pullback.snd _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
     (hf : ∀ x, LocallyQuasiFinite (f.fiberToSpecResidueField x)) : LocallyQuasiFinite f := by
   change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
@@ -359,6 +363,7 @@ lemma Scheme.Hom.quasiFiniteAt [LocallyQuasiFinite f] (x : X) :
     (Algebra.QuasiFinite R (Localization.AtPrime J)))
   ext; simp; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.quasiFiniteAt_comp_iff_of_isOpenImmersion
     {Z : Scheme} {f : X ⟶ Y} {g : Y ⟶ Z} {x : X} [IsOpenImmersion f] :
     (f ≫ g).QuasiFiniteAt x ↔ g.QuasiFiniteAt (f x) := by
@@ -368,7 +373,7 @@ lemma Scheme.Hom.quasiFiniteAt_comp_iff_of_isOpenImmersion
 lemma Scheme.Hom.quasiFiniteAt_comp_iff {Z : Scheme} {f : X ⟶ Y} {g : Y ⟶ Z} {x : X}
     [LocallyQuasiFinite g] :
     (f ≫ g).QuasiFiniteAt x ↔ f.QuasiFiniteAt x := by
-  simp only [QuasiFiniteAt, stalkMap_comp, CommRingCat.hom_comp]
+  simp only [QuasiFiniteAt, stalkMap_comp]
   exact RingHom.QuasiFinite.comp_iff (g.quasiFiniteAt _)
 
 lemma Scheme.Hom.quasiFiniteAt_iff {f : X ⟶ Y} {x : X} :
@@ -376,6 +381,7 @@ lemma Scheme.Hom.quasiFiniteAt_iff {f : X ⟶ Y} {x : X} :
   rw [← SpecMap_stalkMap_fromSpecStalk, LocallyQuasiFinite.comp_iff,
     HasRingHomProperty.Spec_iff (P := @LocallyQuasiFinite), QuasiFiniteAt]
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
     {f : X ⟶ Y} [LocallyOfFiniteType f] {x : X} :
     f.QuasiFiniteAt x ↔ IsOpen {f.asFiber x} := by

@@ -59,6 +59,7 @@ def functorialityRightAdjoint : Cocone (K ⋙ F) ⥤ Cocone K :=
 
 attribute [local simp] functorialityRightAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unit for the adjunction for `Cocones.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
 Auxiliary definition for `functorialityAdjunction`.
@@ -68,6 +69,7 @@ def functorialityUnit :
     𝟭 (Cocone K) ⟶ Cocones.functoriality _ F ⋙ functorialityRightAdjoint adj K where
   app c := { hom := adj.unit.app c.pt }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit for the adjunction for `Cocones.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
 Auxiliary definition for `functorialityAdjunction`.
@@ -77,6 +79,7 @@ def functorialityCounit :
     functorialityRightAdjoint adj K ⋙ Cocones.functoriality _ F ⟶ 𝟭 (Cocone (K ⋙ F)) where
   app c := { hom := adj.counit.app c.pt }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Cocones.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)` is a left adjoint. -/
 def functorialityAdjunction : Cocones.functoriality K F ⊣ functorialityRightAdjoint adj K where
   unit := functorialityUnit adj K
@@ -169,6 +172,7 @@ def functorialityLeftAdjoint : Cone (K ⋙ G) ⥤ Cone K :=
 
 attribute [local simp] functorialityLeftAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unit for the adjunction for `Cones.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
 
 Auxiliary definition for `functorialityAdjunction'`.
@@ -178,6 +182,7 @@ def functorialityUnit' :
     𝟭 (Cone (K ⋙ G)) ⟶ functorialityLeftAdjoint adj K ⋙ Cones.functoriality _ G where
   app c := { hom := adj.unit.app c.pt }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit for the adjunction for `Cones.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
 
 Auxiliary definition for `functorialityAdjunction'`.
@@ -187,6 +192,7 @@ def functorialityCounit' :
     Cones.functoriality _ G ⋙ functorialityLeftAdjoint adj K ⟶ 𝟭 (Cone K) where
   app c := { hom := adj.counit.app c.pt }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Cones.functoriality K G : Cone K ⥤ Cone (K ⋙ G)` is a right adjoint. -/
 def functorialityAdjunction' : functorialityLeftAdjoint adj K ⊣ Cones.functoriality K G where
   unit := functorialityUnit' adj K
@@ -262,6 +268,7 @@ theorem has_limits_of_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimitsOfSi
 
 end PreservationLimits
 
+set_option backward.isDefEq.respectTransparency false in
 /-- auxiliary construction for `coconesIso` -/
 @[simp]
 def coconesIsoComponentHom {J : Type u} [Category.{v} J] {K : J ⥤ C} (Y : D)
@@ -304,6 +311,7 @@ variable {C : Type u₁} [Category.{v₀} C] {D : Type u₂} [Category.{v₀} D]
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
+set_option backward.isDefEq.respectTransparency false in
 -- Note: this is natural in K, but we do not yet have the tools to formulate that.
 /-- When `F ⊣ G`,
 the functor associating to each `Y` the cocones over `K ⋙ F` with cone point `Y`
@@ -316,6 +324,7 @@ def coconesIso {J : Type u} [Category.{v} J] {K : J ⥤ C} :
     { hom := TypeCat.ofHom ⟨coconesIsoComponentHom adj Y⟩
       inv := TypeCat.ofHom ⟨coconesIsoComponentInv adj Y⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 -- Note: this is natural in K, but we do not yet have the tools to formulate that.
 /-- When `F ⊣ G`,
 the functor associating to each `X` the cones over `K` with cone point `F.op.obj X`

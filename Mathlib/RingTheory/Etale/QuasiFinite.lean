@@ -33,6 +33,9 @@ section BijectiveResidueField
 variable {R R' S : Type*} [CommRing R] [CommRing R'] [CommRing S] [Algebra R R'] [Algebra R S]
     {p : Ideal R} {q : Ideal R'} [p.IsPrime] [q.IsPrime] [q.LiesOver p]
 
+#adaptation_note /-- The maxHeartbeats bump is required after leanprover/lean4#12564. -/
+set_option backward.isDefEq.respectTransparency false in
+set_option synthInstance.maxHeartbeats 40000 in -- see adaptation note
 /-- If `q` is a prime of `R'` lying over `p`, a prime of `R`, such that `κ(q) = κ(p)`, then
 the fiber of `R' → R' ⊗[R] S` over `q` is in bijection with the fiber of `R → S` over `p`. -/
 noncomputable
@@ -45,6 +48,7 @@ def Ideal.fiberIsoOfBijectiveResidueField
   (PrimeSpectrum.primesOverOrderIsoFiber ..).trans <|
     (PrimeSpectrum.comapEquiv e.toRingEquiv).trans (PrimeSpectrum.primesOverOrderIsoFiber ..).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.comap_fiberIsoOfBijectiveResidueField_symm
     (H : Function.Bijective (Ideal.ResidueField.mapₐ p q (Algebra.ofId _ _) (q.over_def p)))
     (Q : p.primesOver S) :
@@ -83,6 +87,7 @@ universe u v
 variable {R : Type u} {S : Type v} {T : Type*}
   [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `f : S →ₐ[R] T` is an `R`-algebra homomorphism with `S` integral and `T` of finite type,
 such that the induced map `S[1/g] → T[1/g]` is surjective for some `g : S`.
 Then for any prime `p` of `R` such that `1 ⊗ₜ g` is invertible in `κ(p) ⊗ S`,
@@ -138,6 +143,7 @@ lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
     refine RingHom.finiteType_algebraMap.mpr ?_
     exact .of_restrictScalars_finiteType R _ _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance high] Algebra.TensorProduct.leftAlgebra IsScalarTower.right
   DivisionRing.instIsArtinianRing in
 /-- A variant of `Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver` that also gives you
@@ -196,6 +202,9 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     exact H (Ideal.mul_mem_left _ (s₂ ^ m) this)
   · rw [map_pow]; exact Ideal.notMem_of_isUnit _ (.pow _ (IsLocalization.Away.algebraMap_isUnit _))
 
+#adaptation_note /-- The maxHeartbeats bump is required after leanprover/lean4#12564. -/
+set_option backward.isDefEq.respectTransparency false in
+set_option maxHeartbeats 400000 in -- see adaptation note
 lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
     {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q] :
@@ -291,6 +300,9 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
       (P''.over_def P)).comp_algebraMap, ← Polynomial.map_map, ← ha']
     simp
 
+#adaptation_note /-- The maxHeartbeats bump is required after leanprover/lean4#12564. -/
+set_option backward.isDefEq.respectTransparency false in
+set_option maxHeartbeats 400000 in -- see adaptation note
 lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
     {R S R' R'' : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
     [CommRing R'] [Algebra R R'] [CommRing R''] [Algebra R R''] [Algebra R'' S]
@@ -363,6 +375,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
   simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower,
     Algebra.ofId_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `S` be a finite type `R`-algebra, and `q` a prime lying over `p` such that `S` is quasi-finite
 at `q`.

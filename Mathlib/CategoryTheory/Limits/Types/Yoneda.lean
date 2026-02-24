@@ -41,6 +41,7 @@ def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
         exact (s.property f).symm }
   invFun τ := ⟨τ.app, fun {j j'} f => by simpa using (τ.naturality f).symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Sections of `F.op ⋙ yoneda.obj X` identify to natural
 transformations `F ⟶ (const J).obj X`. -/
 @[deprecated "No replacement" (since := "2026-02-24")]
@@ -78,6 +79,16 @@ macro (name := aesop_concrete_cat) "aesop_concrete_cat" : tactic => do
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`. -/
 @[simps]
 noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
+    limit (F ⋙ coyoneda.obj (op X)) ≅ ((const J).obj X ⟶ F) :=
+  ((Types.limitEquivSections _).trans (compCoyonedaSectionsEquiv F X)).toIso
+
+set_option backward.isDefEq.respectTransparency false in
+/-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
+    naturally in `X`. -/
+@[simps!]
+noncomputable def coyonedaCompLimIsoCones (F : J ⥤ C) :
+    coyoneda ⋙ (whiskeringLeft _ _ _).obj F ⋙ lim ≅ F.cones :=
+  NatIso.ofComponents (fun X => limitCompCoyonedaIsoCone F X.unop)
     limit (F ⋙ coyoneda.obj (op X)) ≅ TypeCat.of ((const J).obj X ⟶ F) where
   hom := TypeCat.ofHom ⟨fun a ↦ {
     app j := limit.π (F ⋙ coyoneda.obj (op X)) j a
@@ -103,6 +114,16 @@ noncomputable def whiskeringLimYonedaIsoCones : whiskeringLeft _ _ _ ⋙
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`. -/
 @[simps]
 noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
+    limit (F.op ⋙ yoneda.obj X) ≅ (F ⟶ (const J).obj X) :=
+  ((Types.limitEquivSections _).trans (opCompYonedaSectionsEquiv F X)).toIso
+
+set_option backward.isDefEq.respectTransparency false in
+/-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
+    naturally in `X`. -/
+@[simps!]
+noncomputable def yonedaCompLimIsoCocones (F : J ⥤ C) :
+    yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙ lim ≅ F.cocones :=
+  NatIso.ofComponents (limitCompYonedaIsoCocone F)
     limit (F.op ⋙ yoneda.obj X) ≅ TypeCat.of (F ⟶ (const J).obj X) where
   hom := TypeCat.ofHom ⟨fun a ↦ {
     app j := limit.π (F.op ⋙ yoneda.obj X) ⟨j⟩ a

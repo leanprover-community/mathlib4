@@ -519,7 +519,6 @@ private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { 
       fun b h => trans_trichotomous_left (IH b h).2 (f.map_rel_iff.2 h)
     ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, H⟩ H⟩
 
-set_option backward.privateInPublic true in
 private theorem collapseF_lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
     ∀ {a'}, r a' a → s (collapseF f a') (collapseF f a) := by
   change _ ∈ { b | ∀ a', r a' a → s (collapseF f a') b }
@@ -533,12 +532,11 @@ private theorem collapseF_not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
   dsimp only
   exact WellFounded.not_lt_min _ _ _ h
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Construct an initial segment embedding `r ≼i s` by "filling in the gaps". That is, each
 subsequent element in `α` is mapped to the least element in `β` that hasn't been used yet.
 
 This construction is guaranteed to work as long as there exists some relation embedding `r ↪r s`. -/
+@[no_expose]
 noncomputable def RelEmbedding.collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
   have H := RelEmbedding.isWellOrder f
   ⟨RelEmbedding.ofMonotone _ fun a b => collapseF_lt f, fun a b h ↦ by

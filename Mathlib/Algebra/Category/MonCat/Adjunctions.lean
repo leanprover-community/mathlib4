@@ -98,6 +98,7 @@ def free : TypeCat.{u} ⥤ AddCommMonCat.{u} where
   obj α := .of (α →₀ ℕ)
   map f := ofHom (Finsupp.mapDomain.addMonoidHom f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for commutative monoids. -/
 noncomputable
 def adj : free ⊣ forget AddCommMonCat.{u} where

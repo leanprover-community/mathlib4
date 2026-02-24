@@ -221,6 +221,7 @@ noncomputable def HoCat.ιCompResolutionNatTrans : toHoCat ⟶ ι ⋙ HoCat.reso
     ext : 1
     exact (HoCat.resolutionMap_fac f.hom).symm )
 
+set_option backward.isDefEq.respectTransparency false in
 instance (X : FibrantObject C) :
     WeakEquivalence (HoCat.ιCompResolutionNatTrans.app X) := by
   dsimp
@@ -261,6 +262,7 @@ noncomputable def HoCat.resolutionCompToLocalizationNatTrans :
   naturality _ _ f := by
     simpa only [Functor.map_comp] using L.congr_map (HoCat.resolutionMap_fac f).symm
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (HoCat.resolutionCompToLocalizationNatTrans L) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X

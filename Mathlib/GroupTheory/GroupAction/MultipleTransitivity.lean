@@ -583,19 +583,9 @@ theorem isMultiplyPretransitive (n : ℕ) :
       · obtain ⟨i, rfl⟩ := hb
         use x i
         simp only [ψ, x.injective.extend_apply]
-      · rw [← Set.mem_compl_iff] at hb
-        use φ.invFun ⟨b, hb⟩
-        simp only [ψ]
-        rw [Function.extend_apply' _ _ _ ?_]
-        · simp only [φ']
-          set a : α := (φ.invFun ⟨b, hb⟩ : α)
-          have ha : a ∈ (range x)ᶜ := Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
-          rw [← Subtype.coe_mk a ha]
-          simp [a]
-        · rintro ⟨i, hi⟩
-          apply Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
-          rw [← hi]
-          exact mem_range_self i
+      · use φ.invFun ⟨b, hb⟩
+        simp only [invFun_as_coe]
+        grind [Function.extend_apply', Function.extend_val_apply]
   use Equiv.ofBijective ψ this
   ext i
   simp [ψ, x.injective.extend_apply]
@@ -604,6 +594,7 @@ theorem isMultiplyPretransitive (n : ℕ) :
 instance : IsPreprimitive (Perm α) α :=
   isPreprimitive_of_is_two_pretransitive (isMultiplyPretransitive _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 -- This is optimal, `AlternatingGroup α` is `Nat.card α - 2`-pretransitive.
 /-- A subgroup of `Perm α` is `⊤` if(f) it is `(Nat.card α - 1)`-pretransitive. -/
 theorem eq_top_of_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm α)}
@@ -677,6 +668,7 @@ theorem isMultiplyPretransitive :
     rw [← Finset.notMem_compl, hs, Finset.mem_insert, Finset.mem_singleton, not_or] at h
     simp [Equiv.swap_apply_of_ne_of_ne h.1 h.2, ← hg]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subgroup of `Equiv.Perm α` which is (card α - 2)-pretransitive
 contains `alternatingGroup α`. -/
 theorem _root_.IsMultiplyPretransitive.alternatingGroup_le

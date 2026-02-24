@@ -88,6 +88,7 @@ theorem IsSMulRegular.notMem_of_mem_minimalPrimes
   rcases not_forall.mp (Module.mem_annihilator.not.mp hy) with ⟨m, hm⟩
   exact hm (reg.right_eq_zero_of_smul ((smul_smul x y m).trans (Module.mem_annihilator.mp hxy m)))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Minimal primes are contained in zero divisors. -/
 lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p ∈ minimalPrimes R) :
     Disjoint (p : Set R) (nonZeroDivisors R) := by

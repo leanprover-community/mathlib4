@@ -145,6 +145,17 @@ theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
   discreteTopology_iff_isOpen_singleton_one.mpr h
 
 @[to_additive]
+theorem smul_connectedComponent (g h : G) : g • connectedComponent h = connectedComponent (g * h) :=
+  (Homeomorph.mulLeft g).isQuotientMap.image_connectedComponent (by simp [isConnected_singleton]) h
+
+@[to_additive]
+theorem totallyDisconnectedSpace_iff_connectedComponent_one :
+    TotallyDisconnectedSpace G ↔ connectedComponent (1 : G) = {1} :=
+  ⟨fun _ ↦ connectedComponent_eq_singleton 1,
+    fun h ↦ totallyDisconnectedSpace_iff_connectedComponent_singleton.mpr fun g ↦ by
+      rw [← mul_one g, ← smul_connectedComponent, h, Set.smul_set_singleton, smul_eq_mul]⟩
+
+@[to_additive]
 lemma Filter.tendsto_mul_const_iff (b : G) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (f · * b) l (𝓝 (c * b)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨?_, Tendsto.mul_const b⟩
@@ -292,6 +303,10 @@ protected def Homeomorph.inv (G : Type*) [TopologicalSpace G] [InvolutiveInv G]
   { Equiv.inv G with
     continuous_toFun := continuous_inv
     continuous_invFun := continuous_inv }
+
+@[to_additive (attr := simp)]
+lemma Homeomorph.symm_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] :
+    (Homeomorph.inv G).symm = Homeomorph.inv G := rfl
 
 @[to_additive (attr := simp)]
 lemma Homeomorph.coe_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] :
@@ -737,6 +752,10 @@ theorem exists_nhds_split_inv {s : Set G} (hs : s ∈ 𝓝 (1 : G)) :
 theorem nhds_translation_mul_inv (x : G) : comap (· * x⁻¹) (𝓝 1) = 𝓝 x :=
   ((Homeomorph.mulRight x⁻¹).comap_nhds_eq 1).trans <| show 𝓝 (1 * x⁻¹⁻¹) = 𝓝 x by simp
 
+@[to_additive]
+theorem nhds_translation_inv_mul (x : G) : comap (x⁻¹ * ·) (𝓝 1) = 𝓝 x :=
+  ((Homeomorph.mulLeft x⁻¹).comap_nhds_eq 1).trans <| show 𝓝 (x⁻¹⁻¹ * 1) = 𝓝 x by simp
+
 @[to_additive (attr := simp)]
 theorem map_mul_left_nhds (x y : G) : map (x * ·) (𝓝 y) = 𝓝 (x * y) :=
   (Homeomorph.mulLeft x).map_nhds_eq y
@@ -919,11 +938,12 @@ theorem IsTopologicalGroup.of_comm_of_nhds_one {G : Type u} [CommGroup G] [Topol
 variable (G) in
 /-- Any first countable topological group has an antitone neighborhood basis `u : ℕ → Set G` for
 which `(u (n + 1)) ^ 2 ⊆ u n`. The existence of such a neighborhood basis is a key tool for
-`QuotientGroup.completeSpace` -/
+`QuotientGroup.completeSpace_right`. -/
 @[to_additive
   /-- Any first countable topological additive group has an antitone neighborhood basis
   `u : ℕ → set G` for which `u (n + 1) + u (n + 1) ⊆ u n`.
-  The existence of such a neighborhood basis is a key tool for `QuotientAddGroup.completeSpace` -/]
+  The existence of such a neighborhood basis is a key tool
+  for `QuotientAddGroup.completeSpace_right`. -/]
 theorem IsTopologicalGroup.exists_antitone_basis_nhds_one [FirstCountableTopology G] :
     ∃ u : ℕ → Set G, (𝓝 1).HasAntitoneBasis u ∧ ∀ n, u (n + 1) * u (n + 1) ⊆ u n := by
   rcases (𝓝 (1 : G)).exists_antitone_basis with ⟨u, hu, u_anti⟩

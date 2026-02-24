@@ -268,6 +268,7 @@ lemma fac_apply (hc : IsColimitCore.{w₂} c)
     hc.desc c' (c.ι j x) = c'.ι j x :=
   congr_fun (hc.fac c' j) x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any structure `IsColimitCore.{max w₂ w₃} c` can be
 lowered to `IsColimitCore.{w₂} c` -/
 def down (hc : IsColimitCore.{max w₂ w₃} c) :
@@ -284,6 +285,7 @@ def down (hc : IsColimitCore.{max w₂ w₃} c) :
       simpa using congr_fun this x
     exact hc.funext (fun j ↦ by simp [Function.comp_assoc, h])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A colimit cocone for `F : J ⥤ Type w₀` induces a colimit cocone
 for `G : J ⥤ Type w₉'` when we have a natural equivalence `G.obj j ≃ F.obj j`
 for all `j : J`. -/
@@ -312,6 +314,7 @@ noncomputable def IsColimit.isColimitCore (hc : c.IsColimit) :
   desc := hc.desc
   funext := hc.funext
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsColimitCore.isColimit (hc : IsColimitCore.{max u w₀ w₁} c) :
     c.IsColimit where
   bijective := by
@@ -336,7 +339,8 @@ lemma IsColimit.precompose (hc : c.IsColimit) {G : J ⥤ TypeCat.{w₀'}} (e : �
     (c.precompose _ naturality).IsColimit :=
   (hc.isColimitCore.precompose e naturality).isColimit
 
-lemma isColimit_precompose_iff {G : J ⥤ TypeCat.{w₀'}} (e : ∀ j, G.obj j ≃ F.obj j)
+set_option backward.isDefEq.respectTransparency false in
+lemma isColimit_precompose_iff {G : J ⥤ Type w₀'} (e : ∀ j, G.obj j ≃ F.obj j)
     (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ G.map f = F.map f ∘ e j) :
     (c.precompose _ naturality).IsColimit ↔ c.IsColimit :=
   ⟨fun hc ↦ (hc.precompose (fun j ↦ (e j).symm)
@@ -345,6 +349,7 @@ lemma isColimit_precompose_iff {G : J ⥤ TypeCat.{w₀'}} (e : ∀ j, G.obj j �
 
 end CoconeTypes
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isColimit_coconeTypes : F.coconeTypes.IsColimit where
   bijective := by
     convert Function.bijective_id

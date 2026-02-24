@@ -146,6 +146,7 @@ def π : F.Elements ⥤ C where
 
 instance : (π F).Faithful where
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (π F).ReflectsIsomorphisms where
   reflects {X Y} f h := ⟨⟨⟨inv ((π F).map f),
     by rw [← map_snd f, ← comp_apply, ← Functor.map_comp]; simp⟩, by cat_disch⟩⟩
@@ -233,6 +234,7 @@ theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ TypeCat.{v}) {X : C} (f : 
     (fromCostructuredArrow F).obj (op (CostructuredArrow.mk f)) = ⟨op X, yonedaEquiv.1 f⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
 @[simps]
 def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ TypeCat.{v}) :
@@ -271,6 +273,7 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ TypeCat.{v}) :
     (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The opposite of the category of elements of a presheaf of types
 is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
 @[simps]

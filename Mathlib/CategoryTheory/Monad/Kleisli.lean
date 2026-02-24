@@ -48,6 +48,7 @@ variable {T} in
 structure Hom (X Y : Kleisli T) where
   hom : @Quiver.Hom C inferInstance X (T.obj Y)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Kleisli category on a monad `T`.
 cf Definition 5.2.9 in [Riehl][riehl2017]. -/
 @[simps!]
@@ -68,6 +69,7 @@ lemma ext {X Y : Kleisli T} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g := Hom.e
 
 namespace Adjunction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
 @[simps]
 def toKleisli : C ⥤ Kleisli T where
@@ -77,6 +79,7 @@ def toKleisli : C ⥤ Kleisli T where
     ext
     simp [← T.η.naturality g]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
 @[simps]
 def fromKleisli : Kleisli T ⥤ C where
@@ -86,6 +89,7 @@ def fromKleisli : Kleisli T ⥤ C where
   map_comp {X} {Y} {Z} f g := by
     simp [← T.μ.naturality_assoc g.hom, T.assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
 cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
 def adj : toKleisli T ⊣ fromKleisli T :=
@@ -99,6 +103,7 @@ def adj : toKleisli T ⊣ fromKleisli T :=
         ext
         simp [← T.η.naturality_assoc g] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the adjunction gives the original functor. -/
 def toKleisliCompFromKleisliIsoSelf : toKleisli T ⋙ fromKleisli T ≅ T :=
   NatIso.ofComponents fun _ => Iso.refl _
@@ -121,6 +126,7 @@ variable (U : Comonad C)
 instance [Inhabited C] (U : Comonad C) : Inhabited (Cokleisli U) :=
   ⟨(default : C)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The co-Kleisli category on a comonad `U`. -/
 instance category : Category (Cokleisli U) where
   Hom := fun X Y : C => (U : C ⥤ C).obj X ⟶ Y
@@ -129,6 +135,7 @@ instance category : Category (Cokleisli U) where
 
 namespace Adjunction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of the adjunction which induces the comonad `(U, ε_ U, δ_ U)`. -/
 @[simps]
 def toCokleisli : C ⥤ Cokleisli U where
@@ -138,6 +145,7 @@ def toCokleisli : C ⥤ Cokleisli U where
     unfold_projs
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of the adjunction which induces the comonad `(U, ε_ U, δ_ U)`. -/
 @[simps]
 def fromCokleisli : Cokleisli U ⥤ C where
@@ -150,6 +158,7 @@ def fromCokleisli : Cokleisli U ⥤ C where
     rw [Comonad.coassoc]
     simp only [Category.assoc, NatTrans.naturality, Functor.comp_map]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The co-Kleisli adjunction which gives rise to the comonad `(U, ε_ U, δ_ U)`. -/
 def adj : fromCokleisli U ⊣ toCokleisli U :=
   Adjunction.mkOfHomEquiv
