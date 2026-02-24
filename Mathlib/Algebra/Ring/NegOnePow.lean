@@ -82,6 +82,7 @@ lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
 theorem abs_negOnePow (n : ℤ) : |(n.negOnePow : ℤ)| = 1 := by
   rw [abs_eq_natAbs, Int.units_natAbs, Nat.cast_one]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma negOnePow_neg (n : ℤ) : (-n).negOnePow = n.negOnePow := by
   dsimp [negOnePow]

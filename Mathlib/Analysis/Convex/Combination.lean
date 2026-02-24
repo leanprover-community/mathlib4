@@ -139,6 +139,7 @@ theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ 
   rw [centerMass, inv_smul_le_iff_of_pos hw₁, sum_smul]
   exact sum_le_sum fun i hi => smul_le_smul_of_nonneg_left (le_sup' _ hi) <| hw₀ i hi
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inf_le_centerMass {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i ∈ s, w i) :
     s.inf' (nonempty_of_ne_empty <| by rintro rfl; simp at hw₁) f ≤ s.centerMass w f :=
@@ -438,6 +439,12 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
       · simp only [hw₁, zero_lt_one]
       · exact fun i hi => Finset.mem_coe.2 (Finset.mem_image_of_mem _ hi)
   · exact iUnion_subset fun i => iUnion_subset convexHull_mono
+
+/-- The `vectorSpan` of a segment is the span of the difference of its endpoints. -/
+theorem vectorSpan_segment {p₁ p₂ : E} :
+    vectorSpan R (segment R p₁ p₂) = R ∙ (p₂ -ᵥ p₁) := by
+  rw [← convexHull_pair, ← direction_affineSpan, affineSpan_convexHull,
+      direction_affineSpan, vectorSpan_pair_rev, vsub_eq_sub]
 
 theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHull R s)
     (hy : y ∈ convexHull R t) : (x, y) ∈ convexHull R (s ×ˢ t) := by

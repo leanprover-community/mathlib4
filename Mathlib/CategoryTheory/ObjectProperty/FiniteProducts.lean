@@ -32,7 +32,7 @@ variable {C : Type*} [Category* C] (P : ObjectProperty C)
 
 /-- The typeclass saying that `P : ObjectProperty C` is stable under binary products. -/
 abbrev IsClosedUnderBinaryProducts :=
-    P.IsClosedUnderLimitsOfShape (Discrete WalkingPair)
+  P.IsClosedUnderLimitsOfShape (Discrete WalkingPair)
 
 lemma prop_prod [P.IsClosedUnderBinaryProducts] (X Y : C) [HasBinaryProduct X Y]
     (hX : P X) (hY : P Y) :
