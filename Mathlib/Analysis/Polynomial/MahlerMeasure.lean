@@ -288,20 +288,13 @@ theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ)
   -- Proof strategy: Apply Jensen's inequality to the definition of the Mahler measure, then to the
   -- square function, and finally apply Parseval's inequality to the polynomial
   -- Instances necessary for Jensen's inequality
-  haveI : IsFiniteMeasure (volume.restrict (uIoc 0 (2 * π))) := by
+  have : IsFiniteMeasure (volume.restrict (uIoc 0 (2 * π))) := by
     rw [uIoc_of_le (by positivity)]; infer_instance
-  haveI : NeZero (volume.restrict (uIoc 0 (2 * π))) := by
-    rw [uIoc_of_le (by positivity), neZero_iff]
-    intro h
-    simp only [Measure.restrict_eq_zero, volume_Ioc, sub_zero,
-      Nat.ofNat_nonneg, ENNReal.ofReal_mul, ENNReal.ofReal_ofNat, mul_eq_zero,
-      OfNat.ofNat_ne_zero, ENNReal.ofReal_eq_zero, false_or] at h
-    linarith [pi_pos]
-
+  have : NeZero (volume (uIoc 0 (2 * π))) := ⟨by simp⟩
   -- Trivial case
   by_cases! hp : p = 0
   · simp [hp]
-
+  -- Elementary facts
   have : ∀ᵐ (θ : ℝ) ∂volume.restrict (uIoc 0 (2 * π)), 0 < ‖p.eval (circleMap 0 1 θ)‖ := by
     rw [ae_restrict_iff' measurableSet_uIoc]
     refine Set.Finite.measure_zero ?_ _
@@ -315,10 +308,7 @@ theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ)
       exp (log ‖p.eval (circleMap 0 1 θ)‖) = ‖p.eval (circleMap 0 1 θ)‖ := by
     filter_upwards [this] with θ hθ
     exact exp_log hθ
-
-  -- `continuity` fails for some reason here
-  have hcont := continuous_norm.comp (p.continuous.comp (continuous_circleMap 0 1))
-
+  have hcont : Continuous (fun x : ℝ ↦ ‖eval (circleMap 0 1 x) p‖) := by fun_prop
   -- Main calc block
   simp only [mahlerMeasure, logMahlerMeasure, ne_eq, hp, not_false_eq_true, ↓reduceIte]
   rw [circleAverage_eq_intervalAverage]
@@ -335,7 +325,7 @@ theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ)
         rw [sqrt_sq]; exact integral_nonneg (fun _ ↦ norm_nonneg _)
     _ ≤ √ (⨍ (θ : ℝ) in 0..(2 * π),  ‖p.eval (circleMap 0 1 θ)‖ ^ 2) := by
         -- Second Jensen's inequality invocation
-        apply Real.sqrt_le_sqrt
+        gcongr
         refine (convexOn_pow 2).map_average_le (continuousOn_pow 2)
             isClosed_Ici (by filter_upwards; simp) ?_ ?_
         · exact hcont.integrableOn_Icc.mono_set Set.Ioc_subset_Icc_self
