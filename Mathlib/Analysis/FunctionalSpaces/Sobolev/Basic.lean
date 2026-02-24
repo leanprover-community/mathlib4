@@ -16,16 +16,18 @@ public import Mathlib.Analysis.Normed.Lp.PiLp
 @[expose] public noncomputable section
 
 open Function Seminorm SeminormFamily Set TopologicalSpace TestFunction MeasureTheory Distribution
-open scoped BoundedContinuousFunction ENNReal Topology Distributions
+  Filter
+open scoped BoundedContinuousFunction ENNReal Topology Distributions NNReal
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] --[RCLike 𝕂]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [MeasurableSpace E'] [BorelSpace E']
   /- probably `Ω` should have type `Set E` and moved after the argument `f` in declarations -/
-  {Ω : Opens E}
+  {Ω : Opens E} {Ω' : Opens E'}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
   {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [SMulCommClass ℝ 𝕜 F']
     -- [NormedSpace 𝕂 F]
-  {f f' : E → F} {n : ℕ∞} {k : ℕ∞} {p : ℝ≥0∞} {μ : Measure E}
+  {f f' : E → F} {n : ℕ∞} {k : ℕ∞} {p : ℝ≥0∞} {μ ν : Measure E}
 
 namespace Distribution
 
@@ -331,7 +333,7 @@ lemma memLp (hf : MemSobolev Ω f 0 p μ) : MemLp f p (μ.restrict Ω) := by
   -- TODO: curry0 is linear, so this is fine here?
   sorry
 
-lemma memSobolev_zero :
+lemma memSobolev_zero_middle :
     MemSobolev Ω f 0 p μ ↔ MemLp f p (μ.restrict Ω) := by
   refine ⟨fun hf ↦ hf.memLp, fun hf ↦ ?_⟩
   let S : E → FormalMultilinearSeries ℝ E F := fun x k ↦
@@ -426,8 +428,8 @@ lemma const (a : F) [IsFiniteMeasure μ] : MemSobolev Ω (fun _ : E ↦ a) k p �
 
 end MemSobolev
 
-/- to do: the Norm instance on PiLp also induces a non-defeq ENorm on PiLp, we maybe should
-disable the Norm → ENorm instance. -/
+/- to do: the Norm instance on PiLp also induces a non-defeq ENorm on PiLp,
+we maybe should disable the Norm → ENorm instance. -/
 /- to do: the EDist instance on PiLp for p = 0 is wrong. -/
 /- to do: move this -/
 /- to do: do we indeed want this for non-fintypes? -/
@@ -453,6 +455,35 @@ def sobolevNorm (f : E → F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) : �
   if h : MemSobolev Ω f k p μ then sobolevNormAux h.choose k p μ else ∞
 
 lemma sobolevNorm_lt_top_iff : sobolevNorm Ω f k p μ < ∞ ↔ MemSobolev Ω f k p μ := by sorry
+
+alias ⟨_, MemSobolev.sobolevNorm_lt_top⟩ := sobolevNorm_lt_top_iff
+
+lemma sobolevNorm_congr_ae (h : f =ᵐ[μ.restrict Ω] f') :
+    sobolevNorm Ω f k p μ = sobolevNorm Ω f' k p μ := by
+  sorry
+
+lemma sobolevNorm_zero : sobolevNorm Ω (0 : E → F) k p μ = 0 := by
+  sorry
+
+lemma sobolevNorm_measure_zero : sobolevNorm Ω f k p 0 = 0 := by
+  sorry
+
+theorem sobolevNorm_eq_zero_iff (hf : AEStronglyMeasurable f μ) :
+    sobolevNorm Ω f k p μ = 0 ↔ f =ᵐ[μ.restrict Ω] 0 := by
+  sorry
+  -- by_cases h_top : p = ∞
+  -- · rw [h_top, eLpNorm_exponent_top, eLpNormEssSup_eq_zero_iff]
+  -- rw [eLpNorm_eq_eLpNorm' h0 h_top]
+  -- exact eLpNorm'_eq_zero_iff (ENNReal.toReal_pos h0 h_top) hf
+
+lemma sobolevNorm_neg :
+    sobolevNorm Ω (-f) k p μ = sobolevNorm Ω f k p μ := by
+  sorry
+
+lemma sobolevNorm_add_le (hf : AEStronglyMeasurable f μ) (hf' : AEStronglyMeasurable f' μ) :
+    sobolevNorm Ω (f + f') k p μ ≤ sobolevNorm Ω f k p μ + sobolevNorm Ω f' k p μ := by
+  sorry
+
 
 end FinDim
 
@@ -514,7 +545,7 @@ lemma memSobolev_congr_ae (h : f =ᵐ[μ.restrict Ω] f') :
     MemSobolev Ω f k p μ ↔ MemSobolev Ω f' k p μ := by
   sorry
 
-lemma MemSobolev.ae_eq (h : f =ᵐ[μ.restrict Ω] f') (hf : MemSobolev Ω f k p μ) :
+lemma MemSobolev.aeEq (h : f =ᵐ[μ.restrict Ω] f') (hf : MemSobolev Ω f k p μ) :
     MemSobolev Ω f' k p μ :=
   memSobolev_congr_ae h |>.mp hf
 
@@ -527,20 +558,24 @@ lemma MemSobolev.indicator {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev �
 lemma MemSobolev.restrict {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
   MemSobolev Ω f k p (μ.restrict s) := sorry
 
+theorem MemSobolev.aeeqfunMk (hf : MemSobolev Ω f k p μ) :
+    MemSobolev Ω (AEEqFun.mk f hf.aestronglyMeasurable) k p μ :=
+  hf.aeEq <| (AEEqFun.coeFn_mk f _).symm
+
 -- todo: move
-lemma MeasureTheory.ae_eq_iff {α β : Type*} [MeasurableSpace α] {μ : Measure α} {f g : α → β} :
+lemma MeasureTheory.aeEq_iff {α β : Type*} [MeasurableSpace α] {μ : Measure α} {f g : α → β} :
     f =ᵐ[μ] g ↔ μ {x | f x ≠ g x} = 0 := by
   rfl
 
 -- todo: move
-lemma Set.EqOn.ae_eq {α β : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α}
+lemma Set.EqOn.aeEq {α β : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α}
     {f g : α → β} (h : s.EqOn f g) (h2 : μ sᶜ = 0) : f =ᵐ[μ] g :=
   Measure.mono_null (fun _x hx h2x ↦ hx (h h2x)) h2
 
 -- todo: move
-lemma Set.EqOn.ae_eq_restrict {α β : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α}
+lemma Set.EqOn.aeEq_restrict {α β : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α}
     {f g : α → β} (h : s.EqOn f g) (hs : MeasurableSet s) : f =ᵐ[μ.restrict s] g :=
-  h.ae_eq <| (Measure.restrict_apply_eq_zero' hs).mpr (by simp)
+  h.aeEq <| (Measure.restrict_apply_eq_zero' hs).mpr (by simp)
 
 variable (Ω F) in
 def Sobolev (k : ℕ∞) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
@@ -561,7 +596,7 @@ variable [IsLocallyFiniteMeasure μ] [Fact (1 ≤ p)]
 -- AEStronglyMeasurable f (μ.restrict Ω)
 /-- make an element of Lp from a function verifying `MemSobolev` -/
 def toSobolev (f : E → F) (hf : MemSobolev Ω f k p μ) : Sobolev Ω F k p μ :=
-  ⟨AEEqFun.mk f hf.aestronglyMeasurable, hf.ae_eq (coeFn_mk f hf.aestronglyMeasurable).symm⟩
+  ⟨AEEqFun.mk f hf.aestronglyMeasurable, hf.aeEq (coeFn_mk f hf.aestronglyMeasurable).symm⟩
 
 theorem toSobolev_val {f : E → F} (hf : MemSobolev Ω f k p μ) :
     (toSobolev f hf).1 = AEEqFun.mk f hf.aestronglyMeasurable := rfl
@@ -613,6 +648,8 @@ theorem ext {f g : Sobolev Ω F k p μ} (h : f =ᵐ[μ.restrict Ω] g) : f = g :
 theorem mem_sobolev_iff_memSobolev {f : E →ₘ[μ.restrict Ω] F} :
     f ∈ Sobolev Ω F k p μ ↔ MemSobolev Ω f k p μ := by rfl
 
+alias ⟨_, _root_.MemSobolev.mem_sobolev ⟩ := mem_sobolev_iff_memSobolev
+
 theorem mem_sobolev_iff_sobolevNorm_lt_top {f : E →ₘ[μ.restrict Ω] F} :
     f ∈ Sobolev Ω F k p μ ↔ sobolevNorm Ω f k p μ < ∞ := by
   rw [mem_sobolev_iff_memSobolev, sobolevNorm_lt_top_iff]
@@ -639,230 +676,151 @@ theorem toSobolev_coeFn (f : Sobolev Ω F k p μ) (hf : MemSobolev Ω f k p μ) 
 theorem memSobolev (f : Sobolev Ω F k p μ) : MemSobolev Ω f k p μ :=
   f.prop
 
--- theorem sobolevNorm_lt_top (f : Sobolev Ω F k p μ) : sobolevNorm Ω f k p μ < ∞ :=
---   f.prop
+theorem sobolevNorm_lt_top (f : Sobolev Ω F k p μ) : sobolevNorm Ω f k p μ < ∞ :=
+  (memSobolev f).sobolevNorm_lt_top
 
--- @[aesop (rule_sets := [finiteness]) safe apply]
--- theorem sobolevNorm_ne_top (f : Sobolev Ω F k p μ) : sobolevNorm Ω f k p μ ≠ ∞ :=
---   (sobolevNorm_lt_top f).ne
+@[aesop (rule_sets := [finiteness]) safe apply]
+theorem sobolevNorm_ne_top (f : Sobolev Ω F k p μ) : sobolevNorm Ω f k p μ ≠ ∞ :=
+  (sobolevNorm_lt_top f).ne
 
--- @[fun_prop, measurability]
--- protected theorem stronglyMeasurable (f : Sobolev Ω F k p μ) : StronglyMeasurable f :=
---   f.val.stronglyMeasurable
+@[fun_prop]
+protected theorem stronglyMeasurable (f : Sobolev Ω F k p μ) : StronglyMeasurable f :=
+  f.val.stronglyMeasurable
 
--- @[fun_prop, measurability]
--- protected theorem aestronglyMeasurable (f : Sobolev Ω F k p μ) : AEStronglyMeasurable f μ :=
---   f.val.aestronglyMeasurable
+@[fun_prop]
+protected theorem aestronglyMeasurable (f : Sobolev Ω F k p μ) : AEStronglyMeasurable f ν :=
+  (Sobolev.stronglyMeasurable f).aestronglyMeasurable
 
--- protected theorem memSobolev (f : Sobolev Ω F k p μ) : MemSobolev Ω f k p μ :=
---   ⟨Lp.aestronglyMeasurable f, f.prop⟩
+variable (E p μ) in
+theorem coeFn_zero : ⇑(0 : Sobolev Ω F k p μ) =ᵐ[μ.restrict Ω] 0 :=
+  AEEqFun.coeFn_zero
 
--- variable (E p μ)
+theorem coeFn_neg (f : Sobolev Ω F k p μ) : ⇑(-f) =ᵐ[μ.restrict Ω] -f :=
+  AEEqFun.coeFn_neg _
 
--- theorem coeFn_zero : ⇑(0 : Sobolev Ω F k p μ) =ᵐ[μ.restrict Ω] 0 :=
---   AEEqFun.coeFn_zero
+theorem coeFn_add (f g : Sobolev Ω F k p μ) : ⇑(f + g) =ᵐ[μ.restrict Ω] f + g :=
+  AEEqFun.coeFn_add _ _
 
--- variable {E p μ}
+theorem coeFn_sub (f g : Sobolev Ω F k p μ) : ⇑(f - g) =ᵐ[μ.restrict Ω] f - g :=
+  AEEqFun.coeFn_sub _ _
 
--- theorem coeFn_neg (f : Sobolev Ω F k p μ) : ⇑(-f) =ᵐ[μ.restrict Ω] -f :=
---   AEEqFun.coeFn_neg _
+theorem const_mem_sobolev (c : F) [IsFiniteMeasure μ] :
+    AEEqFun.const E c ∈ Sobolev Ω F k p μ :=
+  (MemSobolev.const c).aeeqfunMk.mem_sobolev
 
--- theorem coeFn_add (f g : Sobolev Ω F k p μ) : ⇑(f + g) =ᵐ[μ.restrict Ω] f + g :=
---   AEEqFun.coeFn_add _ _
+instance instNorm : Norm (Sobolev Ω F k p μ) where norm f := (sobolevNorm Ω f k p μ).toReal
 
--- theorem coeFn_sub (f g : Sobolev Ω F k p μ) : ⇑(f - g) =ᵐ[μ.restrict Ω] f - g :=
---   AEEqFun.coeFn_sub _ _
+-- note: we need this to be defeq to the instance from `SeminormedAddGroup.toNNNorm`, so
+-- can't use `ENNReal.toNNReal (sobolevNorm Ω f k p μ)`
+instance instNNNorm : NNNorm (Sobolev Ω F k p μ) where nnnorm f := ⟨‖f‖, ENNReal.toReal_nonneg⟩
 
--- theorem const_mem_sobolev (α) {_ : MeasurableSpace α} (μ : Measure α) (c : E) [IsFiniteMeasure μ] :
---     @AEEqFun.const α _ _ μ _ c ∈ Sobolev Ω F k p μ :=
---   (memSobolev_const c).sobolevNorm_mk_lt_top
+instance instDist : Dist (Sobolev Ω F k p μ) where dist f g := ‖f - g‖
 
--- instance instNorm : Norm (Sobolev Ω F k p μ) where norm f := ENNReal.toReal (sobolevNorm Ω f k p μ)
+instance instEDist : EDist (Sobolev Ω F k p μ) where edist f g := sobolevNorm Ω (⇑f - ⇑g) k p μ
 
--- -- note: we need this to be defeq to the instance from `SeminormedAddGroup.toNNNorm`, so
--- -- can't use `ENNReal.toNNReal (sobolevNorm Ω f k p μ)`
--- instance instNNNorm : NNNorm (Sobolev Ω F k p μ) where nnnorm f := ⟨‖f‖, ENNReal.toReal_nonneg⟩
+theorem norm_def (f : Sobolev Ω F k p μ) : ‖f‖ = (sobolevNorm Ω f k p μ).toReal :=
+  rfl
 
--- instance instDist : Dist (Sobolev Ω F k p μ) where dist f g := ‖f - g‖
+theorem nnnorm_def (f : Sobolev Ω F k p μ) : ‖f‖₊ = (sobolevNorm Ω f k p μ).toNNReal :=
+  rfl
 
--- instance instEDist : EDist (Sobolev Ω F k p μ) where edist f g := sobolevNorm (⇑f - ⇑g) p μ
+@[simp, norm_cast]
+protected theorem coe_nnnorm (f : Sobolev Ω F k p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
+  rfl
 
--- theorem norm_def (f : Sobolev Ω F k p μ) : ‖f‖ = ENNReal.toReal (sobolevNorm Ω f k p μ) :=
---   rfl
+@[simp]
+theorem enorm_def (f : Sobolev Ω F k p μ) : ‖f‖ₑ = sobolevNorm Ω f k p μ :=
+  ENNReal.coe_toNNReal <| Sobolev.sobolevNorm_ne_top f
 
--- theorem nnnorm_def (f : Sobolev Ω F k p μ) : ‖f‖₊ = ENNReal.toNNReal (sobolevNorm Ω f k p μ) :=
---   rfl
+@[simp]
+lemma norm_toSobolev (f : E → F) (hf : MemSobolev Ω f k p μ) :
+    ‖hf.toSobolev f‖ = (sobolevNorm Ω f k p μ).toReal := by
+  rw [norm_def, sobolevNorm_congr_ae hf.coeFn_toSobolev]
 
--- @[simp, norm_cast]
--- protected theorem coe_nnnorm (f : Sobolev Ω F k p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
---   rfl
+@[simp]
+theorem nnnorm_toSobolev (f : E → F) (hf : MemSobolev Ω f k p μ) :
+    ‖hf.toSobolev f‖₊ = ENNReal.toNNReal (sobolevNorm Ω f k p μ) :=
+  NNReal.eq <| norm_toSobolev f hf
 
--- @[simp]
--- theorem enorm_def (f : Sobolev Ω F k p μ) : ‖f‖ₑ = sobolevNorm Ω f k p μ :=
---   ENNReal.coe_toNNReal <| Lp.sobolevNorm_ne_top f
+lemma enorm_toSobolev {f : E → F} (hf : MemSobolev Ω f k p μ) :
+    ‖hf.toSobolev f‖ₑ = sobolevNorm Ω f k p μ := by
+  simp_rw [enorm, nnnorm_toSobolev f hf, ENNReal.coe_toNNReal hf.sobolevNorm_lt_top.ne]
 
--- @[simp]
--- lemma norm_toSobolev (f : E → F) (hf : MemSobolev Ω f k p μ) : ‖hf.toSobolev f‖ = ENNReal.toReal (sobolevNorm Ω f k p μ) := by
---   rw [norm_def, sobolevNorm_congr_ae (MemSobolev.coeFn_toSobolev hf)]
+theorem dist_def (f g : Sobolev Ω F k p μ) : dist f g = (sobolevNorm Ω (⇑f - ⇑g) k p μ).toReal := by
+  simp_rw [dist, norm_def]
+  congr 1
+  apply sobolevNorm_congr_ae (coeFn_sub _ _)
 
--- @[simp]
--- theorem nnnorm_toSobolev (f : E → F) (hf : MemSobolev Ω f k p μ) :
---     ‖hf.toSobolev f‖₊ = ENNReal.toNNReal (sobolevNorm Ω f k p μ) :=
---   NNReal.eq <| norm_toSobolev f hf
+theorem edist_def (f g : Sobolev Ω F k p μ) : edist f g = sobolevNorm Ω (⇑f - ⇑g) k p μ :=
+  rfl
 
--- lemma enorm_toSobolev {f : E → F} (hf : MemSobolev Ω f k p μ) : ‖hf.toSobolev f‖ₑ = sobolevNorm Ω f k p μ := by
---   simp [enorm, nnnorm_toSobolev f hf, ENNReal.coe_toNNReal hf.2.ne]
+protected theorem edist_dist (f g : Sobolev Ω F k p μ) : edist f g = .ofReal (dist f g) := by
+  rw [edist_def, dist_def, ← sobolevNorm_congr_ae (coeFn_sub _ _),
+    ENNReal.ofReal_toReal (sobolevNorm_ne_top (f - g))]
 
--- theorem dist_def (f g : Sobolev Ω F k p μ) : dist f g = (sobolevNorm (⇑f - ⇑g) p μ).toReal := by
---   simp_rw [dist, norm_def]
---   refine congr_arg _ ?_
---   apply sobolevNorm_congr_ae (coeFn_sub _ _)
+protected theorem dist_edist (f g : Sobolev Ω F k p μ) : dist f g = (edist f g).toReal :=
+  Sobolev.dist_def ..
 
--- theorem edist_def (f g : Sobolev Ω F k p μ) : edist f g = sobolevNorm (⇑f - ⇑g) p μ :=
---   rfl
+theorem dist_eq_norm (f g : Sobolev Ω F k p μ) : dist f g = ‖f - g‖ := rfl
 
--- protected theorem edist_dist (f g : Sobolev Ω F k p μ) : edist f g = .ofReal (dist f g) := by
---   rw [edist_def, dist_def, ← sobolevNorm_congr_ae (coeFn_sub _ _),
---     ENNReal.ofReal_toReal (sobolevNorm_ne_top (f - g))]
+@[simp]
+theorem edist_toSobolev_toSobolev (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) :
+    edist (hf.toSobolev f) (hg.toSobolev g) = sobolevNorm Ω (f - g) k p μ := by
+  rw [edist_def]
+  exact sobolevNorm_congr_ae (hf.coeFn_toSobolev.sub hg.coeFn_toSobolev)
 
--- protected theorem dist_edist (f g : Sobolev Ω F k p μ) : dist f g = (edist f g).toReal :=
---   MeasureTheory.Lp.dist_def ..
+@[simp]
+theorem edist_toSobolev_zero (hf : MemSobolev Ω f k p μ) :
+    edist (hf.toSobolev f) 0 = sobolevNorm Ω f k p μ := by
+  simpa using edist_toSobolev_toSobolev hf .zero
 
--- theorem dist_eq_norm (f g : Sobolev Ω F k p μ) : dist f g = ‖f - g‖ := rfl
+@[simp]
+theorem nnnorm_zero : ‖(0 : Sobolev Ω F k p μ)‖₊ = 0 := by
+  rw [nnnorm_def, ZeroMemClass.coe_zero, sobolevNorm_congr_ae AEEqFun.coeFn_zero, sobolevNorm_zero,
+    ENNReal.toNNReal_zero]
 
--- @[simp]
--- theorem edist_toSobolev_toSobolev (f g : E → F) (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) :
---     edist (hf.toSobolev f) (hg.toSobolev g) = sobolevNorm (f - g) p μ := by
---   rw [edist_def]
---   exact sobolevNorm_congr_ae (hf.coeFn_toSobolev.sub hg.coeFn_toSobolev)
+@[simp]
+theorem norm_zero : ‖(0 : Sobolev Ω F k p μ)‖ = 0 :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) nnnorm_zero
 
--- @[simp]
--- theorem edist_toSobolev_zero (f : E → F) (hf : MemSobolev Ω f k p μ) : edist (hf.toSobolev f) 0 = sobolevNorm Ω f k p μ := by
---   simpa using edist_toSobolev_toSobolev f 0 hf MemSobolev.zero
+@[simp]
+theorem norm_measure_zero (f : Sobolev Ω F k p 0) : ‖f‖ = 0 := by
+  -- Squeezed for performance reasons
+  simp_rw [norm_def, sobolevNorm_measure_zero, ENNReal.toReal_zero]
 
--- @[simp]
--- theorem nnnorm_zero : ‖(0 : Sobolev Ω F k p μ)‖₊ = 0 := by
---   rw [nnnorm_def]
---   change (sobolevNorm (⇑(0 : E →ₘ[μ.restrict Ω] F)) p μ).toNNReal = 0
---   simp [sobolevNorm_congr_ae AEEqFun.coeFn_zero, sobolevNorm_zero]
+theorem eq_zero_iff_aeEq_zero {f : Sobolev Ω F k p μ} : f = 0 ↔ f =ᵐ[μ.restrict Ω] 0 := by
+  rw [Sobolev.ext_iff]
+  exact EventuallyEq.congr_right AEEqFun.coeFn_zero
 
--- @[simp]
--- theorem norm_zero : ‖(0 : Sobolev Ω F k p μ)‖ = 0 :=
---   congr_arg ((↑) : ℝ≥0 → ℝ) nnnorm_zero
+theorem norm_eq_zero_iff {f : Sobolev Ω F k p μ} : ‖f‖ = 0 ↔ f = 0 := by
+  refine ⟨fun hf => ?_, fun hf => by simp [hf]⟩
+  simp_rw [norm_def, ENNReal.toReal_eq_zero_iff, sobolevNorm_ne_top, or_false,
+    sobolevNorm_eq_zero_iff (Sobolev.aestronglyMeasurable f)] at hf
+  ext
+  exact hf.trans AEEqFun.coeFn_zero.symm
 
--- @[simp]
--- theorem norm_measure_zero (f : Lp E p (0 : MeasureTheory.Measure α)) : ‖f‖ = 0 := by
---   -- Squeezed for performance reasons
---   simp only [norm_def, sobolevNorm_measure_zero, ENNReal.toReal_zero]
+@[simp]
+theorem norm_neg (f : Sobolev Ω F k p μ) : ‖-f‖ = ‖f‖ := by
+  simp_rw [norm_def, sobolevNorm_congr_ae (coeFn_neg _), sobolevNorm_neg]
 
--- @[simp] theorem norm_exponent_zero (f : Lp E 0 μ) : ‖f‖ = 0 := by
---   -- Squeezed for performance reasons
---   simp only [norm_def, sobolevNorm_exponent_zero, ENNReal.toReal_zero]
+@[simp]
+theorem nnnorm_neg (f : Sobolev Ω F k p μ) : ‖-f‖₊ = ‖f‖₊ := by
+  simp_rw [NNReal.eq_iff, Sobolev.coe_nnnorm, norm_neg]
 
--- theorem nnnorm_eq_zero_iff {f : Sobolev Ω F k p μ} (hp : 0 < p) : ‖f‖₊ = 0 ↔ f = 0 := by
---   refine ⟨fun hf => ?_, fun hf => by simp [hf]⟩
---   rw [nnnorm_def, ENNReal.toNNReal_eq_zero_iff] at hf
---   cases hf with
---   | inl hf =>
---     rw [sobolevNorm_eq_zero_iff (Lp.aestronglyMeasurable f) hp.ne.symm] at hf
---     exact Subtype.ext (AEEqFun.ext (hf.trans AEEqFun.coeFn_zero.symm))
---   | inr hf =>
---     exact absurd hf (sobolevNorm_ne_top f)
-
--- theorem norm_eq_zero_iff {f : Sobolev Ω F k p μ} (hp : 0 < p) : ‖f‖ = 0 ↔ f = 0 :=
---   NNReal.coe_eq_zero.trans (nnnorm_eq_zero_iff hp)
-
--- theorem eq_zero_iff_ae_eq_zero {f : Sobolev Ω F k p μ} : f = 0 ↔ f =ᵐ[μ.restrict Ω] 0 := by
---   rw [← (Lp.memSobolev f).toSobolev_eq_toSobolev_iff MemSobolev.zero, MemSobolev.toSobolev_zero, toSobolev_coeFn]
-
--- @[simp]
--- theorem nnnorm_neg (f : Sobolev Ω F k p μ) : ‖-f‖₊ = ‖f‖₊ := by
---   rw [nnnorm_def, nnnorm_def, sobolevNorm_congr_ae (coeFn_neg _), sobolevNorm_neg]
-
--- @[simp]
--- theorem norm_neg (f : Sobolev Ω F k p μ) : ‖-f‖ = ‖f‖ :=
---   congr_arg ((↑) : ℝ≥0 → ℝ) (nnnorm_neg f)
-
--- theorem nnnorm_le_mul_nnnorm_of_ae_le_mul {c : ℝ≥0} {f : Sobolev Ω F k p μ} {g : Lp F p μ}
---     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : ‖f‖₊ ≤ c * ‖g‖₊ := by
---   simp only [nnnorm_def]
---   have := sobolevNorm_le_nnreal_smul_sobolevNorm_of_ae_le_mul h p
---   rwa [← ENNReal.toNNReal_le_toNNReal, ENNReal.smul_def, smul_eq_mul, ENNReal.toNNReal_mul,
---     ENNReal.toNNReal_coe] at this
---   · finiteness
---   · exact ENNReal.mul_ne_top ENNReal.coe_ne_top (by finiteness)
-
--- theorem norm_le_mul_norm_of_ae_le_mul {c : ℝ} {f : Sobolev Ω F k p μ} {g : Lp F p μ}
---     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : ‖f‖ ≤ c * ‖g‖ := by
---   rcases le_or_gt 0 c with hc | hc
---   · lift c to ℝ≥0 using hc
---     exact NNReal.coe_le_coe.mpr (nnnorm_le_mul_nnnorm_of_ae_le_mul h)
---   · simp only [norm_def]
---     have := sobolevNorm_eq_zero_and_zero_of_ae_le_mul_neg h hc p
---     simp [this]
-
--- theorem norm_le_norm_of_ae_le {f : Sobolev Ω F k p μ} {g : Lp F p μ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
---     ‖f‖ ≤ ‖g‖ := by
---   rw [norm_def, norm_def]
---   exact ENNReal.toReal_mono (by finiteness) (sobolevNorm_mono_ae h)
-
--- theorem mem_sobolev_of_nnnorm_ae_le_mul {c : ℝ≥0} {f : E →ₘ[μ.restrict Ω] F} {g : Lp F p μ}
---     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : f ∈ Sobolev Ω F k p μ :=
---   mem_sobolev_iff_memSobolev.2 <| MemSobolev.of_nnnorm_le_mul (Lp.memSobolev g) f.aestronglyMeasurable h
-
--- theorem mem_sobolev_of_ae_le_mul {c : ℝ} {f : E →ₘ[μ.restrict Ω] F} {g : Lp F p μ}
---     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : f ∈ Sobolev Ω F k p μ :=
---   mem_sobolev_iff_memSobolev.2 <| MemSobolev.of_le_mul (Lp.memSobolev g) f.aestronglyMeasurable h
-
--- theorem mem_sobolev_of_nnnorm_ae_le {f : E →ₘ[μ.restrict Ω] F} {g : Lp F p μ} (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
---     f ∈ Sobolev Ω F k p μ :=
---   mem_sobolev_iff_memSobolev.2 <| MemSobolev.of_le (Lp.memSobolev g) f.aestronglyMeasurable h
-
--- theorem mem_sobolev_of_ae_le {f : E →ₘ[μ.restrict Ω] F} {g : Lp F p μ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
---     f ∈ Sobolev Ω F k p μ :=
---   mem_sobolev_of_nnnorm_ae_le h
-
--- theorem mem_sobolev_of_ae_nnnorm_bound [IsFiniteMeasure μ] {f : E →ₘ[μ.restrict Ω] F} (C : ℝ≥0)
---     (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) : f ∈ Sobolev Ω F k p μ :=
---   mem_sobolev_iff_memSobolev.2 <| MemSobolev.of_bound f.aestronglyMeasurable _ hfC
-
--- theorem mem_sobolev_of_ae_bound [IsFiniteMeasure μ] {f : E →ₘ[μ.restrict Ω] F} (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
---     f ∈ Sobolev Ω F k p μ :=
---   mem_sobolev_iff_memSobolev.2 <| MemSobolev.of_bound f.aestronglyMeasurable _ hfC
-
--- theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Sobolev Ω F k p μ} {C : ℝ≥0}
---     (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) : ‖f‖₊ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
---   by_cases hμ : μ = 0
---   · by_cases hp : p.toReal⁻¹ = 0
---     · simp [hp, hμ, nnnorm_def]
---     · simp [hμ, nnnorm_def]
---   rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (sobolevNorm_ne_top _)]
---   refine (sobolevNorm_le_of_ae_nnnorm_bound hfC).trans_eq ?_
---   rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
---     ENNReal.coe_mul, mul_comm, ENNReal.smul_def, smul_eq_mul]
-
--- theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Sobolev Ω F k p μ} {C : ℝ} (hC : 0 ≤ C)
---     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖f‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
---   lift C to ℝ≥0 using hC
---   have := nnnorm_le_of_ae_bound hfC
---   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
-
--- instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Sobolev Ω F k p μ) :=
---   { AddGroupNorm.toNormedAddCommGroup
---       { toFun := (norm : Sobolev Ω F k p μ → ℝ)
---         map_zero' := norm_zero
---         neg' := by simp only [norm_neg, implies_true] -- squeezed for performance reasons
---         add_le' := fun f g => by
---           suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
---             -- Squeezed for performance reasons
---             simpa only [ge_iff_le, enorm, ←ENNReal.coe_add, ENNReal.coe_le_coe] using this
---           simp only [Lp.enorm_def]
---           exact (sobolevNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
---             (sobolevNorm_add_le (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) hp.out)
---         eq_zero_of_map_eq_zero' := fun _ =>
---           (norm_eq_zero_iff <| zero_lt_one.trans_le hp.1).1 } with
---     edist := edist
---     edist_dist := Lp.edist_dist }
+instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Sobolev Ω F k p μ) :=
+  { AddGroupNorm.toNormedAddCommGroup
+      { toFun := (norm : Sobolev Ω F k p μ → ℝ)
+        map_zero' := norm_zero
+        neg' := by simp only [norm_neg, implies_true]
+        add_le' := fun f g => by
+          suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
+            simpa only [ge_iff_le, enorm, ←ENNReal.coe_add, ENNReal.coe_le_coe] using this
+          simp only [Sobolev.enorm_def]
+          exact (sobolevNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
+            (sobolevNorm_add_le (Sobolev.aestronglyMeasurable _) (Sobolev.aestronglyMeasurable _))
+        eq_zero_of_map_eq_zero' _ := norm_eq_zero_iff.1 } with
+    edist := edist
+    edist_dist := Sobolev.edist_dist }
 
 end Sobolev
 
