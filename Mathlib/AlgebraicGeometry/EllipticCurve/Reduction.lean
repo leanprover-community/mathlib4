@@ -281,6 +281,13 @@ theorem isGoodReduction_or_isMultiplicativeReduction_or_isAdditiveReduction
     ← integralModel_Δ_eq R W, ← integralModel_a₄_eq R W]
   grind [valuation_le_one]
 
+/-- A minimal Weierstrass equation has multiplicative reduction if and only if
+the valuation of its discriminant is less than 1 and the valuation of `a₄` equals 1. -/
+@[mk_iff]
+class IsSplitMultiplicativeReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop
+    extends W.IsMultiplicativeReduction R where
+  splitMultiplicativeReduction : valuation K (maximalIdeal R) W.a₄ = 1
+
 end Reduction
 
 end WeierstrassCurve
