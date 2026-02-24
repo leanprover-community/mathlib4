@@ -52,7 +52,7 @@ lemma Smooth.of_smooth_fiberToSpecResidueField [LocallyOfFinitePresentation f] [
     infer_instance
   obtain ⟨S, rfl⟩ := h
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
-  simp only [HasRingHomProperty.Spec_iff, id_eq] at *
+  simp only [HasRingHomProperty.Spec_iff] at *
   algebraize [φ.hom]
   refine Algebra.Smooth.of_formallySmooth_fiber fun p hp ↦ ?_
   rw [← RingHom.formallySmooth_algebraMap]
