@@ -231,9 +231,18 @@ lemma toPresheafFiberMap_presheafFiberMapObjIso_hom (P : Dᵒᵖ ⥤ A) (X : C) 
   IsColimit.comp_coconePointUniqueUpToIso_hom
     (Φ.isColimitPresheafFiberMapCocone F K P) _ ⟨X, x⟩
 
+variable (A) in
 noncomputable def presheafFiberMapIso : (Φ.map F K).presheafFiber (A := A) ≅
     (Functor.whiskeringLeft _ _ _).obj F.op ⋙ (Φ.presheafFiber (A := A)) :=
   NatIso.ofComponents (Φ.presheafFiberMapObjIso F K)
+
+variable [Functor.IsContinuous.{v''} F J K]
+
+variable (A) in
+noncomputable def sheafFiberMapIso [Functor.IsContinuous.{v''} F J K] :
+    (Φ.map F K).sheafFiber (A := A) ≅
+      F.sheafPushforwardContinuous A J K ⋙ (Φ.sheafFiber (A := A)) :=
+  Functor.isoWhiskerLeft (sheafToPresheaf K A) (Φ.presheafFiberMapIso F K A)
 
 end
 
