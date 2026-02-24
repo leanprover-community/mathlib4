@@ -21,11 +21,42 @@ import Mathlib.Logic.Equiv.Embedding
 /-!
 # LatinSquare
 
-Description of Latin Squares
+A Latin rectangle is an $m \times n$ matrix filled with $n$ different
+symbols such that each symbol occurs exactly once in each row and
+occurs at most once in each column.  When $m = n$, the column
+condition forces each symbol to occur exactly once in each column.
+This special case is called a Latin Square and their discovery is
+attributed to Leohnard Euler in 1782 [euler1782].
+
+Basic examples include the multiplication table of any finite group or
+any completely solved Sudoku puzzle. Additionally, Latin squares are a
+special case and motivating example of combinatorial designs.  Like
+with a Sudoku puzzle, an interestnig question is when a "partially
+filled" Latin square can be completed to a Latin square.  In general,
+it is an open question to figure out the number of distinct $n \times
+n$ Latin squares, up to equivalence, although bounds exist.
+
+A classical result in combinatorics, Hall's Marriage Theorem, can be
+used to show that any Latin rectangle can be extended to a Latin
+square; this theorem is formalized as
+`latin_rectangle_extends_to_latin_square`.
 
 ## Main definitions
 
+- `LatinRectangle`: 
+- `LatinSquare`:
+- `LREquiv`:
+
 ## Main results
+
+- `group_to_cayley_table`: every finite group `G` yields a `LatinSquare G G`.
+- `latin_rectangle_extends_one_row`: a (non-square) `LatinRectangle` extends to a `LatinRectangle` 
+   with one more row. This is an application of Hall's Marriage Theorem, `hallMatchingsOn.nonempty`.
+- `latin_rectangle_extends_to_latin_square`:  a `LatinRectangle` extends to a `LatinSquare`.
+
+## Notation
+
+- `≃` : The type of equivalences between `LatinRectangle`s.
 
 ## TODO
 
@@ -42,11 +73,10 @@ Description of Latin Squares
 
 ## References
 
+* [Euler, *Recherches sur une nouvelle espèce de quarrés magiques*][euler1782]
 * [vanLint, Wilson, *A Course in Combinatorics*, Chapter 17][vanlint_wilson2001]
 
 -/
-
-universe u u' v
 
 variable {m m' : Type*} [Fintype m] [Fintype m']
 variable {n n' : Type*} [Fintype n] [Fintype n']
@@ -68,7 +98,7 @@ abbrev distinct_row_entries (M : Matrix m n α) : Prop :=
 
 /-- For m ≤ n, an m × n Latin rectangle is a partial n × n Latin Square where
     the first m entries are filled. -/
-class LatinRectangle (m : Type u) (n : Type u') (α : Type v)
+class LatinRectangle (m : Type*) (n : Type*) (α : Type*)
   [Fintype m] [Fintype n] [Fintype α] [DecidableEq α] where
   /-- An m × n array of symbols. -/
   M : Matrix m n α
@@ -81,7 +111,7 @@ class LatinRectangle (m : Type u) (n : Type u') (α : Type v)
   m_le_n : Fintype.card m ≤ Fintype.card n := by simp
 
 -- Pretty printing of rectangles
-instance {m n : Nat} {α : Type u} [DecidableEq α] [Fintype α] [ToString α] :
+instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
   Repr (LatinRectangle (Fin m) (Fin n) α) where
     reprPrec L _ :=
       let row (i : Fin m) :=
@@ -105,7 +135,7 @@ lemma latin_square_col_implies_latin_rectangle_col
 
 /-- A LatinSquare is an n × n array containing exactly n symbols,
     each occurring exactly once in each row and exactly once in each column. -/
-class LatinSquare (n : Type u) (α : Type v) [Fintype n] [Fintype α] [DecidableEq α]
+class LatinSquare (n : Type*) (α : Type*) [Fintype n] [Fintype α] [DecidableEq α]
   extends LatinRectangle n n α where
   /-- Each column contains each symbol exactly once. -/
   once_per_column : once_per_column M
@@ -121,12 +151,12 @@ example : LatinRectangle (Fin 5) (Fin 5) (Fin 5) := LatinRectangle.mk (fun x y �
 abbrev to_matrix : (LatinRectangle m n α) → (Matrix m n α)
  | A => A.M
 
-instance {m : Type u} {n : Type u'} {α : Type v} [Fintype m]
+instance {m : Type*} {n : Type*} {α : Type*} [Fintype m]
   [Fintype n] [Fintype α] [DecidableEq α] :
   Coe (LatinRectangle m n α) (Matrix m n α) where
   coe := to_matrix
 
-instance {n : Type u'} {α : Type v}
+instance {n : Type*} {α : Type*}
   [Fintype n] [Fintype α] [DecidableEq α] :
   Coe (LatinSquare n α) (LatinRectangle n n α) where
   coe := fun A => A.toLatinRectangle
@@ -163,7 +193,7 @@ theorem ls_as_lr_as_ls_is_eq (A : LatinSquare n α) :
   ((A : LatinRectangle n n α) : LatinSquare n α) = A := by
       simp[lr_to_ls, LatinSquare.toLatinRectangle]
 
-instance {n : Nat} {α : Type v} [DecidableEq α] [Fintype α] [ToString α] :
+instance {n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
   Repr (LatinSquare (Fin n) α) where
     reprPrec L prec := Repr.reprPrec L.toLatinRectangle prec
 
@@ -267,8 +297,8 @@ end Equivalence
 
 section Completion
 
-variable {n : Type u} [Fintype n] [Nonempty n] [DecidableEq n]
-variable {k : Type u} [Fintype k] [Nonempty k] [DecidableEq k]
+variable {n : Type*} [Fintype n] [Nonempty n] [DecidableEq n]
+variable {k : Type*} [Fintype k] [Nonempty k] [DecidableEq k]
 
 def is_subrect
   (A : LatinRectangle m n α)
@@ -291,7 +321,7 @@ lemma count_by_group_or_element_indicator
     let amb : E → ι × (s.biUnion B) := fun b => (b : ι × (s.biUnion B))
     let p1 : E → ι := Prod.fst ∘ amb
     have hp1 : Set.MapsTo p1 (Finset.univ : Finset E) (Finset.univ : Finset ι) := by simp
-    have h1 := Finset.card_eq_sum_card_fiberwise hp1
+    have h₁ := Finset.card_eq_sum_card_fiberwise hp1
     have j_not_in_s_zero_summand : ∀ j ∈ sᶜ, Finset.card {a | p1 a = j} = 0 := by
       intro j hjc
       rw [Finset.card_eq_zero]
@@ -316,15 +346,15 @@ lemma count_by_group_or_element_indicator
       have h := Finset.subset_inter hx hxc
       simp only [Finset.inter_compl, Finset.subset_empty] at h
       exact h
-    have h1_split := Finset.sum_union s_s_complement_disj (f := fun j => Finset.card {a | p1 a = j})
+    have h₁_split := Finset.sum_union s_s_complement_disj (f := fun j => Finset.card {a | p1 a = j})
     replace j_not_in_s_zero_summand := Finset.sum_congr (by rfl) j_not_in_s_zero_summand
     conv at j_not_in_s_zero_summand =>
       rhs
       simp
-    rw [j_not_in_s_zero_summand] at h1_split
-    simp only [Finset.union_compl, Finset.univ_eq_attach, add_zero] at h1_split
-    simp only [Finset.univ_eq_attach, Finset.card_attach] at h1
-    rw [h1_split] at h1
+    rw [j_not_in_s_zero_summand] at h₁_split
+    simp only [Finset.union_compl, Finset.univ_eq_attach, add_zero] at h₁_split
+    simp only [Finset.univ_eq_attach, Finset.card_attach] at h₁
+    rw [h₁_split] at h₁
     have p1_im : ∀ j ∈ s, {a | p1 a = j} ≃ B j := by
       intro j hj
       refine ⟨fun x => ⟨x.val.1.2.val, by
@@ -354,25 +384,25 @@ lemma count_by_group_or_element_indicator
         simp [p1,amb] at hp1
         exact hp1.symm
       · simp [Function.RightInverse, Function.LeftInverse]
-    have h1'set : ∀ j ∈ s, Finset.card {a | p1 a = j} = (B j).card := by
+    have h₁'set : ∀ j ∈ s, Finset.card {a | p1 a = j} = (B j).card := by
       intro j hj
       specialize p1_im j hj
       simp only [Set.coe_setOf] at p1_im
       apply Finset.card_eq_of_equiv
       simp only [Finset.univ_eq_attach, Finset.mem_filter, Finset.mem_attach, true_and]
       exact p1_im
-    have h1'' := Finset.sum_congr (by rfl) h1'set
+    have h₁'' := Finset.sum_congr (by rfl) h₁'set
       (f := fun j => Finset.card {a | p1 a = j}) (g := fun j => Finset.card (B j))
-    rw [←h1'']
+    rw [←h₁'']
     simp only [Finset.univ_eq_attach]
-    rw [←h1]
+    rw [←h₁]
     -- Second half is E.card
-    clear h1 h1'' hp1 h1_split p1_im h1'set s_s_complement_disj j_not_in_s_zero_summand
+    clear h₁ h₁'' hp1 h₁_split p1_im h₁'set s_s_complement_disj j_not_in_s_zero_summand
     let p2 : E → s.biUnion B := Prod.snd ∘ amb
     have hp2 : Set.MapsTo p2 (Finset.univ : Finset E)
       (Finset.univ : Finset (s.biUnion B)) := by simp
-    have h2 := Finset.card_eq_sum_card_fiberwise hp2
-    have h2' : ∀ x ∈ (s.biUnion B), {a | p2 a = x} ≃ {j | j ∈ s ∧ ↑x ∈ B j} := by
+    have h₂ := Finset.card_eq_sum_card_fiberwise hp2
+    have h₂' : ∀ x ∈ (s.biUnion B), {a | p2 a = x} ≃ {j | j ∈ s ∧ ↑x ∈ B j} := by
       intro x hx
       simp only [Function.comp_apply, Set.coe_setOf, p2, amb]
       refine ⟨fun a => ⟨a.val.val.1, by
@@ -393,22 +423,22 @@ lemma count_by_group_or_element_indicator
         intro _ _ _ _ _ _ ha
         exact ha.symm
       · simp[Function.RightInverse, Function.LeftInverse]
-    have h2'set : ∀ x ∈ (s.biUnion B),
+    have h₂'set : ∀ x ∈ (s.biUnion B),
       Finset.card {a | p2 a = x} = Finset.card {j | j ∈ s ∧ ↑x ∈ B j} := by
         intro x hx
         apply Finset.card_eq_of_equiv
-        specialize h2' x hx
-        simp only [Set.coe_setOf] at h2'
+        specialize h₂' x hx
+        simp only [Set.coe_setOf] at h₂'
         simp only [Finset.univ_eq_attach, Finset.mem_filter,
                    Finset.mem_attach, true_and, Finset.mem_univ]
-        exact h2'
-    have h2'' := Finset.sum_congr
-      (s₁ := s.biUnion B) (s₂ := s.biUnion B) (by rfl) h2'set
+        exact h₂'
+    have h₂'' := Finset.sum_congr
+      (s₁ := s.biUnion B) (s₂ := s.biUnion B) (by rfl) h₂'set
       (f := fun x => Finset.card  {a | p2 a = x})
       (g := fun x => Finset.card  {j | j ∈ s ∧ ↑x ∈ B j})
-    rw [←h2'']
+    rw [←h₂'']
     simp only [Finset.univ_eq_attach]
-    simp only [Finset.univ_eq_attach, Finset.card_attach] at h2
+    simp only [Finset.univ_eq_attach, Finset.card_attach] at h₂
     have hfin : ∑ x ∈ (s.biUnion B).attach, {a ∈ E.attach | p2 a = x}.card =
                 ∑ x ∈ s.biUnion B, {a ∈ E.attach | ↑(p2 a) = x}.card := by
          have h := Finset.sum_attach (s.biUnion B) (fun x => {a ∈ E.attach | p2 a = x}.card )
@@ -419,7 +449,7 @@ lemma count_by_group_or_element_indicator
          ext a
          rw [SetCoe.ext_iff]
     rw[← hfin]
-    exact h2
+    exact h₂
 
 lemma exists_larger_subset
   {n : Type*} [DecidableEq n] [Fintype n]
@@ -466,32 +496,31 @@ lemma exists_larger_subset
       rw[←h'] at hc'
       simp[h₁] at hc'
 
-
 lemma latin_rect_hall_property
   {α : Type*} [DecidableEq α]
   {n : Type*} [Fintype n] [DecidableEq n]
   {k : Type*} [Fintype k]
   {B : n → Finset α}
-  (h1 : Fintype.card k < Fintype.card n := by omega)
-  (h2 : ∀ j, Finset.card (B j) = Fintype.card n - Fintype.card k)
-  (h3 : ∀ x, ∀ (t : Finset n),
+  (h₁ : Fintype.card k < Fintype.card n := by omega)
+  (h₂ : ∀ j, Finset.card (B j) = Fintype.card n - Fintype.card k)
+  (h₃ : ∀ x, ∀ (t : Finset n),
     Finset.card {j | j ∈ t ∧ x ∈ B j} ≤ Fintype.card n - Fintype.card k) :
   ∀ (s : Finset n), (Finset.card s) ≤ (Finset.card (s.biUnion B)) := by
     intro s
     set l := s.card with hl
-    have h1 : ∑ j ∈ s, (Finset.card (B j)) = l*(Fintype.card n - Fintype.card k) := by
+    have h₁ : ∑ j ∈ s, (Finset.card (B j)) = l*(Fintype.card n - Fintype.card k) := by
       conv =>
         congr
         arg 2
         ext
-        rw [h2]
+        rw [h₂]
       simp [hl]
     by_contra hc
     simp only [ge_iff_le, not_le] at hc
     have _ : NeZero ((Fintype.card n) - (Fintype.card k) ) := {out := by omega}
-    have hcount := exists_larger_subset h2 hc
+    have hcount := exists_larger_subset h₂ hc
     obtain ⟨ x, hx ⟩ := hcount
-    specialize h3 x s
+    specialize h₃ x s
     omega
 
 lemma col_card
@@ -505,8 +534,8 @@ lemma col_card
     exact Finset.card_image_of_injective Finset.univ (h_inj j)
 
 lemma card_symbols_not_in
-    {k : Type u} [Fintype k]
-    {n : Type u} [Fintype n]
+    {k : Type*} [Fintype k]
+    {n : Type*} [Fintype n]
     (A : LatinRectangle k n α) :
   ∀ j, Finset.card (symbols_not_in A j) = Fintype.card n - Fintype.card k := by
     simp [symbols_not_in,
@@ -514,7 +543,7 @@ lemma card_symbols_not_in
           A.exactly_n_symbols, col_card A]
 
 lemma row_entry_to_column_entry
-    {n : Type u} [Fintype n]
+    {n : Type*} [Fintype n]
     {k : Type*} [Fintype k]
     (A : LatinRectangle k n α)
     (x : α) :
@@ -532,21 +561,21 @@ lemma row_entry_to_column_entry
 
 lemma unique_missed_element
     {k : Type*} [Fintype k]
-    {k' : Type u} [Fintype k'] [DecidableEq k']
+    {k' : Type*} [Fintype k'] [DecidableEq k']
     (ι : k ↪ k')
     (h₂ : Fintype.card k' = Fintype.card k + 1) :
     ∃! x, x ∉ Finset.image ι Finset.univ := by
-      have h3pre : (Finset.image ι Finset.univ) ⊆ Finset.univ := by simp
-      have h3 := Finset.card_sdiff_of_subset h3pre
-      simp only [Finset.card_univ] at h3
-      rw[h₂] at h3
+      have h₃pre : (Finset.image ι Finset.univ) ⊆ Finset.univ := by simp
+      have h₃ := Finset.card_sdiff_of_subset h₃pre
+      simp only [Finset.card_univ] at h₃
+      rw[h₂] at h₃
       have h4 := Finset.card_image_of_injective Finset.univ ι.inj'
       simp only [Function.Embedding.toFun_eq_coe, Finset.card_univ] at h4
-      rw[h4] at h3
-      simp only [add_tsub_cancel_left] at h3
-      rw[Finset.card_eq_one] at h3
-      rw[Finset.singleton_iff_unique_mem] at h3
-      obtain ⟨x, hx1, hx2⟩ := h3
+      rw[h4] at h₃
+      simp only [add_tsub_cancel_left] at h₃
+      rw[Finset.card_eq_one] at h₃
+      rw[Finset.singleton_iff_unique_mem] at h₃
+      obtain ⟨x, hx1, hx2⟩ := h₃
       use x
       dsimp
       rw[Finset.mem_sdiff] at hx1
@@ -559,11 +588,11 @@ lemma unique_missed_element
       exact hx2 hy
 
 theorem latin_rectangle_extends_one_row
-    {n : Type u} [Fintype n]
-    {k : Type u} [Fintype k] [Nonempty k]
+    {n : Type*} [Fintype n]
+    {k : Type*} [Fintype k] [Nonempty k]
     (A : LatinRectangle k n α)
     (h : Fintype.card k < Fintype.card n := by omega)
-    {k' : Type u} [Fintype k']
+    {k' : Type*} [Fintype k']
     (ι : k ↪ k')
     (h₂ : Fintype.card k' = Fintype.card k + 1) :
     ∃ (A' : LatinRectangle k' n α), is_subrect A A' := by
@@ -583,18 +612,18 @@ theorem latin_rectangle_extends_one_row
     have f_inj : Function.Injective f := by
       -- TODO: This proof should be simplified
       unfold Function.Injective
-      intro a1 a2 h1
-      have h1' := h1.symm
-      have h1'' := h1
-      rw [<- hf] at h1
-      rw [<- hf] at h1'
-      rw [h1''] at h1'
-      rw [<-h1'] at h1
+      intro a1 a2 h₁
+      have h₁' := h₁.symm
+      have h₁'' := h₁
+      rw [<- hf] at h₁
+      rw [<- hf] at h₁'
+      rw [h₁''] at h₁'
+      rw [<-h₁'] at h₁
       have hinj := A.distinct_col_entries
       unfold distinct_col_entries at hinj
       specialize hinj (f a2)
       simp only [Function.Injective, Matrix.col] at hinj
-      exact hinj h1
+      exact hinj h₁
     set f' : k ↪ n := ⟨f, f_inj⟩ with hf'
     have h_Cs_card : Finset.card Cs = Fintype.card k := by
       unfold Cs
@@ -692,23 +721,23 @@ theorem latin_rectangle_extends_one_row
       simp only [Matrix.row, M']
       intro y
       split_ifs
-      · rename_i if_h1
-        rw [Finset.mem_image] at if_h1
-        obtain ⟨a1', ha1' ⟩ := if_h1
+      · rename_i if_h₁
+        rw [Finset.mem_image] at if_h₁
+        obtain ⟨a1', ha1' ⟩ := if_h₁
         simp only [Finset.mem_univ, true_and] at ha1'
         rw [<- ha1']
-        have h1' := Function.leftInverse_invFun ι.inj'
-        simp only [Function.Embedding.toFun_eq_coe] at h1'
-        rw [h1']
+        have h₁' := Function.leftInverse_invFun ι.inj'
+        simp only [Function.Embedding.toFun_eq_coe] at h₁'
+        rw [h₁']
         have h := A.once_per_row
         simp only [once_per_row,Matrix.row] at h
         apply h
       · simp only [Subtype.forall, Finset.mem_univ, forall_true_left, Set.mem_setOf_eq] at hf
-        have h2 := A.exactly_n_symbols.symm
-        have h3pre : Fintype.card ↥(Finset.univ : Finset n) = Fintype.card α := by simp[h2]
-        have h3 : (Function.Injective f') ∧ (Fintype.card Finset.univ = Fintype.card α) :=
-                  ⟨hf.1, h3pre⟩
-        rw [<-Fintype.bijective_iff_injective_and_card] at h3
+        have h₂ := A.exactly_n_symbols.symm
+        have h₃pre : Fintype.card ↥(Finset.univ : Finset n) = Fintype.card α := by simp[h₂]
+        have h₃ : (Function.Injective f') ∧ (Fintype.card Finset.univ = Fintype.card α) :=
+                  ⟨hf.1, h₃pre⟩
+        rw [<-Fintype.bijective_iff_injective_and_card] at h₃
         simp only [Function.Bijective]
         constructor
         · simp only [Function.Injective]
@@ -719,11 +748,11 @@ theorem latin_rectangle_extends_one_row
         · simp only [Function.Surjective]
           intro b
           simp only [B, symbols_not_in] at hf
-          unfold Function.Bijective Function.Surjective at h3
-          replace h3 := h3.2
-          specialize h3 b
-          simp only [Subtype.exists, Finset.mem_univ, exists_true_left] at h3
-          exact h3
+          unfold Function.Bijective Function.Surjective at h₃
+          replace h₃ := h₃.2
+          specialize h₃ b
+          simp only [Subtype.exists, Finset.mem_univ, exists_true_left] at h₃
+          exact h₃
     distinct_col_entries := by
       unfold distinct_col_entries
       intro y
@@ -732,15 +761,15 @@ theorem latin_rectangle_extends_one_row
     dite_eq_ite, Matrix.of_apply, M']
       intro a1 a2
       split_ifs
-      all_goals rename_i if_h1 if_h2
-      · obtain ⟨a1', ha1' ⟩ := if_h1
-        have h1' := Function.leftInverse_invFun ι.inj'
-        simp only [Function.Embedding.toFun_eq_coe] at h1'
-        rw [<- ha1',h1']
-        obtain ⟨a2', ha2' ⟩ := if_h2
-        have h2' := Function.leftInverse_invFun ι.inj'
-        simp only [Function.Embedding.toFun_eq_coe] at h2'
-        rw [<- ha2',h2']
+      all_goals rename_i if_h₁ if_h₂
+      · obtain ⟨a1', ha1' ⟩ := if_h₁
+        have h₁' := Function.leftInverse_invFun ι.inj'
+        simp only [Function.Embedding.toFun_eq_coe] at h₁'
+        rw [<- ha1',h₁']
+        obtain ⟨a2', ha2' ⟩ := if_h₂
+        have h₂' := Function.leftInverse_invFun ι.inj'
+        simp only [Function.Embedding.toFun_eq_coe] at h₂'
+        rw [<- ha2',h₂']
         have h := A.distinct_col_entries
         unfold distinct_col_entries at h
         unfold Function.Injective at h
@@ -762,7 +791,7 @@ theorem latin_rectangle_extends_one_row
         have hfyi := (hfy (Function.invFun (⇑ι) a2))
         have h := h.symm
         contradiction
-      · rename_i if_h1 if_h2
+      · rename_i if_h₁ if_h₂
         -- Here the f drops out and it really is about ι and cards
         -- If a1 and a2 aren't in the image of ι and
         -- card codomain of ι = card domain of ι + 1 then
@@ -771,7 +800,7 @@ theorem latin_rectangle_extends_one_row
         simp only [Finset.mem_image] at h
         intro _
         exact ExistsUnique.unique (y₁ := a1) (y₂ := a2) h
-          (by simpa using if_h1) (by simpa using if_h2)
+          (by simpa using if_h₁) (by simpa using if_h₂)
     m_le_n := by omega
   }
   use A'
@@ -788,22 +817,22 @@ theorem latin_rectangle_extends_one_row
   rfl
 
 lemma subrect_transitive {m'' : Type*} [Fintype m'']
-  {n : Type u} [Fintype n]
+  {n : Type*} [Fintype n]
   {A : LatinRectangle m n α}
   {A' : LatinRectangle m' n α}
   {A'' : LatinRectangle m'' n α}
-  (h1 : is_subrect A A') (h2 : is_subrect A' A'') : is_subrect A A'' := by
+  (h₁ : is_subrect A A') (h₂ : is_subrect A' A'') : is_subrect A A'' := by
     unfold is_subrect at *
-    obtain ⟨f,g,h,h1⟩ := h1
-    obtain ⟨f',g',h',h2⟩ := h2
+    obtain ⟨f,g,h,h₁⟩ := h₁
+    obtain ⟨f',g',h',h₂⟩ := h₂
     set f'' := Function.Embedding.trans f f'
     set g'' := Function.Embedding.trans g g'
     set h'' := Equiv.trans h h'
     use f'', g'', h''
-    simp [h'', f'', g'',h2,h1]
+    simp [h'', f'', g'',h₂,h₁]
 
 lemma subrect_refl
-  {n : Type u} [Fintype n]
+  {n : Type*} [Fintype n]
   {A : LatinRectangle m n α}
   {A' : LatinRectangle m' n α} (h : A ≃ A') :
   is_subrect A A' := by
@@ -815,8 +844,8 @@ lemma subrect_refl
     exact hrfl
     
 theorem latin_rectangle_extends_to_latin_square
-    {n : Type u} [Fintype n]
-    {k : Type u} [Fintype k] [Nonempty k]
+    {n : Type*} [Fintype n]
+    {k : Type*} [Fintype k] [Nonempty k]
     (A : LatinRectangle k n α)
     (h : Fintype.card k ≤ Fintype.card n := by omega) :
     ∃ (A' : LatinRectangle n n α), is_subrect A A' := by
