@@ -367,9 +367,7 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
   convert meromorphicOrderAt_const z₀ (n : 𝕜)
   simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
 
-/--
-The order of `· - x` at `x` is `1`.
--/
+/-- The order of `· - x` at `x` is `1`. -/
 @[simp] theorem meromorphicOrderAt_id_sub_const :
     meromorphicOrderAt (· - x) x = 1 := by
   rw [(by rfl : (1 : WithTop ℤ) = (1 : ℤ)), meromorphicOrderAt_eq_int_iff (by fun_prop) (n := 1)]
