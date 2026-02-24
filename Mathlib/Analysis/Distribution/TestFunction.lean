@@ -632,6 +632,34 @@ lemma lineDerivCLM_eq_withOrder {v : E} :
 
 end FDerivCLM
 
+section ToBoundedContinuousFunctionCLM
+
+variable (𝕜) in
+/-- The inclusion of the space `𝓓^{n}(Ω, F)` into the space `E →ᵇ F` of bounded continuous
+functions as a continuous `𝕜`-linear map. -/
+@[simps! apply]
+noncomputable def toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
+    𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F :=
+  TestFunction.mkCLM 𝕜 (↑) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ (ContDiffMapSupportedIn.toBoundedContinuousFunctionCLM 𝕜).continuous)
+
+lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F] :
+    (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
+  rfl
+
+variable (𝕜) in
+theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
+    Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
+  fun f g ↦ by simp [toBoundedContinuousFunctionCLM]
+
+instance : T3Space 𝓓^{n}(Ω, F) :=
+  suffices T2Space 𝓓^{n}(Ω, F) from inferInstance
+  .of_injective_continuous (injective_toBoundedContinuousFunctionCLM ℝ)
+    (ContinuousLinearMap.continuous _)
+
+end ToBoundedContinuousFunctionCLM
+
 section Integral
 
 open MeasureTheory
@@ -655,13 +683,6 @@ protected theorem memLp_top {μ : Measure E} (f : 𝓓^{n}(Ω, F)) :
     MemLp f ⊤ μ :=
   f.continuous.memLp_top_of_hasCompactSupport f.hasCompactSupport μ
 
-protected theorem integrable {μ : Measure E}
-    (H : ∀ K : Set E, IsCompact K → K ⊆ Ω → IsFiniteMeasure (μ.restrict K)) -- TODO
-    (f : 𝓓^{n}(Ω, F)) : Integrable f μ := by
-  rw [← integrableOn_iff_integrable_of_support_subset (subset_tsupport f)]
-  specialize H (tsupport f) f.hasCompactSupport f.tsupport_subset
-  exact f.continuous.integrable_of_hasCompactSupport f.hasCompactSupport
-
 protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {μ : Measure E} {φ : E → F₂}
     (hφ : LocallyIntegrableOn φ Ω μ) (f : 𝓓^{n}(Ω, F₁)) :
     Integrable (fun x ↦ B (f x) (φ x)) μ := by
@@ -672,6 +693,15 @@ protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {�
   replace hφ := hφ.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
   rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
   exact B.memLp_of_bilin 1 f.memLp_top hφ
+
+protected theorem integrable {μ : Measure E}
+    (H : LocallyIntegrableOn (fun (_ : E) ↦ (1 : ℝ)) Ω μ) -- TODO
+    (f : 𝓓^{n}(Ω, F)) : Integrable f μ := by
+  rw [← integrableOn_iff_integrable_of_support_subset (subset_tsupport f)]
+  replace H := H.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
+  suffices IntegrableOn ((1 : ℝ) • f) (tsupport f) μ by simpa
+  rw [IntegrableOn, ← memLp_one_iff_integrable] at H ⊢
+  exact f.memLp_top.smul H
 
 variable [SMulCommClass ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [SMulCommClass ℝ 𝕜 F₃]
 
