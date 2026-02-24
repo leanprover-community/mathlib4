@@ -126,7 +126,8 @@ protected lemma Nontrivial.erase_nonempty (hs : s.Nontrivial) : (s.erase a).None
   exact ⟨_, hb, _, ha, hba⟩
 
 @[simp]
-theorem erase_singleton (a : α) : ({a} : Finset α).erase a = ∅ := by grind
+theorem erase_singleton (a : α) : ({a} : Finset α).erase a = ∅ := by
+  ext x; simp
 
 @[simp]
 theorem erase_insert_eq_erase (s : Finset α) (a : α) : (insert a s).erase a = s.erase a := by grind
