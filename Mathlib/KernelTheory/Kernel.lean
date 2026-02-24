@@ -692,7 +692,7 @@ def featureKernel {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] (
 }
 
 @[simp]
-theorem featureKernel_apply {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F] (φ : X → F) (x y : X) :
+theorem featureKernel_apply {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] (φ : X → F) (x y : X) :
     (featureKernel φ).kernel x y = inner ℝ (φ x) (φ y) :=
   rfl
 
