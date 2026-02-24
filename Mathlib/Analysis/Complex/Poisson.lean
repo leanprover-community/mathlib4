@@ -168,79 +168,40 @@ private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
       _ ≤ q * R := by gcongr
       _ < 1 * R := by gcongr
       _ = ‖W‖ := by simp [W, abs_of_pos hR]
+  have h0 : ∮ (z : ℂ) in C(0, R), z⁻¹ • ((q * z) / (q * z - W)) • f z = 0 := calc
+    ∮ (z : ℂ) in C(0, R), z⁻¹ • ((q * z) / (q * z - W)) • f z
+    _ = ∮ (z : ℂ) in C(0, R), (q / (q * z - W)) • f z := by
+      apply circleIntegral.integral_congr hR.le fun z hz ↦ ?_
+      have hz : z ≠ 0 := by aesop
+      match_scalars
+      field
+    _ = 0 := by
+      apply DifferentiableOn.diffContOnCl ?_ |>.smul hf |>.circleIntegral_eq_zero hR.le
+      rw [closure_ball 0 hR.ne']
+      fun_prop (disch := aesop)
   -- Main computation starts here
   calc Real.circleAverage (fun z ↦ ((z + w) / (z - w)).re • f z) 0 R
     _ = Real.circleAverage (fun z ↦ (z / (z - w) - (q • z) / (q • z - W)) • f z) 0 R := by
-      apply circleAverage_congr_sphere
-      intro z hz
+      apply circleAverage_congr_sphere fun z hz ↦ ?_
+      have hzR : ‖z‖ = R := by simpa [abs_of_pos hR] using hz
       match_scalars
       simp only [q, W, real_smul, ofReal_div, coe_algebraMap, mul_one]
-      have h₁φ : R * exp (z.arg * I) = z := by
-        convert norm_mul_exp_arg_mul_I z
-        simp_all [abs_of_pos]
-      rw [← norm_mul_exp_arg_mul_I w, ← h₁φ, ← circleAverage_re_smul_on_ball_zero_aux,
-        norm_mul_exp_arg_mul_I w]
-      congr 1
-      ring_nf
+      rw [← norm_mul_exp_arg_mul_I w, ← norm_mul_exp_arg_mul_I z, hzR,
+        ← circleAverage_re_smul_on_ball_zero_aux, norm_mul_exp_arg_mul_I w]
       field [hR.ne.symm]
     _ = Real.circleAverage (fun z ↦ (z / (z - w)) • f z) 0 R
         - Real.circleAverage (fun z ↦ ((q • z) / (q • z - W)) • f z) 0 R := by
       simp_rw [sub_smul]
+      have h₁ : ∀ z ∈ sphere 0 R, z - w ≠ 0 := by aesop (add simp sub_eq_zero)
+      have h₃ : ContinuousOn f (sphere 0 R) :=
+        hf.2.mono <| sphere_subset_closedBall.trans_eq (closure_ball 0 hR.ne').symm
       rw [circleAverage_fun_sub]
-      · -- CircleIntegrable (fun z ↦ (z / (z - w)) • f z) 0 R
-        rw [← abs_of_pos hR] at hf hw
+      all_goals
         apply ContinuousOn.circleIntegrable hR.le
-        intro z hz
-        have : z - w ≠ 0 := by
-          by_contra h
-          rw [abs_of_pos hR, sub_eq_zero] at *
-          simp_all [dist_eq_norm]
-        have : ContinuousWithinAt f (sphere 0 R) z := by
-          apply hf.2.mono _ z hz
-          rw [abs_of_pos hR, closure_ball 0 (ne_of_lt hR).symm]
-          apply sphere_subset_closedBall
-        fun_prop (disch := assumption)
-      · -- CircleIntegrable (fun z ↦ (q • z / (q • z - W)) • f z) 0 R
-        apply ContinuousOn.circleIntegrable'
-        intro z hz
-        have : ‖z‖ ≤ R := by
-            rw [mem_sphere_iff_norm, sub_zero, abs_of_pos hR] at hz
-            apply le_of_eq hz
-        have : ContinuousWithinAt f (sphere 0 |R|) z := by
-          apply hf.2.mono _ z hz
-          rw [abs_of_pos hR, closure_ball 0 (ne_of_lt hR).symm]
-          apply sphere_subset_closedBall
         fun_prop (disch := aesop)
-    _ = f w - Real.circleAverage (fun z ↦ ((q • z) / (q • z - W)) • f z) 0 R := by
-      rw [← abs_of_pos hR] at hw hf
-      simp [← hf.circleAverage_smul_div hw]
     _ = f w := by
-      simp only [real_smul, circleAverage_eq_circleIntegral (ne_of_lt hR).symm, mul_inv_rev, inv_I,
-        neg_mul, sub_zero, neg_smul, sub_neg_eq_add, add_eq_left, isUnit_iff_ne_zero, ne_eq,
-        mul_eq_zero, I_ne_zero, inv_eq_zero, ofReal_eq_zero, pi_ne_zero, OfNat.ofNat_ne_zero,
-        or_self, not_false_eq_true, IsUnit.smul_eq_zero]
-      have : ∮ (z : ℂ) in C(0, R), z⁻¹ • ((q * z) / (q * z - W)) • f z
-          = ∮ (z : ℂ) in C(0, R), (q / (q * z - W)) • f z := by
-        apply circleIntegral.integral_congr hR.le
-        intro z hz
-        match_scalars
-        field [(by aesop: z ≠ 0)]
-      rw [this]
-      apply DiffContOnCl.circleIntegral_eq_zero hR.le
-      -- DiffContOnCl ℂ (fun z ↦ (↑q / (↑q * z - W)) • f z) (ball 0 R)
-      apply DiffContOnCl.smul _ hf
-      · constructor
-        · intro x hx
-          have : ‖x‖ ≤ R := by
-            rw [mem_ball, dist_zero_right] at hx
-            exact hx.le
-          have := η₀ this
-          fun_prop (disch := assumption)
-        · intro x hx
-          have : ‖x‖ ≤ R := by
-            rwa [closure_ball _ (ne_of_lt hR).symm, mem_closedBall, dist_zero_right] at hx
-          have := η₀ this
-          fun_prop (disch := assumption)
+      rw [← abs_of_pos hR] at hw hf
+      simp [← hf.circleAverage_smul_div hw, circleAverage_eq_circleIntegral (ne_of_lt hR).symm, h0]
 
 /--
 **Poisson integral formula** for ℂ-differentiable functions on arbitrary disks in the complex plane,
