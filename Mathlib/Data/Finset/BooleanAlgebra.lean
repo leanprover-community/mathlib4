@@ -166,8 +166,9 @@ theorem compl_inter (s t : Finset α) : (s ∩ t)ᶜ = sᶜ ∪ tᶜ :=
 
 @[simp]
 theorem compl_erase : (s.erase a)ᶜ = insert a sᶜ := by
-  ext
-  simp only [or_iff_not_imp_left, mem_insert, not_and, mem_compl, mem_erase]
+  ext x
+  by_cases hxa : x = a <;>
+  simp_all
 
 @[simp]
 theorem compl_insert : (insert a s)ᶜ = sᶜ.erase a := by
