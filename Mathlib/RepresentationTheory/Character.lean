@@ -8,6 +8,7 @@ module
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.RepresentationTheory.Invariants
+public import Mathlib.RepresentationTheory.Intertwining
 
 /-!
 # Characters of representations
@@ -92,13 +93,11 @@ theorem char_linHom (V W : FDRep k G) (g : G) :
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem average_char_eq_finrank_invariants (V : FDRep k G) :
     ⅟(Fintype.card G : k) • ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
   rw [← (isProj_averageMap V.ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `V` are `W` are finite-dimensional representations of a finite group, then the
 scalar product of their characters is equal to the dimension of the space of
@@ -166,12 +165,20 @@ theorem char_one (ρ : Representation k G V) : ρ.character 1 = Module.finrank k
 theorem char_tensor : (tprod ρ σ).character = ρ.character * σ.character := by
   ext g; convert trace_tensorProduct' (ρ g) (σ g)
 
+omit [FiniteDimensional k V] [FiniteDimensional k W] in
+variable {ρ σ} in
+/-- The character of isomorphic representations is the same. -/
+theorem char_iso (φ : Equiv ρ σ) : ρ.character = σ.character := by
+  ext g
+  simp [character, ← φ.conj_apply_self]
+
 end Monoid
 
 section Group
 
-variable {G k V : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
-  [FiniteDimensional k V] (ρ : Representation k G V)
+variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
+  [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
+  (ρ : Representation k G V) (σ : Representation k G W)
 
 omit [FiniteDimensional k V] in
 /-- The character of a representation is constant on conjugacy classes. -/
@@ -183,15 +190,30 @@ theorem char_conj (g : G) (h : G) : ρ.character (h * g * h⁻¹) = ρ.character
 theorem char_dual (g : G) : ρ.dual.character g = ρ.character g⁻¹ :=
   trace_transpose' (ρ g⁻¹)
 
-variable [Finite G] [Invertible (Nat.card G : k)]
+@[simp]
+theorem char_linHom (g : G) :
+    (linHom ρ σ).character g = ρ.character g⁻¹ * σ.character g := by
+  rw [← char_iso (Equiv.dualTensorHom ρ σ), char_tensor, Pi.mul_apply, char_dual]
+
+variable [Fintype G] [Invertible (Nat.card G : k)]
 
 theorem average_char_eq_finrank_invariants :
-    let : Fintype G := Fintype.ofFinite G
     (Nat.card G : k)⁻¹ • ∑ g : G, ρ.character g = finrank k (invariants ρ) := by
-  let : Fintype G := Fintype.ofFinite G
   have : Invertible (Fintype.card G : k) := by rw [Fintype.card_eq_nat_card]; assumption
   rw [← (isProj_averageMap ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
+
+/--
+If `V` are `W` are finite-dimensional representations of a finite group, then the
+scalar product of their characters is equal to the dimension of the space of
+equivariant maps from `V` to `W`.
+-/
+theorem scalar_product_char_eq_finrank_equivariant :
+    (Nat.card G : k)⁻¹ • ∑ g : G, σ.character g * ρ.character g⁻¹ =
+    Module.finrank k (IntertwiningMap ρ σ) := by
+  conv_lhs => congr; rfl; congr; rfl; intro _; rw [mul_comm, ← char_linHom]
+  rw [average_char_eq_finrank_invariants,
+    ← LinearEquiv.finrank_eq (invariantsEquivIntertwiningMap ρ σ)]
 
 end Group
 

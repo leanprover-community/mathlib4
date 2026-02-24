@@ -5,7 +5,7 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.RepresentationTheory.Basic
+public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.FDRep
 
 /-!
@@ -64,8 +64,9 @@ section Invariants
 
 open GroupAlgebra
 
-variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
-variable (ρ : Representation k G V)
+variable {k G V W : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V] [AddCommGroup W]
+  [Module k W]
+variable (ρ : Representation k G V) (σ : Representation k G W)
 
 /-- The subspace of invariants, consisting of the vectors fixed by all elements of `G`.
 -/
@@ -92,6 +93,36 @@ lemma mem_invariants_iff_of_forall_mem_zpowers
     rcases hg γ with ⟨i, rfl⟩
     induction i with | zero => simp | succ i _ => simp_all [zpow_add_one] | pred i h => _
     simpa [neg_sub_comm _ (1 : ℤ), zpow_sub] using congr(ρ g⁻¹ $(h.trans hx.symm))⟩
+
+variable {ρ σ} in
+lemma mem_linHom_invariants_iff_isIntertwining (f : V →ₗ[k] W) :
+    f ∈ (linHom ρ σ).invariants ↔ IsIntertwiningMap ρ σ f := by
+  constructor <;> intro hf
+  · constructor
+    intro γ v
+    specialize hf γ
+    rw [linHom_apply] at hf
+    nth_rewrite 1 [← hf]
+    simp
+  · intro γ
+    rw [linHom_apply]
+    ext v
+    simp [hf.isIntertwining]
+
+/-- The invariants of the representation `linHom ρ σ` correspond to intertwining maps
+ from `ρ` to `σ`. -/
+def invariantsEquivIntertwiningMap : (linHom ρ σ).invariants ≃ₗ[k] IntertwiningMap ρ σ where
+  toFun f := { f.val with
+               isIntertwining' :=
+               ((mem_linHom_invariants_iff_isIntertwining f.val).mp f.property).isIntertwining }
+  map_add' _ _ := IntertwiningMap.ext_iff.mpr rfl
+  map_smul' _ _ := IntertwiningMap.ext_iff.mpr rfl
+  invFun g := { val := g.toLinearMap
+                property := by
+                  exact (mem_linHom_invariants_iff_isIntertwining g.toLinearMap).mpr
+                    {isIntertwining := g.isIntertwining'} }
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 section
 
@@ -121,7 +152,7 @@ theorem isProj_averageMap : LinearMap.IsProj ρ.invariants ρ.averageMap :=
 end
 section Subgroup
 
-variable {V : Type*} [AddCommMonoid V] [Module k V]
+variable {V : Type*} [AddCommGroup V] [Module k V]
 variable (ρ : Representation k G V) (S : Subgroup G) [S.Normal]
 
 lemma le_comap_invariants (g : G) :
