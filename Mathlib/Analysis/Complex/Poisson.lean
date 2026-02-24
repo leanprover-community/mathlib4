@@ -252,8 +252,7 @@ theorem DiffContOnCl.circleAverage_re_herglotzRiesz_smul [CompleteSpace E] {c : 
   rcases le_or_gt R 0 with hR | hR
   · simp_all [(ball_eq_empty).2 hR]
   have h₁g : DiffContOnCl ℂ (fun z ↦ f (z + c)) (ball 0 R) :=
-    ⟨hf.1.comp (by fun_prop) (fun _ _ ↦ by aesop),
-      hf.2.comp (by fun_prop) (fun _ _ ↦ by simp_all [closure_ball _ (ne_of_lt hR).symm])⟩
+    hf.comp (DifferentiableOn.diffContOnCl <| by fun_prop) (by intro; aesop)
   have h₂g : w - c ∈ ball 0 R := by simpa using hw
   simpa [← circleAverage_map_add_const, herglotzRiesz_def]
     using circleAverage_re_smul_on_ball_zero h₁g h₂g
