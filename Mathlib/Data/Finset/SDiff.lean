@@ -62,8 +62,21 @@ theorem mem_sdiff : a ∈ s \ t ↔ a ∈ s ∧ a ∉ t :=
 theorem inter_sdiff_self (s₁ s₂ : Finset α) : s₁ ∩ (s₂ \ s₁) = ∅ := by grind
 
 instance : GeneralizedBooleanAlgebra (Finset α) where
-  sup_inf_sdiff := by grind
-  inf_inf_sdiff := by grind
+  sup_inf_sdiff := by
+    intro s t; ext a
+    simp only [inf_eq_inter', sup_eq_union', mem_union, mem_inter, mem_sdiff]
+    constructor
+    · rintro (⟨h, -⟩ | ⟨h, -⟩) <;> exact h
+    · intro h
+      rcases (inferInstance : Decidable (a ∈ t)) with ht | ht
+      · right; exact ⟨h, ht⟩
+      · left; exact ⟨h, ht⟩
+  inf_inf_sdiff := by
+    intro s t
+    refine ext fun a ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · rw [inf_eq_inter', mem_inter, mem_inter, mem_sdiff] at h
+      exact (h.2.2 h.1.2).elim
+    · simp at h
 
 theorem notMem_sdiff_of_mem_right (h : a ∈ t) : a ∉ s \ t := by grind
 
