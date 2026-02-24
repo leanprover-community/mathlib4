@@ -432,7 +432,8 @@ theorem maximal_isAcyclic_iff_isTree [Nonempty V] {T : SimpleGraph V} :
     Maximal IsAcyclic T ↔ T.IsTree := by
   simp [← connected_top.maximal_le_isAcyclic_iff_isTree le_top]
 
-/-- A maximally acyclic graph is a tree. -/
+/-- A maximally acyclic graph is a tree. This is similar to `maximal_isAcyclic_iff_isTree` except
+with `Nonempty V` as part of the iff rather than an assumption. -/
 theorem isTree_iff_maximal_isAcyclic : G.IsTree ↔ Nonempty V ∧ Maximal IsAcyclic G := by
   refine ⟨fun h ↦ ?_, fun ⟨_, h⟩ ↦ G.maximal_isAcyclic_iff_isTree.mp h⟩
   have := h.isConnected.nonempty
