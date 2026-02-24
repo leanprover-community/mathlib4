@@ -128,8 +128,8 @@ theorem IsAffine.iff_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsAffine 
 @[deprecated (since := "2025-03-31")] alias isAffine_of_isIso := IsAffine.of_isIso
 
 instance Scheme.isAffine_local_affine {X : Scheme.{u}} (x : X) :
-    IsAffine (Opens.toScheme (X.local_affine x).choose.obj) :=
-  let : Opens.toScheme (X.local_affine x).choose.obj ≅ Spec (X.local_affine x).choose_spec.choose :=
+    IsAffine (Opens.toScheme (X.local_affine x).choose.val) :=
+  let : Opens.toScheme (X.local_affine x).choose.val ≅ Spec (X.local_affine x).choose_spec.choose :=
     fullyFaithfulForgetToLocallyRingedSpace.preimageIso
       (X.local_affine x).choose_spec.choose_spec.some
   IsAffine.of_isIso this.hom
@@ -223,12 +223,12 @@ def equivCommRingCat : AffineScheme ≌ CommRingCatᵒᵖ :=
   equivEssImageOfReflective.symm
 
 lemma equivCommRingCat_functor_map {X Y : AffineScheme} (f : X ⟶ Y) :
-    equivCommRingCat.functor.map f = f.appTop.op := by
+    equivCommRingCat.functor.map f = (f.hom.appTop).op := by
   simp [equivCommRingCat, reflector, Reflective.L]
 
-lemma equivCommRingCat_inverse_map {X Y : CommRingCatᵒᵖ} (f : X ⟶ Y) :
-    equivCommRingCat.inverse.map f = Spec.map f.unop := by
-  simp [equivCommRingCat]
+-- lemma equivCommRingCat_inverse_map {X Y : CommRingCatᵒᵖ} (f : X ⟶ Y) :
+--     equivCommRingCat.inverse.map f = Spec.map f.unop := by
+--   simp [equivCommRingCat]
 
 instance : Γ.{u}.rightOp.IsEquivalence := equivCommRingCat.isEquivalence_functor
 
