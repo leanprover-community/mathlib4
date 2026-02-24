@@ -311,12 +311,19 @@ theorem isGoodReduction_or_isMultiplicativeReduction_or_isAdditiveReduction
     ← integralModel_Δ_eq R W, ← integralModel_c₄_eq R W]
   grind [valuation_le_one]
 
-/-- A minimal Weierstrass equation has multiplicative reduction if and only if
-the valuation of its discriminant is less than 1 and the valuation of `a₄` equals 1. -/
+open Polynomial in
+/-- A minimal Weierstrass equation has split multiplicative reduction if and only if
+the polynomial `c₄ X ^ 2 + a₁ c₄ X + (54 b₆ - 3 b₂ b₄ - a₂ c₄)` splits in the residue field.
+
+To see how this polynomial arises, note that node `(x₀, y₀)` has `x₀ = (18 b₆ - b₂ b₄) / c₄`, and
+the reduction is split if and only if the tangent cone `X ^ 2 + a₁ T = 3 x₀ + a₂` splits.
+-/
 @[mk_iff]
 class IsSplitMultiplicativeReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop
     extends W.IsMultiplicativeReduction R where
-  splitMultiplicativeReduction : valuation K (maximalIdeal R) W.a₄ = 1
+  splitMultiplicativeReduction : letI I := W.integralModel R
+    Splits <| .map (algebraMap R (ResidueField R)) <|
+      C I.c₄ * X ^ 2 + C (I.a₁ * I.c₄) * X + C (54 * I.b₆ - 3 * I.b₂ * I.b₄ - I.a₂ * I.c₄)
 
 end Reduction
 
