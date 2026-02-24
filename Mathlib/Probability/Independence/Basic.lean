@@ -698,6 +698,7 @@ theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' 
   · intro h s t hs ht
     rw [(h₀ hs ht).1, (h₀ hs ht).2, h, Measure.prod_prod]
 
+set_option linter.flexible false in
 /-- If `Y` is independent of itself under a probability measure, then `X` and `Y`
 are independent. Self-independence implies `Y` is a.e. constant. -/
 theorem IndepFun.of_self {Ω A B : Type*} [MeasurableSpace Ω]
@@ -711,7 +712,7 @@ theorem IndepFun.of_self {Ω A B : Type*} [MeasurableSpace Ω]
     have h_eq : μ (Y ⁻¹' s) = μ (Y ⁻¹' s) * μ (Y ⁻¹' s) := by
       simpa using hY s s hs hs
     by_cases h : μ (Y ⁻¹' s) = 0 <;> simp +decide [h] at h_eq ⊢
-    rw [← ENNReal.toReal_eq_toReal] at * <;> norm_num at *
+    rw [← ENNReal.toReal_eq_toReal_iff'] at * <;> norm_num at *
     · exact mul_left_cancel₀ h <| by linarith
     · exact ENNReal.mul_ne_top (measure_ne_top _ _) (measure_ne_top _ _)
   intro s t hs ht
