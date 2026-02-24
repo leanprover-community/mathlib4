@@ -551,7 +551,7 @@ lemma ne_update_self_iff : f ≠ update f a b ↔ f a ≠ b := eq_update_self_if
 lemma update_ne_self_iff : update f a b ≠ f ↔ b ≠ f a := update_eq_self_iff.not
 
 @[simp]
-lemma update_eq_self : update f a (f a) = f := by
+lemma update_eq_self (a : α) (f : ∀ a, β a) : update f a (f a) = f := by
   ext x
   by_cases hx : x = a
   · rw [hx, update_self]
