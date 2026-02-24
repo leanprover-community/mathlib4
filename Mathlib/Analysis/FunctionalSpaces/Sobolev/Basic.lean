@@ -29,6 +29,37 @@ variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] --[RCLike 𝕂]
     -- [NormedSpace 𝕂 F]
   {f f' : E → F} {n : ℕ∞} {k : ℕ∞} {p : ℝ≥0∞} {μ ν : Measure E}
 
+section move
+
+lemma MeasureTheory.aeEq_iff {α β : Type*} [MeasurableSpace α] {μ : Measure α} {f g : α → β} :
+    f =ᵐ[μ] g ↔ μ {x | f x ≠ g x} = 0 := by
+  rfl
+
+lemma Set.EqOn.aeEq {α β : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α}
+    {f g : α → β} (h : s.EqOn f g) (h2 : μ sᶜ = 0) : f =ᵐ[μ] g :=
+  Measure.mono_null (fun _x hx h2x ↦ hx (h h2x)) h2
+
+lemma Set.EqOn.aeEq_restrict {α β : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α}
+    {f g : α → β} (h : s.EqOn f g) (hs : MeasurableSet s) : f =ᵐ[μ.restrict s] g :=
+  h.aeEq <| (Measure.restrict_apply_eq_zero' hs).mpr (by simp)
+
+instance [hμ : IsLocallyFiniteMeasure μ] : IsLocallyFiniteMeasure (μ.restrict Ω) where
+  finiteAtNhds x := by
+    obtain ⟨s, hs, hmus⟩ := hμ.finiteAtNhds x
+    exact ⟨s, hs, lt_of_le_of_lt (Measure.restrict_apply_le Ω s) hmus⟩
+
+/- to do: the Norm instance on PiLp also induces a non-defeq ENorm on PiLp,
+we maybe should disable the Norm → ENorm instance. -/
+/- to do: the EDist instance on PiLp for p = 0 is wrong. -/
+/- to do: do we indeed want this for non-fintypes? -/
+instance PiLp.instENorm (p : ℝ≥0∞) {ι : Type*} (β : ι → Type*) [(i : ι) → ENorm (β i)] :
+    ENorm (PiLp p β) where
+  enorm f :=
+    if p = 0 then {i | ‖f i‖ₑ ≠ 0}.encard
+    else if p = ∞ then ⨆ i, ‖f i‖ₑ else (∑' i, ‖f i‖ₑ ^ p.toReal) ^ (1 / p.toReal)
+
+end move
+
 namespace Distribution
 
 /- maybe inline this definition in `HasWeakDeriv`? -/
@@ -375,12 +406,6 @@ lemma mono_p_of_measure_lt_top [IsFiniteMeasure μ] (hf : MemSobolev Ω f k p μ
 
 end monotonicity
 
--- TODO: move to the appropriate location!
-instance [hμ : IsLocallyFiniteMeasure μ] : IsLocallyFiniteMeasure (μ.restrict Ω) where
-  finiteAtNhds x := by
-    obtain ⟨s, hs, hmus⟩ := hμ.finiteAtNhds x
-    exact ⟨s, hs, lt_of_le_of_lt (Measure.restrict_apply_le Ω s) hmus⟩
-
 lemma add [IsLocallyFiniteMeasure μ] [hp : Fact (1 ≤ p)]
     (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
     MemSobolev Ω (f + f') k p μ := by
@@ -426,18 +451,29 @@ lemma const (a : F) [IsFiniteMeasure μ] : MemSobolev Ω (fun _ : E ↦ a) k p �
   -- TODO: better test for MemSobolev: e.g. from being Lp and the weakderiv being nice
   sorry
 
-end MemSobolev
+/- Add analogous lemmas for RepresentedBy and HasWeakDeriv-/
+lemma _root_.memSobolev_congr_ae (h : f =ᵐ[μ.restrict Ω] f') :
+    MemSobolev Ω f k p μ ↔ MemSobolev Ω f' k p μ := by
+  sorry
 
-/- to do: the Norm instance on PiLp also induces a non-defeq ENorm on PiLp,
-we maybe should disable the Norm → ENorm instance. -/
-/- to do: the EDist instance on PiLp for p = 0 is wrong. -/
-/- to do: move this -/
-/- to do: do we indeed want this for non-fintypes? -/
-instance PiLp.instENorm (p : ℝ≥0∞) {ι : Type*} (β : ι → Type*) [(i : ι) → ENorm (β i)] :
-    ENorm (PiLp p β) where
-  enorm f :=
-    if p = 0 then {i | ‖f i‖ₑ ≠ 0}.encard
-    else if p = ∞ then ⨆ i, ‖f i‖ₑ else (∑' i, ‖f i‖ₑ ^ p.toReal) ^ (1 / p.toReal)
+lemma aeEq (h : f =ᵐ[μ.restrict Ω] f') (hf : MemSobolev Ω f k p μ) :
+    MemSobolev Ω f' k p μ :=
+  memSobolev_congr_ae h |>.mp hf
+
+lemma aestronglyMeasurable (hf : MemSobolev Ω f k p μ) :
+  AEStronglyMeasurable f (μ.restrict Ω) := sorry
+
+lemma indicator {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
+  MemSobolev Ω (s.indicator f) k p μ := sorry
+
+lemma restrict {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
+  MemSobolev Ω f k p (μ.restrict s) := sorry
+
+theorem aeeqFunMk (hf : MemSobolev Ω f k p μ) :
+    MemSobolev Ω (AEEqFun.mk f hf.aestronglyMeasurable) k p μ :=
+  hf.aeEq <| (AEEqFun.coeFn_mk f _).symm
+
+end MemSobolev
 
 open Finset in
 /-- Only used to write API. Use `sobolevNorm` instead. -/
@@ -468,14 +504,6 @@ lemma sobolevNorm_zero : sobolevNorm Ω (0 : E → F) k p μ = 0 := by
 lemma sobolevNorm_measure_zero : sobolevNorm Ω f k p 0 = 0 := by
   sorry
 
-theorem sobolevNorm_eq_zero_iff (hf : AEStronglyMeasurable f μ) :
-    sobolevNorm Ω f k p μ = 0 ↔ f =ᵐ[μ.restrict Ω] 0 := by
-  sorry
-  -- by_cases h_top : p = ∞
-  -- · rw [h_top, eLpNorm_exponent_top, eLpNormEssSup_eq_zero_iff]
-  -- rw [eLpNorm_eq_eLpNorm' h0 h_top]
-  -- exact eLpNorm'_eq_zero_iff (ENNReal.toReal_pos h0 h_top) hf
-
 lemma sobolevNorm_neg :
     sobolevNorm Ω (-f) k p μ = sobolevNorm Ω f k p μ := by
   sorry
@@ -484,6 +512,13 @@ lemma sobolevNorm_add_le (hf : AEStronglyMeasurable f μ) (hf' : AEStronglyMeasu
     sobolevNorm Ω (f + f') k p μ ≤ sobolevNorm Ω f k p μ + sobolevNorm Ω f' k p μ := by
   sorry
 
+lemma eLpNorm_le_sobolevNorm : eLpNorm f p (μ.restrict Ω) ≤ sobolevNorm Ω f k p μ := by
+  sorry
+
+theorem sobolevNorm_eq_zero_iff (hf : AEStronglyMeasurable f μ) (hp : p ≠ 0) :
+    sobolevNorm Ω f k p μ = 0 ↔ f =ᵐ[μ.restrict Ω] 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ (sobolevNorm_congr_ae h).trans sobolevNorm_zero⟩
+  simp_rw [← eLpNorm_eq_zero_iff hf.restrict hp, ← le_zero_iff, ← h, eLpNorm_le_sobolevNorm]
 
 end FinDim
 
@@ -538,44 +573,6 @@ end Distribution
 
 
 variable [FiniteDimensional ℝ E]
-
-
-/- Add analogous lemmas for RepresentedBy and HasWeakDeriv-/
-lemma memSobolev_congr_ae (h : f =ᵐ[μ.restrict Ω] f') :
-    MemSobolev Ω f k p μ ↔ MemSobolev Ω f' k p μ := by
-  sorry
-
-lemma MemSobolev.aeEq (h : f =ᵐ[μ.restrict Ω] f') (hf : MemSobolev Ω f k p μ) :
-    MemSobolev Ω f' k p μ :=
-  memSobolev_congr_ae h |>.mp hf
-
-lemma MemSobolev.aestronglyMeasurable (hf : MemSobolev Ω f k p μ) :
-  AEStronglyMeasurable f (μ.restrict Ω) := sorry
-
-lemma MemSobolev.indicator {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
-  MemSobolev Ω (s.indicator f) k p μ := sorry
-
-lemma MemSobolev.restrict {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
-  MemSobolev Ω f k p (μ.restrict s) := sorry
-
-theorem MemSobolev.aeeqfunMk (hf : MemSobolev Ω f k p μ) :
-    MemSobolev Ω (AEEqFun.mk f hf.aestronglyMeasurable) k p μ :=
-  hf.aeEq <| (AEEqFun.coeFn_mk f _).symm
-
--- todo: move
-lemma MeasureTheory.aeEq_iff {α β : Type*} [MeasurableSpace α] {μ : Measure α} {f g : α → β} :
-    f =ᵐ[μ] g ↔ μ {x | f x ≠ g x} = 0 := by
-  rfl
-
--- todo: move
-lemma Set.EqOn.aeEq {α β : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α}
-    {f g : α → β} (h : s.EqOn f g) (h2 : μ sᶜ = 0) : f =ᵐ[μ] g :=
-  Measure.mono_null (fun _x hx h2x ↦ hx (h h2x)) h2
-
--- todo: move
-lemma Set.EqOn.aeEq_restrict {α β : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α}
-    {f g : α → β} (h : s.EqOn f g) (hs : MeasurableSet s) : f =ᵐ[μ.restrict s] g :=
-  h.aeEq <| (Measure.restrict_apply_eq_zero' hs).mpr (by simp)
 
 variable (Ω F) in
 def Sobolev (k : ℕ∞) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
@@ -706,7 +703,7 @@ theorem coeFn_sub (f g : Sobolev Ω F k p μ) : ⇑(f - g) =ᵐ[μ.restrict Ω] 
 
 theorem const_mem_sobolev (c : F) [IsFiniteMeasure μ] :
     AEEqFun.const E c ∈ Sobolev Ω F k p μ :=
-  (MemSobolev.const c).aeeqfunMk.mem_sobolev
+  (MemSobolev.const c).aeeqFunMk.mem_sobolev
 
 instance instNorm : Norm (Sobolev Ω F k p μ) where norm f := (sobolevNorm Ω f k p μ).toReal
 
