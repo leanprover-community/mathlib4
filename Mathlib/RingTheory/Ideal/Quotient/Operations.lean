@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Operations
 public import Mathlib.Algebra.Ring.Fin
+public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Basic
 
@@ -1142,6 +1143,27 @@ lemma quotQuotEquivQuotOfLEₐ_comp_mkₐ (h : I ≤ J) :
 end AlgebraQuotient
 end DoubleQuot
 
+namespace Submodule
+
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+
+/--
+The linear equivalence of the two definitions of `N / I • N`,
+either as a quotient of `N` by its submodule `I • ⊤`,
+or the image of `N` under the `R`-module quotient map `M → M / (I • N)`.
+-/
+noncomputable def quotientIdealSubmoduleEquivMap (N : Submodule R M) (I : Ideal R) :
+    (N ⧸ (I • ⊤ : Submodule R N)) ≃ₗ[R] (map (I • N).mkQ N) := by
+  set f := (I • N).mkQ ∘ₗ N.subtype
+  have hker : f.ker = I • ⊤ := by
+    ext x; simpa [f] using Iff.symm (Submodule.mem_smul_top_iff I N x)
+  have hrange : f.range = map (I • N).mkQ N := by
+    simp only [LinearMap.range_comp, range_subtype, f]
+  exact (Submodule.quotEquivOfEq _ _ hker.symm).trans
+    (f.quotKerEquivRange.trans (LinearEquiv.ofEq _ _ hrange))
+
+end Submodule
+
 namespace Ideal
 
 section PowQuot
@@ -1155,24 +1177,11 @@ noncomputable
 def powQuotPowSuccLinearEquivMapMkPowSuccPow :
     ((I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R))) ≃ₗ[R]
     Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n) := by
-  refine { LinearMap.codRestrict
-    (Submodule.restrictScalars _ (Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n)))
-    (Submodule.mapQ (I • ⊤) (I ^ (n + 1)) (Submodule.subtype (I ^ n)) ?_) ?_,
-    Equiv.ofBijective _ ⟨?_, ?_⟩ with }
-  · intro
-    simp [Submodule.mem_smul_top_iff, pow_succ']
-  · intro x
-    obtain ⟨⟨y, hy⟩, rfl⟩ := Submodule.Quotient.mk_surjective _ x
-    simp [Ideal.mem_sup_left hy]
-  · intro a b
-    obtain ⟨⟨x, hx⟩, rfl⟩ := Submodule.Quotient.mk_surjective _ a
-    obtain ⟨⟨y, hy⟩, rfl⟩ := Submodule.Quotient.mk_surjective _ b
-    simp [Ideal.Quotient.eq, Submodule.Quotient.eq, Submodule.mem_smul_top_iff, pow_succ']
-  · intro ⟨x, hx⟩
-    rw [Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective] at hx
-    obtain ⟨y, hy, rfl⟩ := hx
-    refine ⟨Submodule.Quotient.mk ⟨y, hy⟩, ?_⟩
-    simp
+  rw [show I ^ (n + 1) = I • I ^ n from by simp [pow_succ']]
+  have hmap : Submodule.map (I • I ^ n : Ideal R).mkQ (I ^ n : Ideal R) =
+      ((Ideal.map (Ideal.Quotient.mk (I • I ^ n)) (I ^ n)).restrictScalars R) := by
+    ext x; simp [Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective]
+  exact (Submodule.quotientIdealSubmoduleEquivMap (I ^ n) I).trans (LinearEquiv.ofEq _ _ hmap)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `I ^ n ⧸ I ^ (n + 1)` can be viewed as a quotient module and as ideal of `R ⧸ I ^ (n + 1)`.
