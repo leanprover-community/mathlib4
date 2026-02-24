@@ -26,12 +26,12 @@ lemma prod_nonneg {s : Multiset R} (h : ∀ a ∈ s, 0 ≤ a) : 0 ≤ s.prod := 
   simp only [quot_mk_to_coe, mem_coe, prod_coe] at *
   apply List.prod_nonneg h
 
-lemma one_le_prod_of_one_le₀ {s : Multiset R} (h : ∀ a ∈ s, 1 ≤ a) : 1 ≤ s.prod := by
+lemma one_le_prod₀ {s : Multiset R} (h : ∀ a ∈ s, 1 ≤ a) : 1 ≤ s.prod := by
   cases s using Quotient.ind
   simp only [quot_mk_to_coe, mem_coe, prod_coe] at *
   apply List.one_le_prod h
 
-@[deprecated (since := "2026-01-18")] alias one_le_prod := one_le_prod_of_one_le₀
+@[deprecated (since := "2026-01-18")] alias one_le_prod := one_le_prod₀
 
 lemma prod_le_prod_of_rel_le₀ {s t : Multiset R} (h0 : ∀ x ∈ s, 0 ≤ x)
     (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
@@ -90,7 +90,7 @@ lemma prod_map_nonneg {s : Multiset α} {f : α → R} (h : ∀ a ∈ s, 0 ≤ f
 
 lemma one_le_prod_map {s : Multiset α} {f : α → R} (h : ∀ a ∈ s, 1 ≤ f a) :
     1 ≤ (s.map f).prod := by
-  refine one_le_prod_of_one_le₀ fun r hr ↦ ?_
+  refine one_le_prod₀ fun r hr ↦ ?_
   obtain ⟨a, ha, rfl⟩ := mem_map.mp hr
   exact h a ha
 

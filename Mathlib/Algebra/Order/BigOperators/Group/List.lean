@@ -115,7 +115,7 @@ lemma exists_le_of_prod_le' [LinearOrder M] [MulLeftStrictMono M]
   exact prod_lt_prod_of_ne_nil hl _ _ h
 
 @[to_additive sum_nonneg]
-lemma one_le_prod_of_one_le [Preorder M] [MulLeftMono M] {l : List M}
+lemma one_le_prod [Preorder M] [MulLeftMono M] {l : List M}
     (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) : 1 ≤ l.prod := by
   -- We don't use `pow_card_le_prod` to avoid assumption `[MulRightMono M]`
   induction l with
@@ -240,7 +240,7 @@ lemma single_le_prod [CommMonoid M] [Preorder M] [IsOrderedMonoid M]
   · simp
   simp_rw [prod_cons, forall_mem_cons] at hl₁ ⊢
   constructor
-  case cons.left => exact le_mul_of_one_le_right' (one_le_prod_of_one_le hl₁.2)
+  case cons.left => exact le_mul_of_one_le_right' (one_le_prod hl₁.2)
   case cons.right hd tl ih => exact fun x H => le_mul_of_one_le_of_le hl₁.1 (ih hl₁.right x H)
 
 @[to_additive all_zero_of_le_zero_le_of_sum_eq_zero]

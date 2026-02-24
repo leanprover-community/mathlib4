@@ -29,8 +29,8 @@ section OrderedCommMonoid
 variable [CommMonoid α] [Preorder α] {s t : Multiset α} {a : α}
 
 @[to_additive sum_nonneg]
-lemma one_le_prod_of_one_le [MulLeftMono α] : (∀ x ∈ s, (1 : α) ≤ x) → 1 ≤ s.prod :=
-  Quotient.inductionOn s fun l hl => by simpa using List.one_le_prod_of_one_le hl
+lemma one_le_prod [MulLeftMono α] : (∀ x ∈ s, (1 : α) ≤ x) → 1 ≤ s.prod :=
+  Quotient.inductionOn s fun l hl => by simpa using List.one_le_prod hl
 
 @[to_additive]
 lemma single_le_prod [IsOrderedMonoid α] : (∀ x ∈ s, (1 : α) ≤ x) → ∀ x ∈ s, x ≤ s.prod :=
