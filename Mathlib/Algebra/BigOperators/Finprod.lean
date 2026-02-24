@@ -558,7 +558,7 @@ alias finsum_pos' := finsum_pos
 @[to_additive existing finsum_pos', deprecated (since := "2026-01-03")]
 alias one_lt_finprod' := one_lt_finprod
 
-/-- Monotonicity of `finprod`. See `finprod_le_finprod` for a variant where
+/-- Monotonicity of `finprod`. See `finprod_le_finprod₀` for a variant where
 `M` is a `CommMonoidWithZero`. -/
 @[to_additive /-- Monotonicity of `finsum.` -/]
 lemma finprod_le_finprod [PartialOrder M] [MulLeftMono M] (hf : f.mulSupport.Finite)
@@ -568,7 +568,7 @@ lemma finprod_le_finprod [PartialOrder M] [MulLeftMono M] (hf : f.mulSupport.Fin
   let s := (f.mulSupport ∪ g.mulSupport).toFinset
   rw [finprod_eq_finset_prod_of_mulSupport_subset f (show f.mulSupport ⊆ s by grind),
     finprod_eq_finset_prod_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
-  exact Finset.prod_le_prod' fun i _ ↦ h i
+  exact Finset.prod_le_prod fun i _ ↦ h i
 
 @[deprecated (since := "2026-01-18")] alias finprod_le_finprod' := finprod_le_finprod
 
@@ -582,7 +582,7 @@ lemma finprod_le_finprod₀ {M : Type*} [CommMonoidWithZero M] [PartialOrder M] 
   let s := (f.mulSupport ∪ g.mulSupport).toFinset
   rw [finprod_eq_finset_prod_of_mulSupport_subset f (show f.mulSupport ⊆ s by grind),
     finprod_eq_finset_prod_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
-  exact Finset.prod_le_prod (fun i _ ↦ hf₀ i) fun i _ ↦ h i
+  exact Finset.prod_le_prod₀ (fun i _ ↦ hf₀ i) fun i _ ↦ h i
 
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication

@@ -53,7 +53,7 @@ variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
 @[to_additive]
 theorem hasProd_le (h : ∀ i, f i ≤ g i) (hf : HasProd f a₁ L) (hg : HasProd g a₂ L) [L.NeBot] :
     a₁ ≤ a₂ :=
-  le_of_tendsto_of_tendsto' hf hg fun _ ↦ prod_le_prod' fun i _ ↦ h i
+  le_of_tendsto_of_tendsto' hf hg fun _ ↦ prod_le_prod fun i _ ↦ h i
 
 @[to_additive]
 theorem hasProd_mono (hf : HasProd f a₁ L) (hg : HasProd g a₂ L) (h : f ≤ g) [L.NeBot] : a₁ ≤ a₂ :=
