@@ -356,18 +356,17 @@ theorem isLittleO_cobounded_of_degree_lt (h : P.degree < Q.degree) :
   · refine isEquivalent_cobounded_leading_monomial.trans_isLittleO <|
       ((IsLittleO.const_mul_right ?_ ?_).const_mul_left _).trans_isEquivalent
         isEquivalent_cobounded_leading_monomial.symm
-    · simpa using ne_zero_of_degree_gt h
-    · exact isLittleO_pow_pow_cobounded_of_lt ((natDegree_lt_natDegree_iff hP).mpr h)
+    · exact leadingCoeff_ne_zero.mpr (ne_zero_of_degree_gt h)
+    · exact isLittleO_pow_pow_cobounded_of_lt (natDegree_lt_natDegree hP h)
 
 theorem isBigO_cobounded_of_degree_le (h : P.degree ≤ Q.degree) :
     P.eval =O[cobounded R] Q.eval := by
-  by_cases hP : P = 0
-  · simpa [hP] using isBigO_zero ..
+  by_cases hQ : Q.leadingCoeff = 0
+  · aesop
   · refine isEquivalent_cobounded_leading_monomial.trans_isBigO <|
-      (IsBigO.const_mul_left (IsBigO.const_mul_right ?_ ?_) _).trans_isEquivalent
+      ((IsBigO.const_mul_right hQ ?_).const_mul_left _).trans_isEquivalent
         isEquivalent_cobounded_leading_monomial.symm
-    · simpa using ne_zero_of_degree_ge_degree h hP
-    · exact isBigO_pow_pow_cobounded_of_le (natDegree_le_natDegree h)
+    exact isBigO_pow_pow_cobounded_of_le (natDegree_le_natDegree h)
 
 end Cobounded
 

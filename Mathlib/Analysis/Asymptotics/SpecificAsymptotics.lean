@@ -43,7 +43,7 @@ variable {R : Type*} [NormedRing R] [NormMulClass R] {p q : ℕ}
 open Bornology
 
 theorem Asymptotics.isLittleO_pow_pow_cobounded_of_lt (hpq : p < q) :
-    (fun x ↦ x ^ p) =o[cobounded R] fun x ↦ x ^ q := by
+    (· ^ p) =o[cobounded R] (· ^ q) := by
   nontriviality R
   have noc : NormOneClass R := NormMulClass.toNormOneClass
   refine IsLittleO.of_bound fun c cpos ↦ ?_
@@ -58,7 +58,7 @@ theorem Asymptotics.isLittleO_pow_pow_cobounded_of_lt (hpq : p < q) :
     exact mul_le_mul_of_nonneg_right my (by positivity)
 
 theorem Asymptotics.isBigO_pow_pow_cobounded_of_le (hpq : p ≤ q) :
-    (fun x ↦ x ^ p) =O[cobounded R] fun x ↦ x ^ q := by
+    (· ^ p) =O[cobounded R] (· ^ q) := by
   rcases hpq.eq_or_lt with rfl | h
   · exact isBigO_refl ..
   · exact (isLittleO_pow_pow_cobounded_of_lt h).isBigO
