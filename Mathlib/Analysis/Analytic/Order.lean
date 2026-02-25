@@ -336,39 +336,19 @@ lemma natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero [CharZero 𝕜] [Comp
     simp [← this, IH hf.deriv, iteratedDeriv_succ',
       -Order.lt_add_one_iff, Nat.forall_lt_succ_left, hfz]
 
-open AnalyticAt
-
-#check AnalyticAt.analyticOrderAt_deriv_add_one
-
 lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜] [CharZero 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
     (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n + 1) :
     analyticOrderAt (deriv f) z₀ = n := by
-  have ⟨g, hg, hg₀, hfg⟩ := (analyticOrderAt_eq_natCast hf).1 horder
-  refine (analyticOrderAt_eq_natCast hf.deriv).2 ?_
-  refine ⟨fun z ↦ (n + 1 : 𝕜) • g z + (z - z₀) • deriv g z, ?_, ?_, ?_⟩
-  · simpa using (fun_const_smul (c := (n + 1 : 𝕜)) (f := g) (x := z₀) hg).add
-      ((analyticAt_id.sub analyticAt_const).smul hg.deriv)
-  · have hn1 : (n + 1 : 𝕜) ≠ 0 := mod_cast (Nat.succ_ne_zero n)
-    simpa [sub_self] using (smul_ne_zero hn1 hg₀)
-  · obtain ⟨Ug, hUg, hUf⟩ := eventually_iff_exists_mem.mp hfg
-    obtain ⟨Ur, hUr, hgUr⟩ := exists_mem_nhds_analyticOnNhd hg
-    refine eventually_iff_exists_mem.2 ?_
-    have hU : interior (Ug ∩ Ur) ∈ 𝓝 z₀ :=
-      isOpen_interior.mem_nhds ((mem_interior_iff_mem_nhds).2 (inter_mem hUg hUr))
-    refine ⟨interior (Ug ∩ Ur), hU, fun z hz => ?_⟩
-    trans deriv (fun z : 𝕜 ↦ (z - z₀) ^ (n + 1) • g z) z
-    · rw [EventuallyEq.deriv_eq <| eventually_iff_exists_mem.2 ?_]
-      refine ⟨interior (Ug ∩ Ur), isOpen_interior.mem_nhds hz, fun y hy =>
-        hUf y (interior_subset hy).1⟩
-    · rw [deriv_fun_smul (by simp) ((hgUr z (interior_subset hz).2).differentiableAt)]
-      simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
-        deriv_fun_pow, Nat.cast_add, Nat.cast_one, add_tsub_cancel_right, deriv_fun_sub, deriv_id'',
-        deriv_const', sub_zero, mul_one, smul_add]
-      have hmul : (n + 1 : 𝕜) * (z - z₀) ^ n = (z - z₀) ^ n * (n + 1 : 𝕜) := by simp [mul_comm]
-      rw [hmul, mul_smul, pow_succ, mul_smul, ← smul_add]
-      simp only [smul_add]
-      grind only
+  have ⟨g, hg, hg₀, hfg⟩ := (AnalyticAt.analyticOrderAt_eq_natCast hf).1 horder
+  have hz₀ : f z₀ = 0 := by
+    have h_eval := Filter.Eventually.self_of_nhds hfg
+    rw [sub_self, zero_pow (by grind), zero_smul] at h_eval
+    exact h_eval
+  have H := hf.analyticOrderAt_deriv_add_one
+  simp_rw [hz₀, sub_zero] at H
+  rw [horder] at H
+  aesop
 
 lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
@@ -384,8 +364,8 @@ lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNor
       have : (n - n'.succ) + 1 = n - n' := by grind
       rw [← this]
       simp
-    simpa using
-      (analyticOrderAt_deriv_of_pos (hf := iterated_deriv hf n') (n := n - n'.succ) horder)
+    simpa using (analyticOrderAt_deriv_of_pos (hf := AnalyticAt.iterated_deriv hf n')
+      (n := n - n'.succ) horder)
 
 attribute [local simp] Nat.factorial_ne_zero in
 /-- A version of **Taylor's theorem** for analytic functions in one variable, with the error
