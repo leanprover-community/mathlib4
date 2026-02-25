@@ -21,7 +21,7 @@ groups.
 
 variable {𝓕 E F : Type*}
 
-open Filter Function Metric Bornology
+open Filter Function Metric Bornology Finset
 open scoped ENNReal NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
@@ -247,8 +247,6 @@ theorem abs_dist_sub_le_dist_mul_mul (a₁ a₂ b₁ b₂ : E) :
   simpa only [dist_mul_left, dist_mul_right, dist_comm b₂] using
     abs_dist_sub_le (a₁ * a₂) (b₁ * b₂) (b₁ * a₂)
 
-open Finset
-
 @[to_additive]
 theorem nndist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
     nndist (a₁ * a₂) (b₁ * b₂) ≤ nndist a₁ b₁ + nndist a₂ b₂ :=
@@ -262,8 +260,7 @@ theorem edist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
   apply nndist_mul_mul_le
 
 section PseudoEMetricSpace
-variable {α E : Type*} [SeminormedCommGroup E] [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0}
-  {f g : α → E} {s : Set α}
+variable {α : Type*} [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0} {f g : α → E} {s : Set α}
 
 @[to_additive (attr := simp)]
 lemma lipschitzWith_inv_iff : LipschitzWith K f⁻¹ ↔ LipschitzWith K f := by simp [LipschitzWith]

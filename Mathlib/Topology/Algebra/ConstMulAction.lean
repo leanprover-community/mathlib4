@@ -203,6 +203,10 @@ theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} (c : G) 
     Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul c⁻¹, fun h => h.const_smul _⟩
 
+@[to_additive]
+instance Subgroup.continuousConstSMul {S : Subgroup G} : ContinuousConstSMul S α :=
+  IsInducing.id.continuousConstSMul Subtype.val rfl
+
 variable [TopologicalSpace β] {f : β → α} {b : β} {s : Set β}
 
 @[to_additive]
