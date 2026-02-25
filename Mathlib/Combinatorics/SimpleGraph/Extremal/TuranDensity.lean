@@ -161,7 +161,7 @@ theorem isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ} (hε_pos :
     {V : Type*} [Fintype V] (h_verts : card V ≥ turanDensityConst H ε)
     (G : SimpleGraph V) [DecidableRel G.Adj] :
     #G.edgeFinset ≥ (turanDensity H + ε) * (card V).choose 2 → H ⊑ G := by
-  rw [Iso.card_edgeFinset_eq (G.overFinIso rfl), isContained_congr Iso.refl (G.overFinIso rfl)]
+  rw [(G.overFinIso rfl).card_edgeFinset_eq, isContained_congr Iso.refl (G.overFinIso rfl)]
   apply Nat.find_spec <| eventually_atTop.mp <| eventually_isContained_of_card_edgeFinset H hε_pos
   simpa only [turanDensityConst, hε_pos, ↓reduceDIte] using h_verts
 
