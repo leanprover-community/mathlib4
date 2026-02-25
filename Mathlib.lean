@@ -657,6 +657,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 public import Mathlib.Algebra.Homology.Single
 public import Mathlib.Algebra.Homology.SingleHomology
+public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 public import Mathlib.Algebra.Homology.Square
 public import Mathlib.Algebra.Homology.TotalComplex
 public import Mathlib.Algebra.Homology.TotalComplexShift
@@ -4218,6 +4219,7 @@ public import Mathlib.FieldTheory.Finite.Extension
 public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.FieldTheory.Finite.Polynomial
 public import Mathlib.FieldTheory.Finite.Trace
+public import Mathlib.FieldTheory.Finite.Valuation
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Fixed
 public import Mathlib.FieldTheory.Galois.Abelian
