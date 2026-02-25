@@ -754,13 +754,17 @@ lemma hasFPowerSeriesOnBall_weierstrassPExcept (l₀ x : ℂ) (r : NNReal) (hr0 
     · simp
     · simp
     · intro l hl
-      simpa using Set.subset_compl_comm.mp hr ⟨l.2, hl⟩
+      simpa [-Metric.mem_closedBall, mem_closedBall_iff_norm]
+        using Set.subset_compl_comm.mp hr ⟨l.2, hl⟩
   · exact ENNReal.coe_pos.mpr hr0
   · intro z hz
     replace hz : ‖z‖ < r := by simpa using hz
     have := L.weierstrassPExceptSeries_hasSum l₀ (x + z) x
     simp only [add_sub_cancel_left] at this
-    convert this (fun l hl ↦ hz.trans (by simpa using Set.subset_compl_comm.mp hr ⟨l.2, hl⟩)) with i
+    have A (l : ↥L.lattice) (hl : ↑l ≠ l₀) : r < ‖↑l - x‖ := by
+      simpa [-Metric.mem_closedBall, mem_closedBall_iff_norm] using
+        Set.subset_compl_comm.mp hr ⟨l.2, hl⟩
+    convert this (fun l hl ↦ hz.trans (A l hl)) with i
     rw [weierstrassPExceptSeries, FormalMultilinearSeries.ofScalars_apply_eq,
       FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul]
 

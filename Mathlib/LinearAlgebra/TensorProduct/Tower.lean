@@ -460,6 +460,7 @@ theorem distribBaseChange_tmul (n : N) (q : Q) (a : A) :
     distribBaseChange R A N Q (a ⊗ₜ (n ⊗ₜ q)) = (a ⊗ₜ n) ⊗ₜ (1 ⊗ₜ q) :=
   rfl
 
+@[simp]
 theorem distribBaseChange_symm_tmul
     (n : N) (q : Q) (a b : A) :
     (distribBaseChange R A N Q).symm ((a ⊗ₜ n) ⊗ₜ (b ⊗ₜ q)) = (a * b) ⊗ₜ (n ⊗ₜ q) := by

@@ -593,7 +593,28 @@ theorem isAdjointPair_inner (A : E →ₗ[𝕜] F) :
   intro x y
   simp [adjoint_inner_left]
 
-/-- The Gram operator T†T is symmetric. -/
+/- This next batch of lemmas is based on theorems like `LinearMap.IsPositive.conj_adjoint`, which
+are in a downstream file but historically existed before these lemmas. We can't put them in the file
+where `LinearMap.IsSymmetric` is defined because they depend on the adjoint. -/
+
+@[aesop safe apply]
+theorem IsSymmetric.conj_adjoint {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (S : E →ₗ[𝕜] F) :
+    (S ∘ₗ T ∘ₗ S.adjoint).IsSymmetric := fun _ _ ↦ by simp [← adjoint_inner_right, hT]
+
+theorem isSymmetric_self_comp_adjoint (T : E →ₗ[𝕜] F) : (T ∘ₗ adjoint T).IsSymmetric := by
+  simpa using LinearMap.IsSymmetric.id.conj_adjoint T
+
+@[aesop safe apply]
+theorem IsSymmetric.adjoint_conj {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (S : F →ₗ[𝕜] E) :
+    (S.adjoint ∘ₗ T ∘ₗ S).IsSymmetric := by
+  simpa using hT.conj_adjoint S.adjoint
+
+/-- Like `LinearMap.isSymmetric_adjoint_mul_self` but domain and range can be different -/
+theorem isSymmetric_adjoint_comp_self (T : E →ₗ[𝕜] F) : (adjoint T ∘ₗ T).IsSymmetric := by
+  simpa using LinearMap.IsSymmetric.id.adjoint_conj T
+
+/-- The Gram operator T†T is symmetric. See `LinearMap.isSymmetric_adjoint_comp_self` for a version
+where the domain and codomain are distinct. -/
 theorem isSymmetric_adjoint_mul_self (T : E →ₗ[𝕜] E) : IsSymmetric (T.adjoint * T) := by
   intro x y
   simp [adjoint_inner_left, adjoint_inner_right]
