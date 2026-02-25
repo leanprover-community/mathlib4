@@ -112,7 +112,7 @@ variable {R K}
 
 section CommSemiring
 
-theorem of_equiv_left {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
+theorem of_ringEquiv_left {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
     {K : Type*} [CommSemiring K] [Algebra R K] (e : R ≃+* S) [Algebra S K]
     (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsFractionRing S K] :
     IsFractionRing R K := IsLocalization.of_equiv_left e (MulEquivClass.map_nonZeroDivisors e) h
