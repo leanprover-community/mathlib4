@@ -1,8 +1,10 @@
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.Tactic.CheckDefEqAbuse
+import Mathlib.Tactic.DefEqAbuse
 
 -- This test case relies on a known defeq abuse in the `Set` lattice instances
 -- (going through `Pi` rather than `setOf`). It is fine to delete once that is fixed.
@@ -49,6 +51,23 @@ The following synthesis applications fail due to transparency:
 #defeq_abuse in
 instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
     Module.Free ℝ l := Module.Free.of_divisionRing ℝ l
+
+-- Tactic mode: `simp` with `Zero` instance mismatch.
+-- A lemma for generic `AddGroup α` has `0` as `@Zero.zero α (AddGroup.toZero)`.
+-- When `simp` applies it to `ℤ`, it must match against `Int.ofNat 0`.
+-- This tests that the tool filters out unrelated `simp` exploration failures
+-- like `0 =?= a` and reports only the transparency-caused failure.
+theorem sorriedResult.{u} : ∀ {α : Type u} [inst : AddGroup α] (a : α),
+  0 = a ↔ a = a + a := sorry
+
+/--
+warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
+The following isDefEq checks are the root causes of the failure:
+  ❌️ Zero.zero =?= Int.ofNat 0
+-/
+#guard_msgs in
+theorem testSimpZero (a : ℤ) : 0 = a ↔ a = a + a := by
+  #defeq_abuse in simp only [sorriedResult]
 
 /-! ## Synthetic test cases
 
