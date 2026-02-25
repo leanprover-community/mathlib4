@@ -32,8 +32,17 @@ def myTestFun (n : ℕ) : ℕ := n + 1
 -- Command mode: synthesis failure detected
 -- This test case comes from https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/575690982
 -- The warning output contains fvar IDs that vary between runs, so we just check it produces
--- a warning (not info or error).
-#guard_msgs (drop info) in
+-- a warning (not info or error). It should produce something like:
+/-
+warning: #defeq_abuse: command fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
+The following synthesis applications fail due to transparency:
+  ❌️ apply @Submodule.module to Module ℝ ↥_fvar.1076
+    ❌️ l.toAddSubgroup =?= l.1
+    ❌️ l.toAddSubgroup =?= l.toAddSubmonoid
+    ❌️ l.toAddSubgroup.1 =?= l.1
+    ❌️ ↑l.toAddSubgroup =?= ↑l.toAddSubmonoid
+-/
+#guard_msgs (drop warning) in
 #defeq_abuse in
 instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
     Module.Free ℝ l := Module.Free.of_divisionRing ℝ l
