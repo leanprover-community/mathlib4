@@ -463,13 +463,10 @@ instance : BoundedOrder (Subgraph G) where
 def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms G.Subgraph where
   le_top G' := ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
-  -- Porting note: needed `apply` here to modify elaboration; previously the term itself was fine.
   isLUB_sSup _ :=
-    ⟨fun G' hG' ↦ ⟨by apply Set.subset_iUnion₂ G' hG', fun _ _ hab => ⟨G', hG', hab⟩⟩,
+    ⟨fun G' hG' ↦ ⟨Set.subset_biUnion_of_mem hG', fun _ _ hab => ⟨G', hG', hab⟩⟩,
       fun G' hG' ↦
-        ⟨Set.iUnion₂_subset fun _ hH => (hG' hH).1, by
-          rintro a b ⟨H, hH, hab⟩
-          exact (hG' hH).2 hab⟩⟩
+        ⟨Set.iUnion₂_subset fun _ hH => (hG' hH).1, fun a b ⟨H, hH, hab⟩ ↦ (hG' hH).2 hab⟩⟩
   isGLB_sInf _ :=
     ⟨fun G' hG' ↦ ⟨Set.iInter₂_subset G' hG', fun _ _ hab => hab.1 hG'⟩,
       fun G' hG' ↦

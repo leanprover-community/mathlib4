@@ -51,13 +51,11 @@ theorem le_sInf_apply {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
   grind
 
 private theorem isGLB_sInf {s : Set (Πₗ i, α i)} : IsGLB s (sInf s) := by
-  constructor
-  · intro e he
-    by_contra! hs
+  refine ⟨fun e he ↦ ?_, fun e h ↦ ?_⟩
+  · by_contra! hs
     obtain ⟨a, ha⟩ := hs
     exact ha.2.not_ge (sInf_apply_le he ha.1)
-  · intro e h
-    by_contra! hs
+  · by_contra! hs
     obtain ⟨a, ha⟩ := hs
     refine ha.2.not_ge <| le_sInf_apply fun f hf hf' ↦ apply_le_of_toLex (h hf) ?_
     simp_all
@@ -81,13 +79,11 @@ theorem sSup_apply_le {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
   le_sInf_apply (α := fun i ↦ (α i)ᵒᵈ) h
 
 private theorem isLUB_sSup {s : Set (Πₗ i, α i)} : IsLUB s (sSup s) := by
-  constructor
-  · intro e he
-    by_contra! hs
+  refine ⟨fun e he ↦ ?_, fun e h ↦ ?_⟩
+  · by_contra! hs
     obtain ⟨a, ha⟩ := hs
     exact ha.2.not_ge (le_sSup_apply he fun j hj ↦ (ha.1 j hj).symm)
-  · intro e h
-    by_contra! hs
+  · by_contra! hs
     obtain ⟨a, ha⟩ := hs
     refine ha.2.not_ge <| sSup_apply_le fun f hf hf' ↦ apply_le_of_toLex (h hf) ?_
     simp_all

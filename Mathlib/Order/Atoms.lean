@@ -894,25 +894,21 @@ protected noncomputable def completeLattice : CompleteLattice α :=
     sSup := fun s => if ⊤ ∈ s then ⊤ else ⊥
     sInf := fun s => if ⊥ ∈ s then ⊥ else ⊤
     isLUB_sSup s := by
-      constructor
-      · intro x h
-        rcases eq_bot_or_eq_top x with (rfl | rfl)
+      refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
         · exact bot_le
         · rw [if_pos h]
-      · intro x h
-        rcases eq_bot_or_eq_top x with (rfl | rfl)
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
         · rw [if_neg]
           intro con
           exact bot_ne_top (eq_top_iff.2 (h con))
         · exact le_top
     isGLB_sInf s := by
-      constructor
-      · intro x h
-        rcases eq_bot_or_eq_top x with (rfl | rfl)
+      refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
         · rw [if_pos h]
         · exact le_top
-      · intro x h
-        rcases eq_bot_or_eq_top x with (rfl | rfl)
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
         · exact bot_le
         · rw [if_neg]
           intro con
