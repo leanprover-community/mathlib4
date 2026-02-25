@@ -19,3 +19,5 @@ variable {α : Type*}
 instance : HasAdj α (SimpleGraph α) where
   vertexSet _ := Set.univ
   Adj G := G.Adj
+  left_mem_vertexSet_of_adj _ := Set.mem_univ _
+  right_mem_vertexSet_of_adj _ := Set.mem_univ _
