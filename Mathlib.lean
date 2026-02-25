@@ -1347,6 +1347,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
+public import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.Normalization
 public import Mathlib.AlgebraicGeometry.OpenImmersion
