@@ -33,6 +33,8 @@ universe v u
 
 variable {R : Type u} [CommRing R]
 
+namespace ModuleCat
+
 open CategoryTheory
 
 set_option backward.isDefEq.respectTransparency false in
@@ -45,7 +47,7 @@ instance [Small.{v} R] (S : Submonoid R) :
       Module.projective_of_isLocalizedModule S (X.localizedModuleMkLinearMap S)
 
 open Limits in
-lemma ModuleCat.localizedModule_hasProjectiveDimensionLE [Small.{v, u} R] (n : ℕ) (S : Submonoid R)
+lemma localizedModule_hasProjectiveDimensionLE [Small.{v, u} R] (n : ℕ) (S : Submonoid R)
     (M : ModuleCat.{v} R) [projle : HasProjectiveDimensionLE M n] :
     HasProjectiveDimensionLE (M.localizedModule S) n := by
   let _ : Small.{v, u} (Localization S) :=
@@ -68,7 +70,7 @@ lemma ModuleCat.localizedModule_hasProjectiveDimensionLE [Small.{v, u} R] (n : �
     let _ :=(T_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mp projle
     exact (TS_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mpr (ih (kernel f))
 
-lemma ModuleCat.projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v, u} R]
+lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v, u} R]
     (S : Submonoid R) (M : ModuleCat.{v} R) :
     projectiveDimension (M.localizedModule S) ≤ projectiveDimension M := by
   have aux (n : ℕ) : projectiveDimension M ≤ n → projectiveDimension (M.localizedModule S) ≤ n := by
@@ -88,7 +90,7 @@ lemma ModuleCat.projectiveDimension_le_projectiveDimension_of_isLocalizedModule 
     | coe n => simpa using aux n
 
 set_option backward.isDefEq.respectTransparency false in
-lemma ModuleCat.hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R]
+lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R]
     [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M] : HasProjectiveDimensionLE M n ↔
     ∀ (m : MaximalSpectrum R), HasProjectiveDimensionLE (M.localizedModule m.1.primeCompl) n := by
   induction n generalizing M with
@@ -127,15 +129,14 @@ lemma ModuleCat.hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [S
     rw [S_exact.hasProjectiveDimensionLT_X₃_iff n proj, ih]
     exact (forall_congr' (fun p ↦ (Sp_exact p).hasProjectiveDimensionLT_X₃_iff n (projp p))).symm
 
-lemma ModuleCat.hasProjectiveDimensionLE_iff_forall_primeSpectrum (n : ℕ) [Small.{v} R]
+lemma hasProjectiveDimensionLE_iff_forall_primeSpectrum (n : ℕ) [Small.{v} R]
     [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M] : HasProjectiveDimensionLE M n ↔
     ∀ (p : PrimeSpectrum R), HasProjectiveDimensionLE (M.localizedModule p.1.primeCompl) n :=
   ⟨fun _ p ↦ M.localizedModule_hasProjectiveDimensionLE n p.1.primeCompl,
     fun h ↦ (M.hasProjectiveDimensionLE_iff_forall_maximalSpectrum n).mpr
     fun m ↦ h ⟨m.1, Ideal.IsMaximal.isPrime' m.1⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
-lemma ModuleCat.projectiveDimension_eq_iSup_localizedModule_prime [Small.{v} R]
+lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v} R]
     [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M =
     ⨆ (p : PrimeSpectrum R), projectiveDimension (M.localizedModule p.1.primeCompl) := by
   have aux (n : ℕ) : projectiveDimension M ≤ n ↔ ⨆ (p : PrimeSpectrum R), projectiveDimension
@@ -157,8 +158,7 @@ lemma ModuleCat.projectiveDimension_eq_iSup_localizedModule_prime [Small.{v} R]
     | top => simp
     | coe n => simpa using aux n
 
-set_option backward.isDefEq.respectTransparency false in
-lemma ModuleCat.projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v} R]
+lemma projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v} R]
     [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M =
     ⨆ (p : MaximalSpectrum R), projectiveDimension (M.localizedModule p.1.primeCompl) := by
   have aux (n : ℕ) : projectiveDimension M ≤ n ↔ ⨆ (p : MaximalSpectrum R), projectiveDimension
@@ -179,3 +179,5 @@ lemma ModuleCat.projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v} R
     induction N with
     | top => simp
     | coe n => simpa using aux n
+
+end ModuleCat
