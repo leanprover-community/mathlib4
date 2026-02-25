@@ -203,7 +203,6 @@ theorem intrinsicClosure_idem (s : Set P) :
   rw [intrinsicClosure, preimage_image_eq _ Subtype.coe_injective]
   exact isClosed_closure
 
-set_option backward.isDefEq.respectTransparency false in
 theorem intrinsicClosure_eq_closure_inter_affineSpan (s : Set P) :
     intrinsicClosure 𝕜 s = closure s ∩ affineSpan 𝕜 s := by
   have h : Topology.IsInducing ((↑) : affineSpan 𝕜 s → P) := .subtypeVal

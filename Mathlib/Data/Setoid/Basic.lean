@@ -196,9 +196,11 @@ theorem top_def : ⇑(⊤ : Setoid α) = ⊤ :=
 theorem bot_def : ⇑(⊥ : Setoid α) = (· = ·) :=
   rfl
 
+set_option backward.whnf.reducibleClassField false in
 @[simp] lemma mk_eq_top {r : α → α → Prop} (iseqv) : mk r iseqv = ⊤ ↔ r = ⊤ := by
   simp [eq_iff_rel_eq]
 
+set_option backward.whnf.reducibleClassField false in
 @[simp] lemma mk_eq_bot {r : α → α → Prop} (iseqv) : mk r iseqv = ⊥ ↔ r = (· = ·) := by
   simp [eq_iff_rel_eq]
 

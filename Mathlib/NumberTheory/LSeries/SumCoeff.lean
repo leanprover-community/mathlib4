@@ -170,7 +170,6 @@ variable {f : ℕ → ℂ} {l : ℂ}
 
 section lemmas
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem lemma₁ (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))
     {s : ℝ} (hs : 1 < s) :
     IntegrableOn (fun t : ℝ ↦ (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * (t : ℂ) ^ (-(s : ℂ) - 1)) (Set.Ici 1) := by

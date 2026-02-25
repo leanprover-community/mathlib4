@@ -132,6 +132,7 @@ namespace AlgebraicClosure
 instance instCommRing : CommRing (AlgebraicClosure k) := Ideal.Quotient.commRing _
 instance instInhabited : Inhabited (AlgebraicClosure k) := ⟨37⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
   Submodule.Quotient.instSMul' _
 
