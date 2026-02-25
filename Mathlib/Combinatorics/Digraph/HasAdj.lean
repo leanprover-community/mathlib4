@@ -17,7 +17,7 @@ In this file we make `Digraph` an instance of `HasAdj`.
 variable {α : Type*}
 
 instance : HasAdj α (Digraph α) where
-  vertexSet _ := Set.univ
+  verts _ := Set.univ
   Adj G := G.Adj
-  left_mem_vertexSet_of_adj _ := Set.mem_univ _
-  right_mem_vertexSet_of_adj _ := Set.mem_univ _
+  left_mem_verts_of_adj _ := Set.mem_univ _
+  right_mem_verts_of_adj _ := Set.mem_univ _
