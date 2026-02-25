@@ -120,6 +120,15 @@ lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) 
 theorem length_eq_two {l : List α} : l.length = 2 ↔ ∃ a b, l = [a, b] :=
   ⟨fun _ => let [a, b] := l; ⟨a, b, rfl⟩, fun ⟨_, _, e⟩ => e ▸ rfl⟩
 
+theorem length_eq_two' {l : List α} (h : l ≠ []) : l.length = 2 ↔ l = [l.head h, l.getLast h] := by
+  constructor
+  · intro h
+    obtain ⟨a, b, rfl⟩ := List.length_eq_two.mp h
+    rfl
+  · intro h
+    rw [h]
+    rfl
+
 theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c] :=
   ⟨fun _ => let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
 
