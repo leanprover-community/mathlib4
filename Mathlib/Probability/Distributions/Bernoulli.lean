@@ -38,7 +38,7 @@ instance (a b : α) (p : I) : IsProbabilityMeasure (bernoulli_measure a b p) whe
   measure_univ := by simp [bernoulli_measure_def]
 
 @[simp]
-theorem bernoulli_measure_eq_dirac (a : α) (p : I) :
+theorem bernoulli_measure_self_eq_dirac (a : α) (p : I) :
     bernoulli_measure a a p = dirac a := by
   simp [bernoulli_measure_def, ← add_smul]
 
