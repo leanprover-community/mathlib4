@@ -97,7 +97,9 @@ theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
   refine WellFoundedGT.induction_top ⟨⊥, .singleton _ ⊥, rfl, rfl⟩ ?_
   rintro N hN ⟨s, hs₁, hs₂⟩
   have := Submodule.Quotient.nontrivial_iff.mpr hN
-  obtain ⟨p, hp, x, rfl⟩ := associatedPrimes.nonempty A (M ⧸ N)
+  obtain ⟨p, hp⟩ := associatedPrimes.nonempty A (M ⧸ N)
+  rw [AssociatedPrimes.mem_iff, isAssociatedPrime_iff] at hp
+  obtain ⟨hp, x, rfl⟩ := hp
   obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
   have hxN : x ∉ N := fun h ↦ hp.ne_top (by rw [show N.mkQ x = 0 by simpa]; simp)
   have := Submodule.isQuotientEquivQuotientPrime_iff.mpr ⟨x, hp, rfl⟩
@@ -194,9 +196,11 @@ is annihilated by some nonzero element if each element is annihilated by some no
 see https://math.stackexchange.com/a/3187153. -/
 theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
     (h : Disjoint (I : Set A) (nonZeroDivisors A)) : ⊥ < Module.annihilator A I := by
-  obtain ⟨P, ⟨prime, x, rfl⟩, hP⟩ : ∃ P ∈ associatedPrimes A A, I ≤ P :=
+  obtain ⟨P, h, hP⟩ : ∃ P ∈ associatedPrimes A A, I ≤ P :=
     (I.subset_union_prime_finite (associatedPrimes.finite ..) (f := id) 0 0 fun _ h _ _ ↦ h.1).1 <|
     biUnion_associatedPrimes_eq_compl_nonZeroDivisors A ▸ h.subset_compl_right
+  rw [AssociatedPrimes.mem_iff, isAssociatedPrime_iff] at h
+  obtain ⟨prime, x, rfl⟩ := h
   exact SetLike.lt_iff_le_and_exists.mpr ⟨bot_le, x, Submodule.mem_annihilator.mpr <| by
     simpa only [smul_eq_mul, mul_comm x, SetLike.le_def, Submodule.mem_colon_singleton] using hP,
       fun h : x = 0 ↦ prime.ne_top <| by simp [h]⟩

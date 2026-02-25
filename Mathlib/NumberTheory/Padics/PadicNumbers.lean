@@ -826,7 +826,11 @@ instance : Norm ℚ_[p] :=
 instance normedField : NormedField ℚ_[p] :=
   { Padic.field,
     Padic.metricSpace p with
-    dist_eq := fun _ _ ↦ rfl
+    dist_eq x y := by
+      rw [add_comm, ← sub_eq_add_neg]
+      change ‖x - y‖ = ‖y - x‖
+      have : y - x = (-1) * (x - y) := by ring
+      simp only [this, Norm.norm, map_mul, map_neg_eq_map, AbsoluteValue.map_one, one_mul]
     norm_mul := by simp [Norm.norm, map_mul]
     norm := norm }
 
