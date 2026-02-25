@@ -206,6 +206,19 @@ open NormedSpace
 /-- The norm bornology on `WeakDual 𝕜 E`, inherited from `StrongDual 𝕜 E`. -/
 instance instBornology : Bornology (WeakDual 𝕜 E) := inferInstanceAs (Bornology (StrongDual 𝕜 E))
 
+/-- A set in `WeakDual 𝕜 E` is bounded iff its image in `StrongDual 𝕜 E` is bounded. -/
+@[simp]
+theorem isBounded_toStrongDual_preimage {s : Set (StrongDual 𝕜 E)} :
+    IsBounded (WeakDual.toStrongDual ⁻¹' s) ↔ IsBounded s :=
+  Iff.rfl
+
+/-- A set in `StrongDual 𝕜 E` is bounded iff its image in `WeakDual 𝕜 E` is bounded. -/
+@[simp]
+theorem isBounded_toWeakDual_preimage {s : Set (WeakDual 𝕜 E)} :
+    IsBounded (StrongDual.toWeakDual ⁻¹' s) ↔ IsBounded s :=
+  Iff.rfl
+
+/-- Norm-closed balls in `StrongDual 𝕜 E` are closed in the weak-* topology. -/
 theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsClosed (toStrongDual ⁻¹' closedBall x' r) :=
   isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
@@ -265,7 +278,7 @@ the weak-star topology. -/
 theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsCompact (toStrongDual ⁻¹' closedBall x' r) := by
   apply isCompact_of_bounded_of_closed _ (isClosed_closedBall x' r)
-  change IsBounded (Metric.closedBall x' r)
+  rw [isBounded_toStrongDual_preimage]
   exact Metric.isBounded_closedBall
 
 open TopologicalSpace
@@ -318,7 +331,7 @@ normed space `V` are sequentially compact in the weak-* topology. -/
 theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 V) (r : ℝ) :
     IsSeqCompact (toStrongDual ⁻¹' Metric.closedBall x' r) := by
   apply isSeqCompact_of_isBounded_of_isClosed 𝕜 V _ (isClosed_closedBall x' r)
-  change IsBounded (Metric.closedBall x' r)
+  rw [isBounded_toStrongDual_preimage]
   exact Metric.isBounded_closedBall
 
 end WeakDual

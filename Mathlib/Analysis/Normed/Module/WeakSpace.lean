@@ -24,7 +24,7 @@ This file provides basic instances for `WeakSpace 𝕜 E` in the setting of norm
 
 noncomputable section
 
-open Topology
+open Bornology Topology
 
 namespace WeakSpace
 
@@ -33,6 +33,19 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The norm bornology on `WeakSpace 𝕜 E`, inherited from `E`. -/
 instance instBornology : Bornology (WeakSpace 𝕜 E) := inferInstanceAs (Bornology E)
+
+/-- A set in `WeakSpace 𝕜 E` is bounded iff its image in `E` is bounded. -/
+@[simp]
+theorem isBounded_toE_preimage {s : Set E} :
+    IsBounded (⇑(toWeakSpace 𝕜 E).symm ⁻¹' s) ↔ IsBounded s :=
+  Iff.rfl
+
+/-- A set in `E` is bounded iff its image in `WeakSpace 𝕜 E` is bounded. -/
+@[simp]
+theorem isBounded_toWeakSpace_preimage {s : Set (WeakSpace 𝕜 E)} :
+    IsBounded (⇑(toWeakSpace 𝕜 E) ⁻¹' s) ↔ IsBounded s :=
+  Iff.rfl
+
 
 variable (𝕜) [RCLike 𝕜] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 

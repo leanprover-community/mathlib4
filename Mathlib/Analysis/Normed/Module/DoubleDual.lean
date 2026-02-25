@@ -124,12 +124,7 @@ pulled back from the weak-star topology on the bidual. Both are the topology of 
 convergence against `StrongDual 𝕜 X`. -/
 theorem inclusionInDoubleDualWeak_isInducing :
     IsInducing (inclusionInDoubleDualWeak 𝕜 X) where
-  eq_induced := by
-    change _ = TopologicalSpace.induced (inclusionInDoubleDualWeak 𝕜 X)
-      (TopologicalSpace.induced
-        (fun (φ : WeakDual 𝕜 (StrongDual 𝕜 X)) f => φ f) Pi.topologicalSpace)
-    rw [induced_compose]
-    rfl
+  eq_induced := Eq.symm <| induced_compose (f := inclusionInDoubleDualWeak 𝕜 X)
 
 /-- `inclusionInDoubleDualWeak` is a topological embedding from the weak topology to the weak-star
 topology. -/
