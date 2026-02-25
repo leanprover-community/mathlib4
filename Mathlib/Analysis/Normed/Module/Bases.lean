@@ -424,20 +424,15 @@ structure ProjectionData where
 /-- There exists a coefficient scaling `e n` to match `(succSub D.P n) x`. -/
 lemma exists_coeff (D : ProjectionData 𝕜 X) (n : ℕ) (x : X) :
     ∃ c : 𝕜, c • D.e n = (succSub D.P n) x := by
-  let succSubN := (succSub D.P n).toLinearMap
-  have hrank : Module.finrank 𝕜 (LinearMap.range succSubN) = 1 :=
+  let S := (succSub D.P n).toLinearMap
+  have hrank : Module.finrank 𝕜 (LinearMap.range S) = 1 :=
     succSub_rank_one D.finrankRange D.hcomp n
-  haveI : FiniteDimensional 𝕜 (LinearMap.range succSubN) :=
-    FiniteDimensional.of_finrank_eq_succ hrank
-  have hspan : Submodule.span 𝕜 {D.e n} = LinearMap.range succSubN := by
+  haveI : FiniteDimensional 𝕜 (LinearMap.range S) := .of_finrank_pos (hrank.symm ▸ zero_lt_one)
+  have hspan : Submodule.span 𝕜 {D.e n} = LinearMap.range S := by
     apply Submodule.eq_of_le_of_finrank_eq
-    · rw [Submodule.span_le, Set.singleton_subset_iff]
-      exact D.heInRange n
-    · rw [hrank, finrank_span_singleton (D.heNe n)]
-  have hmem : succSubN x ∈ Submodule.span 𝕜 {D.e n} := by
-    rw [← hspan.symm]
-    exact LinearMap.mem_range_self succSubN x
-  exact Submodule.mem_span_singleton.mp hmem
+    · exact (Submodule.span_singleton_le_iff_mem _ _).mpr (D.heInRange n)
+    · simp [hrank, finrank_span_singleton (D.heNe n)]
+  exact Submodule.mem_span_singleton.mp (hspan.symm ▸ LinearMap.mem_range_self S x)
 
 /-- The coefficient functional value for the basis construction. -/
 def basisCoeff (D : ProjectionData 𝕜 X) (n : ℕ) (x : X) : 𝕜 :=
@@ -455,36 +450,29 @@ def basis (D : ProjectionData 𝕜 X) : SchauderBasis 𝕜 X :=
     (basisCoeff_spec D n x).symm
   { basis := D.e
     coord := fun n ↦ LinearMap.mkContinuous
-      (IsLinearMap.mk' (coeff n) ⟨
-        fun x y ↦ by
-          apply smul_left_injective 𝕜 (D.heNe n); dsimp only [smul_eq_mul]
-          rw [← hcoeff, map_add, add_smul, hcoeff, hcoeff],
-        fun c x ↦ by
-          apply smul_left_injective 𝕜 (D.heNe n); dsimp only [smul_eq_mul]
-          rw [← hcoeff, map_smul, mul_smul, hcoeff]⟩)
+      { toFun := coeff n
+        map_add' := fun x y ↦ smul_left_injective 𝕜 (D.heNe n) <| by
+          simp only [add_smul, ← hcoeff, map_add]
+        map_smul' := fun c x ↦ smul_left_injective 𝕜 (D.heNe n) <| by
+          dsimp only [RingHom.id_apply]
+          rw [smul_eq_mul, ← smul_smul, ← hcoeff, ← hcoeff, map_smul] }
       (‖succSub D.P n‖ / ‖D.e n‖)
       (fun x ↦ by
         rw [div_mul_eq_mul_div, le_div_iff₀ (norm_pos_iff.mpr (D.heNe n))]
         calc ‖coeff n x‖ * ‖D.e n‖ = ‖coeff n x • D.e n‖ := (norm_smul _ _).symm
           _ = ‖(succSub D.P n) x‖ := by rw [hcoeff]
           _ ≤ ‖succSub D.P n‖ * ‖x‖ := ContinuousLinearMap.le_opNorm _ _)
-    ortho := fun i j ↦ by
-      apply smul_left_injective 𝕜 (D.heNe i); dsimp only [smul_eq_mul]
-      simp only [mkContinuous_apply, IsLinearMap.mk'_apply, Pi.single_apply, ite_smul, one_smul,
-        zero_smul]
-      have : (succSub D.P i) (D.e j) = (Pi.single j (D.e j) : ℕ → X) i := by
-        obtain ⟨x, hx⟩ := D.heInRange j
-        rw [ContinuousLinearMap.coe_coe] at hx
-        rw [← hx, succSub_ortho D.hcomp i j x]
-      rw [← hcoeff, this, Pi.single_apply]
-      split_ifs with hij <;> simp [hij]
+    ortho := fun i j ↦ smul_left_injective 𝕜 (D.heNe i) <| by
+      obtain ⟨x, hx⟩ : ∃ x, (succSub D.P j) x = D.e j := D.heInRange j
+      simp only [mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk]
+      rw [← hcoeff, ← hx, succSub_ortho D.hcomp, hx]
+      simp only [Pi.single_apply]; split_ifs with h <;> simp [h]
     expansion := fun x ↦ by
-      rw [HasSum, SummationFilter.conditional_filter_eq_map_range]
-      apply Tendsto.congr _ (D.hlim x)
-      intro n; dsimp only [mkContinuous_apply, IsLinearMap.mk'_apply]
-      simp_rw [← hcoeff, succSub]
-      simp only [← succSub_sum D.P D.projZero n, ContinuousLinearMap.coe_sum', Finset.sum_apply]
-      congr }
+      rw [HasSum, SummationFilter.conditional_filter_eq_map_range, tendsto_map'_iff]
+      exact (D.hlim x).congr fun n ↦ by
+        simp only [Function.comp, LinearMap.coe_mk, AddHom.coe_mk,
+                   LinearMap.mkContinuous_apply, ← hcoeff]
+        rw [← ContinuousLinearMap.sum_apply, succSub_sum D.P D.projZero] }
 
 /-- The projections of the constructed basis correspond to the input data `D.P`. -/
 @[simp]
@@ -500,6 +488,5 @@ theorem basis_proj (D : ProjectionData 𝕜 X) : (basis D).proj = D.P := by
 @[simp]
 theorem basis_coe (D : ProjectionData 𝕜 X) : ⇑(basis D) = D.e :=
   rfl
-
 
 end SchauderBasis
