@@ -219,7 +219,7 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
     ConditionallyCompleteLinearOrderBot α :=
   letI : OrderSupInfSet α := .choose ⊥
   { i₁, i₂, LinearOrder.toLattice,
-    conditionallyCompleteLatticeOfLatticeOfsInf _ fun s _ hn ↦ isGLB_sInf_of_exists_isGLB
-      ⟨h.wf.min s hn, IsLeast.isGLB ⟨h.wf.min_mem s hn, fun _ hx ↦ h.wf.min_le hx hn⟩⟩ with
+    conditionallyCompleteLatticeOfLatticeOfsInf _ fun s _ hn ↦ isGLB_sInf_of_isGLB
+      (IsLeast.isGLB ⟨h.wf.min_mem s hn, fun _ hx ↦ h.wf.min_le hx hn⟩) with
     csSup_of_not_bddAbove _ H := (dif_neg (fun ⟨_, hx⟩ ↦ H hx.bddAbove)).trans sSup_empty.symm
     csInf_of_not_bddBelow s H := (H (OrderBot.bddBelow s)).elim }

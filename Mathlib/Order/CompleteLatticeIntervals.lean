@@ -127,7 +127,7 @@ noncomputable abbrev subsetConditionallyCompleteLinearOrder [Bot s] [Top s]
     (h_Inf : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddBelow t), sInf ((↑) '' t : Set α) ∈ s) :
     ConditionallyCompleteLinearOrder s :=
   { subsetSupSet s, subsetInfSet s, DistribLattice.toLattice, (inferInstance : LinearOrder s) with
-    isLUB_sSup_of_exists_isLUB t := fun ⟨w, h⟩ ↦ by
+    isLUB_sSup_of_isLUB t _ h := by
       dsimp [subset_sSup_def]
       obtain rfl | hn := eq_empty_or_nonempty t
       · rw [isLUB_empty_iff] at h ⊢
@@ -135,8 +135,8 @@ noncomputable abbrev subsetConditionallyCompleteLinearOrder [Bot s] [Top s]
         exact hbot.resolve_right fun _ ↦ not_isBot _ h
       · rw [dif_pos ⟨hn, h.bddAbove, h_Sup hn h.bddAbove⟩]
         exact .of_image Subtype.coe_le_coe
-          (isLUB_csSup (Nonempty.image _ hn) ((Subtype.mono_coe s).map_bddAbove h.bddAbove))
-    isGLB_sInf_of_exists_isGLB t := fun ⟨w, h⟩ ↦ by
+          (isLUB_csSup (hn.image _ ) ((Subtype.mono_coe s).map_bddAbove h.bddAbove))
+    isGLB_sInf_of_isGLB t _ h := by
       dsimp [subset_sSup_def]
       obtain rfl | hn := eq_empty_or_nonempty t
       · rw [isGLB_empty_iff] at h ⊢
@@ -144,7 +144,7 @@ noncomputable abbrev subsetConditionallyCompleteLinearOrder [Bot s] [Top s]
         exact htop.resolve_right fun _ ↦ not_isTop _ h
       · rw [dif_pos ⟨hn, h.bddBelow, h_Inf hn h.bddBelow⟩]
         exact .of_image Subtype.coe_le_coe
-          (isGLB_csInf (Nonempty.image _ hn) ((Subtype.mono_coe s).map_bddBelow h.bddBelow))
+          (isGLB_csInf (hn.image _) ((Subtype.mono_coe s).map_bddBelow h.bddBelow))
     exists_isLUB_of_nonempty_of_bddAbove t ht h_bdd := ⟨sSup t, .of_image Subtype.coe_le_coe <| by
       rw [← subset_sSup_of_within s ht h_bdd (h_Sup ht h_bdd)]
       exact isLUB_csSup (ht.image _) ((Subtype.mono_coe s).map_bddAbove h_bdd)⟩

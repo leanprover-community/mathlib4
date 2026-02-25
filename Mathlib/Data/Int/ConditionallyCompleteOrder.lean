@@ -37,10 +37,10 @@ instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder
     if h : s.Nonempty ∧ BddBelow s then
       leastOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
     else 0
-  isLUB_sSup_of_exists_isLUB s := fun ⟨_, h⟩ ↦ by
+  isLUB_sSup_of_isLUB s _ h := by
     rw [dif_pos ⟨h.nonempty, h.bddAbove⟩]
     exact (isGreatest_coe_greatestOfBdd _ _ _).isLUB
-  isGLB_sInf_of_exists_isGLB s := fun ⟨_, h⟩ ↦ by
+  isGLB_sInf_of_isGLB s _ h := by
     rw [dif_pos ⟨h.nonempty, h.bddBelow⟩]
     exact (isLeast_coe_leastOfBdd _ _ _).isGLB
   exists_isLUB_of_nonempty_of_bddAbove _ hn hb :=

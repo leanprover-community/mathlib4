@@ -1224,12 +1224,12 @@ theorem sInf_apply_eq_sInf_image {α : Type*} {β : α → Type*} [∀ i, InfSet
 
 instance {α : Type*} {β : α → Type*} [∀ i, Preorder (β i)] [∀ i, OrderSupInfSet (β i)] :
     OrderSupInfSet (∀ i, β i) where
-  isLUB_sSup_of_exists_isLUB _ := fun ⟨_, h⟩ ↦ by
+  isLUB_sSup_of_isLUB _ _ h := by
     simp only [isLUB_pi, sSup_apply_eq_sSup_image] at h ⊢
-    exact fun i ↦ isLUB_sSup_of_exists_isLUB ⟨_, h i⟩
-  isGLB_sInf_of_exists_isGLB _ := fun ⟨_, h⟩ ↦ by
+    exact fun i ↦ (h i).isLUB_sSup
+  isGLB_sInf_of_isGLB _ _ h := by
     simp only [isGLB_pi, sInf_apply_eq_sInf_image] at h ⊢
-    exact fun i ↦ isGLB_sInf_of_exists_isGLB ⟨_, h i⟩
+    exact fun i ↦ (h i).isGLB_sInf
 
 @[simp]
 theorem iSup_apply {α : Type*} {β : α → Type*} {ι : Sort*} [∀ i, SupSet (β i)] {f : ι → ∀ a, β a}
@@ -1345,12 +1345,12 @@ theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
 
 instance [Preorder α] [OrderSupInfSet α] [Preorder β] [OrderSupInfSet β] :
     OrderSupInfSet (α × β) where
-  isLUB_sSup_of_exists_isLUB _ := fun ⟨_, h⟩ ↦ by
+  isLUB_sSup_of_isLUB _ _ h := by
     rw [isLUB_prod] at h ⊢
-    exact ⟨isLUB_sSup_of_exists_isLUB ⟨_, h.1⟩, isLUB_sSup_of_exists_isLUB ⟨_, h.2⟩⟩
-  isGLB_sInf_of_exists_isGLB _ := fun ⟨_, h⟩ ↦ by
+    exact ⟨h.1.isLUB_sSup, h.2.isLUB_sSup⟩
+  isGLB_sInf_of_isGLB _ _ h := by
     rw [isGLB_prod] at h ⊢
-    exact ⟨isGLB_sInf_of_exists_isGLB ⟨_, h.1⟩, isGLB_sInf_of_exists_isGLB ⟨_, h.2⟩⟩
+    exact ⟨h.1.isGLB_sInf, h.2.isGLB_sInf⟩
 
 instance instCompleteLattice [CompleteLattice α] [CompleteLattice β] : CompleteLattice (α × β) where
   __ := instBoundedOrder α β

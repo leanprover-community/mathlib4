@@ -52,8 +52,8 @@ instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
   ⟨(sInf : Set α → α)⟩
 
 instance OrderDual.orderSupInfSet (α) [LE α] [OrderSupInfSet α] : OrderSupInfSet αᵒᵈ where
-  isLUB_sSup_of_exists_isLUB _ := isGLB_sInf_of_exists_isGLB (α := α)
-  isGLB_sInf_of_exists_isGLB _ := isLUB_sSup_of_exists_isLUB (α := α)
+  isLUB_sSup_of_isLUB _ _ := isGLB_sInf_of_isGLB (α := α)
+  isGLB_sInf_of_isGLB _ _ := isLUB_sSup_of_isLUB (α := α)
 
 /-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
@@ -133,8 +133,8 @@ attribute [to_dual existing] CompleteLattice.toCompleteSemilatticeInf
 
 instance (priority := 100) CompleteLattice.toOrderSupInfSet [CompleteLattice α] :
     OrderSupInfSet α where
-  isLUB_sSup_of_exists_isLUB _ _ := isLUB_sSup _
-  isGLB_sInf_of_exists_isGLB _ _ := isGLB_sInf _
+  isLUB_sSup_of_isLUB _ _ _ := isLUB_sSup _
+  isGLB_sInf_of_isGLB _ _ _ := isGLB_sInf _
 
 -- Shortcut instance to ensure that the path
 -- `CompleteLattice α → CompletePartialOrder α → PartialOrder α` isn't taken,

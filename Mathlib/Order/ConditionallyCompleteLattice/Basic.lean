@@ -102,7 +102,7 @@ theorem WithBot.isLUB_image_coe {s : Set α} {a : α} (hs : s.Nonempty) :
 @[to_dual]
 noncomputable instance WithTop.instOrderSupInfSet [OrderSupInfSet α] :
     OrderSupInfSet (WithTop α) where
-  isLUB_sSup_of_exists_isLUB s h := by
+  isLUB_sSup_of_isLUB s a h := by
     dsimp [sSup]
     split_ifs with hbot hbdd
     · exact ⟨fun _ _ ↦ le_top, fun a ha ↦ ha hbot⟩
@@ -111,22 +111,20 @@ noncomputable instance WithTop.instOrderSupInfSet [OrderSupInfSet α] :
       · rintro x hx rfl
         exact hbot hx
       rw [preimage_image_eq _ coe_injective] at *
-      obtain ⟨a, h⟩ := h
     · lift a to α
       · rintro rfl
         obtain ⟨_, hbdd⟩ := hbdd
         simpa using h.2 (Monotone.mem_upperBounds_image coe_mono hbdd)
       rw [WithTop.isLUB_image_coe] at h ⊢
-      exact isLUB_sSup_of_exists_isLUB ⟨_, h⟩
+      exact h.isLUB_sSup
     · cases a with | top => exact h | coe a => ?_
       rw [WithTop.isLUB_image_coe] at h
       exact absurd h.bddAbove hbdd
-  isGLB_sInf_of_exists_isGLB s h := by
+  isGLB_sInf_of_isGLB s a h := by
     dsimp [sInf]
     split_ifs with hs
     · obtain hs | hbdd := hs
       · exact ⟨fun b hb ↦ (hs hb).ge, fun _ _ ↦ le_top⟩
-      obtain ⟨a, h⟩ := h
       exact absurd h.bddBelow hbdd
     · rw [subset_singleton_iff] at hs
       push_neg at hs
@@ -150,14 +148,13 @@ noncomputable instance WithTop.instOrderSupInfSet [OrderSupInfSet α] :
         · rw [preimage_diff, preimage_singleton_eq_empty.mpr (by simp), diff_empty]
         · rw [hs', preimage_image_eq _ coe_injective]
       replace hxs' : x ∈ s' := by rwa [← preimage_coe_s, mem_preimage]
-      obtain ⟨a, h⟩ := h
       lift a to α
       · rintro rfl
         obtain ⟨_, hbdd⟩ := hbdd
         simpa using h.1 (mem_image_of_mem _ hxs')
       rw [preimage_coe_s]
       rw [WithTop.isGLB_image_coe ⟨x, by rwa [← preimage_coe_s, mem_preimage]⟩] at h ⊢
-      exact isGLB_sInf_of_exists_isGLB ⟨_, h⟩
+      exact h.isGLB_sInf
 
 theorem WithTop.sSup_eq [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
     (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
@@ -282,7 +279,7 @@ theorem exists_isLUB_of_nonempty_of_bddAbove (hn : s.Nonempty) (hb : BddAbove s)
 
 @[to_dual]
 theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s) : IsLUB s (sSup s) :=
-  isLUB_sSup_of_exists_isLUB (exists_isLUB_of_nonempty_of_bddAbove hn hb)
+  (exists_isLUB_of_nonempty_of_bddAbove hn hb).rec fun _ h ↦ h.isLUB_sSup
 
 @[to_dual csInf_le]
 theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s := by
@@ -625,13 +622,11 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
-@[simp]
-theorem csInf_univ [ConditionallyCompleteLattice α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
-  isLeast_univ.csInf_eq
+@[deprecated (since := "2026-02-26")] alias csInf_univ := sInf_univ
 
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {a : α}
 
-@[deprecated (since := "2026-02-12")] alias csSup_empty := sSup_empty
+@[deprecated (since := "2026-02-26")] alias csSup_empty := sSup_empty
 
 theorem isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)

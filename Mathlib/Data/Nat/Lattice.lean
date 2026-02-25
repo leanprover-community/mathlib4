@@ -130,10 +130,10 @@ open scoped Classical in
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
   { (inferInstance : OrderBot ℕ), (LinearOrder.toLattice : Lattice ℕ),
     (inferInstance : LinearOrder ℕ) with
-    isLUB_sSup_of_exists_isLUB s := fun ⟨_, h⟩ ↦ by
+    isLUB_sSup_of_isLUB s _ h := by
       rw [sSup_def h.bddAbove]
       exact Nat.isLeast_find _
-    isGLB_sInf_of_exists_isGLB s := fun ⟨_, h⟩ ↦ by
+    isGLB_sInf_of_isGLB s _ h := by
       rw [sInf_def h.nonempty]
       exact (Nat.isLeast_find _).isGLB
     exists_isLUB_of_nonempty_of_bddAbove s hn hb := ⟨_, Nat.isLeast_find hb⟩

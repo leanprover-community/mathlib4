@@ -57,12 +57,12 @@ instance [InfSet R] : InfSet (Tropical R) where sInf s := trop (sInf (untrop '' 
 
 instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice R] :
     ConditionallyCompleteLattice (Tropical R) where
-  isLUB_sSup_of_exists_isLUB _ := fun ⟨x, hx⟩ ↦ by
+  isLUB_sSup_of_isLUB _ _ hx := by
     rw [← tropOrderIso.symm.isLUB_image'] at hx ⊢
-    exact isLUB_sSup_of_exists_isLUB ⟨_, hx⟩
-  isGLB_sInf_of_exists_isGLB _ := fun ⟨x, hx⟩ ↦ by
+    exact hx.isLUB_sSup
+  isGLB_sInf_of_isGLB _ _ hx := by
     rw [← tropOrderIso.symm.isGLB_image'] at hx ⊢
-    exact isGLB_sInf_of_exists_isGLB ⟨_, hx⟩
+    exact hx.isGLB_sInf
   exists_isLUB_of_nonempty_of_bddAbove s hn hb := ⟨sSup s,
     .of_image untrop_le_iff <| isLUB_csSup (hn.image _) (untrop_monotone.map_bddAbove hb)⟩
   exists_isGLB_of_nonempty_of_bddBelow s hn hb := ⟨sInf s,

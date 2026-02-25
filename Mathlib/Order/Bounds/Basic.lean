@@ -697,7 +697,7 @@ theorem IsLUB.unique (Ha : IsLUB s a) (Hb : IsLUB s b) : a = b :=
 @[to_dual]
 theorem IsLUB.sSup_eq [OrderSupInfSet α] {s : Set α} {a : α} (h : IsLUB s a) :
     sSup s = a :=
-  (isLUB_sSup_of_exists_isLUB ⟨a, h⟩).unique h
+  h.isLUB_sSup.unique h
 
 @[to_dual]
 theorem IsLUB.iSup_eq [OrderSupInfSet α] {f : ι → α} {a : α} (h : IsLUB (.range f) a) :

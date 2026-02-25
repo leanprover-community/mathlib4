@@ -580,7 +580,7 @@ private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) :
 
 noncomputable instance instOrderSupInfSet :
     OrderSupInfSet (Seminorm 𝕜 E) :=
-  .ofSupSet fun s ⟨_, h⟩ ↦ by exact Seminorm.isLUB_sSup _ h.bddAbove
+  .ofSupSet fun s _ h ↦ by exact Seminorm.isLUB_sSup _ h.bddAbove
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
