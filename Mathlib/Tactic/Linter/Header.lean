@@ -419,7 +419,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     | .original lead .. => lead.toString
     | _ => ""
   -- Report any errors about the copyright line.
-  if mainModule != `Mathlib.Init then
+  if mainModule != `Mathlib.Init && mainModule != `Mathlib.Tactic then
     for (stx, m) in copyrightHeaderChecks copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
   -- Report a missing module doc-string.
