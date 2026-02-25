@@ -14,10 +14,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
+    - name: Checkout CI scripts
+      uses: ./.github/actions/checkout-ci-scripts
+      with:
+        sparse_checkout: |
+          scripts/long_file_report.sh
+
     - name: Run script
       id: long_files
       run: |
-        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/long_file_report.sh)" | tee "$GITHUB_OUTPUT"
+        printf $'summary<<EOF\n%s\nEOF' "$(./ci-tools/scripts/long_file_report.sh)" | tee "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2

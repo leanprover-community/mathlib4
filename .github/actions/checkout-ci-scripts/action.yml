@@ -1,0 +1,30 @@
+name: Checkout CI Scripts
+description: Checkout CI scripts from a dedicated repository/ref.
+
+inputs:
+  repository:
+    description: Repository that hosts CI scripts.
+    required: false
+    default: leanprover-community/mathlib-ci
+  ref:
+    description: Ref in the scripts repository.
+    required: false
+    default: main
+  sparse_checkout:
+    description: Newline-separated sparse checkout patterns.
+    required: true
+  path:
+    description: Destination path for the checkout.
+    required: false
+    default: ci-tools
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        repository: ${{ inputs.repository }}
+        ref: ${{ inputs.ref }}
+        fetch-depth: 1
+        sparse-checkout: ${{ inputs.sparse_checkout }}
+        path: ${{ inputs.path }}

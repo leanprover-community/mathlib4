@@ -91,6 +91,12 @@ jobs:
           ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
           path: tools-branch
 
+      - name: Checkout CI scripts
+        uses: ./.github/actions/checkout-ci-scripts
+        with:
+          sparse_checkout: |
+            scripts/lean-pr-testing-comments.sh
+
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -266,7 +272,7 @@ jobs:
             exit 1
           fi
 
-          echo "✅ ProofWidgets source URL is trusted: $proofwidgets_url"
+          echo "✅ ProofWidgets source URL is allowed: $proofwidgets_url"
 
       - name: verify ProofWidgets lean-toolchain matches on versioned releases
         # Only enforce this on the main mathlib4 repository, not on nightly-testing
@@ -627,8 +633,8 @@ jobs:
           TEST_OUTCOME: ${{ steps.test.outcome }}
           NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
         run: |
-          tools-branch/scripts/lean-pr-testing-comments.sh lean
-          tools-branch/scripts/lean-pr-testing-comments.sh batteries
+          ci-tools/scripts/lean-pr-testing-comments.sh lean
+          ci-tools/scripts/lean-pr-testing-comments.sh batteries
 
   upload_cache:
     name: Upload to cache

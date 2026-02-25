@@ -4,6 +4,10 @@ This directory contains miscellaneous scripts that are useful for working on or 
 When adding a new script, please make sure to document it here, so other readers have a chance
 to learn about it as well!
 
+Note: CI automation scripts have been moved to `mathlib-ci`.
+Workflows that use those scripts now execute them from external checkouts (typically
+under `ci-tools/`).
+
 
 ## Current scripts and their purpose
 

@@ -16,10 +16,16 @@ jobs:
       with: # checkout all history so that we can compare across commits
         fetch-depth: 0
 
+    - name: Checkout CI scripts
+      uses: ./.github/actions/checkout-ci-scripts
+      with:
+        sparse_checkout: |
+          scripts/technical-debt-metrics.sh
+
     - name: Run script
       id: tech_debt
       run: |
-        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/technical-debt-metrics.sh)" >> "$GITHUB_OUTPUT"
+        printf $'summary<<EOF\n%s\nEOF' "$(./ci-tools/scripts/technical-debt-metrics.sh)" >> "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2

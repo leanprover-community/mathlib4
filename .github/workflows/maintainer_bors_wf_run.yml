@@ -131,13 +131,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install zulip
 
-      - if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+      - name: Checkout CI scripts
+        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.extract-data.outputs.bot == 'true' ) }}
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: ./.github/actions/checkout-ci-scripts
         with:
-          ref: master
-          sparse-checkout: |
+          sparse_checkout: |
             scripts/zulip_emoji_reactions.py
 
       - name: update zulip emoji reactions
@@ -149,4 +149,4 @@ jobs:
           ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
           ZULIP_SITE: https://leanprover.zulipchat.com
         run: |
-          python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.pr_number }}"
+          python ci-tools/scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.pr_number }}"

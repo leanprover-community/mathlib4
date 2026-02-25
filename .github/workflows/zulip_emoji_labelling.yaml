@@ -15,11 +15,10 @@ jobs:
         github.repository == 'leanprover-community/mathlib4'
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout mathlib repository
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - name: Checkout CI scripts
+      uses: ./.github/actions/checkout-ci-scripts
       with:
-          ref: master
-          sparse-checkout: |
+          sparse_checkout: |
             scripts/zulip_emoji_reactions.py
 
     - name: Set up Python
@@ -43,4 +42,4 @@ jobs:
         PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
       run: |
         printf $'Running the python script with:\nPR number: "%s"\nlabel status: "%s"\nlabel: "%s"\nPR labels: "%s"\n' "$PR_NUMBER" "$LABEL_STATUS" "$LABEL" "$PR_LABELS"
-        python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$LABEL_NAME" "$PR_NUMBER" "$PR_LABELS"
+        python ci-tools/scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$LABEL_NAME" "$PR_NUMBER" "$PR_LABELS"
