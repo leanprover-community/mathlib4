@@ -33,13 +33,16 @@ theorem divisors_eq_image_Iic_factorization_prod_pow {n : ℕ} (hn : n ≠ 0) :
   apply Finset.coe_inj.mp
   grind [coe_divisors_eq_prod_pow_le_factorization]
 
+theorem Iic_factorization_prod_pow_injective (n : ℕ) :
+    (·.val.prod (· ^ ·) : Finset.Iic n.factorization → _).Injective := by
+  have : ∀ d ≤ n.factorization, (d.prod (· ^ ·)).factorization = d :=
+    fun _ hd ↦ prod_pow_factorization_eq_self fun _ hp ↦
+      prime_of_mem_primeFactors <| support_mono hd hp
+  grind [Function.Injective]
+
 theorem divisors_eq_map_attach_Iic_factorization_prod_pow {n : ℕ} (hn : n ≠ 0) :
-    n.divisors = (Finset.Iic n.factorization).attach.map ⟨(·.val.prod (· ^ ·)), by
-      have : ∀ d ≤ n.factorization, (d.prod (· ^ ·)).factorization = d :=
-        fun _ hd ↦ prod_pow_factorization_eq_self fun _ hp ↦
-          prime_of_mem_primeFactors <| support_mono hd hp
-      grind [Function.Injective]
-    ⟩ := by
+    n.divisors = (Finset.Iic n.factorization).attach.map
+      ⟨(·.val.prod (· ^ ·)), Iic_factorization_prod_pow_injective n⟩ := by
   rw [Finset.map_eq_image]
   change _ = (Finset.Iic n.factorization).attach.image ((·.prod (· ^ ·)) ∘ Subtype.val)
   rw [← Finset.image_image, Finset.attach_image_val]
@@ -69,13 +72,16 @@ theorem properDivisors_eq_image_Iio_factorization_prod_pow {n : ℕ} :
   apply Finset.coe_inj.mp
   grind [coe_properDivisors_eq_prod_pow_lt_factorization]
 
+theorem Iio_factorization_prod_pow_injective (n : ℕ) :
+    (·.val.prod (· ^ ·) : Finset.Iio n.factorization → _).Injective := by
+  have : ∀ d ≤ n.factorization, (d.prod (· ^ ·)).factorization = d :=
+    fun _ hd ↦ prod_pow_factorization_eq_self fun _ hp ↦
+      prime_of_mem_primeFactors <| support_mono hd hp
+  grind [Function.Injective]
+
 theorem properDivisors_eq_map_attach_Iio_factorization_prod_pow {n : ℕ} :
-    n.properDivisors = (Finset.Iio n.factorization).attach.map ⟨(·.val.prod (· ^ ·)), by
-      have : ∀ d ≤ n.factorization, (d.prod (· ^ ·)).factorization = d :=
-        fun _ hd ↦ prod_pow_factorization_eq_self fun _ hp ↦
-          prime_of_mem_primeFactors <| support_mono hd hp
-      grind [Function.Injective]
-    ⟩ := by
+    n.properDivisors = (Finset.Iio n.factorization).attach.map
+      ⟨(·.val.prod (· ^ ·)), Iio_factorization_prod_pow_injective n⟩ := by
   rw [Finset.map_eq_image]
   change _ = (Finset.Iio n.factorization).attach.image ((·.prod (· ^ ·)) ∘ Subtype.val)
   rw [← Finset.image_image, Finset.attach_image_val]
