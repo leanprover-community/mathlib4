@@ -340,7 +340,8 @@ open Bornology
 
 variable {R : Type*} [NormedRing R] [NormMulClass R] {P Q : R[X]}
 
-lemma isEquivalent_cobounded_lead : P.eval ~[cobounded R] (P.leadingCoeff * · ^ P.natDegree) := by
+lemma isEquivalent_cobounded_leading_monomial :
+    P.eval ~[cobounded R] (P.leadingCoeff * · ^ P.natDegree) := by
   by_cases h : P = 0
   · simp [h, IsEquivalent.refl]
   · simp only [eval_eq_sum_range, sum_range_succ]
@@ -352,9 +353,9 @@ theorem isLittleO_cobounded_of_degree_lt (h : P.degree < Q.degree) :
     P.eval =o[cobounded R] Q.eval := by
   by_cases hP : P = 0
   · simp [hP]
-  · refine isEquivalent_cobounded_lead.trans_isLittleO <|
-      (IsLittleO.const_mul_left (IsLittleO.const_mul_right ?_ ?_) _).trans_isEquivalent
-        isEquivalent_cobounded_lead.symm
+  · refine isEquivalent_cobounded_leading_monomial.trans_isLittleO <|
+      ((IsLittleO.const_mul_right ?_ ?_).const_mul_left _).trans_isEquivalent
+        isEquivalent_cobounded_leading_monomial.symm
     · simpa using ne_zero_of_degree_gt h
     · exact isLittleO_pow_pow_cobounded_of_lt ((natDegree_lt_natDegree_iff hP).mpr h)
 
@@ -362,9 +363,9 @@ theorem isBigO_cobounded_of_degree_le (h : P.degree ≤ Q.degree) :
     P.eval =O[cobounded R] Q.eval := by
   by_cases hP : P = 0
   · simpa [hP] using isBigO_zero ..
-  · refine isEquivalent_cobounded_lead.trans_isBigO <|
+  · refine isEquivalent_cobounded_leading_monomial.trans_isBigO <|
       (IsBigO.const_mul_left (IsBigO.const_mul_right ?_ ?_) _).trans_isEquivalent
-        isEquivalent_cobounded_lead.symm
+        isEquivalent_cobounded_leading_monomial.symm
     · simpa using ne_zero_of_degree_ge_degree h hP
     · exact isBigO_pow_pow_cobounded_of_le (natDegree_le_natDegree h)
 
