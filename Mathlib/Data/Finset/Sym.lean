@@ -50,6 +50,7 @@ theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
   rw [mem_mk, sym2_val, Multiset.mem_sym2_iff]
   simp only [mem_val]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_sym2 {m : Finset α} : (m.sym2 : Set (Sym2 α)) = (m : Set α).sym2 :=
   Set.ext fun z ↦ z.ind fun a b => by simp
 

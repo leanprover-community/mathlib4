@@ -157,10 +157,12 @@ variable [BooleanRing α] [BooleanRing β] [BooleanRing γ]
 namespace BooleanRing
 
 /-- The join operation in a Boolean ring is `x + y + x * y`. -/
+@[instance_reducible]
 def sup : Max α :=
   ⟨fun x y => x + y + x * y⟩
 
 /-- The meet operation in a Boolean ring is `x * y`. -/
+@[instance_reducible]
 def inf : Min α :=
   ⟨(· * ·)⟩
 
@@ -214,6 +216,7 @@ The data is defined so that:
 * `aᶜ` unfolds to `1 + a`
 * `a \ b` unfolds to `a * (1 + b)`
 -/
+@[instance_reducible]
 def toBooleanAlgebra : BooleanAlgebra α :=
   { Lattice.mk' sup_comm sup_assoc inf_comm inf_assoc sup_inf_self inf_sup_self with
     le_sup_inf := le_sup_inf

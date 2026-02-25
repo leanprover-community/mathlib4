@@ -244,6 +244,7 @@ theorem IsNNRat.to_isNat {α} [Semiring α] : ∀ {a : α} {n}, IsNNRat a (n) (n
 theorem IsRat.to_isNNRat {α} [Ring α] : ∀ {a : α} {n d}, IsRat a (.ofNat n) (d) → IsNNRat a n d
   | _, _, _, ⟨inv, rfl⟩ => ⟨inv, by simp⟩
 
+set_option backward.whnf.reducibleClassField false in
 theorem IsNat.to_isNNRat {α} [Semiring α] : ∀ {a : α} {n}, IsNat a n → IsNNRat a (n) (nat_lit 1)
   | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
 
@@ -253,6 +254,7 @@ theorem IsNNRat.to_isRat {α} [Ring α] : ∀ {a : α} {n d}, IsNNRat a n d → 
 theorem IsRat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsRat a n (nat_lit 1) → IsInt a n
   | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
 
+set_option backward.whnf.reducibleClassField false in
 theorem IsInt.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsInt a n → IsRat a n (nat_lit 1)
   | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
 

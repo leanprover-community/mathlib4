@@ -193,6 +193,7 @@ theorem rel_extent_intent {x y} (hx : x ∈ c.extent) (hy : y ∈ c.intent) : r 
   rw [← c.upperPolar_extent] at hy
   exact hy hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Note that if `r'` is the `≤` relation, this theorem will often not be true! -/
 theorem disjoint_extent_intent [Std.Irrefl r'] : Disjoint c'.extent c'.intent := by
   rw [disjoint_iff_forall_ne]

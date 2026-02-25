@@ -187,14 +187,15 @@ theorem r_eq_r' : r S = r' S :=
 
 variable {S}
 
+set_option backward.whnf.reducibleClassField false in
 @[to_additive]
 theorem r_iff_exists {x y : M × S} : r S x y ↔ ∃ c : S, ↑c * (↑y.2 * x.1) = c * (x.2 * y.1) := by
   simp only [r_eq_r' S, r', Con.rel_mk]
 
 @[to_additive]
 theorem r_iff_oreEqv_r {x y : M × S} : r S x y ↔ (OreLocalization.oreEqv S M).r x y := by
-  simp only [r_iff_exists, Subtype.exists, exists_prop, OreLocalization.oreEqv, smul_eq_mul,
-    Submonoid.mk_smul]
+  simp +instances only [r_iff_exists, Subtype.exists, exists_prop, OreLocalization.oreEqv,
+    smul_eq_mul, Submonoid.mk_smul]
   constructor
   · rintro ⟨u, hu, e⟩
     exact ⟨_, mul_mem hu x.2.2, u * y.2, by rw [mul_assoc, mul_assoc, ← e], mul_right_comm _ _ _⟩
@@ -219,9 +220,10 @@ class of `(x, y)` in the localization of `M` at `S`. -/
 the equivalence class of `(x, y)` in the localization of `M` at `S`. -/]
 def mk (x : M) (y : S) : Localization S := x /ₒ y
 
+set_option backward.whnf.reducibleClassField false in
 @[to_additive]
 theorem mk_eq_mk_iff {a c : M} {b d : S} : mk a b = mk c d ↔ r S ⟨a, b⟩ ⟨c, d⟩ := by
-  simp only [mk, OreLocalization.oreDiv_eq_iff, r_iff_oreEqv_r, OreLocalization.oreEqv]
+  simp +instances only [mk, OreLocalization.oreDiv_eq_iff, r_iff_oreEqv_r, OreLocalization.oreEqv]
 
 universe u
 

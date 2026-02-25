@@ -65,6 +65,7 @@ lemma IsRetrocompact.union (hs : IsRetrocompact s) (ht : IsRetrocompact t) :
 private lemma supClosed_isRetrocompact : SupClosed {s : Set X | IsRetrocompact s} :=
   fun _s hs _t ht ↦ hs.union ht
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsRetrocompact.finsetSup {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsRetrocompact (t i)) : IsRetrocompact (s.sup t) := by
   induction s using Finset.cons_induction with
