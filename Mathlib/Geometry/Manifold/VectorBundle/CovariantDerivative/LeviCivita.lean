@@ -531,7 +531,6 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
     · simp only [bar, AddHom.toFun_eq_coe, AddHom.coe_mk, smul_eq_mul]; rw [real_inner_smul_right]
     · rw [inner_smul_right_eq_smul]
   rw [h1, h2, product_swap I Y Z]
-
   set A := rhs_aux I X Y Z x
   set B := rhs_aux I Y Z X x
   set C := rhs_aux I Z X Y x
@@ -709,10 +708,10 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
   have hframe := b.orthonormalFrame_isOrthonormalFrameOn t (F := E) (IB := I) (n := 1)
   rw [hframe.eq_iff_coeff hx]
   intro i
-  have h₁ : ⟪X, real i⟫ x = (hframe.coeff i) X x := by
+  have h₁ : ⟪X, real i⟫ x = hframe.coeff i x (X x) := by
     rw [hframe.coeff_eq_inner' _ hx]
     simp [real, real_inner_comm]
-  have h₂ : ⟪X', real i⟫ x = (hframe.coeff i) X' x := by
+  have h₂ : ⟪X', real i⟫ x = hframe.coeff i x (X' x) := by
     rw [hframe.coeff_eq_inner' _ hx]
     simp [real, real_inner_comm]
   rw [← h₁, ← h₂, h (real i)]
@@ -823,7 +822,7 @@ lemma isCovariantDerivativeOn_lcCandidateAux_of_nonempty [FiniteDimensional ℝ 
       (Basis.ofVectorSpace ℝ E).orthonormalFrame_isOrthonormalFrameOn e
     have hZ' : ∑ i, ⟪σ, Z i⟫ x • Z i x = σ x := by
       calc _
-        _ = ∑ i, hZ.coeff i σ x • Z i x := by
+        _ = ∑ i, hZ.coeff i x (σ x) • Z i x := by
           congr; ext i
           rw [hZ.coeff_eq_inner' σ hx i, product_swap]
         _ = σ x := (hZ.toIsLocalFrameOn.coeff_sum_eq _ hx).symm
@@ -906,7 +905,7 @@ noncomputable def ChristoffelSymbol
     (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
     {U : Set M} {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
     (hs : IsLocalFrameOn I E n s U) (i j k : ι) : M → ℝ :=
-  hs.coeff k (f (s i) (s j))
+  (LinearMap.piApply (hs.coeff k)) (f (s i) (s j))
 
 -- special case of `foobar` below; needed?
 lemma ChristoffelSymbol.sum_eq
@@ -932,21 +931,22 @@ lemma eq_product_apply [Fintype ι]
     choose r wo using exists_wellOrder _
     exact r
   have : LocallyFiniteOrderBot ι := by sorry
-  rw [ChristoffelSymbol, hs.coeff_eq_inner' (f (s i) (s j)) hx k, real_inner_comm]
+  dsimp [ChristoffelSymbol] -- simplify the piApply in the definition above
+  rw [hs.coeff_eq_inner' (f (s i) (s j)) hx k, real_inner_comm]
 
 -- Lemma 4.3 in Lee, Chapter 5: first term still missing
 lemma foobar [Fintype ι] [FiniteDimensional ℝ E] (hf : IsCovariantDerivativeOn E f U)
     (hs : IsLocalFrameOn I E 1 s U) {x : M} (hx : x ∈ U) :
     f X Y x = ∑ k,
-      letI S₁ := ∑ i, ∑ j, (hs.coeff i X) * (hs.coeff j Y) * (ChristoffelSymbol I f hs i j k)
+      letI S₁ := ∑ i, ∑ j, (LinearMap.piApply (hs.coeff i) X) * (LinearMap.piApply (hs.coeff j) Y) * (ChristoffelSymbol I f hs i j k)
       letI S₂ : M → ℝ := sorry -- first summand in Leibniz' rule!
       S₁ x • s k x := by
   have hY := hs.coeff_sum_eq Y hx
   -- should this be a separate lemma also?
-  have : ∀ x ∈ U, Y x = ∑ i, (hs.coeff i) Y x • s i x := by
+  have : ∀ x ∈ U, Y x = ∑ i, hs.coeff i x (Y x) • s i x := by
     intro x hx
     apply hs.coeff_sum_eq Y hx
-  have : f X Y x = f X (fun x ↦ ∑ i, (hs.coeff i) Y x • s i x) x := by
+  have : f X Y x = f X (fun x ↦ ∑ i, hs.coeff i x (Y x) • s i x) x := by
     -- apply `congr_σ_of_eventuallyEq` from Basic.lean (after restoring it)
     -- want U to be a neighbourhood of x to make this work
     sorry
@@ -992,7 +992,7 @@ variable (hs : IsLocalFrameOn I E n s U)
 
 lemma christoffelSymbol_zero (U : Set M) {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
     (hs : IsLocalFrameOn I E n s U) (i j k : ι) : ChristoffelSymbol I 0 hs i j k = 0 := by
-  simp [ChristoffelSymbol]
+  ext; simp [ChristoffelSymbol]
 
 @[simp]
 lemma christoffelSymbol_zero_apply (U : Set M) {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
@@ -1009,13 +1009,14 @@ variable {U : Set M} {ι : Type*} [Fintype ι] {s : ι → (x : M) → TangentSp
 /-- Let `{s i}` be a local frame on `U` such that `[s i, s j] = 0` on `U` for all `i, j`.
 A covariant derivative on `U` is torsion-free on `U` iff for each `x ∈ U`,
 the Christoffel symbols `Γᵢⱼᵏ` w.r.t. `{s i}` are symmetric. -/
-lemma isTorsionFreeOn_iff_christoffelSymbols [CompleteSpace E] {ι : Type*} [Fintype ι]
+lemma isTorsionFreeOn_iff_christoffelSymbols [CompleteSpace E] {ι : Type*} [Finite ι]
     [FiniteDimensional ℝ E] -- TODO: this is implied by Finite ι, right?
     (hf : IsCovariantDerivativeOn E f U)
     {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U)
     (hs'' : ∀ i j, ∀ x : U, VectorField.mlieBracket I (s i) (s j) x = 0) :
     IsTorsionFreeOn f U ↔
       ∀ i j k, ∀ x ∈ U, ChristoffelSymbol I f hs i j k x = ChristoffelSymbol I f hs j i k x := by
+  have := Fintype.ofFinite ι
   rw [hf.isTorsionFreeOn_iff_localFrame (n := n) hs]
   have (i j : ι) {x} (hx : x ∈ U) :
       torsion f (s i) (s j) x = f (s i) (s j) x - f (s j) (s i) x := by
@@ -1046,11 +1047,10 @@ lemma isTorsionFree_iff_christoffelSymbols' [FiniteDimensional ℝ E] [IsManifol
       -- Let `{s_i}` be the coordinate frame at `x`: this statement is false for arbitrary frames.
       -- TODO: does the following do what I want??
       letI cs := ChristoffelSymbol I f
-          ((Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 (trivializationAt E _ x))
+          ((trivializationAt E _ x).isLocalFrameOn_localFrame_baseSet I 1 (Basis.ofVectorSpace ℝ E))
       ∀ i j k, cs i j k x = cs j i k x := by
   letI t := (trivializationAt E (fun (x : M) ↦ TangentSpace I x))
-  have hs (x) :=
-    ((Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 (t x))
+  have hs (x) := (t x).isLocalFrameOn_localFrame_baseSet I 1 (Basis.ofVectorSpace ℝ E)
 
   -- TODO: check that the Lie bracket of any two coordinate vector fields is zero!
   rw [isTorsionFreeOn_iff_christoffelSymbols (ι := (↑(Basis.ofVectorSpaceIndex ℝ E))) I hf]
@@ -1059,7 +1059,7 @@ lemma isTorsionFree_iff_christoffelSymbols' [FiniteDimensional ℝ E] [IsManifol
 
 theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x : M) :
     letI t := trivializationAt E (TangentSpace I) x;
-    letI hs := (Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 t
+    letI hs := t.isLocalFrameOn_localFrame_baseSet I 1 (Basis.ofVectorSpace ℝ E)
     ∀ x', x' ∈ t.baseSet → ∀ (i j k : ↑(Basis.ofVectorSpaceIndex ℝ E)),
       ChristoffelSymbol I (LeviCivitaConnection I M) hs i j k x' =
         ChristoffelSymbol I (LeviCivitaConnection I M) hs j i k x' := by
@@ -1074,7 +1074,7 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
     simp only [lcCandidateAux, hE, ↓reduceDIte]
 
     letI t := trivializationAt E (TangentSpace I) x;
-    letI hs := (Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 t
+    letI hs := t.isLocalFrameOn_localFrame_baseSet I 1 (Basis.ofVectorSpace ℝ E)
     have : ChristoffelSymbol I 0 hs i j k = 0 := christoffelSymbol_zero I t.baseSet hs i j k
     -- now, use a congruence result and the first `have`
     sorry
@@ -1084,7 +1084,7 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
   intro x' hx' i j
   set t := trivializationAt E (TangentSpace I) x
   set b := (Basis.ofVectorSpace ℝ E)
-  set s := b.localFrame t
+  set s := t.localFrame b
   set ι := ↑(Basis.ofVectorSpaceIndex ℝ E)
   -- Same computation as above; extract as lemma!
   let O : (x : M) → TangentSpace I x := fun x ↦ 0
@@ -1125,7 +1125,9 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
       set sij := b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k' x'
       rw [inner_smul_left, inner_smul_left]
       congr
-      simp [leviCivitaRhs']
+      simp? [leviCivitaRhs'] says
+        simp only [one_div, leviCivitaRhs', Pi.smul_apply, Pi.add_apply, Pi.sub_apply, smul_eq_mul,
+          mul_eq_mul_left_iff, inv_eq_zero, OfNat.ofNat_ne_zero, or_false]
       set S := b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k'
       have need' : ∀ i, VectorField.mlieBracket I (s i) S x' = O x' := by
         -- expand the definition of Gram-Schmidt and use need and linearity

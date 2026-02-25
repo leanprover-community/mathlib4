@@ -889,17 +889,18 @@ end IsCovariantDerivativeOn
 
 section to_trivialization
 
+namespace Trivialization
+
 variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e] [IsManifold I 1 M]
 
-
 noncomputable
-def Trivialization.pushCovDer
+def pushCovDer
     (cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)) :
     (Π x : M, TangentSpace I x) → (M → F) → (M → F) :=
   fun X σ x ↦ e (cov X (fun x' ↦ e.symm x' <| σ x') x) |>.2
 
 omit [MemTrivializationAtlas e] in
-lemma Trivialization.pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
+lemma pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
     [T2Space M] [IsManifold I ∞ M]
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
@@ -920,7 +921,7 @@ lemma Trivialization.pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensio
 variable {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     -- {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
 
-lemma Trivialization.pushCovDer_isCovariantDerivativeOn
+lemma pushCovDer_isCovariantDerivativeOn
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {u : Set M} (hu : u ⊆ e.baseSet)
     (hcov : IsCovariantDerivativeOn F cov u) :
@@ -929,19 +930,19 @@ lemma Trivialization.pushCovDer_isCovariantDerivativeOn
     set s := (fun x' ↦ e.symm x' (σ x'))
     have hs : MDiffAt (T% s) x :=
       e.mdifferentiableAt_section_of_function (hu hx) <| mdifferentiableAt_section_trivial_iff.1 hσ
-    unfold Trivialization.pushCovDer
+    unfold pushCovDer
     rw [hcov.addX hX hX' hs, e.map_add ℝ (hu hx)]
   smulX {X σ g x} hX hσ hg hx := by
     set s := (fun x' ↦ e.symm x' (σ x'))
     have hs : MDiffAt (T% s) x :=
       e.mdifferentiableAt_section_of_function (hu hx) <| mdifferentiableAt_section_trivial_iff.1 hσ
-    unfold Trivialization.pushCovDer
+    unfold pushCovDer
     rw [hcov.smulX hX hs hg, e.map_smul (hu hx)]
   smul_const_σ {X σ x} a hX hσ hx := by
     set s := (fun x' ↦ e.symm x' (σ x'))
     have hs : MDiffAt (T% s) x :=
       e.mdifferentiableAt_section_of_function (hu hx) <| mdifferentiableAt_section_trivial_iff.1 hσ
-    unfold Trivialization.pushCovDer
+    unfold pushCovDer
     rw [← e.map_smul (hu hx), ← hcov.smul_const_σ a hX hs hx]
     congr
     ext y
@@ -954,7 +955,7 @@ lemma Trivialization.pushCovDer_isCovariantDerivativeOn
     have hs' : MDiffAt (T% s') x :=
       e.mdifferentiableAt_section_of_function (hu hx) <| mdifferentiableAt_section_trivial_iff.1
       hσ'
-    unfold Trivialization.pushCovDer
+    unfold pushCovDer
     rw [← e.map_add ℝ (hu hx)]
     congr
     rw [← hcov.addσ hX hs hs' hx]
@@ -965,7 +966,7 @@ lemma Trivialization.pushCovDer_isCovariantDerivativeOn
     set s := (fun x' ↦ e.symm x' (σ x'))
     have hs : MDiffAt (T% s) x :=
       e.mdifferentiableAt_section_of_function (hu hx) <| mdifferentiableAt_section_trivial_iff.1 hσ
-    unfold Trivialization.pushCovDer
+    unfold pushCovDer
     have : (fun x' ↦ e.symm x' ((g • σ) x')) = g • s := by
       ext y
       simp [s, e.symm_map_smul]
@@ -977,7 +978,7 @@ lemma Trivialization.pushCovDer_isCovariantDerivativeOn
     rw [e.apply_mk_symm (hu hx)]
 
 variable {e} in
-lemma Trivialization.coordChangeL_pushCovDer
+lemma coordChangeL_pushCovDer
     [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M]
     {e' : Trivialization F (π F V)} [MemTrivializationAtlas e']
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
@@ -987,7 +988,7 @@ lemma Trivialization.coordChangeL_pushCovDer
     {s : M → F} (hs : MDiffAt s x) :
     e.coordChangeL ℝ e' x (e.pushCovDer cov X s x) =
       e'.pushCovDer cov X (fun x ↦ e.coordChangeL ℝ e' x (s x)) x := by
-  unfold Trivialization.pushCovDer
+  unfold pushCovDer
   let σ := (fun x' ↦ e.symm x' (s x'))
   rw [coordChangeL_apply e e' hx]
   refold_let σ
@@ -1017,7 +1018,7 @@ lemma Trivialization.coordChangeL_pushCovDer
 
 
 variable {e} in
-lemma Trivialization.coordChangeL_mem_horiz
+lemma coordChangeL_mem_horiz
     [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ F]
     {e' : Trivialization F (π F V)} [MemTrivializationAtlas e']
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
@@ -1048,7 +1049,7 @@ lemma Trivialization.coordChangeL_mem_horiz
 
 -- This is PAIIIIINNNN
 variable {e} in
-lemma Trivialization.coordChangeL_coordChangeL
+lemma coordChangeL_coordChangeL
     [VectorBundle ℝ F V]
     {e' : Trivialization F (π F V)} [MemTrivializationAtlas e']
     {x : M} (hx : x ∈ e.baseSet ∩ e'.baseSet) (v : F) :
@@ -1078,7 +1079,7 @@ lemma Trivialization.coordChangeL_coordChangeL
   simp
 
 variable {e} in
-lemma Trivialization.coordChangeL_mem_horiz_iff
+lemma coordChangeL_mem_horiz_iff
     [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ F]
     {e' : Trivialization F (π F V)} [MemTrivializationAtlas e']
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
@@ -1101,6 +1102,8 @@ lemma Trivialization.coordChangeL_mem_horiz_iff
     apply inter_comm
   · convert hu using 2
     apply inter_comm
+
+end Trivialization
 
 end to_trivialization
 

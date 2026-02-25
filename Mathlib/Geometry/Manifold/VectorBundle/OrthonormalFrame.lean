@@ -106,15 +106,15 @@ section smoothness
 namespace IsOrthonormalFrameOn
 
 omit [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
-variable [Fintype ι]
 
-variable (hs : IsOrthonormalFrameOn IB F n s u) {t : (x : B) → E x} {x : B}
+variable [Finite ι] (hs : IsOrthonormalFrameOn IB F n s u) {t : (x : B) → E x} {x : B}
 
 omit [VectorBundle ℝ F E] [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
   [IsContMDiffRiemannianBundle IB n F E] in
 variable (t) in
 lemma coeff_eq_inner' (hs : IsOrthonormalFrameOn IB F n s u) (hx : x ∈ u) (i : ι) :
-    hs.coeff i t x = ⟪s i x, t x⟫ := by
+    hs.coeff i x (t x) = ⟪s i x, t x⟫ := by
+  let := Fintype.ofFinite ι
   let b := VectorBundle.gramSchmidtOrthonormalBasis (hs.linearIndependent hx) (hs.generating hx)
   have beq (i : ι) : b i = s i x := by
     simp [b, VectorBundle.gramSchmidtNormed_apply_of_orthonormal (hs.orthonormal hx) i]
@@ -133,13 +133,13 @@ lemma coeff_eq_inner' (hs : IsOrthonormalFrameOn IB F n s u) (hx : x ∈ u) (i :
 
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.coeff i t` in a local frame s near `x` -/
 lemma contMDiffWithinAt_coeff (ht : CMDiffAt[u] n (T% t) x) (hx : x ∈ u) (i : ι) :
-    CMDiffAt[u] n (hs.coeff i t) x :=
+    CMDiffAt[u] n (LinearMap.piApply (hs.coeff i) t) x :=
   ((hs.contMDiffOn i x hx).inner_bundle ht).congr_of_mem (fun _ hy ↦ hs.coeff_eq_inner' _ hy _) hx
 
 omit [IsManifold IB n B] [ContMDiffVectorBundle n F E IB] in
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.coeff i t` in a local frame s near `x` -/
 lemma contMDiffAt_coeff (hu : u ∈ 𝓝 x) (ht : CMDiffAt n (T% t) x) (i : ι) :
-    CMDiffAt n (hs.coeff i t) x :=
+    CMDiffAt n (LinearMap.piApply (hs.coeff i) t) x :=
   (((hs.contMDiffOn i).contMDiffAt hu).inner_bundle ht).congr_of_eventuallyEq <|
     Filter.eventually_of_mem hu fun _ hx ↦ hs.coeff_eq_inner' _ hx _
 
@@ -152,19 +152,20 @@ lemma contMDiffAt_coeff (hu : u ∈ 𝓝 x) (ht : CMDiffAt n (T% t) x) (i : ι) 
 
 /-- If `{s i}` is an orthogonal local frame on a neighbourhood `u` of `x` and `t` is `C^k` on `u`,
 so is its coefficient in the frame `{s i}`. -/
-lemma contMDiffOn_coeff (ht : CMDiff[u] n (T% t)) (i : ι) : CMDiff[u] n (hs.coeff i t) :=
+lemma contMDiffOn_coeff (ht : CMDiff[u] n (T% t)) (i : ι) :
+    CMDiff[u] n (LinearMap.piApply (hs.coeff i) t) :=
   fun x' hx ↦ hs.contMDiffWithinAt_coeff (ht x' hx) hx _
 
 /-- A section `s` of `V` is `C^k` at `x` iff each of its coefficients in an orthogonal
 local frame near `x` is. -/
 lemma contMDiffAt_iff_coeff [FiniteDimensional ℝ F] (hu : u ∈ 𝓝 x) :
-    CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (hs.coeff i t) x :=
+    CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (LinearMap.piApply (hs.coeff i) t) x :=
   ⟨fun h i ↦ hs.contMDiffAt_coeff hu h i, fun h ↦ hs.contMDiffAt_of_coeff h hu⟩
 
 /-- If `{s i}` is an orthogonal local frame on `s`, a section `s` of `V` is `C^k` on `u` iff
 each of its coefficients `hs.coeff i s` w.r.t. the local frame `{s i}` is. -/
 lemma contMDiffOn_iff_coeff [FiniteDimensional ℝ F] :
-    CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (hs.coeff i t) :=
+    CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (LinearMap.piApply (hs.coeff i) t) :=
   ⟨fun h i ↦ hs.contMDiffOn_coeff h i, fun hi ↦ hs.contMDiffOn_of_coeff hi⟩
 
 -- unused, just stating for convenience/nice API
@@ -189,21 +190,21 @@ namespace Module.Basis
 
 variable {b : Basis ι ℝ F}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
-    [MemTrivializationAtlas e] {x : B} -- (hx : x ∈ e.baseSet)
+    [MemTrivializationAtlas e] {x : B}
 
 variable (b e) in
 /-- The orthonormal frame associated to the basis `b` and the trivialisation `e`:
 this is obtained by applying the Gram-Schmidt orthonormalisation procedure to `b.localFrame e`.
 In particular, if x is outside of `e.baseSet`, this returns the junk value 0. -/
 noncomputable def orthonormalFrame : ι → (x : B) → E x :=
-  VectorBundle.gramSchmidtNormed (b.localFrame e)
+  VectorBundle.gramSchmidtNormed (e.localFrame b)
 
 omit [IsManifold IB n B] in
 variable (b e) in
 /-- An orthonormal frame w.r.t. a local trivialisation is an orthonormal local frame. -/
 lemma orthonormalFrame_isOrthonormalFrameOn :
     IsOrthonormalFrameOn IB F n (b.orthonormalFrame e) e.baseSet :=
-  (b.localFrame_isLocalFrameOn_baseSet IB n e).gramSchmidtNormed
+  (e.isLocalFrameOn_localFrame_baseSet IB n b).gramSchmidtNormed
 
 omit [IsManifold IB n B] in
 variable (b e) in
@@ -237,6 +238,6 @@ lemma orthonormalFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) :
   simp only [orthonormalFrame, VectorBundle.gramSchmidtNormed, InnerProductSpace.gramSchmidtNormed,
     RCLike.ofReal_real_eq_id, id_eq, smul_eq_zero, inv_eq_zero, norm_eq_zero, or_self]
   convert InnerProductSpace.gramSchmidt_zero ℝ i
-  apply localFrame_apply_of_notMem e b hx
+  exact e.localFrame_apply_of_notMem b hx
 
 end Module.Basis

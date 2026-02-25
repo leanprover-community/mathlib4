@@ -331,15 +331,15 @@ variable {I F}
 @[simp]
 lemma extend_add [FiniteDimensional ℝ F] [T2Space M] {x : M} (v v' : V x) :
     extend I F (v + v') = extend I F v + extend I F v' := by
-  simp [extend, localExtensionOn_add]
+  simp [extend]
 
 @[simp]
 lemma extend_smul [FiniteDimensional ℝ F] [T2Space M] {a : ℝ} {x : M} (v : V x) :
-  extend I F (a • v) = a • extend I F v := by simp [extend, localExtensionOn_smul]; module
+  extend I F (a • v) = a • extend I F v := by simp [extend]; module
 
 @[simp]
 lemma extend_zero [FiniteDimensional ℝ F] [T2Space M] (x : M) :
-  extend I F (0 : V x) = 0 := by simp [extend, localExtensionOn_zero]
+  extend I F (0 : V x) = 0 := by simp [extend]
 
 @[simp] lemma extend_apply_self [FiniteDimensional ℝ F] [T2Space M] {x : M} (v : V x) :
     extend I F v x = v := by
@@ -781,6 +781,3 @@ lemma LinearEquiv.comap_isCompl {R R₂ M M₂ : Type*}
     · simp
 
 end  linear_algebra_isCompl
-
-
-
