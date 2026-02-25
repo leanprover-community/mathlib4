@@ -175,7 +175,6 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
     refine fun h ↦ hx.2 ⟨hx.1, ?_⟩
     exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /- Change of variable formula for differentiable functions: if a real function `f` is
 monotone and differentiable on a measurable set `s`, then the Lebesgue integral of a function
 `u : ℝ → ℝ≥0∞` on `f '' s` coincides with the integral of `(f' x) * u ∘ f` on `s`.
@@ -225,7 +224,6 @@ theorem lintegral_deriv_eq_volume_image_of_monotoneOn (hs : MeasurableSet s)
     (∫⁻ x in s, ENNReal.ofReal (f' x)) = volume (f '' s) := by
   simpa using (lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn hs hf' hf 1).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Integrability in the change of variable formula for differentiable functions: if a real
 function `f` is monotone and differentiable on a measurable set `s`, then a function
 `g : ℝ → F` is integrable on `f '' s` if and only if `f' x • g ∘ f` is integrable on `s` . -/
@@ -262,7 +260,6 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (hs : Measu
     ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, F']
   rw [abs_of_nonneg (deriv_c x hx)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Change of variable formula for differentiable functions: if a real function `f` is
 monotone and differentiable on a measurable set `s`, then the Bochner integral of a function
 `g : ℝ → F` on `f '' s` coincides with the integral of `(f' x) • g ∘ f` on `s` . -/

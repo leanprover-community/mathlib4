@@ -277,7 +277,7 @@ lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
       rw [← inter_eq_self_of_subset_right hBs, ← Subtype.image_preimage_val]
       apply Set.Subsingleton.image hB'
     · -- `Subtype.val ⁻¹' B = s`
-      have hBs' : B = s := Set.Subset.antisymm hBs (by aesop)
+      have hBs' : B = s := Set.Subset.antisymm hBs (by simp_all)
       subst hBs'
       obtain ⟨g', hg', hg's⟩ := SetLike.exists_of_lt hG
       have h := (isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩).resolve_left hg's

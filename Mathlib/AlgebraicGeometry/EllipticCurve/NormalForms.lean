@@ -166,7 +166,6 @@ a normal form of characteristic ≠ 2, provided that 2 is invertible in the ring
 @[simps]
 def toCharNeTwoNF : VariableChange R := ⟨1, 0, ⅟2 * -W.a₁, ⅟2 * -W.a₃⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance toCharNeTwoNF_spec : (W.toCharNeTwoNF • W).IsCharNeTwoNF := by
   constructor <;> simp [variableChange_a₁, variableChange_a₃]
 
@@ -268,7 +267,6 @@ It is the composition of an explicit change of variables with `WeierstrassCurve.
 def toShortNF : VariableChange R :=
   ⟨1, ⅟3 * -(W.toCharNeTwoNF • W).a₂, 0, 0⟩ * W.toCharNeTwoNF
 
-set_option backward.isDefEq.respectTransparency false in
 instance toShortNF_spec : (W.toShortNF • W).IsShortNF := by
   rw [toShortNF, mul_smul]
   constructor <;> simp [variableChange_a₁, variableChange_a₂, variableChange_a₃]
@@ -396,6 +394,7 @@ def toShortNFOfCharThree : VariableChange R :=
   letI : Invertible (2 : R) := ⟨2, h, h⟩
   W.toCharNeTwoNF
 
+set_option backward.whnf.reducibleClassField false in
 lemma toShortNFOfCharThree_a₂ : (W.toShortNFOfCharThree • W).a₂ = W.b₂ := by
   simp_rw [toShortNFOfCharThree, toCharNeTwoNF, variableChange_a₂, inv_one, Units.val_one, b₂]
   linear_combination (-W.a₂ - W.a₁ ^ 2) * CharP.cast_eq_zero R 3

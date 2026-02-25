@@ -855,6 +855,7 @@ variable [MeasurableSpace α] {p q : α → Prop}
 
 alias ⟨_, Measurable.setOf⟩ := measurableSet_setOf
 
+@[fun_prop]
 alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
 
 @[fun_prop]

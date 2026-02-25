@@ -379,7 +379,6 @@ theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
 theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
   exact iInter_Iic_eq_empty_iff.mpr not_bddBelow_coe
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Exponentiation is eventually larger than linear growth. -/
 lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1 : ℝ) < a ^ m := by
   obtain ⟨k, posk, hk⟩ : ∃ k : ℕ, 0 < k ∧ 1 / k + 1 < a := by

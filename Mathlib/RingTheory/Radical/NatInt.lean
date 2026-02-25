@@ -73,6 +73,26 @@ lemma radical_pos (n) : 0 < radical n := pos_of_ne_zero radical_ne_zero
 @[simp] lemma self_lt_radical_iff : n < radical n ↔ n = 0 := by
   simpa only [not_le, not_not] using radical_le_self_iff.not
 
+open Qq Lean Mathlib.Meta Finset
+
+namespace Mathlib.Meta.Positivity
+open Positivity
+
+attribute [local instance] monadLiftOptionMetaM in
+/-- Positivity extension for radical. Proves radicals are nonzero. -/
+@[positivity UniqueFactorizationMonoid.radical _]
+meta def evalRadical : PositivityExt where eval {u α} _ _ e := do
+  match e with
+  | ~q(@radical _ $inst $inst' $inst'' $n) =>
+    have _ := ← synthInstanceQ q(Nontrivial $α)
+    assertInstancesCommute
+    return .nonzero q(radical_ne_zero)
+  | _ => throwError "not radical"
+
+example : 0 < radical 100 := by positivity
+
+end Mathlib.Meta.Positivity
+
 end Nat
 
 /-! ### Lemmas about integers -/

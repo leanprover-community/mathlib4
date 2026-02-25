@@ -312,8 +312,8 @@ def scanl : Vector β (n + 1) :=
 
 /-- Providing an empty vector to `scanl` gives the starting value `b : β`. -/
 @[simp]
-theorem scanl_nil : scanl f b nil = b ::ᵥ nil :=
-  rfl
+theorem scanl_nil : scanl f b nil = b ::ᵥ nil := by
+  ext; simp [scanl, get]
 
 /-- The recursive step of `scanl` splits a vector `x ::ᵥ v : Vector α (n + 1)`
 into the provided starting value `b : β` and the recursed `scanl`

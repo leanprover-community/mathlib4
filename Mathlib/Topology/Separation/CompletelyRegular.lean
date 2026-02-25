@@ -238,7 +238,6 @@ instance {ι : Type*} {X : ι → Type*} [t : Π (i : ι), TopologicalSpace (X i
 instance {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     [htX : T35Space X] [htY : T35Space Y] : T35Space (X × Y) where
 
-set_option backward.isDefEq.respectTransparency false in
 lemma separatesPoints_continuous_of_t35Space [T35Space X] :
     SeparatesPoints {f : X → ℝ | Continuous f} := by
   intro x y x_ne_y
