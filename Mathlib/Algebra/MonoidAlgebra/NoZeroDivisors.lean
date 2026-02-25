@@ -67,7 +67,7 @@ namespace MonoidAlgebra
 
 /-- The coefficient of a monomial in a product `f * g` that can be reached in at most one way
 as a product of monomials in the supports of `f` and `g` is a product. -/
-@[to_additive (dont_translate := R) (relevant_arg := A) mul_apply_add_eq_mul_of_uniqueAdd
+@[to_additive (dont_translate := R) mul_apply_add_eq_mul_of_uniqueAdd
 /-- The coefficient of a monomial in a product `f * g` that can be reached in at most one way
 as a product of monomials in the supports of `f` and `g` is a product. -/]
 theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : R[A]} {a0 b0 : A}
@@ -83,7 +83,7 @@ theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : R[A]} {a0 b0 : A}
     · rw [notMem_support_iff.mp af, zero_mul]
     · rw [notMem_support_iff.mp bg, mul_zero]
 
-@[to_additive (dont_translate := R) (relevant_arg := A)]
+@[to_additive (dont_translate := R)]
 instance [NoZeroDivisors R] [Mul A] [UniqueProds A] : NoZeroDivisors R[A] where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} ab := by
     contrapose! ab
@@ -93,7 +93,8 @@ instance [NoZeroDivisors R] [Mul A] [UniqueProds A] : NoZeroDivisors R[A] where
     rw [mem_support_iff] at a0 b0 ⊢
     exact mul_apply_mul_eq_mul_of_uniqueMul h ▸ mul_ne_zero a0 b0
 
-@[to_additive (dont_translate := R) (relevant_arg := A)]
+set_option backward.isDefEq.respectTransparency false in
+@[to_additive (dont_translate := R)]
 instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
     IsLeftCancelMulZero R[A] where
   mul_left_cancel_of_ne_zero {f} hf {g₁ g₂} eq := by
@@ -113,16 +114,16 @@ instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
     rw [ih ag hag eq]
     simp_rw [support_erase, Finset.erase_union_distrib]
 
-@[to_additive (dont_translate := R) (relevant_arg := A)]
+@[to_additive (dont_translate := R)]
 instance [IsCancelAdd R] [IsRightCancelMulZero R] [Mul A] [UniqueProds A] :
     IsRightCancelMulZero R[A] :=
   MulOpposite.isLeftCancelMulZero_iff.mp <|
     MonoidAlgebra.opRingEquiv.injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
 
-@[to_additive (dont_translate := R) (relevant_arg := A)]
+@[to_additive (dont_translate := R)]
 instance [IsCancelAdd R] [IsCancelMulZero R] [Mul A] [UniqueProds A] : IsCancelMulZero R[A] where
 
-@[to_additive (dont_translate := R) (relevant_arg := A)]
+@[to_additive (dont_translate := R)]
 instance [IsCancelAdd R] [IsDomain R] [Monoid A] [UniqueProds A] : IsDomain R[A] where
 
 end MonoidAlgebra

@@ -23,7 +23,7 @@ corresponding property `isDenseAt F` of objects of `D`.
 
 * formalize dense subcategories
 * show the presheaves of types are canonical colimits relatively
-to the Yoneda embedding
+  to the Yoneda embedding
 
 ## References
 * https://ncatlab.org/nlab/show/dense+functor

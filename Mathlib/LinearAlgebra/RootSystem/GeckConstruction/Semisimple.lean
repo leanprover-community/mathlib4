@@ -137,6 +137,7 @@ lemma isNilpotent_e :
     rw [root_add_nsmul_mem_range_iff_le_chainTopCoeff hij'] at hk₁
     lia
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent_f :
     IsNilpotent (f i) := by
   obtain ⟨n, hn⟩ := isNilpotent_e i
@@ -185,6 +186,7 @@ open LieModule Matrix
 
 local notation "H" => cartanSubalgebra' b
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι → K)}
     (χ : H → K) (hχ : χ ≠ 0) (hχ' : genWeightSpace U χ ≠ ⊥) :
     ∃ i, v b i ∈ (genWeightSpace U χ).map U.incl := by
@@ -386,6 +388,7 @@ instance instIsIrreducible [Nonempty ι] :
   have : v b j ∉ U := fun hj ↦ by simpa [v] using apply_inr_eq_zero_of_mem_span_range_u b j (hU hj)
   contradiction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lemma 4.3 from [Geck](Geck2017). -/
 instance instHasTrivialRadical [IsAlgClosed K] : LieAlgebra.HasTrivialRadical K (lieAlgebra b) := by
   cases isEmpty_or_nonempty ι
