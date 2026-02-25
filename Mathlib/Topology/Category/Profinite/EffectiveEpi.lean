@@ -52,6 +52,7 @@ instance : profiniteToCompHaus.ReflectsEffectiveEpis where
   reflects f h :=
     ((Profinite.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae _).out 0 2).mp h)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
 -/

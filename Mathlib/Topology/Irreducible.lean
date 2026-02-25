@@ -290,6 +290,7 @@ theorem isPreirreducible_iff_isClosed_union_isClosed :
   refine forall₂_congr fun _ _ => ?_
   rw [← and_imp, ← not_or, not_imp_not]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A set is irreducible if and only if for every cover by a finite collection of closed sets, it is
 contained in one of the members of the collection. -/
 theorem isIrreducible_iff_sUnion_isClosed :
@@ -471,3 +472,21 @@ lemma IsDiscrete.subsingleton_of_isPreirreducible (hs : IsDiscrete s) (hs' : IsP
   exact (hUx.le (by grind)).symm.trans (b := z) (hVy.le (by grind))
 
 end Preirreducible
+
+lemma Function.Surjective.preirreducibleSpace {f : X → Y} (hfc : Continuous f)
+    (hf : Function.Surjective f) [PreirreducibleSpace X] : PreirreducibleSpace Y where
+  isPreirreducible_univ := by
+    rw [← hf.range_eq, ← Set.image_univ]
+    exact (PreirreducibleSpace.isPreirreducible_univ).image _ hfc.continuousOn
+
+lemma Function.Surjective.irreducibleSpace {f : X → Y} (hfc : Continuous f)
+    (hf : Function.Surjective f) [IrreducibleSpace X] : IrreducibleSpace Y where
+  isPreirreducible_univ := by
+    rw [← hf.range_eq, ← Set.image_univ]
+    exact (PreirreducibleSpace.isPreirreducible_univ).image _ hfc.continuousOn
+  toNonempty := Nonempty.map f inferInstance
+
+lemma Homeomorph.irreducibleSpace_iff
+    (e : X ≃ₜ Y) : IrreducibleSpace X ↔ IrreducibleSpace Y :=
+  ⟨fun _ ↦ e.surjective.irreducibleSpace e.continuous,
+    fun _ ↦ e.symm.surjective.irreducibleSpace e.symm.continuous⟩

@@ -29,6 +29,7 @@ def onePointHyperplaneHomeoUnitSphere
   OnePoint.equivOfIsEmbeddingOfRangeEq _ _
     (isOpenEmbedding_stereographic_symm hv).toIsEmbedding (range_stereographic_symm hv)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A homeomorphism from the one-point compactification of a finite-dimensional real vector space to
 the sphere. -/
 def onePointEquivSphereOfFinrankEq {ι V : Type*} [Fintype ι]

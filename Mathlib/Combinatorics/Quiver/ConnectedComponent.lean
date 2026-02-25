@@ -20,7 +20,7 @@ We define:
 * `Quiver.IsStronglyConnected V`: every pair of vertices is connected by a (possibly empty) path.
 * `Quiver.IsSStronglyConnected V`: every pair of vertices is connected by a path of positive length.
 * `Quiver.StronglyConnectedComponent V`: the quotient by the equivalence relation “paths in both
-directions”.
+  directions”.
 
 These concepts relate strong and weak connectivity and let us reason about strongly connected
 components in directed graphs.

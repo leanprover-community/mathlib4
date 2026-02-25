@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Init
 public import Qq
+public import Qq.Typ
 
 /-!
 # Extra `Qq` helpers

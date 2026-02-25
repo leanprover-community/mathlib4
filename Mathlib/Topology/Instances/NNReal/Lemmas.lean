@@ -219,6 +219,7 @@ nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
   simp_rw [← tendsto_coe, coe_tsum, NNReal.coe_zero]
   exact tendsto_tsum_compl_atTop_zero fun a : α => (f a : ℝ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0`. -/
 def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
   StrictMono.orderIsoOfSurjective (fun x ↦ x ^ n) (fun x y h =>
@@ -242,6 +243,7 @@ theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddB
 
 variable {ι : Type*} [Preorder ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
 @[deprecated tendsto_atTop_ciInf (since := "2026-01-14")]
 theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
