@@ -272,37 +272,18 @@ lemma linearMap_comp_rid : (Algebra.linearMap S (S ⊗[R] B)).restrictScalars R 
     (TensorProduct.rid R R S).toLinearMap = (Algebra.linearMap R B).lTensor S := by
   ext; simp
 
-section DistribBaseChange
+section
 
 variable (R A B C : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A] [Semiring B]
   [Algebra R B] [Semiring C] [Algebra R C]
 
-/-- A relation between `distribBaseChange`, `includeLeft` and `lTensor`. -/
-lemma distribBaseChange_includeLeft_lTensor :
-    ((AlgebraTensorModule.distribBaseChange R A B C).restrictScalars R) ∘ₗ
-      ((includeLeft (R := R) (B := C)).toLinearMap.lTensor A) =
-    (includeLeft (R := A) (A := A ⊗[R] B) (B := A ⊗[R] C)).toLinearMap := by
-  ext; simp [one_def]
+lemma tmul_one_tmul_one_tmul (x : A) (y : C) :
+    x ⊗ₜ[R] (1 : B) ⊗ₜ[A] ((1 : A) ⊗ₜ[R] y) = 1 ⊗ₜ[A] (x ⊗ₜ[R] y) := by
+  trans x • 1 ⊗ₜ[A] (1 ⊗ₜ[R] y)
+  · simp [Algebra.smul_def]
+  · simp [← tmul_smul, smul_tmul' (M := A)]
 
-/-- A relation between `distribBaseChange`, `includeRight` and `lTensor`. -/
-lemma distribBaseChange_includeRight_lTensor :
-    ((AlgebraTensorModule.distribBaseChange R A B C).restrictScalars R) ∘ₗ
-      ((includeRight (R := R) (A := B) (B := C)).toLinearMap.lTensor A) =
-    ((includeRight (R := A) (A := A ⊗[R] B) (B := A ⊗[R] C)).restrictScalars R).toLinearMap := by
-  apply LinearMap.ext
-  intro x
-  induction x using TensorProduct.induction_on with
-  | zero => simp only [map_zero]
-  | tmul x y =>
-      trans x • 1 ⊗ₜ[A] (1 ⊗ₜ[R] y)
-      · simp [Algebra.smul_def]
-      · simp [← tmul_smul, smul_tmul' (M := A)]
-  | add _ _ hx hy =>
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      LinearEquiv.restrictScalars_apply] at hx hy
-    simp [hx, hy, tmul_add]
-
-end DistribBaseChange
+end
 
 section CompatibleSMul
 
