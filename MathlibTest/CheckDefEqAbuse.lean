@@ -20,3 +20,9 @@ example (s : Set ℕ) (a : ℕ) (ha : a ∉ s) : Disjoint s {a} := by
 #guard_msgs in
 example (a b : ℕ) (h : a = b) : a = b := by
   check_defeq_abuse rw [h]
+
+-- Command mode: no abuse detected
+/-- info: check_defeq_abuse: command succeeds with `backward.isDefEq.respectTransparency true`. No abuse detected. -/
+#guard_msgs in
+#check_defeq_abuse
+def myTestFun (n : ℕ) : ℕ := n + 1
