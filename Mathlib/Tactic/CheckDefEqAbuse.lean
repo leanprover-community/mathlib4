@@ -54,21 +54,29 @@ partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
     -- Skip onFailure retry nodes (cls is Meta.isDefEq.onFailure)
     if td.cls == `Meta.isDefEq.onFailure then
       return #[]
-    -- Check if this is a failing isDefEq check
-    let headerStr ← header.toString
-    if hasSubstr headerStr "❌" then
-      -- Failing node. Recurse into children to find deeper failures.
-      -- Note: ✅ children will return #[] (we don't follow recovered paths).
-      let childFailures ← children.foldlM (init := #[]) fun acc child => do
-        return acc ++ (← findLeafFailures child)
-      if childFailures.isEmpty then
-        -- This is a leaf failure - the deepest point of divergence
-        return #[header]
+    -- Only analyze Meta.isDefEq trace nodes for success/failure
+    if Name.isPrefixOf `Meta.isDefEq td.cls then
+      let headerStr ← header.toString
+      if hasSubstr headerStr "❌" then
+        -- Failing node. Recurse into children to find deeper failures.
+        -- Note: ✅ children will return #[] (we don't follow recovered paths).
+        let mut childFailures := #[]
+        for child in children do
+          childFailures := childFailures.append (← findLeafFailures child)
+        if childFailures.isEmpty then
+          -- This is a leaf failure - the deepest point of divergence
+          return #[header]
+        else
+          return childFailures
       else
-        return childFailures
+        -- ✅ node: failures inside were recovered from, not root causes.
+        return #[]
     else
-      -- ✅ node: failures inside were recovered from, not root causes.
-      return #[]
+      -- Non-isDefEq trace node: recurse through children to find nested isDefEq traces.
+      let mut results := #[]
+      for child in children do
+        results := results.append (← findLeafFailures child)
+      return results
   | .compose a b =>
     return (← findLeafFailures a) ++ (← findLeafFailures b)
   | .nest _ m => findLeafFailures m
@@ -96,8 +104,9 @@ elab_rules : tactic
       withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency true) do
         evalTactic tac
         pure (Except.ok ())
-    catch e =>
-      pure (Except.error e.toMessageData)
+    catch
+      | .internal id ref => throw (.internal id ref)
+      | e => pure (Except.error e.toMessageData)
     match strictResult with
     | .ok () =>
       -- Tactic works fine with strict setting, nothing to report.
@@ -112,8 +121,9 @@ elab_rules : tactic
         withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency false) do
           evalTactic tac
           pure (Except.ok ())
-      catch e =>
-        pure (Except.error e.toMessageData)
+      catch
+        | .internal id ref => throw (.internal id ref)
+        | e => pure (Except.error e.toMessageData)
       match permissiveResult with
       | .error _ =>
         s.restore
@@ -134,8 +144,11 @@ elab_rules : tactic
                 |>.setBool `trace.Meta.isDefEq true) do
             evalTactic tac
             pure (Except.ok ())
-        catch e =>
-          pure (Except.error e.toMessageData)
+        catch
+          | .internal id ref =>
+            modifyTraces (fun _ => oldTraces)
+            throw (.internal id ref)
+          | e => pure (Except.error e.toMessageData)
         let failTraces ← getTraces
         modifyTraces (fun _ => oldTraces)
         s.restore
@@ -144,12 +157,12 @@ elab_rules : tactic
         for trace in failTraces do
           leafFailures := leafFailures ++ (← findLeafFailures trace.msg)
         -- Deduplicate by rendering to string
-        let mut seen : Array String := #[]
+        let mut seen : Std.HashSet String := {}
         let mut uniqueFailures : Array MessageData := #[]
         for failure in leafFailures do
           let s ← failure.toString
           unless seen.contains s do
-            seen := seen.push s
+            seen := seen.insert s
             uniqueFailures := uniqueFailures.push failure
         if uniqueFailures.isEmpty then
           logWarningAt tk
