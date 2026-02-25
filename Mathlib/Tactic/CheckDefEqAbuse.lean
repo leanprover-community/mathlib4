@@ -291,9 +291,13 @@ syntax (name := defeqAbuseCmd) "#defeq_abuse " "in" command : command
 elab_rules : command
   | `(command| #defeq_abuse%$tk in $cmd) => do
     let saved ← get
-    -- Helper: run command and check for errors (elabCommand doesn't throw on synth failures).
-    let runAndCheck (opts : Scope → Scope) : CommandElabM (Except MessageData Unit) := do
-      try
+    -- Helper: run command with given scope options, capturing new messages.
+    -- Returns (result, newMessages). elabCommand doesn't throw on synth failures,
+    -- so we check the message log for errors.
+    let runAndCapture (opts : Scope → Scope) :
+        CommandElabM (Except MessageData Unit × List Message) := do
+      let savedMsgCount := (← get).messages.toList.length
+      let result ← try
         withScope opts do
           elabCommand cmd
           if (← get).messages.hasErrors then
@@ -303,9 +307,15 @@ elab_rules : command
       catch
         | .internal id ref => throw (.internal id ref)
         | e => pure (Except.error e.toMessageData)
-    -- First, try with respectTransparency true (the strict/new default)
-    let strictResult ← runAndCheck (fun scope =>
-      { scope with opts := scope.opts.setBool `backward.isDefEq.respectTransparency true })
+      let newMsgs := ((← get).messages.toList).drop savedMsgCount
+      return (result, newMsgs)
+    let traceOpts (strict : Bool) (scope : Scope) : Scope :=
+      { scope with opts := (scope.opts.setBool `backward.isDefEq.respectTransparency strict)
+          |>.setBool `trace.Meta.isDefEq true
+          |>.setBool `trace.Meta.synthInstance true }
+    -- Pass 1: strict + tracing.
+    -- If it succeeds, no abuse; if it fails, we already have the traces.
+    let (strictResult, strictMsgs) ← runAndCapture (traceOpts true)
     set saved
     match strictResult with
     | .ok () =>
@@ -313,9 +323,9 @@ elab_rules : command
         `backward.isDefEq.respectTransparency true`. No abuse detected."
       elabCommand cmd
     | .error _ =>
-      -- Try with respectTransparency false (the permissive/old setting)
-      let permissiveResult ← runAndCheck (fun scope =>
-        { scope with opts := scope.opts.setBool `backward.isDefEq.respectTransparency false })
+      -- Pass 2: permissive + tracing.
+      -- If it fails, command fails regardless; if it succeeds, we have the traces.
+      let (permissiveResult, permissiveMsgs) ← runAndCapture (traceOpts false)
       set saved
       match permissiveResult with
       | .error _ =>
@@ -323,30 +333,7 @@ elab_rules : command
           `backward.isDefEq.respectTransparency` setting."
         elabCommand cmd
       | .ok () =>
-        -- Strict fails, permissive works. Trace both to find root causes.
-        -- Traces end up in the message log after elabCommand, not in TraceState.
-        let traceOpts (strict : Bool) (scope : Scope) : Scope :=
-          { scope with opts := (scope.opts.setBool `backward.isDefEq.respectTransparency strict)
-              |>.setBool `trace.Meta.isDefEq true
-              |>.setBool `trace.Meta.synthInstance true }
-        -- Run with strict + tracing
-        let savedMsgCount := saved.messages.toList.length
-        _ ← try
-          withScope (traceOpts true) do elabCommand cmd; pure ()
-        catch
-          | .internal id ref => throw (.internal id ref)
-          | _ => pure ()
-        let strictMsgs := ((← get).messages.toList).drop savedMsgCount
-        set saved
-        -- Run with permissive + tracing to identify failures that happen regardless
-        let savedMsgCount2 := saved.messages.toList.length
-        _ ← try
-          withScope (traceOpts false) do elabCommand cmd; pure ()
-        catch
-          | .internal id ref => throw (.internal id ref)
-          | _ => pure ()
-        let permissiveMsgs := ((← get).messages.toList).drop savedMsgCount2
-        set saved
+        -- Strict fails, permissive works. Analyze traces from passes 1 and 2.
         -- Collect instance names that SUCCEED with permissive setting.
         -- Only strict-failing applications that succeed permissively are due
         -- to the transparency change.
@@ -392,7 +379,7 @@ elab_rules : command
             m!"#defeq_abuse: command fails with \
               `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
               The following synthesis applications fail due to transparency:\n{report}"
-        -- Run the command with permissive setting so it actually succeeds
+        -- Pass 3: run the command with permissive setting so it actually takes effect
         withScope (fun scope =>
           { scope with opts := scope.opts.setBool `backward.isDefEq.respectTransparency false }) do
           elabCommand cmd
