@@ -83,7 +83,7 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
   fun h ↦ by simpa [h] using dirac_apply_of_mem (mem_univ a)
 
 @[simp]
-theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) := by
+theorem map_dirac' {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) := by
   classical
   exact ext fun s hs => by simp [hs, map_apply hf hs, hf hs, indicator_apply]
 
@@ -214,6 +214,14 @@ theorem ae_eq_dirac [MeasurableSingletonClass α] {a : α} (f : α → δ) :
 lemma aemeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
     AEMeasurable f (Measure.dirac a) :=
   ⟨fun _ ↦ f a, measurable_const, ae_eq_dirac f⟩
+
+@[simp]
+theorem Measure.map_dirac [MeasurableSingletonClass α] [MeasurableSingletonClass β]
+    {f : α → β} (a : α) : (dirac a).map f = dirac (f a) := by
+  classical
+  ext s hs
+  rw [map_apply_of_aemeasurable (by fun_prop) hs]
+  simp [indicator_apply]
 
 instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩
