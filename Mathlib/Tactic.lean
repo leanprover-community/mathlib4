@@ -47,6 +47,7 @@ public import Mathlib.Tactic.CategoryTheory.Slice
 public import Mathlib.Tactic.CategoryTheory.ToApp
 public import Mathlib.Tactic.Change
 public import Mathlib.Tactic.Check
+public import Mathlib.Tactic.CheckDefEqAbuse
 public import Mathlib.Tactic.Choose
 public import Mathlib.Tactic.Clean
 public import Mathlib.Tactic.ClearExcept
