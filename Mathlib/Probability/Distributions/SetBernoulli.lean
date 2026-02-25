@@ -158,7 +158,7 @@ theorem setBernoulli_image (hu : u.Finite) (S : Set (Set ι)) (hS : ∀ s ∈ S,
 
 section UpperSet
 
-theorem monotone_setBernoulli_isRelUpperSet {S : Set (Set ι)} (hS_meas : MeasurableSet S)
+theorem monotone_setBernoulli_of_isRelUpperSet {S : Set (Set ι)} (hS_meas : MeasurableSet S)
     (hS : IsRelUpperSet S (· ⊆ u)) : Monotone fun p ↦ setBer(u, p) S := by
   intro p q hpq
   obtain ⟨_, _, _, U, _, hU_law, hU_indep, _⟩ := exists_iid ι (ℙ : Measure I)
@@ -168,7 +168,7 @@ theorem monotone_setBernoulli_isRelUpperSet {S : Set (Set ι)} (hS_meas : Measur
   repeat rw [map_apply (by fun_prop) (by measurability)]
   exact measure_mono (fun ω h ↦ (hS h).2 (by grind) (by grind))
 
-theorem monotone_setBernoulli_isUpperSet {S : Set (Set ι)} (hS_meas : MeasurableSet S)
+theorem monotone_setBernoulli_of_isUpperSet {S : Set (Set ι)} (hS_meas : MeasurableSet S)
     (hS : IsUpperSet S) : Monotone fun p ↦ setBer(Set.univ, p) S :=
   monotone_setBernoulli_isRelUpperSet hS_meas (by simp [hS])
 
