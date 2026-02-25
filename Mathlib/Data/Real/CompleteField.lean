@@ -5,7 +5,7 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.Order.Archimedean.Hom
+public import Mathlib.Algebra.Order.CompleteField
 public import Mathlib.Data.Real.Sqrt
 
 /-!
@@ -15,6 +15,13 @@ TODO: rename this file
 -/
 
 @[expose] public section
+
+noncomputable instance Real.uniqueOrderRingHom (α : Type*)
+    [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Archimedean α] : Unique (α →+*o ℝ) :=
+  ConditionallyCompleteLinearOrderedField.uniqueOrderRingHom _ _
+
+instance Real.uniqueOrderRingIso : Unique (ℝ ≃+*o ℝ) :=
+  uniqueOfSubsingleton <| OrderRingIso.refl ℝ
 
 theorem ringHom_monotone {R S : Type*} [Ring R] [PartialOrder R] [IsOrderedAddMonoid R]
     [Ring S] [LinearOrder S] [IsOrderedAddMonoid S] [PosMulMono S]
