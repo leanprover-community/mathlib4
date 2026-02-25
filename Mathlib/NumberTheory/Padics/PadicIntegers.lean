@@ -192,7 +192,9 @@ theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
 instance : NormedCommRing ℤ_[p] where
   __ := instCommRing
-  dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ ↦ rfl
+  dist_eq := by
+    rintro ⟨x, hx⟩ ⟨y, hy⟩
+    exact dist_eq_norm_neg_add x y
   norm_mul_le := by simp [norm_def]
 
 instance : NormOneClass ℤ_[p] :=
