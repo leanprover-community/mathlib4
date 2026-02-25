@@ -21,51 +21,48 @@ Also defines isomorphisms to the categorical product and coproduct, respectively
 @[expose] public section
 
 
-open CategoryTheory.Limits
+open CategoryTheory Limits ConcreteCategory
 
 universe w v u
 
 namespace CategoryTheory.FunctorToTypes
 
 variable {C : Type u} [Category.{v} C]
-variable (F G : C ⥤ Type w)
+variable (F G : C ⥤ TypeCat.{w})
 
 section prod
 
 /-- `prod F G` is the explicit binary product of type-valued functors `F` and `G`. -/
-def prod : C ⥤ Type w where
-  obj a := F.obj a × G.obj a
-  map f a := (F.map f a.1, G.map f a.2)
+@[simps obj map]
+def prod : C ⥤ TypeCat.{w} where
+  obj a := TypeCat.of <| F.obj a × G.obj a
+  map f := TypeCat.ofHom ⟨fun a ↦ (F.map f a.1, G.map f a.2)⟩
 
 variable {F G}
 
 /-- The first projection of `prod F G`, onto `F`. -/
-@[simps]
+@[simps app]
 def prod.fst : prod F G ⟶ F where
-  app _ a := a.1
+  app _ := TypeCat.ofHom ⟨fun a ↦ a.1⟩
 
 /-- The second projection of `prod F G`, onto `G`. -/
-@[simps]
+@[simps app]
 def prod.snd : prod F G ⟶ G where
-  app _ a := a.2
+  app _ := TypeCat.ofHom ⟨fun a ↦ a.2⟩
 
 /-- Given natural transformations `F ⟶ F₁` and `F ⟶ F₂`, construct
 a natural transformation `F ⟶ prod F₁ F₂`. -/
 @[simps]
-def prod.lift {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
+def prod.lift {F₁ F₂ : C ⥤ TypeCat.{w}} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     F ⟶ prod F₁ F₂ where
-  app x y := ⟨τ₁.app x y, τ₂.app x y⟩
-  naturality _ _ _ := by
-    ext a
-    simp only [types_comp_apply, FunctorToTypes.naturality]
-    aesop
+  app x := TypeCat.ofHom ⟨fun y ↦ ⟨τ₁.app x y, τ₂.app x y⟩⟩
 
 @[simp]
-lemma prod.lift_fst {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
+lemma prod.lift_fst {F₁ F₂ : C ⥤ TypeCat.{w}} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     prod.lift τ₁ τ₂ ≫ prod.fst = τ₁ := rfl
 
 @[simp]
-lemma prod.lift_snd {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
+lemma prod.lift_snd {F₁ F₂ : C ⥤ TypeCat.{w}} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     prod.lift τ₁ τ₂ ≫ prod.snd = τ₂ := rfl
 
 variable (F G)
@@ -109,7 +106,7 @@ lemma binaryProductIso_inv_comp_fst :
 @[simp]
 lemma binaryProductIso_inv_comp_fst_apply (a : C) (z : (prod F G).obj a) :
     (Limits.prod.fst (X := F)).app a ((binaryProductIso F G).inv.app a z) = z.1 :=
-  congr_fun (congr_app (binaryProductIso_inv_comp_fst F G) a) z
+  congr_hom (congr_app (binaryProductIso_inv_comp_fst F G) a) z
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -120,7 +117,7 @@ lemma binaryProductIso_inv_comp_snd :
 @[simp]
 lemma binaryProductIso_inv_comp_snd_apply (a : C) (z : (prod F G).obj a) :
     (Limits.prod.snd (X := F)).app a ((binaryProductIso F G).inv.app a z) = z.2 :=
-  congr_fun (congr_app (binaryProductIso_inv_comp_snd F G) a) z
+  congr_hom (congr_app (binaryProductIso_inv_comp_snd F G) a) z
 
 variable {F G}
 
@@ -152,8 +149,8 @@ noncomputable
 def binaryProductEquiv (a : C) : (F ⨯ G).obj a ≃ (F.obj a) × (G.obj a) where
   toFun z := ⟨((binaryProductIso F G).hom.app a z).1, ((binaryProductIso F G).hom.app a z).2⟩
   invFun z := prodMk z.1 z.2
-  left_inv _ := by simp [prodMk]
-  right_inv _ := by simp [prodMk]
+  left_inv _ := by simp [-prod_obj, prodMk]
+  right_inv _ := by simp [-prod_obj, prodMk]
 
 @[ext]
 lemma prod_ext' (a : C) (z w : (F ⨯ G).obj a)
@@ -168,44 +165,39 @@ end prod
 section coprod
 
 /-- `coprod F G` is the explicit binary coproduct of type-valued functors `F` and `G`. -/
-def coprod : C ⥤ Type w where
-  obj a := F.obj a ⊕ G.obj a
-  map f x := by
-    cases x with
-    | inl x => exact .inl (F.map f x)
-    | inr x => exact .inr (G.map f x)
+@[simps obj map]
+def coprod : C ⥤ TypeCat.{w} where
+  obj a := TypeCat.of <| F.obj a ⊕ G.obj a
+  map f := TypeCat.ofHom ⟨Sum.map (F.map f) (G.map f)⟩
+  map_id _ := by ext ⟨⟩<;> simp
+  map_comp _ _ := by ext ⟨⟩<;> simp
 
 variable {F G}
 
 /-- The left inclusion of `F` into `coprod F G`. -/
 @[simps]
 def coprod.inl : F ⟶ coprod F G where
-  app _ x := .inl x
+  app _ := TypeCat.ofHom ⟨fun x ↦ .inl x⟩
 
 /-- The right inclusion of `G` into `coprod F G`. -/
 @[simps]
 def coprod.inr : G ⟶ coprod F G where
-  app _ x := .inr x
+  app _ := TypeCat.ofHom ⟨fun x ↦ .inr x⟩
 
 /-- Given natural transformations `F₁ ⟶ F` and `F₂ ⟶ F`, construct
 a natural transformation `coprod F₁ F₂ ⟶ F`. -/
 @[simps]
-def coprod.desc {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
+def coprod.desc {F₁ F₂ : C ⥤ TypeCat.{w}} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
     coprod F₁ F₂ ⟶ F where
-  app a x := by
-     cases x with
-     | inl x => exact τ₁.app a x
-     | inr x => exact τ₂.app a x
-  naturality _ _ _ := by
-    ext x
-    cases x with | _ => simp only [coprod, types_comp_apply, FunctorToTypes.naturality]
+  app a := TypeCat.ofHom ⟨Sum.elim (τ₁.app a) (τ₂.app a)⟩
+  naturality _ _ _ := by ext ⟨⟩<;> simp
 
 @[simp]
-lemma coprod.desc_inl {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
+lemma coprod.desc_inl {F₁ F₂ : C ⥤ TypeCat.{w}} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
     coprod.inl ≫ coprod.desc τ₁ τ₂ = τ₁ := rfl
 
 @[simp]
-lemma coprod.desc_inr {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
+lemma coprod.desc_inr {F₁ F₂ : C ⥤ TypeCat.{w}} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
     coprod.inr ≫ coprod.desc τ₁ τ₂ = τ₂ := rfl
 
 variable (F G)
@@ -242,7 +234,7 @@ lemma inl_comp_binaryCoproductIso_hom :
 @[simp]
 lemma inl_comp_binaryCoproductIso_hom_apply (a : C) (x : F.obj a) :
     (binaryCoproductIso F G).hom.app a ((Limits.coprod.inl (X := F)).app a x) = .inl x :=
-  congr_fun (congr_app (inl_comp_binaryCoproductIso_hom F G) a) x
+  congr_hom (congr_app (inl_comp_binaryCoproductIso_hom F G) a) x
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -254,7 +246,7 @@ lemma inr_comp_binaryCoproductIso_hom :
 @[simp]
 lemma inr_comp_binaryCoproductIso_hom_apply (a : C) (x : G.obj a) :
     (binaryCoproductIso F G).hom.app a ((Limits.coprod.inr (X := F)).app a x) = .inr x :=
-  congr_fun (congr_app (inr_comp_binaryCoproductIso_hom F G) a) x
+  congr_hom (congr_app (inr_comp_binaryCoproductIso_hom F G) a) x
 
 @[simp]
 lemma inl_comp_binaryCoproductIso_inv :
@@ -293,8 +285,8 @@ def binaryCoproductEquiv (a : C) :
     (F ⨿ G).obj a ≃ (F.obj a) ⊕ (G.obj a) where
   toFun z := (binaryCoproductIso F G).hom.app a z
   invFun z := (binaryCoproductIso F G).inv.app a z
-  left_inv _ := by simp only [hom_inv_id_app_apply]
-  right_inv _ := by simp only [inv_hom_id_app_apply]
+  left_inv _ := by simp [-coprod_obj]
+  right_inv _ := by simp [-coprod_obj]
 
 end coprod
 

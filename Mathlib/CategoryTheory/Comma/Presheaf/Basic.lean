@@ -453,7 +453,7 @@ lemma unitForward_unitBackward {F : Cᵒᵖ ⥤ TypeCat.{v}} (η : F ⟶ A) (X :
   funext fun x => by simp [unitForward, unitBackward]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma unitBackward_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
+lemma unitBackward_unitForward {F : Cᵒᵖ ⥤ TypeCat.{v}} (η : F ⟶ A) (X : C) :
     unitBackward η X ∘ unitForward η X = id := by
   refine funext fun p => YonedaCollection.ext ?_ (OverArrows.ext ?_)
   · simpa [unitForward, unitBackward] using congrArg yonedaEquiv.symm p.snd.app_val
