@@ -6,13 +6,11 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Data.ZMod.Units
-public import Mathlib.NumberTheory.Cyclotomic.Gal
-public import Mathlib.RingTheory.Invariant.Basic
-public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.FieldTheory.Finite.Extension
-public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
+public import Mathlib.NumberTheory.Cyclotomic.Gal
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 public import Mathlib.NumberTheory.NumberField.Ideal.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 
 /-!
 # Galois theory for cyclotomic fields
