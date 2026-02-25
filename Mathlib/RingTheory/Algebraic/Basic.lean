@@ -609,6 +609,19 @@ theorem algEquivOfTranscendental_apply (s : S) (h : Transcendental R s) (f : R[X
 lemma algEquivOfTranscendental_apply_X (s : S) (h : Transcendental R s) :
     algEquivOfTranscendental R s h X = ⟨s, Algebra.subset_adjoin rfl⟩ := by simp
 
+@[simp]
+theorem algEquivOfTranscendental_symm_aeval (s : S) (h : Transcendental R s) (f : R[X]) :
+    (algEquivOfTranscendental R s h).symm
+      (aeval (⟨s, Algebra.self_mem_adjoin_singleton R s⟩) f) = f := by
+  apply (algEquivOfTranscendental R s h).toEquiv.injective
+  simp
+
+@[simp]
+theorem algEquivOfTranscendental_symm_gen (s : S) (h : Transcendental R s) :
+    (algEquivOfTranscendental R s h).symm ⟨s, Algebra.self_mem_adjoin_singleton R s⟩ = X := by
+  apply (algEquivOfTranscendental R s h).toEquiv.injective
+  simp
+
 end Polynomial
 
 end
