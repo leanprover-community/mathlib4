@@ -221,4 +221,18 @@ theorem LinearMap.shortExact_shortComplexKer {f : M →ₗ[R] N} (h : Function.S
   mono_f := (ModuleCat.mono_iff_injective _).mpr (LinearMap.ker f).injective_subtype
   epi_g := (ModuleCat.epi_iff_surjective _).mpr h
 
+variable {L : Type v} [AddCommGroup L] [Module R L]
+
+abbrev ModuleCat.shortComplexOfCompEqZero (f : M →ₗ[R] N) (g : N →ₗ[R] L) (eq0 : g.comp f = 0) :
+    ShortComplex (ModuleCat.{v} R) where
+  f := ModuleCat.ofHom f
+  g := ModuleCat.ofHom g
+
+lemma ModuleCat.shortComplex_shortExact_of_hom (S : ShortComplex (ModuleCat.{v} R))
+    (exac : Function.Exact S.f S.g) (inj : Function.Injective S.f)
+    (surj : Function.Surjective S.g) : S.ShortExact where
+  exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr exac
+  mono_f := (ModuleCat.mono_iff_injective _).mpr inj
+  epi_g := (ModuleCat.epi_iff_surjective _).mpr surj
+
 end
