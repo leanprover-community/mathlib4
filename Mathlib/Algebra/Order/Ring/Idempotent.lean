@@ -67,6 +67,7 @@ instance : SemilatticeSup {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
       (IsIdempotentElem.of_mul_add b.2.1 b.2.2).1.eq, ← mul_add, a.2.2, mul_one]
   sup_le a b c hac hbc := by simp_rw [(· ≤ ·), add_mul, mul_assoc]; rw [hac, hbc]
 
+set_option backward.whnf.reducibleClassField false in
 instance : BooleanAlgebra {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
   inf a b := (aᶜ ⊔ bᶜ)ᶜ
   inf_le_left a b := by simp_rw [(· ≤ ·), (· ⊔ ·), (·ᶜ), SemilatticeSup.sup,

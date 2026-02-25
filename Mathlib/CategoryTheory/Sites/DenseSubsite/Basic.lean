@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
+Authors: Andrew Yang, Joël Riou
 -/
 module
 
@@ -31,6 +31,15 @@ that factors through images of the functor for each object in `D`.
 - `CategoryTheory.Functor.IsDenseSubsite`:
   The functor `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)` if `G` is cover-dense,
   locally fully-faithful, and `S` is a cover of `C` iff the image of `S` in `D` is a cover.
+- `CategoryTheory.Functor.IsDenseSubsite.sheafEquiv`: the equivalence of
+  categories `Sheaf J A ≌ Sheaf K A` when `(C, J)` is a dense subsite of `(D, K)` and
+  the pushforward functor `Sheaf K A ⥤ Sheaf J A` is an equivalence, which we show
+  in two situations:
+  * the sites are small and `A` has suitable limits (see the file
+    `Mathlib/CategoryTheory/Sites/DenseSubsite/SheafEquiv.lean`).
+  * the category `A` has limits of size `w` and `G` is `1`-hypercover cover dense
+    relatively to the universe `w` (see the file
+    `Mathlib/CategoryTheory/Sites/DenseSubsite/OneHypercoverDense.lean`).
 
 ## References
 
@@ -516,7 +525,7 @@ lemma whiskerLeft_obj_map_bijective_of_isCoverDense (G : C ⥤ D)
     Function.Bijective (((whiskeringLeft Cᵒᵖ Dᵒᵖ A).obj G.op).map : (P ⟶ Q) → _) :=
   (IsCoverDense.restrictHomEquivHom (ℱ' := ⟨Q, hQ⟩)).symm.bijective
 
-variable {A : Type*} [Category* A] (G : C ⥤ D)
+variable (G : C ⥤ D) {A : Type*} [Category* A]
 
 /-- The functor `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`
 if `G` is cover-dense, locally fully-faithful,
@@ -655,6 +664,147 @@ lemma mapPreimage_comp_map {X Y Z : C} (f : G.obj X ⟶ G.obj Y)
     mapPreimage K G F f ≫ F.val.map g.op =
       mapPreimage K G F (G.map g ≫ f) := by
   rw [mapPreimage_comp, mapPreimage_map]
+
+section
+
+variable (J) [IsEquivalence (sheafPushforwardContinuous G A J K)]
+
+section
+
+variable [HasWeakSheafify J A]
+
+variable (A) in
+/-- Assuming that `(C, J)` is a dense subsite of `(D, K)` (via a functor `G : C ⥤ D`)
+and `sheafPushforwardContinuous G A J₀ J` is an equivalence of categories
+this is a sheafification functor `(Dᵒᵖ ⥤ A) ⥤ Sheaf K A`
+when `HasWeakSheafify J A` holds. -/
+noncomputable def sheafifyOfIsEquivalence
+    [IsEquivalence (sheafPushforwardContinuous G A J K)] :
+    (Dᵒᵖ ⥤ A) ⥤ Sheaf K A :=
+  (whiskeringLeft _ _ _).obj G.op ⋙ presheafToSheaf J A ⋙
+    inv (G.sheafPushforwardContinuous A J K)
+
+variable (A) in
+/-- Assuming that `(C, J)` is a dense subsite of `(D, K)` (via a functor `G : C ⥤ D`)
+and `sheafPushforwardContinuous G A J₀ J` is an equivalence of categories, this is
+the isomorphism between `sheafifyOfIsEquivalence J K G A ⋙ G.sheafPushforwardContinuous A J K`
+and the functor which sends a presheaf to the sheafification of its precomposition by `G.op`. -/
+noncomputable def sheafifyOfIsEquivalenceCompIso
+    [IsEquivalence (sheafPushforwardContinuous G A J K)] :
+    sheafifyOfIsEquivalence J K G A ⋙ G.sheafPushforwardContinuous A J K ≅
+      (whiskeringLeft _ _ _).obj G.op ⋙ presheafToSheaf J A :=
+  associator _ _ _ ≪≫ isoWhiskerLeft _ (associator _ _ _) ≪≫
+    isoWhiskerLeft _ (isoWhiskerLeft _
+      (sheafPushforwardContinuous G A J K).asEquivalence.counitIso ≪≫ Functor.rightUnitor _)
+
+/-- Auxiliary definition for `sheafifyAdjunctionOfIsEquivalence`. -/
+noncomputable def sheafifyHomEquivOfIsEquivalence
+    {P : Dᵒᵖ ⥤ A} {Q : Sheaf K A} :
+    ((sheafifyOfIsEquivalence J K G A).obj P ⟶ Q) ≃ (P ⟶ Q.val) :=
+  haveI := IsDenseSubsite.isLocallyFull J K G
+  haveI := IsDenseSubsite.isCoverDense J K G
+  ((G.sheafPushforwardContinuous A J K).asEquivalence.symm.toAdjunction.homEquiv _ _).trans
+    (((sheafificationAdjunction J A).homEquiv _ _).trans IsCoverDense.restrictHomEquivHom)
+
+@[reassoc]
+lemma sheafifyHomEquivOfIsEquivalence_naturality_left
+    {P₁ P₂ : Dᵒᵖ ⥤ A} (f : P₁ ⟶ P₂) {Q : Sheaf K A}
+    (g : (sheafifyOfIsEquivalence J K G A).obj P₂ ⟶ Q) :
+      sheafifyHomEquivOfIsEquivalence J K G
+        ((sheafifyOfIsEquivalence J K G A).map f ≫ g) =
+        f ≫ sheafifyHomEquivOfIsEquivalence J K G g := by
+  have := IsDenseSubsite.isLocallyFull J K G
+  have := IsDenseSubsite.isCoverDense J K G
+  let adj₁ := (G.sheafPushforwardContinuous A J K).asEquivalence.symm.toAdjunction
+  let adj₂ := sheafificationAdjunction J A
+  change IsCoverDense.restrictHomEquivHom (adj₂.homEquiv _ _ (adj₁.homEquiv _ _
+    ((sheafifyOfIsEquivalence J K G A).map f ≫ g))) =
+      f ≫ IsCoverDense.restrictHomEquivHom (adj₂.homEquiv _ _ (adj₁.homEquiv _ _ g))
+  rw [← IsCoverDense.restrictHomEquivHom_naturality_left]
+  congr 2
+  trans adj₂.homEquiv _ _ ((presheafToSheaf J A).map (G.op.whiskerLeft f) ≫
+    (adj₁.homEquiv _ _) g)
+  · congr 1
+    apply adj₁.homEquiv_naturality_left
+  · apply adj₂.homEquiv_naturality_left
+
+@[reassoc]
+lemma sheafifyHomEquivOfIsEquivalence_naturality_right
+    {P : Dᵒᵖ ⥤ A} {Q₁ Q₂ : Sheaf K A}
+    (f : (sheafifyOfIsEquivalence J K G A).obj P ⟶ Q₁) (g : Q₁ ⟶ Q₂) :
+      sheafifyHomEquivOfIsEquivalence J K G (f ≫ g) =
+        sheafifyHomEquivOfIsEquivalence J K G f ≫ g.val := by
+  have := IsDenseSubsite.isLocallyFull J K G
+  have := IsDenseSubsite.isCoverDense J K G
+  let adj₁ := (G.sheafPushforwardContinuous A J K).asEquivalence.symm.toAdjunction
+  let adj₂ := sheafificationAdjunction J A
+  change IsCoverDense.restrictHomEquivHom (adj₂.homEquiv _ _ (adj₁.homEquiv _ _ (f ≫ g))) =
+    IsCoverDense.restrictHomEquivHom (adj₂.homEquiv _ _ (adj₁.homEquiv _ _ f)) ≫ g.val
+  rw [adj₁.homEquiv_naturality_right, adj₂.homEquiv_naturality_right]
+  apply IsCoverDense.restrictHomEquivHom_naturality_right
+
+variable (A)
+
+/-- Assuming that `(C, J)` is a dense subsite of `(D, K)` (via a functor `G : C ⥤ D`)
+and `sheafPushforwardContinuous G A J K` is an equivalence of categories, and
+that `HasWeakSheafify J A` holds, then this adjunction shows the existence
+of a left adjoint to `sheafToPresheaf K A`. -/
+noncomputable def sheafifyAdjunctionOfIsEquivalence :
+    sheafifyOfIsEquivalence J K G A ⊣ sheafToPresheaf K A :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := fun P Q ↦ sheafifyHomEquivOfIsEquivalence J K G
+      homEquiv_naturality_left_symm := fun {P₁ P₂ Q} f g ↦
+        (sheafifyHomEquivOfIsEquivalence J K G).injective (by
+          simp only [sheafToPresheaf_obj, Equiv.apply_symm_apply,
+            sheafifyHomEquivOfIsEquivalence_naturality_left _ _ _ f])
+      homEquiv_naturality_right :=
+        sheafifyHomEquivOfIsEquivalence_naturality_right J K G }
+
+include G K in
+lemma hasWeakSheafify_of_isEquivalence :
+    HasWeakSheafify K A := ⟨_, ⟨sheafifyAdjunctionOfIsEquivalence J K G A⟩⟩
+
+end
+
+open Limits in
+include G in
+lemma hasSheafify_of_isEquivalence [HasSheafify J A] [HasFiniteLimits A] :
+    HasSheafify K A := by
+  have : PreservesFiniteLimits (presheafToSheaf J A ⋙
+    (G.sheafPushforwardContinuous A J K).inv) := by
+    apply comp_preservesFiniteLimits
+  have : PreservesFiniteLimits (sheafifyOfIsEquivalence J K G A) := by
+    apply comp_preservesFiniteLimits
+  exact HasSheafify.mk' _ _ (sheafifyAdjunctionOfIsEquivalence J K G A)
+
+end
+
+section
+
+variable (J A) [IsEquivalence (sheafPushforwardContinuous G A J K)]
+
+/--
+If `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`, and the
+pushforward functor `Sheaf K A ⥤ Sheaf J A` is an equivalence, then this
+is the equivalence `Sheaf K A ≌ Sheaf J A`. -/
+@[simps! inverse]
+noncomputable def sheafEquiv : Sheaf J A ≌ Sheaf K A :=
+  (sheafPushforwardContinuous G A J K).asEquivalence.symm
+
+variable [HasWeakSheafify J A] [HasWeakSheafify K A]
+
+/-- The natural isomorphism exhibiting the compatibility of
+`IsDenseSubsite.sheafEquiv` with sheafification. -/
+noncomputable
+def sheafEquivSheafificationCompatibility :
+    (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf J A ≅
+      presheafToSheaf K A ⋙ (sheafEquiv J K G A).inverse :=
+  (sheafifyOfIsEquivalenceCompIso _ _ _ _).symm ≪≫
+    isoWhiskerRight
+      ((sheafifyAdjunctionOfIsEquivalence J K G A).leftAdjointUniq
+        (sheafificationAdjunction K A)) _
+
+end
 
 end IsDenseSubsite
 

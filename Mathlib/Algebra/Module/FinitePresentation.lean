@@ -163,7 +163,6 @@ instance : Module.FinitePresentation R R := Module.finitePresentation_of_project
 instance : Module.FinitePresentation R (ι →₀ R) := Module.finitePresentation_of_projective _ _
 instance : Module.FinitePresentation R (ι → R) := Module.finitePresentation_of_projective _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M] (l : M →ₗ[R] N)
     (hl : Function.Surjective l) (hl' : (LinearMap.ker l).FG) :
     Module.FinitePresentation R N := by

@@ -46,6 +46,7 @@ variable {L : Language.{u, v}} [∀ a, L.Structure (M a)]
 
 namespace Ultraproduct
 
+set_option backward.whnf.reducibleClassField false in
 instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :=
   { (u : Filter α).productSetoid M with
     toStructure :=
