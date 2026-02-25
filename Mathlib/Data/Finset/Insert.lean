@@ -124,8 +124,9 @@ lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by grind
 @[norm_cast]
 lemma singleton_subset_coe : {a} ⊆ (s : Set α) ↔ {a} ⊆ s := by grind
 
-theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a := by
-  grind
+theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a :=
+  ⟨fun h ↦ ⟨h ▸ mem_singleton_self a, fun x hx => mem_singleton.1 (h ▸ hx)⟩,
+    fun ⟨ha, hx⟩ ↦ ext fun x ↦ by simpa using ⟨hx x, fun h => h ▸ ha⟩⟩
 
 theorem eq_singleton_iff_nonempty_unique_mem {s : Finset α} {a : α} :
     s = {a} ↔ s.Nonempty ∧ ∀ x ∈ s, x = a := by
