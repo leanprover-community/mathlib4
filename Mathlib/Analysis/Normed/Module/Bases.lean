@@ -18,9 +18,8 @@ sequential notion with modern generalized bases.
 
 ## Overview
 
-A **basis** in a normed space allows every vector to be expanded as a
-(potentially infinite) linear combination of basis vectors. Historically, this
-was defined strictly for sequences $(x_n)_{n \in ℕ}$ with convergence
+A **basis** in a normed space allows every vector to be expanded as a (potentially infinite) linear
+combination of basis vectors. Historically, this was defined strictly for sequences with convergence
 of partial sums (the "classical Schauder basis").
 
 However, modern functional analysis requires bases indexed by arbitrary sets
@@ -42,12 +41,12 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 * `UnconditionalSchauderBasis β 𝕜 X`: An unconditional Schauder basis, an abbreviation for
   `GeneralSchauderBasis β 𝕜 X (SummationFilter.unconditional β)`.
 * `GeneralSchauderBasis.proj b A`: The projection onto a finite set `A` of basis vectors,
-  defined as $P_A(x) = \sum_{i \in A} f_i(x)e_i$.
-* `SchauderBasis.proj b n`: The `n`-th canonical projection $P_n: X \to X$,
-  defined as $P_n(x) = \sum_{i < n} f_i(x)e_i$ (equals `proj (Finset.range n)`).
+  mapping `x ↦ ∑ i ∈ A, b.coord i x • b i`.
+* `SchauderBasis.proj b n`: The `n`-th canonical projection `X → X`,
+  mapping `x ↦ ∑ i ∈ Finset.range n, b.coord i x • b i`.
 * `UnconditionalSchauderBasis.enormProjBound`: The supremum of projection norms (`ℝ≥0∞`).
 * `UnconditionalSchauderBasis.normProjBound`: The supremum of projection norms (`ℝ≥0`,
-  requires `CompleteSpace`).
+  requires `[CompleteSpace X]`).
 
 ## Main Results
 
@@ -86,10 +85,10 @@ open scoped Classical in
 A generalized Schauder basis indexed by `β` with summation along filter `L`.
 
 The key fields are:
-- `basis`: The basis vectors $(e_i)_{i \in \beta}$
-- `coord`: The coordinate functionals $(f_i)_{i \in \beta}$ in the dual space
-- `ortho`: Biorthogonality condition $f_i(e_j) = \delta_{ij}$
-- `expansion`: Every `x` equals $\sum_i f_i(x) e_i$, converging along `L`
+* `basis`: The basis vectors `e i` for `i : β`
+* `coord`: The coordinate functionals `f i` for `i : β` in the dual space
+* `ortho`: Biorthogonality condition `f i (e j) = if i = j then 1 else 0`
+* `expansion`: Every `x` equals `∑ i, f i x • e i`, converging along `L`
 
 See `SchauderBasis` for the classical `ℕ`-indexed case with conditional convergence,
 and `UnconditionalSchauderBasis` for the unconditional case.
@@ -262,8 +261,8 @@ namespace SchauderBasis
 
 variable (b : SchauderBasis 𝕜 X)
 
-/-- The `n`-th canonical projection `P_n = proj (Finset.range n)`, given by:
-    `P_n x = ∑_{i < n} f_i(x) e_i` -/
+/-- The `n`-th canonical projection `P_n = b.proj (Finset.range n)`, given by:
+    `P_n x = ∑ i ∈ Finset.range n, b.coord i x • b i` -/
 def proj (n : ℕ) : X →L[𝕜] X := GeneralSchauderBasis.proj b (Finset.range n)
 
 /-- The canonical projection at `0` is the zero map. -/
@@ -343,7 +342,7 @@ satisfying `P n ∘ P m = P (min n m)`, `P n → id` pointwise, and each
 `e n = (P (n+1) - P n) x` for some `x` such that this is non-zero, and then
 show that these vectors form a Schauder basis. -/
 
-/-- The difference operator `P_{n+1} - P_n`. -/
+/-- The difference operator `P (n + 1) - P n`. -/
 def succSub (P : ℕ → X →L[𝕜] X) (n : ℕ) : X →L[𝕜] X := P (n + 1) - P n
 
 /-- The sum of `succSub` operators up to `n` equals `P n`. -/
@@ -419,7 +418,7 @@ structure ProjectionData where
   projZero : P 0 = 0
   /-- The n-th projection has rank `n`. -/
   finrankRange (n : ℕ) : Module.finrank 𝕜 (LinearMap.range (P n).toLinearMap) = n
-  /-- The projections commute and are nested `(P_n P_m = P_{min n m})`. -/
+  /-- The projections commute and are nested `P n (P m) = P (min n m)`. -/
   hcomp (n m : ℕ) (x : X) : P n (P m x) = P (min n m) x
   /-- The projections converge pointwise to the identity. -/
   hlim (x : X) : Tendsto (fun n ↦ P n x) atTop (𝓝 x)
@@ -495,7 +494,7 @@ def basis (D : ProjectionData 𝕜 X) : SchauderBasis 𝕜 X :=
       simp only [← succSub_sum D.P D.projZero n, ContinuousLinearMap.coe_sum', Finset.sum_apply]
       congr }
 
-/-- The projections of the constructed basis correspond to the input data `P`. -/
+/-- The projections of the constructed basis correspond to the input data `D.P`. -/
 @[simp]
 theorem basis_proj (D : ProjectionData 𝕜 X) : (basis D).proj = D.P := by
   ext n _
@@ -505,7 +504,7 @@ theorem basis_proj (D : ProjectionData 𝕜 X) : (basis D).proj = D.P := by
   dsimp [basis, mkContinuous_apply, IsLinearMap.mk'_apply]
   rw [basisCoeff_spec]
 
-/-- The sequence of the constructed basis corresponds to the input data `e`. -/
+/-- The sequence of the constructed basis corresponds to the input data `D.e`. -/
 @[simp]
 theorem basis_coe (D : ProjectionData 𝕜 X) : ⇑(basis D) = D.e :=
   rfl
