@@ -333,18 +333,15 @@ theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ)
     _ = √ (circleAverage (fun θ ↦ ‖p.eval θ‖ ^ 2) 0 1) := by simp [circleAverage_eq_intervalAverage]
     _ = √ (∑ i ∈ p.support, ‖p.coeff i‖ ^ 2) := by simp [p.sum_sq_norm_coeff_eq_circleAverage]
     _ ≤ √ ((p.natDegree + 1) * p.supNorm ^ 2) := by
-        apply Real.sqrt_le_sqrt
-        refine (Finset.sum_le_card_nsmul p.support _ (p.supNorm ^ 2) ?_).trans ?_
-        · intros i hp
-          refine (sq_le_sq₀ (norm_nonneg _) p.supNorm_nonneg).mpr (p.le_supNorm _)
-        norm_num
         gcongr
-        norm_cast
-        exact p.card_supp_le_succ_natDegree
+        refine (p.support.sum_le_card_nsmul _ (p.supNorm ^ 2) fun i hi ↦ ?_).trans ?_
+        · gcongr
+          exact p.le_supNorm _
+        · simp only [nsmul_eq_mul]
+          gcongr
+          exact mod_cast p.card_supp_le_succ_natDegree
     _ = √(p.natDegree + 1) * p.supNorm := by
-        rw [Real.sqrt_mul]
-        · congr; exact Real.sqrt_sq p.supNorm_nonneg
-        · norm_cast; omega
+        rw [Real.sqrt_mul (by positivity), Real.sqrt_sq p.supNorm_nonneg]
 
 set_option backward.isDefEq.respectTransparency false in
 open Multiset in
