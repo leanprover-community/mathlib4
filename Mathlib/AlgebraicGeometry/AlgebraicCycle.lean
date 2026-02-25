@@ -16,7 +16,7 @@ public import Mathlib.Algebra.DirectSum.Decomposition
 /-!
 # Algebraic Cycles
 
-In this define algebraic cycles on a scheme `X` with coefficients in a type `Z` and provide some
+In this file we define algebraic cycles on a scheme `X` with coefficients in a type `Z` and provide some
 basic API for working with them. We define an algebraic cycle on a scheme `X` with coefficients
 in a type `Z` to be functions `c : X → Z` whose support is locally finite.
 
