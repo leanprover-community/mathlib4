@@ -166,7 +166,7 @@ theorem monotone_setBernoulli {S : Set (Set ι)} (hS_meas : MeasurableSet S)
     ← (hasLaw_setBernoulli_of_uniform_iid p U hU_law hU_indep).map_eq,
     ← (hasLaw_setBernoulli_of_uniform_iid q U hU_law hU_indep).map_eq] at hS ⊢
   repeat rw [map_apply (by fun_prop) (by measurability)]
-  refine measure_mono (fun ω h ↦ (hS h).2 (by grind) (by grind))
+  exact measure_mono (fun ω h ↦ (hS h).2 (by grind) (by grind))
 
 end UpperSet
 
