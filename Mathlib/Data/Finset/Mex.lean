@@ -39,19 +39,21 @@ theorem coe_sInf_compl_le_encard (s : Set ℕ) : sInf sᶜ ≤ s.encard := by
     exact le_top
 
 theorem sInf_coe_compl_le_card (s : Finset ℕ) : sInf sᶜ ≤ s.card := by
-  grw [sInf_compl_le_ncard <| Finset.finite_toSet s, ncard_coe_finset s]
+  grw [sInf_compl_le_ncard s.finite_toSet, ncard_coe_finset s]
+
+variable {α : Type*} [ConditionallyCompleteLinearOrderBot α]
+variable [AddMonoidWithOne α] [AddLeftMono α] [ZeroLEOneClass α] [CharZero α]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem csInf_coe_compl_le_coe_card' {α : Type*} [ConditionallyCompleteLinearOrderBot α]
-    [AddMonoidWithOne α] [AddLeftMono α] [ZeroLEOneClass α] [CharZero α] (s : Finset α) :
-    sInf sᶜ ≤ (s.card : α) := by
-  rw [← csSup_Iic (a := s.card)]
+theorem csInf_coe_compl_le_coe_ncard' {s : Set α} (hfin : s.Finite) : sInf sᶜ ≤ (s.ncard : α) := by
+  rw [← csSup_Iic (a := s.ncard)]
   grw [← Monotone.csSup_image_le_csSup Nat.mono_cast nonempty_Iic bddAbove_Iic]
-  refine csInf_le_csSup_of_nonempty_inter' ?_ <| Set.finite_Iic _ |>.image _ |>.bddAbove
-  rw [← not_disjoint_iff_nonempty_inter, disjoint_compl_left_iff_subset.not, ← Finset.coe_Iic]
-  intro h
-  norm_cast at h
-  apply Finset.card_le_card at h
-  rw [Finset.card_image_of_injective _ CharZero.cast_injective] at h
-  rw [Nat.card_Iic] at h
+  refine csInf_le_csSup_of_nonempty_inter' ?_ <| finite_Iic _ |>.image _ |>.bddAbove
+  rw [← not_disjoint_iff_nonempty_inter, disjoint_compl_left_iff_subset.not]
+  apply (ncard_le_ncard · hfin).mt
+  rw [ncard_image_of_injective _ CharZero.cast_injective, ncard_Iic_nat]
   lia
+
+set_option backward.isDefEq.respectTransparency false in
+theorem csInf_coe_compl_le_coe_card' (s : Finset α) : sInf sᶜ ≤ (s.card : α) := by
+  grw [csInf_coe_compl_le_coe_ncard' s.finite_toSet, ncard_coe_finset s]
