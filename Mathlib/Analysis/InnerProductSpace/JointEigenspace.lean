@@ -84,6 +84,7 @@ variable [FiniteDimensional 𝕜 E]
 
 open IsFinitelySemisimple
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If A and B are commuting symmetric operators on a finite-dimensional inner product space
 then the eigenspaces of the restriction of B to any eigenspace of A exhaust that eigenspace. -/
 theorem iSup_eigenspace_inf_eigenspace_of_commute (hB : B.IsSymmetric) (hAB : Commute A B) :

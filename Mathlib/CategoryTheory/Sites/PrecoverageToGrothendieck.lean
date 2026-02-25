@@ -82,6 +82,7 @@ lemma toGrothendieck_mono {J K : Precoverage C} (h : J ≤ K) :
   | pullback X S _ Y f _ => grind
   | transitive X S R _ _ _ _ => grind
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 An alternative characterization of the Grothendieck topology associated to a precoverage `J`:
 it is the infimum of all Grothendieck topologies containing `Sieve.generate S` for all presieves

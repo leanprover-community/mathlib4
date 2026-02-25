@@ -309,11 +309,19 @@ noncomputable def abelian [IsTriangulated C] : Abelian A :=
       rw [rotate_distinguished_triangle, ← Triangle.shift_distinguished_iff _ 1]
       refine isomorphic_distinguished _ H.mem _ ?_
       exact Triangle.isoMk _ _ (-(Iso.refl _)) (Iso.refl _) (Iso.refl _)
-    exact ⟨K, _, _, isLimitKernelFork hι hT hT',
-      Q, _, _, isColimitCokernelCofork hι hT hT',
-      I, _, _, isColimitCokernelCoforkOfDistTriang hι _ _ _ Hmem,
-      i, _, isLimitKernelForkOfDistTriang hι _ _ _ hI,
-      (ι ⋙ shiftFunctor C (1 : ℤ)).map_injective (by simpa [hm₁] using H.comm₂.symm)⟩)
+    exact ⟨{
+      kernelFork := _
+      isLimitKernelFork := isLimitKernelFork hι hT hT'
+      cokernelCofork := _
+      isColimitCokernelCofork := isColimitCokernelCofork hι hT hT'
+      image := _
+      imageι := _
+      imageπ := _
+      ι_imageπ := _
+      imageι_π := _
+      imageIsCokernel := isColimitCokernelCoforkOfDistTriang hι _ _ _ Hmem
+      imageIsKernel := isLimitKernelForkOfDistTriang hι _ _ _ hI
+      fac := (ι ⋙ shiftFunctor C (1 : ℤ)).map_injective (by simpa [hm₁] using H.comm₂) }⟩)
 
 end
 

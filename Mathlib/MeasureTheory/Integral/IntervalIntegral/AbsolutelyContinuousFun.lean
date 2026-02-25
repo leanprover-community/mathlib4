@@ -15,12 +15,12 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferenti
 
 This file proves that:
 * `AbsolutelyContinuousOnInterval.integral_deriv_eq_sub`: If `f` is absolutely continuous on
-`uIcc a b`, then *Fundamental Theorem of Calculus* holds for `f'` on `a..b`, i.e.
-`∫ (x : ℝ) in a..b, deriv f x = f b - f a`.
+  `uIcc a b`, then *Fundamental Theorem of Calculus* holds for `f'` on `a..b`, i.e.
+  `∫ (x : ℝ) in a..b, deriv f x = f b - f a`.
 * `AbsolutelyContinuousOnInterval.integral_mul_deriv_eq_deriv_mul`:
-*Integration by Parts* holds for absolutely continuous functions, i.e. if `f` and `g` are
-absolutely continuous on `uIcc a b`, then
-`∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x`.
+  *Integration by Parts* holds for absolutely continuous functions, i.e. if `f` and `g` are
+  absolutely continuous on `uIcc a b`, then
+  `∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x`.
 
 ## Tags
 absolutely continuous, fundamental theorem of calculus, integration by parts
@@ -96,7 +96,6 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
   apply_fun fun x ↦ x.toReal at vol_sum
   rw [ENNReal.tsum_toReal_eq (by simp), ENNReal.toReal_ofReal (by linarith),
       ← Summable.hasSum_iff (by grind [tsum_def])] at vol_sum
-  convert vol_sum with z
   grind [ENNReal.toReal_ofReal]
 
 /-- If `f` is absolutely continuous on `[d, b]` and there is a collection of pairwise disjoint
