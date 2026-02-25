@@ -242,13 +242,15 @@ section left
 
 variable [CommRing R] (v : Valuation R Γ₀) [Semiring S] [Algebra R S]
 
-instance : Algebra (WithVal v) S := .compHom S (equiv v).toRingHom
+instance : Algebra (WithVal v) S where
+  __ := inferInstanceAs (Module (WithVal v) S)
+  __ := Algebra.compHom S (equiv v).toRingHom
 
 theorem algebraMap_left_apply (s : WithVal v) :
     algebraMap (WithVal v) S s = algebraMap R S s.ofVal := rfl
 
 instance {S : Type*} [CommSemiring S] [Algebra R S] [i : IsFractionRing R S] :
-    IsFractionRing (WithVal v) S := .of_equiv_left (equiv v) (fun _ ↦ rfl)
+    IsFractionRing (WithVal v) S := .of_ringEquiv_left (equiv v) (fun _ ↦ rfl)
 
 theorem algebraMap_left_injective (h : Function.Injective (algebraMap R S)) :
     Function.Injective (algebraMap (WithVal v) S) := h.comp (ofVal_injective v)

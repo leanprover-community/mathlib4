@@ -1080,7 +1080,6 @@ theorem valuation_compare (f : K⸨X⸩) :
   rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare
     (pkg := ratfuncAdicComplPkg) (cont_f := Valued.continuous_valuation)]
   · rfl
-  change ∀ _, Tendsto (Valued.v ∘ WithVal.ofVal) _ _
   intro x
   apply Tendsto.comp (tendsto_valuation K x) (by simpa using tendsto_comap)
 
