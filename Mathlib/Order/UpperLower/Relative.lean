@@ -20,7 +20,7 @@ This file proves results on `IsRelUpperSet` and `IsRelLowerSet`.
 
 open Set
 
-variable {α : Type*} {ι : Sort*} {κ : ι → Sort*} {s t : Set α} {a : α} {P : α → Prop}
+variable {α : Type*} {ι : Sort*} {κ : ι → Sort*} {s t : Set α} {a b : α} {P : α → Prop}
 
 section LE
 
@@ -45,6 +45,11 @@ lemma IsRelUpperSet.mono_isUpperSet (ht : IsRelUpperSet t P) (hs : IsUpperSet s)
 
 lemma IsRelUpperSet.prop_of_mem (hs : IsRelUpperSet s P) (h : a ∈ s) : P a := (hs h).1
 lemma IsRelLowerSet.prop_of_mem (hs : IsRelLowerSet s P) (h : a ∈ s) : P a := (hs h).1
+
+lemma IsRelUpperSet.mem_of_le (hs : IsRelUpperSet s P) (h : a ∈ s) (h₁ : a ≤ b) (h₂ : P b) :
+    b ∈ s := (hs h).2 h₁ h₂
+lemma IsRelLowerSet.mem_of_le (hs : IsRelLowerSet s P) (h : a ∈ s) (h₁ : b ≤ a) (h₂ : P b) :
+    b ∈ s := (hs h).2 h₁ h₂
 
 @[simp] lemma isRelUpperSet_empty : IsRelUpperSet (∅ : Set α) P := fun _ ↦ False.elim
 @[simp] lemma isRelLowerSet_empty : IsRelLowerSet (∅ : Set α) P := fun _ ↦ False.elim
