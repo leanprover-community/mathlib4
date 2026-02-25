@@ -329,7 +329,7 @@ lemma height_eq_of_strictMono (f : α → β) (hf : StrictMono f) (a : α)
   apply le_antisymm <|
     Order.height_le_height_apply_of_strictMono _ hf _
   refine height_le_iff'.mpr (fun p hp ↦ ?_)
-  choose p' hp' using (h p hp)
+  obtain ⟨p', hp'⟩ := h p hp
   exact hp'.2 ▸ LTSeries.map_length p' f hf ▸
         (Order.height_eq_iSup_last_eq a) ▸
         (ciSup_pos hp'.1 : (⨆ (_ : RelSeries.last p' = a), p'.length : ℕ∞) = p'.length) ▸
