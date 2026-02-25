@@ -500,11 +500,7 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
     ⟨fun x y z => by
       rw [Algebra.smul_def, mul_smul]
       rfl⟩
-  have : IsScalarTower R S Q := by
-    refine ⟨fun x y z => ?_⟩
-    change (IsScalarTower.toAlgHom R S T) (x • y) • z = x • algebraMap S T y • z
-    rw [map_smul, smul_assoc]
-    rfl
+  have : IsScalarTower R S Q := IsScalarTower.to₁₂₄ _ _ T _
   refine
     ⟨hg.lift (hf.lift i), by
       ext
