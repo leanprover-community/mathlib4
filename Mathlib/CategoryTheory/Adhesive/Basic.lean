@@ -49,8 +49,9 @@ variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 -- This only makes sense when the original diagram is a pushout.
-/-- A convenient formulation for a pushout being a van Kampen colimit.
-See `IsPushout.isVanKampen_iff` below. -/
+/-- A convenient formulation for a pushout being a van Kampen colimit. For any commutative cube of
+which a van Kampen pushout forms the bottom face and the back faces are pullbacks, the front faces
+are pullbacks if and only if the top face is a pushout. See `IsPushout.isVanKampen_iff` below. -/
 @[nolint unusedArguments]
 def IsPushout.IsVanKampen (_ : IsPushout f g h i) : Prop :=
   ∀ ⦃W' X' Y' Z' : C⦄ (f' : W' ⟶ X') (g' : W' ⟶ Y') (h' : X' ⟶ Z') (i' : Y' ⟶ Z') (αW : W' ⟶ W)
@@ -58,13 +59,16 @@ def IsPushout.IsVanKampen (_ : IsPushout f g h i) : Prop :=
     (_ : IsPullback g' αW αY g) (_ : CommSq h' αX αZ h) (_ : CommSq i' αY αZ i)
     (_ : CommSq f' g' h' i'), IsPushout f' g' h' i' ↔ IsPullback h' αX αZ h ∧ IsPullback i' αY αZ i
 
-lemma IsPushout.IsVanKampen.exists_vanKampen_diagram {H : IsPushout f g h i} (H' : H.IsVanKampen)
+/-- If a van Kampem pushout forms the bottom face of a commutative "half-cube" whose front faces
+are pullbacks, then there exist two back faces which are pullbacks and a top face which is a
+pushout. -/
+lemma IsPushout.IsVanKampen.exists_cube_filling {H : IsPushout f g h i} (H' : H.IsVanKampen)
     {X' Y' Z' : C} {h' : X' ⟶ Z'} {i' : Y' ⟶ Z'} {αX : X' ⟶ X} {αY : Y' ⟶ Y} {αZ : Z' ⟶ Z}
     [HasPullback αX f] (hh : IsPullback h' αX αZ h) (hi : IsPullback i' αY αZ i) :
     ∃ (W' : C) (f' : W' ⟶ X') (g' : W' ⟶ Y') (αW : W' ⟶ W),
       IsPullback f' αW αX f ∧ IsPullback g' αW αY g ∧ IsPushout f' g' h' i' := by
   let l := hi.lift ((pullback.fst αX f) ≫ h') ((pullback.snd αX f) ≫ g)
-      (by simp only [Category.assoc, hh.toCommSq.w, pullback.condition_assoc, ← H.w])
+    (by simp only [Category.assoc, hh.toCommSq.w, pullback.condition_assoc, ← H.w])
   use (pullback αX f), (pullback.fst αX f), l, (pullback.snd αX f)
   refine ⟨IsPullback.of_hasPullback αX f, ?_, ?_⟩
   · refine IsPullback.of_right' ?_ hi
@@ -75,7 +79,7 @@ lemma IsPushout.IsVanKampen.exists_vanKampen_diagram {H : IsPushout f g h i} (H'
         hh.toCommSq hi.toCommSq ⟨by simp only [IsPullback.lift_fst, l]⟩).2 ⟨hh, hi⟩
     · refine IsPullback.of_right' ?_ hi
       rw [← H.w]
-      refine IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
+      exact IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
 
 theorem IsPushout.IsVanKampen.flip {H : IsPushout f g h i} (H' : H.IsVanKampen) :
     H.flip.IsVanKampen := by
@@ -130,7 +134,10 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
         exacts [h₁, h₂]
     · exact ⟨fun h => h.2, fun h => ⟨w, h⟩⟩
 
-lemma IsPushout.isVanKampen_iff' {H : IsPushout f g h i} :
+/-- A pushout is van Kampen if and only if whenever it forms the bottom face of a commutative
+"half-cube", the front faces are pullbacks if and only if there exist back faces which are pullbacks
+and a top face which is a pushout. -/
+theorem IsPushout.isVanKampen_iff' {H : IsPushout f g h i} :
     H.IsVanKampen ↔ ∀ ⦃X' Y' Z' : C⦄ (h' : X' ⟶ Z') (i' : Y' ⟶ Z')
       (αX : X' ⟶ X) (αY : Y' ⟶ Y) (αZ : Z' ⟶ Z)
       (_ : CommSq h' αX αZ h) (_ : CommSq i' αY αZ i) [HasPullback αX f],
@@ -141,11 +148,11 @@ lemma IsPushout.isVanKampen_iff' {H : IsPushout f g h i} :
   · intro H' X' Y' Z' h' i' αX αY αZ sq_h sq_i _
     constructor
     · intro ⟨hh, hi⟩
-      exact H'.exists_vanKampen_diagram hh hi
+      exact H'.exists_cube_filling hh hi
     · intro ⟨W', f', g', αW, hf, hg, H''⟩
       rwa [← H' f' g' h' i' αW αX αY αZ hf hg sq_h sq_i H''.toCommSq]
   · intro H' W' X' Y' Z' f' g' h' i' αW αX αY αZ hf hg sq_h sq_i cs
-    have : HasPullback αX f := hf.hasPullback
+    let : HasPullback αX f := hf.hasPullback
     constructor
     · intro H''
       rw [H' h' i' αX αY αZ sq_h sq_i]
@@ -164,7 +171,7 @@ lemma IsPushout.isVanKampen_isPullback_isPullback_hom_ext
     {αX : X' ⟶ X} [HasPullback αX f] {αY : Y' ⟶ Y} {αZ : Z' ⟶ Z} {W : C} {f₁ f₂ : Z' ⟶ W}
     (hh : IsPullback h' αX αZ h) (hi : IsPullback i' αY αZ i)
     (h'_w : h' ≫ f₁ = h' ≫ f₂) (i'_w : i' ≫ f₁ = i' ≫ f₂) : f₁ = f₂ := by
-  obtain ⟨W', f', g', αW, _, _, H''⟩ := H'.exists_vanKampen_diagram hh hi
+  obtain ⟨W', f', g', αW, _, _, H''⟩ := H'.exists_cube_filling hh hi
   exact H''.hom_ext h'_w i'_w
 
 set_option backward.isDefEq.respectTransparency false in
@@ -313,20 +320,23 @@ lemma Adhesive.isPushout_isPullback_isPullback_hom_ext [Adhesive C] [Mono f] (H 
 
 attribute [local instance] Limits.hasPullback_symmetry in
 open IsPullback IsPushout pullback pushout in
+/-- If `a : A ⟶ Z` and `b : B ⟶ Z` are monomorphisms in an adhesive category, then the map
+`pushout (pullback.fst a b) (pullback.snd a b) ⟶ Z` induced by their pullback is a monomorphism.
+See Theorem 5.1 in Lack and Sobociński. -/
 instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
     {a : A ⟶ Z} {b : B ⟶ Z} [Mono a] [Mono b] :
     Mono (pushout.desc a b pullback.condition) where
   right_cancellation f g w := by
     let u := pushout.inl (pullback.fst a b) (pullback.snd a b)
     let v := pushout.inr (pullback.fst a b) (pullback.snd a b)
-    letI : Mono u :=
+    let : Mono u :=
       mono_of_isPushout_of_mono_right (of_hasPushout (pullback.fst a b) (pullback.snd a b))
-    letI : Mono v :=
+    let : Mono v :=
       mono_of_isPushout_of_mono_left (of_hasPushout (pullback.fst a b) (pullback.snd a b))
-    let f_sq_left := of_hasPullback f u
-    let f_sq_right := of_hasPullback f v
-    let g_sq_left := of_hasPullback g u
-    let g_sq_right := of_hasPullback g v
+    let sq_f_u := of_hasPullback f u
+    let sq_f_v := of_hasPullback f v
+    let sq_g_u := of_hasPullback g u
+    let sq_g_v := of_hasPullback g v
     let l₁ := pullback.fst f u
     let f₁ := pullback.snd f u
     let l₂ := pullback.fst f v
@@ -335,43 +345,39 @@ instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
     let g₁ := pullback.snd g u
     let m₂ := pullback.fst g v
     let g₂ := pullback.snd g v
-    obtain ⟨_, f', _, _, p₁, p₂, h₁⟩ := (isVanKampen_iff'.1 (van_kampen (of_hasPushout _ _))
-      _ _ _ _ _ f_sq_left.toCommSq f_sq_right.toCommSq).1 ⟨f_sq_left, f_sq_right⟩
-    letI : Mono f' := by
+    obtain ⟨_, f', _, _, p₁, _, h₁⟩ :=
+      (van_kampen (of_hasPushout _ _)).exists_cube_filling sq_f_u sq_f_v
+    let : Mono f' := by
       rw [← p₁.isoPullback_hom_fst]
       infer_instance
-    apply isPushout_isPullback_isPullback_hom_ext (of_hasPushout _ _) g_sq_left g_sq_right
+    apply isPushout_isPullback_isPullback_hom_ext (of_hasPushout _ _) sq_g_u sq_g_v
     · let sq₁₁ := of_hasPullback m₁ l₁
       let sq₁₂ := of_hasPullback m₁ l₂
       apply isPushout_isPullback_isPullback_hom_ext h₁ sq₁₁ sq₁₂
-      · rw [pullback.condition_assoc, f_sq_left.w, g_sq_left.w, ← Category.assoc, ← Category.assoc]
+      · rw [pullback.condition_assoc, sq_f_u.w, sq_g_u.w, ← Category.assoc, ← Category.assoc]
         refine ?_ =≫ u
-        letI : Mono (pushout.inl (pullback.fst a b) (pullback.snd a b) ≫
-            pushout.desc a b pullback.condition) := by
-          rwa [pushout.inl_desc]
-        rw [← cancel_mono (pushout.inl _ _ ≫ pushout.desc a b pullback.condition), Category.assoc,
-          ← f_sq_left.w_assoc, w, ← pullback.condition_assoc, Category.assoc, ← g_sq_left.w_assoc]
+        let : Mono (u ≫ pushout.desc a b pullback.condition) := by rwa [pushout.inl_desc]
+        rw [← cancel_mono (u ≫ pushout.desc a b pullback.condition), Category.assoc,
+          ← sq_f_u.w_assoc, w, ← pullback.condition_assoc, Category.assoc, ← sq_g_u.w_assoc]
       · have : (pullback.fst m₁ l₂ ≫ g₁) ≫ a = (pullback.snd m₁ l₂ ≫ f₂) ≫ b := by
-          rw [← _ ≫= pushout.inl_desc a b pullback.condition, Category.assoc, ← g_sq_left.w_assoc,
+          rw [← _ ≫= pushout.inl_desc a b pullback.condition, Category.assoc, ← sq_g_u.w_assoc,
             sq₁₂.w_assoc, ← w, Category.assoc, pullback.condition_assoc, pushout.inr_desc]
-        rw [sq₁₂.w_assoc, f_sq_right.w, ← Category.assoc, ← pullback.lift_snd_assoc _ _ this,
-          ← pushout.condition, pullback.lift_fst_assoc _ _ this, Category.assoc, g_sq_left.w]
+        rw [sq₁₂.w_assoc, sq_f_v.w, ← Category.assoc, ← pullback.lift_snd_assoc _ _ this,
+          ← pushout.condition, pullback.lift_fst_assoc _ _ this, Category.assoc, sq_g_u.w]
     · let sq₂₁ := of_hasPullback m₂ l₁
       let sq₂₂ := of_hasPullback m₂ l₂
       apply isPushout_isPullback_isPullback_hom_ext h₁ sq₂₁ sq₂₂
       · have : (pullback.snd m₂ l₁ ≫ f₁) ≫ a = (pullback.fst m₂ l₁ ≫ g₂) ≫ b := by
-          rw [← _ ≫= pushout.inl_desc a b pullback.condition, Category.assoc, ← f_sq_left.w_assoc,
-            w, ← sq₂₁.w_assoc, Category.assoc, g_sq_right.w_assoc, pushout.inr_desc]
-        rw [sq₂₁.w_assoc, f_sq_left.w, ← Category.assoc, ← pullback.lift_fst_assoc _ _ this,
-          pushout.condition, pullback.lift_snd_assoc _ _ this, g_sq_right.w, Category.assoc]
-      · rw [sq₂₂.w_assoc, f_sq_right.w, g_sq_right.w, ← Category.assoc, ← Category.assoc]
+          rw [← _ ≫= pushout.inl_desc a b pullback.condition, Category.assoc, ← sq_f_u.w_assoc,
+            w, ← sq₂₁.w_assoc, Category.assoc, sq_g_v.w_assoc, pushout.inr_desc]
+        rw [sq₂₁.w_assoc, sq_f_u.w, ← Category.assoc, ← pullback.lift_fst_assoc _ _ this,
+          pushout.condition, pullback.lift_snd_assoc _ _ this, sq_g_v.w, Category.assoc]
+      · rw [sq₂₂.w_assoc, sq_f_v.w, sq_g_v.w, ← Category.assoc, ← Category.assoc]
         refine ?_ =≫ v
-        letI : Mono (pushout.inr (pullback.fst a b) (pullback.snd a b) ≫
-            pushout.desc a b pullback.condition) := by
-          rwa [pushout.inr_desc]
-        rw [← cancel_mono (pushout.inr _ _ ≫ pushout.desc a b pullback.condition), Category.assoc,
-          ← f_sq_right.w_assoc, w, ← pullback.condition_assoc, Category.assoc,
-          ← g_sq_right.w_assoc]
+        let : Mono (v ≫ pushout.desc a b pullback.condition) := by rwa [pushout.inr_desc]
+        rw [← cancel_mono (v ≫ pushout.desc a b pullback.condition), Category.assoc,
+          ← sq_f_v.w_assoc, w, ← pullback.condition_assoc, Category.assoc,
+          ← sq_g_v.w_assoc]
 
 instance Type.adhesive : Adhesive (Type u) :=
   ⟨fun {_ _ _ _ f _ _ _ _} H =>
