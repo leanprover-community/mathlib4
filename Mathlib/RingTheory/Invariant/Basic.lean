@@ -353,6 +353,7 @@ noncomputable def IsFractionRing.stabilizerHom : MulAction.stabilizer G Q →* G
   MonoidHom.comp (IsFractionRing.fieldEquivOfAlgEquivHom K L) (Ideal.Quotient.stabilizerHom Q P G)
 
 omit [Finite G] [Q.IsPrime] [Algebra.IsInvariant A B G] in
+@[simp]
 theorem IsFractionRing.stabilizerHom_apply_apply_mk (σ : MulAction.stabilizer G Q) (x : B) :
     IsFractionRing.stabilizerHom G P Q K L σ (algebraMap _  L (Ideal.Quotient.mk Q x)) =
       algebraMap _ L (Ideal.Quotient.mk Q (σ.val • x)) := by
