@@ -24,7 +24,7 @@ assert_not_exists Cardinal
 open Topology
 open scoped Pointwise
 
-variable {G : Type*} [TopologicalSpace G] [Group G]
+variable {G M : Type*} [TopologicalSpace G] [Group G] [TopologicalSpace M] [Monoid M]
 
 namespace QuotientGroup
 
@@ -65,28 +65,42 @@ theorem dense_image_mk {s : Set G} :
   rw [← dense_preimage_mk, preimage_image_mk_eq_mul]
 
 @[to_additive]
-instance instContinuousSMul {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G]
-    {N : Subgroup G} : ContinuousSMul G (G ⧸ N) where
-  continuous_smul := by
-    rw [← (IsOpenQuotientMap.id.prodMap isOpenQuotientMap_mk).continuous_comp_iff]
-    exact continuous_mk.comp continuous_mul
-
-@[to_additive]
-instance instContinuousConstSMul : ContinuousConstSMul G (G ⧸ N) where
-  continuous_const_smul γ := by
+instance instSeparatelyContinuousMul [MulAction M G] [SeparatelyContinuousMul M G]
+    [MulAction.QuotientAction M N] : ContinuousConstSMul M (G ⧸ N) where
+  continuous_const_smul m := by
     rw [← isOpenQuotientMap_mk.continuous_comp_iff]
-    exact continuous_mk.comp <| continuous_const_smul γ
+    exact continuous_mk.comp (continuous_const_smul _)
+
+variable (N) in
+/-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
+@[to_additive
+  /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/]
+theorem nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
+  (isOpenQuotientMap_mk.map_nhds_eq _).symm
 
 @[to_additive]
-theorem t1Space_iff :
-    T1Space (G ⧸ N) ↔ IsClosed (N : Set G) := by
+instance instFirstCountableTopology [FirstCountableTopology G] :
+    FirstCountableTopology (G ⧸ N) where
+  nhds_generated_countable := mk_surjective.forall.2 fun x ↦ nhds_eq N x ▸ inferInstance
+
+/-- The quotient of a second countable topological group by a subgroup is second countable. -/
+@[to_additive
+  /-- The quotient of a second countable additive topological group by a subgroup is second
+  countable. -/]
+instance instSecondCountableTopology [SecondCountableTopology G] :
+    SecondCountableTopology (G ⧸ N) :=
+  ContinuousConstSMul.secondCountableTopology
+
+variable [SeparatelyContinuousMul G G]
+
+@[to_additive]
+theorem t1Space_iff : T1Space (G ⧸ N) ↔ IsClosed (N : Set G) := by
   rw [← QuotientGroup.preimage_mk_one, MulAction.IsPretransitive.t1Space_iff G (mk 1),
-      isClosed_coinduced]
+    isClosed_coinduced]
   rfl
 
 @[to_additive]
-theorem discreteTopology_iff :
-    DiscreteTopology (G ⧸ N) ↔ IsOpen (N : Set G) := by
+theorem discreteTopology_iff : DiscreteTopology (G ⧸ N) ↔ IsOpen (N : Set G) := by
   rw [← QuotientGroup.preimage_mk_one, MulAction.IsPretransitive.discreteTopology_iff G (mk 1),
       isOpen_coinduced]
   rfl
@@ -122,26 +136,16 @@ instance instLocallyCompactSpace [LocallyCompactSpace G] (N : Subgroup G) :
     LocallyCompactSpace (G ⧸ N) :=
   QuotientGroup.isOpenQuotientMap_mk.locallyCompactSpace
 
-variable (N)
+end ContinuousMulConst
 
-/-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
-@[to_additive
-  /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/]
-theorem nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
-  (isOpenQuotientMap_mk.map_nhds_eq _).symm
+section ContinuousMul
+variable [ContinuousMul G] {N : Subgroup G}
 
 @[to_additive]
-instance instFirstCountableTopology [FirstCountableTopology G] :
-    FirstCountableTopology (G ⧸ N) where
-  nhds_generated_countable := mk_surjective.forall.2 fun x ↦ nhds_eq N x ▸ inferInstance
-
-/-- The quotient of a second countable topological group by a subgroup is second countable. -/
-@[to_additive
-  /-- The quotient of a second countable additive topological group by a subgroup is second
-  countable. -/]
-instance instSecondCountableTopology [SecondCountableTopology G] :
-    SecondCountableTopology (G ⧸ N) :=
-  ContinuousConstSMul.secondCountableTopology
+instance instContinuousSMul : ContinuousSMul G (G ⧸ N) where
+  continuous_smul := by
+    rw [← (IsOpenQuotientMap.id.prodMap isOpenQuotientMap_mk).continuous_comp_iff]
+    exact continuous_mk.comp continuous_mul
 
 end ContinuousMul
 
