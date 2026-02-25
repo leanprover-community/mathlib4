@@ -2,6 +2,10 @@ import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Tactic.CheckDefEqAbuse
 
+-- This test case relies on a known defeq abuse in the `Set` lattice instances
+-- (going through `Pi` rather than `setOf`). It is fine to delete once that is fixed.
+-- TODO: add a self-contained test case that doesn't depend on library defeq abuse,
+-- so that this file still exercises `check_defeq_abuse` after corrections land.
 /--
 warning: check_defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following isDefEq checks are the root causes of the failure:
