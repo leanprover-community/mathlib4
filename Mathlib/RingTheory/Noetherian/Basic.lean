@@ -93,13 +93,6 @@ theorem LinearEquiv.isNoetherian_iff {σ : R →+* S} {σ' : S →+* R} [RingHom
     [RingHomInvPair σ' σ] (f : M ≃ₛₗ[σ] P) : IsNoetherian R M ↔ IsNoetherian S P :=
   ⟨fun _ ↦ isNoetherian_of_linearEquiv f, fun _ ↦ isNoetherian_of_linearEquiv f.symm⟩
 
-theorem IsNoetherianRing.of_ringEquiv [hS : IsNoetherianRing S] (e : R ≃+* S) :
-    IsNoetherianRing R := by
-  have : RingHomInvPair e.toRingHom (↑e.symm) := ⟨by simp, by simp⟩
-  have : RingHomInvPair (↑e.symm) e.toRingHom := ⟨by simp, by simp⟩
-  rw [isNoetherianRing_iff, LinearEquiv.isNoetherian_iff (σ := e.toRingHom) (e.toSemilinearEquiv)]
-  exact hS
-
 theorem isNoetherian_top_iff : IsNoetherian R (⊤ : Submodule R M) ↔ IsNoetherian R M :=
   Submodule.topEquiv.isNoetherian_iff
 
