@@ -656,6 +656,7 @@ lemma weaken_lipschitz (hf : IsPicardLindelof f t₀ x₀ a r L K) {K' : ℝ≥0
   norm_le := hf.norm_le
   mul_max_le := hf.mul_max_le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `IsPicardLindelof` on a symmetric interval `[t₀ - ε, t₀ + ε]`, if we shrink the radius
 from `a` to `a'` with `a' ≤ a`, and choose any `r' < a'`, then there exists `ε' > 0` such that
 `IsPicardLindelof` holds on `[t₀ - ε', t₀ + ε']` with the new parameters. -/
