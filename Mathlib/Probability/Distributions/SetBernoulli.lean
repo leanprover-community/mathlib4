@@ -118,19 +118,10 @@ variable (u p) in
   lift u to Finset ι using hu
   calc
     setBer(u, p) {s}
-    -- _ = ∏' i, ((if i ∈ u ↔ i ∈ s then ENNReal.ofReal p else 0) +
-    --       if i ∈ s then 0 else ENNReal.ofReal (σ p)) := by
-    --   simp [setBernoulli_apply, Set.image_singleton]
-    --   have : ∀ (i : ι), IsProbabilityMeasure (ENNReal.ofReal ↑p • dirac (i ∈ u) + ENNReal.ofReal (1 - ↑p) • dirac False) :=
-    --     by infer_instance--by intro i; apply test
-    --   rw [infinitePi_singleton]
     _ = ∏ i ∈ u, (if i ∈ s then ENNReal.ofReal p else ENNReal.ofReal (σ p)) := by
-      sorry -- APPLY API FROM INDEPENDENT_SET_MEASURE API
-      -- rw [setBernoulli_eq_map_infinitePi_ite, Set.image_singleton, infinitePi_singleton]
-      -- simp_rw [← Function.comp_def (f := fun B ↦ {i ∈ u | B i}) (g := fun ω : Ω ↦ (B · ω))]
-      -- rw [tprod_eq_prod, Finset.prod_congr rfl] <;>
-      --   simp +contextual [ite_add_ite, mt (@hsu _)];
-      --   grind [add_sub_cancel, ENNReal.ofReal_one, ENNReal.ofReal_add]
+      rw [setBernoulli_eq_independent_set_measure_ite, independent_set_measure_apply,
+        Set.image_singleton, infinitePi_singleton, tprod_eq_prod, Finset.prod_congr rfl]
+      simp +contextual [bernoulli_measure_def]
     _ = ENNReal.ofReal p ^ s.ncard * ENNReal.ofReal (σ p) ^ (↑u \ s).ncard := by
       simp [Finset.prod_ite, ← Set.ncard_coe_finset, Set.setOf_and,
         Set.inter_eq_right.2 hsu, ← Set.compl_setOf, Set.diff_eq_compl_inter, Set.inter_comm]

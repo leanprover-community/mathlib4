@@ -637,6 +637,14 @@ instance [∀ i, IsProbabilityMeasure (μ i)] : IsProbabilityMeasure (independen
   rw [independent_set_measure_eq_map, isProbabilityMeasure_map_iff (by fun_prop)]
   infer_instance
 
+lemma independent_set_measure_apply (S : Set (Set ι)) :
+    independent_set_measure μ S = (infinitePi μ) ((fun t i ↦ i ∈ t) '' S) :=
+  MeasurableEquiv.setOf.symm.measurableEmbedding.comap_apply ..
+
+lemma independent_set_measure_apply' (S : Set (Set ι)) :
+    independent_set_measure μ S  = (infinitePi μ) ((fun p ↦ {i | p i}) ⁻¹' S) :=
+  MeasurableEquiv.setOf.symm.comap_apply ..
+
 end Set
 
 end InfinitePi
