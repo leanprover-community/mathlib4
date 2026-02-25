@@ -64,6 +64,9 @@ theorem quotientSpanEquivZMod_comp_castRingHom (n : ℤ) :
     ((Int.quotientSpanEquivZMod n).symm : _ →+* _).comp (Int.castRingHom (ZMod n.natAbs)) =
       Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
 
+instance {n : ℤ} [NeZero n] : Finite (ℤ ⧸ Ideal.span {n}) :=
+  Finite.of_equiv _ n.quotientSpanEquivZMod.symm.toEquiv
+
 end Int
 
 noncomputable section ChineseRemainder
