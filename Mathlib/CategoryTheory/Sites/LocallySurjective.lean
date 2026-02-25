@@ -445,34 +445,57 @@ end Presheaf
 
 namespace GrothendieckTopology
 
-lemma ofArrows_mem_iff_isLocallySurjective_sigmaDesc_shrinkYoneda_map [LocallySmall.{w} C]
-    {S : C} {ι : Type*} [Small.{w} ι] {X : ι → C}
-    (f : ∀ i, X i ⟶ S) :
+lemma ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_shrinkYoneda_map
+    [LocallySmall.{w} C] {S : C} {ι : Type*} [Small.{w} ι] {X : ι → C}
+    (f : ∀ i, X i ⟶ S)
+    {c : Cofan (fun i ↦ shrinkYoneda.{w}.obj (X i))} (hc : IsColimit c) :
     Sieve.ofArrows _ f ∈ J S ↔
-      Presheaf.IsLocallySurjective J (Sigma.desc (fun i ↦ shrinkYoneda.{w}.map (f i))) := by
+      Presheaf.IsLocallySurjective J
+        (Cofan.IsColimit.desc hc (fun i ↦ shrinkYoneda.{w}.map (f i))) := by
   refine ⟨fun hf ↦ ⟨fun {U u} ↦ ?_⟩, fun hf ↦ ?_⟩
   · obtain ⟨u, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective u
     replace hf := J.pullback_stable u hf
-    rwa [← Presheaf.imageSieve_cofanIsColimitDesc_shrinkYoneda_map f
-      (coproductIsCoproduct _) u] at hf
+    rwa [← Presheaf.imageSieve_cofanIsColimitDesc_shrinkYoneda_map f hc u] at hf
   · rw [← Sieve.pullback_id (S := Sieve.ofArrows X f),
-      ← Presheaf.imageSieve_cofanIsColimitDesc_shrinkYoneda_map f
-        (coproductIsCoproduct _) (𝟙 S)]
-    exact Presheaf.imageSieve_mem J (Sigma.desc (fun i ↦ shrinkYoneda.{w}.map (f i)))
+      ← Presheaf.imageSieve_cofanIsColimitDesc_shrinkYoneda_map f hc (𝟙 S)]
+    exact Presheaf.imageSieve_mem J (Cofan.IsColimit.desc hc (fun i ↦ shrinkYoneda.{w}.map (f i)))
       (shrinkYonedaObjObjEquiv.symm (𝟙 S))
+
+lemma ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_uliftYoneda_map
+    {S : C} {ι : Type*} [Small.{max w v} ι] {X : ι → C}
+    (f : ∀ i, X i ⟶ S)
+    {c : Cofan (fun i ↦ uliftYoneda.{w}.obj (X i))} (hc : IsColimit c) :
+    Sieve.ofArrows _ f ∈ J S ↔
+      Presheaf.IsLocallySurjective J
+        (Cofan.IsColimit.desc hc (fun i ↦ uliftYoneda.{w}.map (f i))) := by
+  let e : Discrete.functor (fun i ↦ uliftYoneda.{w}.obj (X i)) ≅
+      Discrete.functor (fun i ↦ shrinkYoneda.{max w v}.obj (X i)) :=
+    Discrete.natIso (fun i ↦ uliftYonedaIsoShrinkYoneda.{w}.app (X i.as))
+  let hc' := (IsColimit.precomposeInvEquiv e _).2 hc
+  rw [ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_shrinkYoneda_map.{max w v} J f hc']
+  have :
+      Cofan.IsColimit.desc hc (fun i ↦ uliftYoneda.map (f i)) ≫
+        uliftYonedaIsoShrinkYoneda.hom.app _ =
+      Cofan.IsColimit.desc hc' (fun i ↦ shrinkYoneda.map (f i)) :=
+    Cofan.IsColimit.hom_ext hc _ _ (fun i ↦ by
+      rw [Cofan.IsColimit.fac_assoc, NatTrans.naturality,
+        ← Cofan.IsColimit.fac hc' (fun i ↦ shrinkYoneda.map (f i)) i]
+      simp [Cofan.inj, e])
+  rw [← this, Presheaf.isLocallySurjective_comp_iff J]
+
+lemma ofArrows_mem_iff_isLocallySurjective_sigmaDesc_shrinkYoneda_map [LocallySmall.{w} C]
+    {S : C} {ι : Type*} [Small.{w} ι] {X : ι → C} (f : ∀ i, X i ⟶ S) :
+    Sieve.ofArrows _ f ∈ J S ↔
+      Presheaf.IsLocallySurjective J (Sigma.desc (fun i ↦ shrinkYoneda.{w}.map (f i))) :=
+  ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_shrinkYoneda_map J f
+    (coproductIsCoproduct _)
 
 lemma ofArrows_mem_iff_isLocallySurjective_sigmaDesc_uliftYoneda_map
     {S : C} {ι : Type*} [Small.{max w v} ι] {X : ι → C} (f : ∀ i, X i ⟶ S) :
     Sieve.ofArrows _ f ∈ J S ↔
-      Presheaf.IsLocallySurjective J (Sigma.desc (fun i ↦ uliftYoneda.{w}.map (f i))) := by
-  have :
-      (Sigma.desc fun i ↦ uliftYoneda.{w}.map (f i)) ≫
-        uliftYonedaIsoShrinkYoneda.hom.app _ =
-      (Sigma.mapIso (fun i ↦ uliftYonedaIsoShrinkYoneda.app _)).hom ≫
-        (Sigma.desc fun i ↦ shrinkYoneda.{max w v}.map (f i)) := by cat_disch
-  rw [ofArrows_mem_iff_isLocallySurjective_sigmaDesc_shrinkYoneda_map.{max w v} J f,
-    ← Presheaf.isLocallySurjective_comp_iff J _ (uliftYonedaIsoShrinkYoneda.hom.app _),
-    this, Presheaf.comp_isLocallySurjective_iff]
+      Presheaf.IsLocallySurjective J (Sigma.desc (fun i ↦ uliftYoneda.{w}.map (f i))) :=
+  ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_uliftYoneda_map J f
+    (coproductIsCoproduct _)
 
 end GrothendieckTopology
 
