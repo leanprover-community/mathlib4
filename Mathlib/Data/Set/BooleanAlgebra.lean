@@ -29,11 +29,10 @@ namespace Set
 
 /-! ### Complete lattice and complete Boolean algebra instances -/
 
-instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
-  { instBooleanAlgebra with
-    isLUB_sSup _ := ⟨fun s hs _ hx ↦ ⟨s, hs, hx⟩, fun _ h _ ⟨_, ⟨hs, hx⟩⟩ => h hs hx⟩
-    isGLB_sInf _ := ⟨fun _ hs _ hx ↦ hx _ hs, fun _ h _ hx _ hs => h hs hx⟩
-    iInf_iSup_eq := by intros; ext; simp [Classical.skolem] }
+instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) where
+  isLUB_sSup _ := ⟨fun s hs _ hx ↦ ⟨s, hs, hx⟩, fun _ h _ ⟨_, ⟨hs, hx⟩⟩ => h hs hx⟩
+  isGLB_sInf _ := ⟨fun _ hs _ hx ↦ hx _ hs, fun _ h _ hx _ hs => h hs hx⟩
+  iInf_iSup_eq := by intros; ext; simp [Classical.skolem]
 
 instance : OrderTop (Set α) where
   top := univ
