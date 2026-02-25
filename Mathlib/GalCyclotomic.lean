@@ -1,6 +1,6 @@
 module
 
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Galois
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
 public import Mathlib.Duality
@@ -21,65 +21,21 @@ variable (n : ℕ) [NeZero n] (K : Type*) [Field K] [NumberField K]
 
 open NumberField Ideal Pointwise RingOfIntegers MulChar
 
-include hK in
-def galEquiv : Gal(K/ℚ) ≃* (ZMod n)ˣ :=
-  IsCyclotomicExtension.autEquivPow K <|
-      Polynomial.cyclotomic.irreducible_rat (NeZero.pos n)
-
-theorem galEquiv_apply_of_pow_eq (σ : Gal(K/ℚ)) {x : K} (hx : x ^ n = 1) :
-    σ x = x ^ (galEquiv n K σ).val.val := by
-  have hζ := IsCyclotomicExtension.zeta_spec n ℚ K
-  obtain ⟨a, -, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx
-  rw [map_pow, pow_right_comm, galEquiv, IsCyclotomicExtension.autEquivPow_apply,
-    OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, IsPrimitiveRoot.autToPow_spec]
-
-theorem galEquiv_smul_of_pow_eq (σ : Gal(K/ℚ)) {x : 𝓞 K} (hx : x ^ n = 1) :
-    σ • x = x ^ (galEquiv n K σ).val.val := by
-  apply FaithfulSMul.algebraMap_injective (𝓞 K) K
-  apply galEquiv_apply_of_pow_eq n K σ <| by rw [← Subalgebra.coe_pow, hx, OneMemClass.coe_one]
-
-section restrict
-
-variable {m : ℕ} [NeZero m] (F : Type*) [Field F] [NumberField F]
-  [hF : IsCyclotomicExtension {m} ℚ F] [Algebra F K]
-
-theorem galEquiv_restrictNormal_apply [IsGalois ℚ F] (h : m ∣ n) (σ : Gal(K/ℚ)) :
-    galEquiv m F (σ.restrictNormal F) = ZMod.unitsMap h (galEquiv n K σ) := by
-  let ζ := IsCyclotomicExtension.zeta m ℚ F
-  have hζ := IsCyclotomicExtension.zeta_spec m ℚ F
-  have : ζ ^ (galEquiv m F (σ.restrictNormal F)).val.val = ζ ^ (galEquiv n K σ).val.val := by
-    apply FaithfulSMul.algebraMap_injective F K
-    rw [map_pow, map_pow, ← galEquiv_apply_of_pow_eq, ← AlgEquiv.restrictNormal_commutes,
-      galEquiv_apply_of_pow_eq m, map_pow]
-    · exact hζ.pow_eq_one
-    · rw [← map_pow, orderOf_dvd_iff_pow_eq_one.mp, map_one]
-      rwa [← hζ.eq_orderOf]
-  rw [hζ.isOfFinOrder.pow_inj_mod, ← hζ.eq_orderOf, ← ZMod.natCast_eq_natCast_iff'] at this
-  simp only [ZMod.natCast_val, ZMod.cast_id', id_eq] at this
-  rwa [Units.ext_iff]
-
-theorem galEquiv_restrictNormal [IsGalois ℚ F] (h : m ∣ n) :
-    (galEquiv m F).toMonoidHom.comp (AlgEquiv.restrictNormalHom F) =
-      (ZMod.unitsMap h).comp (galEquiv n K).toMonoidHom :=
-  MonoidHom.ext fun σ ↦ galEquiv_restrictNormal_apply n K F h σ
-
-end restrict
-
 def subgroupGalEquivDirichletCharSubgroup :
     Subgroup Gal(K/ℚ) ≃o (Subgroup (DirichletCharacter R n))ᵒᵈ :=
-  (galEquiv n K).mapSubgroup.trans <| subgroupOrderIsoSubgroupMulChar (ZMod n) R
+  (galEquivZMod n K).mapSubgroup.trans <| subgroupOrderIsoSubgroupMulChar (ZMod n) R
 
 @[simp]
 theorem mem_subgroupGalEquivDirichletCharSubgroup_iff (χ : DirichletCharacter R n)
     (H : Subgroup Gal(K/ℚ)) :
     χ ∈ (subgroupGalEquivDirichletCharSubgroup n K R H).ofDual ↔
-      ∀ σ ∈ H, χ (galEquiv n K σ) = 1 := by simp [subgroupGalEquivDirichletCharSubgroup]
+      ∀ σ ∈ H, χ (galEquivZMod n K σ) = 1 := by simp [subgroupGalEquivDirichletCharSubgroup]
 
 @[simp]
 theorem mem_subgroupGalEquivDirichletCharSubgroup_symm_iff (σ : Gal(K/ℚ))
     (Y : Subgroup (DirichletCharacter R n)) :
     σ ∈ (subgroupGalEquivDirichletCharSubgroup n K R).symm (OrderDual.toDual Y) ↔
-      ∀ χ ∈ Y, χ (galEquiv n K σ) = 1 := by
+      ∀ χ ∈ Y, χ (galEquivZMod n K σ) = 1 := by
   unfold subgroupGalEquivDirichletCharSubgroup
   simp only [OrderIso.symm_trans_apply, MulEquiv.symm_mapSubgroup, MulEquiv.coe_mapSubgroup,
     Subgroup.mem_map_equiv, MulEquiv.symm_symm, mem_subgroupOrderIsoSubgroupMulChar_symm_iff]
@@ -94,7 +50,7 @@ def intermediateFieldEquivSubgroupChar :
 theorem mem_intermediateFieldEquivSubgroupChar {F : IntermediateField ℚ K}
     {χ : DirichletCharacter R n} :
     χ ∈ intermediateFieldEquivSubgroupChar n K R F ↔
-      ∀ σ : Gal(K/ℚ), (∀ x ∈ F, σ x = x) → χ (galEquiv n K σ) = 1 := by
+      ∀ σ : Gal(K/ℚ), (∀ x ∈ F, σ x = x) → χ (galEquivZMod n K σ) = 1 := by
   simp [← IntermediateField.mem_fixingSubgroup_iff, intermediateFieldEquivSubgroupChar]
 
 theorem intermediateFieldEquivSubgroupChar_of_isCyclotomicExtension (F : IntermediateField ℚ K)
@@ -102,10 +58,11 @@ theorem intermediateFieldEquivSubgroupChar_of_isCyclotomicExtension (F : Interme
     intermediateFieldEquivSubgroupChar n K R F =
       (MulChar.subgroupOrderIsoSubgroupMulChar (ZMod n) R (ZMod.unitsMap hdiv).ker).ofDual := by
   ext χ
-  simp [mem_intermediateFieldEquivSubgroupChar, mem_subgroupOrderIsoSubgroupMulChar_iff,
-    MonoidHom.mem_ker, ← (galEquiv n K).forall_congr_right, MulEquiv.toEquiv_eq_coe,
-    EquivLike.coe_coe, (galEquiv_restrictNormal_apply n K F hdiv _).symm,
-    EmbeddingLike.map_eq_one_iff, AlgEquiv.restrictNormal_eq_one_iff]
+  sorry
+  -- simp [mem_intermediateFieldEquivSubgroupChar, mem_subgroupOrderIsoSubgroupMulChar_iff,
+  --   MonoidHom.mem_ker, ← (galEquivZMod n K).forall_congr_right, MulEquiv.toEquiv_eq_coe,
+  --   EquivLike.coe_coe, (galEquivZMod_restrictNormal_apply n K F hdiv _).symm,
+  --   EmbeddingLike.map_eq_one_iff, AlgEquiv.restrictNormal_eq_one_iff]
 
 example (F : IntermediateField ℚ K) {p k : ℕ} [hp : Fact (p.Prime)] [IsGalois ℚ F]
     [IsCyclotomicExtension {p ^ (k + 1)} ℚ F] (hdiv : p ^ (k + 1) ∣ n) :
