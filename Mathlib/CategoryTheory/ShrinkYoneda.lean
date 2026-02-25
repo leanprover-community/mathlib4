@@ -158,4 +158,14 @@ instance : (shrinkYoneda.{w} (C := C)).Faithful := (fullyFaithfulShrinkYoneda C)
 
 instance : (shrinkYoneda.{w} (C := C)).Full := (fullyFaithfulShrinkYoneda C).full
 
+/-- `uliftYoneda` identifies to `shrinkYoneda`. -/
+noncomputable def uliftYonedaIsoShrinkYoneda :
+    uliftYoneda.{w'} (C := C) ≅ shrinkYoneda.{max w' v} :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents
+    (fun Y ↦ (Equiv.ulift.trans shrinkYonedaObjObjEquiv.symm).toIso) (fun f ↦ by
+      ext
+      exact (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm _ _).symm)) (fun g ↦ by
+      ext
+      exact (shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm _ _).symm)
+
 end CategoryTheory

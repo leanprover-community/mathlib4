@@ -135,7 +135,7 @@ lemma jointly_reflect_ofArrows_mem
   refine ⟨fun hf Φ x ↦ ?_, fun hf ↦ ?_⟩
   · obtain ⟨Z, _, ⟨_, p, _, ⟨i⟩, rfl⟩, z, rfl⟩ := Φ.obj.jointly_surjective _ hf x
     exact ⟨i, Φ.obj.fiber.map p z, by simp⟩
-  · rw [J.ofArrows_mem_iff_isLocallySurjective]
+  · rw [J.ofArrows_mem_iff_isLocallySurjective_sigmaDesc_shrinkYoneda_map]
     refine hP.jointly_reflect_isLocallySurjective _ (fun Φ x ↦ ?_)
     obtain ⟨x, rfl⟩ := (Φ.obj.shrinkYonedaCompPresheafFiberIso.app X).toEquiv.symm.surjective x
     obtain ⟨i, y, rfl⟩ := hf Φ x
