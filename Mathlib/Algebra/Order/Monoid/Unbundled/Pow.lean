@@ -54,7 +54,7 @@ end Left
 @[to_additive nsmul_nonpos] alias pow_le_one' := Left.pow_le_one_of_le
 @[to_additive] alias pow_lt_one := Left.pow_lt_one_of_lt
 
-@[deprecated (since := "2026-02-24")] alias pow_lt_one' := pow_lt_one
+@[deprecated (since := "2026-01-18")] alias pow_lt_one' := pow_lt_one
 
 section Left
 
@@ -68,17 +68,20 @@ theorem pow_right_monotone (ha : 1 ≤ a) : Monotone fun n : ℕ ↦ a ^ n :=
 theorem pow_le_pow_right {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
   pow_right_monotone ha h
 
-@[deprecated (since := "2026-02-24")] alias pow_le_pow_right' := pow_le_pow_right
+@[deprecated (since := "2026-01-18")] alias pow_le_pow_right' := pow_le_pow_right
 
 @[to_additive nsmul_le_nsmul_left_of_nonpos]
-theorem pow_le_pow_right_of_le_one' {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n :=
+theorem pow_le_pow_right_of_le_one {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n :=
   pow_le_pow_right (M := Mᵒᵈ) ha h
+
+@[deprecated (since := "2026-01-18")]
+alias pow_le_pow_right_of_le_one' := pow_le_pow_right_of_le_one
 
 @[to_additive nsmul_pos]
 theorem one_lt_pow (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k :=
   pow_lt_one (M := Mᵒᵈ) ha hk
 
-@[deprecated (since := "2026-02-24")] alias one_lt_pow' := one_lt_pow
+@[deprecated (since := "2026-01-18")] alias one_lt_pow' := one_lt_pow
 
 @[to_additive]
 lemma le_self_pow (ha : 1 ≤ a) (hn : n ≠ 0) : a ≤ a ^ n := by
@@ -169,7 +172,7 @@ theorem pow_le_pow_left {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i
     rw [pow_succ, pow_succ]
     exact mul_le_mul' (pow_le_pow_left hab k) hab
 
-@[deprecated (since := "2026-02-24")] alias pow_le_pow_left' := pow_le_pow_left
+@[deprecated (since := "2026-01-18")] alias pow_le_pow_left' := pow_le_pow_left
 
 @[to_additive Monotone.const_nsmul]
 theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monotone fun a => f a ^ n

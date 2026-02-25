@@ -32,7 +32,7 @@ lemma Forall₂.prod_le_prod [Preorder M] [MulRightMono M]
   | nil => rfl
   | cons hab ih ih' => simpa only [prod_cons] using mul_le_mul' hab ih'
 
-@[deprecated (since := "2026-02-24")] alias Forall₂.prod_le_prod' := Forall₂.prod_le_prod
+@[deprecated (since := "2026-01-18")] alias Forall₂.prod_le_prod' := Forall₂.prod_le_prod
 
 /-- If `l₁` is a sublist of `l₂` and all elements of `l₂` are greater than or equal to one, then
 `l₁.prod ≤ l₂.prod`. One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 1 ≤ a` instead
@@ -53,7 +53,7 @@ lemma Sublist.prod_le_prod [Preorder M] [MulRightMono M]
     simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     grw [ih' h₁.2]
 
-@[deprecated (since := "2026-02-24")] alias Sublist.prod_le_prod' := Sublist.prod_le_prod
+@[deprecated (since := "2026-01-18")] alias Sublist.prod_le_prod' := Sublist.prod_le_prod
 
 @[to_additive]
 lemma SublistForall₂.prod_le_prod [Preorder M]
@@ -63,7 +63,7 @@ lemma SublistForall₂.prod_le_prod [Preorder M]
   let ⟨_, hall, hsub⟩ := sublistForall₂_iff.1 h
   hall.prod_le_prod.trans <| hsub.prod_le_prod h₁
 
-@[deprecated (since := "2026-02-24")]
+@[deprecated (since := "2026-01-18")]
 alias SublistForall₂.prod_le_prod' := SublistForall₂.prod_le_prod
 
 @[to_additive]
@@ -72,7 +72,7 @@ lemma prod_le_prod [Preorder M] [MulRightMono M]
     (l.map f).prod ≤ (l.map g).prod :=
   Forall₂.prod_le_prod <| by simpa
 
-@[deprecated (since := "2026-02-24")] alias prod_le_prod' := prod_le_prod
+@[deprecated (since := "2026-01-18")] alias prod_le_prod' := prod_le_prod
 
 @[to_additive]
 lemma prod_lt_prod [Preorder M] [MulLeftStrictMono M]
@@ -88,7 +88,7 @@ lemma prod_lt_prod [Preorder M] [MulLeftStrictMono M]
     · exact mul_lt_mul_of_lt_of_le ‹_› (prod_le_prod h₁.2)
     · exact mul_lt_mul_of_le_of_lt h₁.1 <| ihl h₁.2 ‹_›
 
-@[deprecated (since := "2026-02-24")] alias prod_lt_prod' := prod_lt_prod
+@[deprecated (since := "2026-01-18")] alias prod_lt_prod' := prod_lt_prod
 
 @[to_additive]
 lemma prod_lt_prod_of_ne_nil [Preorder M] [MulLeftStrictMono M]
