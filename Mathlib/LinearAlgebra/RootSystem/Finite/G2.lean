@@ -78,6 +78,7 @@ section IsG2
 
 /-- By making an arbitrary choice of roots pairing to `-3`, we can obtain an embedded `𝔤₂` root
 system just from the knowledge that such a pairs exists. -/
+@[implicit_reducible]
 def IsG2.toEmbeddedG2 [P.IsG2] : P.EmbeddedG2 where
   long := (IsG2.exists_pairingIn_neg_three (P := P)).choose
   short := (IsG2.exists_pairingIn_neg_three (P := P)).choose_spec.choose

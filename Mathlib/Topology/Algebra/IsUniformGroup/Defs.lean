@@ -611,8 +611,10 @@ def IsTopologicalGroup.rightUniformSpace : UniformSpace G where
   nhds_eq_comap_uniformity _ := by
     simp only [comap_comap, Function.comp_def, nhds_translation_mul_inv]
 
+@[implicit_reducible]
 @[deprecated (since := "2025-09-26")]
 alias IsTopologicalAddGroup.toUniformSpace := IsTopologicalAddGroup.rightUniformSpace
+@[implicit_reducible]
 @[to_additive existing, deprecated (since := "2025-09-26")]
 alias IsTopologicalGroup.toUniformSpace := IsTopologicalGroup.rightUniformSpace
 

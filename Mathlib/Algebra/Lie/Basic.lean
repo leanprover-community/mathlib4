@@ -298,6 +298,7 @@ instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
 
 variable (L) in
 /-- It is sometimes useful to regard a `LieRing` as a `NonUnitalNonAssocRing`. -/
+@[implicit_reducible]
 def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
   { mul := Bracket.bracket
     left_distrib := lie_add

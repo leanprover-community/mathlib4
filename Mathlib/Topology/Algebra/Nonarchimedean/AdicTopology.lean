@@ -247,6 +247,7 @@ instance (priority := 100) : IsUniformAddGroup R :=
 
 /-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
+@[implicit_reducible]
 def topologicalSpaceModule (M : Type*) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
   (i : Ideal R).adicModuleTopology M
 

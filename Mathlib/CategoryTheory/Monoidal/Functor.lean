@@ -615,6 +615,7 @@ attribute [reassoc] left_unitality right_unitality
 variable {F} (h : F.CoreMonoidal)
 
 /-- The lax monoidal functor structure induced by a `Functor.CoreMonoidal` structure. -/
+@[implicit_reducible]
 @[simps -isSimp]
 def toLaxMonoidal : F.LaxMonoidal where
   ε := h.εIso.hom
@@ -623,6 +624,7 @@ def toLaxMonoidal : F.LaxMonoidal where
   right_unitality := h.right_unitality
 
 /-- The oplax monoidal functor structure induced by a `Functor.CoreMonoidal` structure. -/
+@[implicit_reducible]
 @[simps -isSimp]
 def toOplaxMonoidal : F.OplaxMonoidal where
   η := h.εIso.inv
@@ -646,6 +648,7 @@ def toOplaxMonoidal : F.OplaxMonoidal where
 
 attribute [local simp] toLaxMonoidal_ε toLaxMonoidal_μ toOplaxMonoidal_η toOplaxMonoidal_δ in
 /-- The monoidal functor structure induced by a `Functor.CoreMonoidal` structure. -/
+@[implicit_reducible]
 @[simps! toLaxMonoidal toOplaxMonoidal]
 def toMonoidal : F.Monoidal where
   toLaxMonoidal := h.toLaxMonoidal

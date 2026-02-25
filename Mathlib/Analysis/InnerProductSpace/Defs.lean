@@ -170,6 +170,7 @@ instance (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
 `PreInnerProductSpace.Core` for `PreInnerProductSpace`s. Note that the `Seminorm` instance provided
 by `PreInnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
+@[implicit_reducible]
 def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
     PreInnerProductSpace.Core 𝕜 E where
   __ := c
@@ -179,6 +180,7 @@ def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpac
 `InnerProductSpace.Core` for `InnerProductSpace`s. Note that the `Norm` instance provided by
 `InnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
+@[implicit_reducible]
 def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
     InnerProductSpace.Core 𝕜 E :=
   { c with
@@ -410,6 +412,7 @@ attribute [local instance] toSeminormedAddCommGroup
 
 /-- Normed space (which is actually a seminorm in general) structure constructed from a
 `PreInnerProductSpace.Core` structure -/
+@[implicit_reducible]
 def toNormedSpace : NormedSpace 𝕜 F where
   norm_smul_le r x := by
     rw [norm_eq_sqrt_re_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
