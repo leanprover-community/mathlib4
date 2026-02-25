@@ -339,7 +339,7 @@ variable (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing �
 theorem Set.Finite.isCompact_convexHull {s : Set E} (hs : s.Finite) :
     IsCompact (convexHull 𝕜 s) := by
   rw [hs.convexHull_eq_image]
-  letI := hs.fintype
+  let := hs.fintype
   exact (isCompact_stdSimplex 𝕜 s).image (LinearMap.continuous_on_pi _)
 
 /-- Convex hull of a finite set is closed. -/
@@ -488,18 +488,19 @@ end LinearOrderedField
 namespace Affine.Simplex
 
 variable {𝕜 V P : Type*}
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
-variable [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [ContinuousAdd 𝕜]
-variable [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V]
-variable [Module 𝕜 V] [ContinuousSMul 𝕜 V] [AddTorsor V P]
-variable [TopologicalSpace P] [IsTopologicalAddTorsor P]
+  [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
+  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [ContinuousAdd 𝕜]
+  [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V]
+  [Module 𝕜 V] [ContinuousSMul 𝕜 V] [AddTorsor V P]
+  [TopologicalSpace P] [IsTopologicalAddTorsor P]
 
 /-- The closed interior of a simplex is compact. -/
 theorem isCompact_closedInterior {n : ℕ} (s : Simplex 𝕜 P n) : IsCompact s.closedInterior := by
-  -- TODO: golf this once `Affine.Simplex.closedInterior_eq_convexHull` is restated for affine space
-  rw [← (Homeomorph.vaddConst (s.points 0)).symm.isCompact_image]
-  change IsCompact ((AffineEquiv.vaddConst 𝕜 (s.points 0)).symm.toAffineMap '' s.closedInterior)
-  rw [← s.closedInterior_map (AffineEquiv.injective _), closedInterior_eq_convexHull]
+  suffices IsCompact ((AffineEquiv.vaddConst 𝕜 (s.points 0)).symm.toAffineMap ''
+      s.closedInterior) by
+    apply (Homeomorph.vaddConst (s.points 0)).symm.isCompact_image.mp
+    simpa
+  rw [← s.closedInterior_map (AffineEquiv.injective _), ← convexHull_eq_closedInterior]
   exact (Set.finite_range _).isCompact_convexHull 𝕜
 
 /-- The closed interior of a simplex is a closed set. -/

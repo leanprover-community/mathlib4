@@ -611,20 +611,13 @@ end pi
 
 namespace Affine.Simplex
 
-/-- The closed interior of a simplex is the convex hull of all vertices.
-
-TODO: `convexHull` is currently defined for vector space. This lemma should be restated for
-affine space once the refactor is done. -/
-theorem closedInterior_eq_convexHull {𝕜 V : Type*} [Field 𝕜] [LinearOrder 𝕜]
+/-- The closed interior of a simplex is the convex hull of all vertices. -/
+@[simp] theorem convexHull_eq_closedInterior {𝕜 V : Type*} [Field 𝕜] [LinearOrder 𝕜]
     [IsOrderedRing 𝕜] [AddCommGroup V] [Module 𝕜 V] {n : ℕ} (s : Simplex 𝕜 V n) :
-    s.closedInterior = convexHull 𝕜 (Set.range s.points) := by
+    convexHull 𝕜 (Set.range s.points) = s.closedInterior := by
   ext p
   rw [convexHull_range_eq_exists_affineCombination, Set.mem_setOf]
   constructor <;> intro h
-  · obtain ⟨w, hw1, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype <|
-      Set.mem_of_mem_of_subset h s.closedInterior_subset_affineSpan
-    rw [affineCombination_mem_closedInterior_iff hw1] at h
-    exact ⟨Finset.univ, w, fun i _ ↦ (h i).1, hw1, rfl⟩
   · obtain ⟨u, w, hw, hw1, rfl⟩ := h
     have hw' : ∀ i ∈ u, w i ≤ 1 := by
       intro i hi
@@ -635,8 +628,10 @@ theorem closedInterior_eq_convexHull {𝕜 V : Type*} [Field 𝕜] [LinearOrder 
     rw [Finset.affineCombination_indicator_subset _ _ u.subset_univ,
       affineCombination_mem_closedInterior_iff hw1']
     intro i
-    by_cases hi : i ∈ (u : Set (Fin (n + 1)))
-    · simp [hi, hw i hi, hw' i hi]
-    · simp [hi]
+    by_cases hi : i ∈ (u : Set (Fin (n + 1))) <;> aesop
+  · obtain ⟨w, hw1, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype <|
+      Set.mem_of_mem_of_subset h s.closedInterior_subset_affineSpan
+    rw [affineCombination_mem_closedInterior_iff hw1] at h
+    exact ⟨Finset.univ, w, fun i _ ↦ (h i).1, hw1, rfl⟩
 
 end Affine.Simplex

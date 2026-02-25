@@ -172,16 +172,16 @@ theorem Set.Finite.convexHull_eq_image {E : Type*} [AddCommGroup E] [Module R E]
 end Field
 
 section GeneralTopology
-variable (𝕜 : Type*)
-variable [TopologicalSpace 𝕜] [Semiring 𝕜] [PartialOrder 𝕜] [OrderClosedTopology 𝕜]
-variable [ContinuousAdd 𝕜]
-variable (ι : Type*) [Fintype ι]
+variable (𝕜 ι : Type*) [Fintype ι]
+  [TopologicalSpace 𝕜] [Semiring 𝕜] [PartialOrder 𝕜] [OrderClosedTopology 𝕜] [ContinuousAdd 𝕜]
 
 /-- `stdSimplex 𝕜 ι` is closed. -/
-theorem isClosed_stdSimplex : IsClosed (stdSimplex 𝕜 ι) :=
-  (stdSimplex_eq_inter 𝕜 ι).symm ▸
-    IsClosed.inter (isClosed_iInter fun i ↦ isClosed_le continuous_const (continuous_apply i))
-      (isClosed_eq (by fun_prop) continuous_const)
+theorem isClosed_stdSimplex : IsClosed (stdSimplex 𝕜 ι) := by
+  rw [stdSimplex_eq_inter]
+  apply IsClosed.inter
+  · apply isClosed_iInter
+    exact fun i ↦ isClosed_le continuous_const (continuous_apply i)
+  · exact isClosed_eq (by fun_prop) continuous_const
 
 /-- `stdSimplex 𝕜 ι` is compact. -/
 theorem isCompact_stdSimplex [CompactIccSpace 𝕜] [IsOrderedAddMonoid 𝕜] :
@@ -189,7 +189,7 @@ theorem isCompact_stdSimplex [CompactIccSpace 𝕜] [IsOrderedAddMonoid 𝕜] :
   IsCompact.of_isClosed_subset isCompact_Icc (isClosed_stdSimplex 𝕜 ι) (stdSimplex_subset_Icc 𝕜)
 
 instance stdSimplex.instCompactSpace_coe [CompactIccSpace 𝕜] [IsOrderedAddMonoid 𝕜] :
-    CompactSpace ↥(stdSimplex 𝕜 ι) :=
+    CompactSpace (stdSimplex 𝕜 ι) :=
   isCompact_iff_compactSpace.mp <| isCompact_stdSimplex 𝕜 _
 
 end GeneralTopology
