@@ -66,7 +66,7 @@ lemma distribBaseChange_comp_includeLeftSubRight (T : Type*) [CommRing T] [Algeb
     ((TensorProduct.AlgebraTensorModule.distribBaseChange R T S S).restrictScalars R).toLinearMap ∘ₗ
       (includeLeftSubRight R S).lTensor T =
     (includeLeftSubRight T (T ⊗[R] S)).restrictScalars R := by
-  ext x y
+  ext
   simp [TensorProduct.tmul_sub, TensorProduct.one_def, tmul_one_tmul_one_tmul]
 
 @[simp]
@@ -139,7 +139,7 @@ lemma of_isEffective_tensorProduct_of_faithfullyFlat
   · ext
     simp
 
-/-- `IsEffective R S` is true for any faithfully flat `R`-algebras `S`. -/
+/-- `IsEffective R S` is true for any faithfully flat `R`-algebra `S`. -/
 lemma of_faithfullyFlat [CommRing S] [Algebra R S] [Module.FaithfullyFlat R S] :
     IsEffective R S :=
   of_isEffective_tensorProduct_of_faithfullyFlat _ _ _ (of_section (TensorProduct.lmul'' R))
