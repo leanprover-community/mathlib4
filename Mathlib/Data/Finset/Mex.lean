@@ -14,7 +14,7 @@ public import Mathlib.Order.Interval.Set.Nat
 The mex (minimum excluded value) of a set is the smallest value in its complement.
 <https://en.wikipedia.org/wiki/Mex_(mathematics)>
 
-This file shows that the cardinality of the set is an upper-bound of its mex.
+This file shows that the cardinality of a set is an upper-bound for its mex.
 
 ## Tags
 
@@ -25,15 +25,11 @@ minimum excluded value, smallest, infimum, complement
 
 open Set
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sInf_compl_le_ncard {s : Set ℕ} (hfin : s.Finite) : sInf sᶜ ≤ s.ncard := by
-  rw [← csSup_Iic (a := s.ncard)]
-  refine csInf_le_csSup_of_nonempty_inter' ?_ <| bddAbove_Iic
-  rw [← not_disjoint_iff_nonempty_inter, disjoint_compl_left_iff_subset.not]
-  intro h
-  have := ncard_le_ncard h hfin
-  rw [ncard_Iic_nat] at this
-  lia
+  rw [← ncard_Iio_nat <| sInf sᶜ]
+  refine ncard_le_ncard ?_ hfin
+  nth_rw 2 [← compl_compl s]
+  apply Nat.notMem_of_lt_sInf
 
 theorem coe_sInf_compl_le_encard (s : Set ℕ) : sInf sᶜ ≤ s.encard := by
   rcases s.finite_or_infinite with hfin | hinf
