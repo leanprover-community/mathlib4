@@ -62,7 +62,6 @@ def det (M : Matrix n n R) : R :=
 theorem det_apply (M : Matrix n n R) : M.det = ∑ σ : Perm n, Equiv.Perm.sign σ • ∏ i, M (σ i) i :=
   MultilinearMap.alternatization_apply _ M
 
-set_option backward.isDefEq.respectTransparency false in
 -- This is what the old definition was. We use it to avoid having to change the old proofs below
 theorem det_apply' (M : Matrix n n R) : M.det = ∑ σ : Perm n, ε σ * ∏ i, M (σ i) i := by
   simp [det_apply, Units.smul_def]
@@ -209,7 +208,6 @@ theorem det_transpose (M : Matrix n n R) : Mᵀ.det = M.det := by
   apply Fintype.prod_equiv σ
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Permuting the columns changes the sign of the determinant. -/
 theorem det_permute (σ : Perm n) (M : Matrix n n R) :
     (M.submatrix σ id).det = Perm.sign σ * M.det :=
@@ -282,6 +280,7 @@ theorem det_smul_of_tower {α} [Monoid α] [MulAction α R] [IsScalarTower α R 
     det (c • A) = c ^ Fintype.card n • det A := by
   rw [← smul_one_smul R c A, det_smul, smul_pow, one_pow, smul_mul_assoc, one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem det_neg (A : Matrix n n R) : det (-A) = (-1) ^ Fintype.card n * det A := by
   rw [← det_smul, neg_one_smul]
 
@@ -756,7 +755,8 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
         Equiv.Perm.decomposeFin_symm_apply_zero, Equiv.Perm.decomposeFin_symm_apply_succ]
     _ = -1 * (A (Fin.succ i) 0 * (Perm.sign σ : ℤ) •
         ∏ i', A ((Fin.succ i).succAbove (Fin.cycleRange i (σ i'))) i'.succ) := by
-      simp [mul_left_comm]
+      simp [_root_.neg_mul, one_mul, zsmul_eq_mul, neg_smul,
+        Fin.succAbove_cycleRange, mul_left_comm]
 
 /-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along row 0. -/
 theorem det_succ_row_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) :

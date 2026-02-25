@@ -314,6 +314,7 @@ lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_mk'
   convert (hr.pow n).algebraMap.mul hx
   exact (mk'_spec'_mk ..).symm
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `t` is integral over `R[1/t]`, then it is integral over `R`. -/
 lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
