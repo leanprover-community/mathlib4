@@ -6,8 +6,9 @@ Authors: Brian Nugent
 
 module
 
-public import Mathlib
+public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.Topology.Sheaves.AddCommGrpCat
+public import Mathlib.Topology.Sheaves.LocallySurjective
 
 /-!
 # Flasque Sheaves
@@ -32,9 +33,7 @@ We define and prove basic properties about flasque sheaves on topological spaces
 
 universe u v w
 
-noncomputable section
-
-open TopCat TopologicalSpace Opposite CategoryTheory Presheaf Limits Sheaf.AddCommGrpCat
+open TopCat TopologicalSpace Opposite CategoryTheory Presheaf Limits
 open scoped AlgebraicGeometry
 
 variable {X : TopCat.{u}}
@@ -49,12 +48,9 @@ namespace IsFlasque
 
 variable {U V : Opens X} {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) (s : G.val.obj (op U))
 
-lemma restrict_inf_flip {s : F.val.obj (op U)} {t : F.val.obj (op V)}
-    (h : s |_ (U ⊓ V) = t |_ (U ⊓ V)) :
-    s |_ (V ⊓ U) = t |_ (V ⊓ U) := by grind
-
 /-- Given a morphism of sheaves `g: F ⟶ G` and a section of `G(U)`, `Under g s` is comprised of an
-open `V` and a section of `F(V)` that maps to `s |_ V` via `g` -/
+open `V` and a section of `F(V)` that maps to `s |_ V` via `g`. This is not likely to be useful
+elsewhere so we leave it in the `IsFlasque` namespace. -/
 structure Under : Type u where
   V : Opens X
   le : V ≤ U
@@ -86,7 +82,7 @@ lemma Under.R.chains_bounded (c : Set (Under g s)) (h : IsChain (R g s) c) :
     dsimp
     obtain h1 | h1 := h i.property j.property (by grind)
     · rw [← h1.restricts]
-      have := h1.1
+      have := h1.le
       change (j.1.sec |_ i.1.V) |_ ((f i) ⊓ (f j)) = j.1.sec |_ ((f i) ⊓ (f j))
       rw [restrict_restrict]
     rw [← h1.restricts]
@@ -122,10 +118,11 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
       conv => rhs; arg 1; change s |_ W
       simp only [restrict_restrict]
     -- Since `S` is exact and `t₂` maps to zero, we can lift it to a section `t₃` of `S.X₁`
-    obtain ⟨t₃, ht₃⟩ := shortExact_app_zero t₂ this hS
+    obtain ⟨t₃, ht₃⟩ := AddCommGrpCat.shortExact_app_zero t₂ this hS
     have i₁ : t.V ⊓ W ⟶ W := homOfLE inf_le_right
     -- Using that `S.X₁` is flasque, we can lift `t₃` to a section on `W`
-    obtain ⟨t₄, ht₄⟩ := (AddCommGrpCat.epi_iff_surjective (S.X₁.val.map i₁.op)).mp (hX₁ i₁) t₃
+    obtain ⟨t₄, (ht₄ : t₄ |_ (t.V ⊓ W) = t₃)⟩ :=
+      (AddCommGrpCat.epi_iff_surjective (S.X₁.val.map i₁.op)).mp (hX₁ i₁) t₃
     let f : Fin 2 → Opens X
     | 0 => t.V
     | 1 => W
@@ -133,8 +130,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
     | 0 => t.sec
     | 1 => t₁ + (S.f.val.app (op W)) t₄
     have : sf 0 |_ (t.V ⊓ W) = sf 1 |_ (t.V ⊓ W) := by
-      rw [restrict_sum, ← map_restrict]
-      conv => rhs; arg 2; arg 2; change (ConcreteCategory.hom (S.X₁.val.map i₁.op)) t₄; rw [ht₄]
+      rw [AddCommGrpCat.restrict_sum, ← map_restrict, ht₄]
       simp only [ht₃, t₂, Fin.isValue, add_sub_cancel]
       rfl
     -- We glue `t.sec` and `t₁ + (S.f.val.app (op W)) t₄` together to form `t₅`
@@ -165,7 +161,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
     cat_disch
   apply map_restrict
 
-/- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque,
+/-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque,
 then `𝓗` is flasque. -/
 theorem X₃_shortExact_isFlasque_X₁_isFlasque_X₂ {S : ShortComplex (Sheaf AddCommGrpCat X)}
     (hS : S.ShortExact) (hX₁ : IsFlasque S.X₁) (hX₂ : IsFlasque S.X₂) : IsFlasque S.X₃ := by
@@ -176,5 +172,3 @@ theorem X₃_shortExact_isFlasque_X₁_isFlasque_X₂ {S : ShortComplex (Sheaf A
   exact CategoryTheory.epi_of_epi (S.g.1.app (op V)) (S.X₃.val.map i.op)
 
 end TopCat.Sheaf.IsFlasque
-
-#min_imports

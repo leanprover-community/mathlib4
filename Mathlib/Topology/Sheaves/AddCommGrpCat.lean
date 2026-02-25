@@ -11,9 +11,8 @@ public import Mathlib.Topology.Sheaves.Abelian
 /-!
 # Sheaves of abelian groups.
 
-Results for sheaves of abelian groups on topological spaces, in preparation for sheaf cohomology.
-- `TopCat.Sheaf.AddCommGrpCat.Γ` : `Γ U` is the functor `(Sheaf AddCommGrpCat X) ⥤ AddCommGrpCat`
-  that sends `𝓕` to `𝓕(U)` and and sends a morphism `f: 𝓕 ⟶ 𝓖` to `f(U): 𝓕(U) ⟶ 𝓖(U)`
+Results for sheaves of abelian groups on topological spaces.
+
 -/
 
 @[expose] public section
@@ -39,10 +38,10 @@ theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf A
 
 namespace Sheaf.AddCommGrpCat
 
-lemma restrict_sum {F : Sheaf AddCommGrpCat X} (h : V ≤ U) (s t : F.val.obj (op U)) :
+lemma restrict_sum {F : Presheaf AddCommGrpCat X} (h : V ≤ U) (s t : F.obj (op U)) :
     (s + t) |_ V = s |_V + t |_V := by
   delta Presheaf.restrictOpen Presheaf.restrict
-  aesop_cat
+  cat_disch
 
 lemma shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)} (s : S.X₂.val.obj (op U))
     (h : S.g.val.app (op U) s = 0) (hS : S.ShortExact) :
