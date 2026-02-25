@@ -61,13 +61,12 @@ abbrev Function.locallyFinsupp [Zero Y] := locallyFinsuppWithin (Set.univ : Set 
 Function with locally finite support have a zero.
 -/
 instance [Zero Y] : Zero (locallyFinsuppWithin U Y) where
-  zero := {
-    toFun := fun _ ↦ 0
-    supportWithinDomain' := by simp
-    supportLocallyFiniteWithinDomain' z hz := by
-      simp_rw [support_fun_zero, inter_empty, finite_empty, and_true]
-      use Set.univ, univ_mem
-  }
+  zero :=
+    { toFun := fun _ ↦ 0
+      supportWithinDomain' := by simp
+      supportLocallyFiniteWithinDomain' z hz := by
+        simp_rw [support_fun_zero, inter_empty, finite_empty, and_true]
+        use Set.univ, univ_mem }
 
 /--
 For T1 spaces, the condition `supportLocallyFiniteWithinDomain'` is equivalent to saying that the
@@ -456,12 +455,10 @@ Every positive function with locally finite supports dominates a singleton indic
 -/
 lemma exists_single_le_pos [DecidableEq X] {D : locallyFinsupp X ℤ} (h : 0 < D) :
     ∃ e, single e 1 ≤ D := by
-  obtain ⟨z, hz⟩ := (by simpa [D.ext_iff] using (ne_of_lt h).symm : ∃ z, D z ≠ 0)
-  use z
-  intro e
-  by_cases he : e = z
-  · subst he
-    simpa [single_apply] using Int.lt_iff_le_and_ne.mpr ⟨h.le e, hz.symm⟩
+  obtain ⟨z, hz⟩ : ∃ z, D z ≠ 0 := by simpa [D.ext_iff] using (ne_of_lt h).symm
+  refine ⟨z, fun e ↦ ?_⟩
+  obtain (rfl | he) := eq_or_ne e z
+  · simpa [single_apply] using Int.lt_iff_le_and_ne.mpr ⟨h.le e, hz.symm⟩
   · simpa [he, single_apply] using h.le e
 
 end LinearOrder
