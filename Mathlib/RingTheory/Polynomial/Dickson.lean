@@ -119,6 +119,7 @@ There is exactly one other Lambda structure on `ℤ[X]` in terms of binomial pol
 
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
     ∀ n, (dickson 1 (1 : R) n).eval (x + y) = x ^ n + y ^ n
   | 0 => by
@@ -138,6 +139,7 @@ private theorem two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟2 : R) = 
 private theorem C_half_mul_two_eq_one [Invertible (2 : R)] : C (⅟2 : R) * 2 = 1 := by
   rw [mul_comm, two_mul_C_half_eq_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dickson_one_one_eq_chebyshev_C : ∀ n, dickson 1 (1 : R) n = Chebyshev.C R n
   | 0 => by
     simp only [dickson_zero]
@@ -158,6 +160,7 @@ theorem chebyshev_T_eq_dickson_one_one [Invertible (2 : R)] (n : ℕ) :
     Chebyshev.T R n = C (⅟2) * (dickson 1 1 n).comp (2 * X) :=
   dickson_one_one_eq_chebyshev_C R n ▸ Chebyshev.T_eq_half_mul_C_comp_two_mul_X R n
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dickson_two_one_eq_chebyshev_S : ∀ n, dickson 2 (1 : R) n = Chebyshev.S R n
   | 0 => by
     simp only [dickson_zero]

@@ -255,6 +255,7 @@ local instances in this section.
 open Classical in
 /-- The distance function on a product space `Π n, E n`, given by `dist x y = (1/2)^n` where `n` is
 the first index at which `x` and `y` differ. -/
+@[instance_reducible]
 protected def dist : Dist (∀ n, E n) :=
   ⟨fun x y => if x ≠ y then (1 / 2 : ℝ) ^ firstDiff x y else 0⟩
 
@@ -396,6 +397,7 @@ Warning: this definition makes sure that the topology is defeq to the original p
 but it does not take care of a possible uniformity. If the `E n` have a uniform structure, then
 there will be two non-defeq uniform structures on `Π n, E n`, the product one and the one coming
 from the metric structure. In this case, use `metricSpaceOfDiscreteUniformity` instead. -/
+@[instance_reducible]
 protected def metricSpace : MetricSpace (∀ n, E n) :=
   MetricSpace.ofDistTopology dist PiNat.dist_self PiNat.dist_comm PiNat.dist_triangle
     isOpen_iff_dist PiNat.eq_of_dist_eq_zero
@@ -466,6 +468,7 @@ consider the longest prefix `w` that `x` shares with an element of `s`, and let 
 where `z_w` is an element of `s` starting with `w`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : ∀ n, E n}
     (hx : x ∉ s) : ∃ n, Disjoint s (cylinder x n) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
@@ -488,6 +491,7 @@ prefix of length `n` as `x`. If there is no such `n`, then use `0` by convention
 def shortestPrefixDiff {E : ℕ → Type*} (x : ∀ n, E n) (s : Set (∀ n, E n)) : ℕ :=
   if h : ∃ n, Disjoint s (cylinder x n) then Nat.find h else 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem firstDiff_lt_shortestPrefixDiff {s : Set (∀ n, E n)} (hs : IsClosed s) {x y : ∀ n, E n}
     (hx : x ∉ s) (hy : y ∈ s) : firstDiff x y < shortestPrefixDiff x s := by
   have A := exists_disjoint_cylinder hs hx
@@ -517,6 +521,7 @@ theorem firstDiff_le_longestPrefix {s : Set (∀ n, E n)} (hs : IsClosed s) {x y
   · exact firstDiff_lt_shortestPrefixDiff hs hx hy
   · exact shortestPrefixDiff_pos hs ⟨y, hy⟩ hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inter_cylinder_longestPrefix_nonempty {s : Set (∀ n, E n)} (hs : IsClosed s)
     (hne : s.Nonempty) (x : ∀ n, E n) : (s ∩ cylinder x (longestPrefix x s)).Nonempty := by
   by_cases hx : x ∈ s
@@ -566,6 +571,7 @@ theorem cylinder_longestPrefix_eq_of_longestPrefix_lt_firstDiff {x y : ∀ n, E 
   rw [l_eq, ← mem_cylinder_iff_eq]
   exact cylinder_anti y H.le (mem_cylinder_firstDiff x y)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a closed nonempty subset `s` of `Π (n : ℕ), E n`, there exists a Lipschitz retraction
 onto this set, i.e., a Lipschitz map with range equal to `s`, equal to the identity on `s`. -/
 theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsClosed s)
@@ -689,6 +695,7 @@ end PiNat
 
 open PiNat
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any nonempty complete second countable metric space is the continuous image of the
 fundamental space `ℕ → ℕ`. For a version of this theorem in the context of Polish spaces, see
 `exists_nat_nat_continuous_surjective_of_polishSpace`. -/
@@ -795,6 +802,7 @@ one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+@[instance_reducible]
 protected def edist : EDist (∀ i, F i) where
   edist x y := ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i))
 
@@ -823,11 +831,13 @@ attribute [scoped instance] PiCountable.edist
 section PseudoEMetricSpace
 variable [∀ i, PseudoEMetricSpace (F i)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a countable family of extended pseudometric spaces,
 one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+@[instance_reducible]
 protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
   edist_self x := by simp [edist_eq_tsum]
   edist_comm x y := by simp [edist_eq_tsum, edist_comm]
@@ -892,6 +902,7 @@ one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+@[instance_reducible]
 protected def emetricSpace : EMetricSpace (∀ i, F i) where
   eq_of_edist_eq_zero := by simp [edist_eq_tsum, funext_iff]
 
@@ -907,6 +918,7 @@ variable [∀ i, PseudoMetricSpace (F i)] {x y : ∀ i, F i} {i : ι}
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
+@[instance_reducible]
 protected def dist : Dist (∀ i, F i) where
   dist x y := ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i))
 
@@ -934,6 +946,7 @@ set_option linter.flexible false in
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
+@[instance_reducible]
 protected def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun x y ↦ by simp [dist_eq_tsum]; positivity) fun x y ↦ by
