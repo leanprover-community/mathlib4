@@ -32,6 +32,7 @@ walks
 @[expose] public section
 
 namespace SimpleGraph
+open HasAdj
 
 namespace Walk
 

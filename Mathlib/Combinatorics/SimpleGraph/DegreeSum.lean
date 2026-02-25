@@ -42,6 +42,7 @@ public section
 assert_not_exists Field TwoSidedIdeal
 
 open Finset
+open HasAdj
 
 namespace SimpleGraph
 
@@ -53,8 +54,8 @@ section DegreeSum
 
 variable [Fintype V] [DecidableRel G.Adj]
 
-theorem dart_fst_fiber [DecidableEq V] (v : V) :
-    ({d : G.Dart | d.fst = v} : Finset _) = univ.image (G.dartOfNeighborSet v) := by
+theorem dart_fst_fiber [DecidableEq V] [DecidableEq (Dart G)] (v : V) :
+    ({d : Dart G | d.fst = v} : Finset _) = univ.image (dartOfNeighborSet G v) := by
   ext d
   simp only [mem_image, true_and, mem_filter, SetCoe.exists, mem_univ]
   constructor
@@ -64,30 +65,30 @@ theorem dart_fst_fiber [DecidableEq V] (v : V) :
     rfl
 
 theorem dart_fst_fiber_card_eq_degree [DecidableEq V] (v : V) :
-    #{d : G.Dart | d.fst = v} = G.degree v := by
+    #{d : Dart G | d.fst = v} = G.degree v := by
   simpa only [dart_fst_fiber, Finset.card_univ, card_neighborSet_eq_degree] using
-    card_image_of_injective univ (G.dartOfNeighborSet_injective v)
+    card_image_of_injective univ (dartOfNeighborSet_injective G v)
 
-theorem dart_card_eq_sum_degrees : Fintype.card G.Dart = ∑ v, G.degree v := by
+theorem dart_card_eq_sum_degrees : Fintype.card (Dart G) = ∑ v, G.degree v := by
   haveI := Classical.decEq V
   simp only [← card_univ, ← dart_fst_fiber_card_eq_degree]
   exact card_eq_sum_card_fiberwise (by simp)
 
 variable {G} in
-theorem Dart.edge_fiber [DecidableEq V] (d : G.Dart) :
-    ({d' : G.Dart | d'.edge = d.edge} : Finset _) = {d, d.symm} :=
+theorem _root_.HasAdj.Dart.edge_fiber [DecidableEq V] (d : Dart G) :
+    ({d' : Dart G | d'.edge = d.edge} : Finset _) = {d, d.symm} :=
   Finset.ext fun d' => by simpa using dart_edge_eq_iff d' d
 
 theorem dart_edge_fiber_card [DecidableEq V] (e : Sym2 V) (h : e ∈ G.edgeSet) :
-    #{d : G.Dart | d.edge = e} = 2 := by
+    #{d : Dart G | d.edge = e} = 2 := by
   obtain ⟨v, w⟩ := e
-  let d : G.Dart := ⟨(v, w), h⟩
+  let d : Dart G := ⟨(v, w), h⟩
   convert congr_arg card d.edge_fiber
   rw [card_insert_of_notMem, card_singleton]
   rw [mem_singleton]
   exact d.symm_ne.symm
 
-theorem dart_card_eq_twice_card_edges : Fintype.card G.Dart = 2 * #G.edgeFinset := by
+theorem dart_card_eq_twice_card_edges : Fintype.card (Dart G) = 2 * #G.edgeFinset := by
   classical
   rw [← card_univ]
   rw [@card_eq_sum_card_fiberwise _ _ _ Dart.edge _ G.edgeFinset fun d _h =>
@@ -104,8 +105,10 @@ theorem sum_degrees_eq_twice_card_edges : ∑ v, G.degree v = 2 * #G.edgeFinset 
 
 lemma two_mul_card_edgeFinset : 2 * #G.edgeFinset = #(univ.filter fun (x, y) ↦ G.Adj x y) := by
   rw [← dart_card_eq_twice_card_edges, ← card_univ]
-  refine card_bij' (fun d _ ↦ (d.fst, d.snd)) (fun xy h ↦ ⟨xy, (mem_filter.1 h).2⟩) ?_ ?_ ?_ ?_
-    <;> simp
+  refine card_bij' (fun d _ ↦ (d.fst, d.snd)) (fun xy h ↦ ⟨xy, (mem_filter.1 h).2⟩) ?_
+      ?_ ?_ ?_
+    <;> simp only [mem_univ, Prod.mk.eta, mem_filter, true_and, forall_const, implies_true]
+  exact Dart.adj
 
 /-- The degree-sum formula only counting over the vertices that form edges.
 

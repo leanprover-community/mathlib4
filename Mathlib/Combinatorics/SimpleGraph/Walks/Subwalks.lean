@@ -25,6 +25,8 @@ walks, subwalks
 
 @[expose] public section
 
+open HasAdj
+
 namespace SimpleGraph
 
 namespace Walk
@@ -147,7 +149,7 @@ theorem isSubwalk_toWalk_iff_mem_darts (p : G.Walk u v) (h : G.Adj u' v') :
     h.toWalk.IsSubwalk p ↔ ⟨⟨u', v'⟩, h⟩ ∈ p.darts := by
   simp [isSubwalk_iff_darts_isInfix, List.singleton_infix_iff]
 
-theorem isSubwalk_toWalk_adj_iff_mem_darts {d : G.Dart} (p : G.Walk u v) :
+theorem isSubwalk_toWalk_adj_iff_mem_darts {d : Dart G} (p : G.Walk u v) :
     d.adj.toWalk.IsSubwalk p ↔ d ∈ p.darts :=
   isSubwalk_toWalk_iff_mem_darts ..
 

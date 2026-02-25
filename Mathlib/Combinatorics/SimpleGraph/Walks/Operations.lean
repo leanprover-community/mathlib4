@@ -33,6 +33,7 @@ walks
 open Function
 
 namespace SimpleGraph
+open HasAdj
 
 namespace Walk
 
@@ -355,8 +356,8 @@ theorem support_eq_concat {u v : V} (p : G.Walk u v) : p.support = p.support.dro
 
 lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) : p = q := by
   refine darts_injective (Dart.toProd_injective.list_map (List.rightInverse_unzip_zip.injective ?_))
-  have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
-  have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
+  have : Prod.fst ∘ Dart.toProd = fun d : Dart G ↦ d.fst := rfl
+  have : Prod.snd ∘ Dart.toProd = fun d : Dart G ↦ d.snd := rfl
   grind [map_fst_darts, map_snd_darts]
 
 @[simp]
@@ -417,7 +418,7 @@ theorem darts_reverse {u v : V} (p : G.Walk u v) :
     p.reverse.darts = (p.darts.map Dart.symm).reverse := by
   induction p <;> simp [*]
 
-theorem mem_darts_reverse {u v : V} {d : G.Dart} {p : G.Walk u v} :
+theorem mem_darts_reverse {u v : V} {d : Dart G} {p : G.Walk u v} :
     d ∈ p.reverse.darts ↔ d.symm ∈ p.darts := by simp
 
 @[simp]
@@ -438,7 +439,7 @@ theorem edges_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
 theorem edges_reverse {u v : V} (p : G.Walk u v) : p.reverse.edges = p.edges.reverse := by
   simp [edges]
 
-theorem dart_snd_mem_support_of_mem_darts {u v : V} (p : G.Walk u v) {d : G.Dart}
+theorem dart_snd_mem_support_of_mem_darts {u v : V} (p : G.Walk u v) {d : Dart G}
     (h : d ∈ p.darts) : d.snd ∈ p.support := by
   simpa using p.reverse.dart_fst_mem_support_of_mem_darts (by simp [h] : d.symm ∈ p.reverse.darts)
 
