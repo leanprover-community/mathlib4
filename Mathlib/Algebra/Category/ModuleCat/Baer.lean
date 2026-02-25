@@ -27,7 +27,7 @@ variable {R : Type u} [CommRing R]
 
 open CategoryTheory Abelian
 
-section
+namespace ModuleCat
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I : Ideal R) :
@@ -130,4 +130,4 @@ lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ
     exact subsingleton_of_forall_eq 0 (fun y ↦ Limits.IsZero.eq_zero_of_tgt this y)
   | n + 1 => exact ext_subsingleton_of_quotients' M n  h
 
-end
+end ModuleCat
