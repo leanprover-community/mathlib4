@@ -78,7 +78,6 @@ theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p
     grind [Finset.disjoint_left]
   simp_rw [count_eq_card_filter_range, range_add, filter_union, card_union_of_disjoint this,
     filter_map, addLeftEmbedding, card_map, Function.Embedding.coeFn_mk, Function.comp_def]
-  rfl
 
 theorem count_add' (a b : ℕ) : count p (a + b) = count (fun k ↦ p (k + b)) a + count p b := by
   rw [add_comm, count_add, add_comm]

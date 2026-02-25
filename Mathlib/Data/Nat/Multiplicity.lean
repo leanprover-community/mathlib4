@@ -175,9 +175,7 @@ theorem multiplicity_factorial_pow {n p : ℕ} (hp : p.Prime) :
   This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
 theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log p n < b) :
     p ^ r ∣ n ! ↔ r ≤ ∑ i ∈ Ico 1 b, n / p ^ i := by
-  rw [← WithTop.coe_le_coe, ENat.some_eq_coe, pow_dvd_iff_le_emultiplicity,
-    hp.emultiplicity_factorial hbn]
-  rfl
+  rw [← ENat.coe_le_coe, pow_dvd_iff_le_emultiplicity, hp.emultiplicity_factorial hbn]
 
 theorem emultiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
     emultiplicity p n ! ≤ (n / (p - 1) : ℕ) := by
