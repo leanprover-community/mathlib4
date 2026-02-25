@@ -822,7 +822,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · simp only [k0, Nat.cast_zero, succ_zero, mul_one, R]
       refine lt_of_lt_of_le ?_ (opow_le_opow_right omega0_pos (one_le_iff_ne_zero.2 e0))
       rcases m with - | m <;> simp [opowAux, omega0_pos]
-      rw [← add_one_eq_succ, ← Nat.cast_succ]
+      rw [← Nat.cast_add_one]
       apply nat_lt_omega0
     · rw [opow_mul]
       exact IH.1 k0
@@ -892,7 +892,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
       simp only [opow_def, opowAux2, e₁, r₁, e₂, r₂, repr,
           Nat.cast_succ, _root_.zero_add,
           add_zero]
-      rw [opow_add, opow_mul, opow_omega0, add_one_eq_succ]
+      rw [opow_add, opow_mul, opow_omega0]
       · simp
       · simpa [Nat.one_le_iff_ne_zero]
       · rw [← Nat.cast_succ, lt_omega0]
@@ -1099,7 +1099,6 @@ theorem fastGrowing_limit (o) {f} (h : fundamentalSequence o = Sum.inr f) :
 theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
   fastGrowing_zero' _ rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]

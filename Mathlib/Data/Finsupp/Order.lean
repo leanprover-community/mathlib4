@@ -109,6 +109,23 @@ lemma mapDomain_mono : Monotone (mapDomain f : (ι →₀ α) → (κ →₀ α)
 lemma mapDomain_nonneg (hg : 0 ≤ g) : 0 ≤ g.mapDomain f := by simpa using mapDomain_mono hg
 lemma mapDomain_nonpos (hg : g ≤ 0) : g.mapDomain f ≤ 0 := by simpa using mapDomain_mono hg
 
+theorem single_le_sum {α M N : Type*} [Zero M] [AddCommMonoid N]
+    [PartialOrder N] [IsOrderedAddMonoid N] (f : α →₀ M) {g : α → M → N}
+    (h : 0 ≤ (g · ·)) (a : α) :
+    ((single a (f a)).sum g) ≤ f.sum g := by
+  rcases eq_or_ne (f a) 0 with H | H
+  · rw [H, single_zero, sum_zero_index]
+    exact sum_nonneg' (fun i ↦ h i (f i))
+  · rw [sum, support_single_ne_zero _ H, sum_singleton, single_eq_same]
+    apply Finset.single_le_sum (fun i hi ↦ h i (f i))
+    simpa [mem_support_iff, ne_eq] using H
+
+lemma single_eval_le_sum {α M N : Type*} [Zero M] [AddCommMonoid N] [PartialOrder N]
+    [IsOrderedAddMonoid N] (f : α →₀ M) {g : M → N} (hg : g 0 = 0) (h : 0 ≤ (g ·)) (a : α) :
+    g (f a) ≤ f.sum fun _ m ↦ g m := by
+  simp only [← sum_single_index (h := fun (_ : α) m ↦ g m) (a := a) (b := f a) hg]
+  apply single_le_sum _ (fun _ m ↦ h m)
+
 end OrderedAddCommMonoid
 
 instance isOrderedCancelAddMonoid [AddCommMonoid α] [Preorder α] [IsOrderedCancelAddMonoid α] :
