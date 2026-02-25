@@ -28,7 +28,7 @@ namespace ProbabilityTheory
 variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
 
 @[expose]
-noncomputable def bernoulli_measure (a b : α) (p : I) : Measure α :=
+noncomputable def bernoulliMeasure (a b : α) (p : I) : Measure α :=
   ENNReal.ofReal p • dirac a + ENNReal.ofReal (σ p) • dirac b
 
 noncomputable def bernoulli_measure_def (a b : α) (p : I) :
