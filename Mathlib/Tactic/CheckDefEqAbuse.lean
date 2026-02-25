@@ -200,7 +200,7 @@ partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet Strin
         let parts : List String := headerStr.splitOn "apply "
         let instName := match parts with
           | [_, rest] => match (rest.splitOn " to ") with
-            | name :: _ => name.trim
+            | name :: _ => name.trimAscii.toString
             | _ => headerStr
           | _ => headerStr
         let mut result : Std.HashSet String := {}
@@ -409,7 +409,7 @@ elab_rules : command
           let parts : List String := appStr.splitOn "apply "
           let instName := match parts with
             | [_, rest] => match (rest.splitOn " to ") with
-              | name :: _ => name.trim
+              | name :: _ => name.trimAscii.toString
               | _ => appStr
             | _ => appStr
           return permissiveSuccessApps.contains instName
