@@ -249,6 +249,7 @@ lemma singleton_le_singleton : (toColex ({a} : Finset α)) ≤ toColex {b} ↔ a
 lemma singleton_lt_singleton : (toColex ({a} : Finset α)) < toColex {b} ↔ a < b := by
   simp [toColex_lt_singleton]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_iff_sdiff_subset_lowerClosure {s t : Colex (Finset α)} :
     s ≤ t ↔ (↑(ofColex s) : Set α) \ ↑(ofColex t) ⊆
       lowerClosure (↑(ofColex t) \ ↑(ofColex s) : Set α) := by

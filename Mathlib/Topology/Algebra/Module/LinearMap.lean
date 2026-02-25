@@ -843,9 +843,7 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
-  __ := ContinuousLinearMap.addCommMonoid
   sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
-  nsmul := (· • ·)
   zsmul := (· • ·)
   zsmul_zero' f := by ext; simp
   zsmul_succ' n f := by ext; simp [add_smul, add_comm]
@@ -1316,16 +1314,12 @@ variable (𝕜 E) in
 def topDualPairing : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
   ContinuousLinearMap.coeLM 𝕜
 
-@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing := topDualPairing
-
 @[deprecated (since := "2025-09-03")] alias strongDualPairing := topDualPairing
 
 @[simp]
 theorem topDualPairing_apply (v : E →L[𝕜] 𝕜)
     (x : E) : topDualPairing 𝕜 E v x = v x :=
   rfl
-
-@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing_apply := topDualPairing_apply
 
 @[deprecated (since := "2025-09-03")] alias StrongDual.dualPairing_apply := topDualPairing_apply
 

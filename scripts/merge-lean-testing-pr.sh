@@ -9,10 +9,25 @@ fi
 PR_NUMBER=$1
 BRANCH_NAME="lean-pr-testing-$PR_NUMBER"
 
+# Find the remote pointing to leanprover-community/mathlib4-nightly-testing
+REMOTE=""
+for r in $(git remote); do
+    if git remote get-url "$r" | grep -q "leanprover-community/mathlib4-nightly-testing"; then
+        REMOTE="$r"
+        break
+    fi
+done
+if [ -z "$REMOTE" ]; then
+    echo "Error: no remote found for leanprover-community/mathlib4-nightly-testing"
+    echo "Available remotes:"
+    git remote -v
+    exit 1
+fi
+
 git checkout nightly-testing
 git pull --ff-only
 
-if ! git merge origin/$BRANCH_NAME; then
+if ! git merge "$REMOTE/$BRANCH_NAME"; then
     echo "Merge conflicts detected. Resolving conflicts in favor of current version..."
     git checkout --ours lean-toolchain lakefile.lean lake-manifest.json
     git add lean-toolchain lakefile.lean lake-manifest.json

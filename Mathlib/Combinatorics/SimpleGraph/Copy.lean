@@ -162,6 +162,7 @@ def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.i
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
 protected def bot (f : α ↪ β) : Copy (⊥ : SimpleGraph α) B := ⟨⟨f, False.elim⟩, f.injective⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism from a subgraph of `A` to its map under a copy `f : Copy A B`. -/
 noncomputable def isoSubgraphMap (f : Copy A B) (A' : A.Subgraph) :
     A'.coe ≃g (A'.map f.toHom).coe := by
@@ -520,6 +521,7 @@ private lemma killCopies_of_ne_bot (hH : H ≠ ⊥) (G : SimpleGraph V) :
       G.deleteEdges (⋃ (G' : G.Subgraph) (hG' : Nonempty (H ≃g G'.coe)), {(aux hH hG').some}) := by
   rw [killCopies]; exact dif_neg hH
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `G.killCopies H` has no effect on `G` if and only if `G` already contained no copies of `H`. See
 `Free.killCopies_eq_left` for the reverse implication with no assumption on `H`. -/
 lemma killCopies_eq_left (hH : H ≠ ⊥) : G.killCopies H = G ↔ H.Free G := by
@@ -584,7 +586,7 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     Set.toFinset_card, edgeSet_deleteEdges]
   simp only [Finset.sdiff_eq_inter_compl, Set.diff_eq, ← Set.iUnion_singleton_eq_range,
     Set.coe_toFinset, coe_filter, Set.iUnion_subtype, ← Fintype.card_coe,
-    ← Finset.coe_sort_coe, coe_inter, coe_compl, Set.coe_toFinset, Set.compl_iUnion,
+    ← Finset.coe_sort_coe, coe_inter, coe_compl, Set.compl_iUnion,
     Fintype.card_ofFinset, f]
 
 /-- Removing an edge from `H` for each subgraph isomorphic to `G` means that the number of edges
