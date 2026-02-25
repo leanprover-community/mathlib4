@@ -888,7 +888,7 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
   isGLB_csInf := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).isLUB_csSup
 
 noncomputable instance [CompleteLattice α] : CompleteLattice (WithBot α) where
- le_sSup s a has := le_csSup (OrderTop.bddAbove _) has
+  le_sSup s a has := le_csSup (OrderTop.bddAbove _) has
   sSup_le s a hsa := s.eq_empty_or_nonempty.elim (by rw [·, WithBot.sSup_empty]; exact bot_le)
     (csSup_le · hsa)
   sInf_le s a hsa := csInf_le (OrderBot.bddBelow _) hsa
