@@ -38,7 +38,7 @@ namespace AlgebraicGeometry.Scheme
 
 variable (X : Scheme.{u}) (Z : Set X) (hZ : Z ∈ irreducibleComponents X) [IsNoetherian X]
 
-/-- The open subset associated to an irreducible component of a Noetherian scheme. -/
+/-- The complement of the irreducible components unequal to `Z` of a Noetherian scheme. -/
 def irreducibleComponentOpen : Opens X :=
   ⟨(⋃₀ (irreducibleComponents X \ {Z}))ᶜ, by
     rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
