@@ -121,7 +121,8 @@ variable (u p) in
     _ = ∏ i ∈ u, (if i ∈ s then ENNReal.ofReal p else ENNReal.ofReal (σ p)) := by
       rw [setBernoulli_eq_independent_set_measure_ite, independent_set_measure_apply,
         Set.image_singleton, infinitePi_singleton, tprod_eq_prod, Finset.prod_congr rfl]
-      simp +contextual [bernoulli_measure_def]
+      · simp +contextual [bernoulli_measure_def, ite_add_ite, Pi.single, Function.update]
+      · simp +contextual [mt (@hsu _)]
     _ = ENNReal.ofReal p ^ s.ncard * ENNReal.ofReal (σ p) ^ (↑u \ s).ncard := by
       simp [Finset.prod_ite, ← Set.ncard_coe_finset, Set.setOf_and,
         Set.inter_eq_right.2 hsu, ← Set.compl_setOf, Set.diff_eq_compl_inter, Set.inter_comm]
