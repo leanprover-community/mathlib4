@@ -876,14 +876,11 @@ theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
     exact Submodule.mem_span_of_mem ⟨n, by simp⟩
   case succ k ih =>
     rw [Function.iterate_succ_apply']
-    let derivative' : R[X] →ₗ[ℕ] R[X] :=
-    { toFun := derivative, map_add' := derivative.map_add'
-      map_smul' m P := by induction m <;> simp }
     suffices Submodule.span ℕ ((fun m : ℕ => derivative (T R m)) '' Set.Icc 0 (n - k)) ≤
       Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - (k + 1))) by
       apply this
-      convert Submodule.apply_mem_span_image_of_mem_span derivative' ih using 2
-      simp [Set.image, derivative']
+      convert Submodule.apply_mem_span_image_of_mem_span (derivative.restrictScalars ℕ) ih using 2
+      simp [Set.image]
     refine Submodule.span_le.mpr (fun x hx => ?_)
     obtain ⟨m, hm, rfl⟩ := hx
     refine (Submodule.span_mono (by grind)) (T_derivative_mem_span_T (R := R) m)
