@@ -3306,6 +3306,7 @@ public import Mathlib.Combinatorics.HalesJewett
 public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.Hall.Finite
 public import Mathlib.Combinatorics.HasAdj.Basic
+public import Mathlib.Combinatorics.HasAdj.Walk
 public import Mathlib.Combinatorics.Hindman
 public import Mathlib.Combinatorics.KatonaCircle
 public import Mathlib.Combinatorics.Matroid.Basic
