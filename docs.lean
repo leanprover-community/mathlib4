@@ -1,4 +1,2 @@
-module  -- shake: keep-all
-
-public import docs.Conv.Guide
-public import docs.Conv.Introduction
+import docs.Conv.Guide
+import docs.Conv.Introduction
