@@ -81,7 +81,7 @@ variable [Countable ι]
 variable (u p) in
 theorem hasLaw_setBernoulli_of_bernoulli_iid [IsProbabilityMeasure P] (B : ι → Ω → Prop)
     (hU : ∀ i, HasLaw (B i) (bernoulli_measure True False p) P) (hU' : iIndepFun B P) :
-    HasLaw ({i ∈ u | B i ·}) (setBer(u, p)) P where
+    HasLaw ({i ∈ u | B i ·}) setBer(u, p) P where
   map_eq := by
     simp_rw [← Function.comp_def (f := fun B ↦ {i ∈ u | B i}) (g := fun ω : Ω ↦ (B · ω)),
       ← Function.comp_def (f := fun p ↦ {i | p i}) (g := fun (p : ι → Prop) i ↦ i ∈ u ∧ p i)]
