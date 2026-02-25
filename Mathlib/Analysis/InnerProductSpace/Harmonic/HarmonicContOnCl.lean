@@ -31,11 +31,11 @@ namespace InnerProductSpace
 A predicate saying that a function is harmonic on a set and is continuous on its closure. This is a
 common assumption in harmonic analysis.
 -/
-@[fun_prop] structure HarmonicContOnCl (f : E → F) (s : Set E) : Prop where
+structure HarmonicContOnCl (f : E → F) (s : Set E) : Prop where
   protected harmonicOnNhd : HarmonicOnNhd f s
   protected continuousOn : ContinuousOn f (closure s)
 
-@[fun_prop] theorem HarmonicOnNhd.harmonicContOnCl (h : HarmonicOnNhd f (closure s)) :
+theorem HarmonicOnNhd.harmonicContOnCl (h : HarmonicOnNhd f (closure s)) :
     HarmonicContOnCl f s :=
   ⟨h.mono subset_closure, h.continuousOn⟩
 
@@ -46,7 +46,7 @@ theorem IsClosed.harmonicContOnCl_iff (hs : IsClosed s) :
     rw [← hs.closure_eq] at h
     exact h.harmonicContOnCl
 
-@[fun_prop] theorem harmonicContOnCl_const {c : F} : HarmonicContOnCl (fun _ : E ↦ c) s :=
+theorem harmonicContOnCl_const {c : F} : HarmonicContOnCl (fun _ : E ↦ c) s :=
   ⟨harmonicOnNhd_const c, continuousOn_const⟩
 
 namespace HarmonicContOnCl
@@ -64,37 +64,37 @@ theorem mk_ball {x : E} {r : ℝ} (hd : HarmonicOnNhd f (ball x r))
     HarmonicContOnCl f (ball x r) :=
   ⟨hd, hc.mono <| closure_ball_subset_closedBall⟩
 
-@[fun_prop] theorem contDiffAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
+theorem contDiffAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
     ContDiffAt ℝ 2 f x := (h.1 x hx).1
 
-@[fun_prop] theorem differentiableAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
+theorem differentiableAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
     DifferentiableAt ℝ f x := (h.contDiffAt hx).differentiableAt two_ne_zero
 
-@[fun_prop] theorem mono {t : Set E} (h : HarmonicContOnCl f s) (ht : t ⊆ s) :
+theorem mono {t : Set E} (h : HarmonicContOnCl f s) (ht : t ⊆ s) :
     HarmonicContOnCl f t := ⟨h.harmonicOnNhd.mono ht, h.continuousOn.mono (closure_mono ht)⟩
 
-@[fun_prop, to_fun] theorem add (hf₁ : HarmonicContOnCl f₁ s) (hf₂ : HarmonicContOnCl f₂ s) :
+@[to_fun] theorem add (hf₁ : HarmonicContOnCl f₁ s) (hf₂ : HarmonicContOnCl f₂ s) :
     HarmonicContOnCl (f₁ + f₂) s := ⟨hf₁.1.add hf₂.1, hf₁.2.add hf₂.2⟩
 
-@[fun_prop, to_fun] theorem add_const (hf : HarmonicContOnCl f s) (c : F) :
+@[to_fun] theorem add_const (hf : HarmonicContOnCl f s) (c : F) :
     HarmonicContOnCl (f + fun _ ↦ c) s := hf.add harmonicContOnCl_const
 
-@[fun_prop, to_fun] theorem const_add (hf : HarmonicContOnCl f s) (c : F) :
+@[to_fun] theorem const_add (hf : HarmonicContOnCl f s) (c : F) :
   HarmonicContOnCl ((fun _ ↦ c) + f) s := harmonicContOnCl_const.add hf
 
-@[fun_prop, to_fun] theorem neg (hf : HarmonicContOnCl f s) :
+@[to_fun] theorem neg (hf : HarmonicContOnCl f s) :
     HarmonicContOnCl  (-f) s := ⟨hf.1.neg, hf.2.neg⟩
 
-@[fun_prop, to_fun] theorem sub (hf₁ : HarmonicContOnCl f₁ s) (hf₂ : HarmonicContOnCl f₂ s) :
+@[to_fun] theorem sub (hf₁ : HarmonicContOnCl f₁ s) (hf₂ : HarmonicContOnCl f₂ s) :
     HarmonicContOnCl (f₁ - f₂) s := ⟨hf₁.1.sub hf₂.1, hf₁.2.sub hf₂.2⟩
 
-@[fun_prop, to_fun] theorem sub_const (hf : HarmonicContOnCl f s) (c : F) :
+@[to_fun] theorem sub_const (hf : HarmonicContOnCl f s) (c : F) :
     HarmonicContOnCl (f - fun _ ↦ c) s := hf.sub harmonicContOnCl_const
 
-@[fun_prop, to_fun] theorem const_sub (hf : HarmonicContOnCl f s) (c : F) :
+@[to_fun] theorem const_sub (hf : HarmonicContOnCl f s) (c : F) :
     HarmonicContOnCl ((fun _ ↦ c) - f) s := harmonicContOnCl_const.sub hf
 
-@[fun_prop, to_fun] theorem const_smul (hf : HarmonicContOnCl f s) (c : ℝ) :
+@[to_fun] theorem const_smul (hf : HarmonicContOnCl f s) (c : ℝ) :
     HarmonicContOnCl (c • f) s := ⟨hf.1.const_smul, hf.2.const_smul c⟩
 
 end HarmonicContOnCl
