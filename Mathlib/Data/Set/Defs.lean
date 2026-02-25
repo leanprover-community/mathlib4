@@ -46,6 +46,16 @@ and predicates.
 -/
 def Set (α : Type u) := α → Prop
 
+/-- Unification hint so that `(i : α) → Prop` can unify with `Set α` at instance transparency.
+
+This is an experiment to see if this resolves `backward.isDefEq.respectTransparency` failures.
+See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency
+-/
+universe v in
+unif_hint (α β : Type v) where
+  α ≟ β ⊢
+  ((i : α) → Prop) ≟ Set β
+
 /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
 def setOf {α : Type u} (p : α → Prop) : Set α :=
   p
