@@ -359,7 +359,7 @@ lemma ideal_height_eq_coheight (R : CommRingCat) (x : Spec R) :
 
 open Order in
 @[stacks 02IZ]
-lemma stalk_dim_eq_coheight {X : Scheme} (x : X) :
+lemma ringKrullDim_stalk_eq_coheight {X : Scheme} (x : X) :
   ringKrullDim (X.presheaf.stalk x) = Order.coheight x := by
   wlog h : ∃ R, X = Spec R
   · obtain ⟨R, f, hf, hsub⟩ := AlgebraicGeometry.Scheme.exists_affine_mem_range_and_range_subset
