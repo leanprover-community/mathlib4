@@ -27,15 +27,18 @@ open scoped DirectSum
 
 variable (Q)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The even or odd submodule, defined as the supremum of the even or odd powers of
 `(ι Q).range`. `evenOdd 0` is the even submodule, and `evenOdd 1` is the odd submodule. -/
 def evenOdd (i : ZMod 2) : Submodule R (CliffordAlgebra Q) :=
   ⨆ j : { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (j : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_le_evenOdd_zero : 1 ≤ evenOdd Q 0 := by
   refine le_trans ?_ (le_iSup _ ⟨0, Nat.cast_zero⟩)
   exact (pow_zero _).ge
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_ι_le_evenOdd_one : LinearMap.range (ι Q) ≤ evenOdd Q 1 := by
   refine le_trans ?_ (le_iSup _ ⟨1, Nat.cast_one⟩)
   exact (pow_one _).ge
@@ -43,6 +46,7 @@ theorem range_ι_le_evenOdd_one : LinearMap.range (ι Q) ≤ evenOdd Q 1 := by
 theorem ι_mem_evenOdd_one (m : M) : ι Q m ∈ evenOdd Q 1 :=
   range_ι_le_evenOdd_one Q <| LinearMap.mem_range_self _ m
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ evenOdd Q 0 :=
   Submodule.mem_iSup_of_mem ⟨2, rfl⟩
     (by
@@ -204,6 +208,7 @@ theorem even_induction {motive : ∀ x, x ∈ evenOdd Q 0 → Prop}
   obtain ⟨r, rfl⟩ := Submodule.mem_one.mp h
   exact algebraMap r
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To show a property is true on the odd parts, it suffices to show it is true on the
 vectors, closed under addition, and under left-multiplication by a pair of vectors. -/
 @[elab_as_elim]

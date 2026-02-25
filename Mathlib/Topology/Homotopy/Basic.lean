@@ -175,7 +175,6 @@ theorem extend_of_mem_I (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ∈ I) :
     F.extend t = F.curry ⟨t, ht⟩ :=
   Set.IccExtend_of_mem (zero_le_one' ℝ) F.curry ht
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extend_zero (F : Homotopy f₀ f₁) : F.extend 0 = f₀ := by simp
 theorem extend_one (F : Homotopy f₀ f₁) : F.extend 1 = f₁ := by simp
 
