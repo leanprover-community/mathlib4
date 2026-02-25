@@ -97,7 +97,7 @@ lemma codRestrictEqLocusPushoutCocone.surj_of_isEffective (hf : IsEffective f) :
   intro s
   algebraize [f.hom]
   have := Set.mem_range.mp <|
-    Algebra.eqLocus_includeLeft_includeRight_of_isEffective hf ▸ SetLike.mem_coe.mpr s.property
+    Algebra.IsEffective.eqLocus_includeLeft_includeRight hf ▸ SetLike.mem_coe.mpr s.property
   use this.choose
   apply Subtype.ext
   erw [RingHom.codRestrict_apply, this.choose_spec]
@@ -110,7 +110,7 @@ lemma codRestrictEqLocusPushoutCocone.bij_of_faithfullyFlat (hf : f.hom.Faithful
   · exact codRestrictEqLocusPushoutCocone.inj_of_inj _ (RingHom.FaithfullyFlat.injective hf)
   · algebraize [f.hom]
     exact codRestrictEqLocusPushoutCocone.surj_of_isEffective _
-      (Algebra.isEffective_of_faithfullyFlat _ _)
+      (Algebra.IsEffective.of_faithfullyFlat _ _)
 
 end CodRestrictEqLocusPushoutCocone
 
