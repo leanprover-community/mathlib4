@@ -109,8 +109,8 @@ lemma nontrivial_iff (hv : v.Integers O) : Nontrivial O ↔ Nontrivial R := by
 
 end Integers
 
-theorem IsTrivialOn.of_le_one {O : Type w} [Field O] [Algebra O R] (v : Valuation R Γ₀)
-    (hle : ∀ (x : O), v (algebraMap O R x) ≤ 1) : v.IsTrivialOn O where
+theorem IsTrivialOn.of_le_one {k : Type*} [Field k] [Algebra k R] (v : Valuation R Γ₀)
+    (hle : ∀ (x : k), v (algebraMap k R x) ≤ 1) : v.IsTrivialOn k where
   eq_one a ha := Valuation.Integers.one_of_isUnit' (IsUnit.mk0 a ha) hle
 
 lemma integers_nontrivial (v : Valuation R Γ₀) :
