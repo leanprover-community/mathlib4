@@ -85,7 +85,7 @@ theorem Tendsto.atBot_mul_atBot (hf : Tendsto f l atBot) (hg : Tendsto g l atBot
 theorem Tendsto.atTop_pow (hf : Tendsto f l atTop) {n : ℕ} (hn : 0 < n) :
     Tendsto (fun x => f x ^ n) l atTop := by
   refine tendsto_atTop_mono' _ ((hf.eventually_ge_atTop 1).mono fun x hx ↦ ?_) hf
-  simpa only [pow_one] using pow_le_pow_right' hx hn
+  simpa only [pow_one] using pow_le_pow_right hx hn
 
 @[to_additive nsmul_atBot]
 theorem Tendsto.atBot_pow (hf : Tendsto f l atBot) {n : ℕ} (hn : 0 < n) :
