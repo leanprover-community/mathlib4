@@ -836,16 +836,25 @@ variable {C : Type*} [Category C] [Preadditive C]
 /-- A preadditive category `C` with finite products is abelian when this
 structure is nonempty for any morphism `f` in `C`, see `Abelian.mk'`. -/
 structure AbelianStruct {X Y : C} (f : X ⟶ Y) where
+  /-- a limit kernel fork of `f` -/
   kernelFork : KernelFork f
+  /-- the kernel fork is a limit -/
   isLimitKernelFork : IsLimit kernelFork
+  /-- a colimit cokernel cofork of `f` -/
   cokernelCofork : CokernelCofork f
+  /-- the cokernel cofork is a a limit -/
   isColimitCokernelCofork : IsColimit cokernelCofork
+  /-- the image of `f` -/
   image : C
+  /-- the projection to the image -/
   imageπ : X ⟶ image
   ι_imageπ : kernelFork.ι ≫ imageπ = 0 := by cat_disch
+  /-- the image is a cokernel -/
   imageIsCokernel : IsColimit (CokernelCofork.ofπ _ ι_imageπ)
+  /-- the inclusion of the image -/
   imageι : image ⟶ Y
   imageι_π : imageι ≫ cokernelCofork.π = 0 := by cat_disch
+  /-- the image is a kernel -/
   imageIsKernel : IsLimit (KernelFork.ofι _ imageι_π)
   fac : imageπ ≫ imageι = f := by cat_disch
 
