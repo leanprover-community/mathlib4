@@ -384,8 +384,7 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : WithTop ℕ∞} {U : Open
 theorem contMDiff_inclusion {n : WithTop ℕ∞} {U V : Opens M} (h : U ≤ V) :
     ContMDiff I I n (Opens.inclusion h : U → V) := by
   rintro ⟨x, hx : x ∈ U⟩
-  apply (contDiffWithinAt_localInvariantProp n).liftProp_inclusion
-  exact (contDiffWithinAtProp_id ·)
+  exact (contDiffWithinAt_localInvariantProp n).liftProp_inclusion (contDiffWithinAtProp_id ·) _ _
 
 end Inclusion
 

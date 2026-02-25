@@ -107,7 +107,7 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
 
 @[simp]
 lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v :=
-  ⟨fun ⟨_, hp⟩ ↦ adj_of_length_eq_one hp, fun h ↦ ⟨h.toWalk, by simp⟩⟩
+  ⟨fun ⟨_, hp⟩ ↦ adj_of_length_eq_one hp, (⟨·.toWalk, by simp⟩)⟩
 
 @[simp]
 theorem length_eq_zero_iff {u : V} {p : G.Walk u u} : p.length = 0 ↔ p = nil := by cases p <;> simp

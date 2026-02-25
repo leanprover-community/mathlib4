@@ -176,8 +176,7 @@ lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen
       hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)] at hdvd
   · exact dvd_trans hζ.toInteger_sub_one_dvd_prime' ⟨x, by simp [hx]⟩
   · exact IsCoprime.intCast hcoprime
-  · simp only [Units.val_one, one_mul]
-    exact_mod_cast h
+  · simpa using by exact_mod_cast h
 
 namespace FermatLastTheoremForThreeGen
 
@@ -282,13 +281,11 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides `S'.c`. -/
 lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   have hm := S'.multiplicity_lambda_c_finite
-  suffices 2 ≤ multiplicity (hζ.toInteger - 1) S'.c from
-    (FiniteMultiplicity.pow_dvd_iff_le_multiplicity hm).mpr this
   have := lambda_pow_four_dvd_c_cube S'
   rw [pow_dvd_iff_le_emultiplicity, emultiplicity_pow hζ.zeta_sub_one_prime',
     hm.emultiplicity_eq_multiplicity] at this
   norm_cast at this
-  lia
+  exact (FiniteMultiplicity.pow_dvd_iff_le_multiplicity hm).mpr (by lia)
 
 /-- Given `S' : Solution'`, we have that `2 ≤ S'.multiplicity`. -/
 lemma Solution'.two_le_multiplicity : 2 ≤ S'.multiplicity := by

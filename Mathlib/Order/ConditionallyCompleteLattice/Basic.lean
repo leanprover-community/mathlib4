@@ -684,9 +684,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
 theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
   by_cases hs : BddBelow s
   · exact isGLB_sInf' hs
-  · exfalso
-    apply hs
-    exact OrderBot.bddBelow _
+  · exact hs.elim (OrderBot.bddBelow _)
 
 noncomputable instance : CompleteLinearOrder (WithTop α) where
   __ := linearOrder

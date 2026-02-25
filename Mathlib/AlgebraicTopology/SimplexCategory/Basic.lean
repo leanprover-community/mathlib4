@@ -807,13 +807,12 @@ theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ �
   exact eq_comp_δ_of_not_surjective' θ i (not_exists.mp hi)
 
 theorem eq_id_of_mono {x : SimplexCategory} (i : x ⟶ x) [Mono i] : i = 𝟙 _ := by
-  suffices IsIso i by
-    apply eq_id_of_isIso
-  exact (isIso_iff_of_mono i).mpr rfl
+  have := (isIso_iff_of_mono i).mpr rfl
+  exact eq_id_of_isIso _
 
 theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ := by
-  suffices IsIso i from eq_id_of_isIso _
-  exact (isIso_iff_of_epi i).mpr rfl
+  have := (isIso_iff_of_epi i).mpr rfl
+  exact eq_id_of_isIso _
 
 theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by
   obtain ⟨i, θ', h⟩ := eq_σ_comp_of_not_injective θ (by
