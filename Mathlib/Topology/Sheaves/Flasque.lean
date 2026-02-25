@@ -52,14 +52,20 @@ variable {U V : Opens X} {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) (s : G.val.
 open `V` and a section of `F(V)` that maps to `s |_ V` via `g`. This is not likely to be useful
 elsewhere so we leave it in the `IsFlasque` namespace. -/
 structure Under : Type u where
+  /-- the open subset that our section is on -/
   V : Opens X
+  /-- V must be contained in U -/
   le : V ≤ U
+  /-- the section itself -/
   sec : F.val.obj (op V)
+  /-- `sec` must be "under s" in the sense that `g` applied to `sec` is `s |_ V` -/
   app_s : g.val.app (op V) sec = s |_ V
 
 /-- Given `t₁` and `t₂` in `Under g s`, we say `t₁ ≤ t₂` if `t₂.sec` restricts to `t₁.sec` -/
 structure Under.R (t₁ t₂ : Under g s) : Prop where
+  /-- inclusion of the opens that the sections live on -/
   le : t₁.V ≤ t₂.V
+  /-- the second section restricts to the first -/
   restricts : t₂.sec |_ t₁.V = t₁.sec
 
 open Under
