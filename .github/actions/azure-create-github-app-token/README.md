@@ -25,7 +25,7 @@ mint_token.py
 |
 |(3) Key Vault sign API with non-exportable key
 |
-`-----------,
+`----------->
             |
             |
             v

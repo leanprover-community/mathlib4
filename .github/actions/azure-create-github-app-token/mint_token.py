@@ -90,6 +90,7 @@ def get_actions_oidc_token(audience: str) -> str:
 
     parsed = urllib.parse.urlsplit(request_url)
     query_pairs = urllib.parse.parse_qsl(parsed.query, keep_blank_values=True)
+    # Audience must match the Entra federated credential configuration.
     query_pairs.append(("audience", audience))
     url_with_audience = urllib.parse.urlunsplit(
         (parsed.scheme, parsed.netloc, parsed.path, urllib.parse.urlencode(query_pairs), parsed.fragment)
@@ -123,6 +124,7 @@ def exchange_oidc_for_keyvault_token(tenant_id: str, client_id: str, oidc_token:
         {
             "client_id": client_id,
             "scope": "https://vault.azure.net/.default",
+            # Entra treats the GitHub OIDC JWT as a client assertion for workload identity federation.
             "grant_type": "client_credentials",
             "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
             "client_assertion": oidc_token,
@@ -155,11 +157,13 @@ def run_keyvault_sign(
 
     encoded_key_name = urllib.parse.quote(key_name, safe="")
     sign_path = f"/keys/{encoded_key_name}/sign"
+    # Include key version when provided so callers can pin exact key material.
     if key_version:
         encoded_key_version = urllib.parse.quote(key_version, safe="")
         sign_path = f"/keys/{encoded_key_name}/{encoded_key_version}/sign"
     sign_url = f"https://{vault_name}.vault.azure.net{sign_path}?api-version=7.4"
 
+    # Key Vault sign expects the SHA-256 digest in base64url form.
     sign_body = json.dumps({"alg": "RS256", "value": digest_b64url}, separators=(",", ":")).encode("utf-8")
     req = urllib.request.Request(url=sign_url, data=sign_body, method="POST")
     req.add_header("Authorization", f"Bearer {access_token}")
@@ -177,7 +181,8 @@ def run_keyvault_sign(
             "Azure Key Vault sign response was not valid JSON."
         )
 
-    signature = sign_result.get("value") or sign_result.get("result") or sign_result.get("signature")
+    # Accept common signature fields to be resilient across SDK/API response shapes.
+    signature = sign_result.get("signature") or sign_result.get("value") or sign_result.get("result")
     if not isinstance(signature, str) or not signature.strip():
         fail(
             "Azure Key Vault sign response did not include a signature in 'result', 'value', or 'signature'.\n"
@@ -251,6 +256,7 @@ def build_app_jwt(
 ) -> str:
     """Build and sign a GitHub App JWT using Azure Key Vault."""
 
+    # Backdate iat slightly to tolerate minor clock skew between systems.
     iat = int(time.time()) - 60
     exp = iat + expiration_seconds
     jwt_header = {"alg": "RS256", "typ": "JWT"}
@@ -260,10 +266,12 @@ def build_app_jwt(
     encoded_payload = b64url_encode(json.dumps(jwt_payload, separators=(",", ":")).encode("utf-8"))
     signing_input = f"{encoded_header}.{encoded_payload}".encode("utf-8")
 
+    # For RS256, Key Vault signs the SHA-256 digest of the JWS signing input.
     digest_b64url = b64url_encode(hashlib.sha256(signing_input).digest())
     oidc_token = get_actions_oidc_token(azure_oidc_audience)
     keyvault_token = exchange_oidc_for_keyvault_token(azure_tenant_id, azure_client_id, oidc_token)
     signature_from_az = run_keyvault_sign(vault_name, key_name, key_version, digest_b64url, keyvault_token)
+    # Normalize the returned signature to canonical base64url for the JWT segment.
     signature_bytes = b64url_decode(signature_from_az)
     if not signature_bytes:
         fail("Azure Key Vault returned an empty signature.")
