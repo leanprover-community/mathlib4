@@ -33,11 +33,11 @@ open CategoryTheory Limits
 
 set_option backward.isDefEq.respectTransparency false in
 instance [Small.{v} R] [IsNoetherianRing R] (S : Submonoid R) :
-    (ModuleCat.localizedModule_functor.{v} S).PreservesInjectiveObjects where
+    (ModuleCat.localizedModuleFunctor.{v} S).PreservesInjectiveObjects where
   injective_obj X {inj} := by
     let _ : Small.{v, u} (Localization S) := small_of_surjective Localization.mkHom_surjective
     rw [← Module.injective_iff_injective_object] at inj ⊢
-    simpa [ModuleCat.localizedModule_functor] using
+    simpa [ModuleCat.localizedModuleFunctor] using
       Module.injective_of_isLocalizedModule S (X.localizedModuleMkLinearMap S)
 
 lemma injectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoetherianRing R]
@@ -82,14 +82,14 @@ lemma injectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoeth
         (S.X₂.localizedModuleMkLinearMap p.1.primeCompl)
         (S.X₃.localizedModuleMkLinearMap p.1.primeCompl)
         _ _ S_exact'
-      let Sp (p : PrimeSpectrum R) := S.map (ModuleCat.localizedModule_functor p.1.primeCompl)
+      let Sp (p : PrimeSpectrum R) := S.map (ModuleCat.localizedModuleFunctor p.1.primeCompl)
       have Sp_exact (p : PrimeSpectrum R) : (Sp p).ShortExact :=
-        S_exact.map_of_exact (ModuleCat.localizedModule_functor p.asIdeal.primeCompl)
+        S_exact.map_of_exact (ModuleCat.localizedModuleFunctor p.asIdeal.primeCompl)
       have ih' := ih S.X₃
       simp only [HasInjectiveDimensionLE] at ih' ⊢
       rw [← S_exact.hasInjectiveDimensionLT_X₃_iff n inj, ih']
       have injp (p : PrimeSpectrum R) : Injective (Sp p).X₂ :=
-        (ModuleCat.localizedModule_functor.{v} p.1.primeCompl).injective_obj _
+        (ModuleCat.localizedModuleFunctor.{v} p.1.primeCompl).injective_obj _
       exact (forall_congr' (fun p ↦ (Sp_exact p).hasInjectiveDimensionLT_X₃_iff n (injp p)))
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
@@ -147,14 +147,14 @@ lemma injectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNoe
         (S.X₂.localizedModuleMkLinearMap p.1.primeCompl)
         (S.X₃.localizedModuleMkLinearMap p.1.primeCompl)
         _ _ S_exact'
-      let Sp (p : MaximalSpectrum R) := S.map (ModuleCat.localizedModule_functor p.1.primeCompl)
+      let Sp (p : MaximalSpectrum R) := S.map (ModuleCat.localizedModuleFunctor p.1.primeCompl)
       have Sp_exact (p : MaximalSpectrum R) : (Sp p).ShortExact :=
-        S_exact.map_of_exact (ModuleCat.localizedModule_functor p.asIdeal.primeCompl)
+        S_exact.map_of_exact (ModuleCat.localizedModuleFunctor p.asIdeal.primeCompl)
       have ih' := ih S.X₃
       simp only [HasInjectiveDimensionLE] at ih' ⊢
       rw [← S_exact.hasInjectiveDimensionLT_X₃_iff n inj, ih']
       have injp (p : MaximalSpectrum R) : Injective (Sp p).X₂ :=
-        (ModuleCat.localizedModule_functor.{v} p.1.primeCompl).injective_obj _
+        (ModuleCat.localizedModuleFunctor.{v} p.1.primeCompl).injective_obj _
       exact (forall_congr' (fun p ↦ (Sp_exact p).hasInjectiveDimensionLT_X₃_iff n (injp p)))
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
@@ -198,11 +198,11 @@ lemma injectiveDimension_le_injectiveDimension_of_isLocalizedModule [Small.{v, u
         (T.X₂.localizedModuleMkLinearMap S)
         (T.X₃.localizedModuleMkLinearMap S)
         _ _ T_exact'
-      let TS := T.map (ModuleCat.localizedModule_functor S)
+      let TS := T.map (ModuleCat.localizedModuleFunctor S)
       have TS_exact : TS.ShortExact :=
-        T_exact.map_of_exact (ModuleCat.localizedModule_functor S)
+        T_exact.map_of_exact (ModuleCat.localizedModuleFunctor S)
       let _ : Injective TS.X₂ :=
-        (ModuleCat.localizedModule_functor.{v} S).injective_obj _
+        (ModuleCat.localizedModuleFunctor.{v} S).injective_obj _
       intro h
       exact (TS_exact.hasInjectiveDimensionLT_X₃_iff n ‹_›).mp
         (ih T.X₃ ((T_exact.hasInjectiveDimensionLT_X₃_iff n ‹_›).mpr h))
