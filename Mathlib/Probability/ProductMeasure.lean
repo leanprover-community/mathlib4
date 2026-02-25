@@ -630,7 +630,7 @@ noncomputable def independent_set_measure : Measure (Set ι) :=
   (infinitePi μ).comap (fun s i ↦ i ∈ s)
 
 theorem independent_set_measure_eq_map :
-    independent_set_measure μ = (infinitePi μ).map (fun p ↦ {i | p i}) :=
+    independent_set_measure μ = (infinitePi μ).map setOf :=
   MeasurableEquiv.setOf.comap_symm
 
 instance [∀ i, IsProbabilityMeasure (μ i)] : IsProbabilityMeasure (independent_set_measure μ) := by
