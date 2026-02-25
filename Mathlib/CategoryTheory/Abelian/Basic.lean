@@ -831,43 +831,59 @@ end CategoryTheory.NonPreadditiveAbelian
 
 namespace CategoryTheory.Abelian
 
+variable {C : Type*} [Category C] [Preadditive C]
+
+/-- A preadditive category `C` with finite products is abelian when this
+structure is nonempty for any morphism `f` in `C`, see `Abelian.mk'`. -/
+structure AbelianStruct {X Y : C} (f : X ⟶ Y) where
+  kernelFork : KernelFork f
+  isLimitKernelFork : IsLimit kernelFork
+  cokernelCofork : CokernelCofork f
+  isColimitCokernelCofork : IsColimit cokernelCofork
+  image : C
+  imageπ : X ⟶ image
+  ι_imageπ : kernelFork.ι ≫ imageπ = 0 := by cat_disch
+  imageIsCokernel : IsColimit (CokernelCofork.ofπ _ ι_imageπ)
+  imageι : image ⟶ Y
+  imageι_π : imageι ≫ cokernelCofork.π = 0 := by cat_disch
+  imageIsKernel : IsLimit (KernelFork.ofι _ imageι_π)
+  fac : imageπ ≫ imageι = f := by cat_disch
+
+namespace AbelianStruct
+
+attribute [reassoc (attr := simp)] ι_imageπ imageι_π fac
+
+end AbelianStruct
+
 /-- Constructor for abelian categories. We assume that the category `C` is
 preadditive, has finite products, and that any morphism `f : X ⟶ Y` has
 a kernel `i : K ⟶ X`, a cokernel `p : Y ⟶ Q` such that `f` factors as `f = π ≫ ι`
-where `π : X ⟶ I` is a cokernel of `i` and `ι : I ⟶ Y` is a kernel of `p`. -/
-noncomputable def mk' {C : Type*} [Category C] [Preadditive C] [HasFiniteProducts C]
-    (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
-      ∃ (K : C) (i : K ⟶ X) (wi : i ≫ f = 0) (_hi : IsLimit (KernelFork.ofι _ wi))
-        (Q : C) (p : Y ⟶ Q) (wp : f ≫ p = 0) (_hp : IsColimit (CokernelCofork.ofπ _ wp))
-        (I : C) (π : X ⟶ I) (wπ : i ≫ π = 0) (_hπ : IsColimit (CokernelCofork.ofπ _ wπ))
-        (ι : I ⟶ Y) (wι : ι ≫ p = 0) (_hι : IsLimit (KernelFork.ofι _ wι)), f = π ≫ ι) :
+where `π : X ⟶ I` is a cokernel of `i` and `ι : I ⟶ Y` is a kernel of `p`.
+This assumption is packaged in a structure `AbelianStruct f`. -/
+noncomputable def mk' [HasFiniteProducts C]
+    (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty (AbelianStruct f)) :
     Abelian C where
-  has_kernels := ⟨fun {X Y} f => by
-    obtain ⟨K, i, wi, hi, _⟩ := h f
-    exact ⟨_, hi⟩⟩
-  has_cokernels := ⟨fun {X Y} f => by
-    obtain ⟨_, _, _, _, Q, p, wp, hp, _⟩ := h f
-    exact ⟨_, hp⟩⟩
-  normalMonoOfMono {X Y} f _ := by
-    obtain ⟨K, i, wi, _, Q, p, wp, _, I, π, wπ, hπ, ι, wι, hι, fac⟩ := h f
-    exact
-     ⟨{ Z := Q
-        g := p
-        w := by rw [fac, Category.assoc, wι, comp_zero]
-        isLimit := by
-          have : IsIso π := CokernelCofork.IsColimit.isIso_π _ hπ (by
-            rw [← cancel_mono f, zero_comp, wi])
-          exact IsLimit.ofIsoLimit hι (Fork.ext (by exact asIso π)
-            (by exact fac.symm)).symm }⟩
-  normalEpiOfEpi {X Y} f _ := by
-    obtain ⟨K, i, wi, _, Q, p, wp, _, I, π, wπ, hπ, ι, wι, hι, fac⟩ := h f
-    exact
-     ⟨{ W := K
-        g := i
-        w := by rw [fac, reassoc_of% wπ, zero_comp]
-        isColimit := by
-          have : IsIso ι := KernelFork.IsLimit.isIso_ι _ hι (by
-            rw [← cancel_epi f, comp_zero, wp])
-          exact IsColimit.ofIsoColimit hπ (Cofork.ext (asIso ι) fac.symm) }⟩
+  has_kernels := ⟨fun f ↦ ⟨_, (h f).some.isLimitKernelFork⟩⟩
+  has_cokernels := ⟨fun f ↦ ⟨_, (h f).some.isColimitCokernelCofork⟩⟩
+  normalMonoOfMono f _ := by
+    obtain ⟨hf⟩ := h f
+    exact ⟨{
+      Z := hf.cokernelCofork.pt
+      g := hf.cokernelCofork.π
+      w := by simp
+      isLimit :=
+        have : IsIso hf.imageπ :=
+          CokernelCofork.IsColimit.isIso_π _ hf.imageIsCokernel (by simp [← cancel_mono f])
+        IsLimit.ofIsoLimit hf.imageIsKernel (Fork.ext (asIso hf.imageπ)).symm }⟩
+  normalEpiOfEpi f _ := by
+    obtain ⟨hf⟩ := h f
+    exact ⟨{
+      W := hf.kernelFork.pt
+      g := hf.kernelFork.ι
+      w := by simp
+      isColimit :=
+        have : IsIso hf.imageι :=
+          KernelFork.IsLimit.isIso_ι _ hf.imageIsKernel (by simp [← cancel_epi f])
+        IsColimit.ofIsoColimit hf.imageIsCokernel (Cofork.ext (asIso hf.imageι)) }⟩
 
 end CategoryTheory.Abelian
