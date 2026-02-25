@@ -18,7 +18,10 @@ groups with zeros.
 public section
 
 namespace List
-variable {R : Type*} [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneClass R] [PosMulMono R]
+variable {R : Type*} [CommMonoidWithZero R]
+
+section Preorder
+variable [Preorder R] [ZeroLEOneClass R] [PosMulMono R]
 
 lemma prod_nonneg {s : List R} (h : ∀ a ∈ s, 0 ≤ a) : 0 ≤ s.prod := by
   induction s with
@@ -27,6 +30,17 @@ lemma prod_nonneg {s : List R} (h : ∀ a ∈ s, 0 ≤ a) : 0 ≤ s.prod := by
     simp only [prod_cons]
     simp only [mem_cons, forall_eq_or_imp] at h
     exact mul_nonneg h.1 (hind h.2)
+
+lemma Forall₂.prod_le_prod₀ {l₁ l₂ : List R} (h : Forall₂ (· ≤ ·) l₁ l₂)
+    (h0 : ∀ a ∈ l₁, 0 ≤ a) :
+    l₁.prod ≤ l₂.prod := by
+  induction h with
+  | nil => rfl
+  | cons hab _ ih =>
+    simp only [prod_cons, forall_mem_cons] at h0 ⊢
+    have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
+    exact (mul_le_mul_of_nonneg_right hab (prod_nonneg h0.2)).trans
+      (mul_le_mul_of_nonneg_left (ih h0.2) (h0.1.trans hab))
 
 lemma one_le_prod₀ {s : List R} (h : ∀ a ∈ s, 1 ≤ a) : 1 ≤ s.prod := by
   induction s with
@@ -62,8 +76,10 @@ theorem prod_le_pow_length₀ {r : R} {t : List R} (hf0 : ∀ x ∈ t, 0 ≤ x) 
   convert prod_map_le_pow_length₀ (f := @id R) hf0 hf
   simp
 
-omit [PosMulMono R]
-variable [PosMulStrictMono R] [NeZero (1 : R)]
+end Preorder
+
+section PartialOrder
+variable [PartialOrder R] [ZeroLEOneClass R] [PosMulStrictMono R] [NeZero (1 : R)]
 
 lemma prod_pos {s : List R} (h : ∀ a ∈ s, 0 < a) : 0 < s.prod := by
   induction s with
@@ -97,4 +113,5 @@ theorem prod_map_lt_prod_map {ι : Type*} {s : List ι} (hs : s ≠ [])
       grind
     · apply le_of_lt ((h0 _ _).trans (h _ _)) <;> simp
 
+end PartialOrder
 end List
