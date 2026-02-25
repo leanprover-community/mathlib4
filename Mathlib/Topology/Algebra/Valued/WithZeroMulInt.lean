@@ -34,7 +34,7 @@ lemma tendsto_zero_pow_of_v_lt_one [MulArchimedean Γ₀] [Valued R Γ₀] {x : 
   obtain ⟨n, hn⟩ := exists_pow_lt₀ hx y
   refine ⟨n, fun m hm ↦ ?_⟩
   refine hn.trans_le' ?_
-  exact pow_le_pow_right_of_le_one' hx.le hm
+  exact pow_le_pow_right_of_le_one hx.le hm
 
 /-- In a `ℤᵐ⁰`-valued ring, powers of `x` tend to zero if `v x ≤ exp (-1)`. -/
 lemma tendsto_zero_pow_of_le_exp_neg_one [Valued R ℤᵐ⁰] {x : R} (hx : v x ≤ exp (-1)) :

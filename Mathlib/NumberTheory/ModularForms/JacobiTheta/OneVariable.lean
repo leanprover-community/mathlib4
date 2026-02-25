@@ -66,7 +66,8 @@ theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
     rw [this, exp_mul, ← Int.cast_pow, rpow_intCast, hm, zpow_natCast]
   · have : n ^ 2 = (n.natAbs ^ 2 :) := by rw [Nat.cast_pow, Int.natAbs_sq]
     rw [this, zpow_natCast]
-    exact pow_le_pow_of_le_one (exp_pos _).le h.le ((sq n.natAbs).symm ▸ n.natAbs.le_mul_self)
+    exact pow_le_pow_right_of_le_one₀ (exp_pos _).le h.le
+      ((sq n.natAbs).symm ▸ n.natAbs.le_mul_self)
 
 theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     HasSum (fun n : ℕ => cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)) ((jacobiTheta τ - 1) / 2) := by
