@@ -288,6 +288,11 @@ and any element less than one of its members and satisfying `P` is also a member
 def IsRelUpperSet {α : Type*} [LE α] (s : Set α) (P : α → Prop) : Prop :=
   ∀ ⦃a : α⦄, a ∈ s → P a ∧ ∀ ⦃b : α⦄, a ≤ b → P b → b ∈ s
 
+@[simp]
+lemma isRelUpperSet_true_eq_isUpperSet {α : Type*} [LE α] (s : Set α) :
+    IsRelUpperSet s (fun _ ↦ True) ↔ IsUpperSet s := by
+  simp [IsUpperSet, IsRelUpperSet]; grind
+
 @[inherit_doc IsRelUpperSet]
 structure RelUpperSet {α : Type*} [LE α] (P : α → Prop) where
   /-- The carrier of a `RelUpperSet`. -/
