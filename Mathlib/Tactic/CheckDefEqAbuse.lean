@@ -101,6 +101,54 @@ partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
   | .withNamingContext _ m => findLeafFailures m
   | _ => return #[]
 
+/-- Within a synthesis trace, find failing instance application attempts
+(`apply @Instance to Goal`) and their `isDefEq` root causes.
+
+Returns an array of `(instanceApp, isDefEqLeafFailures)` pairs. Only reports
+applications that have isDefEq leaf failures. -/
+partial def findSynthAppFailures (msg : MessageData) :
+    BaseIO (Array (MessageData × Array MessageData)) := do
+  match msg with
+  | .trace td header children =>
+    if td.cls == `Meta.isDefEq.onFailure then return #[]
+    if td.cls == `Meta.synthInstance then
+      let headerStr ← header.toString
+      if hasSubstr headerStr "❌" && hasSubstr headerStr "apply" then
+        -- Instance application that failed. Find isDefEq leaf failures.
+        let mut failures := #[]
+        for child in children do
+          failures := failures.append (← findLeafFailures child)
+        if failures.isEmpty then
+          -- No isDefEq failures here; maybe a sub-synthesis failed. Recurse.
+          let mut results := #[]
+          for child in children do
+            results := results.append (← findSynthAppFailures child)
+          return results
+        else
+          return #[(header, failures)]
+      else if hasSubstr headerStr "❌" then
+        -- Other failing synthInstance node, recurse into children
+        let mut results := #[]
+        for child in children do
+          results := results.append (← findSynthAppFailures child)
+        return results
+      else
+        -- Successful synthesis can still contain failed sub-attempts. Recurse.
+        let mut results := #[]
+        for child in children do
+          results := results.append (← findSynthAppFailures child)
+        return results
+    -- Recurse through non-synthInstance children
+    let mut results := #[]
+    for child in children do
+      results := results.append (← findSynthAppFailures child)
+    return results
+  | .compose a b =>
+    return (← findSynthAppFailures a) ++ (← findSynthAppFailures b)
+  | .nest _ m | .group m | .tagged _ m | .withContext _ m | .withNamingContext _ m =>
+    findSynthAppFailures m
+  | _ => return #[]
+
 /-- Walk a combined `Meta.synthInstance` + `Meta.isDefEq` trace tree to find synthesis failures
 and their `isDefEq` root causes.
 
@@ -108,9 +156,8 @@ Returns an array of `(instanceApp, isDefEqLeafFailures)` pairs where:
 - `instanceApp` is the header of a failing `apply @Instance to Goal` node
 - `isDefEqLeafFailures` are the deepest `isDefEq` failures within that application
 
-Only reports instance applications that have `isDefEq` leaf failures (filtering out
-synthesis attempts that fail for structural reasons unrelated to transparency).
--/
+Only enters failing top-level synthesis nodes (to avoid reporting failed sub-attempts
+that were recovered from within a successful synthesis). -/
 partial def findSynthFailures (msg : MessageData) :
     BaseIO (Array (MessageData × Array MessageData)) := do
   match msg with
@@ -139,47 +186,43 @@ partial def findSynthFailures (msg : MessageData) :
   | .nest _ m | .group m | .tagged _ m | .withContext _ m | .withNamingContext _ m =>
     findSynthFailures m
   | _ => return #[]
-where
-  /-- Within a synthesis failure, find instance application attempts
-  (`apply @Instance to Goal`) and their `isDefEq` root causes. -/
-  findSynthAppFailures (msg : MessageData) :
-      BaseIO (Array (MessageData × Array MessageData)) := do
-    match msg with
-    | .trace td header children =>
-      if td.cls == `Meta.isDefEq.onFailure then return #[]
-      if td.cls == `Meta.synthInstance then
-        let headerStr ← header.toString
-        if hasSubstr headerStr "❌" && hasSubstr headerStr "apply" then
-          -- Instance application that failed. Find isDefEq leaf failures.
-          let mut failures := #[]
-          for child in children do
-            failures := failures.append (← findLeafFailures child)
-          if failures.isEmpty then
-            -- No isDefEq failures here; maybe a sub-synthesis failed. Recurse.
-            let mut results := #[]
-            for child in children do
-              results := results.append (← findSynthAppFailures child)
-            return results
-          else
-            return #[(header, failures)]
-        else if hasSubstr headerStr "❌" then
-          -- Other failing node, recurse
-          let mut results := #[]
-          for child in children do
-            results := results.append (← findSynthAppFailures child)
-          return results
-        else
-          return #[]
-      -- Recurse through non-synthInstance children
-      let mut results := #[]
-      for child in children do
-        results := results.append (← findSynthAppFailures child)
-      return results
-    | .compose a b =>
-      return (← findSynthAppFailures a) ++ (← findSynthAppFailures b)
-    | .nest _ m | .group m | .tagged _ m | .withContext _ m | .withNamingContext _ m =>
-      findSynthAppFailures m
-    | _ => return #[]
+
+/-- Walk a synthesis trace tree and collect the instance names from successful
+`apply @Instance to Goal` nodes. Returns a set of instance name strings
+(the part between "apply " and " to "). -/
+partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet String) := do
+  match msg with
+  | .trace td header children =>
+    if td.cls == `Meta.synthInstance then
+      let headerStr ← header.toString
+      if hasSubstr headerStr "apply" && !hasSubstr headerStr "❌" then
+        -- Successful application. Extract instance name.
+        let parts : List String := headerStr.splitOn "apply "
+        let instName := match parts with
+          | [_, rest] => match (rest.splitOn " to ") with
+            | name :: _ => name.trim
+            | _ => headerStr
+          | _ => headerStr
+        let mut result : Std.HashSet String := {}
+        result := result.insert instName
+        -- Also recurse into children for nested successes
+        for child in children do
+          result := result.union (← findSynthSuccessApps child)
+        return result
+      else
+        let mut result : Std.HashSet String := {}
+        for child in children do
+          result := result.union (← findSynthSuccessApps child)
+        return result
+    let mut result : Std.HashSet String := {}
+    for child in children do
+      result := result.union (← findSynthSuccessApps child)
+    return result
+  | .compose a b =>
+    return (← findSynthSuccessApps a).union (← findSynthSuccessApps b)
+  | .nest _ m | .group m | .tagged _ m | .withContext _ m | .withNamingContext _ m =>
+    findSynthSuccessApps m
+  | _ => return {}
 
 /-- Deduplicate an array of `MessageData` by rendering to string. -/
 private def dedup (failures : Array MessageData) : BaseIO (Array MessageData) := do
@@ -324,32 +367,56 @@ elab_rules : command
           `backward.isDefEq.respectTransparency` setting."
         elabCommand cmd
       | .ok () =>
-        -- Strict fails, permissive works. Trace to find root causes.
-        -- Run with strict + both synthInstance and isDefEq tracing.
+        -- Strict fails, permissive works. Trace both to find root causes.
         -- Traces end up in the message log after elabCommand, not in TraceState.
+        let traceOpts (strict : Bool) (scope : Scope) : Scope :=
+          { scope with opts := (scope.opts.setBool `backward.isDefEq.respectTransparency strict)
+              |>.setBool `trace.Meta.isDefEq true
+              |>.setBool `trace.Meta.synthInstance true }
+        -- Run with strict + tracing
         let savedMsgCount := saved.messages.toList.length
         _ ← try
-          withScope (fun scope =>
-            { scope with opts := (scope.opts.setBool `backward.isDefEq.respectTransparency true)
-                |>.setBool `trace.Meta.isDefEq true
-                |>.setBool `trace.Meta.synthInstance true }) do
-            elabCommand cmd
-            pure ()
+          withScope (traceOpts true) do elabCommand cmd; pure ()
         catch
           | .internal id ref => throw (.internal id ref)
           | _ => pure ()
-        -- Extract trace data from new messages
-        let allMsgs := (← get).messages.toList
-        let newMsgs := allMsgs.drop savedMsgCount
+        let strictMsgs := ((← get).messages.toList).drop savedMsgCount
         set saved
-        -- Find synthesis failures with isDefEq root causes
+        -- Run with permissive + tracing to identify failures that happen regardless
+        let savedMsgCount2 := saved.messages.toList.length
+        _ ← try
+          withScope (traceOpts false) do elabCommand cmd; pure ()
+        catch
+          | .internal id ref => throw (.internal id ref)
+          | _ => pure ()
+        let permissiveMsgs := ((← get).messages.toList).drop savedMsgCount2
+        set saved
+        -- Collect instance names that SUCCEED with permissive setting.
+        -- Only strict-failing applications that succeed permissively are due
+        -- to the transparency change.
+        let mut permissiveSuccessApps : Std.HashSet String := {}
+        for m in permissiveMsgs do
+          permissiveSuccessApps := permissiveSuccessApps.union
+            (← findSynthSuccessApps m.data)
+        -- Find synthesis failures with isDefEq root causes (strict only)
         let mut synthResults : Array (MessageData × Array MessageData) := #[]
-        for m in newMsgs do
+        for m in strictMsgs do
           synthResults := synthResults.append (← findSynthFailures m.data)
-        if synthResults.isEmpty then
+        -- Filter to only applications that succeed with permissive transparency.
+        let filteredResults ← synthResults.filterM fun (app, _) => do
+          let appStr ← app.toString
+          -- Extract instance name between "apply " and " to "
+          let parts : List String := appStr.splitOn "apply "
+          let instName := match parts with
+            | [_, rest] => match (rest.splitOn " to ") with
+              | name :: _ => name.trim
+              | _ => appStr
+            | _ => appStr
+          return permissiveSuccessApps.contains instName
+        if filteredResults.isEmpty then
           -- Fall back to flat isDefEq leaf failures
           let mut leafFailures : Array MessageData := #[]
-          for m in newMsgs do
+          for m in strictMsgs do
             leafFailures := leafFailures.append (← findLeafFailures m.data)
           let uniqueFailures ← dedup leafFailures
           if uniqueFailures.isEmpty then
@@ -367,7 +434,7 @@ elab_rules : command
         else
           -- Format structured report: group by instance application
           let mut entries : Array MessageData := #[]
-          for (app, failures) in synthResults do
+          for (app, failures) in filteredResults do
             let uniqueFailures ← dedup failures
             let failureList := MessageData.joinSep
               (uniqueFailures.toList.map fun f => m!"    {f}") "\n"
