@@ -257,7 +257,6 @@ noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
   refine IsColimit.ofIsoColimit (AbelianSubcategory.isColimitCokernelCofork hι hT hT') ?_
   exact Cofork.ext (Iso.refl _) (ι.map_injective (by simp))
 
-
 variable (hA : admissibleMorphism ι = ⊤)
 
 include hι hA in
