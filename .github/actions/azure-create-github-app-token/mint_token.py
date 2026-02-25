@@ -24,7 +24,6 @@ class GithubHttpError(Exception):
     def __init__(self, method: str, url: str, status: int, detail: str) -> None:
         super().__init__(f"GitHub API {method} {url} failed: HTTP {status}\n{detail}")
         self.status = status
-        self.detail = detail
 
 
 def fail(message: str) -> None:
@@ -56,6 +55,27 @@ def parse_repositories(raw: str) -> list[str]:
         if repo:
             repos.append(repo)
     return repos
+
+
+def read_required_env(name: str, label: str) -> str:
+    """Read and validate a required action input from the environment."""
+
+    value = os.environ.get(name, "").strip()
+    if not value:
+        fail(f"{label} is required.")
+    return value
+
+
+def parse_expiration_seconds(raw: str) -> int:
+    """Parse and validate JWT expiration seconds."""
+
+    try:
+        expiration_seconds = int(raw)
+    except ValueError:
+        fail(f"jwt-expiration-seconds must be an integer, got: {raw}")
+    if expiration_seconds <= 0 or expiration_seconds > 600:
+        fail("jwt-expiration-seconds must be between 1 and 600.")
+    return expiration_seconds
 
 
 def run_az_key_sign(vault_name: str, key_name: str, key_version: str, digest_b64: str) -> str:
@@ -158,48 +178,14 @@ def write_output(name: str, value: str) -> None:
         file.write(f"{name}={value}\n")
 
 
-def fail_with_jwt_decode_guidance(err: GithubHttpError, app_id: str, vault_name: str, key_name: str, key_version: str) -> None:
-    """Provide actionable hints when GitHub rejects the app JWT."""
-
-    if err.status == 401 and "could not be decoded" in err.detail.lower():
-        version_text = key_version if key_version else "<latest>"
-        fail(
-            f"{err}\n\n"
-            "GitHub rejected the app JWT. Common causes:\n"
-            "1) app-id does not match the GitHub App that owns this key.\n"
-            "2) Key Vault key/version is not the GitHub App private key currently registered in GitHub.\n"
-            "3) The selected key version is wrong (or omitted and latest is not the expected version).\n"
-            "4) The Key Vault key is not RSA or does not represent the imported GitHub App PEM key.\n\n"
-            f"Current inputs: app-id={app_id}, vault={vault_name}, key={key_name}, key-version={version_text}"
-        )
-    fail(str(err))
-
-
-def main() -> None:
-    """Read inputs, mint token, and publish action outputs."""
-
-    app_id = os.environ.get("INPUT_APP_ID", "").strip()
-    vault_name = os.environ.get("INPUT_KEY_VAULT_NAME", "").strip()
-    key_name = os.environ.get("INPUT_KEY_NAME", "").strip()
-    key_version = os.environ.get("INPUT_KEY_VERSION", "").strip()
-    owner = os.environ.get("INPUT_OWNER", "").strip()
-    repositories_raw = os.environ.get("INPUT_REPOSITORIES", "")
-    api_url = os.environ.get("INPUT_GITHUB_API_URL", "https://api.github.com").strip()
-    expiration_raw = os.environ.get("INPUT_JWT_EXPIRATION_SECONDS", "540").strip()
-
-    if not app_id:
-        fail("app-id is required.")
-    if not vault_name:
-        fail("key-vault-name is required.")
-    if not key_name:
-        fail("key-name is required.")
-
-    try:
-        expiration_seconds = int(expiration_raw)
-    except ValueError:
-        fail(f"jwt-expiration-seconds must be an integer, got: {expiration_raw}")
-    if expiration_seconds <= 0 or expiration_seconds > 600:
-        fail("jwt-expiration-seconds must be between 1 and 600.")
+def build_app_jwt(
+    app_id: str,
+    vault_name: str,
+    key_name: str,
+    key_version: str,
+    expiration_seconds: int,
+) -> str:
+    """Build and sign a GitHub App JWT using Azure Key Vault."""
 
     iat = int(time.time()) - 60
     exp = iat + expiration_seconds
@@ -217,11 +203,21 @@ def main() -> None:
         fail("Azure Key Vault returned an empty signature.")
     signature_b64url = b64url_encode(signature_bytes)
 
-    app_jwt = f"{encoded_header}.{encoded_payload}.{signature_b64url}"
+    return f"{encoded_header}.{encoded_payload}.{signature_b64url}"
+
+
+def mint_installation_token(
+    api_url: str,
+    app_jwt: str,
+    owner: str,
+    repositories_raw: str,
+) -> tuple[str, int]:
+    """Resolve installation id and mint an installation access token."""
+
     try:
         installation_id = resolve_installation_id(api_url, app_jwt, owner)
     except GithubHttpError as err:
-        fail_with_jwt_decode_guidance(err, app_id, vault_name, key_name, key_version)
+        fail(str(err))
 
     token_payload: dict = {}
     repositories = parse_repositories(repositories_raw)
@@ -237,10 +233,28 @@ def main() -> None:
             token_payload,
         )
     except GithubHttpError as err:
-        fail_with_jwt_decode_guidance(err, app_id, vault_name, key_name, key_version)
+        fail(str(err))
+
     token = token_response.get("token")
     if not token:
         fail("GitHub API response did not include a token.")
+    return token, installation_id
+
+
+def main() -> None:
+    """Read inputs, mint token, and publish action outputs."""
+
+    app_id = read_required_env("INPUT_APP_ID", "app-id")
+    vault_name = read_required_env("INPUT_KEY_VAULT_NAME", "key-vault-name")
+    key_name = read_required_env("INPUT_KEY_NAME", "key-name")
+    key_version = os.environ.get("INPUT_KEY_VERSION", "").strip()
+    owner = os.environ.get("INPUT_OWNER", "").strip()
+    repositories_raw = os.environ.get("INPUT_REPOSITORIES", "")
+    api_url = os.environ.get("INPUT_GITHUB_API_URL", "https://api.github.com").strip()
+    expiration_seconds = parse_expiration_seconds(os.environ.get("INPUT_JWT_EXPIRATION_SECONDS", "540").strip())
+
+    app_jwt = build_app_jwt(app_id, vault_name, key_name, key_version, expiration_seconds)
+    token, installation_id = mint_installation_token(api_url, app_jwt, owner, repositories_raw)
 
     print(f"::add-mask::{token}")   # Tell GitHub to mask this secret
     write_output("token", token)
