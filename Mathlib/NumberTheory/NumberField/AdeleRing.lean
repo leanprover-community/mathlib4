@@ -110,12 +110,9 @@ theorem hasProd_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUn
   simp only [SetLike.mem_coe, Filter.eventually_cofinite] at this
   let S := {v : HeightOneSpectrum (𝓞 K) | 1 < Valued.v (x v)}
   let S₁ := {v : HeightOneSpectrum (𝓞 K) | Valued.v (x v) = 1}
-  let hSf : S.Finite := by
-    simpa [HeightOneSpectrum.mem_adicCompletionIntegers] using this
-  have : Fintype S := by
-    apply Set.Finite.fintype hSf
-  have hS : HasProd (fun v : S ↦ ‖x v‖) (∏ v : S, ‖x v‖) := by
-    exact hasProd_fintype _
+  let hSf : S.Finite := by simpa [HeightOneSpectrum.mem_adicCompletionIntegers] using this
+  have : Fintype S := Set.Finite.fintype hSf
+  have hS : HasProd (fun v : S ↦ ‖x v‖) (∏ v : S, ‖x v‖) := hasProd_fintype _
   have hS₁ : HasProd (fun v : S₁ ↦ ‖x v‖) 1 := by
     have : (fun v : S₁ ↦ ‖x v‖) = 1 := by
       ext v
