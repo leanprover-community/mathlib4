@@ -254,6 +254,8 @@ def conjCAE : ℂ ≃A[ℝ] ℂ := { conjAe, conjLIE.toContinuousLinearEquiv wit
 This is an abbreviation for `conjCAE` coerced to a continuous linear map. -/
 abbrev conjCLE : ℂ ≃L[ℝ] ℂ := conjCAE
 
+@[simp] lemma conjLIE_toCLE : conjLIE = conjCLE := rfl
+
 @[simp]
 theorem conjCAE_toAlgEquiv : (conjCAE : ℂ ≃ₐ[ℝ] ℂ) = conjAe :=
   rfl
