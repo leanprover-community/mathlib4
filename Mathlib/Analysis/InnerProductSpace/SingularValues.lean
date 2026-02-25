@@ -35,13 +35,6 @@ theorem isSymmetric_self_comp_adjoint :
 theorem isSymmetric_adjoint_comp_self :
     (adjoint T ∘ₗ T).IsSymmetric := by sorry
 
--- TODO: Rewrite statement using one of the above
-theorem eigenvalues_adjoint_comp_self_nonneg
-  {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
-  : 0 ≤ (LinearMap.isPositive_adjoint_comp_self T).isSymmetric.eigenvalues hn i := by
-  apply LinearMap.IsPositive.nonneg_eigenvalues
-  exact T.isPositive_adjoint_comp_self
-
 /--
 7.64(b) in [axler2024].
 -/
@@ -67,7 +60,7 @@ lemma IsSymmetric.orthogonal_ker {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) : (
 /--
 7.64(c) in [axler2024].
 -/
-lemma range_adjoint_comp_self : range (adjoint T ∘ₗ T) = range (adjoint T) :=
+lemma range_adjoint_comp_self' : range (adjoint T ∘ₗ T) = range (adjoint T) :=
   calc
     range (adjoint T ∘ₗ T) = (ker (adjoint T ∘ₗ T))ᗮ :=
       T.isSymmetric_adjoint_comp_self.orthogonal_ker.symm
@@ -135,7 +128,7 @@ theorem singularValues_of_finrank_le {i : ℕ}
 
 theorem sq_singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
   : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn i := by
-  simp [T.singularValues_fin hn, T.eigenvalues_adjoint_comp_self_nonneg hn]
+  simp [T.singularValues_fin hn, T.isPositive_adjoint_comp_self.nonneg_eigenvalues hn i]
 
 theorem sq_singularValues_of_lt {n : ℕ} (hn : Module.finrank 𝕜 E = n) {i : ℕ} (hi : i < n)
   : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn ⟨i, hi⟩ := by
