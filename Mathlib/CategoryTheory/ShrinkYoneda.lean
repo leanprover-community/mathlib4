@@ -158,4 +158,16 @@ instance : (shrinkYoneda.{w} (C := C)).Faithful := (fullyFaithfulShrinkYoneda C)
 
 instance : (shrinkYoneda.{w} (C := C)).Full := (fullyFaithfulShrinkYoneda C).full
 
+/-- The functor `shrinkYoneda.{w}` followed by the evaluation
+at `Y : Cᵒᵖ` and `uliftFunctor.{v}` identifies to `coyoneda.obj Y` followed
+by `uliftFunctor.{w}`. -/
+noncomputable def shrinkYonedaCompEvaluationCompUliftFunctorIsoUliftFunctor (Y : Cᵒᵖ) :
+    shrinkYoneda.{w} ⋙ (evaluation Cᵒᵖ _).obj Y ⋙ uliftFunctor.{v} ≅
+      coyoneda.obj Y ⋙ uliftFunctor.{w} :=
+  NatIso.ofComponents (fun X ↦ (Equiv.ulift.trans
+    (shrinkYonedaObjObjEquiv.trans Equiv.ulift.symm)).toIso) (fun f ↦ by
+      ext ⟨g⟩
+      obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
+      simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm])
+
 end CategoryTheory

@@ -11,7 +11,7 @@ public import Mathlib.Topology.Sheaves.Sheaf
 /-!
 # The standard conservative families of points for the site attached to a topological space
 
-If `X` is a topological space, any `x : X` defined a point of the site
+If `X` is a topological space, any `x : X` defines a point of the site
 attached to `X`.
 
 ## TODO
@@ -66,5 +66,22 @@ lemma isConservative_pointsGrothendieckTopology :
 instance : HasEnoughPoints.{u} (grothendieckTopology X) where
   exists_objectProperty :=
     ⟨_, inferInstance, isConservative_pointsGrothendieckTopology X⟩
+
+instance (U : Opens X) (Φ : Point.{u} (grothendieckTopology X)) :
+    Subsingleton (Φ.fiber.obj U) :=
+  Φ.subsingleton_fiber_obj (homOfLE le_top) Limits.isTerminalTop
+
+instance : Quiver.IsThin (Point.{u} (grothendieckTopology X)) :=
+  fun _ _ ↦ ⟨fun _ _ ↦ by ext; subsingleton⟩
+
+/-- A point `x` of a topological space `X` specializes to `y` if and only iff
+there is a (unique) morphism between the corresponding points of the site
+`(Opens X, grothendieckTopology X)`. -/
+def pointGrothendieckTopologyHomEquiv {x y : X} :
+    (pointGrothendieckTopology x ⟶ pointGrothendieckTopology y) ≃ x ⤳ y where
+  toFun f := specializes_iff_forall_open.2 (fun U h₁ h₂ ↦ (f.hom.app ⟨U, h₁⟩ ⟨⟨h₂⟩⟩).down.down)
+  invFun s := { hom.app U hU := ⟨⟨specializes_iff_forall_open.1 s _ U.2 hU.down.down⟩⟩ }
+  left_inv _ := by subsingleton
+  right_inv _ := rfl
 
 end Opens
