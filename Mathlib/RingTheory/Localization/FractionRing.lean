@@ -587,6 +587,14 @@ instance unique [Subsingleton R] : Unique (FractionRing R) := inferInstance
 
 instance [Nontrivial R] : Nontrivial (FractionRing R) := inferInstance
 
+variable {R} in
+instance [DecidableEq R] : DecidableEq (FractionRing R) := by
+  intro x y
+  apply Localization.recOnSubsingleton₂ x y (r := fun x y ↦ Decidable (x = y))
+  intro a c b d
+  simp only [Localization.mk_eq_mk_iff, Localization.r_iff_of_le_nonZeroDivisors (le_refl _)]
+  infer_instance
+
 variable [IsDomain A]
 
 noncomputable instance field : Field (FractionRing A) := inferInstance
