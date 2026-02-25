@@ -176,7 +176,7 @@ lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen
       hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)] at hdvd
   · exact dvd_trans hζ.toInteger_sub_one_dvd_prime' ⟨x, by simp [hx]⟩
   · exact IsCoprime.intCast hcoprime
-  · simpa using by exact_mod_cast h
+  · simpa using mod_cast h
 
 namespace FermatLastTheoremForThreeGen
 
