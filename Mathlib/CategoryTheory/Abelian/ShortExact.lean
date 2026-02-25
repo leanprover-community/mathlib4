@@ -22,7 +22,7 @@ universe v₁ v₂ u₁ u₂
 
 noncomputable section
 
-open CategoryTheory Limits Preadditive
+open CategoryTheory Limits Preadditive Functor
 
 variable {C : Type u₁} [Category.{v₁} C] [Abelian C]
 variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
@@ -38,5 +38,7 @@ lemma map_shortExact_iff [F.Faithful] [F.ReflectsEpimorphisms] [F.ReflectsMonomo
     [PreservesFiniteColimits F] [PreservesFiniteLimits F] {S : ShortComplex C} :
     (S.map F).ShortExact ↔ S.ShortExact :=
   ⟨reflects_shortExact_of_faithful F, fun h ↦ ShortComplex.ShortExact.map_of_exact h F⟩
+
+end
 
 end CategoryTheory.ShortExact
