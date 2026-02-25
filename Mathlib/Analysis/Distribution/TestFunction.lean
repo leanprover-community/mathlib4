@@ -453,6 +453,23 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
     continuous_coinduced_dom]
 
+variable (𝕜) in
+/-- Reformulation of the universal property of the topology on `𝓓^{n}(Ω, F)`, in the form of a
+custom constructor for continuous linear maps `𝓓^{n}(Ω, F) →L[𝕜] V`, where `V` is an arbitrary
+locally convex topological vector space. -/
+@[simps]
+protected noncomputable def mkCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] [Module 𝕜 V]
+    [IsScalarTower ℝ 𝕜 V]
+    (toFun : 𝓓^{n}(Ω, F) → V)
+    (map_add : ∀ f g, toFun (f + g) = toFun f + toFun g)
+    (map_smul : ∀ c : 𝕜, ∀ f, toFun (c • f) = c • toFun f)
+    (cont : ∀ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
+      Continuous (toFun ∘ ofSupportedIn K_sub_Ω)) :
+    𝓓^{n}(Ω, F) →L[𝕜] V :=
+  letI Φ : 𝓓^{n}(Ω, F) →ₗ[𝕜] V := ⟨⟨toFun, map_add⟩, map_smul⟩
+  { toLinearMap := Φ
+    cont := show Continuous Φ by rwa [TestFunction.continuous_iff_continuous_comp] }
+
 end Topology
 
 section postcomp
