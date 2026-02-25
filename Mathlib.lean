@@ -1340,6 +1340,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
+public import Mathlib.AlgebraicGeometry.Morphisms.SmoothFiber
 public import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
 public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
@@ -1734,6 +1735,7 @@ public import Mathlib.Analysis.Complex.OperatorNorm
 public import Mathlib.Analysis.Complex.Order
 public import Mathlib.Analysis.Complex.Periodic
 public import Mathlib.Analysis.Complex.PhragmenLindelof
+public import Mathlib.Analysis.Complex.Poisson
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Analysis.Complex.Polynomial.GaussLucas
 public import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
@@ -4856,6 +4858,7 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
 public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Monoidal
 public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Symmetric
+public import Mathlib.LinearAlgebra.QuadraticForm.Radical
 public import Mathlib.LinearAlgebra.QuadraticForm.Real
 public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct.Isometries
