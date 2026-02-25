@@ -233,19 +233,10 @@ instance : InfSet (AbstractSimplicialComplex ι) where
   sInf s :=
     { faces := (⋂ K ∈ s, K.faces) ∩ { t | t.Nonempty }
       isRelLowerSet_faces := fun {_} ⟨hx, hn⟩ => by
-        constructor
-        · exact hn
-        · intro b hb_le hb_nonempty
-          constructor
-          · apply Set.mem_iInter₂.mpr
-            intro K hK
-            exact (K.isRelLowerSet_faces (Set.mem_iInter₂.mp hx K hK)).2 hb_le hb_nonempty
-          · exact hb_nonempty
+        grind [IsRelLowerSet.mem_of_le, PreAbstractSimplicialComplex.isRelLowerSet_faces,
+          mem_iInter]
       singleton_mem v := by
-        simp only [Set.mem_inter_iff, Set.mem_iInter, Set.mem_setOf_eq,
-          Finset.singleton_nonempty, and_true]
-        intro K hK
-        exact K.singleton_mem v }
+        grind [Set.mem_iInter, Finset.singleton_nonempty, singleton_mem]  }
 
 instance : Top (AbstractSimplicialComplex ι) where
   top :=
