@@ -323,8 +323,11 @@ theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoo
     Nat.eq_of_dvd_of_div_eq_one (Nat.gcd_dvd_left ..) (by grind [Rat.den_pos])) (by grind)
   rw_mod_cast [← hk₂, hn]; convert cos_pi_div_two using 2; push_cast; field_simp
 
-theorem abs_iterate_derivative_T_real_le (n k : ℕ) {x : ℝ} (hx : |x| ≤ 1) :
+theorem abs_iterate_derivative_T_real_le (n : ℤ) (k : ℕ) {x : ℝ} (hx : |x| ≤ 1) :
     |(derivative^[k] (T ℝ n)).eval x| ≤ (derivative^[k] (T ℝ n)).eval 1 := by
+  wlog hn : 0 ≤ n
+  · convert this (-n) k hx (by grind) using 1 <;> rw [T_neg]
+  lift n to ℕ using hn
   have := T_iterate_derivative_mem_span_T (R := ℝ) n k
   obtain ⟨f, hfsupp, hfderiv⟩ := Submodule.mem_span_set.mp this
   replace hfderiv : ∑ p ∈ f.support, f p • p = derivative^[k] (T ℝ n) := by rw [← hfderiv]; rfl
