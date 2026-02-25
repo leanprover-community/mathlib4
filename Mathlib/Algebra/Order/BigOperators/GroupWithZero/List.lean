@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Data.List.Forall2
 
 /-!
 # Big operators on a list in ordered groups with zeros
@@ -41,6 +42,26 @@ lemma Forall₂.prod_le_prod₀ {l₁ l₂ : List R} (h : Forall₂ (· ≤ ·) 
     have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
     exact (mul_le_mul_of_nonneg_right hab (prod_nonneg h0.2)).trans
       (mul_le_mul_of_nonneg_left (ih h0.2) (h0.1.trans hab))
+
+lemma Sublist.prod_le_prod₀ {l₁ l₂ : List R} (h : l₁ <+ l₂)
+    (h₁ : ∀ a ∈ l₂, (1 : R) ≤ a) : l₁.prod ≤ l₂.prod := by
+  have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
+  induction h with
+  | slnil => rfl
+  | cons a _ ih =>
+    simp only [prod_cons, forall_mem_cons] at h₁ ⊢
+    exact (ih h₁.2).trans
+      (le_mul_of_one_le_left (prod_nonneg fun x hx => zero_le_one.trans (h₁.2 x hx)) h₁.1)
+  | cons₂ a _ ih =>
+    simp only [prod_cons, forall_mem_cons] at h₁ ⊢
+    exact mul_le_mul_of_nonneg_left (ih h₁.2) (zero_le_one.trans h₁.1)
+
+lemma SublistForall₂.prod_le_prod₀ {l₁ l₂ : List R}
+    (h : SublistForall₂ (· ≤ ·) l₁ l₂) (h0 : ∀ a ∈ l₁, 0 ≤ a)
+    (h₁ : ∀ a ∈ l₂, (1 : R) ≤ a) :
+    l₁.prod ≤ l₂.prod :=
+  let ⟨_, hall, hsub⟩ := sublistForall₂_iff.1 h
+  (hall.prod_le_prod₀ h0).trans <| hsub.prod_le_prod₀ h₁
 
 lemma one_le_prod₀ {s : List R} (h : ∀ a ∈ s, 1 ≤ a) : 1 ≤ s.prod := by
   induction s with
