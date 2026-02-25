@@ -59,7 +59,7 @@ instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice 
   isLUB_csSup _ hn hb :=
     .of_image untrop_le_iff <| isLUB_csSup (hn.image _) (untrop_monotone.map_bddAbove hb)
   isGLB_csInf _ hn hb :=
-    .of_image untrop_le_iff <| isGLB_csInf (hn.image _) (untrop_monotone.map_bddBelow hb) }
+    .of_image untrop_le_iff <| isGLB_csInf (hn.image _) (untrop_monotone.map_bddBelow hb)
 
 instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (Tropical R) :=
   { instConditionallyCompleteLatticeTropical, Tropical.instLinearOrderTropical with
