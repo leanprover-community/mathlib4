@@ -42,12 +42,7 @@ theorem bernoulli_measure_eq_dirac (a : α) (p : I) :
     bernoulli_measure a a p = dirac a := by
   simp [bernoulli_measure_def, ← add_smul]
 
-theorem smul_measure' {f : α → β} {μ : Measure α} (a : α)
-    (h : AEMeasurable f (dirac a)) (c : ℝ) : AEMeasurable f (ENNReal.ofReal c • (dirac a)) := by
-  fun_prop
-
 @[simp]
--- improve `fun_prop`?
 theorem map_bernoulli_measure [MeasurableSingletonClass α] [MeasurableSingletonClass β]
     (a b : α) (f : α → β) (p : I) :
     (bernoulli_measure a b p).map f = bernoulli_measure (f a) (f b) p := by
