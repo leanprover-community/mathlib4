@@ -5524,6 +5524,7 @@ public import Mathlib.NumberTheory.SumPrimeReciprocals
 public import Mathlib.NumberTheory.SumTwoSquares
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAlg
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAlgSetup
+public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAnalytic
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainOrder
 public import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
 public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
