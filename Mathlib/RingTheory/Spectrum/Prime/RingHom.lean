@@ -147,7 +147,7 @@ theorem exists_maximal_notMem_range_sigmaToPi_of_infinite :
     smul_mem' := by
       rintro r _ ⟨x, rfl⟩
       refine ⟨.mk x.support fun i ↦ r i * x i, funext fun i ↦ show dite _ _ _ = _ from ?_⟩
-      simp_rw [DFinsupp.coeFnAddMonoidHom]
+      simp_rw +instances [DFinsupp.coeFnAddMonoidHom]
       refine dite_eq_left_iff.mpr fun h ↦ ?_
       rw [DFinsupp.notMem_support_iff.mp h, mul_zero] }
   have ⟨I, max, le⟩ := J.exists_le_maximal <| (Ideal.ne_top_iff_one _).mpr <| by
@@ -198,6 +198,7 @@ lemma sigmaToPi_bijective {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)
   obtain ⟨i, q, rfl⟩ := exists_comap_evalRingHom_eq q
   exact ⟨⟨i, q⟩, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma iUnion_range_comap_comp_evalRingHom
     {ι : Type*} {R : ι → Type*} [∀ i, CommRing (R i)] [Finite ι]
     {S : Type*} [CommRing S] (f : S →+* Π i, R i) :
@@ -291,6 +292,7 @@ lemma PrimeSpectrum.mem_range_comap_iff {p : PrimeSpectrum R} :
 
 open TensorProduct
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A prime `p` is in the range of `Spec S → Spec R` if the fiber over `p` is nontrivial. -/
 lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
     [Algebra R S] (p : PrimeSpectrum R) :

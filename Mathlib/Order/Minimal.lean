@@ -50,10 +50,18 @@ open Set OrderDual
 variable {ι α β : Type*}
 
 section LE
-variable [LE α] {f : ι → α} {i j : ι}
+variable [LE α] {P Q : ι → Prop} {f : ι → α} {i j : ι}
 
 @[simp] lemma minimalFor_eq_iff : MinimalFor (· = j) f i ↔ i = j := by simp +contextual [MinimalFor]
 @[simp] lemma maximalFor_eq_iff : MaximalFor (· = j) f i ↔ i = j := by simp +contextual [MaximalFor]
+
+@[gcongr]
+theorem MinimalFor.anti (h : MinimalFor P f i) (hle : Q ≤ P) (hQ : Q i) : MinimalFor Q f i :=
+  ⟨hQ, (h.le_of_le <| hle · ·)⟩
+
+@[gcongr]
+theorem MaximalFor.anti (h : MaximalFor P f i) (hle : Q ≤ P) (hQ : Q i) : MaximalFor Q f i :=
+  ⟨hQ, (h.le_of_le <| hle · ·)⟩
 
 end LE
 
@@ -667,12 +675,14 @@ theorem image_setOf_maximal (f : α ≃o β) (P : α → Prop) :
   convert _root_.image_monotone_setOf_maximal (f := f) (by simp [f.le_iff_le])
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_minimal_mem (f : s ≃o t) (hx : Minimal (· ∈ s) x) :
     Minimal (· ∈ t) (f ⟨x, hx.prop⟩) := by
   simpa only [show t = range (Subtype.val ∘ f) by simp, mem_univ, minimal_true_subtype, hx,
     true_imp_iff, image_univ] using OrderEmbedding.minimal_mem_image
     (f.toOrderEmbedding.trans (OrderEmbedding.subtype t)) (s := univ) (x := ⟨x, hx.prop⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_maximal_mem (f : s ≃o t) (hx : Maximal (· ∈ s) x) :
     Maximal (· ∈ t) (f ⟨x, hx.prop⟩) := by
   simpa only [show t = range (Subtype.val ∘ f) by simp, mem_univ, maximal_true_subtype, hx,

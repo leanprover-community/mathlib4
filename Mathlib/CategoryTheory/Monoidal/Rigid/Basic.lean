@@ -147,8 +147,8 @@ class HasLeftDual (Y : C) where
   leftDual : C
   [exact : ExactPairing leftDual Y]
 
-attribute [instance] HasRightDual.exact
-attribute [instance] HasLeftDual.exact
+attribute [instance_reducible, instance] HasRightDual.exact
+attribute [instance_reducible, instance] HasLeftDual.exact
 
 open ExactPairing HasRightDual HasLeftDual MonoidalCategory
 
@@ -565,11 +565,13 @@ def leftDualIso {X₁ X₂ Y : C} (p₁ : ExactPairing X₁ Y) (p₂ : ExactPair
     rw [← @comp_leftAdjointMate C, Category.comp_id, @leftAdjointMate_id]
     rfl
 
+set_option backward.whnf.reducibleClassField false in
 @[simp]
 theorem rightDualIso_id {X Y : C} (p : ExactPairing X Y) : rightDualIso p p = Iso.refl Y := by
   ext
   simp only [rightDualIso, Iso.refl_hom, @rightAdjointMate_id]
 
+set_option backward.whnf.reducibleClassField false in
 @[simp]
 theorem leftDualIso_id {X Y : C} (p : ExactPairing X Y) : leftDualIso p p = Iso.refl X := by
   ext
@@ -583,8 +585,8 @@ class RightRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] 
 class LeftRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
   [leftDual : ∀ X : C, HasLeftDual X]
 
-attribute [instance 100] RightRigidCategory.rightDual
-attribute [instance 100] LeftRigidCategory.leftDual
+attribute [instance_reducible, instance 100] RightRigidCategory.rightDual
+attribute [instance_reducible, instance 100] LeftRigidCategory.leftDual
 
 /-- Any left rigid category is monoidal closed, with the internal hom `X ⟶[C] Y = ᘁX ⊗ Y`.
 This has to be a definition rather than an instance to avoid diamonds, for example between

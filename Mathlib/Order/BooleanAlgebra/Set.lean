@@ -374,6 +374,7 @@ lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.sy
 lemma disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) : Disjoint s t ↔ s = ∅ :=
   disjoint_of_le_iff_left_eq_bot h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
   sdiff_lt_left.trans <| by rw [not_disjoint_iff_nonempty_inter, inter_comm]
@@ -419,6 +420,7 @@ lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
   ⟨fun _s ha ↦ insert_diff_self_of_mem ha, fun _s ↦ insert_diff_self_of_notMem⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma diff_singleton_eq_self (h : a ∉ s) : s \ {a} = s :=
   sdiff_eq_self_iff_disjoint.2 <| by simp [h]
@@ -482,6 +484,7 @@ theorem ite_same (t s : Set α) : t.ite s s = s :=
 @[simp]
 theorem ite_left (s t : Set α) : s.ite s t = s ∪ t := by simp [Set.ite]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ite_right (s t : Set α) : s.ite t s = t ∩ s := by simp [Set.ite]
 

@@ -47,7 +47,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped NNReal
 
-open Module.End Metric
+open Module.End Metric RCLike
 
 namespace ContinuousLinearMap
 
@@ -66,6 +66,22 @@ theorem rayleigh_smul (x : E) {c : 𝕜} (hc : c ≠ 0) :
 theorem rayleighQuotient_add (S : E →L[𝕜] E) {x : E} :
     (T + S).rayleighQuotient x = T.rayleighQuotient x + S.rayleighQuotient x := by
   simp [rayleighQuotient, reApplyInnerSelf_apply, inner_add_left, add_div]
+
+@[simp]
+theorem rayleighQuotient_zero_apply (x : E) : rayleighQuotient (0 : E →L[𝕜] E) x = 0 := by
+  simp [reApplyInnerSelf_apply]
+
+@[simp]
+theorem rayleighQuotient_apply_zero : rayleighQuotient T 0 = 0 := by
+  simp [reApplyInnerSelf_apply]
+
+@[simp]
+theorem rayleighQuotient_neg_apply (x : E) : rayleighQuotient (-T) x = -rayleighQuotient T x := by
+  simp [rayleighQuotient, reApplyInnerSelf_apply, neg_div]
+
+@[simp]
+theorem rayleighQuotient_apply_neg (x : E) : rayleighQuotient T (-x) = rayleighQuotient T x := by
+  simp [rayleighQuotient, reApplyInnerSelf_apply]
 
 theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
     rayleighQuotient T '' {0}ᶜ = rayleighQuotient T '' sphere 0 r := by
@@ -94,6 +110,15 @@ theorem iInf_rayleigh_eq_iInf_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
   show ⨅ x : ({0}ᶜ : Set E), rayleighQuotient T x = _ by
     simp only [← @sInf_image' _ _ _ _ (rayleighQuotient T),
       T.image_rayleigh_eq_image_rayleigh_sphere hr]
+
+theorem rayleighQuotient_le_norm (x : E) : |T.rayleighQuotient x| ≤ ‖T‖ := by
+  grw [rayleighQuotient, reApplyInnerSelf_apply, abs_div, abs_sq, abs_re_le_norm,
+    norm_inner_le_norm, le_opNorm, mul_assoc, ← sq, mul_div_assoc]
+  exact mul_le_of_le_one_right T.opNorm_nonneg (div_self_le_one (‖x‖ ^ 2))
+
+-- TODO: Prove `⨆ x, |T.rayleighQuotient x| = ‖T‖` when `T` is symmetric.
+theorem bddAbove_rayleighQuotient : BddAbove (Set.range fun x ↦ |T.rayleighQuotient x|) :=
+  ⟨‖T‖, fun _ ⟨y, h⟩ ↦ h ▸ T.rayleighQuotient_le_norm y⟩
 
 end ContinuousLinearMap
 

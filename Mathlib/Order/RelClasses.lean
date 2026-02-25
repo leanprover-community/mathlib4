@@ -5,8 +5,8 @@ Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.IsEmpty
-public import Mathlib.Order.Basic
+public import Mathlib.Logic.IsEmpty.Basic
+public import Mathlib.Order.OrderDual
 public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -196,7 +196,8 @@ namespace IsWellFounded
 variable (r) [IsWellFounded α r]
 
 /-- Induction on a well-founded relation. -/
-theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, r y x → C y) → C x) : C a :=
+theorem induction {motive : α → Prop} (a : α) (ind : ∀ x, (∀ y, r y x → motive y) → motive x) :
+    motive a :=
   wf.induction _ ind
 
 /-- All values are accessible under the well-founded relation. -/
@@ -205,15 +206,17 @@ theorem apply : ∀ a, Acc r a :=
 
 /-- Creates data, given a way to generate a value from all that compare as less under a well-founded
 relation. See also `IsWellFounded.fix_eq`. -/
-def fix {C : α → Sort*} : (∀ x : α, (∀ y : α, r y x → C y) → C x) → ∀ x : α, C x :=
+def fix {motive : α → Sort*} : (ind : ∀ x : α, (∀ y : α, r y x → motive y) → motive x) →
+    ∀ x : α, motive x :=
   wf.fix
 
 /-- The value from `IsWellFounded.fix` is built from the previous ones as specified. -/
-theorem fix_eq {C : α → Sort*} (F : ∀ x : α, (∀ y : α, r y x → C y) → C x) :
-    ∀ x, fix r F x = F x fun y _ => fix r F y :=
-  wf.fix_eq F
+theorem fix_eq {motive : α → Sort*} (ind : ∀ x : α, (∀ y : α, r y x → motive y) → motive x) :
+    ∀ x, fix r ind x = ind x fun y _ => fix r ind y :=
+  wf.fix_eq ind
 
 /-- Derive a `WellFoundedRelation` instance from an `isWellFounded` instance. -/
+@[instance_reducible]
 def toWellFoundedRelation : WellFoundedRelation α :=
   ⟨r, IsWellFounded.wf⟩
 
@@ -278,17 +281,19 @@ theorem apply : ∀ a : α, Acc (· < ·) a :=
 `WellFoundedLT.fix_eq`. -/
 @[to_dual /-- Creates data, given a way to generate a value from all that compare as greater.
 See also `WellFoundedGT.fix_eq`. -/]
-def fix {C : α → Sort*} : (∀ x : α, (∀ y : α, y < x → C y) → C x) → ∀ x : α, C x :=
+def fix {motive : α → Sort*} : (ind : ∀ x : α, (∀ y : α, y < x → motive y) → motive x) →
+    ∀ x : α, motive x :=
   IsWellFounded.fix (· < ·)
 
 /-- The value from `WellFoundedLT.fix` is built from the previous ones as specified. -/
 @[to_dual /-- The value from `WellFoundedGT.fix` is built from the successive ones as specified. -/]
-theorem fix_eq {C : α → Sort*} (F : ∀ x : α, (∀ y : α, y < x → C y) → C x) :
-    ∀ x, fix F x = F x fun y _ => fix F y :=
-  IsWellFounded.fix_eq _ F
+theorem fix_eq {motive : α → Sort*} (ind : ∀ x : α, (∀ y : α, y < x → motive y) → motive x) :
+    ∀ x, fix ind x = ind x fun y _ => fix ind y :=
+  IsWellFounded.fix_eq _ ind
 
 /-- Derive a `WellFoundedRelation` instance from a `WellFoundedLT` instance. -/
-@[to_dual /-- Derive a `WellFoundedRelation` instance from a `WellFoundedGT` instance. -/]
+@[to_dual (attr := instance_reducible)
+  /-- Derive a `WellFoundedRelation` instance from a `WellFoundedGT` instance. -/]
 def toWellFoundedRelation : WellFoundedRelation α :=
   IsWellFounded.toWellFoundedRelation (· < ·)
 
@@ -300,6 +305,7 @@ noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder 
   linearOrderOfSTO r
 
 /-- Derive a `WellFoundedRelation` instance from an `IsWellOrder` instance. -/
+@[instance_reducible]
 def IsWellOrder.toHasWellFounded [LT α] [hwo : IsWellOrder α (· < ·)] : WellFoundedRelation α where
   rel := (· < ·)
   wf := hwo.wf
@@ -478,7 +484,9 @@ alias Eq.trans_subset := subset_of_eq_of_subset
 
 alias HasSubset.subset.trans_eq := subset_of_subset_of_eq
 
-alias Eq.subset' := subset_of_eq --TODO: Fix it and kill `Eq.subset`
+alias Eq.subset := subset_of_eq
+
+@[deprecated (since := "2026-01-24")] alias Eq.subset' := Eq.subset
 
 alias Eq.superset := superset_of_eq
 
@@ -490,11 +498,11 @@ alias HasSubset.Subset.antisymm' := superset_antisymm
 
 theorem subset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
     a = b ↔ a ⊆ b ∧ b ⊆ a :=
-  ⟨fun h => ⟨h.subset', h.superset⟩, fun h => h.1.antisymm h.2⟩
+  ⟨fun h => ⟨h.subset, h.superset⟩, fun h => h.1.antisymm h.2⟩
 
 theorem superset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
     a = b ↔ b ⊆ a ∧ a ⊆ b :=
-  ⟨fun h => ⟨h.superset, h.subset'⟩, fun h => h.1.antisymm' h.2⟩
+  ⟨fun h => ⟨h.superset, h.subset⟩, fun h => h.1.antisymm' h.2⟩
 
 end Subset
 
@@ -632,6 +640,15 @@ end SubsetSsubset
 @[to_dual instReflGe]
 instance instReflLe [Preorder α] : @Std.Refl α (· ≤ ·) :=
   ⟨le_refl⟩
+
+/-- A version of `Std.le_refl` that works with `Std.Refl (· ≥ ·)`.
+This is needed for `to_dual` translations because `Std.le_refl` requires `Std.Refl (· ≤ ·)`,
+but after translation `instReflLe` becomes `instReflGe : Std.Refl (· ≥ ·)`. -/
+theorem Std.ge_refl {α : Type*} [LE α] [inst : @Std.Refl α (· ≥ ·)] (a : α) : a ≤ a :=
+  @Std.Refl.refl α (· ≥ ·) inst a
+
+set_option linter.existingAttributeWarning false in
+attribute [to_dual existing Std.ge_refl] Std.le_refl
 
 @[to_dual instIsTransGe]
 instance [Preorder α] : IsTrans α (· ≤ ·) :=
