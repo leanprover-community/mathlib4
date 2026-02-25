@@ -436,37 +436,14 @@ theorem ordFrac_add [IsDiscreteValuationRing R] (x y : K) (h1 : x + y ≠ 0) :
   rw [ordFrac_eq_inv_valuation]
   have := Valuation.map_add (IsDedekindDomain.HeightOneSpectrum.valuation K
       (IsDiscreteValuationRing.maximalIdeal R)) x y
-
   simp_all only [ne_eq, le_sup_iff, MonoidWithZeroHom.coe_comp,
     MonoidWithZero.coe_inverse, inverse_eq_inv', Valuation.toMonoidWithZeroHom_coe_eq_coe,
     Function.comp_apply, inf_le_iff]
   obtain h | h := this
   · left
-    rw [inv_le_inv₀]
-    · exact h
-    · exact
-      (Valuation.pos_iff
-            (IsDedekindDomain.HeightOneSpectrum.valuation K
-              (IsDiscreteValuationRing.maximalIdeal R))).mpr
-        hx0
-    · exact
-      (Valuation.pos_iff
-            (IsDedekindDomain.HeightOneSpectrum.valuation K
-              (IsDiscreteValuationRing.maximalIdeal R))).mpr
-        h1
+    rwa [inv_le_inv₀ ((Valuation.pos_iff _).mpr hx0) ((Valuation.pos_iff _).mpr h1)]
   · right
-    rw [inv_le_inv₀]
-    · exact Valuation.mem_leAddSubgroup_iff.mp h
-    · exact
-      (Valuation.pos_iff
-            (IsDedekindDomain.HeightOneSpectrum.valuation K
-              (IsDiscreteValuationRing.maximalIdeal R))).mpr
-        hy0
-    · exact
-      (Valuation.pos_iff
-            (IsDedekindDomain.HeightOneSpectrum.valuation K
-              (IsDiscreteValuationRing.maximalIdeal R))).mpr
-        h1
+    rwa [inv_le_inv₀ ((Valuation.pos_iff _).mpr hy0) ((Valuation.pos_iff _).mpr h1)]
 
 /--
 In a discrete valuation ring `R` with fraction ring `K`, if `x y : K` and
