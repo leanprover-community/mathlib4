@@ -8,9 +8,9 @@ module
 public import Mathlib.Init
 
 /-!
-# The `defeq_abuse` tactic and `#defeq_abuse` command combinators
+# The `#defeq_abuse` tactic and command combinators
 
-`defeq_abuse in tac` runs `tac` with `backward.isDefEq.respectTransparency` both `true` and
+`#defeq_abuse in tac` runs `tac` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the tactic succeeds with `false` but fails with `true`, it identifies the specific
 `isDefEq` checks that fail with the stricter setting, helping to diagnose where Mathlib relies on
 definitional equality that isn't available at instance transparency.
@@ -24,7 +24,7 @@ application that triggered them.
 
 ### Tactic mode
 ```
-defeq_abuse in rw [Set.disjoint_singleton_right]
+#defeq_abuse in rw [Set.disjoint_singleton_right]
 ```
 
 will report something like:
@@ -193,17 +193,15 @@ private def dedup (failures : Array MessageData) : BaseIO (Array MessageData) :=
   return unique
 
 /--
-`defeq_abuse in tac` runs `tac` with `backward.isDefEq.respectTransparency` both `true` and
+`#defeq_abuse in tac` runs `tac` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the tactic succeeds with `false` but fails with `true`, it identifies the specific
 `isDefEq` checks that fail with the stricter setting.
 
 The tactic still executes (using the permissive setting if needed), so proofs remain valid
 during debugging.
 -/
-syntax (name := defeqAbuse) "defeq_abuse " "in " tactic : tactic
-
-elab_rules : tactic
-  | `(tactic| defeq_abuse%$tk in $tac) => withMainContext do
+elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainContext do
+    let tk ← getRef
     let s ← saveState
     -- First, try with respectTransparency true (the strict/new default)
     let strictResult ← try
@@ -218,7 +216,7 @@ elab_rules : tactic
       -- Tactic works fine with strict setting, nothing to report.
       -- The tactic has already been executed, so proof state is updated.
       logInfoAt tk
-        "defeq_abuse: tactic succeeds with \
+        "#defeq_abuse: tactic succeeds with \
           `backward.isDefEq.respectTransparency true`. No abuse detected."
     | .error _ =>
       s.restore
@@ -234,7 +232,7 @@ elab_rules : tactic
       | .error _ =>
         s.restore
         logWarningAt tk
-          "defeq_abuse: tactic fails regardless of \
+          "#defeq_abuse: tactic fails regardless of \
             `backward.isDefEq.respectTransparency` setting."
         -- Still run the tactic so the user sees the original error
         evalTactic tac
@@ -265,14 +263,14 @@ elab_rules : tactic
         let uniqueFailures ← dedup leafFailures
         if uniqueFailures.isEmpty then
           logWarningAt tk
-            m!"defeq_abuse: tactic fails with \
+            m!"#defeq_abuse: tactic fails with \
               `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
               Could not identify specific failing isDefEq checks from traces."
         else
           let failureList := MessageData.joinSep
             (uniqueFailures.toList.map fun f => m!"  {f}") "\n"
           logWarningAt tk
-            m!"defeq_abuse: tactic fails with \
+            m!"#defeq_abuse: tactic fails with \
               `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
               The following isDefEq checks are the root causes of the failure:\n{failureList}"
         -- Run the tactic with permissive setting so it actually succeeds
