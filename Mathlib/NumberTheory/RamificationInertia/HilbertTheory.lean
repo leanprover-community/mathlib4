@@ -14,8 +14,7 @@ public import Mathlib.FieldTheory.Galois.IsGaloisGroup
 In this file, we develop Hilbert Theory on the splitting of prime ideals in a Galois extension.
 
 Let `L/K` be a Galois extension of fields. Let `A` and `B` be subrings of `K` `L` respectively with
-`A` integrally closed, `K` fraction field of `A`, `L` fraction field of `B` and `B` the integral
-closure of `A` in `L`.
+`K` fraction field of `A`, `L` fraction field of `B` and `B` the integral closure of `A` in `L`.
 
 For `P` a prime ideal of `B`, the decomposition field `D` of `P` in `L/K` is the subfield of
 elements of `L` fixed by the stabilizer of `P` in `Gal(L/K)`, and the inertia field `E` of `P`
