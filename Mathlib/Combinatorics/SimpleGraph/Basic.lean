@@ -652,8 +652,7 @@ theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
 theorem fromEdgeSet_inter (s t : Set (Sym2 V)) :
     fromEdgeSet (s ∩ t) = fromEdgeSet s ⊓ fromEdgeSet t := by
   ext
-  simp
-  tauto
+  simpa using by tauto
 
 @[simp]
 theorem fromEdgeSet_union (s t : Set (Sym2 V)) :
