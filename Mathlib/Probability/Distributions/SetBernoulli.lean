@@ -57,7 +57,7 @@ lemma setBernoulli_eq_map :
   MeasurableEquiv.setOf.comap_symm
 
 variable (u p) in
-lemma setBernoulli_eq_independent_set_measure_ite [∀ i, Decidable (i ∈ u)] :
+lemma setBernoulli_eq_independentSetMeasure_ite [∀ i, Decidable (i ∈ u)] :
     setBer(u, p) = independentSetMeasure
       (fun i ↦ if i ∈ u then bernoulliMeasure True False p else dirac false) := by
   rw [setBernoulli_def]
@@ -83,7 +83,7 @@ theorem hasLaw_setBernoulli_of_bernoulli_iid [IsProbabilityMeasure P] (B : ι �
     (hU : ∀ i, HasLaw (B i) (bernoulliMeasure True False p) P) (hU' : iIndepFun B P) :
     HasLaw ({i ∈ u | B i ·}) (setBer(u, p)) P where
   map_eq := by
-    simp_rw [← Function.comp_def (f := fun B ↦ {i ∈ u | B i}) (g := fun ω : Ω ↦ (B · ω)),
+    simp_rw [← Function.comp_def (f := fun B ↦ {i ∈ u | B i}) (g := fun ω ↦ (B · ω)),
       ← Function.comp_def (f := fun p ↦ {i | p i}) (g := fun (p : ι → Prop) i ↦ i ∈ u ∧ p i)]
     rw [← AEMeasurable.map_map_of_aemeasurable (Measurable.aemeasurable <| by fun_prop)
       (by fun_prop), ← map_map (by fun_prop) (by fun_prop),
@@ -119,7 +119,7 @@ variable (u p) in
   calc
     setBer(u, p) {s}
     _ = ∏ i ∈ u, (if i ∈ s then ENNReal.ofReal p else ENNReal.ofReal (σ p)) := by
-      rw [setBernoulli_eq_independent_set_measure_ite, independent_set_measure_apply,
+      rw [setBernoulli_eq_independentSetMeasure_ite, independentSetMeasure_apply,
         Set.image_singleton, infinitePi_singleton, tprod_eq_prod, Finset.prod_congr rfl]
       · simp +contextual [bernoulli_measure_def, ite_add_ite, Pi.single, Function.update]
       · simp +contextual [mt (@hsu _)]
@@ -170,7 +170,7 @@ theorem monotone_setBernoulli_isRelUpperSet {S : Set (Set ι)} (hS_meas : Measur
 
 theorem monotone_setBernoulli_isUpperSet {S : Set (Set ι)} (hS_meas : MeasurableSet S)
     (hS : IsUpperSet S) : Monotone fun p ↦ setBer(Set.univ, p) S :=
-  monotone_setBernoulli_isRelUpperSet hS_meas (by simp)
+  monotone_setBernoulli_isRelUpperSet hS_meas (by simp [hS])
 
 end UpperSet
 

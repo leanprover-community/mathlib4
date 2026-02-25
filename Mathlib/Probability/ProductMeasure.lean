@@ -629,19 +629,19 @@ variable {ι : Type*} (μ : ι → Measure Prop)
 noncomputable def independentSetMeasure : Measure (Set ι) :=
   (infinitePi μ).comap (fun s i ↦ i ∈ s)
 
-theorem independent_set_measure_eq_map :
+theorem independentSetMeasure_eq_map :
     independentSetMeasure μ = (infinitePi μ).map setOf :=
   MeasurableEquiv.setOf.comap_symm
 
 instance [∀ i, IsProbabilityMeasure (μ i)] : IsProbabilityMeasure (independentSetMeasure μ) := by
-  rw [independent_set_measure_eq_map, isProbabilityMeasure_map_iff (by fun_prop)]
+  rw [independentSetMeasure_eq_map, isProbabilityMeasure_map_iff (by fun_prop)]
   infer_instance
 
-lemma independent_set_measure_apply (S : Set (Set ι)) :
+lemma independentSetMeasure_apply (S : Set (Set ι)) :
     independentSetMeasure μ S = (infinitePi μ) ((fun t i ↦ i ∈ t) '' S) :=
   MeasurableEquiv.setOf.symm.measurableEmbedding.comap_apply ..
 
-lemma independent_set_measure_apply' (S : Set (Set ι)) :
+lemma independentSetMeasure_apply' (S : Set (Set ι)) :
     independentSetMeasure μ S  = (infinitePi μ) ((fun p ↦ {i | p i}) ⁻¹' S) :=
   MeasurableEquiv.setOf.symm.comap_apply ..
 

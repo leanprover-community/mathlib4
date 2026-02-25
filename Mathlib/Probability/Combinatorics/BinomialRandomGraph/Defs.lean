@@ -68,7 +68,7 @@ lemma binomialRandom_apply (S : Set (SimpleGraph V)) :
     G(V, p) S = infinitePi
       (fun e : Sym2 V ↦ ENNReal.ofReal p • dirac (¬ e.IsDiag) + ENNReal.ofReal (σ p) • dirac False)
       ((fun G e ↦ e ∈ G.edgeSet) '' S) := by
-  simp [binomialRandom_apply', setBernoulli_def, independent_set_measure_apply,
+  simp [binomialRandom_apply', setBernoulli_def, independentSetMeasure_apply,
     bernoulli_measure_def, ← Set.image_comp]
 
 instance : IsProbabilityMeasure G(V, p) := by
