@@ -1347,6 +1347,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
+public import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.Normalization
 public import Mathlib.AlgebraicGeometry.OpenImmersion
@@ -1871,6 +1872,7 @@ public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Analytic
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
 public import Mathlib.Analysis.InnerProductSpace.JointEigenspace
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
 public import Mathlib.Analysis.InnerProductSpace.LaxMilgram
