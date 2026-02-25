@@ -130,6 +130,7 @@ end Indexed
 
 section repr
 
+set_option backward.isDefEq.respectTransparency false in
 variable (ι R M) in
 theorem iSupIndep_range_lsingle :
     iSupIndep fun i : ι ↦ LinearMap.range (Finsupp.lsingle (R := R) (M := M) i) := by
@@ -270,7 +271,7 @@ variable {x y : M}
 /-- Also see `LinearIndependent.pair_iff'` for a simpler version over fields. -/
 lemma LinearIndependent.pair_iff :
     LinearIndependent R ![x, y] ↔ ∀ (s t : R), s • x + t • y = 0 → s = 0 ∧ t = 0 := by
-  rw [← linearIndepOn_univ, ← Finset.coe_univ, show @Finset.univ (Fin 2) _ = {0,1} from rfl,
+  rw [← linearIndepOn_univ_iff, ← Finset.coe_univ, show @Finset.univ (Fin 2) _ = {0,1} from rfl,
     Finset.coe_insert, Finset.coe_singleton, LinearIndepOn.pair_iff _ (by trivial)]
   simp
 
@@ -614,7 +615,7 @@ theorem LinearIndepOn.mem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : Lin
 /-- A shortcut to a convenient form for the negation in `LinearIndepOn.mem_span_iff`. -/
 theorem LinearIndepOn.notMem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : LinearIndepOn K f s) :
     f a ∉ Submodule.span K (f '' s) ↔ LinearIndepOn K f (insert a s) ∧ a ∉ s := by
-  rw [h.mem_span_iff, _root_.not_imp]
+  rw [h.mem_span_iff, Classical.not_imp]
 
 theorem LinearIndepOn.mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
     a ∈ Submodule.span K s ↔ (LinearIndepOn K id (insert a s) → a ∈ s) := by
@@ -622,7 +623,7 @@ theorem LinearIndepOn.mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K i
 
 theorem LinearIndepOn.notMem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
     a ∉ Submodule.span K s ↔ LinearIndepOn K id (insert a s) ∧ a ∉ s := by
-  rw [h.mem_span_iff_id, _root_.not_imp]
+  rw [h.mem_span_iff_id, Classical.not_imp]
 
 theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
     LinearIndepOn K id {x, y} := by
@@ -638,7 +639,7 @@ theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v
 /-- Also see `LinearIndependent.pair_iff` for the version over arbitrary rings. -/
 theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
     LinearIndependent K ![x, y] ↔ ∀ a : K, a • x ≠ y := by
-  rw [← linearIndepOn_univ, ← Finset.coe_univ, show @Finset.univ (Fin 2) _ = {0,1} from rfl,
+  rw [← linearIndepOn_univ_iff, ← Finset.coe_univ, show @Finset.univ (Fin 2) _ = {0,1} from rfl,
     Finset.coe_insert, Finset.coe_singleton, linearIndepOn_pair_iff _ (by simp) (by simpa)]
   simp
 
@@ -669,6 +670,7 @@ theorem linearIndependent_fin_succ' {n} {v : Fin (n + 1) → V} : LinearIndepend
     LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
   rw [← linearIndependent_fin_snoc, Fin.snoc_init_self]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
 vector in the complement of their span.
 -/
@@ -769,6 +771,7 @@ theorem LinearIndepOn.linearIndepOn_extend (hs : LinearIndepOn K v s) (hst : s �
   let ⟨_hbt, _hsb, _htb, hli⟩ := Classical.choose_spec (exists_linearIndepOn_extension hs hst)
   hli
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO(Mario): rewrite?
 theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
     (hs : LinearIndepOn K id s) (hst : s ⊆ (span K ↑t : Submodule K V)) :

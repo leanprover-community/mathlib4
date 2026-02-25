@@ -112,9 +112,6 @@ theorem vonNeumann_injective : Function.Injective vonNeumann :=
 theorem vonNeumann_inj : V_ a = V_ b ↔ a = b :=
   vonNeumann_injective.eq_iff
 
-@[gcongr]
-alias ⟨_, _root_.GCongr.ZFSet.vonNeumann_inj⟩ := vonNeumann_inj
-
 @[simp]
 theorem vonNeumann_zero : V_ 0 = ∅ :=
   (eq_empty _).2 (by simp [mem_vonNeumann])

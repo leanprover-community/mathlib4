@@ -216,6 +216,7 @@ def type? : Expr → Option Level
 /-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
 `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
 it does a syntactic check that the expression does not depend on `yₙ`. -/
+@[deprecated "This function was implemented incorrectly" (since := "2026-02-13")]
 def isConstantApplication (e : Expr) :=
   e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
 where
@@ -281,6 +282,17 @@ where
     `forallBoundedTelescope`, do not increment the number of binders we've counted. -/
     | .letE _ _ _ body _ => go body current acc
     | _ => acc
+
+/--
+Returns `true` if `e` includes a `forallE` instance binder that satisfies `p`.
+
+Cleans up annotations before traversing nested `forallE`s, and sees through `let`s.
+-/
+partial def hasInstanceBinderOf (p : Expr → Bool) (e : Expr) : Bool :=
+  match e.cleanupAnnotations with
+  | .forallE _ type body bi => (bi.isInstImplicit && p type) || hasInstanceBinderOf p body
+  | .letE _ _ _ body _ => hasInstanceBinderOf p body
+  | _ => false
 
 /-- Counts the immediate depth of a nested `let` expression. -/
 def letDepth : Expr → Nat
@@ -365,6 +377,15 @@ def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
     some (ty, lhs, ty, rhs)
   else
     ty.heq?
+
+/-- Returns `true` if the provided `Expr` is exactly of the form `sorryAx _ _`.
+This is the form produced by the `sorry` term/tactic.
+
+Contrast with `Lean.Expr.isSorry`, which additionally returns `true` for any function application of
+`sorry`/`sorryAx` (including e.g. `sorryAx α true x y z`). -/
+def isSorryAx : Expr → Bool
+  | .app (.app f _ ) _ => f.isConstOf ``sorryAx
+  | _ => false
 
 end recognizers
 

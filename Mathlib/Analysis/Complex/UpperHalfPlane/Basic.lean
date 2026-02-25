@@ -202,6 +202,7 @@ end PosRealAction
 
 section RealAddAction
 
+set_option backward.whnf.reducibleClassField false in
 instance : AddAction ℝ ℍ where
   vadd x z := mk (x + z) <| by simpa using z.im_pos
   zero_vadd _ := by simp [HVAdd.hVAdd]
