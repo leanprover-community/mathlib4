@@ -82,11 +82,14 @@ end CategoryTheory
 
 namespace PresheafOfModules
 
+section
+
 variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
   [IsCofiltered C] [InitiallySmall.{w} C]
   {R : Cᵒᵖ ⥤ RingCat.{w}} {cR : Cocone R} (hcR : IsColimit cR)
-  {M : PresheafOfModules.{w} R}
-  {cM : Cocone M.presheaf} (hcM : IsColimit cM)
+
+local instance : HasColimitsOfShape Cᵒᵖ AddCommGrpCat.{w} :=
+  hasColimitsOfShape_of_finallySmall _ _
 
 local instance : PreservesColimitsOfShape Cᵒᵖ (forget RingCat.{w}) :=
   Functor.Final.preservesColimitsOfShape_of_final
@@ -95,6 +98,10 @@ local instance : PreservesColimitsOfShape Cᵒᵖ (forget RingCat.{w}) :=
 local instance : PreservesColimitsOfShape Cᵒᵖ (forget AddCommGrpCat.{w}) :=
   Functor.Final.preservesColimitsOfShape_of_final
     (FinallySmall.fromFilteredFinalModel.{w} Cᵒᵖ) _
+
+section
+
+variable {M : PresheafOfModules.{w} R} {cM : Cocone M.presheaf} (hcM : IsColimit cM)
 
 def ModuleColimit (_ : IsColimit cR) (_ : IsColimit cM) : Type w := cM.pt
 
@@ -123,10 +130,6 @@ noncomputable def coconeSMul :
     exact (ConcreteCategory.congr_arg (cM.ι.app U)
       (M.map_smul f r m).symm).trans (ConcreteCategory.congr_hom (cM.w f) _)
 
-noncomputable def smul : cR.pt → cM.pt → cM.pt :=
-  Function.curry
-    ((isColimitCoconeTensorForget hcR hcM).desc (coconeSMul hcR hcM))
-
 noncomputable instance : SMul cR.pt (ModuleColimit hcR hcM) where
   smul := ((isColimitCoconeTensorForget hcR hcM).desc (coconeSMul hcR hcM)).curry
 
@@ -153,6 +156,17 @@ lemma ιR_jointly_surjective (r : cR.pt) :
     ∃ (U : Cᵒᵖ) (a : R.obj U), ιR cR a = r :=
   Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (forget RingCat) hcR) r
+
+variable {hcR hcM} in
+lemma jointly_surjective₂ (r : cR.pt) (m : ModuleColimit hcR hcM) :
+    ∃ (U : Cᵒᵖ) (a : R.obj U) (x : M.obj U),
+      ιR cR a = r ∧ ιM x = m := by
+  obtain ⟨U, ⟨a, x⟩, h⟩ := Types.jointly_surjective_of_isColimit
+    (Types.isColimitCoconeTensor (isColimitOfPreserves (forget RingCat) hcR)
+      (isColimitOfPreserves (forget AddCommGrpCat) hcM)) ⟨r, m⟩
+  rw [Prod.ext_iff] at h
+  obtain ⟨rfl, rfl⟩ := h
+  exact ⟨U, a, x, rfl, rfl⟩
 
 variable {hcR hcM} in
 lemma jointly_surjective₃ (r₁ r₂ : cR.pt) (m : ModuleColimit hcR hcM) :
@@ -202,4 +216,72 @@ noncomputable instance : Module cR.pt (ModuleColimit hcR hcM) where
 
 end ModuleColimit
 
+end
+
+noncomputable def colimitFunctor : PresheafOfModules.{w} R ⥤ ModuleCat cR.pt where
+  obj M := ModuleCat.of _ (ModuleColimit hcR (colimit.isColimit M.presheaf))
+  map {M₁ M₂} f := ModuleCat.ofHom
+    { toFun := colimMap ((toPresheaf _).map f)
+      map_add' := by simp
+      map_smul' m x := by
+        obtain ⟨U, m, x, rfl, rfl⟩ := ModuleColimit.jointly_surjective₂ m x
+        have h₁ := ConcreteCategory.congr_hom
+          (ι_colimMap ((toPresheaf _).map f) U) (m • x)
+        have h₂ := ConcreteCategory.congr_hom
+          (ι_colimMap ((toPresheaf _).map f) U) x
+        dsimp at h₁ h₂ ⊢
+        rw [ModuleColimit.smul_eq]
+        erw [h₁, h₂, ModuleColimit.smul_eq]
+        erw [(f.app U).hom.map_smul]
+        rfl }
+  map_id M :=
+    (forget₂ _ AddCommGrpCat).map_injective (by
+      change colimMap ((toPresheaf _).map (𝟙 M)) = 𝟙 _
+      exact colimit.hom_ext (by simp))
+  map_comp f g :=
+    (forget₂ _ AddCommGrpCat).map_injective (by
+      change colimMap ((toPresheaf _).map (f ≫ g)) =
+        colimMap ((toPresheaf _).map f) ≫ colimMap ((toPresheaf _).map g)
+      exact colimit.hom_ext (by simp))
+
+end
+
 end PresheafOfModules
+
+namespace CategoryTheory.GrothendieckTopology.Point
+
+variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
+  {J : GrothendieckTopology C} (Φ : Point.{w} J)
+
+section
+
+variable {R : Cᵒᵖ ⥤ RingCat.{w}} {c : Cocone ((CategoryOfElements.π Φ.fiber).op ⋙ R)}
+  (hc : IsColimit c)
+
+noncomputable def fiberOfIsColimit : PresheafOfModules.{w} R ⥤ ModuleCat c.pt :=
+  PresheafOfModules.pushforward₀ _ _ ⋙ PresheafOfModules.colimitFunctor hc
+
+noncomputable def fiberOfIsColimitCompForget₂Iso :
+    Φ.fiberOfIsColimit hc ⋙ forget₂ _ AddCommGrpCat ≅
+      PresheafOfModules.toPresheaf _ ⋙ Φ.presheafFiber :=
+  Iso.refl _
+
+end
+
+noncomputable def presheafOfModulesFiberOfRing {R : Cᵒᵖ ⥤ RingCat.{w}} :
+    PresheafOfModules.{w} R ⥤ ModuleCat.{w} (Φ.presheafFiber.obj R :) :=
+  Φ.fiberOfIsColimit (colimit.isColimit _)
+
+local instance : PreservesColimitsOfShape Φ.fiber.Elementsᵒᵖ
+    (forget₂ CommRingCat.{w} RingCat.{w}) :=
+  Functor.Final.preservesColimitsOfShape_of_final
+    (FinallySmall.fromFilteredFinalModel.{w} _) _
+
+noncomputable def presheafOfModulesFiber {R : Cᵒᵖ ⥤ CommRingCat.{w}} :
+    PresheafOfModules.{w} (R ⋙ forget₂ _ _) ⥤
+      ModuleCat.{w} (Φ.presheafFiber.obj R :) :=
+  Φ.fiberOfIsColimit (R := R ⋙ forget₂ _ _ )
+    (isColimitOfPreserves (forget₂ _ RingCat)
+    (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ R)))
+
+end CategoryTheory.GrothendieckTopology.Point
