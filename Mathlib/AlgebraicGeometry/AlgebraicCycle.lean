@@ -72,8 +72,7 @@ Submonoid of cycles of pure dimension `d`.
 def dimensionGradingAddSubmonoid [AddMonoid Z] (d : ℕ∞) :
     AddSubmonoid (AlgebraicCycle X Z) where
   carrier := {c : AlgebraicCycle X Z | ∀ x ∈ c.support, height x = d}
-  add_mem' c₁ c₂ := by
-    rename_i a b
+  add_mem' {a} b c₁ c₂ := by
     simp_all only [Function.mem_support, ne_eq, mem_setOf_eq,
       Function.locallyFinsuppWithin.coe_add, Pi.add_apply]
     intro x hx
