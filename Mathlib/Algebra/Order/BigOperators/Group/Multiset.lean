@@ -123,7 +123,7 @@ lemma prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g
     (s.map f).prod < (s.map g).prod := by
   obtain ⟨l⟩ := s
   simp only [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
-  exact List.prod_lt_prod' f g hle hlt
+  exact List.prod_lt_prod f g hle hlt
 
 @[to_additive sum_lt_sum_of_nonempty]
 lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) :

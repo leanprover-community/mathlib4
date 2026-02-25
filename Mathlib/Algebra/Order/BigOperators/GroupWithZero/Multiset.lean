@@ -29,9 +29,7 @@ lemma prod_nonneg {s : Multiset R} (h : ∀ a ∈ s, 0 ≤ a) : 0 ≤ s.prod := 
 lemma one_le_prod₀ {s : Multiset R} (h : ∀ a ∈ s, 1 ≤ a) : 1 ≤ s.prod := by
   cases s using Quotient.ind
   simp only [quot_mk_to_coe, mem_coe, prod_coe] at *
-  apply List.one_le_prod h
-
-@[deprecated (since := "2026-01-18")] alias one_le_prod := one_le_prod₀
+  exact List.one_le_prod₀ h
 
 lemma prod_le_prod_of_rel_le₀ {s t : Multiset R} (h0 : ∀ x ∈ s, 0 ≤ x)
     (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
@@ -51,7 +49,7 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : Multiset ι} (f : ι → R) (g
     (map f s).prod ≤ (map g s).prod := by
   cases s using Quotient.ind
   simp only [quot_mk_to_coe, mem_coe, map_coe, prod_coe] at *
-  apply List.prod_map_le_prod_map₀ f g h0 h
+  exact List.prod_map_le_prod_map₀ f g h0 h
 
 lemma prod_map_le_prod₀ {s : Multiset R} (f : R → R) (h0 : ∀ x ∈ s, 0 ≤ f x)
     (h : ∀ x ∈ s, f x ≤ x) : (s.map f).prod ≤ s.prod := by
@@ -100,13 +98,13 @@ variable [PosMulStrictMono R] [NeZero (1 : R)]
 lemma prod_pos {s : Multiset R} (h : ∀ a ∈ s, 0 < a) : 0 < s.prod := by
   cases s using Quotient.ind
   simp only [quot_mk_to_coe, mem_coe, prod_coe] at *
-  apply List.prod_pos h
+  exact List.prod_pos h
 
 theorem prod_map_lt_prod_map {ι : Type*} {s : Multiset ι} (hs : s ≠ 0)
     (f : ι → R) (g : ι → R) (h0 : ∀ i ∈ s, 0 < f i) (h : ∀ i ∈ s, f i < g i) :
     (map f s).prod < (map g s).prod := by
   cases s using Quotient.ind
   simp only [quot_mk_to_coe, mem_coe, map_coe, prod_coe, ne_eq, coe_eq_zero] at *
-  apply List.prod_map_lt_prod_map hs f g h0 h
+  exact List.prod_map_lt_prod_map hs f g h0 h
 
 end Multiset
