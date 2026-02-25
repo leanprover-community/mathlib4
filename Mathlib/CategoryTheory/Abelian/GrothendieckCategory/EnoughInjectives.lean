@@ -105,6 +105,7 @@ variable {G} (hG : IsSeparator G)
 
 include hG
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `p : X ⟶ Y` is a monomorphism that is not an isomorphism, there exists
 a subobject `X'` of `Y` containing `X` (but different from `X`) such that
 the inclusion `X ⟶ X'` is a pushout of a monomorphism in the family
@@ -176,6 +177,7 @@ lemma le_largerSubobject (A : Subobject X) :
     simp only [largerSubobject_top, le_refl]
   · exact (lt_largerSubobject hG A hA).le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pushouts_ofLE_le_largerSubobject (A : Subobject X) :
       (generatingMonomorphisms G).pushouts
         (Subobject.ofLE _ _ (le_largerSubobject hG A)) := by
@@ -263,6 +265,7 @@ end
 
 variable {A : C} {f : A ⟶ X} [Mono f]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤`,
 then the monomorphism `f` is a transfinite composition of pushouts of
 monomorphisms in the family `generatingMonomorphisms G`. -/
@@ -291,7 +294,7 @@ lemma exists_transfiniteCompositionOfShape :
     Nonempty ((generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape J f) := by
   obtain ⟨o, j, hj⟩ := exists_ordinal hG (Subobject.mk f)
   letI : OrderBot o.ToType := Ordinal.toTypeOrderBot (by
-    simpa only [← Ordinal.toType_nonempty_iff_ne_zero] using Nonempty.intro j)
+    simpa only [← Ordinal.nonempty_toType_iff] using Nonempty.intro j)
   exact ⟨_, _, _, _, _, ⟨transfiniteCompositionOfShapeOfEqTop hG hj⟩⟩
 
 end generatingMonomorphisms

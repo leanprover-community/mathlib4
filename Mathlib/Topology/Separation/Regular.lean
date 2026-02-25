@@ -254,6 +254,7 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     RegularSpace (∀ i, X i) :=
   regularSpace_iInf fun _ => regularSpace_induced _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a regular space, if a compact set and a closed set are disjoint, then they have disjoint
 neighborhoods. -/
 lemma SeparatedNhds.of_isCompact_isClosed {s t : Set X}
@@ -589,6 +590,7 @@ instance ULift.instCompletelyNormalSpace [CompletelyNormalSpace X] :
     CompletelyNormalSpace (ULift X) :=
   IsEmbedding.uliftDown.completelyNormalSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A space is completely normal iff all open subspaces are normal.
 -/
@@ -698,6 +700,7 @@ instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) 
 
 end CompletelyNormal
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a compact T₂ space, the connected component of a point equals the intersection of all
 its clopen neighbourhoods. -/
 theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : X) :
@@ -753,6 +756,7 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
         exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
           ⟨s ∩ v, H2, mem_inter H.2.1 h1⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ConnectedComponents X` is Hausdorff when `X` is Hausdorff and compact -/
 @[stacks 0900 "The Stacks entry proves profiniteness."]
 instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (ConnectedComponents X) := by

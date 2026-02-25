@@ -56,6 +56,7 @@ instance (priority := low) Functor.preservesInjectiveObjects_of_isEquivalence {F
   preservesInjectiveObjects_of_adjunction_of_preservesMonomorphisms
     F.asEquivalence.symm.toAdjunction
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Functor.preservesMonomorphisms_of_adjunction_of_preservesInjectiveObjects
     [EnoughInjectives D] {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [G.PreservesInjectiveObjects] :
     F.PreservesMonomorphisms where
