@@ -6,10 +6,10 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Polynomial.Expand
-public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.Adjoin.Polynomial
 public import Mathlib.RingTheory.Algebraic.Defs
 public import Mathlib.RingTheory.Polynomial.Tower
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -607,7 +607,7 @@ theorem algEquivOfTranscendental_apply (s : S) (h : Transcendental R s) (f : R[X
     algEquivOfTranscendental R s h f = aeval (⟨s, Algebra.self_mem_adjoin_singleton R s⟩) f := rfl
 
 lemma algEquivOfTranscendental_apply_X (s : S) (h : Transcendental R s) :
-    algEquivOfTranscendental R s h X = ⟨s, Algebra.subset_adjoin rfl⟩ := by simp
+    algEquivOfTranscendental R s h X = ⟨s, Algebra.self_mem_adjoin_singleton R s⟩ := by simp
 
 @[simp]
 theorem algEquivOfTranscendental_symm_aeval (s : S) (h : Transcendental R s) (f : R[X]) :
@@ -623,6 +623,10 @@ theorem algEquivOfTranscendental_symm_gen (s : S) (h : Transcendental R s) :
   simp
 
 end Polynomial
+
+theorem Transcendental.uniqueFactorizationMonoid_adjoin [UniqueFactorizationMonoid R] {s : S}
+      (h : Transcendental R s) : UniqueFactorizationMonoid (Algebra.adjoin R {s}) :=
+  (algEquivOfTranscendental R s h).toMulEquiv.uniqueFactorizationMonoid inferInstance
 
 end
 
