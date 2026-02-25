@@ -64,7 +64,6 @@ open Submodule
 
 open UniqueFactorizationMonoid
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible a) :
     IsSemisimpleModule R (torsionBy R M a) :=
   haveI := PrincipalIdealRing.isMaximal_of_irreducible h
@@ -167,7 +166,6 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
 
 open Finset Multiset
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 omit dec in
 /-- A finitely generated `p ^ ∞`-torsion module over a PID is isomorphic to a direct sum of some
@@ -232,7 +230,6 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
 
 end PTorsion
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A finitely generated torsion module over a PID is isomorphic to a direct sum of some
   `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
 theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTorsion R M) :
@@ -258,7 +255,6 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTor
 
 variable (R M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated
   module over a PID is isomorphic to the product of a free module and a direct sum of some
   `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/

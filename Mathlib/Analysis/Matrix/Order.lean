@@ -174,7 +174,6 @@ set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sqrt_eq_zero_iff (since := "2025-09-22")]
 lemma sqrt_eq_zero_iff : CFC.sqrt A = 0 ↔ A = 0 := CFC.sqrt_eq_zero_iff A
 
-set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sqrt_eq_one_iff (since := "2025-09-23")]
 lemma sqrt_eq_one_iff : CFC.sqrt A = 1 ↔ A = 1 := CFC.sqrt_eq_one_iff A
 

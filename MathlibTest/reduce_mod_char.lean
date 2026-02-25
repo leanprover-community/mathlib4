@@ -84,7 +84,6 @@ example (a : ZMod 7) (h : a + 14 = 2) : a + 7 = 2 := by
   assumption
 
 -- A stress test:
-set_option backward.isDefEq.respectTransparency false in
 example (a b : ZMod 37) : (a + b)^37 = a^37 + b^37 := by ring_nf; reduce_mod_char
 
 -- From the zulip thread:

@@ -95,7 +95,6 @@ lemma goursat_surjective : ∃ e : (M ⧸ L.goursatFst) ≃ₗ[R] N ⧸ L.goursa
   rw [mem_toAddSubgroup, mem_graph_iff, Eq.comm]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Goursat's lemma** for an arbitrary submodule of a product.
 
 If `L` is a submodule of `M × N`, then there exist submodules `M'' ≤ M' ≤ M` and `N'' ≤ N' ≤ N` such

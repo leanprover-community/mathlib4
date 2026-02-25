@@ -38,7 +38,6 @@ lemma tendsto_Ioc_atBot_prod_atTop [NoBotOrder α] :
   simpa [tendsto_atTop, ← coe_subset, Set.subset_def, -eventually_and]
     using fun b i _ ↦ (eventually_lt_atBot i).prod_mk (eventually_ge_atTop i)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_Ico_atBot_prod_atTop [NoTopOrder α] :
     Tendsto (fun p : α × α ↦ Finset.Ico p.1 p.2) (atBot ×ˢ atTop) atTop := by
   simpa [tendsto_atTop, ← coe_subset, Set.subset_def, -eventually_and]

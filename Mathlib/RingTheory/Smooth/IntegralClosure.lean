@@ -49,7 +49,6 @@ def TensorProduct.toIntegralClosure
       (R := R) (A := S))).tower_top (A := S)).smul x
     simp [smul_tmul']
 
-set_option backward.isDefEq.respectTransparency false in
 lemma TensorProduct.toIntegralClosure_injective_of_flat [Module.Flat R S] :
     Function.Injective (toIntegralClosure R S B) := by
   refine Function.Injective.of_comp (f := (integralClosure _ _).val) ?_

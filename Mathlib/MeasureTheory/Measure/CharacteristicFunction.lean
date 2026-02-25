@@ -248,7 +248,6 @@ theorem Measure.ext_of_charFun [CompleteSpace E]
   · exact fun v hv ↦ DFunLike.ne_iff.mpr ⟨v, inner_self_ne_zero.mpr hv⟩
   · exact continuous_inner
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The characteristic function of a convolution of measures
 is the product of the respective characteristic functions. -/
 lemma charFun_conv [IsFiniteMeasure μ] [IsFiniteMeasure ν] (t : E) :

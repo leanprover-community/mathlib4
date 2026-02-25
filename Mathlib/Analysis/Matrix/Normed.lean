@@ -325,7 +325,6 @@ section NonUnitalSeminormedRing
 
 variable [NonUnitalSeminormedRing α]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem linfty_opNNNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [linfty_opNNNorm_def, Matrix.mul_apply]
   calc
