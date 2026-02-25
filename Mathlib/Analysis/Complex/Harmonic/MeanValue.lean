@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Harmonic.Analytic
 public import Mathlib.Analysis.Complex.MeanValue
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
 
 /-!
 # The Mean Value Property of Harmonic Functions on the Complex Plane
@@ -41,3 +42,24 @@ theorem HarmonicOnNhd.circleAverage_eq (hf : HarmonicOnNhd f (closedBall c |R|))
   · apply h₂F
     simp [mem_ball, dist_self, add_pos_of_pos_of_nonneg h₁e (abs_nonneg R)]
   · apply (h₁F.continuousOn.mono (fun _ _ ↦ by simp_all [dist_eq_norm])).circleIntegrable'
+
+/--
+The **Mean Value Property** of harmonic functions: If `f : ℂ → ℝ` is harmonic on a disc of radius
+`|R|` and center `c` and continuous on its closure, then the circle average `circleAverage f c R`
+equals `f c`.
+-/
+theorem HarmonicContOnCl.circleAverage_eq {f : ℂ → ℝ} {c : ℂ} {R : ℝ}
+    (h₁f : HarmonicContOnCl f (ball c |R|)) :
+    circleAverage f c R = f c := by
+  by_cases hR : R = 0
+  · simp_all
+  rw [← circleAverage_abs_radius]
+  apply ((h₁f.2.mono _).circleAverage (·.2.1.le)).eq_of_eqOn_Ioo (by aesop)
+  · intro r hr
+    apply HarmonicOnNhd.circleAverage_eq
+    · apply h₁f.1.mono
+      rw [abs_of_pos hr.1]
+      exact closedBall_subset_ball hr.2
+  · intro x hx
+    rw [closure_ball _ (by aesop), mem_closedBall_iff_norm]
+    exact hx.2
