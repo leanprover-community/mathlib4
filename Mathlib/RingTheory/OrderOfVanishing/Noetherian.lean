@@ -222,7 +222,7 @@ lemma ord_eq_addVal (x : R) : ord R x = IsDiscreteValuationRing.addVal R x := by
     exact (IsDiscreteValutationRing.not_krullDimLE_zero R) (PrimeSpectrum.instKrullDimLEOfNatNat R)
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
   obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hx hϖ
-  rw [ord_mul, ord_pow, ord_irreducible ϖ hϖ]
+  rw [ord_mul, ord_pow, ord_of_irreducible ϖ hϖ]
   · simp [IsDiscreteValuationRing.addVal_uniformizer hϖ]
   all_goals simp_all [Irreducible.ne_zero hϖ]
 
@@ -306,7 +306,7 @@ lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
   simp only [smul_eq_mul, map_mul]
   suffices (ordFrac R) ((algebraMap S K) a) ≥ 1 by exact le_mul_of_one_le_left' this
   suffices (ordFrac R) ((algebraMap R K) (algebraMap S R a)) ≥ 1 by
-    simpa [l.algebraMap_eq]
+    simpa [IsScalarTower.algebraMap_eq S R K]
   apply ordFrac_ge_one_of_ne_zero
   exact ha
 
@@ -329,7 +329,7 @@ lemma ordFrac_irreducible [IsDiscreteValuationRing R]
     (ϖ : R) (hϖ : Irreducible ϖ) : ordFrac R (algebraMap R K ϖ) = WithZero.exp 1 := by
   have : ϖ ≠ 0 := Irreducible.ne_zero hϖ
   simp only [ordFrac_eq_ord R ϖ this, mem_nonZeroDivisors_of_ne_zero this,
-      ordMonoidWithZeroHom_eq_ord, ord_irreducible ϖ hϖ]
+      ordMonoidWithZeroHom_eq_ord, ord_of_irreducible ϖ hϖ]
   rfl
 /--
 The analogue of `ord_of_isUnit` for `ordFrac`, saying `ordFrac R (algebraMap R K x) = 1` for some
