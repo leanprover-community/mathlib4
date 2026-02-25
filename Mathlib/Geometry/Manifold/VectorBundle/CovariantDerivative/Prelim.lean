@@ -81,6 +81,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
+-- Note: this lemma is no longer used, but still pretty nice
 lemma injective_mfderiv_of_eventually_leftInverse
     {f : M → M'} (x : M) {g : M' → M}
     (hg : MDifferentiableAt I' I g (f x)) (hf : MDifferentiableAt I I' f x)
@@ -92,6 +93,7 @@ lemma injective_mfderiv_of_eventually_leftInverse
     simpa using congr($this u).symm
   exact LeftInverse.injective this
 
+-- Note: this lemma is no longer used, but still pretty nice
 lemma surjective_mfderiv_of_eventually_rightInverse
     {f : M → M'} {x : M} {y : M'} (hxy : y = f x) {g : M' → M}
     (hg : MDifferentiableAt I' I g y) (hf : MDifferentiableAt I I' f x)
@@ -554,21 +556,64 @@ def Trivialization.deriv (v : TotalSpace F V) :
     TangentSpace (I.prod 𝓘(ℝ, F)) v →L[ℝ] TangentSpace I v.proj × F :=
   mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v
 
+variable (I) in
+noncomputable
+def Trivialization.derivInv (v : TotalSpace F V) :
+    TangentSpace I v.proj × F →L[ℝ] TangentSpace (I.prod 𝓘(ℝ, F)) v :=
+  mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e.invFun (e v)
+
+@[simp]
+lemma Trivialization.derivInv_deriv
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
+    (e.derivInv I v) ∘L (e.deriv I v) = .id ℝ _ := by
+  have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
+  have D₂ : MDifferentiableAt _ _ e v := e.mdifferentiableAt (I := I) hv v.2
+  rw [mk_proj_snd' e hv] at D₁
+  have comp := mfderiv_comp v D₁ D₂
+  rw [(invFun_comp_eventuallyEq e hv).mfderiv_eq, mfderiv_id] at comp
+  simp [deriv, derivInv, comp]
+
+@[simp]
+lemma Trivialization.derivInv_deriv_apply
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
+    (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
+    (e.derivInv I v (e.deriv I v u)) = u :=
+  show ((e.derivInv I v) ∘L (e.deriv I v)) u = u by simp [hv]
+
+@[simp]
+lemma Trivialization.deriv_derivInv
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
+    (e.deriv I v) ∘L (e.derivInv I v) = .id ℝ _ := by
+  have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
+  rw [mk_proj_snd' e hv] at D₁
+  have D₂ : MDifferentiableAt _ _ e v := e.mdifferentiableAt (I := I) hv v.2
+  have : e.invFun (e v) = v := by
+    simp [symm_apply_apply e ((mem_source e).mpr hv)]
+  rw [← this] at D₂
+  have comp := mfderiv_comp (e v) D₂ D₁
+  rw [(comp_invFun_eventuallyEq e hv).mfderiv_eq, mfderiv_id] at comp
+  symm
+  convert comp <;> rw [this]
+
+@[simp]
+lemma Trivialization.deriv_derivInv_apply
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
+    (u : TangentSpace I v.proj × F) :
+    e.deriv I v (e.derivInv I v u) = u :=
+  show ((e.deriv I v) ∘L (e.derivInv I v)) u = u by simp [hv]
+
 lemma Trivialization.bijective_deriv
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     Function.Bijective (e.deriv I v) := by
-  have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
-  rw [mk_proj_snd' e hv] at D₁
-  have D₂ : MDifferentiableAt _ _ e v := e.mdifferentiableAt (I := I) hv v.2
-  constructor
-  · apply injective_mfderiv_of_eventually_leftInverse v D₁ D₂
-    apply e.invFun_comp_eventuallyEq hv
-  · have : v = e.invFun (e v) :=
-      (Eventually.self_of_nhds <| e.invFun_comp_eventuallyEq hv).symm
-    apply surjective_mfderiv_of_eventually_rightInverse this D₂ D₁
-      (e.comp_invFun_eventuallyEq hv)
-
+   refine Function.bijective_iff_has_inverse.mpr ?_
+   use e.derivInv I v
+   constructor
+   all_goals { intro u; simp [hv] }
 
 lemma Trivialization.mdifferentiableAt_section_of_function
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
