@@ -213,21 +213,15 @@ section Real
 /-- `ℝ`-linear map from `ℂ` to itself, which we shall show is the real derivative of the
 `GL(2, ℝ)`-action on `ℍ`. -/
 noncomputable def smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ →L[ℝ] ℂ :=
-  -- TO DO: This is the same map as `UpperHalfPlane.σ` but bundled slightly differently: here as a
-  -- continuous `ℝ`-linear equivalence, while `UpperHalfPlane.σ` bundles it as a *ring* equiv.
-  -- Clearly it would be better to unify these by defining `UpperHalfPlane.σ` as a
-  -- `ContinuousAlgebraEquiv ℝ ℂ`, but this requires making `conj` as a `ContinuousAlgebraEquiv`
-  -- which doesn't seem to exist yet.
-  (if 0 < g.det.val then ContinuousLinearEquiv.refl ℝ ℂ else Complex.conjCLE) ∘L
-  (ContinuousLinearMap.toSpanSingleton ℂ (g.det.val / denom g z ^ 2)).restrictScalars ℝ
+  (σ g) ∘L (ContinuousLinearMap.toSpanSingleton ℂ (g.det.val / denom g z ^ 2)).restrictScalars ℝ
 
 @[simp]
 theorem smulFDeriv_J_mul (g : GL (Fin 2) ℝ) (z : ℂ) :
     smulFDeriv (J * g) z = -Complex.conjCLE ∘L smulFDeriv g z := by
   ext
   by_cases hg : 0 < g.val.det
-  · simp [smulFDeriv, hg, hg.not_gt, neg_div]
-  · simp [smulFDeriv, hg, g.det_ne_zero.lt_or_gt.resolve_right hg, neg_div]
+  · simp [smulFDeriv, σ, hg, hg.not_gt, neg_div]
+  · simp [smulFDeriv, σ, hg, g.det_ne_zero.lt_or_gt.resolve_right hg, neg_div]
 
 /-- Determinant of the derivative of `g : ℍ → ℍ` considered as an `ℝ`-linear map. This is used in
 the proof that the action is measure-preserving. Note this formula applies for both orientation-
@@ -235,11 +229,13 @@ preserving and orientation-reserving isometries. -/
 lemma det_smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) :
     (smulFDeriv g z).det =
       SignType.sign g.det.val * g.det ^ 2 / ‖denom g z‖ ^ 4 := by
-  simp [smulFDeriv, ContinuousLinearMap.det, LinearMap.det_restrictScalars,
-    Algebra.norm_complex_eq, Complex.normSq_eq_norm_sq,
-    apply_ite ContinuousLinearMap.toLinearMap, apply_ite LinearMap.det,
-    show Complex.conjCLE.toContinuousLinearMap.toLinearMap = Complex.conjAe.toLinearMap by rfl]
-  cases g.det_ne_zero.lt_or_gt <;> simp [*, lt_asymm, ← pow_mul, neg_div]
+  simp only [smulFDeriv, σ]
+  rcases g.det_ne_zero.lt_or_gt with h | h
+  · simp [h.not_gt, ContinuousLinearMap.det, LinearMap.det_restrictScalars,
+      Algebra.norm_complex_eq, Complex.normSq_eq_norm_sq, ← pow_mul, sign_neg h,
+      show Complex.conjCLE = Complex.conjAe.toLinearMap by rfl, neg_div]
+  · simp [ContinuousLinearMap.det, h, LinearMap.det_restrictScalars,
+      Algebra.norm_complex_eq, Complex.normSq_eq_norm_sq, ← pow_mul]
 
 lemma hasStrictFDerivAt_smul (g : GL (Fin 2) ℝ) (τ : ℍ) :
     HasStrictFDerivAt (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (smulFDeriv g τ) τ := by
@@ -250,7 +246,7 @@ lemma hasStrictFDerivAt_smul (g : GL (Fin 2) ℝ) (τ : ℍ) :
     · ext
       simp
   have := (hasStrictDerivAt_smul hg τ).hasStrictFDerivAt.restrictScalars ℝ
-  simp_all [smulFDeriv]
+  simp_all [smulFDeriv, σ]
 
 end Real
 
