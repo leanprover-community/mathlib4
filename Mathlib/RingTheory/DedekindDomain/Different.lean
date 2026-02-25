@@ -34,6 +34,7 @@ public import Mathlib.RingTheory.Trace.Quotient
 -/
 
 @[expose] public section
+set_option backward.isDefEq.respectTransparency false
 
 open Module
 
@@ -771,8 +772,8 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   replace H := (FractionalIdeal.coeIdeal_le_coeIdeal' _ (P := L) le_rfl).mpr H
   rw [FractionalIdeal.coeIdeal_mul, coeIdeal_differentIdeal A K] at H
   replace H := mul_le_mul_right H (FractionalIdeal.dual A K 1)
-  simp only [ne_eq, FractionalIdeal.dual_eq_zero_iff, one_ne_zero, not_false_eq_true,
-    mul_inv_cancel_left₀] at H
+  have hne : (1 : FractionalIdeal B⁰ L) ≠ 0 := one_ne_zero
+  rw [mul_inv_cancel_left₀ (FractionalIdeal.dual_ne_zero A K hne)] at H
   apply hx
   suffices Algebra.trace K L (algebraMap B L x) ∈ (p : FractionalIdeal A⁰ K) by
     obtain ⟨y, hy, e⟩ := this

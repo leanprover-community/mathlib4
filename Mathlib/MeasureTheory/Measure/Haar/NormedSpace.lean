@@ -61,14 +61,14 @@ lemma _root_.MonoidHom.exists_nhds_isBounded (f : G →* H) (hf : Measurable f) 
     simp_rw [nonpos_iff_eq_zero, ← measure_iUnion_null_iff, ← inter_iUnion, ← preimage_iUnion,
       iUnion_ball_nat, preimage_univ, inter_univ] at this
     exact this.not_gt <| isOpen_interior.measure_pos _ K.interior_nonempty
-  rw [← one_mul x, ← op_smul_eq_mul]
+  rw [← mul_one x, ← smul_eq_mul]
   refine ⟨_, smul_mem_nhds_smul _ <| div_mem_nhds_one_of_haar_pos_ne_top haar _
     (isOpen_interior.measurableSet.inter <| hf measurableSet_ball) hn <|
       mt (measure_mono_top <| inter_subset_left.trans interior_subset) K.isCompact.measure_ne_top,
     ?_⟩
   have : Bornology.IsBounded (f '' (interior K ∩ f ⁻¹' ball 1 n)) :=
     isBounded_ball.subset <| (image_mono inter_subset_right).trans <| image_preimage_subset _ _
-  rw [image_op_smul_distrib, image_div]
+  rw [image_smul_distrib, image_div]
   exact (this.div this).smul _
 
 end SeminormedGroup
@@ -85,6 +85,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The integral of `f (R • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
 thanks to the convention that a non-integrable function has integral zero. -/
@@ -171,6 +172,7 @@ end Measure
 
 variable {F : Type*} [NormedAddCommGroup F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
     (f : E → F) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ ↔ Integrable f μ := by

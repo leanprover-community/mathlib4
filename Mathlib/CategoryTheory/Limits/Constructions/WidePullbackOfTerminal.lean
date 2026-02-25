@@ -39,6 +39,7 @@ variable (c : Fan objs)
 abbrev ofFan (hB : IsTerminal B) : WidePullbackCone arrows :=
   WidePullbackCone.mk (hB.from _) c.proj (fun _ ↦ hB.hom_ext _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {c} in
 /-- When the base object is terminal, a limit wide pullback cone can be obtained
 from a limit fan. -/

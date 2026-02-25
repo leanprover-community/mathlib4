@@ -220,6 +220,7 @@ lemma pushoutCocone_inl_eq_inr_iff_of_iso {c c' : PushoutCocone f g} (e : c ≅ 
   · apply pushoutCocone_inl_eq_inr_imp_of_iso e
   · apply pushoutCocone_inl_eq_inr_imp_of_iso e.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
     (h₁ : Function.Injective f) (x₁ : X₁) (x₂ : X₂) :
     c.inl x₁ = c.inr x₂ ↔ ∃ (s : S), f s = x₁ ∧ g s = x₂ := by
@@ -229,6 +230,7 @@ lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : Is
   have := (mono_iff_injective f).2 h₁
   apply Pushout.inl_eq_inr_iff
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pushoutCocone_inr_mono_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
     [Mono f] : Mono c.inr := by
   change Mono ((Pushout.inr f g) ≫

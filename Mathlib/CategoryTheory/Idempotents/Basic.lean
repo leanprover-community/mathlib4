@@ -17,15 +17,15 @@ preadditive categories).
 ## Main definitions
 
 - `IsIdempotentComplete C` expresses that `C` is idempotent complete, i.e.
-all idempotents in `C` split. Other characterisations of idempotent completeness are given
-by `isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent` and
-`isIdempotentComplete_iff_idempotents_have_kernels`.
+  all idempotents in `C` split. Other characterisations of idempotent completeness are given
+  by `isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent` and
+  `isIdempotentComplete_iff_idempotents_have_kernels`.
 - `isIdempotentComplete_of_abelian` expresses that abelian categories are
-idempotent complete.
+  idempotent complete.
 - `isIdempotentComplete_iff_ofEquivalence` expresses that if two categories `C` and `D`
-are equivalent, then `C` is idempotent complete iff `D` is.
+  are equivalent, then `C` is idempotent complete iff `D` is.
 - `isIdempotentComplete_iff_opposite` expresses that `Cᵒᵖ` is idempotent complete
-iff `C` is.
+  iff `C` is.
 
 ## References
 * [Stacks: Karoubian categories] https://stacks.math.columbia.edu/tag/09SF
@@ -59,6 +59,7 @@ class IsIdempotentComplete : Prop where
 
 namespace Idempotents
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A category is idempotent complete iff for all idempotent endomorphisms,
 the equalizer of the identity and this idempotent exists. -/
 theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
@@ -139,6 +140,7 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
     slice_rhs 2 3 => rw [hpp']
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Equivalence.isIdempotentComplete {D : Type*} [Category* D] (ε : C ≌ D)
     (h : IsIdempotentComplete C) : IsIdempotentComplete D := by
   refine ⟨?_⟩

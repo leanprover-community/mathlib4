@@ -169,6 +169,18 @@ lemma infix_antisymm {l₁ l₂ : List α} (h₁ : l₁ <:+: l₂) (h₂ : l₂ 
     l₁ = l₂ :=
   h₁.sublist.antisymm h₂.sublist
 
+protected theorem IsPrefix.nodup {l₁ l₂ : List α} (h : l₁ <+: l₂) (hn : l₂.Nodup) :
+    l₁.Nodup :=
+  hn.sublist h.sublist
+
+protected theorem IsInfix.nodup {l₁ l₂ : List α} (h : l₁ <:+: l₂) (hn : l₂.Nodup) :
+    l₁.Nodup :=
+  hn.sublist h.sublist
+
+protected theorem IsSuffix.nodup {l₁ l₂ : List α} (h : l₁ <:+ l₂) (hn : l₂.Nodup) :
+    l₁.Nodup :=
+  hn.sublist h.sublist
+
 instance : IsPartialOrder (List α) (· <+: ·) where
   refl _ := prefix_rfl
   trans _ _ _ := IsPrefix.trans

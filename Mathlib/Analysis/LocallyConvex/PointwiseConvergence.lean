@@ -16,7 +16,7 @@ We prove that the topology of pointwise convergence is induced by a family of se
 that it is locally convex in the topological sense
 
 * `PointwiseConvergenceCLM.seminorm`: the seminorms on `E →SLₚₜ[σ] F` given by `A ↦ ‖A x‖` for fixed
-`x : E`.
+  `x : E`.
 * `PointwiseConvergenceCLM.withSeminorm`: the topology is induced by the seminorms.
 * `PointwiseConvergenceCLM.instLocallyConvexSpace`: `E →SLₚₜ[σ] F` is locally convex.
 

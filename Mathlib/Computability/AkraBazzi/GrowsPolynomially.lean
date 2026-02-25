@@ -85,6 +85,7 @@ lemma eventually_atTop_ge_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPoly
   obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_ge hb
   exact ⟨c, hc_mem, hc.natCast_atTop⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃ᶠ x in atTop, f x = 0) :
     ∀ᶠ x in atTop, f x = 0 := by
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf (1 / 2) (by norm_num)
@@ -473,6 +474,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
            _ = c₂ / 3 * (3 / 2 * f x) := by ring
            _ ≤ c₂ / 3 * (f x + g x) := by gcongr
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially f) :
     GrowsPolynomially fun x => (f x)⁻¹ := by
   cases hf.eventually_atTop_zero_or_pos_or_neg with
