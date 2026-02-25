@@ -1000,7 +1000,6 @@ lemma ringHomOfRingEquiv_apply (f : R ≃+* S) (I : FractionalIdeal (nonZeroDivi
       ⟨Submodule.map (IsFractionRing.semilinearEquivOfRingEquiv _ _ f).toLinearMap I.val,
         IsFractional.map' K L f I.prop⟩ := rfl
 
-@[simp]
 lemma ringHomOfRingEquiv_comp {T : Type*} [CommRing T] [IsDomain T] (M : Type*) [CommRing M]
     [Algebra T M] [IsFractionRing T M]
     (f : R ≃+* S) (g : S ≃+* T) :
@@ -1015,7 +1014,6 @@ lemma ringHomOfRingEquiv_comp {T : Type*} [CommRing T] [IsDomain T] (M : Type*) 
   rw [← Submodule.map_comp, IsFractionRing.semilinearEquivOfRingEquiv_comp K L f M]
   rfl
 
-@[simp]
 lemma ringHomOfRingEquiv_comp_apply {T : Type*} [CommRing T] [IsDomain T] (M : Type*) [CommRing M]
     [Algebra T M] [IsFractionRing T M]
     (f : R ≃+* S) (g : S ≃+* T) (I : FractionalIdeal R⁰ K) :
