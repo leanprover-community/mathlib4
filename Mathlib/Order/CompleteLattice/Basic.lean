@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.NAry
 public import Mathlib.Data.ULift
+public import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.Hom.Set
 
@@ -49,7 +50,7 @@ variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → 
 
 section
 
-variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
+variable [CompleteLattice α] {s t : Set α} {a b : α}
 
 theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
   IsLeast.mono (isLUB_sSup t) (isLUB_sSup s) <| upperBounds_mono_of_isCofinalFor h
@@ -63,7 +64,7 @@ end
 
 section
 
-variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
+variable [CompleteLattice α] {s t : Set α} {a b : α}
 
 theorem sInf_le_sInf_of_isCoinitialFor (h : IsCoinitialFor s t) : sInf t ≤ sInf s :=
   IsGreatest.mono (isGLB_sInf t) (isGLB_sInf s) <| lowerBounds_mono_of_isCoinitialFor h
@@ -95,22 +96,6 @@ theorem sSup_inter_le {s t : Set α} : sSup (s ∩ t) ≤ sSup s ⊓ sSup t :=
 
 theorem le_sInf_inter {s t : Set α} : sInf s ⊔ sInf t ≤ sInf (s ∩ t) :=
   @sSup_inter_le αᵒᵈ _ _ _
-
-@[simp]
-theorem sSup_empty : sSup ∅ = (⊥ : α) :=
-  (@isLUB_empty α _ _).sSup_eq
-
-@[simp]
-theorem sInf_empty : sInf ∅ = (⊤ : α) :=
-  (@isGLB_empty α _ _).sInf_eq
-
-@[simp]
-theorem sSup_univ : sSup univ = (⊤ : α) :=
-  (@isLUB_univ α _ _).sSup_eq
-
-@[simp]
-theorem sInf_univ : sInf univ = (⊥ : α) :=
-  (@isGLB_univ α _ _).sInf_eq
 
 -- TODO(Jeremy): get this automatically
 @[simp]
@@ -313,12 +298,6 @@ theorem isLUB_iSup : IsLUB (range f) (⨆ j, f j) :=
 
 theorem isGLB_iInf : IsGLB (range f) (⨅ j, f j) :=
   isGLB_sInf _
-
-theorem IsLUB.iSup_eq (h : IsLUB (range f) a) : ⨆ j, f j = a :=
-  h.sSup_eq
-
-theorem IsGLB.iInf_eq (h : IsGLB (range f) a) : ⨅ j, f j = a :=
-  h.sInf_eq
 
 theorem le_iSup_of_le (i : ι) (h : a ≤ f i) : a ≤ iSup f :=
   h.trans <| le_iSup _ i
@@ -1243,6 +1222,15 @@ theorem sInf_apply_eq_sInf_image {α : Type*} {β : α → Type*} [∀ i, InfSet
     sInf s a = sInf (eval a '' s) := by
   simp [sInf_apply, iInf, image_eq_range]
 
+instance {α : Type*} {β : α → Type*} [∀ i, Preorder (β i)] [∀ i, OrderSupInfSet (β i)] :
+    OrderSupInfSet (∀ i, β i) where
+  isLUB_sSup_of_exists_isLUB _ := fun ⟨_, h⟩ ↦ by
+    simp only [isLUB_pi, sSup_apply_eq_sSup_image] at h ⊢
+    exact fun i ↦ isLUB_sSup_of_exists_isLUB ⟨_, h i⟩
+  isGLB_sInf_of_exists_isGLB _ := fun ⟨_, h⟩ ↦ by
+    simp only [isGLB_pi, sInf_apply_eq_sInf_image] at h ⊢
+    exact fun i ↦ isGLB_sInf_of_exists_isGLB ⟨_, h i⟩
+
 @[simp]
 theorem iSup_apply {α : Type*} {β : α → Type*} {ι : Sort*} [∀ i, SupSet (β i)] {f : ι → ∀ a, β a}
     {a : α} : (⨆ i, f i) a = ⨆ i, f i a := by
@@ -1354,6 +1342,15 @@ theorem swap_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).swap 
 theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
     ⨆ i, (f i, g i) = (⨆ i, f i, ⨆ i, g i) :=
   congr_arg₂ Prod.mk (fst_iSup _) (snd_iSup _)
+
+instance [Preorder α] [OrderSupInfSet α] [Preorder β] [OrderSupInfSet β] :
+    OrderSupInfSet (α × β) where
+  isLUB_sSup_of_exists_isLUB _ := fun ⟨_, h⟩ ↦ by
+    rw [isLUB_prod] at h ⊢
+    exact ⟨isLUB_sSup_of_exists_isLUB ⟨_, h.1⟩, isLUB_sSup_of_exists_isLUB ⟨_, h.2⟩⟩
+  isGLB_sInf_of_exists_isGLB _ := fun ⟨_, h⟩ ↦ by
+    rw [isGLB_prod] at h ⊢
+    exact ⟨isGLB_sInf_of_exists_isGLB ⟨_, h.1⟩, isGLB_sInf_of_exists_isGLB ⟨_, h.2⟩⟩
 
 instance instCompleteLattice [CompleteLattice α] [CompleteLattice β] : CompleteLattice (α × β) where
   __ := instBoundedOrder α β

@@ -876,10 +876,6 @@ theorem max_zero_right : ∀ a : Ordinal, max a 0 = a :=
 theorem max_eq_zero {a b : Ordinal} : max a b = 0 ↔ a = 0 ∧ b = 0 :=
   max_eq_bot
 
-@[simp]
-theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
-  dif_neg Set.not_nonempty_empty
-
 /-! ### Successor order properties -/
 
 set_option backward.privateInPublic true in
@@ -900,7 +896,12 @@ instance : SuccOrder Ordinal.{u} :=
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
+@[simp]
+theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
+  dif_neg (fun ⟨_, h⟩ ↦ not_isTop _ (isGLB_empty_iff.mp h))
+
 -- TODO: deprecate this in favor of `Order.succ_eq_add_one`
+@[simp]
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
   rfl
 

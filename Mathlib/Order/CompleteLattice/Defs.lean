@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.Bounds.Basic
-public import Mathlib.Order.SetNotation
 
 /-!
 # Definition of complete lattices
@@ -52,6 +51,10 @@ variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → 
 instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
   ⟨(sInf : Set α → α)⟩
 
+instance OrderDual.orderSupInfSet (α) [LE α] [OrderSupInfSet α] : OrderSupInfSet αᵒᵈ where
+  isLUB_sSup_of_exists_isLUB _ := isGLB_sInf_of_exists_isGLB (α := α)
+  isGLB_sInf_of_exists_isGLB _ := isLUB_sSup_of_exists_isLUB (α := α)
+
 /-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
 
@@ -95,9 +98,6 @@ theorem isLUB_sSup (s : Set α) : IsLUB s (sSup s) :=
 lemma isLUB_iff_sSup_eq : IsLUB s a ↔ sSup s = a :=
   ⟨(isLUB_sSup s).unique, by rintro rfl; exact isLUB_sSup _⟩
 
-@[to_dual]
-alias ⟨IsLUB.sSup_eq, _⟩ := isLUB_iff_sSup_eq
-
 @[to_dual sInf_le_of_le]
 theorem le_sSup_of_le (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
   le_trans h (le_sSup hb)
@@ -130,6 +130,11 @@ class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α
     CompleteSemilatticeInf α, BoundedOrder α
 
 attribute [to_dual existing] CompleteLattice.toCompleteSemilatticeInf
+
+instance (priority := 100) CompleteLattice.toOrderSupInfSet [CompleteLattice α] :
+    OrderSupInfSet α where
+  isLUB_sSup_of_exists_isLUB _ _ := isLUB_sSup _
+  isGLB_sInf_of_exists_isGLB _ _ := isGLB_sInf _
 
 -- Shortcut instance to ensure that the path
 -- `CompleteLattice α → CompletePartialOrder α → PartialOrder α` isn't taken,

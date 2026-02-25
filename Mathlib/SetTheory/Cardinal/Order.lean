@@ -380,7 +380,7 @@ instance : ConditionallyCompleteLinearOrderBot Cardinal :=
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
-  dif_neg Set.not_nonempty_empty
+  dif_neg (fun ⟨_, h⟩ ↦ not_isTop _ (isGLB_empty_iff.mp h))
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 instance : SuccOrder Cardinal := ConditionallyCompleteLinearOrder.toSuccOrder
@@ -540,7 +540,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
   subst h
   suffices BddAbove (range f) from (isLUB_csSup' this).mem_of_not_isSuccPrelimit hω
   contrapose! hω with hf
-  rw [iSup, csSup_of_not_bddAbove hf, csSup_empty]
+  rw [iSup, csSup_of_not_bddAbove hf, sSup_empty]
   exact isSuccPrelimit_bot
 
 lemma exists_eq_of_iSup_eq_of_not_isSuccLimit

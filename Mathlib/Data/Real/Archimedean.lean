@@ -137,8 +137,10 @@ protected theorem isGLB_sInf (h₁ : s.Nonempty) (h₂ : BddBelow s) : IsGLB s (
 noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
   __ := Real.linearOrder
   __ := Real.lattice
-  isLUB_csSup _ := Real.isLUB_sSup
-  isGLB_csInf _ := Real.isGLB_sInf
+  isLUB_sSup_of_exists_isLUB _ := fun ⟨_, h⟩ ↦ Real.isLUB_sSup h.nonempty h.bddAbove
+  isGLB_sInf_of_exists_isGLB _ := fun ⟨_, h⟩ ↦ Real.isGLB_sInf h.nonempty h.bddBelow
+  exists_isLUB_of_nonempty_of_bddAbove _ hn hb := ⟨_, Real.isLUB_sSup hn hb⟩
+  exists_isGLB_of_nonempty_of_bddBelow _ hn hb := ⟨_, Real.isGLB_sInf hn hb⟩
   csSup_of_not_bddAbove s hs := by simp [hs, sSup_def]
   csInf_of_not_bddBelow s hs := by simp [hs, sInf_def, sSup_def]
 
