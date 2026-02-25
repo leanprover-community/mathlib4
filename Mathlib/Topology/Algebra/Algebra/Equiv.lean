@@ -103,6 +103,17 @@ theorem coe_apply (e : A ≃A[R] B) (a : A) : (e : A →A[R] B) a = e a := rfl
 @[simp]
 theorem coe_coe (e : A ≃A[R] B) : ⇑(e : A →A[R] B) = e := rfl
 
+/-- The natural coercion from a continuous algebra isomorphism to a continuous
+module isomorphism. -/
+@[coe] def toContinuousLinearEquiv (e : A ≃A[R] B) : A ≃L[R] B :=
+  { e.toLinearEquiv, e.toHomeomorph with }
+
+instance coeCLE : Coe (A ≃A[R] B) (A ≃L[R] B) := ⟨toContinuousLinearEquiv⟩
+
+@[simp] theorem coeCLE_apply (e : A ≃A[R] B) (a : A) : (e : A ≃L[R] B) a = e a := rfl
+
+@[simp] theorem coe_coeCLE (e : A ≃A[R] B) : ⇑(e : A ≃L[R] B) = e := rfl
+
 theorem toAlgEquiv_injective : Function.Injective (toAlgEquiv : (A ≃A[R] B) → A ≃ₐ[R] B) := by
   rintro ⟨e, _, _⟩ ⟨e', _, _⟩ rfl
   rfl
@@ -120,14 +131,6 @@ theorem coe_inj {f g : A ≃A[R] B} : (f : A →A[R] B) = g ↔ f = g :=
 
 @[simp]
 theorem coe_toAlgEquiv (e : A ≃A[R] B) : ⇑e.toAlgEquiv = e := rfl
-
-/-- The natural coercion from a continuous algebra isomorphism
-to a continuous linear isomorphism. -/
-@[coe]
-def toContinuousLinearEquiv (e : A ≃A[R] B) : A ≃L[R] B :=
-  { e with __ := e.toLinearEquiv }
-
-instance : Coe (A ≃A[R] B) (A ≃L[R] B) := ⟨toContinuousLinearEquiv⟩
 
 @[simp]
 theorem toContinuousLinearEquiv_apply (e : A ≃A[R] B) (a : A) :
@@ -198,6 +201,9 @@ theorem refl_apply (a : A) : refl R A a = a := rfl
 
 @[simp]
 theorem coe_refl : refl R A = ContinuousAlgHom.id R A := rfl
+
+@[simp]
+theorem coeCLE_refl : refl R A = ContinuousLinearEquiv.refl R A := rfl
 
 @[simp]
 theorem coe_refl' : ⇑(refl R A) = id := rfl

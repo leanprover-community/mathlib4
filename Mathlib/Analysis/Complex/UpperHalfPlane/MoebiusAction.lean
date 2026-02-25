@@ -88,8 +88,8 @@ lemma moebius_im (g : GL (Fin 2) ℝ) (z : ℂ) :
   ring
 
 /-- Automorphism of `ℂ`: the identity if `0 < det g` and conjugation otherwise. -/
-noncomputable def σ (g : GL (Fin 2) ℝ) : ℂ →+* ℂ :=
-  if 0 < g.det.val then RingHom.id ℂ else starRingEnd ℂ
+noncomputable def σ (g : GL (Fin 2) ℝ) : ℂ ≃A[ℝ] ℂ :=
+  if 0 < g.det.val then .refl ℝ ℂ else Complex.conjCAE
 
 lemma σ_conj (g : GL (Fin 2) ℝ) (z : ℂ) : σ g (conj z) = conj (σ g z) := by
   simp only [σ]
@@ -144,7 +144,7 @@ lemma smulAux'_im (g : GL (Fin 2) ℝ) (z : ℂ) :
   simp only [smulAux', σ]
   split_ifs with h <;>
   [rw [abs_of_pos h]; rw [abs_of_nonpos (not_lt.mp h)]] <;>
-  simpa only [starRingAut_apply, Complex.star_def, Complex.conj_im,
+  simpa only [Complex.conjCAE_apply, Complex.star_def, Complex.conj_im,
     neg_mul, neg_div, neg_inj] using moebius_im g z
 
 /-- Fractional linear transformation, also known as the Moebius transformation -/
@@ -197,7 +197,7 @@ lemma coe_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
 lemma coe_smul_of_det_pos {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
     ↑(g • z) = num g z / denom g z := by
   change smulAux' g z = _
-  rw [smulAux', σ, if_pos hg, RingHom.id_apply, num, denom]
+  rw [smulAux', σ, if_pos hg, ContinuousAlgEquiv.refl_apply, num, denom]
 
 lemma denom_cocycle_σ (g h : GL (Fin 2) ℝ) (z : ℍ) :
     denom (g * h) z = σ h (denom g ↑(h • z)) * denom h z :=
@@ -215,8 +215,8 @@ theorem re_smul : (g • z).re = (num g z / denom g z).re := by
 
 theorem im_smul : (g • z).im = |(num g z / denom g z).im| := by
   change (smulAux' g z).im = _
-  simp only [smulAux', σ, DFunLike.ite_apply, RingHom.id_apply, apply_ite, moebius_im,
-    Complex.conj_im, ← neg_div, ← neg_mul, abs_div, abs_mul,
+  simp only [smulAux', σ, DFunLike.ite_apply, ContinuousAlgEquiv.refl_apply, apply_ite, moebius_im,
+    Complex.conjCAE_apply, Complex.conj_im, ← neg_div, ← neg_mul, abs_div, abs_mul,
     abs_of_pos (show 0 < (z : ℂ).im from z.coe_im ▸ z.im_pos),
     abs_of_nonneg <| Complex.normSq_nonneg _]
   split_ifs with h <;> [rw [abs_of_pos h]; rw [abs_of_nonpos (not_lt.mp h)]]
@@ -315,7 +315,7 @@ lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
 
 @[simp] lemma det_J : J.det = -1 := by ext; simp [J]
 
-@[simp] lemma sigma_J : σ J = starRingEnd ℂ := by simp [σ, J]
+@[simp] lemma sigma_J : σ J = Complex.conjCAE := by simp [σ, J]
 
 @[simp] lemma denom_J (τ : ℂ) : denom J τ = 1 := by simp [J, denom]
 
