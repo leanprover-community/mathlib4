@@ -298,21 +298,21 @@ theorem add_kernel_apply (K₁ K₂ : Kernel X) (x y : X) :
   rfl
 
 /-- A kernel `K` multiplied by a nonnegative real number `c` yields the kernel `(x,y) ↦ c * K(x,y)`. -/
-def smulPosKernel (r : ℝ) (hr : r ≥ 0) (k : Kernel X) : Kernel X := {
-  kernel := fun x y => r * k.kernel x y
-  symmetric := by intro x y; simp_rw [k.symmetric]
+def smulPosKernel (r : ℝ) (hr : r ≥ 0) (K : Kernel X) : Kernel X := {
+  kernel := fun x y => r * K.kernel x y
+  symmetric := by intro x y; simp_rw [K.symmetric]
   posSemiDef := by
     intro c
-    have (x : X) : ∑ y ∈ c.support, c x * c y * (r * k.kernel x y) = r * ∑ y ∈ c.support, c x * c y * k.kernel x y := by
+    have (x : X) : ∑ y ∈ c.support, c x * c y * (r * K.kernel x y) = r * ∑ y ∈ c.support, c x * c y * K.kernel x y := by
       simp_rw [mul_assoc, mul_comm, Finset.mul_sum, <-mul_assoc, mul_comm]
     simp_rw [this, <-Finset.mul_sum]
-    have h := k.posSemiDef c
+    have h := K.posSemiDef c
     simp [mul_nonneg hr h]
 }
 
 @[simp]
-theorem smulPoseKernel_apply (r : ℝ) (hr : r ≥ 0) (k : Kernel X) (x y : X) :
-    (smulPosKernel r hr k).kernel x y = r * k.kernel x y :=
+theorem smulPoseKernel_apply (r : ℝ) (hr : r ≥ 0) (K : Kernel X) (x y : X) :
+    (smulPosKernel r hr K).kernel x y = r * K.kernel x y :=
   rfl
 
 /-- A kernel `K` multiplied by a natural number `n` yields the kernel `(x,y) ↦ n * K(x,y)`. -/
@@ -340,9 +340,9 @@ instance : AddCommMonoid (Kernel X) where
   nsmul := nsmulRec
 
 /-- A kernel `K` with its domain mapped through a function `f:X→Y` yields the kernel `(x₁,x₂) ↦ K(f(x₁),f(x₂))`. -/
-def pullbackKernel {Y : Type*} [DecidableEq Y] (f : X → Y) (k : Kernel Y) : Kernel X := {
-  kernel := fun x₁ x₂ => k.kernel (f x₁) (f x₂)
-  symmetric := by intro x y; simp_rw [k.symmetric]
+def pullbackKernel {Y : Type*} [DecidableEq Y] (f : X → Y) (K : Kernel Y) : Kernel X := {
+  kernel := fun x₁ x₂ => K.kernel (f x₁) (f x₂)
+  symmetric := by intro x y; simp_rw [K.symmetric]
   posSemiDef := by
     intro c
     let d := c.mapDomain f
@@ -360,13 +360,13 @@ def pullbackKernel {Y : Type*} [DecidableEq Y] (f : X → Y) (k : Kernel Y) : Ke
       rw [hd y]
       simp_all
     calc
-      ∑ x ∈ c.support, ∑ y ∈ c.support, c x * c y * k.kernel (f x) (f y)
+      ∑ x ∈ c.support, ∑ y ∈ c.support, c x * c y * K.kernel (f x) (f y)
       =
       ∑ x ∈ c.support, ∑ y ∈ c.support, ∑ u ∈ D, ∑ v ∈ D,
           c x * c y *
           (if f x = u then 1 else 0) *
           (if f y = v then 1 else 0) *
-          k.kernel u v := by
+          K.kernel u v := by
         apply Finset.sum_congr rfl
         intro x₁ hx₁
         apply Finset.sum_congr rfl
@@ -382,7 +382,7 @@ def pullbackKernel {Y : Type*} [DecidableEq Y] (f : X → Y) (k : Kernel Y) : Ke
           c x * c y *
           (if f x = u then 1 else 0) *
           (if f y = v then 1 else 0) *
-          k.kernel u v := by
+          K.kernel u v := by
           apply Finset.sum_congr rfl
           intro x₁ hx₁
           exact Eq.symm Finset.sum_comm_cycle
@@ -390,12 +390,12 @@ def pullbackKernel {Y : Type*} [DecidableEq Y] (f : X → Y) (k : Kernel Y) : Ke
           c x * c y *
           (if f x = u then 1 else 0) *
           (if f y = v then 1 else 0) *
-          k.kernel u v := by
+          K.kernel u v := by
           exact Eq.symm Finset.sum_comm_cycle
     _ = ∑ u ∈ D, ∑ v ∈ D,
         (∑ x ∈ c.support, c x * (if f x = u then 1 else 0)) *
         (∑ y ∈ c.support, c y * (if f y = v then 1 else 0)) *
-          k.kernel u v := by
+          K.kernel u v := by
           apply Finset.sum_congr rfl
           intro y₁ hy₁
           apply Finset.sum_congr rfl
@@ -410,14 +410,14 @@ def pullbackKernel {Y : Type*} [DecidableEq Y] (f : X → Y) (k : Kernel Y) : Ke
           intro x₂ hx₂
           rw [mul_comm (c x₁), mul_assoc (c x₂), mul_comm (c x₂), mul_assoc _ (c x₂),
             mul_comm (c x₁ * if f x₁ = y₁ then 1 else 0)]
-    _ = ∑ u ∈ D, ∑ v ∈ D, d u * d v * k.kernel u v := by
+    _ = ∑ u ∈ D, ∑ v ∈ D, d u * d v * K.kernel u v := by
       apply Finset.sum_congr rfl
       intro y₁ hy₁
       apply Finset.sum_congr rfl
       intro y₂ hy₂
       rw [hd' y₁]
       rw [hd' y₂]
-    _ = ∑ u ∈ d.support, ∑ v ∈ d.support, d u * d v * k.kernel u v := by
+    _ = ∑ u ∈ d.support, ∑ v ∈ d.support, d u * d v * K.kernel u v := by
       rw [Finset.sum_subset (s₁:=d.support) (s₂:=D) (M:=ℝ)]
       · apply Finset.sum_congr rfl
         intro y₁ hy₁
@@ -429,45 +429,45 @@ def pullbackKernel {Y : Type*} [DecidableEq Y] (f : X → Y) (k : Kernel Y) : Ke
       rintro y₁ hy₁ hy₁nd
       simp_all
     _ ≥ 0 := by
-      exact k.posSemiDef d
+      exact K.posSemiDef d
   }
 
 /-- A kernel `K` with its domain restricted from `X` to a subset of `X` is still a kernel. -/
-def restrictKernel [DecidableEq X] (S : Set X) (k : Kernel X) : Kernel S := pullbackKernel (Subtype.val : S → X) k
+def restrictKernel [DecidableEq X] (S : Set X) (K : Kernel X) : Kernel S := pullbackKernel (Subtype.val : S → X) K
 
 open Matrix
 open scoped MatrixOrder
 
 /-- Any kernel `K` can be turned into a matrix given a list `[x₁,...,xₙ]` (so overlap allowed, atypical though)
   by defining the matrix $K_{n,m}=K(x_n,x_m)$. -/
-def toMatrix (k : Kernel X) (L : List X) : Matrix (Fin L.length) (Fin L.length) ℝ := Matrix.of fun i j => k.kernel (L.get i) (L.get j)
+def toMatrix (K : Kernel X) (L : List X) : Matrix (Fin L.length) (Fin L.length) ℝ := Matrix.of fun i j => K.kernel (L.get i) (L.get j)
 
 /-- A kernel is positive semi-definite, which mean that the formed kernel matrix is PSD. -/
-theorem toMatrix_posSemiDef (k : Kernel X) (L : List X) : Matrix.PosSemidef (k.toMatrix L) := by
+theorem toMatrix_posSemiDef (K : Kernel X) (L : List X) : Matrix.PosSemidef (K.toMatrix L) := by
   classical
   let N := L.length
-  set K:= k.toMatrix L
+  set Kₘ := K.toMatrix L
   constructor
   · rw [Matrix.IsHermitian.ext_iff]
     intro i j
-    rw [show star (K j i) = k.kernel (L.get j) (L.get i) from rfl]
-    rw [show K i j = k.kernel (L.get i) (L.get j) from rfl]
-    exact k.symmetric (L.get j) (L.get i)
+    rw [show star (Kₘ j i) = K.kernel (L.get j) (L.get i) from rfl]
+    rw [show Kₘ i j = K.kernel (L.get i) (L.get j) from rfl]
+    exact K.symmetric (L.get j) (L.get i)
   · intro c_pre
-    let k' := pullbackKernel L.get k
+    let K' := pullbackKernel L.get K
     calc
-      (c_pre.sum fun i xi ↦ c_pre.sum fun j xj ↦ star xi * K i j * xj) = ∑ i ∈ c_pre.support, ∑ j ∈ c_pre.support, star (c_pre i) * K i j * c_pre j := by
+      (c_pre.sum fun i xi ↦ c_pre.sum fun j xj ↦ star xi * Kₘ i j * xj) = ∑ i ∈ c_pre.support, ∑ j ∈ c_pre.support, star (c_pre i) * Kₘ i j * c_pre j := by
         rfl
-      _ = ∑ i ∈ c_pre.support, ∑ j ∈ c_pre.support, c_pre i * c_pre j * k'.kernel i j := by
+      _ = ∑ i ∈ c_pre.support, ∑ j ∈ c_pre.support, c_pre i * c_pre j * K'.kernel i j := by
         apply Finset.sum_congr rfl
         intro i hi
         apply Finset.sum_congr rfl
         intro j hj
-        rw [star_trivial, mul_assoc, mul_comm (K i j), <-mul_assoc]
+        rw [star_trivial, mul_assoc, mul_comm (Kₘ i j), <-mul_assoc]
         simp_all
         rfl
       _ ≥ 0 := by
-        exact k'.posSemiDef c_pre
+        exact K'.posSemiDef c_pre
 
 /-- Schur's product: The hadamard product of two PSD matrices is PSD. Should perhaps be part of
   `Matrix.PosDef` or mabye `Matrix.Hadamard`. -/
@@ -655,20 +655,20 @@ theorem mul_kernel_apply (K₁ K₂ : Kernel X) (x y : X) :
   rfl
 
 /-- The powers of kernels follows by repeated multiplication. -/
-def natPowKernel (k : Kernel X) : ℕ → Kernel X
+def natPowKernel (K : Kernel X) : ℕ → Kernel X
   | 0     => oneKernel
-  | n+1   => mulKernel (natPowKernel k n) k
+  | n+1   => mulKernel (natPowKernel K n) K
 
 @[simp]
-lemma powKernel_zero (k : Kernel X) :
-  natPowKernel k 0 = oneKernel := rfl
+lemma powKernel_zero (K : Kernel X) :
+  natPowKernel K 0 = oneKernel := rfl
 
 @[simp]
-lemma powKernel_succ (k : Kernel X) (n : ℕ) :
-  natPowKernel k (n+1) = (natPowKernel k n) * k := rfl
+lemma powKernel_succ (K : Kernel X) (n : ℕ) :
+  natPowKernel K (n+1) = (natPowKernel K n) * K := rfl
 
 @[simp]
-lemma natPowKernel_apply (k : Kernel X) (N : ℕ) (x y : X) : (natPowKernel k N).kernel x y = (k.kernel x y)^N := by
+lemma natPowKernel_apply (K : Kernel X) (N : ℕ) (x y : X) : (natPowKernel K N).kernel x y = (K.kernel x y)^N := by
   induction N with
   | zero => rfl
   | succ n h =>
@@ -695,28 +695,28 @@ def featureKernel {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] (
 }
 
 @[simp]
-theorem featureKernel_apply {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] (φ : X → F) (x y : X) :
+theorem featureKernel_apply {α : Type*} [NormedAddCommGroup α] [InnerProductSpace ℝ α] (φ : X → α) (x y : X) :
     (featureKernel φ).kernel x y = inner ℝ (φ x) (φ y) :=
   rfl
 
 /-- A kernel `K` scaled on both sides with a function `f:X→ℝ` yields the kernel `(x₁,x₂) ↦ f(x₁)k(x₁,x₂)f(x₁)`. -/
-noncomputable def scaledKernel (f : X → ℝ) (k : Kernel X) : Kernel X := by
-  let k' := featureKernel f
-  exact mulKernel k k'
+noncomputable def scaledKernel (f : X → ℝ) (K : Kernel X) : Kernel X := by
+  let K' := featureKernel f
+  exact mulKernel K K'
 
 /-- Any polynomial $x↦∑_{n=1}^∞ f_n x^n$ with at most finitely many non-zero coefficients, all
   positive, yields the kernel $(x₁,x₂)↦∑_{n=1}^∞ f_n K(x₁,x₂)^n`. -/
-def polyOfKernel (f : ℕ →₀ ℝ) (hf : ∀ (n : ℕ), f n ≥ 0) (k : Kernel X) : Kernel X := {
-  kernel := fun x y => ∑ n ∈ f.support, f n * (natPowKernel k n).kernel x y
+def polyOfKernel (f : ℕ →₀ ℝ) (hf : ∀ (n : ℕ), f n ≥ 0) (K : Kernel X) : Kernel X := {
+  kernel := fun x y => ∑ n ∈ f.support, f n * (natPowKernel K n).kernel x y
   symmetric := by
     intro x y
     apply Finset.sum_congr rfl
     intro z hz
-    simp [k.symmetric]
+    simp [K.symmetric]
   posSemiDef := by
     intro c
     calc
-      _ = ∑ x ∈ c.support, ∑ y ∈ c.support, ∑ n ∈ f.support, c x * c y * f n * (k.natPowKernel n).kernel x y := by
+      _ = ∑ x ∈ c.support, ∑ y ∈ c.support, ∑ n ∈ f.support, c x * c y * f n * (K.natPowKernel n).kernel x y := by
         apply Finset.sum_congr rfl
         intro x hx
         apply Finset.sum_congr rfl
@@ -725,17 +725,17 @@ def polyOfKernel (f : ℕ →₀ ℝ) (hf : ∀ (n : ℕ), f n ≥ 0) (k : Kerne
         apply Finset.sum_congr rfl
         intro n hn
         rw [mul_assoc (c x * c y)]
-      _ = ∑ x ∈ c.support, ∑ n ∈ f.support, ∑ y ∈ c.support, c x * c y * f n * (k.natPowKernel n).kernel x y := by
+      _ = ∑ x ∈ c.support, ∑ n ∈ f.support, ∑ y ∈ c.support, c x * c y * f n * (K.natPowKernel n).kernel x y := by
         apply Finset.sum_congr rfl
         intro x hx
         rw [Finset.sum_comm]
-      _ = ∑ n ∈ f.support, ∑ x ∈ c.support, ∑ y ∈ c.support, c x * c y * f n * (k.natPowKernel n).kernel x y := by
+      _ = ∑ n ∈ f.support, ∑ x ∈ c.support, ∑ y ∈ c.support, c x * c y * f n * (K.natPowKernel n).kernel x y := by
         rw [Finset.sum_comm]
       _ ≥ 0 := by
         apply Finset.sum_nonneg
         rintro n hn
         simp_rw [mul_comm (c _ * c _) (f n)]
-        have : ∑ x ∈ c.support, ∑ x_1 ∈ c.support, f n * (c x * c x_1) * (k.natPowKernel n).kernel x x_1 = ∑ x ∈ c.support, f n * ∑ x_1 ∈ c.support, (c x * c x_1) * (k.natPowKernel n).kernel x x_1 := by
+        have : ∑ x ∈ c.support, ∑ x_1 ∈ c.support, f n * (c x * c x_1) * (K.natPowKernel n).kernel x x_1 = ∑ x ∈ c.support, f n * ∑ x_1 ∈ c.support, (c x * c x_1) * (K.natPowKernel n).kernel x x_1 := by
           apply Finset.sum_congr rfl
           intro x hx
           rw [Finset.mul_sum]
@@ -743,26 +743,26 @@ def polyOfKernel (f : ℕ →₀ ℝ) (hf : ∀ (n : ℕ), f n ≥ 0) (k : Kerne
           intro y hy
           simp [mul_assoc]
         rw [this]
-        have : ∑ x ∈ c.support, f n * ∑ x_1 ∈ c.support, (c x * c x_1) * (k.natPowKernel n).kernel x x_1 = f n * ∑ x ∈ c.support, ∑ x_1 ∈ c.support, (c x * c x_1) * (k.natPowKernel n).kernel x x_1 := by
+        have : ∑ x ∈ c.support, f n * ∑ x_1 ∈ c.support, (c x * c x_1) * (K.natPowKernel n).kernel x x_1 = f n * ∑ x ∈ c.support, ∑ x_1 ∈ c.support, (c x * c x_1) * (K.natPowKernel n).kernel x x_1 := by
           rw [Finset.mul_sum]
         rw [this]
-        exact mul_nonneg (hf n) ((k.natPowKernel n).posSemiDef c)
+        exact mul_nonneg (hf n) ((K.natPowKernel n).posSemiDef c)
 }
 
 @[simp]
-theorem polyOfKernel_apply (f : ℕ →₀ ℝ) (hf : ∀ (n : ℕ), f n ≥ 0) (k : Kernel X) (x y : X) :
-    (polyOfKernel f hf k).kernel x y = ∑ n ∈ f.support, f n * (natPowKernel k n).kernel x y :=
+theorem polyOfKernel_apply (f : ℕ →₀ ℝ) (hf : ∀ (n : ℕ), f n ≥ 0) (K : Kernel X) (x y : X) :
+    (polyOfKernel f hf K).kernel x y = ∑ n ∈ f.support, f n * (natPowKernel K n).kernel x y :=
   rfl
 
 /-- Any kernel `K` satisfies the Cauchy-Schwartz type inequality `K(x₁,x₂)^2 ≤ K(x₁,x₁) * K(x₂,x₂)`. -/
-theorem sq_le_ker_mul_ker (k : Kernel X) (x y : X) : (k.kernel x y)^2 ≤ k.kernel x x * k.kernel y y := by
+theorem sq_le_ker_mul_ker (K : Kernel X) (x y : X) : (K.kernel x y)^2 ≤ K.kernel x x * K.kernel y y := by
   classical
-  have hΓ := toMatrix_posSemiDef k [x, y]
+  have hΓ := toMatrix_posSemiDef K [x, y]
   have h_nonneg := Matrix.PosSemidef.det_nonneg hΓ
-  set A : Matrix (Fin 2) (Fin 2) ℝ := k.toMatrix [x, y]
+  set A : Matrix (Fin 2) (Fin 2) ℝ := K.toMatrix [x, y]
   rw [Matrix.det_fin_two] at h_nonneg
   rw [pow_two]
-  nth_rw 2 [k.symmetric]
+  nth_rw 2 [K.symmetric]
   rw [sub_nonneg] at h_nonneg
   exact h_nonneg
 
@@ -984,7 +984,7 @@ instance : IsOrderedRing (Kernel X) where
     rw [hKdiff]
     rw [right_distrib]
 
-theorem zero_le (k : Kernel X) : 0 ≤ k := ⟨k, by simp⟩
+theorem zero_le (K : Kernel X) : 0 ≤ K := ⟨K, by simp⟩
 
 /-- Any pointwise limit of kernels is again a kernel. -/
 def pointwiseLimitKernel (Kseq : ℕ → Kernel X) (K : X → X → ℝ) (h_conv : ∀ x y, Filter.Tendsto (fun n => (Kseq n).kernel x y) Filter.atTop (nhds (K x y))) : Kernel X := {
@@ -1033,25 +1033,25 @@ theorem finsetSumKernel_apply {α : Type*} (s : Finset α) (K : α → Kernel X)
 
 /-- Any power series $x↦∑_{n=1}^∞ f_n x^n$ with nonnegative coefficients yields the kernel
   $(x₁,x₂)↦∑_{n=1}^∞ f_n K(x₁,x₂)^n`. -/
-noncomputable def posPowerSeriesKernel (p : PowerSeries ℝ) (hp₁ : ∀ n, 0 ≤ PowerSeries.coeff n p) (hp₂ : ∀ x : ℝ, Summable (fun n => PowerSeries.coeff n p * x ^ n)) (k : Kernel X) : Kernel X :=
-  let Kseq : ℕ → Kernel X := fun N => finsetSumKernel (Finset.range N) (fun n => smulPosKernel (PowerSeries.coeff n p) (hp₁ n) (natPowKernel k n))
-  let Klim (x y : X) : ℝ := ∑' n, (PowerSeries.coeff n p) * (k.kernel x y) ^ n
+noncomputable def posPowerSeriesKernel (p : PowerSeries ℝ) (hp₁ : ∀ n, 0 ≤ PowerSeries.coeff n p) (hp₂ : ∀ x : ℝ, Summable (fun n => PowerSeries.coeff n p * x ^ n)) (K : Kernel X) : Kernel X :=
+  let Kseq : ℕ → Kernel X := fun N => finsetSumKernel (Finset.range N) (fun n => smulPosKernel (PowerSeries.coeff n p) (hp₁ n) (natPowKernel K n))
+  let Klim (x y : X) : ℝ := ∑' n, (PowerSeries.coeff n p) * (K.kernel x y) ^ n
   pointwiseLimitKernel Kseq Klim (by
     intro x y
     unfold Kseq Klim
     simp only [finsetSumKernel_apply, smulPoseKernel_apply, natPowKernel_apply]
     apply HasSum.tendsto_sum_nat
-    exact (hp₂ (k.kernel x y)).hasSum
+    exact (hp₂ (K.kernel x y)).hasSum
   )
 
 @[simp]
 theorem posPowerSeriesKernel_apply (p : PowerSeries ℝ) (hp₁ : ∀ n, 0 ≤ PowerSeries.coeff n p)
-  (hp₂ : ∀ x : ℝ, Summable (fun n => PowerSeries.coeff n p * x ^ n)) (k : Kernel X) (x y : X) :
-  (posPowerSeriesKernel p hp₁ hp₂ k).kernel x y = ∑' n, (PowerSeries.coeff n p) * (k.kernel x y) ^ n := rfl
+  (hp₂ : ∀ x : ℝ, Summable (fun n => PowerSeries.coeff n p * x ^ n)) (K : Kernel X) (x y : X) :
+  (posPowerSeriesKernel p hp₁ hp₂ K).kernel x y = ∑' n, (PowerSeries.coeff n p) * (K.kernel x y) ^ n := rfl
 
 /-- The exponent of a kernel is again a kernel. Follows `exp` having a power series with nonnegative
   coefficients. -/
-noncomputable def expKernel (k : Kernel X) : Kernel X :=
+noncomputable def expKernel (K : Kernel X) : Kernel X :=
   posPowerSeriesKernel (PowerSeries.exp ℝ)
     (fun n => by
       rw [PowerSeries.coeff_exp]
@@ -1073,7 +1073,7 @@ noncomputable def expKernel (k : Kernel X) : Kernel X :=
       use L
       exact hExp_sum
     )
-    k
+    K
 
 /-- Definition of the univariate Gaussian kernel `(x₁,x₂)↦exp(-γ*‖x₁-x₂‖^2)`. Proven using the
   decomposition `exp(-γ*‖x-y ‖^2)=exp(-γ‖x‖^2) exp(2γ⟪x,y⟫) exp(-γ‖y‖^2)`, where `exp(2γ⟪x,y⟫)`
