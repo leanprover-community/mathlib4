@@ -1021,6 +1021,38 @@ theorem smulLeftCLM_compCLMOfContinuousLinearEquiv {u : D → 𝕜'} (hu : u.Has
 
 end Comp
 
+section Postcomp
+
+variable [RCLike 𝕜]
+  [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G]
+
+/-- Postcomposition with a continuous linear map is a continuous linear map on Schwartz
+functions. -/
+def postcompCLM (L : F →L[𝕜] G) : 𝓢(E, F) →L[𝕜] 𝓢(E, G) := by
+  refine mkCLM (fun f ↦ L ∘ f) (fun _ _ _ ↦ by simp) (fun _ _ _ ↦ by simp)
+    (fun f ↦ (L.restrictScalars ℝ).contDiff.comp (f.smooth ⊤)) ?_
+  intro ⟨k, n⟩
+  use {⟨k, n⟩}, ‖L‖, by positivity
+  intro f x
+  simp only [Finset.sup_singleton, schwartzSeminormFamily_apply]
+  calc
+    _ = ‖x‖ ^ k * ‖(L.restrictScalars ℝ).compContinuousMultilinearMap
+        (iteratedFDeriv ℝ n f x)‖ := by
+      congr
+      exact (L.restrictScalars ℝ).iteratedFDeriv_comp_left f.smooth'.contDiffAt (mod_cast le_top)
+    _ ≤ ‖x‖ ^ k * (‖L‖ * ‖iteratedFDeriv ℝ n f x‖) := by
+      gcongr
+      apply (L.restrictScalars ℝ).norm_compContinuousMultilinearMap_le
+    _ = ‖L‖ * (‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖) := by ring
+    _ ≤ ‖L‖ * (SchwartzMap.seminorm 𝕜 k n) f := by
+      grw [le_seminorm 𝕜 k n f x]
+
+theorem postcompCLM_apply (L : F →L[𝕜] G) (f : 𝓢(E, F)) (x : E) : f.postcompCLM L x = L (f x) :=
+  rfl
+
+end Postcomp
+
 section Integration
 
 /-! ### Integration -/
