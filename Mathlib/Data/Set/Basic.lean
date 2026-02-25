@@ -69,6 +69,10 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
+protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) := injective_id
+protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) := surjective_id
+protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) := bijective_id
+
 instance instDistribLattice : DistribLattice (Set α) where
   __ : DistribLattice (α → Prop) := inferInstance
   le := (· ≤ ·)
