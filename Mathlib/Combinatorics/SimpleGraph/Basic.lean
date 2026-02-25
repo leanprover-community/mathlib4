@@ -375,8 +375,7 @@ instance uniqueOfSubsingleton [Subsingleton V] : Unique (SimpleGraph V) where
   uniq G := by ext a b; simp [Subsingleton.elim a b]
 
 instance [Nontrivial V] : Nontrivial (SimpleGraph V) :=
-  ⟨⊥, ⊤, fun h ↦ not_subsingleton V ⟨by simpa only [← adj_inj, funext_iff, bot_adj,
-    top_adj, ne_eq, eq_iff_iff, false_iff, not_not] using h⟩⟩
+  ⟨⊥, ⊤, fun h ↦ not_subsingleton V ⟨by simpa [← adj_inj, funext_iff] using h⟩⟩
 
 section Decidable
 
