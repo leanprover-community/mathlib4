@@ -220,6 +220,7 @@ namespace Submodule
 variable {ι R : Type*} {M : ι → Type*} [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
   [∀ i, TopologicalSpace (M i)] [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s i` is a family of submodules, each is in its module,
 then the closure of their span in the indexed product of the modules
 is the product of their closures.

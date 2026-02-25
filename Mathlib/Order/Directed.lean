@@ -207,6 +207,15 @@ theorem Antitone.directed_le [Preorder α] [IsCodirectedOrder α] [Preorder β] 
     (hf : Antitone f) : Directed (· ≤ ·) f :=
   directed_of_isDirected_ge hf
 
+@[to_dual]
+lemma directedOn_iff_isDirectedOrder [LE α] {s : Set α} :
+    DirectedOn (· ≤ ·) s ↔ IsDirectedOrder s := by
+  rw [directedOn_iff_directed, IsDirectedOrder]
+  exact ⟨fun h ↦ ⟨h⟩, fun ⟨h⟩ ↦ h⟩
+
+@[to_dual]
+alias ⟨DirectedOn.isDirectedOrder, DirectedOn.of_isDirectedOrder⟩ := directedOn_iff_isDirectedOrder
+
 section Reflexive
 
 protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
@@ -256,6 +265,15 @@ theorem isTop_or_exists_gt [IsDirectedOrder α] (a : α) : IsTop a ∨ ∃ b, a 
 theorem isTop_iff_isMax [IsDirectedOrder α] : IsTop a ↔ IsMax a :=
   ⟨IsTop.isMax, IsMax.isTop⟩
 
+/-- If `f` is monotone, `g` is antitone, and `f ≤ g`, then for all `a`, `b` we have `f a ≤ g b`. -/
+theorem Monotone.forall_le_of_antitone [IsDirectedOrder α] [Preorder β] {f g : α → β}
+    (hf : Monotone f) (hg : Antitone g) (h : f ≤ g) (m n : α) : f m ≤ g n := by
+  obtain ⟨k, hkm, hkn⟩ := exists_ge_ge m n
+  calc
+    f m ≤ f k := hf hkm
+    _ ≤ g k := h _
+    _ ≤ g n := hg hkn
+
 end Preorder
 
 section PartialOrder
@@ -295,8 +313,8 @@ variable [Preorder α] {f : α → β} {s : Set α}
 /-- If `f` is monotone and antitone on a directed order, then `f` is constant. -/
 lemma constant_of_monotone_antitone [IsDirectedOrder α] (hf : Monotone f) (hf' : Antitone f)
     (a b : α) : f a = f b := by
-  obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
-  exact le_antisymm ((hf hac).trans <| hf' hbc) ((hf hbc).trans <| hf' hac)
+  have := hf.forall_le_of_antitone hf' le_rfl
+  exact le_antisymm (this a b) (this b a)
 
 /-- If `f` is monotone and antitone on a directed set `s`, then `f` is constant on `s`. -/
 lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn f s)

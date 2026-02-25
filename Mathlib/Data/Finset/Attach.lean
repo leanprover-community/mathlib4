@@ -54,6 +54,7 @@ theorem attach_val (s : Finset α) : s.attach.1 = s.1.attach :=
 theorem mem_attach (s : Finset α) : ∀ x, x ∈ s.attach :=
   Multiset.mem_attach _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_attach (s : Finset α) : (s.attach : Set s) = Set.univ := by ext; simp
 

@@ -568,6 +568,7 @@ theorem mapRingHom_mapRingHom {M : Pic R} :
     mapRingHom g (mapRingHom f M) = mapRingHom (g.comp f) M :=
   congr($mapRingHom_comp_mapRingHom M)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mapRingHom_id : mapRingHom (.id R) = .id _ := by
   rw [mapRingHom, mapAlgebra_self]
 
@@ -590,6 +591,7 @@ variable (A : Type*) [CommSemiring A] [Algebra R A]
 defined to be the kernel of `Pic.mapAlgebra R A`. -/
 noncomputable def relPic : Subgroup (Pic R) := (Pic.mapAlgebra R A).ker
 
+set_option backward.isDefEq.respectTransparency false in
 theorem relPic_eq_top [Subsingleton (Pic A)] : relPic R A = ⊤ :=
   top_unique fun _ _ ↦ Subsingleton.elim ..
 

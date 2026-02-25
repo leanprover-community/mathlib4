@@ -114,6 +114,7 @@ lemma rootsOfUnity_inf_rootsOfUnity {m n : ℕ} :
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_rootsOfUnity_of_coprime {m n : ℕ} (h : m.Coprime n) :
     Disjoint (rootsOfUnity m M) (rootsOfUnity n M) := by
   simp [disjoint_iff_inf_le, rootsOfUnity_inf_rootsOfUnity, Nat.coprime_iff_gcd_eq_one.mp h]

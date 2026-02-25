@@ -87,6 +87,7 @@ theorem rieszContentAux_image_nonempty (K : Compacts X) :
   rw [← Real.toNNReal_one, Real.toNNReal_eq_toNNReal_iff (zero_le_one' ℝ) (hfinicc x).1]
   exact hfeq1onK.symm hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Riesz content `λ` (associated with a positive linear functional `Λ`) is
 monotone: if `K₁ ⊆ K₂` are compact subsets in `X`, then `λ(K₁) ≤ λ(K₂)`. -/
 theorem rieszContentAux_mono {K₁ K₂ : Compacts X} (h : K₁ ≤ K₂) :

@@ -834,23 +834,11 @@ theorem nondegenerate_toLinearMap₂'_iff_det_ne_zero :
 
 theorem separatingLeft_toLinearMap₂'_iff_det_ne_zero :
     (Matrix.toLinearMap₂' R M).SeparatingLeft (R := R) ↔ M.det ≠ 0 := by
-  constructor
-  · intro h hne
-    obtain ⟨w, hwne, hw⟩ := exists_vecMul_eq_zero_iff.mpr hne
-    refine hwne (h w fun y ↦ ?_)
-    simp [toLinearMap₂'_apply', dotProduct_mulVec, hw]
-  · rw [← nondegenerate_toLinearMap₂'_iff_det_ne_zero]
-    exact fun h ↦ h.1
+  simpa using separatingLeft_iff_det_ne_zero
 
 theorem separatingRight_toLinearMap₂'_iff_det_ne_zero :
     (Matrix.toLinearMap₂' R M).SeparatingRight (R := R) ↔ M.det ≠ 0 := by
-  constructor
-  · intro h hne
-    obtain ⟨w, hwne, hw⟩ := exists_mulVec_eq_zero_iff.mpr hne
-    refine hwne (h w fun y ↦ ?_)
-    simp [toLinearMap₂'_apply', hw]
-  · rw [← nondegenerate_toLinearMap₂'_iff_det_ne_zero]
-    exact fun h ↦ h.2
+  simpa using separatingRight_iff_det_ne_zero
 
 theorem separatingLeft_toLinearMap₂'_of_det_ne_zero' (h : M.det ≠ 0) :
     (Matrix.toLinearMap₂' R M).SeparatingLeft (R := R) :=
