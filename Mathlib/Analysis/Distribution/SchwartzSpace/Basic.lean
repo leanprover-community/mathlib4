@@ -911,7 +911,7 @@ section Comp
 variable (𝕜)
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [NormedSpace 𝕜 F]
 
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
 provided that the function is temperate and growths polynomially near infinity. -/
@@ -1020,6 +1020,35 @@ theorem smulLeftCLM_compCLMOfContinuousLinearEquiv {u : D → 𝕜'} (hu : u.Has
   simp [smulLeftCLM_apply_apply hu, smulLeftCLM_apply_apply hu']
 
 end Comp
+
+section Translate
+
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
+
+variable (𝕜) in
+/-- Translating the argument as a continuous linear map on Schwartz space. -/
+def compSubConstCLM (a : E) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
+  compCLMOfAntilipschitz (g := fun x ↦ x - a) (K := 1) 𝕜 (by fun_prop)
+    (fun _ _ ↦ by simp [edist_dist, dist_eq_norm])
+
+@[simp]
+theorem compSubConstCLM_apply (f : 𝓢(E, F)) (a x : E) :
+    f.compSubConstCLM 𝕜 a x = f (x - a) := rfl
+
+@[simp]
+theorem compSubConstCLM_zero : compSubConstCLM 𝕜 (0 : E) (F := F) = ContinuousLinearMap.id _ _ := by
+  ext f x
+  simp
+
+@[simp]
+theorem compSubConstCLM_comp (f : 𝓢(E, F)) (a b : E) :
+    (f.compSubConstCLM 𝕜 a).compSubConstCLM 𝕜 b = f.compSubConstCLM 𝕜 (a + b) := by
+  ext x
+  simp only [compSubConstCLM_apply]
+  congr 1
+  exact (sub_add_eq_sub_sub_swap x a b).symm
+
+end Translate
 
 section Integration
 
