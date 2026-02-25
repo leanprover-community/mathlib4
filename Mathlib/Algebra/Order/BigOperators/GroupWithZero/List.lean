@@ -68,6 +68,14 @@ lemma prod_le_prod₀ {ι : Type*} {l : List ι} {f g : ι → R}
     (l.map f).prod ≤ (l.map g).prod :=
   Forall₂.prod_le_prod₀ (by simpa) (by simpa)
 
+lemma prod_le_pow_card₀ (l : List R) (n : R) (h0 : ∀ x ∈ l, 0 ≤ x) (h : ∀ x ∈ l, x ≤ n) :
+    l.prod ≤ n ^ l.length := by
+  simpa only [map_id', map_const', prod_replicate] using prod_le_prod₀ h0 h
+
+lemma pow_card_le_prod₀ (l : List R) (n : R) (hn : 0 ≤ n) (h : ∀ x ∈ l, n ≤ x) :
+    n ^ l.length ≤ l.prod := by
+  simpa only [map_const', prod_replicate, map_id'] using prod_le_prod₀ (fun _ _ => hn) h
+
 lemma one_le_prod₀ {s : List R} (h : ∀ a ∈ s, 1 ≤ a) : 1 ≤ s.prod := by
   induction s with
   | nil => simp
