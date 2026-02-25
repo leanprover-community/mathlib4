@@ -129,16 +129,16 @@ theorem eventually_isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ}
   refine le_csInf ?_ (fun x ⟨m, hm, hx⟩ ↦ ?_)
   · rw [← Set.image, Set.image_nonempty]
     exact Set.nonempty_Ici
-  · rw [← hx]
-    have ⟨n, hn, G, _, hcard_edges, h_free⟩ := h m
-    replace h_free : H.Free G := not_nonempty_iff.mpr h_free
-    trans (extremalNumber n H / n.choose 2)
-    · rw [le_div_iff₀ <| mod_cast Nat.choose_pos (hm.trans hn)]
-      conv =>
-        enter [2, 1, 1]
-        rw [← Fintype.card_fin n]
-      exact hcard_edges.trans (mod_cast card_edgeFinset_le_extremalNumber h_free)
-    · exact antitoneOn_extremalNumber_div_choose_two H hm (hm.trans hn) hn
+  rw [← hx]
+  have ⟨n, hn, G, _, hcard_edges, h_free⟩ := h m
+  replace h_free : H.Free G := not_nonempty_iff.mpr h_free
+  trans (extremalNumber n H / n.choose 2)
+  · rw [le_div_iff₀ <| mod_cast Nat.choose_pos (hm.trans hn)]
+    conv =>
+      enter [2, 1, 1]
+      rw [← Fintype.card_fin n]
+    exact hcard_edges.trans (mod_cast card_edgeFinset_le_extremalNumber h_free)
+  · exact antitoneOn_extremalNumber_div_choose_two H hm (hm.trans hn) hn
 
 open Classical in
 /-- The edge density of `H`-free simple graphs on `turanDensityConst H ε` vertices
