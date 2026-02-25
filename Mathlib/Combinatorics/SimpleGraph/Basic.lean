@@ -865,7 +865,7 @@ def IsCompleteBetween (G : SimpleGraph V) (s t : Set V) :=
   ∀ ⦃v₁⦄, v₁ ∈ s → ∀ ⦃v₂⦄, v₂ ∈ t → G.Adj v₁ v₂
 
 theorem IsCompleteBetween.disjoint (h : G.IsCompleteBetween s t) : Disjoint s t :=
-  Set.disjoint_left.mpr fun v hv₁ hv₂ ↦ (G.loopless.irrefl v) (h hv₁ hv₂)
+  Set.disjoint_left.mpr fun v hv₁ hv₂ ↦ G.loopless.irrefl v (h hv₁ hv₂)
 
 theorem isCompleteBetween_comm : G.IsCompleteBetween s t ↔ G.IsCompleteBetween t s where
   mp h _ h₁ _ h₂ := (h h₂ h₁).symm
