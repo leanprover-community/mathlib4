@@ -68,7 +68,7 @@ theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈
   h
 
 @[gcongr] theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
-  Set.Nonempty.mono hst hs
+  Set.Nonempty.mono (s := (s : Set α)) (t := t) hst hs
 
 theorem Nonempty.forall_const {s : Finset α} (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔ p :=
   let ⟨x, hx⟩ := h
@@ -153,7 +153,9 @@ theorem eq_empty_or_nonempty (s : Finset α) : s = ∅ ∨ s.Nonempty :=
 theorem coe_empty : ((∅ : Finset α) : Set α) = ∅ := by grind
 
 @[simp, norm_cast]
-theorem coe_eq_empty {s : Finset α} : (s : Set α) = ∅ ↔ s = ∅ := by grind
+theorem coe_eq_empty {s : Finset α} : (s : Set α) = ∅ ↔ s = ∅ :=
+  SetLike.coe_injective.eq_iff' coe_empty
+#adaptation_note /-- The proof above was `by grind` -/
 
 @[simp]
 theorem isEmpty_coe_sort {s : Finset α} : IsEmpty (s : Type _) ↔ s = ∅ := by

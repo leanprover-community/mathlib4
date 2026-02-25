@@ -96,11 +96,12 @@ theorem val_inj {s t : Finset α} : s.1 = t.1 ↔ s = t :=
 instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
   | _, _ => decidable_of_iff _ val_inj
 
-/-! ### membership -/
+/-! ### set coercion -/
 
-
-instance : Membership α (Finset α) :=
-  ⟨fun s a => a ∈ s.1⟩
+/-- Convert a finset to a set in the natural way. -/
+instance : SetLike (Finset α) α where
+  coe s := {a | a ∈ s.1}
+  coe_injective' s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
 
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl
@@ -119,13 +120,6 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 @[simp] lemma forall_mem_not_eq {s : Finset α} {a : α} : (∀ b ∈ s, ¬ a = b) ↔ a ∉ s := by grind
 @[simp] lemma forall_mem_not_eq' {s : Finset α} {a : α} : (∀ b ∈ s, ¬ b = a) ↔ a ∉ s := by grind
-
-/-! ### set coercion -/
-
-/-- Convert a finset to a set in the natural way. -/
-instance : SetLike (Finset α) α where
-  coe s := {a | a ∈ s}
-  coe_injective' s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
 
 instance : PartialOrder (Finset α) := .ofSetLike (Finset α) α
 
@@ -306,18 +300,18 @@ theorem ssubset_iff_subset_ne {s t : Finset α} : s ⊂ t ↔ s ⊆ t ∧ s ≠ 
   @lt_iff_le_and_ne _ _ s t
 
 theorem ssubset_iff_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₁ ⊂ s₂ ↔ ∃ x ∈ s₂, x ∉ s₁ :=
-  Set.ssubset_iff_of_subset h
+  Set.ssubset_iff_of_subset (s := (s₁ : Set α)) (t := s₂) h
 
 theorem ssubset_of_ssubset_of_subset {s₁ s₂ s₃ : Finset α} (hs₁s₂ : s₁ ⊂ s₂) (hs₂s₃ : s₂ ⊆ s₃) :
     s₁ ⊂ s₃ :=
-  Set.ssubset_of_ssubset_of_subset hs₁s₂ hs₂s₃
+  Set.ssubset_of_ssubset_of_subset (s₁ := (s₁ : Set α)) (s₂ := s₂) (s₃ := s₃) hs₁s₂ hs₂s₃
 
 theorem ssubset_of_subset_of_ssubset {s₁ s₂ s₃ : Finset α} (hs₁s₂ : s₁ ⊆ s₂) (hs₂s₃ : s₂ ⊂ s₃) :
     s₁ ⊂ s₃ :=
-  Set.ssubset_of_subset_of_ssubset hs₁s₂ hs₂s₃
+  Set.ssubset_of_subset_of_ssubset (s₁ := (s₁ : Set α)) (s₂ := s₂) (s₃ := s₃) hs₁s₂ hs₂s₃
 
 theorem exists_of_ssubset {s₁ s₂ : Finset α} (h : s₁ ⊂ s₂) : ∃ x ∈ s₂, x ∉ s₁ :=
-  Set.exists_of_ssubset h
+  Set.exists_of_ssubset (s := (s₁ : Set α)) (t := s₂) h
 
 instance isWellFounded_ssubset : IsWellFounded (Finset α) (· ⊂ ·) :=
   Subrelation.isWellFounded (InvImage _ _) val_lt_iff.2

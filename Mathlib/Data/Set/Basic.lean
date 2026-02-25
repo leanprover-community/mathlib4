@@ -69,17 +69,27 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
-instance instDistribLattice : DistribLattice (Set α) where
-  __ : DistribLattice (α → Prop) := inferInstance
-  le := (· ≤ ·)
-  lt := fun s t => s ⊆ t ∧ ¬t ⊆ s
-  sup := (· ∪ ·)
-  inf := (· ∩ ·)
+instance : Max (Set α) := ⟨Union.union⟩
+instance : Min (Set α) := ⟨Inter.inter⟩
+instance : LT (Set α) := ⟨fun s t ↦ s ≤ t ∧ ¬t ≤ s⟩
+instance : Bot (Set α) := ⟨∅⟩
+instance : Top (Set α) := ⟨univ⟩
+
+protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) := fun _s _t h ↦
+  Set.ext fun _ ↦ h ▸ .rfl
+
+protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) := fun p ↦
+  ⟨{x | p x}, rfl⟩
+
+protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) :=
+  ⟨Set.mem_injective, Set.mem_surjective⟩
+
+instance instDistribLattice : DistribLattice (Set α) :=
+  Set.mem_injective.distribLattice Membership.mem .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance instBoundedOrder : BoundedOrder (Set α) where
-  __ : BoundedOrder (α → Prop) := inferInstance
-  bot := ∅
-  top := univ
+  le_top _ _ _ := trivial
+  bot_le _ _ := False.elim
 
 instance : HasSSubset (Set α) :=
   ⟨(· < ·)⟩
@@ -120,7 +130,7 @@ alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 
 instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
     CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
-  PiSubtype.canLift ι α s
+  PiSubtype.canLift ι α (· ∈ s)
 
 instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [Nonempty α] (s : Set ι) :
     CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
@@ -184,14 +194,14 @@ instance : Inhabited (Set α) :=
 theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t) : x ∈ t :=
   h hx
 
-theorem setOf_injective : Function.Injective (@setOf α) := injective_id
+theorem setOf_injective : Function.Injective (@setOf α) := fun _ _ ↦ Set.mk.inj
 
-theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := Iff.rfl
+theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := setOf_injective.eq_iff
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
 theorem setOf_bijective : Bijective (setOf : (α → Prop) → Set α) :=
-  bijective_id
+  ⟨setOf_injective, fun ⟨p⟩ ↦ ⟨p, rfl⟩⟩
 
 theorem subset_setOf {p : α → Prop} {s : Set α} : s ⊆ setOf p ↔ ∀ x, x ∈ s → p x :=
   Iff.rfl
@@ -904,7 +914,7 @@ theorem sep_univ : { x ∈ (univ : Set α) | p x } = { x | p x } :=
 
 @[simp]
 theorem sep_union : { x | (x ∈ s ∨ x ∈ t) ∧ p x } = { x ∈ s | p x } ∪ { x ∈ t | p x } :=
-  union_inter_distrib_right { x | x ∈ s } { x | x ∈ t } p
+  union_inter_distrib_right { x | x ∈ s } { x | x ∈ t } {x | p x}
 
 @[simp]
 theorem sep_inter : { x | (x ∈ s ∧ x ∈ t) ∧ p x } = { x ∈ s | p x } ∩ { x ∈ t | p x } :=
@@ -916,7 +926,7 @@ theorem sep_and : { x ∈ s | p x ∧ q x } = { x ∈ s | p x } ∩ { x ∈ s | 
 
 @[simp]
 theorem sep_or : { x ∈ s | p x ∨ q x } = { x ∈ s | p x } ∪ { x ∈ s | q x } :=
-  inter_union_distrib_left s p q
+  inter_union_distrib_left s {x | p x} {x | q x}
 
 @[simp]
 theorem sep_setOf : { x ∈ { y | p y } | q x } = { x | p x ∧ q x } :=
@@ -1063,7 +1073,7 @@ namespace Equiv
   `Set {a : α // p a}` and `{s : Set α // ∀ a ∈ s, p a}`. -/
 protected def setSubtypeComm (p : α → Prop) :
     Set {a : α // p a} ≃ {s : Set α // ∀ a ∈ s, p a} where
-  toFun s := ⟨{a | ∃ h : p a, s ⟨a, h⟩}, fun _ h ↦ h.1⟩
+  toFun s := ⟨{a | ∃ h : p a, ⟨a, h⟩ ∈ s}, fun _ h ↦ h.1⟩
   invFun s := {a | a.val ∈ s.val}
   left_inv s := by ext a; exact ⟨fun h ↦ h.2, fun h ↦ ⟨a.property, h⟩⟩
   right_inv s := by ext; exact ⟨fun h ↦ h.2, fun h ↦ ⟨s.property _ h, h⟩⟩

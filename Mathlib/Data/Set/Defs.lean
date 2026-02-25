@@ -38,30 +38,25 @@ open Lean Elab Term Meta Batteries.ExtendedBinder
 universe u
 variable {α : Type u}
 
-/-- A set is a collection of elements of some type `α`.
-
-Although `Set` is defined as `α → Prop`, this is an implementation detail which should not be
-relied on. Instead, `setOf` and membership of a set (`∈`) should be used to convert between sets
-and predicates.
--/
-def Set (α : Type u) := α → Prop
+/-- A set is a collection of elements of some type `α`. -/
+structure Set (α : Type u) where
+  /-- Membership in a set -/
+  Mem : α → Prop
 
 /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
-def setOf {α : Type u} (p : α → Prop) : Set α :=
-  p
+def setOf (p : α → Prop) : Set α := ⟨p⟩
 
 namespace Set
 
-/-- Membership in a set -/
-protected def Mem (s : Set α) (a : α) : Prop :=
-  s a
+@[simp]
+theorem mk_eq_setOf (p : α → Prop) : mk p = setOf p := rfl
 
 instance : Membership α (Set α) :=
   ⟨Set.Mem⟩
 
 @[ext, grind ext]
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
-  funext (fun x ↦ propext (h x))
+  congrArg setOf <| funext fun x ↦ propext (h x)
 
 /-- The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.
 
@@ -78,7 +73,7 @@ instance : HasSubset (Set α) :=
   ⟨(· ≤ ·)⟩
 
 instance : EmptyCollection (Set α) :=
-  ⟨fun _ ↦ False⟩
+  ⟨⟨fun _ ↦ False⟩⟩
 
 end Set
 
@@ -251,8 +246,8 @@ def image {β : Type v} (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
 instance : Functor Set where map := @Set.image
 
 instance : LawfulFunctor Set where
-  id_map _ := funext fun _ ↦ propext ⟨fun ⟨_, sb, rfl⟩ ↦ sb, fun sb ↦ ⟨_, sb, rfl⟩⟩
-  comp_map g h _ := funext <| fun c ↦ propext
+  id_map _ := Set.ext fun _ ↦ ⟨fun ⟨_, sb, rfl⟩ ↦ sb, fun sb ↦ ⟨_, sb, rfl⟩⟩
+  comp_map g h _ := Set.ext fun c ↦
     ⟨fun ⟨a, ⟨h₁, h₂⟩⟩ ↦ ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
      fun ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ ↦ ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
