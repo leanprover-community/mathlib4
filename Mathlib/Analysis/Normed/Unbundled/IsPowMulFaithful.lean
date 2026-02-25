@@ -31,7 +31,6 @@ public section
 open Filter Real
 open scoped Topology
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : α →+* β` is bounded with respect to a ring seminorm `nα` on `α` and a
   power-multiplicative function `nβ : β → ℝ`, then `∀ x : α, nβ (f x) ≤ nα x`. -/
 theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)} [Ring α]

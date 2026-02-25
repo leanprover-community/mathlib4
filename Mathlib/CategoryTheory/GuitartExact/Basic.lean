@@ -38,8 +38,8 @@ derived functors.
 ## TODO
 
 * Define the notion of derivability structure from
-[the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
-and construct (pointwise) derived functors using this notion
+  [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
+  and construct (pointwise) derived functors using this notion
 
 ## References
 * https://ncatlab.org/nlab/show/exact+square

@@ -273,7 +273,6 @@ lemma isBigO_atTop_oddKernel (a : UnitAddCircle) :
     HurwitzKernelBounds.f_int, abs_of_nonneg (exp_pos _).le] using
     norm_tsum_le_tsum_norm (hasSum_int_oddKernel b ht).summable.norm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The function `sinKernel a` has exponential decay at `+∞`, for any `a`. -/
 lemma isBigO_atTop_sinKernel (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (sinKernel a) (fun x ↦ Real.exp (-p * x)) := by
