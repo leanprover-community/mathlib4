@@ -98,7 +98,7 @@ lemma surjective_eq_epimorphisms_iff :
     have : Epi f := hf
     change Function.Surjective ((forget C).map f)
     rw [← epi_iff_surjective]
-    infer_instance
+    exact Functor.map_epi _ f
 
 lemma injective_eq_monomorphisms_iff :
     MorphismProperty.injective C = monomorphisms C ↔ (forget C).PreservesMonomorphisms := by
@@ -115,7 +115,7 @@ lemma injective_eq_monomorphisms_iff :
     have : Mono f := hf
     change Function.Injective ((forget C).map f)
     rw [← mono_iff_injective]
-    infer_instance
+    exact Functor.map_mono _ f
 
 lemma injective_eq_monomorphisms [(forget C).PreservesMonomorphisms] :
     MorphismProperty.injective C = monomorphisms C := by
@@ -151,7 +151,7 @@ open CategoryTheory.Limits
 
 theorem injective_of_mono_of_preservesPullback {X Y : C} (f : X ⟶ Y) [Mono f]
     [PreservesLimitsOfShape WalkingCospan (forget C)] : Function.Injective f :=
-  (mono_iff_injective ((forget C).map f)).mp inferInstance
+  (mono_iff_injective ((forget C).map f)).mp (Functor.map_mono _ f)
 
 theorem mono_iff_injective_of_preservesPullback {X Y : C} (f : X ⟶ Y)
     [PreservesLimitsOfShape WalkingCospan (forget C)] : Mono f ↔ Function.Injective f :=
@@ -164,7 +164,7 @@ theorem epi_of_surjective {X Y : C} (f : X ⟶ Y) (s : Function.Surjective f) :
 
 theorem surjective_of_epi_of_preservesPushout {X Y : C} (f : X ⟶ Y) [Epi f]
     [PreservesColimitsOfShape WalkingSpan (forget C)] : Function.Surjective f :=
-  (epi_iff_surjective ((forget C).map f)).mp inferInstance
+  (epi_iff_surjective ((forget C).map f)).mp (Functor.map_epi _ f)
 
 theorem epi_iff_surjective_of_preservesPushout {X Y : C} (f : X ⟶ Y)
     [PreservesColimitsOfShape WalkingSpan (forget C)] : Epi f ↔ Function.Surjective f :=
@@ -172,14 +172,14 @@ theorem epi_iff_surjective_of_preservesPushout {X Y : C} (f : X ⟶ Y)
 
 theorem bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
     Function.Bijective f := by
-  rw [← isIso_iff_bijective]
+  rw [bijective_iff_isIso_ofHom]
   infer_instance
 
 /-- If the forgetful functor of a concrete category reflects isomorphisms, being an isomorphism
 is equivalent to being bijective. -/
 theorem isIso_iff_bijective [(forget C).ReflectsIsomorphisms]
     {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f := by
-  rw [← CategoryTheory.isIso_iff_bijective]
+  rw [bijective_iff_isIso_ofHom]
   refine ⟨fun _ ↦ inferInstance, fun h ↦ ?_⟩
   have : IsIso ((forget C).map f) := h
   exact isIso_of_reflects_iso f (forget C)

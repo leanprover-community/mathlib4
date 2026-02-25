@@ -178,7 +178,8 @@ namespace CategoryTheory
 theorem types_id (X : TypeCat.{u}) : (𝟙 X : _ → _) = id :=
   rfl
 
-theorem types_comp {X Y Z : TypeCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : _ → _) = g ∘ f :=
+theorem types_comp {X Y Z : TypeCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    ConcreteCategory.hom (f ≫ g) = g ∘ f :=
   rfl
 
 @[deprecated (since := "2026-02-09")] alias hom_inv_id_apply := Iso.hom_inv_id_apply

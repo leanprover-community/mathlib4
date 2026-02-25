@@ -29,11 +29,11 @@ open CategoryTheory Limits
 namespace Action
 
 section
-variable {G : Type u} [Group G] {A : Action (Type u) G}
+variable {G : Type u} [Group G] {A : Action TypeCat.{u} G}
 
 @[simp]
 theorem ρ_inv_self_apply (g : G) (x : A.V) :
-    A.ρ g⁻¹ (A.ρ g x) = x :=
+    ConcreteCategory.hom ((A.ρ) g⁻¹) (ConcreteCategory.hom (A.ρ g) x) = x :=
   show (A.ρ g⁻¹ * A.ρ g) x = x by simp [← map_mul]
 
 @[simp]

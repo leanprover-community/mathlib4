@@ -26,9 +26,9 @@ open CategoryTheory Limits
 
 namespace CategoryTheory.Limits
 
-variable {J : MulticospanShape} (I : MulticospanIndex J (Type u))
+variable {J : MulticospanShape} (I : MulticospanIndex J (TypeCat.{u}))
 
-/-- Given `I : MulticospanIndex J (Type u)`, this is a type which identifies
+/-- Given `I : MulticospanIndex J (TypeCat.{u})`, this is a type which identifies
 to the sections of the functor `I.multicospan`. -/
 @[ext]
 structure MulticospanIndex.sections where
@@ -36,7 +36,7 @@ structure MulticospanIndex.sections where
   val (i : J.L) : I.left i
   property (r : J.R) : I.fst r (val _) = I.snd r (val _)
 
-/-- The bijection `I.sections ≃ I.multicospan.sections` when `I : MulticospanIndex (Type u)`
+/-- The bijection `I.sections ≃ I.multicospan.sections` when `I : MulticospanIndex (TypeCat.{u})`
 is a multiequalizer diagram in the category of types. -/
 @[simps]
 def MulticospanIndex.sectionsEquiv :
@@ -63,12 +63,12 @@ namespace Multifork
 variable {I}
 variable (c : Multifork I)
 
-/-- Given a multiequalizer diagram `I : MulticospanIndex (Type u)` in the category of
+/-- Given a multiequalizer diagram `I : MulticospanIndex (TypeCat.{u})` in the category of
 types and `c` a multifork for `I`, this is the canonical map `c.pt → I.sections`. -/
 @[simps]
 def toSections (x : c.pt) : I.sections where
   val i := c.ι i x
-  property r := congr_fun (c.condition r) x
+  property r := ConcreteCategory.congr_hom (c.condition r) x
 
 lemma toSections_fac : I.sectionsEquiv.symm ∘ Types.sectionOfCone c = c.toSections := rfl
 

@@ -64,7 +64,7 @@ section FiniteKonig
 the `F` functor is between categories of the same universe, and it is an easy
 corollary to `TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system`. -/
 theorem nonempty_sections_of_finite_cofiltered_system.init {J : Type u} [SmallCategory J]
-    [IsCofilteredOrEmpty J] (F : J ⥤ Type u) [hf : ∀ j, Finite (F.obj j)]
+    [IsCofilteredOrEmpty J] (F : J ⥤ TypeCat.{u}) [hf : ∀ j, Finite (F.obj j)]
     [hne : ∀ j, Nonempty (F.obj j)] : F.sections.Nonempty := by
   let F' : J ⥤ TopCat := F ⋙ TopCat.discrete
   haveI : ∀ j, DiscreteTopology (F'.obj j) := fun _ => ⟨rfl⟩
@@ -77,12 +77,12 @@ theorem nonempty_sections_of_finite_cofiltered_system.init {J : Type u} [SmallCa
 
 See `nonempty_sections_of_finite_inverse_system` for a specialization to inverse limits. -/
 theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w} J]
-    [IsCofilteredOrEmpty J] (F : J ⥤ Type v) [∀ j : J, Finite (F.obj j)]
+    [IsCofilteredOrEmpty J] (F : J ⥤ TypeCat.{v}) [∀ j : J, Finite (F.obj j)]
     [∀ j : J, Nonempty (F.obj j)] : F.sections.Nonempty := by
   -- Step 1: lift everything to the `max u v w` universe.
   let J' : Type max w v u := AsSmall.{max w v} J
   let down : J' ⥤ J := AsSmall.down
-  let F' : J' ⥤ Type max u v w := down ⋙ F ⋙ uliftFunctor.{max u w, v}
+  let F' : J' ⥤ TypeCat.{max u v w} := down ⋙ F ⋙ uliftFunctor.{max u w, v}
   haveI : ∀ i, Nonempty (F'.obj i) := fun i => ⟨⟨Classical.arbitrary (F.obj (down.obj i))⟩⟩
   haveI : ∀ i, Finite (F'.obj i) := fun i => Finite.of_equiv (F.obj (down.obj i)) Equiv.ulift.symm
   -- Step 2: apply the bootstrap theorem
@@ -96,6 +96,7 @@ theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w}
   have h := @hu (⟨j⟩ : J') (⟨j'⟩ : J') (ULift.up f)
   simp only [F', down, AsSmall.down, Functor.comp_map, uliftFunctor_map] at h
   simp_rw [← h]
+  rfl
 
 /-- The inverse limit of nonempty finite types is nonempty.
 
@@ -108,7 +109,7 @@ To specialize: given a locally finite connected graph, take `Jᵒᵖ` to be `ℕ
 `F j` to be length-`j` paths that start from an arbitrary fixed vertex.
 Elements of `F.sections` can be read off as infinite rays in the graph. -/
 theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsDirectedOrder J]
-    (F : Jᵒᵖ ⥤ Type v) [∀ j : Jᵒᵖ, Finite (F.obj j)] [∀ j : Jᵒᵖ, Nonempty (F.obj j)] :
+    (F : Jᵒᵖ ⥤ TypeCat.{v}) [∀ j : Jᵒᵖ, Finite (F.obj j)] [∀ j : Jᵒᵖ, Nonempty (F.obj j)] :
     F.sections.Nonempty := nonempty_sections_of_finite_cofiltered_system F
 
 end FiniteKonig
@@ -117,7 +118,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {J : Type u} [Category* J] (F : J ⥤ Type v) {i j k : J} (s : Set (F.obj i))
+variable {J : Type u} [Category* J] (F : J ⥤ TypeCat.{v}) {i j k : J} (s : Set (F.obj i))
 
 /-- The eventual range of the functor `F : J ⥤ Type v` at index `j : J` is the intersection
 of the ranges of all maps `F.map f` with `i : J` and `f : i ⟶ j`. -/
@@ -147,35 +148,28 @@ theorem IsMittagLeffler.subset_image_eventualRange (h : F.IsMittagLeffler) (f : 
   obtain ⟨k, g, hg⟩ := F.isMittagLeffler_iff_eventualRange.1 h j
   rw [hg]; intro x hx
   obtain ⟨x, rfl⟩ := F.mem_eventualRange_iff.1 hx (g ≫ f)
-  exact ⟨_, ⟨x, rfl⟩, by rw [map_comp_apply]⟩
+  exact ⟨_, ⟨x, rfl⟩, by rw [map_comp, comp_apply]⟩
 
 theorem eventualRange_eq_range_precomp (f : i ⟶ j) (g : j ⟶ k)
     (h : F.eventualRange k = range (F.map g)) : F.eventualRange k = range (F.map <| f ≫ g) := by
   apply subset_antisymm
   · apply iInter₂_subset
-  · rw [h, F.map_comp]
+  · rw [h, F.map_comp, types_comp]
     apply range_comp_subset_range
 
-theorem isMittagLeffler_of_surjective (h : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f).Surjective) :
+theorem isMittagLeffler_of_surjective (h : ∀ ⦃i j : J⦄ (f : i ⟶ j), Function.Surjective (F.map f)) :
     F.IsMittagLeffler :=
   fun j => ⟨j, 𝟙 j, fun k g => by rw [map_id, types_id, range_id, (h g).range_eq]⟩
 
 /-- The subfunctor of `F` obtained by restricting to the preimages of a set `s ∈ F.obj i`. -/
-@[simps]
-def toPreimages : J ⥤ Type v where
-  obj j := ⋂ f : j ⟶ i, F.map f ⁻¹' s
-  map g := MapsTo.restrict (F.map g) _ _ fun x h => by
+@[simps obj map]
+def toPreimages : J ⥤ TypeCat.{v} where
+  obj j := TypeCat.of (⋂ f : j ⟶ i, F.map f ⁻¹' s)
+  map g := TypeCat.ofHom ⟨MapsTo.restrict (F.map g) _ _ fun x h => by
     rw [mem_iInter] at h ⊢
     intro f
     rw [← mem_preimage, preimage_preimage, mem_preimage]
-    convert h (g ≫ f); rw [F.map_comp]; rfl
-  map_id j := by
-    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_id]
-    ext
-    rfl
-  map_comp f g := by
-    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_comp]
-    rfl
+    convert h (g ≫ f); rw [F.map_comp]; rfl⟩
 
 instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
   fun _ => Subtype.finite
@@ -188,7 +182,7 @@ theorem eventualRange_mapsTo (f : j ⟶ i) :
   intro k f'
   obtain ⟨l, g, g', he⟩ := cospan f f'
   obtain ⟨x, rfl⟩ := hx g
-  rw [← map_comp_apply, he, F.map_comp]
+  rw [← comp_apply, ← map_comp, he, F.map_comp]
   exact ⟨_, rfl⟩
 
 theorem IsMittagLeffler.eq_image_eventualRange (h : F.IsMittagLeffler) (f : j ⟶ i) :
@@ -203,7 +197,7 @@ theorem eventualRange_eq_iff {f : i ⟶ j} :
   refine ⟨fun h k g => h _ _, fun h j' f' => ?_⟩
   obtain ⟨k, g, g', he⟩ := cospan f f'
   refine (h g).trans ?_
-  rw [he, F.map_comp]
+  rw [he, F.map_comp, types_comp]
   apply range_comp_subset_range
 
 theorem isMittagLeffler_iff_subset_range_comp : F.IsMittagLeffler ↔ ∀ j : J, ∃ (i : _) (f : i ⟶ j),
@@ -223,12 +217,13 @@ theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).
     refine ⟨⟨y, mem_iInter.2 fun g₂ => ?_⟩, Subtype.ext ?_⟩
     · obtain ⟨j₄, f₄, h₄⟩ := IsCofilteredOrEmpty.cone_maps g₂ ((f₃ ≫ f₂) ≫ g₁)
       obtain ⟨y, rfl⟩ := F.mem_eventualRange_iff.1 hy f₄
-      rw [← map_comp_apply] at h₃
-      rw [mem_preimage, ← map_comp_apply, h₄, ← Category.assoc, map_comp_apply, h₃,
-        ← map_comp_apply]
+      rw [← comp_apply, ← map_comp] at h₃
+      rw [mem_preimage, ← comp_apply, ← map_comp, h₄, ← Category.assoc, map_comp, comp_apply, h₃,
+        ← comp_apply, ← map_comp]
       apply mem_iInter.1 hx
-    · simp_rw [toPreimages_map, MapsTo.val_restrict_apply]
-      rw [← Category.assoc, map_comp_apply, h₃, map_comp_apply]
+    · simp only [toPreimages_obj, toPreimages_map, ConcreteCategory.hom_ofHom,
+        TypeCat.Fun.as_apply, MapsTo.val_restrict_apply]
+      rw [← Category.assoc, map_comp, comp_apply, h₃, map_comp, comp_apply]
 
 theorem isMittagLeffler_of_exists_finite_range
     (h : ∀ j : J, ∃ (i : _) (f : i ⟶ j), (range <| F.map f).Finite) : F.IsMittagLeffler := by
@@ -245,17 +240,10 @@ theorem isMittagLeffler_of_exists_finite_range
   rwa [Finset.lt_iff_ssubset, ← Finset.coe_ssubset, Set.Finite.coe_toFinset, hm] at this
 
 /-- The subfunctor of `F` obtained by restricting to the eventual range at each index. -/
-@[simps]
-def toEventualRanges : J ⥤ Type v where
-  obj j := F.eventualRange j
-  map f := (F.eventualRange_mapsTo f).restrict _ _ _
-  map_id i := by
-    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_id]
-    ext
-    rfl
-  map_comp _ _ := by
-    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_comp]
-    rfl
+@[simps obj map]
+def toEventualRanges : J ⥤ TypeCat.{v} where
+  obj j := TypeCat.of (F.eventualRange j)
+  map f := TypeCat.ofHom ⟨(F.eventualRange_mapsTo f).restrict _ _ _⟩
 
 instance toEventualRanges_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite (F.toEventualRanges.obj j) :=
   fun _ => Subtype.finite
@@ -270,7 +258,7 @@ def toEventualRangesSectionsEquiv : F.toEventualRanges.sections ≃ F.sections w
 /-- If `F` satisfies the Mittag-Leffler condition, its restriction to eventual ranges is a
 surjective functor. -/
 theorem surjective_toEventualRanges (h : F.IsMittagLeffler) ⦃i j⦄ (f : i ⟶ j) :
-    (F.toEventualRanges.map f).Surjective := fun ⟨x, hx⟩ => by
+    Function.Surjective (F.toEventualRanges.map f) := fun ⟨x, hx⟩ => by
   obtain ⟨y, hy, rfl⟩ := h.subset_image_eventualRange F f hx
   exact ⟨⟨y, hy⟩, rfl⟩
 
@@ -282,13 +270,19 @@ theorem toEventualRanges_nonempty (h : F.IsMittagLeffler) [∀ j : J, Nonempty (
   infer_instance
 
 /-- If `F` has all arrows surjective, then it "factors through a poset". -/
-theorem thin_diagram_of_surjective (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f).Surjective) {i j}
-    (f g : i ⟶ j) : F.map f = F.map g :=
+theorem thin_diagram_of_surjective
+    (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), Function.Surjective (F.map f)) {i j}
+    (f g : i ⟶ j) : F.map f = F.map g := by
   let ⟨k, φ, hφ⟩ := IsCofilteredOrEmpty.cone_maps f g
-  (Fsur φ).injective_comp_right <| by simp_rw [← types_comp, ← F.map_comp, hφ]
+  apply ConcreteCategory.ext
+  apply DFunLike.ext
+  rw [← funext_iff]
+  have := congrArg F.map hφ
+  simp only [map_comp, ConcreteCategory.ext_iff, DFunLike.ext_iff, comp_apply, ← funext_iff] at this
+  exact (Fsur φ).injective_comp_right <| this
 
 theorem toPreimages_nonempty_of_surjective [hFn : ∀ j : J, Nonempty (F.obj j)]
-    (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f).Surjective) (hs : s.Nonempty) (j) :
+    (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), Function.Surjective (F.map f)) (hs : s.Nonempty) (j) :
     Nonempty ((F.toPreimages s).obj j) := by
   simp only [toPreimages_obj, nonempty_coe_sort, nonempty_iInter, mem_preimage]
   obtain h | ⟨⟨ji⟩⟩ := isEmpty_or_nonempty (j ⟶ i)
@@ -298,7 +292,7 @@ theorem toPreimages_nonempty_of_surjective [hFn : ∀ j : J, Nonempty (F.obj j)]
     exact ⟨x, fun ji' => (F.thin_diagram_of_surjective Fsur ji' ji).symm ▸ ys⟩
 
 theorem eval_section_injective_of_eventually_injective {j}
-    (Finj : ∀ (i) (f : i ⟶ j), (F.map f).Injective) (i) (f : i ⟶ j) :
+    (Finj : ∀ (i) (f : i ⟶ j), Function.Injective (F.map f)) (i) (f : i ⟶ j) :
     (fun s : F.sections => s.val j).Injective := by
   refine fun s₀ s₁ h => Subtype.ext <| funext fun k => ?_
   obtain ⟨m, mi, mk, _⟩ := IsCofilteredOrEmpty.cone_objs i k
@@ -310,7 +304,7 @@ theorem eval_section_injective_of_eventually_injective {j}
 section FiniteCofilteredSystem
 
 variable [∀ j : J, Nonempty (F.obj j)] [∀ j : J, Finite (F.obj j)]
-  (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f).Surjective)
+  (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), Function.Surjective (F.map f))
 include Fsur
 
 theorem eval_section_surjective_of_surjective (i : J) :
@@ -322,10 +316,10 @@ theorem eval_section_surjective_of_surjective (i : J) :
   · have := (sec i).prop
     simp only [mem_iInter, mem_preimage] at this
     have := this (𝟙 i)
-    rwa [map_id_apply] at this
+    rwa [map_id, id_apply] at this
 
 theorem eventually_injective [Nonempty J] [Finite F.sections] :
-    ∃ j, ∀ (i) (f : i ⟶ j), (F.map f).Injective := by
+    ∃ j, ∀ (i) (f : i ⟶ j), Function.Injective (F.map f) := by
   haveI : ∀ j, Fintype (F.obj j) := fun j => Fintype.ofFinite (F.obj j)
   haveI : Fintype F.sections := Fintype.ofFinite F.sections
   have card_le : ∀ j, Fintype.card (F.obj j) ≤ Fintype.card F.sections :=

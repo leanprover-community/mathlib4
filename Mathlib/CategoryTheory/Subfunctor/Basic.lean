@@ -142,7 +142,7 @@ instance : Nonempty (Subfunctor F) :=
   inferInstance
 
 /-- The subfunctor as a functor. -/
-@[simps]
+@[simps obj map]
 def toFunctor : C ⥤ TypeCat.{w} where
   obj U := TypeCat.of (Subtype (G.obj U))
   map := @fun _ _ i => TypeCat.ofHom ⟨fun x => ⟨F.map i x, G.map i x.prop⟩⟩
@@ -211,9 +211,8 @@ theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.eq_top_iff_isIso := eq_top_iff_isIso
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.nat_trans_naturality := nat_trans_naturality
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf := toFunctor
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_obj := toFunctor_obj_carrier
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_obj := toFunctor_obj
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_map_coe := toFunctor_map
-@[deprecated (since := "2026-02-10")] alias toFunctor_obj := toFunctor_obj_carrier
 @[deprecated (since := "2026-02-10")] alias toFunctor_map_coe := toFunctor_map
 
 end Subfunctor
