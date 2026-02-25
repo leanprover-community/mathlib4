@@ -30,15 +30,15 @@ namespace AlgebraicGeometry.Scheme
 
 /-- Big étale site: the étale precoverage on the category of schemes. -/
 def etalePrecoverage : Precoverage Scheme.{u} :=
-  precoverage @IsEtale
+  precoverage @Etale
 
 /-- Big étale site: the étale pretopology on the category of schemes. -/
 def etalePretopology : Pretopology Scheme.{u} :=
-  pretopology @IsEtale
+  pretopology @Etale
 
 /-- Big étale site: the étale topology on the category of schemes. -/
 abbrev etaleTopology : GrothendieckTopology Scheme.{u} :=
-  grothendieckTopology @IsEtale
+  grothendieckTopology @Etale
 
 lemma zariskiTopology_le_etaleTopology : zariskiTopology ≤ etaleTopology := by
   apply grothendieckTopology_monotone
@@ -48,17 +48,19 @@ lemma zariskiTopology_le_etaleTopology : zariskiTopology ≤ etaleTopology := by
 /-- The small étale site of a scheme is the Grothendieck topology on the
 category of schemes étale over `X` induced from the étale topology on `Scheme.{u}`. -/
 def smallEtaleTopology (X : Scheme.{u}) : GrothendieckTopology X.Etale :=
-  X.smallGrothendieckTopology (P := @IsEtale)
+  X.smallGrothendieckTopology (P := @Etale)
 
 /-- The pretopology generating the small étale site. -/
 def smallEtalePretopology (X : Scheme.{u}) : Pretopology X.Etale :=
-  X.smallPretopology (Q := @IsEtale) (P := @IsEtale)
+  X.smallPretopology (Q := @Etale) (P := @Etale)
 
-instance {S : Scheme.{u}} (𝒰 : S.Cover (precoverage @IsEtale)) (i : 𝒰.I₀) : IsEtale (𝒰.f i) :=
+instance {S : Scheme.{u}} (𝒰 : S.Cover (precoverage @Etale)) (i : 𝒰.I₀) : Etale (𝒰.f i) :=
   𝒰.map_prop i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A separably closed field `Ω` defines a point on the étale topology by the fiber
 functor `X ↦ Hom(Spec Ω, X)`. -/
+noncomputable
 def geometricFiber (Ω : Type u) [Field Ω] [IsSepClosed Ω] : etaleTopology.Point where
   fiber := coyoneda.obj ⟨Spec (.of Ω)⟩
   jointly_surjective {S} R hR (f : Spec (.of Ω) ⟶ S) := by

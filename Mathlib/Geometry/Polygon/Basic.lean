@@ -6,8 +6,8 @@ Authors: A. M. Berns
 module
 
 public import Mathlib.Analysis.Convex.Between
-public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Tactic.Continuity
 
 /-!
 # Polygons
@@ -39,16 +39,16 @@ instance : CoeFun (Polygon P n) (fun _ => Fin n → P) where
   coe := Polygon.vertices
 
 variable (R)
-variable [Ring R] [AddCommGroup V] [Module R V] [AddTorsor V P] [NeZero n]
+variable [Ring R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 
 /-- The `i`-th edge as an affine map `R →ᵃ[R] P`. -/
 def edgePath (poly : Polygon P n) (i : Fin n) : R →ᵃ[R] P :=
-  AffineMap.lineMap (poly i) (poly (i + 1))
+  AffineMap.lineMap (poly i) (poly (finRotate n i))
 
 /-- The `i`-th edge as a set of points using an `affineSegment`. -/
 def edgeSet [PartialOrder R]
     (poly : Polygon P n) (i : Fin n) : Set P :=
-  affineSegment R (poly i) (poly (i + 1))
+  affineSegment R (poly i) (poly (finRotate n i))
 
 /-- The `edgeSet` is equivalent to the image of the `edgePath`. -/
 theorem edgeSet_eq_image_edgePath [PartialOrder R]

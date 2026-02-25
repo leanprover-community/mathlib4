@@ -239,6 +239,16 @@ instance : CommMonoid (A →ₜ* E) where
   one_mul f := ext fun x => one_mul (f x)
   mul_one f := ext fun x => mul_one (f x)
 
+@[to_additive (attr := simp)]
+theorem mul_apply (f g : A →ₜ* E) (a : A) : (f * g) a = f a * g a := by
+  rfl
+
+@[to_additive (attr := simp)]
+theorem pow_apply (f : A →ₜ* E) (n : ℕ) (a : A) : (f ^ n) a = (f a) ^ n := by
+  induction n
+  case zero => rw [pow_zero, pow_zero, one_toFun]
+  case succ n ih => rw [pow_succ, pow_succ, ContinuousMonoidHom.mul_apply, ih]
+
 /-- Coproduct of two continuous homomorphisms to the same space. -/
 @[to_additive (attr := simps!) /-- Coproduct of two continuous homomorphisms to the same space. -/]
 def coprod (f : ContinuousMonoidHom A E) (g : ContinuousMonoidHom B E) :
@@ -543,8 +553,6 @@ section unique
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
     [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N where
   __ := MulEquiv.ofUnique
-  continuous_toFun := by continuity
-  continuous_invFun := by continuity
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive /-- There is a unique additive monoid homomorphism between two additive monoids with
