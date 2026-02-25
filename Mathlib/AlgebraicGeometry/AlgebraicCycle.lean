@@ -31,12 +31,7 @@ open AlgebraicGeometry Set Order LocallyRingedSpace Topology TopologicalSpace
   CategoryTheory
 
 universe u v
-variable (R : Type*)
-         [CommRing R]
-         (i : ℕ)
-         (X : Scheme.{u})
-         {Y : Scheme.{u}}
-         (Z : Type*)
+variable (R : Type*) [CommRing R] (i : ℕ) (X : Scheme.{u}) {Y : Scheme.{u}} (Z : Type*)
 
 /--
 Algebraic cycle on a scheme `X` with coefficients in a type `Z` is just a function from `X` to `Z`
