@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Sites.Canonical
-public import Mathlib.CategoryTheory.Sites.Hypercover.One
+public import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
 public import Mathlib.CategoryTheory.MorphismProperty.Local
 
 /-!
