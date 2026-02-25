@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.CategoryTheory.Sites.Coverage
 public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+public import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
 
 /-!
 # 1-hypercovers
@@ -465,18 +466,55 @@ structure IsStronglySeparatedFor {X : C} (E : PreOneHypercover X) (F : Cᵒᵖ �
 both the `0` and the `1`-components. -/
 structure IsStronglySheafFor {X : C} (E : PreOneHypercover X) (F : Cᵒᵖ ⥤ Type*) : Prop where
   isSheafFor_presieve₀ : E.presieve₀.IsSheafFor F
-  isSheafFor_sieve₁ ⦃i j : E.I₀⦄ ⦃W : C⦄ (p₁ : W ⟶ E.X i) (p₂ : W ⟶ E.X j)
+  isSeparatedFor_sieve₁ ⦃i j : E.I₀⦄ ⦃W : C⦄ (p₁ : W ⟶ E.X i) (p₂ : W ⟶ E.X j)
     (h : p₁ ≫ E.f i = p₂ ≫ E.f j) :
-    (E.sieve₁ p₁ p₂).arrows.IsSheafFor F
+    (E.sieve₁ p₁ p₂).arrows.IsSeparatedFor F
 
-lemma IsStronglySheafFor.isSeparatedFor (h : E.IsStronglySheafFor F) :
+lemma IsStronglySheafFor.isStronglySeparatedFor (h : E.IsStronglySheafFor F) :
     E.IsStronglySeparatedFor F where
   isSeparatedFor_presieve₀ := h.isSheafFor_presieve₀.isSeparatedFor
-  isSeparatedFor_sieve₁ _ _ _ p₁ p₂ w := (h.isSheafFor_sieve₁ p₁ p₂ w).isSeparatedFor
+  isSeparatedFor_sieve₁ _ _ _ p₁ p₂ w := h.isSeparatedFor_sieve₁ p₁ p₂ w
 
-lemma IsStronglySeparatedFor.isSheafFor_sieve_of_pullback (h₁ : E.IsStronglySeparatedFor F)
-    (h₂ : Presieve.IsSheafFor F E.presieve₀)
-    (h₃ : ∀ ⦃Y : C⦄ (f : Y ⟶ X), Presieve.IsSeparatedFor F (E.sieve₀.pullback f).arrows)
+lemma IsStronglySeparatedFor.arrowsCompatible (h : E.IsStronglySeparatedFor F)
+    (x : ∀ i, F.obj (op <| E.X i))
+    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), F.map (E.p₁ k).op (x i) = F.map (E.p₂ k).op (x j)) :
+    Presieve.Arrows.Compatible _ E.f x := by
+  rintro i₁ i₂ Z g₁ g₂ heq
+  refine (h.isSeparatedFor_sieve₁ g₁ g₂ heq).ext fun W f ⟨T, u, h₁, h₂⟩ ↦ ?_
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, h₁]
+  conv_rhs => rw [← FunctorToTypes.map_comp_apply, ← op_comp, h₂]
+  simp [hc]
+
+/-- Glue sections of a `Type`-valued sheaf over a `1`-hypercover. -/
+noncomputable def IsStronglySheafFor.amalgamate (h : E.IsStronglySheafFor F)
+    (x : ∀ i, F.obj (op <| E.X i))
+    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), F.map (E.p₁ k).op (x i) = F.map (E.p₂ k).op (x j)) :
+    F.obj (op X) :=
+  (h.isSheafFor_presieve₀).amalgamate _
+    ((h.isStronglySeparatedFor.arrowsCompatible x hc).familyOfElements_compatible)
+
+@[simp]
+lemma IsStronglySheafFor.map_amalgamate (h : E.IsStronglySheafFor F)
+    (x : ∀ i, F.obj (op <| E.X i))
+    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), F.map (E.p₁ k).op (x i) = F.map (E.p₂ k).op (x j))
+    (i : E.I₀) :
+    F.map (E.f i).op (h.amalgamate x hc) = x i := by
+  rw [amalgamate, Presieve.IsSheafFor.valid_glue _ _ _ ⟨i⟩]
+  simp
+
+/-- `F` satisfies the (strong) sheaf condition for the pre-`1`-hypercover `E`, then
+the multiequalizer diagram attached to `E` is limiting. -/
+noncomputable
+def IsStronglySheafFor.isLimitMultifork (h : E.IsStronglySheafFor F) :
+    IsLimit (E.multifork F) := by
+  refine Nonempty.some ?_
+  rw [Multifork.isLimit_types_iff]
+  refine ⟨fun s t hst ↦ ?_, fun s ↦ ?_⟩
+  · exact h.isSheafFor_presieve₀.isSeparatedFor.ext fun _ _ ⟨i⟩ ↦ congr($(hst).val i)
+  · exact ⟨h.amalgamate s.val fun i j k ↦ s.property ⟨(i, j), k⟩, by ext; simp⟩
+
+lemma IsStronglySheafFor.isSheafFor_sieve_of_pullback (h₁ : E.IsStronglySheafFor F)
+    (h₂ : ∀ ⦃Y : C⦄ (f : Y ⟶ X), Presieve.IsSeparatedFor F (E.sieve₀.pullback f).arrows)
     {S : Sieve X}
     (H : ∀ (i : E.I₀), Presieve.IsSheafFor F (S.pullback (E.f i)).arrows)
     (H' : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j),
@@ -497,9 +535,8 @@ lemma IsStronglySeparatedFor.isSheafFor_sieve_of_pullback (h₁ : E.IsStronglySe
     congr 1
     simp [E.w]
   obtain ⟨s', hs'⟩ := hr.exists_familyOfElements
-  rw [Presieve.isSheafFor_arrows_iff] at h₂
-  obtain ⟨t', ht', hunique⟩ := h₂ _ hr
-  refine ⟨t', fun T f hf ↦ (h₃ f).ext fun Z g hg ↦ ?_, fun y hy ↦ ?_⟩
+  obtain ⟨t', ht', hunique⟩ := (Presieve.isSheafFor_arrows_iff _ _).mp h₁.isSheafFor_presieve₀ _ hr
+  refine ⟨t', fun T f hf ↦ (h₂ f).ext fun Z g hg ↦ ?_, fun y hy ↦ ?_⟩
   · obtain ⟨W, w, u, ⟨i⟩, heq⟩ := hg
     rw [← FunctorToTypes.map_comp_apply, ← op_comp]
     have : t (g ≫ f) (by simp [hf]) = t (w ≫ E.f i) (by simp [heq, hf]) := by
@@ -517,16 +554,15 @@ check that `F` is a sheaf for `R` it suffices to check:
 - `F` is a sheaf for the pullbacks of `R` along the maps from the `0`-components.
 - `F` is separated for the pullbacks of `R` along the maps from the `1`-components.
 -/
-lemma IsStronglySeparatedFor.isSheafFor_of_pullback (h₁ : E.IsStronglySeparatedFor F)
-    (h₂ : Presieve.IsSheafFor F E.presieve₀)
-    (h₃ : ∀ ⦃Y : C⦄ (f : Y ⟶ X), Presieve.IsSeparatedFor F (E.sieve₀.pullback f).arrows)
+lemma IsStronglySheafFor.isSheafFor_of_pullback (h₁ : E.IsStronglySheafFor F)
+    (h₂ : ∀ ⦃Y : C⦄ (f : Y ⟶ X), Presieve.IsSeparatedFor F (E.sieve₀.pullback f).arrows)
     {R : Presieve X}
     (H : ∀ (i : E.I₀), Presieve.IsSheafFor F ((Sieve.generate R).pullback (E.f i)).arrows)
     (H' : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j),
       Presieve.IsSeparatedFor F ((Sieve.generate R).pullback (E.p₁ k ≫ E.f i)).arrows) :
     Presieve.IsSheafFor F R := by
   rw [Presieve.isSheafFor_iff_generate]
-  exact h₁.isSheafFor_sieve_of_pullback h₂ h₃ H H'
+  exact h₁.isSheafFor_sieve_of_pullback h₂ H H'
 
 end
 
@@ -671,55 +707,19 @@ end Category
 
 section
 
-open Opposite
-variable {C : Type*} [Category* C] {K : GrothendieckTopology C} {P : Cᵒᵖ ⥤ Type*}
-   {S : C} (E : K.OneHypercover S)
-
-lemma isSheafFor_presieve₀ (h : Presieve.IsSheaf K P) : E.presieve₀.IsSheafFor P := by
-  rw [Presieve.isSheafFor_iff_generate]
-  exact h _ E.mem₀
-
-lemma arrowsCompatible (h : Presieve.IsSeparated K P) (x : ∀ i, P.obj (op <| E.X i))
-    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), P.map (E.p₁ k).op (x i) = P.map (E.p₂ k).op (x j)) :
-    Presieve.Arrows.Compatible _ E.f x := by
-  rintro i₁ i₂ Z g₁ g₂ heq
-  refine (h _ (E.mem₁ _ _ _ _ heq)).ext fun W f ⟨T, u, h₁, h₂⟩ ↦ ?_
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, h₁]
-  conv_rhs => rw [← FunctorToTypes.map_comp_apply, ← op_comp, h₂]
-  simp [hc]
-
-/-- Glue sections of a `Type`-valued sheaf over a `1`-hypercover. -/
-noncomputable def amalgamate (h : Presieve.IsSheaf K P) (x : ∀ i, P.obj (op <| E.X i))
-    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), P.map (E.p₁ k).op (x i) = P.map (E.p₂ k).op (x j)) :
-    P.obj (op S) :=
-  (E.isSheafFor_presieve₀ h).amalgamate _
-    ((E.arrowsCompatible h.isSeparated x hc).familyOfElements_compatible)
-
-@[simp]
-lemma map_amalgamate (h : Presieve.IsSheaf K P) (x : ∀ i, P.obj (op <| E.X i))
-    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), P.map (E.p₁ k).op (x i) = P.map (E.p₂ k).op (x j))
-    (i : E.I₀) :
-    P.map (E.f i).op (E.amalgamate h x hc) = x i := by
-  rw [amalgamate, Presieve.IsSheafFor.valid_glue _ _ _ ⟨i⟩]
-  simp
-
-end
-
-section
-
 variable {J : GrothendieckTopology C} {X : C} {E : J.OneHypercover X} {F : Cᵒᵖ ⥤ Type*}
 
-lemma isSeparatedFor (hf : Presieve.IsSeparated J F) : E.IsStronglySeparatedFor F where
+lemma isStronglySeparatedFor (hf : Presieve.IsSeparated J F) : E.IsStronglySeparatedFor F where
   isSeparatedFor_presieve₀ := by
     rw [Presieve.isSeparatedFor_iff_generate]
     exact hf _ E.mem₀
   isSeparatedFor_sieve₁ i j W p₁ p₂ h := hf _ (E.mem₁ _ _ _ _ h)
 
-lemma isSheafFor (hf : Presieve.IsSheaf J F) : E.IsStronglySheafFor F where
+lemma isStronglySheafFor (hf : Presieve.IsSheaf J F) : E.IsStronglySheafFor F where
   isSheafFor_presieve₀ := by
     rw [Presieve.isSheafFor_iff_generate]
     exact hf _ E.mem₀
-  isSheafFor_sieve₁ i j W p₁ p₂ h := hf _ (E.mem₁ _ _ _ _ h)
+  isSeparatedFor_sieve₁ i j W p₁ p₂ h := hf.isSeparated _ (E.mem₁ _ _ _ _ h)
 
 variable (E) in
 lemma isSheafFor_sieve_of_pullback (hF : Presieve.IsSheaf J F) {S : Sieve X}
@@ -727,11 +727,9 @@ lemma isSheafFor_sieve_of_pullback (hF : Presieve.IsSheaf J F) {S : Sieve X}
     (h₂ : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j),
       Presieve.IsSeparatedFor F (S.pullback (E.p₁ k ≫ E.f i)).arrows) :
     Presieve.IsSheafFor F S.arrows := by
-  refine (E.isSeparatedFor hF.isSeparated).isSheafFor_sieve_of_pullback ?_ ?_ h₁ h₂
-  · rw [Presieve.isSheafFor_iff_generate]
-    exact hF _ E.mem₀
-  · intro Y f
-    exact (hF _ (J.pullback_stable _ E.mem₀)).isSeparatedFor
+  refine (E.isStronglySheafFor hF).isSheafFor_sieve_of_pullback ?_ h₁ h₂
+  intro Y f
+  exact (hF _ (J.pullback_stable _ E.mem₀)).isSeparatedFor
 
 /-- If `F` is a `J`-sheaf, then being a sheaf for a presieve `R` is `J`-local on the target, i.e.
 it can be checked on the pullbacks from a `1`-hypercover. -/
