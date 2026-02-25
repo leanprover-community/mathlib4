@@ -342,13 +342,8 @@ lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNorme
     analyticOrderAt (deriv f) z₀ = n := by
   have ⟨g, hg, hg₀, hfg⟩ := (AnalyticAt.analyticOrderAt_eq_natCast hf).1 horder
   have hz₀ : f z₀ = 0 := by
-    have h_eval := Filter.Eventually.self_of_nhds hfg
-    rw [sub_self, zero_pow (by grind), zero_smul] at h_eval
-    exact h_eval
-  have H := hf.analyticOrderAt_deriv_add_one
-  simp_rw [hz₀, sub_zero] at H
-  rw [horder] at H
-  aesop
+    simpa [sub_self, zero_pow, zero_smul] using Filter.Eventually.self_of_nhds hfg
+  simpa  [hz₀, sub_zero, horder] using hf.analyticOrderAt_deriv_add_one
 
 lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
