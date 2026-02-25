@@ -57,13 +57,7 @@ noncomputable def isColimitCoconeTensor [IsFiltered C] :
     · rw [Prod.ext_iff] at h
       dsimp at h
       have := this _ ((F₁ ⊗ F₂).map (leftToMax i j) x) _ ((F₁ ⊗ F₂).map (rightToMax i j) y)
-        (by
-          have h₁ := congr_fun (c₁.w (leftToMax i j))
-          have h₁' := congr_fun (c₁.w (rightToMax i j))
-          have h₂ := congr_fun (c₂.w (leftToMax i j))
-          have h₂' := congr_fun (c₂.w (rightToMax i j))
-          dsimp at h₁ h₁' h₂ h₂'
-          aesop) rfl
+        (by cat_disch) rfl
       simpa only [Functor.ιColimitType_map] using this
     subst hij
     rw [Prod.ext_iff] at h
@@ -80,9 +74,7 @@ noncomputable def isColimitCoconeTensor [IsFiltered C] :
     obtain ⟨j₁, x₁, rfl⟩  := Types.jointly_surjective_of_isColimit hc₁ x₁
     obtain ⟨j₂, x₂, rfl⟩  := Types.jointly_surjective_of_isColimit hc₂ x₂
     exact ⟨(F₁ ⊗ F₂).ιColimitType (max j₁ j₂) ⟨F₁.map (leftToMax _ _) x₁,
-      F₂.map (rightToMax _ _) x₂⟩,
-      Prod.ext_iff.2 ⟨congr_fun (c₁.w (leftToMax j₁ j₂)) x₁,
-        congr_fun (c₂.w (rightToMax j₁ j₂)) x₂⟩⟩
+      F₂.map (rightToMax _ _) x₂⟩, by cat_disch⟩
 
 end Limits.Types
 
