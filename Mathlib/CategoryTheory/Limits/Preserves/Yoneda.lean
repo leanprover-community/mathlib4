@@ -39,8 +39,8 @@ open CategoryTheory.Limits Opposite Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-variable {J : Type u₂} [Category.{v₂} J] [HasColimitsOfShape J (Type v₁)]
-  [HasColimitsOfShape J (Type (max u₁ v₁))] (F : J ⥤ Cᵒᵖ ⥤ Type v₁)
+variable {J : Type u₂} [Category.{v₂} J] [HasColimitsOfShape J TypeCat.{v₁}]
+  [HasColimitsOfShape J TypeCat.{max u₁ v₁}] (F : J ⥤ Cᵒᵖ ⥤ TypeCat.{v₁})
 
 /-- Naturally in `X`, we have `Hom(YX, colim_i Fi) ≅ colim_i Hom(YX, Fi)`. -/
 noncomputable def yonedaYonedaColimit :
@@ -66,12 +66,17 @@ theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X
   intro j
   rw [colimit.ι_post, ι_colimMap_assoc]
   simp only [← CategoryTheory.Functor.assoc, comp_evaluation]
-  rw [ι_preservesColimitIso_inv_assoc, ← Functor.map_comp_assoc]
-  simp only [← comp_evaluation]
-  rw [colimitObjIsoColimitCompEvaluation_ι_inv, whiskerLeft_app]
+  rw [ι_preservesColimitIso_inv_assoc]
+  simp only [← comp_evaluation, comp_obj, evaluation_obj_obj, yoneda_obj_obj, uliftFunctor_obj,
+    whiskerLeft_app, uliftFunctor_map, Functor.comp_map, evaluation_obj_map, yoneda_map_app]
   ext η Y f
-  simp [largeCurriedYonedaLemma, yonedaOpCompYonedaObj, FunctorToTypes.colimit.map_ι_apply,
-    map_yonedaEquiv]
+  dsimp [largeCurriedYonedaLemma, yonedaOpCompYonedaObj, yonedaEquiv]
+  simp only [comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.as_apply, Function.comp_apply,
+    Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.ulift_apply, Equiv.coe_fn_symm_mk]
+  simp only [← comp_apply, Category.assoc, colimitObjIsoColimitCompEvaluation_ι_inv,
+    ← NatTrans.naturality, ← NatTrans.naturality_assoc, yoneda_obj_obj, yoneda_obj_map,
+    Quiver.Hom.unop_op]
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance {X : C} : PreservesColimit F (coyoneda.obj (op (yoneda.obj X))) := by
