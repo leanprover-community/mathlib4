@@ -2,15 +2,14 @@
 """Mint a GitHub App installation token using Azure Key Vault signing.
 
 This script is invoked by the local composite action. It builds a JWT for a
-GitHub App, signs the JWT digest with an Azure Key Vault key, and exchanges the
-JWT for an installation access token.
+GitHub App, signs the JWT digest with an Azure Key Vault key via OIDC-authenticated
+REST calls, and exchanges the JWT for an installation access token.
 """
 
 import base64
 import hashlib
 import json
 import os
-import subprocess
 import sys
 import time
 import urllib.error
@@ -78,49 +77,111 @@ def parse_expiration_seconds(raw: str) -> int:
     return expiration_seconds
 
 
-def run_az_key_sign(vault_name: str, key_name: str, key_version: str, digest_b64: str) -> str:
+def get_actions_oidc_token(audience: str) -> str:
+    """Fetch a GitHub Actions OIDC token for the configured audience."""
+
+    request_url = os.environ.get("ACTIONS_ID_TOKEN_REQUEST_URL", "").strip()
+    request_token = os.environ.get("ACTIONS_ID_TOKEN_REQUEST_TOKEN", "").strip()
+    if not request_url or not request_token:
+        fail(
+            "GitHub OIDC request variables are missing. "
+            "Ensure the workflow grants `permissions: id-token: write`."
+        )
+
+    parsed = urllib.parse.urlsplit(request_url)
+    query_pairs = urllib.parse.parse_qsl(parsed.query, keep_blank_values=True)
+    query_pairs.append(("audience", audience))
+    url_with_audience = urllib.parse.urlunsplit(
+        (parsed.scheme, parsed.netloc, parsed.path, urllib.parse.urlencode(query_pairs), parsed.fragment)
+    )
+
+    req = urllib.request.Request(url=url_with_audience, method="GET")
+    req.add_header("Authorization", f"Bearer {request_token}")
+    try:
+        with urllib.request.urlopen(req) as resp:
+            oidc_response = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as err:
+        detail = err.read().decode("utf-8", errors="replace")
+        fail(f"Failed to fetch GitHub OIDC token: HTTP {err.code}\n{detail}")
+    except urllib.error.URLError as err:
+        fail(f"Failed to fetch GitHub OIDC token: {err.reason}")
+    except json.JSONDecodeError:
+        fail("GitHub OIDC response was not valid JSON.")
+
+    oidc_token = oidc_response.get("value")
+    if not isinstance(oidc_token, str) or not oidc_token.strip():
+        fail("GitHub OIDC response did not include token in `value`.")
+    return oidc_token.strip()
+
+
+def exchange_oidc_for_keyvault_token(tenant_id: str, client_id: str, oidc_token: str) -> str:
+    """Exchange a GitHub OIDC token for an Entra access token for Key Vault."""
+
+    tenant = urllib.parse.quote(tenant_id, safe="")
+    token_url = f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
+    body = urllib.parse.urlencode(
+        {
+            "client_id": client_id,
+            "scope": "https://vault.azure.net/.default",
+            "grant_type": "client_credentials",
+            "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+            "client_assertion": oidc_token,
+        }
+    ).encode("utf-8")
+
+    req = urllib.request.Request(url=token_url, data=body, method="POST")
+    req.add_header("Content-Type", "application/x-www-form-urlencoded")
+    try:
+        with urllib.request.urlopen(req) as resp:
+            token_response = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as err:
+        detail = err.read().decode("utf-8", errors="replace")
+        fail(f"Failed to exchange OIDC token for Key Vault token: HTTP {err.code}\n{detail}")
+    except urllib.error.URLError as err:
+        fail(f"Failed to exchange OIDC token for Key Vault token: {err.reason}")
+    except json.JSONDecodeError:
+        fail("Entra token endpoint response was not valid JSON.")
+
+    access_token = token_response.get("access_token")
+    if not isinstance(access_token, str) or not access_token.strip():
+        fail("Entra token endpoint response did not include `access_token`.")
+    return access_token.strip()
+
+
+def run_keyvault_sign(
+    vault_name: str, key_name: str, key_version: str, digest_b64url: str, access_token: str
+) -> str:
     """Sign a SHA-256 digest with a Key Vault key and return encoded signature."""
 
-    cmd = [
-        "az",
-        "keyvault",
-        "key",
-        "sign",
-        "--vault-name",
-        vault_name,
-        "--name",
-        key_name,
-        "--algorithm",
-        "RS256",
-        "--digest",
-        digest_b64,
-        "-o",
-        "json",
-    ]
+    encoded_key_name = urllib.parse.quote(key_name, safe="")
+    sign_path = f"/keys/{encoded_key_name}/sign"
     if key_version:
-        cmd.extend(["--version", key_version])
-    proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
-    if proc.returncode != 0:
-        fail(
-            "Azure Key Vault signing failed.\n"
-            f"Command: {' '.join(cmd)}\n"
-            f"stdout: {proc.stdout.strip()}\n"
-            f"stderr: {proc.stderr.strip()}"
-        )
+        encoded_key_version = urllib.parse.quote(key_version, safe="")
+        sign_path = f"/keys/{encoded_key_name}/{encoded_key_version}/sign"
+    sign_url = f"https://{vault_name}.vault.azure.net{sign_path}?api-version=7.4"
+
+    sign_body = json.dumps({"alg": "RS256", "value": digest_b64url}, separators=(",", ":")).encode("utf-8")
+    req = urllib.request.Request(url=sign_url, data=sign_body, method="POST")
+    req.add_header("Authorization", f"Bearer {access_token}")
+    req.add_header("Content-Type", "application/json")
     try:
-        sign_result = json.loads(proc.stdout)
+        with urllib.request.urlopen(req) as resp:
+            sign_result = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as err:
+        detail = err.read().decode("utf-8", errors="replace")
+        fail(f"Azure Key Vault signing failed: HTTP {err.code}\n{detail}")
+    except urllib.error.URLError as err:
+        fail(f"Azure Key Vault signing failed: {err.reason}")
     except json.JSONDecodeError:
         fail(
-            "Azure Key Vault sign response was not valid JSON.\n"
-            f"stdout: {proc.stdout.strip()}\n"
-            f"stderr: {proc.stderr.strip()}"
+            "Azure Key Vault sign response was not valid JSON."
         )
 
-    signature = sign_result.get("result") or sign_result.get("value") or sign_result.get("signature")
+    signature = sign_result.get("value") or sign_result.get("result") or sign_result.get("signature")
     if not isinstance(signature, str) or not signature.strip():
         fail(
             "Azure Key Vault sign response did not include a signature in 'result', 'value', or 'signature'.\n"
-            f"stdout: {proc.stdout.strip()}"
+            f"response: {json.dumps(sign_result)}"
         )
     return signature.strip()
 
@@ -183,6 +244,9 @@ def build_app_jwt(
     vault_name: str,
     key_name: str,
     key_version: str,
+    azure_client_id: str,
+    azure_tenant_id: str,
+    azure_oidc_audience: str,
     expiration_seconds: int,
 ) -> str:
     """Build and sign a GitHub App JWT using Azure Key Vault."""
@@ -196,8 +260,10 @@ def build_app_jwt(
     encoded_payload = b64url_encode(json.dumps(jwt_payload, separators=(",", ":")).encode("utf-8"))
     signing_input = f"{encoded_header}.{encoded_payload}".encode("utf-8")
 
-    digest_b64 = base64.b64encode(hashlib.sha256(signing_input).digest()).decode("ascii")
-    signature_from_az = run_az_key_sign(vault_name, key_name, key_version, digest_b64)
+    digest_b64url = b64url_encode(hashlib.sha256(signing_input).digest())
+    oidc_token = get_actions_oidc_token(azure_oidc_audience)
+    keyvault_token = exchange_oidc_for_keyvault_token(azure_tenant_id, azure_client_id, oidc_token)
+    signature_from_az = run_keyvault_sign(vault_name, key_name, key_version, digest_b64url, keyvault_token)
     signature_bytes = b64url_decode(signature_from_az)
     if not signature_bytes:
         fail("Azure Key Vault returned an empty signature.")
@@ -248,12 +314,24 @@ def main() -> None:
     vault_name = read_required_env("INPUT_KEY_VAULT_NAME", "key-vault-name")
     key_name = read_required_env("INPUT_KEY_NAME", "key-name")
     key_version = os.environ.get("INPUT_KEY_VERSION", "").strip()
+    azure_client_id = read_required_env("INPUT_AZURE_CLIENT_ID", "azure-client-id")
+    azure_tenant_id = read_required_env("INPUT_AZURE_TENANT_ID", "azure-tenant-id")
+    azure_oidc_audience = os.environ.get("INPUT_AZURE_OIDC_AUDIENCE", "api://AzureADTokenExchange").strip()
     owner = os.environ.get("INPUT_OWNER", "").strip()
     repositories_raw = os.environ.get("INPUT_REPOSITORIES", "")
     api_url = os.environ.get("INPUT_GITHUB_API_URL", "https://api.github.com").strip()
     expiration_seconds = parse_expiration_seconds(os.environ.get("INPUT_JWT_EXPIRATION_SECONDS", "540").strip())
 
-    app_jwt = build_app_jwt(app_id, vault_name, key_name, key_version, expiration_seconds)
+    app_jwt = build_app_jwt(
+        app_id,
+        vault_name,
+        key_name,
+        key_version,
+        azure_client_id,
+        azure_tenant_id,
+        azure_oidc_audience,
+        expiration_seconds,
+    )
     token, installation_id = mint_installation_token(api_url, app_jwt, owner, repositories_raw)
 
     print(f"::add-mask::{token}")   # Tell GitHub to mask this secret

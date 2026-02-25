@@ -27,7 +27,6 @@ jobs:
           key-name: mathlib-merge-conflicts-app-pk
           azure-client-id: ${{ vars.LABEL_BOTS_AZURE_CLIENT_ID }}
           azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
-          azure-subscription-id: ${{ secrets.MATHLIB_CI_SUBSCRIPTION_ID }}
 
       - name: check if prs are dirty
         uses: eps1lon/actions-label-merge-conflict@1df065ebe6e3310545d4f4c4e862e43bdca146f0 # v3.0.3

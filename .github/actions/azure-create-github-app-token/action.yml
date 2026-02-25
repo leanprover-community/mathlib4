@@ -21,9 +21,10 @@ inputs:
   azure-tenant-id:
     description: Azure tenant ID.
     required: true
-  azure-subscription-id:
-    description: Azure subscription ID.
-    required: true
+  azure-oidc-audience:
+    description: OIDC audience for Entra token exchange.
+    required: false
+    default: api://AzureADTokenExchange
   owner:
     description: Optional GitHub organization/user owner to resolve installation from.
     required: false
@@ -52,13 +53,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Login to Azure
-      uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
-      with:
-        client-id: ${{ inputs.azure-client-id }}
-        tenant-id: ${{ inputs.azure-tenant-id }}
-        subscription-id: ${{ inputs.azure-subscription-id }}
-
     - name: Mint installation token
       id: mint
       shell: bash
@@ -67,6 +61,9 @@ runs:
         INPUT_KEY_VAULT_NAME: ${{ inputs.key-vault-name }}
         INPUT_KEY_NAME: ${{ inputs.key-name }}
         INPUT_KEY_VERSION: ${{ inputs.key-version }}
+        INPUT_AZURE_CLIENT_ID: ${{ inputs.azure-client-id }}
+        INPUT_AZURE_TENANT_ID: ${{ inputs.azure-tenant-id }}
+        INPUT_AZURE_OIDC_AUDIENCE: ${{ inputs.azure-oidc-audience }}
         INPUT_OWNER: ${{ inputs.owner }}
         INPUT_REPOSITORIES: ${{ inputs.repositories }}
         INPUT_GITHUB_API_URL: ${{ inputs.github-api-url }}
