@@ -79,7 +79,7 @@ set_option backward.privateInPublic true in
 /-- The type of morphisms in `TypeCat`. -/
 @[ext]
 structure Hom (X Y : TypeCat.{u}) where
-  -- private mk ::
+  private mk ::
   /-- The underlying function -/
   hom' : Fun X.carrier Y.carrier
 
