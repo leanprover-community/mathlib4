@@ -18,16 +18,12 @@ public section
 
 open Complex Real Set
 
-set_option backward.isDefEq.respectTransparency false
-
 /-
 **Liouville's theorem for harmonic functions on the complex plane** A real-valued, bounded harmonic
 function on the complex plane is constant.
 -/
-theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant
-    (f : ℂ → ℝ)
-    (h_harm : HarmonicOnNhd f univ)
-    (h_bound : Bornology.IsBounded (range f)) :
+theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant (f : ℂ → ℝ)
+    (h_harm : HarmonicOnNhd f univ) (h_bound : Bornology.IsBounded (range f)) :
     ∀ z w, f z = f w := by
   -- By assumption, there exists a holomorphic function $f$ such that $\Re(f) = u$.
   obtain ⟨F, hF_diff, hF_re⟩ := harmonic_is_realOfHolomorphic_univ h_harm
