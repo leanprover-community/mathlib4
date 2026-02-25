@@ -32,7 +32,10 @@ def myTestFun (n : ℕ) : ℕ := n + 1
 -- Command mode: synthesis failure detected
 -- This test case comes from https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/575690982
 -- The warning output contains fvar IDs that vary between runs, so we just check it produces
--- a warning (not info or error). It should produce something like:
+-- a warning (not info or error).
+-- We could convert this to a #guard_msgs if/when https://github.com/leanprover/lean4/pull/12688
+-- is available
+-- It should produce something like:
 /-
 warning: #defeq_abuse: command fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following synthesis applications fail due to transparency:
