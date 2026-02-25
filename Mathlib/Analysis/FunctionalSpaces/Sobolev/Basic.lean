@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 public import Mathlib.Analysis.Normed.Lp.PiLp
 
 /-!
@@ -57,6 +58,15 @@ instance PiLp.instENorm (p : ℝ≥0∞) {ι : Type*} (β : ι → Type*) [(i : 
   enorm f :=
     if p = 0 then {i | ‖f i‖ₑ ≠ 0}.encard
     else if p = ∞ then ⨆ i, ‖f i‖ₑ else (∑' i, ‖f i‖ₑ ^ p.toReal) ^ (1 / p.toReal)
+
+attribute [fun_prop] TestFunction.contDiff
+
+-- temporary lemma for fun_prop
+@[fun_prop]
+lemma TestFunction.contDiff_one {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+    [NormedAddCommGroup F] [NormedSpace ℝ F] (φ : 𝓓(Ω, F)) : ContDiff ℝ 1 φ :=
+  φ.contDiff.of_le (mod_cast le_top)
+
 
 end move
 
@@ -170,13 +180,22 @@ lemma weakDeriv_smul (c : ℝ) : weakDeriv Ω (c • f) μ = c • weakDeriv Ω 
 
 lemma weakDeriv_zero : weakDeriv Ω (0 : E → F) μ = 0 := by simp [weakDeriv]
 
-lemma weakDeriv_const (a : F) : weakDeriv Ω (fun _ : E ↦ a) μ = 0 := by
+lemma weakDeriv_const [μ.IsAddHaarMeasure] [CompleteSpace F] (a : F) :
+    weakDeriv Ω (fun _ : E ↦ a) μ = 0 := by
   by_cases hf : LocallyIntegrableOn (fun _ : E ↦ a) Ω μ; swap
   · exact weakDeriv_of_not_locallyIntegrableOn hf
-  ext φ
-  rw [weakDeriv_apply hf]
-  -- now integrate by parts...
-  sorry
+  ext φ x
+  simp_rw [weakDeriv_apply hf, UniformConvergenceCLM.coe_zero, Pi.zero_apply,
+    ContinuousLinearMap.zero_apply, neg_smul, integral_neg]
+  rw [← integral_smul_fderiv_eq_neg_fderiv_smul_of_integrable (hg := differentiable_const _)]
+  · simp
+  · apply Continuous.integrable_of_hasCompactSupport (by fun_prop)
+    exact (φ.hasCompactSupport.fderiv_apply (𝕜 := ℝ) x).smul_right
+  · apply Continuous.integrable_of_hasCompactSupport (by fun_prop)
+    exact φ.hasCompactSupport.smul_right
+  · apply Continuous.integrable_of_hasCompactSupport (by fun_prop)
+    exact φ.hasCompactSupport.smul_right
+  · exact φ.contDiff.differentiable (mod_cast le_top)
 
 
 -- /-- `g` represents distribution `f` and is in `L^p`. -/
@@ -196,6 +215,7 @@ variable (Ω) in
 /-- `f` has weak derivative represented by `g`. -/
 def HasWeakDeriv (f : E → F) (g : E → E →L[ℝ] F) (μ : Measure E) : Prop :=
   IsRepresentedBy (weakDeriv Ω f μ) g μ
+  -- note(F): should we add `LocallyIntegrableOn f Ω μ` as condition here?
 
 lemma hasWeakDeriv_of_ae (h : f =ᵐ[μ.restrict Ω] f') (g : E → E →L[ℝ] F)
     (hf : HasWeakDeriv Ω f g μ) : HasWeakDeriv Ω f' g μ := by
@@ -210,7 +230,8 @@ lemma hasWeakDeriv_zero : HasWeakDeriv Ω (0 : E → F) 0 μ := by
   simp [HasWeakDeriv, weakDeriv_zero, isRepresentedBy_zero]
 
 @[simp]
-lemma hasWeakderiv_const {a : F} : HasWeakDeriv Ω (fun _ : E ↦ a) 0 μ := by
+lemma hasWeakderiv_const [μ.IsAddHaarMeasure] [CompleteSpace F] {a : F} :
+    HasWeakDeriv Ω (fun _ : E ↦ a) 0 μ := by
   simp [HasWeakDeriv, weakDeriv_const, isRepresentedBy_zero]
 
 namespace HasWeakDeriv
@@ -247,6 +268,7 @@ structure HasWTaylorSeriesUpTo (f : E → F) (g : E → FormalMultilinearSeries 
   hasWeakDeriv : ∀ m : ℕ, m < k → HasWeakDeriv Ω (g · m) (g · m.succ |>.curryLeft) μ
   memLp : ∀ m : ℕ, m ≤ k → MemLp (g · m) p (μ.restrict Ω)
 
+-- Note(F): if we want this lemma, we have to weaken `HasWTaylorSeriesUpTo.zero_eq`.
 lemma hasWTaylorSeriesUpTo_congr_ae (h : f =ᵐ[μ.restrict Ω] f')
   (g : E → FormalMultilinearSeries ℝ E F) (k : ℕ∞) (μ : Measure E) :
     HasWTaylorSeriesUpTo Ω f g k p μ ↔ HasWTaylorSeriesUpTo Ω f' g k p μ := by
@@ -256,27 +278,10 @@ namespace HasWTaylorSeriesUpTo
 
 variable {g g' : E → FormalMultilinearSeries ℝ E F} {c : ℝ}
 
--- TODO: add a version assuming just finite-dimensionality of `E`, without the hypothesis on `μ`
-/-- If `f` has weak Taylor series `g` on `Ω`, then `f` is locally integrable on `Ω`.
-This version assumes `p ≥ 1` and `μ` having locally finite measure on `Ω`. -/
-lemma locallyIntegrableOn_zero [IsLocallyFiniteMeasure (μ.restrict Ω)]
-    (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hp : 1 ≤ p) :
-    LocallyIntegrableOn (g · 0) Ω μ :=
-  locallyIntegrableOn_of_locallyIntegrable_restrict <|
-    (hf.memLp _ (by positivity)).locallyIntegrable hp
-
-lemma locallyIntegrableOn_succ [IsLocallyFiniteMeasure (μ.restrict Ω)]
-    (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (n : ℕ) (hn : (n + 1) < k) (hp : 1 ≤ p) :
-    LocallyIntegrableOn (fun x ↦ g x (n + 1)) Ω μ := by
-  have aux : n < k := by
-    apply lt_trans ?_ hn
-    norm_cast
-    omega
-  have := hf.hasWeakDeriv n aux
-  have := this.locallyIntegrable -- almost what we want:
-  sorry
-  -- need to translate some currying
-  -- have (x) : (fun x ↦ g x (n + 1)) = (fun x ↦ (g x n.succ).curryLeft) := sorry
+lemma locallyIntegrableOn [IsLocallyFiniteMeasure (μ.restrict Ω)] [hp : Fact (1 ≤ p)]
+    (hf : HasWTaylorSeriesUpTo Ω f g k p μ) {n : ℕ} (hn : n ≤ k) :
+    LocallyIntegrableOn (fun x ↦ g x n) Ω μ :=
+  locallyIntegrableOn_of_locallyIntegrable_restrict <| (hf.memLp n hn).locallyIntegrable hp.out
 
 lemma mono {k' : ℕ∞} (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hk : k' ≤ k) :
     HasWTaylorSeriesUpTo Ω f g k' p μ where
@@ -304,12 +309,12 @@ lemma mono_exponent [IsFiniteMeasure μ] (hf : HasWTaylorSeriesUpTo Ω f g k p �
   hasWeakDeriv := hf.hasWeakDeriv
   memLp m hm := (hf.memLp m hm).mono_exponent hp'
 
-lemma add (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ)
-    (hg : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g x m) Ω μ)
-    (hg' : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g' x m) Ω μ) :
+lemma add [IsLocallyFiniteMeasure (μ.restrict Ω)] [hp : Fact (1 ≤ p)]
+    (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ) :
     HasWTaylorSeriesUpTo Ω (f + f') (g + g') k p μ where
   zero_eq x := by simp [← hf.zero_eq, ← hf'.zero_eq]
-  hasWeakDeriv m hm := (hf.hasWeakDeriv m hm).add (hf'.hasWeakDeriv m hm) (hg hm) (hg' hm)
+  hasWeakDeriv m hm := (hf.hasWeakDeriv m hm).add (hf'.hasWeakDeriv m hm)
+    (hf.locallyIntegrableOn hm.le) (hf'.locallyIntegrableOn hm.le)
   memLp m hm := (hf.memLp m hm).add (hf'.memLp m hm)
 
 lemma neg (hf : HasWTaylorSeriesUpTo Ω f g k p μ) :
@@ -323,12 +328,11 @@ lemma _root_.hasWTaylorSeriesUpTo_neg :
     HasWTaylorSeriesUpTo Ω (-f) (-g) k p μ ↔ HasWTaylorSeriesUpTo Ω f g k p μ :=
   ⟨fun hf ↦ by simpa using hf.neg, fun hf ↦ hf.neg⟩
 
-lemma sub (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ)
-    (hg : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g x m) Ω μ)
-    (hg' : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g' x m) Ω μ) :
+lemma sub [IsLocallyFiniteMeasure (μ.restrict Ω)] [hp : Fact (1 ≤ p)]
+    (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ) :
     HasWTaylorSeriesUpTo Ω (f - f') (g - g') k p μ := by
   rw [sub_eq_add_neg f f', sub_eq_add_neg g g']
-  exact hf.add hf'.neg hg (fun m ↦ (hg' m).neg)
+  exact hf.add hf'.neg
 
 lemma smul (hf : HasWTaylorSeriesUpTo Ω f g k p μ) :
     HasWTaylorSeriesUpTo Ω (c • f) (c • g) k p μ where
@@ -411,15 +415,7 @@ lemma add [IsLocallyFiniteMeasure μ] [hp : Fact (1 ≤ p)]
     MemSobolev Ω (f + f') k p μ := by
   obtain ⟨g, hg⟩ := hf
   obtain ⟨g', hg'⟩ := hf'
-  refine ⟨g + g', hg.add hg' ?_ ?_⟩
-  · intro m hm
-    cases m with
-    | zero => exact hg.locallyIntegrableOn_zero hp.out
-    | succ n => exact hg.locallyIntegrableOn_succ _ hm hp.out
-  · intro m hm
-    cases m with
-    | zero => exact hg'.locallyIntegrableOn_zero hp.out
-    | succ n => exact hg'.locallyIntegrableOn_succ _ hm hp.out
+  exact ⟨g + g', hg.add hg'⟩
 
 lemma neg (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (-f) k p μ := by
   obtain ⟨g, hg⟩ := hf
@@ -429,15 +425,7 @@ lemma sub [IsLocallyFiniteMeasure μ] [hp : Fact (1 ≤ p)]
     (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) : MemSobolev Ω (f - f') k p μ := by
   obtain ⟨g, hg⟩ := hf
   obtain ⟨g', hg'⟩ := hf'
-  refine ⟨g - g', hg.sub hg' ?_ ?_⟩
-  · intro m hm
-    cases m with
-    | zero => exact hg.locallyIntegrableOn_zero hp.out
-    | succ n => exact hg.locallyIntegrableOn_succ _ hm hp.out
-  · intro m hm
-    cases m with
-    | zero => exact hg'.locallyIntegrableOn_zero hp.out
-    | succ n => exact hg'.locallyIntegrableOn_succ _ hm hp.out
+  exact ⟨g - g', hg.sub hg'⟩
 
 lemma smul (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (c • f) k p μ := by
   obtain ⟨g, hg⟩ := hf
