@@ -123,9 +123,8 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition
 /-- The first uniqueness theorem for primary decomposition, Theorem 4.5 in Atiyah-Macdonald:
 In any minimal primary decomposition `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly
 the associated primes of `I`. -/
-lemma IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff [DecidableEq (Submodule R M)]
-    {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t)
-    {p : Ideal R} :
+lemma IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff {N : Submodule R M}
+    {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t) {p : Ideal R} :
     p ∈ (fun J : Submodule R M ↦ radical (J.colon .univ)) '' t ↔
       IsPrime p ∧ ∃ x : M, p = radical (N.colon {x}) := by
   classical
