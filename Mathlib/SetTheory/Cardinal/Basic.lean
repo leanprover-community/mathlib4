@@ -1043,4 +1043,10 @@ theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
   convert Cardinal.iSup_of_empty _
   exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_gt
 
+/-- The cardinality of a set is an upper-bound for the amount of elements before the set's mex
+(minimum excluded value) -/
+theorem _root_.WellFounded.mk_subtype_lt_min_compl_le_mk {r : α → α → Prop} (wf : WellFounded r)
+    {s : Set α} (hs : sᶜ.Nonempty) : #{ x // r x (wf.min sᶜ hs) } ≤ #s :=
+  Cardinal.mk_le_mk_of_subset <| Set.compl_subset_compl.mp fun _ ↦ wf.not_lt_min sᶜ hs
+
 end Cardinal
