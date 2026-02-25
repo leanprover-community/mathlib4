@@ -651,6 +651,14 @@ lemma one_lt_iff_one_lt (h : v₁.IsEquiv v₂) {x : R} :
     1 < v₁ x ↔ 1 < v₂ x := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
 
+theorem isTrivialOn {A : Type*} [CommSemiring A] [Algebra A R] (h : v₁.IsEquiv v₂)
+    (h₁ : IsTrivialOn A v₁) : IsTrivialOn A v₂ where
+  eq_one _ ha := h.eq_one_iff_eq_one.mp (IsTrivialOn.eq_one _ ha)
+
+theorem isTrivialOn_iff {A : Type*} [CommSemiring A] [Algebra A R] (h : v₁.IsEquiv v₂) :
+    IsTrivialOn A v₁ ↔ IsTrivialOn A v₂ :=
+  ⟨fun h₁ ↦ h.isTrivialOn h₁, fun h₂ ↦ h.symm.isTrivialOn h₂⟩
+
 end IsEquiv
 
 section LinearOrderedCommMonoidWithZero

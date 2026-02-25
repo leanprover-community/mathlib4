@@ -93,6 +93,7 @@ instance : Unique (Σ n, Language.order.Relations n) :=
       match n, R with
       | 2, .le => rfl⟩
 
+set_option backward.whnf.reducibleClassField false in
 instance : Unique Language.order.Symbols := ⟨⟨Sum.inr default⟩, by
   have : IsEmpty (Σ n, Language.order.Functions n) := isEmpty_sigma.2 inferInstance
   simp only [Symbols, Sum.forall, reduceCtorEq, Sum.inr.injEq, IsEmpty.forall_iff, true_and]

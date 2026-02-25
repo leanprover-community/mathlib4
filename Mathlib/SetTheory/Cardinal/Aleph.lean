@@ -466,6 +466,16 @@ theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by
   rw [← succ_aleph0]
   apply lt_succ
 
+theorem aleph0_lt_iff_aleph_one_le {c} : ℵ₀ < c ↔ ℵ₁ ≤ c := by
+  rw [← succ_le_iff, succ_aleph0]
+
+theorem aleph1_le_mk_iff {α : Type*} : ℵ₁ ≤ #α ↔ Uncountable α := by
+  rw [← aleph0_lt_iff_aleph_one_le, aleph0_lt_mk_iff]
+
+@[simp]
+theorem aleph1_le_mk (α : Type*) [Uncountable α] : ℵ₁ ≤ #α :=
+  aleph1_le_mk_iff.mpr ‹_›
+
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
 
