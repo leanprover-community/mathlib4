@@ -17,17 +17,10 @@ and components.
 
 ## Main definitions
 
-- `≤`: the subgraph relation as a partial order on graphs.
-- `Graph.IsSpanningSubgraph` (notation `≤s`): same vertex set as the ambient graph.
-- `Graph.IsInducedSubgraph` (notation `≤i`): contains every ambient link between its vertices.
-- `Graph.IsClosedSubgraph` (notation `≤c`): union of components of the ambient graph.
-
-## Notation
-
-- `H ≤ G` means `H` is a subgraph of `G`.
-- `H ≤s G` means `H` is a spanning subgraph of `G`.
-- `H ≤i G` means `H` is an induced subgraph of `G`.
-- `H ≤c G` means `H` is a closed subgraph of `G` (a union of components of `G`).
+- `H ≤ G`: the subgraph relation as a partial order on graphs.
+- `H ≤s G` (`Graph.IsSpanningSubgraph`): `H` has the same vertex set as `G`.
+- `H ≤i G` (`Graph.IsInducedSubgraph`): `H` contains every ambient link between its vertices.
+- `H ≤c G` (`Graph.IsClosedSubgraph`): `H` is a union of components of `G`.
 
 ## Implementation notes
 
