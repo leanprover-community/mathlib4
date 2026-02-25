@@ -1233,6 +1233,16 @@ theorem sInf_apply {α : Type*} {β : α → Type*} [∀ i, InfSet (β i)] {s : 
     sInf s a = ⨅ f : s, (f : ∀ a, β a) a :=
   rfl
 
+theorem sSup_apply_eq_sSup_image {α : Type*} {β : α → Type*} [∀ i, SupSet (β i)]
+    {s : Set (∀ a, β a)} {a : α} :
+    sSup s a = sSup (eval a '' s) := by
+  simp [sSup_apply, iSup, image_eq_range]
+
+theorem sInf_apply_eq_sInf_image {α : Type*} {β : α → Type*} [∀ i, InfSet (β i)]
+    {s : Set (∀ a, β a)} {a : α} :
+    sInf s a = sInf (eval a '' s) := by
+  simp [sInf_apply, iInf, image_eq_range]
+
 @[simp]
 theorem iSup_apply {α : Type*} {β : α → Type*} {ι : Sort*} [∀ i, SupSet (β i)] {f : ι → ∀ a, β a}
     {a : α} : (⨆ i, f i) a = ⨆ i, f i a := by
