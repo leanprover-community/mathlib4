@@ -8,14 +8,14 @@ module
 public import Mathlib.Init
 
 /-!
-# The `check_defeq_abuse` tactic and command combinators
+# The `check_defeq_abuse` tactic and `#check_defeq_abuse` command combinators
 
 `check_defeq_abuse tac` runs `tac` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the tactic succeeds with `false` but fails with `true`, it identifies the specific
 `isDefEq` checks that fail with the stricter setting, helping to diagnose where Mathlib relies on
 definitional equality that isn't available at instance transparency.
 
-`#check_defeq_abuse cmd` does the same for commands (e.g. `instance` declarations), where
+`#check_defeq_abuse in cmd` does the same for commands (e.g. `instance` declarations), where
 type class synthesis failures may occur during elaboration rather than during a tactic.
 It additionally traces `Meta.synthInstance` to group `isDefEq` failures by the synthesis
 application that triggered them.
@@ -36,7 +36,7 @@ The following isDefEq checks are the root causes of the failure:
 
 ### Command mode
 ```
-#check_defeq_abuse
+#check_defeq_abuse in
 instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
     Module.Free ℝ l := Module.Free.of_divisionRing ℝ l
 ```
@@ -280,7 +280,7 @@ elab_rules : tactic
           evalTactic tac
 
 /--
-`#check_defeq_abuse cmd` runs `cmd` with `backward.isDefEq.respectTransparency` both `true` and
+`#check_defeq_abuse in cmd` runs `cmd` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the command succeeds with `false` but fails with `true`, it identifies the specific
 synthesis applications and `isDefEq` checks that fail with the stricter setting.
 
@@ -289,10 +289,10 @@ failures occur during elaboration rather than within a tactic.
 
 The command is re-executed with the permissive setting so that it actually takes effect.
 -/
-syntax (name := checkDefEqAbuseCmd) "#check_defeq_abuse " command : command
+syntax (name := checkDefEqAbuseCmd) "#check_defeq_abuse " "in" command : command
 
 elab_rules : command
-  | `(command| #check_defeq_abuse%$tk $cmd) => do
+  | `(command| #check_defeq_abuse%$tk in $cmd) => do
     let saved ← get
     -- Helper: run command and check for errors (elabCommand doesn't throw on synth failures).
     let runAndCheck (opts : Scope → Scope) : CommandElabM (Except MessageData Unit) := do
@@ -312,7 +312,7 @@ elab_rules : command
     set saved
     match strictResult with
     | .ok () =>
-      logInfoAt tk "check_defeq_abuse: command succeeds with \
+      logInfoAt tk "#check_defeq_abuse: command succeeds with \
         `backward.isDefEq.respectTransparency true`. No abuse detected."
       elabCommand cmd
     | .error _ =>
@@ -322,7 +322,7 @@ elab_rules : command
       set saved
       match permissiveResult with
       | .error _ =>
-        logWarningAt tk "check_defeq_abuse: command fails regardless of \
+        logWarningAt tk "#check_defeq_abuse: command fails regardless of \
           `backward.isDefEq.respectTransparency` setting."
         elabCommand cmd
       | .ok () =>
@@ -356,14 +356,14 @@ elab_rules : command
           let uniqueFailures ← dedup leafFailures
           if uniqueFailures.isEmpty then
             logWarningAt tk
-              m!"check_defeq_abuse: command fails with \
+              m!"#check_defeq_abuse: command fails with \
                 `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
                 Could not identify specific failing isDefEq checks from traces."
           else
             let failureList := MessageData.joinSep
               (uniqueFailures.toList.map fun f => m!"  {f}") "\n"
             logWarningAt tk
-              m!"check_defeq_abuse: command fails with \
+              m!"#check_defeq_abuse: command fails with \
                 `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
                 The following isDefEq checks are the root causes of the failure:\n{failureList}"
         else
@@ -376,7 +376,7 @@ elab_rules : command
             entries := entries.push m!"  {app}\n{failureList}"
           let report := MessageData.joinSep entries.toList "\n"
           logWarningAt tk
-            m!"check_defeq_abuse: command fails with \
+            m!"#check_defeq_abuse: command fails with \
               `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
               The following synthesis applications fail due to transparency:\n{report}"
         -- Run the command with permissive setting so it actually succeeds

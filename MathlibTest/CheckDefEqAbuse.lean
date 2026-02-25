@@ -1,4 +1,6 @@
+import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Tactic.CheckDefEqAbuse
 
@@ -22,7 +24,16 @@ example (a b : ℕ) (h : a = b) : a = b := by
   check_defeq_abuse rw [h]
 
 -- Command mode: no abuse detected
-/-- info: check_defeq_abuse: command succeeds with `backward.isDefEq.respectTransparency true`. No abuse detected. -/
+/-- info: #check_defeq_abuse: command succeeds with `backward.isDefEq.respectTransparency true`. No abuse detected. -/
 #guard_msgs in
-#check_defeq_abuse
+#check_defeq_abuse in
 def myTestFun (n : ℕ) : ℕ := n + 1
+
+-- Command mode: synthesis failure detected
+-- This test case comes from https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/575690982
+-- The warning output contains fvar IDs that vary between runs, so we just check it produces
+-- a warning (not info or error).
+#guard_msgs (drop info) in
+#check_defeq_abuse in
+instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
+    Module.Free ℝ l := Module.Free.of_divisionRing ℝ l
