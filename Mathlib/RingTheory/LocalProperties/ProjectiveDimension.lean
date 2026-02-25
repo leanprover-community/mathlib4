@@ -50,13 +50,13 @@ open Limits in
 lemma localizedModule_hasProjectiveDimensionLE [Small.{v, u} R] (n : ℕ) (S : Submonoid R)
     (M : ModuleCat.{v} R) [projle : HasProjectiveDimensionLE M n] :
     HasProjectiveDimensionLE (M.localizedModule S) n := by
-  let _ : Small.{v, u} (Localization S) :=
-    small_of_surjective Localization.mkHom_surjective
-  induction n generalizing M
-  · simp only [HasProjectiveDimensionLE, zero_add] at projle ⊢
+  have : Small.{v} (Localization S) := small_of_surjective Localization.mkHom_surjective
+  induction n generalizing M with
+  | zero =>
+    simp only [HasProjectiveDimensionLE, zero_add] at projle ⊢
     rw [← projective_iff_hasProjectiveDimensionLT_one, ← IsProjective.iff_projective] at projle ⊢
     exact Module.projective_of_isLocalizedModule S (M.localizedModuleMkLinearMap S)
-  · rename_i n ih
+  | succ n ih =>
     rcases ModuleCat.enoughProjectives.1 M with ⟨⟨P, f⟩⟩
     let T := ShortComplex.mk (kernel.ι f) f (kernel.condition f)
     have T_exact : T.ShortExact := { exact := ShortComplex.exact_kernel f }
