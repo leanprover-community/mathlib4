@@ -75,7 +75,7 @@ lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) :
     simpa only [globalDimension, iSup_le_iff, projectiveDimension_le_iff]
       using fun h M _ ↦ h M
   tfae_have 2 → 3 := by
-    exact fun h m ge N M ↦ ext_subsingleton_of_quotients M m
+    exact fun h m ge N M ↦ ModuleCat.ext_subsingleton_of_quotients M m
       (fun I ↦ ((h (ModuleCat.of R (Shrink.{v} (R ⧸ I)))).subsingleton _ _ _ ge M)) N
   tfae_have 3 → 1 := by
     intro h
