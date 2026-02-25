@@ -212,11 +212,11 @@ theorem finrank_ker_adjoint_comp_self {n : ℕ} (hn : Module.finrank 𝕜 E = n)
     omega
 
 
--- omit [FiniteDimensional 𝕜 F] in
--- theorem finrank_comp_self {n : ℕ} (hn : Module.finrank 𝕜 E = n) :
---   Module.finrank 𝕜 (ker T) = n - Module.finrank 𝕜 (range T) := by
---     rw [← hn, ← LinearMap.finrank_range_add_finrank_ker T]
---     omega
+omit [FiniteDimensional 𝕜 F] in
+theorem finrank_comp_self {n : ℕ} (hn : Module.finrank 𝕜 E = n) :
+  Module.finrank 𝕜 (ker T) = n - Module.finrank 𝕜 (range T) := by
+    rw [← hn, ← LinearMap.finrank_range_add_finrank_ker T]
+    omega
 
 -- 4. From 3., the number of positive singular values is `rank(T*T) = rank(T)`
 theorem finrank_range_adjoint_comp_self :
@@ -227,6 +227,12 @@ theorem finrank_range_adjoint_comp_self :
 -- We have this: singularValues_antitone
 -- singularValues_antitone : Antitone T.singularValues
 
+-- Roadmap for next two theorems:
+-- 1. μ appears in (T*T).eigenvalues a number of times equal to the dimension of the eigenspace of μ
+-- 2. From 1., 0 appears in (T*T).eigenvalues a number of times equal to dim(ker(T))
+-- 3. From 2., 0 appears as a singular value `dim(ker(T*T))` (= `n - rank(T*T)`) times
+-- 4. From 3., the number of positive singular values is `rank(T*T) = rank(T)`
+-- 5. From 4. and the fact that singular values are antitone, the following two theroems follow
 theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
     rw [← Module.finrank_range_adjoint, ← range_adjoint_comp_self] at hn
@@ -261,54 +267,6 @@ theorem singularValues_lt_rank {n : ℕ}
     have hsq : 0 < (T.singularValues n : ℝ) ^ 2 := by
       simpa [T.sq_singularValues_of_lt rfl hn'] using hpos
     simpa using Real.sqrt_pos.mpr hsq
--- Roadmap for next two theorems:
--- 1. μ appears in (T*T).eigenvalues a number of times equal to the dimension of the eigenspace of μ
--- 2. From 1., 0 appears in (T*T).eigenvalues a number of times equal to dim(ker(T))
--- 3. From 2., 0 appears as a singular value `dim(ker(T*T))` (= `n - rank(T*T)`) times
--- 4. From 3., the number of positive singular values is `rank(T*T) = rank(T)`
--- 5. From 4. and the fact that singular values are antitone, the following two theroems follow
-theorem singularValues_lt_rank {n : ℕ}
-  (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
-  -- range(T) to range(T^*T)
-  rw [← Module.finrank_range_adjoint, ← range_adjoint_comp_self] at hn
-  -- Bounding n by the dim of E
-  have hdimE : n < Module.finrank 𝕜 E := lt_of_lt_of_le hn (Submodule.finrank_le _)
-
-  have hsq : (T.singularValues n : ℝ) ^ 2 =
-    T.isSymmetric_adjoint_comp_self.eigenvalues rfl ⟨n, hdimE⟩ :=
-    T.sq_singularValues_fin rfl ⟨n, hdimE⟩
-
-  -- Showing that the nth eigenvalue is positive
-  have heig_pos : 0 < T.isSymmetric_adjoint_comp_self.eigenvalues rfl ⟨n, hdimE⟩ := by
-    by_contra h
-    push_neg at h
-    have heig_nn := T.eigenvalues_adjoint_comp_self_nonneg rfl ⟨n, hdimE⟩
-    have heig_zero : T.isSymmetric_adjoint_comp_self.eigenvalues rfl ⟨n, hdimE⟩ = 0 :=
-      le_antisymm h heig_nn
-    -- All eigenvalues at index ≥ n are zero (by antitonicity + nonnegativity)
-    have hall_zero : ∀ m : Fin (Module.finrank 𝕜 E), n ≤ m.val →
-        T.isSymmetric_adjoint_comp_self.eigenvalues rfl m = 0 := fun m hm =>
-      le_antisymm
-        (heig_zero ▸ T.isSymmetric_adjoint_comp_self.eigenvalues_antitone rfl hm)
-        (T.eigenvalues_adjoint_comp_self_nonneg rfl m)
-    sorry
-
-
-  rw [← hsq] at heig_pos
-  exact (pow_pos_iff two_ne_zero).mp heig_pos |>.bot_lt
-
-
-
-
-
-  -- have hn' : n < Module.finrank 𝕜 E := by
-  --   calc n < Module.finrank 𝕜 (range (adjoint T ∘ₗ T)) := hn
-  --   _ ≤ Module.finrank 𝕜 E := Submodule.finrank_le _
-  -- have hT := T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨n, hn'⟩
-  -- have haa := IsSymmetric.card_filter_eigenvalues_eq T.isSymmetric_adjoint_comp_self rfl hT
-
-
-  -- have Finset.card {i : Fin n | hT.eigenvalues hn i = μ}
 
 -- It's unclear what the right way to state "The rank of T, as a natural number" is,
 -- I went with this approach simply because it appeared more times in Loogle, but maybe
