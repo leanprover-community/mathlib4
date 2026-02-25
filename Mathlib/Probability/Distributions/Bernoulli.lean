@@ -31,7 +31,7 @@ variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
 noncomputable def bernoulli_measure (a b : α) (p : I) : Measure α :=
   ENNReal.ofReal p • dirac a + ENNReal.ofReal (σ p) • dirac b
 
-noncomputable def bernoulli_measure_def (a b : α) (p : I) :
+lemma bernoulli_measure_def (a b : α) (p : I) :
     bernoulli_measure a b p = ENNReal.ofReal p • dirac a + ENNReal.ofReal (σ p) • dirac b := rfl
 
 instance (a b : α) (p : I) : IsProbabilityMeasure (bernoulli_measure a b p) where
@@ -65,7 +65,7 @@ theorem HasLaw.uniform_le_hasLaw (p : I) {U : Ω → I} (hU : HasLaw U ℙ P) :
     simp_rw [← Function.comp_def (f := (· ≤ p)) (g := U)]
     rw [← AEMeasurable.map_map_of_aemeasurable (by fun_prop) (by fun_prop),
       map_apply_of_aemeasurable (by fun_prop) (by measurability), hU.map_eq]
-    obtain h | h := Classical.prop_complete prop
+    by_cases h : prop
     · simp [h, bernoulli_measure_def, ← Set.mem_Iic]
     · simp [h, bernoulli_measure_def, ← Set.mem_Ioi]
 
